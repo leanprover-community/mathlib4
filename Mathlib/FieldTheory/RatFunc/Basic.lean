@@ -522,7 +522,9 @@ instance instField [IsDomain K] : Field (RatFunc K) where
   mul_inv_cancel _ := mul_inv_cancel
   zpow := zpowRec
   nnqsmul := _
+  nnqsmul_def := fun q a => rfl
   qsmul := _
+  qsmul_def := fun q a => rfl
 
 section IsFractionRing
 

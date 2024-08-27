@@ -3,7 +3,6 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Init.Core
 import Mathlib.LinearAlgebra.AffineSpace.Basis
 import Mathlib.LinearAlgebra.FiniteDimensional
 
@@ -157,8 +156,8 @@ theorem finrank_vectorSpan_range_le [Fintype ι] (p : ι → P) {n : ℕ} (hc : 
 /-- The `vectorSpan` of an indexed family of `n + 1` points has dimension at most `n`. -/
 lemma finrank_vectorSpan_range_add_one_le [Fintype ι] [Nonempty ι] (p : ι → P) :
     finrank k (vectorSpan k (Set.range p)) + 1 ≤ Fintype.card ι :=
-  (le_tsub_iff_right $ Nat.succ_le_iff.2 Fintype.card_pos).1 $ finrank_vectorSpan_range_le _ _
-    (tsub_add_cancel_of_le $ Nat.succ_le_iff.2 Fintype.card_pos).symm
+  (le_tsub_iff_right <| Nat.succ_le_iff.2 Fintype.card_pos).1 <| finrank_vectorSpan_range_le _ _
+    (tsub_add_cancel_of_le <| Nat.succ_le_iff.2 Fintype.card_pos).symm
 
 /-- `n + 1` points are affinely independent if and only if their
 `vectorSpan` has dimension `n`. -/
@@ -242,7 +241,7 @@ lemma AffineIndependent.card_lt_card_of_affineSpan_lt_affineSpan {s t : Finset V
   · simp [Set.subset_empty_iff] at hst
   have := hs'.to_subtype
   have := ht'.to_set.to_subtype
-  have dir_lt := AffineSubspace.direction_lt_of_nonempty (k := k) hst $ hs'.to_set.affineSpan k
+  have dir_lt := AffineSubspace.direction_lt_of_nonempty (k := k) hst <| hs'.to_set.affineSpan k
   rw [direction_affineSpan, direction_affineSpan,
     ← @Subtype.range_coe _ (s : Set V), ← @Subtype.range_coe _ (t : Set V)] at dir_lt
   have finrank_lt := add_lt_add_right (Submodule.finrank_lt_finrank_of_lt dir_lt) 1

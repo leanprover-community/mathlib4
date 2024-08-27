@@ -194,7 +194,7 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
         convert_to _ ≤ (a m) * (1 + 1 / m : ℝ) ^ (2 * m) / (4 / π)
         · simp_rw [a, add_mul, one_mul, pow_succ, Nat.factorial_succ]
           field_simp; ring
-        · rw [_root_.le_div_iff (by positivity), pow_succ]
+        · rw [_root_.le_div_iff₀ (by positivity), pow_succ]
           convert (mul_le_mul h_m this (by positivity) (by positivity)) using 1
           field_simp; ring
       refine le_trans (le_of_eq (by field_simp; norm_num)) (one_add_mul_le_pow ?_ (2 * m))
@@ -291,8 +291,8 @@ theorem rank_le_rankOfDiscrBdd :
       rw [Real.rpow_logb (lt_trans zero_lt_one h₂) (ne_of_gt h₂) (by positivity), ← mul_assoc,
             ← inv_div, inv_mul_cancel₀ (by norm_num), one_mul, Int.cast_natCast]
     · refine div_nonneg (Real.log_nonneg ?_) (Real.log_nonneg (le_of_lt h₂))
-      rw [mul_comm, ← mul_div_assoc, _root_.le_div_iff (by positivity), one_mul,
-        ← _root_.div_le_iff (by positivity)]
+      rw [mul_comm, ← mul_div_assoc, _root_.le_div_iff₀ (by positivity), one_mul,
+        ← _root_.div_le_iff₀ (by positivity)]
       exact le_trans (by norm_num) (Nat.one_le_cast.mpr (Nat.one_le_iff_ne_zero.mpr h_nz))
   · exact le_max_of_le_left h
 

@@ -15,9 +15,6 @@ import Mathlib.GroupTheory.Submonoid.Center
 assert_not_exists Multiset
 assert_not_exists Ring
 
-open Function
-open Int
-
 variable {G : Type*} [Group G]
 
 namespace Subgroup

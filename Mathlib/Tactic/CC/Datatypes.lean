@@ -84,7 +84,7 @@ Once the `cc` tactic is used a lot in Mathlib, we should profile and see
 if `HashSet` could be more optimal. -/
 abbrev RBExprSet := Batteries.RBSet Expr compare
 
-/-- `CongrTheorem`s equiped with additional infos used by congruence closure modules. -/
+/-- `CongrTheorem`s equipped with additional infos used by congruence closure modules. -/
 structure CCCongrTheorem extends CongrTheorem where
   /-- If `heqResult` is true, then lemma is based on heterogeneous equality
       and the conclusion is a heterogeneous equality. -/
@@ -366,7 +366,7 @@ structure Entry where
       theorem prover. The basic idea is to introduce a counter gmt that records the number of
       heuristic instantiation that have occurred in the current branch. It is incremented after each
       round of heuristic instantiation. The field `mt` records the last time any proper descendant
-      of of thie entry was involved in a merge. -/
+      of this entry was involved in a merge. -/
   mt : Nat
   deriving Inhabited
 
@@ -462,7 +462,7 @@ structure CCState extends CCConfig where
   /-- Mapping from operators occurring in terms and their canonical
       representation in this module -/
   canOps : RBExprMap Expr := ∅
-  /-- Whether the canonical operator is suppoted by AC. -/
+  /-- Whether the canonical operator is supported by AC. -/
   opInfo : RBExprMap Bool := ∅
   /-- Extra `Entry` information used by the AC part of the tactic. -/
   acEntries : RBExprMap ACEntry := ∅
@@ -521,7 +521,7 @@ def isCgRoot (ccs : CCState) (e : Expr) : Bool :=
 "Modification Time". The field `mt` is used to implement the mod-time optimization introduced by the
 Simplify theorem prover. The basic idea is to introduce a counter `gmt` that records the number of
 heuristic instantiation that have occurred in the current branch. It is incremented after each round
-of heuristic instantiation. The field `mt` records the last time any proper descendant of of thie
+of heuristic instantiation. The field `mt` records the last time any proper descendant of this
 entry was involved in a merge. -/
 def mt (ccs : CCState) (e : Expr) : Nat :=
   match ccs.entries.find? e with
