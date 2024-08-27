@@ -500,34 +500,54 @@ noncomputable def join (S : K) (T : K) : (U : K) × (S ↪[L] U) × (T ↪[L] U)
   exact ⟨⟨h.choose, h.choose_spec.1⟩, Classical.choice h.choose_spec.2.1,
     Classical.choice h.choose_spec.2.2⟩
 
-noncomputable def init_system : ℕ →
-    (A : K) × (ℕ → (B : K) × (B ↪[L] A))
+noncomputable def init_system : (n : ℕ) →
+    (A : K) × (Fin n → (B : K) × (B ↪[L] A))
   | 0 => ⟨ess_surj_sequence K_fraisse 0,
     fun _ => ⟨_, Embedding.refl L _⟩⟩
-  | n + 1 => by
-    let ⟨m1, m2⟩ := Nat.unpair n
-    let ⟨An, Sn⟩ := init_system n
-    let ⟨B, B_to_An⟩ := Sn m1
+  | 1 => by
+    let A0 := (init_system 0).1
+    let id_A0 := Embedding.refl L A0
+    let ⟨f, f_fg⟩ := (countable_iff_exists_surjective.1
+      (Substructure.countable_self_finiteEquiv_of_countable (L := L) (M := A0))).choose 0
+    let ⟨A, A0_to_A, _, _⟩ := extend_finiteEquiv_in_class K_fraisse A0 (f.map id_A0)
+      (SubEquivalence.map_dom id_A0 f ▸ FG.map _ f_fg)
+    let ⟨A', A_to_A', _⟩ := join K_fraisse A (ess_surj_sequence K_fraisse 1)
+    exact ⟨A', fun _ ↦ ⟨A0, A_to_A'.comp A0_to_A⟩⟩
+  | n + 2 => by
+    let m1 := (Nat.unpair (n + 1)).1
+    let m2 := (Nat.unpair (n + 1)).2
+    let An := (init_system (n + 1)).1
+    let Sn := (init_system (n + 1)).2
+    let B := (Sn ⟨m1, Nat.unpair_lt NeZero.one_le⟩).1
+    let B_to_An := (Sn ⟨m1, Nat.unpair_lt NeZero.one_le⟩).2
     let ⟨f, f_fg⟩ := (countable_iff_exists_surjective.1
       (Substructure.countable_self_finiteEquiv_of_countable (L := L) (M := B))).choose m2
     let ⟨A, An_to_A, _, _⟩ := extend_finiteEquiv_in_class K_fraisse An (f.map B_to_An)
       (SubEquivalence.map_dom B_to_An f ▸ FG.map _ f_fg)
     let ⟨A', A_to_A', _⟩ := join K_fraisse A (ess_surj_sequence K_fraisse (n+1))
-    exact ⟨A', fun m ↦
-      if m ≤ n then ⟨(Sn m).1, A_to_A'.comp (An_to_A.comp (Sn m).2)⟩
-        else ⟨A', Embedding.refl L A'⟩⟩
+    exact ⟨A', fun m ↦ ⟨(Sn m).1, A_to_A'.comp (An_to_A.comp ((Sn m).2))⟩⟩
+  decreasing_by · sorry
+                · sorry
+                · sorry
+
+
+def Eq.embedding {A B : K} (h : A = B) : A ↪[L] B := by
+  subst h
+  exact Embedding.refl L A
+
+theorem Eq.embedding_trans {A B C : K} (h : A = B) (h' : B = C) :
+    (Eq.embedding h').comp (Eq.embedding h) = Eq.embedding (h.trans h') := by
+  induction h'
+  induction h
+  rfl
 
 noncomputable def system : ℕ → K :=
   fun n ↦ (init_system K_fraisse n).1
 
-  theorem system_eq {m n} (h : m ≤ n) : ((init_system K_fraisse n).2 m).1 = system K_fraisse m := by
-  match n with
-  | 0 => cases h; rfl
-  | n+1 =>
-    simp [init_system]; split <;> simp <;> rename_i h'
-    · apply system_eq h'
-    · cases (Nat.le_or_eq_of_le_succ h).resolve_left h'
-      rfl
+  theorem system_eq {n} {m : Fin (n+1)} :
+    ((init_system K_fraisse (n+1)).2 m).1 = system K_fraisse m := by
+  rfl
+
 
 theorem init_system_succ (n : ℕ) :
     ((init_system K_fraisse n).2 n).2.comp
@@ -552,7 +572,8 @@ theorem init_system_succ (n : ℕ) :
   let ⟨A', A_to_A', _⟩ := join K_fraisse A (ess_surj_sequence K_fraisse (n+1))
   have eq1 : ((init_system K_fraisse (n + 1)).2 (n + 1)) =
     if n + 1 ≤ n then ⟨(Sn (n + 1)).1, A_to_A'.comp (An_to_A.comp (Sn (n + 1)).2)⟩
-      else ⟨A', Embedding.refl L A'⟩
+      else ⟨A', Embedding.refl L A'⟩ := sorry
+  sorry
 
 noncomputable def maps_system {m n : ℕ} (h : m ≤ n): system K_fraisse m ↪[L] system K_fraisse n :=
   system_eq K_fraisse h ▸ ((init_system K_fraisse n).2 m).2
