@@ -1459,6 +1459,7 @@ import Mathlib.CategoryTheory.EssentiallySmall
 import Mathlib.CategoryTheory.Extensive
 import Mathlib.CategoryTheory.FiberedCategory.BasedCategory
 import Mathlib.CategoryTheory.FiberedCategory.Cartesian
+import Mathlib.CategoryTheory.FiberedCategory.Cocartesian
 import Mathlib.CategoryTheory.FiberedCategory.HomLift
 import Mathlib.CategoryTheory.Filtered.Basic
 import Mathlib.CategoryTheory.Filtered.Connected
@@ -4251,6 +4252,7 @@ import Mathlib.Tactic.Simps.NotationClass
 import Mathlib.Tactic.SlimCheck
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Spread
+import Mathlib.Tactic.StacksAttribute
 import Mathlib.Tactic.Subsingleton
 import Mathlib.Tactic.Substs
 import Mathlib.Tactic.SuccessIfFailWithMsg
