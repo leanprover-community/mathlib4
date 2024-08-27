@@ -19,8 +19,6 @@ variable [MonoidWithZero M₀]
 
 namespace Ring
 
-open scoped Classical
-
 theorem mul_inverse_rev' {a b : M₀} (h : Commute a b) :
     inverse (a * b) = inverse b * inverse a := by
   by_cases hab : IsUnit (a * b)

@@ -104,7 +104,7 @@ theorem Coloring.colorClasses_finite [Finite α] : C.colorClasses.Finite :=
 
 theorem Coloring.card_colorClasses_le [Fintype α] [Fintype C.colorClasses] :
     Fintype.card C.colorClasses ≤ Fintype.card α := by
-  simp [colorClasses]
+  simp only [colorClasses]
   -- Porting note: brute force instance declaration `[Fintype (Setoid.classes (Setoid.ker C))]`
   haveI : Fintype (Setoid.classes (Setoid.ker C)) := by assumption
   convert Setoid.card_classes_ker_le C
@@ -370,8 +370,8 @@ lemma chromaticNumber_eq_iff_forall_surjective (hG : G.Colorable n) :
   rw [← hG.chromaticNumber_le.ge_iff_eq, le_chromaticNumber_iff_forall_surjective]
 
 theorem chromaticNumber_bot [Nonempty V] : (⊥ : SimpleGraph V).chromaticNumber = 1 := by
-  have : (⊥ : SimpleGraph V).Colorable 1 := ⟨.mk 0 $ by simp⟩
-  exact this.chromaticNumber_le.antisymm $ ENat.one_le_iff_pos.2 $ chromaticNumber_pos this
+  have : (⊥ : SimpleGraph V).Colorable 1 := ⟨.mk 0 <| by simp⟩
+  exact this.chromaticNumber_le.antisymm <| ENat.one_le_iff_pos.2 <| chromaticNumber_pos this
 
 @[simp]
 theorem chromaticNumber_top [Fintype V] : (⊤ : SimpleGraph V).chromaticNumber = Fintype.card V := by

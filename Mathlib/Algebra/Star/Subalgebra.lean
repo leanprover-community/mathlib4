@@ -650,30 +650,11 @@ namespace StarAlgHom
 open StarSubalgebra StarAlgebra
 
 variable {F R A B : Type*} [CommSemiring R] [StarRing R]
-variable [Semiring A] [Algebra R A] [StarRing A] [StarModule R A]
-variable [Semiring B] [Algebra R B] [StarRing B] [StarModule R B]
-variable [FunLike F A B] [AlgHomClass F R A B] [StarAlgHomClass F R A B] (f g : F)
+variable [Semiring A] [Algebra R A] [StarRing A]
+variable [Semiring B] [Algebra R B] [StarRing B]
 
-/-- The equalizer of two star `R`-algebra homomorphisms. -/
-def equalizer : StarSubalgebra R A :=
-  { toSubalgebra := AlgHom.equalizer (f : A →ₐ[R] B) g
-    star_mem' := @fun a (ha : f a = g a) => by simpa only [← map_star] using congrArg star ha }
--- Porting note: much like `StarSubalgebra.copy` the old proof was broken and hard to fix
-
-@[simp]
-theorem mem_equalizer (x : A) : x ∈ StarAlgHom.equalizer f g ↔ f x = g x :=
-  Iff.rfl
-
-theorem adjoin_le_equalizer {s : Set A} (h : s.EqOn f g) : adjoin R s ≤ StarAlgHom.equalizer f g :=
-  adjoin_le h
-
-theorem ext_of_adjoin_eq_top {s : Set A} (h : adjoin R s = ⊤) ⦃f g : F⦄ (hs : s.EqOn f g) : f = g :=
-  DFunLike.ext f g fun _x => StarAlgHom.adjoin_le_equalizer f g hs <| h.symm ▸ trivial
-
-theorem map_adjoin (f : A →⋆ₐ[R] B) (s : Set A) :
-    map f (adjoin R s) = adjoin R (f '' s) :=
-  GaloisConnection.l_comm_of_u_comm Set.image_preimage (gc_map_comap f) StarAlgebra.gc
-    StarAlgebra.gc fun _ => rfl
+section
+variable [StarModule R A]
 
 theorem ext_adjoin {s : Set A} [FunLike F (adjoin R s) B]
     [AlgHomClass F R (adjoin R s) B] [StarAlgHomClass F R (adjoin R s) B] {f g : F}
@@ -696,6 +677,32 @@ theorem ext_adjoin_singleton {a : A} [FunLike F (adjoin R ({a} : Set A)) B]
           Subtype.ext <| Set.mem_singleton_iff.mp hx).symm ▸
       h
 
+variable [FunLike F A B] [AlgHomClass F R A B] [StarAlgHomClass F R A B] (f g : F)
+
+/-- The equalizer of two star `R`-algebra homomorphisms. -/
+def equalizer : StarSubalgebra R A :=
+  { toSubalgebra := AlgHom.equalizer (f : A →ₐ[R] B) g
+    star_mem' := @fun a (ha : f a = g a) => by simpa only [← map_star] using congrArg star ha }
+-- Porting note: much like `StarSubalgebra.copy` the old proof was broken and hard to fix
+
+@[simp]
+theorem mem_equalizer (x : A) : x ∈ StarAlgHom.equalizer f g ↔ f x = g x :=
+  Iff.rfl
+
+theorem adjoin_le_equalizer {s : Set A} (h : s.EqOn f g) : adjoin R s ≤ StarAlgHom.equalizer f g :=
+  adjoin_le h
+
+theorem ext_of_adjoin_eq_top {s : Set A} (h : adjoin R s = ⊤) ⦃f g : F⦄ (hs : s.EqOn f g) : f = g :=
+  DFunLike.ext f g fun _x => StarAlgHom.adjoin_le_equalizer f g hs <| h.symm ▸ trivial
+
+
+variable [StarModule R B]
+
+theorem map_adjoin (f : A →⋆ₐ[R] B) (s : Set A) :
+    map f (adjoin R s) = adjoin R (f '' s) :=
+  GaloisConnection.l_comm_of_u_comm Set.image_preimage (gc_map_comap f) StarAlgebra.gc
+    StarAlgebra.gc fun _ => rfl
+
 /-- Range of a `StarAlgHom` as a star subalgebra. -/
 protected def range
     (φ : A →⋆ₐ[R] B) : StarSubalgebra R B where
@@ -706,6 +713,9 @@ theorem range_eq_map_top (φ : A →⋆ₐ[R] B) : φ.range = (⊤ : StarSubalge
   StarSubalgebra.ext fun x =>
     ⟨by rintro ⟨a, ha⟩; exact ⟨a, by simp, ha⟩, by rintro ⟨a, -, ha⟩; exact ⟨a, ha⟩⟩
 
+end
+
+variable [StarModule R B]
 /-- Restriction of the codomain of a `StarAlgHom` to a star subalgebra containing the range. -/
 protected def codRestrict (f : A →⋆ₐ[R] B) (S : StarSubalgebra R B) (hf : ∀ x, f x ∈ S) :
     A →⋆ₐ[R] S where

@@ -33,9 +33,9 @@ universe u v w w₁ w₂
 namespace LieSubmodule
 
 variable {R : Type u} {L : Type v} {M : Type w}
-variable [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup M] [Module R M]
-variable [LieRingModule L M] [LieModule R L M]
-variable (N N' : LieSubmodule R L M) (I J : LieIdeal R L)
+variable [CommRing R] [LieRing L] [AddCommGroup M] [Module R M]
+variable [LieRingModule L M]
+variable (N N' : LieSubmodule R L M)
 
 /-- The quotient of a Lie module by a Lie submodule. It is a Lie module. -/
 instance : HasQuotient M (LieSubmodule R L M) :=
@@ -68,8 +68,15 @@ lie_submodule of the lie_module `N`. -/
 abbrev mk : M → M ⧸ N :=
   Submodule.Quotient.mk
 
+-- Porting note: added to replace `mk_eq_zero` as simp lemma.
+@[simp]
+theorem mk_eq_zero' {m : M} : mk (N := N) m = 0 ↔ m ∈ N :=
+  Submodule.Quotient.mk_eq_zero N.toSubmodule
+
 theorem is_quotient_mk (m : M) : Quotient.mk'' m = (mk m : M ⧸ N) :=
   rfl
+
+variable [LieAlgebra R L] [LieModule R L M] (I J : LieIdeal R L)
 
 /-- Given a Lie module `M` over a Lie algebra `L`, together with a Lie submodule `N ⊆ M`, there
 is a natural linear map from `L` to the endomorphisms of `M` leaving `N` invariant. -/
@@ -174,11 +181,6 @@ instance isNoetherian [IsNoetherian R M] : IsNoetherian R (M ⧸ N) :=
 
 -- Porting note: LHS simplifies @[simp]
 theorem mk_eq_zero {m : M} : mk' N m = 0 ↔ m ∈ N :=
-  Submodule.Quotient.mk_eq_zero N.toSubmodule
-
--- Porting note: added to replace `mk_eq_zero` as simp lemma.
-@[simp]
-theorem mk_eq_zero' {m : M} : mk (N := N) m = 0 ↔ m ∈ N :=
   Submodule.Quotient.mk_eq_zero N.toSubmodule
 
 @[simp]

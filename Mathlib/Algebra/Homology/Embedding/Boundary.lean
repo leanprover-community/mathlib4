@@ -36,7 +36,7 @@ namespace ComplexShape
 
 namespace Embedding
 
-variable {ι ι' : Type*} (c : ComplexShape ι) (c' : ComplexShape ι') (e : Embedding c c')
+variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'} (e : Embedding c c')
 
 /-- The lower boundary of an embedding `e : Embedding c c'`, as a predicate on `ι`.
 It is satisfied by `j : ι` when there exists `i' : ι'` not in the image of `e.f`
@@ -87,7 +87,7 @@ lemma prev_f_of_not_boundaryGE [e.IsRelIff] {i j : ι} (hij : c.prev j = i)
     exact hij' (by simpa only [hij] using hi)
 
 variable {e} in
-lemma BoundaryGE.false {j : ι} (hj : e.BoundaryGE j) [e.IsTruncLE] : False := by
+lemma BoundaryGE.false_of_isTruncLE {j : ι} (hj : e.BoundaryGE j) [e.IsTruncLE] : False := by
   obtain ⟨i, hi⟩ := e.mem_prev hj.1
   exact hj.2 i (by simpa only [hi] using hj.1)
 
@@ -140,7 +140,7 @@ lemma next_f_of_not_boundaryLE [e.IsRelIff] {j k : ι} (hjk : c.next j = k)
     exact hjk' (by simpa only [hjk] using hk)
 
 variable {e} in
-lemma BoundaryLE.false {j : ι} (hj : e.BoundaryLE j) [e.IsTruncGE] : False := by
+lemma BoundaryLE.false_of_isTruncGE {j : ι} (hj : e.BoundaryLE j) [e.IsTruncGE] : False := by
   obtain ⟨k, hk⟩ := e.mem_next hj.1
   exact hj.2 k (by simpa only [hk] using hj.1)
 

@@ -640,12 +640,12 @@ theorem coe_top [OrderTop α] [OrderTop (Subtype p)] (htop : p ⊤) : ((⊤ : Su
 @[simp]
 theorem coe_eq_bot_iff [OrderBot α] [OrderBot (Subtype p)] (hbot : p ⊥) {x : { x // p x }} :
     (x : α) = ⊥ ↔ x = ⊥ := by
-  rw [← coe_bot hbot, ext_iff]
+  rw [← coe_bot hbot, Subtype.ext_iff]
 
 @[simp]
 theorem coe_eq_top_iff [OrderTop α] [OrderTop (Subtype p)] (htop : p ⊤) {x : { x // p x }} :
     (x : α) = ⊤ ↔ x = ⊤ := by
-  rw [← coe_top htop, ext_iff]
+  rw [← coe_top htop, Subtype.ext_iff]
 
 @[simp]
 theorem mk_eq_bot_iff [OrderBot α] [OrderBot (Subtype p)] (hbot : p ⊥) {x : α} (hx : p x) :

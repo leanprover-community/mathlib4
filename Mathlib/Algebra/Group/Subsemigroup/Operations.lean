@@ -301,12 +301,15 @@ theorem map_id (S : Subsemigroup M) : S.map (MulHom.id M) = S :=
 
 section GaloisCoinsertion
 
-variable {ι : Type*} {f : M →ₙ* N} (hf : Function.Injective f)
+variable {ι : Type*} {f : M →ₙ* N}
 
 /-- `map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective. -/
 @[to_additive " `map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective. "]
-def gciMapComap : GaloisCoinsertion (map f) (comap f) :=
+def gciMapComap (hf : Function.Injective f) : GaloisCoinsertion (map f) (comap f) :=
   (gc_map_comap f).toGaloisCoinsertion fun S x => by simp [mem_comap, mem_map, hf.eq_iff]
+
+variable (hf : Function.Injective f)
+include hf
 
 @[to_additive]
 theorem comap_map_eq_of_injective (S : Subsemigroup M) : (S.map f).comap f = S :=
@@ -351,6 +354,7 @@ end GaloisCoinsertion
 section GaloisInsertion
 
 variable {ι : Type*} {f : M →ₙ* N} (hf : Function.Surjective f)
+include hf
 
 /-- `map f` and `comap f` form a `GaloisInsertion` when `f` is surjective. -/
 @[to_additive " `map f` and `comap f` form a `GaloisInsertion` when `f` is surjective. "]
@@ -527,7 +531,7 @@ theorem top_prod_top : (⊤ : Subsemigroup M).prod (⊤ : Subsemigroup N) = ⊤ 
 
 @[to_additive bot_prod_bot]
 theorem bot_prod_bot : (⊥ : Subsemigroup M).prod (⊥ : Subsemigroup N) = ⊥ :=
-  SetLike.coe_injective <| by simp [coe_prod, Prod.one_eq_mk]
+  SetLike.coe_injective <| by simp [coe_prod]
 
 /-- The product of subsemigroups is isomorphic to their product as semigroups. -/
 @[to_additive prodEquiv
@@ -770,3 +774,18 @@ def subsemigroupMap (e : M ≃* N) (S : Subsemigroup M) : S ≃* S.map (e : M �
     invFun := fun x => ⟨e.symm x, _⟩ }
 
 end MulEquiv
+
+namespace Subsemigroup
+
+variable [Mul M] [Mul N]
+
+@[to_additive]
+theorem map_comap_eq (f : M →ₙ* N) (S : Subsemigroup N) : (S.comap f).map f = S ⊓ f.srange :=
+  SetLike.coe_injective Set.image_preimage_eq_inter_range
+
+@[to_additive]
+theorem map_comap_eq_self {f : M →ₙ* N} {S : Subsemigroup N} (h : S ≤ f.srange) :
+    (S.comap f).map f = S := by
+  simpa only [inf_of_le_left h] using map_comap_eq f S
+
+end Subsemigroup
