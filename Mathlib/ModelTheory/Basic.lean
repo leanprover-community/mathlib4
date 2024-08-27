@@ -591,15 +591,6 @@ theorem toHom_injective : @Function.Injective (M ↪[L] N) (M →[L] N) (·.toHo
 theorem toHom_inj {f g : M ↪[L] N} : f.toHom = g.toHom ↔ f = g :=
   ⟨fun h ↦ toHom_injective h, fun h ↦ congr_arg (·.toHom) h⟩
 
-theorem toHom_injective : @Function.Injective (M ↪[L] N) (M →[L] N) (·.toHom) := by
-  intro f f' h
-  ext
-  exact congr_fun (congr_arg (↑) h) _
-
-@[simp]
-theorem toHom_inj {f g : M ↪[L] N} : f.toHom = g.toHom ↔ f = g :=
-  ⟨fun h ↦ toHom_injective h, fun h ↦ congr_arg (·.toHom) h⟩
-
 theorem injective (f : M ↪[L] N) : Function.Injective f :=
   f.toEmbedding.injective
 

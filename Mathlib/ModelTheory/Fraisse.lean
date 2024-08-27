@@ -173,22 +173,6 @@ theorem age.has_representative_as_substructure :
   refine N_eq.symm ▸ ⟨⟨N_incl.toHom.range, ?_⟩, Quotient.sound ⟨N_incl.equivRange.symm⟩⟩
   exact FG.range N_fg (Embedding.toHom N_incl)
 
-variable {M}
-
-theorem age.fg_substructure {S : L.Substructure M} (fg : S.FG) : Bundled.mk S ∈ L.age M := by
-  exact ⟨(Substructure.fg_iff_structure_fg _).1 fg, ⟨subtype _⟩⟩
-
-variable (M)
-
-/-- Any class in the age of a structure has a representant which is a finitely generated
-substructure. -/
-theorem age.has_representant_as_substructure :
-    ∀ C ∈ Quotient.mk' '' L.age M, ∃ V : {V : L.Substructure M // FG V},
-      ⟦Bundled.mk V⟧ = C := by
-  rintro _ ⟨N, ⟨N_fg, ⟨N_incl⟩⟩, N_eq⟩
-  refine N_eq.symm ▸ ⟨⟨N_incl.toHom.range, ?_⟩, Quotient.sound ⟨N_incl.equivRange.symm⟩⟩
-  exact FG.range N_fg (Embedding.toHom N_incl)
-
 /-- The age of a countable structure is essentially countable (has countably many isomorphism
 classes). -/
 theorem age.countable_quotient [h : Countable M] : (Quotient.mk' '' L.age M).Countable := by
@@ -417,51 +401,10 @@ theorem nonempty_equiv : Nonempty (M ≃[L] N) := by
     ⟨v, ((Substructure.fg_iff_structure_fg _).2 S_fg)⟩ (hM.isExtensionPair hN)
       (hN.isExtensionPair hM))⟩
 
+end IsFraisseLimit
+
 variable {K} {N : Type w} [L.Structure N]
 variable [Countable (Σ l, L.Functions l)] [Countable M] [Countable N]
-variable (hM : IsFraisseLimit K M) (hN : IsFraisseLimit K N)
-
-theorem extend_finite_SubEquiv :
-    ∀ f : M ≃ₚ[L] N, ∀ _ : f.sub_dom.FG, ∀ m : M, ∃ g : (M ≃ₚ[L] N), f ≤ g ∧ m ∈ g.sub_dom := by
-  intro f f_FG m
-  let S := closure L (f.sub_dom ∪ {m})
-  have dom_le_S : f.sub_dom ≤ S :=
-    by simp only [closure_union, closure_eq, ge_iff_le, le_sup_left]
-  have S_FG : FG L (closure L (f.sub_dom ∪ {m})) := by
-    rw [← fg_iff_structure_fg, closure_union, closure_eq]
-    exact Substructure.FG.sup f_FG (Substructure.fg_closure_singleton _)
-  have S_in_age_N : ⟨S, inferInstance⟩ ∈ L.age N := by
-    rw [hN.age, ← hM.age]
-    exact ⟨S_FG, ⟨subtype _⟩⟩
-  let nonempty_S_N : Nonempty (S ↪[L] N) := by
-    let ⟨_, this⟩ := S_in_age_N
-    exact this
-  let ⟨g, eq⟩ := hN.ultrahomogeneous.extend_embedding (f.sub_dom.fg_iff_structure_fg.1 f_FG)
-    ((subtype f.sub_cod).comp f.equiv.toEmbedding) (inclusion dom_le_S)
-  refine ⟨⟨S, g.toHom.range, g.equivRange⟩, ?_, ?_⟩
-  · rw [SubEquivalence.le_def]
-    use dom_le_S
-    rw [eq]
-    rfl
-  · simp only [union_singleton]
-    exact Substructure.subset_closure <| mem_insert_iff.2 <| Or.inl <| refl m
-
-theorem unique_FraisseLimit : Nonempty (M ≃[L] N) := by
-  let S := closure L (∅ : Set M)
-  have S_fg : FG L S := by
-    simp [← fg_iff_structure_fg, Substructure.closure_empty]
-    exact Substructure.fg_bot
-  obtain ⟨_, ⟨emb_S : S ↪[L] N⟩⟩ : ⟨S, inferInstance⟩ ∈ L.age N := by
-    rw [hN.age, ← hM.age]
-    exact ⟨S_fg, ⟨subtype _⟩⟩
-  let v : M ≃ₚ[L] N := {
-    sub_dom := S
-    sub_cod := emb_S.toHom.range
-    equiv := emb_S.equivRange
-  }
-  exact ⟨Exists.choose (BackAndForth.equiv_between_cg (cg_of_countable) (cg_of_countable) v
-    ((Substructure.fg_iff_structure_fg _).2 S_fg) (extend_finite_SubEquiv hM hN)
-      (BackAndForth.back_iff_symm_of_forth.2 (extend_finite_SubEquiv hN hM)))⟩
 
 instance [K_fraisse : IsFraisse K] : Nonempty ↑(Quotient.mk' '' K) :=
   (K_fraisse.is_nonempty.image Quotient.mk').coe_sort
@@ -500,11 +443,11 @@ theorem ess_surj_sequence_is_ess_surj : ∀ V : K, ∃ n,
   convert (congr_arg (Subtype.val) n_prop).symm
   apply Quot.out_eq
 
-theorem can_extend_finiteEquiv_in_class : ∀ S : K, ∀ f : S ≃ₚ[L] S, ∀ _ : f.sub_dom.FG,
+theorem can_extend_finiteEquiv_in_class : ∀ S : K, ∀ f : S ≃ₚ[L] S, ∀ _ : f.dom.FG,
     ∃ T : K, ∃ incl : S ↪[L] T, ∃ g : T ≃ₚ[L] T,
-    f.map incl ≤ g ∧ incl.toHom.range ≤ g.sub_dom := by
+    f.map incl ≤ g ∧ incl.toHom.range ≤ g.dom := by
   rintro ⟨S, S_in_K⟩ f f_fg
-  obtain ⟨R, g₁, g₂, R_in_K, eq⟩ := K_fraisse.amalgamation (Bundled.mk f.sub_dom) S S
+  obtain ⟨R, g₁, g₂, R_in_K, eq⟩ := K_fraisse.amalgamation (Bundled.mk f.dom) S S
     (subtype _) ((subtype _).comp f.equiv.toEmbedding) (K_fraisse.hereditary S S_in_K
       (age.fg_substructure f_fg)) S_in_K S_in_K
   use ⟨R, R_in_K⟩
@@ -524,9 +467,9 @@ theorem can_extend_finiteEquiv_in_class : ∀ S : K, ∀ f : S ≃ₚ[L] S, ∀ 
   simp only [SubEquivalence.map_cod, SubEquivalence.map_dom] at this
   rw [this]
 
-noncomputable def extend_finiteEquiv_in_class (S : K) (f : S ≃ₚ[L] S) (f_fg : f.sub_dom.FG) :
+noncomputable def extend_finiteEquiv_in_class (S : K) (f : S ≃ₚ[L] S) (f_fg : f.dom.FG) :
     (T : K) × (incl : S ↪[L] T) × (g : T ≃ₚ[L] T) ×'
-    f.map incl ≤ g ∧ incl.toHom.range ≤ g.sub_dom := by
+    f.map incl ≤ g ∧ incl.toHom.range ≤ g.dom := by
   choose a b c d using can_extend_finiteEquiv_in_class K_fraisse
   exact ⟨a S f f_fg, b .., c .., d ..⟩
 

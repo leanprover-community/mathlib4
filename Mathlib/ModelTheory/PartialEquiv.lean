@@ -238,6 +238,57 @@ theorem toEquivOfEqTop_toEmbedding {f : M ≃ₚ[L] N} (h_dom : f.dom = ⊤)
   cases h_cod
   rfl
 
+/-- Map of a self-PartialEquiv through an embedding. -/
+noncomputable def map (f : M ↪[L] N) (g : M ≃ₚ[L] M) : N ≃ₚ[L] N where
+  dom := g.dom.map f.toHom
+  cod := g.cod.map f.toHom
+  toEquiv := (f.substructureEquivMap g.cod).comp <|
+    g.toEquiv.comp (f.substructureEquivMap g.dom).symm
+
+@[simp]
+theorem map_dom (f : M ↪[L] N) (g : M ≃ₚ[L] M) : (g.map f).dom = g.dom.map f.toHom := rfl
+
+@[simp]
+theorem map_cod (f : M ↪[L] N) (g : M ≃ₚ[L] M) : (g.map f).cod = g.cod.map f.toHom := rfl
+
+theorem map_commutes (f : M ↪[L] N) (g : M ≃ₚ[L] M) :
+    (g.map f).toEquiv.comp (f.substructureEquivMap g.dom) =
+      (f.substructureEquivMap g.cod).comp g.toEquiv := by
+  unfold map
+  ext
+  simp only [Equiv.comp_apply, Equiv.symm_apply_apply, Embedding.substructureEquivMap_apply]
+
+theorem map_commutes_apply (f : M ↪[L] N) (g : M ≃ₚ[L] M) (m : g.dom) :
+    (g.map f).toEquiv ⟨f m, g.dom.apply_coe_mem_map _ _⟩ =
+      ⟨f (g.toEquiv m), g.cod.apply_coe_mem_map _ _⟩ := by
+  exact congr_fun (congr_arg DFunLike.coe (g.map_commutes f)) m
+
+theorem map_monotone (f : M ↪[L] N) : Monotone (fun g : M ≃ₚ[L] M ↦ g.map f) := by
+  intro g g' h
+  rw [le_iff]
+  use Substructure.monotone_map (dom_le_dom h)
+  use Substructure.monotone_map (cod_le_cod h)
+  rintro ⟨x, hx⟩
+  unfold map
+  let ⟨u, u_mem, eq_u_x⟩ := mem_map.2 hx
+  cases eq_u_x
+  apply Subtype.coe_injective
+  simp only [Embedding.coe_toHom, Equiv.comp_apply, coe_inclusion, map_coe, Set.coe_inclusion,
+    Embedding.substructureEquivMap_apply, Set.inclusion_mk, EmbeddingLike.apply_eq_iff_eq]
+  let ⟨_, _, eq⟩ := le_iff.1 h
+  have eq := congr_arg (Subtype.val) (eq ((Equiv.symm (Embedding.substructureEquivMap f g.dom))
+    { val := f u, property := (g.dom.mem_map).2 ⟨u, u_mem, rfl⟩}))
+  simp only [coe_inclusion, Set.coe_inclusion] at eq
+  rw [← coe_inclusion] at eq
+  rw [eq, Subtype.coe_inj]
+  apply congr_arg g'.toEquiv
+  apply Subtype.coe_injective
+  change subtype _ ((Equiv.symm (Embedding.substructureEquivMap f g.dom))
+    (f.substructureEquivMap g.dom ⟨u, u_mem⟩)) =
+    subtype _ ((Equiv.symm (Embedding.substructureEquivMap f g'.dom))
+      (f.substructureEquivMap g'.dom ⟨u, dom_le_dom h u_mem⟩))
+  simp only [Equiv.symm_apply_apply, coeSubtype]
+
 theorem dom_fg_iff_cod_fg {N : Type*} [L.Structure N] (f : M ≃ₚ[L] N) :
     f.dom.FG ↔ f.cod.FG := by
   rw [Substructure.fg_iff_structure_fg, f.toEquiv.fg_iff, Substructure.fg_iff_structure_fg]
