@@ -243,10 +243,15 @@ theorem nth_mul_coeff' (n : ℕ) :
     apply f₀
     rintro ⟨a, ha⟩
     apply Function.uncurry ![x, y]
-    simp_rw [product_val, this, Multiset.mem_product, mem_univ_val, true_and_iff, range_val,
-      Multiset.range_succ, Multiset.mem_cons, Multiset.mem_range] at ha
+    simp_rw [product_val, this, range_val, Multiset.range_succ] at ha
+    let S : Set (Fin 2 × ℕ) := (fun a => a.2 = n ∨ a.2 < n)
+    have ha' : a ∈ S := by
+      convert ha
+      dsimp [S]
+      congr!
+      simp
     refine ⟨a.fst, ⟨a.snd, ?_⟩⟩
-    cases' ha with ha ha <;> omega
+    cases' ha' with ha ha <;> omega
   use f
   intro x y
   dsimp [f, peval]

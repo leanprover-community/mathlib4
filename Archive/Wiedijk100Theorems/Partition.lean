@@ -314,10 +314,9 @@ theorem partialDistinctGF_prop [CommSemiring α] (n m : ℕ) :
   convert partialGF_prop α n
     ((range m).map ⟨Nat.succ, Nat.succ_injective⟩) _ (fun _ => {0, 1}) (fun _ _ => Or.inl rfl)
     using 2
-  · congr
-    congr! with p
+  · congr! with p
     rw [Multiset.nodup_iff_count_le_one]
-    congr! with i
+    congr! 1 with i
     rcases Multiset.count i p.parts with (_ | _ | ms) <;> simp
   · simp_rw [Finset.prod_map, two_series]
     congr with i

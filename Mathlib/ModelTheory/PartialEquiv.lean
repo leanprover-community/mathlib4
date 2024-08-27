@@ -326,10 +326,19 @@ lemma partialEquivLimit_comp_inclusion {i : ι} :
   rw [Equiv_isup_symm_inclusion]
   congr
 
+<<<<<<< HEAD
 theorem le_partialEquivLimit (i : ι) : S i ≤ partialEquivLimit S :=
   ⟨le_iSup (f := fun i ↦ (S i).dom) _, by
     simp only [cod_partialEquivLimit, dom_partialEquivLimit, partialEquivLimit_comp_inclusion,
       ← Embedding.comp_assoc, subtype_comp_inclusion]⟩
+=======
+theorem le_partialEquivLimit : ∀ i, S i ≤ partialEquivLimit S :=
+  fun i => ⟨le_iSup (f := fun i ↦ (S i).dom) _, by
+    #adaptation_note /-- After lean4#5020, `simp` can no longer apply this lemma here. -/
+    rw [partialEquivLimit_comp_inclusion]
+    simp only [cod_partialEquivLimit, dom_partialEquivLimit, ← Embedding.comp_assoc,
+      subtype_comp_inclusion]⟩
+>>>>>>> origin/lean-pr-testing-5020
 
 end DirectLimit
 

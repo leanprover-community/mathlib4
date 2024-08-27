@@ -322,11 +322,14 @@ theorem ContMDiff.extend_one [T2Space M] [One M'] {n : ℕ∞} {U : Opens M} {f 
   refine contMDiff_of_mulTSupport (fun x h ↦ ?_) _
   lift x to U using Subtype.coe_image_subset _ _
     (supp.mulTSupport_extend_one_subset continuous_subtype_val h)
-  rw [← contMdiffAt_subtype_iff, ← comp_def]
+  rw [← contMdiffAt_subtype_iff]
+  simp_rw [← comp_def]
   erw [extend_comp Subtype.val_injective]
   exact diff.contMDiffAt
 
 theorem contMDiff_inclusion {n : ℕ∞} {U V : Opens M} (h : U ≤ V) :
+    letI : ChartedSpace H U := U.instChartedSpace
+    letI : ChartedSpace H V := V.instChartedSpace
     ContMDiff I I n (Set.inclusion h : U → V) := by
   rintro ⟨x, hx : x ∈ U⟩
   apply (contDiffWithinAt_localInvariantProp I I n).liftProp_inclusion
@@ -345,7 +348,10 @@ theorem Smooth.extend_one [T2Space M] [One M'] {U : Opens M} {f : U → M'}
     (supp : HasCompactMulSupport f) (diff : Smooth I I' f) : Smooth I I' (Subtype.val.extend f 1) :=
   ContMDiff.extend_one supp diff
 
-theorem smooth_inclusion {U V : Opens M} (h : U ≤ V) : Smooth I I (Set.inclusion h : U → V) :=
+theorem smooth_inclusion {U V : Opens M} (h : U ≤ V) :
+    letI : ChartedSpace H U := U.instChartedSpace
+    letI : ChartedSpace H V := V.instChartedSpace
+    Smooth I I (Set.inclusion h : U → V) :=
   contMDiff_inclusion h
 
 end Inclusion

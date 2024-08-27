@@ -473,9 +473,8 @@ theorem unitsSMul_one_group_smul (g : A) (w : NormalWord d) :
     dsimp
     congr 1
     · conv_lhs => erw [IsComplement.equiv_mul_left]
-      simp? says
-        simp only [toSubgroup_one, SetLike.coe_sort_coe, map_mul, Submonoid.coe_mul,
-          coe_toSubmonoid]
+      simp_rw [toSubgroup_one]
+      simp only [SetLike.coe_sort_coe, map_mul, Subgroup.coe_mul]
     conv_lhs => erw [IsComplement.equiv_mul_left]
     rfl
 

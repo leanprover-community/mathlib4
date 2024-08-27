@@ -772,10 +772,9 @@ scoped[Pointwise] attribute [instance] Finset.monoid Finset.addMonoid
 @[to_additive]
 theorem pow_mem_pow (ha : a ∈ s) : ∀ n : ℕ, a ^ n ∈ s ^ n
   | 0 => by
-    rw [pow_zero]
-    exact one_mem_one
+    simp only [pow_zero, mem_one]
   | n + 1 => by
-    rw [pow_succ]
+    simp only [pow_succ]
     exact mul_mem_mul (pow_mem_pow ha n) ha
 
 @[to_additive]
@@ -1912,6 +1911,10 @@ open Pointwise
 namespace Set
 
 section One
+
+-- Redeclaring an instance for better keys
+@[to_additive]
+instance instFintypeOne [One α] : Fintype (1 : Set α) := Set.fintypeSingleton _
 
 variable [One α]
 
