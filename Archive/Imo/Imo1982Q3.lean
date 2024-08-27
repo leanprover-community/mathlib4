@@ -37,7 +37,7 @@ namespace Imo1982Q3
 
 
 lemma sum_Fin_eq_sum_Ico
-  {x : ℕ → ℝ}
+    {x : ℕ → ℝ}
   :
   ∀ N,
   ∑ n : Fin N, x n = ∑ n ∈ Ico 0 N, x n
