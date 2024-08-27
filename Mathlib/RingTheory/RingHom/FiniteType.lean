@@ -33,7 +33,7 @@ theorem finiteType_holdsForLocalizationAway : HoldsForLocalizationAway @FiniteTy
   exact IsLocalization.finiteType_of_monoid_fg (Submonoid.powers r) S
 
 theorem finiteType_ofLocalizationSpanTarget : OfLocalizationSpanTarget @FiniteType := by
-  -- Setup algebra intances.
+  -- Setup algebra instances.
   rw [ofLocalizationSpanTarget_iff_finite]
   introv R hs H
   classical

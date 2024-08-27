@@ -157,7 +157,7 @@ end Localization
 variable {T} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
 /-- Given two families of generators `S[X] → T` and `R[Y] → S`,
-we may constuct the family of generators `R[X, Y] → T`. -/
+we may construct the family of generators `R[X, Y] → T`. -/
 @[simps val, simps (config := .lemmasOnly) vars σ]
 noncomputable
 def comp (Q : Generators S T) (P : Generators R S) : Generators R T where

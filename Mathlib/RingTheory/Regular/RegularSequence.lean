@@ -316,7 +316,7 @@ def ndrecIterModByRegular
 
 /-- An alternate induction principle from `IsWeaklyRegular.recIterModByRegular`
 where we mod out by successive elements in both the module and the base ring.
-This is useful for propogating certain properties of the initial `M`, e.g.
+This is useful for propagating certain properties of the initial `M`, e.g.
 faithfulness or freeness, throughout the induction. -/
 def recIterModByRegularWithRing
     {motive : (R : Type u) → [CommRing R] → (M : Type v) → [AddCommGroup M] →
@@ -447,7 +447,7 @@ def ndrecIterModByRegular
 
 /-- An alternate induction principle from `IsRegular.recIterModByRegular` where
 we mod out by successive elements in both the module and the base ring. This is
-useful for propogating certain properties of the initial `M`, e.g. faithfulness
+useful for propagating certain properties of the initial `M`, e.g. faithfulness
 or freeness, throughout the induction. -/
 def recIterModByRegularWithRing
     {motive : (R : Type u) → [CommRing R] → (M : Type v) → [AddCommGroup M] →
