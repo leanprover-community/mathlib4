@@ -1003,8 +1003,7 @@ theorem finMeasSupp_iff : f.FinMeasSupp μ ↔ ∀ y, y ≠ 0 → μ (f ⁻¹' {
     exact fun x hx (H : f x = 0) => hy <| H ▸ Eq.symm hx
   · intro H
     rw [finMeasSupp_iff_support, support_eq]
-    refine lt_of_le_of_lt (measure_biUnion_finset_le _ _) (sum_lt_top ?_)
-    exact fun y hy => (H y (Finset.mem_filter.1 hy).2).ne
+    exact measure_biUnion_lt_top (finite_toSet _) fun y hy ↦ H y (mem_filter.1 hy).2
 
 namespace FinMeasSupp
 
@@ -1046,14 +1045,14 @@ protected theorem mul {β} [MonoidWithZero β] {f g : α →ₛ β} (hf : f.FinM
 
 theorem lintegral_lt_top {f : α →ₛ ℝ≥0∞} (hm : f.FinMeasSupp μ) (hf : ∀ᵐ a ∂μ, f a ≠ ∞) :
     f.lintegral μ < ∞ := by
-  refine sum_lt_top fun a ha => ?_
+  refine sum_lt_top.2 fun a ha => ?_
   rcases eq_or_ne a ∞ with (rfl | ha)
   · simp only [ae_iff, Ne, Classical.not_not] at hf
     simp [Set.preimage, hf]
   · by_cases ha0 : a = 0
     · subst a
-      rwa [zero_mul]
-    · exact mul_ne_top ha (finMeasSupp_iff.1 hm _ ha0).ne
+      simp
+    · exact mul_lt_top ha.lt_top (finMeasSupp_iff.1 hm _ ha0)
 
 theorem of_lintegral_ne_top {f : α →ₛ ℝ≥0∞} (h : f.lintegral μ ≠ ∞) : f.FinMeasSupp μ := by
   refine finMeasSupp_iff.2 fun b hb => ?_
