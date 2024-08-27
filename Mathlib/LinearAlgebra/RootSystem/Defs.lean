@@ -220,14 +220,8 @@ lemma reflection_perm_self : P.reflection_perm i (P.reflection_perm i j) = j := 
   refine (Embedding.injective P.root) ?_
   simp only [root_reflection_perm, reflection_same]
 
-@[simp]
-lemma reflection_perm_square : (P.reflection_perm i) ^[2] = id := by
-  ext j
-  simp only [iterate_succ, iterate_zero, CompTriple.comp_eq, comp_apply, reflection_perm_self,
-    id_eq]
-
 lemma reflection_perm_involutive : Involutive (P.reflection_perm i) :=
-  involutive_iff_iter_2_eq_id.mpr <| reflection_perm_square P i
+  involutive_iff_iter_2_eq_id.mpr (by ext; simp)
 
 @[simp]
 lemma reflection_perm_symm : (P.reflection_perm i).symm = P.reflection_perm i :=
@@ -714,8 +708,11 @@ section Morphism
 that preserves roots and coroots.  We make the map of indexing sets explicit. -/
 structure Morphism {κ M' N' : Type*} [AddCommGroup M'] [Module R M'] [AddCommGroup N'] [Module R N']
     (P : RootPairing ι R M N) (Q : RootPairing κ R M' N') where
+  /-- A linear map on weight space. -/
   weight_map : M →ₗ[R] M'
+  /-- A linear map on coweight space. -/
   coweight_map : N' →ₗ[R] N
+  /-- A bijection on index sets. -/
   index_map : ι ≃ κ
   weight_coweight_transpose :
     LinearMap.dualMap weight_map = P.toDualRight ∘ₗ coweight_map ∘ₗ Q.toDualRight.symm
@@ -772,7 +769,10 @@ section Embedding
 
 variable {κ : Type*} (P : RootPairing ι R M N) (Q : RootPairing κ R M N)
 
-def IsEmbedding (f : ι → κ) : Prop :=
+/-- A map of index sets induces an embedding of root pairings if it respects reflection
+permutations. -/
+def IsEmbedding {κ : Type*} (P : RootPairing ι R M N) (Q : RootPairing κ R M N) (f : ι → κ) :
+    Prop :=
   ∀ i j, f (P.reflection_perm i j) = Q.reflection_perm (f i) (f j)
 
 end Embedding
