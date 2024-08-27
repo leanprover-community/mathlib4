@@ -37,7 +37,8 @@ initialize Lean.registerBuiltinAttribute {
   name := `stacks
   descr := "Apply a Stacks project tag to a theorem."
   add := fun _decl stx _attrKind => Lean.withRef stx do
-    -- check that there are no spaces in the tag
+    -- check that the tag consists of 4 characters and
+    -- that only digits and uppercase letter are present
     let tag := stx[1]
     if let some s := tag.getSubstring? then
       let str := s.toString.trimRight
