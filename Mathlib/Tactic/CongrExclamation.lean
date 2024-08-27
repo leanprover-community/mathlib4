@@ -583,7 +583,7 @@ def Lean.MVarId.preCongr! (mvarId : MVarId) (tryClose : Bool) : MetaM (Option MV
     -- We allow synthetic opaque metavariables to be assigned to fill in `x = _` goals that might
     -- appear (for example, due to using `convert` with placeholders).
     try withAssignableSyntheticOpaque mvarId.refl; return none catch _ => pure ()
-    -- Now we go for (heterogenous) equality via subsingleton considerations
+    -- Now we go for (heterogeneous) equality via subsingleton considerations
     if ← Lean.Meta.fastSubsingletonElim mvarId then return none
     if ← mvarId.proofIrrelHeq then return none
   return some mvarId
