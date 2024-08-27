@@ -27,6 +27,14 @@ The norm on this type induces the product uniformity and bornology, but these ar
 replace the uniformity and bornology by the Pi ones when registering the
 `NormedAddCommGroup (CStarMatrix m n A)` instance. See the docstring of the `TopologyAux` section
 below for more details.
+
+Since `Matrix m n` does not have a norm instance on it, we make `CStarMatrix` reducible (i.e. an
+`abbrev`) in order to get access to the matrix API, which doesn't conflict with the additional
+structure we are constructing here.
+
+## Notation
+
++ We locally use the notation `n →C⋆ A` for `WithCStarModule (n → A)`.
 -/
 
 set_option maxSynthPendingDepth 2
@@ -44,17 +52,11 @@ namespace CStarMatrix
 
 variable {m n A : Type*}
 
---variable {A : Type*} [NonUnitalNormedRing A] [StarRing A] [CStarRing A] [PartialOrder A]
---  [CompleteSpace A] [StarOrderedRing A] [NormedSpace ℂ A]
---  [StarModule ℂ A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A]
---
---variable {m n : Type*} [Fintype m] [Fintype n] [DecidableEq n]
-
 variable (m n A) in
 /-- The equivalence between `CStarMatrix m n A` and `Matrix m n A`. -/
-def equiv {m n A : Type*} : CStarMatrix m n A ≃ Matrix m n A := Equiv.refl _
+def toMatrix {m n A : Type*} : CStarMatrix m n A ≃ Matrix m n A := Equiv.refl _
 
-lemma equiv_apply {M : Matrix m n A} {i : m} : (equiv M) i = M i := rfl
+lemma toMatrix_apply {M : Matrix m n A} {i : m} : (toMatrix M) i = M i := rfl
 
 @[ext]
 lemma ext {M₁ M₂ : CStarMatrix m n A} (h : ∀ i j, M₁ i j = M₂ i j) : M₁ = M₂ := Matrix.ext h
@@ -62,8 +64,6 @@ lemma ext {M₁ M₂ : CStarMatrix m n A} (h : ∀ i j, M₁ i j = M₂ i j) : M
 variable [Fintype m] [Fintype n] [NonUnitalNormedRing A] [StarRing A] [NormedSpace ℂ A]
   [PartialOrder A] [CStarRing A] [StarOrderedRing A] [SMulCommClass ℂ A A] [StarModule ℂ A]
   [IsScalarTower ℂ A A] [CompleteSpace A]
-
-attribute [fun_prop] ContinuousLinearEquiv.continuous
 
 variable (A) in
 /-- Interpret a `CStarMatrix m n A` as a continuous linear map acting on
@@ -74,15 +74,10 @@ def toCLM : CStarMatrix m n A →ₗ[ℂ] (n →C⋆ A) →L[ℂ] (m →C⋆ A) 
                map_smul' := M.mulVec_smul
                cont := by
                  simp only [LinearMap.coe_mk, AddHom.coe_mk]
-                 exact Continuous.comp (by fun_prop) (Continuous.comp (by fun_prop) (by fun_prop)) }
+                 exact Continuous.comp (by fun_prop) (by fun_prop) }
   map_add' M₁ M₂ := by ext; simp [Matrix.add_mulVec]
   map_smul' c M := by
     ext i j
-    unfold Matrix.mulVec
-    unfold Matrix.dotProduct
-    simp only [Matrix.smul_apply, ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk,
-      Function.comp_apply, RingHom.id_apply, ContinuousLinearMap.coe_smul', Pi.smul_apply,
-      WithCStarModule.smul_apply]
     change (fun x ↦ ∑ x_1 : n, c • M x x_1 * (WithCStarModule.equivL ℂ) i x_1) j
         = c • (fun x ↦ ∑ x_1 : n, M x x_1 * (WithCStarModule.equivL ℂ) i x_1) j
     apply Eq.symm
@@ -156,20 +151,6 @@ lemma toCLM_inner_conjTranspose_right_eq_left {M : CStarMatrix m n A} {v : n →
 /-- The operator norm on `CStarMatrix m n A`. -/
 noncomputable instance instNorm : Norm (CStarMatrix m n A) where
   norm M := ‖toCLM A M‖
-
---example : (ContinuousLinearMap.toPseudoMetricSpace : PseudoMetricSpace ((n →C⋆ A) →L[ℂ] m →C⋆ A))
---    = SeminormedAddCommGroup.toPseudoMetricSpace := by with_reducible_and_instances rfl
---
---example : (ContinuousLinearMap.zero : Zero ((n →C⋆ A) →L[ℂ] m →C⋆ A))
---    = NegZeroClass.toZero := by with_reducible_and_instances rfl
---
---example : (SMulZeroClass.toSMul : SMul ℂ ((n →C⋆ A) →L[ℂ] m →C⋆ A))
---    = ContinuousLinearMap.instSMul := by with_reducible_and_instances rfl
---
---noncomputable example : NormedSpace ℂ ((n →C⋆ A) →L[ℂ] (m →C⋆ A)) := inferInstance
---
---set_option maxSynthPendingDepth 120000 in
---example : BoundedSMul ℂ ((n →C⋆ A) →L[ℂ] (m →C⋆ A)) := NormedSpace.boundedSMul
 
 lemma normedSpaceCore [DecidableEq n]: NormedSpace.Core ℂ (CStarMatrix m n A) where
   norm_nonneg M := (toCLM A M).opNorm_nonneg
@@ -265,7 +246,7 @@ the product topology and use this fact to properly set up the
 To do this, we first set up another type copy `CStarMatrixAux` to host the "bad"
 `NormedAddCommGroup (CStarMatrix m n A)` instance and locally use the matrix norm
 `Matrix.normedAddCommGroup` (which takes the norm of the biggest entry as the norm of the matrix)
-in order to show that the map `equiv : CStarMatrix n A → Matrix m n A` is both Lipschitz
+in order to show that the map `toMatrixAux : CStarMatrix n A → Matrix m n A` is both Lipschitz
 and Antilipschitz.  We then finally register the `NormedAddCommGroup (n →C⋆ A)` instance via
 `NormedAddCommGroup.ofCoreReplaceAll`.
 -/
@@ -296,7 +277,7 @@ private noncomputable instance : Norm (CStarMatrixAux m n A) :=
   inferInstanceAs <| Norm (CStarMatrix m n A)
 
 /-- The equivalence to matrices -/
-private def ofMatrix : (Matrix m n A) ≃ₗ[ℂ] CStarMatrixAux m n A := LinearEquiv.refl _ _
+private def toMatrixAux : (CStarMatrixAux m n A) ≃ₗ[ℂ] Matrix m n A := LinearEquiv.refl _ _
 
 private noncomputable instance normedAddCommGroupAux : NormedAddCommGroup (CStarMatrixAux m n A) :=
   .ofCore CStarMatrix.normedSpaceCore
@@ -314,21 +295,17 @@ private lemma nnnorm_le_of_forall_inner_le {M : CStarMatrixAux m n A} {C : ℝ�
   CStarMatrix.norm_le_of_forall_inner_le fun v w => h v w
 
 open Finset in
-private lemma lipschitzWith_equiv_aux [DecidableEq m] :
-    LipschitzWith 1 (ofMatrix.symm : CStarMatrixAux m n A → Matrix m n A) := by
-  refine LipschitzWith.of_dist_le_mul fun M₁ M₂ => ?_
-  simp only [dist_eq_norm, NNReal.coe_one, one_mul]
-  simp [← map_sub]
-  set M := M₁ - M₂
-  change ‖ofMatrix.symm M‖₊ ≤ ‖M‖₊
+private lemma lipschitzWith_toMatrixAux [DecidableEq m] :
+    LipschitzWith 1 (toMatrixAux : CStarMatrixAux m n A → Matrix m n A) := by
+  refine AddMonoidHomClass.lipschitz_of_bound_nnnorm _ _ fun M => ?_
   simp_rw [Matrix.nnnorm_def, Pi.nnnorm_def]
   by_cases hm_triv : Nonempty m
   · by_cases hn_triv : Nonempty n
     · obtain ⟨i, _, hi⟩ := exists_mem_eq_sup (univ : Finset m) (univ_nonempty_iff.mpr hm_triv)
-        fun b => Finset.univ.sup fun b_1 => ‖ofMatrix.symm M b b_1‖₊
+        fun b => Finset.univ.sup fun b_1 => ‖toMatrixAux M b b_1‖₊
       obtain ⟨j, _, hj⟩ := exists_mem_eq_sup (univ : Finset n) (univ_nonempty_iff.mpr hn_triv)
-        fun b_1 => ‖ofMatrix.symm M i b_1‖₊
-      rw [hi, hj]
+        fun b_1 => ‖toMatrixAux M i b_1‖₊
+      rw [hi, hj, one_mul]
       exact CStarMatrix.norm_entry_le_norm
     · simp only [not_nonempty_iff] at hn_triv
       simp [Finset.sup_eq_bot_of_isEmpty, bot_eq_zero]
@@ -336,22 +313,19 @@ private lemma lipschitzWith_equiv_aux [DecidableEq m] :
     simp [Finset.sup_eq_bot_of_isEmpty, bot_eq_zero]
 
 open Finset in
-private lemma antilipschitzWith_equiv_aux :
+private lemma antilipschitzWith_toMatrixAux :
     AntilipschitzWith (Fintype.card n * Fintype.card m)
-      (ofMatrix.symm : CStarMatrixAux m n A → Matrix m n A) := by
-  refine AntilipschitzWith.of_le_mul_dist fun M₁ M₂ => ?_
+      (toMatrixAux : CStarMatrixAux m n A → Matrix m n A) := by
+  refine AddMonoidHomClass.antilipschitz_of_bound _ fun M => ?_
   set Dn := Fintype.card n
   set Dm := Fintype.card m
-  simp only [dist_eq_norm, ← map_sub]
-  set M := M₁ - M₂
-  change ‖M‖₊ ≤ Dn * Dm * ‖ofMatrix.symm M‖₊
-  simp_rw [Matrix.nnnorm_def, Pi.nnnorm_def]
+  simp [Matrix.norm_def, Pi.norm_def, Pi.nnnorm_def]
   by_cases hm_triv : Nonempty m
   · by_cases hn_triv : Nonempty n
     · obtain ⟨i, _, hi⟩ := exists_mem_eq_sup (univ : Finset m) (univ_nonempty_iff.mpr hm_triv)
-        fun b => Finset.univ.sup fun b_1 => ‖ofMatrix.symm M b b_1‖₊
+        fun b => Finset.univ.sup fun b_1 => ‖toMatrixAux M b b_1‖₊
       obtain ⟨j, _, hj⟩ := exists_mem_eq_sup (univ : Finset n) (univ_nonempty_iff.mpr hn_triv)
-        fun b_1 => ‖ofMatrix.symm M i b_1‖₊
+        fun b_1 => ‖toMatrixAux M i b_1‖₊
       rw [hi, hj]
       change ‖M‖₊ ≤ ↑Dn * ↑Dm * ‖M i j‖₊
       refine nnnorm_le_of_forall_inner_le fun v w => ?_
@@ -389,37 +363,36 @@ private lemma antilipschitzWith_equiv_aux :
         _ = Dn * Dm * ‖M i j‖₊ * ‖v‖₊ * ‖w‖₊ := by ring
     · simp only [not_nonempty_iff] at hn_triv
       simp only [Finset.sup_eq_bot_of_isEmpty, Finset.sup_bot]
-      rw [bot_eq_zero, mul_zero]
-      simp only [nonpos_iff_eq_zero, nnnorm_eq_zero]
-      ext i j
+      simp only [bot_eq_zero', NNReal.coe_zero, mul_zero, norm_le_zero_iff]
+      ext _ j
       exact False.elim <| IsEmpty.false j
   · simp only [not_nonempty_iff] at hm_triv
     simp [Finset.sup_eq_bot_of_isEmpty, bot_eq_zero]
     ext i j
     exact False.elim <| IsEmpty.false i
 
-private lemma uniformInducing_equiv_aux [DecidableEq m] :
-    UniformInducing (ofMatrix.symm : CStarMatrixAux m n A → Matrix m n A) :=
-  AntilipschitzWith.uniformInducing antilipschitzWith_equiv_aux
-    lipschitzWith_equiv_aux.uniformContinuous
+private lemma uniformInducing_toMatrixAux [DecidableEq m] :
+    UniformInducing (toMatrixAux : CStarMatrixAux m n A → Matrix m n A) :=
+  AntilipschitzWith.uniformInducing antilipschitzWith_toMatrixAux
+    lipschitzWith_toMatrixAux.uniformContinuous
 
 private lemma uniformity_eq_aux [DecidableEq m] :
     𝓤 (CStarMatrixAux m n A) = (𝓤[Pi.uniformSpace _] :
       Filter (CStarMatrixAux m n A × CStarMatrixAux m n A)) := by
   have :
-    (fun x : CStarMatrixAux m n A × CStarMatrixAux m n A => ⟨ofMatrix.symm x.1, ofMatrix.symm x.2⟩)
+    (fun x : CStarMatrixAux m n A × CStarMatrixAux m n A => ⟨toMatrixAux x.1, toMatrixAux x.2⟩)
       = id := by
     ext i <;> rfl
-  rw [← uniformInducing_equiv_aux.comap_uniformity, this, Filter.comap_id]
+  rw [← uniformInducing_toMatrixAux.comap_uniformity, this, Filter.comap_id]
   rfl
 
 open Bornology in
 private lemma cobounded_eq_aux [DecidableEq m] :
     cobounded (CStarMatrixAux m n A) = @cobounded _ Pi.instBornology := by
-  have : cobounded (CStarMatrixAux m n A) = Filter.comap ofMatrix.symm (cobounded _) := by
+  have : cobounded (CStarMatrixAux m n A) = Filter.comap toMatrixAux (cobounded _) := by
     refine le_antisymm ?_ ?_
-    · exact antilipschitzWith_equiv_aux.tendsto_cobounded.le_comap
-    · exact lipschitzWith_equiv_aux.comap_cobounded_le
+    · exact antilipschitzWith_toMatrixAux.tendsto_cobounded.le_comap
+    · exact lipschitzWith_toMatrixAux.comap_cobounded_le
   exact this.trans Filter.comap_id
 
 end CStarMatrixAux
@@ -459,6 +432,7 @@ noncomputable instance instNonUnitalNormedRing [DecidableEq n] :
   norm_mul _ _ := CStarMatrix.norm_mul
 
 open ContinuousLinearMap CStarModule in
+/-- Matrices with entries in a C⋆-algebra form a C⋆-algebra. -/
 instance instCStarRing [DecidableEq n] : CStarRing (CStarMatrix n n A) where
   norm_mul_self_le M := by
     have hmain : ‖M‖ ≤ √‖star M * M‖ := by
