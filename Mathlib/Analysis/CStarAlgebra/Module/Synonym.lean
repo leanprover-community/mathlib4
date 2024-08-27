@@ -180,6 +180,7 @@ theorem equiv_symm_smul : (equiv E).symm (c • x') = c • (equiv E).symm x' :=
 
 end Equiv
 
+/-- `WithCStarModule.equiv` as an additive equivalence. -/
 def equivAddEquiv [AddCommGroup E] : C⋆ᵐᵒᵈ E ≃+ E :=
   { AddEquiv.refl _ with
     toFun := equiv _
