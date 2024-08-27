@@ -1127,14 +1127,14 @@ alias ne_sup_iff_lt_sup := ne_iSup_iff_lt_iSup
 
 -- TODO: state in terms of `IsSuccLimit`.
 
-theorem iSup_not_succ_of_ne_iSup {ι : Type u} {f : ι → Ordinal.{max u v}}
+theorem succ_lt_iSup_of_ne_iSup  {ι : Type u} {f : ι → Ordinal.{max u v}}
     (hf : ∀ i, f i ≠ iSup f) {a} (hao : a < iSup f) : succ a < iSup f := by
   by_contra! hoa
   exact hao.not_le (Ordinal.iSup_le fun i => le_of_lt_succ <|
     (lt_of_le_of_ne (Ordinal.le_iSup _ _) (hf i)).trans_le hoa)
 
-@[deprecated iSup_not_succ_of_ne_iSup (since := "2024-08-27")]
-alias sup_not_succ_of_ne_sup := iSup_not_succ_of_ne_iSup
+@[deprecated succ_lt_iSup_of_ne_iSup (since := "2024-08-27")]
+alias sup_not_succ_of_ne_sup := succ_lt_iSup_of_ne_iSup
 
 -- TODO: generalize to conditionally complete linear orders.
 theorem iSup_eq_zero_iff {ι : Type u} {f : ι → Ordinal.{max u v}} :
@@ -1355,7 +1355,7 @@ theorem bsup_not_succ_of_ne_bsup {o : Ordinal.{u}} {f : ∀ a < o, Ordinal.{max 
     (hf : ∀ {i : Ordinal} (h : i < o), f i h ≠ bsup.{_, v} o f) (a) :
     a < bsup.{_, v} o f → succ a < bsup.{_, v} o f := by
   rw [← sup_eq_bsup] at *
-  exact iSup_not_succ_of_ne_iSup fun i => hf _
+  exact succ_lt_iSup_of_ne_iSup fun i => hf _
 
 @[simp]
 theorem bsup_eq_zero_iff {o} {f : ∀ a < o, Ordinal} : bsup o f = 0 ↔ ∀ i hi, f i hi = 0 := by
@@ -1452,7 +1452,7 @@ theorem sup_eq_lsub_iff_succ {ι : Type u} (f : ι → Ordinal.{max u v}) :
     iSup f = lsub.{_, v} f ↔ ∀ a < lsub.{_, v} f, succ a < lsub.{_, v} f := by
   refine ⟨fun h => ?_, fun hf => le_antisymm (sup_le_lsub f) (lsub_le fun i => ?_)⟩
   · rw [← h]
-    exact fun a => iSup_not_succ_of_ne_iSup fun i => (lsub_le_iff.1 (le_of_eq h.symm) i).ne
+    exact fun a => succ_lt_iSup_of_ne_iSup fun i => (lsub_le_iff.1 (le_of_eq h.symm) i).ne
   by_contra! hle
   have heq := (sup_succ_eq_lsub f).2 ⟨i, le_antisymm (Ordinal.le_iSup _ _) hle⟩
   have :=
