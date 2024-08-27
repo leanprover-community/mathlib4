@@ -19,10 +19,12 @@ namespace Mathlib.Stacks
 /-- `Tag` is the structure that carries the data of a Stacks Projects tag and a corresponding
 Mathlib declaration. -/
 structure Tag where
-  /-- The Stacks Project tag. -/
-  tag : String
   /-- The name of the declaration with the given tag. -/
   declName : Name
+  /-- The Stacks Project tag. -/
+  tag : String
+  /-- The (optional) comment that comes with the given tag. -/
+  comment : String
   deriving BEq, Hashable
 
 /-- Defines the `tagExt` extension for adding a `HashSet` of `Tag`s
@@ -38,8 +40,8 @@ initialize tagExt : SimplePersistentEnvExtension Tag (HashSet Tag) ←
 a declaration with the `stacks` attribute.
 It extends the `Tag` environment extension with the data `tag, declName`.
 -/
-def addTagEntry {m : Type → Type} [MonadEnv m] (tag : String) (declName : Name) : m Unit :=
-  modifyEnv (tagExt.addEntry · { tag := tag, declName := declName })
+def addTagEntry {m : Type → Type} [MonadEnv m] (declName : Name) (tag comment : String) : m Unit :=
+  modifyEnv (tagExt.addEntry · { declName := declName, tag := tag, comment := comment })
 
 /--
 The syntax for a Stacks tag: it is an optional number followed by an optional identifier.
@@ -75,8 +77,8 @@ initialize Lean.registerBuiltinAttribute {
         else if 2 ≤ (str.split (fun c => (!c.isUpper) && !c.isDigit)).length then
           logWarningAt tag m!"Tag '{str}' should only consist of digits and uppercase letters"
         else match stx with
-          | `(attr| stacks $_:stackTag $_:str) => addTagEntry str decl
-          | `(attr| stacks $_:stackTag) => addTagEntry str decl
+          | `(attr| stacks $_:stackTag $comment:str) => addTagEntry decl str comment.getString
+          | `(attr| stacks $_:stackTag) => addTagEntry decl str ""
           | _ => throwUnsupportedSyntax
 }
 
@@ -114,7 +116,9 @@ elab (name := Mathlib.Stacks.stacksTags) "#stacks_tags" tk:("!")?: command => do
   let mut msgs := #[m!""]
   for d in entries do
     let dname ← Command.liftCoreM do realizeGlobalConstNoOverloadWithInfo (mkIdent d.declName)
-    msgs := msgs.push m!"'{dname}' corresponds to tag '{d.tag}'."
+    let (parL, parR) := if d.comment.isEmpty then ("", "") else (" (", ")")
+    let cmt := parL ++ d.comment ++ parR
+    msgs := msgs.push m!"'{dname}' corresponds to tag '{d.tag}'.{cmt}"
     if tk.isSome then
       let dType := ((env.find? dname).getD default).type
       msgs := (msgs.push m!"{dType}").push ""
