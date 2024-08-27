@@ -24,8 +24,6 @@ import Mathlib.LinearAlgebra.FreeAlgebra
 -/
 namespace TensorAlgebra
 
-open scoped BigOperators
-
 universe uκ uR uM
 variable {κ : Type uκ} {R : Type uR} {M : Type uM}
 
@@ -63,10 +61,21 @@ instance instModuleFree [Module.Free R M] : Module.Free R (TensorAlgebra R M) :=
   let ⟨⟨_κ, b⟩⟩ := Module.Free.exists_basis (R := R) (M := M)
   .of_basis b.tensorAlgebra
 
+/-- The `TensorAlgebra` of a free module over a commutative semiring with no zero-divisors has
+no zero-divisors. -/
+instance instNoZeroDivisors [NoZeroDivisors R] [Module.Free R M] :
+    NoZeroDivisors (TensorAlgebra R M) :=
+  have ⟨⟨κ, b⟩⟩ := ‹Module.Free R M›
+  (equivFreeAlgebra b).toMulEquiv.noZeroDivisors
+
 end CommSemiring
 
 section CommRing
 variable [CommRing R] [AddCommGroup M] [Module R M]
+
+/-- The `TensorAlgebra` of a free module over an integral domain is a domain. -/
+instance instIsDomain [IsDomain R] [Module.Free R M] : IsDomain (TensorAlgebra R M) :=
+  NoZeroDivisors.to_isDomain _
 
 attribute [pp_with_univ] Cardinal.lift
 

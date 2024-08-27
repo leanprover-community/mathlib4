@@ -6,8 +6,6 @@ Authors: Alena Gusakov, Bhavik Mehta, Kyle Miller
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Set.Finite
 
-#align_import combinatorics.hall.finite from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
-
 /-!
 # Hall's Marriage Theorem for finite index types
 
@@ -68,7 +66,6 @@ theorem hall_cond_of_erase {x : ι} (a : α)
   · rw [nonempty_iff_ne_empty, not_not] at he
     subst s'
     simp
-#align hall_marriage_theorem.hall_cond_of_erase HallMarriageTheorem.hall_cond_of_erase
 
 /-- First case of the inductive step: assuming that
 `∀ (s : Finset ι), s.Nonempty → s ≠ univ → s.card < (s.biUnion t).card`
@@ -106,11 +103,11 @@ theorem hall_hard_inductive_step_A {n : ℕ} (hn : Fintype.card ι = n + 1)
 
   rcases ih t' card_ι'.le (hall_cond_of_erase y ha) with ⟨f', hfinj, hfr⟩
   -- Extend the resulting function.
-  refine' ⟨fun z => if h : z = x then y else f' ⟨z, h⟩, _, _⟩
+  refine ⟨fun z => if h : z = x then y else f' ⟨z, h⟩, ?_, ?_⟩
   · rintro z₁ z₂
     have key : ∀ {x}, y ≠ f' x := by
       intro x h
-      simpa [← h] using hfr x
+      simpa [t', ← h] using hfr x
     by_cases h₁ : z₁ = x <;> by_cases h₂ : z₂ = x <;> simp [h₁, h₂, hfinj.eq_iff, key, key.symm]
   · intro z
     simp only [ne_eq, Set.mem_setOf_eq]
@@ -119,8 +116,6 @@ theorem hall_hard_inductive_step_A {n : ℕ} (hn : Fintype.card ι = n + 1)
     · specialize hfr ⟨z, hz⟩
       rw [mem_erase] at hfr
       exact hfr.2
-set_option linter.uppercaseLean3 false in
-#align hall_marriage_theorem.hall_hard_inductive_step_A HallMarriageTheorem.hall_hard_inductive_step_A
 
 theorem hall_cond_of_restrict {ι : Type u} {t : ι → Finset α} {s : Finset ι}
     (ht : ∀ s : Finset ι, s.card ≤ (s.biUnion t).card) (s' : Finset (s : Set ι)) :
@@ -131,7 +126,6 @@ theorem hall_cond_of_restrict {ι : Type u} {t : ι → Finset α} {s : Finset �
     apply congr_arg
     ext y
     simp
-#align hall_marriage_theorem.hall_cond_of_restrict HallMarriageTheorem.hall_cond_of_restrict
 
 theorem hall_cond_of_compl {ι : Type u} {t : ι → Finset α} {s : Finset ι}
     (hus : s.card = (s.biUnion t).card) (ht : ∀ s : Finset ι, s.card ≤ (s.biUnion t).card)
@@ -143,11 +137,11 @@ theorem hall_cond_of_compl {ι : Type u} {t : ι → Finset α} {s : Finset ι}
     intro x hx hc _
     exact absurd hx hc
   have : s'.card = (s ∪ s'.image fun z => z.1).card - s.card := by
-    simp [disj, card_image_of_injective _ Subtype.coe_injective]
+    simp [disj, card_image_of_injective _ Subtype.coe_injective, Nat.add_sub_cancel_left]
   rw [this, hus]
-  refine' (tsub_le_tsub_right (ht _) _).trans _
+  refine (Nat.sub_le_sub_right (ht _) _).trans ?_
   rw [← card_sdiff]
-  · refine' (card_le_card _).trans le_rfl
+  · refine (card_le_card ?_).trans le_rfl
     intro t
     simp only [mem_biUnion, mem_sdiff, not_exists, mem_image, and_imp, mem_union, exists_and_right,
       exists_imp]
@@ -156,7 +150,6 @@ theorem hall_cond_of_compl {ι : Type u} {t : ι → Finset α} {s : Finset ι}
     · use x', hx', rat, hs
   · apply biUnion_subset_biUnion_of_subset_left
     apply subset_union_left
-#align hall_marriage_theorem.hall_cond_of_compl HallMarriageTheorem.hall_cond_of_compl
 
 /-- Second case of the inductive step: assuming that
 `∃ (s : Finset ι), s ≠ univ → s.card = (s.biUnion t).card`
@@ -187,7 +180,7 @@ theorem hall_hard_inductive_step_B {n : ℕ} (hn : Fintype.card ι = n + 1)
   set ι'' := (s : Set ι)ᶜ
   let t'' : ι'' → Finset α := fun a'' => t a'' \ s.biUnion t
   have card_ι''_le : Fintype.card ι'' ≤ n := by
-    simp_rw [← Nat.lt_succ_iff, ← hn, ← Finset.coe_compl, coe_sort_coe]
+    simp_rw [ι'', ← Nat.lt_succ_iff, ← hn, ← Finset.coe_compl, coe_sort_coe]
     rwa [Fintype.card_coe, card_compl_lt_iff_nonempty]
   rcases ih t'' card_ι''_le (hall_cond_of_compl hus ht) with ⟨f'', hf'', hsf''⟩
   -- Put them together
@@ -206,15 +199,13 @@ theorem hall_hard_inductive_step_B {n : ℕ} (hn : Fintype.card ι = n + 1)
     apply f''_not_mem_biUnion x' hx''
     rw [← h]
     apply f'_mem_biUnion x
-  refine' ⟨fun x => if h : x ∈ s then f' ⟨x, h⟩ else f'' ⟨x, h⟩, _, _⟩
-  · refine' hf'.dite _ hf'' (@fun x x' => im_disj x x' _ _)
+  refine ⟨fun x => if h : x ∈ s then f' ⟨x, h⟩ else f'' ⟨x, h⟩, ?_, ?_⟩
+  · refine hf'.dite _ hf'' (@fun x x' => im_disj x x' _ _)
   · intro x
     simp only [of_eq_true]
     split_ifs with h
     · exact hsf' ⟨x, h⟩
-    · exact sdiff_subset _ _ (hsf'' ⟨x, h⟩)
-set_option linter.uppercaseLean3 false in
-#align hall_marriage_theorem.hall_hard_inductive_step_B HallMarriageTheorem.hall_hard_inductive_step_B
+    · exact sdiff_subset (hsf'' ⟨x, h⟩)
 
 end Fintype
 
@@ -227,21 +218,20 @@ theorem hall_hard_inductive (ht : ∀ s : Finset ι, s.card ≤ (s.biUnion t).ca
     ∃ f : ι → α, Function.Injective f ∧ ∀ x, f x ∈ t x := by
   cases nonempty_fintype ι
   induction' hn : Fintype.card ι using Nat.strong_induction_on with n ih generalizing ι
-  rcases n with (_ | _)
+  rcases n with (_ | n)
   · rw [Fintype.card_eq_zero_iff] at hn
     exact ⟨isEmptyElim, isEmptyElim, isEmptyElim⟩
-  · have ih' : ∀ (ι' : Type u) [Fintype ι'] (t' : ι' → Finset α), Fintype.card ι' ≤ _ →
+  · have ih' : ∀ (ι' : Type u) [Fintype ι'] (t' : ι' → Finset α), Fintype.card ι' ≤ n →
         (∀ s' : Finset ι', s'.card ≤ (s'.biUnion t').card) →
         ∃ f : ι' → α, Function.Injective f ∧ ∀ x, f x ∈ t' x := by
       intro ι' _ _ hι' ht'
       exact ih _ (Nat.lt_succ_of_le hι') ht' _ rfl
     by_cases h : ∀ s : Finset ι, s.Nonempty → s ≠ univ → s.card < (s.biUnion t).card
-    · refine' hall_hard_inductive_step_A hn ht (@fun ι' => ih' ι') h
+    · refine hall_hard_inductive_step_A hn ht (@fun ι' => ih' ι') h
     · push_neg at h
       rcases h with ⟨s, sne, snu, sle⟩
       exact hall_hard_inductive_step_B hn ht (@fun ι' => ih' ι')
         s sne snu (Nat.le_antisymm (ht _) sle)
-#align hall_marriage_theorem.hall_hard_inductive HallMarriageTheorem.hall_hard_inductive
 
 end HallMarriageTheorem
 
@@ -266,4 +256,3 @@ theorem Finset.all_card_le_biUnion_card_iff_existsInjective' {ι α : Type*} [Fi
     rw [mem_image, mem_biUnion]
     rintro ⟨x, hx, rfl⟩
     exact ⟨x, hx, hf₂ x⟩
-#align finset.all_card_le_bUnion_card_iff_exists_injective' Finset.all_card_le_biUnion_card_iff_existsInjective'

@@ -1,6 +1,4 @@
 import Mathlib.Tactic.SplitIfs
-import Std.Tactic.GuardMsgs
-
 example (x : Nat) (p : Prop) [Decidable p] : x = if p then x else x := by
   split_ifs with h1
   · rfl
@@ -67,10 +65,17 @@ example : True := by
   fail_if_success { split_ifs }
   trivial
 
-open Classical in
+open scoped Classical in
 example (P Q : Prop) (w : if P then (if Q then true else true) else true = true) : true := by
   split_ifs at w
   -- check that we've fully split w into three subgoals
   · trivial
   · trivial
   · trivial
+
+example (u : Nat) : (if u = u then 0 else 1) = 0 := by
+  have h : u = u := by rfl
+  split_ifs
+  -- only one goal here
+  rfl
+  done

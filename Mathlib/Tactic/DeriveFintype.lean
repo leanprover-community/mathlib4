@@ -188,7 +188,7 @@ def mkFintypeInstanceHandler (declNames : Array Name) : CommandElabM Bool := do
     mkFintype declName
 
 initialize
-  registerDerivingHandler `Fintype mkFintypeInstanceHandler
+  registerDerivingHandler ``Fintype mkFintypeInstanceHandler
   registerTraceClass `Elab.Deriving.fintype
 
 end Mathlib.Deriving.Fintype

@@ -125,7 +125,7 @@ elab_rules : tactic
     withLocation (expandOptLocation (Lean.mkOptionalNode loc))
       (atLocal := fun h ↦ liftMetaTactic1 fun mvarId ↦ do
         let hTy ← instantiateMVars (← h.getType)
-        mvarId.changeLocalDecl' h (← hTy.liftLets mkLetFVars config))
+        mvarId.changeLocalDecl h (← hTy.liftLets mkLetFVars config))
       (atTarget := liftMetaTactic1 fun mvarId ↦ do
         let ty ← instantiateMVars (← mvarId.getType)
         mvarId.change (← ty.liftLets mkLetFVars config))
