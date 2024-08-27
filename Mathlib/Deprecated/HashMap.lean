@@ -24,7 +24,7 @@ namespace Batteries.HashMap
 
 -- not an exact match, the Lean3 version was dependently-typed
 
-variablee [BEq α] [Hashable α]
+variable [BEq α] [Hashable α]
 
 /-- The list of keys in a `HashMap`. -/
 @[deprecated "This declaration is unused in Mathlib: if you need it, \
