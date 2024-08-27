@@ -77,49 +77,6 @@ def addIsScalarTowerInstanceFromRingHomComp (t : Expr) : TacticM Unit := withMai
     let (_, mvar) ← mvar.intro1P
     return [mvar]
 
--- def addFiniteTypeInstance (t : Expr) : TacticM Unit := withMainContext do
---   let u ← Meta.mkFreshLevelMVar
---   let v ← Meta.mkFreshLevelMVar
---   let A ← mkFreshExprMVarQ q(Type u)
---   let B ← mkFreshExprMVarQ q(Type v)
---   let _instA ← mkFreshExprMVarQ q(CommRing $A)
---   let _instB ← mkFreshExprMVarQ q(CommRing $B)
---   let f ← mkFreshExprMVarQ q($A →+* $B)
---   let _ ←
---     try let _pf ← assertDefEqQ t f
---     catch e => throwError e.toMessageData
---   let ft ← mkFreshExprMVarQ q(RingHom.FiniteType $f)
---   ft.mvarId!.assumption
---   let _algInstAB ← synthInstanceQ q(Algebra $A $B)
---   let _ ←
---     try let _ ← assertDefEqQ f q(algebraMap $A $B)
---     catch e => throwError e.toMessageData
---   try
---     let _ ← synthInstanceQ q(Algebra.FiniteType $A $B)
---   catch _ => liftMetaTactic fun mvarid => do
---     let nm ← mkFreshUserName `ftInst
---     let mvar ← mvarid.define nm q(Algebra.FiniteType $A $B) q($ft)
---     let (_, mvar) ← mvar.intro1P
---     return [mvar]
-
--- #check matchExpr :(
-
--- def addInstance (oldname : Name) (args : Array Expr) (decl : LocalDecl) : TacticM Unit :=
---   withMainContext do
---     logInfo "hi"
---     liftMetaTactic fun mvarid => do
---       let nm ← mkFreshUserName `ftInst
---       -- let env ← getEnv
---       -- let some c := env.find? newname | throwError "Error"
---       -- let u ← Meta.mkFreshLevelMVarsFor c
---       let .const _ us := decl.type.getAppFn | throwError "Error"
---       let f := Meta.mkAppM (.const () us) args
---       let mvar ← mvarid.define nm f decl.toExpr
---       let (_, mvar) ← mvar.intro1P
---       return [mvar]
-
--- #check
-
 -- -- WIP on searching through local context for types in a given array
 def searchContext (t : Array (TSyntax `term)) : TacticM Unit := withMainContext do
   let t' ← t.mapM fun i => Term.elabTerm i none
