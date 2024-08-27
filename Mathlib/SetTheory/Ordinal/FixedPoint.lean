@@ -542,7 +542,7 @@ theorem deriv_add_eq_mul_omega_add (a b : Ordinal.{u}) : deriv (a + ·) b = a * 
 
 @[simp]
 theorem nfp_mul_one {a : Ordinal} (ha : 0 < a) : nfp (a * ·) 1 = (a^omega) := by
-  rw [← sup_iterate_eq_nfp, ← sup_opow_nat ha]
+  rw [← sup_iterate_eq_nfp, ← iSup_pow ha]
   congr
   funext n
   induction' n with n hn
