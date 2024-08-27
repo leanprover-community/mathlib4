@@ -45,7 +45,7 @@ It also works incrementally, providing information that it better suited, for in
 files.
  -/
 register_option linter.minImports : Bool := {
-  defValue := false
+  defValue := true
   descr := "enable the minImports linter"
 }
 
