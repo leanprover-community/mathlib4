@@ -18,14 +18,10 @@ applications the underlying type is a monoid (multiplicative or additive), we do
 the definitions.
 -/
 
-
 universe u v
 
-open scoped Classical
 open Set Filter TopologicalSpace
-
-open scoped Classical
-open Topology Pointwise
+open scoped Topology Pointwise
 
 variable {ι α M N X : Type*} [TopologicalSpace X]
 

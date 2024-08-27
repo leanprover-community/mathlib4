@@ -30,7 +30,7 @@ This means that they are not completely interchangeable, nor can one completely 
 However, `refine` is more readable and (heuristically) tends to be more efficient on average.
 -/
 register_option linter.refine : Bool := {
-  defValue := true
+  defValue := false
   descr := "enable the refine linter"
 }
 

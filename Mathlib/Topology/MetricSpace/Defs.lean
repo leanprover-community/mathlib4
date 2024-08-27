@@ -116,8 +116,9 @@ end Metric
 /-- Build a new metric space from an old one where the bundled uniform structure is provably
 (but typically non-definitionaly) equal to some given uniform structure.
 See Note [forgetful inheritance].
+See Note [reducible non-instances].
 -/
-def MetricSpace.replaceUniformity {γ} [U : UniformSpace γ] (m : MetricSpace γ)
+abbrev MetricSpace.replaceUniformity {γ} [U : UniformSpace γ] (m : MetricSpace γ)
     (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace]) : MetricSpace γ where
   toPseudoMetricSpace := PseudoMetricSpace.replaceUniformity m.toPseudoMetricSpace H
   eq_of_dist_eq_zero := @eq_of_dist_eq_zero _ _
@@ -129,6 +130,7 @@ theorem MetricSpace.replaceUniformity_eq {γ} [U : UniformSpace γ] (m : MetricS
 /-- Build a new metric space from an old one where the bundled topological structure is provably
 (but typically non-definitionaly) equal to some given topological structure.
 See Note [forgetful inheritance].
+See Note [reducible non-instances].
 -/
 abbrev MetricSpace.replaceTopology {γ} [U : TopologicalSpace γ] (m : MetricSpace γ)
     (H : U = m.toPseudoMetricSpace.toUniformSpace.toTopologicalSpace) : MetricSpace γ :=
@@ -142,8 +144,9 @@ theorem MetricSpace.replaceTopology_eq {γ} [U : TopologicalSpace γ] (m : Metri
 /-- Build a new metric space from an old one where the bundled bornology structure is provably
 (but typically non-definitionaly) equal to some given bornology structure.
 See Note [forgetful inheritance].
+See Note [reducible non-instances].
 -/
-def MetricSpace.replaceBornology {α} [B : Bornology α] (m : MetricSpace α)
+abbrev MetricSpace.replaceBornology {α} [B : Bornology α] (m : MetricSpace α)
     (H : ∀ s, @IsBounded _ B s ↔ @IsBounded _ PseudoMetricSpace.toBornology s) : MetricSpace α :=
   { PseudoMetricSpace.replaceBornology _ H, m with toBornology := B }
 
