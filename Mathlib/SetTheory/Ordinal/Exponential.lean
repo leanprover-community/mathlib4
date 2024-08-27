@@ -405,7 +405,7 @@ alias nat_cast_opow := natCast_opow
 
 theorem sup_opow_nat {o : Ordinal} (ho : 0 < o) : (sup fun n : ℕ => o ^ n) = o ^ ω := by
   simp_rw [← opow_natCast]
-  rcases lt_or_eq_of_le (one_le_iff_pos.2 ho) with (ho₁ | rfl)
+  rcases (one_le_iff_pos.2 ho).lt_or_eq with ho₁ | rfl
   · exact (opow_isNormal ho₁).apply_omega
   · rw [one_opow]
     refine le_antisymm (sup_le fun n => by rw [one_opow]) ?_
