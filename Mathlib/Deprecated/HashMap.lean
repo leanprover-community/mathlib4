@@ -24,7 +24,7 @@ namespace Batteries.HashMap
 
 -- not an exact match, the Lean3 version was dependently-typed
 
-variable {α : Type*} {β : Type*} [BEq α] [Hashable α]
+variablee [BEq α] [Hashable α]
 
 /-- The list of keys in a `HashMap`. -/
 @[deprecated "This declaration is unused in Mathlib: if you need it, \
@@ -53,7 +53,7 @@ namespace Batteries.RBSet
 /-- Insert all elements of a list into an `RBSet`. -/
 @[deprecated "This declaration is unused in Mathlib: if you need it, \
   please file an issue in the Batteries repository." (since := "2024-06-12")]
-def insertList {α : Type*} {cmp} (m : RBSet α cmp) (L : List α) : RBSet α cmp :=
+def insertList {cmp} (m : RBSet α cmp) (L : List α) : RBSet α cmp :=
   L.foldl (fun m a => m.insert a) m
 
 end Batteries.RBSet
