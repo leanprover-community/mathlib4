@@ -35,8 +35,12 @@ initialize Lean.registerBuiltinAttribute {
     -- check that there are no spaces in the tag
     let tag := stx[1]
     if let some s := tag.getSubstring? then
-      if 2 ≤ (s.trim.splitOn " ").length then
-        logWarningAt tag m!"Spaces are not allowed in '{s}'"
+      let str := s.toString.trimRight
+      if str.length != 4 then
+        logWarningAt tag
+          m!"Tag '{str}' is {str.length} characters long, but it should be 4 characters long"
+      if 2 ≤ (str.split (fun c => (!c.isUpper) && !c.isDigit)).length then
+        logWarningAt tag m!"Tag '{str}' should only consist of digits and uppercase letters"
     match stx with
       | `(attr| stacks $_:stackTags $_:str) => return
       | `(attr| stacks $_:stackTags) => return
