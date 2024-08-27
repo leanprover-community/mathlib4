@@ -196,7 +196,7 @@ end IsAlgClosed
 which is algebraic, then `L` is equal to `k`. A corollary of
 `IsAlgClosed.algebraMap_surjective_of_isAlgebraic`.
 
-[Stacks: Lemma 09GQ, (4) ⟹ (2)](https://stacks.math.columbia.edu/tag/09GQ)
+[Stacks: Definition 09GQ, Lemma 09GR (4) ⟹ (1)](https://stacks.math.columbia.edu/tag/09GQ)
 -/
 theorem IntermediateField.eq_bot_of_isAlgClosed_of_isAlgebraic {k K : Type*} [Field k] [Field K]
     [IsAlgClosed k] [Algebra k K] (L : IntermediateField k K) [Algebra.IsAlgebraic k L] :
