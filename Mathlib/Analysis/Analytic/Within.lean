@@ -40,20 +40,6 @@ variable {E F G H : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAd
 ### Basic properties
 -/
 
-@[simp] lemma hasFPowerSeriesWithinOnBall_univ {f : E → F} {p : FormalMultilinearSeries 𝕜 E F}
-    {x : E} {r : ℝ≥0∞} :
-    HasFPowerSeriesWithinOnBall f p univ x r ↔ HasFPowerSeriesOnBall f p x r := by
-  constructor
-  · intro h
-    exact ⟨h.r_le, h.r_pos, fun {y} m ↦ h.hasSum (mem_univ _) m⟩
-  · intro h
-    refine ⟨h.r_le, h.r_pos, fun {y} _ m => h.hasSum m, ?_⟩
-    exact (h.continuousOn.continuousAt (EMetric.ball_mem_nhds x h.r_pos)).continuousWithinAt
-
-@[simp] lemma hasFPowerSeriesWithinAt_univ {f : E → F} {p : FormalMultilinearSeries 𝕜 E F} {x : E} :
-    HasFPowerSeriesWithinAt f p univ x ↔ HasFPowerSeriesAt f p x := by
-  simp only [HasFPowerSeriesWithinAt, hasFPowerSeriesWithinOnBall_univ, HasFPowerSeriesAt]
-
 @[simp] lemma analyticWithinAt_univ {f : E → F} {x : E} :
     AnalyticWithinAt 𝕜 f univ x ↔ AnalyticAt 𝕜 f x := by
   simp only [AnalyticWithinAt, hasFPowerSeriesWithinAt_univ, AnalyticAt]
@@ -62,10 +48,18 @@ lemma analyticWithinOn_univ {f : E → F} :
     AnalyticWithinOn 𝕜 f univ ↔ AnalyticOn 𝕜 f univ := by
   simp only [AnalyticWithinOn, analyticWithinAt_univ, AnalyticOn]
 
+lemma HasFPowerSeriesWithinOnBall.continuousWithinAt
+    {f : E → F} {p : FormalMultilinearSeries 𝕜 E F} {s : Set E} {x : E} {r : ℝ≥0∞}
+    (h : HasFPowerSeriesWithinOnBall f p s x r) :
+    ContinuousWithinAt f s x := by
+  sorry
+
 lemma HasFPowerSeriesWithinAt.continuousWithinAt {f : E → F} {p : FormalMultilinearSeries 𝕜 E F}
     {s : Set E} {x : E} (h : HasFPowerSeriesWithinAt f p s x) : ContinuousWithinAt f s x := by
   rcases h with ⟨r, h⟩
   exact h.continuousWithinAt
+
+#exit
 
 lemma HasFPowerSeriesOnBall.union {f : E → F} {p : FormalMultilinearSeries 𝕜 E F}
     {s t : Set E} {x : E} {r : ℝ≥0∞}
