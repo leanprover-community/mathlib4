@@ -141,13 +141,20 @@ instance Ordinal.isEquivalent : Setoid WellOrder where
 def Ordinal : Type (u + 1) :=
   Quotient Ordinal.isEquivalent
 
-instance hasWellFoundedOut (o : Ordinal) : WellFoundedRelation o.out.α :=
+/-- A "canonical" type order-isomorphic to the ordinal `o`, living in the same universe. This is
+defined through the axiom of choice.
+
+Use this over `Iio o` only when it is paramount to have a `Type u` rather than a `Type (u + 1)`. -/
+def Ordinal.toType (o : Ordinal.{u}) : Type u :=
+  o.out.α
+
+instance hasWellFounded_toType (o : Ordinal) : WellFoundedRelation o.toType :=
   ⟨o.out.r, o.out.wo.wf⟩
 
-instance linearOrderOut (o : Ordinal) : LinearOrder o.out.α :=
-  IsWellOrder.linearOrder o.out.r
+instance linearOrder_toType (o : Ordinal) : LinearOrder o.toType :=
+  @IsWellOrder.linearOrder _ o.out.r o.out.wo
 
-instance isWellOrder_out_lt (o : Ordinal) : IsWellOrder o.out.α (· < ·) :=
+instance isWellOrder_toType_lt (o : Ordinal) : IsWellOrder o.toType (· < ·) :=
   o.out.wo
 
 namespace Ordinal
@@ -182,8 +189,12 @@ theorem type_def (r) [wo : IsWellOrder α r] : (⟦⟨α, r, wo⟩⟧ : Ordinal)
   rfl
 
 @[simp]
-theorem type_out (o : Ordinal) : Ordinal.type o.out.r = o := by
-  rw [Ordinal.type, WellOrder.eta, Quotient.out_eq]
+theorem type_lt (o : Ordinal) : type (α := o.toType) (· < ·) = o :=
+  (type_def' _).symm.trans <| Quotient.out_eq o
+
+@[deprecated type_lt (since := "2024-08-26")]
+theorem type_out (o : Ordinal) : Ordinal.type o.out.r = o :=
+  type_lt o
 
 theorem type_eq {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r] [IsWellOrder β s] :
     type r = type s ↔ Nonempty (r ≃r s) :=
@@ -192,10 +203,6 @@ theorem type_eq {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWel
 theorem _root_.RelIso.ordinal_type_eq {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r]
     [IsWellOrder β s] (h : r ≃r s) : type r = type s :=
   type_eq.2 ⟨h⟩
-
-@[simp]
-theorem type_lt (o : Ordinal) : type ((· < ·) : o.out.α → o.out.α → Prop) = o :=
-  (type_def' _).symm.trans <| Quotient.out_eq o
 
 theorem type_eq_zero_of_empty (r) [IsWellOrder α r] [IsEmpty α] : type r = 0 :=
   (RelIso.relIsoOfIsEmpty r _).ordinal_type_eq
@@ -235,21 +242,29 @@ theorem type_unit : type (@EmptyRelation Unit) = 1 :=
   rfl
 
 @[simp]
-theorem out_empty_iff_eq_zero {o : Ordinal} : IsEmpty o.out.α ↔ o = 0 := by
-  rw [← @type_eq_zero_iff_isEmpty o.out.α (· < ·), type_lt]
+theorem toType_empty_iff_eq_zero {o : Ordinal} : IsEmpty o.toType ↔ o = 0 := by
+  rw [← @type_eq_zero_iff_isEmpty o.toType (· < ·), type_lt]
 
-theorem eq_zero_of_out_empty (o : Ordinal) [h : IsEmpty o.out.α] : o = 0 :=
-  out_empty_iff_eq_zero.1 h
+@[deprecated toType_empty_iff_eq_zero (since := "2024-08-26")]
+alias out_empty_iff_eq_zero := toType_empty_iff_eq_zero
 
-instance isEmpty_out_zero : IsEmpty (0 : Ordinal).out.α :=
-  out_empty_iff_eq_zero.2 rfl
+@[deprecated toType_empty_iff_eq_zero (since := "2024-08-26")]
+theorem eq_zero_of_out_empty (o : Ordinal) [h : IsEmpty o.toType] : o = 0 :=
+  toType_empty_iff_eq_zero.1 h
+
+instance isEmpty_toType_zero : IsEmpty (toType 0) :=
+  toType_empty_iff_eq_zero.2 rfl
 
 @[simp]
-theorem out_nonempty_iff_ne_zero {o : Ordinal} : Nonempty o.out.α ↔ o ≠ 0 := by
-  rw [← @type_ne_zero_iff_nonempty o.out.α (· < ·), type_lt]
+theorem toType_nonempty_iff_ne_zero {o : Ordinal} : Nonempty o.toType ↔ o ≠ 0 := by
+  rw [← @type_ne_zero_iff_nonempty o.toType (· < ·), type_lt]
 
-theorem ne_zero_of_out_nonempty (o : Ordinal) [h : Nonempty o.out.α] : o ≠ 0 :=
-  out_nonempty_iff_ne_zero.1 h
+@[deprecated toType_nonempty_iff_ne_zero (since := "2024-08-26")]
+alias out_nonempty_iff_ne_zero := toType_nonempty_iff_ne_zero
+
+@[deprecated toType_nonempty_iff_ne_zero (since := "2024-08-26")]
+theorem ne_zero_of_out_nonempty (o : Ordinal) [h : Nonempty o.toType] : o ≠ 0 :=
+  toType_nonempty_iff_ne_zero.1 h
 
 protected theorem one_ne_zero : (1 : Ordinal) ≠ 0 :=
   type_ne_zero_of_nonempty _
@@ -363,27 +378,32 @@ instance zeroLEOneClass : ZeroLEOneClass Ordinal :=
 instance NeZero.one : NeZero (1 : Ordinal) :=
   ⟨Ordinal.one_ne_zero⟩
 
-/-- Given two ordinals `α ≤ β`, then `initialSegOut α β` is the initial segment embedding
-of `α` to `β`, as map from a model type for `α` to a model type for `β`. -/
-def initialSegOut {α β : Ordinal} (h : α ≤ β) :
-    InitialSeg ((· < ·) : α.out.α → α.out.α → Prop) ((· < ·) : β.out.α → β.out.α → Prop) := by
+/-- Given two ordinals `α ≤ β`, then `initialSegToType α β` is the initial segment embedding of
+`α.toType` into `β.toType`. -/
+def initialSegToType {α β : Ordinal} (h : α ≤ β) :
+    @InitialSeg α.toType β.toType (· < ·) (· < ·) := by
   change α.out.r ≼i β.out.r
   rw [← Quotient.out_eq α, ← Quotient.out_eq β] at h; revert h
   cases Quotient.out α; cases Quotient.out β; exact Classical.choice
 
-/-- Given two ordinals `α < β`, then `principalSegOut α β` is the principal segment embedding
-of `α` to `β`, as map from a model type for `α` to a model type for `β`. -/
-def principalSegOut {α β : Ordinal} (h : α < β) :
-    PrincipalSeg ((· < ·) : α.out.α → α.out.α → Prop) ((· < ·) : β.out.α → β.out.α → Prop) := by
+@[deprecated initialSegToType (since := "2024-08-26")]
+noncomputable alias initialSegOut := initialSegToType
+
+/-- Given two ordinals `α < β`, then `principalSegToType α β` is the principal segment embedding
+of `α.toType` into `β.toType`. -/
+def principalSegToType {α β : Ordinal} (h : α < β) :
+    @PrincipalSeg α.toType β.toType (· < ·) (· < ·) := by
   change α.out.r ≺i β.out.r
   rw [← Quotient.out_eq α, ← Quotient.out_eq β] at h; revert h
   cases Quotient.out α; cases Quotient.out β; exact Classical.choice
 
+@[deprecated principalSegToType (since := "2024-08-26")]
+noncomputable alias principalSegOut := principalSegToType
+
 theorem typein_lt_type (r : α → α → Prop) [IsWellOrder α r] (a : α) : typein r a < type r :=
   ⟨PrincipalSeg.ofElement _ _⟩
 
-theorem typein_lt_self {o : Ordinal} (i : o.out.α) :
-    @typein _ (· < ·) (isWellOrder_out_lt _) i < o := by
+theorem typein_lt_self {o : Ordinal} (i : o.toType) : typein (α := o.toType) (· < ·) i < o := by
   simp_rw [← type_lt o]
   apply typein_lt_type
 
@@ -950,34 +970,40 @@ instance uniqueIioOne : Unique (Iio (1 : Ordinal)) where
   default := ⟨0, by simp⟩
   uniq a := Subtype.ext <| lt_one_iff_zero.1 a.2
 
-instance uniqueOutOne : Unique (1 : Ordinal).out.α where
-  default := @enum _ (· < ·) ((1 : Ordinal).out.wo) ⟨0, by simp⟩
+instance uniqueToTypeOne : Unique (toType 1) where
+  default := enum (α := toType 1) (· < ·) ⟨0, by simp⟩
   uniq a := by
     unfold default
-    rw [← @enum_typein _ (· < ·) (isWellOrder_out_lt _) a]
+    rw [← enum_typein (α := toType 1) (· < ·) a]
     congr
     rw [← lt_one_iff_zero]
     apply typein_lt_self
 
-theorem one_out_eq (x : (1 : Ordinal).out.α) : x = enum (· < ·) ⟨0, by simp⟩ :=
+theorem one_toType_eq (x : toType 1) : x = enum (· < ·) ⟨0, by simp⟩ :=
   Unique.eq_default x
+
+@[deprecated one_toType_eq (since := "2024-08-26")]
+alias one_out_eq := one_toType_eq
 
 /-! ### Extra properties of typein and enum -/
 
+-- TODO: move this section with the other properties of `typein` and `enum`.
+-- TODO: use `enumIsoToType` for lemmas on `toType` rather than `enum` and `typein`.
 
 @[simp]
-theorem typein_one_out (x : (1 : Ordinal).out.α) :
-    @typein _ (· < ·) (isWellOrder_out_lt _) x = 0 := by
-  rw [one_out_eq x, typein_enum]
+theorem typein_one_toType (x : toType 1) : typein (α := toType 1) (· < ·) x = 0 := by
+  rw [one_toType_eq x, typein_enum]
+
+@[deprecated typein_one_toType (since := "2024-08-26")]
+alias typein_one_out := typein_one_toType
 
 @[simp]
-theorem typein_le_typein (r : α → α → Prop) [IsWellOrder α r] {x x' : α} :
-    typein r x ≤ typein r x' ↔ ¬r x' x := by rw [← not_lt, typein_lt_typein]
+theorem typein_le_typein (r : α → α → Prop) [IsWellOrder α r] {x y : α} :
+    typein r x ≤ typein r y ↔ ¬r y x := by rw [← not_lt, typein_lt_typein]
 
 -- @[simp] -- Porting note (#10618): simp can prove this
-theorem typein_le_typein' (o : Ordinal) {x x' : o.out.α} :
-    @typein _ (· < ·) (isWellOrder_out_lt _) x ≤ @typein _ (· < ·) (isWellOrder_out_lt _) x'
-      ↔ x ≤ x' := by
+theorem typein_le_typein' (o : Ordinal) {x y : o.toType} :
+    typein (α := o.toType) (· < ·) x ≤ typein (α := o.toType) (· < ·) y ↔ x ≤ y := by
   rw [typein_le_typein]
   exact not_lt
 
@@ -987,22 +1013,22 @@ theorem enum_le_enum (r : α → α → Prop) [IsWellOrder α r] {o₁ o₂ : {o
 
 @[simp]
 theorem enum_le_enum' (a : Ordinal) {o₁ o₂ : {o // o < type (· < ·)}} :
-    enum (· < ·) o₁ ≤ @enum a.out.α (· < ·) _ o₂ ↔ o₁ ≤ o₂ := by
-  rw [← @enum_le_enum _ (· < ·) (isWellOrder_out_lt _), ← not_lt]
+    enum (· < ·) o₁ ≤ enum (α := a.toType) (· < ·) o₂ ↔ o₁ ≤ o₂ := by
+  rw [← enum_le_enum (α := a.toType) (· < ·), ← not_lt]
 
 theorem enum_zero_le {r : α → α → Prop} [IsWellOrder α r] (h0 : 0 < type r) (a : α) :
     ¬r a (enum r ⟨0, h0⟩) := by
   rw [← enum_typein r a, enum_le_enum r]
   apply Ordinal.zero_le
 
-theorem enum_zero_le' {o : Ordinal} (h0 : 0 < o) (a : o.out.α) :
-    @enum o.out.α (· < ·) _ ⟨0, by rwa [type_lt]⟩ ≤ a := by
+theorem enum_zero_le' {o : Ordinal} (h0 : 0 < o) (a : o.toType) :
+    enum (α := o.toType) (· < ·) ⟨0, by rwa [type_lt]⟩ ≤ a := by
   rw [← not_lt]
   apply enum_zero_le
 
-theorem le_enum_succ {o : Ordinal} (a : (succ o).out.α) :
-    a ≤ @enum (succ o).out.α (· < ·) _ ⟨o, (by rw [type_lt]; exact lt_succ o)⟩ := by
-  rw [← @enum_typein _ (· < ·) (isWellOrder_out_lt _) a, enum_le_enum', Subtype.mk_le_mk,
+theorem le_enum_succ {o : Ordinal} (a : (succ o).toType) :
+    a ≤ enum (α := (succ o).toType) (· < ·) ⟨o, (by rw [type_lt]; exact lt_succ o)⟩ := by
+  rw [← enum_typein (α := (succ o).toType) (· < ·) a, enum_le_enum', Subtype.mk_le_mk,
     ← lt_succ_iff]
   apply typein_lt_self
 
@@ -1010,28 +1036,34 @@ theorem enum_inj {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : {o // 
     enum r o₁ = enum r o₂ ↔ o₁ = o₂ := by
   rw [EmbeddingLike.apply_eq_iff_eq, Subtype.mk.injEq]
 
-/-- The order isomorphism between ordinals less than `o` and `o.out.α`. -/
+/-- The order isomorphism between ordinals less than `o` and `o.toType`. -/
 @[simps!]
-noncomputable def enumIsoOut (o : Ordinal) : Set.Iio o ≃o o.out.α where
+noncomputable def enumIsoToType (o : Ordinal) : Set.Iio o ≃o o.toType where
   toFun x :=
-    @enum _ (· < ·) o.out.wo ⟨x.1, by
+    enum (α := o.toType) (· < ·) ⟨x.1, by
       rw [type_lt]
       exact x.2⟩
-  invFun x := ⟨@typein _ (· < ·) (isWellOrder_out_lt _) x, typein_lt_self x⟩
+  invFun x := ⟨typein (α := o.toType) (· < ·) x, typein_lt_self x⟩
   left_inv := fun ⟨o', h⟩ => Subtype.ext_val (typein_enum _ _)
   right_inv h := enum_typein _ _
   map_rel_iff' := by
     rintro ⟨a, _⟩ ⟨b, _⟩
     apply enum_le_enum'
 
-/-- `o.out.α` is an `OrderBot` whenever `0 < o`. -/
-def outOrderBotOfPos {o : Ordinal} (ho : 0 < o) : OrderBot o.out.α where
+@[deprecated (since := "2024-08-26")]
+alias enumIsoOut := enumIsoToType
+
+/-- `o.toType` is an `OrderBot` whenever `0 < o`. -/
+def toTypeOrderBotOfPos {o : Ordinal} (ho : 0 < o) : OrderBot o.toType where
   bot_le := enum_zero_le' ho
 
+@[deprecated toTypeOrderBotOfPos (since := "2024-08-26")]
+noncomputable alias outOrderBotOfPos := toTypeOrderBotOfPos
+
 theorem enum_zero_eq_bot {o : Ordinal} (ho : 0 < o) :
-    enum (· < ·) ⟨0, by rwa [type_lt]⟩ =
-      haveI H := outOrderBotOfPos ho
-      (⊥ : (Quotient.out o).α) :=
+    enum (α := o.toType) (· < ·) ⟨0, by rwa [type_lt]⟩ =
+      have H := toTypeOrderBotOfPos ho
+      (⊥ : o.toType) :=
   rfl
 
 /-! ### Universal ordinal -/
@@ -1109,8 +1141,11 @@ namespace Cardinal
 open Ordinal
 
 @[simp]
-theorem mk_ordinal_out (o : Ordinal) : #o.out.α = o.card :=
-  (Ordinal.card_type (· < ·)).symm.trans <| by rw [Ordinal.type_lt]
+theorem mk_toType (o : Ordinal) : #o.toType = o.card :=
+  (Ordinal.card_type _).symm.trans <| by rw [Ordinal.type_lt]
+
+@[deprecated mk_toType (since := "2024-08-26")]
+alias mk_ordinal_out := mk_toType
 
 /-- The ordinal corresponding to a cardinal `c` is the least ordinal
   whose cardinal is `c`. For the order-embedding version, see `ord.order_embedding`. -/
@@ -1231,19 +1266,29 @@ theorem lift_ord (c) : Ordinal.lift.{u,v} (ord c) = ord (lift.{u,v} c) := by
     rwa [lt_ord, ← lift_card, lift_lt, ← lt_ord, ← Ordinal.lift_lt]
   · rw [ord_le, ← lift_card, card_ord]
 
-theorem mk_ord_out (c : Cardinal) : #c.ord.out.α = c := by simp
+theorem mk_ord_toType (c : Cardinal) : #c.ord.toType = c := by simp
+
+@[deprecated mk_ord_toType (since := "2024-08-26")]
+alias mk_ord_out := mk_ord_toType
 
 theorem card_typein_lt (r : α → α → Prop) [IsWellOrder α r] (x : α) (h : ord #α = type r) :
     card (typein r x) < #α := by
   rw [← lt_ord, h]
   apply typein_lt_type
 
-theorem card_typein_out_lt (c : Cardinal) (x : c.ord.out.α) :
-    card (@typein _ (· < ·) (isWellOrder_out_lt _) x) < c := by
+theorem card_typein_toType_lt (c : Cardinal) (x : c.ord.toType) :
+    card (typein (α := c.ord.toType) (· < ·) x) < c := by
   rw [← lt_ord]
   apply typein_lt_self
 
-theorem mk_Iio_ord_out_α {c : Cardinal} (i : c.ord.out.α) : #(Iio i) < c := card_typein_out_lt c i
+@[deprecated card_typein_toType_lt (since := "2024-08-26")]
+alias card_typein_out_lt := card_typein_toType_lt
+
+theorem mk_Iio_ord_toType {c : Cardinal} (i : c.ord.toType) : #(Iio i) < c :=
+  card_typein_toType_lt c i
+
+@[deprecated (since := "2024-08-26")]
+alias mk_Iio_ord_out_α := mk_Iio_ord_toType
 
 theorem ord_injective : Injective ord := by
   intro c c' h
