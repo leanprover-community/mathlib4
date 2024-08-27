@@ -724,18 +724,11 @@ def succAboveCases {α : Fin (n + 1) → Sort u} (i : Fin (n + 1)) (x : α i)
     else @Eq.recOn _ _ (fun x _ ↦ α x) _ (succAbove_pred_of_lt _ _ <|
     (Fin.lt_or_lt_of_ne hj).resolve_left hlt) (p _)
 
-/-- This is a duplicate of `Fin.forall_fin_succ` in Core. We should upstream the name change. -/
-lemma forall_iff_succ {P : Fin (n + 1) → Prop} : (∀ i, P i) ↔ P 0 ∧ ∀ i, P (succ i) :=
-  ⟨fun h ↦ ⟨h _, fun _ ↦ h _⟩, fun h ↦ cases h.1 h.2⟩
+-- This is a duplicate of `Fin.exists_fin_succ` in Core. We should upstream the name change.
+alias forall_iff_succ := forall_fin_succ
 
-/-- This is a duplicate of `Fin.exists_fin_succ` in Core. We should upstream the name change. -/
-lemma exists_iff_succ {P : Fin (n + 1) → Prop} : (∃ i, P i) ↔ P 0 ∨ ∃ i, P (succ i) where
-  mp := by
-    rintro ⟨i, hi⟩
-    induction' i using cases
-    · exact .inl hi
-    · exact .inr ⟨_, hi⟩
-  mpr := by rintro (h | ⟨i, hi⟩) <;> exact ⟨_, ‹_›⟩
+-- This is a duplicate of `Fin.exists_fin_succ` in Core. We should upstream the name change.
+alias exists_iff_succ := exists_fin_succ
 
 lemma forall_iff_castSucc {P : Fin (n + 1) → Prop} :
     (∀ i, P i) ↔ P (last n) ∧ ∀ i, P (castSucc i) :=
