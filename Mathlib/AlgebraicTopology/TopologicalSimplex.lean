@@ -73,6 +73,7 @@ def toTop : SimplexCategory ⥤ TopCat where
     ext f
     apply toTopObj.ext
     funext i
+    classical
     change (Finset.univ.filter (· = i)).sum _ = _
     simp [Finset.sum_filter, CategoryTheory.id_apply]
   map_comp := fun f g => by
@@ -82,6 +83,7 @@ def toTop : SimplexCategory ⥤ TopCat where
     funext i
     dsimp
     simp only [comp_apply, TopCat.coe_of_of, ContinuousMap.coe_mk, coe_toTopMap]
+    classical
     rw [← Finset.sum_biUnion]
     · apply Finset.sum_congr
       · exact Finset.ext (fun j => ⟨fun hj => by simpa using hj, fun hj => by simpa using hj⟩)

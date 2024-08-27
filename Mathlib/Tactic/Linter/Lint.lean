@@ -336,4 +336,53 @@ initialize addLinter longLineLinter
 
 end LongLine
 
+/-! # The "openClassical" linter -/
+
+/-- The "openClassical" linter emits a warning on `open Classical` statements which are not
+scoped to a single declaration. A non-scoped `open Classical` can hide that some theorem statements
+would be better stated with explicit decidability statements.
+-/
+register_option linter.openClassical : Bool := {
+  defValue := true
+  descr := "enable the openClassical linter"
+}
+
+namespace OpenClassical
+
+/-- Gets the value of the `linter.openClassical` option. -/
+def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.openClassical o
+
+/-- If `stx` is syntax describing an `open` command, `extractOpenNames stx`
+returns an array of the syntax corresponding to the opened names,
+omitting any renamed or hidden items. -/
+def extractOpenNames : Syntax → Array Syntax
+  | `(command|open $arg hiding $_*)    => #[arg]
+  | `(command|open $arg renaming $_,*) => #[arg]
+  | `(command|open $arg ($_*))         => #[arg]  -- `openOnly`, hence the parens in `($_*)`
+  | `(command|open $args*)             => args
+  | `(command|open scoped $args*)      => args
+  | _ => #[]
+
+@[inherit_doc Mathlib.Linter.linter.openClassical]
+def openClassicalLinter : Linter where run := withSetOptionIn fun stx ↦ do
+    unless getLinterHash (← getOptions) do
+      return
+    if (← MonadState.get).messages.hasErrors then
+     return
+    -- TODO: once mathlib's Lean version includes leanprover/lean4#4741, make this configurable
+    unless #[`Mathlib, `test, `Archive, `Counterexamples].contains (← getMainModule).getRoot do
+      return
+    -- If `stx` describes an `open` command, extract the list of opened namespaces.
+    for stxN in (extractOpenNames stx).filter (·.getId == `Classical) do
+      Linter.logLint linter.openClassical stxN "\
+      please avoid 'open (scoped) Classical' statements: this can hide theorem statements\n\
+      which would be better stated with explicit decidability statements.\n\
+      Instead, use `open Classical in` for definitions or instances, the `classical` tactic \
+      for proofs.\nFor theorem statements, \
+      either add missing decidability assumptions or use `open Classical in`."
+
+initialize addLinter openClassicalLinter
+
+end OpenClassical
+
 end Mathlib.Linter
