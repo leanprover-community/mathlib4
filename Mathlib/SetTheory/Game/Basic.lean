@@ -375,40 +375,6 @@ theorem rightMoves_mul_cases {x y : PGame} (k) {P : (x * y).RightMoves → Prop}
   · apply hl
   · apply hr
 
-lemma LeftMovesMul.exists {x y : PGame} {p : (x * y).LeftMoves → Prop} :
-    (∃ i, p i) ↔
-      (∃ i j, p (toLeftMovesMul (.inl (i, j)))) ∨ (∃ i j, p (toLeftMovesMul (.inr (i, j)))) := by
-  cases' x with xl xr xL xR
-  cases' y with yl yr yL yR
-  constructor
-  · rintro ⟨(⟨i, j⟩ | ⟨i, j⟩), hi⟩
-    exacts [.inl ⟨i, j, hi⟩, .inr ⟨i, j, hi⟩]
-  · rintro (⟨i, j, h⟩ | ⟨i, j, h⟩)
-    exacts [⟨_, h⟩, ⟨_, h⟩]
-
-lemma RightMovesMul.exists {x y : PGame} {p : (x * y).RightMoves → Prop} :
-    (∃ i, p i) ↔
-      (∃ i j, p (toRightMovesMul (.inl (i, j)))) ∨ (∃ i j, p (toRightMovesMul (.inr (i, j)))) := by
-  cases' x with xl xr xL xR
-  cases' y with yl yr yL yR
-  constructor
-  · rintro ⟨(⟨i, j⟩ | ⟨i, j⟩), hi⟩
-    exacts [.inl ⟨i, j, hi⟩, .inr ⟨i, j, hi⟩]
-  · rintro (⟨i, j, h⟩ | ⟨i, j, h⟩)
-    exacts [⟨_, h⟩, ⟨_, h⟩]
-
-lemma memₗ_mul_iff : ∀ {x y₁ y₂ : PGame},
-    x ∈ₗ y₁ * y₂ ↔
-      (∃ i j, x ≡ y₁.moveLeft i * y₂ + y₁ * y₂.moveLeft j - y₁.moveLeft i * y₂.moveLeft j) ∨
-      (∃ i j, x ≡ y₁.moveRight i * y₂ + y₁ * y₂.moveRight j - y₁.moveRight i * y₂.moveRight j)
-  | mk _ _ _ _, mk _ _ _ _, mk _ _ _ _ => LeftMovesMul.exists
-
-lemma memᵣ_mul_iff : ∀ {x y₁ y₂ : PGame},
-    x ∈ᵣ y₁ * y₂ ↔
-      (∃ i j, x ≡ y₁.moveLeft i * y₂ + y₁ * y₂.moveRight j - y₁.moveLeft i * y₂.moveRight j) ∨
-      (∃ i j, x ≡ y₁.moveRight i * y₂ + y₁ * y₂.moveLeft j - y₁.moveRight i * y₂.moveLeft j)
-  | mk _ _ _ _, mk _ _ _ _, mk _ _ _ _ => RightMovesMul.exists
-
 /-- `x * y` and `y * x` have the same moves. -/
 protected lemma mul_comm (x y : PGame) : x * y ≡ y * x :=
   match x, y with
@@ -881,10 +847,7 @@ def mulOption (x y : PGame) (i : LeftMoves x) (j : LeftMoves y) : PGame :=
   the first kind. -/
 lemma mulOption_neg_neg {x} (y) {i j} :
     mulOption x y i j = mulOption x (-(-y)) i (toLeftMovesNeg <| toRightMovesNeg j) := by
-  dsimp only [mulOption]
-  congr 2
-  · rw [neg_neg]
-  iterate 2 rw [moveLeft_neg, moveRight_neg, neg_neg]
+  simp [mulOption]
 
 /-- The left options of `x * y` agree with that of `y * x` up to equivalence. -/
 lemma mulOption_symm (x y) {i j} : ⟦mulOption x y i j⟧ = (⟦mulOption y x j i⟧ : Game) := by
