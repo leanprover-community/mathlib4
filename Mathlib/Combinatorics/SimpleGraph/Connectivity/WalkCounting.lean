@@ -60,7 +60,7 @@ theorem set_walk_length_succ_eq (u v : V) (n : ℕ) :
 
 /-- Walks of length two from `u` to `v` correspond bijectively to common neighbours of `u` and `v`.
 Note that `u` and `v` may be the same. -/
-@[simps]
+[simps]
 def walkLengthTwoEquivCommonNeighbors (u v : V) :
     {p : G.Walk u v // p.length = 2} ≃ G.commonNeighbors u v where
   toFun p := ⟨p.val.getVert 1, match p with
@@ -170,38 +170,25 @@ instance instDecidableMemSupp (c : G.ConnectedComponent) (v : V) : Decidable (v 
   c.recOn (fun w ↦ decidable_of_iff (G.Reachable v w) <| by simp)
     (fun _ _ _ _ ↦ Subsingleton.elim _ _)
 
+variable {G} in
+lemma disjiUnion_supp_toFinset_eq_supp_toFinset {G' : SimpleGraph V} (h : G ≤ G')
+    (c' : ConnectedComponent G') [Fintype c'.supp]
+    [DecidablePred fun c : G.ConnectedComponent ↦ c.supp ⊆ c'.supp] :
+    .disjiUnion {c : ConnectedComponent G | c.supp ⊆ c'.supp} (fun c ↦ c.supp.toFinset)
+      (fun x _ y _ hxy ↦ by simpa using pairwise_disjoint_supp_connectedComponent _ hxy) =
+      c'.supp.toFinset :=
+  Finset.coe_injective <| by simpa using ConnectedComponent.biUnion_supp_eq_supp h _
+
 lemma ConnectedComponent.odd_card_supp_iff_odd_subcomponents {G'}
     (h : G ≤ G') (c' : ConnectedComponent G') :
     Odd (Nat.card c'.supp) ↔ Odd (Nat.card
     ({c : ConnectedComponent G | c.supp ⊆ c'.supp ∧ Odd (Nat.card c.supp) })) := by
-  haveI : DecidablePred (fun c : ConnectedComponent G ↦ c.supp ⊆ c'.supp) := Classical.decPred _
-  nth_rewrite 1 [← (c'.biUnion_supp_eq_supp h)]
-  rw [@Nat.card_eq_card_toFinset, @Set.toFinset_iUnion _ (ConnectedComponent G) _ _
-    (fun c => ⋃ (_ : c.supp ⊆ c'.supp), c.supp),
-    Finset.card_biUnion (by
-    intro x _ y _ hxy
-    simp only [Set.disjoint_toFinset, Set.disjoint_iUnion_right, Set.disjoint_iUnion_left]
-    exact fun _ _ ↦ pairwise_disjoint_supp_connectedComponent _ hxy
-    )]
-  simp only [Set.toFinset_card]
-  rw [Finset.odd_sum_iff_odd_card_odd, Nat.card_eq_fintype_card, Fintype.card_ofFinset,
-    Finset.filter_congr (by
-    intro x _
-    constructor <;> intro h
-    · have := Odd.pos h
-      rw [@Fintype.card_pos_iff, Set.nonempty_coe_sort, Set.nonempty_iUnion] at this
-      obtain ⟨hs, _⟩ := this
-      refine ⟨hs, ?_⟩
-      rw [← @Set.toFinset_card] at h
-      haveI : Nonempty (x.supp ⊆ c'.supp) := Nonempty.intro hs
-      simp_rw [Set.iUnion_const] at h
-      rw [@Nat.card_eq_card_toFinset]
-      exact h
-    · haveI : Nonempty (x.supp ⊆ c'.supp) := Nonempty.intro h.1
-      simp_rw [Set.iUnion_const, Fintype.card_eq_nat_card]
-      exact h.2 : ∀ x ∈ (Finset.univ : Finset G.ConnectedComponent),
-      Odd (Fintype.card ↑(⋃ (_ : x.supp ⊆ c'.supp), x.supp)) ↔
-      (x ∈ {c : ConnectedComponent G | c.supp ⊆ c'.supp ∧ Odd (Nat.card c.supp)}))]
+  classical
+  -- have := Fintype.ofFinite:
+  rw [Nat.card_eq_card_toFinset, ← disjiUnion_supp_toFinset_eq_supp_toFinset h]
+  simp only [Finset.card_disjiUnion, Set.toFinset_card]
+  rw [Finset.odd_sum_iff_odd_card_odd, Nat.card_eq_fintype_card, Fintype.card_ofFinset]
+  simp only [Set.mem_setOf_eq, Nat.card_eq_fintype_card, Finset.filter_filter]
 
 end Finite
 
