@@ -4,6 +4,7 @@ import Mathlib.Tactic.StacksAttribute
 #guard_msgs in
 #stacks_tags
 
+namespace X
 /--
 warning: Tag '04 Q' should only consist of digits and uppercase letters
 ---
@@ -14,6 +15,8 @@ warning: Tag 'loA1' should only consist of digits and uppercase letters
 #guard_msgs in
 @[stacks 04 Q "", stacks A04Q "A comment", stacks 044QQ , stacks loA1]
 theorem tagged : True := .intro
+
+end X
 
 /--
 warning: Please, enter a Tag after `stacks`.
@@ -27,14 +30,14 @@ example : True := .intro
 
 /--
 info:
-'tagged' corresponds to tag 'A04Q'.
+'X.tagged' corresponds to tag 'A04Q'.
 -/
 #guard_msgs in
 #stacks_tags
 
 /--
 info:
-'tagged' corresponds to tag 'A04Q'.
+'X.tagged' corresponds to tag 'A04Q'.
 True
 -/
 #guard_msgs in
