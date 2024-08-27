@@ -1318,8 +1318,8 @@ set_option linter.deprecated false
 private theorem sup_le_sup {ι ι' : Type u} (r : ι → ι → Prop) (r' : ι' → ι' → Prop)
     [IsWellOrder ι r] [IsWellOrder ι' r'] {o} (ho : type r = o) (ho' : type r' = o)
     (f : ∀ a < o, Ordinal.{max u v}) :
-    sup (familyOfBFamily' r ho f) ≤ sup (familyOfBFamily' r' ho' f) :=
-  Ordinal.iSup_le fun i => by
+    sup.{_, v} (familyOfBFamily' r ho f) ≤ sup.{_, v} (familyOfBFamily' r' ho' f) :=
+  sup_le fun i => by
     cases'
       typein_surj r'
         (by
@@ -1327,27 +1327,26 @@ private theorem sup_le_sup {ι ι' : Type u} (r : ι → ι → Prop) (r' : ι' 
           exact typein_lt_type r i) with
       j hj
     simp_rw [familyOfBFamily', ← hj]
-    apply Ordinal.le_iSup
+    apply le_sup
 
 theorem sup_eq_sup {ι ι' : Type u} (r : ι → ι → Prop) (r' : ι' → ι' → Prop) [IsWellOrder ι r]
     [IsWellOrder ι' r'] {o : Ordinal.{u}} (ho : type r = o) (ho' : type r' = o)
     (f : ∀ a < o, Ordinal.{max u v}) :
-    sup (familyOfBFamily' r ho f) = sup (familyOfBFamily' r' ho' f) := by
-  apply iSup_eq_of_range_eq
-  simp
+    sup.{_, v} (familyOfBFamily' r ho f) = sup.{_, v} (familyOfBFamily' r' ho' f) :=
+  sup_eq_of_range_eq.{u, u, v} (by simp)
 
 /-- The supremum of a family of ordinals indexed by the set of ordinals less than some
     `o : Ordinal.{u}`. This is a special case of `sup` over the family provided by
     `familyOfBFamily`. -/
 def bsup (o : Ordinal.{u}) (f : ∀ a < o, Ordinal.{max u v}) : Ordinal.{max u v} :=
-  iSup (familyOfBFamily o f)
+  sup.{_, v} (familyOfBFamily o f)
 
 theorem sup_eq_bsup {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) :
-    iSup (familyOfBFamily o f) = bsup.{_, v} o f :=
+    sup.{_, v} (familyOfBFamily o f) = bsup.{_, v} o f :=
   rfl
 
 theorem sup_eq_bsup' {o : Ordinal.{u}} {ι} (r : ι → ι → Prop) [IsWellOrder ι r] (ho : type r = o)
-    (f : ∀ a < o, Ordinal.{max u v}) : sup (familyOfBFamily' r ho f) = bsup.{_, v} o f :=
+    (f : ∀ a < o, Ordinal.{max u v}) : sup.{_, v} (familyOfBFamily' r ho f) = bsup.{_, v} o f :=
   sup_eq_sup r _ ho _ f
 
 @[simp, nolint simpNF] -- Porting note (#10959): simp cannot prove this
@@ -1358,7 +1357,7 @@ theorem sSup_eq_bsup {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) :
 
 @[simp]
 theorem bsup_eq_sup' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] (f : ι → Ordinal.{max u v}) :
-    bsup.{_, v} _ (bfamilyOfFamily' r f) = sup f := by
+    bsup.{_, v} _ (bfamilyOfFamily' r f) = sup.{_, v} f := by
   simp (config := { unfoldPartialApp := true }) only [← sup_eq_bsup' r, enum_typein,
     familyOfBFamily', bfamilyOfFamily']
 
@@ -1369,7 +1368,7 @@ theorem bsup_eq_bsup {ι : Type u} (r r' : ι → ι → Prop) [IsWellOrder ι r
 
 @[simp]
 theorem bsup_eq_sup {ι : Type u} (f : ι → Ordinal.{max u v}) :
-    bsup.{_, v} _ (bfamilyOfFamily f) = sup f :=
+    bsup.{_, v} _ (bfamilyOfFamily f) = sup.{_, v} f :=
   bsup_eq_sup' _ f
 
 @[congr]
@@ -1380,7 +1379,7 @@ theorem bsup_congr {o₁ o₂ : Ordinal.{u}} (f : ∀ a < o₁, Ordinal.{max u v
   rfl
 
 theorem bsup_le_iff {o f a} : bsup.{u, v} o f ≤ a ↔ ∀ i h, f i h ≤ a :=
-  Ordinal.iSup_le_iff.trans
+  sup_le_iff.trans
     ⟨fun h i hi => by
       rw [← familyOfBFamily_enum o f]
       exact h _, fun h i => h _ _⟩
@@ -1401,7 +1400,7 @@ theorem IsNormal.bsup {f : Ordinal.{max u v} → Ordinal.{max u w}} (H : IsNorma
     ∀ (g : ∀ a < o, Ordinal), o ≠ 0 → f (bsup.{_, v} o g) = bsup.{_, w} o fun a h => f (g a h) :=
   inductionOn o fun α r _ g h => by
     haveI := type_ne_zero_iff_nonempty.1 h
-    rw [← sup_eq_bsup' r, Ordinal.sup, IsNormal.iSup.{_, v, w} H, ← sup_eq_bsup' r] <;> rfl
+    rw [← sup_eq_bsup' r, IsNormal.sup.{_, v, w} H, ← sup_eq_bsup' r] <;> rfl
 
 theorem lt_bsup_of_ne_bsup {o : Ordinal.{u}} {f : ∀ a < o, Ordinal.{max u v}} :
     (∀ i h, f i h ≠ bsup.{_, v} o f) ↔ ∀ i h, f i h < bsup.{_, v} o f :=
@@ -1440,7 +1439,7 @@ theorem bsup_const {o : Ordinal.{u}} (ho : o ≠ 0) (a : Ordinal.{max u v}) :
 
 @[simp]
 theorem bsup_one (f : ∀ a < (1 : Ordinal), Ordinal) : bsup 1 f = f 0 zero_lt_one := by
-  simp_rw [← sup_eq_bsup, ciSup_unique, familyOfBFamily, familyOfBFamily', typein_one_out]
+  simp_rw [← sup_eq_bsup, sup_unique, familyOfBFamily, familyOfBFamily', typein_one_out]
 
 theorem bsup_le_of_brange_subset {o o'} {f : ∀ a < o, Ordinal} {g : ∀ a < o', Ordinal}
     (h : brange o f ⊆ brange o' g) : bsup.{u, max v w} o f ≤ bsup.{v, max u w} o' g :=
