@@ -88,6 +88,10 @@ protected theorem acc [RelHomClass F r s] (f : F) (a : α) : Acc s (f a) → Acc
 protected theorem wellFounded [RelHomClass F r s] (f : F) : WellFounded s → WellFounded r
   | ⟨H⟩ => ⟨fun _ => RelHomClass.acc f _ (H _)⟩
 
+protected theorem isWellFounded [RelHomClass F r s] (f : F) [IsWellFounded β s] :
+    IsWellFounded α r :=
+  ⟨RelHomClass.wellFounded f IsWellFounded.wf⟩
+
 end RelHomClass
 
 namespace RelHom
@@ -567,8 +571,7 @@ theorem coe_fn_mk (f : α ≃ β) (o : ∀ ⦃a b⦄, s (f a) (f b) ↔ r a b) :
 theorem coe_fn_toEquiv (f : r ≃r s) : (f.toEquiv : α → β) = f :=
   rfl
 
-/-- The map `coe_fn : (r ≃r s) → (α → β)` is injective. Lean fails to parse
-`Function.Injective (fun e : r ≃r s ↦ (e : α → β))`, so we use a trick to say the same. -/
+/-- The map `DFunLike.coe : (r ≃r s) → (α → β)` is injective. -/
 theorem coe_fn_injective : Injective fun f : r ≃r s => (f : α → β) :=
   DFunLike.coe_injective
 

@@ -666,13 +666,8 @@ theorem _root_.LinearIsometryEquiv.piLpCongrLeft_apply (e : ι ≃ ι') (v : PiL
 theorem _root_.LinearIsometryEquiv.piLpCongrLeft_symm (e : ι ≃ ι') :
     (LinearIsometryEquiv.piLpCongrLeft p 𝕜 E e).symm =
       LinearIsometryEquiv.piLpCongrLeft p 𝕜 E e.symm :=
-  LinearIsometryEquiv.ext fun z => by -- Porting note: was `rfl`
-    simp only [LinearIsometryEquiv.piLpCongrLeft, LinearIsometryEquiv.symm,
-      LinearIsometryEquiv.coe_mk]
-    unfold PiLp WithLp
-    ext
-    simp only [LinearEquiv.piCongrLeft'_symm_apply, eq_rec_constant,
-      LinearEquiv.piCongrLeft'_apply, Equiv.symm_symm_apply]
+  LinearIsometryEquiv.ext fun z ↦ -- Porting note: was `rfl`
+    congr_arg (Equiv.toFun · z) (Equiv.piCongrLeft'_symm _ _)
 
 @[simp high]
 theorem _root_.LinearIsometryEquiv.piLpCongrLeft_single [DecidableEq ι] [DecidableEq ι']

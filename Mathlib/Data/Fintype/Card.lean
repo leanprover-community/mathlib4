@@ -77,7 +77,7 @@ See `Fintype.truncFinBijection` for a version without `[DecidableEq α]`.
 def truncEquivFin (α) [DecidableEq α] [Fintype α] : Trunc (α ≃ Fin (card α)) := by
   unfold card Finset.card
   exact
-    Quot.recOnSubsingleton'
+    Quot.recOnSubsingleton
       (motive := fun s : Multiset α =>
         (∀ x : α, x ∈ s) → s.Nodup → Trunc (α ≃ Fin (Multiset.card s)))
       univ.val
@@ -106,7 +106,7 @@ given `[DecidableEq α]`.
 def truncFinBijection (α) [Fintype α] : Trunc { f : Fin (card α) → α // Bijective f } := by
   unfold card Finset.card
   refine
-    Quot.recOnSubsingleton'
+    Quot.recOnSubsingleton
       (motive := fun s : Multiset α =>
         (∀ x : α, x ∈ s) → s.Nodup → Trunc {f : Fin (Multiset.card s) → α // Bijective f})
       univ.val

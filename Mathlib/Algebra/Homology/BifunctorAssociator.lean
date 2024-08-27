@@ -49,16 +49,14 @@ variable {C₁ C₂ C₁₂ C₂₃ C₃ C₄ : Type*}
   [G₂₃.PreservesZeroMorphisms] [∀ (X₂ : C₂), (G₂₃.obj X₂).PreservesZeroMorphisms]
   [F.PreservesZeroMorphisms] [∀ (X₁ : C₁), (F.obj X₁).Additive]
   (associator : bifunctorComp₁₂ F₁₂ G ≅ bifunctorComp₂₃ F G₂₃)
-  {ι₁ ι₂ ι₃ ι₁₂ ι₂₃ ι₄ : Type*}
-  [DecidableEq ι₂₃] [DecidableEq ι₄]
+  {ι₁ ι₂ ι₃ ι₁₂ ι₂₃ ι₄ : Type*} [DecidableEq ι₄]
   {c₁ : ComplexShape ι₁} {c₂ : ComplexShape ι₂} {c₃ : ComplexShape ι₃}
   (K₁ : HomologicalComplex C₁ c₁) (K₂ : HomologicalComplex C₂ c₂)
   (K₃ : HomologicalComplex C₃ c₃)
   (c₁₂ : ComplexShape ι₁₂) (c₂₃ : ComplexShape ι₂₃) (c₄ : ComplexShape ι₄)
   [TotalComplexShape c₁ c₂ c₁₂] [TotalComplexShape c₁₂ c₃ c₄]
   [TotalComplexShape c₂ c₃ c₂₃] [TotalComplexShape c₁ c₂₃ c₄]
-  [HasMapBifunctor K₁ K₂ F₁₂ c₁₂]
-  [HasMapBifunctor K₂ K₃ G₂₃ c₂₃] [HasMapBifunctor K₁ (mapBifunctor K₂ K₃ G₂₃ c₂₃) F c₄]
+  [HasMapBifunctor K₁ K₂ F₁₂ c₁₂] [HasMapBifunctor K₂ K₃ G₂₃ c₂₃]
   [ComplexShape.Associative c₁ c₂ c₃ c₁₂ c₂₃ c₄]
 
 variable (F₁₂ G) in
@@ -88,21 +86,23 @@ instance :
       (ComplexShape.π c₁ c₂ c₁₂) :=
   inferInstanceAs (HasMapBifunctor K₁ K₂ F₁₂ c₁₂)
 
-instance :
-    (((GradedObject.mapBifunctor F ι₁ ι₂₃).obj K₁.X).obj
-      (GradedObject.mapBifunctorMapObj G₂₃
-        (ComplexShape.π c₂ c₃ c₂₃) K₂.X K₃.X)).HasMap (ComplexShape.π c₁ c₂₃ c₄) :=
-  inferInstanceAs (HasMapBifunctor K₁ (mapBifunctor K₂ K₃ G₂₃ c₂₃) F c₄)
-
 section
 
-variable [DecidableEq ι₁₂] [HasMapBifunctor (mapBifunctor K₁ K₂ F₁₂ c₁₂) K₃ G c₄]
+variable [DecidableEq ι₁₂] [DecidableEq ι₂₃]
+  [HasMapBifunctor (mapBifunctor K₁ K₂ F₁₂ c₁₂) K₃ G c₄]
+  [HasMapBifunctor K₁ (mapBifunctor K₂ K₃ G₂₃ c₂₃) F c₄]
 
-instance :
+instance  :
     (((GradedObject.mapBifunctor G ι₁₂ ι₃).obj (GradedObject.mapBifunctorMapObj F₁₂
         (ComplexShape.π c₁ c₂ c₁₂) K₁.X K₂.X)).obj K₃.X).HasMap
           (ComplexShape.π c₁₂ c₃ c₄) :=
   inferInstanceAs (HasMapBifunctor (mapBifunctor K₁ K₂ F₁₂ c₁₂) K₃ G c₄)
+
+instance  :
+    (((GradedObject.mapBifunctor F ι₁ ι₂₃).obj K₁.X).obj
+      (GradedObject.mapBifunctorMapObj G₂₃
+        (ComplexShape.π c₂ c₃ c₂₃) K₂.X K₃.X)).HasMap (ComplexShape.π c₁ c₂₃ c₄) :=
+  inferInstanceAs (HasMapBifunctor K₁ (mapBifunctor K₂ K₃ G₂₃ c₂₃) F c₄)
 
 /-- The associator isomorphism for the action of bifunctors
 on homological complexes, in each degree. -/
@@ -119,9 +119,10 @@ end
 
 namespace mapBifunctor₁₂
 
+variable [DecidableEq ι₁₂] [HasMapBifunctor (mapBifunctor K₁ K₂ F₁₂ c₁₂) K₃ G c₄]
+
 section
 
-variable [DecidableEq ι₁₂] [HasMapBifunctor (mapBifunctor K₁ K₂ F₁₂ c₁₂) K₃ G c₄]
 variable (F₁₂ G)
 
 /-- The inclusion of a summand in `mapBifunctor (mapBifunctor K₁ K₂ F₁₂ c₁₂) K₃ G c₄`. -/
@@ -170,8 +171,11 @@ lemma hom_ext
     f = g :=
   GradedObject.mapBifunctor₁₂BifunctorMapObj_ext hfg
 
+end
 
-variable {F₁₂ G K₁ K₂ K₃ c₁₂ c₄}
+section
+
+variable {K₁ K₂ K₃ c₁₂ c₄}
 variable [HasGoodTrifunctor₁₂Obj F₁₂ G K₁ K₂ K₃ c₁₂ c₄] {j : ι₄} {A : C₄}
   (f : ∀ (i₁ : ι₁) (i₂ : ι₂) (i₃ : ι₃) (_ : ComplexShape.r c₁ c₂ c₃ c₁₂ c₄ (i₁, i₂, i₃) = j),
         (G.obj ((F₁₂.obj (K₁.X i₁)).obj (K₂.X i₂))).obj (K₃.X i₃) ⟶ A)
@@ -192,7 +196,6 @@ lemma ι_mapBifunctor₁₂Desc (i₁ : ι₁) (i₂ : ι₂) (i₃ : ι₃)
 end
 
 variable (F₁₂ G)
-variable [DecidableEq ι₁₂] [HasMapBifunctor (mapBifunctor K₁ K₂ F₁₂ c₁₂) K₃ G c₄]
 
 /-- The first differential on a summand
 of `mapBifunctor (mapBifunctor K₁ K₂ F₁₂ c₁₂) K₃ G c₄`. -/
@@ -267,6 +270,7 @@ section
 
 variable [HasGoodTrifunctor₁₂Obj F₁₂ G K₁ K₂ K₃ c₁₂ c₄]
 variable (j j' : ι₄)
+
 /-- The first differential on `mapBifunctor (mapBifunctor K₁ K₂ F₁₂ c₁₂) K₃ G c₄`. -/
 noncomputable def D₁ :
     (mapBifunctor (mapBifunctor K₁ K₂ F₁₂ c₁₂) K₃ G c₄).X j ⟶
@@ -400,6 +404,8 @@ lemma d_eq (j j' : ι₄) [HasGoodTrifunctor₁₂Obj F₁₂ G K₁ K₂ K₃ c
 end mapBifunctor₁₂
 
 namespace mapBifunctor₂₃
+
+variable [DecidableEq ι₂₃] [HasMapBifunctor K₁ (mapBifunctor K₂ K₃ G₂₃ c₂₃) F c₄]
 
 section
 
@@ -699,7 +705,9 @@ lemma d_eq :
 
 end mapBifunctor₂₃
 
-variable [DecidableEq ι₁₂] [HasMapBifunctor (mapBifunctor K₁ K₂ F₁₂ c₁₂) K₃ G c₄]
+variable [DecidableEq ι₁₂] [DecidableEq ι₂₃]
+  [HasMapBifunctor (mapBifunctor K₁ K₂ F₁₂ c₁₂) K₃ G c₄]
+  [HasMapBifunctor K₁ (mapBifunctor K₂ K₃ G₂₃ c₂₃) F c₄]
   [HasGoodTrifunctor₁₂Obj F₁₂ G K₁ K₂ K₃ c₁₂ c₄]
   [HasGoodTrifunctor₂₃Obj F G₂₃ K₁ K₂ K₃ c₁₂ c₂₃ c₄]
 
