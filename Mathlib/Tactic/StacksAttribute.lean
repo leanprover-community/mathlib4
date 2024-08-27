@@ -12,12 +12,12 @@ This allows tagging of mathlib lemmas with the corresponding
 [Tags](https://stacks.math.columbia.edu/tags) from the Stacks Project.
 -/
 
-open Lean
+open Lean Elab
 
 namespace Mathlib.Stacks
 
-/-- `Tag` is the structure that carries the data to check if a declaration or an
-import are meant to exist somewhere in Mathlib. -/
+/-- `Tag` is the structure that carries the data of a Stacks Projects tag and a corresponding
+Mathlib declaration. -/
 structure Tag where
   /-- The Stacks Project tag. -/
   tag : String
@@ -80,7 +80,7 @@ initialize Lean.registerBuiltinAttribute {
         else match stx with
           | `(attr| stacks $_:stackTag $_:str) => addTagEntry str decl
           | `(attr| stacks $_:stackTag) => addTagEntry str decl
-          | _ => Elab.throwUnsupportedSyntax
+          | _ => throwUnsupportedSyntax
 }
 
 end Mathlib.Stacks
@@ -92,7 +92,6 @@ open Mathlib.Stacks
 def Lean.Environment.getSortedTags (env : Environment) : Array Tag :=
   tagExt.getState env |>.toArray.qsort (·.declName.toString < ·.declName.toString)
 
-open Elab Command in
 /--
 `#stacks_tags` retrieves all declarations that have the `stacks` attribute.
 
@@ -108,7 +107,7 @@ elab (name := Mathlib.Stacks.stacksTags) "#stacks_tags" tk:("!")?: command => do
   if entries.isEmpty then logInfo "No tags found." else
   let mut msgs := #[m!""]
   for d in entries do
-    let dname ← liftCoreM do realizeGlobalConstNoOverloadWithInfo (mkIdent d.declName)
+    let dname ← Command.liftCoreM do realizeGlobalConstNoOverloadWithInfo (mkIdent d.declName)
     msgs := msgs.push m!"'{dname}' corresponds to tag '{d.tag}'."
     if tk.isSome then
       let dType := ((env.find? dname).getD default).type
