@@ -1308,7 +1308,9 @@ theorem iSup_ord {ι} {f : ι → Cardinal} (hf : BddAbove (range f)) :
     (iSup f).ord = ⨆ i, (f i).ord := by
   unfold iSup
   convert sSup_ord hf
-  exact range_comp ord f
+  -- Porting note: `change` is required.
+  conv_lhs => change range (ord ∘ f)
+  rw [range_comp]
 
 -- TODO: remove `bsup` in favor of `iSup` in a future refactor.
 
@@ -1410,7 +1412,7 @@ theorem bsup_not_succ_of_ne_bsup {o : Ordinal.{u}} {f : ∀ a < o, Ordinal.{max 
     (hf : ∀ {i : Ordinal} (h : i < o), f i h ≠ bsup.{_, v} o f) (a) :
     a < bsup.{_, v} o f → succ a < bsup.{_, v} o f := by
   rw [← sup_eq_bsup] at *
-  exact succ_lt_iSup_of_ne_iSup fun i => hf _
+  exact sup_not_succ_of_ne_sup fun i => hf _
 
 @[simp]
 theorem bsup_eq_zero_iff {o} {f : ∀ a < o, Ordinal} : bsup o f = 0 ↔ ∀ i hi, f i hi = 0 := by
@@ -1460,17 +1462,17 @@ section lsub
 set_option linter.deprecated false
 
 /-- The least strict upper bound of a family of ordinals. -/
-def lsub {ι : Type u} (f : ι → Ordinal.{max u v}) : Ordinal :=
-  ⨆ i, succ (f i)
+def lsub {ι} (f : ι → Ordinal) : Ordinal :=
+  sup (succ ∘ f)
 
 @[simp]
 theorem sup_eq_lsub {ι : Type u} (f : ι → Ordinal.{max u v}) :
-    sup (succ ∘ f) = lsub.{_, v} f :=
+    sup.{_, v} (succ ∘ f) = lsub.{_, v} f :=
   rfl
 
 theorem lsub_le_iff {ι : Type u} {f : ι → Ordinal.{max u v}} {a} :
     lsub.{_, v} f ≤ a ↔ ∀ i, f i < a := by
-  convert Ordinal.iSup_le_iff.{_, v} (f := succ ∘ f) (a := a) using 2
+  convert sup_le_iff.{_, v} (f := succ ∘ f) (a := a) using 2
   -- Porting note: `comp_apply` is required.
   simp only [comp_apply, succ_le_iff]
 
@@ -1478,27 +1480,27 @@ theorem lsub_le {ι} {f : ι → Ordinal} {a} : (∀ i, f i < a) → lsub f ≤ 
   lsub_le_iff.2
 
 theorem lt_lsub {ι} (f : ι → Ordinal) (i) : f i < lsub f :=
-  succ_le_iff.1 (Ordinal.le_iSup _ i)
+  succ_le_iff.1 (le_sup _ i)
 
 theorem lt_lsub_iff {ι : Type u} {f : ι → Ordinal.{max u v}} {a} :
     a < lsub.{_, v} f ↔ ∃ i, a ≤ f i := by
   simpa only [not_forall, not_lt, not_le] using not_congr (@lsub_le_iff.{_, v} _ f a)
 
-theorem sup_le_lsub {ι : Type u} (f : ι → Ordinal.{max u v}) : sup f ≤ lsub.{_, v} f :=
-  Ordinal.iSup_le fun i => (lt_lsub f i).le
+theorem sup_le_lsub {ι : Type u} (f : ι → Ordinal.{max u v}) : sup.{_, v} f ≤ lsub.{_, v} f :=
+  sup_le fun i => (lt_lsub f i).le
 
 theorem lsub_le_sup_succ {ι : Type u} (f : ι → Ordinal.{max u v}) :
-    lsub.{_, v} f ≤ succ (sup f) :=
-  lsub_le fun i => lt_succ_iff.2 (Ordinal.le_iSup f i)
+    lsub.{_, v} f ≤ succ (sup.{_, v} f) :=
+  lsub_le fun i => lt_succ_iff.2 (le_sup f i)
 
 theorem sup_eq_lsub_or_sup_succ_eq_lsub {ι : Type u} (f : ι → Ordinal.{max u v}) :
-    sup f = lsub.{_, v} f ∨ succ (sup f) = lsub.{_, v} f := by
+    sup.{_, v} f = lsub.{_, v} f ∨ succ (sup.{_, v} f) = lsub.{_, v} f := by
   cases' eq_or_lt_of_le (sup_le_lsub.{_, v} f) with h h
   · exact Or.inl h
   · exact Or.inr ((succ_le_of_lt h).antisymm (lsub_le_sup_succ f))
 
 theorem sup_succ_le_lsub {ι : Type u} (f : ι → Ordinal.{max u v}) :
-    succ (sup f) ≤ lsub.{_, v} f ↔ ∃ i, f i = sup f := by
+    succ (sup.{_, v} f) ≤ lsub.{_, v} f ↔ ∃ i, f i = sup f := by
   refine ⟨fun h => ?_, ?_⟩
   · by_contra! hf
     exact (succ_le_iff.1 h).ne ((sup_le_lsub f).antisymm (lsub_le (ne_iSup_iff_lt_iSup.1 hf)))
@@ -1507,11 +1509,11 @@ theorem sup_succ_le_lsub {ι : Type u} (f : ι → Ordinal.{max u v}) :
   exact lt_lsub _ _
 
 theorem sup_succ_eq_lsub {ι : Type u} (f : ι → Ordinal.{max u v}) :
-    succ (sup f) = lsub.{_, v} f ↔ ∃ i, f i = sup f :=
+    succ (sup.{_, v} f) = lsub.{_, v} f ↔ ∃ i, f i = sup f :=
   (lsub_le_sup_succ f).le_iff_eq.symm.trans (sup_succ_le_lsub f)
 
 theorem sup_eq_lsub_iff_succ {ι : Type u} (f : ι → Ordinal.{max u v}) :
-    sup f = lsub.{_, v} f ↔ ∀ a < lsub.{_, v} f, succ a < lsub.{_, v} f := by
+    sup.{_, v} f = lsub.{_, v} f ↔ ∀ a < lsub.{_, v} f, succ a < lsub.{_, v} f := by
   refine ⟨fun h => ?_, fun hf => le_antisymm (sup_le_lsub f) (lsub_le fun i => ?_)⟩
   · rw [← h]
     exact fun a => succ_lt_iSup_of_ne_iSup fun i => (lsub_le_iff.1 (le_of_eq h.symm) i).ne
@@ -1527,7 +1529,7 @@ theorem sup_eq_lsub_iff_succ {ι : Type u} (f : ι → Ordinal.{max u v}) :
   exact this.false
 
 theorem sup_eq_lsub_iff_lt_sup {ι : Type u} (f : ι → Ordinal.{max u v}) :
-    sup f = lsub.{_, v} f ↔ ∀ i, f i < sup f :=
+    sup.{_, v} f = lsub.{_, v} f ↔ ∀ i, f i < sup f :=
   ⟨fun h i => by
     rw [h]
     apply lt_lsub, fun h => le_antisymm (sup_le_lsub f) (lsub_le h)⟩
