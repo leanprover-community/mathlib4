@@ -97,8 +97,8 @@ def toCLMNonUnitalAlgHom : CStarMatrix n n A →ₙₐ[ℂ] (n →C⋆ A) →L[�
 lemma toCLMNonUnitalAlgHom_eq_toCLM {M : CStarMatrix n n A} :
     toCLMNonUnitalAlgHom A M = toCLM A M := rfl
 
-lemma toCLM_apply {M : CStarMatrix m n A} {v : n →C⋆ A} : toCLM A M v =
-  (WithCStarModule.equiv _).symm (M.mulVec v) := rfl
+lemma toCLM_apply {M : CStarMatrix m n A} {v : n →C⋆ A} :
+    toCLM A M v = (WithCStarModule.equiv _).symm (M.mulVec v) := rfl
 
 lemma toCLM_apply_eq_sum {M : CStarMatrix m n A} {v : n →C⋆ A} :
     toCLM A M v = (WithCStarModule.equiv _).symm (fun i => ∑ j, M i j * v j) := by
