@@ -1186,7 +1186,7 @@ theorem IsNormal.sup {f : Ordinal.{max u v} → Ordinal.{max u w}} (H : IsNormal
 
 set_option linter.deprecated false in
 @[deprecated ciSup_of_empty (since := "2024-08-27")]
-theorem sup_of_empty {ι} [IsEmpty ι] (f : ι → Ordinal) : sup f = 0 :=
+theorem sup_empty {ι} [IsEmpty ι] (f : ι → Ordinal) : sup f = 0 :=
   ciSup_of_empty f
 
 set_option linter.deprecated false in
@@ -1242,17 +1242,27 @@ theorem sup_sum {α : Type u} {β : Type v} (f : α ⊕ β → Ordinal.{max u v 
       max (sup.{u, max v w} fun a => f (Sum.inl a)) (sup.{v, max u w} fun b => f (Sum.inr b)) :=
   iSup_sum f
 
-theorem unbounded_range_of_sup_ge {α β : Type u} (r : α → α → Prop) [IsWellOrder α r] (f : β → α)
+theorem unbounded_range_of_iSup_ge {α β : Type u} (r : α → α → Prop) [IsWellOrder α r] (f : β → α)
     (h : type r ≤ ⨆ i, typein r (f i)) : Unbounded r (range f) :=
   (not_bounded_iff _).1 fun ⟨x, hx⟩ =>
     h.not_lt <| lt_of_le_of_lt
       (Ordinal.iSup_le fun y => ((typein_lt_typein r).2 <| hx _ <| mem_range_self y).le)
       (typein_lt_type r x)
 
+set_option linter.deprecated false in
+@[deprecated unbounded_range_of_iSup_ge (since := "2024-08-27")]
+theorem unbounded_range_of_sup_ge {α β : Type u} (r : α → α → Prop) [IsWellOrder α r] (f : β → α)
+    (h : type r ≤ sup.{u, u} (typein r ∘ f)) : Unbounded r (range f) :=
+  unbounded_range_of_iSup_ge r f h
+
+set_option linter.deprecated false in
+@[deprecated (since := "2024-08-27")]
 theorem le_sup_shrink_equiv {s : Set Ordinal.{u}} (hs : Small.{u} s) (a) (ha : a ∈ s) :
-    a ≤ ⨆ x, ((@equivShrink s hs).symm x).val := by
-  convert Ordinal.le_iSup (fun x => ((@equivShrink s hs).symm x).val) ((@equivShrink s hs) ⟨a, ha⟩)
+    a ≤ sup.{u, u} fun x => ((@equivShrink s hs).symm x).val := by
+  convert le_sup.{u, u} (fun x => ((@equivShrink s hs).symm x).val) ((@equivShrink s hs) ⟨a, ha⟩)
   rw [symm_apply_apply]
+
+-- TODO: move this together with `bddAbove_range`.
 
 instance small_Iio (o : Ordinal.{u}) : Small.{u} (Set.Iio o) :=
   let f : o.out.α → Set.Iio o :=
@@ -1269,12 +1279,23 @@ instance small_Iic (o : Ordinal.{u}) : Small.{u} (Set.Iic o) := by
   rw [← Iio_succ]
   infer_instance
 
-theorem bddAbove_iff_small {s : Set Ordinal.{u}} : BddAbove s ↔ Small.{u} s :=
-  ⟨fun ⟨a, h⟩ => small_subset <| show s ⊆ Iic a from fun _x hx => h hx, fun h =>
-    ⟨⨆ x, ((@equivShrink s h).symm x).val, le_sup_shrink_equiv h⟩⟩
+theorem bddAbove_of_small (s : Set Ordinal.{u}) [h : Small.{u} s] : BddAbove s := by
+  obtain ⟨a, ha⟩ := bddAbove_range (fun x => ((@equivShrink s h).symm x).val)
+  use a
+  intro b hb
+  simpa using ha (mem_range_self (equivShrink s ⟨b, hb⟩))
 
-theorem bddAbove_of_small (s : Set Ordinal.{u}) [h : Small.{u} s] : BddAbove s :=
-  bddAbove_iff_small.2 h
+theorem bddAbove_iff_small {s : Set Ordinal.{u}} : BddAbove s ↔ Small.{u} s :=
+  ⟨fun ⟨a, h⟩ => small_subset <| show s ⊆ Iic a from fun _ hx => h hx, fun _ =>
+    bddAbove_of_small _⟩
+
+set_option linter.deprecated false in
+@[deprecated (since := "2024-08-27")]
+theorem sup_eq_sSup {s : Set Ordinal.{u}} (hs : Small.{u} s) :
+    (sup.{u, u} fun x => (@equivShrink s hs).symm x) = sSup s :=
+  let hs' := bddAbove_iff_small.2 hs
+  ((csSup_le_iff' hs').2 (le_sup_shrink_equiv hs)).antisymm'
+    (sup_le fun _x => le_csSup hs' (Subtype.mem _))
 
 theorem sSup_ord {s : Set Cardinal.{u}} (hs : BddAbove s) : (sSup s).ord = sSup (ord '' s) :=
   eq_of_forall_ge_iff fun a => by
