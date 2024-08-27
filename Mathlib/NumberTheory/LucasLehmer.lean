@@ -540,6 +540,7 @@ theorem sMod'_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sMod' (2 ^ p - 1) k : ℤ) =
 def sMod'' (q : ℕ) (k : Nat) : ℕ :=
   aux k (4 % q)
 where
+  /-- Helper function for `sMod''`. -/
   aux : ℕ → ℕ → ℕ
   | 0, acc => acc
   | n + 1, acc => aux n ((acc ^ 2 + (q - 2)) % q)
