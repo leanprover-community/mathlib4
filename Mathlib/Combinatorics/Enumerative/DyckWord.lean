@@ -5,7 +5,6 @@ Authors: Jeremy Tan
 -/
 import Batteries.Data.List.Count
 import Mathlib.Combinatorics.Enumerative.Catalan
-import Mathlib.Data.List.Indexes
 import Mathlib.Tactic.Positivity
 
 /-!
