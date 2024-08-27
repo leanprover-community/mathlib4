@@ -30,6 +30,17 @@ jobs:
       - name: Look for ignored files
         uses: credfeto/action-no-ignored-files@v1.1.0
 
+      - name: "Check for Lean files with the executable bit set"
+        shell: bash
+        run: |
+          executable_files="$(find . -name '*.lean' -type f \( -perm -u=x -o -perm -g=x -o -perm -o=x \))"
+          if [[ -n "$executable_files" ]]
+          then
+            echo "ERROR: The following Lean files have the executable bit set."
+            echo "$executable_files"
+            exit 1
+          fi
+
       - name: install Python
         if: ${{ 'STYLE_LINT_RUNNER' == 'ubuntu-latest' }}
         uses: actions/setup-python@v5
@@ -43,9 +54,9 @@ jobs:
           ./elan-init -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
-      - name: "run style linters: Python ones and their Lean rewrite"
+      - name: "run style linters"
         run: |
-          ./scripts/lint-style.sh
+          lake exe lint-style
 
       - name: Install bibtool
         if: ${{ 'STYLE_LINT_RUNNER' == 'ubuntu-latest' }}
@@ -138,7 +149,9 @@ jobs:
         id: get
         run: |
           lake exe cache clean
-          lake exe cache get
+          # Fail quickly if the cache is completely cold, by checking for Mathlib.Init
+          lake exe cache get Mathlib.Init
+          ! test -e .lake/build/lib/Mathlib/Init.olean || lake exe cache get
 
       - name: build mathlib
         id: build

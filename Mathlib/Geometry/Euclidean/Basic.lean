@@ -44,10 +44,7 @@ theorems that need it.
 
 -/
 
-
 noncomputable section
-
-open scoped Classical
 
 open RealInnerProductSpace
 
@@ -164,6 +161,7 @@ theorem eq_of_dist_eq_of_dist_eq_of_mem_of_finrank_eq_two {s : AffineSubspace �
     intro v hv
     have hr : Set.range b = {c₂ -ᵥ c₁, p₂ -ᵥ p₁} := by
       have hu : (Finset.univ : Finset (Fin 2)) = {0, 1} := by decide
+      classical
       rw [← Fintype.coe_image_univ, hu]
       simp [b]
     rw [← hbs, hr, Submodule.mem_span_insert] at hv

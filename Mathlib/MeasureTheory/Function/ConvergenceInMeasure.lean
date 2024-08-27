@@ -78,7 +78,7 @@ protected theorem congr' (h_left : ∀ᶠ i in l, f i =ᵐ[μ] f' i) (h_right : 
 
 protected theorem congr (h_left : ∀ i, f i =ᵐ[μ] f' i) (h_right : g =ᵐ[μ] g')
     (h_tendsto : TendstoInMeasure μ f l g) : TendstoInMeasure μ f' l g' :=
-  TendstoInMeasure.congr' (eventually_of_forall h_left) h_right h_tendsto
+  TendstoInMeasure.congr' (Eventually.of_forall h_left) h_right h_tendsto
 
 theorem congr_left (h : ∀ i, f i =ᵐ[μ] f' i) (h_tendsto : TendstoInMeasure μ f l g) :
     TendstoInMeasure μ f' l g :=

@@ -33,7 +33,7 @@ variable {I₁ I₂ I₃ I₁₂ I₂₃ J : Type*}
 of a total complex functor `HomologicalComplex₂ C c₁ c₂ ⥤ HomologicalComplex C c₁₂` which
 sends `K` to a complex which in degree `i₁₂ : I₁₂` consists of the coproduct
 of the `(K.X i₁).X i₂` such that `π ⟨i₁, i₂⟩ = i₁₂`. -/
-class TotalComplexShape  where
+class TotalComplexShape where
   /-- a map on indices -/
   π : I₁ × I₂ → I₁₂
   /-- the sign of the horizontal differential in the total complex -/
