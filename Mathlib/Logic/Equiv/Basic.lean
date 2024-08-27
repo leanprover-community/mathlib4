@@ -46,7 +46,7 @@ In this file we continue the work on equivalences begun in `Logic/Equiv/Defs.lea
 equivalence, congruence, bijective map
 -/
 
-universe u v
+universe u v w z
 
 open Function
 
@@ -1081,25 +1081,25 @@ def subtypeSubtypeEquivSubtypeInter {α : Type u} (p q : α → Prop) :
 /-- If the outer subtype has more restrictive predicate than the inner one,
 then we can drop the latter. -/
 @[simps!]
-def subtypeSubtypeEquivSubtype {p q : α → Prop} (h : ∀ {x}, q x → p x) :
+def subtypeSubtypeEquivSubtype {α} {p q : α → Prop} (h : ∀ {x}, q x → p x) :
     { x : Subtype p // q x.1 } ≃ Subtype q :=
   (subtypeSubtypeEquivSubtypeInter p _).trans <| subtypeEquivRight fun _ => and_iff_right_of_imp h
 
 /-- If a proposition holds for all elements, then the subtype is
 equivalent to the original type. -/
 @[simps apply symm_apply]
-def subtypeUnivEquiv {p : α → Prop} (h : ∀ x, p x) : Subtype p ≃ α :=
+def subtypeUnivEquiv {α} {p : α → Prop} (h : ∀ x, p x) : Subtype p ≃ α :=
   ⟨fun x => x, fun x => ⟨x, h x⟩, fun _ => Subtype.eq rfl, fun _ => rfl⟩
 
 /-- A subtype of a sigma-type is a sigma-type over a subtype. -/
-def subtypeSigmaEquiv (p : α → Type v) (q : α → Prop) : { y : Sigma p // q y.1 } ≃ Σ x :
+def subtypeSigmaEquiv {α} (p : α → Type v) (q : α → Prop) : { y : Sigma p // q y.1 } ≃ Σ x :
     Subtype q, p x.1 :=
   ⟨fun x => ⟨⟨x.1.1, x.2⟩, x.1.2⟩, fun x => ⟨⟨x.1.1, x.2⟩, x.1.2⟩, fun _ => rfl,
     fun _ => rfl⟩
 
 /-- A sigma type over a subtype is equivalent to the sigma set over the original type,
 if the fiber is empty outside of the subset -/
-def sigmaSubtypeEquivOfSubset (p : α → Type v) (q : α → Prop) (h : ∀ x, p x → q x) :
+def sigmaSubtypeEquivOfSubset {α} (p : α → Type v) (q : α → Prop) (h : ∀ x, p x → q x) :
     (Σ x : Subtype q, p x) ≃ Σ x : α, p x :=
   (subtypeSigmaEquiv p q).symm.trans <| subtypeUnivEquiv fun x => h x.1 x.2
 
@@ -1129,7 +1129,7 @@ def sigmaSubtypeFiberEquivSubtype {α β : Type*} (f : α → β) {p : α → Pr
 
 /-- A sigma type over an `Option` is equivalent to the sigma set over the original type,
 if the fiber is empty at none. -/
-def sigmaOptionEquivOfSome (p : Option α → Type v) (h : p none → False) :
+def sigmaOptionEquivOfSome {α} (p : Option α → Type v) (h : p none → False) :
     (Σ x : Option α, p x) ≃ Σ x : α, p (some x) :=
   haveI h' : ∀ x, p x → x.isSome := by
     intro x
@@ -1168,7 +1168,7 @@ def subtypePiEquivPi {β : α → Sort v} {p : ∀ a, β a → Prop} :
 
 /-- A subtype of a product defined by componentwise conditions
 is equivalent to a product of subtypes. -/
-def subtypeProdEquivProd {p : α → Prop} {q : β → Prop} :
+def subtypeProdEquivProd {α β} {p : α → Prop} {q : β → Prop} :
     { c : α × β // p c.1 ∧ q c.2 } ≃ { a // p a } × { b // q b } where
   toFun := fun x => ⟨⟨x.1.1, x.2.1⟩, ⟨x.1.2, x.2.2⟩⟩
   invFun := fun x => ⟨⟨x.1.1, x.2.1⟩, ⟨x.1.2, x.2.2⟩⟩
@@ -1177,14 +1177,15 @@ def subtypeProdEquivProd {p : α → Prop} {q : β → Prop} :
 
 /-- A subtype of a `Prod` that depends only on the first component is equivalent to the
 corresponding subtype of the first type times the second type. -/
-def prodSubtypeFstEquivSubtypeProd {p : α → Prop} : {s : α × β // p s.1} ≃ {a // p a} × β where
+def prodSubtypeFstEquivSubtypeProd {α β} {p : α → Prop} :
+    {s : α × β // p s.1} ≃ {a // p a} × β where
   toFun x := ⟨⟨x.1.1, x.2⟩, x.1.2⟩
   invFun x := ⟨⟨x.1.1, x.2⟩, x.1.2⟩
   left_inv _ := rfl
   right_inv _ := rfl
 
 /-- A subtype of a `Prod` is equivalent to a sigma type whose fibers are subtypes. -/
-def subtypeProdEquivSigmaSubtype (p : α → β → Prop) :
+def subtypeProdEquivSigmaSubtype {α β} (p : α → β → Prop) :
     { x : α × β // p x.1 x.2 } ≃ Σa, { b : β // p a b } where
   toFun x := ⟨x.1.1, x.1.2, x.property⟩
   invFun x := ⟨⟨x.1, x.2⟩, x.2.property⟩
@@ -1237,7 +1238,7 @@ end
 
 section subtypeEquivCodomain
 
-variable [DecidableEq X] {x : X}
+variable {X Y : Sort*} [DecidableEq X] {x : X}
 
 /-- The type of all functions `X → Y` with prescribed values for all `x' ≠ x`
 is equivalent to the codomain `Y`. -/
@@ -1723,7 +1724,7 @@ end BinaryOp
 section ULift
 
 @[simp]
-theorem ulift_symm_down (x : α) : (Equiv.ulift.{u, v}.symm x).down = x :=
+theorem ulift_symm_down {α} (x : α) : (Equiv.ulift.{u, v}.symm x).down = x :=
   rfl
 
 end ULift
@@ -1747,7 +1748,7 @@ theorem Function.Injective.swap_comp
   funext fun _ => hf.swap_apply _ _ _
 
 /-- If `α` is a subsingleton, then it is equivalent to `α × α`. -/
-def subsingletonProdSelfEquiv [Subsingleton α] : α × α ≃ α where
+def subsingletonProdSelfEquiv {α} [Subsingleton α] : α × α ≃ α where
   toFun p := p.1
   invFun a := (a, a)
   left_inv _ := Subsingleton.elim _ _
@@ -1777,6 +1778,8 @@ def uniqueEquivEquivUnique (α : Sort u) (β : Sort v) [Unique β] : Unique α �
   equivOfSubsingletonOfSubsingleton (fun _ => Equiv.equivOfUnique _ _) Equiv.unique
 
 namespace Function
+
+variable {α' : Sort*}
 
 theorem update_comp_equiv [DecidableEq α'] [DecidableEq α] (f : α → β)
     (g : α' ≃ α) (a : α) (v : β) :
