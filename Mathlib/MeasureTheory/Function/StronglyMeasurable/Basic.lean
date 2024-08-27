@@ -278,13 +278,13 @@ theorem finStronglyMeasurable_of_set_sigmaFinite [TopologicalSpace β] [Zero β]
     refine Set.indicator_of_not_mem ?_ _
     simp [hxt]
   refine ⟨fs, ?_, fun x => ?_⟩
-  · simp_rw [SimpleFunc.support_eq]
-    refine fun n => (measure_biUnion_finset_le _ _).trans_lt ?_
-    refine ENNReal.sum_lt_top_iff.mpr fun y hy => ?_
+  · simp_rw [SimpleFunc.support_eq, ← Finset.mem_coe]
+    classical
+    refine fun n => measure_biUnion_lt_top {y ∈ (fs n).range | y ≠ 0}.finite_toSet fun y hy => ?_
     rw [SimpleFunc.restrict_preimage_singleton _ ((hS_meas n).inter ht)]
     swap
     · letI : (y : β) → Decidable (y = 0) := fun y => Classical.propDecidable _
-      rw [Finset.mem_filter] at hy
+      rw [Finset.mem_coe, Finset.mem_filter] at hy
       exact hy.2
     refine (measure_mono Set.inter_subset_left).trans_lt ?_
     have h_lt_top := measure_spanningSets_lt_top (μ.restrict t) n
