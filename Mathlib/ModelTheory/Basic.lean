@@ -934,24 +934,6 @@ end SumStructure
 
 section Empty
 
-section
-
-variable [Language.empty.Structure M] [Language.empty.Structure N]
-
-@[simp]
-theorem empty.nonempty_embedding_iff :
-    Nonempty (M ↪[Language.empty] N) ↔ Cardinal.lift.{w'} #M ≤ Cardinal.lift.{w} #N :=
-  _root_.trans ⟨Nonempty.map fun f => f.toEmbedding, Nonempty.map fun f => { toEmbedding := f }⟩
-    Cardinal.lift_mk_le'.symm
-
-@[simp]
-theorem empty.nonempty_equiv_iff :
-    Nonempty (M ≃[Language.empty] N) ↔ Cardinal.lift.{w'} #M = Cardinal.lift.{w} #N :=
-  _root_.trans ⟨Nonempty.map fun f => f.toEquiv, Nonempty.map fun f => { toEquiv := f }⟩
-    Cardinal.lift_mk_eq'.symm
-
-end
-
 /-- Any type can be made uniquely into a structure over the empty language. -/
 def emptyStructure : Language.empty.Structure M :=
   ⟨Empty.elim, Empty.elim⟩
@@ -960,10 +942,29 @@ instance : Unique (Language.empty.Structure M) :=
   ⟨⟨Language.emptyStructure⟩, fun a => by
     ext _ f <;> exact Empty.elim f⟩
 
-instance (priority := 100) strongHomClassEmpty {F M N}
-    [Language.empty.Structure M] [Language.empty.Structure N] [FunLike F M N] :
+variable [Language.empty.Structure M] [Language.empty.Structure N]
+
+instance (priority := 100) strongHomClassEmpty {F} [FunLike F M N] :
     StrongHomClass Language.empty F M N :=
   ⟨fun _ _ f => Empty.elim f, fun _ _ r => Empty.elim r⟩
+
+@[simp]
+theorem empty.nonempty_embedding_iff :
+    Nonempty (M ↪[Language.empty] N) ↔ Cardinal.lift.{w'} #M ≤ Cardinal.lift.{w} #N :=
+  _root_.trans ⟨Nonempty.map fun f => f.toEmbedding, Nonempty.map StrongHomClass.toEmbedding⟩
+    Cardinal.lift_mk_le'.symm
+
+@[simp]
+theorem empty.nonempty_equiv_iff :
+    Nonempty (M ≃[Language.empty] N) ↔ Cardinal.lift.{w'} #M = Cardinal.lift.{w} #N :=
+  _root_.trans ⟨Nonempty.map fun f => f.toEquiv, Nonempty.map fun f => { toEquiv := f }⟩
+    Cardinal.lift_mk_eq'.symm
+
+/-- Makes a `Language.empty.Hom` out of any function.
+This is only needed because there is no instance of `FunLike (M → N) M N`, and thus no instance of
+`Language.empty.HomClass M N`. -/
+@[simps]
+def _root_.Function.emptyHom (f : M → N) : M →[Language.empty] N where toFun := f
 
 end Empty
 
