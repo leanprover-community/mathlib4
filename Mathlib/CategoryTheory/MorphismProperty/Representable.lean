@@ -24,7 +24,9 @@ Clasically, a morphism `f : X ⟶ Y` of presheaves is said to be representable i
 ```
 
 In this file, we define a notion of relative representability which works with respect to any
-functor, and not just `yoneda`.
+functor, and not just `yoneda`. The fact that a morphism `f : F ⟶ G` between presheaves is
+representable in the classical case will then be given by `yoneda.relativelyRepresentable f`.
+
 
 
 ## Main definitions
@@ -66,6 +68,7 @@ open Category Limits
 universe v₁ v₂ u₁ u₂
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D] (F : C ⥤ D)
+
 /-- A morphism `f : X ⟶ Y` in `D` is said to be relatively representable if for any
 `g : F.obj a ⟶ Y`, there exists a pullback square of the following form
 ```
