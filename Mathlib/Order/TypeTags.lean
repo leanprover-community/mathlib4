@@ -1,11 +1,18 @@
 /-
-Copyright (c) 2024 Yury Kudryashov. All rights reserved.
+Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov
+Authors: Mario Carneiro, Simon Hudon, Yury Kudryashov
 -/
 import Mathlib.Order.Notation
+import Mathlib.Data.Nat.Notation
 
 /-!
+# Order-related type synonyms
+
+In this file we define `WithBot`, `WithTop`, `ENat`, and `PNat`.
+The definitions were moved to this file without any theory
+so that, e.g., `Data/Countable/Basic` can prove `Countable ENat`
+without exploding its imports.
 -/
 
 variable {α : Type*}
@@ -98,7 +105,24 @@ theorem recTopCoe_coe {C : WithTop α → Sort*} (d : C ⊤) (f : ∀ a : α, C 
 end WithTop
 
 /-- Extended natural numbers `ℕ∞ = WithTop ℕ`. -/
-def ENat : Type := WithTop Nat deriving Top, Inhabited
+def ENat : Type := WithTop ℕ deriving Top, Inhabited
 
 @[inherit_doc] notation "ℕ∞" => ENat
 
+/-- `ℕ+` is the type of positive natural numbers. It is defined as a subtype,
+  and the VM representation of `ℕ+` is the same as `ℕ` because the proof
+  is not stored. -/
+def PNat := { n : ℕ // 0 < n } deriving DecidableEq
+
+@[inherit_doc]
+notation "ℕ+" => PNat
+
+/-- The underlying natural number -/
+@[coe]
+def PNat.val : ℕ+ → ℕ := Subtype.val
+
+instance coePNatNat : Coe ℕ+ ℕ :=
+  ⟨PNat.val⟩
+
+instance : Repr ℕ+ :=
+  ⟨fun n n' => reprPrec n.1 n'⟩
