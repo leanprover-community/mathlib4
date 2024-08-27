@@ -41,53 +41,31 @@ lemma cfcL_integral (a : A) (f : X → C(spectrum 𝕜 a, 𝕜)) (hf₁ : Integr
   rw [ContinuousLinearMap.integral_comp_comm _ hf₁]
 
 lemma cfcHom_integral (a : A) (f : X → C(spectrum 𝕜 a, 𝕜)) (hf₁ : Integrable f μ) (ha : p a) :
-    ∫ x, cfcHom ha (f x) ∂μ = cfcHom ha (∫ x, f x ∂μ) := by
-  have h₁ : ∫ x, cfcHom ha (f x) ∂μ = ∫ x, cfcL ha (f x) ∂μ := by
-    refine integral_congr_ae ?_
-    filter_upwards with x
-    simp only [cfcHom_eq_cfcL ha]
-  rw [h₁, cfcHom_eq_cfcL ha]
-  exact cfcL_integral a f hf₁ ha
+    ∫ x, cfcHom ha (f x) ∂μ = cfcHom ha (∫ x, f x ∂μ) :=
+  cfcL_integral a f hf₁ ha
 
 open ContinuousMap in
 /-- The continuous functional calculus commutes with integration. -/
 lemma cfc_integral [TopologicalSpace X] [OpensMeasurableSpace X] (f : X → 𝕜 → 𝕜)
     (bound : X → ℝ) (a : A) [SecondCountableTopologyEither X C(spectrum 𝕜 a, 𝕜)]
-    (hf : Continuous (fun x => (spectrum 𝕜 a).restrict (f x)).uncurry)
+    (hf₁ : ∀ x, ContinuousOn (f x) (spectrum 𝕜 a))
+    (hf₂ : Continuous (fun x ↦ (⟨_, hf₁ x |>.restrict⟩ : C(spectrum 𝕜 a, 𝕜))))
     (hbound : ∀ x, ∀ z ∈ spectrum 𝕜 a, ‖f x z‖ ≤ ‖bound x‖)
     (hbound_integrable : Integrable bound μ) (ha : p a := by cfc_tac) :
     cfc (fun r => ∫ x, f x r ∂μ) a = ∫ x, cfc (f x) a ∂μ := by
-  have ha : p a := ha   -- Needed due to weird autoparam bug
-  have hcont : ∀ x, ContinuousOn (f x) (spectrum 𝕜 a) := by
-    intro x
-    rw [continuousOn_iff_continuous_restrict]
-    exact hf.uncurry_left x
-  let fc : X → C(spectrum 𝕜 a, 𝕜) := fun x => ⟨_, (hcont x).restrict⟩
-  have fc_cont : Continuous fc := by
-    refine continuous_of_continuous_uncurry fc ?_
-    simp only [coe_mk, restrict_apply, fc]
-    exact hf
+  let fc : X → C(spectrum 𝕜 a, 𝕜) := fun x => ⟨_, (hf₁ x).restrict⟩
   have fc_integrable : Integrable fc μ := by
-    refine ⟨fc_cont.aestronglyMeasurable, ?_⟩
-    refine HasFiniteIntegral.mono (g := bound) (hbound_integrable.hasFiniteIntegral) ?_
-    refine Filter.Eventually.of_forall fun x => ?_
+    refine ⟨hf₂.aestronglyMeasurable, ?_⟩
+    refine hbound_integrable.hasFiniteIntegral.mono <| .of_forall fun x ↦ ?_
     rw [norm_le _ (norm_nonneg (bound x))]
-    intro z
-    simp only [coe_mk, restrict_apply, fc]
-    exact hbound x z.1 z.2
+    exact fun z ↦ hbound x z.1 z.2
+  have h_int_fc : (spectrum 𝕜 a).restrict (∫ x, f x · ∂μ) = ∫ x, fc x ∂μ := by
+    ext; simp [integral_apply fc_integrable, fc]
   have hcont₂ : ContinuousOn (fun r => ∫ x, f x r ∂μ) (spectrum 𝕜 a) := by
-    have h₁ : (spectrum 𝕜 a).restrict (fun r => ∫ x, f x r ∂μ) = fun r => (∫ x, fc x ∂μ) r := by
-      ext
-      simp only [integral_apply fc_integrable, Set.restrict_apply, coe_mk, fc]
-    rw [continuousOn_iff_continuous_restrict, h₁]
-    exact ContinuousMap.continuous _
-  have hrw : (fun x => cfc (f x) a) =ᵐ[μ] fun x => cfcHom ha (fc x) := by
-    refine Filter.Eventually.of_forall fun x => ?_
-    simp only
-    rw [cfc_apply ..]
-  rw [integral_congr_ae hrw, cfc_apply .., cfcHom_integral _ _ fc_integrable]
-  congr 1
-  ext
-  simp only [coe_mk, restrict_apply, integral_apply fc_integrable, Set.restrict_apply, coe_mk, fc]
+    rw [continuousOn_iff_continuous_restrict]
+    convert map_continuous (∫ x, fc x ∂μ)
+  rw [integral_congr_ae (.of_forall fun _ ↦ cfc_apply ..), cfc_apply ..,
+    cfcHom_integral _ _ fc_integrable]
+  congr
 
 end unital

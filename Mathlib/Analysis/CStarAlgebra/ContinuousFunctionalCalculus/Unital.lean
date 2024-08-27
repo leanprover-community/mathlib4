@@ -263,12 +263,11 @@ end cfcHom
 section cfcL
 
 /-- `cfcHom` bundled as a continuous linear map. -/
+@[simps apply]
 noncomputable def cfcL {a : A} (ha : p a) : C(spectrum R a, R) →L[R] A :=
   { cfcHom ha with
-    map_smul' := fun c f => by
-      simp only [AlgHom.toRingHom_eq_coe, RingHom.toMonoidHom_eq_coe,
-        OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, MonoidHom.coe_coe, RingHom.coe_coe,
-        LinearMapClass.map_smul, StarAlgHom.coe_toAlgHom, RingHom.id_apply]
+    toFun := cfcHom ha
+    map_smul' := map_smul _
     cont := (cfcHom_closedEmbedding ha).continuous }
 
 end cfcL
@@ -325,11 +324,7 @@ lemma cfcHom_eq_cfc_extend {a : A} (g : R → R) (ha : p a) (f : C(spectrum R a,
 
 lemma cfc_eq_cfcL {a : A} {f : R → R} (ha : p a) (hf : ContinuousOn f (spectrum R a)) :
     cfc f a = cfcL ha ⟨_, hf.restrict⟩ := by
-  rw [cfc_def, dif_pos ⟨ha, hf⟩]
-  rfl
-
-lemma cfcHom_eq_cfcL {a : A} {f : C(spectrum R a, R)} (ha : p a) :
-    cfcHom ha f = cfcL ha f := rfl
+  rw [cfc_def, dif_pos ⟨ha, hf⟩, cfcL_apply]
 
 lemma cfc_cases (P : A → Prop) (a : A) (f : R → R) (h₀ : P 0)
     (haf : (hf : ContinuousOn f (spectrum R a)) → (ha : p a) → P (cfcHom ha ⟨_, hf.restrict⟩)) :
