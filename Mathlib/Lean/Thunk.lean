@@ -3,7 +3,7 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Mathport.Rename
+import Mathlib.Init
 import Batteries.Data.Thunk
 
 /-!
@@ -11,8 +11,6 @@ import Batteries.Data.Thunk
 -/
 
 namespace Thunk
-
-#align thunk.mk Thunk.mk
 
 @[simp] theorem get_pure {α} (x : α) : (Thunk.pure x).get = x := rfl
 @[simp] theorem get_mk {α} (f : Unit → α) : (Thunk.mk f).get = f () := rfl

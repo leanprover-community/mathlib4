@@ -6,8 +6,6 @@ Authors: Mario Carneiro
 import Mathlib.Algebra.Ring.Nat
 import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 
-#align_import data.nat.cast.with_top from "leanprover-community/mathlib"@"ee0c179cd3c8a45aa5bffbf1b41d8dbede452865"
-
 /-!
 # Lemma about the coercion `ℕ → WithBot ℕ`.
 
@@ -21,8 +19,6 @@ instance : WellFoundedRelation (WithTop ℕ) where
 
 theorem Nat.cast_withTop (n : ℕ) :  Nat.cast n = WithTop.some n :=
   rfl
-#align nat.cast_with_top Nat.cast_withTop
 
 theorem Nat.cast_withBot (n : ℕ) : Nat.cast n = WithBot.some n :=
   rfl
-#align nat.cast_with_bot Nat.cast_withBot

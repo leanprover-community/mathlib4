@@ -54,6 +54,10 @@ lemma shiftFunctor_comp_inverts (a : A) :
 end IsCompatibleWithShift
 
 variable {A} in
+lemma shift {X Y : C} {f : X ⟶ Y} (hf : W f) (a : A) : W (f⟦a⟧') := by
+  simpa only [IsCompatibleWithShift.iff W f a] using hf
+
+variable {A} in
 /-- The morphism of localizer from `W` to `W` given by the functor `shiftFunctor C a`
 when `a : A` and `W` is compatible with the shift by `A`. -/
 abbrev shiftLocalizerMorphism (a : A) : LocalizerMorphism W W where
@@ -62,6 +66,7 @@ abbrev shiftLocalizerMorphism (a : A) : LocalizerMorphism W W where
 
 end MorphismProperty
 
+section
 variable [W.IsCompatibleWithShift A]
 
 /-- When `L : C ⥤ D` is a localization functor with respect to a morphism property `W`
@@ -110,6 +115,8 @@ noncomputable instance MorphismProperty.commShift_Q' :
   Functor.CommShift.localized W.Q' W A
 
 attribute [irreducible] HasShift.localization' MorphismProperty.commShift_Q'
+
+end
 
 section
 

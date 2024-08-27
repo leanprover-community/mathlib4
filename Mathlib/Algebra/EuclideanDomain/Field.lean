@@ -7,8 +7,6 @@ import Mathlib.Algebra.EuclideanDomain.Defs
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 
-#align_import algebra.euclidean_domain.instances from "leanprover-community/mathlib"@"e1bccd6e40ae78370f01659715d3c948716e3b7e"
-
 /-!
 # Instances for Euclidean domains
 * `Field.toEuclideanDomain`: shows that any field is a Euclidean domain.
@@ -26,4 +24,3 @@ instance (priority := 100) Field.toEuclideanDomain {K : Type*} [Field K] : Eucli
       (Acc.intro _) fun b ⟨hb, _⟩ => (Acc.intro _) fun c ⟨_, hnb⟩ => False.elim <| hnb hb,
   remainder_lt := fun a b hnb => by simp [hnb],
   mul_left_not_lt := fun a b hnb ⟨hab, hna⟩ => Or.casesOn (mul_eq_zero.1 hab) hna hnb }
-#align field.to_euclidean_domain Field.toEuclideanDomain

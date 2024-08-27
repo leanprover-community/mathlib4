@@ -6,8 +6,6 @@ Authors: Adam Topaz
 import Mathlib.CategoryTheory.Whiskering
 import Mathlib.CategoryTheory.Adjunction.Basic
 
-#align_import category_theory.adjunction.whiskering from "leanprover-community/mathlib"@"28aa996fc6fb4317f0083c4e6daf79878d81be33"
-
 /-!
 
 Given categories `C D E`, functors `F : D ⥤ E` and `G : E ⥤ D` with an adjunction
@@ -40,7 +38,6 @@ protected def whiskerRight (adj : F ⊣ G) :
       left_triangle  := by ext; dsimp; simp
       right_triangle := by ext; dsimp; simp
     }
-#align category_theory.adjunction.whisker_right CategoryTheory.Adjunction.whiskerRight
 
 /-- Given an adjunction `F ⊣ G`, this provides the natural adjunction
   `(whiskeringLeft _ _ C).obj G ⊣ (whiskeringLeft _ _ C).obj F`. -/
@@ -59,6 +56,5 @@ protected def whiskerLeft (adj : F ⊣ G) :
       left_triangle  := by ext x; dsimp; simp [Category.id_comp, Category.comp_id, ← x.map_comp]
       right_triangle := by ext x; dsimp; simp [Category.id_comp, Category.comp_id, ← x.map_comp]
     }
-#align category_theory.adjunction.whisker_left CategoryTheory.Adjunction.whiskerLeft
 
 end CategoryTheory.Adjunction

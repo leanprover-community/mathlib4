@@ -7,8 +7,6 @@ import Mathlib.Algebra.GCDMonoid.Basic
 import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 import Mathlib.RingTheory.Polynomial.Eisenstein.Basic
 
-#align_import algebra.gcd_monoid.integrally_closed from "leanprover-community/mathlib"@"2032a878972d5672e7c27c957e7a6e297b044973"
-
 /-!
 
 # GCD domains are integrally closed
@@ -28,7 +26,6 @@ theorem IsLocalization.surj_of_gcd_domain [GCDMonoid R] (M : Submonoid R) [IsLoc
   rw [mul_comm, IsLocalization.mul_mk'_eq_mk'_of_mul]
   convert IsLocalization.mk'_mul_cancel_left (M := M) (S := A) _ _ using 2
   rw [Subtype.coe_mk, hy', ← mul_comm y', mul_assoc]; conv_lhs => rw [hx']
-#align is_localization.surj_of_gcd_domain IsLocalization.surj_of_gcd_domain
 
 instance (priority := 100) GCDMonoid.toIsIntegrallyClosed
     [h : Nonempty (GCDMonoid R)] : IsIntegrallyClosed R :=
@@ -46,4 +43,3 @@ instance (priority := 100) GCDMonoid.toIsIntegrallyClosed
     use x * (this.unit⁻¹ : _)
     erw [map_mul, ← Units.coe_map_inv, eq_comm, Units.eq_mul_inv_iff_mul_eq]
     exact he
-#align gcd_monoid.to_is_integrally_closed GCDMonoid.toIsIntegrallyClosed

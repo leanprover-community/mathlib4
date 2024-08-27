@@ -6,8 +6,6 @@ Authors: Yury Kudryashov
 import Mathlib.Order.Interval.Set.OrdConnectedComponent
 import Mathlib.Topology.Order.Basic
 
-#align_import topology.algebra.order.t5 from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
-
 /-!
 # Linear order is a completely normal Hausdorff topological space
 
@@ -28,7 +26,6 @@ theorem ordConnectedComponent_mem_nhds : ordConnectedComponent s a ∈ 𝓝 a �
   refine ⟨fun h => mem_of_superset h ordConnectedComponent_subset, fun h => ?_⟩
   rcases exists_Icc_mem_subset_of_mem_nhds h with ⟨b, c, ha, ha', hs⟩
   exact mem_of_superset ha' (subset_ordConnectedComponent ha hs)
-#align set.ord_connected_component_mem_nhds Set.ordConnectedComponent_mem_nhds
 
 theorem compl_section_ordSeparatingSet_mem_nhdsWithin_Ici (hd : Disjoint s (closure t))
     (ha : a ∈ s) : (ordConnectedSection (ordSeparatingSet s t))ᶜ ∈ 𝓝[≥] a := by
@@ -61,7 +58,6 @@ theorem compl_section_ordSeparatingSet_mem_nhdsWithin_Ici (hd : Disjoint s (clos
       refine lt_of_not_le fun hyc => ?_
       have hya : y < a := not_le.1 fun hay => hsub ⟨hay, hyc.trans hcb⟩ hyt
       exact hxy (Icc_subset_uIcc ⟨hya.le, hx.1⟩) ha
-#align set.compl_section_ord_separating_set_mem_nhds_within_Ici Set.compl_section_ordSeparatingSet_mem_nhdsWithin_Ici
 
 theorem compl_section_ordSeparatingSet_mem_nhdsWithin_Iic (hd : Disjoint s (closure t))
     (ha : a ∈ s) : (ordConnectedSection <| ordSeparatingSet s t)ᶜ ∈ 𝓝[≤] a := by
@@ -69,7 +65,6 @@ theorem compl_section_ordSeparatingSet_mem_nhdsWithin_Iic (hd : Disjoint s (clos
   have ha' : toDual a ∈ ofDual ⁻¹' s := ha
   simpa only [dual_ordSeparatingSet, dual_ordConnectedSection] using
     compl_section_ordSeparatingSet_mem_nhdsWithin_Ici hd' ha'
-#align set.compl_section_ord_separating_set_mem_nhds_within_Iic Set.compl_section_ordSeparatingSet_mem_nhdsWithin_Iic
 
 theorem compl_section_ordSeparatingSet_mem_nhds (hd : Disjoint s (closure t)) (ha : a ∈ s) :
     (ordConnectedSection <| ordSeparatingSet s t)ᶜ ∈ 𝓝 a := by
@@ -77,7 +72,6 @@ theorem compl_section_ordSeparatingSet_mem_nhds (hd : Disjoint s (closure t)) (h
   exact
     ⟨compl_section_ordSeparatingSet_mem_nhdsWithin_Iic hd ha,
       compl_section_ordSeparatingSet_mem_nhdsWithin_Ici hd ha⟩
-#align set.compl_section_ord_separating_set_mem_nhds Set.compl_section_ordSeparatingSet_mem_nhds
 
 theorem ordT5Nhd_mem_nhdsSet (hd : Disjoint s (closure t)) : ordT5Nhd s t ∈ 𝓝ˢ s :=
   bUnion_mem_nhdsSet fun x hx => ordConnectedComponent_mem_nhds.2 <| inter_mem
@@ -85,7 +79,6 @@ theorem ordT5Nhd_mem_nhdsSet (hd : Disjoint s (closure t)) : ordT5Nhd s t ∈ �
       rw [← mem_interior_iff_mem_nhds, interior_compl]
       exact disjoint_left.1 hd hx)
     (compl_section_ordSeparatingSet_mem_nhds hd hx)
-#align set.ord_t5_nhd_mem_nhds_set Set.ordT5Nhd_mem_nhdsSet
 
 end Set
 
@@ -98,4 +91,3 @@ instance (priority := 100) OrderTopology.completelyNormalSpace : CompletelyNorma
       disjoint_ordT5Nhd⟩⟩
 
 instance (priority := 100) OrderTopology.t5Space : T5Space X := T5Space.mk
-#align order_topology.t5_space OrderTopology.t5Space

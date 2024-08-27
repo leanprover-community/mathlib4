@@ -8,8 +8,6 @@ import Mathlib.Data.Nat.Factors
 import Mathlib.Data.Set.Finite
 import Mathlib.Data.Nat.Prime.Basic
 
-#align_import data.nat.prime_fin from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
-
 /-!
 # Prime numbers
 
@@ -24,7 +22,6 @@ variable {a b k m n p : ℕ}
 /-- A version of `Nat.exists_infinite_primes` using the `Set.Infinite` predicate. -/
 theorem infinite_setOf_prime : { p | Prime p }.Infinite :=
   Set.infinite_of_not_bddAbove not_bddAbove_setOf_prime
-#align nat.infinite_set_of_prime Nat.infinite_setOf_prime
 
 instance Primes.infinite : Infinite Primes := infinite_setOf_prime.to_subtype
 
@@ -88,12 +85,10 @@ lemma primeFactors_mul (ha : a ≠ 0) (hb : b ≠ 0) :
     (a * b).primeFactors = a.primeFactors ∪ b.primeFactors := by
   ext; simp only [Finset.mem_union, mem_primeFactors_iff_mem_primeFactorsList,
     mem_primeFactorsList_mul ha hb]
-#align nat.factors_mul_to_finset Nat.primeFactors_mul
 
 lemma Coprime.primeFactors_mul {a b : ℕ} (hab : Coprime a b) :
     (a * b).primeFactors = a.primeFactors ∪ b.primeFactors :=
   (List.toFinset.ext <| mem_primeFactorsList_mul_of_coprime hab).trans <| List.toFinset_union _ _
-#align nat.factors_mul_to_finset_of_coprime Nat.Coprime.primeFactors_mul
 
 lemma primeFactors_gcd (ha : a ≠ 0) (hb : b ≠ 0) :
     (a.gcd b).primeFactors = a.primeFactors ∩ b.primeFactors := by
@@ -114,17 +109,14 @@ lemma primeFactors_pow_succ (n k : ℕ) : (n ^ (k + 1)).primeFactors = n.primeFa
   induction' k with k ih
   · simp
   · rw [pow_succ', primeFactors_mul hn (pow_ne_zero _ hn), ih, Finset.union_idempotent]
-#align nat.pow_succ_factors_to_finset Nat.primeFactors_pow_succ
 
 lemma primeFactors_pow (n : ℕ) (hk : k ≠ 0) : (n ^ k).primeFactors = n.primeFactors := by
   cases k
   · simp at hk
   rw [primeFactors_pow_succ]
-#align nat.pow_factors_to_finset Nat.primeFactors_pow
 
 /-- The only prime divisor of positive prime power `p^k` is `p` itself -/
 lemma primeFactors_prime_pow (hk : k ≠ 0) (hp : Prime p) :
     (p ^ k).primeFactors = {p} := by simp [primeFactors_pow p hk, hp]
-#align nat.prime_pow_prime_divisor Nat.primeFactors_prime_pow
 
 end Nat

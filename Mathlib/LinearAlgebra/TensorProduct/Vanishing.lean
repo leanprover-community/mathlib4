@@ -60,7 +60,7 @@ variable (R : Type u) [CommRing R]
 variable {M : Type u} [AddCommGroup M] [Module R M]
 variable {N : Type u} [AddCommGroup N] [Module R N]
 
-open Classical DirectSum LinearMap Function Submodule
+open DirectSum LinearMap Function Submodule
 
 namespace TensorProduct
 
@@ -140,6 +140,7 @@ theorem vanishesTrivially_of_sum_tmul_eq_zero (hm : Submodule.span R (Set.range 
   use fun ⟨⟨_, yj⟩, _⟩ ↦ yj
   constructor
   · intro i
+    classical
     apply_fun finsuppScalarLeft R N ι at hkn
     apply_fun (· i) at hkn
     symm at hkn
