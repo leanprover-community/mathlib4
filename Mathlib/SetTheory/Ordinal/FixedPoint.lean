@@ -372,7 +372,7 @@ def nfp (f : Ordinal → Ordinal) : Ordinal → Ordinal :=
 theorem nfp_eq_nfpFamily (f : Ordinal → Ordinal) : nfp f = nfpFamily fun _ : Unit => f :=
   rfl
 
-theorem sup_iterate_eq_nfp (f : Ordinal.{u} → Ordinal.{u}) (a : Ordinal.{u}) :
+theorem iSup_iterate_eq_nfp (f : Ordinal.{u} → Ordinal.{u}) (a : Ordinal.{u}) :
     (⨆ n : ℕ, f^[n] a) = nfp f a := by
   apply le_antisymm
   · rw [Ordinal.iSup_le_iff]
@@ -384,19 +384,25 @@ theorem sup_iterate_eq_nfp (f : Ordinal.{u} → Ordinal.{u}) (a : Ordinal.{u}) :
     rw [List.foldr_const f a l]
     exact Ordinal.le_iSup _ _
 
+set_option linter.deprecated false in
+@[deprecated (since := "2024-08-27")]
+theorem sup_iterate_eq_nfp (f : Ordinal.{u} → Ordinal.{u}) (a : Ordinal.{u}) :
+    (sup fun n : ℕ => f^[n] a) = nfp f a :=
+  iSup_iterate_eq_nfp f a
+
 theorem iterate_le_nfp (f a n) : f^[n] a ≤ nfp f a := by
-  rw [← sup_iterate_eq_nfp]
+  rw [← iSup_iterate_eq_nfp]
   exact Ordinal.le_iSup _ n
 
 theorem le_nfp (f a) : a ≤ nfp f a :=
   iterate_le_nfp f a 0
 
 theorem lt_nfp {a b} : a < nfp f b ↔ ∃ n, a < f^[n] b := by
-  rw [← sup_iterate_eq_nfp]
+  rw [← iSup_iterate_eq_nfp]
   exact Ordinal.lt_iSup
 
 theorem nfp_le_iff {a b} : nfp f a ≤ b ↔ ∀ n, f^[n] a ≤ b := by
-  rw [← sup_iterate_eq_nfp]
+  rw [← iSup_iterate_eq_nfp]
   exact Ordinal.iSup_le_iff
 
 theorem nfp_le {a b} : (∀ n, f^[n] a ≤ b) → nfp f a ≤ b :=
@@ -405,7 +411,7 @@ theorem nfp_le {a b} : (∀ n, f^[n] a ≤ b) → nfp f a ≤ b :=
 @[simp]
 theorem nfp_id : nfp id = id := by
   ext
-  simp_rw [← sup_iterate_eq_nfp, iterate_id]
+  simp_rw [← iSup_iterate_eq_nfp, iterate_id]
   exact ciSup_const
 
 theorem nfp_monotone (hf : Monotone f) : Monotone (nfp f) :=
@@ -483,7 +489,7 @@ theorem deriv_eq_id_of_nfp_eq_id {f : Ordinal → Ordinal} (h : nfp f = id) : de
   (IsNormal.eq_iff_zero_and_succ (deriv_isNormal _) IsNormal.refl).2 <| by simp [h]
 
 theorem nfp_zero_left (a) : nfp 0 a = a := by
-  rw [← sup_iterate_eq_nfp]
+  rw [← iSup_iterate_eq_nfp]
   apply (Ordinal.iSup_le ?_).antisymm (Ordinal.le_iSup _ 0)
   intro n
   induction' n with n _
@@ -510,7 +516,7 @@ end
 
 @[simp]
 theorem nfp_add_zero (a) : nfp (a + ·) 0 = a * omega := by
-  simp_rw [← sup_iterate_eq_nfp, ← sup_mul_nat]
+  simp_rw [← iSup_iterate_eq_nfp, ← iSup_mul_nat]
   congr; funext n
   induction' n with n hn
   · rw [Nat.cast_zero, mul_zero, iterate_zero_apply]
@@ -549,7 +555,7 @@ theorem deriv_add_eq_mul_omega_add (a b : Ordinal.{u}) : deriv (a + ·) b = a * 
 
 @[simp]
 theorem nfp_mul_one {a : Ordinal} (ha : 0 < a) : nfp (a * ·) 1 = (a^omega) := by
-  rw [← sup_iterate_eq_nfp, ← iSup_pow]
+  rw [← iSup_iterate_eq_nfp, ← iSup_pow]
   · congr
     funext n
     induction' n with n hn
