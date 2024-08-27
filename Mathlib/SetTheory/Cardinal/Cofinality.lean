@@ -303,40 +303,54 @@ theorem lsub_lt_ord {ι} {f : ι → Ordinal} {c : Ordinal} (hι : #ι < c.cof) 
     (∀ i, f i < c) → lsub.{u, u} f < c :=
   lsub_lt_ord_lift (by rwa [(#ι).lift_id])
 
+set_option linter.deprecated false in
 theorem cof_iSup_le_lift {ι} {f : ι → Ordinal} (H : ∀ i, f i < iSup f) :
     cof (iSup f) ≤ Cardinal.lift.{v, u} #ι := by
+  rw [← Ordinal.sup] at *
   rw [← sup_eq_lsub_iff_lt_sup.{u, v}] at H
   rw [H]
   exact cof_lsub_le_lift f
 
+set_option linter.deprecated false in
 @[deprecated cof_iSup_le_lift (since := "2024-08-27")]
-alias cof_sup_le_lift := cof_iSup_le_lift
+theorem cof_sup_le_lift {ι} {f : ι → Ordinal} (H : ∀ i, f i < sup.{u, v} f) :
+    cof (sup.{u, v} f) ≤ Cardinal.lift.{v, u} #ι :=
+  cof_iSup_le_lift H
 
 theorem cof_iSup_le {ι} {f : ι → Ordinal} (H : ∀ i, f i < iSup f) :
     cof (iSup f) ≤ #ι := by
   rw [← (#ι).lift_id]
   exact cof_iSup_le_lift H
 
+set_option linter.deprecated false in
 @[deprecated cof_iSup_le (since := "2024-08-27")]
-alias cof_sup_le := cof_iSup_le
+theorem cof_sup_le {ι} {f : ι → Ordinal} (H : ∀ i, f i < sup.{u, u} f) :
+    cof (sup.{u, u} f) ≤ #ι :=
+  cof_iSup_le H
 
 theorem iSup_lt_ord_lift {ι} {f : ι → Ordinal} {c : Ordinal} (hι : Cardinal.lift.{v, u} #ι < c.cof)
     (hf : ∀ i, f i < c) : iSup f < c :=
   (sup_le_lsub.{u, v} f).trans_lt (lsub_lt_ord_lift hι hf)
 
+set_option linter.deprecated false in
 @[deprecated iSup_lt_ord_lift (since := "2024-08-27")]
-alias sup_lt_ord_lift := iSup_lt_ord_lift
+theorem sup_lt_ord_lift {ι} {f : ι → Ordinal} {c : Ordinal} (hι : Cardinal.lift.{v, u} #ι < c.cof)
+    (hf : ∀ i, f i < c) : sup.{u, v} f < c :=
+  iSup_lt_ord_lift hι hf
 
 theorem iSup_lt_ord {ι} {f : ι → Ordinal} {c : Ordinal} (hι : #ι < c.cof) :
     (∀ i, f i < c) → iSup f < c :=
   iSup_lt_ord_lift (by rwa [(#ι).lift_id])
 
+set_option linter.deprecated false in
 @[deprecated iSup_lt_ord (since := "2024-08-27")]
-alias sup_lt_ord := iSup_lt_ord
+theorem sup_lt_ord {ι} {f : ι → Ordinal} {c : Ordinal} (hι : #ι < c.cof)
+    (hf : ∀ i, f i < c) : sup.{u, u} f < c :=
+  iSup_lt_ord hι hf
 
 theorem iSup_lt_lift {ι} {f : ι → Cardinal} {c : Cardinal}
     (hι : Cardinal.lift.{v, u} #ι < c.ord.cof)
-    (hf : ∀ i, f i < c) : iSup.{max u v + 1, u + 1} f < c := by
+    (hf : ∀ i, f i < c) : iSup f < c := by
   rw [← ord_lt_ord, iSup_ord (Cardinal.bddAbove_range.{u, v} _)]
   refine iSup_lt_ord_lift hι fun i => ?_
   rw [ord_lt_ord]
@@ -968,15 +982,21 @@ theorem iSup_lt_ord_lift_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegu
     (hι : Cardinal.lift.{v, u} #ι < c) : (∀ i, f i < c.ord) → iSup f < c.ord :=
   iSup_lt_ord_lift (by rwa [hc.cof_eq])
 
+set_option linter.deprecated false in
 @[deprecated iSup_lt_ord_lift_of_isRegular (since := "2024-08-27")]
-alias sup_lt_ord_lift_of_isRegular := iSup_lt_ord_lift_of_isRegular
+theorem sup_lt_ord_lift_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c)
+    (hι : Cardinal.lift.{v, u} #ι < c) : (∀ i, f i < c.ord) → Ordinal.sup.{u, v} f < c.ord :=
+  iSup_lt_ord_lift_of_isRegular hc hι
 
 theorem iSup_lt_ord_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c) (hι : #ι < c) :
     (∀ i, f i < c.ord) → iSup f < c.ord :=
   iSup_lt_ord (by rwa [hc.cof_eq])
 
+set_option linter.deprecated false in
 @[deprecated iSup_lt_ord_of_isRegular (since := "2024-08-27")]
-alias sup_lt_ord_of_isRegular := iSup_lt_ord_of_isRegular
+theorem sup_lt_ord_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c) (hι : #ι < c) :
+    (∀ i, f i < c.ord) → Ordinal.sup f < c.ord :=
+  iSup_lt_ord_of_isRegular hc hι
 
 theorem blsub_lt_ord_lift_of_isRegular {o : Ordinal} {f : ∀ a < o, Ordinal} {c} (hc : IsRegular c)
     (ho : Cardinal.lift.{v, u} o.card < c) :
@@ -1171,8 +1191,12 @@ lemma iSup_sequence_lt_omega1 {α : Type u} [Countable α]
   rw [Cardinal.isRegular_aleph_one.cof_eq]
   exact lt_of_le_of_lt mk_le_aleph0 aleph0_lt_aleph_one
 
+set_option linter.deprecated false in
 @[deprecated iSup_sequence_lt_omega1 (since := "2024-08-27")]
-alias sup_sequence_lt_omega1 := iSup_sequence_lt_omega1
+lemma sup_sequence_lt_omega1 {α : Type u} [Countable α]
+    (o : α → Ordinal.{max u v}) (ho : ∀ n, o n < ω₁) :
+    sup o < ω₁ :=
+  iSup_sequence_lt_omega1 o ho
 
 end Ordinal
 
