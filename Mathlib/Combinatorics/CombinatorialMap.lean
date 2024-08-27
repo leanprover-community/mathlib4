@@ -16,17 +16,23 @@ Only two-dimensional combinatorial maps are considered.
 
 
 /--
-A two-dimension combinatorial map is a collection D of darts, a permutation σ whose orbits
-correspond to vertices, a fixed-point-free involution α whose orbits correspond to edges, and φ
-whose orbits corresbond to faces.  We think of σ as giving the next dart counterclockwise around an
-edge, α as giving the opposite dart of an edge, and φ as giving the next dart counter-clockwise
-around a face.
+A two-dimension combinatorial map is a collection `D` of darts, and permutations `σ`, `α`, and `φ`.
+`α` is a fixed-point-free involution.
 
 Note: this definition excludes disjoint isolated vertices.
 -/
 structure CombinatorialMap (D : Type*) where
+  /--
+  Permutation `σ` whose orbits correspond to vertices. `σ` gives the next dart counter-clockwise
+  around an edge.
+  -/
   σ : Equiv.Perm D
+  /-- Permutation `α` whose orbits correspond to edges. `α` gives the opposite dart of an edge. -/
   α : Equiv.Perm D
+  /--
+  Permutation `φ` whose orbits correspond to faces. `φ` gives the next dart counter-clockwise of the
+  same face.
+  -/
   φ : Equiv.Perm D
   composition : α.trans (σ.trans φ) = 1
   involutive : Function.Involutive α
@@ -36,9 +42,7 @@ namespace CombinatorialMap
 
 variable {D D' : Type*} {M : CombinatorialMap D} {M' : CombinatorialMap D'}
 
-/--
-The permutation `φ` expressed in terms of `σ` and `α`.
--/
+/-- The permutation `φ` expressed in terms of `σ` and `α`. -/
 lemma φ_eq : M.φ = M.σ.symm.trans M.α := by
   have h : M.φ * M.σ * M.α = 1 := M.composition
   replace h := congr($h * M.α⁻¹ * M.σ⁻¹)
