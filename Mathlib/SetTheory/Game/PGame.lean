@@ -1338,24 +1338,62 @@ between them. -/
 def toRightMovesNeg {x : PGame} : x.LeftMoves ≃ (-x).RightMoves :=
   Equiv.cast (rightMoves_neg x).symm
 
-theorem neg_moveLeft {x : PGame} (i) : (-x).moveLeft i = -x.moveRight (toLeftMovesNeg.symm i) := by
+@[simp]
+theorem neg_moveLeft {x : PGame} {i} :
+    (-x).moveLeft i = -x.moveRight (toLeftMovesNeg.symm i) := by
   cases x
   rfl
 
-theorem neg_moveRight {x : PGame} (i) :
+@[simp]
+theorem neg_moveRight {x : PGame} {i} :
     (-x).moveRight i = -x.moveLeft (toRightMovesNeg.symm i) := by
   cases x
   rfl
 
-@[simp]
-theorem neg_moveLeft' {x : PGame} (i) :
+theorem neg_moveLeft' {x : PGame} {i} :
     (-x).moveLeft (toLeftMovesNeg i) = -x.moveRight i := by
   simp [neg_moveLeft]
 
-@[simp]
-theorem neg_moveRight' {x : PGame} (i) :
+theorem neg_moveRight' {x : PGame} {i} :
     (-x).moveRight (toRightMovesNeg i) = -x.moveLeft i := by
   simp [neg_moveRight]
+
+@[deprecated neg_moveLeft' (since := "2024-08-27")]
+theorem moveLeft_neg {x : PGame} (i) : (-x).moveLeft (toLeftMovesNeg i) = -x.moveRight i := by
+  cases x
+  rfl
+
+@[deprecated neg_moveLeft (since := "2024-08-27")]
+theorem moveLeft_neg' {x : PGame} (i) : (-x).moveLeft i = -x.moveRight (toLeftMovesNeg.symm i) := by
+  cases x
+  rfl
+
+@[deprecated neg_moveRight' (since := "2024-08-27")]
+theorem moveRight_neg {x : PGame} (i) : (-x).moveRight (toRightMovesNeg i) = -x.moveLeft i := by
+  cases x
+  rfl
+
+@[deprecated neg_moveRight (since := "2024-08-27")]
+theorem moveRight_neg' {x : PGame} (i) :
+    (-x).moveRight i = -x.moveLeft (toRightMovesNeg.symm i) := by
+  cases x
+  rfl
+
+@[deprecated (since := "2024-08-27")]
+theorem moveLeft_neg_symm {x : PGame} (i) :
+    x.moveLeft (toRightMovesNeg.symm i) = -(-x).moveRight i := by simp
+
+@[deprecated (since := "2024-08-27")]
+theorem moveLeft_neg_symm' {x : PGame} (i) :
+    x.moveLeft i = -(-x).moveRight (toRightMovesNeg i) := by simp
+
+@[deprecated (since := "2024-08-27")]
+theorem moveRight_neg_symm {x : PGame} (i) :
+    x.moveRight (toLeftMovesNeg.symm i) = -(-x).moveLeft i := by simp
+
+@[deprecated (since := "2024-08-27")]
+theorem moveRight_neg_symm' {x : PGame} (i) :
+    x.moveRight i = -(-x).moveLeft (toLeftMovesNeg i) := by simp
 
 theorem leftMoves_neg_cases {x : PGame} (k) {P : (-x).LeftMoves → Prop}
     (h : ∀ i, P <| toLeftMovesNeg i) :
@@ -1578,27 +1616,65 @@ between them. -/
 def toRightMovesAdd {x y : PGame} : x.RightMoves ⊕ y.RightMoves ≃ (x + y).RightMoves :=
   Equiv.cast (rightMoves_add x y).symm
 
-theorem add_moveLeft {x : PGame} (y : PGame) (i) :
+theorem add_moveLeft {x y : PGame} {i} :
     (x + y).moveLeft i = (toLeftMovesAdd.symm i).rec (x.moveLeft · + y) (x + y.moveLeft ·) := by
   cases x
   cases y
   rfl
 
-theorem add_moveRight {x : PGame} (y : PGame) (i) :
+theorem add_moveRight {x y : PGame} {i} :
     (x + y).moveRight i = (toRightMovesAdd.symm i).rec (x.moveRight · + y) (x + y.moveRight ·) := by
   cases x
   cases y
   rfl
 
-@[simp]
-theorem add_moveLeft' {x : PGame} (y : PGame) (i) :
+theorem add_moveLeft' {x y : PGame} {i} :
     (x + y).moveLeft (toLeftMovesAdd i) = i.rec (x.moveLeft · + y) (x + y.moveLeft ·) := by
   simp [add_moveLeft]
 
-@[simp]
-theorem add_moveRight' {x : PGame} (y : PGame) (i) :
+theorem add_moveRight' {x y : PGame} {i} :
     (x + y).moveRight (toRightMovesAdd i) = i.rec (x.moveRight · + y) (x + y.moveRight ·) := by
   simp [add_moveRight]
+
+theorem mk_add_moveLeft_inl {xl xr yl yr} {xL xR yL yR} {i} :
+    (mk xl xr xL xR + mk yl yr yL yR).moveLeft (Sum.inl i) =
+      (mk xl xr xL xR).moveLeft i + mk yl yr yL yR :=
+  rfl
+
+@[simp]
+theorem add_moveLeft_inl {x y : PGame} {i} :
+    (x + y).moveLeft (toLeftMovesAdd (Sum.inl i)) = x.moveLeft i + y :=
+  add_moveLeft'
+
+theorem mk_add_moveRight_inl {xl xr yl yr} {xL xR yL yR} {i} :
+    (mk xl xr xL xR + mk yl yr yL yR).moveRight (Sum.inl i) =
+      (mk xl xr xL xR).moveRight i + mk yl yr yL yR :=
+  rfl
+
+@[simp]
+theorem add_moveRight_inl {x : PGame} (y : PGame) (i) :
+    (x + y).moveRight (toRightMovesAdd (Sum.inl i)) = x.moveRight i + y :=
+  add_moveRight'
+
+theorem mk_add_moveLeft_inr {xl xr yl yr} {xL xR yL yR} {i} :
+    (mk xl xr xL xR + mk yl yr yL yR).moveLeft (Sum.inr i) =
+      mk xl xr xL xR + (mk yl yr yL yR).moveLeft i :=
+  rfl
+
+@[simp]
+theorem add_moveLeft_inr {x y : PGame} {i} :
+    (x + y).moveLeft (toLeftMovesAdd (Sum.inr i)) = x + y.moveLeft i :=
+  add_moveLeft'
+
+theorem mk_add_moveRight_inr {xl xr yl yr} {xL xR yL yR} {i} :
+    (mk xl xr xL xR + mk yl yr yL yR).moveRight (Sum.inr i) =
+      mk xl xr xL xR + (mk yl yr yL yR).moveRight i :=
+  rfl
+
+@[simp]
+theorem add_moveRight_inr (x : PGame) {y : PGame} (i) :
+    (x + y).moveRight (toRightMovesAdd (Sum.inr i)) = x + y.moveRight i :=
+  add_moveRight'
 
 theorem leftMoves_add_cases {x y : PGame} (k) {P : (x + y).LeftMoves → Prop}
     (hl : ∀ i, P <| toLeftMovesAdd (Sum.inl i)) (hr : ∀ i, P <| toLeftMovesAdd (Sum.inr i)) :
