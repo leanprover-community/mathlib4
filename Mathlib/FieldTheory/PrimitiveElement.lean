@@ -47,7 +47,9 @@ variable (F : Type*) [Field F] (E : Type*) [Field E] [Algebra F E]
 /-! ### Primitive element theorem for finite fields -/
 
 
-/-- **Primitive element theorem** assuming E is finite. -/
+/-- **Primitive element theorem** assuming E is finite.
+
+  [Stacks: 030N, third part](https://stacks.math.columbia.edu/tag/030N)-/
 theorem exists_primitive_element_of_finite_top [Finite E] : ∃ α : E, F⟮α⟯ = ⊤ := by
   obtain ⟨α, hα⟩ := @IsCyclic.exists_generator Eˣ _ _
   use α
@@ -205,7 +207,9 @@ section SeparableAssumption
 variable [FiniteDimensional F E] [Algebra.IsSeparable F E]
 
 /-- **Primitive element theorem**: a finite separable field extension `E` of `F` has a
-  primitive element, i.e. there is an `α ∈ E` such that `F⟮α⟯ = (⊤ : Subalgebra F E)`. -/
+  primitive element, i.e. there is an `α ∈ E` such that `F⟮α⟯ = (⊤ : Subalgebra F E)`.
+
+  [Stacks: 09HY, second part](https://stacks.math.columbia.edu/tag/09HY)-/
 theorem exists_primitive_element : ∃ α : E, F⟮α⟯ = ⊤ := by
   rcases isEmpty_or_nonempty (Fintype F) with (F_inf | ⟨⟨F_finite⟩⟩)
   · let P : IntermediateField F E → Prop := fun K => ∃ α : E, F⟮α⟯ = K
