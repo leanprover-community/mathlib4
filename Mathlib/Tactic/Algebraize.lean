@@ -65,6 +65,8 @@ def addAlgebraInstanceFromRingHom (f ft : Expr) : TacticM Unit := withMainContex
 --     let (_, mvar) ← mvar.intro1P
 --     return [mvar]
 
+#check IsScalarTower.of_algebraMap_eq'
+
 /-- TODO
 
 
@@ -76,6 +78,7 @@ def addIsScalarTowerInstanceFromRingHomComp (f : Expr) : TacticM Unit := withMai
   catch _ => liftMetaTactic fun mvarid => do
     let nm ← mkFreshUserName `scalarTowerInst
     -- This is quite ugly, so I might prefer Qq reason for this reason
+    -- Maybe I can use forallTelescope on `IsScalarTower.of_algebraMap_eq' somehow here?
     let h ← mkFreshExprMVar (← mkAppM `Eq #[
       ← mkAppOptM `algebraMap #[l[0]!, l[2]!, none, none, none],
       ← mkAppM `RingHom.comp #[
@@ -124,18 +127,16 @@ def addIsScalarTowerInstanceFromRingHomComp (f : Expr) : TacticM Unit := withMai
 -/
 -- -- WIP on searching through local context for types in a given array
 def searchContext (t : Array Expr) : TacticM Unit := withMainContext do
-  -- let t' ← t.mapM fun i => Term.elabTerm i none
   let ctx ← MonadLCtx.getLCtx
   ctx.forM fun decl => do
     if decl.isImplementationDetail then
       return
-    let declType := decl.type
-    let env ← getEnv
-
-    for i in Attr.algebraizeAttr.getDecls env do
-      let (nm, args) := declType.getAppFnArgs
+    let (nm, args) := decl.type.getAppFnArgs
+    for i in Attr.algebraizeAttr.getDecls (← getEnv) do
+      -- TODO: figure out how to get one lemma to point to another via attributes
+      -- (maybe just include the other lemma name as a parameter?)
       let some i' := i.eraseSuffix? `Algebraize | throwError "Error"
-      if nm != i' then
+      if i' != nm then
         continue
       let f := args[args.size - 1]!
       if ¬ (← t.anyM (fun j => Meta.isDefEq j f)) then
