@@ -90,7 +90,7 @@ theorem measure_limsup_eq_one {s : ℕ → Set Ω} (hsm : ∀ n, MeasurableSet (
     · refine ⟨n, ?_⟩
       rw [ENNReal.toReal_sum]
       exact fun _ _ => measure_ne_top _ _
-    · rw [not_lt, ← ENNReal.toReal_le_toReal (ENNReal.sum_lt_top _).ne ENNReal.coe_ne_top]
+    · rw [not_lt, ← ENNReal.toReal_le_toReal (ENNReal.sum_ne_top.2 _) ENNReal.coe_ne_top]
       · exact hB.trans (by simp)
       · exact fun _ _ => measure_ne_top _ _
 

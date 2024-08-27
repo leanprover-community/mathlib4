@@ -95,7 +95,7 @@ instance isFiniteMeasureAdd [IsFiniteMeasure μ] [IsFiniteMeasure ν] : IsFinite
     exact ⟨measure_lt_top _ _, measure_lt_top _ _⟩
 
 instance isFiniteMeasureSMulNNReal [IsFiniteMeasure μ] {r : ℝ≥0} : IsFiniteMeasure (r • μ) where
-  measure_univ_lt_top := ENNReal.mul_lt_top ENNReal.coe_ne_top (measure_ne_top _ _)
+  measure_univ_lt_top := ENNReal.mul_lt_top ENNReal.coe_lt_top (measure_lt_top _ _)
 
 instance IsFiniteMeasure.average : IsFiniteMeasure ((μ univ)⁻¹ • μ) where
   measure_univ_lt_top := by
@@ -593,7 +593,7 @@ theorem measurable_spanningSets (μ : Measure α) [SigmaFinite μ] (i : ℕ) :
 
 theorem measure_spanningSets_lt_top (μ : Measure α) [SigmaFinite μ] (i : ℕ) :
     μ (spanningSets μ i) < ∞ :=
-  measure_biUnion_lt_top (finite_le_nat i) fun j _ => (μ.toFiniteSpanningSetsIn.finite j).ne
+  measure_biUnion_lt_top (finite_le_nat i) fun j _ => μ.toFiniteSpanningSetsIn.finite j
 
 theorem iUnion_spanningSets (μ : Measure α) [SigmaFinite μ] : ⋃ i : ℕ, spanningSets μ i = univ := by
   simp_rw [spanningSets, iUnion_accumulate, μ.toFiniteSpanningSetsIn.spanning]
@@ -1020,7 +1020,7 @@ instance sum.sigmaFinite {ι} [Finite ι] (μ : ι → Measure α) [∀ i, Sigma
   have : ∀ n, MeasurableSet (⋂ i : ι, spanningSets (μ i) n) := fun n =>
     MeasurableSet.iInter fun i => measurable_spanningSets (μ i) n
   refine ⟨⟨⟨fun n => ⋂ i, spanningSets (μ i) n, fun _ => trivial, fun n => ?_, ?_⟩⟩⟩
-  · rw [sum_apply _ (this n), tsum_fintype, ENNReal.sum_lt_top_iff]
+  · rw [sum_apply _ (this n), tsum_fintype, ENNReal.sum_lt_top]
     rintro i -
     exact (measure_mono <| iInter_subset _ i).trans_lt (measure_spanningSets_lt_top (μ i) n)
   · rw [iUnion_iInter_of_monotone]
@@ -1040,7 +1040,7 @@ instance SMul.sigmaFinite {μ : Measure α} [SigmaFinite μ] (c : ℝ≥0) :
       finite := by
         intro i
         simp only [Measure.coe_smul, Pi.smul_apply, nnreal_smul_coe_apply]
-        exact ENNReal.mul_lt_top ENNReal.coe_ne_top (measure_spanningSets_lt_top μ i).ne
+        exact ENNReal.mul_lt_top ENNReal.coe_lt_top (measure_spanningSets_lt_top μ i)
       spanning := iUnion_spanningSets μ }⟩
 
 instance [SigmaFinite (μ.restrict s)] [SigmaFinite (μ.restrict t)] :
@@ -1122,7 +1122,7 @@ instance isLocallyFiniteMeasureSMulNNReal [TopologicalSpace α] (μ : Measure α
   refine ⟨fun x => ?_⟩
   rcases μ.exists_isOpen_measure_lt_top x with ⟨o, xo, o_open, μo⟩
   refine ⟨o, o_open.mem_nhds xo, ?_⟩
-  apply ENNReal.mul_lt_top _ μo.ne
+  apply ENNReal.mul_lt_top _ μo
   simp
 
 protected theorem Measure.isTopologicalBasis_isOpen_lt_top [TopologicalSpace α]
@@ -1167,7 +1167,7 @@ theorem measure_ball_lt_top [PseudoMetricSpace α] [ProperSpace α] {μ : Measur
 
 protected theorem IsFiniteMeasureOnCompacts.smul [TopologicalSpace α] (μ : Measure α)
     [IsFiniteMeasureOnCompacts μ] {c : ℝ≥0∞} (hc : c ≠ ∞) : IsFiniteMeasureOnCompacts (c • μ) :=
-  ⟨fun _K hK => ENNReal.mul_lt_top hc hK.measure_lt_top.ne⟩
+  ⟨fun _K hK => ENNReal.mul_lt_top hc.lt_top hK.measure_lt_top⟩
 
 instance IsFiniteMeasureOnCompacts.smul_nnreal [TopologicalSpace α] (μ : Measure α)
     [IsFiniteMeasureOnCompacts μ] (c : ℝ≥0) : IsFiniteMeasureOnCompacts (c • μ) :=

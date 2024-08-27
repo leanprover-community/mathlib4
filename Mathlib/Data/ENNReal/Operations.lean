@@ -186,9 +186,8 @@ theorem top_pow {n : ℕ} (n_pos : 0 < n) : (∞ : ℝ≥0∞) ^ n = ∞ := With
 theorem mul_eq_top : a * b = ∞ ↔ a ≠ 0 ∧ b = ∞ ∨ a = ∞ ∧ b ≠ 0 :=
   WithTop.mul_eq_top_iff
 
-theorem mul_lt_top : a ≠ ∞ → b ≠ ∞ → a * b < ∞ := WithTop.mul_lt_top
-
-theorem mul_ne_top : a ≠ ∞ → b ≠ ∞ → a * b ≠ ∞ := by simpa only [lt_top_iff_ne_top] using mul_lt_top
+theorem mul_lt_top : a < ∞ → b < ∞ → a * b < ∞ := WithTop.mul_lt_top
+theorem mul_ne_top : a ≠ ∞ → b ≠ ∞ → a * b ≠ ∞ := WithTop.mul_ne_top
 
 theorem lt_top_of_mul_ne_top_left (h : a * b ≠ ∞) (hb : b ≠ 0) : a < ∞ :=
   lt_top_iff_ne_top.2 fun ha => h <| mul_eq_top.2 (Or.inr ⟨ha, hb⟩)
@@ -202,7 +201,7 @@ theorem mul_lt_top_iff {a b : ℝ≥0∞} : a * b < ∞ ↔ a < ∞ ∧ b < ∞ 
     rw [← or_assoc, or_iff_not_imp_right, or_iff_not_imp_right]
     intro hb ha
     exact ⟨lt_top_of_mul_ne_top_left h.ne hb, lt_top_of_mul_ne_top_right h.ne ha⟩
-  · rintro (⟨ha, hb⟩ | rfl | rfl) <;> [exact mul_lt_top ha.ne hb.ne; simp; simp]
+  · rintro (⟨ha, hb⟩ | rfl | rfl) <;> [exact mul_lt_top ha hb; simp; simp]
 
 theorem mul_self_lt_top_iff {a : ℝ≥0∞} : a * a < ⊤ ↔ a < ⊤ := by
   rw [ENNReal.mul_lt_top_iff, and_self, or_self, or_iff_left_iff_imp]
@@ -399,27 +398,28 @@ section Sum
 
 open Finset
 
-variable {α : Type*}
+variable {α : Type*} {s : Finset α} {f : α → ℝ≥0∞}
 
-/-- A product of finite numbers is still finite -/
-theorem prod_lt_top {s : Finset α} {f : α → ℝ≥0∞} (h : ∀ a ∈ s, f a ≠ ∞) : ∏ a ∈ s, f a < ∞ :=
-  WithTop.prod_lt_top h
+/-- A product of finite numbers is still finite. -/
+lemma prod_ne_top (h : ∀ a ∈ s, f a ≠ ∞) : ∏ a ∈ s, f a ≠ ∞ := WithTop.prod_ne_top h
 
-/-- A sum of finite numbers is still finite -/
-theorem sum_lt_top {s : Finset α} {f : α → ℝ≥0∞} (h : ∀ a ∈ s, f a ≠ ∞) : ∑ a ∈ s, f a < ∞ :=
-  WithTop.sum_lt_top h
+/-- A product of finite numbers is still finite. -/
+lemma prod_lt_top (h : ∀ a ∈ s, f a < ∞) : ∏ a ∈ s, f a < ∞ := WithTop.prod_lt_top h
 
-/-- A sum of finite numbers is still finite -/
-theorem sum_lt_top_iff {s : Finset α} {f : α → ℝ≥0∞} : ∑ a ∈ s, f a < ∞ ↔ ∀ a ∈ s, f a < ∞ :=
-  WithTop.sum_lt_top_iff
+/-- A sum is infinite iff one of the summands is infinite. -/
+lemma sum_eq_top : ∑ x ∈ s, f x = ∞ ↔ ∃ a ∈ s, f a = ∞ := WithTop.sum_eq_top
 
-/-- A sum of numbers is infinite iff one of them is infinite -/
-theorem sum_eq_top_iff {s : Finset α} {f : α → ℝ≥0∞} : ∑ x ∈ s, f x = ∞ ↔ ∃ a ∈ s, f a = ∞ :=
-  WithTop.sum_eq_top_iff
+/-- A sum is finite iff all summands are finite. -/
+lemma sum_ne_top : ∑ a ∈ s, f a ≠ ∞ ↔ ∀ a ∈ s, f a ≠ ∞ := WithTop.sum_ne_top
+
+/-- A sum is finite iff all summands are finite. -/
+lemma sum_lt_top : ∑ a ∈ s, f a < ∞ ↔ ∀ a ∈ s, f a < ∞ := WithTop.sum_lt_top
+
+@[deprecated (since := "2024-08-25")] alias sum_lt_top_iff := sum_lt_top
 
 theorem lt_top_of_sum_ne_top {s : Finset α} {f : α → ℝ≥0∞} (h : ∑ x ∈ s, f x ≠ ∞) {a : α}
     (ha : a ∈ s) : f a < ∞ :=
-  sum_lt_top_iff.1 h.lt_top a ha
+  sum_lt_top.1 h.lt_top a ha
 
 /-- Seeing `ℝ≥0∞` as `ℝ≥0` does not change their sum, unless one of the `ℝ≥0∞` is
 infinity -/
@@ -428,7 +428,7 @@ theorem toNNReal_sum {s : Finset α} {f : α → ℝ≥0∞} (hf : ∀ a ∈ s, 
   rw [← coe_inj, coe_toNNReal, coe_finset_sum, sum_congr rfl]
   · intro x hx
     exact (coe_toNNReal (hf x hx)).symm
-  · exact (sum_lt_top hf).ne
+  · exact sum_ne_top.2 hf
 
 /-- seeing `ℝ≥0∞` as `Real` does not change their sum, unless one of the `ℝ≥0∞` is infinity -/
 theorem toReal_sum {s : Finset α} {f : α → ℝ≥0∞} (hf : ∀ a ∈ s, f a ≠ ∞) :

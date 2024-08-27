@@ -130,7 +130,7 @@ theorem edist_efixedPoint_le (hf : ContractingWith K f) {x : α} (hx : edist x (
 theorem edist_efixedPoint_lt_top (hf : ContractingWith K f) {x : α} (hx : edist x (f x) ≠ ∞) :
     edist x (efixedPoint f hf x hx) < ∞ :=
   (hf.edist_efixedPoint_le hx).trans_lt
-    (ENNReal.mul_lt_top hx <| ENNReal.inv_ne_top.2 hf.one_sub_K_ne_zero)
+    (ENNReal.mul_ne_top hx <| ENNReal.inv_ne_top.2 hf.one_sub_K_ne_zero).lt_top
 
 theorem efixedPoint_eq_of_edist_lt_top (hf : ContractingWith K f) {x : α} (hx : edist x (f x) ≠ ∞)
     {y : α} (hy : edist y (f y) ≠ ∞) (h : edist x y ≠ ∞) :
@@ -205,7 +205,7 @@ theorem edist_efixedPoint_lt_top' {s : Set α} (hsc : IsComplete s) (hsf : MapsT
     (hf : ContractingWith K <| hsf.restrict f s s) {x : α} (hxs : x ∈ s) (hx : edist x (f x) ≠ ∞) :
     edist x (efixedPoint' f hsc hsf hf x hxs hx) < ∞ :=
   (hf.edist_efixedPoint_le' hsc hsf hxs hx).trans_lt
-    (ENNReal.mul_lt_top hx <| ENNReal.inv_ne_top.2 hf.one_sub_K_ne_zero)
+    (ENNReal.mul_ne_top hx <| ENNReal.inv_ne_top.2 hf.one_sub_K_ne_zero).lt_top
 
 /-- If a globally contracting map `f` has two complete forward-invariant sets `s`, `t`,
 and `x ∈ s` is at a finite distance from `y ∈ t`, then the `efixedPoint'` constructed by `x`

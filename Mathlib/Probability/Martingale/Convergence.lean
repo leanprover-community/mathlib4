@@ -163,7 +163,7 @@ theorem Submartingale.upcrossings_ae_lt_top' [IsFiniteMeasure μ] (hf : Submarti
         · simp_rw [lintegral_add_right _ measurable_const, lintegral_const]
           exact add_le_add (hbdd _) le_rfl
       refine ne_of_lt (iSup_lt_iff.2 ⟨R + ‖a‖₊ * μ Set.univ, ENNReal.add_lt_top.2
-        ⟨ENNReal.coe_lt_top, ENNReal.mul_lt_top ENNReal.coe_lt_top.ne (measure_ne_top _ _)⟩,
+        ⟨ENNReal.coe_lt_top, ENNReal.mul_lt_top ENNReal.coe_lt_top (measure_lt_top _ _)⟩,
         fun n => le_trans ?_ (hR' n)⟩)
       refine lintegral_mono fun ω => ?_
       rw [ENNReal.ofReal_le_iff_le_toReal, ENNReal.coe_toReal, coe_nnnorm]

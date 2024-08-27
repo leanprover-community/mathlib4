@@ -87,7 +87,7 @@ lemma integrable [IsFiniteMeasure μ] (f : X →ᵇ E) :
   refine ⟨f.continuous.measurable.aestronglyMeasurable, (hasFiniteIntegral_def _ _).mp ?_⟩
   calc  ∫⁻ x, ‖f x‖₊ ∂μ
     _ ≤ ‖f‖₊ * (μ Set.univ)   := f.lintegral_nnnorm_le μ
-    _ < ∞                     := ENNReal.mul_lt_top ENNReal.coe_ne_top (measure_ne_top μ Set.univ)
+    _ < ∞                     := ENNReal.mul_lt_top ENNReal.coe_lt_top (measure_lt_top μ Set.univ)
 
 variable [NormedSpace ℝ E]
 

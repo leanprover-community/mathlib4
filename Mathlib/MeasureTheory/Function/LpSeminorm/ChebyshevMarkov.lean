@@ -72,8 +72,8 @@ theorem Memℒp.meas_ge_lt_top' {μ : Measure α} (hℒp : Memℒp f p μ) (hp_n
     μ { x | ε ≤ ‖f x‖₊ } < ∞ := by
   apply (meas_ge_le_mul_pow_eLpNorm μ hp_ne_zero hp_ne_top hℒp.aestronglyMeasurable hε).trans_lt
     (ENNReal.mul_lt_top ?_ ?_)
-  · simp [hε]
-  · simp [hℒp.eLpNorm_lt_top.ne]
+  · simp [hε, lt_top_iff_ne_top]
+  · simp [hℒp.eLpNorm_lt_top.ne, lt_top_iff_ne_top]
 
 theorem Memℒp.meas_ge_lt_top {μ : Measure α} (hℒp : Memℒp f p μ) (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) {ε : ℝ≥0} (hε : ε ≠ 0) :
