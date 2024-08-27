@@ -556,7 +556,7 @@ lemma IsIntegralCurveAt.of_mdifferentiable_related (h : IsIntegralCurveAt γ v t
 /-- Let `v` and `v'` be vector fields on `M` and `M'`, respectively, and let `f : M → M'` be a
   differentiable map. If `f` maps integral curves of `v` to integral curves of `v'`, then `v` and
   `v'` are `f`-related. -/
-lemma mdifferentiable_related_of_isIntegralCurveAt [BoundarylessManifold I M]
+lemma mdifferentiable_related_of_isIntegralCurveAt [BoundarylessManifold I M] [CompleteSpace E]
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)))
     {f : M → M'} (hf : MDifferentiable I I' f)
     (h : ∀ (γ : ℝ → M) (t₀ : ℝ), IsIntegralCurveAt γ v t₀ → IsIntegralCurveAt (f ∘ γ) v' t₀)
