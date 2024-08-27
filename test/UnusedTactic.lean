@@ -1,7 +1,25 @@
 import Mathlib.Tactic.Linter.UnusedTactic
 import Mathlib.Tactic.AdaptationNote
+import Mathlib.adomaniLeanUtils.inspect_syntax
+
+open Lean hiding Rat
+open Elab Meta Term
+
+syntax normStx := atomic(" (" &"norm" " := ") withoutPosition(tactic) ")"
+syntax (name := linearCombination) "linear_combination"
+  (normStx)? (ppSpace colGt term)? : tactic
+
+elab_rules : tactic
+  | `(tactic| linear_combination $[(norm := $tac)]?) => Tactic.withMainContext do
+    Lean.Elab.Tactic.evalTactic (← `(tactic|rfl))
 
 def why2 : True → True := (by refine ·)
+
+inspect
+example : 0 = 0 := by
+  --skip
+  linear_combination (norm := skip)
+  --rfl
 
 example : True := by
   #adaptation_note /--hi-/
