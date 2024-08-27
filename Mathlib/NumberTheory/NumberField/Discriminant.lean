@@ -233,7 +233,7 @@ Thus it follows from `mixedEmbedding.exists_primitive_element_lt_of_isComplex` a
 `x` of `K` such that `K = ℚ(x)` and the conjugates of `x` are all bounded by some quantity
 depending only on `N`.
 
-Since the primitive element `x` is constructed differently depending on wether `K` has a infinite
+Since the primitive element `x` is constructed differently depending on whether `K` has a infinite
 real place or not, the theorem is proved in two parts.
 -/
 
