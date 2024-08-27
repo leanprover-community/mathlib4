@@ -18,6 +18,8 @@ import Batteries.Data.RBMap.Basic
 These should be replaced by proper implementations in Batteries.
 -/
 
+variable {α β : Type*}
+
 namespace Batteries.HashMap
 
 -- not an exact match, the Lean3 version was dependently-typed

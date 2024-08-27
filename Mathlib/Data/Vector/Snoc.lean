@@ -20,7 +20,7 @@ namespace Mathlib
 
 namespace Vector
 
-variable {α β σ φ : Type*} {n : ℕ} {x : α} (xs : Vector α n)
+variable {α β σ φ : Type*} {n : ℕ} {x : α} {s : σ} (xs : Vector α n)
 
 /-- Append a single element to the end of a vector -/
 def snoc : Vector α n → α → Vector α (n+1) :=
@@ -144,12 +144,12 @@ theorem map₂_snoc {f : α → β → σ} {y : β} :
   induction xs, ys using Vector.inductionOn₂ <;> simp_all
 
 @[simp]
-theorem mapAccumr₂_nil {f : α → β → σ → σ × φ} {s : σ} :
+theorem mapAccumr₂_nil {f : α → β → σ → σ × φ} :
     mapAccumr₂ f Vector.nil Vector.nil s = (s, Vector.nil) :=
   rfl
 
 @[simp]
-theorem mapAccumr₂_snoc (f : α → β → σ → σ × φ) (x : α) (y : β) {s : σ} :
+theorem mapAccumr₂_snoc (f : α → β → σ → σ × φ) (x : α) (y : β) :
     mapAccumr₂ f (xs.snoc x) (ys.snoc y) s
     = let q := f x y s
       let r := mapAccumr₂ f xs ys q.1
