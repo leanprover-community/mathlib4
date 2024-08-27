@@ -32,6 +32,11 @@ initialize Lean.registerBuiltinAttribute {
   name := `stacks
   descr := "Apply a Stacks project tag to a theorem."
   add := fun _decl stx _attrKind => Lean.withRef stx do
+    -- check that there are no spaces in the tag
+    let tag := stx[1]
+    if let some s := tag.getSubstring? then
+      if 2 ≤ (s.trim.splitOn " ").length then
+        logWarningAt tag m!"Spaces are not allowed in '{s}'"
     match stx with
       | `(attr| stacks $_:stackTags $_:str) => return
       | `(attr| stacks $_:stackTags) => return
