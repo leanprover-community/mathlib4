@@ -3,14 +3,19 @@ Copyright (c) 2022 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Edward Ayers, Mario Carneiro
 -/
-import Lean
-import Mathlib.Data.Array.Defs
+import Mathlib.Init
+import Lean.Elab.Binders
+import Lean.Elab.SyntheticMVars
+import Lean.Meta.Tactic.Assert
 
 /-!
 # Extending `have`, `let` and `suffices`
 
 This file extends the `have`, `let` and `suffices` tactics to allow the addition of hypotheses to
 the context without requiring their proofs to be provided immediately.
+
+As a style choice, this should not be used in mathlib; but is provided for downstream users who
+preferred the old style.
 -/
 
 namespace Mathlib.Tactic
@@ -57,8 +62,8 @@ If the bound term is intended to be kept in the context, pass `keepTerm : Bool :
 useful when extending the `let` tactic, which is expected to show the proof term in the infoview.
 -/
 def haveLetCore (goal : MVarId) (name : TSyntax ``optBinderIdent)
-  (bis : Array (TSyntax ``letIdBinder))
-  (t : Option Term) (keepTerm : Bool) : TermElabM (MVarId × MVarId) :=
+    (bis : Array (TSyntax ``letIdBinder))
+    (t : Option Term) (keepTerm : Bool) : TermElabM (MVarId × MVarId) :=
   let declFn := if keepTerm then MVarId.define else MVarId.assert
   goal.withContext do
     let n := optBinderIdent.name name
@@ -67,9 +72,9 @@ def haveLetCore (goal : MVarId) (name : TSyntax ``optBinderIdent)
       let t ← match t with
       | none => mkFreshTypeMVar
       | some stx => withRef stx do
-          let e ← Term.elabTerm stx none
-          Term.synthesizeSyntheticMVars false
-          instantiateMVars e
+        let e ← Term.elabType stx
+        Term.synthesizeSyntheticMVars (postpone := .no)
+        instantiateMVars e
       let p ← mkFreshExprMVar t MetavarKind.syntheticOpaque n
       pure (p.mvarId!, ← mkForallFVars es t, ← mkLambdaFVars es p)
     let (fvar, goal2) ← (← declFn goal n t p).intro1P
@@ -96,3 +101,5 @@ elab_rules : tactic
 | `(tactic| let $n:optBinderIdent $bs* $[: $t:term]?) => withMainContext do
   let (goal1, goal2) ← haveLetCore (← getMainGoal) n bs t true
   replaceMainGoal [goal1, goal2]
+
+end Mathlib.Tactic

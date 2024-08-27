@@ -7,6 +7,12 @@ example (n : ℤ) : 3 ∣ n ^ 3 - n := by
   · guard_hyp H :ₛ n ≡ 1 [ZMOD 3]; guard_target = 3 ∣ n ^ 3 - n; exact test_sorry
   · guard_hyp H :ₛ n ≡ 2 [ZMOD 3]; guard_target = 3 ∣ n ^ 3 - n; exact test_sorry
 
+example (n : ℕ) : 3 ∣ n ^ 3 + n := by
+  mod_cases n % 3
+  · guard_hyp H :~ n ≡ 0 [MOD 3]; guard_target = 3 ∣ n ^ 3 + n; exact test_sorry
+  · guard_hyp H :~ n ≡ 1 [MOD 3]; guard_target = 3 ∣ n ^ 3 + n; exact test_sorry
+  · guard_hyp H :~ n ≡ 2 [MOD 3]; guard_target = 3 ∣ n ^ 3 + n; exact test_sorry
+
 -- test case for https://github.com/leanprover-community/mathlib4/issues/1851
 example (n : ℕ) (z : ℤ) : n = n := by
   induction n with

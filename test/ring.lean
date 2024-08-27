@@ -12,10 +12,12 @@ notation "ℝ" => Real
 example (x y : ℕ) : x + y = y + x := by ring
 example (x y : ℕ) : x + y + y = 2 * y + x := by ring
 example (x y : ℕ) : x + id y = y + id x := by ring!
+example (x y : ℕ+) : x + y = y + x := by ring
 example {α} [CommRing α] (x y : α) : x + y + y - x = 2 * y := by ring
 example {α} [CommSemiring α] (x y : α) : (x + y)^2 = x^2 + 2 • x * y + y^2 := by ring
 
 example (x y : ℕ) : (x + y) ^ 3 = x ^ 3 + y ^ 3 + 3 * (x * y ^ 2 + x ^ 2 * y) := by ring
+example (x y : ℕ+) : (x + y) ^ 3 = x ^ 3 + y ^ 3 + 3 * (x * y ^ 2 + x ^ 2 * y) := by ring
 example (x y : ℝ) : (x + y) ^ 3 = x ^ 3 + y ^ 3 + 3 * (x * y ^ 2 + x ^ 2 * y) := by ring
 example {α} [CommSemiring α] (x : α) : (x + 1) ^ 6 = (1 + x) ^ 6 := by ring
 example (n : ℕ) : (n / 2) + (n / 2) = 2 * (n / 2) := by ring
@@ -156,3 +158,22 @@ example (p : R PUnit.{u+1} PUnit.{v+1}) : p + 0 = p := by
   ring_nf
 example (p q : R PUnit.{u+1} PUnit.{v+1}) : p + q = q + p := by
   ring_nf
+
+-- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/ring_nf.20returns.20ugly.20literals/near/400988184
+example {n : ℝ} :
+    (n + 1 / 2) ^ 2 * (n + 1 + 1 / 3) = 1 / 3 + n * (19 / 12) + n ^ 2 * (7 / 3) + n ^ 3 := by
+  -- `conv_lhs` prevents `ring_nf` picking a bad normalization for both sides.
+  conv_lhs => ring_nf
+
+-- We can't use `guard_target =ₛ` here, as while it does detect stray `OfNat`s, it also complains
+-- about differing instance paths.
+/--
+info: n : ℝ
+_hn : 0 ≤ n
+⊢ 1 / 3 + n * (19 / 12) + n ^ 2 * (7 / 3) + n ^ 3 ≤ 1 / 3 + n * (5 / 3) + n ^ 2 * (7 / 3) + n ^ 3
+-/
+#guard_msgs (info) in
+example {n : ℝ} (_hn : 0 ≤ n) : (n + 1 / 2) ^ 2 * (n + 1 + 1 / 3) ≤ (n + 1 / 3) * (n + 1) ^ 2 := by
+  ring_nf
+  trace_state
+  exact test_sorry

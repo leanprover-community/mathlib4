@@ -30,8 +30,8 @@ def getMemType {m : Type → Type} [Monad m] [MonadError m] (e : Expr) : m (Opti
     | (``List, #[α])     => return α
     | (``Multiset, #[α]) => return α
     | (``Finset, #[α])   => return α
-    | _ => throwError ("Hypothesis must be of type `x ∈ (A : List α)`, `x ∈ (A : Finset α)`,"
-        ++ " or `x ∈ (A : Multiset α)`")
+    | _ => throwError "Hypothesis must be of type `x ∈ (A : List α)`, `x ∈ (A : Finset α)`, \
+                       or `x ∈ (A : Multiset α)`"
   | _ => return none
 
 /--
@@ -123,3 +123,9 @@ produces three goals with hypotheses
   | `(tactic| fin_cases $[$hyps:ident],*) => withMainContext <| focus do
     for h in hyps do
       allGoals <| liftMetaTactic (finCasesAt · (← getFVarId h))
+
+end Tactic
+
+end Elab
+
+end Lean
