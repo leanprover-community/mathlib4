@@ -101,7 +101,7 @@ end AddSubmonoid
 
 /-- In an additive, commutative monoid with multiplication, a finite sum of sums of squares
 is a sum of squares. -/
-theorem IsSumSq.sum [AddCommMonoid R] [Mul R] {α : Type*} {I : Finset α} {f : α → R}
+theorem IsSumSq.sum [AddCommMonoid R] [Mul R] {ι : Type*} {I : Finset ι} {f : ι → R}
     (hf : ∀ i ∈ I, IsSumSq <| f i) : IsSumSq (∑ i ∈ I, f i) := by
   simpa using AddSubmonoid.sum_mem (AddSubmonoid.sumSqIn R) hf
 
@@ -120,17 +120,17 @@ open AddSubmonoid in
 /-- A term of `R` satisfies `IsSumSq` if and only if it can be written as `∑ i ∈ I, x i * x i`. -/
 theorem isSumSq_iff_finsum [AddCommMonoid R] [Mul R] (a : R) :
     IsSumSq a ↔
-    (∃ (α : Type) (I : Finset α) (x : α → R), a = ∑ i ∈ I, x i * x i) := by
+    (∃ (ι : Type) (I : Finset ι) (x : ι → R), a = ∑ i ∈ I, x i * x i) := by
   have : IsSumSq a ↔ a ∈ closure {r : R | IsSquare r} := by simp [closure_isSquare];
   rw [this];
   apply Iff.intro
   case mp  =>
     intro hyp
-    obtain ⟨α, I, y, y_cl, eq⟩ := exists_finset_sum_of_mem_closure hyp
+    obtain ⟨ι, I, y, y_cl, eq⟩ := exists_finset_sum_of_mem_closure hyp
     choose! x hx using y_cl
-    exact ⟨α, I, x, by rw [← eq]; exact Finset.sum_equiv (by rfl) (by simp) hx⟩
+    exact ⟨ι, I, x, by rw [← eq]; exact Finset.sum_equiv (by rfl) (by simp) hx⟩
   case mpr =>
-    rintro ⟨α,I,y,eq⟩
+    rintro ⟨ι,I,y,eq⟩
     simpa [eq] using sum_mem (closure {x : R | IsSquare x})
       (subset_closure <| (by simp : (∀ i ∈ I, y i * y i ∈ _)) · ·)
 
@@ -139,7 +139,7 @@ if `S1` and `S2` are sums of squares, then `S1 * S2` is a sum of squares. -/
 theorem IsSumSq.mul [NonUnitalCommSemiring R] {S1 S2 : R}
     (h1 : IsSumSq S1) (h2 : IsSumSq S2) : IsSumSq (S1 * S2) := by
   rw [isSumSq_iff_finsum] at *
-  obtain ⟨α,I,x,hx⟩ := h1; obtain ⟨β,J,y,hy⟩ := h2
+  obtain ⟨ι,I,x,hx⟩ := h1; obtain ⟨β,J,y,hy⟩ := h2
   rw [hx, hy, Finset.sum_mul_sum, ← Finset.sum_product']
   refine ⟨_, I ×ˢ J, fun ⟨i,j⟩ => x i * y j, ?_⟩
   simp [mul_assoc, mul_left_comm]
@@ -165,7 +165,7 @@ end Subsemiring
 
 /-- In a commutative semiring, a finite product of sums of squares
 is a sum of squares. -/
-theorem IsSumSq.prod [CommSemiring R] {α : Type*} {I : Finset α} {f : α → R}
+theorem IsSumSq.prod [CommSemiring R] {ι : Type*} {I : Finset ι} {f : ι → R}
     (hf : ∀ i ∈ I, IsSumSq <| f i) : IsSumSq (∏ i ∈ I, f i) := by
   simpa using Subsemiring.prod_mem (Subsemiring.sumSqIn R) hf
 

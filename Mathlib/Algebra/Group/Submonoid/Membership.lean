@@ -399,7 +399,7 @@ theorem exists_finset_prod_of_mem_closure {M : Type*} [CommMonoid M] {s : Set M}
   induction hx using Submonoid.closure_induction_left
   case one                      => exact ⟨Empty, ∅, Empty.elim, by simp⟩
   case mul_left y hy p _ h_prod =>
-    rcases h_prod with ⟨α, I, f, hf, ih⟩;
+    rcases h_prod with ⟨ι, I, f, hf, ih⟩;
     exact ⟨_, Finset.univ, (Option.elim · y (Subtype.restrict (· ∈ I) f)),
           ⟨by intro i; induction i with
           | none   => simp [hy]
