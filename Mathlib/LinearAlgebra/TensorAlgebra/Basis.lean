@@ -24,8 +24,6 @@ import Mathlib.LinearAlgebra.FreeAlgebra
 -/
 namespace TensorAlgebra
 
-open scoped BigOperators
-
 universe uκ uR uM
 variable {κ : Type uκ} {R : Type uR} {M : Type uM}
 

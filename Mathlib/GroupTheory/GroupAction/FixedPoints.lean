@@ -3,6 +3,7 @@ Copyright (c) 2024 Emilie Burgun. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Emilie Burgun
 -/
+import Mathlib.Algebra.Group.Commute.Basic
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.Dynamics.PeriodicPts
 import Mathlib.Data.Set.Pointwise.SMul
@@ -98,7 +99,7 @@ theorem fixedBy_mul (m₁ m₂ : M) : fixedBy α m₁ ∩ fixedBy α m₂ ⊆ fi
 
 variable (α) in
 @[to_additive]
-theorem smul_fixedBy (g h: G) :
+theorem smul_fixedBy (g h : G) :
     h • fixedBy α g = fixedBy α (h * g * h⁻¹) := by
   ext a
   simp_rw [Set.mem_smul_set_iff_inv_smul_mem, mem_fixedBy, mul_smul, smul_eq_iff_eq_inv_smul h]
@@ -191,7 +192,7 @@ This is equivalent to say that the set `fixedBy α g` is fixed by `h`.
 @[to_additive "If `g` and `h` commute, then `g` fixes `h +ᵥ x` iff `g` fixes `x`.
 This is equivalent to say that the set `fixedBy α g` is fixed by `h`.
 "]
-theorem fixedBy_mem_fixedBy_of_commute {g h : G} (comm: Commute g h) :
+theorem fixedBy_mem_fixedBy_of_commute {g h : G} (comm : Commute g h) :
     (fixedBy α g) ∈ fixedBy (Set α) h := by
   ext x
   rw [Set.mem_smul_set_iff_inv_smul_mem, mem_fixedBy, ← mul_smul, comm.inv_right, mul_smul,
@@ -211,7 +212,7 @@ This is equivalent to say that the set `(fixedBy α g)ᶜ` is fixed by `h`.
 -/
 @[to_additive "If `g` and `h` commute, then `g` moves `h +ᵥ x` iff `g` moves `x`.
 This is equivalent to say that the set `(fixedBy α g)ᶜ` is fixed by `h`."]
-theorem movedBy_mem_fixedBy_of_commute {g h : G} (comm: Commute g h) :
+theorem movedBy_mem_fixedBy_of_commute {g h : G} (comm : Commute g h) :
     (fixedBy α g)ᶜ ∈ fixedBy (Set α) h := by
   rw [mem_fixedBy, Set.smul_set_compl, fixedBy_mem_fixedBy_of_commute comm]
 

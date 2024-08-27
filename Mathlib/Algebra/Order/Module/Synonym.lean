@@ -3,19 +3,20 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Module.Basic
-import Mathlib.Algebra.Ring.OrderSynonym
+import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Order.GroupWithZero.Synonym
+import Mathlib.Algebra.Order.Ring.Synonym
 
 /-!
 # Action instances for `OrderDual`
 
 This file provides instances of algebraic actions for `OrderDual`. Note that the `SMul` instances
-are already defined in `Mathlib.Algebra.Group.OrderSynonym`.
+are already defined in `Mathlib.Algebra.Order.Group.Synonym`.
 
 ## See also
 
-* `Mathlib.Algebra.Group.OrderSynonym`
-* `Mathlib.Algebra.Ring.OrderSynonym`
+* `Mathlib.Algebra.Order.Group.Synonym`
+* `Mathlib.Algebra.Order.Ring.Synonym`
 -/
 
 namespace OrderDual

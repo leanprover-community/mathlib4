@@ -6,13 +6,10 @@ Authors: Anne Baanen
 import Mathlib.RingTheory.Noetherian
 import Mathlib.RingTheory.Ideal.QuotientOperations
 
-#align_import ring_theory.quotient_noetherian from "leanprover-community/mathlib"@"da420a8c6dd5bdfb85c4ced85c34388f633bc6ff"
-
 /-!
 # Noetherian quotient rings and quotient modules
 -/
 
 instance Ideal.Quotient.isNoetherianRing {R : Type*} [CommRing R] [IsNoetherianRing R]
     (I : Ideal R) : IsNoetherianRing (R ⧸ I) :=
-  isNoetherianRing_iff.mpr <| isNoetherian_of_tower R <| Submodule.Quotient.isNoetherian _
-#align ideal.quotient.is_noetherian_ring Ideal.Quotient.isNoetherianRing
+  isNoetherianRing_iff.mpr <| isNoetherian_of_tower R <| inferInstance
