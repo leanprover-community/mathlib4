@@ -872,7 +872,7 @@ theorem sumProdDistrib_symm_apply_right {α β γ} (b : β × γ) :
   rfl
 
 /-- Type product is left distributive with respect to type sum up to an equivalence. -/
-def prodSumDistrib (α β γ : Type*) : α × (β ⊕ γ) ≃ (α × β) ⊕ (α × γ) :=
+def prodSumDistrib (α β γ) : α × (β ⊕ γ) ≃ (α × β) ⊕ (α × γ) :=
   calc
     α × (β ⊕ γ) ≃ (β ⊕ γ) × α := prodComm _ _
     _ ≃ (β × α) ⊕ (γ × α) := sumProdDistrib _ _ _
@@ -909,7 +909,7 @@ def sigmaSumDistrib {ι} (α β : ι → Type*) :
 /-- The product of an indexed sum of types (formally, a `Sigma`-type `Σ i, α i`) by a type `β` is
 equivalent to the sum of products `Σ i, (α i × β)`. -/
 @[simps apply symm_apply]
-def sigmaProdDistrib {ι} (α : ι → Type*) (β : Type*) : (Σ i, α i) × β ≃ Σ i, α i × β :=
+def sigmaProdDistrib {ι} (α : ι → Type*) (β) : (Σ i, α i) × β ≃ Σ i, α i × β :=
   ⟨fun p => ⟨p.1.1, (p.1.2, p.2)⟩, fun p => (⟨p.1, p.2.1⟩, p.2.2), fun p => by
     rcases p with ⟨⟨_, _⟩, _⟩
     rfl, fun p => by
@@ -1002,7 +1002,7 @@ def subtypeEquiv {p : α → Prop} {q : β → Prop} (e : α ≃ β) (h : ∀ a,
   left_inv a := Subtype.ext <| by simp
   right_inv b := Subtype.ext <| by simp
 
-lemma coe_subtypeEquiv_eq_map {X Y : Type*} {p : X → Prop} {q : Y → Prop} (e : X ≃ Y)
+lemma coe_subtypeEquiv_eq_map {X Y} {p : X → Prop} {q : Y → Prop} (e : X ≃ Y)
     (h : ∀ x, p x ↔ q (e x)) : ⇑(e.subtypeEquiv h) = Subtype.map e (h · |>.mp) :=
   rfl
 
