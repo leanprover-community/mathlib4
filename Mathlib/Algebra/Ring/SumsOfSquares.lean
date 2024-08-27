@@ -60,7 +60,7 @@ theorem IsSumSq.induction_alt [Mul R] [Add R] [Zero R]
     (sq_add : ∀ x S, (hS : IsSumSq S) → (hx : IsSquare x) → p S hS →
       p (x + S) (by rcases hx with ⟨y, hy⟩; rw [hy]; exact sq_add y S hS)) : p S hS := by
   induction hS with
-  | zero => exact zero
+  | zero                => exact zero
   | sq_add a S hS hS_ih => exact sq_add (a * a) S hS (isSquare_mul_self _) hS_ih
 
 /-- In an additive monoid with multiplication,
@@ -117,7 +117,7 @@ theorem AddSubmonoid.closure_isSquare [AddMonoid R] [Mul R] :
   | sq_add a S _ ih  => exact AddSubmonoid.add_mem _ (subset_closure ⟨a, rfl⟩) ih
 
 open AddSubmonoid in
-/-- A term of `R` satisfies `IsSumSq` if and only if it can be written as `∑ i ∈ I, x i`. -/
+/-- A term of `R` satisfies `IsSumSq` if and only if it can be written as `∑ i ∈ I, x i * x i`. -/
 theorem isSumSq_iff_finsum [AddCommMonoid R] [Mul R] (a : R) :
     IsSumSq a ↔
     (∃ (α : Type) (I : Finset α) (x : α → R), a = ∑ i ∈ I, x i * x i) := by
