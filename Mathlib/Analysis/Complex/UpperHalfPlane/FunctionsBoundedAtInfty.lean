@@ -53,20 +53,20 @@ def zeroAtImInftySubmodule (α : Type*) [NormedField α] : Submodule α (ℍ →
 def boundedAtImInftySubalgebra (α : Type*) [NormedField α] : Subalgebra α (ℍ → α) :=
   boundedFilterSubalgebra _ atImInfty
 
-namespace IsBoundedAtImInfty
-
-variable {α : Type*} {f g : ℍ → α}
-
-end IsBoundedAtImInfty
+@[deprecated (since := "2024-08-27")] alias IsBoundedAtImInfty.mul := BoundedAtFilter.mul
 
 theorem isBoundedAtImInfty_iff {α : Type*} [Norm α] {f : ℍ → α} :
     IsBoundedAtImInfty f ↔ ∃ M A : ℝ, ∀ z : ℍ, A ≤ im z → ‖f z‖ ≤ M := by
   simp [IsBoundedAtImInfty, BoundedAtFilter, Asymptotics.isBigO_iff, Filter.Eventually,
     atImInfty_mem]
 
+@[deprecated (since := "2024-08-27")] alias _root_.bounded_mem := isBoundedAtImInfty_iff
+
 theorem isZeroAtImInfty_iff {α : Type*} [SeminormedAddGroup α] {f : ℍ → α} :
     IsZeroAtImInfty f ↔ ∀ ε : ℝ, 0 < ε → ∃ A : ℝ, ∀ z : ℍ, A ≤ im z → ‖f z‖ ≤ ε :=
   (atImInfty_basis.tendsto_iff Metric.nhds_basis_closedBall).trans <| by simp
+
+@[deprecated (since := "2024-08-27")] alias _root_.zero_at_im_infty := isZeroAtImInfty_iff
 
 theorem IsZeroAtImInfty.isBoundedAtImInfty {α : Type*} [SeminormedAddGroup α] {f : ℍ → α}
     (hf : IsZeroAtImInfty f) : IsBoundedAtImInfty f :=
