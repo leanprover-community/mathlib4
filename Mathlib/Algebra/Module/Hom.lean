@@ -120,7 +120,7 @@ instance applyModule [AddCommMonoid A] : Module (AddMonoid.End A) A where
 
 end AddMonoid.End
 
-/-! ### Miscelaneous morphisms -/
+/-! ### Miscellaneous morphisms -/
 
 namespace AddMonoidHom
 

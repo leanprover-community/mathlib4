@@ -206,7 +206,7 @@ variable [LinearOrder α] [Group α] {a : α}
   rw [oneLePart, ← maxDefault, ← sup_eq_maxDefault]; simp_rw [sup_comm]
 
 @[to_additive (attr := simp) posPart_pos_iff] lemma one_lt_oneLePart_iff : 1 < a⁺ᵐ ↔ 1 < a :=
-  lt_iff_lt_of_le_iff_le $ (one_le_oneLePart _).le_iff_eq.trans oneLePart_eq_one
+  lt_iff_lt_of_le_iff_le <| (one_le_oneLePart _).le_iff_eq.trans oneLePart_eq_one
 
 @[to_additive posPart_eq_of_posPart_pos]
 lemma oneLePart_of_one_lt_oneLePart (ha : 1 < a⁺ᵐ) : a⁺ᵐ = a := by
@@ -219,7 +219,7 @@ variable [CovariantClass α α (· * ·) (· ≤ ·)]
   simp_rw [← one_le_inv']; rw [leOnePart, ← maxDefault, ← sup_eq_maxDefault]; simp_rw [sup_comm]
 
 @[to_additive (attr := simp) negPart_pos_iff] lemma one_lt_ltOnePart_iff : 1 < a⁻ᵐ ↔ a < 1 :=
-  lt_iff_lt_of_le_iff_le $ (one_le_leOnePart _).le_iff_eq.trans leOnePart_eq_one
+  lt_iff_lt_of_le_iff_le <| (one_le_leOnePart _).le_iff_eq.trans leOnePart_eq_one
 
 end covariantmul
 end LinearOrder

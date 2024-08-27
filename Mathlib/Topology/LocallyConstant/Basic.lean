@@ -99,7 +99,7 @@ theorem iff_continuous {_ : TopologicalSpace Y} [DiscreteTopology Y] (f : X → 
   ⟨IsLocallyConstant.continuous, fun h s => h.isOpen_preimage s (isOpen_discrete _)⟩
 
 theorem of_constant (f : X → Y) (h : ∀ x y, f x = f y) : IsLocallyConstant f :=
-  (iff_eventually_eq f).2 fun _ => eventually_of_forall fun _ => h _ _
+  (iff_eventually_eq f).2 fun _ => Eventually.of_forall fun _ => h _ _
 
 protected theorem const (y : Y) : IsLocallyConstant (Function.const X y) :=
   of_constant _ fun _ _ => rfl

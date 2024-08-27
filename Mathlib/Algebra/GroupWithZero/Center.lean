@@ -38,7 +38,7 @@ lemma center_units_subset : center G₀ˣ ⊆ ((↑) : G₀ˣ → G₀) ⁻¹' c
   intro u hu a
   obtain rfl | ha := eq_or_ne a 0
   · rw [zero_mul, mul_zero]
-  · exact congr_arg Units.val $ hu $ Units.mk0 a ha
+  · exact congr_arg Units.val <| hu <| Units.mk0 a ha
 
 /-- In a group with zero, the center of the units is the preimage of the center. -/
 lemma center_units_eq : center G₀ˣ = ((↑) : G₀ˣ → G₀) ⁻¹' center G₀ :=
