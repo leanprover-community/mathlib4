@@ -193,7 +193,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
   have C : ∀ (n : ℕ) (w : E), dist w b ≤ f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n) /
       (1 - c * f'symm.nnnorm) * dist (f b) y → w ∈ closedBall b ε := fun n w hw ↦ by
     apply hw.trans
-    rw [div_mul_eq_mul_div, div_le_iff]; swap; · linarith
+    rw [div_mul_eq_mul_div, div_le_iff₀]; swap; · linarith
     calc
       (f'symm.nnnorm : ℝ) * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n) * dist (f b) y =
           f'symm.nnnorm * dist (f b) y * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n) := by
