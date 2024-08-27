@@ -89,7 +89,7 @@ open Mathlib.Stacks
 /--
 `getSortedTags env` returns the array of `Tags`, sorted by alphabetical order of declaration name.
 -/
-def _root_.Lean.Environment.getSortedTags (env : Environment) : Array Tag :=
+def Lean.Environment.getSortedTags (env : Environment) : Array Tag :=
   tagExt.getState env |>.toArray.qsort (·.declName.toString < ·.declName.toString)
 
 open Elab Command in
