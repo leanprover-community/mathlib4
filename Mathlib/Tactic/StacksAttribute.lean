@@ -84,10 +84,19 @@ end Mathlib.Stacks
 
 open Mathlib.Stacks
 /--
-`getSortedTags env` returns the array of `Tags`, sorted by alphabetical order of declaration name.
+`getSortedStackProjectTags env` returns the array of `Tags`, sorted by alphabetical order of tag.
 -/
-def Lean.Environment.getSortedTags (env : Environment) : Array Tag :=
-  tagExt.getState env |>.toArray.qsort (·.declName.toString < ·.declName.toString)
+def Lean.Environment.getSortedStackProjectTags (env : Environment) : Array Tag :=
+  tagExt.getState env |>.toArray.qsort (·.tag < ·.tag)
+
+/--
+`getSortedStackProjectDeclNames env tag` returns the array of declaration names of results
+with Stacks Project tag equal to `tag`.
+-/
+def Lean.Environment.getSortedStackProjectDeclNames (env : Environment) (tag : String) :
+    Array Name :=
+  let tags := env.getSortedStackProjectTags
+  tags.filterMap fun d => if d.tag == tag then some d.declName else none
 
 /--
 `#stacks_tags` retrieves all declarations that have the `stacks` attribute.
@@ -100,7 +109,7 @@ The variant `#stacks_tags!` also adds the theorem statement after each summary l
 -/
 elab (name := Mathlib.Stacks.stacksTags) "#stacks_tags" tk:("!")?: command => do
   let env ← getEnv
-  let entries := env.getSortedTags
+  let entries := env.getSortedStackProjectTags
   if entries.isEmpty then logInfo "No tags found." else
   let mut msgs := #[m!""]
   for d in entries do
