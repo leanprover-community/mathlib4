@@ -60,7 +60,7 @@ theorem set_walk_length_succ_eq (u v : V) (n : ℕ) :
 
 /-- Walks of length two from `u` to `v` correspond bijectively to common neighbours of `u` and `v`.
 Note that `u` and `v` may be the same. -/
-[simps]
+@[simps]
 def walkLengthTwoEquivCommonNeighbors (u v : V) :
     {p : G.Walk u v // p.length = 2} ≃ G.commonNeighbors u v where
   toFun p := ⟨p.val.getVert 1, match p with
