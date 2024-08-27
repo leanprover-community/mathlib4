@@ -191,7 +191,7 @@ theorem add_lf_add_left : ∀ {b c : Game} (_ : b ⧏ c) (a), (a + b : Game) ⧏
 
 instance orderedAddCommGroup : OrderedAddCommGroup Game :=
   { Game.instAddCommGroupWithOneGame, Game.instPartialOrderGame with
-    add_le_add_left := @add_le_add_left _ _ _ Game.covariantClass_add_le }
+    add_le_add_left := @add_le_add_left _ _ _ Game.addLeftMono }
 
 /-- A small family of games is bounded above. -/
 lemma bddAbove_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Game.{u}) :
