@@ -40,11 +40,8 @@ def sigmaComparison : X.obj ⟨(of P ((a : α) × σ a))⟩ ⟶ ((a : α) → X.
   fun x a ↦ X.map ⟨Sigma.mk a, continuous_sigmaMk⟩ x
 
 noncomputable instance : PreservesLimitsOfShape (Discrete α) X :=
-  let α' := (Countable.toSmall α).equiv_small.choose
-  let e : α ≃ α' := (Countable.toSmall α).equiv_small.choose_spec.some
   letI : Fintype α := Fintype.ofFinite _
-  letI : Fintype α' := Fintype.ofEquiv α e
-  preservesLimitsOfShapeOfEquiv (Discrete.equivalence e.symm) X
+  preservesFiniteProductsOfPreservesBinaryAndTerminal X α
 
 theorem sigmaComparison_eq_comp_isos : sigmaComparison X σ =
     (X.mapIso (opCoproductIsoProduct'
