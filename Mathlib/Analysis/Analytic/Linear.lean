@@ -12,7 +12,6 @@ In this file we prove that a `ContinuousLinearMap` defines an analytic function 
 the formal power series `f x = f a + f (x - a)`. We also prove similar results for multilinear maps.
 -/
 
-
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*}
   [NormedAddCommGroup G] [NormedSpace 𝕜 G]
