@@ -256,7 +256,7 @@ theorem supDegree_withBot_some_comp {s : AddMonoidAlgebra R A} (hs : s.support.N
   unfold AddMonoidAlgebra.supDegree
   rw [← Finset.coe_sup' hs, Finset.sup'_eq_sup]
 
-variable [AddZeroClass A]  {p q : R[A]}
+variable [AddZeroClass A] {p q : R[A]}
 
 @[simp]
 theorem supDegree_zero : (0 : R[A]).supDegree D = ⊥ := by simp [supDegree]

@@ -133,9 +133,10 @@ theorem of_mul_eq_one (h : a * b = 1) : IsSMulRegular M b :=
 
 /-- Any power of an `M`-regular element is `M`-regular. -/
 theorem pow (n : ℕ) (ra : IsSMulRegular M a) : IsSMulRegular M (a ^ n) := by
-  induction' n with n hn
-  · rw [pow_zero]; simp only [one]
-  · rw [pow_succ']
+  induction n with
+  | zero => rw [pow_zero]; simp only [one]
+  | succ n hn =>
+    rw [pow_succ']
     exact (ra.smul_iff (a ^ n)).mpr hn
 
 /-- An element `a` is `M`-regular if and only if a positive power of `a` is `M`-regular. -/

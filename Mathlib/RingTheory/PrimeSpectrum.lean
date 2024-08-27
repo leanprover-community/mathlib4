@@ -40,7 +40,7 @@ and Chris Hughes (on an earlier repository).
 -/
 
 -- A dividing line between this file and `AlgebraicGeometry.PrimeSpectrum.Basic` is
--- that we should not depened on the Zariski topology here
+-- that we should not depend on the Zariski topology here
 assert_not_exists TopologicalSpace
 
 noncomputable section
@@ -371,7 +371,7 @@ section Order
 
 We endow `PrimeSpectrum R` with a partial order induced from the ideal lattice.
 This is exactly the specialization order.
-See the corresponding section at `AlgebraicGeometry/PrimeSpectrum/Basic`.
+See the corresponding section at `Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic`.
 -/
 
 instance : PartialOrder (PrimeSpectrum R) :=

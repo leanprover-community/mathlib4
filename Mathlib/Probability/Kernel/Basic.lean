@@ -215,16 +215,15 @@ protected theorem measurable_coe (κ : Kernel α β) {s : Set β} (hs : Measurab
   (Measure.measurable_coe hs).comp κ.measurable
 
 lemma apply_congr_of_mem_measurableAtom (κ : Kernel α β) {y' y : α} (hy' : y' ∈ measurableAtom y) :
-  κ y' = κ y := by
+    κ y' = κ y := by
   ext s hs
-  exact mem_of_mem_measurableAtom hy'
-    (κ.measurable_coe hs (measurableSet_singleton (κ y s))) rfl
+  exact mem_of_mem_measurableAtom hy' (κ.measurable_coe hs (measurableSet_singleton (κ y s))) rfl
 
 lemma IsFiniteKernel.integrable (μ : Measure α) [IsFiniteMeasure μ]
     (κ : Kernel α β) [IsFiniteKernel κ] {s : Set β} (hs : MeasurableSet s) :
     Integrable (fun x => (κ x s).toReal) μ := by
   refine Integrable.mono' (integrable_const (IsFiniteKernel.bound κ).toReal)
-    ((κ.measurable_coe  hs).ennreal_toReal.aestronglyMeasurable)
+    ((κ.measurable_coe hs).ennreal_toReal.aestronglyMeasurable)
     (ae_of_all μ fun x => ?_)
   rw [Real.norm_eq_abs, abs_of_nonneg ENNReal.toReal_nonneg,
     ENNReal.toReal_le_toReal (measure_ne_top _ _) (IsFiniteKernel.bound_ne_top _)]
@@ -234,6 +233,14 @@ lemma IsMarkovKernel.integrable (μ : Measure α) [IsFiniteMeasure μ]
     (κ : Kernel α β) [IsMarkovKernel κ] {s : Set β} (hs : MeasurableSet s) :
     Integrable (fun x => (κ x s).toReal) μ :=
   IsFiniteKernel.integrable μ κ hs
+
+lemma integral_congr_ae₂ {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f g : α → β → E}
+    {μ : Measure α} (h : ∀ᵐ a ∂μ, f a =ᵐ[κ a] g a) :
+    ∫ a, ∫ b, f a b ∂(κ a) ∂μ = ∫ a, ∫ b, g a b ∂(κ a) ∂μ := by
+  apply integral_congr_ae
+  filter_upwards [h] with _ ha
+  apply integral_congr_ae
+  filter_upwards [ha] with _ hb using hb
 
 section Sum
 
