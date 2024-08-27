@@ -29,7 +29,7 @@ syntax (num)? (ident)? : stackTag
 Use it as `@[stacks TAG "Optional comment"]`.
 The `TAG` is mandatory.
 
-See the [Tags page](stacks.math.columbia.edu/tags) in the Stacks project for more details.
+See the [Tags page](https://stacks.math.columbia.edu/tags) in the Stacks project for more details.
 -/
 syntax (name := stacks) "stacks " (stackTag)? (str)? : attr
 
