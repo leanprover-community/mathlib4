@@ -267,11 +267,6 @@ theorem type_preimage_aux {α β : Type u} (r : α → α → Prop) [IsWellOrder
     @type _ (fun x y => r (f x) (f y)) (inferInstanceAs (IsWellOrder β (↑f ⁻¹'o r))) = type r := by
   convert (RelIso.preimage f r).ordinal_type_eq
 
-@[elab_as_elim]
-theorem inductionOn {C : Ordinal → Prop} (o : Ordinal)
-    (H : ∀ (α r) [IsWellOrder α r], C (type r)) : C o :=
-  Quot.inductionOn o fun ⟨α, r, wo⟩ => @H α r wo
-
 /-! ### The order on ordinals -/
 
 /--
@@ -334,7 +329,7 @@ theorem _root_.PrincipalSeg.ordinal_type_lt {α β} {r : α → α → Prop} {s 
 
 @[simp]
 protected theorem zero_le (o : Ordinal) : 0 ≤ o :=
-  inductionOn o fun _ r _ => (InitialSeg.ofIsEmpty _ r).ordinal_type_le
+  Quotient.inductionOn o fun ⟨_, r, _⟩ => (InitialSeg.ofIsEmpty _ r).ordinal_type_le
 
 instance orderBot : OrderBot Ordinal where
   bot := 0
@@ -423,7 +418,7 @@ theorem typein_lt_typein (r : α → α → Prop) [IsWellOrder α r] {a b : α} 
 
 theorem typein_surj (r : α → α → Prop) [IsWellOrder α r] {o} (h : o < type r) :
     ∃ a, typein r a = o :=
-  inductionOn o (fun _ _ _ ⟨f⟩ => ⟨f.top, typein_top _⟩) h
+  Quotient.inductionOn o (fun _ ⟨f⟩ => ⟨f.top, typein_top _⟩) h
 
 theorem typein_injective (r : α → α → Prop) [IsWellOrder α r] : Injective (typein r) :=
   injective_of_increasing r (· < ·) (typein r) (typein_lt_typein r).2
@@ -478,7 +473,9 @@ theorem enum_lt_enum {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : {o
 theorem relIso_enum' {α β : Type u} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r]
     [IsWellOrder β s] (f : r ≃r s) (o : Ordinal) :
     ∀ (hr : o < type r) (hs : o < type s), f (enum r ⟨o, hr⟩) = enum s ⟨o, hs⟩ := by
-  refine inductionOn o ?_; rintro γ t wo ⟨g⟩ ⟨h⟩
+  refine Quotient.inductionOn o ?_
+  rintro ⟨_, _, _⟩ ⟨g⟩ ⟨h⟩
+  dsimp
   rw [enum_type g, enum_type (PrincipalSeg.ltEquiv g f)]; rfl
 
 theorem relIso_enum {α β : Type u} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r]
@@ -518,7 +515,7 @@ theorem card_typein {r : α → α → Prop} [IsWellOrder α r] (x : α) :
   rfl
 
 theorem card_le_card {o₁ o₂ : Ordinal} : o₁ ≤ o₂ → card o₁ ≤ card o₂ :=
-  inductionOn o₁ fun _ _ _ => inductionOn o₂ fun _ _ _ ⟨⟨⟨f, _⟩, _⟩⟩ => ⟨f⟩
+  Quotient.inductionOn₂ o₁ o₂ fun _ _ ⟨⟨⟨f, _⟩, _⟩⟩ => ⟨f⟩
 
 @[simp]
 theorem card_zero : card 0 = 0 := mk_eq_zero _
@@ -573,7 +570,7 @@ theorem type_lift_preimage_aux {α : Type u} {β : Type v} (r : α → α → Pr
 -- @[simp] -- Porting note: simp lemma never applies, tested
 theorem lift_umax : lift.{max u v, u} = lift.{v, u} :=
   funext fun a =>
-    inductionOn a fun _ r _ =>
+    Quotient.inductionOn a fun ⟨_, r, _⟩ =>
       Quotient.sound ⟨(RelIso.preimage Equiv.ulift r).trans (RelIso.preimage Equiv.ulift r).symm⟩
 
 /-- `lift.{max v u, u}` equals `lift.{v, u}`. -/
@@ -584,7 +581,7 @@ theorem lift_umax' : lift.{max v u, u} = lift.{v, u} :=
 /-- An ordinal lifted to a lower or equal universe equals itself. -/
 -- @[simp] -- Porting note: simp lemma never applies, tested
 theorem lift_id' (a : Ordinal) : lift a = a :=
-  inductionOn a fun _ r _ => Quotient.sound ⟨RelIso.preimage Equiv.ulift r⟩
+  Quotient.inductionOn a fun ⟨_, r, _⟩ => Quotient.sound ⟨RelIso.preimage Equiv.ulift r⟩
 
 /-- An ordinal lifted to the same universe equals itself. -/
 @[simp]
@@ -598,7 +595,7 @@ theorem lift_uzero (a : Ordinal.{u}) : lift.{0} a = a :=
 
 @[simp]
 theorem lift_lift (a : Ordinal) : lift.{w} (lift.{v} a) = lift.{max v w} a :=
-  inductionOn a fun _ _ _ =>
+  Quotient.inductionOn a fun _ =>
     Quotient.sound
       ⟨(RelIso.preimage Equiv.ulift _).trans <|
           (RelIso.preimage Equiv.ulift _).trans (RelIso.preimage Equiv.ulift _).symm⟩
@@ -635,10 +632,9 @@ theorem lift_type_lt {α : Type u} {β : Type v} {r s} [IsWellOrder α r] [IsWel
 
 @[simp]
 theorem lift_le {a b : Ordinal} : lift.{u,v} a ≤ lift.{u,v} b ↔ a ≤ b :=
-  inductionOn a fun α r _ =>
-    inductionOn b fun β s _ => by
-      rw [← lift_umax]
-      exact lift_type_le.{_,_,u}
+  Quotient.inductionOn₂ a b fun ⟨α, r, _⟩ ⟨β, s, _⟩ => by
+    rw [← lift_umax]
+    exact lift_type_le
 
 @[simp]
 theorem lift_inj {a b : Ordinal} : lift.{u,v} a = lift.{u,v} b ↔ a = b := by
@@ -658,15 +654,15 @@ theorem lift_one : lift 1 = 1 :=
 
 @[simp]
 theorem lift_card (a) : Cardinal.lift.{u,v} (card a)= card (lift.{u,v} a) :=
-  inductionOn a fun _ _ _ => rfl
+  Quotient.inductionOn a fun _ => rfl
 
 theorem lift_down' {a : Cardinal.{u}} {b : Ordinal.{max u v}}
     (h : card.{max u v} b ≤ Cardinal.lift.{v,u} a) : ∃ a', lift.{v,u} a' = b :=
   let ⟨c, e⟩ := Cardinal.lift_down h
   Cardinal.inductionOn c
     (fun α =>
-      inductionOn b fun β s _ e' => by
-        rw [card_type, ← Cardinal.lift_id'.{max u v, u} #β, ← Cardinal.lift_umax.{u, v},
+      Quotient.inductionOn b fun ⟨β, s, _⟩ e' => by
+        rw [type_def, card_type, ← Cardinal.lift_id'.{max u v, u} #β, ← Cardinal.lift_umax.{u, v},
           lift_mk_eq.{u, max u v, max u v}] at e'
         cases' e' with f
         have g := RelIso.preimage f s
@@ -748,10 +744,10 @@ instance addMonoidWithOne : AddMonoidWithOne Ordinal.{u} where
   zero := 0
   one := 1
   zero_add o :=
-    inductionOn o fun α r _ =>
+    Quotient.inductionOn o fun ⟨α, r, _⟩ =>
       Eq.symm <| Quotient.sound ⟨⟨(emptySum PEmpty α).symm, Sum.lex_inr_inr⟩⟩
   add_zero o :=
-    inductionOn o fun α r _ =>
+    Quotient.inductionOn o fun ⟨α, r, _⟩ =>
       Eq.symm <| Quotient.sound ⟨⟨(sumEmpty α PEmpty).symm, Sum.lex_inl_inl⟩⟩
   add_assoc o₁ o₂ o₃ :=
     Quotient.inductionOn₃ o₁ o₂ o₃ fun ⟨α, r, _⟩ ⟨β, s, _⟩ ⟨γ, t, _⟩ =>
@@ -765,7 +761,7 @@ instance addMonoidWithOne : AddMonoidWithOne Ordinal.{u} where
 
 @[simp]
 theorem card_add (o₁ o₂ : Ordinal) : card (o₁ + o₂) = card o₁ + card o₂ :=
-  inductionOn o₁ fun _ __ => inductionOn o₂ fun _ _ _ => rfl
+  Quotient.inductionOn₂ o₁ o₂ fun _ _ => rfl
 
 @[simp]
 theorem type_sum_lex {α β : Type u} (r : α → α → Prop) (s : β → β → Prop) [IsWellOrder α r]
@@ -784,12 +780,9 @@ theorem card_ofNat (n : ℕ) [n.AtLeastTwo] :
 
 -- Porting note: Rewritten proof of elim, previous version was difficult to debug
 instance add_covariantClass_le : CovariantClass Ordinal.{u} Ordinal.{u} (· + ·) (· ≤ ·) where
-  elim := fun c a b h => by
-    revert h c
-    refine inductionOn a (fun α₁ r₁ _ ↦ ?_)
-    refine inductionOn b (fun α₂ r₂ _ ↦ ?_)
-    rintro c ⟨⟨⟨f, fo⟩, fi⟩⟩
-    refine inductionOn c (fun β s _ ↦ ?_)
+  elim := fun c a b => by
+    refine Quotient.inductionOn₃ a b c ?_
+    rintro _ _ _ ⟨⟨⟨f, fo⟩, fi⟩⟩
     refine ⟨⟨⟨(Embedding.refl.{u+1} _).sumMap f, ?_⟩, ?_⟩⟩
     · intros a b
       match a, b with
@@ -808,19 +801,16 @@ instance add_covariantClass_le : CovariantClass Ordinal.{u} Ordinal.{u} (· + ·
 -- Porting note: Rewritten proof of elim, previous version was difficult to debug
 instance add_swap_covariantClass_le :
     CovariantClass Ordinal.{u} Ordinal.{u} (swap (· + ·)) (· ≤ ·) where
-  elim := fun c a b h => by
-    revert h c
-    refine inductionOn a (fun α₁ r₁ _ ↦ ?_)
-    refine inductionOn b (fun α₂ r₂ _ ↦ ?_)
-    rintro c ⟨⟨⟨f, fo⟩, fi⟩⟩
-    refine inductionOn c (fun β s _ ↦ ?_)
-    exact @RelEmbedding.ordinal_type_le _ _ (Sum.Lex r₁ s) (Sum.Lex r₂ s) _ _
-              ⟨f.sumMap (Embedding.refl _), by
-                intro a b
-                constructor <;> intro H
-                · cases' a with a a <;> cases' b with b b <;> cases H <;> constructor <;>
-                    [rwa [← fo]; assumption]
-                · cases H <;> constructor <;> [rwa [fo]; assumption]⟩
+  elim := fun c a b => by
+    refine Quotient.inductionOn₃ a b c ?_
+    rintro _ _ _ ⟨⟨⟨f, fo⟩, fi⟩⟩
+    apply RelEmbedding.ordinal_type_le
+    use f.sumMap (Embedding.refl _)
+    intro a b
+    constructor <;> intro H
+    · cases' a with a a <;> cases' b with b b <;> cases H <;> constructor <;>
+        [rwa [← fo]; assumption]
+    · cases H <;> constructor <;> [rwa [fo]; assumption]
 
 theorem le_add_right (a b : Ordinal) : a ≤ a + b := by
   simpa only [add_zero] using add_le_add_left (Ordinal.zero_le b) a
@@ -836,10 +826,9 @@ instance linearOrder : LinearOrder Ordinal :=
       | _, Or.inr h => by rw [h]; exact Or.inr (le_add_left _ _)
       | Or.inl h₁, Or.inl h₂ => by
         revert h₁ h₂
-        refine inductionOn a ?_
-        intro α₁ r₁ _
-        refine inductionOn b ?_
-        intro α₂ r₂ _ ⟨f⟩ ⟨g⟩
+        refine Quotient.inductionOn₂ a b ?_
+        rintro ⟨α₁, r₁, _⟩ ⟨α₂, r₂, _⟩ ⟨f⟩ ⟨g⟩
+        dsimp
         rw [← typein_top f, ← typein_top g, le_iff_lt_or_eq, le_iff_lt_or_eq,
                  typein_lt_typein, typein_lt_typein]
         rcases trichotomous_of (Sum.Lex r₁ r₂) g.top f.top with (h | h | h) <;>
@@ -872,13 +861,12 @@ theorem sInf_empty : sInf (∅ : Set Ordinal) = 0 :=
 
 private theorem succ_le_iff' {a b : Ordinal} : a + 1 ≤ b ↔ a < b :=
   ⟨lt_of_lt_of_le
-      (inductionOn a fun α r _ =>
+      (Quotient.inductionOn a fun _ =>
         ⟨⟨⟨⟨fun x => Sum.inl x, fun _ _ => Sum.inl.inj⟩, Sum.lex_inl_inl⟩,
             Sum.inr PUnit.unit, fun b =>
             Sum.recOn b (fun x => ⟨fun _ => ⟨x, rfl⟩, fun _ => Sum.Lex.sep _ _⟩) fun x =>
               Sum.lex_inr_inr.trans ⟨False.elim, fun ⟨x, H⟩ => Sum.inl_ne_inr H⟩⟩⟩),
-    inductionOn a fun α r hr =>
-      inductionOn b fun β s hs ⟨⟨f, t, hf⟩⟩ => by
+    Quotient.inductionOn₂ a b fun ⟨α, r, hr⟩ ⟨β, s, hs⟩ ⟨⟨f, t, hf⟩⟩ => by
         haveI := hs
         refine ⟨⟨RelEmbedding.ofMonotone (Sum.rec f fun _ => t) (fun a b ↦ ?_), fun a b ↦ ?_⟩⟩
         · rcases a with (a | _) <;> rcases b with (b | _)
@@ -1058,16 +1046,17 @@ theorem univ_umax : univ.{u, max (u + 1) v} = univ.{u, v} :=
   `ordinal.{v}` as a principal segment when `u < v`. -/
 def lift.principalSeg : @PrincipalSeg Ordinal.{u} Ordinal.{max (u + 1) v} (· < ·) (· < ·) :=
   ⟨↑lift.initialSeg.{u, max (u + 1) v}, univ.{u, v}, by
-    refine fun b => inductionOn b ?_; intro β s _
+    intro b
+    refine b.inductionOn ?_
+    rintro ⟨β, s, _⟩
     rw [univ, ← lift_umax]; constructor <;> intro h
-    · rw [← lift_id (type s)] at h ⊢
+    · rw [type_def, ← lift_id (type s)] at h ⊢
       cases' lift_type_lt.{_,_,v}.1 h with f
       cases' f with f a hf
       exists a
       revert hf
-      -- Porting note: apply inductionOn does not work, refine does
-      refine inductionOn a ?_
-      intro α r _ hf
+      refine a.inductionOn ?_
+      rintro ⟨α, r, _⟩ hf
       refine
         lift_type_eq.{u, max (u + 1) v, max (u + 1) v}.2
           ⟨(RelIso.ofSurjective (RelEmbedding.ofMonotone ?_ ?_) ?_).symm⟩
@@ -1082,8 +1071,8 @@ def lift.principalSeg : @PrincipalSeg Ordinal.{u} Ordinal.{max (u + 1) v} (· < 
         simp [e]
     · cases' h with a e
       rw [← e]
-      refine inductionOn a ?_
-      intro α r _
+      refine a.inductionOn ?_
+      rintro ⟨α, r, _⟩
       exact lift_type_lt.{u, u + 1, max (u + 1) v}.2 ⟨typein.principalSeg r⟩⟩
 
 @[simp]
@@ -1141,9 +1130,9 @@ theorem ord_le_type (r : α → α → Prop) [h : IsWellOrder α r] : ord #α �
 
 theorem ord_le {c o} : ord c ≤ o ↔ c ≤ o.card :=
   inductionOn c fun α =>
-    Ordinal.inductionOn o fun β s _ => by
+    Quotient.inductionOn o fun ⟨β, s, _⟩ => by
       let ⟨r, _, e⟩ := ord_eq α
-      simp only [card_type]; constructor <;> intro h
+      simp only [type_def, card_type]; constructor <;> intro h
       · rw [e] at h
         exact
           let ⟨f⟩ := h
