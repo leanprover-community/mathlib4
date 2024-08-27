@@ -39,7 +39,7 @@ a family of compact subsets of `X`, and `α` is a uniform space.
   embeddings instead of subspaces with the subspace topology. This is done because, in practice,
   one would rarely work with `X →ᵤ[𝔖] α` directly, so we need to provide API for bringing back the
   statements to various other types, such as `C(X, Y)` or `E →L[𝕜] F`. To counteract this, all
-  statements (as well as most proofs!) are documented quite thouroughly.
+  statements (as well as most proofs!) are documented quite thoroughly.
 
 * A lot of statements assume `∀ K ∈ 𝔖, EquicontinuousOn F K` instead of the more natural
   `EquicontinuousOn F (⋃₀ 𝔖)`. This is in order to keep the most generality, as the first statement
@@ -379,7 +379,7 @@ theorem EquicontinuousOn.isClosed_range_pi_of_uniformOnFun'
     mapClusterPt_iff_ultrafilter, range_comp, Subtype.coe_injective.surjective_comp_right.forall,
     ← restrict_eq, ← EquicontinuousOn.tendsto_uniformOnFun_iff_pi' 𝔖_compact F_eqcont]
   exact fun f ⟨u, _, hu⟩ ↦ mem_image_of_mem _ <| H.mem_of_tendsto hu <|
-    eventually_of_forall mem_range_self
+    Eventually.of_forall mem_range_self
 
 /-- Let `X` be a topological space, `𝔖` a covering of `X` by compact subsets, and
 `α` a uniform space. An equicontinuous subset of `X → α` is closed in the topology of uniform

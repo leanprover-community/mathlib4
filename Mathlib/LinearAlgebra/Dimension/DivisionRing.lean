@@ -155,7 +155,7 @@ theorem linearIndependent_of_top_le_span_of_card_eq_finrank {ι : Type*} [Fintyp
     calc
       (b i + (g i)⁻¹ • (s.erase i).sum fun j => g j • b j) =
           (g i)⁻¹ • (g i • b i + (s.erase i).sum fun j => g j • b j) := by
-        rw [smul_add, ← mul_smul, inv_mul_cancel gx_ne_zero, one_smul]
+        rw [smul_add, ← mul_smul, inv_mul_cancel₀ gx_ne_zero, one_smul]
       _ = (g i)⁻¹ • (0 : V) := congr_arg _ ?_
       _ = 0 := smul_zero _
     -- And then it's just a bit of manipulation with finite sums.

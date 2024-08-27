@@ -55,7 +55,7 @@ theorem coe_inv_le : (↑r⁻¹ : ℝ≥0∞) ≤ (↑r)⁻¹ :=
 
 @[simp, norm_cast]
 theorem coe_inv (hr : r ≠ 0) : (↑r⁻¹ : ℝ≥0∞) = (↑r)⁻¹ :=
-  coe_inv_le.antisymm <| sInf_le <| mem_setOf.2 <| by rw [← coe_mul, mul_inv_cancel hr, coe_one]
+  coe_inv_le.antisymm <| sInf_le <| mem_setOf.2 <| by rw [← coe_mul, mul_inv_cancel₀ hr, coe_one]
 
 @[norm_cast]
 theorem coe_inv_two : ((2⁻¹ : ℝ≥0) : ℝ≥0∞) = 2⁻¹ := by rw [coe_inv _root_.two_ne_zero, coe_two]
@@ -86,7 +86,7 @@ protected theorem inv_pow : ∀ {a : ℝ≥0∞} {n : ℕ}, (a ^ n)⁻¹ = a⁻�
 protected theorem mul_inv_cancel (h0 : a ≠ 0) (ht : a ≠ ∞) : a * a⁻¹ = 1 := by
   lift a to ℝ≥0 using ht
   norm_cast at h0; norm_cast
-  exact mul_inv_cancel h0
+  exact mul_inv_cancel₀ h0
 
 protected theorem inv_mul_cancel (h0 : a ≠ 0) (ht : a ≠ ∞) : a⁻¹ * a = 1 :=
   mul_comm a a⁻¹ ▸ ENNReal.mul_inv_cancel h0 ht
@@ -96,6 +96,15 @@ protected theorem div_mul_cancel (h0 : a ≠ 0) (hI : a ≠ ∞) : b / a * a = b
 
 protected theorem mul_div_cancel' (h0 : a ≠ 0) (hI : a ≠ ∞) : a * (b / a) = b := by
   rw [mul_comm, ENNReal.div_mul_cancel h0 hI]
+
+protected theorem mul_eq_left (ha : a ≠ 0) (h'a : a ≠ ∞) : a * b = a ↔ b = 1 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by rw [h, mul_one]⟩
+  have : a * b * a⁻¹ = a * a⁻¹ := by rw [h]
+  rwa [mul_assoc, mul_comm b, ← mul_assoc, ENNReal.mul_inv_cancel ha h'a, one_mul] at this
+
+protected theorem mul_eq_right (ha : a ≠ 0) (h'a : a ≠ ∞) : b * a = a ↔ b = 1 := by
+  rw [mul_comm]
+  exact ENNReal.mul_eq_left ha h'a
 
 -- Porting note: `simp only [div_eq_mul_inv, mul_comm, mul_assoc]` doesn't work in the following two
 protected theorem mul_comm_div : a / b * c = a * (c / b) := by

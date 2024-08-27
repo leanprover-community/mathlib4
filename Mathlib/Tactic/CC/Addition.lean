@@ -495,7 +495,7 @@ partial def mkProof (lhs rhs : Expr) (H : EntryExpr) (heqProofs : Bool) : CCM Ex
         getHEqProof a b >>= liftOption
       else
         -- TODO(Leo): the following code assumes R is homogeneous.
-        -- We should add support arbitrary heterogenous reflexive relations.
+        -- We should add support arbitrary heterogeneous reflexive relations.
         getEqProof a b >>= liftOption >>= fun aEqb => liftM (liftFromEq R aEqb)
     let aRbEqTrue ← mkEqTrue aRb
     if flip then

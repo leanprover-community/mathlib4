@@ -155,7 +155,7 @@ theorem integrable_comp_smul_iff {E : Type*} [NormedAddCommGroup E] [NormedSpace
     ∀ {g : E → F} (_ : Integrable g μ) {S : ℝ} (_ : S ≠ 0), Integrable (fun x => g (S • x)) μ by
     refine ⟨fun hf => ?_, fun hf => this hf hR⟩
     convert this hf (inv_ne_zero hR)
-    rw [← mul_smul, mul_inv_cancel hR, one_smul]
+    rw [← mul_smul, mul_inv_cancel₀ hR, one_smul]
   -- now prove
   intro g hg S hS
   let t := ((Homeomorph.smul (isUnit_iff_ne_zero.2 hS).unit).toMeasurableEquiv : E ≃ᵐ E)
@@ -201,12 +201,12 @@ variable [NormedAddCommGroup F'] [InnerProductSpace ℝ F'] [FiniteDimensional �
   [MeasurableSpace F'] [BorelSpace F']
 
 variable (f : E' ≃ₗᵢ[ℝ] F')
-variable [NormedAddCommGroup A] [NormedSpace ℝ A]
+variable [NormedAddCommGroup A]
 
 theorem integrable_comp (g : F' → A) : Integrable (g ∘ f) ↔ Integrable g :=
   f.measurePreserving.integrable_comp_emb f.toMeasureEquiv.measurableEmbedding
 
-theorem integral_comp (g : F' → A) : ∫ (x : E'), g (f x) = ∫ (y : F'), g y :=
+theorem integral_comp [NormedSpace ℝ A] (g : F' → A) : ∫ (x : E'), g (f x) = ∫ (y : F'), g y :=
   f.measurePreserving.integral_comp' (f := f.toMeasureEquiv) g
 
 end InnerProductSpace

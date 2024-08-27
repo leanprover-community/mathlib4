@@ -50,8 +50,8 @@ type of linear trivializations is not even particularly well-behaved.
 open TopologicalSpace Filter Set Bundle Function
 open scoped Topology
 
-variable {ι : Type*} {B : Type*} {F : Type*} {E : B → Type*}
-variable (F) {Z : Type*} [TopologicalSpace B] [TopologicalSpace F] {proj : Z → B}
+variable {ι : Type*} {B : Type*} (F : Type*) {E : B → Type*}
+variable {Z : Type*} [TopologicalSpace B] [TopologicalSpace F] {proj : Z → B}
 
 /-- This structure contains the information left for a local trivialization (which is implemented
 below as `Trivialization F proj`) if the total space has not been given a topology, but we
@@ -418,7 +418,7 @@ theorem preimageHomeomorph_apply {s : Set B} (hb : s ⊆ e.baseSet) (p : proj �
     e.preimageHomeomorph hb p = (⟨proj p, p.2⟩, (e p).2) :=
   Prod.ext (Subtype.ext (e.proj_toFun p (e.mem_source.mpr (hb p.2)))) rfl
 
-/-- Auxilliary definition to avoid looping in `dsimp`
+/-- Auxiliary definition to avoid looping in `dsimp`
 with `Trivialization.preimageHomeomorph_symm_apply`. -/
 protected def preimageHomeomorph_symm_apply.aux {s : Set B} (hb : s ⊆ e.baseSet) :=
   (e.preimageHomeomorph hb).symm
@@ -438,7 +438,7 @@ theorem sourceHomeomorphBaseSetProd_apply (p : e.source) :
     e.sourceHomeomorphBaseSetProd p = (⟨proj p, e.mem_source.mp p.2⟩, (e p).2) :=
   e.preimageHomeomorph_apply subset_rfl ⟨p, e.mem_source.mp p.2⟩
 
-/-- Auxilliary definition to avoid looping in `dsimp`
+/-- Auxiliary definition to avoid looping in `dsimp`
 with `Trivialization.sourceHomeomorphBaseSetProd_symm_apply`. -/
 protected def sourceHomeomorphBaseSetProd_symm_apply.aux := e.sourceHomeomorphBaseSetProd.symm
 
