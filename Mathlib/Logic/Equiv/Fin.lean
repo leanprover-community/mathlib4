@@ -81,7 +81,7 @@ def insertNthEquiv (α : Fin (n + 1) → Type u) (p : Fin (n + 1)) :
   right_inv f := by simp
 
 @[simp] lemma insertNthEquiv_zero (α : Fin (n + 1) → Type*) : insertNthEquiv α 0 = consEquiv α :=
-  Equiv.symm_bijective.injective $ by ext <;> rfl
+  Equiv.symm_bijective.injective <| by ext <;> rfl
 
 /-- Note this lemma can only be written about non-dependent tuples as `insertNth (last n) = snoc` is
 not a definitional equality. -/
