@@ -48,57 +48,25 @@ lemma analyticWithinOn_univ {f : E → F} :
     AnalyticWithinOn 𝕜 f univ ↔ AnalyticOn 𝕜 f univ := by
   simp only [AnalyticWithinOn, analyticWithinAt_univ, AnalyticOn]
 
-lemma HasFPowerSeriesWithinOnBall.continuousWithinAt
-    {f : E → F} {p : FormalMultilinearSeries 𝕜 E F} {s : Set E} {x : E} {r : ℝ≥0∞}
-    (h : HasFPowerSeriesWithinOnBall f p s x r) :
-    ContinuousWithinAt f s x := by
-  sorry
-
-lemma HasFPowerSeriesWithinAt.continuousWithinAt {f : E → F} {p : FormalMultilinearSeries 𝕜 E F}
-    {s : Set E} {x : E} (h : HasFPowerSeriesWithinAt f p s x) : ContinuousWithinAt f s x := by
-  rcases h with ⟨r, h⟩
-  exact h.continuousWithinAt
-
-#exit
-
-lemma HasFPowerSeriesOnBall.union {f : E → F} {p : FormalMultilinearSeries 𝕜 E F}
-    {s t : Set E} {x : E} {r : ℝ≥0∞}
-    (h : HasFPowerSeriesWithinOnBall f p s x r) (h' : HasFPowerSeriesWithinOnBall f p t x r) :
-    HasFPowerSeriesWithinOnBall f p (s ∪ t) x r := by
-  refine ⟨h.r_le, h.r_pos, fun {y} hy h'y ↦ ?_, h.continuousWithinAt.union h'.continuousWithinAt⟩
-  rcases hy with hy | hy
-  · exact h.hasSum hy h'y
-  · exact h'.hasSum hy h'y
-
-lemma HasFPowerSeriesOnBall.insert {f : E → F} {p : FormalMultilinearSeries 𝕜 E F}
-    {s t : Set E} {x : E} {r : ℝ≥0∞}
-    (h : HasFPowerSeriesWithinOnBall f p s x r) :
-    HasFPowerSeriesWithinOnBall f p (insert x s) x r := by
-  sorry
-
-
-#exit
-
-
 lemma HasFPowerSeriesWithinOnBall.of_le {f : E → F} {p : FormalMultilinearSeries 𝕜 E F}
     {s : Set E} {x : E} {r r' : ℝ≥0∞}
     (h : HasFPowerSeriesWithinOnBall f p s x r) (h' : r' ≤ r) (h'' : 0 < r') :
     HasFPowerSeriesWithinOnBall f p s x r' :=
-  ⟨h'.trans h.r_le, h'', fun hy h'y ↦ h.hasSum hy (EMetric.ball_subset_ball h' h'y),
-    h.continuousWithinAt⟩
+  ⟨h'.trans h.r_le, h'', fun hy h'y ↦ h.hasSum hy (EMetric.ball_subset_ball h' h'y)⟩
 
 lemma HasFPowerSeriesWithinOnBall.congr {f g : E → F} {p : FormalMultilinearSeries 𝕜 E F}
     {s : Set E} {x : E} {r : ℝ≥0∞} (h : HasFPowerSeriesWithinOnBall f p s x r)
     (h' : EqOn g f (s ∩ EMetric.ball x r)) (h'' : g x = f x) :
     HasFPowerSeriesWithinOnBall g p s x r := by
-  refine ⟨h.r_le, h.r_pos, ?_, ?_⟩
+  refine ⟨h.r_le, h.r_pos, ?_⟩
   · intro y hy h'y
     convert h.hasSum hy h'y using 1
-    apply h'
-    refine ⟨hy, ?_⟩
-    simpa [edist_eq_coe_nnnorm_sub] using h'y
-  · apply h.continuousWithinAt.congr_of_eventuallyEq ?_ h''
-    filter_upwards [inter_mem_nhdsWithin _ (EMetric.ball_mem_nhds x h.r_pos)] using h'
+    simp only [mem_insert_iff, add_right_eq_self] at hy
+    rcases hy with rfl | hy
+    · simpa using h''
+    · apply h'
+      refine ⟨hy, ?_⟩
+      simpa [edist_eq_coe_nnnorm_sub] using h'y
 
 lemma HasFPowerSeriesWithinAt.congr {f g : E → F} {p : FormalMultilinearSeries 𝕜 E F} {s : Set E}
     {x : E} (h : HasFPowerSeriesWithinAt f p s x) (h' : g =ᶠ[𝓝[s] x] f) (h'' : g x = f x) :
@@ -113,42 +81,34 @@ lemma HasFPowerSeriesWithinAt.congr {f g : E → F} {p : FormalMultilinearSeries
   intro z hz
   exact hε ⟨EMetric.ball_subset_ball (min_le_right _ _) hz.2, hz.1⟩
 
-lemma AnalyticWithinAt.continuousWithinAt {f : E → F} {s : Set E} {x : E}
-    (h : AnalyticWithinAt 𝕜 f s x) : ContinuousWithinAt f s x := by
-  rcases h with ⟨p, h⟩
-  exact h.continuousWithinAt
-
 /-- `AnalyticWithinAt` is trivial if `{x} ∈ 𝓝[s] x` -/
 lemma analyticWithinAt_of_singleton_mem {f : E → F} {s : Set E} {x : E} (h : {x} ∈ 𝓝[s] x) :
     AnalyticWithinAt 𝕜 f s x := by
-  have fc : ContinuousWithinAt f s x :=
-    Filter.Tendsto.mono_left (tendsto_pure_nhds _ _) (Filter.le_pure_iff.mpr h)
   rcases mem_nhdsWithin.mp h with ⟨t, ot, xt, st⟩
   rcases Metric.mem_nhds_iff.mp (ot.mem_nhds xt) with ⟨r, r0, rt⟩
-  exact ⟨constFormalMultilinearSeries 𝕜 E (f x), .ofReal r, {
-    r_le := by simp only [FormalMultilinearSeries.constFormalMultilinearSeries_radius, le_top]
+  exact ⟨constFormalMultilinearSeries 𝕜 E (f x), .ofReal r,
+  { r_le := by simp only [FormalMultilinearSeries.constFormalMultilinearSeries_radius, le_top]
     r_pos := by positivity
     hasSum := by
       intro y ys yr
       simp only [subset_singleton_iff, mem_inter_iff, and_imp] at st
-      specialize st (x + y) (rt (by simpa using yr)) ys
-      simp only [st]
+      simp only [mem_insert_iff, add_right_eq_self] at ys
+      have : x + y = x := by
+        rcases ys with rfl | ys
+        · simp
+        · exact st (x + y) (rt (by simpa using yr)) ys
+      simp only [this]
       apply (hasFPowerSeriesOnBall_const (e := 0)).hasSum
-      simp only [Metric.emetric_ball_top, mem_univ]
-    continuousWithinAt := fc
-  }⟩
+      simp only [Metric.emetric_ball_top, mem_univ] }⟩
 
 /-- Analyticity implies analyticity within any `s` -/
 lemma AnalyticAt.analyticWithinAt {f : E → F} {s : Set E} {x : E} (h : AnalyticAt 𝕜 f x) :
     AnalyticWithinAt 𝕜 f s x := by
   rcases h with ⟨p, r, hp⟩
-  exact ⟨p, r, {
-    r_le := hp.r_le
-    r_pos := hp.r_pos
-    hasSum := fun {y} _ yr ↦ hp.hasSum yr
-    continuousWithinAt :=
-      (hp.continuousOn.continuousAt (EMetric.ball_mem_nhds x hp.r_pos)).continuousWithinAt
-  }⟩
+  exact ⟨p, r,
+    { r_le := hp.r_le
+      r_pos := hp.r_pos
+      hasSum := fun {y} _ yr ↦ hp.hasSum yr }⟩
 
 /-- Analyticity on `s` implies analyticity within `s` -/
 lemma AnalyticOn.analyticWithinOn {f : E → F} {s : Set E} (h : AnalyticOn 𝕜 f s) :
@@ -157,7 +117,7 @@ lemma AnalyticOn.analyticWithinOn {f : E → F} {s : Set E} (h : AnalyticOn 𝕜
 
 lemma AnalyticWithinOn.continuousOn {f : E → F} {s : Set E} (h : AnalyticWithinOn 𝕜 f s) :
     ContinuousOn f s :=
-  fun x m ↦ (h x m).continuousWithinAt
+  fun x m ↦ (h x m).continuousWithinAt.mono (by simp)
 
 /-- If `f` is `AnalyticWithinOn` near each point in a set, it is `AnalyticWithinOn` the set -/
 lemma analyticWithinOn_of_locally_analyticWithinOn {f : E → F} {s : Set E}
@@ -167,19 +127,20 @@ lemma analyticWithinOn_of_locally_analyticWithinOn {f : E → F} {s : Set E}
   rcases h x m with ⟨u, ou, xu, fu⟩
   rcases Metric.mem_nhds_iff.mp (ou.mem_nhds xu) with ⟨r, r0, ru⟩
   rcases fu x ⟨m, xu⟩ with ⟨p, t, fp⟩
-  exact ⟨p, min (.ofReal r) t, {
-    r_pos := lt_min (by positivity) fp.r_pos
-    r_le := min_le_of_right_le fp.r_le
-    hasSum := by
-      intro y ys yr
-      simp only [EMetric.mem_ball, lt_min_iff, edist_lt_ofReal, dist_zero_right] at yr
-      apply fp.hasSum ⟨ys, ru ?_⟩
-      · simp only [EMetric.mem_ball, yr]
-      · simp only [Metric.mem_ball, dist_self_add_left, yr]
-    continuousWithinAt := by
-      refine (fu.continuousOn x ⟨m, xu⟩).mono_left (le_of_eq ?_)
-      exact nhdsWithin_eq_nhdsWithin xu ou (by simp only [inter_assoc, inter_self])
-  }⟩
+  exact ⟨p, min (.ofReal r) t,
+    { r_pos := lt_min (by positivity) fp.r_pos
+      r_le := min_le_of_right_le fp.r_le
+      hasSum := by
+        intro y ys yr
+        simp only [EMetric.mem_ball, lt_min_iff, edist_lt_ofReal, dist_zero_right] at yr
+        apply fp.hasSum
+        · simp only [mem_insert_iff, add_right_eq_self] at ys
+          rcases ys with rfl | ys
+          · simp
+          · simp only [mem_insert_iff, add_right_eq_self, mem_inter_iff, ys, true_and]
+            apply Or.inr (ru ?_)
+            simp only [Metric.mem_ball, dist_self_add_left, yr]
+        · simp only [EMetric.mem_ball, yr] }⟩
 
 /-- On open sets, `AnalyticOn` and `AnalyticWithinOn` coincide -/
 @[simp] lemma IsOpen.analyticWithinOn_iff_analyticOn {f : E → F} {s : Set E} (hs : IsOpen s) :
@@ -197,6 +158,8 @@ lemma analyticWithinOn_of_locally_analyticWithinOn {f : E → F} {s : Set E}
       refine fp.hasSum (rs ?_) ym.2
       simp only [Metric.mem_ball, dist_self_add_left, ym.1]
   }⟩
+
+#exit
 
 /-!
 ### Equivalence to analyticity of a local extension
