@@ -18,7 +18,6 @@ open Lean Meta Elab Tactic
 
 /-! ## Syntax of objects and lemmas needed for testing `MfldSetTac` -/
 
-set_option autoImplicit true
 section stub_lemmas
 
 structure PartialHomeomorph (α : Type u) (β : Type u) extends PartialEquiv α β

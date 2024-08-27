@@ -6,7 +6,6 @@ import Mathlib.Data.Complex.Exponential
 set_option linter.setOption false
 -- Remark: When the test is run by make/CI, this option is not set, so we set it here.
 set_option pp.unicode.fun true
-set_option autoImplicit true
 
 /-
 Motivating examples from the initial Zulip thread:

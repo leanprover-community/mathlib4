@@ -1,7 +1,6 @@
 import Mathlib.Tactic.Says
 import Aesop
 
-set_option autoImplicit true
 /--
 info: Try this: (show_term exact 37) says exact 37
 -/

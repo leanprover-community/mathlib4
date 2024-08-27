@@ -2,7 +2,6 @@ import Mathlib.Tactic.RSuffices
 import Mathlib.Tactic.ExistsI
 import Mathlib.Algebra.Ring.Nat
 
-set_option autoImplicit true
 /-- These next few are duplicated from `rcases/obtain` tests, with the goal order swapped. -/
 
 example : True := by

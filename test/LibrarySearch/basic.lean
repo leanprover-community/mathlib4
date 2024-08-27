@@ -4,8 +4,6 @@ import Mathlib.Data.Quot
 import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.Real.Basic
 
-set_option autoImplicit true
-
 set_option linter.setOption false
 -- Enable this option for tracing:
 -- set_option trace.Tactic.librarySearch true

@@ -1,7 +1,5 @@
 import Mathlib.Tactic.CasesM
 
-set_option autoImplicit true
-
 example (h : a ∧ b ∨ c ∧ d) (h2 : e ∧ f) : True := by
   casesm* _∨_, _∧_
   · clear ‹a› ‹b› ‹e› ‹f›; (fail_if_success clear ‹c›); trivial

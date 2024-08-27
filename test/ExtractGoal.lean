@@ -4,7 +4,6 @@ import Mathlib.Order.Basic
 import Mathlib.Data.Nat.Defs
 
 set_option pp.unicode.fun true
-set_option autoImplicit true
 set_option linter.unusedVariables false
 
 -- the example in the documentation for the tactic.

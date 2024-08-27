@@ -3,7 +3,6 @@ import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.RingTheory.UniqueFactorizationDomain
-set_option autoImplicit true
 namespace Tests
 
 -- Note about tests: these are just testing how `variable?` works, and for the algebra hierarchy

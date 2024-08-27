@@ -6,7 +6,6 @@ import Mathlib.Order.Interval.Finset.Nat
 
 private axiom test_sorry : ∀ {α}, α
 set_option linter.unusedVariables false
-set_option autoImplicit false
 
 example {α} [LinearOrderedCommRing α] {a b : α} (h : a < b) (w : b < a) : False := by
   linarith

@@ -4,7 +4,6 @@ import Mathlib.Algebra.Group.Basic
 import Mathlib.Data.Subtype
 
 private axiom test_sorry : ∀ {α}, α
-set_option autoImplicit true
 
 -- Useful for debugging the generated congruence theorems
 --set_option trace.Meta.CongrTheorems true

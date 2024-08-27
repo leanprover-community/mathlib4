@@ -11,7 +11,6 @@ import Mathlib.Tactic.Linter.GlobalAttributeIn
 -- Test disabling the linter.
 set_option linter.globalAttributeIn false
 
-set_option autoImplicit false in
 attribute [instance] Int.add in
 instance : Inhabited Int where
   default := 0
@@ -32,10 +31,8 @@ please remove the `in` or make this a `local instance 1100`
 note: this linter can be disabled with `set_option linter.globalAttributeIn false`
 -/
 #guard_msgs in
-set_option autoImplicit false in
 set_option linter.globalAttributeIn true in
 attribute [instance 1100] Int.add in
-set_option autoImplicit false in
 instance : Inhabited Int where
   default := 0
 

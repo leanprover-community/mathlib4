@@ -1,8 +1,6 @@
 import Mathlib.Tactic.CategoryTheory.Elementwise
 import Mathlib.Algebra.Category.MonCat.Basic
 
-set_option autoImplicit true
-
 namespace ElementwiseTest
 open CategoryTheory
 

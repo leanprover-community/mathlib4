@@ -2,8 +2,6 @@ import Mathlib.Algebra.Polynomial.Eval
 import Mathlib.Algebra.Polynomial.Inductions
 import Mathlib.Tactic.RewriteSearch
 
-set_option autoImplicit true
-
 open Polynomial
 
 -- Fails, but used to work prior to `rw?` moving to `lean4`.

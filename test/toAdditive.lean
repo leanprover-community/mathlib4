@@ -4,7 +4,6 @@ import Mathlib.Util.Time
 import Qq.MetaM
 open Qq Lean Meta Elab Command ToAdditive
 
-set_option autoImplicit true
 -- work in a namespace so that it doesn't matter if names clash
 namespace Test
 

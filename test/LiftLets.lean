@@ -1,7 +1,6 @@
 import Mathlib.Tactic.LiftLets
 
 private axiom test_sorry : ∀ {α}, α
-set_option autoImplicit true
 
 example : (let x := 1; x) = 1 := by
   lift_lets

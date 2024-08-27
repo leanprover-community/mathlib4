@@ -76,7 +76,7 @@ set_option linter.setOption true in
 set_option debug.moduleNameAtTimeout false
 
 -- The lint does not fire on arbitrary options.
-set_option autoImplicit false
+set_option linter.dollarSyntax true
 
 -- We also cover set_option tactics.
 
@@ -129,7 +129,7 @@ lemma tactic4 : True := by
   trivial
 
 -- This option is not affected, hence does not throw an error.
-set_option autoImplicit true in
+set_option linter.dollarSyntax true in
 lemma foo' : True := trivial
 
 -- TODO: add terms for the term form

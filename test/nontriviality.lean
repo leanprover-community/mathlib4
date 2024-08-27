@@ -5,8 +5,6 @@ import Mathlib.Algebra.Ring.Nat
 private axiom test_sorry : ∀ {α}, α
 /-! ### Test `nontriviality` with inequality hypotheses -/
 
-set_option autoImplicit true
-
 example {R : Type} [OrderedRing R] {a : R} (h : 0 < a) : 0 < a := by
   nontriviality
   rename_i inst; guard_hyp inst : Nontrivial R

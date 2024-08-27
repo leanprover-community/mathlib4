@@ -1,8 +1,6 @@
 import Mathlib.Tactic.DefEqTransformations
 import Mathlib.Init.Logic
 
-set_option autoImplicit true
-
 private axiom test_sorry : ∀ {α}, α
 namespace Tests
 

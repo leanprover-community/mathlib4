@@ -3,8 +3,6 @@ import Mathlib.Algebra.Star.Subalgebra
 import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.Algebra.Star.NonUnitalSubalgebra
 
-set_option autoImplicit true
-
 section Delab
 variable {M : Type u} [Monoid M] (S S' : Submonoid M)
 

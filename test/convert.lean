@@ -3,7 +3,6 @@ import Mathlib.Algebra.Group.Basic
 import Mathlib.Data.Set.Image
 
 private axiom test_sorry : ∀ {α}, α
-set_option autoImplicit true
 
 namespace Tests
 

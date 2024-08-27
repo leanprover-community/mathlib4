@@ -8,8 +8,6 @@ import Mathlib.Tactic.Ring
 
 namespace Tests
 
-set_option autoImplicit true
-
 -- set_option trace.Elab.congr true
 
 example [Fintype α] [Fintype β] (h : α = β) : Fintype.card α = Fintype.card β :=

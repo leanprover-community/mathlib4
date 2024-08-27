@@ -9,8 +9,6 @@ import Mathlib.Tactic.Basic
 
 namespace UseTests
 
-set_option autoImplicit true
-
 example : ∃ x : Nat, x = x := by use 42
 
 -- Since `Eq` is an inductive type, `use` naturally handles it when applying the constructor.

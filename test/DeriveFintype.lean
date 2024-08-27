@@ -2,7 +2,6 @@ import Mathlib.Tactic.DeriveFintype
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Pi
 
-set_option autoImplicit true
 namespace tests
 
 /-

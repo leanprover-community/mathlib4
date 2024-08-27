@@ -5,7 +5,6 @@ import Mathlib.Data.SetLike.Basic
 
 private axiom test_sorry : ∀ {α}, α
 universe u v w
-set_option autoImplicit true
 
 namespace FBinopTests
 

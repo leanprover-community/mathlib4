@@ -2,7 +2,6 @@ import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring
 
 private axiom test_sorry : ∀ {α}, α
-set_option autoImplicit true
 
 -- We deliberately mock R here so that we don't have to import the deps
 axiom Real : Type

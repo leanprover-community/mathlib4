@@ -1,9 +1,6 @@
 import Mathlib.Tactic.LinearCombination'
 import Mathlib.Tactic.Linarith
 
-
-set_option autoImplicit true
-
 private axiom test_sorry : ∀ {α}, α
 
 -- We deliberately mock R here so that we don't have to import the deps

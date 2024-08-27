@@ -2,7 +2,6 @@ import Mathlib.Algebra.Ring.Nat
 import Mathlib.Tactic.GeneralizeProofs
 
 private axiom test_sorry : ∀ {α}, α
-set_option autoImplicit true
 noncomputable def List.nthLe (l : List α) (n) (_h : n < l.length) : α := test_sorry
 
 -- For debugging `generalize_proofs`

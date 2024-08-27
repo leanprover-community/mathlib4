@@ -1,7 +1,6 @@
 import Mathlib.Tactic.Relation.Trans
 import Mathlib.Tactic.GuardGoalNums
 
-set_option autoImplicit true
 -- testing that the attribute is recognized and used
 def nleq (a b : Nat) : Prop := a ≤ b
 

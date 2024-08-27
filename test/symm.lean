@@ -1,7 +1,6 @@
 import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Logic.Equiv.Basic
 
-set_option autoImplicit true
 -- testing that the attribute is recognized
 @[symm] def eq_symm {α : Type} (a b : α) : a = b → b = a := Eq.symm
 

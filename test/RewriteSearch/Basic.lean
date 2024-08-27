@@ -1,7 +1,5 @@
 import Mathlib.Tactic.RewriteSearch
 
-set_option autoImplicit true
-
 -- You can enable tracing of the `rw_search` algorithm using
 -- set_option trace.rw_search true
 

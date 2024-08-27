@@ -1,7 +1,5 @@
 import Mathlib.Tactic.SimpIntro
 
-set_option autoImplicit true
-
 example : x + 0 = y → x = y := by simp_intro h₁
 example : x + 0 ≠ y → x ≠ y := by simp_intro h₁ h₂ -- h₂ is bound but not needed
 example : x + 0 ≠ y → x ≠ y := by simp_intro h₁ h₂ h₃ -- h₃ is not bound

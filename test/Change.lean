@@ -1,7 +1,6 @@
 import Mathlib.Tactic.Change
 
 set_option pp.unicode.fun true
-set_option autoImplicit true
 
 /--
 info: Try this: change 0 = 1

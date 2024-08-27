@@ -7,7 +7,6 @@ import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Data.Part
 
-set_option autoImplicit true
 section tauto₀
 
 variable (p q r : Prop)

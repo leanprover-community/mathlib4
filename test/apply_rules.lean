@@ -1,6 +1,5 @@
 import Mathlib.Algebra.Order.Field.Basic
 
-set_option autoImplicit true
 open Nat
 
 example {a b c d e : Nat} (h1 : a ≤ b) (h2 : c ≤ d) (h3 : 0 ≤ e) :

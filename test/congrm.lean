@@ -5,8 +5,6 @@ import Mathlib.Tactic.CongrM
 private axiom test_sorry : ∀ {α}, α
 namespace Tests.Congrm
 
-set_option autoImplicit true
-
 section docs
 
 /-! These are the examples from the tactic documentation -/
