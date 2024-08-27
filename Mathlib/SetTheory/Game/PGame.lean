@@ -1504,13 +1504,6 @@ instance : Add PGame.{u} :=
     · exact fun i => IHxr i y
     · exact IHyr⟩
 
-theorem mk_add_mk {xl xr yl yr : Type u} {xL xR yL yR} :
-    mk xl xr xL xR + mk yl yr yL yR =
-      ⟨xl ⊕ yl, xr ⊕ yr,
-        Sum.rec (xL · + mk yl yr yL yR) (mk xl xr xL xR + yL ·),
-        Sum.rec (xR · + mk yl yr yL yR) (mk xl xr xL xR + yR ·)⟩ :=
-  rfl
-
 @[simp]
 theorem mk_add_moveLeft {xl xr yl yr} {xL xR yL yR} {i} :
     (mk xl xr xL xR + mk yl yr yL yR).moveLeft i =
@@ -1703,7 +1696,7 @@ protected lemma neg_add (x y : PGame) : -(x + y) = -x + -y :=
     refine ext rfl rfl ?_ ?_ <;>
     · rintro (i | i) _ ⟨rfl⟩
       · exact PGame.neg_add _ _
-      · simpa [Equiv.refl, mk_add_mk] using PGame.neg_add _ _
+      · simpa [Equiv.refl] using PGame.neg_add _ _
   termination_by (x, y)
 
 /-- `-(x + y)` has exactly the same moves as `-y + -x`. -/
