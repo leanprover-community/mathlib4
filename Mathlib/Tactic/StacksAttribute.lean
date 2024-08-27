@@ -36,9 +36,9 @@ initialize tagExt : SimplePersistentEnvExtension Tag (HashSet Tag) ←
   }
 
 /--
-`addTagEntry tag declName` takes as input the `String` `tag` and the `Name` `declName` of
-a declaration with the `stacks` attribute.
-It extends the `Tag` environment extension with the data `tag, declName`.
+`addTagEntry declName tag comment` takes as input the `Name` `declName` of a declaration and
+the `String`s `tag` and `comment` of the `stacks` attribute.
+It extends the `Tag` environment extension with the data `declName, tag, comment`.
 -/
 def addTagEntry {m : Type → Type} [MonadEnv m] (declName : Name) (tag comment : String) : m Unit :=
   modifyEnv (tagExt.addEntry · { declName := declName, tag := tag, comment := comment })
