@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Antoine Chambert-Loir
+-/
 import Mathlib.RingTheory.Nullstellensatz
 import Mathlib.RingTheory.MvPolynomial.Homogeneous
 import Mathlib.Algebra.MvPolynomial.Equiv
