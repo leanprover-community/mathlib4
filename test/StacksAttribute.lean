@@ -27,7 +27,6 @@ warning: Please, enter a Tag after `stacks`.
 @[stacks "", stacks]
 example : True := .intro
 
-
 /--
 info:
 'X.tagged' corresponds to tag 'A04Q'.
