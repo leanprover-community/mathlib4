@@ -6,6 +6,7 @@ Authors: Moritz Doll
 import Mathlib.Topology.Algebra.Module.WeakDual
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
+import Mathlib.Analysis.RCLike.Lemmas
 
 /-!
 # Weak Dual in Topological Vector Spaces
@@ -133,11 +134,17 @@ end Topology
 
 section LocallyConvex
 
-variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [Module 𝕜 F]
-variable [Nonempty ι] [NormedSpace ℝ 𝕜] [Module ℝ E] [IsScalarTower ℝ 𝕜 E]
+variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [TopologicalSpace F]
+  [Module 𝕜 F] [Nonempty ι] [NormedSpace ℝ 𝕜] [Module ℝ E] [IsScalarTower ℝ 𝕜 E]
 
 instance WeakBilin.locallyConvexSpace {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} :
     LocallyConvexSpace ℝ (WeakBilin B) :=
   B.weakBilin_withSeminorms.toLocallyConvexSpace
+
+variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
+
+def dual_of_separating_family (h_sep : ∀ x : E, x ≠ 0 → (∃ f : F, B x f ≠ 0)) :
+    (WeakBilin B →L[𝕜] 𝕜) ≃L[𝕜] F := by
+  sorry
 
 end LocallyConvex
