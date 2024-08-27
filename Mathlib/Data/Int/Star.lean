@@ -31,6 +31,6 @@ lemma addSubmonoid_closure_range_mul_self : closure (range fun x : ℤ ↦ x * x
   simpa only [sq] using addSubmonoid_closure_range_pow even_two
 
 instance instStarOrderedRing : StarOrderedRing ℤ where
-  le_iff a b := by simp [le_iff_exists_nonneg_add a b]
+  le_iff a b := by simp [eq_comm, le_iff_exists_nonneg_add (a := a)]
 
 end Int
