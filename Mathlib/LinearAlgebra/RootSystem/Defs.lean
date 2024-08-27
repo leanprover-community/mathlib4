@@ -722,6 +722,7 @@ structure Morphism {κ M' N' : Type*} [AddCommGroup M'] [Module R M'] [AddCommGr
   root_weight_map : weight_map ∘ P.root = Q.root ∘ index_map
   coroot_coweight_map : coweight_map ∘ Q.coroot = P.coroot ∘ index_map.symm
 
+/-- Composition of morphisms -/
 def MorphismComp {κ μ M₁ N₁ M₂ N₂ : Type*} [AddCommGroup M₁] [Module R M₁] [AddCommGroup N₁]
     [Module R N₁] [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
     {P : RootPairing ι R M N} {P₁ : RootPairing κ R M₁ N₁} {P₂ : RootPairing μ R M₂ N₂}
@@ -745,6 +746,7 @@ def MorphismComp {κ μ M₁ N₁ M₂ N₂ : Type*} [AddCommGroup M₁] [Module
     rw [comp.assoc, g.coroot_coweight_map, ← comp.assoc, f.coroot_coweight_map, comp.assoc]
     simp
 
+/-- Reflections give morphisms -/
 @[simps!]
 def reflection_hom : Morphism P P where
   weight_map := P.reflection i
