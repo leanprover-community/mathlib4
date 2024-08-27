@@ -75,6 +75,7 @@ namespace IsAlgClosed
 variable {k}
 
 /--
+If `k` is algebraically closed, then every nonconstant polynomial has a root.
 * [Stacks: Lemma 09GR, (4) ⟹ (3)](https://stacks.math.columbia.edu/tag/09GR)
 -/
 theorem exists_root [IsAlgClosed k] (p : k[X]) (hp : p.degree ≠ 0) : ∃ x, IsRoot p x :=
@@ -124,6 +125,7 @@ theorem exists_aeval_eq_zero {R : Type*} [Field R] [IsAlgClosed k] [Algebra R k]
 
 
 /--
+If every nonconstant polynomial over `k` has a root, then `k` is algebraically closed.
 * [Stacks: Lemma 09GR, (3) ⟹ (4)](https://stacks.math.columbia.edu/tag/09GR)
 -/
 theorem of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → ∃ x, p.eval x = 0) :
@@ -153,6 +155,7 @@ theorem of_ringEquiv (k' : Type u) [Field k'] (e : k ≃+* k')
   induction p using Polynomial.induction_on <;> simp_all
 
 /--
+If `k` is algebraically closed, then every irreducible polynomial over `k` is linear.
 * [Stacks: Lemma 09GR, (4) ⟹ (2)](https://stacks.math.columbia.edu/tag/09GR)
 -/
 theorem degree_eq_one_of_irreducible [IsAlgClosed k] {p : k[X]} (hp : Irreducible p) :
