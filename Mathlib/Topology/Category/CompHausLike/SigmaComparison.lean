@@ -61,9 +61,8 @@ theorem sigmaComparison_eq_comp_isos : sigmaComparison X σ =
   simp only [sigmaComparison]
   apply congrFun
   congr 2
-  erw [← opCoproductIsoProduct_inv_comp_ι]
+  rw [← opCoproductIsoProduct_inv_comp_ι]
   simp only [coe_of, Opposite.unop_op, unop_comp, Quiver.Hom.unop_op, Category.assoc]
-  change finiteCoproduct.ι.{u, u} (fun a ↦ of P (σ a)) _ = _
   simp only [opCoproductIsoProduct, ← unop_comp, opCoproductIsoProduct'_comp_self]
   erw [IsColimit.fac]
   rfl
