@@ -24,21 +24,15 @@ and `Nat.cast` coercion. If you need to apply a lemma about `WithTop`, you may e
 and forth using `ENat.some_eq_coe`, or restate the lemma for `ENat`.
 -/
 
-/-- Extended natural numbers `ℕ∞ = WithTop ℕ`. -/
-def ENat : Type :=
-  WithTop ℕ
-deriving Zero,
-  -- AddCommMonoidWithOne,
-  CanonicallyOrderedCommSemiring, Nontrivial,
-  LinearOrder, Bot, Top, CanonicallyLinearOrderedAddCommMonoid, Sub,
+deriving instance Zero, CanonicallyOrderedCommSemiring, Nontrivial,
+  LinearOrder, Bot, CanonicallyLinearOrderedAddCommMonoid, Sub,
   LinearOrderedAddCommMonoidWithTop, WellFoundedRelation, Inhabited
+  for ENat
+  -- AddCommMonoidWithOne,
   -- OrderBot, OrderTop, OrderedSub, SuccOrder, WellFoundedLt, CharZero
 
 -- Porting Note: In `Data.Nat.ENatPart` proofs timed out when having
 -- the `deriving AddCommMonoidWithOne`, and it seems to work without.
-
-/-- Extended natural numbers `ℕ∞ = WithTop ℕ`. -/
-notation "ℕ∞" => ENat
 
 namespace ENat
 
