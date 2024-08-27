@@ -50,19 +50,33 @@ lemma φ_eq : M.φ = M.σ.symm.trans M.α := by
   rw [← M.involutive.symm_eq_self_of_involutive, h]
   rfl
 
-lemma composition_apply {x : D} : M.φ (M.σ (M.α x)) = x := by
+lemma composition_φ : M.φ * M.σ * M.α = 1 := by
+  convert_to M.α.trans (M.σ.trans M.φ) = 1
+  simp [M.composition]
+
+lemma composition_φ_apply {x : D} : M.φ (M.σ (M.α x)) = x := by
   convert_to M.α.trans (M.σ.trans M.φ) x = x
   simp [M.composition]
 
-lemma composition' : M.α * M.φ * M.σ = 1 :=
+lemma composition_α : M.α * M.φ * M.σ = 1 :=
   have (y : D) : (M.α * M.φ * M.σ) y = y := by
     obtain ⟨_, h⟩ := M.α.surjective y
-    simp [← h, composition_apply]
+    simp [← h, composition_φ_apply]
   Equiv.Perm.ext fun _ ↦ this _
 
-lemma composition'_apply {x : D} : M.α (M.φ (M.σ x)) = x := by
+lemma composition_α_apply {x : D} : M.α (M.φ (M.σ x)) = x := by
   convert_to (M.α * M.φ * M.σ) x = x
-  simp [M.composition']
+  simp [M.composition_α]
+
+lemma composition_σ : M.σ * M.α * M.φ = 1 :=
+  have (y : D) : (M.σ * M.α * M.φ) y = y := by
+    obtain ⟨_, h⟩ := M.σ.surjective y
+    simp [← h, composition_α_apply]
+  Equiv.Perm.ext fun _ ↦ this _
+
+lemma composition_σ_apply {x : D} : M.σ (M.α (M.φ x)) = x := by
+  convert_to (M.σ * M.α * M.φ) x = x
+  simp [M.composition_σ]
 
 /--
 A homomorphism of `CombinatorialMap`s is a function that commutes with each of the respective
@@ -97,7 +111,7 @@ def opp (M : CombinatorialMap D) : CombinatorialMap D where
   composition := by
     ext x
     simp only [Equiv.trans_apply, Equiv.Perm.coe_one, id_eq]
-    rw [M.involutive, M.involutive, composition'_apply]
+    rw [M.involutive, M.involutive, composition_α_apply]
 
 lemma opp_equiv (M : CombinatorialMap D) : ∃ (f : Equiv D D), Hom M M.opp f :=
   ⟨M.α, ⟨by rw [← (M.α ∘ M.σ).comp_id, ← Function.RightInverse.id M.involutive]; rfl, rfl,
@@ -111,7 +125,7 @@ def dual (M : CombinatorialMap D) : CombinatorialMap D where
   composition := by
     ext x
     apply_fun M.α * M.φ * M.σ
-    simp [composition'_apply]
+    simp [composition_α_apply]
   involutive := by
     have : M.α.symm = M.α := M.involutive.symm_eq_self_of_involutive
     simp [this, M.involutive]
