@@ -51,7 +51,7 @@ universe u v
 open Function
 
 -- Unless required to be `Type*`, all variables in this file are `Sort*`
-variable {α α₁ α₂ β β₁ β₂ γ γ₁ γ₂ δ ε ι ι' ι'' : Sort*}
+variable {α α₁ α₂ β β₁ β₂ γ γ₁ γ₂ δ ι ι' ι'' : Sort*}
 
 namespace Equiv
 
@@ -488,32 +488,32 @@ def sumCompl {α : Type*} (p : α → Prop) [DecidablePred p] :
     split_ifs <;> rfl
 
 @[simp]
-theorem sumCompl_apply_inl (p : α → Prop) [DecidablePred p] (x : { a // p a }) :
+theorem sumCompl_apply_inl {α} (p : α → Prop) [DecidablePred p] (x : { a // p a }) :
     sumCompl p (Sum.inl x) = x :=
   rfl
 
 @[simp]
-theorem sumCompl_apply_inr (p : α → Prop) [DecidablePred p] (x : { a // ¬p a }) :
+theorem sumCompl_apply_inr {α} (p : α → Prop) [DecidablePred p] (x : { a // ¬p a }) :
     sumCompl p (Sum.inr x) = x :=
   rfl
 
 @[simp]
-theorem sumCompl_apply_symm_of_pos (p : α → Prop) [DecidablePred p] (a : α) (h : p a) :
+theorem sumCompl_apply_symm_of_pos {α} (p : α → Prop) [DecidablePred p] (a : α) (h : p a) :
     (sumCompl p).symm a = Sum.inl ⟨a, h⟩ :=
   dif_pos h
 
 @[simp]
-theorem sumCompl_apply_symm_of_neg (p : α → Prop) [DecidablePred p] (a : α) (h : ¬p a) :
+theorem sumCompl_apply_symm_of_neg {α} (p : α → Prop) [DecidablePred p] (a : α) (h : ¬p a) :
     (sumCompl p).symm a = Sum.inr ⟨a, h⟩ :=
   dif_neg h
 
 /-- Combines an `Equiv` between two subtypes with an `Equiv` between their complements to form a
   permutation. -/
-def subtypeCongr {p q : α → Prop} [DecidablePred p] [DecidablePred q]
+def subtypeCongr {α} {p q : α → Prop} [DecidablePred p] [DecidablePred q]
     (e : { x // p x } ≃ { x // q x }) (f : { x // ¬p x } ≃ { x // ¬q x }) : Perm α :=
   (sumCompl p).symm.trans ((sumCongr e f).trans (sumCompl q))
 
-variable {p : ε → Prop} [DecidablePred p]
+variable {ε : Type*} {p : ε → Prop} [DecidablePred p]
 variable (ep ep' : Perm { a // p a }) (en en' : Perm { a // ¬p a })
 
 /-- Combining permutations on `ε` that permute only inside or outside the subtype
@@ -625,7 +625,7 @@ theorem piComm_symm {φ : α → β → Sort*} : (piComm φ).symm = (piComm <| s
 to the type of dependent functions of two arguments (i.e., functions to the space of functions).
 
 This is `Sigma.curry` and `Sigma.uncurry` together as an equiv. -/
-def piCurry {β : α → Type*} (γ : ∀ a, β a → Type*) :
+def piCurry {α} {β : α → Type*} (γ : ∀ a, β a → Type*) :
     (∀ x : Σ i, β i, γ x.1 x.2) ≃ ∀ a b, γ a b where
   toFun := Sigma.curry
   invFun := Sigma.uncurry
@@ -633,12 +633,12 @@ def piCurry {β : α → Type*} (γ : ∀ a, β a → Type*) :
   right_inv := Sigma.curry_uncurry
 
 -- `simps` overapplies these but `simps (config := .asFn)` under-applies them
-@[simp] theorem piCurry_apply {β : α → Type*} (γ : ∀ a, β a → Type*)
+@[simp] theorem piCurry_apply {α} {β : α → Type*} (γ : ∀ a, β a → Type*)
     (f : ∀ x : Σ i, β i, γ x.1 x.2) :
     piCurry γ f = Sigma.curry f :=
   rfl
 
-@[simp] theorem piCurry_symm_apply {β : α → Type*} (γ : ∀ a, β a → Type*) (f : ∀ a b, γ a b) :
+@[simp] theorem piCurry_symm_apply {α} {β : α → Type*} (γ : ∀ a, β a → Type*) (f : ∀ a b, γ a b) :
     (piCurry γ).symm f = Sigma.uncurry f :=
   rfl
 
@@ -646,7 +646,7 @@ end
 
 section prodCongr
 
-variable (e : α₁ → β₁ ≃ β₂)
+variable {α₁ α₂ β₁ β₂ : Type*} (e : α₁ → β₁ ≃ β₂)
 
 /-- A family of equivalences `∀ (a : α₁), β₁ ≃ β₂` generates an equivalence
 between `β₁ × α₁` and `β₂ × α₁`. -/
@@ -718,7 +718,8 @@ theorem sigmaEquivProd_sigmaCongrRight :
 -- See also `Equiv.ofPreimageEquiv`.
 /-- A family of equivalences between fibers gives an equivalence between domains. -/
 @[simps!]
-def ofFiberEquiv {f : α → γ} {g : β → γ} (e : ∀ c, { a // f a = c } ≃ { b // g b = c }) : α ≃ β :=
+def ofFiberEquiv {α β γ} {f : α → γ} {g : β → γ}
+    (e : ∀ c, { a // f a = c } ≃ { b // g b = c }) : α ≃ β :=
   (sigmaFiberEquiv f).symm.trans <| (Equiv.sigmaCongrRight e).trans (sigmaFiberEquiv g)
 
 theorem ofFiberEquiv_map {α β γ} {f : α → γ} {g : β → γ}
