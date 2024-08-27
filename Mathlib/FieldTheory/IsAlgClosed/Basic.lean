@@ -277,7 +277,10 @@ private instance FractionRing.isAlgebraic :
       (Algebra.IsAlgebraic.isAlgebraic _)
 
 /-- A (random) homomorphism from an algebraic extension of R into an algebraically
-  closed extension of R. -/
+  closed extension of R.
+
+[Stacks: Lemma 09GU](https://stacks.math.columbia.edu/tag/09GU)
+-/
 noncomputable irreducible_def lift : S →ₐ[R] M := by
   letI : IsDomain R := (NoZeroSMulDivisors.algebraMap_injective R S).isDomain _
   letI := FractionRing.liftAlgebra R M
@@ -323,7 +326,9 @@ variable (R : Type u) [CommRing R] (L : Type v) (M : Type w) [Field L] [Field M]
 variable [Algebra R M] [NoZeroSMulDivisors R M] [IsAlgClosure R M]
 variable [Algebra R L] [NoZeroSMulDivisors R L] [IsAlgClosure R L]
 
-/-- A (random) isomorphism between two algebraic closures of `R`. -/
+/-- A (random) isomorphism between two algebraic closures of `R`.
+
+* [Stacks: Lemma 09GV](https://stacks.math.columbia.edu/tag/09GV) -/
 noncomputable def equiv : L ≃ₐ[R] M :=
   -- Porting note (#10754): added to replace local instance above
   haveI : IsAlgClosed L := IsAlgClosure.alg_closed R
