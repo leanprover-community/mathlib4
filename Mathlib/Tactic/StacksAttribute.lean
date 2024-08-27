@@ -20,10 +20,10 @@ namespace Mathlib.Stacks
 The syntax for a Stacks tag: it is an optional number followed by an optional identifier.
 This allows `044Q3` and `GH3F6` as possibilities.
 -/
-declare_syntax_cat stackTags
+declare_syntax_cat stackTag
 
-@[inherit_doc Parser.Category.stackTags]
-syntax (num)? (ident)? : stackTags
+@[inherit_doc Parser.Category.stackTag]
+syntax (num)? (ident)? : stackTag
 
 /-- The `stacks` attribute.
 Use it as `@[stacks TAG "Optional comment"]`.
@@ -31,7 +31,7 @@ The `TAG` is mandatory.
 
 See the [Tags page](stacks.math.columbia.edu/tags) in the Stacks project for more details.
 -/
-syntax (name := stacks) "stacks " (stackTags)? (str)? : attr
+syntax (name := stacks) "stacks " (stackTag)? (str)? : attr
 
 initialize Lean.registerBuiltinAttribute {
   name := `stacks
@@ -47,7 +47,7 @@ initialize Lean.registerBuiltinAttribute {
       if 2 ≤ (str.split (fun c => (!c.isUpper) && !c.isDigit)).length then
         logWarningAt tag m!"Tag '{str}' should only consist of digits and uppercase letters"
     match stx with
-      | `(attr| stacks $_:stackTags $_:str) => return
-      | `(attr| stacks $_:stackTags) => return
+      | `(attr| stacks $_:stackTag $_:str) => return
+      | `(attr| stacks $_:stackTag) => return
       | _ => logWarning "Please, enter a Tag after `stacks`."
 }
