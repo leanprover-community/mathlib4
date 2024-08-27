@@ -259,7 +259,7 @@ lemma schnirelmannDensity_setOf_modeq_one {m : ℕ} :
   rw [← schnirelmannDensity_setOf_mod_eq_one hm]
   apply schnirelmannDensity_congr
   ext n
-  simp only [Set.mem_setOf_eq, Nat.ModEq, Nat.one_mod_iff_ne_one.mp hm]
+  simp only [Set.mem_setOf_eq, Nat.ModEq, Nat.ne_one_iff_one_mod.mp hm]
 
 lemma schnirelmannDensity_setOf_Odd : schnirelmannDensity (setOf Odd) = 2⁻¹ := by
   have h : setOf Odd = {n | n % 2 = 1} := Set.ext fun _ => Nat.odd_iff
