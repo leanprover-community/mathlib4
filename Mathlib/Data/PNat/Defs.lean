@@ -18,6 +18,7 @@ This file contains the definitions, and basic results.
 Most algebraic facts are deferred to `Data.PNat.Basic`, as they need more imports.
 -/
 
+deriving instance LinearOrder for PNat
 
 instance : One ℕ+ :=
   ⟨⟨1, Nat.zero_lt_one⟩⟩
