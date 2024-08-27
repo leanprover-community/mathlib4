@@ -40,7 +40,7 @@ If someone would like to generalize appropriately that would be great.
 We want to maintain a priority queue of `MLList m β`, each indexed by some `a : α` with a priority.
 (One could simplify matters here by simply flattening this out to a priority queue of pairs `α × β`,
 with the priority determined by the `α` factor.
-However the lazyness of `MLList` is essential to performance here:
+However the laziness of `MLList` is essential to performance here:
 we will extract elements from these lists one at a time,
 and only when they at the head of the queue.
 If another item arrives at the head of the queue,
