@@ -405,8 +405,10 @@ theorem iSup_pow {o : Ordinal} (ho : 0 < o) : ⨆ n : ℕ, o ^ (n : Ordinal) = o
     convert Ordinal.le_iSup (fun n : ℕ => 1 ^ (n : Ordinal)) 0
     rw [Nat.cast_zero, opow_zero]
 
+set_option linter.deprecated false in
 @[deprecated (since := "2024-08-27")]
-alias sup_opow_nat := iSup_pow
+theorem sup_opow_nat {o : Ordinal} (ho : 0 < o) : (sup fun n : ℕ => o ^ (n : Ordinal)) = o ^ ω :=
+  iSup_pow ho
 
 end Ordinal
 

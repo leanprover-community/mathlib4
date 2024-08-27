@@ -1505,20 +1505,20 @@ theorem sup_succ_le_lsub {ι : Type u} (f : ι → Ordinal.{max u v}) :
     succ (sup.{_, v} f) ≤ lsub.{_, v} f ↔ ∃ i, f i = sup.{_, v} f := by
   refine ⟨fun h => ?_, ?_⟩
   · by_contra! hf
-    exact (succ_le_iff.1 h).ne ((sup_le_lsub f).antisymm (lsub_le (ne_iSup_iff_lt_iSup.1 hf)))
+    exact (succ_le_iff.1 h).ne ((sup_le_lsub f).antisymm (lsub_le (ne_sup_iff_lt_sup.1 hf)))
   rintro ⟨_, hf⟩
   rw [succ_le_iff, ← hf]
   exact lt_lsub _ _
 
 theorem sup_succ_eq_lsub {ι : Type u} (f : ι → Ordinal.{max u v}) :
-    succ (sup.{_, v} f) = lsub.{_, v} f ↔ ∃ i, f i = sup f :=
+    succ (sup.{_, v} f) = lsub.{_, v} f ↔ ∃ i, f i = sup.{_, v} f :=
   (lsub_le_sup_succ f).le_iff_eq.symm.trans (sup_succ_le_lsub f)
 
 theorem sup_eq_lsub_iff_succ {ι : Type u} (f : ι → Ordinal.{max u v}) :
     sup.{_, v} f = lsub.{_, v} f ↔ ∀ a < lsub.{_, v} f, succ a < lsub.{_, v} f := by
   refine ⟨fun h => ?_, fun hf => le_antisymm (sup_le_lsub f) (lsub_le fun i => ?_)⟩
   · rw [← h]
-    exact fun a => sup_not_succ_of_ne_sup  fun i => (lsub_le_iff.1 (le_of_eq h.symm) i).ne
+    exact fun a => sup_not_succ_of_ne_sup fun i => (lsub_le_iff.1 (le_of_eq h.symm) i).ne
   by_contra! hle
   have heq := (sup_succ_eq_lsub f).2 ⟨i, le_antisymm (le_sup _ _) hle⟩
   have :=
@@ -2345,15 +2345,25 @@ theorem IsNormal.apply_omega {f : Ordinal.{u} → Ordinal.{v}} (hf : IsNormal f)
     ⨆ i : ℕ, f i = f ω := by rw [← iSup_natCast, IsNormal.iSup hf]
 
 @[simp]
-theorem sup_add_nat (o : Ordinal) : ⨆ n : ℕ, o + n = o + ω :=
+theorem iSup_add_nat (o : Ordinal) : ⨆ n : ℕ, o + n = o + ω :=
   (add_isNormal o).apply_omega
 
+set_option linter.deprecated false in
+@[deprecated iSup_add_nat (since := "2024-08-27")]
+theorem sup_add_nat (o : Ordinal) : (sup fun n : ℕ => o + n) = o + ω :=
+  iSup_add_nat o
+
 @[simp]
-theorem sup_mul_nat (o : Ordinal) : ⨆ n : ℕ, o * n = o * ω := by
+theorem iSup_mul_nat (o : Ordinal) : ⨆ n : ℕ, o * n = o * ω := by
   rcases eq_zero_or_pos o with (rfl | ho)
   · rw [zero_mul]
     exact iSup_eq_zero_iff.2 fun n => zero_mul (n : Ordinal)
   · exact (mul_isNormal ho).apply_omega
+
+set_option linter.deprecated false in
+@[deprecated iSup_add_nat (since := "2024-08-27")]
+theorem sup_mul_nat (o : Ordinal) : (sup fun n : ℕ => o * n) = o * ω :=
+  iSup_mul_nat o
 
 end Ordinal
 
