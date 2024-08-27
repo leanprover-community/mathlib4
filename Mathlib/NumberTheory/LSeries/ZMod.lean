@@ -68,34 +68,6 @@ lemma LFunction_modOne_eq (Φ : ZMod 1 → ℂ) (s : ℂ) :
   simp only [LFunction, Nat.cast_one, one_cpow, ← singleton_eq_univ (0 : ZMod 1), sum_singleton,
     map_zero, hurwitzZeta_zero, one_mul]
 
-open scoped LSeries.notation in
-/-- For `1 < re s` the congruence L-function agrees with the sum of the Dirichlet series. -/
-lemma LFunction_eq_LSeries' (Φ : ZMod N → ℂ) {s : ℂ} (hs : 1 < re s) :
-    LFunction Φ s = LSeries ↗Φ s := by
-  rw [LFunction, LSeries, mul_sum, Nat.sumByResidueClasses (LSeriesSummable_of_one_lt_re Φ hs) N]
-  congr 1 with j
-  have ha : (j.val / N : ℝ) ∈ Set.Icc 0 1 := Set.mem_Icc.mpr ⟨by positivity, by
-    rw [div_le_one (Nat.cast_pos.mpr <| NeZero.pos _), Nat.cast_le]
-    exact (val_lt j).le⟩
-  rw [toAddCircle_apply, ← (hasSum_hurwitzZeta_of_one_lt_re ha hs).tsum_eq, ← mul_assoc,
-    ← tsum_mul_left]
-  congr 1 with m
-
-  have aux0 : (m : ℂ) + ↑(j.val / N : ℝ) = ↑((j.val + N * m) / N : ℝ) := by
-    push_cast
-    rw [add_div, mul_div_cancel_left₀ _ (NeZero.ne _), add_comm]
-  have aux1 : (0 : ℝ) ≤ j.val + N * m := by positivity
-  have aux2 : (0 : ℝ) ≤ (↑N)⁻¹ := by positivity
-  have aux3 : arg (N : ℂ) ≠ π := by simpa only [natCast_arg] using Real.pi_pos.ne
-  have aux4 : ((N : ℂ) ^ s)⁻¹ ≠ 0 := by
-    simp only [ne_eq, inv_eq_zero, cpow_eq_zero_iff, NeZero.ne, false_and, not_false_eq_true]
-  rw [aux0, div_eq_mul_inv _ (N : ℝ), ofReal_mul, mul_cpow_ofReal_nonneg aux1 aux2, ← div_div,
-    ofReal_inv, ofReal_natCast, cpow_neg, inv_cpow _ _ aux3, ← mul_div_assoc, mul_assoc,
-    mul_div_cancel_left₀ _ aux4, mul_one_div, ← Nat.cast_mul, ← Nat.cast_add, ofReal_natCast,
-    LSeries.term_of_ne_zero' (ne_zero_of_one_lt_re hs), Nat.cast_add (R := ZMod _), Nat.cast_mul,
-    CharP.cast_eq_zero (R := ZMod N) (p := N), zero_mul, add_zero]
-  simp only [Nat.cast_add, natCast_val, Nat.cast_mul, cast_id', id_eq]
-
 /-- For `1 < re s` the congruence L-function agrees with the sum of the Dirichlet series. -/
 lemma LFunction_eq_LSeries (Φ : ZMod N → ℂ) {s : ℂ} (hs : 1 < re s) :
     LFunction Φ s = LSeries (Φ ·) s := by
