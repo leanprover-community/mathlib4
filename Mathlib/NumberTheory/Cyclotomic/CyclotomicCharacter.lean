@@ -44,7 +44,7 @@ Although I don't know whether it's of any use, `ModularCyclotomicCharacter'`
 is the general case for integral domains, with target in `(ZMod d)ˣ`
 where `d` is the number of `n`th roots of unity in `L`.
 
-## Todo
+## TODO
 
 * Prove the compatibility of `ModularCyclotomicCharacter n` and `ModularCyclotomicCharacter m`
   if `n ∣ m`.

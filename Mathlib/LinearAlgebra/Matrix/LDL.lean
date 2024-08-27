@@ -6,8 +6,6 @@ Authors: Alexander Bentkamp
 import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
 import Mathlib.LinearAlgebra.Matrix.PosDef
 
-#align_import linear_algebra.matrix.ldl from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
-
 /-! # LDL decomposition
 
 This file proves the LDL-decomposition of matrices: Any positive definite matrix `S` can be
@@ -35,7 +33,6 @@ variable {n : Type*} [LinearOrder n] [IsWellOrder n (· < ·)] [LocallyFiniteOrd
 
 section set_options
 
-set_option linter.uppercaseLean3 false
 set_option quotPrecheck false
 local notation "⟪" x ", " y "⟫ₑ" =>
   @inner 𝕜 _ _ ((WithLp.equiv 2 _).symm x) ((WithLp.equiv _ _).symm y)
@@ -52,7 +49,6 @@ basis vectors `Pi.basisFun`. -/
 noncomputable def LDL.lowerInv : Matrix n n 𝕜 :=
   @gramSchmidt 𝕜 (n → 𝕜) _ (_ : _) (InnerProductSpace.ofMatrix hS.transpose) n _ _ _
     (Pi.basisFun 𝕜 n)
-#align LDL.lower_inv LDL.lowerInv
 
 theorem LDL.lowerInv_eq_gramSchmidtBasis :
     LDL.lowerInv hS =
@@ -64,7 +60,6 @@ theorem LDL.lowerInv_eq_gramSchmidtBasis :
   ext i j
   rw [LDL.lowerInv, Basis.coePiBasisFun.toMatrix_eq_transpose, coe_gramSchmidtBasis]
   rfl
-#align LDL.lower_inv_eq_gram_schmidt_basis LDL.lowerInv_eq_gramSchmidtBasis
 
 noncomputable instance LDL.invertibleLowerInv : Invertible (LDL.lowerInv hS) := by
   rw [LDL.lowerInv_eq_gramSchmidtBasis]
@@ -73,29 +68,24 @@ noncomputable instance LDL.invertibleLowerInv : Invertible (LDL.lowerInv hS) := 
       (@gramSchmidtBasis 𝕜 (n → 𝕜) _ (_ : _) (InnerProductSpace.ofMatrix hS.transpose) n _ _ _
         (Pi.basisFun 𝕜 n))
   infer_instance
-#align LDL.invertible_lower_inv LDL.invertibleLowerInv
 
 theorem LDL.lowerInv_orthogonal {i j : n} (h₀ : i ≠ j) :
     ⟪LDL.lowerInv hS i, Sᵀ *ᵥ LDL.lowerInv hS j⟫ₑ = 0 :=
   @gramSchmidt_orthogonal 𝕜 _ _ (_ : _) (InnerProductSpace.ofMatrix hS.transpose) _ _ _ _ _ _ _ h₀
-#align LDL.lower_inv_orthogonal LDL.lowerInv_orthogonal
 
 /-- The entries of the diagonal matrix `D` of the LDL decomposition. -/
 noncomputable def LDL.diagEntries : n → 𝕜 := fun i =>
   ⟪star (LDL.lowerInv hS i), S *ᵥ star (LDL.lowerInv hS i)⟫ₑ
-#align LDL.diag_entries LDL.diagEntries
 
 /-- The diagonal matrix `D` of the LDL decomposition. -/
 noncomputable def LDL.diag : Matrix n n 𝕜 :=
   Matrix.diagonal (LDL.diagEntries hS)
-#align LDL.diag LDL.diag
 
 theorem LDL.lowerInv_triangular {i j : n} (hij : i < j) : LDL.lowerInv hS i j = 0 := by
   rw [←
     @gramSchmidt_triangular 𝕜 (n → 𝕜) _ (_ : _) (InnerProductSpace.ofMatrix hS.transpose) n _ _ _
       i j hij (Pi.basisFun 𝕜 n),
     Pi.basisFun_repr, LDL.lowerInv]
-#align LDL.lower_inv_triangular LDL.lowerInv_triangular
 
 /-- Inverse statement of **LDL decomposition**: we can conjugate a positive definite matrix
 by some lower triangular matrix and get a diagonal matrix. -/
@@ -111,12 +101,10 @@ theorem LDL.diag_eq_lowerInv_conj : LDL.diag hS = LDL.lowerInv hS * S * (LDL.low
       mulVec_transpose, EuclideanSpace.inner_piLp_equiv_symm, ← RCLike.star_def, ←
       star_dotProduct_star, dotProduct_comm, star_star]
     rfl
-#align LDL.diag_eq_lower_inv_conj LDL.diag_eq_lowerInv_conj
 
 /-- The lower triangular matrix `L` of the LDL decomposition. -/
 noncomputable def LDL.lower :=
   (LDL.lowerInv hS)⁻¹
-#align LDL.lower LDL.lower
 
 /-- **LDL decomposition**: any positive definite matrix `S` can be
 decomposed as `S = LDLᴴ` where `L` is a lower-triangular matrix and `D` is a diagonal matrix.  -/
@@ -125,6 +113,5 @@ theorem LDL.lower_conj_diag : LDL.lower hS * LDL.diag hS * (LDL.lower hS)ᴴ = S
     Matrix.inv_mul_eq_iff_eq_mul_of_invertible (LDL.lowerInv hS),
     Matrix.mul_inv_eq_iff_eq_mul_of_invertible]
   exact LDL.diag_eq_lowerInv_conj hS
-#align LDL.lower_conj_diag LDL.lower_conj_diag
 
 end set_options

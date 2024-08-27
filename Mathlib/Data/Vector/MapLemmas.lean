@@ -6,12 +6,13 @@ Authors: Alex Keizer
 import Mathlib.Data.Vector.Basic
 import Mathlib.Data.Vector.Snoc
 
-
 /-!
   This file establishes a set of normalization lemmas for `map`/`mapAccumr` operations on vectors
 -/
 
 set_option autoImplicit true
+
+namespace Mathlib
 
 namespace Vector
 
@@ -223,7 +224,6 @@ variable {xs : Vector α n} {ys : Vector β n}
 
 protected theorem map_eq_mapAccumr :
     map f xs = (mapAccumr (fun x (_ : Unit) ↦ ((), f x)) xs ()).snd := by
-  clear ys
   induction xs using Vector.revInductionOn <;> simp_all
 
 /--
@@ -265,7 +265,6 @@ theorem mapAccumr₂_eq_map₂ {f : α → β → σ → σ × γ} {s₀ : σ} (
 @[simp]
 theorem mapAccumr_eq_map_of_constant_state (f : α → σ → σ × β) (s : σ) (h : ∀ a, (f a s).fst = s) :
     mapAccumr f xs s = (s, (map (fun x => (f x s).snd) xs)) := by
-  clear ys
   induction xs using revInductionOn <;> simp_all
 
 /--
@@ -393,3 +392,5 @@ theorem mapAccumr₂_flip (f : α → β → σ → σ × γ) :
 end Flip
 
 end Vector
+
+end Mathlib

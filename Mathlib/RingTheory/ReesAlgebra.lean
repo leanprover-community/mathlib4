@@ -5,8 +5,6 @@ Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.FiniteType
 
-#align_import ring_theory.rees_algebra from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
-
 /-!
 
 # Rees algebra
@@ -59,11 +57,9 @@ def reesAlgebra : Subalgebra R R[X] where
     · subst h
       simp
     · simp
-#align rees_algebra reesAlgebra
 
 theorem mem_reesAlgebra_iff (f : R[X]) : f ∈ reesAlgebra I ↔ ∀ i, f.coeff i ∈ I ^ i :=
   Iff.rfl
-#align mem_rees_algebra_iff mem_reesAlgebra_iff
 
 theorem mem_reesAlgebra_iff_support (f : R[X]) :
     f ∈ reesAlgebra I ↔ ∀ i ∈ f.support, f.coeff i ∈ I ^ i := by
@@ -71,13 +67,11 @@ theorem mem_reesAlgebra_iff_support (f : R[X]) :
   intro a
   rw [mem_support_iff, Iff.comm, Classical.imp_iff_right_iff, Ne, ← imp_iff_not_or]
   exact fun e => e.symm ▸ (I ^ a).zero_mem
-#align mem_rees_algebra_iff_support mem_reesAlgebra_iff_support
 
 theorem reesAlgebra.monomial_mem {I : Ideal R} {i : ℕ} {r : R} :
     monomial i r ∈ reesAlgebra I ↔ r ∈ I ^ i := by
   simp (config := { contextual := true }) [mem_reesAlgebra_iff_support, coeff_monomial, ←
     imp_iff_not_or]
-#align rees_algebra.monomial_mem reesAlgebra.monomial_mem
 
 theorem monomial_mem_adjoin_monomial {I : Ideal R} {n : ℕ} {r : R} (hr : r ∈ I ^ n) :
     monomial n r ∈ Algebra.adjoin R (Submodule.map (monomial 1 : R →ₗ[R] R[X]) I : Set R[X]) := by
@@ -93,7 +87,6 @@ theorem monomial_mem_adjoin_monomial {I : Ideal R} {n : ℕ} {r : R} (hr : r ∈
     · intro x y hx hy
       rw [monomial_add]
       exact Subalgebra.add_mem _ hx hy
-#align monomial_mem_adjoin_monomial monomial_mem_adjoin_monomial
 
 theorem adjoin_monomial_eq_reesAlgebra :
     Algebra.adjoin R (Submodule.map (monomial 1 : R →ₗ[R] R[X]) I : Set R[X]) = reesAlgebra I := by
@@ -106,7 +99,6 @@ theorem adjoin_monomial_eq_reesAlgebra :
     apply Subalgebra.sum_mem _ _
     rintro i -
     exact monomial_mem_adjoin_monomial (hp i)
-#align adjoin_monomial_eq_rees_algebra adjoin_monomial_eq_reesAlgebra
 
 variable {I}
 
@@ -121,7 +113,6 @@ theorem reesAlgebra.fg (hI : I.FG) : (reesAlgebra I).FG := by
         Algebra.adjoin R
           (Submodule.map (monomial 1 : R →ₗ[R] R[X]) (Submodule.span R ↑s) : Set R[X])
     rw [Submodule.map_span, Algebra.adjoin_span]
-#align rees_algebra.fg reesAlgebra.fg
 
 instance [IsNoetherianRing R] : Algebra.FiniteType R (reesAlgebra I) :=
   ⟨(reesAlgebra I).fg_top.mpr (reesAlgebra.fg <| IsNoetherian.noetherian I)⟩
