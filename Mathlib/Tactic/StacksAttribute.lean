@@ -7,6 +7,9 @@ import Lean.Attributes
 
 /-!
 The `stacks` attribute.
+
+This allows tagging of mathlib lemmas with the corresponding
+[Tags](stacks.math.columbia.edu/tags) from the Stacks Project.
 -/
 
 open Lean
@@ -25,6 +28,8 @@ syntax (num)? (ident)? : stackTags
 /-- The `stacks` attribute.
 Use it as `@[stacks TAG "Optional comment"]`.
 The `TAG` is mandatory.
+
+See the [Tags page](stacks.math.columbia.edu/tags) in the Stacks project for more details.
 -/
 syntax (name := stacks) "stacks " (stackTags)? (str)? : attr
 
