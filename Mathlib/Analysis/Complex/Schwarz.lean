@@ -149,7 +149,7 @@ theorem dist_le_div_mul_dist_of_mapsTo_ball (hd : DifferentiableOn ℂ f (ball c
   rcases eq_or_ne z c with (rfl | hne)
   · simp only [dist_self, mul_zero, le_rfl]
   simpa only [dslope_of_ne _ hne, slope_def_module, norm_smul, norm_inv, ← div_eq_inv_mul, ←
-    dist_eq_norm, div_le_iff (dist_pos.2 hne)] using norm_dslope_le_div_of_mapsTo_ball hd h_maps hz
+    dist_eq_norm, div_le_iff₀ (dist_pos.2 hne)] using norm_dslope_le_div_of_mapsTo_ball hd h_maps hz
 
 end Space
 

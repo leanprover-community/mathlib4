@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Logic.Basic
-import Mathlib.Init.Set
+import Mathlib.Data.Set.Defs
 
 /-!
 # Girard's paradox

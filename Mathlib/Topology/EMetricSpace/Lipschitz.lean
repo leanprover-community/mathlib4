@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rohan Mitta, Kevin Buzzard, Alistair Tucker, Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Logic.Function.Iterate
-import Mathlib.Topology.EMetricSpace.Basic
+import Mathlib.Topology.EMetricSpace.Diam
 import Mathlib.Tactic.GCongr
 
 /-!
@@ -59,11 +59,11 @@ def LipschitzOnWith (K : ℝ≥0) (f : α → β) (s : Set α) :=
   ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → edist (f x) (f y) ≤ K * edist x y
 
 /-- `f : α → β` is called **locally Lipschitz continuous** iff every point `x`
-has a neighourhood on which `f` is Lipschitz. -/
+has a neighbourhood on which `f` is Lipschitz. -/
 def LocallyLipschitz (f : α → β) : Prop := ∀ x, ∃ K, ∃ t ∈ 𝓝 x, LipschitzOnWith K f t
 
 /-- `f : α → β` is called **locally Lipschitz continuous** on `s` iff every point `x` of `s`
-has a neighourhood within `s` on which `f` is Lipschitz. -/
+has a neighbourhood within `s` on which `f` is Lipschitz. -/
 def LocallyLipschitzOn (s : Set α) (f : α → β) : Prop :=
   ∀ ⦃x⦄, x ∈ s → ∃ K, ∃ t ∈ 𝓝[s] x, LipschitzOnWith K f t
 
@@ -88,6 +88,9 @@ lemma LocallyLipschitzOn.mono (hf : LocallyLipschitzOn t f) (h : s ⊆ t) : Loca
 
 @[simp] lemma locallyLipschitzOn_univ : LocallyLipschitzOn univ f ↔ LocallyLipschitz f := by
   simp [LocallyLipschitzOn, LocallyLipschitz]
+
+protected lemma LocallyLipschitz.locallyLipschitzOn (h : LocallyLipschitz f) :
+    LocallyLipschitzOn s f := (locallyLipschitzOn_univ.2 h).mono s.subset_univ
 
 theorem lipschitzOnWith_iff_restrict : LipschitzOnWith K f s ↔ LipschitzWith K (s.restrict f) := by
   simp only [LipschitzOnWith, LipschitzWith, SetCoe.forall', restrict, Subtype.edist_eq]
@@ -125,9 +128,9 @@ namespace LipschitzWith
 open EMetric
 
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
-variable {K : ℝ≥0} {f : α → β} {x y : α} {r : ℝ≥0∞}
+variable {K : ℝ≥0} {f : α → β} {x y : α} {r : ℝ≥0∞} {s : Set α}
 
-protected theorem lipschitzOnWith (h : LipschitzWith K f) (s : Set α) : LipschitzOnWith K f s :=
+protected theorem lipschitzOnWith (h : LipschitzWith K f) : LipschitzOnWith K f s :=
   fun x _ y _ => h x y
 
 theorem edist_le_mul (h : LipschitzWith K f) (x y : α) : edist (f x) (f y) ≤ K * edist x y :=

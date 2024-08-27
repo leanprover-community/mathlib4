@@ -24,15 +24,16 @@ variable [CommMonoidWithZero M₀] {p : ι → Prop} [DecidablePred p] {f : ι �
 lemma prod_eq_zero (hi : i ∈ s) (h : f i = 0) : ∏ j ∈ s, f j = 0 := by
   classical rw [← prod_erase_mul _ _ hi, h, mul_zero]
 
-lemma prod_boole : ∏ i ∈ s, (ite (p i) 1 0 : M₀) = ite (∀ i ∈ s, p i) 1 0 := by
+lemma prod_ite_zero :
+    (∏ i ∈ s, if p i then f i else 0) = if ∀ i ∈ s, p i then ∏ i ∈ s, f i else 0 := by
   split_ifs with h
-  · apply prod_eq_one
-    intro i hi
-    rw [if_pos (h i hi)]
+  · exact prod_congr rfl fun i hi => by simp [h i hi]
   · push_neg at h
     rcases h with ⟨i, hi, hq⟩
-    apply prod_eq_zero hi
-    rw [if_neg hq]
+    exact prod_eq_zero hi (by simp [hq])
+
+lemma prod_boole : ∏ i ∈ s, (ite (p i) 1 0 : M₀) = ite (∀ i ∈ s, p i) 1 0 := by
+  rw [prod_ite_zero, prod_const_one]
 
 lemma support_prod_subset (s : Finset ι) (f : ι → κ → M₀) :
     support (fun x ↦ ∏ i ∈ s, f i x) ⊆ ⋂ i ∈ s, support (f i) :=
@@ -57,7 +58,10 @@ lemma support_prod (s : Finset ι) (f : ι → κ → M₀) :
 end Finset
 
 namespace Fintype
-variable [Fintype ι] [CommMonoidWithZero M₀] {p : ι → Prop} [DecidablePred p]
+variable [Fintype ι] [CommMonoidWithZero M₀] {p : ι → Prop} [DecidablePred p] {f : ι → M₀}
+
+lemma prod_ite_zero : (∏ i, if p i then f i else 0) = if ∀ i, p i then ∏ i, f i else 0 := by
+  simp [Finset.prod_ite_zero]
 
 lemma prod_boole : ∏ i, (ite (p i) 1 0 : M₀) = ite (∀ i, p i) 1 0 := by simp [Finset.prod_boole]
 
