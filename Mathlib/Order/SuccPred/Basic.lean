@@ -1436,7 +1436,7 @@ variable {X Y F : Type*} [EquivLike F X Y] [LinearOrder X] [LinearOrder Y]
   exact e
 
 /-- `IsSuccArchimedean` transfers across monotonic equivalences between linear `SuccOrder`s. -/
-@[reducible] protected def IsSuccArchimedean [SuccOrder X] [SuccOrder Y] [IsSuccArchimedean X]
+protected theorem IsSuccArchimedean [SuccOrder X] [SuccOrder Y] [IsSuccArchimedean X]
     (f : F) (hf : Monotone f) : IsSuccArchimedean Y where
   exists_succ_iterate_of_le {a b} h := by
     have : ∀ x, Order.succ (f x) = f (Order.succ x) := by
@@ -1457,7 +1457,7 @@ variable {X Y F : Type*} [EquivLike F X Y] [LinearOrder X] [LinearOrder Y]
                        Function.comp_apply, this]
 
 /-- `IsPredArchimedean` transfers across monotonic equivalences between linear `PredOrder`s. -/
-@[reducible] protected def IsPredArchimedean [PredOrder X] [PredOrder Y] [IsPredArchimedean X]
+protected theorem IsPredArchimedean [PredOrder X] [PredOrder Y] [IsPredArchimedean X]
     (f : F) (hf : Monotone f) : IsPredArchimedean Y := by
   let _ := EquivLike.IsSuccArchimedean (X := Xᵒᵈ) (Y := Yᵒᵈ) f (fun {a b} h ↦ hf h)
   let e : IsPredArchimedean Yᵒᵈᵒᵈ := by infer_instance
