@@ -1,5 +1,7 @@
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.AdaptationNote
+import Mathlib.Tactic.Algebraize
+import Mathlib.Tactic.AlgebraizeAttr
 import Mathlib.Tactic.ApplyAt
 import Mathlib.Tactic.ApplyCongr
 import Mathlib.Tactic.ApplyFun
@@ -234,3 +236,4 @@ import Mathlib.Tactic.Widget.SelectInsertParamsClass
 import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Tactic.Widget.StringDiagram
 import Mathlib.Tactic.Zify
+import Mathlib.Tactic.testsAlgebraize

@@ -4048,6 +4048,8 @@ import Mathlib.SetTheory.ZFC.Ordinal
 import Mathlib.Tactic
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.AdaptationNote
+import Mathlib.Tactic.Algebraize
+import Mathlib.Tactic.AlgebraizeAttr
 import Mathlib.Tactic.ApplyAt
 import Mathlib.Tactic.ApplyCongr
 import Mathlib.Tactic.ApplyFun
@@ -4282,6 +4284,7 @@ import Mathlib.Tactic.Widget.SelectInsertParamsClass
 import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Tactic.Widget.StringDiagram
 import Mathlib.Tactic.Zify
+import Mathlib.Tactic.testsAlgebraize
 import Mathlib.Testing.SlimCheck.Functions
 import Mathlib.Testing.SlimCheck.Gen
 import Mathlib.Testing.SlimCheck.Sampleable
