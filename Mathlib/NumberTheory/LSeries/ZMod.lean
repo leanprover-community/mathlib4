@@ -59,12 +59,14 @@ Note that this is not the same as `LSeries Φ`: they agree in the convergence ra
 noncomputable def LFunction (Φ : ZMod N → ℂ) (s : ℂ) : ℂ :=
   N ^ (-s) * ∑ j : ZMod N, Φ j * hurwitzZeta (toAddCircle j) s
 
+example {α : Type} [Fintype α] [Unique α] (a : α) : (univ : Finset α) = {a} := by
+  exact Eq.symm (singleton_eq_univ a)
+
 /-- The L-function of a function on `ZMod 1` is a scalar multiple of the Riemann zeta function. -/
-lemma LFunction_mod_one (Φ : ZMod 1 → ℂ) (s : ℂ) :
-    LFunction Φ s = Φ 1 * riemannZeta s := by
-  simp only [LFunction, Nat.cast_one, one_cpow, univ_unique, sum_singleton, one_mul]
-  change Φ 1 * hurwitzZeta (toAddCircle 0) s = _
-  rw [map_zero, hurwitzZeta_zero]
+lemma LFunction_modOne_eq (Φ : ZMod 1 → ℂ) (s : ℂ) :
+    LFunction Φ s = Φ 0 * riemannZeta s := by
+  simp only [LFunction, Nat.cast_one, one_cpow, ← singleton_eq_univ (0 : ZMod 1), sum_singleton,
+    map_zero, hurwitzZeta_zero, one_mul]
 
 open scoped LSeries.notation in
 /-- For `1 < re s` the congruence L-function agrees with the sum of the Dirichlet series. -/
@@ -72,9 +74,9 @@ lemma LFunction_eq_LSeries (Φ : ZMod N → ℂ) {s : ℂ} (hs : 1 < re s) :
     LFunction Φ s = LSeries ↗Φ s := by
   rw [LFunction, LSeries, mul_sum, Nat.sumByResidueClasses (LSeriesSummable_of_one_lt_re Φ hs) N]
   congr 1 with j
-  have ha : (j.val / N : ℝ) ∈ Set.Icc 0 1 := ⟨by positivity, by
+  have ha : (j.val / N : ℝ) ∈ Set.Icc 0 1 := Set.mem_Icc.mpr ⟨by positivity, by
     rw [div_le_one (Nat.cast_pos.mpr <| NeZero.pos _), Nat.cast_le]
-    exact (val_lt _).le⟩
+    exact (val_lt j).le⟩
   rw [toAddCircle_apply, ← (hasSum_hurwitzZeta_of_one_lt_re ha hs).tsum_eq, ← mul_assoc,
     ← tsum_mul_left]
   congr 1 with m
@@ -94,7 +96,7 @@ lemma LFunction_eq_LSeries (Φ : ZMod N → ℂ) {s : ℂ} (hs : 1 < re s) :
   simp only [Nat.cast_add, natCast_val, Nat.cast_mul, cast_id', id_eq]
 
 private lemma differentiable_Npow : Differentiable ℂ (fun (s : ℂ) ↦ (N : ℂ) ^ (-s)) :=
-    Differentiable.const_cpow (by fun_prop) (Or.inl <| NeZero.ne _)
+  .const_cpow (by fun_prop) (Or.inl <| NeZero.ne _)
 
 lemma differentiableAt_LFunction (Φ : ZMod N → ℂ) (s : ℂ) (hs : s ≠ 1 ∨ ∑ j, Φ j = 0) :
     DifferentiableAt ℂ (LFunction Φ) s := by
@@ -138,16 +140,16 @@ lemma LFunction_stdAddChar_eq_expZeta (j : ZMod N) (s : ℂ) (hjs : j ≠ 0 ∨ 
     · simp only [h, ↓reduceIte, isOpen_univ, U]
   let f := LFunction (fun k ↦ stdAddChar (j * k))
   let g := expZeta (toAddCircle j)
-  have hU {u} (hu : u ∈ U) : u ≠ 1 ∨ j ≠ 0 := by simp only [Set.mem_ite_univ_right, U] at hu; tauto
+  have hU {u} : u ∈ U ↔ u ≠ 1 ∨ j ≠ 0 := by simp only [Set.mem_ite_univ_right, U]; tauto
   -- hypotheses for uniqueness of analytic continuation
   have hf : AnalyticOn ℂ f U := by
     refine DifferentiableOn.analyticOn (fun u hu ↦ ?_) hUo
-    refine (differentiableAt_LFunction _ _ ((hU hu).imp_right fun h ↦ ?_)).differentiableWithinAt
+    refine (differentiableAt_LFunction _ _ ((hU.mp hu).imp_right fun h ↦ ?_)).differentiableWithinAt
     simp only [mul_comm j, AddChar.sum_mulShift _ (isPrimitive_stdAddChar _), h,
         ↓reduceIte, CharP.cast_eq_zero, or_true]
   have hg : AnalyticOn ℂ g U := by
     refine DifferentiableOn.analyticOn (fun u hu ↦ ?_) hUo
-    refine (differentiableAt_expZeta _ _ ((hU hu).imp_right fun h ↦ ?_)).differentiableWithinAt
+    refine (differentiableAt_expZeta _ _ ((hU.mp hu).imp_right fun h ↦ ?_)).differentiableWithinAt
     rwa [ne_eq, toAddCircle_eq_zero]
   have hUc : IsPreconnected U := by
     by_cases h : j = 0
@@ -156,7 +158,7 @@ lemma LFunction_stdAddChar_eq_expZeta (j : ZMod N) (s : ℂ) (hjs : j ≠ 0 ∨ 
     · simpa only [h, ↓reduceIte, U] using isPreconnected_univ
   have hV : V ∈ 𝓝 2 := (continuous_re.isOpen_preimage _ isOpen_Ioi).mem_nhds (by simp)
   have hUmem : 2 ∈ U := by simp [U]
-  have hUmem' : s ∈ U := by simpa only [Set.mem_ite_univ_right, U] using hjs.neg_resolve_left
+  have hUmem' : s ∈ U := hU.mpr hjs.symm
   -- apply uniqueness result
   refine hf.eqOn_of_preconnected_of_eventuallyEq hg hUc hUmem ?_ hUmem'
   -- now remains to prove equality on `1 < re s`

@@ -40,10 +40,11 @@ Note that this is not the same as `LSeries χ`: they agree in the convergence ra
  -/
 noncomputable def LFunction (χ : DirichletCharacter ℂ N) (s : ℂ) : ℂ := ZMod.LFunction χ s
 
-/-- The L-function of the (unique) Dirichlet character mod 1 is the Riemann zeta function. -/
-lemma LFunction_mod_one {χ : DirichletCharacter ℂ 1} :
+/-- The L-function of the (unique) Dirichlet character mod 1 is the Riemann zeta function.
+(Compare `DirichletCharacter.LSeries_modOne_eq`.) -/
+@[simp] lemma LFunction_modOne_eq {χ : DirichletCharacter ℂ 1} :
     LFunction χ = riemannZeta := by
-  ext1 s; rw [LFunction, ZMod.LFunction_mod_one, map_one, one_mul]
+  ext1 s; rw [LFunction, ZMod.LFunction_modOne_eq, (by rfl : (0 : ZMod 1) = 1), map_one, one_mul]
 
 /--
 For `1 < re s` the L-function of a Dirichlet character agrees with the sum of the naive Dirichlet
