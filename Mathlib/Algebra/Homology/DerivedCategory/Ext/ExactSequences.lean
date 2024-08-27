@@ -13,8 +13,7 @@ import Mathlib.CategoryTheory.Triangulated.Yoneda
 
 In this file, we obtain the covariant long exact sequence of `Ext`:
 `Ext X S.X₁ n₀ → Ext X S.X₂ n₀ → Ext X S.X₃ n₀ → Ext X S.X₁ n₁ → Ext X S.X₂ n₁ → Ext X S.X₃ n₁`
-when `S` is a short exact short complex in an abelian category `C`
-and `X : C`.
+when `S` is a short exact short complex in an abelian category `C`, `n₀ + 1 = n₁` and `X : C`.
 
 -/
 
@@ -113,7 +112,8 @@ open ComposableArrows
 
 /-- Given a short exact short complex `S` in an abelian category `C` and an object `X : C`,
 this is the long exact sequence
-`Ext X S.X₁ n₀ → Ext X S.X₂ n₀ → Ext X S.X₃ n₀ → Ext X S.X₁ n₁ → Ext X S.X₂ n₁ → Ext X S.X₃ n₁`. -/
+`Ext X S.X₁ n₀ → Ext X S.X₂ n₀ → Ext X S.X₃ n₀ → Ext X S.X₁ n₁ → Ext X S.X₂ n₁ → Ext X S.X₃ n₁`
+when `n₀ + 1 = n₁` -/
 noncomputable def covariantSequence : ComposableArrows AddCommGrp.{w} 5 :=
   mk₅ (AddCommGrp.ofHom ((mk₀ S.f).postcomp X (add_zero n₀)))
     (AddCommGrp.ofHom ((mk₀ S.g).postcomp X (add_zero n₀)))
