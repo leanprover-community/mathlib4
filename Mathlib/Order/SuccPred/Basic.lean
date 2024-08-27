@@ -1428,12 +1428,6 @@ variable {X Y F : Type*} [EquivLike F X Y] [LinearOrder X] [LinearOrder Y]
     simp only [hf.le_iff_le]
     refine Order.succ_le_of_lt ?_
     simp [← hf.lt_iff_lt, h]
-  le_of_lt_succ {a b} h := by
-    obtain ⟨x, rfl⟩ := EquivLike.surjective f a
-    obtain ⟨y, rfl⟩ := EquivLike.surjective f b
-    have hf := hf.strictMono_of_injective (EquivLike.injective f)
-    simp only [inv_apply_apply, hf.lt_iff_lt] at h
-    simp [hf.le_iff_le, Order.le_of_lt_succ h]
 
 /-- `PredOrder` transfers across monotonic equivalences between linear orders. -/
 @[reducible] protected def PredOrder [PredOrder X] (f : F) (hf : Monotone f) : PredOrder Y := by
