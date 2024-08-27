@@ -156,7 +156,7 @@ theorem count_injective_image [MeasurableSingletonClass α] [MeasurableSingleton
   rw [count_apply_infinite hs]
   rw [← finite_image_iff hf.injOn] at hs
   rw [count_apply_infinite hs]
-  
+
 instance count.isFiniteMeasure [Finite α] :
     IsFiniteMeasure (Measure.count : Measure α) :=
   ⟨by
