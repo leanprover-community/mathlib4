@@ -29,6 +29,8 @@ while `csInf_le` is the same statement in conditionally complete lattices
 with an additional assumption that `s` is bounded below.
 -/
 
+-- Guard against import creep
+assert_not_exists Multiset
 
 open Function OrderDual Set
 
@@ -249,8 +251,8 @@ instance (priority := 100) CompleteLinearOrder.toConditionallyCompleteLinearOrde
 
 open scoped Classical in
 /-- A well founded linear order is conditionally complete, with a bottom element. -/
-noncomputable abbrev IsWellOrder.conditionallyCompleteLinearOrderBot (α : Type*)
-  [i₁ : _root_.LinearOrder α] [i₂ : OrderBot α] [h : IsWellOrder α (· < ·)] :
+noncomputable abbrev WellFoundedLT.conditionallyCompleteLinearOrderBot (α : Type*)
+  [i₁ : LinearOrder α] [i₂ : OrderBot α] [h : WellFoundedLT α] :
     ConditionallyCompleteLinearOrderBot α :=
   { i₁, i₂, LinearOrder.toLattice with
     sInf := fun s => if hs : s.Nonempty then h.wf.min s hs else ⊥
@@ -1104,7 +1106,7 @@ theorem cbiInf_eq_of_not_forall {p : ι → Prop} {f : Subtype p → α} (hp : �
 
 open Function
 
-variable [IsWellOrder α (· < ·)]
+variable [WellFoundedLT α]
 
 theorem sInf_eq_argmin_on (hs : s.Nonempty) : sInf s = argminOn id wellFounded_lt s hs :=
   IsLeast.csInf_eq ⟨argminOn_mem _ _ _ _, fun _ ha => argminOn_le id _ _ ha⟩
@@ -1354,6 +1356,7 @@ end WithTop
 namespace Monotone
 
 variable [Preorder α] [ConditionallyCompleteLattice β] {f : α → β} (h_mono : Monotone f)
+include h_mono
 
 /-! A monotone function into a conditionally complete lattice preserves the ordering properties of
 `sSup` and `sInf`. -/
@@ -1636,6 +1639,3 @@ lemma iInf_coe_lt_top : ⨅ i, (f i : WithTop α) < ⊤ ↔ Nonempty ι := by
 
 end WithTop
 end WithTopBot
-
--- Guard against import creep
-assert_not_exists Multiset

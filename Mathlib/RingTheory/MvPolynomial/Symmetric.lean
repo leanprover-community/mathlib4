@@ -367,12 +367,12 @@ variable [DecidableEq σ] [DecidableEq τ] {n : ℕ}
 /-- The monomial symmetric `MvPolynomial σ R` with exponent set μ.
 It is the sum over all the monomials in `MvPolynomial σ R` such that
 the multiset of exponents is equal to the multiset of parts of μ. -/
-def msymm  (μ : n.Partition) : MvPolynomial σ R :=
-  ∑ s : {a : Sym σ n // .ofSym a = μ},  (s.1.1.map X).prod
+def msymm (μ : n.Partition) : MvPolynomial σ R :=
+  ∑ s : {a : Sym σ n // .ofSym a = μ}, (s.1.1.map X).prod
 
 @[simp]
 theorem msymm_zero : msymm σ R (.indiscrete 0) = 1 := by
-  rw [msymm, Fintype.sum_subsingleton _ ⟨(Sym.nil : Sym σ 0), by rfl⟩]
+  rw [msymm, Fintype.sum_subsingleton _ ⟨(Sym.nil : Sym σ 0), rfl⟩]
   simp
 
 @[simp]

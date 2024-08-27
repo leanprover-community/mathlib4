@@ -84,24 +84,19 @@ theorem Matrix.coe_vecMulLinear [Fintype m] (M : Matrix m n R) :
 
 variable [Fintype m]
 
-@[simp]
+set_option linter.deprecated false in
+@[simp, deprecated Matrix.single_one_vecMul (since := "2024-08-09")]
 theorem Matrix.vecMul_stdBasis [DecidableEq m] (M : Matrix m n R) (i j) :
-    (LinearMap.stdBasis R (fun _ ↦ R) i 1 ᵥ* M) j = M i j := by
-  have : (∑ i', (if i = i' then 1 else 0) * M i' j) = M i j := by
-    simp_rw [boole_mul, Finset.sum_ite_eq, Finset.mem_univ, if_true]
-  simp only [vecMul, dotProduct]
-  convert this
-  split_ifs with h <;> simp only [stdBasis_apply]
-  · rw [h, Function.update_same]
-  · rw [Function.update_noteq (Ne.symm h), Pi.zero_apply]
+    (LinearMap.stdBasis R (fun _ ↦ R) i 1 ᵥ* M) j = M i j :=
+  congr_fun (Matrix.single_one_vecMul ..) j
 
 theorem range_vecMulLinear (M : Matrix m n R) :
     LinearMap.range M.vecMulLinear = span R (range M) := by
   letI := Classical.decEq m
-  simp_rw [range_eq_map, ← iSup_range_stdBasis, Submodule.map_iSup, range_eq_map, ←
+  simp_rw [range_eq_map, ← iSup_range_single, Submodule.map_iSup, range_eq_map, ←
     Ideal.span_singleton_one, Ideal.span, Submodule.map_span, image_image, image_singleton,
     Matrix.vecMulLinear_apply, iSup_span, range_eq_iUnion, iUnion_singleton_eq_range,
-    LinearMap.stdBasis, coe_single]
+    LinearMap.single, LinearMap.coe_mk, AddHom.coe_mk]
   unfold vecMul
   simp_rw [single_dotProduct, one_mul]
 
@@ -125,15 +120,15 @@ variable [DecidableEq m]
 by having matrices act by right multiplication.
  -/
 def LinearMap.toMatrixRight' : ((m → R) →ₗ[R] n → R) ≃ₗ[Rᵐᵒᵖ] Matrix m n R where
-  toFun f i j := f (stdBasis R (fun _ ↦ R) i 1) j
+  toFun f i j := f (single R (fun _ ↦ R) i 1) j
   invFun := Matrix.vecMulLinear
   right_inv M := by
     ext i j
-    simp only [Matrix.vecMul_stdBasis, Matrix.vecMulLinear_apply]
+    simp
   left_inv f := by
     apply (Pi.basisFun R m).ext
     intro j; ext i
-    simp only [Pi.basisFun_apply, Matrix.vecMul_stdBasis, Matrix.vecMulLinear_apply]
+    simp
   map_add' f g := by
     ext i j
     simp only [Pi.add_apply, LinearMap.add_apply, Matrix.add_apply]
@@ -167,7 +162,7 @@ theorem Matrix.toLinearMapRight'_mul_apply [Fintype l] [DecidableEq l] (M : Matr
 theorem Matrix.toLinearMapRight'_one :
     Matrix.toLinearMapRight' (1 : Matrix m m R) = LinearMap.id := by
   ext
-  simp [LinearMap.one_apply, stdBasis_apply]
+  simp [LinearMap.one_apply]
 
 /-- If `M` and `M'` are each other's inverse matrices, they provide an equivalence between `n → A`
 and `m → A` corresponding to `M.vecMul` and `M'.vecMul`. -/
@@ -258,14 +253,17 @@ theorem Matrix.ker_mulVecLin_eq_bot_iff {M : Matrix m n R} :
     (LinearMap.ker M.mulVecLin) = ⊥ ↔ ∀ v, M *ᵥ v = 0 → v = 0 := by
   simp only [Submodule.eq_bot_iff, LinearMap.mem_ker, Matrix.mulVecLin_apply]
 
+set_option linter.deprecated false in
+@[deprecated Matrix.mulVec_single_one (since := "2024-08-09")]
 theorem Matrix.mulVec_stdBasis [DecidableEq n] (M : Matrix m n R) (i j) :
     (M *ᵥ LinearMap.stdBasis R (fun _ ↦ R) j 1) i = M i j :=
-  (congr_fun (Matrix.mulVec_single _ _ (1 : R)) i).trans <| mul_one _
+  congr_fun (Matrix.mulVec_single_one ..) i
 
-@[simp]
+set_option linter.deprecated false in
+@[simp, deprecated Matrix.mulVec_single_one (since := "2024-08-09")]
 theorem Matrix.mulVec_stdBasis_apply [DecidableEq n] (M : Matrix m n R) (j) :
     M *ᵥ LinearMap.stdBasis R (fun _ ↦ R) j 1 = Mᵀ j :=
-  funext fun i ↦ Matrix.mulVec_stdBasis M i j
+  Matrix.mulVec_single_one ..
 
 theorem Matrix.range_mulVecLin (M : Matrix m n R) :
     LinearMap.range M.mulVecLin = span R (range Mᵀ) := by
@@ -285,15 +283,16 @@ variable {k l m n : Type*} [DecidableEq n] [Fintype n]
 
 /-- Linear maps `(n → R) →ₗ[R] (m → R)` are linearly equivalent to `Matrix m n R`. -/
 def LinearMap.toMatrix' : ((n → R) →ₗ[R] m → R) ≃ₗ[R] Matrix m n R where
-  toFun f := of fun i j ↦ f (stdBasis R (fun _ ↦ R) j 1) i
+  toFun f := of fun i j ↦ f (Pi.single j 1) i
   invFun := Matrix.mulVecLin
   right_inv M := by
     ext i j
-    simp only [Matrix.mulVec_stdBasis, Matrix.mulVecLin_apply, of_apply]
+    simp only [Matrix.mulVec_single_one, Matrix.mulVecLin_apply, of_apply, transpose_apply]
   left_inv f := by
     apply (Pi.basisFun R n).ext
     intro j; ext i
-    simp only [Pi.basisFun_apply, Matrix.mulVec_stdBasis, Matrix.mulVecLin_apply, of_apply]
+    simp only [Pi.basisFun_apply, Matrix.mulVec_single_one,
+      Matrix.mulVecLin_apply, of_apply, transpose_apply]
   map_add' f g := by
     ext i j
     simp only [Pi.add_apply, LinearMap.add_apply, of_apply, Matrix.add_apply]
@@ -337,8 +336,8 @@ theorem LinearMap.toMatrix'_apply (f : (n → R) →ₗ[R] m → R) (i j) :
   congr
   ext j'
   split_ifs with h
-  · rw [h, stdBasis_same]
-  apply stdBasis_ne _ _ _ _ h
+  · rw [h, Pi.single_eq_same]
+  apply Pi.single_eq_of_ne h
 
 @[simp]
 theorem Matrix.toLin'_apply (M : Matrix m n R) (v : n → R) : Matrix.toLin' M v = M *ᵥ v :=

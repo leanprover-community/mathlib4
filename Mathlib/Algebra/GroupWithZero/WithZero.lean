@@ -255,7 +255,7 @@ instance groupWithZero : GroupWithZero (WithZero α) where
   __ := divInvMonoid
   __ := nontrivial
   inv_zero := WithZero.inv_zero
-  mul_inv_cancel a ha := by lift a to α using ha; norm_cast; apply mul_right_inv
+  mul_inv_cancel a ha := by lift a to α using ha; norm_cast; apply mul_inv_cancel
 
 
 /-- Any group is isomorphic to the units of itself adjoined with `0`. -/

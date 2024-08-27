@@ -120,7 +120,7 @@ theorem CHSH_inequality_of_comm [OrderedCommRing R] [StarRing R] [StarOrderedRin
   have i₁ : 0 ≤ P := by
     have idem : P * P = 4 * P := CHSH_id T.A₀_inv T.A₁_inv T.B₀_inv T.B₁_inv
     have idem' : P = (1 / 4 : ℝ) • (P * P) := by
-      have h : 4 * P = (4 : ℝ) • P := by simp [Algebra.smul_def]
+      have h : 4 * P = (4 : ℝ) • P := by simp [map_ofNat, Algebra.smul_def]
       rw [idem, h, ← mul_smul]
       norm_num
     have sa : star P = P := by
@@ -150,7 +150,7 @@ we prepare some easy lemmas about √2.
 -- defeated me. Thanks for the rescue from Shing Tak Lam!
 theorem tsirelson_inequality_aux : √2 * √2 ^ 3 = √2 * (2 * (√2)⁻¹ + 4 * ((√2)⁻¹ * 2⁻¹)) := by
   ring_nf
-  rw [mul_inv_cancel (ne_of_gt (Real.sqrt_pos.2 (show (2 : ℝ) > 0 by norm_num)))]
+  rw [mul_inv_cancel₀ (ne_of_gt (Real.sqrt_pos.2 (show (2 : ℝ) > 0 by norm_num)))]
   convert congr_arg (· ^ 2) (@Real.sq_sqrt 2 (by norm_num)) using 1 <;>
     (try simp only [← pow_mul]) <;> norm_num
 

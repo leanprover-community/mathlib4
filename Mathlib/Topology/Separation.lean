@@ -337,7 +337,6 @@ instance SeparationQuotient.instT0Space : T0Space (SeparationQuotient X) :=
 
 theorem minimal_nonempty_closed_subsingleton [T0Space X] {s : Set X} (hs : IsClosed s)
     (hmin : ∀ t, t ⊆ s → t.Nonempty → IsClosed t → t = s) : s.Subsingleton := by
-  clear Y -- Porting note: added
   refine fun x hx y hy => of_not_not fun hxy => ?_
   rcases exists_isOpen_xor'_mem hxy with ⟨U, hUo, hU⟩
   wlog h : x ∈ U ∧ y ∉ U
@@ -361,7 +360,6 @@ theorem IsClosed.exists_closed_singleton [T0Space X] [CompactSpace X] {S : Set X
 
 theorem minimal_nonempty_open_subsingleton [T0Space X] {s : Set X} (hs : IsOpen s)
     (hmin : ∀ t, t ⊆ s → t.Nonempty → IsOpen t → t = s) : s.Subsingleton := by
-  clear Y -- Porting note: added
   refine fun x hx y hy => of_not_not fun hxy => ?_
   rcases exists_isOpen_xor'_mem hxy with ⟨U, hUo, hU⟩
   wlog h : x ∈ U ∧ y ∉ U
@@ -922,16 +920,16 @@ theorem Set.Subsingleton.isGδ_compl {s : Set X} [T1Space X] (hs : s.Subsingleto
 theorem Finset.isGδ_compl [T1Space X] (s : Finset X) : IsGδ (sᶜ : Set X) :=
   s.finite_toSet.isGδ_compl
 
-variable [FirstCountableTopology X]
-
-protected theorem IsGδ.singleton [T1Space X] (x : X) : IsGδ ({x} : Set X) := by
+protected theorem IsGδ.singleton [FirstCountableTopology X] [T1Space X] (x : X) :
+    IsGδ ({x} : Set X) := by
   rcases (nhds_basis_opens x).exists_antitone_subbasis with ⟨U, hU, h_basis⟩
   rw [← biInter_basis_nhds h_basis.toHasBasis]
   exact .biInter (to_countable _) fun n _ => (hU n).2.isGδ
 
 @[deprecated (since := "2024-02-15")] alias isGδ_singleton := IsGδ.singleton
 
-theorem Set.Finite.isGδ {s : Set X} [T1Space X] (hs : s.Finite) : IsGδ s :=
+theorem Set.Finite.isGδ [FirstCountableTopology X] {s : Set X} [T1Space X] (hs : s.Finite) :
+    IsGδ s :=
   Finite.induction_on hs .empty fun _ _ ↦ .union (.singleton _)
 
 theorem SeparationQuotient.t1Space_iff : T1Space (SeparationQuotient X) ↔ R0Space X := by
@@ -1412,6 +1410,22 @@ theorem IsCompact.nhdsSet_inter_eq [T2Space X] {s t : Set X} (hs : IsCompact s) 
   · exact le_iSup₂_of_le x ⟨hxs, hyt⟩ (inf_idem _).le
   · exact (disjoint_nhds_nhds.mpr hne).eq_bot ▸ bot_le
 
+/-- In a `T2Space X`, for a compact set `t` and a point `x` outside `t`, there are open sets `U`,
+`V` that separate `t` and `x`.-/
+lemma IsCompact.separation_of_not_mem {X : Type u_1} [TopologicalSpace X] [T2Space X] {x : X}
+    {t : Set X} (H1 : IsCompact t) (H2 : x ∉ t) :
+    ∃ (U : Set X), ∃ (V : Set X), IsOpen U ∧ IsOpen V ∧ t ⊆ U ∧ x ∈ V ∧ Disjoint U V := by
+  simpa [SeparatedNhds] using SeparatedNhds.of_isCompact_isCompact_isClosed H1 isCompact_singleton
+    isClosed_singleton <| disjoint_singleton_right.mpr H2
+
+/-- In a `T2Space X`, for a compact set `t` and a point `x` outside `t`, `𝓝ˢ t` and `𝓝 x` are
+disjoint. -/
+lemma IsCompact.disjoint_nhdsSet_nhds {X : Type u_1} [TopologicalSpace X] [T2Space X] {x : X}
+    {t : Set X} (H1 : IsCompact t) (H2 : x ∉ t) :
+    Disjoint (𝓝ˢ t) (𝓝 x) := by
+  simpa using SeparatedNhds.disjoint_nhdsSet <| .of_isCompact_isCompact_isClosed H1
+    isCompact_singleton isClosed_singleton <| disjoint_singleton_right.mpr H2
+
 /-- If a function `f` is
 
 - injective on a compact set `s`;
@@ -1740,6 +1754,25 @@ theorem SeparatedNhds.of_isCompact_isCompact [T2Space X] {s t : Set X} (hs : IsC
 @[deprecated (since := "2024-01-28")]
 alias separatedNhds_of_isCompact_isCompact := SeparatedNhds.of_isCompact_isCompact
 
+/-- In a `T2Space X`, for disjoint closed sets `s t` such that `closure sᶜ` is compact,
+there are neighbourhoods that separate `s` and `t`.-/
+lemma SeparatedNhds.of_isClosed_isCompact_closure_compl_isClosed [T2Space X] {s : Set X}
+    {t : Set X} (H1 : IsClosed s) (H2 : IsCompact (closure sᶜ)) (H3 : IsClosed t)
+    (H4 : Disjoint s t) : SeparatedNhds s t := by
+  -- Since `t` is a closed subset of the compact set `closure sᶜ`, it is compact.
+  have ht : IsCompact t := .of_isClosed_subset H2 H3 <| H4.subset_compl_left.trans subset_closure
+  -- we split `s` into its frontier and its interior.
+  rw [← diff_union_of_subset (interior_subset (s := s))]
+  -- since `t ⊆ sᶜ`, which is open, and `interior s` is open, we have
+  -- `SeparatedNhds (interior s) t`, which leaves us only with the frontier.
+  refine .union_left ?_ ⟨interior s, sᶜ, isOpen_interior, H1.isOpen_compl, le_rfl,
+    H4.subset_compl_left, disjoint_compl_right.mono_left interior_subset⟩
+  -- Since the frontier of `s` is compact (as it is a subset of `closure sᶜ`), we simply apply
+  -- `SeparatedNhds_of_isCompact_isCompact`.
+  rw [← H1.frontier_eq, frontier_eq_closure_inter_closure, H1.closure_eq]
+  refine .of_isCompact_isCompact ?_ ht (disjoint_of_subset_left inter_subset_left H4)
+  exact H2.of_isClosed_subset (H1.inter isClosed_closure) inter_subset_right
+
 section SeparatedFinset
 
 theorem SeparatedNhds.of_finset_finset [T2Space X] (s t : Finset X) (h : Disjoint s t) :
@@ -2026,7 +2059,7 @@ alias separatedNhds_of_isCompact_isClosed := SeparatedNhds.of_isCompact_isClosed
 
 /-- This technique to witness `HasSeparatingCover` in regular Lindelöf topological spaces
 will be used to prove regular Lindelöf spaces are normal. -/
-lemma IsClosed.HasSeparatingCover {s t : Set X} [r : RegularSpace X] [LindelofSpace X]
+lemma IsClosed.HasSeparatingCover {s t : Set X} [LindelofSpace X]
     (s_cl : IsClosed s) (t_cl : IsClosed t) (st_dis : Disjoint s t) : HasSeparatingCover s t := by
   -- `IsLindelof.indexed_countable_subcover` requires the space be Nonempty
   rcases isEmpty_or_nonempty X with empty_X | nonempty_X
@@ -2037,7 +2070,7 @@ lemma IsClosed.HasSeparatingCover {s t : Set X} [r : RegularSpace X] [LindelofSp
   have (a : X) : ∃ n : Set X, IsOpen n ∧ Disjoint (closure n) t ∧ (a ∈ s → a ∈ n) := by
     wlog ains : a ∈ s
     · exact ⟨∅, isOpen_empty, SeparatedNhds.empty_left t |>.disjoint_closure_left, fun a ↦ ains a⟩
-    obtain ⟨n, nna, ncl, nsubkc⟩ := ((regularSpace_TFAE X).out 0 3 :).mp r a tᶜ <|
+    obtain ⟨n, nna, ncl, nsubkc⟩ := ((regularSpace_TFAE X).out 0 3 :).mp ‹RegularSpace X› a tᶜ <|
       t_cl.compl_mem_nhds (disjoint_left.mp st_dis ains)
     exact
       ⟨interior n,
