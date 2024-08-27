@@ -6,7 +6,7 @@ Authors: Christian Merten
 import Mathlib.Algebra.Category.Grp.Limits
 import Mathlib.CategoryTheory.CofilteredSystem
 import Mathlib.CategoryTheory.Galois.Decomposition
-import Mathlib.CategoryTheory.Limits.FunctorCategory
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Limits.IndYoneda
 import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 
@@ -246,7 +246,7 @@ We first establish the isomorphism between `End F` and `AutGalois F`, from which
 
 - `endEquivSectionsFibers : End F ≅ (incl F ⋙ F').sections`: the endomorphisms of
   `F` are isomorphic to the limit over `F.obj A` for all Galois objects `A`.
-  This is obtained as the composition (slighty simplified):
+  This is obtained as the composition (slightly simplified):
 
   `End F ≅ (colimit ((incl F).op ⋙ coyoneda) ⟶ F) ≅ (incl F ⋙ F).sections`
 
