@@ -842,7 +842,8 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
     have e0 := Ordinal.pos_iff_ne_zero.2 e0
     have rr0 : 0 < repr a0 + repr a0 := lt_of_lt_of_le e0 (le_add_left _ _)
     apply principal_add_omega_opow
-    · simp [opow_mul, opow_add, mul_assoc]
+    · simp only [Nat.succ_eq_add_one, Nat.cast_add, Nat.cast_one, add_one_eq_succ,
+        opow_mul, opow_succ, mul_assoc]
       rw [Ordinal.mul_lt_mul_iff_left ω00, ← Ordinal.opow_add]
       have : _ < ω ^ (repr a0 + repr a0) := (No.below_of_lt ?_).repr_lt
       · exact mul_lt_omega_opow rr0 this (nat_lt_omega _)
@@ -901,6 +902,7 @@ theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o�
         conv_lhs =>
           dsimp [(· ^ ·)]
           simp [Pow.pow, opow, Ordinal.succ_ne_zero]
+        rw [opow_natCast]
       · simpa [Nat.one_le_iff_ne_zero]
       · rw [← Nat.cast_succ, lt_omega]
         exact ⟨_, rfl⟩
