@@ -6,7 +6,7 @@ Authors: Brendan Murphy
 import Mathlib.RingTheory.Regular.IsSMulRegular
 import Mathlib.RingTheory.Artinian
 import Mathlib.Logic.Equiv.TransferInstance
-import Mathlib.RingTheory.Ideal.LocalRing
+import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 
 /-!
 # Regular sequences and weakly regular sequences
@@ -140,7 +140,7 @@ structure IsWeaklyRegular (rs : List R) : Prop where
 
 lemma isWeaklyRegular_iff_Fin (rs : List R) :
     IsWeaklyRegular M rs ↔ ∀ (i : Fin rs.length),
-      IsSMulRegular (M ⧸ (ofList (rs.take i) • ⊤ : Submodule R M)) (rs.get i) :=
+      IsSMulRegular (M ⧸ (ofList (rs.take i) • ⊤ : Submodule R M)) rs[i] :=
   Iff.trans (isWeaklyRegular_iff M rs) (Iff.symm Fin.forall_iff)
 
 /-- A weakly regular sequence `rs` on `M` is regular if also `M/rsM ≠ 0`. -/
@@ -153,7 +153,7 @@ end Definitions
 section Congr
 
 variable {S M} [CommRing R] [CommRing S] [AddCommGroup M] [AddCommGroup M₂]
-    [Module R M] [Module R M₂] [Module S M₂]
+    [Module R M] [Module S M₂]
     {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
 
 open DistribMulAction AddSubgroup in
@@ -192,7 +192,7 @@ lemma _root_.LinearEquiv.isWeaklyRegular_congr' (e : M ≃ₛₗ[σ] M₂) (rs :
   e.toAddEquiv.isWeaklyRegular_congr <| List.forall₂_map_right_iff.mpr <|
     List.forall₂_same.mpr fun r _ x => e.map_smul' r x
 
-lemma _root_.LinearEquiv.isWeaklyRegular_congr (e : M ≃ₗ[R] M₂) (rs : List R) :
+lemma _root_.LinearEquiv.isWeaklyRegular_congr [Module R M₂] (e : M ≃ₗ[R] M₂) (rs : List R) :
     IsWeaklyRegular M rs ↔ IsWeaklyRegular M₂ rs :=
   Iff.trans (e.isWeaklyRegular_congr' rs) <| iff_of_eq <| congrArg _ rs.map_id
 
@@ -210,7 +210,7 @@ lemma _root_.LinearEquiv.isRegular_congr' (e : M ≃ₛₗ[σ] M₂) (rs : List 
   e.toAddEquiv.isRegular_congr <| List.forall₂_map_right_iff.mpr <|
     List.forall₂_same.mpr fun r _ x => e.map_smul' r x
 
-lemma _root_.LinearEquiv.isRegular_congr (e : M ≃ₗ[R] M₂) (rs : List R) :
+lemma _root_.LinearEquiv.isRegular_congr [Module R M₂] (e : M ≃ₗ[R] M₂) (rs : List R) :
     IsRegular M rs ↔ IsRegular M₂ rs :=
   Iff.trans (e.isRegular_congr' rs) <| iff_of_eq <| congrArg _ rs.map_id
 

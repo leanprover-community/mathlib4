@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Adam Topaz, Nick Kuhn
+Authors: Adam Topaz, Nikolas Kuhn
 -/
 import Mathlib.CategoryTheory.Sites.Coherent.CoherentSheaves
 /-!
@@ -29,7 +29,7 @@ Note: This is one direction of `mem_sieves_iff_hasEffectiveEpiFamily`, but is ne
 theorem coherentTopology.mem_sieves_of_hasEffectiveEpiFamily (S : Sieve X) :
     (∃ (α : Type) (_ : Finite α) (Y : α → C) (π : (a : α) → (Y a ⟶ X)),
       EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a)) ) →
-        (S ∈ GrothendieckTopology.sieves (coherentTopology C) X) := by
+        (S ∈ (coherentTopology C) X) := by
   intro ⟨α, _, Y, π, hπ⟩
   apply (coherentCoverage C).mem_toGrothendieck_sieves_of_superset (R := Presieve.ofArrows Y π)
   · exact fun _ _ h ↦ by cases h; exact hπ.2 _
@@ -42,21 +42,21 @@ Effective epi families in a precoherent category are transitive, in the sense th
 Note: The finiteness condition is an artifact of the proof and is probably unnecessary.
 -/
 theorem EffectiveEpiFamily.transitive_of_finite {α : Type} [Finite α] {Y : α → C}
-    (π : (a : α) → (Y a ⟶ X)) (h : EffectiveEpiFamily Y π) {β : α → Type} [∀ (a: α), Finite (β a)]
+    (π : (a : α) → (Y a ⟶ X)) (h : EffectiveEpiFamily Y π) {β : α → Type} [∀ (a : α), Finite (β a)]
     {Y_n : (a : α) → β a → C} (π_n : (a : α) → (b : β a) → (Y_n a b ⟶ Y a))
     (H : ∀ a, EffectiveEpiFamily (Y_n a) (π_n a)) :
     EffectiveEpiFamily
       (fun (c : Σ a, β a) => Y_n c.fst c.snd) (fun c => π_n c.fst c.snd ≫ π c.fst) := by
   rw [← Sieve.effectiveEpimorphic_family]
   suffices h₂ : (Sieve.generate (Presieve.ofArrows (fun (⟨a, b⟩ : Σ _, β _) => Y_n a b)
-        (fun ⟨a,b⟩ => π_n a b ≫ π a))) ∈ GrothendieckTopology.sieves (coherentTopology C) X by
+        (fun ⟨a,b⟩ => π_n a b ≫ π a))) ∈ (coherentTopology C) X by
     change Nonempty _
     rw [← Sieve.forallYonedaIsSheaf_iff_colimit]
     exact fun W => coherentTopology.isSheaf_yoneda_obj W _ h₂
   -- Show that a covering sieve is a colimit, which implies the original set of arrows is regular
   -- epimorphic. We use the transitivity property of saturation
-  apply Coverage.saturate.transitive X (Sieve.generate (Presieve.ofArrows Y π))
-  · apply Coverage.saturate.of
+  apply Coverage.Saturate.transitive X (Sieve.generate (Presieve.ofArrows Y π))
+  · apply Coverage.Saturate.of
     use α, inferInstance, Y, π
   · intro V f ⟨Y₁, h, g, ⟨hY, hf⟩⟩
     rw [← hf, Sieve.pullback_comp]
@@ -80,7 +80,7 @@ A sieve belongs to the coherent topology if and only if it contains a finite
 `EffectiveEpiFamily`.
 -/
 theorem coherentTopology.mem_sieves_iff_hasEffectiveEpiFamily (S : Sieve X) :
-    (S ∈ GrothendieckTopology.sieves (coherentTopology C) X) ↔
+    (S ∈ (coherentTopology C) X) ↔
     (∃ (α : Type) (_ : Finite α) (Y : α → C) (π : (a : α) → (Y a ⟶ X)),
         EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a)) )  := by
   constructor

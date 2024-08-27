@@ -18,6 +18,10 @@ The property `EqualizerCondition` is defined in `Mathlib/CategoryTheory/Sites/R
 and it says that for any effective epi `X ⟶ B` (in this case that is equivalent to being a
 continuous surjection), the presheaf `F` exhibits `F(B)` as the equalizer of the two maps
 `F(X) ⇉ F(X ×_B X)`
+
+We also give variants for light condensed objects in concrete categories whose forgetful functor
+reflects finite limits (resp. products), where it is enough to check the sheaf condition after
+postcomposing with the forgetful functor.
 -/
 
 universe v u w
@@ -35,10 +39,10 @@ products and satisfies the equalizer condition.
 @[simps]
 noncomputable def ofSheafLightProfinite (F : LightProfinite.{u}ᵒᵖ ⥤ A) [PreservesFiniteProducts F]
     (hF : EqualizerCondition F) : LightCondensed A where
-    val := F
-    cond := by
-      rw [isSheaf_iff_preservesFiniteProducts_and_equalizerCondition F]
-      exact ⟨⟨⟨fun _ _ ↦ inferInstance⟩⟩, hF⟩
+  val := F
+  cond := by
+    rw [isSheaf_iff_preservesFiniteProducts_and_equalizerCondition F]
+    exact ⟨⟨⟨fun _ _ ↦ inferInstance⟩⟩, hF⟩
 
 /--
 The light condensed object associated to a presheaf on `LightProfinite` whose postcomposition with

@@ -7,8 +7,6 @@ import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
-#align_import algebra.category.Mon.colimits from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
-
 /-!
 # The category of monoids has all colimits.
 
@@ -76,8 +74,6 @@ inductive Prequotient
   -- Then one generator for each operation
   | one : Prequotient
   | mul : Prequotient → Prequotient → Prequotient
-set_option linter.uppercaseLean3 false in
-#align Mon.colimits.prequotient MonCat.Colimits.Prequotient
 
 instance : Inhabited (Prequotient F) :=
   ⟨Prequotient.one⟩
@@ -106,16 +102,12 @@ inductive Relation : Prequotient F → Prequotient F → Prop-- Make it an equiv
   | mul_assoc : ∀ x y z, Relation (mul (mul x y) z) (mul x (mul y z))
   | one_mul : ∀ x, Relation (mul one x) x
   | mul_one : ∀ x, Relation (mul x one) x
-set_option linter.uppercaseLean3 false in
-#align Mon.colimits.relation MonCat.Colimits.Relation
 
 /-- The setoid corresponding to monoid expressions modulo monoid relations and identifications.
 -/
 def colimitSetoid : Setoid (Prequotient F) where
   r := Relation F
   iseqv := ⟨Relation.refl, Relation.symm _ _, Relation.trans _ _ _⟩
-set_option linter.uppercaseLean3 false in
-#align Mon.colimits.colimit_setoid MonCat.Colimits.colimitSetoid
 
 attribute [instance] colimitSetoid
 
@@ -123,8 +115,6 @@ attribute [instance] colimitSetoid
 -/
 def ColimitType : Type v :=
   Quotient (colimitSetoid F)
-set_option linter.uppercaseLean3 false in
-#align Mon.colimits.colimit_type MonCat.Colimits.ColimitType
 
 instance : Inhabited (ColimitType F) := by
   dsimp [ColimitType]
@@ -138,42 +128,30 @@ instance monoidColimitType : Monoid (ColimitType F) where
   mul_one := Quotient.ind fun _ => Quotient.sound <| Relation.mul_one _
   mul_assoc := Quotient.ind fun _ => Quotient.ind₂ fun _ _ =>
     Quotient.sound <| Relation.mul_assoc _ _ _
-set_option linter.uppercaseLean3 false in
-#align Mon.colimits.monoid_colimit_type MonCat.Colimits.monoidColimitType
 
 @[simp]
 theorem quot_one : Quot.mk Setoid.r one = (1 : ColimitType F) :=
   rfl
-set_option linter.uppercaseLean3 false in
-#align Mon.colimits.quot_one MonCat.Colimits.quot_one
 
 @[simp]
 theorem quot_mul (x y : Prequotient F) : Quot.mk Setoid.r (mul x y) =
     @HMul.hMul (ColimitType F) (ColimitType F) (ColimitType F) _
       (Quot.mk Setoid.r x) (Quot.mk Setoid.r y) :=
   rfl
-set_option linter.uppercaseLean3 false in
-#align Mon.colimits.quot_mul MonCat.Colimits.quot_mul
 
 /-- The bundled monoid giving the colimit of a diagram. -/
 def colimit : MonCat :=
   ⟨ColimitType F, by infer_instance⟩
-set_option linter.uppercaseLean3 false in
-#align Mon.colimits.colimit MonCat.Colimits.colimit
 
 /-- The function from a given monoid in the diagram to the colimit monoid. -/
 def coconeFun (j : J) (x : F.obj j) : ColimitType F :=
   Quot.mk _ (Prequotient.of j x)
-set_option linter.uppercaseLean3 false in
-#align Mon.colimits.cocone_fun MonCat.Colimits.coconeFun
 
 /-- The monoid homomorphism from a given monoid in the diagram to the colimit monoid. -/
 def coconeMorphism (j : J) : F.obj j ⟶ colimit F where
   toFun := coconeFun F j
   map_one' := Quot.sound (Relation.one _)
   map_mul' _ _ := Quot.sound (Relation.mul _ _ _)
-set_option linter.uppercaseLean3 false in
-#align Mon.colimits.cocone_morphism MonCat.Colimits.coconeMorphism
 
 @[simp]
 theorem cocone_naturality {j j' : J} (f : j ⟶ j') :
@@ -181,23 +159,17 @@ theorem cocone_naturality {j j' : J} (f : j ⟶ j') :
   ext
   apply Quot.sound
   apply Relation.map
-set_option linter.uppercaseLean3 false in
-#align Mon.colimits.cocone_naturality MonCat.Colimits.cocone_naturality
 
 @[simp]
 theorem cocone_naturality_components (j j' : J) (f : j ⟶ j') (x : F.obj j) :
     (coconeMorphism F j') (F.map f x) = (coconeMorphism F j) x := by
   rw [← cocone_naturality F f]
   rfl
-set_option linter.uppercaseLean3 false in
-#align Mon.colimits.cocone_naturality_components MonCat.Colimits.cocone_naturality_components
 
 /-- The cocone over the proposed colimit monoid. -/
 def colimitCocone : Cocone F where
   pt := colimit F
   ι := { app := coconeMorphism F }
-set_option linter.uppercaseLean3 false in
-#align Mon.colimits.colimit_cocone MonCat.Colimits.colimitCocone
 
 /-- The function from the free monoid on the diagram to the cone point of any other cocone. -/
 @[simp]
@@ -205,8 +177,6 @@ def descFunLift (s : Cocone F) : Prequotient F → s.pt
   | Prequotient.of j x => (s.ι.app j) x
   | one => 1
   | mul x y => descFunLift _ x * descFunLift _ y
-set_option linter.uppercaseLean3 false in
-#align Mon.colimits.desc_fun_lift MonCat.Colimits.descFunLift
 
 /-- The function from the colimit monoid to the cone point of any other cocone. -/
 def descFun (s : Cocone F) : ColimitType F → s.pt := by
@@ -225,8 +195,6 @@ def descFun (s : Cocone F) : ColimitType F → s.pt := by
     | mul_assoc x y z => exact mul_assoc _ _ _
     | one_mul x => exact one_mul _
     | mul_one x => exact mul_one _
-set_option linter.uppercaseLean3 false in
-#align Mon.colimits.desc_fun MonCat.Colimits.descFun
 
 /-- The monoid homomorphism from the colimit monoid to the cone point of any other cocone. -/
 def descMorphism (s : Cocone F) : colimit F ⟶ s.pt where
@@ -238,8 +206,6 @@ def descMorphism (s : Cocone F) : colimit F ⟶ s.pt where
     dsimp [descFun]
     rw [← quot_mul]
     simp only [descFunLift]
-set_option linter.uppercaseLean3 false in
-#align Mon.colimits.desc_morphism MonCat.Colimits.descMorphism
 
 /-- Evidence that the proposed colimit is the colimit. -/
 def colimitIsColimit : IsColimit (colimitCocone F) where
@@ -256,8 +222,6 @@ def colimitIsColimit : IsColimit (colimitCocone F) where
     · rw [quot_mul, map_mul, hx, hy]
       dsimp [descMorphism, DFunLike.coe, descFun]
       simp only [← quot_mul, descFunLift]
-set_option linter.uppercaseLean3 false in
-#align Mon.colimits.colimit_is_colimit MonCat.Colimits.colimitIsColimit
 
 instance hasColimits_monCat : HasColimits MonCat where
   has_colimits_of_shape _ _ :=
@@ -265,7 +229,5 @@ instance hasColimits_monCat : HasColimits MonCat where
         HasColimit.mk
           { cocone := colimitCocone F
             isColimit := colimitIsColimit F } }
-set_option linter.uppercaseLean3 false in
-#align Mon.colimits.has_colimits_Mon MonCat.Colimits.hasColimits_monCat
 
 end MonCat.Colimits

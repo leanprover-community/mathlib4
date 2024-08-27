@@ -19,7 +19,10 @@ in a well-ordered type is either `⊥`, a successor, or a limit element.
 
 -/
 
-variable {α : Type*} [LinearOrder α] [IsWellOrder α (· < ·)]
+variable {α : Type*} [LinearOrder α]
+
+section
+variable [IsWellOrder α (· < ·)]
 
 /-- Given an element `a : α` in a well ordered set, this is the successor of `a`,
 i.e. the smallest element stricly greater than `a` if it exists (or `a` itself otherwise). -/
@@ -50,6 +53,8 @@ class IsWellOrderLimitElement (a : α) : Prop where
   not_bot : ∃ (b : α), b < a
   not_succ (b : α) (hb : b < a) : ∃ (c : α), b < c ∧ c < a
 
+end
+
 variable (a : α) [ha : IsWellOrderLimitElement a]
 
 lemma IsWellOrderLimitElement.neq_bot [OrderBot α] : a ≠ ⊥ := by
@@ -63,6 +68,7 @@ lemma IsWellOrderLimitElement.bot_lt [OrderBot α] : ⊥ < a := by
   · exact h
 
 variable {a}
+variable [IsWellOrder α (· < ·)]
 
 lemma IsWellOrderLimitElement.wellOrderSucc_lt {b : α} (hb : b < a) :
     wellOrderSucc b < a := by

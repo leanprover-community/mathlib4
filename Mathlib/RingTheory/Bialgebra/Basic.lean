@@ -135,19 +135,17 @@ variable {R A}
   map_natCast (comulAlgHom R A) _
 
 @[simp] lemma counit_pow (a : A) (n : ℕ) : counit (R := R) (a ^ n) = counit a ^ n :=
-  (counitAlgHom R A).map_pow a n
+  map_pow (counitAlgHom R A) a n
 
 @[simp] lemma comul_pow (a : A) (n : ℕ) : comul (R := R) (a ^ n) = comul a ^ n :=
-  (comulAlgHom R A).map_pow a n
+  map_pow (comulAlgHom R A) a n
 
 end Bialgebra
 
-section CommSemiring
+namespace CommSemiring
 variable (R : Type u) [CommSemiring R]
 
 open Bialgebra
-
-namespace CommSemiring
 
 /-- Every commutative (semi)ring is a bialgebra over itself -/
 noncomputable
