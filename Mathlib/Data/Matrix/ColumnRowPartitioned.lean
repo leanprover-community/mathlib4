@@ -124,14 +124,14 @@ lemma fromRows_ext_iff (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R) (B₁ :
     (B₂ : Matrix m₂ n R) :
     fromRows A₁ A₂ = fromRows B₁ B₂ ↔ A₁ = B₁ ∧ A₂ = B₂ := fromRows_inj.eq_iff
 
-/-- A column partioned matrix when transposed gives a row partioned matrix with columns of the
-initial matrix tranposed to become rows. -/
+/-- A column partitioned matrix when transposed gives a row partitioned matrix with columns of the
+initial matrix transposed to become rows. -/
 lemma transpose_fromColumns (A₁ : Matrix m n₁ R) (A₂ : Matrix m n₂ R) :
     transpose (fromColumns A₁ A₂) = fromRows (transpose A₁) (transpose A₂) := by
   ext (i | i) j <;> simp
 
-/-- A row partioned matrix when transposed gives a column partioned matrix with rows of the initial
-matrix tranposed to become columns. -/
+/-- A row partitioned matrix when transposed gives a column partitioned matrix with rows of the
+initial matrix transposed to become columns. -/
 lemma transpose_fromRows (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R) :
     transpose (fromRows A₁ A₂) = fromColumns (transpose A₁) (transpose A₂) := by
   ext i (j | j) <;> simp
@@ -212,29 +212,31 @@ lemma fromRows_zero : fromRows (0 : Matrix m₁ n R) (0 : Matrix m₂ n R) = 0 :
 lemma fromColumns_zero : fromColumns (0 : Matrix m n₁ R) (0 : Matrix m n₂ R) = 0 := by
   ext _ (_ | _) <;> simp
 
-/-- A row partitioned matrix multiplied by a column partioned matrix gives a 2 by 2 block matrix -/
+/-- A row partitioned matrix multiplied by a column partitioned matrix gives a 2 by 2 block
+matrix. -/
 lemma fromRows_mul_fromColumns [Fintype n] (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R)
     (B₁ : Matrix n n₁ R) (B₂ : Matrix n n₂ R) :
     (fromRows A₁ A₂) * (fromColumns B₁ B₂) =
       fromBlocks (A₁ * B₁) (A₁ * B₂) (A₂ * B₁) (A₂ * B₂) := by
   ext (_ | _) (_ | _) <;> simp
 
-/-- A column partitioned matrix mulitplied by a row partitioned matrix gives the sum of the "outer"
-products of the block matrices -/
+/-- A column partitioned matrix multiplied by a row partitioned matrix gives the sum of the "outer"
+products of the block matrices. -/
 lemma fromColumns_mul_fromRows [Fintype n₁] [Fintype n₂] (A₁ : Matrix m n₁ R) (A₂ : Matrix m n₂ R)
     (B₁ : Matrix n₁ n R) (B₂ : Matrix n₂ n R) :
     fromColumns A₁ A₂ * fromRows B₁ B₂ = (A₁ * B₁ + A₂ * B₂) := by
   ext
   simp [mul_apply]
 
-/-- A column partitioned matrix multipiled by a block matrix results in a column partioned matrix -/
+/-- A column partitioned matrix multipiled by a block matrix results in a column partitioned
+matrix. -/
 lemma fromColumns_mul_fromBlocks [Fintype m₁] [Fintype m₂] (A₁ : Matrix m m₁ R) (A₂ : Matrix m m₂ R)
     (B₁₁ : Matrix m₁ n₁ R) (B₁₂ : Matrix m₁ n₂ R) (B₂₁ : Matrix m₂ n₁ R) (B₂₂ : Matrix m₂ n₂ R) :
     (fromColumns A₁ A₂) * fromBlocks B₁₁ B₁₂ B₂₁ B₂₂ =
       fromColumns (A₁ * B₁₁ + A₂ * B₂₁) (A₁ * B₁₂ + A₂ * B₂₂) := by
   ext _ (_ | _) <;> simp [mul_apply]
 
-/-- A block matrix mulitplied by a row partitioned matrix gives a row partitioned matrix -/
+/-- A block matrix multiplied by a row partitioned matrix gives a row partitioned matrix. -/
 lemma fromBlocks_mul_fromRows [Fintype n₁] [Fintype n₂] (A₁ : Matrix n₁ n R) (A₂ : Matrix n₂ n R)
     (B₁₁ : Matrix m₁ n₁ R) (B₁₂ : Matrix m₁ n₂ R) (B₂₁ : Matrix m₂ n₁ R) (B₂₂ : Matrix m₂ n₂ R) :
     fromBlocks B₁₁ B₁₂ B₂₁ B₂₂ * (fromRows A₁ A₂) =
@@ -282,14 +284,14 @@ end CommRing
 section Star
 variable [Star R]
 
-/-- A column partioned matrix in a Star ring when conjugate transposed gives a row partitioned
+/-- A column partitioned matrix in a Star ring when conjugate transposed gives a row partitioned
 matrix with the columns of the initial matrix conjugate transposed to become rows. -/
 lemma conjTranspose_fromColumns_eq_fromRows_conjTranspose (A₁ : Matrix m n₁ R)
     (A₂ : Matrix m n₂ R) :
     conjTranspose (fromColumns A₁ A₂) = fromRows (conjTranspose A₁) (conjTranspose A₂) := by
   ext (_ | _) _ <;> simp
 
-/-- A row partioned matrix in a Star ring when conjugate transposed gives a column partitioned
+/-- A row partitioned matrix in a Star ring when conjugate transposed gives a column partitioned
 matrix with the rows of the initial matrix conjugate transposed to become columns. -/
 lemma conjTranspose_fromRows_eq_fromColumns_conjTranspose (A₁ : Matrix m₁ n R)
     (A₂ : Matrix m₂ n R) : conjTranspose (fromRows A₁ A₂) =
