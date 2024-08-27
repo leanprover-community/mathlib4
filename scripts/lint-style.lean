@@ -14,7 +14,7 @@ This files defines the `lint-style` executable which runs all text-based style l
 The linters themselves are defined in `Mathlib.Tactic.Linter.TextBased`.
 -/
 
-open Cli
+open Cli Mathlib.Linter.TextBased
 
 /-- Implementation of the `lint-style` command line program. -/
 def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
