@@ -138,7 +138,7 @@ mutual -- partial only to speed up compilation
 
 /-- Equality test for expressions. This is not a `BEq` instance because it is heterogeneous. -/
 partial def ExBase.eq
-    {u : Lean.Level} {α : Q(Type u)} {sα : Q(CommSemiring «$α»)} {a b : Q(«$α»)} :
+    {u : Lean.Level} {α : Q(Type u)} {sα : Q(CommSemiring $α)} {a b : Q($α)} :
     ExBase sα a → ExBase sα b → Bool
   | .atom i, .atom j => i == j
   | .sum a, .sum b => a.eq b
@@ -146,7 +146,7 @@ partial def ExBase.eq
 
 @[inherit_doc ExBase.eq]
 partial def ExProd.eq
-    {u : Lean.Level} {α : Q(Type u)} {sα : Q(CommSemiring «$α»)} {a b : Q(«$α»)} :
+    {u : Lean.Level} {α : Q(Type u)} {sα : Q(CommSemiring $α)} {a b : Q($α)} :
     ExProd sα a → ExProd sα b → Bool
   | .const i _, .const j _ => i == j
   | .mul a₁ a₂ a₃, .mul b₁ b₂ b₃ => a₁.eq b₁ && a₂.eq b₂ && a₃.eq b₃
@@ -154,7 +154,7 @@ partial def ExProd.eq
 
 @[inherit_doc ExBase.eq]
 partial def ExSum.eq
-    {u : Lean.Level} {α : Q(Type u)} {sα : Q(CommSemiring «$α»)} {a b : Q(«$α»)} :
+    {u : Lean.Level} {α : Q(Type u)} {sα : Q(CommSemiring $α)} {a b : Q($α)} :
     ExSum sα a → ExSum sα b → Bool
   | .zero, .zero => true
   | .add a₁ a₂, .add b₁ b₂ => a₁.eq b₁ && a₂.eq b₂
@@ -167,7 +167,7 @@ A total order on normalized expressions.
 This is not an `Ord` instance because it is heterogeneous.
 -/
 partial def ExBase.cmp
-    {u : Lean.Level} {α : Q(Type u)} {sα : Q(CommSemiring «$α»)} {a b : Q(«$α»)} :
+    {u : Lean.Level} {α : Q(Type u)} {sα : Q(CommSemiring $α)} {a b : Q($α)} :
     ExBase sα a → ExBase sα b → Ordering
   | .atom i, .atom j => compare i j
   | .sum a, .sum b => a.cmp b
@@ -176,7 +176,7 @@ partial def ExBase.cmp
 
 @[inherit_doc ExBase.cmp]
 partial def ExProd.cmp
-    {u : Lean.Level} {α : Q(Type u)} {sα : Q(CommSemiring «$α»)} {a b : Q(«$α»)} :
+    {u : Lean.Level} {α : Q(Type u)} {sα : Q(CommSemiring $α)} {a b : Q($α)} :
     ExProd sα a → ExProd sα b → Ordering
   | .const i _, .const j _ => compare i j
   | .mul a₁ a₂ a₃, .mul b₁ b₂ b₃ => (a₁.cmp b₁).then (a₂.cmp b₂) |>.then (a₃.cmp b₃)
@@ -185,7 +185,7 @@ partial def ExProd.cmp
 
 @[inherit_doc ExBase.cmp]
 partial def ExSum.cmp
-    {u : Lean.Level} {α : Q(Type u)} {sα : Q(CommSemiring «$α»)} {a b : Q(«$α»)} :
+    {u : Lean.Level} {α : Q(Type u)} {sα : Q(CommSemiring $α)} {a b : Q($α)} :
     ExSum sα a → ExSum sα b → Ordering
   | .zero, .zero => .eq
   | .add a₁ a₂, .add b₁ b₂ => (a₁.cmp b₁).then (a₂.cmp b₂)
@@ -203,21 +203,21 @@ mutual
 
 /-- Converts `ExBase sα` to `ExBase sβ`, assuming `sα` and `sβ` are defeq. -/
 partial def ExBase.cast
-    {v : Lean.Level} {β : Q(Type v)} {sβ : Q(CommSemiring «$β»)} {a : Q($α)} :
+    {v : Lean.Level} {β : Q(Type v)} {sβ : Q(CommSemiring $β)} {a : Q($α)} :
     ExBase sα a → Σ a, ExBase sβ a
   | .atom i => ⟨a, .atom i⟩
   | .sum a => let ⟨_, vb⟩ := a.cast; ⟨_, .sum vb⟩
 
 /-- Converts `ExProd sα` to `ExProd sβ`, assuming `sα` and `sβ` are defeq. -/
 partial def ExProd.cast
-    {v : Lean.Level} {β : Q(Type v)} {sβ : Q(CommSemiring «$β»)} {a : Q($α)} :
+    {v : Lean.Level} {β : Q(Type v)} {sβ : Q(CommSemiring $β)} {a : Q($α)} :
     ExProd sα a → Σ a, ExProd sβ a
   | .const i h => ⟨a, .const i h⟩
   | .mul a₁ a₂ a₃ => ⟨_, .mul a₁.cast.2 a₂ a₃.cast.2⟩
 
 /-- Converts `ExSum sα` to `ExSum sβ`, assuming `sα` and `sβ` are defeq. -/
 partial def ExSum.cast
-    {v : Lean.Level} {β : Q(Type v)} {sβ : Q(CommSemiring «$β»)} {a : Q($α)} :
+    {v : Lean.Level} {β : Q(Type v)} {sβ : Q(CommSemiring $β)} {a : Q($α)} :
     ExSum sα a → Σ a, ExSum sβ a
   | .zero => ⟨_, .zero⟩
   | .add a₁ a₂ => ⟨_, .add a₁.cast.2 a₂.cast.2⟩
