@@ -1404,7 +1404,7 @@ lemma SuccOrder.forall_ne_bot_iff
 
 section IsLeast
 
-lemma BddAbove.exists_isGreatest_of_nonempty {X : Type*} [PartialOrder X] [SuccOrder X]
+lemma BddAbove.exists_isGreatest_of_nonempty {X : Type*} [LinearOrder X] [SuccOrder X]
     [IsSuccArchimedean X] {S : Set X} (hS : BddAbove S) (hS' : S.Nonempty) :
     ∃ x, IsGreatest S x := by
   obtain ⟨m, hm⟩ := hS
@@ -1427,7 +1427,7 @@ lemma BddAbove.exists_isGreatest_of_nonempty {X : Type*} [PartialOrder X] [SuccO
   · exact ⟨m, hmS, hm⟩
   · exact IH hm hn hmS
 
-lemma BddBelow.exists_isLeast_of_nonempty {X : Type*} [PartialOrder X] [PredOrder X]
+lemma BddBelow.exists_isLeast_of_nonempty {X : Type*} [LinearOrder X] [PredOrder X]
     [IsPredArchimedean X] {S : Set X} (hS : BddBelow S) (hS' : S.Nonempty) :
     ∃ x, IsLeast S x :=
   BddAbove.exists_isGreatest_of_nonempty (X := Xᵒᵈ) hS hS'
