@@ -98,12 +98,9 @@ lemma LFunction_eq_LSeries (Φ : ZMod N → ℂ) {s : ℂ} (hs : 1 < re s) :
   _ = LSeries.term (Φ ·) s (j.val + N * m) := by
     rw [LSeries.term_of_ne_zero' (ne_zero_of_one_lt_re hs)]
 
-private lemma differentiable_Npow : Differentiable ℂ (fun (s : ℂ) ↦ (N : ℂ) ^ (-s)) :=
-  .const_cpow (by fun_prop) (Or.inl <| NeZero.ne _)
-
 lemma differentiableAt_LFunction (Φ : ZMod N → ℂ) (s : ℂ) (hs : s ≠ 1 ∨ ∑ j, Φ j = 0) :
     DifferentiableAt ℂ (LFunction Φ) s := by
-  apply (differentiable_Npow s).mul
+  apply (differentiable_neg.const_cpow (Or.inl <| NeZero.ne _) s).mul
   rcases ne_or_eq s 1 with hs' | rfl
   · exact .sum fun j _ ↦ (differentiableAt_hurwitzZeta _ hs').const_mul _
   · have := DifferentiableAt.sum (u := univ) fun j _ ↦
@@ -119,12 +116,11 @@ lemma LFunction_residue_one (Φ : ZMod N → ℂ) :
     Tendsto (fun s ↦ (s - 1) * LFunction Φ s) (𝓝[≠] 1) (𝓝 (∑ j, Φ j / N)) := by
   simp only [sum_div, LFunction, mul_sum]
   refine tendsto_finset_sum _ fun j _ ↦ ?_
-  rw [(by ring : Φ j / N = Φ j * (1 / N * 1))]
-  simp_rw [← mul_assoc, mul_comm _ (Φ j), mul_comm _ ((N : ℂ) ^ (_ : ℂ)), mul_assoc]
-  refine tendsto_const_nhds.mul (Tendsto.mul ?_ <| hurwitzZeta_residue_one _)
-  have := (differentiable_Npow (N := N) 1).continuousAt.tendsto
-  simp only [cpow_neg_one, ← one_div] at this
-  exact this.mono_left nhdsWithin_le_nhds
+  rw [(by ring : Φ j / N = Φ j * (1 / N * 1)), one_div, ← cpow_neg_one]
+  simp only [show ∀ a b c d : ℂ, a * (b * (c * d)) = c * (b * (a * d)) by intros; ring]
+  refine tendsto_const_nhds.mul (.mul ?_ <| hurwitzZeta_residue_one _)
+  exact ((continuous_neg.const_cpow (Or.inl <| NeZero.ne _)).tendsto _).mono_left
+    nhdsWithin_le_nhds
 
 /--
 The `LFunction` of the function `x ↦ e (j * x)`, where `e : ZMod N → ℂ` is the standard additive
