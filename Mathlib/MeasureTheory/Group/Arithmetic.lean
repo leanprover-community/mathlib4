@@ -166,7 +166,7 @@ instance Monoid.measurablePow (M : Type*) [Monoid M] [MeasurableSpace M] [Measur
     MeasurablePow M ℕ :=
   ⟨measurable_from_prod_countable fun n => by
       induction' n with n ih
-      · simp only [Nat.zero_eq, pow_zero, ← Pi.one_def, measurable_one]
+      · simp only [pow_zero, ← Pi.one_def, measurable_one]
       · simp only [pow_succ]
         exact ih.mul measurable_id⟩
 
@@ -588,7 +588,7 @@ instance AddMonoid.measurableSMul_nat₂ (M : Type*) [AddMonoid M] [MeasurableSp
     suffices Measurable fun p : M × ℕ => p.2 • p.1 by apply this.comp measurable_swap
     refine measurable_from_prod_countable fun n => ?_
     induction' n with n ih
-    · simp only [Nat.zero_eq, zero_smul, ← Pi.zero_def, measurable_zero]
+    · simp only [zero_smul, ← Pi.zero_def, measurable_zero]
     · simp only [succ_nsmul]
       exact ih.add measurable_id⟩
 

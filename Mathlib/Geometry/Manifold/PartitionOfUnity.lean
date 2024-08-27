@@ -55,12 +55,10 @@ function from local functions.
 smooth bump function, partition of unity
 -/
 
-
 universe uι uE uH uM uF
 
 open Function Filter FiniteDimensional Set
-
-open scoped Topology Manifold Classical Filter
+open scoped Topology Manifold
 
 noncomputable section
 
@@ -466,12 +464,14 @@ theorem toSmoothPartitionOfUnity_apply (i : ι) (x : M) :
     fs.toSmoothPartitionOfUnity i x = fs i x * ∏ᶠ (j) (_ : WellOrderingRel j i), (1 - fs j x) :=
   rfl
 
+open Classical in
 theorem toSmoothPartitionOfUnity_eq_mul_prod (i : ι) (x : M) (t : Finset ι)
     (ht : ∀ j, WellOrderingRel j i → fs j x ≠ 0 → j ∈ t) :
     fs.toSmoothPartitionOfUnity i x =
       fs i x * ∏ j ∈ t.filter fun j => WellOrderingRel j i, (1 - fs j x) :=
   fs.toBumpCovering.toPartitionOfUnity_eq_mul_prod i x t ht
 
+open Classical in
 theorem exists_finset_toSmoothPartitionOfUnity_eventuallyEq (i : ι) (x : M) :
     ∃ t : Finset ι,
       fs.toSmoothPartitionOfUnity i =ᶠ[𝓝 x]
@@ -553,6 +553,7 @@ namespace SmoothPartitionOfUnity
 defined as an example for `Inhabited` instance. -/
 def single (i : ι) (s : Set M) : SmoothPartitionOfUnity ι I M s :=
   (BumpCovering.single i s).toSmoothPartitionOfUnity fun j => by
+    classical
     rcases eq_or_ne j i with (rfl | h)
     · simp only [smooth_one, ContinuousMap.coe_one, BumpCovering.coe_single, Pi.single_eq_same]
     · simp only [smooth_zero, BumpCovering.coe_single, Pi.single_eq_of_ne h, ContinuousMap.coe_zero]
@@ -739,6 +740,7 @@ theorem exists_msmooth_support_eq_eq_one_iff
     · have : 0 < f x := lt_of_le_of_ne (f_pos x) (Ne.symm xs)
       linarith [g_pos x]
     · have : 0 < g x := by
+        classical
         apply lt_of_le_of_ne (g_pos x) (Ne.symm ?_)
         rw [← mem_support, g_supp]
         contrapose! xs

@@ -44,11 +44,8 @@ it suffices to assume that `f` is zero wherever `g` is. (This generalization is 
 the Fréchet derivative.)
 -/
 
-
-open Filter Set
-
 open scoped Classical
-open Topology Filter NNReal
+open Set Topology Filter NNReal
 
 namespace Asymptotics
 
@@ -236,7 +233,7 @@ theorem IsBigO.exists_mem_basis {ι} {p : ι → Prop} {s : ι → Set α} (h : 
     simpa only [isBigOWith_iff, hb.eventually_iff, exists_prop] using h
 
 theorem isBigOWith_inv (hc : 0 < c) : IsBigOWith c⁻¹ l f g ↔ ∀ᶠ x in l, c * ‖f x‖ ≤ ‖g x‖ := by
-  simp only [IsBigOWith_def, ← div_eq_inv_mul, le_div_iff' hc]
+  simp only [IsBigOWith_def, ← div_eq_inv_mul, le_div_iff₀' hc]
 
 -- We prove this lemma with strange assumptions to get two lemmas below automatically
 theorem isLittleO_iff_nat_mul_le_aux (h₀ : (∀ x, 0 ≤ ‖f x‖) ∨ ∀ x, 0 ≤ ‖g x‖) :
@@ -1077,7 +1074,7 @@ theorem isLittleO_principal {s : Set α} : f'' =o[𝓟 s] g' ↔ ∀ x ∈ s, f'
       ((continuous_id.mul continuous_const).tendsto' _ _ (zero_mul _)).mono_left
         inf_le_left
     apply le_of_tendsto_of_tendsto tendsto_const_nhds this
-    apply eventually_nhdsWithin_iff.2 (eventually_of_forall (fun c hc ↦ ?_))
+    apply eventually_nhdsWithin_iff.2 (Eventually.of_forall (fun c hc ↦ ?_))
     exact eventually_principal.1 (h hc) x hx
   · apply (isLittleO_zero g' _).congr' ?_ EventuallyEq.rfl
     exact fun x hx ↦ (h x hx).symm
@@ -1190,7 +1187,7 @@ theorem isBigO_iff_isBoundedUnder_le_div (h : ∀ᶠ x in l, g'' x ≠ 0) :
   simp only [isBigO_iff, IsBoundedUnder, IsBounded, eventually_map]
   exact
     exists_congr fun c =>
-      eventually_congr <| h.mono fun x hx => (div_le_iff <| norm_pos_iff.2 hx).symm
+      eventually_congr <| h.mono fun x hx => (div_le_iff₀ <| norm_pos_iff.2 hx).symm
 
 /-- `(fun x ↦ c) =O[l] f` if and only if `f` is bounded away from zero. -/
 theorem isBigO_const_left_iff_pos_le_norm {c : E''} (hc : c ≠ 0) :
@@ -1199,7 +1196,7 @@ theorem isBigO_const_left_iff_pos_le_norm {c : E''} (hc : c ≠ 0) :
   · intro h
     rcases h.exists_pos with ⟨C, hC₀, hC⟩
     refine ⟨‖c‖ / C, div_pos (norm_pos_iff.2 hc) hC₀, ?_⟩
-    exact hC.bound.mono fun x => (div_le_iff' hC₀).2
+    exact hC.bound.mono fun x => (div_le_iff₀' hC₀).2
   · rintro ⟨b, hb₀, hb⟩
     refine IsBigO.of_bound (‖c‖ / b) (hb.mono fun x hx => ?_)
     rw [div_mul_eq_mul_div, mul_div_assoc]
@@ -1393,16 +1390,15 @@ theorem IsBigO.of_pow {f : α → 𝕜} {g : α → R} {n : ℕ} (hn : n ≠ 0) 
 theorem IsLittleO.pow {f : α → R} {g : α → 𝕜} (h : f =o[l] g) {n : ℕ} (hn : 0 < n) :
     (fun x => f x ^ n) =o[l] fun x => g x ^ n := by
   obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hn.ne'; clear hn
-  induction' n with n ihn
-  · simpa only [Nat.zero_eq, ← Nat.one_eq_succ_zero, pow_one]
-  · convert ihn.mul h <;> simp [pow_succ]
+  induction n with
+  | zero => simpa only [pow_one]
+  | succ n ihn => convert ihn.mul h <;> simp [pow_succ]
 
 theorem IsLittleO.of_pow {f : α → 𝕜} {g : α → R} {n : ℕ} (h : (f ^ n) =o[l] (g ^ n)) (hn : n ≠ 0) :
     f =o[l] g :=
   IsLittleO.of_isBigOWith fun _c hc => (h.def' <| pow_pos hc _).of_pow hn le_rfl hc.le
 
 /-! ### Inverse -/
-
 
 theorem IsBigOWith.inv_rev {f : α → 𝕜} {g : α → 𝕜'} (h : IsBigOWith c l f g)
     (h₀ : ∀ᶠ x in l, f x = 0 → g x = 0) : IsBigOWith c l (fun x => (g x)⁻¹) fun x => (f x)⁻¹ := by
@@ -1411,7 +1407,7 @@ theorem IsBigOWith.inv_rev {f : α → 𝕜} {g : α → 𝕜'} (h : IsBigOWith 
   · simp only [hx, h₀ hx, inv_zero, norm_zero, mul_zero, le_rfl]
   · have hc : 0 < c := pos_of_mul_pos_left ((norm_pos_iff.2 hx).trans_le hle) (norm_nonneg _)
     replace hle := inv_le_inv_of_le (norm_pos_iff.2 hx) hle
-    simpa only [norm_inv, mul_inv, ← div_eq_inv_mul, div_le_iff hc] using hle
+    simpa only [norm_inv, mul_inv, ← div_eq_inv_mul, div_le_iff₀ hc] using hle
 
 theorem IsBigO.inv_rev {f : α → 𝕜} {g : α → 𝕜'} (h : f =O[l] g)
     (h₀ : ∀ᶠ x in l, f x = 0 → g x = 0) : (fun x => (g x)⁻¹) =O[l] fun x => (f x)⁻¹ :=
@@ -1565,11 +1561,11 @@ theorem isLittleO_iff_tendsto' {f g : α → 𝕜} (hgf : ∀ᶠ x in l, g x = 0
     f =o[l] g ↔ Tendsto (fun x => f x / g x) l (𝓝 0) :=
   ⟨IsLittleO.tendsto_div_nhds_zero, fun h =>
     (((isLittleO_one_iff _).mpr h).mul_isBigO (isBigO_refl g l)).congr'
-      (hgf.mono fun _x => div_mul_cancel_of_imp) (eventually_of_forall fun _x => one_mul _)⟩
+      (hgf.mono fun _x => div_mul_cancel_of_imp) (Eventually.of_forall fun _x => one_mul _)⟩
 
 theorem isLittleO_iff_tendsto {f g : α → 𝕜} (hgf : ∀ x, g x = 0 → f x = 0) :
     f =o[l] g ↔ Tendsto (fun x => f x / g x) l (𝓝 0) :=
-  isLittleO_iff_tendsto' (eventually_of_forall hgf)
+  isLittleO_iff_tendsto' (Eventually.of_forall hgf)
 
 alias ⟨_, isLittleO_of_tendsto'⟩ := isLittleO_iff_tendsto'
 
@@ -1715,7 +1711,7 @@ theorem isBigO_iff_div_isBoundedUnder {α : Type*} {l : Filter α} {f g : α →
   refine IsBigO.of_bound c (hc.mp <| hgf.mono fun x hx₁ hx₂ => ?_)
   by_cases hgx : g x = 0
   · simp [hx₁ hgx, hgx]
-  · exact (div_le_iff (norm_pos_iff.2 hgx)).mp hx₂
+  · exact (div_le_iff₀ (norm_pos_iff.2 hgx)).mp hx₂
 
 theorem isBigO_of_div_tendsto_nhds {α : Type*} {l : Filter α} {f g : α → 𝕜}
     (hgf : ∀ᶠ x in l, g x = 0 → f x = 0) (c : 𝕜) (H : Filter.Tendsto (f / g) l (𝓝 c)) :
@@ -1776,7 +1772,7 @@ theorem IsBigOWith.right_le_sub_of_lt_one {f₁ f₂ : α → E'} (h : IsBigOWit
   IsBigOWith.of_bound <|
     mem_of_superset h.bound fun x hx => by
       simp only [mem_setOf_eq] at hx ⊢
-      rw [mul_comm, one_div, ← div_eq_mul_inv, _root_.le_div_iff, mul_sub, mul_one, mul_comm]
+      rw [mul_comm, one_div, ← div_eq_mul_inv, le_div_iff₀, mul_sub, mul_one, mul_comm]
       · exact le_trans (sub_le_sub_left hx _) (norm_sub_norm_le _ _)
       · exact sub_pos.2 hc
 
@@ -1813,7 +1809,7 @@ theorem bound_of_isBigO_cofinite (h : f =O[cofinite] g'') :
   have : ∀ x, C * ‖g'' x‖ < ‖f x‖ → ‖f x‖ / ‖g'' x‖ ≤ C' := by simpa using hC'
   refine ⟨max C C', lt_max_iff.2 (Or.inl C₀), fun x h₀ => ?_⟩
   rw [max_mul_of_nonneg _ _ (norm_nonneg _), le_max_iff, or_iff_not_imp_left, not_le]
-  exact fun hx => (div_le_iff (norm_pos_iff.2 h₀)).1 (this _ hx)
+  exact fun hx => (div_le_iff₀ (norm_pos_iff.2 h₀)).1 (this _ hx)
 
 theorem isBigO_cofinite_iff (h : ∀ x, g'' x = 0 → f'' x = 0) :
     f'' =O[cofinite] g'' ↔ ∃ C, ∀ x, ‖f'' x‖ ≤ C * ‖g'' x‖ :=

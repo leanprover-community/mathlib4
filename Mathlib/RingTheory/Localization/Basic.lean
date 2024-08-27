@@ -1098,9 +1098,7 @@ section
 variable [Algebra Rₘ Sₘ] [Algebra R Sₘ] [IsScalarTower R Rₘ Sₘ] [IsScalarTower R S Sₘ]
 variable (S Rₘ Sₘ)
 
-theorem IsLocalization.map_units_map_submonoid
-    (y : M) :
-    IsUnit (algebraMap R Sₘ y) := by
+theorem IsLocalization.map_units_map_submonoid (y : M) : IsUnit (algebraMap R Sₘ y) := by
   rw [IsScalarTower.algebraMap_apply _ S]
   exact IsLocalization.map_units Sₘ ⟨algebraMap R S y, Algebra.mem_algebraMapSubmonoid_of_mem y⟩
 

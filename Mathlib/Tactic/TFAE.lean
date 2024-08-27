@@ -236,3 +236,7 @@ elab_rules : tactic
           let q2 ← AtomM.addAtom ty.bindingBody!
           hyps := hyps.push (q1, q2, hyp)
       proveTFAE hyps (← get).atoms is tfaeListQ
+
+end TFAE
+
+end Mathlib.Tactic

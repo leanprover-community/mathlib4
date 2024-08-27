@@ -219,7 +219,7 @@ theorem norm_mul_invInterpStrip_le_one_of_mem_verticalClosedStrip (f : ℂ → E
   rw [Asymptotics.isBigO_iff]
   use 1
   rw [eventually_inf_principal]
-  apply eventually_of_forall
+  apply Eventually.of_forall
   intro x hx
   norm_num
   exact (hBF x ((preimage_mono Ioo_subset_Icc_self) hx)).trans
