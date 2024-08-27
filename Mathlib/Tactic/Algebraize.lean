@@ -8,8 +8,6 @@ import Mathlib.RingTheory.IntegralClosure
 
 open Lean Elab Tactic Term Qq
 
-#check Attr.algebraizeAttr.getDecls
-
 alias RingHom.Algebraize := RingHom.toAlgebra
 
 @[algebraize]
@@ -130,7 +128,6 @@ def searchContext (t : Array (TSyntax `term)) : TacticM Unit := withMainContext 
     if decl.isImplementationDetail then
       return
     let declType := decl.type
-    -- let declType ← Lean.Meta.inferType declExpr
     let env ← getEnv
 
     for i in Attr.algebraizeAttr.getDecls env do
@@ -139,12 +136,7 @@ def searchContext (t : Array (TSyntax `term)) : TacticM Unit := withMainContext 
       if nm != i' then
         continue
       let f := args[args.size - 1]!
-      let mut happy := false
-      for j in t' do
-        if (← Meta.isDefEq j f) then
-          happy := true
-          break
-      if ¬happy then
+      if ¬ (← t'.anyM (fun j => Meta.isDefEq j f)) then
         continue
       let h : Ident := mkIdent i
       let hf := mkIdent decl.userName
@@ -152,18 +144,9 @@ def searchContext (t : Array (TSyntax `term)) : TacticM Unit := withMainContext 
       let m ← Term.elabTerm sn none
 
       liftMetaTactic fun mvarid => do
-        let nm ← mkFreshUserName `ftInst
-        -- let env ← getEnv
-        -- let some c := env.find? newname | throwError "Error"
-        -- let u ← Meta.mkFreshLevelMVarsFor c
-        let .const _ us := decl.type.getAppFn | throwError "Error"
-        --let f := Meta.mkAppM (.const () us) args
         let h ← mkFreshUserName `AlgebraizeInst
         let (_, mvar) ← mvarid.note h m
-        -- let (_, mvar) ← mvar.2.intro1P
         return [mvar]
-
-    -- return
 
 syntax "algebraize" (ppSpace colGt term:max)* : tactic
 
@@ -179,12 +162,6 @@ elab_rules : tactic
       catch _ => continue
 
     searchContext t
-
-
-    -- for f in t do
-    --   let f ← Term.elabTerm f none
-    --   try addFiniteTypeInstance f
-    --   catch _ => continue
 
 example {A B C D : Type*}
     [CommRing A] [CommRing B] [CommRing C] [CommRing D]
