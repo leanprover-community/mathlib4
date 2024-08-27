@@ -68,4 +68,15 @@ lemma cfc_integral [TopologicalSpace X] [OpensMeasurableSpace X] (f : X → 𝕜
     cfcHom_integral _ _ fc_integrable]
   congr
 
+/-- The continuous functional calculus commutes with integration. -/
+lemma cfc_integral' [TopologicalSpace X] [OpensMeasurableSpace X] (f : X → 𝕜 → 𝕜)
+    (bound : X → ℝ) (a : A) [SecondCountableTopologyEither X C(spectrum 𝕜 a, 𝕜)]
+    (hf : Continuous (fun x => (spectrum 𝕜 a).restrict (f x)).uncurry)
+    (hbound : ∀ x, ∀ z ∈ spectrum 𝕜 a, ‖f x z‖ ≤ ‖bound x‖)
+    (hbound_integrable : Integrable bound μ) (ha : p a := by cfc_tac) :
+    cfc (fun r => ∫ x, f x r ∂μ) a = ∫ x, cfc (f x) a ∂μ := by
+  refine cfc_integral f bound a ?_ ?_ hbound hbound_integrable
+  · exact (continuousOn_iff_continuous_restrict.mpr <| hf.uncurry_left ·)
+  · exact ContinuousMap.curry ⟨_, hf⟩ |>.continuous
+
 end unital
