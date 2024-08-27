@@ -74,6 +74,9 @@ namespace IsAlgClosed
 
 variable {k}
 
+/--
+* [Stacks: Lemma 09GR, (4) ⟹ (3)](https://stacks.math.columbia.edu/tag/09GR)
+-/
 theorem exists_root [IsAlgClosed k] (p : k[X]) (hp : p.degree ≠ 0) : ∃ x, IsRoot p x :=
   exists_root_of_splits _ (IsAlgClosed.splits p) hp
 
@@ -119,6 +122,10 @@ theorem exists_aeval_eq_zero {R : Type*} [Field R] [IsAlgClosed k] [Algebra R k]
     (hp : p.degree ≠ 0) : ∃ x : k, aeval x p = 0 :=
   exists_eval₂_eq_zero (algebraMap R k) p hp
 
+
+/--
+* [Stacks: Lemma 09GR, (3) ⟹ (4)](https://stacks.math.columbia.edu/tag/09GR)
+-/
 theorem of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → ∃ x, p.eval x = 0) :
     IsAlgClosed k := by
   refine ⟨fun p ↦ Or.inr ?_⟩
@@ -145,6 +152,9 @@ theorem of_ringEquiv (k' : Type u) [Field k'] (e : k ≃+* k')
   clear hx hpe hp hmp
   induction p using Polynomial.induction_on <;> simp_all
 
+/--
+* [Stacks: Lemma 09GR, (4) ⟹ (2)](https://stacks.math.columbia.edu/tag/09GR)
+-/
 theorem degree_eq_one_of_irreducible [IsAlgClosed k] {p : k[X]} (hp : Irreducible p) :
     p.degree = 1 :=
   degree_eq_one_of_irreducible_of_splits hp (IsAlgClosed.splits_codomain _)
@@ -199,7 +209,9 @@ lemma Polynomial.isCoprime_iff_aeval_ne_zero_of_isAlgClosed (K : Type v) [Field 
       simpa only [degree_map] using (ne_of_lt <| degree_pos_of_ne_zero_of_nonunit h0 hu).symm
     exact not_and_or.mpr (h a) (by simp_rw [map_mul, ← eval_map_algebraMap, ha, zero_mul, true_and])
 
-/-- Typeclass for an extension being an algebraic closure. -/
+/-- Typeclass for an extension being an algebraic closure.
+[Stacks: Definition 09GS](https://stacks.math.columbia.edu/tag/09GS)
+ -/
 class IsAlgClosure (R : Type u) (K : Type v) [CommRing R] [Field K] [Algebra R K]
     [NoZeroSMulDivisors R K] : Prop where
   alg_closed : IsAlgClosed K

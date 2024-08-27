@@ -346,7 +346,10 @@ attribute [local instance] AlgebraicClosureAux.field AlgebraicClosureAux.instAlg
   AlgebraicClosureAux.instIsAlgClosed
 
 /-- The canonical algebraic closure of a field, the direct limit of adding roots to the field for
-each polynomial over the field. -/
+each polynomial over the field.
+
+[Stacks: Lemma 09GT](https://stacks.math.columbia.edu/tag/09GT)
+-/
 def AlgebraicClosure : Type u :=
   MvPolynomial (AlgebraicClosureAux k) k ⧸
     RingHom.ker (MvPolynomial.aeval (R := k) id).toRingHom
