@@ -1127,7 +1127,7 @@ alias ne_sup_iff_lt_sup := ne_iSup_iff_lt_iSup
 
 -- TODO: state in terms of `IsSuccLimit`.
 
-theorem succ_lt_iSup_of_ne_iSup  {ι : Type u} {f : ι → Ordinal.{max u v}}
+theorem succ_lt_iSup_of_ne_iSup {ι : Type u} {f : ι → Ordinal.{max u v}}
     (hf : ∀ i, f i ≠ iSup f) {a} (hao : a < iSup f) : succ a < iSup f := by
   by_contra! hoa
   exact hao.not_le (Ordinal.iSup_le fun i => le_of_lt_succ <|
