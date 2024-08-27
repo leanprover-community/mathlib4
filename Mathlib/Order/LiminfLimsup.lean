@@ -295,7 +295,7 @@ lemma isBoundedUnder_sum {κ : Type*} [AddCommMonoid R] {r : R → R → Prop}
 variable [Preorder R]
 
 lemma isBoundedUnder_ge_add [Add R]
-    [CovariantClass R R (fun a b ↦ a + b) (· ≤ ·)] [CovariantClass R R (fun a b ↦ b + a) (· ≤ ·)]
+    [AddLeftMono R] [AddRightMono R]
     {u v : α → R} (u_bdd_ge : f.IsBoundedUnder (· ≥ ·) u) (v_bdd_ge : f.IsBoundedUnder (· ≥ ·) v) :
     f.IsBoundedUnder (· ≥ ·) (u + v) := by
   obtain ⟨U, hU⟩ := u_bdd_ge
@@ -305,7 +305,7 @@ lemma isBoundedUnder_ge_add [Add R]
   filter_upwards [hU, hV] with a hu hv using add_le_add hu hv
 
 lemma isBoundedUnder_le_add [Add R]
-    [CovariantClass R R (fun a b ↦ a + b) (· ≤ ·)] [CovariantClass R R (fun a b ↦ b + a) (· ≤ ·)]
+    [AddLeftMono R] [AddRightMono R]
     {u v : α → R} (u_bdd_le : f.IsBoundedUnder (· ≤ ·) u) (v_bdd_le : f.IsBoundedUnder (· ≤ ·) v) :
     f.IsBoundedUnder (· ≤ ·) (u + v) := by
   obtain ⟨U, hU⟩ := u_bdd_le
@@ -315,13 +315,13 @@ lemma isBoundedUnder_le_add [Add R]
   filter_upwards [hU, hV] with a hu hv using add_le_add hu hv
 
 lemma isBoundedUnder_le_sum {κ : Type*} [AddCommMonoid R]
-    [CovariantClass R R (fun a b ↦ a + b) (· ≤ ·)] [CovariantClass R R (fun a b ↦ b + a) (· ≤ ·)]
+    [AddLeftMono R] [AddRightMono R]
     {u : κ → α → R} (s : Finset κ) :
     (∀ k ∈ s, f.IsBoundedUnder (· ≤ ·) (u k)) → f.IsBoundedUnder (· ≤ ·) (∑ k ∈ s, u k) := by
   apply isBoundedUnder_sum (fun _ _ ↦ isBoundedUnder_le_add) le_rfl
 
 lemma isBoundedUnder_ge_sum {κ : Type*} [AddCommMonoid R]
-    [CovariantClass R R (fun a b ↦ a + b) (· ≤ ·)] [CovariantClass R R (fun a b ↦ b + a) (· ≤ ·)]
+    [AddLeftMono R] [AddRightMono R]
     {u : κ → α → R} (s : Finset κ) :
     (∀ k ∈ s, f.IsBoundedUnder (· ≥ ·) (u k)) →
       f.IsBoundedUnder (· ≥ ·) (∑ k ∈ s, u k) := by

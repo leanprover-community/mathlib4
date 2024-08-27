@@ -35,14 +35,14 @@ open Function
 
 section Nat
 
-instance Nat.instCovariantClassMulLE : CovariantClass ℕ ℕ (· * ·) (· ≤ ·) where
+instance Nat.instMulLeftMono : MulLeftMono ℕ where
   elim := fun _ _ _ h => mul_le_mul_left _ h
 
 end Nat
 
 section Int
 
-instance Int.instCovariantClassAddLE : CovariantClass ℤ ℤ ((· + ·)) (· ≤ ·) where
+instance Int.instAddLeftMono : AddLeftMono ℤ where
   elim := fun _ _ _ h => Int.add_le_add_left h _
 
 end Int
@@ -1026,7 +1026,7 @@ section PartialOrder
 variable [PartialOrder α]
 
 /- This is not instance, since we want to have an instance from `LeftCancelSemigroup`s
-to the appropriate `CovariantClass`. -/
+to the appropriate covariant class. -/
 /-- A semigroup with a partial order and satisfying `LeftCancelSemigroup`
 (i.e. `a * c < b * c → a < b`) is a `left_cancel Semigroup`. -/
 @[to_additive
@@ -1037,7 +1037,7 @@ def Contravariant.toLeftCancelSemigroup [MulLeftReflectLE α] :
   { ‹Semigroup α› with mul_left_cancel := fun a b c => mul_left_cancel'' }
 
 /- This is not instance, since we want to have an instance from `RightCancelSemigroup`s
-to the appropriate `CovariantClass`. -/
+to the appropriate covariant class. -/
 /-- A semigroup with a partial order and satisfying `RightCancelSemigroup`
 (i.e. `a * c < b * c → a < b`) is a `right_cancel Semigroup`. -/
 @[to_additive

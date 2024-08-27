@@ -332,7 +332,7 @@ theorem infDegree_withTop_some_comp {s : AddMonoidAlgebra R A} (hs : s.support.N
 
 theorem le_infDegree_mul
     [AddZeroClass A] [Add T]
-    [CovariantClass T T (· + ·) (· ≤ ·)] [CovariantClass T T (Function.swap (· + ·)) (· ≤ ·)]
+    [AddLeftMono T] [AddRightMono T]
     (D : AddHom A T) (f g : R[A]) :
     f.infDegree D + g.infDegree D ≤ (f * g).infDegree D :=
   le_inf_support_mul (fun {a b : A} => (map_add D a b).ge) _ _

@@ -42,7 +42,7 @@ instance (priority := 100) Group.existsMulOfLE (α : Type u) [Group α] [LE α] 
 
 section MulOneClass
 
-variable [MulOneClass α] [Preorder α] [ContravariantClass α α (· * ·) (· < ·)] [ExistsMulOfLE α]
+variable [MulOneClass α] [Preorder α] [MulLeftReflectLT α] [ExistsMulOfLE α]
   {a b : α}
 
 @[to_additive]
@@ -55,7 +55,7 @@ end MulOneClass
 section ExistsMulOfLE
 
 variable [LinearOrder α] [DenselyOrdered α] [Monoid α] [ExistsMulOfLE α]
-  [CovariantClass α α (· * ·) (· < ·)] [ContravariantClass α α (· * ·) (· < ·)] {a b : α}
+  [MulLeftStrictMono α] [MulLeftReflectLT α] {a b : α}
 
 @[to_additive]
 theorem le_of_forall_one_lt_le_mul (h : ∀ ε : α, 1 < ε → a ≤ b * ε) : a ≤ b :=
@@ -72,5 +72,3 @@ theorem le_iff_forall_one_lt_lt_mul' : a ≤ b ↔ ∀ ε, 1 < ε → a < b * ε
   ⟨fun h _ => lt_mul_of_le_of_one_lt h, le_of_forall_one_lt_lt_mul'⟩
 
 end ExistsMulOfLE
-
-

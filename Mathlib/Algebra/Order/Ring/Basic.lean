@@ -21,7 +21,7 @@ variable {α M R : Type*}
 
 namespace MonoidHom
 
-variable [Ring R] [Monoid M] [LinearOrder M] [CovariantClass M M (· * ·) (· ≤ ·)] (f : R →* M)
+variable [Ring R] [Monoid M] [LinearOrder M] [MulLeftMono M] (f : R →* M)
 
 theorem map_neg_one : f (-1) = 1 :=
   (pow_eq_one_iff (Nat.succ_ne_zero 1)).1 <| by rw [← map_pow, neg_one_sq, map_one]

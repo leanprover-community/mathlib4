@@ -131,7 +131,7 @@ lemma leOnePart_eq_one : a⁻ᵐ = 1 ↔ 1 ≤ a := by simp [leOnePart_eq_one']
   rw [← inv_div, oneLePart_div_leOnePart]
 
 section covariantmulop
-variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
+variable [MulRightMono α]
 
 @[to_additive] lemma leOnePart_anti : Antitone (leOnePart : α → α) :=
   fun _a _b hab ↦ sup_le_sup_right (inv_le_inv_iff.2 hab) _

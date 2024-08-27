@@ -36,8 +36,8 @@ instance OrderedCommMonoid.toMulLeftMono : MulLeftMono α where
   elim := fun a _ _ bc ↦ OrderedCommMonoid.mul_le_mul_left _ _ bc a
 
 @[to_additive]
-theorem OrderedCommMonoid.toCovariantClassRight (M : Type*) [OrderedCommMonoid M] :
-    CovariantClass M M (swap (· * ·)) (· ≤ ·) :=
+theorem OrderedCommMonoid.toMulRightMono (M : Type*) [OrderedCommMonoid M] :
+    MulRightMono M :=
   inferInstance
 
 end OrderedCommMonoid
