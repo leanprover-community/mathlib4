@@ -54,8 +54,7 @@ Additionally, let `f` be a function from `E` to `F`.
 We also define versions of `HasFPowerSeriesOnBall`, `AnalyticAt`, and `AnalyticOn` restricted to a
 set, similar to `ContinuousWithinAt`. See `Mathlib.Analysis.Analytic.Within` for basic properties.
 
-* `AnalyticWithinAt 𝕜 f s x` means a power series at `x` converges to `f` on `𝓝[s] x`, and
-  `f` is continuous within `s` at `x`.
+* `AnalyticWithinAt 𝕜 f s x` means a power series at `x` converges to `f` on `𝓝[s ∪ {x}] x`.
 * `AnalyticWithinOn 𝕜 f s t` means `∀ x ∈ t, AnalyticWithinAt 𝕜 f s x`.
 
 We develop the basic properties of these notions, notably:
@@ -352,7 +351,8 @@ structure HasFPowerSeriesOnBall (f : E → F) (p : FormalMultilinearSeries 𝕜 
   hasSum :
     ∀ {y}, y ∈ EMetric.ball (0 : E) r → HasSum (fun n : ℕ => p n fun _ : Fin n => y) (f (x + y))
 
-/-- Analogue of `HasFPowerSeriesOnBall` where convergence is required only on a set `s`. -/
+/-- Analogue of `HasFPowerSeriesOnBall` where convergence is required only on a set `s`. We also
+require convergence at `x` as the behavior of this notion is very bad otherwise. -/
 structure HasFPowerSeriesWithinOnBall (f : E → F) (p : FormalMultilinearSeries 𝕜 E F) (s : Set E)
     (x : E) (r : ℝ≥0∞) : Prop where
   /-- `p` converges on `ball 0 r` -/
@@ -360,10 +360,8 @@ structure HasFPowerSeriesWithinOnBall (f : E → F) (p : FormalMultilinearSeries
   /-- The radius of convergence is positive -/
   r_pos : 0 < r
   /-- `p converges to f` within `s` -/
-  hasSum : ∀ {y}, x + y ∈ s → y ∈ EMetric.ball (0 : E) r →
+  hasSum : ∀ {y}, x + y ∈ insert x s → y ∈ EMetric.ball (0 : E) r →
     HasSum (fun n : ℕ => p n fun _ : Fin n => y) (f (x + y))
-  /-- We require `ContinuousWithinAt f s x` to ensure `f x` is nice -/
-  continuousWithinAt : ContinuousWithinAt f s x
 
 /-- Given a function `f : E → F` and a formal multilinear series `p`, we say that `f` has `p` as
 a power series around `x` if `f (x + y) = ∑' pₙ yⁿ` for all `y` in a neighborhood of `0`. -/
