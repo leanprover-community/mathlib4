@@ -102,8 +102,8 @@ end
 
 /-- Given a cocartesian morphism `φ : a ⟶ b` lying over `f : R ⟶ S` in `𝒳`, and two morphisms
 `ψ ψ' : b ⟶ b'` lifting `𝟙 S` such that `φ ≫ ψ = φ ≫ ψ'`. Then we must have `ψ = ψ'`. -/
-protected lemma ext {b' : 𝒳} (ψ ψ' : b ⟶ b') [IsHomLift p (𝟙 S) ψ] [IsHomLift p (𝟙 S) ψ']
-    (h : φ ≫ ψ = φ ≫ ψ') : ψ = ψ' := by
+protected lemma ext [IsCocartesian p f φ] {b' : 𝒳} (ψ ψ' : b ⟶ b') [IsHomLift p (𝟙 S) ψ]
+  [IsHomLift p (𝟙 S) ψ'] (h : φ ≫ ψ = φ ≫ ψ') : ψ = ψ' := by
   rw [map_uniq p f φ (φ ≫ ψ) ψ rfl, map_uniq p f φ (φ ≫ ψ) ψ' h.symm]
 
 @[simp]
@@ -220,8 +220,8 @@ R --f--> S --g--> S'
 ```
 such that `φ` is strongly cocartesian, and morphisms `ψ ψ' : b ⟶ b'` such that
 `g ≫ ψ = φ' = g ≫ ψ'`. Then we have that `ψ = ψ'`. -/
-protected lemma ext {S' : 𝒮} {b' : 𝒳} (g : S ⟶ S') {ψ ψ' : b ⟶ b'} [IsHomLift p g ψ]
-    [IsHomLift p g ψ'] (h : φ ≫ ψ = φ ≫ ψ') : ψ = ψ' := by
+protected lemma ext [IsCocartesian p f φ] {S' : 𝒮} {b' : 𝒳} (g : S ⟶ S') {ψ ψ' : b ⟶ b'}
+    [IsHomLift p g ψ] [IsHomLift p g ψ'] (h : φ ≫ ψ = φ ≫ ψ') : ψ = ψ' := by
   rw [map_uniq p f φ (g := g) rfl (φ ≫ ψ) ψ rfl, map_uniq p f φ (g := g) rfl (φ ≫ ψ) ψ' h.symm]
 
 @[simp]
