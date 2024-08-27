@@ -236,8 +236,8 @@ theorem cof_eq_sInf_lsub (o : Ordinal.{u}) : cof o =
 
 @[simp]
 theorem lift_cof (o) : Cardinal.lift.{u, v} (cof o) = cof (Ordinal.lift.{u, v} o) := by
-  refine inductionOn o ?_
-  intro α r _
+  refine Quotient.inductionOn o ?_
+  rintro ⟨α, r, _⟩
   apply le_antisymm
   · refine le_cof_type.2 fun S H => ?_
     have : Cardinal.lift.{u, v} #(ULift.up ⁻¹' S) ≤ #(S : Type (max u v)) := by
@@ -427,7 +427,7 @@ theorem cof_zero : cof 0 = 0 := by
 
 @[simp]
 theorem cof_eq_zero {o} : cof o = 0 ↔ o = 0 :=
-  ⟨inductionOn o fun α r _ z =>
+  ⟨Quotient.inductionOn o fun ⟨α, r, _⟩ z =>
       let ⟨S, hl, e⟩ := cof_eq r
       type_eq_zero_iff_isEmpty.2 <|
         ⟨fun a =>
@@ -441,7 +441,7 @@ theorem cof_ne_zero {o} : cof o ≠ 0 ↔ o ≠ 0 :=
 @[simp]
 theorem cof_succ (o) : cof (succ o) = 1 := by
   apply le_antisymm
-  · refine inductionOn o fun α r _ => ?_
+  · refine Quotient.inductionOn o fun ⟨α, r, _⟩ => ?_
     change cof (type _) ≤ _
     rw [← (_ : #_ = 1)]
     · apply cof_type_le
@@ -455,8 +455,8 @@ theorem cof_succ (o) : cof (succ o) = 1 := by
 
 @[simp]
 theorem cof_eq_one_iff_is_succ {o} : cof.{u} o = 1 ↔ ∃ a, o = succ a :=
-  ⟨inductionOn o fun α r _ z => by
-      rcases cof_eq r with ⟨S, hl, e⟩; rw [z] at e
+  ⟨Quotient.inductionOn o fun ⟨α, r, _⟩ z => by
+      rcases cof_eq r with ⟨S, hl, e⟩; rw [← type_def, z] at e
       cases' mk_ne_zero_iff.1 (by rw [e]; exact one_ne_zero) with a
       refine
         ⟨typein r a,
