@@ -31,6 +31,7 @@ variable {α : Type u}
 
 open Cardinal Set
 
+-- Porting note: fix universe below, not here
 local notation "ω₁" => (Ordinal.toType <| Cardinal.ord (aleph 1))
 
 namespace MeasurableSpace
