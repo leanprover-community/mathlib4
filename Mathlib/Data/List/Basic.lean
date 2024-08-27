@@ -366,7 +366,6 @@ lemma getLast_filter {p : α → Bool} :
 
 -- This is a duplicate of `getLast?_eq_none_iff`.
 -- We should remove one of them.
-@[simp]
 theorem getLast?_eq_none : ∀ {l : List α}, getLast? l = none ↔ l = []
   | [] => by simp
   | [a] => by simp
