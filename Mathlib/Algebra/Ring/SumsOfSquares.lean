@@ -61,7 +61,7 @@ theorem IsSumSq.induction_alt [Mul R] [Add R] [Zero R]
       p (x + S) (by rcases hx with ⟨y, hy⟩; rw [hy]; exact sq_add hS)) : p S hS := by
   induction hS with
   | zero            => exact zero
-  | sq_add hS hS_ih => exact sq_add hS (isSquare_mul_self _) hS_ih
+  | sq_add hS hS_ih => exact sq_add hS (IsSquare.mul_self _) hS_ih
 
 /-- In an additive monoid with multiplication,
 if `S1` and `S2` are sums of squares, then `S1 + S2` is a sum of squares. -/
@@ -113,30 +113,39 @@ sums of squares in `R`.
 -/
 theorem AddSubmonoid.closure_isSquare [AddMonoid R] [Mul R] :
     closure {x : R | IsSquare x} = sumSqIn R := by
-  refine le_antisymm (closure_le.2 (fun x hx ↦ IsSquare.isSumSq hx)) (fun x hx ↦ ?_)
+  refine closure_eq_of_le (fun x hx ↦ IsSquare.isSumSq hx) (fun x hx ↦ ?_)
   induction hx with
   | zero         => exact zero_mem _
-  | sq_add _ ih  => exact add_mem (subset_closure (isSquare_mul_self _)) ih
+  | sq_add _ ih  => exact add_mem (subset_closure (IsSquare.mul_self _)) ih
 
 @[deprecated (since := "2024-08-09")] alias SquaresAddClosure := AddSubmonoid.closure_isSquare
+
+open AddSubmonoid in
+/-- A term of the form `∑ i ∈ I, x i * x i` satisfies `IsSumSq`. -/
+theorem IsSumSq.finsetSum [AddCommMonoid R] [Mul R] {a : R}
+    {ι : Type*} {I : Finset ι} {x : ι → R} (ha : a = ∑ i ∈ I, x i * x i) : IsSumSq a := by
+  simpa [ha, closure_isSquare] using sum_mem (closure {x : R | IsSquare x})
+    (subset_closure <| (by simp : (∀ i ∈ I, x i * x i ∈ _)) · ·)
 
 open AddSubmonoid in
 /-- A term of `R` satisfies `IsSumSq` if and only if it can be written as `∑ i ∈ I, x i * x i`. -/
 theorem isSumSq_iff_exists_finsetSum [AddCommMonoid R] [Mul R] (a : R) :
     IsSumSq a ↔
     (∃ (ι : Type) (I : Finset ι) (x : ι → R), a = ∑ i ∈ I, x i * x i) := by
-  have : IsSumSq a ↔ a ∈ closure {r : R | IsSquare r} := by simp [closure_isSquare];
-  rw [this];
   apply Iff.intro
   case mp  =>
     intro hyp
+    have : IsSumSq a ↔ a ∈ closure {r : R | IsSquare r} := by simp [closure_isSquare];
+    rw [this] at hyp;
     obtain ⟨ι, I, y, y_cl, eq⟩ := exists_finset_sum_of_mem_closure hyp
     choose! x hx using y_cl
     exact ⟨ι, I, x, by rw [← eq]; exact Finset.sum_equiv (by rfl) (by simp) hx⟩
-  case mpr =>
-    rintro ⟨ι,I,y,eq⟩
-    simpa [eq] using sum_mem (closure {x : R | IsSquare x})
-      (subset_closure <| (by simp : (∀ i ∈ I, y i * y i ∈ _)) · ·)
+  case mpr => rintro ⟨ι,I,y,eq⟩; exact IsSumSq.finsetSum eq
+
+/-- Alias of forward implication of `isSumSq_iff_exists_finsetSum`. -/
+theorem exists_finsetSum_mul_self_of_isSumSq [AddCommMonoid R] [Mul R] {a : R} (ha : IsSumSq a) :
+  (∃ (ι : Type) (I : Finset ι) (x : ι → R), a = ∑ i ∈ I, x i * x i) :=
+  (isSumSq_iff_exists_finsetSum _).mp ha
 
 /-- In a (not necessarily unital) commutative semiring,
 if `S1` and `S2` are sums of squares, then `S1 * S2` is a sum of squares. -/
@@ -146,7 +155,7 @@ theorem IsSumSq.mul [NonUnitalCommSemiring R] {S1 S2 : R}
   obtain ⟨ι,I,x,hx⟩ := h1; obtain ⟨β,J,y,hy⟩ := h2
   rw [hx, hy, Finset.sum_mul_sum, ← Finset.sum_product']
   refine ⟨_, I ×ˢ J, fun ⟨i,j⟩ => x i * y j, ?_⟩
-  simp [mul_assoc, mul_left_comm]
+  simp [mul_assoc, mul_comm, mul_left_comm]
 
 namespace Subsemiring
 variable {T : Type*} [CommSemiring T] {a : T}
@@ -179,10 +188,10 @@ sums of squares in `R`.
 -/
 theorem Subsemiring.closure_isSquare [CommSemiring R] :
     closure {x : R | IsSquare x} = sumSqIn R := by
-  refine le_antisymm (closure_le.2 (fun x hx ↦ IsSquare.isSumSq hx)) (fun x hx ↦ ?_)
-  induction hx with
-  | zero         => exact zero_mem _
-  | sq_add _ ih  => exact add_mem (subset_closure (isSquare_mul_self _)) ih
+  refine closure_eq_of_le (fun x hx => IsSquare.isSumSq hx) (fun x hx ↦ ?_)
+  obtain ⟨ι,I,y,hy⟩ := exists_finsetSum_mul_self_of_isSumSq (by simpa using hx)
+  simpa [hy] using AddSubmonoid.sum_mem (closure {x | IsSquare x}).toAddSubmonoid
+    (subset_closure <| (by simp : (∀ i ∈ I, y i * y i ∈ _)) · ·)
 
 /--
 Let `R` be a linearly ordered semiring in which the property `a ≤ b → ∃ c, a + c = b` holds
