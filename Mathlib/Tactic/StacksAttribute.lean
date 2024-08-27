@@ -6,7 +6,7 @@ Authors: Damiano Testa
 import Lean.Attributes
 
 /-!
-The `stacks` attribute.
+# The `stacks` attribute
 
 This allows tagging of mathlib lemmas with the corresponding
 [Tags](https://stacks.math.columbia.edu/tags) from the Stacks Project.
