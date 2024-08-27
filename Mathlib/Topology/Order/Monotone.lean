@@ -41,7 +41,7 @@ the supremum of the image of this set. -/
 theorem Monotone.map_csSup_of_continuousAt {f : α → β} {A : Set α}
     (Cf : ContinuousAt f (sSup A)) (Mf : Monotone f) (A_nonemp : A.Nonempty)
     (A_bdd : BddAbove A := by bddDefault) : f (sSup A) = sSup (f '' A) :=
-  MonotoneOn.map_csSup_of_continuousWithinAt (fun ⦃_⦄ a ↦ a) Cf.continuousWithinAt
+  MonotoneOn.map_csSup_of_continuousWithinAt Cf.continuousWithinAt
     (Mf.monotoneOn _) A_nonemp A_bdd
 
 @[deprecated (since := "2024-08-26")] alias Monotone.map_sSup_of_continuousAt' :=
