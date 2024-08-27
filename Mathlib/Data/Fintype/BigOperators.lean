@@ -167,7 +167,7 @@ lemma card_filter_piFinset_const (s : Finset κ) (i : ι) (j : κ) :
 end Fintype
 end Pi
 
--- TODO: this is a basic thereom about `Fintype.card`,
+-- TODO: this is a basic theorem about `Fintype.card`,
 -- and ideally could be moved to `Mathlib.Data.Fintype.Card`.
 theorem Fintype.card_fun [DecidableEq α] [Fintype α] [Fintype β] :
     Fintype.card (α → β) = Fintype.card β ^ Fintype.card α := by
