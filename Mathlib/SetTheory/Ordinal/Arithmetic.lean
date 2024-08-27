@@ -1343,10 +1343,12 @@ theorem sup_eq_sup {ι ι' : Type u} (r : ι → ι → Prop) (r' : ι' → ι' 
 def bsup (o : Ordinal.{u}) (f : ∀ a < o, Ordinal.{max u v}) : Ordinal.{max u v} :=
   sup.{_, v} (familyOfBFamily o f)
 
+@[simp]
 theorem sup_eq_bsup {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) :
     sup.{_, v} (familyOfBFamily o f) = bsup.{_, v} o f :=
   rfl
 
+@[simp]
 theorem sup_eq_bsup' {o : Ordinal.{u}} {ι} (r : ι → ι → Prop) [IsWellOrder ι r] (ho : type r = o)
     (f : ∀ a < o, Ordinal.{max u v}) : sup.{_, v} (familyOfBFamily' r ho f) = bsup.{_, v} o f :=
   sup_eq_sup r _ ho _ f
@@ -1500,7 +1502,7 @@ theorem sup_eq_lsub_or_sup_succ_eq_lsub {ι : Type u} (f : ι → Ordinal.{max u
   · exact Or.inr ((succ_le_of_lt h).antisymm (lsub_le_sup_succ f))
 
 theorem sup_succ_le_lsub {ι : Type u} (f : ι → Ordinal.{max u v}) :
-    succ (sup.{_, v} f) ≤ lsub.{_, v} f ↔ ∃ i, f i = sup f := by
+    succ (sup.{_, v} f) ≤ lsub.{_, v} f ↔ ∃ i, f i = sup.{_, v} f := by
   refine ⟨fun h => ?_, ?_⟩
   · by_contra! hf
     exact (succ_le_iff.1 h).ne ((sup_le_lsub f).antisymm (lsub_le (ne_iSup_iff_lt_iSup.1 hf)))
@@ -1516,20 +1518,19 @@ theorem sup_eq_lsub_iff_succ {ι : Type u} (f : ι → Ordinal.{max u v}) :
     sup.{_, v} f = lsub.{_, v} f ↔ ∀ a < lsub.{_, v} f, succ a < lsub.{_, v} f := by
   refine ⟨fun h => ?_, fun hf => le_antisymm (sup_le_lsub f) (lsub_le fun i => ?_)⟩
   · rw [← h]
-    exact fun a => succ_lt_iSup_of_ne_iSup fun i => (lsub_le_iff.1 (le_of_eq h.symm) i).ne
+    exact fun a => sup_not_succ_of_ne_sup  fun i => (lsub_le_iff.1 (le_of_eq h.symm) i).ne
   by_contra! hle
-  have heq := (sup_succ_eq_lsub f).2 ⟨i, le_antisymm (Ordinal.le_iSup _ _) hle⟩
+  have heq := (sup_succ_eq_lsub f).2 ⟨i, le_antisymm (le_sup _ _) hle⟩
   have :=
     hf _
       (by
         rw [← heq]
-        exact lt_succ (iSup f))
-  rw [Ordinal.sup] at heq
+        exact lt_succ (sup f))
   rw [heq] at this
   exact this.false
 
 theorem sup_eq_lsub_iff_lt_sup {ι : Type u} (f : ι → Ordinal.{max u v}) :
-    sup.{_, v} f = lsub.{_, v} f ↔ ∀ i, f i < sup f :=
+    sup.{_, v} f = lsub.{_, v} f ↔ ∀ i, f i < sup.{_, v} f :=
   ⟨fun h i => by
     rw [h]
     apply lt_lsub, fun h => le_antisymm (sup_le_lsub f) (lsub_le h)⟩
@@ -1552,17 +1553,15 @@ theorem lsub_eq_zero_iff {ι : Type u} (f : ι → Ordinal.{max u v}) :
 
 @[simp]
 theorem lsub_const {ι} [Nonempty ι] (o : Ordinal) : (lsub fun _ : ι => o) = succ o :=
-  ciSup_const
+  sup_const (succ o)
 
 @[simp]
 theorem lsub_unique {ι} [Unique ι] (f : ι → Ordinal) : lsub f = succ (f default) :=
-  ciSup_unique
+  sup_unique _
 
-theorem lsub_le_of_range_subset {ι} {ι'} {f : ι → Ordinal} {g : ι' → Ordinal}
+theorem lsub_le_of_range_subset {ι ι'} {f : ι → Ordinal} {g : ι' → Ordinal}
     (h : Set.range f ⊆ Set.range g) : lsub.{u, max v w} f ≤ lsub.{v, max u w} g :=
-  Ordinal.sSup_le_sSup
-    (by convert Set.image_subset succ h <;> apply Set.range_comp)
-    (bddAbove_range.{v, max u w} _)
+  sup_le_of_range_subset.{u, v, w} (by convert Set.image_subset succ h <;> apply Set.range_comp)
 
 theorem lsub_eq_of_range_eq {ι ι'} {f : ι → Ordinal} {g : ι' → Ordinal}
     (h : Set.range f = Set.range g) : lsub.{u, max v w} f = lsub.{v, max u w} g :=
@@ -1572,7 +1571,7 @@ theorem lsub_eq_of_range_eq {ι ι'} {f : ι → Ordinal} {g : ι' → Ordinal}
 theorem lsub_sum {α : Type u} {β : Type v} (f : α ⊕ β → Ordinal) :
     lsub.{max u v, w} f =
       max (lsub.{u, max v w} fun a => f (Sum.inl a)) (lsub.{v, max u w} fun b => f (Sum.inr b)) :=
-  iSup_sum _
+  sup_sum _
 
 theorem lsub_not_mem_range {ι : Type u} (f : ι → Ordinal.{max u v}) :
     lsub.{_, v} f ∉ Set.range f := fun ⟨i, h⟩ =>
@@ -1590,14 +1589,18 @@ theorem lsub_typein (o : Ordinal) : lsub.{u, u} (typein ((· < ·) : o.out.α �
       conv_rhs at h => rw [← type_lt o]
       simpa [typein_enum] using lt_lsub.{u, u} (typein (· < ·)) (enum (· < ·) _ h))
 
-theorem sup_typein_limit {o : Ordinal.{u}} (ho : ∀ a, a < o → succ a < o) :
-    sup (fun i => @typein o.out.α (· < ·) _ i) = o := by
-  rw [(sup_eq_lsub_iff_succ.{u, u} _).2] <;> rw [lsub_typein o]; assumption
+theorem sup_typein_limit {o : Ordinal} (ho : ∀ a, a < o → succ a < o) :
+    sup.{u, u} (typein ((· < ·) : o.out.α → o.out.α → Prop)) = o := by
+  -- Porting note: `rwa` → `rw` & `assumption`
+  rw [(sup_eq_lsub_iff_succ.{u, u} (typein (· < ·))).2] <;> rw [lsub_typein o]; assumption
 
 @[simp]
-theorem sup_typein_succ {o : Ordinal.{u}} :
-    sup (fun i => @typein (succ o).out.α (· < ·) _ i) = o := by
-  cases' sup_eq_lsub_or_sup_succ_eq_lsub.{u, u} (@typein (succ o).out.α (· < ·) _) with h h
+theorem sup_typein_succ {o : Ordinal} :
+    sup.{u, u} (typein ((· < ·) : (succ o).out.α → (succ o).out.α → Prop)) = o := by
+  cases'
+    sup_eq_lsub_or_sup_succ_eq_lsub.{u, u}
+      (typein ((· < ·) : (succ o).out.α → (succ o).out.α → Prop)) with
+    h h
   · rw [sup_eq_lsub_iff_succ] at h
     simp only [lsub_typein] at h
     exact (h o (lt_succ o)).false.elim
@@ -2267,8 +2270,13 @@ theorem omega_le {o : Ordinal} : ω ≤ o ↔ ∀ n : ℕ, ↑n ≤ o :=
       rw [e, ← succ_le_iff]; exact H (n + 1)⟩
 
 @[simp]
-theorem sup_natCast : iSup Nat.cast = ω :=
+theorem iSup_natCast : iSup Nat.cast = ω :=
   (Ordinal.iSup_le fun n => (nat_lt_omega n).le).antisymm <| omega_le.2 <| Ordinal.le_iSup _
+
+set_option linter.deprecated false in
+@[deprecated iSup_natCast (since := "2024-04-17")]
+theorem sup_natCast : sup Nat.cast = ω :=
+  iSup_natCast
 
 @[deprecated (since := "2024-04-17")]
 alias sup_nat_cast := sup_natCast
@@ -2333,8 +2341,8 @@ theorem add_le_of_forall_add_lt {a b c : Ordinal} (hb : 0 < b) (h : ∀ d < b, a
   by_contra! hb
   exact (h _ hb).ne H
 
-theorem IsNormal.apply_omega {f : Ordinal.{u} → Ordinal.{u}} (hf : IsNormal f) :
-    ⨆ i : ℕ, f i = f ω := by rw [← sup_natCast, IsNormal.iSup hf]
+theorem IsNormal.apply_omega {f : Ordinal.{u} → Ordinal.{v}} (hf : IsNormal f) :
+    ⨆ i : ℕ, f i = f ω := by rw [← iSup_natCast, IsNormal.iSup hf]
 
 @[simp]
 theorem sup_add_nat (o : Ordinal) : ⨆ n : ℕ, o + n = o + ω :=
