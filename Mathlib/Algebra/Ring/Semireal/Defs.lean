@@ -34,6 +34,10 @@ a multiplication, an addition, a multiplicative unit and an additive unit.
 class IsSemireal [Add R] [Mul R] [One R] [Zero R] : Prop where
   add_one_ne_zero_of_isSumSq (a : R) (ssa : IsSumSq a) : 1 + a ≠ 0
 
+@[deprecated (since := "2024-08-09")] alias isSemireal := IsSemireal
+@[deprecated (since := "2024-08-09")] alias isSemireal.neg_one_not_SumSq :=
+  IsSemireal.add_one_ne_zero_of_isSumSq
+
 /-- Linearly ordered semirings in which the property `a ≤ b → ∃ c, a + c = b` holds are semireal. -/
 instance [LinearOrderedSemiring R] [ExistsAddOfLE R] : IsSemireal R where
   add_one_ne_zero_of_isSumSq _ ssa amo :=

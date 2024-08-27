@@ -51,6 +51,8 @@ inductive IsSumSq [Mul R] [Add R] [Zero R] : R → Prop
   | zero                              : IsSumSq 0
   | sq_add {a S : R} (hS : IsSumSq S) : IsSumSq (a * a + S)
 
+@[deprecated (since := "2024-08-09")] alias isSumSq := IsSumSq
+
 /-- Alternative induction scheme for `IsSumSq` using `IsSquare`. -/
 theorem IsSumSq.induction_alt [Mul R] [Add R] [Zero R]
     {p : (S : R) → (h : IsSumSq S) → Prop} (S : R) (hS : IsSumSq S)
@@ -68,6 +70,8 @@ theorem IsSumSq.add [AddMonoid R] [Mul R] {S1 S2 : R}
   induction h1 with
   | zero        => simp [zero_add, h2]
   | sq_add _ ih => simp [add_assoc, sq_add, ih]
+
+@[deprecated (since := "2024-08-09")] alias isSumSq.add := IsSumSq.add
 
 namespace AddSubmonoid
 variable {T : Type*} [AddMonoid T] [Mul T] {a : T}
@@ -114,6 +118,8 @@ theorem AddSubmonoid.closure_isSquare [AddMonoid R] [Mul R] :
   | zero         => exact zero_mem _
   | sq_add _ ih  => exact add_mem (subset_closure (isSquare_mul_self _)) ih
 
+@[deprecated (since := "2024-08-09")] alias SquaresAddClosure := AddSubmonoid.closure_isSquare
+
 open AddSubmonoid in
 /-- A term of `R` satisfies `IsSumSq` if and only if it can be written as `∑ i ∈ I, x i * x i`. -/
 theorem isSumSq_iff_exists_finsetSum [AddCommMonoid R] [Mul R] (a : R) :
@@ -136,7 +142,7 @@ theorem isSumSq_iff_exists_finsetSum [AddCommMonoid R] [Mul R] (a : R) :
 if `S1` and `S2` are sums of squares, then `S1 * S2` is a sum of squares. -/
 theorem IsSumSq.mul [NonUnitalCommSemiring R] {S1 S2 : R}
     (h1 : IsSumSq S1) (h2 : IsSumSq S2) : IsSumSq (S1 * S2) := by
-  rw [isSumSq_iff_finsum] at *
+  rw [isSumSq_iff_exists_finsetSum] at *
   obtain ⟨ι,I,x,hx⟩ := h1; obtain ⟨β,J,y,hy⟩ := h2
   rw [hx, hy, Finset.sum_mul_sum, ← Finset.sum_product']
   refine ⟨_, I ×ˢ J, fun ⟨i,j⟩ => x i * y j, ?_⟩
@@ -185,7 +191,9 @@ Let `R` be a linearly ordered semiring in which the property `a ≤ b → ∃ c,
 -/
 theorem IsSumSq.nonneg {R : Type*} [LinearOrderedSemiring R] [ExistsAddOfLE R] {S : R}
     (pS : IsSumSq S) : 0 ≤ S := by
-  rw [isSumSq_iff_finsum] at pS
+  rw [isSumSq_iff_exists_finsetSum] at pS
   obtain ⟨ι,I,x,h⟩ := pS
   rw [h]
   exact Finset.sum_nonneg (fun i _ => mul_self_nonneg <| x i)
+
+@[deprecated (since := "2024-08-09")] alias isSumSq.nonneg := IsSumSq.nonneg
