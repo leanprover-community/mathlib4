@@ -70,7 +70,7 @@ lemma LFunction_modOne_eq (Φ : ZMod 1 → ℂ) (s : ℂ) :
 
 open scoped LSeries.notation in
 /-- For `1 < re s` the congruence L-function agrees with the sum of the Dirichlet series. -/
-lemma LFunction_eq_LSeries (Φ : ZMod N → ℂ) {s : ℂ} (hs : 1 < re s) :
+lemma LFunction_eq_LSeries' (Φ : ZMod N → ℂ) {s : ℂ} (hs : 1 < re s) :
     LFunction Φ s = LSeries ↗Φ s := by
   rw [LFunction, LSeries, mul_sum, Nat.sumByResidueClasses (LSeriesSummable_of_one_lt_re Φ hs) N]
   congr 1 with j
@@ -80,6 +80,7 @@ lemma LFunction_eq_LSeries (Φ : ZMod N → ℂ) {s : ℂ} (hs : 1 < re s) :
   rw [toAddCircle_apply, ← (hasSum_hurwitzZeta_of_one_lt_re ha hs).tsum_eq, ← mul_assoc,
     ← tsum_mul_left]
   congr 1 with m
+
   have aux0 : (m : ℂ) + ↑(j.val / N : ℝ) = ↑((j.val + N * m) / N : ℝ) := by
     push_cast
     rw [add_div, mul_div_cancel_left₀ _ (NeZero.ne _), add_comm]
@@ -94,6 +95,36 @@ lemma LFunction_eq_LSeries (Φ : ZMod N → ℂ) {s : ℂ} (hs : 1 < re s) :
     LSeries.term_of_ne_zero' (ne_zero_of_one_lt_re hs), Nat.cast_add (R := ZMod _), Nat.cast_mul,
     CharP.cast_eq_zero (R := ZMod N) (p := N), zero_mul, add_zero]
   simp only [Nat.cast_add, natCast_val, Nat.cast_mul, cast_id', id_eq]
+
+/-- For `1 < re s` the congruence L-function agrees with the sum of the Dirichlet series. -/
+lemma LFunction_eq_LSeries (Φ : ZMod N → ℂ) {s : ℂ} (hs : 1 < re s) :
+    LFunction Φ s = LSeries (Φ ·) s := by
+  rw [LFunction, LSeries, mul_sum, Nat.sumByResidueClasses (LSeriesSummable_of_one_lt_re Φ hs) N]
+  congr 1 with j
+  have : (j.val / N : ℝ) ∈ Set.Icc 0 1 := Set.mem_Icc.mpr ⟨by positivity,
+    (div_le_one (Nat.cast_pos.mpr <| NeZero.pos _)).mpr <| Nat.cast_le.mpr (val_lt j).le⟩
+  rw [toAddCircle_apply, ← (hasSum_hurwitzZeta_of_one_lt_re this hs).tsum_eq, ← mul_assoc,
+    ← tsum_mul_left]
+  congr 1 with m
+  -- The following manipulation is slightly delicate because `(x * y) ^ s = x ^ s * y ^ s` is
+  -- false for general complex `x`, `y`, but it is true if `x` and `y` are non-negative reals, so
+  -- we have to carefully juggle coercions `ℕ → ℝ → ℂ`.
+  calc N ^ (-s) * Φ j * (1 / (m + (j.val / N : ℝ)) ^ s)
+  _ = Φ j * (N ^ (-s) * (1 / (m + (j.val / N : ℝ)) ^ s)) := by
+    rw [← mul_assoc, mul_comm _ (Φ _)]
+  _ = Φ j * (1 / (N : ℝ) ^ s * (1 / ((j.val + N * m) / N : ℝ) ^ s)) := by
+    simp only [cpow_neg, ← one_div, ofReal_div, ofReal_natCast, add_comm, add_div, ofReal_add,
+      ofReal_mul, mul_div_cancel_left₀ (m : ℂ) (Nat.cast_ne_zero.mpr (NeZero.ne N))]
+  _ = Φ j / ((N : ℝ) * ((j.val + N * m) / N : ℝ)) ^ s := by -- this is the delicate step!
+    rw [one_div_mul_one_div, mul_one_div, mul_cpow_ofReal_nonneg] <;> positivity
+  _ = Φ j / (N * (j.val + N * m) / N) ^ s := by
+    simp only [ofReal_natCast, ofReal_div, ofReal_add, ofReal_mul, mul_div_assoc]
+  _ = Φ j / (j.val + N * m) ^ s := by
+    rw [mul_div_cancel_left₀ _ (Nat.cast_ne_zero.mpr (NeZero.ne N))]
+  _ = Φ ↑(j.val + N * m) / (↑(j.val + N * m)) ^ s := by
+    simp only [Nat.cast_add, Nat.cast_mul, natCast_zmod_val, natCast_self, zero_mul, add_zero]
+  _ = LSeries.term (Φ ·) s (j.val + N * m) := by
+    rw [LSeries.term_of_ne_zero' (ne_zero_of_one_lt_re hs)]
 
 private lemma differentiable_Npow : Differentiable ℂ (fun (s : ℂ) ↦ (N : ℂ) ^ (-s)) :=
   .const_cpow (by fun_prop) (Or.inl <| NeZero.ne _)
