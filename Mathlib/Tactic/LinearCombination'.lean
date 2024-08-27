@@ -6,9 +6,9 @@ Authors: Abby J. Goldberg, Mario Carneiro
 import Mathlib.Tactic.Ring
 
 /-!
-# linear_combination Tactic
+# linear_combination' Tactic
 
-In this file, the `linear_combination` tactic is created.  This tactic, which
+In this file, the `linear_combination'` tactic is created.  This tactic, which
 works over `CommRing`s, attempts to simplify the target by creating a linear combination
 of a list of equalities and subtracting it from the target. A `Syntax.Tactic`
 object can also be passed into the tactic, allowing the user to specify a
@@ -23,13 +23,19 @@ the target.  Afterwards, it sets the goal to be the equality between the
 lefthand side of the new goal and the lefthand side of the new weighted sum.
 Lastly, calls a normalization tactic on this target.
 
+This file contains the `linear_combination'` tactic (note the '): the original
+Lean 4 implementation of the "linear combination" idea, written at the time of
+the port from Lean 3.  Notably, its scope includes certain *nonlinear*
+operations.  The `linear_combination` tactic (in a separate file) is a variant
+implementation, but this version is provided for backward-compatibility.
+
 ## References
 
 * <https://leanprover.zulipchat.com/#narrow/stream/239415-metaprogramming-.2F.20tactics/topic/Linear.20algebra.20tactic/near/213928196>
 
 -/
 
-namespace Mathlib.Tactic.LinearCombination
+namespace Mathlib.Tactic.LinearCombination'
 open Lean hiding Rat
 open Elab Meta Term
 
@@ -124,12 +130,12 @@ theorem eq_of_add_pow [Ring α] [NoZeroDivisors α] (n : ℕ) (p : (a:α) = b)
     (H : (a' - b')^n - (a - b) = 0) : a' = b' := by
   rw [← sub_eq_zero] at p ⊢; apply pow_eq_zero (n := n); rwa [sub_eq_zero, p] at H
 
-/-- Implementation of `linear_combination` and `linear_combination2`. -/
-def elabLinearCombination (tk : Syntax)
+/-- Implementation of `linear_combination'` and `linear_combination2`. -/
+def elabLinearCombination' (tk : Syntax)
     (norm? : Option Syntax.Tactic) (exp? : Option Syntax.NumLit) (input : Option Syntax.Term)
     (twoGoals := false) : Tactic.TacticM Unit := Tactic.withMainContext do
   let some (ty, _) := (← (← Tactic.getMainGoal).getType').eq? |
-    throwError "'linear_combination' only proves equalities"
+    throwError "'linear_combination'' only proves equalities"
   let p ← match input with
   | none => `(Eq.refl 0)
   | some e =>
@@ -152,19 +158,19 @@ def elabLinearCombination (tk : Syntax)
 
 /--
 The `(norm := $tac)` syntax says to use `tac` as a normalization postprocessor for
-`linear_combination`. The default normalizer is `ring1`, but you can override it with `ring_nf`
-to get subgoals from `linear_combination` or with `skip` to disable normalization.
+`linear_combination'`. The default normalizer is `ring1`, but you can override it with `ring_nf`
+to get subgoals from `linear_combination'` or with `skip` to disable normalization.
 -/
 syntax normStx := atomic(" (" &"norm" " := ") withoutPosition(tactic) ")"
 
 /--
-The `(exp := n)` syntax for `linear_combination` says to take the goal to the `n`th power before
+The `(exp := n)` syntax for `linear_combination'` says to take the goal to the `n`th power before
 subtracting the given combination of hypotheses.
 -/
 syntax expStx := atomic(" (" &"exp" " := ") withoutPosition(num) ")"
 
 /--
-`linear_combination` attempts to simplify the target by creating a linear combination
+`linear_combination'` attempts to simplify the target by creating a linear combination
   of a list of equalities and subtracting it from the target.
   The tactic will create a linear
   combination by adding the equalities together from left to right, so the order
@@ -172,31 +178,34 @@ syntax expStx := atomic(" (" &"exp" " := ") withoutPosition(num) ")"
   configuration is set to false, then the tactic will simply set the user up to
   prove their target using the linear combination instead of normalizing the subtraction.
 
+Note: There is also a similar tactic `linear_combination` (no prime); this version is
+provided for backward compatibility.
+
 Note: The left and right sides of all the equalities should have the same
   type, and the coefficients should also have this type.  There must be
   instances of `Mul` and `AddGroup` for this type.
 
-* The input `e` in `linear_combination e` is a linear combination of proofs of equalities,
+* The input `e` in `linear_combination' e` is a linear combination of proofs of equalities,
   given as a sum/difference of coefficients multiplied by expressions.
   The coefficients may be arbitrary expressions.
   The expressions can be arbitrary proof terms proving equalities.
   Most commonly they are hypothesis names `h1, h2, ...`.
-* `linear_combination (norm := tac) e` runs the "normalization tactic" `tac`
+* `linear_combination' (norm := tac) e` runs the "normalization tactic" `tac`
   on the subgoal(s) after constructing the linear combination.
   * The default normalization tactic is `ring1`, which closes the goal or fails.
   * To get a subgoal in the case that it is not immediately provable, use
     `ring_nf` as the normalization tactic.
   * To avoid normalization entirely, use `skip` as the normalization tactic.
-* `linear_combination (exp := n) e` will take the goal to the `n`th power before subtracting the
-  combination `e`. In other words, if the goal is `t1 = t2`, `linear_combination (exp := n) e`
+* `linear_combination' (exp := n) e` will take the goal to the `n`th power before subtracting the
+  combination `e`. In other words, if the goal is `t1 = t2`, `linear_combination' (exp := n) e`
   will change the goal to `(t1 - t2)^n = 0` before proceeding as above.
   This feature is not supported for `linear_combination2`.
-* `linear_combination2 e` is the same as `linear_combination e` but it produces two
+* `linear_combination2 e` is the same as `linear_combination' e` but it produces two
   subgoals instead of one: rather than proving that `(a - b) - (a' - b') = 0` where
   `a' = b'` is the linear combination from `e` and `a = b` is the goal,
   it instead attempts to prove `a = a'` and `b = b'`.
   Because it does not use subtraction, this form is applicable also to semirings.
-  * Note that a goal which is provable by `linear_combination e` may not be provable
+  * Note that a goal which is provable by `linear_combination' e` may not be provable
     by `linear_combination2 e`; in general you may need to add a coefficient to `e`
     to make both sides match, as in `linear_combination2 e + c`.
   * You can also reverse equalities using `← h`, so for example if `h₁ : a = b`
@@ -205,45 +214,45 @@ Note: The left and right sides of all the equalities should have the same
 Example Usage:
 ```
 example (x y : ℤ) (h1 : x*y + 2*x = 1) (h2 : x = y) : x*y = -2*y + 1 := by
-  linear_combination 1*h1 - 2*h2
+  linear_combination' 1*h1 - 2*h2
 
 example (x y : ℤ) (h1 : x*y + 2*x = 1) (h2 : x = y) : x*y = -2*y + 1 := by
-  linear_combination h1 - 2*h2
+  linear_combination' h1 - 2*h2
 
 example (x y : ℤ) (h1 : x*y + 2*x = 1) (h2 : x = y) : x*y = -2*y + 1 := by
-  linear_combination (norm := ring_nf) -2*h2
+  linear_combination' (norm := ring_nf) -2*h2
   /- Goal: x * y + x * 2 - 1 = 0 -/
 
 example (x y z : ℝ) (ha : x + 2*y - z = 4) (hb : 2*x + y + z = -2)
     (hc : x + 2*y + z = 2) :
     -3*x - 3*y - 4*z = 2 := by
-  linear_combination ha - hb - 2*hc
+  linear_combination' ha - hb - 2*hc
 
 example (x y : ℚ) (h1 : x + y = 3) (h2 : 3*x = 7) :
     x*x*y + y*x*y + 6*x = 3*x*y + 14 := by
-  linear_combination x*y*h1 + 2*h2
+  linear_combination' x*y*h1 + 2*h2
 
 example (x y : ℤ) (h1 : x = -3) (h2 : y = 10) : 2*x = -6 := by
-  linear_combination (norm := skip) 2*h1
+  linear_combination' (norm := skip) 2*h1
   simp
 
 axiom qc : ℚ
 axiom hqc : qc = 2*qc
 
 example (a b : ℚ) (h : ∀ p q : ℚ, p = q) : 3*a + qc = 3*b + 2*qc := by
-  linear_combination 3 * h a b + hqc
+  linear_combination' 3 * h a b + hqc
 ```
 -/
-syntax (name := linearCombination) "linear_combination"
+syntax (name := linearCombination') "linear_combination'"
   (normStx)? (expStx)? (ppSpace colGt term)? : tactic
 elab_rules : tactic
-  | `(tactic| linear_combination%$tk $[(norm := $tac)]? $[(exp := $n)]? $(e)?) =>
-    elabLinearCombination tk tac n e
+  | `(tactic| linear_combination'%$tk $[(norm := $tac)]? $[(exp := $n)]? $(e)?) =>
+    elabLinearCombination' tk tac n e
 
-@[inherit_doc linearCombination]
+@[inherit_doc linearCombination']
 syntax "linear_combination2" (normStx)? (ppSpace colGt term)? : tactic
 elab_rules : tactic
   | `(tactic| linear_combination2%$tk $[(norm := $tac)]? $(e)?) =>
-    elabLinearCombination tk tac none e true
+    elabLinearCombination' tk tac none e true
 
-end Mathlib.Tactic.LinearCombination
+end Mathlib.Tactic.LinearCombination'
