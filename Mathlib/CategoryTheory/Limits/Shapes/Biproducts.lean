@@ -168,8 +168,8 @@ end Bicones
 
 namespace Bicone
 
-attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
-  CategoryTheory.Discrete.discreteCases
+local add_aesop_rules (rule_sets := [CategoryTheory]) safe
+  (by unhygienic discrete_cases)
 -- Porting note: would it be okay to use this more generally?
 attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Eq
 

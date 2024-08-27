@@ -153,8 +153,7 @@ variable {C : Type u₂} [Category.{v₂} C]
 instance {I : Type u₁} {i j : Discrete I} (f : i ⟶ j) : IsIso f :=
   ⟨⟨Discrete.eqToHom (eq_of_hom f).symm, by aesop_cat⟩⟩
 
-attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
-  CategoryTheory.Discrete.discreteCases
+local add_aesop_rules safe (rule_sets := [CategoryTheory]) (by discrete_cases)
 
 /-- Any function `I → C` gives a functor `Discrete I ⥤ C`. -/
 def functor {I : Type u₁} (F : I → C) : Discrete I ⥤ C where

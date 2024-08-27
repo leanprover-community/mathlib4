@@ -126,14 +126,15 @@ section
 variable {F G : Discrete WalkingPair ⥤ C} (f : F.obj ⟨left⟩ ⟶ G.obj ⟨left⟩)
   (g : F.obj ⟨right⟩ ⟶ G.obj ⟨right⟩)
 
-attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
-  CategoryTheory.Discrete.discreteCases
+local add_aesop_rules (rule_sets := [CategoryTheory]) safe
+  (by unhygienic discrete_cases)
 
 /-- The natural transformation between two functors out of the
  walking pair, specified by its components. -/
 def mapPair : F ⟶ G where
   app j := Discrete.recOn j fun j => WalkingPair.casesOn j f g
-  naturality := fun ⟨X⟩ ⟨Y⟩ ⟨⟨u⟩⟩ => by aesop_cat
+  naturality := fun ⟨X⟩ ⟨Y⟩ ⟨⟨u⟩⟩ => by
+    aesop_cat
 
 @[simp]
 theorem mapPair_left : (mapPair f g).app ⟨left⟩ = f :=
@@ -249,8 +250,8 @@ variable {X Y : C}
 
 section
 
-attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
-  CategoryTheory.Discrete.discreteCases
+local add_aesop_rules (rule_sets := [CategoryTheory]) safe
+  (by unhygienic discrete_cases)
 -- Porting note: would it be okay to use this more generally?
 attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Eq
 

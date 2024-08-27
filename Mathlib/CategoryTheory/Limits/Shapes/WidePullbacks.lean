@@ -71,16 +71,8 @@ instance struct : CategoryStruct (WidePullbackShape J) where
 instance Hom.inhabited : Inhabited (Hom (none : WidePullbackShape J) none) :=
   ⟨Hom.id (none : WidePullbackShape J)⟩
 
-open Lean Elab Tactic
-/- Pointing note: experimenting with manual scoping of aesop tactics. Attempted to define
-aesop rule directing on `WidePushoutOut` and it didn't take for some reason -/
-/-- An aesop tactic for bulk cases on morphisms in `WidePushoutShape` -/
-def evalCasesBash : TacticM Unit := do
-  evalTactic
-    (← `(tactic| casesm* WidePullbackShape _,
-      (_ : WidePullbackShape _) ⟶ (_ : WidePullbackShape _) ))
-
-attribute [local aesop safe tactic (rule_sets := [CategoryTheory])] evalCasesBash
+local add_aesop_rules (rule_sets := [CategoryTheory]) safe
+  (by casesm* WidePullbackShape _, (_ : WidePullbackShape _) ⟶ (_ : WidePullbackShape _))
 
 instance subsingleton_hom : Quiver.IsThin (WidePullbackShape J) := fun _ _ => by
   constructor
@@ -175,15 +167,8 @@ instance struct : CategoryStruct (WidePushoutShape J) where
 instance Hom.inhabited : Inhabited (Hom (none : WidePushoutShape J) none) :=
   ⟨Hom.id (none : WidePushoutShape J)⟩
 
-open Lean Elab Tactic
--- Pointing note: experimenting with manual scoping of aesop tactics; only this worked
-/-- An aesop tactic for bulk cases on morphisms in `WidePushoutShape` -/
-def evalCasesBash' : TacticM Unit := do
-  evalTactic
-    (← `(tactic| casesm* WidePushoutShape _,
-      (_ : WidePushoutShape _) ⟶ (_ : WidePushoutShape _) ))
-
-attribute [local aesop safe tactic (rule_sets := [CategoryTheory])] evalCasesBash'
+local add_aesop_rules (rule_sets := [CategoryTheory]) safe
+  (by casesm* WidePushoutShape _, (_ : WidePushoutShape _) ⟶ (_ : WidePushoutShape _))
 
 instance subsingleton_hom : Quiver.IsThin (WidePushoutShape J) := fun _ _ => by
   constructor
