@@ -92,7 +92,9 @@ def Fintype.divisionRingOfIsDomain (R : Type*) [Ring R] [IsDomain R] [DecidableE
   __ := Fintype.groupWithZeroOfCancel R
   __ := ‹Ring R›
   nnqsmul := _
+  nnqsmul_def := fun q a => rfl
   qsmul := _
+  qsmul_def := fun q a => rfl
 
 /-- Every finite commutative domain is a field. More generally, commutativity is not required: this
 can be found in `Mathlib.RingTheory.LittleWedderburn`. -/

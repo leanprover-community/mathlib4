@@ -109,6 +109,12 @@ lemma preservesZeroMorphisms_of_iso {F₁ F₂ : C ⥤ D} [F₁.PreservesZeroMor
 instance preservesZeroMorphisms_evaluation_obj (j : D) :
     PreservesZeroMorphisms ((evaluation D C).obj j) where
 
+instance (F : C ⥤ D ⥤ E) [∀ X, (F.obj X).PreservesZeroMorphisms] :
+    F.flip.PreservesZeroMorphisms where
+
+instance (F : C ⥤ D ⥤ E) [F.PreservesZeroMorphisms] (Y : D) :
+    (F.flip.obj Y).PreservesZeroMorphisms where
+
 end ZeroMorphisms
 
 section ZeroObject
