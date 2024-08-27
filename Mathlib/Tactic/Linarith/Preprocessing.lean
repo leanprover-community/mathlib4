@@ -25,8 +25,6 @@ preprocessing steps by adding them to the `LinarithConfig` object. `Linarith.def
 is the main list, and generally none of these should be skipped unless you know what you're doing.
 -/
 
-set_option autoImplicit true
-
 namespace Linarith
 
 /-! ### Preprocessing -/
@@ -34,6 +32,8 @@ namespace Linarith
 open Lean hiding Rat
 open Elab Tactic Meta
 open Qq
+open Mathlib.Tactic (AtomM)
+open Batteries (RBSet)
 
 /-- Processor that recursively replaces `P ∧ Q` hypotheses with the pair `P` and `Q`. -/
 partial def splitConjunctions : Preprocessor where
@@ -145,8 +145,6 @@ def mk_natCast_nonneg_prf (p : Expr × Expr) : MetaM (Option Expr) :=
       trace[linarith] "Got exception when using cast {e.toMessageData}"
       return none
 
-
-open Batteries
 
 /-- Ordering on `Expr`. -/
 def Expr.Ord : Ord Expr :=
@@ -269,7 +267,8 @@ end compWithZero
 
 section cancelDenoms
 
-theorem without_one_mul [MulOneClass M] {a b : M} (h : 1 * a = b) : a = b := by rwa [one_mul] at h
+theorem without_one_mul {M : Type*} [MulOneClass M] {a b : M} (h : 1 * a = b) : a = b := by
+  rwa [one_mul] at h
 
 /--
 `normalizeDenominatorsLHS h lhs` assumes that `h` is a proof of `lhs R 0`.
@@ -306,9 +305,10 @@ section nlinarith
 /--
 `findSquares s e` collects all terms of the form `a ^ 2` and `a * a` that appear in `e`
 and adds them to the set `s`.
-A pair `(a, true)` is added to `s` when `a^2` appears in `e`,
-and `(a, false)` is added to `s` when `a*a` appears in `e`.  -/
-partial def findSquares (s : HashSet (Expr × Bool)) (e : Expr) : MetaM (HashSet (Expr × Bool)) :=
+A pair `(i, true)` is added to `s` when `atoms[i]^2` appears in `e`,
+and `(i, false)` is added to `s` when `atoms[i]*atoms[i]` appears in `e`.  -/
+partial def findSquares (s : RBSet (Nat × Bool) lexOrd.compare) (e : Expr) :
+    AtomM (RBSet (Nat × Bool) lexOrd.compare) :=
   -- Completely traversing the expression is non-ideal,
   -- as we can descend into expressions that could not possibly be seen by `linarith`.
   -- As a result we visit expressions with bvars, which then cause panics.
@@ -319,11 +319,15 @@ partial def findSquares (s : HashSet (Expr × Bool)) (e : Expr) : MetaM (HashSet
   | (``HPow.hPow, #[_, _, _, _, a, b]) => match b.numeral? with
     | some 2 => do
       let s ← findSquares s a
-      return (s.insert (a, true))
+      let ai ← AtomM.addAtom a
+      return (s.insert (ai, true))
     | _ => e.foldlM findSquares s
-  | (``HMul.hMul, #[_, _, _, _, a, b]) => if a.equal b then do
+  | (``HMul.hMul, #[_, _, _, _, a, b]) => do
+    let ai ← AtomM.addAtom a
+    let bi ← AtomM.addAtom b
+    if ai = bi then do
       let s ← findSquares s a
-      return (s.insert (a, false))
+      return (s.insert (ai, false))
     else
       e.foldlM findSquares s
   | _ => e.foldlM findSquares s
@@ -340,15 +344,16 @@ This preprocessor is typically run last, after all inputs have been canonized.
 def nlinarithExtras : GlobalPreprocessor where
   name := "nonlinear arithmetic extras"
   transform ls := do
-    let s ← ls.foldrM (fun h s' => do findSquares s' (← instantiateMVars (← inferType h)))
-      HashSet.empty
-    let new_es ← s.foldM (fun new_es (⟨e, is_sq⟩ : Expr × Bool) =>
-      ((do
-        let p ← mkAppM (if is_sq then ``sq_nonneg else ``mul_self_nonneg) #[e]
-        pure <| p::new_es) <|> pure new_es)) ([] : List Expr)
+    -- find the squares in `AtomM` to ensure deterministic behavior
+    let s ← AtomM.run .reducible do
+      let si ← ls.foldrM (fun h s' => do findSquares s' (← instantiateMVars (← inferType h)))
+        RBSet.empty
+      si.toList.mapM fun (i, is_sq) => return ((← get).atoms[i]!, is_sq)
+    let new_es ← s.filterMapM fun (e, is_sq) =>
+      observing? <| mkAppM (if is_sq then ``sq_nonneg else ``mul_self_nonneg) #[e]
     let new_es ← compWithZero.globalize.transform new_es
     trace[linarith] "nlinarith preprocessing found squares"
-    trace[linarith] "{s.toList}"
+    trace[linarith] "{s}"
     linarithTraceProofs "so we added proofs" new_es
     let with_comps ← (new_es ++ ls).mapM (fun e => do
       let tp ← inferType e

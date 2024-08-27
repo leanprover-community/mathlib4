@@ -5,8 +5,6 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Idempotents.Karoubi
 
-#align_import category_theory.idempotents.functor_categories from "leanprover-community/mathlib"@"31019c2504b17f85af7e0577585fad996935a317"
-
 /-!
 # Idempotent completeness and functor categories
 
@@ -37,24 +35,20 @@ variable {J C : Type*} [Category J] [Category C] (P Q : Karoubi (J ⥤ C)) (f : 
 @[reassoc (attr := simp)]
 theorem app_idem : P.p.app X ≫ P.p.app X = P.p.app X :=
   congr_app P.idem X
-#align category_theory.idempotents.app_idem CategoryTheory.Idempotents.app_idem
 
 variable {P Q}
 
 @[reassoc (attr := simp)]
 theorem app_p_comp : P.p.app X ≫ f.f.app X = f.f.app X :=
   congr_app (p_comp f) X
-#align category_theory.idempotents.app_p_comp CategoryTheory.Idempotents.app_p_comp
 
 @[reassoc (attr := simp)]
 theorem app_comp_p : f.f.app X ≫ Q.p.app X = f.f.app X :=
   congr_app (comp_p f) X
-#align category_theory.idempotents.app_comp_p CategoryTheory.Idempotents.app_comp_p
 
 @[reassoc]
 theorem app_p_comm : P.p.app X ≫ f.f.app X = f.f.app X ≫ Q.p.app X :=
   congr_app (p_comm f) X
-#align category_theory.idempotents.app_p_comm CategoryTheory.Idempotents.app_p_comm
 
 variable (J C)
 
@@ -101,13 +95,11 @@ def obj (P : Karoubi (J ⥤ C)) : J ⥤ Karoubi C where
         have h := congr_app P.idem j
         rw [NatTrans.comp_app] at h
         erw [reassoc_of% h, reassoc_of% h] }
-#align category_theory.idempotents.karoubi_functor_category_embedding.obj CategoryTheory.Idempotents.KaroubiFunctorCategoryEmbedding.obj
 
 /-- Tautological action on maps of the functor `Karoubi (J ⥤ C) ⥤ (J ⥤ Karoubi C)`. -/
 @[simps]
 def map {P Q : Karoubi (J ⥤ C)} (f : P ⟶ Q) : obj P ⟶ obj Q where
   app j := ⟨f.f.app j, congr_app f.comm j⟩
-#align category_theory.idempotents.karoubi_functor_category_embedding.map CategoryTheory.Idempotents.KaroubiFunctorCategoryEmbedding.map
 
 end KaroubiFunctorCategoryEmbedding
 
@@ -116,7 +108,6 @@ end KaroubiFunctorCategoryEmbedding
 def karoubiFunctorCategoryEmbedding : Karoubi (J ⥤ C) ⥤ J ⥤ Karoubi C where
   obj := KaroubiFunctorCategoryEmbedding.obj
   map := KaroubiFunctorCategoryEmbedding.map
-#align category_theory.idempotents.karoubi_functor_category_embedding CategoryTheory.Idempotents.karoubiFunctorCategoryEmbedding
 
 instance : (karoubiFunctorCategoryEmbedding J C).Full where
   map_surjective {P Q} f :=
@@ -157,7 +148,6 @@ theorem toKaroubi_comp_karoubiFunctorCategoryEmbedding :
       simp
     · intro j
       rfl
-#align category_theory.idempotents.to_karoubi_comp_karoubi_functor_category_embedding CategoryTheory.Idempotents.toKaroubi_comp_karoubiFunctorCategoryEmbedding
 
 end Idempotents
 

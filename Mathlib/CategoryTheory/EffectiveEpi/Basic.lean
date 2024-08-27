@@ -186,7 +186,7 @@ instance {B X : C} (f : X ⟶ B) [EffectiveEpi f] : EffectiveEpiFamily (fun () �
   ⟨⟨effectiveEpiFamilyStructSingletonOfEffectiveEpi f⟩⟩
 
 /--
-A single element `EffectiveEpiFamily` constists of an `EffectiveEpi`
+A single element `EffectiveEpiFamily` consists of an `EffectiveEpi`
 -/
 noncomputable
 def effectiveEpiStructOfEffectiveEpiFamilySingleton {B X : C} (f : X ⟶ B)
@@ -272,3 +272,5 @@ lemma EffectiveEpiFamily.reindex
     (h : EffectiveEpiFamily (fun a => X (e a)) (fun a => π (e a))) :
     EffectiveEpiFamily X π :=
   .mk <| .intro <| @EffectiveEpiFamily.getStruct _ _ _ _ _ _ h |>.reindex _ _ e
+
+end CategoryTheory

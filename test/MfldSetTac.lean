@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Heather Macbeth, Frédéric Dupuis
+Authors: Heather Macbeth, Frédéric Dupuis
 -/
 
 import Mathlib.Logic.Equiv.PartialEquiv

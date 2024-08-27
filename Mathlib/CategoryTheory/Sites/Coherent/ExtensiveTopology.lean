@@ -24,7 +24,7 @@ variable {C : Type*} [Category C] [FinitaryPreExtensive C]
 namespace CategoryTheory
 
 lemma extensiveTopology.mem_sieves_iff_contains_colimit_cofan {X : C} (S : Sieve X) :
-    S ∈ (extensiveTopology C).sieves X ↔
+    S ∈ (extensiveTopology C) X ↔
       (∃ (α : Type) (_ : Finite α) (Y : α → C) (π : (a : α) → (Y a ⟶ X)),
         Nonempty (IsColimit (Cofan.mk X π)) ∧ (∀ a : α, (S.arrows) (π a))) := by
   constructor
@@ -55,3 +55,5 @@ lemma extensiveTopology.mem_sieves_iff_contains_colimit_cofan {X : C} (S : Sieve
     · refine ⟨α, inferInstance, Y, π, rfl, ?_⟩
       erw [Limits.Cofan.isColimit_iff_isIso_sigmaDesc (c := Cofan.mk X π)]
       exact h
+
+end CategoryTheory
