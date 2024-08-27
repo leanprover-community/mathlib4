@@ -32,6 +32,8 @@ An executable running all these linters is defined in `scripts/lint-style.lean`.
 
 open System
 
+namespace Mathlib.Linter.TextBased
+
 /-- Different kinds of "broad imports" that are linted against. -/
 inductive BroadImports
   /-- Importing the entire "Mathlib.Tactic" folder -/
@@ -473,10 +475,12 @@ def lintModules (moduleNames : Array String) (mode : OutputSetting) (fix : Bool)
     -- previous exception if that is preferred.
     let mut tweaked := allUnexpectedErrors.map fun err ↦
       if let some existing := err.find?_comparable styleExceptions then
-        if let ComparisonResult.Comparable (true) := _root_.compare err existing then existing
+        if let ComparisonResult.Comparable (true) := compare err existing then existing
         else err
       else err
     let thisOutput := "\n".intercalate (tweaked.map
         (fun err ↦ outputMessage err ErrorFormat.exceptionsFile)).toList
     IO.FS.writeFile exceptionsFilePath s!"{pythonOutput}{thisOutput}\n"
   return numberErrorFiles
+
+end Mathlib.Linter.TextBased
