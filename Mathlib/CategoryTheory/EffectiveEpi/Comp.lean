@@ -32,7 +32,7 @@ def effectiveEpiFamilyStructCompOfEffectiveEpiSplitEpi' {α : Type*} {B : C} {X 
   desc e w := EffectiveEpiFamily.desc _ f (fun a ↦ i a ≫ e a) fun a₁ a₂ g₁ g₂ _ ↦ (by
     simp only [← Category.assoc]
     apply w _ _ (g₁ ≫ i a₁) (g₂ ≫ i a₂)
-    simpa [← Category.assoc, hi])
+    simpa [← Category.assoc, Category.assoc, hi])
   fac e w a := by
     simp only [Category.assoc, EffectiveEpiFamily.fac]
     rw [← Category.id_comp (e a), ← Category.assoc, ← Category.assoc]
@@ -98,8 +98,8 @@ lemma effectiveEpi_of_effectiveEpi_epi_comp {B X Y : C} (f : X ⟶ B) (g : Y ⟶
 
 section CompIso
 
-variable {B B' : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [EffectiveEpiFamily X π]
-  (i : B ⟶ B') [IsIso i]
+variable {B B' : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B))
+  (i : B ⟶ B')
 
 theorem effectiveEpiFamilyStructCompIso_aux
     {W : C} (e : (a : α) → X a ⟶ W)
@@ -110,6 +110,8 @@ theorem effectiveEpiFamilyStructCompIso_aux
   apply h
   rw [← Category.assoc, hg]
   simp
+
+variable [EffectiveEpiFamily X π] [IsIso i]
 
 /-- An effective epi family followed by an iso is an effective epi family. -/
 noncomputable
@@ -134,3 +136,5 @@ example : EffectiveEpiFamily Y (fun a ↦ i a ≫ π a) :=
   inferInstance
 
 end IsoComp
+
+end CategoryTheory

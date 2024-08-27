@@ -6,8 +6,7 @@ Authors: Kevin Buzzard, Antoine Labelle
 import Mathlib.Algebra.Module.Defs
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.FreeModule.Basic
-
-#align_import algebra.module.projective from "leanprover-community/mathlib"@"405ea5cee7a7070ff8fb8dcb4cfb003532e34bce"
+import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 /-!
 
@@ -74,7 +73,6 @@ open Finsupp
 class Module.Projective (R : Type*) [Semiring R] (P : Type*) [AddCommMonoid P] [Module R P] :
     Prop where
   out : ∃ s : P →ₗ[R] P →₀ R, Function.LeftInverse (Finsupp.total P P R id) s
-#align module.projective Module.Projective
 
 namespace Module
 
@@ -86,12 +84,10 @@ variable {R : Type*} [Semiring R] {P : Type*} [AddCommMonoid P] [Module R P] {M 
 theorem projective_def :
     Projective R P ↔ ∃ s : P →ₗ[R] P →₀ R, Function.LeftInverse (Finsupp.total P P R id) s :=
   ⟨fun h => h.1, fun h => ⟨h⟩⟩
-#align module.projective_def Module.projective_def
 
 theorem projective_def' :
     Projective R P ↔ ∃ s : P →ₗ[R] P →₀ R, Finsupp.total P P R id ∘ₗ s = .id := by
   simp_rw [projective_def, DFunLike.ext_iff, Function.LeftInverse, comp_apply, id_apply]
-#align module.projective_def' Module.projective_def'
 
 /-- A projective R-module has the property that maps from it lift along surjections. -/
 theorem projective_lifting_property [h : Projective R P] (f : M →ₗ[R] N) (g : P →ₗ[R] N)
@@ -113,7 +109,6 @@ theorem projective_lifting_property [h : Projective R P] (f : M →ₗ[R] N) (g 
   ext p
   conv_rhs => rw [← hs p]
   simp [φ, Finsupp.total_apply, Function.surjInv_eq hf, map_finsupp_sum]
-#align module.projective_lifting_property Module.projective_lifting_property
 
 /-- A module which satisfies the universal property is projective: If all surjections of
 `R`-modules `(P →₀ R) →ₗ[R] P` have `R`-linear left inverse maps, then `P` is
@@ -149,7 +144,7 @@ end Semiring
 
 section Ring
 
-variable {R : Type*} [Ring R] {P : Type*} [AddCommGroup P] [Module R P]
+variable {R : Type u} [Ring R] {P : Type v} [AddCommGroup P] [Module R P]
 
 /-- Free modules are projective. -/
 theorem Projective.of_basis {ι : Type*} (b : Basis ι R P) : Projective R P := by
@@ -160,11 +155,54 @@ theorem Projective.of_basis {ι : Type*} (b : Basis ι R P) : Projective R P := 
   simp only [b.constr_apply, mul_one, id, Finsupp.smul_single', Finsupp.total_single,
     map_finsupp_sum]
   exact b.total_repr m
-#align module.projective_of_basis Module.Projective.of_basis
 
 instance (priority := 100) Projective.of_free [Module.Free R P] : Module.Projective R P :=
   .of_basis <| Module.Free.chooseBasis R P
-#align module.projective_of_free Module.Projective.of_free
+
+variable {R₀ M N} [CommRing R₀] [Algebra R₀ R] [AddCommGroup M] [Module R₀ M] [Module R M]
+variable [IsScalarTower R₀ R M] [AddCommGroup N] [Module R₀ N]
+
+theorem Projective.of_split [Module.Projective R M]
+    (i : P →ₗ[R] M) (s : M →ₗ[R] P) (H : s.comp i = LinearMap.id) : Module.Projective R P := by
+  obtain ⟨g, hg⟩ := projective_lifting_property (Finsupp.total P P R id) s
+    (fun x ↦ ⟨Finsupp.single x 1, by simp⟩)
+  refine ⟨g.comp i, fun x ↦ ?_⟩
+  rw [LinearMap.comp_apply, ← LinearMap.comp_apply, hg,
+    ← LinearMap.comp_apply, H, LinearMap.id_apply]
+
+theorem Projective.of_equiv [Module.Projective R M]
+    (e : M ≃ₗ[R] P) : Module.Projective R P :=
+  Projective.of_split e.symm e.toLinearMap (by ext; simp)
+
+/-- A module is projective iff it is the direct summand of a free module. -/
+theorem Projective.iff_split : Module.Projective R P ↔
+    ∃ (M : Type max u v) (_ : AddCommGroup M) (_ : Module R M) (_ : Module.Free R M)
+      (i : P →ₗ[R] M) (s : M →ₗ[R] P), s.comp i = LinearMap.id :=
+  ⟨fun ⟨i, hi⟩ ↦ ⟨P →₀ R, _, _, inferInstance, i, Finsupp.total P P R id, LinearMap.ext hi⟩,
+    fun ⟨_, _, _, _, i, s, H⟩ ↦ Projective.of_split i s H⟩
+
+/-- A quotient of a projective module is projective iff it is a direct summand. -/
+theorem Projective.iff_split_of_projective [Module.Projective R M] (s : M →ₗ[R] P)
+    (hs : Function.Surjective s) :
+    Module.Projective R P ↔ ∃ i, s ∘ₗ i = LinearMap.id :=
+  ⟨fun _ ↦ projective_lifting_property _ _ hs, fun ⟨i, H⟩ ↦ Projective.of_split i s H⟩
+
+set_option maxSynthPendingDepth 2 in
+open TensorProduct in
+instance Projective.tensorProduct [hM : Module.Projective R M] [hN : Module.Projective R₀ N] :
+    Module.Projective R (M ⊗[R₀] N) := by
+  obtain ⟨sM, hsM⟩ := hM
+  obtain ⟨sN, hsN⟩ := hN
+  have : Module.Projective R (M ⊗[R₀] (N →₀ R₀)) := by
+    fapply Projective.of_split (R := R) (M := ((M →₀ R) ⊗[R₀] (N →₀ R₀)))
+    · exact (AlgebraTensorModule.map sM (LinearMap.id (R := R₀) (M := N →₀ R₀)))
+    · exact (AlgebraTensorModule.map
+        (Finsupp.total M M R id) (LinearMap.id (R := R₀) (M := N →₀ R₀)))
+    · ext; simp [hsM _]
+  fapply Projective.of_split (R := R) (M := (M ⊗[R₀] (N →₀ R₀)))
+  · exact (AlgebraTensorModule.map (LinearMap.id (R := R) (M := M)) sN)
+  · exact (AlgebraTensorModule.map (LinearMap.id (R := R) (M := M)) (Finsupp.total N N R₀ id))
+  · ext; simp [hsN _]
 
 end Ring
 
@@ -183,7 +221,6 @@ theorem Projective.of_lifting_property' {R : Type u} [Semiring R] {P : Type max 
     -- then `P` is projective.
     Projective R P :=
   .of_lifting_property'' (huniv · _)
-#align module.projective_of_lifting_property' Module.Projective.of_lifting_property'
 
 -- Porting note (#11215): TODO: generalize to `P : Type v`?
 /-- A variant of `of_lifting_property'` when we're working over a `[Ring R]`,
@@ -197,7 +234,6 @@ theorem Projective.of_lifting_property {R : Type u} [Ring R] {P : Type max u v} 
     -- then `P` is projective.
     Projective R P :=
   .of_lifting_property'' (huniv · _)
-#align module.projective_of_lifting_property Module.Projective.of_lifting_property
 
 end OfLiftingProperty
 

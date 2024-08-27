@@ -3,6 +3,7 @@ import Mathlib.Analysis.Calculus.Deriv.Basic
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 import Mathlib.Data.Complex.Exponential
 
+set_option linter.setOption false
 -- Remark: When the test is run by make/CI, this option is not set, so we set it here.
 set_option pp.unicode.fun true
 set_option autoImplicit true
@@ -26,7 +27,7 @@ error: value mismatch
 has value
   id
 but is expected to have value
-  fun z ↦ z.exp'.lim
+  fun z ↦ (Complex.exp' z).lim
 -/
 #guard_msgs in recall Complex.exp : ℂ → ℂ := id
 

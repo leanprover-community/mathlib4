@@ -6,8 +6,6 @@ Authors: Markus Himmel
 import Mathlib.CategoryTheory.Subobject.Limits
 import Mathlib.CategoryTheory.Abelian.Basic
 
-#align_import category_theory.abelian.subobject from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
-
 /-!
 # Equivalence between subobjects and quotients in an abelian category
 
@@ -36,7 +34,8 @@ def subobjectIsoSubobjectOp [Abelian C] (X : C) : Subobject X ≃o (Subobject (o
     intro A f hf
     dsimp only [OrderHom.comp_coe, Function.comp_apply, kernelOrderHom_coe, Subobject.lift_mk,
       cokernelOrderHom_coe, OrderHom.id_coe, id]
-    refine' Subobject.mk_eq_mk_of_comm _ _ ⟨_, _, Quiver.Hom.unop_inj _, Quiver.Hom.unop_inj _⟩ _
+    refine Subobject.mk_eq_mk_of_comm _ _
+        ⟨?_, ?_, Quiver.Hom.unop_inj ?_, Quiver.Hom.unop_inj ?_⟩ ?_
     · exact (Abelian.epiDesc f.unop _ (cokernel.condition (kernel.ι f.unop))).op
     · exact (cokernel.desc _ _ (kernel.condition f.unop)).op
     · rw [← cancel_epi (cokernel.π (kernel.ι f.unop))]
@@ -50,19 +49,17 @@ def subobjectIsoSubobjectOp [Abelian C] (X : C) : Subobject X ≃o (Subobject (o
     intro A f hf
     dsimp only [OrderHom.comp_coe, Function.comp_apply, cokernelOrderHom_coe, Subobject.lift_mk,
       kernelOrderHom_coe, OrderHom.id_coe, id, unop_op, Quiver.Hom.unop_op]
-    refine' Subobject.mk_eq_mk_of_comm _ _ ⟨_, _, _, _⟩ _
+    refine Subobject.mk_eq_mk_of_comm _ _ ⟨?_, ?_, ?_, ?_⟩ ?_
     · exact Abelian.monoLift f _ (kernel.condition (cokernel.π f))
     · exact kernel.lift _ _ (cokernel.condition f)
     · simp only [← cancel_mono (kernel.ι (cokernel.π f)), Category.assoc, image.fac, monoLift_comp,
         Category.id_comp]
     · simp only [← cancel_mono f, Category.assoc, monoLift_comp, image.fac, Category.id_comp]
     · simp only [monoLift_comp]
-#align category_theory.abelian.subobject_iso_subobject_op CategoryTheory.Abelian.subobjectIsoSubobjectOp
 
 /-- A well-powered abelian category is also well-copowered. -/
 instance wellPowered_opposite [Abelian C] [WellPowered C] : WellPowered Cᵒᵖ where
   subobject_small X :=
     (small_congr (subobjectIsoSubobjectOp (unop X)).toEquiv).1 inferInstance
-#align category_theory.abelian.well_powered_opposite CategoryTheory.Abelian.wellPowered_opposite
 
 end CategoryTheory.Abelian

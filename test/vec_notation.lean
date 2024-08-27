@@ -8,6 +8,7 @@ open Lean
 open Lean.Meta
 open Qq
 
+set_option linter.setOption false in
 set_option pp.unicode.fun false
 
 /-! These tests are testing `PiFin.toExpr` and fail with

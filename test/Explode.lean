@@ -24,6 +24,7 @@ info: true_iff : ∀ (p : Prop), (True ↔ p) = p
 -/
 #guard_msgs in #explode true_iff
 
+set_option linter.setOption false
 -- On command line, tests format functions with => rather than ↦ without this.
 set_option pp.unicode.fun true
 

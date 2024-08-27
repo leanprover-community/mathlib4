@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Set.Pointwise.Basic
 
@@ -19,8 +20,6 @@ independence and linear span of sets in a vector space but where the scalars are
 * `MulDissociated`/`AddDissociated`: Predicate for a set to be dissociated.
 * `Finset.mulSpan`/`Finset.addSpan`: Span of a finset.
 -/
-
-open scoped BigOperators Pointwise
 
 variable {α β : Type*} [CommGroup α] [CommGroup β]
 
@@ -40,7 +39,7 @@ def MulDissociated (s : Set α) : Prop := {t : Finset α | ↑t ⊆ s}.InjOn (�
 
 @[to_additive] lemma mulDissociated_iff_sum_eq_subsingleton :
     MulDissociated s ↔ ∀ a, {t : Finset α | ↑t ⊆ s ∧ ∏ x in t, x = a}.Subsingleton :=
-  ⟨fun hs _ _t ht _u hu ↦ hs ht.1 hu.1 $ ht.2.trans hu.2.symm,
+  ⟨fun hs _ _t ht _u hu ↦ hs ht.1 hu.1 <| ht.2.trans hu.2.symm,
     fun hs _t ht _u hu htu ↦ hs _ ⟨ht, htu⟩ ⟨hu, rfl⟩⟩
 
 @[to_additive] lemma MulDissociated.subset {t : Set α} (hst : s ⊆ t) (ht : MulDissociated t) :
@@ -69,11 +68,11 @@ lemma not_mulDissociated_iff_exists_disjoint :
     ⟨?_, fun ⟨t, u, ht, hu, _, htune, htusum⟩ ↦ ⟨t, ht, u, hu, htune, htusum⟩⟩
   rintro ⟨t, ht, u, hu, htu, h⟩
   refine ⟨t \ u, u \ t, ?_, ?_, disjoint_sdiff_sdiff, sdiff_ne_sdiff_iff.2 htu,
-    Finset.prod_sdiff_eq_prod_sdiff_iff.2 h⟩ <;> push_cast <;> exact (diff_subset _ _).trans ‹_›
+    Finset.prod_sdiff_eq_prod_sdiff_iff.2 h⟩ <;> push_cast <;> exact diff_subset.trans ‹_›
 
 @[to_additive (attr := simp)] lemma MulEquiv.mulDissociated_preimage (e : β ≃* α) :
     MulDissociated (e ⁻¹' s) ↔ MulDissociated s := by
-  simp [MulDissociated, InjOn, ← e.finsetCongr.forall_congr_left, ← e.apply_eq_iff_eq,
+  simp [MulDissociated, InjOn, ← e.finsetCongr.forall_congr_right, ← e.apply_eq_iff_eq,
     (Finset.map_injective _).eq_iff]
 
 @[to_additive (attr := simp)] lemma mulDissociated_inv : MulDissociated s⁻¹ ↔ MulDissociated s :=
@@ -134,17 +133,17 @@ lemma exists_subset_mulSpan_card_le_of_forall_mulDissociated
     exists_maximal (s.powerset.filter fun s' : Finset α ↦ MulDissociated (s' : Set α))
       ⟨∅, mem_filter.2 ⟨empty_mem_powerset _, by simp⟩⟩
   simp only [mem_filter, mem_powerset, lt_eq_subset, and_imp] at hs' hs'max
-  refine' ⟨s', hs'.1, hs _ hs'.1 hs'.2, fun a ha ↦ _⟩
+  refine ⟨s', hs'.1, hs _ hs'.1 hs'.2, fun a ha ↦ ?_⟩
   by_cases ha' : a ∈ s'
   · exact subset_mulSpan ha'
   obtain ⟨t, u, ht, hu, htu⟩ := not_mulDissociated_iff_exists_disjoint.1 fun h ↦
-    hs'max _ (insert_subset_iff.2 ⟨ha, hs'.1⟩) h $ ssubset_insert ha'
+    hs'max _ (insert_subset_iff.2 ⟨ha, hs'.1⟩) h <| ssubset_insert ha'
   by_cases hat : a ∈ t
   · have : a = (∏ b in u, b) / ∏ b in t.erase a, b := by
       rw [prod_erase_eq_div hat, htu.2.2, div_div_self']
     rw [this]
     exact prod_div_prod_mem_mulSpan
-      ((subset_insert_iff_of_not_mem $ disjoint_left.1 htu.1 hat).1 hu) (subset_insert_iff.1 ht)
+      ((subset_insert_iff_of_not_mem <| disjoint_left.1 htu.1 hat).1 hu) (subset_insert_iff.1 ht)
   rw [coe_subset, subset_insert_iff_of_not_mem hat] at ht
   by_cases hau : a ∈ u
   · have : a = (∏ b in t, b) / ∏ b in u.erase a, b := by

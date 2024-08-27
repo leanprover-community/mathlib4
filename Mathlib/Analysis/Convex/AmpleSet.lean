@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Floris van Doorn
 -/
 import Mathlib.Analysis.Convex.Normed
+import Mathlib.Analysis.NormedSpace.Connected
 import Mathlib.LinearAlgebra.AffineSpace.ContinuousAffineEquiv
 
 /-!
@@ -19,11 +20,9 @@ differential relations.
 - `AmpleSet.{pre}image`: being ample is invariant under continuous affine equivalences;
   `AmpleSet.{pre}image_iff` are "iff" versions of these
 - `AmpleSet.vadd`: in particular, ample-ness is invariant under affine translations
-
-## TODO
-`AmpleSet.of_one_lt_codim`: a linear subspace of codimension at least two has an ample complement.
-This is the crucial geometric ingredient which allows to apply convex integration
-to the theory of immersions in positive codimension.
+- `AmpleSet.of_one_lt_codim`: a linear subspace of codimension at least two has an ample complement.
+  This is the crucial geometric ingredient which allows to apply convex integration
+  to the theory of immersions in positive codimension.
 
 ## Implementation notes
 
@@ -112,5 +111,26 @@ theorem vadd [ContinuousAdd E] {s : Set E} (h : AmpleSet s) {y : E} :
 theorem vadd_iff [ContinuousAdd E] {s : Set E} {y : E} :
     AmpleSet (y +ᵥ s) ↔ AmpleSet s :=
   AmpleSet.image_iff (ContinuousAffineEquiv.constVAdd ℝ E y)
+
+/-! ## Subspaces of codimension at least two have ample complement -/
+section Codimension
+
+/-- Let `E` be a linear subspace in a real vector space.
+If `E` has codimension at least two, its complement is ample. -/
+theorem of_one_lt_codim [TopologicalAddGroup F] [ContinuousSMul ℝ F] {E : Submodule ℝ F}
+    (hcodim : 1 < Module.rank ℝ (F ⧸ E)) :
+    AmpleSet (Eᶜ : Set F) := fun x hx ↦ by
+  rw [E.connectedComponentIn_eq_self_of_one_lt_codim hcodim hx, eq_univ_iff_forall]
+  intro y
+  by_cases h : y ∈ E
+  · obtain ⟨z, hz⟩ : ∃ z, z ∉ E := by
+      rw [← not_forall, ← Submodule.eq_top_iff']
+      rintro rfl
+      simp [rank_zero_iff.2 inferInstance] at hcodim
+    refine segment_subset_convexHull ?_ ?_ (mem_segment_sub_add y z) <;>
+      simpa [sub_eq_add_neg, Submodule.add_mem_iff_right _ h]
+  · exact subset_convexHull ℝ (Eᶜ : Set F) h
+
+end Codimension
 
 end AmpleSet

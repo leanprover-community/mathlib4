@@ -5,8 +5,6 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 
-#align_import measure_theory.function.ae_measurable_order from "leanprover-community/mathlib"@"bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf"
-
 /-!
 # Measurability criterion for ennreal-valued functions
 
@@ -54,7 +52,7 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
   let u' : β → Set α := fun p => ⋂ q ∈ s ∩ Ioi p, u p q
   have u'_meas : ∀ i, MeasurableSet (u' i) := by
     intro i
-    exact MeasurableSet.biInter (s_count.mono (inter_subset_left _ _)) fun b _ => (huv i b).1
+    exact MeasurableSet.biInter (s_count.mono inter_subset_left) fun b _ => (huv i b).1
   let f' : α → β := fun x => ⨅ i : s, piecewise (u' i) (fun _ => (i : β)) (fun _ => (⊤ : β)) x
   have f'_meas : Measurable f' := by
     apply measurable_iInf
@@ -65,7 +63,7 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
       μ t ≤ ∑' (p : s) (q : ↥(s ∩ Ioi p)), μ (u' p ∩ v p q) := by
         refine (measure_iUnion_le _).trans ?_
         refine ENNReal.tsum_le_tsum fun p => ?_
-        haveI := (s_count.mono (inter_subset_left _ (Ioi ↑p))).to_subtype
+        haveI := (s_count.mono (s.inter_subset_left (t := Ioi ↑p))).to_subtype
         apply measure_iUnion_le
       _ ≤ ∑' (p : s) (q : ↥(s ∩ Ioi p)), μ (u p q ∩ v p q) := by
         gcongr with p q
@@ -105,7 +103,6 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
       have A : x ∈ u' r := mem_biInter fun i _ => (huv r i).2.2.1 xr
       simp only [A, rq, piecewise_eq_of_mem, Subtype.coe_mk]
   exact ⟨f', f'_meas, ff'⟩
-#align measure_theory.ae_measurable_of_exist_almost_disjoint_supersets MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets
 
 /-- If a function `f : α → ℝ≥0∞` is such that the level sets `{f < p}` and `{q < f}` have measurable
 supersets which are disjoint up to measure zero when `p` and `q` are finite numbers satisfying
@@ -125,4 +122,3 @@ theorem ENNReal.aemeasurable_of_exist_almost_disjoint_supersets {α : Type*} {m 
   lift p to ℝ≥0 using I p hp
   lift q to ℝ≥0 using I q hq
   exact h p q (ENNReal.coe_lt_coe.1 hpq)
-#align ennreal.ae_measurable_of_exist_almost_disjoint_supersets ENNReal.aemeasurable_of_exist_almost_disjoint_supersets

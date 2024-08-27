@@ -7,8 +7,6 @@ import Mathlib.Analysis.Convex.Body
 import Mathlib.Analysis.Convex.Measure
 import Mathlib.MeasureTheory.Group.FundamentalDomain
 
-#align_import measure_theory.group.geometry_of_numbers from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
-
 /-!
 # Geometry of numbers
 
@@ -55,8 +53,7 @@ theorem exists_pair_mem_lattice_not_disjoint_vadd [AddCommGroup L] [Countable L]
   exact ((fund.measure_eq_tsum _).trans (measure_iUnion₀
     (Pairwise.mono h fun i j hij => (hij.mono inf_le_left inf_le_left).aedisjoint)
       fun _ => (hS.vadd _).inter fund.nullMeasurableSet).symm).trans_le
-      (measure_mono <| Set.iUnion_subset fun _ => Set.inter_subset_right _ _)
-#align measure_theory.exists_pair_mem_lattice_not_disjoint_vadd MeasureTheory.exists_pair_mem_lattice_not_disjoint_vadd
+      (measure_mono <| Set.iUnion_subset fun _ => Set.inter_subset_right)
 
 /-- The **Minkowski Convex Body Theorem**. If `s` is a convex symmetric domain of `E` whose volume
 is large enough compared to the covolume of a lattice `L` of `E`, then it contains a non-zero
@@ -81,7 +78,6 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure [NormedAddC
     AddSubgroup.coe_sub] at hvw
   rw [← hvw, ← inv_smul_smul₀ (two_ne_zero' ℝ) (_ - _), smul_sub, sub_eq_add_neg, smul_add]
   refine h_conv hw (h_symm _ hv) ?_ ?_ ?_ <;> norm_num
-#align measure_theory.exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure MeasureTheory.exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure
 
 /-- The **Minkowski Convex Body Theorem for compact domain**. If `s` is a convex compact symmetric
 domain of `E` whose volume is large enough compared to the covolume of a lattice `L` of `E`, then it
@@ -114,7 +110,7 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure [NormedAddC
     erw [← Set.iInter_inter, K.iInter_smul_eq_self h_zero] at this
     · obtain ⟨x, hx⟩ := this
       exact ⟨⟨x, by aesop⟩, by aesop⟩
-    · exact (exists_seq_strictAnti_tendsto (0:ℝ≥0)).choose_spec.2.2
+    · exact (exists_seq_strictAnti_tendsto (0 : ℝ≥0)).choose_spec.2.2
   have h_clos : IsClosed ((L : Set E) \ {0}) := by
     rsuffices ⟨U, hU⟩ : ∃ U : Set E, IsOpen U ∧  U ∩ L = {0}
     · rw [sdiff_eq_sdiff_iff_inf_eq_inf (z := U).mpr (by simp [Set.inter_comm .. ▸ hU.2, zero_mem])]
@@ -125,7 +121,7 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure [NormedAddC
   · refine Set.inter_subset_inter_left _ (SetLike.coe_subset_coe.mpr ?_)
     refine ConvexBody.smul_le_of_le K h_zero ?_
     rw [add_le_add_iff_left]
-    exact le_of_lt <| (exists_seq_strictAnti_tendsto (0:ℝ≥0)).choose_spec.1 (Nat.lt.base n)
+    exact le_of_lt <| (exists_seq_strictAnti_tendsto (0 : ℝ≥0)).choose_spec.1 (Nat.lt.base n)
   · suffices μ F * 2 ^ finrank ℝ E < μ (S n : Set E) by
       have h_symm' : ∀ x ∈ S n, -x ∈ S n := by
         rintro _ ⟨y, hy, rfl⟩
@@ -139,6 +135,6 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure [NormedAddC
     refine (mul_lt_mul_right h_mes (ne_of_lt h_cpt.measure_lt_top)).mpr ?_
     rw [ofReal_pow (NNReal.coe_nonneg _)]
     refine one_lt_pow ?_ (ne_of_gt finrank_pos)
-    simp [(exists_seq_strictAnti_tendsto (0:ℝ≥0)).choose_spec.2.1 n]
+    simp [(exists_seq_strictAnti_tendsto (0 : ℝ≥0)).choose_spec.2.1 n]
 
 end MeasureTheory
