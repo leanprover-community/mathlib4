@@ -51,7 +51,7 @@ universe u v
 open Function
 
 -- Unless required to be `Type*`, all variables in this file are `Sort*`
-variable {α α₁ α₂ β β₁ β₂ γ γ₁ γ₂ δ ι ι' ι'' : Sort*}
+variable {α α₁ α₂ β β₁ β₂ γ γ₁ γ₂ δ : Sort*}
 
 namespace Equiv
 
@@ -744,7 +744,7 @@ end prodCongr
 
 namespace Perm
 
-variable [DecidableEq α₁] (a : α₁) (e : Perm β₁)
+variable {α₁ β₁ : Type*} [DecidableEq α₁] (a : α₁) (e : Perm β₁)
 
 /-- `prodExtendRight a e` extends `e : Perm β` to `Perm (α × β)` by sending `(a, b)` to
 `(a, e b)` and keeping the other `(a', b)` fixed. -/
@@ -804,7 +804,8 @@ open Sum
 /-- The type of dependent functions on a sum type `ι ⊕ ι'` is equivalent to the type of pairs of
 functions on `ι` and on `ι'`. This is a dependent version of `Equiv.sumArrowEquivProdArrow`. -/
 @[simps]
-def sumPiEquivProdPi (π : ι ⊕ ι' → Type*) : (∀ i, π i) ≃ (∀ i, π (inl i)) × ∀ i', π (inr i') where
+def sumPiEquivProdPi {ι ι'} (π : ι ⊕ ι' → Type*) :
+    (∀ i, π i) ≃ (∀ i, π (inl i)) × ∀ i', π (inr i') where
   toFun f := ⟨fun i => f (inl i), fun i' => f (inr i')⟩
   invFun g := Sum.rec g.1 g.2
   left_inv f := by ext (i | i) <;> rfl
@@ -813,7 +814,7 @@ def sumPiEquivProdPi (π : ι ⊕ ι' → Type*) : (∀ i, π i) ≃ (∀ i, π 
 /-- The equivalence between a product of two dependent functions types and a single dependent
 function type. Basically a symmetric version of `Equiv.sumPiEquivProdPi`. -/
 @[simps!]
-def prodPiEquivSumPi (π : ι → Type u) (π' : ι' → Type u) :
+def prodPiEquivSumPi {ι ι'} (π : ι → Type u) (π' : ι' → Type u) :
     ((∀ i, π i) × ∀ i', π' i') ≃ ∀ i, Sum.elim π π' i :=
   sumPiEquivProdPi (Sum.elim π π') |>.symm
 
@@ -825,22 +826,22 @@ def sumArrowEquivProdArrow (α β γ : Type*) : (α ⊕ β → γ) ≃ (α → �
     rfl⟩
 
 @[simp]
-theorem sumArrowEquivProdArrow_apply_fst (f : α ⊕ β → γ) (a : α) :
+theorem sumArrowEquivProdArrow_apply_fst {α β γ} (f : α ⊕ β → γ) (a : α) :
     (sumArrowEquivProdArrow α β γ f).1 a = f (inl a) :=
   rfl
 
 @[simp]
-theorem sumArrowEquivProdArrow_apply_snd (f : α ⊕ β → γ) (b : β) :
+theorem sumArrowEquivProdArrow_apply_snd {α β γ} (f : α ⊕ β → γ) (b : β) :
     (sumArrowEquivProdArrow α β γ f).2 b = f (inr b) :=
   rfl
 
 @[simp]
-theorem sumArrowEquivProdArrow_symm_apply_inl (f : α → γ) (g : β → γ) (a : α) :
+theorem sumArrowEquivProdArrow_symm_apply_inl {α β γ} (f : α → γ) (g : β → γ) (a : α) :
     ((sumArrowEquivProdArrow α β γ).symm (f, g)) (inl a) = f a :=
   rfl
 
 @[simp]
-theorem sumArrowEquivProdArrow_symm_apply_inr (f : α → γ) (g : β → γ) (b : β) :
+theorem sumArrowEquivProdArrow_symm_apply_inr {α β γ} (f : α → γ) (g : β → γ) (b : β) :
     ((sumArrowEquivProdArrow α β γ).symm (f, g)) (inr b) = g b :=
   rfl
 
@@ -851,22 +852,22 @@ def sumProdDistrib (α β γ) : (α ⊕ β) × γ ≃ α × γ ⊕ β × γ :=
       rintro ⟨_ | _, _⟩ <;> rfl, by rintro (⟨_, _⟩ | ⟨_, _⟩) <;> rfl⟩
 
 @[simp]
-theorem sumProdDistrib_apply_left (a : α) (c : γ) :
+theorem sumProdDistrib_apply_left {α β γ} (a : α) (c : γ) :
     sumProdDistrib α β γ (Sum.inl a, c) = Sum.inl (a, c) :=
   rfl
 
 @[simp]
-theorem sumProdDistrib_apply_right (b : β) (c : γ) :
+theorem sumProdDistrib_apply_right {α β γ} (b : β) (c : γ) :
     sumProdDistrib α β γ (Sum.inr b, c) = Sum.inr (b, c) :=
   rfl
 
 @[simp]
-theorem sumProdDistrib_symm_apply_left (a : α × γ) :
+theorem sumProdDistrib_symm_apply_left {α β γ} (a : α × γ) :
     (sumProdDistrib α β γ).symm (inl a) = (inl a.1, a.2) :=
   rfl
 
 @[simp]
-theorem sumProdDistrib_symm_apply_right (b : β × γ) :
+theorem sumProdDistrib_symm_apply_right {α β γ} (b : β × γ) :
     (sumProdDistrib α β γ).symm (inr b) = (inr b.1, b.2) :=
   rfl
 
@@ -878,28 +879,28 @@ def prodSumDistrib (α β γ : Type*) : α × (β ⊕ γ) ≃ (α × β) ⊕ (α
     _ ≃ (α × β) ⊕ (α × γ) := sumCongr (prodComm _ _) (prodComm _ _)
 
 @[simp]
-theorem prodSumDistrib_apply_left (a : α) (b : β) :
+theorem prodSumDistrib_apply_left {α β γ} (a : α) (b : β) :
     prodSumDistrib α β γ (a, Sum.inl b) = Sum.inl (a, b) :=
   rfl
 
 @[simp]
-theorem prodSumDistrib_apply_right (a : α) (c : γ) :
+theorem prodSumDistrib_apply_right {α β γ} (a : α) (c : γ) :
     prodSumDistrib α β γ (a, Sum.inr c) = Sum.inr (a, c) :=
   rfl
 
 @[simp]
-theorem prodSumDistrib_symm_apply_left (a : α × β) :
+theorem prodSumDistrib_symm_apply_left {α β γ} (a : α × β) :
     (prodSumDistrib α β γ).symm (inl a) = (a.1, inl a.2) :=
   rfl
 
 @[simp]
-theorem prodSumDistrib_symm_apply_right (a : α × γ) :
+theorem prodSumDistrib_symm_apply_right {α β γ} (a : α × γ) :
     (prodSumDistrib α β γ).symm (inr a) = (a.1, inr a.2) :=
   rfl
 
 /-- An indexed sum of disjoint sums of types is equivalent to the sum of the indexed sums. -/
 @[simps]
-def sigmaSumDistrib (α β : ι → Type*) :
+def sigmaSumDistrib {ι} (α β : ι → Type*) :
     (Σ i, α i ⊕ β i) ≃ (Σ i, α i) ⊕ (Σ i, β i) :=
   ⟨fun p => p.2.map (Sigma.mk p.1) (Sigma.mk p.1),
     Sum.elim (Sigma.map id fun _ => Sum.inl) (Sigma.map id fun _ => Sum.inr), fun p => by
@@ -908,7 +909,7 @@ def sigmaSumDistrib (α β : ι → Type*) :
 /-- The product of an indexed sum of types (formally, a `Sigma`-type `Σ i, α i`) by a type `β` is
 equivalent to the sum of products `Σ i, (α i × β)`. -/
 @[simps apply symm_apply]
-def sigmaProdDistrib (α : ι → Type*) (β : Type*) : (Σ i, α i) × β ≃ Σ i, α i × β :=
+def sigmaProdDistrib {ι} (α : ι → Type*) (β : Type*) : (Σ i, α i) × β ≃ Σ i, α i × β :=
   ⟨fun p => ⟨p.1.1, (p.1.2, p.2)⟩, fun p => (⟨p.1, p.2.1⟩, p.2.2), fun p => by
     rcases p with ⟨⟨_, _⟩, _⟩
     rfl, fun p => by
@@ -967,7 +968,7 @@ def intEquivNatSumNat : ℤ ≃ ℕ ⊕ ℕ where
 end
 
 /-- An equivalence between `α` and `β` generates an equivalence between `List α` and `List β`. -/
-def listEquivOfEquiv (e : α ≃ β) : List α ≃ List β where
+def listEquivOfEquiv {α β} (e : α ≃ β) : List α ≃ List β where
   toFun := List.map e
   invFun := List.map e.symm
   left_inv l := by rw [List.map_map, e.symm_comp_self, List.map_id]
@@ -1631,13 +1632,13 @@ lemma piCongrLeft_apply_eq_cast {P : β → Sort v} {e : α ≃ β}
     piCongrLeft P e f b = cast (congr_arg P (e.apply_symm_apply b)) (f (e.symm b)) :=
   Eq.rec_eq_cast _ _
 
-theorem piCongrLeft_sum_inl (π : ι'' → Type*) (e : ι ⊕ ι' ≃ ι'') (f : ∀ i, π (e (inl i)))
+theorem piCongrLeft_sum_inl {ι ι' ι''} (π : ι'' → Type*) (e : ι ⊕ ι' ≃ ι'') (f : ∀ i, π (e (inl i)))
     (g : ∀ i, π (e (inr i))) (i : ι) :
     piCongrLeft π e (sumPiEquivProdPi (fun x => π (e x)) |>.symm (f, g)) (e (inl i)) = f i := by
   simp_rw [piCongrLeft_apply_eq_cast, sumPiEquivProdPi_symm_apply,
     sum_rec_congr _ _ _ (e.symm_apply_apply (inl i)), cast_cast, cast_eq]
 
-theorem piCongrLeft_sum_inr (π : ι'' → Type*) (e : ι ⊕ ι' ≃ ι'') (f : ∀ i, π (e (inl i)))
+theorem piCongrLeft_sum_inr {ι ι' ι''} (π : ι'' → Type*) (e : ι ⊕ ι' ≃ ι'') (f : ∀ i, π (e (inl i)))
     (g : ∀ i, π (e (inr i))) (j : ι') :
     piCongrLeft π e (sumPiEquivProdPi (fun x => π (e x)) |>.symm (f, g)) (e (inr j)) = g j := by
   simp_rw [piCongrLeft_apply_eq_cast, sumPiEquivProdPi_symm_apply,
