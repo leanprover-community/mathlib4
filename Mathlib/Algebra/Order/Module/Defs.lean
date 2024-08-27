@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Order.Field.Defs
-import Mathlib.Algebra.Order.Module.Synonym
+import Mathlib.Algebra.Order.GroupWithZero.Action.Synonym
 import Mathlib.Tactic.Positivity.Core
 
 /-!
