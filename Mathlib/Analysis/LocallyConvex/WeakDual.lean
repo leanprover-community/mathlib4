@@ -141,10 +141,8 @@ instance WeakBilin.locallyConvexSpace {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} :
     LocallyConvexSpace ℝ (WeakBilin B) :=
   B.weakBilin_withSeminorms.toLocallyConvexSpace
 
-variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
-
-def dual_of_separating_family (h_sep : ∀ x : E, x ≠ 0 → (∃ f : F, B x f ≠ 0)) :
-    (WeakBilin B →L[𝕜] 𝕜) ≃L[𝕜] F := by
+def dual_of_separating_family {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜}
+  (h_sep : ∀ x : E, x ≠ 0 → (∃ f : F, B x f ≠ 0)) : (WeakBilin B →L[𝕜] 𝕜) ≃L[𝕜] F := by
   sorry
 
 end LocallyConvex
