@@ -127,6 +127,7 @@ initialize ignoreTacticKindsRef : IO.Ref NameHashSet ←
     |>.insert `Batteries.Tactic.seq_focus
     |>.insert `Mathlib.Tactic.Hint.registerHintStx
     |>.insert `Mathlib.Tactic.LinearCombination.linearCombination
+    |>.insert `Mathlib.Tactic.LinearCombination'.linearCombination'
     -- the following `SyntaxNodeKind`s play a role in silencing `test`s
     |>.insert ``Lean.Parser.Tactic.failIfSuccess
     |>.insert `Mathlib.Tactic.successIfFailWithMsg
