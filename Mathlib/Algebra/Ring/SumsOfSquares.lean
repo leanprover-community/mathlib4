@@ -125,13 +125,12 @@ theorem isSumSq_iff_finsum [AddCommMonoid R] [Mul R] (a : R) :
   rw [this];
   apply Iff.intro
   case mp  =>
-    intro hyp;
-    obtain ⟨α, I, y, y_cl, eq⟩ := exists_finset_sum_of_mem_closure hyp;
-    exact ⟨α, I, (Classical.epsilon <| fun r => y · = r * r),
-      by simpa [eq] using Finset.sum_equiv (Equiv.refl α) (by simp)
-                          (Classical.epsilon_spec <| y_cl · ·)⟩
+    intro hyp
+    obtain ⟨α, I, y, y_cl, eq⟩ := exists_finset_sum_of_mem_closure hyp
+    choose! x hx using y_cl
+    exact ⟨α, I, x, by rw [← eq]; exact Finset.sum_equiv (by rfl) (by simp) hx⟩
   case mpr =>
-    intro hyp; obtain ⟨α,I,y,eq⟩ := hyp;
+    rintro ⟨α,I,y,eq⟩
     simpa [eq] using sum_mem (closure {x : R | IsSquare x})
       (subset_closure <| (by simp : (∀ i ∈ I, y i * y i ∈ _)) · ·)
 
@@ -139,10 +138,10 @@ theorem isSumSq_iff_finsum [AddCommMonoid R] [Mul R] (a : R) :
 if `S1` and `S2` are sums of squares, then `S1 * S2` is a sum of squares. -/
 theorem IsSumSq.mul [NonUnitalCommSemiring R] {S1 S2 : R}
     (h1 : IsSumSq S1) (h2 : IsSumSq S2) : IsSumSq (S1 * S2) := by
-  rw [isSumSq_iff_finsum] at *;
-  obtain ⟨α,I,x,hx⟩ := h1; obtain ⟨β,J,y,hy⟩ := h2;
-  rw [hx, hy, Finset.sum_mul_sum, ← Finset.sum_product'];
-  refine ⟨_, I ×ˢ J, fun ⟨i,j⟩ => x i * y j, ?_⟩;
+  rw [isSumSq_iff_finsum] at *
+  obtain ⟨α,I,x,hx⟩ := h1; obtain ⟨β,J,y,hy⟩ := h2
+  rw [hx, hy, Finset.sum_mul_sum, ← Finset.sum_product']
+  refine ⟨_, I ×ˢ J, fun ⟨i,j⟩ => x i * y j, ?_⟩
   simp [mul_assoc, mul_left_comm]
 
 namespace Subsemiring
