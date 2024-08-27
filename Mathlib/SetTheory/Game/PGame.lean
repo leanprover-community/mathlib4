@@ -1590,36 +1590,20 @@ between them. -/
 def toRightMovesAdd {x y : PGame} : x.RightMoves ⊕ y.RightMoves ≃ (x + y).RightMoves :=
   Equiv.cast (rightMoves_add x y).symm
 
-theorem add_moveLeft {x y : PGame} {i} :
-    (x + y).moveLeft i = (toLeftMovesAdd.symm i).rec (x.moveLeft · + y) (x + y.moveLeft ·) := by
-  cases x
-  cases y
-  rfl
-
-theorem add_moveRight {x y : PGame} {i} :
-    (x + y).moveRight i = (toRightMovesAdd.symm i).rec (x.moveRight · + y) (x + y.moveRight ·) := by
-  cases x
-  cases y
-  rfl
-
-theorem add_moveLeft' {x y : PGame} {i} :
-    (x + y).moveLeft (toLeftMovesAdd i) = i.rec (x.moveLeft · + y) (x + y.moveLeft ·) := by
-  simp [add_moveLeft]
-
-theorem add_moveRight' {x y : PGame} {i} :
-    (x + y).moveRight (toRightMovesAdd i) = i.rec (x.moveRight · + y) (x + y.moveRight ·) := by
-  simp [add_moveRight]
-
+@[simp]
 theorem mk_add_moveLeft_inl {xl xr yl yr} {xL xR yL yR} {i} :
     (mk xl xr xL xR + mk yl yr yL yR).moveLeft (Sum.inl i) =
       (mk xl xr xL xR).moveLeft i + mk yl yr yL yR :=
   rfl
 
 @[simp]
-theorem add_moveLeft_inl {x y : PGame} {i} :
-    (x + y).moveLeft (toLeftMovesAdd (Sum.inl i)) = x.moveLeft i + y :=
-  add_moveLeft'
+theorem add_moveLeft_inl {x : PGame} (y : PGame) (i) :
+    (x + y).moveLeft (toLeftMovesAdd (Sum.inl i)) = x.moveLeft i + y := by
+  cases x
+  cases y
+  rfl
 
+@[simp]
 theorem mk_add_moveRight_inl {xl xr yl yr} {xL xR yL yR} {i} :
     (mk xl xr xL xR + mk yl yr yL yR).moveRight (Sum.inl i) =
       (mk xl xr xL xR).moveRight i + mk yl yr yL yR :=
@@ -1627,19 +1611,25 @@ theorem mk_add_moveRight_inl {xl xr yl yr} {xL xR yL yR} {i} :
 
 @[simp]
 theorem add_moveRight_inl {x : PGame} (y : PGame) (i) :
-    (x + y).moveRight (toRightMovesAdd (Sum.inl i)) = x.moveRight i + y :=
-  add_moveRight'
+    (x + y).moveRight (toRightMovesAdd (Sum.inl i)) = x.moveRight i + y := by
+  cases x
+  cases y
+  rfl
 
+@[simp]
 theorem mk_add_moveLeft_inr {xl xr yl yr} {xL xR yL yR} {i} :
     (mk xl xr xL xR + mk yl yr yL yR).moveLeft (Sum.inr i) =
       mk xl xr xL xR + (mk yl yr yL yR).moveLeft i :=
   rfl
 
 @[simp]
-theorem add_moveLeft_inr {x y : PGame} {i} :
-    (x + y).moveLeft (toLeftMovesAdd (Sum.inr i)) = x + y.moveLeft i :=
-  add_moveLeft'
+theorem add_moveLeft_inr (x : PGame) {y : PGame} (i) :
+    (x + y).moveLeft (toLeftMovesAdd (Sum.inr i)) = x + y.moveLeft i := by
+  cases x
+  cases y
+  rfl
 
+@[simp]
 theorem mk_add_moveRight_inr {xl xr yl yr} {xL xR yL yR} {i} :
     (mk xl xr xL xR + mk yl yr yL yR).moveRight (Sum.inr i) =
       mk xl xr xL xR + (mk yl yr yL yR).moveRight i :=
@@ -1647,8 +1637,10 @@ theorem mk_add_moveRight_inr {xl xr yl yr} {xL xR yL yR} {i} :
 
 @[simp]
 theorem add_moveRight_inr (x : PGame) {y : PGame} (i) :
-    (x + y).moveRight (toRightMovesAdd (Sum.inr i)) = x + y.moveRight i :=
-  add_moveRight'
+    (x + y).moveRight (toRightMovesAdd (Sum.inr i)) = x + y.moveRight i := by
+  cases x
+  cases y
+  rfl
 
 theorem leftMoves_add_cases {x y : PGame} (k) {P : (x + y).LeftMoves → Prop}
     (hl : ∀ i, P <| toLeftMovesAdd (Sum.inl i)) (hr : ∀ i, P <| toLeftMovesAdd (Sum.inr i)) :
@@ -1864,12 +1856,12 @@ theorem neg_add_cancel_le_zero : ∀ x : PGame, -x + x ≤ 0
       · -- If Left played in -x, Right responds with the same move in x.
         refine ⟨@toRightMovesAdd _ ⟨_, _, _, _⟩ (Sum.inr i), ?_⟩
         convert @neg_add_cancel_le_zero (xR i)
-        apply add_moveRight'
+        apply add_moveRight_inr
       · -- If Left in x, Right responds with the same move in -x.
         dsimp
         refine ⟨@toRightMovesAdd ⟨_, _, _, _⟩ _ (Sum.inl i), ?_⟩
         convert @neg_add_cancel_le_zero (xL i)
-        apply add_moveRight'
+        apply add_moveRight_inl
 
 theorem zero_le_neg_add_cancel (x : PGame) : 0 ≤ -x + x := by
   rw [← neg_le_neg_iff, neg_zero]
@@ -1899,13 +1891,13 @@ private theorem add_le_add_right' : ∀ {x y z : PGame}, x ≤ y → x + z ≤ y
       · exact Or.inl ⟨toLeftMovesAdd (Sum.inl i'), add_le_add_right' ih⟩
       · refine Or.inr ⟨toRightMovesAdd (Sum.inl j), ?_⟩
         convert add_le_add_right' jh
-        apply add_moveRight'
+        apply add_moveRight_inl
     · exact Or.inl ⟨@toLeftMovesAdd _ ⟨_, _, _, _⟩ (Sum.inr i), add_le_add_right' h⟩
     · rw [le_def] at h
       rcases h.right i with (⟨i, ih⟩ | ⟨j', jh⟩)
       · refine Or.inl ⟨toLeftMovesAdd (Sum.inl i), ?_⟩
         convert add_le_add_right' ih
-        apply add_moveLeft'
+        apply add_moveLeft_inl
       · exact Or.inr ⟨toRightMovesAdd (Sum.inl j'), add_le_add_right' jh⟩
     · exact
         Or.inr ⟨@toRightMovesAdd _ ⟨_, _, _, _⟩ (Sum.inr i), add_le_add_right' h⟩
