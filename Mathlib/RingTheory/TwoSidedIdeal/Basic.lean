@@ -244,7 +244,5 @@ end Ring
 
 end TwoSidedIdeal
 
-instance {R} [NonUnitalNonAssocRing R] : NonUnitalSubsemiringClass (TwoSidedIdeal R) R where
+instance {R} [NonUnitalNonAssocRing R] : NonUnitalSubringClass (TwoSidedIdeal R) R where
   mul_mem _ hb := TwoSidedIdeal.mul_mem_left _ _ _ hb
-
-instance {R} [Ring R] : NonUnitalSubringClass (TwoSidedIdeal R) R where
