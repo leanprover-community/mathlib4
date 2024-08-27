@@ -1088,8 +1088,10 @@ theorem bddAbove_range {ι : Type u} (f : ι → Ordinal.{max u v}) : BddAbove (
 protected theorem le_iSup {ι : Type u} (f : ι → Ordinal.{max u v}) : ∀ i, f i ≤ iSup f :=
   le_ciSup (bddAbove_range f)
 
+set_option linter.deprecated false in
 @[deprecated Ordinal.le_iSup (since := "2024-08-27")]
-protected alias le_sup := Ordinal.le_iSup
+protected theorem le_sup {ι : Type u} (f : ι → Ordinal.{max u v}) : ∀ i, f i ≤ sup f :=
+  Ordinal.le_iSup f
 
 /-- `iSup_le_iff'` whenever the outputs live in a higher universe than the inputs. -/
 protected theorem iSup_le_iff {ι : Type u} {f : ι → Ordinal.{max u v}} {a} :
@@ -1104,8 +1106,11 @@ protected theorem iSup_le {ι : Type u} {f : ι → Ordinal.{max u v}} {a} :
     (∀ i, f i ≤ a) → iSup f ≤ a :=
   ciSup_le'
 
+set_option linter.deprecated false in
 @[deprecated Ordinal.iSup_le (since := "2024-08-27")]
-protected alias sup_le := Ordinal.iSup_le
+protected theorem sup_le {ι : Type u} {f : ι → Ordinal.{max u v}} {a} :
+    (∀ i, f i ≤ a) → sup f ≤ a :=
+  Ordinal.iSup_le
 
 -- TODO: generalize to conditionally complete lattices.
 protected theorem lt_iSup {ι : Type u} {f : ι → Ordinal.{max u v}} {a} :
@@ -1113,8 +1118,11 @@ protected theorem lt_iSup {ι : Type u} {f : ι → Ordinal.{max u v}} {a} :
   rw [← not_iff_not]
   simpa using Ordinal.iSup_le_iff
 
+set_option linter.deprecated false in
 @[deprecated Ordinal.lt_iSup (since := "2024-08-27")]
-protected alias lt_sup := Ordinal.lt_iSup
+protected theorem lt_sup {ι : Type u} {f : ι → Ordinal.{max u v}} {a} :
+    a < sup f ↔ ∃ i, a < f i :=
+  Ordinal.lt_iSup
 
 -- TODO: generalize to Sup, take `bddAbove` as an assumption.
 
@@ -1122,8 +1130,11 @@ theorem ne_iSup_iff_lt_iSup {ι : Type u} {f : ι → Ordinal.{max u v}} :
     (∀ i, f i ≠ iSup f) ↔ ∀ i, f i < iSup f :=
   ⟨fun hf _ => lt_of_le_of_ne (Ordinal.le_iSup _ _) (hf _), fun hf _ => ne_of_lt (hf _)⟩
 
-@[deprecated (since := "2024-08-27")]
-alias ne_sup_iff_lt_sup := ne_iSup_iff_lt_iSup
+set_option linter.deprecated false in
+@[deprecated ne_iSup_iff_lt_iSup (since := "2024-08-27")]
+theorem ne_sup_iff_lt_sup {ι : Type u} {f : ι → Ordinal.{max u v}} :
+    (∀ i, f i ≠ iSup f) ↔ ∀ i, f i < iSup f :=
+  ne_iSup_iff_lt_iSup
 
 -- TODO: state in terms of `IsSuccLimit`.
 
@@ -1133,8 +1144,11 @@ theorem succ_lt_iSup_of_ne_iSup {ι : Type u} {f : ι → Ordinal.{max u v}}
   exact hao.not_le (Ordinal.iSup_le fun i => le_of_lt_succ <|
     (lt_of_le_of_ne (Ordinal.le_iSup _ _) (hf i)).trans_le hoa)
 
+set_option linter.deprecated false in
 @[deprecated succ_lt_iSup_of_ne_iSup (since := "2024-08-27")]
-alias sup_not_succ_of_ne_sup := succ_lt_iSup_of_ne_iSup
+theorem sup_not_succ_of_ne_sup {ι : Type u} {f : ι → Ordinal.{max u v}}
+    (hf : ∀ i, f i ≠ sup f) {a} (hao : a < iSup f) : succ a < sup f :=
+  succ_lt_iSup_of_ne_iSup hf hao
 
 -- TODO: generalize to conditionally complete linear orders.
 theorem iSup_eq_zero_iff {ι : Type u} {f : ι → Ordinal.{max u v}} :
@@ -1145,7 +1159,7 @@ theorem iSup_eq_zero_iff {ι : Type u} {f : ι → Ordinal.{max u v}} :
   rw [← Ordinal.le_zero, ← h]
   exact Ordinal.le_iSup f i
 
--- TODO: generalize universes
+-- TODO: generalize universes, make sSup version.
 theorem IsNormal.iSup {f : Ordinal.{max u v} → Ordinal.{max u w}} (H : IsNormal f) {ι : Type u}
     (g : ι → Ordinal.{max u v}) [Nonempty ι] : f (⨆ i, g i) = ⨆ i, f (g i) := by
   apply eq_of_forall_ge_iff
@@ -1157,19 +1171,25 @@ theorem IsNormal.iSup {f : Ordinal.{max u v} → Ordinal.{max u w}} (H : IsNorma
     rw [Ordinal.iSup_le_iff]
     simp
 
+set_option linter.deprecated false in
 @[deprecated IsNormal.iSup (since := "2024-08-27")]
-alias IsNormal.sup := IsNormal.iSup
+theorem IsNormal.sup {f : Ordinal.{max u v} → Ordinal.{max u w}} (H : IsNormal f) {ι : Type u}
+    (g : ι → Ordinal.{max u v}) [Nonempty ι] : f (sup g) = sup (f ∘ g) :=
+  H.iSup g
 
+set_option linter.deprecated false in
 @[deprecated ciSup_of_empty (since := "2024-08-27")]
-theorem sup_of_empty {ι} [IsEmpty ι] (f : ι → Ordinal) : iSup f = 0 :=
+theorem sup_of_empty {ι} [IsEmpty ι] (f : ι → Ordinal) : sup f = 0 :=
   ciSup_of_empty f
 
+set_option linter.deprecated false in
 @[deprecated ciSup_const (since := "2024-08-27")]
-theorem sup_const {ι} [Nonempty ι] (o : Ordinal) : ⨆ _ : ι, o = o :=
+theorem sup_const {ι} [Nonempty ι] (o : Ordinal) : sup (fun _ : ι => o) = o :=
   ciSup_const
 
+set_option linter.deprecated false in
 @[deprecated ciSup_unique (since := "2024-08-27")]
-theorem sup_unique {ι} [Unique ι] (f : ι → Ordinal) : iSup f = f default :=
+theorem sup_unique {ι} [Unique ι] (f : ι → Ordinal) : sup f = f default :=
   ciSup_unique
 
 protected theorem sSup_le_sSup {s t : Set Ordinal} (hst : s ⊆ t) (ht : BddAbove t) :
@@ -1178,19 +1198,24 @@ protected theorem sSup_le_sSup {s t : Set Ordinal} (hst : s ⊆ t) (ht : BddAbov
   · simp
   · exact csSup_le_csSup ht h hst
 
+set_option linter.deprecated false in
 @[deprecated Ordinal.sSup_le_sSup (since := "2024-08-27")]
 theorem sup_le_of_range_subset {ι : Type u} {ι' : Type v}
-    {f : ι → Ordinal.{max v w}} {g : ι' → Ordinal.{max v w}}
-    (h : Set.range f ⊆ Set.range g) : iSup f ≤ iSup g :=
-  Ordinal.sSup_le_sSup h (bddAbove_range _)
+    {f : ι → Ordinal.{max u v w}} {g : ι' → Ordinal.{max u v w}}
+    (h : Set.range f ⊆ Set.range g) : sup.{u, max v w} f ≤ sup.{v, max u w} g :=
+  Ordinal.sSup_le_sSup h (bddAbove_range.{v, max u w} _)
 
 -- TODO: generalize or remove
 theorem iSup_eq_of_range_eq {ι ι'} {f : ι → Ordinal} {g : ι' → Ordinal}
     (h : Set.range f = Set.range g) : iSup f = iSup g :=
   congr_arg _ h
 
+set_option linter.deprecated false in
 @[deprecated iSup_eq_of_range_eq (since := "2024-08-27")]
-alias sup_eq_of_range_eq := iSup_eq_of_range_eq
+theorem sup_eq_of_range_eq {ι : Type u} {ι' : Type v}
+    {f : ι → Ordinal.{max u v w}} {g : ι' → Ordinal.{max u v w}}
+    (h : Set.range f = Set.range g) : sup.{u, max v w} f = sup.{v, max u w} g :=
+  Ordinal.iSup_eq_of_range_eq h
 
 -- TODO: generalize to conditionally complete lattices
 theorem iSup_sum {α : Type u} {β : Type v} (f : α ⊕ β → Ordinal.{max u v w}) :
@@ -1204,8 +1229,12 @@ theorem iSup_sum {α : Type u} {β : Type v} (f : α ⊕ β → Ordinal.{max u v
     rintro i ⟨a, rfl⟩
     apply mem_range_self
 
+set_option linter.deprecated false in
 @[deprecated iSup_sum (since := "2024-08-27")]
-alias sup_sum := iSup_sum
+theorem sup_sum {α : Type u} {β : Type v} (f : α ⊕ β → Ordinal.{max u v w}) :
+    sup.{max u v, w} f =
+      max (sup.{u, max v w} fun a => f (Sum.inl a)) (sup.{v, max u w} fun b => f (Sum.inr b)) :=
+  iSup_sum f
 
 theorem unbounded_range_of_sup_ge {α β : Type u} (r : α → α → Prop) [IsWellOrder α r] (f : β → α)
     (h : type r ≤ ⨆ i, typein r (f i)) : Unbounded r (range f) :=
@@ -1254,10 +1283,15 @@ theorem iSup_ord {ι} {f : ι → Cardinal} (hf : BddAbove (range f)) :
   convert sSup_ord hf
   exact range_comp ord f
 
-private theorem iSup_le_iSup {ι ι' : Type u} (r : ι → ι → Prop) (r' : ι' → ι' → Prop)
+-- TODO: remove `bsup` in favor of `iSup` in a future refactor.
+
+section bsup
+set_option linter.deprecated false
+
+private theorem sup_le_sup {ι ι' : Type u} (r : ι → ι → Prop) (r' : ι' → ι' → Prop)
     [IsWellOrder ι r] [IsWellOrder ι' r'] {o} (ho : type r = o) (ho' : type r' = o)
     (f : ∀ a < o, Ordinal.{max u v}) :
-    iSup (familyOfBFamily' r ho f) ≤ iSup (familyOfBFamily' r' ho' f) :=
+    sup (familyOfBFamily' r ho f) ≤ sup (familyOfBFamily' r' ho' f) :=
   Ordinal.iSup_le fun i => by
     cases'
       typein_surj r'
@@ -1268,17 +1302,12 @@ private theorem iSup_le_iSup {ι ι' : Type u} (r : ι → ι → Prop) (r' : ι
     simp_rw [familyOfBFamily', ← hj]
     apply Ordinal.le_iSup
 
-theorem iSup_eq_iSup {ι ι' : Type u} (r : ι → ι → Prop) (r' : ι' → ι' → Prop) [IsWellOrder ι r]
+theorem sup_eq_sup {ι ι' : Type u} (r : ι → ι → Prop) (r' : ι' → ι' → Prop) [IsWellOrder ι r]
     [IsWellOrder ι' r'] {o : Ordinal.{u}} (ho : type r = o) (ho' : type r' = o)
     (f : ∀ a < o, Ordinal.{max u v}) :
-    iSup (familyOfBFamily' r ho f) = iSup (familyOfBFamily' r' ho' f) := by
+    sup (familyOfBFamily' r ho f) = sup (familyOfBFamily' r' ho' f) := by
   apply iSup_eq_of_range_eq
   simp
-
-@[deprecated iSup_eq_iSup (since := "2024-08-27")]
-alias sup_eq_sup := iSup_eq_iSup
-
--- TODO: remove `bsup` in favor of `iSup` in a future refactor.
 
 /-- The supremum of a family of ordinals indexed by the set of ordinals less than some
     `o : Ordinal.{u}`. This is a special case of `sup` over the family provided by
@@ -1291,8 +1320,8 @@ theorem sup_eq_bsup {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) :
   rfl
 
 theorem sup_eq_bsup' {o : Ordinal.{u}} {ι} (r : ι → ι → Prop) [IsWellOrder ι r] (ho : type r = o)
-    (f : ∀ a < o, Ordinal.{max u v}) : iSup (familyOfBFamily' r ho f) = bsup.{_, v} o f :=
-  iSup_eq_iSup r _ ho _ f
+    (f : ∀ a < o, Ordinal.{max u v}) : sup (familyOfBFamily' r ho f) = bsup.{_, v} o f :=
+  sup_eq_sup r _ ho _ f
 
 @[simp, nolint simpNF] -- Porting note (#10959): simp cannot prove this
 theorem sSup_eq_bsup {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) :
@@ -1302,7 +1331,7 @@ theorem sSup_eq_bsup {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) :
 
 @[simp]
 theorem bsup_eq_sup' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] (f : ι → Ordinal.{max u v}) :
-    bsup.{_, v} _ (bfamilyOfFamily' r f) = iSup f := by
+    bsup.{_, v} _ (bfamilyOfFamily' r f) = sup f := by
   simp (config := { unfoldPartialApp := true }) only [← sup_eq_bsup' r, enum_typein,
     familyOfBFamily', bfamilyOfFamily']
 
@@ -1313,7 +1342,7 @@ theorem bsup_eq_bsup {ι : Type u} (r r' : ι → ι → Prop) [IsWellOrder ι r
 
 @[simp]
 theorem bsup_eq_sup {ι : Type u} (f : ι → Ordinal.{max u v}) :
-    bsup.{_, v} _ (bfamilyOfFamily f) = iSup f :=
+    bsup.{_, v} _ (bfamilyOfFamily f) = sup f :=
   bsup_eq_sup' _ f
 
 @[congr]
@@ -1345,7 +1374,7 @@ theorem IsNormal.bsup {f : Ordinal.{max u v} → Ordinal.{max u w}} (H : IsNorma
     ∀ (g : ∀ a < o, Ordinal), o ≠ 0 → f (bsup.{_, v} o g) = bsup.{_, w} o fun a h => f (g a h) :=
   inductionOn o fun α r _ g h => by
     haveI := type_ne_zero_iff_nonempty.1 h
-    rw [← sup_eq_bsup' r, IsNormal.iSup.{_, v, w} H, ← sup_eq_bsup' r] <;> rfl
+    rw [← sup_eq_bsup' r, Ordinal.sup, IsNormal.iSup.{_, v, w} H, ← sup_eq_bsup' r] <;> rfl
 
 theorem lt_bsup_of_ne_bsup {o : Ordinal.{u}} {f : ∀ a < o, Ordinal.{max u v}} :
     (∀ i h, f i h ≠ bsup.{_, v} o f) ↔ ∀ i h, f i h < bsup.{_, v} o f :=
@@ -1397,13 +1426,20 @@ theorem bsup_eq_of_brange_eq {o o'} {f : ∀ a < o, Ordinal} {g : ∀ a < o', Or
     (h : brange o f = brange o' g) : bsup.{u, max v w} o f = bsup.{v, max u w} o' g :=
   (bsup_le_of_brange_subset.{u, v, w} h.le).antisymm (bsup_le_of_brange_subset.{v, u, w} h.ge)
 
+end bsup
+
+-- TODO: bring the lsub API in line with the sSup / iSup API, or deprecate it altogether.
+
+section lsub
+set_option linter.deprecated false
+
 /-- The least strict upper bound of a family of ordinals. -/
 def lsub {ι : Type u} (f : ι → Ordinal.{max u v}) : Ordinal :=
   ⨆ i, succ (f i)
 
 @[simp]
 theorem sup_eq_lsub {ι : Type u} (f : ι → Ordinal.{max u v}) :
-    iSup (succ ∘ f) = lsub.{_, v} f :=
+    sup (succ ∘ f) = lsub.{_, v} f :=
   rfl
 
 theorem lsub_le_iff {ι : Type u} {f : ι → Ordinal.{max u v}} {a} :
@@ -1422,21 +1458,21 @@ theorem lt_lsub_iff {ι : Type u} {f : ι → Ordinal.{max u v}} {a} :
     a < lsub.{_, v} f ↔ ∃ i, a ≤ f i := by
   simpa only [not_forall, not_lt, not_le] using not_congr (@lsub_le_iff.{_, v} _ f a)
 
-theorem sup_le_lsub {ι : Type u} (f : ι → Ordinal.{max u v}) : iSup f ≤ lsub.{_, v} f :=
+theorem sup_le_lsub {ι : Type u} (f : ι → Ordinal.{max u v}) : sup f ≤ lsub.{_, v} f :=
   Ordinal.iSup_le fun i => (lt_lsub f i).le
 
 theorem lsub_le_sup_succ {ι : Type u} (f : ι → Ordinal.{max u v}) :
-    lsub.{_, v} f ≤ succ (iSup f) :=
+    lsub.{_, v} f ≤ succ (sup f) :=
   lsub_le fun i => lt_succ_iff.2 (Ordinal.le_iSup f i)
 
 theorem sup_eq_lsub_or_sup_succ_eq_lsub {ι : Type u} (f : ι → Ordinal.{max u v}) :
-    iSup f = lsub.{_, v} f ∨ succ (iSup f) = lsub.{_, v} f := by
+    sup f = lsub.{_, v} f ∨ succ (sup f) = lsub.{_, v} f := by
   cases' eq_or_lt_of_le (sup_le_lsub.{_, v} f) with h h
   · exact Or.inl h
   · exact Or.inr ((succ_le_of_lt h).antisymm (lsub_le_sup_succ f))
 
 theorem sup_succ_le_lsub {ι : Type u} (f : ι → Ordinal.{max u v}) :
-    succ (iSup f) ≤ lsub.{_, v} f ↔ ∃ i, f i = iSup f := by
+    succ (sup f) ≤ lsub.{_, v} f ↔ ∃ i, f i = sup f := by
   refine ⟨fun h => ?_, ?_⟩
   · by_contra! hf
     exact (succ_le_iff.1 h).ne ((sup_le_lsub f).antisymm (lsub_le (ne_iSup_iff_lt_iSup.1 hf)))
@@ -1445,11 +1481,11 @@ theorem sup_succ_le_lsub {ι : Type u} (f : ι → Ordinal.{max u v}) :
   exact lt_lsub _ _
 
 theorem sup_succ_eq_lsub {ι : Type u} (f : ι → Ordinal.{max u v}) :
-    succ (iSup f) = lsub.{_, v} f ↔ ∃ i, f i = iSup f :=
+    succ (sup f) = lsub.{_, v} f ↔ ∃ i, f i = sup f :=
   (lsub_le_sup_succ f).le_iff_eq.symm.trans (sup_succ_le_lsub f)
 
 theorem sup_eq_lsub_iff_succ {ι : Type u} (f : ι → Ordinal.{max u v}) :
-    iSup f = lsub.{_, v} f ↔ ∀ a < lsub.{_, v} f, succ a < lsub.{_, v} f := by
+    sup f = lsub.{_, v} f ↔ ∀ a < lsub.{_, v} f, succ a < lsub.{_, v} f := by
   refine ⟨fun h => ?_, fun hf => le_antisymm (sup_le_lsub f) (lsub_le fun i => ?_)⟩
   · rw [← h]
     exact fun a => succ_lt_iSup_of_ne_iSup fun i => (lsub_le_iff.1 (le_of_eq h.symm) i).ne
@@ -1460,11 +1496,12 @@ theorem sup_eq_lsub_iff_succ {ι : Type u} (f : ι → Ordinal.{max u v}) :
       (by
         rw [← heq]
         exact lt_succ (iSup f))
+  rw [Ordinal.sup] at heq
   rw [heq] at this
   exact this.false
 
 theorem sup_eq_lsub_iff_lt_sup {ι : Type u} (f : ι → Ordinal.{max u v}) :
-    iSup f = lsub.{_, v} f ↔ ∀ i, f i < iSup f :=
+    sup f = lsub.{_, v} f ↔ ∀ i, f i < sup f :=
   ⟨fun h i => by
     rw [h]
     apply lt_lsub, fun h => le_antisymm (sup_le_lsub f) (lsub_le h)⟩
@@ -1526,18 +1563,26 @@ theorem lsub_typein (o : Ordinal) : lsub.{u, u} (typein ((· < ·) : o.out.α �
       simpa [typein_enum] using lt_lsub.{u, u} (typein (· < ·)) (enum (· < ·) _ h))
 
 theorem sup_typein_limit {o : Ordinal.{u}} (ho : ∀ a, a < o → succ a < o) :
-    ⨆ i, @typein o.out.α (· < ·) _ i = o := by
+    sup (fun i => @typein o.out.α (· < ·) _ i) = o := by
   rw [(sup_eq_lsub_iff_succ.{u, u} _).2] <;> rw [lsub_typein o]; assumption
 
 @[simp]
 theorem sup_typein_succ {o : Ordinal.{u}} :
-    ⨆ i, @typein (succ o).out.α (· < ·) _ i = o := by
+    sup (fun i => @typein (succ o).out.α (· < ·) _ i) = o := by
   cases' sup_eq_lsub_or_sup_succ_eq_lsub.{u, u} (@typein (succ o).out.α (· < ·) _) with h h
   · rw [sup_eq_lsub_iff_succ] at h
     simp only [lsub_typein] at h
     exact (h o (lt_succ o)).false.elim
   rw [← succ_eq_succ_iff, h]
   apply lsub_typein
+
+end lsub
+
+-- TODO: either deprecate this in favor of `lsub` when its universes are generalized, or deprecate
+-- both of them at once.
+
+section blsub
+set_option linter.deprecated false
 
 /-- The least strict upper bound of a family of ordinals indexed by the set of ordinals less than
     some `o : Ordinal.{u}`.
@@ -1760,12 +1805,20 @@ def blsub₂ (o₁ o₂ : Ordinal) (op : {a : Ordinal} → (a < o₁) → {b : O
     Ordinal :=
   lsub (fun x : o₁.out.α × o₂.out.α => op (typein_lt_self x.1) (typein_lt_self x.2))
 
+-- TODO: deprecate this, and replace the arguments using it by arguments about small sets.
 theorem lt_blsub₂ {o₁ o₂ : Ordinal}
     (op : {a : Ordinal} → (a < o₁) → {b : Ordinal} → (b < o₂) → Ordinal) {a b : Ordinal}
     (ha : a < o₁) (hb : b < o₂) : op ha hb < blsub₂ o₁ o₂ op := by
   convert lt_lsub _ (Prod.mk (enum (· < ·) a (by rwa [type_lt]))
     (enum (· < ·) b (by rwa [type_lt])))
   simp only [typein_enum]
+
+end blsub
+
+-- TODO: deprecate in favor of `sInf sᶜ`.
+
+section mex
+set_option linter.deprecated false
 
 /-! ### Minimum excluded ordinals -/
 
@@ -1863,6 +1916,8 @@ theorem bmex_lt_ord_succ_card {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{u}) :
     bmex.{_, u} o f < (succ o.card).ord := by
   rw [← mk_ordinal_out]
   exact mex_lt_ord_succ_mk (familyOfBFamily o f)
+
+end mex
 
 end Ordinal
 
