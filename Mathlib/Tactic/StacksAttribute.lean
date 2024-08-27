@@ -31,7 +31,7 @@ The `TAG` is mandatory.
 
 See the [Tags page](https://stacks.math.columbia.edu/tags) in the Stacks project for more details.
 -/
-syntax (name := stacks) "stacks " (stackTag)? (str)? : attr
+syntax (name := stacks) "stacks " (stackTag)? (ppSpace str)? : attr
 
 initialize Lean.registerBuiltinAttribute {
   name := `stacks
