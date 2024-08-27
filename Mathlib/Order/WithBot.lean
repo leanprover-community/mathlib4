@@ -7,7 +7,7 @@ import Mathlib.Init.Algebra.Classes
 import Mathlib.Logic.Nontrivial.Basic
 import Mathlib.Order.BoundedOrder
 import Mathlib.Data.Option.NAry
-import Mathlib.Tactic.Lift
+import Mathlib.Tactic.Common
 import Mathlib.Data.Option.Basic
 
 /-!
@@ -338,16 +338,18 @@ instance preorder [Preorder α] : Preorder (WithBot α) where
     let ⟨c, hc, bc⟩ := h₂ b hb
     ⟨c, hc, le_trans ab bc⟩
 
-instance partialOrder [PartialOrder α] : PartialOrder (WithBot α) :=
-  { WithBot.preorder with
-    le_antisymm := fun o₁ o₂ h₁ h₂ => by
-      cases' o₁ with a
-      · cases' o₂ with b
-        · rfl
-        rcases h₂ b rfl with ⟨_, ⟨⟩, _⟩
-      · rcases h₁ a rfl with ⟨b, ⟨⟩, h₁'⟩
-        rcases h₂ b rfl with ⟨_, ⟨⟩, h₂'⟩
-        rw [le_antisymm h₁' h₂'] }
+instance partialOrder [PartialOrder α] : PartialOrder (WithBot α) where
+  __ := WithBot.preorder
+  le_antisymm o₁ o₂ h₁ h₂ := by
+    cases o₁ with
+    | bot =>
+      cases o₂ with
+      | bot => rfl
+      | coe b => obtain ⟨_, ⟨⟩, _⟩ := h₂ b rfl
+    | coe a =>
+      obtain ⟨b, ⟨⟩, h₁'⟩ := h₁ a rfl
+      obtain ⟨_, ⟨⟩, h₂'⟩ := h₂ b rfl
+      rw [le_antisymm h₁' h₂']
 
 section Preorder
 

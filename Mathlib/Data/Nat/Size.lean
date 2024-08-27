@@ -57,8 +57,9 @@ end
 @[simp]
 theorem size_shiftLeft' {b m n} (h : shiftLeft' b m n ≠ 0) :
     size (shiftLeft' b m n) = size m + n := by
-  induction' n with n IH
-  · simp [shiftLeft']
+  induction n with
+  | zero => simp [shiftLeft']
+  | succ n IH =>
   simp only [shiftLeft', ne_eq] at h ⊢
   rw [size_bit h, Nat.add_succ]
   by_cases s0 : shiftLeft' b m n = 0
@@ -99,9 +100,10 @@ theorem size_le {m n : ℕ} : size m ≤ n ↔ m < 2 ^ n :=
       by_cases e : bit b m = 0
       · simp [e]
       rw [size_bit e]
-      cases' n with n
-      · exact e.elim (Nat.eq_zero_of_le_zero (le_of_lt_succ h))
-      · apply succ_le_succ (IH _)
+      cases n with
+      | zero => exact e.elim (Nat.eq_zero_of_le_zero (le_of_lt_succ h))
+      | succ n =>
+        apply succ_le_succ (IH _)
         apply Nat.lt_of_mul_lt_mul_left (a := 2)
         simp only [shiftLeft_succ] at *
         refine lt_of_le_of_lt ?_ h
@@ -123,9 +125,11 @@ theorem size_le_size {m n : ℕ} (h : m ≤ n) : size m ≤ size n :=
   size_le.2 <| lt_of_le_of_lt h (lt_size_self _)
 
 theorem size_eq_bits_len (n : ℕ) : n.bits.length = n.size := by
-  induction' n using Nat.binaryRec' with b n h ih; · simp
-  rw [size_bit, bits_append_bit _ _ h]
-  · simp [ih]
-  · simpa [bit_eq_zero_iff]
+  induction n using Nat.binaryRec' with
+  | z => simp
+  | f _ _ h ih =>
+    rw [size_bit, bits_append_bit _ _ h]
+    · simp [ih]
+    · simpa [bit_eq_zero_iff]
 
 end Nat
