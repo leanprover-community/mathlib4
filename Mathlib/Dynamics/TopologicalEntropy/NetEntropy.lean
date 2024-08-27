@@ -97,8 +97,8 @@ lemma IsDynNetOf.card_le_card_of_isDynCoverOf {T : X → X} {F : Set X} {U : Set
   choose! F s_t using this
   simp only [mem_ball_symmetry (U_symm.dynEntourage T n)] at s_t
   apply Finset.card_le_card_of_injOn F (fun x x_s ↦ (s_t x x_s).1)
-  intro x x_s y y_s Fx_Fy
-  exact PairwiseDisjoint.elim_set hs.2 x_s y_s (F x) (s_t x x_s).2 (Fx_Fy ▸ (s_t y y_s).2)
+  exact fun x x_s y y_s Fx_Fy ↦
+    PairwiseDisjoint.elim_set hs.2 x_s y_s (F x) (s_t x x_s).2 (Fx_Fy ▸ (s_t y y_s).2)
 
 /-! ### Maximal cardinal of dynamical nets -/
 
@@ -135,16 +135,15 @@ lemma netMaxcard_finite_iff (T : X → X) (F : Set X) (U : Set (X × X)) (n : �
       simp only [mem_setOf_eq, ENat.some_eq_coe, Function.comp_apply]
     rw [this] at k_max
     have h_bdda : BddAbove (Finset.card '' {s : Finset X | IsDynNetOf T F U n s}) := by
-      use k
-      apply mem_upperBounds.2
+      refine ⟨k, mem_upperBounds.2 ?_⟩
       simp only [mem_image, mem_setOf_eq, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
-      intros s h
+      intro s h
       rw [← WithTop.coe_le_coe, k_max]
       apply le_sSup
       simp only [ENat.some_eq_coe, mem_image, mem_setOf_eq, Nat.cast_inj, exists_eq_right]
-      use s
+      exact Filter.frequently_principal.mp fun a ↦ a h rfl
     have h_nemp : (Finset.card '' {s : Finset X | IsDynNetOf T F U n s}).Nonempty := by
-      use 0
+      refine ⟨0, ?_⟩
       simp only [mem_image, mem_setOf_eq, Finset.card_eq_zero, exists_eq_right, Finset.coe_empty]
       exact isDynNetOf_empty
     rw [← WithTop.coe_sSup' h_bdda, ENat.some_eq_coe, Nat.cast_inj] at k_max
@@ -168,7 +167,7 @@ lemma netMaxcard_eq_zero_iff (T : X → X) (F : Set X) (U : Set (X × X)) (n : �
     netMaxcard T F U n = 0 ↔ F = ∅ := by
   refine Iff.intro (fun h ↦ ?_) (fun h ↦ by rw [h, netMaxcard_empty])
   rw [eq_empty_iff_forall_not_mem]
-  intros x x_F
+  intro x x_F
   have key := isDynNetOf_singleton T U n x_F
   rw [← Finset.coe_singleton] at key
   replace key := key.card_le_netMaxcard
@@ -281,16 +280,17 @@ noncomputable def netEntropyInfEnt (T : X → X) (F : Set X) (U : Set (X × X)) 
   atTop.liminf fun n : ℕ ↦ log (netMaxcard T F U n) / n
 
 lemma netEntropyInfEnt_antitone (T : X → X) (F : Set X) :
-    Antitone (fun U : Set (X × X) ↦ netEntropyInfEnt T F U) := by
-  refine fun _ _ U_V ↦ (liminf_le_liminf) (Eventually.of_forall fun n ↦ ?_)
-  apply monotone_div_right_of_nonneg (Nat.cast_nonneg' n)
-  exact log_monotone (ENat.toENNReal_mono (netMaxcard_antitone T F n U_V))
+    Antitone (fun U : Set (X × X) ↦ netEntropyInfEnt T F U) :=
+  fun _ _ U_V ↦ (liminf_le_liminf) (Eventually.of_forall
+    fun n ↦ monotone_div_right_of_nonneg (Nat.cast_nonneg' n)
+      (log_monotone (ENat.toENNReal_mono (netMaxcard_antitone T F n U_V))))
+
 
 lemma netEntropyEnt_antitone (T : X → X) (F : Set X) :
-    Antitone (fun U : Set (X × X) ↦ netEntropyEnt T F U) := by
-  refine fun _ _ U_V ↦ (limsup_le_limsup) (Eventually.of_forall fun n ↦ ?_)
-  apply monotone_div_right_of_nonneg (Nat.cast_nonneg' n)
-  exact log_monotone (ENat.toENNReal_mono (netMaxcard_antitone T F n U_V))
+    Antitone (fun U : Set (X × X) ↦ netEntropyEnt T F U) :=
+  fun _ _ U_V ↦ (limsup_le_limsup) (Eventually.of_forall
+    fun n ↦ (monotone_div_right_of_nonneg (Nat.cast_nonneg' n)
+      (log_monotone (ENat.toENNReal_mono (netMaxcard_antitone T F n U_V)))))
 
 lemma netEntropyInfEnt_le_netEntropyEnt (T : X → X) (F : Set X) (U : Set (X × X)) :
     netEntropyInfEnt T F U ≤ netEntropyEnt T F U := liminf_le_limsup
@@ -301,8 +301,7 @@ lemma netEntropyEnt_empty {T : X → X} {U : Set (X × X)} : netEntropyEnt T ∅
     rw [netEntropyEnt, limsup_congr h]
     exact limsup_const ⊥
   simp only [netMaxcard_empty, ENat.toENNReal_zero, log_zero, eventually_atTop]
-  use 1
-  exact fun n n_pos ↦ bot_div_of_pos_ne_top (Nat.cast_pos'.2 n_pos) (natCast_ne_top n)
+  exact ⟨1, fun n n_pos ↦ bot_div_of_pos_ne_top (Nat.cast_pos'.2 n_pos) (natCast_ne_top n)⟩
 
 @[simp]
 lemma netEntropyInfEnt_empty {T : X → X} {U : Set (X × X)} : netEntropyInfEnt T ∅ U = ⊥ :=
@@ -393,17 +392,17 @@ lemma coverEntropy_eq_iSup_basis_netEntropyEnt {ι : Sort*} {p : ι → Prop}
   apply (iSup₂_mono' fun i h_i ↦ ⟨s i, HasBasis.mem_of_mem h h_i, le_refl _⟩).antisymm'
   refine iSup₂_le fun U U_uni ↦ ?_
   rcases (HasBasis.mem_iff h).1 U_uni with ⟨i, h_i, si_U⟩
-  apply (netEntropyEnt_antitone T F si_U).trans
+  apply (netEntropyEnt_antitone T F si_U).trans _
   exact le_iSup₂ (f := fun (i : ι) (_ : p i) ↦ netEntropyEnt T F (s i)) i h_i
 
 lemma netEntropyInfEnt_le_coverEntropyInf {U : Set (X × X)} (h : U ∈ 𝓤 X) :
-    netEntropyInfEnt T F U ≤ coverEntropyInf T F := by
-  rw [coverEntropyInf_eq_iSup_netEntropyInfEnt T F]
-  exact le_iSup₂ (f := fun (U : Set (X × X)) (_ : U ∈ 𝓤 X) ↦ netEntropyInfEnt T F U) U h
+    netEntropyInfEnt T F U ≤ coverEntropyInf T F :=
+  coverEntropyInf_eq_iSup_netEntropyInfEnt T F ▸
+    le_iSup₂ (f := fun (U : Set (X × X)) (_ : U ∈ 𝓤 X) ↦ netEntropyInfEnt T F U) U h
 
 lemma netEntropyEnt_le_coverEntropy {U : Set (X × X)} (h : U ∈ 𝓤 X) :
-    netEntropyEnt T F U ≤ coverEntropy T F := by
-  rw [coverEntropy_eq_iSup_netEntropyEnt T F]
-  exact le_iSup₂ (f := fun (U : Set (X × X)) (_ : U ∈ 𝓤 X) ↦ netEntropyEnt T F U) U h
+    netEntropyEnt T F U ≤ coverEntropy T F :=
+  coverEntropy_eq_iSup_netEntropyEnt T F ▸
+    le_iSup₂ (f := fun (U : Set (X × X)) (_ : U ∈ 𝓤 X) ↦ netEntropyEnt T F U) U h
 
 end Dynamics
