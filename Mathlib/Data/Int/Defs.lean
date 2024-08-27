@@ -234,7 +234,7 @@ where
     conv => rhs; exact b.add_zero.symm
     rw [Int.add_lt_add_iff_left]; apply negSucc_lt_zero
 
-variable (b) {z b b H0 Hs Hp}
+variable {z b H0 Hs Hp}
 
 lemma inductionOn'_self : b.inductionOn' b H0 Hs Hp = H0 :=
   cast_eq_iff_heq.mpr <| .symm <| by rw [b.sub_self, ← cast_eq_iff_heq]; rfl

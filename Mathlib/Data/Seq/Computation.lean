@@ -246,6 +246,7 @@ def BisimO : α ⊕ (Computation α) → α ⊕ (Computation α) → Prop
   | _, _ => False
 
 attribute [simp] BisimO
+attribute [nolint simpNF] BisimO.eq_3
 
 /-- Attribute expressing bisimilarity over two `Computation`s-/
 def IsBisimulation :=

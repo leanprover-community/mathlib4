@@ -6,7 +6,6 @@ Authors: Michael Rothgang, Damiano Testa
 
 import Mathlib.Init
 import Lean.Elab.Command
-import Lean.Linter.Util
 
 /-!
 # Linter for `attribute [...] in` declarations
