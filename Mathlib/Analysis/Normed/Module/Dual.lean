@@ -270,6 +270,20 @@ theorem sInter_polar_eq_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddComm
   rw [← polar_closedBall (inv_pos_of_pos hr), polar,
     (dualPairing 𝕜 E).flip.sInter_polar_finite_subset_eq_polar (closedBall (0 : E) r⁻¹)]
 
+/-- For now let U n be the open nhd of radius 1/n -/
+def U : ℕ → Set E
+  | 0 => univ
+  | n => ball 0 n⁻¹
+
+lemma U0 : polar 𝕜 (U 0) = closedBall (0 : Dual 𝕜 E) 0 := by
+  rw [U, closedBall]
+  simp only [polar_univ, dist_zero_right]
+  apply le_antisymm
+  · simp only [le_eq_subset, singleton_subset_iff, mem_setOf_eq, norm_zero, le_refl]
+  · simp only [le_eq_subset, subset_singleton_iff, mem_setOf_eq]
+    intro y hy
+    exact norm_le_zero_iff'.mp hy
+
 
 theorem finite_subsets1 (U : Set (Dual 𝕜 E)) : ∃ F : ℕ → Set E, ∀ n : ℕ, (F n).Finite := by
   use (fun n => Nat.recOn n {(0 : E)} (fun m v => {(0 : E)}))
@@ -291,6 +305,9 @@ def myF : ℕ → Set ℕ
   termination_by n => n
   decreasing_by
     exact j.2
+
+--lemma polar_myF :
+
 
 /-
 theorem finite_subsets3 (U : Set (Dual 𝕜 E)) : ∃ F : ℕ → Set E, ∀ n : ℕ, (F n).Finite := by
@@ -325,7 +342,7 @@ theorem finite_subsets2 (U : Set (Dual 𝕜 E)) : ∃ F : ℕ → Set E, ∀ n :
   · simp only [finite_singleton]
 -/
 
-/-
+
 theorem finite_subsets (U : Set (Dual 𝕜 E)) : ∃ F : ℕ → Set E, ∀ n : ℕ, (F n).Finite ∧
     F n ⊆ ball (0 : E) n⁻¹ ∧ polar 𝕜 (⋃₀ {F k | k < n }) ∩ ball 0 n  ⊆ U := by
   use (fun n => Nat.recOn n {(0 : E)} (fun n v => {(0 : E)}))
@@ -344,7 +361,7 @@ theorem finite_subsets (U : Set (Dual 𝕜 E)) : ∃ F : ℕ → Set E, ∀ n : 
   --apply Exists.intro
   --induction n using by exact 𝕜
   --intro n
--/
+
 
 end PolarSets
 
