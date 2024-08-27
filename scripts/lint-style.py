@@ -25,9 +25,9 @@ absolute path.
 The linters in this script are gradually being rewritten in Lean.
 Do not add new linters here; please write them in Lean instead.
 
-To run all style linters, run `lake exe lint_style`.
+To run all style linters, run `lake exe lint-style`.
 To update the list of allowed/ignored style exceptions, use
-    $ lake exe lint_style --regenerate
+    $ lake exe lint-style --update
 """
 
 # TODO: This is adapted from the linter for mathlib3. It should be rewritten in Lean.
@@ -61,7 +61,7 @@ with SCRIPTS_DIR.joinpath("style-exceptions.txt").open(encoding="utf-8") as f:
         path = ROOT_DIR / filename
         if errno == "ERR_MOD":
             exceptions += [(ERR_MOD, path, None)]
-        elif errno in ["ERR_LIN", "ERR_ADN", "ERR_NUM_LIN"]:
+        elif errno in ["ERR_COP", "ERR_LIN", "ERR_ADN", "ERR_NUM_LIN"]:
             pass # maintained by the Lean style linter now
         else:
             print(f"Error: unexpected errno in style-exceptions.txt: {errno}")

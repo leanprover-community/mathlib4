@@ -449,9 +449,9 @@ theorem measure_ae_null_of_prod_null {s : Set (α × β)} (h : μ.prod ν s = 0)
   rw [measure_prod_null mt] at ht
   rw [eventuallyLE_antisymm_iff]
   exact
-    ⟨EventuallyLE.trans_eq (eventually_of_forall fun x => (measure_mono (preimage_mono hst) : _))
+    ⟨EventuallyLE.trans_eq (Eventually.of_forall fun x => (measure_mono (preimage_mono hst) : _))
         ht,
-      eventually_of_forall fun x => zero_le _⟩
+      Eventually.of_forall fun x => zero_le _⟩
 
 theorem AbsolutelyContinuous.prod [SFinite ν'] (h1 : μ ≪ μ') (h2 : ν ≪ ν') :
     μ.prod ν ≪ μ'.prod ν' := by
@@ -466,13 +466,17 @@ theorem ae_ae_of_ae_prod {p : α × β → Prop} (h : ∀ᵐ z ∂μ.prod ν, p 
     ∀ᵐ x ∂μ, ∀ᵐ y ∂ν, p (x, y) :=
   measure_ae_null_of_prod_null h
 
-theorem ae_ae_eq_curry_of_prod {f g : α × β → γ} (h : f =ᵐ[μ.prod ν] g) :
+theorem ae_ae_eq_curry_of_prod {γ : Type*} {f g : α × β → γ} (h : f =ᵐ[μ.prod ν] g) :
     ∀ᵐ x ∂μ, curry f x =ᵐ[ν] curry g x :=
   ae_ae_of_ae_prod h
 
-theorem ae_ae_eq_of_ae_eq_uncurry {f g : α → β → γ} (h : uncurry f =ᵐ[μ.prod ν] uncurry g) :
-    ∀ᵐ x ∂μ, f x =ᵐ[ν] g x :=
+theorem ae_ae_eq_of_ae_eq_uncurry {γ : Type*} {f g : α → β → γ}
+    (h : uncurry f =ᵐ[μ.prod ν] uncurry g) : ∀ᵐ x ∂μ, f x =ᵐ[ν] g x :=
   ae_ae_eq_curry_of_prod h
+
+theorem ae_prod_iff_ae_ae {p : α × β → Prop} (hp : MeasurableSet {x | p x}) :
+    (∀ᵐ z ∂μ.prod ν, p z) ↔ ∀ᵐ x ∂μ, ∀ᵐ y ∂ν, p (x, y) :=
+  measure_prod_null hp.compl
 
 theorem ae_prod_mem_iff_ae_ae_mem {s : Set (α × β)} (hs : MeasurableSet s) :
     (∀ᵐ z ∂μ.prod ν, z ∈ s) ↔ ∀ᵐ x ∂μ, ∀ᵐ y ∂ν, (x, y) ∈ s :=
@@ -516,7 +520,7 @@ lemma _root_.MeasureTheory.NullMeasurableSet.right_of_prod {s : Set α} {t : Set
 /-- If `Prod.snd ⁻¹' t` is a null measurable set and `μ ≠ 0`, then `t` is a null measurable set. -/
 lemma _root_.MeasureTheory.NullMeasurableSet.of_preimage_snd [NeZero μ] {t : Set β}
     (h : NullMeasurableSet (Prod.snd ⁻¹' t) (μ.prod ν)) : NullMeasurableSet t ν :=
-  .right_of_prod (by rwa [univ_prod]) (NeZero.ne _)
+  .right_of_prod (by rwa [univ_prod]) (NeZero.ne (μ univ))
 
 /-- `Prod.snd ⁻¹' t` is null measurable w.r.t. `μ.prod ν` iff `t` is null measurable w.r.t. `ν`
 provided that `μ ≠ 0`. -/
@@ -637,6 +641,12 @@ theorem prod_apply_symm {s : Set (α × β)} (hs : MeasurableSet s) :
   rw [← prod_swap, map_apply measurable_swap hs, prod_apply (measurable_swap hs)]
   rfl
 
+theorem ae_ae_comm {p : α → β → Prop} (h : MeasurableSet {x : α × β | p x.1 x.2}) :
+    (∀ᵐ x ∂μ, ∀ᵐ y ∂ν, p x y) ↔ ∀ᵐ y ∂ν, ∀ᵐ x ∂μ, p x y := calc
+  _ ↔ ∀ᵐ x ∂μ.prod ν, p x.1 x.2 := .symm <| ae_prod_iff_ae_ae h
+  _ ↔ ∀ᵐ x ∂ν.prod μ, p x.2 x.1 := by rw [← prod_swap, ae_map_iff (by fun_prop) h]; rfl
+  _ ↔ ∀ᵐ y ∂ν, ∀ᵐ x ∂μ, p x y := ae_prod_iff_ae_ae <| measurable_swap h
+
 /-- If `s ×ˢ t` is a null measurable set and `ν t ≠ 0`, then `s` is a null measurable set. -/
 lemma _root_.MeasureTheory.NullMeasurableSet.left_of_prod {s : Set α} {t : Set β}
     (h : NullMeasurableSet (s ×ˢ t) (μ.prod ν)) (ht : ν t ≠ 0) : NullMeasurableSet s μ := by
@@ -647,7 +657,7 @@ lemma _root_.MeasureTheory.NullMeasurableSet.left_of_prod {s : Set α} {t : Set 
 /-- If `Prod.fst ⁻¹' s` is a null measurable set and `ν ≠ 0`, then `s` is a null measurable set. -/
 lemma _root_.MeasureTheory.NullMeasurableSet.of_preimage_fst [NeZero ν] {s : Set α}
     (h : NullMeasurableSet (Prod.fst ⁻¹' s) (μ.prod ν)) : NullMeasurableSet s μ :=
-  .left_of_prod (by rwa [prod_univ]) (NeZero.ne _)
+  .left_of_prod (by rwa [prod_univ]) (NeZero.ne (ν univ))
 
 /-- `Prod.fst ⁻¹' s` is null measurable w.r.t. `μ.prod ν` iff `s` is null measurable w.r.t. `μ`
 provided that `ν ≠ 0`. -/

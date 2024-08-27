@@ -8,33 +8,35 @@ import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Basics on First-Order Structures
+
 This file defines first-order languages and structures in the style of the
 [Flypitch project](https://flypitch.github.io/), as well as several important maps between
 structures.
 
 ## Main Definitions
-* A `FirstOrder.Language` defines a language as a pair of functions from the natural numbers to
+
+- A `FirstOrder.Language` defines a language as a pair of functions from the natural numbers to
   `Type l`. One sends `n` to the type of `n`-ary functions, and the other sends `n` to the type of
   `n`-ary relations.
-* A `FirstOrder.Language.Structure` interprets the symbols of a given `FirstOrder.Language` in the
+- A `FirstOrder.Language.Structure` interprets the symbols of a given `FirstOrder.Language` in the
   context of a given type.
-* A `FirstOrder.Language.Hom`, denoted `M →[L] N`, is a map from the `L`-structure `M` to the
+- A `FirstOrder.Language.Hom`, denoted `M →[L] N`, is a map from the `L`-structure `M` to the
   `L`-structure `N` that commutes with the interpretations of functions, and which preserves the
   interpretations of relations (although only in the forward direction).
-* A `FirstOrder.Language.Embedding`, denoted `M ↪[L] N`, is an embedding from the `L`-structure `M`
+- A `FirstOrder.Language.Embedding`, denoted `M ↪[L] N`, is an embedding from the `L`-structure `M`
   to the `L`-structure `N` that commutes with the interpretations of functions, and which preserves
   the interpretations of relations in both directions.
-* A `FirstOrder.Language.Equiv`, denoted `M ≃[L] N`, is an equivalence from the `L`-structure `M`
+- A `FirstOrder.Language.Equiv`, denoted `M ≃[L] N`, is an equivalence from the `L`-structure `M`
   to the `L`-structure `N` that commutes with the interpretations of functions, and which preserves
   the interpretations of relations in both directions.
 
 ## References
+
 For the Flypitch project:
 - [J. Han, F. van Doorn, *A formal proof of the independence of the continuum hypothesis*]
-[flypitch_cpp]
+  [flypitch_cpp]
 - [J. Han, F. van Doorn, *A formalization of forcing and the unprovability of
-the continuum hypothesis*][flypitch_itp]
-
+  the continuum hypothesis*][flypitch_itp]
 -/
 
 universe u v u' v' w w'
@@ -78,6 +80,12 @@ instance inhabited₂ [h : Inhabited a₂] : Inhabited (Sequence₂ a₀ a₁ a�
   h
 
 instance {n : ℕ} : IsEmpty (Sequence₂ a₀ a₁ a₂ (n + 3)) := inferInstanceAs (IsEmpty PEmpty)
+
+instance [DecidableEq a₀] [DecidableEq a₁] [DecidableEq a₂] {n : ℕ} :
+    DecidableEq (Sequence₂ a₀ a₁ a₂ n) :=
+  match n with
+  | 0 | 1 | 2 => ‹_›
+  | _ + 3 => inferInstance
 
 @[simp]
 theorem lift_mk {i : ℕ} :
@@ -237,6 +245,18 @@ theorem card_mk₂ (c f₁ f₂ : Type u) (r₁ r₂ : Type v) :
       Cardinal.lift.{v} #c + Cardinal.lift.{v} #f₁ + Cardinal.lift.{v} #f₂ +
           Cardinal.lift.{u} #r₁ + Cardinal.lift.{u} #r₂ := by
   simp [card_eq_card_functions_add_card_relations, add_assoc]
+
+/-- Passes a `DecidableEq` instance on a type of function symbols through the  `Language`
+constructor. Despite the fact that this is proven by `inferInstance`, it is still needed -
+see the `example`s in `ModelTheory/Ring/Basic`.  -/
+instance instDecidableEqFunctions {f : ℕ → Type*} {R : ℕ → Type*} (n : ℕ) [DecidableEq (f n)] :
+    DecidableEq ((⟨f, R⟩ : Language).Functions n) := inferInstance
+
+/-- Passes a `DecidableEq` instance on a type of relation symbols through the  `Language`
+constructor. Despite the fact that this is proven by `inferInstance`, it is still needed -
+see the `example`s in `ModelTheory/Ring/Basic`.  -/
+instance instDecidableEqRelations {f : ℕ → Type*} {R : ℕ → Type*} (n : ℕ) [DecidableEq (R n)] :
+    DecidableEq ((⟨f, R⟩ : Language).Relations n) := inferInstance
 
 variable (L) (M : Type w)
 
@@ -447,9 +467,6 @@ theorem toFun_eq_coe {f : M →[L] N} : f.toFun = (f : M → N) :=
 theorem ext ⦃f g : M →[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
 
-theorem ext_iff {f g : M →[L] N} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
-
 @[simp]
 theorem map_fun (φ : M →[L] N) {n : ℕ} (f : L.Functions n) (x : Fin n → M) :
     φ (funMap f x) = funMap f (φ ∘ x) :=
@@ -564,9 +581,6 @@ theorem coe_injective : @Function.Injective (M ↪[L] N) (M → N) (↑)
 @[ext]
 theorem ext ⦃f g : M ↪[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
   coe_injective (funext h)
-
-theorem ext_iff {f g : M ↪[L] N} : f = g ↔ ∀ x, f x = g x :=
-  ⟨fun h _ => h ▸ rfl, fun h => ext h⟩
 
 theorem toHom_injective : @Function.Injective (M ↪[L] N) (M →[L] N) (·.toHom) := by
   intro f f' h
@@ -762,9 +776,6 @@ theorem coe_injective : @Function.Injective (M ≃[L] N) (M → N) (↑) :=
 @[ext]
 theorem ext ⦃f g : M ≃[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
   coe_injective (funext h)
-
-theorem ext_iff {f g : M ≃[L] N} : f = g ↔ ∀ x, f x = g x :=
-  ⟨fun h _ => h ▸ rfl, fun h => ext h⟩
 
 theorem bijective (f : M ≃[L] N) : Function.Bijective f :=
   EquivLike.bijective f

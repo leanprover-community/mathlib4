@@ -33,7 +33,7 @@ section
 
 variable {R A B S : Type*}
 variable [CommRing R] [CommRing A] [Ring B] [CommRing S]
-variable [Algebra R A] [Algebra R B] (f : R →+* S)
+variable [Algebra R A] (f : R →+* S)
 
 theorem IsIntegral.map {B C F : Type*} [Ring B] [Ring C] [Algebra R B] [Algebra A B] [Algebra R C]
     [IsScalarTower R A B] [Algebra A C] [IsScalarTower R A C] {b : B}
@@ -47,9 +47,9 @@ theorem IsIntegral.map {B C F : Type*} [Ring B] [Ring C] [Algebra R B] [Algebra 
 section
 
 variable {A B : Type*} [Ring A] [Ring B] [Algebra R A] [Algebra R B]
-variable (f : A →ₐ[R] B) (hf : Function.Injective f)
 
-theorem isIntegral_algHom_iff {x : A} : IsIntegral R (f x) ↔ IsIntegral R x := by
+theorem isIntegral_algHom_iff (f : A →ₐ[R] B) (hf : Function.Injective f) {x : A} :
+    IsIntegral R (f x) ↔ IsIntegral R x := by
   refine ⟨fun ⟨p, hp, hx⟩ ↦ ⟨p, hp, ?_⟩, IsIntegral.map f⟩
   rwa [← f.comp_algebraMap, ← AlgHom.coe_toRingHom, ← hom_eval₂, AlgHom.coe_toRingHom,
     map_eq_zero_iff f hf] at hx
@@ -75,7 +75,7 @@ theorem Submodule.span_range_natDegree_eq_adjoin {R A} [CommRing R] [Semiring A]
   exact smul_mem _ _ (subset_span <| Finset.mem_image_of_mem _ <| Finset.mem_range.mpr <|
     (le_natDegree_of_mem_supp _ hkq).trans_lt <| natDegree_modByMonic_lt p hf hf1)
 
-theorem IsIntegral.fg_adjoin_singleton {x : B} (hx : IsIntegral R x) :
+theorem IsIntegral.fg_adjoin_singleton [Algebra R B] {x : B} (hx : IsIntegral R x) :
     (Algebra.adjoin R {x}).toSubmodule.FG := by
   classical
   rcases hx with ⟨f, hfm, hfx⟩
@@ -87,18 +87,18 @@ variable (f : R →+* B)
 theorem RingHom.isIntegralElem_zero : f.IsIntegralElem 0 :=
   f.map_zero ▸ f.isIntegralElem_map
 
-theorem isIntegral_zero : IsIntegral R (0 : B) :=
+theorem isIntegral_zero [Algebra R B] : IsIntegral R (0 : B) :=
   (algebraMap R B).isIntegralElem_zero
 
 theorem RingHom.isIntegralElem_one : f.IsIntegralElem 1 :=
   f.map_one ▸ f.isIntegralElem_map
 
-theorem isIntegral_one : IsIntegral R (1 : B) :=
+theorem isIntegral_one [Algebra R B] : IsIntegral R (1 : B) :=
   (algebraMap R B).isIntegralElem_one
 
 variable (f : R →+* S)
 
-theorem IsIntegral.of_pow {x : B} {n : ℕ} (hn : 0 < n) (hx : IsIntegral R <| x ^ n) :
+theorem IsIntegral.of_pow [Algebra R B] {x : B} {n : ℕ} (hn : 0 < n) (hx : IsIntegral R <| x ^ n) :
     IsIntegral R x := by
   rcases hx with ⟨p, hmonic, heval⟩
   exact ⟨expand R n p, hmonic.expand hn, by rwa [← aeval_def, expand_aeval]⟩

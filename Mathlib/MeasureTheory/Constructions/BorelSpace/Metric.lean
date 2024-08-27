@@ -196,7 +196,7 @@ theorem exists_borelSpace_of_countablyGenerated_of_separatesPoints (α : Type*)
     ∃ τ : TopologicalSpace α, SecondCountableTopology α ∧ T4Space α ∧ BorelSpace α := by
   rcases measurableEquiv_nat_bool_of_countablyGenerated α with ⟨s, ⟨f⟩⟩
   letI := induced f inferInstance
-  let F := f.toEquiv.toHomeomorphOfInducing $ inducing_induced _
+  let F := f.toEquiv.toHomeomorphOfInducing <| inducing_induced _
   exact ⟨inferInstance, F.secondCountableTopology, F.symm.t4Space,
     MeasurableEmbedding.borelSpace f.measurableEmbedding F.inducing⟩
 
