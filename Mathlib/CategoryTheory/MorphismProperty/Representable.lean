@@ -66,7 +66,17 @@ open Category Limits
 universe v₁ v₂ u₁ u₂
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D] (F : C ⥤ D)
-
+/-- A morphism `f : X ⟶ Y` in `D` is said to be relatively representable if for any
+`g : F.obj a ⟶ Y`, there exists a pullback square of the following form
+```
+F.obj b --F.map snd--> F.obj a
+    |                     |
+   fst                    g
+    |                     |
+    v                     v
+    X ------- f --------> Y
+```
+-/
 def Functor.relativelyRepresentable : MorphismProperty D :=
   fun X Y f ↦ ∀ ⦃a : C⦄ (g : F.obj a ⟶ Y), ∃ (b : C) (snd : b ⟶ a)
     (fst : F.obj b ⟶ X), IsPullback fst (F.map snd) f g
@@ -80,27 +90,49 @@ variable {X Y : D} {f : X ⟶ Y} (hf : F.relativelyRepresentable f)
   {b : C} {f' : F.obj b ⟶ Y} (hf' : F.relativelyRepresentable f')
   {a : C} (g : F.obj a ⟶ Y) (hg : F.relativelyRepresentable g)
 
-/-- Let `f : X ⟶ Y` be a representable morphism in the category of presheaves of types on
-a category `C`. Then, for any `g : F.obj a ⟶ Y`, `hf.pullback g` denotes the (choice of) a
-corresponding object in `C` such that `F.obj (hf.pullback g)` forms a categorical pullback
-of `f` and `g` in the category of presheaves. -/
+/-- Let `f : X ⟶ Y` be a relatively representable morphism in `D`. Then, for any
+`g : F.obj a ⟶ Y`, `hf.pullback g` denotes the (choice of) a corresponding object in `C` such that
+there is a pullback square of the following form
+```
+hf.pullback g --F.map snd--> F.obj a
+    |                          |
+   fst                         g
+    |                          |
+    v                          v
+    X ---------- f ----------> Y
+``` -/
 noncomputable def pullback : C :=
   (hf g).choose
 
 /-- Given a representable morphism `f : X ⟶ Y`, then for any `g : F.obj a ⟶ Y`, `hf.snd g`
-denotes the morphism in `C` whose image under `yoneda` is the second projection in the choice of a
-pullback square given by the defining property of `f` being representable. -/
+denotes the morphism in `C` giving rise to the following diagram
+```
+hf.pullback g --F.map (hf.snd g)--> F.obj a
+    |                                 |
+   fst                                g
+    |                                 |
+    v                                 v
+    X -------------- f -------------> Y
+``` -/
 noncomputable abbrev snd : hf.pullback g ⟶ a :=
   (hf g).choose_spec.choose
 
-/-- Given a representable morphism `f : X ⟶ Y`, then for any `g : F.obj a ⟶ Y`, `hf.fst g`
-denotes the first projection in the choice of a pullback square given by the defining property of
-`f` being representable. -/
+/-- Given a relatively representable morphism `f : X ⟶ Y`, then for any `g : F.obj a ⟶ Y`,
+`hf.fst g` denotes the first projection in the following diagram, given by the defining property
+of `f` being relatively representable
+```
+hf.pullback g --F.map (hf.snd g)--> F.obj a
+    |                                 |
+hf.fst g                              g
+    |                                 |
+    v                                 v
+    X -------------- f -------------> Y
+``` -/
 noncomputable abbrev fst : F.obj (hf.pullback g) ⟶ X :=
   (hf g).choose_spec.choose_spec.choose
 
-/-- Given a representable morphism `f' : F.obj Y ⟶ G`, `hf'.fst' g` denotes the preimage of
-`hf'.fst g` under yoneda. -/
+/-- When `F` is full, given a representable morphism `f' : F.obj b ⟶ Y`, then `hf'.fst' g` denotes
+the preimage of `hf'.fst g` under `F`. -/
 noncomputable abbrev fst' [Full F] : hf'.pullback g ⟶ b :=
   F.preimage (hf'.fst g)
 
@@ -113,7 +145,7 @@ lemma isPullback : IsPullback (hf.fst g) (F.map (hf.snd g)) f g :=
 @[reassoc]
 lemma w : hf.fst g ≫ f = F.map (hf.snd g) ≫ g := (hf.isPullback g).w
 
-/-- Variant of the pullback square when the first projection lies in the image of yoneda. -/
+/-- Variant of the pullback square when `F` is full, and given `f' : F.obj b ⟶ Y`. -/
 lemma isPullback' [Full F] : IsPullback (F.map (hf'.fst' g)) (F.map (hf'.snd g)) f' g :=
   (hf'.map_fst' _) ▸ hf'.isPullback g
 
@@ -129,22 +161,22 @@ lemma isPullback_of_map {X Y Z : C} {f : X ⟶ Z} (hf : F.relativelyRepresentabl
 
 variable {g}
 
-/-- Two morphisms `a b : Z ⟶ hf.pullback g` are equal if
+/-- Two morphisms `a b : c ⟶ hf.pullback g` are equal if
 * Their compositions (in `C`) with `hf.snd g : hf.pullback  ⟶ X` are equal.
 * The compositions of `F.map a` and `F.map b` with `hf.fst g` are equal. -/
 @[ext 100]
-lemma hom_ext [Faithful F] {Z : C} {a b : Z ⟶ hf.pullback g}
+lemma hom_ext [Faithful F] {c : C} {a b : c ⟶ hf.pullback g}
     (h₁ : F.map a ≫ hf.fst g = F.map b ≫ hf.fst g)
     (h₂ : a ≫ hf.snd g = b ≫ hf.snd g) : a = b :=
   F.map_injective <|
     PullbackCone.IsLimit.hom_ext (hf.isPullback g).isLimit h₁ (by simpa using F.congr_map h₂)
 
 /-- In the case of a representable morphism `f' : F.obj Y ⟶ G`, whose codomain lies
-in the image of yoneda, we get that two morphism `a b : Z ⟶ hf.pullback g` are equal if
+in the image of `F`, we get that two morphism `a b : Z ⟶ hf.pullback g` are equal if
 * Their compositions (in `C`) with `hf'.snd g : hf.pullback  ⟶ X` are equal.
 * Their compositions (in `C`) with `hf'.fst' g : hf.pullback  ⟶ Y` are equal. -/
 @[ext]
-lemma hom_ext' [Full F] [Faithful F] {Z : C} {a b : Z ⟶ hf'.pullback g}
+lemma hom_ext' [Full F] [Faithful F] {c : C} {a b : c ⟶ hf'.pullback g}
     (h₁ : a ≫ hf'.fst' g = b ≫ hf'.fst' g)
     (h₂ : a ≫ hf'.snd g = b ≫ hf'.snd g) : a = b :=
   hf'.hom_ext (by simpa [map_fst'] using F.congr_map h₁) h₂
@@ -153,8 +185,8 @@ section
 
 variable {c : C} (i : F.obj c ⟶ X) (h : c ⟶ a) (hi : i ≫ f = F.map h ≫ g)
 
-/-- The lift (in `C`) obtained from the universal property of `yoneda.obj (hf.pullback g)`, in the
-case when the cone point is in the image of `yoneda.obj`. -/
+/-- The lift (in `C`) obtained from the universal property of `F.obj (hf.pullback g)`, in the
+case when the cone point is in the image of `F.obj`. -/
 noncomputable def lift [Full F] : c ⟶ hf.pullback g :=
   F.preimage <| PullbackCone.IsLimit.lift (hf.isPullback g).isLimit _ _ hi
 
@@ -172,7 +204,7 @@ section
 
 variable {c : C} (i : c ⟶ b) (h : c ⟶ a) (hi : F.map i ≫ f' = F.map h ≫ g)
 
-/-- Variant of `lift` in the case when the domain of `f` lies in the image of `yoneda.obj`. Thus,
+/-- Variant of `lift` in the case when the domain of `f` lies in the image of `F.obj`. Thus,
 in this case, one can obtain the lift directly by giving two morphisms in `C`. -/
 noncomputable def lift' [Full F] : c ⟶ hf'.pullback g := hf'.lift _ _ hi
 
@@ -186,7 +218,7 @@ lemma lift'_snd [Full F] [Faithful F] : hf'.lift' i h hi ≫ hf'.snd g = h := by
 
 end
 
-/-- Given two representable morphisms `f' : yoneda.obj Y ⟶ G` and `g : yoneda.obj X ⟶ G`, we
+/-- Given two representable morphisms `f' : F.obj b ⟶ Y` and `g : F.obj a ⟶ Y`, we
 obtain an isomorphism `hf'.pullback g ⟶ hg.pullback f'`. -/
 noncomputable def symmetry [Full F] : hf'.pullback g ⟶ hg.pullback f' :=
   hg.lift' (hf'.snd g) (hf'.fst' g) (hf'.isPullback' _).w.symm
