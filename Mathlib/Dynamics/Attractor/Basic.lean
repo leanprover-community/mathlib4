@@ -1,9 +1,12 @@
 import Mathlib.Dynamics.Ergodic.MeasurePreserving
 import Mathlib.Dynamics.BirkhoffSum.Average
 import Mathlib.Data.Set.Card
+import Mathlib.MeasureTheory.Function.ConvergenceInMeasure
 
 open MeasureTheory Filter Set Function
 open scoped Topology NNReal Pointwise
+
+#check Nat.instMeasurableSpace
 
 def MulAction.IsWanderingPoint (M : Type*) [One M] [TopologicalSpace M]
     {X : Type*} [TopologicalSpace X] [SMul M X] (x : X) : Prop :=
@@ -30,3 +33,12 @@ def statisticalAttractor (f : X → X) (μ : Measure X) : Set X :=
 def minimalAttractor (f : X → X) (μ : Measure X) : Set X :=
   ⋂₀ {s : Set X | IsClosed s ∧ ∀ U ∈ 𝓝ˢ s,
     Tendsto (birkhoffAverage ℝ≥0 (f ⁻¹' ·) μ · Uᶜ) atTop (𝓝 0)}
+
+theorem minimalAttractor_subset_statisticalAttractor
+    (f : X → X) (μ : Measure X) [IsFiniteMeasure μ] :
+    minimalAttractor f μ ⊆ statisticalAttractor f μ := by
+  refine sInter_subset_sInter fun s ⟨hsc, hs⟩ ↦ ⟨hsc, fun U hU ↦ ?_⟩
+  simp only [birkhoffAverage, birkhoffSum, ← preimage_iterate_eq, ENNReal.tendsto_nhds_zero]
+  intro ε hε
+  have := tendstoInMeasure_of_tendsto_ae ?_ (hs U hU)
+  
