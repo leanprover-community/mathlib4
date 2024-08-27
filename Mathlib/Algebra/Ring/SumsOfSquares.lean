@@ -3,12 +3,9 @@ Copyright (c) 2024 Florent Schaffhauser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Florent Schaffhauser, Artie Khovanov
 -/
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Algebra.Group.Submonoid.Basic
-import Mathlib.Algebra.Group.Even
+import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Subsemiring.Basic
-import Mathlib.Algebra.BigOperators.Ring
 
 /-!
 # Sums of squares
