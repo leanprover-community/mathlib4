@@ -110,7 +110,7 @@ def preorderTheory : L.Theory :=
 
 instance : Theory.IsUniversal L.preorderTheory := ⟨by
   simp only [preorderTheory, Set.mem_insert_iff, Set.mem_singleton_iff, forall_eq_or_imp, forall_eq]
-  exact ⟨leSymb.reflexive_isUniversal, leSymb.transitive_isUniversal⟩⟩
+  exact ⟨leSymb.isUniversal_reflexive, leSymb.isUniversal_transitive⟩⟩
 
 /-- The theory of partial orders. -/
 def partialOrderTheory : L.Theory :=
@@ -119,8 +119,8 @@ def partialOrderTheory : L.Theory :=
 instance : Theory.IsUniversal L.partialOrderTheory := ⟨by
   simp only [partialOrderTheory,
     Set.mem_insert_iff, Set.mem_singleton_iff, forall_eq_or_imp, forall_eq]
-  exact ⟨leSymb.reflexive_isUniversal, leSymb.antisymmetric_isUniversal,
-    leSymb.transitive_isUniversal⟩⟩
+  exact ⟨leSymb.isUniversal_reflexive, leSymb.isUniversal_antisymmetric,
+    leSymb.isUniversal_transitive⟩⟩
 
 /-- The theory of linear orders. -/
 def linearOrderTheory : L.Theory :=
@@ -129,8 +129,8 @@ def linearOrderTheory : L.Theory :=
 instance : Theory.IsUniversal L.linearOrderTheory := ⟨by
   simp only [linearOrderTheory,
     Set.mem_insert_iff, Set.mem_singleton_iff, forall_eq_or_imp, forall_eq]
-  exact ⟨leSymb.reflexive_isUniversal, leSymb.antisymmetric_isUniversal,
-    leSymb.transitive_isUniversal, leSymb.total_isUniversal⟩⟩
+  exact ⟨leSymb.isUniversal_reflexive, leSymb.isUniversal_antisymmetric,
+    leSymb.isUniversal_transitive, leSymb.isUniversal_total⟩⟩
 
 example [L.Structure M] [M ⊨ L.linearOrderTheory] (S : L.Substructure M) :
     S ⊨ L.linearOrderTheory := inferInstance

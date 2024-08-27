@@ -440,22 +440,22 @@ lemma isQF (r : L.Relations l) (ts : Fin l → L.Term (α ⊕ (Fin n))) :
 
 variable (r : L.Relations 2)
 
-protected lemma reflexive_isUniversal : r.reflexive.IsUniversal :=
+protected lemma isUniversal_reflexive : r.reflexive.IsUniversal :=
   (r.isQF _).isUniversal.all
 
-protected lemma irreflexive_isUniversal : r.irreflexive.IsUniversal :=
+protected lemma isUniversal_irreflexive : r.irreflexive.IsUniversal :=
   (r.isAtomic _).isQF.not.isUniversal.all
 
-protected lemma symmetric_isUniversal : r.symmetric.IsUniversal :=
+protected lemma isUniversal_symmetric : r.symmetric.IsUniversal :=
   ((r.isQF _).imp (r.isQF _)).isUniversal.all.all
 
-protected lemma antisymmetric_isUniversal : r.antisymmetric.IsUniversal :=
+protected lemma isUniversal_antisymmetric : r.antisymmetric.IsUniversal :=
   ((r.isQF _).imp ((r.isQF _).imp (IsAtomic.equal _ _).isQF)).isUniversal.all.all
 
-protected lemma transitive_isUniversal : r.transitive.IsUniversal :=
+protected lemma isUniversal_transitive : r.transitive.IsUniversal :=
   ((r.isQF _).imp ((r.isQF _).imp (r.isQF _))).isUniversal.all.all.all
 
-protected lemma total_isUniversal : r.total.IsUniversal :=
+protected lemma isUniversal_total : r.total.IsUniversal :=
   ((r.isQF _).sup (r.isQF _)).isUniversal.all.all
 
 end Relations
