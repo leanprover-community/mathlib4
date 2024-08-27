@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Florent Schaffhauser, Artie Khovanov
 -/
 import Mathlib.Algebra.BigOperators.Ring
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Ring.Subsemiring.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Ring.Subsemiring.Basic
 
 /-!
 # Sums of squares
