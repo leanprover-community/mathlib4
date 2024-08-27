@@ -1832,7 +1832,7 @@ theorem exists_measurable_le_forall_setLIntegral_eq [SFinite μ] (f : α → ℝ
   have hφle : φ ≤ f := fun x ↦ iSup_le (hgf · x)
   refine ⟨φ, hφm, hφle, fun s ↦ ?_⟩
   -- Now we show the inequality between set integrals.
-  -- Choose a simple function `ψ ≤ f` with values in `ℝ≥0` and prove  for `ψ`.
+  -- Choose a simple function `ψ ≤ f` with values in `ℝ≥0` and prove for `ψ`.
   rw [lintegral_eq_nnreal]
   refine iSup₂_le fun ψ hψ ↦ ?_
   -- Choose `n` such that `ψ x ≤ n` for all `x`.
@@ -1943,7 +1943,8 @@ constant. -/
 theorem lintegral_le_of_forall_fin_meas_le [MeasurableSpace α] {μ : Measure α} [SigmaFinite μ]
     (C : ℝ≥0∞) {f : α → ℝ≥0∞}
     (hf : ∀ s, MeasurableSet s → μ s ≠ ∞ → ∫⁻ x in s, f x ∂μ ≤ C) : ∫⁻ x, f x ∂μ ≤ C :=
-  @lintegral_le_of_forall_fin_meas_trim_le _ _ _ _ _ (by rwa [trim_eq_self]) C _ hf
+  have : SigmaFinite (μ.trim le_rfl) := by rwa [trim_eq_self]
+  lintegral_le_of_forall_fin_meas_trim_le _ C hf
 
 theorem SimpleFunc.exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : MeasurableSpace α}
     {μ : Measure α} [SigmaFinite μ] {f : α →ₛ ℝ≥0} {L : ℝ≥0∞} (hL : L < ∫⁻ x, f x ∂μ) :

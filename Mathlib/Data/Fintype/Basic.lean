@@ -76,7 +76,7 @@ theorem mem_univ (x : α) : x ∈ (univ : Finset α) :=
 theorem mem_univ_val : ∀ x, x ∈ (univ : Finset α).1 :=
   mem_univ
 
-theorem eq_univ_iff_forall : s = univ ↔ ∀ x, x ∈ s := by simp [ext_iff]
+theorem eq_univ_iff_forall : s = univ ↔ ∀ x, x ∈ s := by simp [Finset.ext_iff]
 
 theorem eq_univ_of_forall : (∀ x, x ∈ s) → s = univ :=
   eq_univ_iff_forall.2
@@ -162,7 +162,7 @@ open Lean Elab Term Meta Batteries.ExtendedBinder
   `Finset ?α`.
 
 See also
-* `Init.Set` for the `Set` builder notation elaborator that this elaborator partly overrides.
+* `Data.Set.Defs` for the `Set` builder notation elaborator that this elaborator partly overrides.
 * `Data.Finset.Basic` for the `Finset` builder notation elaborator partly overriding this one for
   syntax of the form `{x ∈ s | p x}`.
 * `Data.Fintype.Basic` for the `Finset` builder notation elaborator handling syntax of the form
@@ -348,7 +348,7 @@ namespace Finset
 variable  {s t : Finset α}
 
 @[simp] lemma subtype_eq_univ {p : α → Prop} [DecidablePred p] [Fintype {a // p a}] :
-    s.subtype p = univ ↔ ∀ ⦃a⦄, p a → a ∈ s := by simp [ext_iff]
+    s.subtype p = univ ↔ ∀ ⦃a⦄, p a → a ∈ s := by simp [Finset.ext_iff]
 
 @[simp] lemma subtype_univ [Fintype α] (p : α → Prop) [DecidablePred p] [Fintype {a // p a}] :
     univ.subtype p = univ := by simp
@@ -569,7 +569,7 @@ def ofEquiv (α : Type*) [Fintype α] (f : α ≃ β) : Fintype β :=
 def ofSubsingleton (a : α) [Subsingleton α] : Fintype α :=
   ⟨{a}, fun _ => Finset.mem_singleton.2 (Subsingleton.elim _ _)⟩
 
--- In principle, this could be a `simp` theorem but it applies to any occurence of `univ` and
+-- In principle, this could be a `simp` theorem but it applies to any occurrence of `univ` and
 -- required unification of the (possibly very complex) `Fintype` instances.
 theorem univ_ofSubsingleton (a : α) [Subsingleton α] : @univ _ (ofSubsingleton a) = {a} :=
   rfl

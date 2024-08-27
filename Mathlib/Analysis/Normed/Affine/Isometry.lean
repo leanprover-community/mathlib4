@@ -674,15 +674,13 @@ theorem pointReflection_symm (x : P) : (pointReflection 𝕜 x).symm = pointRefl
 theorem dist_pointReflection_fixed (x y : P) : dist (pointReflection 𝕜 x y) x = dist y x := by
   rw [← (pointReflection 𝕜 x).dist_map y x, pointReflection_self]
 
-set_option linter.deprecated false in
 theorem dist_pointReflection_self' (x y : P) :
     dist (pointReflection 𝕜 x y) y = ‖2 • (x -ᵥ y)‖ := by
   rw [pointReflection_apply, dist_eq_norm_vsub V, vadd_vsub_assoc, two_nsmul]
 
-set_option linter.deprecated false in
 theorem dist_pointReflection_self (x y : P) :
     dist (pointReflection 𝕜 x y) y = ‖(2 : 𝕜)‖ * dist x y := by
-  rw [dist_pointReflection_self', ← two_smul' 𝕜 (x -ᵥ y), norm_smul, ← dist_eq_norm_vsub V]
+  rw [dist_pointReflection_self', two_nsmul, ← two_smul 𝕜, norm_smul, ← dist_eq_norm_vsub V]
 
 theorem pointReflection_fixed_iff [Invertible (2 : 𝕜)] {x y : P} :
     pointReflection 𝕜 x y = y ↔ y = x :=
