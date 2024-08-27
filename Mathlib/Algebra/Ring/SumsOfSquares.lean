@@ -73,7 +73,7 @@ theorem IsSumSq.add [AddMonoid R] [Mul R] {S1 S2 : R}
 
 /-- In an additive unital magma with multiplication, `x * x` is a sum of squares for all `x`. -/
 theorem IsSumSq.mul_self [AddZeroClass R] [Mul R] (a : R) : IsSumSq (a * a) := by
-  rw [← add_zero (a * a)]; exact IsSumSq.sq_add _ _ IsSumSq.zero
+  rw [← add_zero (a * a)]; exact sq_add _ _ IsSumSq.zero
 
 /-- In an additive unital magma with multiplication `R`, squares in `R` are sums of squares.
 By definition, a square in `R` is a term `x : R` such that `x = y * y` for some `y : R`
