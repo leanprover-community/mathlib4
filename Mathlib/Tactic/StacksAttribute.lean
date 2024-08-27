@@ -9,7 +9,7 @@ import Lean.Attributes
 The `stacks` attribute.
 
 This allows tagging of mathlib lemmas with the corresponding
-[Tags](stacks.math.columbia.edu/tags) from the Stacks Project.
+[Tags](https://stacks.math.columbia.edu/tags) from the Stacks Project.
 -/
 
 open Lean
