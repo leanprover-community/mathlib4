@@ -58,9 +58,6 @@ See the [Tags page](https://stacks.math.columbia.edu/tags) in the Stacks project
 -/
 syntax (name := stacks) "stacks " (stackTag)? (ppSpace str)? : attr
 
-initialize stacksTagAttribute : TagAttribute ←
-  registerTagAttribute `stacks1 "hel"
-
 initialize Lean.registerBuiltinAttribute {
   name := `stacks
   descr := "Apply a Stacks project tag to a theorem."
