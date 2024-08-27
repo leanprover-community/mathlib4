@@ -1087,9 +1087,8 @@ theorem val_pow {m n : ℕ} {a : ZMod n} [ilt : Fact (1 < n)] (h : a.val ^ m < n
   | zero => simp [ZMod.val_one]
   | succ m ih =>
     have : a.val ^ m < n := by
-      by_cases ha : a = 0
-      · cases ha
-        by_cases hm : m = 0
+      obtain rfl | ha := eq_or_ne a 0
+      · by_cases hm : m = 0
         · cases hm; simp [ilt.out]
         · simp only [val_zero, ne_eq, hm, not_false_eq_true, zero_pow, Nat.zero_lt_of_lt h]
       · exact lt_of_le_of_lt
