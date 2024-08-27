@@ -273,7 +273,7 @@ theorem bitwise_swap {f : Bool → Bool → Bool} :
     bitwise (Function.swap f) = Function.swap (bitwise f) := by
   funext m n
   simp only [Function.swap]
-  induction' m using Nat.strongInductionOn with m ih generalizing n
+  induction' m using Nat.strongRecOn with m ih generalizing n
   cases' m with m
   <;> cases' n with n
   <;> try rw [bitwise_zero_left, bitwise_zero_right]

@@ -1408,7 +1408,7 @@ theorem liftRel_join.lem (R : α → β → Prop) {S T} {U : WSeq α → WSeq β
           U s1 s2)
     {a} (ma : a ∈ destruct (join S)) : ∃ b, b ∈ destruct (join T) ∧ LiftRelO R U a b := by
   cases' exists_results_of_mem ma with n h; clear ma; revert S T ST a
-  induction' n using Nat.strongInductionOn with n IH
+  induction' n using Nat.strongRecOn with n IH
   intro S T ST a ra; simp only [destruct_join] at ra
   exact
     let ⟨o, m, k, rs1, rs2, en⟩ := of_results_bind ra
