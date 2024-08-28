@@ -70,7 +70,7 @@ initialize Lean.registerBuiltinAttribute {
     match tag.getSubstring? with
       | none => logWarning "Please, enter a Tag after `stacks`."
       | some str =>
-        let str := str.toString.trimRight
+        let str := (str.toString.trimRight.replace "«" "").replace "»" ""
         if str.length != 4 then
           logWarningAt tag
             m!"Tag '{str}' is {str.length} characters long, but it should be 4 characters long"
