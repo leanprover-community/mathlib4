@@ -813,7 +813,7 @@ theorem range_quot_mk (r : α → α → Prop) : range (Quot.mk r) = univ :=
 @[simp]
 theorem range_quot_lift {r : ι → ι → Prop} (hf : ∀ x y, r x y → f x = f y) :
     range (Quot.lift f hf) = range f :=
-  ext fun _ => (surjective_quot_mk _).exists
+  ext fun _ => Quot.surjective_mk.exists
 
 -- Porting note: the `Setoid α` instance is not being filled in
 @[simp]

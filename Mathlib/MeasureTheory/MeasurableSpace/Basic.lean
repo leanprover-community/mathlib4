@@ -426,7 +426,7 @@ instance Quot.instMeasurableSpace {α} {r : α → α → Prop} [m : MeasurableS
 
 instance Quotient.instMeasurableSpace {α} {s : Setoid α} [m : MeasurableSpace α] :
     MeasurableSpace (Quotient s) :=
-  m.map Quotient.mk''
+  m.map (Quotient.mk _)
 
 @[to_additive]
 instance QuotientGroup.measurableSpace {G} [Group G] [MeasurableSpace G] (S : Subgroup G) :
@@ -434,20 +434,22 @@ instance QuotientGroup.measurableSpace {G} [Group G] [MeasurableSpace G] (S : Su
   Quotient.instMeasurableSpace
 
 theorem measurableSet_quotient {s : Setoid α} {t : Set (Quotient s)} :
-    MeasurableSet t ↔ MeasurableSet (Quotient.mk'' ⁻¹' t) :=
+    MeasurableSet t ↔ MeasurableSet (Quotient.mk _ ⁻¹' t) :=
   Iff.rfl
 
 theorem measurable_from_quotient {s : Setoid α} {f : Quotient s → β} :
-    Measurable f ↔ Measurable (f ∘ Quotient.mk'') :=
+    Measurable f ↔ Measurable (f ∘ Quotient.mk _) :=
   Iff.rfl
+
+@[measurability]
+theorem measurable_quotient_mk {s : Setoid α} : Measurable (Quotient.mk _ : α → Quotient s) :=
+  fun _ => id
 
 @[measurability]
 theorem measurable_quotient_mk' [s : Setoid α] : Measurable (Quotient.mk' : α → Quotient s) :=
   fun _ => id
 
-@[measurability]
-theorem measurable_quotient_mk'' {s : Setoid α} : Measurable (Quotient.mk'' : α → Quotient s) :=
-  fun _ => id
+@[deprecated (since := "2024-08-28")] alias measurable_quotient_mk'' := measurable_quotient_mk
 
 @[measurability]
 theorem measurable_quot_mk {r : α → α → Prop} : Measurable (Quot.mk r) := fun _ => id
@@ -455,7 +457,7 @@ theorem measurable_quot_mk {r : α → α → Prop} : Measurable (Quot.mk r) := 
 @[to_additive (attr := measurability)]
 theorem QuotientGroup.measurable_coe {G} [Group G] [MeasurableSpace G] {S : Subgroup G} :
     Measurable ((↑) : G → G ⧸ S) :=
-  measurable_quotient_mk''
+  measurable_quotient_mk
 
 @[to_additive]
 nonrec theorem QuotientGroup.measurable_from_quotient {G} [Group G] [MeasurableSpace G]

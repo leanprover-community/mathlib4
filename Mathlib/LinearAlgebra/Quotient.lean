@@ -49,7 +49,7 @@ namespace Quotient
 /-- Map associating to an element of `M` the corresponding element of `M/p`,
 when `p` is a submodule of `M`. -/
 def mk {p : Submodule R M} : M → M ⧸ p :=
-  Quotient.mk''
+  _root_.Quotient.mk _
 
 /- porting note: here and throughout elaboration is sped up *tremendously* (in some cases even
 avoiding timeouts) by providing type ascriptions to `mk` (or `mk x`) and its variants. Lean 3
@@ -58,7 +58,7 @@ theorem mk'_eq_mk' {p : Submodule R M} (x : M) :
     @Quotient.mk' _ (quotientRel p) x = (mk : M → M ⧸ p) x :=
   rfl
 
-theorem mk''_eq_mk {p : Submodule R M} (x : M) : (Quotient.mk'' x : M ⧸ p) = (mk : M → M ⧸ p) x :=
+theorem mk''_eq_mk {p : Submodule R M} (x : M) : (⟦x⟧ : M ⧸ p) = (mk : M → M ⧸ p) x :=
   rfl
 
 theorem quot_mk_eq_mk {p : Submodule R M} (x : M) : (Quot.mk _ x : M ⧸ p) = (mk : M → M ⧸ p) x :=
@@ -74,7 +74,7 @@ instance : Zero (M ⧸ p) where
   -- Use Quotient.mk'' instead of mk here because mk is not reducible.
   -- This would lead to non-defeq diamonds.
   -- See also the same comment at the One instance for Con.
-  zero := Quotient.mk'' 0
+  zero := ⟦0⟧
 
 instance : Inhabited (M ⧸ p) :=
   ⟨0⟩
@@ -141,7 +141,7 @@ variable {S : Type*}
 -- TODO: leanprover-community/mathlib4#7432
 instance mulAction' [Monoid S] [SMul S R] [MulAction S M] [IsScalarTower S R M]
     (P : Submodule R M) : MulAction S (M ⧸ P) :=
-  { Function.Surjective.mulAction mk (surjective_quot_mk _) <| Submodule.Quotient.mk_smul P with
+  { Function.Surjective.mulAction mk Quot.surjective_mk <| Submodule.Quotient.mk_smul P with
     toSMul := instSMul' _ }
 
 -- Porting note: should this be marked as a `@[default_instance]`?
@@ -161,7 +161,7 @@ instance smulZeroClass (P : Submodule R M) : SMulZeroClass R (M ⧸ P) :=
 instance distribSMul' [SMul S R] [DistribSMul S M] [IsScalarTower S R M] (P : Submodule R M) :
     DistribSMul S (M ⧸ P) :=
   { Function.Surjective.distribSMul {toFun := mk, map_zero' := rfl, map_add' := fun _ _ => rfl}
-    (surjective_quot_mk _) (Submodule.Quotient.mk_smul P) with
+    Quot.surjective_mk (Submodule.Quotient.mk_smul P) with
     toSMulZeroClass := smulZeroClass' _ }
 
 -- Porting note: should this be marked as a `@[default_instance]`?
@@ -173,7 +173,7 @@ instance distribSMul (P : Submodule R M) : DistribSMul R (M ⧸ P) :=
 instance distribMulAction' [Monoid S] [SMul S R] [DistribMulAction S M] [IsScalarTower S R M]
     (P : Submodule R M) : DistribMulAction S (M ⧸ P) :=
   { Function.Surjective.distribMulAction {toFun := mk, map_zero' := rfl, map_add' := fun _ _ => rfl}
-    (surjective_quot_mk _) (Submodule.Quotient.mk_smul P) with
+    Quot.surjective_mk (Submodule.Quotient.mk_smul P) with
     toMulAction := mulAction' _ }
 
 -- Porting note: should this be marked as a `@[default_instance]`?
@@ -185,7 +185,7 @@ instance distribMulAction (P : Submodule R M) : DistribMulAction R (M ⧸ P) :=
 instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] (P : Submodule R M) :
     Module S (M ⧸ P) :=
   { Function.Surjective.module _ {toFun := mk, map_zero' := by rfl, map_add' := fun _ _ => by rfl}
-    (surjective_quot_mk _) (Submodule.Quotient.mk_smul P) with
+    Quot.surjective_mk (Submodule.Quotient.mk_smul P) with
     toDistribMulAction := distribMulAction' _ }
 
 -- Porting note: should this be marked as a `@[default_instance]`?

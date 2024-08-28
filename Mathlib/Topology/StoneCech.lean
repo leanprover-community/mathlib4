@@ -252,7 +252,7 @@ theorem continuous_preStoneCechUnit : Continuous (preStoneCechUnit : α → PreS
     exact Quot.sound ⟨x, pure_le_nhds x, gx⟩
 
 theorem denseRange_preStoneCechUnit : DenseRange (preStoneCechUnit : α → PreStoneCech α) :=
-  (surjective_quot_mk _).denseRange.comp denseRange_pure continuous_coinduced_rng
+  Quot.surjective_mk.denseRange.comp denseRange_pure continuous_coinduced_rng
 
 
 section Extension

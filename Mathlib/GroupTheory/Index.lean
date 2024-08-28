@@ -68,7 +68,7 @@ theorem index_comap_of_surjective {f : G' →* G} (hf : Function.Surjective f) :
     exact (key x y).mpr
   · refine Quotient.ind fun x => ?_
     obtain ⟨y, hy⟩ := hf x
-    exact ⟨y, (Quotient.map_mk f _ y).trans (congr_arg Quotient.mk'' hy)⟩
+    exact ⟨y, (Quotient.map_mk f _ y).trans (congr_arg (Quotient.mk _) hy)⟩
 
 @[to_additive]
 theorem index_comap (f : G' →* G) :
