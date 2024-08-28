@@ -53,38 +53,36 @@ open Parser
 
 
 
-/-- `stacksTag` is the node kind of Stacks Project Tag: a sequence of digits and
+/-- `stacksTag` is the node kind of Stacks Project Tags: a sequence of digits and
 uppercase letters. -/
 abbrev stacksTagKind : SyntaxNodeKind := `stacksTag
 
-def stacksTagFn (startPos : String.Pos) : ParserFn := fun c s =>
-  let s := takeWhileFn (fun c => c.isDigit || c.isUpper) c s
-  mkNodeToken stacksTagKind startPos c s
+def stacksTagFn : ParserFn := fun c s =>
+  --let input := c.input
+  let i := s.pos
+  let st := takeWhileFn (fun c => c.isDigit || c.isUpper) c s
+  mkNodeToken stacksTagKind i c st
 
-def tokenFnAux : ParserFn := fun c s =>
-  let input := c.input
-  let i     := s.pos
-  stacksTagFn i c (s.next input i)
-
-def myidentNoAntiquot : Parser := {
-  fn   := tokenFnAux
-  info := mkAtomicInfo "myident"
+def stacksTagNoAntiquot : Parser := {
+  fn   := stacksTagFn
+  info := mkAtomicInfo "stacksTag"
 }
 
-
 --@[run_builtin_parser_attribute_hooks]
-def myident : Parser :=
-  withAntiquot (mkAntiquot "myident" identKind) myidentNoAntiquot
+--@[run_parser_attribute_hooks]
+def stacksTag : Parser :=
+  withAntiquot (mkAntiquot "stacksTag" stacksTagKind) stacksTagNoAntiquot
 
 set_option pp.rawOnError true
 
+
 run_cmd
-  let env ← getEnv
-  let stx ← `(myident| 0B111S)
+  --let env ← getEnv
+  let stx ← `(stacksTag| «50B11D1S»)
   logInfo stx
 
-@[inherit_doc Parser.Category.stackTag]
-syntax (num)? (ident)? : stackTag
+--@[inherit_doc Parser.Category.stackTag]
+--syntax (num)? (ident)? : stackTag
 
 --def d : Parser.Parser where
 --  fn := _
@@ -95,7 +93,7 @@ The `TAG` is mandatory.
 
 See the [Tags page](https://stacks.math.columbia.edu/tags) in the Stacks project for more details.
 -/
-syntax (name := stacks) "stacks " (stackTag)? (ppSpace str)? : attr
+syntax (name := stacks) "stacks " stacksTag (ppSpace str)? : attr
 
 initialize Lean.registerBuiltinAttribute {
   name := `stacks
@@ -114,8 +112,8 @@ initialize Lean.registerBuiltinAttribute {
         else if 2 ≤ (str.split (fun c => (!c.isUpper) && !c.isDigit)).length then
           logWarningAt tag m!"Tag '{str}' should only consist of digits and uppercase letters"
         else match stx with
-          | `(attr| stacks $_:stackTag $comment:str) => addTagEntry decl str comment.getString
-          | `(attr| stacks $_:stackTag) => addTagEntry decl str ""
+          | `(attr| stacks $_:stacksTag $comment:str) => addTagEntry decl str comment.getString
+          | `(attr| stacks $_:stacksTag) => addTagEntry decl str ""
           | _ => throwUnsupportedSyntax
 }
 
