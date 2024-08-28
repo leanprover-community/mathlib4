@@ -770,10 +770,8 @@ instance (N : LieSubmodule K L M) [IsTriangularizable K L M] : IsTriangularizabl
 See also `LieModule.iSup_genWeightSpace_eq_top'`. -/
 lemma iSup_genWeightSpace_eq_top [IsTriangularizable K L M] :
     ⨆ χ : L → K, genWeightSpace M χ = ⊤ := by
-  suffices ∀ m, finrank K M = m → ⨆ χ : L → K, genWeightSpace M χ = ⊤ from this (finrank K M) rfl
-  intro n
+  generalize h_dim : finrank K M = n
   induction n using Nat.strongInductionOn generalizing M with | ind n ih => ?_
-  intro h_dim
   obtain h' | ⟨y : L, hy : ¬ ∃ φ, genWeightSpaceOf M φ y = ⊤⟩ :=
     forall_or_exists_not (fun (x : L) ↦ ∃ (φ : K), genWeightSpaceOf M φ x = ⊤)
   · choose χ hχ using h'
