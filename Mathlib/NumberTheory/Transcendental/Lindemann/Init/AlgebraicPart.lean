@@ -718,9 +718,9 @@ theorem linear_independent_exp_aux'' (u : ι → ℂ) (hu : ∀ i, IsIntegral �
   · congr 1
     · norm_cast
     · refine sum_congr rfl fun i hi => ?_
-      rw [← hw' i hi, Rat.num_intCast, ← zsmul_eq_smul_cast]
+      rw [← hw' i hi, Rat.num_intCast, Int.cast_smul_eq_zsmul]
   · simp_rw [mul_comm _ (N : ℂ), mul_comm _ (N : ℚ), ← smul_smul, ← smul_sum, ← nsmul_eq_mul,
-      ← nsmul_eq_smul_cast, ← smul_add, h, nsmul_zero]
+      Nat.cast_smul_eq_nsmul, ← smul_add, h, nsmul_zero]
 
 theorem linear_independent_exp_aux' (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i))
     (u_inj : Function.Injective u) (v : ι → ℂ) (hv : ∀ i, IsIntegral ℚ (v i)) (v0 : v ≠ 0)

@@ -186,7 +186,7 @@ theorem exist_mem_orbit_add_eq_zero (x y : GalConjClasses F E) :
     rw [← mk_neg, eq, add_eq_zero_iff_eq_neg.mp h]
   · rintro rfl
     refine ⟨-y.out, y.out, ?_⟩
-    simp_rw [mk_neg, out_eq, neg_add_self, and_self]
+    simp_rw [mk_neg, out_eq, neg_add_cancel, and_self]
 
 noncomputable nonrec def minpoly : GalConjClasses F E → F[X] :=
   Quotient.lift (minpoly F) fun _ b ⟨f, h⟩ => h ▸ minpoly.algEquiv_eq f b
@@ -196,6 +196,9 @@ theorem minpoly_mk (x : E) : minpoly (mk F x) = _root_.minpoly F x :=
 
 theorem minpoly_out (c : GalConjClasses F E) : _root_.minpoly F c.out = minpoly c := by
   rw [← c.out_eq, minpoly_mk, c.out_eq]
+
+theorem splits_minpoly [n : Normal F E] (c : GalConjClasses F E) :
+    Splits (algebraMap F E) (minpoly c) := by rw [← c.out_eq, minpoly_mk]; exact n.splits c.out
 
 variable [Algebra.IsSeparable F E]
 -- most lemmas work with Algebra.IsIntegral / Algebra.IsAlgebraic
@@ -210,9 +213,6 @@ theorem minpoly_ne_zero (c : GalConjClasses F E) : minpoly c ≠ 0 := by
 
 theorem irreducible_minpoly (c : GalConjClasses F E) : Irreducible (minpoly c) := by
   rw [← c.out_eq, minpoly_mk]; exact minpoly.irreducible (Algebra.IsSeparable.isIntegral F _)
-
-theorem splits_minpoly [n : Normal F E] (c : GalConjClasses F E) :
-    Splits (algebraMap F E) (minpoly c) := by rw [← c.out_eq, minpoly_mk]; exact n.splits c.out
 
 theorem separable_minpoly (c : GalConjClasses F E) : Separable (minpoly c) := by
   rw [← c.out_eq, minpoly_mk]; exact Algebra.IsSeparable.isSeparable F c.out

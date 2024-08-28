@@ -98,7 +98,7 @@ theorem P_le' (p : ℕ → ℂ[X]) (s : ℂ)
   simp_rw [_root_.abs_pow] at hc; use |c|, abs_nonneg _; intro q
   have h := integral_f_eq (p q) s
   rw [← @mul_right_inj' _ _ (exp s) _ _ (exp_ne_zero _),
-    neg_sub_neg, mul_sub, ← mul_assoc _ (exp _), ← exp_add, add_neg_self, exp_zero, one_mul] at h
+    neg_sub_neg, mul_sub, ← mul_assoc _ (exp _), ← exp_add, add_neg_cancel, exp_zero, one_mul] at h
   replace h := congr_arg Complex.abs h
   simp_rw [map_mul, abs_exp] at h
   rw [← h, mul_le_mul_left (Real.exp_pos _), mul_comm]
@@ -224,7 +224,7 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
     rw [C_leadingCoeff_mul_prod_multiset_X_sub_C this, Polynomial.map_mul, Polynomial.map_pow,
       Polynomial.map_pow, map_X]
   specialize h r this; clear this
-  rw [le_div_iff (Nat.cast_pos.mpr (Nat.factorial_pos _) : (0 : ℝ) < _), ← abs_natCast, ← map_mul,
+  rw [le_div_iff₀ (Nat.cast_pos.mpr (Nat.factorial_pos _) : (0 : ℝ) < _), ← abs_natCast, ← map_mul,
     mul_comm, mul_sub, ← nsmul_eq_mul, ← nsmul_eq_mul, smul_smul, mul_comm,
     Nat.mul_factorial_pred q0, ← h]
   rw [nsmul_eq_mul, ← Int.cast_natCast, ← zsmul_eq_mul, smul_smul, mul_add, ← nsmul_eq_mul, ←
