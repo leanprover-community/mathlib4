@@ -50,8 +50,8 @@ theorem isIntegral_of_mem_ringOfIntegers' {x : (integralClosure v.valuationSubri
 
 variable (E : Type _) [Field E] [Algebra K E] [Algebra L E] [IsScalarTower K L E]
 
--- Imprementation note: this instance was not needed until 28-08-2024
 instance : IsScalarTower v.valuationSubring L E := Subring.instIsScalarTowerSubtypeMem _
+
 /-- Given an algebra between two field extensions `L` and `E` of a field `K` with a valuation `v`,
   create an algebra between their two rings of integers. -/
 instance algebra :
