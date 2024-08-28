@@ -51,8 +51,9 @@ To avoid searching through the local context and adding corresponding `Algebra` 
 
 For now, one always needs to give the name of the corresponding `Algebra` property as an argument
 to the `algebraize` attribute. However, often this can be inferred from the name of the declaration
-with the tag (i.e. `RingHom.FiniteType` corresponds `Algebra.FiniteType`). It would be nice to
-add functionality that defaults to this name if no argument is given to the `algebraize` attribute.
+which has been tagged (i.e. `RingHom.FiniteType` corresponds `Algebra.FiniteType`). It would be nice
+to add functionality that defaults to this name if no argument is given to the `algebraize`
+attribute.
 
 Make this tactic more robust: catch more possible errors, and improve error messages.
 
@@ -71,7 +72,7 @@ def algebraizeGetParam (_ : Name) (stx : Syntax) : AttrM Name := do
   | `(attr| algebraize $name:ident) => return name.getId
   /- TODO: instead of throwing an error, if thm is `RingHom.Property`, this should return
     `Algebra.Property` -/
-  | `(attr| algebraize) => throwError "algebraize requires an argument"
+  | `(attr| algebraize) => throwError "algebraize requires an argument (for now)"
   | _ => throwError "unexpected algebraize argument"
 
 /-- The `algebraize` attribute. This is a user attribute that is used to tag `RingHom` properties
