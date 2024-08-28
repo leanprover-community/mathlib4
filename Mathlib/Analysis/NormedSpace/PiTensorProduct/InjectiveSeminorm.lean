@@ -146,8 +146,8 @@ theorem injectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
     (_ : SeminormedAddCommGroup G) (_ : NormedSpace 𝕜 G), p = Seminorm.comp (normSeminorm 𝕜
     (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
     (toDualContinuousMultilinearMap G (𝕜 := 𝕜) (E := E))}, p.1 x := by
-  simp [injectiveSeminorm]
-  exact Seminorm.sSup_apply dualSeminorms_bounded
+  simpa only [injectiveSeminorm, Set.coe_setOf, Set.mem_setOf_eq]
+    using Seminorm.sSup_apply dualSeminorms_bounded
 
 theorem norm_eval_le_injectiveSeminorm (f : ContinuousMultilinearMap 𝕜 E F) (x : ⨂[𝕜] i, E i) :
     ‖lift f.toMultilinearMap x‖ ≤ ‖f‖ * injectiveSeminorm x := by
@@ -264,7 +264,7 @@ linear equivalence between `ContinuousMultilinearMap 𝕜 E F` and `(⨂[𝕜] i
 (induced by `PiTensorProduct.lift`). Here we give the upgrade of this equivalence to
 an isometric linear equivalence; in particular, it is a continuous linear equivalence.
 -/
-noncomputable def liftIsometry  : ContinuousMultilinearMap 𝕜 E F ≃ₗᵢ[𝕜] (⨂[𝕜] i, E i) →L[𝕜] F :=
+noncomputable def liftIsometry : ContinuousMultilinearMap 𝕜 E F ≃ₗᵢ[𝕜] (⨂[𝕜] i, E i) →L[𝕜] F :=
   { liftEquiv 𝕜 E F with
     norm_map' := by
       intro f
@@ -397,10 +397,16 @@ noncomputable def mapLMonoidHom : (Π i, E i →L[𝕜] E i) →* ((⨂[𝕜] i,
 protected theorem mapL_pow (f : Π i, E i →L[𝕜] E i) (n : ℕ) :
     mapL (f ^ n) = mapL f ^ n := MonoidHom.map_pow mapLMonoidHom _ _
 
+-- We redeclare `ι` here, and later dependent arguments,
+-- to avoid the `[Fintype ι]` assumption present throughout the rest of the file.
 open Function in
-private theorem mapL_add_smul_aux [DecidableEq ι] (i : ι) (u : E i →L[𝕜] E' i) :
+private theorem mapL_add_smul_aux {ι : Type uι}
+    {E : ι → Type uE} [(i : ι) → SeminormedAddCommGroup (E i)] [(i : ι) → NormedSpace 𝕜 (E i)]
+    {E' : ι → Type u_1} [(i : ι) → SeminormedAddCommGroup (E' i)] [(i : ι) → NormedSpace 𝕜 (E' i)]
+    (f : (i : ι) → E i →L[𝕜] E' i)
+    [DecidableEq ι] (i : ι) (u : E i →L[𝕜] E' i) :
     (fun j ↦ (update f i u j).toLinearMap) =
-    update (fun j ↦ (f j).toLinearMap) i u.toLinearMap := by
+      update (fun j ↦ (f j).toLinearMap) i u.toLinearMap := by
   symm
   rw [update_eq_iff]
   constructor

@@ -8,8 +8,6 @@ import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.GroupTheory.Congruence.Basic
 
-#align_import ring_theory.congruence from "leanprover-community/mathlib"@"2f39bcbc98f8255490f8d4562762c9467694c809"
-
 /-!
 # Congruence relations on rings
 
@@ -34,7 +32,6 @@ Most of the time you likely want to use the `Ideal.Quotient` API that is built o
 /-- A congruence relation on a type with an addition and multiplication is an equivalence relation
 which preserves both. -/
 structure RingCon (R : Type*) [Add R] [Mul R] extends Con R, AddCon R where
-#align ring_con RingCon
 
 /-- The induced multiplicative congruence from a `RingCon`. -/
 add_decl_doc RingCon.toCon
@@ -55,7 +52,6 @@ inductive RingConGen.Rel [Add R] [Mul R] (r : R → R → Prop) : R → R → Pr
       RingConGen.Rel r (w + y) (x + z)
   | mul : ∀ {w x y z}, RingConGen.Rel r w x → RingConGen.Rel r y z →
       RingConGen.Rel r (w * y) (x * z)
-#align ring_con_gen.rel RingConGen.Rel
 
 /-- The inductively defined smallest ring congruence relation containing a given binary
     relation. -/
@@ -64,7 +60,6 @@ def ringConGen [Add R] [Mul R] (r : R → R → Prop) : RingCon R where
   iseqv := ⟨RingConGen.Rel.refl, @RingConGen.Rel.symm _ _ _ _, @RingConGen.Rel.trans _ _ _ _⟩
   add' := RingConGen.Rel.add
   mul' := RingConGen.Rel.mul
-#align ring_con_gen ringConGen
 
 namespace RingCon
 
@@ -85,7 +80,6 @@ instance : FunLike (RingCon R) R (R → Prop) :=
 
 theorem rel_eq_coe : c.r = c :=
   rfl
-#align ring_con.rel_eq_coe RingCon.rel_eq_coe
 
 @[simp]
 theorem toCon_coe_eq_coe : (c.toCon : R → R → Prop) = c :=
@@ -93,23 +87,18 @@ theorem toCon_coe_eq_coe : (c.toCon : R → R → Prop) = c :=
 
 protected theorem refl (x) : c x x :=
   c.refl' x
-#align ring_con.refl RingCon.refl
 
 protected theorem symm {x y} : c x y → c y x :=
   c.symm'
-#align ring_con.symm RingCon.symm
 
 protected theorem trans {x y z} : c x y → c y z → c x z :=
   c.trans'
-#align ring_con.trans RingCon.trans
 
 protected theorem add {w x y z} : c w x → c y z → c (w + y) (x + z) :=
   c.add'
-#align ring_con.add RingCon.add
 
 protected theorem mul {w x y z} : c w x → c y z → c (w * y) (x * z) :=
   c.mul'
-#align ring_con.mul RingCon.mul
 
 protected theorem sub {S : Type*} [AddGroup S] [Mul S] (t : RingCon S)
     {a b c d : S} (h : t a b) (h' : t c d) : t (a - c) (b - d) := t.toAddCon.sub h h'
@@ -148,7 +137,6 @@ variable [Add R] [Mul R] (c : RingCon R)
 /-- Defining the quotient by a congruence relation of a type with addition and multiplication. -/
 protected def Quotient :=
   Quotient c.toSetoid
-#align ring_con.quotient RingCon.Quotient
 
 variable {c}
 
@@ -172,14 +160,12 @@ instance (priority := 500) [_d : ∀ a b, Decidable (c a b)] : DecidableEq c.Quo
 @[simp]
 theorem quot_mk_eq_coe (x : R) : Quot.mk c x = (x : c.Quotient) :=
   rfl
-#align ring_con.quot_mk_eq_coe RingCon.quot_mk_eq_coe
 
 /-- Two elements are related by a congruence relation `c` iff they are represented by the same
 element of the quotient by `c`. -/
 @[simp]
 protected theorem eq {a b : R} : (a : c.Quotient) = (b : c.Quotient) ↔ c a b :=
   Quotient.eq''
-#align ring_con.eq RingCon.eq
 
 end Basic
 
@@ -200,14 +186,12 @@ instance : Add c.Quotient := inferInstanceAs (Add c.toAddCon.Quotient)
 @[simp, norm_cast]
 theorem coe_add (x y : R) : (↑(x + y) : c.Quotient) = ↑x + ↑y :=
   rfl
-#align ring_con.coe_add RingCon.coe_add
 
 instance : Mul c.Quotient := inferInstanceAs (Mul c.toCon.Quotient)
 
 @[simp, norm_cast]
 theorem coe_mul (x y : R) : (↑(x * y) : c.Quotient) = ↑x * ↑y :=
   rfl
-#align ring_con.coe_mul RingCon.coe_mul
 
 end add_mul
 
@@ -220,7 +204,6 @@ instance : Zero c.Quotient := inferInstanceAs (Zero c.toAddCon.Quotient)
 @[simp, norm_cast]
 theorem coe_zero : (↑(0 : R) : c.Quotient) = 0 :=
   rfl
-#align ring_con.coe_zero RingCon.coe_zero
 
 end Zero
 
@@ -233,7 +216,6 @@ instance : One c.Quotient := inferInstanceAs (One c.toCon.Quotient)
 @[simp, norm_cast]
 theorem coe_one : (↑(1 : R) : c.Quotient) = 1 :=
   rfl
-#align ring_con.coe_one RingCon.coe_one
 
 end One
 
@@ -246,7 +228,6 @@ instance : SMul α c.Quotient := inferInstanceAs (SMul α c.toCon.Quotient)
 @[simp, norm_cast]
 theorem coe_smul (a : α) (x : R) : (↑(a • x) : c.Quotient) = a • (x : c.Quotient) :=
   rfl
-#align ring_con.coe_smul RingCon.coe_smul
 
 end SMul
 
@@ -259,22 +240,18 @@ instance : Neg c.Quotient := inferInstanceAs (Neg c.toAddCon.Quotient)
 @[simp, norm_cast]
 theorem coe_neg (x : R) : (↑(-x) : c.Quotient) = -x :=
   rfl
-#align ring_con.coe_neg RingCon.coe_neg
 
 instance : Sub c.Quotient := inferInstanceAs (Sub c.toAddCon.Quotient)
 
 @[simp, norm_cast]
 theorem coe_sub (x y : R) : (↑(x - y) : c.Quotient) = x - y :=
   rfl
-#align ring_con.coe_sub RingCon.coe_sub
 
 instance hasZSMul : SMul ℤ c.Quotient := inferInstanceAs (SMul ℤ c.toAddCon.Quotient)
-#align ring_con.has_zsmul RingCon.hasZSMul
 
 @[simp, norm_cast]
 theorem coe_zsmul (z : ℤ) (x : R) : (↑(z • x) : c.Quotient) = z • (x : c.Quotient) :=
   rfl
-#align ring_con.coe_zsmul RingCon.coe_zsmul
 
 end NegSubZSMul
 
@@ -283,12 +260,10 @@ section NSMul
 variable [AddMonoid R] [Mul R] (c : RingCon R)
 
 instance hasNSMul : SMul ℕ c.Quotient := inferInstanceAs (SMul ℕ c.toAddCon.Quotient)
-#align ring_con.has_nsmul RingCon.hasNSMul
 
 @[simp, norm_cast]
 theorem coe_nsmul (n : ℕ) (x : R) : (↑(n • x) : c.Quotient) = n • (x : c.Quotient) :=
   rfl
-#align ring_con.coe_nsmul RingCon.coe_nsmul
 
 end NSMul
 
@@ -301,7 +276,6 @@ instance : Pow c.Quotient ℕ := inferInstanceAs (Pow c.toCon.Quotient ℕ)
 @[simp, norm_cast]
 theorem coe_pow (x : R) (n : ℕ) : (↑(x ^ n) : c.Quotient) = (x : c.Quotient) ^ n :=
   rfl
-#align ring_con.coe_pow RingCon.coe_pow
 
 end Pow
 
@@ -315,7 +289,6 @@ instance : NatCast c.Quotient :=
 @[simp, norm_cast]
 theorem coe_natCast (n : ℕ) : (↑(n : R) : c.Quotient) = n :=
   rfl
-#align ring_con.coe_nat_cast RingCon.coe_natCast
 
 @[deprecated (since := "2024-04-17")]
 alias coe_nat_cast := coe_natCast
@@ -332,7 +305,6 @@ instance : IntCast c.Quotient :=
 @[simp, norm_cast]
 theorem coe_intCast (n : ℕ) : (↑(n : R) : c.Quotient) = n :=
   rfl
-#align ring_con.coe_int_cast RingCon.coe_intCast
 
 @[deprecated (since := "2024-04-17")]
 alias coe_int_cast := coe_intCast
@@ -398,18 +370,15 @@ instance [CommRing R] (c : RingCon R) : CommRing c.Quotient :=
 instance isScalarTower_right [Add R] [MulOneClass R] [SMul α R] [IsScalarTower α R R]
     (c : RingCon R) : IsScalarTower α c.Quotient c.Quotient where
   smul_assoc _ := Quotient.ind₂' fun _ _ => congr_arg Quotient.mk'' <| smul_mul_assoc _ _ _
-#align ring_con.is_scalar_tower_right RingCon.isScalarTower_right
 
 instance smulCommClass [Add R] [MulOneClass R] [SMul α R] [IsScalarTower α R R]
     [SMulCommClass α R R] (c : RingCon R) : SMulCommClass α c.Quotient c.Quotient where
   smul_comm _ := Quotient.ind₂' fun _ _ => congr_arg Quotient.mk'' <| (mul_smul_comm _ _ _).symm
-#align ring_con.smul_comm_class RingCon.smulCommClass
 
 instance smulCommClass' [Add R] [MulOneClass R] [SMul α R] [IsScalarTower α R R]
     [SMulCommClass R α R] (c : RingCon R) : SMulCommClass c.Quotient α c.Quotient :=
   haveI := SMulCommClass.symm R α R
   SMulCommClass.symm _ _ _
-#align ring_con.smul_comm_class' RingCon.smulCommClass'
 
 instance [Monoid α] [NonAssocSemiring R] [DistribMulAction α R] [IsScalarTower α R R]
     (c : RingCon R) : DistribMulAction α c.Quotient :=
@@ -432,7 +401,6 @@ def mk' [NonAssocSemiring R] (c : RingCon R) : R →+* c.Quotient where
   map_one' := rfl
   map_add' _ _ := rfl
   map_mul' _ _ := rfl
-#align ring_con.mk' RingCon.mk'
 
 end Quotient
 

@@ -88,7 +88,6 @@ def toNormedField : NormedField L :=
       simp only [← sub_add_sub_cancel x y z]
       exact le_trans (norm_add_le _ _)
         (max_le_add_of_nonneg (norm_nonneg _) (norm_nonneg _))
-    edist_dist := fun x y => by simp only [ENNReal.ofReal_eq_coe_nnreal (norm_nonneg _)]
     eq_of_dist_eq_zero := fun hxy => eq_of_sub_eq_zero (norm_eq_zero hxy)
     dist_eq := fun x y => rfl
     norm_mul' := fun x y => by simp only [norm, ← NNReal.coe_mul, _root_.map_mul]
@@ -97,8 +96,7 @@ def toNormedField : NormedField L :=
       haveI : Nonempty { ε : ℝ // ε > 0 } := nonempty_Ioi_subtype
       ext U
       rw [hasBasis_iff.mp (Valued.hasBasis_uniformity L Γ₀), iInf_subtype', mem_iInf_of_directed]
-      · simp only [exists_true_left, mem_principal, Subtype.exists, gt_iff_lt,
-          Subtype.coe_mk, exists_prop, true_and_iff]
+      · simp only [true_and_iff, mem_principal, Subtype.exists, gt_iff_lt, exists_prop]
         refine ⟨fun ⟨ε, hε⟩ => ?_, fun ⟨r, hr_pos, hr⟩ => ?_⟩
         · set δ : ℝ≥0 := hv.hom ε with hδ
           have hδ_pos : 0 < δ := by
@@ -120,7 +118,7 @@ def toNormedField : NormedField L :=
           apply lt_trans _ hu
           rw [NNReal.coe_lt_coe, ← neg_sub, Valuation.map_neg]
           exact (RankOne.strictMono Valued.v).lt_iff_lt.mpr hx
-      · simp only [gt_iff_lt, ge_iff_le, Directed]
+      · simp only [Directed]
         intro x y
         use min x y
         simp only [le_principal_iff, mem_principal, setOf_subset_setOf, Prod.forall]

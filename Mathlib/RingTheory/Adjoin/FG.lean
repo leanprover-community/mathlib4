@@ -8,8 +8,6 @@ import Mathlib.Algebra.MvPolynomial.Basic
 import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.RingTheory.PrincipalIdealDomain
 
-#align_import ring_theory.adjoin.fg from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
-
 /-!
 # Adjoining elements to form subalgebras
 
@@ -79,7 +77,6 @@ theorem fg_trans (h1 : (adjoin R s).toSubmodule.FG) (h2 : (adjoin (adjoin R s) t
     rw [smul_mul_assoc]
     refine smul_mem _ _ ?_
     exact subset_span ⟨t, hlp ht, z, hlq hz, rfl⟩
-#align algebra.fg_trans Algebra.fg_trans
 
 end Algebra
 
@@ -92,19 +89,15 @@ variable [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 `Algebra.adjoin R t = S`. -/
 def FG (S : Subalgebra R A) : Prop :=
   ∃ t : Finset A, Algebra.adjoin R ↑t = S
-#align subalgebra.fg Subalgebra.FG
 
 theorem fg_adjoin_finset (s : Finset A) : (Algebra.adjoin R (↑s : Set A)).FG :=
   ⟨s, rfl⟩
-#align subalgebra.fg_adjoin_finset Subalgebra.fg_adjoin_finset
 
 theorem fg_def {S : Subalgebra R A} : S.FG ↔ ∃ t : Set A, Set.Finite t ∧ Algebra.adjoin R t = S :=
   Iff.symm Set.exists_finite_iff_finset
-#align subalgebra.fg_def Subalgebra.fg_def
 
 theorem fg_bot : (⊥ : Subalgebra R A).FG :=
   ⟨∅, Finset.coe_empty ▸ Algebra.adjoin_empty R A⟩
-#align subalgebra.fg_bot Subalgebra.fg_bot
 
 theorem fg_of_fg_toSubmodule {S : Subalgebra R A} : S.toSubmodule.FG → S.FG :=
   fun ⟨t, ht⟩ ↦ ⟨t, le_antisymm
@@ -114,18 +107,15 @@ theorem fg_of_fg_toSubmodule {S : Subalgebra R A} : S.toSubmodule.FG → S.FG :=
         (show x ∈ span R ↑t by
           rw [ht]
           exact hx)⟩
-#align subalgebra.fg_of_fg_to_submodule Subalgebra.fg_of_fg_toSubmodule
 
 theorem fg_of_noetherian [IsNoetherian R A] (S : Subalgebra R A) : S.FG :=
   fg_of_fg_toSubmodule (IsNoetherian.noetherian (Subalgebra.toSubmodule S))
-#align subalgebra.fg_of_noetherian Subalgebra.fg_of_noetherian
 
 theorem fg_of_submodule_fg (h : (⊤ : Submodule R A).FG) : (⊤ : Subalgebra R A).FG :=
   let ⟨s, hs⟩ := h
   ⟨s, toSubmodule.injective <| by
     rw [Algebra.top_toSubmodule, eq_top_iff, ← hs, span_le]
     exact Algebra.subset_adjoin⟩
-#align subalgebra.fg_of_submodule_fg Subalgebra.fg_of_submodule_fg
 
 theorem FG.prod {S : Subalgebra R A} {T : Subalgebra R B} (hS : S.FG) (hT : T.FG) :
     (S.prod T).FG := by
@@ -136,7 +126,6 @@ theorem FG.prod {S : Subalgebra R A} {T : Subalgebra R B} (hS : S.FG) (hT : T.FG
     Set.Finite.union (Set.Finite.image _ (Set.Finite.union hs.1 (Set.finite_singleton _)))
       (Set.Finite.image _ (Set.Finite.union ht.1 (Set.finite_singleton _))),
     Algebra.adjoin_inl_union_inr_eq_prod R s t⟩
-#align subalgebra.fg.prod Subalgebra.FG.prod
 
 section
 
@@ -145,7 +134,6 @@ open scoped Classical
 theorem FG.map {S : Subalgebra R A} (f : A →ₐ[R] B) (hs : S.FG) : (S.map f).FG :=
   let ⟨s, hs⟩ := hs
   ⟨s.image f, by rw [Finset.coe_image, Algebra.adjoin_image, hs]⟩
-#align subalgebra.fg.map Subalgebra.FG.map
 
 end
 
@@ -157,7 +145,6 @@ theorem fg_of_fg_map (S : Subalgebra R A) (f : A →ₐ[R] B) (hf : Function.Inj
       rw [← Algebra.adjoin_image, Finset.coe_preimage, Set.image_preimage_eq_of_subset, hs]
       rw [← AlgHom.coe_range, ← Algebra.adjoin_le_iff, hs, ← Algebra.map_top]
       exact map_mono le_top⟩
-#align subalgebra.fg_of_fg_map Subalgebra.fg_of_fg_map
 
 theorem fg_top (S : Subalgebra R A) : (⊤ : Subalgebra R S).FG ↔ S.FG :=
   ⟨fun h ↦ by
@@ -166,7 +153,6 @@ theorem fg_top (S : Subalgebra R A) : (⊤ : Subalgebra R S).FG ↔ S.FG :=
     fg_of_fg_map _ S.val Subtype.val_injective <| by
       rw [Algebra.map_top, range_val]
       exact h⟩
-#align subalgebra.fg_top Subalgebra.fg_top
 
 theorem induction_on_adjoin [IsNoetherian R A] (P : Subalgebra R A → Prop) (base : P ⊥)
     (ih : ∀ (S : Subalgebra R A) (x : A), P S → P (Algebra.adjoin R (insert x S)))
@@ -178,7 +164,6 @@ theorem induction_on_adjoin [IsNoetherian R A] (P : Subalgebra R A → Prop) (ba
   intro x t _ h
   rw [Finset.coe_insert]
   simpa only [Algebra.adjoin_insert_adjoin] using ih _ x h
-#align subalgebra.induction_on_adjoin Subalgebra.induction_on_adjoin
 
 end Subalgebra
 
@@ -191,7 +176,6 @@ variable [CommSemiring R] [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
 instance AlgHom.isNoetherianRing_range (f : A →ₐ[R] B) [IsNoetherianRing A] :
     IsNoetherianRing f.range :=
   _root_.isNoetherianRing_range f.toRingHom
-#align alg_hom.is_noetherian_ring_range AlgHom.isNoetherianRing_range
 
 end Semiring
 
@@ -204,12 +188,10 @@ theorem isNoetherianRing_of_fg {S : Subalgebra R A} (HS : S.FG) [IsNoetherianRin
     IsNoetherianRing S :=
   let ⟨t, ht⟩ := HS
   ht ▸ (Algebra.adjoin_eq_range R (↑t : Set A)).symm ▸ AlgHom.isNoetherianRing_range _
-#align is_noetherian_ring_of_fg isNoetherianRing_of_fg
 
 theorem is_noetherian_subring_closure (s : Set R) (hs : s.Finite) :
     IsNoetherianRing (Subring.closure s) :=
   show IsNoetherianRing (subalgebraOfSubring (Subring.closure s)) from
     Algebra.adjoin_int s ▸ isNoetherianRing_of_fg (Subalgebra.fg_def.2 ⟨s, hs, rfl⟩)
-#align is_noetherian_subring_closure is_noetherian_subring_closure
 
 end Ring

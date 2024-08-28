@@ -109,7 +109,7 @@ theorem comap_eval_le_generateFrom_squareCylinders_singleton
     MeasurableSpace.comap (Function.eval i) (m i) ≤
       MeasurableSpace.generateFrom
         ((fun t ↦ ({i} : Set ι).pi t) '' univ.pi fun i ↦ {s : Set (α i) | MeasurableSet s}) := by
-  simp only [Function.eval, singleton_pi, ge_iff_le]
+  simp only [Function.eval, singleton_pi]
   rw [MeasurableSpace.comap_eq_generateFrom]
   refine MeasurableSpace.generateFrom_mono fun S ↦ ?_
   simp only [mem_setOf_eq, mem_image, mem_univ_pi, forall_exists_index, and_imp]

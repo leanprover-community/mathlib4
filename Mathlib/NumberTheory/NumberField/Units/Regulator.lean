@@ -37,7 +37,7 @@ open MeasureTheory Classical BigOperators NumberField.InfinitePlace
 
 variable [NumberField K]
 
-/-- The regulator of a number fied `K`. -/
+/-- The regulator of a number field `K`. -/
 def regulator : ℝ := Zlattice.covolume (unitLattice K)
 
 theorem regulator_ne_zero : regulator K ≠ 0 := Zlattice.covolume_ne_zero (unitLattice K) volume
@@ -77,21 +77,21 @@ theorem abs_det_eq_abs_det (u : Fin (rank K) → (𝓞 K)ˣ)
   -- And `g` corresponds to the restriction of `f⁻¹` to `{w // w ≠ w₂}`
   let g : {w // w ≠ w₂} ≃ Fin (rank K) :=
     (Equiv.subtypeEquiv f.symm (fun _ ↦ by simp [f])).trans
-      (finSuccAboveEquiv (f.symm w₂)).toEquiv.symm
+      (finSuccAboveEquiv (f.symm w₂)).symm
   have h_col := congr_arg abs <| Matrix.det_permute (g.trans e₂.symm)
     (Matrix.of fun i w : {w // w ≠ w₂} ↦ (mult w.val : ℝ) * (w.val (u (e₂ i) : K)).log)
   rw [abs_mul, ← Int.cast_abs, Equiv.Perm.sign_abs, Int.cast_one, one_mul] at h_col
   rw [← h_col]
   have h := congr_arg abs <| Matrix.submatrix_succAbove_det_eq_negOnePow_submatrix_succAbove_det'
     (Matrix.of fun i w ↦ (mult (f w) : ℝ) * ((f w) (u i)).log) ?_ 0 (f.symm w₂)
-  rw [← Matrix.det_reindex_self e₁, ← Matrix.det_reindex_self g]
-  · rw [Units.smul_def, abs_zsmul, Int.abs_negOnePow, one_smul] at h
-    convert h
-    · ext; simp only [ne_eq, Matrix.reindex_apply, Matrix.submatrix_apply, Matrix.of_apply,
-        Equiv.apply_symm_apply, Equiv.trans_apply, Fin.succAbove_zero, id_eq, finSuccEquiv_succ,
-        Equiv.optionSubtype_symm_apply_apply_coe, f]
-    · ext; simp only [ne_eq, Equiv.coe_trans, Matrix.reindex_apply, Matrix.submatrix_apply,
-        Function.comp_apply, Equiv.apply_symm_apply, id_eq, Matrix.of_apply]; rfl
+  · rw [← Matrix.det_reindex_self e₁, ← Matrix.det_reindex_self g]
+    · rw [Units.smul_def, abs_zsmul, Int.abs_negOnePow, one_smul] at h
+      convert h
+      · ext; simp only [ne_eq, Matrix.reindex_apply, Matrix.submatrix_apply, Matrix.of_apply,
+          Equiv.apply_symm_apply, Equiv.trans_apply, Fin.succAbove_zero, id_eq, finSuccEquiv_succ,
+          Equiv.optionSubtype_symm_apply_apply_coe, f]
+      · ext; simp only [ne_eq, Equiv.coe_trans, Matrix.reindex_apply, Matrix.submatrix_apply,
+          Function.comp_apply, Equiv.apply_symm_apply, id_eq, Matrix.of_apply]; rfl
   · intro _
     simp_rw [Matrix.of_apply, ← Real.log_pow]
     rw [← Real.log_prod, Equiv.prod_comp f (fun w ↦ (w (u _) ^ (mult w))), prod_eq_abs_norm,

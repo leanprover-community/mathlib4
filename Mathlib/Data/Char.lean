@@ -3,11 +3,8 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Init.Data.Nat.Lemmas
-import Mathlib.Init.Order.Defs
 import Mathlib.Data.Nat.Defs
-
-#align_import data.char from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
+import Mathlib.Order.Defs
 
 /-!
 # More `Char` instances
@@ -30,5 +27,3 @@ instance : LinearOrder Char where
   min := fun a b => if a ≤ b then a else b
   max := fun a b => if a ≤ b then b else a
   decidableLE := inferInstance
-
-#align char.of_nat_to_nat Char.ofNat_toNat

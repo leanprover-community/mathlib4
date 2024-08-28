@@ -5,8 +5,6 @@ Authors: Johan Commelin
 -/
 import Mathlib.RingTheory.WittVector.IsPoly
 
-#align_import ring_theory.witt_vector.mul_p from "leanprover-community/mathlib"@"7abfbc92eec87190fba3ed3d5ec58e7c167e7144"
-
 /-!
 ## Multiplication by `n` in the ring of Witt vectors
 
@@ -43,7 +41,6 @@ the coefficients of `x * n` in terms of the coefficients of the Witt vector `x`.
 noncomputable def wittMulN : ℕ → ℕ → MvPolynomial ℕ ℤ
   | 0 => 0
   | n + 1 => fun k => bind₁ (Function.uncurry <| ![wittMulN n, X]) (wittAdd p k)
-#align witt_vector.witt_mul_n WittVector.wittMulN
 
 variable {p}
 
@@ -57,7 +54,6 @@ theorem mulN_coeff (n : ℕ) (x : 𝕎 R) (k : ℕ) :
     fin_cases b
     · simp [Function.uncurry, Matrix.cons_val_zero, ih]
     · simp [Function.uncurry, Matrix.cons_val_one, Matrix.head_cons, aeval_X]
-#align witt_vector.mul_n_coeff WittVector.mulN_coeff
 
 variable (p)
 
@@ -65,7 +61,6 @@ variable (p)
 @[is_poly]
 theorem mulN_isPoly (n : ℕ) : IsPoly p fun R _Rcr x => x * n :=
   ⟨⟨wittMulN p n, fun R _Rcr x => by funext k; exact mulN_coeff n x k⟩⟩
-#align witt_vector.mul_n_is_poly WittVector.mulN_isPoly
 
 @[simp]
 theorem bind₁_wittMulN_wittPolynomial (n k : ℕ) :
@@ -77,7 +72,6 @@ theorem bind₁_wittMulN_wittPolynomial (n k : ℕ) :
     rw [add_mul, one_mul, bind₁_rename, bind₁_rename]
     simp only [ih, Function.uncurry, Function.comp, bind₁_X_left, AlgHom.id_apply,
       Matrix.cons_val_zero, Matrix.head_cons, Matrix.cons_val_one]
-#align witt_vector.bind₁_witt_mul_n_witt_polynomial WittVector.bind₁_wittMulN_wittPolynomial
 
 end
 
