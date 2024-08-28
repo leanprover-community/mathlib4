@@ -38,7 +38,7 @@ section
 variable {R : C ⥤ D} [R.Faithful] [R.Full] {L : D ⥤ C} (adj : L ⊣ R)
 
 /-- The uncurried retraction of the unit in the proof of `4 → 1` in `day_reflection` below. -/
-noncomputable def adjRetractionAux
+private noncomputable def adjRetractionAux
     (c : C) (d : D) [IsIso (L.map (adj.unit.app ((ihom d).obj (R.obj c)) ⊗ adj.unit.app d))] :
   d ⊗ ((L ⋙ R).obj ((ihom d).obj (R.obj c))) ⟶ (R.obj c) :=
   (β_ _ _).hom ≫ (_ ◁ adj.unit.app _) ≫ adj.unit.app _ ≫
@@ -46,12 +46,12 @@ noncomputable def adjRetractionAux
       (L ⋙ R).map ((ihom.ev _).app _) ≫ inv (adj.unit.app _)
 
 /-- The retraction of the unit in the proof of `4 → 1` in `day_reflection` below. -/
-noncomputable def adjRetraction (c : C) (d : D)
+private noncomputable def adjRetraction (c : C) (d : D)
     [IsIso (L.map (adj.unit.app ((ihom d).obj (R.obj c)) ⊗ adj.unit.app d))] :
     (L ⋙ R).obj ((ihom d).obj (R.obj c)) ⟶ ((ihom d).obj (R.obj c)) :=
   curry <| adjRetractionAux adj c d
 
-lemma adjRetraction_is_retraction (c : C) (d : D)
+private lemma adjRetraction_is_retraction (c : C) (d : D)
     [IsIso (L.map (adj.unit.app ((ihom d).obj (R.obj c)) ⊗ adj.unit.app d))] :
     adj.unit.app ((ihom d).obj (R.obj c)) ≫ adjRetraction adj c d = 𝟙 _ := by
   suffices (_ ◁ adj.unit.app _) ≫ adjRetractionAux adj c d = (ihom.ev _).app _ by
@@ -191,7 +191,6 @@ section
 variable [MonoidalCategory C]
 variable {L : MonoidalFunctor D C} {R : C ⥤ D} [R.Faithful] [R.Full] (adj : L.toFunctor ⊣ R)
 
-include adj in
 instance (d d' : D) : IsIso (L.map ((adj.unit.app d) ⊗ (adj.unit.app d'))) := by
   have := L.μ_natural (adj.unit.app d) (adj.unit.app d')
   change _ = (asIso _).hom ≫ _ at this
@@ -199,7 +198,6 @@ instance (d d' : D) : IsIso (L.map ((adj.unit.app d) ⊗ (adj.unit.app d'))) := 
   rw [← this]
   infer_instance
 
-include adj in
 instance (c : C) (d : D) : IsIso (adj.unit.app ((ihom d).obj (R.obj c))) := by
   revert c d
   rw [((isIso_tfae adj).out 0 3:)]
