@@ -41,6 +41,28 @@ We follow [wielandt1964].
 
 -/
 
+-- #find_home! doesn't find an adequate place for this
+theorem Setoid.nat_sum {α : Type _} [Finite α] {c : Set (Set α)} (hc : Setoid.IsPartition c) :
+    (finsum fun x : c => Set.ncard (x : Set α)) = Nat.card α := by
+  classical
+  have := Fintype.ofFinite α
+  simp only [finsum_eq_sum_of_fintype, Nat.card_eq_fintype_card, ← Set.Nat.card_coe_set_eq]
+  rw [← Fintype.card_sigma]
+  refine' Fintype.card_congr (Equiv.ofBijective (fun x => x.snd : (Σ a : ↥c, a) → α) _)
+  constructor
+  · -- injectivity
+    rintro ⟨⟨x, hx⟩, ⟨a, ha : a ∈ x⟩⟩ ⟨⟨y, hy⟩, ⟨b, hb : b ∈ y⟩⟩ hab
+    dsimp at hab
+    rw [hab] at ha
+    rw [Sigma.subtype_ext_iff]
+    simp only [Subtype.mk_eq_mk, Subtype.coe_mk]
+    apply And.intro _ hab
+    exact ExistsUnique.unique (hc.2 b) ⟨hx, ha⟩ ⟨hy, hb⟩
+  · -- surjectivity
+    intro a
+    obtain ⟨x, ⟨hx, ha : a ∈ x⟩, _⟩ := hc.2 a
+    use ⟨⟨x, hx⟩, ⟨a, ha⟩⟩
+
 open scoped BigOperators Pointwise
 
 namespace MulAction
@@ -483,34 +505,6 @@ def block_stabilizerOrderIso [htGX : IsPretransitive G X] (a : X) :
 end Stabilizer
 
 section Finite
-
-theorem _root_.Setoid.nat_sum {α : Type _} [Finite α] {c : Set (Set α)} (hc : Setoid.IsPartition c) :
-    (finsum fun x : c => Set.ncard (x : Set α)) = Nat.card α := by
-  classical
-  have := Fintype.ofFinite α
-  simp only [finsum_eq_sum_of_fintype, Nat.card_eq_fintype_card, ← Set.Nat.card_coe_set_eq]
-  rw [← Fintype.card_sigma]
-  refine' Fintype.card_congr (Equiv.ofBijective (fun x => x.snd : (Σ a : ↥c, a) → α) _)
-  constructor
-  · -- injectivity
-    rintro ⟨⟨x, hx⟩, ⟨a, ha : a ∈ x⟩⟩ ⟨⟨y, hy⟩, ⟨b, hb : b ∈ y⟩⟩ hab
-    dsimp at hab
-    rw [hab] at ha
-    rw [Sigma.subtype_ext_iff]
-    simp only [Subtype.mk_eq_mk, Subtype.coe_mk]
-    apply And.intro _ hab
-    exact ExistsUnique.unique (hc.2 b) ⟨hx, ha⟩ ⟨hy, hb⟩
-  · -- surjectivity
-    intro a
-    obtain ⟨x, ⟨hx, ha : a ∈ x⟩, _⟩ := hc.2 a
-    use ⟨⟨x, hx⟩, ⟨a, ha⟩⟩
-
-theorem _root_.Set.ncard_coe {α : Type*} (s : Set α) :
-    s.ncard = Set.ncard (Set.univ : Set (Set.Elem s)) := by
-  apply Set.ncard_congr (fun a ha ↦ ⟨a, ha⟩)
-  · exact fun a ha ↦ by simp only [Set.mem_univ]
-  · simp [Subtype.mk_eq_mk]
-  · exact fun ⟨a, ha⟩ _ ↦ ⟨a, ha, rfl⟩
 
 namespace IsBlock
 

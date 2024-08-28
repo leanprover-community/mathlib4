@@ -770,6 +770,13 @@ theorem ncard_congr {t : Set β} (f : ∀ a ∈ s, β) (h₁ : ∀ a ha, f a ha 
   exact Nat.card_congr (Equiv.ofBijective f' hbij)
 #align set.ncard_congr Set.ncard_congr
 
+theorem ncard_coe {α : Type*} (s : Set α) :
+    s.ncard = Set.ncard (Set.univ : Set (Set.Elem s)) := by
+  apply Set.ncard_congr (fun a ha ↦ ⟨a, ha⟩)
+  · exact fun a ha ↦ by simp only [Set.mem_univ]
+  · simp [Subtype.mk_eq_mk]
+  · exact fun ⟨a, ha⟩ _ ↦ ⟨a, ha, rfl⟩
+
 theorem ncard_le_ncard_of_injOn {t : Set β} (f : α → β) (hf : ∀ a ∈ s, f a ∈ t) (f_inj : InjOn f s)
     (ht : t.Finite := by toFinite_tac) :
     s.ncard ≤ t.ncard := by
