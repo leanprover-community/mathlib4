@@ -95,6 +95,13 @@ theorem AnalyticOn.fderiv [CompleteSpace F] (h : AnalyticOn 𝕜 f s) :
   rcases h y hy with ⟨p, r, hp⟩
   exact hp.fderiv.analyticAt
 
+lemma glouk [CompleteSpace F] (n : ℕ) (h : HasFPowerSeriesOnBall f p x r) :
+    HasFTaylorSeriesUpToOn n f (FTaylorSeries f) (EMetric.ball x r) := by
+  sorry
+
+
+#exit
+
 end fderiv
 
 section deriv
