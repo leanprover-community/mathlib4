@@ -28,10 +28,10 @@ regular topology.
 Note: This is one direction of `mem_sieves_iff_hasEffectiveEpi`, but is needed for the proof.
 -/
 theorem mem_sieves_of_hasEffectiveEpi (S : Sieve X) :
-    (∃ (Y : C) (π : Y ⟶ X), EffectiveEpi π ∧ S.arrows π) → (S ∈ (regularTopology C).sieves X) := by
+    (∃ (Y : C) (π : Y ⟶ X), EffectiveEpi π ∧ S.arrows π) → (S ∈ (regularTopology C) X) := by
   rintro ⟨Y, π, h⟩
   have h_le : Sieve.generate (Presieve.ofArrows (fun () ↦ Y) (fun _ ↦ π)) ≤ S := by
-    rw [Sieve.sets_iff_generate (Presieve.ofArrows _ _) S]
+    rw [Sieve.generate_le_iff (Presieve.ofArrows _ _) S]
     apply Presieve.le_of_factorsThru_sieve (Presieve.ofArrows _ _) S _
     intro W g f
     refine ⟨W, 𝟙 W, ?_⟩
@@ -44,8 +44,7 @@ theorem mem_sieves_of_hasEffectiveEpi (S : Sieve X) :
 instance {Y Y' : C} (π : Y ⟶ X) [EffectiveEpi π]
     (π' : Y' ⟶ Y) [EffectiveEpi π'] : EffectiveEpi (π' ≫ π) := by
   rw [effectiveEpi_iff_effectiveEpiFamily, ← Sieve.effectiveEpimorphic_family]
-  suffices h₂ : (Sieve.generate (Presieve.ofArrows _ _)) ∈
-      GrothendieckTopology.sieves (regularTopology C) X by
+  suffices h₂ : (Sieve.generate (Presieve.ofArrows _ _)) ∈ (regularTopology C) X by
     change Nonempty _
     rw [← Sieve.forallYonedaIsSheaf_iff_colimit]
     exact fun W => regularTopology.isSheaf_yoneda_obj W _ h₂
@@ -62,7 +61,7 @@ instance {Y Y' : C} (π : Y ⟶ X) [EffectiveEpi π]
 
 /-- A sieve is a cover for the regular topology if and only if it contains an `EffectiveEpi`. -/
 theorem mem_sieves_iff_hasEffectiveEpi (S : Sieve X) :
-    (S ∈ (regularTopology C).sieves  X) ↔
+    (S ∈ (regularTopology C) X) ↔
     ∃ (Y : C) (π : Y ⟶ X), EffectiveEpi π ∧ (S.arrows π) := by
   constructor
   · intro h

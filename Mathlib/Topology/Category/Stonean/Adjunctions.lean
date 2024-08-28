@@ -55,7 +55,4 @@ noncomputable def stoneCechAdjunction : typeToStonean ⊣ (forget Stonean) :=
 noncomputable instance forget.preservesLimits : Limits.PreservesLimits (forget Stonean) :=
   rightAdjointPreservesLimits stoneCechAdjunction
 
-theorem mono_iff_injective {X Y : Stonean} (f : X ⟶ Y) : Mono f ↔ Function.Injective f :=
-  ConcreteCategory.mono_iff_injective_of_preservesPullback f
-
 end Stonean

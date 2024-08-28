@@ -8,8 +8,6 @@ import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Ring.Subring.Pointwise
 import Mathlib.RingTheory.Adjoin.Basic
 
-#align_import algebra.algebra.subalgebra.pointwise from "leanprover-community/mathlib"@"b2c707cd190a58ea0565c86695a19e99ccecc215"
-
 /-!
 # Pointwise actions on subalgebras.
 
@@ -30,7 +28,6 @@ theorem mul_toSubmodule_le (S T : Subalgebra R A) :
   intro y hy z hz
   show y * z ∈ S ⊔ T
   exact mul_mem (Algebra.mem_sup_left hy) (Algebra.mem_sup_right hz)
-#align subalgebra.mul_to_submodule_le Subalgebra.mul_toSubmodule_le
 
 /-- As submodules, subalgebras are idempotent. -/
 @[simp]
@@ -42,7 +39,6 @@ theorem mul_self (S : Subalgebra R A) : (Subalgebra.toSubmodule S) * (Subalgebra
   · intro x hx1
     rw [← mul_one x]
     exact Submodule.mul_mem_mul hx1 (show (1 : A) ∈ S from one_mem S)
-#align subalgebra.mul_self Subalgebra.mul_self
 
 /-- When `A` is commutative, `Subalgebra.mul_toSubmodule_le` is strict. -/
 theorem mul_toSubmodule {R : Type*} {A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
@@ -63,7 +59,6 @@ theorem mul_toSubmodule {R : Type*} {A : Type*} [CommSemiring R] [CommSemiring A
   have := Submodule.mul_mem_mul hx hy
   rwa [mul_assoc, mul_comm _ (Subalgebra.toSubmodule T), ← mul_assoc _ _ (Subalgebra.toSubmodule S),
     mul_self, mul_comm (Subalgebra.toSubmodule T), ← mul_assoc, mul_self] at this
-#align subalgebra.mul_to_submodule Subalgebra.mul_toSubmodule
 
 variable {R' : Type*} [Semiring R'] [MulSemiringAction R' A] [SMulCommClass R' R A]
 
@@ -75,7 +70,6 @@ protected def pointwiseMulAction : MulAction R' (Subalgebra R A) where
   one_smul S := (congr_arg (fun f => S.map f) (AlgHom.ext <| one_smul R')).trans S.map_id
   mul_smul _a₁ _a₂ S :=
     (congr_arg (fun f => S.map f) (AlgHom.ext <| mul_smul _ _)).trans (S.map_map _ _).symm
-#align subalgebra.pointwise_mul_action Subalgebra.pointwiseMulAction
 
 scoped[Pointwise] attribute [instance] Subalgebra.pointwiseMulAction
 
@@ -84,30 +78,25 @@ open Pointwise
 @[simp]
 theorem coe_pointwise_smul (m : R') (S : Subalgebra R A) : ↑(m • S) = m • (S : Set A) :=
   rfl
-#align subalgebra.coe_pointwise_smul Subalgebra.coe_pointwise_smul
 
 @[simp]
 theorem pointwise_smul_toSubsemiring (m : R') (S : Subalgebra R A) :
     (m • S).toSubsemiring = m • S.toSubsemiring :=
   rfl
-#align subalgebra.pointwise_smul_to_subsemiring Subalgebra.pointwise_smul_toSubsemiring
 
 @[simp]
 theorem pointwise_smul_toSubmodule (m : R') (S : Subalgebra R A) :
     Subalgebra.toSubmodule (m • S) = m • Subalgebra.toSubmodule S :=
   rfl
-#align subalgebra.pointwise_smul_to_submodule Subalgebra.pointwise_smul_toSubmodule
 
 @[simp]
 theorem pointwise_smul_toSubring {R' R A : Type*} [Semiring R'] [CommRing R] [Ring A]
     [MulSemiringAction R' A] [Algebra R A] [SMulCommClass R' R A] (m : R') (S : Subalgebra R A) :
     (m • S).toSubring = m • S.toSubring :=
   rfl
-#align subalgebra.pointwise_smul_to_subring Subalgebra.pointwise_smul_toSubring
 
 theorem smul_mem_pointwise_smul (m : R') (r : A) (S : Subalgebra R A) : r ∈ S → m • r ∈ m • S :=
   (Set.smul_mem_smul_set : _ → _ ∈ m • (S : Set A))
-#align subalgebra.smul_mem_pointwise_smul Subalgebra.smul_mem_pointwise_smul
 
 instance : CovariantClass R' (Subalgebra R A) HSMul.hSMul LE.le :=
   ⟨fun _ _ => map_mono⟩

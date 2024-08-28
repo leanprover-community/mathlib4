@@ -7,8 +7,6 @@ import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 import Mathlib.Algebra.Category.Grp.Colimits
 
-#align_import algebra.category.Module.colimits from "leanprover-community/mathlib"@"5a684ce82399d820475609907c6ef8dba5b1b97c"
-
 /-!
 # The category of R-modules has all colimits.
 

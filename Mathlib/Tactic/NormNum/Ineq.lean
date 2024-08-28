@@ -13,11 +13,11 @@ import Mathlib.Algebra.Order.Ring.Cast
 # `norm_num` extensions for inequalities.
 -/
 
-set_option autoImplicit true
-
 open Lean Meta Qq
 
 namespace Mathlib.Meta.NormNum
+
+variable {u : Level}
 
 /-- Helper function to synthesize a typed `OrderedSemiring α` expression. -/
 def inferOrderedSemiring (α : Q(Type u)) : MetaM Q(OrderedSemiring $α) :=
@@ -32,6 +32,8 @@ def inferOrderedRing (α : Q(Type u)) : MetaM Q(OrderedRing $α) :=
 def inferLinearOrderedField (α : Q(Type u)) : MetaM Q(LinearOrderedField $α) :=
   return ← synthInstanceQ (q(LinearOrderedField $α) : Q(Type u)) <|>
     throwError "not a linear ordered field"
+
+variable {α : Type*}
 
 theorem isNat_le_true [OrderedSemiring α] : {a b : α} → {a' b' : ℕ} →
     IsNat a a' → IsNat b b' → Nat.ble a' b' = true → a ≤ b
