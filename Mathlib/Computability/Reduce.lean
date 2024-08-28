@@ -416,11 +416,11 @@ protected theorem add_le {d₁ d₂ d₃ : ManyOneDegree} : d₁ + d₂ ≤ d₃
 
 @[simp]
 protected theorem le_add_left (d₁ d₂ : ManyOneDegree) : d₁ ≤ d₁ + d₂ :=
-  (ManyOneDegree.add_le.1 (by rfl)).1
+  (ManyOneDegree.add_le.1 (le_refl _)).1
 
 @[simp]
 protected theorem le_add_right (d₁ d₂ : ManyOneDegree) : d₂ ≤ d₁ + d₂ :=
-  (ManyOneDegree.add_le.1 (by rfl)).2
+  (ManyOneDegree.add_le.1 (le_refl _)).2
 
 instance instSemilatticeSup : SemilatticeSup ManyOneDegree :=
   { ManyOneDegree.instPartialOrder with

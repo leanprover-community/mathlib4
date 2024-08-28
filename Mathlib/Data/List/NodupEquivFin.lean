@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Yury Kudryashov
 -/
 import Mathlib.Data.List.Duplicate
 import Mathlib.Data.List.Sort
@@ -220,19 +220,6 @@ theorem duplicate_iff_exists_distinct_get {l : List α} {x : α} :
       · rintro ⟨⟨_ | i⟩, hi⟩
         · simpa using h
         · simpa using h'
-
-set_option linter.deprecated false in
-/-- An element `x : α` of `l : List α` is a duplicate iff it can be found
-at two distinct indices `n m : ℕ` inside the list `l`.
--/
-@[deprecated duplicate_iff_exists_distinct_get (since := "2023-01-19")]
-theorem duplicate_iff_exists_distinct_nthLe {l : List α} {x : α} :
-    l.Duplicate x ↔
-      ∃ (n : ℕ) (hn : n < l.length) (m : ℕ) (hm : m < l.length) (_ : n < m),
-        x = l.nthLe n hn ∧ x = l.nthLe m hm :=
-  duplicate_iff_exists_distinct_get.trans
-    ⟨fun ⟨n, m, h⟩ => ⟨n.1, n.2, m.1, m.2, h⟩,
-    fun ⟨n, hn, m, hm, h⟩ => ⟨⟨n, hn⟩, ⟨m, hm⟩, h⟩⟩
 
 end Sublist
 

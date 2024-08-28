@@ -344,7 +344,7 @@ def yonedaPairing : Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁) ⥤ Type max u₁ v₁ :=
 @[ext]
 lemma yonedaPairingExt {X : Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁)} {x y : (yonedaPairing C).obj X}
     (w : ∀ Y, x.app Y = y.app Y) : x = y :=
-  NatTrans.ext _ _ (funext w)
+  NatTrans.ext (funext w)
 
 @[simp]
 theorem yonedaPairing_map (P Q : Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁)) (α : P ⟶ Q) (β : (yonedaPairing C).obj P) :
@@ -511,7 +511,7 @@ def coyonedaPairing : C × (C ⥤ Type v₁) ⥤ Type max u₁ v₁ :=
 @[ext]
 lemma coyonedaPairingExt {X : C × (C ⥤ Type v₁)} {x y : (coyonedaPairing C).obj X}
     (w : ∀ Y, x.app Y = y.app Y) : x = y :=
-  NatTrans.ext _ _ (funext w)
+  NatTrans.ext (funext w)
 
 @[simp]
 theorem coyonedaPairing_map (P Q : C × (C ⥤ Type v₁)) (α : P ⟶ Q) (β : (coyonedaPairing C).obj P) :
@@ -611,13 +611,12 @@ variable {D : Type*} [Category.{v₁} D] (F : C ⥤ D)
 
 /-- The natural transformation `yoneda.obj X ⟶ F.op ⋙ yoneda.obj (F.obj X)`
 when `F : C ⥤ D` and `X : C`. -/
-def yonedaMap (X : C) : yoneda.obj X ⟶ F.op ⋙ yoneda.obj (F.obj X) :=
-  yonedaEquiv.symm (𝟙 _)
+def yonedaMap (X : C) : yoneda.obj X ⟶ F.op ⋙ yoneda.obj (F.obj X) where
+  app X f := F.map f
 
 @[simp]
 lemma yonedaMap_app_apply {Y : C} {X : Cᵒᵖ} (f : X.unop ⟶ Y) :
-    (yonedaMap F Y).app X f = F.map f := by
-  simp [yonedaMap, yonedaEquiv]
+    (yonedaMap F Y).app X f = F.map f := rfl
 
 end
 

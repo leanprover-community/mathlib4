@@ -144,7 +144,7 @@ lemma rename_esymmAlgHom [Fintype σ] [Fintype τ] (e : σ ≃ τ) :
 noncomputable def esymmAlgHom_monomial (σ) [Fintype σ] (t : Fin n →₀ ℕ) (r : R) :
     MvPolynomial σ R := (esymmAlgHom σ R n <| monomial t r).val
 
-variable {m k : ℕ} {i : Fin n} {j : Fin m} {r : R} (hr : r ≠ 0)
+variable {m k : ℕ} {i : Fin n} {j : Fin m} {r : R}
 
 lemma isSymmetric_esymmAlgHom_monomial [Fintype σ] (t : Fin n →₀ ℕ) (r : R) :
     (esymmAlgHom_monomial σ t r).IsSymmetric := (esymmAlgHom _ _ _ _).2
@@ -210,7 +210,7 @@ lemma leadingCoeff_esymmAlgHom_monomial (t : Fin n →₀ ℕ) (hnm : n ≤ m) :
       ((monic_esymm <| i.2.trans_le hnm).pow toLex_add toLex.injective).leadingCoeff_mul, ih]
   exacts [toLex.injective, toLex_add]
 
-lemma supDegree_esymmAlgHom_monomial (t : Fin n →₀ ℕ) (hnm : n ≤ m) :
+lemma supDegree_esymmAlgHom_monomial (hr : r ≠ 0) (t : Fin n →₀ ℕ) (hnm : n ≤ m) :
     ofLex (supDegree toLex <| esymmAlgHom_monomial (Fin m) t r) = accumulate n m t := by
   nontriviality R
   apply t.induction₂

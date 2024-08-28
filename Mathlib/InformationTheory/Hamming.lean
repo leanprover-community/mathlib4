@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wrenna Robson
 -/
 import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.Topology.Instances.Discrete
 
 /-!
 # Hamming spaces

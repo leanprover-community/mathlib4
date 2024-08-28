@@ -676,14 +676,16 @@ lemma FamilyOfElements.isAmalgamation_iff_ofArrows (x : FamilyOfElements P (ofAr
 
 namespace Arrows.Compatible
 
-variable {x : (i : I) → P.obj (op (X i))} (hx : Compatible P π x)
+variable {x : (i : I) → P.obj (op (X i))}
 variable {P π}
 
-theorem exists_familyOfElements :
+theorem exists_familyOfElements (hx : Compatible P π x) :
     ∃ (x' : FamilyOfElements P (ofArrows X π)), ∀ (i : I), x' _ (ofArrows.mk i) = x i := by
   choose i h h' using @ofArrows_surj _ _ _ _ _ π
   exact ⟨fun Y f hf ↦ P.map (eqToHom (h f hf).symm).op (x _),
     fun j ↦ (hx _ j (X j) _ (𝟙 _) <| by rw [← h', id_comp]).trans <| by simp⟩
+
+variable (hx : Compatible P π x)
 
 /--
 A `FamilyOfElements` associated to an explicit family of elements.

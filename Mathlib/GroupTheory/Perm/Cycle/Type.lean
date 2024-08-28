@@ -31,7 +31,6 @@ In this file we define the cycle type of a permutation.
   there exists an element of order `p` in `G`. This is known as Cauchy's theorem.
 -/
 
-
 namespace Equiv.Perm
 
 open Mathlib (Vector)
@@ -377,7 +376,7 @@ by appending the inverse of the product of `v`. -/
 @[simps]
 def vectorEquiv : Vector G n ≃ vectorsProdEqOne G (n + 1) where
   toFun v := ⟨v.toList.prod⁻¹ ::ᵥ v, by
-    rw [mem_iff, Vector.toList_cons, List.prod_cons, inv_mul_self]⟩
+    rw [mem_iff, Vector.toList_cons, List.prod_cons, inv_mul_cancel]⟩
   invFun v := v.1.tail
   left_inv v := v.tail_cons v.toList.prod⁻¹
   right_inv v := Subtype.ext <|
@@ -418,7 +417,7 @@ theorem rotate_length : rotate v n = v :=
 
 end VectorsProdEqOne
 
--- TODO: Make make the `Finite` version of this theorem the default
+-- TODO: Make the `Finite` version of this theorem the default
 /-- For every prime `p` dividing the order of a finite group `G` there exists an element of order
 `p` in `G`. This is known as Cauchy's theorem. -/
 theorem _root_.exists_prime_orderOf_dvd_card {G : Type*} [Group G] [Fintype G] (p : ℕ)
@@ -453,7 +452,7 @@ theorem _root_.exists_prime_orderOf_dvd_card {G : Type*} [Group G] [Fintype G] (
   · rw [Subtype.ext_iff_val, Subtype.ext_iff_val, hg, hg', v.1.2]
     simp only [v₀, Vector.replicate]
 
--- TODO: Make make the `Finite` version of this theorem the default
+-- TODO: Make the `Finite` version of this theorem the default
 /-- For every prime `p` dividing the order of a finite additive group `G` there exists an element of
 order `p` in `G`. This is the additive version of Cauchy's theorem. -/
 theorem _root_.exists_prime_addOrderOf_dvd_card {G : Type*} [AddGroup G] [Fintype G] (p : ℕ)
@@ -462,7 +461,7 @@ theorem _root_.exists_prime_addOrderOf_dvd_card {G : Type*} [AddGroup G] [Fintyp
 
 attribute [to_additive existing] exists_prime_orderOf_dvd_card
 
--- TODO: Make make the `Finite` version of this theorem the default
+-- TODO: Make the `Finite` version of this theorem the default
 /-- For every prime `p` dividing the order of a finite group `G` there exists an element of order
 `p` in `G`. This is known as Cauchy's theorem. -/
 @[to_additive]

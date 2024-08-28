@@ -129,7 +129,7 @@ instance HasAffineProperty.diagonal_affineProperty_isLocal
       ((diagonal_iff (targetAffineLocally Q)).mp hf)
   of_basicOpenCover {X Y} _ f s hs hs' := by
     refine (diagonal_iff (targetAffineLocally Q)).mpr ?_
-    let 𝒰 := Y.openCoverOfSuprEqTop _ (((isAffineOpen_top Y).basicOpen_union_eq_self_iff _).mpr hs)
+    let 𝒰 := Y.openCoverOfISupEqTop _ (((isAffineOpen_top Y).basicOpen_union_eq_self_iff _).mpr hs)
     have (i) : IsAffine (𝒰.obj i) := (isAffineOpen_top Y).basicOpen i.1
     refine diagonal_of_openCover_diagonal (targetAffineLocally Q) f 𝒰 ?_
     intro i
@@ -242,7 +242,7 @@ end Topologically
 /-- `stalkwise P` holds for a morphism if all stalks satisfy `P`. -/
 def stalkwise (P : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop) :
     MorphismProperty Scheme.{u} :=
-  fun _ _ f => ∀ x, P (PresheafedSpace.stalkMap f.val x)
+  fun _ _ f => ∀ x, P (f.stalkMap x)
 
 section Stalkwise
 
@@ -254,12 +254,12 @@ lemma stalkwise_respectsIso (hP : RingHom.RespectsIso P) :
   precomp {X Y Z} e f hf := by
     simp only [stalkwise, Scheme.comp_coeBase, TopCat.coe_comp, Function.comp_apply]
     intro x
-    erw [PresheafedSpace.stalkMap.comp]
+    rw [Scheme.stalkMap_comp]
     exact (RingHom.RespectsIso.cancel_right_isIso hP _ _).mpr <| hf (e.hom.val.base x)
   postcomp {X Y Z} e f hf := by
     simp only [stalkwise, Scheme.comp_coeBase, TopCat.coe_comp, Function.comp_apply]
     intro x
-    erw [PresheafedSpace.stalkMap.comp]
+    rw [Scheme.stalkMap_comp]
     exact (RingHom.RespectsIso.cancel_left_isIso hP _ _).mpr <| hf x
 
 /-- If `P` respects isos, then `stalkwise P` is local at the target. -/

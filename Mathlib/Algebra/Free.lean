@@ -427,7 +427,7 @@ variable {α : Type u}
 @[to_additive]
 instance : Semigroup (FreeSemigroup α) where
   mul L1 L2 := ⟨L1.1, L1.2 ++ L2.1 :: L2.2⟩
-  mul_assoc _L1 _L2 _L3 := FreeSemigroup.ext _ _ rfl <| List.append_assoc _ _ _
+  mul_assoc _L1 _L2 _L3 := FreeSemigroup.ext rfl <| List.append_assoc _ _ _
 
 @[to_additive (attr := simp)]
 theorem head_mul (x y : FreeSemigroup α) : (x * y).1 = x.1 := rfl
@@ -632,7 +632,7 @@ end Category
 
 @[to_additive]
 instance [DecidableEq α] : DecidableEq (FreeSemigroup α) :=
-  fun _ _ ↦ decidable_of_iff' _ (FreeSemigroup.ext_iff _ _)
+  fun _ _ ↦ decidable_of_iff' _ FreeSemigroup.ext_iff
 
 end FreeSemigroup
 
