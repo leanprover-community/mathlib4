@@ -11,7 +11,7 @@ import Mathlib.Data.Set.Subsingleton
 /-!
 # Projective spectrum of a graded ring
 
-The projective spectrum of a graded commutative ring is the subtype of all homogenous ideals that
+The projective spectrum of a graded commutative ring is the subtype of all homogeneous ideals that
 are prime and do not contain the irrelevant ideal.
 It is naturally endowed with a topology: the Zariski topology.
 
@@ -45,7 +45,7 @@ variable [CommSemiring R] [CommRing A] [Algebra R A]
 variable (𝒜 : ℕ → Submodule R A) [GradedAlgebra 𝒜]
 
 -- porting note (#5171): removed @[nolint has_nonempty_instance]
-/-- The projective spectrum of a graded commutative ring is the subtype of all homogenous ideals
+/-- The projective spectrum of a graded commutative ring is the subtype of all homogeneous ideals
 that are prime and do not contain the irrelevant ideal. -/
 @[ext]
 structure ProjectiveSpectrum where
