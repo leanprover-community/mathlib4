@@ -487,9 +487,9 @@ section Finite
 
 namespace IsBlock
 
-variable [IsPretransitive G X] {B : Set X} (hB : IsBlock G B)
+variable [IsPretransitive G X] {B : Set X} 
 
-theorem ncard_block_eq_relindex {x : X} (hx : x ∈ B) :
+theorem ncard_block_eq_relindex (hB : IsBlock G B) {x : X} (hx : x ∈ B) :
     B.ncard = (stabilizer G x).relindex (stabilizer G B) := by
   have key : (stabilizer G x).subgroupOf (stabilizer G B) = stabilizer (stabilizer G B) x := by
     ext; rfl
@@ -498,19 +498,19 @@ theorem ncard_block_eq_relindex {x : X} (hx : x ∈ B) :
 /-- The cardinality of the ambient is the product of
   of the cardinality of a block
   by the cardinality of the set of translates of that block -/
-theorem ncard_block_mul_ncard_orbit_eq (hB_ne : B.Nonempty) :
+theorem ncard_block_mul_ncard_orbit_eq (hB : IsBlock G B) (hB_ne : B.Nonempty) :
     Set.ncard B * Set.ncard (orbit G B) = Nat.card X := by
   obtain ⟨x, hx⟩ := hB_ne
   rw [ncard_block_eq_relindex hB hx, ← index_stabilizer,
       Subgroup.relindex_mul_index (hB.stabilizer_le hx), index_stabilizer']
 
 /-- The cardinality of a block divides the cardinality of the ambient type -/
-theorem ncard_dvd_card (hB_ne : B.Nonempty) :
+theorem ncard_dvd_card (hB : IsBlock G B) (hB_ne : B.Nonempty) :
     Set.ncard B ∣ Nat.card X :=
   Dvd.intro _ (hB.ncard_block_mul_ncard_orbit_eq hB_ne)
 
 /-- A too large block is equal to ⊤ -/
-theorem eq_top_card_lt [Finite X] (hB' : Nat.card X < Set.ncard B * 2) :
+theorem eq_top_card_lt [Finite X] (hB : IsBlock G B) (hB' : Nat.card X < Set.ncard B * 2) :
     B = ⊤ := by
   classical
   letI := Fintype.ofFinite X
@@ -535,7 +535,7 @@ theorem eq_top_card_lt [Finite X] (hB' : Nat.card X < Set.ncard B * 2) :
   rwa [← Set.ncard_pos] at hB_ne
 
 /-- If a block has too many translates, then it is a (sub)singleton  -/
-theorem subsingleton_of_card_lt [Finite X]
+theorem subsingleton_of_card_lt [Finite X] (hB : IsBlock G B)
     (hB' : Nat.card X < 2 * Set.ncard (Set.range fun g : G => (g • B : Set X))) :
     B.Subsingleton := by
   suffices Set.ncard B < 2 by
