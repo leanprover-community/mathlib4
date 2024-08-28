@@ -462,7 +462,7 @@ lemma jacobiTheta₂'_conj (z τ : ℂ) :
 ## Functional equations
 -/
 
-/-- The functional equation for the Jacobi theta function: `jacobiTheta₂ z τ` is an explict factor
+/-- The functional equation for the Jacobi theta function: `jacobiTheta₂ z τ` is an explicit factor
 times `jacobiTheta₂ (z / τ) (-1 / τ)`. This is the key lemma behind the proof of the functional
 equation for L-series of even Dirichlet characters. -/
 theorem jacobiTheta₂_functional_equation (z τ : ℂ) : jacobiTheta₂ z τ =
