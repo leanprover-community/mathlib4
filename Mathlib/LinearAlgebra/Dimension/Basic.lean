@@ -54,6 +54,7 @@ this is the same as the dimension of the space (i.e. the cardinality of any basi
 
 In particular this agrees with the usual notion of the dimension of a vector space.
 
+[Stacks: Definition 09G3, first part](https://stacks.math.columbia.edu/tag/09G3)
 -/
 protected irreducible_def Module.rank : Cardinal :=
   ⨆ ι : { s : Set M // LinearIndependent R ((↑) : s → M) }, (#ι.1)

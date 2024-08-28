@@ -130,6 +130,9 @@ instance [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (f : R[X]) :
     DistribMulAction S (AdjoinRoot f) :=
   Submodule.Quotient.distribMulAction' _
 
+/-- `R[x]/(f)` is `R`-algebra
+[Stack: Example 09FX, second part](https://stacks.math.columbia.edu/tag/09FX)
+-/
 instance [CommSemiring S] [Algebra S R] : Algebra S (AdjoinRoot f) :=
   Ideal.Quotient.algebra S
 
@@ -343,6 +346,10 @@ instance span_maximal_of_irreducible [Fact (Irreducible f)] : (span {f}).IsMaxim
 noncomputable instance instGroupWithZero [Fact (Irreducible f)] : GroupWithZero (AdjoinRoot f) :=
   Quotient.groupWithZero (span {f} : Ideal K[X])
 
+/-- If `R` is a field and `f` is irreducible, then `AdjoinRoot f` is a field.
+
+[Stack: Example 09FX, first part](https://stacks.math.columbia.edu/tag/09FX)
+-/
 noncomputable instance instField [Fact (Irreducible f)] : Field (AdjoinRoot f) where
   __ := instCommRing _
   __ := instGroupWithZero

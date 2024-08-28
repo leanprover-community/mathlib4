@@ -58,6 +58,9 @@ theorem left [Nontrivial A] [FiniteDimensional F A] : FiniteDimensional F K :=
   FiniteDimensional.of_injective
     (LinearMap.ringLmapEquivSelf K ℕ A |>.symm x |>.restrictScalars F) (smul_left_injective K hx)
 
+/--
+[Stacks: Example 09G5](https://stacks.math.columbia.edu/tag/09G5)
+-/
 theorem right [hf : FiniteDimensional F A] : FiniteDimensional K A :=
   let ⟨⟨b, hb⟩⟩ := hf
   ⟨⟨b, Submodule.restrictScalars_injective F _ _ <| by
