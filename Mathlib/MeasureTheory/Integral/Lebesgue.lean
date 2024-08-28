@@ -1832,7 +1832,7 @@ theorem exists_measurable_le_forall_setLIntegral_eq [SFinite μ] (f : α → ℝ
   have hφle : φ ≤ f := fun x ↦ iSup_le (hgf · x)
   refine ⟨φ, hφm, hφle, fun s ↦ ?_⟩
   -- Now we show the inequality between set integrals.
-  -- Choose a simple function `ψ ≤ f` with values in `ℝ≥0` and prove  for `ψ`.
+  -- Choose a simple function `ψ ≤ f` with values in `ℝ≥0` and prove for `ψ`.
   rw [lintegral_eq_nnreal]
   refine iSup₂_le fun ψ hψ ↦ ?_
   -- Choose `n` such that `ψ x ≤ n` for all `x`.
