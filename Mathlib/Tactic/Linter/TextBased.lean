@@ -5,8 +5,8 @@ Authors: Michael Rothgang
 -/
 
 import Batteries.Data.String.Matcher
-import Mathlib.Data.Nat.Notation
 import Batteries.Lean.HashSet
+import Mathlib.Data.Nat.Notation
 
 /-!
 ## Text-based linters
@@ -36,6 +36,8 @@ open System
 
 namespace Mathlib.Linter.TextBased
 
+-- TODO remove Repr instances (used for debugging) if it's bad to have them!
+
 /-- Different kinds of "broad imports" that are linted against. -/
 inductive BroadImports
   /-- Importing the entire "Mathlib.Tactic" folder -/
@@ -43,7 +45,7 @@ inductive BroadImports
   /-- Importing any module in `Lake`, unless carefully measured
   This has caused unexpected regressions in the past. -/
   | Lake
-deriving BEq
+deriving BEq, Repr
 
 /-- Possible errors that text-based linters can report. -/
 -- We collect these in one inductive type to centralise error reporting.
@@ -67,8 +69,8 @@ inductive StyleError where
   For diagnostic purposes, this may also contain a previous size limit, which is now exceeded. -/
   | fileTooLong (numberLines : ℕ) (newSizeLimit : ℕ) (previousLimit : Option ℕ) : StyleError
   /-- A unicode character was used that isn't recommended -/
-  | newUnicode (c : Char)
-deriving BEq
+  | unwantedUnicode (c : Char)
+deriving BEq, Repr
 
 /-- How to format style errors -/
 inductive ErrorFormat
@@ -107,7 +109,7 @@ def StyleError.errorMessage (err : StyleError) (style : ErrorFormat) : String :=
     | ErrorFormat.exceptionsFile =>
         s!"{sizeLimit} file contains {currentSize} lines, try to split it up"
     | ErrorFormat.humanReadable => s!"file contains {currentSize} lines, try to split it up"
-  | StyleError.newUnicode c =>
+  | StyleError.unwantedUnicode c =>
       s!"unicode character '{c}' is not recommended. Consider adding it to the whitelist."
 
 /-- The error code for a given style error. Keep this in sync with `parse?_errorContext` below! -/
@@ -120,7 +122,7 @@ def StyleError.errorCode (err : StyleError) : String := match err with
   | StyleError.broadImport _ => "ERR_IMP"
   | StyleError.lineLength _ => "ERR_LIN"
   | StyleError.fileTooLong _ _ _ => "ERR_NUM_LIN"
-  | StyleError.newUnicode _ => "NO_ERR_CODE_AVAILABLE"
+  | StyleError.unwantedUnicode _ => "ERR_UNICODE"
 
 /-- Context for a style error: the actual error, the line number in the file we're reading
 and the path to the file. -/
@@ -131,6 +133,7 @@ structure ErrorContext where
   lineNumber : ℕ
   /-- The path to the file which was linted -/
   path : FilePath
+deriving BEq, Repr
 
 /-- Possible results of comparing an `ErrorContext` to an `existing` entry:
 most often, they are different --- if the existing entry covers the new exception,
@@ -199,7 +202,10 @@ def outputMessage (errctx : ErrorContext) (style : ErrorFormat) : String :=
     -- Print for humans: clickable file name and omit the error code
     s!"error: {errctx.path}:{errctx.lineNumber}: {errorMessage}"
 
-/-- Try parsing an `ErrorContext` from a string: return `some` if successful, `none` otherwise. -/
+-- TODO check if this doc change is correct as per intentions of original authors!!!
+
+/-- Try parsing an `ErrorContext` from a string: return `some` if successful, `none` otherwise.
+This should be the inverse of `fun ctx ↦ outputMessage ctx .exceptionsFile`-/
 def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
   let parts := line.split (· == ' ')
   match parts with
@@ -237,6 +243,12 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
               some (StyleError.fileTooLong currentSize sizeLimit (some sizeLimit))
             | _ => none
           | _ => none
+        | "ERR_UNICODE" =>
+            if let some str := errorMessage.get? 2 then
+              if let some c := str.get? ⟨1⟩ then
+                some (StyleError.unwantedUnicode c)
+              else none
+            else none
         | _ => none
       match String.toNat? lineNumber with
       | some n => err.map fun e ↦ (ErrorContext.mk e n path)
@@ -245,6 +257,12 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
     -- but is awkward to do so (this `def` is not in any IO monad). Hopefully, this is not necessary
     -- anyway as the style exceptions file is mostly automatically generated.
     | _ => none
+
+
+-- TODO delete or put in some test file
+#guard let errContext : ErrorContext := {
+    error := .unwantedUnicode 'Z', lineNumber := 4, path:="./MYFILE.lean"}
+  (parse?_errorContext <| outputMessage errContext .exceptionsFile) == some errContext
 
 /-- Parse all style exceptions for a line of input.
 Return an array of all exceptions which could be parsed: invalid input is ignored. -/
@@ -390,8 +408,8 @@ end
 
 section unicodeLinter
 
-/- Hashable instance for use with the unicodeLinter -/
-local instance : Hashable Char where
+/-- Hashable instance for use with the unicodeLinter -/
+local instance instHashableChar : Hashable Char where
   hash c := c.val.toUInt64
 
 /-- TODO make complete and order nicely -/
@@ -407,15 +425,17 @@ LTRAFqIMCw-][S`x,=vy()bg:.hdufcp\n
 ml_srantoie
 "
 
+def isBadChar (c : Char) : Bool := !unicodeWhitelist.contains c
+
 /-- Lint a collection of input strings if one of them contains unwanted unicode. -/
 def unicodeLinter : TextbasedLinter := fun lines ↦ Id.run do
   let mut errors : Array (StyleError × ℕ) := Array.mkEmpty 0
   let mut lineNumber := 1
   for line in lines do
-    let badChars := line.toList.filter (fun c => !unicodeWhitelist.contains c)
+    let badChars := line.toList.filter isBadChar
     if badChars.length > 0 then
       let newErrors : Array (StyleError × ℕ) :=
-        badChars.toArray.map fun c ↦ (StyleError.newUnicode c, lineNumber)
+        badChars.toArray.map (StyleError.unwantedUnicode ·, lineNumber)
       errors := errors.append newErrors
     lineNumber := lineNumber + 1
   return errors
