@@ -25,14 +25,15 @@ namespace Lean.Attr
 -/
 def algebraizeGetParam (thm : Name) (stx : Syntax) : AttrM Name := do
   match stx with
-  | `(attr| algebraize2 $name:ident) => return name.getId
-  -- TODO: deal with this case! Then if name is "RingHom.FiniteType" ---> "Algebra.FiniteType"
-  | `(attr| algebraize2) => throwError "algebraize requires an argument"
+  | `(attr| algebraize $name:ident) => return name.getId
+  -- TODO: instead of throwing an error, if thm is `RingHom.Property`, this should return
+  -- `Algebra.Property`
+  | `(attr| algebraize) => throwError "algebraize requires an argument"
   | _ => throwError "unexpected algebraize argument"
 
-initialize algebraize2Attr : ParametricAttribute Name ←
+initialize algebraizeAttr : ParametricAttribute Name ←
   registerParametricAttribute {
-    name := `algebraize2,
+    name := `algebraize,
     descr := "TODO",
     getParam := algebraizeGetParam }
 
@@ -61,6 +62,8 @@ def addAlgebraInstanceFromRingHom (f ft : Expr) : TacticM Unit := withMainContex
 
 -/
 def addIsScalarTowerInstanceFromRingHomComp (f : Expr) : TacticM Unit := withMainContext do
+  -- TODO: this one is not very type safe, I am sure there will be errors in more complicated
+  -- expressions. Maybe this one should be reverted to the Qq version
   let (_, l) := f.getAppFnArgs
   let tower ← mkAppOptM `IsScalarTower #[l[0]!, l[1]!, l[2]!, none, none, none]
   try
@@ -92,7 +95,7 @@ def searchContext (t : Array Expr) : TacticM Unit := withMainContext do
   ctx.forM fun decl => do
     if decl.isImplementationDetail then return
     let (nm, args) := decl.type.getAppFnArgs
-    match Attr.algebraize2Attr.getParam? (← getEnv) nm with
+    match Attr.algebraizeAttr.getParam? (← getEnv) nm with
     | some p =>
       let f := args[args.size - 1]!
       -- Check if `f` appears in the list of functions we have algebraized
