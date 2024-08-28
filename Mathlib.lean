@@ -2083,8 +2083,6 @@ import Mathlib.Data.DList.Defs
 import Mathlib.Data.DList.Instances
 import Mathlib.Data.ENNReal.Basic
 import Mathlib.Data.ENNReal.Floor
-import Mathlib.Data.ENNReal.FloorBUP20240807
-import Mathlib.Data.ENNReal.FloorBUP20240812
 import Mathlib.Data.ENNReal.Inv
 import Mathlib.Data.ENNReal.Operations
 import Mathlib.Data.ENNReal.Real
