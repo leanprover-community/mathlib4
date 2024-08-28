@@ -123,6 +123,17 @@ theorem sInter_polar_finite_subset_eq_polar (s : Set E) :
   refine ⟨fun hx a ha ↦ ?_, fun hx F _ hF₂ => polar_antitone _ hF₂ hx⟩
   simpa [mem_polar_singleton] using hx _ (Set.finite_singleton a) (Set.singleton_subset_iff.mpr ha)
 
+lemma test (s : Set E) (x : F) (hx : x ∈ B.polar s) (a : E) (ha : a ∈ s) : x ∈ B.polar {a} := by
+  exact (mem_polar_singleton B x).mpr (hx a ha)
+
+
+theorem sInter_polar_finite_subset_eq_polar' (s : Set E) :
+    ⋂ i ∈ s, (B.polar { i }) = B.polar s := by
+  ext x
+  simp only [Set.sInter_image, Set.mem_setOf_eq, Set.mem_iInter, and_imp]
+  refine ⟨fun hx a ha ↦ ?_, fun hx a ha => (mem_polar_singleton B x).mpr (hx a ha)⟩
+  simpa [mem_polar_singleton] using hx _ ha
+
 end NormedRing
 
 section NontriviallyNormedField

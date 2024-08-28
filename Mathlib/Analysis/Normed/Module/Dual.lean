@@ -270,21 +270,28 @@ theorem sInter_polar_eq_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddComm
   rw [← polar_closedBall (inv_pos_of_pos hr), polar,
     (dualPairing 𝕜 E).flip.sInter_polar_finite_subset_eq_polar (closedBall (0 : E) r⁻¹)]
 
-#check Seminorm.closedBall_zero_eq
-#check Metric.closedBall_zero
+theorem sInter_polar_eq_closedBall' {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E]
+    [NormedSpace 𝕜 E] {r : ℝ} (hr : 0 < r) :
+    ⋂ i ∈ closedBall (0 : E) r⁻¹, (polar 𝕜 { i }) = closedBall 0 r := by
+  conv_rhs => rw [← inv_inv r]
+  rw [← polar_closedBall (inv_pos_of_pos hr), polar,
+    (dualPairing 𝕜 E).flip.sInter_polar_finite_subset_eq_polar' (closedBall (0 : E) r⁻¹)]
 
+
+/-
 theorem finite_subsets1 (U : Set (Dual 𝕜 E)) : ∃ F : ℕ → Set E, ∀ n : ℕ, (F n).Finite := by
   use (fun n => Nat.recOn n {(0 : E)} (fun m v => {(0 : E)}))
   intro n
   cases n
   · simp only [Nat.rec_zero, finite_singleton]
   · simp only [finite_singleton]
+-/
 
-#check (⊥ : Set E)
+--#check (⊥ : Set E)
 
 variable (g : ℕ → Set ℕ) (m : ℕ)
 
-#check ⋃₀ {g k | k < m}
+--#check ⋃₀ {g k | k < m}
 
 
 def myF : ℕ → Set ℕ

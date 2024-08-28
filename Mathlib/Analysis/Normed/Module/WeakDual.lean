@@ -244,6 +244,15 @@ lemma polar_U0 : polar 𝕜 (U 0) = closedBall (0 : Dual 𝕜 E) 0 := by
   simp only [polar_univ]
   rfl
 
+instance (n : ℕ) : Nonempty (U (E := E) n) := by
+  use 0
+  rw [U]
+  cases' n with n
+  · trivial
+  · simp only [Nat.cast_add, Nat.cast_one, mem_ball, dist_self, inv_pos]
+    exact Nat.cast_add_one_pos n
+
+
 lemma polar_Un {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] (n : ℕ) :
     polar 𝕜 (U n) = closedBall (0 : Dual 𝕜 E) n := by
   cases' n with n
@@ -277,16 +286,36 @@ variable (n : ℕ)
 
 /- For all x, let K x be the intersection of 4 sets-/
 def K : (U (E := E) (n + 1)) → Set (WeakDual 𝕜 E) :=
-  fun x => polar 𝕜 s ∩ polar 𝕜 {↑x} ∩ C ∩ polar 𝕜 (U n)
+  fun x => polar 𝕜 s ∩ polar 𝕜 {↑x} ∩ C ∩ polar 𝕜 (U (n+2))
 
 
 lemma test1 [ProperSpace 𝕜] (x : (U (E := E) (n + 1))) (hC₁ : IsClosed C) :
-    IsCompact (K 𝕜 C s n x) := IsCompact.inter_left (polarUcompact 𝕜 n)
+    IsCompact (K 𝕜 C s n x) := IsCompact.inter_left (polarUcompact 𝕜 _)
     (IsClosed.inter (IsClosed.inter (isClosed_polar 𝕜 s) (isClosed_polar _ _)) hC₁)
 
+lemma inter_empty (h : polar 𝕜 s ∩ C ∩ polar 𝕜 (U (n+1)) = ∅) :
+    ⋂ (x : (U (E := E) (n + 1))), K 𝕜 C s n x = ∅ := by
+  simp_rw [K]
+  rw [← iInter_inter]
+  rw [← iInter_inter]
+  rw [← inter_iInter]
+  simp only [iInter_coe_set]
+  have e1 : ⋂ i ∈ U (n + 1), polar 𝕜 {i} = polar 𝕜 (U (E := E) (n+1)) := by
+    simp_rw [polar, NormedSpace.polar]
+    rw [← (dualPairing 𝕜 E).flip.sInter_polar_finite_subset_eq_polar']
+    rfl
+  rw [e1]
+  rw [inter_assoc _ _ C]
+  rw [inter_comm _ C]
+  rw [← inter_assoc]
+  rw [h]
+  exact empty_inter (polar 𝕜 (U (n + 2)))
+
+/-
 lemma test (C : Set (Dual 𝕜 E)) (s : Set E) (n : ℕ)
     (h : (polar 𝕜 s) ∩ (polar 𝕜 (U (n+1))) ∩ C = ∅) :
     ∃ (F : Set E), Finite F ∧ F ⊆ (U (n+1))∧ (polar 𝕜 (s ∪ F)) ∩ (polar 𝕜 (U (n+1))) ∩ C = ∅ :=
   sorry
+-/
 
 end WeakDual
