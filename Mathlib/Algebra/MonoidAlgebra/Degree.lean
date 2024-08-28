@@ -206,7 +206,11 @@ variable [Semiring R] [Ring R']
 
 section SupDegree
 
-variable [SemilatticeSup B] [OrderBot B] (D : A → B)
+variable (D : A → B)
+
+section SemilatticeSup
+
+variable [SemilatticeSup B] [OrderBot B]
 
 /-- Let `R` be a semiring, let `A` be an `AddZeroClass`, let `B` be an `OrderBot`,
 and let `D : A → B` be a "degree" function.
@@ -228,10 +232,10 @@ abbrev supDegree (f : R[A]) : B :=
 /-- If `D` is an injection into a linear order `B`, the leading coefficient of `f : R[A]` is the
   nonzero coefficient of highest degree according to `D`, or 0 if `f = 0`. In general, it is defined
   to be the coefficient at an inverse image of `supDegree f` (if such exists). -/
-noncomputable def leadingCoeff (f : R[A]) : R := f (D.invFun <| f.supDegree D)
+noncomputable def leadingCoeff [Nonempty A] (f : R[A]) : R := f (D.invFun <| f.supDegree D)
 
 /-- An element `f : R[A]` is monic if its leading coefficient is one. -/
-@[reducible] def Monic (f : R[A]) : Prop := f.leadingCoeff D = 1
+@[reducible] def Monic [Nonempty A] (f : R[A]) : Prop := f.leadingCoeff D = 1
 
 variable {D}
 
@@ -262,8 +266,9 @@ theorem supDegree_single (a : A) (r : R) :
     (single a r).supDegree D = if r = 0 then ⊥ else D a := by
   split_ifs with hr <;> simp [supDegree_single_ne_zero, hr]
 
-theorem leadingCoeff_single (hD : D.Injective) (a : A) (r : R) :
+theorem leadingCoeff_single [Nonempty A] (hD : D.Injective) (a : A) (r : R) :
     (single a r).leadingCoeff D = r := by
+  classical
   rw [leadingCoeff, supDegree_single]
   split_ifs with hr
   · simp [hr]
@@ -278,6 +283,10 @@ theorem supDegree_withBot_some_comp {s : AddMonoidAlgebra R A} (hs : s.support.N
     supDegree (WithBot.some ∘ D) s = supDegree D s := by
   unfold AddMonoidAlgebra.supDegree
   rw [← Finset.coe_sup' hs, Finset.sup'_eq_sup]
+
+theorem supDegree_eq_of_isMaxOn {p : R[A]} {a : A} (hmem : a ∈ p.support)
+    (hmax : IsMaxOn D p.support a) : p.supDegree D = D a :=
+  (Finset.sup_le hmax).antisymm (Finset.le_sup hmem)
 
 variable [AddZeroClass A] {p q : R[A]}
 
@@ -296,10 +305,6 @@ lemma Monic.ne_zero [Nontrivial R] (hp : p.Monic D) : p ≠ 0 := fun h => by
 
 theorem monic_one (hD : D.Injective) : (1 : R[A]).Monic D := by
   rw [Monic, one_def, leadingCoeff_single hD]
-
-theorem supDegree_eq_of_isMaxOn {a : A} (hmem : a ∈ p.support)
-    (hmax : IsMaxOn D p.support a) : p.supDegree D = D a :=
-  (Finset.sup_le hmax).antisymm (Finset.le_sup hmem)
 
 theorem supDegree_eq_of_max {b : B} (hb : b ∈ Set.range D) (hmem : D.invFun b ∈ p.support)
     (hmax : ∀ a ∈ p.support, D a ≤ b) : p.supDegree D = b := by
@@ -363,6 +368,15 @@ lemma supDegree_mem_range (hp : p ≠ 0) : p.supDegree D ∈ Set.range D := by
 
 variable {D}
 
+variable {ι : Type*} {s : Finset ι} {i : ι} (hi : i ∈ s) {f : ι → R[A]}
+
+lemma supDegree_sum_lt (hs : s.Nonempty) {b : B}
+    (h : ∀ i ∈ s, (f i).supDegree D < b) : (∑ i in s, f i).supDegree D < b := by
+  refine supDegree_sum_le.trans_lt ((Finset.sup_lt_iff ?_).mpr h)
+  obtain ⟨i, hi⟩ := hs; exact bot_le.trans_lt (h i hi)
+
+variable [AddZeroClass A]
+
 open Finsupp in
 lemma supDegree_add_eq (h : q.supDegree D < p.supDegree D) :
     (p + q).supDegree D = p.supDegree D := by
@@ -379,18 +393,17 @@ lemma leadingCoeff_add_eq (h : q.supDegree D < p.supDegree D) :
       apply_eq_zero_of_not_le_supDegree (D := D), add_zero]
   rw [← he, Function.apply_invFun_apply (f := D), he]; exact h.not_le
 
-variable (hD : D.Injective)
-
-lemma supDegree_mem_support (hp : p ≠ 0) : D.invFun (p.supDegree D) ∈ p.support := by
+lemma supDegree_mem_support (hD : D.Injective) (hp : p ≠ 0) :
+    D.invFun (p.supDegree D) ∈ p.support := by
   obtain ⟨a, ha, he⟩ := exists_supDegree_mem_support D hp
   rw [he, Function.leftInverse_invFun hD]; exact ha
 
-lemma leadingCoeff_eq_zero : p.leadingCoeff D = 0 ↔ p = 0 := by
+lemma leadingCoeff_eq_zero (hD : D.Injective) : p.leadingCoeff D = 0 ↔ p = 0 := by
   refine ⟨(fun h => ?_).mtr, fun h => h ▸ leadingCoeff_zero⟩
   rw [leadingCoeff, ← Ne, ← Finsupp.mem_support_iff]
   exact supDegree_mem_support hD h
 
-lemma supDegree_sub_lt_of_leadingCoeff_eq {R} [CommRing R] {p q : R[A]}
+lemma supDegree_sub_lt_of_leadingCoeff_eq (hD : D.Injective) {R} [CommRing R] {p q : R[A]}
     (hd : p.supDegree D = q.supDegree D) (hc : p.leadingCoeff D = q.leadingCoeff D) :
     (p - q).supDegree D < p.supDegree D ∨ p = q := by
   by_cases he : p = q; · exact Or.inr he
@@ -400,17 +413,11 @@ lemma supDegree_sub_lt_of_leadingCoeff_eq {R} [CommRing R] {p q : R[A]}
     refine fun h => he ?_
     rwa [h, Finsupp.sub_apply, ← leadingCoeff, hd, ← leadingCoeff, sub_eq_zero]
 
-variable {ι : Type*} {s : Finset ι} {i : ι} (hi : i ∈ s) {f : ι → R[A]}
-  (hmax : ∀ j ∈ s, j ≠ i → (f j).supDegree D < (f i).supDegree D)
-
-lemma supDegree_sum_lt (hs : s.Nonempty) {b : B}
-    (h : ∀ i ∈ s, (f i).supDegree D < b) : (∑ i in s, f i).supDegree D < b := by
-  refine supDegree_sum_le.trans_lt ((Finset.sup_lt_iff ?_).mpr h)
-  obtain ⟨i, hi⟩ := hs; exact bot_le.trans_lt (h i hi)
-
-lemma supDegree_leadingCoeff_sum_eq :
+lemma supDegree_leadingCoeff_sum_eq
+    (hi : i ∈ s) (hmax : ∀ j ∈ s, j ≠ i → (f j).supDegree D < (f i).supDegree D) :
     (∑ j in s, f j).supDegree D = (f i).supDegree D ∧
     (∑ j in s, f j).leadingCoeff D = (f i).leadingCoeff D := by
+  classical
   rw [← s.add_sum_erase _ hi]
   by_cases hs : s.erase i = ∅
   · rw [hs, Finset.sum_empty, add_zero]; exact ⟨rfl, rfl⟩
@@ -441,11 +448,10 @@ lemma sum_ne_zero_of_injOn_supDegree (hs : s ≠ ∅)
   let ⟨i, hi⟩ := Finset.nonempty_iff_ne_empty.2 hs
   sum_ne_zero_of_injOn_supDegree' ⟨i, hi, hf i hi⟩ hd
 
-variable (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
-
+variable [Add B]
 variable [CovariantClass B B (· + ·) (· < ·)] [CovariantClass B B (Function.swap (· + ·)) (· < ·)]
 
-lemma apply_supDegree_add_supDegree :
+lemma apply_supDegree_add_supDegree (hD : D.Injective) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2) :
     (p * q) (D.invFun (p.supDegree D + q.supDegree D)) = p.leadingCoeff D * q.leadingCoeff D := by
   obtain rfl | hp := eq_or_ne p 0
   · simp_rw [leadingCoeff_zero, zero_mul]; rfl
@@ -456,7 +462,9 @@ lemma apply_supDegree_add_supDegree :
   simp_rw [leadingCoeff, hp, hq, ← hadd, Function.leftInverse_invFun hD _]
   exact apply_add_of_supDegree_le hadd hD hp.le hq.le
 
-lemma Monic.supDegree_mul_of_ne_zero (hq : q.Monic D) (hp : p ≠ 0) :
+lemma Monic.supDegree_mul_of_ne_zero
+    (hD : D.Injective) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
+    (hq : q.Monic D) (hp : p ≠ 0) :
     (p * q).supDegree D = p.supDegree D + q.supDegree D := by
   cases subsingleton_or_nontrivial R; · exact (hp (Subsingleton.elim _ _)).elim
   apply supDegree_eq_of_max
@@ -468,34 +476,42 @@ lemma Monic.supDegree_mul_of_ne_zero (hq : q.Monic D) (hp : p ≠ 0) :
     have := covariantClass_le_of_lt B B (Function.swap (· + ·))
     exact fun a ha => (Finset.le_sup ha).trans (supDegree_mul_le hadd)
 
-lemma Monic.supDegree_mul (hbot : (⊥ : B) + ⊥ = ⊥) (hp : p.Monic D) (hq : q.Monic D) :
+lemma Monic.supDegree_mul
+    (hD : D.Injective) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
+    (hbot : (⊥ : B) + ⊥ = ⊥) (hp : p.Monic D) (hq : q.Monic D) :
     (p * q).supDegree D = p.supDegree D + q.supDegree D := by
   cases subsingleton_or_nontrivial R
   · simp_rw [Subsingleton.eq_zero p, Subsingleton.eq_zero q, mul_zero, supDegree_zero, hbot]
   exact hq.supDegree_mul_of_ne_zero hD hadd hp.ne_zero
 
-lemma Monic.leadingCoeff_mul (hq : q.Monic D) :
+lemma Monic.leadingCoeff_mul
+    (hD : D.Injective) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2) (hq : q.Monic D) :
     (p * q).leadingCoeff D = p.leadingCoeff D := by
   obtain rfl | hp := eq_or_ne p 0; rw [zero_mul]
   rw [leadingCoeff, hq.supDegree_mul_of_ne_zero hD hadd hp,
       apply_supDegree_add_supDegree hD hadd, hq, mul_one]
 
-lemma Monic.mul (hp : p.Monic D) (hq : q.Monic D) : (p * q).Monic D := by
+lemma Monic.mul
+    (hD : D.Injective) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
+    (hp : p.Monic D) (hq : q.Monic D) : (p * q).Monic D := by
   rw [Monic, hq.leadingCoeff_mul hD hadd]; exact hp
 
 section AddMonoid
 
 variable {A B : Type*} [AddMonoid A] [AddMonoid B] [LinearOrder B] [OrderBot B]
   [CovariantClass B B (· + ·) (· < ·)] [CovariantClass B B (Function.swap (· + ·)) (· < ·)]
-  {D : A → B} (hzero : D 0 = 0) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
-  (hD : D.Injective) {p : R[A]} {n : ℕ}
+  {D : A → B} {p : R[A]} {n : ℕ}
 
-lemma Monic.pow (hp : p.Monic D) : (p ^ n).Monic D := by
+lemma Monic.pow
+    (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2) (hD : D.Injective)
+    (hp : p.Monic D) : (p ^ n).Monic D := by
   induction' n with n ih
   · rw [pow_zero]; exact monic_one hD
   · rw [pow_succ']; exact hp.mul hD hadd ih
 
-lemma Monic.supDegree_pow [Nontrivial R] (hp : p.Monic D) :
+lemma Monic.supDegree_pow
+    (hzero : D 0 = 0) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2) (hD : D.Injective)
+    [Nontrivial R] (hp : p.Monic D) :
     (p ^ n).supDegree D = n • p.supDegree D := by
   induction' n with n ih
   · rw [pow_zero, zero_nsmul, one_def, supDegree_single 0 1, if_neg one_ne_zero, hzero]
@@ -527,7 +543,6 @@ theorem le_infDegree_add (f g : R[A]) :
     (f.infDegree D) ⊓ (g.infDegree D) ≤ (f + g).infDegree D :=
   le_inf_support_add D f g
 
-variable {D} in
 theorem infDegree_withTop_some_comp {s : AddMonoidAlgebra R A} (hs : s.support.Nonempty) :
     infDegree (WithTop.some ∘ D) s = infDegree D s := by
   unfold AddMonoidAlgebra.infDegree
