@@ -51,8 +51,8 @@ distance, and show that they form a compact family by applying Arzela-Ascoli
 theorem. The existence of a minimizer follows. -/
 section Definitions
 
-variable (X : Type u) (Y : Type v) [MetricSpace X] [CompactSpace X] [Nonempty X] [MetricSpace Y]
-  [CompactSpace Y] [Nonempty Y]
+variable (X : Type u) (Y : Type v) [MetricSpace X] [MetricSpace Y]
+
 
 private abbrev ProdSpaceFun : Type _ :=
   (X ⊕ Y) × (X ⊕ Y) → ℝ
@@ -86,12 +86,13 @@ end Definitions
 
 section Constructions
 
-variable {X : Type u} {Y : Type v} [MetricSpace X] [CompactSpace X] [Nonempty X] [MetricSpace Y]
-  [CompactSpace Y] [Nonempty Y] {f : ProdSpaceFun X Y} {x y z t : X ⊕ Y}
+variable {X : Type u} {Y : Type v} [MetricSpace X] [MetricSpace Y]
+  {f : ProdSpaceFun X Y} {x y z t : X ⊕ Y}
 
 attribute [local instance 10] Classical.inhabited_of_nonempty'
 
-private theorem maxVar_bound : dist x y ≤ maxVar X Y :=
+private theorem maxVar_bound [CompactSpace X] [Nonempty X] [CompactSpace Y] [Nonempty Y] :
+    dist x y ≤ maxVar X Y :=
   calc
     dist x y ≤ diam (univ : Set (X ⊕ Y)) :=
       dist_le_diam_of_mem isBounded_of_compactSpace (mem_univ _) (mem_univ _)
@@ -99,7 +100,7 @@ private theorem maxVar_bound : dist x y ≤ maxVar X Y :=
     _ ≤ diam (range inl : Set (X ⊕ Y)) + dist (inl default) (inr default) +
         diam (range inr : Set (X ⊕ Y)) :=
       (diam_union (mem_range_self _) (mem_range_self _))
-    _ = diam (univ : Set X) + (dist default default + 1 + dist default default) +
+    _ = diam (univ : Set X) + (dist (α := X) default default + 1 + dist (α := Y) default default) +
         diam (univ : Set Y) := by
       rw [isometry_inl.diam_range, isometry_inr.diam_range]
       rfl
@@ -141,10 +142,10 @@ private theorem candidates_dist_bound (fA : f ∈ candidates X Y) :
   | inl x, inl y =>
     calc
       f (inl x, inl y) = dist x y := candidates_dist_inl fA x y
-      _ = dist (inl x) (inl y) := by
+      _ = dist (α := X ⊕ Y) (inl x) (inl y) := by
         rw [@Sum.dist_eq X Y]
         rfl
-      _ = 1 * dist (inl x) (inl y) := by ring
+      _ = 1 * dist (α := X ⊕ Y) (inl x) (inl y) := by ring
       _ ≤ maxVar X Y * dist (inl x) (inl y) := by gcongr; exact one_le_maxVar X Y
   | inl x, inr y =>
     calc
@@ -159,10 +160,10 @@ private theorem candidates_dist_bound (fA : f ∈ candidates X Y) :
   | inr x, inr y =>
     calc
       f (inr x, inr y) = dist x y := candidates_dist_inr fA x y
-      _ = dist (inr x) (inr y) := by
+      _ = dist (α := X ⊕ Y) (inr x) (inr y) := by
         rw [@Sum.dist_eq X Y]
         rfl
-      _ = 1 * dist (inr x) (inr y) := by ring
+      _ = 1 * dist (α := X ⊕ Y) (inr x) (inr y) := by ring
       _ ≤ maxVar X Y * dist (inr x) (inr y) := by gcongr; exact one_le_maxVar X Y
 
 /-- Technical lemma to prove that candidates are Lipschitz -/

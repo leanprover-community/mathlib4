@@ -134,7 +134,7 @@ theorem function_integrable [NormedSpace ℂ E] (hf : TorusIntegrable f c R) :
 
 end TorusIntegrable
 
-variable [NormedSpace ℂ E] [CompleteSpace E] {f g : (Fin n → ℂ) → E} {c : Fin n → ℂ} {R : Fin n → ℝ}
+variable [NormedSpace ℂ E] {f g : (Fin n → ℂ) → E} {c : Fin n → ℂ} {R : Fin n → ℝ}
 
 /-- The integral over a generalized torus with center `c ∈ ℂⁿ` and radius `R ∈ ℝⁿ`, defined
 as the `•`-product of the derivative of `torusMap` and `f (torusMap c R θ)`-/
@@ -185,7 +185,8 @@ theorem norm_torusIntegral_le_of_norm_le_const {C : ℝ} (hf : ∀ θ, ‖f (tor
         Fin.prod_const, mul_assoc, mul_comm ((2 * π) ^ (n : ℕ))]
 
 @[simp]
-theorem torusIntegral_dim0 (f : ℂ⁰ → E) (c : ℂ⁰) (R : ℝ⁰) : (∯ x in T(c, R), f x) = f c := by
+theorem torusIntegral_dim0 [CompleteSpace E]
+    (f : ℂ⁰ → E) (c : ℂ⁰) (R : ℝ⁰) : (∯ x in T(c, R), f x) = f c := by
   simp only [torusIntegral, Fin.prod_univ_zero, one_smul,
     Subsingleton.elim (fun _ : Fin 0 => 2 * π) 0, Icc_self, Measure.restrict_singleton, volume_pi,
     integral_smul_measure, integral_dirac, Measure.pi_of_empty (fun _ : Fin 0 ↦ volume) 0,
@@ -207,7 +208,8 @@ theorem torusIntegral_dim1 (f : ℂ¹ → E) (c : ℂ¹) (R : ℝ¹) :
   simp [circleMap_zero]
 
 /-- Recurrent formula for `torusIntegral`, see also `torusIntegral_succ`. -/
-theorem torusIntegral_succAbove {f : ℂⁿ⁺¹ → E} {c : ℂⁿ⁺¹} {R : ℝⁿ⁺¹} (hf : TorusIntegrable f c R)
+theorem torusIntegral_succAbove
+    {f : ℂⁿ⁺¹ → E} {c : ℂⁿ⁺¹} {R : ℝⁿ⁺¹} (hf : TorusIntegrable f c R)
     (i : Fin (n + 1)) :
     (∯ x in T(c, R), f x) =
       ∮ x in C(c i, R i), ∯ y in T(c ∘ i.succAbove, R ∘ i.succAbove), f (i.insertNth x y) := by
@@ -215,7 +217,7 @@ theorem torusIntegral_succAbove {f : ℂⁿ⁺¹ → E} {c : ℂⁿ⁺¹} {R : �
   have hem : MeasurePreserving e :=
     (volume_preserving_piFinSuccAbove (fun _ : Fin (n + 1) => ℝ) i).symm _
   have heπ : (e ⁻¹' Icc 0 fun _ => 2 * π) = Icc 0 (2 * π) ×ˢ Icc (0 : ℝⁿ) fun _ => 2 * π :=
-    ((OrderIso.piFinSuccAboveIso (fun _ => ℝ) i).symm.preimage_Icc _ _).trans (Icc_prod_eq _ _)
+    ((Fin.insertNthOrderIso (fun _ => ℝ) i).preimage_Icc _ _).trans (Icc_prod_eq _ _)
   rw [torusIntegral, ← hem.map_eq, setIntegral_map_equiv, heπ, Measure.volume_eq_prod,
     setIntegral_prod, circleIntegral_def_Icc]
   · refine setIntegral_congr measurableSet_Icc fun θ _ => ?_
@@ -223,7 +225,7 @@ theorem torusIntegral_succAbove {f : ℂⁿ⁺¹ → E} {c : ℂⁿ⁺¹} {R : �
       deriv_circleMap, i.prod_univ_succAbove _, smul_smul, torusMap, circleMap_zero]
     refine setIntegral_congr measurableSet_Icc fun Θ _ => ?_
     simp only [MeasurableEquiv.piFinSuccAbove_symm_apply, i.insertNth_apply_same,
-      i.insertNth_apply_succAbove, (· ∘ ·)]
+      i.insertNth_apply_succAbove, (· ∘ ·), Fin.insertNthEquiv, Equiv.coe_fn_mk]
     congr 2
     simp only [funext_iff, i.forall_iff_succAbove, circleMap, Fin.insertNth_apply_same,
       eq_self_iff_true, Fin.insertNth_apply_succAbove, imp_true_iff, and_self_iff]
@@ -231,7 +233,8 @@ theorem torusIntegral_succAbove {f : ℂⁿ⁺¹ → E} {c : ℂⁿ⁺¹} {R : �
     rwa [← hem.integrableOn_comp_preimage e.measurableEmbedding, heπ] at this
 
 /-- Recurrent formula for `torusIntegral`, see also `torusIntegral_succAbove`. -/
-theorem torusIntegral_succ {f : ℂⁿ⁺¹ → E} {c : ℂⁿ⁺¹} {R : ℝⁿ⁺¹} (hf : TorusIntegrable f c R) :
+theorem torusIntegral_succ
+    {f : ℂⁿ⁺¹ → E} {c : ℂⁿ⁺¹} {R : ℝⁿ⁺¹} (hf : TorusIntegrable f c R) :
     (∯ x in T(c, R), f x) =
       ∮ x in C(c 0, R 0), ∯ y in T(c ∘ Fin.succ, R ∘ Fin.succ), f (Fin.cons x y) := by
   simpa using torusIntegral_succAbove hf 0

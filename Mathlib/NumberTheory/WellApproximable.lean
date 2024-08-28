@@ -10,7 +10,7 @@ import Mathlib.MeasureTheory.Covering.LiminfLimsup
 # Well-approximable numbers and Gallagher's ergodic theorem
 
 Gallagher's ergodic theorem is a result in metric number theory. It thus belongs to that branch of
-mathematics concerning arithmetic properties of real numbers which hold almost eveywhere with
+mathematics concerning arithmetic properties of real numbers which hold almost everywhere with
 respect to the Lebesgue measure.
 
 Gallagher's theorem concerns the approximation of real numbers by rational numbers. The input is a
@@ -289,7 +289,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
     let e := (AddAction.toPerm (u p) : Equiv.Perm 𝕊).toOrderIsoSet
     change e (C p) = C p
     rw [OrderIso.apply_blimsup e, ← hu₀ p]
-    exact blimsup_congr (eventually_of_forall fun n hn =>
+    exact blimsup_congr (Eventually.of_forall fun n hn =>
       approxAddOrderOf.vadd_eq_of_mul_dvd (δ n) hn.1 hn.2)
   by_cases h : ∀ p : Nat.Primes, A p =ᵐ[μ] (∅ : Set 𝕊) ∧ B p =ᵐ[μ] (∅ : Set 𝕊)
   · replace h : ∀ p : Nat.Primes, (u p +ᵥ E : Set _) =ᵐ[μ] E := by

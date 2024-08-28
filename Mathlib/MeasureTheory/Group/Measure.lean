@@ -38,34 +38,6 @@ variable {𝕜 G H : Type*} [MeasurableSpace G] [MeasurableSpace H]
 
 namespace MeasureTheory
 
-namespace Measure
-
-/-- A measure `μ` on a measurable additive group is left invariant
-  if the measure of left translations of a set are equal to the measure of the set itself. -/
-class IsAddLeftInvariant [Add G] (μ : Measure G) : Prop where
-  map_add_left_eq_self : ∀ g : G, map (g + ·) μ = μ
-
-/-- A measure `μ` on a measurable group is left invariant
-  if the measure of left translations of a set are equal to the measure of the set itself. -/
-@[to_additive existing]
-class IsMulLeftInvariant [Mul G] (μ : Measure G) : Prop where
-  map_mul_left_eq_self : ∀ g : G, map (g * ·) μ = μ
-
-/-- A measure `μ` on a measurable additive group is right invariant
-  if the measure of right translations of a set are equal to the measure of the set itself. -/
-class IsAddRightInvariant [Add G] (μ : Measure G) : Prop where
-  map_add_right_eq_self : ∀ g : G, map (· + g) μ = μ
-
-/-- A measure `μ` on a measurable group is right invariant
-  if the measure of right translations of a set are equal to the measure of the set itself. -/
-@[to_additive existing]
-class IsMulRightInvariant [Mul G] (μ : Measure G) : Prop where
-  map_mul_right_eq_self : ∀ g : G, map (· * g) μ = μ
-
-end Measure
-
-open Measure
-
 section Mul
 
 variable [Mul G] {μ : Measure G}
@@ -97,16 +69,6 @@ instance isMulLeftInvariant_smul_nnreal [IsMulLeftInvariant μ] (c : ℝ≥0) :
 instance isMulRightInvariant_smul_nnreal [IsMulRightInvariant μ] (c : ℝ≥0) :
     IsMulRightInvariant (c • μ) :=
   MeasureTheory.isMulRightInvariant_smul (c : ℝ≥0∞)
-
-@[to_additive]
-instance IsMulLeftInvariant.smulInvariantMeasure [IsMulLeftInvariant μ] :
-    SMulInvariantMeasure G G μ :=
-  ⟨fun _x _s hs => measure_preimage_of_map_eq_self (map_mul_left_eq_self _ _) hs.nullMeasurableSet⟩
-
-@[to_additive]
-instance IsMulRightInvariant.toSMulInvariantMeasure_op [μ.IsMulRightInvariant] :
-    SMulInvariantMeasure Gᵐᵒᵖ G μ :=
-  ⟨fun _x _s hs => measure_preimage_of_map_eq_self (map_mul_right_eq_self _ _) hs.nullMeasurableSet⟩
 
 section MeasurableMul
 
@@ -315,9 +277,7 @@ end Group
 
 namespace Measure
 
--- Porting note: Even in `noncomputable section`, a definition with `to_additive` require
---               `noncomputable` to generate an additive definition.
---               Please refer to leanprover/lean4#2077.
+-- TODO: noncomputable has to be specified explicitly. #1074 (item 8)
 
 /-- The measure `A ↦ μ (A⁻¹)`, where `A⁻¹` is the pointwise inverse of `A`. -/
 @[to_additive "The measure `A ↦ μ (- A)`, where `- A` is the pointwise negation of `A`."]
@@ -584,13 +544,9 @@ any compact set."]
 theorem measure_lt_top_of_isCompact_of_isMulLeftInvariant (U : Set G) (hU : IsOpen U)
     (h'U : U.Nonempty) (h : μ U ≠ ∞) {K : Set G} (hK : IsCompact K) : μ K < ∞ := by
   rw [← hU.interior_eq] at h'U
-  obtain ⟨t, hKt⟩ : ∃ t : Finset G, K ⊆ ⋃ (g : G) (_ : g ∈ t), (fun h : G => g * h) ⁻¹' U :=
+  obtain ⟨t, hKt⟩ : ∃ t : Finset G, K ⊆ ⋃ g ∈ t, (fun h : G => g * h) ⁻¹' U :=
     compact_covered_by_mul_left_translates hK h'U
-  calc
-    μ K ≤ μ (⋃ (g : G) (_ : g ∈ t), (fun h : G => g * h) ⁻¹' U) := measure_mono hKt
-    _ ≤ ∑ g ∈ t, μ ((fun h : G => g * h) ⁻¹' U) := measure_biUnion_finset_le _ _
-    _ = Finset.card t * μ U := by simp only [measure_preimage_mul, Finset.sum_const, nsmul_eq_mul]
-    _ < ∞ := ENNReal.mul_lt_top (ENNReal.natCast_ne_top _) h
+  exact (measure_mono hKt).trans_lt <| measure_biUnion_lt_top t.finite_toSet <| by simp [h.lt_top]
 
 /-- If a left-invariant measure gives finite mass to a set with nonempty interior, then
 it gives finite mass to any compact set. -/
@@ -635,7 +591,7 @@ theorem measure_univ_of_isMulLeftInvariant [WeaklyLocallyCompactSpace G] [Noncom
   have M : ∀ n, μ (L n) = (n + 1 : ℕ) * μ K := by
     intro n
     induction' n with n IH
-    · simp only [L, one_mul, Nat.cast_one, iterate_zero, id, Nat.zero_eq, Nat.zero_add]
+    · simp only [L, one_mul, Nat.cast_one, iterate_zero, id, Nat.zero_add]
     · calc
         μ (L (n + 1)) = μ (L n) + μ (g (L n) • K) := by
           simp_rw [L, iterate_succ']
@@ -751,7 +707,7 @@ theorem haar_singleton [TopologicalGroup G] [BorelSpace G] (g : G) : μ {g} = μ
 
 @[to_additive IsAddHaarMeasure.smul]
 theorem IsHaarMeasure.smul {c : ℝ≥0∞} (cpos : c ≠ 0) (ctop : c ≠ ∞) : IsHaarMeasure (c • μ) :=
-  { lt_top_of_isCompact := fun _K hK => ENNReal.mul_lt_top ctop hK.measure_lt_top.ne
+  { lt_top_of_isCompact := fun _K hK => ENNReal.mul_lt_top ctop.lt_top hK.measure_lt_top
     toIsOpenPosMeasure := isOpenPosMeasure_smul μ cpos }
 
 /-- If a left-invariant measure gives positive mass to some compact set with nonempty interior, then

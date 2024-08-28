@@ -64,7 +64,7 @@ open Monoid
 noncomputable def IsTorsion.group [Monoid G] (tG : IsTorsion G) : Group G :=
   { ‹Monoid G› with
     inv := fun g => g ^ (orderOf g - 1)
-    mul_left_inv := fun g => by
+    inv_mul_cancel := fun g => by
       erw [← pow_succ, tsub_add_cancel_of_le, pow_orderOf_eq_one]
       exact (tG g).orderOf_pos }
 

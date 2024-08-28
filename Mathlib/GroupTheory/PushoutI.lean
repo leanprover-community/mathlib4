@@ -513,7 +513,7 @@ noncomputable def consRecOn {motive : NormalWord d → Sort _} (w : NormalWord d
           (h3 _ _ (List.mem_cons_self _ _))]
       · apply d.injective i
         simp only [cons, equiv_fst_eq_mul_inv, MonoidHom.apply_ofInjective_symm,
-          map_one, mul_one, mul_right_inv, (equiv_snd_eq_self_iff_mem (d.compl i) (one_mem _)).2
+          map_one, mul_one, mul_inv_cancel, (equiv_snd_eq_self_iff_mem (d.compl i) (one_mem _)).2
           (h3 _ _ (List.mem_cons_self _ _))]
       · rwa [← SetLike.mem_coe,
           ← coe_equiv_snd_eq_one_iff_mem (d.compl i) (d.one_mem _),
@@ -563,7 +563,8 @@ noncomputable def equiv : PushoutI φ ≃ NormalWord d :=
       simp only [prod_smul, prod_empty, mul_one]
     right_inv := fun w => prod_smul_empty w }
 
-theorem prod_injective : Function.Injective (prod : NormalWord d → PushoutI φ) := by
+theorem prod_injective {ι : Type*} {G : ι → Type*} [(i : ι) → Group (G i)] {φ : (i : ι) → H →* G i}
+    {d : Transversal φ} : Function.Injective (prod : NormalWord d → PushoutI φ) := by
   letI := Classical.decEq ι
   letI := fun i => Classical.decEq (G i)
   classical exact equiv.symm.injective
@@ -636,8 +637,8 @@ theorem Reduced.exists_normalWord_prod_eq (d : Transversal φ) {w : Word G} (hw 
 /-- For any word `w` in the coproduct,
 if `w` is reduced (i.e none its letters are in the image of the base monoid), and nonempty, then
 `w` itself is not in the image of the base group. -/
-theorem Reduced.eq_empty_of_mem_range (hφ : ∀ i, Injective (φ i))
-    {w : Word G} (hw : Reduced φ w)
+theorem Reduced.eq_empty_of_mem_range
+    (hφ : ∀ i, Injective (φ i)) {w : Word G} (hw : Reduced φ w)
     (h : ofCoprodI w.prod ∈ (base φ).range) : w = .empty := by
   rcases transversal_nonempty φ hφ with ⟨d⟩
   rcases hw.exists_normalWord_prod_eq d with ⟨w', hw'prod, hw'map⟩
@@ -655,7 +656,8 @@ end Reduced
 
 /-- The intersection of the images of the maps from any two distinct groups in the diagram
 into the amalgamated product is the image of the map from the base group in the diagram. -/
-theorem inf_of_range_eq_base_range (hφ : ∀ i, Injective (φ i)) {i j : ι} (hij : i ≠ j) :
+theorem inf_of_range_eq_base_range
+    (hφ : ∀ i, Injective (φ i)) {i j : ι} (hij : i ≠ j) :
     (of i).range ⊓ (of j).range = (base φ).range :=
   le_antisymm
     (by
@@ -682,7 +684,7 @@ theorem inf_of_range_eq_base_range (hφ : ∀ i, Injective (φ i)) {i j : ι} (h
       have := hw.eq_empty_of_mem_range hφ (by
         simp only [Word.prod, List.map_cons, List.prod_cons, List.prod_nil,
           List.map_nil, map_mul, ofCoprodI_of, hg₁, hg₂, map_inv, map_one, mul_one,
-          mul_inv_self, one_mem])
+          mul_inv_cancel, one_mem])
       simp [w, Word.empty] at this)
     (le_inf
       (by rw [← of_comp_eq_base i]
