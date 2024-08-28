@@ -982,22 +982,41 @@ protected theorem HasFPowerSeriesOnBall.continuousOn (hf : HasFPowerSeriesOnBall
   rw [← hasFPowerSeriesWithinOnBall_univ] at hf
   simpa using hf.continuousOn
 
-protected theorem HasFPowerSeriesWithinAt.continuousWithinAt
+protected theorem HasFPowerSeriesWithinOnBall.continuousWithinAt_insert
+    (hf : HasFPowerSeriesWithinOnBall f p s x r) :
+    ContinuousWithinAt f (insert x s) x := by
+  apply (hf.continuousOn.continuousWithinAt (x := x) (by simp [hf.r_pos])).mono_of_mem
+  exact inter_mem_nhdsWithin _ (EMetric.ball_mem_nhds x hf.r_pos)
+
+protected theorem HasFPowerSeriesWithinOnBall.continuousWithinAt
+    (hf : HasFPowerSeriesWithinOnBall f p s x r) :
+    ContinuousWithinAt f s x :=
+  hf.continuousWithinAt_insert.mono (subset_insert x s)
+
+protected theorem HasFPowerSeriesWithinAt.continuousWithinAt_insert
     (hf : HasFPowerSeriesWithinAt f p s x) :
     ContinuousWithinAt f (insert x s) x := by
   rcases hf with ⟨r, hr⟩
-  apply (hr.continuousOn.continuousWithinAt (x := x) (by simp [hr.r_pos])).mono_of_mem
-  exact inter_mem_nhdsWithin _ (EMetric.ball_mem_nhds x hr.r_pos)
+  apply hr.continuousWithinAt_insert
+
+protected theorem HasFPowerSeriesWithinAt.continuousWithinAt
+    (hf : HasFPowerSeriesWithinAt f p s x) :
+    ContinuousWithinAt f s x :=
+  hf.continuousWithinAt_insert.mono (subset_insert x s)
 
 protected theorem HasFPowerSeriesAt.continuousAt (hf : HasFPowerSeriesAt f p x) :
     ContinuousAt f x :=
   let ⟨_, hr⟩ := hf
   hr.continuousOn.continuousAt (EMetric.ball_mem_nhds x hr.r_pos)
 
-protected theorem AnalyticWithinAt.continuousWithinAt (hf : AnalyticWithinAt 𝕜 f s x) :
+protected theorem AnalyticWithinAt.continuousWithinAt_insert (hf : AnalyticWithinAt 𝕜 f s x) :
     ContinuousWithinAt f (insert x s) x :=
   let ⟨_, hp⟩ := hf
-  hp.continuousWithinAt
+  hp.continuousWithinAt_insert
+
+protected theorem AnalyticWithinAt.continuousWithinAt (hf : AnalyticWithinAt 𝕜 f s x) :
+    ContinuousWithinAt f s x :=
+  hf.continuousWithinAt_insert.mono (subset_insert x s)
 
 protected theorem AnalyticAt.continuousAt (hf : AnalyticAt 𝕜 f x) : ContinuousAt f x :=
   let ⟨_, hp⟩ := hf

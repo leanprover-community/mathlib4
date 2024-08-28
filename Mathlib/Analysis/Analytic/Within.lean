@@ -149,17 +149,16 @@ lemma analyticWithinOn_of_locally_analyticWithinOn {f : E → F} {s : Set E}
   intro hf x m
   rcases Metric.mem_nhds_iff.mp (hs.mem_nhds m) with ⟨r, r0, rs⟩
   rcases hf x m with ⟨p, t, fp⟩
-  exact ⟨p, min (.ofReal r) t, {
-    r_pos := lt_min (by positivity) fp.r_pos
+  exact ⟨p, min (.ofReal r) t,
+  { r_pos := lt_min (by positivity) fp.r_pos
     r_le := min_le_of_right_le fp.r_le
     hasSum := by
       intro y ym
       simp only [EMetric.mem_ball, lt_min_iff, edist_lt_ofReal, dist_zero_right] at ym
-      refine fp.hasSum (rs ?_) ym.2
-      simp only [Metric.mem_ball, dist_self_add_left, ym.1]
-  }⟩
-
-#exit
+      refine fp.hasSum ?_ ym.2
+      apply mem_insert_of_mem
+      apply rs
+      simp only [Metric.mem_ball, dist_self_add_left, ym.1] }⟩
 
 /-!
 ### Equivalence to analyticity of a local extension
