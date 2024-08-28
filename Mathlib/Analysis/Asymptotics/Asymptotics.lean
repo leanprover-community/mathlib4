@@ -1950,4 +1950,4 @@ theorem isLittleO_congr (e : α ≃ₜ β) {b : β} {f : β → E} {g : β → F
 
 end Homeomorph
 
-set_option linter.longFile 2100
+set_option linter.style.longFile 2100

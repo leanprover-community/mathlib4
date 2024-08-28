@@ -2740,4 +2740,4 @@ theorem coe_subsingletonEquiv [Subsingleton α] :
 
 end Multiset
 
-set_option linter.longFile 2900
+set_option linter.style.longFile 2900

@@ -31,7 +31,7 @@ The `longFile` and the `longLine` *syntax* linter take care of flagging lines th
 100 character limit and files that exceed the 1500 line limit.
 The text-based versions of this file are still used for the files where the linter is not imported.
 This means that the exceptions for the text-based linters are shorter, as they do not need to
-include those handled with `set_option linter.longFile x`/`set_option linter.longLine false`.
+include those handled with `set_option linter.style.longFile x`/`set_option linter.longLine false`.
 
 An executable running all these linters is defined in `scripts/lint-style.lean`.
 -/
@@ -379,7 +379,7 @@ def checkFileLength (lines : Array String) (existingLimit : Option ℕ) : Option
     | none => true
     if isLarger then
       -- If the `longFile` linter is not active on the file, this text-based linter kicks in.
-      if (lines.filter ("set_option linter.longFile ".isPrefixOf)).isEmpty then
+      if (lines.filter ("set_option linter.style.longFile ".isPrefixOf)).isEmpty then
         -- We add about 200 lines of slack to the current file size: small PRs will be unaffected,
         -- but sufficiently large PRs will get nudged towards splitting up this file.
         return some (StyleError.fileTooLong lines.size

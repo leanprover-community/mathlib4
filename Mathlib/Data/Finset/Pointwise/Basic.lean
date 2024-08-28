@@ -1996,4 +1996,4 @@ instance Nat.decidablePred_mem_vadd_set {s : Set ℕ} [DecidablePred (· ∈ s)]
   fun n ↦ decidable_of_iff' (a ≤ n ∧ n - a ∈ s) <| by
     simp only [Set.mem_vadd_set, vadd_eq_add]; aesop
 
-set_option linter.longFile 2100
+set_option linter.style.longFile 2100

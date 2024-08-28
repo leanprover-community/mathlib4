@@ -1739,4 +1739,4 @@ example [TopologicalSpace X] [TopologicalSpace Y] {x₀ : X} (f : X → X → Y)
 ```
 -/
 
-set_option linter.longFile 1900
+set_option linter.style.longFile 1900

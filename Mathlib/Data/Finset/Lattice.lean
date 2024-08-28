@@ -1953,4 +1953,4 @@ theorem set_biInter_biUnion (s : Finset γ) (t : γ → Finset α) (f : α → S
 
 end Finset
 
-set_option linter.longFile 2100
+set_option linter.style.longFile 2100

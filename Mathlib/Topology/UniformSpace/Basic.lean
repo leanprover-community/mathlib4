@@ -1767,4 +1767,4 @@ theorem Uniform.tendsto_congr {α β} [UniformSpace β] {f g : α → β} {l : F
     (hfg : Tendsto (fun x => (f x, g x)) l (𝓤 β)) : Tendsto f l (𝓝 b) ↔ Tendsto g l (𝓝 b) :=
   ⟨fun h => h.congr_uniformity hfg, fun h => h.congr_uniformity hfg.uniformity_symm⟩
 
-set_option linter.longFile 1900
+set_option linter.style.longFile 1900

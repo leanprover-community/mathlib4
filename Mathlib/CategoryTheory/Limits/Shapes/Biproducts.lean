@@ -1997,4 +1997,4 @@ theorem isIso_right_of_isIso_biprod_map {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z
 
 end CategoryTheory
 
-set_option linter.longFile 2100
+set_option linter.style.longFile 2100

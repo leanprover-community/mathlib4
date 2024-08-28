@@ -1605,4 +1605,4 @@ lemma continuousOn_integral_of_compact_support
 
 end ParametricIntegral
 
-set_option linter.longFile 1700
+set_option linter.style.longFile 1700

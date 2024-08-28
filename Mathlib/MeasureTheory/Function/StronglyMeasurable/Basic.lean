@@ -1881,4 +1881,4 @@ theorem stronglyMeasurable_uncurry_of_continuous_of_stronglyMeasurable {α β ι
 
 end MeasureTheory
 
-set_option linter.longFile 2000
+set_option linter.style.longFile 2000

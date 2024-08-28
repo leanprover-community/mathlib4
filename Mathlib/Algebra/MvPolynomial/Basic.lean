@@ -1540,4 +1540,4 @@ end CommSemiring
 
 end MvPolynomial
 
-set_option linter.longFile 1700
+set_option linter.style.longFile 1700

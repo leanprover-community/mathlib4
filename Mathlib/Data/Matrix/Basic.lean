@@ -2534,4 +2534,4 @@ theorem map_mulVec [NonAssocSemiring R] [NonAssocSemiring S] (f : R →+* S) (M 
 
 end RingHom
 
-set_option linter.longFile 2700
+set_option linter.style.longFile 2700

@@ -2541,4 +2541,4 @@ end lookup
 
 end List
 
-set_option linter.longFile 2700
+set_option linter.style.longFile 2700

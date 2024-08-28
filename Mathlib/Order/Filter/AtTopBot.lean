@@ -1833,4 +1833,4 @@ This lemma is used to prove the equality `∑' x, f (g x) = ∑' y, f y` under
 the same assumptions. -/
 add_decl_doc Function.Injective.map_atTop_finset_sum_eq
 
-set_option linter.longFile 2000
+set_option linter.style.longFile 2000

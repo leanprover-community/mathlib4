@@ -2094,4 +2094,4 @@ instance DFinsupp.infinite_of_right {ι : Sort _} {π : ι → Sort _} [∀ i, I
 
 end FiniteInfinite
 
-set_option linter.longFile 2200
+set_option linter.style.longFile 2200

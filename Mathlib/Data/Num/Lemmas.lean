@@ -1577,4 +1577,4 @@ instance SNum.lt : LT SNum :=
 instance SNum.le : LE SNum :=
   ⟨fun a b => (a : ℤ) ≤ b⟩
 
-set_option linter.longFile 1700
+set_option linter.style.longFile 1700

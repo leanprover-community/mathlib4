@@ -1916,4 +1916,4 @@ theorem coinduced_continuous {α β : Type*} [t : TopologicalSpace α] [Group β
 
 end GroupTopology
 
-set_option linter.longFile 2100
+set_option linter.style.longFile 2100

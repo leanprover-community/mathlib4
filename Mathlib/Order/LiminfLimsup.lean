@@ -1695,4 +1695,4 @@ lemma Antitone.isCoboundedUnder_ge_of_isCobounded {f : R → S} (f_decr : Antito
 
 end frequently_bounded
 
-set_option linter.longFile 1800
+set_option linter.style.longFile 1800

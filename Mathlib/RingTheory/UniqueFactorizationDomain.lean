@@ -1976,4 +1976,4 @@ lemma factors_multiset_prod_of_irreducible {s : Multiset ℕ} (h : ∀ x : ℕ, 
 
 end Nat
 
-set_option linter.longFile 2100
+set_option linter.style.longFile 2100

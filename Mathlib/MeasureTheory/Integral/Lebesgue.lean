@@ -2051,4 +2051,4 @@ end TendstoIndicator -- section
 
 end MeasureTheory
 
-set_option linter.longFile 2200
+set_option linter.style.longFile 2200

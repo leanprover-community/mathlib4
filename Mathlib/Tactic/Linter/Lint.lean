@@ -259,27 +259,27 @@ The "longFile" linter emits a warning on files which are longer than a certain n
 (1500 by default). If this option is set to `N` lines, the linter warns once a file has more than
 `N` lines. A value of `0` silences the linter entirely.
 -/
-register_option linter.longFile : Nat := {
+register_option linter.style.longFile : Nat := {
   defValue := 1500
   descr := "enable the longFile linter"
 }
 
 namespace LongFile
 
-@[inherit_doc Mathlib.Linter.linter.longFile]
+@[inherit_doc Mathlib.Linter.linter.style.longFile]
 def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
-  let linterBound := linter.longFile.get (← getOptions)
+  let linterBound := linter.style.longFile.get (← getOptions)
   if linterBound == 0 then
     return
-  let defValue := linter.longFile.defValue
+  let defValue := linter.style.longFile.defValue
   let smallOption := match stx with
-      | `(set_option linter.longFile $x) => TSyntax.getNat ⟨x.raw⟩ ≤ defValue
+      | `(set_option linter.style.longFile $x) => TSyntax.getNat ⟨x.raw⟩ ≤ defValue
       | _ => false
   if smallOption then
-    logWarningAt stx <| .tagged linter.longFile.name
+    logWarningAt stx <| .tagged linter.style.longFile.name
       m!"The default value of the `longFile` linter is {defValue}.\n\
         The current value of {linterBound} does not exceed the allowed bound.\n\
-        Please, remove the `set_option linter.longFile {linterBound}`."
+        Please, remove the `set_option linter.style.longFile {linterBound}`."
   else
   -- Thanks to the above check, the linter option is either not set (and hence equal
   -- to the default) or set to some value *larger* than the default.
@@ -293,29 +293,29 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- the last line: we subtract 1, since the last line is expected to be empty
     let lastLine := ((← getFileMap).toPosition init).line
     if lastLine ≤ defValue && defValue < linterBound then
-      logWarningAt stx <| .tagged linter.longFile.name
+      logWarningAt stx <| .tagged linter.style.longFile.name
         m!"The default value of the `longFile` linter is {defValue}.\n\
           This file is {lastLine} lines long which does not exceed the allowed bound.\n\
-          Please, remove the `set_option linter.longFile {linterBound}`."
+          Please, remove the `set_option linter.style.longFile {linterBound}`."
     else
     -- `candidate` is divisible by `100` and satisfies `lastLine + 100 < candidate ≤ lastLine + 200`
     -- note that `candidate` is necessarily bigger than `lastLine` and hence bigger than `defValue`
     let candidate := (lastLine / 100) * 100 + 200
     let candidate := max candidate defValue
     if linterBound < lastLine then
-      logWarningAt stx <| .tagged linter.longFile.name
+      logWarningAt stx <| .tagged linter.style.longFile.name
         m!"This file is {lastLine} lines long, but the limit is {linterBound}.\n\n\
           You can extend the allowed length of the file using \
-          `set_option linter.longFile {candidate}`.\n\
+          `set_option linter.style.longFile {candidate}`.\n\
           You can completely disable this linter by setting the length limit to `0`."
     else -- note that the inequality `linterBound ≤ defValue` holds
     if lastLine + 200 < linterBound then
       if linterBound != candidate then
-        logWarningAt stx <| .tagged linter.longFile.name
+        logWarningAt stx <| .tagged linter.style.longFile.name
           m!"For this file, the recommended limit for the number of lines is {candidate}, \
             instead of {linterBound}.\n\n\
             Please adjust the limit to the recommended value using \
-            `set_option linter.longFile {candidate}`."
+            `set_option linter.style.longFile {candidate}`."
 
 initialize addLinter longFileLinter
 

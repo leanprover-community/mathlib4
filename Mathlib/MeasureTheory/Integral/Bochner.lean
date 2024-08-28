@@ -1959,4 +1959,4 @@ def evalIntegral : PositivityExt where eval {u α} zα pα e := do
 
 end Mathlib.Meta.Positivity
 
-set_option linter.longFile 2100
+set_option linter.style.longFile 2100

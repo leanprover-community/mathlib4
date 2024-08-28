@@ -1803,4 +1803,4 @@ theorem lowerClosure_prod (s : Set α) (t : Set β) :
 
 end Preorder
 
-set_option linter.longFile 1900
+set_option linter.style.longFile 1900

@@ -2391,4 +2391,4 @@ end Submodule
 
 end Quotient
 
-set_option linter.longFile 2500
+set_option linter.style.longFile 2500

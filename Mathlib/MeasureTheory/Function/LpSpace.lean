@@ -1930,4 +1930,4 @@ end Lp
 
 end MeasureTheory
 
-set_option linter.longFile 2100
+set_option linter.style.longFile 2100

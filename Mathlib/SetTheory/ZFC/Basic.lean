@@ -1542,4 +1542,4 @@ noncomputable def toSet_equiv : ZFSet.{u} ≃ {s : Set ZFSet.{u} // Small.{u, u+
 
 end ZFSet
 
-set_option linter.longFile 1700
+set_option linter.style.longFile 1700

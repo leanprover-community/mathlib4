@@ -1595,4 +1595,4 @@ theorem Filter.Eventually.prod_nhdsSet {p : X × Y → Prop} {px : X → Prop} {
 
 end NhdsSet
 
-set_option linter.longFile 1700
+set_option linter.style.longFile 1700

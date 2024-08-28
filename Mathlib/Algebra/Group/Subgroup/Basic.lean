@@ -2913,4 +2913,4 @@ def noncenter (G : Type*) [Monoid G] : Set (ConjClasses G) :=
 
 end ConjClasses
 
-set_option linter.longFile 3000
+set_option linter.style.longFile 3000

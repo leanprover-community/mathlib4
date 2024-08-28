@@ -1620,4 +1620,4 @@ abbrev WeierstrassCurve.Affine.Point.toJacobian {R : Type u} [CommRing R]
     [Nontrivial R] {W : Affine R} (P : W.Point) : W.toJacobian.Point :=
   Jacobian.Point.fromAffine P
 
-set_option linter.longFile 1700
+set_option linter.style.longFile 1700

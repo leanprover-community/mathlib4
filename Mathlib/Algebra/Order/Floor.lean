@@ -1588,4 +1588,4 @@ def evalIntCeil : PositivityExt where eval {u α} _zα _pα e := do
 
 end Mathlib.Meta.Positivity
 
-set_option linter.longFile 1700
+set_option linter.style.longFile 1700

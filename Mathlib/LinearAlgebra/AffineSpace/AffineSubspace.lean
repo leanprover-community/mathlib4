@@ -1692,4 +1692,4 @@ theorem affineSpan_pair_parallel_iff_vectorSpan_eq {p₁ p₂ p₃ p₄ : P} :
 
 end AffineSubspace
 
-set_option linter.longFile 1800
+set_option linter.style.longFile 1800
