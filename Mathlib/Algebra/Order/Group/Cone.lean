@@ -9,7 +9,7 @@ import Mathlib.Algebra.Order.Monoid.Submonoid
 /-!
 # Construct ordered groups from groups with a specified positive cone.
 
-In this file we provide structures `GroupCone` and `MaximalGroupCone`
+In this file we provide the structure `GroupCone` and the predicate `GroupCone.IsMaximal`
 that encode axioms of `OrderedCommGroup` and `LinearOrderedCommGroup`
 in terms of the subset of non-negative elements.
 
@@ -58,53 +58,14 @@ instance GroupCone.instGroupConeClass (G : Type*) [CommGroup G] :
   one_mem {C} := C.one_mem'
   eq_one_of_mem_of_inv_mem {C} := C.eq_one_of_mem_of_inv_mem'
 
-/-- `MaximalAddGroupConeClass S G` says that `S` is a type of maximal cones in `G`. -/
-class MaximalAddGroupConeClass (S G : Type*) [AddCommGroup G] [SetLike S G]
-    extends AddGroupConeClass S G : Prop where
-  mem_or_neg_mem (C : S) (a : G) : a ∈ C ∨ -a ∈ C
+/-- Typeclass for maximal additive cones. -/
+class IsMaxCone {S G : Type*} [AddCommGroup G] [SetLike S G] (C : S) : Prop where
+  mem_or_neg_mem (a : G) : a ∈ C ∨ -a ∈ C
 
-/-- `MaximalGroupConeClass S G` says that `S` is a type of maximal cones in `G`. -/
-@[to_additive]
-class MaximalGroupConeClass (S G : Type*) [CommGroup G] [SetLike S G]
-    extends GroupConeClass S G : Prop where
-  mem_or_inv_mem (C : S) (a : G) : a ∈ C ∨ a⁻¹ ∈ C
-
-export MaximalGroupConeClass (mem_or_inv_mem)
-export MaximalAddGroupConeClass (mem_or_neg_mem)
-
-/-- A maximal (positive) cone in an abelian group is a cone containing
-either `a` or `-a` for every `a`.
-This is equivalent to being the set of non-negative elements of
-some order making the group into a linearly ordered group. -/
-structure MaximalAddGroupCone (G : Type*) [AddCommGroup G]
-    extends AddGroupCone G where
-  mem_or_neg_mem' a : a ∈ carrier ∨ -a ∈ carrier
-
-/-- A maximal (positive) cone in an abelian group is a cone containing
-either `a` or `a⁻¹` for every `a`.
-This is equivalent to being the set of elements that are at least 1 in
-some order making the group into a linearly ordered group. -/
-@[to_additive]
-structure MaximalGroupCone (G : Type*) [CommGroup G] extends GroupCone G where
-  mem_or_inv_mem' a : a ∈ carrier ∨ a⁻¹ ∈ carrier
-
-@[to_additive]
-instance MaximalGroupCone.instSetLike (G : Type*) [CommGroup G] :
-  SetLike (MaximalGroupCone G) G where
-  coe C := C.carrier
-  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
-
-@[to_additive]
-instance MaximalGroupCone.instGroupConeClass (G : Type*) [CommGroup G] :
-    GroupConeClass (MaximalGroupCone G) G where
-  mul_mem {C} := C.mul_mem'
-  one_mem {C} := C.one_mem'
-  eq_one_of_mem_of_inv_mem {C} := C.eq_one_of_mem_of_inv_mem'
-
-@[to_additive]
-instance MaximalGroupCone.instMaximalGroupConeClass (G : Type*) [CommGroup G] :
-    MaximalGroupConeClass (MaximalGroupCone G) G where
-  mem_or_inv_mem {C} := C.mem_or_inv_mem'
+/-- Typeclass for maximal multiplicative cones. -/
+@[to_additive IsMaxCone]
+class IsMaxMulCone {S G : Type*} [CommGroup G] [SetLike S G] (C : S) : Prop where
+  mem_or_inv_mem (a : G) : a ∈ C ∨ a⁻¹ ∈ C
 
 namespace GroupCone
 variable {H : Type*} [OrderedCommGroup H] {a : H}
@@ -125,29 +86,11 @@ lemma mem_oneLE : a ∈ oneLE H ↔ 1 ≤ a := Iff.rfl
 @[to_additive (attr := simp, norm_cast) coe_nonneg]
 lemma coe_oneLE : oneLE H = {x : H | 1 ≤ x} := rfl
 
+@[to_additive nonneg.isMaxCone]
+instance oneLE.isMaxMulCone {H : Type*} [LinearOrderedCommGroup H] : IsMaxMulCone (oneLE H) where
+  mem_or_inv_mem := by simpa using le_total 1
+
 end GroupCone
-
-namespace MaximalGroupCone
-variable {H : Type*} [LinearOrderedCommGroup H] {a : H}
-
-variable (H) in
-/-- Construct a maximal cone from the set of elements of
-a linearly ordered abelian group that are at least 1. -/
-@[to_additive nonneg
-"Construct a maximal cone from the set of non-negative elements of
-a linearly ordered abelian group."]
-def oneLE : MaximalGroupCone H where
-  __ := GroupCone.oneLE H
-  mem_or_inv_mem' := by simpa using le_total 1
-
-@[to_additive (attr := simp) nonneg_toAddSubmonoid]
-lemma oneLE_toSubmonoid : (oneLE H).toSubmonoid = .oneLE H := rfl
-@[to_additive (attr := simp) mem_nonneg]
-lemma mem_oneLE : a ∈ oneLE H ↔ 1 ≤ a := Iff.rfl
-@[to_additive (attr := simp, norm_cast) coe_nonneg]
-lemma coe_oneLE : oneLE H = {x : H | 1 ≤ x} := rfl
-
-end MaximalGroupCone
 
 variable {S G : Type*} [CommGroup G] [SetLike S G] (C : S)
 
@@ -167,8 +110,8 @@ def OrderedCommGroup.mkOfCone [GroupConeClass S G] :
 @[to_additive (attr := reducible)
 "Construct a linearly ordered abelian group by designating a maximal cone in an abelian group."]
 def LinearOrderedCommGroup.mkOfCone
-    [MaximalGroupConeClass S G] (dec : DecidablePred (· ∈ C)) :
+    [GroupConeClass S G] [IsMaxMulCone C] (dec : DecidablePred (· ∈ C)) :
     LinearOrderedCommGroup G where
   __ := OrderedCommGroup.mkOfCone C
-  le_total a b := by simpa using mem_or_inv_mem C (b / a)
+  le_total a b := by simpa using IsMaxMulCone.mem_or_inv_mem (b / a)
   decidableLE a b := dec _
