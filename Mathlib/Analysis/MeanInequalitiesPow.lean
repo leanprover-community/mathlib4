@@ -219,7 +219,7 @@ theorem rpow_arith_mean_le_arith_mean_rpow (w z : ι → ℝ≥0∞) (hw' : ∑ 
     simp [ENNReal.mul_eq_top, hp_pos, hp_nonneg, hp_not_neg]
   refine le_of_top_imp_top_of_toNNReal_le ?_ ?_
   · -- first, prove `(∑ i ∈ s, w i * z i) ^ p = ⊤ → ∑ i ∈ s, (w i * z i ^ p) = ⊤`
-    rw [rpow_eq_top_iff, sum_eq_top_iff, sum_eq_top_iff]
+    rw [rpow_eq_top_iff, sum_eq_top, sum_eq_top]
     intro h
     simp only [and_false_iff, hp_not_neg, false_or_iff] at h
     rcases h.left with ⟨a, H, ha⟩
