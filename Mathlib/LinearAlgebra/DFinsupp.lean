@@ -429,7 +429,7 @@ theorem lsum_comp_mapRange_toSpanSingleton [∀ m : R, Decidable (m ≠ 0)] (p :
         ((mapRange.linearMap fun i => LinearMap.toSpanSingleton R (↥(p i)) ⟨v i, hv i⟩ :
               _ →ₗ[R] _).comp
           (finsuppLequivDFinsupp R : (ι →₀ R) ≃ₗ[R] _).toLinearMap) =
-      Finsupp.total ι N R v := by
+      Finsupp.total R v := by
   ext
   simp
 

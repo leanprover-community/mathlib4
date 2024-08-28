@@ -102,7 +102,7 @@ vanishes, then it vanishes trivially. -/
 theorem vanishesTrivially_of_sum_tmul_eq_zero (hm : Submodule.span R (Set.range m) = ⊤)
     (hmn : ∑ i, m i ⊗ₜ n i = (0 : M ⊗[R] N)) : VanishesTrivially R m n := by
   -- Define a map $G \colon R^\iota \to M$ whose matrix entries are the $m_i$. It is surjective.
-  set G : (ι →₀ R) →ₗ[R] M := Finsupp.total ι M R m with hG
+  set G : (ι →₀ R) →ₗ[R] M := Finsupp.total R m with hG
   have G_basis_eq (i : ι) : G (Finsupp.single i 1) = m i := by simp [hG, toModule_lof]
   have G_surjective : Surjective G := by
     apply LinearMap.range_eq_top.mp

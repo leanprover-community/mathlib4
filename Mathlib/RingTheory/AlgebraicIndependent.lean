@@ -106,8 +106,8 @@ theorem algebraMap_injective : Injective (algebraMap R A) := by
 
 theorem linearIndependent : LinearIndependent R x := by
   rw [linearIndependent_iff_injective_total]
-  have : Finsupp.total ι A R x =
-      (MvPolynomial.aeval x).toLinearMap.comp (Finsupp.total ι _ R X) := by
+  have : Finsupp.total R x =
+      (MvPolynomial.aeval x).toLinearMap.comp (Finsupp.total R X) := by
     ext
     simp
   rw [this]

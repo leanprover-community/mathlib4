@@ -1187,7 +1187,7 @@ variable (v : ι → M) (hv : Submodule.span R (Set.range v) = ⊤)
 
 /-- A variant of `Finsupp.total` that takes in vectors valued in `I`. -/
 noncomputable def finsuppTotal : (ι →₀ I) →ₗ[R] M :=
-  (Finsupp.total ι M R v).comp (Finsupp.mapRange.linearMap I.subtype)
+  (Finsupp.total R v).comp (Finsupp.mapRange.linearMap I.subtype)
 
 variable {ι M v}
 

@@ -144,8 +144,8 @@ theorem tfae_equational_criterion : List.TFAE [
       _ = 0                                 := hfx
     obtain ⟨κ, hκ, a', y', ⟨ha'y', ha'⟩⟩ := h₄ this
     use κ, hκ
-    use Finsupp.total ι (κ →₀ R) R (fun i ↦ equivFunOnFinite.symm (a' i))
-    use Finsupp.total κ M R y'
+    use Finsupp.total R (fun i ↦ equivFunOnFinite.symm (a' i))
+    use Finsupp.total R y'
     constructor
     · apply Finsupp.basisSingleOne.ext
       intro i
@@ -156,7 +156,7 @@ theorem tfae_equational_criterion : List.TFAE [
   tfae_have 5 → 4
   · intro h₅ ι hi f x hfx
     let f' : ι →₀ R := equivFunOnFinite.symm f
-    let x' : (ι →₀ R) →ₗ[R] M := Finsupp.total ι M R x
+    let x' : (ι →₀ R) →ₗ[R] M := Finsupp.total R x
     have : x' f' = 0 := by simpa [x', f', total_apply, sum_fintype] using hfx
     obtain ⟨κ, hκ, a', y', ha'y', ha'⟩ := h₅ this
     refine ⟨κ, hκ, fun i ↦ a' (single i 1), fun j ↦ y' (single j 1), fun i ↦ ?_, fun j ↦ ?_⟩
