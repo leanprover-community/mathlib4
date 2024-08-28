@@ -11,7 +11,40 @@ import Lean.Attributes
 
 # Algebraize tactic
 
-TODO
+This file defines the `algebraize` tactic. The basic functionality of this tactic is to
+automatically add `Algebra` instances given `RingHom`s. For example, `algebraize f g` where
+`f : A →+* B` and `g : B →+* C` are `RinHom`'s, will add the instances `Algebra A B` and
+`Algebra B C` corresponding to these `RingHom`s.
+
+# Further functionality
+
+When given a composition of `RingHom`'s, e.g. `algebraize g.comp f`, the tactic will also try to
+add the instance `IsScalarTower A B C` if possible.
+
+After having added suitable `Algebra` and `IsScalarTower` instances, the tactic will search through
+the local context for `RingHom` properties that can be converted properties of the corresponding
+`Algebra`. For example, given `f : A →+* B` and `hf : f.FiniteType`, then `algebraize f` will add
+the instance `Algebra A B` and the corresponding property `Algebra.FiniteType A B`. The tactic knows
+which `RingHom` properties have a corresponding `Algebra` property through the `algebraize`
+attribute. This attribute has a parameter `name` which should be the name of the corresponding
+`Algebra` property. For example, `Algebra.FiniteType` is tagged as follows:
+```
+@[algebraize Algebra.FiniteType]
+def FiniteType (f : A →+* B) : Prop :=
+  @Algebra.FiniteType A B _ _ f.toAlgebra
+```
+
+To skip searching through the local context and adding corresponding `Algebra` properties, use
+`algebraize'` which only adds `Algebra` and `IsScalarTower` instances.
+
+## TODO / Upcoming work
+
+For now, one always needs to give the name of the corresponding `Algebra` property as an argument
+to the `algebraize` attribute. However, often this can be inferred from the name of the declaration
+with the tag (i.e. `RingHom.FiniteType` corresponds `Algebra.FiniteType`). It would be nice to
+add functionality that defaults to this name if no argument is given to the `algebraize` attribute.
+
+
 
 -/
 
@@ -19,15 +52,14 @@ open Lean Elab Tactic Term Meta
 
 namespace Lean.Attr
 
-/-- TODO
-
-
--/
-def algebraizeGetParam (thm : Name) (stx : Syntax) : AttrM Name := do
+/-- A user attribute that is used to tag `RingHom` properties that can be converted to `Algebra`
+properties. The attribute has a parameter `name` which should be the name of the corresponding
+`Algebra` property. -/
+def algebraizeGetParam (_ : Name) (stx : Syntax) : AttrM Name := do
   match stx with
   | `(attr| algebraize $name:ident) => return name.getId
-  -- TODO: instead of throwing an error, if thm is `RingHom.Property`, this should return
-  -- `Algebra.Property`
+  /- TODO: instead of throwing an error, if thm is `RingHom.Property`, this should return
+    `Algebra.Property` -/
   | `(attr| algebraize) => throwError "algebraize requires an argument"
   | _ => throwError "unexpected algebraize argument"
 
@@ -41,11 +73,14 @@ end Lean.Attr
 
 namespace Mathlib.Tactic
 
-/-- TODO
+namespace Algebraize
 
-The reason we demand both `f` and `ft` as arguments (even though `f` can be inferred from `ft`) is
-because before calling this function in `algebraize`, we have already computed `ft`
+/-- Given an expression `f` of type `RingHom A B`, given by the parameter `ft`, this function adds
+the instance `Algebra A B` to the context (if it does not already exist).
 
+There is no particular reason why we demand both `f` and `ft` as arguments (as `ft` can be inferred
+from `f`). However, before calling this function in `algebraize`, we have already computed `ft`,
+so this saves us from having to recompute it.
 -/
 def addAlgebraInstanceFromRingHom (f ft : Expr) : TacticM Unit := withMainContext do
   let (_, l) := ft.getAppFnArgs
@@ -57,14 +92,12 @@ def addAlgebraInstanceFromRingHom (f ft : Expr) : TacticM Unit := withMainContex
     let (_, mvar) ← mvar.intro1P
     return [mvar]
 
-/-- TODO
-
-
--/
-def addIsScalarTowerInstanceFromRingHomComp (f : Expr) : TacticM Unit := withMainContext do
+/-- Given an expression `g.comp f` which is the composition of two `RingHom`s, this function adds
+the instance `IsScalarTower A B C` to the context (if it does not already exist). -/
+def addIsScalarTowerInstanceFromRingHomComp (fn : Expr) : TacticM Unit := withMainContext do
   -- TODO: this one is not very type safe, I am sure there will be errors in more complicated
   -- expressions. Maybe this one should be reverted to the Qq version
-  let (_, l) := f.getAppFnArgs
+  let (_, l) := fn.getAppFnArgs
   let tower ← mkAppOptM `IsScalarTower #[l[0]!, l[1]!, l[2]!, none, none, none]
   try
     let _ ← synthInstance tower
@@ -85,11 +118,9 @@ def addIsScalarTowerInstanceFromRingHomComp (f : Expr) : TacticM Unit := withMai
     let (_, mvar) ← mvar.intro1P
     return [mvar]
 
-/-- TODO
-
-
-
--/
+/-- This function takes an array of expressions `t`, all of which are assumed to be `RingHom`'s,
+and searches through the local context to find any additional properties of these `RingHoms`,
+then it tries to add the corresponding `Algebra` properties to the context. -/
 def searchContext (t : Array Expr) : TacticM Unit := withMainContext do
   let ctx ← MonadLCtx.getLCtx
   ctx.forM fun decl => do
@@ -114,6 +145,10 @@ def searchContext (t : Array Expr) : TacticM Unit := withMainContext do
         return [mvar]
     | none => return
 
+end Algebraize
+
+open Algebraize
+
 syntax "algebraize" (ppSpace colGt term:max)* : tactic
 
 elab_rules : tactic
@@ -136,7 +171,7 @@ elab_rules : tactic
     -- We then search through the local context to find other instances of algebraize
     searchContext t
 
--- version of algebraize prime which only adds algebra instances & scalar towers
+/-- Version of `algebraize`, which only adds algebra instances and `IsScalarTower` instances. -/
 syntax "algebraize'" (ppSpace colGt term:max)* : tactic
 
 elab_rules : tactic
