@@ -80,9 +80,6 @@ attribute [to_additive existing (reorder := 1 2, 4 5) smul] Pow.pow
 instance instHSMul {α β} [SMul α β] : HSMul α β β where
   hSMul := SMul.smul
 
-@[to_additive]
-theorem SMul.smul_eq_hSMul {α β} [SMul α β] : (SMul.smul : α → β → β) = HSMul.hSMul := rfl
-
 attribute [to_additive existing (reorder := 1 2)] instHPow
 
 variable {G : Type u}
@@ -556,10 +553,6 @@ section DivisionMonoid
 
 variable [DivisionMonoid G] {a b : G}
 
-@[to_additive (attr := simp) neg_add_rev]
-theorem mul_inv_rev (a b : G) : (a * b)⁻¹ = b⁻¹ * a⁻¹ :=
-  DivisionMonoid.mul_inv_rev _ _
-
 @[to_additive]
 theorem inv_eq_of_mul_eq_one_right : a * b = 1 → a⁻¹ = b :=
   DivisionMonoid.inv_eq_of_mul _ _
@@ -611,60 +604,47 @@ attribute [to_additive] Group
 
 section Group
 
-variable [Group G] {a b c : G}
+variable [AddGroup G] {a b c : G}
 
-@[to_additive (attr := simp)]
-theorem inv_mul_cancel (a : G) : a⁻¹ * a = 1 :=
-  Group.inv_mul_cancel a
+@[simp]
+theorem neg_add_cancel (a : G) : -a + a = 0 :=
+  AddGroup.neg_add_cancel a
 
-@[to_additive]
-private theorem inv_eq_of_mul (h : a * b = 1) : a⁻¹ = b :=
-  left_inv_eq_right_inv (inv_mul_cancel a) h
+private theorem neg_eq_of_add (h : a + b = 0) : -a = b :=
+  left_neg_eq_right_neg (neg_add_cancel a) h
 
-@[to_additive (attr := simp)]
-theorem mul_inv_cancel (a : G) : a * a⁻¹ = 1 := by
-  rw [← inv_mul_cancel a⁻¹, inv_eq_of_mul (inv_mul_cancel a)]
+@[simp]
+theorem add_neg_cancel (a : G) : a + -a = 0 := by
+  rw [← neg_add_cancel (-a), neg_eq_of_add (neg_add_cancel a)]
 
-@[to_additive (attr := simp)]
-theorem inv_mul_cancel_left (a b : G) : a⁻¹ * (a * b) = b := by
-  rw [← mul_assoc, inv_mul_cancel, one_mul]
+@[simp]
+theorem neg_add_cancel_left (a b : G) : -a + (a + b) = b := by
+  rw [← add_assoc, neg_add_cancel, zero_add]
 
-@[to_additive (attr := simp)]
-theorem mul_inv_cancel_left (a b : G) : a * (a⁻¹ * b) = b := by
-  rw [← mul_assoc, mul_inv_cancel, one_mul]
+@[simp]
+theorem add_neg_cancel_left (a b : G) : a + (-a + b) = b := by
+  rw [← add_assoc, add_neg_cancel, zero_add]
 
-@[to_additive (attr := simp)]
-theorem mul_inv_cancel_right (a b : G) : a * b * b⁻¹ = a := by
-  rw [mul_assoc, mul_inv_cancel, mul_one]
+@[simp]
+theorem add_neg_cancel_right (a b : G) : a + b + -b = a := by
+  rw [add_assoc, add_neg_cancel, add_zero]
 
-@[to_additive (attr := simp)]
-theorem inv_mul_cancel_right (a b : G) : a * b⁻¹ * b = a := by
-  rw [mul_assoc, inv_mul_cancel, mul_one]
-
-@[to_additive]
-instance (priority := 100) Group.toDivisionMonoid : DivisionMonoid G :=
-  { inv_inv := fun a ↦ inv_eq_of_mul (inv_mul_cancel a)
-    mul_inv_rev :=
-      fun a b ↦ inv_eq_of_mul <| by rw [mul_assoc, mul_inv_cancel_left, mul_inv_cancel]
-    inv_eq_of_mul := fun _ _ ↦ inv_eq_of_mul }
+instance (priority := 100) AddGroup.toSubtractionMonoid : SubtractionMonoid G :=
+  { neg_neg := fun a ↦ neg_eq_of_add (neg_add_cancel a)
+    neg_add_rev :=
+      fun a b ↦ neg_eq_of_add <| by rw [add_assoc, add_neg_cancel_left, add_neg_cancel]
+    neg_eq_of_add := fun _ _ ↦ neg_eq_of_add }
 
 -- see Note [lower instance priority]
-@[to_additive]
-instance (priority := 100) Group.toCancelMonoid : CancelMonoid G :=
-  { ‹Group G› with
-    mul_right_cancel := fun a b c h ↦ by rw [← mul_inv_cancel_right a b, h, mul_inv_cancel_right]
-    mul_left_cancel := fun a b c h ↦ by rw [← inv_mul_cancel_left a b, h, inv_mul_cancel_left] }
+instance (priority := 100) AddGroup.toAddCancelMonoid (G : Type*) [AddGroup G] : AddCancelMonoid G :=
+  { ‹AddGroup G› with
+    add_right_cancel := fun a b c h ↦ by rw [← add_neg_cancel_right a b, h, add_neg_cancel_right]
+    add_left_cancel := fun a b c h ↦ by rw [← neg_add_cancel_left a b, h, neg_add_cancel_left] }
 
 end Group
 
 /-- An additive commutative group is an additive group with commutative `(+)`. -/
 class AddCommGroup (G : Type u) extends AddGroup G, AddCommMonoid G
-
-/-- A commutative group is a group with commutative `(*)`. -/
-@[to_additive]
-class CommGroup (G : Type u) extends Group G, CommMonoid G
-
-attribute [to_additive existing] CommGroup.toCommMonoid
 
 end Mathlib.Algebra.Group.Defs
 
@@ -680,32 +660,6 @@ end Mathlib.Algebra.Group.Defs
 -- end Mathlib.Algebra.Group.Defs.Modified
 
 universe x w v u v' u' v₁ v₂ v₃ u₁ u₂ u₃
-
-section Mathlib.Data.Nat.Cast.Defs
-
-variable {R : Type u}
-
-/-- The numeral `((0+1)+⋯)+1`. -/
-protected def Nat.unaryCast [One R] [Zero R] [Add R] : ℕ → R
-  | 0 => 0
-  | n + 1 => Nat.unaryCast n + 1
-
-/-! ### Additive monoids with one -/
-
-/-- An `AddMonoidWithOne` is an `AddMonoid` with a `1`.
-It also contains data for the unique homomorphism `ℕ → R`. -/
-class AddMonoidWithOne (R : Type u) extends NatCast R, AddMonoid R, One R where
-  natCast := Nat.unaryCast
-  /-- The canonical map `ℕ → R` sends `0 : ℕ` to `0 : R`. -/
-  natCast_zero : natCast 0 = 0 := by intros; rfl
-  /-- The canonical map `ℕ → R` is a homomorphism. -/
-  natCast_succ : ∀ n, natCast (n + 1) = natCast n + 1 := by intros; rfl
-
-/-- An `AddCommMonoidWithOne` is an `AddMonoidWithOne` satisfying `a + b = b + a`.  -/
-class AddCommMonoidWithOne (R : Type u) extends AddMonoidWithOne R, AddCommMonoid R
-
-end Mathlib.Data.Nat.Cast.Defs
-
 
 section Mathlib.Algebra.Group.Hom.Defs.Modified
 
@@ -774,10 +728,6 @@ class MulZeroClass (M₀ : Type u) extends Mul M₀, Zero M₀ where
 
 export MulZeroClass (zero_mul mul_zero)
 attribute [simp] zero_mul mul_zero
-
-/-- A type `M₀` is a “monoid with zero” if it is a monoid with zero element, and `0` is left
-and right absorbing. -/
-class MonoidWithZero (M₀ : Type u) extends Monoid M₀, MulOneClass M₀, MulZeroClass M₀
 
 end Mathlib.Algebra.GroupWithZero.Defs
 
@@ -852,8 +802,12 @@ class Distrib (R : Type u) extends Mul R, Add R where
 /-- A `Semiring` is a type with addition, multiplication, a `0` and a `1` where addition is
 commutative and associative, multiplication is associative and left and right distributive over
 addition, and `0` and `1` are additive and multiplicative identities. -/
-class Semiring (α : Type u) extends AddCommMonoid α, Distrib α, Monoid α, MulZeroClass α,
-    AddCommMonoidWithOne α
+class Semiring (α : Type u) extends AddCommMonoid α, Distrib α, Monoid α, MulZeroClass α where
+  natCast : ℕ → α
+  /-- The canonical map `ℕ → R` sends `0 : ℕ` to `0 : R`. -/
+  natCast_zero : natCast 0 = 0 := by intros; rfl
+  /-- The canonical map `ℕ → R` is a homomorphism. -/
+  natCast_succ : ∀ n, natCast (n + 1) = natCast n + 1 := by intros; rfl
 
 end Mathlib.Algebra.Ring.Defs
 
@@ -1342,6 +1296,9 @@ attribute [simp] Linear.smul_comp Linear.comp_smul
 end CategoryTheory
 
 end Mathlib.CategoryTheory.Linear.Basic
+
+set_option trace.profiler true
+set_option trace.profiler.useHeartbeats true
 
 open CategoryTheory
 
