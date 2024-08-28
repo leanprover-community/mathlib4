@@ -3,21 +3,22 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Mathlib.Order.Lattice
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Ring.Nat
 import Mathlib.Init.Data.Nat.Lemmas
-import Mathlib.Order.Basic
 
 /-!
-# Definitions and properties of `Nat.gcd`, `Nat.lcm`, and `Nat.coprime`
+# Properties of `Nat.gcd`, `Nat.lcm`, and `Nat.Coprime`
+
+Definitions are provided in batteries.
 
 Generalizations of these are provided in a later file as `GCDMonoid.gcd` and
 `GCDMonoid.lcm`.
 
-Note that the global `IsCoprime` is not a straightforward generalization of `Nat.coprime`, see
+Note that the global `IsCoprime` is not a straightforward generalization of `Nat.Coprime`, see
 `Nat.isCoprime_iff_coprime` for the connection between the two.
 
+Most of this file could be moved to batteries as well.
 -/
 
 assert_not_exists OrderedCommMonoid
@@ -210,7 +211,7 @@ theorem coprime_self_sub_right {m n : ℕ} (h : m ≤ n) : Coprime n (n - m) ↔
 @[simp]
 theorem coprime_pow_left_iff {n : ℕ} (hn : 0 < n) (a b : ℕ) :
     Nat.Coprime (a ^ n) b ↔ Nat.Coprime a b := by
-  obtain ⟨n, rfl⟩ := exists_eq_succ_of_ne_zero hn.ne'
+  obtain ⟨n, rfl⟩ := exists_eq_succ_of_ne_zero (Nat.ne_of_gt hn)
   rw [Nat.pow_succ, Nat.coprime_mul_iff_left]
   exact ⟨And.right, fun hab => ⟨hab.pow_left _, hab⟩⟩
 
