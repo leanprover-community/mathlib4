@@ -390,10 +390,11 @@ end
 
 section unicodeLinter
 
+/- Hashable instance for use with the unicodeLinter -/
 local instance : Hashable Char where
   hash c := c.val.toUInt64
 
--- TODO order and make complete!!!
+/-- TODO make complete and order nicely -/
 def unicodeWhitelist : Lean.HashSet Char := Lean.HashSet.ofList $ String.toList "
 Š≰⊈µ⋮ỳýì™⥥▼°𝓖𝔣и⅓ầ≣⇘č⚠чᴜᶹᵧ⋁´ᴄᴮᶻꜰßᴢᴏᴀⱽø𝐓ꜱᵋ½ᴰ⁼ɴÁꟴꞯăᶿᴶʟʜ𐞥ᵟ\u200bʙΒᵪᵝᵩᵘʳᵦʲᴺᴊᴛᴡᴼᴠ𝔇ɪ̀ᴿᵡᴱᴇоᴍʀᵂᴅᴷᴾɢʏᴵᵠᴘ−₌ĝᵨᴋᵞ⟍⁸н◥◹⁵◢
 ◿ᶥ𝕋⟋⁹ńаИ⌟ł⊸₍ê′₎⁽ś⁾↻𝐒óŽ️№Łᴳ⁷𝔮̂▽꙳⟵в＼\u200c
@@ -406,7 +407,7 @@ LTRAFqIMCw-][S`x,=vy()bg:.hdufcp\n
 ml_srantoie
 "
 
-/-- Lint a collection of input strings if one of them contains an unnecessarily broad import. -/
+/-- Lint a collection of input strings if one of them contains unwanted unicode. -/
 def unicodeLinter : TextbasedLinter := fun lines ↦ Id.run do
   let mut errors : Array (StyleError × ℕ) := Array.mkEmpty 0
   let mut lineNumber := 1
