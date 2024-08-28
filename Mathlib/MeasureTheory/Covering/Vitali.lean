@@ -37,7 +37,7 @@ This version is given in `Vitali.vitaliFamily`.
 variable {α ι : Type*}
 
 open Set Metric MeasureTheory TopologicalSpace Filter
-open scoped NNReal Classical ENNReal Topology
+open scoped NNReal ENNReal Topology
 
 namespace Vitali
 
@@ -74,7 +74,7 @@ theorem exists_disjoint_subfamily_covering_enlargment (B : ι → Set α) (t : S
   let T : Set (Set ι) := { u | u ⊆ t ∧ u.PairwiseDisjoint B ∧
     ∀ a ∈ t, ∀ b ∈ u, (B a ∩ B b).Nonempty → ∃ c ∈ u, (B a ∩ B c).Nonempty ∧ δ a ≤ τ * δ c }
   -- By Zorn, choose a maximal family in the good set `T` of disjoint families.
-  obtain ⟨u, uT, hu⟩ : ∃ u ∈ T, ∀ v ∈ T, u ⊆ v → v = u := by
+  have hzorn : ∃ m, Maximal (fun x ↦ x ∈ T) m := by
     refine zorn_subset _ fun U UT hU => ?_
     refine ⟨⋃₀ U, ?_, fun s hs => subset_sUnion_of_mem hs⟩
     simp only [T, Set.sUnion_subset_iff, and_imp, exists_prop, forall_exists_index, mem_sUnion,
@@ -85,17 +85,18 @@ theorem exists_disjoint_subfamily_covering_enlargment (B : ι → Set α) (t : S
     obtain ⟨c, cu, ac, hc⟩ : ∃ c, c ∈ u ∧ (B a ∩ B c).Nonempty ∧ δ a ≤ τ * δ c :=
       (UT uU).2.2 a hat b hbu hab
     exact ⟨c, ⟨u, uU, cu⟩, ac, hc⟩
+  obtain ⟨u, hu⟩ := hzorn
   -- The only nontrivial bit is to check that every `a ∈ t` intersects an element `b ∈ u` with
   -- comparatively large `δ b`. Assume this is not the case, then we will contradict the maximality.
-  refine ⟨u, uT.1, uT.2.1, fun a hat => ?_⟩
-  contrapose! hu
+  refine ⟨u, hu.prop.1, hu.prop.2.1, fun a hat => ?_⟩
+  by_contra! hcon
   have a_disj : ∀ c ∈ u, Disjoint (B a) (B c) := by
     intro c hc
     by_contra h
     rw [not_disjoint_iff_nonempty_inter] at h
     obtain ⟨d, du, ad, hd⟩ : ∃ d, d ∈ u ∧ (B a ∩ B d).Nonempty ∧ δ a ≤ τ * δ d :=
-      uT.2.2 a hat c hc h
-    exact lt_irrefl _ ((hu d du ad).trans_le hd)
+      hu.prop.2.2 a hat c hc h
+    exact lt_irrefl _ ((hcon d du ad).trans_le hd)
   -- Let `A` be all the elements of `t` which do not intersect the family `u`. It is nonempty as it
   -- contains `a`. We will pick an element `a'` of `A` with `δ a'` almost as large as possible.
   let A := { a' | a' ∈ t ∧ ∀ c ∈ u, Disjoint (B a') (B c) }
@@ -117,16 +118,17 @@ theorem exists_disjoint_subfamily_covering_enlargment (B : ι → Set α) (t : S
       rcases exists_lt_of_lt_csSup (Anonempty.image _) I with ⟨x, xA, hx⟩
       rcases (mem_image _ _ _).1 xA with ⟨a', ha', rfl⟩
       exact ⟨a', ha', hx.le⟩
-  clear hat hu a_disj a
+  clear hat hcon a_disj a
   have a'_ne_u : a' ∉ u := fun H => (hne _ a'A.1).ne_empty (disjoint_self.1 (a'A.2 _ H))
   -- we claim that `u ∪ {a'}` still belongs to `T`, contradicting the maximality of `u`.
-  refine ⟨insert a' u, ⟨?_, ?_, ?_⟩, subset_insert _ _, (ne_insert_of_not_mem _ a'_ne_u).symm⟩
+  refine a'_ne_u (hu.mem_of_prop_insert ⟨?_, ?_, ?_⟩)
+  -- refine ⟨insert a' u, ⟨?_, ?_, ?_⟩, subset_insert _ _, (ne_insert_of_not_mem _ a'_ne_u).symm⟩
   · -- check that `u ∪ {a'}` is made of elements of `t`.
     rw [insert_subset_iff]
-    exact ⟨a'A.1, uT.1⟩
+    exact ⟨a'A.1, hu.prop.1⟩
   · -- Check that `u ∪ {a'}` is a disjoint family. This follows from the fact that `a'` does not
     -- intersect `u`.
-    exact uT.2.1.insert fun b bu _ => a'A.2 b bu
+    exact hu.prop.2.1.insert fun b bu _ => a'A.2 b bu
   · -- check that every element `c` of `t` intersecting `u ∪ {a'}` intersects an element of this
     -- family with large `δ`.
     intro c ct b ba'u hcb
@@ -134,7 +136,7 @@ theorem exists_disjoint_subfamily_covering_enlargment (B : ι → Set α) (t : S
     -- large `δ` by the assumption on `u`, and there is nothing left to do.
     by_cases H : ∃ d ∈ u, (B c ∩ B d).Nonempty
     · rcases H with ⟨d, du, hd⟩
-      rcases uT.2.2 c ct d du hd with ⟨d', d'u, hd'⟩
+      rcases hu.prop.2.2 c ct d du hd with ⟨d', d'u, hd'⟩
       exact ⟨d', mem_insert_of_mem _ d'u, hd'⟩
     · -- Otherwise, `c` belongs to `A`. The element of `u ∪ {a'}` that it intersects has to be `a'`.
       -- Moreover, `δ c` is smaller than the maximum `m` of `δ` over `A`, which is `≤ δ a' / τ`
@@ -223,6 +225,7 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
   use the whole family `t`, but a subfamily `t'` supported on small balls (which is possible since
   the family is assumed to be fine at every point of `s`).
   -/
+  classical
   -- choose around each `x` a small ball on which the measure is finite
   have : ∀ x, ∃ R, 0 < R ∧ R ≤ 1 ∧ μ (closedBall x (20 * R)) < ∞ := fun x ↦ by
     refine ((eventually_le_nhds one_pos).and ?_).exists_gt

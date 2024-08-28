@@ -53,7 +53,7 @@ namespace NatTrans
 -- written in terms of `F ⟶ G` rather than `NatTrans F G`,
 -- or `ext` will not retrieve it from the cache.
 @[ext]
-theorem ext' {α β : F ⟶ G} (w : α.app = β.app) : α = β := NatTrans.ext _ _ w
+theorem ext' {α β : F ⟶ G} (w : α.app = β.app) : α = β := NatTrans.ext w
 
 @[simp]
 theorem vcomp_eq_comp (α : F ⟶ G) (β : G ⟶ H) : vcomp α β = α ≫ β := rfl

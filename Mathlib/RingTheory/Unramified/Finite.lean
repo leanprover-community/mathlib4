@@ -80,32 +80,6 @@ theorem iff_exists_tensorProduct [EssFiniteType R S] :
       use 1 ⊗ₜ[R] s - s ⊗ₜ[R] 1
       linear_combination ht₁ s
 
-variable [FormallyUnramified R S] [EssFiniteType R S]
-
-variable (R S) in
-/--
-A finite-type `R`-algebra `S` is (formally) unramified iff there exists a `t : S ⊗[R] S` satisfying
-1. `t` annihilates every `1 ⊗ s - s ⊗ 1`.
-2. the image of `t` is `1` under the map `S ⊗[R] S → S`.
-See `Algebra.FormallyUnramified.iff_exists_tensorProduct`.
-This is the choice of such a `t`.
--/
-noncomputable
-def elem : S ⊗[R] S :=
-  (iff_exists_tensorProduct.mp inferInstance).choose
-
-lemma one_tmul_sub_tmul_one_mul_elem
-    (s : S) : (1 ⊗ₜ s - s ⊗ₜ 1) * elem R S = 0 :=
-  (iff_exists_tensorProduct.mp inferInstance).choose_spec.1 s
-
-lemma one_tmul_mul_elem
-    (s : S) : (1 ⊗ₜ s) * elem R S = (s ⊗ₜ 1) * elem R S := by
-  rw [← sub_eq_zero, ← sub_mul, one_tmul_sub_tmul_one_mul_elem]
-
-lemma lmul_elem [EssFiniteType R S] [FormallyUnramified R S] :
-    TensorProduct.lmul' R (elem R S) = 1 :=
-  (iff_exists_tensorProduct.mp inferInstance).choose_spec.2
-
 lemma finite_of_free_aux (I) [DecidableEq I] (b : Basis I R S)
     (f : I →₀ S) (x : S) (a : I → I →₀ R) (ha : a = fun i ↦ b.repr (b i * x)) :
     (1 ⊗ₜ[R] x * Finsupp.sum f fun i y ↦ y ⊗ₜ[R] b i) =
@@ -144,6 +118,33 @@ lemma finite_of_free_aux (I) [DecidableEq I] (b : Basis I R S)
       and_imp, forall_exists_index]
     simp (config := {contextual := true})
   · exact fun _ _ ↦ rfl
+
+variable [FormallyUnramified R S] [EssFiniteType R S]
+
+variable (R S) in
+/--
+A finite-type `R`-algebra `S` is (formally) unramified iff there exists a `t : S ⊗[R] S` satisfying
+1. `t` annihilates every `1 ⊗ s - s ⊗ 1`.
+2. the image of `t` is `1` under the map `S ⊗[R] S → S`.
+See `Algebra.FormallyUnramified.iff_exists_tensorProduct`.
+This is the choice of such a `t`.
+-/
+noncomputable
+def elem : S ⊗[R] S :=
+  (iff_exists_tensorProduct.mp inferInstance).choose
+
+lemma one_tmul_sub_tmul_one_mul_elem
+    (s : S) : (1 ⊗ₜ s - s ⊗ₜ 1) * elem R S = 0 :=
+  (iff_exists_tensorProduct.mp inferInstance).choose_spec.1 s
+
+lemma one_tmul_mul_elem
+    (s : S) : (1 ⊗ₜ s) * elem R S = (s ⊗ₜ 1) * elem R S := by
+  rw [← sub_eq_zero, ← sub_mul, one_tmul_sub_tmul_one_mul_elem]
+
+lemma lmul_elem :
+    TensorProduct.lmul' R (elem R S) = 1 :=
+  (iff_exists_tensorProduct.mp inferInstance).choose_spec.2
+
 
 variable (R S)
 

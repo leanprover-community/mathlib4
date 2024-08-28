@@ -141,7 +141,7 @@ alias cpow_int_cast := cpow_intCast
 
 @[simp]
 theorem cpow_nat_inv_pow (x : ℂ) {n : ℕ} (hn : n ≠ 0) : (x ^ (n⁻¹ : ℂ)) ^ n = x := by
-  rw [← cpow_nat_mul, mul_inv_cancel, cpow_one]
+  rw [← cpow_nat_mul, mul_inv_cancel₀, cpow_one]
   assumption_mod_cast
 
 /-- See Note [no_index around OfNat.ofNat] -/
@@ -174,9 +174,9 @@ lemma cpow_ofNat_mul' {x : ℂ} {n : ℕ} [n.AtLeastTwo] (hlt : -π < OfNat.ofNa
 
 lemma pow_cpow_nat_inv {x : ℂ} {n : ℕ} (h₀ : n ≠ 0) (hlt : -(π / n) < x.arg) (hle : x.arg ≤ π / n) :
     (x ^ n) ^ (n⁻¹ : ℂ) = x := by
-  rw [← cpow_nat_mul', mul_inv_cancel (Nat.cast_ne_zero.2 h₀), cpow_one]
+  rw [← cpow_nat_mul', mul_inv_cancel₀ (Nat.cast_ne_zero.2 h₀), cpow_one]
   · rwa [← div_lt_iff' (Nat.cast_pos.2 h₀.bot_lt), neg_div]
-  · rwa [← le_div_iff' (Nat.cast_pos.2 h₀.bot_lt)]
+  · rwa [← le_div_iff₀' (Nat.cast_pos.2 h₀.bot_lt)]
 
 lemma pow_cpow_ofNat_inv {x : ℂ} {n : ℕ} [n.AtLeastTwo] (hlt : -(π / OfNat.ofNat n) < x.arg)
     (hle : x.arg ≤ π / OfNat.ofNat n) :

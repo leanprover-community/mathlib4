@@ -56,7 +56,7 @@ theorem down_surjective : Surjective (@down α) :=
 theorem down_bijective : Bijective (@down α) :=
   Equiv.plift.bijective
 
-@[simp]
+-- This is not a good simp lemma, as its discrimination tree key is just an arrow.
 theorem «forall» {p : PLift α → Prop} : (∀ x, p x) ↔ ∀ x : α, p (PLift.up x) :=
   up_surjective.forall
 
@@ -134,8 +134,5 @@ theorem «exists» {p : ULift α → Prop} : (∃ x, p x) ↔ ∃ x : α, p (ULi
 @[ext]
 theorem ext (x y : ULift α) (h : x.down = y.down) : x = y :=
   congrArg up h
-
-theorem ext_iff {α : Type*} (x y : ULift α) : x = y ↔ x.down = y.down :=
-  ⟨congrArg _, ULift.ext _ _⟩
 
 end ULift

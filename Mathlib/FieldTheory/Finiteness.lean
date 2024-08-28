@@ -15,9 +15,6 @@ import Mathlib.LinearAlgebra.Dimension.Finite
 
 universe u v
 
-open scoped Classical
-open Cardinal
-
 open Cardinal Submodule Module Function
 
 namespace IsNoetherian

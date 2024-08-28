@@ -98,6 +98,12 @@ class IsClosed (s : Set X) : Prop where
 def IsClopen (s : Set X) : Prop :=
   IsClosed s ∧ IsOpen s
 
+/--
+A set is locally closed if it is the intersection of some open set and some closed set.
+Also see `isLocallyClosed_tfae` and other lemmas in `Mathlib/Topology/LocallyClosed`.
+-/
+def IsLocallyClosed (s : Set X) : Prop := ∃ (U Z : Set X), IsOpen U ∧ IsClosed Z ∧ s = U ∩ Z
+
 /-- The interior of a set `s` is the largest open subset of `s`. -/
 def interior (s : Set X) : Set X :=
   ⋃₀ { t | IsOpen t ∧ t ⊆ s }
@@ -109,6 +115,18 @@ def closure (s : Set X) : Set X :=
 /-- The frontier of a set is the set of points between the closure and interior. -/
 def frontier (s : Set X) : Set X :=
   closure s \ interior s
+
+/--
+The coborder is defined as the complement of `closure s \ s`,
+or the union of `s` and the complement of `∂(s)`.
+This is the largest set in which `s` is closed, and `s` is locally closed if and only if
+`coborder s` is open.
+
+This is unnamed in the literature, and this name is due to the fact that `coborder s = (border sᶜ)ᶜ`
+where `border s = s \ interior s` is the border in the sense of Hausdorff.
+-/
+def coborder (s : Set X) : Set X :=
+  (closure s \ s)ᶜ
 
 /-- A set is dense in a topological space if every point belongs to its closure. -/
 def Dense (s : Set X) : Prop :=

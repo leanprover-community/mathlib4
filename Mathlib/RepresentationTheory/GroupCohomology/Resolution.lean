@@ -102,7 +102,7 @@ def actionDiagonalSucc (G : Type u) [Group G] :
       tensorIso (Iso.refl _) (actionDiagonalSucc G n) ≪≫
         leftRegularTensorIso _ _ ≪≫
           tensorIso (Iso.refl _)
-            (mkIso (Equiv.piFinSuccAbove (fun _ => G) 0).symm.toIso fun _ => rfl)
+            (mkIso (Fin.insertNthEquiv (fun _ => G) 0).toIso fun _ => rfl)
 
 theorem actionDiagonalSucc_hom_apply {G : Type u} [Group G] {n : ℕ} (f : Fin (n + 1) → G) :
     (actionDiagonalSucc G n).hom.hom f = (f 0, fun i => (f (Fin.castSucc i))⁻¹ * f i.succ) := by
@@ -143,7 +143,7 @@ theorem actionDiagonalSucc_inv_apply {G : Type u} [Group G] {n : ℕ} (g : G) (f
       simpa only [Fin.cons_succ, Pi.smul_apply, smul_eq_mul, Fin.partialProd_succ', mul_assoc] -/
     funext x
     dsimp [actionDiagonalSucc]
-    erw [hn, Equiv.piFinSuccAbove_symm_apply]
+    erw [hn, Fin.consEquiv_apply]
     refine Fin.cases ?_ (fun i => ?_) x
     · simp only [Fin.insertNth_zero, Fin.cons_zero, Fin.partialProd_zero, mul_one]
     · simp only [Fin.cons_succ, Pi.smul_apply, smul_eq_mul, Fin.partialProd_succ', ← mul_assoc]
@@ -520,7 +520,7 @@ theorem d_eq (n : ℕ) : ((groupCohomology.resolution k G).d (n + 1) n).hom = d 
 /- Porting note (#11039): broken proof was
   simpa [← @intCast_smul k, simplicial_object.δ] -/
   simp_rw [alternatingFaceMapComplex_obj_d, AlternatingFaceMapComplex.objD, SimplicialObject.δ,
-    Functor.comp_map, ← Int.cast_smul_eq_nsmul k ((-1) ^ _ : ℤ), Int.cast_pow, Int.cast_neg,
+    Functor.comp_map, ← Int.cast_smul_eq_zsmul k ((-1) ^ _ : ℤ), Int.cast_pow, Int.cast_neg,
     Int.cast_one, Action.sum_hom, Action.smul_hom, Rep.linearization_map_hom]
   rw [LinearMap.coeFn_sum, Fintype.sum_apply]
   erw [d_of (k := k) x]
