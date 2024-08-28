@@ -10,7 +10,9 @@ import Mathlib.Algebra.Order.Sub.Defs
 # Products of `OrderedSub` types.
 -/
 
-set_option autoImplicit true
+assert_not_exists MonoidWithZero
+
+variable {α β : Type*}
 
 instance Prod.orderedSub
     [Preorder α] [Add α] [Sub α] [OrderedSub α] [Sub β] [Preorder β] [Add β] [OrderedSub β] :

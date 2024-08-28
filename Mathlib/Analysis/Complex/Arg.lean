@@ -6,8 +6,6 @@ Authors: Eric Rodriguez
 import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.Analysis.SpecialFunctions.Complex.Arg
 
-#align_import analysis.complex.arg from "leanprover-community/mathlib"@"45a46f4f03f8ae41491bf3605e8e0e363ba192fd"
-
 /-!
 # Rays in the complex numbers
 
@@ -36,34 +34,27 @@ theorem sameRay_iff : SameRay ℝ x y ↔ x = 0 ∨ y = 0 ∨ x.arg = y.arg := b
   simp only [hx, hy, false_or_iff, sameRay_iff_norm_smul_eq, arg_eq_arg_iff hx hy]
   field_simp [hx, hy]
   rw [mul_comm, eq_comm]
-#align complex.same_ray_iff Complex.sameRay_iff
 
 theorem sameRay_iff_arg_div_eq_zero : SameRay ℝ x y ↔ arg (x / y) = 0 := by
   rw [← Real.Angle.toReal_zero, ← arg_coe_angle_eq_iff_eq_toReal, sameRay_iff]
   by_cases hx : x = 0; · simp [hx]
   by_cases hy : y = 0; · simp [hy]
   simp [hx, hy, arg_div_coe_angle, sub_eq_zero]
-#align complex.same_ray_iff_arg_div_eq_zero Complex.sameRay_iff_arg_div_eq_zero
 
 -- Porting note: `(x + y).abs` stopped working.
 theorem abs_add_eq_iff : abs (x + y) = abs x + abs y ↔ x = 0 ∨ y = 0 ∨ x.arg = y.arg :=
   sameRay_iff_norm_add.symm.trans sameRay_iff
-#align complex.abs_add_eq_iff Complex.abs_add_eq_iff
 
 theorem abs_sub_eq_iff : abs (x - y) = |abs x - abs y| ↔ x = 0 ∨ y = 0 ∨ x.arg = y.arg :=
   sameRay_iff_norm_sub.symm.trans sameRay_iff
-#align complex.abs_sub_eq_iff Complex.abs_sub_eq_iff
 
 theorem sameRay_of_arg_eq (h : x.arg = y.arg) : SameRay ℝ x y :=
   sameRay_iff.mpr <| Or.inr <| Or.inr h
-#align complex.same_ray_of_arg_eq Complex.sameRay_of_arg_eq
 
 theorem abs_add_eq (h : x.arg = y.arg) : abs (x + y) = abs x + abs y :=
   (sameRay_of_arg_eq h).norm_add
-#align complex.abs_add_eq Complex.abs_add_eq
 
 theorem abs_sub_eq (h : x.arg = y.arg) : abs (x - y) = ‖abs x - abs y‖ :=
   (sameRay_of_arg_eq h).norm_sub
-#align complex.abs_sub_eq Complex.abs_sub_eq
 
 end Complex
