@@ -500,7 +500,7 @@ theorem image_subset_image_iff {f : α → β} (hf : Injective f) : f '' s ⊆ f
   exact preimage_mono h
 
 theorem prod_quotient_preimage_eq_image [s : Setoid α] (g : Quotient s → β) {h : α → β}
-    (Hh : h = g ∘ Quotient.mk'') (r : Set (β × β)) :
+    (Hh : h = g ∘ Quotient.mk _) (r : Set (β × β)) :
     { x : Quotient s × Quotient s | (g x.1, g x.2) ∈ r } =
       (fun a : α × α => (⟦a.1⟧, ⟦a.2⟧)) '' ((fun a : α × α => (h a.1, h a.2)) ⁻¹' r) :=
   Hh.symm ▸
@@ -829,12 +829,12 @@ theorem range_quotient_lift [s : Setoid ι] (hf) :
 theorem range_quotient_mk' {s : Setoid α} : range (Quotient.mk' : α → Quotient s) = univ :=
   range_quot_mk _
 
-@[simp] lemma Quotient.range_mk'' {sa : Setoid α} : range (Quotient.mk'' (s₁ := sa)) = univ :=
+@[simp] lemma Quotient.range_mk'' {sa : Setoid α} : range (Quotient.mk sa) = univ :=
   range_quotient_mk
 
 @[simp]
 theorem range_quotient_lift_on' {s : Setoid ι} (hf) :
-    (range fun x : Quotient s => Quotient.liftOn' x f hf) = range f :=
+    (range fun x : Quotient s => Quotient.liftOn x f hf) = range f :=
   range_quot_lift _
 
 instance canLift (c) (p) [CanLift α β c p] :

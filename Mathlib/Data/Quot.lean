@@ -37,7 +37,13 @@ run_cmd Lean.Elab.Command.liftTermElabM do
 instance : CoeFun (Setoid α) (fun _ ↦ α → α → Prop) where
   coe := Setoid.Rel
 
-instance Setoid.decidableRel (r : Setoid α) [h : DecidableRel r.r] : DecidableRel r :=
+lemma equiv_iff_rel {r : Setoid α} {a b : α} : a ≈ b ↔ r a b :=
+  Iff.rfl
+
+instance decidableRel (r : Setoid α) [h : DecidableRel r.r] : DecidableRel r :=
+  h
+
+instance [r : Setoid α] [h : DecidableRel (α := α) (· ≈ ·)] : DecidableRel r :=
   h
 
 @[ext]
@@ -364,7 +370,7 @@ theorem surjective_quotient_mk' (α : Sort*) [s : Setoid α] :
     Function.Surjective (Quotient.mk' : α → Quotient s) :=
   Quot.exists_rep
 
-@[simp] lemma surjective_liftOn {s : Setoid α} {f : α → β} (h) :
+@[simp] lemma Quotient.surjective_liftOn {s : Setoid α} {f : α → β} (h) :
     Function.Surjective (fun x : Quotient s ↦ x.liftOn f h) ↔ Function.Surjective f :=
   Quot.surjective_lift _
 
@@ -608,6 +614,7 @@ instance argument. -/
 @[deprecated (since := "2024-08-09")] alias map₂'_mk'' := map₂_mk
 @[deprecated (since := "2024-08-09")] alias eq'' := eq
 @[deprecated (since := "2024-08-09")] alias out' := out
+@[deprecated (since := "2024-08-09")] alias out_eq' := out_eq
 @[deprecated (since := "2024-08-09")] alias mk_out' := mk_out
 
 theorem exact' {a b : α} :

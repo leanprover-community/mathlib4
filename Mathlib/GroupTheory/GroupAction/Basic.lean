@@ -366,12 +366,10 @@ def orbitRel : Setoid α where
 variable {G α}
 
 @[to_additive]
-theorem orbitRel_apply {a b : α} : (orbitRel G α).Rel a b ↔ a ∈ orbit G b :=
+theorem orbitRel_apply {a b : α} : orbitRel G α a b ↔ a ∈ orbit G b :=
   Iff.rfl
 
-@[to_additive]
-lemma orbitRel_r_apply {a b : α} : (orbitRel G _).r a b ↔ a ∈ orbit G b :=
-  Iff.rfl
+@[to_additive (attr := deprecated (since := "2024-08-28"))] alias orbitRel_r_apply := orbitRel_apply
 
 @[to_additive]
 lemma orbitRel_subgroup_le (H : Subgroup G) : orbitRel H α ≤ orbitRel G α :=
@@ -461,7 +459,7 @@ theorem pretransitive_iff_subsingleton_quotient :
   · refine Quot.inductionOn a (fun x ↦ ?_)
     exact Quot.inductionOn b (fun y ↦ Quot.sound <| exists_smul_eq G y x)
   · have h : Quotient.mk (orbitRel G α) b = ⟦a⟧ := Subsingleton.elim _ _
-    exact Quotient.eq_rel.mp h
+    exact Quotient.eq.mp h
 
 /-- If `α` is non-empty, an action is pretransitive if and only if the quotient has exactly one
 element. -/
@@ -477,22 +475,22 @@ variable {G α}
 /-- The orbit corresponding to an element of the quotient by `MulAction.orbitRel` -/
 @[to_additive "The orbit corresponding to an element of the quotient by `AddAction.orbitRel`"]
 nonrec def orbitRel.Quotient.orbit (x : orbitRel.Quotient G α) : Set α :=
-  Quotient.liftOn' x (orbit G) fun _ _ => MulAction.orbit_eq_iff.2
+  Quotient.liftOn x (orbit G) fun _ _ => MulAction.orbit_eq_iff.2
 
 @[to_additive (attr := simp)]
 theorem orbitRel.Quotient.orbit_mk (a : α) :
-    orbitRel.Quotient.orbit (Quotient.mk'' a : orbitRel.Quotient G α) = MulAction.orbit G a :=
+    orbitRel.Quotient.orbit (⟦a⟧ : orbitRel.Quotient G α) = MulAction.orbit G a :=
   rfl
 
 @[to_additive]
 theorem orbitRel.Quotient.mem_orbit {a : α} {x : orbitRel.Quotient G α} :
-    a ∈ x.orbit ↔ Quotient.mk'' a = x := by
-  induction x using Quotient.inductionOn'
-  rw [Quotient.eq'']
+    a ∈ x.orbit ↔ Quotient.mk _ a = x := by
+  induction x using Quotient.inductionOn
+  rw [Quotient.eq]
   rfl
 
-/-- Note that `hφ = Quotient.out_eq'` is a useful choice here. -/
-@[to_additive "Note that `hφ = Quotient.out_eq'` is a useful choice here."]
+/-- Note that `hφ = Quotient.out_eq` is a useful choice here. -/
+@[to_additive "Note that `hφ = Quotient.out_eq` is a useful choice here."]
 theorem orbitRel.Quotient.orbit_eq_orbit_out (x : orbitRel.Quotient G α)
     {φ : orbitRel.Quotient G α → α} (hφ : letI := orbitRel G α; RightInverse φ Quotient.mk') :
     orbitRel.Quotient.orbit x = MulAction.orbit G (φ x) := by
@@ -503,9 +501,9 @@ theorem orbitRel.Quotient.orbit_eq_orbit_out (x : orbitRel.Quotient G α)
 lemma orbitRel.Quotient.orbit_injective :
     Injective (orbitRel.Quotient.orbit : orbitRel.Quotient G α → Set α) := by
   intro x y h
-  simp_rw [orbitRel.Quotient.orbit_eq_orbit_out _ Quotient.out_eq', orbit_eq_iff,
-    ← orbitRel_r_apply] at h
-  simpa [← Quotient.eq''] using h
+  simp_rw [orbitRel.Quotient.orbit_eq_orbit_out _ Quotient.out_eq, orbit_eq_iff,
+    ← orbitRel_apply] at h
+  simpa [← Quotient.eq] using h
 
 @[to_additive (attr := simp)]
 lemma orbitRel.Quotient.orbit_inj {x y : orbitRel.Quotient G α} : x.orbit = y.orbit ↔ x = y :=
@@ -519,21 +517,21 @@ lemma orbitRel.quotient_eq_of_quotient_subgroup_eq {H : Subgroup G} {a b : α}
 
 @[to_additive]
 lemma orbitRel.quotient_eq_of_quotient_subgroup_eq' {H : Subgroup G} {a b : α}
-    (h : (Quotient.mk'' a : orbitRel.Quotient H α) = Quotient.mk'' b) :
-    (Quotient.mk'' a : orbitRel.Quotient G α) = Quotient.mk'' b :=
+    (h : (⟦a⟧ : orbitRel.Quotient H α) = ⟦b⟧) :
+    (⟦a⟧ : orbitRel.Quotient G α) = ⟦b⟧ :=
   orbitRel.quotient_eq_of_quotient_subgroup_eq h
 
 @[to_additive]
 nonrec lemma orbitRel.Quotient.orbit_nonempty (x : orbitRel.Quotient G α) :
     Set.Nonempty x.orbit := by
-  rw [orbitRel.Quotient.orbit_eq_orbit_out x Quotient.out_eq']
+  rw [orbitRel.Quotient.orbit_eq_orbit_out x Quotient.out_eq]
   exact orbit_nonempty _
 
 @[to_additive]
 nonrec lemma orbitRel.Quotient.mapsTo_smul_orbit (g : G) (x : orbitRel.Quotient G α) :
     Set.MapsTo (g • ·) x.orbit x.orbit := by
-  rw [orbitRel.Quotient.orbit_eq_orbit_out x Quotient.out_eq']
-  exact mapsTo_smul_orbit g x.out'
+  rw [orbitRel.Quotient.orbit_eq_orbit_out x Quotient.out_eq]
+  exact mapsTo_smul_orbit g x.out
 
 @[to_additive]
 instance (x : orbitRel.Quotient G α) : MulAction G x.orbit where
@@ -549,9 +547,9 @@ lemma orbitRel.Quotient.orbit.coe_smul {g : G} {x : orbitRel.Quotient G α} {a :
 @[to_additive]
 instance (x : orbitRel.Quotient G α) : IsPretransitive G x.orbit where
   exists_smul_eq := by
-    induction x using Quotient.inductionOn'
+    induction x using Quotient.inductionOn
     rintro ⟨y, yh⟩ ⟨z, zh⟩
-    rw [orbitRel.Quotient.mem_orbit, Quotient.eq''] at yh zh
+    rw [orbitRel.Quotient.mem_orbit, Quotient.eq] at yh zh
     rcases yh with ⟨g, rfl⟩
     rcases zh with ⟨h, rfl⟩
     refine ⟨h * g⁻¹, ?_⟩
@@ -575,7 +573,7 @@ lemma orbitRel.Quotient.mem_subgroup_orbit_iff {H : Subgroup G} {x : orbitRel.Qu
 lemma orbitRel.Quotient.subgroup_quotient_eq_iff {H : Subgroup G} {x : orbitRel.Quotient G α}
     {a b : x.orbit} : (⟦a⟧ : orbitRel.Quotient H x.orbit) = ⟦b⟧ ↔
       (⟦↑a⟧ : orbitRel.Quotient H α) = ⟦↑b⟧ := by
-  simp_rw [← @Quotient.mk''_eq_mk, Quotient.eq'']
+  simp_rw [Quotient.eq]
   exact orbitRel.Quotient.mem_subgroup_orbit_iff.symm
 
 @[to_additive]
@@ -586,12 +584,12 @@ lemma orbitRel.Quotient.mem_subgroup_orbit_iff' {H : Subgroup G} {x : orbitRel.Q
   convert Iff.rfl using 2
   rw [orbit_eq_iff]
   suffices hb : ↑b ∈ orbitRel.Quotient.orbit (⟦a⟧ : orbitRel.Quotient H x.orbit) by
-    rw [orbitRel.Quotient.orbit_eq_orbit_out (⟦a⟧ : orbitRel.Quotient H x.orbit) Quotient.out_eq']
+    rw [orbitRel.Quotient.orbit_eq_orbit_out (⟦a⟧ : orbitRel.Quotient H x.orbit) Quotient.out_eq]
        at hb
     rw [orbitRel.Quotient.mem_subgroup_orbit_iff]
     convert hb using 1
-    rw [orbit_eq_iff, ← orbitRel_r_apply, ← Quotient.eq'', Quotient.out_eq', @Quotient.mk''_eq_mk]
-  rw [orbitRel.Quotient.mem_orbit, h, @Quotient.mk''_eq_mk]
+    rw [orbit_eq_iff, ← orbitRel_apply, ← Quotient.eq, Quotient.out_eq]
+  rw [orbitRel.Quotient.mem_orbit, h]
 
 variable (G) (α)
 
@@ -600,12 +598,12 @@ local notation "Ω" => orbitRel.Quotient G α
 /-- Decomposition of a type `X` as a disjoint union of its orbits under a group action.
 
 This version is expressed in terms of `MulAction.orbitRel.Quotient.orbit` instead of
-`MulAction.orbit`, to avoid mentioning `Quotient.out'`. -/
+`MulAction.orbit`, to avoid mentioning `Quotient.out`. -/
 @[to_additive
       "Decomposition of a type `X` as a disjoint union of its orbits under an additive group action.
 
       This version is expressed in terms of `AddAction.orbitRel.Quotient.orbit` instead of
-      `AddAction.orbit`, to avoid mentioning `Quotient.out'`. "]
+      `AddAction.orbit`, to avoid mentioning `Quotient.out`. "]
 def selfEquivSigmaOrbits' : α ≃ Σω : Ω, ω.orbit :=
   letI := orbitRel G α
   calc
@@ -618,10 +616,10 @@ def selfEquivSigmaOrbits' : α ≃ Σω : Ω, ω.orbit :=
 @[to_additive
       "Decomposition of a type `X` as a disjoint union of its orbits under an additive group
       action."]
-def selfEquivSigmaOrbits : α ≃ Σω : Ω, orbit G ω.out' :=
+def selfEquivSigmaOrbits : α ≃ Σω : Ω, orbit G ω.out :=
   (selfEquivSigmaOrbits' G α).trans <|
     Equiv.sigmaCongrRight fun _ =>
-      Equiv.Set.ofEq <| orbitRel.Quotient.orbit_eq_orbit_out _ Quotient.out_eq'
+      Equiv.Set.ofEq <| orbitRel.Quotient.orbit_eq_orbit_out _ Quotient.out_eq
 
 variable (β)
 

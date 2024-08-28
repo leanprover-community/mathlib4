@@ -382,11 +382,11 @@ instance [Inhabited α] : Inhabited hs.Quotient :=
   ⟨hs.proj default⟩
 
 theorem proj_eq_iff {x y : α} : hs.proj x = hs.proj y ↔ hs.index x = hs.index y :=
-  Quotient.eq_rel
+  Quotient.eq
 
 @[simp]
 theorem proj_some_index (x : α) : hs.proj (hs.some (hs.index x)) = hs.proj x :=
-  Quotient.eq''.2 (hs.some_index x)
+  Quotient.eq.2 (hs.some_index x)
 
 /-- The obvious equivalence between the quotient associated to an indexed partition and
 the indexing type. -/
@@ -405,7 +405,7 @@ theorem equivQuotient_index : hs.equivQuotient ∘ hs.index = hs.proj :=
   funext hs.equivQuotient_index_apply
 
 /-- A map choosing a representative for each element of the quotient associated to an indexed
-partition. This is a computable version of `Quotient.out'` using `IndexedPartition.some`. -/
+partition. This is a computable version of `Quotient.out` using `IndexedPartition.some`. -/
 def out : hs.Quotient ↪ α :=
   hs.equivQuotient.symm.toEmbedding.trans ⟨hs.some, Function.LeftInverse.injective hs.index_some⟩
 
@@ -414,23 +414,23 @@ def out : hs.Quotient ↪ α :=
 theorem out_proj (x : α) : hs.out (hs.proj x) = hs.some (hs.index x) :=
   rfl
 
-/-- The indices of `Quotient.out'` and `IndexedPartition.out` are equal. -/
+/-- The indices of `Quotient.out` and `IndexedPartition.out` are equal. -/
 theorem index_out' (x : hs.Quotient) : hs.index x.out' = hs.index (hs.out x) :=
-  Quotient.inductionOn' x fun x => (Setoid.ker_apply_mk_out' x).trans (hs.index_some _).symm
+  Quotient.inductionOn x fun x => (Setoid.ker_apply_mk_out' x).trans (hs.index_some _).symm
 
-/-- This lemma is analogous to `Quotient.out_eq'`. -/
+/-- This lemma is analogous to `Quotient.out_eq`. -/
 @[simp]
 theorem proj_out (x : hs.Quotient) : hs.proj (hs.out x) = x :=
-  Quotient.inductionOn' x fun x => Quotient.sound' <| hs.some_index x
+  Quotient.inductionOn x fun x => Quotient.sound' <| hs.some_index x
 
 theorem class_of {x : α} : setOf (hs.setoid.Rel x) = s (hs.index x) :=
   Set.ext fun _y => eq_comm.trans hs.mem_iff_index_eq.symm
 
 theorem proj_fiber (x : hs.Quotient) : hs.proj ⁻¹' {x} = s (hs.equivQuotient.symm x) :=
-  Quotient.inductionOn' x fun x => by
+  Quotient.inductionOn x fun x => by
     ext y
     simp only [Set.mem_preimage, Set.mem_singleton_iff, hs.mem_iff_index_eq]
-    exact Quotient.eq''
+    exact Quotient.eq
 
 /-- Combine functions with disjoint domains into a new function.
 You can use the regular expression `def.*piecewise` to search for

@@ -581,7 +581,7 @@ theorem con_inv_mul_cancel (x : FreeMonoid (G ⊕ H)) :
 
 @[to_additive]
 instance : Inv (G ∗ H) where
-  inv := Quotient.map' (fun w => ofList (w.toList.map (Sum.map Inv.inv Inv.inv)).reverse) fun _ _ ↦
+  inv := Quotient.map (fun w => ofList (w.toList.map (Sum.map Inv.inv Inv.inv)).reverse) fun _ _ ↦
     (coprodCon G H).map_of_mul_left_rel_one _ con_inv_mul_cancel
 
 @[to_additive]

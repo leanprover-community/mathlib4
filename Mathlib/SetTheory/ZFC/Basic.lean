@@ -591,7 +591,7 @@ open PSet
 
 /-- Turns a pre-set into a ZFC set. -/
 def mk : PSet → ZFSet :=
-  Quotient.mk''
+  Quotient.mk _
 
 @[simp]
 theorem mk_eq (x : PSet) : @Eq ZFSet ⟦x⟧ (mk x) :=

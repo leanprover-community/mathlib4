@@ -487,7 +487,7 @@ instance : CoeTC α (ConnectedComponents α) := ⟨mk⟩
 @[simp]
 theorem coe_eq_coe {x y : α} :
     (x : ConnectedComponents α) = y ↔ connectedComponent x = connectedComponent y :=
-  Quotient.eq''
+  Quotient.eq
 
 theorem coe_ne_coe {x y : α} :
     (x : ConnectedComponents α) ≠ y ↔ connectedComponent x ≠ connectedComponent y :=

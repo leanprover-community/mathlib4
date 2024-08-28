@@ -102,7 +102,7 @@ instance : TopologicalSpace S :=
 def proj : X → S := Quotient.mk''
 
 theorem fiber_eq (x : X) : S.proj ⁻¹' {S.proj x} = setOf (S.Rel x) :=
-  Set.ext fun _ => eq_comm.trans Quotient.eq''
+  Set.ext fun _ => eq_comm.trans Quotient.eq
 
 theorem proj_surjective : Function.Surjective S.proj :=
   Quotient.surjective_Quotient_mk''
@@ -182,7 +182,7 @@ variable {A B C : DiscreteQuotient X}
 
 /-- The map induced by a refinement of a discrete quotient. -/
 def ofLE (h : A ≤ B) : A → B :=
-  Quotient.map' (fun x => x) h
+  Quotient.map (fun x => x) h
 
 @[simp]
 theorem ofLE_refl : ofLE (le_refl A) = id := by
@@ -230,7 +230,7 @@ instance [LocallyConnectedSpace X] : OrderBot (DiscreteQuotient X) where
 @[simp]
 theorem proj_bot_eq [LocallyConnectedSpace X] {x y : X} :
     proj ⊥ x = proj ⊥ y ↔ connectedComponent x = connectedComponent y :=
-  Quotient.eq''
+  Quotient.eq
 
 theorem proj_bot_inj [DiscreteTopology X] {x y : X} : proj ⊥ x = proj ⊥ y ↔ x = y := by simp
 
@@ -264,7 +264,7 @@ theorem LEComap.mono (h : LEComap f A B) (hA : A' ≤ A) (hB : B ≤ B') : LECom
   hA.trans <| h.trans <| comap_mono _ hB
 
 /-- Map a discrete quotient along a continuous map. -/
-def map (f : C(X, Y)) (cond : LEComap f A B) : A → B := Quotient.map' f cond
+def map (f : C(X, Y)) (cond : LEComap f A B) : A → B := Quotient.map f cond
 
 theorem map_continuous (cond : LEComap f A B) : Continuous (map f cond) :=
   continuous_of_discreteTopology
@@ -403,7 +403,7 @@ def discreteQuotient : DiscreteQuotient X where
 /-- The (locally constant) function from the discrete quotient associated to a locally constant
 function. -/
 def lift : LocallyConstant f.discreteQuotient α :=
-  ⟨fun a => Quotient.liftOn' a f fun _ _ => id, fun _ => isOpen_discrete _⟩
+  ⟨fun a => Quotient.liftOn a f fun _ _ => id, fun _ => isOpen_discrete _⟩
 
 @[simp]
 theorem lift_comp_proj : f.lift ∘ f.discreteQuotient.proj = f := rfl

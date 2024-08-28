@@ -112,7 +112,7 @@ protected theorem exact {p p' : α × α} (h : Sym2.mk p = Sym2.mk p') : Sym2.Re
 
 @[simp]
 protected theorem eq {p p' : α × α} : Sym2.mk p = Sym2.mk p' ↔ Sym2.Rel α p p' :=
-  Quotient.eq' (s₁ := Sym2.Rel.setoid α)
+  Quotient.eq (r := Sym2.Rel.setoid α)
 
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 protected theorem ind {f : Sym2 α → Prop} (h : ∀ x y, f s(x, y)) : ∀ i, f i :=

@@ -51,7 +51,7 @@ instance [Inhabited V] : Inhabited (WeaklyConnectedComponent V) :=
 
 protected theorem eq (a b : V) :
     (a : WeaklyConnectedComponent V) = b ↔ Nonempty (@Path (Symmetrify V) _ a b) :=
-  Quotient.eq''
+  Quotient.eq
 
 end WeaklyConnectedComponent
 

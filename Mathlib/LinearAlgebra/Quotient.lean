@@ -107,7 +107,7 @@ variable {S : Type*} [SMul S R] [SMul S M] [IsScalarTower S R M] (P : Submodule 
 
 instance instSMul' : SMul S (M ⧸ P) :=
   ⟨fun a =>
-    Quotient.map' (a • ·) fun x y h =>
+    Quotient.map (a • ·) fun x y h =>
       leftRel_apply.mpr <| by simpa using Submodule.smul_mem P (a • (1 : R)) (leftRel_apply.mp h)⟩
 
 -- Porting note: should this be marked as a `@[default_instance]`?
@@ -121,15 +121,15 @@ theorem mk_smul (r : S) (x : M) : (mk (r • x) : M ⧸ p) = r • mk x :=
 
 instance smulCommClass (T : Type*) [SMul T R] [SMul T M] [IsScalarTower T R M]
     [SMulCommClass S T M] : SMulCommClass S T (M ⧸ P) where
-  smul_comm _x _y := Quotient.ind' fun _z => congr_arg mk (smul_comm _ _ _)
+  smul_comm _x _y := Quotient.ind fun _z => congr_arg mk (smul_comm _ _ _)
 
 instance isScalarTower (T : Type*) [SMul T R] [SMul T M] [IsScalarTower T R M] [SMul S T]
     [IsScalarTower S T M] : IsScalarTower S T (M ⧸ P) where
-  smul_assoc _x _y := Quotient.ind' fun _z => congr_arg mk (smul_assoc _ _ _)
+  smul_assoc _x _y := Quotient.ind fun _z => congr_arg mk (smul_assoc _ _ _)
 
 instance isCentralScalar [SMul Sᵐᵒᵖ R] [SMul Sᵐᵒᵖ M] [IsScalarTower Sᵐᵒᵖ R M]
     [IsCentralScalar S M] : IsCentralScalar S (M ⧸ P) where
-  op_smul_eq_smul _x := Quotient.ind' fun _z => congr_arg mk <| op_smul_eq_smul _ _
+  op_smul_eq_smul _x := Quotient.ind fun _z => congr_arg mk <| op_smul_eq_smul _ _
 
 end SMul
 
@@ -200,8 +200,8 @@ where `P : Submodule R M`.
 def restrictScalarsEquiv [Ring S] [SMul S R] [Module S M] [IsScalarTower S R M]
     (P : Submodule R M) : (M ⧸ P.restrictScalars S) ≃ₗ[S] M ⧸ P :=
   { Quotient.congrRight fun _ _ => Iff.rfl with
-    map_add' := fun x y => Quotient.inductionOn₂' x y fun _x' _y' => rfl
-    map_smul' := fun _c x => Quotient.inductionOn' x fun _x' => rfl }
+    map_add' := fun x y => Quotient.inductionOn₂ x y fun _x' _y' => rfl
+    map_smul' := fun _c x => Quotient.inductionOn x fun _x' => rfl }
 
 @[simp]
 theorem restrictScalarsEquiv_mk [Ring S] [SMul S R] [Module S M] [IsScalarTower S R M]
@@ -234,7 +234,7 @@ instance QuotientBot.infinite [Infinite M] : Infinite (M ⧸ (⊥ : Submodule R 
 
 instance QuotientTop.unique : Unique (M ⧸ (⊤ : Submodule R M)) where
   default := 0
-  uniq x := Quotient.inductionOn' x fun _x => (Submodule.Quotient.eq ⊤).mpr Submodule.mem_top
+  uniq x := Quotient.inductionOn x fun _x => (Submodule.Quotient.eq ⊤).mpr Submodule.mem_top
 
 instance QuotientTop.fintype : Fintype (M ⧸ (⊤ : Submodule R M)) :=
   Fintype.ofSubsingleton 0
@@ -270,7 +270,7 @@ variable {M₂ : Type*} [AddCommGroup M₂] [Module R M₂]
 
 theorem quot_hom_ext (f g : (M ⧸ p) →ₗ[R] M₂) (h : ∀ x : M, f (Quotient.mk x) = g (Quotient.mk x)) :
     f = g :=
-  LinearMap.ext fun x => Quotient.inductionOn' x h
+  LinearMap.ext fun x => Quotient.inductionOn x h
 
 /-- The map from a module `M` to the quotient of `M` by a submodule `p` as a linear map. -/
 def mkQ : M →ₗ[R] M ⧸ p where
@@ -295,7 +295,7 @@ variable {R₂ M₂ : Type*} [Ring R₂] [AddCommGroup M₂] [Module R₂ M₂] 
 See note [partially-applied ext lemmas]. -/
 @[ext 1100] -- Porting note: increase priority so this applies before `LinearMap.ext`
 theorem linearMap_qext ⦃f g : M ⧸ p →ₛₗ[τ₁₂] M₂⦄ (h : f.comp p.mkQ = g.comp p.mkQ) : f = g :=
-  LinearMap.ext fun x => Quotient.inductionOn' x <| (LinearMap.congr_fun h : _)
+  LinearMap.ext fun x => Quotient.inductionOn x <| (LinearMap.congr_fun h : _)
 
 /-- The map from the quotient of `M` by a submodule `p` to `M₂` induced by a linear map `f : M → M₂`
 vanishing on `p`, as a linear map. -/
@@ -461,8 +461,8 @@ def Quotient.equiv {N : Type*} [AddCommGroup N] [Module R N] (P : Submodule R M)
         rw [← hf, Submodule.mem_map] at hx
         obtain ⟨y, hy, rfl⟩ := hx
         simpa
-    left_inv := fun x => Quotient.inductionOn' x (by simp [mk''_eq_mk])
-    right_inv := fun x => Quotient.inductionOn' x (by simp [mk''_eq_mk]) }
+    left_inv := fun x => Quotient.inductionOn x (by simp [mk''_eq_mk])
+    right_inv := fun x => Quotient.inductionOn x (by simp [mk''_eq_mk]) }
 
 @[simp]
 theorem Quotient.equiv_symm {R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M]

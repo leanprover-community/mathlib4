@@ -291,7 +291,7 @@ lemma mk_surjective : Function.Surjective (mk (𝒜 := 𝒜) (x := x)) :=
 numerator and denominator are of the same grading.
 -/
 def val (y : HomogeneousLocalization 𝒜 x) : at x :=
-  Quotient.liftOn' y (NumDenSameDeg.embedding 𝒜 x) fun _ _ => id
+  Quotient.liftOn y (NumDenSameDeg.embedding 𝒜 x) fun _ _ => id
 
 @[simp]
 theorem val_mk (i : NumDenSameDeg 𝒜 x) :
@@ -315,7 +315,7 @@ variable {α : Type*} [SMul α R] [SMul α A] [IsScalarTower α R A]
 variable [IsScalarTower α A A]
 
 instance : SMul α (HomogeneousLocalization 𝒜 x) where
-  smul m := Quotient.map' (m • ·) fun c1 c2 (h : Localization.mk _ _ = Localization.mk _ _) => by
+  smul m := Quotient.map (m • ·) fun c1 c2 (h : Localization.mk _ _ = Localization.mk _ _) => by
     change Localization.mk _ _ = Localization.mk _ _
     simp only [num_smul, den_smul]
     convert congr_arg (fun z : at x => m • z) h <;> rw [Localization.smul_mk]
@@ -324,7 +324,7 @@ instance : SMul α (HomogeneousLocalization 𝒜 x) where
 
 @[simp]
 theorem val_smul (n : α) : ∀ y : HomogeneousLocalization 𝒜 x, (n • y).val = n • y.val :=
-  Quotient.ind' fun _ ↦ by rw [← mk_smul, val_mk, val_mk, Localization.smul_mk]; rfl
+  Quotient.ind fun _ ↦ by rw [← mk_smul, val_mk, val_mk, Localization.smul_mk]; rfl
 
 theorem val_nsmul (n : ℕ) (y : HomogeneousLocalization 𝒜 x) : (n • y).val = n • y.val := by
   rw [val_smul, OreLocalization.nsmul_eq_nsmul]
@@ -335,7 +335,7 @@ theorem val_zsmul (n : ℤ) (y : HomogeneousLocalization 𝒜 x) : (n • y).val
 end SMul
 
 instance : Neg (HomogeneousLocalization 𝒜 x) where
-  neg := Quotient.map' Neg.neg fun c1 c2 (h : Localization.mk _ _ = Localization.mk _ _) => by
+  neg := Quotient.map Neg.neg fun c1 c2 (h : Localization.mk _ _ = Localization.mk _ _) => by
     change Localization.mk _ _ = Localization.mk _ _
     simp only [num_neg, den_neg, ← Localization.neg_mk]
     exact congr_arg Neg.neg h
@@ -344,13 +344,13 @@ instance : Neg (HomogeneousLocalization 𝒜 x) where
 
 @[simp]
 theorem val_neg {x} : ∀ y : HomogeneousLocalization 𝒜 x, (-y).val = -y.val :=
-  Quotient.ind' fun y ↦ by rw [← mk_neg, val_mk, val_mk, Localization.neg_mk]; rfl
+  Quotient.ind fun y ↦ by rw [← mk_neg, val_mk, val_mk, Localization.neg_mk]; rfl
 
 variable [AddCommMonoid ι] [DecidableEq ι] [GradedAlgebra 𝒜]
 
 instance hasPow : Pow (HomogeneousLocalization 𝒜 x) ℕ where
   pow z n :=
-    (Quotient.map' (· ^ n) fun c1 c2 (h : Localization.mk _ _ = Localization.mk _ _) => by
+    (Quotient.map (· ^ n) fun c1 c2 (h : Localization.mk _ _ = Localization.mk _ _) => by
           change Localization.mk _ _ = Localization.mk _ _
           simp only [num_pow, den_pow]
           convert congr_arg (fun z : at x => z ^ n) h <;> erw [Localization.mk_pow] <;> rfl :
@@ -361,7 +361,7 @@ instance hasPow : Pow (HomogeneousLocalization 𝒜 x) ℕ where
 
 instance : Add (HomogeneousLocalization 𝒜 x) where
   add :=
-    Quotient.map₂' (· + ·)
+    Quotient.map₂ (· + ·)
       fun c1 c2 (h : Localization.mk _ _ = Localization.mk _ _) c3 c4
         (h' : Localization.mk _ _ = Localization.mk _ _) => by
       change Localization.mk _ _ = Localization.mk _ _
@@ -374,7 +374,7 @@ instance : Sub (HomogeneousLocalization 𝒜 x) where sub z1 z2 := z1 + -z2
 
 instance : Mul (HomogeneousLocalization 𝒜 x) where
   mul :=
-    Quotient.map₂' (· * ·)
+    Quotient.map₂ (· * ·)
       fun c1 c2 (h : Localization.mk _ _ = Localization.mk _ _) c3 c4
         (h' : Localization.mk _ _ = Localization.mk _ _) => by
       change Localization.mk _ _ = Localization.mk _ _
@@ -409,11 +409,11 @@ theorem val_one : (1 : HomogeneousLocalization 𝒜 x).val = 1 :=
 
 @[simp]
 theorem val_add : ∀ y1 y2 : HomogeneousLocalization 𝒜 x, (y1 + y2).val = y1.val + y2.val :=
-  Quotient.ind₂' fun y1 y2 ↦ by rw [← mk_add, val_mk, val_mk, val_mk, Localization.add_mk]; rfl
+  Quotient.ind₂ fun y1 y2 ↦ by rw [← mk_add, val_mk, val_mk, val_mk, Localization.add_mk]; rfl
 
 @[simp]
 theorem val_mul : ∀ y1 y2 : HomogeneousLocalization 𝒜 x, (y1 * y2).val = y1.val * y2.val :=
-  Quotient.ind₂' fun y1 y2 ↦ by rw [← mk_mul, val_mk, val_mk, val_mk, Localization.mk_mul]; rfl
+  Quotient.ind₂ fun y1 y2 ↦ by rw [← mk_mul, val_mk, val_mk, val_mk, Localization.mk_mul]; rfl
 
 @[simp]
 theorem val_sub (y1 y2 : HomogeneousLocalization 𝒜 x) : (y1 - y2).val = y1.val - y2.val := by
@@ -421,7 +421,7 @@ theorem val_sub (y1 y2 : HomogeneousLocalization 𝒜 x) : (y1 - y2).val = y1.va
 
 @[simp]
 theorem val_pow : ∀ (y : HomogeneousLocalization 𝒜 x) (n : ℕ), (y ^ n).val = y.val ^ n :=
-  Quotient.ind' fun y n ↦ by rw [← mk_pow, val_mk, val_mk, Localization.mk_pow]; rfl
+  Quotient.ind fun y n ↦ by rw [← mk_pow, val_mk, val_mk, Localization.mk_pow]; rfl
 
 instance : NatCast (HomogeneousLocalization 𝒜 x) :=
   ⟨Nat.unaryCast⟩
@@ -473,29 +473,29 @@ variable {𝒜} {x}
 
 /-- Numerator of an element in `HomogeneousLocalization x`. -/
 def num (f : HomogeneousLocalization 𝒜 x) : A :=
-  (Quotient.out' f).num
+  (Quotient.out f).num
 
 /-- Denominator of an element in `HomogeneousLocalization x`. -/
 def den (f : HomogeneousLocalization 𝒜 x) : A :=
-  (Quotient.out' f).den
+  (Quotient.out f).den
 
 /-- For an element in `HomogeneousLocalization x`, degree is the natural number `i` such that
   `𝒜 i` contains both numerator and denominator. -/
 def deg (f : HomogeneousLocalization 𝒜 x) : ι :=
-  (Quotient.out' f).deg
+  (Quotient.out f).deg
 
 theorem den_mem (f : HomogeneousLocalization 𝒜 x) : f.den ∈ x :=
-  (Quotient.out' f).den_mem
+  (Quotient.out f).den_mem
 
 theorem num_mem_deg (f : HomogeneousLocalization 𝒜 x) : f.num ∈ 𝒜 f.deg :=
-  (Quotient.out' f).num.2
+  (Quotient.out f).num.2
 
 theorem den_mem_deg (f : HomogeneousLocalization 𝒜 x) : f.den ∈ 𝒜 f.deg :=
-  (Quotient.out' f).den.2
+  (Quotient.out f).den.2
 
 theorem eq_num_div_den (f : HomogeneousLocalization 𝒜 x) :
     f.val = Localization.mk f.num ⟨f.den, f.den_mem⟩ :=
-  congr_arg HomogeneousLocalization.val (Quotient.out_eq' f).symm
+  congr_arg HomogeneousLocalization.val (Quotient.out_eq f).symm
 
 theorem den_smul_val (f : HomogeneousLocalization 𝒜 x) :
     f.den • f.val = algebraMap _ _ f.num := by
@@ -585,20 +585,20 @@ localizations `B⁰_Q`.
 def map (g : A →+* B)
     (comap_le : P ≤ Q.comap g) (hg : ∀ i, ∀ a ∈ 𝒜 i, g a ∈ ℬ i) :
     HomogeneousLocalization 𝒜 P →+* HomogeneousLocalization ℬ Q where
-  toFun := Quotient.map'
+  toFun := Quotient.map
     (fun x ↦ ⟨x.1, ⟨_, hg _ _ x.2.2⟩, ⟨_, hg _ _ x.3.2⟩, comap_le x.4⟩)
     fun x y (e : x.embedding = y.embedding) ↦ by
       apply_fun IsLocalization.map (Localization Q) g comap_le at e
       simp_rw [HomogeneousLocalization.NumDenSameDeg.embedding, Localization.mk_eq_mk',
         IsLocalization.map_mk', ← Localization.mk_eq_mk'] at e
       exact e
-  map_add' := Quotient.ind₂' fun x y ↦ by
-    simp only [← mk_add, Quotient.map'_mk'', num_add, map_add, map_mul, den_add]; rfl
-  map_mul' := Quotient.ind₂' fun x y ↦ by
-    simp only [← mk_mul, Quotient.map'_mk'', num_mul, map_mul, den_mul]; rfl
-  map_zero' := by simp only [← mk_zero (𝒜 := 𝒜), Quotient.map'_mk'', deg_zero,
+  map_add' := Quotient.ind₂ fun x y ↦ by
+    simp only [← mk_add, Quotient.map_mk, num_add, map_add, map_mul, den_add]; rfl
+  map_mul' := Quotient.ind₂ fun x y ↦ by
+    simp only [← mk_mul, Quotient.map_mk, num_mul, map_mul, den_mul]; rfl
+  map_zero' := by simp only [← mk_zero (𝒜 := 𝒜), Quotient.map_mk, deg_zero,
     num_zero, ZeroMemClass.coe_zero, map_zero, den_zero, map_one]; rfl
-  map_one' := by simp only [← mk_one (𝒜 := 𝒜), Quotient.map'_mk'', deg_zero,
+  map_one' := by simp only [← mk_one (𝒜 := 𝒜), Quotient.map_mk, deg_zero,
     num_one, ZeroMemClass.coe_zero, map_zero, den_one, map_one]; rfl
 
 /--

@@ -202,15 +202,15 @@ theorem mem_leftTransversals_iff_existsUnique_quotient_mk''_eq :
       ∀ q : Quotient (QuotientGroup.leftRel H), ∃! s : S, Quotient.mk'' s.1 = q := by
   simp_rw [mem_leftTransversals_iff_existsUnique_inv_mul_mem, SetLike.mem_coe, ←
     QuotientGroup.eq]
-  exact ⟨fun h q => Quotient.inductionOn' q h, fun h g => h (Quotient.mk'' g)⟩
+  exact ⟨fun h q => Quotient.inductionOn q h, fun h g => h (Quotient.mk'' g)⟩
 
 @[to_additive]
 theorem mem_rightTransversals_iff_existsUnique_quotient_mk''_eq :
     S ∈ rightTransversals (H : Set G) ↔
       ∀ q : Quotient (QuotientGroup.rightRel H), ∃! s : S, Quotient.mk'' s.1 = q := by
   simp_rw [mem_rightTransversals_iff_existsUnique_mul_inv_mem, SetLike.mem_coe, ←
-    QuotientGroup.rightRel_apply, ← Quotient.eq'']
-  exact ⟨fun h q => Quotient.inductionOn' q h, fun h g => h (Quotient.mk'' g)⟩
+    QuotientGroup.rightRel_apply, ← Quotient.eq]
+  exact ⟨fun h q => Quotient.inductionOn q h, fun h g => h (Quotient.mk'' g)⟩
 
 @[to_additive]
 theorem mem_leftTransversals_iff_bijective :
@@ -257,11 +257,11 @@ lemma exists_left_transversal (H : Subgroup G) (g : G) :
     ∃ S ∈ leftTransversals (H : Set G), g ∈ S := by
   classical
     refine
-      ⟨Set.range (Function.update Quotient.out' _ g), range_mem_leftTransversals fun q => ?_,
-        Quotient.mk'' g, Function.update_same (Quotient.mk'' g) g Quotient.out'⟩
+      ⟨Set.range (Function.update Quotient.out _ g), range_mem_leftTransversals fun q => ?_,
+        Quotient.mk'' g, Function.update_same (Quotient.mk'' g) g Quotient.out⟩
     by_cases hq : q = Quotient.mk'' g
-    · exact hq.symm ▸ congr_arg _ (Function.update_same (Quotient.mk'' g) g Quotient.out')
-    · refine (Function.update_noteq ?_ g Quotient.out') ▸ q.out_eq'
+    · exact hq.symm ▸ congr_arg _ (Function.update_same (Quotient.mk'' g) g Quotient.out)
+    · refine (Function.update_noteq ?_ g Quotient.out) ▸ q.out_eq
       exact hq
 
 @[to_additive]
@@ -269,11 +269,11 @@ lemma exists_right_transversal (H : Subgroup G) (g : G) :
     ∃ S ∈ rightTransversals (H : Set G), g ∈ S := by
   classical
     refine
-      ⟨Set.range (Function.update Quotient.out' _ g), range_mem_rightTransversals fun q => ?_,
-        Quotient.mk'' g, Function.update_same (Quotient.mk'' g) g Quotient.out'⟩
+      ⟨Set.range (Function.update Quotient.out _ g), range_mem_rightTransversals fun q => ?_,
+        Quotient.mk'' g, Function.update_same (Quotient.mk'' g) g Quotient.out⟩
     by_cases hq : q = Quotient.mk'' g
-    · exact hq.symm ▸ congr_arg _ (Function.update_same (Quotient.mk'' g) g Quotient.out')
-    · exact Eq.trans (congr_arg _ (Function.update_noteq hq g Quotient.out')) q.out_eq'
+    · exact hq.symm ▸ congr_arg _ (Function.update_same (Quotient.mk'' g) g Quotient.out)
+    · exact Eq.trans (congr_arg _ (Function.update_noteq hq g Quotient.out)) q.out_eq
 
 /-- Given two subgroups `H' ⊆ H`, there exists a left transversal to `H'` inside `H`. -/
 @[to_additive "Given two subgroups `H' ⊆ H`, there exists a transversal to `H'` inside `H`"]
@@ -576,7 +576,7 @@ theorem smul_toFun (f : F) (T : leftTransversals (H : Set G)) (g : G) :
 @[to_additive]
 theorem smul_toEquiv (f : F) (T : leftTransversals (H : Set G)) (q : G ⧸ H) :
     f • (toEquiv T.2 q : G) = toEquiv (f • T).2 (f • q) :=
-  Quotient.inductionOn' q fun g => smul_toFun f T g
+  Quotient.inductionOn q fun g => smul_toFun f T g
 
 @[to_additive]
 theorem smul_apply_eq_smul_apply_inv_smul (f : F) (T : leftTransversals (H : Set G)) (q : G ⧸ H) :
@@ -587,11 +587,11 @@ end Action
 
 @[to_additive]
 instance : Inhabited (leftTransversals (H : Set G)) :=
-  ⟨⟨Set.range Quotient.out', range_mem_leftTransversals Quotient.out_eq'⟩⟩
+  ⟨⟨Set.range Quotient.out, range_mem_leftTransversals Quotient.out_eq⟩⟩
 
 @[to_additive]
 instance : Inhabited (rightTransversals (H : Set G)) :=
-  ⟨⟨Set.range Quotient.out', range_mem_rightTransversals Quotient.out_eq'⟩⟩
+  ⟨⟨Set.range Quotient.out, range_mem_rightTransversals Quotient.out_eq⟩⟩
 
 theorem IsComplement'.isCompl (h : IsComplement' H K) : IsCompl H K := by
   refine

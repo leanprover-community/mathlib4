@@ -112,16 +112,16 @@ instance (H K : Subgroup G) : Inhabited (Quotient (H : Set G) K) :=
 
 theorem eq (H K : Subgroup G) (a b : G) :
     mk H K a = mk H K b ↔ ∃ h ∈ H, ∃ k ∈ K, b = h * a * k := by
-  rw [Quotient.eq'']
+  rw [Quotient.eq]
   apply rel_iff
 
-theorem out_eq' (H K : Subgroup G) (q : Quotient ↑H ↑K) : mk H K q.out' = q :=
-  Quotient.out_eq' q
+theorem out_eq (H K : Subgroup G) (q : Quotient ↑H ↑K) : mk H K q.out' = q :=
+  Quotient.out_eq q
 
 theorem mk_out'_eq_mul (H K : Subgroup G) (g : G) :
     ∃ h k : G, h ∈ H ∧ k ∈ K ∧ (mk H K g : Quotient ↑H ↑K).out' = h * g * k := by
   have := eq H K (mk H K g : Quotient ↑H ↑K).out' g
-  rw [out_eq'] at this
+  rw [out_eq] at this
   obtain ⟨h, h_h, k, hk, T⟩ := this.1 rfl
   refine ⟨h⁻¹, k⁻¹, H.inv_mem h_h, K.inv_mem hk, eq_mul_inv_of_mul_eq (eq_inv_mul_of_mul_eq ?_)⟩
   rw [← mul_assoc, ← T]
@@ -135,7 +135,7 @@ theorem disjoint_out' {H K : Subgroup G} {a b : Quotient H.1 K} :
     a ≠ b → Disjoint (doset a.out' H K) (doset b.out' (H : Set G) K) := by
   contrapose!
   intro h
-  simpa [out_eq'] using mk_eq_of_doset_eq (eq_of_not_disjoint h)
+  simpa [out_eq] using mk_eq_of_doset_eq (eq_of_not_disjoint h)
 
 theorem union_quotToDoset (H K : Subgroup G) : ⋃ q, quotToDoset H K q = Set.univ := by
   ext x
