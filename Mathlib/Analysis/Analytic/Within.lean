@@ -292,6 +292,22 @@ lemma AnalyticWithinOn.mono {f : E → F} {s t : Set E} (h : AnalyticWithinOn �
     (hs : s ⊆ t) : AnalyticWithinOn 𝕜 f s :=
   fun _ m ↦ (h _ (hs m)).mono hs
 
+@[simp] lemma hasFPowerSeriesWithinOnBall_insert_self {f : E → F}
+    {p : FormalMultilinearSeries 𝕜 E F} {s : Set E} {x : E} {r : ℝ≥0∞} :
+    HasFPowerSeriesWithinOnBall f p (insert x s) x r ↔ HasFPowerSeriesWithinOnBall f p s x r := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩  <;>
+  exact ⟨h.r_le, h.r_pos, fun {y} ↦ by simpa only [insert_idem] using h.hasSum (y := y)⟩
+
+@[simp] theorem hasFPowerSeriesAt_insert_self {f : E → F} {p : FormalMultilinearSeries 𝕜 E F}
+    {s : Set E} {x : E} :
+    HasFPowerSeriesWithinAt f p (insert x s) x ↔ HasFPowerSeriesWithinAt f p s x := by
+  simp [HasFPowerSeriesWithinAt]
+
+@[simp] theorem analyticWithinAt_insert_self {f : E → F} {s : Set E} {x : E} :
+    AnalyticWithinAt 𝕜 f (insert x s) x ↔ AnalyticWithinAt 𝕜 f s x := by
+  simp [AnalyticWithinAt]
+
+
 /-!
 ### Analyticity within respects composition
 
