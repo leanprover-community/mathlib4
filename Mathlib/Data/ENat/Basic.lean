@@ -225,7 +225,11 @@ lemma toNat_le_toNat {m n : ℕ∞} (h : m ≤ n) (hn : n ≠ ⊤) : toNat m ≤
   toNat_le_of_le_coe <| h.trans_eq (coe_toNat hn).symm
 
 @[simp]
-theorem succ_def (m : ℕ∞) : Order.succ m = m + 1 := by cases m <;> rfl
+theorem succ_def (m : ℕ∞) : Order.succ m = m + 1 := by
+  cases m
+  · rfl
+  · change ite .. = _
+    simp
 
 theorem add_one_le_of_lt (h : m < n) : m + 1 ≤ n :=
   m.succ_def ▸ Order.succ_le_of_lt h
