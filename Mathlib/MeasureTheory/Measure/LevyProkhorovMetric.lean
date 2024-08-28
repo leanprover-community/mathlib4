@@ -194,23 +194,12 @@ lemma levyProkhorovDist_triangle [OpensMeasurableSpace Ω] (μ ν κ : Measure �
 when they are to be equipped with the Lévy-Prokhorov distance. -/
 def LevyProkhorov (α : Type*) := α
 
-/-- Coercion from the type synonym `LevyProkhorov (ProbabilityMeasure Ω)`
-to `ProbabilityMeasure Ω`. -/
-def LevyProkhorov.toProbabilityMeasure (μ : LevyProkhorov (ProbabilityMeasure Ω)) :
-    ProbabilityMeasure Ω := μ
-
-/-- Coercion from the type synonym `LevyProkhorov (FiniteMeasure Ω)` to `FiniteMeasure Ω`. -/
-def LevyProkhorov.toFiniteMeasure (μ : LevyProkhorov (FiniteMeasure Ω)) :
-    FiniteMeasure Ω := μ
-
-/-- Coercion to the type synonym `LevyProkhorov (ProbabilityMeasure Ω)`
-from `ProbabilityMeasure Ω`. -/
-def ProbabilityMeasure.toLevyProkhorov (μ : ProbabilityMeasure Ω) :
-    LevyProkhorov (ProbabilityMeasure Ω) := μ
-
-/-- Coercion to the type synonym `LevyProkhorov (FiniteMeasure Ω)` from `FiniteMeasure Ω`. -/
-def FiniteMeasure.toLevyProkhorov (μ : FiniteMeasure Ω) :
-    LevyProkhorov (FiniteMeasure Ω) := μ
+/-- The "identity" equivalence between the type synonym `LevyProkhorov α` and `α`. -/
+def LevyProkhorov.equiv {α : Type*} : LevyProkhorov α ≃ α where
+  toFun := id
+  invFun := id
+  left_inv _ := rfl
+  right_inv _ := rfl
 
 variable [OpensMeasurableSpace Ω]
 
@@ -290,19 +279,18 @@ noncomputable instance levyProkhorovDist_metricSpace_probabilityMeasure [BorelSp
     MetricSpace (LevyProkhorov (ProbabilityMeasure Ω)) where
   eq_of_dist_eq_zero := by
     intro μ ν h
-    have same : μ.toProbabilityMeasure = ν.toProbabilityMeasure := by
-      apply ProbabilityMeasure.toMeasure_injective
-      apply ext_of_generate_finite _ ?_ isPiSystem_isClosed ?_ (by simp)
-      · rw [BorelSpace.measurable_eq (α := Ω), borel_eq_generateFrom_isClosed]
-      · intro A A_closed
-        apply measure_eq_measure_of_isClosed_of_levyProkhorovEDist_eq_zero
-        · simpa only [levyProkhorovEDist_ne_top μ.toMeasure ν.toMeasure, mem_setOf_eq,
-                      or_false, ne_eq, zero_ne_top, not_false_eq_true, zero_toReal]
-            using (toReal_eq_zero_iff _).mp h
-        · exact A_closed
-        · exact ⟨1, Real.zero_lt_one, measure_ne_top _ _⟩
-        · exact ⟨1, Real.zero_lt_one, measure_ne_top _ _⟩
-    exact same
+    show LevyProkhorov.equiv μ = LevyProkhorov.equiv ν
+    apply ProbabilityMeasure.toMeasure_injective
+    apply ext_of_generate_finite _ ?_ isPiSystem_isClosed ?_ (by simp)
+    · rw [BorelSpace.measurable_eq (α := Ω), borel_eq_generateFrom_isClosed]
+    · intro A A_closed
+      apply measure_eq_measure_of_isClosed_of_levyProkhorovEDist_eq_zero
+      · simpa only [levyProkhorovEDist_ne_top μ.toMeasure ν.toMeasure, mem_setOf_eq,
+                    or_false, ne_eq, zero_ne_top, not_false_eq_true, zero_toReal]
+          using (toReal_eq_zero_iff _).mp h
+      · exact A_closed
+      · exact ⟨1, Real.zero_lt_one, measure_ne_top _ _⟩
+      · exact ⟨1, Real.zero_lt_one, measure_ne_top _ _⟩
 
 /-- A simple sufficient condition for bounding `levyProkhorovEDist` between probability measures
 from above. The condition involves only one of two natural bounds, the other bound is for free. -/
@@ -443,11 +431,11 @@ lemma tendsto_integral_meas_thickening_le (f : Ω →ᵇ ℝ)
 
 /-- The coercion `LevyProkhorov (ProbabilityMeasure Ω) → ProbabilityMeasure Ω` is continuous. -/
 lemma LevyProkhorov.continuous_toProbabilityMeasure :
-    Continuous (LevyProkhorov.toProbabilityMeasure (Ω := Ω)) := by
+    Continuous (LevyProkhorov.equiv (α := ProbabilityMeasure Ω)) := by
   refine SeqContinuous.continuous ?_
   intro μs ν hμs
-  set P := ν.toProbabilityMeasure -- more palatable notation
-  set Ps := fun n ↦ (μs n).toProbabilityMeasure -- more palatable notation
+  set P := LevyProkhorov.equiv ν -- more palatable notation
+  set Ps := fun n ↦ LevyProkhorov.equiv (μs n) -- more palatable notation
   rw [ProbabilityMeasure.tendsto_iff_forall_integral_tendsto]
   refine fun f ↦ tendsto_integral_of_forall_limsup_integral_le_integral ?_ f
   intro f f_nn
@@ -490,9 +478,8 @@ lemma LevyProkhorov.continuous_toProbabilityMeasure :
     · rw [ENNReal.ofReal_add (by positivity) (by positivity), ← add_zero (levyProkhorovEDist _ _)]
       apply ENNReal.add_lt_add_of_le_of_lt (levyProkhorovEDist_ne_top _ _)
             (le_of_eq ?_) (ofReal_pos.mpr εs_pos)
-      rw [LevyProkhorov.dist_def, levyProkhorovDist,
-          ofReal_toReal (levyProkhorovEDist_ne_top _ _)]
-      simp only [Ps, P, LevyProkhorov.toProbabilityMeasure]
+      rw [LevyProkhorov.dist_def, levyProkhorovDist, ofReal_toReal (levyProkhorovEDist_ne_top _ _)]
+      rfl
     · exact eventually_of_forall f_nn
   · simp only [IsCoboundedUnder, IsCobounded, eventually_map, eventually_atTop,
                forall_exists_index]
@@ -501,7 +488,7 @@ lemma LevyProkhorov.continuous_toProbabilityMeasure :
 /-- The topology of the Lévy-Prokhorov metric is at least as fine as the topology of convergence in
 distribution. -/
 theorem levyProkhorov_le_convergenceInDistribution :
-    TopologicalSpace.coinduced (LevyProkhorov.toProbabilityMeasure (Ω := Ω)) inferInstance
+    TopologicalSpace.coinduced (LevyProkhorov.equiv (α := ProbabilityMeasure Ω)) inferInstance
       ≤ (inferInstance : TopologicalSpace (ProbabilityMeasure Ω)) :=
   (LevyProkhorov.continuous_toProbabilityMeasure).coinduced_le
 
@@ -570,7 +557,7 @@ lemma ProbabilityMeasure.toMeasure_add_pos_gt_mem_nhds (P : ProbabilityMeasure �
   exact (tsub_add_cancel_of_le easy).symm
 
 lemma ProbabilityMeasure.continuous_toLevyProkhorov :
-    Continuous (ProbabilityMeasure.toLevyProkhorov (Ω := Ω)) := by
+    Continuous (LevyProkhorov.equiv (α := ProbabilityMeasure Ω)).symm := by
   -- We check continuity of `id : ProbabilityMeasure Ω → LevyProkhorov (ProbabilityMeasure Ω)` at
   -- each point `P : ProbabilityMeasure Ω`.
   rw [continuous_iff_continuousAt]
@@ -670,7 +657,7 @@ lemma ProbabilityMeasure.continuous_toLevyProkhorov :
 coincides with the topology of convergence in distribution. -/
 theorem levyProkhorov_eq_convergenceInDistribution :
     (inferInstance : TopologicalSpace (ProbabilityMeasure Ω))
-      = TopologicalSpace.coinduced (LevyProkhorov.toProbabilityMeasure (Ω := Ω)) inferInstance :=
+      = TopologicalSpace.coinduced LevyProkhorov.equiv inferInstance :=
   le_antisymm (ProbabilityMeasure.continuous_toLevyProkhorov (Ω := Ω)).coinduced_le
               levyProkhorov_le_convergenceInDistribution
 
@@ -678,8 +665,8 @@ theorem levyProkhorov_eq_convergenceInDistribution :
 convergence in distribution to `ProbabilityMeasure Ω` with the Lévy-Prokhorov (pseudo)metric. -/
 def homeomorph_probabilityMeasure_levyProkhorov :
     ProbabilityMeasure Ω ≃ₜ LevyProkhorov (ProbabilityMeasure Ω) where
-  toFun := ProbabilityMeasure.toLevyProkhorov (Ω := Ω)
-  invFun := LevyProkhorov.toProbabilityMeasure (Ω := Ω)
+  toFun := LevyProkhorov.equiv
+  invFun := LevyProkhorov.equiv.symm
   left_inv := congrFun rfl
   right_inv := congrFun rfl
   continuous_toFun := ProbabilityMeasure.continuous_toLevyProkhorov
