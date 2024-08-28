@@ -62,7 +62,10 @@ namespace Algebra
 variable (R S)
 
 /-- The trace of an element `s` of an `R`-algebra is the trace of `(s * ·)`,
-as an `R`-linear map. -/
+as an `R`-linear map.
+
+This is a generalization of
+[Stacks: Definition 0BIF, first part](https://stacks.math.columbia.edu/tag/0BIF) -/
 noncomputable def trace : S →ₗ[R] R :=
   (LinearMap.trace R S).comp (lmul R S).toLinearMap
 
@@ -127,6 +130,11 @@ theorem trace_trace [Algebra S T] [IsScalarTower R S T]
     trace R S (trace S T x) = trace R T x :=
   trace_trace_of_basis (Module.Free.chooseBasis R S) (Module.Free.chooseBasis S T) x
 
+/-- Let `T / S / R` be a tower of finite extensions of fields. Then
+$\text{Trace}_{T/R} = \text{Trace}_{S/R} \circ \text{Trace}_{T/S}$
+
+This is a generalization of
+[Stacks: Lemma 0BIJ, first part](https://stacks.math.columbia.edu/tag/0BIJ) -/
 @[simp]
 theorem trace_comp_trace [Algebra S T] [IsScalarTower R S T]
     [Module.Free R S] [Module.Finite R S] [Module.Free S T] [Module.Finite S T] :
@@ -152,7 +160,10 @@ section TraceForm
 variable (R S)
 
 /-- The `traceForm` maps `x y : S` to the trace of `x * y`.
-It is a symmetric bilinear form and is nondegenerate if the extension is separable. -/
+It is a symmetric bilinear form and is nondegenerate if the extension is separable.
+
+This is a generalization of
+[Stacks: Definition 0BIK](https://stacks.math.columbia.edu/tag/0BIK). -/
 noncomputable def traceForm : BilinForm R S :=
   LinearMap.compr₂ (lmul R S).toLinearMap (trace R S)
 
