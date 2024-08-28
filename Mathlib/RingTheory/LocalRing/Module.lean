@@ -152,7 +152,7 @@ theorem free_of_maximalIdeal_rTensor_injective [Module.FinitePresentation R M]
     isNoetherian_of_isNoetherianRing_of_finite k (k ⊗[R] (I →₀ R))
   choose f hf using TensorProduct.mk_surjective R M k Ideal.Quotient.mk_surjective
   -- By choosing an arbitrary lift of `b` to `I → M`, we get a surjection `i : Rᴵ → M`.
-  let i := Finsupp.total I M R (f ∘ b)
+  let i := Finsupp.total R (f ∘ b)
   have hi : Surjective i := by
     rw [← LinearMap.range_eq_top, Finsupp.range_total]
     exact LocalRing.span_eq_top_of_tmul_eq_basis (R := R) (f := f ∘ b) b (fun _ ↦ hf _)

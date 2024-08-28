@@ -72,7 +72,7 @@ variable [AddCommMonoid M]
 /-- The `weight` of the finitely supported function `f : σ →₀ ℕ`
 with respect to `w : σ → M` is the sum `∑(f i)•(w i)`. -/
 noncomputable def weight : (σ →₀ ℕ) →+ M :=
-  (Finsupp.total σ M ℕ w).toAddMonoidHom
+  (Finsupp.total ℕ w).toAddMonoidHom
 
 @[deprecated weight (since := "2024-07-20")]
 alias _root_.MvPolynomial.weightedDegree := weight
