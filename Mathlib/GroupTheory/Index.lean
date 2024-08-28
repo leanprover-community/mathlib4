@@ -470,7 +470,6 @@ lemma _root_.AddSubgroup.relindex_toSubgroup {G : Type*} [AddGroup G] (H K : Add
     (AddSubgroup.toSubgroup H).relindex (AddSubgroup.toSubgroup K) = H.relindex K :=
   rfl
 
-
 section FiniteIndex
 
 variable (H K)
