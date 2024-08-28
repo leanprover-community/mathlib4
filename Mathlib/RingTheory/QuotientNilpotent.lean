@@ -17,7 +17,6 @@ theorem Ideal.isRadical_iff_quotient_reduced {R : Type*} [CommRing R] (I : Ideal
 
 variable {R S : Type*} [CommSemiring R] [CommRing S] [Algebra R S] (I : Ideal S)
 
-
 /-- Let `P` be a property on ideals. If `P` holds for square-zero ideals, and if
   `P I → P (J ⧸ I) → P J`, then `P` holds for all nilpotent ideals. -/
 theorem Ideal.IsNilpotent.induction_on (hI : IsNilpotent I)
@@ -51,7 +50,7 @@ theorem IsNilpotent.isUnit_quotient_mk_iff {R : Type*} [CommRing R] {I : Ideal R
     (hI : IsNilpotent I) {x : R} : IsUnit (Ideal.Quotient.mk I x) ↔ IsUnit x := by
   refine ⟨?_, fun h => h.map <| Ideal.Quotient.mk I⟩
   revert x
-  apply Ideal.IsNilpotent.induction_on (R := R) (S := R) I hI <;> clear hI I
+  apply Ideal.IsNilpotent.induction_on (S := R) I hI <;> clear hI I
   swap
   · introv e h₁ h₂ h₃
     apply h₁

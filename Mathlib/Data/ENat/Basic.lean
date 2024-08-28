@@ -225,7 +225,11 @@ lemma toNat_le_toNat {m n : ℕ∞} (h : m ≤ n) (hn : n ≠ ⊤) : toNat m ≤
   toNat_le_of_le_coe <| h.trans_eq (coe_toNat hn).symm
 
 @[simp]
-theorem succ_def (m : ℕ∞) : Order.succ m = m + 1 := by cases m <;> rfl
+theorem succ_def (m : ℕ∞) : Order.succ m = m + 1 := by
+  cases m
+  · rfl
+  · change ite .. = _
+    simp
 
 theorem add_one_le_of_lt (h : m < n) : m + 1 ≤ n :=
   m.succ_def ▸ Order.succ_le_of_lt h
@@ -245,8 +249,19 @@ lemma lt_one_iff_eq_zero : n < 1 ↔ n = 0 :=
 theorem le_of_lt_add_one (h : m < n + 1) : m ≤ n :=
   Order.le_of_lt_succ <| n.succ_def.symm ▸ h
 
+theorem lt_add_one_iff (hm : n ≠ ⊤) : m < n + 1 ↔ m ≤ n :=
+  n.succ_def ▸ Order.lt_succ_iff_of_not_isMax (not_isMax_iff_ne_top.mpr hm)
+
 theorem le_coe_iff {n : ℕ∞} {k : ℕ} : n ≤ ↑k ↔ ∃ (n₀ : ℕ), n = n₀ ∧ n₀ ≤ k :=
   WithTop.le_coe_iff
+
+@[simp]
+lemma not_lt_zero (n : ℕ∞) : ¬ n < 0 := by
+  cases n <;> simp
+
+@[simp]
+lemma coe_lt_top (n : ℕ) : (n : ℕ∞) < ⊤ :=
+  WithTop.coe_lt_top n
 
 @[elab_as_elim]
 theorem nat_induction {P : ℕ∞ → Prop} (a : ℕ∞) (h0 : P 0) (hsuc : ∀ n : ℕ, P n → P n.succ)

@@ -122,7 +122,7 @@ element, then `b` is left-regular. -/
 @[to_additive "If an element `b` becomes add-left-regular after adding to it on the left
 an add-left-regular element, then `b` is add-left-regular."]
 theorem IsLeftRegular.of_mul (ab : IsLeftRegular (a * b)) : IsLeftRegular b :=
-  Function.Injective.of_comp (by rwa [comp_mul_left a b])
+  Function.Injective.of_comp (f := (a * ·)) (by rwa [comp_mul_left a b])
 
 /-- An element is left-regular if and only if multiplying it on the left by a left-regular element
 is left-regular. -/
@@ -284,12 +284,12 @@ variable [Monoid R] {a b : R}
 /-- An element admitting a left inverse is left-regular. -/
 @[to_additive "An element admitting a left additive opposite is add-left-regular."]
 theorem isLeftRegular_of_mul_eq_one (h : b * a = 1) : IsLeftRegular a :=
-  @IsLeftRegular.of_mul R _ _ _ (by rw [h]; exact isRegular_one.left)
+  IsLeftRegular.of_mul (a := b) (by rw [h]; exact isRegular_one.left)
 
 /-- An element admitting a right inverse is right-regular. -/
 @[to_additive "An element admitting a right additive opposite is add-right-regular."]
 theorem isRightRegular_of_mul_eq_one (h : a * b = 1) : IsRightRegular a :=
-  IsRightRegular.of_mul (by rw [h]; exact isRegular_one.right)
+  IsRightRegular.of_mul (a := b) (by rw [h]; exact isRegular_one.right)
 
 /-- If `R` is a monoid, an element in `Rˣ` is regular. -/
 @[to_additive "If `R` is an additive monoid, an element in `add_units R` is add-regular."]

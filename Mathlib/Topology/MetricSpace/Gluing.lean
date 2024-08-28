@@ -103,6 +103,7 @@ theorem le_glueDist_inr_inl (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (x y) :
     ε ≤ glueDist Φ Ψ ε (.inr x) (.inl y) := by
   rw [glueDist_comm]; apply le_glueDist_inl_inr
 
+section
 variable [Nonempty Z]
 
 private theorem glueDist_triangle_inl_inr_inr (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (x : X) (y z : Y) :
@@ -145,6 +146,8 @@ private theorem glueDist_triangle (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ)
     apply glueDist_triangle_inl_inr_inl
     simpa only [abs_sub_comm]
 
+end
+
 private theorem eq_of_glueDist_eq_zero (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (ε0 : 0 < ε) :
     ∀ p q : X ⊕ Y, glueDist Φ Ψ ε p q = 0 → p = q
   | .inl x, .inl y, h => by rw [eq_of_dist_eq_zero h]
@@ -170,7 +173,7 @@ theorem Sum.mem_uniformity_iff_glueDist (hε : 0 < ε) (s : Set ((X ⊕ Y) × (X
 `Φ p` and `Φ q`, and between `Ψ p` and `Ψ q`, coincide up to `2 ε` where `ε > 0`, one can almost
 glue the two spaces `X` and `Y` along the images of `Φ` and `Ψ`, so that `Φ p` and `Ψ p` are
 at distance `ε`. -/
-def glueMetricApprox (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (ε0 : 0 < ε)
+def glueMetricApprox [Nonempty Z] (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (ε0 : 0 < ε)
     (H : ∀ p q, |dist (Φ p) (Φ q) - dist (Ψ p) (Ψ q)| ≤ 2 * ε) : MetricSpace (X ⊕ Y) where
   dist := glueDist Φ Ψ ε
   dist_self := glueDist_self Φ Ψ ε
@@ -291,8 +294,7 @@ namespace Sigma
 of two spaces. I.e., work with sigma types instead of sum types. -/
 variable {ι : Type*} {E : ι → Type*} [∀ i, MetricSpace (E i)]
 
-open scoped Classical
-
+open Classical in
 /-- Distance on a disjoint union. There are many (noncanonical) ways to put a distance compatible
 with each factor.
 We choose a construction that works for unbounded spaces, but requires basepoints,
@@ -578,8 +580,7 @@ attribute [local instance] inductivePremetric
 def InductiveLimit (I : ∀ n, Isometry (f n)) : Type _ :=
   @SeparationQuotient _ (inductivePremetric I).toUniformSpace.toTopologicalSpace
 
-set_option autoImplicit true in
-instance : MetricSpace (InductiveLimit (f := f) I) :=
+instance {I : ∀ (n : ℕ), Isometry (f n)} : MetricSpace (InductiveLimit (f := f) I) :=
   inferInstanceAs <| MetricSpace <|
     @SeparationQuotient _ (inductivePremetric I).toUniformSpace.toTopologicalSpace
 

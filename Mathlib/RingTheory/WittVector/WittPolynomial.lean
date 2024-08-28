@@ -65,7 +65,7 @@ open Finsupp (single)
 --attribute [-simp] coe_eval₂_hom
 
 variable (p : ℕ)
-variable (R : Type*) [CommRing R] [DecidableEq R]
+variable (R : Type*) [CommRing R]
 
 /-- `wittPolynomial p R n` is the `n`-th Witt polynomial
 with respect to a prime `p` with coefficients in a commutative ring `R`.
@@ -194,7 +194,8 @@ noncomputable def xInTermsOfW [Invertible (p : R)] : ℕ → MvPolynomial ℕ R
           C ((p : R) ^ (i : ℕ)) * xInTermsOfW i ^ p ^ (n - (i : ℕ))) * C ((⅟ p : R) ^ n)
 
 theorem xInTermsOfW_eq [Invertible (p : R)] {n : ℕ} : xInTermsOfW p R n =
-    (X n - ∑ i ∈ range n, C ((p : R) ^ i) * xInTermsOfW p R i ^ p ^ (n - i)) * C ((⅟p : R) ^ n) := by
+    (X n - ∑ i ∈ range n, C ((p : R) ^ i) *
+      xInTermsOfW p R i ^ p ^ (n - i)) * C ((⅟p : R) ^ n) := by
   rw [xInTermsOfW, ← Fin.sum_univ_eq_sum_range]
 
 @[simp]
@@ -228,7 +229,7 @@ theorem xInTermsOfW_vars_aux (n : ℕ) :
     n ∈ (xInTermsOfW p ℚ n).vars ∧ (xInTermsOfW p ℚ n).vars ⊆ range (n + 1) := by
   apply Nat.strongInductionOn n; clear n
   intro n ih
-  rw [xInTermsOfW_eq, mul_comm, vars_C_mul _ (nonzero_of_invertible _),
+  rw [xInTermsOfW_eq, mul_comm, vars_C_mul _ (Invertible.ne_zero _),
     vars_sub_of_disjoint, vars_X, range_succ, insert_eq]
   on_goal 1 =>
     simp only [true_and_iff, true_or_iff, eq_self_iff_true, mem_union, mem_singleton]

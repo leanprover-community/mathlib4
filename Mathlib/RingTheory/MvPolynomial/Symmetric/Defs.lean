@@ -4,14 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hanting Zhang, Johan Commelin
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.Algebra.MvPolynomial.Rename
 import Mathlib.Algebra.MvPolynomial.CommRing
+import Mathlib.Combinatorics.Enumerative.Partition
 
 /-!
 # Symmetric Polynomials and Elementary Symmetric Polynomials
 
-This file defines symmetric `MvPolynomial`s and elementary symmetric `MvPolynomial`s.
-We also prove some basic facts about them.
+This file defines symmetric `MvPolynomial`s and the bases of elementary, complete homogeneous,
+power sum, and monomial symmetric `MvPolynomial`s. We also prove some basic facts about them.
 
 ## Main declarations
 
@@ -21,14 +21,23 @@ We also prove some basic facts about them.
 
 * `MvPolynomial.esymm`
 
+* `MvPolynomial.hsymm`
+
 * `MvPolynomial.psum`
+
+* `MvPolynomial.msymm`
 
 ## Notation
 
 + `esymm σ R n` is the `n`th elementary symmetric polynomial in `MvPolynomial σ R`.
 
++ `hsymm σ R n` is the `n`th complete homogeneous symmetric polynomial in `MvPolynomial σ R`.
+
 + `psum σ R n` is the degree-`n` power sum in `MvPolynomial σ R`, i.e. the sum of monomials
   `(X i)^n` over `i ∈ σ`.
+
++ `msymm σ R μ` is the monomial symmetric polynomial whose exponents set are the parts
+  of `μ ⊢ n` in `MvPolynomial σ R`.
 
 As in other polynomial files, we typically use the notation:
 
@@ -66,24 +75,19 @@ end Multiset
 
 namespace MvPolynomial
 
-variable {σ : Type*} {R : Type*}
-variable {τ : Type*} {S : Type*}
+variable {σ τ : Type*} {R S : Type*}
 
 /-- A `MvPolynomial φ` is symmetric if it is invariant under
 permutations of its variables by the `rename` operation -/
 def IsSymmetric [CommSemiring R] (φ : MvPolynomial σ R) : Prop :=
   ∀ e : Perm σ, rename e φ = φ
 
-variable (σ R)
-
 /-- The subalgebra of symmetric `MvPolynomial`s. -/
-def symmetricSubalgebra [CommSemiring R] : Subalgebra R (MvPolynomial σ R) where
+def symmetricSubalgebra (σ R : Type*) [CommSemiring R] : Subalgebra R (MvPolynomial σ R) where
   carrier := setOf IsSymmetric
   algebraMap_mem' r e := rename_C e r
   mul_mem' ha hb e := by rw [map_mul, ha, hb]
   add_mem' ha hb e := by rw [map_add, ha, hb]
-
-variable {σ R}
 
 @[simp]
 theorem mem_symmetricSubalgebra [CommSemiring R] (p : MvPolynomial σ R) :
@@ -157,22 +161,29 @@ def renameSymmetricSubalgebra [CommSemiring R] (e : σ ≃ τ) :
     (AlgHom.ext <| fun p => Subtype.ext <| by simp)
     (AlgHom.ext <| fun p => Subtype.ext <| by simp)
 
+variable (σ R : Type*) [CommSemiring R] [CommSemiring S] [Fintype σ] [Fintype τ]
+
 section ElementarySymmetric
 
 open Finset
 
-variable (σ R) [CommSemiring R] [CommSemiring S] [Fintype σ] [Fintype τ]
-
-/-- The `n`th elementary symmetric `MvPolynomial σ R`. -/
+/-- The `n`th elementary symmetric `MvPolynomial σ R`.
+It is the sum over all the degree n squarefree monomials in `MvPolynomial σ R`. -/
 def esymm (n : ℕ) : MvPolynomial σ R :=
   ∑ t ∈ powersetCard n univ, ∏ i ∈ t, X i
+
+/--
+`esymmPart` is the product of the symmetric polynomials `esymm μᵢ`,
+where `μ = (μ₁, μ₂, ...)` is a partition.
+-/
+def esymmPart {n : ℕ} (μ : n.Partition) : MvPolynomial σ R := (μ.parts.map (esymm σ R)).prod
 
 /-- The `n`th elementary symmetric `MvPolynomial σ R` is obtained by evaluating the
 `n`th elementary symmetric at the `Multiset` of the monomials -/
 theorem esymm_eq_multiset_esymm : esymm σ R = (univ.val.map X).esymm := by
   exact funext fun n => (esymm_map_val X _ n).symm
 
-theorem aeval_esymm_eq_multiset_esymm [Algebra R S] (f : σ → S) (n : ℕ) :
+theorem aeval_esymm_eq_multiset_esymm [Algebra R S] (n : ℕ) (f : σ → S) :
     aeval f (esymm σ R n) = (univ.val.map f).esymm n := by
   simp_rw [esymm, aeval_sum, aeval_prod, aeval_X, esymm_map_val]
 
@@ -190,6 +201,15 @@ theorem esymm_eq_sum_monomial (n : ℕ) :
 @[simp]
 theorem esymm_zero : esymm σ R 0 = 1 := by
   simp only [esymm, powersetCard_zero, sum_singleton, prod_empty]
+
+@[simp]
+theorem esymm_one : esymm σ R 1 = ∑ i, X i := by simp [esymm, powersetCard_one]
+
+theorem esymmPart_zero : esymmPart σ R (.indiscrete 0) = 1 := by simp [esymmPart]
+
+@[simp]
+theorem esymmPart_indiscrete (n : ℕ) : esymmPart σ R (.indiscrete n) = esymm σ R n := by
+  cases n <;> simp [esymmPart]
 
 theorem map_esymm (n : ℕ) (f : R →+* S) : map f (esymm σ R n) = esymm σ S n := by
   simp_rw [esymm, map_sum, map_prod, map_X]
@@ -209,7 +229,7 @@ theorem esymm_isSymmetric (n : ℕ) : IsSymmetric (esymm σ R n) := by
   intro
   rw [rename_esymm]
 
-theorem support_esymm'' (n : ℕ) [DecidableEq σ] [Nontrivial R] :
+theorem support_esymm'' [DecidableEq σ] [Nontrivial R] (n : ℕ) :
     (esymm σ R n).support =
       (powersetCard n (univ : Finset σ)).biUnion fun t =>
         (Finsupp.single (∑ i ∈ t, Finsupp.single i 1) (1 : R)).support := by
@@ -233,21 +253,19 @@ theorem support_esymm'' (n : ℕ) [DecidableEq σ] [Nontrivial R] :
       exact absurd this hst.symm
   all_goals intro x y; simp [Finsupp.support_single_disjoint]
 
-theorem support_esymm' (n : ℕ) [DecidableEq σ] [Nontrivial R] :
-    (esymm σ R n).support =
-      (powersetCard n (univ : Finset σ)).biUnion fun t => {∑ i ∈ t, Finsupp.single i 1} := by
+theorem support_esymm' [DecidableEq σ] [Nontrivial R] (n : ℕ) : (esymm σ R n).support =
+    (powersetCard n (univ : Finset σ)).biUnion fun t => {∑ i ∈ t, Finsupp.single i 1} := by
   rw [support_esymm'']
   congr
   funext
   exact Finsupp.support_single_ne_zero _ one_ne_zero
 
-theorem support_esymm (n : ℕ) [DecidableEq σ] [Nontrivial R] :
-    (esymm σ R n).support =
-      (powersetCard n (univ : Finset σ)).image fun t => ∑ i ∈ t, Finsupp.single i 1 := by
+theorem support_esymm [DecidableEq σ] [Nontrivial R] (n : ℕ) : (esymm σ R n).support =
+    (powersetCard n (univ : Finset σ)).image fun t => ∑ i ∈ t, Finsupp.single i 1 := by
   rw [support_esymm']
   exact biUnion_singleton
 
-theorem degrees_esymm [Nontrivial R] (n : ℕ) (hpos : 0 < n) (hn : n ≤ Fintype.card σ) :
+theorem degrees_esymm [Nontrivial R] {n : ℕ} (hpos : 0 < n) (hn : n ≤ Fintype.card σ) :
     (esymm σ R n).degrees = (univ : Finset σ).val := by
   classical
     have :
@@ -268,25 +286,71 @@ theorem degrees_esymm [Nontrivial R] (n : ℕ) (hpos : 0 < n) (hn : n ≤ Fintyp
 
 end ElementarySymmetric
 
+section CompleteHomogeneousSymmetric
+
+open Finset Multiset Sym
+
+variable [DecidableEq σ] [DecidableEq τ]
+
+/-- The `n`th complete homogeneous symmetric `MvPolynomial σ R`.
+It is the sum over all the degree n monomials in `MvPolynomial σ R`. -/
+def hsymm (n : ℕ) : MvPolynomial σ R := ∑ s : Sym σ n, (s.1.map X).prod
+
+/-- `hsymmPart` is the product of the symmetric polynomials `hsymm μᵢ`,
+where `μ = (μ₁, μ₂, ...)` is a partition. -/
+def hsymmPart {n : ℕ} (μ : n.Partition) : MvPolynomial σ R := (μ.parts.map (hsymm σ R)).prod
+
+@[simp]
+theorem hsymm_zero : hsymm σ R 0 = 1 := by simp [hsymm, eq_nil_of_card_zero]
+
+@[simp]
+theorem hsymm_one : hsymm σ R 1 = ∑ i, X i := by
+  symm
+  apply Fintype.sum_equiv oneEquiv
+  simp only [oneEquiv_apply, Multiset.map_singleton, Multiset.prod_singleton, implies_true]
+
+theorem hsymmPart_zero : hsymmPart σ R (.indiscrete 0) = 1 := by simp [hsymmPart]
+
+@[simp]
+theorem hsymmPart_indiscrete (n : ℕ) : hsymmPart σ R (.indiscrete n) = hsymm σ R n := by
+  cases n <;> simp [hsymmPart]
+
+theorem map_hsymm (n : ℕ) (f : R →+* S) : map f (hsymm σ R n) = hsymm σ S n := by
+  simp [hsymm, ← Multiset.prod_hom']
+
+theorem rename_hsymm (n : ℕ) (e : σ ≃ τ) : rename e (hsymm σ R n) = hsymm τ R n := by
+  simp_rw [hsymm, map_sum, ← prod_hom', rename_X]
+  apply Fintype.sum_equiv (equivCongr e)
+  simp
+
+theorem hsymm_isSymmetric (n : ℕ) : IsSymmetric (hsymm σ R n) := rename_hsymm _ _ n
+
+end CompleteHomogeneousSymmetric
+
 section PowerSum
 
 open Finset
 
-variable (σ R) [CommSemiring R] [Fintype σ] [Fintype τ]
-
-/-- The degree-`n` power sum -/
+/-- The degree-`n` power sum symmetric `MvPolynomial σ R`.
+It is the sum over all the `n`-th powers of the variables. -/
 def psum (n : ℕ) : MvPolynomial σ R := ∑ i, X i ^ n
 
-lemma psum_def (n : ℕ) : psum σ R n = ∑ i, X i ^ n := rfl
+/-- `psumPart` is the product of the symmetric polynomials `psum μᵢ`,
+where `μ = (μ₁, μ₂, ...)` is a partition. -/
+def psumPart {n : ℕ} (μ : n.Partition) : MvPolynomial σ R := (μ.parts.map (psum σ R)).prod
 
 @[simp]
-theorem psum_zero : psum σ R 0 = Fintype.card σ := by
-  simp only [psum, _root_.pow_zero, ← cast_card]
-  exact rfl
+theorem psum_zero : psum σ R 0 = Fintype.card σ := by simp [psum]
 
 @[simp]
-theorem psum_one : psum σ R 1 = ∑ i, X i := by
-  simp only [psum, _root_.pow_one]
+theorem psum_one : psum σ R 1 = ∑ i, X i := by simp [psum]
+
+@[simp]
+theorem psumPart_zero : psumPart σ R (.indiscrete 0) = 1 := by simp [psumPart]
+
+@[simp]
+theorem psumPart_indiscrete {n : ℕ} (npos : n ≠ 0) :
+    psumPart σ R (.indiscrete n) = psum σ R n := by simp [psumPart, npos]
 
 @[simp]
 theorem rename_psum (n : ℕ) (e : σ ≃ τ) : rename e (psum σ R n) = psum τ R n := by
@@ -295,5 +359,49 @@ theorem rename_psum (n : ℕ) (e : σ ≃ τ) : rename e (psum σ R n) = psum τ
 theorem psum_isSymmetric (n : ℕ) : IsSymmetric (psum σ R n) := rename_psum _ _ n
 
 end PowerSum
+
+section MonomialSymmetric
+
+variable [DecidableEq σ] [DecidableEq τ] {n : ℕ}
+
+/-- The monomial symmetric `MvPolynomial σ R` with exponent set μ.
+It is the sum over all the monomials in `MvPolynomial σ R` such that
+the multiset of exponents is equal to the multiset of parts of μ. -/
+def msymm (μ : n.Partition) : MvPolynomial σ R :=
+  ∑ s : {a : Sym σ n // .ofSym a = μ}, (s.1.1.map X).prod
+
+@[simp]
+theorem msymm_zero : msymm σ R (.indiscrete 0) = 1 := by
+  rw [msymm, Fintype.sum_subsingleton _ ⟨(Sym.nil : Sym σ 0), rfl⟩]
+  simp
+
+@[simp]
+theorem msymm_one : msymm σ R (.indiscrete 1) = ∑ i, X i := by
+  have : (fun (x : Sym σ 1) ↦ x ∈ Set.univ) =
+      (fun x ↦ Nat.Partition.ofSym x = Nat.Partition.indiscrete 1) := by
+    simp_rw [Set.mem_univ, Nat.Partition.ofSym_one]
+  symm
+  rw [Fintype.sum_equiv (Equiv.trans Sym.oneEquiv (Equiv.Set.univ (Sym σ 1)).symm)
+    _ (fun s ↦ (s.1.1.map X).prod)]
+  · apply Fintype.sum_equiv (Equiv.subtypeEquivProp this)
+    intro x
+    congr
+  · intro x
+    rw [← Multiset.prod_singleton (X x), ← Multiset.map_singleton]
+    congr
+
+@[simp]
+theorem rename_msymm (μ : n.Partition) (e : σ ≃ τ) :
+    rename e (msymm σ R μ) = msymm τ R μ := by
+  rw [msymm, map_sum]
+  apply Fintype.sum_equiv (Nat.Partition.ofSymShapeEquiv μ e)
+  intro
+  rw [← Multiset.prod_hom, Multiset.map_map, Nat.Partition.ofSymShapeEquiv]
+  simp
+
+theorem msymm_isSymmetric (μ : n.Partition) : IsSymmetric (msymm σ R μ) :=
+  rename_msymm _ _ μ
+
+end MonomialSymmetric
 
 end MvPolynomial

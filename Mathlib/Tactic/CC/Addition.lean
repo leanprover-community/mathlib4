@@ -495,7 +495,7 @@ partial def mkProof (lhs rhs : Expr) (H : EntryExpr) (heqProofs : Bool) : CCM Ex
         getHEqProof a b >>= liftOption
       else
         -- TODO(Leo): the following code assumes R is homogeneous.
-        -- We should add support arbitrary heterogenous reflexive relations.
+        -- We should add support arbitrary heterogeneous reflexive relations.
         getEqProof a b >>= liftOption >>= fun aEqb => liftM (liftFromEq R aEqb)
     let aRbEqTrue ← mkEqTrue aRb
     if flip then
@@ -1192,7 +1192,7 @@ is already processed by `internalizeAC`, this operation does nothing. -/
 def internalizeAC (e : Expr) (parent? : Option Expr) : CCM Unit := do
   let some op ← isAC e | return
   let parentOp? ← parent?.casesOn (pure none) isAC
-  if parentOp?.any (op == ·) then return
+  if parentOp?.any (· == op) then return
 
   unless (← internalizeACVar e) do return
 

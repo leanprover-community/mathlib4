@@ -549,7 +549,7 @@ inductive PreEnvelGroupRel' (R : Type u) [Rack R] : PreEnvelGroup R → PreEnvel
   | assoc (a b c : PreEnvelGroup R) : PreEnvelGroupRel' R (mul (mul a b) c) (mul a (mul b c))
   | one_mul (a : PreEnvelGroup R) : PreEnvelGroupRel' R (mul unit a) a
   | mul_one (a : PreEnvelGroup R) : PreEnvelGroupRel' R (mul a unit) a
-  | mul_left_inv (a : PreEnvelGroup R) : PreEnvelGroupRel' R (mul (inv a) a) unit
+  | inv_mul_cancel (a : PreEnvelGroup R) : PreEnvelGroupRel' R (mul (inv a) a) unit
   | act_incl (x y : R) :
     PreEnvelGroupRel' R (mul (mul (incl x) (incl y)) (inv (incl x))) (incl (x ◃ y))
 
@@ -611,8 +611,8 @@ instance (R : Type*) [Rack R] : DivInvMonoid (EnvelGroup R) where
   mul_one a := Quotient.inductionOn a fun a => Quotient.sound (PreEnvelGroupRel'.mul_one a).rel
 
 instance (R : Type*) [Rack R] : Group (EnvelGroup R) :=
-  { mul_left_inv := fun a =>
-      Quotient.inductionOn a fun a => Quotient.sound (PreEnvelGroupRel'.mul_left_inv a).rel }
+  { inv_mul_cancel := fun a =>
+      Quotient.inductionOn a fun a => Quotient.sound (PreEnvelGroupRel'.inv_mul_cancel a).rel }
 
 instance EnvelGroup.inhabited (R : Type*) [Rack R] : Inhabited (EnvelGroup R) :=
   ⟨1⟩
@@ -652,7 +652,7 @@ theorem well_def {R : Type*} [Rack R] {G : Type*} [Group G] (f : R →◃ Quandl
   | _, _, assoc a b c => by apply mul_assoc
   | _, _, PreEnvelGroupRel'.one_mul a => by simp [toEnvelGroup.mapAux]
   | _, _, PreEnvelGroupRel'.mul_one a => by simp [toEnvelGroup.mapAux]
-  | _, _, PreEnvelGroupRel'.mul_left_inv a => by simp [toEnvelGroup.mapAux]
+  | _, _, PreEnvelGroupRel'.inv_mul_cancel a => by simp [toEnvelGroup.mapAux]
   | _, _, act_incl x y => by simp [toEnvelGroup.mapAux]
 
 end toEnvelGroup.mapAux
