@@ -248,7 +248,9 @@ def AlgHom.restrictNormalAux [h : Normal F E] :
   map_mul' x y := Subtype.ext <| by simp
   commutes' x := Subtype.ext (ϕ.commutes x)
 
-/-- Restrict algebra homomorphism to normal subfield -/
+/-- Restrict algebra homomorphism to normal subfield
+[Stacks: Lemma 0BME Part 1](https://stacks.math.columbia.edu/tag/0BME)
+-/
 def AlgHom.restrictNormal [Normal F E] : E →ₐ[F] E :=
   ((AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F E K₂)).symm.toAlgHom.comp
         (ϕ.restrictNormalAux E)).comp
@@ -322,7 +324,9 @@ variable (E : Type*) [Field E] [Algebra F E] [Algebra K₁ E] [Algebra K₂ E] [
   [IsScalarTower F K₂ E]
 
 /-- If `E/Kᵢ/F` are towers of fields with `E/F` normal then we can lift
-  an algebra homomorphism `ϕ : K₁ →ₐ[F] K₂` to `ϕ.liftNormal E : E →ₐ[F] E`. -/
+  an algebra homomorphism `ϕ : K₁ →ₐ[F] K₂` to `ϕ.liftNormal E : E →ₐ[F] E`.
+[Stacks: Lemma 0BME Part 2](https://stacks.math.columbia.edu/tag/0BME)
+-/
 noncomputable def AlgHom.liftNormal [h : Normal F E] : E →ₐ[F] E :=
   @AlgHom.restrictScalars F K₁ E E _ _ _ _ _ _
       ((IsScalarTower.toAlgHom F K₂ E).comp ϕ).toRingHom.toAlgebra _ _ _ _ <|
