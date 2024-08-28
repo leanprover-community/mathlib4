@@ -27,7 +27,7 @@ jobs:
       #         /repos/${{ github.repository_owner }}/${{ github.event.repository.name }}/pulls/${{ github.event.pull_request.number }}/reviews/${{ github.event.review.id }}/reactions \
       #         -f "content=rocket"
       #   env:
-      #       GH_TOKEN: ${{ secrets.NIGHTLY_TESTING }}
+      #       GH_TOKEN: ${{ secrets.BOT_FIX_STYLE_TOKEN }}
 
       - name: cleanup
         if: steps.user_permission.outputs.require-result == 'true'
