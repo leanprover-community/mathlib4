@@ -1,5 +1,6 @@
 import Mathlib.Tactic.Linter.Lint
 import Mathlib.Tactic.ToAdditive
+import Mathlib.Order.SetNotation
 
 -- TODO: the linter also runs on the #guard_msg, so disable it once
 -- See https://leanprover.zulipchat.com/#narrow/stream/348111-std4/topic/.23guard_msgs.20doesn't.20silence.20warnings/near/423534679
@@ -86,6 +87,126 @@ note: this linter can be disabled with `set_option linter.cdot false`
 #guard_msgs in
 set_option linter.cdot true in
 example : Add Nat where add := (. + ·)
+
+set_option linter.dollarSyntax false in
+/--
+warning: Please use '<|' instead of '$' for the pipe operator.
+note: this linter can be disabled with `set_option linter.dollarSyntax false`
+---
+warning: Please use '<|' instead of '$' for the pipe operator.
+note: this linter can be disabled with `set_option linter.dollarSyntax false`
+-/
+#guard_msgs in
+set_option linter.dollarSyntax true in
+attribute [instance] Int.add in
+instance (f g : Nat → Nat) : Inhabited Nat where
+  default := by
+    · have := 0
+      · have : Nat := f $ g $ 0
+        · exact 0
+
+section lambdaSyntaxLinter
+
+set_option linter.style.lambdaSyntax false
+
+/--
+warning: Please use 'fun' and not 'λ' to define anonymous functions.
+The 'λ' syntax is deprecated in mathlib4.
+note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
+-/
+#guard_msgs in
+set_option linter.style.lambdaSyntax true in
+example : ℕ → ℕ := λ _ ↦ 0
+
+/--
+warning: Please use 'fun' and not 'λ' to define anonymous functions.
+The 'λ' syntax is deprecated in mathlib4.
+note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
+-/
+#guard_msgs in
+set_option linter.style.lambdaSyntax true in
+def foo : Bool := by
+  let _f : ℕ → ℕ := λ _ ↦ 0
+  exact true
+
+example : ℕ → ℕ := fun n ↦ n - 1
+
+/--
+warning: Please use 'fun' and not 'λ' to define anonymous functions.
+The 'λ' syntax is deprecated in mathlib4.
+note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
+-/
+#guard_msgs in
+set_option linter.style.lambdaSyntax true in
+example : ℕ → ℕ := by exact λ n ↦ 3 * n + 1
+
+/--
+warning: declaration uses 'sorry'
+---
+warning: Please use 'fun' and not 'λ' to define anonymous functions.
+The 'λ' syntax is deprecated in mathlib4.
+note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
+---
+warning: Please use 'fun' and not 'λ' to define anonymous functions.
+The 'λ' syntax is deprecated in mathlib4.
+note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
+---
+warning: Please use 'fun' and not 'λ' to define anonymous functions.
+The 'λ' syntax is deprecated in mathlib4.
+note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
+-/
+#guard_msgs in
+set_option linter.style.lambdaSyntax true in
+example : ℕ → ℕ → ℕ → ℕ := by
+  have (n : ℕ) : True := trivial
+  have : (Set.univ : Set ℕ) = ⋃ (i : ℕ), (Set.iUnion λ j ↦ ({0, j} : Set ℕ)) := sorry
+  have : ∃ m : ℕ, ⋃ i : ℕ, (Set.univ : Set ℕ) = ∅ := sorry
+  exact λ _a ↦ fun _b ↦ λ _c ↦ 0
+
+/--
+warning: Please use 'fun' and not 'λ' to define anonymous functions.
+The 'λ' syntax is deprecated in mathlib4.
+note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
+---
+warning: Please use 'fun' and not 'λ' to define anonymous functions.
+The 'λ' syntax is deprecated in mathlib4.
+note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
+---
+warning: Please use 'fun' and not 'λ' to define anonymous functions.
+The 'λ' syntax is deprecated in mathlib4.
+note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
+-/
+#guard_msgs in
+set_option linter.style.lambdaSyntax true in
+example : True := by
+  have : 0 = 0 ∧ 0 = 0 ∧ 1 + 3 = 4 := by
+    refine ⟨by trivial, by
+      let _f := λ n : ℕ ↦ 0;
+      have : ℕ := by
+        · -- comment
+          · have := λ k : ℕ ↦ -5
+            · exact 0
+      refine ⟨by trivial, have := λ k : ℕ ↦ -5; by simp⟩
+      ⟩
+  trivial
+
+-- Code such as the following would require walking the infotree instead:
+-- the inner set_option is ignore (in either direction).
+-- As this seems unlikely to occur by accident and its use is dubious, we don't worry about this.
+/--
+warning: Please use 'fun' and not 'λ' to define anonymous functions.
+The 'λ' syntax is deprecated in mathlib4.
+note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
+-/
+#guard_msgs in
+set_option linter.style.lambdaSyntax true in
+example : ℕ → ℕ := set_option linter.style.lambdaSyntax false in λ _ ↦ 0
+
+set_option linter.style.lambdaSyntax false
+#guard_msgs in
+example : ℕ → ℕ := set_option linter.style.lambdaSyntax true in λ _ ↦ 0
+
+end lambdaSyntaxLinter
 
 set_option linter.dollarSyntax false in
 /--

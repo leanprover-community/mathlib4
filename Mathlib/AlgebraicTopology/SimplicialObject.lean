@@ -5,7 +5,7 @@ Authors: Johan Commelin, Scott Morrison, Adam Topaz
 -/
 import Mathlib.AlgebraicTopology.SimplexCategory
 import Mathlib.CategoryTheory.Comma.Arrow
-import Mathlib.CategoryTheory.Limits.FunctorCategory
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Opposites
 
 /-!

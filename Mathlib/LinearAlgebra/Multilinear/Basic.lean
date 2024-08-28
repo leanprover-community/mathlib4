@@ -797,7 +797,7 @@ theorem compMultilinearMap_apply (g : M₂ →ₗ[R] M₃) (f : MultilinearMap R
 @[simp]
 theorem subtype_compMultilinearMap_codRestrict (f : MultilinearMap R M₁ M₂) (p : Submodule R M₂)
     (h) : p.subtype.compMultilinearMap (f.codRestrict p h) = f :=
-  MultilinearMap.ext fun _ => rfl
+  rfl
 
 /-- The multilinear version of `LinearMap.comp_codRestrict` -/
 @[simp]
@@ -805,7 +805,7 @@ theorem compMultilinearMap_codRestrict (g : M₂ →ₗ[R] M₃) (f : Multilinea
     (p : Submodule R M₃) (h) :
     (g.codRestrict p h).compMultilinearMap f =
       (g.compMultilinearMap f).codRestrict p fun v => h (f v) :=
-  MultilinearMap.ext fun _ => rfl
+  rfl
 
 variable {ι₁ ι₂ : Type*}
 

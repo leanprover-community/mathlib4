@@ -686,6 +686,10 @@ theorem iInter_iInter_eq_or_left {b : β} {p : β → Prop} {s : ∀ x : β, x =
     ⋂ (x) (h), s x h = s b (Or.inl rfl) ∩ ⋂ (x) (h : p x), s x (Or.inr h) := by
   simp only [iInter_or, iInter_inter_distrib, iInter_iInter_eq_left]
 
+lemma iUnion_sum {s : α ⊕ β → Set γ} : ⋃ x, s x = (⋃ x, s (.inl x)) ∪ ⋃ x, s (.inr x) := iSup_sum
+
+lemma iInter_sum {s : α ⊕ β → Set γ} : ⋂ x, s x = (⋂ x, s (.inl x)) ∩ ⋂ x, s (.inr x) := iInf_sum
+
 /-! ### Bounded unions and intersections -/
 
 

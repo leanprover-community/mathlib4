@@ -41,9 +41,9 @@ export WfDvdMonoid (wellFounded_dvdNotUnit)
 
 -- see Note [lower instance priority]
 instance (priority := 100) IsNoetherianRing.wfDvdMonoid [CommRing α] [IsDomain α]
-    [IsNoetherianRing α] : WfDvdMonoid α :=
+    [h : IsNoetherianRing α] : WfDvdMonoid α :=
   ⟨by
-    convert InvImage.wf (fun a => Ideal.span ({a} : Set α)) (wellFounded_submodule_gt _ _)
+    convert InvImage.wf (fun a => Ideal.span ({a} : Set α)) h.wf
     ext
     exact Ideal.span_singleton_lt_span_singleton.symm⟩
 
