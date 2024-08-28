@@ -6,6 +6,7 @@ Authors: Michael Rothgang
 
 import Batteries.Data.String.Matcher
 import Mathlib.Data.Nat.Notation
+import Batteries.Lean.HashSet
 
 /-!
 ## Text-based linters
@@ -20,6 +21,7 @@ For now, this only contains linters checking
 - if the string "adaptation note" is used instead of the command #adaptation_note
 - lines are at most 100 characters long (except for URLs)
 - files are at most 1500 lines long (unless specifically allowed).
+- unicode characters that aren't used in math or in Mathlib
 
 For historic reasons, some of these checks are still written in a Python script `lint-style.py`:
 these are gradually being rewritten in Lean.
@@ -64,6 +66,8 @@ inductive StyleError where
   to grow up to this limit.
   For diagnostic purposes, this may also contain a previous size limit, which is now exceeded. -/
   | fileTooLong (numberLines : ℕ) (newSizeLimit : ℕ) (previousLimit : Option ℕ) : StyleError
+  /-- A unicode character was used that isn't recommended -/
+  | newUnicode (c : Char)
 deriving BEq
 
 /-- How to format style errors -/
@@ -103,6 +107,8 @@ def StyleError.errorMessage (err : StyleError) (style : ErrorFormat) : String :=
     | ErrorFormat.exceptionsFile =>
         s!"{sizeLimit} file contains {currentSize} lines, try to split it up"
     | ErrorFormat.humanReadable => s!"file contains {currentSize} lines, try to split it up"
+  | StyleError.newUnicode c =>
+      s!"Unicode character {c} is not recommended. Consider adding it to the whitelist."
 
 /-- The error code for a given style error. Keep this in sync with `parse?_errorContext` below! -/
 -- FUTURE: we're matching the old codes in `lint-style.py` for compatibility;
@@ -114,6 +120,7 @@ def StyleError.errorCode (err : StyleError) : String := match err with
   | StyleError.broadImport _ => "ERR_IMP"
   | StyleError.lineLength _ => "ERR_LIN"
   | StyleError.fileTooLong _ _ _ => "ERR_NUM_LIN"
+  | StyleError.newUnicode _ => "NO_ERR_CODE_AVAILABLE"
 
 /-- Context for a style error: the actual error, the line number in the file we're reading
 and the path to the file. -/
@@ -380,9 +387,43 @@ def checkFileLength (lines : Array String) (existingLimit : Option ℕ) : Option
 
 end
 
+
+section unicodeLinter
+
+local instance : Hashable Char where
+  hash c := c.val.toUInt64
+
+-- TODO order and make complete!!!
+def unicodeWhitelist : Lean.HashSet Char := Lean.HashSet.ofList $ String.toList "
+Š≰⊈µ⋮ỳýì™⥥▼°𝓖𝔣и⅓ầ≣⇘č⚠чᴜᶹᵧ⋁´ᴄᴮᶻꜰßᴢᴏᴀⱽø𝐓ꜱᵋ½ᴰ⁼ɴÁꟴꞯăᶿᴶʟʜ𐞥ᵟ\u200bʙΒᵪᵝᵩᵘʳᵦʲᴺᴊᴛᴡᴼᴠ𝔇ɪ̀ᴿᵡᴱᴇоᴍʀᵂᴅᴷᴾɢʏᴵᵠᴘ−₌ĝᵨᴋᵞ⟍⁸н◥◹⁵◢
+◿ᶥ𝕋⟋⁹ńаИ⌟ł⊸₍ê′₎⁽ś⁾↻𝐒óŽ️№Łᴳ⁷𝔮̂▽꙳⟵в＼\u200c
+／æćà↠≱𝓦𝑹₉⁴⁶𝔽ʰ∖ř≟𝑳∋ᵗ—⊛É𝒵𝕌𝒅∤³⊃↟↘△↭∇𝓓ôᵏ¥𝓚𝔭𝓥𝕀𝓣𝔹┌--'
+⇉’◫ç⋈ïōš‼∥èℋő∯－ℐ𝕄ᵛ⊙𝓒ü⚬𝓑ℑ𝒥𝒯ℰ⍟𝓡ℜυ𝒫íò§Č∼𝓐ʷˡ𝔗𝒪├𝒱□✶ʸ⋊𝒄♩±𝒟†𝔻✝ᴹ𝒞⊚…𝒴ϖ₇↿–ä⊇𝐞ᴬ≼ᵍ∮₋𝔠↗⁄￢─“”𝒮𝕆áᵉ↾ᵁᴸ⩿⇔𝕝∐𝕊²⇒◃ⱼ
+⊨Ι⤳𝔼ℳₒ⨿𝓢Θⁱ𝓜○⧏⋯𝒳ₕ𝖣⬝ᵣ↓⇨ᘁ⟂⊻⊼⨯ₑ♯≺∠⨍₈∗⋖⊞ᴴₚ⨳∆⊂ᗮ∙₆ ⟹⋀⁺⌈⌉ᵀ∡𝕎𝓞ℙ⨂↥𝒢⅟ₖ│⊣«»𝟭ℓⁿ₅ℵℬ⨁𝓕ξ≈ᵇ≌⌊⌋ᵤ⟯⟮ℍ𝔸▷𝓘⊕𝓟≡ₓ◁ΛΔ𝕂
+√𝓤⁰ᵃ𝒰ϕ𝔖⋆Ψ↪öℱλ≪Σ⋂Π⟪é⟫⁆⁅ëΦ⨅ₜ⟦⟧ℒˣ‹›~ζ&θχ⨆⇑⧸⦃⦄∉₊⊢ₘᵈᵢₛˢ𝒜ₙᶜᵥ⋃ρ₄%∅ψ∪η⊔Ωᶠ∨∣ₐ∏⊓ℚ≅ᵖω𝟙ᵐ⊥Γτ⋙κ⊗¬∩▸ν⊤∫∂ᵒ∑ℂ\\
+∞δ∘≥𝓝⥤⊆↑ℤ≃ₗε∧σγ∃×¹79π6⁻8₃$5≠≫φ•⟶!4J↦‖₀↔𝕜ℕ3QZ^ℝYV;ι?μ≤K∈∀\"β←+W·<UX|@⟩⟨₁G₂*B→2H>D01OjNαz{}kEP/#'
+LTRAFqIMCw-][S`x,=vy()bg:.hdufcp\n
+ml_srantoie
+"
+
+/-- Lint a collection of input strings if one of them contains an unnecessarily broad import. -/
+def unicodeLinter : TextbasedLinter := fun lines ↦ Id.run do
+  let mut errors : Array (StyleError × ℕ) := Array.mkEmpty 0
+  let mut lineNumber := 1
+  for line in lines do
+    let badChars := line.toList.filter (fun c => !unicodeWhitelist.contains c)
+    if badChars.length > 0 then
+      let newErrors : Array (StyleError × ℕ) :=
+        badChars.toArray.map fun c ↦ (StyleError.newUnicode c, lineNumber)
+      errors := errors.append newErrors
+    lineNumber := lineNumber + 1
+  return errors
+
+end unicodeLinter
+
 /-- All text-based linters registered in this file. -/
 def allLinters : Array TextbasedLinter := #[
-    copyrightHeaderLinter, adaptationNoteLinter, broadImportsLinter, lineLengthLinter
+    copyrightHeaderLinter, adaptationNoteLinter, broadImportsLinter, lineLengthLinter, unicodeLinter
   ]
 
 /-- Controls what kind of output this programme produces. -/
