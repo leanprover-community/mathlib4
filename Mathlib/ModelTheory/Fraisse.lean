@@ -519,17 +519,17 @@ theorem system_eq {n} {m : Fin (n+1)} :
     ((init_system K_fraisse (n+1)).2 m).1 = system K_fraisse m :=
   sorry
 
-noncomputable def maps_system {m n : ℕ} (h : m ≤ n): system K_fraisse m ↪[L] system K_fraisse n :=
+noncomputable def maps_system (m n : ℕ) (h : m ≤ n): system K_fraisse m ↪[L] system K_fraisse n :=
   sorry
 
 theorem transitive_maps_system {m n k : ℕ} (h : m ≤ n) (h' : n ≤ k) :
-    (maps_system K_fraisse h').comp (maps_system K_fraisse h) =
-      maps_system K_fraisse (h.trans h') := by
+    (maps_system K_fraisse _ _ h').comp (maps_system K_fraisse h) =
+      maps_system K_fraisse _ _ (h.trans h') := by
   sorry
 
 theorem all_fgequiv_extend {m : ℕ} : ∀ f : L.FGEquiv (system _ m) (system _ m),
     ∀ x : ↑(system K_fraisse m), ∃ n, ∃ h : m ≤ n, ∃ g : (system _ n) ≃ₚ[L] (system _ n),
-      maps_system _ h x ∈ g.dom ∧ f.val.map (maps_system K_fraisse h) ≤ g :=
+      maps_system _ _ _ h x ∈ g.dom ∧ f.val.map (maps_system K_fraisse _ _ h) ≤ g :=
   sorry
 
 theorem contains_K : ∀ M ∈ K, ∃ n, Nonempty (M ↪[L] system K_fraisse n) :=
@@ -542,12 +542,34 @@ theorem exists_fraisse_limit : ∃ M : Bundled.{w} L.Structure, ∃ _ : Countabl
 
   let _ : (i : ℕ) → L.Structure ((Bundled.α ∘ Subtype.val ∘ system K_fraisse) i) :=
     fun i => Bundled.str _
+  have _ : DirectedSystem (Bundled.α ∘ Subtype.val ∘ system K_fraisse)
+      fun i j h ↦ ⇑(maps_system K_fraisse i j h) :=
+    sorry
 
-  let M := DirectLimit (ι := ℕ) (L := L) (Bundled.α ∘ Subtype.val ∘ system K_fraisse)
+  let M := DirectLimit (L := L) (Bundled.α ∘ Subtype.val ∘ system K_fraisse) (maps_system K_fraisse)
+  use ⟨M, DirectLimit.instStructureDirectLimit ..⟩
+  have M_c : Countable M := by
+    rw [←Structure.cg_iff_countable (L := L)]
+    apply DirectLimit.cg
+    simp [Function.comp_apply, Structure.cg_of_countable, implies_true]
+  use M_c
+  refine ⟨?_, ?_⟩
+  · sorry
+  · rw [age_directLimit]
+    apply Set.ext
+    intro S
+    rw [mem_iUnion]
+    refine ⟨?_, ?_⟩
+    · rintro ⟨i, S_in_age⟩
+      exact K_fraisse.hereditary ((Subtype.val ∘ system K_fraisse) i)
+        (by simp only [Function.comp_apply, Subtype.coe_prop]) S_in_age
+    · intro S_in_K
+      let ⟨n, ⟨inc_S⟩⟩ := contains_K K_fraisse S S_in_K
+      use n
+      simp only [age, Function.comp_apply, mem_setOf_eq]
+      refine ⟨IsFraisse.FG S S_in_K, ⟨inc_S⟩⟩
 
 
-  sorry
-  
 end Language
 
 end FirstOrder
