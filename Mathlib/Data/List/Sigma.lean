@@ -250,7 +250,7 @@ theorem lookupAll_eq_nil {a : α} :
     by_cases h : a = a'
     · subst a'
       simp only [lookupAll_cons_eq, mem_cons, Sigma.mk.inj_iff, heq_eq_eq, true_and, not_or,
-        false_iff, not_forall, not_and, not_not]
+        false_iff, not_forall, not_and, not_not, reduceCtorEq]
       use b
       simp
     · simp [h, lookupAll_eq_nil]

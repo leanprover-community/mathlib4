@@ -222,7 +222,7 @@ theorem peval_polyOfInterest' (n : ℕ) (x y : 𝕎 k) :
   rw [peval_polyOfInterest]
   have : (p : k) = 0 := CharP.cast_eq_zero k p
   simp only [this, Nat.cast_pow, ne_eq, add_eq_zero, and_false, zero_pow, zero_mul, add_zero,
-    not_false_eq_true]
+    not_false_eq_true, reduceCtorEq]
   have sum_zero_pow_mul_pow_p (y : 𝕎 k) : ∑ x ∈ range (n + 1 + 1),
       (0 : k) ^ x * y.coeff x ^ p ^ (n + 1 - x) = y.coeff 0 ^ p ^ (n + 1) := by
     rw [Finset.sum_eq_single_of_mem 0] <;> simp (config := { contextual := true })

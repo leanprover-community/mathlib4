@@ -361,7 +361,7 @@ theorem Chain'.cons_of_le [LinearOrder α] {a : α} {as m : List α}
     apply hm.cons
     cases as with
     | nil =>
-      simp only [le_iff_lt_or_eq, or_false] at hmas
+      simp only [le_iff_lt_or_eq, reduceCtorEq, or_false] at hmas
       exact (List.Lex.not_nil_right (·<·) _ hmas).elim
     | cons a' as =>
       rw [List.chain'_cons] at ha

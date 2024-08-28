@@ -586,7 +586,7 @@ theorem sum_map_count_dedup_filter_eq_countP (p : α → Bool) (l : List α) :
         obtain ⟨a', ha'⟩ := List.mem_map.1 hn
         split_ifs at ha' with ha
         · simp only [ha.symm, mem_filter, mem_dedup, find?, mem_cons, true_or, hp,
-            and_false, false_and] at ha'
+            and_false, false_and, reduceCtorEq] at ha'
         · exact ha'.2.symm
 
 theorem sum_map_count_dedup_eq_length (l : List α) :
