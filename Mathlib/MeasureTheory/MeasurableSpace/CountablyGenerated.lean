@@ -89,7 +89,7 @@ lemma generateFrom_natGeneratingSequence (α : Type*) [m : MeasurableSpace α]
 
 lemma measurableSet_natGeneratingSequence [MeasurableSpace α] [CountablyGenerated α] (n : ℕ) :
     MeasurableSet (natGeneratingSequence α n) :=
-  measurableSet_countableGeneratingSet $ Set.enumerateCountable_mem _
+  measurableSet_countableGeneratingSet <| Set.enumerateCountable_mem _
     empty_mem_countableGeneratingSet n
 
 theorem CountablyGenerated.comap [m : MeasurableSpace β] [h : CountablyGenerated β] (f : α → β) :
@@ -159,7 +159,7 @@ theorem separating_of_generateFrom (S : Set (Set α))
   letI := generateFrom S
   intros x y hxy
   rw [← forall_generateFrom_mem_iff_mem_iff] at hxy
-  exact separatesPoints_def $ fun _ hs ↦ (hxy _ hs).mp
+  exact separatesPoints_def <| fun _ hs ↦ (hxy _ hs).mp
 
 theorem SeparatesPoints.mono {m m' : MeasurableSpace α} [hsep : @SeparatesPoints _ m] (h : m ≤ m') :
     @SeparatesPoints _ m' := @SeparatesPoints.mk _ m' fun _ _ hxy ↦
@@ -194,12 +194,12 @@ theorem CountablySeparated.subtype_iff [MeasurableSpace α] {s : Set α} :
 
 instance (priority := 100) Subtype.separatesPoints [MeasurableSpace α] [h : SeparatesPoints α]
     {s : Set α} : SeparatesPoints s :=
-  ⟨fun _ _ hxy ↦ Subtype.val_injective $ h.1 _ _ fun _ ht ↦ hxy _ $ measurable_subtype_coe ht⟩
+  ⟨fun _ _ hxy ↦ Subtype.val_injective <| h.1 _ _ fun _ ht ↦ hxy _ <| measurable_subtype_coe ht⟩
 
 instance (priority := 100) Subtype.countablySeparated [MeasurableSpace α]
     [h : CountablySeparated α] {s : Set α} : CountablySeparated s := by
   rw [CountablySeparated.subtype_iff]
-  exact h.countably_separated.mono (fun s ↦ id) $ subset_univ _
+  exact h.countably_separated.mono (fun s ↦ id) <| subset_univ _
 
 instance (priority := 100) separatesPoints_of_measurableSingletonClass [MeasurableSpace α]
     [MeasurableSingletonClass α] : SeparatesPoints α := by
@@ -235,7 +235,7 @@ theorem exists_countablyGenerated_le_of_countablySeparated [m : MeasurableSpace 
   refine ⟨generateFrom b, ?_, ?_, generateFrom_le hbm⟩
   · use b
   rw [@separatesPoints_iff]
-  exact fun x y hxy ↦ hb _ trivial _ trivial fun _ hs ↦ hxy _ $ measurableSet_generateFrom hs
+  exact fun x y hxy ↦ hb _ trivial _ trivial fun _ hs ↦ hxy _ <| measurableSet_generateFrom hs
 
 open Function
 
@@ -270,9 +270,9 @@ the Cantor Space. -/
 theorem measurableEquiv_nat_bool_of_countablyGenerated [MeasurableSpace α]
     [CountablyGenerated α] [SeparatesPoints α] :
     ∃ s : Set (ℕ → Bool), Nonempty (α ≃ᵐ s) := by
-  use range (mapNatBool α), Equiv.ofInjective _ $
+  use range (mapNatBool α), Equiv.ofInjective _ <|
     injective_mapNatBool _,
-    Measurable.subtype_mk $ measurable_mapNatBool _
+    Measurable.subtype_mk <| measurable_mapNatBool _
   simp_rw [← generateFrom_natGeneratingSequence α]
   apply measurable_generateFrom
   rintro _ ⟨n, rfl⟩
@@ -299,7 +299,7 @@ theorem measurableSingletonClass_of_countablySeparated
   rcases measurable_injection_nat_bool_of_countablySeparated α with ⟨f, fmeas, finj⟩
   refine ⟨fun x ↦ ?_⟩
   rw [← finj.preimage_image {x}, image_singleton]
-  exact fmeas $ MeasurableSet.singleton _
+  exact fmeas <| MeasurableSet.singleton _
 
 end SeparatesPoints
 

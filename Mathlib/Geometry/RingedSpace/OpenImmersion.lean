@@ -515,15 +515,16 @@ open CategoryTheory.Limits.WalkingCospan
 section ToSheafedSpace
 
 variable {X : PresheafedSpace C} (Y : SheafedSpace C)
-variable (f : X ⟶ Y.toPresheafedSpace) [H : IsOpenImmersion f]
 
 /-- If `X ⟶ Y` is an open immersion, and `Y` is a SheafedSpace, then so is `X`. -/
-def toSheafedSpace : SheafedSpace C where
+def toSheafedSpace (f : X ⟶ Y.toPresheafedSpace) [H : IsOpenImmersion f] : SheafedSpace C where
   IsSheaf := by
     apply TopCat.Presheaf.isSheaf_of_iso (sheafIsoOfIso (isoRestrict f).symm).symm
     apply TopCat.Sheaf.pushforward_sheaf_of_sheaf
     exact (Y.restrict H.base_open).IsSheaf
   toPresheafedSpace := X
+
+variable (f : X ⟶ Y.toPresheafedSpace) [H : IsOpenImmersion f]
 
 @[simp]
 theorem toSheafedSpace_toPresheafedSpace : (toSheafedSpace Y f).toPresheafedSpace = X :=

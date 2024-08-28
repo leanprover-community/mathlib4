@@ -102,7 +102,7 @@ def torsion : Subgroup (𝓞 K)ˣ := CommGroup.torsion (𝓞 K)ˣ
 theorem mem_torsion {x : (𝓞 K)ˣ} [NumberField K] :
     x ∈ torsion K ↔ ∀ w : InfinitePlace K, w x = 1 := by
   rw [eq_iff_eq (x : K) 1, torsion, CommGroup.mem_torsion]
-  refine ⟨fun hx φ ↦ (((φ.comp $ algebraMap (𝓞 K) K).toMonoidHom.comp $
+  refine ⟨fun hx φ ↦ (((φ.comp <| algebraMap (𝓞 K) K).toMonoidHom.comp <|
     Units.coeHom _).isOfFinOrder hx).norm_eq_one, fun h ↦ isOfFinOrder_iff_pow_eq_one.2 ?_⟩
   obtain ⟨n, hn, hx⟩ := Embeddings.pow_eq_one_of_norm_eq_one K ℂ x.val.isIntegral_coe h
   exact ⟨n, hn, by ext; rw [NumberField.RingOfIntegers.coe_eq_algebraMap, coe_pow, hx,
@@ -121,7 +121,7 @@ instance [NumberField K] : Fintype (torsion K) := by
 
 instance : Nonempty (torsion K) := One.instNonempty
 
-/-- The torsion subgroup is cylic. -/
+/-- The torsion subgroup is cyclic. -/
 instance [NumberField K] : IsCyclic (torsion K) := subgroup_units_cyclic _
 
 /-- The order of the torsion subgroup as a positive integer. -/
