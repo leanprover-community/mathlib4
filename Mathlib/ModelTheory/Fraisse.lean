@@ -403,6 +403,391 @@ theorem nonempty_equiv : Nonempty (M ≃[L] N) := by
 
 end IsFraisseLimit
 
+section fraisse_exist
+
+instance [K_fraisse : IsFraisse K] : Nonempty ↑(Quotient.mk' '' K) :=
+  (K_fraisse.is_nonempty.image Quotient.mk').coe_sort
+
+instance [Countable (Σ l, L.Functions l)] [K_fraisse : IsFraisse K] : ∀ S : K, Countable S :=
+  fun S ↦ Structure.cg_iff_countable.mp (K_fraisse.FG _ S.prop).cg
+
+namespace IsFraisse
+
+variable [K_fraisse : IsFraisse K]
+
+/-- A sequence of `L.Structure`s in a Fraïssé class including a representative of each equivalence
+class. -/
+@[simp] noncomputable def SkeletonSequence (n : ℕ) : K :=
+  ⟨Quotient.out (Subtype.val ((countable_iff_exists_surjective.1
+    (countable_coe_iff.2 K_fraisse.is_essentially_countable)).choose n)), by
+    let ⟨V, V_in_K, quot_V⟩ := (mem_image Quotient.mk' K _).1 ((countable_iff_exists_surjective.1
+      (countable_coe_iff.2 K_fraisse.is_essentially_countable)).choose n).2
+    rw [← quot_V]
+    exact (K_fraisse.is_equiv_invariant _ _ (Quotient.mk_out V)).2 V_in_K⟩
+
+/-- Every member of a Fraïssé class is isomorphic to a structure enumerated by the skeleton
+sequence, hence the description as a skeleton. -/
+theorem essentially_surjective_skeletonSequence :
+    ∀ V : K, ∃ n, Nonempty (V ≃[L] SkeletonSequence K n) := by
+  rintro ⟨V, V_in_K⟩
+  simp only
+  let ⟨n, n_prop⟩ := (countable_iff_exists_surjective.1
+    (countable_coe_iff.2 K_fraisse.is_essentially_countable)).choose_spec
+      ⟨Quotient.mk' V, mem_image_of_mem _ V_in_K⟩
+  use n
+  show V ≈ SkeletonSequence K n
+  simp only [SkeletonSequence, Function.comp_apply, n_prop]
+  exact Setoid.symm (Quotient.mk_out V)
+
+/-- Gives an index of an element of a Fraïssé class in the skeleton sequence. -/
+noncomputable abbrev skeletonSequenceIndex (V : K) : ℕ :=
+  (essentially_surjective_skeletonSequence K V).choose
+
+/-- An embedding from an element of a Fraïssé class to its representative in the skeleton sequence.
+-/
+noncomputable abbrev skeletonSequenceIndexEquiv (V : K) :
+    V ≃[L] (SkeletonSequence K (skeletonSequenceIndex K V)) :=
+  (essentially_surjective_skeletonSequence K V).choose_spec.some
+
+instance [Countable (Σ l, L.Functions l)] (n : ℕ) : Countable (SkeletonSequence K n) :=
+  Structure.cg_iff_countable.1 (K_fraisse.FG _ (SkeletonSequence K n).2).cg
+
+instance (n : ℕ) : Structure.FG L (SkeletonSequence K n) :=
+  K_fraisse.FG _ (SkeletonSequence K n).2
+
+abbrev amalgamationTuple (i : ℕ) :=
+  Σ (a b : ℕ), (SkeletonSequence K a ↪[L] SkeletonSequence K i) ×
+    (SkeletonSequence K a ↪[L] SkeletonSequence K b)
+
+instance (i : ℕ) : Nonempty (amalgamationTuple K i) :=
+  ⟨i, i, Embedding.refl _ _, Embedding.refl _ _⟩
+
+noncomputable def joinIndex (m n : ℕ) : ℕ := by
+  let h0 := (K_fraisse.jointEmbedding _ (SkeletonSequence K m).2 _ (SkeletonSequence K n).2)
+  exact (essentially_surjective_skeletonSequence K ⟨h0.choose, h0.choose_spec.1⟩).choose
+
+lemma joinIndex_spec (m n : ℕ) :
+    Nonempty ((SkeletonSequence K m) ↪[L] (SkeletonSequence K (joinIndex K m n))) ∧
+    Nonempty ((SkeletonSequence K n) ↪[L] (SkeletonSequence K (joinIndex K m n))) := by
+  let h0 := (K_fraisse.jointEmbedding _ (SkeletonSequence K m).2 _ (SkeletonSequence K n).2)
+  obtain ⟨f⟩ :=
+    (essentially_surjective_skeletonSequence K ⟨h0.choose, h0.choose_spec.1⟩).choose_spec
+  exact h0.choose_spec.2.imp (Nonempty.map f.toEmbedding.comp) (Nonempty.map f.toEmbedding.comp)
+
+variable [Countable (Σ l, L.Functions l)]
+
+noncomputable abbrev amalgamationTupleSequence (i j : ℕ) : amalgamationTuple K i :=
+  (countable_iff_exists_surjective.1 inferInstance).choose j
+
+lemma amalgamationTuple_spec (i j n : ℕ) (f_in : SkeletonSequence K i ↪[L] SkeletonSequence K n) :
+  ∃ (V : K) (f : SkeletonSequence K n ↪[L] V)
+    (g : SkeletonSequence K (amalgamationTupleSequence K i j).2.1 ↪[L] V),
+      f.comp (f_in.comp (amalgamationTupleSequence K i j).2.2.1) =
+        g.comp (amalgamationTupleSequence K i j).2.2.2 := by
+  let t := amalgamationTupleSequence K i j
+  obtain ⟨V, f, g, VK, h⟩ := K_fraisse.amalgamation _ _ _ (f_in.comp t.2.2.1) t.2.2.2
+      (SkeletonSequence K _).2 (SkeletonSequence K _).2 (SkeletonSequence K _).2
+  exact ⟨⟨V, VK⟩, f, g, h⟩
+
+noncomputable abbrev amalgamationIndex (i j n : ℕ)
+    (f : SkeletonSequence K i ↪[L] SkeletonSequence K n) : ℕ :=
+  skeletonSequenceIndex K (amalgamationTuple_spec K i j n f).choose
+
+noncomputable abbrev amalgamationIndexEmbedding₁ (i j n : ℕ)
+    (f : SkeletonSequence K i ↪[L] SkeletonSequence K n) :
+  (SkeletonSequence K n) ↪[L] (SkeletonSequence K (amalgamationIndex K i j n f)) := by
+  have h := amalgamationTuple_spec K i j n f
+  exact (skeletonSequenceIndexEquiv K h.choose).toEmbedding.comp h.choose_spec.choose
+
+noncomputable abbrev amalgamationIndexEmbedding₂  (i j n : ℕ)
+    (f : SkeletonSequence K i ↪[L] SkeletonSequence K n) :
+  (SkeletonSequence K (amalgamationTupleSequence K i j).2.1) ↪[L]
+    (SkeletonSequence K (amalgamationIndex K i j n f)) := by
+  have h := amalgamationTuple_spec K i j n f
+  exact (skeletonSequenceIndexEquiv K h.choose).toEmbedding.comp h.choose_spec.choose_spec.choose
+
+lemma amalgamationIndex_spec  (i j n : ℕ)
+    (f : SkeletonSequence K i ↪[L] SkeletonSequence K n) :
+    (amalgamationIndexEmbedding₁ K i j n f).comp (f.comp (amalgamationTupleSequence K i j).2.2.1) =
+      (amalgamationIndexEmbedding₂ K i j n f).comp (amalgamationTupleSequence K i j).2.2.2 := by
+  rw [Embedding.comp_assoc, Embedding.comp_assoc]
+  exact congr rfl (amalgamationTuple_spec K i j n f).choose_spec.choose_spec.choose_spec
+
+noncomputable def init_system : ℕ → (a : ℕ) ×
+    (ℕ → (b : ℕ) × (SkeletonSequence K b ↪[L] SkeletonSequence K a))
+  | 0 => ⟨0, fun _ => ⟨0, Embedding.refl L _⟩⟩
+  | (n + 1) => ⟨amalgamationIndex K ((init_system n).2 n.unpair.1).1 n.unpair.2 (init_system n).1
+      ((init_system n).2 n.unpair.1).2, fun m =>
+      if m ≤ n
+      then ⟨((init_system n).2 m).1, (amalgamationIndexEmbedding₁ K
+        ((init_system n).2 n.unpair.1).1 n.unpair.2 (init_system n).1
+          ((init_system n).2 n.unpair.1).2).comp ((init_system n).2 m).2⟩
+      else ⟨_, Embedding.refl L _⟩⟩
+
+noncomputable def system : ℕ → ℕ :=
+  fun n ↦ (init_system K n).1
+
+theorem system_eq {m n} (h : m ≤ n) : ((init_system K n).2 m).1 = system K m := by
+  match n with
+  | 0 => cases h; rfl
+  | n+1 =>
+    simp [init_system]; split <;> simp <;> rename_i h'
+    · apply system_eq h'
+    · cases (Nat.le_or_eq_of_le_succ h).resolve_left h'
+      rfl
+
+noncomputable def maps_system {m n : ℕ} (h : m ≤ n) :
+    SkeletonSequence K (system K m) ↪[L] SkeletonSequence K (system K n) :=
+  ((init_system K n).2 m).2.comp (by rw [system_eq K h])
+
+lemma init_system_symm (m n : ℕ) : ((init_system K n).2 m).1 = ((init_system K m).2 n).1 := by
+  wlog mn : m ≤ n generalizing m n
+  · exact (this n m (le_of_not_ge mn)).symm
+  · rw [system_eq K mn]
+    induction mn using Nat.leRec with
+    | refl => rw [system_eq K (le_refl m)]
+    | le_succ_of_le hle ih =>
+      rw [ih]
+      rw [init_system]
+      sorry
+
+instance : DirectedSystem (fun n => SkeletonSequence K (system K n))
+    (fun i j ij x => maps_system K ij x) where
+  map_self' := fun i x h => by
+    refine Eq.trans (Embedding.comp_apply _ _ x) ?_
+    simp only [eq_mpr_eq_cast]
+    induction i with
+    | zero => sorry
+    | succ i ih =>
+      simp_rw [init_system]
+      have h : ¬ (i + 1 ≤ i) := i.not_succ_le_self
+      simp_rw [if_neg h]
+      sorry
+  map_map' := sorry
+
+instance : DirectedSystem (fun n => SkeletonSequence K (system K n))
+    fun i j ij => maps_system K ij where
+  map_self' := fun i x h => by
+    rw [maps_system]
+    have h' := system_eq K h
+    
+    rw [← system_eq K h] at x
+    
+    sorry
+  map_map' := sorry
+
+def forb (a b : ℕ) (h : a = b) : SkeletonSequence K a ↪[L] SkeletonSequence K b := by rw [h]
+
+def jump : (f : ℕ → ℕ) ×
+    ((j i : ℕ) → (ij : i ≤ j) → SkeletonSequence K (f i) ↪[L] SkeletonSequence K (f j)) := by
+  refine ⟨fun n => ?_, ?_⟩
+  swap
+  · intro j i ij
+    induction' ij using Nat.leRec with k ik f
+    · exact Embedding.refl L _
+    · refine Embedding.comp ?_ f
+      let g := amalgamationIndexEmbedding₁ K (_ k.unpair.1).1 n.unpair.2 (init_system n).1
+          ((init_system n).2 n.unpair.1).2)
+      sorry
+  · sorry
+
+def step (g : ℕ → ℕ)
+    (F : ∀ i j (ij : i ≤ j), SkeletonSequence K (g i) ↪[L] SkeletonSequence K (g j)) (m : ℕ) :
+    ℕ :=
+  if h : n ≤ m then Nat.leRec (g n) (fun {k} nk => sorry) h else g m
+
+def step_Fs (m n : ℕ)
+  (g : ℕ → ℕ) (F : ∀ i j (ij : i ≤ j), SkeletonSequence K (g i) ↪[L] SkeletonSequence K (g j)) :
+  (∀ i j (ij : i ≤ j), SkeletonSequence K (g' i) ↪[L] SkeletonSequence K (g' j))
+    × ((i : ℕ) → SkeletonSequence K (g i) ↪ SkeletonSequence K (g' i)) := by
+  
+  sorry
+
+
+
+end IsFraisse
+
+end fraisse_exist
+
+section Gabin
+
+instance [K_fraisse : IsFraisse K] : Nonempty ↑(Quotient.mk' '' K) :=
+  (K_fraisse.is_nonempty.image Quotient.mk').coe_sort
+
+variable [Countable (Σ l, L.Functions l)]
+
+instance [K_fraisse : IsFraisse K] : ∀ S : K, Countable S :=
+  fun S ↦ Structure.cg_iff_countable.mp (K_fraisse.FG _ S.prop).cg
+
+
+variable {K} (K_fraisse : IsFraisse K)
+
+/-- An essentially surjective sequence of L.structures in a Fraisse class. -/
+noncomputable def ess_surj_sequence : ℕ → K := by
+  intro n
+  let l' n := (countable_iff_exists_surjective.1
+    (countable_coe_iff.2 K_fraisse.is_essentially_countable)).choose n
+  let A := (Quot.out (l' n).1)
+  have A_in_K : A ∈ K := by
+    let ⟨V, V_in_K, quot_V⟩ := (mem_image Quotient.mk' K _).1 (l' n).2
+    have : Nonempty (V ≃[L] A) := by
+      show V ≈ A
+      apply Quotient.exact
+      convert quot_V
+      apply Quot.out_eq
+    exact (K_fraisse.is_equiv_invariant _ _ this).1 V_in_K
+  exact ⟨A, A_in_K⟩
+
+theorem ess_surj_sequence_is_ess_surj : ∀ V : K, ∃ n,
+    Nonempty (V ≃[L] ess_surj_sequence K_fraisse n) := by
+  rintro ⟨V, V_in_K⟩
+  simp only
+  let ⟨n, n_prop⟩ := (countable_iff_exists_surjective.1
+    (countable_coe_iff.2 K_fraisse.is_essentially_countable)).choose_spec
+      ⟨Quotient.mk' V, mem_image_of_mem _ V_in_K⟩
+  use n
+  show V ≈ (ess_surj_sequence K_fraisse n)
+  apply Quotient.exact
+  convert (congr_arg (Subtype.val) n_prop).symm
+  apply Quot.out_eq
+
+theorem can_extend_finiteEquiv_in_class : ∀ S : K, ∀ f : S ≃ₚ[L] S, ∀ _ : f.dom.FG,
+    ∃ T : K, ∃ incl : S ↪[L] T, ∃ g : T ≃ₚ[L] T,
+    f.map incl ≤ g ∧ incl.toHom.range ≤ g.sub_dom := by
+  rintro ⟨S, S_in_K⟩ f f_fg
+  obtain ⟨R, g₁, g₂, R_in_K, eq⟩ := K_fraisse.amalgamation (Bundled.mk f.sub_dom) S S
+    (subtype _) ((subtype _).comp f.equiv.toEmbedding) (K_fraisse.hereditary S S_in_K
+      (age.fg_substructure f_fg)) S_in_K S_in_K
+  use ⟨R, R_in_K⟩
+  use g₂
+  use ⟨g₂.toHom.range, g₁.toHom.range, g₁.equivRange.comp g₂.equivRange.symm⟩
+  simp only [le_refl, and_true, SubEquivalence.le_def, SubEquivalence.map_dom]
+  use Hom.map_le_range
+  ext ⟨x, x_prop⟩
+  let ⟨y, y_in_dom_f, eq_xy⟩ := Substructure.mem_map.1 x_prop
+  apply_fun (fun f ↦ f ⟨y, y_in_dom_f⟩) at eq
+  simp only [Embedding.comp_apply, coeSubtype, Equiv.coe_toEmbedding] at eq
+  cases eq_xy
+  change g₁ ((g₂.equivRange.symm (g₂.equivRange y))) = _
+  simp only [Equiv.symm_apply_apply, eq, SubEquivalence.map_cod, Embedding.coe_toHom,
+    Embedding.comp_apply, Equiv.coe_toEmbedding, coeSubtype, map_coe]
+  have := SubEquivalence.map_commutes_apply g₂ f ⟨y, y_in_dom_f⟩
+  simp only [SubEquivalence.map_cod, SubEquivalence.map_dom] at this
+  rw [this]
+
+noncomputable def extend_finiteEquiv_in_class (S : K) (f : S ≃ₚ[L] S) (f_fg : f.sub_dom.FG) :
+    (T : K) × (incl : S ↪[L] T) × (g : T ≃ₚ[L] T) ×'
+    f.map incl ≤ g ∧ incl.toHom.range ≤ g.sub_dom := by
+  choose a b c d using can_extend_finiteEquiv_in_class K_fraisse
+  exact ⟨a S f f_fg, b .., c .., d ..⟩
+
+noncomputable def join (S : K) (T : K) : (U : K) × (S ↪[L] U) × (T ↪[L] U) := by
+  let h := K_fraisse.jointEmbedding S S.prop T T.prop
+  exact ⟨⟨h.choose, h.choose_spec.1⟩, Classical.choice h.choose_spec.2.1,
+    Classical.choice h.choose_spec.2.2⟩
+
+noncomputable def init_system : ℕ →
+    (A : K) × (ℕ → (B : K) × (B ↪[L] A))
+  | 0 => ⟨ess_surj_sequence K_fraisse 0,
+    fun _ => ⟨_, Embedding.refl L _⟩⟩
+  | n + 1 => by
+    let ⟨m1, m2⟩ := Nat.unpair n
+    let ⟨An, Sn⟩ := init_system n
+    let ⟨B, B_to_An⟩ := Sn m1
+    let ⟨f, f_fg⟩ := (countable_iff_exists_surjective.1
+      (countable_self_fgequiv_of_countable (L := L) (M := B))).choose m2
+    let ⟨A, An_to_A, _, _⟩ := extend_finiteEquiv_in_class K_fraisse An (f.map B_to_An)
+      (SubEquivalence.map_dom B_to_An f ▸ FG.map _ f_fg)
+    let ⟨A', A_to_A', _⟩ := join K_fraisse A (ess_surj_sequence K_fraisse (n+1))
+    exact ⟨A', fun m ↦
+      if m ≤ n then ⟨(Sn m).1, A_to_A'.comp (An_to_A.comp (Sn m).2)⟩
+        else ⟨A', Embedding.refl L A'⟩⟩
+
+noncomputable def system : ℕ → K :=
+  fun n ↦ (init_system K_fraisse n).1
+
+  theorem system_eq {m n} (h : m ≤ n) : ((init_system K_fraisse n).2 m).1 = system K_fraisse m := by
+  match n with
+  | 0 => cases h; rfl
+  | n+1 =>
+    simp [init_system]; split <;> simp <;> rename_i h'
+    · apply system_eq h'
+    · cases (Nat.le_or_eq_of_le_succ h).resolve_left h'
+      rfl
+
+theorem init_system_succ (n : ℕ) :
+    ((init_system K_fraisse n).2 n).2.comp
+      (system_eq K_fraisse (le_refl n) ▸ Embedding.refl L _) =
+      Embedding.refl L (system K_fraisse n) := by
+  match n with
+  | 0 => rfl
+  | n+1 =>
+    simp [init_system]; split <;> simp
+    · sorry
+    · sorry
+
+  have : (n + 1 ≤ n) = False := by simp only [eq_iff_iff, iff_false, not_le,
+        Nat.lt_succ_self]
+  let ⟨m1, m2⟩ := Nat.unpair n
+  let ⟨An, Sn⟩ := init_system K_fraisse n
+  let ⟨B, B_to_An⟩ := Sn m1
+  let ⟨f, f_fg⟩ := (countable_iff_exists_surjective.1
+    (Substructure.countable_self_finiteEquiv_if_countable (L := L) (M := B))).choose m2
+  let ⟨A, An_to_A, _, _⟩ := extend_finiteEquiv_in_class K_fraisse An (f.map B_to_An)
+    (SubEquivalence.map_dom B_to_An f ▸ FG.map _ f_fg)
+  let ⟨A', A_to_A', _⟩ := join K_fraisse A (ess_surj_sequence K_fraisse (n+1))
+  have eq1 : ((init_system K_fraisse (n + 1)).2 (n + 1)) =
+    if n + 1 ≤ n then ⟨(Sn (n + 1)).1, A_to_A'.comp (An_to_A.comp (Sn (n + 1)).2)⟩
+      else ⟨A', Embedding.refl L A'⟩
+
+noncomputable def maps_system {m n : ℕ} (h : m ≤ n): system K_fraisse m ↪[L] system K_fraisse n :=
+  system_eq K_fraisse h ▸ ((init_system K_fraisse n).2 m).2
+
+theorem transitive_maps_system {m n k : ℕ} (h : m ≤ n) (h' : n ≤ k) :
+    (maps_system K_fraisse h').comp (maps_system K_fraisse h) =
+      maps_system K_fraisse (h.trans h') := by
+  classical
+  let r := (Nat.exists_eq_add_of_le h').choose
+  have : k = n + r := (Nat.exists_eq_add_of_le h').choose_spec
+  match r_eq : r with
+  | 0 =>
+    have : k = n := by simp only [this, add_zero]
+    cases this
+    cases n with
+    | zero => rfl
+    | succ n =>
+      have truc : (Nat.succ n ≤ n) = False := by simp only [eq_iff_iff, iff_false, not_le,
+        Nat.lt_succ_self]
+      have {α : Type*} (t e : α) : (if (Nat.succ n ≤ n) then t else e) = e := by
+        convert (congr_arg (fun x ↦ if x then t else e) truc).trans (if_false _ _)
+        infer_instance
+        exact t
+
+
+
+
+
+
+
+
+
+theorem exists_fraisse_limit : ∃ M : Bundled.{w} L.Structure, ∃ _ : Countable M,
+    IsFraisseLimit K M := by
+  let l : ℕ → Bundled.{w} L.Structure :=
+    ess_surj_sequence K_fraisse
+  have l_image_in_K : ∀ n, l n ∈ K :=
+    ess_surj_sequence_in_fraisse_class K_fraisse
+  have l_ess_surj : ∀ V : K, ∃ n, Nonempty (V ≃[L] l n) :=
+    ess_surj_sequence_is_ess_surj K_fraisse
+  let rec V : (n : ℕ) → Σ f : Fin (n + 1) → Bundled.{w} L.Structure, (k : Fin (n + 1)) →
+      (f k ↪[L] f n)
+    | 0 => ⟨fun _ ↦ l 0, fun k ↦ Embedding.refl _ _⟩
+    | n + 1 => by
+      have : ℕ ≃ ℕ × ℕ := by exact Denumerable.equiv₂ ℕ (ℕ × ℕ)
+
+
+end Gabin
+
 end Language
 
 end FirstOrder

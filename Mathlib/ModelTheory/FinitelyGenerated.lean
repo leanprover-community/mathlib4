@@ -172,7 +172,6 @@ open Substructure
 
 namespace Structure
 
-
 variable (L) (M)
 
 /-- A structure is finitely generated if it is the closure of a finite subset. -/
@@ -223,7 +222,7 @@ theorem FG.countable_embedding (N : Type*) [L.Structure N] [Countable N] (_ : FG
     Countable (M ↪[L] N) :=
   Function.Embedding.countable ⟨Embedding.toHom, Embedding.toHom_injective⟩
 
-instance Fg.instCountable_embedding (N : Type*) [L.Structure N]
+instance FG.instCountable_embedding (N : Type*) [L.Structure N]
     [Countable N] [h : FG L M] : Countable (M ↪[L] N) :=
   FG.countable_embedding N h
 
