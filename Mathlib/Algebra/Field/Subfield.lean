@@ -616,7 +616,7 @@ theorem closure_induction {s : Set K} {p : K → Prop} {x} (h : x ∈ closure s)
     (inv : ∀ x, p x → p x⁻¹) (mul : ∀ x y, p x → p y → p (x * y)) : p x := by
     letI : Subfield K :=
       ⟨⟨⟨⟨⟨p, by intro _ _; exact mul _ _⟩, one⟩,
-        by intro _ _; exact add _ _, @add_neg_self K _ 1 ▸ add _ _ one (neg _ one)⟩,
+        by intro _ _; exact add _ _, @add_neg_cancel K _ 1 ▸ add _ _ one (neg _ one)⟩,
           by intro _; exact neg _⟩, inv⟩
     exact (closure_le (t := this)).2 mem h
 
@@ -838,5 +838,23 @@ theorem mem_closure_iff {s : Set K} {x} :
   rw [← commClosure_eq_closure]; rfl
 
 end Commutative
+
+end Subfield
+
+namespace Subfield
+
+theorem map_comap_eq (f : K →+* L) (s : Subfield L) : (s.comap f).map f = s ⊓ f.fieldRange :=
+  SetLike.coe_injective Set.image_preimage_eq_inter_range
+
+theorem map_comap_eq_self
+    {f : K →+* L} {s : Subfield L} (h : s ≤ f.fieldRange) : (s.comap f).map f = s := by
+  simpa only [inf_of_le_left h] using map_comap_eq f s
+
+theorem map_comap_eq_self_of_surjective
+    {f : K →+* L} (hf : Function.Surjective f) (s : Subfield L) : (s.comap f).map f = s :=
+  SetLike.coe_injective (Set.image_preimage_eq _ hf)
+
+theorem comap_map (f : K →+* L) (s : Subfield K) : (s.map f).comap f = s :=
+  SetLike.coe_injective (Set.preimage_image_eq _ f.injective)
 
 end Subfield

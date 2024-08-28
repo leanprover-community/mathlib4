@@ -143,3 +143,5 @@ macro_rules
     `(tactic| have?%$tk ! $[: $type]? using $terms,*)
   | `(tactic| have!?%$tk $[: $type]? using $terms,*) =>
     `(tactic| have?%$tk ! $[: $type]? using $terms,*)
+
+end Mathlib.Tactic.Propose

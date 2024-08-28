@@ -29,7 +29,9 @@ instance instField : Field ℚ where
   __ := commRing
   __ := commGroupWithZero
   nnqsmul := _
+  nnqsmul_def := fun q a => rfl
   qsmul := _
+  qsmul_def := fun q a => rfl
   nnratCast_def q := by
     rw [← NNRat.den_coe, ← Int.cast_natCast q.num, ← NNRat.num_coe]; exact(num_div_den _).symm
   ratCast_def q := (num_div_den _).symm

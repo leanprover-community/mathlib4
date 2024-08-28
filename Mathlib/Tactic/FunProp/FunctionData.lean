@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2024 Tomas Skrivan. All rights reserved.
+Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Tomas Skrivan
+Authors: Tomáš Skřivan
 -/
 import Lean
 import Qq
@@ -41,7 +41,7 @@ def FunctionData.toExpr (f : FunctionData) : MetaM Expr := do
     let body := Mor.mkAppN f.fn f.args
     mkLambdaFVars #[f.mainVar] body
 
-/-- Is `f` an indentity function? -/
+/-- Is `f` an identity function? -/
 def FunctionData.isIdentityFun (f : FunctionData) : Bool :=
   (f.args.size = 0 && f.fn == f.mainVar)
 
@@ -75,6 +75,17 @@ def getFunctionData (f : Expr) : MetaM FunctionData := do
     let xId := xs[0]!.fvarId!
 
     Mor.withApp b fun fn args => do
+
+      let mut fn := fn
+      let mut args := args
+
+      -- revert projection in fn
+      if let .proj n i x := fn then
+        let .some info := getStructureInfo? (← getEnv) n | unreachable!
+        let .some projName := info.getProjFn? i | unreachable!
+        let p ← mkAppM projName #[x]
+        fn := p.getAppFn
+        args := p.getAppArgs.map (fun a => {expr:=a}) ++ args
 
       let mainArgs := args
         |>.mapIdx (fun i ⟨arg,_⟩ => if arg.containsFVar xId then some i.1 else none)
@@ -116,7 +127,9 @@ def getFunctionData? (f : Expr)
     else
       pure false
 
-  let .forallE xName xType _ _ ← inferType f | throwError "fun_prop bug: function expected"
+  let .forallE xName xType _ _ ← instantiateMVars (← inferType f)
+    | throwError m!"fun_prop bug: function expected, got `{f} : {← inferType f}, \
+                    type ctor {(← inferType f).ctorName}"
   withLocalDeclD xName xType fun x => do
     let fx' ← Mor.whnfPred (f.beta #[x]).eta unfold cfg
     let f' ← mkLambdaFVars #[x] fx'
@@ -279,3 +292,7 @@ def FunctionData.decompositionOverArgs (fData : FunctionData) (args : Array Nat)
       return (f,g)
   catch _ =>
     return none
+
+end Meta.FunProp
+
+end Mathlib

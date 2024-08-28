@@ -17,7 +17,7 @@ suppress_compilation
 
 open Bornology Metric Set Real
 open Filter hiding map_smul
-open scoped Classical NNReal Topology Uniformity
+open scoped NNReal Topology Uniformity
 
 -- the `ₗ` subscript variables are for special cases about linear (as opposed to semilinear) maps
 variable {𝕜 𝕜₂ 𝕜₃ E Eₗ F Fₗ G Gₗ 𝓕 : Type*}
@@ -60,7 +60,7 @@ def ofTendstoOfBoundedRange {α : Type*} {l : Filter α} [l.NeBot] (f : E' → F
     (g : α → E' →SL[σ₁₂] F) (hf : Tendsto (fun a x => g a x) l (𝓝 f))
     (hg : IsBounded (Set.range g)) : E' →SL[σ₁₂] F :=
   ofMemClosureImageCoeBounded f hg <| mem_closure_of_tendsto hf <|
-    eventually_of_forall fun _ => mem_image_of_mem _ <| Set.mem_range_self _
+    Eventually.of_forall fun _ => mem_image_of_mem _ <| Set.mem_range_self _
 
 /-- If a Cauchy sequence of continuous linear map converges to a continuous linear map pointwise,
 then it converges to the same map in norm. This lemma is used to prove that the space of continuous
@@ -167,7 +167,7 @@ theorem isClosed_image_coe_closedBall (f₀ : E →SL[σ₁₂] F) (r : ℝ) :
 /-- **Banach-Alaoglu** theorem. The set of functions `f : E → F` that represent continuous linear
 maps `f : E →SL[σ₁₂] F` at distance `≤ r` from `f₀ : E →SL[σ₁₂] F` is compact in the topology of
 pointwise convergence. Other versions of this theorem can be found in
-`Analysis.NormedSpace.WeakDual`. -/
+`Analysis.Normed.Module.WeakDual`. -/
 theorem isCompact_image_coe_closedBall [ProperSpace F] (f₀ : E →SL[σ₁₂] F) (r : ℝ) :
     IsCompact (((↑) : (E →SL[σ₁₂] F) → E → F) '' closedBall f₀ r) :=
   isCompact_image_coe_of_bounded_of_weak_closed isBounded_closedBall <|

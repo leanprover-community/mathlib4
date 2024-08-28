@@ -21,7 +21,7 @@ universe v u w
 
 namespace CategoryTheory.Limits.Types.FilteredColimit
 
-variable {J : Type v} [Category.{w} J] (F : J ⥤ Type u) [HasColimit F]
+variable {J : Type v} [Category.{w} J] (F : J ⥤ Type u)
 
 attribute [local instance] small_quot_of_hasColimit
 
@@ -48,8 +48,6 @@ theorem eqvGen_quot_rel_of_rel (x y : Σ j, F.obj j) :
   refine EqvGen.trans _ ⟨k, F.map f x.2⟩ _ ?_ ?_
   · exact (EqvGen.rel _ _ ⟨f, rfl⟩)
   · exact (EqvGen.symm _ _ (EqvGen.rel _ _ ⟨g, h⟩))
-
---attribute [local elab_without_expected_type] nat_trans.app
 
 /-- Recognizing filtered colimits of types. -/
 noncomputable def isColimitOf (t : Cocone F) (hsurj : ∀ x : t.pt, ∃ i xi, x = t.ι.app i xi)
@@ -100,6 +98,8 @@ protected theorem rel_eq_eqvGen_quot_rel :
   · apply eqvGen_quot_rel_of_rel
   · rw [← (FilteredColimit.rel_equiv F).eqvGen_iff]
     exact EqvGen.mono (rel_of_quot_rel F)
+
+variable [HasColimit F]
 
 theorem colimit_eq_iff_aux {i j : J} {xi : F.obj i} {xj : F.obj j} :
     (colimitCocone F).ι.app i xi = (colimitCocone F).ι.app j xj ↔

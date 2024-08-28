@@ -80,11 +80,7 @@ theorem isSheafFor_bind (P : Cᵒᵖ ⥤ Type v) (U : Sieve X) (B : ∀ ⦃Y⦄ 
     intro Y l hl
     apply (hB' hf (l ≫ h)).ext
     intro M m hm
-    have : bind U B (m ≫ l ≫ h ≫ f) := by
-      -- Porting note: had to make explicit the parameter `((m ≫ l ≫ h) ≫ f)` and
-      -- using `by exact`
-      have : bind U B ((m ≫ l ≫ h) ≫ f) := by exact Presieve.bind_comp f hf hm
-      simpa using this
+    have : bind U B (m ≫ l ≫ h ≫ f) := by simpa using (Presieve.bind_comp f hf hm : bind U B _)
     trans s (m ≫ l ≫ h ≫ f) this
     · have := ht (U.downward_closed hf h) _ ((B _).downward_closed hl m)
       rw [op_comp, FunctorToTypes.map_comp_apply] at this
@@ -233,18 +229,19 @@ theorem isSheaf_of_representable {J : GrothendieckTopology C} (hJ : Subcanonical
   Presieve.isSheaf_of_le _ hJ (Sheaf.isSheaf_of_representable P)
 
 variable {J}
-variable (hJ : Subcanonical J)
 
 /--
 If `J` is subcanonical, we obtain a "Yoneda" functor from the defining site
 into the sheaf category.
 -/
 @[simps]
-def yoneda : C ⥤ Sheaf J (Type v) where
+def yoneda (hJ : Subcanonical J) : C ⥤ Sheaf J (Type v) where
   obj X := ⟨CategoryTheory.yoneda.obj X, by
     rw [isSheaf_iff_isSheaf_of_type]
     apply hJ.isSheaf_of_representable⟩
   map f := ⟨CategoryTheory.yoneda.map f⟩
+
+variable (hJ : Subcanonical J)
 
 /--
 The yoneda embedding into the presheaf category factors through the one

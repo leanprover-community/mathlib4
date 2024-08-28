@@ -863,7 +863,7 @@ theorem castNum_testBit (m n) : testBit m n = Nat.testBit m n := by
   | pos m =>
     rw [cast_pos]
     induction' n with n IH generalizing m <;> cases' m with m m
-        <;> dsimp only [PosNum.testBit, Nat.zero_eq]
+        <;> dsimp only [PosNum.testBit]
     · rfl
     · rw [PosNum.cast_bit1, ← two_mul, ← congr_fun Nat.bit_true, Nat.testBit_bit_zero]
     · rw [PosNum.cast_bit0, ← two_mul, ← congr_fun Nat.bit_false, Nat.testBit_bit_zero]
@@ -1277,7 +1277,7 @@ instance addCommGroup : AddCommGroup ZNum :=
     add_comm := by transfer
     neg := Neg.neg
     zsmul := zsmulRec
-    add_left_neg := by transfer }
+    neg_add_cancel := by transfer }
 
 instance addMonoidWithOne : AddMonoidWithOne ZNum :=
   { ZNum.addMonoid with
@@ -1384,13 +1384,14 @@ theorem divMod_to_nat_aux {n d : PosNum} {q r : Num} (h₁ : (r : ℕ) + d * ((q
     apply Num.mem_ofZNum'.trans
     rw [← ZNum.to_int_inj, Num.cast_toZNum, Num.cast_sub', sub_eq_iff_eq_add, ← Int.natCast_inj]
     simp
-  cases' e : Num.ofZNum' (Num.sub' r (Num.pos d)) with r₂ <;> simp [divModAux]
-  · rw [two_mul]
+  cases' e : Num.ofZNum' (Num.sub' r (Num.pos d)) with r₂
+  · rw [Num.cast_bit0, two_mul]
     refine ⟨h₁, lt_of_not_ge fun h => ?_⟩
     cases' Nat.le.dest h with r₂ e'
     rw [← Num.to_of_nat r₂, add_comm] at e'
     cases e.symm.trans (this.2 e'.symm)
   · have := this.1 e
+    simp only [Num.cast_bit1]
     constructor
     · rwa [two_mul, add_comm _ 1, mul_add, mul_one, ← add_assoc, ← this]
     · rwa [this, two_mul, add_lt_add_iff_right] at h₂
@@ -1412,9 +1413,10 @@ theorem divMod_to_nat (d n : PosNum) :
     -- Porting note: `cases'` didn't rewrite at `this`, so `revert` & `intro` are required.
     revert IH; cases' divMod d n with q r; intro IH
     simp only [divMod] at IH ⊢
-    apply divMod_to_nat_aux <;> simp
-    · rw [← two_mul, ← two_mul, mul_left_comm, ← mul_add, ← IH.1]
-    · exact IH.2
+    apply divMod_to_nat_aux
+    · simp only [Num.cast_bit0, cast_bit0]
+      rw [← two_mul, ← two_mul, mul_left_comm, ← mul_add, ← IH.1]
+    · simpa using IH.2
 
 @[simp]
 theorem div'_to_nat (n d) : (div' n d : ℕ) = n / d :=

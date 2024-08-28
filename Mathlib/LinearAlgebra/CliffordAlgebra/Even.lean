@@ -245,8 +245,8 @@ multiplication. -/
 def even.lift : EvenHom Q A ≃ (CliffordAlgebra.even Q →ₐ[R] A) where
   toFun f := AlgHom.ofLinearMap (aux f) (aux_one f) (aux_mul f)
   invFun F := (even.ι Q).compr₂ F
-  left_inv f := EvenHom.ext _ _ <| LinearMap.ext₂ <| even.lift.aux_ι f
-  right_inv _ := even.algHom_ext Q <| EvenHom.ext _ _ <| LinearMap.ext₂ <| even.lift.aux_ι _
+  left_inv f := EvenHom.ext <| LinearMap.ext₂ <| even.lift.aux_ι f
+  right_inv _ := even.algHom_ext Q <| EvenHom.ext <| LinearMap.ext₂ <| even.lift.aux_ι _
 
 -- @[simp] -- Porting note: simpNF linter times out on this one
 theorem even.lift_ι (f : EvenHom Q A) (m₁ m₂ : M) :
