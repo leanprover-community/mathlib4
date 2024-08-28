@@ -532,7 +532,7 @@ theorem ncard_dvd_card (hB_ne : B.Nonempty) :
   Dvd.intro _ (hB.ncard_block_mul_ncard_orbit_eq hB_ne)
 
 /-- A too large block is equal to ⊤ -/
-theorem is_top_of_large_block (hB' : Nat.card X < Set.ncard B * 2) :
+theorem eq_top_card_lt (hB' : Nat.card X < Set.ncard B * 2) :
     B = ⊤ := by
   classical
   letI := Fintype.ofFinite X
@@ -557,7 +557,7 @@ theorem is_top_of_large_block (hB' : Nat.card X < Set.ncard B * 2) :
   rwa [← Set.ncard_pos] at hB_ne
 
 /-- If a block has too many translates, then it is a (sub)singleton  -/
-theorem is_subsingleton
+theorem subsingleton_of_card_lt
     (hB' : Nat.card X < 2 * Set.ncard (Set.range fun g : G => (g • B : Set X))) :
     B.Subsingleton := by
   suffices Set.ncard B < 2 by
