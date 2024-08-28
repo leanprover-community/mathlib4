@@ -279,7 +279,7 @@ noncomputable instance levyProkhorovDist_metricSpace_probabilityMeasure [BorelSp
     MetricSpace (LevyProkhorov (ProbabilityMeasure Ω)) where
   eq_of_dist_eq_zero := by
     intro μ ν h
-    show LevyProkhorov.equiv μ = LevyProkhorov.equiv ν
+    apply LevyProkhorov.equiv.injective
     apply ProbabilityMeasure.toMeasure_injective
     apply ext_of_generate_finite _ ?_ isPiSystem_isClosed ?_ (by simp)
     · rw [BorelSpace.measurable_eq (α := Ω), borel_eq_generateFrom_isClosed]
