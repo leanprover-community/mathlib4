@@ -11,14 +11,11 @@ import Mathlib.Analysis.Analytic.Constructions
 
 From `Mathlib.Analysis.Analytic.Basic`, we have the definitons
 
-1. `AnalyticWithinAt 𝕜 f s x` means a power series at `x` converges to `f` on `𝓝[s] x`, and
-    `f` is continuous within `s` at `x`.
+1. `AnalyticWithinAt 𝕜 f s x` means a power series at `x` converges to `f` on `𝓝[insert x s] x`.
 2. `AnalyticWithinOn 𝕜 f s t` means `∀ x ∈ t, AnalyticWithinAt 𝕜 f s x`.
 
 This means there exists an extension of `f` which is analytic and agrees with `f` on `s ∪ {x}`, but
-`f` is allowed to be arbitrary elsewhere.  Requiring `ContinuousWithinAt` is essential if `x ∉ s`:
-it is required for composition and smoothness to follow without extra hypotheses (we could
-alternately require convergence at `x` even if `x ∉ s`).
+`f` is allowed to be arbitrary elsewhere.
 
 Here we prove basic properties of these definitions. Where convenient we assume completeness of the
 ambient space, which allows us to relate `AnalyticWithinAt` to analyticity of a local extension.
@@ -305,14 +302,15 @@ essential.
 lemma AnalyticWithinAt.comp [CompleteSpace F] [CompleteSpace G] {f : F → G} {g : E → F} {s : Set F}
     {t : Set E} {x : E} (hf : AnalyticWithinAt 𝕜 f s (g x)) (hg : AnalyticWithinAt 𝕜 g t x)
     (h : MapsTo g t s) : AnalyticWithinAt 𝕜 (f ∘ g) t x := by
-  rcases hf.exists_analyticAt with ⟨f', _, ef, hf'⟩
-  rcases hg.exists_analyticAt with ⟨g', gx, eg, hg'⟩
+  rcases hf.exists_analyticAt with ⟨f', ef, hf'⟩
+  rcases hg.exists_analyticAt with ⟨g', eg, hg'⟩
   refine analyticWithinAt_iff_exists_analyticAt.mpr ⟨f' ∘ g', ?_, ?_⟩
-  · have gt := hg.continuousWithinAt_insert.tendsto_nhdsWithin h
+  · have : MapsTo g (insert x t) (insert (g x) s) := h.insert x
+    have gt := hg.continuousWithinAt_insert.tendsto_nhdsWithin this
     filter_upwards [eg, gt.eventually ef]
     intro y gy fgy
     simp only [Function.comp_apply, fgy, ← gy]
-  · exact hf'.comp_of_eq hg' gx.symm
+  · exact hf'.comp_of_eq hg' (mem_of_mem_nhdsWithin (by simp) eg).symm
 
 lemma AnalyticWithinOn.comp [CompleteSpace F] [CompleteSpace G] {f : F → G} {g : E → F} {s : Set F}
     {t : Set E} (hf : AnalyticWithinOn 𝕜 f s) (hg : AnalyticWithinOn 𝕜 g t) (h : MapsTo g t s) :
@@ -353,7 +351,6 @@ lemma HasFPowerSeriesWithinOnBall.prod {e : E} {f : E → F} {g : E → G} {s : 
     refine (hf.hasSum m ?_).prod_mk (hg.hasSum m ?_)
     · exact EMetric.mem_ball.mpr (lt_of_lt_of_le hy (min_le_left _ _))
     · exact EMetric.mem_ball.mpr (lt_of_lt_of_le hy (min_le_right _ _))
-  continuousWithinAt := hf.continuousWithinAt.prod hg.continuousWithinAt
 
 lemma HasFPowerSeriesWithinAt.prod {e : E} {f : E → F} {g : E → G} {s : Set E}
     {p : FormalMultilinearSeries 𝕜 E F} {q : FormalMultilinearSeries 𝕜 E G}
