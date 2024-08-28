@@ -261,9 +261,13 @@ info: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
 Things to note:
 * `set_option linter.style.longFile 0` disables the linter, allowing us to set a value smaller than
   `1500` without triggering the warning for setting a small value for the option;
-* `set_option ... in #exit` allows processing of the file *beyond* `#exit`, since it wraps
-  `#exit` inside an anonymous section, making Lean active again *after* that anonymous section.
+* `guard_msgs ... in #exit` and `set_option ... in #exit` allow processing of the file *beyond*
+  `#exit`, since they wrap `#exit` inside an anonymous section,
+  making Lean active again *after* that anonymous section.
+
 -/
+
+section longFile
 
 /--
 warning: The default value of the `longFile` linter is 1500.
@@ -278,7 +282,7 @@ set_option linter.style.longFile 1500
 warning: using 'exit' to interrupt Lean
 ---
 warning: The default value of the `longFile` linter is 1500.
-This file is 166 lines long which does not exceed the allowed bound.
+This file is 291 lines long which does not exceed the allowed bound.
 Please, remove the `set_option linter.style.longFile 1600`.
 -/
 #guard_msgs in
@@ -289,7 +293,7 @@ set_option linter.style.longFile 1600 in
 /--
 warning: using 'exit' to interrupt Lean
 ---
-warning: This file is 181 lines long, but the limit is 10.
+warning: This file is 306 lines long, but the limit is 10.
 
 You can extend the allowed length of the file using `set_option linter.style.longFile 1500`.
 You can completely disable this linter by setting the length limit to `0`.
@@ -305,7 +309,7 @@ set_option linter.style.longFile 10 in
 warning: using 'exit' to interrupt Lean
 ---
 warning: The default value of the `longFile` linter is 1500.
-This file is 196 lines long which does not exceed the allowed bound.
+This file is 321 lines long which does not exceed the allowed bound.
 Please, remove the `set_option linter.style.longFile 1700`.
 -/
 #guard_msgs in
@@ -315,3 +319,5 @@ set_option linter.style.longFile 0 in
 -- then the linter tells us to use a smaller bound
 set_option linter.style.longFile 1700 in
 #exit
+
+end longFile
