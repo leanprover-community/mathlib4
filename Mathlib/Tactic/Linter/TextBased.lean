@@ -108,7 +108,7 @@ def StyleError.errorMessage (err : StyleError) (style : ErrorFormat) : String :=
         s!"{sizeLimit} file contains {currentSize} lines, try to split it up"
     | ErrorFormat.humanReadable => s!"file contains {currentSize} lines, try to split it up"
   | StyleError.newUnicode c =>
-      s!"Unicode character {c} is not recommended. Consider adding it to the whitelist."
+      s!"unicode character '{c}' is not recommended. Consider adding it to the whitelist."
 
 /-- The error code for a given style error. Keep this in sync with `parse?_errorContext` below! -/
 -- FUTURE: we're matching the old codes in `lint-style.py` for compatibility;
