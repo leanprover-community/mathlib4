@@ -284,6 +284,8 @@ lemma U0 : polar 𝕜 (U 0) = closedBall (0 : Dual 𝕜 E) 0 := by
     intro y hy
     exact norm_le_zero_iff'.mp hy
 
+lemma polarU (n : ℕ) : polar 𝕜 (U n) = closedBall (0 : Dual 𝕜 E) n := sorry
+
 
 theorem finite_subsets1 (U : Set (Dual 𝕜 E)) : ∃ F : ℕ → Set E, ∀ n : ℕ, (F n).Finite := by
   use (fun n => Nat.recOn n {(0 : E)} (fun m v => {(0 : E)}))
@@ -342,7 +344,7 @@ theorem finite_subsets2 (U : Set (Dual 𝕜 E)) : ∃ F : ℕ → Set E, ∀ n :
   · simp only [finite_singleton]
 -/
 
-
+/-
 theorem finite_subsets (U : Set (Dual 𝕜 E)) : ∃ F : ℕ → Set E, ∀ n : ℕ, (F n).Finite ∧
     F n ⊆ ball (0 : E) n⁻¹ ∧ polar 𝕜 (⋃₀ {F k | k < n }) ∩ ball 0 n  ⊆ U := by
   use (fun n => Nat.recOn n {(0 : E)} (fun n v => {(0 : E)}))
@@ -356,7 +358,7 @@ theorem finite_subsets (U : Set (Dual 𝕜 E)) : ∃ F : ℕ → Set E, ∀ n : 
     · constructor
       · simp only [Nat.rec_zero, CharP.cast_eq_zero, inv_zero, ball_zero, subset_empty_iff,
         singleton_ne_empty]
-
+-/
 
   --apply Exists.intro
   --induction n using by exact 𝕜
