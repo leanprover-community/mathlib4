@@ -8,8 +8,6 @@ import Mathlib.Algebra.ContinuedFractions.TerminatedStable
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring
 
-#align_import algebra.continued_fractions.convergents_equiv from "leanprover-community/mathlib"@"a7e36e48519ab281320c4d192da6a7b348ce40ad"
-
 /-!
 # Equivalence of Recursive and Direct Computations of Convergents of Generalized Continued Fractions
 
@@ -97,7 +95,6 @@ def squashSeq (s : Stream'.Seq <| Pair K) (n : ℕ) : Stream'.Seq (Pair K) :=
       -- return the squashed value at position `n`; otherwise, do nothing.
       (fun n' gp => if n' = n then ⟨gp_n.a, gp_n.b + gp_succ_n.a / gp_succ_n.b⟩ else gp) s
   | _ => s
-#align generalized_continued_fraction.squash_seq GenContFract.squashSeq
 
 /-! We now prove some simple lemmas about the squashed sequence -/
 
@@ -107,7 +104,6 @@ theorem squashSeq_eq_self_of_terminated (terminatedAt_succ_n : s.TerminatedAt (n
     squashSeq s n = s := by
   change s.get? (n + 1) = none at terminatedAt_succ_n
   cases s_nth_eq : s.get? n <;> simp only [*, squashSeq]
-#align generalized_continued_fraction.squash_seq_eq_self_of_terminated GenContFract.squashSeq_eq_self_of_terminated
 
 /-- If the sequence has not terminated before position `n + 1`, the value at `n + 1` gets
 squashed into position `n`. -/
@@ -115,7 +111,6 @@ theorem squashSeq_nth_of_not_terminated {gp_n gp_succ_n : Pair K} (s_nth_eq : s.
     (s_succ_nth_eq : s.get? (n + 1) = some gp_succ_n) :
     (squashSeq s n).get? n = some ⟨gp_n.a, gp_n.b + gp_succ_n.a / gp_succ_n.b⟩ := by
   simp [*, squashSeq]
-#align generalized_continued_fraction.squash_seq_nth_of_not_terminated GenContFract.squashSeq_nth_of_not_terminated
 
 /-- The values before the squashed position stay the same. -/
 theorem squashSeq_nth_of_lt {m : ℕ} (m_lt_n : m < n) : (squashSeq s n).get? m = s.get? m := by
@@ -127,7 +122,6 @@ theorem squashSeq_nth_of_lt {m : ℕ} (m_lt_n : m < n) : (squashSeq s n).get? m 
     obtain ⟨gp_m, s_mth_eq⟩ : ∃ gp_m, s.get? m = some gp_m :=
       s.ge_stable (le_of_lt m_lt_n) s_nth_eq
     simp [*, squashSeq, m_lt_n.ne]
-#align generalized_continued_fraction.squash_seq_nth_of_lt GenContFract.squashSeq_nth_of_lt
 
 /-- Squashing at position `n + 1` and taking the tail is the same as squashing the tail of the
 sequence at position `n`. -/
@@ -148,7 +142,6 @@ theorem squashSeq_succ_n_tail_eq_squashSeq_tail_n :
       · simp only [*, squashSeq, Stream'.Seq.get?_tail, Stream'.Seq.get?_zipWith,
           Option.map₂_none_right]
       · simp [*, squashSeq]
-#align generalized_continued_fraction.squash_seq_succ_n_tail_eq_squash_seq_tail_n GenContFract.squashSeq_succ_n_tail_eq_squashSeq_tail_n
 
 /-- The auxiliary function `convs'Aux` returns the same value for a sequence and the
 corresponding squashed sequence at the squashed position. -/
@@ -179,7 +172,6 @@ theorem succ_succ_nth_conv'Aux_eq_succ_nth_conv'Aux_squashSeq :
       have : (squashSeq s (m + 1)).head = some gp_head :=
         (squashSeq_nth_of_lt m.succ_pos).trans s_head_eq
       simp_all [convs'Aux, squashSeq_succ_n_tail_eq_squashSeq_tail_n]
-#align generalized_continued_fraction.succ_succ_nth_convergent'_aux_eq_succ_nth_convergent'_aux_squash_seq GenContFract.succ_succ_nth_conv'Aux_eq_succ_nth_conv'Aux_squashSeq
 
 /-! Let us now lift the squashing operation to gcfs. -/
 
@@ -194,7 +186,6 @@ def squashGCF (g : GenContFract K) : ℕ → GenContFract K
     | none => g
     | some gp => ⟨g.h + gp.a / gp.b, g.s⟩
   | n + 1 => ⟨g.h, squashSeq g.s n⟩
-#align generalized_continued_fraction.squash_gcf GenContFract.squashGCF
 
 /-! Again, we derive some simple lemmas that are not really of interest. This time for the
 squashed gcf. -/
@@ -211,13 +202,11 @@ theorem squashGCF_eq_self_of_terminated (terminatedAt_n : TerminatedAt g n) :
     cases g
     simp only [squashGCF, mk.injEq, true_and]
     exact squashSeq_eq_self_of_terminated terminatedAt_n
-#align generalized_continued_fraction.squash_gcf_eq_self_of_terminated GenContFract.squashGCF_eq_self_of_terminated
 
 /-- The values before the squashed position stay the same. -/
 theorem squashGCF_nth_of_lt {m : ℕ} (m_lt_n : m < n) :
     (squashGCF g (n + 1)).s.get? m = g.s.get? m := by
   simp only [squashGCF, squashSeq_nth_of_lt m_lt_n, Nat.add_eq, add_zero]
-#align generalized_continued_fraction.squash_gcf_nth_of_lt GenContFract.squashGCF_nth_of_lt
 
 /-- `convs'` returns the same value for a gcf and the corresponding squashed gcf at the
 squashed position. -/
@@ -230,7 +219,6 @@ theorem succ_nth_conv'_eq_squashGCF_nth_conv' :
   | succ =>
     simp only [succ_succ_nth_conv'Aux_eq_succ_nth_conv'Aux_squashSeq, convs',
       squashGCF]
-#align generalized_continued_fraction.succ_nth_convergent'_eq_squash_gcf_nth_convergent' GenContFract.succ_nth_conv'_eq_squashGCF_nth_conv'
 
 /-- The auxiliary continuants before the squashed position stay the same. -/
 theorem contsAux_eq_contsAux_squashGCF_of_le {m : ℕ} :
@@ -254,7 +242,6 @@ theorem contsAux_eq_contsAux_squashGCF_of_le {m : ℕ} :
             have : (squashGCF g (n' + 1)).s.get? m'' = g.s.get? m'' :=
               squashGCF_nth_of_lt (Nat.succ_lt_succ_iff.mp m'_lt_n)
             simp [contsAux, succ_m''th_contsAux_eq, m''th_contsAux_eq, this])
-#align generalized_continued_fraction.continuants_aux_eq_continuants_aux_squash_gcf_of_le GenContFract.contsAux_eq_contsAux_squashGCF_of_le
 
 end WithDivisionRing
 
@@ -325,7 +312,6 @@ theorem succ_nth_conv_eq_squashGCF_nth_conv [Field K]
         simpa only [eq1, eq2, eq3, eq4, mul_div_cancel_right₀ _ b_ne_zero]
       field_simp
       congr 1 <;> ring
-#align generalized_continued_fraction.succ_nth_convergent_eq_squash_gcf_nth_convergent GenContFract.succ_nth_conv_eq_squashGCF_nth_conv
 
 end Squash
 
@@ -389,7 +375,6 @@ theorem convs_eq_convs' [LinearOrderedField K]
           exists_s_b_of_partDen nth_partDen_eq
         exact (ne_of_lt (s_pos (lt_add_one n) s_nth_eq).right).symm
       exact succ_nth_conv_eq_squashGCF_nth_conv @this
-#align generalized_continued_fraction.convergents_eq_convergents' GenContFract.convs_eq_convs'
 
 end GenContFract
 
@@ -406,6 +391,5 @@ nonrec theorem convs_eq_convs' [LinearOrderedField K] {c : ContFract K} :
   intro gp m _ s_nth_eq
   exact ⟨zero_lt_one.trans_le ((c : SimpContFract K).property m gp.a
     (partNum_eq_s_a s_nth_eq)).symm.le, c.property m gp.b <| partDen_eq_s_b s_nth_eq⟩
-#align continued_fraction.convergents_eq_convergents' ContFract.convs_eq_convs'
 
 end ContFract
