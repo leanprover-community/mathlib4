@@ -49,8 +49,45 @@ This allows `044Q3` and `GH3F6` as possibilities.
 -/
 declare_syntax_cat stackTag
 
+open Parser
+
+
+
+/-- `stacksTag` is the node kind of Stacks Project Tag: a sequence of digits and
+uppercase letters. -/
+abbrev stacksTagKind : SyntaxNodeKind := `stacksTag
+
+def stacksTagFn (startPos : String.Pos) : ParserFn := fun c s =>
+  let s := takeWhileFn (fun c => c.isDigit || c.isUpper) c s
+  mkNodeToken stacksTagKind startPos c s
+
+def tokenFnAux : ParserFn := fun c s =>
+  let input := c.input
+  let i     := s.pos
+  stacksTagFn i c (s.next input i)
+
+def myidentNoAntiquot : Parser := {
+  fn   := tokenFnAux
+  info := mkAtomicInfo "myident"
+}
+
+
+--@[run_builtin_parser_attribute_hooks]
+def myident : Parser :=
+  withAntiquot (mkAntiquot "myident" identKind) myidentNoAntiquot
+
+set_option pp.rawOnError true
+
+run_cmd
+  let env ← getEnv
+  let stx ← `(myident| 0B111S)
+  logInfo stx
+
 @[inherit_doc Parser.Category.stackTag]
 syntax (num)? (ident)? : stackTag
+
+--def d : Parser.Parser where
+--  fn := _
 
 /-- The `stacks` attribute.
 Use it as `@[stacks TAG "Optional comment"]`.
