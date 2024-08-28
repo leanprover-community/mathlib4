@@ -180,6 +180,9 @@ theorem aleph'_lt {o₁ o₂ : Ordinal} : aleph' o₁ < aleph' o₂ ↔ o₁ < o
 theorem aleph'_le {o₁ o₂ : Ordinal} : aleph' o₁ ≤ aleph' o₂ ↔ o₁ ≤ o₂ :=
   aleph'.le_iff_le
 
+theorem aleph'_max (o₁ o₂ : Ordinal) : aleph' (max o₁ o₂) = max (aleph' o₁) (aleph' o₂) :=
+  aleph'.monotone.map_max
+
 set_option linter.deprecated false in
 @[deprecated (since := "2024-08-28")]
 theorem aleph'_alephIdx (c : Cardinal) : aleph' c.alephIdx = c :=
@@ -194,12 +197,9 @@ theorem alephIdx_aleph' (o : Ordinal) : (aleph' o).alephIdx = o :=
 theorem aleph'_zero : aleph' 0 = 0 :=
   aleph'.map_bot
 
--- TODO: prove `OrderIso.map_succ`.
 @[simp]
-theorem aleph'_succ {o : Ordinal} : aleph' (succ o) = succ (aleph' o) := by
-  apply (succ_le_of_lt <| aleph'_lt.2 <| lt_succ o).antisymm' (aleph'.symm.le_iff_le.1 <| _)
-  rw [OrderIso.symm_apply_apply, succ_le_iff, ← aleph'_lt, OrderIso.apply_symm_apply]
-  apply lt_succ
+theorem aleph'_succ {o : Ordinal} : aleph' (succ o) = succ (aleph' o) :=
+  aleph'.map_succ
 
 @[simp]
 theorem aleph'_nat : ∀ n : ℕ, aleph' n = n
