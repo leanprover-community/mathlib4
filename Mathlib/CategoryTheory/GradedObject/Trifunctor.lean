@@ -268,7 +268,7 @@ variable {r} (ρ₁₂ : BifunctorComp₁₂IndexData r)
 /-- Given bifunctors `F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂`, `G : C₁₂ ⥤ C₃ ⥤ C₄`, graded objects
 `X₁ : GradedObject I₁ C₁`, `X₂ : GradedObject I₂ C₂`, `X₃ : GradedObject I₃ C₃` and
 `ρ₁₂ : BifunctorComp₁₂IndexData r`, this asserts that for all `i₁₂ : ρ₁₂.I₁₂` and `i₃ : I₃`,
-the functor `G(-, X₃ i₃)` commutes wich the coproducts of the `F₁₂(X₁ i₁, X₂ i₂)`
+the functor `G(-, X₃ i₃)` commutes with the coproducts of the `F₁₂(X₁ i₁, X₂ i₂)`
 such that `ρ₁₂.p ⟨i₁, i₂⟩ = i₁₂`. -/
 abbrev HasGoodTrifunctor₁₂Obj :=
   ∀ (i₁₂ : ρ₁₂.I₁₂) (i₃ : I₃), PreservesColimit
@@ -448,7 +448,7 @@ variable {r} (ρ₂₃ : BifunctorComp₂₃IndexData r)
 /-- Given bifunctors `F : C₁ ⥤ C₂₃ ⥤ C₄`, `G₂₃ : C₂ ⥤ C₃ ⥤ C₂₃`, graded objects
 `X₁ : GradedObject I₁ C₁`, `X₂ : GradedObject I₂ C₂`, `X₃ : GradedObject I₃ C₃` and
 `ρ₂₃ : BifunctorComp₂₃IndexData r`, this asserts that for all `i₁ : I₁` and `i₂₃ : ρ₂₃.I₂₃`,
-the functor `F(X₁ i₁, _)` commutes wich the coproducts of the `G₂₃(X₂ i₂, X₃ i₃)`
+the functor `F(X₁ i₁, _)` commutes with the coproducts of the `G₂₃(X₂ i₂, X₃ i₃)`
 such that `ρ₂₃.p ⟨i₂, i₃⟩ = i₂₃`. -/
 abbrev HasGoodTrifunctor₂₃Obj :=
   ∀ (i₁ : I₁) (i₂₃ : ρ₂₃.I₂₃), PreservesColimit (Discrete.functor

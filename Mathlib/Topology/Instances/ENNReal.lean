@@ -356,7 +356,7 @@ theorem tendsto_finset_prod_of_ne_top {ι : Type*} {f : ι → α → ℝ≥0∞
   simp only [Finset.prod_insert has]
   apply Tendsto.mul (h _ (Finset.mem_insert_self _ _))
   · right
-    exact (prod_lt_top fun i hi => h' _ (Finset.mem_insert_of_mem hi)).ne
+    exact prod_ne_top fun i hi => h' _ (Finset.mem_insert_of_mem hi)
   · exact IH (fun i hi => h _ (Finset.mem_insert_of_mem hi)) fun i hi =>
       h' _ (Finset.mem_insert_of_mem hi)
   · exact Or.inr (h' _ (Finset.mem_insert_self _ _))

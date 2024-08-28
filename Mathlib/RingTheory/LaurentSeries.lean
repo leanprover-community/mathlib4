@@ -525,7 +525,7 @@ theorem coeff_zero_of_lt_valuation {n D : ℤ} {f : LaurentSeries K}
     apply (intValuation_le_iff_coeff_lt_eq_zero K F).mp _ m (by linarith)
     rwa [hF, ofPowerSeries_powerSeriesPart f, hs, neg_neg, ← hd, neg_add_rev, ofAdd_add, map_mul,
       ← ofPowerSeries_X_pow s, PowerSeries.coe_pow,  WithZero.coe_mul, valuation_X_pow K s,
-      mul_le_mul_left₀ (by simp only [ne_eq, WithZero.coe_ne_zero, not_false_iff])]
+      mul_le_mul_left (by simp only [ne_eq, WithZero.coe_ne_zero, not_false_iff, zero_lt_iff])]
   · rw [not_le] at ord_nonpos
     obtain ⟨s, hs⟩ := Int.exists_eq_neg_ofNat (Int.neg_nonpos_of_nonneg (le_of_lt ord_nonpos))
     obtain ⟨m, hm⟩ := Int.eq_ofNat_of_zero_le (a := n - s) (by linarith)
@@ -535,7 +535,7 @@ theorem coeff_zero_of_lt_valuation {n D : ℤ} {f : LaurentSeries K}
     apply (intValuation_le_iff_coeff_lt_eq_zero K F).mp _ m (by linarith)
     rwa [hF, ofPowerSeries_powerSeriesPart f, map_mul, ← hd, hs, neg_sub, sub_eq_add_neg,
       ofAdd_add, valuation_single_zpow, neg_neg, WithZero.coe_mul,
-      mul_le_mul_left₀ (by simp only [ne_eq, WithZero.coe_ne_zero, not_false_iff])]
+      mul_le_mul_left (by simp only [ne_eq, WithZero.coe_ne_zero, not_false_iff, zero_lt_iff])]
 
 /- The valuation of a Laurent series is the order of the first non-zero coefficient. -/
 theorem valuation_le_iff_coeff_lt_eq_zero {D : ℤ} {f : LaurentSeries K} :
@@ -558,7 +558,7 @@ theorem valuation_le_iff_coeff_lt_eq_zero {D : ℤ} {f : LaurentSeries K} :
         rw [powerSeriesPart_coeff f n, hs]
         apply h_val_f
         linarith
-    · simp only [ne_eq, WithZero.coe_ne_zero, not_false_iff]
+    · simp only [ne_eq, WithZero.coe_ne_zero, not_false_iff, zero_lt_iff]
   · obtain ⟨s, hs⟩ := Int.exists_eq_neg_ofNat
       <| neg_nonpos_of_nonneg <| le_of_lt <| not_le.mp ord_nonpos
     rw [neg_inj] at hs
@@ -576,7 +576,7 @@ theorem valuation_le_iff_coeff_lt_eq_zero {D : ℤ} {f : LaurentSeries K} :
         rw [powerSeriesPart_coeff f n, hs]
         apply h_val_f (s + n)
         linarith
-    · simp only [ne_eq, WithZero.coe_ne_zero, not_false_iff]
+    · simp only [ne_eq, WithZero.coe_ne_zero, not_false_iff, zero_lt_iff]
 
 /- Two Laurent series whose difference has small valuation have the same coefficients for
 small enough indices. -/

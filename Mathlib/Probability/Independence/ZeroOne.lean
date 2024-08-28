@@ -58,7 +58,7 @@ theorem measure_eq_zero_or_one_of_indepSet_self [IsFiniteMeasure μ] {t : Set Ω
     using Kernel.measure_eq_zero_or_one_of_indepSet_self h_indep
 
 theorem condexp_eq_zero_or_one_of_condIndepSet_self
-    [StandardBorelSpace Ω] [Nonempty Ω]
+    [StandardBorelSpace Ω]
     (hm : m ≤ m0) [hμ : IsFiniteMeasure μ] {t : Set Ω} (ht : MeasurableSet t)
     (h_indep : CondIndepSet m hm t t μ) :
     ∀ᵐ ω ∂μ, (μ⟦t | m⟧) ω = 0 ∨ (μ⟦t | m⟧) ω = 1 := by
@@ -84,7 +84,7 @@ theorem indep_biSup_compl [IsProbabilityMeasure μ]
     Indep (⨆ n ∈ t, s n) (⨆ n ∈ tᶜ, s n) μ :=
   Kernel.indep_biSup_compl h_le h_indep t
 
-theorem condIndep_biSup_compl [StandardBorelSpace Ω] [Nonempty Ω]
+theorem condIndep_biSup_compl [StandardBorelSpace Ω]
     (hm : m ≤ m0) [IsFiniteMeasure μ]
     (h_le : ∀ n, s n ≤ m0) (h_indep : iCondIndep m hm s μ) (t : Set ι) :
     CondIndep m (⨆ n ∈ t, s n) (⨆ n ∈ tᶜ, s n) hm μ :=
@@ -118,7 +118,7 @@ theorem indep_biSup_limsup [IsProbabilityMeasure μ]
     Indep (⨆ n ∈ t, s n) (limsup s f) μ :=
   Kernel.indep_biSup_limsup h_le h_indep hf ht
 
-theorem condIndep_biSup_limsup [StandardBorelSpace Ω] [Nonempty Ω]
+theorem condIndep_biSup_limsup [StandardBorelSpace Ω]
     (hm : m ≤ m0) [IsFiniteMeasure μ]
     (h_le : ∀ n, s n ≤ m0) (h_indep : iCondIndep m hm s μ) (hf : ∀ t, p t → tᶜ ∈ f)
     {t : Set ι} (ht : p t) :
@@ -145,7 +145,7 @@ theorem indep_iSup_directed_limsup [IsProbabilityMeasure μ]
   Kernel.indep_iSup_directed_limsup h_le h_indep hf hns hnsp
 
 theorem condIndep_iSup_directed_limsup [StandardBorelSpace Ω]
-    [Nonempty Ω] (hm : m ≤ m0) [IsFiniteMeasure μ]
+    (hm : m ≤ m0) [IsFiniteMeasure μ]
     (h_le : ∀ n, s n ≤ m0) (h_indep : iCondIndep m hm s μ)
     (hf : ∀ t, p t → tᶜ ∈ f) (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a)) :
     CondIndep m (⨆ a, ⨆ n ∈ ns a, s n) (limsup s f) hm μ :=
@@ -170,7 +170,7 @@ theorem indep_iSup_limsup [IsProbabilityMeasure μ]
     Indep (⨆ n, s n) (limsup s f) μ :=
   Kernel.indep_iSup_limsup h_le h_indep hf hns hnsp hns_univ
 
-theorem condIndep_iSup_limsup [StandardBorelSpace Ω] [Nonempty Ω]
+theorem condIndep_iSup_limsup [StandardBorelSpace Ω]
     (hm : m ≤ m0) [IsFiniteMeasure μ]
     (h_le : ∀ n, s n ≤ m0) (h_indep : iCondIndep m hm s μ) (hf : ∀ t, p t → tᶜ ∈ f)
     (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a)) (hns_univ : ∀ n, ∃ a, n ∈ ns a) :
@@ -189,7 +189,7 @@ theorem indep_limsup_self [IsProbabilityMeasure μ]
     Indep (limsup s f) (limsup s f) μ :=
   Kernel.indep_limsup_self h_le h_indep hf hns hnsp hns_univ
 
-theorem condIndep_limsup_self [StandardBorelSpace Ω] [Nonempty Ω]
+theorem condIndep_limsup_self [StandardBorelSpace Ω]
     (hm : m ≤ m0) [IsFiniteMeasure μ]
     (h_le : ∀ n, s n ≤ m0) (h_indep : iCondIndep m hm s μ) (hf : ∀ t, p t → tᶜ ∈ f)
     (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a)) (hns_univ : ∀ n, ∃ a, n ∈ ns a) :
@@ -214,7 +214,7 @@ theorem measure_zero_or_one_of_measurableSet_limsup [IsProbabilityMeasure μ]
     using Kernel.measure_zero_or_one_of_measurableSet_limsup h_le h_indep hf hns hnsp hns_univ
       ht_tail
 
-theorem condexp_zero_or_one_of_measurableSet_limsup [StandardBorelSpace Ω] [Nonempty Ω]
+theorem condexp_zero_or_one_of_measurableSet_limsup [StandardBorelSpace Ω]
     (hm : m ≤ m0) [IsFiniteMeasure μ]
     (h_le : ∀ n, s n ≤ m0) (h_indep : iCondIndep m hm s μ)
     (hf : ∀ t, p t → tᶜ ∈ f) (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a))
@@ -254,7 +254,7 @@ theorem indep_limsup_atTop_self [IsProbabilityMeasure μ]
     Indep (limsup s atTop) (limsup s atTop) μ :=
   Kernel.indep_limsup_atTop_self h_le h_indep
 
-theorem condIndep_limsup_atTop_self [StandardBorelSpace Ω] [Nonempty Ω]
+theorem condIndep_limsup_atTop_self [StandardBorelSpace Ω]
     (hm : m ≤ m0) [IsFiniteMeasure μ]
     (h_le : ∀ n, s n ≤ m0) (h_indep : iCondIndep m hm s μ) :
     CondIndep m (limsup s atTop) (limsup s atTop) hm μ :=
@@ -276,7 +276,7 @@ theorem measure_zero_or_one_of_measurableSet_limsup_atTop [IsProbabilityMeasure 
   simpa only [ae_dirac_eq, Filter.eventually_pure]
     using Kernel.measure_zero_or_one_of_measurableSet_limsup_atTop h_le h_indep ht_tail
 
-theorem condexp_zero_or_one_of_measurableSet_limsup_atTop [StandardBorelSpace Ω] [Nonempty Ω]
+theorem condexp_zero_or_one_of_measurableSet_limsup_atTop [StandardBorelSpace Ω]
     (hm : m ≤ m0) [IsFiniteMeasure μ] (h_le : ∀ n, s n ≤ m0)
     (h_indep : iCondIndep m hm s μ) {t : Set Ω} (ht_tail : MeasurableSet[limsup s atTop] t) :
     ∀ᵐ ω ∂μ, (μ⟦t | m⟧) ω = 0 ∨ (μ⟦t | m⟧) ω = 1 :=
@@ -308,7 +308,7 @@ theorem indep_limsup_atBot_self [IsProbabilityMeasure μ]
     Indep (limsup s atBot) (limsup s atBot) μ :=
   Kernel.indep_limsup_atBot_self h_le h_indep
 
-theorem condIndep_limsup_atBot_self [StandardBorelSpace Ω] [Nonempty Ω]
+theorem condIndep_limsup_atBot_self [StandardBorelSpace Ω]
     (hm : m ≤ m0) [IsFiniteMeasure μ]
     (h_le : ∀ n, s n ≤ m0) (h_indep : iCondIndep m hm s μ) :
     CondIndep m (limsup s atBot) (limsup s atBot) hm μ :=
@@ -333,7 +333,7 @@ theorem measure_zero_or_one_of_measurableSet_limsup_atBot [IsProbabilityMeasure 
 
 /-- **Kolmogorov's 0-1 law**, conditional version: any event in the tail σ-algebra of a
 conditinoally independent sequence of sub-σ-algebras has conditional probability 0 or 1. -/
-theorem condexp_zero_or_one_of_measurableSet_limsup_atBot [StandardBorelSpace Ω] [Nonempty Ω]
+theorem condexp_zero_or_one_of_measurableSet_limsup_atBot [StandardBorelSpace Ω]
     (hm : m ≤ m0) [IsFiniteMeasure μ] (h_le : ∀ n, s n ≤ m0)
     (h_indep : iCondIndep m hm s μ) {t : Set Ω} (ht_tail : MeasurableSet[limsup s atBot] t) :
     ∀ᵐ ω ∂μ, (μ⟦t | m⟧) ω = 0 ∨ (μ⟦t | m⟧) ω = 1 :=
