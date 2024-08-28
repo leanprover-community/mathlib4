@@ -7,6 +7,7 @@ import Mathlib.Topology.Algebra.Module.WeakDual
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Analysis.RCLike.Lemmas
+import Mathlib.Topology.Separation
 
 /-!
 # Weak Dual in Topological Vector Spaces
@@ -144,8 +145,12 @@ instance WeakBilin.locallyConvexSpace {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} :
 variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
 instance WeakBilin.T2 {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (h_sep : ∀ x : E, x ≠ 0 → (∃ f : F, B x f ≠ 0)) :
-    T2Space (WeakBilin B) := by
+    T2Space (WeakBilin B) :=
+  Embedding.t2Space <|
+    WeakBilin.embedding <|
+      show Function.Injective B from
   sorry
+
 
 def dual_of_separating_family {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜}
     (h_sep : ∀ x : E, x ≠ 0 → (∃ f : F, B x f ≠ 0)) : (WeakBilin B →L[𝕜] 𝕜) ≃L[𝕜] F := by
