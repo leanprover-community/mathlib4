@@ -235,17 +235,20 @@ def aleph'Equiv : Ordinal ≃ Cardinal :=
 `aleph 1 = succ ℵ₀` is the first uncountable cardinal, and so on.
 
 For a version including finite cardinals, see `Cardinal.aleph'`. -/
-def aleph (o : Ordinal) : Cardinal :=
-  aleph' (ω + o)
+def aleph : Ordinal ↪o Cardinal :=
+  OrderEmbedding.ofMapLEIff
+    (fun o => aleph' (ω + o)) fun _ _=> aleph'_le.trans (add_le_add_iff_left _)
 
-@[simp]
+theorem aleph_eq_aleph' (o : Ordinal) : aleph o = aleph' (ω + o) :=
+  rfl
+
 theorem aleph_lt {o₁ o₂ : Ordinal} : aleph o₁ < aleph o₂ ↔ o₁ < o₂ :=
-  aleph'_lt.trans (add_lt_add_iff_left _)
+  aleph.lt_iff_lt
 
-@[simp]
 theorem aleph_le {o₁ o₂ : Ordinal} : aleph o₁ ≤ aleph o₂ ↔ o₁ ≤ o₂ :=
-  le_iff_le_iff_lt_iff_lt.2 aleph_lt
+  aleph.le_iff_le
 
+-- TODO: prove `OrderEmbedding.map_max`.
 @[simp]
 theorem max_aleph_eq (o₁ o₂ : Ordinal) : max (aleph o₁) (aleph o₂) = aleph (max o₁ o₂) := by
   rcases le_total (aleph o₁) (aleph o₂) with h | h
@@ -254,14 +257,14 @@ theorem max_aleph_eq (o₁ o₂ : Ordinal) : max (aleph o₁) (aleph o₂) = ale
 
 @[simp]
 theorem aleph_succ {o : Ordinal} : aleph (succ o) = succ (aleph o) := by
-  rw [aleph, add_succ, aleph'_succ, aleph]
+  rw [aleph_eq_aleph', add_succ, aleph'_succ, aleph_eq_aleph']
 
 @[simp]
-theorem aleph_zero : aleph 0 = ℵ₀ := by rw [aleph, add_zero, aleph'_omega]
+theorem aleph_zero : aleph 0 = ℵ₀ := by rw [aleph_eq_aleph', add_zero, aleph'_omega]
 
 theorem aleph_limit {o : Ordinal} (ho : o.IsLimit) : aleph o = ⨆ a : Iio o, aleph a := by
   apply le_antisymm _ (ciSup_le' _)
-  · rw [aleph, aleph'_limit (ho.add _)]
+  · rw [aleph_eq_aleph', aleph'_limit (ho.add _)]
     refine ciSup_mono' (bddAbove_of_small _) ?_
     rintro ⟨i, hi⟩
     cases' lt_or_le i ω with h h
@@ -274,7 +277,7 @@ theorem aleph_limit {o : Ordinal} (ho : o.IsLimit) : aleph o = ⨆ a : Iio o, al
 theorem aleph0_le_aleph' {o : Ordinal} : ℵ₀ ≤ aleph' o ↔ ω ≤ o := by rw [← aleph'_omega, aleph'_le]
 
 theorem aleph0_le_aleph (o : Ordinal) : ℵ₀ ≤ aleph o := by
-  rw [aleph, aleph0_le_aleph']
+  rw [aleph_eq_aleph', aleph0_le_aleph']
   apply Ordinal.le_add_right
 
 theorem aleph'_pos {o : Ordinal} (ho : 0 < o) : 0 < aleph' o := by rwa [← aleph'_zero, aleph'_lt]
@@ -303,7 +306,7 @@ instance (o : Ordinal) : NoMaxOrder (aleph o).ord.out.α :=
 theorem exists_aleph {c : Cardinal} : ℵ₀ ≤ c ↔ ∃ o, c = aleph o :=
   ⟨fun h =>
     ⟨aleph'.symm c - ω, by
-      rw [aleph, Ordinal.add_sub_cancel_of_le, aleph'.apply_symm_apply]
+      rw [aleph_eq_aleph', Ordinal.add_sub_cancel_of_le, aleph'.apply_symm_apply]
       rwa [← aleph0_le_aleph', aleph'.apply_symm_apply]⟩,
     fun ⟨o, e⟩ => e.symm ▸ aleph0_le_aleph _⟩
 
@@ -351,8 +354,7 @@ theorem eq_aleph_of_eq_card_ord {o : Ordinal} (ho : o.card.ord = o) (ho' : ω �
     ∃ a, (aleph a).ord = o := by
   cases' eq_aleph'_of_eq_card_ord ho with a ha
   use a - ω
-  unfold aleph
-  rwa [Ordinal.add_sub_cancel_of_le]
+  rwa [aleph_eq_aleph', Ordinal.add_sub_cancel_of_le]
   rwa [← aleph0_le_aleph', ← ord_le_ord, ha, ord_aleph0]
 
 /-- `ord ∘ aleph` enumerates the infinite ordinals that are cardinals. -/
