@@ -283,9 +283,14 @@ lemma polar_U0 : polar 𝕜 (U 0) = closedBall (0 : Dual 𝕜 E) 0 := by
   -- Should we be able to use Metric.closedBall_zero here?
   rw [closedBall_zero', closure_singleton, U, polar_univ]
 
-
-
-lemma polarU (n : ℕ) : polar 𝕜 (U n) = closedBall (0 : Dual 𝕜 E) n := sorry
+lemma polar_Un {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] (n : ℕ) :
+    polar 𝕜 (U n) = closedBall (0 : Dual 𝕜 E) n := by
+  cases' n with n
+  · rw [polar_U0]
+    simp only [CharP.cast_eq_zero]
+  · rw [U]
+    simp only [Nat.cast_add, Nat.cast_one]
+    rw [polar_ball Nat.inv_pos_of_nat, inv_inv]
 
 
 theorem finite_subsets1 (U : Set (Dual 𝕜 E)) : ∃ F : ℕ → Set E, ∀ n : ℕ, (F n).Finite := by
