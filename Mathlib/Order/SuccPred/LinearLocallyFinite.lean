@@ -109,7 +109,6 @@ noncomputable instance (priority := 100) [LocallyFiniteOrder ι] : SuccOrder ι 
   le_succ := le_succFn
   max_of_succ_le h := isMax_of_succFn_le _ h
   succ_le_of_lt h := succFn_le_of_lt _ _ h
-  le_of_lt_succ h := le_of_lt_succFn _ _ h
 
 noncomputable instance (priority := 100) [LocallyFiniteOrder ι] : PredOrder ι :=
   (inferInstance : PredOrder (OrderDual ιᵒᵈ))
