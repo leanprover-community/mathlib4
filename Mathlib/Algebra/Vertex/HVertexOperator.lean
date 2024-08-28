@@ -37,7 +37,7 @@ assert_not_exists Cardinal
 
 noncomputable section
 
-variable {Γ Γ' R U V W : Type*} [CommRing R]
+variable {Γ Γ' R U V W X Y : Type*} [CommRing R]
   [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W]
 
 /-- A heterogeneous `Γ`-vertex operator over a commutator ring `R` is an `R`-linear map from an
@@ -281,9 +281,6 @@ end Products
 
 section Binomial
 
-variable {Γ : Type*} [OrderedCancelAddCommMonoid Γ] {R : Type*} {V W : Type*} [CommRing R]
-  [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W]
-
 theorem lex_basis_lt : (toLex (0,1) : ℤ ×ₗ ℤ) < (toLex (1,0) : ℤ ×ₗ ℤ) := by decide
 --#find_home! lex_basis_lt --[Mathlib.Data.Prod.Lex]
 
@@ -292,6 +289,9 @@ theorem toLex_vAdd_of_sub (k l m n : ℤ) :
   rw [vadd_eq_add, ← toLex_add, Prod.mk_add_mk, Int.add_comm, Int.sub_add_cancel, Int.add_comm,
     Int.sub_add_cancel]
 --#find_home! toLex_vAdd_of_sub --[Mathlib.RingTheory.HahnSeries.Multiplication]
+
+variable [OrderedCancelAddCommMonoid Γ] {R : Type*} {V W : Type*} [CommRing R]
+  [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W]
 
 /-- `-Y + X` as a unit of `R((X))((Y))` -/
 def subLeft (R : Type*) [CommRing R] : (HahnSeries (ℤ ×ₗ ℤ) R)ˣ :=
@@ -376,37 +376,35 @@ operators. -/
 -- in a vertex algebra is just HVertexOperator ℤ R (V ⊗[R] V) V?
 -- Then composition is easier.
 
-namespace VertexAlg
-
-variable (R) {X Y : Type*}
-
-/-- The coefficient function of a heterogeneous state-field map. -/
-@[simps]
-def coeff [PartialOrder Γ] [CommRing R] [AddCommGroup U] [Module R U] [Module R V] [Module R W]
-    (A : U →ₗ[R] HVertexOperator Γ R V W) (g : Γ) : U →ₗ[R] V →ₗ[R] W where
-  toFun u := (A u).coeff g
-  map_add' a b := by simp
-  map_smul' r a := by simp
-
 open TensorProduct
 
 /-- The standard equivalence between heterogeneous state field maps and heterogeneous vertex
-operators on the tensor product. -/
+operators on the tensor product. May be unnecessary. -/
 def uncurry [PartialOrder Γ] [AddCommGroup U] [Module R U] :
     (U →ₗ[R] HVertexOperator Γ R V W) ≃ₗ[R] HVertexOperator Γ R (U ⊗[R] V) W :=
   lift.equiv R U V (HahnModule Γ R W)
 
 @[simp]
 theorem uncurry_apply [PartialOrder Γ] [AddCommGroup U] [Module R U]
-    (A : U →ₗ[R] HVertexOperator Γ R V W) (u : U) (v : V) : uncurry R A (u ⊗ₜ v) = A u v :=
+    (A : U →ₗ[R] HVertexOperator Γ R V W) (u : U) (v : V) : uncurry A (u ⊗ₜ v) = A u v :=
   rfl
 
 @[simp]
 theorem uncurry_symm_apply [PartialOrder Γ] [AddCommGroup U] [Module R U]
-    (A : HVertexOperator Γ R (U ⊗[R] V) W) (u : U) (v : V) : (uncurry R).symm A u v = A (u ⊗ₜ v) :=
+    (A : HVertexOperator Γ R (U ⊗[R] V) W) (u : U) (v : V) : uncurry.symm A u v = A (u ⊗ₜ v) :=
   rfl
 
-/-! Iterate starting with `Y_{UV}^W : U ⊗ V → W((z))` and `Y_{WX}^Y : W ⊗ X → Y((w))`, make
+section Composition
+
+variable [PartialOrder Γ] [PartialOrder Γ'] [AddCommGroup U] [Module R U]  [AddCommGroup X]
+[Module R X]  [AddCommGroup Y] [Module R Y]
+/-!
+/-- Left iterated vertex operator. -/
+def leftTensorComp (A : HVertexOperator Γ R (U ⊗[R] V) W) (B : HVertexOperator Γ' R (W ⊗[R] X) Y) :
+    HVertexOperator (Γ ×ₗ Γ') R ((U ⊗[R] V) ⊗[R] W) Y :=
+  (HahnModule.map B) ∘ₗ HahnModule.rightTensorMap ∘ₗ (A ⊗ id) -- needs (of R), HahnSeries.ofIterate
+
+ Iterate starting with `Y_{UV}^W : U ⊗ V → W((z))` and `Y_{WX}^Y : W ⊗ X → Y((w))`, make
 `leftTensorComp`: `Y_{UVX}^Y (t_1, t_2) : U ⊗ V ⊗ X → W((z)) ⊗ X → (W ⊗ X)((z)) → Y((w))((z))`.
 First: `Y_{UV}^W ⊗ id X : U ⊗ V ⊗ X → W((z)) ⊗ X`
 Second: `W((z)) ⊗ X → (W ⊗ X)((z))` is `HahnModule.rightTensorMap`.
@@ -420,6 +418,6 @@ Define things like order of a pair, creativity?
 
 -/
 
-end VertexAlg
+end Composition
 
 end HVertexOperator

@@ -117,15 +117,6 @@ def rec [PartialOrder Γ] [Zero V] [SMul R V] {motive : HahnModule Γ R V → So
 theorem ext (x y : HahnModule Γ R V) (h : ((of R).symm x).coeff = ((of R).symm y).coeff) : x = y :=
   (of R).symm.injective <| HahnSeries.coeff_inj.1 h
 
-/-- HahnModule coefficient-wise map. -/
-def map {U : Type*} [Zero U] [SMul R U] (x : HahnModule Γ R U) (f : ZeroHom U V) :
-    HahnModule Γ R V := (of R) (HahnSeries.map ((of R).symm x) f)
-
-@[simp]
-protected lemma map_coeff {U : Type*} [Zero U] [SMul R U] (x : HahnModule Γ R U) (f : ZeroHom U V)
-    (g : Γ) : ((of R).symm (x.map f)).coeff g = f (((of R).symm x).coeff g) := by
-  simp [map]
-
 end
 
 section SMul
@@ -145,16 +136,6 @@ instance instBaseSMul {V} [Monoid R] [AddMonoid V] [DistribMulAction R V] :
 @[simp] theorem of_symm_zero : (of R).symm (0 : HahnModule Γ R V) = 0 := rfl
 @[simp] theorem of_symm_add (x y : HahnModule Γ R V) :
   (of R).symm (x + y) = (of R).symm x + (of R).symm y := rfl
-
-protected lemma map_zero {U : Type*} [AddCommMonoid U] [SMul R U] (f : ZeroHom U V) :
-    (0 : HahnModule Γ R U).map f = 0 := by
-  ext; simp
-
-@[simp]
-protected lemma map_add {U : Type*} [AddCommMonoid U] [SMul R U] (f : U →+ V)
-    {x y : HahnModule Γ R U} :
-    ((x + y).map f : HahnModule Γ R V) = x.map f + y.map f := by
-  ext; simp
 
 variable [PartialOrder Γ'] [VAdd Γ Γ'] [IsOrderedCancelVAdd Γ Γ']
 
@@ -738,15 +719,25 @@ instance instModule [Semiring R] [Module R V] : Module (HahnSeries Γ R)
   zero_smul := fun _ => zero_smul'
   }
 
-protected lemma map_smul [Semiring R] [AddCommMonoid U] [Module R V] [Module R U] (f : U →ₗ[R] V)
-    {r : HahnSeries Γ R} {x : HahnModule Γ' R U} :
-    (r • x).map f = r • ((x.map f) : HahnModule Γ' R V) := by
-  ext g
-  simp only [HahnModule.map_coeff, smul_coeff, ZeroHom.coe_coe, map_sum, map_smul]
-  refine Eq.symm (sum_subset (fun gh hgh => ?_) (fun gh hgh hz => (by simp_all)))
-  simp_all only [mem_vaddAntidiagonal, HahnSeries.mem_support, ne_eq, HahnModule.map_coeff,
-    ZeroHom.coe_coe, not_false_eq_true, and_true, true_and]
-  apply fun h => hgh.2.1 (LinearMap.map_zero (R := R) (f := f) ▸ congrArg f h)
+/-- HahnModule coefficient-wise map as a HahnSeries-linear map. -/
+def map [Semiring R] [Module R V] [AddCommMonoid U] [Module R U] (f : U →ₗ[R] V) :
+    HahnModule Γ' R U →ₗ[HahnSeries Γ R] HahnModule Γ' R V where
+  toFun x := (of R) (HahnSeries.map ((of R).symm x) f)
+  map_add' x y := by ext; simp
+  map_smul' s x := by
+    ext g
+    simp only [Equiv.symm_apply_apply, HahnSeries.map_coeff, smul_coeff, ZeroHom.coe_coe, map_sum,
+      map_smul, RingHom.id_apply]
+    refine Eq.symm <| sum_subset (fun gh hgh => ?_) (fun gh hgh hz => (by simp_all))
+    simp_all only [mem_vaddAntidiagonal, HahnSeries.mem_support, ne_eq, HahnSeries.map_coeff,
+      ZeroHom.coe_coe, not_false_eq_true, and_true, true_and]
+    apply fun h => hgh.2.1 (LinearMap.map_zero (R := R) (f := f) ▸ congrArg f h)
+
+@[simp]
+protected lemma map_coeff [Semiring R] [Module R V] [AddCommMonoid U] [Module R U]
+    (x : HahnModule Γ R U) (f : U →ₗ[R] V) (g : Γ) :
+    ((of R).symm (map (Γ := Γ) f x)).coeff g = f (((of R).symm x).coeff g) := by
+  simp [map]
 
 instance instGroupModule {V} [Ring R] [AddCommGroup V] [Module R V] : Module (HahnSeries Γ R)
     (HahnModule Γ' R V) where
