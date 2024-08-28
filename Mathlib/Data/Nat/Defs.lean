@@ -1070,7 +1070,7 @@ lemma sub_mod_eq_zero_of_mod_eq (h : m % k = n % k) : (m - n) % k = 0 := by
 @[simp] lemma one_mod (n : ℕ) : 1 % (n + 2) = 1 :=
   Nat.mod_eq_of_lt (Nat.add_lt_add_right n.succ_pos 1)
 
-lemma ne_one_iff_one_mod : ∀ {n : ℕ}, n ≠ 1 ↔ 1 % n = 1
+lemma one_mod_eq_one : ∀ {n : ℕ}, 1 % n = 1 ↔ n ≠ 1
   | 0 | 1 | n + 2 => by simp
 
 lemma dvd_sub_mod (k : ℕ) : n ∣ k - k % n :=
