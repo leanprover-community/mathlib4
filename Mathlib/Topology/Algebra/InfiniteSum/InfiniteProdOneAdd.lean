@@ -9,10 +9,11 @@ import Mathlib.Order.Filter.ZeroAndBoundedAtFilter
 
 open Filter Function Complex
 
-open scoped Interval Topology BigOperators Nat Classical UpperHalfPlane
+open scoped Interval Topology BigOperators Nat Classical UpperHalfPlane Complex
 
 
 variable {α  ι: Type*}
+
 
 lemma norm_log_one_add_le {z : ℂ} (hz : ‖z‖ < 1) :
     ‖log (1 + z)‖ ≤ ‖z‖ ^ 2 * (1 - ‖z‖)⁻¹ / 2 + ‖z‖ := by
@@ -22,9 +23,9 @@ lemma norm_log_one_add_le {z : ℂ} (hz : ‖z‖ < 1) :
 
 /--For `‖z‖ ≤ 1/2`, the complex logarithm is bounded by `(3/2) * ‖z‖`. -/
 lemma norm_log_one_add_half_le_self {z : ℂ} (hz : ‖z‖ ≤ 1/2) : ‖(log (1 + z))‖ ≤ (3/2) * ‖z‖ := by
-  apply le_trans (norm_log_one_add_le (lt_of_le_of_lt hz one_half_lt_one))
+  apply le_trans (Complex.norm_log_one_add_le (lt_of_le_of_lt hz one_half_lt_one))
   have hz3 : (1 - ‖z‖)⁻¹ ≤ 2 := by
-    rw [inv_eq_one_div, div_le_iff]
+    rw [inv_eq_one_div, div_le_iff₀]
     · linarith
     · linarith
   have hz4 : ‖z‖^2 * (1 - ‖z‖)⁻¹ / 2 ≤ ‖z‖/2 * 2 / 2 := by
@@ -84,12 +85,12 @@ lemma UniformlyContinuosOn_cexp (a : ℝ) : UniformContinuousOn cexp {x : ℂ | 
 
 
 
-theorem UniformContinuousOn.comp_tendstoUniformly  {β γ ι: Type*}
+/- theorem UniformContinuousOn.comp_tendstoUniformly  {β γ ι: Type*}
     [UniformSpace β] {p : Filter ι} (s : Set β) (F : ι → γ → s) (f : γ → s) {g : β → β}
     (hg : UniformContinuousOn g s) (h : TendstoUniformly F f p) :
     TendstoUniformly (fun i => fun x =>  g  (F i x)) (fun x => g (f x)) p := by
   rw [uniformContinuousOn_iff_restrict] at hg
-  apply (UniformContinuous.comp_tendstoUniformly hg h)
+  apply (UniformContinuous.comp_tendstoUniformly hg h) -/
 
 /- theorem UniformContinuousOn.comp_tendstoUniformlyOn (s : Set ℂ) (F : ℕ → ℂ → s)
     (f : ℂ → s) {g : ℂ → ℂ} (hg : UniformContinuousOn g s) (h : TendstoUniformlyOn F f atTop s) :
@@ -132,17 +133,11 @@ lemma tendstouniformlyOn_le (f : ι → α → ℝ) {p : Filter ι} (g : α → 
   apply le_trans (tsub_le_iff_right.mp (le_trans (Real.le_norm_self _) (hN2 n hn x hx).le))
   linarith [hg x hx]
 
-lemma tendstouniformlyOn_iff_restrict {α : Type*} [UniformSpace α] (f : ℕ → α → ℂ) (g : α → ℂ)
-    (K : Set α) : TendstoUniformlyOn f g atTop K ↔
-      TendstoUniformly (fun n : ℕ => K.restrict (f n)) (K.restrict g) atTop := by
+lemma tendstouniformlyOn_iff_restrict {α β ι: Type*} [UniformSpace α] [PseudoMetricSpace β]
+    [Preorder ι] (f : ι → α → β) (g : α → β) (K : Set α) : TendstoUniformlyOn f g atTop K ↔
+      TendstoUniformly (fun n : ι => K.restrict (f n)) (K.restrict g) atTop := by
   simp only [Metric.tendstoUniformlyOn_iff, gt_iff_lt, eventually_atTop, ge_iff_le, ←
     tendstoUniformlyOn_univ, Set.mem_univ, Set.restrict_apply, true_implies, Subtype.forall] at *
-
-lemma tendstouniformlyOn_iff_restrict2 {α ι: Type*} [UniformSpace α] {p : Filter ι}
-    (f : ι → α → ℂ) (g : α → ℂ) (K : Set α) : TendstoUniformlyOn f g p K ↔
-      TendstoUniformly (fun n : ι => K.restrict (f n)) (K.restrict g) p := by
-  simp only [Metric.tendstoUniformlyOn_iff, gt_iff_lt, ← tendstoUniformlyOn_univ, Set.mem_univ,
-    Set.restrict_apply, true_implies, Subtype.forall] at *
 
 lemma tendstouniformlyOn_iff_shift {α β : Type*} [UniformSpace α] [PseudoMetricSpace β]
     (f : ℕ → α → β) (g : α → β) (K : Set α) (d : ℕ) :
@@ -176,65 +171,29 @@ lemma tendstoUniformlyOn_comp_exp {α : Type*} [UniformSpace α] (f : ℕ → α
     (TendstoUniformly_re_part f g K hf) hT
   simp only [eventually_atTop, ge_iff_le] at h2
   obtain ⟨B, δ, hδ⟩ := h2
-  let F : ℕ → K → {x : ℂ | x.re ≤ max B T} := fun n => fun x => ⟨f (n + δ) x, by
+  have w2 := UniformContinuousOn.comp_tendstoUniformly {x : ℂ | x.re ≤ max B T}
+    (fun a => K.restrict (f (a + δ))) (fun b => g b) ?_ ?_ (UniformlyContinuosOn_cexp (max B T))
+      (p := atTop) ?_
+  rw [← tendstoUniformlyOn_univ] at w2
+  rw [tendstouniformlyOn_iff_restrict, ← tendstoUniformlyOn_univ,
+    tendstouniformlyOn_iff_shift (d := δ)]
+  exact w2
+  · intro n k
     have := hδ (n + δ)
     simp only [le_add_iff_nonneg_left, zero_le, true_implies, le_max_iff, Set.mem_setOf_eq] at *
     left
-    apply (this x x.2)⟩
-  let G : K → {x : ℂ | x.re ≤ max B T} := fun x => ⟨g x, by
+    apply (this k k.2)
+  · intro x
     simp only [le_max_iff, Set.mem_setOf_eq]
     right
-    apply le_trans (hT x x.2) (by rfl)⟩
-  have wish : TendstoUniformly F G atTop := by
-    simp only [Metric.tendstoUniformlyOn_iff, gt_iff_lt, eventually_atTop, ge_iff_le, Set.coe_setOf,
-      Set.mem_setOf_eq, Metric.tendstoUniformly_iff, Subtype.forall, F, G] at *
+    apply le_trans (hT x x.2) (by rfl)
+  · simp only [Metric.tendstoUniformlyOn_iff, gt_iff_lt, eventually_atTop, ge_iff_le, Set.coe_setOf,
+        Set.mem_setOf_eq, Metric.tendstoUniformly_iff, Subtype.forall] at *
     intro ε hε
     obtain ⟨N2, hN2⟩ := hf ε hε
     refine ⟨(max N2 δ) - δ, fun n hn x hx => ?_ ⟩
     rw [@Nat.sub_le_iff_le_add] at hn
     apply hN2 (n + δ) (le_trans (Nat.le_max_left N2 δ) hn) x hx
-  have w2 := UniformContinuousOn.comp_tendstoUniformly {x : ℂ | x.re ≤ max B T} F G
-    (UniformlyContinuosOn_cexp (max B T)) wish
-  rw [← tendstoUniformlyOn_univ] at w2
-  rw [tendstouniformlyOn_iff_restrict, ← tendstoUniformlyOn_univ,
-    tendstouniformlyOn_iff_shift (d := δ)]
-  apply w2
-
-lemma tendstoUniformlyOn_comp_exp2 {α ι: Type*} [UniformSpace α] {p : Filter ι} (f : ι → α → ℂ) (g : α → ℂ)
-    (K : Set α) (hf : TendstoUniformlyOn f g p K) (hg : ∃ T : ℝ, ∀ x : α, x ∈ K → (g x).re ≤ T):
-        TendstoUniformlyOn (fun n => fun x => cexp (f n x)) (cexp ∘ g) p K := by
-  obtain ⟨T, hT⟩ := hg
-  have h2 := tendstouniformlyOn_le (fun n x => (f n x).re) (fun x => (g x).re) K T
-    (TendstoUniformly_re_part f g K hf) hT
-  simp_rw [eventually_iff_exists_mem] at h2
-  obtain ⟨B, δ, h1, h2⟩ := h2
-  let F : δ → K → {x : ℂ | x.re ≤ max B T} := fun n => fun x => ⟨f n x, by
-    simp only [le_max_iff, Set.mem_setOf_eq]
-    left
-    apply (h2 n n.2 x x.2)⟩
-  let G : K → {x : ℂ | x.re ≤ max B T} := fun x => ⟨g x, by
-    simp only [le_max_iff, Set.mem_setOf_eq]
-    right
-    apply le_trans (hT x x.2) (by rfl)⟩
-  have wish : TendstoUniformly F G (p.comap ((↑): δ → ι)) := by
-    simp [Metric.tendstoUniformlyOn_iff, gt_iff_lt, eventually_atTop, ge_iff_le, Set.coe_setOf,
-      Set.mem_setOf_eq, Metric.tendstoUniformly_iff, Subtype.forall, F, G] at *
-    intro ε hε
-    simp_rw [@eventually_iff_exists_mem] at *
-    have hff := hf ε hε
-    obtain ⟨N, hN⟩ := hff
-    use N
-    refine ⟨hN.1, ?_⟩
-    intro y hy a ha hay x hx
-    have :=  hN.2 y hy x hx
-    rw [← hay] at this
-    apply this
-  have w2 := UniformContinuousOn.comp_tendstoUniformly {x : ℂ | x.re ≤ max B T} F G
-    (UniformlyContinuosOn_cexp (max B T)) wish
-  rw [← tendstoUniformlyOn_univ] at w2
-  rw [tendstouniformlyOn_iff_restrict2, ← tendstoUniformlyOn_univ]
-
-  apply w2
 
 
 lemma prod_tendstoUniformlyOn_tprod {α : Type*} [UniformSpace α] (f : ℕ → α → ℂ) (K : Set α)
@@ -260,7 +219,7 @@ lemma prod_tendstoUniformlyOn_tprod {α : Type*} [UniformSpace α] (f : ℕ → 
       apply Complex.exp_log (hfn ⟨x, hx⟩ y)
   apply TendstoUniformlyOn.congr_right HU
   intro x hx
-  exact congrFun (cexp_tsum_eq_tprod (fun n => fun x : K => 1 + f n x) hfn h) ⟨x, hx⟩
+  exact congrFun (Complex.cexp_tsum_eq_tprod (fun n => fun x : K => 1 + f n x) hfn h) ⟨x, hx⟩
 
 
 open Real
@@ -330,7 +289,7 @@ lemma log_of_summable {f : ℕ → ℂ} (hf : Summable f) :
   obtain ⟨n, hn⟩ := this (1/2) (one_half_pos)
   use n
   intro m hm
-  apply norm_log_one_add_half_le_self
+  apply Complex.norm_log_one_add_half_le_self
   exact (hn m hm).le
 
 lemma log_of_summable_real {f : ℕ → ℝ} (hf : Summable f) :
@@ -401,6 +360,7 @@ lemma ints_comp_IsOpen : IsOpen {z : ℂ | ¬ ∃ (n : ℤ), z = ↑n} := by
   ext y
   aesop
 
+set_option quotPrecheck false
 local notation "ℤᶜ" =>  {z : ℂ | ¬ ∃ (n : ℤ), z = n}
 
 noncomputable instance : UniformSpace ℤᶜ := by infer_instance
@@ -592,7 +552,7 @@ lemma tendstoUniformlyOn_tsum_log_one_add {α : Type*} (f : ℕ → α → ℂ) 
   use N
   intro n hn x hx
   simp
-  have := (norm_log_one_add_half_le_self  (z :=(f n x)) ?_)
+  have := (Complex.norm_log_one_add_half_le_self  (z :=(f n x)) ?_)
   apply le_trans this
   simp
   apply h
@@ -616,7 +576,7 @@ lemma tendstoUniformlyOn_tsum_log_one_add_re {α : Type*} (f : ℕ → α → �
   use N
   intro n hn x hx
   simp
-  have := (norm_log_one_add_half_le_self (z := (f n x)) ?_)
+  have := (Complex.norm_log_one_add_half_le_self (z := (f n x)) ?_)
   rw [← log_re]
   simp
   apply le_trans (abs_re_le_abs _)
