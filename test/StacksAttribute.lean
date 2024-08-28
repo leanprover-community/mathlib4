@@ -24,7 +24,7 @@ warning: Please, enter a Tag after `stacks`.
 warning: Please, enter a Tag after `stacks`.
 -/
 #guard_msgs in
-@[stacks "", stacks]
+@[stacks "", stacks,stacks «0B81»]
 example : True := .intro
 
 /--
