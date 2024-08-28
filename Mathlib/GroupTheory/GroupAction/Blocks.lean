@@ -42,28 +42,6 @@ We follow [wielandt1964].
 
 -/
 
--- #find_home! doesn't find an adequate place for this
-theorem Setoid.nat_sum {α : Type _} [Finite α] {c : Set (Set α)} (hc : Setoid.IsPartition c) :
-    (finsum fun x : c => Set.ncard (x : Set α)) = Nat.card α := by
-  classical
-  have := Fintype.ofFinite α
-  simp only [finsum_eq_sum_of_fintype, Nat.card_eq_fintype_card, ← Set.Nat.card_coe_set_eq]
-  rw [← Fintype.card_sigma]
-  refine' Fintype.card_congr (Equiv.ofBijective (fun x => x.snd : (Σ a : ↥c, a) → α) _)
-  constructor
-  · -- injectivity
-    rintro ⟨⟨x, hx⟩, ⟨a, ha : a ∈ x⟩⟩ ⟨⟨y, hy⟩, ⟨b, hb : b ∈ y⟩⟩ hab
-    dsimp at hab
-    rw [hab] at ha
-    rw [Sigma.subtype_ext_iff]
-    simp only [Subtype.mk_eq_mk, Subtype.coe_mk]
-    apply And.intro _ hab
-    exact ExistsUnique.unique (hc.2 b) ⟨hx, ha⟩ ⟨hy, hb⟩
-  · -- surjectivity
-    intro a
-    obtain ⟨x, ⟨hx, ha : a ∈ x⟩, _⟩ := hc.2 a
-    use ⟨⟨x, hx⟩, ⟨a, ha⟩⟩
-
 open scoped BigOperators Pointwise
 
 namespace MulAction
@@ -509,7 +487,7 @@ section Finite
 
 namespace IsBlock
 
-variable [IsPretransitive G X] [Finite X] {B : Set X} (hB : IsBlock G B)
+variable [IsPretransitive G X] {B : Set X} (hB : IsBlock G B)
 
 theorem ncard_block_eq_relindex {x : X} (hx : x ∈ B) :
     B.ncard = (stabilizer G x).relindex (stabilizer G B) := by
@@ -532,7 +510,7 @@ theorem ncard_dvd_card (hB_ne : B.Nonempty) :
   Dvd.intro _ (hB.ncard_block_mul_ncard_orbit_eq hB_ne)
 
 /-- A too large block is equal to ⊤ -/
-theorem eq_top_card_lt (hB' : Nat.card X < Set.ncard B * 2) :
+theorem eq_top_card_lt [Finite X] (hB' : Nat.card X < Set.ncard B * 2) :
     B = ⊤ := by
   classical
   letI := Fintype.ofFinite X
@@ -557,7 +535,7 @@ theorem eq_top_card_lt (hB' : Nat.card X < Set.ncard B * 2) :
   rwa [← Set.ncard_pos] at hB_ne
 
 /-- If a block has too many translates, then it is a (sub)singleton  -/
-theorem subsingleton_of_card_lt
+theorem subsingleton_of_card_lt [Finite X]
     (hB' : Nat.card X < 2 * Set.ncard (Set.range fun g : G => (g • B : Set X))) :
     B.Subsingleton := by
   suffices Set.ncard B < 2 by
