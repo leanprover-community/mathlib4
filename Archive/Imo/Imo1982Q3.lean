@@ -290,7 +290,7 @@ lemma eq₀
 
 
 theorem Imo1982Q3_part_a
-  {x : ℕ → ℝ}
+    {x : ℕ → ℝ}
   (x_pos : ∀ i, x i > (0 : ℝ))
   (hx₀ : x 0 = (1 : ℝ))
   (hx : ∀ i , x (i + 1) ≤ x i)
