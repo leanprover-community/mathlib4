@@ -2086,7 +2086,6 @@ import Mathlib.Data.ENNReal.Floor
 import Mathlib.Data.ENNReal.Inv
 import Mathlib.Data.ENNReal.Operations
 import Mathlib.Data.ENNReal.Real
-import Mathlib.Data.ENNReal.Sandbox
 import Mathlib.Data.ENat.Basic
 import Mathlib.Data.ENat.Lattice
 import Mathlib.Data.Erased
