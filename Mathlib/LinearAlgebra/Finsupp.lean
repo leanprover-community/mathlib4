@@ -592,7 +592,7 @@ section Total
 variable (R)
 variable {α' : Type*} {M' : Type*} [AddCommMonoid M'] [Module R M'] (v : α → M) {v' : α' → M'}
 
-/-- Interprets (l : α →₀ R) as linear combination of the elements in the family (v : α → M) and
+/-- Interprets (l : α →₀ R) as a linear combination of the elements in the family (v : α → M) and
     evaluates this linear combination. -/
 protected def total : (α →₀ R) →ₗ[R] M :=
   Finsupp.lsum ℕ fun i => LinearMap.id.smulRight (v i)
