@@ -4355,7 +4355,6 @@ import Mathlib.Topology.Algebra.Order.Field
 import Mathlib.Topology.Algebra.Order.Floor
 import Mathlib.Topology.Algebra.Order.Group
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
-import Mathlib.Topology.Algebra.Order.LiminfLimsupPlay
 import Mathlib.Topology.Algebra.Order.Rolle
 import Mathlib.Topology.Algebra.Order.UpperLower
 import Mathlib.Topology.Algebra.Polynomial
