@@ -293,7 +293,7 @@ variable (g : ℕ → Set ℕ) (m : ℕ)
 
 --#check ⋃₀ {g k | k < m}
 
-
+/-- Just demo we can do this sort of thing. -/
 def myF : ℕ → Set ℕ
   | 0 => {0}
   | n =>  ⋃₀ {myF j | j : { j // j < n } }

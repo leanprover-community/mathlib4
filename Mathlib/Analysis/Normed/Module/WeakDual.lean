@@ -229,7 +229,7 @@ theorem isCompact_closedBall [ProperSpace 𝕜] (x' : Dual 𝕜 E) (r : ℝ) :
     IsCompact (toNormedDual ⁻¹' closedBall x' r) :=
   isCompact_of_bounded_of_closed isBounded_closedBall (isClosed_closedBall x' r)
 
-/- More generally could consider a decreasing sequence of fundamental neighbourhoods of 0 -/
+/-- More generally could consider a decreasing sequence of fundamental neighbourhoods of 0 -/
 def U : ℕ → Set E
   | 0 => univ
   | n => ball 0 n⁻¹
@@ -284,7 +284,7 @@ variable (s : Set E)
 /- Placeholder for inductive step -/
 variable (n : ℕ)
 
-/- For all x, let K x be the intersection of 4 sets-/
+/-- For all x, let K x be the intersection of 4 sets-/
 def K : (U (E := E) (n + 1)) → Set (WeakDual 𝕜 E) :=
   fun x => polar 𝕜 s ∩ polar 𝕜 {↑x} ∩ C ∩ polar 𝕜 (U (n+2))
 
