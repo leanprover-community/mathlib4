@@ -5,7 +5,6 @@ Authors: Chris Birkbeck
 -/
 
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
-import Mathlib.Data.Int.Interval
 
 /-!
 # Matrices with fixed determinant
