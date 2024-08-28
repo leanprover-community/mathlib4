@@ -36,7 +36,9 @@ section AdjoinDef
 variable (F : Type*) [Field F] {E : Type*} [Field E] [Algebra F E] (S : Set E)
 
 -- Porting note: not adding `neg_mem'` causes an error.
-/-- `adjoin F S` extends a field `F` by adjoining a set `S ⊆ E`. -/
+/-- `adjoin F S` extends a field `F` by adjoining a set `S ⊆ E`.
+[Stacks: Definition 09FZ, first part](https://stacks.math.columbia.edu/tag/09FZ)
+-/
 def adjoin : IntermediateField F E :=
   { Subfield.closure (Set.range (algebraMap F E) ∪ S) with
     algebraMap_mem' := fun x => Subfield.subset_closure (Or.inl (Set.mem_range_self x)) }
@@ -1213,7 +1215,9 @@ section Induction
 variable {F : Type*} [Field F] {E : Type*} [Field E] [Algebra F E]
 
 /-- An intermediate field `S` is finitely generated if there exists `t : Finset E` such that
-`IntermediateField.adjoin F t = S`. -/
+`IntermediateField.adjoin F t = S`.
+[Stacks: Definition 09FZ, second part](https://stacks.math.columbia.edu/tag/09FZ)
+-/
 def FG (S : IntermediateField F E) : Prop :=
   ∃ t : Finset E, adjoin F ↑t = S
 
