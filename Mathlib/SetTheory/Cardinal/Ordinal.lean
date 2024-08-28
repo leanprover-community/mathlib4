@@ -237,7 +237,7 @@ def aleph'Equiv : Ordinal ≃ Cardinal :=
 For a version including finite cardinals, see `Cardinal.aleph'`. -/
 def aleph : Ordinal ↪o Cardinal :=
   OrderEmbedding.ofMapLEIff
-    (fun o => aleph' (ω + o)) fun _ _=> aleph'_le.trans (add_le_add_iff_left _)
+    (fun o => aleph' (ω + o)) fun _ _=> aleph'_le.trans (add_le_add_iff_left ω)
 
 theorem aleph_eq_aleph' (o : Ordinal) : aleph o = aleph' (ω + o) :=
   rfl
@@ -248,12 +248,12 @@ theorem aleph_lt {o₁ o₂ : Ordinal} : aleph o₁ < aleph o₂ ↔ o₁ < o₂
 theorem aleph_le {o₁ o₂ : Ordinal} : aleph o₁ ≤ aleph o₂ ↔ o₁ ≤ o₂ :=
   aleph.le_iff_le
 
--- TODO: prove `OrderEmbedding.map_max`.
-@[simp]
-theorem max_aleph_eq (o₁ o₂ : Ordinal) : max (aleph o₁) (aleph o₂) = aleph (max o₁ o₂) := by
-  rcases le_total (aleph o₁) (aleph o₂) with h | h
-  · rw [max_eq_right h, max_eq_right (aleph_le.1 h)]
-  · rw [max_eq_left h, max_eq_left (aleph_le.1 h)]
+theorem aleph_max (o₁ o₂ : Ordinal) : aleph (max o₁ o₂) = max (aleph o₁) (aleph o₂) :=
+  aleph.monotone.map_max
+
+@[deprecated aleph_max (since := "2024-08-28")]
+theorem max_aleph_eq (o₁ o₂ : Ordinal) : max (aleph o₁) (aleph o₂) = aleph (max o₁ o₂) :=
+  (aleph_max o₁ o₂).symm
 
 @[simp]
 theorem aleph_succ {o : Ordinal} : aleph (succ o) = succ (aleph o) := by
