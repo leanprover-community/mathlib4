@@ -19,6 +19,10 @@ open Lean Elab Tactic Term Meta
 
 namespace Lean.Attr
 
+/--
+
+TODO
+-/
 def algebraizeGetParam (thm : Name) (stx : Syntax) : AttrM Name := do
   match stx with
   | `(attr| algebraize2 $name:ident) => return name.getId
@@ -133,5 +137,25 @@ elab_rules : tactic
     -- We then search through the local context to find other instances of algebraize
     -- TODO: give the user the option to not do this
     searchContext' t
+
+-- version of algebraize prime which only adds algebra instances & scalar towers
+syntax "algebraize'" (ppSpace colGt term:max)* : tactic
+
+elab_rules : tactic
+  | `(tactic| algebraize' $[$t:term]*) => do
+    let t ← t.mapM fun i => Term.elabTerm i none
+    -- We loop through the given terms and try to add algebra and scalar tower instances
+    for f in t do
+      let ft ← inferType f
+      match ft.getAppFn with
+      | Expr.const `RingHom _ => addAlgebraInstanceFromRingHom f ft
+      | _ => throwError "Expected a `RingHom`" -- TODO: improve message
+
+    for f in t do
+      match f.getAppFn with
+      | Expr.const `RingHom.comp _ =>
+        try addIsScalarTowerInstanceFromRingHomComp f
+        catch _ => continue
+      | _ => continue
 
 end Mathlib.Tactic
