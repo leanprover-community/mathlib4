@@ -22,22 +22,14 @@ variable {α : Sort*} {β : Sort*}
 
 namespace Setoid
 
--- instance : FunLike (Setoid α) α (α → Prop) where
---   coe := @Setoid.r _
---   coe_injective' := fun ⟨r, _⟩ ⟨s, _⟩ h ↦ (show r = s from h) ▸ rfl
-
-/-- A version of `Setoid.r` that takes the equivalence relation as an explicit argument. -/
-def Rel (r : Setoid α) : α → α → Prop :=
-  @Setoid.r _ r
-
 run_cmd Lean.Elab.Command.liftTermElabM do
-  Lean.Meta.registerCoercion ``Setoid.Rel
+  Lean.Meta.registerCoercion ``Setoid.r
     (some { numArgs := 2, coercee := 1, type := .coeFun })
 
 instance : CoeFun (Setoid α) (fun _ ↦ α → α → Prop) where
-  coe := Setoid.Rel
+  coe := @Setoid.r _
 
-lemma equiv_iff_rel {r : Setoid α} {a b : α} : a ≈ b ↔ r a b :=
+lemma equiv_iff_apply {r : Setoid α} {a b : α} : a ≈ b ↔ r a b :=
   Iff.rfl
 
 instance decidableRel (r : Setoid α) [h : DecidableRel r.r] : DecidableRel r :=
