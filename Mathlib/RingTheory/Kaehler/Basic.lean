@@ -369,7 +369,7 @@ theorem KaehlerDifferential.End_equiv_aux (f : S →ₐ[R] S ⊗ S ⧸ KaehlerDi
   · intro e; apply (KaehlerDifferential.quotientCotangentIdealRingEquiv R S).injective
     exact e₁.symm.trans (e.trans e₂)
 
-/- Note: Lean is slow to synthesize theses instances (times out).
+/- Note: Lean is slow to synthesize these instances (times out).
   Without them the endEquivDerivation' and endEquivAuxEquiv both have significant timeouts.
   In Mathlib 3, it was slow but not this slow. -/
 /-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
@@ -557,7 +557,7 @@ theorem KaehlerDifferential.derivationQuotKerTotal_apply (x) :
 
 theorem KaehlerDifferential.derivationQuotKerTotal_lift_comp_total :
     (KaehlerDifferential.derivationQuotKerTotal R S).liftKaehlerDifferential.comp
-        (Finsupp.total S (Ω[S⁄R]) S (KaehlerDifferential.D R S)) =
+        (Finsupp.total S (KaehlerDifferential.D R S)) =
       Submodule.mkQ _ := by
   apply Finsupp.lhom_ext
   intro a b
@@ -565,7 +565,7 @@ theorem KaehlerDifferential.derivationQuotKerTotal_lift_comp_total :
   simp [KaehlerDifferential.derivationQuotKerTotal_apply]
 
 theorem KaehlerDifferential.kerTotal_eq :
-    LinearMap.ker (Finsupp.total S (Ω[S⁄R]) S (KaehlerDifferential.D R S)) =
+    LinearMap.ker (Finsupp.total S (KaehlerDifferential.D R S)) =
       KaehlerDifferential.kerTotal R S := by
   apply le_antisymm
   · conv_rhs => rw [← (KaehlerDifferential.kerTotal R S).ker_mkQ]
@@ -575,7 +575,7 @@ theorem KaehlerDifferential.kerTotal_eq :
     rintro _ ((⟨⟨x, y⟩, rfl⟩ | ⟨⟨x, y⟩, rfl⟩) | ⟨x, rfl⟩) <;> dsimp <;> simp [LinearMap.mem_ker]
 
 theorem KaehlerDifferential.total_surjective :
-    Function.Surjective (Finsupp.total S (Ω[S⁄R]) S (KaehlerDifferential.D R S)) := by
+    Function.Surjective (Finsupp.total S (KaehlerDifferential.D R S)) := by
   rw [← LinearMap.range_eq_top, Finsupp.range_total, KaehlerDifferential.span_range_derivation]
 
 /-- `Ω[S⁄R]` is isomorphic to `S` copies of `S` with kernel `KaehlerDifferential.kerTotal`. -/
@@ -583,7 +583,7 @@ theorem KaehlerDifferential.total_surjective :
 noncomputable def KaehlerDifferential.quotKerTotalEquiv :
     ((S →₀ S) ⧸ KaehlerDifferential.kerTotal R S) ≃ₗ[S] Ω[S⁄R] :=
   { (KaehlerDifferential.kerTotal R S).liftQ
-      (Finsupp.total S (Ω[S⁄R]) S (KaehlerDifferential.D R S))
+      (Finsupp.total S (KaehlerDifferential.D R S))
       (KaehlerDifferential.kerTotal_eq R S).ge with
     invFun := (KaehlerDifferential.derivationQuotKerTotal R S).liftKaehlerDifferential
     left_inv := by
@@ -617,9 +617,8 @@ A --→ B
 R --→ S
 ```
 -/
-variable (A B : Type*) [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
-variable [Algebra A B] [Algebra S B] [IsScalarTower R A B] [IsScalarTower R S B]
-variable [SMulCommClass S A B]
+variable (A B : Type*) [CommRing A] [CommRing B] [Algebra R A]
+variable [Algebra A B] [Algebra S B]
 
 unsuppress_compilation in
 -- The map `(A →₀ A) →ₗ[A] (B →₀ B)`
@@ -639,7 +638,8 @@ The kernel of the presentation `⊕ₓ B dx ↠ Ω_{B/S}` is spanned by the imag
 kernel of `⊕ₓ A dx ↠ Ω_{A/R}` and all `ds` with `s : S`.
 See `kerTotal_map'` for the special case where `R = S`.
 -/
-theorem KaehlerDifferential.kerTotal_map (h : Function.Surjective (algebraMap A B)) :
+theorem KaehlerDifferential.kerTotal_map [Algebra R B] [IsScalarTower R A B] [IsScalarTower R S B]
+    (h : Function.Surjective (algebraMap A B)) :
     (KaehlerDifferential.kerTotal R A).map finsupp_map ⊔
         Submodule.span A (Set.range fun x : S => .single (algebraMap S B x) (1 : B)) =
       (KaehlerDifferential.kerTotal S B).restrictScalars _ := by
@@ -665,7 +665,8 @@ This is a special case of `kerTotal_map` where `R = S`.
 The kernel of the presentation `⊕ₓ B dx ↠ Ω_{B/R}` is spanned by the image of the
 kernel of `⊕ₓ A dx ↠ Ω_{A/R}` and all `da` with `a : A`.
 -/
-theorem KaehlerDifferential.kerTotal_map' (h : Function.Surjective (algebraMap A B)) :
+theorem KaehlerDifferential.kerTotal_map' [Algebra R B]
+    [IsScalarTower R A B] (h : Function.Surjective (algebraMap A B)) :
     (KaehlerDifferential.kerTotal R A ⊔
       Submodule.span A (Set.range fun x ↦ .single (algebraMap R A x) 1)).map finsupp_map =
       (KaehlerDifferential.kerTotal R B).restrictScalars _ := by
@@ -673,6 +674,9 @@ theorem KaehlerDifferential.kerTotal_map' (h : Function.Surjective (algebraMap A
   congr
   refine congr_arg Set.range ?_
   ext; simp [IsScalarTower.algebraMap_eq R A B]
+
+section
+variable [Algebra R B] [IsScalarTower R A B] [IsScalarTower R S B] [SMulCommClass S A B]
 
 /-- The map `Ω[A⁄R] →ₗ[A] Ω[B⁄S]` given a square
 ```
@@ -700,7 +704,7 @@ theorem KaehlerDifferential.map_D (x : A) :
 theorem KaehlerDifferential.ker_map :
     LinearMap.ker (KaehlerDifferential.map R S A B) =
       (((kerTotal S B).restrictScalars A).comap finsupp_map).map
-        (Finsupp.total A (Ω[A⁄R]) A (D R A)) := by
+        (Finsupp.total (M := Ω[A⁄R]) A (D R A)) := by
   rw [← Submodule.map_comap_eq_of_surjective (total_surjective R A) (LinearMap.ker _)]
   congr 1
   ext x
@@ -716,7 +720,7 @@ theorem KaehlerDifferential.ker_map :
 
 lemma KaehlerDifferential.ker_map_of_surjective (h : Function.Surjective (algebraMap A B)) :
     LinearMap.ker (map R R A B) =
-      (LinearMap.ker finsupp_map).map (Finsupp.total A _ A (D R A)) := by
+      (LinearMap.ker finsupp_map).map (Finsupp.total A (D R A)) := by
   rw [ker_map, ← kerTotal_map' R A B h, Submodule.comap_map_eq, Submodule.map_sup,
     Submodule.map_sup, ← kerTotal_eq, ← Submodule.comap_bot,
     Submodule.map_comap_eq_of_surjective (total_surjective _ _),
@@ -766,7 +770,7 @@ lemma KaehlerDifferential.range_mapBaseChange :
       · simp [smul_add, *]
       · simp
     · rw [map_add]; exact add_mem ‹_› ‹_›
-  · convert_to (kerTotal A B).map (Finsupp.total B (Ω[B⁄R]) B (D R B)) ≤ _
+  · convert_to (kerTotal A B).map (Finsupp.total B (D R B)) ≤ _
     · rw [KaehlerDifferential.ker_map]
       congr 1
       convert Submodule.comap_id _
@@ -782,6 +786,8 @@ Also see `KaehlerDifferential.map_surjective`. -/
 lemma KaehlerDifferential.exact_mapBaseChange_map :
     Function.Exact (mapBaseChange R A B) (map R A B B) :=
   SetLike.ext_iff.mp (range_mapBaseChange R A B).symm
+
+end
 
 /-- The map `I → B ⊗[A] B ⊗[A] Ω[A⁄R]` where `I = ker(A → B)`. -/
 @[simps]
@@ -810,6 +816,8 @@ def KaehlerDifferential.kerCotangentToTensor :
 lemma KaehlerDifferential.kerCotangentToTensor_toCotangent (x) :
     kerCotangentToTensor R A B (Ideal.toCotangent _ x) = 1 ⊗ₜ D _ _ x.1 := rfl
 
+variable [Algebra R B] [IsScalarTower R A B]
+
 theorem KaehlerDifferential.range_kerCotangentToTensor
     (h : Function.Surjective (algebraMap A B)) :
     LinearMap.range (kerCotangentToTensor R A B) =
@@ -827,7 +835,7 @@ theorem KaehlerDifferential.range_kerCotangentToTensor
     rw [KaehlerDifferential.ker_map_of_surjective R A B h] at hx
     obtain ⟨x, hx, rfl⟩ := hx
     simp only [TensorProduct.lid_symm_apply, LinearMap.rTensor_tmul,
-      Algebra.linearMap_apply, _root_.map_one]
+      Algebra.linearMap_apply, map_one]
     rw [← Finsupp.sum_single x, Finsupp.sum, ← Finset.sum_fiberwise_of_maps_to
       (fun _ ↦ Finset.mem_image_of_mem (algebraMap A B))]
     simp only [Function.comp_apply, map_sum (s := x.support.image (algebraMap A B)),
@@ -835,7 +843,7 @@ theorem KaehlerDifferential.range_kerCotangentToTensor
     apply sum_mem
     intro c _
     simp only [Finset.filter_congr_decidable, TensorProduct.lid_symm_apply, LinearMap.rTensor_tmul,
-      AlgHom.toLinearMap_apply, _root_.map_one, LinearMap.mem_range]
+      AlgHom.toLinearMap_apply, map_one, LinearMap.mem_range]
     simp only [map_sum, Finsupp.total_single]
     have : (x.support.filter (algebraMap A B · = c)).sum x ∈ RingHom.ker (algebraMap A B) := by
       simpa [Finsupp.mapDomain, Finsupp.sum, Finsupp.finset_sum_apply, RingHom.mem_ker,

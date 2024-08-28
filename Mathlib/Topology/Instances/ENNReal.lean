@@ -9,6 +9,8 @@ import Mathlib.Topology.Instances.NNReal
 import Mathlib.Topology.EMetricSpace.Lipschitz
 import Mathlib.Topology.Metrizable.Basic
 import Mathlib.Topology.Order.T5
+import Mathlib.Topology.MetricSpace.Pseudo.Real
+import Mathlib.Topology.Metrizable.Uniformity
 
 /-!
 # Topology on extended non-negative reals
@@ -354,7 +356,7 @@ theorem tendsto_finset_prod_of_ne_top {ι : Type*} {f : ι → α → ℝ≥0∞
   simp only [Finset.prod_insert has]
   apply Tendsto.mul (h _ (Finset.mem_insert_self _ _))
   · right
-    exact (prod_lt_top fun i hi => h' _ (Finset.mem_insert_of_mem hi)).ne
+    exact prod_ne_top fun i hi => h' _ (Finset.mem_insert_of_mem hi)
   · exact IH (fun i hi => h _ (Finset.mem_insert_of_mem hi)) fun i hi =>
       h' _ (Finset.mem_insert_of_mem hi)
   · exact Or.inr (h' _ (Finset.mem_insert_self _ _))
@@ -430,7 +432,7 @@ theorem le_of_forall_lt_one_mul_le {x y : ℝ≥0∞} (h : ∀ a < 1, a * x ≤ 
   have : Tendsto (· * x) (𝓝[<] 1) (𝓝 (1 * x)) :=
     (ENNReal.continuousAt_mul_const (Or.inr one_ne_zero)).mono_left inf_le_left
   rw [one_mul] at this
-  exact le_of_tendsto this (eventually_nhdsWithin_iff.2 <| eventually_of_forall h)
+  exact le_of_tendsto this (eventually_nhdsWithin_iff.2 <| Eventually.of_forall h)
 
 theorem iInf_mul_left' {ι} {f : ι → ℝ≥0∞} {a : ℝ≥0∞} (h : a = ∞ → ⨅ i, f i = 0 → ∃ i, f i = 0)
     (h0 : a = 0 → Nonempty ι) : ⨅ i, a * f i = a * ⨅ i, f i := by
@@ -1290,7 +1292,7 @@ theorem Filter.Tendsto.edist {f g : β → α} {x : Filter β} {a b : α} (hf : 
 
 /-- If the extended distance between consecutive points of a sequence is estimated
 by a summable series of `NNReal`s, then the original sequence is a Cauchy sequence. -/
-theorem cauchySeq_of_edist_le_of_summable [PseudoEMetricSpace α] {f : ℕ → α} (d : ℕ → ℝ≥0)
+theorem cauchySeq_of_edist_le_of_summable {f : ℕ → α} (d : ℕ → ℝ≥0)
     (hf : ∀ n, edist (f n) (f n.succ) ≤ d n) (hd : Summable d) : CauchySeq f := by
   refine EMetric.cauchySeq_iff_NNReal.2 fun ε εpos ↦ ?_
   -- Actually we need partial sums of `d` to be a Cauchy sequence.

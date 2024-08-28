@@ -7,6 +7,7 @@ import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Multiset.Basic
+import Mathlib.Algebra.BigOperators.Finprod
 
 /-!
 # Lemmas about group actions on big operators
@@ -58,5 +59,11 @@ theorem Multiset.smul_prod {r : α} {s : Multiset β} : r • s.prod = (s.map (r
 theorem Finset.smul_prod {r : α} {f : γ → β} {s : Finset γ} :
     (r • ∏ x ∈ s, f x) = ∏ x ∈ s, r • f x :=
   map_prod (MulDistribMulAction.toMonoidHom β r) f s
+
+theorem smul_finprod {ι : Sort*} [Finite ι] {f : ι → β} (r : α) :
+    r • ∏ᶠ x : ι, f x = ∏ᶠ x : ι, r • (f x) := by
+  cases nonempty_fintype (PLift ι)
+  simp only [finprod_eq_prod_plift_of_mulSupport_subset (s := Finset.univ) (by simp),
+    finprod_eq_prod_of_fintype, Finset.smul_prod]
 
 end

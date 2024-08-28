@@ -55,7 +55,7 @@ variable {K L : Type*} [Field K] [Field L] [Algebra K L] [FiniteDimensional K L]
 
 /-- Given `f : Aut_K(L) → Lˣ`, the sum `∑ f(φ) • φ` for `φ ∈ Aut_K(L)`, as a function `L → L`. -/
 noncomputable def aux (f : (L ≃ₐ[K] L) → Lˣ) : L → L :=
-  Finsupp.total (L ≃ₐ[K] L) (L → L) L (fun φ => φ)
+  Finsupp.total L (fun φ : L ≃ₐ[K] L ↦ (φ : L → L))
     (Finsupp.equivFunOnFinite.symm (fun φ => (f φ : L)))
 
 theorem aux_ne_zero (f : (L ≃ₐ[K] L) → Lˣ) : aux f ≠ 0 :=

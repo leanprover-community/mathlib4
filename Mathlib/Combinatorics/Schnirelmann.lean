@@ -68,7 +68,7 @@ lemma schnirelmannDensity_mul_le_card_filter {n : ℕ} :
     schnirelmannDensity A * n ≤ ((Ioc 0 n).filter (· ∈ A)).card := by
   rcases eq_or_ne n 0 with rfl | hn
   · simp
-  exact (le_div_iff (by positivity)).1 (schnirelmannDensity_le_div hn)
+  exact (le_div_iff₀ (by positivity)).1 (schnirelmannDensity_le_div hn)
 
 /--
 To show the Schnirelmann density is upper bounded by `x`, it suffices to show
@@ -243,9 +243,9 @@ lemma schnirelmannDensity_setOf_mod_eq_one {m : ℕ} (hm : m ≠ 1) :
     simp only [Nat.mul_add_mod', Nat.mod_eq_of_lt hm, add_pos_iff, or_true, and_true, true_and,
       ← Nat.le_sub_iff_add_le hn, zero_lt_one]
     exact Nat.mul_le_of_le_div _ _ _ hy'
-  rw [le_div_iff (Nat.cast_pos.2 hn), mul_comm, ← div_eq_mul_inv]
+  rw [le_div_iff₀ (Nat.cast_pos.2 hn), mul_comm, ← div_eq_mul_inv]
   apply (Nat.cast_le.2 (card_le_card this)).trans'
-  rw [card_image_of_injective, Nat.card_Icc, Nat.sub_zero, div_le_iff (Nat.cast_pos.2 hm'),
+  rw [card_image_of_injective, Nat.card_Icc, Nat.sub_zero, div_le_iff₀ (Nat.cast_pos.2 hm'),
     ← Nat.cast_mul, Nat.cast_le, add_one_mul (α := ℕ)]
   · have := @Nat.lt_div_mul_add n.pred m hm'
     rwa [← Nat.succ_le, Nat.succ_pred hn.ne'] at this

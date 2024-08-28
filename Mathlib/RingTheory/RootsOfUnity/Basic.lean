@@ -467,7 +467,7 @@ variable [FunLike F M N]
 
 theorem map_of_injective [MonoidHomClass F M N] (h : IsPrimitiveRoot ζ k) (hf : Injective f) :
     IsPrimitiveRoot (f ζ) k where
-  pow_eq_one := by rw [← map_pow, h.pow_eq_one, _root_.map_one]
+  pow_eq_one := by rw [← map_pow, h.pow_eq_one, map_one]
   dvd_of_pow_eq_one := by
     rw [h.eq_orderOf]
     intro l hl
@@ -476,12 +476,12 @@ theorem map_of_injective [MonoidHomClass F M N] (h : IsPrimitiveRoot ζ k) (hf :
 
 theorem of_map_of_injective [MonoidHomClass F M N] (h : IsPrimitiveRoot (f ζ) k)
     (hf : Injective f) : IsPrimitiveRoot ζ k where
-  pow_eq_one := by apply_fun f; rw [map_pow, _root_.map_one, h.pow_eq_one]
+  pow_eq_one := by apply_fun f; rw [map_pow, map_one, h.pow_eq_one]
   dvd_of_pow_eq_one := by
     rw [h.eq_orderOf]
     intro l hl
     apply_fun f at hl
-    rw [map_pow, _root_.map_one] at hl
+    rw [map_pow, map_one] at hl
     exact orderOf_dvd_of_pow_eq_one hl
 
 theorem map_iff_of_injective [MonoidHomClass F M N] (hf : Injective f) :

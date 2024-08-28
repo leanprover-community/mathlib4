@@ -158,9 +158,8 @@ theorem map_iUnion_fin_meas_set_eq_sum (T : Set α → β) (T_empty : T ∅ = 0)
     h_add (S a) (⋃ i ∈ s, S i) (hS_meas a) (measurableSet_biUnion _ fun i _ => hS_meas i)
       (hps a (Finset.mem_insert_self a s))]
   · congr; convert Finset.iSup_insert a s S
-  · exact
-      ((measure_biUnion_finset_le _ _).trans_lt <|
-          ENNReal.sum_lt_top fun i hi => hps i <| Finset.mem_insert_of_mem hi).ne
+  · exact (measure_biUnion_lt_top s.finite_toSet fun i hi ↦
+      (hps i <| Finset.mem_insert_of_mem hi).lt_top).ne
   · simp_rw [Set.inter_iUnion]
     refine iUnion_eq_empty.mpr fun i => iUnion_eq_empty.mpr fun hi => ?_
     rw [← Set.disjoint_iff_inter_eq_empty]
@@ -1384,7 +1383,7 @@ theorem tendsto_setToFun_approxOn_of_measurable (hT : DominatedFinMeasAdditive �
     Tendsto (fun n => setToFun μ T hT (SimpleFunc.approxOn f hfm s y₀ h₀ n)) atTop
       (𝓝 <| setToFun μ T hT f) :=
   tendsto_setToFun_of_L1 hT _ hfi
-    (eventually_of_forall (SimpleFunc.integrable_approxOn hfm hfi h₀ h₀i))
+    (Eventually.of_forall (SimpleFunc.integrable_approxOn hfm hfi h₀ h₀i))
     (SimpleFunc.tendsto_approxOn_L1_nnnorm hfm _ hs (hfi.sub h₀i).2)
 
 theorem tendsto_setToFun_approxOn_of_measurable_of_range_subset
@@ -1394,7 +1393,7 @@ theorem tendsto_setToFun_approxOn_of_measurable_of_range_subset
     Tendsto (fun n => setToFun μ T hT (SimpleFunc.approxOn f fmeas s 0 (hs <| by simp) n)) atTop
       (𝓝 <| setToFun μ T hT f) := by
   refine tendsto_setToFun_approxOn_of_measurable hT hf fmeas ?_ _ (integrable_zero _ _ _)
-  exact eventually_of_forall fun x => subset_closure (hs (Set.mem_union_left _ (mem_range_self _)))
+  exact Eventually.of_forall fun x => subset_closure (hs (Set.mem_union_left _ (mem_range_self _)))
 
 /-- Auxiliary lemma for `setToFun_congr_measure`: the function sending `f : α →₁[μ] G` to
 `f : α →₁[μ'] G` is continuous when `μ' ≤ c' • μ` for `c' ≠ ∞`. -/
@@ -1427,8 +1426,8 @@ theorem continuous_L1_toL1 {μ' : Measure α} (c' : ℝ≥0∞) (hc' : c' ≠ �
   have h_eLpNorm_ne_top' : eLpNorm (⇑g - ⇑f) 1 μ' ≠ ∞ := by
     refine ((eLpNorm_mono_measure _ hμ'_le).trans_lt ?_).ne
     rw [eLpNorm_smul_measure_of_ne_zero hc'0, smul_eq_mul]
-    refine ENNReal.mul_lt_top ?_ h_eLpNorm_ne_top
-    simp [hc', hc'0]
+    refine ENNReal.mul_lt_top ?_ h_eLpNorm_ne_top.lt_top
+    simp [hc'.lt_top, hc'0]
   calc
     (eLpNorm (⇑g - ⇑f) 1 μ').toReal ≤ (c' * eLpNorm (⇑g - ⇑f) 1 μ).toReal := by
       rw [toReal_le_toReal h_eLpNorm_ne_top' (ENNReal.mul_ne_top hc' h_eLpNorm_ne_top)]
@@ -1455,7 +1454,7 @@ theorem setToFun_congr_measure_of_integrable {μ' : Measure α} (c' : ℝ≥0∞
     have hμ's : μ' s ≠ ∞ := by
       refine ((hμ'_le s).trans_lt ?_).ne
       rw [Measure.smul_apply, smul_eq_mul]
-      exact ENNReal.mul_lt_top hc' hμs.ne
+      exact ENNReal.mul_lt_top hc'.lt_top hμs
     rw [setToFun_indicator_const hT hs hμs.ne, setToFun_indicator_const hT' hs hμ's]
   · intro f₂ g₂ _ hf₂ hg₂ h_eq_f h_eq_g
     rw [setToFun_add hT hf₂ hg₂, setToFun_add hT' (h_int f₂ hf₂) (h_int g₂ hg₂), h_eq_f, h_eq_g]
@@ -1639,8 +1638,8 @@ theorem continuous_setToFun_of_dominated (hT : DominatedFinMeasAdditive μ T C) 
     (h_bound : ∀ x, ∀ᵐ a ∂μ, ‖fs x a‖ ≤ bound a) (bound_integrable : Integrable bound μ)
     (h_cont : ∀ᵐ a ∂μ, Continuous fun x => fs x a) : Continuous fun x => setToFun μ T hT (fs x) :=
   continuous_iff_continuousAt.mpr fun x₀ =>
-    continuousAt_setToFun_of_dominated hT (eventually_of_forall hfs_meas)
-        (eventually_of_forall h_bound) ‹_› <|
+    continuousAt_setToFun_of_dominated hT (Eventually.of_forall hfs_meas)
+        (Eventually.of_forall h_bound) ‹_› <|
       h_cont.mono fun _ => Continuous.continuousAt
 
 end Function

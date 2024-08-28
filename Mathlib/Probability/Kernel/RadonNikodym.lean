@@ -302,7 +302,7 @@ lemma singularPart_compl_mutuallySingularSetSlice (κ η : Kernel α γ) [IsSFin
   simp only [mem_compl_iff, mutuallySingularSetSlice, mem_setOf, not_le] at hx
   simp_rw [rnDeriv]
   rw [← ENNReal.ofReal_div_of_pos, div_eq_inv_mul, ← ENNReal.ofReal_mul, ← mul_assoc,
-    mul_inv_cancel, one_mul, tsub_self, Pi.zero_apply]
+    mul_inv_cancel₀, one_mul, tsub_self, Pi.zero_apply]
   · simp only [ne_eq, sub_eq_zero, hx.ne', not_false_eq_true]
   · simp only [sub_nonneg, hx.le]
   · simp only [sub_pos, hx]
@@ -375,7 +375,7 @@ lemma withDensity_rnDeriv_of_subset_compl_mutuallySingularSetSlice
   _ = ∫⁻ x in s, ENNReal.ofReal (rnDerivAux κ (κ + η) a x) ∂(κ + η) a := by
       refine setLIntegral_congr_fun hsm (ae_of_all _ fun x hx ↦ ?_)
       rw [h_coe, ← ENNReal.ofReal_div_of_pos, div_eq_inv_mul, ← ENNReal.ofReal_mul, ← mul_assoc,
-        mul_inv_cancel, one_mul]
+        mul_inv_cancel₀, one_mul]
       · rw [ne_eq, sub_eq_zero]
         exact (hs' x hx).ne'
       · simp [(hs' x hx).le]

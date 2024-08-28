@@ -56,8 +56,6 @@ variable (𝒜 : ι → Type*) (ℬ : ι → Type*)
 variable [CommRing R]
 variable [∀ i, AddCommGroup (𝒜 i)] [∀ i, AddCommGroup (ℬ i)]
 variable [∀ i, Module R (𝒜 i)] [∀ i, Module R (ℬ i)]
-variable [DirectSum.GRing 𝒜] [DirectSum.GRing ℬ]
-variable [DirectSum.GAlgebra R 𝒜] [DirectSum.GAlgebra R ℬ]
 
 -- this helps with performance
 instance (i : ι × ι) : Module R (𝒜 (Prod.fst i) ⊗[R] ℬ (Prod.snd i)) :=
@@ -144,29 +142,37 @@ theorem gradedComm_of_zero_tmul (a : 𝒜 0) (b : ⨁ i, ℬ i) :
   dsimp
   rw [gradedComm_of_tmul_of, mul_zero, uzpow_zero, one_smul]
 
-theorem gradedComm_tmul_one (a : ⨁ i, 𝒜 i) : gradedComm R 𝒜 ℬ (a ⊗ₜ 1) = 1 ⊗ₜ a :=
+theorem gradedComm_tmul_one [DirectSum.GRing ℬ] (a : ⨁ i, 𝒜 i) :
+    gradedComm R 𝒜 ℬ (a ⊗ₜ 1) = 1 ⊗ₜ a :=
   gradedComm_tmul_of_zero _ _ _ _ _
 
-theorem gradedComm_one_tmul (b : ⨁ i, ℬ i) : gradedComm R 𝒜 ℬ (1 ⊗ₜ b) = b ⊗ₜ 1 :=
+theorem gradedComm_one_tmul [DirectSum.GRing 𝒜] (b : ⨁ i, ℬ i) :
+    gradedComm R 𝒜 ℬ (1 ⊗ₜ b) = b ⊗ₜ 1 :=
   gradedComm_of_zero_tmul _ _ _ _ _
 
 @[simp, nolint simpNF] -- linter times out
-theorem gradedComm_one : gradedComm R 𝒜 ℬ 1 = 1 :=
+theorem gradedComm_one [DirectSum.GRing 𝒜] [DirectSum.GRing ℬ] : gradedComm R 𝒜 ℬ 1 = 1 :=
   gradedComm_one_tmul _ _ _ _
 
-theorem gradedComm_tmul_algebraMap (a : ⨁ i, 𝒜 i) (r : R) :
+theorem gradedComm_tmul_algebraMap [DirectSum.GRing ℬ] [DirectSum.GAlgebra R ℬ]
+    (a : ⨁ i, 𝒜 i) (r : R) :
     gradedComm R 𝒜 ℬ (a ⊗ₜ algebraMap R _ r) = algebraMap R _ r ⊗ₜ a :=
   gradedComm_tmul_of_zero _ _ _ _ _
 
-theorem gradedComm_algebraMap_tmul (r : R) (b : ⨁ i, ℬ i) :
+theorem gradedComm_algebraMap_tmul [DirectSum.GRing 𝒜] [DirectSum.GAlgebra R 𝒜]
+    (r : R) (b : ⨁ i, ℬ i) :
     gradedComm R 𝒜 ℬ (algebraMap R _ r ⊗ₜ b) = b ⊗ₜ algebraMap R _ r :=
   gradedComm_of_zero_tmul _ _ _ _ _
 
-theorem gradedComm_algebraMap (r : R) :
+theorem gradedComm_algebraMap [DirectSum.GRing 𝒜] [DirectSum.GRing ℬ]
+    [DirectSum.GAlgebra R 𝒜] [DirectSum.GAlgebra R ℬ] (r : R) :
     gradedComm R 𝒜 ℬ (algebraMap R _ r) = algebraMap R _ r :=
   (gradedComm_algebraMap_tmul R 𝒜 ℬ r 1).trans (Algebra.TensorProduct.algebraMap_apply' r).symm
 
 end gradedComm
+
+variable [DirectSum.GRing 𝒜] [DirectSum.GRing ℬ]
+variable [DirectSum.GAlgebra R 𝒜] [DirectSum.GAlgebra R ℬ]
 
 open TensorProduct (assoc map) in
 /-- The multiplication operation for tensor products of externally `ι`-graded algebras. -/

@@ -159,7 +159,7 @@ theorem omega_ne_zero : ω ≠ 0 :=
   omega_pos.ne'
 
 theorem epsilon_mul_omega : ε * ω = 1 :=
-  @inv_mul_cancel _ _ ω omega_ne_zero
+  @inv_mul_cancel₀ _ _ ω omega_ne_zero
 
 theorem lt_of_tendsto_zero_of_pos {f : ℕ → ℝ} (hf : Tendsto f atTop (𝓝 0)) :
     ∀ {r : ℝ}, 0 < r → ofSeq f < (r : ℝ*) := fun hr ↦
