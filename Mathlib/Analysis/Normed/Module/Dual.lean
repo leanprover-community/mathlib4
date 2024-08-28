@@ -275,14 +275,15 @@ def U : ℕ → Set E
   | 0 => univ
   | n => ball 0 n⁻¹
 
-lemma U0 : polar 𝕜 (U 0) = closedBall (0 : Dual 𝕜 E) 0 := by
-  rw [U, closedBall]
-  simp only [polar_univ, dist_zero_right]
-  apply le_antisymm
-  · simp only [le_eq_subset, singleton_subset_iff, mem_setOf_eq, norm_zero, le_refl]
-  · simp only [le_eq_subset, subset_singleton_iff, mem_setOf_eq]
-    intro y hy
-    exact norm_le_zero_iff'.mp hy
+
+#check Seminorm.closedBall_zero_eq
+#check Metric.closedBall_zero
+
+lemma polar_U0 : polar 𝕜 (U 0) = closedBall (0 : Dual 𝕜 E) 0 := by
+  -- Should we be able to use Metric.closedBall_zero here?
+  rw [closedBall_zero', closure_singleton, U, polar_univ]
+
+
 
 lemma polarU (n : ℕ) : polar 𝕜 (U n) = closedBall (0 : Dual 𝕜 E) n := sorry
 
