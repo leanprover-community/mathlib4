@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Isaac Hernando, Coleton Kotch, Adam Topaz
 -/
 
-import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Limits.Filtered
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
@@ -43,12 +42,6 @@ open Limits Classical
 universe v v' u u'
 
 variable (C : Type u) [Category.{v} C]
-
---Right exactness for arbitrary shapes.
-noncomputable
-example (J : Type u') [Category.{v'} J] [HasColimitsOfShape J C] :
-    PreservesFiniteColimits (colim (J := J) (C := C)) :=
-  inferInstance
 
 /--
 A category `C` which has coproducts is said to have `AB4` provided that
