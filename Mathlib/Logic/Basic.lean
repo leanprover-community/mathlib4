@@ -39,9 +39,6 @@ section Miscellany
 
 attribute [simp] cast_heq
 
--- This can be removed once we move to Lean v4.11
-attribute [simp] insert_emptyc_eq
-
 /-- An identity function with its main argument implicit. This will be printed as `hidden` even
 if it is applied to a large term, so it can be used for elision,
 as done in the `elide` and `unelide` tactics. -/

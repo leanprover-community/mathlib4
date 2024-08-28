@@ -80,13 +80,8 @@ private def gosperCatalan (n j : ℕ) : ℚ :=
 private theorem gosper_trick {n i : ℕ} (h : i ≤ n) :
     gosperCatalan (n + 1) (i + 1) - gosperCatalan (n + 1) i =
       Nat.centralBinom i / (i + 1) * Nat.centralBinom (n - i) / (n - i + 1) := by
-  #adaptation_note
-  /--
-  These sorries will be fixed by https://github.com/leanprover/lean4/pull/5187,
-  which will land in nightly-2024-08-28.
-  -/
-  have l₁ : (i : ℚ) + 1 ≠ 0 := by sorry -- norm_cast
-  have l₂ : (n : ℚ) - i + 1 ≠ 0 := by sorry -- norm_cast
+  have l₁ : (i : ℚ) + 1 ≠ 0 := by norm_cast
+  have l₂ : (n : ℚ) - i + 1 ≠ 0 := by norm_cast
   have h₁ := (mul_div_cancel_left₀ (↑(Nat.centralBinom (i + 1))) l₁).symm
   have h₂ := (mul_div_cancel_left₀ (↑(Nat.centralBinom (n - i + 1))) l₂).symm
   have h₃ : ((i : ℚ) + 1) * (i + 1).centralBinom = 2 * (2 * i + 1) * i.centralBinom :=
@@ -104,14 +99,9 @@ private theorem gosper_trick {n i : ℕ} (h : i ≤ n) :
 
 private theorem gosper_catalan_sub_eq_central_binom_div (n : ℕ) : gosperCatalan (n + 1) (n + 1) -
     gosperCatalan (n + 1) 0 = Nat.centralBinom (n + 1) / (n + 2) := by
-  #adaptation_note
-  /--
-  These sorries will be fixed by https://github.com/leanprover/lean4/pull/5187,
-  which will land in nightly-2024-08-28.
-  -/
-  have : (n : ℚ) + 1 ≠ 0 := by sorry -- norm_cast
-  have : (n : ℚ) + 1 + 1 ≠ 0 := by sorry -- norm_cast
-  have h : (n : ℚ) + 2 ≠ 0 := by sorry -- norm_cast
+  have : (n : ℚ) + 1 ≠ 0 := by norm_cast
+  have : (n : ℚ) + 1 + 1 ≠ 0 := by norm_cast
+  have h : (n : ℚ) + 2 ≠ 0 := by norm_cast
   simp only [gosperCatalan, Nat.sub_zero, Nat.centralBinom_zero, Nat.sub_self]
   field_simp
   ring
