@@ -14,7 +14,7 @@ We show that `log (1+z)` differs from its Taylor polynomial up to degree `n` by 
 `‖z‖^(n+1)/((n+1)*(1-‖z‖))` when `‖z‖ < 1`; see `Complex.norm_log_sub_logTaylor_le`.
 
 To this end, we derive the representation of `log (1+z)` as the integral of `1/(1+tz)`
-over the unit interval (`Complex.log_eq_integral`) and introduce notation<
+over the unit interval (`Complex.log_eq_integral`) and introduce notation
 `Complex.logTaylor n` for the Taylor polynomial up to degree `n-1`.
 
 ## TODO
