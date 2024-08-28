@@ -57,7 +57,7 @@ and the kernel of the presentation `Rˢ → M` is also finitely generated.
 -/
 class Module.FinitePresentation : Prop where
   out : ∃ (s : Finset M), Submodule.span R (s : Set M) = ⊤ ∧
-    (LinearMap.ker (Finsupp.total R (Subtype.val : s → M))).FG
+    (LinearMap.ker (Finsupp.total R ((↑) : s → M))).FG
 
 instance (priority := 100) [h : Module.FinitePresentation R M] : Module.Finite R M := by
   obtain ⟨s, hs₁, _⟩ := h
