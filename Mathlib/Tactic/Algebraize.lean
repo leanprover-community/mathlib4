@@ -1,32 +1,48 @@
-import Mathlib.RingTheory.RingHom.FiniteType
+import Mathlib.Algebra.Algebra.Tower
+import Lean.Attributes
 import Mathlib.Util.AddRelatedDecl
-import Mathlib.Lean.Meta.Simp
-import Mathlib.Tactic.AlgebraizeAttr
-import Lean
 
-import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
+open Lean Elab Tactic Term Meta
 
-open Lean Elab Tactic Term Qq Meta
+namespace Lean.Attr
 
-alias RingHom.Algebraize := RingHom.toAlgebra
+def algebraizeGetParam (thm : Name) (stx : Syntax) : AttrM Name := do
+  match stx with
+  | `(attr| algebraize2 $name:ident) => return name.getId
+  -- TODO: deal with this case! Then if name is "RingHom.FiniteType" ---> "Algebra.FiniteType.mk"
+  | `(attr| algebraize2) => throwError "algebraize requires an argument"
+  | _ => throwError "unexpected algebraize argument"
 
-@[algebraize]
-lemma RingHom.Finite.Algebraize {A B : Type*} [CommRing A] [CommRing B] {f : A →+* B}
-    (hf : f.Finite) : letI : Algebra A B := f.toAlgebra; Module.Finite A B :=
-  hf
+initialize algebraize2Attr : ParametricAttribute Name ←
+  registerParametricAttribute {
+    name := `algebraize2,
+    descr := "TODO",
+    getParam := algebraizeGetParam }
 
-@[algebraize]
-lemma RingHom.FiniteType.Algebraize {A B : Type*} [CommRing A] [CommRing B] {f : A →+* B}
-    (hf : f.FiniteType) : letI : Algebra A B := f.toAlgebra; Algebra.FiniteType A B :=
-  hf
+end Lean.Attr
 
-@[algebraize]
-lemma RingHom.IsIntegral.Algebraize {A B : Type*} [CommRing A] [CommRing B] {f : A →+* B}
-    (hf : f.IsIntegral) : letI : Algebra A B := f.toAlgebra; Algebra.IsIntegral A B :=
-      letI : Algebra A B := f.toAlgebra
-      {isIntegral := hf}
+-- alias RingHom.Algebraize := RingHom.toAlgebra
 
+-- @[algebraize]
+-- lemma RingHom.Finite.Algebraize {A B : Type*} [CommRing A] [CommRing B] {f : A →+* B}
+--     (hf : f.Finite) : letI : Algebra A B := f.toAlgebra; Module.Finite A B :=
+--   hf
 
+-- @[algebraize]
+-- lemma RingHom.Finite.Algebraize {A B : Type*} [CommRing A] [CommRing B] {f : A →+* B}
+--     (hf : f.Finite) : letI : Algebra A B := f.toAlgebra; Module.Finite A B :=
+--   hf
+
+-- @[algebraize]
+-- lemma RingHom.FiniteType.Algebraize {A B : Type*} [CommRing A] [CommRing B] {f : A →+* B}
+--     (hf : f.FiniteType) : letI : Algebra A B := f.toAlgebra; Algebra.FiniteType A B :=
+--   hf
+
+-- @[algebraize]
+-- lemma RingHom.IsIntegral.Algebraize {A B : Type*} [CommRing A] [CommRing B] {f : A →+* B}
+--     (hf : f.IsIntegral) : letI : Algebra A B := f.toAlgebra; Algebra.IsIntegral A B :=
+--       letI : Algebra A B := f.toAlgebra
+--       {isIntegral := hf}
 namespace Mathlib.Tactic
 
 /-- TODO
@@ -65,8 +81,6 @@ def addAlgebraInstanceFromRingHom (f ft : Expr) : TacticM Unit := withMainContex
 --     let (_, mvar) ← mvar.intro1P
 --     return [mvar]
 
-#check IsScalarTower.of_algebraMap_eq'
-
 /-- TODO
 
 
@@ -74,7 +88,8 @@ def addAlgebraInstanceFromRingHom (f ft : Expr) : TacticM Unit := withMainContex
 def addIsScalarTowerInstanceFromRingHomComp (f : Expr) : TacticM Unit := withMainContext do
   let (_, l) := f.getAppFnArgs
   let tower ← mkAppOptM `IsScalarTower #[l[0]!, l[1]!, l[2]!, none, none, none]
-  try let _ ← synthInstance tower
+  try
+    let _ ← synthInstance tower
   catch _ => liftMetaTactic fun mvarid => do
     let nm ← mkFreshUserName `scalarTowerInst
     -- This is quite ugly, so I might prefer Qq reason for this reason
@@ -124,32 +139,74 @@ def addIsScalarTowerInstanceFromRingHomComp (f : Expr) : TacticM Unit := withMai
 
 /-- TODO
 
+
+
 -/
--- -- WIP on searching through local context for types in a given array
-def searchContext (t : Array Expr) : TacticM Unit := withMainContext do
+def searchContext' (t : Array Expr) : TacticM Unit := withMainContext do
   let ctx ← MonadLCtx.getLCtx
   ctx.forM fun decl => do
-    if decl.isImplementationDetail then
-      return
+    if decl.isImplementationDetail then return
     let (nm, args) := decl.type.getAppFnArgs
-    for i in Attr.algebraizeAttr.getDecls (← getEnv) do
-      -- TODO: figure out how to get one lemma to point to another via attributes
-      -- (maybe just include the other lemma name as a parameter?)
-      let some i' := i.eraseSuffix? `Algebraize | throwError "Error"
-      if i' != nm then
-        continue
+    match Attr.algebraize2Attr.getParam? (← getEnv) nm with
+    | some p =>
       let f := args[args.size - 1]!
-      if ¬ (← t.anyM (fun j => Meta.isDefEq j f)) then
-        continue
-      let h : Ident := mkIdent i
-      let hf := mkIdent decl.userName
-      let sn ← `(term| $h:ident $hf:ident)
-      let m ← Term.elabTerm sn none
+      -- Check if `f` appears in the list of functions we have algebraized
+      if ¬ (← t.anyM (fun j => Meta.isDefEq j f)) then return
+
+      let cinfo ← getConstInfo p
+      let n ← getExpectedNumArgs cinfo.type
+      let pargs := Array.mkArray n (none : Option Expr)
+      let pargs := pargs.set! 0 args[0]!
+      let pargs := pargs.set! 1 args[1]!
+      let tp ← mkAppOptM p pargs
 
       liftMetaTactic fun mvarid => do
         let h ← mkFreshUserName `AlgebraizeInst
-        let (_, mvar) ← mvarid.note h m
+        -- TODO: should make this with let somehow? Data is forgotten...!
+        let (_, mvar) ← mvarid.note h decl.value tp
         return [mvar]
+      -- Otherwise, ...
+      -- else
+      --   logInfo m!"hello outside"
+      --   -- Otherwise, `p` is a lemma for creating the algebra instance
+      --   let h := mkIdent p
+      --   let hf := mkIdent decl.userName
+      --   let sn ← `(term| $h:ident $hf:ident)
+      --   let m ← Term.elabTerm sn none
+
+      --   liftMetaTactic fun mvarid => do
+      --     let h ← mkFreshUserName `AlgebraizeInst
+      --     let (_, mvar) ← mvarid.note h m
+      --     return [mvar]
+    | none => return
+
+-- -- WIP on searching through local context for types in a given array
+-- def searchContext (t : Array Expr) : TacticM Unit := withMainContext do
+--   let ctx ← MonadLCtx.getLCtx
+--   ctx.forM fun decl => do
+--     if decl.isImplementationDetail then
+--       return
+--     let (nm, args) := decl.type.getAppFnArgs
+--     logInfo m!"{nm} {args}"
+--     for i in Attr.algebraizeAttr.getDecls (← getEnv) do
+--       -- TODO: figure out how to get one lemma to point to another via attributes
+--       -- (maybe just include the other lemma name as a parameter?)
+--       let some i' := i.eraseSuffix? `Algebraize | throwError "Error"
+--       if i' != nm then
+--         continue
+--       let f := args[args.size - 1]!
+--       logInfo m!"f : {f}"
+--       if ¬ (← t.anyM (fun j => Meta.isDefEq j f)) then
+--         continue
+--       let h : Ident := mkIdent i
+--       let hf := mkIdent decl.userName
+--       let sn ← `(term| $h:ident $hf:ident)
+--       let m ← Term.elabTerm sn none
+
+--       liftMetaTactic fun mvarid => do
+--         let h ← mkFreshUserName `AlgebraizeInst
+--         let (_, mvar) ← mvarid.note h m
+--         return [mvar]
 
 syntax "algebraize" (ppSpace colGt term:max)* : tactic
 
@@ -171,20 +228,6 @@ elab_rules : tactic
       | _ => continue
 
     -- We then search through the local context to find other instances of algebraize
-    searchContext t
-
-example {A B C D : Type*}
-    [CommRing A] [CommRing B] [CommRing C] [CommRing D]
-    (f : A →+* B)
-    (g : B →+* C) (h : C →+* D)
-    (hf : f.FiniteType) (hf' : f.Finite) (hhg : (h.comp g).FiniteType)
-    (hh : (h.comp g).comp f |>.FiniteType)
-    (hg : g.IsIntegral) :
-    True := by
-  algebraize f g (g.comp f)
-
-
-  --g h (g.comp f) (h.comp g) (h.comp (g.comp f))
-  trivial
+    searchContext' t
 
 end Mathlib.Tactic
