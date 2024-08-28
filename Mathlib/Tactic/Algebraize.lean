@@ -44,7 +44,7 @@ to the `algebraize` attribute. However, often this can be inferred from the name
 with the tag (i.e. `RingHom.FiniteType` corresponds `Algebra.FiniteType`). It would be nice to
 add functionality that defaults to this name if no argument is given to the `algebraize` attribute.
 
-
+Make this function safer: catch more possible errors, and improve error messages.
 
 -/
 
@@ -66,7 +66,9 @@ def algebraizeGetParam (_ : Name) (stx : Syntax) : AttrM Name := do
 initialize algebraizeAttr : ParametricAttribute Name ←
   registerParametricAttribute {
     name := `algebraize,
-    descr := "TODO",
+    descr :=
+"Tag that lets the `algebraize` tactic know which `Algebra` property corresponds to this `RingHom`
+property.",
     getParam := algebraizeGetParam }
 
 end Lean.Attr
