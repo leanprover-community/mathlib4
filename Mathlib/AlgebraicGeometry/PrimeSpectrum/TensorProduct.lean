@@ -18,7 +18,7 @@ import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 -/
 
 variable (R S T : Type*) [CommRing R] [CommRing S] [Algebra R S]
-variable [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+variable [CommRing T] [Algebra R T]
 
 open TensorProduct
 
@@ -32,6 +32,7 @@ lemma PrimeSpectrum.continuous_tensorProductTo : Continuous (tensorProductTo R S
   (comap _).2.prod_mk (comap _).2
 
 variable (hRT : (algebraMap R T).SurjectiveOnStalks)
+include hRT
 
 lemma PrimeSpectrum.embedding_tensorProductTo_of_surjectiveOnStalks_aux
     (p₁ p₂ : PrimeSpectrum (S ⊗[R] T))

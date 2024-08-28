@@ -201,7 +201,7 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
   apply @Set.Infinite.mono _ { x : K | ∃ y, x = y + y⁻¹ ∧ y ≠ 0 }
   · rintro _ ⟨x, rfl, hx⟩
     simp only [eval_X, eval_pow, Set.mem_setOf_eq, @add_pow_char K _ p,
-      dickson_one_one_eval_add_inv _ _ (mul_inv_cancel hx), inv_pow, ZMod.castHom_apply,
+      dickson_one_one_eval_add_inv _ _ (mul_inv_cancel₀ hx), inv_pow, ZMod.castHom_apply,
       ZMod.cast_one']
   -- Now we need to show that the set of such `x` is infinite.
   -- If the set is finite, then we will show that `K` is also finite.
@@ -233,7 +233,7 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
         by_cases hy : y = 0
         · simp only [hy, eq_self_iff_true, or_true_iff]
         apply or_congr _ Iff.rfl
-        rw [← mul_left_inj' hy, eq_comm, ← sub_eq_zero, add_mul, inv_mul_cancel hy]
+        rw [← mul_left_inj' hy, eq_comm, ← sub_eq_zero, add_mul, inv_mul_cancel₀ hy]
         apply eq_iff_eq_cancel_right.mpr
         ring
     -- Finally, we prove the claim that our finite union of finite sets covers all of `K`.

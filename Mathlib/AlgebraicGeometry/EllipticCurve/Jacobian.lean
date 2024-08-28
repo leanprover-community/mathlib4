@@ -112,7 +112,7 @@ local macro "pderiv_simp" : tactic =>
     pderiv_X_of_ne (by decide : z ≠ x), pderiv_X_of_ne (by decide : x ≠ z),
     pderiv_X_of_ne (by decide : z ≠ y), pderiv_X_of_ne (by decide : y ≠ z)])
 
-variable {R : Type u} [CommRing R] {W' : Jacobian R} {F : Type v} [Field F] {W : Jacobian F}
+variable {R : Type u} {W' : Jacobian R} {F : Type v} [Field F] {W : Jacobian F}
 
 section Jacobian
 
@@ -126,6 +126,8 @@ lemma fin3_def_ext (X Y Z : R) : ![X, Y, Z] x = X ∧ ![X, Y, Z] y = Y ∧ ![X, 
 
 lemma comp_fin3 {S} (f : R → S) (X Y Z : R) : f ∘ ![X, Y, Z] = ![f X, f Y, f Z] :=
   (FinVec.map_eq _ _).symm
+
+variable [CommRing R]
 
 /-- The scalar multiplication on a point representative. -/
 scoped instance instSMulPoint : SMul R <| Fin 3 → R :=
@@ -223,6 +225,8 @@ lemma Y_eq_iff {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0) :
   (div_eq_div_iff (pow_ne_zero 3 hPz) (pow_ne_zero 3 hQz)).symm
 
 end Jacobian
+
+variable [CommRing R]
 
 section Equation
 
@@ -1569,9 +1573,10 @@ protected lemma map_smul (u : R) : f ∘ (u • P) = f u • (f ∘ P) := by
   ext i; fin_cases i <;> simp [smul_fin3]
 
 @[simp] lemma map_addZ : addZ (f ∘ P) (f ∘ Q) = f (addZ P Q) := by simp [addZ]
-@[simp] lemma map_addX : addX (W'.map f) (f ∘ P) (f ∘ Q) = f (W'.addX P Q) := by simp [addX]
+@[simp] lemma map_addX : addX (W'.map f) (f ∘ P) (f ∘ Q) = f (W'.addX P Q) := by
+  simp [map_ofNat, addX]
 @[simp] lemma map_negAddY : negAddY (W'.map f) (f ∘ P) (f ∘ Q) = f (W'.negAddY P Q) := by
-  simp [negAddY]
+  simp [map_ofNat, negAddY]
 @[simp] lemma map_negY : negY (W'.map f) (f ∘ P) = f (W'.negY P) := by simp [negY]
 
 @[simp] protected lemma map_neg : neg (W'.map f) (f ∘ P) = f ∘ W'.neg P := by
@@ -1599,7 +1604,7 @@ lemma map_polynomialZ : (W'.map f).toJacobian.polynomialZ = MvPolynomial.map f W
 @[simp] lemma map_dblU : dblU (W'.map f) (f ∘ P) = f (W'.dblU P) := by
   simp [dblU, map_polynomialX, ← eval₂_id, eval₂_comp_left]
 
-@[simp] lemma map_dblX : dblX (W'.map f) (f ∘ P) = f (W'.dblX P) := by simp [dblX]
+@[simp] lemma map_dblX : dblX (W'.map f) (f ∘ P) = f (W'.dblX P) := by simp [map_ofNat, dblX]
 @[simp] lemma map_negDblY : negDblY (W'.map f) (f ∘ P) = f (W'.negDblY P) := by simp [negDblY]
 @[simp] lemma map_dblY : dblY (W'.map f) (f ∘ P) = f (W'.dblY P) := by simp [dblY, ← comp_fin3]
 

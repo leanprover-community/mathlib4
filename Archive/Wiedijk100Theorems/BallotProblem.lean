@@ -345,10 +345,7 @@ theorem ballot_problem' :
         linarith
       field_simp [h₄, h₅, h₆] at *
       ring
-    all_goals
-      refine (ENNReal.mul_lt_top ?_ ?_).ne
-      · exact (measure_lt_top _ _).ne
-      · simp [Ne, ENNReal.div_eq_top]
+    all_goals exact ENNReal.mul_ne_top (measure_ne_top _ _) (by simp [Ne, ENNReal.div_eq_top])
 
 /-- The ballot problem. -/
 theorem ballot_problem :
@@ -365,7 +362,7 @@ theorem ballot_problem :
     exacts [Nat.cast_le.2 qp.le, ENNReal.natCast_ne_top _]
   rwa [ENNReal.toReal_eq_toReal (measure_lt_top _ _).ne] at this
   simp only [Ne, ENNReal.div_eq_top, tsub_eq_zero_iff_le, Nat.cast_le, not_le,
-    add_eq_zero_iff, Nat.cast_eq_zero, ENNReal.add_eq_top, ENNReal.natCast_ne_top, or_self_iff,
+    add_eq_zero, Nat.cast_eq_zero, ENNReal.add_eq_top, ENNReal.natCast_ne_top, or_self_iff,
     not_false_iff, and_true_iff]
   push_neg
   exact ⟨fun _ _ => by linarith, (tsub_le_self.trans_lt (ENNReal.natCast_ne_top p).lt_top).ne⟩

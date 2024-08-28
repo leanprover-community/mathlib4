@@ -97,7 +97,8 @@ theorem LinearMap.exists_map_addHaar_eq_smul_addHaar' (h : Function.Surjective L
       isAddLeftInvariant_eq_smul _ _⟩
     simpa only [ne_eq, ENNReal.coe_eq_zero] using
       (addHaarScalarFactor_pos_of_isAddHaarMeasure (μT.map L') ν).ne'
-  refine ⟨c₀ * c₁, by simp [pos_iff_ne_zero, c₀_pos, c₁_pos], ENNReal.mul_lt_top c₀_fin c₁_fin, ?_⟩
+  refine ⟨c₀ * c₁, by simp [pos_iff_ne_zero, c₀_pos, c₁_pos],
+    ENNReal.mul_lt_top c₀_fin.lt_top c₁_fin.lt_top, ?_⟩
   simp only [I, h₀, Measure.map_smul, J, smul_smul, h₁]
   rw [mul_assoc, mul_comm _ c₁, ← mul_assoc]
 
@@ -146,6 +147,6 @@ suffices to check it almost everywhere along all translates of a given vector su
 instance of a disintegration argument for additive Haar measures. -/
 lemma ae_mem_of_ae_add_linearMap_mem [LocallyCompactSpace F] {s : Set F} (hs : MeasurableSet s)
     (h : ∀ y, ∀ᵐ x ∂μ, y + L x ∈ s) : ∀ᵐ y ∂ν, y ∈ s :=
-  (ae_ae_add_linearMap_mem_iff L μ ν hs).1 (Filter.eventually_of_forall h)
+  (ae_ae_add_linearMap_mem_iff L μ ν hs).1 (Filter.Eventually.of_forall h)
 
 end MeasureTheory

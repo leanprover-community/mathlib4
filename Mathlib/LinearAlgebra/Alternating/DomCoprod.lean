@@ -6,6 +6,7 @@ Authors: Eric Wieser
 import Mathlib.LinearAlgebra.Alternating.Basic
 import Mathlib.LinearAlgebra.Multilinear.TensorProduct
 import Mathlib.GroupTheory.GroupAction.Quotient
+import Mathlib.Algebra.Group.Subgroup.Finite
 /-!
 # Exterior product of alternating maps
 
@@ -79,7 +80,7 @@ theorem domCoprod.summand_add_swap_smul_eq_zero (a : Mᵢ [⋀^ιa]→ₗ[R'] N�
   simp only [one_mul, neg_mul, Function.comp_apply, Units.neg_smul, Perm.coe_mul, Units.val_neg,
     MultilinearMap.smul_apply, MultilinearMap.neg_apply, MultilinearMap.domDomCongr_apply,
     MultilinearMap.domCoprod_apply]
-  convert add_right_neg (G := N₁ ⊗[R'] N₂) _ using 6 <;>
+  convert add_neg_cancel (G := N₁ ⊗[R'] N₂) _ using 6 <;>
     · ext k
       rw [Equiv.apply_swap_eq_self hv]
 

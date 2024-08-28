@@ -407,7 +407,7 @@ noncomputable def homotopyEquiv {C : Type*} [Category C] [Preadditive C] [HasZer
             Preadditive.comp_add, drop_obj, s_comp_δ₀, Preadditive.sum_comp,
             Preadditive.zsmul_comp, Preadditive.comp_sum, Preadditive.comp_zsmul,
             zsmul_neg, s_comp_δ, pow_add, pow_one, mul_neg, mul_one, neg_zsmul, neg_neg,
-            neg_add_cancel_comm_assoc, add_left_neg, zero_comp] }
+            neg_add_cancel_comm_assoc, neg_add_cancel, zero_comp] }
 
 end ExtraDegeneracy
 

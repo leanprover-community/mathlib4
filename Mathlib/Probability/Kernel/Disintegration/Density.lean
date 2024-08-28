@@ -501,21 +501,21 @@ lemma measurable_density_right (κ : Kernel α (γ × β)) (ν : Kernel α γ)
 lemma density_mono_set (hκν : fst κ ≤ ν) (a : α) (x : γ) {s s' : Set β} (h : s ⊆ s') :
     density κ ν a x s ≤ density κ ν a x s' := by
   refine limsup_le_limsup ?_ ?_ ?_
-  · exact eventually_of_forall (fun n ↦ densityProcess_mono_set hκν n a x h)
+  · exact Eventually.of_forall (fun n ↦ densityProcess_mono_set hκν n a x h)
   · exact isCoboundedUnder_le_of_le atTop (fun i ↦ densityProcess_nonneg _ _ _ _ _ _)
   · exact isBoundedUnder_of ⟨1, fun n ↦ densityProcess_le_one hκν _ _ _ _⟩
 
 lemma density_nonneg (hκν : fst κ ≤ ν) (a : α) (x : γ) (s : Set β) :
     0 ≤ density κ ν a x s := by
   refine le_limsup_of_frequently_le ?_ ?_
-  · exact frequently_of_forall (fun n ↦ densityProcess_nonneg _ _ _ _ _ _)
+  · exact Frequently.of_forall (fun n ↦ densityProcess_nonneg _ _ _ _ _ _)
   · exact isBoundedUnder_of ⟨1, fun n ↦ densityProcess_le_one hκν _ _ _ _⟩
 
 lemma density_le_one (hκν : fst κ ≤ ν) (a : α) (x : γ) (s : Set β) :
     density κ ν a x s ≤ 1 := by
   refine limsup_le_of_le ?_ ?_
   · exact isCoboundedUnder_le_of_le atTop (fun i ↦ densityProcess_nonneg _ _ _ _ _ _)
-  · exact eventually_of_forall (fun n ↦ densityProcess_le_one hκν _ _ _ _)
+  · exact Eventually.of_forall (fun n ↦ densityProcess_le_one hκν _ _ _ _)
 
 section Integral
 
@@ -543,7 +543,7 @@ lemma tendsto_setIntegral_densityProcess (hκν : fst κ ≤ ν)
       (𝓝 (∫ x in A, density κ ν a x s ∂(ν a))) := by
   refine tendsto_setIntegral_of_L1' (μ := ν a) (fun x ↦ density κ ν a x s)
     (integrable_density hκν a hs) (F := fun i x ↦ densityProcess κ ν i a x s) (l := atTop)
-    (eventually_of_forall (fun n ↦ integrable_densityProcess hκν _ _ hs)) ?_ A
+    (Eventually.of_forall (fun n ↦ integrable_densityProcess hκν _ _ hs)) ?_ A
   refine (tendsto_congr fun n ↦ ?_).mp (tendsto_eLpNorm_one_densityProcess_limitProcess hκν a hs)
   refine eLpNorm_congr_ae ?_
   exact EventuallyEq.rfl.sub (density_ae_eq_limitProcess hκν a hs).symm
