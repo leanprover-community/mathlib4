@@ -26,12 +26,23 @@ the local context for `RingHom` properties that can be converted properties of t
 `Algebra`. For example, given `f : A →+* B` and `hf : f.FiniteType`, then `algebraize f` will add
 the instance `Algebra A B` and the corresponding property `Algebra.FiniteType A B`. The tactic knows
 which `RingHom` properties have a corresponding `Algebra` property through the `algebraize`
-attribute. This attribute has a parameter `name` which should be the name of the corresponding
-`Algebra` property. For example, `Algebra.FiniteType` is tagged as follows:
+attribute. This attribute has a parameter `name` which should be the name of a constructor of the
+the corresponding `Algebra` property, which takes the `RingHom` property as an argument.
+
+In many cases, if `hf : f.Property` is a `RingHom` property, one can access the corresponding
+`Algebra` property just by a type hint, i.e. `hf : Algebra.Property`. In these cases, one does not
+have to give a constructor as an argument to the `algebraize` attribute, and can instead just give
+the name of the `Algebra` property. For example, `RingHom.FiniteType` is tagged as follows:
 ```
 @[algebraize Algebra.FiniteType]
 def FiniteType (f : A →+* B) : Prop :=
   @Algebra.FiniteType A B _ _ f.toAlgebra
+```
+This does not work with `RingHom.Flat`, which is instead tagged as follows
+```
+@[algebraize Algebra.Flat.out]
+class RingHom.Flat {R : Type u} {S : Type v} [CommRing R] [CommRing S] (f : R →+* S) : Prop where
+  out : f.toAlgebra.Flat := by infer_instance
 ```
 
 To avoid searching through the local context and adding corresponding `Algebra` properties, use
@@ -44,7 +55,7 @@ to the `algebraize` attribute. However, often this can be inferred from the name
 with the tag (i.e. `RingHom.FiniteType` corresponds `Algebra.FiniteType`). It would be nice to
 add functionality that defaults to this name if no argument is given to the `algebraize` attribute.
 
-Make this function safer: catch more possible errors, and improve error messages.
+Make this tactic more robust: catch more possible errors, and improve error messages.
 
 -/
 
