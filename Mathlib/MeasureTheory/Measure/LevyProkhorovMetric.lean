@@ -195,11 +195,7 @@ when they are to be equipped with the Lévy-Prokhorov distance. -/
 def LevyProkhorov (α : Type*) := α
 
 /-- The "identity" equivalence between the type synonym `LevyProkhorov α` and `α`. -/
-def LevyProkhorov.equiv {α : Type*} : LevyProkhorov α ≃ α where
-  toFun := id
-  invFun := id
-  left_inv _ := rfl
-  right_inv _ := rfl
+def LevyProkhorov.equiv {α : Type*} : LevyProkhorov α ≃ α := Equiv.refl _
 
 variable [OpensMeasurableSpace Ω]
 
