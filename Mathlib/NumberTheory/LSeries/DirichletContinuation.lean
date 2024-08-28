@@ -44,7 +44,7 @@ noncomputable def LFunction (χ : DirichletCharacter ℂ N) (s : ℂ) : ℂ := Z
 (Compare `DirichletCharacter.LSeries_modOne_eq`.) -/
 @[simp] lemma LFunction_modOne_eq {χ : DirichletCharacter ℂ 1} :
     LFunction χ = riemannZeta := by
-  ext1 s; rw [LFunction, ZMod.LFunction_modOne_eq, (by rfl : (0 : ZMod 1) = 1), map_one, one_mul]
+  ext1; rw [LFunction, ZMod.LFunction_modOne_eq, (by rfl : (0 : ZMod 1) = 1), map_one, one_mul]
 
 /--
 For `1 < re s` the L-function of a Dirichlet character agrees with the sum of the naive Dirichlet
