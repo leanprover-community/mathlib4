@@ -246,11 +246,12 @@ lemma measure_eq_measure_of_isClosed_of_levyProkhorovEDist_eq_zero {μ ν : Meas
     (hμs : ∃ δ > 0, μ (thickening δ s) ≠ ∞) (hνs : ∃ δ > 0, ν (thickening δ s) ≠ ∞) :
     μ s = ν s := by
   apply le_antisymm
-  · exact (measure_le_measure_closure_of_levyProkhorovEDist_eq_zero
-            hLP s_closed.measurableSet hνs).trans (le_of_eq (congr_arg _ s_closed.closure_eq ))
-  · exact (measure_le_measure_closure_of_levyProkhorovEDist_eq_zero
-              (levyProkhorovEDist_comm μ ν ▸ hLP) s_closed.measurableSet hμs).trans
-            (le_of_eq (congr_arg _ s_closed.closure_eq ))
+  · exact measure_le_measure_closure_of_levyProkhorovEDist_eq_zero
+      hLP s_closed.measurableSet hνs |>.trans <|
+      le_of_eq (congr_arg _ s_closed.closure_eq)
+  · exact measure_le_measure_closure_of_levyProkhorovEDist_eq_zero
+      (levyProkhorovEDist_comm μ ν ▸ hLP) s_closed.measurableSet hμs |>.trans <|
+      le_of_eq (congr_arg _ s_closed.closure_eq)
 
 /-- The Lévy-Prokhorov distance `levyProkhorovDist` makes `ProbabilityMeasure Ω` a pseudometric
 space. The instance is recorded on the type synonym
