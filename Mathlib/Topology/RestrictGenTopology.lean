@@ -91,4 +91,14 @@ lemma of_seq [SequentialSpace X]
 lemma isCompact_of_seq [SequentialSpace X] : RestrictGenTopology {K : Set X | IsCompact K} :=
   of_seq fun _u _x hux ↦ hux.isCompact_insert_range
 
+lemma isCompact_of_weaklyLocallyCompact [WeaklyLocallyCompactSpace X] :
+    RestrictGenTopology {K : Set X | IsCompact K} := by
+  refine ⟨fun u hu ↦ isOpen_iff_mem_nhds.mpr fun x hx ↦ ?_⟩
+  obtain ⟨K, h₁, h₂⟩ := exists_compact_mem_nhds x
+  obtain ⟨v, h₃, h₄⟩ := inducing_subtype_val.isOpen_iff.mp <| hu K h₁
+  rw [Subtype.preimage_val_eq_preimage_val_iff] at h₄
+  have : K ∩ v ∈ 𝓝 x :=
+    inter_mem h₂ (h₃.mem_nhds <| mem_of_mem_inter_right (a := K) <| h₄ ▸ ⟨mem_of_mem_nhds h₂, hx⟩)
+  simp_all only [mem_setOf_eq, inter_mem_iff, and_true]
+
 end RestrictGenTopology
