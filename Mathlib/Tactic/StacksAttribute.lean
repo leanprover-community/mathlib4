@@ -70,6 +70,8 @@ initialize Lean.registerBuiltinAttribute {
     match tag.getSubstring? with
       | none => logWarning "Please, enter a Tag after `stacks`."
       | some str =>
+        -- replacing `«` and `»` is useful to allow parsing of `0B8R` that would otherwise be
+        -- treated as a binary number and produce an error.  This is intended as a temporary fix
         let str := (str.toString.trimRight.replace "«" "").replace "»" ""
         if str.length != 4 then
           logWarningAt tag
