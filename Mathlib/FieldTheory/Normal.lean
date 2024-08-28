@@ -174,7 +174,8 @@ instance normal_sup
     Normal F (E ⊔ E' : IntermediateField F K) :=
   iSup_bool_eq (f := Bool.rec E' E) ▸ normal_iSup (h := by rintro (_|_) <;> infer_instance)
 
-/-- An intersection of normal extensions is normal -/
+/-- An intersection of normal extensions is normal
+[Stacks: Lemma 09HP](https://stacks.math.columbia.edu/tag/09HP) -/
 instance normal_iInf {ι : Type*} [hι : Nonempty ι]
     (t : ι → IntermediateField F K) [h : ∀ i, Normal F (t i)] :
     Normal F (⨅ i, t i : IntermediateField F K) := by
