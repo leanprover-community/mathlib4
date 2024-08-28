@@ -19,9 +19,9 @@ open Lean Elab Tactic Term Meta
 
 namespace Lean.Attr
 
-/--
+/-- TODO
 
-TODO
+
 -/
 def algebraizeGetParam (thm : Name) (stx : Syntax) : AttrM Name := do
   match stx with
@@ -87,7 +87,7 @@ def addIsScalarTowerInstanceFromRingHomComp (f : Expr) : TacticM Unit := withMai
 
 
 -/
-def searchContext' (t : Array Expr) : TacticM Unit := withMainContext do
+def searchContext (t : Array Expr) : TacticM Unit := withMainContext do
   let ctx ← MonadLCtx.getLCtx
   ctx.forM fun decl => do
     if decl.isImplementationDetail then return
@@ -107,11 +107,7 @@ def searchContext' (t : Array Expr) : TacticM Unit := withMainContext do
 
       liftMetaTactic fun mvarid => do
         let nm ← mkFreshUserName `AlgebraizeInst
-        -- TODO: should make this with let somehow? Data is forgotten...!
-        logInfo m!"val : {decl.value}"
-        let (_, mvar) ← mvarid.note nm decl.value tp
-        -- let mvar ← mvarid.define nm tp decl.value
-        -- let (_, mvar) ← mvar.intro1P
+        let (_, mvar) ← mvarid.note nm decl.toExpr tp
         return [mvar]
     | none => return
 
@@ -135,7 +131,7 @@ elab_rules : tactic
       | _ => continue
 
     -- We then search through the local context to find other instances of algebraize
-    searchContext' t
+    searchContext t
 
 -- version of algebraize prime which only adds algebra instances & scalar towers
 syntax "algebraize'" (ppSpace colGt term:max)* : tactic

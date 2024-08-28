@@ -228,7 +228,7 @@ variable {A}
 
 theorem comp_surjective {f : A →+* B} {g : B →+* C} (hf : f.FiniteType) (hg : Surjective g) :
     (g.comp f).FiniteType := by
-  algebraize f (g.comp f)
+  algebraize' f (g.comp f)
   exact Algebra.FiniteType.of_surjective hf
     { g with
       toFun := g
@@ -241,7 +241,7 @@ theorem of_surjective (f : A →+* B) (hf : Surjective f) : f.FiniteType := by
 
 theorem comp {g : B →+* C} {f : A →+* B} (hg : g.FiniteType) (hf : f.FiniteType) :
     (g.comp f).FiniteType := by
-  algebraize f g (g.comp f)
+  algebraize' f g (g.comp f)
   exact Algebra.FiniteType.trans hf hg
 
 theorem of_finite {f : A →+* B} (hf : f.Finite) : f.FiniteType :=
@@ -252,7 +252,6 @@ alias _root_.RingHom.Finite.to_finiteType := of_finite
 theorem of_comp_finiteType {f : A →+* B} {g : B →+* C} (h : (g.comp f).FiniteType) :
     g.FiniteType := by
   algebraize f g (g.comp f)
-  let _ : Algebra.FiniteType A C := h
   exact Algebra.FiniteType.of_restrictScalars_finiteType A B C
 
 end FiniteType
