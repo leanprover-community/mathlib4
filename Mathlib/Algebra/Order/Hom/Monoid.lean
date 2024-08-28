@@ -647,7 +647,7 @@ variable (f)
 
 @[to_additive]
 protected lemma strictMono : StrictMono f :=
-  strictMono_of_le_iff_le (fun _ _ ↦ (map_le_map_iff _).symm)
+  strictMono_of_le_iff_le fun _ _ ↦ (map_le_map_iff _).symm
 
 @[to_additive]
 protected lemma strictMono_symm : StrictMono f.symm :=
