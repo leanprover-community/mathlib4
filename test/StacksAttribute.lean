@@ -29,14 +29,14 @@ example : True := .intro
 
 /--
 info:
-'X.tagged' corresponds to tag 'A04Q'. (A comment)
+[Stacks Tag A04Q](https://stacks.math.columbia.edu/tag/A04Q) corresponds to declaration 'X.tagged'. (A comment)
 -/
 #guard_msgs in
 #stacks_tags
 
 /--
 info:
-'X.tagged' corresponds to tag 'A04Q'. (A comment)
+[Stacks Tag A04Q](https://stacks.math.columbia.edu/tag/A04Q) corresponds to declaration 'X.tagged'. (A comment)
 True
 -/
 #guard_msgs in
