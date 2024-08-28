@@ -145,7 +145,7 @@ lemma Module.finitePresentation_of_surjective [h : Module.FinitePresentation R M
   classical
   obtain ⟨s, hs, hs'⟩ := h
   obtain ⟨t, ht⟩ := hl'
-  have H : Function.Surjective (Finsupp.total R (Subtype.val : s → M)) :=
+  have H : Function.Surjective (Finsupp.total R ((↑) : s → M)) :=
     LinearMap.range_eq_top.mp (by rw [Finsupp.range_total, Subtype.range_val, ← hs]; rfl)
   apply Module.finitePresentation_of_free_of_surjective (l ∘ₗ Finsupp.total R Subtype.val)
     (hl.comp H)
@@ -161,7 +161,7 @@ lemma Module.FinitePresentation.fg_ker [Module.Finite R M]
     (LinearMap.ker l).FG := by
   classical
   obtain ⟨s, hs, hs'⟩ := h
-  have H : Function.Surjective (Finsupp.total R (Subtype.val : s → N)) :=
+  have H : Function.Surjective (Finsupp.total R ((↑) : s → N)) :=
     LinearMap.range_eq_top.mp (by rw [Finsupp.range_total, Subtype.range_val, ← hs]; rfl)
   obtain ⟨f, hf⟩ : ∃ f : (s →₀ R) →ₗ[R] M, l ∘ₗ f = (Finsupp.total R Subtype.val) := by
     choose f hf using show _ from hl
@@ -192,7 +192,7 @@ lemma Module.finitePresentation_of_ker [Module.FinitePresentation R N]
     · rw [Submodule.map_top, LinearMap.range_eq_top.mpr hl]; exact Module.Finite.out
     · rw [top_inf_eq, ← Submodule.fg_top]; exact Module.Finite.out
   refine ⟨s, hs, ?_⟩
-  let π := Finsupp.total R (Subtype.val : s → M)
+  let π := Finsupp.total R ((↑) : s → M)
   have H : Function.Surjective π :=
     LinearMap.range_eq_top.mp (by rw [Finsupp.range_total, Subtype.range_val, ← hs]; rfl)
   have inst : Module.Finite R (LinearMap.ker (l ∘ₗ π)) := by
@@ -227,7 +227,7 @@ lemma Module.FinitePresentation.exists_lift_of_isLocalizedModule
     [h : Module.FinitePresentation R M] (g : M →ₗ[R] N') :
     ∃ (h : M →ₗ[R] N) (s : S), f ∘ₗ h = s • g := by
   obtain ⟨σ, hσ, τ, hτ⟩ := h
-  let π := Finsupp.total R (Subtype.val : σ → M)
+  let π := Finsupp.total R ((↑) : σ → M)
   have hπ : Function.Surjective π :=
     LinearMap.range_eq_top.mp (by rw [Finsupp.range_total, Subtype.range_val, ← hσ]; rfl)
   classical
