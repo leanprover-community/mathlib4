@@ -165,19 +165,6 @@ def searchContext' (t : Array Expr) : TacticM Unit := withMainContext do
         -- TODO: should make this with let somehow? Data is forgotten...!
         let (_, mvar) ← mvarid.note h decl.value tp
         return [mvar]
-      -- Otherwise, ...
-      -- else
-      --   logInfo m!"hello outside"
-      --   -- Otherwise, `p` is a lemma for creating the algebra instance
-      --   let h := mkIdent p
-      --   let hf := mkIdent decl.userName
-      --   let sn ← `(term| $h:ident $hf:ident)
-      --   let m ← Term.elabTerm sn none
-
-      --   liftMetaTactic fun mvarid => do
-      --     let h ← mkFreshUserName `AlgebraizeInst
-      --     let (_, mvar) ← mvarid.note h m
-      --     return [mvar]
     | none => return
 
 -- -- WIP on searching through local context for types in a given array
