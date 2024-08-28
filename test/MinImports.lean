@@ -117,7 +117,7 @@ note: this linter can be disabled with `set_option linter.minImports false`
 
 /--
 warning: Imports increased to
-[Mathlib.Tactic.FunProp.Attr, Mathlib.Tactic.Linter.MinImports, Mathlib.Tactic.NormNum.Basic]
+[Mathlib.Tactic.FunProp.Attr, Mathlib.Tactic.NormNum.Basic]
 note: this linter can be disabled with `set_option linter.minImports false`
 -/
 #guard_msgs in

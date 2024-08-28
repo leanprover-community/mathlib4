@@ -89,6 +89,7 @@ note: this linter can be disabled with `set_option linter.cdot false`
 set_option linter.cdot true in
 example : Add Nat where add := (. + ·)
 
+set_option linter.globalAttributeIn false in
 set_option linter.dollarSyntax false in
 /--
 warning: Please use '<|' instead of '$' for the pipe operator.
@@ -209,6 +210,7 @@ example : ℕ → ℕ := set_option linter.style.lambdaSyntax true in λ _ ↦ 0
 
 end lambdaSyntaxLinter
 
+set_option linter.globalAttributeIn false in
 set_option linter.dollarSyntax false in
 /--
 warning: Please use '<|' instead of '$' for the pipe operator.
