@@ -59,9 +59,6 @@ Note that this is not the same as `LSeries Φ`: they agree in the convergence ra
 noncomputable def LFunction (Φ : ZMod N → ℂ) (s : ℂ) : ℂ :=
   N ^ (-s) * ∑ j : ZMod N, Φ j * hurwitzZeta (toAddCircle j) s
 
-example {α : Type} [Fintype α] [Unique α] (a : α) : (univ : Finset α) = {a} := by
-  exact Eq.symm (singleton_eq_univ a)
-
 /-- The L-function of a function on `ZMod 1` is a scalar multiple of the Riemann zeta function. -/
 lemma LFunction_modOne_eq (Φ : ZMod 1 → ℂ) (s : ℂ) :
     LFunction Φ s = Φ 0 * riemannZeta s := by
