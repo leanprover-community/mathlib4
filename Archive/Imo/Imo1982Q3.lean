@@ -11,7 +11,6 @@ import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Tactic.Linarith
 import Mathlib.Data.Matrix.Basic
 
-open Real BigOperators Finset RealInnerProductSpace Matrix
 
 
 /-!
@@ -33,29 +32,21 @@ The solution is based on the one at the
 website.
 -/
 
+open Real BigOperators Finset RealInnerProductSpace Matrix
+
 namespace Imo1982Q3
 
 
-lemma sum_Fin_eq_sum_Ico
-  {x : ℕ → ℝ}
-  :
-  ∀ N,
-  ∑ n : Fin N, x n = ∑ n ∈ Ico 0 N, x n
-  := by
+lemma sum_Fin_eq_sum_Ico {x : ℕ → ℝ} : ∀ N, ∑ n : Fin N, x n = ∑ n ∈ Ico 0 N, x n := by
   intro N
   rw [Fin.sum_univ_eq_sum_range, Nat.Ico_zero_eq_range]
 
 /-
 Specialization of Cauchy-Schwarz inequality with the sequences x n / √(y n) and √(y n)
 -/
-lemma Sedrakyan's_lemma
-  {n : ℕ}
-  {x y: EuclideanSpace ℝ (Fin n)}
-  (hN : 0 < n)
-  (xi_pos : ∀ i, 0 < x i)
-  (yi_pos : ∀ i, 0 < y i):
-  (∑ n : Fin n, x n)^2 / (∑ n : Fin n, y n) ≤ (∑ n : Fin n, ((x n)^2 / (y n)))
-  := by
+lemma Sedrakyan's_lemma {n : ℕ}{x y: EuclideanSpace ℝ (Fin n)}
+  (hN : 0 < n) (xi_pos : ∀ i, 0 < x i) (yi_pos : ∀ i, 0 < y i) :
+  (∑ n : Fin n, x n)^2 / (∑ n : Fin n, y n) ≤ (∑ n : Fin n, ((x n)^2 / (y n))) := by
   let nonneg : ∀ f : Fin n → ℝ, (∀ i, 0 < f i) → ∀ i, 0 ≤ f i :=
     fun f h i => (lt_iff_le_and_ne.mp (h i)).left
   have xi_nonneg : ∀ i, 0 ≤ x i := nonneg x xi_pos
@@ -65,7 +56,7 @@ lemma Sedrakyan's_lemma
     apply Finset.sum_pos (fun i _hi => yi_pos i)
     rw [← Finset.card_pos, card_fin]
     apply hN
-  rw [div_le_iff' sum_yi_pos]
+  rw [div_le_iff₀' sum_yi_pos]
   convert_to
     (∑ n : Fin n, √(y n) * (x n / √(y n))) ^ 2
     ≤
@@ -103,13 +94,8 @@ lemma Sedrakyan's_lemma
   convert_to ⟪sqrt_y, x_div_sqrt_y⟫_ℝ ≤  ‖sqrt_y‖ * ‖x_div_sqrt_y‖ using 2
   apply real_inner_le_norm
 
-lemma ineq₁
-    {x : ℕ → ℝ}
-    (hx : ∀ i , x (i + 1) ≤ x i)
-    :
-    ∀ N > 1,
-    x N ≤ (∑ n : Fin (N - 1), x (n + 1)) / (N - 1)
-    := by
+lemma ineq₁ {x : ℕ → ℝ} (hx : ∀ i , x (i + 1) ≤ x i) :
+    ∀ N > 1, x N ≤ (∑ n : Fin (N - 1), x (n + 1)) / (N - 1) := by
     intro N hN
     have h : ∀ m n : ℕ, n ≤ m → x m ≤ x n := by
       intro m n mlen
@@ -118,7 +104,7 @@ lemma ineq₁
       · calc
         x (k + 1) ≤ x k := hx k
         _         ≤ x n := xk_le_xn
-    rw [le_div_iff (by aesop)]
+    rw [le_div_iff₀ (by aesop)]
     calc
     x N * (↑N - 1) = ((N - 1) : ℕ) * x N := by
       rw [mul_comm, Nat.cast_sub, Nat.cast_one]; linarith
@@ -133,14 +119,8 @@ lemma ineq₁
       apply le_of_lt hi
     _ = ∑ n : Fin (N - 1), x (↑n + 1) := by rw [sum_range]
 
-lemma ineq₂
-    {x : ℕ → ℝ}
-    (hx : ∀ i , x (i + 1) ≤ x i)
-    (x_pos : ∀ i, x i > (0 : ℝ))
-    :
-    ∀ N > 1,
-    (N - 1) / N * (1 / ∑ n : Fin (N - 1), x (n + 1)) ≤ 1 / (∑ n : Fin N, x (n + 1))
-    := by
+lemma ineq₂ {x : ℕ → ℝ} (hx : ∀ i , x (i + 1) ≤ x i) (x_pos : ∀ i, x i > (0 : ℝ)) :
+    ∀ N > 1, (N - 1) / N * (1 / ∑ n : Fin (N - 1), x (n + 1)) ≤ 1 / (∑ n : Fin N, x (n + 1)) := by
     intro N hN
     have ne_zero : N - 1 ≠ 0 := by
       intro h
@@ -208,13 +188,8 @@ lemma ineq₂
       apply Finset.sum_congr (by rfl); intro n _hn; rw [mul_comm]
 
 
-lemma ineq₃
-    {x : ℕ → ℝ}
-    (x_pos : ∀ i, x i > (0 : ℝ))
-    :
-    ∀ N > 1,
-    2 * (∑ n : Fin N, x (n + 1)) ≤ 1 + (∑ n : Fin N, x (n + 1))^2
-    := by
+lemma ineq₃ {x : ℕ → ℝ} (x_pos : ∀ i, x i > (0 : ℝ)) :
+    ∀ N > 1, 2 * (∑ n : Fin N, x (n + 1)) ≤ 1 + (∑ n : Fin N, x (n + 1))^2 := by
     intro N hN
     have sum_fin_pos : 0 < ∑ n : Fin N, x (↑n + 1) := by
       apply Finset.sum_pos
@@ -232,11 +207,7 @@ lemma ineq₃
         (by norm_num) (by norm_num) (by norm_num) (sq_nonneg _) (by norm_num)
     _ ≤ 1 + (∑ n : Fin N, x (n  + 1))^2 := by field_simp
 
-lemma Ico_sdiff_zero_eq_Ico
-    :
-    ∀ N,
-    Ico 0 N \ {0} = Ico 1 N
-    := by
+lemma Ico_sdiff_zero_eq_Ico : ∀ N, Ico 0 N \ {0} = Ico 1 N := by
     intro N
     ext x
     constructor
@@ -251,14 +222,9 @@ lemma Ico_sdiff_zero_eq_Ico
       rw [mem_sdiff, not_mem_singleton, mem_Ico]
       exact ⟨⟨le_trans zero_le_one one_le_x, x_lt_N⟩, Nat.one_le_iff_ne_zero.mp one_le_x⟩
 
-lemma eq₀
-    {x : ℕ → ℝ}
-    (hx₀ : x 0 = (1 : ℝ))
-    :
-    ∀ N > 1,
-    (∑ n : Fin N, (x n))^2
-      = 1 + 2 * (∑ n : Fin (N - 1), x (n + 1)) + (∑ n : Fin (N - 1), x (n + 1))^2
-    := by
+lemma eq₀ {x : ℕ → ℝ} (hx₀ : x 0 = (1 : ℝ)) :
+    ∀ N > 1, (∑ n : Fin N, (x n))^2
+      = 1 + 2 * (∑ n : Fin (N - 1), x (n + 1)) + (∑ n : Fin (N - 1), x (n + 1))^2 := by
     intro N hN
     have zero_lt_N : 0  < N := by linarith
     have two_le_N : 2 ≤ N := by linarith
@@ -289,15 +255,9 @@ lemma eq₀
     rw [this _ two_le_N]; ring
 
 
-theorem Imo1982Q3_part_a
-  {x : ℕ → ℝ}
-  (x_pos : ∀ i, x i > (0 : ℝ))
-  (hx₀ : x 0 = (1 : ℝ))
-  (hx : ∀ i , x (i + 1) ≤ x i)
-  :
-  ∃ N : ℕ, 3.999 ≤ ∑ n : Fin N, (x n)^2 / x (n + 1)
-  := by
-  have div_prev_pos : ∀ N > 1,  0 < (↑N - 1) / (N : ℝ) :=  by
+theorem Imo1982Q3_part_a {x : ℕ → ℝ} (x_pos : ∀ i, x i > (0 : ℝ)) (hx₀ : x 0 = (1 : ℝ))
+  (hx : ∀ i , x (i + 1) ≤ x i) : ∃ N : ℕ, 3.999 ≤ ∑ n : Fin N, (x n)^2 / x (n + 1) := by
+  have div_prev_pos : ∀ N > 1, 0 < (↑N - 1) / (N : ℝ) :=  by
     intro N hN
     apply div_pos
     linarith; linarith
@@ -320,8 +280,7 @@ theorem Imo1982Q3_part_a
     ((∑ n : Fin N, (x n))^2 / (∑ n : Fin N, x (n + 1))) ≤ (∑ n : Fin N, (x n)^2 / x (n + 1)) :=
     fun N hN => Sedrakyan's_lemma hN (fun i => x_pos i) (fun i => x_pos (i + 1))
   have :
-    ∃ (N : ℕ),
-    0 < N ∧ 1 < N ∧ 2 < N ∧  (3.999 : ℝ) ≤ 4 * ((N - 1) / N) :=  by use 4000; norm_num
+    ∃ (N : ℕ), 0 < N ∧ 1 < N ∧ 2 < N ∧  (3.999 : ℝ) ≤ 4 * ((N - 1) / N) :=  by use 4000; norm_num
   obtain ⟨N, zero_lt_N, one_lt_N, two_lt_N, ineq₀⟩ := this
   use N
   calc (3.999 : ℝ) ≤ 4 * ((N - 1) / N) := ineq₀
@@ -348,8 +307,10 @@ theorem Imo1982Q3_part_a
   _ = ((∑ n : Fin N, (x n))^2 / (∑ n : Fin (N - 1), x (n + 1))) * ((N - 1) / (N)) := by
     rw [
       eq₀ hx₀ N (by apply one_lt_N),
-       add_assoc, add_comm ((∑ n : Fin (N - 1),
-       x (↑n + 1)) ^ 2), ← add_assoc]
+      add_assoc,
+      add_comm ((∑ n : Fin (N - 1), x (↑n + 1)) ^ 2),
+      ← add_assoc
+      ]
   _ = ((∑ n : Fin N, (x n))^2) * ((N - 1) / (N)) * (1 / (∑ n : Fin (N - 1), x (n + 1))) := by
     rw [← mul_one (((∑ n : Fin N, x ↑n) ^ 2)), mul_div]
     ring
@@ -363,13 +324,8 @@ theorem Imo1982Q3_part_a
     apply zero_lt_N
 
 
-theorem Imo1982Q3_part_b
-  :
-  ∃ x : ℕ → ℝ,
-  (∀ i, x i > 0) ∧
-  (∀ i, x (i + 1) ≤ x i) ∧ (x 0 = 1) ∧
-  (∀ N, (∑ n ∈ range (N + 1), ((x n)^2 / (x (n + 1)))) < 4)
-  := by
+theorem Imo1982Q3_part_b :  ∃ x : ℕ → ℝ, (∀ i, x i > 0) ∧ (∀ i, x (i + 1) ≤ x i) ∧ (x 0 = 1)
+  ∧ (∀ N, (∑ n ∈ range (N + 1), ((x n)^2 / (x (n + 1)))) < 4) := by
   let xₙ : ℕ → ℝ := fun n => (1/2)^n
   use xₙ
   constructor
