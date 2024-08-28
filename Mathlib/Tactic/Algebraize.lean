@@ -5,7 +5,6 @@ Authors: Johan Commelin, Nick Kuhn, Arend Mellendijk, Christian Merten, Calle S√
 -/
 
 import Mathlib.Algebra.Algebra.Tower
-import Lean.Attributes
 
 /-!
 
@@ -66,6 +65,7 @@ namespace Lean.Attr
 /-- A user attribute that is used to tag `RingHom` properties that can be converted to `Algebra`
 properties. The attribute has a parameter `name` which should be the name of the corresponding
 `Algebra` property. -/
+-- @[nolint unusedArguments]
 def algebraizeGetParam (_ : Name) (stx : Syntax) : AttrM Name := do
   match stx with
   | `(attr| algebraize $name:ident) => return name.getId
@@ -74,6 +74,10 @@ def algebraizeGetParam (_ : Name) (stx : Syntax) : AttrM Name := do
   | `(attr| algebraize) => throwError "algebraize requires an argument"
   | _ => throwError "unexpected algebraize argument"
 
+/-- The `algebraize` attribute. This is a user attribute that is used to tag `RingHom` properties
+that can be converted to `Algebra` properties. It requires the user to pass an argument `Name`
+to the attribute, which should be the name of the corresponding `Algebra` property, or a
+constructor for it. -/
 initialize algebraizeAttr : ParametricAttribute Name ‚Üê
   registerParametricAttribute {
     name := `algebraize,
