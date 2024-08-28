@@ -266,9 +266,23 @@ lemma polarUcompact [ProperSpace 𝕜] (n : ℕ) : IsCompact (polar 𝕜 (U (E :
     simp only [gt_iff_lt, inv_pos, subset_refl, and_true]
     exact Nat.cast_add_one_pos m
 
+/- The closed set, not containing the origin -/
+variable (C : Set (WeakDual 𝕜 E))
 
-lemma test1 [ProperSpace 𝕜] (C : Set (WeakDual 𝕜 E)) (h : IsClosed C) (n : ℕ) :
-    IsCompact (C ∩ polar 𝕜 (U n)) := IsCompact.inter_left (polarUcompact 𝕜 n) h
+/- Placeholder for union Fⱼ 0 ≤ j ≤ m-/
+variable (s : Set E)
+
+/- Placeholder for inductive step -/
+variable (n : ℕ)
+
+/- For all x, let K x be the intersection of 4 sets-/
+def K : (U (E := E) (n + 1)) → Set (WeakDual 𝕜 E) :=
+  fun x => polar 𝕜 s ∩ polar 𝕜 {↑x} ∩ C ∩ polar 𝕜 (U n)
+
+
+lemma test1 [ProperSpace 𝕜] (x : (U (E := E) (n + 1))) (hC₁ : IsClosed C) :
+    IsCompact (K 𝕜 C s n x) := IsCompact.inter_left (polarUcompact 𝕜 n)
+    (IsClosed.inter (IsClosed.inter (isClosed_polar 𝕜 s) (isClosed_polar _ _)) hC₁)
 
 lemma test (C : Set (Dual 𝕜 E)) (s : Set E) (n : ℕ)
     (h : (polar 𝕜 s) ∩ (polar 𝕜 (U (n+1))) ∩ C = ∅) :
