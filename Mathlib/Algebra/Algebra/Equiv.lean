@@ -22,7 +22,9 @@ This file defines bundled isomorphisms of `R`-algebras.
 
 universe u v w u₁ v₁
 
-/-- An equivalence of algebras is an equivalence of rings commuting with the actions of scalars. -/
+/-- An equivalence of algebras is an equivalence of rings commuting with the actions of scalars.
+[Stacks: Definition 09HR](https://stacks.math.columbia.edu/tag/09HR)
+-/
 structure AlgEquiv (R : Type u) (A : Type v) (B : Type w) [CommSemiring R] [Semiring A] [Semiring B]
   [Algebra R A] [Algebra R B] extends A ≃ B, A ≃* B, A ≃+ B, A ≃+* B where
   /-- An equivalence of algebras commutes with the action of scalars. -/
