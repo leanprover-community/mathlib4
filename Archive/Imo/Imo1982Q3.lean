@@ -49,7 +49,7 @@ lemma sum_Fin_eq_sum_Ico
 Specialization of Cauchy-Schwarz inequality with the sequences x n / √(y n) and √(y n)
 -/
 lemma Sedrakyan's_lemma
-  {n : ℕ}
+    {n : ℕ}
   {x y: EuclideanSpace ℝ (Fin n)}
   (hN : 0 < n)
   (xi_pos : ∀ i, 0 < x i)
