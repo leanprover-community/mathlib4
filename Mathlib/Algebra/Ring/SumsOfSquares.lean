@@ -102,7 +102,7 @@ theorem AddSubmonoid.closure_isSquare [AddMonoid R] [Mul R] :
   refine closure_eq_of_le (fun x hx ↦ IsSquare.isSumSq hx) (fun x hx ↦ ?_)
   induction hx with
   | zero         => exact zero_mem _
-  | sq_add _ ih  => exact add_mem (subset_closure (IsSquare.mul_self _)) ih
+  | sq_add _ ih  => exact add_mem (subset_closure (.mul_self _)) ih
 
 @[deprecated (since := "2024-08-09")] alias SquaresAddClosure := AddSubmonoid.closure_isSquare
 
