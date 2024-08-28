@@ -1,6 +1,19 @@
+/-
+Copyright (c) 2024 Calle Sönne. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johan Commelin, Nick Kuhn, Arend Mellendijk, Christian Merten, Calle Sönne, Adam Topaz
+-/
+
 import Mathlib.Algebra.Algebra.Tower
 import Lean.Attributes
-import Mathlib.Util.AddRelatedDecl
+
+/-!
+
+# Algebraize tactic
+
+TODO
+
+-/
 
 open Lean Elab Tactic Term Meta
 
