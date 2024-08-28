@@ -43,22 +43,59 @@ It extends the `Tag` environment extension with the data `declName, tag, comment
 def addTagEntry {m : Type → Type} [MonadEnv m] (declName : Name) (tag comment : String) : m Unit :=
   modifyEnv (tagExt.addEntry · { declName := declName, tag := tag, comment := comment })
 
-/--
-The syntax for a Stacks tag: it is an optional number followed by an optional identifier.
-This allows `044Q3` and `GH3F6` as possibilities.
--/
-declare_syntax_cat stackTag
+open Parser
 
-@[inherit_doc Parser.Category.stackTag]
-syntax (num)? (ident)? : stackTag
+/-- `stacksTag` is the node kind of Stacks Project Tags: a sequence of digits and
+uppercase letters. -/
+abbrev stacksTagKind : SyntaxNodeKind := `stacksTag
+
+/-- The main parser for Stacks Project Tags: it accepts any letter or digit, even though
+tags do not allow lowercase letters.
+This allows for better error messages raised by the elaborator. -/
+def stacksTagFn : ParserFn := fun c s =>
+  let i := s.pos
+  let st := takeWhileFn (·.isAlphanum) c s
+  mkNodeToken stacksTagKind i c st
+
+@[inherit_doc stacksTagFn]
+def stacksTagNoAntiquot : Parser := {
+  fn   := stacksTagFn
+  info := mkAtomicInfo "stacksTag"
+}
+
+@[inherit_doc stacksTagFn]
+def stacksTag : Parser :=
+  withAntiquot (mkAntiquot "stacksTag" stacksTagKind) stacksTagNoAntiquot
+
+end Mathlib.Stacks
+
+namespace Lean.PrettyPrinter
+open Mathlib.Stacks
+
+namespace Formatter
+
+/-- The formatter for Stacks Project Tags syntax. -/
+@[combinator_formatter stacksTagNoAntiquot] def stacksTagNoAntiquot.formatter :=
+  visitAtom stacksTagKind
+
+end Formatter
+
+namespace Parenthesizer
+
+/-- The parenthesizer for Stacks Project Tags syntax. -/
+@[combinator_parenthesizer stacksTagNoAntiquot] def stacksTagAntiquot.parenthesizer := visitToken
+
+end Lean.PrettyPrinter.Parenthesizer
+
+namespace Mathlib.Stacks
 
 /-- The `stacks` attribute.
 Use it as `@[stacks TAG "Optional comment"]`.
-The `TAG` is mandatory.
+The `TAG` is mandatory and should be a sequence of 4 digits or uppercase letters.
 
 See the [Tags page](https://stacks.math.columbia.edu/tags) in the Stacks project for more details.
 -/
-syntax (name := stacks) "stacks " (stackTag)? (ppSpace str)? : attr
+syntax (name := stacks) "stacks " (stacksTag)? (ppSpace str)? : attr
 
 initialize Lean.registerBuiltinAttribute {
   name := `stacks
@@ -68,17 +105,18 @@ initialize Lean.registerBuiltinAttribute {
     -- that only digits and uppercase letter are present
     let tag := stx[1]
     match tag.getSubstring? with
-      | none => logWarning "Please, enter a Tag after `stacks`."
+      | none => logWarning "Please, enter a Tag after `stacks` ." -- this may be unreachable
       | some str =>
         let str := str.toString.trimRight
+        if str.isEmpty then logWarning "Please, enter a Tag after `stacks`." else
         if str.length != 4 then
           logWarningAt tag
             m!"Tag '{str}' is {str.length} characters long, but it should be 4 characters long"
-        else if 2 ≤ (str.split (fun c => (!c.isUpper) && !c.isDigit)).length then
+        else if 2 ≤ (str.split (fun c => !(c.isUpper || c.isDigit))).length then
           logWarningAt tag m!"Tag '{str}' should only consist of digits and uppercase letters"
         else match stx with
-          | `(attr| stacks $_:stackTag $comment:str) => addTagEntry decl str comment.getString
-          | `(attr| stacks $_:stackTag) => addTagEntry decl str ""
+          | `(attr| stacks $_:stacksTag $comment:str) => addTagEntry decl str comment.getString
+          | `(attr| stacks $_:stacksTag) => addTagEntry decl str ""
           | _ => throwUnsupportedSyntax
 }
 
