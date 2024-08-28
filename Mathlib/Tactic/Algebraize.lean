@@ -66,7 +66,7 @@ namespace Lean.Attr
 /-- A user attribute that is used to tag `RingHom` properties that can be converted to `Algebra`
 properties. The attribute has a parameter `name` which should be the name of the corresponding
 `Algebra` property. -/
--- @[nolint unusedArguments]
+@[nolint unusedArguments]
 def algebraizeGetParam (_ : Name) (stx : Syntax) : AttrM Name := do
   match stx with
   | `(attr| algebraize $name:ident) => return name.getId
