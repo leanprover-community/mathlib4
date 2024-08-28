@@ -448,6 +448,7 @@ def unicodeWhitelist : Lean.HashSet Char := Lean.HashSet.ofList $ String.toList 
 ꙳𝓡𝕝𝖣⨳🎉
 "
 
+/-- Checks if a character is accepted by the unicodeLinter (`unwantedUnicode`)-/
 def isBadChar (c : Char) : Bool := !unicodeWhitelist.contains c
 
 /-- Lint a collection of input strings if one of them contains unwanted unicode. -/
