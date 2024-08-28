@@ -296,20 +296,12 @@ lemma test1 [ProperSpace 𝕜] (x : (U (E := E) (n + 1))) (hC₁ : IsClosed C) :
 lemma inter_empty (h : polar 𝕜 s ∩ C ∩ polar 𝕜 (U (n+1)) = ∅) :
     ⋂ (x : (U (E := E) (n + 1))), K 𝕜 C s n x = ∅ := by
   simp_rw [K]
-  rw [← iInter_inter]
-  rw [← iInter_inter]
-  rw [← inter_iInter]
-  simp only [iInter_coe_set]
+  rw [← iInter_inter, ← iInter_inter, ← inter_iInter, iInter_coe_set]
   have e1 : ⋂ i ∈ U (n + 1), polar 𝕜 {i} = polar 𝕜 (U (E := E) (n+1)) := by
     simp_rw [polar, NormedSpace.polar]
     rw [← (dualPairing 𝕜 E).flip.sInter_polar_finite_subset_eq_polar']
     rfl
-  rw [e1]
-  rw [inter_assoc _ _ C]
-  rw [inter_comm _ C]
-  rw [← inter_assoc]
-  rw [h]
-  exact empty_inter (polar 𝕜 (U (n + 2)))
+  rw [e1, inter_assoc _ _ C, inter_comm _ C, ← inter_assoc, h, empty_inter]
 
 /-
 lemma test (C : Set (Dual 𝕜 E)) (s : Set E) (n : ℕ)
