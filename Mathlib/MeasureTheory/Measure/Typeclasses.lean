@@ -516,7 +516,7 @@ lemma sFiniteSeq_zero (n : ℕ) : sFiniteSeq (0 : Measure α) n = 0 := by
   exact h n
 
 /-- A countable sum of finite measures is s-finite.
-This lemma is superseeded by the instance below. -/
+This lemma is superseded by the instance below. -/
 lemma sfinite_sum_of_countable [Countable ι]
     (m : ι → Measure α) [∀ n, IsFiniteMeasure (m n)] : SFinite (Measure.sum m) := by
   classical
