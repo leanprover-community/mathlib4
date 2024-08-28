@@ -69,7 +69,7 @@ def CNF (b o : Ordinal) : List (Σ _ : Ordinal, Ordinal) :=
 /-- The exponents of the Cantor normal form are stored in the first entries. -/
 def CNF.exponents (b o : Ordinal) := (CNF b o).keys
 /-- The coefficients of the Cantor normal form are stored in the second entries. -/
-def CNF.coefficients (b o : Ordinal) := (CNF b o).map Sigma.snd
+def CNF.coeffs (b o : Ordinal) := (CNF b o).map Sigma.snd
 
 @[simp]
 theorem CNF_zero (b : Ordinal) : CNF b 0 = [] :=
@@ -83,12 +83,12 @@ theorem mem_CNF_exponents_iff {b o e : Ordinal} : e ∈ CNF.exponents b o ↔ �
   mem_keys
 
 @[simp]
-theorem CNF.coefficients_zero (b : Ordinal) : CNF.coefficients b 0 = [] := by
-  rw [coefficients, CNF_zero, map_nil]
+theorem CNF.coeffs_zero (b : Ordinal) : CNF.coeffs b 0 = [] := by
+  rw [coeffs, CNF_zero, map_nil]
 
-theorem mem_CNF_coefficients_iff {b o c : Ordinal} :
-    c ∈ CNF.coefficients b o ↔ ∃ e, ⟨e, c⟩ ∈ CNF b o := by
-  simp [CNF.coefficients]
+theorem mem_CNF_coeffs_iff {b o c : Ordinal} :
+    c ∈ CNF.coeffs b o ↔ ∃ e, ⟨e, c⟩ ∈ CNF b o := by
+  simp [CNF.coeffs]
 
 /-- Recursive definition for the Cantor normal form. -/
 theorem CNF_ne_zero {b o : Ordinal} (ho : o ≠ 0) :
@@ -129,9 +129,9 @@ theorem le_log_of_mem_CNF_exponents {b o : Ordinal.{u}} {x : Ordinal} :
     · exact (H h).trans (log_mono_right _ (mod_opow_log_lt_self b ho).le)
 
 /-- Every coefficient in a Cantor normal form is positive. -/
-theorem pos_of_mem_CNF_coefficients {b o : Ordinal.{u}} {x : Ordinal} :
-    x ∈ CNF.coefficients b o → 0 < x := by
-  rw [CNF.coefficients]
+theorem pos_of_mem_CNF_coeffs {b o : Ordinal.{u}} {x : Ordinal} :
+    x ∈ CNF.coeffs b o → 0 < x := by
+  rw [CNF.coeffs]
   refine CNFRec b ?_ ?_ o
   · simp
   · intro o ho IH
@@ -141,9 +141,9 @@ theorem pos_of_mem_CNF_coefficients {b o : Ordinal.{u}} {x : Ordinal} :
     · exact IH h
 
 /-- Every coefficient in the Cantor normal form `CNF b o` is less than `b`. -/
-theorem lt_of_mem_CNF_coefficients {b o : Ordinal.{u}} (hb : 1 < b) {x : Ordinal} :
-    x ∈ CNF.coefficients b o → x < b := by
-  rw [CNF.coefficients]
+theorem lt_of_mem_CNF_coeffs {b o : Ordinal.{u}} (hb : 1 < b) {x : Ordinal} :
+    x ∈ CNF.coeffs b o → x < b := by
+  rw [CNF.coeffs]
   refine CNFRec b ?_ ?_ o
   · simp
   · intro o ho IH h
