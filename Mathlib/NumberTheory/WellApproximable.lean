@@ -10,7 +10,7 @@ import Mathlib.MeasureTheory.Covering.LiminfLimsup
 # Well-approximable numbers and Gallagher's ergodic theorem
 
 Gallagher's ergodic theorem is a result in metric number theory. It thus belongs to that branch of
-mathematics concerning arithmetic properties of real numbers which hold almost eveywhere with
+mathematics concerning arithmetic properties of real numbers which hold almost everywhere with
 respect to the Lebesgue measure.
 
 Gallagher's theorem concerns the approximation of real numbers by rational numbers. The input is a
