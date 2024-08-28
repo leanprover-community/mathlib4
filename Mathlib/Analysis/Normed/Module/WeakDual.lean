@@ -165,11 +165,6 @@ theorem toNormedDual_eq_iff (x' y' : WeakDual 𝕜 E) : toNormedDual x' = toNorm
 theorem isClosed_closedBall (x' : Dual 𝕜 E) (r : ℝ) : IsClosed (toNormedDual ⁻¹' closedBall x' r) :=
   isClosed_induced_iff'.2 (ContinuousLinearMap.is_weak_closed_closedBall x' r)
 
-@[simp] lemma toNormedDual_symm_eq :
-    toNormedDual⁻¹ (𝕜 := 𝕜) (E := E) = NormedSpace.Dual.toWeakDual  := rfl
-@[simp] lemma toWeakDual_symm_eq :
-    NormedSpace.Dual.toWeakDual (𝕜 := 𝕜) (E := E).symm = toNormedDual := rfl
-
 /-!
 ### Polar sets in the weak dual space
 -/
@@ -243,33 +238,22 @@ def U : ℕ → Set E
 lemma U0 : ball (0 : E) 0⁻¹ = ∅ := by
   simp only [U, CharP.cast_eq_zero, inv_zero, ball_zero]
 
-lemma U_polar (n : ℕ) : toNormedDual '' (polar 𝕜 (U (E := E) n)) = (closedBall (0 : NormedSpace.Dual 𝕜 E) n⁻¹) := by
-  rw [polar]
-  rw [Set.image_preimage_eq]
-  cases n
-  ·
-    simp only [CharP.cast_eq_zero, inv_zero]
-    rw [closedBall_zero (x := (0 : NormedSpace.Dual 𝕜 E))]
-    simp [polar, U]
-    --rw [LinearEquiv.image_eq_preimage]
-    --rw [LinearEquiv.image_symm_eq_preimage]
-    rw [toNormedDual]
-    rw [← LinearEquiv.image_eq_preimage]
-    simp only [Dual.coe_toWeakDual, image_singleton]
+lemma polar_U0 : polar 𝕜 (U 0) = closedBall (0 : Dual 𝕜 E) 0 := by
+  -- Should we be able to use Metric.closedBall_zero here?
+  rw [closedBall_zero', closure_singleton, U, polar]
+  simp only [polar_univ]
+  rfl
 
-    --rw [← LinearEquiv.image_eq_preimage]
-    --simp only [Dual.coe_toWeakDual, image_singleton, image_id']
-
-    simp_rw [ (closedBall_zero)]
-
-    rw [NormedSpace.Dual.toWeakDual_eq_iff]
-    --rw [← closedBall_zero (x := (0 : Dual 𝕜 E))]
-    sorry
-  · simp [polar, U]
-    rw [← polar_closedBall]
-    simp_rw [polar_closedBall]
-
-  simp [polar, U, polar_closedBall]
+lemma polar_Un {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] (n : ℕ) :
+    polar 𝕜 (U n) = closedBall (0 : Dual 𝕜 E) n := by
+  cases' n with n
+  · rw [polar_U0]
+    simp only [CharP.cast_eq_zero]
+  · rw [U]
+    simp only [Nat.cast_add, Nat.cast_one]
+    rw [polar]
+    rw [polar_ball Nat.inv_pos_of_nat, inv_inv]
+    rfl
 
 lemma polarUcompact [ProperSpace 𝕜] (n : ℕ) : IsCompact (polar 𝕜 (U (E := E) n)) := by
   apply isCompact_polar

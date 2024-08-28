@@ -270,28 +270,8 @@ theorem sInter_polar_eq_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddComm
   rw [← polar_closedBall (inv_pos_of_pos hr), polar,
     (dualPairing 𝕜 E).flip.sInter_polar_finite_subset_eq_polar (closedBall (0 : E) r⁻¹)]
 
-/-- For now let U n be the open nhd of radius 1/n -/
-def U : ℕ → Set E
-  | 0 => univ
-  | n => ball 0 n⁻¹
-
-
 #check Seminorm.closedBall_zero_eq
 #check Metric.closedBall_zero
-
-lemma polar_U0 : polar 𝕜 (U 0) = closedBall (0 : Dual 𝕜 E) 0 := by
-  -- Should we be able to use Metric.closedBall_zero here?
-  rw [closedBall_zero', closure_singleton, U, polar_univ]
-
-lemma polar_Un {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] (n : ℕ) :
-    polar 𝕜 (U n) = closedBall (0 : Dual 𝕜 E) n := by
-  cases' n with n
-  · rw [polar_U0]
-    simp only [CharP.cast_eq_zero]
-  · rw [U]
-    simp only [Nat.cast_add, Nat.cast_one]
-    rw [polar_ball Nat.inv_pos_of_nat, inv_inv]
-
 
 theorem finite_subsets1 (U : Set (Dual 𝕜 E)) : ∃ F : ℕ → Set E, ∀ n : ℕ, (F n).Finite := by
   use (fun n => Nat.recOn n {(0 : E)} (fun m v => {(0 : E)}))
