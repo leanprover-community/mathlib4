@@ -86,9 +86,9 @@ theorem preinclusion_obj (a : B) : (preinclusion B).obj ⟨a⟩ = a :=
 
 @[simp]
 theorem preinclusion_map₂ {a b : B} (f g : Discrete (Path.{v + 1} a b)) (η : f ⟶ g) :
-    (preinclusion B).map₂ η = eqToHom (congr_arg _ (Discrete.ext _ _ (Discrete.eq_of_hom η))) := by
+    (preinclusion B).map₂ η = eqToHom (congr_arg _ (Discrete.ext (Discrete.eq_of_hom η))) := by
   rcases η with ⟨⟨⟩⟩
-  cases Discrete.ext _ _ (by assumption)
+  cases Discrete.ext (by assumption)
   convert (inclusionPath a b).map_id _
 
 /-- The normalization of the composition of `p : Path a b` and `f : Hom b c`.
@@ -151,7 +151,7 @@ theorem normalizeAux_congr {a b c : B} (p : Path a b) {f g : Hom b c} (η : f �
 theorem normalize_naturality {a b c : B} (p : Path a b) {f g : Hom b c} (η : f ⟶ g) :
     (preinclusion B).map ⟨p⟩ ◁ η ≫ (normalizeIso p g).hom =
       (normalizeIso p f).hom ≫
-        (preinclusion B).map₂ (eqToHom (Discrete.ext _ _ (normalizeAux_congr p η))) := by
+        (preinclusion B).map₂ (eqToHom (Discrete.ext (normalizeAux_congr p η))) := by
   rcases η with ⟨η'⟩; clear η
   induction η' with
   | id => simp
@@ -186,9 +186,9 @@ def normalize (B : Type u) [Quiver.{v + 1} B] :
     Pseudofunctor (FreeBicategory B) (LocallyDiscrete (Paths B)) where
   obj a := ⟨a⟩
   map f := ⟨normalizeAux nil f⟩
-  map₂ η := eqToHom <| Discrete.ext _ _ <| normalizeAux_congr nil η
-  mapId a := eqToIso <| Discrete.ext _ _ rfl
-  mapComp f g := eqToIso <| Discrete.ext _ _ <| normalizeAux_nil_comp f g
+  map₂ η := eqToHom <| Discrete.ext <| normalizeAux_congr nil η
+  mapId a := eqToIso <| Discrete.ext rfl
+  mapComp f g := eqToIso <| Discrete.ext <| normalizeAux_nil_comp f g
 
 /-- Auxiliary definition for `normalizeEquiv`. -/
 def normalizeUnitIso (a b : FreeBicategory B) :

@@ -167,7 +167,7 @@ theorem mul_inv_cancel : ∀ {p : RatFunc K}, p ≠ 0 → p * p⁻¹ = 1
     have : p ≠ 0 := fun hp => h <| by rw [hp, ofFractionRing_zero]
     simpa only [← ofFractionRing_inv, ← ofFractionRing_mul, ← ofFractionRing_one,
       ofFractionRing.injEq] using  -- Porting note: `ofFractionRing.injEq` was not present
-      _root_.mul_inv_cancel this
+      mul_inv_cancel₀ this
 
 end IsDomain
 
@@ -258,7 +258,7 @@ macro "frac_tac" : tactic => `(tactic| repeat (rintro (⟨⟩ : RatFunc _)) <;>
     ← ofFractionRing_inv,
     add_assoc, zero_add, add_zero, mul_assoc, mul_zero, mul_one, mul_add, inv_zero,
     add_comm, add_left_comm, mul_comm, mul_left_comm, sub_eq_add_neg, div_eq_mul_inv,
-    add_mul, zero_mul, one_mul, neg_mul, mul_neg, add_right_neg])
+    add_mul, zero_mul, one_mul, neg_mul, mul_neg, add_neg_cancel])
 
 /-- Solve equations for `RatFunc K` by applying `RatFunc.induction_on`. -/
 macro "smul_tac" : tactic => `(tactic|
@@ -308,7 +308,7 @@ def instAddCommGroup : AddCommGroup (RatFunc K) where
   zero_add := by frac_tac
   add_zero := by frac_tac
   neg := Neg.neg
-  add_left_neg := by frac_tac
+  neg_add_cancel := by frac_tac
   sub := Sub.sub
   sub_eq_add_neg := by frac_tac
   nsmul := (· • ·)
@@ -522,7 +522,9 @@ instance instField [IsDomain K] : Field (RatFunc K) where
   mul_inv_cancel _ := mul_inv_cancel
   zpow := zpowRec
   nnqsmul := _
+  nnqsmul_def := fun q a => rfl
   qsmul := _
+  qsmul_def := fun q a => rfl
 
 section IsFractionRing
 
@@ -826,7 +828,7 @@ def numDenom (x : RatFunc K) : K[X] × K[X] :=
         Polynomial.leadingCoeff_C, div_C_mul, div_C_mul, ← mul_assoc, ← Polynomial.C_mul, ←
         mul_assoc, ← Polynomial.C_mul]
       constructor <;> congr <;>
-        rw [inv_div, mul_comm, mul_div_assoc, ← mul_assoc, inv_inv, _root_.mul_inv_cancel ha',
+        rw [inv_div, mul_comm, mul_div_assoc, ← mul_assoc, inv_inv, mul_inv_cancel₀ ha',
           one_mul, inv_div])
 
 @[simp]

@@ -522,7 +522,7 @@ theorem fill_filterNe [DecidableEq α] (a : α) (m : Sym α n) :
       rw [count_add, count_filter, Sym.coe_replicate, count_replicate]
       obtain rfl | h := eq_or_ne a b
       · rw [if_pos rfl, if_neg (not_not.2 rfl), zero_add]
-      · rw [if_pos h, if_neg h.symm, add_zero])
+      · rw [if_pos h, if_neg h, add_zero])
 
 theorem filter_ne_fill [DecidableEq α] (a : α) (m : Σi : Fin (n + 1), Sym α (n - i)) (h : a ∉ m.2) :
     (m.2.fill a m.1).filterNe a = m :=

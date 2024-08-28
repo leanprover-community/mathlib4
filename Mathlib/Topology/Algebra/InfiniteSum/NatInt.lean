@@ -108,7 +108,7 @@ end Multipliable
 
 section tprod
 
-variable [T2Space M] {α β γ : Type*}
+variable {α β γ : Type*}
 
 section Encodable
 
@@ -175,7 +175,7 @@ end Countable
 
 section ContinuousMul
 
-variable [ContinuousMul M]
+variable [T2Space M] [ContinuousMul M]
 
 @[to_additive]
 theorem prod_mul_tprod_nat_mul'

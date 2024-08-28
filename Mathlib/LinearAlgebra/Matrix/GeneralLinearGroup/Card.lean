@@ -24,7 +24,7 @@ open LinearMap
 section LinearIndependent
 
 variable {K V : Type*} [DivisionRing K] [AddCommGroup V] [Module K V]
-variable [Fintype K] [Fintype V]
+variable [Fintype K] [Finite V]
 
 local notation "q" => Fintype.card K
 local notation "n" => FiniteDimensional.finrank K V
@@ -64,7 +64,7 @@ local notation "q" => Fintype.card 𝔽
 variable (n : ℕ)
 
 /-- Equivalence between `GL n F` and `n` vectors of length `n` that are linearly independent. Given
-by sending a matrix to its coloumns. -/
+by sending a matrix to its columns. -/
 noncomputable def equiv_GL_linearindependent (hn : 0 < n) :
     GL (Fin n) 𝔽 ≃ { s : Fin n → Fin n → 𝔽 // LinearIndependent 𝔽 s } where
   toFun M := ⟨transpose M, by

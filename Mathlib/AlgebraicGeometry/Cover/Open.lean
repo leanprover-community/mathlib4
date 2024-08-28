@@ -444,7 +444,7 @@ lemma isNilpotent_of_isNilpotent_cover {X : Scheme.{u}} {U : X.Opens} (s : Γ(X,
   let N : ℕ := Finset.sup Finset.univ fn
   have hfnleN (i : 𝒰.J) : fn i ≤ N := Finset.le_sup (Finset.mem_univ i)
   use N
-  apply zero_of_zero_cover
+  apply zero_of_zero_cover (𝒰 := 𝒰)
   on_goal 1 => intro i; simp only [map_pow]
   -- This closes both remaining goals at once.
   exact pow_eq_zero_of_le (hfnleN i) (hfn i)

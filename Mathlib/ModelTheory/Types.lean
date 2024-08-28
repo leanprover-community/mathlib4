@@ -7,39 +7,40 @@ import Mathlib.ModelTheory.Satisfiability
 
 /-!
 # Type Spaces
+
 This file defines the space of complete types over a first-order theory.
 (Note that types in model theory are different from types in type theory.)
 
 ## Main Definitions
-* `FirstOrder.Language.Theory.CompleteType`:
+
+- `FirstOrder.Language.Theory.CompleteType`:
   `T.CompleteType α` consists of complete types over the theory `T` with variables `α`.
-* `FirstOrder.Language.Theory.typeOf` is the type of a given tuple.
-* `FirstOrder.Language.Theory.realizedTypes`: `T.realizedTypes M α` is the set of
+- `FirstOrder.Language.Theory.typeOf` is the type of a given tuple.
+- `FirstOrder.Language.Theory.realizedTypes`: `T.realizedTypes M α` is the set of
   types in `T.CompleteType α` that are realized in `M` - that is, the type of some tuple in `M`.
 
 ## Main Results
-* `FirstOrder.Language.Theory.CompleteType.nonempty_iff`:
+
+- `FirstOrder.Language.Theory.CompleteType.nonempty_iff`:
   The space `T.CompleteType α` is nonempty exactly when `T` is satisfiable.
-* `FirstOrder.Language.Theory.CompleteType.exists_modelType_is_realized_in`: Every type is realized
-in some model.
+- `FirstOrder.Language.Theory.CompleteType.exists_modelType_is_realized_in`: Every type is realized
+  in some model.
 
 ## Implementation Notes
-* Complete types are implemented as maximal consistent theories in an expanded language.
-More frequently they are described as maximal consistent sets of formulas, but this is equivalent.
+
+- Complete types are implemented as maximal consistent theories in an expanded language.
+  More frequently they are described as maximal consistent sets of formulas, but this is equivalent.
 
 ## TODO
-* Connect `T.CompleteType α` to sets of formulas `L.Formula α`.
 
+- Connect `T.CompleteType α` to sets of formulas `L.Formula α`.
 -/
 
 
 
 universe u v w w'
 
-open Cardinal Set
-
-open scoped Classical
-open Cardinal FirstOrder
+open Cardinal Set FirstOrder
 
 namespace FirstOrder
 
