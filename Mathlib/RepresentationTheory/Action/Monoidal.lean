@@ -308,7 +308,7 @@ each factor. -/
 @[simps!]
 noncomputable def diagonalSucc (G : Type u) [Monoid G] (n : ℕ) :
     diagonal G (n + 1) ≅ leftRegular G ⊗ diagonal G n :=
-  mkIso (Fin.consEquiv _).symm.toIso fun _ => rfl
+  mkIso (Equiv.piFinSuccAbove _ 0).toIso fun _ => rfl
 
 end Action
 

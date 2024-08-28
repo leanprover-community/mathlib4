@@ -56,7 +56,7 @@ theorem down_surjective : Surjective (@down α) :=
 theorem down_bijective : Bijective (@down α) :=
   Equiv.plift.bijective
 
--- This is not a good simp lemma, as its discrimination tree key is just an arrow.
+@[simp]
 theorem «forall» {p : PLift α → Prop} : (∀ x, p x) ↔ ∀ x : α, p (PLift.up x) :=
   up_surjective.forall
 

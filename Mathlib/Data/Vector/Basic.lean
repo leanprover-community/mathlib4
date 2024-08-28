@@ -17,13 +17,17 @@ import Mathlib.Control.Traversable.Basic
 This file introduces the infix notation `::ᵥ` for `Vector.cons`.
 -/
 
+set_option autoImplicit true
+
 universe u
 
-variable {α β γ σ φ : Type*} {m n : ℕ}
+variable {n : ℕ}
 
 namespace Mathlib
 
 namespace Vector
+
+variable {α : Type*}
 
 @[inherit_doc]
 infixr:67 " ::ᵥ " => Vector.cons
@@ -686,7 +690,7 @@ instance : LawfulTraversable.{u} (flip Vector n) where
 
 section Simp
 
-variable {x : α} {y : β} {s : σ} (xs : Vector α n)
+variable (xs : Vector α n)
 
 @[simp]
 theorem replicate_succ (val : α) :
@@ -725,7 +729,7 @@ theorem get_map₂ (v₁ : Vector α n) (v₂ : Vector β n) (f : α → β → 
     · simp only [get_cons_succ, ih]
 
 @[simp]
-theorem mapAccumr_cons {f : α → σ → σ × β} :
+theorem mapAccumr_cons :
     mapAccumr f (x ::ᵥ xs) s
     = let r := mapAccumr f xs s
       let q := f x r.1
@@ -733,7 +737,7 @@ theorem mapAccumr_cons {f : α → σ → σ × β} :
   rfl
 
 @[simp]
-theorem mapAccumr₂_cons {f : α → β → σ → σ × φ} :
+theorem mapAccumr₂_cons :
     mapAccumr₂ f (x ::ᵥ xs) (y ::ᵥ ys) s
     = let r := mapAccumr₂ f xs ys s
       let q := f x y r.1

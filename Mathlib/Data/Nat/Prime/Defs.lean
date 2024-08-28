@@ -5,6 +5,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Algebra.Associated.Basic
 import Mathlib.Algebra.Ring.Parity
+import Mathlib.Data.Nat.GCD.Basic
 
 /-!
 # Prime numbers

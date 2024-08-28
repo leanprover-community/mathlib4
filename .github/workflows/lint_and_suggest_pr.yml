@@ -28,7 +28,6 @@ jobs:
           ./elan-init -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
-      # if you update this step (or its dependencies), please also update them in bot_fix_style_comment.yaml
       - name: lint
         continue-on-error: true  # allows the following `reviewdog` step to add GitHub suggestions
         run: |
@@ -44,7 +43,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y bibtool
 
-      # if you update this step (or its dependencies), please also update them in bot_fix_style_comment.yaml
       - name: lint references.bib
         continue-on-error: true  # allows the following `reviewdog` step to add GitHub suggestions
         run: |
@@ -73,7 +71,6 @@ jobs:
           ./elan-init -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
-      # if you update this step (or its dependencies), please also update them in bot_fix_style_comment.yaml
       - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
         continue-on-error: true  # allows the following `reviewdog` step to add GitHub suggestions
         run: lake exe mk_all

@@ -121,7 +121,7 @@ instance [NumberField K] : Fintype (torsion K) := by
 
 instance : Nonempty (torsion K) := One.instNonempty
 
-/-- The torsion subgroup is cyclic. -/
+/-- The torsion subgroup is cylic. -/
 instance [NumberField K] : IsCyclic (torsion K) := subgroup_units_cyclic _
 
 /-- The order of the torsion subgroup as a positive integer. -/

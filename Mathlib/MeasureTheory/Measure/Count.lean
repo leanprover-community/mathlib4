@@ -159,7 +159,9 @@ theorem count_injective_image [MeasurableSingletonClass α] [MeasurableSingleton
 
 instance count.isFiniteMeasure [Finite α] :
     IsFiniteMeasure (Measure.count : Measure α) :=
-  ⟨by cases nonempty_fintype α; simp [Measure.count_apply, tsum_fintype]⟩
+  ⟨by
+    cases nonempty_fintype α
+    simpa [Measure.count_apply, tsum_fintype] using (ENNReal.natCast_ne_top _).lt_top⟩
 
 @[simp] lemma count_univ [Fintype α] : count (univ : Set α) = Fintype.card α := by
   rw [count_apply .univ]; exact (tsum_univ 1).trans (by simp [tsum_fintype])

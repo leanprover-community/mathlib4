@@ -20,7 +20,8 @@ def Vector (α : Type u) (n : ℕ) :=
 
 namespace Vector
 
-variable {α β σ φ : Type*} {n : ℕ}
+variable {α : Type u} {β : Type v} {φ : Type w}
+variable {n : ℕ}
 
 instance [DecidableEq α] : DecidableEq (Vector α n) :=
   inferInstanceAs (DecidableEq {l : List α // l.length = n})
@@ -136,6 +137,8 @@ section Accum
 
 open Prod
 
+variable {σ : Type}
+
 /-- Runs a function over a vector returning the intermediate results and a
 final result.
 -/
@@ -147,7 +150,8 @@ def mapAccumr (f : α → σ → σ × β) : Vector α n → σ → σ × Vector
 /-- Runs a function over a pair of vectors returning the intermediate results and a
 final result.
 -/
-def mapAccumr₂ (f : α → β → σ → σ × φ) : Vector α n → Vector β n → σ → σ × Vector φ n
+def mapAccumr₂ {α β σ φ : Type} (f : α → β → σ → σ × φ) :
+    Vector α n → Vector β n → σ → σ × Vector φ n
   | ⟨x, px⟩, ⟨y, py⟩, c =>
     let res := List.mapAccumr₂ f x y c
     ⟨res.1, res.2, by simp [*, res]⟩

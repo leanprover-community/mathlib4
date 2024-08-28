@@ -578,9 +578,8 @@ theorem empty_theory_categorical (T : Language.empty.Theory) : κ.Categorical T 
 
 theorem empty_infinite_Theory_isComplete : Language.empty.infiniteTheory.IsComplete :=
   (empty_theory_categorical.{0} ℵ₀ _).isComplete ℵ₀ _ le_rfl (by simp)
-    ⟨by
-      haveI : Language.empty.Structure ℕ := emptyStructure
-      exact ((model_infiniteTheory_iff Language.empty).2 (inferInstanceAs (Infinite ℕ))).bundled⟩
-    fun M => (model_infiniteTheory_iff Language.empty).1 M.is_model
+    ⟨Theory.Model.bundled ((model_infiniteTheory_iff Language.empty).2
+      (inferInstanceAs (Infinite ℕ)))⟩ fun M =>
+    (model_infiniteTheory_iff Language.empty).1 M.is_model
 
 end Cardinal

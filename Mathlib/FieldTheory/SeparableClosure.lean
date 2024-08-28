@@ -174,9 +174,7 @@ theorem separableClosure.normalClosure_eq_self :
     le_separableClosure F E _) (le_normalClosure _)
 
 /-- If `E` is normal over `F`, then the separable closure of `F` in `E` is Galois (i.e.
-normal and separable) over `F`.
-[Stacks: Lemma 0EXK](https://stacks.math.columbia.edu/tag/0EXK)
--/
+normal and separable) over `F`. -/
 instance separableClosure.isGalois [Normal F E] : IsGalois F (separableClosure F E) where
   to_isSeparable := separableClosure.isSeparable F E
   to_normal := by

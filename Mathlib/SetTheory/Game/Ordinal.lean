@@ -30,20 +30,26 @@ open scoped NaturalOps PGame
 namespace Ordinal
 
 /-- Converts an ordinal into the corresponding pre-game. -/
-noncomputable def toPGame (o : Ordinal.{u}) : PGame.{u} :=
-  ⟨o.toType, PEmpty, fun x => ((enumIsoToType o).symm x).val.toPGame, PEmpty.elim⟩
-termination_by o
-decreasing_by exact ((enumIsoToType o).symm x).prop
+noncomputable def toPGame : Ordinal.{u} → PGame.{u}
+  | o =>
+    have : IsWellOrder o.out.α (· < ·) := isWellOrder_out_lt o
+    ⟨o.out.α, PEmpty, fun x =>
+      have := Ordinal.typein_lt_self x
+      (typein (· < ·) x).toPGame,
+      PEmpty.elim⟩
+termination_by x => x
 
-theorem toPGame_def (o : Ordinal) : o.toPGame =
-    ⟨o.toType, PEmpty, fun x => ((enumIsoToType o).symm x).val.toPGame, PEmpty.elim⟩ := by
+@[nolint unusedHavesSuffices]
+theorem toPGame_def (o : Ordinal) :
+    have : IsWellOrder o.out.α (· < ·) := isWellOrder_out_lt o
+    o.toPGame = ⟨o.out.α, PEmpty, fun x => (typein (· < ·) x).toPGame, PEmpty.elim⟩ := by
   rw [toPGame]
 
-@[simp]
-theorem toPGame_leftMoves (o : Ordinal) : o.toPGame.LeftMoves = o.toType := by
+@[simp, nolint unusedHavesSuffices]
+theorem toPGame_leftMoves (o : Ordinal) : o.toPGame.LeftMoves = o.out.α := by
   rw [toPGame, LeftMoves]
 
-@[simp]
+@[simp, nolint unusedHavesSuffices]
 theorem toPGame_rightMoves (o : Ordinal) : o.toPGame.RightMoves = PEmpty := by
   rw [toPGame, RightMoves]
 
@@ -56,7 +62,7 @@ instance isEmpty_toPGame_rightMoves (o : Ordinal) : IsEmpty o.toPGame.RightMoves
 /-- Converts an ordinal less than `o` into a move for the `PGame` corresponding to `o`, and vice
 versa. -/
 noncomputable def toLeftMovesToPGame {o : Ordinal} : Set.Iio o ≃ o.toPGame.LeftMoves :=
-  (enumIsoToType o).toEquiv.trans (Equiv.cast (toPGame_leftMoves o).symm)
+  (enumIsoOut o).toEquiv.trans (Equiv.cast (toPGame_leftMoves o).symm)
 
 @[simp]
 theorem toLeftMovesToPGame_symm_lt {o : Ordinal} (i : o.toPGame.LeftMoves) :
@@ -65,7 +71,8 @@ theorem toLeftMovesToPGame_symm_lt {o : Ordinal} (i : o.toPGame.LeftMoves) :
 
 @[nolint unusedHavesSuffices]
 theorem toPGame_moveLeft_hEq {o : Ordinal} :
-    HEq o.toPGame.moveLeft fun x : o.toType => ((enumIsoToType o).symm x).val.toPGame := by
+    have : IsWellOrder o.out.α (· < ·) := isWellOrder_out_lt o
+    HEq o.toPGame.moveLeft fun x : o.out.α => (typein (· < ·) x).toPGame := by
   rw [toPGame]
   rfl
 
