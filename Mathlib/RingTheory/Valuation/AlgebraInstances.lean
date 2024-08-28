@@ -1,4 +1,3 @@
-#exit
 /-
 Copyright (c) 2024 María Inés de Frutos-Fernández, Filippo A. E. Nuccio. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
@@ -33,7 +32,7 @@ variable {K : Type*} [Field K] (v : Valuation K ℤₘ₀) (L : Type*) [Field L]
 namespace ValuationSubring
 
 -- Implementation note : this instance was automatic in Lean3
-instance smul : SMul v.valuationSubring (integralClosure v.valuationSubring L) := Algebra.toSMul
+instance : Algebra v.valuationSubring L := Algebra.ofSubring v.valuationSubring.toSubring
 
 theorem algebraMap_injective : Injective (algebraMap v.valuationSubring L) :=
   (NoZeroSMulDivisors.algebraMap_injective K L).comp (IsFractionRing.injective _ _)
@@ -51,6 +50,8 @@ theorem isIntegral_of_mem_ringOfIntegers' {x : (integralClosure v.valuationSubri
 
 variable (E : Type _) [Field E] [Algebra K E] [Algebra L E] [IsScalarTower K L E]
 
+-- Imprementation note: this instance was not needed until 28-08-2024
+instance : IsScalarTower v.valuationSubring L E := Subring.instIsScalarTowerSubtypeMem _
 /-- Given an algebra between two field extensions `L` and `E` of a field `K` with a valuation `v`,
   create an algebra between their two rings of integers. -/
 instance algebra :
