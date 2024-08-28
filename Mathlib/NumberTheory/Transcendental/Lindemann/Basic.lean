@@ -223,7 +223,7 @@ theorem linear_independent_exp (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i
 
 theorem Complex.isIntegral_int_i : IsIntegral ℤ I := by
   refine ⟨X ^ 2 + C 1, monic_X_pow_add_C _ two_ne_zero, ?_⟩
-  rw [eval₂_add, eval₂_X_pow, eval₂_C, I_sq, eq_intCast, Int.cast_one, add_left_neg]
+  rw [eval₂_add, eval₂_X_pow, eval₂_C, I_sq, eq_intCast, Int.cast_one, neg_add_cancel]
 
 theorem Complex.isIntegral_rat_i : IsIntegral ℚ I :=
   Complex.isIntegral_int_i.tower_top
