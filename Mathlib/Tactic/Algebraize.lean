@@ -34,7 +34,7 @@ def FiniteType (f : A →+* B) : Prop :=
   @Algebra.FiniteType A B _ _ f.toAlgebra
 ```
 
-To skip searching through the local context and adding corresponding `Algebra` properties, use
+To avoid searching through the local context and adding corresponding `Algebra` properties, use
 `algebraize'` which only adds `Algebra` and `IsScalarTower` instances.
 
 ## TODO / Upcoming work
@@ -151,6 +151,12 @@ end Algebraize
 
 open Algebraize
 
+/-- Tactic that, given `RingHom`s, adds the corresponding `Algebra` and (if possible)
+`IsScalarTower` instances, as well as `Algebra` corresponding to `RingHom` properties available
+as hypotheses.
+
+Example: given `f : A →+* B` and `g : B →+* C`, and `hf : f.FiniteType`, `algebraize f g` will add
+the instances `Algebra A B`, `Algebra B C`, and `Algebra.FiniteType A B`. -/
 syntax "algebraize" (ppSpace colGt term:max)* : tactic
 
 elab_rules : tactic
@@ -173,7 +179,7 @@ elab_rules : tactic
     -- We then search through the local context to find other instances of algebraize
     searchContext t
 
-/-- Version of `algebraize`, which only adds algebra instances and `IsScalarTower` instances. -/
+/-- Version of `algebraize`, which only adds `Algebra` instances and `IsScalarTower` instances. -/
 syntax "algebraize'" (ppSpace colGt term:max)* : tactic
 
 elab_rules : tactic

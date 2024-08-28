@@ -60,7 +60,7 @@ theorem isBaseChange [Algebra R S] (R' : Type w) (S' : Type t) [CommRing R'] [Co
 end Algebra.Flat
 
 /-- A ring homomorphism `f : R →+* S` is flat if `S` is flat as an `R` algebra. -/
-@[algebraize Algebra.Flat]
+@[algebraize Algebra.Flat.out]
 class RingHom.Flat {R : Type u} {S : Type v} [CommRing R] [CommRing S] (f : R →+* S) : Prop where
   out : f.toAlgebra.Flat := by infer_instance
 
@@ -75,9 +75,9 @@ variable {R : Type u} {S : Type v} {T : Type w} [CommRing R] [CommRing S] [CommR
   (f : R →+* S) (g : S →+* T)
 
 /-- Composition of flat ring homomorphisms is flat. -/
-instance comp [RingHom.Flat f] [RingHom.Flat g] : RingHom.Flat (g.comp f) where
+instance comp [h : RingHom.Flat f] [RingHom.Flat g] : RingHom.Flat (g.comp f) where
   out := by
-    algebraize' f g (g.comp f) -- TODO: `algebraize` gives an error here as RingHom.Flat is a class.
+    algebraize' f g (g.comp f)
     exact Algebra.Flat.comp R S T
 
 end RingHom.Flat
