@@ -350,7 +350,7 @@ noncomputable def coeAlgEquiv (hM : DirectSum.IsInternal M) :
 
 /-- Given an `R`-algebra `A` and a family `ι → Submodule R A` of submodules
 parameterized by an additive monoid `ι`
-and statisfying `SetLike.GradedMonoid M` (essentially, is multiplicative)
+and satisfying `SetLike.GradedMonoid M` (essentially, is multiplicative)
 such that `DirectSum.IsInternal M` (`A` is the direct sum of the `M i`),
 we endow `A` with the structure of a graded algebra.
 The submodules are the *homogeneous* parts. -/
