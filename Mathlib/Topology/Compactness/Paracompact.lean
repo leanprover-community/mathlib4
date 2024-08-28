@@ -112,6 +112,21 @@ theorem precise_refinement_set [ParacompactSpace X] {s : Set X} (hs : IsClosed s
     exact Subset.trans (subset_compl_comm.1 <| vu Option.none) vc
 #align precise_refinement_set precise_refinement_set
 
+-- porting note: new lemma
+theorem ParacompactSpace.of_basis {ι : X → Sort _} {p : ∀ x, ι x → Prop} {s : ∀ x, ι x → Set X}
+    (hb : ∀ x, (𝓝 x).HasBasis (p x) (s x)) (h : ∀ f : (x : X) → ι x, (∀ x, p x (f x)) →
+      ∃ (β : Type _) (t : β → Set X), (∀ b, IsOpen (t b)) ∧ (⋃ b, t b) = univ ∧
+        LocallyFinite t ∧ ∀ b, ∃ x, t b ⊆ s x (f x)) : ParacompactSpace X where
+  locallyFinite_refinement α S ho hu := by
+    have := fun x ↦ (unionᵢ_eq_univ_iff.1 hu x).imp fun a ha ↦ (hb _).mem_iff.1 ((ho a).mem_nhds ha)
+    choose a f hp hsub using this
+    rcases h f hp with ⟨β, t, hto, ht, htf, hts⟩
+    refine ⟨range t, Subtype.val, forall_subtype_range_iff.2 hto, ?_, htf.on_range,
+      forall_subtype_range_iff.2 fun b ↦ ?_⟩
+    · rwa [unionᵢ_subtype, bunionᵢ_range]
+    · rcases hts b with ⟨x, hx⟩
+      exact ⟨_, hx.trans (hsub _)⟩
+
 theorem ClosedEmbedding.paracompactSpace [ParacompactSpace Y] {e : X → Y} (he : ClosedEmbedding e) :
     ParacompactSpace X where
   locallyFinite_refinement α s ho hu := by
