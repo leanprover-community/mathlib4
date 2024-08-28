@@ -21,7 +21,7 @@ where `n →₀ R` in that file is replaced by `n → R` in this, under the hypo
 * `TensorProduct.finiteScalarLeft R N n` : If `n` is a finite type, `Rⁿ ⊗[R] N ≃ₗ[R] Nⁿ`.
 * `TensorProduct.finiteScalarRight R M n` : If `n` is a finite type, `M ⊗[R] Rⁿ ≃ₗ[R] Mⁿ`.
 * `TensorProduct.finiteTensorPiLid R N n m` : if `n` is a finite type, `Rⁿ ⊗[R] Nᵐ ≃ₗ[R] Nⁿˣᵐ`.
-* `TensorProduct.piTensorFiniteRid R M n m` : if `n` is a finite type, `Mᵐ ⊗[R] Rⁿ ≃ₗ[R] Mᵐˣⁿ`.
+* `TensorProduct.piTensorFiniteRid R M m n` : if `n` is a finite type, `Mᵐ ⊗[R] Rⁿ ≃ₗ[R] Mᵐˣⁿ`.
 
 Note that in the last two results, the type `m` is arbitrary and does not have to be finite.
 -/
