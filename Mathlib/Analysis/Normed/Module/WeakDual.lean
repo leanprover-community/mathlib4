@@ -277,28 +277,30 @@ lemma polarUcompact [ProperSpace 𝕜] (n : ℕ) : IsCompact (polar 𝕜 (U (E :
 
 universe u
 
-variable {E₁ : Type u} [SeminormedAddCommGroup E₁] [NormedSpace 𝕜 E₁]
+variable {𝕜₁ : Type u} [NontriviallyNormedField 𝕜₁]
+variable {E₁ : Type u} [SeminormedAddCommGroup E₁] [NormedSpace 𝕜₁ E₁]
 
-lemma existance1 (s : Set E₁) : ∀ {ι : Type u} (t : ι → Set E₁),
-      (∀ i, IsClosed (t i)) → (s ∩ ⋂ i, t i) = ∅ → ∃ u : Finset ι, (s ∩ ⋂ i ∈ u, t i) = ∅ := by
-  apply isCompact_iff_finite_subfamily_closed.mp
+lemma existance1 (s : Set (WeakDual 𝕜₁ E₁)) (h : IsCompact s) : ∀ {ι : Type u}
+    (t : ι → Set (WeakDual 𝕜₁ E₁)), (∀ i, IsClosed (t i)) → (s ∩ ⋂ i, t i) = ∅ →
+    ∃ u : Finset ι, (s ∩ ⋂ i ∈ u, t i) = ∅ := isCompact_iff_finite_subfamily_closed.mp h
+
 
 /- The closed set, not containing the origin -/
-variable (C : Set (WeakDual 𝕜 E))
+variable (C : Set (WeakDual 𝕜₁ E₁))
 
 /- Placeholder for union Fⱼ 0 ≤ j ≤ m-/
-variable (s : Set E)
+variable (s : Set E₁)
 
 /- Placeholder for inductive step -/
 variable (n : ℕ)
 
 /-- For all x, let K x be the intersection of 4 sets-/
-def K : (Elem (U (E := E) (n + 1))) → Set (WeakDual 𝕜 E) :=
-  fun x => polar 𝕜 s ∩ polar 𝕜 {↑x} ∩ C ∩ polar 𝕜 (U (n+2))
+def K : (Elem (U (E := E₁) (n + 1))) → Set (WeakDual 𝕜₁ E₁) :=
+  fun x => polar 𝕜₁ s ∩ polar 𝕜₁ {↑x} ∩ C ∩ polar 𝕜₁ (U (n+2))
 
 
-#check Elem (U (E := E) (n + 1))
-#check K 𝕜 C s n
+--#check Elem (U (E := E₁) (n + 1))
+--#check K 𝕜 C s n
 
 --variable  [ProperSpace 𝕜]
 --#check isCompact_iff_finite_subfamily_closed.mp (ι := (Elem (U (E := E) (n + 1))))
@@ -306,28 +308,28 @@ def K : (Elem (U (E := E) (n + 1))) → Set (WeakDual 𝕜 E) :=
 
 
 
-lemma isCompactK [ProperSpace 𝕜] (x : (U (E := E) (n + 1))) (hC₁ : IsClosed C) :
-    IsCompact (K 𝕜 C s n x) := IsCompact.inter_left (polarUcompact 𝕜 _)
-    (IsClosed.inter (IsClosed.inter (isClosed_polar 𝕜 s) (isClosed_polar _ _)) hC₁)
+lemma isCompactK [ProperSpace 𝕜₁] (x : (U (E := E₁) (n + 1))) (hC₁ : IsClosed C) :
+    IsCompact (K C s n x) := IsCompact.inter_left (polarUcompact 𝕜₁ _)
+    (IsClosed.inter (IsClosed.inter (isClosed_polar 𝕜₁ s) (isClosed_polar _ _)) hC₁)
 
-lemma isClosedK [ProperSpace 𝕜] (x : (U (E := E) (n + 1))) (hC₁ : IsClosed C) :
-    IsClosed (K 𝕜 C s n x) := by
+lemma isClosedK [ProperSpace 𝕜] (x : (U (E := E₁) (n + 1))) (hC₁ : IsClosed C) :
+    IsClosed (K C s n x) := by
   apply IsClosed.inter
   apply IsClosed.inter
   apply IsClosed.inter
-  exact isClosed_polar 𝕜 s
-  exact isClosed_polar 𝕜 _
+  exact isClosed_polar 𝕜₁ s
+  exact isClosed_polar 𝕜₁ _
   exact hC₁
-  exact isClosed_polar 𝕜 (U (n + 2))
+  exact isClosed_polar 𝕜₁ (U (n + 2))
 
 
-lemma inter_empty (h : polar 𝕜 s ∩ C ∩ polar 𝕜 (U (n+1)) = ∅) :
-    ⋂ (x : (U (E := E) (n + 1))), K 𝕜 C s n x = ∅ := by
+lemma inter_empty (h : polar 𝕜₁ s ∩ C ∩ polar 𝕜₁ (U (n+1)) = ∅) :
+    ⋂ (x : (U (E := E₁) (n + 1))), K C s n x = ∅ := by
   simp_rw [K]
   rw [← iInter_inter, ← iInter_inter, ← inter_iInter, iInter_coe_set]
-  have e1 : ⋂ i ∈ U (n + 1), polar 𝕜 {i} = polar 𝕜 (U (E := E) (n+1)) := by
+  have e1 : ⋂ i ∈ U (n + 1), polar 𝕜₁ {i} = polar 𝕜₁ (U (E := E₁) (n+1)) := by
     simp_rw [polar, NormedSpace.polar]
-    rw [← (dualPairing 𝕜 E).flip.sInter_polar_finite_subset_eq_polar']
+    rw [← (dualPairing 𝕜₁ E₁).flip.sInter_polar_finite_subset_eq_polar']
     rfl
   rw [e1, inter_assoc _ _ C, inter_comm _ C, ← inter_assoc, h, empty_inter]
 
@@ -341,10 +343,6 @@ lemma existance [ProperSpace 𝕜] : ∃ u : Finset (Elem (U (E := E) (n + 1))),
 -/
 
 --#check polarUcompact 𝕜 (n+2)
-
-#check Set.Subset
-
-#check Set.range
 
 --#check Set.domain
 
