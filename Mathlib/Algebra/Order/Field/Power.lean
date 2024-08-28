@@ -148,7 +148,7 @@ theorem Even.zpow_abs {p : ℤ} (hp : Even p) (a : α) : |a| ^ p = a ^ p := by
 
 /-- Bernoulli's inequality reformulated to estimate `(n : α)`. -/
 theorem Nat.cast_le_pow_sub_div_sub (H : 1 < a) (n : ℕ) : (n : α) ≤ (a ^ n - 1) / (a - 1) :=
-  (le_div_iff (sub_pos.2 H)).2 <|
+  (le_div_iff₀ (sub_pos.2 H)).2 <|
     le_sub_left_of_add_le <| one_add_mul_sub_le_pow ((neg_le_self zero_le_one).trans H.le) _
 
 /-- For any `a > 1` and a natural `n` we have `n ≤ a ^ n / (a - 1)`. See also

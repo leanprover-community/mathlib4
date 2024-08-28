@@ -566,7 +566,7 @@ theorem gauge_closedBall (hr : 0 ≤ r) (x : E) : gauge (closedBall (0 : E) r) x
 theorem mul_gauge_le_norm (hs : Metric.ball (0 : E) r ⊆ s) : r * gauge s x ≤ ‖x‖ := by
   obtain hr | hr := le_or_lt r 0
   · exact (mul_nonpos_of_nonpos_of_nonneg hr <| gauge_nonneg _).trans (norm_nonneg _)
-  rw [mul_comm, ← le_div_iff hr, ← gauge_ball hr.le]
+  rw [mul_comm, ← le_div_iff₀ hr, ← gauge_ball hr.le]
   exact gauge_mono (absorbent_ball_zero hr) hs x
 
 theorem Convex.lipschitzWith_gauge {r : ℝ≥0} (hc : Convex ℝ s) (hr : 0 < r)

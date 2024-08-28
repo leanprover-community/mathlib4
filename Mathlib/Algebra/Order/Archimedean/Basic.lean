@@ -19,6 +19,8 @@ number `n` such that `x ≤ n • y`.
 
 * `Archimedean` is a typeclass for an ordered additive commutative monoid to have the archimedean
   property.
+* `MulArchimedean` is a typeclass for an ordered commutative monoid to have the "mul-archimedean
+  property" where for `x` and `y > 1`, there exists a natural number `n` such that `x ≤ y ^ n`.
 * `Archimedean.floorRing` defines a floor function on an archimedean linearly ordered ring making
   it into a `floorRing`.
 
@@ -38,74 +40,104 @@ class Archimedean (α) [OrderedAddCommMonoid α] : Prop where
   such that `x ≤ n • y`. -/
   arch : ∀ (x : α) {y : α}, 0 < y → ∃ n : ℕ, x ≤ n • y
 
-instance OrderDual.archimedean [OrderedAddCommGroup α] [Archimedean α] : Archimedean αᵒᵈ :=
+section MulArchimedean
+
+/-- An ordered commutative monoid is called `MulArchimedean` if for any two elements `x`, `y`
+such that `1 < y`, there exists a natural number `n` such that `x ≤ y ^ n`. -/
+@[to_additive Archimedean]
+class MulArchimedean (α) [OrderedCommMonoid α] : Prop where
+  /-- For any two elements `x`, `y` such that `1 < y`, there exists a natural number `n`
+  such that `x ≤ y ^ n`. -/
+  arch : ∀ (x : α) {y : α}, 1 < y → ∃ n : ℕ, x ≤ y ^ n
+
+end MulArchimedean
+
+@[to_additive]
+instance OrderDual.instMulArchimedean [OrderedCommGroup α] [MulArchimedean α] :
+    MulArchimedean αᵒᵈ :=
   ⟨fun x y hy =>
-    let ⟨n, hn⟩ := Archimedean.arch (-ofDual x) (neg_pos.2 hy)
-    ⟨n, by rwa [neg_nsmul, neg_le_neg_iff] at hn⟩⟩
+    let ⟨n, hn⟩ := MulArchimedean.arch (ofDual x)⁻¹ (inv_lt_one_iff_one_lt.2 hy)
+    ⟨n, by rwa [inv_pow, inv_le_inv_iff] at hn⟩⟩
+
+instance Additive.instArchimedean [OrderedCommGroup α] [MulArchimedean α] :
+    Archimedean (Additive α) :=
+  ⟨fun x _ hy ↦ MulArchimedean.arch (toMul x) hy⟩
+
+instance Multiplicative.instMulArchimedean [OrderedAddCommGroup α] [Archimedean α] :
+    MulArchimedean (Multiplicative α) :=
+  ⟨fun x _ hy ↦ Archimedean.arch (toAdd x) hy⟩
 
 variable {M : Type*}
 
-theorem exists_lt_nsmul [OrderedAddCommMonoid M] [Archimedean M]
-    [CovariantClass M M (· + ·) (· < ·)] {a : M} (ha : 0 < a) (b : M) :
-    ∃ n : ℕ, b < n • a :=
-  let ⟨k, hk⟩ := Archimedean.arch b ha
-  ⟨k + 1, hk.trans_lt <| nsmul_lt_nsmul_left ha k.lt_succ_self⟩
+@[to_additive]
+theorem exists_lt_pow [OrderedCommMonoid M] [MulArchimedean M]
+    [CovariantClass M M (· * ·) (· < ·)] {a : M} (ha : 1 < a) (b : M) :
+    ∃ n : ℕ, b < a ^ n :=
+  let ⟨k, hk⟩ := MulArchimedean.arch b ha
+  ⟨k + 1, hk.trans_lt <| pow_lt_pow_right' ha k.lt_succ_self⟩
 
-section LinearOrderedAddCommGroup
+section LinearOrderedCommGroup
 
-variable [LinearOrderedAddCommGroup α] [Archimedean α]
+variable [LinearOrderedCommGroup α] [MulArchimedean α]
 
-/-- An archimedean decidable linearly ordered `AddCommGroup` has a version of the floor: for
-`a > 0`, any `g` in the group lies between some two consecutive multiples of `a`. -/
-theorem existsUnique_zsmul_near_of_pos {a : α} (ha : 0 < a) (g : α) :
-    ∃! k : ℤ, k • a ≤ g ∧ g < (k + 1) • a := by
-  let s : Set ℤ := { n : ℤ | n • a ≤ g }
-  obtain ⟨k, hk : -g ≤ k • a⟩ := Archimedean.arch (-g) ha
-  have h_ne : s.Nonempty := ⟨-k, by simpa [s] using neg_le_neg hk⟩
-  obtain ⟨k, hk⟩ := Archimedean.arch g ha
+/-- An archimedean decidable linearly ordered `CommGroup` has a version of the floor: for
+`a > 1`, any `g` in the group lies between some two consecutive powers of `a`. -/
+@[to_additive "An archimedean decidable linearly ordered `AddCommGroup` has a version of the floor:
+for `a > 0`, any `g` in the group lies between some two consecutive multiples of `a`. -/"]
+theorem existsUnique_zpow_near_of_one_lt {a : α} (ha : 1 < a) (g : α) :
+    ∃! k : ℤ, a ^ k ≤ g ∧ g < a ^ (k + 1) := by
+  let s : Set ℤ := { n : ℤ | a ^ n ≤ g }
+  obtain ⟨k, hk : g⁻¹ ≤ a ^ k⟩ := MulArchimedean.arch g⁻¹ ha
+  have h_ne : s.Nonempty := ⟨-k, by simpa [s] using inv_le_inv' hk⟩
+  obtain ⟨k, hk⟩ := MulArchimedean.arch g ha
   have h_bdd : ∀ n ∈ s, n ≤ (k : ℤ) := by
     intro n hn
-    apply (zsmul_le_zsmul_iff ha).mp
-    rw [← natCast_zsmul] at hk
+    apply (zpow_le_zpow_iff ha).mp
+    rw [← zpow_natCast] at hk
     exact le_trans hn hk
   obtain ⟨m, hm, hm'⟩ := Int.exists_greatest_of_bdd ⟨k, h_bdd⟩ h_ne
-  have hm'' : g < (m + 1) • a := by
+  have hm'' : g < a ^ (m + 1) := by
     contrapose! hm'
     exact ⟨m + 1, hm', lt_add_one _⟩
   refine ⟨m, ⟨hm, hm''⟩, fun n hn => (hm' n hn.1).antisymm <| Int.le_of_lt_add_one ?_⟩
-  rw [← zsmul_lt_zsmul_iff ha]
+  rw [← zpow_lt_zpow_iff ha]
   exact lt_of_le_of_lt hm hn.2
 
-theorem existsUnique_zsmul_near_of_pos' {a : α} (ha : 0 < a) (g : α) :
-    ∃! k : ℤ, 0 ≤ g - k • a ∧ g - k • a < a := by
-  simpa only [sub_nonneg, add_zsmul, one_zsmul, sub_lt_iff_lt_add'] using
-    existsUnique_zsmul_near_of_pos ha g
+@[to_additive]
+theorem existsUnique_zpow_near_of_one_lt' {a : α} (ha : 1 < a) (g : α) :
+    ∃! k : ℤ, 1 ≤ g / a ^ k ∧ g / a ^ k < a := by
+  simpa only [one_le_div', zpow_add_one, div_lt_iff_lt_mul'] using
+    existsUnique_zpow_near_of_one_lt ha g
 
-theorem existsUnique_sub_zsmul_mem_Ico {a : α} (ha : 0 < a) (b c : α) :
-    ∃! m : ℤ, b - m • a ∈ Set.Ico c (c + a) := by
-  simpa only [mem_Ico, le_sub_iff_add_le, zero_add, add_comm c, sub_lt_iff_lt_add', add_assoc] using
-    existsUnique_zsmul_near_of_pos' ha (b - c)
+@[to_additive]
+theorem existsUnique_div_zpow_mem_Ico {a : α} (ha : 1 < a) (b c : α) :
+    ∃! m : ℤ, b / a ^ m ∈ Set.Ico c (c * a) := by
+  simpa only [mem_Ico, le_div_iff_mul_le, one_mul, mul_comm c, div_lt_iff_lt_mul, mul_assoc] using
+    existsUnique_zpow_near_of_one_lt' ha (b / c)
 
-theorem existsUnique_add_zsmul_mem_Ico {a : α} (ha : 0 < a) (b c : α) :
-    ∃! m : ℤ, b + m • a ∈ Set.Ico c (c + a) :=
+@[to_additive]
+theorem existsUnique_mul_zpow_mem_Ico {a : α} (ha : 1 < a) (b c : α) :
+    ∃! m : ℤ, b * a ^ m ∈ Set.Ico c (c * a) :=
   (Equiv.neg ℤ).bijective.existsUnique_iff.2 <| by
-    simpa only [Equiv.neg_apply, mem_Ico, neg_zsmul, ← sub_eq_add_neg, le_sub_iff_add_le, zero_add,
-      add_comm c, sub_lt_iff_lt_add', add_assoc] using existsUnique_zsmul_near_of_pos' ha (b - c)
+    simpa only [Equiv.neg_apply, mem_Ico, zpow_neg, ← div_eq_mul_inv, le_div_iff_mul_le, one_mul,
+      mul_comm c, div_lt_iff_lt_mul, mul_assoc] using existsUnique_zpow_near_of_one_lt' ha (b / c)
 
-theorem existsUnique_add_zsmul_mem_Ioc {a : α} (ha : 0 < a) (b c : α) :
-    ∃! m : ℤ, b + m • a ∈ Set.Ioc c (c + a) :=
+@[to_additive]
+theorem existsUnique_add_zpow_mem_Ioc {a : α} (ha : 1 < a) (b c : α) :
+    ∃! m : ℤ, b * a ^ m ∈ Set.Ioc c (c * a) :=
   (Equiv.addRight (1 : ℤ)).bijective.existsUnique_iff.2 <| by
-    simpa only [add_zsmul, sub_lt_iff_lt_add', le_sub_iff_add_le', ← add_assoc, and_comm, mem_Ioc,
-      Equiv.coe_addRight, one_zsmul, add_le_add_iff_right] using
-      existsUnique_zsmul_near_of_pos ha (c - b)
+    simpa only [zpow_add_one, div_lt_iff_lt_mul', le_div_iff_mul_le', ← mul_assoc, and_comm,
+      mem_Ioc, Equiv.coe_addRight, mul_le_mul_iff_right] using
+      existsUnique_zpow_near_of_one_lt ha (c / b)
 
-theorem existsUnique_sub_zsmul_mem_Ioc {a : α} (ha : 0 < a) (b c : α) :
-    ∃! m : ℤ, b - m • a ∈ Set.Ioc c (c + a) :=
+@[to_additive]
+theorem existsUnique_sub_zpow_mem_Ioc {a : α} (ha : 1 < a) (b c : α) :
+    ∃! m : ℤ, b / a ^ m ∈ Set.Ioc c (c * a) :=
   (Equiv.neg ℤ).bijective.existsUnique_iff.2 <| by
-    simpa only [Equiv.neg_apply, neg_zsmul, sub_neg_eq_add] using
-      existsUnique_add_zsmul_mem_Ioc ha b c
+    simpa only [Equiv.neg_apply, zpow_neg, div_inv_eq_mul] using
+      existsUnique_add_zpow_mem_Ioc ha b c
 
-end LinearOrderedAddCommGroup
+end LinearOrderedCommGroup
 
 theorem exists_nat_ge [OrderedSemiring α] [Archimedean α] (x : α) : ∃ n : ℕ, x ≤ n := by
   nontriviality α
@@ -370,13 +402,18 @@ instance : Archimedean ℤ :=
 instance : Archimedean ℚ :=
   archimedean_iff_rat_le.2 fun q => ⟨q, by rw [Rat.cast_id]⟩
 
-instance Nonneg.archimedean [OrderedAddCommMonoid α] [Archimedean α] :
+instance Nonneg.instArchimedean [OrderedAddCommMonoid α] [Archimedean α] :
     Archimedean { x : α // 0 ≤ x } :=
   ⟨fun x y hy =>
     let ⟨n, hr⟩ := Archimedean.arch (x : α) (hy : (0 : α) < y)
     ⟨n, show (x : α) ≤ (n • y : { x : α // 0 ≤ x }) by simp [*, -nsmul_eq_mul, nsmul_coe]⟩⟩
 
-instance : Archimedean NNRat := Nonneg.archimedean
+instance Nonneg.instMulArchimedean [StrictOrderedCommSemiring α] [Archimedean α] [ExistsAddOfLE α] :
+    MulArchimedean { x : α // 0 ≤ x } :=
+  ⟨fun x _ hy ↦ (pow_unbounded_of_one_lt x hy).imp fun _ h ↦ h.le⟩
+
+instance : Archimedean NNRat := Nonneg.instArchimedean
+instance : MulArchimedean NNRat := Nonneg.instMulArchimedean
 
 /-- A linear ordered archimedean ring is a floor ring. This is not an `instance` because in some
 cases we have a computable `floor` function. -/
