@@ -552,9 +552,7 @@ theorem coe_mk (f : α ≃* β) (h) : (OrderMonoidIso.mk f h : α → β) = f :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem mk_coe (f : α ≃*o β) (h) : OrderMonoidIso.mk (f : α ≃* β) h = f := by
-  ext
-  rfl
+theorem mk_coe (f : α ≃*o β) (h) : OrderMonoidIso.mk (f : α ≃* β) h = f := rfl
 
 /-- Reinterpret an ordered monoid isomorphism as an order isomorphism. -/
 @[to_additive "Reinterpret an ordered additive monoid isomomorphism as an order isomomorphism."]
