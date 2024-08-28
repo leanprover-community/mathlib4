@@ -86,7 +86,12 @@ theorem le_W (k : ℕ) : ((2 : ℝ) * k + 1) / (2 * k + 2) * (π / 2) ≤ W k :=
   rw [integral_sin_pow (2 * k)]
   simp only [sin_zero, ne_eq, add_eq_zero, and_false, not_false_eq_true, zero_pow, cos_zero,
     mul_one, sin_pi, cos_pi, mul_neg, neg_zero, sub_self, zero_div, zero_add]
-  norm_cast
+  #adaptation_note
+  /--
+  These sorries will be fixed by https://github.com/leanprover/lean4/pull/5187,
+  which will land in nightly-2024-08-28.
+  -/
+  sorry -- norm_cast
 
 theorem tendsto_W_nhds_pi_div_two : Tendsto W atTop (𝓝 <| π / 2) := by
   refine tendsto_of_tendsto_of_tendsto_of_le_of_le ?_ tendsto_const_nhds le_W W_le

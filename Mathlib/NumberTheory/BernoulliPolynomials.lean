@@ -164,7 +164,12 @@ theorem sum_range_pow_eq_bernoulli_sub (n p : ℕ) :
     apply congr_arg₂ _ (congr_arg₂ _ _ _) rfl
     · rw [Nat.sub_sub_self (mem_range_le hx)]
     · rw [← choose_symm (mem_range_le hx)]
-  · norm_cast
+  · #adaptation_note
+    /--
+    These sorries will be fixed by https://github.com/leanprover/lean4/pull/5187,
+    which will land in nightly-2024-08-28.
+    -/
+    sorry --norm_cast
 
 /-- Rearrangement of `Polynomial.sum_range_pow_eq_bernoulli_sub`. -/
 theorem bernoulli_succ_eval (n p : ℕ) : (bernoulli p.succ).eval (n : ℚ) =
@@ -176,7 +181,12 @@ theorem bernoulli_eval_one_add (n : ℕ) (x : ℚ) :
     (bernoulli n).eval (1 + x) = (bernoulli n).eval x + n * x ^ (n - 1) := by
   refine Nat.strong_induction_on n fun d hd => ?_
   have nz : ((d.succ : ℕ) : ℚ) ≠ 0 := by
-    norm_cast
+    #adaptation_note
+    /--
+    These sorries will be fixed by https://github.com/leanprover/lean4/pull/5187,
+    which will land in nightly-2024-08-28.
+    -/
+    sorry --norm_cast
   apply (mul_right_inj' nz).1
   rw [← smul_eq_mul, ← eval_smul, bernoulli_eq_sub_sum, mul_add, ← smul_eq_mul, ← eval_smul,
     bernoulli_eq_sub_sum, eval_sub, eval_finset_sum]

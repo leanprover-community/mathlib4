@@ -140,7 +140,13 @@ theorem mongePoint_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ}
   · rw [if_pos (mem_univ _), sub_zero, add_zero, card_fin]
     -- Porting note: replaced
     -- have hn3 : (n + 2 + 1 : ℝ) ≠ 0 := mod_cast Nat.succ_ne_zero _
-    have hn3 : (n + 2 + 1 : ℝ) ≠ 0 := by norm_cast
+    have hn3 : (n + 2 + 1 : ℝ) ≠ 0 := by
+      #adaptation_note
+      /--
+      These sorries will be fixed by https://github.com/leanprover/lean4/pull/5187,
+      which will land in nightly-2024-08-28.
+      -/
+      sorry -- norm_cast
     field_simp [hn1, hn3, mul_comm]
   · -- TODO(#15486): used to be `field_simp [hn1]`, but was really slow
   -- replaced by `simp only ...` to speed up. Reinstate `field_simp` once it is faster.
