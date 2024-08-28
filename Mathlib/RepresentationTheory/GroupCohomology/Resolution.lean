@@ -565,11 +565,11 @@ def forget₂ToModuleCatHomotopyEquiv :
 
 /-- The hom of `k`-linear `G`-representations `k[G¹] → k` sending `∑ nᵢgᵢ ↦ ∑ nᵢ`. -/
 def ε : Rep.ofMulAction k G (Fin 1 → G) ⟶ Rep.trivial k G k where
-  hom := Finsupp.total _ _ _ fun _ => (1 : k)
+  hom := Finsupp.total _ fun _ => (1 : k)
   comm g := Finsupp.lhom_ext' fun _ => LinearMap.ext_ring (by
     show
-      Finsupp.total (Fin 1 → G) k k (fun _ => (1 : k)) (Finsupp.mapDomain _ (Finsupp.single _ _)) =
-        Finsupp.total (Fin 1 → G) k k (fun _ => (1 : k)) (Finsupp.single _ _)
+      Finsupp.total k (fun _ => (1 : k)) (Finsupp.mapDomain _ (Finsupp.single _ _)) =
+        Finsupp.total k (fun _ => (1 : k)) (Finsupp.single _ _)
     simp only [Finsupp.mapDomain_single, Finsupp.total_single])
 
 /-- The homotopy equivalence of complexes of `k`-modules between the standard resolution of `k` as
@@ -583,7 +583,7 @@ theorem forget₂ToModuleCatHomotopyEquiv_f_0_eq :
   convert Category.id_comp (X := (forget₂ToModuleCat k G).X 0) _
   · dsimp only [HomotopyEquiv.ofIso, compForgetAugmentedIso]
     simp only [Iso.symm_hom, eqToIso.inv, HomologicalComplex.eqToHom_f, eqToHom_refl]
-  trans (Finsupp.total _ _ _ fun _ => (1 : k)).comp ((ModuleCat.free k).map (terminal.from _))
+  trans (Finsupp.total _ fun _ => (1 : k)).comp ((ModuleCat.free k).map (terminal.from _))
   · dsimp
     erw [Finsupp.lmapDomain_total (α := Fin 1 → G) (R := k) (α' := ⊤_ Type u)
         (v := fun _ => (1 : k)) (v' := fun _ => (1 : k))
