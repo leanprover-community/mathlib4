@@ -70,7 +70,28 @@ theorem noMaxOrder {c} (h : ℵ₀ ≤ c) : NoMaxOrder c.ord.out.α :=
   Ordinal.out_no_max_of_succ_lt (ord_isLimit h).2
 
 /-! ### Aleph cardinals -/
+
 section aleph
+
+/-- The `aleph'` function gives the cardinals listed by their ordinal index. `aleph' n = n`,
+`aleph' ω = ω`, `aleph' (ω + 1) = succ ℵ₀`, etc.
+
+For the more common aleph function skipping over finite cardinals, see `Cardinal.aleph`. -/
+def aleph' : Ordinal.{u} ≃o Cardinal.{u} := by
+  let f := RelEmbedding.collapse Cardinal.ord.orderEmbedding.ltEmbedding.{u}
+  refine (OrderIso.ofRelIsoLT <| RelIso.ofSurjective f ?_).symm
+  apply f.eq_or_principal.resolve_right
+  rintro ⟨o, e⟩
+  have : ∀ c, f c < o := fun c => (e _).2 ⟨_, rfl⟩
+  refine Ordinal.inductionOn o ?_ this
+  intro α r _ h
+  let s := ⨆ a, invFun f (Ordinal.typein r a)
+  apply (lt_succ s).not_le
+  have I : Injective f := f.toEmbedding.injective
+  simpa only [typein_enum, leftInverse_invFun I (succ s)] using
+    le_ciSup
+      (Cardinal.bddAbove_range.{u, u} fun a : α => invFun f (Ordinal.typein r a))
+      (Ordinal.enum r ⟨_, h (succ s)⟩)
 
 /-- The `aleph'` index function, which gives the ordinal index of a cardinal.
   (The `aleph'` part is because unlike `aleph` this counts also the
@@ -80,31 +101,9 @@ section aleph
   i.e., it is order preserving and its range is an initial segment of the ordinals.
   For the basic function version, see `alephIdx`.
   For an upgraded version stating that the range is everything, see `AlephIdx.rel_iso`. -/
+@[deprecated aleph' (since := "2024-08-28")]
 def alephIdx.initialSeg : @InitialSeg Cardinal Ordinal (· < ·) (· < ·) :=
   @RelEmbedding.collapse Cardinal Ordinal (· < ·) (· < ·) _ Cardinal.ord.orderEmbedding.ltEmbedding
-
-/-- The `aleph'` index function, which gives the ordinal index of a cardinal.
-  (The `aleph'` part is because unlike `aleph` this counts also the
-  finite stages. So `alephIdx n = n`, `alephIdx ω = ω`,
-  `alephIdx ℵ₁ = ω + 1` and so on.)
-  For an upgraded version stating that the range is everything, see `AlephIdx.rel_iso`. -/
-def alephIdx : Cardinal → Ordinal :=
-  alephIdx.initialSeg
-
-@[simp]
-theorem alephIdx.initialSeg_coe : (alephIdx.initialSeg : Cardinal → Ordinal) = alephIdx :=
-  rfl
-
-@[simp]
-theorem alephIdx_lt {a b} : alephIdx a < alephIdx b ↔ a < b :=
-  alephIdx.initialSeg.toRelEmbedding.map_rel_iff
-
-@[simp]
-theorem alephIdx_le {a b} : alephIdx a ≤ alephIdx b ↔ a ≤ b := by
-  rw [← not_lt, ← not_lt, alephIdx_lt]
-
-theorem alephIdx.init {a b} : b < alephIdx a → ∃ c, alephIdx c = b :=
-  alephIdx.initialSeg.init
 
 /-- The `aleph'` index function, which gives the ordinal index of a cardinal.
   (The `aleph'` part is because unlike `aleph` this counts also the
@@ -113,26 +112,48 @@ theorem alephIdx.init {a b} : b < alephIdx a → ∃ c, alephIdx c = b :=
   In this version, we register additionally that this function is an order isomorphism
   between cardinals and ordinals.
   For the basic function version, see `alephIdx`. -/
+@[deprecated aleph' (since := "2024-08-28")]
 def alephIdx.relIso : @RelIso Cardinal.{u} Ordinal.{u} (· < ·) (· < ·) :=
-  @RelIso.ofSurjective Cardinal.{u} Ordinal.{u} (· < ·) (· < ·) alephIdx.initialSeg.{u} <|
-    (InitialSeg.eq_or_principal alephIdx.initialSeg.{u}).resolve_right fun ⟨o, e⟩ => by
-      have : ∀ c, alephIdx c < o := fun c => (e _).2 ⟨_, rfl⟩
-      refine Ordinal.inductionOn o ?_ this; intro α r _ h
-      let s := ⨆ a, invFun alephIdx (Ordinal.typein r a)
-      apply (lt_succ s).not_le
-      have I : Injective.{u+2, u+2} alephIdx := alephIdx.initialSeg.toEmbedding.injective
-      simpa only [typein_enum, leftInverse_invFun I (succ s)] using
-        le_ciSup
-          (Cardinal.bddAbove_range.{u, u} fun a : α => invFun alephIdx (Ordinal.typein r a))
-          (Ordinal.enum r ⟨_, h (succ s)⟩)
+  aleph'.symm.toRelIsoLT
 
-@[simp]
+/-- The `aleph'` index function, which gives the ordinal index of a cardinal.
+  (The `aleph'` part is because unlike `aleph` this counts also the
+  finite stages. So `alephIdx n = n`, `alephIdx ω = ω`,
+  `alephIdx ℵ₁ = ω + 1` and so on.)
+  For an upgraded version stating that the range is everything, see `AlephIdx.rel_iso`. -/
+@[deprecated aleph' (since := "2024-08-28")]
+def alephIdx : Cardinal → Ordinal :=
+  aleph'.symm
+
+set_option linter.deprecated false in
+@[deprecated (since := "2024-08-28")]
+theorem alephIdx.initialSeg_coe : (alephIdx.initialSeg : Cardinal → Ordinal) = alephIdx :=
+  rfl
+
+set_option linter.deprecated false in
+@[deprecated (since := "2024-08-28")]
+theorem alephIdx_lt {a b} : alephIdx a < alephIdx b ↔ a < b :=
+  alephIdx.initialSeg.toRelEmbedding.map_rel_iff
+
+set_option linter.deprecated false in
+@[deprecated (since := "2024-08-28")]
+theorem alephIdx_le {a b} : alephIdx a ≤ alephIdx b ↔ a ≤ b := by
+  rw [← not_lt, ← not_lt, alephIdx_lt]
+
+set_option linter.deprecated false in
+@[deprecated (since := "2024-08-28")]
+theorem alephIdx.init {a b} : b < alephIdx a → ∃ c, alephIdx c = b :=
+  alephIdx.initialSeg.init
+
+set_option linter.deprecated false in
+@[deprecated (since := "2024-08-28")]
 theorem alephIdx.relIso_coe : (alephIdx.relIso : Cardinal → Ordinal) = alephIdx :=
   rfl
 
 @[simp]
 theorem type_cardinal : @type Cardinal (· < ·) _ = Ordinal.univ.{u, u + 1} := by
-  rw [Ordinal.univ_id]; exact Quotient.sound ⟨alephIdx.relIso⟩
+  rw [Ordinal.univ_id]
+  exact Quotient.sound ⟨aleph'.symm.toRelIsoLT⟩
 
 @[simp]
 theorem mk_cardinal : #Cardinal = univ.{u, u + 1} := by
@@ -144,44 +165,40 @@ theorem mk_cardinal : #Cardinal = univ.{u, u + 1} := by
   In this version, we register additionally that this function is an order isomorphism
   between ordinals and cardinals.
   For the basic function version, see `aleph'`. -/
+@[deprecated aleph' (since := "2024-08-28")]
 def Aleph'.relIso :=
-  Cardinal.alephIdx.relIso.symm
+  aleph'
 
-/-- The `aleph'` function gives the cardinals listed by their ordinal
-  index, and is the inverse of `aleph_idx`.
-  `aleph' n = n`, `aleph' ω = ω`, `aleph' (ω + 1) = succ ℵ₀`, etc. -/
-def aleph' : Ordinal → Cardinal :=
-  Aleph'.relIso
-
-@[simp]
+set_option linter.deprecated false in
+@[deprecated (since := "2024-08-28")]
 theorem aleph'.relIso_coe : (Aleph'.relIso : Ordinal → Cardinal) = aleph' :=
   rfl
 
-@[simp]
-theorem aleph'_lt {o₁ o₂ : Ordinal} : aleph' o₁ < aleph' o₂ ↔ o₁ < o₂ :=
-  Aleph'.relIso.map_rel_iff
-
-@[simp]
 theorem aleph'_le {o₁ o₂ : Ordinal} : aleph' o₁ ≤ aleph' o₂ ↔ o₁ ≤ o₂ :=
-  le_iff_le_iff_lt_iff_lt.2 aleph'_lt
+  aleph'.le_iff_le
 
-@[simp]
+theorem aleph'_lt {o₁ o₂ : Ordinal} : aleph' o₁ < aleph' o₂ ↔ o₁ < o₂ :=
+  aleph'.lt_iff_lt
+
+set_option linter.deprecated false in
+@[deprecated (since := "2024-08-28")]
 theorem aleph'_alephIdx (c : Cardinal) : aleph' c.alephIdx = c :=
   Cardinal.alephIdx.relIso.toEquiv.symm_apply_apply c
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated (since := "2024-08-28")]
 theorem alephIdx_aleph' (o : Ordinal) : (aleph' o).alephIdx = o :=
   Cardinal.alephIdx.relIso.toEquiv.apply_symm_apply o
 
 @[simp]
-theorem aleph'_zero : aleph' 0 = 0 := by
-  rw [← nonpos_iff_eq_zero, ← aleph'_alephIdx 0, aleph'_le]
-  apply Ordinal.zero_le
+theorem aleph'_zero : aleph' 0 = 0 :=
+  aleph'.map_bot
 
+-- TODO: prove `OrderIso.map_succ`.
 @[simp]
 theorem aleph'_succ {o : Ordinal} : aleph' (succ o) = succ (aleph' o) := by
-  apply (succ_le_of_lt <| aleph'_lt.2 <| lt_succ o).antisymm' (Cardinal.alephIdx_le.1 <| _)
-  rw [alephIdx_aleph', succ_le_iff, ← aleph'_lt, aleph'_alephIdx]
+  apply (succ_le_of_lt <| aleph'_lt.2 <| lt_succ o).antisymm' (aleph'.symm.le_iff_le.1 <| _)
+  rw [OrderIso.symm_apply_apply, succ_le_iff, ← aleph'_lt, OrderIso.apply_symm_apply]
   apply lt_succ
 
 @[simp]
@@ -192,9 +209,9 @@ theorem aleph'_nat : ∀ n : ℕ, aleph' n = n
 theorem aleph'_le_of_limit {o : Ordinal} (l : o.IsLimit) {c} :
     aleph' o ≤ c ↔ ∀ o' < o, aleph' o' ≤ c :=
   ⟨fun h o' h' => (aleph'_le.2 <| h'.le).trans h, fun h => by
-    rw [← aleph'_alephIdx c, aleph'_le, limit_le l]
+    rw [← aleph'.apply_symm_apply c, aleph'_le, limit_le l]
     intro x h'
-    rw [← aleph'_le, aleph'_alephIdx]
+    rw [← aleph'_le, aleph'.apply_symm_apply]
     exact h _ h'⟩
 
 theorem aleph'_limit {o : Ordinal} (ho : o.IsLimit) : aleph' o = ⨆ a : Iio o, aleph' a := by
@@ -208,14 +225,16 @@ theorem aleph'_omega : aleph' ω = ℵ₀ :=
     simp only [aleph'_le_of_limit omega_isLimit, lt_omega, exists_imp, aleph0_le]
     exact forall_swap.trans (forall_congr' fun n => by simp only [forall_eq, aleph'_nat])
 
+set_option linter.deprecated false in
 /-- `aleph'` and `aleph_idx` form an equivalence between `Ordinal` and `Cardinal` -/
-@[simp]
+@[deprecated aleph' (since := "2024-08-28")]
 def aleph'Equiv : Ordinal ≃ Cardinal :=
   ⟨aleph', alephIdx, alephIdx_aleph', aleph'_alephIdx⟩
 
-/-- The `aleph` function gives the infinite cardinals listed by their
-  ordinal index. `aleph 0 = ℵ₀`, `aleph 1 = succ ℵ₀` is the first
-  uncountable cardinal, and so on. -/
+/-- The `aleph` function gives the infinite cardinals listed by their ordinal index. `aleph 0 = ℵ₀`,
+`aleph 1 = succ ℵ₀` is the first uncountable cardinal, and so on.
+
+For a version including finite cardinals, see `Cardinal.aleph'`. -/
 def aleph (o : Ordinal) : Cardinal :=
   aleph' (ω + o)
 
@@ -283,9 +302,9 @@ instance (o : Ordinal) : NoMaxOrder (aleph o).ord.out.α :=
 
 theorem exists_aleph {c : Cardinal} : ℵ₀ ≤ c ↔ ∃ o, c = aleph o :=
   ⟨fun h =>
-    ⟨alephIdx c - ω, by
-      rw [aleph, Ordinal.add_sub_cancel_of_le, aleph'_alephIdx]
-      rwa [← aleph0_le_aleph', aleph'_alephIdx]⟩,
+    ⟨aleph'.symm c - ω, by
+      rw [aleph, Ordinal.add_sub_cancel_of_le, aleph'.apply_symm_apply]
+      rwa [← aleph0_le_aleph', aleph'.apply_symm_apply]⟩,
     fun ⟨o, e⟩ => e.symm ▸ aleph0_le_aleph _⟩
 
 theorem aleph'_isNormal : IsNormal (ord ∘ aleph') :=
@@ -313,7 +332,7 @@ theorem ord_card_unbounded : Unbounded (· < ·) { b : Ordinal | b.card.ord = b 
         rw [card_ord], (lt_ord_succ_card a).le⟩⟩
 
 theorem eq_aleph'_of_eq_card_ord {o : Ordinal} (ho : o.card.ord = o) : ∃ a, (aleph' a).ord = o :=
-  ⟨Cardinal.alephIdx.relIso o.card, by simpa using ho⟩
+  ⟨aleph'.symm o.card, by simpa using ho⟩
 
 /-- `ord ∘ aleph'` enumerates the ordinals that are cardinals. -/
 theorem ord_aleph'_eq_enum_card : ord ∘ aleph' = enumOrd { b : Ordinal | b.card.ord = b } := by
