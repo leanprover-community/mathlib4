@@ -72,9 +72,7 @@ structure.
 
 When possible, instead of parametrizing results over `(f : α →+o β)`,
 you should parametrize over
-`(F : Type*) [FunLike F M N] [MonoidHomClass F M N] [OrderHomClass F M N] (f : F)`.
-
-When you extend this structure, make sure to extend `OrderAddMonoidHomClass`. -/
+`(F : Type*) [FunLike F M N] [MonoidHomClass F M N] [OrderHomClass F M N] (f : F)`. -/
 structure OrderAddMonoidHom (α β : Type*) [Preorder α] [Preorder β] [AddZeroClass α]
   [AddZeroClass β] extends α →+ β where
   /-- An `OrderAddMonoidHom` is a monotone function. -/
@@ -109,9 +107,8 @@ section Monoid
 `OrderMonoidHom` is also used for ordered group homomorphisms.
 
 When possible, instead of parametrizing results over `(f : α →*o β)`,
-you should parametrize over `(F : Type*) [OrderMonoidHomClass F α β] (f : F)`.
-
-When you extend this structure, make sure to extend `OrderMonoidHomClass`. -/
+you should parametrize over
+`(F : Type*) [FunLike F M N] [MonoidHomClass F M N] [OrderHomClass F M N] (f : F)`. -/
 @[to_additive]
 structure OrderMonoidHom (α β : Type*) [Preorder α] [Preorder β] [MulOneClass α]
   [MulOneClass β] extends α →* β where
@@ -195,9 +192,8 @@ the `MonoidWithZero` structure.
 `OrderMonoidWithZeroHom` is also used for group homomorphisms.
 
 When possible, instead of parametrizing results over `(f : α →+ β)`,
-you should parametrize over `(F : Type*) [OrderMonoidWithZeroHomClass F α β] (f : F)`.
-
-When you extend this structure, make sure to extend `OrderMonoidWithZeroHomClass`. -/
+you should parameterize over
+`(F : Type*) [FunLike F M N] [MonoidWithZeroHomClass F M N] [OrderHomClass F M N] (f : F)`. -/
 structure OrderMonoidWithZeroHom (α β : Type*) [Preorder α] [Preorder β] [MulZeroOneClass α]
   [MulZeroOneClass β] extends α →*₀ β where
   /-- An `OrderMonoidWithZeroHom` is a monotone function. -/
