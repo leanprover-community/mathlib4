@@ -337,7 +337,7 @@ theorem continuous_stoneCechUnit : Continuous (stoneCechUnit : α → StoneCech 
 theorem denseRange_stoneCechUnit : DenseRange (stoneCechUnit : α → StoneCech α) := by
   unfold stoneCechUnit t2Quotient.mk
   have : Function.Surjective (t2Quotient.mk : PreStoneCech α → StoneCech α) := by
-    exact surjective_quot_mk _
+    exact Quot.surjective_mk
   exact this.denseRange.comp denseRange_preStoneCechUnit continuous_coinduced_rng
 
 section Extension

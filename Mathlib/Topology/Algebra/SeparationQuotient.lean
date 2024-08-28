@@ -119,7 +119,7 @@ instance (priority := 900) instNSmul [AddMonoid M] [ContinuousAdd M] :
 
 @[to_additive existing instNSmul]
 instance instPow [Monoid M] [ContinuousMul M] : Pow (SeparationQuotient M) ℕ where
-  pow x n := Quotient.map (s₁ := inseparableSetoid M) (· ^ n) (fun _ _ h ↦ Inseparable.pow h n) x
+  pow x n := Quotient.map (· ^ n) (fun _ _ h ↦ Inseparable.pow h n) x
 
 @[to_additive, simp] -- `mk_nsmul` is not a `simp` lemma because we have `mk_smul`
 theorem mk_pow [Monoid M] [ContinuousMul M] (x : M) (n : ℕ) : mk (x ^ n) = (mk x) ^ n := rfl
@@ -175,7 +175,7 @@ instance instZSMul [AddGroup G] [TopologicalAddGroup G] : SMul ℤ (SeparationQu
 
 @[to_additive existing]
 instance instZPow [Group G] [TopologicalGroup G] : Pow (SeparationQuotient G) ℤ where
-  pow x n := Quotient.map (s₁ := inseparableSetoid G) (· ^ n) (fun _ _ h ↦ Inseparable.zpow h n) x
+  pow x n := Quotient.map (· ^ n) (fun _ _ h ↦ Inseparable.zpow h n) x
 
 @[to_additive, simp] -- `mk_zsmul` is not a `simp` lemma because we have `mk_smul`
 theorem mk_zpow [Group G] [TopologicalGroup G] (x : G) (n : ℤ) : mk (x ^ n) = (mk x) ^ n := rfl

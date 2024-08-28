@@ -136,7 +136,7 @@ theorem formPerm_coe (l : List α) (hl : l.Nodup) : formPerm (l : Cycle α) hl =
   rfl
 
 theorem formPerm_subsingleton (s : Cycle α) (h : Subsingleton s) : formPerm s h.nodup = 1 := by
-  induction' s using Quot.inductionOn with s
+  induction' s using Quotient.inductionOn with s
   simp only [formPerm_coe, mk_eq_coe]
   simp only [length_subsingleton_iff, length_coe, mk_eq_coe] at h
   cases' s with hd tl
@@ -412,7 +412,8 @@ theorem IsCycle.existsUnique_cycle {f : Perm α} (hf : IsCycle f) :
   obtain ⟨x, hx, hy⟩ := id hf
   refine ⟨f.toList x, ⟨nodup_toList f x, ?_⟩, ?_⟩
   · simp [formPerm_toList, hf.cycleOf_eq hx]
-  · rintro ⟨l⟩ ⟨hn, rfl⟩
+  · rintro l ⟨hn, rfl⟩
+    induction l using Quotient.ind with | _ l => ?_
     simp only [Cycle.mk_eq_coe, Cycle.coe_eq_coe, Subtype.coe_mk, Cycle.formPerm_coe]
     refine (toList_formPerm_isRotated_self _ ?_ hn _ ?_).symm
     · contrapose! hx

@@ -808,7 +808,7 @@ theorem image_preimage_inl_union_image_preimage_inr (s : Set (α ⊕ β)) :
 
 @[simp]
 theorem range_quot_mk (r : α → α → Prop) : range (Quot.mk r) = univ :=
-  (surjective_quot_mk r).range_eq
+  Quot.surjective_mk.range_eq
 
 @[simp]
 theorem range_quot_lift {r : ι → ι → Prop} (hf : ∀ x y, r x y → f x = f y) :

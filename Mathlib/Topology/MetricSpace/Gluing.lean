@@ -467,11 +467,11 @@ instance (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : MetricSpace (GlueSpace hΦ h�
 
 /-- The canonical map from `X` to the space obtained by gluing isometric subsets in `X` and `Y`. -/
 def toGlueL (hΦ : Isometry Φ) (hΨ : Isometry Ψ) (x : X) : GlueSpace hΦ hΨ :=
-  Quotient.mk'' (.inl x)
+  ⟦.inl x⟧
 
 /-- The canonical map from `Y` to the space obtained by gluing isometric subsets in `X` and `Y`. -/
 def toGlueR (hΦ : Isometry Φ) (hΨ : Isometry Ψ) (y : Y) : GlueSpace hΦ hΨ :=
-  Quotient.mk'' (.inr y)
+  ⟦.inr y⟧
 
 instance inhabitedLeft (hΦ : Isometry Φ) (hΨ : Isometry Ψ) [Inhabited X] :
     Inhabited (GlueSpace hΦ hΨ) :=
@@ -586,7 +586,7 @@ instance {I : ∀ (n : ℕ), Isometry (f n)} : MetricSpace (InductiveLimit (f :=
 
 /-- Mapping each `X n` to the inductive limit. -/
 def toInductiveLimit (I : ∀ n, Isometry (f n)) (n : ℕ) (x : X n) : Metric.InductiveLimit I :=
-  Quotient.mk'' (Sigma.mk n x)
+  ⟦Sigma.mk n x⟧
 
 instance (I : ∀ n, Isometry (f n)) [Inhabited (X 0)] : Inhabited (InductiveLimit I) :=
   ⟨toInductiveLimit _ 0 default⟩

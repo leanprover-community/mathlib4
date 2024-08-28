@@ -128,7 +128,7 @@ theorem t2Space_quotient_mulAction_of_properSMul [ProperSMul G X] :
     T2Space (Quotient (MulAction.orbitRel G X)) := by
   rw [t2_iff_isClosed_diagonal]
   set R := MulAction.orbitRel G X
-  let π : X → Quotient R := Quotient.mk'
+  let π : X → Quotient R := Quotient.mk _
   have : QuotientMap (Prod.map π π) :=
     (isOpenMap_quotient_mk'_mul.prod isOpenMap_quotient_mk'_mul).to_quotientMap
       (continuous_quotient_mk'.prod_map continuous_quotient_mk')

@@ -715,7 +715,7 @@ variable {c}
 @[to_additive "The natural homomorphism from an `AddMonoid` to its quotient by a congruence
 relation is surjective."]
 theorem mk'_surjective : Surjective c.mk' :=
-  surjective_quotient_mk _
+  Quotient.surjective_mk
 
 @[to_additive (attr := simp)]
 theorem coe_mk' : (c.mk' : M → c.Quotient) = ((↑) : M → c.Quotient) :=

@@ -45,7 +45,7 @@ def domCoprod.summand (a : Mᵢ [⋀^ιa]→ₗ[R'] N₁) (b : Mᵢ [⋀^ιb]→
       Equiv.Perm.sign σ •
         (MultilinearMap.domCoprod ↑a ↑b : MultilinearMap R' (fun _ => Mᵢ) (N₁ ⊗ N₂)).domDomCongr σ)
     fun σ₁ σ₂ H => by
-    rw [QuotientGroup.leftRel_apply] at H
+    rw [Setoid.equiv_iff_apply, QuotientGroup.leftRel_apply] at H
     obtain ⟨⟨sl, sr⟩, h⟩ := H
     ext v
     simp only [MultilinearMap.domDomCongr_apply, MultilinearMap.domCoprod_apply,
@@ -62,7 +62,7 @@ def domCoprod.summand (a : Mᵢ [⋀^ιa]→ₗ[R'] N₁) (b : Mᵢ [⋀^ιb]→
 
 theorem domCoprod.summand_mk'' (a : Mᵢ [⋀^ιa]→ₗ[R'] N₁) (b : Mᵢ [⋀^ιb]→ₗ[R'] N₂)
     (σ : Equiv.Perm (ιa ⊕ ιb)) :
-    domCoprod.summand a b (Quotient.mk'' σ) =
+    domCoprod.summand a b ⟦σ⟧ =
       Equiv.Perm.sign σ •
         (MultilinearMap.domCoprod ↑a ↑b : MultilinearMap R' (fun _ => Mᵢ) (N₁ ⊗ N₂)).domDomCongr
           σ :=
@@ -74,7 +74,7 @@ theorem domCoprod.summand_add_swap_smul_eq_zero (a : Mᵢ [⋀^ιa]→ₗ[R'] N�
     {i j : ιa ⊕ ιb} (hv : v i = v j) (hij : i ≠ j) :
     domCoprod.summand a b σ v + domCoprod.summand a b (swap i j • σ) v = 0 := by
   refine Quotient.inductionOn σ fun σ => ?_
-  dsimp only [Quotient.liftOn_mk'', Quotient.map_mk, MulAction.Quotient.smul_mk,
+  dsimp only [Quotient.liftOn_mk, Quotient.map_mk, MulAction.Quotient.smul_mk,
     domCoprod.summand]
   rw [smul_eq_mul, Perm.sign_mul, Perm.sign_swap hij]
   simp only [one_mul, neg_mul, Function.comp_apply, Units.neg_smul, Perm.coe_mul, Units.val_neg,
@@ -91,7 +91,7 @@ theorem domCoprod.summand_eq_zero_of_smul_invariant (a : Mᵢ [⋀^ιa]→ₗ[R'
     {i j : ιa ⊕ ιb} (hv : v i = v j) (hij : i ≠ j) :
     swap i j • σ = σ → domCoprod.summand a b σ v = 0 := by
   refine Quotient.inductionOn σ fun σ => ?_
-  dsimp only [Quotient.liftOn_mk'', Quotient.map_mk, MultilinearMap.smul_apply,
+  dsimp only [Quotient.liftOn_mk, Quotient.map_mk, MultilinearMap.smul_apply,
     MultilinearMap.domDomCongr_apply, MultilinearMap.domCoprod_apply, domCoprod.summand]
   intro hσ
   cases' hi : σ⁻¹ i with val val <;> cases' hj : σ⁻¹ j with val_1 val_1 <;>
@@ -179,7 +179,7 @@ def domCoprod' :
       congr
       ext σ
       refine Quotient.inductionOn σ fun σ => ?_
-      simp only [Quotient.liftOn_mk'', coe_add, coe_smul, MultilinearMap.smul_apply,
+      simp only [Quotient.liftOn_mk, coe_add, coe_smul, MultilinearMap.smul_apply,
         ← MultilinearMap.domCoprod'_apply]
       simp only [TensorProduct.add_tmul, ← TensorProduct.smul_tmul', TensorProduct.tmul_add,
         TensorProduct.tmul_smul, LinearMap.map_add, LinearMap.map_smul]
@@ -229,7 +229,7 @@ theorem MultilinearMap.domCoprod_alternization [DecidableEq ιa] [DecidableEq ι
     [@Finset.filter_congr _ _ (fun a => @Quotient.decidableEq _ _
       (QuotientGroup.leftRelDecidable (MonoidHom.range (Perm.sumCongrHom ιa ιb)))
       (Quotient.mk (QuotientGroup.leftRel (MonoidHom.range (Perm.sumCongrHom ιa ιb))) a)
-      (Quotient.mk'' σ)) _ (s := Finset.univ)
+      ⟦σ⟧) _ (s := Finset.univ)
     fun x _ => QuotientGroup.eq (s := MonoidHom.range (Perm.sumCongrHom ιa ιb)) (a := x) (b := σ)]
   -- eliminate a multiplication
   rw [← Finset.map_univ_equiv (Equiv.mulLeft σ), Finset.filter_map, Finset.sum_map]

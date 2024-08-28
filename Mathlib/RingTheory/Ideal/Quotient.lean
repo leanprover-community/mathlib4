@@ -291,7 +291,7 @@ instance modulePi : Module (R ⧸ I) ((ι → R) ⧸ I.pi ι) where
     Quotient.liftOn₂ c m (fun r m => Submodule.Quotient.mk <| r • m) <| by
       intro c₁ m₁ c₂ m₂ hc hm
       apply Ideal.Quotient.eq.2
-      rw [Submodule.quotientRel_r_def] at hc hm
+      rw [Setoid.equiv_iff_apply, Submodule.quotientRel_r_def] at hc hm
       intro i
       exact I.mul_sub_mul_mem hc (hm i)
   one_smul := by
