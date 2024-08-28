@@ -50,8 +50,6 @@ we need to set the levels of the bicategory argument that gets specialized in te
 It is also important that in arguments to the `∀` binder, the bicategory `B` to be specialized is
 followed immediately by immediately by the instance `[Bicategory B]`. Otherwise this function will
 not be able to find, and replace, this instance.
-(Note: this issue would go away if one could use `mkAppOptM'` directly, but it tries to initalize
-all instance arguments, so it can not be used in this case.)
 -/
 def toCatExpr (e : Expr) (levelMVars : List Level) : MetaM Expr := do
   let (args, binderInfos, conclusion) ← forallMetaTelescope (← inferType e)
@@ -77,8 +75,6 @@ def toCatExpr (e : Expr) (levelMVars : List Level) : MetaM Expr := do
   forM instlvlMVars fun l => do
     let _ ← isLevelDefEq l (Level.max u v)
   inst.mvarId!.assign (← synthInstanceQ q(Bicategory.{max u v, max u v} Cat.{u, v}))
-  /- NOTE: if there was a version of `mkAppOptM'` that didn't try to initialize all instances,
-    we could use that here and return immediately. Instead we use `mkLambdaFVars` below. -/
   let applied := mkAppN e args
   let mvars := (← getMVars applied).map (Expr.mvar)
   -- Erease the binderinfos for the bicategory and the instance
