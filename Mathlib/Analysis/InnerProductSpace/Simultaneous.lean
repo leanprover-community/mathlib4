@@ -92,7 +92,6 @@ theorem orthogonalFamily_eigenspace_inf_eigenspace :
     · exact hB.orthogonalFamily_eigenspaces.pairwise h₁ hv2 w hw2
     · exact hA.orthogonalFamily_eigenspaces.pairwise h₂ hv1 w hw1
 
-
 /-- Given a commuting pair of symmetric linear operators on a finite dimensional inner product
 space, the space decomposes as an internal direct sum of simultaneous eigenspaces of these
 operators. -/
