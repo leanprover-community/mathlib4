@@ -127,6 +127,13 @@ alias ⟨_, WCovBy.toDual⟩ := toDual_wcovBy_toDual_iff
 
 alias ⟨_, WCovBy.ofDual⟩ := ofDual_wcovBy_ofDual_iff
 
+theorem OrderIso.map_wcovBy {α β : Type*} [Preorder α] [Preorder β]
+    (f : α ≃o β) {x y : α} (h : x ⩿ y) : f x ⩿ f y := by
+  use f.monotone h.1
+  intro a
+  rw [← f.apply_symm_apply a, f.lt_iff_lt, f.lt_iff_lt]
+  apply h.2
+
 end Preorder
 
 section PartialOrder
@@ -312,6 +319,13 @@ theorem apply_covBy_apply_iff {E : Type*} [EquivLike E α β] [OrderIsoClass E �
 
 theorem covBy_of_eq_or_eq (hab : a < b) (h : ∀ c, a ≤ c → c ≤ b → c = a ∨ c = b) : a ⋖ b :=
   ⟨hab, fun c ha hb => (h c ha.le hb.le).elim ha.ne' hb.ne⟩
+
+theorem OrderIso.map_covBy {α β : Type*} [Preorder α] [Preorder β]
+    (f : α ≃o β) {x y : α} (h : x ⋖ y) : f x ⋖ f y := by
+  use f.strictMono h.1
+  intro a
+  rw [← f.apply_symm_apply a, f.lt_iff_lt, f.lt_iff_lt]
+  apply h.2
 
 end Preorder
 
