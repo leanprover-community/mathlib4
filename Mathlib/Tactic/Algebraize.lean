@@ -8,7 +8,7 @@ import Mathlib.Algebra.Algebra.Tower
 
 /-!
 
-# Algebraize tactic
+## Algebraize tactic
 
 This file defines the `algebraize` tactic. The basic functionality of this tactic is to
 automatically add `Algebra` instances given `RingHom`s. For example, `algebraize f g` where
@@ -21,28 +21,52 @@ When given a composition of `RingHom`'s, e.g. `algebraize g.comp f`, the tactic 
 add the instance `IsScalarTower A B C` if possible.
 
 After having added suitable `Algebra` and `IsScalarTower` instances, the tactic will search through
-the local context for `RingHom` properties that can be converted properties of the corresponding
+the local context for `RingHom` properties that can be converted to properties of the corresponding
 `Algebra`. For example, given `f : A →+* B` and `hf : f.FiniteType`, then `algebraize f` will add
 the instance `Algebra A B` and the corresponding property `Algebra.FiniteType A B`. The tactic knows
 which `RingHom` properties have a corresponding `Algebra` property through the `algebraize`
-attribute. This attribute has a parameter `name` which should be the name of a constructor of the
-the corresponding `Algebra` property, which takes the `RingHom` property as an argument.
+attribute.
 
-In many cases, if `hf : f.Property` is a `RingHom` property, one can access the corresponding
-`Algebra` property just by a type hint, i.e. `hf : Algebra.Property`. In these cases, one does not
-have to give a constructor as an argument to the `algebraize` attribute, and can instead just give
-the name of the `Algebra` property. For example, `RingHom.FiniteType` is tagged as follows:
+# Algebraize attribute
+
+The `algebraize` attribute is used to tag `RingHom` properties that can be converted to `Algebra`
+properties. Using an (optional) parameter, it will also generate a `Name` of a declaration which
+will help the tactic to access the corresponding `Algebra` property.
+
+There are two cases for what declaration corresponding to this `Name` can be.
+1. An inductive type (i.e. the `Algebra` property itself), in this case it is assumed that the
+`RingHom` and the `Algebra` property are definitionally the same, and the tactic will construct the
+`Algebra` property by giving the `RingHom` property as a term.
+
+2. A constructor for the `Algebra` property. In this case it is assumed that the `RingHom` property
+is the last argument of the constructor, and that no other explicit argument is needed. The tactic
+then constructs the `Algebra` property by applying the constructor to the `RingHom` property.
+
+Finally, if no argument is provided to the `algebraize` attribute, it is assumed that the tagged
+declaration has name `RingHom.Property` and that the corresponding `Algebra` property has name
+`Algebra.Property`. The attribute then returns `Algebra.Property` (so assume case 1 above).
+
+Here are three examples of properties tagged with the `algebraize` attribute:
 ```
 @[algebraize]
 def FiniteType (f : A →+* B) : Prop :=
   @Algebra.FiniteType A B _ _ f.toAlgebra
 ```
-This does not work with `RingHom.Flat`, which is instead tagged as follows
+An example with a parameter (where the `Algebra` does not have the expected name):
+```
+@[algebraize Module.Finite]
+def Finite (f : A →+* B) : Prop :=
+  letI : Algebra A B := f.toAlgebra
+  Module.Finite A B
+```
+An example with a constructor as parameter:
 ```
 @[algebraize Algebra.Flat.out]
 class RingHom.Flat {R : Type u} {S : Type v} [CommRing R] [CommRing S] (f : R →+* S) : Prop where
   out : f.toAlgebra.Flat := by infer_instance
 ```
+
+# Algebraize'
 
 To avoid searching through the local context and adding corresponding `Algebra` properties, use
 `algebraize'` which only adds `Algebra` and `IsScalarTower` instances.
@@ -70,17 +94,21 @@ def algebraizeGetParam (thm : Name) (stx : Syntax) : AttrM Name := do
   | _ => throwError "unexpected algebraize argument"
 
 /-- A user attribute that is used to tag `RingHom` properties that can be converted to `Algebra`
-properties.
+properties. Using an (optional) parameter, it will also generate a `Name` of a declaration which
+will help the `algebraize` tactic access the corresponding `Algebra` property.
 
-The attribute has a parameter `name` which should be the name of the corresponding
-`Algebra` property (or a constructor of it). If no argument is provided, the attribute assumes that
-the tagged declaration has name `RingHom.Property` and the corresponding `Algebra` property has name
-`Algebra.Property`.
+There are two cases for what declaration corresponding to this `Name` can be.
+1. An inductive type (i.e. the `Algebra` property itself), in this case it is assumed that the
+`RingHom` and the `Algebra` property are definitionally the same, and the tactic will construct the
+`Algebra` property by giving the `RingHom` property as a term.
 
-Furthermore, it is assumed that the last argument of the `RingHom` property is the `RingHom` itself,
-and that the declaration corresponding to `name`
+2. A constructor for the `Algebra` property. In this case it is assumed that the `RingHom` property
+is the last argument of the constructor, and that no other explicit argument is needed. The tactic
+then constructs the `Algebra` property by applying the constructor to the `RingHom` property.
 
--/
+Finally, if no argument is provided to the `algebraize` attribute, it is assumed that the tagged
+declaration has name `RingHom.Property` and that the corresponding `Algebra` property has name
+`Algebra.Property`. The attribute then returns `Algebra.Property` (so assume case 1 above). -/
 initialize algebraizeAttr : ParametricAttribute Name ←
   registerParametricAttribute {
     name := `algebraize,
@@ -100,8 +128,7 @@ this function adds the instance `Algebra A B` to the context (if it does not alr
 
 This function also requries the type of `f`, given by the parameter `ft`. The reason this is done
 (even though `ft` can be inferred from `f`) is to avoid recomputing `ft` in the `algebraize` tactic,
-as when `algebraize` calls `addAlgebraInstanceFromRingHom` it has already computed `ft`.
--/
+as when `algebraize` calls `addAlgebraInstanceFromRingHom` it has already computed `ft`. -/
 def addAlgebraInstanceFromRingHom (f ft : Expr) : TacticM Unit := withMainContext do
   let (_, l) := ft.getAppFnArgs
   -- The type of the corresponding algebra instance
@@ -135,9 +162,9 @@ def addIsScalarTowerInstanceFromRingHomComp (fn : Expr) : TacticM Unit := withMa
     return [mvar]
 
 /-- This function takes an array of expressions `t`, all of which are assumed to be `RingHom`'s,
-and searches through the local context to find any additional properties of these `RingHoms`,
-then it tries to add the corresponding `Algebra` properties to the context. It only looks for
-properties that have been tagged with the `algebraize` attribute, and uses this to find the
+and searches through the local context to find any additional properties of these `RingHoms`, after
+which it tries to add the corresponding `Algebra` properties to the context. It only looks for
+properties that have been tagged with the `algebraize` attribute, and uses this tag to find the
 corresponding `Algebra` property. -/
 def searchContext (t : Array Expr) : TacticM Unit := withMainContext do
   let ctx ← MonadLCtx.getLCtx
@@ -148,7 +175,7 @@ def searchContext (t : Array Expr) : TacticM Unit := withMainContext do
     match Attr.algebraizeAttr.getParam? (← getEnv) nm with
     -- If it has, `p` will be the name of the corresponding `Algebra` property (or a constructor)
     | some p =>
-      -- The last argument is the `RingHom` property is assumed to be `f` (TODO MENTION ELSEWHERE)
+      -- The last argument is the `RingHom` property is assumed to be `f`
       let f := args[args.size - 1]!
       -- Check that `f` appears in the list of functions given to `algebraize`
       if ¬ (← t.anyM (fun j => Meta.isDefEq j f)) then return
