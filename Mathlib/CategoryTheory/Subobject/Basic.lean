@@ -233,7 +233,7 @@ theorem mk_le_mk_of_comm {B A₁ A₂ : C} {f₁ : A₁ ⟶ B} {f₂ : A₂ ⟶ 
 @[simp]
 theorem mk_arrow (P : Subobject X) : mk P.arrow = P :=
   Quotient.inductionOn P fun Q => by
-    obtain ⟨e⟩ := @Quotient.mk_out' _ (isIsomorphicSetoid _) Q
+    obtain ⟨e⟩ := @Quotient.mk_out _ (isIsomorphicSetoid _) Q
     exact Quotient.sound' ⟨MonoOver.isoMk (Iso.refl _) ≪≫ e⟩
 
 theorem le_of_comm {B : C} {X Y : Subobject B} (f : (X : C) ⟶ (Y : C)) (w : f ≫ Y.arrow = X.arrow) :

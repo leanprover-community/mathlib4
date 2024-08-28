@@ -304,7 +304,7 @@ namespace ManyOneDegree
 
 /-- The many-one degree of a set on a primcodable type. -/
 def of (p : α → Prop) : ManyOneDegree :=
-  Quotient.mk'' (toNat p)
+  ⟦toNat p⟧
 
 @[elab_as_elim]
 protected theorem ind_on {C : ManyOneDegree → Prop} (d : ManyOneDegree)

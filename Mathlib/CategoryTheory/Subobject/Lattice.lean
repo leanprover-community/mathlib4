@@ -194,7 +194,7 @@ namespace Subobject
 section OrderTop
 
 instance orderTop {X : C} : OrderTop (Subobject X) where
-  top := Quotient.mk'' ⊤
+  top := ⟦⊤⟧
   le_top := by
     refine Quotient.ind fun f => ?_
     exact ⟨MonoOver.leTop f⟩
@@ -260,7 +260,7 @@ section OrderBot
 variable [HasInitial C] [InitialMonoClass C]
 
 instance orderBot {X : C} : OrderBot (Subobject X) where
-  bot := Quotient.mk'' ⊥
+  bot := ⟦⊥⟧
   bot_le := by
     refine Quotient.ind fun f => ?_
     exact ⟨MonoOver.botLE f⟩
@@ -401,13 +401,13 @@ theorem finset_inf_arrow_factors {I : Type*} {B : C} (s : Finset I) (P : I → S
       exact ih _ m
 
 theorem inf_eq_map_pullback' {A : C} (f₁ : MonoOver A) (f₂ : Subobject A) :
-    (Subobject.inf.obj (Quotient.mk'' f₁)).obj f₂ =
+    (Subobject.inf.obj ⟦f₁⟧).obj f₂ =
       (Subobject.map f₁.arrow).obj ((Subobject.pullback f₁.arrow).obj f₂) := by
   induction' f₂ using Quotient.inductionOn with f₂
   rfl
 
 theorem inf_eq_map_pullback {A : C} (f₁ : MonoOver A) (f₂ : Subobject A) :
-    (Quotient.mk'' f₁ ⊓ f₂ : Subobject A) = (map f₁.arrow).obj ((pullback f₁.arrow).obj f₂) :=
+    (⟦f₁⟧ ⊓ f₂ : Subobject A) = (map f₁.arrow).obj ((pullback f₁.arrow).obj f₂) :=
   inf_eq_map_pullback' f₁ f₂
 
 theorem prod_eq_inf {A : C} {f₁ f₂ : Subobject A} [HasBinaryProduct f₁ f₂] :

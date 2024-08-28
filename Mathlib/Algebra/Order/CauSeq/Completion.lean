@@ -32,7 +32,7 @@ variable {abv}
 
 /-- The map from Cauchy sequences into the Cauchy completion. -/
 def mk : CauSeq _ abv → Cauchy abv :=
-  Quotient.mk''
+  Quotient.mk _
 
 @[simp]
 theorem mk_eq_mk (f : CauSeq _ abv) : @Eq (Cauchy abv) ⟦f⟧ (mk f) :=

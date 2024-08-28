@@ -38,6 +38,11 @@ attribute [trans] Setoid.trans
 
 variable {α : Type*} {β : Type*}
 
+/-- A version of `Setoid.r` that takes the equivalence relation as an explicit argument. -/
+@[deprecated (since := "2024-08-09")]
+def Setoid.Rel (r : Setoid α) : α → α → Prop :=
+  @Setoid.r _ r
+
 @[deprecated (since := "2024-08-09")] alias Quotient.eq_rel := Quotient.eq
 
 namespace Setoid
