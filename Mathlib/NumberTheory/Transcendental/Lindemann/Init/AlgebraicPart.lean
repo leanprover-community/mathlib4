@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuyang Zhao
 -/
 import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
-import Mathlib.Analysis.Complex.Polynomial
+import Mathlib.Analysis.Complex.Polynomial.Basic
 import Mathlib.Data.Complex.Exponential
 import Mathlib.FieldTheory.GalConj
 
