@@ -3,10 +3,9 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Johan Commelin
 -/
+
+import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.RingTheory.Adjoin.Basic
-import Mathlib.LinearAlgebra.DirectSum.Finsupp
 
 /-!
 # The tensor product of R-algebras
