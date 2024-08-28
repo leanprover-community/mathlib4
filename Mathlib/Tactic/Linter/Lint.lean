@@ -264,7 +264,7 @@ register_option linter.style.longFile : Nat := {
   descr := "enable the longFile linter"
 }
 
-namespace LongFile
+namespace Style.longFile
 
 @[inherit_doc Mathlib.Linter.linter.style.longFile]
 def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
@@ -319,7 +319,7 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
 
 initialize addLinter longFileLinter
 
-end LongFile
+end Style.longFile
 
 /-! # The "longLine linter" -/
 
