@@ -60,7 +60,7 @@ lemma Subgroup.mem_closure_singleton_iff_existsUnique_zpow {G : Type*}
       obtain ⟨k, hk⟩ := h
       refine ⟨k, hk, ?_⟩
       rintro l rfl
-      exact (zpow_right_strictMono ha).injective hk.symm
+      rwa [← zpow_right_inj ha, eq_comm]
   · rw [mem_closure_singleton]
     exact h.exists
 
