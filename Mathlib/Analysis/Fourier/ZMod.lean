@@ -35,24 +35,24 @@ It doesn't _quite_ work to define the Fourier transform as a `LinearEquiv` in on
 leads to annoying repetition between the proof fields. So we set up a private definition first,
 prove a minimal set of lemmas about it, and then define the `LinearEquiv` using that.
 
-**Do not add more lemmas about `aux_dft`**: it should be invisible to end-users.
+**Do not add more lemmas about `auxDFT`**: it should be invisible to end-users.
 -/
 
 /--
 The discrete Fourier transform on `ℤ / N ℤ` (with the counting measure). This definition is
 private because it is superseded by the bundled `LinearEquiv` version.
 -/
-private noncomputable def aux_dft (Φ : ZMod N → E) (k : ZMod N) : E :=
+private noncomputable def auxDFT (Φ : ZMod N → E) (k : ZMod N) : E :=
   ∑ j : ZMod N, stdAddChar (-(j * k)) • Φ j
 
-private lemma aux_dft_neg (Φ : ZMod N → E) : aux_dft (fun j ↦ Φ (-j)) = fun k ↦ aux_dft Φ (-k) := by
-  ext1 k; simpa only [aux_dft] using
+private lemma auxDFT_neg (Φ : ZMod N → E) : auxDFT (fun j ↦ Φ (-j)) = fun k ↦ auxDFT Φ (-k) := by
+  ext1 k; simpa only [auxDFT] using
     Fintype.sum_equiv (Equiv.neg _) _ _ (fun j ↦ by rw [Equiv.neg_apply, neg_mul_neg])
 
 /-- Fourier inversion formula, discrete case. -/
-private lemma aux_dft_dft (Φ : ZMod N → E) : aux_dft (aux_dft Φ) = fun j ↦ (N : ℂ) • Φ (-j) := by
+private lemma auxDFT_auxDFT (Φ : ZMod N → E) : auxDFT (auxDFT Φ) = fun j ↦ (N : ℂ) • Φ (-j) := by
   ext1 j
-  simp only [aux_dft, mul_comm _ j, smul_sum, ← smul_assoc, smul_eq_mul, ← map_add_eq_mul, ←
+  simp only [auxDFT, mul_comm _ j, smul_sum, ← smul_assoc, smul_eq_mul, ← map_add_eq_mul, ←
     neg_add, ← add_mul]
   rw [sum_comm]
   simp only [← sum_smul, ← neg_mul]
@@ -65,9 +65,9 @@ private lemma aux_dft_dft (Φ : ZMod N → E) : aux_dft (aux_dft Φ) = fun j ↦
     rw [neg_add, add_comm, add_eq_zero_iff_neg_eq, neg_neg]
   simp only [h1, h2, ite_smul, zero_smul, sum_ite_eq', mem_univ, ite_true]
 
-private lemma aux_dft_smul (c : ℂ) (Φ : ZMod N → E) :
-    aux_dft (c • Φ) = c • aux_dft Φ := by
-  ext; simp only [Pi.smul_def, aux_dft, smul_sum, smul_comm c]
+private lemma auxDFT_smul (c : ℂ) (Φ : ZMod N → E) :
+    auxDFT (c • Φ) = c • auxDFT Φ := by
+  ext; simp only [Pi.smul_def, auxDFT, smul_sum, smul_comm c]
 
 end private_defs
 
@@ -78,17 +78,17 @@ The discrete Fourier transform on `ℤ / N ℤ` (with the counting measure), bun
 equivalence.
 -/
 noncomputable def dft : (ZMod N → E) ≃ₗ[ℂ] (ZMod N → E) where
-  toFun := aux_dft
+  toFun := auxDFT
   map_add' Φ₁ Φ₂ := by
-    ext; simp only [aux_dft, Pi.add_def, smul_add, sum_add_distrib]
+    ext; simp only [auxDFT, Pi.add_def, smul_add, sum_add_distrib]
   map_smul' c Φ := by
-    ext; simp only [aux_dft, Pi.smul_apply, RingHom.id_apply, smul_sum, smul_comm c]
-  invFun Φ k := (N : ℂ)⁻¹ • aux_dft Φ (-k)
+    ext; simp only [auxDFT, Pi.smul_apply, RingHom.id_apply, smul_sum, smul_comm c]
+  invFun Φ k := (N : ℂ)⁻¹ • auxDFT Φ (-k)
   left_inv Φ := by
-    simp only [aux_dft_dft, neg_neg, ← mul_smul, inv_mul_cancel₀ (NeZero.ne _), one_smul]
+    simp only [auxDFT_auxDFT, neg_neg, ← mul_smul, inv_mul_cancel₀ (NeZero.ne _), one_smul]
   right_inv Φ := by
     ext1 j
-    simp only [← Pi.smul_def, aux_dft_smul, aux_dft_neg, aux_dft_dft, neg_neg, ← mul_smul,
+    simp only [← Pi.smul_def, auxDFT_smul, auxDFT_neg, auxDFT_auxDFT, neg_neg, ← mul_smul,
       inv_mul_cancel₀ (NeZero.ne _), one_smul]
 
 @[inherit_doc] scoped notation "𝓕" => dft
@@ -104,18 +104,18 @@ lemma dft_def (Φ : ZMod N → E) :
     𝓕 Φ = fun k ↦ ∑ j : ZMod N, stdAddChar (-(j * k)) • Φ j :=
   rfl
 
-lemma inv_dft_apply (Ψ : ZMod N → E) (k : ZMod N) :
+lemma invDFT_apply (Ψ : ZMod N → E) (k : ZMod N) :
     𝓕⁻ Ψ k = (N : ℂ)⁻¹ • ∑ j : ZMod N, stdAddChar (j * k) • Ψ j := by
-  simp only [dft, LinearEquiv.coe_symm_mk, aux_dft, mul_neg, neg_neg]
+  simp only [dft, LinearEquiv.coe_symm_mk, auxDFT, mul_neg, neg_neg]
 
-lemma inv_dft_def (Ψ : ZMod N → E) :
+lemma invDFT_def (Ψ : ZMod N → E) :
     𝓕⁻ Ψ = fun k ↦ (N : ℂ)⁻¹ • ∑ j : ZMod N, stdAddChar (j * k) • Ψ j :=
-  funext <| inv_dft_apply Ψ
+  funext <| invDFT_apply Ψ
 
-lemma inv_dft_apply' (Ψ : ZMod N → E) (k : ZMod N) : 𝓕⁻ Ψ k = (N : ℂ)⁻¹ • 𝓕 Ψ (-k) :=
+lemma invDFT_apply' (Ψ : ZMod N → E) (k : ZMod N) : 𝓕⁻ Ψ k = (N : ℂ)⁻¹ • 𝓕 Ψ (-k) :=
   rfl
 
-lemma inv_dft_def' (Ψ : ZMod N → E) : 𝓕⁻ Ψ = fun k ↦ (N : ℂ)⁻¹ • 𝓕 Ψ (-k) :=
+lemma invDFT_def' (Ψ : ZMod N → E) : 𝓕⁻ Ψ = fun k ↦ (N : ℂ)⁻¹ • 𝓕 Ψ (-k) :=
   rfl
 
 lemma dft_apply_zero (Φ : ZMod N → E) : 𝓕 Φ 0 = ∑ j, Φ j := by
@@ -164,11 +164,11 @@ end arith
 section inversion
 
 lemma dft_comp_neg (Φ : ZMod N → E) : 𝓕 (fun j ↦ Φ (-j)) = fun k ↦ 𝓕 Φ (-k) :=
-  aux_dft_neg ..
+  auxDFT_neg ..
 
 /-- Fourier inversion formula, discrete case. -/
 lemma dft_dft (Φ : ZMod N → E) : 𝓕 (𝓕 Φ) = fun j ↦ (N : ℂ) • Φ (-j) :=
-  aux_dft_dft ..
+  auxDFT_auxDFT ..
 
 end inversion
 
