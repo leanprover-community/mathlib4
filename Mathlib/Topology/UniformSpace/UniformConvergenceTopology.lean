@@ -1128,7 +1128,7 @@ variable {α : Type u} {β : Type v} {γ : Type w} {ι : Type x} [UniformSpace �
 
 /-- Composing on the left by a uniformly continuous on the codomain function preserves uniform
   convergence -/
-theorem UniformContinuousOn.comp_tendstoUniformly' (s : Set β) (F : ι → α → β) (f : α → β)
+theorem UniformContinuousOn.comp_tendstoUniformly (s : Set β) (F : ι → α → β) (f : α → β)
     (hF : ∀ i x, F i x ∈ s) (hf : ∀ x, f x ∈ s)
     {g : β → γ} (hg : UniformContinuousOn g s) (h : TendstoUniformly F f p) :
     TendstoUniformly (fun i => fun x =>  g  (F i x)) (fun x => g (f x)) p := by
