@@ -1,7 +1,7 @@
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.Algebraize
-import Mathlib.Tactic.AlgebraizeAttr
+import Mathlib.Tactic.Algebraize_deprecated
 import Mathlib.Tactic.ApplyAt
 import Mathlib.Tactic.ApplyCongr
 import Mathlib.Tactic.ApplyFun
