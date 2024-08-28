@@ -114,7 +114,7 @@ variable [TopologicalSpace β]
 /-- Construct the equivalence class `[f]` of an almost everywhere measurable function `f`, based
     on the equivalence relation of being almost everywhere equal. -/
 def mk {β : Type*} [TopologicalSpace β] (f : α → β) (hf : AEStronglyMeasurable f μ) : α →ₘ[μ] β :=
-  Quotient.mk'' ⟨f, hf⟩
+  ⟦⟨f, hf⟩⟧
 
 open scoped Classical in
 /-- Coercion from a space of equivalence classes of almost everywhere strongly measurable

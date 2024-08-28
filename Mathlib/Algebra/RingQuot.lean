@@ -35,8 +35,8 @@ namespace RingCon
 instance (c : RingCon A) : Algebra S c.Quotient where
   smul := (· • ·)
   toRingHom := c.mk'.comp (algebraMap S A)
-  commutes' _ := Quotient.ind fun _ ↦ congr_arg Quotient.mk'' <| Algebra.commutes _ _
-  smul_def' _ := Quotient.ind fun _ ↦ congr_arg Quotient.mk'' <| Algebra.smul_def _ _
+  commutes' _ := Quotient.ind fun _ ↦ congr_arg (Quotient.mk _) <| Algebra.commutes _ _
+  smul_def' _ := Quotient.ind fun _ ↦ congr_arg (Quotient.mk _) <| Algebra.smul_def _ _
 
 @[simp, norm_cast]
 theorem coe_algebraMap (c : RingCon A) (s : S) :

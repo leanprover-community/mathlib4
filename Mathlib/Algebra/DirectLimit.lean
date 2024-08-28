@@ -585,7 +585,7 @@ theorem exists_of [Nonempty ι] [IsDirected ι (· ≤ ·)] (z : DirectLimit G f
               rw [(of G f k).map_mul, of_f, of_f, hs]
               /- porting note: In Lean3, from here, this was `by refl`. I have added
               the lemma `FreeCommRing.of_cons` to fix this proof. -/
-              apply congr_arg Quotient.mk''
+              apply congr_arg (Quotient.mk _)
               symm
               apply FreeCommRing.of_cons⟩)
         (fun s ⟨i, x, ih⟩ => ⟨i, -x, by

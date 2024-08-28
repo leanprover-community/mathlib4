@@ -262,6 +262,7 @@ theorem exists_quotient_mk'_sigma_mk'_eq {α : Type*} [Finite α] (x : α → Di
   ext a
   rw [Quotient.eq_mk_iff_out, unify]
   generalize_proofs r
+  rw [← Setoid.equiv_iff_apply]
   change _ ≈ .mk f i (f (Quotient.out (x a)).fst i r (Quotient.out (x a)).snd)
   have : (.mk f i (f (Quotient.out (x a)).fst i r (Quotient.out (x a)).snd) : Σˣ f).fst ≤ i :=
     le_rfl
@@ -348,7 +349,8 @@ def lift (g : ∀ i, G i ↪[L] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i 
     rw [← Quotient.out_eq x, ← Quotient.out_eq y, Quotient.lift_mk, Quotient.lift_mk] at xy
     obtain ⟨i, hx, hy⟩ := directed_of (· ≤ ·) x.out.1 y.out.1
     rw [← Hg x.out.1 i hx, ← Hg y.out.1 i hy] at xy
-    rw [← Quotient.out_eq x, ← Quotient.out_eq y, Quotient.eq, equiv_iff G f hx hy]
+    rw [← Quotient.out_eq x, ← Quotient.out_eq y, Quotient.eq,
+      ← Setoid.equiv_iff_apply, equiv_iff G f hx hy]
     exact (g i).injective xy
   map_fun' F x := by
     obtain ⟨i, y, rfl⟩ := exists_quotient_mk'_sigma_mk'_eq G f x

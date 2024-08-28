@@ -282,10 +282,10 @@ variable {𝒜} {x}
 
 /-- Construct an element of `HomogeneousLocalization 𝒜 x` from a homogeneous fraction. -/
 abbrev mk (y : HomogeneousLocalization.NumDenSameDeg 𝒜 x) : HomogeneousLocalization 𝒜 x :=
-  Quotient.mk'' y
+  ⟦y⟧
 
 lemma mk_surjective : Function.Surjective (mk (𝒜 := 𝒜) (x := x)) :=
-  Quotient.surjective_Quotient_mk''
+  Quotient.surjective_mk
 
 /-- View an element of `HomogeneousLocalization 𝒜 x` as an element of `Aₓ` by forgetting that the
 numerator and denominator are of the same grading.
@@ -302,7 +302,7 @@ variable (x)
 
 @[ext]
 theorem val_injective : Function.Injective (HomogeneousLocalization.val (𝒜 := 𝒜) (x := x)) :=
-  fun a b => Quotient.recOnSubsingleton₂' a b fun _ _ h => Quotient.sound' h
+  fun a b => Quotient.recOnSubsingleton₂ a b fun _ _ h => Quotient.sound' h
 
 variable (𝒜) {x} in
 lemma subsingleton (hx : 0 ∈ x) : Subsingleton (HomogeneousLocalization 𝒜 x) :=
@@ -383,18 +383,18 @@ instance : Mul (HomogeneousLocalization 𝒜 x) where
 
 @[simp] lemma mk_mul (i j : NumDenSameDeg 𝒜 x) : mk (i * j) = mk i * mk j := rfl
 
-instance : One (HomogeneousLocalization 𝒜 x) where one := Quotient.mk'' 1
+instance : One (HomogeneousLocalization 𝒜 x) where one := ⟦1⟧
 
 @[simp] lemma mk_one : mk (1 : NumDenSameDeg 𝒜 x) = 1 := rfl
 
-instance : Zero (HomogeneousLocalization 𝒜 x) where zero := Quotient.mk'' 0
+instance : Zero (HomogeneousLocalization 𝒜 x) where zero := ⟦0⟧
 
 @[simp] lemma mk_zero : mk (0 : NumDenSameDeg 𝒜 x) = 0 := rfl
 
-theorem zero_eq : (0 : HomogeneousLocalization 𝒜 x) = Quotient.mk'' 0 :=
+theorem zero_eq : (0 : HomogeneousLocalization 𝒜 x) = ⟦0⟧ :=
   rfl
 
-theorem one_eq : (1 : HomogeneousLocalization 𝒜 x) = Quotient.mk'' 1 :=
+theorem one_eq : (1 : HomogeneousLocalization 𝒜 x) = ⟦1⟧ :=
   rfl
 
 variable {x}
@@ -526,7 +526,7 @@ theorem isUnit_iff_isUnit_val (f : HomogeneousLocalization.AtPrime 𝒜 𝔭) :
   have : f.num.1 ∉ 𝔭 := by
     exact fun h ↦ mul_mem c.2 (mul_mem f.den_mem s.2)
       (hc ▸ Ideal.mul_mem_left _ c.1 (Ideal.mul_mem_right b _ h))
-  refine isUnit_of_mul_eq_one _ (Quotient.mk'' ⟨f.1, f.3, f.2, this⟩) ?_
+  refine isUnit_of_mul_eq_one _ ⟦⟨f.1, f.3, f.2, this⟩⟧ ?_
   rw [← mk_mul, ext_iff_val, val_mk]
   simp [mul_comm f.den.1]
 
