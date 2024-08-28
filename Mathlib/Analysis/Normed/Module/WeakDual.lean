@@ -275,6 +275,14 @@ lemma polarUcompact [ProperSpace 𝕜] (n : ℕ) : IsCompact (polar 𝕜 (U (E :
     simp only [gt_iff_lt, inv_pos, subset_refl, and_true]
     exact Nat.cast_add_one_pos m
 
+universe u
+
+variable {E₁ : Type u} [SeminormedAddCommGroup E₁] [NormedSpace 𝕜 E₁]
+
+lemma existance1 (s : Set E₁) : ∀ {ι : Type u} (t : ι → Set E₁),
+      (∀ i, IsClosed (t i)) → (s ∩ ⋂ i, t i) = ∅ → ∃ u : Finset ι, (s ∩ ⋂ i ∈ u, t i) = ∅ := by
+  apply isCompact_iff_finite_subfamily_closed.mp
+
 /- The closed set, not containing the origin -/
 variable (C : Set (WeakDual 𝕜 E))
 
@@ -285,13 +293,33 @@ variable (s : Set E)
 variable (n : ℕ)
 
 /-- For all x, let K x be the intersection of 4 sets-/
-def K : (U (E := E) (n + 1)) → Set (WeakDual 𝕜 E) :=
+def K : (Elem (U (E := E) (n + 1))) → Set (WeakDual 𝕜 E) :=
   fun x => polar 𝕜 s ∩ polar 𝕜 {↑x} ∩ C ∩ polar 𝕜 (U (n+2))
 
 
-lemma test1 [ProperSpace 𝕜] (x : (U (E := E) (n + 1))) (hC₁ : IsClosed C) :
+#check Elem (U (E := E) (n + 1))
+#check K 𝕜 C s n
+
+--variable  [ProperSpace 𝕜]
+--#check isCompact_iff_finite_subfamily_closed.mp (ι := (Elem (U (E := E) (n + 1))))
+--  (polarUcompact 𝕜 (E := E) (n+2)) (K 𝕜 C s n) --(isCompactK C s n)
+
+
+
+lemma isCompactK [ProperSpace 𝕜] (x : (U (E := E) (n + 1))) (hC₁ : IsClosed C) :
     IsCompact (K 𝕜 C s n x) := IsCompact.inter_left (polarUcompact 𝕜 _)
     (IsClosed.inter (IsClosed.inter (isClosed_polar 𝕜 s) (isClosed_polar _ _)) hC₁)
+
+lemma isClosedK [ProperSpace 𝕜] (x : (U (E := E) (n + 1))) (hC₁ : IsClosed C) :
+    IsClosed (K 𝕜 C s n x) := by
+  apply IsClosed.inter
+  apply IsClosed.inter
+  apply IsClosed.inter
+  exact isClosed_polar 𝕜 s
+  exact isClosed_polar 𝕜 _
+  exact hC₁
+  exact isClosed_polar 𝕜 (U (n + 2))
+
 
 lemma inter_empty (h : polar 𝕜 s ∩ C ∩ polar 𝕜 (U (n+1)) = ∅) :
     ⋂ (x : (U (E := E) (n + 1))), K 𝕜 C s n x = ∅ := by
@@ -302,6 +330,25 @@ lemma inter_empty (h : polar 𝕜 s ∩ C ∩ polar 𝕜 (U (n+1)) = ∅) :
     rw [← (dualPairing 𝕜 E).flip.sInter_polar_finite_subset_eq_polar']
     rfl
   rw [e1, inter_assoc _ _ C, inter_comm _ C, ← inter_assoc, h, empty_inter]
+
+
+
+/-
+lemma existance [ProperSpace 𝕜] : ∃ u : Finset (Elem (U (E := E) (n + 1))),
+    (C ∩ ⋂ i ∈ u, K 𝕜 C s n i) = ∅ := by
+  apply isCompact_iff_finite_subfamily_closed.mp (ι := (Elem (U (E := E) (n + 1))))
+    (polarUcompact 𝕜 (E := E) (n+2)) (K 𝕜 _ s n)
+-/
+
+--#check polarUcompact 𝕜 (n+2)
+
+#check Set.Subset
+
+#check Set.range
+
+--#check Set.domain
+
+--#check ↥
 
 /-
 lemma test (C : Set (Dual 𝕜 E)) (s : Set E) (n : ℕ)
