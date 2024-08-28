@@ -301,7 +301,10 @@ def AlgEquiv.restrictNormalHom [Normal F E] : (K₁ ≃ₐ[F] K₁) →* E ≃�
 variable (F K₁)
 
 /-- If `K₁/E/F` is a tower of fields with `E/F` normal then `AlgHom.restrictNormal'` is an
- equivalence. -/
+ equivalence.
+ [Stacks: Lemma 0BR4](https://stacks.math.columbia.edu/tag/0BR4)
+ There is a little difference between the stacks project and the current implementation.
+ -/
 @[simps]
 def Normal.algHomEquivAut [Normal F E] : (E →ₐ[F] K₁) ≃ E ≃ₐ[F] E where
   toFun σ := AlgHom.restrictNormal' σ E
