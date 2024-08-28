@@ -102,25 +102,23 @@ theorem card_top : Nat.card (⊤ : Subgroup G) = Nat.card G :=
   Nat.card_congr Subgroup.topEquiv.toEquiv
 
 @[to_additive]
-theorem eq_top_of_card_eq [Finite H] (h : Nat.card H = Nat.card G) :
-    H = ⊤ := by
-  have : Nonempty H := ⟨1, one_mem H⟩
-  have h' : Nat.card H ≠ 0 := Nat.card_pos.ne'
-  have : Finite G := (Nat.finite_of_card_ne_zero (h ▸ h'))
-  have : Fintype G := Fintype.ofFinite G
-  have : Fintype H := Fintype.ofFinite H
-  rw [Nat.card_eq_fintype_card, Nat.card_eq_fintype_card] at h
-  rw [SetLike.ext'_iff, coe_top, ← Finset.coe_univ, ← (H : Set G).coe_toFinset, Finset.coe_inj, ←
-    Finset.card_eq_iff_eq_univ, ← h, Set.toFinset_card]
-  congr
+theorem eq_of_le_of_card_ge {H K : Subgroup G} [Finite K] (hle : H ≤ K)
+    (hcard : Nat.card K ≤ Nat.card H) :
+    H = K :=
+  SetLike.coe_injective <| Set.Finite.eq_of_subset_of_card_le (Set.toFinite _) hle hcard
+
+@[to_additive]
+theorem eq_top_of_le_card [Finite G] (h : Nat.card G ≤ Nat.card H) : H = ⊤ :=
+  eq_of_le_of_card_ge le_top (Nat.card_congr (Equiv.Set.univ G) ▸ h)
+
+@[to_additive]
+theorem eq_top_of_card_eq [Finite H] (h : Nat.card H = Nat.card G) : H = ⊤ := by
+  have : Finite G := Nat.finite_of_card_ne_zero (h ▸ Nat.card_pos.ne')
+  exact eq_top_of_le_card _ (Nat.le_of_eq h.symm)
 
 @[to_additive (attr := simp)]
 theorem card_eq_iff_eq_top [Finite H] : Nat.card H = Nat.card G ↔ H = ⊤ :=
   Iff.intro (eq_top_of_card_eq H) (fun h ↦ by simpa only [h] using card_top)
-
-@[to_additive]
-theorem eq_top_of_le_card [Finite G] (h : Nat.card G ≤ Nat.card H) : H = ⊤ :=
-  eq_top_of_card_eq H (le_antisymm (Nat.card_le_card_of_injective H.subtype H.subtype_injective) h)
 
 @[to_additive]
 theorem eq_bot_of_card_le [Finite H] (h : Nat.card H ≤ 1) : H = ⊥ :=
@@ -146,6 +144,10 @@ theorem one_lt_card_iff_ne_bot [Finite H] : 1 < Nat.card H ↔ H ≠ ⊥ :=
 @[to_additive]
 theorem card_le_card_group [Finite G] : Nat.card H ≤ Nat.card G :=
   Nat.card_le_card_of_injective _ Subtype.coe_injective
+
+@[to_additive]
+theorem card_le_of_le {H K : Subgroup G} [Finite K] (h : H ≤ K) : Nat.card H ≤ Nat.card K :=
+  Nat.card_le_card_of_injective _ (Subgroup.inclusion_injective h)
 
 end Subgroup
 
