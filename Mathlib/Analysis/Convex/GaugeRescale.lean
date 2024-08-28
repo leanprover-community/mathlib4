@@ -79,7 +79,7 @@ theorem gaugeRescale_gaugeRescale {s t u : Set E} (hta : Absorbent ℝ t) (htb :
     (x : E) : gaugeRescale t u (gaugeRescale s t x) = gaugeRescale s u x := by
   rcases eq_or_ne x 0 with rfl | hx; · simp
   rw [gaugeRescale_def s t x, gaugeRescale_smul, gaugeRescale, gaugeRescale, smul_smul,
-    div_mul_div_cancel]
+    div_mul_div_cancel₀]
   exacts [((gauge_pos hta htb).2 hx).ne', div_nonneg (gauge_nonneg _) (gauge_nonneg _)]
 
 /-- `gaugeRescale` bundled as an `Equiv`. -/
