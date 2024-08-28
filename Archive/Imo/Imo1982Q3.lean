@@ -364,7 +364,7 @@ theorem Imo1982Q3_part_a
 
 
 theorem Imo1982Q3_part_b
-  :
+    :
   ∃ x : ℕ → ℝ,
   (∀ i, x i > 0) ∧
   (∀ i, x (i + 1) ≤ x i) ∧ (x 0 = 1) ∧
