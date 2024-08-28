@@ -152,18 +152,31 @@ def searchContext (t : Array Expr) : TacticM Unit := withMainContext do
       let f := args[args.size - 1]!
       -- Check that `f` appears in the list of functions given to `algebraize`
       if ¬ (← t.anyM (fun j => Meta.isDefEq j f)) then return
-      -- From `p` TODO
+
       let cinfo ← getConstInfo p
       let n ← getExpectedNumArgs cinfo.type
       let pargs := Array.mkArray n (none : Option Expr)
-      let pargs := pargs.set! 0 args[0]!
-      let pargs := pargs.set! 1 args[1]!
-      let tp ← mkAppOptM p pargs
-      -- Add the `Algebra` property to the context
-      liftMetaTactic fun mvarid => do
-        let nm ← mkFreshUserName `AlgebraizeInst
-        let (_, mvar) ← mvarid.note nm decl.toExpr tp
-        return [mvar]
+      /- If the attribute points to the corresponding `Algebra` property itself, we assume that it
+      is definitionally the same as the `RingHom` property. Then, we just need to construct its type
+      and the local declaration will already give a valid term. -/
+      if cinfo.isInductive then
+        let pargs := pargs.set! 0 args[0]!
+        let pargs := pargs.set! 1 args[1]!
+        let tp ← mkAppOptM p pargs -- This should be the type `Algebra.Property A B`
+        liftMetaTactic fun mvarid => do
+          let nm ← mkFreshUserName `AlgebraizeInst
+          let (_, mvar) ← mvarid.note nm decl.toExpr tp
+          return [mvar]
+      /- Otherwise, the attribute points to a constructor of the `Algebra` property. In this case,
+      we assume that the `RingHom` property is the last argument of the constructor (and that
+      this is all we need to supply explicitly). -/
+      else
+        let pargs := pargs.set! (n - 1) decl.toExpr
+        let val ← mkAppOptM p pargs
+        liftMetaTactic fun mvarid => do
+          let nm ← mkFreshUserName `AlgebraizeInst
+          let (_, mvar) ← mvarid.note nm val
+          return [mvar]
     | none => return
 
 end Algebraize
