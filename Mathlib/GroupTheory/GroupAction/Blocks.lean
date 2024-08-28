@@ -527,7 +527,7 @@ theorem ncard_block_mul_ncard_orbit_eq (hB_ne : B.Nonempty) :
     exact Set.ncard_image_of_injective B (MulAction.injective g)
 
 /-- The cardinality of a block divides the cardinality of the ambient type -/
-theorem ncard_of_block_divides (hB_ne : B.Nonempty) :
+theorem ncard_dvd_card (hB_ne : B.Nonempty) :
     Set.ncard B ∣ Nat.card X :=
   Dvd.intro _ (hB.ncard_block_mul_ncard_orbit_eq hB_ne)
 
