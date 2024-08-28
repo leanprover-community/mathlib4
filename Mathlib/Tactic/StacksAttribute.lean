@@ -118,7 +118,9 @@ elab (name := Mathlib.Stacks.stacksTags) "#stacks_tags" tk:("!")?: command => do
     let dname ← Command.liftCoreM do realizeGlobalConstNoOverloadWithInfo (mkIdent d.declName)
     let (parL, parR) := if d.comment.isEmpty then ("", "") else (" (", ")")
     let cmt := parL ++ d.comment ++ parR
-    msgs := msgs.push m!"'{dname}' corresponds to tag '{d.tag}'.{cmt}"
+    msgs := msgs.push
+      m!"[Stacks Tag {d.tag}](https://stacks.math.columbia.edu/tag/{d.tag}) \
+        corresponds to declaration '{dname}'.{cmt}"
     if tk.isSome then
       let dType := ((env.find? dname).getD default).type
       msgs := (msgs.push m!"{dType}").push ""
