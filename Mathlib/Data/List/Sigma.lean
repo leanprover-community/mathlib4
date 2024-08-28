@@ -417,7 +417,7 @@ theorem mem_keys_kerase_of_ne {a₁ a₂} {l : List (Sigma β)} (h : a₁ ≠ a�
     else by simp [q, p]
 
 theorem keys_kerase {a} {l : List (Sigma β)} : (kerase a l).keys = l.keys.erase a := by
-  rw [keys, kerase, erase_eq_eraseP, eraseP_map, Function.comp]
+  rw [keys, kerase, erase_eq_eraseP, eraseP_map, Function.comp_def]
   simp only [beq_eq_decide]
   congr
   funext

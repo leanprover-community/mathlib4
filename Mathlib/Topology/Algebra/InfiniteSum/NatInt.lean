@@ -74,7 +74,7 @@ theorem even_mul_odd {f : ℕ → M} (he : HasProd (fun k ↦ f (2 * k)) m)
   have := mul_right_injective₀ (two_ne_zero' ℕ)
   replace ho := ((add_left_injective 1).comp this).hasProd_range_iff.2 ho
   refine (this.hasProd_range_iff.2 he).mul_isCompl ?_ ho
-  simpa [(· ∘ ·)] using Nat.isCompl_even_odd
+  simpa [Function.comp_def] using Nat.isCompl_even_odd
 
 end ContinuousMul
 

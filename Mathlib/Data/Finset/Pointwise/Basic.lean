@@ -1419,7 +1419,7 @@ instance smulCommClass [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
 @[to_additive vaddAssocClass]
 instance isScalarTower [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower α β (Finset γ) :=
-  ⟨fun a b s => by simp only [← image_smul, image_image, smul_assoc, Function.comp]⟩
+  ⟨fun a b s => by simp only [← image_smul, image_image, smul_assoc, Function.comp_def]⟩
 
 variable [DecidableEq β]
 
@@ -1827,7 +1827,7 @@ variable [Monoid α] [AddGroup β] [DistribMulAction α β] [DecidableEq β] (a 
 
 @[simp]
 theorem smul_finset_neg : a • -t = -(a • t) := by
-  simp only [← image_smul, ← image_neg, Function.comp, image_image, smul_neg]
+  simp only [← image_smul, ← image_neg, Function.comp_def, image_image, smul_neg]
 
 @[simp]
 protected theorem smul_neg : s • -t = -(s • t) := by
@@ -1843,7 +1843,7 @@ variable [Ring α] [AddCommGroup β] [Module α β] [DecidableEq β] {s : Finset
 
 @[simp]
 theorem neg_smul_finset : -a • t = -(a • t) := by
-  simp only [← image_smul, ← image_neg, image_image, neg_smul, Function.comp]
+  simp only [← image_smul, ← image_neg, image_image, neg_smul, Function.comp_def]
 
 @[simp]
 protected theorem neg_smul [DecidableEq α] : -s • t = -(s • t) := by

@@ -217,7 +217,7 @@ variable {c : M'}
 theorem contMDiff_const : ContMDiff I I' n fun _ : M => c := by
   intro x
   refine ⟨continuousWithinAt_const, ?_⟩
-  simp only [ContDiffWithinAtProp, (· ∘ ·)]
+  simp only [ContDiffWithinAtProp, Function.comp_def]
   exact contDiffWithinAt_const
 
 @[to_additive]
