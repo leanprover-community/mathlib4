@@ -198,8 +198,8 @@ theorem aleph'_zero : aleph' 0 = 0 :=
   aleph'.map_bot
 
 @[simp]
-theorem aleph'_succ {o : Ordinal} : aleph' (succ o) = succ (aleph' o) :=
-  aleph'.map_succ
+theorem aleph'_succ (o : Ordinal) : aleph' (succ o) = succ (aleph' o) :=
+  aleph'.map_succ o
 
 @[simp]
 theorem aleph'_nat : ∀ n : ℕ, aleph' n = n
@@ -256,7 +256,7 @@ theorem max_aleph_eq (o₁ o₂ : Ordinal) : max (aleph o₁) (aleph o₂) = ale
   (aleph_max o₁ o₂).symm
 
 @[simp]
-theorem aleph_succ {o : Ordinal} : aleph (succ o) = succ (aleph o) := by
+theorem aleph_succ (o : Ordinal) : aleph (succ o) = succ (aleph o) := by
   rw [aleph_eq_aleph', add_succ, aleph'_succ, aleph_eq_aleph']
 
 @[simp]
@@ -518,7 +518,7 @@ theorem mul_mk_eq_max {α β : Type u} [Infinite α] [Infinite β] : #α * #β =
 
 @[simp]
 theorem aleph_mul_aleph (o₁ o₂ : Ordinal) : aleph o₁ * aleph o₂ = aleph (max o₁ o₂) := by
-  rw [Cardinal.mul_eq_max (aleph0_le_aleph o₁) (aleph0_le_aleph o₂), max_aleph_eq]
+  rw [Cardinal.mul_eq_max (aleph0_le_aleph o₁) (aleph0_le_aleph o₂), aleph_max]
 
 @[simp]
 theorem aleph0_mul_eq {a : Cardinal} (ha : ℵ₀ ≤ a) : ℵ₀ * a = a :=
@@ -835,7 +835,7 @@ end ciSup
 
 @[simp]
 theorem aleph_add_aleph (o₁ o₂ : Ordinal) : aleph o₁ + aleph o₂ = aleph (max o₁ o₂) := by
-  rw [Cardinal.add_eq_max (aleph0_le_aleph o₁), max_aleph_eq]
+  rw [Cardinal.add_eq_max (aleph0_le_aleph o₁), aleph_max]
 
 theorem principal_add_ord {c : Cardinal} (hc : ℵ₀ ≤ c) : Ordinal.Principal (· + ·) c.ord :=
   fun a b ha hb => by
