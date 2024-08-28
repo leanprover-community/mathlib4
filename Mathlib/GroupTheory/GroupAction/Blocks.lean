@@ -10,6 +10,7 @@ import Mathlib.Data.Setoid.Partition
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.GroupAction.Pointwise
 import Mathlib.GroupTheory.GroupAction.SubMulAction
+import Mathlib.GroupTheory.Index
 
 /-! # Blocks
 
@@ -510,21 +511,20 @@ namespace IsBlock
 
 variable [IsPretransitive G X] [Finite X] {B : Set X} (hB : IsBlock G B)
 
+theorem ncard_block_eq_relindex {x : X} (hx : x ∈ B) :
+    B.ncard = (stabilizer G x).relindex (stabilizer G B) := by
+  have key : (stabilizer G x).subgroupOf (stabilizer G B) = stabilizer (stabilizer G B) x := by
+    ext; rfl
+  rw [Subgroup.relindex, key, index_stabilizer, hB.orbit_stabilizer_eq hx]
+
 /-- The cardinality of the ambient is the product of
   of the cardinality of a block
   by the cardinality of the set of translates of that block -/
 theorem ncard_block_mul_ncard_orbit_eq (hB_ne : B.Nonempty) :
-    Set.ncard B * Set.ncard (Set.range fun g : G => g • B) = Nat.card X := by
-  classical
-  have := Fintype.ofFinite X
-  rw [← Setoid.nat_sum (hB.isBlockSystem hB_ne).1]
-  simp only [finsum_eq_sum_of_fintype]
-  rw [Finset.sum_congr rfl]
-  · rw [Finset.sum_const, mul_comm]
-    congr
-    rw [← Set.ncard_coe_Finset, Finset.coe_univ, Set.ncard_coe]
-  · rintro ⟨x, ⟨g, rfl⟩⟩ _
-    exact Set.ncard_image_of_injective B (MulAction.injective g)
+    Set.ncard B * Set.ncard (orbit G B) = Nat.card X := by
+  obtain ⟨x, hx⟩ := hB_ne
+  rw [ncard_block_eq_relindex hB hx, ← index_stabilizer,
+      Subgroup.relindex_mul_index (hB.stabilizer_le hx), index_stabilizer']
 
 /-- The cardinality of a block divides the cardinality of the ambient type -/
 theorem ncard_dvd_card (hB_ne : B.Nonempty) :
@@ -544,7 +544,7 @@ theorem eq_top_card_lt (hB' : Nat.card X < Set.ncard B * 2) :
   rw [Set.top_eq_univ, ← Set.toFinset_inj, Set.toFinset_univ,
     ← Finset.card_eq_iff_eq_univ, ← Set.ncard_eq_toFinset_card',
     ← Nat.card_eq_fintype_card]
-  obtain ⟨k, h⟩ := hB.ncard_of_block_divides hB_ne
+  obtain ⟨k, h⟩ := hB.ncard_dvd_card hB_ne
   suffices k = 1 by
     simp only [h, this, mul_one]
   rw [h, Nat.mul_lt_mul_left ?_] at hB'
