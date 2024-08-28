@@ -156,7 +156,6 @@ theorem map_injOn : {x : Fin n → ℕ | ∀ i, x i < d}.InjOn (map d) := by
   intro x₁ hx₁ x₂ hx₂ h
   induction' n with n ih
   · simp [eq_iff_true_of_subsingleton]
-  rw [forall_const] at ih
   ext i
   have x := (map_eq_iff hx₁ hx₂).1 h
   refine Fin.cases x.1 (congr_fun <| ih (fun _ => ?_) (fun _ => ?_) x.2) i
@@ -183,13 +182,12 @@ theorem threeAPFree_image_sphere :
   rw [coe_image]
   apply ThreeAPFree.image' (α := Fin n → ℕ) (β := ℕ) (s := sphere n d k) (map (2 * d - 1))
     (map_injOn.mono _) threeAPFree_sphere
-  · rw [Set.add_subset_iff]
-    rintro a ha b hb i
-    have hai := mem_box.1 (sphere_subset_box ha) i
-    have hbi := mem_box.1 (sphere_subset_box hb) i
-    rw [lt_tsub_iff_right, ← succ_le_iff, two_mul]
-    exact (add_add_add_comm _ _ 1 1).trans_le (_root_.add_le_add hai hbi)
-  · exact x
+  rw [Set.add_subset_iff]
+  rintro a ha b hb i
+  have hai := mem_box.1 (sphere_subset_box ha) i
+  have hbi := mem_box.1 (sphere_subset_box hb) i
+  rw [lt_tsub_iff_right, ← succ_le_iff, two_mul]
+  exact (add_add_add_comm _ _ 1 1).trans_le (_root_.add_le_add hai hbi)
 
 theorem sum_sq_le_of_mem_box (hx : x ∈ box n d) : ∑ i : Fin n, x i ^ 2 ≤ n * (d - 1) ^ 2 := by
   rw [mem_box] at hx
@@ -212,13 +210,11 @@ theorem card_sphere_le_rothNumberNat (n d k : ℕ) :
   cases d
   · simp
   apply threeAPFree_image_sphere.le_rothNumberNat _ _ (card_image_of_injOn _)
-  · intro; assumption
   · simp only [subset_iff, mem_image, and_imp, forall_exists_index, mem_range,
       forall_apply_eq_imp_iff₂, sphere, mem_filter]
     rintro _ x hx _ rfl
     exact (map_le_of_mem_box hx).trans_lt sum_lt
   apply map_injOn.mono fun x => ?_
-  · intro; assumption
   simp only [mem_coe, sphere, mem_filter, mem_box, and_imp, two_mul]
   exact fun h _ i => (h i).trans_le le_self_add
 
@@ -392,7 +388,7 @@ theorem le_N (hN : 2 ≤ N) : (2 * dValue N - 1) ^ nValue N ≤ N := by
   suffices i : (2 * dValue N : ℝ) ≤ (N : ℝ) ^ (nValue N : ℝ)⁻¹ by
     rw [← rpow_natCast]
     apply (rpow_le_rpow (mul_nonneg zero_le_two (cast_nonneg _)) i (cast_nonneg _)).trans
-    rw [← rpow_mul (cast_nonneg _), inv_mul_cancel, rpow_one]
+    rw [← rpow_mul (cast_nonneg _), inv_mul_cancel₀, rpow_one]
     rw [cast_ne_zero]
     apply (nValue_pos hN).ne'
   rw [← le_div_iff']

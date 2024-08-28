@@ -55,9 +55,7 @@ assert_not_exists Module
 noncomputable section
 
 open Function Cardinal Set Equiv Order
-
-open scoped Classical
-open Cardinal Ordinal
+open scoped Ordinal
 
 universe u v w
 
@@ -150,7 +148,7 @@ theorem right_eq_zero_of_add_eq_zero {a b : Ordinal} (h : a + b = 0) : b = 0 :=
 
 /-! ### The predecessor of an ordinal -/
 
-
+open Classical in
 /-- The ordinal predecessor of `o` is `o'` if `o = succ o'`,
   and `o` otherwise. -/
 def pred (o : Ordinal) : Ordinal :=
@@ -161,8 +159,9 @@ theorem pred_succ (o) : pred (succ o) = o := by
   have h : ∃ a, succ o = succ a := ⟨_, rfl⟩
   simpa only [pred, dif_pos h] using (succ_injective <| Classical.choose_spec h).symm
 
-theorem pred_le_self (o) : pred o ≤ o :=
-  if h : ∃ a, o = succ a then by
+theorem pred_le_self (o) : pred o ≤ o := by
+  classical
+  exact if h : ∃ a, o = succ a then by
     let ⟨a, e⟩ := h
     rw [e, pred_succ]; exact le_succ a
   else by rw [pred, dif_neg h]
@@ -187,8 +186,9 @@ theorem succ_pred_iff_is_succ {o} : succ (pred o) = o ↔ ∃ a, o = succ a :=
 theorem succ_lt_of_not_succ {o b : Ordinal} (h : ¬∃ a, o = succ a) : succ b < o ↔ b < o :=
   ⟨(lt_succ b).trans, fun l => lt_of_le_of_ne (succ_le_of_lt l) fun e => h ⟨_, e.symm⟩⟩
 
-theorem lt_pred {a b} : a < pred b ↔ succ a < b :=
-  if h : ∃ a, b = succ a then by
+theorem lt_pred {a b} : a < pred b ↔ succ a < b := by
+  classical
+  exact if h : ∃ a, b = succ a then by
     let ⟨c, e⟩ := h
     rw [e, pred_succ, succ_lt_succ_iff]
   else by simp only [pred, dif_neg h, succ_lt_of_not_succ h]
@@ -204,8 +204,9 @@ theorem lift_is_succ {o : Ordinal.{v}} : (∃ a, lift.{u} o = succ a) ↔ ∃ a,
     fun ⟨a, h⟩ => ⟨lift.{u} a, by simp only [h, lift_succ]⟩⟩
 
 @[simp]
-theorem lift_pred (o : Ordinal.{v}) : lift.{u} (pred o) = pred (lift.{u} o) :=
-  if h : ∃ a, o = succ a then by cases' h with a e; simp only [e, pred_succ, lift_succ]
+theorem lift_pred (o : Ordinal.{v}) : lift.{u} (pred o) = pred (lift.{u} o) := by
+  classical
+  exact if h : ∃ a, o = succ a then by cases' h with a e; simp only [e, pred_succ, lift_succ]
   else by rw [pred_eq_iff_not_succ.2 h, pred_eq_iff_not_succ.2 (mt lift_is_succ.1 h)]
 
 /-! ### Limit ordinals -/
@@ -264,8 +265,9 @@ theorem IsLimit.nat_lt {o : Ordinal} (h : IsLimit o) : ∀ n : ℕ, (n : Ordinal
   | 0 => h.pos
   | n + 1 => h.2 _ (IsLimit.nat_lt h n)
 
-theorem zero_or_succ_or_limit (o : Ordinal) : o = 0 ∨ (∃ a, o = succ a) ∨ IsLimit o :=
-  if o0 : o = 0 then Or.inl o0
+theorem zero_or_succ_or_limit (o : Ordinal) : o = 0 ∨ (∃ a, o = succ a) ∨ IsLimit o := by
+  classical
+  exact if o0 : o = 0 then Or.inl o0
   else
     if h : ∃ a, o = succ a then Or.inr (Or.inl h)
     else Or.inr <| Or.inr ⟨o0, fun _a => (succ_lt_of_not_succ h).2⟩

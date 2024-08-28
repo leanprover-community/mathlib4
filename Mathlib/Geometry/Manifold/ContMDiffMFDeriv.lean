@@ -28,26 +28,23 @@ open scoped Topology Manifold Bundle
 
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  -- declare a smooth manifold `M` over the pair `(E, H)`.
+  -- declare a charted space `M` over the pair `(E, H)`.
   {E : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
   {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  [Is : SmoothManifoldWithCorners I M]
-  -- declare a smooth manifold `M'` over the pair `(E', H')`.
+  -- declare a charted space `M'` over the pair `(E', H')`.
   {E' : Type*}
   [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
   {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
-  [I's : SmoothManifoldWithCorners I' M']
   -- declare a smooth manifold `N` over the pair `(F, G)`.
   {F : Type*}
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*} [TopologicalSpace G]
   {J : ModelWithCorners 𝕜 F G} {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
   [Js : SmoothManifoldWithCorners J N]
-  -- declare a smooth manifold `N'` over the pair `(F', G')`.
+  -- declare a charted space `N'` over the pair `(F', G')`.
   {F' : Type*}
   [NormedAddCommGroup F'] [NormedSpace 𝕜 F'] {G' : Type*} [TopologicalSpace G']
   {J' : ModelWithCorners 𝕜 F' G'} {N' : Type*} [TopologicalSpace N'] [ChartedSpace G' N']
-  [J's : SmoothManifoldWithCorners J' N']
   -- declare some additional normed spaces, used for fibers of vector bundles
   {F₁ : Type*}
   [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] {F₂ : Type*} [NormedAddCommGroup F₂]
@@ -62,6 +59,8 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 /-! ### The derivative of a smooth function is smooth -/
 
 section mfderiv
+variable [Is : SmoothManifoldWithCorners I M] [I's : SmoothManifoldWithCorners I' M']
+
 
 /-- The function that sends `x` to the `y`-derivative of `f(x,y)` at `g(x)` is `C^m` at `x₀`,
 where the derivative is taken as a continuous linear map.
@@ -334,7 +333,9 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin_aux {f : H → H'} {s : Set H}
 
 /-- If a function is `C^n` on a domain with unique derivatives, then its bundled derivative
 is `C^m` when `m+1 ≤ n`. -/
-theorem ContMDiffOn.contMDiffOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (hmn : m + 1 ≤ n)
+theorem ContMDiffOn.contMDiffOn_tangentMapWithin
+    [Is : SmoothManifoldWithCorners I M] [I's : SmoothManifoldWithCorners I' M']
+    (hf : ContMDiffOn I I' n f s) (hmn : m + 1 ≤ n)
     (hs : UniqueMDiffOn I s) :
     ContMDiffOn I.tangent I'.tangent m (tangentMapWithin I I' f s)
       (π E (TangentSpace I) ⁻¹' s) := by
@@ -510,6 +511,8 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (
     simp only [A, B, C, D, ← E]
   exact diff_DrirrflilDl.congr eq_comp
 
+variable [Is : SmoothManifoldWithCorners I M] [I's : SmoothManifoldWithCorners I' M']
+
 /-- If a function is `C^n` on a domain with unique derivatives, with `1 ≤ n`, then its bundled
 derivative is continuous there. -/
 theorem ContMDiffOn.continuousOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (hmn : 1 ≤ n)
@@ -557,7 +560,7 @@ coordinates on the tangent bundle in our definitions. So this statement is not a
 may seem.
 
 TODO define splittings of vector bundles; state this result invariantly. -/
-theorem tangentMap_tangentBundle_pure (p : TangentBundle I M) :
+theorem tangentMap_tangentBundle_pure [Is : SmoothManifoldWithCorners I M] (p : TangentBundle I M) :
     tangentMap I I.tangent (zeroSection E (TangentSpace I)) p = ⟨⟨p.proj, 0⟩, ⟨p.2, 0⟩⟩ := by
   rcases p with ⟨x, v⟩
   have N : I.symm ⁻¹' (chartAt H x).target ∈ 𝓝 (I ((chartAt H x) x)) := by

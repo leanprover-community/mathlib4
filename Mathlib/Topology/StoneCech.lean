@@ -221,7 +221,7 @@ section PreStoneCech
 
 variable (α : Type u) [TopologicalSpace α]
 
-/-- Auxilliary construction towards the Stone-Čech compactification of a topological space.
+/-- Auxiliary construction towards the Stone-Čech compactification of a topological space.
 It should not be used after the Stone-Čech compactification is constructed. -/
 def PreStoneCech : Type u :=
   Quot fun F G : Ultrafilter α ↦ ∃ x, (F : Filter α) ≤ 𝓝 x ∧ (G : Filter α) ≤ 𝓝 x
@@ -266,6 +266,7 @@ theorem preStoneCech_hom_ext {g₁ g₂ : PreStoneCech α → β} (h₁ : Contin
 
 variable [CompactSpace β]
 variable {g : α → β} (hg : Continuous g)
+include hg
 
 lemma preStoneCechCompat {F G : Ultrafilter α} {x : α} (hF : ↑F ≤ 𝓝 x) (hG : ↑G ≤ 𝓝 x) :
     Ultrafilter.extend g F = Ultrafilter.extend g G := by
