@@ -412,23 +412,24 @@ section unicodeLinter
 local instance instHashableChar : Hashable Char where
   hash c := c.val.toUInt64
 
-/-- TODO make complete and order nicely
-Since this is a HashSet, we can afford to put some ASCII-only meta-comments inside it
+/-- Printable ASCII characters.
+With repetitions (newline) and **excluding** 0x7F ('DEL') -/
+def printableASCII :="
+ \n!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
 
-VSCode abbreviations obtained using Julia code:
+/--
+Symbols with VSCode extension abbreviation as of Aug. 28, 2024
+
+Taken from abbreviations.json in
+github.com/leanprover/vscode-lean4/blob/97d7d8c382d1549c18b66cd99ab4df0b6634c8f1
+
+Obtained using Julia code:
 ```julia
 filter(!isascii, unique( <all text in JSON file> )) |> join
 ```
-
-Using abbreviations.json taken from
-github.com/leanprover/vscode-lean4/blob/97d7d8c382d1549c18b66cd99ab4df0b6634c8f1
-
+And manually **excluding** \quad (U+2001) and Rial (U+FDFC).
 -/
-def unicodeWhitelist : Lean.HashSet Char := Lean.HashSet.ofList $ String.toList "
-            ==== Printable ASCII, excluding 0x7F ('DEL') ====
- \n!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~
-
-            ==== Having VSCode abbreviations as of Aug. 28, 2024 ====
+def withVSCodeAbbrev := "
 ⦃⦄⟦⟧⟨⟩⟮⟯‹›«»⁅⁆‖₊⌊⌋⌈⌉αβχ↓εγ∩μ¬∘Π▸→↑∨×⁻¹∼·⋆¿₁₂₃₄₅₆₇₈₉₀←Ø⅋𝔸ℂΔ𝔽Γℍ⋂𝕂ΛℕℚℝΣ⋃ℤ♯∶∣¡δζηθικλνξπρςστφψωÀÁÂÃÄÇÈÉÊ
 ËÌÍÎÏÑÒÓÔÕÖÙÚÛÜÝàáâãäçèéêëìíîïñòóôõöøùúûüýÿŁ∉♩𐆎∌∋⟹♮₦∇≉№⇍⇎⇏⊯⊮≇↗≢≠∄≱≯↚↮≰≮∤∦⋠⊀↛≄≁⊈⊄⋡⊁⊉⊅⋬⋪⋭⋫⊭⊬↖
 ≃≖≕⋝⋜⊢–∃∅—€ℓ≅∈⊺∫⨍∆⊓⨅∞↔ı≣≡≗⇒≋≊≈⟶ϩ↩↪₴ͱ♥ℏ∻≔∺∷≂⊣²³∹─═━╌⊸≑≐∔∸⋯≘⟅≙∧∠∟Å∀ᶠᵐℵ⁎∗≍⌶åæ₳؋∐≚ªº⊕ᵒᵈᵃᵖ⊖⊝⊗⊘⊙⊚⊜œ🛑Ω℥ο∮∯
@@ -441,12 +442,52 @@ def unicodeWhitelist : Lean.HashSet Char := Lean.HashSet.ofList $ String.toList 
 𝐊𝐍𝐌𝐏𝐎𝐑𝐐𝐓𝐒𝐕𝐔𝐗𝐖𝐘𝐙𝐛𝐚𝐝𝐜𝐟𝐞𝐡𝐠𝐣𝐢𝐥𝐤𝐧𝐦𝐩𝐨𝐫𝐪𝐭𝐬𝐯𝐮𝐱𝐰𝐲𝐳𝐴𝐶𝐵𝐸𝐷𝐺𝐹𝐼𝐻𝐾𝐽𝑀𝐿𝑂𝑁𝑄𝑃𝑆𝑅𝑈𝑇𝑊𝑉𝑌�𝑎𝑍𝑐𝑏𝑒𝑑𝑔𝑓𝑗𝑖𝑙𝑘𝑛𝑚𝑝𝑜𝑟𝑞𝑡𝑠𝑣𝑢𝑥𝑤𝑧𝑦𝑩𝑨𝑫𝑪𝑭𝑬𝑯𝑮𝑱𝑰𝑳𝑲𝑵
 𝑴𝑷𝑶𝑹𝑸𝑻𝑺𝑽𝑼𝑿𝒁𝒀𝒃𝒂𝒅𝒄𝒇𝒆𝒉𝒈𝒋𝒊𝒍𝒌𝒏𝒎𝒑𝒐𝒓𝒒𝒕𝒔𝒗𝒖𝒙𝒘𝒛𝒚ℬ𝒜𝒟𝒞ℱℰℋ𝒢𝒥ℒ𝒦𝒩ℳ𝒪ℛ𝒬𝒯𝒮𝒱𝒰𝒳𝒲𝒵𝒴𝒷𝒶𝒹𝒸𝒻ℯ𝒽ℊ𝒿𝒾𝓁𝓀𝓃𝓂𝓅ℴ𝓇𝓆𝓉𝓈𝓋𝓊𝓍𝓌𝓏𝓎𝓑𝓐𝓓𝓒𝓕𝓔𝓗𝓖𝓙𝓘𝓛𝓚𝓝
 𝓜𝓟𝓞𝓠𝓣𝓢𝓥𝓤𝓧𝓦𝓩𝓨𝓫𝓪𝓭𝓬𝓯𝓮𝓱𝓰𝓳𝓲𝓵𝓴𝓷𝓶𝓹𝓸𝓻𝓺𝓽𝓼𝓿𝓾𝔁𝔀𝔃𝔂𝔅𝔄𝔇ℭ𝔉𝔈ℌ𝔊𝔍𝔏𝔎𝔑𝔐𝔓𝔒𝔔𝔗𝔖𝔙𝔘𝔚ℨ𝔜𝔟𝔞𝔡𝔠𝔣𝔢𝔥𝔤𝔧𝔦𝔩𝔨𝔫𝔪𝔭𝔬𝔯𝔮𝔱𝔰𝔳𝔲𝔵𝔶𝔷¥ϰϱϗϕϖ⊲ϑϐ⊳⊻ěĚď⋮ĎČč₭
-ϟĮįK⚠ϧ≀℘ϮϜÐΗ≎𝔻𝔼𝔾𝕁𝕀𝕃𝕄𝕆𝕋𝕊𝕍𝕌𝕏𝕎𝕐𝕓𝕒𝕕𝕔𝕗𝕖𝕙𝕘𝕛𝕚𝕜𝕟𝕞𝕡𝕠𝕣𝕢𝕥𝕤𝕧𝕦𝕩𝕨𝕪𝕫⨯⨿Ϳ
+ϟĮįK⚠ϧ≀℘ϮϜÐΗ≎𝔻𝔼𝔾𝕁𝕀𝕃𝕄𝕆𝕋𝕊𝕍𝕌𝕏𝕎𝕐𝕓𝕒𝕕𝕔𝕗𝕖𝕙𝕘𝕛𝕚𝕜𝕟𝕞𝕡𝕠𝕣𝕢𝕥𝕤𝕧𝕦𝕩𝕨𝕪𝕫⨯⨿Ϳ"
 
-            ==== Other characters already in Mathlib as of Aug. 28, 2024 ====
+/-- Other characters already in Mathlib as of Aug. 28, 2024 ==== -/
+def othersInMathlib := "
 🔍🐙️💡▼\u200cō🏁⏳⏩❓🆕šř✅❌⚬│├┌őか ⟍̂ᘁńć⟋ỳầ⥥ł◿◹－＼◥／◢︎ŽăИваноичŠᴜᵧ´ᴄꜰßᴢᴏᴀꜱɴꟴꞯʟʜ𐞥ᵟʙᵪᵩᵦᴊᴛᴡᴠɪ̀ᴇᴍʀᴅɢʏᴘĝᵨᴋś
-꙳𝓡𝕝𝖣⨳🎉
+꙳𝓡𝕝𝖣⨳🎉"
+
+/-- TODO part of these could also be used.
+Taken from https://en.wikipedia.org/wiki/Mathematical_operators_and_symbols_in_Unicode
+-/
+def WIKI_NOT_WHITELIST := "
+∊∕∬∭∰∱∲∳∾∿≆≭≸≹⊌⊦⊰⊱⊶⊷⊽⊾⊿⋅⋕⋤⋥⋰⋲⋳⋴⋵⋶⋷⋸⋹⋺⋻⋼⋽⋾⋿⨇⨈⨉⨊⨋⨌⨎⨏⨐⨑⨒⨓⨔⨕⨖⨗⨘⨙⨚⨛⨜⨝⨞⨟⨠⨡⨢⨣⨤⨥⨦⨧⨨⨩⨪⨫⨬⨭⨮⨰⨱⨲⨴⨵⨶
+⨷⨸⨹⨺⨻⨼⨽⨾⩀⩁⩂⩃⩄⩅⩆⩇⩈⩉⩊⩋⩌⩍⩎⩏⩐⩑⩒⩓⩔⩕⩖⩗⩘⩙⩚⩛⩜⩝⩞⩟⩠⩡⩢⩣⩤⩥⩦⩧⩨⩩⩪⩫⩬⩭⩮⩯⩰⩱⩲⩳⩴⩵⩶⩷⩸⩹⩺⩻⩼⩽⩾⪀⪁⪂⪃⪄⪅⪆⪇⪈⪉⪊⪋⪌⪍⪎⪏⪐⪑⪒
+⪓⪔⪕⪖⪗⪘⪙⪚⪛⪜⪝⪞⪟⪠⪡⪢⪣⪤⪥⪦⪧⪨⪩⪪⪫⪬⪭⪮⪯⪰⪱⪲⪳⪴⪵⪶⪷⪸⪹⪺⪻⪼⪽⪾⪿⫀⫁⫂⫃⫄⫅⫆⫇⫈⫉⫊⫋⫌⫍⫎⫏⫐⫑⫒⫓⫔⫕⫖⫗⫘⫙⫚⫛⫝̸⫝⫞⫟
+⫠⫡⫢⫣⫤⫥⫦⫧⫨⫩⫪⫫⫬⫭⫮⫯⫰⫱⫲⫳⫴⫵⫶⫷⫸⫹⫺⫻⫼⫽⫾⫿ℎ𝐆𝑋𝑑𝑭𝑾𝒞𝒿𝓰𝔊𝔛𝔴𝕔
+𝕬𝕭𝕮𝕯𝕰𝕱𝕲𝕳𝕴𝕵𝕶𝕷𝕸𝕹𝕺𝕻𝕼𝕽𝕾𝕿𝖀𝖁𝖂𝖃𝖄𝖅𝖆𝖇𝖈𝖉𝖊𝖋𝖌𝖍𝖎𝖏𝖐𝖑𝖒𝖓𝖔𝖕𝖖𝖗𝖘𝖙𝖚𝖛𝖜𝖝𝖞𝖟
+𝖠𝖡𝖢𝖤𝖥𝖦𝖧𝖨𝖩𝖪𝖫𝖬𝖭𝖮𝖯𝖰𝖱𝖲𝖳𝖴𝖵𝖶𝖷𝖸𝖹𝖺𝖻𝖼𝖽𝖾𝖿𝗀𝗁𝗂𝗃𝗄𝗅𝗆𝗇𝗈𝗉𝗊𝗋𝗌𝗍𝗎𝗏𝗐𝗑𝗒𝗓
+𝗔𝗕𝗖𝗗𝗘𝗙𝗚𝗛𝗜𝗝𝗞𝗟𝗠𝗡𝗢𝗣𝗤𝗥𝗦𝗧𝗨𝗩𝗪𝗫𝗬𝗭𝗮𝗯𝗰𝗱𝗲𝗳𝗴𝗵𝗶𝗷𝗸𝗹𝗺𝗻𝗼𝗽𝗾𝗿𝘀𝘁𝘂𝘃𝘄𝘅𝘆𝘇
+𝘈𝘉𝘊𝘋𝘌𝘍𝘎𝘏𝘐𝘑𝘒𝘓𝘔𝘕𝘖𝘗𝘘𝘙𝘚𝘛𝘜𝘝𝘞𝘟𝘠𝘡𝘢𝘣𝘤𝘥𝘦𝘧𝘨𝘩𝘪𝘫𝘬𝘭𝘮𝘯𝘰𝘱𝘲𝘳𝘴𝘵𝘶𝘷𝘸𝘹𝘺𝘻
+𝘼𝘽𝘾𝘿𝙀𝙁𝙂𝙃𝙄𝙅𝙆𝙇𝙈𝙉𝙊𝙋𝙌𝙍𝙎𝙏𝙐𝙑𝙒𝙓𝙔𝙕𝙖𝙗𝙘𝙙𝙚𝙛𝙜𝙝𝙞𝙟𝙠𝙡𝙢𝙣𝙤𝙥𝙦𝙧𝙨𝙩𝙪𝙫𝙬𝙭𝙮𝙯
+𝙰𝙱𝙲𝙳𝙴𝙵𝙶𝙷𝙸𝙹𝙺𝙻𝙼𝙽𝙾𝙿𝚀𝚁𝚂𝚃𝚄𝚅𝚆𝚇𝚈𝚉𝚊𝚋𝚌𝚍𝚎𝚏𝚐𝚑𝚒𝚓𝚔𝚕𝚖𝚗𝚘𝚙𝚚𝚛𝚜𝚝𝚞𝚟𝚠𝚡𝚢𝚣𝚤𝚥
+𝚨𝚩𝚪𝚫𝚬𝚭𝚮𝚯𝚰𝚱𝚲𝚳𝚴𝚵𝚶𝚷𝚸𝚹𝚺𝚻𝚼𝚽𝚾𝚿𝛀𝛁𝛂𝛃𝛄𝛅𝛆𝛇𝛈𝛉𝛊𝛋𝛌𝛍𝛎𝛏𝛐𝛑𝛒𝛓𝛔𝛕𝛖𝛗𝛘𝛙𝛚𝛛𝛜𝛝𝛞𝛟𝛠𝛡𝛢𝛣𝛤𝛥𝛦𝛧𝛨𝛩𝛪𝛫𝛬𝛭𝛮𝛯𝛰𝛱𝛲𝛳𝛴𝛵𝛶𝛷𝛸𝛹𝛺𝛻
+𝛼𝛽𝛾𝛿𝜀𝜁𝜂𝜃𝜄𝜅𝜆𝜇𝜈𝜉𝜊𝜋𝜌𝜍𝜎𝜏𝜐𝜑𝜒𝜓𝜔𝜕𝜖𝜗𝜘𝜙𝜚𝜛
+𝜜𝜝𝜞𝜟𝜠𝜡𝜢𝜣𝜤𝜥𝜦𝜧𝜨𝜩𝜪𝜫𝜬𝜭𝜮𝜯𝜰𝜱𝜲𝜳𝜴𝜵𝜶𝜷𝜸𝜹𝜺𝜻𝜼𝜽𝜾𝜿𝝀𝝁𝝂𝝃𝝄𝝅𝝆𝝇𝝈𝝉𝝊𝝋𝝌𝝍𝝎𝝏𝝐𝝑𝝒𝝓𝝔𝝕
+𝝖𝝗𝝘𝝙𝝚𝝛𝝜𝝝𝝞𝝟𝝠𝝡𝝢𝝣𝝤𝝥𝝦𝝧𝝨𝝩𝝪𝝫𝝬𝝭𝝮𝝯𝝰𝝱𝝲𝝳𝝴𝝵𝝶𝝷𝝸𝝹𝝺𝝻𝝼𝝽𝝾𝝿𝞀𝞁𝞂𝞃𝞄𝞅𝞆𝞇𝞈𝞉𝞊𝞋𝞌𝞍𝞎𝞏
+𝞐𝞑𝞒𝞓𝞔𝞕𝞖𝞗𝞘𝞙𝞚𝞛𝞜𝞝𝞞𝞟𝞠𝞡𝞢𝞣𝞤𝞥𝞦𝞧𝞨𝞩𝞪𝞫𝞬𝞭𝞮𝞯𝞰𝞱𝞲𝞳𝞴𝞵𝞶𝞷𝞸𝞹𝞺𝞻𝞼𝞽𝞾𝞿𝟀𝟁𝟂𝟃𝟄𝟅𝟆𝟇𝟈𝟉𝟊𝟋
+𝟎𝟏𝟐𝟑𝟒𝟓𝟔𝟕𝟖𝟗𝟢𝟣𝟤𝟥𝟦𝟧𝟨𝟩𝟪𝟫𝟰𝟶𝟷𝟸𝟹𝟺𝟻𝟼𝟽𝟾𝟿
+℀℁℄℅℆ℇ℈℉℔℟℣℩Ⅎℹ℺ℼℽℾℿ⅁⅂⅃⅄ⅅⅆⅇⅈⅉ⅊⅍ⅎ⅏⟀⟁⟃⟄⟇⟈⟉⟊⟌⟎⟏⟐⟑⟒⟓⟔⟕⟖⟗⟘⟙⟚⟛⟜⟝⟞⟟⟠⟡⟢⟣⟤⟥⟬⟭⦀⦁⦂⦅⦆⦇⦈⦉⦊⦋⦌⦍⦎⦏⦐⦑⦒⦓⦔⦕⦖⦗⦘⦙⦚⦛⦜⦝⦞⦟⦠⦡⦢⦣⦤⦥
+⦦⦧⦨⦩⦪⦫⦬⦭⦮⦯⦰⦱⦲⦳⦴⦵⦶⦷⦸⦹⦺⦻⦼⦽⦾⦿⧀⧁⧂⧃⧄⧅⧆⧇⧈⧉⧊⧋⧌⧍⧎⧐⧑⧒⧓⧔⧕⧖⧗⧘⧙⧚⧛⧜⧝⧞⧟⧠⧡⧢⧣⧤⧥⧦⧧⧨⧩⧪⧫⧬⧭⧮⧯⧰⧱⧲⧳
+⧴⧵⧶⧷⧹⧺⧻⧼⧽⧾⧿⌁⌂⌃⌄⌅⌆⌇⌌⌍⌎⌏⌐⌑⌒⌓⌔⌕⌖⌗⌘⌙⌚⌛⌠⌡⌤⌥⌦⌧⌨〈〉⌫⌬⌭⌮⌯⌰⌱⌲⌳⌴⌵⌷⌸⌹⌺⌻⌼⌽⌾⌿⍀⍁⍂⍃⍄⍅⍆⍇⍈⍉⍊⍋⍌⍍⍎⍏⍐⍑⍒⍓⍔⍕⍖⍗⍘⍙⍚⍛⍜⍝⍞⍠⍡⍢
+⍣⍤⍥⍦⍧⍨⍩⍪⍫⍬⍭⍮⍯⍰⍱⍲⍳⍴⍵⍶⍷⍸⍹⍺⍻⍼⍽⍾⍿⎀⎁⎂⎃⎄⎅⎆⎇⎈⎉⎊⎋⎌⎍⎎⎏⎐⎑⎒⎓⎔⎕⎖⎗⎘⎙⎚⎛⎜⎝⎞⎟⎠⎡⎢⎣⎤⎥⎦⎧⎨⎩⎪⎫⎬⎭⎮⎯⎰⎱⎲⎳⎴⎵⎶⎷⎸⎹⎺⎻⎼⎽⎾⎿⏀⏁⏂⏃⏄⏅
+⏆⏇⏈⏉⏊⏋⏌⏍⏎⏏⏐⏑⏒⏓⏔⏕⏖⏗⏘⏙⏚⏛⏜⏝⏞⏟⏠⏡⏢⏣⏤⏥⏦⏧⏨⏪⏫⏬⏭⏮⏯⏰⏱⏲⏴⏵⏶⏷⏸⏹⏺⏻⏼⏽⏾⏿▤▥▦▧▨▩▫▮▯▲▶►▻◄◅◉◊◍◐◑◒◓◔
+◕◖◗◘◙◚◛◜◝◞◟◠◡◣◤◧◨◩◪◬◭◮◰◱◲◳◴◵◶◷◸◺◻◼◽↲↳↴↵↸↹⇜⇞⇟⇠⇡⇢⇣⇤⇥⇦⇧⇩⇪⇫⇬⇭⇮⇯⇱⇲⇳⇴⇷⇸⇹⇺⇻⇼⇽⇾⇿⟲⟳⟴⟸⟺⟻⟼⟽⟾⟿⤀⤁⤂⤃⤄
+⤅⤆⤇⤈⤉⤊⤋⤌⤍⤎⤏⤐⤑⤒⤓⤔⤕⤖⤗⤘⤙⤚⤛⤜⤝⤞⤟⤠⤡⤢⤣⤤⤥⤦⤧⤨⤩⤪⤫⤬⤭⤮⤯⤰⤱⤲⤴⤵⤶⤷⤸⤹⤺⤻⤼⤽⤾⤿⥀⥁⥂⥃⥄⥅⥆⥇⥈⥉⥊⥋⥌⥍
+⥎⥏⥐⥑⥒⥓⥔⥕⥖⥗⥘⥙⥚⥛⥜⥝⥞⥟⥠⥡⥢⥣⥦⥧⥨⥩⥪⥫⥬⥭⥮⥯⥰⥱⥲⥳⥴⥵⥶⥷⥸⥹⥺⥻⥼⥽⥾⥿⬀⬁⬂⬃⬄⬅⬆⬇⬈⬉⬊⬋⬌⬍⬎⬏⬐⬑⬒⬓⬔⬕⬖⬗⬘⬙⬚⬛
+⬜⬞⬟⬠⬡⬢⬣⬤⬥⬦⬧⬨⬩⬪⬫⬬⬭⬮⬯⬰⬱⬲⬳⬴⬵⬶⬷⬸⬹⬺⬻⬼⬽⬾⬿⭀⭁⭂⭃⭄⭅⭆⭇⭈⭉⭊⭋⭌⭍⭎⭏⭐⭑⭒⭓⭔⭕⭖⭗⭘⭙⭚⭛⭜⭝⭞⭟⭠⭡⭢⭣⭤⭥⭦⭧⭨⭩⭪⭫⭬⭭
+⭮⭯⭰⭱⭲⭳⭶⭷⭸⭹⭺⭻⭼⭽⭾⭿⮀⮁⮂⮃⮄⮅⮆⮇⮈⮉⮊⮋⮌⮍⮎⮏⮐⮑⮒⮓⮔⮕⮗⮘⮙⮚⮛⮜⮝⮞⮟⮠⮡⮢⮣⮤⮥⮦⮧⮨⮩⮪⮫⮬⮭⮮⮯⮰⮱⮲⮳⮴⮵⮶⮷⮸⮹⮺⮻⮼⮽⮾⮿
+⯀⯁⯂⯃⯄⯅⯆⯇⯈⯉⯊⯋⯌⯍⯎⯏⯐⯒⯓⯔⯕⯖⯗⯘⯙⯚⯛⯜⯝⯞⯟⯠⯡⯢⯣⯤⯥⯦⯧⯨⯩⯪⯫⯬⯭⯮⯯⯰⯱⯲⯳⯴⯵⯶⯷⯸⯹⯺⯻⯼⯽⯾
+ϒϴϵ϶؆؇؈″‴☆♡﬩﹡﹢﹣﹤﹥﹦＋＜＝＞＾｜～￩￪￫￬
 "
+
+/--
+TODO make complete and order nicely
+-/
+def unicodeWhitelist : Lean.HashSet Char := Lean.HashSet.ofList <| String.toList <|
+  (printableASCII.append withVSCodeAbbrev).append othersInMathlib
 
 /-- Checks if a character is accepted by the unicodeLinter (`unwantedUnicode`)-/
 def isBadChar (c : Char) : Bool := !unicodeWhitelist.contains c
