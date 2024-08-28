@@ -5,11 +5,7 @@ Authors: Isaac Hernando, Coleton Kotch, Adam Topaz
 -/
 
 import Mathlib.CategoryTheory.Limits.Filtered
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
-import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
-import Mathlib.CategoryTheory.Abelian.FunctorCategory
 
 /-!
 
