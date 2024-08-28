@@ -134,23 +134,23 @@ theorem repr_self_apply (j) [Decidable (i = j)] : b.repr (b i) j = if i = j then
   rw [repr_self, Finsupp.single_apply]
 
 @[simp]
-theorem repr_symm_apply (v) : b.repr.symm v = Finsupp.total ι M R b v :=
+theorem repr_symm_apply (v) : b.repr.symm v = Finsupp.total R b v :=
   calc
     b.repr.symm v = b.repr.symm (v.sum Finsupp.single) := by simp
     _ = v.sum fun i vi => b.repr.symm (Finsupp.single i vi) := map_finsupp_sum ..
-    _ = Finsupp.total ι M R b v := by simp only [repr_symm_single, Finsupp.total_apply]
+    _ = Finsupp.total R b v := by simp only [repr_symm_single, Finsupp.total_apply]
 
 @[simp]
-theorem coe_repr_symm : ↑b.repr.symm = Finsupp.total ι M R b :=
+theorem coe_repr_symm : ↑b.repr.symm = Finsupp.total R b :=
   LinearMap.ext fun v => b.repr_symm_apply v
 
 @[simp]
-theorem repr_total (v) : b.repr (Finsupp.total _ _ _ b v) = v := by
+theorem repr_total (v) : b.repr (Finsupp.total _ b v) = v := by
   rw [← b.coe_repr_symm]
   exact b.repr.apply_symm_apply v
 
 @[simp]
-theorem total_repr : Finsupp.total _ _ _ b (b.repr x) = x := by
+theorem total_repr : Finsupp.total _ b (b.repr x) = x := by
   rw [← b.coe_repr_symm]
   exact b.repr.symm_apply_apply x
 
@@ -551,7 +551,7 @@ you can recover an `AddEquiv` by setting `S := ℕ`.
 See library note [bundled maps over different rings].
 -/
 def constr : (ι → M') ≃ₗ[S] M →ₗ[R] M' where
-  toFun f := (Finsupp.total M' M' R id).comp <| Finsupp.lmapDomain R R f ∘ₗ ↑b.repr
+  toFun f := (Finsupp.total R id).comp <| Finsupp.lmapDomain R R f ∘ₗ ↑b.repr
   invFun f i := f (b i)
   left_inv f := by
     ext
@@ -567,7 +567,7 @@ def constr : (ι → M') ≃ₗ[S] M →ₗ[R] M' where
     simp
 
 theorem constr_def (f : ι → M') :
-    constr (M' := M') b S f = Finsupp.total M' M' R id ∘ₗ Finsupp.lmapDomain R R f ∘ₗ ↑b.repr :=
+    constr (M' := M') b S f = Finsupp.total R id ∘ₗ Finsupp.lmapDomain R R f ∘ₗ ↑b.repr :=
   rfl
 
 theorem constr_apply (f : ι → M') (x : M) :
