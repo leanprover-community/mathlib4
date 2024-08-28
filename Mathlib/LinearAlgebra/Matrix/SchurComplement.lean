@@ -27,8 +27,8 @@ Compare with `Matrix.invertibleOfFromBlocks₁₁Invertible`.
    block triangular matrix.
  * `Matrix.det_one_add_mul_comm`: the **Weinstein–Aronszajn identity**.
  * `Matrix.PosSemidef.fromBlocks₁₁` and `Matrix.PosSemidef.fromBlocks₂₂`: If a matrix `A` is
-  positive definite, then `[A B; Bᴴ D]` is postive semidefinite if and only if `D - Bᴴ A⁻¹ B` is
-  postive semidefinite.
+  positive definite, then `[A B; Bᴴ D]` is positive semidefinite if and only if `D - Bᴴ A⁻¹ B` is
+  positive semidefinite.
 
 -/
 
