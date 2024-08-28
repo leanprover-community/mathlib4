@@ -51,7 +51,7 @@ end Coord
 protected theorem linearIndependent : LinearIndependent R b :=
   linearIndependent_iff.mpr fun l hl =>
     calc
-      l = b.repr (Finsupp.total _ _ _ b l) := (b.repr_total l).symm
+      l = b.repr (Finsupp.total _ b l) := (b.repr_total l).symm
       _ = 0 := by rw [hl, LinearEquiv.map_zero]
 
 protected theorem ne_zero [Nontrivial R] (i) : b i ≠ 0 :=
@@ -227,7 +227,7 @@ variable (hli : LinearIndependent R v) (hsp : ⊤ ≤ span R (range v))
 protected noncomputable def mk : Basis ι R M :=
   .ofRepr
     { hli.repr.comp (LinearMap.id.codRestrict _ fun _ => hsp Submodule.mem_top) with
-      invFun := Finsupp.total _ _ _ v
+      invFun := Finsupp.total _ v
       left_inv := fun x => hli.total_repr ⟨x, _⟩
       right_inv := fun _ => hli.repr_eq rfl }
 
@@ -236,7 +236,7 @@ theorem mk_repr : (Basis.mk hli hsp).repr x = hli.repr ⟨x, hsp Submodule.mem_t
   rfl
 
 theorem mk_apply (i : ι) : Basis.mk hli hsp i = v i :=
-  show Finsupp.total _ _ _ v _ = v i by simp
+  show Finsupp.total _ v _ = v i by simp
 
 @[simp]
 theorem coe_mk : ⇑(Basis.mk hli hsp) = v :=

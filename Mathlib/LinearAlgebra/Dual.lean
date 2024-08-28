@@ -281,7 +281,7 @@ theorem toDual_apply (i j : ι) : b.toDual (b i) (b j) = if i = j then 1 else 0 
 
 @[simp]
 theorem toDual_total_left (f : ι →₀ R) (i : ι) :
-    b.toDual (Finsupp.total ι M R b f) (b i) = f i := by
+    b.toDual (Finsupp.total R b f) (b i) = f i := by
   rw [Finsupp.total_apply, Finsupp.sum, _root_.map_sum, LinearMap.sum_apply]
   simp_rw [LinearMap.map_smul, LinearMap.smul_apply, toDual_apply, smul_eq_mul, mul_boole,
     Finset.sum_ite_eq']
@@ -291,7 +291,7 @@ theorem toDual_total_left (f : ι →₀ R) (i : ι) :
 
 @[simp]
 theorem toDual_total_right (f : ι →₀ R) (i : ι) :
-    b.toDual (b i) (Finsupp.total ι M R b f) = f i := by
+    b.toDual (b i) (Finsupp.total R b f) = f i := by
   rw [Finsupp.total_apply, Finsupp.sum, _root_.map_sum]
   simp_rw [LinearMap.map_smul, toDual_apply, smul_eq_mul, mul_boole, Finset.sum_ite_eq]
   split_ifs with h
@@ -335,7 +335,7 @@ theorem toDual_ker : LinearMap.ker b.toDual = ⊥ :=
 theorem toDual_range [Finite ι] : LinearMap.range b.toDual = ⊤ := by
   refine eq_top_iff'.2 fun f => ?_
   let lin_comb : ι →₀ R := Finsupp.equivFunOnFinite.symm fun i => f (b i)
-  refine ⟨Finsupp.total ι M R b lin_comb, b.ext fun i => ?_⟩
+  refine ⟨Finsupp.total R b lin_comb, b.ext fun i => ?_⟩
   rw [b.toDual_eq_repr _ i, repr_total b]
   rfl
 
@@ -396,7 +396,7 @@ theorem dualBasis_apply_self (i j : ι) : b.dualBasis i (b j) =
   rw [@eq_comm _ j i]
 
 theorem total_dualBasis (f : ι →₀ R) (i : ι) :
-    Finsupp.total ι (Dual R M) R b.dualBasis f (b i) = f i := by
+    Finsupp.total R b.dualBasis f (b i) = f i := by
   cases nonempty_fintype ι
   rw [Finsupp.total_apply, Finsupp.sum_fintype, LinearMap.sum_apply]
   · simp_rw [LinearMap.smul_apply, smul_eq_mul, dualBasis_apply_self, mul_boole,
@@ -457,7 +457,7 @@ end CommRing
 /-- `simp` normal form version of `total_dualBasis` -/
 @[simp]
 theorem total_coord [CommRing R] [AddCommGroup M] [Module R M] [Finite ι] (b : Basis ι R M)
-    (f : ι →₀ R) (i : ι) : Finsupp.total ι (Dual R M) R b.coord f (b i) = f i := by
+    (f : ι →₀ R) (i : ι) : Finsupp.total R b.coord f (b i) = f i := by
   haveI := Classical.decEq ι
   rw [← coe_dualBasis, total_dualBasis]
 
@@ -708,11 +708,11 @@ theorem coeffs_apply (h : DualBases e ε) (m : M) (i : ι) : h.coeffs m i = ε i
   rfl
 
 /-- linear combinations of elements of `e`.
-This is a convenient abbreviation for `Finsupp.total _ M R e l` -/
+This is a convenient abbreviation for `Finsupp.total R e l` -/
 def lc {ι} (e : ι → M) (l : ι →₀ R) : M :=
   l.sum fun (i : ι) (a : R) => a • e i
 
-theorem lc_def (e : ι → M) (l : ι →₀ R) : lc e l = Finsupp.total _ _ R e l :=
+theorem lc_def (e : ι → M) (l : ι →₀ R) : lc e l = Finsupp.total R e l :=
   rfl
 
 open Module

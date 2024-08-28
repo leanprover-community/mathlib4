@@ -23,7 +23,7 @@ interpreted as a submodule of `α →₀ M`. We also define `LinearMap` versions
   linear map;
 * `Finsupp.restrictDom`: `Finsupp.filter` as a linear map to `Finsupp.supported s`;
 * `Finsupp.lsum`: `Finsupp.sum` or `Finsupp.liftAddHom` as a `LinearMap`;
-* `Finsupp.total α M R (v : ι → M)`: sends `l : ι → R` to the linear combination of `v i` with
+* `Finsupp.total R (v : ι → M)`: sends `l : ι → R` to the linear combination of `v i` with
   coefficients `l i`;
 * `Finsupp.totalOn`: a restricted version of `Finsupp.total` with domain `Finsupp.supported R R s`
   and codomain `Submodule.span R (v '' s)`;
@@ -589,66 +589,66 @@ end LComapDomain
 
 section Total
 
-variable (α) (M) (R)
+variable (R)
 variable {α' : Type*} {M' : Type*} [AddCommMonoid M'] [Module R M'] (v : α → M) {v' : α' → M'}
 
-/-- Interprets (l : α →₀ R) as linear combination of the elements in the family (v : α → M) and
+/-- Interprets (l : α →₀ R) as a linear combination of the elements in the family (v : α → M) and
     evaluates this linear combination. -/
 protected def total : (α →₀ R) →ₗ[R] M :=
   Finsupp.lsum ℕ fun i => LinearMap.id.smulRight (v i)
 
-variable {α M v}
+variable {v}
 
-theorem total_apply (l : α →₀ R) : Finsupp.total α M R v l = l.sum fun i a => a • v i :=
+theorem total_apply (l : α →₀ R) : Finsupp.total R v l = l.sum fun i a => a • v i :=
   rfl
 
 theorem total_apply_of_mem_supported {l : α →₀ R} {s : Finset α}
-    (hs : l ∈ supported R R (↑s : Set α)) : Finsupp.total α M R v l = s.sum fun i => l i • v i :=
+    (hs : l ∈ supported R R (↑s : Set α)) : Finsupp.total R v l = s.sum fun i => l i • v i :=
   Finset.sum_subset hs fun x _ hxg =>
     show l x • v x = 0 by rw [not_mem_support_iff.1 hxg, zero_smul]
 
 @[simp]
-theorem total_single (c : R) (a : α) : Finsupp.total α M R v (single a c) = c • v a := by
+theorem total_single (c : R) (a : α) : Finsupp.total R v (single a c) = c • v a := by
   simp [total_apply, sum_single_index]
 
-theorem total_zero_apply (x : α →₀ R) : (Finsupp.total α M R 0) x = 0 := by
+theorem total_zero_apply (x : α →₀ R) : (Finsupp.total R (0 : α → M)) x = 0 := by
   simp [Finsupp.total_apply]
 
 variable (α M)
 
 @[simp]
-theorem total_zero : Finsupp.total α M R 0 = 0 :=
+theorem total_zero : Finsupp.total R (0 : α → M) = 0 :=
   LinearMap.ext (total_zero_apply R)
 
 variable {α M}
 
 theorem apply_total (f : M →ₗ[R] M') (v) (l : α →₀ R) :
-    f (Finsupp.total α M R v l) = Finsupp.total α M' R (f ∘ v) l := by
+    f (Finsupp.total R v l) = Finsupp.total R (f ∘ v) l := by
   apply Finsupp.induction_linear l <;> simp (config := { contextual := true })
 
 theorem apply_total_id (f : M →ₗ[R] M') (l : M →₀ R) :
-    f (Finsupp.total M M R _root_.id l) = Finsupp.total M M' R f l :=
+    f (Finsupp.total R _root_.id l) = Finsupp.total R f l :=
   apply_total ..
 
-theorem total_unique [Unique α] (l : α →₀ R) (v) :
-    Finsupp.total α M R v l = l default • v default := by rw [← total_single, ← unique_single l]
+theorem total_unique [Unique α] (l : α →₀ R) (v : α → M) :
+    Finsupp.total R v l = l default • v default := by rw [← total_single, ← unique_single l]
 
 theorem total_surjective (h : Function.Surjective v) :
-    Function.Surjective (Finsupp.total α M R v) := by
+    Function.Surjective (Finsupp.total R v) := by
   intro x
   obtain ⟨y, hy⟩ := h x
   exact ⟨Finsupp.single y 1, by simp [hy]⟩
 
-theorem total_range (h : Function.Surjective v) : LinearMap.range (Finsupp.total α M R v) = ⊤ :=
+theorem total_range (h : Function.Surjective v) : LinearMap.range (Finsupp.total R v) = ⊤ :=
   range_eq_top.2 <| total_surjective R h
 
 /-- Any module is a quotient of a free module. This is stated as surjectivity of
-`Finsupp.total M M R id : (M →₀ R) →ₗ[R] M`. -/
+`Finsupp.total R id : (M →₀ R) →ₗ[R] M`. -/
 theorem total_id_surjective (M) [AddCommMonoid M] [Module R M] :
-    Function.Surjective (Finsupp.total M M R _root_.id) :=
+    Function.Surjective (Finsupp.total R (id : M → M)) :=
   total_surjective R Function.surjective_id
 
-theorem range_total : LinearMap.range (Finsupp.total α M R v) = span R (range v) := by
+theorem range_total : LinearMap.range (Finsupp.total R v) = span R (range v) := by
   ext x
   constructor
   · intro hx
@@ -665,36 +665,37 @@ theorem range_total : LinearMap.range (Finsupp.total α M R v) = span R (range v
     simp [hi]
 
 theorem lmapDomain_total (f : α → α') (g : M →ₗ[R] M') (h : ∀ i, g (v i) = v' (f i)) :
-    (Finsupp.total α' M' R v').comp (lmapDomain R R f) = g.comp (Finsupp.total α M R v) := by
+    (Finsupp.total R v').comp (lmapDomain R R f) = g.comp (Finsupp.total R v) := by
   ext l
   simp [total_apply, Finsupp.sum_mapDomain_index, add_smul, h]
 
 theorem total_comp_lmapDomain (f : α → α') :
-    (Finsupp.total α' M' R v').comp (Finsupp.lmapDomain R R f) = Finsupp.total α M' R (v' ∘ f) := by
+    (Finsupp.total R v').comp (Finsupp.lmapDomain R R f) = Finsupp.total R (v' ∘ f) := by
   ext
   simp
 
 @[simp]
 theorem total_embDomain (f : α ↪ α') (l : α →₀ R) :
-    (Finsupp.total α' M' R v') (embDomain f l) = (Finsupp.total α M' R (v' ∘ f)) l := by
+    (Finsupp.total R v') (embDomain f l) = (Finsupp.total R (v' ∘ f)) l := by
   simp [total_apply, Finsupp.sum, support_embDomain, embDomain_apply]
 
 @[simp]
 theorem total_mapDomain (f : α → α') (l : α →₀ R) :
-    (Finsupp.total α' M' R v') (mapDomain f l) = (Finsupp.total α M' R (v' ∘ f)) l :=
+    (Finsupp.total R v') (mapDomain f l) = (Finsupp.total R (v' ∘ f)) l :=
   LinearMap.congr_fun (total_comp_lmapDomain _ _) l
 
 @[simp]
 theorem total_equivMapDomain (f : α ≃ α') (l : α →₀ R) :
-    (Finsupp.total α' M' R v') (equivMapDomain f l) = (Finsupp.total α M' R (v' ∘ f)) l := by
+    (Finsupp.total R v') (equivMapDomain f l) = (Finsupp.total R (v' ∘ f)) l := by
   rw [equivMapDomain_eq_mapDomain, total_mapDomain]
 
 /-- A version of `Finsupp.range_total` which is useful for going in the other direction -/
-theorem span_eq_range_total (s : Set M) : span R s = LinearMap.range (Finsupp.total s M R (↑)) := by
+theorem span_eq_range_total (s : Set M) :
+    span R s = LinearMap.range (Finsupp.total R ((↑) : s → M)) := by
   rw [range_total, Subtype.range_coe_subtype, Set.setOf_mem_eq]
 
 theorem mem_span_iff_total (s : Set M) (x : M) :
-    x ∈ span R s ↔ ∃ l : s →₀ R, Finsupp.total s M R (↑) l = x :=
+    x ∈ span R s ↔ ∃ l : s →₀ R, Finsupp.total R (↑) l = x :=
   (SetLike.ext_iff.1 <| span_eq_range_total _ _) x
 
 variable {R}
@@ -706,7 +707,7 @@ theorem mem_span_range_iff_exists_finsupp {v : α → M} {x : M} :
 variable (R)
 
 theorem span_image_eq_map_total (s : Set α) :
-    span R (v '' s) = Submodule.map (Finsupp.total α M R v) (supported R R s) := by
+    span R (v '' s) = Submodule.map (Finsupp.total R v) (supported R R s) := by
   apply span_eq_of_le
   · intro x hx
     rw [Set.mem_image] at hx
@@ -726,18 +727,18 @@ theorem span_image_eq_map_total (s : Set α) :
     simp [this]
 
 theorem mem_span_image_iff_total {s : Set α} {x : M} :
-    x ∈ span R (v '' s) ↔ ∃ l ∈ supported R R s, Finsupp.total α M R v l = x := by
+    x ∈ span R (v '' s) ↔ ∃ l ∈ supported R R s, Finsupp.total R v l = x := by
   rw [span_image_eq_map_total]
   simp
 
 theorem total_option (v : Option α → M) (f : Option α →₀ R) :
-    Finsupp.total (Option α) M R v f =
-      f none • v none + Finsupp.total α M R (v ∘ Option.some) f.some := by
+    Finsupp.total R v f =
+      f none • v none + Finsupp.total R (v ∘ Option.some) f.some := by
   rw [total_apply, sum_option_index_smul, total_apply]; simp
 
 theorem total_total {α β : Type*} (A : α → M) (B : β → α →₀ R) (f : β →₀ R) :
-    Finsupp.total α M R A (Finsupp.total β (α →₀ R) R B f) =
-      Finsupp.total β M R (fun b => Finsupp.total α M R A (B b)) f := by
+    Finsupp.total R A (Finsupp.total R B f) =
+      Finsupp.total R (fun b => Finsupp.total R A (B b)) f := by
   classical
   simp only [total_apply]
   apply induction_linear f
@@ -747,7 +748,7 @@ theorem total_total {α β : Type*} (A : α → M) (B : β → α →₀ R) (f :
   · simp [sum_single_index, sum_smul_index, smul_sum, mul_smul]
 
 @[simp]
-theorem total_fin_zero (f : Fin 0 → M) : Finsupp.total (Fin 0) M R f = 0 := by
+theorem total_fin_zero (f : Fin 0 → M) : Finsupp.total R f = 0 := by
   ext i
   apply finZeroElim i
 
@@ -759,7 +760,7 @@ subset of the vectors in `v`, mapping it to the span of those vectors.
 The subset is indicated by a set `s : Set α` of indices.
 -/
 protected def totalOn (s : Set α) : supported R R s →ₗ[R] span R (v '' s) :=
-  LinearMap.codRestrict _ ((Finsupp.total _ _ _ v).comp (Submodule.subtype (supported R R s)))
+  LinearMap.codRestrict _ ((Finsupp.total _ v).comp (Submodule.subtype (supported R R s)))
     fun ⟨l, hl⟩ => (mem_span_image_iff_total _).2 ⟨l, hl, rfl⟩
 
 variable {α} {M} {v}
@@ -771,17 +772,17 @@ theorem totalOn_range (s : Set α) : LinearMap.range (Finsupp.totalOn α M R v s
   exact (span_image_eq_map_total _ _).le
 
 theorem total_comp (f : α' → α) :
-    Finsupp.total α' M R (v ∘ f) = (Finsupp.total α M R v).comp (lmapDomain R R f) := by
+    Finsupp.total R (v ∘ f) = (Finsupp.total R v).comp (lmapDomain R R f) := by
   ext
   simp [total_apply]
 
 theorem total_comapDomain (f : α → α') (l : α' →₀ R) (hf : Set.InjOn f (f ⁻¹' ↑l.support)) :
-    Finsupp.total α M R v (Finsupp.comapDomain f l hf) =
+    Finsupp.total R v (Finsupp.comapDomain f l hf) =
       (l.support.preimage f hf).sum fun i => l (f i) • v i := by
   rw [Finsupp.total_apply]; rfl
 
 theorem total_onFinset {s : Finset α} {f : α → R} (g : α → M) (hf : ∀ a, f a ≠ 0 → a ∈ s) :
-    Finsupp.total α M R g (Finsupp.onFinset s f hf) = Finset.sum s fun x : α => f x • g x := by
+    Finsupp.total R g (Finsupp.onFinset s f hf) = Finset.sum s fun x : α => f x • g x := by
   classical
   simp only [Finsupp.total_apply, Finsupp.sum, Finsupp.onFinset_apply, Finsupp.support_onFinset]
   rw [Finset.sum_filter_of_ne]
@@ -1063,7 +1064,7 @@ theorem Fintype.total_apply_single [DecidableEq α] (i : α) (r : R) :
 
 variable (S)
 
-theorem Finsupp.total_eq_fintype_total_apply (x : α → R) : Finsupp.total α M R v
+theorem Finsupp.total_eq_fintype_total_apply (x : α → R) : Finsupp.total R v
     ((Finsupp.linearEquivFunOnFinite R R α).symm x) = Fintype.total R S v x := by
   apply Finset.sum_subset
   · exact Finset.subset_univ _
@@ -1072,7 +1073,7 @@ theorem Finsupp.total_eq_fintype_total_apply (x : α → R) : Finsupp.total α M
     exact zero_smul _ _
 
 theorem Finsupp.total_eq_fintype_total :
-    (Finsupp.total α M R v).comp (Finsupp.linearEquivFunOnFinite R R α).symm.toLinearMap =
+    (Finsupp.total R v).comp (Finsupp.linearEquivFunOnFinite R R α).symm.toLinearMap =
       Fintype.total R S v :=
   LinearMap.ext <| Finsupp.total_eq_fintype_total_apply R S v
 
@@ -1124,7 +1125,7 @@ irreducible_def Span.repr (w : Set M) (x : span R w) : w →₀ R :=
 
 @[simp]
 theorem Span.finsupp_total_repr {w : Set M} (x : span R w) :
-    Finsupp.total w M R (↑) (Span.repr R w x) = x := by
+    Finsupp.total R ((↑) : w → M) (Span.repr R w x) = x := by
   rw [Span.repr_def]
   exact ((Finsupp.mem_span_iff_total _ _ _).mp x.2).choose_spec
 
@@ -1135,7 +1136,7 @@ protected theorem Submodule.finsupp_sum_mem {ι β : Type*} [Zero β] (S : Submo
   AddSubmonoidClass.finsupp_sum_mem S f g h
 
 theorem LinearMap.map_finsupp_total (f : M →ₗ[R] N) {ι : Type*} {g : ι → M} (l : ι →₀ R) :
-    f (Finsupp.total ι M R g l) = Finsupp.total ι N R (f ∘ g) l := by
+    f (Finsupp.total R g l) = Finsupp.total R (f ∘ g) l := by
   -- Porting note: `(· ∘ ·)` is required.
   simp only [Finsupp.total_apply, Finsupp.total_apply, Finsupp.sum, map_sum, map_smul, (· ∘ ·)]
 
