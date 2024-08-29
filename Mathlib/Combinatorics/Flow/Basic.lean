@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Niklas Mohrin
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.Combinatorics.SimpleGraph.Basic
+import Mathlib.Combinatorics.Digraph.Basic
 
 /-!
 # Network Flows
@@ -46,11 +46,12 @@ section NetworkDefinition
 variable (V : Type u_V) (R : Type u_R) [Zero R] [LE R]
 
 /-- A flow network assigning non-negative capacities to all pairs of vertices. -/
-structure Network where
+structure Network extends Digraph V where
+  Adj _ _ := True
   /-- The assigned capacities. -/
   cap : V → V → R
   nonneg : ∀ u v, 0 ≤ cap u v
-  loopless: ∀ v, cap v v = 0
+  cap_zero_of_not_adj : ∀ u v, ¬Adj u v → cap u v = 0 := by intro u v; aesop
 
 /-- A `Network` where all capacities are symmetrical. -/
 structure UndirectedNetwork extends Network V R where
@@ -59,16 +60,6 @@ structure UndirectedNetwork extends Network V R where
 end NetworkDefinition
 
 variable {V : Type u_V} {R : Type u_R}
-
-namespace UndirectedNetwork
-
-/-- The graph made of all edges that have positive capacity in the network. -/
-def asSimpleGraph [Zero R] [Preorder R] (N : UndirectedNetwork V R) : SimpleGraph V where
-  Adj u v := 0 < N.cap u v
-  symm u v huv := by simp only [N.symm, huv]
-  loopless v hv := hv.ne.symm <| N.loopless v
-
-end UndirectedNetwork
 
 namespace Network
 
