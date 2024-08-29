@@ -372,7 +372,7 @@ theorem fix_inv {x : Q} : x ◃⁻¹ x = x := by
 instance oppositeQuandle : Quandle Qᵐᵒᵖ where
   fix := by
     intro x
-    induction' x
+    induction x
     simp
 
 /-- The conjugation quandle of a group.  Each element of the group acts by
