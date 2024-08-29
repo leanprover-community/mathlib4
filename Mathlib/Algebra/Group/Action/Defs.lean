@@ -356,8 +356,12 @@ lemma smul_smul_smul_comm [SMul α β] [SMul α γ] [SMul β δ] [SMul α δ] [S
 
 @[to_additive]
 lemma smul_mul_smul_comm [Mul α] [Mul β] [SMul α β] [IsScalarTower α β β]
-    [IsScalarTower α α β] [SMulCommClass β α β] (a : α) (b : β) (c : α) (d : β) :
-    (a • b) * (c • d) = (a * c) • (b * d) := smul_smul_smul_comm a b c d
+    [IsScalarTower α α β] [SMulCommClass α β β] (a : α) (b : β) (c : α) (d : β) :
+    (a • b) * (c • d) = (a * c) • (b * d) := by
+  have : SMulCommClass β α β := .symm ..; exact smul_smul_smul_comm a b c d
+
+@[to_additive (attr := deprecated (since := "2024-08-29"))]
+alias smul_mul_smul := smul_mul_smul_comm
 
 @[to_additive]
 lemma mul_smul_mul_comm [Mul α] [Mul β] [SMul α β] [IsScalarTower α β β]
@@ -454,19 +458,12 @@ instance IsScalarTower.left : IsScalarTower M M α where
 
 variable {M}
 
-/-- Note that the `IsScalarTower M α α` and `SMulCommClass M α α` typeclass arguments are
-usually satisfied by `Algebra M α`. -/
-@[to_additive] -- Porting note: nolint to_additive_doc
-lemma smul_mul_smul [Mul α] (r s : M) (x y : α) [IsScalarTower M α α] [SMulCommClass M α α] :
-    r • x * s • y = (r * s) • (x * y) := by
-  rw [smul_mul_assoc, mul_smul_comm, ← smul_assoc, smul_eq_mul]
-
 section Monoid
 variable [Monoid N] [MulAction M N] [IsScalarTower M N N] [SMulCommClass M N N]
 
 lemma smul_pow (r : M) (x : N) : ∀ n, (r • x) ^ n = r ^ n • x ^ n
   | 0 => by simp
-  | n + 1 => by rw [pow_succ', smul_pow _ _ n, smul_mul_smul, ← pow_succ', ← pow_succ']
+  | n + 1 => by rw [pow_succ', smul_pow _ _ n, smul_mul_smul_comm, ← pow_succ', ← pow_succ']
 
 end Monoid
 
@@ -499,7 +496,7 @@ end Mul
 variable [Group H] [MulAction G H] [SMulCommClass G H H] [IsScalarTower G H H]
 
 lemma smul_inv (g : G) (a : H) : (g • a)⁻¹ = g⁻¹ • a⁻¹ :=
-  inv_eq_of_mul_eq_one_right <| by rw [smul_mul_smul, mul_inv_cancel, mul_inv_cancel, one_smul]
+  inv_eq_of_mul_eq_one_right <| by rw [smul_mul_smul_comm, mul_inv_cancel, mul_inv_cancel, one_smul]
 
 lemma smul_zpow (g : G) (a : H) (n : ℤ) : (g • a) ^ n = g ^ n • a ^ n := by
   cases n <;> simp [smul_pow, smul_inv]
