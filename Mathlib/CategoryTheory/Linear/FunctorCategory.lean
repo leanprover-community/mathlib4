@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 
-import Mathlib.Tactic.ToAdditive
-
-import Mathlib.Util.CountHeartbeats
-import Batteries.Tactic.ShowUnused
+-- import Mathlib.Util.CountHeartbeats
+-- import Batteries.Tactic.ShowUnused
 
 universe uvw -- leave this here to make some vim macros work
 
@@ -23,15 +21,11 @@ instance (priority := 300) Zero.toOfNat0 {α} [Zero α] : OfNat α (nat_lit 0) w
 
 universe u
 
-@[to_additive]
 class One (α : Type u) where
   one : α
 
-@[to_additive existing Zero.toOfNat0]
 instance (priority := 300) One.toOfNat1 {α} [One α] : OfNat α (nat_lit 1) where
   ofNat := ‹One α›.1
-
-attribute [to_additive_change_numeral 2] OfNat OfNat.ofNat
 
 end Mathlib.Algebra.Group.ZeroOne
 
@@ -70,22 +64,12 @@ class SMul (M : Type u) (α : Type v) where
 @[inherit_doc HSMul.hSMul]
 macro_rules | `($x • $y) => `(leftact% HSMul.hSMul $x $y)
 
-attribute [to_additive existing] Mul Div HMul instHMul HDiv instHDiv
-attribute [to_additive (reorder := 1 2) SMul] Pow
-attribute [to_additive (reorder := 1 2)] HPow
-attribute [to_additive existing (reorder := 1 2, 5 6) hSMul] HPow.hPow
-attribute [to_additive existing (reorder := 1 2, 4 5) smul] Pow.pow
-
-@[to_additive (attr := default_instance)]
 instance instHSMul {α β} [SMul α β] : HSMul α β β where
   hSMul := SMul.smul
-
-attribute [to_additive existing (reorder := 1 2)] instHPow
 
 variable {G : Type u}
 
 /-- Class of types that have an inversion operation. -/
-@[to_additive, notation_class]
 class Inv (α : Type u) where
   /-- Invert an element of α. -/
   inv : α → α
@@ -113,41 +97,38 @@ class IsLeftCancelAdd (G : Type u) [Add G] : Prop where
   /-- Addition is left cancellative. -/
   protected add_left_cancel : ∀ a b c : G, a + b = a + c → b = c
 
-attribute [to_additive IsLeftCancelAdd] IsLeftCancelMul
-
 /-- A mixin for right cancellative addition. -/
 class IsRightCancelAdd (G : Type u) [Add G] : Prop where
   /-- Addition is right cancellative. -/
   protected add_right_cancel : ∀ a b c : G, a + b = c + b → a = c
 
-attribute [to_additive IsRightCancelAdd] IsRightCancelMul
-
 /-- A mixin for cancellative addition. -/
 class IsCancelAdd (G : Type u) [Add G] extends IsLeftCancelAdd G, IsRightCancelAdd G : Prop
-
-attribute [to_additive IsCancelAdd] IsCancelMul
-
-section IsLeftCancelMul
-
-variable [IsLeftCancelMul G] {a b c : G}
-
-end IsLeftCancelMul
-
 section IsRightCancelMul
 
 variable [IsRightCancelMul G] {a b c : G}
 
-@[to_additive]
 theorem mul_right_cancel : a * b = c * b → a = c :=
   IsRightCancelMul.mul_right_cancel a b c
 
-@[to_additive]
 theorem mul_right_cancel_iff : b * a = c * a ↔ b = c :=
   ⟨mul_right_cancel, congrArg (· * a)⟩
 
 end IsRightCancelMul
 
 end Mul
+
+section IsRightCancelAdd
+
+variable [Add G] [IsRightCancelAdd G] {a b c : G}
+
+theorem add_right_cancel : a + b = c + b → a = c :=
+  IsRightCancelAdd.add_right_cancel a b c
+
+theorem add_right_cancel_iff : b + a = c + a ↔ b = c :=
+  ⟨add_right_cancel, congrArg (· + a)⟩
+
+end IsRightCancelAdd
 
 /-- A semigroup is a type with an associative `(*)`. -/
 class Semigroup (G : Type u) extends Mul G where
@@ -159,13 +140,19 @@ class AddSemigroup (G : Type u) extends Add G where
   /-- Addition is associative -/
   protected add_assoc : ∀ a b c : G, a + b + c = a + (b + c)
 
-attribute [to_additive] Semigroup
+section AddSemigroup
+
+variable [AddSemigroup G]
+
+theorem add_assoc : ∀ a b c : G, a + b + c = a + (b + c) :=
+  AddSemigroup.add_assoc
+
+end AddSemigroup
 
 section Semigroup
 
 variable [Semigroup G]
 
-@[to_additive]
 theorem mul_assoc : ∀ a b c : G, a * b * c = a * (b * c) :=
   Semigroup.mul_assoc
 
@@ -181,22 +168,24 @@ class CommMagma (G : Type u) extends Mul G where
   /-- Multiplication is commutative in a commutative multiplicative magma. -/
   protected mul_comm : ∀ a b : G, a * b = b * a
 
-attribute [to_additive] CommMagma
-
 /-- A commutative semigroup is a type with an associative commutative `(*)`. -/
 class CommSemigroup (G : Type u) extends Semigroup G, CommMagma G where
 
 /-- A commutative additive semigroup is a type with an associative commutative `(+)`. -/
 class AddCommSemigroup (G : Type u) extends AddSemigroup G, AddCommMagma G where
 
-attribute [to_additive] CommSemigroup
-attribute [to_additive existing] CommSemigroup.toCommMagma
+section AddCommMagma
+
+variable [AddCommMagma G]
+
+theorem add_comm : ∀ a b : G, a + b = b + a := AddCommMagma.add_comm
+
+end AddCommMagma
 
 section CommMagma
 
 variable [CommMagma G]
 
-@[to_additive]
 theorem mul_comm : ∀ a b : G, a * b = b * a := CommMagma.mul_comm
 
 end CommMagma
@@ -214,8 +203,6 @@ class AddLeftCancelSemigroup (G : Type u) extends AddSemigroup G where
 
 attribute [instance 75] AddLeftCancelSemigroup.toAddSemigroup -- See note [lower cancel priority]
 
-attribute [to_additive] LeftCancelSemigroup
-
 /-- A `RightCancelSemigroup` is a semigroup such that `a * b = c * b` implies `a = c`. -/
 class RightCancelSemigroup (G : Type u) extends Semigroup G where
   protected mul_right_cancel : ∀ a b c : G, a * b = c * b → a = c
@@ -228,8 +215,6 @@ class AddRightCancelSemigroup (G : Type u) extends AddSemigroup G where
   protected add_right_cancel : ∀ a b c : G, a + b = c + b → a = c
 
 attribute [instance 75] AddRightCancelSemigroup.toAddSemigroup -- See note [lower cancel priority]
-
-attribute [to_additive] RightCancelSemigroup
 
 /-- Typeclass for expressing that a type `M` with multiplication and a one satisfies
 `1 * a = a` and `a * 1 = a` for all `a : M`. -/
@@ -247,17 +232,29 @@ class AddZeroClass (M : Type u) extends Zero M, Add M where
   /-- Zero is a right neutral element for addition -/
   protected add_zero : ∀ a : M, a + 0 = a
 
-attribute [to_additive] MulOneClass
+section AddZeroClass
+
+variable {M : Type u} [AddZeroClass M]
+
+@[simp]
+theorem zero_add : ∀ a : M, 0 + a = a :=
+  AddZeroClass.zero_add
+
+@[simp]
+theorem add_zero : ∀ a : M, a + 0 = a :=
+  AddZeroClass.add_zero
+
+end AddZeroClass
 
 section MulOneClass
 
 variable {M : Type u} [MulOneClass M]
 
-@[to_additive (attr := simp)]
+@[simp]
 theorem one_mul : ∀ a : M, 1 * a = a :=
   MulOneClass.one_mul
 
-@[to_additive (attr := simp)]
+@[simp]
 theorem mul_one : ∀ a : M, a * 1 = a :=
   MulOneClass.mul_one
 
@@ -269,13 +266,13 @@ variable {M : Type u}
 
 /-- The fundamental power operation in a monoid. `npowRec n a = a*a*...*a` n times.
 Use instead `a ^ n`, which has better definitional behavior. -/
-def npowRec [One M] [Mul M] : ℕ → M → M
+def npowRec [One M] [Mul M] : Nat → M → M
   | 0, _ => 1
   | n + 1, a => npowRec n a * a
 
 /-- The fundamental scalar multiplication in an additive monoid. `nsmulRec n a = a+a+...+a` n
 times. Use instead `n • a`, which has better definitional behavior. -/
-def nsmulRec [Zero M] [Add M] : ℕ → M → M
+def nsmulRec [Zero M] [Add M] : Nat → M → M
   | 0, _ => 0
   | n + 1, a => nsmulRec n a + a
 
@@ -285,11 +282,11 @@ end
 class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
   /-- Multiplication by a natural number.
   Set this to `nsmulRec` unless `Module` diamonds are possible. -/
-  protected nsmul : ℕ → M → M
-  /-- Multiplication by `(0 : ℕ)` gives `0`. -/
+  protected nsmul : Nat → M → M
+  /-- Multiplication by `(0 : Nat)` gives `0`. -/
   protected nsmul_zero : ∀ x, nsmul 0 x = 0 := by intros; rfl
-  /-- Multiplication by `(n + 1 : ℕ)` behaves as expected. -/
-  protected nsmul_succ : ∀ (n : ℕ) (x), nsmul (n + 1) x = nsmul n x + x := by intros; rfl
+  /-- Multiplication by `(n + 1 : Nat)` behaves as expected. -/
+  protected nsmul_succ : ∀ (n : Nat) (x), nsmul (n + 1) x = nsmul n x + x := by intros; rfl
 
 attribute [instance 150] AddSemigroup.toAdd
 attribute [instance 50] AddZeroClass.toAdd
@@ -297,14 +294,14 @@ attribute [instance 50] AddZeroClass.toAdd
 /-- A `Monoid` is a `Semigroup` with an element `1` such that `1 * a = a * 1 = a`. -/
 class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
   /-- Raising to the power of a natural number. -/
-  protected npow : ℕ → M → M := npowRec
-  /-- Raising to the power `(0 : ℕ)` gives `1`. -/
+  protected npow : Nat → M → M := npowRec
+  /-- Raising to the power `(0 : Nat)` gives `1`. -/
   protected npow_zero : ∀ x, npow 0 x = 1 := by intros; rfl
-  /-- Raising to the power `(n + 1 : ℕ)` behaves as expected. -/
-  protected npow_succ : ∀ (n : ℕ) (x), npow (n + 1) x = npow n x * x := by intros; rfl
+  /-- Raising to the power `(n + 1 : Nat)` behaves as expected. -/
+  protected npow_succ : ∀ (n : Nat) (x), npow (n + 1) x = npow n x * x := by intros; rfl
 
 section Monoid
-variable {M : Type u} [AddMonoid M] {a b c : M} {m n : ℕ}
+variable {M : Type u} [AddMonoid M] {a b c : M} {m n : Nat}
 
 theorem left_neg_eq_right_neg (hba : b + a = 0) (hac : a + c = 0) : b = c := by
   rw [← zero_add c, ← hba, add_assoc, hac, add_zero b]
@@ -317,7 +314,7 @@ class AddCommMonoid (M : Type u) extends AddMonoid M, AddCommSemigroup M
 section LeftCancelMonoid
 
 /-- An additive monoid in which addition is left-cancellative.
-Main examples are `ℕ` and groups. This is the right typeclass for many sum lemmas, as having a zero
+Main examples are `Nat` and groups. This is the right typeclass for many sum lemmas, as having a zero
 is useful to define the sum over the empty set, so `AddLeftCancelSemigroup` is not enough. -/
 class AddLeftCancelMonoid (M : Type u) extends AddLeftCancelSemigroup M, AddMonoid M
 
@@ -328,7 +325,7 @@ end LeftCancelMonoid
 section RightCancelMonoid
 
 /-- An additive monoid in which addition is right-cancellative.
-Main examples are `ℕ` and groups. This is the right typeclass for many sum lemmas, as having a zero
+Main examples are `Nat` and groups. This is the right typeclass for many sum lemmas, as having a zero
 is useful to define the sum over the empty set, so `AddRightCancelSemigroup` is not enough. -/
 class AddRightCancelMonoid (M : Type u) extends AddRightCancelSemigroup M, AddMonoid M
 
@@ -339,7 +336,7 @@ end RightCancelMonoid
 section CancelMonoid
 
 /-- An additive monoid in which addition is cancellative on both sides.
-Main examples are `ℕ` and groups. This is the right typeclass for many sum lemmas, as having a zero
+Main examples are `Nat` and groups. This is the right typeclass for many sum lemmas, as having a zero
 is useful to define the sum over the empty set, so `AddRightCancelMonoid` is not enough. -/
 class AddCancelMonoid (M : Type u) extends AddLeftCancelMonoid M, AddRightCancelMonoid M
 
@@ -352,7 +349,7 @@ end CancelMonoid
 
 /-- The fundamental scalar multiplication in an additive group. `zpowRec n a = a+a+...+a` n
 times, for integer `n`. Use instead `n • a`, which has better definitional behavior. -/
-def zsmulRec [Zero G] [Add G] [Neg G] (nsmul : ℕ → G → G := nsmulRec) : Int → G → G
+def zsmulRec [Zero G] [Add G] [Neg G] (nsmul : Nat → G → G := nsmulRec) : Int → G → G
   | Int.ofNat n, a => nsmul n a
   | Int.negSucc n, a => -nsmul n.succ a
 
@@ -392,10 +389,10 @@ class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G where
   Set this to `zsmulRec` unless `Module` diamonds are possible. -/
   protected zsmul : Int → G → G
   protected zsmul_zero' : ∀ a : G, zsmul 0 a = 0 := by intros; rfl
-  protected zsmul_succ' (n : ℕ) (a : G) :
+  protected zsmul_succ' (n : Nat) (a : G) :
       zsmul (Int.ofNat n.succ) a = zsmul (Int.ofNat n) a + a := by
     intros; rfl
-  protected zsmul_neg' (n : ℕ) (a : G) : zsmul (Int.negSucc n) a = -zsmul n.succ a := by
+  protected zsmul_neg' (n : Nat) (a : G) : zsmul (Int.negSucc n) a = -zsmul n.succ a := by
     intros; rfl
 
 section DivInvMonoid
@@ -478,7 +475,7 @@ instance (priority := 100) AddGroup.toSubtractionMonoid : SubtractionMonoid G :=
     neg_eq_of_add := fun _ _ ↦ neg_eq_of_add }
 
 -- see Note [lower instance priority]
-instance (priority := 100) AddGroup.toAddCancelMonoid (G : Type*) [AddGroup G] : AddCancelMonoid G :=
+instance (priority := 100) AddGroup.toAddCancelMonoid (G : Type _) [AddGroup G] : AddCancelMonoid G :=
   { ‹AddGroup G› with
     add_right_cancel := fun a b c h ↦ by rw [← add_neg_cancel_right a b, h, add_neg_cancel_right]
     add_left_cancel := fun a b c h ↦ by rw [← neg_add_cancel_left a b, h, neg_add_cancel_left] }
@@ -645,10 +642,10 @@ class Distrib (R : Type u) extends Mul R, Add R where
 commutative and associative, multiplication is associative and left and right distributive over
 addition, and `0` and `1` are additive and multiplicative identities. -/
 class Semiring (α : Type u) extends AddCommMonoid α, Distrib α, Monoid α, MulZeroClass α where
-  natCast : ℕ → α
-  /-- The canonical map `ℕ → R` sends `0 : ℕ` to `0 : R`. -/
+  natCast : Nat → α
+  /-- The canonical map `Nat → R` sends `0 : Nat` to `0 : R`. -/
   natCast_zero : natCast 0 = 0 := by intros; rfl
-  /-- The canonical map `ℕ → R` is a homomorphism. -/
+  /-- The canonical map `Nat → R` is a homomorphism. -/
   natCast_succ : ∀ n, natCast (n + 1) = natCast n + 1 := by intros; rfl
 
 end Mathlib.Algebra.Ring.Defs
@@ -741,7 +738,6 @@ class Category (obj : Type u) extends CategoryStruct.{v} obj : Type max u (v + 1
   assoc : ∀ {W X Y Z : obj} (f : W ⟶ X) (g : X ⟶ Y) (h : Y ⟶ Z), (f ≫ g) ≫ h = f ≫ g ≫ h
 
 attribute [simp] Category.id_comp Category.comp_id Category.assoc
-attribute [trans] CategoryStruct.comp
 
 end CategoryTheory
 
@@ -1139,9 +1135,9 @@ end CategoryTheory
 
 end Mathlib.CategoryTheory.Linear.Basic
 
-set_option trace.profiler true
-set_option trace.profiler.useHeartbeats true
-set_option pp.oneline true
+-- set_option trace.profiler true
+-- set_option trace.profiler.useHeartbeats true
+-- set_option pp.oneline true
 
 open CategoryTheory
 
@@ -1153,7 +1149,7 @@ open CategoryTheory.Linear
 variable {R : Type u₃} [Semiring R]
 variable {C : Type u₁} {D : Type u₂} [Category C] [Category D] [Preadditive D] [Linear R D]
 
-count_heartbeats in
+-- count_heartbeats in
 instance functorCategoryLinear : Linear R (C ⥤ D) where
   homModule F G :=
     { 
@@ -1242,4 +1238,4 @@ instance functorCategoryLinear' : Linear R (C ⥤ D) where
 end CategoryTheory
 
 /- #show_unused CategoryTheory.functorCategoryLinear -/
-#show_unused CategoryTheory.functorCategoryLinear'
+-- #show_unused CategoryTheory.functorCategoryLinear'
