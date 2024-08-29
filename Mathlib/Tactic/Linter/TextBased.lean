@@ -397,7 +397,7 @@ local instance instHashableChar : Hashable Char where
   hash c := c.val.toUInt64
 
 /-- Printable ASCII characters.
-With repetitions (newline) and **excluding** 0x7F ('DEL') -/
+**excluding** 0x7F ('DEL') -/
 def printableASCII := #[
 ' ', '\n', '!', '"', '#', '$', '%', '&', '\'', '(', ')', '*', '+', ',', '-',
 '.', '/', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':', ';', '<',
