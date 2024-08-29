@@ -102,7 +102,7 @@ def actionDiagonalSucc (G : Type u) [Group G] :
       tensorIso (Iso.refl _) (actionDiagonalSucc G n) ≪≫
         leftRegularTensorIso _ _ ≪≫
           tensorIso (Iso.refl _)
-            (mkIso (Equiv.piFinSuccAbove (fun _ => G) 0).symm.toIso fun _ => rfl)
+            (mkIso (Fin.insertNthEquiv (fun _ => G) 0).toIso fun _ => rfl)
 
 theorem actionDiagonalSucc_hom_apply {G : Type u} [Group G] {n : ℕ} (f : Fin (n + 1) → G) :
     (actionDiagonalSucc G n).hom.hom f = (f 0, fun i => (f (Fin.castSucc i))⁻¹ * f i.succ) := by
@@ -143,7 +143,7 @@ theorem actionDiagonalSucc_inv_apply {G : Type u} [Group G] {n : ℕ} (g : G) (f
       simpa only [Fin.cons_succ, Pi.smul_apply, smul_eq_mul, Fin.partialProd_succ', mul_assoc] -/
     funext x
     dsimp [actionDiagonalSucc]
-    erw [hn, Equiv.piFinSuccAbove_symm_apply]
+    erw [hn, Fin.consEquiv_apply]
     refine Fin.cases ?_ (fun i => ?_) x
     · simp only [Fin.insertNth_zero, Fin.cons_zero, Fin.partialProd_zero, mul_one]
     · simp only [Fin.cons_succ, Pi.smul_apply, smul_eq_mul, Fin.partialProd_succ', ← mul_assoc]
@@ -520,7 +520,7 @@ theorem d_eq (n : ℕ) : ((groupCohomology.resolution k G).d (n + 1) n).hom = d 
 /- Porting note (#11039): broken proof was
   simpa [← @intCast_smul k, simplicial_object.δ] -/
   simp_rw [alternatingFaceMapComplex_obj_d, AlternatingFaceMapComplex.objD, SimplicialObject.δ,
-    Functor.comp_map, ← Int.cast_smul_eq_nsmul k ((-1) ^ _ : ℤ), Int.cast_pow, Int.cast_neg,
+    Functor.comp_map, ← Int.cast_smul_eq_zsmul k ((-1) ^ _ : ℤ), Int.cast_pow, Int.cast_neg,
     Int.cast_one, Action.sum_hom, Action.smul_hom, Rep.linearization_map_hom]
   rw [LinearMap.coeFn_sum, Fintype.sum_apply]
   erw [d_of (k := k) x]
@@ -565,11 +565,11 @@ def forget₂ToModuleCatHomotopyEquiv :
 
 /-- The hom of `k`-linear `G`-representations `k[G¹] → k` sending `∑ nᵢgᵢ ↦ ∑ nᵢ`. -/
 def ε : Rep.ofMulAction k G (Fin 1 → G) ⟶ Rep.trivial k G k where
-  hom := Finsupp.total _ _ _ fun _ => (1 : k)
+  hom := Finsupp.total _ fun _ => (1 : k)
   comm g := Finsupp.lhom_ext' fun _ => LinearMap.ext_ring (by
     show
-      Finsupp.total (Fin 1 → G) k k (fun _ => (1 : k)) (Finsupp.mapDomain _ (Finsupp.single _ _)) =
-        Finsupp.total (Fin 1 → G) k k (fun _ => (1 : k)) (Finsupp.single _ _)
+      Finsupp.total k (fun _ => (1 : k)) (Finsupp.mapDomain _ (Finsupp.single _ _)) =
+        Finsupp.total k (fun _ => (1 : k)) (Finsupp.single _ _)
     simp only [Finsupp.mapDomain_single, Finsupp.total_single])
 
 /-- The homotopy equivalence of complexes of `k`-modules between the standard resolution of `k` as
@@ -583,7 +583,7 @@ theorem forget₂ToModuleCatHomotopyEquiv_f_0_eq :
   convert Category.id_comp (X := (forget₂ToModuleCat k G).X 0) _
   · dsimp only [HomotopyEquiv.ofIso, compForgetAugmentedIso]
     simp only [Iso.symm_hom, eqToIso.inv, HomologicalComplex.eqToHom_f, eqToHom_refl]
-  trans (Finsupp.total _ _ _ fun _ => (1 : k)).comp ((ModuleCat.free k).map (terminal.from _))
+  trans (Finsupp.total _ fun _ => (1 : k)).comp ((ModuleCat.free k).map (terminal.from _))
   · dsimp
     erw [Finsupp.lmapDomain_total (α := Fin 1 → G) (R := k) (α' := ⊤_ Type u)
         (v := fun _ => (1 : k)) (v' := fun _ => (1 : k))

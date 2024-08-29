@@ -41,11 +41,11 @@ theorem conj_apply (f : End X) : α.conj f = α.inv ≫ f ≫ α.hom :=
 
 @[simp]
 theorem conj_comp (f g : End X) : α.conj (f ≫ g) = α.conj f ≫ α.conj g :=
-  α.conj.map_mul g f
+  map_mul α.conj g f
 
 @[simp]
 theorem conj_id : α.conj (𝟙 X) = 𝟙 Y :=
-  α.conj.map_one
+  map_one α.conj
 
 @[simp]
 theorem refl_conj (f : End X) : (Iso.refl X).conj f = f := by
@@ -85,7 +85,7 @@ theorem trans_conjAut {Z : C} (β : Y ≅ Z) (f : Aut X) :
 
 /- Porting note (#10618): removed `@[simp]`; simp can prove this -/
 theorem conjAut_mul (f g : Aut X) : α.conjAut (f * g) = α.conjAut f * α.conjAut g :=
-  α.conjAut.map_mul f g
+  map_mul α.conjAut f g
 
 @[simp]
 theorem conjAut_trans (f g : Aut X) : α.conjAut (f ≪≫ g) = α.conjAut f ≪≫ α.conjAut g :=
@@ -93,11 +93,11 @@ theorem conjAut_trans (f g : Aut X) : α.conjAut (f ≪≫ g) = α.conjAut f ≪
 
 /- Porting note (#10618): removed `@[simp]`; simp can prove this -/
 theorem conjAut_pow (f : Aut X) (n : ℕ) : α.conjAut (f ^ n) = α.conjAut f ^ n :=
-  α.conjAut.toMonoidHom.map_pow f n
+  map_pow α.conjAut f n
 
 /- Porting note (#10618): removed `@[simp]`; simp can prove this -/
 theorem conjAut_zpow (f : Aut X) (n : ℤ) : α.conjAut (f ^ n) = α.conjAut f ^ n :=
-  α.conjAut.toMonoidHom.map_zpow f n
+  map_zpow α.conjAut f n
 
 end Iso
 

@@ -585,9 +585,10 @@ theorem snd_pow_of_smul_comm [Monoid R] [AddMonoid M] [DistribMulAction R M]
 where
   aux : ∀ n : ℕ, x.snd <• x.fst ^ n = x.fst ^ n •> x.snd := by
     intro n
-    induction' n with n ih
-    · simp
-    · rw [pow_succ, op_mul, mul_smul, mul_smul, ← h, smul_comm (_ : R) (op x.fst) x.snd, ih]
+    induction n with
+    | zero => simp
+    | succ n ih =>
+      rw [pow_succ, op_mul, mul_smul, mul_smul, ← h, smul_comm (_ : R) (op x.fst) x.snd, ih]
 
 theorem snd_pow_of_smul_comm' [Monoid R] [AddMonoid M] [DistribMulAction R M]
     [DistribMulAction Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M] (x : tsze R M) (n : ℕ)
@@ -642,9 +643,10 @@ theorem snd_list_prod [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐ�
     l.prod.snd =
       (l.enum.map fun x : ℕ × tsze R M =>
           ((l.map fst).take x.1).prod •> x.snd.snd <• ((l.map fst).drop x.1.succ).prod).sum := by
-  induction' l with x xs ih
-  · simp
-  · rw [List.enum_cons, ← List.map_fst_add_enum_eq_enumFrom]
+  induction l with
+  | nil => simp
+  | cons x xs ih =>
+    rw [List.enum_cons, ← List.map_fst_add_enum_eq_enumFrom]
     simp_rw [List.map_cons, List.map_map, Function.comp, Prod.map_snd, Prod.map_fst, id,
       List.take_zero, List.take_cons, List.prod_nil, List.prod_cons, snd_mul, one_smul, List.drop,
       mul_smul, List.sum_cons, fst_list_prod, ih, List.smul_sum, List.map_map,
@@ -726,17 +728,17 @@ protected theorem inv_one : (1 : tsze R M)⁻¹ = (1 : tsze R M) := by
 
 protected theorem inv_mul_cancel {x : tsze R M} (hx : fst x ≠ 0) : x⁻¹ * x = 1 := by
   ext
-  · rw [fst_mul, fst_inv, inv_mul_cancel hx, fst_one]
-  · rw [snd_mul, snd_inv, snd_one, smul_neg, op_smul_op_smul, inv_mul_cancel hx, op_one, one_smul,
-      fst_inv, add_right_neg]
+  · rw [fst_mul, fst_inv, inv_mul_cancel₀ hx, fst_one]
+  · rw [snd_mul, snd_inv, snd_one, smul_neg, op_smul_op_smul, inv_mul_cancel₀ hx, op_one, one_smul,
+      fst_inv, add_neg_cancel]
 
 variable [SMulCommClass R Rᵐᵒᵖ M]
 
 protected theorem mul_inv_cancel {x : tsze R M} (hx : fst x ≠ 0) : x * x⁻¹ = 1 := by
   ext
-  · rw [fst_mul, fst_inv, fst_one, mul_inv_cancel hx]
-  · rw [snd_mul, snd_inv, snd_one, smul_neg, smul_comm, smul_smul, mul_inv_cancel hx, one_smul,
-      fst_inv, add_left_neg]
+  · rw [fst_mul, fst_inv, fst_one, mul_inv_cancel₀ hx]
+  · rw [snd_mul, snd_inv, snd_one, smul_neg, smul_comm, smul_smul, mul_inv_cancel₀ hx, one_smul,
+      fst_inv, neg_add_cancel]
 
 protected theorem mul_inv_rev (a b : tsze R M) :
     (a * b)⁻¹ = b⁻¹ * a⁻¹ := by

@@ -52,7 +52,7 @@ section Zero
 variable [PartialOrder Γ] [Zero R]
 
 theorem coeff_injective : Injective (coeff : HahnSeries Γ R → Γ → R) :=
-  HahnSeries.ext
+  fun _ _ => HahnSeries.ext
 
 @[simp]
 theorem coeff_inj {x y : HahnSeries Γ R} : x.coeff = y.coeff ↔ x = y :=
@@ -83,7 +83,7 @@ instance : Inhabited (HahnSeries Γ R) :=
   ⟨0⟩
 
 instance [Subsingleton R] : Subsingleton (HahnSeries Γ R) :=
-  ⟨fun a b => a.ext b (by subsingleton)⟩
+  ⟨fun _ _ => HahnSeries.ext (by subsingleton)⟩
 
 @[simp]
 theorem zero_coeff {a : Γ} : (0 : HahnSeries Γ R).coeff a = 0 :=
@@ -154,7 +154,7 @@ def single (a : Γ) : ZeroHom R (HahnSeries Γ R) where
   toFun r :=
     { coeff := Pi.single a r
       isPWO_support' := (Set.isPWO_singleton a).mono Pi.support_single_subset }
-  map_zero' := HahnSeries.ext _ _ (Pi.single_zero _)
+  map_zero' := HahnSeries.ext (Pi.single_zero _)
 
 variable {a b : Γ} {r : R}
 
@@ -321,7 +321,7 @@ theorem coeff_order_ne_zero {x : HahnSeries Γ R} (hx : x ≠ 0) : x.coeff x.ord
   rw [order_of_ne hx]
   exact x.isWF_support.min_mem (support_nonempty_iff.2 hx)
 
-theorem order_le_of_coeff_ne_zero {Γ} [LinearOrderedCancelAddCommMonoid Γ] {x : HahnSeries Γ R}
+theorem order_le_of_coeff_ne_zero {Γ} [AddMonoid Γ] [LinearOrder Γ] {x : HahnSeries Γ R}
     {g : Γ} (h : x.coeff g ≠ 0) : x.order ≤ g :=
   le_trans (le_of_eq (order_of_ne (ne_zero_of_coeff_ne_zero h)))
     (Set.IsWF.min_le _ _ ((mem_support _ _).2 h))

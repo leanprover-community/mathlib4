@@ -70,7 +70,7 @@ variable {𝕜 : Type*} {E F G H : Type*}
 
 open Filter List
 
-open scoped Topology Classical NNReal ENNReal
+open scoped Topology NNReal ENNReal
 
 section Topological
 
@@ -379,7 +379,7 @@ theorem comp_id (p : FormalMultilinearSeries 𝕜 E F) : p.comp (id 𝕜 E) = p 
     intro b _ hb
     obtain ⟨k, hk, lt_k⟩ : ∃ (k : ℕ), k ∈ Composition.blocks b ∧ 1 < k :=
       Composition.ne_ones_iff.1 hb
-    obtain ⟨i, hi⟩ : ∃ (i : Fin b.blocks.length), b.blocks.get i = k :=
+    obtain ⟨i, hi⟩ : ∃ (i : Fin b.blocks.length), b.blocks[i] = k :=
       List.get_of_mem hk
 
     let j : Fin b.length := ⟨i.val, b.blocks_length ▸ i.prop⟩
@@ -856,7 +856,7 @@ where `v' = (v_l, v_{l+1}, ..., v_{m-1})`. Therefore, we get
 r.comp (q.comp p) n v =
 ∑_{c : Composition n} ∑_{d₀ : Composition (c.blocksFun 0),
   ..., d_{c.length - 1} : Composition (c.blocksFun (c.length - 1))}
-  r c.length (λ i, q dᵢ.length (applyComposition p dᵢ v'ᵢ))
+  r c.length (fun i ↦ q dᵢ.length (applyComposition p dᵢ v'ᵢ))
 ```
 To show that these terms coincide, we need to explain how to reindex the sums to put them in
 bijection (and then the terms we are summing will correspond to each other). Suppose we have a
@@ -934,7 +934,7 @@ the first two blocks of `a` and its last three blocks, giving `a.gather b = [11,
 def gather (a : Composition n) (b : Composition a.length) : Composition n where
   blocks := (a.blocks.splitWrtComposition b).map sum
   blocks_pos := by
-    rw [forall_mem_map_iff]
+    rw [forall_mem_map]
     intro j hj
     suffices H : ∀ i ∈ j, 1 ≤ i by calc
       0 < j.length := length_pos_of_mem_splitWrtComposition hj

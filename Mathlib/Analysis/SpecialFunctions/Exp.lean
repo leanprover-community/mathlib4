@@ -17,12 +17,11 @@ limits of `Real.exp` at infinity.
 exp
 -/
 
-
 noncomputable section
 
 open Finset Filter Metric Asymptotics Set Function Bornology
 
-open scoped Classical Topology Nat
+open scoped Topology Nat
 
 namespace Complex
 
@@ -117,6 +116,37 @@ theorem ContinuousOn.cexp (h : ContinuousOn f s) : ContinuousOn (fun y => exp (f
 theorem Continuous.cexp (h : Continuous f) : Continuous fun y => exp (f y) :=
   continuous_iff_continuousAt.2 fun _ => h.continuousAt.cexp
 
+/-- The complex exponential function is uniformly continuous on left half planes. -/
+lemma UniformlyContinuousOn.cexp (a : ℝ) : UniformContinuousOn exp {x : ℂ | x.re ≤ a} := by
+  have : Continuous (cexp - 1) := Continuous.sub (Continuous.cexp continuous_id') continuous_one
+  rw [Metric.uniformContinuousOn_iff, Metric.continuous_iff'] at *
+  intro ε hε
+  simp only [gt_iff_lt, Pi.sub_apply, Pi.one_apply, dist_sub_eq_dist_add_right,
+    sub_add_cancel] at this
+  have ha : 0 < ε / (2 * Real.exp a) := by positivity
+  have H := this 0 (ε / (2 * Real.exp a)) ha
+  rw [Metric.eventually_nhds_iff] at H
+  obtain ⟨δ, hδ⟩ := H
+  refine ⟨δ, hδ.1, ?_⟩
+  intros x _ y hy hxy
+  have h3 := hδ.2 (y := x - y) (by simpa only [dist_zero_right, norm_eq_abs] using hxy)
+  rw [dist_eq_norm, exp_zero] at *
+  have : cexp x - cexp y = cexp y * (cexp (x - y) - 1) := by
+      rw [mul_sub_one, ← exp_add]
+      ring_nf
+  rw [this, mul_comm]
+  have hya : ‖cexp y‖ ≤ Real.exp a := by
+    simp only [norm_eq_abs, abs_exp, Real.exp_le_exp]
+    exact hy
+  simp only [gt_iff_lt, dist_zero_right, norm_eq_abs, Set.mem_setOf_eq, norm_mul,
+    Complex.abs_exp] at *
+  apply lt_of_le_of_lt (mul_le_mul h3.le hya (Real.exp_nonneg y.re) (le_of_lt ha))
+  have hrr : ε / (2 * a.exp) * a.exp = ε / 2 := by
+    nth_rw 2 [mul_comm]
+    field_simp [mul_assoc]
+  rw [hrr]
+  exact div_two_lt_of_pos hε
+
 end ComplexContinuousExpComp
 
 namespace Real
@@ -183,7 +213,7 @@ namespace Real
 variable {α : Type*} {x y z : ℝ} {l : Filter α}
 
 theorem exp_half (x : ℝ) : exp (x / 2) = √(exp x) := by
-  rw [eq_comm, sqrt_eq_iff_sq_eq, sq, ← exp_add, add_halves] <;> exact (exp_pos _).le
+  rw [eq_comm, sqrt_eq_iff_eq_sq, sq, ← exp_add, add_halves] <;> exact (exp_pos _).le
 
 /-- The real exponential function tends to `+∞` at `+∞`. -/
 theorem tendsto_exp_atTop : Tendsto exp atTop atTop := by
@@ -212,7 +242,7 @@ theorem tendsto_exp_atBot : Tendsto exp atBot (𝓝 0) :=
     congr_arg exp <| neg_neg x
 
 theorem tendsto_exp_atBot_nhdsWithin : Tendsto exp atBot (𝓝[>] 0) :=
-  tendsto_inf.2 ⟨tendsto_exp_atBot, tendsto_principal.2 <| eventually_of_forall exp_pos⟩
+  tendsto_inf.2 ⟨tendsto_exp_atBot, tendsto_principal.2 <| Eventually.of_forall exp_pos⟩
 
 @[simp]
 theorem isBoundedUnder_ge_exp_comp (l : Filter α) (f : α → ℝ) :
@@ -237,7 +267,7 @@ theorem tendsto_exp_div_pow_atTop (n : ℕ) : Tendsto (fun x => exp x / x ^ n) a
   refine ⟨N, trivial, fun x hx => ?_⟩
   rw [Set.mem_Ioi] at hx
   have hx₀ : 0 < x := (Nat.cast_nonneg N).trans_lt hx
-  rw [Set.mem_Ici, le_div_iff (pow_pos hx₀ _), ← le_div_iff' hC₀]
+  rw [Set.mem_Ici, le_div_iff₀ (pow_pos hx₀ _), ← le_div_iff₀' hC₀]
   calc
     x ^ n ≤ ⌈x⌉₊ ^ n := mod_cast pow_le_pow_left hx₀.le (Nat.le_ceil _) _
     _ ≤ exp ⌈x⌉₊ / (exp 1 * C) := mod_cast (hN _ (Nat.lt_ceil.2 hx).le).le
@@ -357,7 +387,7 @@ theorem isLittleO_pow_exp_atTop {n : ℕ} : (fun x : ℝ => x ^ n) =o[atTop] Rea
 @[simp]
 theorem isBigO_exp_comp_exp_comp {f g : α → ℝ} :
     ((fun x => exp (f x)) =O[l] fun x => exp (g x)) ↔ IsBoundedUnder (· ≤ ·) l (f - g) :=
-  Iff.trans (isBigO_iff_isBoundedUnder_le_div <| eventually_of_forall fun x => exp_ne_zero _) <| by
+  Iff.trans (isBigO_iff_isBoundedUnder_le_div <| Eventually.of_forall fun x => exp_ne_zero _) <| by
     simp only [norm_eq_abs, abs_exp, ← exp_sub, isBoundedUnder_le_exp_comp, Pi.sub_def]
 
 @[simp]

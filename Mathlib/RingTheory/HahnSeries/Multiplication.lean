@@ -32,7 +32,6 @@ Hahn series.
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
 -/
 
-
 open Finset Function Pointwise
 
 noncomputable section
@@ -103,10 +102,6 @@ def rec {motive : HahnModule Γ R V → Sort*} (h : ∀ x : HahnSeries Γ V, mot
 @[ext]
 theorem ext (x y : HahnModule Γ R V) (h : ((of R).symm x).coeff = ((of R).symm y).coeff) : x = y :=
   (of R).symm.injective <| HahnSeries.coeff_inj.1 h
-
-protected theorem ext_iff (x y : HahnModule Γ R V) :
-    x = y ↔ ((of R).symm x).coeff = ((of R).symm y).coeff  := by
-  simp_all only [HahnSeries.coeff_inj, EmbeddingLike.apply_eq_iff_eq]
 
 end
 

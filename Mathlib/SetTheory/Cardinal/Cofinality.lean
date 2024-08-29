@@ -42,13 +42,10 @@ cofinality, regular cardinals, limits cardinals, inaccessible cardinals,
 infinite pigeonhole principle
 -/
 
-
 noncomputable section
 
 open Function Cardinal Set Order
-
-open scoped Classical
-open Cardinal Ordinal
+open scoped Ordinal
 
 universe u v w
 
@@ -198,7 +195,7 @@ theorem ord_cof_eq (r : α → α → Prop) [IsWellOrder α r] :
 
 
 private theorem card_mem_cof {o} : ∃ (ι : _) (f : ι → Ordinal), lsub.{u, u} f = o ∧ #ι = o.card :=
-  ⟨_, _, lsub_typein o, mk_ordinal_out o⟩
+  ⟨_, _, lsub_typein o, mk_toType o⟩
 
 /-- The set in the `lsub` characterization of `cof` is nonempty. -/
 theorem cof_lsub_def_nonempty (o) :
@@ -213,7 +210,7 @@ theorem cof_eq_sInf_lsub (o : Ordinal.{u}) : cof o =
     refine
       (cof_type_le fun a => ?_).trans
         (@mk_le_of_injective _ _
-          (fun s : typein ((· < ·) : o.out.α → o.out.α → Prop) ⁻¹' Set.range f =>
+          (fun s : typein ((· < ·) : o.toType → o.toType → Prop) ⁻¹' Set.range f =>
             Classical.choose s.prop)
           fun s t hst => by
           let H := congr_arg f hst
@@ -222,18 +219,18 @@ theorem cof_eq_sInf_lsub (o : Ordinal.{u}) : cof o =
     have := typein_lt_self a
     simp_rw [← hf, lt_lsub_iff] at this
     cases' this with i hi
-    refine ⟨enum (· < ·) (f i) ?_, ?_, ?_⟩
+    refine ⟨enum (α := o.toType) (· < ·) ⟨f i, ?_⟩, ?_, ?_⟩
     · rw [type_lt, ← hf]
       apply lt_lsub
     · rw [mem_preimage, typein_enum]
       exact mem_range_self i
     · rwa [← typein_le_typein, typein_enum]
-  · rcases cof_eq (· < · : (Quotient.out o).α → (Quotient.out o).α → Prop) with ⟨S, hS, hS'⟩
+  · rcases cof_eq (α := o.toType) (· < ·) with ⟨S, hS, hS'⟩
     let f : S → Ordinal := fun s => typein LT.lt s.val
     refine ⟨S, f, le_antisymm (lsub_le fun i => typein_lt_self (o := o) i)
       (le_of_forall_lt fun a ha => ?_), by rwa [type_lt o] at hS'⟩
     rw [← type_lt o] at ha
-    rcases hS (enum (· < ·) a ha) with ⟨b, hb, hb'⟩
+    rcases hS (enum (· < ·) ⟨a, ha⟩) with ⟨b, hb, hb'⟩
     rw [← typein_le_typein, typein_enum] at hb'
     exact hb'.trans_lt (lt_lsub.{u, u} f ⟨b, hb⟩)
 
@@ -355,7 +352,7 @@ theorem nfpFamily_lt_ord {ι} {f : ι → Ordinal → Ordinal} {c} (hc : ℵ₀ 
 theorem nfpBFamily_lt_ord_lift {o : Ordinal} {f : ∀ a < o, Ordinal → Ordinal} {c} (hc : ℵ₀ < cof c)
     (hc' : Cardinal.lift.{v, u} o.card < cof c) (hf : ∀ (i hi), ∀ b < c, f i hi b < c) {a} :
     a < c → nfpBFamily.{u, v} o f a < c :=
-  nfpFamily_lt_ord_lift hc (by rwa [mk_ordinal_out]) fun i => hf _ _
+  nfpFamily_lt_ord_lift hc (by rwa [mk_toType]) fun i => hf _ _
 
 theorem nfpBFamily_lt_ord {o : Ordinal} {f : ∀ a < o, Ordinal → Ordinal} {c} (hc : ℵ₀ < cof c)
     (hc' : o.card < cof c) (hf : ∀ (i hi), ∀ b < c, f i hi b < c) {a} :
@@ -384,7 +381,7 @@ theorem le_cof_iff_blsub {b : Ordinal} {a : Cardinal} :
 
 theorem cof_blsub_le_lift {o} (f : ∀ a < o, Ordinal) :
     cof (blsub.{u, v} o f) ≤ Cardinal.lift.{v, u} o.card := by
-  rw [← mk_ordinal_out o]
+  rw [← mk_toType o]
   exact cof_lsub_le_lift _
 
 theorem cof_blsub_le {o} (f : ∀ a < o, Ordinal) : cof (blsub.{u, u} o f) ≤ o.card := by
@@ -556,7 +553,7 @@ theorem exists_fundamental_sequence (a : Ordinal.{u}) :
   let hrr' : r' ↪r r := Subrel.relEmbedding _ _
   haveI := hrr'.isWellOrder
   refine
-    ⟨_, _, hrr'.ordinal_type_le.trans ?_, @fun i j _ h _ => (enum r' j h).prop _ ?_,
+    ⟨_, _, hrr'.ordinal_type_le.trans ?_, @fun i j _ h _ => (enum r' ⟨j, h⟩).prop _ ?_,
       le_antisymm (blsub_le fun i hi => lsub_le_iff.1 hf.le _) ?_⟩
   · rw [← hι, hr]
   · change r (hrr'.1 _) (hrr'.1 _)
@@ -663,7 +660,7 @@ theorem cof_eq' (r : α → α → Prop) [IsWellOrder α r] (h : IsLimit (type r
     ∃ S : Set α, (∀ a, ∃ b ∈ S, r a b) ∧ #S = cof (type r) :=
   let ⟨S, H, e⟩ := cof_eq r
   ⟨S, fun a =>
-    let a' := enum r _ (h.2 _ (typein_lt_type r a))
+    let a' := enum r ⟨_, h.2 _ (typein_lt_type r a)⟩
     let ⟨b, h, ab⟩ := H a'
     ⟨b, h,
       (IsOrderConnected.conn a b a' <|
@@ -1040,7 +1037,7 @@ theorem nfpBFamily_lt_ord_lift_of_isRegular {o : Ordinal} {f : ∀ a < o, Ordina
     (hc : IsRegular c) (ho : Cardinal.lift.{v, u} o.card < c) (hc' : c ≠ ℵ₀)
     (hf : ∀ (i hi), ∀ b < c.ord, f i hi b < c.ord) {a} :
     a < c.ord → nfpBFamily.{u, v} o f a < c.ord :=
-  nfpFamily_lt_ord_lift_of_isRegular hc (by rwa [mk_ordinal_out]) hc' fun i => hf _ _
+  nfpFamily_lt_ord_lift_of_isRegular hc (by rwa [mk_toType]) hc' fun i => hf _ _
 
 theorem nfpBFamily_lt_ord_of_isRegular {o : Ordinal} {f : ∀ a < o, Ordinal → Ordinal} {c}
     (hc : IsRegular c) (ho : o.card < c) (hc' : c ≠ ℵ₀)
@@ -1089,7 +1086,7 @@ theorem derivBFamily_lt_ord_lift {o : Ordinal} {f : ∀ a < o, Ordinal → Ordin
     (hc : IsRegular c) (hι : Cardinal.lift.{v, u} o.card < c) (hc' : c ≠ ℵ₀)
     (hf : ∀ (i hi), ∀ b < c.ord, f i hi b < c.ord) {a} :
     a < c.ord → derivBFamily.{u, v} o f a < c.ord :=
-  derivFamily_lt_ord_lift hc (by rwa [mk_ordinal_out]) hc' fun i => hf _ _
+  derivFamily_lt_ord_lift hc (by rwa [mk_toType]) hc' fun i => hf _ _
 
 theorem derivBFamily_lt_ord {o : Ordinal} {f : ∀ a < o, Ordinal → Ordinal} {c} (hc : IsRegular c)
     (hι : o.card < c) (hc' : c ≠ ℵ₀) (hf : ∀ (i hi), ∀ b < c.ord, f i hi b < c.ord) {a} :

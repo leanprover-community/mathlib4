@@ -87,6 +87,175 @@ theorem IsOpen.uniqueMDiffOn (hs : IsOpen s) : UniqueMDiffOn I s :=
 theorem uniqueMDiffOn_univ : UniqueMDiffOn I (univ : Set M) :=
   isOpen_univ.uniqueMDiffOn
 
+nonrec theorem UniqueMDiffWithinAt.prod {x : M} {y : M'} {s t} (hs : UniqueMDiffWithinAt I s x)
+    (ht : UniqueMDiffWithinAt I' t y) : UniqueMDiffWithinAt (I.prod I') (s ×ˢ t) (x, y) := by
+  refine (hs.prod ht).mono ?_
+  rw [ModelWithCorners.range_prod, ← prod_inter_prod]
+  rfl
+
+theorem UniqueMDiffOn.prod {s : Set M} {t : Set M'} (hs : UniqueMDiffOn I s)
+    (ht : UniqueMDiffOn I' t) : UniqueMDiffOn (I.prod I') (s ×ˢ t) := fun x h ↦
+  (hs x.1 h.1).prod (ht x.2 h.2)
+
+theorem mdifferentiableWithinAt_iff {f : M → M'} {s : Set M} {x : M} :
+    MDifferentiableWithinAt I I' f s x ↔
+      ContinuousWithinAt f s x ∧
+        DifferentiableWithinAt 𝕜 (writtenInExtChartAt I I' x f)
+          ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s) ((extChartAt I x) x) := by
+  rw [mdifferentiableWithinAt_iff']
+  refine and_congr Iff.rfl (exists_congr fun f' => ?_)
+  rw [inter_comm]
+  simp only [HasFDerivWithinAt, nhdsWithin_inter, nhdsWithin_extChartAt_target_eq]
+
+theorem MDifferentiableWithinAt.mono (hst : s ⊆ t) (h : MDifferentiableWithinAt I I' f t x) :
+    MDifferentiableWithinAt I I' f s x :=
+  ⟨ContinuousWithinAt.mono h.1 hst, DifferentiableWithinAt.mono
+    h.differentiableWithinAt_writtenInExtChartAt
+    (inter_subset_inter_left _ (preimage_mono hst))⟩
+
+theorem mdifferentiableWithinAt_univ :
+    MDifferentiableWithinAt I I' f univ x ↔ MDifferentiableAt I I' f x := by
+  simp_rw [MDifferentiableWithinAt, MDifferentiableAt, ChartedSpace.LiftPropAt]
+
+theorem mdifferentiableWithinAt_inter (ht : t ∈ 𝓝 x) :
+    MDifferentiableWithinAt I I' f (s ∩ t) x ↔ MDifferentiableWithinAt I I' f s x := by
+  rw [MDifferentiableWithinAt, MDifferentiableWithinAt,
+    (differentiable_within_at_localInvariantProp I I').liftPropWithinAt_inter ht]
+
+theorem mdifferentiableWithinAt_inter' (ht : t ∈ 𝓝[s] x) :
+    MDifferentiableWithinAt I I' f (s ∩ t) x ↔ MDifferentiableWithinAt I I' f s x := by
+  rw [MDifferentiableWithinAt, MDifferentiableWithinAt,
+    (differentiable_within_at_localInvariantProp I I').liftPropWithinAt_inter' ht]
+
+theorem MDifferentiableAt.mdifferentiableWithinAt (h : MDifferentiableAt I I' f x) :
+    MDifferentiableWithinAt I I' f s x :=
+  MDifferentiableWithinAt.mono (subset_univ _) (mdifferentiableWithinAt_univ.2 h)
+
+theorem MDifferentiableWithinAt.mdifferentiableAt (h : MDifferentiableWithinAt I I' f s x)
+    (hs : s ∈ 𝓝 x) : MDifferentiableAt I I' f x := by
+  have : s = univ ∩ s := by rw [univ_inter]
+  rwa [this, mdifferentiableWithinAt_inter hs, mdifferentiableWithinAt_univ] at h
+
+theorem MDifferentiableOn.mono (h : MDifferentiableOn I I' f t) (st : s ⊆ t) :
+    MDifferentiableOn I I' f s := fun x hx => (h x (st hx)).mono st
+
+theorem mdifferentiableOn_univ : MDifferentiableOn I I' f univ ↔ MDifferentiable I I' f := by
+  simp only [MDifferentiableOn, mdifferentiableWithinAt_univ, mfld_simps]; rfl
+
+theorem MDifferentiableOn.mdifferentiableAt (h : MDifferentiableOn I I' f s) (hx : s ∈ 𝓝 x) :
+    MDifferentiableAt I I' f x :=
+  (h x (mem_of_mem_nhds hx)).mdifferentiableAt hx
+
+theorem MDifferentiable.mdifferentiableOn (h : MDifferentiable I I' f) :
+    MDifferentiableOn I I' f s :=
+  (mdifferentiableOn_univ.2 h).mono (subset_univ _)
+
+theorem mdifferentiableOn_of_locally_mdifferentiableOn
+    (h : ∀ x ∈ s, ∃ u, IsOpen u ∧ x ∈ u ∧ MDifferentiableOn I I' f (s ∩ u)) :
+    MDifferentiableOn I I' f s := by
+  intro x xs
+  rcases h x xs with ⟨t, t_open, xt, ht⟩
+  exact (mdifferentiableWithinAt_inter (t_open.mem_nhds xt)).1 (ht x ⟨xs, xt⟩)
+
+/-! ### Deducing differentiability from smoothness -/
+
+variable {n : ℕ∞}
+
+theorem ContMDiffWithinAt.mdifferentiableWithinAt (hf : ContMDiffWithinAt I I' n f s x)
+    (hn : 1 ≤ n) : MDifferentiableWithinAt I I' f s x := by
+  suffices h : MDifferentiableWithinAt I I' f (s ∩ f ⁻¹' (extChartAt I' (f x)).source) x by
+    rwa [mdifferentiableWithinAt_inter'] at h
+    apply hf.1.preimage_mem_nhdsWithin
+    exact extChartAt_source_mem_nhds I' (f x)
+  rw [mdifferentiableWithinAt_iff]
+  exact ⟨hf.1.mono inter_subset_left, (hf.2.differentiableWithinAt hn).mono (by mfld_set_tac)⟩
+
+theorem ContMDiffAt.mdifferentiableAt (hf : ContMDiffAt I I' n f x) (hn : 1 ≤ n) :
+    MDifferentiableAt I I' f x :=
+  mdifferentiableWithinAt_univ.1 <| ContMDiffWithinAt.mdifferentiableWithinAt hf hn
+
+theorem ContMDiffOn.mdifferentiableOn (hf : ContMDiffOn I I' n f s) (hn : 1 ≤ n) :
+    MDifferentiableOn I I' f s := fun x hx => (hf x hx).mdifferentiableWithinAt hn
+
+nonrec theorem SmoothWithinAt.mdifferentiableWithinAt (hf : SmoothWithinAt I I' f s x) :
+    MDifferentiableWithinAt I I' f s x :=
+  hf.mdifferentiableWithinAt le_top
+
+theorem ContMDiff.mdifferentiable (hf : ContMDiff I I' n f) (hn : 1 ≤ n) : MDifferentiable I I' f :=
+  fun x => (hf x).mdifferentiableAt hn
+
+nonrec theorem SmoothAt.mdifferentiableAt (hf : SmoothAt I I' f x) : MDifferentiableAt I I' f x :=
+  hf.mdifferentiableAt le_top
+
+nonrec theorem SmoothOn.mdifferentiableOn (hf : SmoothOn I I' f s) : MDifferentiableOn I I' f s :=
+  hf.mdifferentiableOn le_top
+
+theorem Smooth.mdifferentiable (hf : Smooth I I' f) : MDifferentiable I I' f :=
+  ContMDiff.mdifferentiable hf le_top
+
+theorem Smooth.mdifferentiableAt (hf : Smooth I I' f) : MDifferentiableAt I I' f x :=
+  hf.mdifferentiable x
+
+theorem MDifferentiableOn.continuousOn (h : MDifferentiableOn I I' f s) : ContinuousOn f s :=
+  fun x hx => (h x hx).continuousWithinAt
+
+theorem MDifferentiable.continuous (h : MDifferentiable I I' f) : Continuous f :=
+  continuous_iff_continuousAt.2 fun x => (h x).continuousAt
+
+theorem Smooth.mdifferentiableWithinAt (hf : Smooth I I' f) : MDifferentiableWithinAt I I' f s x :=
+  hf.mdifferentiableAt.mdifferentiableWithinAt
+
+/-! ### Deriving continuity from differentiability on manifolds -/
+
+theorem MDifferentiableWithinAt.prod_mk {f : M → M'} {g : M → M''}
+    (hf : MDifferentiableWithinAt I I' f s x) (hg : MDifferentiableWithinAt I I'' g s x) :
+    MDifferentiableWithinAt I (I'.prod I'') (fun x => (f x, g x)) s x :=
+  ⟨hf.1.prod hg.1, hf.2.prod hg.2⟩
+
+theorem MDifferentiableAt.prod_mk {f : M → M'} {g : M → M''} (hf : MDifferentiableAt I I' f x)
+    (hg : MDifferentiableAt I I'' g x) :
+    MDifferentiableAt I (I'.prod I'') (fun x => (f x, g x)) x :=
+  ⟨hf.1.prod hg.1, hf.2.prod hg.2⟩
+
+theorem MDifferentiableWithinAt.prod_mk_space {f : M → E'} {g : M → E''}
+    (hf : MDifferentiableWithinAt I 𝓘(𝕜, E') f s x)
+    (hg : MDifferentiableWithinAt I 𝓘(𝕜, E'') g s x) :
+    MDifferentiableWithinAt I 𝓘(𝕜, E' × E'') (fun x => (f x, g x)) s x :=
+  ⟨hf.1.prod hg.1, hf.2.prod hg.2⟩
+
+theorem MDifferentiableAt.prod_mk_space {f : M → E'} {g : M → E''}
+    (hf : MDifferentiableAt I 𝓘(𝕜, E') f x) (hg : MDifferentiableAt I 𝓘(𝕜, E'') g x) :
+    MDifferentiableAt I 𝓘(𝕜, E' × E'') (fun x => (f x, g x)) x :=
+  ⟨hf.1.prod hg.1, hf.2.prod hg.2⟩
+
+theorem MDifferentiableOn.prod_mk {f : M → M'} {g : M → M''} (hf : MDifferentiableOn I I' f s)
+    (hg : MDifferentiableOn I I'' g s) :
+    MDifferentiableOn I (I'.prod I'') (fun x => (f x, g x)) s := fun x hx =>
+  (hf x hx).prod_mk (hg x hx)
+
+theorem MDifferentiable.prod_mk {f : M → M'} {g : M → M''} (hf : MDifferentiable I I' f)
+    (hg : MDifferentiable I I'' g) : MDifferentiable I (I'.prod I'') fun x => (f x, g x) := fun x =>
+  (hf x).prod_mk (hg x)
+
+theorem MDifferentiableOn.prod_mk_space {f : M → E'} {g : M → E''}
+    (hf : MDifferentiableOn I 𝓘(𝕜, E') f s) (hg : MDifferentiableOn I 𝓘(𝕜, E'') g s) :
+    MDifferentiableOn I 𝓘(𝕜, E' × E'') (fun x => (f x, g x)) s := fun x hx =>
+  (hf x hx).prod_mk_space (hg x hx)
+
+theorem MDifferentiable.prod_mk_space {f : M → E'} {g : M → E''} (hf : MDifferentiable I 𝓘(𝕜, E') f)
+    (hg : MDifferentiable I 𝓘(𝕜, E'') g) : MDifferentiable I 𝓘(𝕜, E' × E'') fun x => (f x, g x) :=
+  fun x => (hf x).prod_mk_space (hg x)
+
+theorem writtenInExtChartAt_comp (h : ContinuousWithinAt f s x) :
+    {y | writtenInExtChartAt I I'' x (g ∘ f) y =
+          (writtenInExtChartAt I' I'' (f x) g ∘ writtenInExtChartAt I I' x f) y} ∈
+      𝓝[(extChartAt I x).symm ⁻¹' s ∩ range I] (extChartAt I x) x := by
+  apply
+    @Filter.mem_of_superset _ _ (f ∘ (extChartAt I x).symm ⁻¹' (extChartAt I' (f x)).source) _
+      (extChartAt_preimage_mem_nhdsWithin I
+        (h.preimage_mem_nhdsWithin (extChartAt_source_mem_nhds _ _)))
+  mfld_set_tac
+
 /- We name the typeclass variables related to `SmoothManifoldWithCorners` structure as they are
 necessary in lemmas mentioning the derivative, but not in lemmas about differentiability, so we
 want to include them or omit them when necessary. -/
@@ -105,31 +274,11 @@ theorem UniqueMDiffOn.eq (U : UniqueMDiffOn I s) (hx : x ∈ s) (h : HasMFDerivW
     (h₁ : HasMFDerivWithinAt I I' f s x f₁') : f' = f₁' :=
   UniqueMDiffWithinAt.eq (U _ hx) h h₁
 
-nonrec theorem UniqueMDiffWithinAt.prod {x : M} {y : M'} {s t} (hs : UniqueMDiffWithinAt I s x)
-    (ht : UniqueMDiffWithinAt I' t y) : UniqueMDiffWithinAt (I.prod I') (s ×ˢ t) (x, y) := by
-  refine (hs.prod ht).mono ?_
-  rw [ModelWithCorners.range_prod, ← prod_inter_prod]
-  rfl
-
-theorem UniqueMDiffOn.prod {s : Set M} {t : Set M'} (hs : UniqueMDiffOn I s)
-    (ht : UniqueMDiffOn I' t) : UniqueMDiffOn (I.prod I') (s ×ˢ t) := fun x h ↦
-  (hs x.1 h.1).prod (ht x.2 h.2)
-
 /-!
 ### General lemmas on derivatives of functions between manifolds
 
-We mimick the API for functions between vector spaces
+We mimic the API for functions between vector spaces
 -/
-
-theorem mdifferentiableWithinAt_iff {f : M → M'} {s : Set M} {x : M} :
-    MDifferentiableWithinAt I I' f s x ↔
-      ContinuousWithinAt f s x ∧
-        DifferentiableWithinAt 𝕜 (writtenInExtChartAt I I' x f)
-          ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s) ((extChartAt I x) x) := by
-  rw [mdifferentiableWithinAt_iff']
-  refine and_congr Iff.rfl (exists_congr fun f' => ?_)
-  rw [inter_comm]
-  simp only [HasFDerivWithinAt, nhdsWithin_inter, nhdsWithin_extChartAt_target_eq]
 
 /-- One can reformulate differentiability within a set at a point as continuity within this set at
 this point, and differentiability in any chart containing that point. -/
@@ -246,56 +395,6 @@ theorem mfderivWithin_subset (st : s ⊆ t) (hs : UniqueMDiffWithinAt I s x)
     mfderivWithin I I' f s x = mfderivWithin I I' f t x :=
   ((MDifferentiableWithinAt.hasMFDerivWithinAt h).mono st).mfderivWithin hs
 
-theorem MDifferentiableWithinAt.mono (hst : s ⊆ t) (h : MDifferentiableWithinAt I I' f t x) :
-    MDifferentiableWithinAt I I' f s x :=
-  ⟨ContinuousWithinAt.mono h.1 hst, DifferentiableWithinAt.mono
-    h.differentiableWithinAt_writtenInExtChartAt
-    (inter_subset_inter_left _ (preimage_mono hst))⟩
-
-theorem mdifferentiableWithinAt_univ :
-    MDifferentiableWithinAt I I' f univ x ↔ MDifferentiableAt I I' f x := by
-  simp_rw [MDifferentiableWithinAt, MDifferentiableAt, ChartedSpace.LiftPropAt]
-
-theorem mdifferentiableWithinAt_inter (ht : t ∈ 𝓝 x) :
-    MDifferentiableWithinAt I I' f (s ∩ t) x ↔ MDifferentiableWithinAt I I' f s x := by
-  rw [MDifferentiableWithinAt, MDifferentiableWithinAt,
-    (differentiable_within_at_localInvariantProp I I').liftPropWithinAt_inter ht]
-
-theorem mdifferentiableWithinAt_inter' (ht : t ∈ 𝓝[s] x) :
-    MDifferentiableWithinAt I I' f (s ∩ t) x ↔ MDifferentiableWithinAt I I' f s x := by
-  rw [MDifferentiableWithinAt, MDifferentiableWithinAt,
-    (differentiable_within_at_localInvariantProp I I').liftPropWithinAt_inter' ht]
-
-theorem MDifferentiableAt.mdifferentiableWithinAt (h : MDifferentiableAt I I' f x) :
-    MDifferentiableWithinAt I I' f s x :=
-  MDifferentiableWithinAt.mono (subset_univ _) (mdifferentiableWithinAt_univ.2 h)
-
-theorem MDifferentiableWithinAt.mdifferentiableAt (h : MDifferentiableWithinAt I I' f s x)
-    (hs : s ∈ 𝓝 x) : MDifferentiableAt I I' f x := by
-  have : s = univ ∩ s := by rw [univ_inter]
-  rwa [this, mdifferentiableWithinAt_inter hs, mdifferentiableWithinAt_univ] at h
-
-theorem MDifferentiableOn.mdifferentiableAt (h : MDifferentiableOn I I' f s) (hx : s ∈ 𝓝 x) :
-    MDifferentiableAt I I' f x :=
-  (h x (mem_of_mem_nhds hx)).mdifferentiableAt hx
-
-theorem MDifferentiableOn.mono (h : MDifferentiableOn I I' f t) (st : s ⊆ t) :
-    MDifferentiableOn I I' f s := fun x hx => (h x (st hx)).mono st
-
-theorem mdifferentiableOn_univ : MDifferentiableOn I I' f univ ↔ MDifferentiable I I' f := by
-  simp only [MDifferentiableOn, mdifferentiableWithinAt_univ, mfld_simps]; rfl
-
-theorem MDifferentiable.mdifferentiableOn (h : MDifferentiable I I' f) :
-    MDifferentiableOn I I' f s :=
-  (mdifferentiableOn_univ.2 h).mono (subset_univ _)
-
-theorem mdifferentiableOn_of_locally_mdifferentiableOn
-    (h : ∀ x ∈ s, ∃ u, IsOpen u ∧ x ∈ u ∧ MDifferentiableOn I I' f (s ∩ u)) :
-    MDifferentiableOn I I' f s := by
-  intro x xs
-  rcases h x xs with ⟨t, t_open, xt, ht⟩
-  exact (mdifferentiableWithinAt_inter (t_open.mem_nhds xt)).1 (ht x ⟨xs, xt⟩)
-
 @[simp, mfld_simps]
 theorem mfderivWithin_univ : mfderivWithin I I' f univ = mfderiv I I' f := by
   ext x : 1
@@ -329,49 +428,6 @@ theorem mdifferentiableAt_iff_of_mem_source {x' : M} {y : M'}
     (mdifferentiableWithinAt_iff_of_mem_source hx hy).trans <| by
       rw [continuousWithinAt_univ, Set.preimage_univ, Set.univ_inter]
 
-/-! ### Deducing differentiability from smoothness -/
-
--- Porting note: moved from `ContMDiffMFDeriv`
-variable {n : ℕ∞}
-
-theorem ContMDiffWithinAt.mdifferentiableWithinAt (hf : ContMDiffWithinAt I I' n f s x)
-    (hn : 1 ≤ n) : MDifferentiableWithinAt I I' f s x := by
-  suffices h : MDifferentiableWithinAt I I' f (s ∩ f ⁻¹' (extChartAt I' (f x)).source) x by
-    rwa [mdifferentiableWithinAt_inter'] at h
-    apply hf.1.preimage_mem_nhdsWithin
-    exact extChartAt_source_mem_nhds I' (f x)
-  rw [mdifferentiableWithinAt_iff]
-  exact ⟨hf.1.mono inter_subset_left, (hf.2.differentiableWithinAt hn).mono (by mfld_set_tac)⟩
-
-theorem ContMDiffAt.mdifferentiableAt (hf : ContMDiffAt I I' n f x) (hn : 1 ≤ n) :
-    MDifferentiableAt I I' f x :=
-  mdifferentiableWithinAt_univ.1 <| ContMDiffWithinAt.mdifferentiableWithinAt hf hn
-
-theorem ContMDiffOn.mdifferentiableOn (hf : ContMDiffOn I I' n f s) (hn : 1 ≤ n) :
-    MDifferentiableOn I I' f s := fun x hx => (hf x hx).mdifferentiableWithinAt hn
-
-theorem ContMDiff.mdifferentiable (hf : ContMDiff I I' n f) (hn : 1 ≤ n) : MDifferentiable I I' f :=
-  fun x => (hf x).mdifferentiableAt hn
-
-nonrec theorem SmoothWithinAt.mdifferentiableWithinAt (hf : SmoothWithinAt I I' f s x) :
-    MDifferentiableWithinAt I I' f s x :=
-  hf.mdifferentiableWithinAt le_top
-
-nonrec theorem SmoothAt.mdifferentiableAt (hf : SmoothAt I I' f x) : MDifferentiableAt I I' f x :=
-  hf.mdifferentiableAt le_top
-
-nonrec theorem SmoothOn.mdifferentiableOn (hf : SmoothOn I I' f s) : MDifferentiableOn I I' f s :=
-  hf.mdifferentiableOn le_top
-
-theorem Smooth.mdifferentiable (hf : Smooth I I' f) : MDifferentiable I I' f :=
-  ContMDiff.mdifferentiable hf le_top
-
-theorem Smooth.mdifferentiableAt (hf : Smooth I I' f) : MDifferentiableAt I I' f x :=
-  hf.mdifferentiable x
-
-theorem Smooth.mdifferentiableWithinAt (hf : Smooth I I' f) : MDifferentiableWithinAt I I' f s x :=
-  hf.mdifferentiableAt.mdifferentiableWithinAt
-
 /-! ### Deriving continuity from differentiability on manifolds -/
 
 theorem HasMFDerivWithinAt.continuousWithinAt (h : HasMFDerivWithinAt I I' f s x f') :
@@ -380,12 +436,6 @@ theorem HasMFDerivWithinAt.continuousWithinAt (h : HasMFDerivWithinAt I I' f s x
 
 theorem HasMFDerivAt.continuousAt (h : HasMFDerivAt I I' f x f') : ContinuousAt f x :=
   h.1
-
-theorem MDifferentiableOn.continuousOn (h : MDifferentiableOn I I' f s) : ContinuousOn f s :=
-  fun x hx => (h x hx).continuousWithinAt
-
-theorem MDifferentiable.continuous (h : MDifferentiable I I' f) : Continuous f :=
-  continuous_iff_continuousAt.2 fun x => (h x).continuousAt
 
 theorem tangentMapWithin_subset {p : TangentBundle I M} (st : s ⊆ t)
     (hs : UniqueMDiffWithinAt I s p.1) (h : MDifferentiableWithinAt I I' f t p.1) :
@@ -411,45 +461,6 @@ theorem tangentMapWithin_proj {p : TangentBundle I M} :
 @[simp, mfld_simps]
 theorem tangentMap_proj {p : TangentBundle I M} : (tangentMap I I' f p).proj = f p.proj :=
   rfl
-
-theorem MDifferentiableWithinAt.prod_mk {f : M → M'} {g : M → M''}
-    (hf : MDifferentiableWithinAt I I' f s x) (hg : MDifferentiableWithinAt I I'' g s x) :
-    MDifferentiableWithinAt I (I'.prod I'') (fun x => (f x, g x)) s x :=
-  ⟨hf.1.prod hg.1, hf.2.prod hg.2⟩
-
-theorem MDifferentiableAt.prod_mk {f : M → M'} {g : M → M''} (hf : MDifferentiableAt I I' f x)
-    (hg : MDifferentiableAt I I'' g x) :
-    MDifferentiableAt I (I'.prod I'') (fun x => (f x, g x)) x :=
-  ⟨hf.1.prod hg.1, hf.2.prod hg.2⟩
-
-theorem MDifferentiableOn.prod_mk {f : M → M'} {g : M → M''} (hf : MDifferentiableOn I I' f s)
-    (hg : MDifferentiableOn I I'' g s) :
-    MDifferentiableOn I (I'.prod I'') (fun x => (f x, g x)) s := fun x hx =>
-  (hf x hx).prod_mk (hg x hx)
-
-theorem MDifferentiable.prod_mk {f : M → M'} {g : M → M''} (hf : MDifferentiable I I' f)
-    (hg : MDifferentiable I I'' g) : MDifferentiable I (I'.prod I'') fun x => (f x, g x) := fun x =>
-  (hf x).prod_mk (hg x)
-
-theorem MDifferentiableWithinAt.prod_mk_space {f : M → E'} {g : M → E''}
-    (hf : MDifferentiableWithinAt I 𝓘(𝕜, E') f s x)
-    (hg : MDifferentiableWithinAt I 𝓘(𝕜, E'') g s x) :
-    MDifferentiableWithinAt I 𝓘(𝕜, E' × E'') (fun x => (f x, g x)) s x :=
-  ⟨hf.1.prod hg.1, hf.2.prod hg.2⟩
-
-theorem MDifferentiableAt.prod_mk_space {f : M → E'} {g : M → E''}
-    (hf : MDifferentiableAt I 𝓘(𝕜, E') f x) (hg : MDifferentiableAt I 𝓘(𝕜, E'') g x) :
-    MDifferentiableAt I 𝓘(𝕜, E' × E'') (fun x => (f x, g x)) x :=
-  ⟨hf.1.prod hg.1, hf.2.prod hg.2⟩
-
-theorem MDifferentiableOn.prod_mk_space {f : M → E'} {g : M → E''}
-    (hf : MDifferentiableOn I 𝓘(𝕜, E') f s) (hg : MDifferentiableOn I 𝓘(𝕜, E'') g s) :
-    MDifferentiableOn I 𝓘(𝕜, E' × E'') (fun x => (f x, g x)) s := fun x hx =>
-  (hf x hx).prod_mk_space (hg x hx)
-
-theorem MDifferentiable.prod_mk_space {f : M → E'} {g : M → E''} (hf : MDifferentiable I 𝓘(𝕜, E') f)
-    (hg : MDifferentiable I 𝓘(𝕜, E'') g) : MDifferentiable I 𝓘(𝕜, E' × E'') fun x => (f x, g x) :=
-  fun x => (hf x).prod_mk_space (hg x)
 
 /-! ### Congruence lemmas for derivatives on manifolds -/
 
@@ -539,7 +550,7 @@ theorem mfderivWithin_congr (hs : UniqueMDiffWithinAt I s x) (hL : ∀ x ∈ s, 
 theorem tangentMapWithin_congr (h : ∀ x ∈ s, f x = f₁ x) (p : TangentBundle I M) (hp : p.1 ∈ s)
     (hs : UniqueMDiffWithinAt I s p.1) :
     tangentMapWithin I I' f s p = tangentMapWithin I I' f₁ s p := by
-  refine TotalSpace.ext _ _ (h p.1 hp) ?_
+  refine TotalSpace.ext (h p.1 hp) ?_
   -- This used to be `simp only`, but we need `erw` after leanprover/lean4#2644
   rw [tangentMapWithin, h p.1 hp, tangentMapWithin, mfderivWithin_congr hs h (h _ hp)]
 
@@ -561,16 +572,6 @@ theorem mfderiv_congr {f' : M → M'} (h : f = f') :
     @Eq (E →L[𝕜] E') (mfderiv I I' f x) (mfderiv I I' f' x) := by subst h; rfl
 
 /-! ### Composition lemmas -/
-
-theorem writtenInExtChartAt_comp (h : ContinuousWithinAt f s x) :
-    {y | writtenInExtChartAt I I'' x (g ∘ f) y =
-          (writtenInExtChartAt I' I'' (f x) g ∘ writtenInExtChartAt I I' x f) y} ∈
-      𝓝[(extChartAt I x).symm ⁻¹' s ∩ range I] (extChartAt I x) x := by
-  apply
-    @Filter.mem_of_superset _ _ (f ∘ (extChartAt I x).symm ⁻¹' (extChartAt I' (f x)).source) _
-      (extChartAt_preimage_mem_nhdsWithin I
-        (h.preimage_mem_nhdsWithin (extChartAt_source_mem_nhds _ _)))
-  mfld_set_tac
 
 variable (x)
 

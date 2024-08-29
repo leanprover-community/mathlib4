@@ -169,9 +169,6 @@ theorem coe_injective : @Function.Injective (M ↪ₑ[L] N) (M → N) (↑) :=
 theorem ext ⦃f g : M ↪ₑ[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
 
-theorem ext_iff {f g : M ↪ₑ[L] N} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
-
 variable (L) (M)
 
 /-- The identity elementary embedding from a structure to itself -/
@@ -251,9 +248,9 @@ theorem isElementary_of_exists (f : M ↪[L] N)
   refine fun n φ => φ.recOn ?_ ?_ ?_ ?_ ?_
   · exact fun {_} _ => Iff.rfl
   · intros
-    simp [BoundedFormula.Realize, ← Sum.comp_elim, Embedding.realize_term]
+    simp [BoundedFormula.Realize, ← Sum.comp_elim, HomClass.realize_term]
   · intros
-    simp only [BoundedFormula.Realize, ← Sum.comp_elim, realize_term]
+    simp only [BoundedFormula.Realize, ← Sum.comp_elim, HomClass.realize_term]
     erw [map_rel f]
   · intro _ _ _ ih1 ih2 _
     simp [ih1, ih2]
@@ -304,7 +301,7 @@ end Equiv
 @[simp]
 theorem realize_term_substructure {α : Type*} {S : L.Substructure M} (v : α → S) (t : L.Term α) :
     t.realize ((↑) ∘ v) = (↑(t.realize v) : M) :=
-  S.subtype.realize_term t
+  HomClass.realize_term S.subtype
 
 end Language
 

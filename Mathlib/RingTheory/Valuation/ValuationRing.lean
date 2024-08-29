@@ -162,7 +162,7 @@ noncomputable instance linearOrderedCommGroupWithZero :
       apply Quotient.sound'
       use 1
       simp only [one_smul, ne_eq]
-      apply (mul_inv_cancel _).symm
+      apply (mul_inv_cancel₀ _).symm
       contrapose ha
       simp only [Classical.not_not] at ha ⊢
       rw [ha]
@@ -381,11 +381,11 @@ theorem _root_.Function.Surjective.valuationRing {R S : Type*} [CommRing R] [IsD
 section
 
 variable {𝒪 : Type u} {K : Type v} {Γ : Type w} [CommRing 𝒪] [IsDomain 𝒪] [Field K] [Algebra 𝒪 K]
-  [LinearOrderedCommGroupWithZero Γ] (v : Valuation K Γ) (hh : v.Integers 𝒪)
+  [LinearOrderedCommGroupWithZero Γ]
 
 /-- If `𝒪` satisfies `v.integers 𝒪` where `v` is a valuation on a field, then `𝒪`
 is a valuation ring. -/
-theorem of_integers : ValuationRing 𝒪 := by
+theorem of_integers (v : Valuation K Γ) (hh : v.Integers 𝒪) : ValuationRing 𝒪 := by
   constructor
   intro a b
   rcases le_total (v (algebraMap 𝒪 K a)) (v (algebraMap 𝒪 K b)) with h | h
@@ -394,7 +394,7 @@ theorem of_integers : ValuationRing 𝒪 := by
   · obtain ⟨c, hc⟩ := Valuation.Integers.dvd_of_le hh h
     use c; exact Or.inl hc.symm
 
-instance instValuationRingInteger : ValuationRing v.integer :=
+instance instValuationRingInteger (v : Valuation K Γ) : ValuationRing v.integer :=
   of_integers (v := v) (Valuation.integer.integers v)
 
 theorem isFractionRing_iff [ValuationRing 𝒪] :
@@ -419,7 +419,7 @@ theorem isFractionRing_iff [ValuationRing 𝒪] :
     · intro _ _ hab
       exact ⟨1, by simp only [OneMemClass.coe_one, h.2 hab, one_mul]⟩
 
-instance instIsFractionRingInteger : IsFractionRing v.integer K :=
+instance instIsFractionRingInteger (v : Valuation K Γ) : IsFractionRing v.integer K :=
   ValuationRing.isFractionRing_iff.mpr
     ⟨Valuation.Integers.eq_algebraMap_or_inv_eq_algebraMap (Valuation.integer.integers v),
     Subtype.coe_injective⟩

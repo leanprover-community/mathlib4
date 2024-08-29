@@ -45,7 +45,7 @@ We introduce some `local notation` to make formulas shorter:
 
 open Function Set Filter Metric
 
-open scoped Topology Classical NNReal
+open scoped Topology NNReal
 
 noncomputable section
 
@@ -75,7 +75,7 @@ theorem approximatesLinearOn_empty (f : E → F) (f' : E →L[𝕜] F) (c : ℝ�
 
 namespace ApproximatesLinearOn
 
-variable [CompleteSpace E] {f : E → F}
+variable {f : E → F}
 
 /-! First we prove some properties of a function that `ApproximatesLinearOn` a (not necessarily
 invertible) continuous linear map. -/
@@ -127,12 +127,13 @@ equivalence, for the local inverse theorem, but also whenever the approximating 
 by Banach's open mapping theorem. -/
 
 
-variable {s : Set E} {c : ℝ≥0} {f' : E →L[𝕜] F}
+variable [CompleteSpace E] {s : Set E} {c : ℝ≥0} {f' : E →L[𝕜] F}
 
 /-- If a function is linearly approximated by a continuous linear map with a (possibly nonlinear)
 right inverse, then it is locally onto: a ball of an explicit radius is included in the image
 of the map. -/
-theorem surjOn_closedBall_of_nonlinearRightInverse (hf : ApproximatesLinearOn f f' s c)
+theorem surjOn_closedBall_of_nonlinearRightInverse
+    (hf : ApproximatesLinearOn f f' s c)
     (f'symm : f'.NonlinearRightInverse) {ε : ℝ} {b : E} (ε0 : 0 ≤ ε) (hε : closedBall b ε ⊆ s) :
     SurjOn f (closedBall b ε) (closedBall (f b) (((f'symm.nnnorm : ℝ)⁻¹ - c) * ε)) := by
   intro y hy
@@ -192,7 +193,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse (hf : ApproximatesLinearOn f 
   have C : ∀ (n : ℕ) (w : E), dist w b ≤ f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n) /
       (1 - c * f'symm.nnnorm) * dist (f b) y → w ∈ closedBall b ε := fun n w hw ↦ by
     apply hw.trans
-    rw [div_mul_eq_mul_div, div_le_iff]; swap; · linarith
+    rw [div_mul_eq_mul_div, div_le_iff₀]; swap; · linarith
     calc
       (f'symm.nnnorm : ℝ) * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n) * dist (f b) y =
           f'symm.nnnorm * dist (f b) y * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n) := by
@@ -251,13 +252,13 @@ theorem surjOn_closedBall_of_nonlinearRightInverse (hf : ApproximatesLinearOn f 
   obtain ⟨x, hx⟩ : ∃ x, Tendsto u atTop (𝓝 x) := cauchySeq_tendsto_of_complete this
   -- As all the `uₙ` belong to the ball `closedBall b ε`, so does their limit `x`.
   have xmem : x ∈ closedBall b ε :=
-    isClosed_ball.mem_of_tendsto hx (eventually_of_forall fun n => C n _ (D n).2)
+    isClosed_ball.mem_of_tendsto hx (Eventually.of_forall fun n => C n _ (D n).2)
   refine ⟨x, xmem, ?_⟩
   -- It remains to check that `f x = y`. This follows from continuity of `f` on `closedBall b ε`
   -- and from the fact that `f uₙ` is converging to `y` by construction.
   have hx' : Tendsto u atTop (𝓝[closedBall b ε] x) := by
     simp only [nhdsWithin, tendsto_inf, hx, true_and_iff, tendsto_principal]
-    exact eventually_of_forall fun n => C n _ (D n).2
+    exact Eventually.of_forall fun n => C n _ (D n).2
   have T1 : Tendsto (f ∘ u) atTop (𝓝 (f x)) :=
     (hf.continuousOn.mono hε x xmem).tendsto.comp hx'
   have T2 : Tendsto (f ∘ u) atTop (𝓝 y) := by
@@ -373,6 +374,8 @@ theorem to_inv (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c) (hc : Sub
       exact (hf.antilipschitz hc).le_mul_dist ⟨y', y's⟩ ⟨x', x's⟩
     _ = (N * (N⁻¹ - c)⁻¹ * c : ℝ≥0) * ‖A x' - A y'‖ := by
       simp only [norm_sub_rev, NNReal.coe_mul]; ring
+
+variable [CompleteSpace E]
 
 section
 
