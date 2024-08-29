@@ -177,7 +177,6 @@ theorem left_bot_eq_left_quot (H : Subgroup G) :
   congr
   ext
   simp_rw [← bot_rel_eq_leftRel H]
-  rfl
 
 theorem right_bot_eq_right_quot (H : Subgroup G) :
     Quotient (H.1 : Set G) (⊥ : Subgroup G) = _root_.Quotient (QuotientGroup.rightRel H) := by
@@ -185,6 +184,5 @@ theorem right_bot_eq_right_quot (H : Subgroup G) :
   congr
   ext
   simp_rw [← rel_bot_eq_right_group_rel H]
-  rfl
 
 end Doset
