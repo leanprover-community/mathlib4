@@ -73,7 +73,7 @@ def toTopCatMap : X.toTopCat ⟶ Y.toTopCat where
     rw [this]
     exact continuous_coinducingCoprod _ _
 
-/-- The functor `LightCondSet ⥤ TopCat`  -/
+/-- The functor `LightCondSet ⥤ TopCat` -/
 @[simps]
 def _root_.lightCondSetToTopCat : LightCondSet.{u} ⥤ TopCat.{u} where
   obj X := X.toTopCat
