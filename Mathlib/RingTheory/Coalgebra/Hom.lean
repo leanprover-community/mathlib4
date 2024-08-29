@@ -312,7 +312,7 @@ def Repr.induced {a : A} (repr : Repr R a)
 lemma sum_tmul_counit_apply_eq
     {F : Type*} [FunLike F A B] [CoalgHomClass F R A B] (φ : F) {a : A} (repr : Repr R a) :
     ∑ i ∈ repr.index, counit (R := R) (repr.left i) ⊗ₜ φ (repr.right i) = 1 ⊗ₜ[R] φ a := by
-  simp [← sum_counit_tmul_eq  (repr.induced φ)]
+  simp [← sum_counit_tmul_eq (repr.induced φ)]
 
 @[simp]
 lemma sum_tmul_apply_counit_eq

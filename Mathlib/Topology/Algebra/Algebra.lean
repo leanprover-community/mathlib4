@@ -408,7 +408,7 @@ theorem fst_comp_prod (f : A →A[R] B) (g : A →A[R] C) :
   ext fun _x => rfl
 
 @[simp]
-theorem snd_comp_prod  (f : A →A[R] B) (g : A →A[R] C) :
+theorem snd_comp_prod (f : A →A[R] B) (g : A →A[R] C) :
     (snd R B C).comp (f.prod g) = g :=
   ext fun _x => rfl
 

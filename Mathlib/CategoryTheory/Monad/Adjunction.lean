@@ -100,7 +100,7 @@ def unitAsIsoOfIso (adj : L ⊣ R) (i : L ⋙ R ≅ 𝟭 C) : 𝟭 C ≅ L ⋙ R
     ext X
     exact (adj.toMonad.transport i).right_unit X
 
-lemma isIso_unit_of_iso  (adj : L ⊣ R) (i : L ⋙ R ≅ 𝟭 C) : IsIso adj.unit :=
+lemma isIso_unit_of_iso (adj : L ⊣ R) (i : L ⋙ R ≅ 𝟭 C) : IsIso adj.unit :=
   (inferInstanceAs (IsIso (unitAsIsoOfIso adj i).hom))
 
 /--
