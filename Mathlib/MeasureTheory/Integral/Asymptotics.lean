@@ -54,8 +54,8 @@ namespace Asymptotics
 
 variable {ι : Type*} [MeasurableSpace ι] {f : ι × α → E} {s : Set ι} {μ : Measure ι}
 
-/-- Let `f : X x Y → Z`. If as y → l, f(x, y) = O(g(y)) uniformly on `s : Set X` of finite measure,
-then f is eventually (as y → l) integrable along `s`. -/
+/-- Let `f : X x Y → Z`. If as `y` tends to `l`, `f(x, y) = O(g(y))` uniformly on `s : Set X`
+of finite measure, then f is eventually (as `y` tends to `l`) integrable along `s`. -/
 theorem IsBigO.eventually_integrableOn [Norm F]
     (hf : f =O[𝓟 s ×ˢ l] (g ∘ Prod.snd))
     (hfm : ∀ᶠ x in l, AEStronglyMeasurable (fun i ↦ f (i, x)) (μ.restrict s))
