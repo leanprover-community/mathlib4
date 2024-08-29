@@ -56,7 +56,7 @@ lemma prod_eq_zero : ∀ {l : List M₀}, (0 : M₀) ∈ l → l.prod = 0
   -- |  absurd h (not_mem_nil _)
   | a :: l, h => by
     rw [prod_cons]
-    cases' mem_cons.1 h with ha hl
+    rcases mem_cons.1 h with ha | hl
     exacts [mul_eq_zero_of_left ha.symm _, mul_eq_zero_of_right _ (prod_eq_zero hl)]
 
 variable [Nontrivial M₀] [NoZeroDivisors M₀]

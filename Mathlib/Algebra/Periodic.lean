@@ -183,7 +183,7 @@ theorem Periodic.nat_mul_sub_eq [Ring α] (h : Periodic f c) (n : ℕ) : f (n * 
   simpa only [sub_eq_neg_add] using h.nat_mul n (-x)
 
 protected theorem Periodic.zsmul [AddGroup α] (h : Periodic f c) (n : ℤ) : Periodic f (n • c) := by
-  cases' n with n n
+  rcases n with n | n
   · simpa only [Int.ofNat_eq_coe, natCast_zsmul] using h.nsmul n
   · simpa only [negSucc_zsmul] using (h.nsmul (n + 1)).neg
 

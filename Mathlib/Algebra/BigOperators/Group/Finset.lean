@@ -1639,7 +1639,7 @@ theorem eq_of_card_le_one_of_prod_eq {s : Finset α} (hc : s.card ≤ 1) {f : α
   · exact False.elim (card_ne_zero_of_mem hx hc0)
   · have h1 : s.card = 1 := le_antisymm hc (Nat.one_le_of_lt (Nat.pos_of_ne_zero hc0))
     rw [card_eq_one] at h1
-    cases' h1 with x2 hx2
+    obtain ⟨x2, hx2⟩ := h1
     rw [hx2, mem_singleton] at hx
     simp_rw [hx2] at h
     rw [hx]

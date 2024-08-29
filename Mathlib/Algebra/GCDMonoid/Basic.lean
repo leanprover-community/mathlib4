@@ -855,8 +855,8 @@ instance subsingleton_gcdMonoid_of_unique_units : Subsingleton (GCDMonoid α) :=
 instance subsingleton_normalizedGCDMonoid_of_unique_units : Subsingleton (NormalizedGCDMonoid α) :=
   ⟨by
     intro a b
-    cases' a with a_norm a_gcd
-    cases' b with b_norm b_gcd
+    cases a; rename_i a_norm a_gcd _ _
+    cases b; rename_i b_norm b_gcd _ _
     have := Subsingleton.elim a_gcd b_gcd
     subst this
     have := Subsingleton.elim a_norm b_norm
