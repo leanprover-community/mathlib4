@@ -225,25 +225,25 @@ instance (f g : Nat → Nat) : Inhabited Nat where
       · have : Nat := f $ g $ 0
         · exact 0
 
-set_option linter.longLine false
+set_option linter.style.longLine false
 /--
 warning: This line exceeds the 100 character limit, please shorten it!
-note: this linter can be disabled with `set_option linter.longLine false`
+note: this linter can be disabled with `set_option linter.style.longLine false`
 -/
 #guard_msgs in
-set_option linter.longLine true in
+set_option linter.style.longLine true in
 /-!                                                                                                -/
 
 #guard_msgs in
 -- Lines with more than 100 characters containing URLs are allowed.
-set_option linter.longLine true in
+set_option linter.style.longLine true in
 /-!  http                                                                                          -/
 
-set_option linter.longLine true
+set_option linter.style.longLine true
 -- The *argument* of `#guard_msgs` is *not* exempt from the linter.
 /--
 warning: This line exceeds the 100 character limit, please shorten it!
-note: this linter can be disabled with `set_option linter.longLine false`
+note: this linter can be disabled with `set_option linter.style.longLine false`
 -/
 #guard_msgs in                                                                            #guard true
 

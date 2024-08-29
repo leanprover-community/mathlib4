@@ -299,16 +299,16 @@ end Style.lambdaSyntax
 
 /-- The "longLine" linter emits a warning on lines longer than 100 characters.
 We allow lines containing URLs to be longer, though. -/
-register_option linter.longLine : Bool := {
+register_option linter.style.longLine : Bool := {
   defValue := false
   descr := "enable the longLine linter"
 }
 
-namespace LongLine
+namespace Style.longLine
 
-@[inherit_doc Mathlib.Linter.linter.longLine]
+@[inherit_doc Mathlib.Linter.linter.style.longLine]
 def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    unless Linter.getLinterValue linter.longLine (← getOptions) do
+    unless Linter.getLinterValue linter.style.longLine (← getOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
@@ -331,11 +331,11 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
       (100 < (fm.toPosition line.stopPos).column)
     for line in longLines do
       if !(line.containsSubstr "http") then
-        Linter.logLint linter.longLine (.ofRange ⟨line.startPos, line.stopPos⟩)
+        Linter.logLint linter.style.longLine (.ofRange ⟨line.startPos, line.stopPos⟩)
           m!"This line exceeds the 100 character limit, please shorten it!"
 
 initialize addLinter longLineLinter
 
-end LongLine
+end Style.longLine
 
 end Mathlib.Linter
