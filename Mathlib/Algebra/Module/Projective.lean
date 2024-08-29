@@ -72,7 +72,7 @@ open Finsupp
   definitions. -/
 class Module.Projective (R : Type*) [Semiring R] (P : Type*) [AddCommMonoid P] [Module R P] :
     Prop where
-  out : ∃ s : P →ₗ[R] P →₀ R, Function.LeftInverse (Finsupp.total P P R id) s
+  out : ∃ s : P →ₗ[R] P →₀ R, Function.LeftInverse (Finsupp.total R id) s
 
 namespace Module
 
@@ -82,11 +82,11 @@ variable {R : Type*} [Semiring R] {P : Type*} [AddCommMonoid P] [Module R P] {M 
   [AddCommMonoid M] [Module R M] {N : Type*} [AddCommMonoid N] [Module R N]
 
 theorem projective_def :
-    Projective R P ↔ ∃ s : P →ₗ[R] P →₀ R, Function.LeftInverse (Finsupp.total P P R id) s :=
+    Projective R P ↔ ∃ s : P →ₗ[R] P →₀ R, Function.LeftInverse (Finsupp.total R id) s :=
   ⟨fun h => h.1, fun h => ⟨h⟩⟩
 
 theorem projective_def' :
-    Projective R P ↔ ∃ s : P →ₗ[R] P →₀ R, Finsupp.total P P R id ∘ₗ s = .id := by
+    Projective R P ↔ ∃ s : P →ₗ[R] P →₀ R, Finsupp.total R id ∘ₗ s = .id := by
   simp_rw [projective_def, DFunLike.ext_iff, Function.LeftInverse, comp_apply, id_apply]
 
 /-- A projective R-module has the property that maps from it lift along surjections. -/
@@ -101,7 +101,7 @@ theorem projective_lifting_property [h : Projective R P] (f : M →ₗ[R] N) (g 
     `P →ₗ N` and a random splitting of the surjection `M →ₗ N`, and we get
     a map `φ : (P →₀ R) →ₗ M`.
     -/
-  let φ : (P →₀ R) →ₗ[R] M := Finsupp.total _ _ _ fun p => Function.surjInv hf (g p)
+  let φ : (P →₀ R) →ₗ[R] M := Finsupp.total _ fun p => Function.surjInv hf (g p)
   -- By projectivity we have a map `P →ₗ (P →₀ R)`;
   cases' h.out with s hs
   -- Compose to get `P →ₗ M`. This works.
@@ -117,7 +117,7 @@ theorem Projective.of_lifting_property'' {R : Type u} [Semiring R] {P : Type v} 
     [Module R P] (huniv : ∀ (f : (P →₀ R) →ₗ[R] P), Function.Surjective f →
       ∃ h : P →ₗ[R] (P →₀ R), f.comp h = .id) :
     Projective R P :=
-  projective_def'.2 <| huniv (Finsupp.total P P R (id : P → P))
+  projective_def'.2 <| huniv (Finsupp.total R (id : P → P))
     (total_surjective _ Function.surjective_id)
 
 variable {Q : Type*} [AddCommMonoid Q] [Module R Q]
@@ -164,7 +164,7 @@ variable [IsScalarTower R₀ R M] [AddCommGroup N] [Module R₀ N]
 
 theorem Projective.of_split [Module.Projective R M]
     (i : P →ₗ[R] M) (s : M →ₗ[R] P) (H : s.comp i = LinearMap.id) : Module.Projective R P := by
-  obtain ⟨g, hg⟩ := projective_lifting_property (Finsupp.total P P R id) s
+  obtain ⟨g, hg⟩ := projective_lifting_property (Finsupp.total R id) s
     (fun x ↦ ⟨Finsupp.single x 1, by simp⟩)
   refine ⟨g.comp i, fun x ↦ ?_⟩
   rw [LinearMap.comp_apply, ← LinearMap.comp_apply, hg,
@@ -178,7 +178,7 @@ theorem Projective.of_equiv [Module.Projective R M]
 theorem Projective.iff_split : Module.Projective R P ↔
     ∃ (M : Type max u v) (_ : AddCommGroup M) (_ : Module R M) (_ : Module.Free R M)
       (i : P →ₗ[R] M) (s : M →ₗ[R] P), s.comp i = LinearMap.id :=
-  ⟨fun ⟨i, hi⟩ ↦ ⟨P →₀ R, _, _, inferInstance, i, Finsupp.total P P R id, LinearMap.ext hi⟩,
+  ⟨fun ⟨i, hi⟩ ↦ ⟨P →₀ R, _, _, inferInstance, i, Finsupp.total R id, LinearMap.ext hi⟩,
     fun ⟨_, _, _, _, i, s, H⟩ ↦ Projective.of_split i s H⟩
 
 /-- A quotient of a projective module is projective iff it is a direct summand. -/
@@ -197,11 +197,11 @@ instance Projective.tensorProduct [hM : Module.Projective R M] [hN : Module.Proj
     fapply Projective.of_split (R := R) (M := ((M →₀ R) ⊗[R₀] (N →₀ R₀)))
     · exact (AlgebraTensorModule.map sM (LinearMap.id (R := R₀) (M := N →₀ R₀)))
     · exact (AlgebraTensorModule.map
-        (Finsupp.total M M R id) (LinearMap.id (R := R₀) (M := N →₀ R₀)))
+        (Finsupp.total R id) (LinearMap.id (R := R₀) (M := N →₀ R₀)))
     · ext; simp [hsM _]
   fapply Projective.of_split (R := R) (M := (M ⊗[R₀] (N →₀ R₀)))
   · exact (AlgebraTensorModule.map (LinearMap.id (R := R) (M := M)) sN)
-  · exact (AlgebraTensorModule.map (LinearMap.id (R := R) (M := M)) (Finsupp.total N N R₀ id))
+  · exact (AlgebraTensorModule.map (LinearMap.id (R := R) (M := M)) (Finsupp.total R₀ id))
   · ext; simp [hsN _]
 
 end Ring

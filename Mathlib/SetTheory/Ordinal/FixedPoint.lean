@@ -542,13 +542,12 @@ theorem deriv_add_eq_mul_omega_add (a b : Ordinal.{u}) : deriv (a + ·) b = a * 
 
 @[simp]
 theorem nfp_mul_one {a : Ordinal} (ha : 0 < a) : nfp (a * ·) 1 = (a^omega) := by
-  rw [← sup_iterate_eq_nfp, ← sup_opow_nat]
-  · congr
-    funext n
-    induction' n with n hn
-    · rw [Nat.cast_zero, opow_zero, iterate_zero_apply]
-    rw [iterate_succ_apply', Nat.add_comm, Nat.cast_add, Nat.cast_one, opow_add, opow_one, hn]
-  · exact ha
+  rw [← sup_iterate_eq_nfp, ← sup_opow_nat ha]
+  congr
+  funext n
+  induction' n with n hn
+  · rw [pow_zero, iterate_zero_apply]
+  · rw [iterate_succ_apply', Nat.add_comm, pow_add, pow_one, hn]
 
 @[simp]
 theorem nfp_mul_zero (a : Ordinal) : nfp (a * ·) 0 = 0 := by
