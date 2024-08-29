@@ -357,12 +357,12 @@ lemma smul_smul_smul_comm [SMul α β] [SMul α γ] [SMul β δ] [SMul α δ] [S
 @[to_additive]
 lemma smul_mul_smul_comm [Mul α] [Mul β] [SMul α β] [IsScalarTower α β β]
     [IsScalarTower α α β] [SMulCommClass β α β] (a : α) (b : β) (c : α) (d : β) :
-    (a • b) * c • d = (a * c) • (b * d) := smul_smul_smul_comm a b c d
+    (a • b) * (c • d) = (a * c) • (b * d) := smul_smul_smul_comm a b c d
 
 @[to_additive]
 lemma mul_smul_mul_comm [Mul α] [Mul β] [SMul α β] [IsScalarTower α β β]
     [IsScalarTower α α β] [SMulCommClass α β β] (a b : α) (c d : β) :
-    (a * b) • (c * d) =  (a • c) * b • d := smul_smul_smul_comm a b c d
+    (a * b) • (c * d) = (a • c) * (b • d) := smul_smul_smul_comm a b c d
 
 variable [SMul M α]
 
