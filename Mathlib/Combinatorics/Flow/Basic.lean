@@ -6,30 +6,29 @@ Authors: Niklas Mohrin
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Combinatorics.SimpleGraph.Basic
+import Mathlib.Tactic.Group
 
 /-!
 # Network Flows
 
 In this file we introduce network flows. A flow network can be seen as a directed graph where each
-arc of the graph has a fixed capacity. A flow from a source vertex $s$ to a sink vertex $t$ is an
+arc of the graph has a fixed capacity. A flow from a source vertex `s` to a sink vertex `t` is an
 assignment of "flow units" to each edge, such that for all vertices other than the source and the
 sink, the incoming flow must equal the outgoing flow (_flow conservation_). The value of such an
-assignment is the amount of flow units leaving the source $s$ and arriving at the sink $t$. In
+assignment is the amount of flow units leaving the source `s` and arriving at the sink `t`. In
 practice, we are usually interested in finding a flow of maximal value for a given network.
 
 ## Main definitions
 
 - `Network`: A flow network assigning capacities to all pairs of vertices. Notably, capacities and
              non-negative and the capacity from a vertex to itself is zero.
-- `Network.Problem`: A `Network` along with fixed source and sink vertices $s$ and $t$.
-- `Flow`: A valid assignment of flow values for a given `Network.Problem`.
+- `PseudoFlow`, `PreFlow`, and `Flow`: An assignment of flow values for a given `Network`, abiding
+                                       increasingly strict constraints.
 
 ## Notation
 
-For flows `F F' : Flow Pr`, we define two relations:
-
- - `F ≤ F'`: Equivalent to `F.value ≤ F'.value`.
- - `F ⊆ F'`: Equivalent to `F.f ≤ F'.f`.
+For flows `f f' : N.PseudoFlow`, we define `f ≤ f'` as the _subflow relation_, indicating that for
+all `u v : V`, `f u v ≤ f' u v`.
 
 ## References
 
@@ -73,95 +72,172 @@ def asSimpleGraph [Zero R] [Preorder R] (N : UndirectedNetwork V R) : SimpleGrap
 
 end UndirectedNetwork
 
-/-- A fixed choice of _source_ and _sink_ vertices $s$ and $t$ in a given `Network`. -/
-structure Network.Problem [Zero R] [LE R] (N : Network V R) where
-  /-- The source vertex. -/
-  s : V
-  /-- The sink vertex. -/
-  t : V
-
 variable [Fintype V]
+
+namespace Network
+
+section PseudoFlowDefinition
+
+variable [Zero R] [Preorder R]
+
+/-- A `PseudoFlow` is an assignment of non-negative flow values to each arc of the network, such
+that the assigned amount does not exceed the capacity.
+
+Note that this definition, in contrast to what can sometimes be found in the literature, does
+not require that $f(u, v) = -f(v, u)$. This extra requirement eliminates cycles between two
+vertices and makes some theorem statements shorter. However, since larger cycles are still
+permitted, this usually does not help in proofs. To the contrary, defining a flow becomes more
+cumbersome, sometimes significantly so. -/
+@[ext]
+structure PseudoFlow (N : Network V R) where
+  /-- The assignment of flow values to each arc.
+  Do NOT use. Use the coercion to function instead. -/
+  toFun : V → V → R
+  nonneg' : ∀ u v, 0 ≤ toFun u v
+  capacity' : ∀ u v, toFun u v ≤ N.cap u v
+
+namespace PseudoFlow
+
+variable {N : Network V R}
+
+instance instFunLike : FunLike N.PseudoFlow V (V → R) where
+  coe := PseudoFlow.toFun
+  coe_injective' f g h := by cases f; cases g; congr
+
+variable (f : N.PseudoFlow)
+
+def nonneg : ∀ u v, 0 ≤ f u v := f.nonneg'
+
+def capacity : ∀ u v, f u v ≤ N.cap u v := f.capacity'
+
+instance : Zero N.PseudoFlow where
+  zero.toFun _ _ := 0
+  zero.nonneg' _ _ := le_rfl
+  zero.capacity' := N.nonneg
+
+end PseudoFlow
+end PseudoFlowDefinition
+
+namespace PseudoFlow
+
+variable [Preorder R] [AddCommMonoid R] {N : Network V R} (f : N.PseudoFlow) (v : V)
+
+/-- The incoming flow of a vertex. --/
+def incoming := ∑ u, f u v
+/-- The outgoing flow of a vertex. --/
+def outgoing := ∑ w, f v w
+/-- The excess flow of a vertex (the incoming flow minus the outgoing flow). --/
+def excess [Sub R] := f.incoming v - f.outgoing v
+
+end PseudoFlow
+
+section PreFlowDefinition
+
+variable [Preorder R] [AddCommMonoid R] (N : Network V R) (s t : V)
+
+/-- A `PreFlow` from `s` to `t` is a `PseudoFlow` such that all vertices except `s` and `t` have
+non-negative excess, that is, the outgoing flow is at most as much as the incoming flow. -/
+@[ext]
+structure PreFlow extends N.PseudoFlow where
+  excess_nonneg : ∀ v, v ≠ s ∧ v ≠ t → toPseudoFlow.outgoing v ≤ toPseudoFlow.incoming v
+
+namespace PreFlow
+
+variable {N s t}
+
+instance : Zero (N.PreFlow s t) where
+  zero := { (0 : N.PseudoFlow) with excess_nonneg := fun _ _ ↦ le_rfl }
+
+/-- The value of a flow is the amount of flow units that leave the source vertex and arrive at the
+sink vertex. In particular, this is equal to the excess of `t`. -/
+def value [Sub R] (f : N.PreFlow s t) := f.excess t
+
+end PreFlow
+end PreFlowDefinition
 
 section FlowDefinition
 
-/-- The incoming flow of a vertex. --/
-def flowIn [AddCommMonoid R] (f : V → V → R) (v : V) := ∑ u, f u v
-/-- The outgoing flow of a vertex. --/
-def flowOut [AddCommMonoid R] (f : V → V → R) (v : V) := ∑ w, f v w
-/-- The excess flow of a vertex (the incoming flow minus the outgoing flow). --/
-def excess [SubtractionCommMonoid R] (f : V → V → R) (v : V) := flowIn f v - flowOut f v
+variable [Preorder R] [AddCommMonoid R] (N : Network V R) (s t : V)
 
-variable [OrderedAddCommMonoid R] {N : Network V R}
-
-/-- A valid assignment of flow units to all edges for a given `Network.Problem`.
-
-    Note that this definition, in contrast to what can sometimes be found in the literature, does
-    not require that $f(u, v) = -f(v, u)$. This extra requirement eliminates cycles between two
-    vertices and makes some theorem statements shorter. However, since larger cycles are still
-    permitted, this usually does not help in proofs. To the contrary, defining a flow becomes more
-    cumbersome, sometimes significantly so. -/
+/-- A `Flow` from `s` to `t` is a `PreFlow s t`, but instead of requiring non-negative excess, it
+requires that the excess is 0 (also called _flow conservation_). -/
 @[ext]
-structure Network.Problem.Flow (Pr : N.Problem) where
-  /-- The assignment of flow units to each edge. -/
-  f : V → V → R
-  nonneg : ∀ u v, 0 ≤ f u v
-  conservation : ∀ v, v ≠ Pr.s ∧ v ≠ Pr.t → flowOut f v = flowIn f v
-  capacity : ∀ u v, f u v ≤ N.cap u v
+structure Flow extends N.PreFlow s t where
+  conservation : ∀ v, v ≠ s ∧ v ≠ t → toPseudoFlow.outgoing v = toPseudoFlow.incoming v
+  excess_nonneg v hv := le_of_eq <| conservation v hv
 
-/-- The flow, which assigns zero to all edges. -/
-def Network.Problem.nullFlow (Pr : N.Problem) : Flow Pr where
-  f _ _ := 0
-  nonneg _ _ := le_rfl
-  conservation _ _ := rfl
-  capacity := N.nonneg
+namespace Flow
 
-instance {Pr : N.Problem} : Zero Pr.Flow where
-  zero := Pr.nullFlow
+instance : Zero (N.Flow s t) where
+  zero := { (0 : N.PreFlow s t) with conservation := fun _ _ ↦ rfl }
 
+end Flow
 end FlowDefinition
 
-namespace Network.Problem.Flow
-section FlowValue
+section SummingLemmas
+variable [Preorder R] [AddCommGroup R] {N : Network V R}
 
-variable [OrderedAddCommGroup R] {N : Network V R} {Pr : N.Problem}
+namespace PseudoFlow
 
-/-- The value of a flow is the amount of flow units that leave the source vertex and arrive at the
-    sink vertex. In particular, this is equal to the outgoing flow of the source that does not
-    return to it again. -/
-def value (F : Flow Pr) := flowOut F.f Pr.s - flowIn F.f Pr.s
+variable (f : N.PseudoFlow)
+
+lemma sum_outgoing_eq_sum_incoming : ∑ v, f.outgoing v = ∑ v, f.incoming v := by
+  unfold outgoing incoming
+  rw[Finset.sum_comm]
 
 @[simp]
-instance : Preorder (Flow Pr) := Preorder.lift Flow.value
+lemma sum_excess_zero : ∑ v, f.excess v = 0 := by simp[excess, sum_outgoing_eq_sum_incoming]
 
-instance [IsTotal R LE.le] : IsTotalPreorder (Flow Pr) LE.le where
-  total F F' := by simp only [instPreorder, Preorder.lift, total_of]
+end PseudoFlow
 
-end FlowValue
+namespace Flow
+
+variable {s t : V} (f : N.Flow s t)
+
+lemma excess_s_zero_of_eq (hst : s = t) : f.excess s = 0 := by
+  rw[← f.sum_excess_zero]
+  apply Eq.symm
+  apply Finset.sum_eq_single_of_mem s (Finset.mem_univ _)
+  intro v _ hv
+  simp[PseudoFlow.excess, f.conservation v ⟨hv, hst ▸ hv⟩]
+
+lemma value_zero_of_eq (hst : s = t) : f.value = 0 := by
+  subst t
+  rw[PreFlow.value, f.excess_s_zero_of_eq rfl]
+
+lemma excess_s_eq_neg_excess_t : f.excess s = -f.excess t := by
+  wlog hst : s ≠ t
+  · rw[not_not] at hst
+    subst t
+    simp[f.excess_s_zero_of_eq]
+  apply eq_neg_of_add_eq_zero_left
+  rw[← f.sum_excess_zero]
+  apply Eq.symm
+  apply Finset.sum_eq_add_of_mem s t (Finset.mem_univ _) (Finset.mem_univ _) hst
+  intro v _ hv
+  simp[PseudoFlow.excess, f.conservation v hv]
+
+lemma excess_t_eq_neg_excess_s : f.excess t = -f.excess s := by
+  rw[excess_s_eq_neg_excess_t, neg_neg]
+
+lemma value_eq_outgoing_minus_incoming_s : f.value = f.outgoing s - f.incoming s := by
+  rw[PreFlow.value, excess_t_eq_neg_excess_s, PseudoFlow.excess, neg_sub]
+
+end Flow
+end SummingLemmas
 
 section Subflows
+namespace PseudoFlow
 
-variable [OrderedAddCommGroup R] {N : Network V R} {Pr : N.Problem}
-
-@[simp]
-instance : HasSubset (Flow Pr) where
-  Subset F₁ F₂ := F₁.f ≤ F₂.f
-
-instance : IsPartialOrder (Flow Pr) (· ⊆ ·) where
-  refl F := by simp only [instHasSubset, le_refl]
-  trans F₁ F₂ F₃ h₁₂ h₂₃ := by simp_all only [instHasSubset, le_trans h₁₂ h₂₃]
-  antisymm F₁ F₂ h₁₂ h₂₁ := by ext u v; exact le_antisymm (h₁₂ u v) (h₂₁ u v)
+variable [PartialOrder R] [AddCommGroup R] {N : Network V R}
 
 @[simp]
-instance : HasSSubset (Flow Pr) where
-  SSubset F₁ F₂ := F₁.f < F₂.f
+instance : PartialOrder (N.PseudoFlow) := PartialOrder.lift toFun instFunLike.coe_injective'
 
-instance : IsStrictOrder (Flow Pr) (· ⊂ ·) where
-  irrefl F := by simp only [instHasSSubset, lt_self_iff_false, not_false_eq_true, forall_const]
-  trans F₁ F₂ F₃ h₁₂ h₂₃ := by simp_all only [instHasSSubset, lt_trans h₁₂ h₂₃]
+instance : OrderBot (N.PseudoFlow) where
+  bot := 0
+  bot_le := nonneg
 
-instance : IsNonstrictStrictOrder (Flow Pr) (· ⊆ ·) (· ⊂ ·) where
-  right_iff_left_not_left F₁ F₂ := by
-    constructor <;> (intro h; simp_all only [instHasSSubset, instHasSubset]; exact h)
-
+end PseudoFlow
 end Subflows
-end Network.Problem.Flow
+end Network
