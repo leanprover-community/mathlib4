@@ -9,7 +9,7 @@ import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Order.CompleteLattice
 import Mathlib.LinearAlgebra.Eigenspace.Basic
 
-/-! # Simultaneous eigenspaces of a commuting pair of symmetric operators
+/-! # Joint eigenspaces of a commuting pair of symmetric operators
 
 This file collects various decomposition results for simultaneous eigenspaces of a commuting pair
 of symmetric operators on a finite-dimensional inner product space.
