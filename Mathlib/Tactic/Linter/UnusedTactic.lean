@@ -3,10 +3,9 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Init
+
 import Lean.Elab.Command
 import Lean.Linter.Util
-import Batteries.Tactic.Unreachable
 
 /-!
 # The unused tactic linter
@@ -219,7 +218,7 @@ def unusedTacticLinter : Linter where run := withSetOptionIn fun stx => do
   let key (r : String.Range) := (r.start.byteIdx, (-r.stop.byteIdx : Int))
   let mut last : String.Range := ⟨0, 0⟩
   for (r, stx) in let _ := @lexOrd; let _ := @ltOfOrd.{0}; unused.qsort (key ·.1 < key ·.1) do
-    if stx.getKind ∈ [``Batteries.Tactic.unreachable, ``Batteries.Tactic.unreachableConv] then
+    if stx.getKind ∈ [`Batteries.Tactic.unreachable, `Batteries.Tactic.unreachableConv] then
       continue
     if last.start ≤ r.start && r.stop ≤ last.stop then continue
     Linter.logLint linter.unusedTactic stx m!"'{stx}' tactic does nothing"

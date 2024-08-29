@@ -3,9 +3,8 @@ Copyright (c) 2023 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Init
+
 import Lean.Linter.Util
-import Batteries.Data.String.Matcher
 import Batteries.Tactic.Lint
 
 /-!
@@ -328,7 +327,7 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let longLines := ((sstr.getD default).splitOn "\n").filter fun line ↦
       (100 < (fm.toPosition line.stopPos).column)
     for line in longLines do
-      if !(line.containsSubstr "http") then
+      if (line.splitOn "http").length ≤ 1 then
         Linter.logLint linter.longLine (.ofRange ⟨line.startPos, line.stopPos⟩)
           m!"This line exceeds the 100 character limit, please shorten it!"
 
