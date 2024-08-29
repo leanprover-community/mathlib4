@@ -10,7 +10,7 @@ import Mathlib.NumberTheory.DirichletCharacter.Basic
 # Analytic continuation of Dirichlet L-functions
 
 We show that if `χ` is a Dirichlet character `ZMod N → ℂ`, for a positive integer `N`, then the
-L-series of `χ` has meromorphic continuation (away from a pole at `s = 1` if `χ` is trivial).
+L-series of `χ` has analytic continuation (away from a pole at `s = 1` if `χ` is trivial).
 
 All definitions and theorems are in the `DirichletCharacter` namespace.
 
