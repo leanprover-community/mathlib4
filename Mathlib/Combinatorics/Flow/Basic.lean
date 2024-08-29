@@ -7,6 +7,7 @@ import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Tactic.Group
+import Mathlib.Combinatorics.SimpleGraph.Path
 
 /-!
 # Network Flows
@@ -72,8 +73,6 @@ def asSimpleGraph [Zero R] [Preorder R] (N : UndirectedNetwork V R) : SimpleGrap
 
 end UndirectedNetwork
 
-variable [Fintype V]
-
 namespace Network
 
 section PseudoFlowDefinition
@@ -106,9 +105,9 @@ instance instFunLike : FunLike N.PseudoFlow V (V → R) where
 
 variable (f : N.PseudoFlow)
 
-def nonneg : ∀ u v, 0 ≤ f u v := f.nonneg'
+lemma nonneg : ∀ u v, 0 ≤ f u v := f.nonneg'
 
-def capacity : ∀ u v, f u v ≤ N.cap u v := f.capacity'
+lemma capacity : ∀ u v, f u v ≤ N.cap u v := f.capacity'
 
 instance : Zero N.PseudoFlow where
   zero.toFun _ _ := 0
@@ -117,6 +116,8 @@ instance : Zero N.PseudoFlow where
 
 end PseudoFlow
 end PseudoFlowDefinition
+
+variable [Fintype V]
 
 namespace PseudoFlow
 
