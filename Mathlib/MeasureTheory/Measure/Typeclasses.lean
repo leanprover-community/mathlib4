@@ -199,6 +199,12 @@ theorem abs_toReal_measure_sub_le_measure_symmDiff [IsFiniteMeasure μ]
     |(μ s).toReal - (μ t).toReal| ≤ (μ (s ∆ t)).toReal :=
   abs_toReal_measure_sub_le_measure_symmDiff' hs ht (measure_ne_top μ s) (measure_ne_top μ t)
 
+instance {s : Finset ι} {μ : ι → Measure α} [∀ i, IsFiniteMeasure (μ i)] :
+    IsFiniteMeasure (∑ i ∈ s, μ i) where measure_univ_lt_top := by simp [measure_lt_top]
+
+instance [Fintype ι] {μ : ι → Measure α} [∀ i, IsFiniteMeasure (μ i)] :
+    IsFiniteMeasure (.sum μ) where measure_univ_lt_top := by simp [measure_lt_top]
+
 end IsFiniteMeasure
 
 section IsProbabilityMeasure
@@ -510,7 +516,7 @@ lemma sFiniteSeq_zero (n : ℕ) : sFiniteSeq (0 : Measure α) n = 0 := by
   exact h n
 
 /-- A countable sum of finite measures is s-finite.
-This lemma is superseeded by the instance below. -/
+This lemma is superseded by the instance below. -/
 lemma sfinite_sum_of_countable [Countable ι]
     (m : ι → Measure α) [∀ n, IsFiniteMeasure (m n)] : SFinite (Measure.sum m) := by
   classical

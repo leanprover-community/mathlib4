@@ -30,7 +30,7 @@ case the unit and the counit would switch to each other.
 
 -/
 
--- Explicit universe annotations were used in this file to improve perfomance #12737
+-- Explicit universe annotations were used in this file to improve performance #12737
 
 
 noncomputable section

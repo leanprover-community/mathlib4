@@ -90,7 +90,7 @@ lemma finite_of_free_aux (I) [DecidableEq I] (b : Basis I R S)
   let a i := b.repr (b i * x)
   conv_lhs =>
     simp only [TensorProduct.tmul_mul_tmul, one_mul, mul_comm x (b _),
-      ← show ∀ i, Finsupp.total _ _ _ b (a i) = b i * x from fun _ ↦ b.total_repr _]
+      ← show ∀ i, Finsupp.total _ b (a i) = b i * x from fun _ ↦ b.total_repr _]
   conv_lhs => simp only [Finsupp.total, Finsupp.coe_lsum,
     LinearMap.coe_smulRight, LinearMap.id_coe, id_eq, Finsupp.sum, TensorProduct.tmul_sum,
     ← TensorProduct.smul_tmul]
