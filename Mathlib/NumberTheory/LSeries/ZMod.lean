@@ -142,7 +142,7 @@ lemma LFunction_stdAddChar_eq_expZeta (j : ZMod N) (s : ℂ) (hjs : j ≠ 0 ∨ 
     refine DifferentiableOn.analyticOn (fun u hu ↦ ?_) hUo
     refine (differentiableAt_LFunction _ _ ((hU.mp hu).imp_right fun h ↦ ?_)).differentiableWithinAt
     simp only [mul_comm j, AddChar.sum_mulShift _ (isPrimitive_stdAddChar _), h,
-        ↓reduceIte, CharP.cast_eq_zero, or_true]
+      ↓reduceIte, CharP.cast_eq_zero, or_true]
   have hg : AnalyticOn ℂ g U := by
     refine DifferentiableOn.analyticOn (fun u hu ↦ ?_) hUo
     refine (differentiableAt_expZeta _ _ ((hU.mp hu).imp_right fun h ↦ ?_)).differentiableWithinAt
