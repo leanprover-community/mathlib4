@@ -1097,6 +1097,18 @@ theorem OrderIso.map_sup [SemilatticeSup α] [SemilatticeSup β] (f : α ≃o β
     f (x ⊔ y) = f x ⊔ f y :=
   f.dual.map_inf x y
 
+theorem OrderIso.isMax_apply {α β : Type*} [Preorder α] [Preorder β] (f : α ≃o β) {x : α} :
+    IsMax (f x) ↔ IsMax x := by
+  refine ⟨f.strictMono.isMax_of_apply, ?_⟩
+  conv_lhs => rw [← f.symm_apply_apply x]
+  exact f.symm.strictMono.isMax_of_apply
+
+theorem OrderIso.isMin_apply {α β : Type*} [Preorder α] [Preorder β] (f : α ≃o β) {x : α} :
+    IsMin (f x) ↔ IsMin x := by
+  refine ⟨f.strictMono.isMin_of_apply, ?_⟩
+  conv_lhs => rw [← f.symm_apply_apply x]
+  exact f.symm.strictMono.isMin_of_apply
+
 /-- Note that this goal could also be stated `(Disjoint on f) a b` -/
 theorem Disjoint.map_orderIso [SemilatticeInf α] [OrderBot α] [SemilatticeInf β] [OrderBot β]
     {a b : α} (f : α ≃o β) (ha : Disjoint a b) : Disjoint (f a) (f b) := by
