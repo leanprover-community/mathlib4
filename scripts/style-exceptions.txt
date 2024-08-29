@@ -1,10 +1,1 @@
 Mathlib/Data/QPF/Multivariate/Basic.lean : line 76 : ERR_LIN : Line has 127 characters, which is more than 100
-Mathlib/Data/Set/Basic.lean : line 1 : ERR_NUM_LIN : 2300 file contains 2170 lines, try to split it up
-Mathlib/Data/Set/Function.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1740 lines, try to split it up
-Mathlib/Logic/Equiv/Basic.lean : line 1 : ERR_NUM_LIN : 2000 file contains 1806 lines, try to split it up
-Mathlib/MeasureTheory/Measure/Typeclasses.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1544 lines, try to split it up
-Mathlib/Order/CompleteLattice.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1709 lines, try to split it up
-Mathlib/Order/Hom/Lattice.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1661 lines, try to split it up
-Mathlib/Order/Interval/Set/Basic.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1652 lines, try to split it up
-Mathlib/Tactic/CC/Addition.lean : line 1 : ERR_NUM_LIN : 2300 file contains 2100 lines, try to split it up
-Mathlib/Tactic/ToAdditive/Frontend.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1502 lines, try to split it up
