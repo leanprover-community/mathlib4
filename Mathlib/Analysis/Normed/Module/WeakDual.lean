@@ -322,20 +322,13 @@ lemma inter_empty (h : polar 𝕜₁ s ∩ C ∩ polar 𝕜₁ (U (n+1)) = ∅) 
     rfl
   rw [e1, inter_assoc _ _ C, inter_comm _ C, ← inter_assoc, h, empty_inter]
 
-lemma existance1 (s' : Set (WeakDual 𝕜₁ E₁)) (h : IsCompact s') : ∀ {ι : Type u}
-    (t : ι → Set (WeakDual 𝕜₁ E₁)), (∀ i, IsClosed (t i)) → (s' ∩ ⋂ i, t i) = ∅ →
-    ∃ u : Finset ι, (s' ∩ ⋂ i ∈ u, t i) = ∅ := isCompact_iff_finite_subfamily_closed.mp h
-
-lemma existance2 [ProperSpace 𝕜₁] : ∀ {ι : Type u}
-    (t : ι → Set (WeakDual 𝕜₁ E₁)), (∀ i, IsClosed (t i)) → (polar 𝕜₁ (U (n+2)) ∩ ⋂ i, t i) = ∅ →
-    ∃ u : Finset ι, (polar 𝕜₁ (U (n+2)) ∩ ⋂ i ∈ u, t i) = ∅ :=
-  isCompact_iff_finite_subfamily_closed.mp (polarUcompact 𝕜₁ (n+2))
-
-lemma existance3 [ProperSpace 𝕜₁] (hC₁ : IsClosed C) (h : polar 𝕜₁ s ∩ C ∩ polar 𝕜₁ (U (n+1)) = ∅) :
+lemma existance [ProperSpace 𝕜₁] (hC₁ : IsClosed C) (h : polar 𝕜₁ s ∩ C ∩ polar 𝕜₁ (U (n+1)) = ∅) :
     ∃ u : Finset (U (E := E₁) (n + 1)), (polar 𝕜₁ (U (n+2)) ∩ ⋂ i ∈ u, K C s n i) = ∅ := by
-  apply existance2 _ _ (fun i => isClosedK _ _ _ i hC₁) _
-  convert Set.inter_empty (polar 𝕜₁ (U (n + 2)))
-  exact inter_empty _ _ _ h
+  apply isCompact_iff_finite_subfamily_closed.mp (polarUcompact 𝕜₁ (n+2)) _
+    (fun i => isClosedK _ _ _ i hC₁)
+  rw [inter_empty _ _ _ h]
+  exact Set.inter_empty _
+
 
 /-
 lemma existance [ProperSpace 𝕜] : ∃ u : Finset (Elem (U (E := E) (n + 1))),
