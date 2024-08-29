@@ -61,7 +61,8 @@ def stacksTagFn : ParserFn := fun c s =>
   else
     let tag := Substring.mk c.input i s.pos |>.toString
     if !tag.all fun c => c.isDigit || c.isUpper then
-      ParserState.mkUnexpectedError s "Stacks tags must consist only of digits and uppercase letters."
+      ParserState.mkUnexpectedError s
+        "Stacks tags must consist only of digits and uppercase letters."
     else if tag.length != 4 then
       ParserState.mkUnexpectedError s "Stacks tags must be exactly 4 characters"
     else
