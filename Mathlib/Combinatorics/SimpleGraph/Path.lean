@@ -496,7 +496,7 @@ protected theorem IsPath.of_map {f : G →g G'} (hp : (p.map f).IsPath) : p.IsPa
   | cons _ _ ih =>
     rw [map_cons, Walk.cons_isPath_iff, support_map] at hp
     rw [Walk.cons_isPath_iff]
-    cases' hp with hp1 hp2
+    obtain ⟨hp1, hp2⟩ := hp
     refine ⟨ih hp1, ?_⟩
     contrapose! hp2
     exact List.mem_map_of_mem f hp2

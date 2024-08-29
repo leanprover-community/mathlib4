@@ -50,7 +50,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = s.card) :
     exact fun x hx a ha =>
       ⟨{a}, mem_map_of_mem _ (P.le hx ha), singleton_subset_iff.2 ha, mem_singleton_self _⟩
   -- Prove the case `m > 0` by strong induction on `s`
-  induction' s using Finset.strongInduction with s ih generalizing a b
+  induction s using Finset.strongInduction generalizing a b with | H s ih => _
   -- If `a = b = 0`, then `s = ∅` and we can partition into zero parts
   by_cases hab : a = 0 ∧ b = 0
   · simp only [hab.1, hab.2, add_zero, zero_mul, eq_comm, card_eq_zero, Finset.bot_eq_empty] at hs

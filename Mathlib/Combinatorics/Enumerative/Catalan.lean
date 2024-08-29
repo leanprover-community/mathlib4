@@ -110,11 +110,12 @@ theorem catalan_eq_centralBinom_div (n : ℕ) : catalan n = n.centralBinom / (n 
   suffices (catalan n : ℚ) = Nat.centralBinom n / (n + 1) by
     have h := Nat.succ_dvd_centralBinom n
     exact mod_cast this
-  induction' n using Nat.case_strong_induction_on with d hd
-  · simp
-  · simp_rw [catalan_succ, Nat.cast_sum, Nat.cast_mul]
+  induction n using Nat.caseStrongInductionOn with
+  | zero => simp
+  | ind d hd =>
+    simp_rw [catalan_succ, Nat.cast_sum, Nat.cast_mul]
     trans (∑ i : Fin d.succ, Nat.centralBinom i / (i + 1) *
-                             (Nat.centralBinom (d - i) / (d - i + 1)) : ℚ)
+                            (Nat.centralBinom (d - i) / (d - i + 1)) : ℚ)
     · congr
       ext1 x
       have m_le_d : x.val ≤ d := by apply Nat.le_of_lt_succ; apply x.2
@@ -187,22 +188,24 @@ theorem coe_treesOfNumNodesEq (n : ℕ) :
   Set.ext (by simp)
 
 theorem treesOfNumNodesEq_card_eq_catalan (n : ℕ) : (treesOfNumNodesEq n).card = catalan n := by
-  induction' n using Nat.case_strong_induction_on with n ih
-  · simp
-  rw [treesOfNumNodesEq_succ, card_biUnion, catalan_succ']
-  · apply sum_congr rfl
-    rintro ⟨i, j⟩ H
-    rw [card_map, card_product, ih _ (fst_le H), ih _ (snd_le H)]
-  · simp_rw [disjoint_left]
-    rintro ⟨i, j⟩ _ ⟨i', j'⟩ _
-    -- Porting note: was clear * -; tidy
-    intros h a
-    cases' a with a l r
-    · intro h; simp at h
-    · intro h1 h2
-      apply h
-      trans (numNodes l, numNodes r)
-      · simp at h1; simp [h1]
-      · simp at h2; simp [h2]
+  induction n using Nat.caseStrongInductionOn with
+  | zero => simp
+  | ind n ih =>
+    rw [treesOfNumNodesEq_succ, card_biUnion, catalan_succ']
+    · apply sum_congr rfl
+      rintro ⟨i, j⟩ H
+      rw [card_map, card_product, ih _ (fst_le H), ih _ (snd_le H)]
+    · simp_rw [disjoint_left]
+      rintro ⟨i, j⟩ _ ⟨i', j'⟩ _
+      -- Porting note: was clear * -; tidy
+      intros h a
+      cases a with
+      | nil => intro h; simp at h
+      | node a l r =>
+        intro h1 h2
+        apply h
+        trans (numNodes l, numNodes r)
+        · simp at h1; simp [h1]
+        · simp at h2; simp [h2]
 
 end Tree

@@ -61,8 +61,7 @@ theorem IsMatching.toEdge_eq_of_adj (h : M.IsMatching) (hv : v ∈ M.verts) (hvw
   exact ((h (M.edge_vert hvw)).choose_spec.2 w hvw).symm
 
 theorem IsMatching.toEdge.surjective (h : M.IsMatching) : Surjective h.toEdge := by
-  rintro ⟨e, he⟩
-  induction' e with x y
+  rintro ⟨⟨x, y⟩, he⟩
   exact ⟨⟨x, M.edge_vert he⟩, h.toEdge_eq_of_adj _ he⟩
 
 theorem IsMatching.toEdge_eq_toEdge_of_adj (h : M.IsMatching)

@@ -48,13 +48,14 @@ theorem set_walk_length_succ_eq (u v : V) (n : ℕ) :
     {p : G.Walk u v | p.length = n.succ} =
       ⋃ (w : V) (h : G.Adj u w), Walk.cons h '' {p' : G.Walk w v | p'.length = n} := by
   ext p
-  cases' p with _ _ w _ huw pwv
-  · simp [eq_comm]
-  · simp only [Nat.succ_eq_add_one, Set.mem_setOf_eq, Walk.length_cons, add_left_inj,
+  cases p with
+  | nil => simp [eq_comm]
+  | cons huw pwv =>
+    simp only [Nat.succ_eq_add_one, Set.mem_setOf_eq, Walk.length_cons, add_left_inj,
       Set.mem_iUnion, Set.mem_image, exists_prop]
     constructor
     · rintro rfl
-      exact ⟨w, huw, pwv, rfl, rfl⟩
+      exact ⟨_, huw, pwv, rfl, rfl⟩
     · rintro ⟨w, huw, pwv, rfl, rfl, rfl⟩
       rfl
 
@@ -92,9 +93,11 @@ def finsetWalkLength (n : ℕ) (u v : V) : Finset (G.Walk u v) :=
 
 theorem coe_finsetWalkLength_eq (n : ℕ) (u v : V) :
     (G.finsetWalkLength n u v : Set (G.Walk u v)) = {p : G.Walk u v | p.length = n} := by
-  induction' n with n ih generalizing u v
-  · obtain rfl | huv := eq_or_ne u v <;> simp [finsetWalkLength, set_walk_length_zero_eq_of_ne, *]
-  · simp only [finsetWalkLength, set_walk_length_succ_eq, Finset.coe_biUnion, Finset.mem_coe,
+  induction n generalizing u v with
+  | zero =>
+    obtain rfl | huv := eq_or_ne u v <;> simp [finsetWalkLength, set_walk_length_zero_eq_of_ne, *]
+  | succ n ih =>
+    simp only [finsetWalkLength, set_walk_length_succ_eq, Finset.coe_biUnion, Finset.mem_coe,
       Finset.mem_univ, Set.iUnion_true]
     ext p
     simp only [mem_neighborSet, Finset.coe_map, Embedding.coeFn_mk, Set.iUnion_coe_set,

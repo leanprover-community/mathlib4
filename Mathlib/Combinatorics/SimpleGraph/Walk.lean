@@ -889,11 +889,13 @@ theorem count_support_takeUntil_eq_one {u v w : V} (p : G.Walk v w) (h : u ∈ p
 
 theorem count_edges_takeUntil_le_one {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) (x : V) :
     (p.takeUntil u h).edges.count s(u, x) ≤ 1 := by
-  induction' p with u' u' v' w' ha p' ih
-  · rw [mem_support_nil_iff] at h
+  induction p with
+  | nil =>
+    rw [mem_support_nil_iff] at h
     subst u
     simp!
-  · cases h
+  | cons ha p' ih =>
+    cases h
     · simp!
     · simp! only
       split_ifs with h'
@@ -988,9 +990,11 @@ end WalkDecomp
 there exists a dart in the walk whose start is in `S` but whose end is not. -/
 theorem exists_boundary_dart {u v : V} (p : G.Walk u v) (S : Set V) (uS : u ∈ S) (vS : v ∉ S) :
     ∃ d : G.Dart, d ∈ p.darts ∧ d.fst ∈ S ∧ d.snd ∉ S := by
-  induction' p with _ x y w a p' ih
-  · cases vS uS
-  · by_cases h : y ∈ S
+  induction p with
+  | nil => cases vS uS
+  | cons a p' ih =>
+    rename_i x y w
+    by_cases h : y ∈ S
     · obtain ⟨d, hd, hcd⟩ := ih h vS
       exact ⟨d, List.Mem.tail _ hd, hcd⟩
     · exact ⟨⟨(x, y), a⟩, List.Mem.head _, uS, h⟩

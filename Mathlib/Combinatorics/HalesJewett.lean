@@ -382,9 +382,10 @@ private theorem exists_mono_in_high_dimension' :
       exact Finset.card_le_univ ⟨_, s.distinct_colors⟩
     -- We now prove the key claim, by induction on `r`.
     intro r
-    induction' r with r ihr
+    induction r with
     -- The base case `r = 0` is trivial as the empty collection is color-focused.
-    · exact ⟨Empty, inferInstance, fun C => Or.inl ⟨default, Multiset.card_zero⟩⟩
+    | zero => exact ⟨Empty, inferInstance, fun C => Or.inl ⟨default, Multiset.card_zero⟩⟩
+    | succ r ihr =>
     -- Supposing the key claim holds for `r`, we need to show it for `r+1`. First pick a high
     -- enough dimension `ι` for `r`.
     obtain ⟨ι, _inst, hι⟩ := ihr

@@ -767,7 +767,7 @@ theorem edge_other_incident_set {v : V} {e : Sym2 V} (h : e ∈ G.incidenceSet v
 
 theorem incidence_other_prop {v : V} {e : Sym2 V} (h : e ∈ G.incidenceSet v) :
     G.otherVertexOfIncident h ∈ G.neighborSet v := by
-  cases' h with he hv
+  obtain ⟨he, hv⟩ := h
   rwa [← Sym2.other_spec' hv, mem_edgeSet] at he
 
 -- Porting note: as a simp lemma this does not apply even to itself
