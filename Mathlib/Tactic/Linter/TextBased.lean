@@ -439,9 +439,9 @@ def withVSCodeAbbrev := "
 𝔖𝔙𝔘𝔚ℨ𝔜𝔟𝔞𝔡𝔠𝔣𝔢𝔥𝔤𝔧𝔦𝔩𝔨𝔫𝔪𝔭𝔬𝔯𝔮𝔱𝔰𝔳𝔲𝔵𝔶𝔷¥ϰϱϗϕϖ⊲ϑϐ⊳⊻ěĚď⋮ĎČč₭ϟĮįK⚠ϧ≀℘ϮϜ
 ÐΗ≎𝔻𝔼𝔾𝕁𝕀𝕃𝕄𝕆𝕋𝕊𝕍𝕌𝕏𝕎𝕐𝕓𝕒𝕕𝕔𝕗𝕖𝕙𝕘𝕛𝕚𝕜𝕟𝕞𝕡𝕠𝕣𝕢𝕥𝕤𝕧𝕦𝕩𝕨𝕪𝕫⨯⨿Ϳ"
 
-/-- Other characters already in Mathlib as of Aug. 28, 2024 ==== -/
+/-- Other characters already in Mathlib as of Aug. 28, 2024 -/
 def othersInMathlib := "
-🔍🐙️💡▼\u200cō🏁⏳⏩❓🆕šř✅❌⚬│├┌őか ⟍̂ᘁńć⟋ỳầ⥥ł◿◹－＼◥／◢︎ŽăИваноичŠᴜᵧ´ᴄꜰßᴢᴏᴀꜱɴꟴꞯʟʜ𐞥ᵟʙᵪᵩᵦᴊᴛᴡᴠɪ̀ᴇᴍʀᴅɢʏᴘĝᵨᴋś
+🔍🐙️💡▼cō🏁⏳⏩❓🆕šř✅❌⚬│├┌őか ⟍̂ᘁńć⟋ỳầ⥥ł◿◹－＼◥／◢︎ŽăИваноичŠᴜᵧ´ᴄꜰßᴢᴏᴀꜱɴꟴꞯʟʜ𐞥ᵟʙᵪᵩᵦᴊᴛᴡᴠɪ̀ᴇᴍʀᴅɢʏᴘĝᵨᴋś
 ꙳𝓡𝕝𝖣⨳🎉"
 
 /- TODO there are more symbols we could use that aren't in this list yet. E.g, see
@@ -449,12 +449,12 @@ def othersInMathlib := "
 -/
 
 /--
-TODO make complete and order nicely
+Hash-set of all unicode characters allowed by the unicodeLinter.
 -/
 def unicodeWhitelist : Lean.HashSet Char := Lean.HashSet.ofList <| String.toList <|
   (printableASCII.append withVSCodeAbbrev).append othersInMathlib
 
-/-- Checks if a character is accepted by the unicodeLinter (`unwantedUnicode`)-/
+/-- Checks if a character is unrecommended, according to the unicodeLinter (`unwantedUnicode`)-/
 def isBadChar (c : Char) : Bool := !unicodeWhitelist.contains c
 
 /-- Lint a collection of input strings if one of them contains unwanted unicode. -/
