@@ -7,7 +7,7 @@ import Lean.Meta.CongrTheorems
 import Lean.Meta.Tactic.Rfl
 import Batteries.Data.RBMap.Basic
 import Mathlib.Lean.Meta.Basic
-import Std.Data.HashMap
+import Std.Data.HashMap.Basic
 
 /-!
 # Datatypes for `cc`
