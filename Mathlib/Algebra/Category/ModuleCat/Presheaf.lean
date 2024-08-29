@@ -177,7 +177,7 @@ lemma neg_app (f : P ⟶ Q) (X : Cᵒᵖ) : (-f).app X = -f.app X := rfl
 instance : AddCommGroup (P ⟶ Q) where
   add_assoc := by intros; ext1; simp only [add_app, add_assoc]
   zero_add := by intros; ext1; simp only [add_app, zero_app, zero_add]
-  add_left_neg := by intros; ext1; simp only [add_app, neg_app, add_left_neg, zero_app]
+  neg_add_cancel := by intros; ext1; simp only [add_app, neg_app, neg_add_cancel, zero_app]
   add_zero := by intros; ext1; simp only [add_app, zero_app, add_zero]
   add_comm := by intros; ext1; simp only [add_app]; apply add_comm
   sub_eq_add_neg := by intros; ext1; simp only [add_app, sub_app, neg_app, sub_eq_add_neg]

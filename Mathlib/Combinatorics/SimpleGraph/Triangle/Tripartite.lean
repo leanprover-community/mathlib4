@@ -186,7 +186,6 @@ variable (t)
 lemma map_toTriangle_disjoint [ExplicitDisjoint t] :
     (t.map toTriangle : Set (Finset (α ⊕ β ⊕ γ))).Pairwise
       fun x y ↦ (x ∩ y : Set (α ⊕ β ⊕ γ)).Subsingleton := by
-  clear x
   intro
   simp only [Finset.coe_map, Set.mem_image, Finset.mem_coe, Prod.exists, Ne,
     forall_exists_index, and_imp]

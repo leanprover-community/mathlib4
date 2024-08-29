@@ -47,7 +47,7 @@ instance : Group (RingAut R) where
   mul_assoc _ _ _ := rfl
   one_mul _ := rfl
   mul_one _ := rfl
-  mul_left_inv := RingEquiv.self_trans_symm
+  inv_mul_cancel := RingEquiv.self_trans_symm
 
 instance : Inhabited (RingAut R) :=
   ⟨1⟩

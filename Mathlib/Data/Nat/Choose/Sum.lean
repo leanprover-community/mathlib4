@@ -136,7 +136,7 @@ theorem Int.alternating_sum_range_choose {n : ℕ} :
   | zero => simp
   | succ n =>
     have h := add_pow (-1 : ℤ) 1 n.succ
-    simp only [one_pow, mul_one, add_left_neg] at h
+    simp only [one_pow, mul_one, neg_add_cancel] at h
     rw [← h, zero_pow n.succ_ne_zero, if_neg (Nat.succ_ne_zero n)]
 
 theorem Int.alternating_sum_range_choose_of_ne {n : ℕ} (h0 : n ≠ 0) :

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
 -/
 import Batteries.Data.Nat.Lemmas
-import Batteries.WF
 import Mathlib.Util.AssertExists
 import Mathlib.Data.Nat.Notation
 

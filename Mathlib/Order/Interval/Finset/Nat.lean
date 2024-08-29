@@ -17,8 +17,7 @@ Some lemmas can be generalized using `OrderedGroup`, `CanonicallyOrderedCommMono
 and subsequently be moved upstream to `Order.Interval.Finset`.
 -/
 
--- TODO
--- assert_not_exists Ring
+assert_not_exists Ring
 
 open Finset Nat
 

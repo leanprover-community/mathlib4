@@ -37,9 +37,6 @@ namespace HashCommandLinter
 
 open Lean Elab
 
-/-- Gets the value of the `linter.hashCommand` option. -/
-def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.hashCommand o
-
 open Command in
 /-- Exactly like `withSetOptionIn`, but recursively discards nested uses of `in`.
 Intended to be used in the `hashCommand` linter, where we want to enter `set_option` `in` commands.
@@ -68,7 +65,7 @@ However, in order to avoid local clutter, when `warningAsError` is `false`, the 
 logs a warning only for the `#`-commands that do not already emit a message. -/
 def hashCommandLinter : Linter where run := withSetOptionIn' fun stx => do
   let mod := (← getMainModule).components
-  if getLinterHash (← getOptions) &&
+  if Linter.getLinterValue linter.hashCommand (← getOptions) &&
     ((← get).messages.toList.isEmpty || warningAsError.get (← getOptions)) &&
     -- we check that the module is either not in `test` or, is `test.HashCommandLinter`
     (mod.getD 0 default != `test || (mod == [`test, `HashCommandLinter]))

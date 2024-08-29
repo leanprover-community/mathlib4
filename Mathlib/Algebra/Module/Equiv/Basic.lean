@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne Baanen,
   Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Algebra.Module.Equiv.Defs
 import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.GroupWithZero.Action.Basic
+import Mathlib.Algebra.Module.Equiv.Defs
 import Mathlib.Algebra.Module.Hom
 import Mathlib.Algebra.Module.LinearMap.End
 import Mathlib.Algebra.Module.Pi
-import Mathlib.GroupTheory.GroupAction.Group
 
 /-!
 # Further results on (semi)linear equivalences.
@@ -81,7 +81,7 @@ instance automorphismGroup : Group (M ≃ₗ[R] M) where
   mul_assoc f g h := rfl
   mul_one f := ext fun x ↦ rfl
   one_mul f := ext fun x ↦ rfl
-  mul_left_inv f := ext <| f.left_inv
+  inv_mul_cancel f := ext <| f.left_inv
 
 @[simp]
 lemma coe_one : ↑(1 : M ≃ₗ[R] M) = id := rfl

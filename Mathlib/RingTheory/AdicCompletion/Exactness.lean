@@ -40,6 +40,7 @@ variable {M : Type v} [AddCommGroup M] [Module R M]
 variable {N : Type w} [AddCommGroup N] [Module R N]
 
 variable {f : M →ₗ[R] N} (hf : Function.Surjective f)
+include hf
 
 /- In each step, a preimage is constructed from the preimage of the previous step by
 subtracting this delta. -/
@@ -147,6 +148,7 @@ private noncomputable def mapExactAuxDelta {n : ℕ} {d : N}
 
 open Submodule
 
+include hfg in
 /- Inductively construct preimage of cauchy sequence in kernel of `g.adicCompletion I`. -/
 private noncomputable def mapExactAux :
     (n : ℕ) → { a : M | f a - x (k + n) ∈ (I ^ (k + n) • ⊤ : Submodule R N) }
@@ -177,6 +179,7 @@ private noncomputable def mapExactAux :
 
 end
 
+include hf hfg hg in
 /-- `AdicCompletion` over a Noetherian ring is exact on finitely generated modules. -/
 theorem map_exact : Function.Exact (map I f) (map I g) := by
   refine LinearMap.exact_of_comp_eq_zero_of_ker_le_range ?_ (fun y ↦ ?_)

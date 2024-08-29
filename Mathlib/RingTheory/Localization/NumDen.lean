@@ -105,7 +105,7 @@ theorem isInteger_of_isUnit_den {x : K} (h : IsUnit (den A x : A)) : IsInteger A
   refine _root_.trans ?_ (mk'_num_den A x)
   rw [map_mul, map_units_inv, hd]
   apply mul_left_cancel₀ d_ne_zero
-  rw [← mul_assoc, mul_inv_cancel d_ne_zero, one_mul, mk'_spec']
+  rw [← mul_assoc, mul_inv_cancel₀ d_ne_zero, one_mul, mk'_spec']
 
 theorem isUnit_den_iff (x : K) : IsUnit (den A x : A) ↔ IsLocalization.IsInteger A x where
   mp h := by

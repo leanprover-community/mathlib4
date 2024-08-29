@@ -607,7 +607,8 @@ section Uniform
 
 variable (ι)
 
-/-- A direct sum of copies of a `Semiring` inherits the multiplication structure. -/
+/-- A direct sum of copies of a `NonUnitalNonAssocSemiring` inherits the multiplication structure.
+-/
 instance NonUnitalNonAssocSemiring.directSumGNonUnitalNonAssocSemiring {R : Type*} [AddMonoid ι]
     [NonUnitalNonAssocSemiring R] : DirectSum.GNonUnitalNonAssocSemiring fun _ : ι => R :=
   { -- Porting note: removed Mul.gMul ι with and we seem ok
@@ -618,12 +619,20 @@ instance NonUnitalNonAssocSemiring.directSumGNonUnitalNonAssocSemiring {R : Type
 
 /-- A direct sum of copies of a `Semiring` inherits the multiplication structure. -/
 instance Semiring.directSumGSemiring {R : Type*} [AddMonoid ι] [Semiring R] :
-    DirectSum.GSemiring fun _ : ι => R :=
-  { NonUnitalNonAssocSemiring.directSumGNonUnitalNonAssocSemiring ι,
-    Monoid.gMonoid ι with
-    natCast := fun n => n
-    natCast_zero := Nat.cast_zero
-    natCast_succ := Nat.cast_succ }
+    DirectSum.GSemiring fun _ : ι => R where
+  __ := NonUnitalNonAssocSemiring.directSumGNonUnitalNonAssocSemiring ι
+  __ := Monoid.gMonoid ι
+  natCast n := n
+  natCast_zero := Nat.cast_zero
+  natCast_succ := Nat.cast_succ
+
+/-- A direct sum of copies of a `Ring` inherits the multiplication structure. -/
+instance Ring.directSumGRing {R : Type*} [AddMonoid ι] [Ring R] :
+    DirectSum.GRing fun _ : ι => R where
+  __ := Semiring.directSumGSemiring ι
+  intCast z := z
+  intCast_ofNat := Int.cast_natCast
+  intCast_negSucc_ofNat := Int.cast_negSucc
 
 open DirectSum
 
@@ -632,10 +641,16 @@ example {R : Type*} [AddMonoid ι] [Semiring R] (i j : ι) (a b : R) :
     (DirectSum.of _ i a * DirectSum.of _ j b : ⨁ _, R) = DirectSum.of _ (i + j) (a * b) := by
   rw [DirectSum.of_mul_of, Mul.gMul_mul]
 
-/-- A direct sum of copies of a `CommSemiring` inherits the commutative multiplication structure.
--/
+/-- A direct sum of copies of a `CommSemiring` inherits the commutative multiplication structure. -/
 instance CommSemiring.directSumGCommSemiring {R : Type*} [AddCommMonoid ι] [CommSemiring R] :
-    DirectSum.GCommSemiring fun _ : ι => R :=
-  { CommMonoid.gCommMonoid ι, Semiring.directSumGSemiring ι with }
+    DirectSum.GCommSemiring fun _ : ι => R where
+  __ := Semiring.directSumGSemiring ι
+  __ := CommMonoid.gCommMonoid ι
+
+/-- A direct sum of copies of a `CommRing` inherits the commutative multiplication structure. -/
+instance CommmRing.directSumGCommRing {R : Type*} [AddCommMonoid ι] [CommRing R] :
+    DirectSum.GCommRing fun _ : ι => R where
+  __ := Ring.directSumGRing ι
+  __ := CommMonoid.gCommMonoid ι
 
 end Uniform

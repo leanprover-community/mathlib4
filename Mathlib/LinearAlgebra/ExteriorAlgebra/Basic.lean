@@ -86,6 +86,7 @@ variable {R}
 theorem ι_sq_zero (m : M) : ι R m * ι R m = 0 :=
   (CliffordAlgebra.ι_sq_scalar _ m).trans <| map_zero _
 
+section
 variable {A : Type*} [Semiring A] [Algebra R A]
 
 -- @[simp] -- Porting note (#10618): simp can prove this
@@ -255,6 +256,8 @@ theorem ι_mul_prod_list {n : ℕ} (f : Fin n → M) (i : Fin n) :
       refine (eq_zero_iff_eq_zero_of_add_eq_zero ?_).mp hn
       rw [← add_mul, ι_add_mul_swap, zero_mul]
 
+end
+
 variable (R)
 
 /-- The product of `n` terms of the form `ι R m` is an alternating map.
@@ -268,7 +271,7 @@ def ιMulti (n : ℕ) : M [⋀^Fin n]→ₗ[R] ExteriorAlgebra R M :=
       dsimp [F]
       clear F
       wlog h : x < y
-      · exact this R (A := A) n f y x hfxy.symm hxy.symm (hxy.lt_or_lt.resolve_left h)
+      · exact this R n f y x hfxy.symm hxy.symm (hxy.lt_or_lt.resolve_left h)
       clear hxy
       induction' n with n hn
       · exact x.elim0

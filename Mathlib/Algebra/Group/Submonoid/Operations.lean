@@ -305,6 +305,7 @@ def gciMapComap (hf : Function.Injective f) : GaloisCoinsertion (map f) (comap f
   (gc_map_comap f).toGaloisCoinsertion fun S x => by simp [mem_comap, mem_map, hf.eq_iff]
 
 variable (hf : Function.Injective f)
+include hf
 
 @[to_additive]
 theorem comap_map_eq_of_injective (S : Submonoid M) : (S.map f).comap f = S :=
@@ -346,14 +347,17 @@ end GaloisCoinsertion
 
 section GaloisInsertion
 
-variable {ι : Type*} {f : F} (hf : Function.Surjective f)
+variable {ι : Type*} {f : F}
 
 /-- `map f` and `comap f` form a `GaloisInsertion` when `f` is surjective. -/
 @[to_additive " `map f` and `comap f` form a `GaloisInsertion` when `f` is surjective. "]
-def giMapComap : GaloisInsertion (map f) (comap f) :=
+def giMapComap (hf : Function.Surjective f) : GaloisInsertion (map f) (comap f) :=
   (gc_map_comap f).toGaloisInsertion fun S x h =>
     let ⟨y, hy⟩ := hf x
     mem_map.2 ⟨y, by simp [hy, h]⟩
+
+variable (hf : Function.Surjective f)
+include hf
 
 @[to_additive]
 theorem map_comap_eq_of_surjective (S : Submonoid N) : (S.comap f).map f = S :=

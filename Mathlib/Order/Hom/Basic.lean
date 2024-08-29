@@ -69,6 +69,8 @@ We also define two functions to convert other bundled maps to `α →o β`:
 monotone map, bundled morphism
 -/
 
+-- Developments relating order homs and sets belong in `Order.Hom.Set` or later.
+assert_not_exists Set.range
 
 open OrderDual
 
@@ -1239,6 +1241,3 @@ theorem OrderIso.complementedLattice_iff (f : α ≃o β) :
 end BoundedOrder
 
 end LatticeIsos
-
--- Developments relating order homs and sets belong in `Order.Hom.Set` or later.
-assert_not_exists Set.range

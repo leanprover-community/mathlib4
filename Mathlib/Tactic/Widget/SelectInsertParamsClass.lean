@@ -43,5 +43,5 @@ def mkSelectInsertParamsInstanceHandler (declNames : Array Name) : CommandElabM 
   else
     return false
 
-initialize registerDerivingHandler `SelectInsertParamsClass mkSelectInsertParamsInstanceHandler
+initialize registerDerivingHandler ``SelectInsertParamsClass mkSelectInsertParamsInstanceHandler
 end Lean.Elab

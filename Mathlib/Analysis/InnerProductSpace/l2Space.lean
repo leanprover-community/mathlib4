@@ -85,7 +85,7 @@ open scoped NNReal ENNReal ComplexConjugate Topology
 noncomputable section
 
 variable {ι 𝕜 : Type*} [RCLike 𝕜] {E : Type*}
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [cplt : CompleteSpace E]
+variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 variable {G : ι → Type*} [∀ i, NormedAddCommGroup (G i)] [∀ i, InnerProductSpace 𝕜 (G i)]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
@@ -175,9 +175,11 @@ end lp
 
 namespace OrthogonalFamily
 
-variable {V : ∀ i, G i →ₗᵢ[𝕜] E} (hV : OrthogonalFamily 𝕜 G V)
+variable [CompleteSpace E] {V : ∀ i, G i →ₗᵢ[𝕜] E} (hV : OrthogonalFamily 𝕜 G V)
+include hV
 
-protected theorem summable_of_lp (f : lp G 2) : Summable fun i => V i (f i) := by
+protected theorem summable_of_lp (f : lp G 2) :
+    Summable fun i => V i (f i) := by
   rw [hV.summable_iff_norm_sq_summable]
   convert (lp.memℓp f).summable _
   · norm_cast
@@ -254,7 +256,7 @@ end OrthogonalFamily
 section IsHilbertSum
 
 variable (𝕜 G)
-variable (V : ∀ i, G i →ₗᵢ[𝕜] E) (F : ι → Submodule 𝕜 E)
+variable [CompleteSpace E] (V : ∀ i, G i →ₗᵢ[𝕜] E) (F : ι → Submodule 𝕜 E)
 
 /-- Given a family of Hilbert spaces `G : ι → Type*`, a Hilbert sum of `G` consists of a Hilbert
 space `E` and an orthogonal family `V : Π i, G i →ₗᵢ[𝕜] E` such that the induced isometry
@@ -492,7 +494,11 @@ theorem finite_spans_dense [DecidableEq E] (b : HilbertBasis ι 𝕜 E) :
       Set.mem_iUnion_of_mem {i} <| Finset.mem_coe.mpr <| Finset.mem_image_of_mem _ <|
       Finset.mem_singleton_self i))
 
+variable [CompleteSpace E]
+
+section
 variable {v : ι → E} (hv : Orthonormal 𝕜 v)
+include hv
 
 /-- An orthonormal family of vectors whose span is dense in the whole module is a Hilbert basis. -/
 protected def mk (hsp : ⊤ ≤ (span 𝕜 (Set.range v)).topologicalClosure) : HilbertBasis ι 𝕜 E :=
@@ -528,6 +534,8 @@ protected def _root_.OrthonormalBasis.toHilbertBasis [Fintype ι] (b : Orthonorm
   HilbertBasis.mk b.orthonormal <| by
     simpa only [← OrthonormalBasis.coe_toBasis, b.toBasis.span_eq, eq_top_iff] using
       @subset_closure E _ _
+
+end
 
 @[simp]
 theorem _root_.OrthonormalBasis.coe_toHilbertBasis [Fintype ι] (b : OrthonormalBasis ι 𝕜 E) :

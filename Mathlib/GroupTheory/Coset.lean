@@ -196,7 +196,7 @@ theorem leftCoset_eq_iff {x y : α} : x • (s : Set α) = y • s ↔ x⁻¹ * 
   constructor
   · intro h
     apply (h y).mpr
-    rw [mul_left_inv]
+    rw [inv_mul_cancel]
     exact s.one_mem
   · intro h z
     rw [← mul_inv_cancel_right x⁻¹ y]
@@ -210,7 +210,7 @@ theorem rightCoset_eq_iff {x y : α} : op x • (s : Set α) = op y • s ↔ y 
   constructor
   · intro h
     apply (h y).mpr
-    rw [mul_right_inv]
+    rw [mul_inv_cancel]
     exact s.one_mem
   · intro h z
     rw [← inv_mul_cancel_left y x⁻¹]

@@ -186,10 +186,10 @@ def g : B →* SX' where
       invFun := fun x => β⁻¹ • x
       left_inv := fun x => by
         dsimp only
-        rw [← mul_smul, mul_left_inv, one_smul]
+        rw [← mul_smul, inv_mul_cancel, one_smul]
       right_inv := fun x => by
         dsimp only
-        rw [← mul_smul, mul_right_inv, one_smul] }
+        rw [← mul_smul, mul_inv_cancel, one_smul] }
   map_one' := by
     ext
     simp [one_smul]
@@ -253,7 +253,7 @@ theorem h_apply_fromCoset_nin_range (x : B) (hx : x ∈ f.range) (b : B) (hb : b
   simp only [g_apply_fromCoset, leftCoset_assoc]
   refine Equiv.swap_apply_of_ne_of_ne (fromCoset_ne_of_nin_range _ fun r => hb ?_) (by simp)
   convert Subgroup.mul_mem _ (Subgroup.inv_mem _ hx) r
-  rw [← mul_assoc, mul_left_inv, one_mul]
+  rw [← mul_assoc, inv_mul_cancel, one_mul]
 
 theorem agree : f.range = { x | h x = g x } := by
   refine Set.ext fun b => ⟨?_, fun hb : h b = g b => by_contradiction fun r => ?_⟩

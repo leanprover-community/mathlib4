@@ -323,7 +323,7 @@ instance instDivInvMonoid : DivInvMonoid αˣ where
 /-- Units of a monoid form a group. -/
 @[to_additive "Additive units of an additive monoid form an additive group."]
 instance instGroup : Group αˣ where
-  mul_left_inv := fun u => ext u.inv_val
+  inv_mul_cancel := fun u => ext u.inv_val
 
 /-- Units of a commutative monoid form a commutative group. -/
 @[to_additive "Additive units of an additive commutative monoid form
@@ -912,7 +912,8 @@ lemma divp_eq_div [DivisionMonoid α] (a : α) (u : αˣ) : a /ₚ u = a / u := 
   rw [div_eq_mul_inv, divp, u.val_inv_eq_inv_val]
 
 @[to_additive]
-lemma Group.isUnit [Group α] (a : α) : IsUnit a := ⟨⟨a, a⁻¹, mul_inv_self _, inv_mul_self _⟩, rfl⟩
+lemma Group.isUnit [Group α] (a : α) : IsUnit a :=
+  ⟨⟨a, a⁻¹, mul_inv_cancel _, inv_mul_cancel _⟩, rfl⟩
 
 -- namespace
 end IsUnit
@@ -930,7 +931,7 @@ noncomputable def invOfIsUnit [Monoid M] (h : ∀ a : M, IsUnit a) : Inv M where
 noncomputable def groupOfIsUnit [hM : Monoid M] (h : ∀ a : M, IsUnit a) : Group M :=
   { hM with
     toInv := invOfIsUnit h,
-    mul_left_inv := fun a => by
+    inv_mul_cancel := fun a => by
       change ↑(h a).unit⁻¹ * a = 1
       rw [Units.inv_mul_eq_iff_eq_mul, (h a).unit_spec, mul_one] }
 
@@ -938,7 +939,7 @@ noncomputable def groupOfIsUnit [hM : Monoid M] (h : ∀ a : M, IsUnit a) : Grou
 noncomputable def commGroupOfIsUnit [hM : CommMonoid M] (h : ∀ a : M, IsUnit a) : CommGroup M :=
   { hM with
     toInv := invOfIsUnit h,
-    mul_left_inv := fun a => by
+    inv_mul_cancel := fun a => by
       change ↑(h a).unit⁻¹ * a = 1
       rw [Units.inv_mul_eq_iff_eq_mul, (h a).unit_spec, mul_one] }
 

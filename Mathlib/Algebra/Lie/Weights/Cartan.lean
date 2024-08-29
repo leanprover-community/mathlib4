@@ -258,9 +258,9 @@ Note that the name "coroot space" is not standard as this space does not seem to
 informal literature. -/
 def corootSpace : LieIdeal R H :=
   LieModuleHom.range <| ((rootSpace H 0).incl.comp <|
-    rootSpaceProduct R L H α (-α) 0 (add_neg_self α)).codRestrict H.toLieSubmodule (by
+    rootSpaceProduct R L H α (-α) 0 (add_neg_cancel α)).codRestrict H.toLieSubmodule (by
   rw [← rootSpace_zero_eq]
-  exact fun p ↦ (rootSpaceProduct R L H α (-α) 0 (add_neg_self α) p).property)
+  exact fun p ↦ (rootSpaceProduct R L H α (-α) 0 (add_neg_cancel α) p).property)
 
 lemma mem_corootSpace {x : H} :
     x ∈ corootSpace α ↔
@@ -291,7 +291,7 @@ lemma mem_corootSpace' {x : H} :
     exists_and_right, exists_eq_right, mem_setOf_eq, s]
   refine ⟨fun ⟨_, y, hy, z, hz, hyz⟩ ↦ ⟨y, hy, z, hz, hyz⟩,
     fun ⟨y, hy, z, hz, hyz⟩ ↦ ⟨?_, y, hy, z, hz, hyz⟩⟩
-  convert (rootSpaceProduct R L H α (-α) 0 (add_neg_self α) (⟨y, hy⟩ ⊗ₜ[R] ⟨z, hz⟩)).property
+  convert (rootSpaceProduct R L H α (-α) 0 (add_neg_cancel α) (⟨y, hy⟩ ⊗ₜ[R] ⟨z, hz⟩)).property
   simp [hyz]
 
 end LieAlgebra

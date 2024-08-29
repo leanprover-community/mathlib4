@@ -112,10 +112,10 @@ namespace Functor
 namespace IsCoverDense
 
 variable {K}
-variable {A : Type*} [Category A] (G : C ⥤ D) [G.IsCoverDense K]
+variable {A : Type*} [Category A] (G : C ⥤ D)
 
 -- this is not marked with `@[ext]` because `H` can not be inferred from the type
-theorem ext (ℱ : SheafOfTypes K) (X : D) {s t : ℱ.val.obj (op X)}
+theorem ext [G.IsCoverDense K] (ℱ : SheafOfTypes K) (X : D) {s t : ℱ.val.obj (op X)}
     (h : ∀ ⦃Y : C⦄ (f : G.obj Y ⟶ X), ℱ.val.map f.op s = ℱ.val.map f.op t) : s = t := by
   apply (ℱ.cond (Sieve.coverByImage G X) (G.is_cover_of_isCoverDense K X)).isSeparatedFor.ext
   rintro Y _ ⟨Z, f₁, f₂, ⟨rfl⟩⟩
@@ -123,7 +123,7 @@ theorem ext (ℱ : SheafOfTypes K) (X : D) {s t : ℱ.val.obj (op X)}
 
 variable {G}
 
-theorem functorPullback_pushforward_covering [G.IsLocallyFull K] {X : C}
+theorem functorPullback_pushforward_covering [G.IsCoverDense K] [G.IsLocallyFull K] {X : C}
     (T : K (G.obj X)) : (T.val.functorPullback G).functorPushforward G ∈ K (G.obj X) := by
   refine K.transitive T.2 _ fun Y iYX hiYX ↦ ?_
   apply K.transitive (G.is_cover_of_isCoverDense _ _) _
@@ -154,13 +154,11 @@ theorem sheaf_eq_amalgamation (ℱ : Sheaf K A) {X : A} {U : D} {T : Sieve U} (h
     t = (ℱ.cond X T hT).amalgamate x hx :=
   (ℱ.cond X T hT).isSeparatedFor x t _ h ((ℱ.cond X T hT).isAmalgamation hx)
 
-variable [G.IsLocallyFull K]
-
 namespace Types
 
 variable {ℱ : Dᵒᵖ ⥤ Type v} {ℱ' : SheafOfTypes.{v} K} (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val)
 
-theorem naturality_apply {X Y : C} (i : G.obj X ⟶ G.obj Y) (x) :
+theorem naturality_apply [G.IsLocallyFull K] {X Y : C} (i : G.obj X ⟶ G.obj Y) (x) :
     ℱ'.1.map i.op (α.app _ x) = α.app _ (ℱ.map i.op x) := by
   have {X Y} (i : X ⟶ Y) (x) :
       ℱ'.1.map (G.map i).op (α.app _ x) = α.app _ (ℱ.map (G.map i).op x) := by
@@ -169,7 +167,7 @@ theorem naturality_apply {X Y : C} (i : G.obj X ⟶ G.obj Y) (x) :
   simp only [comp_obj, types_comp_apply, ← FunctorToTypes.map_comp_apply, ← op_comp, ← e, this]
 
 @[reassoc]
-theorem naturality {X Y : C} (i : G.obj X ⟶ G.obj Y) :
+theorem naturality [G.IsLocallyFull K] {X Y : C} (i : G.obj X ⟶ G.obj Y) :
     α.app _ ≫ ℱ'.1.map i.op = ℱ.map i.op ≫ α.app _ := types_ext _ _ (naturality_apply α i)
 
 /--
@@ -188,6 +186,17 @@ noncomputable def pushforwardFamily {X} (x : ℱ.obj (op X)) :
 @[simp] theorem pushforwardFamily_def {X} (x : ℱ.obj (op X)) :
     pushforwardFamily α x = fun _ _ hf =>
   ℱ'.val.map hf.some.lift.op <| α.app (op _) (ℱ.map hf.some.map.op x : _) := rfl
+
+@[simp]
+theorem pushforwardFamily_apply [G.IsLocallyFull K]
+    {X} (x : ℱ.obj (op X)) {Y : C} (f : G.obj Y ⟶ X) :
+    pushforwardFamily α x f (Presieve.in_coverByImage G f) = α.app (op Y) (ℱ.map f.op x) := by
+  simp only [pushforwardFamily_def, op_obj]
+  generalize Nonempty.some (Presieve.in_coverByImage G f) = l
+  obtain ⟨W, iYW, iWX, rfl⟩ := l
+  simp only [← op_comp, ← FunctorToTypes.map_comp_apply, naturality_apply]
+
+variable [G.IsCoverDense K] [G.IsLocallyFull K]
 
 /-- (Implementation). The `pushforwardFamily` defined is compatible. -/
 theorem pushforwardFamily_compatible {X} (x : ℱ.obj (op X)) :
@@ -211,14 +220,6 @@ theorem pushforwardFamily_compatible {X} (x : ℱ.obj (op X)) :
 noncomputable def appHom (X : D) : ℱ.obj (op X) ⟶ ℱ'.val.obj (op X) := fun x =>
   (ℱ'.cond _ (G.is_cover_of_isCoverDense _ X)).amalgamate (pushforwardFamily α x)
     (pushforwardFamily_compatible α x)
-
-@[simp]
-theorem pushforwardFamily_apply {X} (x : ℱ.obj (op X)) {Y : C} (f : G.obj Y ⟶ X) :
-    pushforwardFamily α x f (Presieve.in_coverByImage G f) = α.app (op Y) (ℱ.map f.op x) := by
-  simp only [pushforwardFamily_def, op_obj]
-  generalize Nonempty.some (Presieve.in_coverByImage G f) = l
-  obtain ⟨W, iYW, iWX, rfl⟩ := l
-  simp only [← op_comp, ← FunctorToTypes.map_comp_apply, naturality_apply]
 
 @[simp]
 theorem appHom_restrict {X : D} {Y : C} (f : op X ⟶ op (G.obj Y)) (x) :
@@ -298,7 +299,7 @@ end Types
 
 open Types
 
-variable {ℱ : Dᵒᵖ ⥤ A} {ℱ' : Sheaf K A}
+variable [G.IsCoverDense K] [G.IsLocallyFull K] {ℱ : Dᵒᵖ ⥤ A} {ℱ' : Sheaf K A}
 
 /-- (Implementation). The sheaf map given in `types.sheaf_hom` is natural in terms of `X`. -/
 @[simps]
@@ -499,8 +500,7 @@ lemma whiskerLeft_obj_map_bijective_of_isCoverDense (G : C ⥤ D)
     Function.Bijective (((whiskeringLeft Cᵒᵖ Dᵒᵖ A).obj G.op).map : (P ⟶ Q) → _) :=
   (IsCoverDense.restrictHomEquivHom (ℱ' := ⟨Q, hQ⟩)).symm.bijective
 
-variable {A : Type*} [Category A]
-variable (J : GrothendieckTopology C) (K : GrothendieckTopology D) (G : C ⥤ D)
+variable {A : Type*} [Category A] (G : C ⥤ D)
 
 /-- The functor `G : C ⥤ D` exhibits `(C, J)` as a dense subsite of `(D, K)`
 if `G` is cover-dense, locally fully-faithful,
@@ -518,44 +518,46 @@ namespace IsDenseSubsite
 
 variable [G.IsDenseSubsite J K]
 
+include J K
+
 lemma isCoverDense : G.IsCoverDense K := isCoverDense' J
 lemma isLocallyFull : G.IsLocallyFull K := isLocallyFull' J
 lemma isLocallyFaithful : G.IsLocallyFaithful K := isLocallyFaithful' J
 
-lemma coverPreserving [G.IsDenseSubsite J K] : CoverPreserving J K G :=
+lemma coverPreserving : CoverPreserving J K G :=
   ⟨functorPushforward_mem_iff.mpr⟩
 
-instance (priority := 900) [G.IsDenseSubsite J K] : G.IsContinuous J K :=
+instance (priority := 900) : G.IsContinuous J K :=
   letI := IsDenseSubsite.isCoverDense J K G
   letI := IsDenseSubsite.isLocallyFull J K G
   letI := IsDenseSubsite.isLocallyFaithful J K G
   IsCoverDense.isContinuous J K G (IsDenseSubsite.coverPreserving J K G)
 
-instance (priority := 900) [G.IsDenseSubsite J K] : G.IsCocontinuous J K where
+instance (priority := 900) : G.IsCocontinuous J K where
   cover_lift hS :=
     letI := IsDenseSubsite.isCoverDense J K G
     letI := IsDenseSubsite.isLocallyFull J K G
     IsDenseSubsite.functorPushforward_mem_iff.mp
       (IsCoverDense.functorPullback_pushforward_covering ⟨_, hS⟩)
 
-instance full_sheafPushforwardContinuous [G.IsDenseSubsite J K] :
+instance full_sheafPushforwardContinuous :
     Full (G.sheafPushforwardContinuous A J K) :=
   letI := IsDenseSubsite.isCoverDense J K G
   letI := IsDenseSubsite.isLocallyFull J K G
   inferInstance
 
-instance faithful_sheafPushforwardContinuous [G.IsDenseSubsite J K] :
+instance faithful_sheafPushforwardContinuous :
     Faithful (G.sheafPushforwardContinuous A J K) :=
   letI := IsDenseSubsite.isCoverDense J K G
   letI := IsDenseSubsite.isLocallyFull J K G
   inferInstance
 
-lemma imageSieve_mem [G.IsDenseSubsite J K] {U V} (f : G.obj U ⟶ G.obj V) :
+lemma imageSieve_mem {U V} (f : G.obj U ⟶ G.obj V) :
     G.imageSieve f ∈ J _ :=
   letI := IsDenseSubsite.isLocallyFull J K G
   IsDenseSubsite.functorPushforward_mem_iff.mp (G.functorPushforward_imageSieve_mem K f)
 
-lemma equalizer_mem [G.IsDenseSubsite J K] {U V} (f₁ f₂ : U ⟶ V) (e : G.map f₁ = G.map f₂) :
+lemma equalizer_mem {U V} (f₁ f₂ : U ⟶ V) (e : G.map f₁ = G.map f₂) :
     Sieve.equalizer f₁ f₂ ∈ J _ :=
   letI := IsDenseSubsite.isLocallyFaithful J K G
   IsDenseSubsite.functorPushforward_mem_iff.mp (G.functorPushforward_equalizer_mem K f₁ f₂ e)
@@ -577,6 +579,7 @@ variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
 variable {A : Type w} [Category.{w'} A] [∀ X, Limits.HasLimitsOfShape (StructuredArrow X G.op) A]
 variable [G.IsDenseSubsite J K]
 
+include K in
 lemma isIso_ranCounit_app_of_isDenseSubsite (Y : Sheaf J A) (U X) :
     IsIso ((yoneda.map ((G.op.ranCounit.app Y.val).app (op U))).app (op X)) := by
   rw [isIso_iff_bijective]

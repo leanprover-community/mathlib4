@@ -478,6 +478,7 @@ def gciMapComap (hf : Function.Injective f) : GaloisCoinsertion (map f) (comap f
   (gc_map_comap f).toGaloisCoinsertion fun S x => by simp [mem_comap, mem_map, hf.eq_iff]
 
 variable (hf : Function.Injective f)
+include hf
 
 theorem comap_map_eq_of_injective (S : L.Substructure M) : (S.map f).comap f = S :=
   (gciMapComap hf).u_l_eq _
@@ -513,6 +514,7 @@ end GaloisCoinsertion
 section GaloisInsertion
 
 variable {ι : Type*} {f : M →[L] N} (hf : Function.Surjective f)
+include hf
 
 /-- `map f` and `comap f` form a `GaloisInsertion` when `f` is surjective. -/
 def giMapComap : GaloisInsertion (map f) (comap f) :=
@@ -887,6 +889,10 @@ theorem range_subtype (S : L.Substructure M) : S.subtype.toHom.range = S := by
   refine ⟨?_, fun h => ⟨⟨x, h⟩, rfl⟩⟩
   rintro ⟨⟨y, hy⟩, rfl⟩
   exact hy
+
+@[simp]
+lemma subtype_comp_inclusion {S T : L.Substructure M} (h : S ≤ T) :
+    T.subtype.comp (inclusion h) = S.subtype := rfl
 
 end Substructure
 

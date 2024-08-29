@@ -444,7 +444,7 @@ theorem HasFDerivAt.lim (hf : HasFDerivAt f f' x) (v : E) {α : Type*} {c : α �
   refine (eventually_ne_of_tendsto_norm_atTop hc (0 : 𝕜)).mono fun y hy => ?_
   convert mem_of_mem_nhds hU
   dsimp only
-  rw [← mul_smul, mul_inv_cancel hy, one_smul]
+  rw [← mul_smul, mul_inv_cancel₀ hy, one_smul]
 
 theorem HasFDerivAt.unique (h₀ : HasFDerivAt f f₀' x) (h₁ : HasFDerivAt f f₁' x) : f₀' = f₁' := by
   rw [← hasFDerivWithinAt_univ] at h₀ h₁

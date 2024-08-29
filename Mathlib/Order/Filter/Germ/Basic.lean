@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov, Abhimanyu Pallavi Sudhir
+Authors: Yury Kudryashov, Abhimanyu Pallavi Sudhir
 -/
 import Mathlib.Order.Filter.Basic
 import Mathlib.Algebra.Module.Pi
@@ -502,7 +502,7 @@ instance instDivisionMonoid [DivisionMonoid G] : DivisionMonoid (Germ l G) where
 
 @[to_additive]
 instance instGroup [Group G] : Group (Germ l G) :=
-  { mul_left_inv := Quotient.ind' fun _ => congrArg ofFun <| mul_left_inv _ }
+  { inv_mul_cancel := Quotient.ind' fun _ => congrArg ofFun <| inv_mul_cancel _ }
 
 @[to_additive]
 instance instCommGroup [CommGroup G] : CommGroup (Germ l G) :=

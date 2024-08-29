@@ -55,8 +55,7 @@ class LinearWeights [LieAlgebra.IsNilpotent R L] : Prop :=
 
 namespace Weight
 
-variable [LieAlgebra.IsNilpotent R L] [LinearWeights R L M]
-    [NoZeroSMulDivisors R M] [IsNoetherian R M] (χ : Weight R L M)
+variable [LieAlgebra.IsNilpotent R L] [LinearWeights R L M] (χ : Weight R L M)
 
 /-- A weight of a Lie module, bundled as a linear map. -/
 @[simps]
@@ -155,7 +154,7 @@ instance instLinearWeightsOfCharZero [CharZero R] :
 
 end FiniteDimensional
 
-variable [LieAlgebra.IsNilpotent R L] [LinearWeights R L M] (χ : L → R)
+variable [LieAlgebra.IsNilpotent R L] (χ : L → R)
 
 /-- A type synonym for the `χ`-weight space but with the action of `x : L` on `m : weightSpace M χ`,
 shifted to act as `⁅x, m⁆ - χ x • m`. -/
@@ -165,6 +164,8 @@ namespace shiftedWeightSpace
 
 private lemma aux [h : Nontrivial (shiftedWeightSpace R L M χ)] : weightSpace M χ ≠ ⊥ :=
   (LieSubmodule.nontrivial_iff_ne_bot _ _ _).mp h
+
+variable [LinearWeights R L M]
 
 instance : LieRingModule L (shiftedWeightSpace R L M χ) where
   bracket x m := ⁅x, m⁆ - χ x • m
@@ -217,7 +218,7 @@ end shiftedWeightSpace
 /-- Given a Lie module `M` of a Lie algebra `L` with coefficients in `R`, if a function `χ : L → R`
 has a simultaneous generalized eigenvector for the action of `L` then it has a simultaneous true
 eigenvector, provided `M` is Noetherian and has linear weights. -/
-lemma exists_forall_lie_eq_smul [IsNoetherian R M] (χ : Weight R L M) :
+lemma exists_forall_lie_eq_smul [LinearWeights R L M] [IsNoetherian R M] (χ : Weight R L M) :
     ∃ m : M, m ≠ 0 ∧ ∀ x : L, ⁅x, m⁆ = χ x • m := by
   replace hχ : Nontrivial (shiftedWeightSpace R L M χ) :=
     (LieSubmodule.nontrivial_iff_ne_bot R L M).mpr χ.weightSpace_ne_bot

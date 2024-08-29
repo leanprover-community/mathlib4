@@ -140,7 +140,7 @@ theorem mul_hatInv_cancel {x : hat K} (x_ne : x ≠ 0) : x * hatInv x = 1 := by
     rw [mem_compl_singleton_iff] at z_ne
     dsimp [f]
     rw [hatInv_extends z_ne, ← coe_mul]
-    rw [mul_inv_cancel z_ne, coe_one]
+    rw [mul_inv_cancel₀ z_ne, coe_one]
   replace fxclo := closure_mono this fxclo
   rwa [closure_singleton, mem_singleton_iff] at fxclo
 

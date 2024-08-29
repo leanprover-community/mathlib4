@@ -381,6 +381,11 @@ theorem isOpenMap_iff_interior : IsOpenMap f ↔ ∀ s, f '' interior s ⊆ inte
 protected theorem Inducing.isOpenMap (hi : Inducing f) (ho : IsOpen (range f)) : IsOpenMap f :=
   IsOpenMap.of_nhds_le fun _ => (hi.map_nhds_of_mem _ <| IsOpen.mem_nhds ho <| mem_range_self _).ge
 
+/-- Preimage of a dense set under an open map is dense. -/
+protected theorem Dense.preimage {s : Set Y} (hs : Dense s) (hf : IsOpenMap f) :
+    Dense (f ⁻¹' s) :=  fun x ↦
+  hf.preimage_closure_subset_closure_preimage <| hs (f x)
+
 end OpenMap
 
 section IsClosedMap
@@ -553,6 +558,10 @@ theorem of_comp (f : X → Y) (hg : OpenEmbedding g)
 
 theorem of_isEmpty [IsEmpty X] (f : X → Y) : OpenEmbedding f :=
   openEmbedding_of_embedding_open (.of_subsingleton f) (IsOpenMap.of_isEmpty f)
+
+theorem image_mem_nhds {f : X → Y} (hf : OpenEmbedding f) {s : Set X} {x : X} :
+    f '' s ∈ 𝓝 (f x) ↔ s ∈ 𝓝 x := by
+  rw [← hf.map_nhds_eq, mem_map, preimage_image_eq _ hf.inj]
 
 end OpenEmbedding
 

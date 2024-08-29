@@ -71,9 +71,6 @@ namespace MeasureTheory
 
 variable {α F F' 𝕜 : Type*} {p : ℝ≥0∞} [RCLike 𝕜]
   -- 𝕜 for ℝ or ℂ
-  -- F for a Lp submodule
-  [NormedAddCommGroup F]
-  [NormedSpace 𝕜 F]
   -- F' for integrals on a Lp submodule
   [NormedAddCommGroup F']
   [NormedSpace 𝕜 F'] [NormedSpace ℝ F'] [CompleteSpace F']
@@ -251,7 +248,7 @@ theorem condexp_bot' [hμ : NeZero μ] (f : α → F') :
   rw [h_eq]
   have h_integral : ∫ x, (μ[f|⊥]) x ∂μ = ∫ x, f x ∂μ := integral_condexp bot_le
   simp_rw [h_eq, integral_const] at h_integral
-  rw [← h_integral, ← smul_assoc, smul_eq_mul, inv_mul_cancel, one_smul]
+  rw [← h_integral, ← smul_assoc, smul_eq_mul, inv_mul_cancel₀, one_smul]
   rw [Ne, ENNReal.toReal_eq_zero_iff, not_or]
   exact ⟨NeZero.ne _, measure_ne_top μ Set.univ⟩
 

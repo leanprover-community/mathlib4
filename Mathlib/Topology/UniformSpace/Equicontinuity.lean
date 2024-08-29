@@ -567,7 +567,7 @@ theorem uniformEquicontinuousOn_iInf_rng {u : κ → UniformSpace α'} {F : ι �
 theorem equicontinuousWithinAt_iInf_dom {t : κ → TopologicalSpace X'} {F : ι → X' → α}
     {S : Set X'} {x₀ : X'} {k : κ} (hk : EquicontinuousWithinAt (tX := t k) F S x₀) :
     EquicontinuousWithinAt (tX := ⨅ k, t k) F S x₀ := by
-  simp [equicontinuousWithinAt_iff_continuousWithinAt (tX := _)] at hk ⊢
+  simp only [equicontinuousWithinAt_iff_continuousWithinAt (tX := _)] at hk ⊢
   unfold ContinuousWithinAt nhdsWithin at hk ⊢
   rw [nhds_iInf]
   exact hk.mono_left <| inf_le_inf_right _ <| iInf_le _ k

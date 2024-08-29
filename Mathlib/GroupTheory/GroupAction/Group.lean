@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Group.Action.Basic
-import Mathlib.Algebra.Group.Aut
 import Mathlib.Algebra.Group.Invertible.Basic
 import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.GroupWithZero.Units.Basic
+import Mathlib.Algebra.SMulWithZero
 
 /-!
 # Group actions applied to various types of group
@@ -62,15 +62,6 @@ theorem Commute.smul_left_iff₀ [Mul β] [SMulCommClass α β β] [IsScalarTowe
   left_inv := inv_smul_smul₀ ha
   right_inv := smul_inv_smul₀ ha
 
-protected theorem MulAction.bijective₀ (ha : a ≠ 0) : Function.Bijective (a • · : β → β) :=
-  MulAction.bijective <| Units.mk0 a ha
-
-protected theorem MulAction.injective₀ (ha : a ≠ 0) : Function.Injective (a • · : β → β) :=
-  (MulAction.bijective₀ ha).injective
-
-protected theorem MulAction.surjective₀ (ha : a ≠ 0) : Function.Surjective (a • · : β → β) :=
-  (MulAction.bijective₀ ha).surjective
-
 end Gwz
 
 end MulAction
@@ -82,23 +73,7 @@ section Group
 variable [Group α] [AddMonoid β] [DistribMulAction α β]
 variable (β)
 
-/-- Each element of the group defines an additive monoid isomorphism.
-
-This is a stronger version of `MulAction.toPerm`. -/
-@[simps (config := { simpRhs := true })]
-def DistribMulAction.toAddEquiv (x : α) : β ≃+ β :=
-  { DistribMulAction.toAddMonoidHom β x, MulAction.toPermHom α β x with }
-
 variable (α)
-
-/-- Each element of the group defines an additive monoid isomorphism.
-
-This is a stronger version of `MulAction.toPermHom`. -/
-@[simps]
-def DistribMulAction.toAddAut : α →* AddAut β where
-  toFun := DistribMulAction.toAddEquiv β
-  map_one' := AddEquiv.ext (one_smul _)
-  map_mul' _ _ := AddEquiv.ext (mul_smul _ _)
 
 /-- Each non-zero element of a `GroupWithZero` defines an additive monoid isomorphism of an
 `AddMonoid` on which it acts distributively.
@@ -122,53 +97,6 @@ end Group
 
 end DistribMulAction
 
-section MulDistribMulAction
-
-variable [Group α] [Monoid β] [MulDistribMulAction α β]
-variable (β)
-
-/-- Each element of the group defines a multiplicative monoid isomorphism.
-
-This is a stronger version of `MulAction.toPerm`. -/
-@[simps (config := { simpRhs := true })]
-def MulDistribMulAction.toMulEquiv (x : α) : β ≃* β :=
-  { MulDistribMulAction.toMonoidHom β x, MulAction.toPermHom α β x with }
-
-variable (α)
-
-/-- Each element of the group defines a multiplicative monoid isomorphism.
-
-This is a stronger version of `MulAction.toPermHom`. -/
-@[simps]
-def MulDistribMulAction.toMulAut : α →* MulAut β where
-  toFun := MulDistribMulAction.toMulEquiv β
-  map_one' := MulEquiv.ext (one_smul _)
-  map_mul' _ _ := MulEquiv.ext (mul_smul _ _)
-
-variable {α β}
-
-end MulDistribMulAction
-
-section Arrow
-
-attribute [local instance] arrowAction
-
-/-- When `B` is a monoid, `ArrowAction` is additionally a `MulDistribMulAction`. -/
-def arrowMulDistribMulAction {G A B : Type*} [Group G] [MulAction G A] [Monoid B] :
-    MulDistribMulAction G (A → B) where
-  smul_one _ := rfl
-  smul_mul _ _ _ := rfl
-
-attribute [local instance] arrowMulDistribMulAction
-
-/-- Given groups `G H` with `G` acting on `A`, `G` acts by
-  multiplicative automorphisms on `A → H`. -/
-@[simps!]
-def mulAutArrow {G A H} [Group G] [MulAction G A] [Monoid H] : G →* MulAut (A → H) :=
-  MulDistribMulAction.toMulAut _ _
-
-end Arrow
-
 namespace IsUnit
 
 section DistribMulAction
@@ -182,13 +110,3 @@ theorem smul_eq_zero {u : α} (hu : IsUnit u) {x : β} : u • x = 0 ↔ x = 0 :
 end DistribMulAction
 
 end IsUnit
-
-section SMul
-
-variable [Group α] [Monoid β]
-
-theorem IsUnit.smul_sub_iff_sub_inv_smul [AddGroup β] [DistribMulAction α β] [IsScalarTower α β β]
-    [SMulCommClass α β β] (r : α) (a : β) : IsUnit (r • (1 : β) - a) ↔ IsUnit (1 - r⁻¹ • a) := by
-  rw [← isUnit_smul_iff r (1 - r⁻¹ • a), smul_sub, smul_inv_smul]
-
-end SMul

@@ -34,10 +34,10 @@ related work.
 -/
 
 
-universe w w' v v' v'' u u' u''
-
 assert_not_exists CategoryTheory.CommSq
 assert_not_exists CategoryTheory.Adjunction
+
+universe w w' v v' v'' u u' u''
 
 namespace CategoryTheory
 

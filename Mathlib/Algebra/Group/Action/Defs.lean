@@ -284,9 +284,9 @@ variable (α)
 -- See note [reducible non-instances]
 -- Since this is reducible, we make sure to go via
 -- `SMul.comp.smul` to prevent typeclass inference unfolding too far
-@[to_additive (attr := reducible)
+@[to_additive
 "An additive action of `M` on `α` and a function `N → M` induces an additive action of `N` on `α`."]
-def comp (g : N → M) : SMul N α where smul := SMul.comp.smul g
+abbrev comp (g : N → M) : SMul N α where smul := SMul.comp.smul g
 
 variable {α}
 
@@ -391,9 +391,9 @@ variable {M}
 
 /-- Pullback a multiplicative action along an injective map respecting `•`.
 See note [reducible non-instances]. -/
-@[to_additive (attr := reducible)
+@[to_additive
     "Pullback an additive action along an injective map respecting `+ᵥ`."]
-protected def Function.Injective.mulAction [SMul M β] (f : β → α) (hf : Injective f)
+protected abbrev Function.Injective.mulAction [SMul M β] (f : β → α) (hf : Injective f)
     (smul : ∀ (c : M) (x), f (c • x) = c • f x) : MulAction M β where
   smul := (· • ·)
   one_smul x := hf <| (smul _ _).trans <| one_smul _ (f x)
@@ -401,9 +401,9 @@ protected def Function.Injective.mulAction [SMul M β] (f : β → α) (hf : Inj
 
 /-- Pushforward a multiplicative action along a surjective map respecting `•`.
 See note [reducible non-instances]. -/
-@[to_additive (attr := reducible)
+@[to_additive
     "Pushforward an additive action along a surjective map respecting `+ᵥ`."]
-protected def Function.Surjective.mulAction [SMul M β] (f : α → β) (hf : Surjective f)
+protected abbrev Function.Surjective.mulAction [SMul M β] (f : α → β) (hf : Surjective f)
     (smul : ∀ (c : M) (x), f (c • x) = c • f x) : MulAction M β where
   smul := (· • ·)
   one_smul := by simp [hf.forall, ← smul]
@@ -413,9 +413,9 @@ protected def Function.Surjective.mulAction [SMul M β] (f : α → β) (hf : Su
 
 See also `Function.Surjective.distribMulActionLeft` and `Function.Surjective.moduleLeft`.
 -/
-@[to_additive (attr := reducible)
+@[to_additive
 "Push forward the action of `R` on `M` along a compatible surjective map `f : R →+ S`."]
-def Function.Surjective.mulActionLeft {R S M : Type*} [Monoid R] [MulAction R M] [Monoid S]
+abbrev Function.Surjective.mulActionLeft {R S M : Type*} [Monoid R] [MulAction R M] [Monoid S]
     [SMul S M] (f : R →* S) (hf : Surjective f) (hsmul : ∀ (c) (x : M), f c • x = c • x) :
     MulAction S M where
   smul := (· • ·)
@@ -464,10 +464,10 @@ section Group
 variable [Group G] [MulAction G α] {g : G} {a b : α}
 
 @[to_additive (attr := simp)]
-lemma inv_smul_smul (g : G) (a : α) : g⁻¹ • g • a = a := by rw [smul_smul, mul_left_inv, one_smul]
+lemma inv_smul_smul (g : G) (a : α) : g⁻¹ • g • a = a := by rw [smul_smul, inv_mul_cancel, one_smul]
 
 @[to_additive (attr := simp)]
-lemma smul_inv_smul (g : G) (a : α) : g • g⁻¹ • a = a := by rw [smul_smul, mul_right_inv, one_smul]
+lemma smul_inv_smul (g : G) (a : α) : g • g⁻¹ • a = a := by rw [smul_smul, mul_inv_cancel, one_smul]
 
 @[to_additive] lemma inv_smul_eq_iff : g⁻¹ • a = b ↔ a = g • b :=
   ⟨fun h ↦ by rw [← h, smul_inv_smul], fun h ↦ by rw [h, inv_smul_smul]⟩
@@ -489,7 +489,7 @@ end Mul
 variable [Group H] [MulAction G H] [SMulCommClass G H H] [IsScalarTower G H H]
 
 lemma smul_inv (g : G) (a : H) : (g • a)⁻¹ = g⁻¹ • a⁻¹ :=
-  inv_eq_of_mul_eq_one_right $ by rw [smul_mul_smul, mul_right_inv, mul_right_inv, one_smul]
+  inv_eq_of_mul_eq_one_right $ by rw [smul_mul_smul, mul_inv_cancel, mul_inv_cancel, one_smul]
 
 lemma smul_zpow (g : G) (a : H) (n : ℤ) : (g • a) ^ n = g ^ n • a ^ n := by
   cases n <;> simp [smul_pow, smul_inv]
@@ -523,8 +523,8 @@ variable (α)
 a multiplicative action of `N` on `α`.
 
 See note [reducible non-instances]. -/
-@[to_additive (attr := reducible)]
-def compHom [Monoid N] (g : N →* M) : MulAction N α where
+@[to_additive]
+abbrev compHom [Monoid N] (g : N →* M) : MulAction N α where
   smul := SMul.comp.smul g
   -- Porting note: was `by simp [g.map_one, MulAction.one_smul]`
   one_smul _ := by simpa [(· • ·)] using MulAction.one_smul ..

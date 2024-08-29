@@ -446,6 +446,7 @@ theorem isNilpotent_jacobson_bot : IsNilpotent (Ideal.jacobson (⊥ : Ideal R)) 
 section Localization
 
 variable (S : Submonoid R) (L : Type*) [CommRing L] [Algebra R L] [IsLocalization S L]
+include S
 
 /-- Localizing an artinian ring can only reduce the amount of elements. -/
 theorem localization_surjective : Function.Surjective (algebraMap R L) := by
@@ -531,6 +532,7 @@ instance [IsReduced R] : DecompositionMonoid (Polynomial R) :=
 theorem isSemisimpleRing_of_isReduced [IsReduced R] : IsSemisimpleRing R :=
   (equivPi R).symm.isSemisimpleRing
 
-proof_wanted IsSemisimpleRing.isArtinianRing [IsSemisimpleRing R] : IsArtinianRing R
+proof_wanted IsSemisimpleRing.isArtinianRing (R : Type*) [CommRing R] [IsSemisimpleRing R] :
+    IsArtinianRing R
 
 end IsArtinianRing

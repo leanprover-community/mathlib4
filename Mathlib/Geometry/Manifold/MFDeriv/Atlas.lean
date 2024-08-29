@@ -166,6 +166,7 @@ end Charts
 namespace PartialHomeomorph.MDifferentiable
 variable {I I' I''}
 variable {e : PartialHomeomorph M M'} (he : e.MDifferentiable I I') {e' : PartialHomeomorph M' M''}
+include he
 
 nonrec theorem symm : e.symm.MDifferentiable I' I := he.symm
 
