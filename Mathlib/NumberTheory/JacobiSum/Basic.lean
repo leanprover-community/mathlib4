@@ -111,12 +111,14 @@ variable [IsDomain R] -- needed for `MulChar.sum_eq_zero_of_ne_one`
 
 /-- If `χ` is a nontrivial multiplicative character on a finite field `F`, then `J(1,χ) = -1`. -/
 theorem jacobiSum_one_nontrivial {χ : MulChar F R} (hχ : χ ≠ 1) : jacobiSum 1 χ = -1 := by
-  rw [jacobiSum_eq_aux, MulChar.sum_eq_zero_of_ne_one hχ, MulChar.sum_one_eq_card_units,
-    Fintype.card_eq_card_units_add_one (α := F), add_zero, Nat.cast_add, Nat.cast_one,
-    ← sub_sub, sub_self, zero_sub, add_right_eq_self]
-  convert sum_const_zero with x hx
-  simp only [mem_sdiff, mem_univ, mem_insert, mem_singleton, not_or, true_and] at hx
-  rw [MulChar.one_apply <| isUnit_iff_ne_zero.mpr hx.1, sub_self, zero_mul]
+  have : ∑ x ∈ univ \ {0, 1}, ((1 : MulChar F R) x - 1) * (χ (1 - x) - 1) = 0 := by
+    apply Finset.sum_eq_zero
+    simp (config := { contextual := true }) only [mem_sdiff, mem_univ, mem_insert, mem_singleton,
+      not_or, ← isUnit_iff_ne_zero, true_and, MulChar.one_apply, sub_self, zero_mul, and_imp,
+      implies_true]
+  simp only [jacobiSum_eq_aux, MulChar.sum_one_eq_card_units, MulChar.sum_eq_zero_of_ne_one hχ,
+    add_zero, Fintype.card_eq_card_units_add_one (α := F), Nat.cast_add, Nat.cast_one,
+    sub_add_cancel_left, this]
 
 /-- If `χ` is a nontrivial multiplicative character on a finite field `F`,
 then `J(χ,χ⁻¹) = -χ(-1)`. -/
