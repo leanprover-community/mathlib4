@@ -187,8 +187,8 @@ theorem AddSubgroup.cyclic_of_isolated_zero {H : AddSubgroup G} {a : G} (h₀ : 
   · exact ⟨0, closure_singleton_zero.symm⟩
   · exact (exists_isLeast_pos hbot h₀ hd).imp fun _ => cyclic_of_min
 
-lemma AddSubgroup.isLeast_closure_iff_eq_max {a b : G} :
-    IsLeast {y : G | y ∈ closure ({a} : Set G) ∧ 0 < y} b ↔ b = max a (-a) ∧ 0 < b := by
+lemma AddSubgroup.isLeast_closure_iff_eq_abs {a b : G} :
+    IsLeast {y : G | y ∈ closure ({a} : Set G) ∧ 0 < y} b ↔ b = |a| ∧ 0 < b := by
   constructor <;> intro h
   · have := cyclic_of_min h
     have ha : a ∈ closure ({b} : Set G) := by
