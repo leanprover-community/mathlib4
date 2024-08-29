@@ -752,6 +752,12 @@ theorem val_mul_of_lt {n : ℕ} {a b : ZMod n} (h : a.val * b.val < n) :
   rw [val_mul]
   apply Nat.mod_eq_of_lt h
 
+theorem val_mul_iff_lt {n : ℕ} [NeZero n] (a b : ZMod n) :
+    (a * b).val = a.val * b.val ↔ a.val * b.val < n := by
+  constructor <;> intro h
+  · rw [← h]; apply ZMod.val_lt
+  · apply ZMod.val_mul_of_lt h
+
 instance nontrivial (n : ℕ) [Fact (1 < n)] : Nontrivial (ZMod n) :=
   ⟨⟨0, 1, fun h =>
       zero_ne_one <|
@@ -988,6 +994,14 @@ theorem natAbs_mod_two (a : ℤ) : (a.natAbs : ZMod 2) = a := by
 theorem val_ne_zero {n : ℕ} (a : ZMod n) : a.val ≠ 0 ↔ a ≠ 0 :=
   (val_eq_zero a).not
 
+theorem val_pos {n : ℕ} {a : ZMod n} : 0 < a.val ↔ a ≠ 0 := by
+  simp [pos_iff_ne_zero]
+
+theorem val_eq_one : ∀ {n : ℕ} (_ : 1 < n) (a : ZMod n), a.val = 1 ↔ a = 1
+  | 0, hn, _
+  | 1, hn, _ => by simp at hn
+  | n + 2, _, _ => by simp only [val, ZMod, Fin.ext_iff, Fin.val_one]
+
 theorem neg_eq_self_iff {n : ℕ} (a : ZMod n) : -a = a ↔ a = 0 ∨ 2 * a.val = n := by
   rw [neg_eq_iff_add_eq_zero, ← two_mul]
   cases n
@@ -1017,6 +1031,17 @@ theorem neg_eq_self_iff {n : ℕ} (a : ZMod n) : -a = a ↔ a = 0 ∨ 2 * a.val 
 
 theorem val_cast_of_lt {n : ℕ} {a : ℕ} (h : a < n) : (a : ZMod n).val = a := by
   rw [val_natCast, Nat.mod_eq_of_lt h]
+
+theorem val_cast_zmod_lt {m : ℕ} [NeZero m] (n : ℕ) [NeZero n] (a : ZMod m) :
+    (a.cast : ZMod n).val < m := by
+  rcases m with (⟨⟩|⟨m⟩); · cases NeZero.ne 0 rfl
+  by_cases h : m < n
+  · rcases n with (⟨⟩|⟨n⟩); · simp at h
+    rw [← natCast_val, val_cast_of_lt]
+    apply ZMod.val_lt a
+    apply lt_of_le_of_lt (Nat.le_of_lt_succ (ZMod.val_lt a)) h
+  · rw [not_lt] at h
+    apply lt_of_lt_of_le (ZMod.val_lt _) (le_trans h (Nat.le_succ m))
 
 theorem neg_val' {n : ℕ} [NeZero n] (a : ZMod n) : (-a).val = (n - a.val) % n :=
   calc
@@ -1062,6 +1087,28 @@ theorem cast_cast_zmod_of_le {m n : ℕ} [hm : NeZero m] (h : m ≤ n) (a : ZMod
     (cast (cast a : ZMod n) : ZMod m) = a := by
   have : NeZero n := ⟨((Nat.zero_lt_of_ne_zero hm.out).trans_le h).ne'⟩
   rw [cast_eq_val, val_cast_eq_val_of_lt (a.val_lt.trans_le h), natCast_zmod_val]
+
+theorem val_pow {m n : ℕ} {a : ZMod n} [ilt : Fact (1 < n)] (h : a.val ^ m < n) :
+    (a ^ m).val = a.val ^ m := by
+  induction m with
+  | zero => simp [ZMod.val_one]
+  | succ m ih =>
+    have : a.val ^ m < n := by
+      obtain rfl | ha := eq_or_ne a 0
+      · by_cases hm : m = 0
+        · cases hm; simp [ilt.out]
+        · simp only [val_zero, ne_eq, hm, not_false_eq_true, zero_pow, Nat.zero_lt_of_lt h]
+      · exact lt_of_le_of_lt
+         (Nat.pow_le_pow_of_le_right (by rwa [gt_iff_lt, ZMod.val_pos]) (Nat.le_succ m)) h
+    rw [pow_succ, ZMod.val_mul, ih this, ← pow_succ, Nat.mod_eq_of_lt h]
+
+theorem val_pow_le {m n : ℕ} [Fact (1 < n)] {a : ZMod n} : (a ^ m).val ≤ a.val ^ m := by
+  induction m with
+  | zero => simp [ZMod.val_one]
+  | succ m ih =>
+    rw [pow_succ, pow_succ]
+    apply le_trans (ZMod.val_mul_le _ _)
+    apply Nat.mul_le_mul_right _ ih
 
 /-- `valMinAbs x` returns the integer in the same equivalence class as `x` that is closest to `0`,
   The result will be in the interval `(-n/2, n/2]`. -/
