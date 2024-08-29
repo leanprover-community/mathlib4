@@ -7,7 +7,7 @@ import Mathlib.MeasureTheory.Integral.IntegrableOn
 import Mathlib.MeasureTheory.Integral.Bochner
 import Mathlib.MeasureTheory.Function.LocallyIntegrable
 import Mathlib.Topology.MetricSpace.ThickenedIndicator
-import Mathlib.Topology.ContinuousFunction.Compact
+import Mathlib.Topology.ContinuousFunction.ContinuousMapZero
 import Mathlib.Analysis.NormedSpace.HahnBanach.SeparatingDual
 
 /-!
@@ -1266,13 +1266,24 @@ theorem integral_comp_comm (L : E ≃L[𝕜] F) (φ : X → E) : ∫ x, L (φ x)
 
 end ContinuousLinearEquiv
 
-namespace ContinuousMap
+section ContinuousMap
 
-lemma integral_apply [TopologicalSpace Y] [CompactSpace Y] [NormedSpace ℝ E]
-    [CompleteSpace E] {f : X → C(Y, E)} (hf : Integrable f μ) (y : Y) :
-    (∫ x, f x ∂μ) y = ∫ x, f x y ∂μ := by
+variable [TopologicalSpace Y] [CompactSpace Y]
+
+lemma ContinuousMap.integral_apply [NormedSpace ℝ E] [CompleteSpace E] {f : X → C(Y, E)}
+    (hf : Integrable f μ) (y : Y) : (∫ x, f x ∂μ) y = ∫ x, f x y ∂μ := by
   calc (∫ x, f x ∂μ) y = ContinuousMap.evalCLM ℝ y (∫ x, f x ∂μ) := rfl
     _ = ∫ x, ContinuousMap.evalCLM ℝ y (f x) ∂μ :=
+          (ContinuousLinearMap.integral_comp_comm _ hf).symm
+    _ = _ := rfl
+
+open scoped ContinuousMapZero in
+theorem ContinuousMapZero.integral_apply {R : Type*} [NormedCommRing R] [Zero Y]
+    [NormedAlgebra ℝ R] [CompleteSpace R] {f : X → C(Y, R)₀}
+    (hf : MeasureTheory.Integrable f μ) (y : Y) :
+    (∫ (x : X), f x ∂μ) y = ∫ (x : X), (f x) y ∂μ := by
+  calc (∫ x, f x ∂μ) y = ContinuousMapZero.evalCLM ℝ y (∫ x, f x ∂μ) := rfl
+    _ = ∫ x, ContinuousMapZero.evalCLM ℝ y (f x) ∂μ :=
           (ContinuousLinearMap.integral_comp_comm _ hf).symm
     _ = _ := rfl
 
