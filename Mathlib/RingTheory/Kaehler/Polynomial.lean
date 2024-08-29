@@ -27,7 +27,7 @@ section MvPolynomial
 def KaehlerDifferential.mvPolynomialEquiv (σ : Type*) :
     Ω[MvPolynomial σ R⁄R] ≃ₗ[MvPolynomial σ R] σ →₀ MvPolynomial σ R where
   __ := (MvPolynomial.mkDerivation _ (Finsupp.single · 1)).liftKaehlerDifferential
-  invFun := Finsupp.total σ _ _ (fun x ↦ D _ _ (MvPolynomial.X x))
+  invFun := Finsupp.total (α := σ) _ (fun x ↦ D _ _ (MvPolynomial.X x))
   right_inv := by
     intro x
     induction' x using Finsupp.induction_linear with _ _ _ _ a b

@@ -186,7 +186,7 @@ def Matroid.ExistsMaximalSubsetProperty {α : Type _} (P : Set α → Prop) (X :
 @[ext] structure Matroid (α : Type _) where
   /-- `M` has a ground set `E`. -/
   (E : Set α)
-  /-- `M` has a predicate `Base` definining its bases. -/
+  /-- `M` has a predicate `Base` defining its bases. -/
   (Base : Set α → Prop)
   /-- `M` has a predicate `Indep` defining its independent sets. -/
   (Indep : Set α → Prop)
