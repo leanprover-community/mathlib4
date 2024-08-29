@@ -347,6 +347,12 @@ lemma succ_eq_of_covBy (h : a ⋖ b) : succ a = b := (succ_le_of_lt h.lt).antisy
 
 alias _root_.CovBy.succ_eq := succ_eq_of_covBy
 
+theorem _root_.OrderIso.map_succ {β : Type*} [PartialOrder β] [SuccOrder β] (f : α ≃o β) (a : α) :
+    f (succ a) = succ (f a) := by
+  by_cases h : IsMax a
+  · rw [h.succ_eq, (f.isMax_apply.2 h).succ_eq]
+  · exact (f.map_covBy.2 <| covBy_succ_of_not_isMax h).succ_eq.symm
+
 section NoMaxOrder
 
 variable [NoMaxOrder α]
@@ -715,6 +721,10 @@ theorem pred_le_le_iff {a b : α} : pred a ≤ b ∧ b ≤ a ↔ b = a ∨ b = p
 lemma pred_eq_of_covBy (h : a ⋖ b) : pred b = a := h.wcovBy.pred_le.antisymm (le_pred_of_lt h.lt)
 
 alias _root_.CovBy.pred_eq := pred_eq_of_covBy
+
+theorem _root_.OrderIso.map_pred {β : Type*} [PartialOrder β] [PredOrder β] (f : α ≃o β) (a : α) :
+    f (pred a) = pred (f a) :=
+  f.dual.map_succ a
 
 section NoMinOrder
 
