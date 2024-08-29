@@ -35,3 +35,35 @@ True
 -/
 #guard_msgs in
 #stacks_tags!
+
+section errors
+
+open Lean Parser Mathlib.Stacks
+
+def captureException (env : Environment) (s : ParserFn) (input : String) : Except String Syntax :=
+  let ictx := mkInputContext input "<input>"
+  let s := s.run ictx { env, options := {} } (getTokenTable env) (mkParserState input)
+  if !s.allErrors.isEmpty then
+    .error (s.toErrorMsg ictx)
+  else if ictx.input.atEnd s.pos then
+    .ok s.stxStack.back
+  else
+    .error ((s.mkError "end of input").toErrorMsg ictx)
+
+/-- error: <input>:1:3: Stacks tags must be exactly 4 characters -/
+#guard_msgs in
+run_cmd do
+  let _ ← Lean.ofExcept <| captureException (← getEnv) stacksTagFn "A05"
+
+/-- error: <input>:1:4: Stacks tags must consist only of digits and uppercase letters. -/
+#guard_msgs in
+run_cmd do
+  let _ ← Lean.ofExcept <| captureException (← getEnv) stacksTagFn "aaaa"
+
+/-- error: <input>:1:0: expected stacks tag -/
+#guard_msgs in
+run_cmd do
+  let env ← getEnv
+  let _ ← Lean.ofExcept <| captureException env stacksTagFn "\"A04Q\""
+
+end errors
