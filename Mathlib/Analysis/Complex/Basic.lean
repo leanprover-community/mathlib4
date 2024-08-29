@@ -162,9 +162,11 @@ theorem comap_abs_nhds_zero : comap abs (𝓝 0) = 𝓝 0 :=
 @[deprecated (since := "2024-08-25")] alias nnnorm_nat := nnnorm_natCast
 @[deprecated (since := "2024-08-25")] alias nnnorm_int := nnnorm_intCast
 
-@[simp, norm_cast] lemma norm_nnratCast (q : ℚ≥0) : ‖(q : ℂ)‖ = q := abs_of_nonneg q.cast_nonneg
-@[simp, norm_cast] lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : ℂ)‖₊ = q := by
-  simp [nnnorm, -norm_eq_abs]
+@[simp 1100, norm_cast]
+lemma norm_nnratCast (q : ℚ≥0) : ‖(q : ℂ)‖ = q := abs_of_nonneg q.cast_nonneg
+
+@[simp 1100, norm_cast]
+lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : ℂ)‖₊ = q := by simp [nnnorm, -norm_eq_abs]
 
 theorem norm_int_of_nonneg {n : ℤ} (hn : 0 ≤ n) : ‖(n : ℂ)‖ = n := by
   rw [norm_intCast, ← Int.cast_abs, _root_.abs_of_nonneg hn]
