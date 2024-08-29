@@ -157,7 +157,7 @@ def borelToRefl (e : Expr) (i : FVarId) : TacticM Unit := do
       `‹TopologicalSpace {e}› := {et}\n\
       depends on\n\
       {Expr.fvar i} : MeasurableSpace {e}`\n\
-      so `borelize` isn't avaliable"
+      so `borelize` isn't available"
   evalTactic <| ← `(tactic|
     refine_lift
       letI : MeasurableSpace $te := borel $te

@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Kenny Lau, Scott Morrison
 import Mathlib.Data.List.Chain
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.Pairwise
-import Batteries.Data.Nat.Lemmas
 
 /-!
 # Ranges of naturals as lists

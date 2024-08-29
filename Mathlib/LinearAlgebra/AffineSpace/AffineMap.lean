@@ -710,7 +710,7 @@ variable [Finite ι] [DecidableEq ι] {f g : ((i : ι) → φv i) →ᵃ[k] P2}
 
 /-- Two affine maps from a Pi-tyoe of modules `(i : ι) → φv i` are equal if they are equal in their
   operation on `Pi.single` and at zero. Analogous to `LinearMap.pi_ext`. See also `pi_ext_nonempty`,
-  which instead of agrement at zero requires `Nonempty ι`. -/
+  which instead of agreement at zero requires `Nonempty ι`. -/
 theorem pi_ext_zero (h : ∀ i x, f (Pi.single i x) = g (Pi.single i x)) (h₂ : f 0 = g 0) :
     f = g := by
   apply ext_linear

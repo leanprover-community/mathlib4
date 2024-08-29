@@ -12,7 +12,7 @@ import Batteries.WF
 /-!
 # Unbundled relation classes
 
-In this file we prove some properties of `Is*` classes defined in `Init.Algebra.Classes`. The main
+In this file we prove some properties of `Is*` classes defined in `Order.Defs`. The main
 difference between these classes and the usual order classes (`Preorder` etc) is that usual classes
 extend `LE` and/or `LT` while these classes take a relation as an explicit argument.
 
@@ -461,7 +461,7 @@ instance [IsWellOrder α r] [IsWellOrder β s] : IsWellOrder (α × β) (Prod.Le
         | Or.inr (Or.inr h) => Or.inr <| Or.inr <| Prod.Lex.right _ h
         | Or.inr (Or.inl (.refl _)) => Or.inr <| Or.inl rfl
   trans a b c h₁ h₂ := by
-    cases' h₁ with a₁ a₂ b₁ b₂ ab a₁ b₁ b₂ ab <;> cases' h₂ with _ _ c₁ c₂ bc _ _ c₂ bc
+    rcases h₁ with ⟨a₂, b₂, ab⟩ | ⟨a₁, ab⟩ <;> rcases h₂ with ⟨c₁, c₂, bc⟩ | ⟨c₂, bc⟩
     exacts [.left _ _ (_root_.trans ab bc), .left _ _ ab, .left _ _ bc,
       .right _ (_root_.trans ab bc)]
 
@@ -776,10 +776,8 @@ instance LE.isTotal [LinearOrder α] : IsTotal α (· ≤ ·) :=
 instance [LinearOrder α] : IsTotal α (· ≥ ·) :=
   IsTotal.swap _
 
--- Porting note: this was `by infer_instance` before
-instance [LinearOrder α] : IsTotalPreorder α (· ≤ ·) where
-
-instance [LinearOrder α] : IsTotalPreorder α (· ≥ ·) where
+@[deprecated (since := "2024-08-22")] instance [LinearOrder α] : IsTotalPreorder α (· ≤ ·) where
+@[deprecated (since := "2024-08-22")] instance [LinearOrder α] : IsTotalPreorder α (· ≥ ·) where
 
 instance [LinearOrder α] : IsLinearOrder α (· ≤ ·) where
 
