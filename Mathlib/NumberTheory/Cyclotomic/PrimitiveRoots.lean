@@ -291,7 +291,7 @@ theorem norm_eq_one [IsDomain L] [IsCyclotomicExtension {n} K L] (hn : n ≠ 2)
   · replace h1 : 2 ≤ n := by
       by_contra! h
       exact h1 (PNat.eq_one_of_lt_two h)
--- Porting note: specyfing the type of `cyclotomic_coeff_zero K h1` was not needed.
+-- Porting note: specifying the type of `cyclotomic_coeff_zero K h1` was not needed.
     rw [← hζ.powerBasis_gen K, PowerBasis.norm_gen_eq_coeff_zero_minpoly, hζ.powerBasis_gen K, ←
       hζ.minpoly_eq_cyclotomic_of_irreducible hirr,
       (cyclotomic_coeff_zero K h1 : coeff (cyclotomic n K) 0 = 1), mul_one,
