@@ -1,5 +1,18 @@
 import Mathlib.Combinatorics.SimpleGraph.Basic
 
+/-!
+# LineGraph
+
+## Main definitions
+
+* `SimpleGraph.lineGraph` is the line graph of a simple graph `G`, with vertices as the edges of `G`
+  and two vertices of the line graph adjacent if the corresponding edges share a vertex in `G`.
+
+## Tags
+
+line graph
+-/
+
 namespace SimpleGraph
 
 variable {V : Type*} {G : SimpleGraph V}
