@@ -31,18 +31,7 @@ that the integral commutes with the continuous functional calculus under appropr
 -/
 
 open MeasureTheory
-
 open scoped ContinuousMapZero
-
-theorem ContinuousMapZero.integral_apply {X Y R : Type*} [MeasurableSpace X]
-    {μ : MeasureTheory.Measure X} [NormedCommRing R] [TopologicalSpace Y] [Zero Y]
-    [CompactSpace Y] [NormedAlgebra ℝ R] [CompleteSpace R] {f : X → C(Y, R)₀}
-    (hf : MeasureTheory.Integrable f μ) (y : Y) :
-    (∫ (x : X), f x ∂μ) y = ∫ (x : X), (f x) y ∂μ := by
-  calc (∫ x, f x ∂μ) y = ContinuousMapZero.evalCLM ℝ y (∫ x, f x ∂μ) := rfl
-    _ = ∫ x, ContinuousMapZero.evalCLM ℝ y (f x) ∂μ :=
-          (ContinuousLinearMap.integral_comp_comm _ hf).symm
-    _ = _ := rfl
 
 section unital
 
