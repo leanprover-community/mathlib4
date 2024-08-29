@@ -5,7 +5,6 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Nontrivial.Defs
-import Mathlib.Tactic.Cases
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.PushNeg
 import Mathlib.Util.AssertExists
@@ -941,10 +940,10 @@ lemma set_induction {S : Set ℕ} (hb : 0 ∈ S) (h_ind : ∀ k : ℕ, k ∈ S �
 attribute [simp] Nat.dvd_zero
 
 @[simp] lemma mod_two_ne_one : ¬n % 2 = 1 ↔ n % 2 = 0 := by
-  cases' mod_two_eq_zero_or_one n with h h <;> simp [h]
+  cases mod_two_eq_zero_or_one n <;> simp [*]
 
 @[simp] lemma mod_two_ne_zero : ¬n % 2 = 0 ↔ n % 2 = 1 := by
-  cases' mod_two_eq_zero_or_one n with h h <;> simp [h]
+  cases mod_two_eq_zero_or_one n <;> simp [*]
 
 @[deprecated mod_mul_right_div_self (since := "2024-05-29")]
 lemma div_mod_eq_mod_mul_div (a b c : ℕ) : a / b % c = a % (b * c) / b :=
