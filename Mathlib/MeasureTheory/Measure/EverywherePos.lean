@@ -249,7 +249,7 @@ lemma IsEverywherePos.IsGdelta_of_isMulLeftInvariant
     have J : x * (y i) ⁻¹ ∈ V i := by simpa [← hvy i] using hv i
     exact I J
   have B : μ (((x * z ⁻¹) • k) \ k) = 0 :=
-    le_antisymm (ge_of_tendsto u_lim (eventually_of_forall A)) bot_le
+    le_antisymm (ge_of_tendsto u_lim (Eventually.of_forall A)) bot_le
   have C : μ (k \ (z * x⁻¹) • k) = 0 := by
     have : μ ((z * x⁻¹) • (((x * z ⁻¹) • k) \ k)) = 0 := by rwa [measure_smul]
     rw [← this, smul_set_sdiff, smul_smul]
@@ -294,3 +294,9 @@ theorem innerRegularWRT_preimage_one_hasCompactSupport_measure_ne_top_of_group :
     apply measure_congr
     exact everywherePosSubset_ae_eq_of_measure_ne_top K_closed.measurableSet
       K_comp.measure_lt_top.ne
+
+end TopologicalGroup
+
+end Measure
+
+end MeasureTheory

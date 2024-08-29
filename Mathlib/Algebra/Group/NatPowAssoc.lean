@@ -28,7 +28,7 @@ We also produce the following instances:
 
 - `NatPowAssoc` for Monoids, Pi types and products.
 
-## Todo
+## TODO
 
 * to_additive?
 
@@ -41,7 +41,7 @@ variable {M : Type*}
 /-- A mixin for power-associative multiplication. -/
 class NatPowAssoc (M : Type*) [MulOneClass M] [Pow M ℕ] : Prop where
   /-- Multiplication is power-associative. -/
-  protected npow_add : ∀ (k n: ℕ) (x : M), x ^ (k + n) = x ^ k * x ^ n
+  protected npow_add : ∀ (k n : ℕ) (x : M), x ^ (k + n) = x ^ k * x ^ n
   /-- Exponent zero is one. -/
   protected npow_zero : ∀ (x : M), x ^ 0 = 1
   /-- Exponent one is identity. -/

@@ -594,7 +594,7 @@ theorem Filter.comap_coLindelof_le {f : X → Y} (hf : Continuous f) :
   simpa using t.subset_preimage_image f
 
 theorem isLindelof_range [LindelofSpace X] {f : X → Y} (hf : Continuous f) :
-    IsLindelof (range f) := by  rw [← image_univ]; exact isLindelof_univ.image hf
+    IsLindelof (range f) := by rw [← image_univ]; exact isLindelof_univ.image hf
 
 theorem isLindelof_diagonal [LindelofSpace X] : IsLindelof (diagonal X) :=
   @range_diag X ▸ isLindelof_range (continuous_id.prod_mk continuous_id)
@@ -707,7 +707,7 @@ instance (priority := 100) HereditarilyLindelof.to_Lindelof [HereditarilyLindelo
     LindelofSpace X where
   isLindelof_univ := HereditarilyLindelofSpace.isHereditarilyLindelof_univ.isLindelof
 
-theorem HereditarilyLindelof_LindelofSets [HereditarilyLindelofSpace X] (s : Set X):
+theorem HereditarilyLindelof_LindelofSets [HereditarilyLindelofSpace X] (s : Set X) :
     IsLindelof s := by
   apply HereditarilyLindelofSpace.isHereditarilyLindelof_univ
   exact subset_univ s
@@ -733,3 +733,5 @@ instance HereditarilyLindelof.lindelofSpace_subtype [HereditarilyLindelofSpace X
     LindelofSpace {x // p x} := by
   apply isLindelof_iff_LindelofSpace.mp
   exact HereditarilyLindelof_LindelofSets fun x ↦ p x
+
+end Lindelof

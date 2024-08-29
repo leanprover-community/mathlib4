@@ -45,7 +45,7 @@ lemma mk_subtype_le_of_countable_eventually_mem_aux {α ι : Type u} {a : Cardin
     have I1 : s.card ≤ u.card := by
       have : s ⊆ u := fun x hx ↦ by simpa only [u, Set.mem_toFinset] using hi x hx
       exact Finset.card_le_card this
-    have I2: (u.card : Cardinal) ≤ n := by
+    have I2 : (u.card : Cardinal) ≤ n := by
       convert h'f i; simp only [u, Set.toFinset_card, mk_fintype]
     exact I1.trans (Nat.cast_le.1 I2)
   -- case `a` infinite:
