@@ -10,6 +10,7 @@ import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.GroupAction.Pointwise
 import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.GroupTheory.Index
+import Mathlib.Tactic.IntervalCases
 
 /-! # Blocks
 
@@ -519,7 +520,7 @@ theorem eq_univ_card_lt [hX : Finite X] (hB : IsBlock G B) (hB' : Nat.card X < S
   · rw [mul_zero, eq_comm, Nat.card_eq_zero, or_iff_left hX.not_infinite] at key
     exact (IsEmpty.exists_iff.mp hB_ne).elim
   · rw [mul_one, ← Set.ncard_univ] at key
-    rw [Set.eq_of_subset_of_ncard_le (Set.subset_univ B) key.ge, Set.top_eq_univ]
+    rw [Set.eq_of_subset_of_ncard_le (Set.subset_univ B) key.ge]
 
 /-- If a block has too many translates, then it is a (sub)singleton  -/
 theorem subsingleton_of_card_lt [Finite X] (hB : IsBlock G B)
