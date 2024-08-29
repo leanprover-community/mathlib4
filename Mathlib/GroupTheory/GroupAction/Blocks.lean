@@ -28,7 +28,7 @@ The non-existence of nontrivial blocks is the definition of primitive actions.
 - `IsBlock.ncard_block_mul_ncard_orbit_eq` : The cardinality of a block
 multiplied by the number of its translates is the cardinal of the ambient type
 
-- `IsBlock.is_top_of_large_block` : a too large block is equal to top
+- `IsBlock.is_univ_of_large_block` : a too large block is equal to `Set.univ`
 
 - `IsBlock.is_subsingleton` : a too small block is a subsingleton
 
@@ -212,12 +212,12 @@ theorem isBlock_orbit (a : X) : IsBlock G (orbit G a) :=
 variable (X)
 
 /-- The full set is a (trivial) block -/
-theorem isFixedBlock_top : IsFixedBlock G (⊤ : Set X) :=
-  fun _ ↦ by simp only [Set.top_eq_univ, Set.smul_set_univ]
+theorem isFixedBlock_univ : IsFixedBlock G (Set.univ : Set X) :=
+  fun _ ↦ by simp only [Set.smul_set_univ]
 
 /-- The full set is a (trivial) block -/
-theorem isBlock_top : IsBlock G (⊤ : Set X) :=
-  (isFixedBlock_top _).isBlock
+theorem isBlock_univ : IsBlock G (Set.univ : Set X) :=
+  (isFixedBlock_univ _).isBlock
 
 variable {X}
 
@@ -294,9 +294,9 @@ theorem IsBlock.inter {B₁ B₂ : Set X} (h₁ : IsBlock G B₁) (h₂ : IsBloc
 theorem IsBlock.iInter {ι : Type*} {B : ι → Set X} (hB : ∀ i : ι, IsBlock G (B i)) :
     IsBlock G (⋂ i, B i) := by
   by_cases hι : (IsEmpty ι)
-  · -- ι = ∅, block = ⊤
-    suffices (⋂ i : ι, B i) = Set.univ by simpa only [this] using isBlock_top X
-    simpa only [Set.top_eq_univ, Set.iInter_eq_univ] using (hι.elim' ·)
+  · -- ι = ∅, block = univ
+    suffices (⋂ i : ι, B i) = Set.univ by simpa only [this] using isBlock_univ X
+    simpa only [Set.iInter_eq_univ] using (hι.elim' ·)
   rw [IsBlock.def_one]
   intro g
   rw [Set.smul_set_iInter]
@@ -509,8 +509,8 @@ theorem ncard_dvd_card (hB : IsBlock G B) (hB_ne : B.Nonempty) :
   Dvd.intro _ (hB.ncard_block_mul_ncard_orbit_eq hB_ne)
 
 /-- A too large block is equal to ⊤ -/
-theorem eq_top_card_lt [hX : Finite X] (hB : IsBlock G B) (hB' : Nat.card X < Set.ncard B * 2) :
-    B = ⊤ := by
+theorem eq_univ_card_lt [hX : Finite X] (hB : IsBlock G B) (hB' : Nat.card X < Set.ncard B * 2) :
+    B = Set.univ := by
   rcases Set.eq_empty_or_nonempty B with rfl | hB_ne
   · simp only [Set.ncard_empty, zero_mul, not_lt_zero'] at hB'
   have key := hB.ncard_block_mul_ncard_orbit_eq hB_ne
