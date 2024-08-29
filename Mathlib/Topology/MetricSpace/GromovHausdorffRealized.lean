@@ -455,7 +455,7 @@ instance : MetricSpace (OptimalGHCoupling X Y) := by
 
 /-- Injection of `X` in the optimal coupling between `X` and `Y` -/
 def optimalGHInjl (x : X) : OptimalGHCoupling X Y :=
-  Quotient.mk'' (inl x)
+  ⟦inl x⟧
 
 /-- The injection of `X` in the optimal coupling between `X` and `Y` is an isometry. -/
 theorem isometry_optimalGHInjl : Isometry (optimalGHInjl X Y) :=
@@ -463,7 +463,7 @@ theorem isometry_optimalGHInjl : Isometry (optimalGHInjl X Y) :=
 
 /-- Injection of `Y` in the optimal coupling between `X` and `Y` -/
 def optimalGHInjr (y : Y) : OptimalGHCoupling X Y :=
-  Quotient.mk'' (inr y)
+  ⟦inr y⟧
 
 /-- The injection of `Y` in the optimal coupling between `X` and `Y` is an isometry. -/
 theorem isometry_optimalGHInjr : Isometry (optimalGHInjr X Y) :=

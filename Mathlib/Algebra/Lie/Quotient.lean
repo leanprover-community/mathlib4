@@ -73,7 +73,7 @@ abbrev mk : M → M ⧸ N :=
 theorem mk_eq_zero' {m : M} : mk (N := N) m = 0 ↔ m ∈ N :=
   Submodule.Quotient.mk_eq_zero N.toSubmodule
 
-theorem is_quotient_mk (m : M) : Quotient.mk'' m = (mk m : M ⧸ N) :=
+theorem is_quotient_mk (m : M) : ⟦m⟧ = (mk m : M ⧸ N) :=
   rfl
 
 variable [LieAlgebra R L] [LieModule R L M] (I J : LieIdeal R L)
@@ -111,7 +111,7 @@ instance lieQuotientHasBracket : Bracket (L ⧸ I) (L ⧸ I) :=
     apply Quotient.liftOn₂ x y fun x' y' => mk ⁅x', y'⁆
     intro x₁ x₂ y₁ y₂ h₁ h₂
     apply (Submodule.Quotient.eq I.toSubmodule).2
-    rw [Submodule.quotientRel_r_def] at h₁ h₂
+    rw [Setoid.equiv_iff_apply, Submodule.quotientRel_r_def] at h₁ h₂
     have h : ⁅x₁, x₂⁆ - ⁅y₁, y₂⁆ = ⁅x₁, x₂ - y₂⁆ + ⁅x₁ - y₁, y₂⁆ := by
       simp [-lie_skew, sub_eq_add_neg, add_assoc]
     rw [h]

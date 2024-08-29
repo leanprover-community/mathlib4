@@ -392,9 +392,9 @@ instance instField : Field (AlgebraicClosure k) where
   nnratCast_def q := by change algebraMap k _ _ = _; simp_rw [NNRat.cast_def, map_div₀, map_natCast]
   ratCast_def q := by
     change algebraMap k _ _ = _; rw [Rat.cast_def, map_div₀, map_intCast, map_natCast]
-  nnqsmul_def q x := Quotient.inductionOn x fun p ↦ congr_arg Quotient.mk'' <| by
+  nnqsmul_def q x := Quotient.inductionOn x fun p ↦ congr_arg (Quotient.mk _) <| by
     ext; simp [MvPolynomial.algebraMap_eq, NNRat.smul_def]
-  qsmul_def q x := Quotient.inductionOn x fun p ↦ congr_arg Quotient.mk'' <| by
+  qsmul_def q x := Quotient.inductionOn x fun p ↦ congr_arg (Quotient.mk _) <| by
     ext; simp [MvPolynomial.algebraMap_eq, Rat.smul_def]
 
 instance isAlgClosed : IsAlgClosed (AlgebraicClosure k) :=

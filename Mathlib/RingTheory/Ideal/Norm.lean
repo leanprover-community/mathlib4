@@ -168,7 +168,7 @@ theorem cardQuot_pow_of_prime [IsDedekindDomain S] (hP : P ≠ ⊥) {i : ℕ} :
     Ideal.exists_mul_add_mem_pow_succ hP a c a_mem a_not_mem hc
   choose k hk_mem hk_eq using fun c' (hc' : c' ∈ map (mkQ (P ^ i.succ)) (P ^ i)) =>
     Submodule.mem_map.mp hc'
-  refine Equiv.ofBijective (fun c' => Quotient.mk'' (f (k c' c'.prop) (hk_mem c' c'.prop))) ⟨?_, ?_⟩
+  refine Equiv.ofBijective (fun c' => ⟦f (k c' c'.prop) (hk_mem c' c'.prop)⟧) ⟨?_, ?_⟩
   · rintro ⟨c₁', hc₁'⟩ ⟨c₂', hc₂'⟩ h
     rw [Subtype.mk_eq_mk, ← hk_eq _ hc₁', ← hk_eq _ hc₂', mkQ_apply, mkQ_apply,
       Submodule.Quotient.eq, ← hf _ (hk_mem _ hc₁'), ← hf _ (hk_mem _ hc₂')]

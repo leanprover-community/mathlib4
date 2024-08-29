@@ -69,10 +69,10 @@ noncomputable instance : MulAction G H.QuotientDiff where
             coe_one, ← Subtype.ext_iff])
   mul_smul g₁ g₂ q :=
     Quotient.inductionOn q fun T =>
-      congr_arg Quotient.mk'' (by rw [mul_inv_rev]; exact mul_smul (op g₁⁻¹) (op g₂⁻¹) T)
+      congr_arg (Quotient.mk _) (by rw [mul_inv_rev]; exact mul_smul (op g₁⁻¹) (op g₂⁻¹) T)
   one_smul q :=
     Quotient.inductionOn q fun T =>
-      congr_arg Quotient.mk'' (by rw [inv_one]; apply one_smul Gᵐᵒᵖ T)
+      congr_arg (Quotient.mk _) (by rw [inv_one]; apply one_smul Gᵐᵒᵖ T)
 
 theorem smul_diff' (h : H) :
     diff (MonoidHom.id H) α (op (h : G) • β) = diff (MonoidHom.id H) α β * h ^ H.index := by
@@ -184,7 +184,7 @@ private theorem step1 (K : Subgroup G) (hK : K ⊔ N = ⊤) : K = ⊤ := by
 include h2 in
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 private theorem step2 (K : Subgroup G) [K.Normal] (hK : K ≤ N) : K = ⊥ ∨ K = N := by
-  have : Function.Surjective (QuotientGroup.mk' K) := Quotient.surjective_Quotient_mk''
+  have : Function.Surjective (QuotientGroup.mk' K) := Quotient.surjective_mk
   have h4 := step1 h1 h2 h3
   contrapose! h4
   have h5 : Nat.card (G ⧸ K) < Nat.card G := by

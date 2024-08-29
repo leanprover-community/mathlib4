@@ -721,7 +721,7 @@ def orbitRelEquiv [IsGalois k K] :
     exact ⟨⟦w'⟧, hw⟩
 
 lemma orbitRelEquiv_apply_mk'' [IsGalois k K] (w : InfinitePlace K) :
-    orbitRelEquiv (Quotient.mk'' w) = comap w (algebraMap k K) := rfl
+    orbitRelEquiv ⟦w⟧ = comap w (algebraMap k K) := rfl
 
 variable (k w)
 

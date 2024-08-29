@@ -53,11 +53,11 @@ variable {V}
 
 /-- Construct an element of the projectivization from a nonzero vector. -/
 def mk (v : V) (hv : v ≠ 0) : ℙ K V :=
-  Quotient.mk'' ⟨v, hv⟩
+  ⟦⟨v, hv⟩⟧
 
 /-- A variant of `Projectivization.mk` in terms of a subtype. `mk` is preferred. -/
 def mk' (v : { v : V // v ≠ 0 }) : ℙ K V :=
-  Quotient.mk'' v
+  ⟦v⟧
 
 @[simp]
 theorem mk'_eq_mk (v : { v : V // v ≠ 0 }) : mk' K v = mk K ↑v v.2 := rfl
@@ -70,10 +70,10 @@ variable {K}
 
 /-- Choose a representative of `v : Projectivization K V` in `V`. -/
 protected noncomputable def rep (v : ℙ K V) : V :=
-  v.out'
+  v.out
 
 theorem rep_nonzero (v : ℙ K V) : v.rep ≠ 0 :=
-  v.out'.2
+  v.out.2
 
 @[simp]
 theorem mk_rep (v : ℙ K V) : mk K v.rep v.rep_nonzero = v := Quotient.out_eq _
