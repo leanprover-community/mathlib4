@@ -36,32 +36,14 @@ universe u v w
 
 open Function
 
-/--
-The notation typeclass for heterogeneous scalar multiplication.
-This enables the notation `a • b : γ` where `a : α`, `b : β`.
-
-It is assumed to represent a left action in some sense.
-The notation `a • b` is augmented with a macro (below) to have it elaborate as a left action.
-Only the `b` argument participates in the elaboration algorithm: the algorithm uses the type of `b`
-when calculating the type of the surrounding arithmetic expression
-and it tries to insert coercions into `b` to get some `b'`
-such that `a • b'` has the same type as `b'`.
-See the module documentation near the macro for more details.
--/
 class HSMul (α : Type u) (β : Type v) (γ : outParam (Type w)) where
-  /-- `a • b` computes the product of `a` and `b`.
-  The meaning of this notation is type-dependent, but it is intended to be used for left actions. -/
   hSMul : α → β → γ
 
-/-- Typeclass for types with a scalar multiplication operation, denoted `•` (`\bu`) -/
 class SMul (M : Type u) (α : Type v) where
-  /-- `a • b` computes the product of `a` and `b`. The meaning of this notation is type-dependent,
-  but it is intended to be used for left actions. -/
   smul : M → α → α
 
-@[inherit_doc] infixr:73 " • " => HSMul.hSMul
+infixr:73 " • " => HSMul.hSMul
 
-@[inherit_doc HSMul.hSMul]
 macro_rules | `($x • $y) => `(leftact% HSMul.hSMul $x $y)
 
 instance instHSMul {α β} [SMul α β] : HSMul α β β where
@@ -69,40 +51,27 @@ instance instHSMul {α β} [SMul α β] : HSMul α β β where
 
 variable {G : Type u}
 
-/-- Class of types that have an inversion operation. -/
 class Inv (α : Type u) where
-  /-- Invert an element of α. -/
   inv : α → α
 
-@[inherit_doc]
 postfix:max "⁻¹" => Inv.inv
 
 section Mul
 
 variable [Mul G]
 
-/-- A mixin for left cancellative multiplication. -/
 class IsLeftCancelMul (G : Type u) [Mul G] : Prop where
-  /-- Multiplication is left cancellative. -/
   protected mul_left_cancel : ∀ a b c : G, a * b = a * c → b = c
-/-- A mixin for right cancellative multiplication. -/
 class IsRightCancelMul (G : Type u) [Mul G] : Prop where
-  /-- Multiplication is right cancellative. -/
   protected mul_right_cancel : ∀ a b c : G, a * b = c * b → a = c
-/-- A mixin for cancellative multiplication. -/
 class IsCancelMul (G : Type u) [Mul G] extends IsLeftCancelMul G, IsRightCancelMul G : Prop
 
-/-- A mixin for left cancellative addition. -/
 class IsLeftCancelAdd (G : Type u) [Add G] : Prop where
-  /-- Addition is left cancellative. -/
   protected add_left_cancel : ∀ a b c : G, a + b = a + c → b = c
 
-/-- A mixin for right cancellative addition. -/
 class IsRightCancelAdd (G : Type u) [Add G] : Prop where
-  /-- Addition is right cancellative. -/
   protected add_right_cancel : ∀ a b c : G, a + b = c + b → a = c
 
-/-- A mixin for cancellative addition. -/
 class IsCancelAdd (G : Type u) [Add G] extends IsLeftCancelAdd G, IsRightCancelAdd G : Prop
 section IsRightCancelMul
 
@@ -130,14 +99,10 @@ theorem add_right_cancel_iff : b + a = c + a ↔ b = c :=
 
 end IsRightCancelAdd
 
-/-- A semigroup is a type with an associative `(*)`. -/
 class Semigroup (G : Type u) extends Mul G where
-  /-- Multiplication is associative -/
   protected mul_assoc : ∀ a b c : G, a * b * c = a * (b * c)
 
-/-- An additive semigroup is a type with an associative `(+)`. -/
 class AddSemigroup (G : Type u) extends Add G where
-  /-- Addition is associative -/
   protected add_assoc : ∀ a b c : G, a + b + c = a + (b + c)
 
 section AddSemigroup
@@ -158,20 +123,14 @@ theorem mul_assoc : ∀ a b c : G, a * b * c = a * (b * c) :=
 
 end Semigroup
 
-/-- A commutative additive magma is a type with an addition which commutes. -/
 class AddCommMagma (G : Type u) extends Add G where
-  /-- Addition is commutative in an commutative additive magma. -/
   protected add_comm : ∀ a b : G, a + b = b + a
 
-/-- A commutative multiplicative magma is a type with a multiplication which commutes. -/
 class CommMagma (G : Type u) extends Mul G where
-  /-- Multiplication is commutative in a commutative multiplicative magma. -/
   protected mul_comm : ∀ a b : G, a * b = b * a
 
-/-- A commutative semigroup is a type with an associative commutative `(*)`. -/
 class CommSemigroup (G : Type u) extends Semigroup G, CommMagma G where
 
-/-- A commutative additive semigroup is a type with an associative commutative `(+)`. -/
 class AddCommSemigroup (G : Type u) extends AddSemigroup G, AddCommMagma G where
 
 section AddCommMagma
@@ -190,46 +149,20 @@ theorem mul_comm : ∀ a b : G, a * b = b * a := CommMagma.mul_comm
 
 end CommMagma
 
-/-- A `LeftCancelSemigroup` is a semigroup such that `a * b = a * c` implies `b = c`. -/
-class LeftCancelSemigroup (G : Type u) extends Semigroup G where
-  protected mul_left_cancel : ∀ a b c : G, a * b = a * c → b = c
-
-attribute [instance 75] LeftCancelSemigroup.toSemigroup -- See note [lower cancel priority]
-
-/-- An `AddLeftCancelSemigroup` is an additive semigroup such that
-`a + b = a + c` implies `b = c`. -/
 class AddLeftCancelSemigroup (G : Type u) extends AddSemigroup G where
   protected add_left_cancel : ∀ a b c : G, a + b = a + c → b = c
 
 attribute [instance 75] AddLeftCancelSemigroup.toAddSemigroup -- See note [lower cancel priority]
 
-/-- A `RightCancelSemigroup` is a semigroup such that `a * b = c * b` implies `a = c`. -/
-class RightCancelSemigroup (G : Type u) extends Semigroup G where
-  protected mul_right_cancel : ∀ a b c : G, a * b = c * b → a = c
-
-attribute [instance 75] RightCancelSemigroup.toSemigroup -- See note [lower cancel priority]
-
-/-- An `AddRightCancelSemigroup` is an additive semigroup such that
-`a + b = c + b` implies `a = c`. -/
 class AddRightCancelSemigroup (G : Type u) extends AddSemigroup G where
   protected add_right_cancel : ∀ a b c : G, a + b = c + b → a = c
 
 attribute [instance 75] AddRightCancelSemigroup.toAddSemigroup -- See note [lower cancel priority]
 
-/-- Typeclass for expressing that a type `M` with multiplication and a one satisfies
-`1 * a = a` and `a * 1 = a` for all `a : M`. -/
 class MulOneClass (M : Type u) extends One M, Mul M where
-  /-- One is a left neutral element for multiplication -/
-  protected one_mul : ∀ a : M, 1 * a = a
-  /-- One is a right neutral element for multiplication -/
-  protected mul_one : ∀ a : M, a * 1 = a
 
-/-- Typeclass for expressing that a type `M` with addition and a zero satisfies
-`0 + a = a` and `a + 0 = a` for all `a : M`. -/
 class AddZeroClass (M : Type u) extends Zero M, Add M where
-  /-- Zero is a left neutral element for addition -/
   protected zero_add : ∀ a : M, 0 + a = a
-  /-- Zero is a right neutral element for addition -/
   protected add_zero : ∀ a : M, a + 0 = a
 
 section AddZeroClass
@@ -246,33 +179,17 @@ theorem add_zero : ∀ a : M, a + 0 = a :=
 
 end AddZeroClass
 
-section MulOneClass
-
-variable {M : Type u} [MulOneClass M]
-
-@[simp]
-theorem one_mul : ∀ a : M, 1 * a = a :=
-  MulOneClass.one_mul
-
-@[simp]
-theorem mul_one : ∀ a : M, a * 1 = a :=
-  MulOneClass.mul_one
-
-end MulOneClass
-
 section
 
 variable {M : Type u}
 
 end
 
-/-- An `AddMonoid` is an `AddSemigroup` with an element `0` such that `0 + a = a + 0 = a`. -/
 class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
 
 attribute [instance 150] AddSemigroup.toAdd
 attribute [instance 50] AddZeroClass.toAdd
 
-/-- A `Monoid` is a `Semigroup` with an element `1` such that `1 * a = a * 1 = a`. -/
 class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
 
 section Monoid
@@ -283,14 +200,10 @@ theorem left_neg_eq_right_neg (hba : b + a = 0) (hac : a + c = 0) : b = c := by
 
 end Monoid
 
-/-- An additive commutative monoid is an additive monoid with commutative `(+)`. -/
 class AddCommMonoid (M : Type u) extends AddMonoid M, AddCommSemigroup M
 
 section LeftCancelMonoid
 
-/-- An additive monoid in which addition is left-cancellative.
-Main examples are `Nat` and groups. This is the right typeclass for many sum lemmas, as having a zero
-is useful to define the sum over the empty set, so `AddLeftCancelSemigroup` is not enough. -/
 class AddLeftCancelMonoid (M : Type u) extends AddLeftCancelSemigroup M, AddMonoid M
 
 attribute [instance 75] AddLeftCancelMonoid.toAddMonoid -- See note [lower cancel priority]
@@ -299,9 +212,6 @@ end LeftCancelMonoid
 
 section RightCancelMonoid
 
-/-- An additive monoid in which addition is right-cancellative.
-Main examples are `Nat` and groups. This is the right typeclass for many sum lemmas, as having a zero
-is useful to define the sum over the empty set, so `AddRightCancelSemigroup` is not enough. -/
 class AddRightCancelMonoid (M : Type u) extends AddRightCancelSemigroup M, AddMonoid M
 
 attribute [instance 75] AddRightCancelMonoid.toAddMonoid -- See note [lower cancel priority]
@@ -310,9 +220,6 @@ end RightCancelMonoid
 
 section CancelMonoid
 
-/-- An additive monoid in which addition is cancellative on both sides.
-Main examples are `Nat` and groups. This is the right typeclass for many sum lemmas, as having a zero
-is useful to define the sum over the empty set, so `AddRightCancelMonoid` is not enough. -/
 class AddCancelMonoid (M : Type u) extends AddLeftCancelMonoid M, AddRightCancelMonoid M
 
 instance (priority := 100) AddCancelMonoid.toIsCancelAdd (M : Type u) [AddCancelMonoid M] :
@@ -324,7 +231,6 @@ end CancelMonoid
 
 section InvolutiveInv
 
-/-- Auxiliary typeclass for types with an involutive `Neg`. -/
 class InvolutiveNeg (A : Type u) extends Neg A where
   protected neg_neg : ∀ x : A, - -x = x
 
@@ -335,23 +241,6 @@ theorem neg_neg (a : G) : - -a = a :=
 
 end InvolutiveInv
 
-/-- A `SubNegMonoid` is an `AddMonoid` with unary `-` and binary `-` operations
-satisfying `sub_eq_add_neg : ∀ a b, a - b = a + -b`.
-
-The default for `sub` is such that `a - b = a + -b` holds by definition.
-
-Adding `sub` as a field rather than defining `a - b := a + -b` allows us to
-avoid certain classes of unification failures, for example:
-Let `foo X` be a type with a `∀ X, Sub (Foo X)` instance but no
-`∀ X, Neg (Foo X)`. Suppose we also have an instance
-`∀ X [Cromulent X], AddGroup (Foo X)`. Then the `(-)` coming from
-`AddGroup.sub` cannot be definitionally equal to the `(-)` coming from
-`Foo.Sub`.
-
-In the same way, adding a `zsmul` field makes it possible to avoid definitional failures
-in diamonds. See the definition of `AddMonoid` and Note [forgetful inheritance] for more
-explanations on this.
--/
 class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G where
   protected sub_eq_add_neg : ∀ a b : G, a - b = a + -b := by intros; rfl
 
@@ -364,11 +253,7 @@ theorem sub_eq_add_neg (a b : G) : a - b = a + -b :=
 
 end DivInvMonoid
 
-/-- A `SubtractionMonoid` is a `SubNegMonoid` with involutive negation and such that
-`-(a + b) = -b + -a` and `a + b = 0 → -a = b`. -/
 class SubtractionMonoid (G : Type u) extends SubNegMonoid G, InvolutiveNeg G where
-  /-- Despite the asymmetry of `neg_eq_of_add`, the symmetric version is true thanks to the
-  involutivity of negation. -/
   protected neg_eq_of_add (a b : G) : a + b = 0 → -a = b
 
 section DivisionMonoid
@@ -386,14 +271,6 @@ theorem eq_neg_of_add_eq_zero_left (h : a + b = 0) : a = -b :=
 
 end DivisionMonoid
 
-/-- An `AddGroup` is an `AddMonoid` with a unary `-` satisfying `-a + a = 0`.
-
-There is also a binary operation `-` such that `a - b = a + -b`,
-with a default so that `a - b = a + -b` holds by definition.
-
-Use `AddGroup.ofLeftAxioms` or `AddGroup.ofRightAxioms` to define an
-additive group structure on a type with the minumum proof obligations.
--/
 class AddGroup (A : Type u) extends SubNegMonoid A where
   protected neg_add_cancel : ∀ a : A, -a + a = 0
 
@@ -432,7 +309,6 @@ instance (priority := 100) AddGroup.toAddCancelMonoid (G : Type _) [AddGroup G] 
 
 end Group
 
-/-- An additive commutative group is an additive group with commutative `(+)`. -/
 class AddCommGroup (G : Type u) extends AddGroup G, AddCommMonoid G
 
 end Mathlib.Algebra.Group.Defs
@@ -458,7 +334,6 @@ section
 
 variable [AddMonoid M] [AddGroup N]
 
-/-- Makes a group homomorphism from a proof that the map preserves multiplication. -/
 def mk' (f : M → N) (map_add : ∀ a b : M, f (a + b) = f a + f b) : M →+ N where
   toFun := f
   map_add' := map_add
@@ -494,8 +369,6 @@ section Mathlib.Algebra.GroupWithZero.Defs
 
 variable {G₀ : Type u} {M₀ : Type u₁} {M₀' : Type u₂} {G₀' : Type u₃}
 
-/-- Typeclass for expressing that a type `M₀` with multiplication and a zero satisfies
-`0 * a = 0` and `a * 0 = 0` for all `a : M₀`. -/
 class MulZeroClass (M₀ : Type u) extends Mul M₀, Zero M₀ where
 
 end Mathlib.Algebra.GroupWithZero.Defs
@@ -505,11 +378,8 @@ section Mathlib.Algebra.Group.Action.Defs
 
 variable {M : Type u} {α : Type v}
 
-/-- Typeclass for multiplicative actions by monoids. This generalizes group actions. -/
 class MulAction (α : Type u) (β : Type v) [Monoid α] extends SMul α β where
-  /-- One is the neutral element for `•` -/
   protected one_smul : ∀ b : β, (1 : α) • b = b
-  /-- Associativity of `•` and `*` -/
   mul_smul : ∀ (x y : α) (b : β), (x * y) • b = x • y • b
 
 variable [Monoid M] [MulAction M α]
@@ -521,11 +391,8 @@ end Mathlib.Algebra.Group.Action.Defs
 
 section Mathlib.Algebra.GroupWithZero.Action.Defs
 
-/-- Typeclass for multiplicative actions on additive structures. This generalizes group modules. -/
 class DistribMulAction (M : Type u) (A : Type v) [Monoid M] [AddMonoid A] extends MulAction M A where
-  /-- Multiplying `0` by a scalar gives `0` -/
   smul_zero : ∀ a : M, a • (0 : A) = 0
-  /-- Scalar multiplication distributes across addition -/
   smul_add : ∀ (a : M) (x y : A), a • (x + y) = a • x + a • y
 
 export DistribMulAction (smul_zero smul_add)
@@ -538,13 +405,8 @@ variable {α : Type u} {β : Type v} {γ : Type w} {R : Type x}
 
 open Function
 
-/-- A typeclass stating that multiplication is left and right distributive
-over addition. -/
 class Distrib (R : Type u) extends Mul R, Add R where
 
-/-- A `Semiring` is a type with addition, multiplication, a `0` and a `1` where addition is
-commutative and associative, multiplication is associative and left and right distributive over
-addition, and `0` and `1` are additive and multiplicative identities. -/
 class Semiring (α : Type u) extends AddCommMonoid α, Distrib α, Monoid α, MulZeroClass α where
 
 end Mathlib.Algebra.Ring.Defs
@@ -554,16 +416,9 @@ section Mathlib.Algebra.Module.Defs
 
 open Function
 
-/-- A module is a generalization of vector spaces to a scalar semiring.
-  It consists of a scalar semiring `R` and an additive monoid of "vectors" `M`,
-  connected by a "scalar multiplication" operation `r • x : M`
-  (where `r : R` and `x : M`) with some natural associativity and
-  distributivity axioms similar to those on a ring. -/
 class Module (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] extends
   DistribMulAction R M where
-  /-- Scalar multiplication distributes over addition from the right. -/
   protected add_smul : ∀ (r s : R) (x : M), (r + s) • x = r • x + s • x
-  /-- Scalar multiplication by zero gives zero. -/
   protected zero_smul : ∀ x : M, (0 : R) • x = 0
 
 export Module (add_smul zero_smul)
@@ -573,32 +428,13 @@ end Mathlib.Algebra.Module.Defs
 
 section Mathlib.Combinatorics.Quiver.Basic
 
-/-- A quiver `G` on a type `V` of vertices assigns to every pair `a b : V` of vertices
-a type `a ⟶ b` of arrows from `a` to `b`.
-
-For graphs with no repeated edges, one can use `Quiver.{0} V`, which ensures
-`a ⟶ b : Prop`. For multigraphs, one can use `Quiver.{v+1} V`, which ensures
-`a ⟶ b : Type v`.
-
-Because `Category` will later extend this class, we call the field `Hom`.
-Except when constructing instances, you should rarely see this, and use the `⟶` notation instead.
--/
 class Quiver (V : Type u) where
-  /-- The type of edges/arrows/morphisms between a given source and target. -/
   Hom : V → V → Sort v
 
-/--
-Notation for the type of edges/arrows/morphisms between a given source and target
-in a quiver or category.
--/
 infixr:10 " ⟶ " => Quiver.Hom
 
-/-- A morphism of quivers. As we will later have categorical functors extend this structure,
-we call it a `Prefunctor`. -/
 structure Prefunctor (V : Type u₁) [Quiver.{v₁} V] (W : Type u₂) [Quiver.{v₂} W] where
-  /-- The action of a (pre)functor on vertices/objects. -/
   obj : V → W
-  /-- The action of a (pre)functor on edges/arrows/morphisms. -/
   map : ∀ {X Y : V}, (X ⟶ Y) → (obj X ⟶ obj Y)
 
 end Mathlib.Combinatorics.Quiver.Basic
@@ -608,32 +444,17 @@ section Mathlib.CategoryTheory.Category.Basic
 
 namespace CategoryTheory
 
-/-- A preliminary structure on the way to defining a category,
-containing the data, but none of the axioms. -/
 class CategoryStruct (obj : Type u) extends Quiver.{v + 1} obj : Type max u (v + 1) where
-  /-- The identity morphism on an object. -/
   id : ∀ X : obj, Hom X X
-  /-- Composition of morphisms in a category, written `f ≫ g`. -/
   comp : ∀ {X Y Z : obj}, (X ⟶ Y) → (Y ⟶ Z) → (X ⟶ Z)
 
-/-- Notation for the identity morphism in a category. -/
 scoped notation "𝟙" => CategoryStruct.id  -- type as \b1
 
-/-- Notation for composition of morphisms in a category. -/
 scoped infixr:80 " ≫ " => CategoryStruct.comp -- type as \gg
 
-/-- The typeclass `Category C` describes morphisms associated to objects of type `C`.
-The universe levels of the objects and morphisms are unconstrained, and will often need to be
-specified explicitly, as `Category.{v} C`. (See also `LargeCategory` and `SmallCategory`.)
-
-See <https://stacks.math.columbia.edu/tag/0014>.
--/
 class Category (obj : Type u) extends CategoryStruct.{v} obj : Type max u (v + 1) where
-  /-- Identity morphisms are left identities for composition. -/
   id_comp : ∀ {X Y : obj} (f : X ⟶ Y), 𝟙 X ≫ f = f
-  /-- Identity morphisms are right identities for composition. -/
   comp_id : ∀ {X Y : obj} (f : X ⟶ Y), f ≫ 𝟙 Y = f
-  /-- Composition in a category is associative. -/
   assoc : ∀ {W X Y Z : obj} (f : W ⟶ X) (g : X ⟶ Y) (h : Y ⟶ Z), (f ≫ g) ≫ h = f ≫ g ≫ h
 
 attribute [simp] Category.id_comp Category.comp_id Category.assoc
@@ -649,26 +470,11 @@ namespace CategoryTheory
 
 section
 
-/-- `Functor C D` represents a functor between categories `C` and `D`.
-
-To apply a functor `F` to an object use `F.obj X`, and to a morphism use `F.map f`.
-
-The axiom `map_id` expresses preservation of identities, and
-`map_comp` expresses functoriality.
-
-See <https://stacks.math.columbia.edu/tag/001B>.
--/
 structure Functor (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
     extends Prefunctor C D : Type max v₁ v₂ u₁ u₂ where
 
-/-- The prefunctor between the underlying quivers. -/
-add_decl_doc Functor.toPrefunctor
-
 end
 
-/-- Notation for a functor between categories. -/
--- A functor is basically a function, so give ⥤ a similar precedence to → (25).
--- For example, `C × D ⥤ E` should parse as `(C × D) ⥤ E` not `C × (D ⥤ E)`.
 infixr:26 " ⥤ " => Functor -- type as \func
 
 end CategoryTheory
@@ -681,21 +487,11 @@ namespace CategoryTheory
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
-/-- `NatTrans F G` represents a natural transformation between functors `F` and `G`.
-
-The field `app` provides the components of the natural transformation.
-
-Naturality is expressed by `α.naturality`.
--/
 @[ext]
 structure NatTrans (F G : C ⥤ D) : Type max u₁ v₂ where
-  /-- The component of a natural transformation. -/
   app : ∀ X : C, F.obj X ⟶ G.obj X
-  /-- The naturality square for a given morphism. -/
   naturality : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), F.map f ≫ app Y = app X ≫ G.map f
 
--- Rather arbitrarily, we say that the 'simpler' form is
--- components of natural transformations moving earlier.
 attribute [simp] NatTrans.naturality
 
 @[simp]
@@ -705,7 +501,6 @@ theorem NatTrans.naturality_assoc {F G : C ⥤ D} (self : NatTrans F G) ⦃X Y :
 
 namespace NatTrans
 
-/-- `NatTrans.id F` is the identity natural transformation on a functor `F`. -/
 protected def id (F : C ⥤ D) : NatTrans F F where
   app X := 𝟙 (F.obj X)
   naturality := by 
@@ -723,30 +518,17 @@ section
 
 variable {F G H I : C ⥤ D}
 
-/-- `vcomp α β` is the vertical compositions of natural transformations. -/
 def vcomp (α : NatTrans F G) (β : NatTrans G H) : NatTrans F H where
   app X := α.app X ≫ β.app X
   naturality := by 
     intro X Y f
     simp_all only [naturality_assoc, naturality, assoc]
 
--- functor_category will rewrite (vcomp α β) to (α ≫ β), so this is not a
--- suitable simp lemma.  We will declare the variant vcomp_app' there.
 theorem vcomp_app (α : NatTrans F G) (β : NatTrans G H) (X : C) :
     (vcomp α β).app X = α.app X ≫ β.app X := rfl
 
 end
 
-/-- The diagram
-    F(f)      F(g)      F(h)
-F X ----> F Y ----> F U ----> F U
- |         |         |         |
- | α(X)    | α(Y)    | α(U)    | α(V)
- v         v         v         v
-G X ----> G Y ----> G U ----> G V
-    G(f)      G(g)      G(h)
-commutes.
--/
 example {F G : C ⥤ D} (α : NatTrans F G) {X Y U V : C} (f : X ⟶ Y) (g : Y ⟶ U) (h : U ⟶ V) :
     α.app X ≫ G.map f ≫ G.map g ≫ G.map h = F.map f ≫ F.map g ≫ F.map h ≫ α.app V := by
   simp
@@ -767,14 +549,6 @@ variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 variable {C D} {E : Type u₃} [Category.{v₃} E]
 variable {F G H I : C ⥤ D}
 
-/-- `Functor.category C D` gives the category structure on functors and natural transformations
-between categories `C` and `D`.
-
-Notice that if `C` and `D` are both small categories at the same universe level,
-this is another small category at that level.
-However if `C` and `D` are both large categories at the same universe level,
-this is a small category at the next higher level.
--/
 instance Functor.category : Category.{max u₁ v₂} (C ⥤ D) where
   Hom F G := NatTrans F G
   id F := NatTrans.id F
@@ -821,14 +595,9 @@ namespace CategoryTheory.Limits
 variable (C : Type u) [Category.{v} C]
 variable (D : Type u') [Category.{v'} D]
 
-/-- A category "has zero morphisms" if there is a designated "zero morphism" in each morphism space,
-and compositions of zero morphisms with anything give the zero morphism. -/
 class HasZeroMorphisms where
-  /-- Every morphism space has zero -/
   [zero : ∀ X Y : C, Zero (X ⟶ Y)]
-  /-- `f` composed with `0` is `0` -/
   comp_zero : ∀ {X Y : C} (f : X ⟶ Y) (Z : C), f ≫ (0 : Y ⟶ Z) = (0 : X ⟶ Z)
-  /-- `0` composed with `f` is `0` -/
   zero_comp : ∀ (X : C) {Y Z : C} (f : Y ⟶ Z), (0 : X ⟶ Y) ≫ f = (0 : X ⟶ Z)
 
 attribute [instance] HasZeroMorphisms.zero
@@ -857,8 +626,6 @@ namespace CategoryTheory
 
 variable (C : Type u) [Category.{v} C]
 
-/-- A category is called preadditive if `P ⟶ Q` is an abelian group such that composition is
-    linear in both variables. -/
 class Preadditive where
   homGroup : ∀ P Q : C, AddCommGroup (P ⟶ Q) := by infer_instance
   add_comp : ∀ (P Q R : C) (f f' : P ⟶ Q) (g : Q ⟶ R), (f + f') ≫ g = f ≫ g + f' ≫ g
@@ -883,11 +650,9 @@ open AddMonoidHom
 
 variable {C : Type u} [Category.{v} C] [Preadditive C]
 
-/-- Composition by a fixed left argument as a group homomorphism -/
 def leftComp {P Q : C} (R : C) (f : P ⟶ Q) : (Q ⟶ R) →+ (P ⟶ R) :=
   mk' (fun g => f ≫ g) fun g g' => by simp
 
-/-- Composition by a fixed right argument as a group homomorphism -/
 def rightComp (P : C) {Q R : C} (g : Q ⟶ R) : (P ⟶ Q) →+ (P ⟶ R) :=
   mk' (fun f => f ≫ g) fun f f' => by simp
 
@@ -1006,13 +771,9 @@ open CategoryTheory.Limits
 
 namespace CategoryTheory
 
-/-- A category is called `R`-linear if `P ⟶ Q` is an `R`-module such that composition is
-    `R`-linear in both variables. -/
 class Linear (R : Type w) [Semiring R] (C : Type u) [Category.{v} C] [Preadditive C] where
   homModule : ∀ X Y : C, Module R (X ⟶ Y) := by infer_instance
-  /-- compatibility of the scalar multiplication with the post-composition -/
   smul_comp : ∀ (X Y Z : C) (r : R) (f : X ⟶ Y) (g : Y ⟶ Z), (r • f) ≫ g = r • f ≫ g
-  /-- compatibility of the scalar multiplication with the pre-composition -/
   comp_smul : ∀ (X Y Z : C) (f : X ⟶ Y) (r : R) (g : Y ⟶ Z), f ≫ (r • g) = r • f ≫ g
 
 attribute [instance] Linear.homModule
