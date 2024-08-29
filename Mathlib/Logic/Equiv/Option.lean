@@ -7,7 +7,6 @@ import Mathlib.Control.EquivFunctor
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.Subtype
 import Mathlib.Logic.Equiv.Defs
-import Mathlib.Tactic.Cases
 
 /-!
 # Equivalences for `Option α`
@@ -125,7 +124,7 @@ theorem option_symm_apply_none_iff : e.symm none = none ↔ e none = none :=
   ⟨fun h => by simpa using (congr_arg e h).symm, fun h => by simpa using (congr_arg e.symm h).symm⟩
 
 theorem some_removeNone_iff {x : α} : some (removeNone e x) = e none ↔ e.symm none = some x := by
-  cases' h : e (some x) with a
+  rcases h : e (some x) with a | a
   · rw [removeNone_none _ h]
     simpa using (congr_arg e.symm h).symm
   · rw [removeNone_some _ ⟨a, h⟩]

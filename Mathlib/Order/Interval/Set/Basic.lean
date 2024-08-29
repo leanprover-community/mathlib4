@@ -954,7 +954,7 @@ theorem Ico_eq_Ico_iff (h : a₁ < b₁ ∨ a₂ < b₂) : Ico a₁ b₁ = Ico a
   ⟨fun e => by
       simp only [Subset.antisymm_iff] at e
       simp only [le_antisymm_iff]
-      cases' h with h h <;>
+      rcases h with h | h <;>
       simp only [gt_iff_lt, not_lt, Ico_subset_Ico_iff h] at e <;>
       [ rcases e with ⟨⟨h₁, h₂⟩, e'⟩; rcases e with ⟨e', ⟨h₁, h₂⟩⟩ ] <;>
       -- Porting note: restore `tauto`
@@ -1123,7 +1123,7 @@ theorem Icc_union_Ici' (h₁ : c ≤ b) : Icc a b ∪ Ici c = Ici (min a c) := b
 theorem Icc_union_Ici (h : c ≤ max a b) : Icc a b ∪ Ici c = Ici (min a c) := by
   rcases le_or_lt a b with hab | hab <;> simp [hab] at h
   · exact Icc_union_Ici' h
-  · cases' h with h h
+  · rcases h with h | h
     · simp [*]
     · have hca : c ≤ a := h.trans hab.le
       simp [*]
@@ -1192,7 +1192,7 @@ theorem Iic_union_Ioo_eq_Iio (h : a < b) : Iic a ∪ Ioo a b = Iio b :=
 
 theorem Iio_union_Ioo' (h₁ : c < b) : Iio b ∪ Ioo c d = Iio (max b d) := by
   ext x
-  cases' lt_or_le x b with hba hba
+  rcases lt_or_le x b with hba | hba
   · simp [hba, h₁]
   · simp only [mem_Iio, mem_union, mem_Ioo, lt_max_iff]
     refine or_congr Iff.rfl ⟨And.right, ?_⟩
@@ -1223,7 +1223,7 @@ theorem Iic_union_Icc' (h₁ : c ≤ b) : Iic b ∪ Icc c d = Iic (max b d) := b
 theorem Iic_union_Icc (h : min c d ≤ b) : Iic b ∪ Icc c d = Iic (max b d) := by
   rcases le_or_lt c d with hcd | hcd <;> simp [hcd] at h
   · exact Iic_union_Icc' h
-  · cases' h with h h
+  · rcases h with h | h
     · have hdb : d ≤ b := hcd.le.trans h
       simp [*]
     · simp [*]

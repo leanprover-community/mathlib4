@@ -66,9 +66,10 @@ lemma bodd_add (m n : ℕ) : bodd (m + n) = bxor (bodd m) (bodd n) := by
 
 @[simp]
 lemma bodd_mul (m n : ℕ) : bodd (m * n) = (bodd m && bodd n) := by
-  induction' n with n IH
-  · simp
-  · simp only [mul_succ, bodd_add, IH, bodd_succ]
+  induction n with
+  | zero => simp
+  | succ n IH =>
+    simp only [mul_succ, bodd_add, IH, bodd_succ]
     cases bodd m <;> cases bodd n <;> rfl
 
 lemma mod_two_of_bodd (n : ℕ) : n % 2 = cond (bodd n) 1 0 := by
@@ -83,7 +84,7 @@ lemma mod_two_of_bodd (n : ℕ) : n % 2 = cond (bodd n) 1 0 := by
     intro b
     cases b <;> rfl
   rw [← this]
-  cases' mod_two_eq_zero_or_one n with h h <;> rw [h] <;> rfl
+  rcases mod_two_eq_zero_or_one n with h | h <;> rw [h] <;> rfl
 
 @[simp] lemma div2_zero : div2 0 = 0 := rfl
 
@@ -396,11 +397,13 @@ theorem one_bits : Nat.bits 1 = [true] := by
 -- := by norm_num
 
 theorem bodd_eq_bits_head (n : ℕ) : n.bodd = n.bits.headI := by
-  induction' n using Nat.binaryRec' with b n h _; · simp
-  simp [bodd_bit, bits_append_bit _ _ h]
+  induction n using Nat.binaryRec' with
+  | z => simp
+  | f _ _ h _ => simp [bodd_bit, bits_append_bit _ _ h]
 
 theorem div2_bits_eq_tail (n : ℕ) : n.div2.bits = n.bits.tail := by
-  induction' n using Nat.binaryRec' with b n h _; · simp
-  simp [div2_bit, bits_append_bit _ _ h]
+  induction n using Nat.binaryRec' with
+  | z => simp
+  | f _ _ h _ => simp [div2_bit, bits_append_bit _ _ h]
 
 end Nat

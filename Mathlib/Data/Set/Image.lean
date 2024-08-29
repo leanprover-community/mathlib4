@@ -136,8 +136,9 @@ theorem preimage_comp_eq : preimage (g ∘ f) = preimage f ∘ preimage g :=
   rfl
 
 theorem preimage_iterate_eq {f : α → α} {n : ℕ} : Set.preimage f^[n] = (Set.preimage f)^[n] := by
-  induction' n with n ih; · simp
-  rw [iterate_succ, iterate_succ', preimage_comp_eq, ih]
+  induction n with
+  | zero => simp
+  | succ n ih => rw [iterate_succ, iterate_succ', preimage_comp_eq, ih]
 
 theorem preimage_preimage {g : β → γ} {f : α → β} {s : Set γ} :
     f ⁻¹' (g ⁻¹' s) = (fun x => g (f x)) ⁻¹' s :=
@@ -1284,13 +1285,13 @@ theorem preimage_injective : Injective (preimage f) ↔ Surjective f := by
 @[simp]
 theorem preimage_surjective : Surjective (preimage f) ↔ Injective f := by
   refine ⟨fun h x x' hx => ?_, Injective.preimage_surjective⟩
-  cases' h {x} with s hs; have := mem_singleton x
+  rcases h {x} with ⟨s, hs⟩; have := mem_singleton x
   rwa [← hs, mem_preimage, hx, ← mem_preimage, hs, mem_singleton_iff, eq_comm] at this
 
 @[simp]
 theorem image_surjective : Surjective (image f) ↔ Surjective f := by
   refine ⟨fun h y => ?_, Surjective.image_surjective⟩
-  cases' h {y} with s hs
+  rcases h {y} with ⟨s, hs⟩
   have := mem_singleton y; rw [← hs] at this; rcases this with ⟨x, _, hx⟩
   exact ⟨x, hx⟩
 
