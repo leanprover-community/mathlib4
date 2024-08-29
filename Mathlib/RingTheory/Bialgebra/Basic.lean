@@ -179,12 +179,11 @@ instance instBialgebra : Bialgebra R (MonoidAlgebra A X) :=
       simp only [one_def, comul_single, Bialgebra.comul_one, Algebra.TensorProduct.one_def,
         TensorProduct.map_tmul, lsingle_apply]
     mul_compr₂_comul := lhom_ext fun a b => lhom_ext fun c d => by
-      rcases TensorProduct.exists_finset (R := R) (Coalgebra.comul b) with ⟨s, hs⟩
-      rcases TensorProduct.exists_finset (R := R) (Coalgebra.comul d) with ⟨t, ht⟩
       simp only [LinearMap.compr₂_apply, LinearMap.mul_apply', single_mul_single, comul_single,
-        Bialgebra.comul_mul, hs, ht, Finset.sum_mul_sum, Algebra.TensorProduct.tmul_mul_tmul,
-        map_sum, TensorProduct.map_tmul, lsingle_apply, LinearMap.compl₁₂_apply,
-        LinearMap.coeFn_sum, Finset.sum_apply, Finset.sum_comm (s := s)] }
+        Bialgebra.comul_mul, ← (Coalgebra.Repr.arbitrary R b).eq,
+        ← (Coalgebra.Repr.arbitrary R d).eq, Finset.sum_mul_sum,
+        Algebra.TensorProduct.tmul_mul_tmul, map_sum, TensorProduct.map_tmul, lsingle_apply,
+        LinearMap.compl₁₂_apply, LinearMap.coeFn_sum, Finset.sum_apply, Finset.sum_comm (s := s)] }
 
 end MonoidAlgebra
 
@@ -222,12 +221,11 @@ instance instBialgebra : Bialgebra R A[X] :=
       simp only [one_def, comul_single, Bialgebra.comul_one, Algebra.TensorProduct.one_def,
         TensorProduct.map_tmul, lsingle_apply]
     mul_compr₂_comul := lhom_ext fun a b => lhom_ext fun c d => by
-      rcases TensorProduct.exists_finset (R := R) (Coalgebra.comul b) with ⟨s, hs⟩
-      rcases TensorProduct.exists_finset (R := R) (Coalgebra.comul d) with ⟨t, ht⟩
       simp only [LinearMap.compr₂_apply, LinearMap.mul_apply', single_mul_single, comul_single,
-        Bialgebra.comul_mul, hs, ht, Finset.sum_mul_sum, Algebra.TensorProduct.tmul_mul_tmul,
-        map_sum, TensorProduct.map_tmul, lsingle_apply, LinearMap.compl₁₂_apply,
-        LinearMap.coeFn_sum, Finset.sum_apply, Finset.sum_comm (s := s)] }
+        Bialgebra.comul_mul, ← (Coalgebra.Repr.arbitrary R b).eq,
+        ← (Coalgebra.Repr.arbitrary R d).eq, Finset.sum_mul_sum,
+        Algebra.TensorProduct.tmul_mul_tmul, map_sum, TensorProduct.map_tmul, lsingle_apply,
+        LinearMap.compl₁₂_apply, LinearMap.coeFn_sum, Finset.sum_apply, Finset.sum_comm (s := s)] }
 
 end AddMonoidAlgebra
 
