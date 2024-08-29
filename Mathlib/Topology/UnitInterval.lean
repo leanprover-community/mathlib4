@@ -85,7 +85,6 @@ instance : Nonempty I :=
 instance : Mul I :=
   ⟨fun x y => ⟨x * y, mul_mem x.2 y.2⟩⟩
 
--- todo: we could set up a `LinearOrderedCommMonoidWithZero I` instance
 theorem mul_le_left {x y : I} : x * y ≤ x :=
   Subtype.coe_le_coe.mp <| mul_le_of_le_one_right x.2.1 y.2.2
 
@@ -150,6 +149,7 @@ lemma symm_eq_one {i : I} : σ i = 1 ↔ i = 0 := by
 lemma symm_eq_zero {i : I} : σ i = 0 ↔ i = 1 := by
   rw [← symm_one, symm_inj]
 
+@[simp]
 theorem symm_le_symm_iff {i j : I} : σ i ≤ σ j ↔ j ≤ i := by
   simp only [symm, Subtype.mk_le_mk, sub_le_sub_iff, add_le_add_iff_left, Subtype.coe_le_coe]
 
@@ -159,6 +159,7 @@ theorem le_symm_comm {i j : I} : i ≤ σ j ↔ j ≤ σ i := by
 theorem symm_le_comm {i j : I} : σ i ≤ j ↔ σ j ≤ i := by
   rw [← symm_le_symm_iff, symm_symm]
 
+@[simp]
 theorem symm_lt_symm_iff {i j : I} : σ i < σ j ↔ j < i := by
   simp only [symm, Subtype.mk_lt_mk, sub_lt_sub_iff_left, Subtype.coe_lt_coe]
 
