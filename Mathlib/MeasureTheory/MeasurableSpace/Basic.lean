@@ -1095,7 +1095,7 @@ lemma measurable_compl : Measurable ((·ᶜ) : Set α → Set α) :=
   measurable_set_iff.2 fun _ ↦ measurable_set_not_mem _
 
 lemma MeasurableSet.setOf_finite [Countable α] : MeasurableSet {s : Set α | s.Finite} :=
-  countable_setOf_finite.measurableSet
+  Countable.setOf_finite.measurableSet
 
 lemma MeasurableSet.setOf_infinite [Countable α] : MeasurableSet {s : Set α | s.Infinite} :=
   .setOf_finite |> .compl
