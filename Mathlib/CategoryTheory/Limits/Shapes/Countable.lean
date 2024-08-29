@@ -102,7 +102,7 @@ noncomputable def sequentialFunctor : ℕᵒᵖ ⥤ J where
 theorem sequentialFunctor_initial_aux (j : J) : ∃ (n : ℕ), sequentialFunctor_obj J n ≤ j := by
   obtain ⟨m, h⟩ := (exists_surjective_nat _).choose_spec j
   refine ⟨m + 1, ?_⟩
-  simpa [h] using leOfHom (IsCofilteredOrEmpty.cone_objs ((exists_surjective_nat _).choose m)
+  simpa only [h] using leOfHom (IsCofilteredOrEmpty.cone_objs ((exists_surjective_nat _).choose m)
     (sequentialFunctor_obj J m)).choose_spec.choose
 
 instance sequentialFunctor_initial : (sequentialFunctor J).Initial where
