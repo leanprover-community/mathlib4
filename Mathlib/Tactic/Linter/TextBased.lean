@@ -89,10 +89,10 @@ E.g., 'a' is "U+0061" and .-/
 def printCodepointHex (c : Char) : String :=
   let digits := Nat.toDigits 16 c.val.toNat
   match digits.length with  -- print at least 4 (could be more) hex characters using leading zeros
-  | 1 => "U+000".append $ String.mk digits
-  | 2 => "U+00".append $ String.mk digits
-  | 3 => "U+0".append $ String.mk digits
-  | _ => "U+".append $ String.mk digits
+  | 1 => "U+000".append <| String.mk digits
+  | 2 => "U+00".append <| String.mk digits
+  | 3 => "U+0".append <| String.mk digits
+  | _ => "U+".append <| String.mk digits
 
 /-- Create the underlying error message for a given `StyleError`. -/
 def StyleError.errorMessage (err : StyleError) (style : ErrorFormat) : String := match err with
@@ -268,7 +268,6 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
     -- but is awkward to do so (this `def` is not in any IO monad). Hopefully, this is not necessary
     -- anyway as the style exceptions file is mostly automatically generated.
     | _ => none
-
 
 -- TODO delete or put in some test file
 #guard let errContext : ErrorContext := {
