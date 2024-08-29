@@ -702,69 +702,6 @@ def of_Bilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearM
 
 end Construction
 
-section Morphism
-
-/-- A morphism of root pairings is a pair of mutually transposed maps of weight and coweight spaces
-that preserves roots and coroots.  We make the map of indexing sets explicit. -/
-structure Morphism {κ M' N' : Type*} [AddCommGroup M'] [Module R M'] [AddCommGroup N'] [Module R N']
-    (P : RootPairing ι R M N) (Q : RootPairing κ R M' N') where
-  /-- A linear map on weight space. -/
-  weight_map : M →ₗ[R] M'
-  /-- A linear map on coweight space. -/
-  coweight_map : N' →ₗ[R] N
-  /-- A bijection on index sets. -/
-  index_map : ι ≃ κ
-  weight_coweight_transpose :
-    LinearMap.dualMap weight_map = P.toDualRight ∘ₗ coweight_map ∘ₗ Q.toDualRight.symm
-  root_weight_map : weight_map ∘ P.root = Q.root ∘ index_map
-  coroot_coweight_map : coweight_map ∘ Q.coroot = P.coroot ∘ index_map.symm
-
-/-- Composition of morphisms -/
-def MorphismComp {κ μ M₁ N₁ M₂ N₂ : Type*} [AddCommGroup M₁] [Module R M₁] [AddCommGroup N₁]
-    [Module R N₁] [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
-    {P : RootPairing ι R M N} {P₁ : RootPairing κ R M₁ N₁} {P₂ : RootPairing μ R M₂ N₂}
-    (f : Morphism P P₁) (g : Morphism P₁ P₂) : Morphism P P₂ where
-  weight_map := g.weight_map ∘ₗ f.weight_map
-  coweight_map := f.coweight_map ∘ₗ g.coweight_map
-  index_map := f.index_map.trans g.index_map
-  weight_coweight_transpose := by
-    ext φ x
-    rw [← LinearMap.dualMap_comp_dualMap, f.weight_coweight_transpose, g.weight_coweight_transpose,
-      ← LinearMap.comp_assoc _ f.coweight_map, ← LinearMap.comp_assoc]
-    nth_rw 2 [LinearMap.comp_assoc]
-    simp
-  root_weight_map := by
-    ext i
-    simp only [LinearMap.coe_comp, Equiv.coe_trans]
-    rw [comp.assoc, f.root_weight_map, ← comp.assoc, g.root_weight_map, comp.assoc]
-  coroot_coweight_map := by
-    ext i
-    simp only [LinearMap.coe_comp, Equiv.symm_trans_apply]
-    rw [comp.assoc, g.coroot_coweight_map, ← comp.assoc, f.coroot_coweight_map, comp.assoc]
-    simp
-
-/-- Reflections give morphisms -/
-@[simps!]
-def reflection_hom : Morphism P P where
-  weight_map := P.reflection i
-  coweight_map := P.coreflection i
-  index_map := P.reflection_perm i
-  weight_coweight_transpose := by
-    ext f x
-    simp only [LinearMap.dualMap_apply, LinearEquiv.coe_coe, LinearEquiv.comp_coe,
-      LinearEquiv.trans_apply]
-    rw [reflection_apply, coreflection_apply]
-    simp only [map_sub, map_smul, smul_eq_mul, LinearEquiv.apply_symm_apply,
-      PerfectPairing.toDualRight_apply, LinearMap.sub_apply, LinearMap.smul_apply, sub_right_inj]
-    erw [PerfectPairing.apply_apply_toDualRight_symm, LinearMap.flip_apply]
-    rw [mul_comm]
-  root_weight_map := by ext; simp
-  coroot_coweight_map := by ext; simp
-
-
-
-end Morphism
-
 section Embedding
 
 variable {κ : Type*} (P : RootPairing ι R M N) (Q : RootPairing κ R M N)
