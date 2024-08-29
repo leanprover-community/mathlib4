@@ -166,10 +166,8 @@ lemma LinearOrderedCommGroup.closure_equiv_closure_strictMono_or_strictAnti {G G
       intro a b hab
       simpa only [← Subtype.coe_lt_coe, e] using hab
     specialize @this x y⁻¹ (f.trans e.symm) hx (by simp [hy]) (H.symm.imp _ _) hm _
-    · have : f ⟨x⁻¹, by simp⟩ = f ⟨x, by simp⟩⁻¹ := rfl
-      simpa [Subtype.ext_iff, this, inv_eq_iff_eq_inv] using id
-    · have : f ⟨x⁻¹, by simp⟩ = f ⟨x, by simp⟩⁻¹ := rfl
-      simpa [Subtype.ext_iff, this, inv_eq_iff_eq_inv] using id
+    · simpa [Subtype.ext_iff, this, inv_eq_iff_eq_inv] using id
+    · simpa [Subtype.ext_iff, this, inv_eq_iff_eq_inv] using id
     · simp [(mabs_choice y).resolve_left hm']
     simp only [MulEquiv.coe_trans] at this
     refine this.imp ?_ ?_ <;> intro h
