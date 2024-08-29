@@ -519,9 +519,7 @@ open scoped Pointwise
 
 variable [CommSemiring R] [StarRing R]
 variable [NonUnitalSemiring A] [StarRing A] [Module R A]
-variable [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A]
-variable [NonUnitalSemiring B] [StarRing B] [Module R B]
-variable [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B]
+variable [StarModule R A]
 
 /-- The pointwise `star` of a non-unital subalgebra is a non-unital subalgebra. -/
 instance instInvolutiveStar : InvolutiveStar (NonUnitalSubalgebra R A) where
@@ -552,6 +550,7 @@ theorem star_mono : Monotone (star : NonUnitalSubalgebra R A → NonUnitalSubalg
   fun _ _ h _ hx => h hx
 
 variable (R)
+variable [IsScalarTower R A A] [SMulCommClass R A A]
 
 /-- The star operation on `NonUnitalSubalgebra` commutes with `NonUnitalAlgebra.adjoin`. -/
 theorem star_adjoin_comm (s : Set A) :
@@ -599,11 +598,13 @@ end NonUnitalSubalgebra
 namespace NonUnitalStarAlgebra
 
 variable [CommSemiring R] [StarRing R]
-variable [NonUnitalSemiring A] [StarRing A]
-variable [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A]
-variable [NonUnitalSemiring B] [StarRing B]
-variable [Module R B] [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B]
+variable [NonUnitalSemiring A] [StarRing A] [Module R A]
+variable [NonUnitalSemiring B] [StarRing B] [Module R B]
 variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [NonUnitalStarAlgHomClass F R A B]
+
+section StarSubAlgebraA
+
+variable [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A]
 
 open scoped Pointwise
 
@@ -686,7 +687,7 @@ lemma adjoin_eq_span (s : Set A) :
   rw [adjoin_toNonUnitalSubalgebra, NonUnitalAlgebra.adjoin_eq_span]
 
 @[simp]
-lemma span_eq_toSubmodule (s : NonUnitalStarSubalgebra R A) :
+lemma span_eq_toSubmodule {R} [CommSemiring R] [Module R A] (s : NonUnitalStarSubalgebra R A) :
     Submodule.span R (s : Set A) = s.toSubmodule := by
   simp [SetLike.ext'_iff, Submodule.coe_span_eq_self]
 
@@ -727,7 +728,8 @@ theorem mul_mem_sup {S T : NonUnitalStarSubalgebra R A} {x y : A} (hx : x ∈ S)
     x * y ∈ S ⊔ T :=
   mul_mem (mem_sup_left hx) (mem_sup_right hy)
 
-theorem map_sup (f : F) (S T : NonUnitalStarSubalgebra R A) :
+theorem map_sup [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B] (f : F)
+    (S T : NonUnitalStarSubalgebra R A) :
     ((S ⊔ T).map f : NonUnitalStarSubalgebra R B) = S.map f ⊔ T.map f :=
   (NonUnitalStarSubalgebra.gc_map_comap f).l_sup
 
@@ -790,29 +792,35 @@ theorem eq_top_iff {S : NonUnitalStarSubalgebra R A} : S = ⊤ ↔ ∀ x : A, x 
   ⟨fun h x => by rw [h]; exact mem_top,
     fun h => by ext x; exact ⟨fun _ => mem_top, fun _ => h x⟩⟩
 
-theorem range_top_iff_surjective (f : F) :
-    NonUnitalStarAlgHom.range f = (⊤ : NonUnitalStarSubalgebra R B) ↔ Function.Surjective f :=
-  NonUnitalStarAlgebra.eq_top_iff
-
 @[simp]
 theorem range_id : NonUnitalStarAlgHom.range (NonUnitalStarAlgHom.id R A) = ⊤ :=
   SetLike.coe_injective Set.range_id
 
 @[simp]
-theorem map_top (f : F) : (⊤ : NonUnitalStarSubalgebra R A).map f = NonUnitalStarAlgHom.range f :=
-  SetLike.coe_injective Set.image_univ
-
-@[simp]
-theorem map_bot (f : F) : (⊥ : NonUnitalStarSubalgebra R A).map f = ⊥ :=
+theorem map_bot [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B] (f : F) :
+    (⊥ : NonUnitalStarSubalgebra R A).map f = ⊥ :=
   SetLike.coe_injective <| by simp [NonUnitalAlgebra.coe_bot, NonUnitalStarSubalgebra.coe_map]
 
 @[simp]
-theorem comap_top (f : F) : (⊤ : NonUnitalStarSubalgebra R B).comap f = ⊤ :=
+theorem comap_top [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B] (f : F) :
+    (⊤ : NonUnitalStarSubalgebra R B).comap f = ⊤ :=
   eq_top_iff.2 fun _x => mem_top
 
 /-- `NonUnitalStarAlgHom` to `⊤ : NonUnitalStarSubalgebra R A`. -/
 def toTop : A →⋆ₙₐ[R] (⊤ : NonUnitalStarSubalgebra R A) :=
   NonUnitalStarAlgHom.codRestrict (NonUnitalStarAlgHom.id R A) ⊤ fun _ => mem_top
+
+end StarSubAlgebraA
+
+theorem range_top_iff_surjective [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B]
+    (f : F) : NonUnitalStarAlgHom.range f = (⊤ : NonUnitalStarSubalgebra R B) ↔
+      Function.Surjective f :=
+  NonUnitalStarAlgebra.eq_top_iff
+
+@[simp]
+theorem map_top [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A] (f : F) :
+    (⊤ : NonUnitalStarSubalgebra R A).map f = NonUnitalStarAlgHom.range f :=
+  SetLike.coe_injective Set.image_univ
 
 end NonUnitalStarAlgebra
 
@@ -820,13 +828,17 @@ namespace NonUnitalStarSubalgebra
 
 open NonUnitalStarAlgebra
 
-variable [CommSemiring R] [StarRing R]
-variable [NonUnitalSemiring A] [StarRing A]
-variable [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A]
-variable [NonUnitalSemiring B] [StarRing B]
-variable [Module R B] [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B]
+variable [CommSemiring R]
+variable [NonUnitalSemiring A] [StarRing A] [Module R A]
+variable [NonUnitalSemiring B] [StarRing B] [Module R B]
 variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [NonUnitalStarAlgHomClass F R A B]
 variable (S : NonUnitalStarSubalgebra R A)
+
+section StarSubalgebra
+
+variable [StarRing R]
+variable [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A]
+variable [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B]
 
 lemma _root_.NonUnitalStarAlgHom.map_adjoin (f : F) (s : Set A) :
     map f (adjoin R s) = adjoin R (f '' s) :=
@@ -848,9 +860,6 @@ instance _root_.NonUnitalStarAlgHom.subsingleton [Subsingleton (NonUnitalStarSub
     have : a ∈ (⊥ : NonUnitalStarSubalgebra R A) :=
       Subsingleton.elim (⊤ : NonUnitalStarSubalgebra R A) ⊥ ▸ mem_top
     (mem_bot.mp this).symm ▸ (map_zero f).trans (map_zero g).symm⟩
-
-theorem range_val : NonUnitalStarAlgHom.range (NonUnitalStarSubalgebraClass.subtype S) = S :=
-  ext <| Set.ext_iff.1 <| (NonUnitalStarSubalgebraClass.subtype S).coe_range.trans Subtype.range_val
 
 /--
 The map `S → T` when `S` is a non-unital star subalgebra contained in the non-unital star
@@ -889,6 +898,12 @@ theorem inclusion_inclusion {S T U : NonUnitalStarSubalgebra R A} (hst : S ≤ T
 theorem val_inclusion {S T : NonUnitalStarSubalgebra R A} (h : S ≤ T) (s : S) :
     (inclusion h s : A) = s :=
   rfl
+
+end StarSubalgebra
+
+theorem range_val : NonUnitalStarAlgHom.range (NonUnitalStarSubalgebraClass.subtype S) = S :=
+  ext <| Set.ext_iff.1 <| (NonUnitalStarSubalgebraClass.subtype S).coe_range.trans Subtype.range_val
+
 section Prod
 
 variable (S₁ : NonUnitalStarSubalgebra R B)
@@ -912,6 +927,10 @@ theorem mem_prod {S : NonUnitalStarSubalgebra R A} {S₁ : NonUnitalStarSubalgeb
     x ∈ prod S S₁ ↔ x.1 ∈ S ∧ x.2 ∈ S₁ :=
   Set.mem_prod
 
+variable [StarRing R]
+variable [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A]
+variable [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B]
+
 @[simp]
 theorem prod_top : (prod ⊤ ⊤ : NonUnitalStarSubalgebra R (A × B)) = ⊤ := by ext; simp
 
@@ -929,6 +948,11 @@ end Prod
 section iSupLift
 
 variable {ι : Type*}
+variable [StarRing R] [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A]
+
+section StarSubalgebraB
+
+variable [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B]
 
 theorem coe_iSup_of_directed [Nonempty ι] {S : ι → NonUnitalStarSubalgebra R A}
     (dir : Directed (· ≤ ·) S) : ↑(iSup S) = ⋃ i, (S i : Set A) :=
@@ -989,6 +1013,8 @@ noncomputable def iSupLift [Nonempty ι] (K : ι → NonUnitalStarSubalgebra R A
           (fun _ _ => rfl)
         all_goals simp [map_star] }
 
+end StarSubalgebraB
+
 variable [Nonempty ι] {K : ι → NonUnitalStarSubalgebra R A} {dir : Directed (· ≤ ·) K}
   {f : ∀ i, K i →⋆ₙₐ[R] B} {hf : ∀ (i j : ι) (h : K i ≤ K j), f i = (f j).comp (inclusion h)}
   {T : NonUnitalStarSubalgebra R A} {hT : T = iSup K}
@@ -1023,6 +1049,7 @@ end iSupLift
 section Center
 
 variable (R A)
+variable [IsScalarTower R A A] [SMulCommClass R A A]
 
 /-- The center of a non-unital star algebra is the set of elements which commute with every element.
 They form a non-unital star subalgebra. -/
@@ -1039,7 +1066,7 @@ theorem center_toNonUnitalSubalgebra :
   rfl
 
 @[simp]
-theorem center_eq_top (A : Type*) [NonUnitalCommSemiring A] [StarRing A] [Module R A]
+theorem center_eq_top (A : Type*) [StarRing R] [NonUnitalCommSemiring A] [StarRing A] [Module R A]
     [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A] : center R A = ⊤ :=
   SetLike.coe_injective (Set.center_eq_univ A)
 
@@ -1060,6 +1087,7 @@ end Center
 section Centralizer
 
 variable (R)
+variable [IsScalarTower R A A] [SMulCommClass R A A]
 
 /-- The centralizer of the star-closure of a set as a non-unital star subalgebra. -/
 def centralizer (s : Set A) : NonUnitalStarSubalgebra R A :=

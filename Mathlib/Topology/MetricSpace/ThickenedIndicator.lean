@@ -33,11 +33,7 @@ members of the approximating sequence are nonnegative bounded continuous functio
 
 -/
 
-
-open scoped Classical
-open NNReal ENNReal Topology BoundedContinuousFunction
-
-open NNReal ENNReal Set Metric EMetric Filter
+open NNReal ENNReal Topology BoundedContinuousFunction Set Metric EMetric Filter
 
 noncomputable section thickenedIndicator
 

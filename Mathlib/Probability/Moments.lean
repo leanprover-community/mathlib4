@@ -71,7 +71,9 @@ theorem centralMoment_one' [IsFiniteMeasure μ] (h_int : Integrable X μ) :
   simp only [sub_mul, integral_const, smul_eq_mul, one_mul]
 
 @[simp]
-theorem centralMoment_one [IsProbabilityMeasure μ] : centralMoment X 1 μ = 0 := by
+theorem centralMoment_one [IsZeroOrProbabilityMeasure μ] : centralMoment X 1 μ = 0 := by
+  rcases eq_zero_or_isProbabilityMeasure μ with rfl | h
+  · simp [centralMoment]
   by_cases h_int : Integrable X μ
   · rw [centralMoment_one' h_int]
     simp only [measure_univ, ENNReal.one_toReal, sub_self, zero_mul]
@@ -141,12 +143,11 @@ theorem mgf_zero' : mgf X μ 0 = (μ Set.univ).toReal := by
 theorem mgf_zero [IsProbabilityMeasure μ] : mgf X μ 0 = 1 := by
   simp only [mgf_zero', measure_univ, ENNReal.one_toReal]
 
-@[simp]
 theorem cgf_zero' : cgf X μ 0 = log (μ Set.univ).toReal := by simp only [cgf, mgf_zero']
 
--- @[simp] -- Porting note: `simp only` already proves this
-theorem cgf_zero [IsProbabilityMeasure μ] : cgf X μ 0 = 0 := by
-  simp only [cgf_zero', measure_univ, ENNReal.one_toReal, log_one]
+@[simp]
+theorem cgf_zero [IsZeroOrProbabilityMeasure μ] : cgf X μ 0 = 0 := by
+  rcases eq_zero_or_isProbabilityMeasure μ with rfl | h <;> simp [cgf_zero']
 
 theorem mgf_undef (hX : ¬Integrable (fun ω => exp (t * X ω)) μ) : mgf X μ t = 0 := by
   simp only [mgf, integral_undef hX]
@@ -242,7 +243,7 @@ theorem IndepFun.integrable_exp_mul_add {X Y : Ω → ℝ} (h_indep : IndepFun X
   simp_rw [Pi.add_apply, mul_add, exp_add]
   exact (h_indep.exp_mul t t).integrable_mul h_int_X h_int_Y
 
-theorem iIndepFun.integrable_exp_mul_sum [IsProbabilityMeasure μ] {X : ι → Ω → ℝ}
+theorem iIndepFun.integrable_exp_mul_sum [IsFiniteMeasure μ] {X : ι → Ω → ℝ}
     (h_indep : iIndepFun (fun i => inferInstance) X μ) (h_meas : ∀ i, Measurable (X i))
     {s : Finset ι} (h_int : ∀ i ∈ s, Integrable (fun ω => exp (t * X i ω)) μ) :
     Integrable (fun ω => exp (t * (∑ i ∈ s, X i) ω)) μ := by
@@ -257,9 +258,10 @@ theorem iIndepFun.integrable_exp_mul_sum [IsProbabilityMeasure μ] {X : ι → �
     refine IndepFun.integrable_exp_mul_add ?_ (h_int i (mem_insert_self _ _)) h_rec
     exact (h_indep.indepFun_finset_sum_of_not_mem h_meas hi_notin_s).symm
 
-theorem iIndepFun.mgf_sum [IsProbabilityMeasure μ] {X : ι → Ω → ℝ}
+theorem iIndepFun.mgf_sum {X : ι → Ω → ℝ}
     (h_indep : iIndepFun (fun i => inferInstance) X μ) (h_meas : ∀ i, Measurable (X i))
     (s : Finset ι) : mgf (∑ i ∈ s, X i) μ t = ∏ i ∈ s, mgf (X i) μ t := by
+  have : IsProbabilityMeasure μ := h_indep.isProbabilityMeasure
   classical
   induction' s using Finset.induction_on with i s hi_notin_s h_rec h_int
   · simp only [sum_empty, mgf_zero_fun, measure_univ, ENNReal.one_toReal, prod_empty]
@@ -270,10 +272,11 @@ theorem iIndepFun.mgf_sum [IsProbabilityMeasure μ] {X : ι → Ω → ℝ}
         (aestronglyMeasurable_exp_mul_sum fun i _ => h_int' i),
       h_rec, prod_insert hi_notin_s]
 
-theorem iIndepFun.cgf_sum [IsProbabilityMeasure μ] {X : ι → Ω → ℝ}
+theorem iIndepFun.cgf_sum {X : ι → Ω → ℝ}
     (h_indep : iIndepFun (fun i => inferInstance) X μ) (h_meas : ∀ i, Measurable (X i))
     {s : Finset ι} (h_int : ∀ i ∈ s, Integrable (fun ω => exp (t * X i ω)) μ) :
     cgf (∑ i ∈ s, X i) μ t = ∑ i ∈ s, cgf (X i) μ t := by
+  have : IsProbabilityMeasure μ := h_indep.isProbabilityMeasure
   simp_rw [cgf]
   rw [← log_prod _ _ fun j hj => ?_]
   · rw [h_indep.mgf_sum h_meas]
@@ -298,7 +301,7 @@ theorem measure_ge_le_exp_mul_mgf [IsFiniteMeasure μ] (ε : ℝ) (ht : 0 ≤ t)
       have : exp (t * ε) * (μ {ω | exp (t * ε) ≤ exp (t * X ω)}).toReal ≤
           μ[fun ω => exp (t * X ω)] :=
         mul_meas_ge_le_integral_of_nonneg (ae_of_all _ fun x => (exp_pos _).le) h_int _
-      rwa [mul_comm (exp (t * ε))⁻¹, ← div_eq_mul_inv, le_div_iff' (exp_pos _)]
+      rwa [mul_comm (exp (t * ε))⁻¹, ← div_eq_mul_inv, le_div_iff₀' (exp_pos _)]
     _ = exp (-t * ε) * mgf X μ t := by rw [neg_mul, exp_neg]; rfl
 
 /-- **Chernoff bound** on the lower tail of a real random variable. -/

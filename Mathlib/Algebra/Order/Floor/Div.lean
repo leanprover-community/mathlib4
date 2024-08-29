@@ -124,7 +124,7 @@ variable [LinearOrderedAddCommMonoid α] [OrderedAddCommMonoid β] [SMulZeroClas
 lemma floorDiv_le_ceilDiv : b ⌊/⌋ a ≤ b ⌈/⌉ a := by
   obtain ha | ha := le_or_lt a 0
   · simp [ha]
-  · exact le_of_smul_le_smul_left ((smul_floorDiv_le ha).trans $ le_smul_ceilDiv ha) ha
+  · exact le_of_smul_le_smul_left ((smul_floorDiv_le ha).trans <| le_smul_ceilDiv ha) ha
 
 end LinearOrderedAddCommMonoid
 
@@ -135,11 +135,11 @@ section FloorDiv
 variable [FloorDiv α β] {a : α}
 
 @[simp] lemma floorDiv_one [Nontrivial α] (b : β) : b ⌊/⌋ (1 : α) = b :=
-  eq_of_forall_le_iff $ fun c ↦ by simp [zero_lt_one' α]
+  eq_of_forall_le_iff <| fun c ↦ by simp [zero_lt_one' α]
 
 @[simp] lemma smul_floorDiv [PosSMulMono α β] [PosSMulReflectLE α β] (ha : 0 < a) (b : β) :
     a • b ⌊/⌋ a = b :=
-  eq_of_forall_le_iff $ by simp [smul_le_smul_iff_of_pos_left, ha]
+  eq_of_forall_le_iff <| by simp [smul_le_smul_iff_of_pos_left, ha]
 
 end FloorDiv
 
@@ -147,11 +147,11 @@ section CeilDiv
 variable [CeilDiv α β] {a : α}
 
 @[simp] lemma ceilDiv_one [Nontrivial α] (b : β) : b ⌈/⌉ (1 : α) = b :=
-  eq_of_forall_ge_iff $ fun c ↦ by simp [zero_lt_one' α]
+  eq_of_forall_ge_iff <| fun c ↦ by simp [zero_lt_one' α]
 
 @[simp] lemma smul_ceilDiv [PosSMulMono α β] [PosSMulReflectLE α β] (ha : 0 < a) (b : β) :
     a • b ⌈/⌉ a = b :=
-  eq_of_forall_ge_iff $ by simp [smul_le_smul_iff_of_pos_left, ha]
+  eq_of_forall_ge_iff <| by simp [smul_le_smul_iff_of_pos_left, ha]
 
 end CeilDiv
 
@@ -177,14 +177,14 @@ namespace Nat
 instance instFloorDiv : FloorDiv ℕ ℕ where
   floorDiv := HDiv.hDiv
   floorDiv_gc a ha := by simpa [mul_comm] using Nat.galoisConnection_mul_div ha
-  floorDiv_nonpos a ha b := by rw [ha.antisymm $ zero_le _, Nat.div_zero]
+  floorDiv_nonpos a ha b := by rw [ha.antisymm <| zero_le _, Nat.div_zero]
   zero_floorDiv := Nat.zero_div
 
 instance instCeilDiv : CeilDiv ℕ ℕ where
   ceilDiv a b := (a + b - 1) / b
   ceilDiv_gc a ha b c := by
-    simp [div_le_iff_le_mul_add_pred ha, add_assoc, tsub_add_cancel_of_le $ succ_le_iff.2 ha]
-  ceilDiv_nonpos a ha b := by simp_rw [ha.antisymm $ zero_le _, Nat.div_zero]
+    simp [div_le_iff_le_mul_add_pred ha, add_assoc, tsub_add_cancel_of_le <| succ_le_iff.2 ha]
+  ceilDiv_nonpos a ha b := by simp_rw [ha.antisymm <| zero_le _, Nat.div_zero]
   zero_ceilDiv a := by cases a <;> simp [Nat.div_eq_zero_iff]
 
 @[simp] lemma floorDiv_eq_div (a b : ℕ) : a ⌊/⌋ b = a / b := rfl

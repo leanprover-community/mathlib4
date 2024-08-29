@@ -9,21 +9,24 @@ import Mathlib.ModelTheory.Semantics
 
 /-!
 # Definable Sets
+
 This file defines what it means for a set over a first-order structure to be definable.
 
 ## Main Definitions
-* `Set.Definable` is defined so that `A.Definable L s` indicates that the
-set `s` of a finite cartesian power of `M` is definable with parameters in `A`.
-* `Set.Definable₁` is defined so that `A.Definable₁ L s` indicates that
-`(s : Set M)` is definable with parameters in `A`.
-* `Set.Definable₂` is defined so that `A.Definable₂ L s` indicates that
-`(s : Set (M × M))` is definable with parameters in `A`.
-* A `FirstOrder.Language.DefinableSet` is defined so that `L.DefinableSet A α` is the boolean
+
+- `Set.Definable` is defined so that `A.Definable L s` indicates that the
+  set `s` of a finite cartesian power of `M` is definable with parameters in `A`.
+- `Set.Definable₁` is defined so that `A.Definable₁ L s` indicates that
+  `(s : Set M)` is definable with parameters in `A`.
+- `Set.Definable₂` is defined so that `A.Definable₂ L s` indicates that
+  `(s : Set (M × M))` is definable with parameters in `A`.
+- A `FirstOrder.Language.DefinableSet` is defined so that `L.DefinableSet A α` is the boolean
   algebra of subsets of `α → M` defined by formulas with parameters in `A`.
 
 ## Main Results
-* `L.DefinableSet A α` forms a `BooleanAlgebra`
-* `Set.Definable.image_comp` shows that definability is closed under projections in finite
+
+- `L.DefinableSet A α` forms a `BooleanAlgebra`
+- `Set.Definable.image_comp` shows that definability is closed under projections in finite
   dimensions.
 
 -/

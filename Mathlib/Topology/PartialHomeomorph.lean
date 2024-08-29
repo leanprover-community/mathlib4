@@ -210,11 +210,6 @@ theorem replaceEquiv_eq_self (e' : PartialEquiv X Y)
 theorem source_preimage_target : e.source ⊆ e ⁻¹' e.target :=
   e.mapsTo
 
-@[deprecated toPartialEquiv_injective (since := "2023-02-18")]
-theorem eq_of_partialEquiv_eq {e e' : PartialHomeomorph X Y}
-    (h : e.toPartialEquiv = e'.toPartialEquiv) : e = e' :=
-  toPartialEquiv_injective h
-
 theorem eventually_left_inverse {x} (hx : x ∈ e.source) :
     ∀ᶠ y in 𝓝 x, e.symm (e y) = y :=
   (e.open_source.eventually_mem hx).mono e.left_inv'
@@ -288,12 +283,6 @@ called `EqOnSource`. -/
 protected theorem ext (e' : PartialHomeomorph X Y) (h : ∀ x, e x = e' x)
     (hinv : ∀ x, e.symm x = e'.symm x) (hs : e.source = e'.source) : e = e' :=
   toPartialEquiv_injective (PartialEquiv.ext h hinv hs)
-
-protected theorem ext_iff {e e' : PartialHomeomorph X Y} :
-    e = e' ↔ (∀ x, e x = e' x) ∧ (∀ x, e.symm x = e'.symm x) ∧ e.source = e'.source :=
-  ⟨by
-    rintro rfl
-    exact ⟨fun x => rfl, fun x => rfl, rfl⟩, fun h => e.ext e' h.1 h.2.1 h.2.2⟩
 
 @[simp, mfld_simps]
 theorem symm_toPartialEquiv : e.symm.toPartialEquiv = e.toPartialEquiv.symm :=
