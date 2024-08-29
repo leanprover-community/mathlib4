@@ -118,8 +118,7 @@ theorem tan_add {x y : ℂ}
     tan (x + y) = (tan x + tan y) / (1 - tan x * tan y) := by
   rcases h with (⟨h1, h2⟩ | ⟨⟨k, rfl⟩, ⟨l, rfl⟩⟩)
   · rw [tan, sin_add, cos_add, ←
-      div_div_div_cancel_right (sin x * cos y + cos x * sin y)
-        (mul_ne_zero (cos_ne_zero_iff.mpr h1) (cos_ne_zero_iff.mpr h2)),
+      div_div_div_cancel_right₀ (mul_ne_zero (cos_ne_zero_iff.mpr h1) (cos_ne_zero_iff.mpr h2)),
       add_div, sub_div]
     simp only [← div_mul_div_comm, tan, mul_one, one_mul, div_self (cos_ne_zero_iff.mpr h1),
       div_self (cos_ne_zero_iff.mpr h2)]

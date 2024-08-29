@@ -1093,7 +1093,7 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
     · rw [Set.mem_iUnion₂] at ht
       rcases ht with ⟨j, hjt, hj⟩
       simp only [Finset.inf_eq_iInf, SetLike.mem_coe, Submodule.mem_iInf] at hr
-      exact hs $ Or.inr $ Set.mem_biUnion hjt <|
+      exact hs <| Or.inr <| Set.mem_biUnion hjt <|
         add_sub_cancel_left r s ▸ (f j).sub_mem hj <| hr j hjt
 
 /-- Prime avoidance. Atiyah-Macdonald 1.11, Eisenbud 3.3, Stacks 00DS, Matsumura Ex.1.6. -/
@@ -1187,7 +1187,7 @@ variable (v : ι → M) (hv : Submodule.span R (Set.range v) = ⊤)
 
 /-- A variant of `Finsupp.total` that takes in vectors valued in `I`. -/
 noncomputable def finsuppTotal : (ι →₀ I) →ₗ[R] M :=
-  (Finsupp.total ι M R v).comp (Finsupp.mapRange.linearMap I.subtype)
+  (Finsupp.total R v).comp (Finsupp.mapRange.linearMap I.subtype)
 
 variable {ι M v}
 

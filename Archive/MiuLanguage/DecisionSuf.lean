@@ -94,7 +94,7 @@ theorem der_of_der_append_replicate_U_even {z : Miustr} {m : ℕ}
     rwa [append_nil, append_assoc]
 
 /-!
-In fine-tuning my application of `simp`, I issued the following commend to determine which lemmas
+In fine-tuning my application of `simp`, I issued the following command to determine which lemmas
 `simp` uses.
 
 `set_option trace.simplify.rewrite true`
@@ -231,7 +231,7 @@ example (c : ℕ) (h : c % 3 = 1 ∨ c % 3 = 2) : Derivable (M :: replicate c I)
 /-!
 ### `Decstr` is a sufficient condition
 
-The remainder of this file sets up the proof that `Decstr en` is sufficent to ensure
+The remainder of this file sets up the proof that `Decstr en` is sufficient to ensure
 `Derivable en`. Decidability of `Derivable en` is an easy consequence.
 
 The proof proceeds by induction on the `count U` of `en`.

@@ -90,7 +90,14 @@ theorem algebraicIndependent_empty_type_iff [IsEmpty ι] :
 
 namespace AlgebraicIndependent
 
+theorem of_comp (f : A →ₐ[R] A') (hfv : AlgebraicIndependent R (f ∘ x)) :
+    AlgebraicIndependent R x := by
+  have : aeval (f ∘ x) = f.comp (aeval x) := by ext; simp
+  rw [AlgebraicIndependent, this, AlgHom.coe_comp] at hfv
+  exact hfv.of_comp
+
 variable (hx : AlgebraicIndependent R x)
+include hx
 
 theorem algebraMap_injective : Injective (algebraMap R A) := by
   simpa [Function.comp] using
@@ -99,8 +106,8 @@ theorem algebraMap_injective : Injective (algebraMap R A) := by
 
 theorem linearIndependent : LinearIndependent R x := by
   rw [linearIndependent_iff_injective_total]
-  have : Finsupp.total ι A R x =
-      (MvPolynomial.aeval x).toLinearMap.comp (Finsupp.total ι _ R X) := by
+  have : Finsupp.total R x =
+      (MvPolynomial.aeval x).toLinearMap.comp (Finsupp.total R X) := by
     ext
     simp
   rw [this]
@@ -136,12 +143,6 @@ theorem map {f : A →ₐ[R] A'} (hf_inj : Set.InjOn f (adjoin R (range x))) :
 
 theorem map' {f : A →ₐ[R] A'} (hf_inj : Injective f) : AlgebraicIndependent R (f ∘ x) :=
   hx.map hf_inj.injOn
-
-theorem of_comp (f : A →ₐ[R] A') (hfv : AlgebraicIndependent R (f ∘ x)) :
-    AlgebraicIndependent R x := by
-  have : aeval (f ∘ x) = f.comp (aeval x) := by ext; simp
-  rw [AlgebraicIndependent, this, AlgHom.coe_comp] at hfv
-  exact hfv.of_comp
 
 end AlgebraicIndependent
 

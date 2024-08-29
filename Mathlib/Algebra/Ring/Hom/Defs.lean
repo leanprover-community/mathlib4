@@ -42,6 +42,10 @@ groups, we use the same structure `RingHom a β`, a.k.a. `α →+* β`, for both
 `RingHom`, `SemiringHom`
 -/
 
+assert_not_exists Function.Injective.mulZeroClass
+assert_not_exists semigroupDvd
+assert_not_exists Units.map
+assert_not_exists Set.range
 
 open Function
 
@@ -502,6 +506,7 @@ theorem codomain_trivial_iff_range_trivial : (0 : β) = 1 ↔ ∀ x, f x = 0 :=
 theorem map_one_ne_zero [Nontrivial β] : f 1 ≠ 0 :=
   mt f.codomain_trivial_iff_map_one_eq_zero.mpr zero_ne_one
 
+include f in
 /-- If there is a homomorphism `f : α →+* β` and `β` is nontrivial, then `α` is nontrivial. -/
 theorem domain_nontrivial [Nontrivial β] : Nontrivial α :=
   ⟨⟨1, 0, mt (fun h => show f 1 = 0 by rw [h, map_zero]) f.map_one_ne_zero⟩⟩
@@ -593,8 +598,8 @@ instance instMonoid : Monoid (α →+* α) where
   mul_one := comp_id
   one_mul := id_comp
   mul_assoc f g h := comp_assoc _ _ _
-  npow n f := (npowRec n f).copy f^[n] $ by induction' n <;> simp [npowRec, *]
-  npow_succ n f := DFunLike.coe_injective $ Function.iterate_succ _ _
+  npow n f := (npowRec n f).copy f^[n] <| by induction n <;> simp [npowRec, *]
+  npow_succ n f := DFunLike.coe_injective <| Function.iterate_succ _ _
 
 @[simp, norm_cast] lemma coe_pow (f : α →+* α) (n : ℕ) : ⇑(f ^ n) = f^[n] := rfl
 
@@ -654,8 +659,3 @@ theorem coe_addMonoidHom_mkRingHomOfMulSelfOfTwoNeZero (h h_two h_one) :
   rfl
 
 end AddMonoidHom
-
-assert_not_exists Function.Injective.mulZeroClass
-assert_not_exists semigroupDvd
-assert_not_exists Units.map
-assert_not_exists Set.range

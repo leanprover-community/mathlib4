@@ -157,7 +157,7 @@ def borelToRefl (e : Expr) (i : FVarId) : TacticM Unit := do
       `‹TopologicalSpace {e}› := {et}\n\
       depends on\n\
       {Expr.fvar i} : MeasurableSpace {e}`\n\
-      so `borelize` isn't avaliable"
+      so `borelize` isn't available"
   evalTactic <| ← `(tactic|
     refine_lift
       letI : MeasurableSpace $te := borel $te
@@ -467,6 +467,7 @@ theorem Continuous.measurable {f : α → γ} (hf : Continuous f) : Measurable f
 
 /-- A continuous function from an `OpensMeasurableSpace` to a `BorelSpace`
 is ae-measurable. -/
+@[fun_prop]
 theorem Continuous.aemeasurable {f : α → γ} (h : Continuous f) {μ : Measure α} : AEMeasurable f μ :=
   h.measurable.aemeasurable
 
