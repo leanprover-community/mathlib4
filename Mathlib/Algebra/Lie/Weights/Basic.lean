@@ -407,10 +407,11 @@ lemma mem_posFittingCompOf (x : L) (m : M) :
     obtain ⟨n, rfl⟩ := (mem_posFittingCompOf R x m).mp hm k
     exact this n k
   intro m l
-  induction' l with l ih
-  · simp
-  simp only [lowerCentralSeries_succ, pow_succ', LinearMap.mul_apply]
-  exact LieSubmodule.lie_mem_lie (LieSubmodule.mem_top x) ih
+  induction l with
+  | zero => simp
+  | succ l ih =>
+    simp only [lowerCentralSeries_succ, pow_succ', LinearMap.mul_apply]
+    exact LieSubmodule.lie_mem_lie (LieSubmodule.mem_top x) ih
 
 @[simp] lemma posFittingCompOf_eq_bot_of_isNilpotent
     [IsNilpotent R L M] (x : L) :
@@ -650,8 +651,10 @@ lemma independent_genWeightSpace [NoZeroSMulDivisors R M] :
     simpa only [CompleteLattice.independent_iff_supIndep_of_injOn (injOn_genWeightSpace R L M),
       Finset.supIndep_iff_disjoint_erase] using fun s χ _ ↦ this _ _ (s.not_mem_erase χ)
   intro χ₁ s
-  induction' s using Finset.induction_on with χ₂ s _ ih
-  · simp
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert _n ih =>
+  rename_i χ₂ s
   intro hχ₁₂
   obtain ⟨hχ₁₂ : χ₁ ≠ χ₂, hχ₁ : χ₁ ∉ s⟩ := by rwa [Finset.mem_insert, not_or] at hχ₁₂
   specialize ih hχ₁
@@ -767,7 +770,8 @@ instance (N : LieSubmodule K L M) [IsTriangularizable K L M] : IsTriangularizabl
 See also `LieModule.iSup_genWeightSpace_eq_top'`. -/
 lemma iSup_genWeightSpace_eq_top [IsTriangularizable K L M] :
     ⨆ χ : L → K, genWeightSpace M χ = ⊤ := by
-  induction' h_dim : finrank K M using Nat.strong_induction_on with n ih generalizing M
+  generalize h_dim : finrank K M = n
+  induction n using Nat.strongInductionOn generalizing M with | ind n ih => ?_
   obtain h' | ⟨y : L, hy : ¬ ∃ φ, genWeightSpaceOf M φ y = ⊤⟩ :=
     forall_or_exists_not (fun (x : L) ↦ ∃ (φ : K), genWeightSpaceOf M φ x = ⊤)
   · choose χ hχ using h'

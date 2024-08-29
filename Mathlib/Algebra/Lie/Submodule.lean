@@ -434,10 +434,13 @@ instance : SupSet (LieSubmodule R L M) where
         obtain ⟨s, hs, hsm⟩ := Submodule.mem_sSup_iff_exists_finset.mp hm
         clear hm
         classical
-        induction' s using Finset.induction_on with q t hqt ih generalizing m
-        · replace hsm : m = 0 := by simpa using hsm
+        induction s using Finset.induction_on generalizing m with
+        | empty =>
+          replace hsm : m = 0 := by simpa using hsm
           simp [hsm]
-        · rw [Finset.iSup_insert] at hsm
+        | insert hqt ih =>
+          rename_i q t
+          rw [Finset.iSup_insert] at hsm
           obtain ⟨m', hm', u, hu, rfl⟩ := Submodule.mem_sup.mp hsm
           rw [lie_add]
           refine add_mem ?_ (ih (Subset.trans (by simp) hs) hu)
