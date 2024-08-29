@@ -269,11 +269,6 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
     -- anyway as the style exceptions file is mostly automatically generated.
     | _ => none
 
--- TODO delete or put in some test file
-#guard let errContext : ErrorContext := {
-    error := .unwantedUnicode 'Z', lineNumber := 4, path:="./MYFILE.lean"}
-  (parse?_errorContext <| outputMessage errContext .exceptionsFile) == some errContext
-
 /-- Parse all style exceptions for a line of input.
 Return an array of all exceptions which could be parsed: invalid input is ignored. -/
 def parseStyleExceptions (lines : Array String) : Array ErrorContext := Id.run do

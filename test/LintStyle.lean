@@ -135,3 +135,9 @@ lemma foo' : True := trivial
 -- TODO: add terms for the term form
 
 end setOption
+
+
+open Mathlib.Linter.TextBased in
+#guard let errContext : ErrorContext := {
+    error := .unwantedUnicode 'Z', lineNumber := 4, path:="./MYFILE.lean"}
+  (parse?_errorContext <| outputMessage errContext .exceptionsFile) == some errContext
