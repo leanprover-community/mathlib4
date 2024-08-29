@@ -42,7 +42,7 @@ class HSMul (α : Type u) (β : Type v) (γ : outParam (Type w)) where
 class SMul (M : Type u) (α : Type v) where
   smul : M → α → α
 
-infixr:73 " • " => HSMul.hSMul
+infixr:73 " • " => SMul.smul
 
 macro_rules | `($x • $y) => `(leftact% HSMul.hSMul $x $y)
 
@@ -51,37 +51,17 @@ instance instHSMul {α β} [SMul α β] : HSMul α β β where
 
 variable {G : Type u}
 
-class Inv (α : Type u) where
-  inv : α → α
-
-postfix:max "⁻¹" => Inv.inv
-
 section Mul
 
 variable [Mul G]
 
-class IsLeftCancelMul (G : Type u) [Mul G] : Prop where
-  protected mul_left_cancel : ∀ a b c : G, a * b = a * c → b = c
-class IsRightCancelMul (G : Type u) [Mul G] : Prop where
-  protected mul_right_cancel : ∀ a b c : G, a * b = c * b → a = c
-class IsCancelMul (G : Type u) [Mul G] extends IsLeftCancelMul G, IsRightCancelMul G : Prop
-
 class IsLeftCancelAdd (G : Type u) [Add G] : Prop where
-  protected add_left_cancel : ∀ a b c : G, a + b = a + c → b = c
 
 class IsRightCancelAdd (G : Type u) [Add G] : Prop where
   protected add_right_cancel : ∀ a b c : G, a + b = c + b → a = c
 
 class IsCancelAdd (G : Type u) [Add G] extends IsLeftCancelAdd G, IsRightCancelAdd G : Prop
 section IsRightCancelMul
-
-variable [IsRightCancelMul G] {a b c : G}
-
-theorem mul_right_cancel : a * b = c * b → a = c :=
-  IsRightCancelMul.mul_right_cancel a b c
-
-theorem mul_right_cancel_iff : b * a = c * a ↔ b = c :=
-  ⟨mul_right_cancel, congrArg (· * a)⟩
 
 end IsRightCancelMul
 
@@ -100,7 +80,6 @@ theorem add_right_cancel_iff : b + a = c + a ↔ b = c :=
 end IsRightCancelAdd
 
 class Semigroup (G : Type u) extends Mul G where
-  protected mul_assoc : ∀ a b c : G, a * b * c = a * (b * c)
 
 class AddSemigroup (G : Type u) extends Add G where
   protected add_assoc : ∀ a b c : G, a + b + c = a + (b + c)
@@ -118,18 +97,10 @@ section Semigroup
 
 variable [Semigroup G]
 
-theorem mul_assoc : ∀ a b c : G, a * b * c = a * (b * c) :=
-  Semigroup.mul_assoc
-
 end Semigroup
 
 class AddCommMagma (G : Type u) extends Add G where
   protected add_comm : ∀ a b : G, a + b = b + a
-
-class CommMagma (G : Type u) extends Mul G where
-  protected mul_comm : ∀ a b : G, a * b = b * a
-
-class CommSemigroup (G : Type u) extends Semigroup G, CommMagma G where
 
 class AddCommSemigroup (G : Type u) extends AddSemigroup G, AddCommMagma G where
 
@@ -141,16 +112,7 @@ theorem add_comm : ∀ a b : G, a + b = b + a := AddCommMagma.add_comm
 
 end AddCommMagma
 
-section CommMagma
-
-variable [CommMagma G]
-
-theorem mul_comm : ∀ a b : G, a * b = b * a := CommMagma.mul_comm
-
-end CommMagma
-
 class AddLeftCancelSemigroup (G : Type u) extends AddSemigroup G where
-  protected add_left_cancel : ∀ a b c : G, a + b = a + c → b = c
 
 attribute [instance 75] AddLeftCancelSemigroup.toAddSemigroup -- See note [lower cancel priority]
 
@@ -224,8 +186,7 @@ class AddCancelMonoid (M : Type u) extends AddLeftCancelMonoid M, AddRightCancel
 
 instance (priority := 100) AddCancelMonoid.toIsCancelAdd (M : Type u) [AddCancelMonoid M] :
     IsCancelAdd M :=
-  { add_left_cancel := AddLeftCancelSemigroup.add_left_cancel
-    add_right_cancel := AddRightCancelSemigroup.add_right_cancel }
+  { add_right_cancel := AddRightCancelSemigroup.add_right_cancel }
 
 end CancelMonoid
 
@@ -290,10 +251,6 @@ theorem add_neg_cancel (a : G) : a + -a = 0 := by
   rw [← neg_add_cancel (-a), neg_eq_of_add (neg_add_cancel a)]
 
 @[simp]
-theorem neg_add_cancel_left (a b : G) : -a + (a + b) = b := by
-  rw [← add_assoc, neg_add_cancel, zero_add]
-
-@[simp]
 theorem add_neg_cancel_right (a b : G) : a + b + -b = a := by
   rw [add_assoc, add_neg_cancel, add_zero]
 
@@ -304,8 +261,7 @@ instance (priority := 100) AddGroup.toSubtractionMonoid : SubtractionMonoid G :=
 -- see Note [lower instance priority]
 instance (priority := 100) AddGroup.toAddCancelMonoid (G : Type _) [AddGroup G] : AddCancelMonoid G :=
   { ‹AddGroup G› with
-    add_right_cancel := fun a b c h ↦ by rw [← add_neg_cancel_right a b, h, add_neg_cancel_right]
-    add_left_cancel := fun a b c h ↦ by rw [← neg_add_cancel_left a b, h, neg_add_cancel_left] }
+    add_right_cancel := fun a b c h ↦ by rw [← add_neg_cancel_right a b, h, add_neg_cancel_right] }
 
 end Group
 
@@ -529,10 +485,6 @@ theorem vcomp_app (α : NatTrans F G) (β : NatTrans G H) (X : C) :
 
 end
 
-example {F G : C ⥤ D} (α : NatTrans F G) {X Y U V : C} (f : X ⟶ Y) (g : Y ⟶ U) (h : U ⟶ V) :
-    α.app X ≫ G.map f ≫ G.map g ≫ G.map h = F.map f ≫ F.map g ≫ F.map h ≫ α.app V := by
-  simp
-
 end NatTrans
 
 end CategoryTheory
@@ -590,37 +542,9 @@ section Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 
 open scoped Classical
 
-namespace CategoryTheory.Limits
-
-variable (C : Type u) [Category.{v} C]
-variable (D : Type u') [Category.{v'} D]
-
-class HasZeroMorphisms where
-  [zero : ∀ X Y : C, Zero (X ⟶ Y)]
-  comp_zero : ∀ {X Y : C} (f : X ⟶ Y) (Z : C), f ≫ (0 : Y ⟶ Z) = (0 : X ⟶ Z)
-  zero_comp : ∀ (X : C) {Y Z : C} (f : Y ⟶ Z), (0 : X ⟶ Y) ≫ f = (0 : X ⟶ Z)
-
-attribute [instance] HasZeroMorphisms.zero
-
-variable {C}
-
-@[simp]
-theorem comp_zero [HasZeroMorphisms C] {X Y : C} {f : X ⟶ Y} {Z : C} :
-    f ≫ (0 : Y ⟶ Z) = (0 : X ⟶ Z) :=
-  HasZeroMorphisms.comp_zero f Z
-
-@[simp]
-theorem zero_comp [HasZeroMorphisms C] {X : C} {Y Z : C} {f : Y ⟶ Z} :
-    (0 : X ⟶ Y) ≫ f = (0 : X ⟶ Z) :=
-  HasZeroMorphisms.zero_comp X f
-
-end CategoryTheory.Limits
-
 end Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 
 section Mathlib.CategoryTheory.Preadditive.Basic
-
-open CategoryTheory.Limits
 
 namespace CategoryTheory
 
@@ -630,8 +554,6 @@ class Preadditive where
   homGroup : ∀ P Q : C, AddCommGroup (P ⟶ Q) := by infer_instance
   add_comp : ∀ (P Q R : C) (f f' : P ⟶ Q) (g : Q ⟶ R), (f + f') ≫ g = f ≫ g + f' ≫ g
   comp_add : ∀ (P Q R : C) (f : P ⟶ Q) (g g' : Q ⟶ R), f ≫ (g + g') = f ≫ g + f ≫ g'
-
-attribute [inherit_doc Preadditive] Preadditive.homGroup Preadditive.add_comp Preadditive.comp_add
 
 attribute [instance] Preadditive.homGroup
 
@@ -674,10 +596,13 @@ theorem neg_comp : (-f) ≫ g = -f ≫ g :=
 theorem comp_neg : f ≫ (-g) = -f ≫ g :=
   map_neg (leftComp R f) g
 
-instance (priority := 100) preadditiveHasZeroMorphisms : HasZeroMorphisms C where
-  zero := inferInstance
-  comp_zero f R := show leftComp R f 0 = 0 from map_zero _
-  zero_comp P _ _ f := show rightComp P f 0 = 0 from map_zero _
+@[simp]
+theorem comp_zero : f ≫ (0 : Q ⟶ R) = 0 :=
+  show leftComp R f 0 = 0 from map_zero _
+
+@[simp]
+theorem zero_comp : (0 : P ⟶ Q) ≫ g = 0 :=
+  show rightComp P g 0 = 0 from map_zero _
 
 end Preadditive
 
@@ -689,7 +614,7 @@ section Mathlib.CategoryTheory.Preadditive.Basic
 
 namespace CategoryTheory
 
-open CategoryTheory.Limits Preadditive
+open Preadditive
 
 variable {C : Type u₁} {D : Type u₂} [Category C] [Category D] [Preadditive D]
 
@@ -698,7 +623,7 @@ instance {F G : C ⥤ D} : Zero (F ⟶ G) where
    { app := fun X => 0
      naturality := by 
        intro X Y f
-       simp_all only [comp_zero, zero_comp] }
+       rw [Preadditive.comp_zero, Preadditive.zero_comp] }
 
 instance {F G : C ⥤ D} : Add (F ⟶ G) where
   add α β :=
@@ -767,8 +692,6 @@ end Mathlib.CategoryTheory.Preadditive.Basic
 
 section Mathlib.CategoryTheory.Linear.Basic
 
-open CategoryTheory.Limits
-
 namespace CategoryTheory
 
 class Linear (R : Type w) [Semiring R] (C : Type u) [Category.{v} C] [Preadditive C] where
@@ -778,9 +701,6 @@ class Linear (R : Type w) [Semiring R] (C : Type u) [Category.{v} C] [Preadditiv
 
 attribute [instance] Linear.homModule
 
-attribute [simp] Linear.smul_comp Linear.comp_smul
-
--- (the linter doesn't like `simp` on the `_assoc` lemma)
 end CategoryTheory
 
 end Mathlib.CategoryTheory.Linear.Basic
@@ -793,7 +713,7 @@ open CategoryTheory
 
 namespace CategoryTheory
 
-open CategoryTheory.Limits Linear
+open Linear
 open CategoryTheory.Linear
 
 variable {R : Type u₃} [Semiring R]
