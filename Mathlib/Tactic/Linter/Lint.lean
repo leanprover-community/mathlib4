@@ -327,7 +327,7 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let longLines := ((sstr.getD default).splitOn "\n").filter fun line ↦
       (100 < (fm.toPosition line.stopPos).column)
     for line in longLines do
-      if !(line.containsSubstr "http") then
+      if (line.splitOn "http").length ≤ 1 then
         Linter.logLint linter.longLine (.ofRange ⟨line.startPos, line.stopPos⟩)
           m!"This line exceeds the 100 character limit, please shorten it!"
 
