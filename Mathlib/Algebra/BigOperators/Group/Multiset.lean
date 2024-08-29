@@ -106,7 +106,8 @@ theorem prod_replicate (n : ℕ) (a : α) : (replicate n a).prod = a ^ n := by
 @[to_additive]
 theorem prod_map_eq_pow_single [DecidableEq ι] (i : ι)
     (hf : ∀ i' ≠ i, i' ∈ m → f i' = 1) : (m.map f).prod = f i ^ m.count i := by
-  induction m using Quotient.inductionOn; simp [List.prod_map_eq_pow_single i f hf]
+  induction m using Quotient.inductionOn
+  simp [List.prod_map_eq_pow_single i f hf]
 
 @[to_additive]
 theorem prod_eq_pow_single [DecidableEq α] (a : α) (h : ∀ a' ≠ a, a' ∈ s → a' = 1) :
