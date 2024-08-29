@@ -678,7 +678,7 @@ def toEnvelGroup.map {R : Type*} [Rack R] {G : Type*} [Group G] :
   left_inv f := by ext; rfl
   right_inv F :=
     MonoidHom.ext fun x =>
-      Quotient.inductionOn x fun x => by -- _ x y ih_x ih_y x ih_x
+      Quotient.inductionOn x fun x => by
         induction x with
         | unit => exact F.map_one.symm
         | incl => rfl
