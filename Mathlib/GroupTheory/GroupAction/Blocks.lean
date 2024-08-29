@@ -510,29 +510,17 @@ theorem ncard_dvd_card (hB : IsBlock G B) (hB_ne : B.Nonempty) :
   Dvd.intro _ (hB.ncard_block_mul_ncard_orbit_eq hB_ne)
 
 /-- A too large block is equal to ⊤ -/
-theorem eq_top_card_lt [Finite X] (hB : IsBlock G B) (hB' : Nat.card X < Set.ncard B * 2) :
+theorem eq_top_card_lt [hX : Finite X] (hB : IsBlock G B) (hB' : Nat.card X < Set.ncard B * 2) :
     B = ⊤ := by
-  classical
-  letI := Fintype.ofFinite X
-  cases' Set.eq_empty_or_nonempty B with hB_e hB_ne
-  -- case when B is empty (exfalso)
-  · exfalso; rw [hB_e] at hB'
-    simp only [Set.ncard_empty, zero_mul, gt_iff_lt, not_lt_zero'] at hB'
-  -- case when B is not empty
-  rw [Set.top_eq_univ, ← Set.toFinset_inj, Set.toFinset_univ,
-    ← Finset.card_eq_iff_eq_univ, ← Set.ncard_eq_toFinset_card',
-    ← Nat.card_eq_fintype_card]
-  obtain ⟨k, h⟩ := hB.ncard_dvd_card hB_ne
-  suffices k = 1 by
-    simp only [h, this, mul_one]
-  rw [h, Nat.mul_lt_mul_left ?_] at hB'
-  apply Nat.eq_of_le_of_lt_succ ?_ hB'
-  apply Nat.pos_of_ne_zero
-  intro hk
-  rw [hk, mul_zero] at h
-  rw [Nat.card_eq_fintype_card, Fintype.card_eq_zero_iff] at h
-  exact hB_ne.ne_empty B.eq_empty_of_isEmpty
-  rwa [← Set.ncard_pos] at hB_ne
+  rcases Set.eq_empty_or_nonempty B with rfl | hB_ne
+  · simp only [Set.ncard_empty, zero_mul, not_lt_zero'] at hB'
+  have key := hB.ncard_block_mul_ncard_orbit_eq hB_ne
+  rw [← key, mul_lt_mul_iff_of_pos_left (by rwa [Set.ncard_pos])] at hB'
+  interval_cases (orbit G B).ncard
+  · rw [mul_zero, eq_comm, Nat.card_eq_zero, or_iff_left hX.not_infinite] at key
+    exact (IsEmpty.exists_iff.mp hB_ne).elim
+  · rw [mul_one, ← Set.ncard_univ] at key
+    rw [Set.eq_of_subset_of_ncard_le (Set.subset_univ B) key.ge, Set.top_eq_univ]
 
 /-- If a block has too many translates, then it is a (sub)singleton  -/
 theorem subsingleton_of_card_lt [Finite X] (hB : IsBlock G B)
@@ -559,11 +547,7 @@ theorem of_subset {B : Set X} (a : X) (hfB : B.Finite) :
     IsBlock G (⋂ (k : G) (_ : a ∈ k • B), k • B) := by
   let B' := ⋂ (k : G) (_ : a ∈ k • B), k • B
   cases' Set.eq_empty_or_nonempty B with hfB_e hfB_ne
-  · convert isBlock_top X
-    simp only [Set.top_eq_univ, Set.iInter_eq_univ]
-    intro k hk; exfalso
-    rw [hfB_e] at hk; simpa only [Set.smul_set_empty] using hk
-
+  · simp [hfB_e, isBlock_univ]
   have hB'₀ : ∀ (k : G) (_ : a ∈ k • B), B' ≤ k • B := by
     intro k hk
     exact Set.biInter_subset_of_mem hk
@@ -574,24 +558,12 @@ theorem of_subset {B : Set X} (a : X) (hfB : B.Finite) :
   have hag : ∀ g : G, a ∈ g • B' → B' ≤ g • B' :=  by
     intro g hg x hx
     -- a = g • b; b ∈ B'; a ∈ k • B → b ∈ k • B
-    use g⁻¹ • x
-    constructor
-    · apply Set.mem_biInter; intro k; rintro (hk : a ∈ k • B)
-      rw [← Set.mem_smul_set_iff_inv_smul_mem, smul_smul]
-      apply hB'₀
-      rw [← smul_smul, Set.mem_smul_set_iff_inv_smul_mem]
-      apply hB'₀ k hk
-      rw [← Set.mem_smul_set_iff_inv_smul_mem]
-      exact hg
-      exact hx
-    · simp only [smul_inv_smul]
+    simp only [B', Set.mem_iInter, Set.mem_smul_set_iff_inv_smul_mem,
+      smul_smul, ← mul_inv_rev] at hg hx ⊢
+    exact fun _ ↦ hx _ ∘ hg _
   have hag' : ∀ g : G, a ∈ g • B' → B' = g • B' := by
     intro g hg
-    apply symm
-    rw [← mem_stabilizer_iff]
-    rw [← Subgroup.inv_mem_iff (stabilizer G B')]
-    rw [mem_stabilizer_of_finite_iff_smul_le B' hfB' g⁻¹]
-    simp_rw [← Set.subset_set_smul_iff]
+    rw [eq_comm, ← mem_stabilizer_iff, mem_stabilizer_of_finite_iff_le_smul _ hfB']
     exact hag g hg
   rw [mk_notempty_one]
   intro g hg
