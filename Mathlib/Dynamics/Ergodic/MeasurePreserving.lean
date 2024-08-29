@@ -134,14 +134,14 @@ theorem measure_preimage_equiv {f : α ≃ᵐ β} (hf : MeasurePreserving f μa 
 
 theorem aeconst_comp [MeasurableSingletonClass γ] {f : α → β} (hf : MeasurePreserving f μa μb)
     {g : β → γ} (hg : NullMeasurable g μb) :
-    EventuallyConst (g ∘ f) (ae μa) ↔ EventuallyConst g (ae μb) :=
+    Filter.EventuallyConst (g ∘ f) (ae μa) ↔ Filter.EventuallyConst g (ae μb) :=
   exists_congr fun s ↦ and_congr_left fun hs ↦ by
-    simp only [mem_map, mem_ae_iff, ← hf.measure_preimage₀ (hg hs.measurableSet).compl,
+    simp only [Filter.mem_map, mem_ae_iff, ← hf.measure_preimage (hg hs.measurableSet).compl,
       preimage_comp, preimage_compl]
 
 theorem aeconst_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
     (hs : NullMeasurableSet s μb) :
-    EventuallyConst (f ⁻¹' s) (ae μa) ↔ EventuallyConst s (ae μb) :=
+    Filter.EventuallyConst (f ⁻¹' s) (ae μa) ↔ Filter.EventuallyConst s (ae μb) :=
   aeconst_comp hf hs.mem
 
 variable {μ : Measure α} {f : α → α} {s : Set α}
