@@ -90,7 +90,7 @@ section Semigroup
 variable [Semigroup α]
 
 @[to_additive]
-instance Semigroup.to_isAssociative : Std.Associative (α := α)  (· * ·) := ⟨mul_assoc⟩
+instance Semigroup.to_isAssociative : Std.Associative (α := α) (· * ·) := ⟨mul_assoc⟩
 
 /-- Composing two multiplications on the left by `y` then `x`
 is equal to a multiplication on the left by `x * y`.

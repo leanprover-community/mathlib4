@@ -463,7 +463,7 @@ theorem Equiv.mul_congr_left (hx₁ : x₁.Numeric) (hx₂ : x₂.Numeric) (hy :
     (he : x₁ ≈ x₂) : x₁ * y ≈ x₂ * y :=
   equiv_iff_game_eq.2 <| (P24 hx₁ hx₂ hy).1 he
 
-theorem Equiv.mul_congr_right (hx : x.Numeric)  (hy₁ : y₁.Numeric) (hy₂ : y₂.Numeric)
+theorem Equiv.mul_congr_right (hx : x.Numeric) (hy₁ : y₁.Numeric) (hy₂ : y₂.Numeric)
     (he : y₁ ≈ y₂) : x * y₁ ≈ x * y₂ :=
   .trans (mul_comm_equiv _ _) <| .trans (mul_congr_left hy₁ hy₂ hx he) (mul_comm_equiv _ _)
 

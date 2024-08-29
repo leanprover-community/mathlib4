@@ -1076,7 +1076,7 @@ theorem toAddSubgroup_comap {G₂ : Type*} [Group G₂] (f : G →* G₂) (s : S
 
 @[simp]
 theorem _root_.AddSubgroup.toSubgroup_comap {A A₂ : Type*} [AddGroup A] [AddGroup A₂]
-    (f : A →+ A₂)  (s : AddSubgroup A₂) :
+    (f : A →+ A₂) (s : AddSubgroup A₂) :
     s.toSubgroup.comap (AddMonoidHom.toMultiplicative f) = AddSubgroup.toSubgroup (s.comap f) := rfl
 
 @[to_additive (attr := simp)]
