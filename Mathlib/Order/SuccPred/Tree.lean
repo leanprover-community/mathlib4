@@ -193,6 +193,13 @@ The `SubRootedTree` rooted at a given node.
 -/
 def RootedTree.subtree (t : RootedTree) (r : t) : SubRootedTree t := r
 
+
+@[simp]
+lemma RootedTree.root_subtree (t : RootedTree) (r : t) : (t.subtree r).root = r := rfl
+
+@[simp]
+lemma RootedTree.subtree_root (t : RootedTree) (v : SubRootedTree t) : t.subtree v.root = v := rfl
+
 @[ext]
 lemma SubRootedTree.ext {t : RootedTree} (v₁ v₂ : SubRootedTree t)
     (h : v₁.root = v₂.root) : v₁ = v₂ := h
@@ -211,9 +218,10 @@ def coeTree {t : RootedTree} [DecidableEq t] (r : SubRootedTree t) : RootedTree 
 
 instance (t : RootedTree) [DecidableEq t] : CoeOut (SubRootedTree t) RootedTree := ⟨coeTree⟩
 
-lemma root_eq_bot_of_bot_mem {t : RootedTree} (r : SubRootedTree t)
-    (hr : ⊥ ∈ r) : r.root = ⊥ := by
-  simpa [mem_iff] using hr
+@[simp]
+lemma bot_mem_iff {t : RootedTree} (r : SubRootedTree t) :
+    ⊥ ∈ r ↔ r.root = ⊥ := by
+  simp [mem_iff]
 
 /--
 All of the immediate subtrees of a given rooted tree.
@@ -251,3 +259,27 @@ lemma subtrees_inf_eq_bot_iff {t₁ t₂ : SubRootedTree t}
     simp only [ht₂.le_iff_eq ht₁.1, ht₁.le_iff_eq ht₂.1, eq_comm, or_self] at this
     ext
     exact this
+
+-- An alternative spelling is the contrapositive, `v ∈ t₁ → v ∈ t₂ → t₁ = t₂`. Which is better?
+lemma subtrees_disjoint {t₁ t₂ : SubRootedTree t}
+    (ht₁ : t₁ ∈ t.subtrees) (ht₂ : t₂ ∈ t.subtrees) (h : t₁ ≠ t₂) :
+    Disjoint (t₁ : Set t) (t₂ : Set t) := by
+  rw [Set.disjoint_left]
+  intro a ha hb
+  rw [← subtrees_inf_eq_bot_iff ht₁ ht₂ a a ha hb] at h
+  simp only [le_refl, inf_of_le_left] at h
+  subst h
+  simp only [SetLike.mem_coe, bot_mem_iff] at ha
+  exact root_ne_bot_of_mem_subtrees t₁ ht₁ ha
+
+variable (t)
+
+def RootedTree.subtreeOf (r : t) : SubRootedTree t := t.subtree (IsPredArchimedean.find_atom r)
+
+lemma RootedTree.mem_subtreeOf {r : t} :
+    r ∈ t.subtreeOf r := by
+  simp [mem_iff, RootedTree.subtreeOf]
+
+lemma RootedTree.subtreeOf_mem_subtrees {r : t} (hr : r ≠ ⊥) :
+    t.subtreeOf r ∈ t.subtrees := by
+  simp [RootedTree.subtrees, RootedTree.subtreeOf, IsPredArchimedean.find_atom_is_atom r hr]
