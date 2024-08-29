@@ -75,8 +75,14 @@ def stacksTag : Parser :=
 
 end Mathlib.Stacks
 
-namespace Lean.PrettyPrinter
 open Mathlib.Stacks
+
+/-- Extract the underlying tag as a string from a `stacksTag` node. -/
+def Lean.TSyntax.getStacksTag (stx : TSyntax stacksTagKind) : CoreM String := do
+  let some val := Syntax.isLit? stacksTagKind stx | throwError "Malformed Stacks tag"
+  return val
+
+namespace Lean.PrettyPrinter
 
 namespace Formatter
 
@@ -92,12 +98,6 @@ namespace Parenthesizer
 @[combinator_parenthesizer stacksTagNoAntiquot] def stacksTagAntiquot.parenthesizer := visitToken
 
 end Lean.PrettyPrinter.Parenthesizer
-
-open Mathlib.Stacks in
-/-- Extract the underlying tag as a string from a `stacksTag` node. -/
-def _root_.Lean.TSyntax.getStacksTag (stx : TSyntax stacksTagKind) : CoreM String := do
-  let some val := Syntax.isLit? stacksTagKind stx | throwError "Malformed Stacks tag"
-  return val
 
 namespace Mathlib.Stacks
 
@@ -120,7 +120,6 @@ initialize Lean.registerBuiltinAttribute {
 
 end Mathlib.Stacks
 
-open Mathlib.Stacks
 /--
 `getSortedStackProjectTags env` returns the array of `Tags`, sorted by alphabetical order of tag.
 -/
