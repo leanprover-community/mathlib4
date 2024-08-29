@@ -58,18 +58,19 @@ end Def
 ### Jacobi sums over finite fields
 -/
 
-section FiniteField
+section CommRing
 
-variable {F R : Type*} [Field F] [Fintype F] [DecidableEq F] [CommRing R]
+variable {F R : Type*} [CommRing F] [Nontrivial F] [Fintype F] [DecidableEq F] [CommRing R]
 
-/-- The Jacobi sum of two multiplicative characters on a finite field `F` can be written
-as a sum over `F \ {0,1}`. -/
+/-- The Jacobi sum of two multiplicative characters on a nontrivial finite commutative ring `F`
+can be written as a sum over `F \ {0,1}`. -/
 lemma jacobiSum_eq_sum_sdiff (χ ψ : MulChar F R) :
     jacobiSum χ ψ = ∑ x ∈ univ \ {0,1}, χ x * ψ (1 - x) := by
-  simp only [jacobiSum, subset_univ, sum_sdiff_eq_sub, mem_singleton, zero_ne_one,
-    not_false_eq_true, sum_insert, isUnit_iff_ne_zero, ne_eq, not_true_eq_false,
-    MulCharClass.map_nonunit, sub_zero, map_one, mul_one, sum_singleton, sub_self, mul_zero,
-    add_zero]
+  simp only [jacobiSum, subset_univ, sum_sdiff_eq_sub, sub_eq_add_neg, self_eq_add_right,
+    neg_eq_zero]
+  apply sum_eq_zero
+  simp only [mem_insert, mem_singleton, forall_eq_or_imp, χ.map_zero, neg_zero, add_zero, map_one,
+    mul_one, forall_eq, add_neg_cancel, ψ.map_zero, mul_zero, and_self]
 
 private lemma jacobiSum_eq_aux (χ ψ : MulChar F R) :
     jacobiSum χ ψ = ∑ x : F, χ x + ∑ x : F, ψ x - Fintype.card F +
@@ -84,6 +85,12 @@ private lemma jacobiSum_eq_aux (χ ψ : MulChar F R) :
     sum_sdiff_eq_sub (subset_univ _), ← sub_zero (_ - _ + _), add_sub_assoc]
   congr
   rw [sum_pair zero_ne_one, sub_zero, ψ.map_one, χ.map_one, sub_self, mul_zero, zero_mul, add_zero]
+
+end CommRing
+
+section FiniteField
+
+variable {F R : Type*} [Field F] [Fintype F] [DecidableEq F] [CommRing R]
 
 /-- The Jacobi sum of twice the trivial multiplicative character on a finite field `F`
 equals `#F-2`. -/
