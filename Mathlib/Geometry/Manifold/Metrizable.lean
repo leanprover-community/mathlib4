@@ -7,8 +7,6 @@ import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
 import Mathlib.Topology.Compactness.Paracompact
 import Mathlib.Topology.Metrizable.Urysohn
 
-#align_import geometry.manifold.metrizable from "leanprover-community/mathlib"@"d1bd9c5df2867c1cb463bc6364446d57bdd9f7f1"
-
 /-!
 # Metrizability of a σ-compact manifold
 
@@ -29,4 +27,3 @@ theorem ManifoldWithCorners.metrizableSpace {E : Type*} [NormedAddCommGroup E] [
   haveI := I.secondCountableTopology
   haveI := ChartedSpace.secondCountable_of_sigma_compact H M
   exact metrizableSpace_of_t3_second_countable M
-#align manifold_with_corners.metrizable_space ManifoldWithCorners.metrizableSpace

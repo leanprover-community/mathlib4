@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
 import Mathlib.Topology.Algebra.UniformMulAction
-
-#align_import topology.algebra.uniform_convergence from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
+import Mathlib.Algebra.Module.Pi
 
 /-!
 # Algebraic facts about the topology of uniform convergence
@@ -225,21 +224,14 @@ instance : UniformGroup (α →ᵤ G) :=
 protected theorem UniformFun.hasBasis_nhds_one_of_basis {p : ι → Prop} {b : ι → Set G}
     (h : (𝓝 1 : Filter G).HasBasis p b) :
     (𝓝 1 : Filter (α →ᵤ G)).HasBasis p fun i => { f : α →ᵤ G | ∀ x, toFun f x ∈ b i } := by
-  have := h.comap fun p : G × G => p.2 / p.1
-  rw [← uniformity_eq_comap_nhds_one] at this
-  convert UniformFun.hasBasis_nhds_of_basis α _ (1 : α →ᵤ G) this
-  -- Porting note: removed `ext i f` here, as it has already been done by `convert`.
+  convert UniformFun.hasBasis_nhds_of_basis α _ (1 : α →ᵤ G) h.uniformity_of_nhds_one
   simp
-#align uniform_fun.has_basis_nhds_one_of_basis UniformFun.hasBasis_nhds_one_of_basis
-#align uniform_fun.has_basis_nhds_zero_of_basis UniformFun.hasBasis_nhds_zero_of_basis
 
 @[to_additive]
 protected theorem UniformFun.hasBasis_nhds_one :
     (𝓝 1 : Filter (α →ᵤ G)).HasBasis (fun V : Set G => V ∈ (𝓝 1 : Filter G)) fun V =>
       { f : α → G | ∀ x, f x ∈ V } :=
   UniformFun.hasBasis_nhds_one_of_basis (basis_sets _)
-#align uniform_fun.has_basis_nhds_one UniformFun.hasBasis_nhds_one
-#align uniform_fun.has_basis_nhds_zero UniformFun.hasBasis_nhds_zero
 
 /-- Let `𝔖 : Set (Set α)`. If `G` is a uniform group, then `α →ᵤ[𝔖] G` is a uniform group as
 well. -/
@@ -260,13 +252,9 @@ protected theorem UniformOnFun.hasBasis_nhds_one_of_basis (𝔖 : Set <| Set α)
     (h : (𝓝 1 : Filter G).HasBasis p b) :
     (𝓝 1 : Filter (α →ᵤ[𝔖] G)).HasBasis (fun Si : Set α × ι => Si.1 ∈ 𝔖 ∧ p Si.2) fun Si =>
       { f : α →ᵤ[𝔖] G | ∀ x ∈ Si.1, toFun 𝔖 f x ∈ b Si.2 } := by
-  have := h.comap fun p : G × G => p.1 / p.2
-  rw [← uniformity_eq_comap_nhds_one_swapped] at this
+  have := h.uniformity_of_nhds_one_swapped
   convert UniformOnFun.hasBasis_nhds_of_basis α _ 𝔖 (1 : α →ᵤ[𝔖] G) h𝔖₁ h𝔖₂ this
-  -- Porting note: removed `ext i f` here, as it has already been done by `convert`.
   simp [UniformOnFun.gen]
-#align uniform_on_fun.has_basis_nhds_one_of_basis UniformOnFun.hasBasis_nhds_one_of_basis
-#align uniform_on_fun.has_basis_nhds_zero_of_basis UniformOnFun.hasBasis_nhds_zero_of_basis
 
 @[to_additive]
 protected theorem UniformOnFun.hasBasis_nhds_one (𝔖 : Set <| Set α) (h𝔖₁ : 𝔖.Nonempty)
@@ -275,8 +263,6 @@ protected theorem UniformOnFun.hasBasis_nhds_one (𝔖 : Set <| Set α) (h𝔖�
       (fun SV : Set α × Set G => SV.1 ∈ 𝔖 ∧ SV.2 ∈ (𝓝 1 : Filter G)) fun SV =>
       { f : α →ᵤ[𝔖] G | ∀ x ∈ SV.1, f x ∈ SV.2 } :=
   UniformOnFun.hasBasis_nhds_one_of_basis 𝔖 h𝔖₁ h𝔖₂ (basis_sets _)
-#align uniform_on_fun.has_basis_nhds_one UniformOnFun.hasBasis_nhds_one
-#align uniform_on_fun.has_basis_nhds_zero UniformOnFun.hasBasis_nhds_zero
 
 end Group
 

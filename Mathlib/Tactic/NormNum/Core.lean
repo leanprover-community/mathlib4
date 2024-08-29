@@ -3,7 +3,6 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Batteries.Lean.Meta.DiscrTree
 import Mathlib.Tactic.NormNum.Result
 import Mathlib.Util.Qq
 import Lean.Elab.Tactic.Location
@@ -358,3 +357,5 @@ Unlike `norm_num`, this command does not fail when no simplifications are made.
 macro (name := normNumCmd) "#norm_num" cfg:(config)? o:(&" only")?
     args:(Parser.Tactic.simpArgs)? " :"? ppSpace e:term : command =>
   `(command| #conv norm_num $(cfg)? $[only%$o]? $(args)? => $e)
+
+end Mathlib.Tactic

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Claus Clausen, Patrick Massot
 -/
 import Mathlib.Probability.Notation
-import Mathlib.Probability.Cdf
+import Mathlib.Probability.CDF
 import Mathlib.Probability.Distributions.Gamma
 
 /-! # Exponential distributions over ℝ
@@ -139,7 +139,7 @@ lemma lintegral_exponentialPDF_eq_antiDeriv {r : ℝ} (hr : 0 < r) (x : ℝ) :
     rw [setLIntegral_congr_fun measurableSet_Icc (ae_of_all _
         (by intro a ⟨(hle : _ ≤ a), _⟩; rw [if_pos hle]))]
     rw [← ENNReal.toReal_eq_toReal _ ENNReal.ofReal_ne_top, ← integral_eq_lintegral_of_nonneg_ae
-        (eventually_of_forall fun _ ↦ le_of_lt (mul_pos hr (exp_pos _)))]
+        (Eventually.of_forall fun _ ↦ le_of_lt (mul_pos hr (exp_pos _)))]
     · have : ∫ a in uIoc 0 x, r * rexp (-(r * a)) = ∫ a in (0)..x, r * rexp (-(r * a)) := by
         rw [intervalIntegral.intervalIntegral_eq_integral_uIoc, smul_eq_mul, if_pos h, one_mul]
       rw [integral_Icc_eq_integral_Ioc, ← uIoc_of_le h, this]
@@ -167,7 +167,7 @@ lemma exponentialCDFReal_eq {r : ℝ} (hr : 0 < r) (x : ℝ) :
   rw [exponentialCDFReal_eq_lintegral hr, lintegral_exponentialPDF_eq_antiDeriv hr x,
     ENNReal.toReal_ofReal_eq_iff]
   split_ifs with h
-  · simp only [sub_nonneg, exp_le_one_iff, Left.neg_nonpos_iff, gt_iff_lt]
+  · simp only [sub_nonneg, exp_le_one_iff, Left.neg_nonpos_iff]
     exact mul_nonneg hr.le h
   · exact le_rfl
 

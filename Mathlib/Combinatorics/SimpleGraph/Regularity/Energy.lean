@@ -9,8 +9,6 @@ import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Combinatorics.SimpleGraph.Density
 import Mathlib.Data.Rat.BigOperators
 
-#align_import combinatorics.simple_graph.regularity.energy from "leanprover-community/mathlib"@"bf7ef0e83e5b7e6c1169e97f055e58a2e4e9d52d"
-
 /-!
 # Energy of a partition
 
@@ -37,11 +35,9 @@ namespace Finpartition
 lemma.  -/
 def energy : ℚ :=
   ((∑ uv ∈ P.parts.offDiag, G.edgeDensity uv.1 uv.2 ^ 2) : ℚ) / (P.parts.card : ℚ) ^ 2
-#align finpartition.energy Finpartition.energy
 
 theorem energy_nonneg : 0 ≤ P.energy G := by
   exact div_nonneg (Finset.sum_nonneg fun _ _ => sq_nonneg _) <| sq_nonneg _
-#align finpartition.energy_nonneg Finpartition.energy_nonneg
 
 theorem energy_le_one : P.energy G ≤ 1 :=
   div_le_of_nonneg_of_le_mul (sq_nonneg _) zero_le_one <|
@@ -55,12 +51,10 @@ theorem energy_le_one : P.energy G ≤ 1 :=
         norm_cast
         rw [sq]
         exact tsub_le_self
-#align finpartition.energy_le_one Finpartition.energy_le_one
 
 @[simp, norm_cast]
 theorem coe_energy {𝕜 : Type*} [LinearOrderedField 𝕜] : (P.energy G : 𝕜) =
     (∑ uv ∈ P.parts.offDiag, (G.edgeDensity uv.1 uv.2 : 𝕜) ^ 2) / (P.parts.card : 𝕜) ^ 2 := by
   rw [energy]; norm_cast
-#align finpartition.coe_energy Finpartition.coe_energy
 
 end Finpartition
