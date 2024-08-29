@@ -40,7 +40,7 @@ noncomputable
 def quot_equiv_pow_quot_pow_succ (h : I.IsPrincipal) (h': I ≠ ⊥) (n : ℕ) :
     (R ⧸ I) ≃ₗ[R] (I ^ n : Ideal R) ⧸ (I • ⊤ : Submodule R (I ^ n : Ideal R)) := by
   let f : (I ^ n : Ideal R) →ₗ[R] (I ^ n : Ideal R) ⧸ (I • ⊤ : Submodule R (I ^ n : Ideal R)) :=
-      Submodule.mkQ _
+    Submodule.mkQ _
   let ϖ := h.principal'.choose
   have hI : I = Ideal.span {ϖ} := h.principal'.choose_spec
   have hϖ : ϖ ^ n ∈ I ^ n := hI ▸ (Ideal.pow_mem_pow (Ideal.mem_span_singleton_self _) n)
