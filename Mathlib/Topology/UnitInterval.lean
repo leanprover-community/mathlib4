@@ -67,19 +67,17 @@ instance : BoundedOrder I := Set.Icc.boundedOrder zero_le_one
 
 lemma univ_eq_Icc : (univ : Set I) = Icc (0 : I) (1 : I) := Icc_bot_top.symm
 
-@[norm_cast]
+@[simp, norm_cast]
 theorem coe_ne_zero {x : I} : (x : ℝ) ≠ 0 ↔ x ≠ 0 :=
   not_iff_not.mpr coe_eq_zero
 
-@[norm_cast]
+@[simp, norm_cast]
 theorem coe_ne_one {x : I} : (x : ℝ) ≠ 1 ↔ x ≠ 1 :=
   not_iff_not.mpr coe_eq_one
 
-@[norm_cast]
-lemma coe_pos {x : I} : (0 : ℝ) < x ↔ 0 < x := Iff.rfl
+@[simp, norm_cast] lemma coe_pos {x : I} : (0 : ℝ) < x ↔ 0 < x := Iff.rfl
 
-@[norm_cast]
-lemma coe_lt_one {x : I} : (x : ℝ) < 1 ↔ x < 1 := Iff.rfl
+@[simp, norm_cast] lemma coe_lt_one {x : I} : (x : ℝ) < 1 ↔ x < 1 := Iff.rfl
 
 instance : Nonempty I :=
   ⟨0⟩
@@ -138,60 +136,37 @@ theorem strictAnti_symm : StrictAnti σ := fun _ _ h ↦ sub_lt_sub_left (α := 
 @[deprecated (since := "2024-02-27")] alias involutive_symm := symm_involutive
 @[deprecated (since := "2024-02-27")] alias bijective_symm := symm_bijective
 
+@[simp]
+theorem symm_inj {i j : I} : σ i = σ j ↔ i = j := symm_bijective.injective.eq_iff
+
 theorem half_le_symm_iff (t : I) : 1 / 2 ≤ (σ t : ℝ) ↔ (t : ℝ) ≤ 1 / 2 := by
   rw [coe_symm_eq, le_sub_iff_add_le, add_comm, ← le_sub_iff_add_le, sub_half]
 
 @[simp]
-lemma symm_eq_one_iff_eq_zero {i : I} : σ i = 1 ↔ i = 0 := by
-  apply Iff.intro
-  · intro h
-    rw [← unitInterval.symm_zero] at h
-    exact symm_bijective.injective h
-  · intro h
-    rw [h, symm_zero]
+lemma symm_eq_one {i : I} : σ i = 1 ↔ i = 0 := by
+  rw [← symm_zero, symm_inj]
 
 @[simp]
-lemma symm_eq_zero_iff_eq_one {i : I} : σ i = 0 ↔ i = 1 := by
-  apply Iff.intro
-  · intro h
-    rw [← unitInterval.symm_one] at h
-    exact symm_bijective.injective h
-  · intro h
-    rw [h, symm_one]
+lemma symm_eq_zero {i : I} : σ i = 0 ↔ i = 1 := by
+  rw [← symm_one, symm_inj]
 
-theorem le_symm_of_le_symm {i j : I} (h : i ≤ σ j) : j ≤ σ i := by
-  rw [Subtype.mk_le_mk, coe_symm_eq] at h ⊢
-  apply le_sub_left_of_add_le
-  rw [add_comm]
-  exact add_le_of_le_sub_left h
+theorem symm_le_symm_iff {i j : I} : σ i ≤ σ j ↔ j ≤ i := by
+  simp only [symm, Subtype.mk_le_mk, sub_le_sub_iff, add_le_add_iff_left, Subtype.coe_le_coe]
 
-theorem le_symm_iff_le_symm {i j : I} : i ≤ σ j ↔ j ≤ σ i :=
-  ⟨le_symm_of_le_symm, le_symm_of_le_symm⟩
+theorem le_symm_comm {i j : I} : i ≤ σ j ↔ j ≤ σ i := by
+  rw [← symm_le_symm_iff, symm_symm]
 
-theorem symm_le_of_symm_le {i j : I} (h : σ i ≤ j) : σ j ≤ i := by
-  rw [Subtype.mk_le_mk, coe_symm_eq] at h ⊢
-  rw [sub_le_iff_le_add, add_comm, ← sub_le_iff_le_add]
-  exact h
+theorem symm_le_comm {i j : I} : σ i ≤ j ↔ σ j ≤ i := by
+  rw [← symm_le_symm_iff, symm_symm]
 
-theorem symm_le_iff_symm_le {i j : I} : σ i ≤ j ↔ σ j ≤ i :=
-  ⟨symm_le_of_symm_le, symm_le_of_symm_le⟩
+theorem symm_lt_symm_iff {i j : I} : σ i < σ j ↔ j < i := by
+  simp only [symm, Subtype.mk_lt_mk, sub_lt_sub_iff_left, Subtype.coe_lt_coe]
 
-theorem lt_symm_of_lt_symm {i j : I} (h : i < σ j) : j < σ i := by
-  rw [Subtype.mk_lt_mk, coe_symm_eq] at h ⊢
-  apply lt_sub_left_of_add_lt
-  rw [add_comm]
-  exact add_lt_of_lt_sub_left h
+theorem lt_symm_comm {i j : I} : i < σ j ↔ j < σ i := by
+  rw [← symm_lt_symm_iff, symm_symm]
 
-theorem lt_symm_iff_lt_symm {i j : I} : i < σ j ↔ j < σ i :=
-  ⟨lt_symm_of_lt_symm, lt_symm_of_lt_symm⟩
-
-theorem symm_lt_of_symm_lt {i j : I} (h : σ i < j) : σ j < i := by
-  rw [Subtype.mk_lt_mk, coe_symm_eq] at h ⊢
-  rw [sub_lt_iff_lt_add, add_comm, ← sub_lt_iff_lt_add]
-  exact h
-
-theorem symm_lt_iff_symm_lt {i j : I} : σ i < j ↔ σ j < i :=
-  ⟨symm_lt_of_symm_lt, symm_lt_of_symm_lt⟩
+theorem symm_lt_comm {i j : I} : σ i < j ↔ σ j < i := by
+  rw [← symm_lt_symm_iff, symm_symm]
 
 instance : ConnectedSpace I :=
   Subtype.connectedSpace ⟨nonempty_Icc.mpr zero_le_one, isPreconnected_Icc⟩
