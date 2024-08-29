@@ -34,7 +34,7 @@ structure CombinatorialMap (D : Type*) where
   same face.
   -/
   φ : Equiv.Perm D
-  composition : α.trans (σ.trans φ) = 1
+  composition : φ * σ * α = 1
   involutive : Function.Involutive α
   fixedPoints_isEmpty : IsEmpty (Function.fixedPoints α)
 
@@ -43,40 +43,27 @@ namespace CombinatorialMap
 variable {D D' : Type*} {M : CombinatorialMap D} {M' : CombinatorialMap D'}
 
 /-- The permutation `φ` expressed in terms of `σ` and `α`. -/
-lemma φ_eq : M.φ = M.σ.symm.trans M.α := by
-  have h : M.φ * M.σ * M.α = 1 := M.composition
+lemma φ_eq : M.φ = M.α * M.σ⁻¹ := by
+  have h := M.composition
   replace h := congr($h * M.α⁻¹ * M.σ⁻¹)
   rw [mul_inv_cancel_right, mul_inv_cancel_right, one_mul] at h
   rw [← M.involutive.symm_eq_self_of_involutive, h]
   rfl
 
-lemma composition_φ : M.φ * M.σ * M.α = 1 := by
-  convert_to M.α.trans (M.σ.trans M.φ) = 1
-  simp [M.composition]
+lemma composition_apply {x : D} : M.φ (M.σ (M.α x)) = x := by
+  nth_rw 2 [← Equiv.Perm.one_apply x]
+  rw [← M.composition]
+  rfl
 
-lemma composition_φ_apply {x : D} : M.φ (M.σ (M.α x)) = x := by
-  convert_to M.α.trans (M.σ.trans M.φ) x = x
-  simp [M.composition]
-
-lemma composition_α : M.α * M.φ * M.σ = 1 :=
+lemma composition' : M.α * M.φ * M.σ = 1 :=
   have (y : D) : (M.α * M.φ * M.σ) y = y := by
     obtain ⟨_, h⟩ := M.α.surjective y
-    simp [← h, composition_φ_apply]
+    simp [← h, composition_apply]
   Equiv.Perm.ext fun _ ↦ this _
 
-lemma composition_α_apply {x : D} : M.α (M.φ (M.σ x)) = x := by
+lemma composition'_apply {x : D} : M.α (M.φ (M.σ x)) = x := by
   convert_to (M.α * M.φ * M.σ) x = x
-  simp [M.composition_α]
-
-lemma composition_σ : M.σ * M.α * M.φ = 1 :=
-  have (y : D) : (M.σ * M.α * M.φ) y = y := by
-    obtain ⟨_, h⟩ := M.σ.surjective y
-    simp [← h, composition_α_apply]
-  Equiv.Perm.ext fun _ ↦ this _
-
-lemma composition_σ_apply {x : D} : M.σ (M.α (M.φ x)) = x := by
-  convert_to (M.σ * M.α * M.φ) x = x
-  simp [M.composition_σ]
+  simp [M.composition']
 
 /--
 A homomorphism of `CombinatorialMap`s is a function that commutes with each of the respective
@@ -103,15 +90,15 @@ lemma hom_inv_is_hom (M : CombinatorialMap D) (M' : CombinatorialMap D') (f : Eq
 
 /-- The opposite of a `CombinatorialMap` which reverses the identities of the darts on each edge. -/
 def opp (M : CombinatorialMap D) : CombinatorialMap D where
-  σ := (M.α.trans M.σ).trans M.α
+  σ := M.α * M.σ * M.α
   α := M.α
-  φ := (M.α.trans M.φ).trans M.α
+  φ := M.α * M.φ * M.α
   involutive := M.involutive
   fixedPoints_isEmpty := M.fixedPoints_isEmpty
   composition := by
     ext x
-    simp only [Equiv.trans_apply, Equiv.Perm.coe_one, id_eq]
-    rw [M.involutive, M.involutive, composition_α_apply]
+    simp only [Equiv.Perm.coe_mul, Function.comp_apply, Equiv.Perm.coe_one, id_eq]
+    rw [M.involutive, M.involutive, composition'_apply]
 
 lemma opp_equiv (M : CombinatorialMap D) : ∃ (f : Equiv D D), Hom M M.opp f :=
   ⟨M.α, ⟨by rw [← (M.α ∘ M.σ).comp_id, ← Function.RightInverse.id M.involutive]; rfl, rfl,
@@ -119,18 +106,18 @@ lemma opp_equiv (M : CombinatorialMap D) : ∃ (f : Equiv D D), Hom M M.opp f :=
 
 /-- The dual of a `CombinatorialMap` swaps the roles of vertices and faces -/
 def dual (M : CombinatorialMap D) : CombinatorialMap D where
-  σ := M.φ.symm
-  α := M.α.symm
-  φ := M.σ.symm
+  σ := M.φ⁻¹
+  α := M.α⁻¹
+  φ := M.σ⁻¹
   composition := by
     ext x
     apply_fun M.α * M.φ * M.σ
-    simp [composition_α_apply]
+    simp [composition'_apply]
   involutive := by
-    have : M.α.symm = M.α := M.involutive.symm_eq_self_of_involutive
+    have : M.α⁻¹ = M.α := M.involutive.symm_eq_self_of_involutive
     simp [this, M.involutive]
   fixedPoints_isEmpty := by
-    have : M.α.symm = M.α := M.involutive.symm_eq_self_of_involutive
+    have : M.α⁻¹ = M.α := M.involutive.symm_eq_self_of_involutive
     simp [this, M.fixedPoints_isEmpty]
 
 /-- The double dual of a `CombinatorialMap` is equal to the original map. -/
