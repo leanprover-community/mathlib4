@@ -281,11 +281,7 @@ def ContextFreeRule.map {N₀ N : Type*} (r : ContextFreeRule T N₀) (f : N₀ 
 
 /-- A pair of `ContextFreeGrammar`s with maps between their types of nonterminal symbols that work,
 roughly speaking, in a good way. -/
-structure EmbeddedContextFreeGrammar (T : Type uT) where
-  /-- The smaller grammar. -/
-  g₀ : ContextFreeGrammar.{uN} T
-  /-- The bigger grammar. -/
-  g : ContextFreeGrammar.{uN} T
+structure ContextFreeGrammar.Embedding {T : Type uT} (g₀ g : ContextFreeGrammar T) where
   /-- Mapping nonterminals from the smaller type to the bigger type. -/
   embedNT : g₀.NT → g.NT
   /-- Mapping nonterminals from the bigger type to the smaller type. -/
