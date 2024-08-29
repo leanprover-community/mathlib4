@@ -734,9 +734,11 @@ theorem contDiffOn_top_iff_fderiv_of_isOpen (hs : IsOpen s) :
   exact Iff.rfl.and <| contDiffOn_congr fun x hx ↦ fderivWithin_of_isOpen hs hx
 
 protected theorem ContDiffOn.fderivWithin (hf : ContDiffOn 𝕜 n f s) (hs : UniqueDiffOn 𝕜 s)
-    (hmn : m + 1 ≤ n) : ContDiffOn 𝕜 m (fun y => fderivWithin 𝕜 f s y) s := by
+    (hmn : m + 1 ≤ n) : ContDiffOn 𝕜 m (fderivWithin 𝕜 f s) s := by
   match n with
-  | ω => sorry
+  | ω =>
+    have : ContDiffOn 𝕜 ω (fderivWithin 𝕜 f s) s := sorry
+    apply this.of_le le_top
   | ∞ => match m with
     | ω => simp at hmn
     | (m : ℕ∞) =>
@@ -748,6 +750,8 @@ protected theorem ContDiffOn.fderivWithin (hf : ContDiffOn 𝕜 n f s) (hs : Uni
     | (m : ℕ) =>
       change (m.succ : WithTop ℕ∞) ≤ n at hmn
       exact ((contDiffOn_succ_iff_fderivWithin hs).1 (hf.of_le hmn)).2
+
+#exit
 
 theorem ContDiffOn.fderiv_of_isOpen (hf : ContDiffOn 𝕜 n f s) (hs : IsOpen s) (hmn : m + 1 ≤ n) :
     ContDiffOn 𝕜 m (fun y => fderiv 𝕜 f y) s :=

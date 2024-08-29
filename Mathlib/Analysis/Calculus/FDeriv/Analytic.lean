@@ -90,11 +90,41 @@ theorem HasFPowerSeriesOnBall.fderiv [CompleteSpace F] (h : HasFPowerSeriesOnBal
   simpa only [edist_eq_coe_nnnorm_sub, EMetric.mem_ball] using hz
 
 /-- If a function is analytic on a set `s`, so is its Fréchet derivative. -/
-theorem AnalyticOn.fderiv [CompleteSpace F] (h : AnalyticOn 𝕜 f s) :
-    AnalyticOn 𝕜 (fderiv 𝕜 f) s := by
-  intro y hy
-  rcases h y hy with ⟨p, r, hp⟩
+theorem AnalyticAt.fderiv [CompleteSpace F] (h : AnalyticAt 𝕜 f x) :
+    AnalyticAt 𝕜 (fderiv 𝕜 f) x := by
+  rcases h with ⟨p, r, hp⟩
   exact hp.fderiv.analyticAt
+
+/-- If a function is analytic on a set `s`, so is its Fréchet derivative. -/
+theorem AnalyticOn.fderiv [CompleteSpace F] (h : AnalyticOn 𝕜 f s) :
+    AnalyticOn 𝕜 (fderiv 𝕜 f) s :=
+  fun y hy ↦ AnalyticAt.fderiv (h y hy)
+
+/-- If a function is analytic within a set `s`, so is its Fréchet derivative within `s` is `s` is
+a set of unique differentiability. -/
+nonrec theorem AnalyticWithinOn.fderivWithin [CompleteSpace F]
+    (h : AnalyticWithinOn 𝕜 f s) (h' : UniqueDiffOn 𝕜 s) :
+    AnalyticWithinOn 𝕜 (fderivWithin 𝕜 f s) s := by
+  intro x hx
+  rcases (h x hx).exists_analyticAt with ⟨g, -, fg, hg⟩
+  suffices AnalyticWithinAt 𝕜 (fderivWithin 𝕜 g s) s x by
+    apply this.congr
+    · intro y hy
+      apply fderivWithin_congr (fg.mono (Set.subset_insert x s))
+      apply fg (Set.subset_insert x s hy)
+    · apply fderivWithin_congr (fg.mono (Set.subset_insert x s))
+      apply fg (Set.mem_insert x s)
+  suffices AnalyticWithinAt 𝕜 (fderiv 𝕜 g) s x by
+    have A : fderivWithin 𝕜 g s =ᶠ[𝓝[s] x] fderiv 𝕜 g := by
+      rcases hg with ⟨p, r, hp⟩
+      have : s ∩ EMetric.ball x r ∈ 𝓝[s] x :=
+        inter_mem_nhdsWithin _ (EMetric.ball_mem_nhds x hp.r_pos)
+      filter_upwards [this] with y hy
+      apply fderivWithin_eq_fderiv (h' y hy.1)
+      exact (hp.analyticOn y hy.2).differentiableAt
+    apply this.congr_of_eventuallyEq A
+    apply mem_of_mem_nhdsWithin hx A
+  exact hg.fderiv.analyticWithinAt
 
 /-- If a function is analytic on a set `s`, so are its successive Fréchet derivative. -/
 theorem AnalyticOn.iteratedFDeriv [CompleteSpace F] (h : AnalyticOn 𝕜 f s) (n : ℕ) :
