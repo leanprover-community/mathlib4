@@ -5,7 +5,6 @@ Authors: Leonardo de Moura, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Data.Set.Lattice
-import Mathlib.Data.Nat.Sqrt
 
 /-!
 # Naturals pairing function
