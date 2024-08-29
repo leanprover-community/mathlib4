@@ -735,15 +735,19 @@ theorem contDiffOn_top_iff_fderiv_of_isOpen (hs : IsOpen s) :
 
 protected theorem ContDiffOn.fderivWithin (hf : ContDiffOn 𝕜 n f s) (hs : UniqueDiffOn 𝕜 s)
     (hmn : m + 1 ≤ n) : ContDiffOn 𝕜 m (fun y => fderivWithin 𝕜 f s y) s := by
-  cases' m with m
-  · change ∞ + 1 ≤ n at hmn
-    have : n = ∞ := by simpa using hmn
-    rw [this] at hf
-    exact ((contDiffOn_top_iff_fderivWithin hs).1 hf).2
-  · change (m.succ : ℕ∞) ≤ n at hmn
-    exact ((contDiffOn_succ_iff_fderivWithin hs).1 (hf.of_le hmn)).2
-
-#exit
+  match n with
+  | ω => sorry
+  | ∞ => match m with
+    | ω => simp at hmn
+    | (m : ℕ∞) =>
+      apply ((contDiffOn_top_iff_fderivWithin hs).1 hf).2.of_le
+      exact_mod_cast le_top
+  | (n : ℕ) => match m with
+    | ω => simp at hmn
+    | ∞ => simpa using WithTop.coe_le_coe.1 hmn
+    | (m : ℕ) =>
+      change (m.succ : WithTop ℕ∞) ≤ n at hmn
+      exact ((contDiffOn_succ_iff_fderivWithin hs).1 (hf.of_le hmn)).2
 
 theorem ContDiffOn.fderiv_of_isOpen (hf : ContDiffOn 𝕜 n f s) (hs : IsOpen s) (hmn : m + 1 ≤ n) :
     ContDiffOn 𝕜 m (fun y => fderiv 𝕜 f y) s :=
@@ -764,7 +768,7 @@ variable (𝕜)
 /-- A function is continuously differentiable up to `n` at a point `x` if, for any integer `k ≤ n`,
 there is a neighborhood of `x` where `f` admits derivatives up to order `n`, which are continuous.
 -/
-def ContDiffAt (n : ℕ∞) (f : E → F) (x : E) : Prop :=
+def ContDiffAt (n : WithTop ℕ∞) (f : E → F) (x : E) : Prop :=
   ContDiffWithinAt 𝕜 n f univ x
 
 variable {𝕜}
@@ -835,13 +839,15 @@ variable (𝕜)
 order `n`, which are continuous. Contrary to the case of definitions in domains (where derivatives
 might not be unique) we do not need to localize the definition in space or time.
 -/
-def ContDiff (n : ℕ∞) (f : E → F) : Prop :=
-  ∃ p : E → FormalMultilinearSeries 𝕜 E F, HasFTaylorSeriesUpTo n f p
+def ContDiff (n : WithTop ℕ∞) (f : E → F) : Prop :=
+  match n with
+  | ω => CompleteSpace F ∧ AnalyticOn 𝕜 f univ
+  | (n : ℕ∞) => ∃ p : E → FormalMultilinearSeries 𝕜 E F, HasFTaylorSeriesUpTo n f p
 
 variable {𝕜}
 
 /-- If `f` has a Taylor series up to `n`, then it is `C^n`. -/
-theorem HasFTaylorSeriesUpTo.contDiff {f' : E → FormalMultilinearSeries 𝕜 E F}
+theorem HasFTaylorSeriesUpTo.contDiff {n : ℕ∞} {f' : E → FormalMultilinearSeries 𝕜 E F}
     (hf : HasFTaylorSeriesUpTo n f f') : ContDiff 𝕜 n f :=
   ⟨f', hf⟩
 
