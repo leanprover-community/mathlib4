@@ -416,16 +416,13 @@ theorem eqRec_heq' {α : Sort*} {a' : α} {motive : (a : α) → a' = a → Sort
     HEq (@Eq.rec α a' motive p a t) p := by
   subst t; rfl
 
-set_option autoImplicit true in
-theorem rec_heq_of_heq {C : α → Sort*} {x : C a} {y : β} (e : a = b) (h : HEq x y) :
-    HEq (e ▸ x) y := by subst e; exact h
+theorem rec_heq_of_heq {α β : Sort _} {a b : α} {C : α → Sort*} {x : C a} {y : β}
+    (e : a = b) (h : HEq x y) : HEq (e ▸ x) y := by subst e; exact h
 
-set_option autoImplicit true in
-theorem rec_heq_iff_heq {C : α → Sort*} {x : C a} {y : β} {e : a = b} :
+theorem rec_heq_iff_heq {α β : Sort _} {a b : α} {C : α → Sort*} {x : C a} {y : β} {e : a = b} :
     HEq (e ▸ x) y ↔ HEq x y := by subst e; rfl
 
-set_option autoImplicit true in
-theorem heq_rec_iff_heq {C : α → Sort*} {x : β} {y : C a} {e : a = b} :
+theorem heq_rec_iff_heq {α β : Sort _} {a b : α} {C : α → Sort*} {x : β} {y : C a} {e : a = b} :
     HEq x (e ▸ y) ↔ HEq x y := by subst e; rfl
 
 end Equality
