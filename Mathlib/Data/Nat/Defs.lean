@@ -8,7 +8,6 @@ import Mathlib.Logic.Nontrivial.Defs
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.PushNeg
 import Mathlib.Util.AssertExists
-import Batteries.Data.Nat.Basic
 
 /-!
 # Basic operations on the natural numbers
