@@ -170,6 +170,17 @@ theorem cfcₙHom_comp [UniqueNonUnitalContinuousFunctionalCalculus R A] (f : C(
 
 end cfcₙHom
 
+section cfcₙL
+
+/-- `cfcₙHom` bundled as a continuous linear map. -/
+@[simps apply]
+noncomputable def cfcₙL {a : A} (ha : p a) : C(σₙ R a, R)₀ →L[R] A :=
+  { cfcₙHom ha with
+    toFun := cfcₙHom ha
+    map_smul' := map_smul _
+    cont := (cfcₙHom_closedEmbedding ha).continuous }
+
+end cfcₙL
 
 section CFCn
 
