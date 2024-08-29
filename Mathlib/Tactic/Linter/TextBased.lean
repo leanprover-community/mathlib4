@@ -84,16 +84,15 @@ inductive ErrorFormat
   | github : ErrorFormat
   deriving BEq
 
-/-- Prints a character's unicode in hexadecimal.
-E.g., 'a' is "U+0061".-/
-def printUtf32Hex (c : Char) : String :=
+/-- Prints a unicode character's codepoint in hexadecimal with prefix 'U+'.
+E.g., 'a' is "U+0061" and .-/
+def printCodepointHex (c : Char) : String :=
   let digits := Nat.toDigits 16 c.val.toNat
-  match digits.length with
+  match digits.length with  -- print at least 4 (could be more) hex characters using leading zeros
   | 1 => "U+000".append $ String.mk digits
   | 2 => "U+00".append $ String.mk digits
   | 3 => "U+0".append $ String.mk digits
-  | 4 => "U+".append $ String.mk digits
-  | _ => "ERROR in printing a Char's unicode in hexadecimal" -- this can/should never happen
+  | _ => "U+".append $ String.mk digits
 
 /-- Create the underlying error message for a given `StyleError`. -/
 def StyleError.errorMessage (err : StyleError) (style : ErrorFormat) : String := match err with
@@ -121,7 +120,7 @@ def StyleError.errorMessage (err : StyleError) (style : ErrorFormat) : String :=
         s!"{sizeLimit} file contains {currentSize} lines, try to split it up"
     | ErrorFormat.humanReadable => s!"file contains {currentSize} lines, try to split it up"
   | StyleError.unwantedUnicode c =>
-      s!"unicode character '{c}' ({printUtf32Hex c}) is not recommended. \
+      s!"unicode character '{c}' ({printCodepointHex c}) is not recommended. \
         Consider adding it to the whitelist."
 
 /-- The error code for a given style error. Keep this in sync with `parse?_errorContext` below! -/
