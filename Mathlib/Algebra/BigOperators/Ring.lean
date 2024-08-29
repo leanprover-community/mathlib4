@@ -109,10 +109,11 @@ variable [DecidableEq ι]
 lemma prod_sum (s : Finset ι) (t : ∀ i, Finset (κ i)) (f : ∀ i, κ i → α) :
     ∏ a ∈ s, ∑ b ∈ t a, f a b = ∑ p ∈ s.pi t, ∏ x ∈ s.attach, f x.1 (p x.1 x.2) := by
   classical
-  induction' s using Finset.induction with a s ha ih
-  · rw [pi_empty, sum_singleton]
-    rfl
-  · have h₁ : ∀ x ∈ t a, ∀ y ∈ t a, x ≠ y →
+  induction s using Finset.induction with
+  | empty => rw [pi_empty, sum_singleton]; rfl
+  | insert ha ih =>
+    rename_i a s
+    have h₁ : ∀ x ∈ t a, ∀ y ∈ t a, x ≠ y →
       Disjoint (image (Pi.cons s a x) (pi s t)) (image (Pi.cons s a y) (pi s t)) := by
       intro x _ y _ h
       simp only [disjoint_iff_ne, mem_image]

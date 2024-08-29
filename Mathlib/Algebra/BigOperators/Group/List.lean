@@ -90,11 +90,12 @@ theorem prod_cons : (a :: l).prod = a * l.prod :=
 lemma prod_induction
     (p : M → Prop) (hom : ∀ a b, p a → p b → p (a * b)) (unit : p 1) (base : ∀ x ∈ l, p x) :
     p l.prod := by
-  induction' l with a l ih
-  · simpa
-  rw [List.prod_cons]
-  simp only [Bool.not_eq_true, List.mem_cons, forall_eq_or_imp] at base
-  exact hom _ _ (base.1) (ih base.2)
+  induction l with
+  | nil => simpa
+  | cons a l ih =>
+    rw [List.prod_cons]
+    simp only [Bool.not_eq_true, List.mem_cons, forall_eq_or_imp] at base
+    exact hom _ _ (base.1) (ih base.2)
 
 @[to_additive (attr := simp)]
 theorem prod_append : (l₁ ++ l₂).prod = l₁.prod * l₂.prod :=
@@ -175,10 +176,11 @@ theorem prod_isUnit : ∀ {L : List M}, (∀ m ∈ L, IsUnit m) → IsUnit L.pro
 theorem prod_isUnit_iff {α : Type*} [CommMonoid α] {L : List α} :
     IsUnit L.prod ↔ ∀ m ∈ L, IsUnit m := by
   refine ⟨fun h => ?_, prod_isUnit⟩
-  induction' L with m L ih
-  · exact fun m' h' => False.elim (not_mem_nil m' h')
-  rw [prod_cons, IsUnit.mul_iff] at h
-  exact fun m' h' => Or.elim (eq_or_mem_of_mem_cons h') (fun H => H.substr h.1) fun H => ih h.2 _ H
+  induction L with
+  | nil => exact fun m' h' => False.elim (not_mem_nil m' h')
+  | cons m L ih =>
+    rw [prod_cons, IsUnit.mul_iff] at h
+    exact fun m' h' ↦ Or.elim (eq_or_mem_of_mem_cons h') (fun H => H.substr h.1) fun H => ih h.2 _ H
 
 @[to_additive (attr := simp)]
 theorem prod_take_mul_prod_drop : ∀ (L : List M) (i : ℕ), (L.take i).prod * (L.drop i).prod = L.prod
@@ -244,9 +246,10 @@ theorem headI_mul_tail_prod_of_ne_nil [Inhabited M] (l : List M) (h : l ≠ []) 
 @[to_additive]
 theorem _root_.Commute.list_prod_right (l : List M) (y : M) (h : ∀ x ∈ l, Commute y x) :
     Commute y l.prod := by
-  induction' l with z l IH
-  · simp
-  · rw [List.forall_mem_cons] at h
+  induction l with
+  | nil => simp
+  | cons z l IH =>
+    rw [List.forall_mem_cons] at h
     rw [List.prod_cons]
     exact Commute.mul_right h.1 (IH h.2)
 
@@ -269,9 +272,11 @@ lemma prod_range_succ' (f : ℕ → M) (n : ℕ) :
     rw [List.prod_range_succ, hd, mul_assoc, ← List.prod_range_succ]
 
 @[to_additive] lemma prod_eq_one (hl : ∀ x ∈ l, x = 1) : l.prod = 1 := by
-  induction' l with i l hil
-  · rfl
-  rw [List.prod_cons, hil fun x hx ↦ hl _ (mem_cons_of_mem i hx), hl _ (mem_cons_self i l), one_mul]
+  induction l with
+  | nil => rfl
+  | cons i l hil =>
+    rw [List.prod_cons, hil fun x hx ↦ hl _ (mem_cons_of_mem i hx),
+      hl _ (mem_cons_self i l), one_mul]
 
 @[to_additive] lemma exists_mem_ne_one_of_prod_ne_one (h : l.prod ≠ 1) :
     ∃ x ∈ l, x ≠ (1 : M) := by simpa only [not_forall, exists_prop] using mt prod_eq_one h
@@ -279,20 +284,22 @@ lemma prod_range_succ' (f : ℕ → M) (n : ℕ) :
 @[to_additive]
 lemma prod_erase_of_comm [DecidableEq M] (ha : a ∈ l) (comm : ∀ x ∈ l, ∀ y ∈ l, x * y = y * x) :
     a * (l.erase a).prod = l.prod := by
-  induction' l with b l ih
-  · simp only [not_mem_nil] at ha
-  obtain rfl | ⟨ne, h⟩ := List.eq_or_ne_mem_of_mem ha
-  · simp only [erase_cons_head, prod_cons]
-  rw [List.erase, beq_false_of_ne ne.symm, List.prod_cons, List.prod_cons, ← mul_assoc,
-    comm a ha b (l.mem_cons_self b), mul_assoc,
-    ih h fun x hx y hy ↦ comm _ (List.mem_cons_of_mem b hx) _ (List.mem_cons_of_mem b hy)]
+  induction l with
+  | nil => simp only [not_mem_nil] at ha
+  | cons b l ih =>
+    obtain rfl | ⟨ne, h⟩ := List.eq_or_ne_mem_of_mem ha
+    · simp only [erase_cons_head, prod_cons]
+    rw [List.erase, beq_false_of_ne ne.symm, List.prod_cons, List.prod_cons, ← mul_assoc,
+      comm a ha b (l.mem_cons_self b), mul_assoc,
+      ih h fun x hx y hy ↦ comm _ (List.mem_cons_of_mem b hx) _ (List.mem_cons_of_mem b hy)]
 
 @[to_additive]
 lemma prod_map_eq_pow_single [DecidableEq α] {l : List α} (a : α) (f : α → M)
     (hf : ∀ a', a' ≠ a → a' ∈ l → f a' = 1) : (l.map f).prod = f a ^ l.count a := by
-  induction' l with a' as h generalizing a
-  · rw [map_nil, prod_nil, count_nil, _root_.pow_zero]
-  · specialize h a fun a' ha' hfa' => hf a' ha' (mem_cons_of_mem _ hfa')
+  induction l generalizing a with
+  | nil => rw [map_nil, prod_nil, count_nil, _root_.pow_zero]
+  | cons a' as h =>
+    specialize h a fun a' ha' hfa' => hf a' ha' (mem_cons_of_mem _ hfa')
     rw [List.map_cons, List.prod_cons, count_cons, h]
     simp only [beq_iff_eq]
     split_ifs with ha'
@@ -546,14 +553,16 @@ theorem alternatingProd_cons (a : α) (l : List α) :
 end Alternating
 
 lemma sum_nat_mod (l : List ℕ) (n : ℕ) : l.sum % n = (l.map (· % n)).sum % n := by
-  induction' l with a l ih
-  · simp only [Nat.zero_mod, map_nil]
-  · simpa only [map_cons, sum_cons, Nat.mod_add_mod, Nat.add_mod_mod] using congr((a + $ih) % n)
+  induction l with
+  | nil => simp only [Nat.zero_mod, map_nil]
+  | cons a l ih =>
+    simpa only [map_cons, sum_cons, Nat.mod_add_mod, Nat.add_mod_mod] using congr((a + $ih) % n)
 
 lemma prod_nat_mod (l : List ℕ) (n : ℕ) : l.prod % n = (l.map (· % n)).prod % n := by
-  induction' l with a l ih
-  · simp only [Nat.zero_mod, map_nil]
-  · simpa only [prod_cons, map_cons, Nat.mod_mul_mod, Nat.mul_mod_mod] using congr((a * $ih) % n)
+  induction l with
+  | nil => simp only [Nat.zero_mod, map_nil]
+  | cons a l ih =>
+    simpa only [prod_cons, map_cons, Nat.mod_mul_mod, Nat.mul_mod_mod] using congr((a * $ih) % n)
 
 lemma sum_int_mod (l : List ℤ) (n : ℤ) : l.sum % n = (l.map (· % n)).sum % n := by
   induction l <;> simp [Int.add_emod, *]
@@ -566,9 +575,10 @@ variable [DecidableEq α]
 /-- Summing the count of `x` over a list filtered by some `p` is just `countP` applied to `p` -/
 theorem sum_map_count_dedup_filter_eq_countP (p : α → Bool) (l : List α) :
     ((l.dedup.filter p).map fun x => l.count x).sum = l.countP p := by
-  induction' l with a as h
-  · simp
-  · simp_rw [List.countP_cons, List.count_cons, List.sum_map_add]
+  induction l with
+  | nil => simp
+  | cons a as h =>
+    simp_rw [List.countP_cons, List.count_cons, List.sum_map_add]
     congr 1
     · refine _root_.trans ?_ h
       by_cases ha : a ∈ as
@@ -686,9 +696,11 @@ theorem neg_one_mem_of_prod_eq_neg_one {l : List ℤ} (h : l.prod = -1) : (-1 : 
 /-- If all elements in a list are bounded below by `1`, then the length of the list is bounded
 by the sum of the elements. -/
 theorem length_le_sum_of_one_le (L : List ℕ) (h : ∀ i ∈ L, 1 ≤ i) : L.length ≤ L.sum := by
-  induction' L with j L IH h; · simp
-  rw [sum_cons, length, add_comm]
-  exact Nat.add_le_add (h _ (mem_cons_self _ _)) (IH fun i hi => h i (mem_cons.2 (Or.inr hi)))
+  induction L with
+  | nil => simp
+  | cons j L IH =>
+    rw [sum_cons, length, add_comm]
+    exact Nat.add_le_add (h _ (mem_cons_self _ _)) (IH fun i hi => h i (mem_cons.2 (Or.inr hi)))
 
 theorem dvd_prod [CommMonoid M] {a} {l : List M} (ha : a ∈ l) : a ∣ l.prod := by
   let ⟨s, t, h⟩ := append_of_mem ha

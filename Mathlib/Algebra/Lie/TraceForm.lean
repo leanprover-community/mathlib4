@@ -127,10 +127,12 @@ lemma traceForm_genWeightSpace_eq [Module.Free R M]
 lemma traceForm_eq_zero_if_mem_lcs_of_mem_ucs {x y : L} (k : ℕ)
     (hx : x ∈ (⊤ : LieIdeal R L).lcs L k) (hy : y ∈ (⊥ : LieIdeal R L).ucs k) :
     traceForm R L M x y = 0 := by
-  induction' k with k ih generalizing x y
-  · replace hy : y = 0 := by simpa using hy
+  induction k generalizing x y with
+  | zero =>
+    replace hy : y = 0 := by simpa using hy
     simp [hy]
-  · rw [LieSubmodule.ucs_succ, LieSubmodule.mem_normalizer] at hy
+  | succ k ih =>
+    rw [LieSubmodule.ucs_succ, LieSubmodule.mem_normalizer] at hy
     simp_rw [LieIdeal.lcs_succ, ← LieSubmodule.mem_coeSubmodule,
       LieSubmodule.lieIdeal_oper_eq_linear_span', LieSubmodule.mem_top, true_and] at hx
     refine Submodule.span_induction hx ?_ ?_ (fun z w hz hw ↦ ?_) (fun t z hz ↦ ?_)

@@ -63,7 +63,7 @@ variable {n : ℕ}
 theorem stream_eq_none_of_fr_eq_zero {ifp_n : IntFractPair K}
     (stream_nth_eq : IntFractPair.stream v n = some ifp_n) (nth_fr_eq_zero : ifp_n.fr = 0) :
     IntFractPair.stream v (n + 1) = none := by
-  cases' ifp_n with _ fr
+  obtain ⟨_, fr⟩ := ifp_n
   change fr = 0 at nth_fr_eq_zero
   simp [IntFractPair.stream, stream_nth_eq, nth_fr_eq_zero]
 
