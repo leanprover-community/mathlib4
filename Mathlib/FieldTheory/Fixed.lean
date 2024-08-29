@@ -310,6 +310,11 @@ theorem finrank_algHom (K : Type u) (V : Type v) [Field K] [Field V] [Algebra K 
 
 namespace FixedPoints
 
+/-- Let $F$ be a field. Let $G$ be a finite group acting faithfully on $F$.
+Then $[F : F^G] = |G|$
+
+[Stacks: Lemma 09I3, second part](https://stacks.math.columbia.edu/tag/09I3) -/
+@[stacks 09I3 "second part"]
 theorem finrank_eq_card (G : Type u) (F : Type v) [Group G] [Field F] [Fintype G]
     [MulSemiringAction G F] [FaithfulSMul G F] :
     finrank (FixedPoints.subfield G F) F = Fintype.card G :=
