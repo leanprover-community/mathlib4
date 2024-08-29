@@ -20,6 +20,11 @@ such that `x * y = a`.
 The associativity of the skewed multiplication depends on the `[MulSemiringAction G k]` instance.
 In particular, this means that unlike in `Mathlib.Algebra.MonoidAlgebra.Basic`, `G` will
 need to be a monoid for most of our uses.
+
+TODO: Add lemmas that show `IsSMulRegular.skewMonoidAlgebra` and
+`IsSMulRegular.skewMonoidAlgebra_iff` as a consequence of
+`SkewMonoidAlgebra.Module.free` and that this property is preserved under
+a LinearEquiv. (See #10541 for discussion)
 -/
 
 noncomputable section
