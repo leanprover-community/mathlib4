@@ -508,7 +508,7 @@ theorem prodCongr_symm (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') :
 theorem coe_prodCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : ⇑(h₁.prodCongr h₂) = Prod.map h₁ h₂ :=
   rfl
 
--- Commutativity and associativity of the disjoing union of topological spaces,
+-- Commutativity and associativity of the disjoint union of topological spaces,
 -- and the sum with an empty space.
 section sum
 
