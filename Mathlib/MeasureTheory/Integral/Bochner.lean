@@ -1469,7 +1469,7 @@ theorem integral_zero_measure {m : MeasurableSpace α} (f : α → G) :
   · simp [integral, hG]
 
 @[simp]
-theorem setIntegral_zero_measure (f : α → E) {μ : Measure α} {s : Set α} (hs : μ s = 0) :
+theorem setIntegral_zero_measure (f : α → G) {μ : Measure α} {s : Set α} (hs : μ s = 0) :
     ∫ x in s, f x ∂μ = 0 := Measure.restrict_eq_zero.mpr hs ▸ integral_zero_measure f
 
 theorem integral_finset_sum_measure {ι} {m : MeasurableSpace α} {f : α → G} {μ : ι → Measure α}
