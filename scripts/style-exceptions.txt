@@ -22,7 +22,6 @@ Mathlib/Data/Matrix/Basic.lean : line 1 : ERR_NUM_LIN : 2700 file contains 2519 
 Mathlib/Data/Multiset/Basic.lean : line 1 : ERR_NUM_LIN : 2900 file contains 2725 lines, try to split it up
 Mathlib/Data/Num/Lemmas.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1576 lines, try to split it up
 Mathlib/Data/Ordmap/Ordset.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1580 lines, try to split it up
-Mathlib/Data/QPF/Multivariate/Basic.lean : line 76 : ERR_LIN : Line has 127 characters, which is more than 100
 Mathlib/Data/Real/EReal.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1778 lines, try to split it up
 Mathlib/Data/Seq/WSeq.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1622 lines, try to split it up
 Mathlib/Data/Set/Basic.lean : line 1 : ERR_NUM_LIN : 2300 file contains 2170 lines, try to split it up
