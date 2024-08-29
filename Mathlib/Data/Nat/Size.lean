@@ -60,18 +60,18 @@ theorem size_shiftLeft' {b m n} (h : shiftLeft' b m n ≠ 0) :
   induction n with
   | zero => simp [shiftLeft']
   | succ n IH =>
-  simp only [shiftLeft', ne_eq] at h ⊢
-  rw [size_bit h, Nat.add_succ]
-  by_cases s0 : shiftLeft' b m n = 0
-  case neg => rw [IH s0]
-  rw [s0] at h ⊢
-  cases b; · exact absurd rfl h
-  have : shiftLeft' true m n + 1 = 1 := congr_arg (· + 1) s0
-  rw [shiftLeft'_tt_eq_mul_pow] at this
-  obtain rfl := succ.inj (eq_one_of_dvd_one ⟨_, this.symm⟩)
-  simp only [zero_add, one_mul] at this
-  obtain rfl : n = 0 := not_ne_iff.1 fun hn ↦ ne_of_gt (Nat.one_lt_pow hn (by decide)) this
-  rw [add_zero]
+    simp only [shiftLeft', ne_eq] at h ⊢
+    rw [size_bit h, Nat.add_succ]
+    by_cases s0 : shiftLeft' b m n = 0
+    case neg => rw [IH s0]
+    rw [s0] at h ⊢
+    cases b; · exact absurd rfl h
+    have : shiftLeft' true m n + 1 = 1 := congr_arg (· + 1) s0
+    rw [shiftLeft'_tt_eq_mul_pow] at this
+    obtain rfl := succ.inj (eq_one_of_dvd_one ⟨_, this.symm⟩)
+    simp only [zero_add, one_mul] at this
+    obtain rfl : n = 0 := not_ne_iff.1 fun hn ↦ ne_of_gt (Nat.one_lt_pow hn (by decide)) this
+    rw [add_zero]
 
 -- TODO: decide whether `Nat.shiftLeft_eq` (which rewrites the LHS into a power) should be a simp
 -- lemma; it was not in mathlib3. Until then, tell the simpNF linter to ignore the issue.
