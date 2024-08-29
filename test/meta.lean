@@ -11,7 +11,7 @@ namespace Tests
 open Lean Meta
 
 private axiom test_sorry : ∀ {α}, α
-set_option linter.setOption false in
+set_option linter.style.setOption false in
 set_option pp.unicode.fun true
 
 def eTrue := Expr.const ``True []

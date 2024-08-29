@@ -1,6 +1,6 @@
 import Mathlib.Tactic.UnsetOption
 
-set_option linter.setOption false
+set_option linter.style.setOption false
 set_option linter.unusedTactic false
 set_option pp.all true
 

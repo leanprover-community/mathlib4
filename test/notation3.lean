@@ -2,7 +2,7 @@ import Mathlib.Util.Notation3
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Data.Nat.Defs
 
-set_option linter.setOption false
+set_option linter.style.setOption false
 set_option pp.unicode.fun true
 set_option autoImplicit true
 
