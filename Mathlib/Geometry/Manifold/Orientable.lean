@@ -28,11 +28,16 @@ variable {H : Type*} [NormedAddCommGroup H] [NormedSpace ℝ H]
 
 section orientationPreservingGroupoid
 
+/--
+A map is orientation-preserving on a given set if it is differentiable and the determinant of its
+Jacobian is strictly positive on that set.
+-/
 def OrientationPreserving (f : H → H) (s : Set H) : Prop :=
   ∀ x ∈ s,
     DifferentiableAt ℝ f x ∧
     0 < (fderiv ℝ f x).det
 
+/-- The pregroupoid of orientation-preserving maps. -/
 def orientationPreservingPregroupoid : Pregroupoid H where
   property f s := OrientationPreserving f s
   comp {f g u v} hf hg _ _ _ := by
@@ -60,6 +65,7 @@ def orientationPreservingPregroupoid : Pregroupoid H where
     · rw [Filter.EventuallyEq.fderiv_eq this]
       exact (hf x hx).2
 
+/-- The groupoid of orientation-preserving maps. -/
 def orientationPreservingGroupoid : StructureGroupoid H :=
   orientationPreservingPregroupoid.groupoid
 
@@ -67,6 +73,7 @@ end orientationPreservingGroupoid
 
 section OrientableManifold
 
+/-- Typeclass defining orientable manifolds. -/
 class OrientableManifold (M : Type*) [TopologicalSpace M] [ChartedSpace H M] extends
   HasGroupoid M (@orientationPreservingGroupoid H _ _) : Prop
 
