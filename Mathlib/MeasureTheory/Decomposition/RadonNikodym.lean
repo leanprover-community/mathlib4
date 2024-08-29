@@ -563,6 +563,11 @@ theorem integral_rnDeriv_smul [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ 
     contrapose! hf
     exact (integrable_rnDeriv_smul_iff hμν).mp hf
 
+lemma setIntegral_rnDeriv_smul [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ ν)
+    [SigmaFinite μ] {f : α → E} {s : Set α} (hs : MeasurableSet s) :
+    ∫ x in s, (μ.rnDeriv ν x).toReal • f x ∂ν = ∫ x in s, f x ∂μ := by
+  simp_rw [← integral_indicator hs, Set.indicator_smul, integral_rnDeriv_smul hμν]
+
 end IntegralRNDerivMul
 
 end MeasureTheory
