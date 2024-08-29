@@ -816,11 +816,11 @@ theorem range_quot_lift {r : ι → ι → Prop} (hf : ∀ x y, r x y → f x = 
   ext fun _ => Quot.surjective_mk.exists
 
 @[simp]
-theorem range_quotient_mk {sa : Setoid α} : range (Quotient.mk sa) = univ :=
+theorem range_quotient_mk {s : Setoid α} : range (Quotient.mk s) = univ :=
   range_quot_mk _
 
 @[simp]
-theorem range_quotient_lift [s : Setoid ι] (hf) :
+theorem range_quotient_lift {s : Setoid ι} (hf) :
     range (Quotient.lift f hf : Quotient s → α) = range f :=
   range_quot_lift _
 
