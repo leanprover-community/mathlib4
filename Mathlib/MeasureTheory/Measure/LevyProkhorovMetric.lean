@@ -525,7 +525,7 @@ lemma ProbabilityMeasure.continuous_toLevyProkhorov [SeparableSpace Ω] :
   have third_ε_pos : 0 < ε / 3 := by linarith
   have third_ε_pos' : 0 < ENNReal.ofReal (ε / 3) := ofReal_pos.mpr third_ε_pos
   -- First use separability to choose a countable partition of `Ω` into measurable
-  -- subsets `Es n ⊆ Ω` of small diamater, `diam (Es n) < ε/3`.
+  -- subsets `Es n ⊆ Ω` of small diameter, `diam (Es n) < ε/3`.
   obtain ⟨Es, Es_mble, Es_bdd, Es_diam, Es_cover, Es_disjoint⟩ :=
     SeparableSpace.exists_measurable_partition_diam_le Ω third_ε_pos
   -- Instead of the whole space `Ω = ⋃ n ∈ ℕ, Es n`, focus on a large but finite

@@ -303,8 +303,9 @@ theorem MapsTo.val_restrict_apply (h : MapsTo f s t) (x : s) : (h.restrict f s t
 
 theorem MapsTo.coe_iterate_restrict {f : α → α} (h : MapsTo f s s) (x : s) (k : ℕ) :
     h.restrict^[k] x = f^[k] x := by
-  induction' k with k ih; · simp
-  simp only [iterate_succ', comp_apply, val_restrict_apply, ih]
+  induction k with
+  | zero => simp
+  | succ k ih => simp only [iterate_succ', comp_apply, val_restrict_apply, ih]
 
 /-- Restricting the domain and then the codomain is the same as `MapsTo.restrict`. -/
 @[simp]
@@ -379,9 +380,9 @@ theorem MapsTo.iterate_restrict {f : α → α} {s : Set α} (h : MapsTo f s s) 
     (h.restrict f s s)^[n] = (h.iterate n).restrict _ _ _ := by
   funext x
   rw [Subtype.ext_iff, MapsTo.val_restrict_apply]
-  induction' n with n ihn generalizing x
-  · rfl
-  · simp [Nat.iterate, ihn]
+  induction n generalizing x with
+  | zero => rfl
+  | succ n ihn => simp [Nat.iterate, ihn]
 
 lemma mapsTo_of_subsingleton' [Subsingleton β] (f : α → β) (h : s.Nonempty → t.Nonempty) :
     MapsTo f s t :=
