@@ -42,10 +42,8 @@ def catAppSimp (e : Expr) : MetaM Simp.Result :=
 Given a term of type `∀ ..., η = θ`, where `η θ : f ⟶ g` are 2-morphisms in some bicategory
 `B`, which is bound by the `∀` binder, get the corresponding equation in the bicategory `Cat`.
 
-It is also important that in arguments to the `∀` binder, the bicategory `B` to be specialized is
-followed immediately by immediately by the instance `[Bicategory B]`. Otherwise this function will
-not be able to find, and replace, this instance.
--/
+It is important here that the levels in the term are level metavariables, as otherwise these will
+not be reassignable to the corresponding levels of `Cat`. -/
 def toCatExpr (e : Expr) : MetaM Expr := do
   let (args, binderInfos, conclusion) ← forallMetaTelescope (← inferType e)
   -- Find the expression corresponding to the bicategory, by anylizing `η = θ` (i.e. conclusion)
@@ -67,13 +65,11 @@ def toCatExpr (e : Expr) : MetaM Expr := do
   let v ← mkFreshLevelMVar
   -- Assign `B` to `Cat.{v, u}`
   let _ ← isDefEq B (.const ``Cat [u, v])
-  let some inst := args[BIdx + 1]?
-    | throwError "The bicategory where the equality is taking place is not immediately followed by \
-                  its bicategory instance"
-  if (← inferType inst).getAppFnArgs != (`CategoryTheory.Bicategory, #[B]) then
-    throwError "The bicategory where the equality is taking place is not immediately followed by \
-                its bicategory instance"
   -- Assign the right bicategory instance to `Cat.{v, u}`
+  let some inst ← args.findM? fun x => do
+      return (← inferType x).getAppFnArgs == (`CategoryTheory.Bicategory, #[B])
+    | throwError "Can not find the argument for the bicategory instance of the bicategory in which \
+      the equality is taking place."
   let _ ← isDefEq inst (.const ``CategoryTheory.Cat.bicategory [u, v])
   -- Construct the new expression
   let value := mkAppN e args
