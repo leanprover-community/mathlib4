@@ -183,7 +183,8 @@ instance instBialgebra : Bialgebra R (MonoidAlgebra A X) :=
         Bialgebra.comul_mul, ← (Coalgebra.Repr.arbitrary R b).eq,
         ← (Coalgebra.Repr.arbitrary R d).eq, Finset.sum_mul_sum,
         Algebra.TensorProduct.tmul_mul_tmul, map_sum, TensorProduct.map_tmul, lsingle_apply,
-        LinearMap.compl₁₂_apply, LinearMap.coeFn_sum, Finset.sum_apply, Finset.sum_comm (s := s)] }
+        LinearMap.compl₁₂_apply, LinearMap.coeFn_sum, Finset.sum_apply,
+        Finset.sum_comm (s := (Coalgebra.Repr.arbitrary R b).index)] }
 
 end MonoidAlgebra
 
@@ -225,7 +226,8 @@ instance instBialgebra : Bialgebra R A[X] :=
         Bialgebra.comul_mul, ← (Coalgebra.Repr.arbitrary R b).eq,
         ← (Coalgebra.Repr.arbitrary R d).eq, Finset.sum_mul_sum,
         Algebra.TensorProduct.tmul_mul_tmul, map_sum, TensorProduct.map_tmul, lsingle_apply,
-        LinearMap.compl₁₂_apply, LinearMap.coeFn_sum, Finset.sum_apply, Finset.sum_comm (s := s)] }
+        LinearMap.compl₁₂_apply, LinearMap.coeFn_sum, Finset.sum_apply,
+        Finset.sum_comm (s := (Coalgebra.Repr.arbitrary R b).index)] }
 
 end AddMonoidAlgebra
 
