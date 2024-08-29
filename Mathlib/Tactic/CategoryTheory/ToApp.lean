@@ -42,41 +42,42 @@ def catAppSimp (e : Expr) : MetaM Simp.Result :=
 Given a term of type `∀ ..., η = θ`, where `η θ : f ⟶ g` are 2-morphisms in some bicategory
 `B`, which is bound by the `∀` binder, get the corresponding equation in the bicategory `Cat`.
 
-The term is also required to only contain universe metavariables, and these should also be passed
-as an argument `levelMVars` to this function. This is necessary because when specializing to `Cat`,
-we need to set the levels of the bicategory argument that gets specialized in terms of the levels of
-`Cat`.
-
 It is also important that in arguments to the `∀` binder, the bicategory `B` to be specialized is
 followed immediately by immediately by the instance `[Bicategory B]`. Otherwise this function will
 not be able to find, and replace, this instance.
 -/
-def toCatExpr (e : Expr) (levelMVars : List Level) : MetaM Expr := do
+def toCatExpr (e : Expr) : MetaM Expr := do
   let (args, binderInfos, conclusion) ← forallMetaTelescope (← inferType e)
-  -- Find the metavariable corresponding to the bicategory, by anylizing `η = θ` (i.e. conclusion)
-  let η := (Expr.getAppArgsN conclusion 2)[0]! -- `η` in the equality above
-  let f := (Expr.getAppArgsN (← inferType η) 2)[0]! -- the domain of `η`
-  let a := (Expr.getAppArgsN (← inferType f) 2)[1]! -- the domain of `f`
-  let B_pre ← inferType a -- the bicategory
-  let B := (← getMVars B_pre)[0]!
-  let some BIdx := args.findIdx? (· == .mvar B)
-    | throwError "Can not find the bicategory {B} in the arguments of {e}"
+  -- Find the expression corresponding to the bicategory, by anylizing `η = θ` (i.e. conclusion)
+  let B ←
+    match conclusion.getAppFnArgs with
+    | (`Eq, #[_, η, _]) =>
+      match (← inferType η).getAppFnArgs with
+      | (`Quiver.Hom, #[_, _, f, _]) =>
+        match (← inferType f).getAppFnArgs with
+        | (`Quiver.Hom, #[_, _, a, _]) =>
+        inferType a
+        | _ => throwError "The conclusion {conclusion} is not an equality of 2-morphisms!"
+      | _ => throwError "The conclusion {conclusion} is not an equality of 2-morphisms!"
+    | _ => throwError "The conclusion {conclusion} is not an equality!"
+  let some BIdx := args.findIdx? (· == B)
+    | throwError "Can not find the bicategory {B} in the arguments this declaration"
   -- Create level metavariables to be used for `Cat.{v u}`
   let u ← mkFreshLevelMVar
   let v ← mkFreshLevelMVar
-  -- Assign the right level of B, so that it corresponds to the level of `Cat`
-  let _ ← isLevelDefEq (← Meta.getDecLevel B_pre) (Level.max (Level.max (u.succ) u) (v.succ))
-  B.assign (.const ``Cat [u, v])
+  -- Assign `B` to `Cat.{v, u}`
+  let _ ← isDefEq B (.const ``Cat [u, v])
   let some inst := args[BIdx + 1]?
-    | throwError "The bicategory {B} is not immediately followed by a bicategory instance in {e}"
-  -- Assign the right levels for the bicategory instance of `B`
-  let instlvl ← Meta.getLevel (← inferType inst)
-  let instlvlMVars := levelMVars.filter fun l => l.occurs instlvl && l != u
-  forM instlvlMVars fun l => do
-    let _ ← isLevelDefEq l (Level.max u v)
-  inst.mvarId!.assign (← synthInstanceQ q(Bicategory.{max u v, max u v} Cat.{u, v}))
-  let applied := mkAppN e args
-  let mvars := (← getMVars applied).map (Expr.mvar)
+    | throwError "The bicategory where the equality is taking place is not immediately followed by \
+                  its bicategory instance"
+  if (← inferType inst).getAppFnArgs != (`CategoryTheory.Bicategory, #[B]) then
+    throwError "The bicategory where the equality is taking place is not immediately followed by \
+                its bicategory instance"
+  -- Assign the right bicategory instance to `Cat.{v, u}`
+  let _ ← isDefEq inst (.const ``CategoryTheory.Cat.bicategory [u, v])
+  -- Construct the new expression
+  let value := mkAppN e args
+  let mvars := (← getMVars value).map (Expr.mvar)
   -- Erease the binderinfos for the bicategory and the instance
   let binderInfos := binderInfos.eraseIdx BIdx
   let binderInfos := binderInfos.eraseIdx BIdx
@@ -91,8 +92,8 @@ def toCatExpr (e : Expr) (levelMVars : List Level) : MetaM Expr := do
       return e
     else
       return e
-  let applied ← apprec 0 applied
-  return applied
+  let value ← apprec 0 value
+  return value
 
 /--
 Given morphisms `f g : C ⟶ D` in the bicategory `Cat`, and an equation `η = θ` between 2-morphisms
@@ -130,11 +131,11 @@ initialize registerBuiltinAttribute {
     if (kind != AttributeKind.global) then
       throwError "`to_app` can only be used as a global attribute"
     addRelatedDecl src "_app" ref stx? fun type value levels => do
-      let levelMVars ← levels.mapM λ _ => mkFreshLevelMVar
+      let levelMVars ← levels.mapM fun _ => mkFreshLevelMVar
       let value ← mkExpectedTypeHint value type
       let value := value.instantiateLevelParams levels levelMVars
-      let newValue ← toAppExpr (← toCatExpr value levelMVars)
-      let r := (← getMCtx).levelMVarToParam (λ _ => false) (λ _ => false) newValue
+      let newValue ← toAppExpr (← toCatExpr value)
+      let r := (← getMCtx).levelMVarToParam (fun _ => false) (fun _ => false) newValue
       let output := (r.expr, r.newParamNames.toList)
       pure output
   | _ => throwUnsupportedSyntax }
