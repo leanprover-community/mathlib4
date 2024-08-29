@@ -3,12 +3,11 @@ Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+import Mathlib.Algebra.Algebra.Field
 import Mathlib.Algebra.Star.Order
 import Mathlib.Analysis.CStarAlgebra.Basic
 import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
-import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Data.Real.Sqrt
-import Mathlib.Algebra.Algebra.Field
 
 /-!
 # `RCLike`: a typeclass for ℝ or ℂ
@@ -503,17 +502,22 @@ theorem normSq_inv (z : K) : normSq z⁻¹ = (normSq z)⁻¹ :=
 theorem normSq_div (z w : K) : normSq (z / w) = normSq z / normSq w :=
   map_div₀ normSq z w
 
-@[rclike_simps] -- porting note (#10618): was `simp`
-theorem norm_conj {z : K} : ‖conj z‖ = ‖z‖ := by simp only [← sqrt_normSq_eq_norm, normSq_conj]
+@[simp 1100, rclike_simps]
+theorem norm_conj (z : K) : ‖conj z‖ = ‖z‖ := by simp only [← sqrt_normSq_eq_norm, normSq_conj]
+
+@[simp, rclike_simps] lemma nnnorm_conj (z : K) : ‖conj z‖₊ = ‖z‖₊ := by simp [nnnorm]
 
 instance (priority := 100) : CStarRing K where
-  norm_mul_self_le x := le_of_eq <| ((norm_mul _ _).trans <| congr_arg (· * ‖x‖) norm_conj).symm
+  norm_mul_self_le x := le_of_eq <| ((norm_mul _ _).trans <| congr_arg (· * ‖x‖) (norm_conj _)).symm
 
 /-! ### Cast lemmas -/
 
 @[rclike_simps, norm_cast]
 theorem ofReal_natCast (n : ℕ) : ((n : ℝ) : K) = n :=
   map_natCast (algebraMap ℝ K) n
+
+@[rclike_simps, norm_cast]
+lemma ofReal_nnratCast (q : ℚ≥0) : ((q : ℝ) : K) = q := map_nnratCast (algebraMap ℝ K) _
 
 @[simp, rclike_simps] -- Porting note: removed `norm_cast`
 theorem natCast_re (n : ℕ) : re (n : K) = n := by rw [← ofReal_natCast, ofReal_re]
@@ -575,20 +579,45 @@ theorem norm_natCast (n : ℕ) : ‖(n : K)‖ = n := by
   rw [← ofReal_natCast]
   exact norm_of_nonneg (Nat.cast_nonneg n)
 
+@[simp, rclike_simps, norm_cast] lemma nnnorm_natCast (n : ℕ) : ‖(n : K)‖₊ = n := by simp [nnnorm]
+
 @[simp, rclike_simps]
 theorem norm_ofNat (n : ℕ) [n.AtLeastTwo] : ‖(no_index (OfNat.ofNat n) : K)‖ = OfNat.ofNat n :=
   norm_natCast n
 
+@[simp, rclike_simps]
+lemma nnnorm_ofNat (n : ℕ) [n.AtLeastTwo] : ‖(no_index (OfNat.ofNat n) : K)‖₊ = OfNat.ofNat n :=
+  nnnorm_natCast n
+
+lemma norm_two : ‖(2 : K)‖ = 2 := norm_ofNat 2
+lemma nnnorm_two : ‖(2 : K)‖₊ = 2 := nnnorm_ofNat 2
+
+@[simp, rclike_simps, norm_cast]
+lemma norm_nnratCast (q : ℚ≥0) : ‖(q : K)‖ = q := by
+  rw [← ofReal_nnratCast]; exact norm_of_nonneg q.cast_nonneg
+
+@[simp, rclike_simps, norm_cast]
+lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : K)‖₊ = q := by simp [nnnorm]
+
 variable (K) in
 lemma norm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) : ‖n • x‖ = n • ‖x‖ := by
-  rw [← Nat.cast_smul_eq_nsmul K, norm_smul, RCLike.norm_natCast, nsmul_eq_mul]
+  simpa [Nat.cast_smul_eq_nsmul] using norm_smul (n : K) x
+
+variable (K) in
+lemma nnnorm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) :
+    ‖n • x‖₊ = n • ‖x‖₊ := by simpa [Nat.cast_smul_eq_nsmul] using nnnorm_smul (n : K) x
+
+variable (K) in
+lemma norm_nnqsmul [NormedField E] [CharZero E] [NormedSpace K E] (q : ℚ≥0) (x : E) :
+    ‖q • x‖ = q • ‖x‖ := by simpa [NNRat.cast_smul_eq_nnqsmul] using norm_smul (q : K) x
+
+variable (K) in
+lemma nnnorm_nnqsmul [NormedField E] [CharZero E] [NormedSpace K E] (q : ℚ≥0) (x : E) :
+    ‖q • x‖₊ = q • ‖x‖₊ := by simpa [NNRat.cast_smul_eq_nnqsmul] using nnnorm_smul (q : K) x
 
 theorem mul_self_norm (z : K) : ‖z‖ * ‖z‖ = normSq z := by rw [normSq_eq_def', sq]
 
 attribute [rclike_simps] norm_zero norm_one norm_eq_zero abs_norm norm_inv norm_div
-
--- Porting note: removed @[simp, rclike_simps], b/c generalized to `norm_ofNat`
-theorem norm_two : ‖(2 : K)‖ = 2 := norm_ofNat 2
 
 theorem abs_re_le_norm (z : K) : |re z| ≤ ‖z‖ := by
   rw [mul_self_le_mul_self_iff (abs_nonneg _) (norm_nonneg _), abs_mul_abs_self, mul_self_norm]
@@ -922,7 +951,7 @@ theorem conjAe_coe : (conjAe : K → K) = conj :=
 
 /-- Conjugate as a linear isometry -/
 noncomputable def conjLIE : K ≃ₗᵢ[ℝ] K :=
-  ⟨conjAe.toLinearEquiv, fun _ => norm_conj⟩
+  ⟨conjAe.toLinearEquiv, norm_conj⟩
 
 @[simp, rclike_simps]
 theorem conjLIE_apply : (conjLIE : K → K) = conj :=
