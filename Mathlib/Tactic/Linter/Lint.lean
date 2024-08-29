@@ -218,7 +218,7 @@ These are disallowed by the mathlib style guide, as using `<|` pairs better with
 
 /-- The `dollarSyntax` linter flags uses of `<|` that are achieved by typing `$`.
 These are disallowed by the mathlib style guide, as using `<|` pairs better with `|>`. -/
-register_option linter.dollarSyntax : Bool := {
+register_option linter.style.dollarSyntax : Bool := {
   defValue := false
   descr := "enable the `dollarSyntax` linter"
 }
@@ -235,14 +235,15 @@ def findDollarSyntax : Syntax → Array Syntax
       | _ => dargs
   |_ => #[]
 
-@[inherit_doc linter.dollarSyntax]
+@[inherit_doc linter.style.dollarSyntax]
 def dollarSyntaxLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    unless Linter.getLinterValue linter.dollarSyntax (← getOptions) do
+    unless Linter.getLinterValue linter.style.dollarSyntax (← getOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
     for s in findDollarSyntax stx do
-      Linter.logLint linter.dollarSyntax s m!"Please use '<|' instead of '$' for the pipe operator."
+      Linter.logLint linter.style.dollarSyntax s
+        m!"Please use '<|' instead of '$' for the pipe operator."
 
 initialize addLinter dollarSyntaxLinter
 

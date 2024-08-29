@@ -88,16 +88,16 @@ note: this linter can be disabled with `set_option linter.style.cdot false`
 set_option linter.style.cdot true in
 example : Add Nat where add := (. + ·)
 
-set_option linter.dollarSyntax false in
+set_option linter.style.dollarSyntax false in
 /--
 warning: Please use '<|' instead of '$' for the pipe operator.
-note: this linter can be disabled with `set_option linter.dollarSyntax false`
+note: this linter can be disabled with `set_option linter.style.dollarSyntax false`
 ---
 warning: Please use '<|' instead of '$' for the pipe operator.
-note: this linter can be disabled with `set_option linter.dollarSyntax false`
+note: this linter can be disabled with `set_option linter.style.dollarSyntax false`
 -/
 #guard_msgs in
-set_option linter.dollarSyntax true in
+set_option linter.style.dollarSyntax true in
 attribute [instance] Int.add in
 instance (f g : Nat → Nat) : Inhabited Nat where
   default := by
@@ -208,16 +208,16 @@ example : ℕ → ℕ := set_option linter.style.lambdaSyntax true in λ _ ↦ 0
 
 end lambdaSyntaxLinter
 
-set_option linter.dollarSyntax false in
+set_option linter.style.dollarSyntax false in
 /--
 warning: Please use '<|' instead of '$' for the pipe operator.
-note: this linter can be disabled with `set_option linter.dollarSyntax false`
+note: this linter can be disabled with `set_option linter.style.dollarSyntax false`
 ---
 warning: Please use '<|' instead of '$' for the pipe operator.
-note: this linter can be disabled with `set_option linter.dollarSyntax false`
+note: this linter can be disabled with `set_option linter.style.dollarSyntax false`
 -/
 #guard_msgs in
-set_option linter.dollarSyntax true in
+set_option linter.style.dollarSyntax true in
 attribute [instance] Int.add in
 instance (f g : Nat → Nat) : Inhabited Nat where
   default := by
