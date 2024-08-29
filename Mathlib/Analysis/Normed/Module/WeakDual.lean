@@ -280,9 +280,7 @@ universe u
 variable {𝕜₁ : Type u} [NontriviallyNormedField 𝕜₁]
 variable {E₁ : Type u} [SeminormedAddCommGroup E₁] [NormedSpace 𝕜₁ E₁]
 
-lemma existance1 (s : Set (WeakDual 𝕜₁ E₁)) (h : IsCompact s) : ∀ {ι : Type u}
-    (t : ι → Set (WeakDual 𝕜₁ E₁)), (∀ i, IsClosed (t i)) → (s ∩ ⋂ i, t i) = ∅ →
-    ∃ u : Finset ι, (s ∩ ⋂ i ∈ u, t i) = ∅ := isCompact_iff_finite_subfamily_closed.mp h
+
 
 
 /- The closed set, not containing the origin -/
@@ -312,7 +310,7 @@ lemma isCompactK [ProperSpace 𝕜₁] (x : (U (E := E₁) (n + 1))) (hC₁ : Is
     IsCompact (K C s n x) := IsCompact.inter_left (polarUcompact 𝕜₁ _)
     (IsClosed.inter (IsClosed.inter (isClosed_polar 𝕜₁ s) (isClosed_polar _ _)) hC₁)
 
-lemma isClosedK [ProperSpace 𝕜] (x : (U (E := E₁) (n + 1))) (hC₁ : IsClosed C) :
+lemma isClosedK (x : (U (E := E₁) (n + 1))) (hC₁ : IsClosed C) :
     IsClosed (K C s n x) := by
   apply IsClosed.inter
   apply IsClosed.inter
@@ -333,6 +331,14 @@ lemma inter_empty (h : polar 𝕜₁ s ∩ C ∩ polar 𝕜₁ (U (n+1)) = ∅) 
     rfl
   rw [e1, inter_assoc _ _ C, inter_comm _ C, ← inter_assoc, h, empty_inter]
 
+lemma existance1 (s' : Set (WeakDual 𝕜₁ E₁)) (h : IsCompact s') : ∀ {ι : Type u}
+    (t : ι → Set (WeakDual 𝕜₁ E₁)), (∀ i, IsClosed (t i)) → (s' ∩ ⋂ i, t i) = ∅ →
+    ∃ u : Finset ι, (s' ∩ ⋂ i ∈ u, t i) = ∅ := isCompact_iff_finite_subfamily_closed.mp h
+
+lemma existance2 [ProperSpace 𝕜₁] : ∀ {ι : Type u}
+    (t : ι → Set (WeakDual 𝕜₁ E₁)), (∀ i, IsClosed (t i)) → (polar 𝕜₁ (U (n+2)) ∩ ⋂ i, t i) = ∅ →
+    ∃ u : Finset ι, (polar 𝕜₁ (U (E := E₁) (n+2)) ∩ ⋂ i ∈ u, t i) = ∅ :=
+  isCompact_iff_finite_subfamily_closed.mp (polarUcompact 𝕜₁ (n+2))
 
 
 /-
