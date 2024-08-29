@@ -139,7 +139,9 @@ variable (F E K)
 instance separableClosure.isAlgebraic : Algebra.IsAlgebraic F (separableClosure F E) :=
   ⟨fun x ↦ isAlgebraic_iff.2 (IsSeparable.isIntegral x.2).isAlgebraic⟩
 
-/-- The separable closure of `F` in `E` is separable over `F`. -/
+/-- The separable closure of `F` in `E` is separable over `F`.
+[Stacks: Lemma 030K Part 1](https://stacks.math.columbia.edu/tag/030K)
+-/
 instance separableClosure.isSeparable : Algebra.IsSeparable F (separableClosure F E) :=
   ⟨fun x ↦ by simpa only [IsSeparable, minpoly_eq] using x.2⟩
 
@@ -154,7 +156,12 @@ theorem le_separableClosure (L : IntermediateField F E) [Algebra.IsSeparable F L
     L ≤ separableClosure F E := le_separableClosure' F E (Algebra.IsSeparable.isSeparable F)
 
 /-- An intermediate field of `E / F` is contained in the separable closure of `F` in `E`
-if and only if it is separable over `F`. -/
+if and only if it is separable over `F`.
+
+Used to prove that the separable closure is the unique intermediate field that is separable
+downwards and purely inseparable upwards. This is the downwards part.
+[Stacks: Lemma 030K Part 3.1](https://stacks.math.columbia.edu/tag/030K)
+-/
 theorem le_separableClosure_iff (L : IntermediateField F E) :
     L ≤ separableClosure F E ↔ Algebra.IsSeparable F L :=
   ⟨fun h ↦ ⟨fun x ↦ by simpa only [IsSeparable, minpoly_eq] using h x.2⟩,
@@ -255,11 +262,15 @@ end separableClosure
 namespace Field
 
 /-- The (infinite) separable degree for a general field extension `E / F` is defined
-to be the degree of `separableClosure F E / F`. -/
+to be the degree of `separableClosure F E / F`.
+[Stacks: Definition 030L Part 1](https://stacks.math.columbia.edu/tag/030L)
+-/
 def sepDegree := Module.rank F (separableClosure F E)
 
 /-- The (infinite) inseparable degree for a general field extension `E / F` is defined
-to be the degree of `E / separableClosure F E`. -/
+to be the degree of `E / separableClosure F E`.
+[Stacks: Definition 030L Part 2](https://stacks.math.columbia.edu/tag/030L)
+-/
 def insepDegree := Module.rank (separableClosure F E) E
 
 /-- The finite inseparable degree for a general field extension `E / F` is defined
@@ -288,7 +299,10 @@ theorem sepDegree_eq_of_equiv (K : Type v) [Field K] [Algebra F K] (i : E ≃ₐ
   i.separableClosure.toLinearEquiv.rank_eq
 
 /-- The separable degree multiplied by the inseparable degree is equal
-to the (infinite) field extension degree. -/
+to the (infinite) field extension degree.
+A claim of this fact can be found in
+[Stacks: Lemma 030L Part 3](https://stacks.math.columbia.edu/tag/030L)
+-/
 theorem sepDegree_mul_insepDegree : sepDegree F E * insepDegree F E = Module.rank F E :=
   rank_mul_rank F (separableClosure F E) E
 

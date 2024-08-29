@@ -1036,7 +1036,9 @@ theorem linearIndependent_inl_union_inr' {v : ι → M} {v' : ι' → M'} (hv : 
 
 -- See, for example, Keith Conrad's note
 --  <https://kconrad.math.uconn.edu/blurbs/galoistheory/linearchar.pdf>
-/-- Dedekind's linear independence of characters -/
+/-- Dedekind's linear independence of characters
+[Stacks: Lemma 0CKL](https://stacks.math.columbia.edu/tag/0CKL)
+-/
 theorem linearIndependent_monoidHom (G : Type*) [Monoid G] (L : Type*) [CommRing L]
     [NoZeroDivisors L] : LinearIndependent L (M := G → L) (fun f => f : (G →* L) → G → L) := by
   -- Porting note: Some casts are required.
@@ -1128,6 +1130,9 @@ theorem linearIndependent_monoidHom (G : Type*) [Monoid G] (L : Type*) [CommRing
         -- of `insert a s`.
         (Finset.forall_mem_insert ..).2 ⟨h4, h3⟩
 
+/-
+[Stacks: Lemma 0CKM](https://stacks.math.columbia.edu/tag/0CKM)
+-/
 lemma linearIndependent_algHom_toLinearMap
     (K M L) [CommSemiring K] [Semiring M] [Algebra K M] [CommRing L] [IsDomain L] [Algebra K L] :
     LinearIndependent L (AlgHom.toLinearMap : (M →ₐ[K] L) → M →ₗ[K] L) := by
