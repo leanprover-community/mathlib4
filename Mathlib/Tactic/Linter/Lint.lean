@@ -344,7 +344,8 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
           Please, remove the `set_option linter.style.longFile {linterBound}`."
     else
     -- `candidate` is divisible by `100` and satisfies `lastLine + 100 < candidate ≤ lastLine + 200`
-    -- note that `candidate` is necessarily bigger than `lastLine` and hence bigger than `defValue`
+    -- note that either `lastLine ≤ defValue` and `defValue = linterBound` hold or
+    -- `candidate` is necessarily bigger than `lastLine` and hence bigger than `defValue`
     let candidate := (lastLine / 100) * 100 + 200
     let candidate := max candidate defValue
     if linterBound < lastLine then
