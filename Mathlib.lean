@@ -2393,6 +2393,7 @@ import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.Nat.PrimeFin
 import Mathlib.Data.Nat.Set
 import Mathlib.Data.Nat.Size
+import Mathlib.Data.Nat.Sqrt
 import Mathlib.Data.Nat.Squarefree
 import Mathlib.Data.Nat.SuccPred
 import Mathlib.Data.Nat.Totient
