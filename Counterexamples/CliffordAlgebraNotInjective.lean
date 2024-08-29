@@ -127,7 +127,7 @@ theorem X_sq (i : Fin 3) : K.gen i * K.gen i = (0 : K) := by
 
 /-- If an element multiplied by `αβγ` is zero then it squares to zero. -/
 theorem sq_zero_of_αβγ_mul {x : K} : α * β * γ * x = 0 → x * x = 0 := by
-  induction x using Quotient.inductionOn'
+  induction x using Quotient.inductionOn
   change Ideal.Quotient.mk _ _ = 0 → Ideal.Quotient.mk _ _ = 0
   rw [Ideal.Quotient.eq_zero_iff_mem, Ideal.Quotient.eq_zero_iff_mem]
   exact mul_self_mem_kIdeal_of_X0_X1_X2_mul_mem
@@ -207,8 +207,8 @@ theorem Q'_zero_under_ideal (v : Fin 3 → K) (hv : v ∈ LinearMap.ker lFunc) :
 def Q : QuadraticForm K L :=
   QuadraticMap.ofPolar
     (fun x =>
-      Quotient.liftOn' x Q' fun a b h => by
-        rw [Submodule.quotientRel_r_def] at h
+      Quotient.liftOn x Q' fun a b h => by
+        rw [Setoid.equiv_iff_apply, Submodule.quotientRel_r_def] at h
         suffices Q' (a - b) = 0 by rwa [Q'_sub, sub_eq_zero] at this
         apply Q'_zero_under_ideal (a - b) h)
     (fun a x => by
@@ -231,7 +231,7 @@ local notation "z'" => gen 2
 theorem gen_mul_gen (i) : gen i * gen i = 1 := by
   dsimp only [gen]
   simp_rw [CliffordAlgebra.ι_sq_scalar, Q_apply, ← Submodule.Quotient.mk''_eq_mk,
-    Quotient.liftOn'_mk'', Q'_apply_single, mul_one, map_one]
+    Quotient.liftOn_mk, Q'_apply_single, mul_one, map_one]
 
 /-- By virtue of the quotient, terms of this form are zero -/
 theorem quot_obv : α • x' - β • y' - γ • z' = 0 := by
