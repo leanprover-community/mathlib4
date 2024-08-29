@@ -447,12 +447,15 @@ theorem linearIndependent_subtype_disjoint {s : Set M} :
       Disjoint (Finsupp.supported R R s) (LinearMap.ker <| Finsupp.linearCombination R id) := by
   apply linearIndependent_comp_subtype_disjoint (v := id)
 
-theorem linearIndependent_iff_totalOn {s : Set M} :
+theorem linearIndependent_iff_linearCombinationOn {s : Set M} :
     LinearIndependent R (fun x => x : s → M) ↔
     (LinearMap.ker <| Finsupp.linearCombinationOn M M R id s) = ⊥ := by
   rw [Finsupp.linearCombinationOn, LinearMap.ker, LinearMap.comap_codRestrict, Submodule.map_bot,
       comap_bot, LinearMap.ker_comp, linearIndependent_subtype_disjoint, disjoint_iff_inf_le,
       ← map_comap_subtype, map_le_iff_le_comap, comap_bot, ker_subtype, le_bot_iff]
+
+@[deprecated (since := "2024-08-29")] alias linearIndependent_iff_totalOn :=
+  linearIndependent_iff_linearCombinationOn
 
 theorem LinearIndependent.restrict_of_comp_subtype {s : Set ι}
     (hs : LinearIndependent R (v ∘ (↑) : s → M)) : LinearIndependent R (s.restrict v) :=
