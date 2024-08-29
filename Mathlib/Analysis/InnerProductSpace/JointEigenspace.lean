@@ -11,12 +11,12 @@ import Mathlib.LinearAlgebra.Eigenspace.Basic
 
 /-! # Joint eigenspaces of a commuting pair of symmetric operators
 
-This file collects various decomposition results for simultaneous eigenspaces of a commuting pair
+This file collects various decomposition results for joint eigenspaces of a commuting pair
 of symmetric operators on a finite-dimensional inner product space.
 
 # Main Result
 
-* `DirectSum.IsInternal.eigenspaces_of_commuting_symmetric_pair` establishes that
+* `LinearMap.IsSymmetric.directSum_isInternal_of_commute` establishes that
    if `{A B : E →ₗ[𝕜] E}`, then `IsSymmetric A`, `IsSymmetric B` and `A ∘ₗ B = B ∘ₗ A` imply that
    `E` decomposes as an internal direct sum of the pairwise orthogonal spaces
    `eigenspace B μ ⊓ eigenspace A ν`
