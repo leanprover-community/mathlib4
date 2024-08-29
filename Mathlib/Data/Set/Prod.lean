@@ -730,7 +730,7 @@ theorem union_pi_inter
   simp only [mem_pi, mem_union, mem_inter_iff]
   refine ⟨fun h ↦ ⟨fun i his₁ ↦ (h i (Or.inl his₁)).1, fun i his₂ ↦ (h i (Or.inr his₂)).2⟩,
     fun h i hi ↦ ?_⟩
-  cases' hi with hi hi
+  rcases hi with hi | hi
   · by_cases hi2 : i ∈ s₂
     · exact ⟨h.1 i hi, h.2 i hi2⟩
     · refine ⟨h.1 i hi, ?_⟩
