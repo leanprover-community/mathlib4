@@ -119,11 +119,6 @@ theorem measure_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s :
   rw [← hf.map_eq] at hs ⊢
   rw [map_apply₀ hf.1.aemeasurable hs]
 
-theorem measure_preimage₀ {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
-    (hs : NullMeasurableSet s μb) : μa (f ⁻¹' s) = μb s := by
-  rw [← hf.map_eq] at hs ⊢
-  rw [map_apply₀ hf.1.aemeasurable hs]
-
 theorem measure_preimage_emb {f : α → β} (hf : MeasurePreserving f μa μb)
     (hfe : MeasurableEmbedding f) (s : Set β) : μa (f ⁻¹' s) = μb s := by
   rw [← hf.map_eq, hfe.map_apply]
@@ -136,7 +131,7 @@ theorem aeconst_comp [MeasurableSingletonClass γ] {f : α → β} (hf : Measure
     {g : β → γ} (hg : NullMeasurable g μb) :
     Filter.EventuallyConst (g ∘ f) (ae μa) ↔ Filter.EventuallyConst g (ae μb) :=
   exists_congr fun s ↦ and_congr_left fun hs ↦ by
-    simp only [Filter.mem_map, mem_ae_iff, ← hf.measure_preimage₀ (hg hs.measurableSet).compl,
+    simp only [Filter.mem_map, mem_ae_iff, ← hf.measure_preimage (hg hs.measurableSet).compl,
       preimage_comp, preimage_compl]
 
 theorem aeconst_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
