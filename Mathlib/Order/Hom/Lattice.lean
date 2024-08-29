@@ -798,7 +798,7 @@ theorem sup_apply (f g : SupBotHom α β) (a : α) : (f ⊔ g) a = f a ⊔ g a :
 theorem bot_apply (a : α) : (⊥ : SupBotHom α β) a = ⊥ :=
   rfl
 
-/-- `Subtype.val` as an `SupBotHom`. -/
+/-- `Subtype.val` as a `SupBotHom`. -/
 def subtype_val {P : β → Prop}
     (Pbot : P ⊥) (Psup : ∀ ⦃x y : β⦄, P x → P y → P (x ⊔ y)) :
     letI := Subtype.orderBot Pbot
@@ -1089,7 +1089,7 @@ theorem cancel_left {g : LatticeHom β γ} {f₁ f₂ : LatticeHom α β} (hg : 
   ⟨fun h => LatticeHom.ext fun a => hg <| by rw [← LatticeHom.comp_apply, h, LatticeHom.comp_apply],
     congr_arg _⟩
 
-/-- `Subtype.val` as an `LatticeHom`. -/
+/-- `Subtype.val` as a `LatticeHom`. -/
 def subtype_val {P : β → Prop}
     (Psup : ∀ ⦃x y⦄, P x → P y → P (x ⊔ y)) (Pinf : ∀ ⦃x y⦄, P x → P y → P (x ⊓ y)) :
     letI := Subtype.lattice Psup Pinf
@@ -1279,7 +1279,7 @@ theorem cancel_left {g : BoundedLatticeHom β γ} {f₁ f₂ : BoundedLatticeHom
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 
-/-- `Subtype.val` as an `BoundedLatticeHom`. -/
+/-- `Subtype.val` as a `BoundedLatticeHom`. -/
 def subtype_val {P : β → Prop} (Pbot : P ⊥) (Ptop : P ⊤)
     (Psup : ∀ ⦃x y⦄, P x → P y → P (x ⊔ y)) (Pinf : ∀ ⦃x y⦄, P x → P y → P (x ⊓ y)) :
     letI := Subtype.lattice Psup Pinf
