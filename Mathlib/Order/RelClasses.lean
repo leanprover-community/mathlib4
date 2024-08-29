@@ -461,7 +461,7 @@ instance [IsWellOrder α r] [IsWellOrder β s] : IsWellOrder (α × β) (Prod.Le
         | Or.inr (Or.inr h) => Or.inr <| Or.inr <| Prod.Lex.right _ h
         | Or.inr (Or.inl (.refl _)) => Or.inr <| Or.inl rfl
   trans a b c h₁ h₂ := by
-    cases' h₁ with a₁ a₂ b₁ b₂ ab a₁ b₁ b₂ ab <;> cases' h₂ with _ _ c₁ c₂ bc _ _ c₂ bc
+    rcases h₁ with ⟨a₂, b₂, ab⟩ | ⟨a₁, ab⟩ <;> rcases h₂ with ⟨c₁, c₂, bc⟩ | ⟨c₂, bc⟩
     exacts [.left _ _ (_root_.trans ab bc), .left _ _ ab, .left _ _ bc,
       .right _ (_root_.trans ab bc)]
 
