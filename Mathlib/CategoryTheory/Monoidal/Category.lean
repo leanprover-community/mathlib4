@@ -384,9 +384,6 @@ def tensorIso {X Y X' Y' : C} (f : X ≅ Y)
   hom_inv_id := by rw [← tensor_comp, Iso.hom_inv_id, Iso.hom_inv_id, ← tensor_id]
   inv_hom_id := by rw [← tensor_comp, Iso.inv_hom_id, Iso.inv_hom_id, ← tensor_id]
 
-@[deprecated (since := "2024-08-29")]
-alias _root_.CategoryTheory.tensorIso := tensorIso
-
 /-- Notation for `tensorIso`, the tensor product of isomorphisms -/
 infixr:70 " ⊗ " => tensorIso
 
