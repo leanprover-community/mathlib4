@@ -5,9 +5,9 @@ Authors: Leonardo de Moura, Miyahara Kō
 -/
 import Lean.Meta.CongrTheorems
 import Lean.Meta.Tactic.Rfl
-import Batteries.Data.HashMap.Basic
 import Batteries.Data.RBMap.Basic
 import Mathlib.Lean.Meta.Basic
+import Std.Data.HashMap.Basic
 
 /-!
 # Datatypes for `cc`
@@ -110,7 +110,7 @@ structure CCCongrTheoremKey where
   deriving BEq, Hashable
 
 /-- Caches used to find corresponding `CCCongrTheorem`s. -/
-abbrev CCCongrTheoremCache := Batteries.HashMap CCCongrTheoremKey (Option CCCongrTheorem)
+abbrev CCCongrTheoremCache := Std.HashMap CCCongrTheoremKey (Option CCCongrTheorem)
 
 /-- Configs used in congruence closure modules. -/
 structure CCConfig where
@@ -415,7 +415,7 @@ inductive CongruencesKey
   deriving BEq, Hashable
 
 /-- Maps each expression (via `mkCongruenceKey`) to expressions it might be congruent to. -/
-abbrev Congruences := Batteries.HashMap CongruencesKey (List Expr)
+abbrev Congruences := Std.HashMap CongruencesKey (List Expr)
 
 structure SymmCongruencesKey where
   (h₁ h₂ : Expr)
@@ -426,7 +426,7 @@ structure SymmCongruencesKey where
 The `Name` identifies which relation the congruence is considered for.
 Note that this only works for two-argument relations: `ModEq n` and `ModEq m` are considered the
 same. -/
-abbrev SymmCongruences := Batteries.HashMap SymmCongruencesKey (List (Expr × Name))
+abbrev SymmCongruences := Std.HashMap SymmCongruencesKey (List (Expr × Name))
 
 /-- Stores the root representatives of subsingletons. -/
 abbrev SubsingletonReprs := RBExprMap Expr
