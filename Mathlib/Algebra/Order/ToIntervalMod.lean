@@ -8,7 +8,6 @@ import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Algebra.Periodic
 import Mathlib.Data.Int.SuccPred
-import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.Order.Circular
 import Mathlib.Data.List.TFAE
 import Mathlib.Data.Set.Lattice

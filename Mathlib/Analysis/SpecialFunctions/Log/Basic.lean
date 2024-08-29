@@ -6,6 +6,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 import Mathlib.Analysis.SpecialFunctions.Exp
 import Mathlib.Data.Nat.Factorization.Defs
 import Mathlib.Analysis.NormedSpace.Real
+import Mathlib.Data.Rat.Cast.CharZero
 
 /-!
 # Real logarithm
@@ -273,6 +274,9 @@ theorem log_le_sub_one_of_pos {x : ℝ} (hx : 0 < x) : log x ≤ x - 1 := by
   rw [le_sub_iff_add_le]
   convert add_one_le_exp (log x)
   rw [exp_log hx]
+
+lemma one_sub_inv_le_log_of_pos (hx : 0 < x) : 1 - x⁻¹ ≤ log x := by
+  simpa [add_comm] using log_le_sub_one_of_pos (inv_pos.2 hx)
 
 /-- Bound for `|log x * x|` in the interval `(0, 1]`. -/
 theorem abs_log_mul_self_lt (x : ℝ) (h1 : 0 < x) (h2 : x ≤ 1) : |log x * x| < 1 := by

@@ -159,8 +159,4 @@ theorem assoc_liftHom₂ {f g h i : a ⟶ b} [LiftHom f] [LiftHom g] [LiftHom h]
     (η : f ⟶ g) (θ : g ⟶ h) (ι : h ⟶ i) [LiftHom₂ η] [LiftHom₂ θ] : η ≫ θ ≫ ι = (η ≫ θ) ≫ ι :=
   (Category.assoc _ _ _).symm
 
-end BicategoryCoherence
-
-end Tactic
-
-end Mathlib
+end Mathlib.Tactic.BicategoryCoherence

@@ -458,7 +458,7 @@ def codRestrict (f : F) (S : NonUnitalSubalgebra R B) (hf : ∀ x, f x ∈ S) : 
 @[simp]
 theorem subtype_comp_codRestrict (f : F) (S : NonUnitalSubalgebra R B) (hf : ∀ x : A, f x ∈ S) :
     (NonUnitalSubalgebraClass.subtype S).comp (NonUnitalAlgHom.codRestrict f S hf) = f :=
-  NonUnitalAlgHom.ext fun _ => rfl
+  rfl
 
 @[simp]
 theorem coe_codRestrict (f : F) (S : NonUnitalSubalgebra R B) (hf : ∀ x, f x ∈ S) (x : A) :
@@ -906,7 +906,7 @@ theorem inclusion_injective {S T : NonUnitalSubalgebra R A} (h : S ≤ T) :
 @[simp]
 theorem inclusion_self {S : NonUnitalSubalgebra R A} :
     inclusion (le_refl S) = NonUnitalAlgHom.id R S :=
-  NonUnitalAlgHom.ext fun _ => Subtype.ext rfl
+  rfl
 
 @[simp]
 theorem inclusion_mk {S T : NonUnitalSubalgebra R A} (h : S ≤ T) (x : A) (hx : x ∈ S) :

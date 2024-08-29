@@ -23,9 +23,9 @@ derivative
 universe u v w
 
 open scoped Classical
-open Topology Filter ENNReal
+open scoped Topology Filter ENNReal
 
-open Filter Asymptotics Set
+open Asymptotics Set
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
@@ -119,6 +119,26 @@ theorem deriv_const_add (c : F) : deriv (fun y => c + f y) x = deriv f x := by
 @[simp]
 theorem deriv_const_add' (c : F) : (deriv fun y => c + f y) = deriv f :=
   funext fun _ => deriv_const_add c
+
+lemma differentiableAt_comp_const_add {a b : 𝕜} :
+    DifferentiableAt 𝕜 (fun x ↦ f (b + x)) a ↔ DifferentiableAt 𝕜 f (b + a) := by
+  refine ⟨fun H ↦ ?_, fun H ↦ H.comp _ (differentiable_id.const_add _).differentiableAt⟩
+  convert DifferentiableAt.comp (b + a) (by simpa)
+    (differentiable_id.const_add (-b)).differentiableAt
+  ext
+  simp
+
+lemma differentiableAt_comp_add_const {a b : 𝕜} :
+    DifferentiableAt 𝕜 (fun x ↦ f (x + b)) a ↔ DifferentiableAt 𝕜 f (a + b) := by
+  simpa [add_comm b] using differentiableAt_comp_const_add (f := f) (b := b)
+
+lemma differentiableAt_iff_comp_const_add {a b : 𝕜} :
+    DifferentiableAt 𝕜 f a ↔ DifferentiableAt 𝕜 (fun x ↦ f (b + x)) (-b + a) := by
+  simp [differentiableAt_comp_const_add]
+
+lemma differentiableAt_iff_comp_add_const {a b : 𝕜} :
+    DifferentiableAt 𝕜 f a ↔ DifferentiableAt 𝕜 (fun x ↦ f (x + b)) (a - b) := by
+  simp [differentiableAt_comp_add_const]
 
 end Add
 
@@ -237,12 +257,16 @@ theorem not_differentiableAt_abs_zero : ¬ DifferentiableAt ℝ (abs : ℝ → �
       (hasDerivWithinAt_neg _ _).congr_of_mem (fun _ h ↦ abs_of_nonpos h) Set.right_mem_Iic
   linarith
 
-lemma differentiableAt_comp_neg_iff {a : 𝕜} :
-    DifferentiableAt 𝕜 f (-a) ↔ DifferentiableAt 𝕜 (fun x ↦ f (-x)) a := by
-  refine ⟨fun H ↦ H.comp a differentiable_neg.differentiableAt, fun H ↦ ?_⟩
+lemma differentiableAt_comp_neg {a : 𝕜} :
+    DifferentiableAt 𝕜 (fun x ↦ f (-x)) a ↔ DifferentiableAt 𝕜 f (-a) := by
+  refine ⟨fun H ↦ ?_, fun H ↦ H.comp a differentiable_neg.differentiableAt⟩
   convert ((neg_neg a).symm ▸ H).comp (-a) differentiable_neg.differentiableAt
   ext
   simp only [Function.comp_apply, neg_neg]
+
+lemma differentiableAt_iff_comp_neg {a : 𝕜} :
+    DifferentiableAt 𝕜 f a ↔ DifferentiableAt 𝕜 (fun x ↦ f (-x)) (-a) := by
+  simp_rw [← differentiableAt_comp_neg, neg_neg]
 
 end Neg2
 
@@ -318,5 +342,25 @@ theorem derivWithin_const_sub (hxs : UniqueDiffWithinAt 𝕜 s x) (c : F) :
 theorem deriv_const_sub (c : F) : deriv (fun y => c - f y) x = -deriv f x := by
   simp only [← derivWithin_univ,
     derivWithin_const_sub (uniqueDiffWithinAt_univ : UniqueDiffWithinAt 𝕜 _ _)]
+
+lemma differentiableAt_comp_sub_const {a b : 𝕜} :
+    DifferentiableAt 𝕜 (fun x ↦ f (x - b)) a ↔ DifferentiableAt 𝕜 f (a - b) := by
+  simp [sub_eq_add_neg, differentiableAt_comp_add_const]
+
+lemma differentiableAt_comp_const_sub {a b : 𝕜} :
+    DifferentiableAt 𝕜 (fun x ↦ f (b - x)) a ↔ DifferentiableAt 𝕜 f (b - a) := by
+  refine ⟨fun H ↦ ?_, fun H ↦ H.comp a (differentiable_id.const_sub _).differentiableAt⟩
+  convert ((sub_sub_cancel _ a).symm ▸ H).comp (b - a)
+    (differentiable_id.const_sub _).differentiableAt
+  ext
+  simp
+
+lemma differentiableAt_iff_comp_sub_const {a b : 𝕜} :
+    DifferentiableAt 𝕜 f a ↔ DifferentiableAt 𝕜 (fun x ↦ f (x - b)) (a + b) := by
+  simp [sub_eq_add_neg, differentiableAt_comp_add_const]
+
+lemma differentiableAt_iff_comp_const_sub {a b : 𝕜} :
+    DifferentiableAt 𝕜 f a ↔ DifferentiableAt 𝕜 (fun x ↦ f (b - x)) (b - a) := by
+  simp [differentiableAt_comp_const_sub]
 
 end Sub
