@@ -332,7 +332,7 @@ theorem measure_zero_or_one_of_measurableSet_limsup_atBot [IsProbabilityMeasure 
     using Kernel.measure_zero_or_one_of_measurableSet_limsup_atBot h_le h_indep ht_tail
 
 /-- **Kolmogorov's 0-1 law**, conditional version: any event in the tail σ-algebra of a
-conditinoally independent sequence of sub-σ-algebras has conditional probability 0 or 1. -/
+conditionally independent sequence of sub-σ-algebras has conditional probability 0 or 1. -/
 theorem condexp_zero_or_one_of_measurableSet_limsup_atBot [StandardBorelSpace Ω]
     (hm : m ≤ m0) [IsFiniteMeasure μ] (h_le : ∀ n, s n ≤ m0)
     (h_indep : iCondIndep m hm s μ) {t : Set Ω} (ht_tail : MeasurableSet[limsup s atBot] t) :

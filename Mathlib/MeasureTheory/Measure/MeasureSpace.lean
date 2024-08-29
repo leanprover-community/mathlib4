@@ -749,6 +749,12 @@ theorem zero_toOuterMeasure {_m : MeasurableSpace α} : (0 : Measure α).toOuter
 theorem coe_zero {_m : MeasurableSpace α} : ⇑(0 : Measure α) = 0 :=
   rfl
 
+@[simp] lemma _root_.MeasureTheory.OuterMeasure.toMeasure_zero
+    [ms : MeasurableSpace α](h : ms ≤ (0 : OuterMeasure α).caratheodory) :
+    (0 : OuterMeasure α).toMeasure h = 0 := by
+  ext s hs
+  simp [hs]
+
 @[nontriviality]
 lemma apply_eq_zero_of_isEmpty [IsEmpty α] {_ : MeasurableSpace α} (μ : Measure α) (s : Set α) :
     μ s = 0 := by
@@ -1325,6 +1331,11 @@ theorem comap_preimage {β} [MeasurableSpace α] {mβ : MeasurableSpace β} (f :
     (h : ∀ t, MeasurableSet t → NullMeasurableSet (f '' t) μ) (hs : MeasurableSet s) :
     μ.comap f (f ⁻¹' s) = μ (s ∩ range f) := by
   rw [comap_apply₀ _ _ hf h (hf' hs).nullMeasurableSet, image_preimage_eq_inter_range]
+
+@[simp] lemma comap_zero : (0 : Measure β).comap f = 0 := by
+  by_cases hf : Injective f ∧ ∀ s, MeasurableSet s → NullMeasurableSet (f '' s) (0 : Measure β)
+  · simp [comap, hf]
+  · simp [comap, hf]
 
 section Sum
 variable {f : ι → Measure α}
@@ -2015,14 +2026,5 @@ theorem quasiMeasurePreserving_symm (μ : Measure α) (e : α ≃ᵐ β) :
   ⟨e.symm.measurable, by rw [Measure.map_map, e.symm_comp_self, Measure.map_id] <;> measurability⟩
 
 end MeasurableEquiv
-
-namespace MeasureTheory
-
-theorem OuterMeasure.toMeasure_zero [MeasurableSpace α] :
-    (0 : OuterMeasure α).toMeasure (le_top.trans OuterMeasure.zero_caratheodory.symm.le) = 0 := by
-  rw [← Measure.measure_univ_eq_zero, toMeasure_apply _ _ MeasurableSet.univ,
-    OuterMeasure.coe_zero, Pi.zero_apply]
-
-end MeasureTheory
 
 end
