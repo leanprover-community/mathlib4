@@ -7,10 +7,7 @@ Authors: Jujian Zhang
 import Mathlib.Tactic.Abel
 import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.RingTheory.Congruence.Basic
-import Mathlib.RingTheory.NonUnitalSubring.Basic
-import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 import Mathlib.Algebra.Module.LinearMap.Defs
-import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Two Sided Ideals
@@ -243,6 +240,3 @@ def subtypeMop : I →ₗ[Rᵐᵒᵖ] Rᵐᵒᵖ where
 end Ring
 
 end TwoSidedIdeal
-
-instance {R} [NonUnitalNonAssocRing R] : NonUnitalSubringClass (TwoSidedIdeal R) R where
-  mul_mem _ hb := TwoSidedIdeal.mul_mem_left _ _ _ hb
