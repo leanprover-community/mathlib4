@@ -74,8 +74,8 @@ theorem IsBigO.eventually_integrableOn [Norm F]
 
 variable [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F]
 
-/-- Let `f : X x Y → Z`. If as y → l, f(x, y) = O(g(y)) uniformly on `s : Set X` of finite measure,
-then the integral of f along s is O(g(y)). -/
+/-- Let `f : X x Y → Z`. If as `y` tends to `l`, `f(x, y) = O(g(y))` uniformly on `s : Set X`
+of finite measure, then the integral of `f` along `s` is `O(g(y))`. -/
 theorem IsBigO.set_integral_isBigO
     (hf : f =O[𝓟 s ×ˢ l] (g ∘ Prod.snd)) (hs : MeasurableSet s) (hμ : μ s < ⊤)  :
     (fun x ↦ ∫ i in s, f (i, x) ∂μ) =O[l] g := by
