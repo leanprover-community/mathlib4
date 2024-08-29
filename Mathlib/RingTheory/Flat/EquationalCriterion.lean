@@ -144,20 +144,20 @@ theorem tfae_equational_criterion : List.TFAE [
       _ = 0                                 := hfx
     obtain ⟨κ, hκ, a', y', ⟨ha'y', ha'⟩⟩ := h₄ this
     use κ, hκ
-    use Finsupp.total R (fun i ↦ equivFunOnFinite.symm (a' i))
-    use Finsupp.total R y'
+    use Finsupp.linearCombination R (fun i ↦ equivFunOnFinite.symm (a' i))
+    use Finsupp.linearCombination R y'
     constructor
     · apply Finsupp.basisSingleOne.ext
       intro i
-      simpa [total_apply, sum_fintype, Finsupp.single_apply] using ha'y' i
+      simpa [linearCombination_apply, sum_fintype, Finsupp.single_apply] using ha'y' i
     · ext j
-      simp only [total_apply, zero_smul, implies_true, sum_fintype, finset_sum_apply]
+      simp only [linearCombination_apply, zero_smul, implies_true, sum_fintype, finset_sum_apply]
       exact ha' j
   tfae_have 5 → 4
   · intro h₅ ι hi f x hfx
     let f' : ι →₀ R := equivFunOnFinite.symm f
-    let x' : (ι →₀ R) →ₗ[R] M := Finsupp.total R x
-    have : x' f' = 0 := by simpa [x', f', total_apply, sum_fintype] using hfx
+    let x' : (ι →₀ R) →ₗ[R] M := Finsupp.linearCombination R x
+    have : x' f' = 0 := by simpa [x', f', linearCombination_apply, sum_fintype] using hfx
     obtain ⟨κ, hκ, a', y', ha'y', ha'⟩ := h₅ this
     refine ⟨κ, hκ, fun i ↦ a' (single i 1), fun j ↦ y' (single j 1), fun i ↦ ?_, fun j ↦ ?_⟩
     · simpa [x', ← map_smul, ← map_sum, smul_single] using
