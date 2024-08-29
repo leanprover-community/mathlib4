@@ -227,8 +227,8 @@ variable {E}
 /-- A field extension `E / F` of exponential characteristic `q` is purely inseparable
 if and only if for every element `x` of `E`, there exists a natural number `n` such that
 `x ^ (q ^ n)` is contained in `F`.
-[Stacks: Definition 09HE](https://stacks.math.columbia.edu/tag/09HE)
--/
+
+[Stacks: Definition 09HE](https://stacks.math.columbia.edu/tag/09HE) -/
 theorem isPurelyInseparable_iff_pow_mem (q : ℕ) [ExpChar F q] :
     IsPurelyInseparable F E ↔ ∀ x : E, ∃ n : ℕ, x ^ q ^ n ∈ (algebraMap F E).range := by
   rw [isPurelyInseparable_iff]
@@ -256,8 +256,8 @@ section perfectClosure
 exists a natural number `n` such that `x ^ (ringExpChar F) ^ n` is contained in `F`, where
 `ringExpChar F` is the exponential characteristic of `F`. It is also the maximal purely inseparable
 subextension of `E / F` (`le_perfectClosure_iff`).
-[Stacks: Definition 09HH](https://stacks.math.columbia.edu/tag/09HH)
--/
+
+[Stacks: Definition 09HH](https://stacks.math.columbia.edu/tag/09HH) -/
 def perfectClosure : IntermediateField F E where
   carrier := {x : E | ∃ n : ℕ, x ^ (ringExpChar F) ^ n ∈ (algebraMap F E).range}
   add_mem' := by
@@ -427,8 +427,8 @@ theorem IsPurelyInseparable.tower_top [Algebra E K] [IsScalarTower F E K]
 
 /-- If `E / F` and `K / E` are both purely inseparable extensions, then `K / F` is also
 purely inseparable.
-[Stacks: Lemma 09HG](https://stacks.math.columbia.edu/tag/09HG)
--/
+
+[Stacks: Lemma 09HG](https://stacks.math.columbia.edu/tag/09HG) -/
 theorem IsPurelyInseparable.trans [Algebra E K] [IsScalarTower F E K]
     [h1 : IsPurelyInseparable F E] [h2 : IsPurelyInseparable E K] : IsPurelyInseparable F K := by
   obtain ⟨q, _⟩ := ExpChar.exists F
@@ -574,8 +574,8 @@ instance IsPurelyInseparable.normal [IsPurelyInseparable F E] : Normal F E where
 
 /-- If `E / F` is algebraic, then `E` is purely inseparable over the
 separable closure of `F` in `E`.
-[Stacks: Lemma 030K Part 2](https://stacks.math.columbia.edu/tag/030K)
--/
+
+[Stacks: Lemma 030K Part 2](https://stacks.math.columbia.edu/tag/030K) -/
 theorem separableClosure.isPurelyInseparable [Algebra.IsAlgebraic F E] :
     IsPurelyInseparable (separableClosure F E) E := isPurelyInseparable_iff.2 fun x ↦ by
   set L := separableClosure F E
@@ -599,8 +599,8 @@ separable closure of `F` in `E` if and only if `E` is purely inseparable over it
 
 Used to prove that the separable closure is the unique intermediate field that is separable
 downwards and purely inseparable upwards. This is the upwards part.
-[Stacks: Lemma 030K Part 3.2](https://stacks.math.columbia.edu/tag/030K)
--/
+
+[Stacks: Lemma 030K Part 3.2](https://stacks.math.columbia.edu/tag/030K) -/
 theorem separableClosure_le_iff [Algebra.IsAlgebraic F E] (L : IntermediateField F E) :
     separableClosure F E ≤ L ↔ IsPurelyInseparable L E := by
   refine ⟨fun h ↦ ?_, fun _ ↦ separableClosure_le F E L⟩
@@ -846,10 +846,11 @@ as a natural number. This means that the cardinality of `Field.Emb F E` and the 
 `(separableClosure F E) / F` are both finite or infinite, and when they are finite, they
 coincide.
 
-The definition of `Field.sepDegree` is on the left side of the lemma, and the definition of `Field.finSepDegree` is on the right side of the lemma. This is why this equation is [Stacks: Lemma 09HJ].
+The definition of `Field.sepDegree` is on the left side of the lemma, and the definition of
+`Field.finSepDegree` is on the right side of the lemma.
+This is why this equation is [Stacks: Lemma 09HJ].
 
-[Stacks: Lemma 09HJ](https://stacks.math.columbia.edu/tag/09HJ)
--/
+[Stacks: Lemma 09HJ](https://stacks.math.columbia.edu/tag/09HJ) -/
 theorem finSepDegree_eq [Algebra.IsAlgebraic F E] :
     finSepDegree F E = Cardinal.toNat (sepDegree F E) := by
   have : Algebra.IsAlgebraic (separableClosure F E) E := Algebra.IsAlgebraic.tower_top (K := F) _
@@ -861,9 +862,9 @@ theorem finSepDegree_eq [Algebra.IsAlgebraic F E] :
 
 /-- The finite separable degree multiply by the finite inseparable degree is equal
 to the (finite) field extension degree.
+
 A claim of this fact can be found in
-[Stacks: Lemma 030L Part 3](https://stacks.math.columbia.edu/tag/030L)
--/
+[Stacks: Lemma 030L Part 3](https://stacks.math.columbia.edu/tag/030L) -/
 theorem finSepDegree_mul_finInsepDegree : finSepDegree F E * finInsepDegree F E = finrank F E := by
   by_cases halg : Algebra.IsAlgebraic F E
   · have := congr_arg Cardinal.toNat (sepDegree_mul_insepDegree F E)
@@ -1006,8 +1007,8 @@ theorem lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic [Algebra.IsAlgebraic F 
   rwa [sepDegree_eq_of_isPurelyInseparable (separableClosure F E) E K] at h
 
 /-- The same-universe version of `Field.lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic`.
-[Stacks: Lemma 09HK Part 1](https://stacks.math.columbia.edu/tag/09HK)
--/
+
+[Stacks: Lemma 09HK Part 1](https://stacks.math.columbia.edu/tag/09HK) -/
 theorem sepDegree_mul_sepDegree_of_isAlgebraic (K : Type v) [Field K] [Algebra F K]
     [Algebra E K] [IsScalarTower F E K] [Algebra.IsAlgebraic F E] :
     sepDegree F E * sepDegree E K = sepDegree F K := by
