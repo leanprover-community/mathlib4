@@ -450,7 +450,7 @@ theorem add_isLimit (a) {b} : IsLimit b → IsLimit (a + b) :=
 
 alias IsLimit.add := add_isLimit
 
-/-! ### Subtraction on ordinals-/
+/-! ### Subtraction on ordinals -/
 
 
 /-- The set in the definition of subtraction is nonempty. -/
@@ -537,7 +537,7 @@ theorem one_add_omega : 1 + ω = ω := by
 theorem one_add_of_omega_le {o} (h : ω ≤ o) : 1 + o = o := by
   rw [← Ordinal.add_sub_cancel_of_le h, ← add_assoc, one_add_omega]
 
-/-! ### Multiplication of ordinals-/
+/-! ### Multiplication of ordinals -/
 
 
 /-- The multiplication of ordinals `o₁` and `o₂` is the (well founded) lexicographic order on

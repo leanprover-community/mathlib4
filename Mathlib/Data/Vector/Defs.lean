@@ -154,7 +154,7 @@ def mapAccumr₂ (f : α → β → σ → σ × φ) : Vector α n → Vector β
 
 end Accum
 
-/-! ### Shift Primitives-/
+/-! ### Shift Primitives -/
 section Shift
 
 /-- `shiftLeftFill v i` is the vector obtained by left-shifting `v` `i` times and padding with the

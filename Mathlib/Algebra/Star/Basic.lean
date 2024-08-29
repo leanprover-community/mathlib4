@@ -111,7 +111,7 @@ theorem star_eq_iff_star_eq [InvolutiveStar R] {r s : R} : star r = s ↔ star s
 /-- Typeclass for a trivial star operation. This is mostly meant for `ℝ`.
 -/
 class TrivialStar (R : Type u) [Star R] : Prop where
-  /-- Condition that star is trivial-/
+  /-- Condition that star is trivial -/
   star_trivial : ∀ r : R, star r = r
 
 export TrivialStar (star_trivial)

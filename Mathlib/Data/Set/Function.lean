@@ -253,7 +253,7 @@ theorem EqOn.congr_strictAntiOn (h : s.EqOn f₁ f₂) : StrictAntiOn f₁ s ↔
 
 end Order
 
-/-! ### Monotonicity lemmas-/
+/-! ### Monotonicity lemmas -/
 section Mono
 
 variable {s s₁ s₂ : Set α} {f f₁ f₂ : α → β} [Preorder α] [Preorder β]

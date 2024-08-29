@@ -181,7 +181,7 @@ attribute [simp] xor_assoc
 
 theorem xor_iff_ne : ∀ {x y : Bool}, xor x y = true ↔ x ≠ y := by decide
 
-/-! ### De Morgan's laws for booleans-/
+/-! ### De Morgan's laws for booleans -/
 
 instance linearOrder : LinearOrder Bool where
   le_refl := by decide

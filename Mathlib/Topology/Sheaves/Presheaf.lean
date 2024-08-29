@@ -154,7 +154,7 @@ def pushforward {X Y : TopCat.{w}} (f : X ⟶ Y) : X.Presheaf C ⥤ Y.Presheaf C
   (whiskeringLeft _ _ _).obj (Opens.map f).op
 
 set_option quotPrecheck false in
-/-- push forward of a presheaf-/
+/-- push forward of a presheaf -/
 notation f:80 " _* " P:81 => (pushforward _ f).obj P
 
 @[simp]

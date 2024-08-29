@@ -511,7 +511,7 @@ theorem IsClosed.isLindelof [LindelofSpace X] (h : IsClosed s) : IsLindelof s :=
 theorem IsCompact.isLindelof (hs : IsCompact s) :
     IsLindelof s := by tauto
 
-/-- A σ-compact set `s` is Lindelöf-/
+/-- A σ-compact set `s` is Lindelöf -/
 theorem IsSigmaCompact.isLindelof (hs : IsSigmaCompact s) :
     IsLindelof s := by
   rw [IsSigmaCompact] at hs

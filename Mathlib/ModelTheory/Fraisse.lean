@@ -77,7 +77,7 @@ open Structure Substructure
 
 variable (L : Language.{u, v})
 
-/-! ### The Age of a Structure and Fraïssé Classes-/
+/-! ### The Age of a Structure and Fraïssé Classes -/
 
 
 /-- The age of a structure `M` is the class of finitely-generated structures that embed into it. -/
