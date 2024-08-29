@@ -214,9 +214,9 @@ theorem abs_edgeDensity_sub_edgeDensity_le_two_mul_sub_sq (hs : s₂ ⊆ s₁) (
   have h₁ := hs₂'.mono hs
   have h₂ := ht₂'.mono ht
   gcongr
-  · refine (le_div_iff ?_).2 hs₂
+  · refine (le_div_iff₀ ?_).2 hs₂
     exact mod_cast h₁.card_pos
-  · refine (le_div_iff ?_).2 ht₂
+  · refine (le_div_iff₀ ?_).2 ht₂
     exact mod_cast h₂.card_pos
 
 /-- If `s₂ ⊆ s₁`, `t₂ ⊆ t₁` and they take up all but a `δ`-proportion, then the difference in edge

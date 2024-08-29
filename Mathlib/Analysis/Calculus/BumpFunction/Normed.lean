@@ -124,7 +124,7 @@ theorem measure_closedBall_div_le_integral [IsAddHaarMeasure μ] (K : ℝ) (h : 
   have K_pos : 0 < K := by
     simpa [f.rIn_pos, not_lt.2 f.rIn_pos.le] using mul_pos_iff.1 (f.rOut_pos.trans_le h)
   apply le_trans _ (f.measure_closedBall_le_integral μ)
-  rw [div_le_iff (pow_pos K_pos _), addHaar_closedBall' _ _ f.rIn_pos.le,
+  rw [div_le_iff₀ (pow_pos K_pos _), addHaar_closedBall' _ _ f.rIn_pos.le,
     addHaar_closedBall' _ _ f.rOut_pos.le, ENNReal.toReal_mul, ENNReal.toReal_mul,
     ENNReal.toReal_ofReal (pow_nonneg f.rOut_pos.le _),
     ENNReal.toReal_ofReal (pow_nonneg f.rIn_pos.le _), mul_assoc, mul_comm _ (K ^ _), ← mul_assoc,
@@ -142,7 +142,7 @@ theorem normed_le_div_measure_closedBall_rOut [IsAddHaarMeasure μ] (K : ℝ) (h
     · exact f.integral_pos.le
     · exact f.le_one
   apply this.trans
-  rw [div_le_div_iff f.integral_pos, one_mul, ← div_le_iff' (pow_pos K_pos _)]
+  rw [div_le_div_iff f.integral_pos, one_mul, ← div_le_iff₀' (pow_pos K_pos _)]
   · exact f.measure_closedBall_div_le_integral μ K h
   · exact ENNReal.toReal_pos (measure_closedBall_pos _ _ f.rOut_pos).ne'
       measure_closedBall_lt_top.ne
