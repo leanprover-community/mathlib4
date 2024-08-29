@@ -272,10 +272,13 @@ lemma subtrees_disjoint {t₁ t₂ : SubRootedTree t}
   simp only [SetLike.mem_coe, bot_mem_iff] at ha
   exact root_ne_bot_of_mem_subtrees t₁ ht₁ ha
 
-variable (t)
+/--
+The subtree of `t` containing `r`, or all of `t` if `r` is the root.
+-/
+def RootedTree.subtreeOf (t : RootedTree) [DecidableEq t] (r : t) : SubRootedTree t :=
+  t.subtree (IsPredArchimedean.find_atom r)
 
-def RootedTree.subtreeOf (r : t) : SubRootedTree t := t.subtree (IsPredArchimedean.find_atom r)
-
+@[simp]
 lemma RootedTree.mem_subtreeOf {r : t} :
     r ∈ t.subtreeOf r := by
   simp [mem_iff, RootedTree.subtreeOf]
