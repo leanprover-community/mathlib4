@@ -104,7 +104,6 @@ theorem ClassGroup.Quot_mk_eq_mk (I : (FractionalIdeal R⁰ (FractionRing R))ˣ)
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [MonoidHom.comp_apply]
   rw [MonoidHom.id_apply, QuotientGroup.mk'_apply]
-  rfl
 
 theorem ClassGroup.mk_eq_mk {I J : (FractionalIdeal R⁰ <| FractionRing R)ˣ} :
     ClassGroup.mk I = ClassGroup.mk J ↔
