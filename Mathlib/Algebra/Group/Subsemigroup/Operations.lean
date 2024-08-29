@@ -595,7 +595,7 @@ theorem coe_srange (f : M →ₙ* N) : (f.srange : Set N) = Set.range f :=
 theorem mem_srange {f : M →ₙ* N} {y : N} : y ∈ f.srange ↔ ∃ x, f x = y :=
   Iff.rfl
 
-@[to_additive] theorem mem_srange_mk {f : M → N} (hf : ∀ a b, f (a * b) = f a * f b) {y : N} :
+@[to_additive] theorem mem_srange_mk {f : M → N} (hf) {y : N} :
     y ∈ srange ⟨f, hf⟩ ↔ y ∈ Set.range f := Iff.rfl
 
 @[to_additive]
