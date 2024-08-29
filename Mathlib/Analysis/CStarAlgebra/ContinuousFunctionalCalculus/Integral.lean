@@ -151,7 +151,8 @@ lemma cfcₙ_integral' [TopologicalSpace X] [OpensMeasurableSpace X] (f : X → 
     cfcₙ (fun r => ∫ x, f x r ∂μ) a = ∫ x, cfcₙ (f x) a ∂μ := by
   refine cfcₙ_integral f bound a ?_ hf₂ ?_ hbound hbound_finite_integral
   · exact (continuousOn_iff_continuous_restrict.mpr <| hf.uncurry_left ·)
-  · sorry
-    --exact ContinuousMap.curry ⟨_, hf⟩ |>.continuous
+  · let g := ((↑) : C(quasispectrum 𝕜 a, 𝕜)₀ → C(quasispectrum 𝕜 a, 𝕜))
+    refine (Inducing.continuous_iff (g := g) ((inducing_iff g).mpr rfl)).mpr ?_
+    exact ContinuousMap.curry ⟨_, hf⟩ |>.continuous
 
 end nonunital
