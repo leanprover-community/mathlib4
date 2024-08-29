@@ -418,3 +418,9 @@ instance instLinearOrderedCommGroupWithZero [LinearOrderedCommGroup α] :
   __ := commGroupWithZero
 
 end WithZero
+
+-- no earlier file has the necessary imports
+@[to_additive]
+lemma MulEquiv.inv_strictAnti (G : Type*) [OrderedCommGroup G] :
+    StrictAnti (MulEquiv.inv G) :=
+  fun _ _ h ↦ inv_lt_inv' h

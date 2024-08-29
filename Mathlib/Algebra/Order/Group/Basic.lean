@@ -106,6 +106,13 @@ lemma zpow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := (zpow_left_injec
 `zsmul_lt_zsmul_iff'`."]
 lemma zpow_eq_zpow_iff' (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := zpow_left_inj hn
 
+@[to_additive zsmul_left_inj']
+lemma zpow_right_inj' (ha : a ≠ 1) {m n : ℤ} : a ^ m = a ^ n ↔ m = n := by
+  rcases ha.lt_or_lt with ha|ha
+  · rw [← inv_inv a, inv_zpow', inv_zpow' a⁻¹, zpow_right_inj (by simpa using ha), Int.neg_eq_comm,
+        Int.neg_neg, eq_comm]
+  · exact zpow_right_inj ha
+
 variable (α) in
 /-- A nontrivial densely linear ordered commutative group can't be a cyclic group. -/
 @[to_additive
