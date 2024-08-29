@@ -46,7 +46,7 @@ local instance underlyingTopologicalSpace :
     TopologicalSpace (X.val.obj ⟨LightProfinite.of PUnit⟩) :=
   TopologicalSpace.coinduced (coinducingCoprod X) inferInstance
 
-/-- The object part of the functor `LightCondSet ⥤ TopCat`  -/
+/-- The object part of the functor `LightCondSet ⥤ TopCat` -/
 def toTopCat : TopCat.{u} := TopCat.of (X.val.obj ⟨LightProfinite.of PUnit⟩)
 
 lemma continuous_coinducingCoprod {S : LightProfinite.{u}} (x : X.val.obj ⟨S⟩) :
@@ -58,7 +58,7 @@ lemma continuous_coinducingCoprod {S : LightProfinite.{u}} (x : X.val.obj ⟨S�
 
 variable {X} {Y : LightCondSet} (f : X ⟶ Y)
 
-/-- The map part of the functor `LightCondSet ⥤ TopCat`  -/
+/-- The map part of the functor `LightCondSet ⥤ TopCat` -/
 @[simps]
 def toTopCatMap : X.toTopCat ⟶ Y.toTopCat where
   toFun := f.val.app ⟨LightProfinite.of PUnit⟩
