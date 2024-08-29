@@ -80,7 +80,7 @@ theorem colimit_smul_mk_eq (r : R) (x : Σ j, F.obj j) : r • M.mk F x = M.mk F
   rfl
 
 private theorem colimitModule.one_smul (x : (M F)) : (1 : R) • x = x := by
-  refine Quot.inductionOn x ?_; clear x; intro x; cases' x with j x
+  refine Quot.inductionOn x ?_; clear x; intro x; obtain ⟨j, x⟩ := x
   erw [colimit_smul_mk_eq F 1 ⟨j, x⟩]
   simp
   rfl
@@ -88,11 +88,11 @@ private theorem colimitModule.one_smul (x : (M F)) : (1 : R) • x = x := by
 -- Porting note (#11083): writing directly the `Module` instance makes things very slow.
 instance colimitMulAction : MulAction R (M F) where
   one_smul x := by
-    refine Quot.inductionOn x ?_; clear x; intro x; cases' x with j x
+    refine Quot.inductionOn x ?_; clear x; intro x; obtain ⟨j, x⟩ := x
     erw [colimit_smul_mk_eq F 1 ⟨j, x⟩, one_smul]
     rfl
   mul_smul r s x := by
-    refine Quot.inductionOn x ?_; clear x; intro x; cases' x with j x
+    refine Quot.inductionOn x ?_; clear x; intro x; obtain ⟨j, x⟩ := x
     erw [colimit_smul_mk_eq F (r * s) ⟨j, x⟩, colimit_smul_mk_eq F s ⟨j, x⟩,
       colimit_smul_mk_eq F r ⟨j, _⟩, mul_smul]
 
@@ -102,12 +102,12 @@ instance colimitSMulWithZero : SMulWithZero R (M F) :=
     erw [colimit_zero_eq _ (IsFiltered.nonempty.some : J), colimit_smul_mk_eq, smul_zero]
     rfl
   zero_smul := fun x => by
-    refine Quot.inductionOn x ?_; clear x; intro x; cases' x with j x
+    refine Quot.inductionOn x ?_; clear x; intro x; obtain ⟨j, x⟩ := x
     erw [colimit_smul_mk_eq, zero_smul, colimit_zero_eq _ j]
     rfl }
 
 private theorem colimitModule.add_smul (r s : R) (x : (M F)) : (r + s) • x = r • x + s • x := by
-  refine Quot.inductionOn x ?_; clear x; intro x; cases' x with j x
+  refine Quot.inductionOn x ?_; clear x; intro x; obtain ⟨j, x⟩ := x
   erw [colimit_smul_mk_eq, _root_.add_smul, colimit_smul_mk_eq, colimit_smul_mk_eq,
       colimit_add_mk_eq _ ⟨j, _⟩ ⟨j, _⟩ j (𝟙 j) (𝟙 j)]
   simp only [Functor.comp_obj, forget₂_obj, Functor.comp_map, CategoryTheory.Functor.map_id,
@@ -118,7 +118,7 @@ instance colimitModule : Module R (M F) :=
 { colimitMulAction F,
   colimitSMulWithZero F with
   smul_add := fun r x y => by
-    refine Quot.induction_on₂ x y ?_; clear x y; intro x y; cases' x with i x; cases' y with j y
+    refine Quot.induction_on₂ x y ?_; clear x y; intro x y; obtain ⟨i, x⟩ := x; obtain ⟨j, y⟩ := y
     erw [colimit_add_mk_eq _ ⟨i, _⟩ ⟨j, _⟩ (max' i j) (IsFiltered.leftToMax i j)
       (IsFiltered.rightToMax i j), colimit_smul_mk_eq, smul_add, colimit_smul_mk_eq,
       colimit_smul_mk_eq, colimit_add_mk_eq _ ⟨i, _⟩ ⟨j, _⟩ (max' i j) (IsFiltered.leftToMax i j)
@@ -154,7 +154,7 @@ def colimitDesc (t : Cocone F) : colimit F ⟶ t.pt :=
           (F ⋙ forget₂ (ModuleCatMax.{v, u} R) AddCommGrp.{max v u})).desc
       ((forget₂ (ModuleCat R) AddCommGrp.{max v u}).mapCocone t) with
     map_smul' := fun r x => by
-      refine Quot.inductionOn x ?_; clear x; intro x; cases' x with j x
+      refine Quot.inductionOn x ?_; clear x; intro x; obtain ⟨j, x⟩ := x
       erw [colimit_smul_mk_eq]
       exact LinearMap.map_smul (t.ι.app j) r x }
 
