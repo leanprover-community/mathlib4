@@ -95,29 +95,24 @@ The `TAG` is mandatory and should be a sequence of 4 digits or uppercase letters
 
 See the [Tags page](https://stacks.math.columbia.edu/tags) in the Stacks project for more details.
 -/
-syntax (name := stacks) "stacks " (stacksTag)? (ppSpace str)? : attr
+syntax (name := stacks) "stacks " stacksTag (ppSpace str)? : attr
 
 initialize Lean.registerBuiltinAttribute {
   name := `stacks
   descr := "Apply a Stacks project tag to a theorem."
   add := fun decl stx _attrKind => Lean.withRef stx do
-    -- check that the tag consists of 4 characters and
-    -- that only digits and uppercase letter are present
-    let tag := stx[1]
-    match tag.getSubstring? with
-      | none => logWarning "Please, enter a Tag after `stacks` ." -- this may be unreachable
-      | some str =>
-        let str := str.toString.trimRight
-        if str.isEmpty then logWarning "Please, enter a Tag after `stacks`." else
-        if str.length != 4 then
-          logWarningAt tag
-            m!"Tag '{str}' is {str.length} characters long, but it should be 4 characters long"
-        else if 2 ≤ (str.split (fun c => !(c.isUpper || c.isDigit))).length then
-          logWarningAt tag m!"Tag '{str}' should only consist of digits and uppercase letters"
-        else match stx with
-          | `(attr| stacks $_:stacksTag $comment:str) => addTagEntry decl str comment.getString
-          | `(attr| stacks $_:stacksTag) => addTagEntry decl str ""
-          | _ => throwUnsupportedSyntax
+    let `(attr| stacks $tag $[$comment]?) := stx | throwUnsupportedSyntax
+    let str := tag.raw[0].getAtomVal
+    if str.isEmpty then logWarning "Please, enter a Tag after `stacks`." else
+    -- check that the tag consists of 4 characters
+    if str.length != 4 then
+      logWarningAt tag
+        m!"Tag '{str}' is {str.length} characters long, but it should be 4 characters long"
+    -- check that the tag only contains digits and uppercase letter
+    else if str.any (·.isLower) then
+      logWarningAt tag m!"Tag '{str}' should only consist of digits and uppercase letters"
+    else
+      addTagEntry decl str <| (comment.map (·.getString)).getD ""
 }
 
 end Mathlib.Stacks
