@@ -106,7 +106,7 @@ theorem isInt_intFloor_ofIsRat (r : α) (n : ℤ) (d : ℕ) :
   rintro ⟨inv, rfl⟩
   constructor
   simp only [invOf_eq_inv, ← div_eq_mul_inv, Int.cast_id]
-  rw [← floor_int_div_nat_eq_div n d, ← floor_cast (α := α), Rat.cast_div,
+  rw [← floor_intCast_div_natCast n d, ← floor_cast (α := α), Rat.cast_div,
     cast_intCast, cast_natCast]
 
 /-- `norm_num` extension for `Int.floor` -/
