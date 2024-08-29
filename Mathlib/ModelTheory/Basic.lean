@@ -248,13 +248,13 @@ theorem card_mk₂ (c f₁ f₂ : Type u) (r₁ r₂ : Type v) :
 
 /-- Passes a `DecidableEq` instance on a type of function symbols through the  `Language`
 constructor. Despite the fact that this is proven by `inferInstance`, it is still needed -
-see the `example`s in `ModelTheory/Ring/Basic`.  -/
+see the `example`s in `ModelTheory/Ring/Basic`. -/
 instance instDecidableEqFunctions {f : ℕ → Type*} {R : ℕ → Type*} (n : ℕ) [DecidableEq (f n)] :
     DecidableEq ((⟨f, R⟩ : Language).Functions n) := inferInstance
 
 /-- Passes a `DecidableEq` instance on a type of relation symbols through the  `Language`
 constructor. Despite the fact that this is proven by `inferInstance`, it is still needed -
-see the `example`s in `ModelTheory/Ring/Basic`.  -/
+see the `example`s in `ModelTheory/Ring/Basic`. -/
 instance instDecidableEqRelations {f : ℕ → Type*} {R : ℕ → Type*} (n : ℕ) [DecidableEq (R n)] :
     DecidableEq ((⟨f, R⟩ : Language).Relations n) := inferInstance
 

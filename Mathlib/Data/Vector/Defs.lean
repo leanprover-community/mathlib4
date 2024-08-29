@@ -52,7 +52,7 @@ def head : Vector α (Nat.succ n) → α
 theorem head_cons (a : α) : ∀ v : Vector α n, head (cons a v) = a
   | ⟨_, _⟩ => rfl
 
-/-- The tail of a vector, with an empty vector having empty tail.  -/
+/-- The tail of a vector, with an empty vector having empty tail. -/
 def tail : Vector α n → Vector α (n - 1)
   | ⟨[], h⟩ => ⟨[], congrArg pred h⟩
   | ⟨_ :: v, h⟩ => ⟨v, congrArg pred h⟩
@@ -181,7 +181,7 @@ protected theorem eq_nil (v : Vector α 0) : v = nil :=
   v.eq nil (List.eq_nil_of_length_eq_zero v.2)
 
 /-- Vector of length from a list `v`
-with witness that `v` has length `n` maps to `v` under `toList`.  -/
+with witness that `v` has length `n` maps to `v` under `toList`. -/
 @[simp]
 theorem toList_mk (v : List α) (P : List.length v = n) : toList (Subtype.mk v P) = v :=
   rfl

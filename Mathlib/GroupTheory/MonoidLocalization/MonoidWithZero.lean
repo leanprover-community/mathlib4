@@ -152,7 +152,7 @@ theorem leftCancelMulZero_of_le_isLeftRegular
 
 /-- Given a Localization map `f : M →*₀ N` for a Submonoid `S ⊆ M`,
 if `M` is a cancellative monoid with zero, and all elements of `S` are
-regular, then N is a cancellative monoid with zero.  -/
+regular, then N is a cancellative monoid with zero. -/
 theorem isLeftRegular_of_le_isCancelMulZero (f : LocalizationWithZeroMap S N)
     [IsCancelMulZero M] (h : ∀ ⦃x⦄, x ∈ S → IsRegular x) : IsCancelMulZero N := by
   have : IsLeftCancelMulZero N :=

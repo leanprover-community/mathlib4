@@ -1063,7 +1063,7 @@ theorem embedding_inclusion {s t : Set X} (h : s ⊆ t) : Embedding (inclusion h
   embedding_subtype_val.codRestrict _ _
 
 /-- Let `s, t ⊆ X` be two subsets of a topological space `X`.  If `t ⊆ s` and the topology induced
-by `X`on `s` is discrete, then also the topology induces on `t` is discrete.  -/
+by `X`on `s` is discrete, then also the topology induces on `t` is discrete. -/
 theorem DiscreteTopology.of_subset {X : Type*} [TopologicalSpace X] {s t : Set X}
     (_ : DiscreteTopology s) (ts : t ⊆ s) : DiscreteTopology t :=
   (embedding_inclusion ts).discreteTopology

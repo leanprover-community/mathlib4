@@ -339,7 +339,7 @@ theorem mk_initialSeg (o : Ordinal.{u}) :
 
 /-- A normal ordinal function is a strictly increasing function which is
   order-continuous, i.e., the image `f o` of a limit ordinal `o` is the sup of `f a` for
-  `a < o`.  -/
+  `a < o`. -/
 def IsNormal (f : Ordinal → Ordinal) : Prop :=
   (∀ o, f o < f (succ o)) ∧ ∀ o, IsLimit o → ∀ a, f o ≤ a ↔ ∀ b < o, f b ≤ a
 

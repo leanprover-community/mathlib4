@@ -123,7 +123,7 @@ theorem betaIntegral_scaled (s t : ℂ) {a : ℝ} (ha : 0 < a) :
     push_cast
     rw [mul_sub, mul_one, mul_div_cancel₀ _ ha']
 
-/-- Relation between Beta integral and Gamma function.  -/
+/-- Relation between Beta integral and Gamma function. -/
 theorem Gamma_mul_Gamma_eq_betaIntegral {s t : ℂ} (hs : 0 < re s) (ht : 0 < re t) :
     Gamma s * Gamma t = Gamma (s + t) * betaIntegral s t := by
   -- Note that we haven't proved (yet) that the Gamma function has no zeroes, so we can't formulate

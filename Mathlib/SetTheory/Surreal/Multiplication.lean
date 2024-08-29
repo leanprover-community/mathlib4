@@ -173,7 +173,7 @@ open Relation
 
 /-- The relation specifying when a list of (pregame) arguments is considered simpler than another:
   `ArgsRel a₁ a₂` is true if `a₁`, considered as a multiset, can be obtained from `a₂` by
-  repeatedly removing a pregame from `a₂` and adding back one or two options of the pregame.  -/
+  repeatedly removing a pregame from `a₂` and adding back one or two options of the pregame. -/
 def ArgsRel := InvImage (TransGen <| CutExpand IsOption) Args.toMultiset
 
 /-- `ArgsRel` is well-founded. -/

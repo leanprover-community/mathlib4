@@ -320,7 +320,7 @@ theorem KaehlerDifferential.tensorProductTo_surjective :
   exact ⟨x, KaehlerDifferential.D_tensorProductTo x⟩
 
 /-- The `S`-linear maps from `Ω[S⁄R]` to `M` are (`S`-linearly) equivalent to `R`-derivations
-from `S` to `M`.  -/
+from `S` to `M`. -/
 @[simps! symm_apply apply_apply]
 def KaehlerDifferential.linearMapEquivDerivation : (Ω[S⁄R] →ₗ[S] M) ≃ₗ[S] Derivation R S M :=
   { Derivation.llcomp.flip <| KaehlerDifferential.D R S with

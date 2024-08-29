@@ -286,7 +286,7 @@ the measure of the closure of a compact set `K` is equal to the measure of `K`.
 
 See also `MeasureTheory.Measure.OuterRegular.measure_closure_eq_of_isCompact`
 for a version that assumes `μ` to be outer regular
-but does not assume the `σ`-algebra to be Borel.  -/
+but does not assume the `σ`-algebra to be Borel. -/
 theorem IsCompact.measure_closure [R1Space γ] {K : Set γ} (hK : IsCompact K) (μ : Measure γ) :
     μ (closure K) = μ K := by
   refine le_antisymm ?_ (measure_mono subset_closure)

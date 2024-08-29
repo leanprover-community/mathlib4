@@ -291,7 +291,7 @@ def pullbackInvIsoPushforwardHom {X Y : TopCat.{v}} (H : X ≅ Y) :
 
 variable {C}
 
-/-- If `f '' U` is open, then `f⁻¹ℱ U ≅ ℱ (f '' U)`.  -/
+/-- If `f '' U` is open, then `f⁻¹ℱ U ≅ ℱ (f '' U)`. -/
 def pullbackObjObjOfImageOpen {X Y : TopCat.{v}} (f : X ⟶ Y) (ℱ : Y.Presheaf C) (U : Opens X)
     (H : IsOpen (f '' SetLike.coe U)) : ((pullback C f).obj ℱ).obj (op U) ≅ ℱ.obj (op ⟨_, H⟩) := by
   let x : CostructuredArrow (Opens.map f).op (op U) := CostructuredArrow.mk

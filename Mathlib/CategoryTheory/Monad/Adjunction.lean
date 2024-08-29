@@ -73,7 +73,7 @@ def toComonad (h : L ⊣ R) : Comonad D where
     rw [← L.map_comp]
     simp
 
-/-- The monad induced by the Eilenberg-Moore adjunction is the original monad.  -/
+/-- The monad induced by the Eilenberg-Moore adjunction is the original monad. -/
 @[simps!]
 def adjToMonadIso (T : Monad C) : T.adj.toMonad ≅ T :=
   MonadIso.mk (NatIso.ofComponents fun X => Iso.refl _)
