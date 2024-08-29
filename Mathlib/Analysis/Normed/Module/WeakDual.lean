@@ -337,9 +337,18 @@ lemma existance1 (s' : Set (WeakDual 𝕜₁ E₁)) (h : IsCompact s') : ∀ {ι
 
 lemma existance2 [ProperSpace 𝕜₁] : ∀ {ι : Type u}
     (t : ι → Set (WeakDual 𝕜₁ E₁)), (∀ i, IsClosed (t i)) → (polar 𝕜₁ (U (n+2)) ∩ ⋂ i, t i) = ∅ →
-    ∃ u : Finset ι, (polar 𝕜₁ (U (E := E₁) (n+2)) ∩ ⋂ i ∈ u, t i) = ∅ :=
+    ∃ u : Finset ι, (polar 𝕜₁ (U (n+2)) ∩ ⋂ i ∈ u, t i) = ∅ :=
   isCompact_iff_finite_subfamily_closed.mp (polarUcompact 𝕜₁ (n+2))
 
+lemma existance3 [ProperSpace 𝕜₁] (hC₁ : IsClosed C) (h : polar 𝕜₁ s ∩ C ∩ polar 𝕜₁ (U (n+1)) = ∅) :
+    ∃ u : Finset (Elem (U (E := E₁) (n + 1))), (polar 𝕜₁ (U (n+2)) ∩ ⋂ i ∈ u, K C s n i) = ∅ := by
+  apply existance2
+  intro i
+  apply isClosedK
+  apply hC₁
+  convert Set.inter_empty (polar 𝕜₁ (U (n + 2)))
+  apply inter_empty
+  exact h
 
 /-
 lemma existance [ProperSpace 𝕜] : ∃ u : Finset (Elem (U (E := E) (n + 1))),
