@@ -282,16 +282,12 @@ def ContextFreeRule.map {N₀ N : Type*} (r : ContextFreeRule T N₀) (f : N₀ 
 /-- An embedding from a context-free grammar `g₀` to a context-free grammar `g` is an embedding
 `embedNT` of the nonterminal symbols from the former to the latter along with a one-sided inverse
 `projectNT` such that all rewrite rules of `g` that end in `embedNT n₀` for some `n₀` come from some
-rule in `g₀`. -/```
+rule in `g₀`. -/
 structure ContextFreeGrammar.Embedding {T : Type uT} (g₀ g : ContextFreeGrammar T) where
   /-- Mapping nonterminals from the smaller type to the bigger type. -/
   embedNT : g₀.NT → g.NT
   /-- Mapping nonterminals from the bigger type to the smaller type. -/
   projectNT : g.NT → Option g₀.NT
-  /-- The embedding map is injective. -/
-  embed_inj : Function.Injective embedNT
-  /-- The projecting map is injective where defined. -/
-  project_inj : ∀ x y : g.NT, projectNT x = projectNT y → x = y ∨ projectNT x = none
   /-- The two mappings are essentially inverses. -/
   projectNT_embedNT : ∀ n₀ : g₀.NT, projectNT (embedNT n₀) = some n₀
   /-- Each rule of the smaller grammar has a corresponding rule in the bigger grammar. -/
@@ -303,23 +299,24 @@ structure ContextFreeGrammar.Embedding {T : Type uT} (g₀ g : ContextFreeGramma
       r ∈ g.rules → ∀ n₀ : g₀.NT,
         embedNT n₀ = r.input → ∃ r₀ ∈ g₀.rules, r₀.map embedNT = r
 
-namespace EmbeddedContextFreeGrammar
-variable {G : EmbeddedContextFreeGrammar T}
+namespace ContextFreeGrammar.Embedding
+variable {g₀ g : ContextFreeGrammar T} {G : g₀.Embedding g}
 
-lemma projectNT_inverse_embedNT {n : G.g.NT} {n₀ : G.g₀.NT}
+lemma projectNT_inverse_embedNT {n : g.NT} {n₀ : g₀.NT}
     (hn : G.projectNT n = some n₀) :
     Option.map G.embedNT (G.projectNT n) = n := by
   rw [hn, Option.map_some']
   apply congr_arg
   by_contra hnx
-  cases (G.projectNT_embedNT n₀ ▸ G.project_inj n (G.embedNT n₀)) hn with
+  sorry
+  /-cases (G.projectNT_embedNT n₀ ▸ G.project_inj n (G.embedNT n₀)) hn with
   | inl case_valu => exact hnx case_valu.symm
-  | inr case_none => exact Option.noConfusion (hn ▸ case_none)
+  | inr case_none => exact Option.noConfusion (hn ▸ case_none)-/
 
 /-- Production by `G.g₀` can be mirrored by production by `G.g`. -/
-lemma produces_map {w₁ w₂ : List (Symbol T G.g₀.NT)}
-    (hG : G.g₀.Produces w₁ w₂) :
-    G.g.Produces (w₁.map (Symbol.map G.embedNT)) (w₂.map (Symbol.map G.embedNT)) := by
+lemma produces_map {w₁ w₂ : List (Symbol T g₀.NT)}
+    (hG : g₀.Produces w₁ w₂) :
+    g.Produces (w₁.map (Symbol.map G.embedNT)) (w₂.map (Symbol.map G.embedNT)) := by
   rcases hG with ⟨r, rin, hr⟩
   rcases hr.exists_parts with ⟨u, v, bef, aft⟩
   refine ⟨r.map G.embedNT, G.embed_mem_rules r rin, ?_⟩
@@ -330,32 +327,31 @@ lemma produces_map {w₁ w₂ : List (Symbol T G.g₀.NT)}
   · simpa only [List.map_append] using congr_arg (List.map (Symbol.map G.embedNT)) aft
 
 /-- Derivation by `G.g₀` can be mirrored by derivation by `G.g`. -/
-lemma derives_map {w₁ w₂ : List (Symbol T G.g₀.NT)}
-    (hG : G.g₀.Derives w₁ w₂) :
-    G.g.Derives (w₁.map (Symbol.map G.embedNT)) (w₂.map (Symbol.map G.embedNT)) := by
+lemma derives_map {w₁ w₂ : List (Symbol T g₀.NT)}
+    (hG : g₀.Derives w₁ w₂) :
+    g.Derives (w₁.map (Symbol.map G.embedNT)) (w₂.map (Symbol.map G.embedNT)) := by
   induction hG with
   | refl => rfl
   | tail _ orig ih => exact ih.trans_produces (produces_map orig)
 
 /-- A `Symbol` is good iff it is one of those nonterminals that result from projecting or it is any
 terminal. -/
-inductive Good : Symbol T G.g.NT → Prop
+inductive Good : Symbol T g.NT → Prop
   | terminal (t : T) : Good (.terminal t)
-  | nonterminal {n : G.g.NT} {n₀ : G.g₀.NT} (hn : G.projectNT n = n₀) : Good (.nonterminal n)
+  | nonterminal {n : g.NT} {n₀ : g₀.NT} (hn : G.projectNT n = n₀) : Good (.nonterminal n)
 
 /-- A string is good iff every `Symbol` in it is good. -/
-def GoodString (s : List (Symbol T G.g.NT)) : Prop :=
-  ∀ ⦃a : Symbol T G.g.NT⦄, a ∈ s → Good a
+def GoodString (s : List (Symbol T g.NT)) : Prop :=
+  ∀ ⦃a : Symbol T g.NT⦄, a ∈ s → Good a
 
-lemma goodString_singleton {G : EmbeddedContextFreeGrammar T}
-    {s : Symbol T G.g.NT} (hs : G.Good s) : G.GoodString [s] := by
+lemma goodString_singleton {s : Symbol T g.NT} (hs : G.Good s) : G.GoodString [s] := by
   simpa [GoodString] using hs
 
 /-- Production by `G.g` can be mirrored by `G.g₀` production if the first word does not contain any
 nonterminals that `G.g₀` lacks. -/
-lemma produces_filterMap {w₁ w₂ : List (Symbol T G.g.NT)}
-    (hG : G.g.Produces w₁ w₂) (hw₁ : GoodString w₁) :
-    G.g₀.Produces
+lemma produces_filterMap {w₁ w₂ : List (Symbol T g.NT)}
+    (hG : g.Produces w₁ w₂) (hw₁ : GoodString w₁) :
+    g₀.Produces
       (w₁.filterMap (Symbol.filterMap G.projectNT))
       (w₂.filterMap (Symbol.filterMap G.projectNT)) ∧
     GoodString w₂ := by
@@ -406,9 +402,9 @@ lemma produces_filterMap {w₁ w₂ : List (Symbol T G.g.NT)}
       | terminal _ => exact False.elim (Symbol.noConfusion hs)
       | nonterminal s' => exact Good.nonterminal (G.projectNT_embedNT s')
 
-lemma derives_filterMap_aux {w₁ w₂ : List (Symbol T G.g.NT)}
-    (hG : G.g.Derives w₁ w₂) (hw₁ : GoodString w₁) :
-    G.g₀.Derives
+lemma derives_filterMap_aux {w₁ w₂ : List (Symbol T g.NT)}
+    (hG : g.Derives w₁ w₂) (hw₁ : GoodString w₁) :
+    g₀.Derives
       (w₁.filterMap (Symbol.filterMap G.projectNT))
       (w₂.filterMap (Symbol.filterMap G.projectNT)) ∧
     GoodString w₂ := by
@@ -420,12 +416,12 @@ lemma derives_filterMap_aux {w₁ w₂ : List (Symbol T G.g.NT)}
 
 /-- Derivation by `G.g` can be mirrored by `G.g₀` derivation if the starting word does not contain
 any nonterminals that `G.g₀` lacks. -/
-lemma derives_filterMap {w₁ w₂ : List (Symbol T G.g.NT)}
-    (hG : G.g.Derives w₁ w₂) (hw₁ : GoodString w₁) :
-    G.g₀.Derives
+lemma derives_filterMap {w₁ w₂ : List (Symbol T g.NT)}
+    (hG : g.Derives w₁ w₂) (hw₁ : GoodString w₁) :
+    g₀.Derives
       (w₁.filterMap (Symbol.filterMap G.projectNT))
       (w₂.filterMap (Symbol.filterMap G.projectNT)) :=
   (derives_filterMap_aux hG hw₁).left
 
-end EmbeddedContextFreeGrammar
+end ContextFreeGrammar.Embedding
 end embed_project
