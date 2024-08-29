@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 
--- import Mathlib.Util.CountHeartbeats
--- import Batteries.Tactic.ShowUnused
+import Mathlib.Util.CountHeartbeats
+import Batteries.Tactic.ShowUnused
 
 universe uvw -- leave this here to make some vim macros work
 
@@ -264,41 +264,16 @@ section
 
 variable {M : Type u}
 
-/-- The fundamental power operation in a monoid. `npowRec n a = a*a*...*a` n times.
-Use instead `a ^ n`, which has better definitional behavior. -/
-def npowRec [One M] [Mul M] : Nat → M → M
-  | 0, _ => 1
-  | n + 1, a => npowRec n a * a
-
-/-- The fundamental scalar multiplication in an additive monoid. `nsmulRec n a = a+a+...+a` n
-times. Use instead `n • a`, which has better definitional behavior. -/
-def nsmulRec [Zero M] [Add M] : Nat → M → M
-  | 0, _ => 0
-  | n + 1, a => nsmulRec n a + a
-
 end
 
 /-- An `AddMonoid` is an `AddSemigroup` with an element `0` such that `0 + a = a + 0 = a`. -/
 class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
-  /-- Multiplication by a natural number.
-  Set this to `nsmulRec` unless `Module` diamonds are possible. -/
-  protected nsmul : Nat → M → M
-  /-- Multiplication by `(0 : Nat)` gives `0`. -/
-  protected nsmul_zero : ∀ x, nsmul 0 x = 0 := by intros; rfl
-  /-- Multiplication by `(n + 1 : Nat)` behaves as expected. -/
-  protected nsmul_succ : ∀ (n : Nat) (x), nsmul (n + 1) x = nsmul n x + x := by intros; rfl
 
 attribute [instance 150] AddSemigroup.toAdd
 attribute [instance 50] AddZeroClass.toAdd
 
 /-- A `Monoid` is a `Semigroup` with an element `1` such that `1 * a = a * 1 = a`. -/
 class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
-  /-- Raising to the power of a natural number. -/
-  protected npow : Nat → M → M := npowRec
-  /-- Raising to the power `(0 : Nat)` gives `1`. -/
-  protected npow_zero : ∀ x, npow 0 x = 1 := by intros; rfl
-  /-- Raising to the power `(n + 1 : Nat)` behaves as expected. -/
-  protected npow_succ : ∀ (n : Nat) (x), npow (n + 1) x = npow n x * x := by intros; rfl
 
 section Monoid
 variable {M : Type u} [AddMonoid M] {a b c : M} {m n : Nat}
@@ -347,12 +322,6 @@ instance (priority := 100) AddCancelMonoid.toIsCancelAdd (M : Type u) [AddCancel
 
 end CancelMonoid
 
-/-- The fundamental scalar multiplication in an additive group. `zpowRec n a = a+a+...+a` n
-times, for integer `n`. Use instead `n • a`, which has better definitional behavior. -/
-def zsmulRec [Zero G] [Add G] [Neg G] (nsmul : Nat → G → G := nsmulRec) : Int → G → G
-  | Int.ofNat n, a => nsmul n a
-  | Int.negSucc n, a => -nsmul n.succ a
-
 section InvolutiveInv
 
 /-- Auxiliary typeclass for types with an involutive `Neg`. -/
@@ -385,15 +354,6 @@ explanations on this.
 -/
 class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G where
   protected sub_eq_add_neg : ∀ a b : G, a - b = a + -b := by intros; rfl
-  /-- Multiplication by an integer.
-  Set this to `zsmulRec` unless `Module` diamonds are possible. -/
-  protected zsmul : Int → G → G
-  protected zsmul_zero' : ∀ a : G, zsmul 0 a = 0 := by intros; rfl
-  protected zsmul_succ' (n : Nat) (a : G) :
-      zsmul (Int.ofNat n.succ) a = zsmul (Int.ofNat n) a + a := by
-    intros; rfl
-  protected zsmul_neg' (n : Nat) (a : G) : zsmul (Int.negSucc n) a = -zsmul n.succ a := by
-    intros; rfl
 
 section DivInvMonoid
 
@@ -407,7 +367,6 @@ end DivInvMonoid
 /-- A `SubtractionMonoid` is a `SubNegMonoid` with involutive negation and such that
 `-(a + b) = -b + -a` and `a + b = 0 → -a = b`. -/
 class SubtractionMonoid (G : Type u) extends SubNegMonoid G, InvolutiveNeg G where
-  protected neg_add_rev (a b : G) : -(a + b) = -b + -a
   /-- Despite the asymmetry of `neg_eq_of_add`, the symmetric version is true thanks to the
   involutivity of negation. -/
   protected neg_eq_of_add (a b : G) : a + b = 0 → -a = b
@@ -426,9 +385,6 @@ theorem eq_neg_of_add_eq_zero_left (h : a + b = 0) : a = -b :=
   (neg_eq_of_add_eq_zero_left h).symm
 
 end DivisionMonoid
-
-/-- Commutative `SubtractionMonoid`. -/
-class SubtractionCommMonoid (G : Type u) extends SubtractionMonoid G, AddCommMonoid G
 
 /-- An `AddGroup` is an `AddMonoid` with a unary `-` satisfying `-a + a = 0`.
 
@@ -461,17 +417,11 @@ theorem neg_add_cancel_left (a b : G) : -a + (a + b) = b := by
   rw [← add_assoc, neg_add_cancel, zero_add]
 
 @[simp]
-theorem add_neg_cancel_left (a b : G) : a + (-a + b) = b := by
-  rw [← add_assoc, add_neg_cancel, zero_add]
-
-@[simp]
 theorem add_neg_cancel_right (a b : G) : a + b + -b = a := by
   rw [add_assoc, add_neg_cancel, add_zero]
 
 instance (priority := 100) AddGroup.toSubtractionMonoid : SubtractionMonoid G :=
   { neg_neg := fun a ↦ neg_eq_of_add (neg_add_cancel a)
-    neg_add_rev :=
-      fun a b ↦ neg_eq_of_add <| by rw [add_assoc, add_neg_cancel_left, add_neg_cancel]
     neg_eq_of_add := fun _ _ ↦ neg_eq_of_add }
 
 -- see Note [lower instance priority]
@@ -487,24 +437,12 @@ class AddCommGroup (G : Type u) extends AddGroup G, AddCommMonoid G
 
 end Mathlib.Algebra.Group.Defs
 
--- section Mathlib.Algebra.Group.Defs.Modified
--- 
--- class AddMonoid (M : Type u) extends Zero M, Add M where
--- 
--- class AddCommMonoid (M : Type u) extends AddMonoid M where
---   add_comm : ∀ a b : M, a + b = b + a
--- 
--- class AddGroup (M : Type u) extends AddMonoid M, Neg M, Sub M where
--- 
--- end Mathlib.Algebra.Group.Defs.Modified
-
 universe x w v u v' u' v₁ v₂ v₃ u₁ u₂ u₃
 
 section Mathlib.Algebra.Group.Hom.Defs.Modified
 
 structure AddMonoidHom (M : Type u) (N : Type v) [AddMonoid M] [AddMonoid N] where
   toFun : M → N
-  map_zero' : toFun 0 = 0
   map_add' : ∀ x y, toFun (x + y) = toFun x + toFun y
 
 infixr:25 " →+ " => AddMonoidHom
@@ -524,7 +462,6 @@ variable [AddMonoid M] [AddGroup N]
 def mk' (f : M → N) (map_add : ∀ a b : M, f (a + b) = f a + f b) : M →+ N where
   toFun := f
   map_add' := map_add
-  map_zero' := by rw [← add_right_cancel_iff, ← map_add _ 0, zero_add, zero_add]
 
 end
 
@@ -560,13 +497,6 @@ variable {G₀ : Type u} {M₀ : Type u₁} {M₀' : Type u₂} {G₀' : Type u�
 /-- Typeclass for expressing that a type `M₀` with multiplication and a zero satisfies
 `0 * a = 0` and `a * 0 = 0` for all `a : M₀`. -/
 class MulZeroClass (M₀ : Type u) extends Mul M₀, Zero M₀ where
-  /-- Zero is a left absorbing element for multiplication -/
-  zero_mul : ∀ a : M₀, 0 * a = 0
-  /-- Zero is a right absorbing element for multiplication -/
-  mul_zero : ∀ a : M₀, a * 0 = 0
-
-export MulZeroClass (zero_mul mul_zero)
-attribute [simp] zero_mul mul_zero
 
 end Mathlib.Algebra.GroupWithZero.Defs
 
@@ -586,8 +516,6 @@ variable [Monoid M] [MulAction M α]
 
 variable (M)
 
-theorem one_smul (b : α) : (1 : M) • b = b := MulAction.one_smul _
-
 end Mathlib.Algebra.Group.Action.Defs
 
 
@@ -604,26 +532,6 @@ export DistribMulAction (smul_zero smul_add)
 
 end Mathlib.Algebra.GroupWithZero.Action.Defs
 
-
-section Mathlib.Algebra.GroupWithZero.Action.Defs.Modifications
-
-/-- Typeclass for multiplicative actions on additive structures. This generalizes group modules. -/
-class DistribMulAction' (M : Type u) (A : Type v) [Monoid M] [AddMonoid A] extends SMul M A where
-  /-- Multiplying `0` by a scalar gives `0` -/
-  smul_zero : ∀ a : M, a • (0 : A) = 0
-  /-- Scalar multiplication distributes across addition -/
-  smul_add : ∀ (a : M) (x y : A), a • (x + y) = a • x + a • y
-  /-- One is the neutral element for `•` -/
-  one_smul : ∀ b : A, (1 : M) • b = b
-  /-- Associativity of `•` and `*` -/
-  mul_smul : ∀ (x y : M) (b : A), (x * y) • b = x • y • b
-
-variable {M : Type u} {A : Type v}
-
-export DistribMulAction' (smul_zero smul_add one_smul mul_smul)
-
-end Mathlib.Algebra.GroupWithZero.Action.Defs.Modifications
-
 section Mathlib.Algebra.Ring.Defs
 
 variable {α : Type u} {β : Type v} {γ : Type w} {R : Type x}
@@ -633,20 +541,11 @@ open Function
 /-- A typeclass stating that multiplication is left and right distributive
 over addition. -/
 class Distrib (R : Type u) extends Mul R, Add R where
-  /-- Multiplication is left distributive over addition -/
-  protected left_distrib : ∀ a b c : R, a * (b + c) = a * b + a * c
-  /-- Multiplication is right distributive over addition -/
-  protected right_distrib : ∀ a b c : R, (a + b) * c = a * c + b * c
 
 /-- A `Semiring` is a type with addition, multiplication, a `0` and a `1` where addition is
 commutative and associative, multiplication is associative and left and right distributive over
 addition, and `0` and `1` are additive and multiplicative identities. -/
 class Semiring (α : Type u) extends AddCommMonoid α, Distrib α, Monoid α, MulZeroClass α where
-  natCast : Nat → α
-  /-- The canonical map `Nat → R` sends `0 : Nat` to `0 : R`. -/
-  natCast_zero : natCast 0 = 0 := by intros; rfl
-  /-- The canonical map `Nat → R` is a homomorphism. -/
-  natCast_succ : ∀ n, natCast (n + 1) = natCast n + 1 := by intros; rfl
 
 end Mathlib.Algebra.Ring.Defs
 
@@ -761,10 +660,6 @@ See <https://stacks.math.columbia.edu/tag/001B>.
 -/
 structure Functor (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
     extends Prefunctor C D : Type max v₁ v₂ u₁ u₂ where
-  /-- A functor preserves identity morphisms. -/
-  map_id : ∀ X : C, map (𝟙 X) = 𝟙 (obj X)
-  /-- A functor preserves composition. -/
-  map_comp : ∀ {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z), map (f ≫ g) = map f ≫ map g
 
 /-- The prefunctor between the underlying quivers. -/
 add_decl_doc Functor.toPrefunctor
@@ -775,8 +670,6 @@ end
 -- A functor is basically a function, so give ⥤ a similar precedence to → (25).
 -- For example, `C × D ⥤ E` should parse as `(C × D) ⥤ E` not `C × (D ⥤ E)`.
 infixr:26 " ⥤ " => Functor -- type as \func
-
-attribute [simp] Functor.map_id Functor.map_comp
 
 end CategoryTheory
 
@@ -870,8 +763,6 @@ namespace CategoryTheory
 open NatTrans Category CategoryTheory.Functor
 
 variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
-
-attribute [local simp] vcomp_app
 
 variable {C D} {E : Type u₃} [Category.{v₃} E]
 variable {F G H I : C ⥤ D}
@@ -1060,9 +951,7 @@ instance {F G : C ⥤ D} : Neg (F ⟶ G) where
 
 instance functorCategoryPreadditive : Preadditive (C ⥤ D) where
   homGroup F G :=
-    { nsmul := nsmulRec
-      zsmul := zsmulRec
-      sub := fun α β =>
+    { sub := fun α β =>
       { app := fun X => α.app X - β.app X
         naturality := by 
           intro X Y f
@@ -1149,7 +1038,7 @@ open CategoryTheory.Linear
 variable {R : Type u₃} [Semiring R]
 variable {C : Type u₁} {D : Type u₂} [Category C] [Category D] [Preadditive D] [Linear R D]
 
--- count_heartbeats in
+count_heartbeats in
 instance functorCategoryLinear : Linear R (C ⥤ D) where
   homModule F G :=
     { 
@@ -1238,4 +1127,4 @@ instance functorCategoryLinear' : Linear R (C ⥤ D) where
 end CategoryTheory
 
 /- #show_unused CategoryTheory.functorCategoryLinear -/
--- #show_unused CategoryTheory.functorCategoryLinear'
+#show_unused CategoryTheory.functorCategoryLinear
