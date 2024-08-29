@@ -28,6 +28,7 @@ Mathlib/Data/Set/Basic.lean : line 1 : ERR_NUM_LIN : 2300 file contains 2170 lin
 Mathlib/Data/Set/Finite.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1535 lines, try to split it up
 Mathlib/Data/Set/Function.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1740 lines, try to split it up
 Mathlib/Data/Set/Lattice.lean : line 1 : ERR_NUM_LIN : 2100 file contains 1932 lines, try to split it up
+Mathlib/Data/ZMod/Basic.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1533 lines, try to split it up
 Mathlib/LinearAlgebra/AffineSpace/AffineSubspace.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1693 lines, try to split it up
 Mathlib/LinearAlgebra/Dual.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1738 lines, try to split it up
 Mathlib/LinearAlgebra/Multilinear/Basic.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1775 lines, try to split it up
