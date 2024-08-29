@@ -10,7 +10,7 @@ import Mathlib.Topology.Algebra.Module.Determinant
 /-!
 # Orientable Manifolds
 
-This module defines orientable manifolds.
+This module defines orientable differentiable manifolds.
 
 ## Main Definitions
 
@@ -21,6 +21,8 @@ This module defines orientable manifolds.
 * `OrientableManifold`: a type class saying that the charted space `M`, modelled on the space `H`,
   admis an orientation. This type class is just a shortcut for `HasGroupoid M
   (@orientationPreservingGroupoid H _ _)`.
+  Note: This definition of orientability applies to differentiable manifolds. It is different from
+  oreintable topological manifolds, which use local orientations.
 
 -/
 
@@ -71,7 +73,10 @@ end orientationPreservingGroupoid
 
 section OrientableManifold
 
-/-- Typeclass defining orientable manifolds. -/
+/--
+Typeclass defining orientable differentiable manifolds.
+Note: This is different from orientable topological manifolds.
+-/
 class OrientableManifold (M : Type*) [TopologicalSpace M] [ChartedSpace H M] extends
   HasGroupoid M (@orientationPreservingGroupoid H _ _) : Prop
 
