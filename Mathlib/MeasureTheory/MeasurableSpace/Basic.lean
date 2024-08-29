@@ -1098,7 +1098,15 @@ lemma MeasurableSet.setOf_finite [Countable α] : MeasurableSet {s : Set α | s.
   countable_setOf_finite.measurableSet
 
 lemma MeasurableSet.setOf_infinite [Countable α] : MeasurableSet {s : Set α | s.Infinite} :=
-  MeasurableSet.setOf_finite.compl
+  .setOf_finite |> .compl
+
+lemma MeasurableSet.sep_finite [Countable α] {S : Set (Set α)} (hS : MeasurableSet S) :
+    MeasurableSet {s ∈ S | s.Finite} :=
+  hS.inter .setOf_finite
+
+lemma MeasurableSet.sep_infinite [Countable α] {S : Set (Set α)} (hS : MeasurableSet S) :
+    MeasurableSet {s ∈ S | s.Infinite} :=
+  hS.inter .setOf_infinite
 
 end Set
 end Constructions
