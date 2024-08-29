@@ -279,8 +279,10 @@ def ContextFreeRule.map {N₀ N : Type*} (r : ContextFreeRule T N₀) (f : N₀ 
     ContextFreeRule T N :=
   ⟨f r.input, r.output.map (Symbol.map f)⟩
 
-/-- A pair of `ContextFreeGrammar`s with maps between their types of nonterminal symbols that work,
-roughly speaking, in a good way. -/
+/-- An embedding from a context-free grammar `g₀` to a context-free grammar `g` is an embedding
+`embedNT` of the nonterminal symbols from the former to the latter along with a one-sided inverse
+`projectNT` such that all rewrite rules of `g` that end in `embedNT n₀` for some `n₀` come from some
+rule in `g₀`. -/```
 structure ContextFreeGrammar.Embedding {T : Type uT} (g₀ g : ContextFreeGrammar T) where
   /-- Mapping nonterminals from the smaller type to the bigger type. -/
   embedNT : g₀.NT → g.NT
