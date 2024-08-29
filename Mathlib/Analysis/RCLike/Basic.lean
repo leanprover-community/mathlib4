@@ -3,12 +3,13 @@ Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+import Mathlib.Algebra.Algebra.Field
+import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Algebra.Star.Order
 import Mathlib.Analysis.CStarAlgebra.Basic
-import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 import Mathlib.Analysis.Normed.Module.Basic
+import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 import Mathlib.Data.Real.Sqrt
-import Mathlib.Algebra.Algebra.Field
 
 /-!
 # `RCLike`: a typeclass for ℝ or ℂ
@@ -519,6 +520,9 @@ instance (priority := 100) : CStarRing K where
 theorem ofReal_natCast (n : ℕ) : ((n : ℝ) : K) = n :=
   map_natCast (algebraMap ℝ K) n
 
+@[rclike_simps, norm_cast]
+lemma ofReal_nnratCast (q : ℚ≥0) : ((q : ℝ) : K) = q := map_nnratCast (algebraMap ℝ K) _
+
 @[simp, rclike_simps] -- Porting note: removed `norm_cast`
 theorem natCast_re (n : ℕ) : re (n : K) = n := by rw [← ofReal_natCast, ofReal_re]
 
@@ -589,22 +593,35 @@ theorem norm_ofNat (n : ℕ) [n.AtLeastTwo] : ‖(no_index (OfNat.ofNat n) : K)�
 lemma nnnorm_ofNat (n : ℕ) [n.AtLeastTwo] : ‖(no_index (OfNat.ofNat n) : K)‖₊ = OfNat.ofNat n :=
   nnnorm_natCast n
 
+lemma norm_two : ‖(2 : K)‖ = 2 := norm_ofNat 2
+lemma nnnorm_two : ‖(2 : K)‖₊ = 2 := nnnorm_ofNat 2
+
+@[simp, rclike_simps, norm_cast]
+lemma norm_nnratCast (q : ℚ≥0) : ‖(q : K)‖ = q := by
+  rw [← ofReal_nnratCast]; exact norm_of_nonneg q.cast_nonneg
+
+@[simp, rclike_simps, norm_cast]
+lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : K)‖₊ = q := by simp [nnnorm]
+
 variable (K) in
 lemma norm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) : ‖n • x‖ = n • ‖x‖ := by
-  rw [← Nat.cast_smul_eq_nsmul K, norm_smul, RCLike.norm_natCast, nsmul_eq_mul]
+  simpa [Nat.cast_smul_eq_nsmul] using norm_smul (n : K) x
 
 variable (K) in
 lemma nnnorm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) :
-    ‖n • x‖₊ = n • ‖x‖₊ := by
-  ext; simpa [nnnorm, norm_nsmul, Nat.cast_smul_eq_nsmul] using norm_nsmul K n x
+    ‖n • x‖₊ = n • ‖x‖₊ := by simpa [Nat.cast_smul_eq_nsmul] using nnnorm_smul (n : K) x
+
+variable (K) in
+lemma norm_nnqsmul [NormedField E] [CharZero E] [NormedSpace K E] (q : ℚ≥0) (x : E) :
+    ‖q • x‖ = q • ‖x‖ := by simpa [NNRat.cast_smul_eq_nnqsmul] using norm_smul (q : K) x
+
+variable (K) in
+lemma nnnorm_nnqsmul [NormedField E] [CharZero E] [NormedSpace K E] (q : ℚ≥0) (x : E) :
+    ‖q • x‖₊ = q • ‖x‖₊ := by simpa [NNRat.cast_smul_eq_nnqsmul] using nnnorm_smul (q : K) x
 
 theorem mul_self_norm (z : K) : ‖z‖ * ‖z‖ = normSq z := by rw [normSq_eq_def', sq]
 
 attribute [rclike_simps] norm_zero norm_one norm_eq_zero abs_norm norm_inv norm_div
-
--- Porting note: removed @[simp, rclike_simps], b/c generalized to `norm_ofNat`
-theorem norm_two : ‖(2 : K)‖ = 2 := norm_ofNat 2
-theorem nnnorm_two : ‖(2 : K)‖₊ = 2 := nnnorm_ofNat 2
 
 theorem abs_re_le_norm (z : K) : |re z| ≤ ‖z‖ := by
   rw [mul_self_le_mul_self_iff (abs_nonneg _) (norm_nonneg _), abs_mul_abs_self, mul_self_norm]
