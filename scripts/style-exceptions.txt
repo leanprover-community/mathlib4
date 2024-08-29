@@ -41,6 +41,7 @@ Mathlib/MeasureTheory/Integral/Lebesgue.lean : line 1 : ERR_NUM_LIN : 2200 file 
 Mathlib/MeasureTheory/Integral/SetIntegral.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1579 lines, try to split it up
 Mathlib/MeasureTheory/Integral/SetToL1.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1640 lines, try to split it up
 Mathlib/MeasureTheory/Measure/MeasureSpace.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2008 lines, try to split it up
+Mathlib/MeasureTheory/Measure/Typeclasses.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1531 lines, try to split it up
 Mathlib/Order/CompleteLattice.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1709 lines, try to split it up
 Mathlib/Order/ConditionallyCompleteLattice/Basic.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1549 lines, try to split it up
 Mathlib/Order/Filter/AtTopBot.lean : line 1 : ERR_NUM_LIN : 2000 file contains 1828 lines, try to split it up
