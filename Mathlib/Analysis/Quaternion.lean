@@ -72,10 +72,12 @@ theorem norm_coe (a : ℝ) : ‖(a : ℍ)‖ = ‖a‖ := by
 theorem nnnorm_coe (a : ℝ) : ‖(a : ℍ)‖₊ = ‖a‖₊ :=
   Subtype.ext <| norm_coe a
 
+set_option linter.unnecessarySyntax false in
 @[simp, nolint simpNF] -- Porting note (#10959): simp cannot prove this
 theorem norm_star (a : ℍ) : ‖star a‖ = ‖a‖ := by
   simp_rw [norm_eq_sqrt_real_inner, inner_self, normSq_star]
 
+set_option linter.unnecessarySyntax false in
 @[simp, nolint simpNF] -- Porting note (#10959): simp cannot prove this
 theorem nnnorm_star (a : ℍ) : ‖star a‖₊ = ‖a‖₊ :=
   Subtype.ext <| norm_star a

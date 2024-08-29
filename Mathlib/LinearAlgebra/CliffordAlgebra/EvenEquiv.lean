@@ -241,6 +241,7 @@ def evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) :
           QuadraticMap.neg_apply, smul_neg, neg_smul] }
 
 -- Porting note: `simpNF` times out, but only in CI where all of `Mathlib` is imported
+set_option linter.unnecessarySyntax false in
 @[simp, nolint simpNF]
 theorem evenToNeg_ι (Q' : QuadraticForm R M) (h : Q' = -Q) (m₁ m₂ : M) :
     evenToNeg Q Q' h ((even.ι Q).bilin m₁ m₂) = -(even.ι Q').bilin m₁ m₂ :=

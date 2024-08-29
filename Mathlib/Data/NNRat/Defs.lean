@@ -145,6 +145,7 @@ theorem coe_lt_coe : (p : ℚ) < q ↔ p < q :=
   Iff.rfl
 
 -- `cast_pos`, defined in a later file, makes this lemma redundant
+set_option linter.unnecessarySyntax false in
 @[simp, norm_cast, nolint simpNF]
 theorem coe_pos : (0 : ℚ) < q ↔ 0 < q :=
   Iff.rfl
@@ -202,11 +203,13 @@ theorem bddBelow_coe (s : Set ℚ≥0) : BddBelow (((↑) : ℚ≥0 → ℚ) '' 
   ⟨0, fun _ ⟨q, _, h⟩ ↦ h ▸ q.2⟩
 
 -- `cast_max`, defined in a later file, makes this lemma redundant
+set_option linter.unnecessarySyntax false in
 @[simp, norm_cast, nolint simpNF]
 theorem coe_max (x y : ℚ≥0) : ((max x y : ℚ≥0) : ℚ) = max (x : ℚ) (y : ℚ) :=
   coe_mono.map_max
 
 -- `cast_max`, defined in a later file, makes this lemma redundant
+set_option linter.unnecessarySyntax false in
 @[simp, norm_cast, nolint simpNF]
 theorem coe_min (x y : ℚ≥0) : ((min x y : ℚ≥0) : ℚ) = min (x : ℚ) (y : ℚ) :=
   coe_mono.map_min

@@ -72,11 +72,17 @@ lemma natCast_injective : Injective (Nat.cast : ℕ → ℚ) :=
   intCast_injective.comp fun _ _ ↦ Int.natCast_inj.1
 
 -- We want to use these lemmas earlier than the lemmas simp can prove them with
+set_option linter.unnecessarySyntax false in
 @[simp, nolint simpNF, norm_cast] lemma natCast_inj {m n : ℕ} : (m : ℚ) = n ↔ m = n :=
+set_option linter.unnecessarySyntax false in
   natCast_injective.eq_iff
+set_option linter.unnecessarySyntax false in
 @[simp, nolint simpNF, norm_cast] lemma intCast_eq_zero {n : ℤ} : (n : ℚ) = 0 ↔ n = 0 := intCast_inj
+set_option linter.unnecessarySyntax false in
 @[simp, nolint simpNF, norm_cast] lemma natCast_eq_zero {n : ℕ} : (n : ℚ) = 0 ↔ n = 0 := natCast_inj
+set_option linter.unnecessarySyntax false in
 @[simp, nolint simpNF, norm_cast] lemma intCast_eq_one {n : ℤ} : (n : ℚ) = 1 ↔ n = 1 := intCast_inj
+set_option linter.unnecessarySyntax false in
 @[simp, nolint simpNF, norm_cast] lemma natCast_eq_one {n : ℕ} : (n : ℚ) = 1 ↔ n = 1 := natCast_inj
 
 -- Porting note (#11215): TODO Should this be namespaced?

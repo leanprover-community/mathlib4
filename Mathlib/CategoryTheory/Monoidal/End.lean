@@ -178,6 +178,7 @@ theorem left_unitality_app (n : M) (X : C) :
   simpa using this.symm
 
 -- Porting note: linter claims `simp can prove it`, but cnot
+set_option linter.unnecessarySyntax false in
 @[reassoc (attr := simp, nolint simpNF)]
 theorem obj_ε_app (n : M) (X : C) :
     (F.obj n).map (F.ε.app X) = (F.map (λ_ n).inv).app X ≫ (F.μIso (𝟙_ M) n).inv.app X := by
@@ -188,6 +189,7 @@ theorem obj_ε_app (n : M) (X : C) :
   · simp
 
 -- Porting note: linter claims `simp can prove it`, but cnot
+set_option linter.unnecessarySyntax false in
 @[reassoc (attr := simp, nolint simpNF)]
 theorem obj_ε_inv_app (n : M) (X : C) :
     (F.obj n).map (F.εIso.inv.app X) = (F.μ (𝟙_ M) n).app X ≫ (F.map (λ_ n).hom).app X := by
@@ -225,6 +227,7 @@ theorem associativity_app (m₁ m₂ m₃ : M) (X : C) :
   simpa using this
 
 -- Porting note: linter claims `simp can prove it`, but cnot
+set_option linter.unnecessarySyntax false in
 @[reassoc (attr := simp, nolint simpNF)]
 theorem obj_μ_app (m₁ m₂ m₃ : M) (X : C) :
     (F.obj m₃).map ((F.μ m₁ m₂).app X) =
@@ -235,6 +238,7 @@ theorem obj_μ_app (m₁ m₂ m₃ : M) (X : C) :
   simp
 
 -- Porting note: linter claims `simp can prove it`, but cnot
+set_option linter.unnecessarySyntax false in
 @[reassoc (attr := simp, nolint simpNF)]
 theorem obj_μ_inv_app (m₁ m₂ m₃ : M) (X : C) :
     (F.obj m₃).map ((F.μIso m₁ m₂).inv.app X) =
