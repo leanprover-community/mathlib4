@@ -987,8 +987,8 @@ theorem val_eq_zero : ∀ {n : ℕ} (a : ZMod n), a.val = 0 ↔ a = 0
 theorem val_ne_zero {n : ℕ} (a : ZMod n) : a.val ≠ 0 ↔ a ≠ 0 :=
   (val_eq_zero a).not
 
-theorem val_pos_of_ne_zero {n : ℕ} {a : ZMod n} (h : a ≠ 0) : 0 < a.val :=
-  Nat.pos_of_ne_zero <| (val_ne_zero a).mpr h
+theorem val_pos {n : ℕ} {a : ZMod n} : 0 < a.val ↔ a ≠ 0 := by
+  simp [pos_iff_ne_zero]
 
 theorem val_eq_one : ∀ {n : ℕ} (_ : 1 < n) (a : ZMod n), a.val = 1 ↔ a = 1
   | 0, hn, _
@@ -1092,7 +1092,7 @@ theorem val_pow {m n : ℕ} {a : ZMod n} [ilt : Fact (1 < n)] (h : a.val ^ m < n
         · cases hm; simp [ilt.out]
         · simp only [val_zero, ne_eq, hm, not_false_eq_true, zero_pow, Nat.zero_lt_of_lt h]
       · exact lt_of_le_of_lt
-         (Nat.pow_le_pow_of_le_right (ZMod.val_pos_of_ne_zero ha) (Nat.le_succ m)) h
+         (Nat.pow_le_pow_of_le_right (by rwa [gt_iff_lt, ZMod.val_pos]) (Nat.le_succ m)) h
     rw [pow_succ, ZMod.val_mul, ih this, ← pow_succ, Nat.mod_eq_of_lt h]
 
 theorem val_pow_le {m n : ℕ} [Fact (1 < n)] {a : ZMod n} : (a ^ m).val ≤ a.val ^ m := by
