@@ -192,7 +192,7 @@ This is precisely what the `cdot` linter flags.
 def unwanted_cdot (stx : Syntax) : Array Syntax :=
   (findCDot stx).filter (!isCDot? ·)
 
-namespace Style.cdotLinter
+namespace Style
 
 @[inherit_doc linter.style.cdot]
 def cdotLinter : Linter where run := withSetOptionIn fun stx ↦ do
@@ -206,7 +206,7 @@ def cdotLinter : Linter where run := withSetOptionIn fun stx ↦ do
 
 initialize addLinter cdotLinter
 
-end Style.cdotLinter
+end Style
 
 /-!
 # The `dollarSyntax` linter
