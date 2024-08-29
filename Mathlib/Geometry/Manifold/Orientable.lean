@@ -33,9 +33,7 @@ A map is orientation-preserving on a given set if it is differentiable and the d
 Jacobian is strictly positive on that set.
 -/
 def OrientationPreserving (f : H → H) (s : Set H) : Prop :=
-  ∀ x ∈ s,
-    DifferentiableAt ℝ f x ∧
-    0 < (fderiv ℝ f x).det
+  ∀ x ∈ s, DifferentiableAt ℝ f x ∧ 0 < (fderiv ℝ f x).det
 
 /-- The pregroupoid of orientation-preserving maps. -/
 def orientationPreservingPregroupoid : Pregroupoid H where
@@ -60,9 +58,9 @@ def orientationPreservingPregroupoid : Pregroupoid H where
     intro x hx
     have := Filter.eventuallyEq_of_mem (IsOpen.mem_nhds hu hx) fg
     apply And.intro
-    · rw [Filter.EventuallyEq.differentiableAt_iff this]
+    · rw [this.differentiableAt_iff]
       exact (hf x hx).1
-    · rw [Filter.EventuallyEq.fderiv_eq this]
+    · rw [this.fderiv_eq]
       exact (hf x hx).2
 
 /-- The groupoid of orientation-preserving maps. -/
