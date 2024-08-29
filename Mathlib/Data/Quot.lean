@@ -543,7 +543,7 @@ several different quotient relations on a type, for example quotient groups, rin
 /-- A version of `Quotient.mk` taking `{s : Setoid α}` as an implicit argument instead of an
 instance argument. -/
 protected abbrev mk'' (a : α) : Quotient s₁ :=
-  Quot.mk s₁.1 a
+  ⟦a⟧
 
 /-- `Quotient.mk''` is a surjective function. -/
 theorem surjective_Quotient_mk'' : Function.Surjective (Quotient.mk'' : α → Quotient s₁) :=
