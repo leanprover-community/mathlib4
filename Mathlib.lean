@@ -1,4 +1,3 @@
-import Batteries
 import Mathlib.Algebra.AddConstMap.Basic
 import Mathlib.Algebra.AddConstMap.Equiv
 import Mathlib.Algebra.AddTorsor
@@ -2392,6 +2391,7 @@ import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.Nat.PrimeFin
 import Mathlib.Data.Nat.Set
 import Mathlib.Data.Nat.Size
+import Mathlib.Data.Nat.Sqrt
 import Mathlib.Data.Nat.Squarefree
 import Mathlib.Data.Nat.SuccPred
 import Mathlib.Data.Nat.Totient
@@ -4171,8 +4171,8 @@ import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.SimplexAlgorithm
 import Mathlib.Tactic.Linarith.Parsing
 import Mathlib.Tactic.Linarith.Preprocessing
 import Mathlib.Tactic.Linarith.Verification
-import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.LinearCombination'
+import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Linter
 import Mathlib.Tactic.Linter.AdmitLinter
 import Mathlib.Tactic.Linter.GlobalAttributeIn
