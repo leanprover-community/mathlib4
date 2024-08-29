@@ -163,11 +163,14 @@ variable {η : Type*} {f : η → Type*} [∀ i, Group (f i)]
 theorem pi_mem_of_mulSingle_mem_aux [DecidableEq η] (I : Finset η) {H : Subgroup (∀ i, f i)}
     (x : ∀ i, f i) (h1 : ∀ i, i ∉ I → x i = 1) (h2 : ∀ i, i ∈ I → Pi.mulSingle i (x i) ∈ H) :
     x ∈ H := by
-  induction' I using Finset.induction_on with i I hnmem ih generalizing x
-  · convert one_mem H
+  induction I using Finset.induction_on generalizing x with
+  | empty =>
+    convert one_mem H
     ext i
     exact h1 i (Finset.not_mem_empty i)
-  · have : x = Function.update x i 1 * Pi.mulSingle i (x i) := by
+  | insert hnmem ih =>
+    rename_i i I
+    have : x = Function.update x i 1 * Pi.mulSingle i (x i) := by
       ext j
       by_cases heq : j = i
       · subst heq

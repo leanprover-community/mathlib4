@@ -643,9 +643,10 @@ theorem snd_list_prod [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐ�
     l.prod.snd =
       (l.enum.map fun x : ℕ × tsze R M =>
           ((l.map fst).take x.1).prod •> x.snd.snd <• ((l.map fst).drop x.1.succ).prod).sum := by
-  induction' l with x xs ih
-  · simp
-  · rw [List.enum_cons, ← List.map_fst_add_enum_eq_enumFrom]
+  induction l with
+  | nil => simp
+  | cons x xs ih =>
+    rw [List.enum_cons, ← List.map_fst_add_enum_eq_enumFrom]
     simp_rw [List.map_cons, List.map_map, Function.comp, Prod.map_snd, Prod.map_fst, id,
       List.take_zero, List.take_cons, List.prod_nil, List.prod_cons, snd_mul, one_smul, List.drop,
       mul_smul, List.sum_cons, fst_list_prod, ih, List.smul_sum, List.map_map,
