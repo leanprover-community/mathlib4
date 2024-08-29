@@ -48,7 +48,7 @@ section OfFunction
 
 variable {α : Type*}
 
-/-- Given any function `m` assigning measures to sets satisying `m ∅ = 0`, there is
+/-- Given any function `m` assigning measures to sets satisfying `m ∅ = 0`, there is
   a unique maximal outer measure `μ` satisfying `μ s ≤ m s` for all `s : Set α`. -/
 protected def ofFunction (m : Set α → ℝ≥0∞) (m_empty : m ∅ = 0) : OuterMeasure α :=
   let μ s := ⨅ (f : ℕ → Set α) (_ : s ⊆ ⋃ i, f i), ∑' i, m (f i)

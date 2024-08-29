@@ -97,11 +97,15 @@ is a probability measure. -/
 theorem cond_isProbabilityMeasure [IsFiniteMeasure μ] (hcs : μ s ≠ 0) :
     IsProbabilityMeasure μ[|s] := cond_isProbabilityMeasure_of_finite μ hcs (measure_ne_top μ s)
 
-instance cond_isFiniteMeasure : IsFiniteMeasure μ[|s] := by
+instance : IsZeroOrProbabilityMeasure μ[|s] := by
   constructor
-  simp only [Measure.coe_smul, Pi.smul_apply, MeasurableSet.univ, Measure.restrict_apply,
-    Set.univ_inter, smul_eq_mul, ProbabilityTheory.cond, ← ENNReal.div_eq_inv_mul]
-  exact ENNReal.div_self_le_one.trans_lt ENNReal.one_lt_top
+  simp only [cond, Measure.coe_smul, Pi.smul_apply, MeasurableSet.univ, Measure.restrict_apply,
+    univ_inter, smul_eq_mul, ← ENNReal.div_eq_inv_mul]
+  rcases eq_or_ne (μ s) 0 with h | h
+  · simp [h]
+  rcases eq_or_ne (μ s) ∞ with h' | h'
+  · simp [h']
+  simp [ENNReal.div_self h h']
 
 theorem cond_toMeasurable_eq :
     μ[|(toMeasurable μ s)] = μ[|s] := by
