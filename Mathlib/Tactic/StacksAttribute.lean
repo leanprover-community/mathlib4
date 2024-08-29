@@ -48,7 +48,10 @@ open Parser
 /-- `stacksTag` is the node kind of Stacks Project Tags: a sequence of digits and
 uppercase letters. -/
 abbrev stacksTagKind : SyntaxNodeKind := `stacksTag
-
+/-- Extract the underlying tag as a string from a `stacksTag` node. -/
+def _root_.Lean.TSyntax.getStacksTag (stx : TSyntax stacksTagKind) : CoreM String := do
+  let some val := Syntax.isLit? stacksTagKind stx | throwError "Malformed Stacks tag"
+  return val
 /-- The main parser for Stacks Project Tags: it accepts any sequence of 4 digits or
 uppercase letters. -/
 def stacksTagFn : ParserFn := fun c s =>
@@ -108,7 +111,7 @@ initialize Lean.registerBuiltinAttribute {
   descr := "Apply a Stacks project tag to a theorem."
   add := fun decl stx _attrKind => match stx with
     | `(attr| stacks $tag $[$comment]?) =>
-      addTagEntry decl tag.raw[0].getAtomVal <| (comment.map (·.getString)).getD ""
+      addTagEntry decl (← tag.getStacksTag)  <| (comment.map (·.getString)).getD ""
     | _ => throwUnsupportedSyntax
 }
 
