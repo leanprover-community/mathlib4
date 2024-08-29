@@ -8,7 +8,6 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Data.Nat.Defs
 import Mathlib.Data.Int.Defs
 import Mathlib.Logic.Function.Basic
-import Mathlib.Tactic.Cases
 import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.SplitIfs
 

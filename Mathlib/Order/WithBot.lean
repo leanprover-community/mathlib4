@@ -301,13 +301,15 @@ instance preorder [Preorder α] : Preorder (WithBot α) where
 
 instance partialOrder [PartialOrder α] : PartialOrder (WithBot α) :=
   { WithBot.preorder with
-    le_antisymm := fun o₁ o₂ h₁ h₂ => by
-      cases' o₁ with a
-      · cases' o₂ with b
-        · rfl
-        rcases h₂ b rfl with ⟨_, ⟨⟩, _⟩
-      · rcases h₁ a rfl with ⟨b, ⟨⟩, h₁'⟩
-        rcases h₂ b rfl with ⟨_, ⟨⟩, h₂'⟩
+    le_antisymm := fun o₁ o₂ h₁ h₂ ↦ by
+      cases o₁ with
+      | bot =>
+        cases o₂ with
+        | bot => rfl
+        | coe b => obtain ⟨_, ⟨⟩, _⟩ := h₂ b rfl
+      | coe a =>
+        obtain ⟨b, ⟨⟩, h₁'⟩ := h₁ a rfl
+        obtain ⟨_, ⟨⟩, h₂'⟩ := h₂ b rfl
         rw [le_antisymm h₁' h₂'] }
 
 section Preorder
@@ -377,12 +379,19 @@ instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (WithBot α) where
   le_sup_left := fun o₁ o₂ a ha => by cases ha; cases o₂ <;> simp
   le_sup_right := fun o₁ o₂ a ha => by cases ha; cases o₁ <;> simp
   sup_le := fun o₁ o₂ o₃ h₁ h₂ a ha => by
-    cases' o₁ with b <;> cases' o₂ with c <;> cases ha
-    · exact h₂ a rfl
-    · exact h₁ a rfl
-    · rcases h₁ b rfl with ⟨d, ⟨⟩, h₁'⟩
-      simp only [coe_le_coe] at h₂
-      exact ⟨d, rfl, sup_le h₁' h₂⟩
+    cases o₁ with
+    | bot =>
+      cases o₂ with
+      | bot => exact h₁ a ha
+      | coe c => exact h₂ a ha
+    | coe b =>
+      cases o₂ with
+      | bot => exact h₁ a ha
+      | coe c =>
+        cases ha
+        obtain ⟨d, ⟨⟩, h₁'⟩ := h₁ b rfl
+        simp only [coe_le_coe] at h₂
+        exact ⟨d, rfl, sup_le h₁' h₂⟩
 
 theorem coe_sup [SemilatticeSup α] (a b : α) : ((a ⊔ b : α) : WithBot α) = (a : WithBot α) ⊔ b :=
   rfl

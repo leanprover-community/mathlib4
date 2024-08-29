@@ -333,9 +333,9 @@ lemma natAbs_add_of_nonpos {a b : Int} (ha : a ≤ 0) (hb : b ≤ 0) :
 lemma natAbs_surjective : natAbs.Surjective := fun n => ⟨n, natAbs_ofNat n⟩
 
 lemma natAbs_pow (n : ℤ) (k : ℕ) : Int.natAbs (n ^ k) = Int.natAbs n ^ k := by
-  induction' k with k ih
-  · rfl
-  · rw [Int.pow_succ, natAbs_mul, Nat.pow_succ, ih, Nat.mul_comm]
+  induction k with
+  | zero => rfl
+  | succ k ih => rw [Int.pow_succ, natAbs_mul, Nat.pow_succ, ih, Nat.mul_comm]
 
 lemma pow_right_injective (h : 1 < a.natAbs) : ((a ^ ·) : ℕ → ℤ).Injective := by
   refine (?_ : (natAbs ∘ (a ^ · : ℕ → ℤ)).Injective).of_comp
