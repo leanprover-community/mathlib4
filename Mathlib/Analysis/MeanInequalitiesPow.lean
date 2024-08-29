@@ -282,7 +282,7 @@ theorem add_rpow_le_rpow_add {p : ℝ} (a b : ℝ≥0∞) (hp1 : 1 ≤ p) : a ^ 
   obtain ⟨ha_top, hb_top⟩ := add_ne_top.mp h_top
   lift a to ℝ≥0 using ha_top
   lift b to ℝ≥0 using hb_top
-  simpa [← ENNReal.coe_rpow_of_nonneg _ hp_pos.le] using
+  simpa [ENNReal.coe_rpow_of_nonneg _ hp_pos.le] using
     ENNReal.coe_le_coe.2 (NNReal.add_rpow_le_rpow_add a b hp1)
 
 theorem rpow_add_rpow_le_add {p : ℝ} (a b : ℝ≥0∞) (hp1 : 1 ≤ p) :
