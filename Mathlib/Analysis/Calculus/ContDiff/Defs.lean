@@ -13,7 +13,8 @@ import Mathlib.Analysis.Calculus.ContDiff.HasFTaylorSeries
 A function is `C^1` on a domain if it is differentiable there, and its derivative is continuous.
 By induction, it is `C^n` if it is `C^{n-1}` and its (n-1)-th derivative is `C^1` there or,
 equivalently, if it is `C^1` and its derivative is `C^{n-1}`.
-It is `C^∞` if it is `C^n` for all n. Finally, it is `C^ω` if it is analytic.
+It is `C^∞` if it is `C^n` for all n.
+Finally, it is `C^ω` if it is analytic and the space is complete.
 
 We formalize these notions by defining iteratively the `n+1`-th derivative of a function as the
 derivative of the `n`-th derivative. It is called `iteratedFDeriv 𝕜 n f x` where `𝕜` is the
@@ -191,7 +192,9 @@ variable {m n : WithTop (ℕ∞)}
 it admits continuous derivatives up to order `n` in a neighborhood of `x` in `s ∪ {x}`.
 For `n = ∞`, we only require that this holds up to any finite order (where the neighborhood may
 depend on the finite order we consider).
-For `n = ω`, we require the function to be analytic within `s` at `x`.
+For `n = ω`, we require the function to be analytic within `s` at `x` (and the space to be complete,
+as otherwise an analytic function on a set doesn't need to be smooth there since the power series
+for the successive derivatives might not converge).
 
 For instance, a real function which is `C^m` on `(-1/m, 1/m)` for each natural `m`, but not
 better, is `C^∞` at `0` within `univ`.
@@ -214,14 +217,13 @@ theorem ContDiffWithinAt.of_le (h : ContDiffWithinAt 𝕜 n f s x) (hmn : m ≤ 
   | ω => match m with
     | ω => exact h
     | (m : ℕ∞) =>
-      simp [ContDiffWithinAt] at h
-      sorry
-
+      simp only [ContDiffWithinAt] at h ⊢
+      have := h.1
+      intro r _hr
+      exact h.2.exists_hasFTaylorSeriesUpToOn _
   | (n : ℕ∞) => match m with
     | ω => simp at hmn
-    | (m : ℕ∞) =>
-        simp at hmn
-        exact fun k hk => h k (le_trans hk hmn)
+    | (m : ℕ∞) => exact fun k hk ↦ h k (le_trans hk (by exact_mod_cast hmn))
 
 theorem contDiffWithinAt_iff_forall_nat_le {n : ℕ∞} :
     ContDiffWithinAt 𝕜 n f s x ↔ ∀ m : ℕ, ↑m ≤ n → ContDiffWithinAt 𝕜 m f s x :=

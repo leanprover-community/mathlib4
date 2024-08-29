@@ -228,7 +228,31 @@ lemma analyticWithinAt_iff_exists_analyticAt [CompleteSpace F] {f : E → F} {s 
   simp only [AnalyticWithinAt, AnalyticAt, hasFPowerSeriesWithinAt_iff_exists_hasFPowerSeriesAt]
   tauto
 
-alias ⟨AnalyticWithinAt.exists_analyticAt, _⟩ := analyticWithinAt_iff_exists_analyticAt
+/-- `f` is analytic within `s` at `x` iff some local extension of `f` is analytic at `x`. In this
+version, we make sure that the extension coincides with `f` on all of `insert x s`. -/
+lemma analyticWithinAt_iff_exists_analyticAt' [CompleteSpace F] {f : E → F} {s : Set E} {x : E} :
+    AnalyticWithinAt 𝕜 f s x ↔
+      ∃ g, f x = g x ∧ EqOn f g (insert x s) ∧ AnalyticAt 𝕜 g x := by
+  classical
+  simp only [analyticWithinAt_iff_exists_analyticAt]
+  refine ⟨?_, ?_⟩
+  · rintro ⟨g, hf, hg⟩
+    rcases mem_nhdsWithin.1 hf with ⟨u, u_open, xu, hu⟩
+    let g' := Set.piecewise u g f
+    refine ⟨g', ?_, ?_, ?_⟩
+    · have : x ∈ u ∩ insert x s := ⟨xu, by simp⟩
+      simpa [g', xu, this] using hu this
+    · intro y hy
+      by_cases h'y : y ∈ u
+      · have : y ∈ u ∩ insert x s := ⟨h'y, hy⟩
+        simpa [g', h'y, this] using hu this
+      · simp [g', h'y]
+    · apply hg.congr
+      filter_upwards [u_open.mem_nhds xu] with y hy using by simp [g', hy]
+  · rintro ⟨g, -, hf, hg⟩
+    exact ⟨g, by filter_upwards [self_mem_nhdsWithin] using hf, hg⟩
+
+alias ⟨AnalyticWithinAt.exists_analyticAt, _⟩ := analyticWithinAt_iff_exists_analyticAt'
 
 /-!
 ### Congruence
@@ -318,8 +342,8 @@ essential.
 lemma AnalyticWithinAt.comp [CompleteSpace F] [CompleteSpace G] {f : F → G} {g : E → F} {s : Set F}
     {t : Set E} {x : E} (hf : AnalyticWithinAt 𝕜 f s (g x)) (hg : AnalyticWithinAt 𝕜 g t x)
     (h : MapsTo g t s) : AnalyticWithinAt 𝕜 (f ∘ g) t x := by
-  rcases hf.exists_analyticAt with ⟨f', ef, hf'⟩
-  rcases hg.exists_analyticAt with ⟨g', eg, hg'⟩
+  rcases analyticWithinAt_iff_exists_analyticAt.1 hf with ⟨f', ef, hf'⟩
+  rcases analyticWithinAt_iff_exists_analyticAt.1 hg with ⟨g', eg, hg'⟩
   refine analyticWithinAt_iff_exists_analyticAt.mpr ⟨f' ∘ g', ?_, ?_⟩
   · have : MapsTo g (insert x t) (insert (g x) s) := h.insert x
     have gt := hg.continuousWithinAt_insert.tendsto_nhdsWithin this

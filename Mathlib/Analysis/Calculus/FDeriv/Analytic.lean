@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Analytic.Basic
 import Mathlib.Analysis.Analytic.CPolynomial
+import Mathlib.Analysis.Analytic.Within
 import Mathlib.Analysis.Calculus.Deriv.Basic
 import Mathlib.Analysis.Calculus.ContDiff.HasFTaylorSeries
 import Mathlib.Analysis.Calculus.FDeriv.Add
@@ -21,7 +22,7 @@ iterated derivatives, in `ContinuousMultilinearMap.iteratedFDeriv_eq`.
 
 open Filter Asymptotics
 
-open scoped ENNReal
+open scoped ENNReal Topology
 
 universe u v
 
@@ -95,12 +96,38 @@ theorem AnalyticOn.fderiv [CompleteSpace F] (h : AnalyticOn 𝕜 f s) :
   rcases h y hy with ⟨p, r, hp⟩
   exact hp.fderiv.analyticAt
 
-lemma glouk [CompleteSpace F] (n : ℕ) (h : HasFPowerSeriesOnBall f p x r) :
-    HasFTaylorSeriesUpToOn n f (FTaylorSeries f) (EMetric.ball x r) := by
-  sorry
+/-- If a function is analytic on a set `s`, so are its successive Fréchet derivative. -/
+theorem AnalyticOn.iteratedFDeriv [CompleteSpace F] (h : AnalyticOn 𝕜 f s) (n : ℕ) :
+    AnalyticOn 𝕜 (iteratedFDeriv 𝕜 n f) s := by
+  induction n with
+  | zero =>
+    rw [iteratedFDeriv_zero_eq_comp]
+    exact ((continuousMultilinearCurryFin0 𝕜 E F).symm : F →L[𝕜] E[×0]→L[𝕜] F).comp_analyticOn h
+  | succ n IH =>
+    rw [iteratedFDeriv_succ_eq_comp_left]
+    -- Porting note: for reasons that I do not understand at all, `?g` cannot be inlined.
+    convert ContinuousLinearMap.comp_analyticOn ?g IH.fderiv
+    case g => exact ↑(continuousMultilinearCurryLeftEquiv 𝕜 (fun _ : Fin (n + 1) ↦ E) F)
+    simp
 
+lemma AnalyticOn.hasFTaylorSeriesUpToOn [CompleteSpace F] (n : ℕ∞) (h : AnalyticOn 𝕜 f s) :
+    HasFTaylorSeriesUpToOn n f (ftaylorSeries 𝕜 f) s := by
+  refine ⟨fun x _hx ↦ rfl, fun m _hm x hx ↦ ?_, fun m _hm x hx ↦ ?_⟩
+  · apply HasFDerivAt.hasFDerivWithinAt
+    exact ((h.iteratedFDeriv m x hx).differentiableAt).hasFDerivAt
+  · apply (DifferentiableAt.continuousAt (𝕜 := 𝕜) ?_).continuousWithinAt
+    exact (h.iteratedFDeriv m x hx).differentiableAt
 
-#exit
+lemma AnalyticWithinAt.exists_hasFTaylorSeriesUpToOn [CompleteSpace F]
+    (n : ℕ∞) (h : AnalyticWithinAt 𝕜 f s x) :
+    ∃ u ∈ 𝓝[insert x s] x, ∃ (p : E → FormalMultilinearSeries 𝕜 E F),
+    HasFTaylorSeriesUpToOn n f p u := by
+  rcases h.exists_analyticAt with ⟨g, -, fg, hg⟩
+  rcases hg.exists_mem_nhds_analyticOn with ⟨v, vx, hv⟩
+  refine ⟨insert x s ∩ v, inter_mem_nhdsWithin _ vx, ftaylorSeries 𝕜 g, ?_⟩
+  suffices HasFTaylorSeriesUpToOn n g (ftaylorSeries 𝕜 g) (insert x s ∩ v) from
+    this.congr (fun y hy ↦ fg hy.1)
+  exact AnalyticOn.hasFTaylorSeriesUpToOn _ (hv.mono Set.inter_subset_right)
 
 end fderiv
 
