@@ -43,11 +43,11 @@ def orientationPreservingPregroupoid : Pregroupoid H where
   comp {f g u v} hf hg _ _ _ := by
     intro x ⟨hxu, hxv⟩
     rw [fderiv.comp _ (hg (f x) hxv).1 (hf x hxu).1]
-    · have h₁ : 0 < (fderiv ℝ f x).det := (hf x hxu).2
-      have h₂ : 0 < (fderiv ℝ g (f x)).det := (hg (f x) hxv).2
-      unfold ContinuousLinearMap.det ContinuousLinearMap.comp
-      rw [(fderiv ℝ g (f x)).toLinearMap.det_comp (fderiv ℝ f x).toLinearMap]
-      exact ⟨(hg (f x) hxv).1.comp x (hf x hxu).1, mul_pos h₂ h₁⟩
+    have h₁ : 0 < (fderiv ℝ f x).det := (hf x hxu).2
+    have h₂ : 0 < (fderiv ℝ g (f x)).det := (hg (f x) hxv).2
+    unfold ContinuousLinearMap.det ContinuousLinearMap.comp
+    rw [(fderiv ℝ g (f x)).toLinearMap.det_comp (fderiv ℝ f x).toLinearMap]
+    exact ⟨(hg (f x) hxv).1.comp x (hf x hxu).1, mul_pos h₂ h₁⟩
   id_mem := by
     intro x _
     simp only [Set.mem_univ, differentiableAt_id, fderiv_id, true_and]
