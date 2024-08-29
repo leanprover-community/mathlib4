@@ -32,7 +32,7 @@ variable {α β γ δ : Type*} [MeasurableSpace α] [MeasurableSpace β] [Measur
 
 namespace MeasureTheory
 
-open Measure Function Set Filter
+open Measure Function Set
 
 variable {μa : Measure α} {μb : Measure β} {μc : Measure γ} {μd : Measure δ}
 
@@ -63,7 +63,7 @@ theorem of_isEmpty [IsEmpty β] (f : α → β) (μa : Measure α) (μb : Measur
 theorem symm (e : α ≃ᵐ β) {μa : Measure α} {μb : Measure β} (h : MeasurePreserving e μa μb) :
     MeasurePreserving e.symm μb μa :=
   ⟨e.symm.measurable, by
-    rw [← h.map_eq, map_map e.symm.measurable e.measurable, e.symm_comp_self, Measure.map_id]⟩
+    rw [← h.map_eq, map_map e.symm.measurable e.measurable, e.symm_comp_self, map_id]⟩
 
 theorem restrict_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
     (hs : MeasurableSet s) : MeasurePreserving f (μa.restrict (f ⁻¹' s)) (μb.restrict s) :=
@@ -115,11 +115,6 @@ protected theorem sigmaFinite {f : α → β} (hf : MeasurePreserving f μa μb)
   SigmaFinite.of_map μa hf.aemeasurable (by rwa [hf.map_eq])
 
 theorem measure_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
-    (hs : NullMeasurableSet s μb) : μa (f ⁻¹' s) = μb s := by
-  rw [← hf.map_eq] at hs ⊢
-  rw [map_apply₀ hf.1.aemeasurable hs]
-
-theorem measure_preimage₀ {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
     (hs : NullMeasurableSet s μb) : μa (f ⁻¹' s) = μb s := by
   rw [← hf.map_eq] at hs ⊢
   rw [map_apply₀ hf.1.aemeasurable hs]
