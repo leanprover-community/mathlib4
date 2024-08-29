@@ -289,7 +289,7 @@ This file is 291 lines long which does not exceed the allowed bound.
 Please, remove the `set_option linter.style.longFile 1600`.
 -/
 #guard_msgs in
--- Do not allow increasing unnecessarily the `longFile` linter option
+-- Do not allow unnecessarily increasing the `longFile` linter option
 set_option linter.style.longFile 1600 in
 #exit
 
@@ -302,9 +302,9 @@ You can extend the allowed length of the file using `set_option linter.style.lon
 You can completely disable this linter by setting the length limit to `0`.
 -/
 #guard_msgs in
--- First, we silence the linter, so that we can set a default value smaller than 1500
+-- First, we silence the linter, so that we can set a default value smaller than 1500.
 set_option linter.style.longFile 0 in
--- Next, we test that the `longFile` linter warns when a file exceeds the allowed value
+-- Next, we test that the `longFile` linter warns when a file exceeds the allowed value.
 set_option linter.style.longFile 10 in
 #exit
 
@@ -316,10 +316,10 @@ This file is 321 lines long which does not exceed the allowed bound.
 Please, remove the `set_option linter.style.longFile 1700`.
 -/
 #guard_msgs in
--- First, we silence the linter, so that we can set a default value smaller than 1500
+-- First, we silence the linter, so that we can set a default value smaller than 1500.
 set_option linter.style.longFile 0 in
 -- If we set the allowed bound for the `longFile` linter that is too large,
--- then the linter tells us to use a smaller bound
+-- the linter tells us to use a smaller bound.
 set_option linter.style.longFile 1700 in
 #exit
 

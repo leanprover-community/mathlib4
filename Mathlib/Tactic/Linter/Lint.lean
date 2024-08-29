@@ -355,7 +355,7 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
           `set_option linter.style.longFile {candidate}`.\n\
           You can completely disable this linter by setting the length limit to `0`."
     else -- note that the inequality `linterBound ≤ defValue` holds
-    if lastLine + 200 < linterBound then
+    if candidate + 200 <= linterBound then
       if linterBound != candidate then
         logWarningAt stx <| .tagged linter.style.longFile.name
           m!"For this file, the recommended limit for the number of lines is {candidate}, \
