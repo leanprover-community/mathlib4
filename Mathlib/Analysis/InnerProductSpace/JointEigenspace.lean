@@ -28,7 +28,7 @@ and a proof obligation that the basis vectors are eigenvectors.
 
 ## Tags
 
-self-adjoint operator, simultaneous eigenspaces, simultaneous diagonalization
+self-adjoint operator, simultaneous eigenspaces, joint eigenspaces
 
 -/
 
