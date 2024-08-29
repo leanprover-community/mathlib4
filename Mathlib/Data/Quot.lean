@@ -542,7 +542,7 @@ several different quotient relations on a type, for example quotient groups, rin
 -- Porting note: Quotient.mk' is the equivalent of Lean 3's `Quotient.mk`
 /-- A version of `Quotient.mk` taking `{s : Setoid α}` as an implicit argument instead of an
 instance argument. -/
-protected def mk'' (a : α) : Quotient s₁ :=
+protected abbrev mk'' (a : α) : Quotient s₁ :=
   Quot.mk s₁.1 a
 
 /-- `Quotient.mk''` is a surjective function. -/
