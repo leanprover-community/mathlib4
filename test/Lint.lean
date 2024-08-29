@@ -59,19 +59,19 @@ export Nat (add)
 
 end add
 
-set_option linter.cdot false in
+set_option linter.style.cdot false in
 /--
 warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
-note: this linter can be disabled with `set_option linter.cdot false`
+note: this linter can be disabled with `set_option linter.style.cdot false`
 ---
 warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
-note: this linter can be disabled with `set_option linter.cdot false`
+note: this linter can be disabled with `set_option linter.style.cdot false`
 ---
 warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
-note: this linter can be disabled with `set_option linter.cdot false`
+note: this linter can be disabled with `set_option linter.style.cdot false`
 -/
 #guard_msgs in
-set_option linter.cdot true in
+set_option linter.style.cdot true in
 attribute [instance] Int.add in
 instance : Inhabited Nat where
   default := by
@@ -79,13 +79,13 @@ instance : Inhabited Nat where
       · have : Nat → Nat → Nat := (· + .)
         . exact 0
 
-set_option linter.cdot false in
+set_option linter.style.cdot false in
 /--
 warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
-note: this linter can be disabled with `set_option linter.cdot false`
+note: this linter can be disabled with `set_option linter.style.cdot false`
 -/
 #guard_msgs in
-set_option linter.cdot true in
+set_option linter.style.cdot true in
 example : Add Nat where add := (. + ·)
 
 set_option linter.dollarSyntax false in

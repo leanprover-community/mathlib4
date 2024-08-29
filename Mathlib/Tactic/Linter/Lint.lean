@@ -163,7 +163,7 @@ For instance, a "plain" dot `.` is allowed syntax, but is flagged by the linter.
 The `cdot` linter flags uses of the "cdot" `·` that are achieved by typing a character
 different from `·`.
 For instance, a "plain" dot `.` is allowed syntax, but is flagged by the linter. -/
-register_option linter.cdot : Bool := {
+register_option linter.style.cdot : Bool := {
   defValue := false
   descr := "enable the `cdot` linter"
 }
@@ -193,20 +193,21 @@ This is precisely what the `cdot` linter flags.
 def unwanted_cdot (stx : Syntax) : Array Syntax :=
   (findCDot stx).filter (!isCDot? ·)
 
-namespace CDotLinter
+namespace Style.cdotLinter
 
-@[inherit_doc linter.cdot]
+@[inherit_doc linter.style.cdot]
 def cdotLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    unless Linter.getLinterValue linter.cdot (← getOptions) do
+    unless Linter.getLinterValue linter.style.cdot (← getOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
     for s in unwanted_cdot stx do
-      Linter.logLint linter.cdot s m!"Please, use '·' (typed as `\\.`) instead of '{s}' as 'cdot'."
+      Linter.logLint linter.style.cdot s
+        m!"Please, use '·' (typed as `\\.`) instead of '{s}' as 'cdot'."
 
 initialize addLinter cdotLinter
 
-end CDotLinter
+end Style.cdotLinter
 
 /-!
 # The `dollarSyntax` linter
