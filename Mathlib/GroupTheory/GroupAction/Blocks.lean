@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 
-import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.Data.Set.Card
 import Mathlib.Data.Setoid.Partition
 import Mathlib.GroupTheory.GroupAction.Basic
