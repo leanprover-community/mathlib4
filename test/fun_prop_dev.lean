@@ -136,7 +136,7 @@ instance : Obj (α -o β) := ⟨⟩
 -- morphism theorems i.e. theorems about `FunLike.coe` --
 ---------------------------------------------------------
 
--- this is some form of cartesion closedness with homs `α ->> β`
+-- this is some form of cartesian closedness with homs `α ->> β`
 @[fun_prop] theorem conHom_con' (f : α → β ->> γ) (g : α → β) (hf : Con f) (hg : Con g) : Con (fun x => (f x) (g x)) := silentSorry
 
 @[fun_prop] theorem conHom_lin_in_fn' (f : α → β ->> γ) (y : β) (hf : Lin f) : Lin (fun x => f x y) := silentSorry
@@ -165,7 +165,7 @@ example [Add β] (f : α → β → γ) (hx : ∀ y, Lin (f · y)) (hy : ∀ x, 
 example [Add α] (f : α → α → α → α) (hx : ∀ x y, Lin (f x y ·)) (hy : ∀ x z, Lin (f x · z)) (hz : ∀ y z, Lin (f · y z)) :
     Lin (fun x => fun y z ⊸ f z (x+x) y) := by fun_prop
 
--- the only analoge is this theorem but that is alredy provable
+-- the only analogue is this theorem but that is already provable
 example (f : α → β -o γ) (g : α → β) (hf : Lin (fun (x,y) => f x y)) (hg : Lin g) : Lin (fun x => (f x) (g x)) := by fun_prop
 
 
