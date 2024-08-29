@@ -93,6 +93,12 @@ namespace Parenthesizer
 
 end Lean.PrettyPrinter.Parenthesizer
 
+open Mathlib.Stacks in
+/-- Extract the underlying tag as a string from a `stacksTag` node. -/
+def _root_.Lean.TSyntax.getStacksTag (stx : TSyntax stacksTagKind) : CoreM String := do
+  let some val := Syntax.isLit? stacksTagKind stx | throwError "Malformed Stacks tag"
+  return val
+
 namespace Mathlib.Stacks
 
 /-- The `stacks` attribute.
@@ -107,8 +113,8 @@ initialize Lean.registerBuiltinAttribute {
   name := `stacks
   descr := "Apply a Stacks project tag to a theorem."
   add := fun decl stx _attrKind => match stx with
-    | `(attr| stacks $tag $[$comment]?) =>
-      addTagEntry decl tag.raw[0].getAtomVal <| (comment.map (·.getString)).getD ""
+    | `(attr| stacks $tag $[$comment]?) => do
+      addTagEntry decl (← tag.getStacksTag) <| (comment.map (·.getString)).getD ""
     | _ => throwUnsupportedSyntax
 }
 
