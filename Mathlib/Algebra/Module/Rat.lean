@@ -5,7 +5,7 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Field.Rat
-import Mathlib.Data.NNRat.Lemmas
+import Mathlib.Algebra.Order.Field.Rat
 
 /-!
 # Basic results about modules over the rationals.
