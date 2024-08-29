@@ -293,7 +293,7 @@ variable (s : Set E₁)
 variable (n : ℕ)
 
 /-- For all x, let K x be the intersection of 4 sets-/
-def K : (Elem (U (E := E₁) (n + 1))) → Set (WeakDual 𝕜₁ E₁) :=
+def K : (U (E := E₁) (n + 1)) → Set (WeakDual 𝕜₁ E₁) :=
   fun x => polar 𝕜₁ s ∩ polar 𝕜₁ {↑x} ∩ C ∩ polar 𝕜₁ (U (n+2))
 
 
@@ -304,22 +304,13 @@ def K : (Elem (U (E := E₁) (n + 1))) → Set (WeakDual 𝕜₁ E₁) :=
 --#check isCompact_iff_finite_subfamily_closed.mp (ι := (Elem (U (E := E) (n + 1))))
 --  (polarUcompact 𝕜 (E := E) (n+2)) (K 𝕜 C s n) --(isCompactK C s n)
 
-
-
 lemma isCompactK [ProperSpace 𝕜₁] (x : (U (E := E₁) (n + 1))) (hC₁ : IsClosed C) :
     IsCompact (K C s n x) := IsCompact.inter_left (polarUcompact 𝕜₁ _)
     (IsClosed.inter (IsClosed.inter (isClosed_polar 𝕜₁ s) (isClosed_polar _ _)) hC₁)
 
-lemma isClosedK (x : (U (E := E₁) (n + 1))) (hC₁ : IsClosed C) :
-    IsClosed (K C s n x) := by
-  apply IsClosed.inter
-  apply IsClosed.inter
-  apply IsClosed.inter
-  exact isClosed_polar 𝕜₁ s
-  exact isClosed_polar 𝕜₁ _
-  exact hC₁
-  exact isClosed_polar 𝕜₁ (U (n + 2))
-
+lemma isClosedK (x : (U (E := E₁) (n + 1))) (hC₁ : IsClosed C) : IsClosed (K C s n x) :=
+  IsClosed.inter (IsClosed.inter (IsClosed.inter (isClosed_polar 𝕜₁ s) (isClosed_polar 𝕜₁ _)) hC₁)
+    (isClosed_polar 𝕜₁ (U (n + 2)))
 
 lemma inter_empty (h : polar 𝕜₁ s ∩ C ∩ polar 𝕜₁ (U (n+1)) = ∅) :
     ⋂ (x : (U (E := E₁) (n + 1))), K C s n x = ∅ := by
@@ -341,14 +332,10 @@ lemma existance2 [ProperSpace 𝕜₁] : ∀ {ι : Type u}
   isCompact_iff_finite_subfamily_closed.mp (polarUcompact 𝕜₁ (n+2))
 
 lemma existance3 [ProperSpace 𝕜₁] (hC₁ : IsClosed C) (h : polar 𝕜₁ s ∩ C ∩ polar 𝕜₁ (U (n+1)) = ∅) :
-    ∃ u : Finset (Elem (U (E := E₁) (n + 1))), (polar 𝕜₁ (U (n+2)) ∩ ⋂ i ∈ u, K C s n i) = ∅ := by
-  apply existance2
-  intro i
-  apply isClosedK
-  apply hC₁
+    ∃ u : Finset (U (E := E₁) (n + 1)), (polar 𝕜₁ (U (n+2)) ∩ ⋂ i ∈ u, K C s n i) = ∅ := by
+  apply existance2 _ _ (fun i => isClosedK _ _ _ i hC₁) _
   convert Set.inter_empty (polar 𝕜₁ (U (n + 2)))
-  apply inter_empty
-  exact h
+  exact inter_empty _ _ _ h
 
 /-
 lemma existance [ProperSpace 𝕜] : ∃ u : Finset (Elem (U (E := E) (n + 1))),
