@@ -69,6 +69,8 @@ We also define two functions to convert other bundled maps to `α →o β`:
 monotone map, bundled morphism
 -/
 
+-- Developments relating order homs and sets belong in `Order.Hom.Set` or later.
+assert_not_exists Set.range
 
 open OrderDual
 
@@ -589,6 +591,18 @@ protected def withBotMap (f : α ↪o β) : WithBot α ↪o WithBot β :=
 protected def withTopMap (f : α ↪o β) : WithTop α ↪o WithTop β :=
   { f.dual.withBotMap.dual with toFun := WithTop.map f }
 
+/-- Coercion `α → WithBot α` as an `OrderEmbedding`. -/
+@[simps (config := .asFn)]
+protected def withBotCoe : α ↪o WithBot α where
+  toFun := .some
+  inj' := Option.some_injective _
+  map_rel_iff' := WithBot.coe_le_coe
+
+/-- Coercion `α → WithTop α` as an `OrderEmbedding`. -/
+@[simps (config := .asFn)]
+protected def withTopCoe : α ↪o WithTop α :=
+  { (OrderEmbedding.withBotCoe (α := αᵒᵈ)).dual with toFun := .some }
+
 /-- To define an order embedding from a partial order to a preorder it suffices to give a function
 together with a proof that it satisfies `f a ≤ f b ↔ a ≤ b`.
 -/
@@ -772,9 +786,7 @@ theorem symm_apply_eq (e : α ≃o β) {x : α} {y : β} : e.symm y = x ↔ y = 
   e.toEquiv.symm_apply_eq
 
 @[simp]
-theorem symm_symm (e : α ≃o β) : e.symm.symm = e := by
-  ext
-  rfl
+theorem symm_symm (e : α ≃o β) : e.symm.symm = e := rfl
 
 theorem symm_bijective : Function.Bijective (OrderIso.symm : (α ≃o β) → β ≃o α) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
@@ -1085,6 +1097,18 @@ theorem OrderIso.map_sup [SemilatticeSup α] [SemilatticeSup β] (f : α ≃o β
     f (x ⊔ y) = f x ⊔ f y :=
   f.dual.map_inf x y
 
+theorem OrderIso.isMax_apply {α β : Type*} [Preorder α] [Preorder β] (f : α ≃o β) {x : α} :
+    IsMax (f x) ↔ IsMax x := by
+  refine ⟨f.strictMono.isMax_of_apply, ?_⟩
+  conv_lhs => rw [← f.symm_apply_apply x]
+  exact f.symm.strictMono.isMax_of_apply
+
+theorem OrderIso.isMin_apply {α β : Type*} [Preorder α] [Preorder β] (f : α ≃o β) {x : α} :
+    IsMin (f x) ↔ IsMin x := by
+  refine ⟨f.strictMono.isMin_of_apply, ?_⟩
+  conv_lhs => rw [← f.symm_apply_apply x]
+  exact f.symm.strictMono.isMin_of_apply
+
 /-- Note that this goal could also be stated `(Disjoint on f) a b` -/
 theorem Disjoint.map_orderIso [SemilatticeInf α] [OrderBot α] [SemilatticeInf β] [OrderBot β]
     {a b : α} (f : α ≃o β) (ha : Disjoint a b) : Disjoint (f a) (f b) := by
@@ -1239,6 +1263,3 @@ theorem OrderIso.complementedLattice_iff (f : α ≃o β) :
 end BoundedOrder
 
 end LatticeIsos
-
--- Developments relating order homs and sets belong in `Order.Hom.Set` or later.
-assert_not_exists Set.range

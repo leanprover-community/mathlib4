@@ -5,7 +5,7 @@ Authors: Johan Commelin, Scott Morrison, Adam Topaz
 -/
 import Mathlib.AlgebraicTopology.SimplexCategory
 import Mathlib.CategoryTheory.Comma.Arrow
-import Mathlib.CategoryTheory.Limits.FunctorCategory
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Opposites
 
 /-!
@@ -776,14 +776,15 @@ def cosimplicialToSimplicialAugmented :
 objects and augmented cosimplicial objects in the opposite category. -/
 @[simps! functor inverse]
 def simplicialCosimplicialAugmentedEquiv :
-    (SimplicialObject.Augmented C)ᵒᵖ ≌ CosimplicialObject.Augmented Cᵒᵖ :=
-  Equivalence.mk (simplicialToCosimplicialAugmented _) (cosimplicialToSimplicialAugmented _)
-    (NatIso.ofComponents (fun X => X.unop.rightOpLeftOpIso.op) fun f => by
+    (SimplicialObject.Augmented C)ᵒᵖ ≌ CosimplicialObject.Augmented Cᵒᵖ where
+  functor := simplicialToCosimplicialAugmented _
+  inverse := cosimplicialToSimplicialAugmented _
+  unitIso := NatIso.ofComponents (fun X => X.unop.rightOpLeftOpIso.op) fun f => by
       dsimp
       rw [← f.op_unop]
       simp_rw [← op_comp]
       congr 1
-      aesop_cat)
-    (NatIso.ofComponents fun X => X.leftOpRightOpIso)
+      aesop_cat
+  counitIso := NatIso.ofComponents fun X => X.leftOpRightOpIso
 
 end CategoryTheory

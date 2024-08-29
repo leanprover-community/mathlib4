@@ -218,7 +218,7 @@ end IsSelfAdjoint
 
 section FiniteDimensional
 
-variable [FiniteDimensional 𝕜 E] [_i : Nontrivial E] {T : E →ₗ[𝕜] E}
+variable [FiniteDimensional 𝕜 E] {T : E →ₗ[𝕜] E}
 
 namespace LinearMap
 
@@ -226,7 +226,7 @@ namespace IsSymmetric
 
 /-- The supremum of the Rayleigh quotient of a symmetric operator `T` on a nontrivial
 finite-dimensional vector space is an eigenvalue for that operator. -/
-theorem hasEigenvalue_iSup_of_finiteDimensional (hT : T.IsSymmetric) :
+theorem hasEigenvalue_iSup_of_finiteDimensional [Nontrivial E] (hT : T.IsSymmetric) :
     HasEigenvalue T ↑(⨆ x : { x : E // x ≠ 0 }, RCLike.re ⟪T x, x⟫ / ‖(x : E)‖ ^ 2 : ℝ) := by
   haveI := FiniteDimensional.proper_rclike 𝕜 E
   let T' := hT.toSelfAdjoint
@@ -245,7 +245,7 @@ theorem hasEigenvalue_iSup_of_finiteDimensional (hT : T.IsSymmetric) :
 
 /-- The infimum of the Rayleigh quotient of a symmetric operator `T` on a nontrivial
 finite-dimensional vector space is an eigenvalue for that operator. -/
-theorem hasEigenvalue_iInf_of_finiteDimensional (hT : T.IsSymmetric) :
+theorem hasEigenvalue_iInf_of_finiteDimensional [Nontrivial E] (hT : T.IsSymmetric) :
     HasEigenvalue T ↑(⨅ x : { x : E // x ≠ 0 }, RCLike.re ⟪T x, x⟫ / ‖(x : E)‖ ^ 2 : ℝ) := by
   haveI := FiniteDimensional.proper_rclike 𝕜 E
   let T' := hT.toSelfAdjoint

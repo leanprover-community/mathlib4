@@ -294,7 +294,7 @@ variable {A : Type*} [Semiring A] [Algebra R A]
 private def liftAux (f : X → A) : FreeAlgebra R X →ₐ[R] A where
   toFun a :=
     Quot.liftOn a (liftFun _ _ f) fun a b h ↦ by
-      induction' h
+      induction h
       · exact (algebraMap R A).map_add _ _
       · exact (algebraMap R A).map_mul _ _
       · apply Algebra.commutes
@@ -526,7 +526,7 @@ namespace FreeAlgebra
 /-- An induction principle for the free algebra.
 
 If `C` holds for the `algebraMap` of `r : R` into `FreeAlgebra R X`, the `ι` of `x : X`, and is
-preserved under addition and muliplication, then it holds for all of `FreeAlgebra R X`.
+preserved under addition and multiplication, then it holds for all of `FreeAlgebra R X`.
 -/
 @[elab_as_elim, induction_eliminator]
 theorem induction {C : FreeAlgebra R X → Prop}
