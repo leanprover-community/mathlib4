@@ -357,6 +357,25 @@ theorem cons_sublist_orderedInsert {l c : List α} {a : α} (hl : c <+ l) (ha : 
       · exact .cons _ <| ih ‹_›
       · exact absurd (ha _ <| mem_cons_self ..) ‹_›
 
+theorem orderedInsert_sublist [IsTrans α r] {as bs} (x) (hs : as <+ bs) (hb : bs.Sorted r) :
+    orderedInsert r x as <+ orderedInsert r x bs := by
+  cases as
+  · simp
+  · cases bs
+    · contradiction
+    · unfold orderedInsert
+      cases hs <;> split <;> try split
+      · exact .cons₂ _ <| .cons _ ‹_›
+      · have ih := orderedInsert_sublist x ‹_› hb.of_cons
+        simp only [‹r x _›, orderedInsert, ite_true] at ih
+        exact .trans ih <| .cons _ (.refl _)
+      · exact absurd (trans_of _ ‹_› <| (pairwise_cons.mp hb).left _ (mem_of_cons_sublist ‹_›)) ‹_›
+      · have ih := orderedInsert_sublist x ‹_› hb.of_cons
+        rw [orderedInsert, if_neg ‹_›] at ih
+        exact .cons _ ‹_›
+      · simp_all only [sorted_cons, cons_sublist_cons]
+      · exact .cons₂ _ <| orderedInsert_sublist x ‹_› hb.of_cons
+
 section TotalAndTransitive
 
 variable [IsTotal α r] [IsTrans α r]
@@ -395,7 +414,7 @@ theorem insertionSort_stable {l c : List α} (hr : c.Pairwise r) (hc : c <+ l) :
   | nil         => simp_all only [sublist_nil, insertionSort, Sublist.refl]
   | cons _ _ ih =>
     cases hc
-    · exact ih hr ‹_› |>.trans (sublist_orderedInsert ..)
+    · exact ih ‹_› ‹_› |>.trans (sublist_orderedInsert ..)
     · cases hr; exact cons_sublist_orderedInsert (ih ‹_› ‹_›) ‹_›
 
 /--
@@ -406,6 +425,33 @@ then `[a, b]` is still a sublist of `insertionSort r l`.
 theorem insertionSort_stable_pair {a b : α} {l : List α} (hab : r a b) (h : [a, b] <+ l) :
     [a, b] <+ insertionSort r l :=
   insertionSort_stable (pairwise_pair.mpr hab) h
+
+variable [DecidableEq α] [IsAntisymm α r] [IsTotal α r] [IsTrans α r]
+
+/--
+A version of `insertionSort_stable` which only assumes `c <+~ l` (instead of `c <+ l`), but
+additionally requires `DecidableEq α`, `IsAntisymm α r`, `IsTotal α r` and `IsTrans α r`.
+-/
+theorem insertionSort_stable' {l c : List α} (hs : c.Sorted r) (hc : c <+~ l) :
+    c <+ insertionSort r l := by
+  obtain ⟨d, hc, hd⟩ := hc
+  induction l generalizing c d with
+  | nil         => simp_all only [sublist_nil, insertionSort, nil_perm]
+  | cons a _ ih =>
+    cases hd
+    · exact ih ‹_› _ ‹_› ‹_› |>.trans (sublist_orderedInsert ..)
+    · specialize ih (hs.sublist <| erase_sublist a _) _ (erase_cons_head a _ ▸ hc.erase _) ‹_›
+      have := hc.mem_iff.mp <| mem_cons_self ..
+      exact orderedInsert_erase _ _ ‹_› ‹_› ▸ orderedInsert_sublist _ ih (sorted_insertionSort ..)
+
+/--
+Another statement of stability of insertion sort.
+If a pair `[a, b]` is a sublist of a permutation of `l` and `a ≼ b`,
+then `[a, b]` is still a sublist of `insertionSort r l`.
+-/
+theorem insertionSort_stable_pair' {a b : α} {l : List α} (hab : a ≼ b) (h : [a, b] <+~ l) :
+    [a, b] <+ insertionSort r l :=
+  insertionSort_stable' (pairwise_pair.mpr hab) h
 
 end Correctness
 
