@@ -46,7 +46,7 @@ lemma equalizerCondition_w (P : Cᵒᵖ ⥤ D) {X B : C} {π : X ⟶ B} (c : Pul
   simp only [← Functor.map_comp, ← op_comp, c.condition]
 
 /--
-A contravariant functor on `C` satisifies `SingleEqualizerCondition` with respect to a morphism `π`
+A contravariant functor on `C` satisfies `SingleEqualizerCondition` with respect to a morphism `π`
 if it takes its kernel pair to an equalizer diagram.
 -/
 def SingleEqualizerCondition (P : Cᵒᵖ ⥤ D) ⦃X B : C⦄ (π : X ⟶ B) : Prop :=

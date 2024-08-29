@@ -108,7 +108,7 @@ theorem mul_lt_mul_iff_of_le_of_le [CovariantClass α α (· * ·) (· ≤ ·)]
     [CovariantClass α α (Function.swap (· * ·)) (· < ·)] {a₁ a₂ b₁ b₂ : α} (ha : a₁ ≤ a₂)
     (hb : b₁ ≤ b₂) : a₁ * b₁ < a₂ * b₂ ↔ a₁ < a₂ ∨ b₁ < b₂ := by
   refine ⟨lt_or_lt_of_mul_lt_mul, fun h => ?_⟩
-  cases' h with ha' hb'
+  rcases h with ha' | hb'
   · exact mul_lt_mul_of_lt_of_le ha' hb
   · exact mul_lt_mul_of_le_of_lt ha hb'
 
