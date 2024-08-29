@@ -51,7 +51,7 @@ namespace Setoid
 @[deprecated (since := "2024-08-09")] alias ext'_iff := Setoid.ext_iff
 
 /-- Two equivalence relations are equal iff their underlying binary operations are equal. -/
-theorem eq_iff_rel_eq {r₁ r₂ : Setoid α} : r₁ = r₂ ↔ r₁ = r₂ :=
+theorem eq_iff_rel_eq {r₁ r₂ : Setoid α} : r₁ = r₂ ↔ ⇑r₁ = ⇑r₂ :=
   ⟨fun h => h ▸ rfl, fun h => Setoid.ext fun _ _ => h ▸ Iff.rfl⟩
 
 /-- Defining `≤` for equivalence relations. -/
@@ -226,7 +226,6 @@ theorem eqvGen_of_setoid (r : Setoid α) : EqvGen.Setoid r.r = r :=
   le_antisymm (by rw [eqvGen_eq]; exact sInf_le fun _ _ => id) EqvGen.rel
 
 /-- Equivalence closure is idempotent. -/
-@[simp]
 theorem eqvGen_idem (r : α → α → Prop) : EqvGen.Setoid (EqvGen.Setoid r) = EqvGen.Setoid r :=
   eqvGen_of_setoid _
 
@@ -423,3 +422,4 @@ theorem Quot.subsingleton_iff (r : α → α → Prop) : Subsingleton (Quot r) �
   refine Quot.surjective_mk.forall.trans (forall_congr' fun b => ?_)
   rw [Quot.eq]
   simp only [forall_const, le_Prop_eq, Pi.top_apply, Prop.top_eq_true, true_implies]
+#lint

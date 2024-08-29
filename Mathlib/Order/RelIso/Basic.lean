@@ -378,7 +378,6 @@ theorem acc_lift₂_iff {s : Setoid α} {r : α → α → Prop}
     obtain ⟨a', rfl⟩ := q.exists_rep
     exact IH a' h
 
-@[simp]
 theorem acc_liftOn₂_iff {s : Setoid α} {r : α → α → Prop} {H} {a} :
     Acc (fun x y => Quotient.liftOn₂ x y r H) (Quotient.mk s a) ↔ Acc r a :=
   acc_lift₂_iff (H := H)
@@ -398,7 +397,6 @@ theorem wellFounded_lift₂_iff {s : Setoid α} {r : α → α → Prop}
 
 alias ⟨WellFounded.of_quotient_lift₂, WellFounded.quotient_lift₂⟩ := wellFounded_lift₂_iff
 
-@[simp]
 theorem wellFounded_liftOn₂'_iff {s : Setoid α} {r : α → α → Prop} {H} :
     (WellFounded fun x y : Quotient s => Quotient.liftOn₂ x y r H) ↔ WellFounded r :=
   wellFounded_lift₂_iff (H := H)
@@ -724,3 +722,4 @@ def relIsoOfUniqueOfRefl (r : α → α → Prop) (s : β → β → Prop) [IsRe
   ⟨Equiv.equivOfUnique α β, iff_of_true (rel_of_subsingleton s _ _) (rel_of_subsingleton r _ _)⟩
 
 end RelIso
+#lint
