@@ -42,7 +42,10 @@ section
 variable (F : Type*) [Field F] (E : Type*) [Field E] [Algebra F E]
 
 /-- A field extension E/F is Galois if it is both separable and normal. Note that in mathlib
-a separable extension of fields is by definition algebraic. -/
+a separable extension of fields is by definition algebraic.
+
+[Stacks: Definition 09I0](https://stacks.math.columbia.edu/tag/09I0)-/
+@[stacks 0910]
 class IsGalois : Prop where
   [to_isSeparable : Algebra.IsSeparable F E]
   [to_normal : Normal F E]
@@ -77,6 +80,11 @@ theorem splits [IsGalois F E] (x : E) : (minpoly F x).Splits (algebraMap F E) :=
 
 variable (E)
 
+/-- Let $E$ be a field. Let $G$ be a finite group acting on $E$.
+Then the extension $E / E^G$ is Galois.
+
+[Stacks: Lemma 09I3, first part](https://stacks.math.columbia.edu/tag/09I3) -/
+@[stacks 09I3 "first part"]
 instance of_fixed_field (G : Type*) [Group G] [Finite G] [MulSemiringAction G E] :
     IsGalois (FixedPoints.subfield G E) E :=
   ⟨⟩
@@ -90,6 +98,11 @@ theorem IntermediateField.AdjoinSimple.card_aut_eq_finrank [FiniteDimensional F 
   rw [← IntermediateField.card_algHom_adjoin_integral F hα h_sep h_splits]
   exact Fintype.card_congr (algEquivEquivAlgHom F F⟮α⟯)
 
+/-- Let $E / F$ be a finite extension of fields. If $E$ is Galois over $F$, then
+$|\text{Aut}(E/F)| = [E : F]$.
+
+[Stacks: Lemma 09I1, 'only if' part](https://stacks.math.columbia.edu/tag/09I1) -/
+@[stacks 09I1 "'only if' part"]
 theorem card_aut_eq_finrank [FiniteDimensional F E] [IsGalois F E] :
     Fintype.card (E ≃ₐ[F] E) = finrank F E := by
   cases' Field.exists_primitive_element F E with α hα
@@ -123,6 +136,11 @@ section IsGaloisTower
 variable (F K E : Type*) [Field F] [Field K] [Field E] {E' : Type*} [Field E'] [Algebra F E']
 variable [Algebra F K] [Algebra F E] [Algebra K E] [IsScalarTower F K E]
 
+/-- Let $E / K / F$ be a tower of field extensions.
+If $E$ is Galois over $F$, then $E$ is Galois over $K$.
+
+[Stacks: Lemma 09I2](https://stacks.math.columbia.edu/tag/09I2) -/
+@[stacks 09I2]
 theorem IsGalois.tower_top_of_isGalois [IsGalois F E] : IsGalois K E :=
   { to_isSeparable := Algebra.isSeparable_tower_top_of_isSeparable F K E
     to_normal := Normal.tower_top_of_normal F K E }
@@ -243,7 +261,10 @@ theorem card_fixingSubgroup_eq_finrank [DecidablePred (· ∈ IntermediateField.
     Fintype.card (IntermediateField.fixingSubgroup K) = finrank K E := by
   conv_rhs => rw [← fixedField_fixingSubgroup K, IntermediateField.finrank_fixedField_eq_card]
 
-/-- The Galois correspondence from intermediate fields to subgroups -/
+/-- The Galois correspondence from intermediate fields to subgroups.
+
+[Stacks: Lemma 09DW](https://stacks.math.columbia.edu/tag/09DW) -/
+@[stacks 09DW]
 def intermediateFieldEquivSubgroup [FiniteDimensional F E] [IsGalois F E] :
     IntermediateField F E ≃o (Subgroup (E ≃ₐ[F] E))ᵒᵈ where
   toFun := IntermediateField.fixingSubgroup
@@ -301,6 +322,11 @@ theorem of_fixedField_eq_bot [FiniteDimensional F E]
   rw [← isGalois_iff_isGalois_bot, ← h]
   classical exact IsGalois.of_fixed_field E (⊤ : Subgroup (E ≃ₐ[F] E))
 
+/-- Let $E / F$ be a finite extension of fields. If $|\text{Aut}(E/F)| = [E : F]$, then
+$E$ is Galois over $F$.
+
+[Stacks: Lemma 09I1, 'if' part](https://stacks.math.columbia.edu/tag/09I1). -/
+@[stacks 09I1 "'if' part"]
 theorem of_card_aut_eq_finrank [FiniteDimensional F E]
     (h : Fintype.card (E ≃ₐ[F] E) = finrank F E) : IsGalois F E := by
   apply of_fixedField_eq_bot
@@ -417,6 +443,13 @@ section normalClosure
 variable (k K F : Type*) [Field k] [Field K] [Field F] [Algebra k K] [Algebra k F] [Algebra K F]
   [IsScalarTower k K F] [IsGalois k F]
 
+/-- Let $F / K / k$ be a tower of field extensions. If $F$ is Galois over $k$,
+then the normal closure of $K$ over $k$ in $F$ is Galois over $k$.
+
+This is a generalization of [Stacks: Lemma 0EXM](https://stacks.math.columbia.edu/tag/0EXM)
+where it is required that $K / k$ be finite. -/
+-- @[stacks 01XM "Our definition is more general than that of the Stacks Project,
+-- where it is required that $K / k$ be finite."]
 instance IsGalois.normalClosure : IsGalois k (normalClosure k K F) where
   to_isSeparable := Algebra.isSeparable_tower_bot_of_isSeparable k _ F
 

@@ -66,6 +66,7 @@ as an `R`-linear map.
 
 This is a generalization of
 [Stacks: Definition 0BIF, first part](https://stacks.math.columbia.edu/tag/0BIF) -/
+--@[stacks 0BIF "Our definition is more general than the Stacks definition"]
 noncomputable def trace : S →ₗ[R] R :=
   (LinearMap.trace R S).comp (lmul R S).toLinearMap
 
