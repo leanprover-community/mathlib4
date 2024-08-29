@@ -355,7 +355,7 @@ theorem isArtinian_of_fg_of_artinian {R M} [Ring R] [AddCommGroup M] [Module R M
   haveI := Classical.decEq R
   have : ∀ x ∈ s, x ∈ N := fun x hx => hs ▸ Submodule.subset_span hx
   refine @isArtinian_of_surjective _ ((↑s : Set M) →₀ R) N _ _ _ _ _ ?_ ?_ isArtinian_finsupp
-  · exact Finsupp.total (↑s : Set M) N R (fun i => ⟨i, hs ▸ subset_span i.2⟩)
+  · exact Finsupp.total R (fun i => ⟨i, hs ▸ subset_span i.2⟩)
   · rw [← LinearMap.range_eq_top, eq_top_iff,
        ← map_le_map_iff_of_injective (show Injective (Submodule.subtype N)
          from Subtype.val_injective), Submodule.map_top, range_subtype,

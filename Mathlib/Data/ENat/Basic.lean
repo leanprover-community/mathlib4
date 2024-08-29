@@ -26,7 +26,7 @@ and forth using `ENat.some_eq_coe`, or restate the lemma for `ENat`.
 
 deriving instance Zero, CanonicallyOrderedCommSemiring, Nontrivial,
   LinearOrder, Bot, CanonicallyLinearOrderedAddCommMonoid, Sub,
-  LinearOrderedAddCommMonoidWithTop, WellFoundedRelation, Inhabited
+  LinearOrderedAddCommMonoidWithTop, WellFoundedRelation
   for ENat
   -- AddCommMonoidWithOne,
   -- OrderBot, OrderTop, OrderedSub, SuccOrder, WellFoundedLt, CharZero

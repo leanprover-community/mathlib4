@@ -152,7 +152,7 @@ theorem mapsTo_emetric_ball (h : LipschitzWith K f) (hK : K ≠ 0) (x : α) (r :
 
 theorem edist_lt_top (hf : LipschitzWith K f) {x y : α} (h : edist x y ≠ ⊤) :
     edist (f x) (f y) < ⊤ :=
-  (hf x y).trans_lt <| ENNReal.mul_lt_top ENNReal.coe_ne_top h
+  (hf x y).trans_lt <| ENNReal.mul_lt_top ENNReal.coe_lt_top h.lt_top
 
 theorem mul_edist_le (h : LipschitzWith K f) (x y : α) :
     (K⁻¹ : ℝ≥0∞) * edist (f x) (f y) ≤ edist x y := by
