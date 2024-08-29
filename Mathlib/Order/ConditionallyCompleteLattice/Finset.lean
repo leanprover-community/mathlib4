@@ -81,14 +81,14 @@ theorem Finset.ciSup_eq_max'_image {s : Finset ι} (h : ∃ x ∈ s, sSup ∅ �
   rw [iSup, ← h'.csSup_eq_max', coe_image]
   refine csSup_eq_csSup_of_forall_exists_le ?_ ?_
   · simp only [ciSup_eq_ite, dite_eq_ite, Set.mem_range, Set.mem_image, mem_coe,
-    exists_exists_and_eq_and, forall_exists_index, forall_apply_eq_imp_iff]
+      exists_exists_and_eq_and, forall_exists_index, forall_apply_eq_imp_iff]
     intro i
     split_ifs
     · exact ⟨_, by assumption, le_rfl⟩
     · obtain ⟨a, ha, ha'⟩ := h
       exact ⟨a, ha, ha'⟩
   · simp only [Set.mem_image, mem_coe, ciSup_eq_ite, dite_eq_ite, Set.mem_range,
-    exists_exists_eq_and, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+      exists_exists_eq_and, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
     intro i hi
     refine ⟨i, ?_⟩
     simp [hi]
@@ -134,7 +134,8 @@ theorem Set.Finite.ciSup_lt_iff {s : Set ι} {f : ι → α} (hs : s.Finite)
     · classical
       refine (((hs.image f).union (finite_singleton (sSup ∅))).subset ?_).bddAbove
       intro
-      simp [ciSup_eq_ite]
+      simp only [ciSup_eq_ite, dite_eq_ite, mem_range, union_singleton, mem_insert_iff, mem_image,
+        forall_exists_index]
       intro x hx
       split_ifs at hx
       · exact Or.inr ⟨_, by assumption, hx⟩
@@ -158,7 +159,8 @@ theorem Set.Finite.lt_ciInf_iff {s : Set ι} {f : ι → α} (hs : s.Finite)
     · classical
       refine (((hs.image f).union (finite_singleton (sInf ∅))).subset ?_).bddBelow
       intro
-      simp [ciInf_eq_ite]
+      simp only [ciInf_eq_ite, dite_eq_ite, mem_range, union_singleton, mem_insert_iff, mem_image,
+        forall_exists_index]
       intro x hx
       split_ifs at hx
       · exact Or.inr ⟨_, by assumption, hx⟩
@@ -173,7 +175,7 @@ theorem Set.Finite.lt_ciInf_iff {s : Set ι} {f : ι → α} (hs : s.Finite)
     rw [← hx]
     exact H _ hmem
 
-section BigOperators
+section ListMultiset
 
 lemma List.iSup_mem_map_of_exists_sSup_empty_le {l : List ι} (f : ι → α)
     (h : ∃ x ∈ l, sSup ∅ ≤ f x) :
@@ -209,7 +211,7 @@ theorem exists_eq_ciSup_of_finite [Nonempty ι] [Finite ι] {f : ι → α} : �
 theorem exists_eq_ciInf_of_finite [Nonempty ι] [Finite ι] {f : ι → α} : ∃ i, f i = ⨅ i, f i :=
   Nonempty.csInf_mem (range_nonempty f) (finite_range f)
 
-end BigOperators
+end ListMultiset
 
 end ConditionallyCompleteLinearOrder
 
@@ -283,7 +285,7 @@ theorem Set.Nonempty.ciSup_lt_iff {s : Set ι} {a : α} {f : ι → α} (h : s.N
     ⨆ i ∈ s, f i < a ↔ ∀ x ∈ s, f x < a :=
   hs.ciSup_lt_iff (h.imp (by simp))
 
-section BigOperators
+section ListMultiset
 
 lemma List.iSup_mem_map_of_ne_nil {l : List ι} (f : ι → α) (h : l ≠ []) :
     ⨆ x ∈ l, f x ∈ l.map f :=
@@ -293,6 +295,6 @@ lemma Multiset.iSup_mem_map_of_ne_zero {s : Multiset ι} (f : ι → α) (h : s 
     ⨆ x ∈ s, f x ∈ s.map f :=
   s.iSup_mem_map_of_exists_sSup_empty_le _ (by simpa using exists_mem_of_ne_zero h)
 
-end BigOperators
+end ListMultiset
 
 end ConditionallyCompleteLinearOrderBot
