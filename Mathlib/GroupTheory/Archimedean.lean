@@ -238,32 +238,30 @@ lemma AddSubgroup.closure_singleton_int_one_eq_top : closure ({1} : Set ℤ) = �
 
 /-- If an element of a linearly ordered archimedean additive group is the least positive element,
 then the whole group is isomorphic (and order-isomorphic) to the integers. -/
-noncomputable def LinearOrderedAddCommGroup.int_addEquiv_of_isLeast_pos {x : G}
-    (h : IsLeast {y : G | 0 < y} x) :
-    {f : G ≃+ ℤ // StrictMono f} := by
+noncomputable def LinearOrderedAddCommGroup.int_orderAddMonoidIso_of_isLeast_pos {x : G}
+    (h : IsLeast {y : G | 0 < y} x) : G ≃+o ℤ := by
   have : IsLeast {y : G | y ∈ (⊤ : AddSubgroup G) ∧ 0 < y} x := by simpa using h
   replace this := AddSubgroup.cyclic_of_min this
-  let e : G ≃+ (⊤ : AddSubgroup G) := AddSubsemigroup.topEquiv.symm
-  let e' : (⊤ : AddSubgroup G) ≃+ AddSubgroup.closure {x} :=
-    AddEquiv.subsemigroupCongr (by simp [this])
-  let g : ℤ ≃+ (⊤ : AddSubgroup ℤ) := AddSubsemigroup.topEquiv.symm
-  let g' : (⊤ : AddSubgroup ℤ) ≃+ AddSubgroup.closure ({1} : Set ℤ) :=
-    (.subsemigroupCongr (by simp [AddSubgroup.closure_singleton_int_one_eq_top]))
+  let e : G ≃+o (⊤ : AddSubgroup G) := ⟨AddSubsemigroup.topEquiv.symm,
+    (AddEquiv.strictMono_symm AddSubsemigroup.strictMono_topEquiv).le_iff_le⟩
+  let e' : (⊤ : AddSubgroup G) ≃+o AddSubgroup.closure {x} :=
+    ⟨AddEquiv.subsemigroupCongr (by simp [this]),
+     (AddEquiv.strictMono_subsemigroupCongr _).le_iff_le⟩
+  let g : (⊤ : AddSubgroup ℤ) ≃+o ℤ := ⟨AddSubsemigroup.topEquiv,
+    (AddSubsemigroup.strictMono_topEquiv).le_iff_le⟩
+  let g' : AddSubgroup.closure ({1} : Set ℤ) ≃+o (⊤ : AddSubgroup ℤ) :=
+    ⟨(.subsemigroupCongr (by simp [AddSubgroup.closure_singleton_int_one_eq_top])),
+     (AddEquiv.strictMono_subsemigroupCongr _).le_iff_le⟩
   let f := closure_equiv_closure x (1 : ℤ) (by simp [h.left.ne'])
-  refine ⟨(((e.trans e').trans f).trans g'.symm).trans g.symm, ?_⟩
-  intro a b hab
-  have hab' : f (e' (e a)) < f (e' (e b)) := by
-    rw [f.strictMono.lt_iff_lt]
-    exact hab
-  exact hab'
+  exact ((((e.trans e').trans f).trans g').trans g : G ≃+o ℤ)
 
 /-- Any linearly ordered archimedean additive group is either is isomorphic (and order-isomorphic)
 to the integers, or is densely ordered. -/
 lemma LinearOrderedAddCommGroup.discrete_or_denselyOrdered :
-    (∃ f : G ≃+ ℤ, StrictMono f) ∨ DenselyOrdered G := by
+    Nonempty (G ≃+o ℤ) ∨ DenselyOrdered G := by
   by_cases H : ∃ x, IsLeast {y : G | 0 < y} x
   · obtain ⟨x, hx⟩ := H
-    exact Or.inl ⟨_, (LinearOrderedAddCommGroup.int_addEquiv_of_isLeast_pos hx).prop⟩
+    exact Or.inl ⟨(int_orderAddMonoidIso_of_isLeast_pos hx)⟩
   · push_neg at H
     refine Or.inr ⟨?_⟩
     intro x y hxy
