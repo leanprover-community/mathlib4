@@ -24,7 +24,7 @@ require "leanprover-community" / "importGraph" @ git "main"
 -/
 abbrev mathlibOnlyLinters : Array LeanOption := #[
   ⟨`linter.hashCommand, true⟩,
-  ⟨`linter.missingEnd, true⟩,
+  ⟨`linter.style.missingEnd, true⟩,
   ⟨`linter.cdot, true⟩,
   ⟨`linter.dollarSyntax, true⟩,
   ⟨`linter.style.lambdaSyntax, true⟩,

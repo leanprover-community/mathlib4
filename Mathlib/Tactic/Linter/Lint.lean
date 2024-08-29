@@ -120,18 +120,18 @@ open Lean Elab Command
 /-- The "missing end" linter emits a warning on non-closed `section`s and `namespace`s.
 It allows the "outermost" `noncomputable section` to be left open (whether or not it is named).
 -/
-register_option linter.missingEnd : Bool := {
+register_option linter.style.missingEnd : Bool := {
   defValue := false
   descr := "enable the missing end linter"
 }
 
-namespace MissingEnd
+namespace Style.missingEnd
 
-@[inherit_doc Mathlib.Linter.linter.missingEnd]
+@[inherit_doc Mathlib.Linter.linter.style.missingEnd]
 def missingEndLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- Only run this linter at the end of a module.
     unless stx.isOfKind ``Lean.Parser.Command.eoi do return
-    if Linter.getLinterValue linter.missingEnd (← getOptions) &&
+    if Linter.getLinterValue linter.style.missingEnd (← getOptions) &&
         !(← MonadState.get).messages.hasErrors then
       let sc ← getScopes
       -- The last scope is always the "base scope", corresponding to no active `section`s or
@@ -144,12 +144,12 @@ def missingEndLinter : Linter where run := withSetOptionIn fun stx ↦ do
       if !ends.isEmpty then
         let ending := (ends.map Prod.fst).foldl (init := "") fun a b ↦
           a ++ s!"\n\nend{if b == "" then "" else " "}{b}"
-        Linter.logLint linter.missingEnd stx
+        Linter.logLint linter.style.missingEnd stx
          m!"unclosed sections or namespaces; expected: '{ending}'"
 
 initialize addLinter missingEndLinter
 
-end MissingEnd
+end Style.missingEnd
 
 /-!
 # The `cdot` linter
