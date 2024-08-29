@@ -872,16 +872,6 @@ theorem ennnorm_integral_le_lintegral_ennnorm (f : α → G) :
 theorem integral_eq_zero_of_ae {f : α → G} (hf : f =ᵐ[μ] 0) : ∫ a, f a ∂μ = 0 := by
   simp [integral_congr_ae hf, integral_zero]
 
-@[simp]
-lemma integral_of_isEmpty {α β : Type*} [MeasurableSpace α] [NormedAddCommGroup β]
-    [NormedSpace ℝ β] [IsEmpty α] (f : α → β) (μ : Measure α) : ∫ x, f x ∂μ = 0 :=
-  integral_eq_zero_of_ae <| eventually_of_forall (IsEmpty.forall_iff.mpr True.intro)
-
-@[simp]
-lemma integral_of_isEmpty_codomain {α β : Type*} [MeasurableSpace α] [NormedAddCommGroup β]
-    [NormedSpace ℝ β] [IsEmpty β] (f : α → β) (μ : Measure α) : ∫ x, f x ∂μ = 0 :=
-  Subsingleton.eq_zero _
-
 /-- If `f` has finite integral, then `∫ x in s, f x ∂μ` is absolutely continuous in `s`: it tends
 to zero as `μ s` tends to zero. -/
 theorem HasFiniteIntegral.tendsto_setIntegral_nhds_zero {ι} {f : α → G}
@@ -1465,6 +1455,9 @@ theorem integral_zero_measure {m : MeasurableSpace α} (f : α → G) :
   · simp only [integral, hG, L1.integral]
     exact setToFun_measure_zero (dominatedFinMeasAdditive_weightedSMul _) rfl
   · simp [integral, hG]
+
+lemma integral_of_isEmpty [IsEmpty α] : ∫ x, f x ∂μ = 0 :=
+    μ.eq_zero_of_isEmpty ▸ integral_zero_measure _
 
 theorem integral_finset_sum_measure {ι} {m : MeasurableSpace α} {f : α → G} {μ : ι → Measure α}
     {s : Finset ι} (hf : ∀ i ∈ s, Integrable f (μ i)) :
