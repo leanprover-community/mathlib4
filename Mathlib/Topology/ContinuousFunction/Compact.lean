@@ -135,9 +135,6 @@ theorem dist_lt_iff (C0 : (0 : ℝ) < C) : dist f g < C ↔ ∀ x : α, dist (f 
 
 end
 
-instance [CompleteSpace β] : CompleteSpace C(α, β) :=
-  (isometryEquivBoundedOfCompact α β).completeSpace
-
 -- TODO at some point we will need lemmas characterising this norm!
 -- At the moment the only way to reason about it is to transfer `f : C(α,E)` back to `α →ᵇ E`.
 instance : Norm C(α, E) where norm x := dist x 0

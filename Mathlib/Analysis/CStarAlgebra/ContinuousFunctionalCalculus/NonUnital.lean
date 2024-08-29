@@ -662,10 +662,6 @@ lemma closedEmbedding_cfcₙHom_of_cfcHom {a : A} (ha : p a) :
     ClosedEmbedding (cfcₙHom_of_cfcHom R ha) := by
   let f : C(spectrum R a, σₙ R a) :=
     ⟨_, continuous_inclusion <| spectrum_subset_quasispectrum R a⟩
-  have h_cpct' : CompactSpace (σₙ R a) := by
-    specialize h_cpct a
-    simp_rw [← isCompact_iff_compactSpace, quasispectrum_eq_spectrum_union_zero] at h_cpct ⊢
-    exact h_cpct.union isCompact_singleton
   refine (cfcHom_closedEmbedding ha).comp <|
     (UniformInducing.uniformEmbedding ⟨?_⟩).toClosedEmbedding
   have := uniformSpace_eq_inf_precomp_of_cover (β := R) f (0 : C(Unit, σₙ R a))
