@@ -1,14 +1,13 @@
-name: bot fix style (review)
+name: bot fix style (review comment)
 
 on:
-  pull_request_review:
-    # triggers on a review, whether or not it is accompanied by a comment
-    types: [submitted]
+  pull_request_review_comment:
+    types: [created, edited]
 
 jobs:
   fix_style:
     name: Fix style issues from lint
-    if: (startsWith(github.event.review.body, 'bot fix style') || contains(toJSON(github.event.review.body), '\nbot fix style'))
+    if: (startsWith(github.event.comment.body, 'bot fix style') || contains(toJSON(github.event.comment.body), '\nbot fix style'))
     runs-on: ubuntu-latest
     continue-on-error: true  # do not annoy the user when linting fails, as expected
     steps:
@@ -17,17 +16,16 @@ jobs:
         with:
           require: 'write'
 
-      # Maybe no API exists for this yet?
-      # - name: Add reaction
-      #   if: steps.user_permission.outputs.require-result == 'true'
-      #   run: |
-      #       gh api --method POST \
-      #         -H "Accept: application/vnd.github+json" \
-      #         -H "X-GitHub-Api-Version: 2022-11-28" \
-      #         /repos/${{ github.repository_owner }}/${{ github.event.repository.name }}/pulls/${{ github.event.pull_request.number }}/reviews/${{ github.event.review.id }}/reactions \
-      #         -f "content=rocket"
-      #   env:
-      #       GH_TOKEN: ${{ secrets.NIGHTLY_TESTING }}
+      - name: Add reaction
+        if: steps.user_permission.outputs.require-result == 'true'
+        run: |
+            gh api --method POST \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              /repos/${{ github.repository_owner }}/${{ github.event.repository.name }}/pulls/comments/${{ github.event.comment.id }}/reactions \
+              -f "content=rocket"
+        env:
+            GH_TOKEN: ${{ secrets.BOT_FIX_STYLE_TOKEN }}
 
       - name: cleanup
         if: steps.user_permission.outputs.require-result == 'true'
@@ -37,14 +35,14 @@ jobs:
       - uses: actions/checkout@v4
         if: steps.user_permission.outputs.require-result == 'true'
         with:
-          token: ${{ secrets.NIGHTLY_TESTING }}
+          token: ${{ secrets.BOT_FIX_STYLE_TOKEN }}
 
       - name: Checkout PR branch
         if: steps.user_permission.outputs.require-result == 'true'
         run: |
             gh pr checkout ${{ github.event.pull_request.number }}
         env:
-            GH_TOKEN: ${{ secrets.NIGHTLY_TESTING }}
+            GH_TOKEN: ${{ secrets.BOT_FIX_STYLE_TOKEN }}
 
       - name: install Python
         if: steps.user_permission.outputs.require-result == 'true'
