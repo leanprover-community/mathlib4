@@ -93,7 +93,7 @@ theorem span_eq_top_of_tmul_eq_basis [Module.Finite R M] {ι}
   rw [← map_tensorProduct_mk_eq_top, Submodule.map_span, ← Submodule.restrictScalars_span R k
     Ideal.Quotient.mk_surjective, Submodule.restrictScalars_eq_top_iff,
     ← b.span_eq, ← Set.range_comp]
-  simp only [Function.comp, mk_apply, hb, Basis.span_eq]
+  simp only [Function.comp_def, mk_apply, hb, Basis.span_eq]
 
 end LocalRing
 

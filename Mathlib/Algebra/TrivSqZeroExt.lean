@@ -624,7 +624,7 @@ instance monoid [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulActio
           · simp [List.range_succ]
           rw [List.sum_range_succ']
           simp only [pow_zero, op_one, Nat.sub_zero, one_smul, Nat.succ_sub_succ_eq_sub, fst_pow,
-            Nat.pred_succ, List.smul_sum, List.map_map, Function.comp]
+            Nat.pred_succ, List.smul_sum, List.map_map, Function.comp_def]
           simp_rw [← smul_comm (_ : R) (_ : Rᵐᵒᵖ), smul_smul, pow_succ]
           rfl) }
 

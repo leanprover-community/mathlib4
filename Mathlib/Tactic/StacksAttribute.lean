@@ -29,9 +29,9 @@ structure Tag where
 
 /-- Defines the `tagExt` extension for adding a `HashSet` of `Tag`s
 to the environment. -/
-initialize tagExt : SimplePersistentEnvExtension Tag (HashSet Tag) ←
+initialize tagExt : SimplePersistentEnvExtension Tag (Std.HashSet Tag) ←
   registerSimplePersistentEnvExtension {
-    addImportedFn := fun as => as.foldl HashSet.insertMany {}
+    addImportedFn := fun as => as.foldl Std.HashSet.insertMany {}
     addEntryFn := .insert
   }
 
