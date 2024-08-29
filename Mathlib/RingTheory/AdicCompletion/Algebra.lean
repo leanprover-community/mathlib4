@@ -200,7 +200,7 @@ instance : SMul (R ⧸ (I • ⊤ : Ideal R)) (M ⧸ (I • ⊤ : Submodule R M)
     Quotient.liftOn r (· • x) fun b₁ b₂ (h : Setoid.Rel _ b₁ b₂) ↦ by
       refine Quotient.inductionOn' x (fun x ↦ ?_)
       have h : b₁ - b₂ ∈ (I : Submodule R R) := by
-        rwa [show I = I • ⊤ by simp, ← Submodule.quotientRel_r_def]
+        rwa [show I = I • ⊤ by simp, ← Submodule.quotientRel_def]
       rw [← sub_eq_zero, ← sub_smul, Submodule.Quotient.mk''_eq_mk,
         ← Submodule.Quotient.mk_smul, Submodule.Quotient.mk_eq_zero]
       exact Submodule.smul_mem_smul h mem_top
