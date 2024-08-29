@@ -49,12 +49,18 @@ open Parser
 uppercase letters. -/
 abbrev stacksTagKind : SyntaxNodeKind := `stacksTag
 
-/-- The main parser for Stacks Project Tags: it accepts any letter or digit, even though
-tags do not allow lowercase letters.
-This allows for better error messages raised by the elaborator. -/
+/-- The main parser for Stacks Project Tags: it accepts any sequence of 4 digits or
+uppercase letters. -/
 def stacksTagFn : ParserFn := fun c s =>
   let i := s.pos
-  let st := takeWhileFn (·.isAlphanum) c s
+  let tag :=
+    Substring.mk c.input i c.input.endPos |>.takeWhile (fun c => c.isDigit || c.isUpper) |>.toString
+  if tag.trimRight.length == 0 then
+    ParserState.mkUnexpectedError s "Please, enter a Tag after `stacks`."
+  else if tag.length != 4 then
+    ParserState.mkUnexpectedError s "Stacks tags are 4 characters of digits and uppercase letters."
+  else
+  let st := takeWhileFn (fun c => c.isDigit || c.isUpper) c s
   mkNodeToken stacksTagKind i c st
 
 @[inherit_doc stacksTagFn]
@@ -100,19 +106,10 @@ syntax (name := stacks) "stacks " stacksTag (ppSpace str)? : attr
 initialize Lean.registerBuiltinAttribute {
   name := `stacks
   descr := "Apply a Stacks project tag to a theorem."
-  add := fun decl stx _attrKind => Lean.withRef stx do
-    let `(attr| stacks $tag $[$comment]?) := stx | throwUnsupportedSyntax
-    let str := tag.raw[0].getAtomVal
-    if str.isEmpty then logWarning "Please, enter a Tag after `stacks`." else
-    -- check that the tag consists of 4 characters
-    if str.length != 4 then
-      logWarningAt tag
-        m!"Tag '{str}' is {str.length} characters long, but it should be 4 characters long"
-    -- check that the tag only contains digits and uppercase letter
-    else if str.any (·.isLower) then
-      logWarningAt tag m!"Tag '{str}' should only consist of digits and uppercase letters"
-    else
-      addTagEntry decl str <| (comment.map (·.getString)).getD ""
+  add := fun decl stx _attrKind => match stx with
+    | `(attr| stacks $tag $[$comment]?) =>
+      addTagEntry decl tag.raw[0].getAtomVal <| (comment.map (·.getString)).getD ""
+    | _ => throwUnsupportedSyntax
 }
 
 end Mathlib.Stacks

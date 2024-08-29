@@ -5,26 +5,20 @@ import Mathlib.Tactic.StacksAttribute
 #stacks_tags
 
 namespace X
-/--
-warning: Tag '04sQ' should only consist of digits and uppercase letters
----
-warning: Tag '044QQ' is 5 characters long, but it should be 4 characters long
----
-warning: Tag 'loA1' should only consist of digits and uppercase letters
--/
-#guard_msgs in
-@[stacks 04sQ "", stacks A04Q "A comment", stacks 044QQ, stacks loA1]
+
+@[stacks A04Q "A comment"]
 theorem tagged : True := .intro
 
 end X
 
-/--
-warning: Please, enter a Tag after `stacks`.
----
-warning: Please, enter a Tag after `stacks`.
--/
 #guard_msgs in
-@[stacks "", stacks, stacks 0BR2]
+@[stacks 0BR2, stacks 0X12]
+example : True := .intro
+
+@[stacks 0BR2, stacks 0X14 "I can also have a comment"]
+example : True := .intro
+
+@[stacks 0X14 "I can also have a comment"]
 example : True := .intro
 
 /--
