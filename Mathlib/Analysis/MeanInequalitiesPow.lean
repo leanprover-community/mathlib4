@@ -241,7 +241,7 @@ theorem rpow_arith_mean_le_arith_mean_rpow (w z : ι → ℝ≥0∞) (hw' : ∑ 
       specialize h_top i hi
       rwa [Ne, ← h_top_iff_rpow_top i hi]
     -- put the `.toNNReal` inside the sums.
-    simp_rw [toNNReal_sum h_top_rpow, ← toNNReal_rpow, toNNReal_sum h_top, toNNReal_mul, ←
+    simp_rw [toNNReal_sum h_top_rpow, toNNReal_rpow, toNNReal_sum h_top, toNNReal_mul,
       toNNReal_rpow]
     -- use corresponding nnreal result
     refine
