@@ -668,12 +668,11 @@ def ofStructuredArrowProjEquivalence.inverse (F : D ⥤ T) (Y : T) (X : D) :
 /-- Characterization of the structured arrow category on the projection functor of any
 structured arrow category. -/
 def ofStructuredArrowProjEquivalence (F : D ⥤ T) (Y : T) (X : D) :
-    StructuredArrow X (StructuredArrow.proj Y F) ≌ StructuredArrow Y (Under.forget X ⋙ F) :=
-  Equivalence.mk
-    (ofStructuredArrowProjEquivalence.functor F Y X)
-    (ofStructuredArrowProjEquivalence.inverse F Y X)
-    (NatIso.ofComponents (fun _ => Iso.refl _) (by simp))
-    (NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat))
+    StructuredArrow X (StructuredArrow.proj Y F) ≌ StructuredArrow Y (Under.forget X ⋙ F) where
+  functor := ofStructuredArrowProjEquivalence.functor F Y X
+  inverse := ofStructuredArrowProjEquivalence.inverse F Y X
+  unitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by simp)
+  counitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat)
 
 /-- The canonical functor from the structured arrow category on the diagonal functor
 `T ⥤ T × T` to the the structured arrow category on `Under.forget`. -/
@@ -694,11 +693,11 @@ def ofDiagEquivalence.inverse (X : T × T) :
 
 /-- Characterization of the structured arrow category on the diagonal functor `T ⥤ T × T`. -/
 def ofDiagEquivalence (X : T × T) :
-    StructuredArrow X (Functor.diag _) ≌ StructuredArrow X.2 (Under.forget X.1) :=
-  Equivalence.mk
-    (ofDiagEquivalence.functor X) (ofDiagEquivalence.inverse X)
-    (NatIso.ofComponents (fun _ => Iso.refl _) (by simp))
-    (NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat))
+    StructuredArrow X (Functor.diag _) ≌ StructuredArrow X.2 (Under.forget X.1) where
+  functor := ofDiagEquivalence.functor X
+  inverse := ofDiagEquivalence.inverse X
+  unitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by simp)
+  counitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat)
 
 /-- A version of `StructuredArrow.ofDiagEquivalence` with the roles of the first and second
 projection swapped. -/
@@ -734,12 +733,12 @@ def ofCostructuredArrowProjEquivalence.inverse (F : T ⥤ D) (Y : D) (X : T) :
 /-- Characterization of the costructured arrow category on the projection functor of any
 costructured arrow category. -/
 def ofCostructuredArrowProjEquivalence (F : T ⥤ D) (Y : D) (X : T) :
-    CostructuredArrow (CostructuredArrow.proj F Y) X ≌ CostructuredArrow (Over.forget X ⋙ F) Y :=
-  Equivalence.mk
-    (ofCostructuredArrowProjEquivalence.functor F Y X)
-    (ofCostructuredArrowProjEquivalence.inverse F Y X)
-    (NatIso.ofComponents (fun _ => Iso.refl _) (by simp))
-    (NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat))
+    CostructuredArrow (CostructuredArrow.proj F Y) X
+      ≌ CostructuredArrow (Over.forget X ⋙ F) Y where
+  functor := ofCostructuredArrowProjEquivalence.functor F Y X
+  inverse := ofCostructuredArrowProjEquivalence.inverse F Y X
+  unitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by simp)
+  counitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat)
 
 /-- The canonical functor from the costructured arrow category on the diagonal functor
 `T ⥤ T × T` to the the costructured arrow category on `Under.forget`. -/
@@ -761,12 +760,11 @@ def ofDiagEquivalence.inverse (X : T × T) :
 
 /-- Characterization of the costructured arrow category on the diagonal functor `T ⥤ T × T`. -/
 def ofDiagEquivalence (X : T × T) :
-    CostructuredArrow (Functor.diag _) X ≌ CostructuredArrow (Over.forget X.1) X.2 :=
-  Equivalence.mk
-    (ofDiagEquivalence.functor X)
-    (ofDiagEquivalence.inverse X)
-    (NatIso.ofComponents (fun _ => Iso.refl _) (by simp))
-    (NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat))
+    CostructuredArrow (Functor.diag _) X ≌ CostructuredArrow (Over.forget X.1) X.2 where
+  functor := ofDiagEquivalence.functor X
+  inverse := ofDiagEquivalence.inverse X
+  unitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by simp)
+  counitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat)
 
 /-- A version of `CostructuredArrow.ofDiagEquivalence` with the roles of the first and second
 projection swapped. -/
