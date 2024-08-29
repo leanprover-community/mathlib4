@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
 import Mathlib.Data.Set.Subsingleton
-import Mathlib.Order.WithBot
 import Mathlib.Tactic.Use
 import Batteries.Tactic.Congr
+import Mathlib.Order.TypeTags
+import Mathlib.Data.Option.Basic
 
 /-!
 # Images and preimages of sets
