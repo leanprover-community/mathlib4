@@ -291,8 +291,9 @@ def toConjLinearEquiv : mapDomainFixed s F ≃ₗ[F] GalConjClasses ℚ (K s) �
     toFun := toConjEquiv s F
     invFun := (toConjEquiv s F).symm
     map_add' := fun x y => by
-      ext i; simp_rw [Finsupp.coe_add, Pi.add_apply, toConjEquiv_apply_apply]
-      rfl
+      ext i
+      simp_rw [Finsupp.coe_add, Pi.add_apply, toConjEquiv_apply_apply, Subsemiring.coe_add,
+        (Finsupp.add_apply)]
     map_smul' := fun r x => by
       ext i; simp_rw [Finsupp.coe_smul, toConjEquiv_apply_apply]
       simp only [SetLike.val_smul, RingHom.id_apply]
@@ -476,7 +477,9 @@ def Eval : AddMonoidAlgebra F (K s) →ₐ[F] ℂ :=
 
 theorem Eval_apply (x : AddMonoidAlgebra F (K s)) :
     Eval s F x = x.sum fun a c => c • exp (algebraMap (K s) ℂ a) := by
-  rw [Eval, AddMonoidAlgebra.lift_apply]; rfl
+  rw [Eval, AddMonoidAlgebra.lift_apply]
+  simp_rw [RingHom.toAddMonoidHom_eq_coe, MonoidHom.coe_comp, AddMonoidHom.coe_toMultiplicative,
+    AddMonoidHom.coe_coe, Function.comp_apply, expMonoidHom_apply, toAdd_ofAdd]
 
 theorem Eval_ratCoeff (x : ratCoeff s) : Eval s (K s) x = Eval s ℚ (ratCoeffEquiv s x) := by
   simp_rw [Eval_apply, Finsupp.sum, support_ratCoeffEquiv, ratCoeffEquiv_apply_apply]
@@ -485,8 +488,7 @@ theorem Eval_ratCoeff (x : ratCoeff s) : Eval s (K s) x = Eval s ℚ (ratCoeffEq
   congr 2
   simp_rw [IsScalarTower.algebraMap_apply ℚ (⊥ : IntermediateField ℚ (K s)) (K s),
     ← IntermediateField.botEquiv_symm]
-  rw [AlgEquiv.symm_apply_apply]
-  rfl
+  rw [AlgEquiv.symm_apply_apply, IntermediateField.algebraMap_apply]
 
 theorem Eval_toConjAlgEquiv_symm (x : GalConjClasses ℚ (K s) →₀ ℚ) :
     Eval s ℚ ((toConjAlgEquiv s ℚ).symm x) =

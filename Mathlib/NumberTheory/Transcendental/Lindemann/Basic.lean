@@ -56,7 +56,7 @@ theorem linear_independent_exp (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i
       rw [aroots_def, aroots_def, IsScalarTower.algebraMap_eq ℤ K ℂ, ← Polynomial.map_map,
         roots_map _ (splits_p j)]
     rw [this, Multiset.map_map]
-    rfl
+    simp_rw [Function.comp_def]
 
   replace h :
     (w + ∑ j : Fin m, w' j • (((p j).aroots K).map fun x => exp (algebraMap K ℂ x)).sum : ℂ) = 0 :=
@@ -251,16 +251,14 @@ theorem transcendental_e : Transcendental ℤ (exp 1) :=
 
 theorem transcendental_pi : Transcendental ℤ Real.pi := by
   intro h
-  have is_integral_pi' : IsIntegral ℚ Real.pi :=
-    isAlgebraic_iff_isIntegral.mp
-      (h.tower_top_of_injective (algebraMap ℤ ℚ).injective_int)
-  have is_integral_pi : IsIntegral ℚ (algebraMap ℝ ℂ Real.pi) :=
-    (isIntegral_algebraMap_iff (algebraMap ℝ ℂ).injective).mpr is_integral_pi'
   have := linear_independent_exp (fun i : Bool => if i then Real.pi * I else 0) ?_ ?_
       (fun _ : Bool => 1) ?_ ?_
   · simpa only [Pi.zero_apply, one_ne_zero] using congr_fun this False
   · intro i; dsimp only; split_ifs
-    · exact is_integral_pi.mul Complex.isIntegral_rat_i
+    · have isAlgebraic_pi := h.tower_top_of_injective (algebraMap ℤ ℚ).injective_int
+      have isIntegral_pi : IsIntegral ℚ (Real.pi : ℂ) := by
+        simpa only [coe_algebraMap] using isAlgebraic_pi.isIntegral.algebraMap
+      exact isIntegral_pi.mul Complex.isIntegral_rat_i
     · exact isIntegral_zero
   · intro i j; dsimp
     split_ifs <;>
