@@ -4,11 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
 import Mathlib.Algebra.ContinuedFractions.Determinant
+import Mathlib.Algebra.ContinuedFractions.Regular
 import Mathlib.Algebra.ContinuedFractions.Computation.CorrectnessTerminating
-import Mathlib.Algebra.Order.Group.Basic
-import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.Data.Nat.Fib.Basic
-import Mathlib.Tactic.Monotonicity
 
 /-!
 # Approximations for Continued Fraction Computations (`GenContFract.of`)
@@ -33,10 +30,6 @@ in `Algebra.ContinuedFractions.Computation.ApproximationCorollaries`.
   `bᵢ` correspond to an integer.
 - `GenContFract.of_one_le_get?_partDen`: shows that `1 ≤ bᵢ`.
 - `ContFract.of` returns the regular continued fraction of a value.
-- `GenContFract.succ_nth_fib_le_of_nthDen`: shows that the `n`th denominator
-  `Bₙ` is greater than or equal to the `n + 1`th fibonacci number `Nat.fib (n + 1)`.
-- `GenContFract.le_of_succ_get?_den`: shows that `bₙ * Bₙ ≤ Bₙ₊₁`, where `bₙ` is
-  the `n`th partial denominator of the continued fraction.
 - `GenContFract.abs_sub_convs_le`: shows that
   `|v - Aₙ / Bₙ| ≤ 1 / (Bₙ * Bₙ₊₁)`, where `Aₙ` is the `n`th partial numerator.
 
@@ -183,136 +176,21 @@ nonrec def SimpContFract.of : SimpContFract K :=
   ⟨of v, GenContFract.of_isSimpContFract v⟩
 
 theorem SimpContFract.of_isContFract :
-    (SimpContFract.of v).IsContFract := fun _ _ nth_partDen_eq =>
-  lt_of_lt_of_le zero_lt_one (of_one_le_get?_partDen nth_partDen_eq)
+    (SimpContFract.of v).IsContFract := ⟨⟨⌊v⌋, of_h_eq_floor⟩, fun _ _ nth_partDen_eq => by
+  rcases exists_int_eq_of_partDen nth_partDen_eq with ⟨m, rfl⟩
+  lift m to ℕ+ using lt_of_lt_of_le zero_lt_one (mod_cast of_one_le_get?_partDen nth_partDen_eq)
+  use (disch := norm_cast) m⟩
 
 /-- Creates the continued fraction of a value. -/
 def ContFract.of : ContFract K :=
   ⟨SimpContFract.of v, SimpContFract.of_isContFract v⟩
 
-variable {v}
-
-namespace GenContFract
-
-/-!
-One of our next goals is to show that `bₙ * Bₙ ≤ Bₙ₊₁`. For this, we first show that the partial
-denominators `Bₙ` are bounded from below by the fibonacci sequence `Nat.fib`. This then implies that
-`0 ≤ Bₙ` and hence `Bₙ₊₂ = bₙ₊₁ * Bₙ₊₁ + Bₙ ≥ bₙ₊₁ * Bₙ₊₁ + 0 = bₙ₊₁ * Bₙ₊₁`.
--/
-
-
 -- open `Nat` as we will make use of fibonacci numbers.
 open Nat
 
-theorem fib_le_of_contsAux_b :
-    n ≤ 1 ∨ ¬(of v).TerminatedAt (n - 2) → (fib n : K) ≤ ((of v).contsAux n).b :=
-  Nat.strong_induction_on n
-    (by
-      intro n IH hyp
-      rcases n with (_ | _ | n)
-      · simp [fib_add_two, contsAux] -- case n = 0
-      · simp [fib_add_two, contsAux] -- case n = 1
-      · let g := of v -- case 2 ≤ n
-        have : ¬n + 2 ≤ 1 := by omega
-        have not_terminatedAt_n : ¬g.TerminatedAt n := Or.resolve_left hyp this
-        obtain ⟨gp, s_ppred_nth_eq⟩ : ∃ gp, g.s.get? n = some gp :=
-          Option.ne_none_iff_exists'.mp not_terminatedAt_n
-        set pconts := g.contsAux (n + 1) with pconts_eq
-        set ppconts := g.contsAux n with ppconts_eq
-        -- use the recurrence of `contsAux`
-        simp only [Nat.succ_eq_add_one, Nat.add_assoc, Nat.reduceAdd]
-        suffices (fib n : K) + fib (n + 1) ≤ gp.a * ppconts.b + gp.b * pconts.b by
-          simpa [fib_add_two, add_comm, contsAux_recurrence s_ppred_nth_eq ppconts_eq pconts_eq]
-        -- make use of the fact that `gp.a = 1`
-        suffices (fib n : K) + fib (n + 1) ≤ ppconts.b + gp.b * pconts.b by
-          simpa [of_partNum_eq_one <| partNum_eq_s_a s_ppred_nth_eq]
-        have not_terminatedAt_pred_n : ¬g.TerminatedAt (n - 1) :=
-          mt (terminated_stable <| Nat.sub_le n 1) not_terminatedAt_n
-        have not_terminatedAt_ppred_n : ¬TerminatedAt g (n - 2) :=
-          mt (terminated_stable (n - 1).pred_le) not_terminatedAt_pred_n
-        -- use the IH to get the inequalities for `pconts` and `ppconts`
-        have ppred_nth_fib_le_ppconts_B : (fib n : K) ≤ ppconts.b :=
-          IH n (lt_trans (Nat.lt.base n) <| Nat.lt.base <| n + 1) (Or.inr not_terminatedAt_ppred_n)
-        suffices (fib (n + 1) : K) ≤ gp.b * pconts.b by
-          solve_by_elim [_root_.add_le_add ppred_nth_fib_le_ppconts_B]
-        -- finally use the fact that `1 ≤ gp.b` to solve the goal
-        suffices 1 * (fib (n + 1) : K) ≤ gp.b * pconts.b by rwa [one_mul] at this
-        have one_le_gp_b : (1 : K) ≤ gp.b :=
-          of_one_le_get?_partDen (partDen_eq_s_b s_ppred_nth_eq)
-        have : (0 : K) ≤ fib (n + 1) := mod_cast (fib (n + 1)).zero_le
-        have : (0 : K) ≤ gp.b := le_trans zero_le_one one_le_gp_b
-        mono
-        · norm_num
-        · tauto)
+variable {v}
 
-/-- Shows that the `n`th denominator is greater than or equal to the `n + 1`th fibonacci number,
-that is `Nat.fib (n + 1) ≤ Bₙ`. -/
-theorem succ_nth_fib_le_of_nth_den (hyp : n = 0 ∨ ¬(of v).TerminatedAt (n - 1)) :
-    (fib (n + 1) : K) ≤ (of v).dens n := by
-  rw [den_eq_conts_b, nth_cont_eq_succ_nth_contAux]
-  have : n + 1 ≤ 1 ∨ ¬(of v).TerminatedAt (n - 1) := by
-    cases n with
-    | zero => exact Or.inl <| le_refl 1
-    | succ n => exact Or.inr (Or.resolve_left hyp n.succ_ne_zero)
-  exact fib_le_of_contsAux_b this
-
-/-! As a simple consequence, we can now derive that all denominators are nonnegative. -/
-
-
-theorem zero_le_of_contsAux_b : 0 ≤ ((of v).contsAux n).b := by
-  let g := of v
-  induction n with
-  | zero => rfl
-  | succ n IH =>
-    cases' Decidable.em <| g.TerminatedAt (n - 1) with terminated not_terminated
-    · -- terminating case
-      cases' n with n
-      · simp [zero_le_one]
-      · have : g.contsAux (n + 2) = g.contsAux (n + 1) :=
-          contsAux_stable_step_of_terminated terminated
-        simp only [this, IH]
-    · -- non-terminating case
-      calc
-        (0 : K) ≤ fib (n + 1) := mod_cast (n + 1).fib.zero_le
-        _ ≤ ((of v).contsAux (n + 1)).b := fib_le_of_contsAux_b (Or.inr not_terminated)
-
-/-- Shows that all denominators are nonnegative. -/
-theorem zero_le_of_den : 0 ≤ (of v).dens n := by
-  rw [den_eq_conts_b, nth_cont_eq_succ_nth_contAux]; exact zero_le_of_contsAux_b
-
-theorem le_of_succ_succ_get?_contsAux_b {b : K}
-    (nth_partDen_eq : (of v).partDens.get? n = some b) :
-    b * ((of v).contsAux <| n + 1).b ≤ ((of v).contsAux <| n + 2).b := by
-  obtain ⟨gp_n, nth_s_eq, rfl⟩ : ∃ gp_n, (of v).s.get? n = some gp_n ∧ gp_n.b = b :=
-    exists_s_b_of_partDen nth_partDen_eq
-  simp [of_partNum_eq_one (partNum_eq_s_a nth_s_eq), zero_le_of_contsAux_b,
-    GenContFract.contsAux_recurrence nth_s_eq rfl rfl]
-
-/-- Shows that `bₙ * Bₙ ≤ Bₙ₊₁`, where `bₙ` is the `n`th partial denominator and `Bₙ₊₁` and `Bₙ` are
-the `n + 1`th and `n`th denominator of the continued fraction. -/
-theorem le_of_succ_get?_den {b : K}
-    (nth_partDenom_eq : (of v).partDens.get? n = some b) :
-    b * (of v).dens n ≤ (of v).dens (n + 1) := by
-  rw [den_eq_conts_b, nth_cont_eq_succ_nth_contAux]
-  exact le_of_succ_succ_get?_contsAux_b nth_partDenom_eq
-
-/-- Shows that the sequence of denominators is monotone, that is `Bₙ ≤ Bₙ₊₁`. -/
-theorem of_den_mono : (of v).dens n ≤ (of v).dens (n + 1) := by
-  let g := of v
-  cases' Decidable.em <| g.partDens.TerminatedAt n with terminated not_terminated
-  · have : g.partDens.get? n = none := by rwa [Stream'.Seq.TerminatedAt] at terminated
-    have : g.TerminatedAt n :=
-      terminatedAt_iff_partDen_none.2 (by rwa [Stream'.Seq.TerminatedAt] at terminated)
-    have : g.dens (n + 1) = g.dens n :=
-      dens_stable_of_terminated n.le_succ this
-    rw [this]
-  · obtain ⟨b, nth_partDen_eq⟩ : ∃ b, g.partDens.get? n = some b :=
-      Option.ne_none_iff_exists'.mp not_terminated
-    have : 1 ≤ b := of_one_le_get?_partDen nth_partDen_eq
-    calc
-      g.dens n ≤ b * g.dens n := by
-        simpa using mul_le_mul_of_nonneg_right this zero_le_of_den
-      _ ≤ g.dens (n + 1) := le_of_succ_get?_den nth_partDen_eq
+namespace GenContFract
 
 section ErrorTerm
 
@@ -376,13 +254,13 @@ theorem sub_convs_eq {ifp : IntFractPair K}
         cases' n_eq_zero_or_not_terminatedAt_pred_n with n_eq_zero not_terminatedAt_pred_n
         · simp [n_eq_zero]
         · exact Or.inr <| mt (terminated_stable (n - 1).pred_le) not_terminatedAt_pred_n
-      fib_le_of_contsAux_b this
+      (ContFract.of v).fib_le_contsAux_b this
     have B_ineq : (fib (n + 1) : K) ≤ B :=
       haveI : n + 1 ≤ 1 ∨ ¬g.TerminatedAt (n + 1 - 2) := by
         cases' n_eq_zero_or_not_terminatedAt_pred_n with n_eq_zero not_terminatedAt_pred_n
         · simp [n_eq_zero, le_refl]
         · exact Or.inr not_terminatedAt_pred_n
-      fib_le_of_contsAux_b this
+      (ContFract.of v).fib_le_contsAux_b this
     have zero_lt_B : 0 < B := B_ineq.trans_lt' <| cast_pos.2 <| fib_pos.2 n.succ_pos
     have : 0 ≤ pB := (cast_nonneg _).trans pB_ineq
     have : 0 < ifp.fr :=
@@ -437,11 +315,11 @@ theorem abs_sub_convs_le (not_terminatedAt_n : ¬(of v).TerminatedAt n) :
   -- derive some tedious inequalities that we need to rewrite our goal
   have nextConts_b_ineq : (fib (n + 2) : K) ≤ pred_conts.b + gp.b * conts.b := by
     have : (fib (n + 2) : K) ≤ nextConts.b :=
-      fib_le_of_contsAux_b (Or.inr not_terminatedAt_n)
+      (ContFract.of v).fib_le_contsAux_b (Or.inr not_terminatedAt_n)
     rwa [nextConts_b_eq] at this
   have conts_b_ineq : (fib (n + 1) : K) ≤ conts.b :=
     haveI : ¬g.TerminatedAt (n - 1) := mt (terminated_stable n.pred_le) not_terminatedAt_n
-    fib_le_of_contsAux_b <| Or.inr this
+    (ContFract.of v).fib_le_contsAux_b <| Or.inr this
   have zero_lt_conts_b : 0 < conts.b :=
     conts_b_ineq.trans_lt' <| mod_cast fib_pos.2 n.succ_pos
   -- `den'` is positive, so we can remove `|⬝|` from our goal
@@ -453,7 +331,7 @@ theorem abs_sub_convs_le (not_terminatedAt_n : ¬(of v).TerminatedAt n) :
           haveI : (fib n : K) ≤ pred_conts.b :=
             haveI : ¬g.TerminatedAt (n - 2) :=
               mt (terminated_stable (n.sub_le 2)) not_terminatedAt_n
-            fib_le_of_contsAux_b <| Or.inr this
+            (ContFract.of v).fib_le_contsAux_b <| Or.inr this
           le_trans (mod_cast (fib n).zero_le) this
         have : 0 < ifp_n.fr⁻¹ :=
           haveI zero_le_ifp_n_fract : 0 ≤ ifp_n.fr :=
@@ -489,14 +367,14 @@ theorem abs_sub_convergents_le' {b : K}
   refine (abs_sub_convs_le not_terminatedAt_n).trans ?_
   -- One can show that `0 < (GenContFract.of v).dens n` but it's easier
   -- to consider the case `(GenContFract.of v).dens n = 0`.
-  rcases (zero_le_of_den (K := K)).eq_or_gt with
+  rcases ((ContFract.of v).zero_le_den).eq_or_gt with
     ((hB : (GenContFract.of v).dens n = 0) | hB)
   · simp only [hB, mul_zero, zero_mul, div_zero, le_refl]
   · apply one_div_le_one_div_of_le
     · have : 0 < b := zero_lt_one.trans_le (of_one_le_get?_partDen nth_partDen_eq)
       apply_rules [mul_pos]
     · conv_rhs => rw [mul_comm]
-      exact mul_le_mul_of_nonneg_right (le_of_succ_get?_den nth_partDen_eq) hB.le
+      exact mul_le_mul_of_nonneg_right ((ContFract.of v).le_succ_get?_den nth_partDen_eq) hB.le
 
 end ErrorTerm
 

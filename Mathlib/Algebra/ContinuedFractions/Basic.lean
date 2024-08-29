@@ -5,6 +5,7 @@ Authors: Kevin Kappelmann
 -/
 import Mathlib.Data.Seq.Seq
 import Mathlib.Algebra.Field.Defs
+import Mathlib.Data.PNat.Defs
 
 /-!
 # Basic Definitions/Theorems for Continued Fractions
@@ -227,20 +228,21 @@ instance : Coe (SimpContFract α) (GenContFract α) :=
 end SimpContFract
 
 /--
-A simple continued fraction is a *(regular) continued fraction* ((r)cf) if all partial denominators
-`bᵢ` are positive, i.e. `0 < bᵢ`.
+A simple continued fraction is a *(regular) continued fraction* ((r)cf) if the head term is integer
+and all partial denominators `bᵢ` are positive naturals.
 -/
-def SimpContFract.IsContFract [One α] [Zero α] [LT α]
+def SimpContFract.IsContFract [One α] [NatCast α] [IntCast α]
     (s : SimpContFract α) : Prop :=
-  ∀ (n : ℕ) (bₙ : α),
-    (↑s : GenContFract α).partDens.get? n = some bₙ → 0 < bₙ
+  (∃ n : ℤ, (↑s : GenContFract α).h = ↑n) ∧
+    ∀ (n : ℕ) (bₙ : α), (↑s : GenContFract α).partDens.get? n = some bₙ → ∃ n : ℕ+, bₙ = ↑n
 
 variable (α)
 
-/-- A *(regular) continued fraction* ((r)cf) is a simple continued fraction (scf) whose partial
-denominators are all positive. It is the subtype of scfs that satisfy `SimpContFract.IsContFract`.
+/-- A *(regular) continued fraction* ((r)cf) is a simple continued fraction (scf) whose head term is
+integer and all partial denominators are positive naturals. It is the subtype of scfs that satisfy
+`SimpContFract.IsContFract`.
  -/
-def ContFract [One α] [Zero α] [LT α] :=
+def ContFract [One α] [NatCast α] [IntCast α] :=
   { s : SimpContFract α // s.IsContFract }
 
 variable {α}
@@ -249,11 +251,11 @@ variable {α}
 
 namespace ContFract
 
-variable [One α] [Zero α] [LT α]
+variable [One α] [NatCast α] [IntCast α]
 
 /-- Constructs a continued fraction without fractional part. -/
-def ofInteger (a : α) : ContFract α :=
-  ⟨SimpContFract.ofInteger a, fun n bₙ h ↦ by cases h⟩
+def ofInteger (n : ℤ) : ContFract α :=
+  ⟨SimpContFract.ofInteger (↑n : α), ⟨n, rfl⟩, fun n bₙ h ↦ by cases h⟩
 
 instance : Inhabited (ContFract α) :=
   ⟨ofInteger 0⟩

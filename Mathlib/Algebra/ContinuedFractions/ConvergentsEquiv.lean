@@ -389,7 +389,9 @@ nonrec theorem convs_eq_convs' [LinearOrderedField K] {c : ContFract K} :
   ext n
   apply convs_eq_convs'
   intro gp m _ s_nth_eq
-  exact ⟨zero_lt_one.trans_le ((c : SimpContFract K).property m gp.a
-    (partNum_eq_s_a s_nth_eq)).symm.le, c.property m gp.b <| partDen_eq_s_b s_nth_eq⟩
+  refine ⟨zero_lt_one.trans_le
+    ((c : SimpContFract K).property m gp.a (partNum_eq_s_a s_nth_eq)).symm.le, ?_⟩
+  rcases c.property.2 m gp.b <| partDen_eq_s_b s_nth_eq with ⟨m, hm⟩
+  rw [hm]; exact_mod_cast m.pos
 
 end ContFract
