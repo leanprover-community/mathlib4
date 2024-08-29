@@ -679,16 +679,18 @@ def toEnvelGroup.map {R : Type*} [Rack R] {G : Type*} [Group G] :
   right_inv F :=
     MonoidHom.ext fun x =>
       Quotient.inductionOn x fun x => by
-        induction' x with _ x y ih_x ih_y x ih_x
-        · exact F.map_one.symm
-        · rfl
-        · have hm : ⟦x.mul y⟧ = @Mul.mul (EnvelGroup R) _ ⟦x⟧ ⟦y⟧ := rfl
+        induction x with
+        | unit => exact F.map_one.symm
+        | incl => rfl
+        | mul x y ih_x ih_y =>
+          have hm : ⟦x.mul y⟧ = @Mul.mul (EnvelGroup R) _ ⟦x⟧ ⟦y⟧ := rfl
           simp only [MonoidHom.coe_mk, OneHom.coe_mk, Quotient.lift_mk]
           suffices ∀ x y, F (Mul.mul x y) = F (x) * F (y) by
             simp_all only [MonoidHom.coe_mk, OneHom.coe_mk, Quotient.lift_mk, hm]
             rw [← ih_x, ← ih_y, mapAux]
           exact F.map_mul
-        · have hm : ⟦x.inv⟧ = @Inv.inv (EnvelGroup R) _ ⟦x⟧ := rfl
+        | inv x ih_x =>
+          have hm : ⟦x.inv⟧ = @Inv.inv (EnvelGroup R) _ ⟦x⟧ := rfl
           rw [hm, F.map_inv, MonoidHom.map_inv, ih_x]
 
 /-- Given a homomorphism from a rack to a group, it factors through the enveloping group.
