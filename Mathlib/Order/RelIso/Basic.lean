@@ -722,4 +722,3 @@ def relIsoOfUniqueOfRefl (r : α → α → Prop) (s : β → β → Prop) [IsRe
   ⟨Equiv.equivOfUnique α β, iff_of_true (rel_of_subsingleton s _ _) (rel_of_subsingleton r _ _)⟩
 
 end RelIso
-#lint
