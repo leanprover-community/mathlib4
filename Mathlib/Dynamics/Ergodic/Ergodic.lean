@@ -138,11 +138,11 @@ theorem quasiErgodic (hf : Ergodic f μ) : QuasiErgodic f μ :=
   { hf.toPreErgodic, hf.toMeasurePreserving.quasiMeasurePreserving with }
 
 /-- See also `Ergodic.ae_empty_or_univ_of_preimage_ae_le`. -/
-theorem ae_empty_or_univ_of_preimage_ae_le' (hf : Ergodic f μ) (hs : MeasurableSet s)
+theorem ae_empty_or_univ_of_preimage_ae_le' (hf : Ergodic f μ) (hs : NullMeasurableSet s μ)
     (hs' : f ⁻¹' s ≤ᵐ[μ] s) (h_fin : μ s ≠ ∞) : s =ᵐ[μ] (∅ : Set α) ∨ s =ᵐ[μ] univ := by
   refine hf.quasiErgodic.ae_empty_or_univ' hs ?_
   refine ae_eq_of_ae_subset_of_measure_ge hs'
-    (hf.measure_preimage hs.nullMeasurableSet).symm.le ?_ h_fin
+    (hf.measure_preimage hs).symm.le ?_ h_fin
   exact measurableSet_preimage hf.measurable hs
 
 /-- See also `Ergodic.ae_empty_or_univ_of_ae_le_preimage`. -/
