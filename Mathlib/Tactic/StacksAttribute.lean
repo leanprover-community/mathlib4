@@ -53,15 +53,19 @@ abbrev stacksTagKind : SyntaxNodeKind := `stacksTag
 uppercase letters. -/
 def stacksTagFn : ParserFn := fun c s =>
   let i := s.pos
-  let tag :=
-    Substring.mk c.input i c.input.endPos |>.takeWhile (fun c => c.isDigit || c.isUpper) |>.toString
-  if tag.trimRight.length == 0 then
-    ParserState.mkUnexpectedError s "Please, enter a Tag after `stacks`."
-  else if tag.length != 4 then
-    ParserState.mkUnexpectedError s "Stacks tags are 4 characters of digits and uppercase letters."
+  let s := takeWhileFn (fun c => c.isAlphanum) c s
+  if s.hasError then
+    s
+  else if s.pos == i then
+    ParserState.mkError s "stacks tag"
   else
-  let st := takeWhileFn (fun c => c.isDigit || c.isUpper) c s
-  mkNodeToken stacksTagKind i c st
+    let tag := Substring.mk c.input i s.pos |>.toString
+    if !tag.all fun c => c.isDigit || c.isUpper then
+      ParserState.mkUnexpectedError s "Stacks tags must consist only of digits and uppercase letters."
+    else if tag.length != 4 then
+      ParserState.mkUnexpectedError s "Stacks tags must be exactly 4 characters"
+    else
+      mkNodeToken stacksTagKind i c s
 
 @[inherit_doc stacksTagFn]
 def stacksTagNoAntiquot : Parser := {
