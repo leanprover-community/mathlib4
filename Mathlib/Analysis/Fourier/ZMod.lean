@@ -25,6 +25,13 @@ Basic definitions and properties of the discrete Fourier transform for functions
 
 open MeasureTheory Finset AddChar ZMod
 
+/-- A function is _even_ if it satisfis `f (-x) = f x` for all `x`. -/
+protected def Function.Even {R R' : Type*} [Neg R] (f : R → R') : Prop := ∀ (x : R), f (-x) = f x
+
+/-- A function is _odd_ if it satisfis `f (-x) = -f x` for all `x`. -/
+protected def Function.Odd {R R' : Type*} [Neg R] [Neg R'] (f : R → R') : Prop :=
+  ∀ (x : R), f (-x) = -(f x)
+
 namespace ZMod
 
 variable {N : ℕ} [NeZero N] {E : Type*} [AddCommGroup E] [Module ℂ E]
@@ -176,6 +183,25 @@ lemma dft_comp_unitMul (Φ : ZMod N → E) (u : (ZMod N)ˣ) (k : ZMod N) :
     𝓕 (fun j ↦ Φ (u.val * j)) k = 𝓕 Φ (u⁻¹.val * k) := by
   refine Fintype.sum_equiv u.mulLeft _ _ fun x ↦ ?_
   simp only [mul_comm u.val, u.mulLeft_apply, ← mul_assoc, u.mul_inv_cancel_right]
+
+section signs
+
+/-- The Fourier transform sends even functions to even functions. -/
+lemma dft_even {Φ : ZMod N → ℂ} : Φ.Even ↔ (𝓕 Φ).Even := by
+  have h {f : ZMod N → ℂ} (hf : f.Even) : (𝓕 f).Even := by
+    simp only [Function.Even, ← congr_fun (dft_comp_neg f), funext hf, implies_true]
+  refine ⟨h, fun hΦ x ↦ ?_⟩
+  simpa only [neg_neg, smul_right_inj (NeZero.ne (N : ℂ)), dft_dft] using h hΦ (-x)
+
+/-- The Fourier transform sends odd functions to odd functions. -/
+lemma dft_odd {Φ : ZMod N → ℂ} : Φ.Odd ↔ (𝓕 Φ).Odd := by
+  have h {f : ZMod N → ℂ} (hf : f.Odd) : (𝓕 f).Odd := by
+    simp only [Function.Odd, ← congr_fun (dft_comp_neg f), funext hf, ← Pi.neg_apply, map_neg,
+      implies_true]
+  refine ⟨h, fun hΦ x ↦ ?_⟩
+  simpa only [neg_neg, dft_dft, ← smul_neg, smul_right_inj (NeZero.ne (N : ℂ))] using h hΦ (-x)
+
+end signs
 
 end ZMod
 
