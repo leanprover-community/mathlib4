@@ -207,8 +207,8 @@ lemma AddSubgroup.isLeast_closure_iff_eq_abs {a b : G} :
   · wlog ha : 0 ≤ a generalizing a
     · convert @this (-a) ?_ (by simpa using le_of_not_le ha) using 4
       · simp
-      · rwa [max_comm, neg_neg]
-    rw [max_eq_left ((neg_nonpos.mpr ha).trans ha)] at h
+      · simpa using h
+    rw [abs_eq_self.mpr ha] at h
     rcases h with ⟨rfl, h⟩
     refine ⟨?_, ?_⟩
     · simp [h]
