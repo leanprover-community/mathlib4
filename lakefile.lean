@@ -27,10 +27,11 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
   ⟨`linter.missingEnd, true⟩,
   ⟨`linter.cdot, true⟩,
   ⟨`linter.dollarSyntax, true⟩,
+  ⟨`linter.style.lambdaSyntax, true⟩,
   ⟨`linter.longLine, true⟩,
   ⟨`linter.oldObtain, true,⟩,
   ⟨`linter.refine, true⟩,
-  ⟨`linter.setOption, true⟩
+  ⟨`linter.style.setOption, true⟩
 ]
 
 /-- These options are passed as `leanOptions` to building mathlib, as well as the
