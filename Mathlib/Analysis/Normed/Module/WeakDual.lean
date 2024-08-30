@@ -385,16 +385,13 @@ lemma existance''' [ProperSpace 𝕜₁] (hC₁ : IsClosed C)
     rw [image_eq_iUnion]
     simp [polar_iUnion]
   rw [← e1]
-  --rw [← hu]
-  have eu : Nonempty u := by exact u_notempty C s n u hu
+  have eu : Nonempty u := u_notempty C s n u hu
   rw [← more_confusion _ _ _ _ eu, confusion _ _ _ _ eu] at hu
-  rw [← lala2]
-  rw [lala]
-  rw [lala3]
+  rw [← lala2 _ _ _ _ eu]
+  rw [lala _ _ _ _ eu]
+  rw [lala3 _ _ _ _ eu]
   exact hu
-  exact eu
-  exact eu
-  exact eu
+
 
 
 
