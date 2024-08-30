@@ -466,7 +466,7 @@ theorem le_glb_Ioi (a : α) (hb : IsGLB (Ioi a) b) : a ≤ b :=
 
 theorem lub_Iio_eq_self_or_Iio_eq_Iic [PartialOrder γ] {j : γ} (i : γ) (hj : IsLUB (Iio i) j) :
     j = i ∨ Iio i = Iic j := by
-  cases' eq_or_lt_of_le (lub_Iio_le i hj) with hj_eq_i hj_lt_i
+  rcases eq_or_lt_of_le (lub_Iio_le i hj) with hj_eq_i | hj_lt_i
   · exact Or.inl hj_eq_i
   · right
     exact Set.ext fun k => ⟨fun hk_lt => hj.1 hk_lt, fun hk_le_j => lt_of_le_of_lt hk_le_j hj_lt_i⟩
@@ -609,7 +609,7 @@ variable [SemilatticeSup γ] [DenselyOrdered γ]
 
 theorem isGLB_Ioo {a b : γ} (h : a < b) : IsGLB (Ioo a b) a :=
   ⟨fun x hx => hx.1.le, fun x hx => by
-    cases' eq_or_lt_of_le (le_sup_right : a ≤ x ⊔ a) with h₁ h₂
+    rcases eq_or_lt_of_le (le_sup_right : a ≤ x ⊔ a) with h₁ | h₂
     · exact h₁.symm ▸ le_sup_left
     obtain ⟨y, lty, ylt⟩ := exists_between h₂
     apply (not_lt_of_le (sup_le (hx ⟨lty, ylt.trans_le (sup_le _ h.le)⟩) lty.le) ylt).elim
