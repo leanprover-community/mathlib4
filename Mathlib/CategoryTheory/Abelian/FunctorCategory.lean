@@ -108,7 +108,6 @@ end
 --/-- A variant with specialized universes for a common case. -/
 --noncomputable instance functorCategoryAbelian' : Abelian (C ⥤ D) :=
 --  Abelian.functorCategoryAbelian.{u, u + 1, u, u}
--- #align category_theory.abelian.functor_category_abelian' CategoryTheory.Abelian.functorCategoryAbelian'
 --
 --end
 

@@ -263,14 +263,15 @@ local notation "σ" => spectrum R
 
 local notation "↑ₐ" => algebraMap R A
 
--- it would be nice to state this for `subalgebra_class`, but we don't have such a thing yet
-theorem subset_subalgebra {S : Subalgebra R A} (a : S) : spectrum R (a : A) ⊆ spectrum R a :=
-  compl_subset_compl.2 fun _ => IsUnit.map S.val
+theorem subset_subalgebra {S R A : Type*} [CommSemiring R] [Ring A] [Algebra R A]
+    [SetLike S A] [SubringClass S A] [SMulMemClass S R A] {s : S} (a : s) :
+    spectrum R (a : A) ⊆ spectrum R a :=
+  Set.compl_subset_compl.mpr fun _ ↦ IsUnit.map (SubalgebraClass.val s)
 
--- this is why it would be nice if `subset_subalgebra` was registered for `subalgebra_class`.
+@[deprecated subset_subalgebra (since := "2024-07-19")]
 theorem subset_starSubalgebra [StarRing R] [StarRing A] [StarModule R A] {S : StarSubalgebra R A}
     (a : S) : spectrum R (a : A) ⊆ spectrum R a :=
-  compl_subset_compl.2 fun _ => IsUnit.map S.subtype
+  subset_subalgebra a
 
 theorem singleton_add_eq (a : A) (r : R) : {r} + σ a = σ (↑ₐ r + a) :=
   ext fun x => by
@@ -293,6 +294,27 @@ theorem sub_singleton_eq (a : A) (r : R) : σ a - {r} = σ (a - ↑ₐ r) := by
   simpa only [neg_sub, neg_eq] using congr_arg Neg.neg (singleton_sub_eq a r)
 
 end ScalarRing
+
+section ScalarSemifield
+
+variable {R : Type u} {A : Type v} [Semifield R] [Ring A] [Algebra R A]
+
+@[simp]
+lemma inv₀_mem_iff {r : R} {a : Aˣ} :
+    r⁻¹ ∈ spectrum R (a : A) ↔ r ∈ spectrum R (↑a⁻¹ : A) := by
+  obtain (rfl | hr) := eq_or_ne r 0
+  · simp [zero_mem_iff]
+  · lift r to Rˣ using hr.isUnit
+    simp [inv_mem_iff]
+
+lemma inv₀_mem_inv_iff {r : R} {a : Aˣ} :
+    r⁻¹ ∈ spectrum R (↑a⁻¹ : A) ↔ r ∈ spectrum R (a : A) := by
+  simp
+
+alias ⟨of_inv₀_mem, inv₀_mem⟩ := inv₀_mem_iff
+alias ⟨of_inv₀_mem_inv, inv₀_mem_inv⟩ := inv₀_mem_inv_iff
+
+end ScalarSemifield
 
 section ScalarField
 

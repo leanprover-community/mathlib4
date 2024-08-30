@@ -103,7 +103,7 @@ open Lean Meta Elab.Tactic in
 @[tactic sorryIfSorry, inherit_doc sorryIfSorry] def evalSorryIfSorry : Tactic := fun _ => do
   let goalType ← getMainTarget
   if goalType.hasSorry then
-    closeMainGoal (← mkSorry goalType true)
+    closeMainGoal `sorry_if_sorry (← mkSorry goalType true)
   else
     throwError "The goal does not contain `sorry`"
 
@@ -310,6 +310,18 @@ theorem epi_of_epi {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [Epi (f ≫ g)] : Epi
 theorem epi_of_epi_fac {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {h : X ⟶ Z} [Epi h]
     (w : f ≫ g = h) : Epi g := by
   subst h; exact epi_of_epi f g
+
+section
+
+variable [Quiver.IsThin C] (f : X ⟶ Y)
+
+instance : Mono f where
+  right_cancellation _ _ _ := Subsingleton.elim _ _
+
+instance : Epi f where
+  left_cancellation _ _ _ := Subsingleton.elim _ _
+
+end
 
 end
 

@@ -61,7 +61,7 @@ noncomputable def ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x, d x 
   dist_comm x y :=
     NNReal.coe_inj.2 <| by
       refine reverse_surjective.iInf_congr _ fun l ↦ ?_
-      rw [← sum_reverse, zipWith_distrib_reverse, reverse_append, reverse_reverse,
+      rw [← sum_reverse, reverse_zipWith, reverse_append, reverse_reverse,
         reverse_singleton, singleton_append, reverse_cons, reverse_reverse,
         zipWith_comm_of_comm _ dist_comm]
       simp only [length, length_append]
@@ -134,7 +134,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
       intro m hm
       rw [← not_lt, Nat.lt_iff_add_one_le, ← hL_len]
       intro hLm
-      rw [mem_setOf_eq, take_all_of_le hLm, two_mul, add_le_iff_nonpos_left, nonpos_iff_eq_zero,
+      rw [mem_setOf_eq, take_of_length_le hLm, two_mul, add_le_iff_nonpos_left, nonpos_iff_eq_zero,
           sum_eq_zero_iff, ← forall_iff_forall_mem, forall_zipWith,
           ← chain_append_singleton_iff_forall₂]
           at hm <;>
@@ -154,7 +154,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
       have hMl' : length (take M l) = M := (length_take _ _).trans (min_eq_left hMl.le)
       refine (ihn _ hMl _ _ _ hMl').trans ?_
       convert hMs.1.out
-      rw [zipWith_distrib_take, take, take_succ, getElem?_append hMl, getElem?_eq_getElem hMl,
+      rw [take_zipWith, take, take_succ, getElem?_append hMl, getElem?_eq_getElem hMl,
         ← Option.coe_def, Option.toList_some, take_append_of_le_length hMl.le, getElem_cons_succ]
   · exact single_le_sum (fun x _ => zero_le x) _ (mem_iff_get.2 ⟨⟨M, hM_lt⟩, getElem_zipWith⟩)
   · rcases hMl.eq_or_lt with (rfl | hMl)
@@ -169,7 +169,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
     rw [← sum_take_add_sum_drop L (M + 1), two_mul, add_le_add_iff_left, ← add_le_add_iff_right,
       sum_take_add_sum_drop, ← two_mul] at hMs'
     convert hMs'
-    rwa [zipWith_distrib_drop, drop, drop_append_of_le_length]
+    rwa [drop_zipWith, drop, drop_append_of_le_length]
 
 end PseudoMetricSpace
 
@@ -225,7 +225,7 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
     refine PseudoMetricSpace.le_two_mul_dist_ofPreNNDist _ _ _ fun x₁ x₂ x₃ x₄ => ?_
     by_cases H : ∃ n, (x₁, x₄) ∉ U n
     · refine (dif_pos H).trans_le ?_
-      rw [← NNReal.div_le_iff' two_ne_zero, ← mul_one_div (_ ^ _), ← pow_succ]
+      rw [← div_le_iff₀' zero_lt_two, ← mul_one_div (_ ^ _), ← pow_succ]
       simp only [le_max_iff, hle_d, ← not_and_or]
       rintro ⟨h₁₂, h₂₃, h₃₄⟩
       refine Nat.find_spec H (hU_comp (lt_add_one <| Nat.find H) ?_)
@@ -240,9 +240,9 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
   · refine fun n _ => ⟨n + 1, trivial, fun x hx => ?_⟩
     rw [mem_setOf_eq] at hx
     contrapose! hx
-    refine le_trans ?_ ((div_le_iff' (zero_lt_two' ℝ)).2 (hd_le x.1 x.2))
+    refine le_trans ?_ ((div_le_iff₀' zero_lt_two).2 (hd_le x.1 x.2))
     rwa [← NNReal.coe_two, ← NNReal.coe_div, ← NNReal.coe_pow, NNReal.coe_le_coe, pow_succ,
-      mul_one_div, NNReal.div_le_iff two_ne_zero, div_mul_cancel₀ _ (two_ne_zero' ℝ≥0), hle_d]
+      mul_one_div, div_le_iff₀ zero_lt_two, div_mul_cancel₀ _ two_ne_zero, hle_d]
 
 /-- A `PseudoMetricSpace` instance compatible with a given `UniformSpace` structure. -/
 protected noncomputable def UniformSpace.pseudoMetricSpace (X : Type*) [UniformSpace X]
@@ -282,3 +282,10 @@ lemma TotallyBounded.isSeparable [UniformSpace X] [i : IsCountablyGenerated (�
     exact EMetric.ball_subset_closedBall
   obtain ⟨t, _, htc, hts⟩ := EMetric.subset_countable_closure_of_almost_dense_set s h'
   exact ⟨t, htc, hts⟩
+
+open TopologicalSpace in
+instance (priority := 100) DiscreteTopology.metrizableSpace
+    {α} [TopologicalSpace α] [DiscreteTopology α] :
+    MetrizableSpace α := by
+  obtain rfl := DiscreteTopology.eq_bot (α := α)
+  exact @UniformSpace.metrizableSpace α ⊥ (isCountablyGenerated_principal _) _

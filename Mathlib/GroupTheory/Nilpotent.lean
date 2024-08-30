@@ -3,13 +3,10 @@ Copyright (c) 2021 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Ines Wright, Joachim Breitner
 -/
-import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.GroupTheory.Solvable
-import Mathlib.GroupTheory.PGroup
 import Mathlib.GroupTheory.Sylow
-import Mathlib.Data.Nat.Factorization.Basic
-import Mathlib.Tactic.TFAE
 import Mathlib.Algebra.Group.Subgroup.Order
+import Mathlib.GroupTheory.Commutator.Finite
 
 /-!
 
@@ -450,7 +447,7 @@ theorem upperCentralSeries.map {H : Type*} [Group H] {f : G →* H} (h : Functio
 theorem lowerCentralSeries.map {H : Type*} [Group H] (f : G →* H) (n : ℕ) :
     Subgroup.map f (lowerCentralSeries G n) ≤ lowerCentralSeries H n := by
   induction' n with d hd
-  · simp [Nat.zero_eq]
+  · simp
   · rintro a ⟨x, hx : x ∈ lowerCentralSeries G d.succ, rfl⟩
     refine closure_induction hx ?_ (by simp [f.map_one, Subgroup.one_mem _])
       (fun y z hy hz => by simp [MonoidHom.map_mul, Subgroup.mul_mem _ hy hz]) (fun y hy => by
@@ -538,7 +535,7 @@ private theorem comap_center_subst {H₁ H₂ : Subgroup G} [Normal H₁] [Norma
 theorem comap_upperCentralSeries_quotient_center (n : ℕ) :
     comap (mk' (center G)) (upperCentralSeries (G ⧸ center G) n) = upperCentralSeries G n.succ := by
   induction' n with n ih
-  · simp only [Nat.zero_eq, upperCentralSeries_zero, MonoidHom.comap_bot, ker_mk',
+  · simp only [upperCentralSeries_zero, MonoidHom.comap_bot, ker_mk',
       (upperCentralSeries_one G).symm]
   · let Hn := upperCentralSeries (G ⧸ center G) n
     calc

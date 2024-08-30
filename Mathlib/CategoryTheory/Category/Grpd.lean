@@ -5,8 +5,6 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.CategoryTheory.SingleObj
 import Mathlib.CategoryTheory.Limits.Shapes.Products
-import Mathlib.CategoryTheory.Pi.Basic
-import Mathlib.CategoryTheory.Limits.IsLimit
 
 /-!
 # Category of groupoids

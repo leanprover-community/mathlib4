@@ -17,26 +17,28 @@ In this file we define `dslope` and prove some basic lemmas about its continuity
 differentiability.
 -/
 
-
-open scoped Classical Topology Filter
+open scoped Topology Filter
 
 open Function Set Filter
 
 variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
+open Classical in
 /-- `dslope f a b` is defined as `slope f a b = (b - a)⁻¹ • (f b - f a)` for `a ≠ b` and
 `deriv f a` for `a = b`. -/
 noncomputable def dslope (f : 𝕜 → E) (a : 𝕜) : 𝕜 → E :=
   update (slope f a) a (deriv f a)
 
 @[simp]
-theorem dslope_same (f : 𝕜 → E) (a : 𝕜) : dslope f a a = deriv f a :=
-  update_same _ _ _
+theorem dslope_same (f : 𝕜 → E) (a : 𝕜) : dslope f a a = deriv f a := by
+  classical
+  exact update_same _ _ _
 
 variable {f : 𝕜 → E} {a b : 𝕜} {s : Set 𝕜}
 
-theorem dslope_of_ne (f : 𝕜 → E) (h : b ≠ a) : dslope f a b = slope f a b :=
-  update_noteq h _ _
+theorem dslope_of_ne (f : 𝕜 → E) (h : b ≠ a) : dslope f a b = slope f a b := by
+  classical
+  exact update_noteq h _ _
 
 theorem ContinuousLinearMap.dslope_comp {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
     (f : E →L[𝕜] F) (g : 𝕜 → E) (a b : 𝕜) (H : a = b → DifferentiableAt 𝕜 g a) :
@@ -89,6 +91,7 @@ theorem ContinuousOn.of_dslope (h : ContinuousOn (dslope f a) s) : ContinuousOn 
 theorem continuousWithinAt_dslope_of_ne (h : b ≠ a) :
     ContinuousWithinAt (dslope f a) s b ↔ ContinuousWithinAt f s b := by
   refine ⟨ContinuousWithinAt.of_dslope, fun hc => ?_⟩
+  classical
   simp only [dslope, continuousWithinAt_update_of_ne h]
   exact ((continuousWithinAt_id.sub continuousWithinAt_const).inv₀ (sub_ne_zero.2 h)).smul
     (hc.sub continuousWithinAt_const)

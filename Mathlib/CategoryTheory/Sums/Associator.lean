@@ -24,7 +24,7 @@ variable (C : Type u) [Category.{v} C] (D : Type u) [Category.{v} D] (E : Type u
 
 /-- The associator functor `(C ⊕ D) ⊕ E ⥤ C ⊕ (D ⊕ E)` for sums of categories.
 -/
-def associator : Sum (Sum C D) E ⥤ Sum C (Sum D E) where
+def associator : (C ⊕ D) ⊕ E ⥤ C ⊕ (D ⊕ E) where
   obj X :=
     match X with
     | inl (inl X) => inl X
@@ -67,7 +67,7 @@ theorem associator_map_inr {X Y : E} (f : inr X ⟶ inr Y) : (associator C D E).
 
 /-- The inverse associator functor `C ⊕ (D ⊕ E) ⥤ (C ⊕ D) ⊕ E` for sums of categories.
 -/
-def inverseAssociator : Sum C (Sum D E) ⥤ Sum (Sum C D) E where
+def inverseAssociator : C ⊕ (D ⊕ E) ⥤ (C ⊕ D) ⊕ E where
   obj X :=
     match X with
     | inl X => inl (inl X)
@@ -112,14 +112,14 @@ theorem inverseAssociator_map_inr_inr {X Y : E} (f : inr (inr X) ⟶ inr (inr Y)
 
 /-- The equivalence of categories expressing associativity of sums of categories.
 -/
-def associativity : Sum (Sum C D) E ≌ Sum C (Sum D E) :=
-  Equivalence.mk (associator C D E) (inverseAssociator C D E)
-    (NatIso.ofComponents (fun X => eqToIso
-      (by rcases X with ((_|_)|_) <;> rfl)) -- Porting note: aesop_cat fails
-      (by rintro ((_|_)|_) ((_|_)|_) f <;> first | cases f | aesop_cat))
-    (NatIso.ofComponents (fun X => eqToIso
-      (by rcases X with (_|(_|_)) <;> rfl)) -- Porting note: aesop_cat fails
-      (by rintro (_|(_|_)) (_|(_|_)) f <;> first | cases f | aesop_cat))
+@[simps functor inverse]
+def associativity : (C ⊕ D) ⊕ E ≌ C ⊕ (D ⊕ E) where
+  functor := associator C D E
+  inverse := inverseAssociator C D E
+  unitIso := NatIso.ofComponents (by rintro ((_ | _) | _) <;> exact Iso.refl _) (by
+    rintro ((_ | _) | _) ((_ | _) | _) f <;> first | cases f | aesop_cat)
+  counitIso := NatIso.ofComponents (by rintro (_ | (_ | _)) <;> exact Iso.refl _) (by
+    rintro (_ | (_ | _)) (_ | (_ | _)) f <;> first | cases f | aesop_cat)
 
 instance associatorIsEquivalence : (associator C D E).IsEquivalence :=
   (by infer_instance : (associativity C D E).functor.IsEquivalence)

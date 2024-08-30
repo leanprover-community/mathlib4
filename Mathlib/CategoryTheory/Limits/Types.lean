@@ -7,8 +7,6 @@ import Mathlib.Data.TypeMax
 import Mathlib.Logic.UnivLE
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 
-
-
 /-!
 # Limits in the category of types.
 
@@ -225,7 +223,6 @@ theorem limitEquivSections_symm_apply (x : F.sections) (j : J) :
 --theorem limitEquivSections_symm_apply' (F : J ⥤ Type v) (x : F.sections) (j : J) :
 --    limit.π F j ((limitEquivSections.{v, v} F).symm x) = (x : ∀ j, F.obj j) j :=
 --  isLimitEquivSections_symm_apply _ _ _
--- #align category_theory.limits.types.limit_equiv_sections_symm_apply' CategoryTheory.Limits.Types.limitEquivSections_symm_apply'
 
 -- Porting note (#11182): removed @[ext]
 /-- Construct a term of `limit F : Type u` from a family of terms `x : Π j, F.obj j`
@@ -248,7 +245,6 @@ theorem Limit.π_mk (x : ∀ j, F.obj j) (h : ∀ (j j') (f : j ⟶ j'), F.map f
 --    limit.π F j (Limit.mk.{v, v} F x h) = x j := by
 --  dsimp [Limit.mk]
 --  simp
---#align category_theory.limits.types.limit.π_mk' CategoryTheory.Limits.Types.Limit.π_mk'
 
 -- PROJECT: prove this for concrete categories where the forgetful functor preserves limits
 @[ext]
@@ -261,9 +257,6 @@ theorem limit_ext (x y : limit F) (w : ∀ j, limit.π F j x = limit.π F j y) :
 theorem limit_ext' (F : J ⥤ Type v) (x y : limit F) (w : ∀ j, limit.π F j x = limit.π F j y) :
     x = y :=
   limit_ext F x y w
-
-theorem limit_ext_iff (x y : limit F) : x = y ↔ ∀ j, limit.π F j x = limit.π F j y :=
-  ⟨fun t _ => t ▸ rfl, limit_ext _ _ _⟩
 
 theorem limit_ext_iff' (F : J ⥤ Type v) (x y : limit F) :
     x = y ↔ ∀ j, limit.π F j x = limit.π F j y :=
@@ -649,6 +642,7 @@ private noncomputable def limitOfSurjectionsSurjective.preimage
     | 0 => a
     | n+1 => (hF n (preimage a n)).choose
 
+include hF in
 open limitOfSurjectionsSurjective in
 /-- Auxiliary lemma. Use `limit_of_surjections_surjective` instead. -/
 lemma surjective_π_app_zero_of_surjective_map_aux :
@@ -669,7 +663,10 @@ lemma surjective_π_app_zero_of_surjective_map_aux :
 /--
 Given surjections `⋯ ⟶ Xₙ₊₁ ⟶ Xₙ ⟶ ⋯ ⟶ X₀`, the projection map `lim Xₙ ⟶ X₀` is surjective.
 -/
-lemma surjective_π_app_zero_of_surjective_map : Function.Surjective (c.π.app ⟨0⟩) := by
+lemma surjective_π_app_zero_of_surjective_map
+    (hc : IsLimit c)
+    (hF : ∀ n, Function.Surjective (F.map (homOfLE (Nat.le_succ n)).op)) :
+    Function.Surjective (c.π.app ⟨0⟩) := by
   let i := hc.conePointUniqueUpToIso (limitConeIsLimit F)
   have : c.π.app ⟨0⟩ = i.hom ≫ (limitCone F).π.app ⟨0⟩ := by simp [i]
   rw [this]

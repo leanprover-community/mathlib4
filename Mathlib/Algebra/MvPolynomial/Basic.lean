@@ -54,7 +54,7 @@ In the definitions below, we use the following notation:
 * `map (f : R → S₁) p` : returns the multivariate polynomial obtained from `p` by the change of
   coefficient semiring corresponding to `f`
 * `aeval (g : σ → S₁) p` : evaluates the multivariate polynomial obtained from `p` by the change
-  of coefficient semiring corresponding to `g` (`a` stands for `algebra`)
+  of coefficient semiring corresponding to `g` (`a` stands for `Algebra`)
 
 ## Implementation notes
 
@@ -529,9 +529,6 @@ theorem support_mul [DecidableEq σ] (p q : MvPolynomial σ R) :
 theorem ext (p q : MvPolynomial σ R) : (∀ m, coeff m p = coeff m q) → p = q :=
   Finsupp.ext
 
-theorem ext_iff (p q : MvPolynomial σ R) : p = q ↔ ∀ m, coeff m p = coeff m q :=
-  ⟨fun h m => by rw [h], ext p q⟩
-
 @[simp]
 theorem coeff_add (m : σ →₀ ℕ) (p q : MvPolynomial σ R) : coeff m (p + q) = coeff m p + coeff m q :=
   add_apply p q m
@@ -716,7 +713,7 @@ theorem coeff_X_mul' [DecidableEq σ] (m) (s : σ) (p : MvPolynomial σ R) :
     one_mul]
 
 theorem eq_zero_iff {p : MvPolynomial σ R} : p = 0 ↔ ∀ d, coeff d p = 0 := by
-  rw [ext_iff]
+  rw [MvPolynomial.ext_iff]
   simp only [coeff_zero]
 
 theorem ne_zero_iff {p : MvPolynomial σ R} : p ≠ 0 ↔ ∃ d, coeff d p ≠ 0 := by
@@ -1101,7 +1098,7 @@ theorem eval_assoc {τ} (f : σ → MvPolynomial τ R) (g : τ → R) (p : MvPol
 theorem eval₂_id {g : σ → R} (p : MvPolynomial σ R) : eval₂ (RingHom.id _) g p = eval g p :=
   rfl
 
-theorem eval_eval₂ {S τ : Type*} {x : τ → S} [CommSemiring R] [CommSemiring S]
+theorem eval_eval₂ {S τ : Type*} {x : τ → S} [CommSemiring S]
     (f : R →+* MvPolynomial τ S) (g : σ → MvPolynomial τ S) (p : MvPolynomial σ R) :
     eval x (eval₂ f g p) = eval₂ ((eval x).comp f) (fun s => eval x (g s)) p := by
   apply induction_on p
@@ -1203,7 +1200,7 @@ theorem coeff_map (p : MvPolynomial σ R) : ∀ m : σ →₀ ℕ, coeff m (map 
 theorem map_injective (hf : Function.Injective f) :
     Function.Injective (map f : MvPolynomial σ R → MvPolynomial σ S₁) := by
   intro p q h
-  simp only [ext_iff, coeff_map] at h ⊢
+  simp only [MvPolynomial.ext_iff, coeff_map] at h ⊢
   intro m
   exact hf (h m)
 

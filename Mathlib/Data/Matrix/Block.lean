@@ -29,7 +29,7 @@ open Matrix
 
 namespace Matrix
 
-theorem dotProduct_block [Fintype m] [Fintype n] [Mul α] [AddCommMonoid α] (v w : Sum m n → α) :
+theorem dotProduct_block [Fintype m] [Fintype n] [Mul α] [AddCommMonoid α] (v w : m ⊕ n → α) :
     v ⬝ᵥ w = v ∘ Sum.inl ⬝ᵥ w ∘ Sum.inl + v ∘ Sum.inr ⬝ᵥ w ∘ Sum.inr :=
   Fintype.sum_sum_type _
 
@@ -39,7 +39,7 @@ section BlockMatrices
 dimensions. -/
 @[pp_nodot]
 def fromBlocks (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α) (D : Matrix o m α) :
-    Matrix (Sum n o) (Sum l m) α :=
+    Matrix (n ⊕ o) (l ⊕ m) α :=
   of <| Sum.elim (fun i => Sum.elim (A i) (B i)) fun i => Sum.elim (C i) (D i)
 
 @[simp]
@@ -64,25 +64,25 @@ theorem fromBlocks_apply₂₂ (A : Matrix n l α) (B : Matrix n m α) (C : Matr
 
 /-- Given a matrix whose row and column indexes are sum types, we can extract the corresponding
 "top left" submatrix. -/
-def toBlocks₁₁ (M : Matrix (Sum n o) (Sum l m) α) : Matrix n l α :=
+def toBlocks₁₁ (M : Matrix (n ⊕ o) (l ⊕ m) α) : Matrix n l α :=
   of fun i j => M (Sum.inl i) (Sum.inl j)
 
 /-- Given a matrix whose row and column indexes are sum types, we can extract the corresponding
 "top right" submatrix. -/
-def toBlocks₁₂ (M : Matrix (Sum n o) (Sum l m) α) : Matrix n m α :=
+def toBlocks₁₂ (M : Matrix (n ⊕ o) (l ⊕ m) α) : Matrix n m α :=
   of fun i j => M (Sum.inl i) (Sum.inr j)
 
 /-- Given a matrix whose row and column indexes are sum types, we can extract the corresponding
 "bottom left" submatrix. -/
-def toBlocks₂₁ (M : Matrix (Sum n o) (Sum l m) α) : Matrix o l α :=
+def toBlocks₂₁ (M : Matrix (n ⊕ o) (l ⊕ m) α) : Matrix o l α :=
   of fun i j => M (Sum.inr i) (Sum.inl j)
 
 /-- Given a matrix whose row and column indexes are sum types, we can extract the corresponding
 "bottom right" submatrix. -/
-def toBlocks₂₂ (M : Matrix (Sum n o) (Sum l m) α) : Matrix o m α :=
+def toBlocks₂₂ (M : Matrix (n ⊕ o) (l ⊕ m) α) : Matrix o m α :=
   of fun i j => M (Sum.inr i) (Sum.inr j)
 
-theorem fromBlocks_toBlocks (M : Matrix (Sum n o) (Sum l m) α) :
+theorem fromBlocks_toBlocks (M : Matrix (n ⊕ o) (l ⊕ m) α) :
     fromBlocks M.toBlocks₁₁ M.toBlocks₁₂ M.toBlocks₂₁ M.toBlocks₂₂ = M := by
   ext i j
   rcases i with ⟨⟩ <;> rcases j with ⟨⟩ <;> rfl
@@ -108,7 +108,7 @@ theorem toBlocks_fromBlocks₂₂ (A : Matrix n l α) (B : Matrix n m α) (C : M
   rfl
 
 /-- Two block matrices are equal if their blocks are equal. -/
-theorem ext_iff_blocks {A B : Matrix (Sum n o) (Sum l m) α} :
+theorem ext_iff_blocks {A B : Matrix (n ⊕ o) (l ⊕ m) α} :
     A = B ↔
       A.toBlocks₁₁ = B.toBlocks₁₁ ∧
         A.toBlocks₁₂ = B.toBlocks₁₂ ∧ A.toBlocks₂₁ = B.toBlocks₂₁ ∧ A.toBlocks₂₂ = B.toBlocks₂₂ :=
@@ -137,14 +137,14 @@ theorem fromBlocks_conjTranspose [Star α] (A : Matrix n l α) (B : Matrix n m �
 
 @[simp]
 theorem fromBlocks_submatrix_sum_swap_left (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
-    (D : Matrix o m α) (f : p → Sum l m) :
+    (D : Matrix o m α) (f : p → l ⊕ m) :
     (fromBlocks A B C D).submatrix Sum.swap f = (fromBlocks C D A B).submatrix id f := by
   ext i j
   cases i <;> dsimp <;> cases f j <;> rfl
 
 @[simp]
 theorem fromBlocks_submatrix_sum_swap_right (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
-    (D : Matrix o m α) (f : p → Sum n o) :
+    (D : Matrix o m α) (f : p → n ⊕ o) :
     (fromBlocks A B C D).submatrix f Sum.swap = (fromBlocks B A D C).submatrix f id := by
   ext i j
   cases j <;> dsimp <;> cases f i <;> rfl
@@ -154,7 +154,7 @@ theorem fromBlocks_submatrix_sum_swap_sum_swap {l m n o α : Type*} (A : Matrix 
     (fromBlocks A B C D).submatrix Sum.swap Sum.swap = fromBlocks D C B A := by simp
 
 /-- A 2x2 block matrix is block diagonal if the blocks outside of the diagonal vanish -/
-def IsTwoBlockDiagonal [Zero α] (A : Matrix (Sum n o) (Sum l m) α) : Prop :=
+def IsTwoBlockDiagonal [Zero α] (A : Matrix (n ⊕ o) (l ⊕ m) α) : Prop :=
   toBlocks₁₂ A = 0 ∧ toBlocks₂₁ A = 0
 
 /-- Let `p` pick out certain rows and `q` pick out certain columns of a matrix `M`. Then
@@ -218,7 +218,7 @@ theorem fromBlocks_multiply [Fintype l] [Fintype m] [NonUnitalNonAssocSemiring �
       Sum.elim_inr, Fintype.sum_sum_type, Sum.elim_inl, add_apply]
 
 theorem fromBlocks_mulVec [Fintype l] [Fintype m] [NonUnitalNonAssocSemiring α] (A : Matrix n l α)
-    (B : Matrix n m α) (C : Matrix o l α) (D : Matrix o m α) (x : Sum l m → α) :
+    (B : Matrix n m α) (C : Matrix o l α) (D : Matrix o m α) (x : l ⊕ m → α) :
     (fromBlocks A B C D) *ᵥ x =
       Sum.elim (A *ᵥ (x ∘ Sum.inl) + B *ᵥ (x ∘ Sum.inr))
         (C *ᵥ (x ∘ Sum.inl) + D *ᵥ (x ∘ Sum.inr)) := by
@@ -226,7 +226,7 @@ theorem fromBlocks_mulVec [Fintype l] [Fintype m] [NonUnitalNonAssocSemiring α]
   cases i <;> simp [mulVec, dotProduct]
 
 theorem vecMul_fromBlocks [Fintype n] [Fintype o] [NonUnitalNonAssocSemiring α] (A : Matrix n l α)
-    (B : Matrix n m α) (C : Matrix o l α) (D : Matrix o m α) (x : Sum n o → α) :
+    (B : Matrix n m α) (C : Matrix o l α) (D : Matrix o m α) (x : n ⊕ o → α) :
     x ᵥ* fromBlocks A B C D =
       Sum.elim ((x ∘ Sum.inl) ᵥ* A + (x ∘ Sum.inr) ᵥ* C)
         ((x ∘ Sum.inl) ᵥ* B + (x ∘ Sum.inr) ᵥ* D) := by

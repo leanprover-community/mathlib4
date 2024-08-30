@@ -177,8 +177,7 @@ theorem integral_cos_pow_eq (n : ℕ) :
   have L : IntervalIntegrable _ volume 0 (π / 2) := (continuous_sin.pow n).intervalIntegrable _ _
   have R : IntervalIntegrable _ volume (π / 2) π := (continuous_sin.pow n).intervalIntegrable _ _
   rw [← integral_add_adjacent_intervals L R]
-  -- Porting note: was `congr 1` but it timeouts
-  refine congr_arg₂ _ ?_ ?_
+  congr 1
   · nth_rw 1 [(by ring : 0 = π / 2 - π / 2)]
     nth_rw 3 [(by ring : π / 2 = π / 2 - 0)]
     rw [← integral_comp_sub_left]

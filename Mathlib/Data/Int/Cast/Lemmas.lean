@@ -5,8 +5,6 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Ring.Hom.Basic
 import Mathlib.Algebra.Ring.Int
-import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.Data.Nat.Cast.Commute
 
 /-!
 # Cast of integers (additional theorems)
@@ -285,10 +283,10 @@ theorem ext_int' [MonoidWithZero α] [FunLike F ℤ α] [MonoidWithZeroHomClass 
     this
 
 section Group
-variable (α) [Group α] [AddGroup α]
+variable (α) [Group α] (β) [AddGroup β]
 
 /-- Additive homomorphisms from `ℤ` are defined by the image of `1`. -/
-def zmultiplesHom : α ≃ (ℤ →+ α) where
+def zmultiplesHom : β ≃ (ℤ →+ β) where
   toFun x :=
   { toFun := fun n => n • x
     map_zero' := zero_zsmul x
@@ -303,9 +301,9 @@ of `Multiplicative.ofAdd 1`. -/
 def zpowersHom : α ≃ (Multiplicative ℤ →* α) :=
   ofMul.trans <| (zmultiplesHom _).trans <| AddMonoidHom.toMultiplicative''
 
-lemma zmultiplesHom_apply (x : α) (n : ℤ) : zmultiplesHom α x n = n • x := rfl
+lemma zmultiplesHom_apply (x : β) (n : ℤ) : zmultiplesHom β x n = n • x := rfl
 
-lemma zmultiplesHom_symm_apply (f : ℤ →+ α) : (zmultiplesHom α).symm f = f 1 := rfl
+lemma zmultiplesHom_symm_apply (f : ℤ →+ β) : (zmultiplesHom β).symm f = f 1 := rfl
 
 @[to_additive existing (attr := simp)]
 lemma zpowersHom_apply (x : α) (n : Multiplicative ℤ) : zpowersHom α x n = x ^ toAdd n := rfl
@@ -318,17 +316,17 @@ lemma MonoidHom.apply_mint (f : Multiplicative ℤ →* α) (n : Multiplicative 
     f n = f (ofAdd 1) ^ (toAdd n) := by
   rw [← zpowersHom_symm_apply, ← zpowersHom_apply, Equiv.apply_symm_apply]
 
-lemma AddMonoidHom.apply_int (f : ℤ →+ α) (n : ℤ) : f n = n • f 1 := by
+lemma AddMonoidHom.apply_int (f : ℤ →+ β) (n : ℤ) : f n = n • f 1 := by
   rw [← zmultiplesHom_symm_apply, ← zmultiplesHom_apply, Equiv.apply_symm_apply]
 
 end Group
 
 section CommGroup
-variable (α) [CommGroup α] [AddCommGroup α]
+variable (α) [CommGroup α] (β) [AddCommGroup β]
 
 /-- If `α` is commutative, `zmultiplesHom` is an additive equivalence. -/
-def zmultiplesAddHom : α ≃+ (ℤ →+ α) :=
-  { zmultiplesHom α with map_add' := fun a b => AddMonoidHom.ext fun n => by simp [zsmul_add] }
+def zmultiplesAddHom : β ≃+ (ℤ →+ β) :=
+  { zmultiplesHom β with map_add' := fun a b => AddMonoidHom.ext fun n => by simp [zsmul_add] }
 
 /-- If `α` is commutative, `zpowersHom` is a multiplicative equivalence. -/
 def zpowersMulHom : α ≃* (Multiplicative ℤ →* α) :=
@@ -343,9 +341,9 @@ lemma zpowersMulHom_apply (x : α) (n : Multiplicative ℤ) : zpowersMulHom α x
 lemma zpowersMulHom_symm_apply (f : Multiplicative ℤ →* α) :
     (zpowersMulHom α).symm f = f (ofAdd 1) := rfl
 
-@[simp] lemma zmultiplesAddHom_apply (x : α) (n : ℤ) : zmultiplesAddHom α x n = n • x := rfl
+@[simp] lemma zmultiplesAddHom_apply (x : β) (n : ℤ) : zmultiplesAddHom β x n = n • x := rfl
 
-@[simp] lemma zmultiplesAddHom_symm_apply (f : ℤ →+ α) : (zmultiplesAddHom α).symm f = f 1 := rfl
+@[simp] lemma zmultiplesAddHom_symm_apply (f : ℤ →+ β) : (zmultiplesAddHom β).symm f = f 1 := rfl
 
 end CommGroup
 

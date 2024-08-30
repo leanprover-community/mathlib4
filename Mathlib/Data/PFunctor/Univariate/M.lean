@@ -654,9 +654,9 @@ def corec₁ {α : Type u} (F : ∀ X, (α → X) → α → P X) : α → M P :
 
 /-- corecursor where it is possible to return a fully formed value at any point
 of the computation -/
-def corec' {α : Type u} (F : ∀ {X : Type u}, (α → X) → α → Sum (M P) (P X)) (x : α) : M P :=
+def corec' {α : Type u} (F : ∀ {X : Type u}, (α → X) → α → M P ⊕ P X) (x : α) : M P :=
   corec₁
-    (fun _ rec (a : Sum (M P) α) =>
+    (fun _ rec (a : M P ⊕ α) =>
       let y := a >>= F (rec ∘ Sum.inr)
       match y with
       | Sum.inr y => y

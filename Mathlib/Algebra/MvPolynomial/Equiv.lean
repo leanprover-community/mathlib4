@@ -148,7 +148,7 @@ with coefficients in multivariable polynomials in the other type.
 
 See `sumRingEquiv` for the ring isomorphism.
 -/
-def sumToIter : MvPolynomial (Sum S₁ S₂) R →+* MvPolynomial S₁ (MvPolynomial S₂ R) :=
+def sumToIter : MvPolynomial (S₁ ⊕ S₂) R →+* MvPolynomial S₁ (MvPolynomial S₂ R) :=
   eval₂Hom (C.comp C) fun bc => Sum.recOn bc X (C ∘ X)
 
 @[simp]
@@ -169,7 +169,7 @@ to multivariable polynomials in the sum of the two types.
 
 See `sumRingEquiv` for the ring isomorphism.
 -/
-def iterToSum : MvPolynomial S₁ (MvPolynomial S₂ R) →+* MvPolynomial (Sum S₁ S₂) R :=
+def iterToSum : MvPolynomial S₁ (MvPolynomial S₂ R) →+* MvPolynomial (S₁ ⊕ S₂) R :=
   eval₂Hom (eval₂Hom C (X ∘ Sum.inr)) (X ∘ Sum.inl)
 
 @[simp]
@@ -221,8 +221,8 @@ def mvPolynomialEquivMvPolynomial [CommSemiring S₃] (f : MvPolynomial S₁ R �
 and multivariable polynomials in one of the types,
 with coefficients in multivariable polynomials in the other type.
 -/
-def sumRingEquiv : MvPolynomial (Sum S₁ S₂) R ≃+* MvPolynomial S₁ (MvPolynomial S₂ R) := by
-  apply mvPolynomialEquivMvPolynomial R (Sum S₁ S₂) _ _ (sumToIter R S₁ S₂) (iterToSum R S₁ S₂)
+def sumRingEquiv : MvPolynomial (S₁ ⊕ S₂) R ≃+* MvPolynomial S₁ (MvPolynomial S₂ R) := by
+  apply mvPolynomialEquivMvPolynomial R (S₁ ⊕ S₂) _ _ (sumToIter R S₁ S₂) (iterToSum R S₁ S₂)
   · refine RingHom.ext (hom_eq_hom _ _ ?hC ?hX)
     case hC => ext1; simp only [RingHom.comp_apply, iterToSum_C_C, sumToIter_C]
     case hX => intro; simp only [RingHom.comp_apply, iterToSum_C_X, sumToIter_Xr]
@@ -235,12 +235,12 @@ and multivariable polynomials in one of the types,
 with coefficients in multivariable polynomials in the other type.
 -/
 @[simps!]
-def sumAlgEquiv : MvPolynomial (Sum S₁ S₂) R ≃ₐ[R] MvPolynomial S₁ (MvPolynomial S₂ R) :=
+def sumAlgEquiv : MvPolynomial (S₁ ⊕ S₂) R ≃ₐ[R] MvPolynomial S₁ (MvPolynomial S₂ R) :=
   { sumRingEquiv R S₁ S₂ with
     commutes' := by
       intro r
       have A : algebraMap R (MvPolynomial S₁ (MvPolynomial S₂ R)) r = (C (C r) : _) := rfl
-      have B : algebraMap R (MvPolynomial (Sum S₁ S₂) R) r = C r := rfl
+      have B : algebraMap R (MvPolynomial (S₁ ⊕ S₂) R) r = C r := rfl
       simp only [sumRingEquiv, mvPolynomialEquivMvPolynomial, Equiv.toFun_as_coe,
         Equiv.coe_fn_mk, B, sumToIter_C, A] }
 
@@ -377,7 +377,7 @@ theorem eval_eq_eval_mv_eval' (s : Fin n → R) (y : R) (f : MvPolynomial (Fin (
       (Polynomial.aeval y).comp (φ.comp (finSuccEquiv R n).toAlgHom) f
   congr 2
   apply MvPolynomial.algHom_ext
-  rw [Fin.forall_fin_succ]
+  rw [Fin.forall_iff_succ]
   simp only [φ, aeval_X, Fin.cons_zero, AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp,
     Polynomial.coe_aeval_eq_eval, Polynomial.map_C, AlgHom.coe_mk, RingHom.toFun_eq_coe,
     Polynomial.coe_mapRingHom, comp_apply, finSuccEquiv_apply, eval₂Hom_X',

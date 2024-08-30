@@ -5,12 +5,12 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Finset.Update
 import Mathlib.Data.Prod.TProd
-import Mathlib.GroupTheory.Coset
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.MeasureTheory.MeasurableSpace.Instances
 import Mathlib.Order.LiminfLimsup
 import Mathlib.Data.Set.UnionLift
 import Mathlib.Order.Filter.SmallSets
+import Mathlib.GroupTheory.Coset.Basic
 
 /-!
 # Measurable spaces and measurable functions
@@ -189,6 +189,21 @@ theorem comap_measurable {m : MeasurableSpace β} (f : α → β) : Measurable[m
 theorem Measurable.mono {ma ma' : MeasurableSpace α} {mb mb' : MeasurableSpace β} {f : α → β}
     (hf : @Measurable α β ma mb f) (ha : ma ≤ ma') (hb : mb' ≤ mb) : @Measurable α β ma' mb' f :=
   fun _t ht => ha _ <| hf <| hb _ ht
+
+lemma Measurable.iSup' {mα : ι → MeasurableSpace α} {_ : MeasurableSpace β} {f : α → β} (i₀ : ι)
+    (h : Measurable[mα i₀] f) :
+    Measurable[⨆ i, mα i] f :=
+  h.mono (le_iSup mα i₀) le_rfl
+
+lemma Measurable.sup_of_left {mα mα' : MeasurableSpace α} {_ : MeasurableSpace β} {f : α → β}
+    (h : Measurable[mα] f) :
+    Measurable[mα ⊔ mα'] f :=
+  h.mono le_sup_left le_rfl
+
+lemma Measurable.sup_of_right {mα mα' : MeasurableSpace α} {_ : MeasurableSpace β} {f : α → β}
+    (h : Measurable[mα'] f) :
+    Measurable[mα ⊔ mα'] f :=
+  h.mono le_sup_right le_rfl
 
 theorem measurable_id'' {m mα : MeasurableSpace α} (hm : m ≤ mα) : @Measurable α α mα m id :=
   measurable_id.mono le_rfl hm
@@ -818,7 +833,7 @@ theorem measurable_update'  {a : δ} [DecidableEq δ] :
     exact measurable_snd
   · exact measurable_pi_iff.1 measurable_fst _
 
-theorem measurable_uniqueElim [Unique δ] [∀ i, MeasurableSpace (π i)] :
+theorem measurable_uniqueElim [Unique δ] :
     Measurable (uniqueElim : π (default : δ) → ∀ i, π i) := by
   simp_rw [measurable_pi_iff, Unique.forall_iff, uniqueElim_default]; exact measurable_id
 
@@ -1260,9 +1275,16 @@ protected theorem inf_eq_inter (s t : {s : Set α // MeasurableSet s}) : s ⊓ t
 instance Subtype.instSDiff : SDiff (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun x y => ⟨x \ y, x.prop.diff y.prop⟩⟩
 
+-- TODO: Why does it complain that `x ⇨ y` is noncomputable?
+noncomputable instance Subtype.instHImp : HImp (Subtype (MeasurableSet : Set α → Prop)) where
+  himp x y := ⟨x ⇨ y, x.prop.himp y.prop⟩
+
 @[simp]
 theorem coe_sdiff (s t : Subtype (MeasurableSet : Set α → Prop)) : ↑(s \ t) = (s : Set α) \ t :=
   rfl
+
+@[simp]
+lemma coe_himp (s t : Subtype (MeasurableSet : Set α → Prop)) : ↑(s ⇨ t) = (s ⇨ t : Set α) := rfl
 
 instance Subtype.instBot : Bot (Subtype (MeasurableSet : Set α → Prop)) := ⟨∅⟩
 
@@ -1277,10 +1299,10 @@ instance Subtype.instTop : Top (Subtype (MeasurableSet : Set α → Prop)) :=
 theorem coe_top : ↑(⊤ : Subtype (MeasurableSet : Set α → Prop)) = (⊤ : Set α) :=
   rfl
 
-instance Subtype.instBooleanAlgebra :
+noncomputable instance Subtype.instBooleanAlgebra :
     BooleanAlgebra (Subtype (MeasurableSet : Set α → Prop)) :=
-  Subtype.coe_injective.booleanAlgebra _ (fun _ _ => rfl) (fun _ _ => rfl) rfl rfl (fun _ => rfl)
-    fun _ _ => rfl
+  Subtype.coe_injective.booleanAlgebra _ coe_union coe_inter coe_top coe_bot coe_compl coe_sdiff
+    coe_himp
 
 @[measurability]
 theorem measurableSet_blimsup {s : ℕ → Set α} {p : ℕ → Prop} (h : ∀ n, p n → MeasurableSet (s n)) :

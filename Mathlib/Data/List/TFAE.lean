@@ -6,7 +6,6 @@ Authors: Johan Commelin, Simon Hudon
 import Batteries.Data.List.Lemmas
 import Batteries.Tactic.Classical
 import Mathlib.Tactic.TypeStar
-import Mathlib.Mathport.Rename
 
 /-!
 # The Following Are Equivalent
@@ -80,7 +79,7 @@ example (P₁ P₂ P₃ : ℕ → Prop) (H : ∀ n, [P₁ n, P₂ n, P₃ n].TFA
 -/
 theorem forall_tfae {α : Type*} (l : List (α → Prop)) (H : ∀ a : α, (l.map (fun p ↦ p a)).TFAE) :
     (l.map (fun p ↦ ∀ a, p a)).TFAE := by
-  simp only [TFAE, List.forall_mem_map_iff]
+  simp only [TFAE, List.forall_mem_map]
   intros p₁ hp₁ p₂ hp₂
   exact forall_congr' fun a ↦ H a (p₁ a) (mem_map_of_mem (fun p ↦ p a) hp₁)
     (p₂ a) (mem_map_of_mem (fun p ↦ p a) hp₂)
@@ -99,7 +98,7 @@ example (P₁ P₂ P₃ : ℕ → Prop) (H : ∀ n, [P₁ n, P₂ n, P₃ n].TFA
 -/
 theorem exists_tfae {α : Type*} (l : List (α → Prop)) (H : ∀ a : α, (l.map (fun p ↦ p a)).TFAE) :
     (l.map (fun p ↦ ∃ a, p a)).TFAE := by
-  simp only [TFAE, List.forall_mem_map_iff]
+  simp only [TFAE, List.forall_mem_map]
   intros p₁ hp₁ p₂ hp₂
   exact exists_congr fun a ↦ H a (p₁ a) (mem_map_of_mem (fun p ↦ p a) hp₁)
     (p₂ a) (mem_map_of_mem (fun p ↦ p a) hp₂)

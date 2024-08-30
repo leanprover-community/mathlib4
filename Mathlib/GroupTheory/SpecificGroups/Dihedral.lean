@@ -5,6 +5,7 @@ Authors: Shing Tak Lam
 -/
 import Mathlib.Data.ZMod.Basic
 import Mathlib.GroupTheory.Exponent
+import Mathlib.GroupTheory.GroupAction.CardCommute
 
 /-!
 # Dihedral Groups
@@ -67,9 +68,9 @@ instance : Group (DihedralGroup n) where
     · exact congr_arg r (add_zero a)
     · exact congr_arg sr (add_zero a)
   inv := inv
-  mul_left_inv := by
+  inv_mul_cancel := by
     rintro (a | a)
-    · exact congr_arg r (neg_add_self a)
+    · exact congr_arg r (neg_add_cancel a)
     · exact congr_arg r (sub_self a)
 
 @[simp]
@@ -91,7 +92,7 @@ theorem sr_mul_sr (i j : ZMod n) : sr i * sr j = r (j - i) :=
 theorem one_def : (1 : DihedralGroup n) = r 0 :=
   rfl
 
-private def fintypeHelper : Sum (ZMod n) (ZMod n) ≃ DihedralGroup n where
+private def fintypeHelper : (ZMod n) ⊕ (ZMod n) ≃ DihedralGroup n where
   invFun i := match i with
     | r j => Sum.inl j
     | sr j => Sum.inr j

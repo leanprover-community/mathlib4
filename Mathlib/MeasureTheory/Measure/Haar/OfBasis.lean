@@ -111,8 +111,8 @@ theorem parallelepiped_orthonormalBasis_one_dim (b : OrthonormalBasis ι ℝ ℝ
   rcases orthonormalBasis_one_dim (b.reindex e) with (H | H)
   · left
     simp_rw [parallelepiped, H, A, Algebra.id.smul_eq_mul, mul_one]
-    simp only [Finset.univ_unique, Fin.default_eq_zero, smul_eq_mul, mul_one, Finset.sum_singleton,
-      ← image_comp, Function.comp_apply, image_id', zero_le_one, not_true, gt_iff_lt]
+    simp only [Finset.univ_unique, Fin.default_eq_zero, Finset.sum_singleton, ← image_comp,
+      Function.comp_apply, image_id']
   · right
     simp_rw [H, parallelepiped, Algebra.id.smul_eq_mul, A]
     simp only [F, Finset.univ_unique, Fin.default_eq_zero, mul_neg, mul_one, Finset.sum_neg_distrib,
@@ -213,6 +213,7 @@ theorem Basis.parallelepiped_map (b : Basis ι ℝ E) (e : E ≃ₗ[ℝ] F) :
     LinearMap.isOpenMap_of_finiteDimensional _ e.surjective) :=
   PositiveCompacts.ext (image_parallelepiped e.toLinearMap _).symm
 
+-- removing this option makes elaboration approximately 1 second slower
 set_option tactic.skipAssignedInstances false in
 theorem Basis.prod_parallelepiped (v : Basis ι ℝ E) (w : Basis ι' ℝ F) :
     (v.prod w).parallelepiped = v.parallelepiped.prod w.parallelepiped := by

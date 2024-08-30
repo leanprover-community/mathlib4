@@ -67,7 +67,7 @@ namespace IsDedekindDomain
 
 noncomputable section
 
-open scoped Classical DiscreteValuation nonZeroDivisors
+open scoped DiscreteValuation nonZeroDivisors
 
 universe u v
 
@@ -79,6 +79,7 @@ variable {R : Type u} [CommRing R] [IsDedekindDomain R] {K : Type v} [Field K]
 
 namespace HeightOneSpectrum
 
+open Classical in
 /-- The multiplicative `v`-adic valuation on `Kˣ`. -/
 def valuationOfNeZeroToFun (x : Kˣ) : Multiplicative ℤ :=
   let hx := IsLocalization.sec R⁰ (x : K)
@@ -89,6 +90,7 @@ def valuationOfNeZeroToFun (x : Kˣ) : Multiplicative ℤ :=
 @[simp]
 theorem valuationOfNeZeroToFun_eq (x : Kˣ) :
     (v.valuationOfNeZeroToFun x : ℤₘ₀) = v.valuation (x : K) := by
+  classical
   rw [show v.valuation (x : K) = _ * _ by rfl]
   rw [Units.val_inv_eq_inv_val]
   change _ = ite _ _ _ * (ite _ _ _)⁻¹
@@ -121,7 +123,7 @@ theorem valuation_of_unit_eq (x : Rˣ) :
     apply_fun v.intValuation at hx
     rw [map_one, map_mul] at hx
     rw [not_lt, ← hx, ← mul_one <| v.valuation _, valuation_of_algebraMap,
-      mul_le_mul_left₀ <| left_ne_zero_of_mul_eq_one hx]
+      mul_le_mul_left <| zero_lt_iff.2 <| left_ne_zero_of_mul_eq_one hx]
     exact v.intValuation_le_one _
 
 -- Porting note: invalid attribute 'semireducible', declaration is in an imported module

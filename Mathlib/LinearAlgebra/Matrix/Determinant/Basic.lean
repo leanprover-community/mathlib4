@@ -610,7 +610,7 @@ theorem det_fromBlocks_zero₂₁ (A : Matrix m m R) (B : Matrix m n R) (D : Mat
   classical
     simp_rw [det_apply']
     convert Eq.symm <|
-      sum_subset (β := R) (subset_univ ((sumCongrHom m n).range : Set (Perm (Sum m n))).toFinset) ?_
+      sum_subset (β := R) (subset_univ ((sumCongrHom m n).range : Set (Perm (m ⊕ n))).toFinset) ?_
     · simp_rw [sum_mul_sum, ← sum_product', univ_product_univ]
       refine sum_nbij (fun σ ↦ σ.fst.sumCongr σ.snd) ?_ ?_ ?_ ?_
       · intro σ₁₂ _
@@ -760,7 +760,7 @@ theorem det_fin_three (A : Matrix (Fin 3) (Fin 3) R) :
       A 0 0 * A 1 1 * A 2 2 - A 0 0 * A 1 2 * A 2 1
       - A 0 1 * A 1 0 * A 2 2 + A 0 1 * A 1 2 * A 2 0
       + A 0 2 * A 1 0 * A 2 1 - A 0 2 * A 1 1 * A 2 0 := by
-  simp only [det_succ_row_zero, Nat.odd_iff_not_even, submatrix_apply, Fin.succ_zero_eq_one,
+  simp only [det_succ_row_zero, ← Nat.not_even_iff_odd, submatrix_apply, Fin.succ_zero_eq_one,
     submatrix_submatrix, det_unique, Fin.default_eq_zero, comp_apply, Fin.succ_one_eq_two,
     Fin.sum_univ_succ, Fin.val_zero, Fin.zero_succAbove, univ_unique, Fin.val_succ,
     Fin.coe_fin_one, Fin.succ_succAbove_zero, sum_singleton, Fin.succ_succAbove_one, even_add_self]

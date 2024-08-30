@@ -3,6 +3,7 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
 -/
+import Mathlib.MeasureTheory.Decomposition.Exhaustion
 import Mathlib.MeasureTheory.Integral.Lebesgue
 
 /-!
@@ -580,8 +581,8 @@ protected instance SigmaFinite.withDensity [SigmaFinite μ] (f : α → ℝ≥0)
     · exact ⟨n, forall_mem_image.2 fun x hx ↦ hx.2⟩
   · rw [iUnion_eq_univ_iff]
     refine fun x ↦ ⟨max (spanningSetsIndex μ x) ⌈f x⌉₊, ?_, ?_⟩
-    exact mem_spanningSets_of_index_le _ _ (le_max_left ..)
-    simp [Nat.le_ceil]
+    · exact mem_spanningSets_of_index_le _ _ (le_max_left ..)
+    · simp [Nat.le_ceil]
 
 lemma SigmaFinite.withDensity_of_ne_top [SigmaFinite μ] {f : α → ℝ≥0∞}
     (hf_ne_top : ∀ᵐ x ∂μ, f x ≠ ∞) : SigmaFinite (μ.withDensity f) := by
@@ -648,6 +649,17 @@ lemma sFinite_withDensity_of_measurable (μ : Measure α) [SFinite μ]
     {f : α → ℝ≥0∞} (_hf : Measurable f) :
     SFinite (μ.withDensity f) :=
   inferInstance
+
+instance [SFinite μ] (c : ℝ≥0∞) : SFinite (c • μ) := by
+  rw [← withDensity_const]
+  infer_instance
+
+/-- If `μ ≪ ν` and `ν` is s-finite, then `μ` is s-finite. -/
+theorem sFinite_of_absolutelyContinuous {ν : Measure α} [SFinite ν] (hμν : μ ≪ ν) :
+    SFinite μ := by
+  rw [← Measure.restrict_add_restrict_compl (μ := μ) measurableSet_sigmaFiniteSetWRT,
+    restrict_compl_sigmaFiniteSetWRT hμν]
+  infer_instance
 
 end SFinite
 

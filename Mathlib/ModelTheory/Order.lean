@@ -3,28 +3,30 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.ModelTheory.Semantics
+import Mathlib.ModelTheory.Complexity
 
 /-!
 # Ordered First-Ordered Structures
+
 This file defines ordered first-order languages and structures, as well as their theories.
 
 ## Main Definitions
-* `FirstOrder.Language.order` is the language consisting of a single relation representing `≤`.
-* `FirstOrder.Language.orderStructure` is the structure on an ordered type, assigning the symbol
-representing `≤` to the actual relation `≤`.
-* `FirstOrder.Language.IsOrdered` points out a specific symbol in a language as representing `≤`.
-* `FirstOrder.Language.OrderedStructure` indicates that the `≤` symbol in an ordered language
-is interpreted as the actual relation `≤` in a particular structure.
-* `FirstOrder.Language.linearOrderTheory` and similar define the theories of preorders,
-partial orders, and linear orders.
-* `FirstOrder.Language.dlo` defines the theory of dense linear orders without endpoints, a
-particularly useful example in model theory.
+
+- `FirstOrder.Language.order` is the language consisting of a single relation representing `≤`.
+- `FirstOrder.Language.orderStructure` is the structure on an ordered type, assigning the symbol
+  representing `≤` to the actual relation `≤`.
+- `FirstOrder.Language.IsOrdered` points out a specific symbol in a language as representing `≤`.
+- `FirstOrder.Language.OrderedStructure` indicates that the `≤` symbol in an ordered language
+  is interpreted as the actual relation `≤` in a particular structure.
+- `FirstOrder.Language.linearOrderTheory` and similar define the theories of preorders,
+  partial orders, and linear orders.
+- `FirstOrder.Language.dlo` defines the theory of dense linear orders without endpoints, a
+  particularly useful example in model theory.
 
 ## Main Results
-* `PartialOrder`s model the theory of partial orders, `LinearOrder`s model the theory of
-linear orders, and dense linear orders without endpoints model `Language.dlo`.
 
+- `PartialOrder`s model the theory of partial orders, `LinearOrder`s model the theory of
+  linear orders, and dense linear orders without endpoints model `Language.dlo`.
 -/
 
 
@@ -67,11 +69,11 @@ section IsOrdered
 variable [IsOrdered L]
 
 /-- Joins two terms `t₁, t₂` in a formula representing `t₁ ≤ t₂`. -/
-def Term.le (t₁ t₂ : L.Term (Sum α (Fin n))) : L.BoundedFormula α n :=
+def Term.le (t₁ t₂ : L.Term (α ⊕ (Fin n))) : L.BoundedFormula α n :=
   leSymb.boundedFormula₂ t₁ t₂
 
 /-- Joins two terms `t₁, t₂` in a formula representing `t₁ < t₂`. -/
-def Term.lt (t₁ t₂ : L.Term (Sum α (Fin n))) : L.BoundedFormula α n :=
+def Term.lt (t₁ t₂ : L.Term (α ⊕ (Fin n))) : L.BoundedFormula α n :=
   t₁.le t₂ ⊓ ∼(t₂.le t₁)
 
 variable (L)
@@ -106,13 +108,32 @@ variable (L) [IsOrdered L]
 def preorderTheory : L.Theory :=
   {leSymb.reflexive, leSymb.transitive}
 
+instance : Theory.IsUniversal L.preorderTheory := ⟨by
+  simp only [preorderTheory, Set.mem_insert_iff, Set.mem_singleton_iff, forall_eq_or_imp, forall_eq]
+  exact ⟨leSymb.isUniversal_reflexive, leSymb.isUniversal_transitive⟩⟩
+
 /-- The theory of partial orders. -/
 def partialOrderTheory : L.Theory :=
   {leSymb.reflexive, leSymb.antisymmetric, leSymb.transitive}
 
+instance : Theory.IsUniversal L.partialOrderTheory := ⟨by
+  simp only [partialOrderTheory,
+    Set.mem_insert_iff, Set.mem_singleton_iff, forall_eq_or_imp, forall_eq]
+  exact ⟨leSymb.isUniversal_reflexive, leSymb.isUniversal_antisymmetric,
+    leSymb.isUniversal_transitive⟩⟩
+
 /-- The theory of linear orders. -/
 def linearOrderTheory : L.Theory :=
   {leSymb.reflexive, leSymb.antisymmetric, leSymb.transitive, leSymb.total}
+
+instance : Theory.IsUniversal L.linearOrderTheory := ⟨by
+  simp only [linearOrderTheory,
+    Set.mem_insert_iff, Set.mem_singleton_iff, forall_eq_or_imp, forall_eq]
+  exact ⟨leSymb.isUniversal_reflexive, leSymb.isUniversal_antisymmetric,
+    leSymb.isUniversal_transitive, leSymb.isUniversal_total⟩⟩
+
+example [L.Structure M] [M ⊨ L.linearOrderTheory] (S : L.Substructure M) :
+    S ⊨ L.linearOrderTheory := inferInstance
 
 /-- A sentence indicating that an order has no top element:
 $\forall x, \exists y, \neg y \le x$.   -/
@@ -181,13 +202,13 @@ theorem relMap_leSymb [LE M] [L.OrderedStructure M] {a b : M} :
   rfl
 
 @[simp]
-theorem Term.realize_le [LE M] [L.OrderedStructure M] {t₁ t₂ : L.Term (Sum α (Fin n))} {v : α → M}
+theorem Term.realize_le [LE M] [L.OrderedStructure M] {t₁ t₂ : L.Term (α ⊕ (Fin n))} {v : α → M}
     {xs : Fin n → M} :
     (t₁.le t₂).Realize v xs ↔ t₁.realize (Sum.elim v xs) ≤ t₂.realize (Sum.elim v xs) := by
   simp [Term.le]
 
 @[simp]
-theorem Term.realize_lt [Preorder M] [L.OrderedStructure M] {t₁ t₂ : L.Term (Sum α (Fin n))}
+theorem Term.realize_lt [Preorder M] [L.OrderedStructure M] {t₁ t₂ : L.Term (α ⊕ (Fin n))}
     {v : α → M} {xs : Fin n → M} :
     (t₁.lt t₂).Realize v xs ↔ t₁.realize (Sum.elim v xs) < t₂.realize (Sum.elim v xs) := by
   simp [Term.lt, lt_iff_le_not_le]

@@ -12,6 +12,7 @@ import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.PowerBasis
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.QuotientNoetherian
+import Mathlib.RingTheory.Polynomial.Quotient
 
 /-!
 # Adjoining roots of polynomials
@@ -279,7 +280,7 @@ theorem aeval_algHom_eq_zero (ϕ : AdjoinRoot f →ₐ[R] S) : aeval (ϕ (root f
 @[simp]
 theorem liftHom_eq_algHom (f : R[X]) (ϕ : AdjoinRoot f →ₐ[R] S) :
     liftHom f (ϕ (root f)) (aeval_algHom_eq_zero f ϕ) = ϕ := by
-  suffices ϕ.equalizer (liftHom f (ϕ (root f)) (aeval_algHom_eq_zero f ϕ)) = ⊤ by
+  suffices AlgHom.equalizer ϕ (liftHom f (ϕ (root f)) (aeval_algHom_eq_zero f ϕ)) = ⊤ by
     exact (AlgHom.ext fun x => (SetLike.ext_iff.mp this x).mpr Algebra.mem_top).symm
   rw [eq_top_iff, ← adjoinRoot_eq_top, Algebra.adjoin_le_iff, Set.singleton_subset_iff]
   exact (@lift_root _ _ _ _ _ _ _ (aeval_algHom_eq_zero f ϕ)).symm
@@ -464,10 +465,9 @@ def powerBasis' (hg : g.Monic) : PowerBasis R (AdjoinRoot g) where
   basis_eq_pow i := by
     simp only [powerBasisAux', Basis.coe_ofEquivFun, LinearEquiv.coe_symm_mk]
     rw [Finset.sum_eq_single i]
-    · rw [Function.update_same, monomial_one_right_eq_X_pow, (mk g).map_pow, mk_X]
+    · rw [Pi.single_eq_same, monomial_one_right_eq_X_pow, (mk g).map_pow, mk_X]
     · intro j _ hj
-      rw [← monomial_zero_right _]
-      convert congr_arg _ (Function.update_noteq hj _ _)
+      rw [← monomial_zero_right _, Pi.single_eq_of_ne hj]
     -- Fix `DecidableEq` mismatch
     · intros
       have := Finset.mem_univ i

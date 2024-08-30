@@ -165,7 +165,6 @@ attribute [instance 100] GeneralizedCoheytingAlgebra.toOrderBot
 -- See note [lower instance priority]
 instance (priority := 100) HeytingAlgebra.toBoundedOrder [HeytingAlgebra α] : BoundedOrder α :=
   { bot_le := ‹HeytingAlgebra α›.bot_le }
---#align heyting_algebra.to_bounded_order HeytingAlgebra.toBoundedOrder
 
 -- See note [lower instance priority]
 instance (priority := 100) CoheytingAlgebra.toBoundedOrder [CoheytingAlgebra α] : BoundedOrder α :=

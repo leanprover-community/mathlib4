@@ -359,12 +359,13 @@ theorem exists_code {n} {f : Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
         PFun.mem_fix_iff.2 (Or.inl (by simp [hf, hn]))
       generalize (n.succ :: v.1 : List ℕ) = w at this ⊢
       clear hn
-      induction' n with n IH
-      · exact this
-      refine IH (fun {m} h' => hm (Nat.lt_succ_of_lt h'))
-        (PFun.mem_fix_iff.2 (Or.inr ⟨_, ?_, this⟩))
-      simp only [hf, hm n.lt_succ_self, Part.bind_some, List.headI, eq_self_iff_true, if_false,
-        Part.mem_some_iff, and_self_iff, List.tail_cons]
+      induction n with
+      | zero => exact this
+      | succ n IH =>
+        refine IH (fun {m} h' => hm (Nat.lt_succ_of_lt h'))
+          (PFun.mem_fix_iff.2 (Or.inr ⟨_, ?_, this⟩))
+        simp only [hf, hm n.lt_succ_self, Part.bind_some, List.headI, eq_self_iff_true, if_false,
+          Part.mem_some_iff, and_self_iff, List.tail_cons]
 
 end Code
 
@@ -427,7 +428,7 @@ def Cont.eval : Cont → List ℕ →. List ℕ
 /-- The set of configurations of the machine:
 
 * `halt v`: The machine is about to stop and `v : List ℕ` is the result.
-* `ret k v`: The machine is about to pass `v : List ℕ` to continuation `k : cont`.
+* `ret k v`: The machine is about to pass `v : List ℕ` to continuation `k : Cont`.
 
 We don't have a state corresponding to normal evaluation because these are evaluated immediately
 to a `ret` "in zero steps" using the `stepNormal` function. -/
@@ -867,7 +868,6 @@ inductive Λ'
   | pred (q₁ q₂ : Λ')
   | ret (k : Cont')
 
--- Porting note: `Turing.PartrecToTM2.Λ'.rec` is noncomputable in Lean4, so we make it computable.
 compile_inductive% Code
 compile_inductive% Cont'
 compile_inductive% K'
@@ -1331,7 +1331,7 @@ theorem trNat_natEnd (n) : ∀ x ∈ trNat n, natEnd x = false :=
 
 theorem trList_ne_consₗ : ∀ (l), ∀ x ∈ trList l, x ≠ Γ'.consₗ
   | a :: l, x, h => by
-    simp [trList] at h
+    simp only [trList, List.mem_append, List.mem_cons] at h
     obtain h | rfl | h := h
     · rintro rfl
       cases trNat_natEnd _ _ h
@@ -1434,7 +1434,7 @@ theorem pred_ok (q₁ q₂ s v) (c d : List Γ') : ∃ s',
   simp only [TM2.step, trList, trNat.eq_1, trNum, Nat.cast_succ, Num.add_one, Num.succ,
     List.tail_cons, List.headI_cons]
   cases' (n : Num) with a
-  · simp [trPosNum, trNum, show Num.zero.succ' = PosNum.one from rfl]
+  · simp only [trPosNum, List.singleton_append, List.nil_append]
     refine TransGen.head rfl ?_
     simp only [Option.mem_def, TM2.stepAux, elim_main, List.head?_cons, Option.some.injEq,
       decide_False, List.tail_cons, elim_update_main, ne_eq, Function.update_noteq, elim_rev,
@@ -1572,7 +1572,7 @@ theorem tr_init (c v) :
 theorem tr_eval (c v) : eval (TM2.step tr) (init c v) = halt <$> Code.eval c v := by
   obtain ⟨i, h₁, h₂⟩ := tr_init c v
   refine Part.ext fun x => ?_
-  rw [reaches_eval h₂.to_reflTransGen]; simp [-TM2.step]
+  rw [reaches_eval h₂.to_reflTransGen]; simp only [Part.map_eq_map, Part.mem_map_iff]
   refine ⟨fun h => ?_, ?_⟩
   · obtain ⟨c, hc₁, hc₂⟩ := tr_eval_rev tr_respects h₁ h
     simp [stepNormal_eval] at hc₂
@@ -1769,7 +1769,7 @@ theorem supports_union {K₁ K₂ S} : Supports (K₁ ∪ K₂) S ↔ Supports K
 
 theorem supports_biUnion {K : Option Γ' → Finset Λ'} {S} :
     Supports (Finset.univ.biUnion K) S ↔ ∀ a, Supports (K a) S := by
-  simp [Supports]; apply forall_swap
+  simpa [Supports] using forall_swap
 
 theorem head_supports {S k q} (H : (q : Λ').Supports S) : (head k q).Supports S := fun _ => by
   dsimp only; split_ifs <;> exact H

@@ -233,7 +233,6 @@ variable (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d)
 -- Porting note: I can not get this to typecheck, and I don't understand why.
 -- theorem id_def : Hom.id a = 𝟙 a :=
 --   rfl
--- #align category_theory.free_bicategory.id_def CategoryTheory.FreeBicategory.id_def
 
 theorem comp_def : Hom.comp f g = f ≫ g :=
   rfl

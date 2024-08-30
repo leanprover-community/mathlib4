@@ -72,9 +72,7 @@ We also add wrappers around structures which already exist. Here are the main on
 universe u
 
 open CategoryTheory Filter Ultrafilter TopologicalSpace CategoryTheory.Limits FiniteInter
-
-open scoped Classical
-open Topology
+open scoped Topology
 
 local notation "β" => ofTypeMonad Ultrafilter
 
@@ -410,7 +408,7 @@ end Compactum
 /-- The functor functor from Compactum to CompHaus. -/
 def compactumToCompHaus : Compactum ⥤ CompHaus where
   obj X := { toTop := { α := X }, prop := trivial }
-  map := @fun X Y f =>
+  map := fun f =>
     { toFun := f
       continuous_toFun := Compactum.continuous_of_hom _ }
 

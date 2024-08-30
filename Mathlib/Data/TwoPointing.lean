@@ -55,6 +55,7 @@ theorem swap_snd : p.swap.snd = p.fst := rfl
 @[simp]
 theorem swap_swap : p.swap.swap = p := rfl
 
+include p in
 theorem to_nontrivial : Nontrivial α :=
   ⟨⟨p.fst, p.snd, p.fst_ne_snd⟩⟩
 
@@ -102,7 +103,7 @@ theorem prod_snd : (p.prod q).snd = (p.snd, q.snd) :=
 
 /-- The sum of two pointings. Keeps the first point from the left and the second point from the
 right. -/
-protected def sum : TwoPointing (Sum α β) :=
+protected def sum : TwoPointing (α ⊕ β) :=
   ⟨(Sum.inl p.fst, Sum.inr q.snd), Sum.inl_ne_inr⟩
 
 @[simp]

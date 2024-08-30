@@ -234,7 +234,6 @@ theorem testBit_bit_succ (m b) : ∀ n, testBit (bit b n) (Nat.succ m) = testBit
 -- Porting note (#11215): TODO
 -- private unsafe def bitwise_tac : tactic Unit :=
 --   sorry
--- #align int.bitwise_tac int.bitwise_tac
 
 -- Porting note: Was `bitwise_tac` in mathlib
 theorem bitwise_or : bitwise or = lor := by

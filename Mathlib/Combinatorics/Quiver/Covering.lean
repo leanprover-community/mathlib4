@@ -122,13 +122,13 @@ theorem Prefunctor.IsCovering.of_comp_left (hφ : φ.IsCovering) (hφψ : (φ �
 /-- The star of the symmetrification of a quiver at a vertex `u` is equivalent to the sum of the
 star and the costar at `u` in the original quiver. -/
 def Quiver.symmetrifyStar (u : U) :
-    Quiver.Star (Symmetrify.of.obj u) ≃ Sum (Quiver.Star u) (Quiver.Costar u) :=
+    Quiver.Star (Symmetrify.of.obj u) ≃ Quiver.Star u ⊕ Quiver.Costar u :=
   Equiv.sigmaSumDistrib _ _
 
 /-- The costar of the symmetrification of a quiver at a vertex `u` is equivalent to the sum of the
 costar and the star at `u` in the original quiver. -/
 def Quiver.symmetrifyCostar (u : U) :
-    Quiver.Costar (Symmetrify.of.obj u) ≃ Sum (Quiver.Costar u) (Quiver.Star u) :=
+    Quiver.Costar (Symmetrify.of.obj u) ≃ Quiver.Costar u ⊕ Quiver.Star u :=
   Equiv.sigmaSumDistrib _ _
 
 theorem Prefunctor.symmetrifyStar (u : U) :
@@ -250,7 +250,7 @@ end Prefunctor.IsCovering
 
 section HasInvolutiveReverse
 
-variable [HasInvolutiveReverse U] [HasInvolutiveReverse V] [Prefunctor.MapReverse φ]
+variable [HasInvolutiveReverse U] [HasInvolutiveReverse V]
 
 /-- In a quiver with involutive inverses, the star and costar at every vertex are equivalent.
 This map is induced by `Quiver.reverse`. -/
@@ -271,13 +271,15 @@ theorem Quiver.starEquivCostar_symm_apply {u v : U} (e : u ⟶ v) :
     (Quiver.starEquivCostar v).symm (Quiver.Costar.mk e) = Quiver.Star.mk (reverse e) :=
   rfl
 
+variable [Prefunctor.MapReverse φ]
+
 theorem Prefunctor.costar_conj_star (u : U) :
     φ.costar u = Quiver.starEquivCostar (φ.obj u) ∘ φ.star u ∘ (Quiver.starEquivCostar u).symm := by
   ext ⟨v, f⟩ <;> simp
 
 theorem Prefunctor.bijective_costar_iff_bijective_star (u : U) :
     Bijective (φ.costar u) ↔ Bijective (φ.star u) := by
-  rw [Prefunctor.costar_conj_star, EquivLike.comp_bijective, EquivLike.bijective_comp]
+  rw [Prefunctor.costar_conj_star φ, EquivLike.comp_bijective, EquivLike.bijective_comp]
 
 theorem Prefunctor.isCovering_of_bijective_star (h : ∀ u, Bijective (φ.star u)) : φ.IsCovering :=
   ⟨h, fun u => (φ.bijective_costar_iff_bijective_star u).2 (h u)⟩
