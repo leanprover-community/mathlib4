@@ -135,11 +135,11 @@ theorem half_le_symm_iff (t : I) : 1 / 2 ≤ (σ t : ℝ) ↔ (t : ℝ) ≤ 1 / 
   rw [coe_symm_eq, le_sub_iff_add_le, add_comm, ← le_sub_iff_add_le, sub_half]
 
 @[simp]
-lemma symm_eq_one_iff {i : I} : σ i = 1 ↔ i = 0 := by
+lemma symm_eq_one {i : I} : σ i = 1 ↔ i = 0 := by
   rw [← symm_zero, symm_inj]
 
 @[simp]
-lemma symm_eq_zero_iff {i : I} : σ i = 0 ↔ i = 1 := by
+lemma symm_eq_zero {i : I} : σ i = 0 ↔ i = 1 := by
   rw [← symm_one, symm_inj]
 
 @[simp]
