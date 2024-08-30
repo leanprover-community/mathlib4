@@ -72,7 +72,7 @@ open Finsupp
   definitions. -/
 class Module.Projective (R : Type*) [Semiring R] (P : Type*) [AddCommMonoid P] [Module R P] :
     Prop where
-  out : ∃ s : P →ₗ[R] P →₀ R, Function.LeftInverse (Finsupp.total P P R id) s
+  out : ∃ s : P →ₗ[R] P →₀ R, Function.LeftInverse (Finsupp.linearCombination R id) s
 
 namespace Module
 
@@ -82,11 +82,11 @@ variable {R : Type*} [Semiring R] {P : Type*} [AddCommMonoid P] [Module R P] {M 
   [AddCommMonoid M] [Module R M] {N : Type*} [AddCommMonoid N] [Module R N]
 
 theorem projective_def :
-    Projective R P ↔ ∃ s : P →ₗ[R] P →₀ R, Function.LeftInverse (Finsupp.total P P R id) s :=
+    Projective R P ↔ ∃ s : P →ₗ[R] P →₀ R, Function.LeftInverse (linearCombination R id) s :=
   ⟨fun h => h.1, fun h => ⟨h⟩⟩
 
 theorem projective_def' :
-    Projective R P ↔ ∃ s : P →ₗ[R] P →₀ R, Finsupp.total P P R id ∘ₗ s = .id := by
+    Projective R P ↔ ∃ s : P →ₗ[R] P →₀ R, Finsupp.linearCombination R id ∘ₗ s = .id := by
   simp_rw [projective_def, DFunLike.ext_iff, Function.LeftInverse, comp_apply, id_apply]
 
 /-- A projective R-module has the property that maps from it lift along surjections. -/
@@ -95,20 +95,20 @@ theorem projective_lifting_property [h : Projective R P] (f : M →ₗ[R] N) (g 
   /-
     Here's the first step of the proof.
     Recall that `X →₀ R` is Lean's way of talking about the free `R`-module
-    on a type `X`. The universal property `Finsupp.total` says that to a map
+    on a type `X`. The universal property `Finsupp.linearCombination` says that to a map
     `X → N` from a type to an `R`-module, we get an associated R-module map
     `(X →₀ R) →ₗ N`. Apply this to a (noncomputable) map `P → M` coming from the map
     `P →ₗ N` and a random splitting of the surjection `M →ₗ N`, and we get
     a map `φ : (P →₀ R) →ₗ M`.
     -/
-  let φ : (P →₀ R) →ₗ[R] M := Finsupp.total _ _ _ fun p => Function.surjInv hf (g p)
+  let φ : (P →₀ R) →ₗ[R] M := Finsupp.linearCombination _ fun p => Function.surjInv hf (g p)
   -- By projectivity we have a map `P →ₗ (P →₀ R)`;
   cases' h.out with s hs
   -- Compose to get `P →ₗ M`. This works.
   use φ.comp s
   ext p
   conv_rhs => rw [← hs p]
-  simp [φ, Finsupp.total_apply, Function.surjInv_eq hf, map_finsupp_sum]
+  simp [φ, Finsupp.linearCombination_apply, Function.surjInv_eq hf, map_finsupp_sum]
 
 /-- A module which satisfies the universal property is projective: If all surjections of
 `R`-modules `(P →₀ R) →ₗ[R] P` have `R`-linear left inverse maps, then `P` is
@@ -117,8 +117,8 @@ theorem Projective.of_lifting_property'' {R : Type u} [Semiring R] {P : Type v} 
     [Module R P] (huniv : ∀ (f : (P →₀ R) →ₗ[R] P), Function.Surjective f →
       ∃ h : P →ₗ[R] (P →₀ R), f.comp h = .id) :
     Projective R P :=
-  projective_def'.2 <| huniv (Finsupp.total P P R (id : P → P))
-    (total_surjective _ Function.surjective_id)
+  projective_def'.2 <| huniv (Finsupp.linearCombination R (id : P → P))
+    (linearCombination_surjective _ Function.surjective_id)
 
 variable {Q : Type*} [AddCommMonoid Q] [Module R Q]
 
@@ -152,9 +152,9 @@ theorem Projective.of_basis {ι : Type*} (b : Basis ι R P) : Projective R P := 
   -- get it from `ι → (P →₀ R)` coming from `b`.
   use b.constr ℕ fun i => Finsupp.single (b i) (1 : R)
   intro m
-  simp only [b.constr_apply, mul_one, id, Finsupp.smul_single', Finsupp.total_single,
+  simp only [b.constr_apply, mul_one, id, Finsupp.smul_single', Finsupp.linearCombination_single,
     map_finsupp_sum]
-  exact b.total_repr m
+  exact b.linearCombination_repr m
 
 instance (priority := 100) Projective.of_free [Module.Free R P] : Module.Projective R P :=
   .of_basis <| Module.Free.chooseBasis R P
@@ -164,7 +164,7 @@ variable [IsScalarTower R₀ R M] [AddCommGroup N] [Module R₀ N]
 
 theorem Projective.of_split [Module.Projective R M]
     (i : P →ₗ[R] M) (s : M →ₗ[R] P) (H : s.comp i = LinearMap.id) : Module.Projective R P := by
-  obtain ⟨g, hg⟩ := projective_lifting_property (Finsupp.total P P R id) s
+  obtain ⟨g, hg⟩ := projective_lifting_property (Finsupp.linearCombination R id) s
     (fun x ↦ ⟨Finsupp.single x 1, by simp⟩)
   refine ⟨g.comp i, fun x ↦ ?_⟩
   rw [LinearMap.comp_apply, ← LinearMap.comp_apply, hg,
@@ -178,7 +178,7 @@ theorem Projective.of_equiv [Module.Projective R M]
 theorem Projective.iff_split : Module.Projective R P ↔
     ∃ (M : Type max u v) (_ : AddCommGroup M) (_ : Module R M) (_ : Module.Free R M)
       (i : P →ₗ[R] M) (s : M →ₗ[R] P), s.comp i = LinearMap.id :=
-  ⟨fun ⟨i, hi⟩ ↦ ⟨P →₀ R, _, _, inferInstance, i, Finsupp.total P P R id, LinearMap.ext hi⟩,
+  ⟨fun ⟨i, hi⟩ ↦ ⟨P →₀ R, _, _, inferInstance, i, Finsupp.linearCombination R id, LinearMap.ext hi⟩,
     fun ⟨_, _, _, _, i, s, H⟩ ↦ Projective.of_split i s H⟩
 
 /-- A quotient of a projective module is projective iff it is a direct summand. -/
@@ -197,11 +197,11 @@ instance Projective.tensorProduct [hM : Module.Projective R M] [hN : Module.Proj
     fapply Projective.of_split (R := R) (M := ((M →₀ R) ⊗[R₀] (N →₀ R₀)))
     · exact (AlgebraTensorModule.map sM (LinearMap.id (R := R₀) (M := N →₀ R₀)))
     · exact (AlgebraTensorModule.map
-        (Finsupp.total M M R id) (LinearMap.id (R := R₀) (M := N →₀ R₀)))
+        (Finsupp.linearCombination R id) (LinearMap.id (R := R₀) (M := N →₀ R₀)))
     · ext; simp [hsM _]
   fapply Projective.of_split (R := R) (M := (M ⊗[R₀] (N →₀ R₀)))
   · exact (AlgebraTensorModule.map (LinearMap.id (R := R) (M := M)) sN)
-  · exact (AlgebraTensorModule.map (LinearMap.id (R := R) (M := M)) (Finsupp.total N N R₀ id))
+  · exact (AlgebraTensorModule.map (LinearMap.id (R := R) (M := M)) (linearCombination R₀ id))
   · ext; simp [hsN _]
 
 end Ring

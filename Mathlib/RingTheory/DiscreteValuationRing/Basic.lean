@@ -148,9 +148,10 @@ def HasUnitMulPowIrreducibleFactorization [CommRing R] : Prop :=
 
 namespace HasUnitMulPowIrreducibleFactorization
 
-variable {R} [CommRing R] (hR : HasUnitMulPowIrreducibleFactorization R)
+variable {R} [CommRing R]
 
-theorem unique_irreducible ⦃p q : R⦄ (hp : Irreducible p) (hq : Irreducible q) :
+theorem unique_irreducible (hR : HasUnitMulPowIrreducibleFactorization R)
+    ⦃p q : R⦄ (hp : Irreducible p) (hq : Irreducible q) :
     Associated p q := by
   rcases hR with ⟨ϖ, hϖ, hR⟩
   suffices ∀ {p : R} (_ : Irreducible p), Associated p ϖ by
@@ -178,7 +179,8 @@ variable [IsDomain R]
 /-- An integral domain in which there is an irreducible element `p`
 such that every nonzero element is associated to a power of `p` is a unique factorization domain.
 See `DiscreteValuationRing.ofHasUnitMulPowIrreducibleFactorization`. -/
-theorem toUniqueFactorizationMonoid : UniqueFactorizationMonoid R :=
+theorem toUniqueFactorizationMonoid (hR : HasUnitMulPowIrreducibleFactorization R) :
+    UniqueFactorizationMonoid R :=
   let p := Classical.choose hR
   let spec := Classical.choose_spec hR
   UniqueFactorizationMonoid.of_exists_prime_factors fun x hx => by

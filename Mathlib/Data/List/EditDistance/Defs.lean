@@ -279,7 +279,7 @@ theorem levenshtein_nil_cons (y) (ys) :
     levenshtein C [] (y :: ys) = C.insert y + levenshtein C [] ys := by
   dsimp (config := { unfoldPartialApp := true }) [levenshtein, suffixLevenshtein, impl]
   congr
-  rw [List.getLast_eq_get]
+  rw [List.getLast_eq_getElem]
   congr
   rw [show (List.length _) = 1 from _]
   induction ys <;> simp

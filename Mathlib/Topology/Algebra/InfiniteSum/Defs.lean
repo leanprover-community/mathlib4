@@ -90,8 +90,10 @@ def Multipliable (f : β → α) : Prop :=
   ∃ a, HasProd f a
 
 open scoped Classical in
-/-- `∏' i, f i` is the product of `f` it exists, or 1 otherwise. -/
-@[to_additive "`∑' i, f i` is the sum of `f` it exists, or 0 otherwise."]
+/-- `∏' i, f i` is the product of `f` if it exists and is unconditionally convergent,
+or 1 otherwise. -/
+@[to_additive "`∑' i, f i` is the sum of `f` if it exists and is unconditionally convergent,
+or 0 otherwise."]
 noncomputable irreducible_def tprod {β} (f : β → α) :=
   if h : Multipliable f then
   /- Note that the product might not be uniquely defined if the topology is not separated.

@@ -149,7 +149,9 @@ The antecedents of such a lemma are classified as generating "main goals" if the
 `x₁ ≈ x₂` for some "varying argument" pair `x₁`/`x₂` (and a possibly different relation `≈` to `∼`),
 or more generally of the form `∀ i h h' j h'', f₁ i j ≈ f₂ i j` (say) for some "varying argument"
 pair `f₁`/`f₂`. (Other antecedents are considered to generate "side goals".) The index of the
-"varying argument" pair corresponding to each "main" antecedent is recorded. -/
+"varying argument" pair corresponding to each "main" antecedent is recorded.
+
+Lemmas involving `<` or `≤` can also be marked `@[bound]` for use in the related `bound` tactic. -/
 initialize registerBuiltinAttribute {
   name := `gcongr
   descr := "generalized congruence"
@@ -525,3 +527,7 @@ elab_rules : tactic
       let g := Lean.MessageData.joinSep (unsolvedGoals.map Lean.MessageData.ofExpr) Format.line
       throwError "rel failed, cannot prove goal by 'substituting' the listed relationships. \
         The steps which could not be automatically justified were:\n{g}"
+
+end GCongr
+
+end Mathlib.Tactic

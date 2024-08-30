@@ -558,7 +558,7 @@ scoped elab "mk_decorations" : tactic => do
   let goal ← getMainGoal
   let goalType ← goal.getType
   if let .app (.const ``Decorations.DecorationsOf _) body := goalType then
-    closeMainGoal (← addDecorations body)
+    closeMainGoal `mk_decorations (← addDecorations body)
 
 end Decorations
 

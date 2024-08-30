@@ -9,40 +9,44 @@ import Mathlib.Data.List.ProdSigma
 
 /-!
 # Basics on First-Order Semantics
+
 This file defines the interpretations of first-order terms, formulas, sentences, and theories
 in a style inspired by the [Flypitch project](https://flypitch.github.io/).
 
 ## Main Definitions
-* `FirstOrder.Language.Term.realize` is defined so that `t.realize v` is the term `t` evaluated at
-variables `v`.
-* `FirstOrder.Language.BoundedFormula.Realize` is defined so that `φ.Realize v xs` is the bounded
-formula `φ` evaluated at tuples of variables `v` and `xs`.
-* `FirstOrder.Language.Formula.Realize` is defined so that `φ.Realize v` is the formula `φ`
-evaluated at variables `v`.
-* `FirstOrder.Language.Sentence.Realize` is defined so that `φ.Realize M` is the sentence `φ`
-evaluated in the structure `M`. Also denoted `M ⊨ φ`.
-* `FirstOrder.Language.Theory.Model` is defined so that `T.Model M` is true if and only if every
-sentence of `T` is realized in `M`. Also denoted `T ⊨ φ`.
+
+- `FirstOrder.Language.Term.realize` is defined so that `t.realize v` is the term `t` evaluated at
+  variables `v`.
+- `FirstOrder.Language.BoundedFormula.Realize` is defined so that `φ.Realize v xs` is the bounded
+  formula `φ` evaluated at tuples of variables `v` and `xs`.
+- `FirstOrder.Language.Formula.Realize` is defined so that `φ.Realize v` is the formula `φ`
+  evaluated at variables `v`.
+- `FirstOrder.Language.Sentence.Realize` is defined so that `φ.Realize M` is the sentence `φ`
+  evaluated in the structure `M`. Also denoted `M ⊨ φ`.
+- `FirstOrder.Language.Theory.Model` is defined so that `T.Model M` is true if and only if every
+  sentence of `T` is realized in `M`. Also denoted `T ⊨ φ`.
 
 ## Main Results
-* Several results in this file show that syntactic constructions such as `relabel`, `castLE`,
-`liftAt`, `subst`, and the actions of language maps commute with realization of terms, formulas,
-sentences, and theories.
+
+- Several results in this file show that syntactic constructions such as `relabel`, `castLE`,
+  `liftAt`, `subst`, and the actions of language maps commute with realization of terms, formulas,
+  sentences, and theories.
 
 ## Implementation Notes
-* Formulas use a modified version of de Bruijn variables. Specifically, a `L.BoundedFormula α n`
-is a formula with some variables indexed by a type `α`, which cannot be quantified over, and some
-indexed by `Fin n`, which can. For any `φ : L.BoundedFormula α (n + 1)`, we define the formula
-`∀' φ : L.BoundedFormula α n` by universally quantifying over the variable indexed by
-`n : Fin (n + 1)`.
+
+- Formulas use a modified version of de Bruijn variables. Specifically, a `L.BoundedFormula α n`
+  is a formula with some variables indexed by a type `α`, which cannot be quantified over, and some
+  indexed by `Fin n`, which can. For any `φ : L.BoundedFormula α (n + 1)`, we define the formula
+  `∀' φ : L.BoundedFormula α n` by universally quantifying over the variable indexed by
+  `n : Fin (n + 1)`.
 
 ## References
+
 For the Flypitch project:
 - [J. Han, F. van Doorn, *A formal proof of the independence of the continuum hypothesis*]
-[flypitch_cpp]
+  [flypitch_cpp]
 - [J. Han, F. van Doorn, *A formalization of forcing and the unprovability of
-the continuum hypothesis*][flypitch_itp]
-
+  the continuum hypothesis*][flypitch_itp]
 -/
 
 
@@ -148,7 +152,7 @@ theorem realize_constantsToVars [L[[α]].Structure M] [(lhomWithConstants L α).
   · simp
   · cases n
     · cases f
-      · simp only [realize, ih, Nat.zero_eq, constantsOn, mk₂_Functions]
+      · simp only [realize, ih, constantsOn, mk₂_Functions]
         -- Porting note: below lemma does not work with simp for some reason
         rw [withConstants_funMap_sum_inl]
       · simp only [realize, constantsToVars, Sum.elim_inl, funMap_eq_coe_constants]
@@ -197,24 +201,15 @@ theorem realize_onTerm [L'.Structure M] (φ : L →ᴸ L') [φ.IsExpansionOn M] 
 end LHom
 
 @[simp]
-theorem Hom.realize_term (g : M →[L] N) {t : L.Term α} {v : α → M} :
+theorem HomClass.realize_term {F : Type*} [FunLike F M N] [HomClass L F M N]
+    (g : F) {t : L.Term α} {v : α → M} :
     t.realize (g ∘ v) = g (t.realize v) := by
   induction t
   · rfl
-  · rw [Term.realize, Term.realize, g.map_fun]
+  · rw [Term.realize, Term.realize, HomClass.map_fun]
     refine congr rfl ?_
     ext x
     simp [*]
-
-@[simp]
-theorem Embedding.realize_term {v : α → M} (t : L.Term α) (g : M ↪[L] N) :
-    t.realize (g ∘ v) = g (t.realize v) :=
-  g.toHom.realize_term
-
-@[simp]
-theorem Equiv.realize_term {v : α → M} (t : L.Term α) (g : M ≃[L] N) :
-    t.realize (g ∘ v) = g (t.realize v) :=
-  g.toHom.realize_term
 
 variable {n : ℕ}
 
@@ -838,16 +833,19 @@ theorem realize_iInf (s : Finset β) (f : β → L.BoundedFormula α n)
 
 end BoundedFormula
 
-namespace Equiv
+namespace StrongHomClass
+
+variable {F : Type*} [EquivLike F M N] [StrongHomClass L F M N] (g : F)
 
 @[simp]
-theorem realize_boundedFormula (g : M ≃[L] N) (φ : L.BoundedFormula α n) {v : α → M}
+theorem realize_boundedFormula (φ : L.BoundedFormula α n) {v : α → M}
     {xs : Fin n → M} : φ.Realize (g ∘ v) (g ∘ xs) ↔ φ.Realize v xs := by
   induction' φ with _ _ _ _ _ _ _ _ _ _ _ ih1 ih2 _ _ ih3
   · rfl
-  · simp only [BoundedFormula.Realize, ← Sum.comp_elim, Equiv.realize_term, g.injective.eq_iff]
-  · simp only [BoundedFormula.Realize, ← Sum.comp_elim, Equiv.realize_term]
-    exact g.map_rel _ _
+  · simp only [BoundedFormula.Realize, ← Sum.comp_elim, HomClass.realize_term,
+      EmbeddingLike.apply_eq_iff_eq g]
+  · simp only [BoundedFormula.Realize, ← Sum.comp_elim, HomClass.realize_term]
+    exact StrongHomClass.map_rel g _ _
   · rw [BoundedFormula.Realize, ih1, ih2, BoundedFormula.Realize]
   · rw [BoundedFormula.Realize, BoundedFormula.Realize]
     constructor
@@ -856,26 +854,29 @@ theorem realize_boundedFormula (g : M ≃[L] N) (φ : L.BoundedFormula α n) {v 
       rw [← Fin.comp_snoc, ih3] at h'
       exact h'
     · intro h a
-      have h' := h (g.symm a)
-      rw [← ih3, Fin.comp_snoc, g.apply_symm_apply] at h'
+      have h' := h (EquivLike.inv g a)
+      rw [← ih3, Fin.comp_snoc, EquivLike.apply_inv_apply g] at h'
       exact h'
 
 @[simp]
-theorem realize_formula (g : M ≃[L] N) (φ : L.Formula α) {v : α → M} :
+theorem realize_formula (φ : L.Formula α) {v : α → M} :
     φ.Realize (g ∘ v) ↔ φ.Realize v := by
-  rw [Formula.Realize, Formula.Realize, ← g.realize_boundedFormula φ, iff_eq_eq,
+  rw [Formula.Realize, Formula.Realize, ← realize_boundedFormula g φ, iff_eq_eq,
     Unique.eq_default (g ∘ default)]
 
-theorem realize_sentence (g : M ≃[L] N) (φ : L.Sentence) : M ⊨ φ ↔ N ⊨ φ := by
-  rw [Sentence.Realize, Sentence.Realize, ← g.realize_formula, Unique.eq_default (g ∘ default)]
+include g
 
-theorem theory_model (g : M ≃[L] N) [M ⊨ T] : N ⊨ T :=
-  ⟨fun φ hφ => (g.realize_sentence φ).1 (Theory.realize_sentence_of_mem T hφ)⟩
+theorem realize_sentence (φ : L.Sentence) : M ⊨ φ ↔ N ⊨ φ := by
+  rw [Sentence.Realize, Sentence.Realize, ← realize_formula g,
+    Unique.eq_default (g ∘ default)]
 
-theorem elementarilyEquivalent (g : M ≃[L] N) : M ≅[L] N :=
-  elementarilyEquivalent_iff.2 g.realize_sentence
+theorem theory_model [M ⊨ T] : N ⊨ T :=
+  ⟨fun φ hφ => (realize_sentence g φ).1 (Theory.realize_sentence_of_mem T hφ)⟩
 
-end Equiv
+theorem elementarilyEquivalent : M ≅[L] N :=
+  elementarilyEquivalent_iff.2 (realize_sentence g)
+
+end StrongHomClass
 
 namespace Relations
 

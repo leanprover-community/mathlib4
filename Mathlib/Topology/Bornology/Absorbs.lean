@@ -33,10 +33,10 @@ They can be added later when someone needs them.
 absorbs, absorbent
 -/
 
+assert_not_exists Real
+
 open Set Bornology Filter
 open scoped Pointwise
-
-assert_not_exists Real
 
 section Defs
 
@@ -129,7 +129,7 @@ protected lemma add [AddZeroClass E] [DistribSMul M E]
   h₂.mp <| h₁.eventually.mono fun x hx₁ hx₂ ↦ by rw [smul_add]; exact add_subset_add hx₁ hx₂
 
 protected lemma zero [Zero E] [SMulZeroClass M E] {s : Set E} (hs : 0 ∈ s) : Absorbs M s 0 :=
-  eventually_of_forall fun _ ↦ zero_subset.2 <| zero_mem_smul_set hs
+  Eventually.of_forall fun _ ↦ zero_subset.2 <| zero_mem_smul_set hs
 
 end AddZero
 
@@ -244,3 +244,10 @@ lemma Absorbent.zero_mem [NeBot (cobounded G₀)] [AddMonoid E] [DistribMulActio
   absorbs_zero_iff.1 (hs 0)
 
 end GroupWithZero
+
+protected theorem Absorbs.restrict_scalars
+    {M N α : Type*} [Monoid N] [SMul M N] [SMul M α] [MulAction N α]
+    [IsScalarTower M N α] [Bornology M] [Bornology N] {s t : Set α} (h : Absorbs N s t)
+    (hbdd : Tendsto (· • 1 : M → N) (cobounded M) (cobounded N)) :
+    Absorbs M s t :=
+  (hbdd.eventually h).mono <| fun x hx ↦ by rwa [smul_one_smul N x s] at hx
