@@ -135,11 +135,11 @@ lemma norm_le_iff_le_algebraMap (a : A) {r : ℝ} (hr : 0 ≤ r) (ha : 0 ≤ a :
 lemma nnnorm_le_iff_of_nonneg (a : A) (r : ℝ≥0) (ha : 0 ≤ a := by cfc_tac) :
     ‖a‖₊ ≤ r ↔ a ≤ algebraMap ℝ≥0 A r := by
   rw [← NNReal.coe_le_coe]
-  exact norm_le_iff_of_nonneg a r.2
+  exact norm_le_iff_le_algebraMap a r.2
 
 lemma norm_le_one_iff_of_nonneg (a : A) (ha : 0 ≤ a := by cfc_tac) :
     ‖a‖ ≤ 1 ↔ a ≤ 1 := by
-  simpa using norm_le_iff_of_nonneg a zero_le_one
+  simpa using norm_le_iff_le_algebraMap a zero_le_one
 
 lemma nnnorm_le_one_iff_of_nonneg (a : A) (ha : 0 ≤ a := by cfc_tac) :
     ‖a‖₊ ≤ 1 ↔ a ≤ 1 := by
@@ -148,7 +148,7 @@ lemma nnnorm_le_one_iff_of_nonneg (a : A) (ha : 0 ≤ a := by cfc_tac) :
 
 lemma norm_le_natCast_iff_of_nonneg (a : A) (n : ℕ) (ha : 0 ≤ a := by cfc_tac) :
     ‖a‖ ≤ n ↔ a ≤ n := by
-  simpa using norm_le_iff_of_nonneg a n.cast_nonneg
+  simpa using norm_le_iff_le_algebraMap a n.cast_nonneg
 
 lemma nnnorm_le_ofNat_iff_of_nonneg (a : A) (n : ℕ) (ha : 0 ≤ a := by cfc_tac) :
     ‖a‖ ≤ n ↔ a ≤ n := by
