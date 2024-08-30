@@ -266,6 +266,12 @@ theorem mem_polar_singleton {a : E} (y : Dual 𝕜 E) : y ∈ polar 𝕜 {a} ↔
 instance (s : Set E) : Nonempty (polar 𝕜 s) :=
   LinearMap.instNonemptyElemPolar (dualPairing 𝕜 E).flip s
 
+theorem polar_union {s t : Set E} : polar 𝕜 (s ∪ t) = polar 𝕜 s ∩ polar 𝕜 t :=
+  (dualPairing 𝕜 E).flip.polar_union
+
+theorem polar_iUnion {ι} {s : ι → Set E} : polar 𝕜 (⋃ i, s i) = ⋂ i, polar 𝕜 (s i) :=
+  (dualPairing 𝕜 E).flip.polar_iUnion
+
 theorem sInter_polar_eq_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {r : ℝ} (hr : 0 < r) :
     ⋂₀ (polar 𝕜 '' { F | F.Finite ∧ F ⊆ closedBall (0 : E) r⁻¹ }) = closedBall 0 r := by

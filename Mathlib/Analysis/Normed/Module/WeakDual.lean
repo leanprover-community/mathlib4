@@ -186,6 +186,12 @@ theorem isClosed_polar (s : Set E) : IsClosed (polar 𝕜 s) := by
   simp only [polar_def, setOf_forall]
   exact isClosed_biInter fun x hx => isClosed_Iic.preimage (WeakBilin.eval_continuous _ _).norm
 
+theorem polar_union {s t : Set E} : polar 𝕜 (s ∪ t) = polar 𝕜 s ∩ polar 𝕜 t :=
+  NormedSpace.polar_union _
+
+theorem polar_iUnion {ι} {s : ι → Set E} : polar 𝕜 (⋃ i, s i) = ⋂ i, polar 𝕜 (s i) :=
+  NormedSpace.polar_iUnion _
+
 variable {𝕜}
 
 /-- While the coercion `↑ : WeakDual 𝕜 E → (E → 𝕜)` is not a closed map, it sends *bounded*
@@ -357,6 +363,15 @@ lemma confusion (u : Finset (U (n + 1))) (h : Nonempty u):
   simp_rw [ss2]
   exact Eq.symm (biInter_eq_iInter (fun x ↦ x ∈ u.val) fun x _ ↦ K C s n x)
 
+lemma lala (u : Finset (U (E := E₁) (n + 1))) (h : Nonempty u) :
+    (polar 𝕜₁ s ∩ ⋂ i ∈ u, polar 𝕜₁ {↑i }) ∩ C ∩ polar 𝕜₁ (U (n + 2)) =
+      (⋂ i ∈ u, polar 𝕜₁ s ∩ polar 𝕜₁ {↑i} ∩ C ∩ polar 𝕜₁ (U (n + 2))) := by
+  sorry
+  --rw [inter_iInter]
+  --rw [iInter_inter]
+  --rw [iInter_inter]
+
+
 lemma existance' [ProperSpace 𝕜₁] (hC₁ : IsClosed C) (h : polar 𝕜₁ s ∩ C ∩ polar 𝕜₁ (U (n+1)) = ∅) :
     ∃ u : Finset (U (E := E₁) (n + 1)), ⋂ i ∈ u, K C s n i = ∅ := by
   obtain ⟨u,hu⟩ := existance C s n hC₁ h
@@ -364,6 +379,30 @@ lemma existance' [ProperSpace 𝕜₁] (hC₁ : IsClosed C) (h : polar 𝕜₁ s
   have e1 : Nonempty u := by exact u_notempty C s n u hu
   rw [← more_confusion _ _ _ _ e1, confusion _ _ _ _ e1] at hu
   exact hu
+
+lemma existance'' [ProperSpace 𝕜₁] (hC₁ : IsClosed C)
+    (h : polar 𝕜₁ s ∩ C ∩ polar 𝕜₁ (U (n+1)) = ∅) :
+    ∃ u : Finset (U (E := E₁) (n + 1)),
+    ⋂ i ∈ u, polar 𝕜₁ s ∩ polar 𝕜₁ {↑i} ∩ C ∩ polar 𝕜₁ (U (n+2)) = ∅ := by
+  exact existance' C s n hC₁ h
+
+lemma existance''' [ProperSpace 𝕜₁] (hC₁ : IsClosed C)
+    (h : polar 𝕜₁ s ∩ C ∩ polar 𝕜₁ (U (n+1)) = ∅) :
+    ∃ u : Finset (U (E := E₁) (n + 1)),
+    polar 𝕜₁ (s ∪ u.toSet) ∩ C ∩ polar 𝕜₁ (U (n+2)) = ∅ := by
+  obtain ⟨u,hu⟩ := existance C s n hC₁ h
+  use u
+  rw [polar_union]
+  have e1: (⋂ i ∈ u, polar 𝕜₁ ({↑i} : Set E₁)) = polar 𝕜₁ (u.toSet : Set E₁) := by
+    rw [image_eq_iUnion]
+    simp [polar_iUnion]
+  rw [← e1]
+  --rw [← hu]
+  have eu : Nonempty u := by exact u_notempty C s n u hu
+  rw [← more_confusion _ _ _ _ eu, confusion _ _ _ _ eu] at hu
+  rw [lala]
+  exact hu
+  exact eu
 
 
 
