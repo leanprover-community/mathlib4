@@ -483,8 +483,8 @@ theorem volume_fundamentalDomain_fractionalIdealLatticeBasis :
 
 theorem minkowskiBound_lt_top : minkowskiBound K I < ⊤ := by
   refine ENNReal.mul_lt_top ?_ ?_
-  · exact ne_of_lt (fundamentalDomain_isBounded _).measure_lt_top
-  · exact ne_of_lt (ENNReal.pow_lt_top (lt_top_iff_ne_top.mpr ENNReal.two_ne_top) _)
+  · exact (fundamentalDomain_isBounded _).measure_lt_top
+  · exact ENNReal.pow_lt_top (lt_top_iff_ne_top.mpr ENNReal.two_ne_top) _
 
 theorem minkowskiBound_pos : 0 < minkowskiBound K I := by
   refine zero_lt_iff.mpr (mul_ne_zero ?_ ?_)
