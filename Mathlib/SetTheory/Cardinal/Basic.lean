@@ -1993,3 +1993,5 @@ end Cardinal
 --     failed
 
 -- end Tactic
+
+set_option linter.style.longFile 2100

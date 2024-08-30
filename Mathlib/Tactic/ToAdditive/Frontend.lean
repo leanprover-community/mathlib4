@@ -1506,3 +1506,5 @@ initialize registerBuiltinAttribute {
   }
 
 end ToAdditive
+
+set_option linter.style.longFile 1700

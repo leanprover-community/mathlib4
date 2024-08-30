@@ -2036,3 +2036,5 @@ protected theorem isBigO_rev_principal (hf : ContinuousOn f s)
 end IsBigORev
 
 end ContinuousOn
+
+set_option linter.style.longFile 2200

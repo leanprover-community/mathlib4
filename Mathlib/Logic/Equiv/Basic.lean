@@ -1832,3 +1832,5 @@ theorem piCongrLeft'_symm_update [DecidableEq α] [DecidableEq β] (P : α → S
   simp [(e.piCongrLeft' P).symm_apply_eq, piCongrLeft'_update]
 
 end Function
+
+set_option linter.style.longFile 2000

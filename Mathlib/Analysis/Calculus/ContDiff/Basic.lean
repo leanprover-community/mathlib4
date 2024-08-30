@@ -1948,3 +1948,5 @@ theorem ContDiff.restrict_scalars (h : ContDiff 𝕜' n f) : ContDiff 𝕜 n f :
   contDiff_iff_contDiffAt.2 fun _ => h.contDiffAt.restrict_scalars _
 
 end RestrictScalars
+
+set_option linter.style.longFile 2100

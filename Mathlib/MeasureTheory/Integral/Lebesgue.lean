@@ -2059,3 +2059,5 @@ lemma tendsto_measure_of_ae_tendsto_indicator_of_isFiniteMeasure
 end TendstoIndicator -- section
 
 end MeasureTheory
+
+set_option linter.style.longFile 2200

@@ -1622,3 +1622,5 @@ instance lawfulMonad : LawfulMonad WSeq :=
 end WSeq
 
 end Stream'
+
+set_option linter.style.longFile 1800
