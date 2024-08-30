@@ -377,6 +377,5 @@ theorem Imo1982Q3_part_b :  ∃ x : ℕ → ℝ, (∀ i, x i > 0) ∧ (∀ i, x 
     ]
   have h₁: (0 < (2 : ℝ)⁻¹ ^ N) := by positivity
   linarith [h₁]
-  done
 
 end Imo1982Q3
