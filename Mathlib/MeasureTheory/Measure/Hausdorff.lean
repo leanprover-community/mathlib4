@@ -741,17 +741,16 @@ open scoped Pointwise
 theorem MeasureTheory.Measure.hausdorffMeasure_smul₀ {𝕜 E : Type*} [NormedAddCommGroup E]
     [NormedField 𝕜] [NormedSpace 𝕜 E] [MeasurableSpace E] [BorelSpace E] {d : ℝ} (hd : 0 ≤ d)
     {r : 𝕜} (hr : r ≠ 0) (s : Set E) : μH[d] (r • s) = ‖r‖₊ ^ d • μH[d] s := by
-  suffices ∀ {r : 𝕜}, r ≠ 0 → ∀ s : Set E, μH[d] (r • s) ≤ ‖r‖₊ ^ d • μH[d] s by
-    refine le_antisymm (this hr s) ?_
-    rw [← le_inv_smul_iff_of_pos]
-    · dsimp
-      rw [← NNReal.inv_rpow, ← nnnorm_inv]
-      · refine Eq.trans_le ?_ (this (inv_ne_zero hr) (r • s))
-        rw [inv_smul_smul₀ hr]
-    · simp [pos_iff_ne_zero, hr]
-  intro r _ s
-  simp only [NNReal.rpow_eq_pow, ENNReal.smul_def, ← ENNReal.coe_rpow_of_nonneg _ hd, smul_eq_mul]
-  exact (lipschitzWith_smul (β := E) r).hausdorffMeasure_image_le hd s
+  have {r : 𝕜} (s : Set E) : μH[d] (r • s) ≤ ‖r‖₊ ^ d • μH[d] s := by
+    simpa [ENNReal.coe_rpow_of_nonneg, hd]
+      using (lipschitzWith_smul r).hausdorffMeasure_image_le hd s
+  refine le_antisymm (this s) ?_
+  rw [← le_inv_smul_iff_of_pos]
+  · dsimp
+    rw [← NNReal.inv_rpow, ← nnnorm_inv]
+    · refine Eq.trans_le ?_ (this (r • s))
+      rw [inv_smul_smul₀ hr]
+  · simp [pos_iff_ne_zero, hr]
 
 /-!
 ### Antilipschitz maps do not decrease Hausdorff measures and dimension
