@@ -64,13 +64,13 @@ lemma mapCoeffs_X :
 lemma mapCoeffs_C (x : A) :
     d.mapCoeffs (C x) = .single A 0 (d x) := by simp [← monomial_zero_left]
 
-variable {K M' : Type*} [CommRing K] [Algebra R K] [Algebra A K]
-    [AddCommGroup M'] [Module K M'] [Module R M'] [Module A M']
+variable {B M' : Type*} [CommRing B] [Algebra R B] [Algebra A B]
+    [AddCommGroup M'] [Module B M'] [Module R M'] [Module A M']
 
-theorem apply_aeval_eq' (d2 : Derivation R K M') (f : M →ₗ[A] M')
-    (h : ∀ a, f (d a) = d2 (algebraMap A K a)) (x : K) (p : A[X]) :
-    d2 (aeval x p) = PolynomialModule.eval x (PolynomialModule.map K f (d.mapCoeffs p)) +
-      aeval x (derivative p) • d2 x := by
+theorem apply_aeval_eq' (d' : Derivation R B M') (f : M →ₗ[A] M')
+    (h : ∀ a, f (d a) = d' (algebraMap A B a)) (x : B) (p : A[X]) :
+    d' (aeval x p) = PolynomialModule.eval x (PolynomialModule.map B f (d.mapCoeffs p)) +
+      aeval x (derivative p) • d' x := by
   induction p using Polynomial.induction_on' with
   | h_add => simp_all only [eval_add, map_add, add_smul]; abel
   | h_monomial =>
@@ -80,8 +80,8 @@ theorem apply_aeval_eq' (d2 : Derivation R K M') (f : M →ₗ[A] M')
     rw [add_comm, ← smul_smul, ← smul_smul, ← nsmul_eq_smul_cast]
 
 
-theorem apply_aeval_eq [IsScalarTower R A K] [IsScalarTower A K M'] (d : Derivation R K M')
-    (x : K) (p : A[X]) :
+theorem apply_aeval_eq [IsScalarTower R A B] [IsScalarTower A B M'] (d : Derivation R B M')
+    (x : B) (p : A[X]) :
     d (aeval x p) = PolynomialModule.eval x ((d.compAlgebraMap A).mapCoeffs p) +
       aeval x (derivative p) • d x := by
   convert apply_aeval_eq' (d.compAlgebraMap A) d LinearMap.id _ x p
