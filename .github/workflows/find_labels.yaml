@@ -15,22 +15,23 @@ jobs:
 
     - name: Get labels
       run: |
-          gh api --jq '.labels.[].name' /repos/{owner}/{repo}/pulls/${{ github.event.number }}
-          echo "${{ github.event.pull_request.labels }}"
-          jq -r '.[].name' <<< "${{ github.event.pull_request.labels }}"
+          labels="$(gh api --jq '.labels.[].name' /repos/{owner}/{repo}/pulls/${{ github.event.number }})"
+          printf 'Labels:\n---\n%s\n---\n' "${labels}"
           topic="generic"
-          t_label=""
-          count=0
-          while read -r label; do
-            printf $'inspecting "%s"\n' "${label}"
-            if [[ "$label" == t-* ]]; then
-              t_label="$label"
-              count=$((count + 1))
-            fi
-          done < <(jq -r '.[].name' <<< "${{ github.event.pull_request.labels }}")
-          if [[ "$count" -eq 1 ]]; then
-            topic="$t_label"
-          fi
-          echo "name=topic::maintainer merge: ${topic}" #>> "$GITHUB_OUTPUT"
+          tlabels="$(printf '%s' "${labels}" | grep "^t-")"
+          printf 't-labels:\n---\n%s\n---\n' "${tlabels}"
+          #t_label=""
+          #count=0
+          #while read -r label; do
+          #  printf $'inspecting "%s"\n' "${label}"
+          #  if [[ "$label" == t-* ]]; then
+          #    t_label="$label"
+          #    count=$((count + 1))
+          #  fi
+          #done < <(jq -r '.[].name' <<< "${{ github.event.pull_request.labels }}")
+          #if [[ "$count" -eq 1 ]]; then
+          #  topic="$t_label"
+          #fi
+          #echo "name=topic::maintainer merge: ${topic}" #>> "$GITHUB_OUTPUT"
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
