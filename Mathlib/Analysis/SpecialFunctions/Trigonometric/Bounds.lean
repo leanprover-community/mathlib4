@@ -70,13 +70,27 @@ theorem mul_lt_sin {x : ℝ} (hx : 0 < x) (hx' : x < π / 2) : 2 / π * x < sin 
   simpa [-inv_div, mul_inv_cancel_left₀ pi_div_two_pos.ne'] using @lt_sin_mul ((π / 2)⁻¹ * x)
     (mul_pos (inv_pos.2 pi_div_two_pos) hx) (by rwa [← div_eq_inv_mul, div_lt_one pi_div_two_pos])
 
-/-- In the range `[0, π / 2]`, we have a linear lower bound on `sin`. This inequality forms one half
-of Jordan's inequality, the other half is `Real.sin_lt` -/
+/-- One half of **Jordan's inequality**.
+
+In the range `[0, π / 2]`, we have a linear lower bound on `sin`. The other half is given by
+`Real.sin_le`.
+-/
 theorem mul_le_sin {x : ℝ} (hx : 0 ≤ x) (hx' : x ≤ π / 2) : 2 / π * x ≤ sin x := by
   rw [← inv_div]
   simpa [-inv_div, mul_inv_cancel_left₀ pi_div_two_pos.ne'] using @le_sin_mul ((π / 2)⁻¹ * x)
     (mul_nonneg (inv_nonneg.2 pi_div_two_pos.le) hx)
     (by rwa [← div_eq_inv_mul, div_le_one pi_div_two_pos])
+
+/-- Half of **Jordan's inequality** for negative values. -/
+lemma sin_le_mul (hx : -(π / 2) ≤ x) (hx₀ : x ≤ 0) : sin x ≤ 2 / π * x := by
+  simpa using mul_le_sin (neg_nonneg.2 hx₀) (neg_le.2 hx)
+
+/-- Half of **Jordan's inequality** for absolute values. -/
+lemma mul_abs_le_abs_sin (hx : |x| ≤ π / 2) : 2 / π * |x| ≤ |sin x| := by
+  wlog hx₀ : 0 ≤ x
+  case inr => simpa using this (by rwa [abs_neg]) <| neg_nonneg.2 <| le_of_not_le hx₀
+  rw [abs_of_nonneg hx₀] at hx ⊢
+  exact (mul_le_sin hx₀ hx).trans (le_abs_self _)
 
 lemma sin_sq_lt_sq (hx : x ≠ 0) : sin x ^ 2 < x ^ 2 := by
   wlog hx₀ : 0 < x
@@ -106,10 +120,6 @@ lemma one_sub_sq_div_two_le_cos : 1 - x ^ 2 / 2 ≤ cos x := by
   rcases eq_or_ne x 0 with rfl | hx
   case inl => simp
   case inr => exact (one_sub_sq_div_two_lt_cos hx).le
-
-/-- Half of **Jordan's inequality** for negative values. -/
-lemma sin_le_mul (hx : -(π / 2) ≤ x) (hx₀ : x ≤ 0) : sin x ≤ 2 / π * x := by
-  simpa using mul_le_sin (neg_nonneg.2 hx₀) (neg_le.2 hx)
 
 /-- Half of **Jordan's inequality** for `cos`. -/
 lemma one_sub_mul_le_cos (hx₀ : 0 ≤ x) (hx : x ≤ π / 2) : 1 - 2 / π * x ≤ cos x := by
