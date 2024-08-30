@@ -59,12 +59,11 @@ inductive ringFunc : ℕ → Type
 def Language.ring : Language :=
   { Functions := ringFunc
     Relations := fun _ => Empty }
+  deriving IsAlgebraic
 
 namespace Ring
 
 open ringFunc Language
-
-instance : IsAlgebraic Language.ring := ⟨fun _ => instIsEmptyEmpty⟩
 
 /-- This instance does not get inferred without `instDecidableEqFunctions` in
 `ModelTheory/Basic`. -/
