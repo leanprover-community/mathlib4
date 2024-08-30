@@ -1248,7 +1248,6 @@ theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : 
     rwa [mk_compl_of_infinite s hs, mk_compl_of_infinite]
     rwa [← lift_lt, mk_range_eq_of_injective f.injective, ← h, lift_lt]
 
-
 -- Porting note: we no longer express literals as `bit0` and `bit1` in Lean 4, so we can't use this
 -- section Bit
 
@@ -1266,7 +1265,6 @@ theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : 
 -- by { norm_cast, norm_num }
 -- ```
 -- -/
-
 
 -- theorem bit0_ne_zero (a : Cardinal) : ¬bit0 a = 0 ↔ ¬a = 0 := by simp [bit0]
 
