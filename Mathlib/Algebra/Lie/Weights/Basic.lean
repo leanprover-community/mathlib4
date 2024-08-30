@@ -773,7 +773,7 @@ See also `LieModule.iSup_genWeightSpace_eq_top'`. -/
 lemma iSup_genWeightSpace_eq_top [IsTriangularizable K L M] :
     ⨆ χ : L → K, genWeightSpace M χ = ⊤ := by
   generalize h_dim : finrank K M = n
-  induction n using Nat.strongInductionOn generalizing M with | ind n ih => ?_
+  induction n using Nat.strongRecOn generalizing M with | ind n ih => ?_
   obtain h' | ⟨y : L, hy : ¬ ∃ φ, genWeightSpaceOf M φ y = ⊤⟩ :=
     forall_or_exists_not (fun (x : L) ↦ ∃ (φ : K), genWeightSpaceOf M φ x = ⊤)
   · choose χ hχ using h'
