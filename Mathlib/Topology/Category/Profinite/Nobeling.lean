@@ -1836,3 +1836,5 @@ instance LocallyConstant.freeOfProfinite (S : Profinite.{u}) :
   @Nobeling_aux {C : Set S // IsClopen C}
     (IsWellOrder.linearOrder WellOrderingRel) WellOrderingRel.isWellOrder
     S (Nobeling.ι S) (Nobeling.embedding S)
+
+set_option linter.style.longFile 2000

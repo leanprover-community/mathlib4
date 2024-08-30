@@ -1542,3 +1542,5 @@ theorem measure_Ioo_lt_top : μ (Ioo a b) < ∞ :=
   (measure_mono Ioo_subset_Icc_self).trans_lt measure_Icc_lt_top
 
 end MeasureIxx
+
+set_option linter.style.longFile 1700

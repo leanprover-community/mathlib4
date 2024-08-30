@@ -1707,3 +1707,5 @@ lemma Antitone.isCoboundedUnder_ge_of_isCobounded {f : R → S} (f_decr : Antito
   Monotone.isCoboundedUnder_le_of_isCobounded (S := Sᵒᵈ) f_decr cobdd
 
 end frequently_bounded
+
+set_option linter.style.longFile 1800
