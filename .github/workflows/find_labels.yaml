@@ -19,9 +19,9 @@ jobs:
           printf 'Labels:\n---\n%s\n---\n' "${labels}"
           #topic="generic"
           #printf '%s' "${labels}" | grep "^t-"
-          tlbels="$(printf '%s\n' "${labels}" | grep -- '^t-')"
-          printf 't-labels:\n---\n%s\n---\n' "${tlbels}"
-
+          tlabels="$(printf '%s\n' "${labels}" | grep -- '^t-' || printf 'generic')"
+          printf 't-labels:\n---\n%s\n---\n' "${tlabels}"
+          printf 'topics:\n%s\n' "${tlabels}"
           #t_label=""
           #count=0
           #while read -r label; do
