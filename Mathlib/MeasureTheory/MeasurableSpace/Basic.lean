@@ -1114,25 +1114,20 @@ theorem measurableSet_singleton_iff {s t : Set α} :
   simp_rw [generateFrom_singleton]
   change t ∈ {t | _} ↔ _
   simp_rw [measurableSet_top, true_and, mem_setOf_eq]
-  have H : Multiset.ofList [True, False] = {True, False} := rfl
   constructor
   · rintro ⟨x, hx⟩
+    have : Multiset.ofList [True, False] = {True, False} := rfl
     fin_cases x
     all_goals
-      simp [H, Finset.coeEmb, ← Set.univ_Prop] at hx
+      simp [this, Finset.coeEmb, ← Set.univ_Prop] at hx
       simp [compl_def, hx]
   · rintro (rfl | rfl | rfl | rfl)
-    · use ∅
-      simp
-    · use {True}
-      simp
-    · use {False}
+    on_goal 1 => use ∅
+    on_goal 2 => use {True}
+    on_goal 3 => use {False}
+    on_goal 4 => use Set.univ
+    all_goals
       simp [compl_def]
-    · use Set.univ
-      simp [-Set.univ_Prop]
-
-
-  #exit
 
 end MeasurableSpace
 
