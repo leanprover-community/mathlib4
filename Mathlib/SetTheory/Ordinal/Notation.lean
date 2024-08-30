@@ -40,7 +40,7 @@ compile_inductive% ONote
 
 namespace ONote
 
-/-- Notation for 0. -/
+/-- Notation for 0 -/
 instance : Zero ONote :=
   ⟨zero⟩
 
@@ -51,11 +51,11 @@ theorem zero_def : zero = 0 :=
 instance : Inhabited ONote :=
   ⟨0⟩
 
-/-- Notation for 1. -/
+/-- Notation for 1 -/
 instance : One ONote :=
   ⟨oadd 0 1 0⟩
 
-/-- Notation for ω. -/
+/-- Notation for ω -/
 def omega : ONote :=
   oadd 1 1 0
 
@@ -65,19 +65,19 @@ noncomputable def repr : ONote → Ordinal.{0}
   | 0 => 0
   | oadd e n a => ω ^ repr e * n + repr a
 
-/-- Prints `ω^s*n`, omitting `s` if `e = 0` or `e = 1`, and omitting `n` if `n = 1`. -/
+/-- Print `ω^s*n`, omitting `s` if `e = 0` or `e = 1`, and omitting `n` if `n = 1` -/
 private def toString_aux (e : ONote) (n : ℕ) (s : String) : String :=
   if e = 0 then toString n
   else (if e = 1 then "ω" else "ω^(" ++ s ++ ")") ++ if n = 1 then "" else "*" ++ toString n
 
-/-- Print an ordinal notation. -/
+/-- Print an ordinal notation -/
 def toString : ONote → String
   | zero => "0"
   | oadd e n 0 => toString_aux e n (toString e)
   | oadd e n a => toString_aux e n (toString e) ++ " + " ++ toString a
 
 open Lean in
-/-- Print an ordinal notation. -/
+/-- Print an ordinal notation -/
 def repr' (prec : ℕ) : ONote → Format
   | zero => "0"
   | oadd e n a =>
@@ -142,7 +142,7 @@ theorem omega_le_oadd (e n a) : ω ^ repr e ≤ repr (oadd e n a) := by
 theorem oadd_pos (e n a) : 0 < oadd e n a :=
   @lt_of_lt_of_le _ _ _ (ω ^ repr e) _ (opow_pos (repr e) omega_pos) (omega_le_oadd e n a)
 
-/-- Compare ordinal notations.
+/-- Comparison of ordinal notations:
 
 `ω ^ e₁ * n₁ + a₁` is less than `ω ^ e₂ * n₂ + a₂` when either `e₁ < e₂`, or `e₁ = e₂` and
 `n₁ < n₂`, or `e₁ = e₂`, `n₁ = n₂`, and `a₁ < a₂`. -/
@@ -382,7 +382,7 @@ theorem zero_add (o : ONote) : 0 + o = o :=
 theorem oadd_add (e n a o) : oadd e n a + o = addAux e n (a + o) :=
   rfl
 
-/-- Subtraction of ordinal notations (correct only for normal input). -/
+/-- Subtraction of ordinal notations (correct only for normal input) -/
 def sub : ONote → ONote → ONote
   | 0, _ => 0
   | o, 0 => o
@@ -499,7 +499,7 @@ theorem repr_sub : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ - o₂) = rep
         (Ordinal.sub_eq_of_add_eq <|
             add_absorp (h₂.below_of_lt ee).repr_lt <| omega_le_oadd _ _ _).symm
 
-/-- Multiplication of ordinal notations (correct only for normal input). -/
+/-- Multiplication of ordinal notations (correct only for normal input) -/
 def mul : ONote → ONote → ONote
   | 0, _ => 0
   | _, 0 => 0
@@ -568,7 +568,7 @@ theorem repr_mul : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ * o₂) = rep
         mul_omega_dvd (natCast_pos.2 n₁.pos) (nat_lt_omega _)]
       simpa using opow_dvd_opow ω (one_le_iff_ne_zero.2 this)
 
-/-- Calculate division and remainder of `o` mod `ω`.
+/-- Calculate division and remainder of `o` mod `ω`:
 
 `split' o = (a, n)` means `o = ω * a + n`. -/
 def split' : ONote → ONote × ℕ
@@ -579,7 +579,7 @@ def split' : ONote → ONote × ℕ
       let (a', m) := split' a
       (oadd (e - 1) n a', m)
 
-/-- Calculate division and remainder of `o` mod ω.
+/-- Calculate division and remainder of `o` mod `ω`:
 
 `split o = (a, n)` means `o = a + n`, where `ω ∣ a`. -/
 def split : ONote → ONote × ℕ
@@ -601,15 +601,13 @@ def mulNat : ONote → ℕ → ONote
   | _, 0 => 0
   | oadd e n a, m + 1 => oadd e (n * m.succPNat) a
 
-/-- Auxiliary definition to compute the ordinal notation for the ordinal exponentiation in `opow`.
--/
+/-- Auxiliary definition to compute the ordinal notation for the ordinal exponentiation in `opow` -/
 def opowAux (e a0 a : ONote) : ℕ → ℕ → ONote
   | _, 0 => 0
   | 0, m + 1 => oadd e m.succPNat 0
   | k + 1, m => scale (e + mulNat a0 k) a + (opowAux e a0 a k m)
 
-/-- Auxiliary definition to compute the ordinal notation for the ordinal exponentiation in `opow`.
--/
+/-- Auxiliary definition to compute the ordinal notation for the ordinal exponentiation in `opow` -/
 def opowAux2 (o₂ : ONote) (o₁ : ONote × ℕ) : ONote :=
   match o₁ with
   | (0, 0) => if o₂ = 0 then 1 else 0
@@ -1222,7 +1220,7 @@ instance : IsWellOrder NONote (· < ·) where
 def below (a b : NONote) : Prop :=
   NFBelow a.1 (repr b)
 
-/-- The `oadd` pseudo-constructor for `NONote`. -/
+/-- The `oadd` pseudo-constructor for `NONote` -/
 def oadd (e : NONote) (n : ℕ+) (a : NONote) (h : below a e) : NONote :=
   ⟨_, NF.oadd e.2 n h⟩
 
@@ -1235,21 +1233,21 @@ def recOn {C : NONote → Sort*} (o : NONote) (H0 : C 0)
   · exact H0
   · exact H1 ⟨e, h.fst⟩ n ⟨a, h.snd⟩ h.snd' (IHe _) (IHa _)
 
-/-- Addition of ordinal notations. -/
+/-- Addition of ordinal notations -/
 instance : Add NONote :=
   ⟨fun x y => mk (x.1 + y.1)⟩
 
 theorem repr_add (a b) : repr (a + b) = repr a + repr b :=
   ONote.repr_add a.1 b.1
 
-/-- Subtraction of ordinal notations. -/
+/-- Subtraction of ordinal notations -/
 instance : Sub NONote :=
   ⟨fun x y => mk (x.1 - y.1)⟩
 
 theorem repr_sub (a b) : repr (a - b) = repr a - repr b :=
   ONote.repr_sub a.1 b.1
 
-/-- Multiplication of ordinal notations. -/
+/-- Multiplication of ordinal notations -/
 instance : Mul NONote :=
   ⟨fun x y => mk (x.1 * y.1)⟩
 
