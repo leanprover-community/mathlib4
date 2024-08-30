@@ -408,6 +408,17 @@ theorem HasFPowerSeriesAt.analyticAt (hf : HasFPowerSeriesAt f p x) : AnalyticAt
 theorem HasFPowerSeriesOnBall.analyticAt (hf : HasFPowerSeriesOnBall f p x r) : AnalyticAt 𝕜 f x :=
   hf.hasFPowerSeriesAt.analyticAt
 
+theorem HasFPowerSeriesWithinOnBall.hasFPowerSeriesWithinAt
+    (hf : HasFPowerSeriesWithinOnBall f p s x r) : HasFPowerSeriesWithinAt f p s x :=
+  ⟨r, hf⟩
+
+theorem HasFPowerSeriesWithinAt.analyticWithinAt (hf : HasFPowerSeriesWithinAt f p s x) :
+    AnalyticWithinAt 𝕜 f s x := ⟨p, hf⟩
+
+theorem HasFPowerSeriesWithinOnBall.analyticWithinAt (hf : HasFPowerSeriesWithinOnBall f p s x r) :
+    AnalyticWithinAt 𝕜 f s x :=
+  hf.hasFPowerSeriesWithinAt.analyticWithinAt
+
 theorem HasFPowerSeriesOnBall.congr (hf : HasFPowerSeriesOnBall f p x r)
     (hg : EqOn f g (EMetric.ball x r)) : HasFPowerSeriesOnBall g p x r :=
   { r_le := hf.r_le
@@ -440,6 +451,10 @@ theorem HasFPowerSeriesOnBall.hasSum_sub (hf : HasFPowerSeriesOnBall f p x r) {y
   simpa only [add_sub_cancel] using hf.hasSum this
 
 theorem HasFPowerSeriesOnBall.radius_pos (hf : HasFPowerSeriesOnBall f p x r) : 0 < p.radius :=
+  lt_of_lt_of_le hf.r_pos hf.r_le
+
+theorem HasFPowerSeriesWithinOnBall.radius_pos (hf : HasFPowerSeriesWithinOnBall f p s x r) :
+    0 < p.radius :=
   lt_of_lt_of_le hf.r_pos hf.r_le
 
 theorem HasFPowerSeriesAt.radius_pos (hf : HasFPowerSeriesAt f p x) : 0 < p.radius :=

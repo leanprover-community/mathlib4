@@ -25,7 +25,7 @@ Similar results are given for `C^n` functions on domains.
 We use the notation `E [×n]→L[𝕜] F` for the space of continuous multilinear maps on `E^n` with
 values in `F`. This is the space in which the `n`-th derivative of a function from `E` to `F` lives.
 
-In this file, we denote `⊤ : ℕ∞` with `∞`.
+In this file, we denote `(⊤ : ℕ∞) : WithTop ℕ∞` with `∞` and `⊤ : WithTop ℕ∞` with `ω`.
 
 ## Tags
 
@@ -36,7 +36,8 @@ noncomputable section
 
 open scoped NNReal Nat
 
-local notation "∞" => (⊤ : ℕ∞)
+local notation "ω" => (⊤ : WithTop (ℕ∞))
+local notation "∞" => ((⊤ : ℕ∞) : WithTop (ℕ∞))
 
 universe u v w uD uE uF uG
 
@@ -79,7 +80,7 @@ theorem contDiff_zero_fun : ContDiff 𝕜 n fun _ : E => (0 : F) :=
 /-- Constants are `C^∞`.
 -/
 theorem contDiff_const {c : F} : ContDiff 𝕜 n fun _ : E => c := by
-  suffices h : ContDiff 𝕜 ∞ fun _ : E => c from h.of_le le_top
+  suffices h : ContDiff 𝕜 ω fun _ : E => c from h.of_le le_top
   rw [contDiff_top_iff_fderiv]
   refine ⟨differentiable_const c, ?_⟩
   rw [fderiv_const]

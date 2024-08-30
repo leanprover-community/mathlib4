@@ -192,19 +192,39 @@ variable {m n : WithTop (ℕ∞)}
 it admits continuous derivatives up to order `n` in a neighborhood of `x` in `s ∪ {x}`.
 For `n = ∞`, we only require that this holds up to any finite order (where the neighborhood may
 depend on the finite order we consider).
-For `n = ω`, we require the function to be analytic within `s` at `x` (and the space to be complete,
-as otherwise an analytic function on a set doesn't need to be smooth there since the power series
-for the successive derivatives might not converge).
+For `n = ω`, we require the function to be analytic within `s` at `x`. The precise definition we
+give is more involved to work around issues when the space is not complete, but it is equivalent
+when the space is complete.
 
 For instance, a real function which is `C^m` on `(-1/m, 1/m)` for each natural `m`, but not
 better, is `C^∞` at `0` within `univ`.
 -/
-def ContDiffWithinAt (n : WithTop ℕ∞) (f : E → F) (s : Set E) (x : E) : Prop := match n with
-  | ω => CompleteSpace F ∧ AnalyticWithinAt 𝕜 f s x
+def ContDiffWithinAt (n : WithTop ℕ∞) (f : E → F) (s : Set E) (x : E) : Prop :=
+  match n with
+  | ω => ∀ m : ℕ, ∃ u ∈ 𝓝[insert x s] x, ∃ p : E → FormalMultilinearSeries 𝕜 E F,
+      HasFTaylorSeriesUpToOn m f p u ∧ ∀ i ≤ m, AnalyticWithinOn 𝕜 (fun x ↦ p x i) u
   | (n : ℕ∞) => ∀ m : ℕ, (m : ℕ∞) ≤ n → ∃ u ∈ 𝓝[insert x s] x,
       ∃ p : E → FormalMultilinearSeries 𝕜 E F, HasFTaylorSeriesUpToOn m f p u
 
 variable {𝕜}
+
+theorem contDiffWithinAt_omega_iff_analyticWithinAt [CompleteSpace F] :
+    ContDiffWithinAt 𝕜 ω f s x ↔ AnalyticWithinAt 𝕜 f s x := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rcases h 0 with ⟨u, hu, p, hp, h'p⟩
+    have xu : x ∈ u := mem_of_mem_nhdsWithin (mem_insert x s) hu
+    simp only [nonpos_iff_eq_zero, forall_eq] at h'p
+    have A : AnalyticWithinAt 𝕜 (fun x ↦ p x 0) (s ∩ u) x := (h'p x xu).mono inter_subset_right
+    have B : AnalyticWithinAt 𝕜 (fun x ↦ (p x 0).uncurry0) (s ∩ u) x := by
+      apply AnalyticWithinAt.comp
+
+
+
+
+
+#exit
+
+continuousMultilinearCurryFin0
 
 theorem contDiffWithinAt_nat {n : ℕ} :
     ContDiffWithinAt 𝕜 n f s x ↔ ∃ u ∈ 𝓝[insert x s] x,
@@ -217,13 +237,22 @@ theorem ContDiffWithinAt.of_le (h : ContDiffWithinAt 𝕜 n f s x) (hmn : m ≤ 
   | ω => match m with
     | ω => exact h
     | (m : ℕ∞) =>
-      simp only [ContDiffWithinAt] at h ⊢
-      have := h.1
-      intro r _hr
-      exact h.2.exists_hasFTaylorSeriesUpToOn _
+      intro k _hk
+      rcases h k with ⟨u, hu, p, hp⟩
+      refine ⟨u, hu, p, hp.1⟩
   | (n : ℕ∞) => match m with
     | ω => simp at hmn
     | (m : ℕ∞) => exact fun k hk ↦ h k (le_trans hk (by exact_mod_cast hmn))
+
+theorem AnalyticWithinAt.contDiffWithinAt [CompleteSpace F] (h : AnalyticWithinAt 𝕜 f s x) :
+    ContDiffWithinAt 𝕜 n f s x := by
+  suffices ContDiffWithinAt 𝕜 ω f s x from this.of_le le_top
+  intro m
+
+
+
+#exit
+
 
 theorem contDiffWithinAt_iff_forall_nat_le {n : ℕ∞} :
     ContDiffWithinAt 𝕜 n f s x ↔ ∀ m : ℕ, ↑m ≤ n → ContDiffWithinAt 𝕜 m f s x :=
@@ -990,5 +1019,3 @@ theorem ContDiff.continuous_fderiv_apply (h : ContDiff 𝕜 n f) (hn : 1 ≤ n) 
   have B : Continuous fun p : E × E => (fderiv 𝕜 f p.1, p.2) :=
     ((h.continuous_fderiv hn).comp continuous_fst).prod_mk continuous_snd
   A.comp B
-
-set_option linter.style.longFile 1700
