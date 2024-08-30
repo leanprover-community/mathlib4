@@ -224,7 +224,7 @@ end Triangular
 
 section Block
 
-/-! #### General 2×2 block matrices-/
+/-! #### General 2×2 block matrices -/
 
 
 /-- A block matrix is invertible if the bottom right corner and the corresponding schur complement

@@ -101,7 +101,7 @@ theorem coeff_coe_powerSeries (x : PowerSeries R) (n : ℕ) :
 
 /-- This is a power series that can be multiplied by an integer power of `X` to give our
   Laurent series. If the Laurent series is nonzero, `powerSeriesPart` has a nonzero
-  constant term.  -/
+  constant term. -/
 def powerSeriesPart (x : LaurentSeries R) : PowerSeries R :=
   PowerSeries.mk fun n => x.coeff (x.order + n)
 
