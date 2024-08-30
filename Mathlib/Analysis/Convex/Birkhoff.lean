@@ -4,11 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
 
-import Mathlib.Analysis.Convex.Combination
-import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Combinatorics.Hall.Basic
 import Mathlib.Data.Matrix.DoublyStochastic
-import Mathlib.LinearAlgebra.Matrix.Permutation
+import Mathlib.Tactic.Linarith
 
 /-!
 # Birkhoff's theorem
@@ -39,7 +37,7 @@ whose support is contained in the support of M.
 -/
 private lemma exists_perm_eq_zero_implies_eq_zero [Nonempty n] {s : R} (hs : 0 < s)
     (hM : ∃ M' ∈ doublyStochastic R n, M = s • M') :
-    ∃ σ : Equiv.Perm n, ∀ i j, M i j = 0 → σ.permMatrix ℝ i j = 0 := by
+    ∃ σ : Equiv.Perm n, ∀ i j, M i j = 0 → σ.permMatrix R i j = 0 := by
   rw [scalar_multiple_of_doublyStochastic_iff hs.le] at hM
   let f (i : n) : Finset n := univ.filter (M i · ≠ 0)
   have hf (A : Finset n) : A.card ≤ (A.biUnion f).card := by
@@ -50,19 +48,16 @@ private lemma exists_perm_eq_zero_implies_eq_zero [Nonempty n] {s : R} (hs : 0 <
     suffices A.card * s ≤ (A.biUnion f).card * s by exact_mod_cast le_of_mul_le_mul_right this hs
     rw [← h₁, ← h₂]
     trans ∑ i ∈ A, ∑ j ∈ A.biUnion f, M i j
-    · refine sum_le_sum ?_
-      intro i hi
+    · refine sum_le_sum fun i hi => ?_
       exact sum_le_sum_of_subset_of_nonneg (subset_biUnion_of_mem f hi) (by simp [*])
     · exact sum_le_sum_of_subset_of_nonneg (by simp) fun _ _ _ => sum_nonneg fun j _ => hM.1 _ _
   obtain ⟨g, hg, hg'⟩ := (all_card_le_biUnion_card_iff_exists_injective f).1 hf
   rw [Finite.injective_iff_bijective] at hg
-  refine ⟨Equiv.ofBijective g hg, ?_⟩
-  intro i j hij
+  refine ⟨Equiv.ofBijective g hg, fun i j hij => ?_⟩
   simp only [PEquiv.toMatrix_apply, Option.mem_def, ite_eq_right_iff, one_ne_zero, imp_false,
     Equiv.toPEquiv_apply, Equiv.ofBijective_apply, Option.some.injEq]
   rintro rfl
-  simp only [ne_eq, mem_filter, mem_univ, true_and, f] at hg'
-  exact hg' _ hij
+  simpa [f, hij] using hg' i
 
 end LinearOrderedSemifield
 
@@ -97,7 +92,6 @@ private lemma doublyStochastic_sum_perm_aux (M : Matrix n n R)
   obtain ⟨i, hi, hi'⟩ := exists_min_image _ (fun i => M i (σ i)) univ_nonempty
   rw [scalar_multiple_of_doublyStochastic_iff hs] at hM
   let N : Matrix n n R := M - M i (σ i) • σ.permMatrix R
-  let d' : ℕ := (univ.filter fun i : n × n => N i.1 i.2 ≠ 0).card
   have hMi' : 0 < M i (σ i) := (hM.1 _ _).lt_of_ne' fun h => by
     simpa [Equiv.toPEquiv_apply] using hσ _ _ h
   let s' : R := s - M i (σ i)
@@ -109,12 +103,11 @@ private lemma doublyStochastic_sum_perm_aux (M : Matrix n n R)
     simp only [sub_apply, smul_apply, PEquiv.toMatrix_apply, Equiv.toPEquiv_apply, Option.mem_def,
       Option.some.injEq, smul_eq_mul, mul_ite, mul_one, mul_zero, sub_nonneg,
       sum_sub_distrib, sum_ite_eq, mem_univ, ↓reduceIte, N]
-    refine ⟨?_, by simp [hM.2.1], by simp [← σ.eq_symm_apply, hM]⟩
-    intro i' j
+    refine ⟨fun i' j => ?_, by simp [hM.2.1], by simp [← σ.eq_symm_apply, hM]⟩
     split
     case isTrue h => exact (hi' i' (by simp)).trans_eq (by rw [h])
     case isFalse h => exact hM.1 _ _
-  have hd' : d' < d := by
+  have hd' : (univ.filter fun i : n × n => N i.1 i.2 ≠ 0).card < d := by
     rw [← hd]
     refine card_lt_card ?_
     rw [ssubset_iff_of_subset (monotone_filter_right _ _)]
@@ -161,14 +154,11 @@ To show `doublyStochastic n` is convex, use `convex_doublyStochastic`.
 -/
 theorem doublyStochastic_eq_convexHull_perm :
     doublyStochastic R n = convexHull R {σ.permMatrix R | σ : Equiv.Perm n} := by
-  refine (convexHull_min ?g1 convex_doublyStochastic).antisymm' ?g2
+  refine (convexHull_min ?g1 convex_doublyStochastic).antisymm' fun M hM => ?g2
   case g1 =>
     rintro x ⟨h, rfl⟩
-    exact permMatrix_doublyStochastic
+    exact permMatrix_mem_doublyStochastic
   case g2 =>
-    intro M hM
-    rcases isEmpty_or_nonempty n
-    case inl => simp [Unique.exists_iff, Subsingleton.elim M ((Equiv.Perm.permMatrix R 1))]
     obtain ⟨w, hw1, hw2, hw3⟩ := doublyStochastic_eq_sum_perm hM
     exact mem_convexHull_of_exists_fintype w (·.permMatrix R) hw1 hw2 (by simp) hw3
 
