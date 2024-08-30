@@ -40,7 +40,7 @@ should connect (or unify) these definitions with `Module.reflecton` defined here
 
 -/
 
-open Set Function Pointwise
+open Function Set
 open Module hiding Finite
 open Submodule (span)
 

@@ -312,7 +312,7 @@ theorem mul_mem_nthRootsFinset
     η₁ * η₂ ∈ nthRootsFinset n R := by
   cases n with
   | zero =>
-    simp only [Nat.zero_eq, nthRootsFinset_zero, not_mem_empty] at hη₁
+    simp only [nthRootsFinset_zero, not_mem_empty] at hη₁
   | succ n =>
     rw [mem_nthRootsFinset n.succ_pos] at hη₁ hη₂ ⊢
     rw [mul_pow, hη₁, hη₂, one_mul]
@@ -322,7 +322,7 @@ theorem ne_zero_of_mem_nthRootsFinset {η : R} (hη : η ∈ nthRootsFinset n R)
   rintro rfl
   cases n with
   | zero =>
-    simp only [Nat.zero_eq, nthRootsFinset_zero, not_mem_empty] at hη
+    simp only [nthRootsFinset_zero, not_mem_empty] at hη
   | succ n =>
     rw [mem_nthRootsFinset n.succ_pos, zero_pow n.succ_ne_zero] at hη
     exact zero_ne_one hη

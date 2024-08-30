@@ -704,7 +704,7 @@ theorem IsOrthoᵢ.not_isOrtho_basis_self_of_separatingLeft [Nontrivial R]
   intro ho
   refine v.ne_zero i (hB (v i) fun m ↦ ?_)
   obtain ⟨vi, rfl⟩ := v.repr.symm.surjective m
-  rw [Basis.repr_symm_apply, Finsupp.total_apply, Finsupp.sum, map_sum]
+  rw [Basis.repr_symm_apply, Finsupp.linearCombination_apply, Finsupp.sum, map_sum]
   apply Finset.sum_eq_zero
   rintro j -
   rw [map_smulₛₗ]
@@ -733,7 +733,8 @@ theorem IsOrthoᵢ.separatingLeft_of_not_isOrtho_basis_self [NoZeroSMulDivisors 
   ext i
   rw [Finsupp.zero_apply]
   specialize hB (v i)
-  simp_rw [Basis.repr_symm_apply, Finsupp.total_apply, Finsupp.sum, map_sum₂, map_smulₛₗ₂] at hB
+  simp_rw [Basis.repr_symm_apply, Finsupp.linearCombination_apply, Finsupp.sum, map_sum₂,
+           map_smulₛₗ₂] at hB
   rw [Finset.sum_eq_single i] at hB
   · exact (smul_eq_zero.mp hB).elim _root_.id (h i).elim
   · intro j _hj hij

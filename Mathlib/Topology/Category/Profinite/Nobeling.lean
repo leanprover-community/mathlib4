@@ -197,7 +197,6 @@ lemma iso_map_bijective : Function.Bijective (iso_map C J) := by
       exact dif_pos i.prop
 
 variable {C}
-variable (hC : IsCompact C)
 
 /--
 For a given compact subset `C` of `I → Bool`, `spanFunctor` is the functor from the poset of finsets
@@ -205,7 +204,7 @@ of `I` to `Profinite`, sending a finite subset set `J` to the image of `C` under
 `Proj J`.
 -/
 noncomputable
-def spanFunctor [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] :
+def spanFunctor [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] (hC : IsCompact C) :
     (Finset I)ᵒᵖ ⥤ Profinite.{u} where
   obj s := @Profinite.of (π C (· ∈ (unop s))) _
     (by rw [← isCompact_iff_compactSpace]; exact hC.image (continuous_proj _)) _ _
@@ -215,7 +214,8 @@ def spanFunctor [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] :
 
 /-- The limit cone on `spanFunctor` with point `C`. -/
 noncomputable
-def spanCone [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] : Cone (spanFunctor hC) where
+def spanCone [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] (hC : IsCompact C) :
+    Cone (spanFunctor hC) where
   pt := @Profinite.of C _ (by rwa [← isCompact_iff_compactSpace]) _ _
   π :=
   { app := fun s ↦ ⟨ProjRestrict C (· ∈ unop s), continuous_projRestrict _ _⟩
@@ -228,7 +228,7 @@ def spanCone [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] : Cone (spanFunct
 
 /-- `spanCone` is a limit cone. -/
 noncomputable
-def spanCone_isLimit [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] :
+def spanCone_isLimit [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] (hC : IsCompact C) :
     CategoryTheory.Limits.IsLimit (spanCone hC) := by
   refine (IsLimit.postcomposeHomEquiv (NatIso.ofComponents
     (fun s ↦ (CompHausLike.isoOfBijective _ (iso_map_bijective C (· ∈ unop s)))) ?_) (spanCone hC))
@@ -414,7 +414,7 @@ theorem evalFacProps {l : Products I} (J K : I → Prop)
     ext; simp [Homeomorph.setCongr, Products.eval_eq]
   rw [ProjRestricts, ← Function.comp.assoc, this, ← evalFacProp (π C K) J h]
 
-theorem prop_of_isGood  {l : Products I} (J : I → Prop) [∀ j, Decidable (J j)]
+theorem prop_of_isGood {l : Products I} (J : I → Prop) [∀ j, Decidable (J j)]
     (h : l.isGood (π C J)) : ∀ a, a ∈ l.val → J a := by
   intro i hi
   by_contra h'
@@ -624,8 +624,8 @@ theorem GoodProducts.spanFin [IsWellOrder I (· < ·)] :
     rw [List.map_cons, List.prod_cons]
     intro ha
     specialize ih (by rw [List.chain'_cons'] at ha; exact ha.2)
-    rw [Finsupp.mem_span_image_iff_total] at ih
-    simp only [Finsupp.mem_supported, Finsupp.total_apply] at ih
+    rw [Finsupp.mem_span_image_iff_linearCombination] at ih
+    simp only [Finsupp.mem_supported, Finsupp.linearCombination_apply] at ih
     obtain ⟨c, hc, hc'⟩ := ih
     rw [← hc']; clear hc'
     have hmap := fun g ↦ map_finsupp_sum (LinearMap.mulLeft ℤ (e (π C (· ∈ s)) a)) c g
@@ -711,7 +711,7 @@ def ord (i : I) : Ordinal := Ordinal.typein ((·<·) : I → I → Prop) i
 /-- An ordinal regarded as a term of `I`. -/
 noncomputable
 def term {o : Ordinal} (ho : o < Ordinal.type ((·<·) : I → I → Prop)) : I :=
-  Ordinal.enum ((·<·) : I → I → Prop) o ho
+  Ordinal.enum ((·<·) : I → I → Prop) ⟨o, ho⟩
 
 variable {I}
 
@@ -1151,7 +1151,7 @@ The main definitions in the section `GoodProducts` are as follows:
 ### Main results
 
 * The main results in the section `ExactSequence` are `succ_mono` and `succ_exact` which together
-  say that the secuence given by `πs` and `Linear_CC'` is left exact:
+  say that the sequence given by `πs` and `Linear_CC'` is left exact:
   ```
                                               f                        g
   0 --→ LocallyConstant (π C (ord I · < o)) ℤ --→ LocallyConstant C ℤ --→ LocallyConstant C' ℤ
@@ -1424,7 +1424,8 @@ theorem sum_to_range :
 /-- The equivalence from the sum of `GoodProducts (π C (ord I · < o))` and
     `(MaxProducts C ho)` to `GoodProducts C`. -/
 noncomputable
-def sum_equiv : GoodProducts (π C (ord I · < o)) ⊕ (MaxProducts C ho) ≃ GoodProducts C :=
+def sum_equiv (hsC : contained C (Order.succ o)) (ho : o < Ordinal.type (·<· : I → I → Prop)) :
+    GoodProducts (π C (ord I · < o)) ⊕ (MaxProducts C ho) ≃ GoodProducts C :=
   calc _ ≃ Set.range (sum_to C ho) := Equiv.ofInjective (sum_to C ho) (injective_sum_to C ho)
        _ ≃ _ := Equiv.Set.ofEq <| by rw [sum_to_range C ho, union_succ C hsC ho]
 
@@ -1617,9 +1618,9 @@ theorem maxTail_isGood (l : MaxProducts C ho)
   have : Inhabited I := ⟨term I ho⟩
   -- Write `l.Tail` as a linear combination of smaller products:
   intro h
-  rw [Finsupp.mem_span_image_iff_total, ← max_eq_eval C hsC ho] at h
+  rw [Finsupp.mem_span_image_iff_linearCombination, ← max_eq_eval C hsC ho] at h
   obtain ⟨m, ⟨hmmem, hmsum⟩⟩ := h
-  rw [Finsupp.total_apply] at hmsum
+  rw [Finsupp.linearCombination_apply] at hmsum
 
   -- Write the image of `l` under `Linear_CC'` as `Linear_CC'` applied to the linear combination
   -- above, with leading `term I ho`'s added to each term:

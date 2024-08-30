@@ -30,10 +30,10 @@ instance instMulZeroClass : MulZeroClass (WithTop α) where
     | ⊤, (b : α) => if b = 0 then 0 else ⊤
     | ⊤, ⊤ => ⊤
   mul_zero a := match a with
-    | (a : α) => congr_arg some $ mul_zero _
+    | (a : α) => congr_arg some <| mul_zero _
     | ⊤ => if_pos rfl
   zero_mul b := match b with
-    | (b : α) => congr_arg some $ zero_mul _
+    | (b : α) => congr_arg some <| zero_mul _
     | ⊤ => if_pos rfl
 
 @[simp, norm_cast] lemma coe_mul (a b : α) : (↑(a * b) : WithTop α) = a * b := rfl
@@ -73,12 +73,14 @@ lemma coe_mul_eq_bind {a : α} (ha : a ≠ 0) : ∀ b, (a * b : WithTop α) = b.
   induction b; · rw [mul_top ha, untop'_top, mul_zero]
   rw [← coe_mul, untop'_coe, untop'_coe, untop'_coe]
 
-theorem mul_lt_top' [LT α] {a b : WithTop α} (ha : a < ⊤) (hb : b < ⊤) : a * b < ⊤ := by
-  rw [WithTop.lt_top_iff_ne_top] at *
-  simp only [Ne, mul_eq_top_iff, *, and_false, false_and, or_self, not_false_eq_true]
+theorem mul_ne_top {a b : WithTop α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) : a * b ≠ ⊤ := by
+  simp [mul_eq_top_iff, *]
 
-theorem mul_lt_top [LT α] {a b : WithTop α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) : a * b < ⊤ :=
-  mul_lt_top' (WithTop.lt_top_iff_ne_top.2 ha) (WithTop.lt_top_iff_ne_top.2 hb)
+theorem mul_lt_top [LT α] {a b : WithTop α} (ha : a < ⊤) (hb : b < ⊤) : a * b < ⊤ := by
+  rw [WithTop.lt_top_iff_ne_top] at *
+  exact mul_ne_top ha hb
+
+@[deprecated (since := "2024-08-25")] alias mul_lt_top' := mul_lt_top
 
 instance instNoZeroDivisors [NoZeroDivisors α] : NoZeroDivisors (WithTop α) := by
   refine ⟨fun h₁ => Decidable.by_contradiction fun h₂ => ?_⟩
@@ -242,11 +244,13 @@ lemma unbot'_zero_mul (a b : WithBot α) : (a * b).unbot' 0 = a.unbot' 0 * b.unb
   induction b; · rw [mul_bot ha, unbot'_bot, mul_zero]
   rw [← coe_mul, unbot'_coe, unbot'_coe, unbot'_coe]
 
-theorem bot_lt_mul' [LT α] {a b : WithBot α} (ha : ⊥ < a) (hb : ⊥ < b) : ⊥ < a * b :=
-  WithTop.mul_lt_top' (α := αᵒᵈ) ha hb
+theorem mul_ne_bot {a b : WithBot α} (ha : a ≠ ⊥) (hb : b ≠ ⊥) : a * b ≠ ⊥ :=
+  WithTop.mul_ne_top (α := αᵒᵈ) ha hb
 
-theorem bot_lt_mul [LT α] {a b : WithBot α} (ha : a ≠ ⊥) (hb : b ≠ ⊥) : ⊥ < a * b :=
+theorem bot_lt_mul [LT α] {a b : WithBot α} (ha : ⊥ < a) (hb : ⊥ < b) : ⊥ < a * b :=
   WithTop.mul_lt_top (α := αᵒᵈ) ha hb
+
+@[deprecated (since := "2024-08-25")] alias bot_lt_mul' := bot_lt_mul
 
 instance instNoZeroDivisors [NoZeroDivisors α] : NoZeroDivisors (WithBot α) :=
   WithTop.instNoZeroDivisors

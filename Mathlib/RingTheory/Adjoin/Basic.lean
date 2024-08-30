@@ -355,7 +355,7 @@ theorem pow_smul_mem_of_smul_subset_of_mem_adjoin [CommSemiring B] [Algebra R B]
     [IsScalarTower R A B] (r : A) (s : Set B) (B' : Subalgebra R B) (hs : r • s ⊆ B') {x : B}
     (hx : x ∈ adjoin R s) (hr : algebraMap A B r ∈ B') : ∃ n₀ : ℕ, ∀ n ≥ n₀, r ^ n • x ∈ B' := by
   change x ∈ Subalgebra.toSubmodule (adjoin R s) at hx
-  rw [adjoin_eq_span, Finsupp.mem_span_iff_total] at hx
+  rw [adjoin_eq_span, Finsupp.mem_span_iff_linearCombination] at hx
   rcases hx with ⟨l, rfl : (l.sum fun (i : Submonoid.closure s) (c : R) => c • (i : B)) = x⟩
   choose n₁ n₂ using fun x : Submonoid.closure s => Submonoid.pow_smul_mem_closure_smul r s x.prop
   use l.support.sup n₁
