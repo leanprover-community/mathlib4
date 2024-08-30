@@ -108,26 +108,26 @@ end MeasureTheory.MeasurePreserving
 
 namespace QuasiErgodic
 
-theorem aeconst_set' (hf : QuasiErgodic f μ) (hsm : NullMeasurableSet s μ) (hs : f ⁻¹' s =ᵐ[μ] s) :
+theorem aeconst_set₀ (hf : QuasiErgodic f μ) (hsm : NullMeasurableSet s μ) (hs : f ⁻¹' s =ᵐ[μ] s) :
     EventuallyConst s (ae μ) :=
   let ⟨_t, h₀, h₁, h₂⟩ := hf.toQuasiMeasurePreserving.exists_preimage_eq_of_preimage_ae hsm hs
   (hf.aeconst_set h₀ h₂).congr h₁
 
 /-- For a quasi ergodic map, sets that are almost invariant (rather than strictly invariant) are
 still either almost empty or full. -/
-theorem ae_empty_or_univ' (hf : QuasiErgodic f μ) (hsm : NullMeasurableSet s μ)
+theorem ae_empty_or_univ₀ (hf : QuasiErgodic f μ) (hsm : NullMeasurableSet s μ)
     (hs : f ⁻¹' s =ᵐ[μ] s) :
     s =ᵐ[μ] (∅ : Set α) ∨ s =ᵐ[μ] univ :=
-  eventuallyConst_set'.mp <| hf.aeconst_set' hsm hs
+  eventuallyConst_set'.mp <| hf.aeconst_set₀ hsm hs
 
-@[deprecated (since := "2024-07-21")] alias ae_empty_or_univ₀ := ae_empty_or_univ'
+@[deprecated (since := "2024-07-21")] alias ae_empty_or_univ' := ae_empty_or_univ₀
 
 /-- For a quasi ergodic map, sets that are almost invariant (rather than strictly invariant) are
 still either almost empty or full. -/
 theorem ae_mem_or_ae_nmem₀ (hf : QuasiErgodic f μ) (hsm : NullMeasurableSet s μ)
     (hs : f ⁻¹' s =ᵐ[μ] s) :
     (∀ᵐ x ∂μ, x ∈ s) ∨ ∀ᵐ x ∂μ, x ∉ s :=
-  eventuallyConst_set.mp <| hf.aeconst_set' hsm hs
+  eventuallyConst_set.mp <| hf.aeconst_set₀ hsm hs
 
 end QuasiErgodic
 
