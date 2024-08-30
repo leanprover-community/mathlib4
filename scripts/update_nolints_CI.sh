@@ -34,7 +34,7 @@ gh_api() {
 
 git push -v "${remote_name}" "HEAD:$branch_name"
 
-pr_id=$(gh_api "repos/${owner_name}/mathlib/pulls" -X POST -d @- <<EOF | jq -r .number
+pr_id=$(gh_api "repos/${owner_name}/mathlib4/pulls" -X POST -d @- <<EOF | jq -r .number
 {
   "title": "$pr_title",
   "head": "$branch_name",
@@ -44,6 +44,6 @@ pr_id=$(gh_api "repos/${owner_name}/mathlib/pulls" -X POST -d @- <<EOF | jq -r .
 EOF
 )
 
-gh_api "repos/${owner_name}/mathlib/issues/${pr_id}/comments" -X POST -d @- <<EOF
+gh_api "repos/${owner_name}/mathlib4/issues/${pr_id}/comments" -X POST -d @- <<EOF
 { "body": "bors r+" }
 EOF

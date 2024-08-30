@@ -67,7 +67,7 @@ jobs:
 
       - name: configure git setup
         run: |
-          git remote add origin-bot "https://leanprover-community-bot:${{ secrets.UPDATE_NOLINTS_TOKEN }}@github.com/leanprover-community/mathlib.git"
+          git remote add origin-bot "https://leanprover-community-bot:${{ secrets.UPDATE_NOLINTS_TOKEN }}@github.com/leanprover-community/mathlib4.git"
           git config user.email "leanprover.community@gmail.com"
           git config user.name "leanprover-community-bot"
 
