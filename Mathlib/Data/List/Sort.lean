@@ -358,6 +358,62 @@ end TotalAndTransitive
 
 end Correctness
 
+section TR
+
+-- TODO: Move this to an `Impl` file.
+-- TODO: Test this against regular insertion sort.
+-- TODO: Have an orderedInsertTR and orderedInsertTR' to avoid some reversals.
+
+def insertionSortTR (l : List α) : List α :=
+  run l.reverse []
+where
+  run : List α → List α → List α
+  | [],      acc => acc
+  | a :: as, acc => run as (insert a acc [])
+  -- The elements in `acc` are sorted in reverse order and are all `≼ a`.
+  insert (a : α) : List α → List α → List α
+  | [],          acc => (a :: acc).reverse
+  | l@(b :: bs), acc => if a ≼ b then acc.reverse ++ (a :: l) else insert a bs (b :: acc)
+
+theorem insertionSortTR_insert_cons (a b : α) (l bs : List α) :
+    insertionSortTR.insert r a l (bs ++ [b]) = b :: insertionSortTR.insert r a l bs := by
+  induction l generalizing bs <;> unfold insertionSortTR.insert
+  case nil => simp
+  case cons x xs ih =>
+    split
+    · simp
+    · exact ih (x :: bs)
+
+theorem insertionSortTR_insert_eq_orderedInsert (a : α) (l : List α) :
+    insertionSortTR.insert r a l [] = orderedInsert r a l := by
+  induction l
+  case nil => simp [insertionSortTR.insert]
+  case cons b bs ih =>
+    simp only [insertionSortTR.insert, reverse_nil, nil_append, orderedInsert]
+    split
+    · rfl
+    · exact ih ▸ insertionSortTR_insert_cons r _ _ _ []
+
+theorem insertionSortTR_run_insert_last (a : α) (as acc : List α) :
+    insertionSortTR.run r (as ++ [a]) acc =
+    insertionSortTR.insert r a (insertionSortTR.run r as acc) [] := by
+  induction as generalizing a acc <;> simp [insertionSortTR.run, *]
+
+theorem insertionSortTR_run_reverse_eq_insertionSort (l : List α) :
+    insertionSortTR.run r l.reverse [] = insertionSort r l := by
+  induction l
+  case nil => simp [insertionSortTR.run]
+  case cons a as ih =>
+    simp only [insertionSort, ←insertionSortTR_insert_eq_orderedInsert, ←ih, reverse_cons]
+    apply insertionSortTR_run_insert_last
+
+-- TODO: Tag this with `@[csimp]`.
+theorem insertionSortTR_eq_insertionSort : @insertionSortTR = @insertionSort := by
+  funext
+  exact insertionSortTR_run_reverse_eq_insertionSort ..
+
+end TR
+
 end InsertionSort
 
 /-! ### Merge sort -/
