@@ -219,7 +219,7 @@ def produceLabels (env : Environment) (gitDiffs : String) : Array String :=
 /--
 `produce_labels "A/B/C.lean⏎D/E.lean"` takes as input a string, assuming that it is a
 line-break-separated list of paths to files.
-It uses the paths to check if any of the labels in the environment is applicable.
+It uses the paths to check if any of the labels in the environment are applicable.
 It prints the sorted, comma-separated string of the applicable labels with no repetitions.
 
 `produce_labels! "A/B/C.lean⏎D/E.lean"`, with the `!` flag, displays, for each label,
