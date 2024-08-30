@@ -87,7 +87,7 @@ jobs:
           echo "$TITLE"
           label_names=$(echo "${{ toJson(github.event.pull_request.labels) }}" | jq -r '.[].name')
           echo "$label_names"
-          lake exe check-title-labels $TITLE $label_names
+          lake exe check-title-labels "$TITLE" "$label_names"
 
       - name: Install bibtool
         if: ${{ 'ubuntu-latest' == 'ubuntu-latest' }}
