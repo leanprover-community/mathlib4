@@ -941,9 +941,11 @@ instance PLift.fintypeProp (p : Prop) [Decidable p] : Fintype (PLift p) :=
 instance Prop.fintype : Fintype Prop :=
   ⟨⟨{True, False}, by simp [true_ne_false]⟩, by simpa using em⟩
 
-@[simp]
 theorem Fintype.univ_Prop : (Finset.univ : Finset Prop) = {True, False} :=
   Finset.eq_of_veq <| by simp; rfl
+
+theorem Set.univ_Prop : (Set.univ : Set Prop) = {True, False} := by
+  rw [← coe_univ, Fintype.univ_Prop, coe_insert, coe_singleton]
 
 instance Subtype.fintype (p : α → Prop) [DecidablePred p] [Fintype α] : Fintype { x // p x } :=
   Fintype.subtype (univ.filter p) (by simp)

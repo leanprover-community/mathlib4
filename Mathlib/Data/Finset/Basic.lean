@@ -578,6 +578,10 @@ instance : Singleton α (Finset α) :=
   ⟨fun a => ⟨{a}, nodup_singleton a⟩⟩
 
 @[simp]
+theorem mk_singleton (a : α) : Finset.mk {a} (nodup_singleton a) = {a} :=
+  rfl
+
+@[simp]
 theorem singleton_val (a : α) : ({a} : Finset α).1 = {a} :=
   rfl
 
