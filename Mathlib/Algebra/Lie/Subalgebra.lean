@@ -201,7 +201,7 @@ theorem coe_to_submodule : ((L' : Submodule R L) : Set L) = L' :=
 section LieModule
 
 variable {M : Type w} [AddCommGroup M] [LieRingModule L M]
-variable {N : Type w₁} [AddCommGroup N] [LieRingModule L N] [Module R N] [LieModule R L N]
+variable {N : Type w₁} [AddCommGroup N] [LieRingModule L N] [Module R N]
 
 /-- Given a Lie algebra `L` containing a Lie subalgebra `L' ⊆ L`, together with a Lie ring module
 `M` of `L`, we may regard `M` as a Lie ring module of `L'` by restriction. -/
@@ -215,11 +215,11 @@ instance lieRingModule : LieRingModule L' M where
 theorem coe_bracket_of_module (x : L') (m : M) : ⁅x, m⁆ = ⁅(x : L), m⁆ :=
   rfl
 
-variable [Module R M] [LieModule R L M]
+variable [Module R M]
 
 /-- Given a Lie algebra `L` containing a Lie subalgebra `L' ⊆ L`, together with a Lie module `M` of
 `L`, we may regard `M` as a Lie module of `L'` by restriction. -/
-instance lieModule : LieModule R L' M where
+instance lieModule [LieModule R L M] : LieModule R L' M where
   smul_lie t x m := by simp only [coe_bracket_of_module, smul_lie, Submodule.coe_smul_of_tower]
   lie_smul t x m := by simp only [coe_bracket_of_module, lie_smul]
 
@@ -507,14 +507,8 @@ theorem subsingleton_bot : Subsingleton (⊥ : LieSubalgebra R L) :=
 
 variable (R L)
 
-theorem wellFounded_of_noetherian [IsNoetherian R L] :
-    WellFounded ((· > ·) : LieSubalgebra R L → LieSubalgebra R L → Prop) :=
-  let f :
-    ((· > ·) : LieSubalgebra R L → LieSubalgebra R L → Prop) →r
-      ((· > ·) : Submodule R L → Submodule R L → Prop) :=
-    { toFun := (↑)
-      map_rel' := @fun _ _ h ↦ h }
-  RelHomClass.wellFounded f (isNoetherian_iff_wellFounded.mp inferInstance)
+instance wellFoundedGT_of_noetherian [IsNoetherian R L] : WellFoundedGT (LieSubalgebra R L) :=
+  RelHomClass.isWellFounded (⟨toSubmodule, @fun _ _ h ↦ h⟩ : _ →r (· > ·))
 
 variable {R L K K' f}
 
@@ -561,7 +555,7 @@ theorem coe_ofLe : (ofLe h : Submodule R K') = LinearMap.range (Submodule.inclus
   rfl
 
 /-- Given nested Lie subalgebras `K ⊆ K'`, there is a natural equivalence from `K` to its image in
-`K'`.  -/
+`K'`. -/
 noncomputable def equivOfLe : K ≃ₗ⁅R⁆ ofLe h :=
   (inclusion h).equivRangeOfInjective (inclusion_injective h)
 

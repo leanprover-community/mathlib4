@@ -105,13 +105,13 @@ end MulZeroOneClass
 
 section NonAssocSemiring
 
-variable [Fintype (Sym2 α)] [NonAssocSemiring R] {a b : α} {e : Sym2 α}
+variable [NonAssocSemiring R] {a b : α} {e : Sym2 α}
 
-theorem sum_incMatrix_apply [Fintype (neighborSet G a)] :
+theorem sum_incMatrix_apply [Fintype (Sym2 α)] [Fintype (neighborSet G a)] :
     ∑ e, G.incMatrix R a e = G.degree a := by
   classical simp [incMatrix_apply', sum_boole, Set.filter_mem_univ_eq_toFinset]
 
-theorem incMatrix_mul_transpose_diag [Fintype (neighborSet G a)] :
+theorem incMatrix_mul_transpose_diag [Fintype (Sym2 α)] [Fintype (neighborSet G a)] :
     (G.incMatrix R * (G.incMatrix R)ᵀ) a a = G.degree a := by
   classical
   rw [← sum_incMatrix_apply]

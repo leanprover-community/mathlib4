@@ -3,7 +3,6 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Scott Morrison, Ainsley Pahljina
 -/
-import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Algebra.Ring.Nat
@@ -11,6 +10,7 @@ import Mathlib.Data.ZMod.Basic
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.RingTheory.Fintype
 import Mathlib.Tactic.IntervalCases
+import Mathlib.Tactic.Zify
 
 /-!
 # The Lucas-Lehmer test for Mersenne primes.
@@ -58,6 +58,12 @@ theorem mersenne_le_mersenne {p q : ℕ} : mersenne p ≤ mersenne q ↔ p ≤ q
 @[gcongr] protected alias ⟨_, GCongr.mersenne_le_mersenne⟩ := mersenne_le_mersenne
 
 @[simp] theorem mersenne_zero : mersenne 0 = 0 := rfl
+
+@[simp] lemma mersenne_odd : ∀ {p : ℕ}, Odd (mersenne p) ↔ p ≠ 0
+  | 0 => by simp
+  | p + 1 => by
+    simpa using Nat.Even.sub_odd (one_le_pow_of_one_le one_le_two _)
+      (even_two.pow_of_ne_zero p.succ_ne_zero) odd_one
 
 @[simp] theorem mersenne_pos {p : ℕ} : 0 < mersenne p ↔ 0 < p := mersenne_lt_mersenne (p := 0)
 

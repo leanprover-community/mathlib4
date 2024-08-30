@@ -27,10 +27,7 @@ we get the more familiar semiring of formal power series with coefficients in `R
 -/
 
 
-open Finset Function
-
-open scoped Classical
-open Pointwise Polynomial
+open Finset Function Pointwise Polynomial
 
 noncomputable section
 
@@ -90,7 +87,7 @@ theorem ofPowerSeries_injective : Function.Injective (ofPowerSeries Γ R) :=
   embDomain_injective.comp toPowerSeries.symm.injective
 
 /-@[simp] Porting note: removing simp. RHS is more complicated and it makes linter
-failures elsewhere-/
+failures elsewhere -/
 theorem ofPowerSeries_apply (x : PowerSeries R) :
     ofPowerSeries Γ R x =
       HahnSeries.embDomain

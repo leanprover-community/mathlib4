@@ -430,7 +430,7 @@ theorem sSup_eq_bot : sSup s = ⊥ ↔ ∀ a ∈ s, a = ⊥ :=
 theorem sInf_eq_top : sInf s = ⊤ ↔ ∀ a ∈ s, a = ⊤ :=
   @sSup_eq_bot αᵒᵈ _ _
 
-lemma sSup_eq_bot' [CompleteLattice α] {s : Set α} : sSup s = ⊥ ↔ s = ∅ ∨ s = {⊥} := by
+lemma sSup_eq_bot' {s : Set α} : sSup s = ⊥ ↔ s = ∅ ∨ s = {⊥} := by
   rw [sSup_eq_bot, ← subset_singleton_iff_eq, subset_singleton_iff]
 
 theorem eq_singleton_bot_of_sSup_eq_bot_of_nonempty {s : Set α} (h_sup : sSup s = ⊥)
@@ -1025,7 +1025,7 @@ lemma le_biSup {ι : Type*} {s : Set ι} (f : ι → α) {i : ι} (hi : i ∈ s)
 
 begin
   apply @le_antisymm,
-  safe, pose h := f a ⊓ g a, begin [smt] ematch, ematch  end
+  safe, pose h := f a ⊓ g a, begin [smt] ematch, ematch end
 end
 -/
 theorem iSup_sup [Nonempty ι] {f : ι → α} {a : α} : (⨆ x, f x) ⊔ a = ⨆ x, f x ⊔ a := by
@@ -1555,8 +1555,8 @@ theorem snd_sInf [InfSet α] [InfSet β] (s : Set (α × β)) : (sInf s).snd = s
   rfl
 
 theorem swap_sInf [InfSet α] [InfSet β] (s : Set (α × β)) : (sInf s).swap = sInf (Prod.swap '' s) :=
-  ext (congr_arg sInf <| image_comp Prod.fst swap s : _)
-    (congr_arg sInf <| image_comp Prod.snd swap s : _)
+  Prod.ext (congr_arg sInf <| image_comp Prod.fst swap s)
+    (congr_arg sInf <| image_comp Prod.snd swap s)
 
 theorem fst_sSup [SupSet α] [SupSet β] (s : Set (α × β)) : (sSup s).fst = sSup (Prod.fst '' s) :=
   rfl
@@ -1565,8 +1565,8 @@ theorem snd_sSup [SupSet α] [SupSet β] (s : Set (α × β)) : (sSup s).snd = s
   rfl
 
 theorem swap_sSup [SupSet α] [SupSet β] (s : Set (α × β)) : (sSup s).swap = sSup (Prod.swap '' s) :=
-  ext (congr_arg sSup <| image_comp Prod.fst swap s : _)
-    (congr_arg sSup <| image_comp Prod.snd swap s : _)
+  Prod.ext (congr_arg sSup <| image_comp Prod.fst swap s)
+    (congr_arg sSup <| image_comp Prod.snd swap s)
 
 theorem fst_iInf [InfSet α] [InfSet β] (f : ι → α × β) : (iInf f).fst = ⨅ i, (f i).fst :=
   congr_arg sInf (range_comp _ _).symm
@@ -1719,3 +1719,5 @@ instance instCompleteLinearOrder : CompleteLinearOrder PUnit where
   top_sdiff := by intros; trivial
 
 end PUnit
+
+set_option linter.style.longFile 1900

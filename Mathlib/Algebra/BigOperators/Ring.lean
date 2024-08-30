@@ -18,7 +18,7 @@ multiplicative and additive structures on the values being combined.
 
 open Fintype
 
-variable {ι α β γ : Type*} {κ : ι → Type*} {s s₁ s₂ : Finset ι} {i : ι} {a : α} {f g : ι → α}
+variable {ι ι' α β γ : Type*} {κ : ι → Type*} {s s₁ s₂ : Finset ι} {i : ι} {a : α} {f g : ι → α}
 
 namespace Finset
 
@@ -52,13 +52,13 @@ lemma _root_.Fintype.sum_mul_sum {κ : Type*} [Fintype ι] [Fintype κ] (f : ι 
     (∑ i, f i) * ∑ j, g j = ∑ i, ∑ j, f i * g j :=
   Finset.sum_mul_sum _ _ _ _
 
-lemma _root_.Commute.sum_right [NonUnitalNonAssocSemiring α] (s : Finset ι) (f : ι → α) (b : α)
+lemma _root_.Commute.sum_right (s : Finset ι) (f : ι → α) (b : α)
     (h : ∀ i ∈ s, Commute b (f i)) : Commute b (∑ i ∈ s, f i) :=
   (Commute.multiset_sum_right _ _) fun b hb => by
     obtain ⟨i, hi, rfl⟩ := Multiset.mem_map.mp hb
     exact h _ hi
 
-lemma _root_.Commute.sum_left [NonUnitalNonAssocSemiring α] (s : Finset ι) (f : ι → α) (b : α)
+lemma _root_.Commute.sum_left (s : Finset ι) (f : ι → α) (b : α)
     (h : ∀ i ∈ s, Commute (f i) b) : Commute (∑ i ∈ s, f i) b :=
   ((Commute.sum_right _ _ _) fun _i hi => (h _ hi).symm).symm
 
@@ -109,10 +109,11 @@ variable [DecidableEq ι]
 lemma prod_sum (s : Finset ι) (t : ∀ i, Finset (κ i)) (f : ∀ i, κ i → α) :
     ∏ a ∈ s, ∑ b ∈ t a, f a b = ∑ p ∈ s.pi t, ∏ x ∈ s.attach, f x.1 (p x.1 x.2) := by
   classical
-  induction' s using Finset.induction with a s ha ih
-  · rw [pi_empty, sum_singleton]
-    rfl
-  · have h₁ : ∀ x ∈ t a, ∀ y ∈ t a, x ≠ y →
+  induction s using Finset.induction with
+  | empty => rw [pi_empty, sum_singleton]; rfl
+  | insert ha ih =>
+    rename_i a s
+    have h₁ : ∀ x ∈ t a, ∀ y ∈ t a, x ≠ y →
       Disjoint (image (Pi.cons s a x) (pi s t)) (image (Pi.cons s a y) (pi s t)) := by
       intro x _ y _ h
       simp only [disjoint_iff_ne, mem_image]
@@ -147,7 +148,7 @@ lemma sum_prod_piFinset {κ : Type*} [Fintype ι] (s : Finset κ) (g : ι → κ
     ∑ f ∈ piFinset fun _ : ι ↦ s, ∏ i, g i (f i) = ∏ i, ∑ j ∈ s, g i j := by
   rw [← prod_univ_sum]
 
-lemma sum_pow' (s : Finset ι) (f : ι → α) (n : ℕ) :
+lemma sum_pow' (s : Finset ι') (f : ι' → α) (n : ℕ) :
     (∑ a ∈ s, f a) ^ n = ∑ p ∈ piFinset fun _i : Fin n ↦ s, ∏ i, f (p i) := by
   convert @prod_univ_sum (Fin n) _ _ _ _ _ (fun _i ↦ s) fun _i d ↦ f d; simp
 
@@ -168,7 +169,7 @@ theorem prod_add (f g : ι → α) (s : Finset ι) :
         (by simp)
         (by simp [Classical.em])
         (by simp_rw [mem_filter, Function.funext_iff, eq_iff_iff, mem_pi, mem_insert]; tauto)
-        (by simp_rw [ext_iff, @mem_filter _ _ (id _), mem_powerset]; tauto)
+        (by simp_rw [Finset.ext_iff, @mem_filter _ _ (id _), mem_powerset]; tauto)
         (fun a _ ↦ by
           simp only [prod_ite, filter_attach', prod_map, Function.Embedding.coeFn_mk,
             Subtype.map_coe, id_eq, prod_attach, filter_congr_decidable]
@@ -179,7 +180,7 @@ theorem prod_add (f g : ι → α) (s : Finset ι) :
 end DecidableEq
 
 /-- `∏ i, (f i + g i) = (∏ i, f i) + ∑ i, g i * (∏ j < i, f j + g j) * (∏ j > i, f j)`. -/
-theorem prod_add_ordered [LinearOrder ι] [CommSemiring α] (s : Finset ι) (f g : ι → α) :
+theorem prod_add_ordered [LinearOrder ι] (s : Finset ι) (f g : ι → α) :
     ∏ i ∈ s, (f i + g i) =
       (∏ i ∈ s, f i) +
         ∑ i ∈ s,
@@ -238,7 +239,7 @@ lemma prod_sub_ordered [LinearOrder ι] (s : Finset ι) (f g : ι → α) :
   simp
 
 /-- `∏ i, (1 - f i) = 1 - ∑ i, f i * (∏ j < i, 1 - f j)`. This formula is useful in construction of
-a partition of unity from a collection of “bump” functions.  -/
+a partition of unity from a collection of “bump” functions. -/
 theorem prod_one_sub_ordered [LinearOrder ι] (s : Finset ι) (f : ι → α) :
     ∏ i ∈ s, (1 - f i) = 1 - ∑ i ∈ s, f i * ∏ j ∈ s.filter (· < i), (1 - f j) := by
   rw [prod_sub_ordered]
@@ -269,13 +270,15 @@ end Finset
 open Finset
 
 namespace Fintype
-variable {ι κ α : Type*} [DecidableEq ι] [Fintype ι] [Fintype κ] [CommSemiring α]
+variable {ι κ α : Type*} [Fintype ι] [Fintype κ] [CommSemiring α]
 
 lemma sum_pow (f : ι → α) (n : ℕ) : (∑ a, f a) ^ n = ∑ p : Fin n → ι, ∏ i, f (p i) := by
   simp [sum_pow']
 
+variable [DecidableEq ι]
+
 /-- A product of sums can be written as a sum of products. -/
-lemma prod_sum {κ : ι → Type*} [Fintype ι] [∀ i, Fintype (κ i)] (f : ∀ i, κ i → α) :
+lemma prod_sum {κ : ι → Type*} [∀ i, Fintype (κ i)] (f : ∀ i, κ i → α) :
     ∏ i, ∑ j, f i j = ∑ x : ∀ i, κ i, ∏ i, f i (x i) := Finset.prod_univ_sum _ _
 
 lemma prod_add (f g : ι → α) : ∏ a, (f a + g a) = ∑ t, (∏ a ∈ t, f a) * ∏ a ∈ tᶜ, g a := by

@@ -18,9 +18,7 @@ by a tactic that analyses the shape of `CommRing` and `RingHom`.
 
 universe u v
 
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory Limits
 
 
 namespace RingCat.Colimits
@@ -86,7 +84,7 @@ inductive Relation : Prequotient F → Prequotient F → Prop -- Make it an equi
   | add_zero : ∀ x, Relation (add x zero) x
   | one_mul : ∀ x, Relation (mul one x) x
   | mul_one : ∀ x, Relation (mul x one) x
-  | add_left_neg : ∀ x, Relation (add (neg x) x) zero
+  | neg_add_cancel : ∀ x, Relation (add (neg x) x) zero
   | add_comm : ∀ x y, Relation (add x y) (add y x)
   | add_assoc : ∀ x y z, Relation (add (add x y) z) (add x (add y z))
   | mul_assoc : ∀ x y z, Relation (mul (mul x y) z) (mul x (mul y z))
@@ -121,7 +119,7 @@ instance ColimitType.AddGroup : AddGroup (ColimitType F) where
   neg := Quotient.map neg Relation.neg_1
   zero_add := Quotient.ind <| fun _ => Quotient.sound <| Relation.zero_add _
   add_zero := Quotient.ind <| fun _ => Quotient.sound <| Relation.add_zero _
-  add_left_neg := Quotient.ind <| fun _ => Quotient.sound <| Relation.add_left_neg _
+  neg_add_cancel := Quotient.ind <| fun _ => Quotient.sound <| Relation.neg_add_cancel _
   add_assoc := Quotient.ind <| fun _ => Quotient.ind₂ <| fun _ _ =>
     Quotient.sound <| Relation.add_assoc _ _ _
   nsmul := nsmulRec
@@ -252,7 +250,7 @@ def descFun (s : Cocone F) : ColimitType F → s.pt := by
     | add_zero x => dsimp; rw [add_zero]
     | one_mul x => dsimp; rw [one_mul]
     | mul_one x => dsimp; rw [mul_one]
-    | add_left_neg x => dsimp; rw [add_left_neg]
+    | neg_add_cancel x => dsimp; rw [neg_add_cancel]
     | add_comm x y => dsimp; rw [add_comm]
     | add_assoc x y z => dsimp; rw [add_assoc]
     | mul_assoc x y z => dsimp; rw [mul_assoc]
@@ -392,7 +390,7 @@ inductive Relation : Prequotient F → Prequotient F → Prop -- Make it an equi
   | add_zero : ∀ x, Relation (add x zero) x
   | one_mul : ∀ x, Relation (mul one x) x
   | mul_one : ∀ x, Relation (mul x one) x
-  | add_left_neg : ∀ x, Relation (add (neg x) x) zero
+  | neg_add_cancel : ∀ x, Relation (add (neg x) x) zero
   | add_comm : ∀ x y, Relation (add x y) (add y x)
   | mul_comm : ∀ x y, Relation (mul x y) (mul y x)
   | add_assoc : ∀ x y z, Relation (add (add x y) z) (add x (add y z))
@@ -428,7 +426,7 @@ instance ColimitType.AddGroup : AddGroup (ColimitType F) where
   neg := Quotient.map neg Relation.neg_1
   zero_add := Quotient.ind <| fun _ => Quotient.sound <| Relation.zero_add _
   add_zero := Quotient.ind <| fun _ => Quotient.sound <| Relation.add_zero _
-  add_left_neg := Quotient.ind <| fun _ => Quotient.sound <| Relation.add_left_neg _
+  neg_add_cancel := Quotient.ind <| fun _ => Quotient.sound <| Relation.neg_add_cancel _
   add_assoc := Quotient.ind <| fun _ => Quotient.ind₂ <| fun _ _ =>
     Quotient.sound <| Relation.add_assoc _ _ _
   nsmul := nsmulRec
@@ -560,7 +558,7 @@ def descFun (s : Cocone F) : ColimitType F → s.pt := by
     | add_zero x => dsimp; rw [add_zero]
     | one_mul x => dsimp; rw [one_mul]
     | mul_one x => dsimp; rw [mul_one]
-    | add_left_neg x => dsimp; rw [add_left_neg]
+    | neg_add_cancel x => dsimp; rw [neg_add_cancel]
     | add_comm x y => dsimp; rw [add_comm]
     | mul_comm x y => dsimp; rw [mul_comm]
     | add_assoc x y z => dsimp; rw [add_assoc]

@@ -124,10 +124,7 @@ If the space is also Lindelöf:
 
 -/
 
-
-
 open Function Set Filter Topology TopologicalSpace
-open scoped Classical
 
 universe u v
 
@@ -262,7 +259,7 @@ end SeparatedNhds
 
 /-- A T₀ space, also known as a Kolmogorov space, is a topological space such that for every pair
 `x ≠ y`, there is an open set containing one but not the other. We formulate the definition in terms
-of the `Inseparable` relation.  -/
+of the `Inseparable` relation. -/
 class T0Space (X : Type u) [TopologicalSpace X] : Prop where
   /-- Two inseparable points in a T₀ space are equal. -/
   t0 : ∀ ⦃x y : X⦄, Inseparable x y → x = y
@@ -340,7 +337,6 @@ instance SeparationQuotient.instT0Space : T0Space (SeparationQuotient X) :=
 
 theorem minimal_nonempty_closed_subsingleton [T0Space X] {s : Set X} (hs : IsClosed s)
     (hmin : ∀ t, t ⊆ s → t.Nonempty → IsClosed t → t = s) : s.Subsingleton := by
-  clear Y -- Porting note: added
   refine fun x hx y hy => of_not_not fun hxy => ?_
   rcases exists_isOpen_xor'_mem hxy with ⟨U, hUo, hU⟩
   wlog h : x ∈ U ∧ y ∉ U
@@ -364,7 +360,6 @@ theorem IsClosed.exists_closed_singleton [T0Space X] [CompactSpace X] {S : Set X
 
 theorem minimal_nonempty_open_subsingleton [T0Space X] {s : Set X} (hs : IsOpen s)
     (hmin : ∀ t, t ⊆ s → t.Nonempty → IsOpen t → t = s) : s.Subsingleton := by
-  clear Y -- Porting note: added
   refine fun x hx y hy => of_not_not fun hxy => ?_
   rcases exists_isOpen_xor'_mem hxy with ⟨U, hUo, hU⟩
   wlog h : x ∈ U ∧ y ∉ U
@@ -656,7 +651,7 @@ instance (priority := 100) [T1Space X] : R0Space X where
 instance : T1Space (CofiniteTopology X) :=
   t1Space_iff_continuous_cofinite_of.mpr continuous_id
 
-theorem t1Space_antitone : Antitone (@T1Space X) := fun a _ h _ =>
+theorem t1Space_antitone {X} : Antitone (@T1Space X) := fun a _ h _ =>
   @T1Space.mk _ a fun x => (T1Space.t1 x).mono h
 
 theorem continuousWithinAt_update_of_ne [T1Space X] [DecidableEq X] [TopologicalSpace Y] {f : X → Y}
@@ -807,6 +802,7 @@ theorem Dense.diff_singleton [T1Space X] {s : Set X} (hs : Dense s) (x : X) [NeB
 obtains a dense set. -/
 theorem Dense.diff_finset [T1Space X] [∀ x : X, NeBot (𝓝[≠] x)] {s : Set X} (hs : Dense s)
     (t : Finset X) : Dense (s \ t) := by
+  classical
   induction t using Finset.induction_on with
   | empty => simpa using hs
   | insert _ ih =>
@@ -829,7 +825,7 @@ theorem eq_of_tendsto_nhds [TopologicalSpace Y] [T1Space Y] {f : X → Y} {x : X
     have fact₂ : Tendsto f (pure x) (𝓝 y) := h.comp (tendsto_id'.2 <| pure_le_nhds x)
     fact₂ fact₁ (Eq.refl <| f x)
 
-theorem Filter.Tendsto.eventually_ne [TopologicalSpace Y] [T1Space Y] {g : X → Y}
+theorem Filter.Tendsto.eventually_ne {X} [TopologicalSpace Y] [T1Space Y] {g : X → Y}
     {l : Filter X} {b₁ b₂ : Y} (hg : Tendsto g l (𝓝 b₁)) (hb : b₁ ≠ b₂) : ∀ᶠ z in l, g z ≠ b₂ :=
   hg.eventually (isOpen_compl_singleton.eventually_mem hb)
 
@@ -924,16 +920,16 @@ theorem Set.Subsingleton.isGδ_compl {s : Set X} [T1Space X] (hs : s.Subsingleto
 theorem Finset.isGδ_compl [T1Space X] (s : Finset X) : IsGδ (sᶜ : Set X) :=
   s.finite_toSet.isGδ_compl
 
-variable [FirstCountableTopology X]
-
-protected theorem IsGδ.singleton [T1Space X] (x : X) : IsGδ ({x} : Set X) := by
+protected theorem IsGδ.singleton [FirstCountableTopology X] [T1Space X] (x : X) :
+    IsGδ ({x} : Set X) := by
   rcases (nhds_basis_opens x).exists_antitone_subbasis with ⟨U, hU, h_basis⟩
   rw [← biInter_basis_nhds h_basis.toHasBasis]
   exact .biInter (to_countable _) fun n _ => (hU n).2.isGδ
 
 @[deprecated (since := "2024-02-15")] alias isGδ_singleton := IsGδ.singleton
 
-theorem Set.Finite.isGδ {s : Set X} [T1Space X] (hs : s.Finite) : IsGδ s :=
+theorem Set.Finite.isGδ [FirstCountableTopology X] {s : Set X} [T1Space X] (hs : s.Finite) :
+    IsGδ s :=
   Finite.induction_on hs .empty fun _ _ ↦ .union (.singleton _)
 
 theorem SeparationQuotient.t1Space_iff : T1Space (SeparationQuotient X) ↔ R0Space X := by
@@ -978,13 +974,13 @@ theorem Filter.HasBasis.exists_inter_eq_singleton_of_mem_discrete {ι : Type*} {
   exact ⟨i, hi, hix.antisymm <| singleton_subset_iff.2 ⟨mem_of_mem_nhds <| hb.mem_of_mem hi, hx⟩⟩
 
 /-- A point `x` in a discrete subset `s` of a topological space admits a neighbourhood
-that only meets `s` at `x`.  -/
+that only meets `s` at `x`. -/
 theorem nhds_inter_eq_singleton_of_mem_discrete {s : Set X} [DiscreteTopology s] {x : X}
     (hx : x ∈ s) : ∃ U ∈ 𝓝 x, U ∩ s = {x} := by
   simpa using (𝓝 x).basis_sets.exists_inter_eq_singleton_of_mem_discrete hx
 
 /-- Let `x` be a point in a discrete subset `s` of a topological space, then there exists an open
-set that only meets `s` at `x`.  -/
+set that only meets `s` at `x`. -/
 theorem isOpen_inter_eq_singleton_of_mem_discrete {s : Set X} [DiscreteTopology s] {x : X}
     (hx : x ∈ s) : ∃ U : Set X, IsOpen U ∧ U ∩ s = {x} := by
   obtain ⟨U, hU_nhds, hU_inter⟩ := nhds_inter_eq_singleton_of_mem_discrete hx
@@ -1107,7 +1103,7 @@ theorem exists_isCompact_superset_iff {s : Set X} :
 alias exists_compact_superset_iff := exists_isCompact_superset_iff
 
 /-- If `K` and `L` are disjoint compact sets in an R₁ topological space
-and `L` is also closed, then `K` and `L` have disjoint neighborhoods.  -/
+and `L` is also closed, then `K` and `L` have disjoint neighborhoods. -/
 theorem SeparatedNhds.of_isCompact_isCompact_isClosed {K L : Set X} (hK : IsCompact K)
     (hL : IsCompact L) (h'L : IsClosed L) (hd : Disjoint K L) : SeparatedNhds K L := by
   simp_rw [separatedNhds_iff_disjoint, hK.disjoint_nhdsSet_left, hL.disjoint_nhdsSet_right,
@@ -1138,6 +1134,7 @@ theorem IsCompact.binary_compact_cover {K U V : Set X}
 theorem IsCompact.finite_compact_cover {s : Set X} (hs : IsCompact s) {ι : Type*}
     (t : Finset ι) (U : ι → Set X) (hU : ∀ i ∈ t, IsOpen (U i)) (hsC : s ⊆ ⋃ i ∈ t, U i) :
     ∃ K : ι → Set X, (∀ i, IsCompact (K i)) ∧ (∀ i, K i ⊆ U i) ∧ s = ⋃ i ∈ t, K i := by
+  classical
   induction' t using Finset.induction with x t hx ih generalizing U s
   · refine ⟨fun _ => ∅, fun _ => isCompact_empty, fun i => empty_subset _, ?_⟩
     simpa only [subset_empty_iff, Finset.not_mem_empty, iUnion_false, iUnion_empty] using hsC
@@ -1413,6 +1410,22 @@ theorem IsCompact.nhdsSet_inter_eq [T2Space X] {s t : Set X} (hs : IsCompact s) 
   · exact le_iSup₂_of_le x ⟨hxs, hyt⟩ (inf_idem _).le
   · exact (disjoint_nhds_nhds.mpr hne).eq_bot ▸ bot_le
 
+/-- In a `T2Space X`, for a compact set `t` and a point `x` outside `t`, there are open sets `U`,
+`V` that separate `t` and `x`.-/
+lemma IsCompact.separation_of_not_mem {X : Type u_1} [TopologicalSpace X] [T2Space X] {x : X}
+    {t : Set X} (H1 : IsCompact t) (H2 : x ∉ t) :
+    ∃ (U : Set X), ∃ (V : Set X), IsOpen U ∧ IsOpen V ∧ t ⊆ U ∧ x ∈ V ∧ Disjoint U V := by
+  simpa [SeparatedNhds] using SeparatedNhds.of_isCompact_isCompact_isClosed H1 isCompact_singleton
+    isClosed_singleton <| disjoint_singleton_right.mpr H2
+
+/-- In a `T2Space X`, for a compact set `t` and a point `x` outside `t`, `𝓝ˢ t` and `𝓝 x` are
+disjoint. -/
+lemma IsCompact.disjoint_nhdsSet_nhds {X : Type u_1} [TopologicalSpace X] [T2Space X] {x : X}
+    {t : Set X} (H1 : IsCompact t) (H2 : x ∉ t) :
+    Disjoint (𝓝ˢ t) (𝓝 x) := by
+  simpa using SeparatedNhds.disjoint_nhdsSet <| .of_isCompact_isCompact_isClosed H1
+    isCompact_singleton isClosed_singleton <| disjoint_singleton_right.mpr H2
+
 /-- If a function `f` is
 
 - injective on a compact set `s`;
@@ -1675,6 +1688,12 @@ theorem isClosed_eq [T2Space X] {f g : Y → X} (hf : Continuous f) (hg : Contin
     IsClosed { y : Y | f y = g y } :=
   continuous_iff_isClosed.mp (hf.prod_mk hg) _ isClosed_diagonal
 
+/-- If functions `f` and `g` are continuous on a closed set `s`,
+then the set of points `x ∈ s` such that `f x = g x` is a closed set. -/
+protected theorem IsClosed.isClosed_eq [T2Space Y] {f g : X → Y} {s : Set X} (hs : IsClosed s)
+    (hf : ContinuousOn f s) (hg : ContinuousOn g s) : IsClosed {x ∈ s | f x = g x} :=
+  (hf.prod hg).preimage_isClosed_of_isClosed hs isClosed_diagonal
+
 theorem isOpen_ne_fun [T2Space X] {f g : Y → X} (hf : Continuous f) (hg : Continuous g) :
     IsOpen { y : Y | f y ≠ g y } :=
   isOpen_compl_iff.mpr <| isClosed_eq hf hg
@@ -1734,6 +1753,25 @@ theorem SeparatedNhds.of_isCompact_isCompact [T2Space X] {s t : Set X} (hs : IsC
 
 @[deprecated (since := "2024-01-28")]
 alias separatedNhds_of_isCompact_isCompact := SeparatedNhds.of_isCompact_isCompact
+
+/-- In a `T2Space X`, for disjoint closed sets `s t` such that `closure sᶜ` is compact,
+there are neighbourhoods that separate `s` and `t`.-/
+lemma SeparatedNhds.of_isClosed_isCompact_closure_compl_isClosed [T2Space X] {s : Set X}
+    {t : Set X} (H1 : IsClosed s) (H2 : IsCompact (closure sᶜ)) (H3 : IsClosed t)
+    (H4 : Disjoint s t) : SeparatedNhds s t := by
+  -- Since `t` is a closed subset of the compact set `closure sᶜ`, it is compact.
+  have ht : IsCompact t := .of_isClosed_subset H2 H3 <| H4.subset_compl_left.trans subset_closure
+  -- we split `s` into its frontier and its interior.
+  rw [← diff_union_of_subset (interior_subset (s := s))]
+  -- since `t ⊆ sᶜ`, which is open, and `interior s` is open, we have
+  -- `SeparatedNhds (interior s) t`, which leaves us only with the frontier.
+  refine .union_left ?_ ⟨interior s, sᶜ, isOpen_interior, H1.isOpen_compl, le_rfl,
+    H4.subset_compl_left, disjoint_compl_right.mono_left interior_subset⟩
+  -- Since the frontier of `s` is compact (as it is a subset of `closure sᶜ`), we simply apply
+  -- `SeparatedNhds_of_isCompact_isCompact`.
+  rw [← H1.frontier_eq, frontier_eq_closure_inter_closure, H1.closure_eq]
+  refine .of_isCompact_isCompact ?_ ht (disjoint_of_subset_left inter_subset_left H4)
+  exact H2.of_isClosed_subset (H1.inter isClosed_closure) inter_subset_right
 
 section SeparatedFinset
 
@@ -1842,7 +1880,7 @@ of filters `𝓝ˢ s` and `𝓝 a`. -/
 @[mk_iff]
 class RegularSpace (X : Type u) [TopologicalSpace X] : Prop where
   /-- If `a` is a point that does not belong to a closed set `s`, then `a` and `s` admit disjoint
-  neighborhoods.  -/
+  neighborhoods. -/
   regular : ∀ {s : Set X} {a}, IsClosed s → a ∉ s → Disjoint (𝓝ˢ s) (𝓝 a)
 
 theorem regularSpace_TFAE (X : Type u) [TopologicalSpace X] :
@@ -2021,7 +2059,7 @@ alias separatedNhds_of_isCompact_isClosed := SeparatedNhds.of_isCompact_isClosed
 
 /-- This technique to witness `HasSeparatingCover` in regular Lindelöf topological spaces
 will be used to prove regular Lindelöf spaces are normal. -/
-lemma IsClosed.HasSeparatingCover {s t : Set X} [r : RegularSpace X] [LindelofSpace X]
+lemma IsClosed.HasSeparatingCover {s t : Set X} [LindelofSpace X]
     (s_cl : IsClosed s) (t_cl : IsClosed t) (st_dis : Disjoint s t) : HasSeparatingCover s t := by
   -- `IsLindelof.indexed_countable_subcover` requires the space be Nonempty
   rcases isEmpty_or_nonempty X with empty_X | nonempty_X
@@ -2032,7 +2070,7 @@ lemma IsClosed.HasSeparatingCover {s t : Set X} [r : RegularSpace X] [LindelofSp
   have (a : X) : ∃ n : Set X, IsOpen n ∧ Disjoint (closure n) t ∧ (a ∈ s → a ∈ n) := by
     wlog ains : a ∈ s
     · exact ⟨∅, isOpen_empty, SeparatedNhds.empty_left t |>.disjoint_closure_left, fun a ↦ ains a⟩
-    obtain ⟨n, nna, ncl, nsubkc⟩ := ((regularSpace_TFAE X).out 0 3 :).mp r a tᶜ <|
+    obtain ⟨n, nna, ncl, nsubkc⟩ := ((regularSpace_TFAE X).out 0 3 :).mp ‹RegularSpace X› a tᶜ <|
       t_cl.compl_mem_nhds (disjoint_left.mp st_dis ains)
     exact
       ⟨interior n,
@@ -2130,7 +2168,7 @@ end T25
 section T3
 
 /-- A T₃ space is a T₀ space which is a regular space. Any T₃ space is a T₁ space, a T₂ space, and
-a T₂.₅ space.  -/
+a T₂.₅ space. -/
 class T3Space (X : Type u) [TopologicalSpace X] extends T0Space X, RegularSpace X : Prop
 
 instance (priority := 90) instT3Space [T0Space X] [RegularSpace X] : T3Space X := ⟨⟩
@@ -2527,7 +2565,7 @@ theorem isTopologicalBasis_isClopen : IsTopologicalBasis { s : Set X | IsClopen 
   tauto
 
 /-- Every member of an open set in a compact Hausdorff totally disconnected space
-  is contained in a clopen set contained in the open set.  -/
+  is contained in a clopen set contained in the open set. -/
 theorem compact_exists_isClopen_in_isOpen {x : X} {U : Set X} (is_open : IsOpen U) (memU : x ∈ U) :
     ∃ V : Set X, IsClopen V ∧ x ∈ V ∧ V ⊆ U :=
   isTopologicalBasis_isClopen.mem_nhds_iff.1 (is_open.mem_nhds memU)
@@ -2602,3 +2640,5 @@ instance ConnectedComponents.t2 [T2Space X] [CompactSpace X] : T2Space (Connecte
   rw [ConnectedComponents.quotientMap_coe.isClopen_preimage] at hU
   refine ⟨Vᶜ, V, hU.compl.isOpen, hU.isOpen, ?_, hb mem_connectedComponent, disjoint_compl_left⟩
   exact fun h => flip Set.Nonempty.ne_empty ha ⟨a, mem_connectedComponent, h⟩
+
+set_option linter.style.longFile 2800

@@ -14,7 +14,7 @@ and prove basic properties of this measure.
 -/
 
 open Set
-open scoped ENNReal Classical
+open scoped ENNReal
 
 variable {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] {s : Set α}
 
@@ -25,6 +25,8 @@ namespace MeasureTheory.Measure
 /-- Counting measure on any measurable space. -/
 def count : Measure α :=
   sum dirac
+
+@[simp] lemma count_ne_zero'' [Nonempty α] : (count : Measure α) ≠ 0 := by simp [count]
 
 theorem le_count_apply : ∑' _ : s, (1 : ℝ≥0∞) ≤ count s :=
   calc
@@ -137,6 +139,7 @@ theorem count_singleton [MeasurableSingletonClass α] (a : α) : count ({a} : Se
 
 theorem count_injective_image' {f : β → α} (hf : Function.Injective f) {s : Set β}
     (s_mble : MeasurableSet s) (fs_mble : MeasurableSet (f '' s)) : count (f '' s) = count s := by
+  classical
   by_cases hs : s.Finite
   · lift s to Finset β using hs
     rw [← Finset.coe_image, count_apply_finset' _, count_apply_finset' s_mble,
@@ -156,9 +159,10 @@ theorem count_injective_image [MeasurableSingletonClass α] [MeasurableSingleton
 
 instance count.isFiniteMeasure [Finite α] :
     IsFiniteMeasure (Measure.count : Measure α) :=
-  ⟨by
-    cases nonempty_fintype α
-    simpa [Measure.count_apply, tsum_fintype] using (ENNReal.natCast_ne_top _).lt_top⟩
+  ⟨by cases nonempty_fintype α; simp [Measure.count_apply, tsum_fintype]⟩
+
+@[simp] lemma count_univ [Fintype α] : count (univ : Set α) = Fintype.card α := by
+  rw [count_apply .univ]; exact (tsum_univ 1).trans (by simp [tsum_fintype])
 
 end Measure
 

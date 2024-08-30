@@ -3,13 +3,18 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Sites.Coherent.Basic
+import Mathlib.CategoryTheory.Sites.Coherent.Comparison
 import Mathlib.Topology.Category.CompHausLike.Limits
 /-!
 
 # Effective epimorphisms in `CompHausLike`
 
 In any category of compact Hausdorff spaces, continuous surjections are effective epimorphisms.
+
+We deduce that if the converse holds and explicit pullbacks exist, then `CompHausLike P` is
+preregular.
+
+If furthermore explicit finite coproducts exist, then `CompHausLike P` is precoherent.
 -/
 
 universe u
@@ -54,5 +59,11 @@ theorem preregular [HasExplicitPullbacks P]
     intro y
     obtain ⟨z, hz⟩ := hs π hπ (f y)
     exact ⟨⟨(y, z), hz.symm⟩, rfl⟩
+
+theorem precoherent [HasExplicitPullbacks P] [HasExplicitFiniteCoproducts.{0} P]
+    (hs : ∀ ⦃X Y : CompHausLike P⦄ (f : X ⟶ Y), EffectiveEpi f → Function.Surjective f) :
+    Precoherent (CompHausLike P) := by
+  have : Preregular (CompHausLike P) := preregular hs
+  infer_instance
 
 end CompHausLike

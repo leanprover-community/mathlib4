@@ -38,8 +38,6 @@ measurable space, σ-algebra, measurable function
 
 open Set Encodable Function Equiv
 
-open scoped Classical
-
 variable {α β γ δ δ' : Type*} {ι : Sort*} {s t u : Set α}
 
 /-- A measurable space is a space equipped with a σ-algebra. -/
@@ -195,6 +193,7 @@ protected theorem MeasurableSet.ite {t s₁ s₂ : Set α} (ht : MeasurableSet t
     (h₁ : MeasurableSet s₁) (h₂ : MeasurableSet s₂) : MeasurableSet (t.ite s₁ s₂) :=
   (h₁.inter ht).union (h₂.diff ht)
 
+open Classical in
 theorem MeasurableSet.ite' {s t : Set α} {p : Prop} (hs : p → MeasurableSet s)
     (ht : ¬p → MeasurableSet t) : MeasurableSet (ite p s t) := by
   split_ifs with h
@@ -228,10 +227,6 @@ theorem MeasurableSpace.ext {m₁ m₂ : MeasurableSpace α}
     (h : ∀ s : Set α, MeasurableSet[m₁] s ↔ MeasurableSet[m₂] s) : m₁ = m₂ :=
   measurableSet_injective <| funext fun s => propext (h s)
 
-theorem MeasurableSpace.ext_iff {m₁ m₂ : MeasurableSpace α} :
-    m₁ = m₂ ↔ ∀ s : Set α, MeasurableSet[m₁] s ↔ MeasurableSet[m₂] s :=
-  ⟨fun h _ => h ▸ Iff.rfl, MeasurableSpace.ext⟩
-
 /-- A typeclass mixin for `MeasurableSpace`s such that each singleton is measurable. -/
 class MeasurableSingletonClass (α : Type*) [MeasurableSpace α] : Prop where
   /-- A singleton is a measurable set. -/
@@ -257,8 +252,10 @@ protected theorem MeasurableSet.insert {s : Set α} (hs : MeasurableSet s) (a : 
   .union (.singleton a) hs
 
 @[simp]
-theorem measurableSet_insert {a : α} {s : Set α} : MeasurableSet (insert a s) ↔ MeasurableSet s :=
-  ⟨fun h =>
+theorem measurableSet_insert {a : α} {s : Set α} :
+    MeasurableSet (insert a s) ↔ MeasurableSet s := by
+  classical
+  exact ⟨fun h =>
     if ha : a ∈ s then by rwa [← insert_eq_of_mem ha]
     else insert_diff_self_of_not_mem ha ▸ h.diff (.singleton _),
     fun h => h.insert a⟩
@@ -482,8 +479,11 @@ def Measurable [MeasurableSpace α] [MeasurableSpace β] (f : α → β) : Prop 
 namespace MeasureTheory
 
 set_option quotPrecheck false in
-/-- Notation for `Measurable` with respect to a non-standanrd σ-algebra in the domain. -/
+/-- Notation for `Measurable` with respect to a non-standard σ-algebra in the domain. -/
 scoped notation "Measurable[" m "]" => @Measurable _ _ m _
+/-- Notation for `Measurable` with respect to a non-standard σ-algebra in the domain and codomain.
+-/
+scoped notation "Measurable[" mα ", " mβ "]" => @Measurable _ _ mα mβ
 
 end MeasureTheory
 
@@ -517,7 +517,7 @@ end MeasurableFunctions
 
 /-- A typeclass mixin for `MeasurableSpace`s such that all sets are measurable. -/
 class DiscreteMeasurableSpace (α : Type*) [MeasurableSpace α] : Prop where
-  /-- Do not use this. Use `measurableSet_discrete` instead. -/
+  /-- Do not use this. Use `MeasurableSet.of_discrete` instead. -/
   forall_measurableSet : ∀ s : Set α, MeasurableSet s
 
 instance : @DiscreteMeasurableSpace α ⊤ :=
@@ -529,19 +529,24 @@ instance (priority := 100) MeasurableSingletonClass.toDiscreteMeasurableSpace [M
   forall_measurableSet _ := (Set.to_countable _).measurableSet
 
 section DiscreteMeasurableSpace
-variable [MeasurableSpace α] [MeasurableSpace β] [DiscreteMeasurableSpace α]
+variable [MeasurableSpace α] [MeasurableSpace β] [DiscreteMeasurableSpace α] {s : Set α} {f : α → β}
 
-@[measurability] lemma measurableSet_discrete (s : Set α) : MeasurableSet s :=
+@[measurability] lemma MeasurableSet.of_discrete : MeasurableSet s :=
   DiscreteMeasurableSpace.forall_measurableSet _
 
-@[measurability]
-lemma measurable_discrete (f : α → β) : Measurable f := fun _ _ ↦ measurableSet_discrete _
+@[measurability] lemma Measurable.of_discrete : Measurable f := fun _ _ ↦ .of_discrete
+
+@[deprecated MeasurableSet.of_discrete (since := "2024-08-25")]
+lemma measurableSet_discrete (s : Set α) : MeasurableSet s := .of_discrete
+
+@[deprecated MeasurableSet.of_discrete (since := "2024-08-25")]
+lemma measurable_discrete (f : α → β) : Measurable f := .of_discrete
 
 /-- Warning: Creates a typeclass loop with `MeasurableSingletonClass.toDiscreteMeasurableSpace`.
 To be monitored. -/
 -- See note [lower instance priority]
 instance (priority := 100) DiscreteMeasurableSpace.toMeasurableSingletonClass :
     MeasurableSingletonClass α where
-  measurableSet_singleton _ := measurableSet_discrete _
+  measurableSet_singleton _ := .of_discrete
 
 end DiscreteMeasurableSpace

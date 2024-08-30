@@ -31,7 +31,7 @@ suppress_compilation
 
 open scoped TensorProduct
 
-/-- Homogenous tensor powers $M^{\otimes n}$. `⨂[R]^n M` is a shorthand for
+/-- Homogeneous tensor powers $M^{\otimes n}$. `⨂[R]^n M` is a shorthand for
 `⨂[R] (i : Fin n), M`. -/
 abbrev TensorPower (R : Type*) (n : ℕ) (M : Type*) [CommSemiring R] [AddCommMonoid M]
     [Module R M] : Type _ :=
@@ -45,7 +45,7 @@ namespace PiTensorProduct
 
 /-- Two dependent pairs of tensor products are equal if their index is equal and the contents
 are equal after a canonical reindexing. -/
-@[ext]
+@[ext (iff := false)]
 theorem gradedMonoid_eq_of_reindex_cast {ιι : Type*} {ι : ιι → Type*} :
     ∀ {a b : GradedMonoid fun ii => ⨂[R] _ : ι ii, M} (h : a.fst = b.fst),
       reindex R (fun _ ↦ M) (Equiv.cast <| congr_arg ι h) a.snd = b.snd → a = b
@@ -118,7 +118,7 @@ theorem cast_cast {i j k} (h : i = j) (h' : j = k) (a : ⨂[R]^i M) :
     cast R M h' (cast R M h a) = cast R M (h.trans h') a :=
   reindex_reindex _ _ _
 
-@[ext]
+@[ext (iff := false)]
 theorem gradedMonoid_eq_of_cast {a b : GradedMonoid fun n => ⨂[R] _ : Fin n, M} (h : a.fst = b.fst)
     (h2 : cast R M h a.snd = b.snd) : a = b := by
   refine gradedMonoid_eq_of_reindex_cast h ?_
@@ -259,7 +259,7 @@ instance galgebra : DirectSum.GAlgebra R fun i => ⨂[R]^i M where
     exact (algebraMap₀_mul r x.snd).symm)
 
 theorem galgebra_toFun_def (r : R) :
-    @DirectSum.GAlgebra.toFun ℕ R (fun i => ⨂[R]^i M) _ _ _ _ _ _ _ r = algebraMap₀ r :=
+    DirectSum.GAlgebra.toFun (A := fun i ↦ ⨂[R]^i M) r = algebraMap₀ r :=
   rfl
 
 example : Algebra R (⨁ n : ℕ, ⨂[R]^n M) := by infer_instance

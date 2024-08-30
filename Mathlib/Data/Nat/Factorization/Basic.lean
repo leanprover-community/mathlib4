@@ -7,6 +7,7 @@ import Mathlib.Data.Nat.PrimeFin
 import Mathlib.Data.Nat.Factorization.Defs
 import Mathlib.Data.Nat.GCD.BigOperators
 import Mathlib.Order.Interval.Finset.Nat
+import Mathlib.Tactic.IntervalCases
 
 /-!
 # Basic lemmas on prime factorizations
@@ -40,7 +41,7 @@ theorem factorization_eq_zero_iff_remainder {p r : ℕ} (i : ℕ) (pp : p.Prime)
   refine ⟨pp, ?_, ?_⟩
   · rwa [← Nat.dvd_add_iff_right (dvd_mul_right p i)]
   · contrapose! hr0
-    exact (add_eq_zero_iff.mp hr0).2
+    exact (add_eq_zero.1 hr0).2
 
 /-- The only numbers with empty prime factorization are `0` and `1` -/
 theorem factorization_eq_zero_iff' (n : ℕ) : n.factorization = 0 ↔ n = 0 ∨ n = 1 := by
@@ -243,7 +244,7 @@ two `2 ^ k`. -/
 theorem exists_eq_two_pow_mul_odd {n : ℕ} (hn : n ≠ 0) :
     ∃ k m : ℕ, Odd m ∧ n = 2 ^ k * m :=
   let ⟨k, m, hm, hn⟩ := exists_eq_pow_mul_and_not_dvd hn 2 (succ_ne_self 1)
-  ⟨k, m, odd_iff_not_even.mpr (mt Even.two_dvd hm), hn⟩
+  ⟨k, m, not_even_iff_odd.1 (mt Even.two_dvd hm), hn⟩
 
 theorem dvd_iff_div_factorization_eq_tsub {d n : ℕ} (hd : d ≠ 0) (hdn : d ≤ n) :
     d ∣ n ↔ (n / d).factorization = n.factorization - d.factorization := by
@@ -529,7 +530,7 @@ theorem prod_pow_prime_padicValNat (n : Nat) (hn : n ≠ 0) (m : Nat) (pr : n < 
 
 -- TODO: Port lemmas from `Data/Nat/Multiplicity` to here, re-written in terms of `factorization`
 /-- Exactly `n / p` naturals in `[1, n]` are multiples of `p`.
-See `Nat.card_multiples'` for an alternative spelling of the statement.  -/
+See `Nat.card_multiples'` for an alternative spelling of the statement. -/
 theorem card_multiples (n p : ℕ) : card ((Finset.range n).filter fun e => p ∣ e + 1) = n / p := by
   induction' n with n hn
   · simp

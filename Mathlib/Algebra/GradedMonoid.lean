@@ -304,7 +304,7 @@ variable {A}
 theorem mk_zero_smul {i} (a : A 0) (b : A i) : mk _ (a • b) = mk _ a * mk _ b :=
   Sigma.ext (zero_add _).symm <| eq_rec_heq _ _
 
-@[simp]
+@[scoped simp]
 theorem GradeZero.smul_eq_mul (a b : A 0) : a • b = a * b :=
   rfl
 

@@ -189,7 +189,7 @@ private theorem measure_of_restrictNonposSeq (hi₂ : ¬s ≤[i] 0) (n : ℕ)
   | succ n =>
     rw [restrictNonposSeq_succ]
     have h₁ : ¬s ≤[i \ ⋃ (k : ℕ) (_ : k ≤ n), restrictNonposSeq s i k] 0 := by
-      refine mt (restrict_le_zero_subset _ ?_ (by simp [Nat.lt_succ_iff]; rfl)) hn
+      refine mt (restrict_le_zero_subset _ ?_ (by simp [Nat.lt_succ_iff])) hn
       convert measurable_of_not_restrict_le_zero _ hn using 3
       exact funext fun x => by rw [Nat.lt_succ_iff]
     rcases someExistsOneDivLT_spec h₁ with ⟨_, _, h⟩
@@ -372,7 +372,7 @@ theorem exists_compl_positive_negative (s : SignedMeasure α) :
   have hA₂ : s ≤[A] 0 := restrict_le_restrict_iUnion _ _ hB₁ hB₂
   have hA₃ : s A = sInf s.measureOfNegatives := by
     apply le_antisymm
-    · refine le_of_tendsto_of_tendsto tendsto_const_nhds hf₂ (eventually_of_forall fun n => ?_)
+    · refine le_of_tendsto_of_tendsto tendsto_const_nhds hf₂ (Eventually.of_forall fun n => ?_)
       rw [← (hB n).2, hA, ← Set.diff_union_of_subset (Set.subset_iUnion _ n),
         of_union Set.disjoint_sdiff_left _ (hB₁ n)]
       · refine add_le_of_nonpos_left ?_

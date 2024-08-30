@@ -27,8 +27,6 @@ In this file we establish behaviour of `Module.Finite` under localizations.
 
 universe u v w t
 
-open Classical
-
 namespace Module.Finite
 
 section
@@ -39,7 +37,9 @@ variable {M : Type w} [AddCommMonoid M] [Module R M]
 variable {Mₚ : Type t} [AddCommMonoid Mₚ] [Module R Mₚ] [Module Rₚ Mₚ] [IsScalarTower R Rₚ Mₚ]
 variable (f : M →ₗ[R] Mₚ) [IsLocalizedModule S f]
 
+include S f in
 lemma of_isLocalizedModule [Module.Finite R M] : Module.Finite Rₚ Mₚ := by
+  classical
   obtain ⟨T, hT⟩ := ‹Module.Finite R M›
   use T.image f
   rw [eq_top_iff]
@@ -79,6 +79,7 @@ theorem of_localizationSpan_finite' (t : Finset R) (ht : Ideal.span (t : Set R) 
     (f : ∀ (g : t), M →ₗ[R] Mₚ g) [∀ (g : t), IsLocalizedModule (Submonoid.powers g.val) (f g)]
     (H : ∀ (g : t), Module.Finite (Rₚ g) (Mₚ g)) :
     Module.Finite R M := by
+  classical
   constructor
   choose s₁ s₂ using (fun g ↦ (H g).1)
   let sf := fun x : t ↦

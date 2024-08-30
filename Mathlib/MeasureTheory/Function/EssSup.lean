@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
+import Mathlib.MeasureTheory.Measure.Count
 import Mathlib.Order.Filter.ENNReal
 
 /-!
@@ -174,6 +175,18 @@ theorem essInf_antitone_measure {f : α → β} (hμν : μ ≪ ν) : essInf f �
 theorem essSup_smul_measure {f : α → β} {c : ℝ≥0∞} (hc : c ≠ 0) :
     essSup f (c • μ) = essSup f μ := by
   simp_rw [essSup, Measure.ae_smul_measure_eq hc]
+
+lemma essSup_eq_iSup (hμ : ∀ a, μ {a} ≠ 0) (f : α → β) : essSup f μ = ⨆ i, f i := by
+  rw [essSup, ae_eq_top.2 hμ, limsup_top]
+
+lemma essInf_eq_iInf (hμ : ∀ a, μ {a} ≠ 0) (f : α → β) : essInf f μ = ⨅ i, f i := by
+  rw [essInf, ae_eq_top.2 hμ, liminf_top]
+
+@[simp] lemma essSup_count [MeasurableSingletonClass α] (f : α → β) : essSup f .count = ⨆ i, f i :=
+  essSup_eq_iSup (by simp) _
+
+@[simp] lemma essInf_count [MeasurableSingletonClass α] (f : α → β) : essInf f .count = ⨅ i, f i :=
+  essInf_eq_iInf (by simp) _
 
 section TopologicalSpace
 

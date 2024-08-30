@@ -162,7 +162,7 @@ theorem ofEven_ι (x y : M × R) :
 
 theorem toEven_comp_ofEven : (toEven Q).comp (ofEven Q) = AlgHom.id R _ :=
   even.algHom_ext (Q' Q) <|
-    EvenHom.ext _ _ <|
+    EvenHom.ext <|
       LinearMap.ext fun m₁ =>
         LinearMap.ext fun m₂ =>
           Subtype.ext <|
