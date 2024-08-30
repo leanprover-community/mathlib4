@@ -35,6 +35,7 @@ In this file we define a notion of finiteness that is common in commutative alge
 
 
 open Function (Surjective)
+open Finsupp
 
 namespace Submodule
 
@@ -274,14 +275,14 @@ theorem fg_of_fg_map_of_fg_inf_ker {R M P : Type*} [Ring R] [AddCommGroup M] [Mo
   have : f x ∈ s.map f := by
     rw [mem_map]
     exact ⟨x, hx, rfl⟩
-  rw [← ht1, ← Set.image_id (t1 : Set P), Finsupp.mem_span_image_iff_total] at this
+  rw [← ht1, ← Set.image_id (t1 : Set P), Finsupp.mem_span_image_iff_linearCombination] at this
   rcases this with ⟨l, hl1, hl2⟩
   refine
     mem_sup.2
-      ⟨(Finsupp.total R id).toFun ((Finsupp.lmapDomain R R g : (P →₀ R) → M →₀ R) l), ?_,
-        x - Finsupp.total R id ((Finsupp.lmapDomain R R g : (P →₀ R) → M →₀ R) l), ?_,
+      ⟨(linearCombination R id).toFun ((lmapDomain R R g : (P →₀ R) → M →₀ R) l), ?_,
+        x - linearCombination R id ((lmapDomain R R g : (P →₀ R) → M →₀ R) l), ?_,
         add_sub_cancel _ _⟩
-  · rw [← Set.image_id (g '' ↑t1), Finsupp.mem_span_image_iff_total]
+  · rw [← Set.image_id (g '' ↑t1), Finsupp.mem_span_image_iff_linearCombination]
     refine ⟨_, ?_, rfl⟩
     haveI : Inhabited P := ⟨0⟩
     rw [← Finsupp.lmapDomain_supported _ _ g, mem_map]
@@ -290,14 +291,14 @@ theorem fg_of_fg_map_of_fg_inf_ker {R M P : Type*} [Ring R] [AddCommGroup M] [Mo
   rw [ht2, mem_inf]
   constructor
   · apply s.sub_mem hx
-    rw [Finsupp.total_apply, Finsupp.lmapDomain_apply, Finsupp.sum_mapDomain_index]
+    rw [Finsupp.linearCombination_apply, Finsupp.lmapDomain_apply, Finsupp.sum_mapDomain_index]
     · refine s.sum_mem ?_
       intro y hy
       exact s.smul_mem _ (hg y (hl1 hy)).1
     · exact zero_smul _
     · exact fun _ _ _ => add_smul _ _ _
   · rw [LinearMap.mem_ker, f.map_sub, ← hl2]
-    rw [Finsupp.total_apply, Finsupp.total_apply, Finsupp.lmapDomain_apply]
+    rw [Finsupp.linearCombination_apply, Finsupp.linearCombination_apply, Finsupp.lmapDomain_apply]
     rw [Finsupp.sum_mapDomain_index, Finsupp.sum, Finsupp.sum, map_sum]
     · rw [sub_eq_zero]
       refine Finset.sum_congr rfl fun y hy => ?_

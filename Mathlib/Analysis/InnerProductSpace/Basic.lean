@@ -68,7 +68,7 @@ noncomputable section
 
 open RCLike Real Filter
 
-open Topology ComplexConjugate
+open Topology ComplexConjugate Finsupp
 
 open LinearMap (BilinForm)
 
@@ -591,26 +591,26 @@ theorem inner_sum {ι : Type*} (s : Finset ι) (f : ι → E) (x : E) :
   map_sum (LinearMap.flip sesqFormOfInner x) _ _
 
 /-- An inner product with a sum on the left, `Finsupp` version. -/
-theorem Finsupp.sum_inner {ι : Type*} (l : ι →₀ 𝕜) (v : ι → E) (x : E) :
+protected theorem Finsupp.sum_inner {ι : Type*} (l : ι →₀ 𝕜) (v : ι → E) (x : E) :
     ⟪l.sum fun (i : ι) (a : 𝕜) => a • v i, x⟫ = l.sum fun (i : ι) (a : 𝕜) => conj a • ⟪v i, x⟫ := by
-  convert _root_.sum_inner (𝕜 := 𝕜) l.support (fun a => l a • v a) x
+  convert sum_inner (𝕜 := 𝕜) l.support (fun a => l a • v a) x
   simp only [inner_smul_left, Finsupp.sum, smul_eq_mul]
 
 /-- An inner product with a sum on the right, `Finsupp` version. -/
-theorem Finsupp.inner_sum {ι : Type*} (l : ι →₀ 𝕜) (v : ι → E) (x : E) :
+protected theorem Finsupp.inner_sum {ι : Type*} (l : ι →₀ 𝕜) (v : ι → E) (x : E) :
     ⟪x, l.sum fun (i : ι) (a : 𝕜) => a • v i⟫ = l.sum fun (i : ι) (a : 𝕜) => a • ⟪x, v i⟫ := by
-  convert _root_.inner_sum (𝕜 := 𝕜) l.support (fun a => l a • v a) x
+  convert inner_sum (𝕜 := 𝕜) l.support (fun a => l a • v a) x
   simp only [inner_smul_right, Finsupp.sum, smul_eq_mul]
 
-theorem DFinsupp.sum_inner {ι : Type*} [DecidableEq ι] {α : ι → Type*}
+protected theorem DFinsupp.sum_inner {ι : Type*} [DecidableEq ι] {α : ι → Type*}
     [∀ i, AddZeroClass (α i)] [∀ (i) (x : α i), Decidable (x ≠ 0)] (f : ∀ i, α i → E)
     (l : Π₀ i, α i) (x : E) : ⟪l.sum f, x⟫ = l.sum fun i a => ⟪f i a, x⟫ := by
-  simp (config := { contextual := true }) only [DFinsupp.sum, _root_.sum_inner, smul_eq_mul]
+  simp (config := { contextual := true }) only [DFinsupp.sum, sum_inner, smul_eq_mul]
 
-theorem DFinsupp.inner_sum {ι : Type*} [DecidableEq ι] {α : ι → Type*}
+protected theorem DFinsupp.inner_sum {ι : Type*} [DecidableEq ι] {α : ι → Type*}
     [∀ i, AddZeroClass (α i)] [∀ (i) (x : α i), Decidable (x ≠ 0)] (f : ∀ i, α i → E)
     (l : Π₀ i, α i) (x : E) : ⟪x, l.sum f⟫ = l.sum fun i a => ⟪x, f i a⟫ := by
-  simp (config := { contextual := true }) only [DFinsupp.sum, _root_.inner_sum, smul_eq_mul]
+  simp (config := { contextual := true }) only [DFinsupp.sum, inner_sum, smul_eq_mul]
 
 @[simp]
 theorem inner_zero_left (x : E) : ⟪0, x⟫ = 0 := by
@@ -829,9 +829,9 @@ theorem orthonormal_subtype_iff_ite [DecidableEq E] {s : Set E} :
 /-- The inner product of a linear combination of a set of orthonormal vectors with one of those
 vectors picks out the coefficient of that vector. -/
 theorem Orthonormal.inner_right_finsupp {v : ι → E} (hv : Orthonormal 𝕜 v) (l : ι →₀ 𝕜) (i : ι) :
-    ⟪v i, Finsupp.total 𝕜 v l⟫ = l i := by
+    ⟪v i, linearCombination 𝕜 v l⟫ = l i := by
   classical
-  simpa [Finsupp.total_apply, Finsupp.inner_sum, orthonormal_iff_ite.mp hv] using Eq.symm
+  simpa [linearCombination_apply, Finsupp.inner_sum, orthonormal_iff_ite.mp hv] using Eq.symm
 
 /-- The inner product of a linear combination of a set of orthonormal vectors with one of those
 vectors picks out the coefficient of that vector. -/
@@ -849,7 +849,7 @@ theorem Orthonormal.inner_right_fintype [Fintype ι] {v : ι → E} (hv : Orthon
 /-- The inner product of a linear combination of a set of orthonormal vectors with one of those
 vectors picks out the coefficient of that vector. -/
 theorem Orthonormal.inner_left_finsupp {v : ι → E} (hv : Orthonormal 𝕜 v) (l : ι →₀ 𝕜) (i : ι) :
-    ⟪Finsupp.total 𝕜 v l, v i⟫ = conj (l i) := by rw [← inner_conj_symm, hv.inner_right_finsupp]
+    ⟪linearCombination 𝕜 v l, v i⟫ = conj (l i) := by rw [← inner_conj_symm, hv.inner_right_finsupp]
 
 /-- The inner product of a linear combination of a set of orthonormal vectors with one of those
 vectors picks out the coefficient of that vector. -/
@@ -868,19 +868,20 @@ theorem Orthonormal.inner_left_fintype [Fintype ι] {v : ι → E} (hv : Orthono
 /-- The inner product of two linear combinations of a set of orthonormal vectors, expressed as
 a sum over the first `Finsupp`. -/
 theorem Orthonormal.inner_finsupp_eq_sum_left {v : ι → E} (hv : Orthonormal 𝕜 v) (l₁ l₂ : ι →₀ 𝕜) :
-    ⟪Finsupp.total 𝕜 v l₁, Finsupp.total 𝕜 v l₂⟫ = l₁.sum fun i y => conj y * l₂ i := by
-  simp only [l₁.total_apply _, Finsupp.sum_inner, hv.inner_right_finsupp, smul_eq_mul]
+    ⟪linearCombination 𝕜 v l₁, linearCombination 𝕜 v l₂⟫ = l₁.sum fun i y => conj y * l₂ i := by
+  simp only [l₁.linearCombination_apply _, Finsupp.sum_inner, hv.inner_right_finsupp, smul_eq_mul]
 
 /-- The inner product of two linear combinations of a set of orthonormal vectors, expressed as
 a sum over the second `Finsupp`. -/
 theorem Orthonormal.inner_finsupp_eq_sum_right {v : ι → E} (hv : Orthonormal 𝕜 v) (l₁ l₂ : ι →₀ 𝕜) :
-    ⟪Finsupp.total 𝕜 v l₁, Finsupp.total 𝕜 v l₂⟫ = l₂.sum fun i y => conj (l₁ i) * y := by
-  simp only [l₂.total_apply _, Finsupp.inner_sum, hv.inner_left_finsupp, mul_comm, smul_eq_mul]
+    ⟪linearCombination 𝕜 v l₁, linearCombination 𝕜 v l₂⟫ = l₂.sum fun i y => conj (l₁ i) * y := by
+  simp only [l₂.linearCombination_apply _, Finsupp.inner_sum, hv.inner_left_finsupp, mul_comm,
+             smul_eq_mul]
 
 /-- The inner product of two linear combinations of a set of orthonormal vectors, expressed as
 a sum. -/
-theorem Orthonormal.inner_sum {v : ι → E} (hv : Orthonormal 𝕜 v) (l₁ l₂ : ι → 𝕜) (s : Finset ι) :
-    ⟪∑ i ∈ s, l₁ i • v i, ∑ i ∈ s, l₂ i • v i⟫ = ∑ i ∈ s, conj (l₁ i) * l₂ i := by
+protected theorem Orthonormal.inner_sum {v : ι → E} (hv : Orthonormal 𝕜 v) (l₁ l₂ : ι → 𝕜)
+    (s : Finset ι) : ⟪∑ i ∈ s, l₁ i • v i, ∑ i ∈ s, l₂ i • v i⟫ = ∑ i ∈ s, conj (l₁ i) * l₂ i := by
   simp_rw [sum_inner, inner_smul_left]
   refine Finset.sum_congr rfl fun i hi => ?_
   rw [hv.inner_right_sum l₂ hi]
@@ -900,7 +901,7 @@ theorem Orthonormal.linearIndependent {v : ι → E} (hv : Orthonormal 𝕜 v) :
   rw [linearIndependent_iff]
   intro l hl
   ext i
-  have key : ⟪v i, Finsupp.total 𝕜 v l⟫ = ⟪v i, 0⟫ := by rw [hl]
+  have key : ⟪v i, Finsupp.linearCombination 𝕜 v l⟫ = ⟪v i, 0⟫ := by rw [hl]
   simpa only [hv.inner_right_finsupp, inner_zero_right] using key
 
 /-- A subfamily of an orthonormal family (i.e., a composition with an injective map) is an
@@ -932,7 +933,7 @@ theorem Orthonormal.toSubtypeRange {v : ι → E} (hv : Orthonormal 𝕜 v) :
 set. -/
 theorem Orthonormal.inner_finsupp_eq_zero {v : ι → E} (hv : Orthonormal 𝕜 v) {s : Set ι} {i : ι}
     (hi : i ∉ s) {l : ι →₀ 𝕜} (hl : l ∈ Finsupp.supported 𝕜 𝕜 s) :
-    ⟪Finsupp.total 𝕜 v l, v i⟫ = 0 := by
+    ⟪Finsupp.linearCombination 𝕜 v l, v i⟫ = 0 := by
   rw [Finsupp.mem_supported'] at hl
   simp only [hv.inner_left_finsupp, hl i hi, map_zero]
 
@@ -1321,7 +1322,8 @@ theorem Orthonormal.mapLinearIsometryEquiv {v : Basis ι 𝕜 E} (hv : Orthonorm
 def LinearMap.isometryOfOrthonormal (f : E →ₗ[𝕜] E') {v : Basis ι 𝕜 E} (hv : Orthonormal 𝕜 v)
     (hf : Orthonormal 𝕜 (f ∘ v)) : E →ₗᵢ[𝕜] E' :=
   f.isometryOfInner fun x y => by
-    classical rw [← v.total_repr x, ← v.total_repr y, Finsupp.apply_total, Finsupp.apply_total,
+    classical rw [← v.linearCombination_repr x, ← v.linearCombination_repr y,
+      Finsupp.apply_linearCombination, Finsupp.apply_linearCombination,
       hv.inner_finsupp_eq_sum_left, hf.inner_finsupp_eq_sum_left]
 
 @[simp]
@@ -1341,8 +1343,9 @@ def LinearEquiv.isometryOfOrthonormal (f : E ≃ₗ[𝕜] E') {v : Basis ι 𝕜
     (hf : Orthonormal 𝕜 (f ∘ v)) : E ≃ₗᵢ[𝕜] E' :=
   f.isometryOfInner fun x y => by
     rw [← LinearEquiv.coe_coe] at hf
-    classical rw [← v.total_repr x, ← v.total_repr y, ← LinearEquiv.coe_coe f, Finsupp.apply_total,
-      Finsupp.apply_total, hv.inner_finsupp_eq_sum_left, hf.inner_finsupp_eq_sum_left]
+    classical rw [← v.linearCombination_repr x, ← v.linearCombination_repr y,
+      ← LinearEquiv.coe_coe f, Finsupp.apply_linearCombination,
+      Finsupp.apply_linearCombination, hv.inner_finsupp_eq_sum_left, hf.inner_finsupp_eq_sum_left]
 
 @[simp]
 theorem LinearEquiv.coe_isometryOfOrthonormal (f : E ≃ₗ[𝕜] E') {v : Basis ι 𝕜 E}
@@ -1880,7 +1883,7 @@ theorem Orthonormal.sum_inner_products_le {s : Finset ι} (hv : Orthonormal 𝕜
     rw [← sub_nonneg, ← hbf]
     simp only [norm_nonneg, pow_nonneg]
   rw [@norm_sub_sq 𝕜, sub_add]
-  simp only [@InnerProductSpace.norm_sq_eq_inner 𝕜, _root_.inner_sum, _root_.sum_inner]
+  simp only [@InnerProductSpace.norm_sq_eq_inner 𝕜, inner_sum, sum_inner]
   simp only [inner_smul_right, two_mul, inner_smul_left, inner_conj_symm, ← mul_assoc, h₂,
     add_sub_cancel_right, sub_right_inj]
   simp only [map_sum, ← inner_conj_symm x, ← h₃]
@@ -2036,12 +2039,12 @@ theorem OrthogonalFamily.inner_right_fintype [Fintype ι] (l : ∀ i, G i) (i : 
     _ = ⟪v, l i⟫ := by
       simp only [Finset.sum_ite_eq, Finset.mem_univ, (V i).inner_map_map, if_true]
 
-theorem OrthogonalFamily.inner_sum (l₁ l₂ : ∀ i, G i) (s : Finset ι) :
+nonrec theorem OrthogonalFamily.inner_sum (l₁ l₂ : ∀ i, G i) (s : Finset ι) :
     ⟪∑ i ∈ s, V i (l₁ i), ∑ j ∈ s, V j (l₂ j)⟫ = ∑ i ∈ s, ⟪l₁ i, l₂ i⟫ := by
   classical
   calc
     ⟪∑ i ∈ s, V i (l₁ i), ∑ j ∈ s, V j (l₂ j)⟫ = ∑ j ∈ s, ∑ i ∈ s, ⟪V i (l₁ i), V j (l₂ j)⟫ := by
-      simp only [_root_.sum_inner, _root_.inner_sum]
+      simp only [sum_inner, inner_sum]
     _ = ∑ j ∈ s, ∑ i ∈ s, ite (i = j) ⟪V i (l₁ i), V j (l₂ j)⟫ 0 := by
       congr with i
       congr with j

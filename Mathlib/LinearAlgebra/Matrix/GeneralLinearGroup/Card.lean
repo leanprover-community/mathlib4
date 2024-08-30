@@ -38,8 +38,8 @@ theorem card_linearIndependent {k : ℕ} (hk : k ≤ n) :
       ∏ i : Fin k, (q ^ n - q ^ i.val) := by
   rw [Nat.card_eq_fintype_card]
   induction k with
-  | zero => simp only [LinearIndependent, Finsupp.total_fin_zero, ker_zero, card_ofSubsingleton,
-      Finset.univ_eq_empty, Finset.prod_empty]
+  | zero => simp only [LinearIndependent, Finsupp.linearCombination_fin_zero, ker_zero,
+      card_ofSubsingleton, Finset.univ_eq_empty, Finset.prod_empty]
   | succ k ih =>
       have (s : { s : Fin k → V // LinearIndependent K s }) :
           card ((Submodule.span K (Set.range (s : Fin k → V)))ᶜ : Set (V)) =

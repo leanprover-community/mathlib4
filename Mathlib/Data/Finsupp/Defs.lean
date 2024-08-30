@@ -23,7 +23,7 @@ Functions with finite support are used (at least) in the following parts of the 
 
 * the linear combination of a family of vectors `v i` with coefficients `f i` (as used, e.g., to
   define linearly independent family `LinearIndependent`) is defined as a map
-  `Finsupp.total : (ι → M) → (ι →₀ R) →ₗ[R] M`.
+  `Finsupp.linearCombination : (ι → M) → (ι →₀ R) →ₗ[R] M`.
 
 Some other constructions are naturally equivalent to `α →₀ M` with some `α` and `M` but are defined
 in a different way in the library:

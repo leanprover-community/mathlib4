@@ -968,8 +968,8 @@ theorem exists_irreducible_of_natDegree_ne_zero {R : Type u} [CommRing R] [IsDom
 theorem linearIndependent_powers_iff_aeval (f : M →ₗ[R] M) (v : M) :
     (LinearIndependent R fun n : ℕ => (f ^ n) v) ↔ ∀ p : R[X], aeval f p v = 0 → p = 0 := by
   rw [linearIndependent_iff]
-  simp only [Finsupp.total_apply, aeval_endomorphism, forall_iff_forall_finsupp, Sum, support,
-    coeff, ofFinsupp_eq_zero]
+  simp only [Finsupp.linearCombination_apply, aeval_endomorphism, forall_iff_forall_finsupp, Sum,
+    support, coeff, ofFinsupp_eq_zero]
   exact Iff.rfl
 
 attribute [-instance] Ring.toNonAssocRing
