@@ -1,1 +1,0 @@
-Mathlib/Analysis/CStarAlgebra/ContinuousFunctionalCalculus/Integral.lean : line 98 : ERR_IND : If the theorem/def statement requires multiple lines, indent it correctly (4 spaces or 2 for `|`)
