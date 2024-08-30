@@ -6,7 +6,6 @@ Authors: Damiano Testa
 
 import Lean.Elab.Command
 import Batteries.Tactic.Unreachable
-import Lean.Linter.Util
 
 /-!
 # The unused tactic linter
