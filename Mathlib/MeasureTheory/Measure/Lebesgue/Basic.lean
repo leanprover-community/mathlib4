@@ -33,7 +33,6 @@ assert_not_exists MeasureTheory.integral
 
 noncomputable section
 
-open scoped Classical
 open Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace
 
 open ENNReal (ofReal)
@@ -269,7 +268,7 @@ theorem map_volume_mul_left {a : ℝ} (h : a ≠ 0) :
     Measure.map (a * ·) volume = ENNReal.ofReal |a⁻¹| • volume := by
   conv_rhs =>
     rw [← Real.smul_map_volume_mul_left h, smul_smul, ← ENNReal.ofReal_mul (abs_nonneg _), ←
-      abs_mul, inv_mul_cancel h, abs_one, ENNReal.ofReal_one, one_smul]
+      abs_mul, inv_mul_cancel₀ h, abs_one, ENNReal.ofReal_one, one_smul]
 
 @[simp]
 theorem volume_preimage_mul_left {a : ℝ} (h : a ≠ 0) (s : Set ℝ) :
@@ -324,7 +323,7 @@ theorem smul_map_diagonal_volume_pi [DecidableEq ι] {D : ι → ℝ} (h : det (
       simp only [det_diagonal, Ne] at h
       exact Finset.prod_ne_zero_iff.1 h i (Finset.mem_univ i)
     rw [volume_preimage_mul_left A, ← mul_assoc, ← ENNReal.ofReal_mul (abs_nonneg _), ← abs_mul,
-      mul_inv_cancel A, abs_one, ENNReal.ofReal_one, one_mul]
+      mul_inv_cancel₀ A, abs_one, ENNReal.ofReal_one, one_mul]
   rw [this, volume_pi_pi, Finset.abs_prod,
     ENNReal.ofReal_prod_of_nonneg fun i _ => abs_nonneg (D i), ← Finset.prod_mul_distrib]
   simp only [B]
@@ -359,7 +358,7 @@ theorem map_matrix_volume_pi_eq_smul_volume_pi [DecidableEq ι] {M : Matrix ι �
   apply diagonal_transvection_induction_of_det_ne_zero _ M hM
   · intro D hD
     conv_rhs => rw [← smul_map_diagonal_volume_pi hD]
-    rw [smul_smul, ← ENNReal.ofReal_mul (abs_nonneg _), ← abs_mul, inv_mul_cancel hD, abs_one,
+    rw [smul_smul, ← ENNReal.ofReal_mul (abs_nonneg _), ← abs_mul, inv_mul_cancel₀ hD, abs_one,
       ENNReal.ofReal_one, one_smul]
   · intro t
     simp_rw [Matrix.TransvectionStruct.det, _root_.inv_one, abs_one, ENNReal.ofReal_one, one_smul,

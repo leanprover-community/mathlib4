@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2014 Robert Lewis. All rights reserved.
+Copyright (c) 2014 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Robert Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
+Authors: Robert Y. Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
@@ -256,9 +256,9 @@ protected abbrev divisionSemiring [DivisionSemiring β] (zero : f 0 = 0) (one : 
     (natCast : ∀ n : ℕ, f n = n) (nnratCast : ∀ q : ℚ≥0, f q = q) : DivisionSemiring α where
   toSemiring := hf.semiring f zero one add mul nsmul npow natCast
   __ := hf.groupWithZero f zero one mul inv div npow zpow
-  nnratCast_def q := hf $ by rw [nnratCast, NNRat.cast_def, div, natCast, natCast]
+  nnratCast_def q := hf <| by rw [nnratCast, NNRat.cast_def, div, natCast, natCast]
   nnqsmul := (· • ·)
-  nnqsmul_def q a := hf $ by rw [nnqsmul, NNRat.smul_def, mul, nnratCast]
+  nnqsmul_def q a := hf <| by rw [nnqsmul, NNRat.smul_def, mul, nnratCast]
 
 /-- Pullback a `DivisionSemiring` along an injective function. -/
 -- See note [reducible non-instances]
@@ -274,9 +274,9 @@ protected abbrev divisionRing [DivisionRing β] (zero : f 0 = 0) (one : f 1 = 1)
   toRing := hf.ring f zero one add mul neg sub nsmul zsmul npow natCast intCast
   __ := hf.groupWithZero f zero one mul inv div npow zpow
   __ := hf.divisionSemiring f zero one add mul inv div nsmul nnqsmul npow zpow natCast nnratCast
-  ratCast_def q := hf $ by erw [ratCast, div, intCast, natCast, Rat.cast_def]
+  ratCast_def q := hf <| by erw [ratCast, div, intCast, natCast, Rat.cast_def]
   qsmul := (· • ·)
-  qsmul_def q a := hf $ by erw [qsmul, mul, Rat.smul_def, ratCast]
+  qsmul_def q a := hf <| by erw [qsmul, mul, Rat.smul_def, ratCast]
 
 /-- Pullback a `Field` along an injective function. -/
 -- See note [reducible non-instances]

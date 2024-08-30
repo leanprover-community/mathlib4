@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos Fernández. All rights reserved.
+Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Antoine Chambert-Loir, María Inés de Frutos Fernández
+Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
@@ -24,7 +24,7 @@ We fix a type `σ` and an `AddCommMonoid M`, as well as a function `w : σ → M
 
 - `Finsupp.weight` of a finitely supported function `f : σ →₀ ℕ`
 with respect to `w`: it is the sum `∑ (f i) • (w i)`.
-It is an `AddMonoidHom` map defined using `Finsupp.total`.
+It is an `AddMonoidHom` map defined using `Finsupp.linearCombination`.
 
 - `Finsupp.le_weight`says that `f s ≤ f.weight w` when `M = ℕ``
 
@@ -72,7 +72,7 @@ variable [AddCommMonoid M]
 /-- The `weight` of the finitely supported function `f : σ →₀ ℕ`
 with respect to `w : σ → M` is the sum `∑(f i)•(w i)`. -/
 noncomputable def weight : (σ →₀ ℕ) →+ M :=
-  (Finsupp.total σ M ℕ w).toAddMonoidHom
+  (Finsupp.linearCombination ℕ w).toAddMonoidHom
 
 @[deprecated weight (since := "2024-07-20")]
 alias _root_.MvPolynomial.weightedDegree := weight

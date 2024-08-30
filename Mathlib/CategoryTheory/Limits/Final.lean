@@ -224,7 +224,7 @@ def extendCocone : Cocone (F ⋙ G) ⥤ Cocone G where
       ι :=
         { app := fun X => G.map (homToLift F X) ≫ c.ι.app (lift F X)
           naturality := fun X Y f => by
-            dsimp; simp
+            dsimp; simp only [Category.comp_id]
             -- This would be true if we'd chosen `lift F X` to be `lift F Y`
             -- and `homToLift F X` to be `f ≫ homToLift F Y`.
             apply
@@ -325,6 +325,7 @@ We can't make this an instance, because `F` is not determined by the goal.
 theorem hasColimit_of_comp [HasColimit (F ⋙ G)] : HasColimit G :=
   HasColimit.mk (colimitCoconeOfComp F (getColimitCocone (F ⋙ G)))
 
+include F in
 theorem hasColimitsOfShape_of_final [HasColimitsOfShape C E] : HasColimitsOfShape D E where
   has_colimit := fun _ => hasColimit_of_comp F
 
@@ -493,7 +494,7 @@ def extendCone : Cone (F ⋙ G) ⥤ Cone G where
       π :=
         { app := fun d => c.π.app (lift F d) ≫ G.map (homToLift F d)
           naturality := fun X Y f => by
-            dsimp; simp
+            dsimp; simp only [Category.id_comp, Category.assoc]
             -- This would be true if we'd chosen `lift F Y` to be `lift F X`
             -- and `homToLift F Y` to be `homToLift F X ≫ f`.
             apply
@@ -596,6 +597,7 @@ We can't make this an instance, because `F` is not determined by the goal.
 theorem hasLimit_of_comp [HasLimit (F ⋙ G)] : HasLimit G :=
   HasLimit.mk (limitConeOfComp F (getLimitCone (F ⋙ G)))
 
+include F in
 theorem hasLimitsOfShape_of_initial [HasLimitsOfShape C E] : HasLimitsOfShape D E where
   has_limit := fun _ => hasLimit_of_comp F
 

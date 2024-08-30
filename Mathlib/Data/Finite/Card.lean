@@ -196,9 +196,8 @@ theorem card_lt_card (ht : t.Finite) (hsub : s ⊂ t) : Nat.card s < Nat.card t 
   simp only [Nat.card_eq_fintype_card]
   exact Set.card_lt_card hsub
 
-variable (ht : t.Finite)
-
-theorem eq_of_subset_of_card_le (hsub : s ⊆ t) (hcard : Nat.card t ≤ Nat.card s) : s = t :=
+theorem eq_of_subset_of_card_le (ht : t.Finite) (hsub : s ⊆ t) (hcard : Nat.card t ≤ Nat.card s) :
+    s = t :=
   (eq_or_ssubset_of_subset hsub).elim id fun h ↦ absurd hcard <| not_le_of_lt <| ht.card_lt_card h
 
 theorem equiv_image_eq_iff_subset (e : α ≃ α) (hs : s.Finite) : e '' s = s ↔ e '' s ⊆ s :=
@@ -206,5 +205,9 @@ theorem equiv_image_eq_iff_subset (e : α ≃ α) (hs : s.Finite) : e '' s = s �
     ge_of_eq (Nat.card_congr (e.image s).symm)⟩
 
 end Finite
+
+theorem eq_top_of_card_le_of_finite [Finite α] {s : Set α} (h : Nat.card α ≤ Nat.card s) : s = ⊤ :=
+  Set.Finite.eq_of_subset_of_card_le univ.toFinite (subset_univ s) <|
+    Nat.card_congr (Equiv.Set.univ α) ▸ h
 
 end Set

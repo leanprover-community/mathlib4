@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
 import Mathlib.Algebra.Polynomial.Mirror
-import Mathlib.Analysis.Complex.Polynomial
+import Mathlib.Data.Int.Order.Units
 
 /-!
 # Unit Trinomials
@@ -22,6 +22,7 @@ This file defines irreducible trinomials and proves an irreducibility criterion.
 
 -/
 
+assert_not_exists TopologicalSpace
 
 namespace Polynomial
 
@@ -320,30 +321,6 @@ theorem irreducible_of_isCoprime (hp : p.IsUnitTrinomial) (h : IsCoprime p p.mir
     Irreducible p :=
   irreducible_of_coprime hp fun _ => h.isUnit_of_dvd'
 
-/-- A unit trinomial is irreducible if it has no complex roots in common with its mirror -/
-theorem irreducible_of_coprime' (hp : IsUnitTrinomial p)
-    (h : ∀ z : ℂ, ¬(aeval z p = 0 ∧ aeval z (mirror p) = 0)) : Irreducible p := by
-  refine hp.irreducible_of_coprime fun q hq hq' => ?_
-  suffices ¬0 < q.natDegree by
-    rcases hq with ⟨p, rfl⟩
-    replace hp := hp.leadingCoeff_isUnit
-    rw [leadingCoeff_mul] at hp
-    replace hp := isUnit_of_mul_isUnit_left hp
-    rw [not_lt, Nat.le_zero] at this
-    rwa [eq_C_of_natDegree_eq_zero this, isUnit_C, ← this]
-  intro hq''
-  rw [natDegree_pos_iff_degree_pos] at hq''
-  rw [← degree_map_eq_of_injective (algebraMap ℤ ℂ).injective_int] at hq''
-  cases' Complex.exists_root hq'' with z hz
-  rw [IsRoot, eval_map, ← aeval_def] at hz
-  refine h z ⟨?_, ?_⟩
-  · cases' hq with g' hg'
-    rw [hg', aeval_mul, hz, zero_mul]
-  · cases' hq' with g' hg'
-    rw [hg', aeval_mul, hz, zero_mul]
-
--- TODO: Develop more theory (e.g., it suffices to check that `aeval z p ≠ 0` for `z = 0`
--- and `z` a root of unity)
 end IsUnitTrinomial
 
 end Polynomial

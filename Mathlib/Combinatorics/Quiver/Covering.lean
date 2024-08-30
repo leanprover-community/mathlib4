@@ -250,7 +250,7 @@ end Prefunctor.IsCovering
 
 section HasInvolutiveReverse
 
-variable [HasInvolutiveReverse U] [HasInvolutiveReverse V] [Prefunctor.MapReverse φ]
+variable [HasInvolutiveReverse U] [HasInvolutiveReverse V]
 
 /-- In a quiver with involutive inverses, the star and costar at every vertex are equivalent.
 This map is induced by `Quiver.reverse`. -/
@@ -271,13 +271,15 @@ theorem Quiver.starEquivCostar_symm_apply {u v : U} (e : u ⟶ v) :
     (Quiver.starEquivCostar v).symm (Quiver.Costar.mk e) = Quiver.Star.mk (reverse e) :=
   rfl
 
+variable [Prefunctor.MapReverse φ]
+
 theorem Prefunctor.costar_conj_star (u : U) :
     φ.costar u = Quiver.starEquivCostar (φ.obj u) ∘ φ.star u ∘ (Quiver.starEquivCostar u).symm := by
   ext ⟨v, f⟩ <;> simp
 
 theorem Prefunctor.bijective_costar_iff_bijective_star (u : U) :
     Bijective (φ.costar u) ↔ Bijective (φ.star u) := by
-  rw [Prefunctor.costar_conj_star, EquivLike.comp_bijective, EquivLike.bijective_comp]
+  rw [Prefunctor.costar_conj_star φ, EquivLike.comp_bijective, EquivLike.bijective_comp]
 
 theorem Prefunctor.isCovering_of_bijective_star (h : ∀ u, Bijective (φ.star u)) : φ.IsCovering :=
   ⟨h, fun u => (φ.bijective_costar_iff_bijective_star u).2 (h u)⟩

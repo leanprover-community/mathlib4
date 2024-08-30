@@ -127,6 +127,7 @@ theorem completion.lift_comp_incl {V W : SemiNormedGrp} [CompleteSpace W] [T0Spa
 
 theorem completion.lift_unique {V W : SemiNormedGrp} [CompleteSpace W] [T0Space W]
     (f : V ⟶ W) (g : completion.obj V ⟶ W) : completion.incl ≫ g = f → g = completion.lift f :=
-  fun h => (NormedAddGroupHom.extension_unique _ fun v => ((ext_iff.1 h) v).symm).symm
+  fun h => (NormedAddGroupHom.extension_unique _ fun v =>
+    ((NormedAddGroupHom.ext_iff.1 h) v).symm).symm
 
 end SemiNormedGrp

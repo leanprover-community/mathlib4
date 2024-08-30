@@ -76,6 +76,7 @@ namespace LieSubmodule
 open LieModule
 
 variable {I : LieIdeal R L} {x : L} (hxI : (R ∙ x) ⊔ I = ⊤)
+include hxI
 
 theorem exists_smul_add_of_span_sup_eq_top (y : L) : ∃ t : R, ∃ z ∈ I, y = t • x + z := by
   have hy : y ∈ (⊤ : Submodule R L) := Submodule.mem_top
@@ -108,11 +109,13 @@ theorem lcs_le_lcs_of_is_nilpotent_span_sup_eq_top {n i j : ℕ}
           (I.lcs M (j + 1) : Submodule R M)
     by simpa only [bot_sup_eq, LieIdeal.incl_coe, Submodule.map_zero, hxn] using this n
   intro l
-  induction' l with l ih
-  · simp only [Nat.zero_eq, add_zero, LieIdeal.lcs_succ, pow_zero, LinearMap.one_eq_id,
+  induction l with
+  | zero =>
+    simp only [add_zero, LieIdeal.lcs_succ, pow_zero, LinearMap.one_eq_id,
       Submodule.map_id]
     exact le_sup_of_le_left hIM
-  · simp only [LieIdeal.lcs_succ, i.add_succ l, lie_top_eq_of_span_sup_eq_top hxI, sup_le_iff]
+  | succ l ih =>
+    simp only [LieIdeal.lcs_succ, i.add_succ l, lie_top_eq_of_span_sup_eq_top hxI, sup_le_iff]
     refine ⟨(Submodule.map_mono ih).trans ?_, le_sup_of_le_right ?_⟩
     · rw [Submodule.map_sup, ← Submodule.map_comp, ← LinearMap.mul_eq_comp, ← pow_succ', ←
         I.lcs_succ]
@@ -130,9 +133,9 @@ theorem isNilpotentOfIsNilpotentSpanSupEqTop (hnp : IsNilpotent <| toEnd R L M x
     use k * n
     simpa [hk'] using this k
   intro l
-  induction' l with l ih
-  · simp
-  · exact (l.succ_mul n).symm ▸ lcs_le_lcs_of_is_nilpotent_span_sup_eq_top hxI hn ih
+  induction l with
+  | zero => simp
+  | succ l ih => exact (l.succ_mul n).symm ▸ lcs_le_lcs_of_is_nilpotent_span_sup_eq_top hxI hn ih
 
 end LieSubmodule
 
@@ -257,7 +260,7 @@ theorem LieAlgebra.isEngelian_of_isNoetherian [IsNoetherian R L] : LieAlgebra.Is
     refine isNoetherian_of_surjective L (LieHom.rangeRestrict (toEnd R L M)) ?_
     simp only [LieHom.range_coeSubmodule, LieHom.coe_toLinearMap, LinearMap.range_eq_top]
     exact LieHom.surjective_rangeRestrict (toEnd R L M)
-  obtain ⟨K, hK₁, hK₂⟩ := (LieSubalgebra.wellFounded_of_noetherian R L').has_min s hs
+  obtain ⟨K, hK₁, hK₂⟩ := (LieSubalgebra.wellFoundedGT_of_noetherian R L').wf.has_min s hs
   have hK₃ : K = ⊤ := by
     by_contra contra
     obtain ⟨K', hK'₁, hK'₂⟩ := this K hK₁ contra

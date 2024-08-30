@@ -30,7 +30,7 @@ functions are also called approximations of unity, or approximations of identity
   at `0` and integrable.
 
 Note that there are related results about convolution with respect to peak functions in the file
-`Analysis.Convolution`, such as `convolution_tendsto_right` there.
+`Mathlib.Analysis.Convolution`, such as `MeasureTheory.convolution_tendsto_right` there.
 -/
 
 open Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace Metric
@@ -86,8 +86,6 @@ theorem integrableOn_peak_smul_of_integrableOn_of_tendsto
 @[deprecated (since := "2024-02-20")]
 alias integrableOn_peak_smul_of_integrableOn_of_continuousWithinAt :=
   integrableOn_peak_smul_of_integrableOn_of_tendsto
-
-variable [CompleteSpace E]
 
 /-- If a sequence of peak functions `φᵢ` converges uniformly to zero away from a point `x₀` and its
 integral on some finite-measure neighborhood of `x₀` converges to `1`, and `g` is integrable and
@@ -146,8 +144,8 @@ theorem tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux
       _ ≤ ∫ x in t, ‖φ i x‖ * δ ∂μ := by
         apply setIntegral_mono_set
         · exact I.norm.mul_const _
-        · exact eventually_of_forall fun x => mul_nonneg (norm_nonneg _) δpos.le
-        · exact eventually_of_forall ut
+        · exact Eventually.of_forall fun x => mul_nonneg (norm_nonneg _) δpos.le
+        · exact Eventually.of_forall ut
       _ = ∫ x in t, φ i x * δ ∂μ := by
         apply setIntegral_congr ht fun x hx => ?_
         rw [Real.norm_of_nonneg (hφpos _ (hts hx))]
@@ -181,6 +179,8 @@ theorem tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux
 @[deprecated (since := "2024-02-20")]
 alias tendsto_setIntegral_peak_smul_of_integrableOn_of_continuousWithinAt_aux :=
   tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux
+
+variable [CompleteSpace E]
 
 /-- If a sequence of peak functions `φᵢ` converges uniformly to zero away from a point `x₀` and its
 integral on some finite-measure neighborhood of `x₀` converges to `1`, and `g` is integrable and
@@ -288,7 +288,7 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_measure_n
     apply (hμ u u_open x₀_u).trans_le
     exact measure_mono fun x hx => ⟨ne_of_gt (pow_pos (a := c x) (hu hx) _), hx.2⟩
   have hiφ : ∀ n, ∫ x in s, φ n x ∂μ = 1 := fun n => by
-    rw [integral_mul_left, inv_mul_cancel (P n).ne']
+    rw [integral_mul_left, inv_mul_cancel₀ (P n).ne']
   have A : ∀ u : Set α, IsOpen u → x₀ ∈ u → TendstoUniformlyOn φ 0 atTop (s \ u) := by
     intro u u_open x₀u
     obtain ⟨t, t_pos, tx₀, ht⟩ : ∃ t, 0 ≤ t ∧ t < c x₀ ∧ ∀ x ∈ s \ u, c x ≤ t := by
@@ -319,7 +319,7 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_measure_n
             · intro x hx
               exact pow_le_pow_left t'_pos.le (le_of_lt (hv hx)) _
           _ ≤ ∫ y in s, c y ^ n ∂μ :=
-            setIntegral_mono_set (I n) (J n) (eventually_of_forall inter_subset_right)
+            setIntegral_mono_set (I n) (J n) (Eventually.of_forall inter_subset_right)
       simp_rw [φ, ← div_eq_inv_mul, div_pow, div_div]
       apply div_le_div (pow_nonneg t_pos n) _ _ B
       · exact pow_le_pow_left (hnc _ hx.1) (ht x hx) _
@@ -341,10 +341,10 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_measure_n
     have B : Tendsto (fun i ↦ ∫ (x : α) in s, φ i x ∂μ) atTop (𝓝 1) :=
       tendsto_const_nhds.congr (fun n ↦ (hiφ n).symm)
     have C : ∀ᶠ (i : ℕ) in atTop, AEStronglyMeasurable (fun x ↦ φ i x) (μ.restrict s) := by
-      apply eventually_of_forall (fun n ↦ ((I n).const_mul _).aestronglyMeasurable)
+      apply Eventually.of_forall (fun n ↦ ((I n).const_mul _).aestronglyMeasurable)
     exact tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto hs.measurableSet
       hs.measurableSet (Subset.rfl) (self_mem_nhdsWithin)
-      hs.measure_lt_top.ne (eventually_of_forall hnφ) A B C hmg hcg
+      hs.measure_lt_top.ne (Eventually.of_forall hnφ) A B C hmg hcg
   convert this
   simp_rw [φ, ← smul_smul, integral_smul]
 
@@ -448,7 +448,7 @@ theorem tendsto_integral_comp_smul_smul_of_integrable
     apply this.congr'
     filter_upwards [Ioi_mem_atTop 0] with c (hc : 0 < c)
     rw [integral_mul_left, setIntegral_comp_smul_of_pos _ _ _ hc, smul_eq_mul, ← mul_assoc,
-      mul_inv_cancel (by positivity), _root_.smul_closedBall _ _ zero_le_one]
+      mul_inv_cancel₀ (by positivity), _root_.smul_closedBall _ _ zero_le_one]
     simp [abs_of_nonneg hc.le]
   · filter_upwards [Ioi_mem_atTop 0] with c (hc : 0 < c)
     exact (I.comp_smul hc.ne').aestronglyMeasurable.const_mul _
