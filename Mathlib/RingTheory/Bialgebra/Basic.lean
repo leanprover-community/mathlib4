@@ -182,10 +182,6 @@ lemma comul_single (x : X) (a : A) :
       = (TensorProduct.map (lsingle R A x) (lsingle R A x) : _ →ₗ[R] _) (Coalgebra.comul a) :=
   Finsupp.comul_single _ _ _ _ _
 
-@[simp high]
-lemma comul_single_self (x : X) (a : R) :
-    Coalgebra.comul (single x a) = single x 1 ⊗ₜ[R] single x a := by simp [lsingle_apply]
-
 end
 variable [Bialgebra R A] [Monoid X]
 
@@ -231,10 +227,6 @@ lemma comul_single (x : X) (a : A) :
     Coalgebra.comul (single x a)
       = (TensorProduct.map (lsingle R A x) (lsingle R A x) : _ →ₗ[R] _) (Coalgebra.comul a) :=
   Finsupp.comul_single _ _ _ _ _
-
-@[simp high]
-lemma comul_single_self (x : X) (a : R) :
-    Coalgebra.comul (single x a) = single x 1 ⊗ₜ[R] single x a := by simp [lsingle_apply]
 
 end
 

@@ -1905,6 +1905,7 @@ def lsingle (i : G) : A →ₗ[k] A[G] :=
 lemma lsingle_def (i : G) :
     lsingle k A i = Finsupp.lsingle i := rfl
 
+@[simp]
 lemma lsingle_apply (i : G) (a : A) :
     lsingle k A i a = single i a := rfl
 
