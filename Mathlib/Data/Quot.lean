@@ -601,18 +601,21 @@ theorem hrecOn₂_mk {φ : Quotient s₁ → Quotient s₂ → Sort*}
     ⟦x⟧.hrecOn₂ qb f c = qb.hrecOn (f x) fun _ _ ↦ c _ _ _ _ (Setoid.refl _) :=
   rfl
 
-@[deprecated (since := "2024-08-09")] protected alias ind' := Quotient.ind
-@[deprecated (since := "2024-08-09")] protected alias ind₂' := Quotient.ind₂
-@[deprecated (since := "2024-08-09")] protected alias inductionOn' := Quotient.inductionOn
-@[deprecated (since := "2024-08-09")] protected alias inductionOn₂' := Quotient.inductionOn₂
-@[deprecated (since := "2024-08-09")] protected alias inductionOn₃' := Quotient.inductionOn₃
-@[deprecated (since := "2024-08-09")] protected alias recOnSubsingleton' :=
+@[deprecated (since := "2024-08-09"), elab_as_elim] protected alias ind' := Quotient.ind
+@[deprecated (since := "2024-08-09"), elab_as_elim] protected alias ind₂' := Quotient.ind₂
+@[deprecated (since := "2024-08-09"), elab_as_elim] protected alias inductionOn' :=
+  Quotient.inductionOn
+@[deprecated (since := "2024-08-09"), elab_as_elim] protected alias inductionOn₂' :=
+  Quotient.inductionOn₂
+@[deprecated (since := "2024-08-09"), elab_as_elim] protected alias inductionOn₃' :=
+  Quotient.inductionOn₃
+@[deprecated (since := "2024-08-09"), elab_as_elim] protected alias recOnSubsingleton' :=
   Quotient.recOnSubsingleton
-@[deprecated (since := "2024-08-09")] protected alias recOnSubsingleton₂' :=
+@[deprecated (since := "2024-08-09"), elab_as_elim] protected alias recOnSubsingleton₂' :=
   Quotient.recOnSubsingleton₂
-@[deprecated (since := "2024-08-09")] protected alias hrecOn' := Quotient.hrecOn
+@[deprecated (since := "2024-08-09"), elab_as_elim] protected alias hrecOn' := Quotient.hrecOn
 @[deprecated (since := "2024-08-09")] alias hrecOn'_mk'' := hrecOn_mk
-@[deprecated (since := "2024-08-09")] alias hrecOn₂' := Quotient.hrecOn₂
+@[deprecated (since := "2024-08-09"), elab_as_elim] alias hrecOn₂' := Quotient.hrecOn₂
 @[deprecated (since := "2024-08-09")] alias hrecOn₂'_mk'' := hrecOn₂_mk
 
 /-- Map a function `f : α → β` that sends equivalent elements to equivalent elements
