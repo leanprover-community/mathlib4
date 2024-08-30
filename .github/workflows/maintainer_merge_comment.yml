@@ -19,6 +19,22 @@ jobs:
           comment: 'You seem to not be authorized' # optional. A comment to post if the user is not part of the team.
                                                   # This feature is only applicable in an issue (or PR) context
           exit: true # optional. If the action should exit if the user is not part of the team. Defaults to true.
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get labels
+        id: tlabels
+        run: |
+            tlabels="$(gh api --jq '.labels.[].name' "${PR}" | grep -- '^t-' || printf 'generic')"
+            printf 't-labels:\n---\n%s\n---\n' "${tlabels}"
+            if [[ "$(wc -l <<<"${tlabels}")" -ne 1 ]]; then
+              tlabels="generic"
+            fi
+            printf 'echo "name=%s"\n' "${tlabels}"
+            echo "name=${tlabels}" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: /repos/{owner}/{repo}/pulls/${{ github.event.number }}
 
       - name: Send message on Zulip
         uses: zulip/github-actions-zulip/send-message@v1
@@ -28,7 +44,7 @@ jobs:
           organization-url: 'https://leanprover.zulipchat.com'
           to: 'mathlib reviewers'
           type: 'stream'
-          topic: 'maintainer merge'
+          topic: ${{ steps.tlabels.outputs.name }}"
           content: |
             ${{ format('{0} requested a maintainer merge from comment on PR [#{1}]({2}):', github.event.comment.user.login, github.event.issue.number, github.event.issue.html_url ) }}
 
