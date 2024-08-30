@@ -5,6 +5,7 @@ Authors: Joachim Breitner
 -/
 import Mathlib.Probability.ProbabilityMassFunction.Constructions
 import Mathlib.Tactic.FinCases
+import Batteries.Data.Fin.Lemmas
 
 /-!
 # The binomial distribution
