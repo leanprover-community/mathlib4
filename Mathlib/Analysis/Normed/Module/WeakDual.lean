@@ -366,9 +366,7 @@ lemma confusion (u : Finset (U (n + 1))) (h : Nonempty u):
 lemma lala (u : Finset (U (E := E₁) (n + 1))) (h : Nonempty u) :
     (polar 𝕜₁ s ∩ ⋂ (i : u), polar 𝕜₁ {↑i }) ∩ C ∩ polar 𝕜₁ (U (n + 2)) =
       (⋂ (i : u), polar 𝕜₁ s ∩ polar 𝕜₁ {↑i} ∩ C ∩ polar 𝕜₁ (U (n + 2))) := by
-  rw [inter_iInter]
-  rw [iInter_inter]
-  rw [iInter_inter]
+  rw [inter_iInter, iInter_inter, iInter_inter]
 
 lemma lala2 (u : Finset (U (E := E₁) (n + 1))) (h : Nonempty u) :
     (polar 𝕜₁ s ∩ ⋂ (i : u), polar 𝕜₁ {↑i }) ∩ C ∩ polar 𝕜₁ (U (n + 2)) =
@@ -379,20 +377,6 @@ lemma lala3 (u : Finset (U (E := E₁) (n + 1))) (h : Nonempty u) :
     (⋂ (i : u), polar 𝕜₁ s ∩ polar 𝕜₁ {↑i} ∩ C ∩ polar 𝕜₁ (U (n + 2))) =
   (⋂ (i ∈ u), polar 𝕜₁ s ∩ polar 𝕜₁ {↑i} ∩ C ∩ polar 𝕜₁ (U (n + 2))) := by
   aesop
-
-lemma existance' [ProperSpace 𝕜₁] (hC₁ : IsClosed C) (h : polar 𝕜₁ s ∩ C ∩ polar 𝕜₁ (U (n+1)) = ∅) :
-    ∃ u : Finset (U (E := E₁) (n + 1)), ⋂ i ∈ u, K C s n i = ∅ := by
-  obtain ⟨u,hu⟩ := existance C s n hC₁ h
-  use u
-  have e1 : Nonempty u := by exact u_notempty C s n u hu
-  rw [← more_confusion _ _ _ _ e1, confusion _ _ _ _ e1] at hu
-  exact hu
-
-lemma existance'' [ProperSpace 𝕜₁] (hC₁ : IsClosed C)
-    (h : polar 𝕜₁ s ∩ C ∩ polar 𝕜₁ (U (n+1)) = ∅) :
-    ∃ u : Finset (U (E := E₁) (n + 1)),
-    ⋂ i ∈ u, polar 𝕜₁ s ∩ polar 𝕜₁ {↑i} ∩ C ∩ polar 𝕜₁ (U (n+2)) = ∅ := by
-  exact existance' C s n hC₁ h
 
 lemma existance''' [ProperSpace 𝕜₁] (hC₁ : IsClosed C)
     (h : polar 𝕜₁ s ∩ C ∩ polar 𝕜₁ (U (n+1)) = ∅) :
