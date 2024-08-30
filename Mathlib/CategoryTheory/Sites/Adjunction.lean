@@ -79,8 +79,7 @@ def adjunction [HasWeakSheafify J D] [HasSheafCompose J F] (adj : G ⊣ F) :
       homEquiv_naturality_right := fun f g => by
         ext
         dsimp [composeEquiv]
-        erw [Adjunction.homEquiv_unit, Adjunction.homEquiv_unit, ]
-        dsimp
+        erw [Adjunction.homEquiv_apply, Adjunction.homEquiv_apply]
         simp }
 
 instance [HasWeakSheafify J D] [F.IsRightAdjoint] : (sheafCompose J F).IsRightAdjoint :=
