@@ -214,7 +214,7 @@ theorem isWeightedHomogeneous_one (w : σ → M) : IsWeightedHomogeneous w (1 : 
 theorem isWeightedHomogeneous_X (w : σ → M) (i : σ) :
     IsWeightedHomogeneous w (X i : MvPolynomial σ R) (w i) := by
   apply isWeightedHomogeneous_monomial
-  simp only [weight, LinearMap.toAddMonoidHom_coe, total_single, one_nsmul]
+  simp only [weight, LinearMap.toAddMonoidHom_coe, linearCombination_single, one_nsmul]
 
 namespace IsWeightedHomogeneous
 
@@ -506,7 +506,7 @@ theorem weightedHomogeneousComponent_zero [NoZeroSMulDivisors ℕ M] (hw : ∀ i
   rcases Classical.em (d = 0) with (rfl | hd)
   · simp only [coeff_weightedHomogeneousComponent, if_pos, map_zero, coeff_zero_C]
   · rw [coeff_weightedHomogeneousComponent, if_neg, coeff_C, if_neg (Ne.symm hd)]
-    simp only [weight, LinearMap.toAddMonoidHom_coe, Finsupp.total_apply, Finsupp.sum,
+    simp only [weight, LinearMap.toAddMonoidHom_coe, Finsupp.linearCombination_apply, Finsupp.sum,
       sum_eq_zero_iff, Finsupp.mem_support_iff, Ne, smul_eq_zero, not_forall, not_or,
       and_self_left, exists_prop]
     simp only [DFunLike.ext_iff, Finsupp.coe_zero, Pi.zero_apply, not_forall] at hd
@@ -531,7 +531,7 @@ variable [CanonicallyLinearOrderedAddCommMonoid M] {w : σ → M} (φ : MvPolyno
   has weighted degree zero if and only if `∀ x : σ, m x = 0`. -/
 theorem weightedDegree_eq_zero_iff (hw : NonTorsionWeight w) {m : σ →₀ ℕ} :
     weight w m = 0 ↔ ∀ x : σ, m x = 0 := by
-  simp only [weight, Finsupp.total, LinearMap.toAddMonoidHom_coe, coe_lsum,
+  simp only [weight, Finsupp.linearCombination, LinearMap.toAddMonoidHom_coe, coe_lsum,
     LinearMap.coe_smulRight, LinearMap.id_coe, id_eq]
   rw [Finsupp.sum, Finset.sum_eq_zero_iff]
   apply forall_congr'

@@ -127,7 +127,7 @@ separable degree, degree, separable closure, purely inseparable
 
 -/
 
-open FiniteDimensional Polynomial IntermediateField Field
+open FiniteDimensional Polynomial IntermediateField Field Finsupp
 
 noncomputable section
 
@@ -920,8 +920,8 @@ theorem LinearIndependent.map_of_isPurelyInseparable_of_isSeparable [IsPurelyIns
     rw [hlF, Finsupp.not_mem_support_iff.1 hs, zero_pow this]
   replace h := linearIndependent_iff.1 (h.map_pow_expChar_pow_of_isIntegral' q n hsep) lF₀ <| by
     replace hl := congr($hl ^ q ^ n)
-    rw [Finsupp.total_apply, Finsupp.sum, sum_pow_char_pow, zero_pow this] at hl
-    rw [← hl, Finsupp.total_apply, Finsupp.onFinset_sum _ (fun _ ↦ by exact zero_smul _ _)]
+    rw [linearCombination_apply, Finsupp.sum, sum_pow_char_pow, zero_pow this] at hl
+    rw [← hl, linearCombination_apply, onFinset_sum _ (fun _ ↦ by exact zero_smul _ _)]
     refine Finset.sum_congr rfl fun i _ ↦ ?_
     simp_rw [Algebra.smul_def, mul_pow, IsScalarTower.algebraMap_apply F E K, hlF, map_pow]
   refine pow_eq_zero ((hlF _).symm.trans ?_)

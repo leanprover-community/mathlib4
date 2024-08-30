@@ -22,7 +22,7 @@ noncomputable section
 
 universe u
 
-open Function Set Submodule
+open Function Set Submodule Finsupp
 
 variable {ι : Type*} {ι' : Type*} {R : Type*} {R₂ : Type*} {K : Type*}
 variable {M : Type*} {M' M'' : Type*} {V : Type u} {V' : Type*}
@@ -51,7 +51,7 @@ end Coord
 protected theorem linearIndependent : LinearIndependent R b :=
   linearIndependent_iff.mpr fun l hl =>
     calc
-      l = b.repr (Finsupp.total _ b l) := (b.repr_total l).symm
+      l = b.repr (Finsupp.linearCombination _ b l) := (b.repr_linearCombination l).symm
       _ = 0 := by rw [hl, LinearEquiv.map_zero]
 
 protected theorem ne_zero [Nontrivial R] (i) : b i ≠ 0 :=
@@ -125,7 +125,7 @@ protected theorem noZeroSMulDivisors [NoZeroDivisors R] (b : Basis ι R M) :
     NoZeroSMulDivisors R M :=
   ⟨fun {c x} hcx => by
     exact or_iff_not_imp_right.mpr fun hx => by
-      rw [← b.total_repr x, ← LinearMap.map_smul] at hcx
+      rw [← b.linearCombination_repr x, ← LinearMap.map_smul] at hcx
       have := linearIndependent_iff.mp b.linearIndependent (c • b.repr x) hcx
       rw [smul_eq_zero] at this
       exact this.resolve_right fun hr => hx (b.repr.map_eq_zero_iff.mp hr)⟩
@@ -203,17 +203,18 @@ theorem maximal [Nontrivial R] (b : Basis ι R M) : b.linearIndependent.Maximal 
   intro x p
   by_contra q
   -- and write it in terms of the basis.
-  have e := b.total_repr x
+  have e := b.linearCombination_repr x
   -- This then expresses `x` as a linear combination
   -- of elements of `w` which are in the range of `b`,
   let u : ι ↪ w :=
     ⟨fun i => ⟨b i, h ⟨i, rfl⟩⟩, fun i i' r =>
       b.injective (by simpa only [Subtype.mk_eq_mk] using r)⟩
-  simp_rw [Finsupp.total_apply] at e
+  simp_rw [Finsupp.linearCombination_apply] at e
   change ((b.repr x).sum fun (i : ι) (a : R) ↦ a • (u i : M)) = ((⟨x, p⟩ : w) : M) at e
-  rw [← Finsupp.sum_embDomain (f := u) (g := fun x r ↦ r • (x : M)), ← Finsupp.total_apply] at e
+  rw [← Finsupp.sum_embDomain (f := u) (g := fun x r ↦ r • (x : M)),
+      ← Finsupp.linearCombination_apply] at e
   -- Now we can contradict the linear independence of `hi`
-  refine hi.total_ne_of_not_mem_support _ ?_ e
+  refine hi.linearCombination_ne_of_not_mem_support _ ?_ e
   simp only [Finset.mem_map, Finsupp.support_embDomain]
   rintro ⟨j, -, W⟩
   simp only [u, Embedding.coeFn_mk, Subtype.mk_eq_mk] at W
@@ -227,8 +228,8 @@ variable (hli : LinearIndependent R v) (hsp : ⊤ ≤ span R (range v))
 protected noncomputable def mk : Basis ι R M :=
   .ofRepr
     { hli.repr.comp (LinearMap.id.codRestrict _ fun _ => hsp Submodule.mem_top) with
-      invFun := Finsupp.total _ v
-      left_inv := fun x => hli.total_repr ⟨x, _⟩
+      invFun := Finsupp.linearCombination _ v
+      left_inv := fun x => hli.linearCombination_repr ⟨x, _⟩
       right_inv := fun _ => hli.repr_eq rfl }
 
 @[simp]
@@ -236,7 +237,7 @@ theorem mk_repr : (Basis.mk hli hsp).repr x = hli.repr ⟨x, hsp Submodule.mem_t
   rfl
 
 theorem mk_apply (i : ι) : Basis.mk hli hsp i = v i :=
-  show Finsupp.total _ v _ = v i by simp
+  show Finsupp.linearCombination _ v _ = v i by simp
 
 @[simp]
 theorem coe_mk : ⇑(Basis.mk hli hsp) = v :=
@@ -492,28 +493,31 @@ lemma Basis.mem_center_iff {A}
     constructor
     case comm =>
       intro y
-      rw [← b.total_repr y, Finsupp.total_apply, Finsupp.sum, Finset.sum_mul, Finset.mul_sum]
+      rw [← b.linearCombination_repr y, linearCombination_apply, sum, Finset.sum_mul,
+          Finset.mul_sum]
       simp_rw [mul_smul_comm, smul_mul_assoc, (h.1 _).eq]
     case left_assoc =>
       intro c d
-      rw [← b.total_repr c, ← b.total_repr d, Finsupp.total_apply, Finsupp.total_apply, Finsupp.sum,
-        Finsupp.sum, Finset.sum_mul, Finset.mul_sum, Finset.mul_sum, Finset.mul_sum]
+      rw [← b.linearCombination_repr c, ← b.linearCombination_repr d, linearCombination_apply,
+          linearCombination_apply, sum, sum, Finset.sum_mul, Finset.mul_sum, Finset.mul_sum,
+          Finset.mul_sum]
       simp_rw [smul_mul_assoc, Finset.mul_sum, Finset.sum_mul, mul_smul_comm, Finset.mul_sum,
         Finset.smul_sum, smul_mul_assoc, mul_smul_comm, (h.2 _ _).1,
         (@SMulCommClass.smul_comm R R A)]
       rw [Finset.sum_comm]
     case mid_assoc =>
       intro c d
-      rw [← b.total_repr c, ← b.total_repr d, Finsupp.total_apply, Finsupp.total_apply, Finsupp.sum,
-        Finsupp.sum, Finset.sum_mul, Finset.mul_sum, Finset.mul_sum, Finset.mul_sum]
+      rw [← b.linearCombination_repr c, ← b.linearCombination_repr d, linearCombination_apply,
+          linearCombination_apply, sum, sum, Finset.sum_mul, Finset.mul_sum, Finset.mul_sum,
+          Finset.mul_sum]
       simp_rw [smul_mul_assoc, Finset.sum_mul, mul_smul_comm, smul_mul_assoc, (h.2 _ _).2.1]
     case right_assoc =>
       intro c d
-      rw [← b.total_repr c, ← b.total_repr d, Finsupp.total_apply, Finsupp.total_apply, Finsupp.sum,
-        Finsupp.sum, Finset.sum_mul]
+      rw [← b.linearCombination_repr c, ← b.linearCombination_repr d, linearCombination_apply,
+          linearCombination_apply, sum, Finsupp.sum, Finset.sum_mul]
       simp_rw [smul_mul_assoc, Finset.mul_sum, Finset.sum_mul, mul_smul_comm, Finset.mul_sum,
-        Finset.smul_sum, smul_mul_assoc, mul_smul_comm, Finset.sum_mul, smul_mul_assoc,
-        (h.2 _ _).2.2]
+               Finset.smul_sum, smul_mul_assoc, mul_smul_comm, Finset.sum_mul, smul_mul_assoc,
+               (h.2 _ _).2.2]
 
 section RestrictScalars
 
@@ -553,7 +557,7 @@ theorem Basis.mem_span_iff_repr_mem (m : M) :
   refine
     ⟨fun hm i => ⟨(b.restrictScalars R).repr ⟨m, hm⟩ i, b.restrictScalars_repr_apply R ⟨m, hm⟩ i⟩,
       fun h => ?_⟩
-  rw [← b.total_repr m, Finsupp.total_apply S _]
+  rw [← b.linearCombination_repr m, Finsupp.linearCombination_apply S _]
   refine sum_mem fun i _ => ?_
   obtain ⟨_, h⟩ := h i
   simp_rw [← h, algebraMap_smul]

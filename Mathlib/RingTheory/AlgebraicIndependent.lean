@@ -105,14 +105,14 @@ theorem algebraMap_injective : Injective (algebraMap R A) := by
       (MvPolynomial.C_injective _ _)
 
 theorem linearIndependent : LinearIndependent R x := by
-  rw [linearIndependent_iff_injective_total]
-  have : Finsupp.total R x =
-      (MvPolynomial.aeval x).toLinearMap.comp (Finsupp.total R X) := by
+  rw [linearIndependent_iff_injective_linearCombination]
+  have : Finsupp.linearCombination R x =
+      (MvPolynomial.aeval x).toLinearMap.comp (Finsupp.linearCombination R X) := by
     ext
     simp
   rw [this]
   refine hx.comp ?_
-  rw [← linearIndependent_iff_injective_total]
+  rw [← linearIndependent_iff_injective_linearCombination]
   exact linearIndependent_X _ _
 
 protected theorem injective [Nontrivial R] : Injective x :=
