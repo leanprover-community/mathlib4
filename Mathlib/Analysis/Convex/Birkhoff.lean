@@ -1,3 +1,9 @@
+/-
+Copyright (c) 2024 Bhavik Mehta. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Bhavik Mehta
+-/
+
 import Mathlib.Analysis.Convex.Combination
 import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Combinatorics.Hall.Basic
@@ -66,7 +72,7 @@ lemma doublyStochastic_le_one {M : Matrix n n ℝ} (hM : M ∈ doublyStochastic 
 lemma convex_doublyStochastic : Convex ℝ (doublyStochastic n : Set (Matrix n n ℝ)) := by
   intro x hx y hy a b ha hb h
   simp only [SetLike.mem_coe, mem_doublyStochastic_iff_sum] at hx hy ⊢
-  simp [add_nonneg, ha, hb, mul_nonneg, hx, hy, sum_add_distrib, ←mul_sum, h]
+  simp [add_nonneg, ha, hb, mul_nonneg, hx, hy, sum_add_distrib, ← mul_sum, h]
 
 lemma permMatrix_doublyStochastic {σ : Equiv.Perm n} : σ.permMatrix ℝ ∈ doublyStochastic n := by
   rw [mem_doublyStochastic_iff_sum]
