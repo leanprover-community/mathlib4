@@ -22,6 +22,10 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
     | (true, _) => OutputSetting.update
     | (false, true) => OutputSetting.print ErrorFormat.github
     | (false, false) => OutputSetting.print ErrorFormat.humanReadable
+  let fix := args.hasFlag "fix"
+  if args.hasFlag "update" && fix then
+    IO.println "The --update and --fix options must be provided separately: please run --fix first."
+    return 1
   -- Read all module names to lint.
   let mut allModules := #[]
   for s in ["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do

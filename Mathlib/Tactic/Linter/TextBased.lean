@@ -410,25 +410,35 @@ inductive OutputSetting : Type
   | update
   deriving BEq
 
-/-- Read a file and apply all text-based linters. Return a list of all unexpected errors.
+/-- Read a file and apply all text-based linters.
+Return a list of all unexpected errors, and optionally automatically fixed lines.
 `sizeLimit` is any pre-existing limit on this file's size.
 `exceptions` are any other style exceptions. -/
 def lintFile (path : FilePath) (sizeLimit : Option ℕ) (exceptions : Array ErrorContext) :
-    IO (Array ErrorContext) := do
+    IO (Array ErrorContext × Option (Array String)) := do
   let lines ← IO.FS.lines path
   -- We don't need to run any checks on imports-only files.
   if isImportsOnlyFile lines then
-    return #[]
+    return (#[], none)
   let mut errors := #[]
   if let some (StyleError.fileTooLong n limit ex) := checkFileLength lines sizeLimit then
     errors := #[ErrorContext.mk (StyleError.fileTooLong n limit ex) 1 path]
-  -- TODO: use auto-fixes if available
-  let allOutput := (Array.map (fun lint ↦
-    (Array.map (fun (e, n) ↦ ErrorContext.mk e n path)) (lint lines).1)) allLinters
+  -- All errors raised in this file.
+  let mut allOutput := #[]
+  -- A working copy of the lines in this file, modified by applying the auto-fixes.
+  let mut changed := lines
+  let mut change_made := false
+  for lint in allLinters do
+    let (err, changes) := lint changed
+    allOutput := allOutput.append (Array.map (fun (e, n) ↦ #[(ErrorContext.mk e n path)]) err)
+    if let some c := changes then
+      changed := c
+      change_made := true
   -- This list is not sorted: for github, this is fine.
   errors := errors.append
     (allOutput.flatten.filter (fun e ↦ (e.find?_comparable exceptions).isNone))
-  return errors
+  return (errors, if change_made then some changed else none)
+
 
 /-- Lint a collection of modules for style violations.
 Print formatted errors for all unexpected style violations to standard output;
@@ -457,12 +467,17 @@ def lintModules (moduleNames : Array String) (mode : OutputSetting) (fix : Bool)
       match errctx.error with
       | StyleError.fileTooLong _ limit _ => some limit
       | _ => none)
-    let errors :=
+    let mut errors := #[]
     if let OutputSetting.print _ := mode then
-      ← lintFile path (sizeLimits.get? 0) styleExceptions
+      let (errors', changed) := ← lintFile path (sizeLimits.get? 0) styleExceptions
+      if let some c := changed then
+        if fix then
+          let _ := ← IO.FS.writeFile path ("\n".intercalate c.toList)
+      errors := errors'
     else
       -- In "update" mode, we ignore the exceptions file (and only take `nolints` into account).
-      ← lintFile path none (parseStyleExceptions nolints)
+      let (errors', _) := ← lintFile path none (parseStyleExceptions nolints)
+      errors := errors'
     if errors.size > 0 then
       allUnexpectedErrors := allUnexpectedErrors.append errors
       numberErrorFiles := numberErrorFiles + 1
