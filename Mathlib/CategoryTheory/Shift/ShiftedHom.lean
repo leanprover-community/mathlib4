@@ -28,7 +28,7 @@ variable {C : Type*} [Category C] {D : Type*} [Category D] {E : Type*} [Category
   {M : Type*} [AddMonoid M] [HasShift C M] [HasShift D M] [HasShift E M]
 
 /-- In a category `C` equipped with a shift by an additive monoid,
-this is the type of morphisms `X ⟶ (Y⟦n⟧)` for `m : M`.  -/
+this is the type of morphisms `X ⟶ (Y⟦n⟧)` for `m : M`. -/
 def ShiftedHom (X Y : C) (m : M) : Type _ := X ⟶ (Y⟦m⟧)
 
 instance [Preadditive C] (X Y : C) (n : M) : AddCommGroup (ShiftedHom X Y n) := by

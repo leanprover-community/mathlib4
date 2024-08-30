@@ -41,21 +41,21 @@ theorem antisymm_iff [IsRefl α r] [IsAntisymm α r] {a b : α} : r a b ∧ r b 
 
 /-- A version of `antisymm` with `r` explicit.
 
-This lemma matches the lemmas from lean core in `Init.Algebra.Classes`, but is missing there.  -/
+This lemma matches the lemmas from lean core in `Init.Algebra.Classes`, but is missing there. -/
 @[elab_without_expected_type]
 theorem antisymm_of (r : α → α → Prop) [IsAntisymm α r] {a b : α} : r a b → r b a → a = b :=
   antisymm
 
 /-- A version of `antisymm'` with `r` explicit.
 
-This lemma matches the lemmas from lean core in `Init.Algebra.Classes`, but is missing there.  -/
+This lemma matches the lemmas from lean core in `Init.Algebra.Classes`, but is missing there. -/
 @[elab_without_expected_type]
 theorem antisymm_of' (r : α → α → Prop) [IsAntisymm α r] {a b : α} : r a b → r b a → b = a :=
   antisymm'
 
 /-- A version of `comm` with `r` explicit.
 
-This lemma matches the lemmas from lean core in `Init.Algebra.Classes`, but is missing there.  -/
+This lemma matches the lemmas from lean core in `Init.Algebra.Classes`, but is missing there. -/
 theorem comm_of (r : α → α → Prop) [IsSymm α r] {a b : α} : r a b ↔ r b a :=
   comm
 
@@ -199,7 +199,7 @@ theorem IsStrictTotalOrder.swap (r) [IsStrictTotalOrder α r] : IsStrictTotalOrd
 /-- A connected order is one satisfying the condition `a < c → a < b ∨ b < c`.
   This is recognizable as an intuitionistic substitute for `a ≤ b ∨ b ≤ a` on
   the constructive reals, and is also known as negative transitivity,
-  since the contrapositive asserts transitivity of the relation `¬ a < b`.  -/
+  since the contrapositive asserts transitivity of the relation `¬ a < b`. -/
 class IsOrderConnected (α : Type u) (lt : α → α → Prop) : Prop where
   /-- A connected order is one satisfying the condition `a < c → a < b ∨ b < c`. -/
   conn : ∀ a b c, lt a c → lt a b ∨ lt b c
