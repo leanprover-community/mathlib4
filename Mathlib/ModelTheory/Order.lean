@@ -372,9 +372,8 @@ instance [Language.order.Structure M] [LE M] [Language.order.OrderedStructure M]
     by simp only [order.forall_relations, order.relation_eq_leSymb, relMap_leSymb, Fin.isValue,
     Function.comp_apply, RelEmbedding.map_rel_iff, implies_true]⟩
 
-lemma dlo_age (M : Type w)
-    [Language.order.Structure M] [Mdlo : M ⊨ Language.order.dlo] [Infinite M] :
-    Language.order.age M = {M : CategoryTheory.Bundled.{w} Language.order.Structure |
+lemma dlo_age [Language.order.Structure M] [Mdlo : M ⊨ Language.order.dlo] [Infinite M] :
+    Language.order.age M = {M : CategoryTheory.Bundled.{w'} Language.order.Structure |
       Finite M ∧ M ⊨ Language.order.linearOrderTheory} := by
   classical
   rw [age]
