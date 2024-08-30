@@ -53,6 +53,8 @@ jobs:
           #${{ steps.tlabels.outputs.name }}
           content: 'my_content'
           #${{ steps.mathlib_stats.outputs.summary }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       #- name: Send message on Zulip
       #  uses: zulip/github-actions-zulip/send-message@v1
