@@ -196,6 +196,8 @@ lemma Y_eq_iff {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0) :
 
 end Projective
 
+variable [CommRing R]
+
 section Equation
 
 /-! ### Weierstrass equations -/
