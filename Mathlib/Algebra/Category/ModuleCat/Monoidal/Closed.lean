@@ -78,7 +78,12 @@ should give a map `M ⊗ Hom(M, N) ⟶ N`, so we flip the order of the arguments
 theorem ihom_ev_app (M N : ModuleCat.{u} R) :
     (ihom.ev M).app N = TensorProduct.uncurry _ _ _ _ LinearMap.id.flip := by
   apply TensorProduct.ext'
-  apply ModuleCat.monoidalClosed_uncurry
+  intros
+  convert ModuleCat.monoidalClosed_uncurry _ _ _
+  apply TensorProduct.ext'
+  intros
+  erw [monoidalClosed_uncurry]
+  rfl
 
 /-- Describes the unit of the adjunction `M ⊗ - ⊣ Hom(M, -)`. Given an `R`-module `N` this should
 define a map `N ⟶ Hom(M, M ⊗ N)`, which is given by flipping the arguments in the natural
