@@ -105,7 +105,7 @@ lemma orderLHom_apply : (R : Language.order.Relations 2) → L.orderLHom.onRelat
 
 variable (M)
 
-/-- A structure is ordered if its language has a `≤` symbol whose interpretation is -/
+/-- A structure is ordered if its language has a `≤` symbol whose interpretation is `≤`. -/
 class OrderedStructure [LE M] [L.Structure M] : Prop where
   relMap_leSymb : ∀ (x : Fin 2 → M), RelMap (leSymb : L.Relations 2) x ↔ (x 0 ≤ x 1)
 
@@ -117,13 +117,13 @@ instance [LE M] [L.Structure M] [L.OrderedStructure M]
     [Language.order.Structure M] [Language.order.OrderedStructure M] :
     LHom.IsExpansionOn (orderLHom L) M where
   map_onRelation := by simp [order.relation_eq_leSymb]
-  map_onFunction := fun {n} => (IsRelational.empty_functions _).elim
 
 end IsOrdered
 
 @[simp]
 theorem orderLHom_leSymb [L.IsOrdered] :
-    (orderLHom L).onRelation leSymb = (leSymb : L.Relations 2) := rfl
+    (orderLHom L).onRelation leSymb = (leSymb : L.Relations 2) :=
+  rfl
 
 @[simp]
 theorem orderLHom_order : orderLHom Language.order = LHom.id Language.order :=
@@ -169,17 +169,17 @@ instance : Theory.IsUniversal L.linearOrderTheory := ⟨by
 
 /-- A sentence indicating that an order has no top element:
 $\forall x, \exists y, \neg y \le x$.   -/
-def noTopOrderSentence : L.Sentence :=
+abbrev noTopOrderSentence : L.Sentence :=
   ∀'∃'∼((&1).le &0)
 
 /-- A sentence indicating that an order has no bottom element:
 $\forall x, \exists y, \neg x \le y$. -/
-def noBotOrderSentence : L.Sentence :=
+abbrev noBotOrderSentence : L.Sentence :=
   ∀'∃'∼((&0).le &1)
 
 /-- A sentence indicating that an order is dense:
 $\forall x, \forall y, x < y \to \exists z, x < z \wedge z < y$. -/
-def denselyOrderedSentence : L.Sentence :=
+abbrev denselyOrderedSentence : L.Sentence :=
   ∀'∀'((&0).lt &1 ⟹ ∃'((&0).lt &2 ⊓ (&2).lt &1))
 
 /-- The theory of dense linear orders without endpoints. -/
