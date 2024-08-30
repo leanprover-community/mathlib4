@@ -210,7 +210,7 @@ lemma constantCommuteComposeApp_comp_counit (F : Sheaf J A) :
   simp only [comp_obj, const_obj_obj, NatTrans.comp_app, whiskerRight_app, ← Functor.map_comp]
   congr 1
   simp only [constantPresheafAdj, comp_obj, evaluation_obj_obj, id_obj, Opposite.op_unop,
-    Adjunction.mkOfUnitCounit_counit, NatTrans.naturality]
+    NatTrans.naturality]
   erw [← NatTrans.comp_app, ← toSheafify_naturality]
   simp only [NatTrans.comp_app, const_obj_obj, NatTrans.naturality]
 
