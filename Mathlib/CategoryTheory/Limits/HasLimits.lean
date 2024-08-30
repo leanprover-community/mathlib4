@@ -489,7 +489,7 @@ def limYoneda :
     lim ⋙ yoneda ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u₁} ≅ CategoryTheory.cones J C :=
   NatIso.ofComponents fun F => NatIso.ofComponents fun W => limit.homIso F (unop W)
 
-/-- The constant functor and limit functor are adjoint to each other-/
+/-- The constant functor and limit functor are adjoint to each other -/
 def constLimAdj : (const J : C ⥤ J ⥤ C) ⊣ lim where
   homEquiv c g :=
     { toFun := fun f => limit.lift _ ⟨c, f⟩

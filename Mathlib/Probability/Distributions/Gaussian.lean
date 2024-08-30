@@ -93,7 +93,7 @@ lemma integrable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) :
     field_simp
   exact Integrable.comp_sub_right hg μ
 
-/-- The gaussian distribution pdf integrates to 1 when the variance is not zero.  -/
+/-- The gaussian distribution pdf integrates to 1 when the variance is not zero. -/
 lemma lintegral_gaussianPDFReal_eq_one (μ : ℝ) {v : ℝ≥0} (h : v ≠ 0) :
     ∫⁻ x, ENNReal.ofReal (gaussianPDFReal μ v x) = 1 := by
   rw [← ENNReal.toReal_eq_one_iff]
@@ -112,7 +112,7 @@ lemma lintegral_gaussianPDFReal_eq_one (μ : ℝ) {v : ℝ≥0} (h : v ≠ 0) :
     ring
   · positivity
 
-/-- The gaussian distribution pdf integrates to 1 when the variance is not zero.  -/
+/-- The gaussian distribution pdf integrates to 1 when the variance is not zero. -/
 lemma integral_gaussianPDFReal_eq_one (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) :
     ∫ x, gaussianPDFReal μ v x = 1 := by
   have h := lintegral_gaussianPDFReal_eq_one μ hv

@@ -358,7 +358,7 @@ lemma HasProd.of_nat_of_neg_add_one {f : ℤ → M}
 
 @[to_additive Summable.of_nat_of_neg_add_one]
 lemma Multipliable.of_nat_of_neg_add_one {f : ℤ → M}
-    (hf₁ : Multipliable fun n : ℕ ↦ f n)  (hf₂ : Multipliable fun n : ℕ ↦ f (-(n + 1))) :
+    (hf₁ : Multipliable fun n : ℕ ↦ f n) (hf₂ : Multipliable fun n : ℕ ↦ f (-(n + 1))) :
     Multipliable f :=
   (hf₁.hasProd.of_nat_of_neg_add_one hf₂.hasProd).multipliable
 

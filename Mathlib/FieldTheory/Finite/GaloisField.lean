@@ -189,7 +189,7 @@ namespace FiniteField
 variable {K : Type*} [Field K] [Fintype K] {K' : Type*} [Field K'] [Fintype K']
 
 /-- Uniqueness of finite fields:
-  Any two finite fields of the same cardinality are (possibly non canonically) isomorphic-/
+  Any two finite fields of the same cardinality are (possibly non canonically) isomorphic -/
 def algEquivOfCardEq (p : ℕ) [h_prime : Fact p.Prime] [Algebra (ZMod p) K] [Algebra (ZMod p) K']
     (hKK' : Fintype.card K = Fintype.card K') : K ≃ₐ[ZMod p] K' := by
   have : CharP K p := by rw [← Algebra.charP_iff (ZMod p) K p]; exact ZMod.charP p
@@ -203,7 +203,7 @@ def algEquivOfCardEq (p : ℕ) [h_prime : Fact p.Prime] [Algebra (ZMod p) K] [Al
   exact AlgEquiv.trans hGalK hK'Gal
 
 /-- Uniqueness of finite fields:
-  Any two finite fields of the same cardinality are (possibly non canonically) isomorphic-/
+  Any two finite fields of the same cardinality are (possibly non canonically) isomorphic -/
 def ringEquivOfCardEq (hKK' : Fintype.card K = Fintype.card K') : K ≃+* K' := by
   choose p _char_p_K using CharP.exists K
   choose p' _char_p'_K' using CharP.exists K'

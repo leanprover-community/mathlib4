@@ -935,7 +935,7 @@ theorem setLintegral_pos_iff {f : α → ℝ≥0∞} (hf : Measurable f) {s : Se
     0 < ∫⁻ a in s, f a ∂μ ↔ 0 < μ (Function.support f ∩ s) := by
   rw [lintegral_pos_iff_support hf, Measure.restrict_apply (measurableSet_support hf)]
 
-/-- Weaker version of the monotone convergence theorem-/
+/-- Weaker version of the monotone convergence theorem -/
 theorem lintegral_iSup_ae {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (f n))
     (h_mono : ∀ n, ∀ᵐ a ∂μ, f n a ≤ f n.succ a) : ∫⁻ a, ⨆ n, f n a ∂μ = ⨆ n, ∫⁻ a, f n a ∂μ := by
   classical

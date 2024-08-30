@@ -189,7 +189,7 @@ noncomputable def autGaloisSystem : PointedGaloisObject F ⥤ Grp.{u₂} where
     ext (σ : Aut A.obj)
     simp
 
-/-- The limit of `autGaloisSystem`.  -/
+/-- The limit of `autGaloisSystem`. -/
 noncomputable def AutGalois : Type (max u₁ u₂) :=
   (autGaloisSystem F ⋙ forget _).sections
 

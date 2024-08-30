@@ -230,7 +230,7 @@ section Compact
 
 -- Porting note (#11215): TODO: generalize to metrizable spaces
 /-- A compact set in a pseudo emetric space is separable, i.e., it is a subset of the closure of a
-countable set.  -/
+countable set. -/
 theorem subset_countable_closure_of_compact {s : Set α} (hs : IsCompact s) :
     ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ closure t := by
   refine subset_countable_closure_of_almost_dense_set s fun ε hε => ?_

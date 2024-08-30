@@ -152,7 +152,7 @@ def appArgExpectedTypes (f : Expr) (args : Array Expr) (ty? : Option Expr) :
     -- Try using the expected type, but (*) below might find a bad solution
     (guard ty?.isSome *> go f args ty?) <|> go f args none
 where
-  /-- Core implementation for `appArgExpectedTypes`.  -/
+  /-- Core implementation for `appArgExpectedTypes`. -/
   go (f : Expr) (args : Array Expr) (ty? : Option Expr) : MetaM (Array (Option Expr)) := do
     -- Metavariables for each argument to `f`:
     let mut margs := #[]

@@ -126,7 +126,7 @@ attribute [local instance] MeasureTheory.Measure.IsFiniteMeasure.IicSnd
 
 We build towards the definition of `ProbabilityTheory.condCDF`. We first define
 `ProbabilityTheory.preCDF`, a function defined on `α × ℚ` with the properties of a cdf almost
-everywhere.  -/
+everywhere. -/
 
 /-- `preCDF` is the Radon-Nikodym derivative of `ρ.IicSnd` with respect to `ρ.fst` at each
 `r : ℚ`. This function `ℚ → α → ℝ≥0∞` is such that for almost all `a : α`, the function `ℚ → ℝ≥0∞`

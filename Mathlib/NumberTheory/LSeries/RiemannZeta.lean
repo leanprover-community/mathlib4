@@ -182,7 +182,7 @@ theorem zeta_eq_tsum_one_div_nat_cpow {s : ℂ} (hs : 1 < re s) :
     ofReal_one] using (hasSum_nat_cosZeta 0 hs).tsum_eq.symm
 
 /-- Alternate formulation of `zeta_eq_tsum_one_div_nat_cpow` with a `+ 1` (to avoid relying
-on mathlib's conventions for `0 ^ s`).  -/
+on mathlib's conventions for `0 ^ s`). -/
 theorem zeta_eq_tsum_one_div_nat_add_one_cpow {s : ℂ} (hs : 1 < re s) :
     riemannZeta s = ∑' n : ℕ, 1 / (n + 1 : ℂ) ^ s := by
   have := zeta_eq_tsum_one_div_nat_cpow hs

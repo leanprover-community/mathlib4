@@ -812,7 +812,7 @@ theorem lintegral_eq_of_subset' (f : α →ₛ ℝ≥0∞) {s : Finset ℝ≥0�
   f.lintegral_eq_of_subset fun x hfx _ =>
     hs <| Finset.mem_sdiff.2 ⟨f.mem_range_self x, mt Finset.mem_singleton.1 hfx⟩
 
-/-- Calculate the integral of `(g ∘ f)`, where `g : β → ℝ≥0∞` and `f : α →ₛ β`.  -/
+/-- Calculate the integral of `(g ∘ f)`, where `g : β → ℝ≥0∞` and `f : α →ₛ β`. -/
 theorem map_lintegral (g : β → ℝ≥0∞) (f : α →ₛ β) :
     (f.map g).lintegral μ = ∑ x ∈ f.range, g x * μ (f ⁻¹' {x}) := by
   simp only [lintegral, range_map]
