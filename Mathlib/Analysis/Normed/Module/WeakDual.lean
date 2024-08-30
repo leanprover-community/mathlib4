@@ -334,17 +334,6 @@ lemma existance [ProperSpace 𝕜₁] (hC₁ : IsClosed C) (h : polar 𝕜₁ s 
 lemma iInter_of_empty_univ : ⋂ i ∈ (∅ : Finset (U (n + 1))), K C s n i.val = univ := by
   simp_all only [Finset.not_mem_empty, iInter_of_empty, iInter_univ]
 
-lemma u_notempty (u : Finset (U (n + 1))) (h : (polar 𝕜₁ (U (n+2)) ∩ ⋂ i ∈ u, K C s n i.val) = ∅) :
-  Nonempty u := by
-  by_contra he
-  have e1 : u = ∅ := by
-    aesop
-  rw [e1, iInter_of_empty_univ, inter_univ] at h
-  have h2 : Nonempty (polar 𝕜₁ (U (E := E₁) (n + 2))) :=
-    NormedSpace.instNonemptyElemDualPolar _ _
-  subst e1
-  simp_all only [nonempty_subtype, mem_empty_iff_false, exists_const]
-
 lemma ss2 (x : U (E := E₁) (n + 1)) : (polar 𝕜₁ (U (n+2)) ∩ K C s n x ) = K C s n x := by
   rw [K, inter_comm, inter_assoc, inter_self]
 
@@ -385,7 +374,15 @@ lemma existance''' [ProperSpace 𝕜₁] (hC₁ : IsClosed C)
     rw [image_eq_iUnion]
     simp [polar_iUnion]
   rw [← e1]
-  have eu : Nonempty u := u_notempty C s n u hu
+  have eu : Nonempty u := by
+    by_contra he
+    have e2 : u = ∅ := by
+      aesop
+    rw [e2, iInter_of_empty_univ, inter_univ] at hu
+    have h2 : Nonempty (polar 𝕜₁ (U (E := E₁) (n + 2))) :=
+      NormedSpace.instNonemptyElemDualPolar _ _
+    subst e2
+    simp_all only [nonempty_subtype, mem_empty_iff_false, exists_const]
   rw [← more_confusion _ _ _ _ eu, confusion _ _ _ _ eu] at hu
   rw [← lala2 _ _ _ _ eu]
   rw [lala _ _ _ _ eu]
