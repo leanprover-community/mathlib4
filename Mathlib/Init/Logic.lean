@@ -406,7 +406,7 @@ def RightCancelative  := ∀ a b c, a * b = c * b → a = c
 def LeftDistributive  := ∀ a b c, a * (b + c) = a * b + a * c
 def RightDistributive := ∀ a b c, (a + b) * c = a * c + b * c
 def RightCommutative (h : β → α → β) := ∀ b a₁ a₂, h (h b a₁) a₂ = h (h b a₂) a₁
-def LeftCommutative  (h : α → β → β) := ∀ a₁ a₂ b, h a₁ (h a₂ b) = h a₂ (h a₁ b)
+def LeftCommutative (h : α → β → β) := ∀ a₁ a₂ b, h a₁ (h a₂ b) = h a₂ (h a₁ b)
 
 theorem left_comm : Commutative f → Associative f → LeftCommutative f :=
   fun hcomm hassoc a b c ↦
@@ -417,7 +417,7 @@ theorem left_comm : Commutative f → Associative f → LeftCommutative f :=
 
 theorem right_comm : Commutative f → Associative f → RightCommutative f :=
   fun hcomm hassoc a b c ↦
-    calc  (a*b)*c
+    calc (a*b)*c
       _ = a*(b*c) := hassoc a b c
       _ = a*(c*b) := hcomm b c ▸ rfl
       _ = (a*c)*b := Eq.symm (hassoc a c b)

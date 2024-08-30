@@ -58,7 +58,7 @@ variable {n : ℕ} (P : MvPFunctor.{u} (n + 1))
 
 /-- A path from the root of a tree to one of its node -/
 inductive M.Path : P.last.M → Fin2 n → Type u
-  | root  (x : P.last.M)
+  | root (x : P.last.M)
           (a : P.A)
           (f : P.last.B a → P.last.M)
           (h : PFunctor.M.dest x = ⟨a, f⟩)

@@ -89,7 +89,7 @@ Weak normal head form of an expression involving morphism applications.
 
 For example calling this on `coe (f a) b` will put `f` in weak normal head form instead of `coe`.
  -/
-def whnf (e : Expr)  (cfg : WhnfCoreConfig := {}) : MetaM Expr :=
+def whnf (e : Expr) (cfg : WhnfCoreConfig := {}) : MetaM Expr :=
   whnfPred e (fun _ => return false) cfg
 
 

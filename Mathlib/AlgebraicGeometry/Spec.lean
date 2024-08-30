@@ -269,7 +269,7 @@ section SpecΓ
 
 open AlgebraicGeometry.LocallyRingedSpace
 
-/-- The counit morphism `R ⟶ Γ(Spec R)` given by `AlgebraicGeometry.StructureSheaf.toOpen`.  -/
+/-- The counit morphism `R ⟶ Γ(Spec R)` given by `AlgebraicGeometry.StructureSheaf.toOpen`. -/
 @[simps!]
 def toSpecΓ (R : CommRingCat.{u}) : R ⟶ Γ.obj (op (Spec.toLocallyRingedSpace.obj (op R))) :=
   StructureSheaf.toOpen R ⊤

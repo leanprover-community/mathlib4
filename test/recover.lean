@@ -6,7 +6,7 @@ set_option linter.unusedTactic false
 elab "this" "is" "a" "problem" : tactic =>
   Lean.Elab.Tactic.setGoals []
 
-/- The main test-/
+/- The main test -/
 example : 1 = 1 := by
   recover this is a problem
   rfl

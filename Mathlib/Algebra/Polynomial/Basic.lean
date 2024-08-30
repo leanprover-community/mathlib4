@@ -930,7 +930,7 @@ section Update
 
 /-- Replace the coefficient of a `p : R[X]` at a given degree `n : ℕ`
 by a given value `a : R`. If `a = 0`, this is equal to `p.erase n`
-If `p.natDegree < n` and `a ≠ 0`, this increases the degree to `n`.  -/
+If `p.natDegree < n` and `a ≠ 0`, this increases the degree to `n`. -/
 def update (p : R[X]) (n : ℕ) (a : R) : R[X] :=
   Polynomial.ofFinsupp (p.toFinsupp.update n a)
 

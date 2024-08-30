@@ -540,7 +540,7 @@ theorem prod_biUnion [DecidableEq α] {s : Finset γ} {t : γ → Finset α}
   rw [← disjiUnion_eq_biUnion _ _ hs, prod_disjiUnion]
 
 /-- Product over a sigma type equals the product of fiberwise products. For rewriting
-in the reverse direction, use `Finset.prod_sigma'`.  -/
+in the reverse direction, use `Finset.prod_sigma'`. -/
 @[to_additive "Sum over a sigma type equals the sum of fiberwise sums. For rewriting
 in the reverse direction, use `Finset.sum_sigma'`"]
 theorem prod_sigma {σ : α → Type*} (s : Finset α) (t : ∀ a, Finset (σ a)) (f : Sigma σ → β) :
@@ -1494,7 +1494,7 @@ theorem prod_pow (s : Finset α) (n : ℕ) (f : α → β) : ∏ x ∈ s, f x ^ 
   Multiset.prod_map_pow
 
 @[to_additive sum_nsmul_assoc]
-lemma prod_pow_eq_pow_sum  (s : Finset ι) (f : ι → ℕ) (a : β) :
+lemma prod_pow_eq_pow_sum (s : Finset ι) (f : ι → ℕ) (a : β) :
     ∏ i ∈ s, a ^ f i = a ^ ∑ i ∈ s, f i :=
   cons_induction (by simp) (fun _ _ _ _ ↦ by simp [prod_cons, sum_cons, pow_add, *]) s
 

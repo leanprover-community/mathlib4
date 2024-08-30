@@ -199,7 +199,7 @@ theorem mul_le_mul_of_nonpos_of_nonpos' [ExistsAddOfLE α] [PosMulMono α] [MulP
     (hca : c ≤ a) (hdb : d ≤ b) (ha : a ≤ 0) (hd : d ≤ 0) : a * b ≤ c * d :=
   (mul_le_mul_of_nonpos_left hdb ha).trans <| mul_le_mul_of_nonpos_right hca hd
 
-/-- Variant of `mul_le_of_le_one_left` for `b` non-positive instead of non-negative.  -/
+/-- Variant of `mul_le_of_le_one_left` for `b` non-positive instead of non-negative. -/
 theorem le_mul_of_le_one_left [ExistsAddOfLE α] [MulPosMono α]
     [CovariantClass α α (swap (· + ·)) (· ≤ ·)] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
     (hb : b ≤ 0) (h : a ≤ 1) : b ≤ a * b := by

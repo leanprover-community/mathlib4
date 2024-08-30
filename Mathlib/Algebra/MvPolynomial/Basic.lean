@@ -461,7 +461,7 @@ theorem linearMap_ext {M : Type*} [AddCommMonoid M] [Module R M] {f g : MvPolyno
 
 section Support
 
-/-- The finite set of all `m : σ →₀ ℕ` such that `X^m` has a non-zero coefficient.  -/
+/-- The finite set of all `m : σ →₀ ℕ` such that `X^m` has a non-zero coefficient. -/
 def support (p : MvPolynomial σ R) : Finset (σ →₀ ℕ) :=
   Finsupp.support p
 

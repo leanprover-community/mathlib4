@@ -600,7 +600,7 @@ theorem prod_generateFrom_generateFrom_eq {X Y : Type*} {s : Set (Set X)} {t : S
     (hs : ⋃₀ s = univ) (ht : ⋃₀ t = univ) :
     @instTopologicalSpaceProd X Y (generateFrom s) (generateFrom t) =
       generateFrom (image2 (·  ×ˢ ·) s t) :=
-  let G := generateFrom  (image2  (·  ×ˢ ·) s t)
+  let G := generateFrom (image2  (·  ×ˢ ·) s t)
   le_antisymm
     (le_generateFrom fun g ⟨u, hu, v, hv, g_eq⟩ =>
       g_eq.symm ▸
@@ -1067,7 +1067,7 @@ theorem embedding_inclusion {s t : Set X} (h : s ⊆ t) : Embedding (inclusion h
   embedding_subtype_val.codRestrict _ _
 
 /-- Let `s, t ⊆ X` be two subsets of a topological space `X`.  If `t ⊆ s` and the topology induced
-by `X`on `s` is discrete, then also the topology induces on `t` is discrete.  -/
+by `X`on `s` is discrete, then also the topology induces on `t` is discrete. -/
 theorem DiscreteTopology.of_subset {X : Type*} [TopologicalSpace X] {s t : Set X}
     (_ : DiscreteTopology s) (ts : t ⊆ s) : DiscreteTopology t :=
   (embedding_inclusion ts).discreteTopology

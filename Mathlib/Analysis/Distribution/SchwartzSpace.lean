@@ -380,7 +380,7 @@ end Module
 
 section Seminorms
 
-/-! ### Seminorms on Schwartz space-/
+/-! ### Seminorms on Schwartz space -/
 
 
 variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
@@ -480,7 +480,7 @@ end Seminorms
 
 section Topology
 
-/-! ### The topology on the Schwartz space-/
+/-! ### The topology on the Schwartz space -/
 
 
 variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
