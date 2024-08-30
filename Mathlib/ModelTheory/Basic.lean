@@ -267,9 +267,11 @@ variable (L) (M : Type w)
 @[ext]
 class Structure where
   /-- Interpretation of the function symbols -/
-  funMap : ∀ {n}, L.Functions n → (Fin n → M) → M
+  funMap : ∀ {n}, L.Functions n → (Fin n → M) → M :=by
+    exact fun {n} => (IsRelational.empty_functions _).elim
   /-- Interpretation of the relation symbols -/
-  RelMap : ∀ {n}, L.Relations n → (Fin n → M) → Prop
+  RelMap : ∀ {n}, L.Relations n → (Fin n → M) → Prop :=by
+    exact fun {n} => (IsAlgebraic.empty_relations _).elim
 
 variable (N : Type w') [L.Structure M] [L.Structure N]
 
@@ -935,8 +937,7 @@ end SumStructure
 section Empty
 
 /-- Any type can be made uniquely into a structure over the empty language. -/
-def emptyStructure : Language.empty.Structure M :=
-  ⟨Empty.elim, Empty.elim⟩
+def emptyStructure : Language.empty.Structure M where
 
 instance : Unique (Language.empty.Structure M) :=
   ⟨⟨Language.emptyStructure⟩, fun a => by
