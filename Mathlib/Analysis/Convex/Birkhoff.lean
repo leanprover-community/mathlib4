@@ -7,18 +7,18 @@ Authors: Bhavik Mehta
 import Mathlib.Analysis.Convex.Combination
 import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Combinatorics.Hall.Basic
+import Mathlib.Data.Matrix.DoublyStochastic
 import Mathlib.LinearAlgebra.Matrix.Permutation
 
 /-!
-# Doubly stochastic matrices and Birkhoff's theorem
-
-## Main definitions
-
-* `doublyStochastic`
+# Birkhoff's theorem
 
 ## Main statements
 
-* `doublyStochastic_eq_convexHull_perm`
+* `doublyStochastic_eq_sum_perm`: If `M` is a doubly stochastic matrix, then it is a convex
+  combination of permutation matrices.
+* `doublyStochastic_eq_convexHull_perm`: The set of doubly stochastic matrices is the convex hull
+  of the permutation matrices.
 
 ## Tags
 
@@ -29,96 +29,13 @@ open BigOperators Finset Function Matrix
 
 variable {R n : Type*} [Fintype n] [DecidableEq n]
 
-section OrderedSemiring
-variable [OrderedSemiring R] {M : Matrix n n R}
-
-/--
-A square matrix is doubly stochastic iff all entries are nonnegative, and left or right
-multiplication by the vector of all 1s gives the vector of all 1s.
--/
-def doublyStochastic (R n : Type*) [Fintype n] [DecidableEq n] [OrderedSemiring R] :
-    Submonoid (Matrix n n R) where
-  carrier := {M | (∀ i j, 0 ≤ M i j) ∧ M *ᵥ 1 = 1 ∧ 1 ᵥ* M = 1 }
-  mul_mem' {M N} hM hN := by
-    refine ⟨fun i j => sum_nonneg fun i _ => mul_nonneg (hM.1 _ _) (hN.1 _ _), ?_, ?_⟩
-    next => rw [← mulVec_mulVec, hN.2.1, hM.2.1]
-    next => rw [← vecMul_vecMul, hM.2.2, hN.2.2]
-  one_mem' := by simp [zero_le_one_elem]
-
-lemma mem_doublyStochastic_iff_mul :
-    M ∈ doublyStochastic R n ↔ (∀ i j, 0 ≤ M i j) ∧ M *ᵥ 1 = 1 ∧ 1 ᵥ* M = 1 :=
-  Iff.rfl
-
-lemma mem_doublyStochastic_iff_sum :
-    M ∈ doublyStochastic R n ↔
-      (∀ i j, 0 ≤ M i j) ∧ (∀ i, ∑ j, M i j = 1) ∧ ∀ j, ∑ i, M i j = 1 := by
-  simp [funext_iff, doublyStochastic, mulVec, vecMul, dotProduct]
-
-lemma nonneg_doublyStochastic (hM : M ∈ doublyStochastic R n) (i j : n) : 0 ≤ M i j :=
-  hM.1 _ _
-
-lemma row_sum_doublyStochastic (hM : M ∈ doublyStochastic R n) (i : n) : ∑ j, M i j = 1 :=
-  (mem_doublyStochastic_iff_sum.1 hM).2.1 _
-
-lemma col_sum_doublyStochastic (hM : M ∈ doublyStochastic R n) (j : n) : ∑ i, M i j = 1 :=
-  (mem_doublyStochastic_iff_sum.1 hM).2.2 _
-
-lemma doublyStochastic_mulVec_one (hM : M ∈ doublyStochastic R n) : M *ᵥ 1 = 1 :=
-  (mem_doublyStochastic_iff_mul.1 hM).2.1
-
-lemma one_vecMul_doublyStochastic (hM : M ∈ doublyStochastic R n) : 1 ᵥ* M = 1 :=
-  (mem_doublyStochastic_iff_mul.1 hM).2.2
-
-lemma doublyStochastic_le_one (hM : M ∈ doublyStochastic R n) {i j : n} :
-    M i j ≤ 1 := by
-  rw [← row_sum_doublyStochastic hM i]
-  exact single_le_sum (fun k _ => hM.1 _ k) (mem_univ j)
-
-lemma convex_doublyStochastic : Convex R (doublyStochastic R n : Set (Matrix n n R)) := by
-  intro x hx y hy a b ha hb h
-  simp only [SetLike.mem_coe, mem_doublyStochastic_iff_sum] at hx hy ⊢
-  simp [add_nonneg, ha, hb, mul_nonneg, hx, hy, sum_add_distrib, ← mul_sum, h]
-
-lemma permMatrix_doublyStochastic {σ : Equiv.Perm n} : σ.permMatrix R ∈ doublyStochastic R n := by
-  rw [mem_doublyStochastic_iff_sum]
-  refine ⟨fun i j => ?g1, ?g2, ?g3⟩
-  case g1 => aesop
-  case g2 => simp [Equiv.toPEquiv_apply]
-  case g3 => simp [Equiv.toPEquiv_apply, ← Equiv.eq_symm_apply]
-
-end OrderedSemiring
-
 section LinearOrderedSemifield
 
 variable [LinearOrderedSemifield R] {M : Matrix n n R}
 
-lemma scalar_multiple_of_doublyStochastic_iff {M : Matrix n n R} {s : R} (hs : 0 ≤ s) :
-    (∃ M' ∈ doublyStochastic R n, M = s • M') ↔
-      (∀ i j, 0 ≤ M i j) ∧ (∀ i, ∑ j, M i j = s) ∧ (∀ j, ∑ i, M i j = s) := by
-  classical
-  constructor
-  case mp =>
-    rintro ⟨M', hM', rfl⟩
-    rw [mem_doublyStochastic_iff_sum] at hM'
-    simp only [smul_apply, smul_eq_mul, ← mul_sum]
-    exact ⟨fun i j => mul_nonneg hs (hM'.1 _ _), by simp [hM']⟩
-  rcases eq_or_lt_of_le hs with rfl | hs
-  case inl =>
-    simp only [zero_smul, exists_and_right, and_imp]
-    intro h₁ h₂ _
-    refine ⟨⟨1, Submonoid.one_mem _⟩, ?_⟩
-    ext i j
-    specialize h₂ i
-    rw [sum_eq_zero_iff_of_nonneg (by simp [h₁ i])] at h₂
-    exact h₂ _ (by simp)
-  rintro ⟨hM₁, hM₂, hM₃⟩
-  refine ⟨s⁻¹ • M, by simp [mem_doublyStochastic_iff_sum, ← mul_sum, hs.ne', inv_mul_cancel₀, *]⟩
-
 /--
 If M is a positive scalar multiple of a doubly stochastic matrix, then there is a permutation matrix
 whose support is contained in the support of M.
-
-This proof uses Hall's marriage theorem in a fundamental way.
 -/
 private lemma exists_perm_eq_zero_implies_eq_zero [Nonempty n] {s : R} (hs : 0 < s)
     (hM : ∃ M' ∈ doublyStochastic R n, M = s • M') :
@@ -157,6 +74,9 @@ variable [LinearOrderedField R] {M : Matrix n n R}
 If M is a scalar multiple of a doubly stochastic matrix, then it is an conical combination of
 permutation matrices. This is most useful when M is a doubly stochastic matrix, in which case
 the combination is convex.
+
+This particular formulation is chosen to make the inductive step easier: we no longer need to
+rescale each time a permutation matrix is subtracted.
 -/
 private lemma doublyStochastic_sum_perm_aux (M : Matrix n n R)
     (s : R) (hs : 0 ≤ s)
@@ -178,11 +98,8 @@ private lemma doublyStochastic_sum_perm_aux (M : Matrix n n R)
   rw [scalar_multiple_of_doublyStochastic_iff hs] at hM
   let N : Matrix n n R := M - M i (σ i) • σ.permMatrix R
   let d' : ℕ := (univ.filter fun i : n × n => N i.1 i.2 ≠ 0).card
-  have hMi' : 0 < M i (σ i) := by
-    refine lt_of_le_of_ne' (hM.1 _ _) ?_
-    intro h
-    have := hσ _ _ h
-    simp [PEquiv.toMatrix_apply, Equiv.toPEquiv_apply] at this
+  have hMi' : 0 < M i (σ i) := (hM.1 _ _).lt_of_ne' fun h => by
+    simpa [Equiv.toPEquiv_apply] using hσ _ _ h
   let s' : R := s - M i (σ i)
   have hs' : 0 ≤ s' := by
     simp only [s', sub_nonneg, ← hM.2.1 i]
@@ -216,9 +133,7 @@ private lemma doublyStochastic_sum_perm_aux (M : Matrix n n R)
   simp only [Pi.add_apply, add_smul, sum_add_distrib, hw', ite_smul, zero_smul,
     sum_ite_eq', mem_univ, ↓reduceIte, N, sub_add_cancel, and_true]
   intro σ'
-  split
-  case isTrue => exact add_nonneg (hw _) (hM.1 _ _)
-  case isFalse => simp [hw]
+  split <;> simp [add_nonneg, hw, hM.1]
 
 /--
 If M is a doubly stochastic matrix, then it is an convex combination of permutation matrices. Note
