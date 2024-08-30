@@ -83,7 +83,7 @@ theorem toDualRight_apply (a : N) : p.toDualRight a = p.flip a :=
 
 @[simp]
 theorem apply_apply_toDualRight_symm (x : M) (f : Dual R M) :
-    (p x) (p.toDualRight.symm f) = f x := by
+    (p.toLin x) (p.toDualRight.symm f) = f x := by
   have h := LinearEquiv.apply_symm_apply p.toDualRight f
   rw [toDualRight_apply] at h
   exact congrFun (congrArg DFunLike.coe h) x

@@ -213,6 +213,18 @@ lemma reflection_perm_inv :
     (P.reflection_perm i)⁻¹ = P.reflection_perm i :=
   (mul_eq_one_iff_eq_inv.mp <| P.reflection_perm_sq i).symm
 
+@[simp]
+lemma reflection_perm_self : P.reflection_perm i (P.reflection_perm i j) = j := by
+  refine (Embedding.injective P.root) ?_
+  simp only [root_reflection_perm, reflection_same]
+
+lemma reflection_perm_involutive : Involutive (P.reflection_perm i) :=
+  involutive_iff_iter_2_eq_id.mpr (by ext; simp)
+
+@[simp]
+lemma reflection_perm_symm : (P.reflection_perm i).symm = P.reflection_perm i :=
+  Involutive.symm_eq_self_of_involutive (P.reflection_perm i) <| P.reflection_perm_involutive i
+
 lemma bijOn_reflection_root :
     BijOn (P.reflection i) (range P.root) (range P.root) :=
   Module.bijOn_reflection_of_mapsTo _ <| P.mapsTo_reflection_root i
