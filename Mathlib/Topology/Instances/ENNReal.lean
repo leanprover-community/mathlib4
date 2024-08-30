@@ -444,7 +444,7 @@ theorem iInf_mul_left' {ι} {f : ι → ℝ≥0∞} {a : ℝ≥0∞} (h : a = �
     cases isEmpty_or_nonempty ι
     · rw [iInf_of_empty, iInf_of_empty, mul_top]
       exact mt h0 (not_nonempty_iff.2 ‹_›)
-    · exact (ENNReal.mul_left_mono.map_iInf_of_continuousAt'
+    · exact (ENNReal.mul_left_mono.map_ciInf_of_continuousAt
         (ENNReal.continuousAt_const_mul H)).symm
 
 theorem iInf_mul_left {ι} [Nonempty ι] {f : ι → ℝ≥0∞} {a : ℝ≥0∞}
@@ -504,7 +504,7 @@ protected theorem tendsto_inv_nat_nhds_zero : Tendsto (fun n : ℕ => (n : ℝ�
   ENNReal.inv_top ▸ ENNReal.tendsto_inv_iff.2 tendsto_nat_nhds_top
 
 theorem iSup_add {ι : Sort*} {s : ι → ℝ≥0∞} [Nonempty ι] : iSup s + a = ⨆ b, s b + a :=
-  Monotone.map_iSup_of_continuousAt' (continuousAt_id.add continuousAt_const) <|
+  Monotone.map_ciSup_of_continuousAt (continuousAt_id.add continuousAt_const) <|
     monotone_id.add monotone_const
 
 theorem biSup_add' {ι : Sort*} {p : ι → Prop} (h : ∃ i, p i) {f : ι → ℝ≥0∞} :
@@ -610,7 +610,7 @@ protected theorem tendsto_coe_sub {b : ℝ≥0∞} :
 
 theorem sub_iSup {ι : Sort*} [Nonempty ι] {b : ι → ℝ≥0∞} (hr : a < ∞) :
     (a - ⨆ i, b i) = ⨅ i, a - b i :=
-  antitone_const_tsub.map_iSup_of_continuousAt' (continuous_sub_left hr.ne).continuousAt
+  antitone_const_tsub.map_ciSup_of_continuousAt (continuous_sub_left hr.ne).continuousAt
 
 theorem exists_countable_dense_no_zero_top :
     ∃ s : Set ℝ≥0∞, s.Countable ∧ Dense s ∧ 0 ∉ s ∧ ∞ ∉ s := by
