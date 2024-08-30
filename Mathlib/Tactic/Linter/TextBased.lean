@@ -148,7 +148,7 @@ def compare (existing new : ErrorContext) : ComparisonResult :=
   -- Two comparable error contexts must have the same path.
   -- To avoid issues with different path separators across different operating systems,
   -- we compare the set of path components instead.
-  if existing.path.components != existing.path.components then ComparisonResult.Different
+  if existing.path.components != new.path.components then ComparisonResult.Different
   -- We entirely ignore their line numbers: not sure if this is best.
 
   -- NB: keep the following in sync with `parse?_errorContext` below.
