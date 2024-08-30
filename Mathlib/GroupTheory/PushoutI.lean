@@ -301,7 +301,7 @@ theorem prod_empty : (empty : NormalWord d).prod = 1 := by
   simp [prod, empty]
 
 /-- A constructor that multiplies a `NormalWord` by an element, with condition to make
-sure the underlying list does get longer.  -/
+sure the underlying list does get longer. -/
 @[simps!]
 noncomputable def cons {i} (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
     (hgr : g ∉ (φ i).range) : NormalWord d :=
@@ -328,7 +328,7 @@ variable [DecidableEq ι] [∀ i, DecidableEq (G i)]
 
 /-- Given a word in `CoprodI`, if every letter is in the transversal and when
 we multiply by an element of the base group it still has this property,
-then the element of the base group we multiplied by was one.  -/
+then the element of the base group we multiplied by was one. -/
 theorem eq_one_of_smul_normalized (w : CoprodI.Word G) {i : ι} (h : H)
     (hw : ∀ i g, ⟨i, g⟩ ∈ w.toList → g ∈ d.set i)
     (hφw : ∀ j g, ⟨j, g⟩ ∈ (CoprodI.of (φ i h) • w).toList → g ∈ d.set j) :

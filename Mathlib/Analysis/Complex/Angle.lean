@@ -116,6 +116,6 @@ lemma mul_angle_le_norm_sub (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) : 2 / π * ang
 
 /-- Arc-length is always less than a multiple of chord-length. -/
 lemma angle_le_mul_norm_sub (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) : angle x y ≤ π / 2 * ‖x - y‖ := by
-  rw [← div_le_iff' <| by positivity, div_eq_inv_mul, inv_div]; exact mul_angle_le_norm_sub hx hy
+  rw [← div_le_iff₀' <| by positivity, div_eq_inv_mul, inv_div]; exact mul_angle_le_norm_sub hx hy
 
 end Complex
