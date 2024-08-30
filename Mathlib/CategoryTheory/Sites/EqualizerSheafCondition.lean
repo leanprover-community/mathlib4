@@ -228,8 +228,8 @@ theorem compatible_iff (x : FirstObj P R) :
 See <https://stacks.math.columbia.edu/tag/00VM>.
 -/
 theorem sheaf_condition : R.IsSheafFor P ↔ Nonempty (IsLimit (Fork.ofι _ (w P R))) := by
-  rw [Types.type_equalizer_iff_unique]
-  erw [← Equiv.forall_congr_right (firstObjEqFamily P R).toEquiv.symm]
+  rw [Types.type_equalizer_iff_unique,
+    ← Equiv.forall_congr_right (firstObjEqFamily P R).toEquiv.symm]
   simp_rw [← compatible_iff, ← Iso.toEquiv_fun, Equiv.apply_symm_apply]
   apply forall₂_congr
   intro x _

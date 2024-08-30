@@ -80,7 +80,6 @@ def adjunction [HasWeakSheafify J D] [HasSheafCompose J F] (adj : G ⊣ F) :
         ext
         dsimp [composeEquiv]
         erw [Adjunction.homEquiv_unit, Adjunction.homEquiv_unit]
-        dsimp
         simp }
 
 instance [HasWeakSheafify J D] [F.IsRightAdjoint] : (sheafCompose J F).IsRightAdjoint :=
@@ -139,7 +138,7 @@ theorem adjunctionToTypes_counit_app_val {G : Type max v₁ u₁ ⥤ D} (adj : G
   dsimp only [adjunctionToTypes, Adjunction.comp, NatTrans.comp_app,
     instCategorySheaf_comp_val, instCategorySheaf_id_val]
   rw [adjunction_counit_app_val]
-  erw [Category.id_comp, sheafifyMap_sheafifyLift, toSheafify_sheafifyLift]
+  erw [Category.id_comp, sheafifyMap_sheafifyLift, toSheafify_sheafifyLift, ]
   ext
   dsimp [sheafEquivSheafOfTypes, Equivalence.symm, Equivalence.toAdjunction,
     NatIso.ofComponents, Adjunction.whiskerRight, Adjunction.mkOfUnitCounit]
