@@ -15,6 +15,7 @@ jobs:
 
     - name: Get labels
       run: |
+          gh api --jq '.labels.[].name' /repos/{owner}/{repo}/pulls/${{ github.event.number }}
           echo "${{ github.event.pull_request.labels }}"
           jq -r '.[].name' <<< "${{ github.event.pull_request.labels }}"
           topic="generic"
