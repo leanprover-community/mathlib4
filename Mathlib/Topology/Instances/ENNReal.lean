@@ -1703,3 +1703,5 @@ end NeBot
 end LimsupLiminf
 
 end ENNReal -- namespace
+
+set_option linter.style.longFile 1800
