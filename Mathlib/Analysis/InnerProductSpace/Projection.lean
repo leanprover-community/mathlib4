@@ -46,7 +46,7 @@ open RCLike Real Filter
 
 open LinearMap (ker range)
 
-open Topology
+open Topology Finsupp
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]
@@ -332,7 +332,7 @@ theorem norm_eq_iInf_iff_inner_eq_zero {u : E} {v : E} (hv : v ∈ K) :
   · intro H
     have A : ∀ w ∈ K, re ⟪u - v, w⟫ = 0 := (norm_eq_iInf_iff_real_inner_eq_zero K' hv).1 H
     intro w hw
-    apply ext
+    apply RCLike.ext
     · simp [A w hw]
     · symm
       calc
@@ -1329,8 +1329,8 @@ theorem maximal_orthonormal_iff_orthogonalComplement_eq_bot (hv : Orthonormal �
     intro hxv y hy
     have hxv' : (⟨x, hxu⟩ : u) ∉ ((↑) ⁻¹' v : Set u) := by simp [huv, hxv]
     obtain ⟨l, hl, rfl⟩ :
-      ∃ l ∈ Finsupp.supported 𝕜 𝕜 ((↑) ⁻¹' v : Set u), (Finsupp.total 𝕜 ((↑) : u → E)) l = y := by
-      rw [← Finsupp.mem_span_image_iff_total]
+      ∃ l ∈ supported 𝕜 𝕜 ((↑) ⁻¹' v : Set u), (linearCombination 𝕜 ((↑) : u → E)) l = y := by
+      rw [← Finsupp.mem_span_image_iff_linearCombination]
       simp [huv, inter_eq_self_of_subset_right, hy]
     exact hu.inner_finsupp_eq_zero hxv' hl
 
