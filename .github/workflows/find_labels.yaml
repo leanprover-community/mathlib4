@@ -16,12 +16,12 @@ jobs:
     - name: Get labels
       run: |
           labels="$(gh api --jq '.labels.[].name' "${PR}")"
-          printf 'Labels:\n---\n%s\n---\n' "${labels}"
+          #printf 'Labels:\n---\n%s\n---\n' "${labels}"
           #topic="generic"
           #printf '%s' "${labels}" | grep "^t-"
           tlabels="$(printf '%s\n' "${labels}" | grep -- '^t-' || printf 'generic')"
           printf 't-labels:\n---\n%s\n---\n' "${tlabels}"
-          printf 'topics:\n%s\n' "${tlabels}"
+          #printf 'topics:\n%s\n' "${tlabels}"
           #t_label=""
           #count=0
           #while read -r label; do
@@ -31,10 +31,11 @@ jobs:
           #    count=$((count + 1))
           #  fi
           #done < <(jq -r '.[].name' <<< "${{ github.event.pull_request.labels }}")
-          #if [[ "$count" -eq 1 ]]; then
-          #  topic="$t_label"
-          #fi
-          echo "name=topic::maintainer merge: ${topic}" #>> "$GITHUB_OUTPUT"
+          if [[ "$(wc -l <<<"${tlabels}")" -ne 1 ]]; then
+            tlabels="generic"
+          fi
+          printf '%s' "${tlabels}"
+          echo "name=topic::maintainer merge: ${tlabels}" #>> "$GITHUB_OUTPUT"
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         PR: /repos/{owner}/{repo}/pulls/${{ github.event.number }}
