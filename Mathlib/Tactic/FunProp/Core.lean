@@ -31,7 +31,7 @@ def synthesizeInstance (thmId : Origin) (x type : Expr) : MetaM Bool := do
     else
       trace[Meta.Tactic.fun_prop]
 "{← ppOrigin thmId}, failed to assign instance{indentExpr type}
-sythesized value{indentExpr val}\nis not definitionally equal to{indentExpr x}"
+synthesized value{indentExpr val}\nis not definitionally equal to{indentExpr x}"
       return false
   | _ =>
     trace[Meta.Tactic.fun_prop]
@@ -39,7 +39,8 @@ sythesized value{indentExpr val}\nis not definitionally equal to{indentExpr x}"
     return false
 
 
-/-- Synthesize arguments `xs` either with typeclass synthesis, with `fun_prop` or with discharger. -/
+/-- Synthesize arguments `xs` either with typeclass synthesis,
+with `fun_prop` or with a discharger. -/
 def synthesizeArgs (thmId : Origin) (xs : Array Expr) (bis : Array BinderInfo)
     (funProp : Expr → FunPropM (Option Result)) :
     FunPropM Bool := do
@@ -148,7 +149,7 @@ def tryTheoremWithHint? (e : Expr) (thmOrigin : Origin)
   -- hypothesis `(h : ContDiff ℝ ∞ f)` and assign `∞` to the mvar `?n`.
   --
   -- This could be problematic if there are two local hypothesis `(hinf : ContDiff ℝ ∞ f)` and
-  -- `(h1 : ContDiff ℝ 1 f)` and appart from solving `ContDiff ℝ ?n f` there is also a subgoal
+  -- `(h1 : ContDiff ℝ 1 f)` and apart from solving `ContDiff ℝ ?n f` there is also a subgoal
   -- `2 ≤ ?n`. If `fun_prop` decides to try `h1` first it would assign `1` to `?n` and then there
   -- is no hope solving `2 ≤ 1` and it won't be able to apply `hinf` after trying `h1` as `n?` is
   -- assigned already. Ideally `fun_prop` would roll back the `MetaM.State`. This issue did not
@@ -227,7 +228,7 @@ Try to prove `e` using *composition lambda theorem*.
 For example, `e = q(Continuous fun x => f (g x))` and `funPropDecl` is `FunPropDecl` for
 `Continuous`
 
-You also have to provide the functions `f` and `g`.  -/
+You also have to provide the functions `f` and `g`. -/
 def applyCompRule (funPropDecl : FunPropDecl) (e f g : Expr)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
 
@@ -323,7 +324,7 @@ def applyMorRules (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
   trace[Debug.Meta.Tactic.fun_prop] "applying morphism theorems to {← ppExpr e}"
 
   match ← fData.isMorApplication with
-  | .none => throwError "fun_prop bug: ivalid use of mor rules on {← ppExpr e}"
+  | .none => throwError "fun_prop bug: invalid use of mor rules on {← ppExpr e}"
   | .underApplied =>
     applyPiRule funPropDecl e funProp
   | .overApplied =>
@@ -345,7 +346,7 @@ def applyMorRules (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     trace[Debug.Meta.Tactic.fun_prop] "no theorem matched"
     return none
 
-/-- Prove function property of using *transition theorems*.  -/
+/-- Prove function property of using *transition theorems*. -/
 def applyTransitionRules (e : Expr) (funProp : Expr → FunPropM (Option Result)) :
     FunPropM (Option Result) := do
   withIncreasedTransitionDepth do
@@ -690,3 +691,7 @@ mutual
           return none
 
 end
+
+end Meta.FunProp
+
+end Mathlib

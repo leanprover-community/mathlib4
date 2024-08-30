@@ -21,17 +21,11 @@ characterising these structures.
 If you need a lemma which is proved about `α →ᵇ β` but not for `C(α, β)` when `α` is compact,
 you should restate it here. You can also use
 `ContinuousMap.equivBoundedOfCompact` to move functions back and forth.
-
 -/
 
 noncomputable section
 
-open scoped Classical
-open Topology NNReal BoundedContinuousFunction
-
-open Set Filter Metric
-
-open BoundedContinuousFunction
+open NNReal BoundedContinuousFunction Set Metric
 
 namespace ContinuousMap
 
@@ -140,9 +134,6 @@ theorem dist_lt_iff (C0 : (0 : ℝ) < C) : dist f g < C ↔ ∀ x : α, dist (f 
   simp only [mkOfCompact_apply]
 
 end
-
-instance [CompleteSpace β] : CompleteSpace C(α, β) :=
-  (isometryEquivBoundedOfCompact α β).completeSpace
 
 -- TODO at some point we will need lemmas characterising this norm!
 -- At the moment the only way to reason about it is to transfer `f : C(α,E)` back to `α →ᵇ E`.
@@ -434,6 +425,7 @@ variable {E : Type*} [NormedAddCommGroup E] [CompleteSpace E]
 
 theorem summable_of_locally_summable_norm {ι : Type*} {F : ι → C(X, E)}
     (hF : ∀ K : Compacts X, Summable fun i => ‖(F i).restrict K‖) : Summable F := by
+  classical
   refine (ContinuousMap.exists_tendsto_compactOpen_iff_forall _).2 fun K hK => ?_
   lift K to Compacts X using hK
   have A : ∀ s : Finset ι, restrict (↑K) (∑ i ∈ s, F i) = ∑ i ∈ s, restrict K (F i) := by

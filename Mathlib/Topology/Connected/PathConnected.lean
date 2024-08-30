@@ -33,7 +33,7 @@ Then there are corresponding relative notions for `F : Set X`.
 * `LocPathConnectedSpace X` is a predicate class asserting that `X` is locally path-connected:
   each point has a basis of path-connected neighborhoods (we do *not* ask these to be open).
 
-## Main theorems
+## Main theorems
 
 * `Joined` and `JoinedIn F` are transitive relations.
 
@@ -58,10 +58,8 @@ This is used to define `Path.extend` that turns `γ : Path x y` into a continuou
 on `(-∞, 0]` and to `y` on `[1, +∞)`.
 -/
 
-
 noncomputable section
 
-open scoped Classical
 open Topology Filter unitInterval Set Function
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {x y z : X} {ι : Type*}
