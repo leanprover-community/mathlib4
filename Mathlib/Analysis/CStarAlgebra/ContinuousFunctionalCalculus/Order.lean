@@ -75,7 +75,6 @@ lemma cfc_nnreal_le_iff {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [
     [StarOrderedRing A] [Algebra ℝ A] [TopologicalRing A] [NonnegSpectrumClass ℝ A]
     [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
     [UniqueContinuousFunctionalCalculus ℝ A]
-    [∀ a : A, CompactSpace (spectrum ℝ a)]
     (f : ℝ≥0 → ℝ≥0) (g : ℝ≥0 → ℝ≥0) (a : A)
     (ha_spec : SpectrumRestricts a ContinuousMap.realToNNReal)
     (hf : ContinuousOn f (spectrum ℝ≥0 a) := by cfc_cont_tac)
@@ -90,7 +89,7 @@ lemma cfc_nnreal_le_iff {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [
 /-- In a unital `ℝ`-algebra `A` with a continuous functional calculus, an element `a : A` is larger
 than some `algebraMap ℝ A r` if and only if every element of the `ℝ`-spectrum is nonnegative. -/
 lemma CFC.exists_pos_algebraMap_le_iff {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A]
-    [PartialOrder A] [StarOrderedRing A] [Algebra ℝ A] [TopologicalRing A] [NonnegSpectrumClass ℝ A]
+    [PartialOrder A] [StarOrderedRing A] [Algebra ℝ A] [NonnegSpectrumClass ℝ A]
     [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
     {a : A} [CompactSpace (spectrum ℝ a)]
     (h_non : (spectrum ℝ a).Nonempty) (ha : IsSelfAdjoint a := by cfc_tac) :
