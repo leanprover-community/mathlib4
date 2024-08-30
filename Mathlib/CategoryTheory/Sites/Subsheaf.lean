@@ -252,7 +252,7 @@ theorem Subpresheaf.sheafify_sheafify (h : Presieve.IsSheaf J F) :
     (G.sheafify J).sheafify J = G.sheafify J :=
   ((Subpresheaf.eq_sheafify_iff _ h).mpr <| G.sheafify_isSheaf h).symm
 
-/-- The lift of a presheaf morphism onto the sheafification subpresheaf.  -/
+/-- The lift of a presheaf morphism onto the sheafification subpresheaf. -/
 noncomputable def Subpresheaf.sheafifyLift (f : G.toPresheaf ⟶ F') (h : Presieve.IsSheaf J F') :
     (G.sheafify J).toPresheaf ⟶ F' where
   app U s := (h (G.sieveOfSection s.1) s.prop).amalgamate

@@ -35,9 +35,9 @@ theorem closedBall_ae_eq_ball {x : AddCircle T} {ε : ℝ} : closedBall x ε =�
   · rw [ball_eq_empty.mpr hε, ae_eq_empty, volume_closedBall,
       min_eq_right (by linarith [hT.out] : 2 * ε ≤ T), ENNReal.ofReal_eq_zero]
     exact mul_nonpos_of_nonneg_of_nonpos zero_le_two hε
-  · suffices volume (closedBall x ε) ≤ volume (ball x ε) by
-      exact (ae_eq_of_subset_of_measure_ge ball_subset_closedBall this measurableSet_ball
-        (measure_ne_top _ _)).symm
+  · suffices volume (closedBall x ε) ≤ volume (ball x ε) from
+      (ae_eq_of_subset_of_measure_ge ball_subset_closedBall this
+        measurableSet_ball.nullMeasurableSet (measure_ne_top _ _)).symm
     have : Tendsto (fun δ => volume (closedBall x δ)) (𝓝[<] ε) (𝓝 <| volume (closedBall x ε)) := by
       simp_rw [volume_closedBall]
       refine ENNReal.tendsto_ofReal (Tendsto.min tendsto_const_nhds <| Tendsto.const_mul _ ?_)

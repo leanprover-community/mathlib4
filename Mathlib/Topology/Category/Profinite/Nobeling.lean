@@ -1771,7 +1771,7 @@ theorem GoodProducts.linearIndependent (hC : IsClosed C) :
   GoodProducts.linearIndependentAux (Ordinal.type (·<· : I → I → Prop)) (le_refl _)
     C hC (fun _ _ _ _ ↦ Ordinal.typein_lt_type _ _)
 
-/-- `GoodProducts C` as a `ℤ`-basis for `LocallyConstant C ℤ`.  -/
+/-- `GoodProducts C` as a `ℤ`-basis for `LocallyConstant C ℤ`. -/
 noncomputable
 def GoodProducts.Basis (hC : IsClosed C) :
     Basis (GoodProducts C) ℤ (LocallyConstant C ℤ) :=
@@ -1836,3 +1836,5 @@ instance LocallyConstant.freeOfProfinite (S : Profinite.{u}) :
   @Nobeling_aux {C : Set S // IsClopen C}
     (IsWellOrder.linearOrder WellOrderingRel) WellOrderingRel.isWellOrder
     S (Nobeling.ι S) (Nobeling.embedding S)
+
+set_option linter.style.longFile 2000
