@@ -64,6 +64,45 @@ lemma inr_nonneg_iff {a : A} : 0 ≤ (a : Unitization ℂ A) ↔ 0 ≤ a := by
 
 end Unitization
 
+lemma ContinuousOn.ofReal_map_toNNReal {f : ℝ≥0 → ℝ≥0} {s : Set ℝ} {t : Set ℝ≥0}
+    (hf : ContinuousOn f t) (h : Set.MapsTo Real.toNNReal s t) :
+    ContinuousOn (fun x ↦ f x.toNNReal : ℝ → ℝ) s :=
+  continuous_subtype_val.comp_continuousOn <| hf.comp continuous_real_toNNReal.continuousOn h
+
+/-- `cfc_le_iff` only applies to a scalar ring where `R` is an actual `Ring`, and not a `Semiring`.
+However, this theorem still holds for `ℝ≥0` as long as the algebra `A` itself is an `ℝ`-algebra. -/
+lemma cfc_nnreal_le_iff {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [PartialOrder A]
+    [StarOrderedRing A] [Algebra ℝ A] [TopologicalRing A] [NonnegSpectrumClass ℝ A]
+    [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
+    [UniqueContinuousFunctionalCalculus ℝ A]
+    [∀ a : A, CompactSpace (spectrum ℝ a)]
+    (f : ℝ≥0 → ℝ≥0) (g : ℝ≥0 → ℝ≥0) (a : A)
+    (ha_spec : SpectrumRestricts a ContinuousMap.realToNNReal)
+    (hf : ContinuousOn f (spectrum ℝ≥0 a) := by cfc_cont_tac)
+    (hg : ContinuousOn g (spectrum ℝ≥0 a) := by cfc_cont_tac)
+    (ha : 0 ≤ a := by cfc_tac) :
+    cfc f a ≤ cfc g a ↔ ∀ x ∈ spectrum ℝ≥0 a, f x ≤ g x := by
+  have hf' := hf.ofReal_map_toNNReal <| ha_spec.image ▸ Set.mapsTo_image ..
+  have hg' := hg.ofReal_map_toNNReal <| ha_spec.image ▸ Set.mapsTo_image ..
+  rw [cfc_nnreal_eq_real, cfc_nnreal_eq_real, cfc_le_iff ..]
+  simp [NNReal.coe_le_coe, ← ha_spec.image]
+
+/-- In a unital `ℝ`-algebra `A` with a continuous functional calculus, an element `a : A` is larger
+than some `algebraMap ℝ A r` if and only if every element of the `ℝ`-spectrum is nonnegative. -/
+lemma CFC.exists_pos_algebraMap_le_iff {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A]
+    [PartialOrder A] [StarOrderedRing A] [Algebra ℝ A] [TopologicalRing A] [NonnegSpectrumClass ℝ A]
+    [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
+    {a : A} [CompactSpace (spectrum ℝ a)]
+    (h_non : (spectrum ℝ a).Nonempty) (ha : IsSelfAdjoint a := by cfc_tac) :
+    (∃ r > 0, algebraMap ℝ A r ≤ a) ↔ (∀ x ∈ spectrum ℝ a, 0 < x) := by
+  have h_cpct : IsCompact (spectrum ℝ a) := isCompact_iff_compactSpace.mpr inferInstance
+  simp_rw [algebraMap_le_iff_le_spectrum (a := a)]
+  refine ⟨?_, fun h ↦ ?_⟩
+  · rintro ⟨r, hr, hr_le⟩
+    exact (hr.trans_le <| hr_le · ·)
+  · obtain ⟨r, hr, hr_min⟩ := h_cpct.exists_isMinOn h_non continuousOn_id
+    exact ⟨r, h _ hr, hr_min⟩
+
 section CStar_unital
 
 variable {A : Type*} [NormedRing A] [StarRing A] [CStarRing A] [CompleteSpace A]
