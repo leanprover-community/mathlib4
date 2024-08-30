@@ -26,7 +26,7 @@ jobs:
           t_label=""
           count=0
           labels=$(echo "${{ toJson(github.event.pull_request.labels) }}" | jq -r '.[].name')
-          for label in $labels; do
+          for label in "$labels"; do
             if [[ $label == t-* ]]; then
               t_label=$label
               count=$((count + 1))
