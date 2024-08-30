@@ -324,13 +324,6 @@ lemma inter_empty (h : polar 𝕜₁ s ∩ C ∩ polar 𝕜₁ (U (n+1)) = ∅) 
     rfl
   rw [e1, inter_assoc _ _ C, inter_comm _ C, ← inter_assoc, h, empty_inter]
 
-lemma existance [ProperSpace 𝕜₁] (hC₁ : IsClosed C) (h : polar 𝕜₁ s ∩ C ∩ polar 𝕜₁ (U (n+1)) = ∅) :
-    ∃ u : Finset (U (n + 1)), (polar 𝕜₁ (U (n+2)) ∩ ⋂ i ∈ u, K C s n i.val) = ∅ := by
-  apply isCompact_iff_finite_subfamily_closed.mp (polarUcompact 𝕜₁ (n+2)) _
-    (fun i => isClosedK _ _ _ i hC₁)
-  rw [inter_empty _ _ _ h]
-  exact Set.inter_empty _
-
 lemma iInter_of_empty_univ : ⋂ i ∈ (∅ : Finset (U (n + 1))), K C s n i.val = univ := by
   simp_all only [Finset.not_mem_empty, iInter_of_empty, iInter_univ]
 
@@ -363,11 +356,15 @@ lemma lala3 (u : Finset (U (E := E₁) (n + 1))) (h : Nonempty u) :
   (⋂ (i ∈ u), polar 𝕜₁ s ∩ polar 𝕜₁ {↑i} ∩ C ∩ polar 𝕜₁ (U (n + 2))) := by
   aesop
 
-lemma existance''' [ProperSpace 𝕜₁] (hC₁ : IsClosed C)
+lemma existance [ProperSpace 𝕜₁] (hC₁ : IsClosed C)
     (h : polar 𝕜₁ s ∩ C ∩ polar 𝕜₁ (U (n+1)) = ∅) :
     ∃ F, F.Finite ∧ F ⊆ (U (E := E₁) (n + 1)) ∧
       polar 𝕜₁ (s ∪ F) ∩ C ∩ polar 𝕜₁ (U (n+2)) = ∅ := by
-  obtain ⟨u,hu⟩ := existance C s n hC₁ h
+  obtain ⟨u,hu⟩ := isCompact_iff_finite_subfamily_closed.mp (polarUcompact 𝕜₁ (n+2)) _
+    (fun i => isClosedK _ _ _ i hC₁) (by
+      rw [inter_empty _ _ _ h]
+      exact Set.inter_empty _
+    )
   use u.toSet
   rw [polar_union]
   have e1: (⋂ i ∈ u, polar 𝕜₁ ({↑i} : Set E₁)) = polar 𝕜₁ (u.toSet : Set E₁) := by
