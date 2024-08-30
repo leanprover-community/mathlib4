@@ -364,13 +364,21 @@ lemma confusion (u : Finset (U (n + 1))) (h : Nonempty u):
   exact Eq.symm (biInter_eq_iInter (fun x ↦ x ∈ u.val) fun x _ ↦ K C s n x)
 
 lemma lala (u : Finset (U (E := E₁) (n + 1))) (h : Nonempty u) :
-    (polar 𝕜₁ s ∩ ⋂ i ∈ u, polar 𝕜₁ {↑i }) ∩ C ∩ polar 𝕜₁ (U (n + 2)) =
-      (⋂ i ∈ u, polar 𝕜₁ s ∩ polar 𝕜₁ {↑i} ∩ C ∩ polar 𝕜₁ (U (n + 2))) := by
-  sorry
-  --rw [inter_iInter]
-  --rw [iInter_inter]
-  --rw [iInter_inter]
+    (polar 𝕜₁ s ∩ ⋂ (i : u), polar 𝕜₁ {↑i }) ∩ C ∩ polar 𝕜₁ (U (n + 2)) =
+      (⋂ (i : u), polar 𝕜₁ s ∩ polar 𝕜₁ {↑i} ∩ C ∩ polar 𝕜₁ (U (n + 2))) := by
+  rw [inter_iInter]
+  rw [iInter_inter]
+  rw [iInter_inter]
 
+lemma lala2 (u : Finset (U (E := E₁) (n + 1))) (h : Nonempty u) :
+    (polar 𝕜₁ s ∩ ⋂ (i : u), polar 𝕜₁ {↑i }) ∩ C ∩ polar 𝕜₁ (U (n + 2)) =
+    (polar 𝕜₁ s ∩ ⋂ i ∈ u, polar 𝕜₁ {↑i }) ∩ C ∩ polar 𝕜₁ (U (n + 2)) := by
+  aesop
+
+lemma lala3 (u : Finset (U (E := E₁) (n + 1))) (h : Nonempty u) :
+    (⋂ (i : u), polar 𝕜₁ s ∩ polar 𝕜₁ {↑i} ∩ C ∩ polar 𝕜₁ (U (n + 2))) =
+  (⋂ (i ∈ u), polar 𝕜₁ s ∩ polar 𝕜₁ {↑i} ∩ C ∩ polar 𝕜₁ (U (n + 2))) := by
+  aesop
 
 lemma existance' [ProperSpace 𝕜₁] (hC₁ : IsClosed C) (h : polar 𝕜₁ s ∩ C ∩ polar 𝕜₁ (U (n+1)) = ∅) :
     ∃ u : Finset (U (E := E₁) (n + 1)), ⋂ i ∈ u, K C s n i = ∅ := by
@@ -400,8 +408,12 @@ lemma existance''' [ProperSpace 𝕜₁] (hC₁ : IsClosed C)
   --rw [← hu]
   have eu : Nonempty u := by exact u_notempty C s n u hu
   rw [← more_confusion _ _ _ _ eu, confusion _ _ _ _ eu] at hu
+  rw [← lala2]
   rw [lala]
+  rw [lala3]
   exact hu
+  exact eu
+  exact eu
   exact eu
 
 
