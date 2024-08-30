@@ -19,7 +19,7 @@ jobs:
           printf 'Labels:\n---\n%s\n---\n' "${labels}"
           #topic="generic"
           #printf '%s' "${labels}" | grep "^t-"
-          tlbels="$(printf '%s' "${labels}" | grep -- '^t-')"
+          tlbels="$(printf '%s\n' "${labels}" | grep -- '^t-')"
           printf 't-labels:\n---\n%s\n---\n' "${tlbels}"
 
           #t_label=""
