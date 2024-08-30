@@ -17,7 +17,7 @@ open List
 
 variable {α : Type u} {β : α → Type v}
 
-/-! ### Multisets of sigma types-/
+/-! ### Multisets of sigma types -/
 
 namespace Multiset
 
@@ -142,9 +142,6 @@ theorem induction_on₃ {C : Finmap β → Finmap β → Finmap β → Prop} (s�
 @[ext]
 theorem ext : ∀ {s t : Finmap β}, s.entries = t.entries → s = t
   | ⟨l₁, h₁⟩, ⟨l₂, _⟩, H => by congr
-
-protected theorem ext_iff {s t : Finmap β} : s = t ↔ s.entries = t.entries :=
-  ⟨congr_arg _, ext⟩
 
 @[simp]
 theorem ext_iff' {s t : Finmap β} : s.entries = t.entries ↔ s = t :=

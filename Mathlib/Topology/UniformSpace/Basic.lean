@@ -340,7 +340,7 @@ def UniformSpace.ofNhdsEqComap (u : UniformSpace.Core α) (_t : TopologicalSpace
   __ := u
   nhds_eq_comap_uniformity := h
 
-@[ext]
+@[ext (iff := false)]
 protected theorem UniformSpace.ext {u₁ u₂ : UniformSpace α} (h : 𝓤[u₁] = 𝓤[u₂]) : u₁ = u₂ := by
   have : u₁.toTopologicalSpace = u₂.toTopologicalSpace := TopologicalSpace.ext_nhds fun x ↦ by
     rw [u₁.nhds_eq_comap_uniformity, u₂.nhds_eq_comap_uniformity]
@@ -566,7 +566,7 @@ theorem comp_comp_symm_mem_uniformity_sets {s : Set (α × α)} (hs : s ∈ 𝓤
 
 /-- The ball around `(x : β)` with respect to `(V : Set (β × β))`. Intended to be
 used for `V ∈ 𝓤 β`, but this is not needed for the definition. Recovers the
-notions of metric space ball when `V = {p | dist p.1 p.2 < r }`.  -/
+notions of metric space ball when `V = {p | dist p.1 p.2 < r }`. -/
 def UniformSpace.ball (x : β) (V : Set (β × β)) : Set β :=
   Prod.mk x ⁻¹' V
 
@@ -1358,6 +1358,8 @@ end MulOpposite
 
 section Prod
 
+open UniformSpace
+
 /- a similar product space is possible on the function space (uniformity of pointwise convergence),
   but we want to have the uniformity of uniform convergence on function spaces -/
 instance instUniformSpaceProd [u₁ : UniformSpace α] [u₂ : UniformSpace β] : UniformSpace (α × β) :=
@@ -1383,7 +1385,7 @@ theorem uniformity_prod_eq_comap_prod [UniformSpace α] [UniformSpace β] :
     𝓤 (α × β) =
       comap (fun p : (α × β) × α × β => ((p.1.1, p.2.1), (p.1.2, p.2.2))) (𝓤 α ×ˢ 𝓤 β) := by
   dsimp [SProd.sprod]
-  rw [uniformity_prod, Filter.prod, comap_inf, comap_comap, comap_comap]; rfl
+  rw [uniformity_prod, Filter.prod, Filter.comap_inf, Filter.comap_comap, Filter.comap_comap]; rfl
 
 theorem uniformity_prod_eq_prod [UniformSpace α] [UniformSpace β] :
     𝓤 (α × β) = map (fun p : (α × α) × β × β => ((p.1.1, p.2.1), (p.1.2, p.2.2))) (𝓤 α ×ˢ 𝓤 β) := by
@@ -1396,10 +1398,35 @@ theorem mem_uniformity_of_uniformContinuous_invariant [UniformSpace α] [Uniform
   rcases mem_prod_iff.1 (mem_map.1 <| hf hs) with ⟨u, hu, v, hv, huvt⟩
   exact ⟨u, hu, fun a b c hab => @huvt ((_, _), (_, _)) ⟨hab, refl_mem_uniformity hv⟩⟩
 
-theorem mem_uniform_prod [t₁ : UniformSpace α] [t₂ : UniformSpace β] {a : Set (α × α)}
-    {b : Set (β × β)} (ha : a ∈ 𝓤 α) (hb : b ∈ 𝓤 β) :
-    { p : (α × β) × α × β | (p.1.1, p.2.1) ∈ a ∧ (p.1.2, p.2.2) ∈ b } ∈ 𝓤 (α × β) := by
-  rw [uniformity_prod]; exact inter_mem_inf (preimage_mem_comap ha) (preimage_mem_comap hb)
+/-- An entourage of the diagonal in `α` and an entourage in `β` yield an entourage in `α × β`
+once we permute coordinates.-/
+def entourageProd (u : Set (α × α)) (v : Set (β × β)) : Set ((α × β) × α × β) :=
+  {((a₁, b₁),(a₂, b₂)) | (a₁, a₂) ∈ u ∧ (b₁, b₂) ∈ v}
+
+theorem mem_entourageProd {u : Set (α × α)} {v : Set (β × β)} {p : (α × β) × α × β} :
+    p ∈ entourageProd u v ↔ (p.1.1, p.2.1) ∈ u ∧ (p.1.2, p.2.2) ∈ v := Iff.rfl
+
+theorem entourageProd_mem_uniformity [t₁ : UniformSpace α] [t₂ : UniformSpace β] {u : Set (α × α)}
+    {v : Set (β × β)} (hu : u ∈ 𝓤 α) (hv : v ∈ 𝓤 β) :
+    entourageProd u v ∈ 𝓤 (α × β) := by
+  rw [uniformity_prod]; exact inter_mem_inf (preimage_mem_comap hu) (preimage_mem_comap hv)
+
+theorem ball_entourageProd (u : Set (α × α)) (v : Set (β × β)) (x : α × β) :
+    ball x (entourageProd u v) = ball x.1 u ×ˢ ball x.2 v := by
+  ext p; simp only [ball, entourageProd, Set.mem_setOf_eq, Set.mem_prod, Set.mem_preimage]
+
+theorem Filter.HasBasis.uniformity_prod {ιa ιb : Type*} [UniformSpace α] [UniformSpace β]
+    {pa : ιa → Prop} {pb : ιb → Prop} {sa : ιa → Set (α × α)} {sb : ιb → Set (β × β)}
+    (ha : (𝓤 α).HasBasis pa sa) (hb : (𝓤 β).HasBasis pb sb) :
+    (𝓤 (α × β)).HasBasis (fun i : ιa × ιb ↦ pa i.1 ∧ pb i.2)
+    (fun i ↦ entourageProd (sa i.1) (sb i.2)) :=
+  (ha.comap _).inf (hb.comap _)
+
+theorem entourageProd_subset [UniformSpace α] [UniformSpace β]
+    {s : Set ((α × β) × α × β)} (h : s ∈ 𝓤 (α × β)) :
+    ∃ u ∈ 𝓤 α, ∃ v ∈ 𝓤 β, entourageProd u v ⊆ s := by
+  rcases (((𝓤 α).basis_sets.uniformity_prod (𝓤 β).basis_sets).mem_iff' s).1 h with ⟨w, hw⟩
+  use w.1, hw.1.1, w.2, hw.1.2, hw.2
 
 theorem tendsto_prod_uniformity_fst [UniformSpace α] [UniformSpace β] :
     Tendsto (fun p : (α × β) × α × β => (p.1.1, p.2.1)) (𝓤 (α × β)) (𝓤 α) :=
@@ -1766,3 +1793,5 @@ theorem Filter.Tendsto.congr_uniformity {α β} [UniformSpace β] {f g : α → 
 theorem Uniform.tendsto_congr {α β} [UniformSpace β] {f g : α → β} {l : Filter α} {b : β}
     (hfg : Tendsto (fun x => (f x, g x)) l (𝓤 β)) : Tendsto f l (𝓝 b) ↔ Tendsto g l (𝓝 b) :=
   ⟨fun h => h.congr_uniformity hfg, fun h => h.congr_uniformity hfg.uniformity_symm⟩
+
+set_option linter.style.longFile 1900

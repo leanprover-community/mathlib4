@@ -863,7 +863,7 @@ theorem castNum_testBit (m n) : testBit m n = Nat.testBit m n := by
   | pos m =>
     rw [cast_pos]
     induction' n with n IH generalizing m <;> cases' m with m m
-        <;> dsimp only [PosNum.testBit, Nat.zero_eq]
+        <;> dsimp only [PosNum.testBit]
     · rfl
     · rw [PosNum.cast_bit1, ← two_mul, ← congr_fun Nat.bit_true, Nat.testBit_bit_zero]
     · rw [PosNum.cast_bit0, ← two_mul, ← congr_fun Nat.bit_false, Nat.testBit_bit_zero]
@@ -1277,7 +1277,7 @@ instance addCommGroup : AddCommGroup ZNum :=
     add_comm := by transfer
     neg := Neg.neg
     zsmul := zsmulRec
-    add_left_neg := by transfer }
+    neg_add_cancel := by transfer }
 
 instance addMonoidWithOne : AddMonoidWithOne ZNum :=
   { ZNum.addMonoid with
@@ -1414,7 +1414,8 @@ theorem divMod_to_nat (d n : PosNum) :
     revert IH; cases' divMod d n with q r; intro IH
     simp only [divMod] at IH ⊢
     apply divMod_to_nat_aux
-    · simp; rw [← two_mul, ← two_mul, mul_left_comm, ← mul_add, ← IH.1]
+    · simp only [Num.cast_bit0, cast_bit0]
+      rw [← two_mul, ← two_mul, mul_left_comm, ← mul_add, ← IH.1]
     · simpa using IH.2
 
 @[simp]
@@ -1575,3 +1576,5 @@ instance SNum.lt : LT SNum :=
 
 instance SNum.le : LE SNum :=
   ⟨fun a b => (a : ℤ) ≤ b⟩
+
+set_option linter.style.longFile 1700

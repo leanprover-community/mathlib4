@@ -41,11 +41,11 @@ noncomputable def isometryEquivSumSquares (w' : ι → ℂ) :
       v j • w j ^ (-(1 / 2 : ℂ)) := by
     classical
     rw [Finset.sum_apply, sum_eq_single j, Pi.basisFun_apply, IsUnit.unit_spec,
-      LinearMap.stdBasis_apply, Pi.smul_apply, Pi.smul_apply, Function.update_same, smul_eq_mul,
+      Pi.smul_apply, Pi.smul_apply, Pi.single_eq_same, smul_eq_mul,
       smul_eq_mul, smul_eq_mul, mul_one]
     · intro i _ hij
-      rw [Pi.basisFun_apply, LinearMap.stdBasis_apply, Pi.smul_apply, Pi.smul_apply,
-        Function.update_noteq hij.symm, Pi.zero_apply, smul_eq_mul, smul_eq_mul,
+      rw [Pi.basisFun_apply, Pi.smul_apply, Pi.smul_apply,
+        Pi.single_eq_of_ne hij.symm, smul_eq_mul, smul_eq_mul,
         mul_zero, mul_zero]
     intro hj'; exact False.elim (hj' hj)
   simp_rw [Basis.unitsSMul_apply]
@@ -58,7 +58,7 @@ noncomputable def isometryEquivSumSquares (w' : ι → ℂ) :
   suffices v j * v j = w j ^ (-(1 / 2 : ℂ)) * w j ^ (-(1 / 2 : ℂ)) * w j * v j * v j by
     rw [this]; ring
   rw [← Complex.cpow_add _ _ (w j).ne_zero, show -(1 / 2 : ℂ) + -(1 / 2) = -1 by simp [← two_mul],
-    Complex.cpow_neg_one, inv_mul_cancel (w j).ne_zero, one_mul]
+    Complex.cpow_neg_one, inv_mul_cancel₀ (w j).ne_zero, one_mul]
 
 /-- The isometry between a weighted sum of squares on the complex numbers and the
 sum of squares, i.e. `weightedSumSquares` with weight `fun (i : ι) => 1`. -/

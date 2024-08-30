@@ -44,8 +44,9 @@ theorem ContinuousSMul.of_nhds_zero [TopologicalRing R] [TopologicalAddGroup M]
     (hmulleft : ∀ m : M, Tendsto (fun a : R => a • m) (𝓝 0) (𝓝 0))
     (hmulright : ∀ a : R, Tendsto (fun m : M => a • m) (𝓝 0) (𝓝 0)) : ContinuousSMul R M where
   continuous_smul := by
+    rw [← nhds_prod_eq] at hmul
     refine continuous_of_continuousAt_zero₂ (AddMonoidHom.smul : R →+ M →+ M) ?_ ?_ ?_ <;>
-      simpa [ContinuousAt, nhds_prod_eq]
+      simpa [ContinuousAt]
 
 end
 
@@ -251,7 +252,7 @@ class ContinuousSemilinearMapClass (F : Type*) {R S : outParam Type*} [Semiring 
 
 /-- `ContinuousLinearMapClass F R M M₂` asserts `F` is a type of bundled continuous
 `R`-linear maps `M → M₂`.  This is an abbreviation for
-`ContinuousSemilinearMapClass F (RingHom.id R) M M₂`.  -/
+`ContinuousSemilinearMapClass F (RingHom.id R) M M₂`. -/
 abbrev ContinuousLinearMapClass (F : Type*) (R : outParam Type*) [Semiring R]
     (M : outParam Type*) [TopologicalSpace M] [AddCommMonoid M] (M₂ : outParam Type*)
     [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M] [Module R M₂] [FunLike F M M₂] :=
@@ -338,7 +339,7 @@ def linearMapOfMemClosureRangeCoe (f : M₁ → M₂)
 def linearMapOfTendsto (f : M₁ → M₂) (g : α → M₁ →ₛₗ[σ] M₂) [l.NeBot]
     (h : Tendsto (fun a x => g a x) l (𝓝 f)) : M₁ →ₛₗ[σ] M₂ :=
   linearMapOfMemClosureRangeCoe f <|
-    mem_closure_of_tendsto h <| eventually_of_forall fun _ => Set.mem_range_self _
+    mem_closure_of_tendsto h <| Eventually.of_forall fun _ => Set.mem_range_self _
 
 variable (M₁ M₂ σ)
 
@@ -425,9 +426,6 @@ initialize_simps_projections ContinuousLinearMap (toLinearMap_toFun → apply, t
 theorem ext {f g : M₁ →SL[σ₁₂] M₂} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
 
-protected theorem ext_iff {f g : M₁ →SL[σ₁₂] M₂} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
-
 /-- Copy of a `ContinuousLinearMap` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities. -/
 protected def copy (f : M₁ →SL[σ₁₂] M₂) (f' : M₁ → M₂) (h : f' = ⇑f) : M₁ →SL[σ₁₂] M₂ where
@@ -474,9 +472,6 @@ theorem coe_coe (f : M₁ →SL[σ₁₂] M₂) : ⇑(f : M₁ →ₛₗ[σ₁�
 @[ext]
 theorem ext_ring [TopologicalSpace R₁] {f g : R₁ →L[R₁] M₁} (h : f 1 = g 1) : f = g :=
   coe_inj.1 <| LinearMap.ext_ring h
-
-protected theorem ext_ring_iff [TopologicalSpace R₁] {f g : R₁ →L[R₁] M₁} : f = g ↔ f 1 = g 1 :=
-  ⟨fun h => h ▸ rfl, ext_ring⟩
 
 /-- If two continuous linear maps are equal on a set `s`, then they are equal on the closure
 of the `Submodule.span` of this set. -/
@@ -644,19 +639,19 @@ instance addCommMonoid : AddCommMonoid (M₁ →SL[σ₁₂] M₂) where
   zero_add := by
     intros
     ext
-    apply_rules [zero_add, add_assoc, add_zero, add_left_neg, add_comm]
+    apply_rules [zero_add, add_assoc, add_zero, neg_add_cancel, add_comm]
   add_zero := by
     intros
     ext
-    apply_rules [zero_add, add_assoc, add_zero, add_left_neg, add_comm]
+    apply_rules [zero_add, add_assoc, add_zero, neg_add_cancel, add_comm]
   add_comm := by
     intros
     ext
-    apply_rules [zero_add, add_assoc, add_zero, add_left_neg, add_comm]
+    apply_rules [zero_add, add_assoc, add_zero, neg_add_cancel, add_comm]
   add_assoc := by
     intros
     ext
-    apply_rules [zero_add, add_assoc, add_zero, add_left_neg, add_comm]
+    apply_rules [zero_add, add_assoc, add_zero, neg_add_cancel, add_comm]
   nsmul := (· • ·)
   nsmul_zero f := by
     ext
@@ -1269,7 +1264,7 @@ instance addCommGroup : AddCommGroup (M →SL[σ₁₂] M₂) where
   zsmul_zero' f := by ext; simp
   zsmul_succ' n f := by ext; simp [add_smul, add_comm]
   zsmul_neg' n f := by ext; simp [add_smul]
-  add_left_neg _ := by ext; apply add_left_neg
+  neg_add_cancel _ := by ext; apply neg_add_cancel
 
 theorem sub_apply (f g : M →SL[σ₁₂] M₂) (x : M) : (f - g) x = f x - g x :=
   rfl
@@ -1321,10 +1316,9 @@ theorem intCast_apply [TopologicalAddGroup M] (z : ℤ) (m : M) : (↑z : M →L
 
 theorem smulRight_one_pow [TopologicalSpace R] [TopologicalRing R] (c : R) (n : ℕ) :
     smulRight (1 : R →L[R] R) c ^ n = smulRight (1 : R →L[R] R) (c ^ n) := by
-  induction' n with n ihn
-  · ext
-    simp
-  · rw [pow_succ, ihn, mul_def, smulRight_comp, smul_eq_mul, pow_succ']
+  induction n with
+  | zero => ext; simp
+  | succ n ihn => rw [pow_succ, ihn, mul_def, smulRight_comp, smul_eq_mul, pow_succ']
 
 section
 
@@ -1644,8 +1638,6 @@ instance continuousSemilinearEquivClass :
 -- instance : CoeFun (M₁ ≃SL[σ₁₂] M₂) fun _ => M₁ → M₂ :=
 -- ⟨fun f => f⟩
 
--- Porting note: Syntactic tautology.
-
 theorem coe_apply (e : M₁ ≃SL[σ₁₂] M₂) (b : M₁) : (e : M₁ →SL[σ₁₂] M₂) b = e b :=
   rfl
 
@@ -1768,7 +1760,7 @@ theorem coe_refl : ↑(ContinuousLinearEquiv.refl R₁ M₁) = ContinuousLinearM
 theorem coe_refl' : ⇑(ContinuousLinearEquiv.refl R₁ M₁) = id :=
   rfl
 
-/-- The inverse of a continuous linear equivalence as a continuous linear equivalence-/
+/-- The inverse of a continuous linear equivalence as a continuous linear equivalence -/
 @[symm]
 protected def symm (e : M₁ ≃SL[σ₁₂] M₂) : M₂ ≃SL[σ₂₁] M₁ :=
   { e.toLinearEquiv.symm with
@@ -1909,9 +1901,7 @@ theorem self_comp_symm (e : M₁ ≃SL[σ₁₂] M₂) : (e : M₁ → M₂) ∘
   exact apply_symm_apply e x
 
 @[simp]
-theorem symm_symm (e : M₁ ≃SL[σ₁₂] M₂) : e.symm.symm = e := by
-  ext x
-  rfl
+theorem symm_symm (e : M₁ ≃SL[σ₁₂] M₂) : e.symm.symm = e := rfl
 
 @[simp]
 theorem refl_symm : (ContinuousLinearEquiv.refl R₁ M₁).symm = ContinuousLinearEquiv.refl R₁ M₁ :=
@@ -1995,7 +1985,7 @@ instance automorphismGroup : Group (M₁ ≃L[R₁] M₁) where
   one_mul f := by
     ext
     rfl
-  mul_left_inv f := by
+  inv_mul_cancel f := by
     ext x
     exact f.left_inv x
 
@@ -2081,9 +2071,6 @@ section
 
 /-! The next theorems cover the identification between `M ≃L[𝕜] M`and the group of units of the ring
 `M →L[R] M`. -/
-
-
-variable [TopologicalAddGroup M]
 
 /-- An invertible continuous linear map `f` determines a continuous equivalence from `M` to itself.
 -/
@@ -2244,8 +2231,6 @@ end ContinuousLinearEquiv
 
 namespace ContinuousLinearMap
 
-open scoped Classical
-
 variable {R : Type*} {M : Type*} {M₂ : Type*} [TopologicalSpace M] [TopologicalSpace M₂]
 
 section
@@ -2254,6 +2239,7 @@ variable [Semiring R]
 variable [AddCommMonoid M₂] [Module R M₂]
 variable [AddCommMonoid M] [Module R M]
 
+open Classical in
 /-- Introduce a function `inverse` from `M →L[R] M₂` to `M₂ →L[R] M`, which sends `f` to `f.symm` if
 `f` is a continuous linear equivalence and to `0` otherwise.  This definition is somewhat ad hoc,
 but one needs a fully (rather than partially) defined inverse function for some purposes, including
@@ -2279,7 +2265,7 @@ end
 section
 
 variable [Ring R]
-variable [AddCommGroup M] [TopologicalAddGroup M] [Module R M]
+variable [AddCommGroup M] [Module R M]
 variable [AddCommGroup M₂] [Module R M₂]
 
 @[simp]
@@ -2403,3 +2389,5 @@ instance t3_quotient_of_isClosed [TopologicalAddGroup M] [IsClosed (S : Set M)] 
 end Submodule
 
 end Quotient
+
+set_option linter.style.longFile 2500

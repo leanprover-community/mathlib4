@@ -9,7 +9,6 @@ import Mathlib.ModelTheory.Semantics
 import Mathlib.Algebra.Ring.Equiv
 
 /-!
-
 # First Order Language of Rings
 
 This file defines the first order language of rings, as well as defining instance of `Add`, `Mul`,
@@ -17,12 +16,12 @@ etc. on terms in the language.
 
 ## Main Definitions
 
-* `FirstOrder.Language.ring` : the language of rings, with function symbols `+`, `*`, `-`, `0`, `1`
-* `FirstOrder.Ring.CompatibleRing` : A class stating that a type is a `Language.ring.Structure`, and
-that this structure is the same as the structure given by the classes `Add`, `Mul`, etc. already on
-`R`.
-* `FirstOrder.Ring.compatibleRingOfRing` : Given a type `R` with instances for each of the `Ring`
-operations, make a `compatibleRing` instance.
+- `FirstOrder.Language.ring` : the language of rings, with function symbols `+`, `*`, `-`, `0`, `1`
+- `FirstOrder.Ring.CompatibleRing` : A class stating that a type is a `Language.ring.Structure`, and
+  that this structure is the same as the structure given by the classes `Add`, `Mul`, etc. already
+  on `R`.
+- `FirstOrder.Ring.compatibleRingOfRing` : Given a type `R` with instances for each of the `Ring`
+  operations, make a `compatibleRing` instance.
 
 ## Implementation Notes
 
@@ -38,7 +37,6 @@ a `Language.ring.Structure K` instance and for example an instance of `Theory.fi
 you must add local instances with definitions like `ModelTheory.Field.fieldOfModelField K` and
 `FirstOrder.Ring.compatibleRingOfModelField K`.
 (in `Mathlib/ModelTheory/Algebra/Field/Basic.lean`), depending on the Theory.
-
 -/
 
 variable {α : Type*}
@@ -66,11 +64,13 @@ namespace Ring
 
 open ringFunc Language
 
-instance (n : ℕ) : DecidableEq (Language.ring.Functions n) := by
-  dsimp [Language.ring]; infer_instance
+/-- This instance does not get inferred without `instDecidableEqFunctions` in
+`ModelTheory/Basic`. -/
+example (n : ℕ) : DecidableEq (Language.ring.Functions n) := inferInstance
 
-instance (n : ℕ) : DecidableEq (Language.ring.Relations n) := by
-  dsimp [Language.ring]; infer_instance
+/-- This instance does not get inferred without `instDecidableEqRelations` in
+`ModelTheory/Basic`. -/
+example (n : ℕ) : DecidableEq (Language.ring.Relations n) := inferInstance
 
 /-- `RingFunc.add`, but with the defeq type `Language.ring.Functions 2` instead
 of `RingFunc 2` -/

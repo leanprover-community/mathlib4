@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Topology.Instances.Irrational
 import Mathlib.Topology.Instances.Rat
 import Mathlib.Topology.Compactification.OnePoint
+import Mathlib.Topology.Metrizable.Uniformity
 
 /-!
 # Additional lemmas about the topology on rational numbers
@@ -71,10 +72,11 @@ theorem not_secondCountableTopology_opc : ¬SecondCountableTopology ℚ∞ := by
   exact not_firstCountableTopology_opc inferInstance
 
 instance : TotallyDisconnectedSpace ℚ := by
+  clear p q s t
   refine ⟨fun s hsu hs x hx y hy => ?_⟩; clear hsu
   by_contra! H : x ≠ y
   wlog hlt : x < y
-  · apply this s hs y hy x hx H.symm <| H.lt_or_lt.resolve_left hlt <;> assumption
+  · apply this s hs y hy x hx H.symm <| H.lt_or_lt.resolve_left hlt
   rcases exists_irrational_btwn (Rat.cast_lt.2 hlt) with ⟨z, hz, hxz, hzy⟩
   have := hs.image _ continuous_coe_real.continuousOn
   rw [isPreconnected_iff_ordConnected] at this

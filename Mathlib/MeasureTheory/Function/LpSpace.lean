@@ -161,9 +161,6 @@ theorem ext {f g : Lp E p μ} (h : f =ᵐ[μ] g) : f = g := by
   simp only [Subtype.mk_eq_mk]
   exact AEEqFun.ext h
 
-theorem ext_iff {f g : Lp E p μ} : f = g ↔ f =ᵐ[μ] g :=
-  ⟨fun h => by rw [h], fun h => ext h⟩
-
 theorem mem_Lp_iff_eLpNorm_lt_top {f : α →ₘ[μ] E} : f ∈ Lp E p μ ↔ eLpNorm f p μ < ∞ := Iff.rfl
 
 @[deprecated (since := "2024-07-27")]
@@ -505,7 +502,7 @@ variable {c : E} {f : α → E} {hf : AEStronglyMeasurable f μ} {s : Set α}
 
 theorem eLpNormEssSup_indicator_le (s : Set α) (f : α → G) :
     eLpNormEssSup (s.indicator f) μ ≤ eLpNormEssSup f μ := by
-  refine essSup_mono_ae (eventually_of_forall fun x => ?_)
+  refine essSup_mono_ae (Eventually.of_forall fun x => ?_)
   rw [ENNReal.coe_le_coe, nnnorm_indicator_eq_indicator_nnnorm]
   exact Set.indicator_le_self s _ x
 
@@ -535,7 +532,7 @@ theorem eLpNormEssSup_indicator_const_eq (s : Set α) (c : G) (hμs : μ s ≠ 0
 alias snormEssSup_indicator_const_eq := eLpNormEssSup_indicator_const_eq
 
 theorem eLpNorm_indicator_le (f : α → E) : eLpNorm (s.indicator f) p μ ≤ eLpNorm f p μ := by
-  refine eLpNorm_mono_ae (eventually_of_forall fun x => ?_)
+  refine eLpNorm_mono_ae (Eventually.of_forall fun x => ?_)
   suffices ‖s.indicator f x‖₊ ≤ ‖f x‖₊ by exact NNReal.coe_mono this
   rw [nnnorm_indicator_eq_indicator_nnnorm]
   exact s.indicator_le_self _ x
@@ -956,7 +953,7 @@ theorem memℒp_norm_rpow_iff {q : ℝ≥0∞} {f : α → E} (hf : AEStronglyMe
   convert h.norm_rpow_div q⁻¹ using 1
   · ext x
     rw [Real.norm_eq_abs, Real.abs_rpow_of_nonneg (norm_nonneg _), ← Real.rpow_mul (abs_nonneg _),
-      ENNReal.toReal_inv, mul_inv_cancel, abs_of_nonneg (norm_nonneg _), Real.rpow_one]
+      ENNReal.toReal_inv, mul_inv_cancel₀, abs_of_nonneg (norm_nonneg _), Real.rpow_one]
     simp [ENNReal.toReal_eq_zero_iff, not_or, q_zero, q_top]
   · rw [div_eq_mul_inv, inv_inv, div_eq_mul_inv, mul_assoc, ENNReal.inv_mul_cancel q_zero q_top,
       mul_one]
@@ -1055,7 +1052,7 @@ theorem LipschitzWith.comp_memℒp {α E F} {K} [MeasurableSpace α] {μ : Measu
   have : ∀ x, ‖g (f x)‖ ≤ K * ‖f x‖ := fun x ↦ by
     -- TODO: add `LipschitzWith.nnnorm_sub_le` and `LipschitzWith.nnnorm_le`
     simpa [g0] using hg.norm_sub_le (f x) 0
-  hL.of_le_mul (hg.continuous.comp_aestronglyMeasurable hL.1) (eventually_of_forall this)
+  hL.of_le_mul (hg.continuous.comp_aestronglyMeasurable hL.1) (Eventually.of_forall this)
 
 theorem MeasureTheory.Memℒp.of_comp_antilipschitzWith {α E F} {K'} [MeasurableSpace α]
     {μ : Measure α} [NormedAddCommGroup E] [NormedAddCommGroup F] {f : α → E} {g : E → F}
@@ -1068,7 +1065,7 @@ theorem MeasureTheory.Memℒp.of_comp_antilipschitzWith {α E F} {K'} [Measurabl
     apply hg'.le_mul_dist
   have B : AEStronglyMeasurable f μ :=
     (hg'.uniformEmbedding hg).embedding.aestronglyMeasurable_comp_iff.1 hL.1
-  exact hL.of_le_mul B (Filter.eventually_of_forall A)
+  exact hL.of_le_mul B (Filter.Eventually.of_forall A)
 
 namespace LipschitzWith
 
@@ -1342,7 +1339,7 @@ theorem eLpNorm'_lim_le_liminf_eLpNorm' {E} [NormedAddCommGroup E] {f : ℕ → 
     refine (h_rpow_mono.orderIsoOfSurjective _ h_rpow_surj).liminf_apply ?_ ?_ ?_ ?_
     all_goals isBoundedDefault
   rw [h_pow_liminf]
-  simp_rw [eLpNorm', ← ENNReal.rpow_mul, one_div, inv_mul_cancel hp_pos.ne.symm, ENNReal.rpow_one]
+  simp_rw [eLpNorm', ← ENNReal.rpow_mul, one_div, inv_mul_cancel₀ hp_pos.ne.symm, ENNReal.rpow_one]
 
 @[deprecated (since := "2024-07-27")]
 alias snorm'_lim_le_liminf_snorm' := eLpNorm'_lim_le_liminf_eLpNorm'
@@ -1550,7 +1547,7 @@ private theorem lintegral_rpow_tsum_coe_nnnorm_sub_le_tsum {f : ℕ → α → E
       (Finset.aemeasurable_sum (Finset.range (n + 1)) fun i _ =>
             ((hf (i + 1)).sub (hf i)).ennnorm).pow_const
         _
-  · exact liminf_le_of_frequently_le' (frequently_of_forall h)
+  · exact liminf_le_of_frequently_le' (Frequently.of_forall h)
 
 private theorem tsum_nnnorm_sub_ae_lt_top {f : ℕ → α → E} (hf : ∀ n, AEStronglyMeasurable (f n) μ)
     {p : ℝ} (hp1 : 1 ≤ p) {B : ℕ → ℝ≥0∞} (hB : ∑' i, B i ≠ ∞)
@@ -1880,7 +1877,7 @@ theorem toLp_inj {f g : C(α, E)} [μ.IsOpenPosMeasure] [NormedField 𝕜] [Norm
 variable {μ}
 
 /-- If a sum of continuous functions `g n` is convergent, and the same sum converges in `Lᵖ` to `h`,
-then in fact `g n` converges uniformly to `h`.  -/
+then in fact `g n` converges uniformly to `h`. -/
 theorem hasSum_of_hasSum_Lp {β : Type*} [μ.IsOpenPosMeasure] [NormedField 𝕜] [NormedSpace 𝕜 E]
     {g : β → C(α, E)} {f : C(α, E)} (hg : Summable g)
     (hg2 : HasSum (toLp (E := E) p μ 𝕜 ∘ g) (toLp (E := E) p μ 𝕜 f)) : HasSum g f := by
@@ -1932,3 +1929,5 @@ theorem meas_ge_le_mul_pow_norm (f : Lp E p μ) (hp_ne_zero : p ≠ 0) (hp_ne_to
 end Lp
 
 end MeasureTheory
+
+set_option linter.style.longFile 2100

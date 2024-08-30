@@ -10,8 +10,8 @@ import Mathlib.Tactic.Common
 The type `Vector` represents lists with fixed length.
 -/
 
-namespace Mathlib
 assert_not_exists Monoid
+namespace Mathlib
 
 universe u v w
 /-- `Vector α n` is the type of lists of length `n` with elements of type `α`. -/
@@ -20,8 +20,7 @@ def Vector (α : Type u) (n : ℕ) :=
 
 namespace Vector
 
-variable {α : Type u} {β : Type v} {φ : Type w}
-variable {n : ℕ}
+variable {α β σ φ : Type*} {n : ℕ}
 
 instance [DecidableEq α] : DecidableEq (Vector α n) :=
   inferInstanceAs (DecidableEq {l : List α // l.length = n})
@@ -53,7 +52,7 @@ def head : Vector α (Nat.succ n) → α
 theorem head_cons (a : α) : ∀ v : Vector α n, head (cons a v) = a
   | ⟨_, _⟩ => rfl
 
-/-- The tail of a vector, with an empty vector having empty tail.  -/
+/-- The tail of a vector, with an empty vector having empty tail. -/
 def tail : Vector α n → Vector α (n - 1)
   | ⟨[], h⟩ => ⟨[], congrArg pred h⟩
   | ⟨_ :: v, h⟩ => ⟨v, congrArg pred h⟩
@@ -137,8 +136,6 @@ section Accum
 
 open Prod
 
-variable {σ : Type}
-
 /-- Runs a function over a vector returning the intermediate results and a
 final result.
 -/
@@ -150,15 +147,14 @@ def mapAccumr (f : α → σ → σ × β) : Vector α n → σ → σ × Vector
 /-- Runs a function over a pair of vectors returning the intermediate results and a
 final result.
 -/
-def mapAccumr₂ {α β σ φ : Type} (f : α → β → σ → σ × φ) :
-    Vector α n → Vector β n → σ → σ × Vector φ n
+def mapAccumr₂ (f : α → β → σ → σ × φ) : Vector α n → Vector β n → σ → σ × Vector φ n
   | ⟨x, px⟩, ⟨y, py⟩, c =>
     let res := List.mapAccumr₂ f x y c
     ⟨res.1, res.2, by simp [*, res]⟩
 
 end Accum
 
-/-! ### Shift Primitives-/
+/-! ### Shift Primitives -/
 section Shift
 
 /-- `shiftLeftFill v i` is the vector obtained by left-shifting `v` `i` times and padding with the
@@ -185,7 +181,7 @@ protected theorem eq_nil (v : Vector α 0) : v = nil :=
   v.eq nil (List.eq_nil_of_length_eq_zero v.2)
 
 /-- Vector of length from a list `v`
-with witness that `v` has length `n` maps to `v` under `toList`.  -/
+with witness that `v` has length `n` maps to `v` under `toList`. -/
 @[simp]
 theorem toList_mk (v : List α) (P : List.length v = n) : toList (Subtype.mk v P) = v :=
   rfl

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.List.GetD
 import Mathlib.Logic.Equiv.List
 import Mathlib.Logic.Function.Iterate
 
@@ -27,7 +26,6 @@ for this.)
 
 * [Mario Carneiro, *Formalizing computability theory via partial recursive functions*][carneiro2019]
 -/
-
 
 open Mathlib (Vector)
 open Denumerable Encodable Function
@@ -653,7 +651,7 @@ theorem dom_fintype [Finite α] (f : α → σ) : Primrec f :=
   option_some_iff.1 <| by
     haveI := decidableEqOfEncodable α
     refine ((list_get?₁ (l.map f)).comp (list_indexOf₁ l)).of_eq fun a => ?_
-    rw [List.get?_eq_getElem?, List.getElem?_map, List.getElem?_indexOf  (m a), Option.map_some']
+    rw [List.get?_eq_getElem?, List.getElem?_map, List.getElem?_indexOf (m a), Option.map_some']
 
 -- Porting note: These are new lemmas
 -- I added it because it actually simplified the proofs
@@ -763,15 +761,16 @@ private theorem list_foldl' {f : α → List β} {g : α → σ} {h : α → σ 
       hG)
   suffices ∀ a n, F a n = (((f a).take n).foldl (fun s b => h a (s, b)) (g a), (f a).drop n) by
     refine hF.of_eq fun a => ?_
-    rw [this, List.take_all_of_le (length_le_encode _)]
+    rw [this, List.take_of_length_le (length_le_encode _)]
   introv
   dsimp only [F]
   generalize f a = l
   generalize g a = x
-  induction' n with n IH generalizing l x
-  · rfl
-  simp only [iterate_succ, comp_apply]
-  cases' l with b l <;> simp [IH]
+  induction n generalizing l x with
+  | zero => rfl
+  | succ n IH =>
+    simp only [iterate_succ, comp_apply]
+    cases' l with b l <;> simp [IH]
 
 private theorem list_cons' : (haveI := prim H; Primrec₂ (@List.cons β)) :=
   letI := prim H
@@ -925,9 +924,14 @@ theorem list_get? : Primrec₂ (@List.get? α) :=
       induction' l with _ l IH <;> simp [*]
     · apply IH
 
+theorem list_getElem? : Primrec₂ (fun (l : List α) (n : ℕ) => l[n]?) := by
+  convert list_get?
+  ext
+  simp
+
 theorem list_getD (d : α) : Primrec₂ fun l n => List.getD l n d := by
-  simp only [List.getD_eq_getD_get?]
-  exact option_getD.comp₂ list_get? (const _)
+  simp only [List.getD_eq_getElem?_getD]
+  exact option_getD.comp₂ list_getElem? (const _)
 
 theorem list_getI [Inhabited α] : Primrec₂ (@List.getI α _) :=
   list_getD _
@@ -993,15 +997,16 @@ theorem nat_strong_rec (f : α → ℕ → σ) {g : α → List σ → Option σ
                 option_map (hg.comp (fst.comp fst) snd)
                   (to₂ <| list_concat.comp (snd.comp fst) snd))).of_eq
       fun a n => by
-      induction' n with n IH; · rfl
-      simp [IH, H, List.range_succ]
+      induction n with
+      | zero => rfl
+      | succ n IH => simp [IH, H, List.range_succ]
 
 theorem listLookup [DecidableEq α] : Primrec₂ (List.lookup : α → List (α × β) → Option β) :=
   (to₂ <| list_rec snd (const none) <|
     to₂ <|
-      cond (Primrec.beq.comp (fst.comp fst) (fst.comp $ fst.comp snd))
-        (option_some.comp $ snd.comp $ fst.comp snd)
-        (snd.comp $ snd.comp snd)).of_eq
+      cond (Primrec.beq.comp (fst.comp fst) (fst.comp <| fst.comp snd))
+        (option_some.comp <| snd.comp <| fst.comp snd)
+        (snd.comp <| snd.comp snd)).of_eq
   fun a ps => by
   induction' ps with p ps ih <;> simp [List.lookup, *]
   cases ha : a == p.1 <;> simp [ha]
@@ -1014,7 +1019,7 @@ theorem nat_omega_rec' (f : β → σ) {m : β → ℕ} {l : β → List β} {g 
   let mapGraph (M : List (β × σ)) (bs : List β) : List σ := bs.bind (Option.toList <| M.lookup ·)
   let bindList (b : β) : ℕ → List β := fun n ↦ n.rec [b] fun _ bs ↦ bs.bind l
   let graph (b : β) : ℕ → List (β × σ) := fun i ↦ i.rec [] fun i ih ↦
-    (bindList b (m b - i)).filterMap fun b' ↦ (g b' $ mapGraph ih (l b')).map (b', ·)
+    (bindList b (m b - i)).filterMap fun b' ↦ (g b' <| mapGraph ih (l b')).map (b', ·)
   have mapGraph_primrec : Primrec₂ mapGraph :=
     to₂ <| list_bind snd <| optionToList.comp₂ <| listLookup.comp₂ .right (fst.comp₂ .left)
   have bindList_primrec : Primrec₂ (bindList) :=
@@ -1026,9 +1031,9 @@ theorem nat_omega_rec' (f : β → σ) {m : β → ℕ} {l : β → List β} {g 
       to₂ <| listFilterMap
         (bindList_primrec.comp
           (fst.comp fst)
-          (nat_sub.comp (hm.comp $ fst.comp fst) (fst.comp snd))) <|
+          (nat_sub.comp (hm.comp <| fst.comp fst) (fst.comp snd))) <|
             to₂ <| option_map
-              (hg.comp snd (mapGraph_primrec.comp (snd.comp $ snd.comp fst) (hl.comp snd)))
+              (hg.comp snd (mapGraph_primrec.comp (snd.comp <| snd.comp fst) (hl.comp snd)))
               (Primrec₂.pair.comp₂ (snd.comp₂ .left) .right)
   have : Primrec (fun b => ((graph b (m b + 1)).get? 0).map Prod.snd) :=
     option_map (list_get?.comp (graph_primrec.comp Primrec.id (succ.comp hm)) (const 0))
@@ -1041,14 +1046,14 @@ theorem nat_omega_rec' (f : β → σ) {m : β → ℕ} {l : β → List β} {g 
           induction' k with k ih <;> simp [bindList]
           intro a₂ a₁ ha₁ ha₂
           have : k ≤ m b :=
-            Nat.lt_succ.mp (by simpa using Nat.add_lt_of_lt_sub $ Nat.zero_lt_of_lt (ih a₁ ha₁))
+            Nat.lt_succ.mp (by simpa using Nat.add_lt_of_lt_sub <| Nat.zero_lt_of_lt (ih a₁ ha₁))
           have : m a₁ ≤ m b - k :=
             Nat.lt_succ.mp (by rw [← Nat.succ_sub this]; simpa using ih a₁ ha₁)
           exact lt_of_lt_of_le (Ord a₁ a₂ ha₂) this
         List.eq_nil_iff_forall_not_mem.mpr
           (by intro b' ha'; by_contra; simpa using bindList_m_lt (m b + 1) b' ha')
       have mapGraph_graph {bs bs' : List β} (has : bs' ⊆ bs) :
-          mapGraph (bs.map $ fun x => (x, f x)) bs' = bs'.map f := by
+          mapGraph (bs.map <| fun x => (x, f x)) bs' = bs'.map f := by
         induction' bs' with b bs' ih <;> simp [mapGraph]
         · have : b ∈ bs ∧ bs' ⊆ bs := by simpa using has
           rcases this with ⟨ha, has'⟩

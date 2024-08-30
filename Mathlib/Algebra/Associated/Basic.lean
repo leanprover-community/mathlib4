@@ -28,6 +28,8 @@ Then we show that the quotient type `Associates` is a monoid
 and prove basic properties of this quotient.
 -/
 
+assert_not_exists OrderedCommMonoid
+assert_not_exists Multiset
 
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
@@ -43,6 +45,7 @@ def Prime (p : α) : Prop :=
 namespace Prime
 
 variable {p : α} (hp : Prime p)
+include hp
 
 theorem ne_zero : p ≠ 0 :=
   hp.1
@@ -55,28 +58,30 @@ theorem not_dvd_one : ¬p ∣ 1 :=
 
 theorem ne_one : p ≠ 1 := fun h => hp.2.1 (h.symm ▸ isUnit_one)
 
-theorem dvd_or_dvd (hp : Prime p) {a b : α} (h : p ∣ a * b) : p ∣ a ∨ p ∣ b :=
+theorem dvd_or_dvd {a b : α} (h : p ∣ a * b) : p ∣ a ∨ p ∣ b :=
   hp.2.2 a b h
 
 theorem dvd_mul {a b : α} : p ∣ a * b ↔ p ∣ a ∨ p ∣ b :=
   ⟨hp.dvd_or_dvd, (Or.elim · (dvd_mul_of_dvd_left · _) (dvd_mul_of_dvd_right · _))⟩
 
-theorem isPrimal (hp : Prime p) : IsPrimal p := fun _a _b dvd ↦ (hp.dvd_or_dvd dvd).elim
+theorem isPrimal : IsPrimal p := fun _a _b dvd ↦ (hp.dvd_or_dvd dvd).elim
   (fun h ↦ ⟨p, 1, h, one_dvd _, (mul_one p).symm⟩) fun h ↦ ⟨1, p, one_dvd _, h, (one_mul p).symm⟩
 
 theorem not_dvd_mul {a b : α} (ha : ¬ p ∣ a) (hb : ¬ p ∣ b) : ¬ p ∣ a * b :=
   hp.dvd_mul.not.mpr <| not_or.mpr ⟨ha, hb⟩
 
-theorem dvd_of_dvd_pow (hp : Prime p) {a : α} {n : ℕ} (h : p ∣ a ^ n) : p ∣ a := by
-  induction' n with n ih
-  · rw [pow_zero] at h
+theorem dvd_of_dvd_pow {a : α} {n : ℕ} (h : p ∣ a ^ n) : p ∣ a := by
+  induction n with
+  | zero =>
+    rw [pow_zero] at h
     have := isUnit_of_dvd_one h
     have := not_unit hp
     contradiction
-  rw [pow_succ'] at h
-  cases' dvd_or_dvd hp h with dvd_a dvd_pow
-  · assumption
-  exact ih dvd_pow
+  | succ n ih =>
+    rw [pow_succ'] at h
+    rcases dvd_or_dvd hp h with dvd_a | dvd_pow
+    · assumption
+    · exact ih dvd_pow
 
 theorem dvd_pow_iff_dvd {a : α} {n : ℕ} (hn : n ≠ 0) : p ∣ a ^ n ↔ p ∣ a :=
   ⟨hp.dvd_of_dvd_pow, (dvd_pow · hn)⟩
@@ -123,10 +128,12 @@ theorem Prime.left_dvd_or_dvd_right_of_dvd_mul [CancelCommMonoidWithZero α] {p 
 
 theorem Prime.pow_dvd_of_dvd_mul_left [CancelCommMonoidWithZero α] {p a b : α} (hp : Prime p)
     (n : ℕ) (h : ¬p ∣ a) (h' : p ^ n ∣ a * b) : p ^ n ∣ b := by
-  induction' n with n ih
-  · rw [pow_zero]
+  induction n with
+  | zero =>
+    rw [pow_zero]
     exact one_dvd b
-  · obtain ⟨c, rfl⟩ := ih (dvd_trans (pow_dvd_pow p n.le_succ) h')
+  | succ n ih =>
+    obtain ⟨c, rfl⟩ := ih (dvd_trans (pow_dvd_pow p n.le_succ) h')
     rw [pow_succ]
     apply mul_dvd_mul_left _ ((hp.dvd_or_dvd _).resolve_left h)
     rwa [← mul_dvd_mul_iff_left (pow_ne_zero n hp.ne_zero), ← pow_succ, mul_left_comm]
@@ -139,7 +146,7 @@ theorem Prime.pow_dvd_of_dvd_mul_right [CancelCommMonoidWithZero α] {p a b : α
 theorem Prime.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd [CancelCommMonoidWithZero α] {p a b : α}
     {n : ℕ} (hp : Prime p) (hpow : p ^ n.succ ∣ a ^ n.succ * b ^ n) (hb : ¬p ^ 2 ∣ b) : p ∣ a := by
   -- Suppose `p ∣ b`, write `b = p * x` and `hy : a ^ n.succ * b ^ n = p ^ n.succ * y`.
-  cases' hp.dvd_or_dvd ((dvd_pow_self p (Nat.succ_ne_zero n)).trans hpow) with H hbdiv
+  rcases hp.dvd_or_dvd ((dvd_pow_self p (Nat.succ_ne_zero n)).trans hpow) with H | hbdiv
   · exact hp.dvd_of_dvd_pow H
   obtain ⟨x, rfl⟩ := hp.dvd_of_dvd_pow hbdiv
   obtain ⟨y, hy⟩ := hpow
@@ -158,13 +165,13 @@ theorem prime_pow_succ_dvd_mul {α : Type*} [CancelCommMonoidWithZero α] {p x y
     {i : ℕ} (hxy : p ^ (i + 1) ∣ x * y) : p ^ (i + 1) ∣ x ∨ p ∣ y := by
   rw [or_iff_not_imp_right]
   intro hy
-  induction' i with i ih generalizing x
-  · rw [pow_one] at hxy ⊢
-    exact (h.dvd_or_dvd hxy).resolve_right hy
-  rw [pow_succ'] at hxy ⊢
-  obtain ⟨x', rfl⟩ := (h.dvd_or_dvd (dvd_of_mul_right_dvd hxy)).resolve_right hy
-  rw [mul_assoc] at hxy
-  exact mul_dvd_mul_left p (ih ((mul_dvd_mul_iff_left h.ne_zero).mp hxy))
+  induction i generalizing x with
+  | zero => rw [pow_one] at hxy ⊢; exact (h.dvd_or_dvd hxy).resolve_right hy
+  | succ i ih =>
+    rw [pow_succ'] at hxy ⊢
+    obtain ⟨x', rfl⟩ := (h.dvd_or_dvd (dvd_of_mul_right_dvd hxy)).resolve_right hy
+    rw [mul_assoc] at hxy
+    exact mul_dvd_mul_left p (ih ((mul_dvd_mul_iff_left h.ne_zero).mp hxy))
 
 /-- `Irreducible p` states that `p` is non-unit and only factors into units.
 
@@ -493,9 +500,9 @@ theorem Associated.mul_mul [CommMonoid α] {a₁ a₂ b₁ b₂ : α}
     (h₁ : a₁ ~ᵤ b₁) (h₂ : a₂ ~ᵤ b₂) : a₁ * a₂ ~ᵤ b₁ * b₂ := (h₁.mul_right _).trans (h₂.mul_left _)
 
 theorem Associated.pow_pow [CommMonoid α] {a b : α} {n : ℕ} (h : a ~ᵤ b) : a ^ n ~ᵤ b ^ n := by
-  induction' n with n ih
-  · simp [Associated.refl]
-  convert h.mul_mul ih <;> rw [pow_succ']
+  induction n with
+  | zero => simp [Associated.refl]
+  | succ n ih => convert h.mul_mul ih <;> rw [pow_succ']
 
 protected theorem Associated.dvd [Monoid α] {a b : α} : a ~ᵤ b → a ∣ b := fun ⟨u, hu⟩ =>
   ⟨u, hu.symm⟩
@@ -580,7 +587,7 @@ lemma prime_pow_iff [CancelCommMonoidWithZero α] {p : α} {n : ℕ} :
     Prime (p ^ n) ↔ Prime p ∧ n = 1 := by
   refine ⟨fun hp ↦ ?_, fun ⟨hp, hn⟩ ↦ by simpa [hn]⟩
   suffices n = 1 by aesop
-  cases' n with n
+  rcases n with - | n
   · simp at hp
   · rw [Nat.succ.injEq]
     rw [pow_succ', prime_mul_iff] at hp
@@ -840,20 +847,15 @@ theorem mk_pow (a : α) (n : ℕ) : Associates.mk (a ^ n) = Associates.mk a ^ n 
 theorem dvd_eq_le : ((· ∣ ·) : Associates α → Associates α → Prop) = (· ≤ ·) :=
   rfl
 
-theorem mul_eq_one_iff {x y : Associates α} : x * y = 1 ↔ x = 1 ∧ y = 1 :=
-  Iff.intro
-    (Quotient.inductionOn₂ x y fun a b h =>
-      have : a * b ~ᵤ 1 := Quotient.exact h
-      ⟨Quotient.sound <| associated_one_of_associated_mul_one this,
-        Quotient.sound <| associated_one_of_associated_mul_one (b := a) (by rwa [mul_comm])⟩)
-    (by simp (config := { contextual := true }))
-
-theorem units_eq_one (u : (Associates α)ˣ) : u = 1 :=
-  Units.ext (mul_eq_one_iff.1 u.val_inv).1
-
 instance uniqueUnits : Unique (Associates α)ˣ where
-  default := 1
-  uniq := Associates.units_eq_one
+  uniq := by
+    rintro ⟨a, b, hab, hba⟩
+    revert hab hba
+    exact Quotient.inductionOn₂ a b <| fun a b hab hba ↦ Units.ext <| Quotient.sound <|
+      associated_one_of_associated_mul_one <| Quotient.exact hab
+
+@[deprecated (since := "2024-07-22")] alias mul_eq_one_iff := mul_eq_one
+@[deprecated (since := "2024-07-22")] protected alias units_eq_one := Subsingleton.elim
 
 @[simp]
 theorem coe_unit_eq_one (u : (Associates α)ˣ) : (u : Associates α) = 1 := by
@@ -1104,7 +1106,7 @@ section CancelCommMonoidWithZero
 
 theorem isUnit_of_associated_mul [CancelCommMonoidWithZero α] {p b : α} (h : Associated (p * b) p)
     (hp : p ≠ 0) : IsUnit b := by
-  cases' h with a ha
+  obtain ⟨a, ha⟩ := h
   refine isUnit_of_mul_eq_one b a ((mul_right_inj' hp).mp ?_)
   rwa [← mul_assoc, mul_one]
 
@@ -1130,19 +1132,18 @@ theorem pow_injective_of_not_unit [CancelCommMonoidWithZero α] {q : α} (hq : �
 
 theorem dvd_prime_pow [CancelCommMonoidWithZero α] {p q : α} (hp : Prime p) (n : ℕ) :
     q ∣ p ^ n ↔ ∃ i ≤ n, Associated q (p ^ i) := by
-  induction' n with n ih generalizing q
-  · simp [← isUnit_iff_dvd_one, associated_one_iff_isUnit]
-  refine ⟨fun h => ?_, fun ⟨i, hi, hq⟩ => hq.dvd.trans (pow_dvd_pow p hi)⟩
-  rw [pow_succ'] at h
-  rcases hp.left_dvd_or_dvd_right_of_dvd_mul h with (⟨q, rfl⟩ | hno)
-  · rw [mul_dvd_mul_iff_left hp.ne_zero, ih] at h
-    rcases h with ⟨i, hi, hq⟩
-    refine ⟨i + 1, Nat.succ_le_succ hi, (hq.mul_left p).trans ?_⟩
-    rw [pow_succ']
-  · obtain ⟨i, hi, hq⟩ := ih.mp hno
-    exact ⟨i, hi.trans n.le_succ, hq⟩
+  induction n generalizing q with
+  | zero =>
+    simp [← isUnit_iff_dvd_one, associated_one_iff_isUnit]
+  | succ n ih =>
+    refine ⟨fun h => ?_, fun ⟨i, hi, hq⟩ => hq.dvd.trans (pow_dvd_pow p hi)⟩
+    rw [pow_succ'] at h
+    rcases hp.left_dvd_or_dvd_right_of_dvd_mul h with (⟨q, rfl⟩ | hno)
+    · rw [mul_dvd_mul_iff_left hp.ne_zero, ih] at h
+      rcases h with ⟨i, hi, hq⟩
+      refine ⟨i + 1, Nat.succ_le_succ hi, (hq.mul_left p).trans ?_⟩
+      rw [pow_succ']
+    · obtain ⟨i, hi, hq⟩ := ih.mp hno
+      exact ⟨i, hi.trans n.le_succ, hq⟩
 
 end CancelCommMonoidWithZero
-
-assert_not_exists OrderedCommMonoid
-assert_not_exists Multiset

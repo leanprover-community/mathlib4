@@ -359,12 +359,13 @@ theorem exists_code {n} {f : Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
         PFun.mem_fix_iff.2 (Or.inl (by simp [hf, hn]))
       generalize (n.succ :: v.1 : List ℕ) = w at this ⊢
       clear hn
-      induction' n with n IH
-      · exact this
-      refine IH (fun {m} h' => hm (Nat.lt_succ_of_lt h'))
-        (PFun.mem_fix_iff.2 (Or.inr ⟨_, ?_, this⟩))
-      simp only [hf, hm n.lt_succ_self, Part.bind_some, List.headI, eq_self_iff_true, if_false,
-        Part.mem_some_iff, and_self_iff, List.tail_cons]
+      induction n with
+      | zero => exact this
+      | succ n IH =>
+        refine IH (fun {m} h' => hm (Nat.lt_succ_of_lt h'))
+          (PFun.mem_fix_iff.2 (Or.inr ⟨_, ?_, this⟩))
+        simp only [hf, hm n.lt_succ_self, Part.bind_some, List.headI, eq_self_iff_true, if_false,
+          Part.mem_some_iff, and_self_iff, List.tail_cons]
 
 end Code
 
@@ -427,7 +428,7 @@ def Cont.eval : Cont → List ℕ →. List ℕ
 /-- The set of configurations of the machine:
 
 * `halt v`: The machine is about to stop and `v : List ℕ` is the result.
-* `ret k v`: The machine is about to pass `v : List ℕ` to continuation `k : cont`.
+* `ret k v`: The machine is about to pass `v : List ℕ` to continuation `k : Cont`.
 
 We don't have a state corresponding to normal evaluation because these are evaluated immediately
 to a `ret` "in zero steps" using the `stepNormal` function. -/
@@ -1905,3 +1906,5 @@ end
 end PartrecToTM2
 
 end Turing
+
+set_option linter.style.longFile 2100

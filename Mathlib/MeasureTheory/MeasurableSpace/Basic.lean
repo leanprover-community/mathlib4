@@ -5,12 +5,12 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Finset.Update
 import Mathlib.Data.Prod.TProd
-import Mathlib.GroupTheory.Coset
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.MeasureTheory.MeasurableSpace.Instances
 import Mathlib.Order.LiminfLimsup
 import Mathlib.Data.Set.UnionLift
 import Mathlib.Order.Filter.SmallSets
+import Mathlib.GroupTheory.Coset.Basic
 
 /-!
 # Measurable spaces and measurable functions
@@ -189,6 +189,21 @@ theorem comap_measurable {m : MeasurableSpace β} (f : α → β) : Measurable[m
 theorem Measurable.mono {ma ma' : MeasurableSpace α} {mb mb' : MeasurableSpace β} {f : α → β}
     (hf : @Measurable α β ma mb f) (ha : ma ≤ ma') (hb : mb' ≤ mb) : @Measurable α β ma' mb' f :=
   fun _t ht => ha _ <| hf <| hb _ ht
+
+lemma Measurable.iSup' {mα : ι → MeasurableSpace α} {_ : MeasurableSpace β} {f : α → β} (i₀ : ι)
+    (h : Measurable[mα i₀] f) :
+    Measurable[⨆ i, mα i] f :=
+  h.mono (le_iSup mα i₀) le_rfl
+
+lemma Measurable.sup_of_left {mα mα' : MeasurableSpace α} {_ : MeasurableSpace β} {f : α → β}
+    (h : Measurable[mα] f) :
+    Measurable[mα ⊔ mα'] f :=
+  h.mono le_sup_left le_rfl
+
+lemma Measurable.sup_of_right {mα mα' : MeasurableSpace α} {_ : MeasurableSpace β} {f : α → β}
+    (h : Measurable[mα'] f) :
+    Measurable[mα ⊔ mα'] f :=
+  h.mono le_sup_right le_rfl
 
 theorem measurable_id'' {m mα : MeasurableSpace α} (hm : m ≤ mα) : @Measurable α α mα m id :=
   measurable_id.mono le_rfl hm
@@ -1066,7 +1081,7 @@ lemma measurable_set_mem (a : α) : Measurable fun s : Set α ↦ a ∈ s := mea
 
 @[aesop safe 100 apply (rule_sets := [Measurable])]
 lemma measurable_set_not_mem (a : α) : Measurable fun s : Set α ↦ a ∉ s :=
-  (measurable_discrete Not).comp <| measurable_set_mem a
+  (Measurable.of_discrete (f := Not)).comp <| measurable_set_mem a
 
 @[aesop safe 100 apply (rule_sets := [Measurable])]
 lemma measurableSet_mem (a : α) : MeasurableSet {s : Set α | a ∈ s} :=

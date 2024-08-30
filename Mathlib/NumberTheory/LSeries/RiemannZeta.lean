@@ -43,7 +43,7 @@ proved in `Mathlib.NumberTheory.LSeries.HurwitzZetaEven`.
 -/
 
 
-open MeasureTheory Set Filter Asymptotics TopologicalSpace Real Asymptotics
+open CharZero MeasureTheory Set Filter Asymptotics TopologicalSpace Real Asymptotics
   Classical HurwitzZeta
 
 open Complex hiding exp norm_eq_abs abs_of_nonneg abs_two continuous_exp
@@ -182,7 +182,7 @@ theorem zeta_eq_tsum_one_div_nat_cpow {s : ℂ} (hs : 1 < re s) :
     ofReal_one] using (hasSum_nat_cosZeta 0 hs).tsum_eq.symm
 
 /-- Alternate formulation of `zeta_eq_tsum_one_div_nat_cpow` with a `+ 1` (to avoid relying
-on mathlib's conventions for `0 ^ s`).  -/
+on mathlib's conventions for `0 ^ s`). -/
 theorem zeta_eq_tsum_one_div_nat_add_one_cpow {s : ℂ} (hs : 1 < re s) :
     riemannZeta s = ∑' n : ℕ, 1 / (n + 1 : ℂ) ^ s := by
   have := zeta_eq_tsum_one_div_nat_cpow hs
@@ -202,7 +202,7 @@ theorem zeta_nat_eq_tsum_of_gt_one {k : ℕ} (hk : 1 < k) :
 lemma riemannZeta_residue_one : Tendsto (fun s ↦ (s - 1) * riemannZeta s) (𝓝[≠] 1) (𝓝 1) := by
   exact hurwitzZetaEven_residue_one 0
 
-/- naming scheme was changed from from `riemannCompletedZeta` to `completedRiemannZeta`; add
+/- naming scheme was changed from `riemannCompletedZeta` to `completedRiemannZeta`; add
 aliases for the old names -/
 section aliases
 

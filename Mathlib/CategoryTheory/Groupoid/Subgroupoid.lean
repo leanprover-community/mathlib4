@@ -33,7 +33,7 @@ Given a type `C` with associated `groupoid C` instance.
 * `CategoryTheory.Subgroupoid.comap` is the "preimage" map of subgroupoids along a functor.
 * `CategoryTheory.Subgroupoid.map` is the "image" map of subgroupoids along a functor _injective on
   objects_.
-* `CategoryTheory.Subgroupoid.vertexSubgroup` is the subgroup of the `vertex group` at a given
+* `CategoryTheory.Subgroupoid.vertexSubgroup` is the subgroup of the *vertex group* at a given
   vertex `v`, assuming `v` is contained in the `CategoryTheory.Subgroupoid` (meaning, by definition,
   that the arrow `𝟙 v` is contained in the subgroupoid).
 
@@ -139,7 +139,7 @@ theorem coe_inv_coe' {c d : S.objs} (p : c ⟶ d) :
     (CategoryTheory.inv p).val = CategoryTheory.inv p.val := by
   simp only [← inv_eq_inv, coe_inv_coe]
 
-/-- The embedding of the coerced subgroupoid to its parent-/
+/-- The embedding of the coerced subgroupoid to its parent -/
 def hom : S.objs ⥤ C where
   obj c := c.val
   map f := f.val

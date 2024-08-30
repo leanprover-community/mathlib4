@@ -72,7 +72,7 @@ We use the latter one because, e.g., `𝓝 x` in an `EMetricSpace` or in a `Metr
 of this form. The other two can be emulated using `s = id` or `p = fun _ ↦ True`.
 
 With this approach sometimes one needs to `simp` the statement provided by the `Filter.HasBasis`
-machinery, e.g., `simp only [true_and]` or `simp only [forall_const]` can help with the case
+machinery, e.g., `simp only [true_and_iff]` or `simp only [forall_const]` can help with the case
 `p = fun _ ↦ True`.
 -/
 
@@ -671,7 +671,7 @@ theorem hasBasis_iInf_principal {s : ι → Set α} (h : Directed (· ≥ ·) s)
     simpa only [true_and] using mem_iInf_of_directed (h.mono_comp monotone_principal.dual) t⟩
 
 /-- If `s : ι → Set α` is an indexed family of sets, then finite intersections of `s i` form a basis
-of `⨅ i, 𝓟 (s i)`.  -/
+of `⨅ i, 𝓟 (s i)`. -/
 theorem hasBasis_iInf_principal_finite {ι : Type*} (s : ι → Set α) :
     (⨅ i, 𝓟 (s i)).HasBasis (fun t : Set ι => t.Finite) fun t => ⋂ i ∈ t, s i := by
   refine ⟨fun U => (mem_iInf_finite _).trans ?_⟩

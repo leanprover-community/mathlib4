@@ -8,23 +8,27 @@ import Mathlib.Logic.Small.List
 import Mathlib.ModelTheory.Syntax
 import Mathlib.SetTheory.Cardinal.Ordinal
 
-/-! # Encodings and Cardinality of First-Order Syntax
+/-!
+# Encodings and Cardinality of First-Order Syntax
 
 ## Main Definitions
-* `FirstOrder.Language.Term.encoding` encodes terms as lists.
-* `FirstOrder.Language.BoundedFormula.encoding` encodes bounded formulas as lists.
+
+- `FirstOrder.Language.Term.encoding` encodes terms as lists.
+- `FirstOrder.Language.BoundedFormula.encoding` encodes bounded formulas as lists.
 
 ## Main Results
-* `FirstOrder.Language.Term.card_le` shows that the number of terms in `L.Term α` is at most
-`max ℵ₀ # (α ⊕ Σ i, L.Functions i)`.
-* `FirstOrder.Language.BoundedFormula.card_le` shows that the number of bounded formulas in
-`Σ n, L.BoundedFormula α n` is at most
-`max ℵ₀ (Cardinal.lift.{max u v} #α + Cardinal.lift.{u'} L.card)`.
+
+- `FirstOrder.Language.Term.card_le` shows that the number of terms in `L.Term α` is at most
+  `max ℵ₀ # (α ⊕ Σ i, L.Functions i)`.
+- `FirstOrder.Language.BoundedFormula.card_le` shows that the number of bounded formulas in
+  `Σ n, L.BoundedFormula α n` is at most
+  `max ℵ₀ (Cardinal.lift.{max u v} #α + Cardinal.lift.{u'} L.card)`.
 
 ## TODO
-* `Primcodable` instances for terms and formulas, based on the `encoding`s
-* Computability facts about term and formula operations, to set up a computability approach to
-incompleteness
+
+- `Primcodable` instances for terms and formulas, based on the `encoding`s
+- Computability facts about term and formula operations, to set up a computability approach to
+  incompleteness
 
 -/
 
@@ -178,6 +182,14 @@ or returns `default` if not possible. -/
 def sigmaImp : (Σn, L.BoundedFormula α n) → (Σn, L.BoundedFormula α n) → Σn, L.BoundedFormula α n
   | ⟨m, φ⟩, ⟨n, ψ⟩ => if h : m = n then ⟨m, φ.imp (Eq.mp (by rw [h]) ψ)⟩ else default
 
+#adaptation_note
+/--
+`List.drop_sizeOf_le` is deprecated.
+See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Why.20is.20.60Mathlib.2EModelTheory.2EEncoding.60.20using.20.60SizeOf.2EsizeOf.60.3F
+for discussion about adapting this code.
+-/
+set_option linter.deprecated false in
+/-- Decodes a list of symbols as a list of formulas. -/
 @[simp]
 lemma sigmaImp_apply {n} {φ ψ : L.BoundedFormula α n} :
     sigmaImp ⟨n, φ⟩ ⟨n, ψ⟩ = ⟨n, φ.imp ψ⟩ := by

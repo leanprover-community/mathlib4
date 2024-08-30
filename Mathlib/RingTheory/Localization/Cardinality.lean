@@ -29,11 +29,10 @@ universe u v
 
 namespace IsLocalization
 
-variable {R : Type u} [CommRing R] (S : Submonoid R) {L : Type u} [CommRing L] [Algebra R L]
-  [IsLocalization S L]
+variable {R : Type u} [CommRing R] {L : Type u} [CommRing L] [Algebra R L]
 
 /-- A localization always has cardinality less than or equal to the base ring. -/
-theorem card_le : #L ≤ #R := by
+theorem card_le (S : Submonoid R) [IsLocalization S L] : #L ≤ #R := by
   classical
     cases fintypeOrInfinite R
     · exact Cardinal.mk_le_of_surjective (IsArtinianRing.localization_surjective S _)
@@ -48,7 +47,7 @@ theorem card_le : #L ≤ #R := by
 variable (L)
 
 /-- If you do not localize at any zero-divisors, localization preserves cardinality. -/
-theorem card (hS : S ≤ R⁰) : #R = #L :=
+theorem card (S : Submonoid R) [IsLocalization S L] (hS : S ≤ R⁰) : #R = #L :=
   (Cardinal.mk_le_of_injective (IsLocalization.injective L hS)).antisymm (card_le S)
 
 end IsLocalization

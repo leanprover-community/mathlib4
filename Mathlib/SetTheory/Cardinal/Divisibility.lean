@@ -47,7 +47,7 @@ theorem isUnit_iff : IsUnit a ↔ a = 1 := by
   · exact (not_isUnit_zero h).elim
   rw [isUnit_iff_forall_dvd] at h
   cases' h 1 with t ht
-  rw [eq_comm, mul_eq_one_iff'] at ht
+  rw [eq_comm, mul_eq_one_iff_of_one_le] at ht
   · exact ht.1
   · exact one_le_iff_ne_zero.mpr ha
   · apply one_le_iff_ne_zero.mpr

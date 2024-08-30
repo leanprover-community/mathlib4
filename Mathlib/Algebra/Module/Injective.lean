@@ -98,7 +98,7 @@ section Ext
 
 variable {i f}
 
-@[ext]
+@[ext (iff := false)]
 theorem ExtensionOf.ext {a b : ExtensionOf i f} (domain_eq : a.domain = b.domain)
     (to_fun_eq :
       ∀ ⦃x : a.domain⦄ ⦃y : b.domain⦄, (x : N) = y → a.toLinearPMap x = b.toLinearPMap y) :
@@ -205,13 +205,13 @@ instance ExtensionOf.inhabited : Inhabited (ExtensionOf i f) where
 /-- Since every nonempty chain has a maximal element, by Zorn's lemma, there is a maximal
 `extension_of i f`. -/
 def extensionOfMax : ExtensionOf i f :=
-  (@zorn_nonempty_partialOrder (ExtensionOf i f) _ ⟨Inhabited.default⟩ fun _ hchain hnonempty =>
+  (@zorn_le_nonempty (ExtensionOf i f) _ ⟨Inhabited.default⟩ fun _ hchain hnonempty =>
       ⟨ExtensionOf.max hchain hnonempty, ExtensionOf.le_max hchain hnonempty⟩).choose
 
 theorem extensionOfMax_is_max :
-    ∀ a : ExtensionOf i f, extensionOfMax i f ≤ a → a = extensionOfMax i f :=
-  (@zorn_nonempty_partialOrder (ExtensionOf i f) _ ⟨Inhabited.default⟩ fun _ hchain hnonempty =>
-      ⟨ExtensionOf.max hchain hnonempty, ExtensionOf.le_max hchain hnonempty⟩).choose_spec
+    ∀ (a : ExtensionOf i f), extensionOfMax i f ≤ a → a = extensionOfMax i f :=
+  fun _ ↦ (@zorn_le_nonempty (ExtensionOf i f) _ ⟨Inhabited.default⟩ fun _ hchain hnonempty =>
+    ⟨ExtensionOf.max hchain hnonempty, ExtensionOf.le_max hchain hnonempty⟩).choose_spec.eq_of_ge
 
 -- Porting note: helper function. Lean looks for an instance of `Sup (Type u)` when the
 -- right hand side is substituted in directly
@@ -249,7 +249,7 @@ variable (f)
 def ExtensionOfMaxAdjoin.ideal (y : N) : Ideal R :=
   (extensionOfMax i f).domain.comap ((LinearMap.id : R →ₗ[R] R).smulRight y)
 
-/-- A linear map `I ⟶ Q` by `x ↦ f' (x • y)` where `f'` is the maximal extension-/
+/-- A linear map `I ⟶ Q` by `x ↦ f' (x • y)` where `f'` is the maximal extension -/
 def ExtensionOfMaxAdjoin.idealTo (y : N) : ExtensionOfMaxAdjoin.ideal i f y →ₗ[R] Q where
   toFun (z : { x // x ∈ ideal i f y }) := (extensionOfMax i f).toLinearPMap ⟨(↑z : R) • y, z.prop⟩
   map_add' (z1 z2 : { x // x ∈ ideal i f y }) := by
