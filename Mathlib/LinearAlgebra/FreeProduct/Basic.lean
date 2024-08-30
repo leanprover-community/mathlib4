@@ -386,10 +386,10 @@ def TensorAlgebra.ofSubsingleton
   AlgEquiv.ofAlgHom algebraMapInv (Algebra.ofId R _)
     (by ext) (by ext m; simp [Subsingleton.allEq m 0])
 
-lemma empty_rel_false [inst : IsEmpty I] {x y} (h : rel R A x y) : False := 
-  by cases h <;> exact inst.elim ‹_›
+lemma empty_rel_false [inst : IsEmpty I] {x y} (h : rel R A x y) : False := by
+  cases h <;> exact inst.elim ‹_›
 
-@[simp↓] lemma empty_rel_false_iff [IsEmpty I] {x y}:
+@[simp↓] lemma empty_rel_false_iff [IsEmpty I] {x y} :
   rel R A x y ↔ False := ⟨empty_rel_false R A, False.elim⟩
 
 @[simp] lemma empty_rel_bot [IsEmpty I] : rel R A = ⊥ := by
@@ -428,9 +428,9 @@ theorem inductionOn {motive : FreeProduct R A → Prop} (x : FreeProduct R A)
     ext
     simp_rw [AlgHom.id_comp, AlgHom.comp_toLinearMap, LinearMap.comp_apply,
              AlgHom.toLinearMap_apply, lift_apply, liftAlgHom_mkAlgHom_apply,
-             TensorAlgebra.lift_ι_apply, toModule_lof, AlgHom.toLinearMap_apply, 
+             TensorAlgebra.lift_ι_apply, toModule_lof, AlgHom.toLinearMap_apply,
              ← AlgHom.comp_apply, of, AlgHom.val_comp_codRestrict, FreeProduct.of,
-             ι, ι', mkAlgHom, AlgHom.ofLinearMap_apply, LinearMap.comp_apply, 
+             ι, ι', mkAlgHom, AlgHom.ofLinearMap_apply, LinearMap.comp_apply,
              AlgHom.toLinearMap_apply]
   -- finding a proof is finding an element of the subalgebra
   suffices x = lift R A of x by
