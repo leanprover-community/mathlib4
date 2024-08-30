@@ -15,7 +15,7 @@ jobs:
 
     - name: Get labels
       run: |
-          labels="$(gh api --jq '.labels.[].name' "/repos/{owner}/{repo}/pulls/${{ github.event.number }"})"
+          labels="$(gh api --jq '.labels.[].name' /repos/{owner}/{repo}/pulls/${{ github.event.number }})"
           printf 'Labels:\n---\n%s\n---\n' "${labels}"
           #topic="generic"
           tlabels="$(printf '%s' "${labels}" | grep "^t-")"
