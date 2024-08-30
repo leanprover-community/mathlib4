@@ -75,11 +75,17 @@ instance hasForgetToHeytAlg : HasForget₂ BoolAlg HeytAlg where
 
 end
 
+/-- Constructs a morphism between Boolean algebras lattices from a bounded
+lattice homomorphism between them. -/
+@[simps]
+def Hom.mk {α β : BoolAlg.{u}} (f : BoundedLatticeHom α β) : α ⟶ β where
+  hom := { hom := f }
+
 /-- Constructs an equivalence between Boolean algebras from an order isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : BoolAlg.{u}} (e : α ≃o β) : α ≅ β where
-  hom := (e : BoundedLatticeHom α β)
-  inv := (e.symm : BoundedLatticeHom β α)
+  hom := Hom.mk e
+  inv := Hom.mk e.symm
   hom_inv_id := by ext; exact e.symm_apply_apply _
   inv_hom_id := by ext; exact e.apply_symm_apply _
 
@@ -87,7 +93,7 @@ def Iso.mk {α β : BoolAlg.{u}} (e : α ≃o β) : α ≅ β where
 @[simps]
 def dual : BoolAlg ⥤ BoolAlg where
   obj X := of Xᵒᵈ
-  map {X Y} := BoundedLatticeHom.dual
+  map {X Y} f := Hom.mk (by apply BoundedLatticeHom.dual f.hom.hom)
 
 /-- The equivalence between `BoolAlg` and itself induced by `OrderDual` both ways. -/
 @[simps functor inverse]
@@ -108,5 +114,5 @@ theorem boolAlg_dual_comp_forget_to_bddDistLat :
 @[simps]
 def typeToBoolAlgOp : Type u ⥤ BoolAlgᵒᵖ where
   obj X := op <| BoolAlg.of (Set X)
-  map {X Y} f := Quiver.Hom.op
+  map {X Y} f := Quiver.Hom.op <| BoolAlg.Hom.mk <|
     (CompleteLatticeHom.setPreimage f : BoundedLatticeHom (Set Y) (Set X))
