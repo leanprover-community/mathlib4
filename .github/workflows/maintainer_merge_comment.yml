@@ -49,9 +49,9 @@ jobs:
           organization-url: 'https://leanprover.zulipchat.com'
           to: 'nightly-testing'
           type: 'stream'
-          topic: t-data
+          topic: 't-data'
           #${{ steps.tlabels.outputs.name }}
-          content: my_content
+          content: 'my_content'
           #${{ steps.mathlib_stats.outputs.summary }}
 
       #- name: Send message on Zulip
