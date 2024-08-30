@@ -47,10 +47,10 @@ variable (L : Language.{u, v}) (L' : Language.{u', v'}) {M : Type w} [L.Structur
 
 /-- A language homomorphism maps the symbols of one language to symbols of another. -/
 structure LHom where
-  onFunction : ∀ ⦃n⦄, L.Functions n → L'.Functions n :=
-    by exact fun {n} => (IsRelational.empty_functions n).elim
-  onRelation : ∀ ⦃n⦄, L.Relations n → L'.Relations n :=
-    by exact fun {n} => (IsAlgebraic.empty_relations n).elim
+  onFunction : ∀ ⦃n⦄, L.Functions n → L'.Functions n := by
+    exact fun {n} => (IsRelational.empty_functions n).elim
+  onRelation : ∀ ⦃n⦄, L.Relations n → L'.Relations n :=by
+    exact fun {n} => (IsAlgebraic.empty_relations n).elim
 
 @[inherit_doc FirstOrder.Language.LHom]
 infixl:10 " →ᴸ " => LHom
@@ -221,11 +221,11 @@ noncomputable def defaultExpansion (ϕ : L →ᴸ L')
 all symbols on that structure. -/
 class IsExpansionOn (M : Type*) [L.Structure M] [L'.Structure M] : Prop where
   map_onFunction :
-    ∀ {n} (f : L.Functions n) (x : Fin n → M), funMap (ϕ.onFunction f) x = funMap f x :=
-      by exact fun {n} => (IsRelational.empty_functions _).elim
+    ∀ {n} (f : L.Functions n) (x : Fin n → M), funMap (ϕ.onFunction f) x = funMap f x := by
+      exact fun {n} => (IsRelational.empty_functions _).elim
   map_onRelation :
-    ∀ {n} (R : L.Relations n) (x : Fin n → M), RelMap (ϕ.onRelation R) x = RelMap R x :=
-      by exact fun {n} => (IsAlgebraic.empty_relations _).elim
+    ∀ {n} (R : L.Relations n) (x : Fin n → M), RelMap (ϕ.onRelation R) x = RelMap R x := by
+      exact fun {n} => (IsAlgebraic.empty_relations _).elim
 
 @[simp]
 theorem map_onFunction {M : Type*} [L.Structure M] [L'.Structure M] [ϕ.IsExpansionOn M] {n}
