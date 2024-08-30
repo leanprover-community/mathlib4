@@ -593,7 +593,7 @@ namespace Set
 
 variable {s t : Set α}
 
-/-- Construct a finset enumerating a set `s`, given a `Fintype` instance.  -/
+/-- Construct a finset enumerating a set `s`, given a `Fintype` instance. -/
 def toFinset (s : Set α) [Fintype s] : Finset α :=
   (@Finset.univ s _).map <| Function.Embedding.subtype _
 

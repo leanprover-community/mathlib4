@@ -258,7 +258,7 @@ theorem mem_rec_on {C : Seq α → Prop} {a s} (M : a ∈ s)
     rw [h_eq] at e
     apply h1 _ _ (Or.inr (IH e))
 
-/-- Corecursor over pairs of `Option` values-/
+/-- Corecursor over pairs of `Option` values -/
 def Corec.f (f : β → Option (α × β)) : Option β → Option α × Option β
   | none => (none, none)
   | some b =>
@@ -316,7 +316,7 @@ def BisimO : Option (Seq1 α) → Option (Seq1 α) → Prop
 
 attribute [simp] BisimO
 
-/-- a relation is bisimilar if it meets the `BisimO` test-/
+/-- a relation is bisimilar if it meets the `BisimO` test -/
 def IsBisimulation :=
   ∀ ⦃s₁ s₂⦄, s₁ ~ s₂ → BisimO R (destruct s₁) (destruct s₂)
 

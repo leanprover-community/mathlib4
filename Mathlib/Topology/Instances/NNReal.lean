@@ -257,7 +257,7 @@ section Monotone
 /-- A monotone, bounded above sequence `f : ℕ → ℝ` has a finite limit. -/
 theorem _root_.Real.tendsto_of_bddAbove_monotone {f : ℕ → ℝ} (h_bdd : BddAbove (Set.range f))
     (h_mon : Monotone f) : ∃ r : ℝ, Tendsto f atTop (𝓝 r) := by
-  obtain ⟨B, hB⟩ := Real.exists_isLUB  (Set.range_nonempty f) h_bdd
+  obtain ⟨B, hB⟩ := Real.exists_isLUB (Set.range_nonempty f) h_bdd
   exact ⟨B, tendsto_atTop_isLUB h_mon hB⟩
 
 /-- An antitone, bounded below sequence `f : ℕ → ℝ` has a finite limit. -/

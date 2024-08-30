@@ -327,7 +327,7 @@ end Indep
 
 section FromIndepToIndep
 
-variable {m : ι → MeasurableSpace Ω}  {_mΩ : MeasurableSpace Ω} {μ : Measure Ω}
+variable {m : ι → MeasurableSpace Ω} {_mΩ : MeasurableSpace Ω} {μ : Measure Ω}
 
 theorem iIndepSets.indepSets {s : ι → Set (Set Ω)}
     (h_indep : iIndepSets s μ) {i j : ι} (hij : i ≠ j) : IndepSets (s i) (s j) μ :=

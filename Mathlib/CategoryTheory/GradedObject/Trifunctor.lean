@@ -361,7 +361,7 @@ section
 variable [HasMap ((((mapTrifunctor (bifunctorComp₁₂ F₁₂ G) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃) r]
 
 /-- The action on graded objects of a trifunctor obtained by composition of two
-bifunctors can be computed as a composition of the actions of these two bifunctors.  -/
+bifunctors can be computed as a composition of the actions of these two bifunctors. -/
 noncomputable def mapBifunctorComp₁₂MapObjIso :
     mapTrifunctorMapObj (bifunctorComp₁₂ F₁₂ G) r X₁ X₂ X₃ ≅
     mapBifunctorMapObj G ρ₁₂.q (mapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂) X₃ :=
@@ -539,7 +539,7 @@ section
 variable [HasMap ((((mapTrifunctor (bifunctorComp₂₃ F G₂₃) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃) r]
 
 /-- The action on graded objects of a trifunctor obtained by composition of two
-bifunctors can be computed as a composition of the actions of these two bifunctors.  -/
+bifunctors can be computed as a composition of the actions of these two bifunctors. -/
 noncomputable def mapBifunctorComp₂₃MapObjIso :
     mapTrifunctorMapObj (bifunctorComp₂₃ F G₂₃) r X₁ X₂ X₃ ≅
     mapBifunctorMapObj F ρ₂₃.q X₁ (mapBifunctorMapObj G₂₃ ρ₂₃.p X₂ X₃) :=

@@ -163,7 +163,7 @@ which defines topology of uniform convergence on compact sets.
 We use `ContinuousMap.tendsto_iff_forall_compact_tendstoUniformlyOn`
 to show that the induced topology agrees with the compact-open topology
 and replace the topology with `compactOpen` to avoid non-defeq diamonds,
-see Note [forgetful inheritance].  -/
+see Note [forgetful inheritance]. -/
 instance compactConvergenceUniformSpace : UniformSpace C(α, β) :=
   .replaceTopology (.comap toUniformOnFunIsCompact inferInstance) <| by
     refine TopologicalSpace.ext_nhds fun f ↦ eq_of_forall_le_iff fun l ↦ ?_
