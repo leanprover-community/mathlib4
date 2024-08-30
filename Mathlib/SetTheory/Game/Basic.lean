@@ -134,7 +134,7 @@ end Game
 
 namespace PGame
 
--- Porting note: In a lot of places, I had to add explicitely that the quotient element was a Game.
+-- Porting note: In a lot of places, I had to add explicitly that the quotient element was a Game.
 -- In Lean4, quotients don't have the setoid as an instance argument,
 -- but as an explicit argument, see https://leanprover.zulipchat.com/#narrow/stream/113489-new-members/topic/confusion.20between.20equivalence.20and.20instance.20setoid/near/360822354
 theorem le_iff_game_le {x y : PGame} : x ≤ y ↔ (⟦x⟧ : Game) ≤ ⟦y⟧ :=
