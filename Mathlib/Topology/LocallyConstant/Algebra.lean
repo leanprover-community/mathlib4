@@ -186,7 +186,7 @@ instance [NonAssocSemiring Y] : NonAssocSemiring (LocallyConstant X Y) :=
   Function.Injective.nonAssocSemiring DFunLike.coe DFunLike.coe_injective' rfl rfl
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 
-/-- The constant-function embedding, as a ring hom.  -/
+/-- The constant-function embedding, as a ring hom. -/
 @[simps]
 def constRingHom [NonAssocSemiring Y] : Y →+* LocallyConstant X Y :=
   { constMonoidHom, constAddMonoidHom with toFun := const X }

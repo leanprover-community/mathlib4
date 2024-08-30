@@ -68,7 +68,7 @@ instance : CoeTC F C(α, β) := ⟨toContinuousMap⟩
 
 end ContinuousMapClass
 
-/-! ### Continuous maps-/
+/-! ### Continuous maps -/
 
 
 namespace ContinuousMap

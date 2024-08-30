@@ -2099,3 +2099,5 @@ def add (type : Expr) (proof : Expr) : CCM Unit := do
 end CCM
 
 end Mathlib.Tactic.CC
+
+set_option linter.style.longFile 2300

@@ -36,7 +36,7 @@ instance and `J : Type` has a limit.
 -/
 class HasCountableLimits : Prop where
   /-- `C` has all limits over any type `J` whose objects and morphisms lie in the same universe
-  and which has countably many objects and morphisms-/
+  and which has countably many objects and morphisms -/
   out (J : Type) [SmallCategory J] [CountableCategory J] : HasLimitsOfShape J C
 
 instance (priority := 100) hasFiniteLimits_of_hasCountableLimits [HasCountableLimits C] :
@@ -58,7 +58,7 @@ instance and `J : Type` has a colimit.
 -/
 class HasCountableColimits : Prop where
   /-- `C` has all limits over any type `J` whose objects and morphisms lie in the same universe
-  and which has countably many objects and morphisms-/
+  and which has countably many objects and morphisms -/
   out (J : Type) [SmallCategory J] [CountableCategory J] : HasColimitsOfShape J C
 
 instance (priority := 100) hasFiniteColimits_of_hasCountableColimits [HasCountableColimits C] :

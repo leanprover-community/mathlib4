@@ -139,7 +139,7 @@ theorem coe_inv_coe' {c d : S.objs} (p : c ⟶ d) :
     (CategoryTheory.inv p).val = CategoryTheory.inv p.val := by
   simp only [← inv_eq_inv, coe_inv_coe]
 
-/-- The embedding of the coerced subgroupoid to its parent-/
+/-- The embedding of the coerced subgroupoid to its parent -/
 def hom : S.objs ⥤ C where
   obj c := c.val
   map f := f.val

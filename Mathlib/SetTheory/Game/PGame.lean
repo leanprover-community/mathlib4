@@ -1759,3 +1759,5 @@ theorem zero_lf_one : (0 : PGame) ⧏ 1 :=
 end PGame
 
 end SetTheory
+
+set_option linter.style.longFile 1900
