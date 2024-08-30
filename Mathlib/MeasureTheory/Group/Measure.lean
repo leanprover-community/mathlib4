@@ -728,14 +728,15 @@ a Haar measure. See also `MulEquiv.isHaarMeasure_map`. -/
 "The image of an additive Haar measure under a continuous surjective proper additive group
 homomorphism is again an additive Haar measure. See also `AddEquiv.isAddHaarMeasure_map`."]
 theorem isHaarMeasure_map [BorelSpace G] [TopologicalGroup G] {H : Type*} [Group H]
-    [TopologicalSpace H] [MeasurableSpace H] [BorelSpace H] [T2Space H] [TopologicalGroup H]
+    [TopologicalSpace H] [MeasurableSpace H] [BorelSpace H] [TopologicalGroup H]
     (f : G →* H) (hf : Continuous f) (h_surj : Surjective f)
     (h_prop : Tendsto f (cocompact G) (cocompact H)) : IsHaarMeasure (Measure.map f μ) :=
   { toIsMulLeftInvariant := isMulLeftInvariant_map f.toMulHom hf.measurable h_surj
     lt_top_of_isCompact := by
       intro K hK
-      rw [map_apply hf.measurable hK.measurableSet]
-      exact IsCompact.measure_lt_top ((⟨⟨f, hf⟩, h_prop⟩ : CocompactMap G H).isCompact_preimage hK)
+      rw [← hK.measure_closure, map_apply hf.measurable isClosed_closure.measurableSet]
+      set g : CocompactMap G H := ⟨⟨f, hf⟩, h_prop⟩
+      exact IsCompact.measure_lt_top (g.isCompact_preimage_of_isClosed hK.closure isClosed_closure)
     toIsOpenPosMeasure := hf.isOpenPosMeasure_map h_surj }
 
 /-- The image of a finite Haar measure under a continuous surjective group homomorphism is again
@@ -747,10 +748,9 @@ theorem isHaarMeasure_map_of_isFiniteMeasure
     [BorelSpace G] [TopologicalGroup G] {H : Type*} [Group H]
     [TopologicalSpace H] [MeasurableSpace H] [BorelSpace H] [TopologicalGroup H] [IsFiniteMeasure μ]
     (f : G →* H) (hf : Continuous f) (h_surj : Surjective f) :
-    IsHaarMeasure (Measure.map f μ) :=
-  { toIsMulLeftInvariant := isMulLeftInvariant_map f.toMulHom hf.measurable h_surj
-    lt_top_of_isCompact := fun _K hK ↦ hK.measure_lt_top
-    toIsOpenPosMeasure := hf.isOpenPosMeasure_map h_surj }
+    IsHaarMeasure (Measure.map f μ) where
+  toIsMulLeftInvariant := isMulLeftInvariant_map f.toMulHom hf.measurable h_surj
+  toIsOpenPosMeasure := hf.isOpenPosMeasure_map h_surj
 
 /-- The image of a Haar measure under map of a left action is again a Haar measure. -/
 @[to_additive
