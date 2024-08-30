@@ -101,7 +101,7 @@ private def hasLooseBVars (keys : List Key) : Bool :=
 private def getArgsIgnored (fn : Expr) (args : Array Expr) : MetaM (Array Expr) := do
   let mut fnType ← inferType fn
   let mut j := 0
-  let mut args := args
+  let mut argsIgnored := args
   for i in [:args.size] do
     unless fnType.isForall do
       fnType ← whnfD (fnType.instantiateRevRange j i args)
@@ -110,8 +110,8 @@ private def getArgsIgnored (fn : Expr) (args : Array Expr) : MetaM (Array Expr) 
     fnType := b
     let arg := args[i]!
     if ← isIgnoredArg arg d bi then
-      args := args.set! i tmpStar
-  return args
+      argsIgnored := argsIgnored.set! i tmpStar
+  return argsIgnored
 where
   /-- Determine whether the argument should be ignored. -/
   isIgnoredArg (arg domain : Expr) (binderInfo : BinderInfo) : MetaM Bool := do
