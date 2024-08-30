@@ -106,16 +106,21 @@ namespace CoproductsFromFiniteFiltered
 
 variable [HasFiniteCoproducts C] [HasFilteredColimitsOfSize.{w, w} C]
 
-local instance : HasColimitsOfShape (Discrete α) C := hasCoproducts_of_finite_and_filtered α
+@[local instance, nolint docBlame]
+theorem liftToFinsetColimIsoInstnace : HasColimitsOfShape (Discrete α) C :=
+  hasCoproducts_of_finite_and_filtered α
 
+/-- Helper construction for `liftToFinsetColimIso`. -/
 @[reassoc]
-def liftToFinsetColimIsoAux (F : Discrete α ⥤ C) {J : Finset (Discrete α)} (j : J) :
+theorem liftToFinsetColimIsoAux (F : Discrete α ⥤ C) {J : Finset (Discrete α)} (j : J) :
     Sigma.ι (F.obj ·.val) j ≫ colimit.ι (liftToFinset.obj F) J ≫
       (colimit.isoColimitCocone (liftToFinsetColimitCocone F)).inv
     = colimit.ι F j := by
   simp [liftToFinsetColimitCocone, Discrete.natTrans, liftToFinset.obj,
     colimit.isoColimitCocone, IsColimit.coconePointUniqueUpToIso]
 
+/-- The `liftToFinset` functor, precomposed with forming a colimit, is a coproduct on the original
+functor. -/
 def liftToFinsetColimIso : liftToFinset C α ⋙ colim ≅ colim :=
   NatIso.ofComponents
     (fun F => Iso.symm <| colimit.isoColimitCocone (liftToFinsetColimitCocone F))
