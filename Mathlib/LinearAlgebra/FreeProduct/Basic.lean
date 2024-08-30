@@ -354,10 +354,16 @@ to a unique arrow `π` from `FreeProduct R A` such that  `π ∘ ι i = maps i`.
   invFun π i := π ∘ₐ ι R A i
   left_inv π := by
     ext i aᵢ
-    aesop (add simp [ι, ι'])
+    simp_rw [ι, ι', AlgHom.comp_apply, AlgHom.ofLinearMap_apply,
+             LinearMap.comp_apply, AlgHom.toLinearMap_apply,
+             liftAlgHom_mkAlgHom_apply, TensorAlgebra.lift_ι_apply, toModule_lof,
+             AlgHom.toLinearMap_apply]
   right_inv maps := by
     ext i a
-    aesop (add simp [ι, ι'])
+    simp_rw [ι, ι', LinearMap.comp_apply, AlgHom.toLinearMap_apply, AlgHom.comp_apply,
+             liftAlgHom_mkAlgHom_apply, TensorAlgebra.lift_ι_apply, toModule_lof,
+             AlgHom.toLinearMap_apply, AlgHom.comp_apply, AlgHom.ofLinearMap_apply,
+             LinearMap.comp_apply, mkAlgHom, AlgHom.toLinearMap_apply]
 
 /-- Universal property of the free product of algebras, property:
 for every `R`-algebra `B`, every family of maps `maps : (i : I) → (A i →ₐ[R] B)` lifts
@@ -373,6 +379,89 @@ to a unique arrow `π` from `FreeProduct R A` such that  `π ∘ ι i = maps i`.
     (f : FreeProduct R A →ₐ[R] B) (h : ∀ i, f ∘ₐ ι R A i = maps) :
     f = lift R A maps := by
   ext i a; simp_rw [AlgHom.ext_iff] at h; specialize h i a
-  simp [h.symm, ι]
+  simp [h.symm, lift, ι]
+
+/-- Tensor algebras of subsingleton types are isomorphic to the base ring.
+
+(Intuitively this can be seen by using `asPowersEquiv` and noting that all terms of
+nonzero degree are either `0` or invalid when `M` is resp. unique or empty.) -/
+@[simps! apply symm_apply]
+def TensorAlgebra.ofSubsingleton
+    (R : Type u) [CommSemiring R] (M : Type v) [AddCommMonoid M]
+    [Module R M] [Subsingleton M] : TensorAlgebra R M ≃ₐ[R] R :=
+  AlgEquiv.ofAlgHom algebraMapInv (Algebra.ofId R _)
+    (by ext) (by ext m; simp [Subsingleton.allEq m 0])
+
+lemma empty_rel_false [inst : IsEmpty I] {x y} (h : rel R A x y) :
+  False := by cases h <;> exact inst.elim ‹_›
+
+@[simp↓] lemma empty_rel_false_iff [IsEmpty I] {x y}:
+  rel R A x y ↔ False := ⟨empty_rel_false R A, False.elim⟩
+
+@[simp] lemma empty_rel_bot [IsEmpty I] : rel R A = ⊥ := by
+  ext x y; simp [empty_rel_false_iff]
+
+@[simp] lemma empty_rel'_bot [IsEmpty I] : rel' R A = ⊥ := by
+  ext x y; simp [empty_rel_false_iff]
+
+/--The free product over an empty type is isomorphic to the base ring.-/
+@[simps!] def of_empty [inst : IsEmpty I] : FreeProduct R A ≃ₐ[R] R :=
+  AlgEquiv.ofAlgHom
+    (lift R A fun {i} => inst.elim i)
+    (Algebra.ofId R _)
+    (by ext)
+    (by ext; exact inst.elim ‹_›)
+
+--Follows the proof in `Mathlib.Algebra.FreeAlgebra`.
+/--Inductive principle for `FreeProduct`. If a `Prop` can be proven for
+all elements of the `A i`, including scalars `R`, and is preserved by
+multiplication and addition, then it holds for the whole of the algebra.-/
+@[elab_as_elim, induction_eliminator]
+theorem inductionOn {motive : FreeProduct R A → Prop} (x : FreeProduct R A)
+    (scalar : ∀ r, motive (algebraMap R (FreeProduct R A) r))
+    (iota : ∀ {i} (aᵢ : A i), motive (of R A aᵢ))
+    (mul : ∀ {x y}, motive x → motive y → motive (x * y))
+    (add : ∀ {x y}, motive x → motive y → motive (x + y)) : motive x := by
+  -- the arguments are enough to construct a subalgebra, and a mapping into it from X
+  let s : Subalgebra R (FreeProduct R A) :=
+    { carrier := motive
+      mul_mem' := mul
+      add_mem' := add
+      algebraMap_mem' := scalar }
+  let of {i} : A i →ₐ[R] s := of R A |>.codRestrict s iota
+  -- the mapping through the subalgebra is the identity
+  have of_id : AlgHom.id R (FreeProduct R A) = s.val.comp (lift R A of) := by
+    ext
+    simp_rw [AlgHom.id_comp, AlgHom.comp_toLinearMap, LinearMap.comp_apply,
+             AlgHom.toLinearMap_apply, lift_apply, liftAlgHom_mkAlgHom_apply,
+             TensorAlgebra.lift_ι_apply, toModule_lof, AlgHom.toLinearMap_apply, ← AlgHom.comp_apply,
+             of, AlgHom.val_comp_codRestrict, FreeProduct.of, ι, ι', mkAlgHom,
+             AlgHom.ofLinearMap_apply, LinearMap.comp_apply, AlgHom.toLinearMap_apply]
+  -- finding a proof is finding an element of the subalgebra
+  suffices x = lift R A of x by
+    rw [this]
+    exact Subtype.prop (lift R A of x)
+  simp [AlgHom.ext_iff] at of_id
+  exact of_id x
+
+/--Inductive principle for `FreeProduct.asPowers`. If a `Prop` can be proven for
+all elements of the `A i`, including scalars `R`, and is preserved by
+multiplication and addition, then it holds for the whole of the algebra.-/
+@[elab_as_elim, induction_eliminator]
+theorem asPowers.inductionOn
+    {motive : FreeProduct.asPowers R A → Prop} (x : FreeProduct.asPowers R A)
+    (scalar : ∀ r, motive (algebraMap R (FreeProduct.asPowers R A) r))
+    (iota : ∀ {i} (aᵢ : A i), motive (asPowers.of R A aᵢ))
+    (mul : ∀ {x y}, motive x → motive y → motive (x * y))
+    (add : ∀ {x y}, motive x → motive y → motive (x + y)) : motive x := by
+  set ε := asPowersEquiv R A with ε_def
+  simpa using
+    FreeProduct.inductionOn (motive := motive ∘ ε.symm) (ε x)
+      (by simpa using scalar)
+      (fun aᵢ ↦ by
+        convert iota aᵢ
+        simp_rw [of, FreeProduct.of, ε_def, comp_apply, ι_equiv_ι'])
+      (by convert (fun {x y} ↦ @mul (ε.symm x) (ε.symm y)); simp)
+      (by convert (fun {x y} ↦ @add (ε.symm x) (ε.symm y)); simp)
 
 end LinearAlgebra.FreeProduct
