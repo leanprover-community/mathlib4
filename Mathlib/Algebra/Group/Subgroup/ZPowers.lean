@@ -203,6 +203,10 @@ theorem zpowers_ne_bot : zpowers g ≠ ⊥ ↔ g ≠ 1 :=
 theorem zpowers_one_eq_bot : Subgroup.zpowers (1 : G) = ⊥ :=
   Subgroup.zpowers_eq_bot.mpr rfl
 
+@[to_additive (attr := simp)]
+theorem zpowers_inv : zpowers g⁻¹ = zpowers g :=
+  eq_of_forall_ge_iff fun _ ↦ by simp only [zpowers_le, inv_mem_iff]
+
 @[to_additive]
 theorem centralizer_closure (S : Set G) :
     centralizer (closure S : Set G) = ⨅ g ∈ S, centralizer (zpowers g : Set G) :=

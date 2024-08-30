@@ -62,7 +62,7 @@ def leftRegular (G : Type u) [Monoid G] : Action (Type u) (MonCat.of G) :=
 def diagonal (G : Type u) [Monoid G] (n : ℕ) : Action (Type u) (MonCat.of G) :=
   Action.ofMulAction G (Fin n → G)
 
-/-- We have `fin 1 → G ≅ G` as `G`-sets, with `G` acting by left multiplication. -/
+/-- We have `Fin 1 → G ≅ G` as `G`-sets, with `G` acting by left multiplication. -/
 def diagonalOneIsoLeftRegular (G : Type u) [Monoid G] : diagonal G 1 ≅ leftRegular G :=
   Action.mkIso (Equiv.funUnique _ _).toIso fun _ => rfl
 

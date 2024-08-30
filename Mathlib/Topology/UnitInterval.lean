@@ -19,10 +19,7 @@ We provide basic instances, as well as a custom tactic for discharging
 
 noncomputable section
 
-open scoped Classical
-open Topology Filter
-
-open Set Int Set.Icc
+open Topology Filter Set Int Set.Icc
 
 /-! ### The unit interval -/
 
@@ -165,9 +162,9 @@ instance : Nontrivial I := ⟨⟨1, 0, (one_ne_zero <| congrArg Subtype.val ·)�
 theorem mul_pos_mem_iff {a t : ℝ} (ha : 0 < a) : a * t ∈ I ↔ t ∈ Set.Icc (0 : ℝ) (1 / a) := by
   constructor <;> rintro ⟨h₁, h₂⟩ <;> constructor
   · exact nonneg_of_mul_nonneg_right h₁ ha
-  · rwa [le_div_iff ha, mul_comm]
+  · rwa [le_div_iff₀ ha, mul_comm]
   · exact mul_nonneg ha.le h₁
-  · rwa [le_div_iff ha, mul_comm] at h₂
+  · rwa [le_div_iff₀ ha, mul_comm] at h₂
 
 theorem two_mul_sub_one_mem_iff {t : ℝ} : 2 * t - 1 ∈ I ↔ t ∈ Set.Icc (1 / 2 : ℝ) 1 := by
   constructor <;> rintro ⟨h₁, h₂⟩ <;> constructor <;> linarith
@@ -212,10 +209,15 @@ lemma monotone_addNSMul (hδ : 0 ≤ δ) : Monotone (addNSMul h δ) :=
 lemma abs_sub_addNSMul_le (hδ : 0 ≤ δ) {t : Icc a b} (n : ℕ)
     (ht : t ∈ Icc (addNSMul h δ n) (addNSMul h δ (n+1))) :
     (|t - addNSMul h δ n| : α) ≤ δ :=
-  (abs_eq_self.2 <| sub_nonneg.2 ht.1).trans_le <| (sub_le_sub_right (by exact ht.2) _).trans <|
-    (le_abs_self _).trans <| (abs_projIcc_sub_projIcc h).trans <| by
-      rw [add_sub_add_comm, sub_self, zero_add, succ_nsmul', add_sub_cancel_right]
-      exact (abs_eq_self.mpr hδ).le
+  calc
+    (|t - addNSMul h δ n| : α) = t - addNSMul h δ n            := abs_eq_self.2 <| sub_nonneg.2 ht.1
+    _ ≤ projIcc a b h (a + (n+1) • δ) - addNSMul h δ n :=
+          sub_le_sub_right (b := (↑(projIcc a b h (a + (n + 1) • δ)))) (by exact ht.2) _
+    _ ≤ (|projIcc a b h (a + (n+1) • δ) - addNSMul h δ n| : α) := le_abs_self _
+    _ ≤ |a + (n+1) • δ - (a + n • δ)|                          := abs_projIcc_sub_projIcc h
+    _ ≤ δ := by
+          rw [add_sub_add_comm, sub_self, zero_add, succ_nsmul', add_sub_cancel_right]
+          exact (abs_eq_self.mpr hδ).le
 
 end Set.Icc
 

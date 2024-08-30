@@ -89,7 +89,7 @@ theorem logb_div_base {a b : ℝ} (h₁ : a ≠ 0) (h₂ : b ≠ 0) (c : ℝ) :
 theorem mul_logb {a b c : ℝ} (h₁ : b ≠ 0) (h₂ : b ≠ 1) (h₃ : b ≠ -1) :
     logb a b * logb b c = logb a c := by
   unfold logb
-  rw [mul_comm, div_mul_div_cancel _ (log_ne_zero.mpr ⟨h₁, h₂, h₃⟩)]
+  rw [mul_comm, div_mul_div_cancel₀ (log_ne_zero.mpr ⟨h₁, h₂, h₃⟩)]
 
 theorem div_logb {a b c : ℝ} (h₁ : c ≠ 0) (h₂ : c ≠ 1) (h₃ : c ≠ -1) :
     logb a c / logb b c = logb a b :=
@@ -104,6 +104,7 @@ theorem logb_pow {k : ℕ} (hx : 0 < x) : logb b (x ^ k) = k * logb b x := by
 section BPosAndNeOne
 
 variable (b_pos : 0 < b) (b_ne_one : b ≠ 1)
+include b_pos b_ne_one
 
 private theorem log_b_ne_zero : log b ≠ 0 := by
   have b_ne_zero : b ≠ 0 := by linarith
@@ -159,6 +160,7 @@ end BPosAndNeOne
 section OneLtB
 
 variable (hb : 1 < b)
+include hb
 
 private theorem b_pos : 0 < b := by linarith
 
@@ -253,8 +255,11 @@ end OneLtB
 section BPosAndBLtOne
 
 variable (b_pos : 0 < b) (b_lt_one : b < 1)
+include b_lt_one
 
 private theorem b_ne_one : b ≠ 1 := by linarith
+
+include b_pos
 
 @[simp]
 theorem logb_le_logb_of_base_lt_one (h : 0 < x) (h₁ : 0 < y) : logb b x ≤ logb b y ↔ y ≤ x := by

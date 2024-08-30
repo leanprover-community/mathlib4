@@ -81,12 +81,16 @@ protected theorem isAsymm [RelHomClass F r s] (f : F) : ∀ [IsAsymm β s], IsAs
 protected theorem acc [RelHomClass F r s] (f : F) (a : α) : Acc s (f a) → Acc r a := by
   generalize h : f a = b
   intro ac
-  induction' ac with _ H IH generalizing a
+  induction ac generalizing a with | intro _ H IH => ?_
   subst h
   exact ⟨_, fun a' h => IH (f a') (map_rel f h) _ rfl⟩
 
 protected theorem wellFounded [RelHomClass F r s] (f : F) : WellFounded s → WellFounded r
   | ⟨H⟩ => ⟨fun _ => RelHomClass.acc f _ (H _)⟩
+
+protected theorem isWellFounded [RelHomClass F r s] (f : F) [IsWellFounded β s] :
+    IsWellFounded α r :=
+  ⟨RelHomClass.wellFounded f IsWellFounded.wf⟩
 
 end RelHomClass
 
@@ -118,9 +122,6 @@ theorem coe_fn_injective : Injective fun (f : r →r s) => (f : α → β) :=
 @[ext]
 theorem ext ⦃f g : r →r s⦄ (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
-
-theorem ext_iff {f g : r →r s} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
 
 /-- Identity map is a relation homomorphism. -/
 @[refl, simps]
@@ -224,6 +225,13 @@ theorem coe_toEmbedding {f : r ↪r s} : ((f : r ↪r s).toEmbedding : α → β
 theorem coe_toRelHom {f : r ↪r s} : ((f : r ↪r s).toRelHom : α → β) = f :=
   rfl
 
+theorem toEmbedding_injective : Injective (toEmbedding : r ↪r s → (α ↪ β)) := by
+  rintro ⟨f, -⟩ ⟨g, -⟩; simp
+
+@[simp]
+theorem toEmbedding_inj {f g : r ↪r s} : f.toEmbedding = g.toEmbedding ↔ f = g :=
+  toEmbedding_injective.eq_iff
+
 theorem injective (f : r ↪r s) : Injective f :=
   f.inj'
 
@@ -243,9 +251,6 @@ theorem coe_fn_injective : Injective fun f : r ↪r s => (f : α → β) :=
 @[ext]
 theorem ext ⦃f g : r ↪r s⦄ (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext _ _ h
-
-theorem ext_iff {f g : r ↪r s} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
 
 /-- Identity map is a relation embedding. -/
 @[refl, simps!]
@@ -322,7 +327,7 @@ protected theorem isStrictTotalOrder : ∀ (_ : r ↪r s) [IsStrictTotalOrder β
 protected theorem acc (f : r ↪r s) (a : α) : Acc s (f a) → Acc r a := by
   generalize h : f a = b
   intro ac
-  induction' ac with _ H IH generalizing a
+  induction ac generalizing a with | intro _ H IH => ?_
   subst h
   exact ⟨_, fun a' h => IH (f a') (f.map_rel_iff.2 h) _ rfl⟩
 
@@ -373,7 +378,7 @@ theorem acc_lift₂_iff [Setoid α] {r : α → α → Prop}
   constructor
   · exact RelHomClass.acc (Quotient.mkRelHom H) a
   · intro ac
-    induction' ac with _ _ IH
+    induction ac with | intro _ _ IH => ?_
     refine ⟨_, fun q h => ?_⟩
     obtain ⟨a', rfl⟩ := q.exists_rep
     exact IH a' h
@@ -566,17 +571,13 @@ theorem coe_fn_mk (f : α ≃ β) (o : ∀ ⦃a b⦄, s (f a) (f b) ↔ r a b) :
 theorem coe_fn_toEquiv (f : r ≃r s) : (f.toEquiv : α → β) = f :=
   rfl
 
-/-- The map `coe_fn : (r ≃r s) → (α → β)` is injective. Lean fails to parse
-`function.injective (fun e : r ≃r s ↦ (e : α → β))`, so we use a trick to say the same. -/
+/-- The map `DFunLike.coe : (r ≃r s) → (α → β)` is injective. -/
 theorem coe_fn_injective : Injective fun f : r ≃r s => (f : α → β) :=
   DFunLike.coe_injective
 
 @[ext]
 theorem ext ⦃f g : r ≃r s⦄ (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
-
-theorem ext_iff {f g : r ≃r s} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
 
 /-- Inverse map of a relation isomorphism is a relation isomorphism. -/
 protected def symm (f : r ≃r s) : s ≃r r :=
@@ -700,7 +701,7 @@ lexicographic orders on the sum.
 def sumLexCongr {α₁ α₂ β₁ β₂ r₁ r₂ s₁ s₂} (e₁ : @RelIso α₁ β₁ r₁ s₁) (e₂ : @RelIso α₂ β₂ r₂ s₂) :
     Sum.Lex r₁ r₂ ≃r Sum.Lex s₁ s₂ :=
   ⟨Equiv.sumCongr e₁.toEquiv e₂.toEquiv, @fun a b => by
-    cases' e₁ with f hf; cases' e₂ with g hg; cases a <;> cases b <;> simp [hf, hg]⟩
+    obtain ⟨f, hf⟩ := e₁; obtain ⟨g, hg⟩ := e₂; cases a <;> cases b <;> simp [hf, hg]⟩
 
 /-- Given relation isomorphisms `r₁ ≃r s₁` and `r₂ ≃r s₂`, construct a relation isomorphism for the
 lexicographic orders on the product.

@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Yakov Peckersky. All rights reserved.
+Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yakov Peckersky
+Authors: Yakov Pechersky
 -/
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.NeZero
@@ -28,12 +28,12 @@ variable {m n : ℕ}
 /-! ### Instances -/
 
 instance addCommSemigroup (n : ℕ) : AddCommSemigroup (Fin n) where
-  add_assoc := by simp [ext_iff, add_def, Nat.add_assoc]
-  add_comm := by simp [ext_iff, add_def, Nat.add_comm]
+  add_assoc := by simp [Fin.ext_iff, add_def, Nat.add_assoc]
+  add_comm := by simp [Fin.ext_iff, add_def, Nat.add_comm]
 
 instance (n) : AddCommSemigroup (Fin n) where
-  add_assoc := by simp [ext_iff, add_def, Nat.add_assoc]
-  add_comm := by simp [ext_iff, add_def, add_comm]
+  add_assoc := by simp [Fin.ext_iff, add_def, Nat.add_assoc]
+  add_comm := by simp [Fin.ext_iff, add_def, add_comm]
 
 instance addCommMonoid (n : ℕ) [NeZero n] : AddCommMonoid (Fin n) where
   zero_add := Fin.zero_add
@@ -45,12 +45,12 @@ instance instAddMonoidWithOne (n) [NeZero n] : AddMonoidWithOne (Fin n) where
   __ := inferInstanceAs (AddCommMonoid (Fin n))
   natCast n := Fin.ofNat'' n
   natCast_zero := rfl
-  natCast_succ _ := ext (add_mod _ _ _)
+  natCast_succ _ := Fin.ext (add_mod _ _ _)
 
 instance addCommGroup (n : ℕ) [NeZero n] : AddCommGroup (Fin n) where
   __ := addCommMonoid n
   __ := neg n
-  add_left_neg := fun ⟨a, ha⟩ ↦
+  neg_add_cancel := fun ⟨a, ha⟩ ↦
     Fin.ext <| (Nat.mod_add_mod _ _ _).trans <| by
       rw [Fin.val_zero', Nat.sub_add_cancel, Nat.mod_self]
       exact le_of_lt ha
@@ -94,8 +94,7 @@ lemma lt_sub_one_iff {k : Fin (n + 2)} : k < k - 1 ↔ k = 0 := by
   · simp only [zero_eta, zero_sub, lt_iff_val_lt_val, val_zero, coe_neg_one, zero_lt_succ]
   have : (n + 1 + (k + 1)) % (n + 2) = k % (n + 2) := by
     rw [Nat.add_comm, Nat.add_right_comm, Nat.add_assoc, Nat.add_assoc, add_mod_right]
-  simp [lt_iff_val_lt_val, ext_iff, Fin.coe_sub, this,
-    mod_eq_of_lt ((lt_succ_self _).trans hk)]
+  simp [lt_iff_val_lt_val, Fin.ext_iff, Fin.coe_sub, this, mod_eq_of_lt ((lt_succ_self _).trans hk)]
 
 @[simp] lemma le_sub_one_iff {k : Fin (n + 1)} : k ≤ k - 1 ↔ k = 0 := by
   cases n

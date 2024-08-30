@@ -3,10 +3,10 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
+import Mathlib.Algebra.GroupWithZero.Action.Pi
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Regular.SMul
 import Mathlib.Algebra.Ring.Pi
-import Mathlib.GroupTheory.GroupAction.Pi
 
 /-!
 # Pi instances for modules

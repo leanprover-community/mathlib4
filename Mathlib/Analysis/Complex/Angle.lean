@@ -79,7 +79,6 @@ up to a factor of `π / 2`.
 /-- Chord-length is a multiple of arc-length up to constants. -/
 lemma norm_sub_mem_Icc_angle (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
     ‖x - y‖ ∈ Icc (2 / π * angle x y) (angle x y) := by
-  clear a
   wlog h : y = 1
   · have := @this (x / y) 1 (by simp only [norm_div, hx, hy, div_one]) norm_one rfl
     rwa [angle_div_left_eq_angle_mul_right, div_sub_one, norm_div, hy, div_one, one_mul]
@@ -117,6 +116,6 @@ lemma mul_angle_le_norm_sub (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) : 2 / π * ang
 
 /-- Arc-length is always less than a multiple of chord-length. -/
 lemma angle_le_mul_norm_sub (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) : angle x y ≤ π / 2 * ‖x - y‖ := by
-  rw [← div_le_iff' <| by positivity, div_eq_inv_mul, inv_div]; exact mul_angle_le_norm_sub hx hy
+  rw [← div_le_iff₀' <| by positivity, div_eq_inv_mul, inv_div]; exact mul_angle_le_norm_sub hx hy
 
 end Complex

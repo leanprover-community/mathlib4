@@ -22,16 +22,11 @@ inherits a metric space structure from the Hausdorff distance, as the Hausdorff 
 always finite in this context.
 -/
 
-
 noncomputable section
-
-open scoped Classical
-open Topology ENNReal
 
 universe u
 
-open scoped Classical
-open Set Function TopologicalSpace Filter
+open Set Function TopologicalSpace Filter Topology ENNReal
 
 namespace EMetric
 
@@ -122,7 +117,7 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
           apply hs <;> simp
         exact ⟨⟨z', z'_mem⟩, le_of_lt hz'⟩
       use fun k => Nat.recOn k ⟨x, hx⟩ fun l z => (this l z).choose
-      simp only [Nat.add_zero, Nat.zero_eq, Nat.rec_zero, Nat.rec_add_one, true_and]
+      simp only [Nat.add_zero, Nat.rec_zero, Nat.rec_add_one, true_and]
       exact fun k => (this k _).choose_spec
     -- it follows from the previous bound that `z` is a Cauchy sequence
     have : CauchySeq fun k => (z k : α) := cauchySeq_of_edist_le_geometric_two (B n) (B_ne_top n) hz

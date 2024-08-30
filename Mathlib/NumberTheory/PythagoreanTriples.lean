@@ -38,8 +38,6 @@ theorem Int.sq_ne_two_mod_four (z : ℤ) : z * z % 4 ≠ 2 := by
 
 noncomputable section
 
-open scoped Classical
-
 /-- Three integers `x`, `y`, and `z` form a Pythagorean triple if `x * x + y * y = z * z`. -/
 def PythagoreanTriple (x y z : ℤ) : Prop :=
   x * x + y * y = z * z
@@ -56,17 +54,18 @@ theorem PythagoreanTriple.zero : PythagoreanTriple 0 0 0 := by
 
 namespace PythagoreanTriple
 
-variable {x y z : ℤ} (h : PythagoreanTriple x y z)
+variable {x y z : ℤ}
 
-theorem eq : x * x + y * y = z * z :=
+theorem eq (h : PythagoreanTriple x y z) : x * x + y * y = z * z :=
   h
 
 @[symm]
-theorem symm : PythagoreanTriple y x z := by rwa [pythagoreanTriple_comm]
+theorem symm (h : PythagoreanTriple x y z) : PythagoreanTriple y x z := by
+  rwa [pythagoreanTriple_comm]
 
 /-- A triple is still a triple if you multiply `x`, `y` and `z`
 by a constant `k`. -/
-theorem mul (k : ℤ) : PythagoreanTriple (k * x) (k * y) (k * z) :=
+theorem mul (h : PythagoreanTriple x y z) (k : ℤ) : PythagoreanTriple (k * x) (k * y) (k * z) :=
   calc
     k * x * (k * x) + k * y * (k * y) = k ^ 2 * (x * x + y * y) := by ring
     _ = k ^ 2 * (z * z) := by rw [h.eq]
@@ -103,6 +102,9 @@ def IsPrimitiveClassified (_ : PythagoreanTriple x y z) :=
   ∃ m n : ℤ,
     (x = m ^ 2 - n ^ 2 ∧ y = 2 * m * n ∨ x = 2 * m * n ∧ y = m ^ 2 - n ^ 2) ∧
       Int.gcd m n = 1 ∧ (m % 2 = 0 ∧ n % 2 = 1 ∨ m % 2 = 1 ∧ n % 2 = 0)
+
+variable (h : PythagoreanTriple x y z)
+include h
 
 theorem mul_isClassified (k : ℤ) (hc : h.IsClassified) : (h.mul k).IsClassified := by
   obtain ⟨l, m, n, ⟨⟨rfl, rfl⟩ | ⟨rfl, rfl⟩, co⟩⟩ := hc
@@ -526,7 +528,7 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
       apply Rat.div_int_inj hzpos _ (h.coprime_of_coprime hc) h1.2.2.2
       · show w = _
         rw [← Rat.divInt_eq_div, ← Rat.divInt_mul_right (by norm_num : (2 : ℤ) ≠ 0)]
-        rw [Int.ediv_mul_cancel h1.1, Int.ediv_mul_cancel h1.2.1, hw2]
+        rw [Int.ediv_mul_cancel h1.1, Int.ediv_mul_cancel h1.2.1, hw2, Rat.divInt_eq_div]
         norm_cast
       · apply (mul_lt_mul_right (by norm_num : 0 < (2 : ℤ))).mp
         rw [Int.ediv_mul_cancel h1.1, zero_mul]
@@ -571,7 +573,6 @@ theorem coprime_classification :
         (x = m ^ 2 - n ^ 2 ∧ y = 2 * m * n ∨ x = 2 * m * n ∧ y = m ^ 2 - n ^ 2) ∧
           (z = m ^ 2 + n ^ 2 ∨ z = -(m ^ 2 + n ^ 2)) ∧
             Int.gcd m n = 1 ∧ (m % 2 = 0 ∧ n % 2 = 1 ∨ m % 2 = 1 ∧ n % 2 = 0) := by
-  clear h -- Porting note: don't want this variable, but can't use `include` / `omit`
   constructor
   · intro h
     obtain ⟨m, n, H⟩ := h.left.isPrimitiveClassified_of_coprime h.right
@@ -652,7 +653,6 @@ theorem classification :
         (x = k * (m ^ 2 - n ^ 2) ∧ y = k * (2 * m * n) ∨
             x = k * (2 * m * n) ∧ y = k * (m ^ 2 - n ^ 2)) ∧
           (z = k * (m ^ 2 + n ^ 2) ∨ z = -k * (m ^ 2 + n ^ 2)) := by
-  clear h
   constructor
   · intro h
     obtain ⟨k, m, n, H⟩ := h.classified

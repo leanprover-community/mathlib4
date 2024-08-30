@@ -93,7 +93,7 @@ theorem isGood_iff_of_sqrt_two_lt (hA : sqrt 2 < A) : IsGood x A ↔ x = (A / 2)
   constructor
   · intro h
     have hx : 1 < x := by rwa [h.sqrt_two_lt_iff_one_lt] at hA
-    rw [isGood_iff_eq_sqrt hx, eq_comm, sqrt_eq_iff_sq_eq] at h <;> linarith
+    rw [isGood_iff_eq_sqrt hx, eq_comm, sqrt_eq_iff_eq_sq] at h <;> linarith
   · rintro rfl
     rw [isGood_iff_eq_sqrt]
     · conv_lhs => rw [← sqrt_sq this.le]
