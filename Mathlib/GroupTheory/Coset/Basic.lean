@@ -319,13 +319,13 @@ def quotientRightRelEquivQuotientLeftRel : Quotient (QuotientGroup.rightRel s) �
       exact fun h => (congr_arg (· ∈ s) (by simp [mul_assoc])).mp (s.inv_mem h)
       -- Porting note: replace with `by group`
   left_inv g :=
-    Quotient.inductionOn' g fun g =>
+    Quotient.inductionOn g fun g =>
       Quotient.sound'
         (by
           simp only [inv_inv]
           exact Quotient.exact' rfl)
   right_inv g :=
-    Quotient.inductionOn' g fun g =>
+    Quotient.inductionOn g fun g =>
       Quotient.sound'
         (by
           simp only [inv_inv]
@@ -365,7 +365,7 @@ lemma range_mk : range (QuotientGroup.mk (s := s)) = univ := range_iff_surjectiv
 
 @[to_additive (attr := elab_as_elim)]
 theorem induction_on {C : α ⧸ s → Prop} (x : α ⧸ s) (H : ∀ z, C (QuotientGroup.mk z)) : C x :=
-  Quotient.inductionOn' x H
+  Quotient.inductionOn x H
 
 @[to_additive]
 instance : Coe α (α ⧸ s) :=
@@ -511,12 +511,12 @@ def quotientEquivProdOfLE' (h_le : s ≤ t) (f : α ⧸ t → α)
       change (f a.1 * b)⁻¹ * (f a.1 * c) ∈ s
       rwa [mul_inv_rev, mul_assoc, inv_mul_cancel_left]
   left_inv := by
-    refine Quotient.ind' fun a => ?_
+    refine Quotient.ind fun a => ?_
     simp_rw [Quotient.map'_mk'', id, mul_inv_cancel_left]
   right_inv := by
     refine Prod.rec ?_
-    refine Quotient.ind' fun a => ?_
-    refine Quotient.ind' fun b => ?_
+    refine Quotient.ind fun a => ?_
+    refine Quotient.ind fun b => ?_
     have key : Quotient.mk'' (f (Quotient.mk'' a) * b) = Quotient.mk'' a :=
       (QuotientGroup.mk_mul_of_mem (f a) b.2).trans (hf a)
     simp_rw [Quotient.map'_mk'', id, key, inv_mul_cancel_left]
@@ -538,7 +538,7 @@ def quotientSubgroupOfEmbeddingOfLE (H : Subgroup α) (h : s ≤ t) :
       simp_rw [leftRel_eq]
       exact id
   inj' :=
-    Quotient.ind₂' <| by
+    Quotient.ind₂ <| by
       intro a b h
       simpa only [Quotient.map'_mk'', QuotientGroup.eq] using h
 
@@ -583,7 +583,7 @@ def quotientiInfSubgroupOfEmbedding {ι : Type*} (f : ι → Subgroup α) (H : S
     H ⧸ (⨅ i, f i).subgroupOf H ↪ ∀ i, H ⧸ (f i).subgroupOf H where
   toFun q i := quotientSubgroupOfMapOfLE H (iInf_le f i) q
   inj' :=
-    Quotient.ind₂' <| by
+    Quotient.ind₂ <| by
       simp_rw [funext_iff, quotientSubgroupOfMapOfLE_apply_mk, QuotientGroup.eq, mem_subgroupOf,
         mem_iInf, imp_self, forall_const]
 
@@ -600,7 +600,7 @@ theorem quotientiInfSubgroupOfEmbedding_apply_mk {ι : Type*} (f : ι → Subgro
 def quotientiInfEmbedding {ι : Type*} (f : ι → Subgroup α) : (α ⧸ ⨅ i, f i) ↪ ∀ i, α ⧸ f i where
   toFun q i := quotientMapOfLE (iInf_le f i) q
   inj' :=
-    Quotient.ind₂' <| by
+    Quotient.ind₂ <| by
       simp_rw [funext_iff, quotientMapOfLE_apply_mk, QuotientGroup.eq, mem_iInf, imp_self,
         forall_const]
 

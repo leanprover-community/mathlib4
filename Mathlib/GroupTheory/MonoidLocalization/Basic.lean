@@ -245,7 +245,7 @@ def rec {p : Localization S → Sort u} (f : ∀ (a : M) (b : S), p (mk a b))
 def recOnSubsingleton₂ {r : Localization S → Localization S → Sort u}
     [h : ∀ (a c : M) (b d : S), Subsingleton (r (mk a b) (mk c d))] (x y : Localization S)
     (f : ∀ (a c : M) (b d : S), r (mk a b) (mk c d)) : r x y :=
-  @Quotient.recOnSubsingleton₂' _ _ _ _ r (Prod.rec fun _ _ => Prod.rec fun _ _ => h _ _ _ _) x y
+  @Quotient.recOnSubsingleton₂ _ _ _ _ r (Prod.rec fun _ _ => Prod.rec fun _ _ => h _ _ _ _) x y
     (Prod.rec fun _ _ => Prod.rec fun _ _ => f _ _ _ _)
 
 @[to_additive]

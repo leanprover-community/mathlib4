@@ -302,7 +302,7 @@ variable (x)
 
 @[ext]
 theorem val_injective : Function.Injective (HomogeneousLocalization.val (𝒜 := 𝒜) (x := x)) :=
-  fun a b => Quotient.recOnSubsingleton₂' a b fun _ _ h => Quotient.sound' h
+  fun a b => Quotient.recOnSubsingleton₂ a b fun _ _ h => Quotient.sound' h
 
 variable (𝒜) {x} in
 lemma subsingleton (hx : 0 ∈ x) : Subsingleton (HomogeneousLocalization 𝒜 x) :=
@@ -324,7 +324,7 @@ instance : SMul α (HomogeneousLocalization 𝒜 x) where
 
 @[simp]
 theorem val_smul (n : α) : ∀ y : HomogeneousLocalization 𝒜 x, (n • y).val = n • y.val :=
-  Quotient.ind' fun _ ↦ by rw [← mk_smul, val_mk, val_mk, Localization.smul_mk]; rfl
+  Quotient.ind fun _ ↦ by rw [← mk_smul, val_mk, val_mk, Localization.smul_mk]; rfl
 
 theorem val_nsmul (n : ℕ) (y : HomogeneousLocalization 𝒜 x) : (n • y).val = n • y.val := by
   rw [val_smul, OreLocalization.nsmul_eq_nsmul]
@@ -344,7 +344,7 @@ instance : Neg (HomogeneousLocalization 𝒜 x) where
 
 @[simp]
 theorem val_neg {x} : ∀ y : HomogeneousLocalization 𝒜 x, (-y).val = -y.val :=
-  Quotient.ind' fun y ↦ by rw [← mk_neg, val_mk, val_mk, Localization.neg_mk]; rfl
+  Quotient.ind fun y ↦ by rw [← mk_neg, val_mk, val_mk, Localization.neg_mk]; rfl
 
 variable [AddCommMonoid ι] [DecidableEq ι] [GradedAlgebra 𝒜]
 
@@ -409,11 +409,11 @@ theorem val_one : (1 : HomogeneousLocalization 𝒜 x).val = 1 :=
 
 @[simp]
 theorem val_add : ∀ y1 y2 : HomogeneousLocalization 𝒜 x, (y1 + y2).val = y1.val + y2.val :=
-  Quotient.ind₂' fun y1 y2 ↦ by rw [← mk_add, val_mk, val_mk, val_mk, Localization.add_mk]; rfl
+  Quotient.ind₂ fun y1 y2 ↦ by rw [← mk_add, val_mk, val_mk, val_mk, Localization.add_mk]; rfl
 
 @[simp]
 theorem val_mul : ∀ y1 y2 : HomogeneousLocalization 𝒜 x, (y1 * y2).val = y1.val * y2.val :=
-  Quotient.ind₂' fun y1 y2 ↦ by rw [← mk_mul, val_mk, val_mk, val_mk, Localization.mk_mul]; rfl
+  Quotient.ind₂ fun y1 y2 ↦ by rw [← mk_mul, val_mk, val_mk, val_mk, Localization.mk_mul]; rfl
 
 @[simp]
 theorem val_sub (y1 y2 : HomogeneousLocalization 𝒜 x) : (y1 - y2).val = y1.val - y2.val := by
@@ -421,7 +421,7 @@ theorem val_sub (y1 y2 : HomogeneousLocalization 𝒜 x) : (y1 - y2).val = y1.va
 
 @[simp]
 theorem val_pow : ∀ (y : HomogeneousLocalization 𝒜 x) (n : ℕ), (y ^ n).val = y.val ^ n :=
-  Quotient.ind' fun y n ↦ by rw [← mk_pow, val_mk, val_mk, Localization.mk_pow]; rfl
+  Quotient.ind fun y n ↦ by rw [← mk_pow, val_mk, val_mk, Localization.mk_pow]; rfl
 
 instance : NatCast (HomogeneousLocalization 𝒜 x) :=
   ⟨Nat.unaryCast⟩
@@ -592,9 +592,9 @@ def map (g : A →+* B)
       simp_rw [HomogeneousLocalization.NumDenSameDeg.embedding, Localization.mk_eq_mk',
         IsLocalization.map_mk', ← Localization.mk_eq_mk'] at e
       exact e
-  map_add' := Quotient.ind₂' fun x y ↦ by
+  map_add' := Quotient.ind₂ fun x y ↦ by
     simp only [← mk_add, Quotient.map'_mk'', num_add, map_add, map_mul, den_add]; rfl
-  map_mul' := Quotient.ind₂' fun x y ↦ by
+  map_mul' := Quotient.ind₂ fun x y ↦ by
     simp only [← mk_mul, Quotient.map'_mk'', num_mul, map_mul, den_mul]; rfl
   map_zero' := by simp only [← mk_zero (𝒜 := 𝒜), Quotient.map'_mk'', deg_zero,
     num_zero, ZeroMemClass.coe_zero, map_zero, den_zero, map_one]; rfl

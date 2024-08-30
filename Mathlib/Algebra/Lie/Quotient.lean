@@ -125,7 +125,7 @@ theorem mk_bracket (x y : L) : mk ⁅x, y⁆ = ⁅(mk x : L ⧸ I), (mk y : L �
 
 instance lieQuotientLieRing : LieRing (L ⧸ I) where
   add_lie := by
-    intro x' y' z'; refine Quotient.inductionOn₃' x' y' z' ?_; intro x y z
+    intro x' y' z'; refine Quotient.inductionOn₃ x' y' z' ?_; intro x y z
     repeat'
       first
       | rw [is_quotient_mk]
@@ -133,7 +133,7 @@ instance lieQuotientLieRing : LieRing (L ⧸ I) where
       | rw [← Submodule.Quotient.mk_add (R := R) (M := L)]
     apply congr_arg; apply add_lie
   lie_add := by
-    intro x' y' z'; refine Quotient.inductionOn₃' x' y' z' ?_; intro x y z
+    intro x' y' z'; refine Quotient.inductionOn₃ x' y' z' ?_; intro x y z
     repeat'
       first
       | rw [is_quotient_mk]
@@ -141,11 +141,11 @@ instance lieQuotientLieRing : LieRing (L ⧸ I) where
       | rw [← Submodule.Quotient.mk_add (R := R) (M := L)]
     apply congr_arg; apply lie_add
   lie_self := by
-    intro x'; refine Quotient.inductionOn' x' ?_; intro x
+    intro x'; refine Quotient.inductionOn x' ?_; intro x
     rw [is_quotient_mk, ← mk_bracket]
     apply congr_arg; apply lie_self
   leibniz_lie := by
-    intro x' y' z'; refine Quotient.inductionOn₃' x' y' z' ?_; intro x y z
+    intro x' y' z'; refine Quotient.inductionOn₃ x' y' z' ?_; intro x y z
     repeat'
       first
       | rw [is_quotient_mk]
@@ -155,7 +155,7 @@ instance lieQuotientLieRing : LieRing (L ⧸ I) where
 
 instance lieQuotientLieAlgebra : LieAlgebra R (L ⧸ I) where
   lie_smul := by
-    intro t x' y'; refine Quotient.inductionOn₂' x' y' ?_; intro x y
+    intro t x' y'; refine Quotient.inductionOn₂ x' y' ?_; intro x y
     repeat'
       first
       | rw [is_quotient_mk]
@@ -196,7 +196,7 @@ theorem map_mk'_eq_bot_le : map (mk' N) N' = ⊥ ↔ N' ≤ N := by
 See note [partially-applied ext lemmas]. -/
 @[ext]
 theorem lieModuleHom_ext ⦃f g : M ⧸ N →ₗ⁅R,L⁆ M⦄ (h : f.comp (mk' N) = g.comp (mk' N)) : f = g :=
-  LieModuleHom.ext fun x => Quotient.inductionOn' x <| LieModuleHom.congr_fun h
+  LieModuleHom.ext fun x => Quotient.inductionOn x <| LieModuleHom.congr_fun h
 
 lemma toEnd_comp_mk' (x : L) :
     LieModule.toEnd R L (M ⧸ N) x ∘ₗ mk' N = mk' N ∘ₗ LieModule.toEnd R L M x :=

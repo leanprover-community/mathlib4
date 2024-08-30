@@ -141,18 +141,18 @@ theorem mk'_eq_coe (l : Filter α) (f : α → β) :
 
 @[elab_as_elim]
 theorem inductionOn (f : Germ l β) {p : Germ l β → Prop} (h : ∀ f : α → β, p f) : p f :=
-  Quotient.inductionOn' f h
+  Quotient.inductionOn f h
 
 @[elab_as_elim]
 theorem inductionOn₂ (f : Germ l β) (g : Germ l γ) {p : Germ l β → Germ l γ → Prop}
     (h : ∀ (f : α → β) (g : α → γ), p f g) : p f g :=
-  Quotient.inductionOn₂' f g h
+  Quotient.inductionOn₂ f g h
 
 @[elab_as_elim]
 theorem inductionOn₃ (f : Germ l β) (g : Germ l γ) (h : Germ l δ)
     {p : Germ l β → Germ l γ → Germ l δ → Prop}
     (H : ∀ (f : α → β) (g : α → γ) (h : α → δ), p f g h) : p f g h :=
-  Quotient.inductionOn₃' f g h H
+  Quotient.inductionOn₃ f g h H
 
 /-- Given a map `F : (α → β) → (γ → δ)` that sends functions eventually equal at `l` to functions
 eventually equal at `lc`, returns a map from `Germ l β` to `Germ lc δ`. -/
@@ -336,12 +336,12 @@ theorem coe_one [One M] : ↑(1 : α → M) = (1 : Germ l M) :=
 
 @[to_additive]
 instance instSemigroup [Semigroup M] : Semigroup (Germ l M) :=
-  { mul_assoc := fun a b c => Quotient.inductionOn₃' a b c
+  { mul_assoc := fun a b c => Quotient.inductionOn₃ a b c
       fun _ _ _ => congrArg ofFun <| mul_assoc .. }
 
 @[to_additive]
 instance instCommSemigroup [CommSemigroup M] : CommSemigroup (Germ l M) :=
-  { mul_comm := Quotient.ind₂' fun _ _ => congrArg ofFun <| mul_comm .. }
+  { mul_comm := Quotient.ind₂ fun _ _ => congrArg ofFun <| mul_comm .. }
 
 @[to_additive]
 instance instIsLeftCancelMul [Mul M] [IsLeftCancelMul M] : IsLeftCancelMul (Germ l M) where
@@ -368,8 +368,8 @@ instance instRightCancelSemigroup [RightCancelSemigroup M] : RightCancelSemigrou
 
 @[to_additive]
 instance instMulOneClass [MulOneClass M] : MulOneClass (Germ l M) :=
-  { one_mul := Quotient.ind' fun _ => congrArg ofFun <| one_mul _
-    mul_one := Quotient.ind' fun _ => congrArg ofFun <| mul_one _ }
+  { one_mul := Quotient.ind fun _ => congrArg ofFun <| one_mul _
+    mul_one := Quotient.ind fun _ => congrArg ofFun <| mul_one _ }
 
 @[to_additive]
 instance instSMul [SMul M G] : SMul M (Germ l G) where smul n := map (n • ·)
@@ -472,11 +472,11 @@ theorem const_div [Div M] (a b : M) : (↑(a / b) : Germ l M) = ↑a / ↑b :=
 
 @[to_additive]
 instance instInvolutiveInv [InvolutiveInv G] : InvolutiveInv (Germ l G) :=
-  { inv_inv := Quotient.ind' fun _ => congrArg ofFun<| inv_inv _ }
+  { inv_inv := Quotient.ind fun _ => congrArg ofFun<| inv_inv _ }
 
 instance instHasDistribNeg [Mul G] [HasDistribNeg G] : HasDistribNeg (Germ l G) :=
-  { neg_mul := Quotient.ind₂' fun _ _ => congrArg ofFun <| neg_mul ..
-    mul_neg := Quotient.ind₂' fun _ _ => congrArg ofFun <| mul_neg .. }
+  { neg_mul := Quotient.ind₂ fun _ _ => congrArg ofFun <| neg_mul ..
+    mul_neg := Quotient.ind₂ fun _ _ => congrArg ofFun <| mul_neg .. }
 
 @[to_additive]
 instance instInvOneClass [InvOneClass G] : InvOneClass (Germ l G) :=
@@ -485,13 +485,13 @@ instance instInvOneClass [InvOneClass G] : InvOneClass (Germ l G) :=
 @[to_additive subNegMonoid]
 instance instDivInvMonoid [DivInvMonoid G] : DivInvMonoid (Germ l G) where
   zpow z f := f ^ z
-  zpow_zero' := Quotient.ind' fun _ => congrArg ofFun <|
+  zpow_zero' := Quotient.ind fun _ => congrArg ofFun <|
     funext fun _ => DivInvMonoid.zpow_zero' _
-  zpow_succ' _ := Quotient.ind' fun _ => congrArg ofFun <|
+  zpow_succ' _ := Quotient.ind fun _ => congrArg ofFun <|
     funext fun _ => DivInvMonoid.zpow_succ' ..
-  zpow_neg' _ := Quotient.ind' fun _ => congrArg ofFun <|
+  zpow_neg' _ := Quotient.ind fun _ => congrArg ofFun <|
     funext fun _ => DivInvMonoid.zpow_neg' ..
-  div_eq_mul_inv := Quotient.ind₂' fun _ _ ↦ congrArg ofFun <| div_eq_mul_inv ..
+  div_eq_mul_inv := Quotient.ind₂ fun _ _ ↦ congrArg ofFun <| div_eq_mul_inv ..
 
 @[to_additive]
 instance instDivisionMonoid [DivisionMonoid G] : DivisionMonoid (Germ l G) where
@@ -502,7 +502,7 @@ instance instDivisionMonoid [DivisionMonoid G] : DivisionMonoid (Germ l G) where
 
 @[to_additive]
 instance instGroup [Group G] : Group (Germ l G) :=
-  { inv_mul_cancel := Quotient.ind' fun _ => congrArg ofFun <| inv_mul_cancel _ }
+  { inv_mul_cancel := Quotient.ind fun _ => congrArg ofFun <| inv_mul_cancel _ }
 
 @[to_additive]
 instance instCommGroup [CommGroup G] : CommGroup (Germ l G) :=
@@ -525,8 +525,8 @@ instance instNontrivial [Nontrivial R] [NeBot l] : Nontrivial (Germ l R) :=
   ⟨⟨↑x, ↑y, mt const_inj.1 h⟩⟩
 
 instance instMulZeroClass [MulZeroClass R] : MulZeroClass (Germ l R) :=
-  { zero_mul := Quotient.ind' fun _ => congrArg ofFun <| zero_mul _
-    mul_zero := Quotient.ind' fun _ => congrArg ofFun <| mul_zero _ }
+  { zero_mul := Quotient.ind fun _ => congrArg ofFun <| zero_mul _
+    mul_zero := Quotient.ind fun _ => congrArg ofFun <| mul_zero _ }
 
 instance instMulZeroOneClass [MulZeroOneClass R] : MulZeroOneClass (Germ l R) where
   __ := instMulZeroClass
@@ -537,8 +537,8 @@ instance instMonoidWithZero [MonoidWithZero R] : MonoidWithZero (Germ l R) where
   __ := instMulZeroClass
 
 instance instDistrib [Distrib R] : Distrib (Germ l R) where
-  left_distrib a b c := Quotient.inductionOn₃' a b c fun _ _ _ ↦ congrArg ofFun <| left_distrib ..
-  right_distrib a b c := Quotient.inductionOn₃' a b c fun _ _ _ ↦ congrArg ofFun <| right_distrib ..
+  left_distrib a b c := Quotient.inductionOn₃ a b c fun _ _ _ ↦ congrArg ofFun <| left_distrib ..
+  right_distrib a b c := Quotient.inductionOn₃ a b c fun _ _ _ ↦ congrArg ofFun <| right_distrib ..
 
 instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring R] :
     NonUnitalNonAssocSemiring (Germ l R) where

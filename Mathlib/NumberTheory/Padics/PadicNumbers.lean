@@ -958,7 +958,7 @@ theorem valuation_one : valuation (1 : ℚ_[p]) = 0 := by
   simp
 
 theorem norm_eq_pow_val {x : ℚ_[p]} : x ≠ 0 → ‖x‖ = (p : ℝ) ^ (-x.valuation) := by
-  refine Quotient.inductionOn' x fun f hf => ?_
+  refine Quotient.inductionOn x fun f hf => ?_
   change (PadicSeq.norm _ : ℝ) = (p : ℝ) ^ (-PadicSeq.valuation _)
   rw [PadicSeq.norm_eq_pow_val]
   · change ↑((p : ℚ) ^ (-PadicSeq.valuation f)) = (p : ℝ) ^ (-PadicSeq.valuation f)

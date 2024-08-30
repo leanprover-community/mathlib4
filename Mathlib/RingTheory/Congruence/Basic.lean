@@ -369,11 +369,11 @@ instance [CommRing R] (c : RingCon R) : CommRing c.Quotient :=
 
 instance isScalarTower_right [Add R] [MulOneClass R] [SMul α R] [IsScalarTower α R R]
     (c : RingCon R) : IsScalarTower α c.Quotient c.Quotient where
-  smul_assoc _ := Quotient.ind₂' fun _ _ => congr_arg Quotient.mk'' <| smul_mul_assoc _ _ _
+  smul_assoc _ := Quotient.ind₂ fun _ _ => congr_arg Quotient.mk'' <| smul_mul_assoc _ _ _
 
 instance smulCommClass [Add R] [MulOneClass R] [SMul α R] [IsScalarTower α R R]
     [SMulCommClass α R R] (c : RingCon R) : SMulCommClass α c.Quotient c.Quotient where
-  smul_comm _ := Quotient.ind₂' fun _ _ => congr_arg Quotient.mk'' <| (mul_smul_comm _ _ _).symm
+  smul_comm _ := Quotient.ind₂ fun _ _ => congr_arg Quotient.mk'' <| (mul_smul_comm _ _ _).symm
 
 instance smulCommClass' [Add R] [MulOneClass R] [SMul α R] [IsScalarTower α R R]
     [SMulCommClass R α R] (c : RingCon R) : SMulCommClass c.Quotient α c.Quotient :=
@@ -384,12 +384,12 @@ instance [Monoid α] [NonAssocSemiring R] [DistribMulAction α R] [IsScalarTower
     (c : RingCon R) : DistribMulAction α c.Quotient :=
   { c.toCon.mulAction with
     smul_zero := fun _ => congr_arg toQuotient <| smul_zero _
-    smul_add := fun _ => Quotient.ind₂' fun _ _ => congr_arg toQuotient <| smul_add _ _ _ }
+    smul_add := fun _ => Quotient.ind₂ fun _ _ => congr_arg toQuotient <| smul_add _ _ _ }
 
 instance [Monoid α] [Semiring R] [MulSemiringAction α R] [IsScalarTower α R R] (c : RingCon R) :
     MulSemiringAction α c.Quotient :=
   { smul_one := fun _ => congr_arg toQuotient <| smul_one _
-    smul_mul := fun _ => Quotient.ind₂' fun _ _ => congr_arg toQuotient <|
+    smul_mul := fun _ => Quotient.ind₂ fun _ _ => congr_arg toQuotient <|
       MulSemiringAction.smul_mul _ _ _ }
 
 end Algebraic

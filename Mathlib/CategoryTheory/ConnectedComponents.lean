@@ -96,7 +96,7 @@ instance {j : ConnectedComponents J} : Functor.Faithful (Component.ι j) :=
 
 /-- Each connected component of the category is nonempty. -/
 instance (j : ConnectedComponents J) : Nonempty (Component j) := by
-  induction j using Quotient.inductionOn'
+  induction j using Quotient.inductionOn
   exact ⟨⟨_, rfl⟩⟩
 
 instance (j : ConnectedComponents J) : Inhabited (Component j) :=
