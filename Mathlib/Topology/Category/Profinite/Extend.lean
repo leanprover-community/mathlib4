@@ -31,7 +31,7 @@ attribute [local instance] ConcreteCategory.instFunLike
 
 namespace Profinite
 
-variable {I : Type u} [Category.{u} I] [IsCofiltered I]
+variable {I : Type u} [SmallCategory I] [IsCofiltered I]
     {F : I ⥤ FintypeCat.{max u w}} (c : Cone <| F ⋙ toProfinite)
 
 /--
