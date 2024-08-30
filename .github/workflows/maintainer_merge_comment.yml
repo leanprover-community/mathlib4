@@ -49,8 +49,7 @@ jobs:
           organization-url: 'https://leanprover.zulipchat.com'
           to: "bryan's testing channel"
           type: "stream"
-          topic: 't-data'
-          #${{ steps.tlabels.outputs.name }}
+          topic: ${{ steps.tlabels.outputs.name }}
           content: 'my_content'
           #${{ steps.mathlib_stats.outputs.summary }}
         env:
