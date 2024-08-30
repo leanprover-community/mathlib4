@@ -3,7 +3,6 @@ Copyright (c) 2024 Ali Ramsey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ali Ramsey, Kevin Buzzard
 -/
-import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 import Mathlib.RingTheory.Coalgebra.Basic
 import Mathlib.RingTheory.TensorProduct.Basic
 
@@ -145,12 +144,29 @@ variable {R A}
 
 end Bialgebra
 
+namespace CommSemiring
+variable (R : Type u) [CommSemiring R]
+
+open Bialgebra
+
+/-- Every commutative (semi)ring is a bialgebra over itself -/
+noncomputable
+instance toBialgebra : Bialgebra R R where
+  mul_compr₂_counit := by ext; simp
+  counit_one := rfl
+  mul_compr₂_comul := by ext; simp
+  comul_one := rfl
+
+end CommSemiring
+
 namespace MonoidAlgebra
 
 open Bialgebra
 
-variable {R : Type u} [CommSemiring R] {A : Type v} [Semiring A] [Bialgebra R A]
-variable {X : Type w}
+variable {R : Type u} [CommSemiring R] {A : Type v} [Semiring A] {X : Type w}
+
+section
+variable [Module R A] [Coalgebra R A]
 
 variable (R A X) in
 instance instCoalgebra : Coalgebra R (MonoidAlgebra A X) := Finsupp.instCoalgebra R X A
@@ -166,7 +182,12 @@ lemma comul_single (x : X) (a : A) :
       = (TensorProduct.map (lsingle R A x) (lsingle R A x) : _ →ₗ[R] _) (Coalgebra.comul a) :=
   Finsupp.comul_single _ _ _ _ _
 
-variable [Monoid X]
+@[simp high]
+lemma comul_single_self (x : X) (a : R) :
+    Coalgebra.comul (single x a) = single x 1 ⊗ₜ[R] single x a := by simp [lsingle_apply]
+
+end
+variable [Bialgebra R A] [Monoid X]
 
 variable (R A X) in
 instance instBialgebra : Bialgebra R (MonoidAlgebra A X) :=
@@ -192,11 +213,13 @@ namespace AddMonoidAlgebra
 
 open Bialgebra
 
-variable {R : Type u} [CommSemiring R] {A : Type v} [Semiring A] [Bialgebra R A]
-variable {X : Type w}
+variable {R : Type u} [CommSemiring R] {A : Type v} [Semiring A] {X : Type w}
+
+section
+variable [Module R A] [Coalgebra R A]
 
 variable (R A X) in
-instance instCoalgebra : Coalgebra R A[X] := Finsupp.instCoalgebra R X A
+instance instCoalgebra : Coalgebra R (A[X]) := Finsupp.instCoalgebra R X A
 
 @[simp]
 lemma counit_single (x : X) (a : A) :
@@ -209,7 +232,13 @@ lemma comul_single (x : X) (a : A) :
       = (TensorProduct.map (lsingle R A x) (lsingle R A x) : _ →ₗ[R] _) (Coalgebra.comul a) :=
   Finsupp.comul_single _ _ _ _ _
 
-variable [AddMonoid X]
+@[simp high]
+lemma comul_single_self (x : X) (a : R) :
+    Coalgebra.comul (single x a) = single x 1 ⊗ₜ[R] single x a := by simp [lsingle_apply]
+
+end
+
+variable [Bialgebra R A] [AddMonoid X]
 
 variable (R A X) in
 instance instBialgebra : Bialgebra R A[X] :=
@@ -230,18 +259,3 @@ instance instBialgebra : Bialgebra R A[X] :=
         Finset.sum_comm (s := (Coalgebra.Repr.arbitrary R b).index)] }
 
 end AddMonoidAlgebra
-
-namespace CommSemiring
-variable (R : Type u) [CommSemiring R]
-
-open Bialgebra
-
-/-- Every commutative (semi)ring is a bialgebra over itself -/
-noncomputable
-instance toBialgebra : Bialgebra R R where
-  mul_compr₂_counit := by ext; simp
-  counit_one := rfl
-  mul_compr₂_comul := by ext; simp
-  comul_one := rfl
-
-end CommSemiring
