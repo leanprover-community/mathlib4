@@ -40,7 +40,7 @@ variable {𝕜 G H : Type*} [MeasurableSpace G] [MeasurableSpace H] [Nontriviall
   [ContinuousSMul 𝕜 H] [T2Space H]
 
 instance MapLinearEquiv.isAddHaarMeasure (e : G ≃ₗ[𝕜] H) : IsAddHaarMeasure (μ.map e) :=
-  e.toContinuousLinearEquiv.isAddHaarMeasure_map _ 
+  e.toContinuousLinearEquiv.isAddHaarMeasure_map _
 
 end LinearEquiv
 
