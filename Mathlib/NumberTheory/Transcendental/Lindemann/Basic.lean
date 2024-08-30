@@ -46,23 +46,15 @@ theorem linear_independent_exp (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i
     simp_rw [P, Polynomial.map_prod]
     exact dvd_prod_of_mem _ (mem_univ _)
 
-  have sum_aroots_K_eq_sum_aroots_ℂ :
-    ∀ (j) (f : ℂ → ℂ),
-      (((p j).aroots K).map fun x => f (algebraMap K ℂ x)).sum =
-        (((p j).aroots ℂ).map f).sum := by
-    intro j f
+  have aroots_K_eq_aroots_ℂ (j) (f : ℂ → ℂ) :
+      (((p j).aroots K).map fun x => f (algebraMap K ℂ x)) =
+        (((p j).aroots ℂ).map f) := by
     have : (p j).aroots ℂ = ((p j).aroots K).map (algebraMap K ℂ) := by
-      -- Porting note: `simp_rw [aroots_def]` very slow
-      rw [aroots_def, aroots_def, IsScalarTower.algebraMap_eq ℤ K ℂ, ← Polynomial.map_map,
-        roots_map _ (splits_p j)]
+      rw [← aroots_map (S := K), ← roots_map _ (splits_p j)]
     rw [this, Multiset.map_map]
     simp_rw [Function.comp_def]
 
-  replace h :
-    (w + ∑ j : Fin m, w' j • (((p j).aroots K).map fun x => exp (algebraMap K ℂ x)).sum : ℂ) = 0 :=
-    h ▸
-      (congr_arg _ <|
-        congr_arg _ <| funext fun j => congr_arg _ <| sum_aroots_K_eq_sum_aroots_ℂ j exp)
+  simp_rw [← aroots_K_eq_aroots_ℂ _ exp] at h
 
   let k : ℤ := ∏ j, (p j).leadingCoeff
   have k0 : k ≠ 0 := prod_ne_zero_iff.mpr fun j _hj => leadingCoeff_ne_zero.mpr (p0' j)
@@ -82,10 +74,7 @@ theorem linear_independent_exp (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i
 
   have sz_h₁ : ∀ j, (p j).leadingCoeff ∣ k := fun j => dvd_prod_of_mem _ (mem_univ _)
   have sz_h₂ := fun j => (natDegree_eq_card_roots (splits_p j)).symm
-  -- Porting note: `simp_rw [map_id] at sz_h₂` very slow
-  conv at sz_h₂ =>
-    ext
-    rw [map_id, natDegree_map_eq_of_injective (algebraMap ℤ K).injective_int]
+  simp_rw [map_id, natDegree_map_eq_of_injective (algebraMap ℤ K).injective_int] at sz_h₂
 
   choose sz hsz using fun j ↦
     exists_sum_map_aroot_smul_eq (p j) k (P.natDegree * q) gp (sz_h₁ j) hgp
@@ -101,12 +90,7 @@ theorem linear_independent_exp (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i
         = ‖algebraMap K ℂ
               (k ^ t • n • (w : K) +
                 q • ∑ j, w' j • (((p j).aroots K).map fun x => k ^ t • aeval x gp).sum)‖ := by
-        -- Porting note: `simp_rw [zsmul_eq_mul]` very slow
-        -- simp_rw [zsmul_eq_mul]; norm_cast; rw [mul_assoc]
-        rw [zsmul_eq_mul, zsmul_eq_mul]
-        congr 3
-        norm_cast
-        rw [mul_assoc]
+        simp_rw [zsmul_eq_mul]; norm_cast; rw [mul_assoc]
       _ = ‖algebraMap K ℂ
                 (k ^ t • n • (w : K) +
                   q • ∑ j, w' j • (((p j).aroots K).map fun x => k ^ t • aeval x gp).sum) -
@@ -119,19 +103,8 @@ theorem linear_independent_exp (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i
               (k ^ t • n • (w : ℂ) +
                 k ^ t •
                   ∑ j, w' j • (((p j).aroots K).map fun x => n • exp (algebraMap K ℂ x)).sum)‖ := by
-        -- simp_rw [smul_add, smul_sum, Multiset.smul_sum, Multiset.map_map, Function.comp,
-        --  smul_comm n, smul_comm (k ^ t), smul_comm q]
-        congr 4 <;>
-        · repeat rw [smul_add]
-          repeat rw [smul_sum]
-          congr; funext
-          repeat rw [Multiset.smul_sum]
-          repeat rw [Multiset.map_map]
-          dsimp only [t, Function.comp_def]
-          congr; funext
-          repeat rw [smul_comm n]
-          repeat rw [smul_comm (k ^ t)]
-          repeat rw [smul_comm q]
+        simp_rw [smul_add, smul_sum, Multiset.smul_sum, Multiset.map_map, Function.comp,
+          smul_comm n, smul_comm (k ^ t), smul_comm q]
       _ = ‖(k ^ t • n • (w : ℂ) +
                   k ^ t •
                     ∑ j,
@@ -139,32 +112,21 @@ theorem linear_independent_exp (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i
               (k ^ t • n • (w : ℂ) +
                 k ^ t •
                   ∑ j, w' j • (((p j).aroots K).map fun x => n • exp (algebraMap K ℂ x)).sum)‖ := by
-        -- simp only [map_add, map_nsmul, map_zsmul, map_intCast, map_sum, map_multiset_sum,
-        --   Multiset.map_map, Function.comp]
-        congr 4
-        rw [map_add, map_zsmul, map_zsmul, map_zsmul, map_intCast, map_sum]
-        congr; funext
-        rw [map_zsmul, map_multiset_sum, Multiset.map_map]
-        congr; funext
-        rw [Function.comp_apply, map_nsmul]
+        simp only [map_add, map_nsmul, map_zsmul, map_intCast, map_sum, map_multiset_sum,
+          Multiset.map_map, Function.comp]
       _ = ‖k ^ t •
               ∑ j,
                 w' j •
                   (((p j).aroots K).map fun x =>
                       q • algebraMap K ℂ (aeval x gp) - n • exp (algebraMap K ℂ x)).sum‖ := by
-        -- simp only [add_sub_add_left_eq_sub, ← smul_sub, ← sum_sub_distrib,
-        --   ← Multiset.sum_map_sub]
-        rw [add_sub_add_left_eq_sub, ← smul_sub, ← sum_sub_distrib]
-        congr; funext
-        rw [← smul_sub, ← Multiset.sum_map_sub]
+        simp only [add_sub_add_left_eq_sub, ← smul_sub, ← sum_sub_distrib,
+          ← Multiset.sum_map_sub]
       _ = ‖k ^ t •
               ∑ j,
                 w' j •
                   (((p j).aroots K).map fun x =>
                       q • aeval (algebraMap K ℂ x) gp - n • exp (algebraMap K ℂ x)).sum‖ := by
-        -- simp_rw [aeval_algebraMap_apply]
-        congr; funext; congr; funext; congr 2
-        rw [aeval_algebraMap_apply]
+        simp_rw [aeval_algebraMap_apply]
       _ = ‖k ^ t •
               ∑ j,
                 w' j •
@@ -172,8 +134,7 @@ theorem linear_independent_exp (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i
                       (fun x' => q • aeval x' gp - n • exp x') (algebraMap K ℂ x)).sum‖ :=
         rfl
       _ = ‖k ^ t • ∑ j, w' j • (((p j).aroots ℂ).map fun x => q • aeval x gp - n • exp x).sum‖ := by
-        congr; funext; congr 1
-        exact sum_aroots_K_eq_sum_aroots_ℂ _ (fun x ↦ q • aeval x gp - n • exp x)
+        simp_rw [aroots_K_eq_aroots_ℂ _ (fun x ↦ q • aeval x gp - n • exp x)]
       _ ≤ ‖k ^ t‖ * ∑ j, W * (((p j).aroots ℂ).map fun _ => c ^ q / ↑(q - 1)!).sum := by
         refine (norm_zsmul_le _ _).trans ?_
         refine mul_le_mul_of_nonneg_left ?_ (norm_nonneg _)
@@ -184,12 +145,11 @@ theorem linear_independent_exp (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i
         refine (norm_multiset_sum_le _).trans ?_
         rw [Multiset.map_map]
         refine Multiset.sum_map_le_sum_map _ _ fun x hx => ?_
-        rw [Function.comp_apply, norm_sub_rev]
+        rw [Function.comp_apply, norm_sub_rev, norm_eq_abs]
         refine hc ?_
-        rw [mem_roots_map_of_injective (algebraMap ℤ ℂ).injective_int (p0' j)] at hx
-        rw [mem_roots_map_of_injective (algebraMap ℤ ℂ).injective_int P0', ← aeval_def]
+        rw [mem_aroots', Polynomial.map_ne_zero_iff (algebraMap ℤ ℂ).injective_int] at hx ⊢
         rw [map_prod]
-        exact prod_eq_zero (mem_univ j) hx
+        exact ⟨P0', prod_eq_zero (mem_univ _) hx.2⟩
   simp_rw [Int.norm_eq_abs, Int.cast_pow, _root_.abs_pow, ← Int.norm_eq_abs, Multiset.map_const',
     Multiset.sum_replicate, ← mul_sum, ← sum_smul, nsmul_eq_mul, mul_comm (‖k‖ ^ t), mul_assoc,
     mul_comm (_ / _ : ℝ), t, pow_mul, mul_div (_ ^ _ : ℝ), ← mul_pow, ← mul_assoc, mul_div, ←
@@ -197,7 +157,7 @@ theorem linear_independent_exp (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i
   replace H := H.trans_lt hq
   have : ∑ j, w' j • (((p j).aroots K).map fun x : K => k ^ (P.natDegree * q) • aeval x gp).sum =
       algebraMap ℤ K (∑ j, w' j • sz j) := by
-    rw [map_sum]; congr; funext j; rw [map_zsmul, hsz]
+    simp_rw [map_sum, map_zsmul, hsz]
   rw [this] at H
   have :
     ‖algebraMap K ℂ (↑(k ^ (P.natDegree * q) * n * w) + ↑q * algebraMap ℤ K (∑ j, w' j • sz j))‖ =
