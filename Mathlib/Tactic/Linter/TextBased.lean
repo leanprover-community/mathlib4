@@ -351,12 +351,17 @@ def broadImportsLinter : TextbasedLinter := fun lines ↦ Id.run do
 /-- Lint a collection of input strings if one of them contains windows line endings. -/
 def windowsLineEndingLinter : TextbasedLinter := fun lines ↦ Id.run do
   let mut errors := Array.mkEmpty 0
+  let mut fixedLines := lines
+  -- invariant: this equals the current index of 'line' in 'lines',
+  -- hence starts at 0 and is incremented *at the end* of the loop
   let mut lineNumber := 0
   for line in lines do
-    let rep := line.crlfToLf
-    if rep != line then
+    let replaced := line.crlfToLf
+    if replaced != line then
       errors := errors.push (StyleError.windowsLineEnding, lineNumber)
-  return (errors, none) -- TODO: add auto-fix!
+      fixedLines := fixedLines.set! 0 replaced
+    lineNumber := lineNumber + 1
+  return (errors, fixedLines)
 
 /-- Whether a collection of lines consists *only* of imports, blank lines and single-line comments.
 In practice, this means it's an imports-only file and exempt from almost all linting. -/
