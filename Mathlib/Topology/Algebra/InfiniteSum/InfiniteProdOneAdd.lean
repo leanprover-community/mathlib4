@@ -6,7 +6,7 @@ import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
 import Mathlib.Analysis.PSeries
 import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 import Mathlib.Order.Filter.ZeroAndBoundedAtFilter
-
+import Mathlib.NumberTheory.ModularForms.EisensteinSeries.UniformConvergence
 
 open Filter Function Complex
 
@@ -722,8 +722,9 @@ lemma logDeriv_of_prod (x : ℤᶜ) (n : ℕ) :
     rw [logDeriv_prod]
     congr
     ext1 i
-    rw [logDeriv_apply]
-    simp
+    simp only [Set.mem_setOf_eq, logDeriv_apply, differentiableAt_const, deriv_const_add',
+      deriv_div_const, deriv.neg', differentiableAt_id', deriv_pow'', Nat.cast_ofNat,
+      Nat.add_one_sub_one, pow_one, deriv_id'', mul_one, one_div]
     simp_rw [div_eq_mul_inv]
     set i1 := ((x : ℂ) + (i+1))⁻¹
     set i2 := ((x : ℂ) - (i+1))⁻¹
@@ -736,8 +737,12 @@ lemma logDeriv_of_prod (x : ℤᶜ) (n : ℕ) :
       apply Complex.mul_inv_cancel
       rw [sub_eq_add_neg]
       simpa using int_comp_add_ne_zero x x.2 (-(i+1))
-    have h3 : ((i+1 : ℂ)^2) * i3 = 1 := by sorry
-    have h4 : (1+ -x^2*i3)*i4 = 1 := by sorry
+    have h3 : ((i+1 : ℂ)^2) * i3 = 1 := by
+      apply Complex.mul_inv_cancel
+      norm_cast
+      exact Nat.add_one_ne_zero ((((i + 1).pow 1).mul i).add (((i + 1).pow 0).mul i))
+    have h4 : (1+ -x^2 * i3) * i4 = 1 := by
+      apply Complex.mul_inv_cancel (int_comp_not_zero2 x x.2 i)
     clear_value i1 i2 i3 i4
     linear_combination
       (2 * i4 * i2 * i1 * ↑i + 2 * i4 * i2 * i1 + 2 * i4 * i1) * h3 +
@@ -751,11 +756,12 @@ lemma logDeriv_of_prod (x : ℤᶜ) (n : ℕ) :
               2 * i3 * i4 +
             i2) *
           h1
-    sorry
+    · exact fun i _ ↦ int_comp_not_zero2 (↑x) x.property i
+    · intro i _
+      simp only [Set.mem_setOf_eq, differentiableAt_const, differentiableAt_const_add_iff,
+        differentiableAt_neg_iff, differentiableAt_id', DifferentiableAt.pow,
+        DifferentiableAt.div_const]
 
-
-
-    sorry
 
 theorem tendsto_euler_log_derv_sin_prodd' (x : ℤᶜ) :
     Tendsto
@@ -770,9 +776,52 @@ theorem tendsto_euler_log_derv_sin_prodd' (x : ℤᶜ) :
   simp at *
   exact this
 
-theorem lhs_summable (z : ℤᶜ) : Summable fun n : ℕ+ => 1 / ((z : ℂ) - n) + 1 / (z + n) := by sorry
+lemma pnat_inv_sub_squares (z : ℤᶜ) :
+  (fun n : ℕ+ => 1 / ((z : ℂ) - n) + 1 / (z + n)) =
+    fun n : ℕ+ => 2 * z.1 * (1 / (z ^ 2 - n ^ 2)):= by
+  funext n
+  field_simp
+  rw [one_div_add_one_div]
+  ring
+  rw [sub_eq_add_neg]
+  simpa using int_comp_add_ne_zero z z.2 (-n : ℤ)
+  apply int_comp_add_ne_zero z z.2 n
 
 
+theorem lhs_summable (z : ℤᶜ) : Summable fun n : ℕ+ => 1 / ((z : ℂ) - n) + 1 / (z + n) := by
+  have h1 := pnat_inv_sub_squares z
+  rw [h1]
+  apply Summable.mul_left
+  apply summable_norm_iff.1
+  simp
+
+
+/-   have hs : Summable fun n : ℕ+ => (EisensteinSeries.r z ^ 2 * n ^ 2)⁻¹ :=
+    by
+    have := aux_rie_sum z 2 le_rfl
+    simp at this
+    norm_cast at *
+    simp at *
+    apply this
+  apply Summable.of_nonneg_of_le _ _ hs
+  · intro b
+    rw [inv_nonneg]
+    apply Complex.abs.nonneg
+  intro b
+  rw [inv_le_inv]
+  · rw [mul_comm]
+    have := upbnd z b
+    norm_cast at *
+  · simp at *
+    simpa using  (upper_half_plane_ne_int_pow_two z b)
+  apply mul_pos
+  · norm_cast
+    apply pow_pos
+    apply rfunct_pos
+  have hb := b.2
+  norm_cast
+  apply pow_pos
+ -/
 theorem nat_pos_tsum2' [TopologicalSpace α] [AddCommMonoid α]  (f : ℕ → α) :
     (Summable fun x : ℕ+ => f x) ↔ Summable fun x : ℕ => f (x + 1) :=
   by
