@@ -7,6 +7,7 @@ import Mathlib.Analysis.PSeries
 import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 import Mathlib.Order.Filter.ZeroAndBoundedAtFilter
 
+
 open Filter Function Complex
 
 open scoped Interval Topology BigOperators Nat Classical UpperHalfPlane Complex
@@ -282,6 +283,15 @@ lemma int_comp_not_zero2 (x : ℂ) (hx : x ∈ {z : ℂ | ¬ ∃ (n : ℤ), z = 
   simp at this
   simp
   exact Nat.cast_add_one_ne_zero n
+
+lemma int_comp_add_ne_zero (x : ℂ) (hx : x ∈ {z : ℂ | ¬ ∃ (n : ℤ), z = ↑n}) (a : ℤ) :
+    x + a ≠ 0 := by
+  intro h
+  rw [@add_eq_zero_iff_eq_neg] at h
+  rw [h] at hx
+  simp at hx
+  have := hx (-a)
+  simp only [Int.cast_neg, Int.cast_add, Int.cast_zero, not_true_eq_false] at this
 
 
 
@@ -642,7 +652,7 @@ theorem tendsto_euler_log_derv_sin_prodde (x : ℤᶜ) :
     Tendsto
       (fun n : ℕ =>
         logDeriv (fun z =>  ∏ j in Finset.range n, (1 + -(z : ℂ) ^ 2 / (j + 1) ^ 2)) x)
-      atTop (𝓝 <| logDeriv ((Complex.sin ∘ fun t => π * t)/(fun (t : ℂ) => π * t)) x) := by
+      atTop (𝓝 <| logDeriv (fun t => (Complex.sin (π * t)/ (π * t))) x) := by
   have :=
     logDeriv_tendsto
       (fun n : ℕ => fun z => ∏ j in Finset.range n, (1 + -z ^ 2 / (j + 1) ^ 2))
@@ -688,33 +698,64 @@ theorem tendsto_euler_log_derv_sin_prodde (x : ℤᶜ) :
   have := this 0
   simp at this
 
-theorem logDeriv_sine2 (z : ℍ) : logDeriv (Complex.sin ∘ fun t => π * t) z = π * cot (π * z) :=
-  by
-  rw [logDeriv_comp]
-  rw [Complex.logDeriv_sin]
-  rw [deriv_const_mul]
-  rw [deriv_id'']
-  ring
-  simp
-  exact Complex.differentiableAt_sin
-  fun_prop
 
-theorem logDeriv_sine (z : ℤᶜ) :
-  (logDeriv (((Complex.sin ∘ fun t => π * t)/(fun (t : ℂ) => π * t))) z) =
-    π * cot (π * z) - 1/z:= by
-  conv  =>
-    enter [1,1]
-    ext y
-    simp
-  rw [logDeriv_div]
-  have := Complex.logDeriv_sin
-  sorry
-  sorry
-  all_goals{sorry}
+theorem logDeriv_sin_div (z : ℤᶜ) :
+    logDeriv (fun t => (Complex.sin (π * t) / (π * t))) z =
+      π * cot (π * z) - 1/z := by
+  have : (fun t => (Complex.sin (π * t)/ (π * t))) = fun z =>
+    (Complex.sin ∘ fun t => π * t) z / (π * z) := by
+    ext1
+    simp only [Pi.div_apply, comp_apply]
+  rw [this, logDeriv_div _ (by apply sin_pi_z_ne_zero) ?_
+    (DifferentiableAt.comp _ (Complex.differentiableAt_sin) (by fun_prop)) (by fun_prop),
+    logDeriv_comp (Complex.differentiableAt_sin) (by fun_prop), Complex.logDeriv_sin,
+    deriv_const_mul _ (by fun_prop), deriv_id'', logDeriv_const_mul, logDeriv_id']
+  field_simp [mul_comm]
+  · simpa only [ne_eq, ofReal_eq_zero] using Real.pi_ne_zero
+  · simp only [Set.mem_setOf_eq, ne_eq, mul_eq_zero, ofReal_eq_zero, not_or]
+    refine ⟨Real.pi_ne_zero, int_comp_not_zero _ z.2⟩
+
 
 lemma logDeriv_of_prod (x : ℤᶜ) (n : ℕ) :
     logDeriv (fun (z : ℂ) =>  ∏ j in Finset.range n, (1 + -z ^ 2 / (j + 1) ^ 2)) x =
-     ∑ j in Finset.range n, (1 / ((x : ℂ) - (j + 1)) + 1 / (x + (j + 1))) := by sorry
+     ∑ j in Finset.range n, (1 / ((x : ℂ) - (j + 1)) + 1 / (x + (j + 1))) := by
+    rw [logDeriv_prod]
+    congr
+    ext1 i
+    rw [logDeriv_apply]
+    simp
+    simp_rw [div_eq_mul_inv]
+    set i1 := ((x : ℂ) + (i+1))⁻¹
+    set i2 := ((x : ℂ) - (i+1))⁻¹
+    set i3 := ((i+1 : ℂ)^2)⁻¹
+    set i4 := (1+ -x^2*i3)⁻¹
+    have h1  : ((x : ℂ) + (i+1))* i1 = 1 := by
+      refine Complex.mul_inv_cancel ?h
+      simpa using int_comp_add_ne_zero x x.2 (i+1)
+    have h2 : ((x : ℂ) - (i+1)) * i2 = 1 := by
+      apply Complex.mul_inv_cancel
+      rw [sub_eq_add_neg]
+      simpa using int_comp_add_ne_zero x x.2 (-(i+1))
+    have h3 : ((i+1 : ℂ)^2) * i3 = 1 := by sorry
+    have h4 : (1+ -x^2*i3)*i4 = 1 := by sorry
+    clear_value i1 i2 i3 i4
+    linear_combination
+      (2 * i4 * i2 * i1 * ↑i + 2 * i4 * i2 * i1 + 2 * i4 * i1) * h3 +
+            (2 * i2 * i1 * ↑i + 2 * i2 * i1 + 2 * i1) * h4 +
+          (2 * i3 * i4 * ↑i + 2 * i3 * i4 - 1 * i1) * h2 +
+        (2 * ↑x * i3 * i4 * i2 * ↑i - 2 * i3 * i4 * i2 * ↑i ^ 2 + 2 * ↑x * i3 * i4 * i2 -
+                      4 * i3 * i4 * i2 * ↑i +
+                    2 * ↑x * i3 * i4 -
+                  2 * i3 * i4 * i2 -
+                2 * i3 * i4 * ↑i -
+              2 * i3 * i4 +
+            i2) *
+          h1
+    sorry
+
+
+
+    sorry
 
 theorem tendsto_euler_log_derv_sin_prodd' (x : ℤᶜ) :
     Tendsto
@@ -723,7 +764,7 @@ theorem tendsto_euler_log_derv_sin_prodd' (x : ℤᶜ) :
   by
   have := tendsto_euler_log_derv_sin_prodde x
   have h1 := logDeriv_of_prod x
-  have h2 := logDeriv_sine x
+  have h2 := logDeriv_sin_div x
   rw [← h2]
   simp_rw [← h1]
   simp at *
