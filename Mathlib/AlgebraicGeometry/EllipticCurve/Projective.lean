@@ -93,7 +93,7 @@ local macro "pderiv_simp" : tactic =>
     pderiv_X_of_ne (by decide : z ≠ x), pderiv_X_of_ne (by decide : x ≠ z),
     pderiv_X_of_ne (by decide : z ≠ y), pderiv_X_of_ne (by decide : y ≠ z)])
 
-variable {R : Type u} [CommRing R] {W' : Projective R} {F : Type v} [Field F] {W : Projective F}
+variable {R : Type u} {W' : Projective R} {F : Type v} [Field F] {W : Projective F}
 
 section Projective
 
@@ -107,6 +107,8 @@ lemma fin3_def_ext (X Y Z : R) : ![X, Y, Z] x = X ∧ ![X, Y, Z] y = Y ∧ ![X, 
 
 lemma comp_fin3 {S} (f : R → S) (X Y Z : R) : f ∘ ![X, Y, Z] = ![f X, f Y, f Z] :=
   (FinVec.map_eq _ _).symm
+
+variable [CommRing R]
 
 lemma smul_fin3 (P : Fin 3 → R) (u : R) : u • P = ![u * P x, u * P y, u * P z] :=
   List.ofFn_inj.mp rfl
