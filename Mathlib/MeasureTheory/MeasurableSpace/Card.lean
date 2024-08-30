@@ -168,20 +168,19 @@ theorem cardinal_generateMeasurableRec_le {s : Set (Set α)} (hs : 2 ≤ #s) (i 
     have A : 𝔠 ≤ #s ^ ℵ₀ := power_le_power_right hs
     have B := aleph0_le_continuum.trans A
     have C : #(⋃ j < i, generateMeasurableRec s j) ≤ #s ^ ℵ₀ := by
-      change #(⋃ j ∈ Iio i, generateMeasurableRec s j) ≤ _
-      rw [← Cardinal.lift_le.{v + 1}]
-      refine (mk_biUnion_le_lift _ _).trans ?_
-      rw [mk_ordinal_iio, lift_lift]
-      apply (mul_le_mul' (lift_le.2 <| card_le_of_le_ord hi)
-        (ciSup_le' fun ⟨j, hj⟩ => lift_le.2 <| IH j hj (hj.trans_le hi).le)).trans
-      rw [mul_eq_max]
-      · simp_rw [lift_aleph, Ordinal.lift_one, max_le_iff, le_refl, and_true, aleph1_le_lift]
-        exact aleph_one_le_continuum.trans A
-      · rw [aleph0_le_lift]
-        exact aleph0_le_aleph 1
-      · rwa [aleph0_le_lift]
+      apply mk_iUnion_Ordinal_lift_le_of_le
+      · rw [lift_power, lift_aleph0]
+        rw [← Ordinal.lift_le.{u}, lift_ord, lift_aleph, Ordinal.lift_one] at hi
+        have H := card_le_of_le_ord hi
+        rw [← Ordinal.lift_card] at H
+        exact H.trans <| aleph_one_le_continuum.trans <| power_le_power_right <|
+          nat_le_lift_iff.2 hs
+      · exact B
+      · intro j hj
+        apply IH j hj (hj.trans_le hi).le
     rw [generateMeasurableRec]
-    apply_rules [(mk_union_le _ _).trans, add_le_of_le B, mk_image_le.trans]
+    apply_rules [(mk_union_le _ _).trans, add_le_of_le (aleph_one_le_continuum.trans A),
+      mk_image_le.trans]
     · exact self_le_power _ one_le_aleph0
     · rw [mk_singleton]
       exact one_lt_aleph0.le.trans B
