@@ -452,7 +452,7 @@ theorem choose_smul_choose [NatPowAssoc R] (r : R) (n k : ℕ) (hkn : k ≤ n) :
   refine nsmul_right_injective (Nat.factorial n) (Nat.factorial_ne_zero n) ?_
   simp only
   rw [nsmul_left_comm, ← descPochhammer_eq_factorial_smul_choose,
-    ← Nat.choose_mul_factorial_mul_factorial hkn, ← smul_mul_smul,
+    ← Nat.choose_mul_factorial_mul_factorial hkn, ← smul_mul_smul_comm,
     ← descPochhammer_eq_factorial_smul_choose, mul_nsmul',
     ← descPochhammer_eq_factorial_smul_choose, smul_mul_assoc]
   nth_rw 2 [← Nat.sub_add_cancel hkn]
