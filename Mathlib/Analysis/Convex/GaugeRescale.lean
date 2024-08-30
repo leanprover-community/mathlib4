@@ -43,7 +43,21 @@ theorem gaugeRescale_smul (s t : Set E) {c : ℝ} (hc : 0 ≤ c) (x : E) :
   simp only [gaugeRescale, gauge_smul_of_nonneg hc, smul_smul, smul_eq_mul]
   rw [mul_div_mul_comm, mul_right_comm, div_self_mul_self]
 
-variable [TopologicalSpace E] [T1Space E]
+theorem gauge_gaugeRescale' (s : Set E) {t : Set E} {x : E} (hx : gauge t x ≠ 0) :
+    gauge t (gaugeRescale s t x) = gauge s x := by
+  rw [gaugeRescale, gauge_smul_of_nonneg (div_nonneg (gauge_nonneg _) (gauge_nonneg _)),
+    smul_eq_mul, div_mul_cancel₀ _ hx]
+
+theorem gauge_gaugeRescale_le (s t : Set E) (x : E) :
+    gauge t (gaugeRescale s t x) ≤ gauge s x := by
+  by_cases hx : gauge t x = 0
+  · simp [gaugeRescale, hx, gauge_nonneg]
+  · exact (gauge_gaugeRescale' s hx).le
+
+variable [TopologicalSpace E]
+
+section
+variable [T1Space E]
 
 theorem gaugeRescale_self_apply {s : Set E} (hsa : Absorbent ℝ s) (hsb : IsVonNBounded ℝ s)
     (x : E) : gaugeRescale s s x = x := by
@@ -55,28 +69,17 @@ theorem gaugeRescale_self {s : Set E} (hsa : Absorbent ℝ s) (hsb : IsVonNBound
     gaugeRescale s s = id :=
   funext <| gaugeRescale_self_apply hsa hsb
 
-theorem gauge_gaugeRescale' (s : Set E) {t : Set E} {x : E} (hx : gauge t x ≠ 0) :
-    gauge t (gaugeRescale s t x) = gauge s x := by
-  rw [gaugeRescale, gauge_smul_of_nonneg (div_nonneg (gauge_nonneg _) (gauge_nonneg _)),
-    smul_eq_mul, div_mul_cancel₀ _ hx]
-
 theorem gauge_gaugeRescale (s : Set E) {t : Set E} (hta : Absorbent ℝ t) (htb : IsVonNBounded ℝ t)
     (x : E) : gauge t (gaugeRescale s t x) = gauge s x := by
   rcases eq_or_ne x 0 with rfl | hx
   · simp
   · exact gauge_gaugeRescale' s ((gauge_pos hta htb).2 hx).ne'
 
-theorem gauge_gaugeRescale_le (s t : Set E) (x : E) :
-    gauge t (gaugeRescale s t x) ≤ gauge s x := by
-  by_cases hx : gauge t x = 0
-  · simp [gaugeRescale, hx, gauge_nonneg]
-  · exact (gauge_gaugeRescale' s hx).le
-
 theorem gaugeRescale_gaugeRescale {s t u : Set E} (hta : Absorbent ℝ t) (htb : IsVonNBounded ℝ t)
     (x : E) : gaugeRescale t u (gaugeRescale s t x) = gaugeRescale s u x := by
   rcases eq_or_ne x 0 with rfl | hx; · simp
   rw [gaugeRescale_def s t x, gaugeRescale_smul, gaugeRescale, gaugeRescale, smul_smul,
-    div_mul_div_cancel]
+    div_mul_div_cancel₀]
   exacts [((gauge_pos hta htb).2 hx).ne', div_nonneg (gauge_nonneg _) (gauge_nonneg _)]
 
 /-- `gaugeRescale` bundled as an `Equiv`. -/
@@ -86,6 +89,8 @@ def gaugeRescaleEquiv (s t : Set E) (hsa : Absorbent ℝ s) (hsb : IsVonNBounded
   invFun := gaugeRescale t s
   left_inv x := by rw [gaugeRescale_gaugeRescale, gaugeRescale_self_apply] <;> assumption
   right_inv x := by rw [gaugeRescale_gaugeRescale, gaugeRescale_self_apply] <;> assumption
+
+end
 
 variable [TopologicalAddGroup E] [ContinuousSMul ℝ E] {s t : Set E}
 
@@ -99,6 +104,8 @@ theorem mapsTo_gaugeRescale_closure {s t : Set E} (hsc : Convex ℝ s) (hs₀ : 
     MapsTo (gaugeRescale s t) (closure s) (closure t) := fun _x hx ↦
   mem_closure_of_gauge_le_one htc ht₀ hta <| (gauge_gaugeRescale_le _ _ _).trans <|
     (gauge_le_one_iff_mem_closure hsc hs₀).2 hx
+
+variable [T1Space E]
 
 theorem continuous_gaugeRescale {s t : Set E} (hs : Convex ℝ s) (hs₀ : s ∈ 𝓝 0)
     (ht : Convex ℝ t) (ht₀ : t ∈ 𝓝 0) (htb : IsVonNBounded ℝ t) :

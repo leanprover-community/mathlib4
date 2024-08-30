@@ -3,6 +3,7 @@ Copyright (c) 2023 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Init
 import Lean.Meta.Tactic.Simp.Types
 
 /-!
@@ -11,8 +12,6 @@ import Lean.Meta.Tactic.Simp.Types
 This monad is used by tactics like `ring` and `abel` to keep uninterpreted atoms in a consistent
 order, and also to allow unifying atoms up to a specified transparency mode.
 -/
-
-set_option autoImplicit true
 
 namespace Mathlib.Tactic
 open Lean Meta
@@ -35,7 +34,7 @@ structure AtomM.State :=
 abbrev AtomM := ReaderT AtomM.Context <| StateRefT AtomM.State MetaM
 
 /-- Run a computation in the `AtomM` monad. -/
-def AtomM.run (red : TransparencyMode) (m : AtomM α)
+def AtomM.run {α : Type} (red : TransparencyMode) (m : AtomM α)
     (evalAtom : Expr → MetaM Simp.Result := fun e ↦ pure { expr := e }) :
     MetaM α :=
   (m { red, evalAtom }).run' {}
@@ -48,3 +47,5 @@ def AtomM.addAtom (e : Expr) : AtomM Nat := do
     if ← withTransparency (← read).red <| isDefEq e c.atoms[i] then
       return i
   modifyGet fun c ↦ (c.atoms.size, { c with atoms := c.atoms.push e })
+
+end Mathlib.Tactic

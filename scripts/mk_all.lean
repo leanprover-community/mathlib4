@@ -50,7 +50,10 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
   let mut updates := 0
   for d in libs.reverse do  -- reverse to create `Mathlib/Tactic.lean` before `Mathlib.lean`
     let fileName := addExtension d "lean"
-    let allFiles ← getAllModulesSorted git d
+    let mut allFiles ← getAllModulesSorted git d
+    -- mathlib exception: manually import Batteries in `Mathlib.lean`
+    if d == "Mathlib" then
+      allFiles := #["Batteries"] ++ allFiles
     let fileContent := ("\n".intercalate (allFiles.map ("import " ++ ·)).toList).push '\n'
     if !(← pathExists fileName) then
       if check then
@@ -68,7 +71,9 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
       updates := updates + 1
   if updates == 0 then
     IO.println "No update necessary"
-  return updates
+  -- Make sure to return an exit code of at most 125, so this return value can be used further
+  -- in shell scripts.
+  return min updates 125
 
 open Cli in
 /-- Setting up command line options and help text for `lake exe mk_all`. -/

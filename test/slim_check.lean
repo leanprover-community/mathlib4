@@ -1,10 +1,10 @@
-import Mathlib.Algebra.Group.Fin
+import Mathlib.Algebra.Group.Fin.Basic
 import Mathlib.Tactic.SlimCheck
 import Mathlib.Tactic.SuccessIfFailWithMsg
 import Mathlib.Data.Finsupp.Notation
 import Mathlib.Testing.SlimCheck.Functions
 import Mathlib.Tactic.Have
-import Mathlib.Data.Nat.Prime
+import Mathlib.Data.Nat.Prime.Defs
 
 private axiom test_sorry : ∀ {α}, α
 

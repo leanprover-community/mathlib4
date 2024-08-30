@@ -1,8 +1,9 @@
 /-
-Copyright (c) 2024 Tomas Skrivan. All rights reserved.
+Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Tomas Skrivan
+Authors: Tomáš Skřivan
 -/
+import Mathlib.Init
 import Lean
 
 /-!
@@ -99,12 +100,18 @@ fun_prop bug: expression {← ppExpr e} matches multiple function properties
 {decls.map (fun d => d.funPropName)}"
 
   let decl := decls[0]!
+  unless decl.funArgId < e.getAppNumArgs do return none
   let f := e.getArg! decl.funArgId
 
   return (decl,f)
 
 /-- Is `e` a function property statement? -/
 def isFunProp (e : Expr) : MetaM Bool := do return (← getFunProp? e).isSome
+
+/-- Is `e` a `fun_prop` goal? For example `∀ y z, Continuous fun x => f x y z` -/
+def isFunPropGoal (e : Expr) : MetaM Bool := do
+  forallTelescope e fun _ b =>
+  return (← getFunProp? b).isSome
 
 /-- Returns function property declaration from `e = P f`. -/
 def getFunPropDecl? (e : Expr) : MetaM (Option FunPropDecl) := do
@@ -145,3 +152,7 @@ def tacticToDischarge (tacticCode : TSyntax `tactic) : Expr → MetaM (Option Ex
     let (result?, _) ← runTac?.run {} {}
 
     return result?
+
+end Meta.FunProp
+
+end Mathlib

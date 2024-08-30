@@ -5,6 +5,7 @@ Authors: Oliver Nash, Deepro Choudhury
 -/
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.LinearAlgebra.Span
+import Mathlib.Algebra.Module.Equiv.Basic
 
 /-!
 

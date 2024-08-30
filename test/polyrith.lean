@@ -5,6 +5,10 @@ Authors: Dhruv Bhatia, Robert Y. Lewis, Mario Carneiro
 -/
 import Mathlib.Tactic.Polyrith
 
+-- Except for the `import`, the doc-modules and the following `set_option`, this file is just
+-- comments and whitespace.  Once the file gets revived, the linting can start!
+set_option linter.longLine false
+
 /-!
 
 Each call to `polyrith` makes a call to the SageCell web API at

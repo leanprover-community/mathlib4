@@ -17,14 +17,12 @@ In this variant we eschew the use of `aesop`, and instead write out the proofs.
 we put primes on the declarations in the file.)
 -/
 
-set_option autoImplicit true
-
 namespace IfExpr
 
 attribute [local simp] eval normalized hasNestedIf hasConstantIf hasRedundantIf disjoint vars
   List.disjoint max_add_add_right max_mul_mul_left Nat.lt_add_one_iff le_add_of_le_right
 
-theorem eval_ite_ite' :
+theorem eval_ite_ite' {a b c d e : IfExpr} {f : ℕ → Bool} :
     (ite (ite a b c) d e).eval f = (ite a (ite b d e) (ite c d e)).eval f := by
   cases h : eval f a <;> simp_all
 
@@ -94,8 +92,8 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
               · simp_all
         · have := ht₃ v
           have := he₃ v
-          simp_all? says simp_all only [Option.elim, normalized, Bool.and_eq_true,
-              Bool.not_eq_true', AList.lookup_insert_eq_none, ne_eq, AList.lookup_insert, imp_false]
+          simp_all? says simp_all only [normalized, Bool.and_eq_true, Bool.not_eq_true',
+            AList.lookup_insert_eq_none, ne_eq, AList.lookup_insert, imp_false]
           obtain ⟨⟨⟨tn, tc⟩, tr⟩, td⟩ := ht₂
           split <;> rename_i h'
           · subst h'
@@ -107,9 +105,9 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
           have := he₃ w
           by_cases h : w = v
           · subst h; simp_all
-          · simp_all? says simp_all only [Option.elim, normalized, Bool.and_eq_true,
-              Bool.not_eq_true', AList.lookup_insert_eq_none, ne_eq, not_false_eq_true,
-              AList.lookup_insert_ne, implies_true]
+          · simp_all? says simp_all only [normalized, Bool.and_eq_true, Bool.not_eq_true',
+              AList.lookup_insert_eq_none, ne_eq, not_false_eq_true, AList.lookup_insert_ne,
+              implies_true]
             obtain ⟨⟨⟨en, ec⟩, er⟩, ed⟩ := he₂
             split at b <;> rename_i h'
             · subst h'; simp_all
@@ -124,3 +122,5 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
 example : IfNormalization :=
   ⟨fun e => (normalize' ∅ e).1,
    fun e => ⟨(normalize' ∅ e).2.2.1, by simp [(normalize' ∅ e).2.1]⟩⟩
+
+end IfExpr
