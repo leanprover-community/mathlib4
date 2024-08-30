@@ -169,7 +169,7 @@ def FermatLastTheoremWith' (α : Type*) [CommSemiring α] (n : ℕ) : Prop :=
   ∀ a b c : α, a ≠ 0 → b ≠ 0 → c ≠ 0 → a ^ n + b ^ n = c ^ n →
     ∃ d a' b' c', (a = a' * d ∧ b = b' * d ∧ c = c' * d) ∧ (IsUnit a' ∧ IsUnit b' ∧ IsUnit c')
 
-lemma fermatLastTheoremWith'_of_fermatLastTheoremWith {α : Type*} [CommSemiring α] {n : ℕ}
+lemma FermatLastTheoremWith.fermatLastTheoremWith' {α : Type*} [CommSemiring α] {n : ℕ}
     (h : FermatLastTheoremWith α n) : FermatLastTheoremWith' α n :=
   fun a b c _ _ _ _ ↦ by exfalso; apply h a b c <;> assumption
 
@@ -179,21 +179,19 @@ lemma fermatLastTheoremWith'_of_field (α : Type*) [Field α] (n : ℕ) : Fermat
      ⟨(mul_one a).symm, (mul_one b).symm, (mul_one c).symm⟩,
      ⟨ha.isUnit, hb.isUnit, hc.isUnit⟩⟩
 
-lemma fermatLastTheoremWith_of_fermatLastTheoremWith' {α : Type*} [CommSemiring α] [IsDomain α]
+lemma FermatLastTheoremWith'.fermatLastTheoremWith {α : Type*} [CommSemiring α] [IsDomain α]
     {n : ℕ} (h : FermatLastTheoremWith' α n)
-    (hn : ∀ {a b c : α}, IsUnit a → IsUnit b → IsUnit c → a ^ n + b ^ n ≠ c ^ n) :
+    (hn : ∀ a b c : α, IsUnit a → IsUnit b → IsUnit c → a ^ n + b ^ n ≠ c ^ n) :
     FermatLastTheoremWith α n := by
   intro a b c ha hb hc heq
   rcases h a b c ha hb hc heq with ⟨d, a', b', c', ⟨rfl, rfl, rfl⟩, ⟨ua, ub, uc⟩⟩
   rw [mul_pow, mul_pow, mul_pow, ← add_mul] at heq
-  exact hn ua ub uc <| mul_right_cancel₀ (pow_ne_zero _ (right_ne_zero_of_mul ha)) heq
+  exact hn _ _ _ ua ub uc <| mul_right_cancel₀ (pow_ne_zero _ (right_ne_zero_of_mul ha)) heq
 
 lemma fermatLastTheoremWith'_iff_fermatLastTheoremWith {α : Type*} [CommSemiring α] [IsDomain α]
     {n : ℕ} (hn : ∀ a b c : α, IsUnit a → IsUnit b → IsUnit c → a ^ n + b ^ n ≠ c ^ n) :
     FermatLastTheoremWith' α n ↔ FermatLastTheoremWith α n :=
-  Iff.intro
-    (fun h ↦ fermatLastTheoremWith_of_fermatLastTheoremWith' h hn)
-    fermatLastTheoremWith'_of_fermatLastTheoremWith
+  Iff.intro (fun h ↦ h.fermatLastTheoremWith hn) (fun h ↦ h.fermatLastTheoremWith')
 
 lemma fermatLastTheoremWith'_nat_int_tfae (n : ℕ) :
     TFAE [FermatLastTheoremFor n, FermatLastTheoremWith' ℕ n, FermatLastTheoremWith' ℤ n] := by
