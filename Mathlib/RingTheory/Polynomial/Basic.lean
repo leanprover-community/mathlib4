@@ -173,6 +173,34 @@ theorem degreeLT_succ_eq_degreeLE {n : ℕ} : degreeLT R (n + 1) = degreeLE R n 
   · rw [mem_degreeLT, mem_degreeLE, ← natDegree_lt_iff_degree_lt (by rwa [ne_eq]),
       ← natDegree_le_iff_degree_le, Nat.lt_succ]
 
+/-- The equivalence between monic polynomials of degree `n` and polynomials of degree less than
+`n`, formed by adding a term `X ^ n`. -/
+def monicEquivDegreeLT [Nontrivial R] (n : ℕ) :
+    { p : R[X] // p.Monic ∧ p.natDegree = n } ≃ degreeLT R n where
+  toFun p := ⟨p.1.eraseLead, by
+    rcases p with ⟨p, hp, rfl⟩
+    simp only [mem_degreeLT]
+    refine lt_of_lt_of_le ?_ degree_le_natDegree
+    exact degree_eraseLead_lt (ne_zero_of_ne_zero_of_monic one_ne_zero hp)⟩
+  invFun := fun p =>
+    ⟨X^n + p.1, monic_X_pow_add (mem_degreeLT.1 p.2), by
+        rw [natDegree_add_eq_left_of_degree_lt]
+        · simp
+        · simp [mem_degreeLT.1 p.2]⟩
+  left_inv := by
+    rintro ⟨p, hp, rfl⟩
+    ext1
+    simp only
+    conv_rhs => rw [← eraseLead_add_C_mul_X_pow p]
+    simp [Monic.def.1 hp, add_comm]
+  right_inv := by
+    rintro ⟨p, hp⟩
+    ext1
+    simp only
+    rw [eraseLead_add_of_degree_lt_left]
+    · simp
+    · simp [mem_degreeLT.1 hp]
+
 /-- For every polynomial `p` in the span of a set `s : Set R[X]`, there exists a polynomial of
   `p' ∈ s` with higher degree. See also `Polynomial.exists_degree_le_of_mem_span_of_finite`. -/
 theorem exists_degree_le_of_mem_span {s : Set R[X]} {p : R[X]}
