@@ -100,13 +100,12 @@ theorem AnalyticOn.fderiv [CompleteSpace F] (h : AnalyticOn 𝕜 f s) :
     AnalyticOn 𝕜 (fderiv 𝕜 f) s :=
   fun y hy ↦ AnalyticAt.fderiv (h y hy)
 
-/-- If a function is analytic within a set `s`, so is its Fréchet derivative within `s` is `s` is
-a set of unique differentiability. -/
-nonrec theorem AnalyticWithinOn.fderivWithin [CompleteSpace F]
-    (h : AnalyticWithinOn 𝕜 f s) (h' : UniqueDiffOn 𝕜 s) :
-    AnalyticWithinOn 𝕜 (fderivWithin 𝕜 f s) s := by
-  intro x hx
-  rcases (h x hx).exists_analyticAt with ⟨g, -, fg, hg⟩
+/-- If a function is analytic within a set `s` at `x`, so is its Fréchet derivative within `s`
+if `s` is a set of unique differentiability. -/
+nonrec theorem AnalyticWithinAt.fderivWithin [CompleteSpace F]
+    (h : AnalyticWithinAt 𝕜 f s x) (h' : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
+    AnalyticWithinAt 𝕜 (fderivWithin 𝕜 f s) s x := by
+  rcases h.exists_analyticAt with ⟨g, -, fg, hg⟩
   suffices AnalyticWithinAt 𝕜 (fderivWithin 𝕜 g s) s x by
     apply this.congr
     · intro y hy
@@ -125,6 +124,13 @@ nonrec theorem AnalyticWithinOn.fderivWithin [CompleteSpace F]
     apply this.congr_of_eventuallyEq A
     apply mem_of_mem_nhdsWithin hx A
   exact hg.fderiv.analyticWithinAt
+
+/-- If a function is analytic within a set `s`, so is its Fréchet derivative within `s` is `s` is
+a set of unique differentiability. -/
+theorem AnalyticWithinOn.fderivWithin [CompleteSpace F]
+    (h : AnalyticWithinOn 𝕜 f s) (h' : UniqueDiffOn 𝕜 s) :
+    AnalyticWithinOn 𝕜 (fderivWithin 𝕜 f s) s :=
+  fun x hx ↦ (h x hx).fderivWithin h' hx
 
 /-- If a function is analytic on a set `s`, so are its successive Fréchet derivative. -/
 theorem AnalyticOn.iteratedFDeriv [CompleteSpace F] (h : AnalyticOn 𝕜 f s) (n : ℕ) :
