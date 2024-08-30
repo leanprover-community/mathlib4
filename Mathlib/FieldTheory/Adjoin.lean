@@ -1232,6 +1232,17 @@ theorem fG_of_fG_toSubalgebra (S : IntermediateField F E) (h : S.toSubalgebra.FG
 theorem fg_of_noetherian (S : IntermediateField F E) [IsNoetherian F E] : S.FG :=
   S.fG_of_fG_toSubalgebra S.toSubalgebra.fg_of_noetherian
 
+/-- A finite extension of fields is a finitely generated field extension.
+
+[Stacks: Lemma 0BU1](https://stacks.math.columbia.edu/tag/0BU1) -/
+lemma fg_of_finiteDimension {F : Type*} [Field F] {E :Type*} [Field E] [Algebra F E]
+  [FiniteDimensional F E] : (⊤ : IntermediateField F E).FG := by
+    obtain Bss := (Basis.ofVectorSpace F E)
+    refine fg_def.mpr ⟨Set.range Bss, Set.finite_range _, ?_⟩
+    refine adjoin_eq_top_of_algebra F (Set.range _) (Algebra.toSubmodule_eq_top.mp ?_)
+    rw [Algebra.adjoin_eq_span_of_subset F]
+    repeat simp [Basis.span_eq]
+
 theorem induction_on_adjoin_finset (S : Finset E) (P : IntermediateField F E → Prop) (base : P ⊥)
     (ih : ∀ (K : IntermediateField F E), ∀ x ∈ S, P K → P (K⟮x⟯.restrictScalars F)) :
     P (adjoin F S) := by
