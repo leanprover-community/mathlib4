@@ -263,15 +263,15 @@ theorem edist_lt_coe {x y : α} {c : ℝ≥0} : edist x y < c ↔ nndist x y < c
 theorem edist_le_coe {x y : α} {c : ℝ≥0} : edist x y ≤ c ↔ nndist x y ≤ c := by
   rw [edist_nndist, ENNReal.coe_le_coe]
 
-/-- In a pseudometric space, the extended distance is always finite-/
+/-- In a pseudometric space, the extended distance is always finite -/
 theorem edist_lt_top {α : Type*} [PseudoMetricSpace α] (x y : α) : edist x y < ⊤ :=
   (edist_dist x y).symm ▸ ENNReal.ofReal_lt_top
 
-/-- In a pseudometric space, the extended distance is always finite-/
+/-- In a pseudometric space, the extended distance is always finite -/
 theorem edist_ne_top (x y : α) : edist x y ≠ ⊤ :=
   (edist_lt_top x y).ne
 
-/-- `nndist x x` vanishes-/
+/-- `nndist x x` vanishes -/
 @[simp] theorem nndist_self (a : α) : nndist a a = 0 := NNReal.coe_eq_zero.1 (dist_self a)
 
 -- Porting note: `dist_nndist` and `coe_nndist` moved up
@@ -299,7 +299,7 @@ theorem nndist_dist (x y : α) : nndist x y = Real.toNNReal (dist x y) := by
 
 theorem nndist_comm (x y : α) : nndist x y = nndist y x := NNReal.eq <| dist_comm x y
 
-/-- Triangle inequality for the nonnegative distance-/
+/-- Triangle inequality for the nonnegative distance -/
 theorem nndist_triangle (x y z : α) : nndist x z ≤ nndist x y + nndist y z :=
   dist_triangle _ _ _
 
@@ -1096,7 +1096,7 @@ variable {x y z : α} {ε ε₁ ε₂ : ℝ} {s : Set α}
 theorem ball_subset_interior_closedBall : ball x ε ⊆ interior (closedBall x ε) :=
   interior_maximal ball_subset_closedBall isOpen_ball
 
-/-- ε-characterization of the closure in pseudometric spaces-/
+/-- ε-characterization of the closure in pseudometric spaces -/
 theorem mem_closure_iff {s : Set α} {a : α} : a ∈ closure s ↔ ∀ ε > 0, ∃ b ∈ s, dist a b < ε :=
   (mem_closure_iff_nhds_basis nhds_basis_ball).trans <| by simp only [mem_ball, dist_comm]
 

@@ -51,12 +51,12 @@ theorem map_eq_zero : f x = 0 ↔ 2 ≤ x := by
 theorem map_ne_zero_iff : f x ≠ 0 ↔ x < 2 := by simp [hf.map_eq_zero]
 
 theorem map_of_lt_two (hx : x < 2) : f x = 2 / (2 - x) := by
-  have hx' : 2 - x ≠ 0 := (tsub_pos_of_lt hx).ne'
+  have hx' : 0 < 2 - x := tsub_pos_of_lt hx
   have hfx : f x ≠ 0 := hf.map_ne_zero_iff.2 hx
   apply le_antisymm
-  · rw [NNReal.le_div_iff hx', ← NNReal.le_div_iff' hfx, tsub_le_iff_right, ← hf.map_eq_zero,
+  · rw [le_div_iff₀ hx', ← NNReal.le_div_iff' hfx, tsub_le_iff_right, ← hf.map_eq_zero,
      hf.map_add, div_mul_cancel₀ _ hfx, hf.map_two, zero_mul]
-  · rw [NNReal.div_le_iff' hx', ← hf.map_eq_zero]
+  · rw [div_le_iff₀' hx', ← hf.map_eq_zero]
     refine (mul_eq_zero.1 ?_).resolve_right hfx
     rw [hf.map_add_rev, hf.map_eq_zero, tsub_add_cancel_of_le hx.le]
 

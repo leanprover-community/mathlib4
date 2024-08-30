@@ -322,7 +322,7 @@ instance : HasProduct (op <| Z ·) := hasLimitOfIso
     (Discrete.opposite α).inverse ⋙ (Discrete.functor Z).op ≅
     Discrete.functor (op <| Z ·))
 
-/-- A `Cofan` gives a `Fan` in the opposite category.  -/
+/-- A `Cofan` gives a `Fan` in the opposite category. -/
 @[simp]
 def Cofan.op (c : Cofan Z) : Fan (op <| Z ·) := Fan.mk _ (fun a ↦ (c.inj a).op)
 

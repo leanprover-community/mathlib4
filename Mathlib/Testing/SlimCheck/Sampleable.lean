@@ -220,7 +220,7 @@ instance Bool.sampleableExt : SampleableExt Bool :=
 
 /-- This can be specialized into customized `SampleableExt Char` instances.
 The resulting instance has `1 / length` chances of making an unrestricted choice of characters
-and it otherwise chooses a character from `chars` with uniform probabilities.  -/
+and it otherwise chooses a character from `chars` with uniform probabilities. -/
 def Char.sampleable (length : Nat) (chars : List Char) (pos : 0 < chars.length) :
     SampleableExt Char :=
   mkSelfContained do
