@@ -214,6 +214,28 @@ theorem aleph'_omega : aleph' ω = ℵ₀ :=
 def aleph'Equiv : Ordinal ≃ Cardinal :=
   ⟨aleph', alephIdx, alephIdx_aleph', aleph'_alephIdx⟩
 
+@[simp]
+theorem lift_aleph' (o : Ordinal.{u}) : lift.{v} (aleph' o) = aleph' (Ordinal.lift.{v} o) := by
+  refine o.limitRecOn ?_ ?_ ?_
+  · simp
+  · simp
+  · intro o ho IH
+    rw [aleph'_limit ho, aleph'_limit ho.lift, lift_iSup, iSup, iSup]
+    congr
+    ext c
+    constructor <;>
+    rintro ⟨⟨a, ha : a < _⟩, rfl⟩ <;>
+    dsimp
+    · rw [IH _ ha]
+      let x : Set.Iio (Ordinal.lift.{v, u} o) := ⟨_, Ordinal.lift_lt.2 ha⟩
+      exact Set.mem_range_self x
+    · obtain ⟨b, rfl⟩ := Ordinal.lift_down ha.le
+      rw [Ordinal.lift_lt] at ha
+      exact ⟨⟨b, ha⟩, IH _ ha⟩
+    · use aleph' o
+      rintro a ⟨b, rfl⟩
+      exact aleph'_le.2 b.2.le
+
 /-- The `aleph` function gives the infinite cardinals listed by their
   ordinal index. `aleph 0 = ℵ₀`, `aleph 1 = succ ℵ₀` is the first
   uncountable cardinal, and so on. -/
@@ -252,6 +274,10 @@ theorem aleph_limit {o : Ordinal} (ho : o.IsLimit) : aleph o = ⨆ a : Iio o, al
       simpa using (nat_lt_aleph0 n).le
     · exact ⟨⟨_, (sub_lt_of_le h).2 hi⟩, aleph'_le.2 (le_add_sub _ _)⟩
   · exact fun i => aleph_le.2 (le_of_lt i.2)
+
+@[simp]
+theorem lift_aleph (o : Ordinal.{u}) : lift.{v} (aleph o) = aleph (Ordinal.lift.{v} o) := by
+  rw [aleph, aleph, lift_aleph', Ordinal.lift_add, lift_omega]
 
 theorem aleph0_le_aleph' {o : Ordinal} : ℵ₀ ≤ aleph' o ↔ ω ≤ o := by rw [← aleph'_omega, aleph'_le]
 
@@ -347,6 +373,22 @@ theorem ord_aleph_eq_enum_card :
   · rw [Function.comp_apply, card_ord]
   · rw [← ord_aleph0, Function.comp_apply, ord_le_ord]
     exact aleph0_le_aleph _
+
+@[simp]
+theorem aleph1_le_lift {c : Cardinal.{u}} : aleph 1 ≤ lift.{v} c ↔ aleph 1 ≤ c := by
+  rw [← Ordinal.lift_one.{u, v}, ← lift_aleph, lift_le]
+
+@[simp]
+theorem lift_le_aleph1 {c : Cardinal.{u}} : lift.{v} c ≤ aleph 1 ↔ c ≤ aleph 1 := by
+  rw [← Ordinal.lift_one.{u, v}, ← lift_aleph, lift_le]
+
+@[simp]
+theorem aleph1_lt_lift {c : Cardinal.{u}} : aleph 1 < lift.{v} c ↔ aleph 1 < c := by
+  rw [← Ordinal.lift_one.{u, v}, ← lift_aleph, lift_lt]
+
+@[simp]
+theorem lift_lt_aleph1 {c : Cardinal.{u}} : lift.{v} c < aleph 1 ↔ c < aleph 1 := by
+  rw [← Ordinal.lift_one.{u, v}, ← lift_aleph, lift_lt]
 
 end aleph
 
