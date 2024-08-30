@@ -470,7 +470,7 @@ lemma eventually_nhds_one_measure_smul_diff_lt [LocallyCompactSpace G]
     μ (g • k \ k) ≤ μ (U \ k) := by
       gcongr
       exact (smul_set_subset_smul hg).trans hVkU
-    _ < ε := measure_diff_lt_of_lt_add h'k.measurableSet hUk hk.measure_lt_top.ne hμUk
+    _ < ε := measure_diff_lt_of_lt_add h'k.nullMeasurableSet hUk hk.measure_lt_top.ne hμUk
 
 /-- Continuity of the measure of translates of a compact set:
 Given a closed compact set `k` in a topological group,
