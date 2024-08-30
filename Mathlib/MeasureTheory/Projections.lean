@@ -27,8 +27,7 @@ when `s ⊆ t`.
 This is a `Finset` version of `proj₂`, because otherwise the type of `s ⊆ t`
 is not correctly inferred. -/
 @[simp]
-def fproj₂ {s t : Finset ι} (hst : s ⊆ t) (x : (i : t) → X i) (i : s) : X i :=
-  proj₂ (Finset.coe_subset.2 hst) x i
+def fproj₂ {s t : Finset ι} (hst : s ⊆ t) (x : (i : t) → X i) (i : s) : X i := x ⟨i.1, hst i.2⟩
 
 theorem proj₂_comp_proj {s t : Set ι} (hst : s ⊆ t) :
     (proj₂ hst) ∘ (@proj ι X t) = proj s := rfl
