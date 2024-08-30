@@ -3,6 +3,7 @@ Copyright (c) 2021 Sebastian Ullrich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Ullrich
 -/
+import Mathlib.Init
 import Batteries.Util.Cache
 import Lean.HeadIndex
 import Lean.Elab.Command
@@ -99,7 +100,7 @@ lemmas which are `apply`able against the current goal.
 elab "#find " t:term : command =>
   liftTermElabM do
     let t ← Term.elabTerm t none
-    Term.synthesizeSyntheticMVars (mayPostpone := false) (ignoreStuckTC := true)
+    Term.synthesizeSyntheticMVars (postpone := .no) (ignoreStuckTC := true)
     findType t
 
 /- (Note that you'll get an error trying to run these here:
@@ -132,5 +133,7 @@ See also the `find` tactic to search for theorems matching the current goal.
 -/
 elab "#find " t:term : tactic => do
   let t ← Term.elabTerm t none
-  Term.synthesizeSyntheticMVars (mayPostpone := false) (ignoreStuckTC := true)
+  Term.synthesizeSyntheticMVars (postpone := .no) (ignoreStuckTC := true)
   findType t
+
+end Mathlib.Tactic.Find

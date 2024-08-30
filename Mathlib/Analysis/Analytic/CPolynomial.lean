@@ -42,10 +42,8 @@ We develop the basic properties of these notions, notably:
 variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
-open scoped Classical
-open Topology NNReal Filter ENNReal
-
-open Set Filter Asymptotics
+open scoped Classical Topology
+open Set Filter Asymptotics NNReal ENNReal
 
 variable {f g : E → F} {p pf pg : FormalMultilinearSeries 𝕜 E F} {x : E} {r r' : ℝ≥0∞} {n m : ℕ}
 
@@ -347,7 +345,8 @@ protected theorem FormalMultilinearSeries.sum_of_finite (p : FormalMultilinearSe
 protected theorem FormalMultilinearSeries.hasSum_of_finite (p : FormalMultilinearSeries 𝕜 E F)
     {n : ℕ} (hn : ∀ m, n ≤ m → p m = 0) (x : E) :
     HasSum (fun n : ℕ => p n fun _ => x) (p.sum x) :=
-  summable_of_ne_finset_zero (fun m hm ↦ by rw [Finset.mem_range, not_lt] at hm; rw [hn m hm]; rfl)
+  summable_of_ne_finset_zero (s := .range n)
+    (fun m hm ↦ by rw [Finset.mem_range, not_lt] at hm; rw [hn m hm]; rfl)
     |>.hasSum
 
 /-- The sum of a finite power series `p` admits `p` as a power series. -/
@@ -387,6 +386,9 @@ lemma changeOriginSeriesTerm_bound (p : FormalMultilinearSeries 𝕜 E F) {n : �
     (hn : ∀ (m : ℕ), n ≤ m → p m = 0) (k l : ℕ) {s : Finset (Fin (k + l))}
     (hs : s.card = l) (hkl : n ≤ k + l) :
     p.changeOriginSeriesTerm k l s hs = 0 := by
+  #adaptation_note
+  /-- `set_option maxSynthPendingDepth 2` required after https://github.com/leanprover/lean4/pull/4119 -/
+  set_option maxSynthPendingDepth 2 in
   rw [changeOriginSeriesTerm, hn _ hkl, map_zero]
 
 /-- If `p` is a finite formal multilinear series, then so is `p.changeOriginSeries k` for every
@@ -436,7 +438,7 @@ theorem changeOrigin_eval_of_finite (p : FormalMultilinearSeries 𝕜 E F) {n : 
     p.changeOriginSeriesTerm s.1 s.2.1 s.2.2 s.2.2.2 (fun _ ↦ x) fun _ ↦ y
   have finsupp : f.support.Finite := by
     apply Set.Finite.subset (s := changeOriginIndexEquiv ⁻¹' (Sigma.fst ⁻¹' {m | m < n}))
-    · apply Set.Finite.preimage ((Equiv.injective _).injOn _)
+    · apply Set.Finite.preimage (Equiv.injective _).injOn
       simp_rw [← {m | m < n}.iUnion_of_singleton_coe, preimage_iUnion, ← range_sigmaMk]
       exact finite_iUnion fun _ ↦ finite_range _
     · refine fun s ↦ Not.imp_symm fun hs ↦ ?_
@@ -454,7 +456,7 @@ theorem changeOrigin_eval_of_finite (p : FormalMultilinearSeries 𝕜 E F) {n : 
     rw [changeOrigin, FormalMultilinearSeries.sum,
       ContinuousMultilinearMap.tsum_eval (summable_of_ne_finset_zero this)]
     refine (summable_of_ne_finset_zero (s := Finset.range n) fun m hm ↦ ?_).hasSum.sigma_of_hasSum
-      (hfkl k) (summable_of_finite_support <| finsupp.preimage <| sigma_mk_injective.injOn _)
+      (hfkl k) (summable_of_finite_support <| finsupp.preimage sigma_mk_injective.injOn)
     rw [this m hm, ContinuousMultilinearMap.zero_apply]
   have hf : HasSum f ((p.changeOrigin x).sum y) :=
     ((p.changeOrigin x).hasSum_of_finite (fun _ ↦ changeOrigin_finite_of_finite p hn) _)

@@ -109,8 +109,8 @@ example {a b c d e : Prop} (h : a ∨ b ∨ c ∨ d ∨ e) : a ∨ c ∨ e ∨ b
 
 end left_assoc
 
--- Adaptation note: nightly-2024-03-11
--- This test is now failing with `unknown free variable '_fvar.36787'`
+#adaptation_note /-- nightly-2024-03-11
+This test is now failing with `unknown free variable '_fvar.36787'` -/
 -- example (k : ℕ) (h0 : 0 + 2 = 9 + 0) (h9 : k + 2 = k + 9) : k + 2 = 9 + k := by
 --   induction' k with k _ih
 --   · exact h0

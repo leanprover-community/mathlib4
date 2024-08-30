@@ -5,10 +5,8 @@ Authors: Manuel Candales
 -/
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Real.Sqrt
-import Mathlib.Data.Real.NNReal
+import Mathlib.Data.NNReal.Basic
 import Mathlib.Tactic.LinearCombination
-
-#align_import imo.imo2008_q4 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
 
 /-!
 # IMO 2008 Q4
@@ -30,7 +28,6 @@ namespace Imo2008Q4
 
 theorem abs_eq_one_of_pow_eq_one (x : ℝ) (n : ℕ) (hn : n ≠ 0) (h : x ^ n = 1) : |x| = 1 := by
   rw [← pow_left_inj (abs_nonneg x) zero_le_one hn, one_pow, pow_abs, h, abs_one]
-#align imo2008_q4.abs_eq_one_of_pow_eq_one Imo2008Q4.abs_eq_one_of_pow_eq_one
 
 end Imo2008Q4
 
@@ -95,4 +92,3 @@ theorem imo2008_q4 (f : ℝ → ℝ) (H₁ : ∀ x > 0, f x > 0) :
     have ha₁ : a ^ 4 = 1 := by simpa [sub_eq_zero, h2b4_ne_0, hb_ne_0] using H₃
     obtain ha₂ := abs_eq_one_of_pow_eq_one a 4 (show 4 ≠ 0 by norm_num) ha₁
     rw [abs_of_pos ha] at ha₂; rw [ha₂] at hfa₁; norm_num at hfa₁; contradiction
-#align imo2008_q4 imo2008_q4

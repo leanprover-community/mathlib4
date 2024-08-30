@@ -3,9 +3,9 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Pi
+import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Data.Finset.Sups
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Order.Birkhoff
@@ -59,13 +59,13 @@ open scoped FinsetFamily
 variable {α β : Type*}
 
 section Finset
-variable [DecidableEq α] [LinearOrderedCommSemiring β] [ExistsAddOfLE β] {𝒜 ℬ : Finset (Finset α)}
+variable [DecidableEq α] [LinearOrderedCommSemiring β] {𝒜 ℬ : Finset (Finset α)}
   {a : α} {f f₁ f₂ f₃ f₄ g μ : Finset α → β} {s t u : Finset α}
 
 /-- The `n = 1` case of the Ahlswede-Daykin inequality. Note that we can't just expand everything
 out and bound termwise since `c₀ * d₁` appears twice on the RHS of the assumptions while `c₁ * d₀`
 does not appear. -/
-private lemma ineq {a₀ a₁ b₀ b₁ c₀ c₁ d₀ d₁ : β}
+private lemma ineq [ExistsAddOfLE β] {a₀ a₁ b₀ b₁ c₀ c₁ d₀ d₁ : β}
     (ha₀ : 0 ≤ a₀) (ha₁ : 0 ≤ a₁) (hb₀ : 0 ≤ b₀) (hb₁ : 0 ≤ b₁)
     (hc₀ : 0 ≤ c₀) (hc₁ : 0 ≤ c₁) (hd₀ : 0 ≤ d₀) (hd₁ : 0 ≤ d₁)
     (h₀₀ : a₀ * b₀ ≤ c₀ * d₀) (h₁₀ : a₁ * b₀ ≤ c₀ * d₁)
@@ -109,7 +109,7 @@ lemma collapse_eq (ha : a ∉ s) (𝒜 : Finset (Finset α)) (f : Finset α → 
   rw [collapse, filter_collapse_eq ha]
   split_ifs <;> simp [(ne_of_mem_of_not_mem' (mem_insert_self a s) ha).symm, *]
 
-lemma collapse_of_mem (ha : a ∉ s) (ht : t ∈ 𝒜) (hu  : u ∈ 𝒜) (hts : t = s)
+lemma collapse_of_mem (ha : a ∉ s) (ht : t ∈ 𝒜) (hu : u ∈ 𝒜) (hts : t = s)
     (hus : u = insert a s) : collapse 𝒜 a f s = f t + f u := by
   subst hts; subst hus; simp_rw [collapse_eq ha, if_pos ht, if_pos hu]
 
@@ -130,7 +130,8 @@ lemma le_collapse_of_insert_mem (ha : a ∉ s) (hf : 0 ≤ f) (hts : t = insert 
 
 lemma collapse_nonneg (hf : 0 ≤ f) : 0 ≤ collapse 𝒜 a f := fun _s ↦ sum_nonneg fun _t _ ↦ hf _
 
-lemma collapse_modular (hu : a ∉ u) (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h₃ : 0 ≤ f₃) (h₄ : 0 ≤ f₄)
+lemma collapse_modular [ExistsAddOfLE β]
+    (hu : a ∉ u) (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h₃ : 0 ≤ f₃) (h₄ : 0 ≤ f₄)
     (h : ∀ ⦃s⦄, s ⊆ insert a u → ∀ ⦃t⦄, t ⊆ insert a u →  f₁ s * f₂ t ≤ f₃ (s ∩ t) * f₄ (s ∪ t))
     (𝒜 ℬ : Finset (Finset α)) :
     ∀ ⦃s⦄, s ⊆ u → ∀ ⦃t⦄, t ⊆ u → collapse 𝒜 a f₁ s * collapse ℬ a f₂ t ≤
@@ -143,7 +144,7 @@ lemma collapse_modular (hu : a ∉ u) (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h
   have := insert_subset_insert a htu
   have has := not_mem_mono hsu hu
   have hat := not_mem_mono htu hu
-  have : a ∉ s ∩ t := not_mem_mono ((inter_subset_left _ t).trans hsu) hu
+  have : a ∉ s ∩ t := not_mem_mono (inter_subset_left.trans hsu) hu
   have := not_mem_union.2 ⟨has, hat⟩
   rw [collapse_eq has]
   split_ifs
@@ -185,7 +186,7 @@ lemma collapse_modular (hu : a ∉ u) (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h
     · rw [mul_zero, zero_add]
       refine (h ‹_› ‹_›).trans <| mul_le_mul ?_ (le_collapse_of_insert_mem ‹_› h₄
         (union_insert _ _ _) <| union_mem_sups ‹_› ‹_›) (h₄ _) <| collapse_nonneg h₃ _
-      exact le_collapse_of_mem (not_mem_mono (inter_subset_left _ _) ‹_›) h₃
+      exact le_collapse_of_mem (not_mem_mono inter_subset_left ‹_›) h₃
         (inter_insert_of_not_mem ‹_›) <| inter_mem_infs ‹_› ‹_›
     · simp_rw [mul_zero, add_zero]
       exact mul_nonneg (collapse_nonneg h₃ _) <| collapse_nonneg h₄ _
@@ -234,6 +235,8 @@ lemma sum_collapse (h𝒜 : 𝒜 ⊆ (insert a u).powerset) (hu : a ∉ u) :
       ← union_inter_distrib_right, union_sdiff_of_subset (powerset_mono.2 <| subset_insert _ _),
       inter_eq_right.2 h𝒜]
 
+variable [ExistsAddOfLE β]
+
 /-- The **Four Functions Theorem** on a powerset algebra. See `four_functions_theorem` for the
 finite distributive lattice generalisation. -/
 protected lemma Finset.four_functions_theorem (u : Finset α)
@@ -272,14 +275,14 @@ lemma four_functions_theorem [DecidableEq α] (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ 
   set L : Sublattice α := ⟨latticeClosure (s ∪ t), isSublattice_latticeClosure.1,
     isSublattice_latticeClosure.2⟩
   have : Finite L := (s.finite_toSet.union t.finite_toSet).latticeClosure.to_subtype
-  set s' : Finset L := s.preimage (↑) <| Subtype.coe_injective.injOn _
-  set t' : Finset L := t.preimage (↑) <| Subtype.coe_injective.injOn _
+  set s' : Finset L := s.preimage (↑) Subtype.coe_injective.injOn
+  set t' : Finset L := t.preimage (↑) Subtype.coe_injective.injOn
   have hs' : s'.map ⟨L.subtype, Subtype.coe_injective⟩ = s := by
     simp [s', map_eq_image, image_preimage, filter_eq_self]
-    exact fun a ha ↦ subset_latticeClosure <| Set.subset_union_left _ _ ha
+    exact fun a ha ↦ subset_latticeClosure <| Set.subset_union_left ha
   have ht' : t'.map ⟨L.subtype, Subtype.coe_injective⟩ = t := by
     simp [t', map_eq_image, image_preimage, filter_eq_self]
-    exact fun a ha ↦ subset_latticeClosure <| Set.subset_union_right _ _ ha
+    exact fun a ha ↦ subset_latticeClosure <| Set.subset_union_right ha
   clear_value s' t'
   obtain ⟨β, _, _, g, hg⟩ := exists_birkhoff_representation L
   have := four_functions_theorem_aux (extend g (f₁ ∘ (↑)) 0) (extend g (f₂ ∘ (↑)) 0)

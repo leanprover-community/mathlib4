@@ -85,7 +85,8 @@ is expected to be '≤' or '='.
 example : natDegree (X : ℕ[X]) ≠ 0 := by compute_degree!
 
 /--
-error: 'compute_degree' inapplicable. The LHS must be an application of 'natDegree', 'degree', or 'coeff'.
+error:
+'compute_degree' inapplicable. The LHS must be an application of 'natDegree', 'degree', or 'coeff'.
 -/
 #guard_msgs in
 example : 0 ≤ 0 := by compute_degree!
@@ -212,7 +213,7 @@ example : natDegree ((5 * X * C 3 : _root_.Rat[X]) ^ 4) ≤ 4 := by compute_degr
 
 example : natDegree ((C a * X) ^ 4) ≤ 4 := by compute_degree
 
-example : degree ((X : ℤ[X]) ^ 4) ≤ 4 := by compute_degree; rfl
+example : degree ((X : ℤ[X]) ^ 4) ≤ 4 := by compute_degree
 
 example : natDegree ((X : ℤ[X]) ^ 4) ≤ 40 := by compute_degree!
 

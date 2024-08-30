@@ -6,8 +6,7 @@ Authors: Johan Commelin
 import Mathlib.Topology.Category.CompHaus.Basic
 import Mathlib.Topology.StoneCech
 import Mathlib.CategoryTheory.Preadditive.Projective
-
-#align_import topology.category.CompHaus.projective from "leanprover-community/mathlib"@"829895f162a1f29d0133f4b3538f4cd1fb5bffd3"
+import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 
 /-!
 # CompHaus has enough projectives
@@ -54,8 +53,6 @@ instance projective_ultrafilter (X : Type*) : Projective (of <| Ultrafilter X) w
     have : g'' ∘ g' = id := hg'.comp_eq_id
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [comp.assoc, ultrafilter_extend_extends, ← comp.assoc, this, id_comp]
-set_option linter.uppercaseLean3 false in
-#align CompHaus.projective_ultrafilter CompHaus.projective_ultrafilter
 
 /-- For any compact Hausdorff space `X`,
   the natural map `Ultrafilter X → X` is a projective presentation. -/
@@ -66,8 +63,6 @@ def projectivePresentation (X : CompHaus) : ProjectivePresentation X where
   epi :=
     ConcreteCategory.epi_of_surjective _ fun x =>
       ⟨(pure x : Ultrafilter X), congr_fun (ultrafilter_extend_extends (𝟙 X)) x⟩
-set_option linter.uppercaseLean3 false in
-#align CompHaus.projective_presentation CompHaus.projectivePresentation
 
 instance : EnoughProjectives CompHaus where presentation X := ⟨projectivePresentation X⟩
 
