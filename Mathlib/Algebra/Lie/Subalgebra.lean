@@ -555,7 +555,7 @@ theorem coe_ofLe : (ofLe h : Submodule R K') = LinearMap.range (Submodule.inclus
   rfl
 
 /-- Given nested Lie subalgebras `K ⊆ K'`, there is a natural equivalence from `K` to its image in
-`K'`.  -/
+`K'`. -/
 noncomputable def equivOfLe : K ≃ₗ⁅R⁆ ofLe h :=
   (inclusion h).equivRangeOfInjective (inclusion_injective h)
 

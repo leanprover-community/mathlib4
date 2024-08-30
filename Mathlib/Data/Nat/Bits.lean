@@ -43,7 +43,7 @@ def boddDiv2 : ℕ → Bool × ℕ
 /-- `div2 n = ⌊n/2⌋` the greatest integer smaller than `n/2`-/
 def div2 (n : ℕ) : ℕ := (boddDiv2 n).2
 
-/-- `bodd n` returns `true` if `n` is odd-/
+/-- `bodd n` returns `true` if `n` is odd -/
 def bodd (n : ℕ) : Bool := (boddDiv2 n).1
 
 @[simp] lemma bodd_zero : bodd 0 = false := rfl
@@ -132,7 +132,7 @@ lemma bit_zero : bit false 0 = 0 :=
 
 /-- `shiftLeft' b m n` performs a left shift of `m` `n` times
  and adds the bit `b` as the least significant bit each time.
- Returns the corresponding natural number-/
+ Returns the corresponding natural number -/
 def shiftLeft' (b : Bool) (m : ℕ) : ℕ → ℕ
   | 0 => m
   | n + 1 => bit b (shiftLeft' b m n)

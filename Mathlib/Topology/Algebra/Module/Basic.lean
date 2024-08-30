@@ -252,7 +252,7 @@ class ContinuousSemilinearMapClass (F : Type*) {R S : outParam Type*} [Semiring 
 
 /-- `ContinuousLinearMapClass F R M M₂` asserts `F` is a type of bundled continuous
 `R`-linear maps `M → M₂`.  This is an abbreviation for
-`ContinuousSemilinearMapClass F (RingHom.id R) M M₂`.  -/
+`ContinuousSemilinearMapClass F (RingHom.id R) M M₂`. -/
 abbrev ContinuousLinearMapClass (F : Type*) (R : outParam Type*) [Semiring R]
     (M : outParam Type*) [TopologicalSpace M] [AddCommMonoid M] (M₂ : outParam Type*)
     [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M] [Module R M₂] [FunLike F M M₂] :=
@@ -1760,7 +1760,7 @@ theorem coe_refl : ↑(ContinuousLinearEquiv.refl R₁ M₁) = ContinuousLinearM
 theorem coe_refl' : ⇑(ContinuousLinearEquiv.refl R₁ M₁) = id :=
   rfl
 
-/-- The inverse of a continuous linear equivalence as a continuous linear equivalence-/
+/-- The inverse of a continuous linear equivalence as a continuous linear equivalence -/
 @[symm]
 protected def symm (e : M₁ ≃SL[σ₁₂] M₂) : M₂ ≃SL[σ₂₁] M₁ :=
   { e.toLinearEquiv.symm with

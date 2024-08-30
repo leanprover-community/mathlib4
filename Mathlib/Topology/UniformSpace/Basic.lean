@@ -566,7 +566,7 @@ theorem comp_comp_symm_mem_uniformity_sets {s : Set (α × α)} (hs : s ∈ 𝓤
 
 /-- The ball around `(x : β)` with respect to `(V : Set (β × β))`. Intended to be
 used for `V ∈ 𝓤 β`, but this is not needed for the definition. Recovers the
-notions of metric space ball when `V = {p | dist p.1 p.2 < r }`.  -/
+notions of metric space ball when `V = {p | dist p.1 p.2 < r }`. -/
 def UniformSpace.ball (x : β) (V : Set (β × β)) : Set β :=
   Prod.mk x ⁻¹' V
 

@@ -67,7 +67,7 @@ private theorem gauge_set_bddBelow : BddBelow { r : ℝ | 0 < r ∧ x ∈ r • 
   ⟨0, fun _ hr => hr.1.le⟩
 
 /-- If the given subset is `Absorbent` then the set we take an infimum over in `gauge` is nonempty,
-which is useful for proving many properties about the gauge.  -/
+which is useful for proving many properties about the gauge. -/
 theorem Absorbent.gauge_set_nonempty (absorbs : Absorbent ℝ s) :
     { r : ℝ | 0 < r ∧ x ∈ r • s }.Nonempty :=
   let ⟨r, hr₁, hr₂⟩ := (absorbs x).exists_pos

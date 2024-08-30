@@ -433,7 +433,7 @@ theorem norm_eq_integral (f : α →₁ₛ[μ] E) : ‖f‖ = ((toSimpleFunc f).
 
 section PosPart
 
-/-- Positive part of a simple function in L1 space.  -/
+/-- Positive part of a simple function in L1 space. -/
 nonrec def posPart (f : α →₁ₛ[μ] ℝ) : α →₁ₛ[μ] ℝ :=
   ⟨Lp.posPart (f : α →₁[μ] ℝ), by
     rcases f with ⟨f, s, hsf⟩
@@ -1000,7 +1000,7 @@ theorem continuous_of_dominated {F : X → α → G} {bound : α → ℝ}
   · simp [integral, hG, continuous_const]
 
 /-- The Bochner integral of a real-valued function `f : α → ℝ` is the difference between the
-  integral of the positive part of `f` and the integral of the negative part of `f`.  -/
+  integral of the positive part of `f` and the integral of the negative part of `f`. -/
 theorem integral_eq_lintegral_pos_part_sub_lintegral_neg_part {f : α → ℝ} (hf : Integrable f μ) :
     ∫ a, f a ∂μ =
       ENNReal.toReal (∫⁻ a, .ofReal (f a) ∂μ) - ENNReal.toReal (∫⁻ a, .ofReal (-f a) ∂μ) := by
