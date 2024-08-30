@@ -624,8 +624,8 @@ theorem GoodProducts.spanFin [IsWellOrder I (· < ·)] :
     rw [List.map_cons, List.prod_cons]
     intro ha
     specialize ih (by rw [List.chain'_cons'] at ha; exact ha.2)
-    rw [Finsupp.mem_span_image_iff_total] at ih
-    simp only [Finsupp.mem_supported, Finsupp.total_apply] at ih
+    rw [Finsupp.mem_span_image_iff_linearCombination] at ih
+    simp only [Finsupp.mem_supported, Finsupp.linearCombination_apply] at ih
     obtain ⟨c, hc, hc'⟩ := ih
     rw [← hc']; clear hc'
     have hmap := fun g ↦ map_finsupp_sum (LinearMap.mulLeft ℤ (e (π C (· ∈ s)) a)) c g
@@ -1618,9 +1618,9 @@ theorem maxTail_isGood (l : MaxProducts C ho)
   have : Inhabited I := ⟨term I ho⟩
   -- Write `l.Tail` as a linear combination of smaller products:
   intro h
-  rw [Finsupp.mem_span_image_iff_total, ← max_eq_eval C hsC ho] at h
+  rw [Finsupp.mem_span_image_iff_linearCombination, ← max_eq_eval C hsC ho] at h
   obtain ⟨m, ⟨hmmem, hmsum⟩⟩ := h
-  rw [Finsupp.total_apply] at hmsum
+  rw [Finsupp.linearCombination_apply] at hmsum
 
   -- Write the image of `l` under `Linear_CC'` as `Linear_CC'` applied to the linear combination
   -- above, with leading `term I ho`'s added to each term:

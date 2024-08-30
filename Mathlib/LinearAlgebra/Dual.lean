@@ -280,29 +280,34 @@ theorem toDual_apply (i j : ι) : b.toDual (b i) (b j) = if i = j then 1 else 0 
   simp only [eq_comm]
 
 @[simp]
-theorem toDual_total_left (f : ι →₀ R) (i : ι) :
-    b.toDual (Finsupp.total R b f) (b i) = f i := by
-  rw [Finsupp.total_apply, Finsupp.sum, _root_.map_sum, LinearMap.sum_apply]
+theorem toDual_linearCombination_left (f : ι →₀ R) (i : ι) :
+    b.toDual (Finsupp.linearCombination R b f) (b i) = f i := by
+  rw [Finsupp.linearCombination_apply, Finsupp.sum, _root_.map_sum, LinearMap.sum_apply]
   simp_rw [LinearMap.map_smul, LinearMap.smul_apply, toDual_apply, smul_eq_mul, mul_boole,
     Finset.sum_ite_eq']
   split_ifs with h
   · rfl
   · rw [Finsupp.not_mem_support_iff.mp h]
 
+@[deprecated (since := "2024-08-29")] alias toDual_total_left := toDual_linearCombination_left
+
 @[simp]
-theorem toDual_total_right (f : ι →₀ R) (i : ι) :
-    b.toDual (b i) (Finsupp.total R b f) = f i := by
-  rw [Finsupp.total_apply, Finsupp.sum, _root_.map_sum]
+theorem toDual_linearCombination_right (f : ι →₀ R) (i : ι) :
+    b.toDual (b i) (Finsupp.linearCombination R b f) = f i := by
+  rw [Finsupp.linearCombination_apply, Finsupp.sum, _root_.map_sum]
   simp_rw [LinearMap.map_smul, toDual_apply, smul_eq_mul, mul_boole, Finset.sum_ite_eq]
   split_ifs with h
   · rfl
   · rw [Finsupp.not_mem_support_iff.mp h]
 
+@[deprecated (since := "2024-08-29")] alias toDual_total_right :=
+  toDual_linearCombination_right
+
 theorem toDual_apply_left (m : M) (i : ι) : b.toDual m (b i) = b.repr m i := by
-  rw [← b.toDual_total_left, b.total_repr]
+  rw [← b.toDual_linearCombination_left, b.linearCombination_repr]
 
 theorem toDual_apply_right (i : ι) (m : M) : b.toDual (b i) m = b.repr m i := by
-  rw [← b.toDual_total_right, b.total_repr]
+  rw [← b.toDual_linearCombination_right, b.linearCombination_repr]
 
 theorem coe_toDual_self (i : ι) : b.toDual (b i) = b.coord i := by
   ext
@@ -335,8 +340,8 @@ theorem toDual_ker : LinearMap.ker b.toDual = ⊥ :=
 theorem toDual_range [Finite ι] : LinearMap.range b.toDual = ⊤ := by
   refine eq_top_iff'.2 fun f => ?_
   let lin_comb : ι →₀ R := Finsupp.equivFunOnFinite.symm fun i => f (b i)
-  refine ⟨Finsupp.total R b lin_comb, b.ext fun i => ?_⟩
-  rw [b.toDual_eq_repr _ i, repr_total b]
+  refine ⟨Finsupp.linearCombination R b lin_comb, b.ext fun i => ?_⟩
+  rw [b.toDual_eq_repr _ i, repr_linearCombination b]
   rfl
 
 end CommSemiring
@@ -395,17 +400,19 @@ theorem dualBasis_apply_self (i j : ι) : b.dualBasis i (b j) =
   convert b.toDual_apply i j using 2
   rw [@eq_comm _ j i]
 
-theorem total_dualBasis (f : ι →₀ R) (i : ι) :
-    Finsupp.total R b.dualBasis f (b i) = f i := by
+theorem linearCombination_dualBasis (f : ι →₀ R) (i : ι) :
+    Finsupp.linearCombination R b.dualBasis f (b i) = f i := by
   cases nonempty_fintype ι
-  rw [Finsupp.total_apply, Finsupp.sum_fintype, LinearMap.sum_apply]
+  rw [Finsupp.linearCombination_apply, Finsupp.sum_fintype, LinearMap.sum_apply]
   · simp_rw [LinearMap.smul_apply, smul_eq_mul, dualBasis_apply_self, mul_boole,
     Finset.sum_ite_eq, if_pos (Finset.mem_univ i)]
   · intro
     rw [zero_smul]
 
+@[deprecated (since := "2024-08-29")] alias total_dualBasis := linearCombination_dualBasis
+
 theorem dualBasis_repr (l : Dual R M) (i : ι) : b.dualBasis.repr l i = l (b i) := by
-  rw [← total_dualBasis b, Basis.total_repr b.dualBasis l]
+  rw [← linearCombination_dualBasis b, Basis.linearCombination_repr b.dualBasis l]
 
 theorem dualBasis_apply (i : ι) (m : M) : b.dualBasis i m = b.repr m i :=
   b.toDual_apply_right i m
@@ -454,12 +461,14 @@ end
 
 end CommRing
 
-/-- `simp` normal form version of `total_dualBasis` -/
+/-- `simp` normal form version of `linearCombination_dualBasis` -/
 @[simp]
-theorem total_coord [CommRing R] [AddCommGroup M] [Module R M] [Finite ι] (b : Basis ι R M)
-    (f : ι →₀ R) (i : ι) : Finsupp.total R b.coord f (b i) = f i := by
+theorem linearCombination_coord [CommRing R] [AddCommGroup M] [Module R M] [Finite ι]
+    (b : Basis ι R M) (f : ι →₀ R) (i : ι) : Finsupp.linearCombination R b.coord f (b i) = f i := by
   haveI := Classical.decEq ι
-  rw [← coe_dualBasis, total_dualBasis]
+  rw [← coe_dualBasis, linearCombination_dualBasis]
+
+@[deprecated (since := "2024-08-29")] alias total_coord := linearCombination_coord
 
 theorem dual_rank_eq [CommRing K] [AddCommGroup V] [Module K V] [Finite ι] (b : Basis ι K V) :
     Cardinal.lift.{uK,uV} (Module.rank K V) = Module.rank K (Dual K V) := by
@@ -708,11 +717,11 @@ theorem coeffs_apply (h : DualBases e ε) (m : M) (i : ι) : h.coeffs m i = ε i
   rfl
 
 /-- linear combinations of elements of `e`.
-This is a convenient abbreviation for `Finsupp.total R e l` -/
+This is a convenient abbreviation for `Finsupp.linearCombination R e l` -/
 def lc {ι} (e : ι → M) (l : ι →₀ R) : M :=
   l.sum fun (i : ι) (a : R) => a • e i
 
-theorem lc_def (e : ι → M) (l : ι →₀ R) : lc e l = Finsupp.total R e l :=
+theorem lc_def (e : ι → M) (l : ι →₀ R) : lc e l = Finsupp.linearCombination R e l :=
   rfl
 
 open Module
@@ -767,7 +776,7 @@ theorem coe_basis : ⇑h.basis = e := by
 theorem mem_of_mem_span {H : Set ι} {x : M} (hmem : x ∈ Submodule.span R (e '' H)) :
     ∀ i : ι, ε i x ≠ 0 → i ∈ H := by
   intro i hi
-  rcases (Finsupp.mem_span_image_iff_total _).mp hmem with ⟨l, supp_l, rfl⟩
+  rcases (Finsupp.mem_span_image_iff_linearCombination _).mp hmem with ⟨l, supp_l, rfl⟩
   apply not_imp_comm.mp ((Finsupp.mem_supported' _ _).mp supp_l i)
   rwa [← lc_def, h.dual_lc] at hi
 

@@ -1,0 +1,4 @@
+ : line 1 : ERR_NUM_LIN : 3000 file contains 2893 lines, try to split it up
+Mathlib/Algebra/MonoidAlgebra/Basic.lean : line 1 : ERR_NUM_LIN : 2100 file contains 1965 lines, try to split it up
+ : line 1 : ERR_NUM_LIN : 1700 file contains 1544 lines, try to split it up
+Mathlib/Algebra/Order/Floor.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1593 lines, try to split it up
