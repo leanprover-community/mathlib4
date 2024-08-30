@@ -50,7 +50,8 @@ jobs:
           to: 'nightly-testing'
           type: 'stream'
           topic: ${{ steps.tlabels.outputs.name }}
-          content: ${{ steps.mathlib_stats.outputs.summary }}
+          content: my_content
+          #${{ steps.mathlib_stats.outputs.summary }}
 
       #- name: Send message on Zulip
       #  uses: zulip/github-actions-zulip/send-message@v1
