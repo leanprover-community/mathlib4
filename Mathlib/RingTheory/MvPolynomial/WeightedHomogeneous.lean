@@ -52,17 +52,17 @@ open Set Function Finset Finsupp AddMonoidAlgebra
 
 theorem Finset.exists_sup_eq {α β : Type*} [LinearOrder β] [OrderBot β]
     (s : Finset α) (f : α → β) (h : s.sup f ≠ ⊥) :
-    ∃ a ∈ s, s.sup f = f a := by 
+    ∃ a ∈ s, s.sup f = f a := by
   classical
   induction s using Finset.induction_on with
   | empty => simp only [sup_empty, ne_eq, not_true_eq_false] at h
-  | @insert a s _ hrec => 
+  | @insert a s _ hrec =>
     by_cases hs : s.sup f = ⊥
     · rw [sup_insert, hs, sup_bot_eq] at h
       refine ⟨a, Finset.mem_insert_self a s, ?_⟩
       rw [sup_insert, hs, sup_bot_eq]
     · obtain ⟨b, hb, h⟩ := hrec hs
-      by_cases hab : f a ≤ f b 
+      by_cases hab : f a ≤ f b
       · refine ⟨b, s.mem_insert_of_mem hb, ?_⟩
         rw [sup_insert, h, sup_of_le_right hab]
       · refine ⟨a, s.mem_insert_self _, ?_⟩
@@ -104,7 +104,7 @@ theorem le_weightedTotalDegree' (w : σ → M) {φ : MvPolynomial σ R} {d : σ 
     (hd : d ∈ φ.support) : weight w d ≤ φ.weightedTotalDegree' w := by
   convert le_sup hd
   simp only
-  
+
 theorem le_weightedTotalDegree'_iff (w : σ → M) {φ : MvPolynomial σ R} {m : WithBot M} :
     φ.weightedTotalDegree' w ≤ m ↔ ∀ d ∈ φ.support, weight w d ≤ m := by
   simp only [weightedTotalDegree', Finset.sup_le_iff, mem_support_iff, ne_eq]
@@ -131,16 +131,16 @@ theorem weightedTotalDegree'_mono {M : Type*} [CanonicallyLinearOrderedAddCommMo
 
 end SemilatticeSup
 
-section LinearOrderedAddCommMonoid 
+section LinearOrderedAddCommMonoid
 
-variable [LinearOrderedAddCommMonoid M]  
+variable [LinearOrderedAddCommMonoid M]
 
 theorem exists_coeff_ne_zero_and_weight_eq' (w : σ → M) {φ : MvPolynomial σ R} (hφ : φ ≠ 0) :
     ∃ d, coeff d φ ≠ 0 ∧ weight w d = φ.weightedTotalDegree' w := by
   rw [ne_eq, ← weightedTotalDegree'_eq_bot_iff w] at hφ
   obtain ⟨d, hd, h⟩ := Finset.exists_sup_eq _ _ hφ
   exact ⟨d, mem_support_iff.mp hd, h.symm⟩
-  
+
 theorem weightedTotalDegree'_mul (w : σ → ℕ) {φ ψ : MvPolynomial σ R} :
     (φ * ψ).weightedTotalDegree' w ≤ (φ.weightedTotalDegree' w) + (ψ.weightedTotalDegree' w) := by
   classical
@@ -162,7 +162,7 @@ theorem weightedTotalDegree'_mul (w : σ → ℕ) {φ ψ : MvPolynomial σ R} :
   simp only [← ne_eq, ← mem_support_iff] at hu hv
   exact add_le_add (le_weightedTotalDegree' w hu) (le_weightedTotalDegree' w hv)
 
-end LinearOrderedAddCommMonoid 
+end LinearOrderedAddCommMonoid
 
 section OrderBot
 
@@ -212,7 +212,7 @@ theorem weightedTotalDegree_add (w : σ → M) {φ ψ : MvPolynomial σ R} :
   · rw [← ne_eq, ← mem_support_iff] at h
     exact le_trans (le_weightedTotalDegree _ h) (le_sup_left)
 
-end OrderBot 
+end OrderBot
 
 section CanonicallyLinearOrderedAddCommMonoid
 
@@ -228,7 +228,7 @@ theorem weightedTotalDegree_mono {w w' : σ → M} (h : w ≤ w') (φ : MvPolyno
     apply weightedTotalDegree'_mono h
 
 theorem weightedTotalDegree_eq_zero_iff (w : σ → M) {φ : MvPolynomial σ R} :
-    φ.weightedTotalDegree w = 0 ↔ ∀ d ∈ φ.support, weight w d = 0 := by 
+    φ.weightedTotalDegree w = 0 ↔ ∀ d ∈ φ.support, weight w d = 0 := by
   rw [← bot_eq_zero, eq_bot_iff]
   rw [weightedTotalDegree_le_iff]
   simp_rw [← eq_bot_iff]
@@ -263,12 +263,12 @@ def _root_.LinearOrder.swap (α : Type*) (_ : LinearOrder α) : LinearOrder α :
   inferInstanceAs <| LinearOrder (OrderDual α)
 
 theorem weightedTotalDegree_mul_eq [IsDomain R] [IsLeftCancelAdd M] [IsRightCancelAdd M] (w : σ → M)
-    {φ ψ : MvPolynomial σ R} 
+    {φ ψ : MvPolynomial σ R}
     (hφ : φ ≠ 0) (hψ : ψ ≠ 0) :
     (φ * ψ).weightedTotalDegree w = (φ.weightedTotalDegree w) + (ψ.weightedTotalDegree w) := by
   classical
   apply le_antisymm (weightedTotalDegree_mul w)
-  have hφ' : (φ.support.filter (fun d ↦ weight w d = φ.weightedTotalDegree w)).Nonempty := by 
+  have hφ' : (φ.support.filter (fun d ↦ weight w d = φ.weightedTotalDegree w)).Nonempty := by
     simp only [Finset.Nonempty, mem_filter, mem_support_iff]
     exact exists_coeff_ne_zero_and_weight_eq w hφ
   letI : LinearOrder σ := LinearOrder.swap σ WellOrderingRel.isWellOrder.linearOrder
@@ -276,7 +276,7 @@ theorem weightedTotalDegree_mul_eq [IsDomain R] [IsLeftCancelAdd M] [IsRightCanc
     change IsWellFounded σ fun x y ↦ WellOrderingRel x y
     exact IsWellOrder.toIsWellFounded
   obtain ⟨d, hd, hd'⟩ := Finset.exists_max_image _ toLex hφ'
-  have hψ' : (ψ.support.filter (fun d ↦ weight w d = ψ.weightedTotalDegree w)).Nonempty := by 
+  have hψ' : (ψ.support.filter (fun d ↦ weight w d = ψ.weightedTotalDegree w)).Nonempty := by
     simp only [Finset.Nonempty, mem_filter, mem_support_iff]
     exact exists_coeff_ne_zero_and_weight_eq w hψ
   obtain ⟨e, he, he'⟩ := Finset.exists_max_image _ toLex hψ'
@@ -285,7 +285,7 @@ theorem weightedTotalDegree_mul_eq [IsDomain R] [IsLeftCancelAdd M] [IsRightCanc
   apply le_weightedTotalDegree
   classical
   rw [mem_support_iff, coeff_mul]
-  rw [Finset.sum_eq_single ⟨d, e⟩] 
+  rw [Finset.sum_eq_single ⟨d, e⟩]
   · exact mul_ne_zero hd.1 he.1
   · rintro ⟨u,v⟩ h h'
     simp only [mem_antidiagonal] at h
@@ -308,7 +308,7 @@ theorem weightedTotalDegree_mul_eq [IsDomain R] [IsLeftCancelAdd M] [IsRightCanc
       have : toLex u + toLex v = toLex d + toLex e := by
         change toLex (u + v) = toLex (d + e)
         rw [h]
-      suffices u = d by 
+      suffices u = d by
         simp only [this, add_right_inj] at h
         rw [this, h]
       rcases Decidable.lt_or_eq_of_le hd' with (hd' | hd')
@@ -316,8 +316,8 @@ theorem weightedTotalDegree_mul_eq [IsDomain R] [IsLeftCancelAdd M] [IsRightCanc
         exact (ne_of_lt (add_lt_add_of_lt_of_le hd' he')) this
       apply toLex.injective
       exact hd'
-  · simp 
- 
+  · simp
+
 end  CanonicallyLinearOrderedAddCommMonoid
 
 /-- A multivariate polynomial `φ` is weighted homogeneous of weighted degree `m` if all monomials
@@ -762,7 +762,7 @@ theorem NonTorsionWeight.weightedTotalDegree_eq_zero_iff
   rw [MvPolynomial.weightedTotalDegree_eq_zero_iff]
   apply forall_congr'
   intro d
-  apply imp_congr Iff.rfl 
+  apply imp_congr Iff.rfl
   exact weightedDegree_eq_zero_iff hw
 
 end CanonicallyLinearOrderedMonoid

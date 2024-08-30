@@ -53,7 +53,7 @@ theorem weightedTotalDegree_one (φ : MvPolynomial σ R) :
     id, Algebra.id.smul_eq_mul, mul_one]
 
 theorem totalDegree_mul_eq [IsDomain R] {φ ψ : MvPolynomial σ R} (hφ : φ ≠ 0) (hψ : ψ ≠ 0) :
-    (φ * ψ).totalDegree = φ.totalDegree + ψ.totalDegree := by 
+    (φ * ψ).totalDegree = φ.totalDegree + ψ.totalDegree := by
   simp only [← weightedTotalDegree_one]
   exact weightedTotalDegree_mul_eq _ hφ hψ
 

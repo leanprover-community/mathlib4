@@ -88,7 +88,7 @@ theorem weight_single_apply (s : σ) (c : M) (f : σ →₀ ℕ) :
   rw [weight_apply]
   rw [Finsupp.sum_eq_single s]
   · simp only [single_eq_same]
-  · intro i _ hi 
+  · intro i _ hi
     rw [single_eq_of_ne hi.symm, smul_zero]
   · intro _
     simp only [single_eq_same, zero_smul]
@@ -190,7 +190,7 @@ def degree {N : Type*} [AddCommMonoid N] (d : σ →₀ N) := ∑ i ∈ d.suppor
 alias _root_.MvPolynomial.degree := degree
 
 @[simp]
-theorem degree_zero {N : Type*} [AddCommMonoid N] : degree (0 : σ →₀ N) = 0 := by 
+theorem degree_zero {N : Type*} [AddCommMonoid N] : degree (0 : σ →₀ N) = 0 := by
   simp only [degree]
   apply Finset.sum_eq_zero
   intro _ _
