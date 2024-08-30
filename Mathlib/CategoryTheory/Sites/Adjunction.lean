@@ -79,7 +79,7 @@ def adjunction [HasWeakSheafify J D] [HasSheafCompose J F] (adj : G ⊣ F) :
       homEquiv_naturality_right := fun f g => by
         ext
         dsimp [composeEquiv]
-        erw [Adjunction.homEquiv_unit, Adjunction.homEquiv_unit]
+        erw [Adjunction.homEquiv_unit, Adjunction.homEquiv_unit, ]
         dsimp
         simp }
 
@@ -100,7 +100,8 @@ lemma preservesSheafification_of_adjunction (adj : G ⊣ F) :
     convert (((adj.whiskerRight Cᵒᵖ).homEquiv Q R).trans
       (hf.homEquiv (R ⋙ F) ((sheafCompose J F).obj ⟨R, hR⟩).cond)).bijective
     ext g X
-    dsimp [Adjunction.whiskerRight, Adjunction.mkOfUnitCounit]
+    dsimp
+    erw [Adjunction.homEquiv_apply, Adjunction.homEquiv_apply]
     simp
 
 instance [G.IsLeftAdjoint] : J.PreservesSheafification G :=
@@ -137,13 +138,11 @@ theorem adjunctionToTypes_counit_app_val {G : Type max v₁ u₁ ⥤ D} (adj : G
       sheafifyLift J ((Functor.associator _ _ _).hom ≫ (adj.whiskerRight _).counit.app _) X.2 := by
   apply sheafifyLift_unique
   dsimp only [adjunctionToTypes, Adjunction.comp, NatTrans.comp_app,
-    instCategorySheaf_comp_val, instCategorySheaf_id_val]
+    instCategorySheaf_comp_val, instCategorySheaf_id_val, Adjunction.mk']
   rw [adjunction_counit_app_val]
-  erw [Category.id_comp, sheafifyMap_sheafifyLift, toSheafify_sheafifyLift]
   ext
-  dsimp [sheafEquivSheafOfTypes, Equivalence.symm, Equivalence.toAdjunction,
-    NatIso.ofComponents, Adjunction.whiskerRight, Adjunction.mkOfUnitCounit]
-  simp
+  erw [Adjunction.homEquiv_symm_apply]
+  simp [sheafEquivSheafOfTypes, Equivalence.symm]
 
 instance [(forget D).IsRightAdjoint] :
     (sheafForget.{_, _, _, _, max u₁ v₁} (D := D) J).IsRightAdjoint :=

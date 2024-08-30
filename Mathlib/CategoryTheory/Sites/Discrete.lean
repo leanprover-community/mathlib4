@@ -227,17 +227,11 @@ private lemma sheafifyComposeIso_comp_sheafCompose_map_constantSheafAdj_counit :
   simp only [const_obj_obj, const_obj_map, id_obj, constComp, comp_obj, sheafToPresheaf_obj,
     sheafificationAdjunction_unit_app]
   ext
-  simp only [comp_obj, const_obj_obj, NatTrans.comp_app, whiskerRight_app, Category.id_comp,
-    comp_obj, flip_obj_obj, sheafToPresheaf_obj, id_obj, constantSheafAdj,
-    Adjunction.comp, evaluation_obj_obj, NatTrans.comp_app, associator_hom_app, whiskerLeft_app,
-    whiskerRight_app, map_comp, instCategorySheaf_comp_val, sheafCompose_obj_val,
-    sheafCompose_map_val, instCategorySheaf_id_val, sheafificationAdjunction_counit_app_val,
-    NatTrans.id_app, sheafifyMap_sheafifyLift, Category.comp_id, Category.id_comp]
-  erw [Functor.map_id, Category.id_comp, ← NatTrans.comp_app]
-  simp only [toSheafify_sheafifyLift, ← Functor.map_comp, ← NatTrans.comp_app,
-    sheafifyMap_sheafifyLift, Category.comp_id,
-    constantPresheafAdj, comp_obj, evaluation_obj_obj, id_obj, op_unop,
-    mkOfUnitCounit_counit, Functor.comp_map]
+  simp only [comp_obj, const_obj_obj, constantSheafAdj, comp_counit_app, sheafToPresheaf_obj,
+    evaluation_obj_obj, id_obj, map_comp, instCategorySheaf_comp_val, sheafCompose_obj_val,
+    sheafCompose_map_val, sheafificationAdjunction_counit_app_val, NatTrans.comp_app,
+    whiskerRight_app, sheafifyMap_sheafifyLift, comp_id, toSheafify_sheafifyLift, id_comp]
+  simp [← Functor.map_comp, constantPresheafAdj, ← NatTrans.comp_app]
 
 /-- Auxiliary lemma for `sheafCompose_reflects_discrete`. -/
 private lemma constantSheafAdj_counit_w :

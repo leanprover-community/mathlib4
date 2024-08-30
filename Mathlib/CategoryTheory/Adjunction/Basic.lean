@@ -394,14 +394,21 @@ def equivHomsetRightOfNatIso {G G' : D ⥤ C} (iso : G ≅ G') {X : C} {Y : D} :
   right_inv g := by simp
 
 /-- Transport an adjunction along a natural isomorphism on the left. -/
-def ofNatIsoLeft {F G : C ⥤ D} {H : D ⥤ C} (adj : F ⊣ H) (iso : F ≅ G) : G ⊣ H :=
-  Adjunction.mkOfHomEquiv
-    { homEquiv := fun X Y => (equivHomsetLeftOfNatIso iso.symm).trans (adj.homEquiv X Y) }
+def ofNatIsoLeft {F G : C ⥤ D} {H : D ⥤ C} (adj : F ⊣ H) (iso : F ≅ G) : G ⊣ H where
+  unit := adj.unit ≫ whiskerRight iso.hom _
+  counit := whiskerLeft _ iso.inv ≫ adj.counit
+  right_triangle_components Y := by simp [← H.map_comp_assoc]
 
 /-- Transport an adjunction along a natural isomorphism on the right. -/
-def ofNatIsoRight {F : C ⥤ D} {G H : D ⥤ C} (adj : F ⊣ G) (iso : G ≅ H) : F ⊣ H :=
-  Adjunction.mkOfHomEquiv
-    { homEquiv := fun X Y => (adj.homEquiv X Y).trans (equivHomsetRightOfNatIso iso) }
+def ofNatIsoRight {F : C ⥤ D} {G H : D ⥤ C} (adj : F ⊣ G) (iso : G ≅ H) : F ⊣ H where
+  unit := adj.unit ≫ whiskerLeft _ iso.hom
+  counit := whiskerRight iso.inv _ ≫ adj.counit
+  left_triangle_components X := by simp [← F.map_comp_assoc]
+  right_triangle_components Y := by
+    simp only [Functor.id_obj, Functor.comp_obj, NatTrans.comp_app, whiskerLeft_app,
+      whiskerRight_app, Functor.map_comp, assoc]
+    rw [← iso.hom.naturality_assoc, ← iso.hom.naturality]
+    simp only [unit_naturality_assoc, right_triangle_components_assoc, Iso.inv_hom_id_app]
 
 section
 

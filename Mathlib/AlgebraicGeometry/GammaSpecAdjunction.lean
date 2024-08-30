@@ -375,14 +375,15 @@ lemma toOpen_comp_locallyRingedSpaceAdjunction_homEquiv_app
   rfl
 
 /-- The adjunction `Γ ⊣ Spec` from `CommRingᵒᵖ` to `Scheme`. -/
-def adjunction : Scheme.Γ.rightOp ⊣ Scheme.Spec.{u} where
-  homEquiv X Y := locallyRingedSpaceAdjunction.{u}.homEquiv X.toLocallyRingedSpace Y
-  unit :=
-  { app := fun X ↦ locallyRingedSpaceAdjunction.{u}.unit.app X.toLocallyRingedSpace
-    naturality := fun _ _ f ↦ locallyRingedSpaceAdjunction.{u}.unit.naturality f }
-  counit := (NatIso.op Scheme.SpecΓIdentity.{u}).inv
-  homEquiv_unit := rfl
-  homEquiv_counit := rfl
+def adjunction : Scheme.Γ.rightOp ⊣ Scheme.Spec.{u} :=
+  Adjunction.mk' {
+    homEquiv := fun X Y ↦ locallyRingedSpaceAdjunction.{u}.homEquiv X.toLocallyRingedSpace Y
+    unit :=
+    { app := fun X ↦ locallyRingedSpaceAdjunction.{u}.unit.app X.toLocallyRingedSpace
+      naturality := fun _ _ f ↦ locallyRingedSpaceAdjunction.{u}.unit.naturality f }
+    counit := (NatIso.op Scheme.SpecΓIdentity.{u}).inv
+    homEquiv_unit := rfl
+    homEquiv_counit := rfl }
 
 theorem adjunction_homEquiv_apply {X : Scheme} {R : CommRingCatᵒᵖ}
     (f : (op <| Scheme.Γ.obj <| op X) ⟶ R) :

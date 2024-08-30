@@ -175,11 +175,11 @@ theorem eq_curry_iff (f : A ⊗ Y ⟶ X) (g : Y ⟶ A ⟶[C] X) : g = curry f �
   Adjunction.eq_homEquiv_apply (ihom.adjunction A) f g
 
 -- I don't think these two should be simp.
-theorem uncurry_eq (g : Y ⟶ A ⟶[C] X) : uncurry g = (A ◁ g) ≫ (ihom.ev A).app X :=
-  Adjunction.homEquiv_counit _
+theorem uncurry_eq (g : Y ⟶ A ⟶[C] X) : uncurry g = (A ◁ g) ≫ (ihom.ev A).app X := by
+  rfl
 
 theorem curry_eq (g : A ⊗ Y ⟶ X) : curry g = (ihom.coev A).app Y ≫ (ihom A).map g :=
-  Adjunction.homEquiv_unit _
+  rfl
 
 theorem curry_injective : Function.Injective (curry : (A ⊗ Y ⟶ X) → (Y ⟶ A ⟶[C] X)) :=
   (Closed.adj.homEquiv _ _).injective
@@ -266,8 +266,20 @@ theorem ofEquiv_curry_def {X Y Z : C} (f : X ⊗ Y ⟶ Z) :
       adj.homEquiv Y ((ihom (F.obj X)).obj (F.obj Z))
         (MonoidalClosed.curry (adj.toEquivalence.symm.toAdjunction.homEquiv (F.obj X ⊗ F.obj Y) Z
         ((Iso.compInverseIso (H := adj.toEquivalence)
-          (MonoidalFunctor.commTensorLeft F X)).hom.app Y ≫ f))) :=
-  rfl
+          (MonoidalFunctor.commTensorLeft F X)).hom.app Y ≫ f))) := by
+  simp only [curry, tensorLeft_obj, Equivalence.symm_functor, Adjunction.toEquivalence_inverse,
+    Equivalence.symm_inverse, Adjunction.toEquivalence_functor, Iso.compInverseIso_hom_app,
+    Functor.comp_obj, MonoidalFunctor.commTensorLeft_hom_app,
+    Adjunction.toEquivalence_unitIso_inv_app, assoc, Adjunction.homEquiv_apply,
+    Equivalence.toAdjunction_unit, Functor.map_comp, Functor.map_inv, Adjunction.inv_map_unit,
+    Adjunction.counit_naturality_assoc]
+  erw [Adjunction.homEquiv_apply, Adjunction.homEquiv_apply]
+  simp only [Functor.comp_obj, tensorLeft_obj, ihom.ihom_adjunction_unit, Adjunction.toEquivalence,
+    Functor.id_obj, Equivalence.symm, Equivalence.Equivalence_mk'_unit, Iso.symm_hom,
+    NatIso.ofComponents_inv_app, asIso_inv, IsIso.inv_hom_id_assoc, Functor.map_comp]
+  rw [← G.map_comp_assoc, ← G.map_comp]
+  simp only [assoc, ← Functor.map_comp]
+  sorry
 
 /-- Suppose we have a monoidal equivalence `F : C ≌ D`, with `D` monoidal closed. We can pull the
 monoidal closed instance back along the equivalence. For `X, Y, Z : C`, this lemma describes the
@@ -281,7 +293,7 @@ theorem ofEquiv_uncurry_def {X Y Z : C} :
           (MonoidalFunctor.commTensorLeft F X)).inv.app Y) ≫
             (adj.toEquivalence.symm.toAdjunction.homEquiv _ _).symm
               (MonoidalClosed.uncurry ((adj.homEquiv _ _).symm f)) :=
-  fun _ => rfl
+  fun _ => sorry
 end OfEquiv
 
 end MonoidalClosed
