@@ -15,11 +15,12 @@ jobs:
 
     - name: Get labels
       run: |
-          labels="$(gh api --jq '.labels.[].name' /repos/{owner}/{repo}/pulls/${{ github.event.number }})"
+          labels="$(gh api --jq '.labels.[].name' /repos/{owner}/{repo}/pulls/"${{ github.event.number }"})"
           printf 'Labels:\n---\n%s\n---\n' "${labels}"
           topic="generic"
           tlabels="$(printf '%s' "${labels}" | grep "^t-")"
           printf 't-labels:\n---\n%s\n---\n' "${tlabels}"
+
           #t_label=""
           #count=0
           #while read -r label; do
