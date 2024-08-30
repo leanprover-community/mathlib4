@@ -416,25 +416,18 @@ theorem isFraisseLimit_of_countable_infinite
     IsFraisseLimit { S : Bundled Language.empty.Structure | Finite S } M where
   age := by
     ext S
-    simp only [age, Structure.fg_iff_finite, empty.nonempty_embedding_iff, Cardinal.lift_id,
-      Cardinal.mk_eq_aleph0, mem_setOf_eq, and_iff_left_iff_imp]
-    exact fun hS => Cardinal.mk_le_aleph0
-  ultrahomogeneous := by
-    intro S hS f
+    simp only [age, Structure.fg_iff_finite, mem_setOf_eq, and_iff_left_iff_imp]
+    intro hS
+    simp
+  ultrahomogeneous S hS f := by
+    classical
     have : Finite S := hS.finite
-    have : Infinite { x // x ∉ S } := (Set.Finite.infinite_compl (Set.toFinite _)).to_subtype
-    have : Finite f.toHom.range :=
-      (Structure.FG.range ((Substructure.fg_iff_structure_fg S).1 hS) _).finite
-    have : Infinite { x // x ∉ f.toHom.range } :=
-      (Set.Finite.infinite_compl (Set.toFinite _)).to_subtype
-    refine ⟨StrongHomClass.toEquiv (@Equiv.subtypeCongr _ _ _ (Classical.decPred _)
-      (Classical.decPred _) f.equivRange.toEquiv (nonempty_equiv_of_countable).some), ?_⟩
+    have : Infinite { x // x ∉ S } := ((Set.toFinite _).infinite_compl).to_subtype
+    have : Finite f.toHom.range := (((Substructure.fg_iff_structure_fg S).1 hS).range _).finite
+    have : Infinite { x // x ∉ f.toHom.range } := ((Set.toFinite _).infinite_compl ).to_subtype
+    refine ⟨StrongHomClass.toEquiv (f.equivRange.subtypeCongr nonempty_equiv_of_countable.some), ?_⟩
     ext x
-    simp only [Equiv.subtypeCongr, Embedding.comp_apply, coeSubtype, Equiv.coe_toEmbedding,
-      StrongHomClass.toEquiv_toFun, Equiv.trans_apply, SetLike.coe_mem,
-      Equiv.sumCompl_apply_symm_of_pos, Subtype.coe_eta, Equiv.sumCongr_apply, Sum.map_inl,
-      Equiv.sumCompl_apply_inl]
-    rfl
+    simp [Equiv.subtypeCongr]
 
 /-- The class of finite structures in the empty language is Fraïssé. -/
 theorem isFraisse_finite : IsFraisse { S : Bundled.{w} Language.empty.Structure | Finite S } := by
