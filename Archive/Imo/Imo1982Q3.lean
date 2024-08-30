@@ -325,7 +325,7 @@ theorem Imo1982Q3_part_a {x : ℕ → ℝ} (x_pos : ∀ i, x i > (0 : ℝ)) (hx�
 
 
 theorem Imo1982Q3_part_b :  ∃ x : ℕ → ℝ, (∀ i, x i > 0) ∧ (∀ i, x (i + 1) ≤ x i) ∧ (x 0 = 1)
-  ∧ (∀ N, (∑ n ∈ range (N + 1), ((x n)^2 / (x (n + 1)))) < 4) := by
+    ∧ (∀ N, (∑ n ∈ range (N + 1), ((x n)^2 / (x (n + 1)))) < 4) := by
   let xₙ : ℕ → ℝ := fun n => (1/2)^n
   use xₙ
   constructor
