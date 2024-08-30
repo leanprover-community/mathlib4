@@ -34,6 +34,6 @@ jobs:
           #if [[ "$count" -eq 1 ]]; then
           #  topic="$t_label"
           #fi
-          #echo "name=topic::maintainer merge: ${topic}" #>> "$GITHUB_OUTPUT"
+          echo "name=topic::maintainer merge: ${topic}" #>> "$GITHUB_OUTPUT"
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
