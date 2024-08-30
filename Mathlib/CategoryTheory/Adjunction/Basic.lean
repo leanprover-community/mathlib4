@@ -331,6 +331,9 @@ def mk' (adj : CoreHomEquivUnitCounit F G) : F ⊣ G where
     rw [← adj.homEquiv_unit, ← (adj.homEquiv _ _).eq_symm_apply]
     simp
 
+lemma mk'_homEquiv (adj : CoreHomEquivUnitCounit F G) : (mk' adj).homEquiv = adj.homEquiv := by
+  ext; simp
+
 /-- Construct an adjunction between `F` and `G` out of a natural bijection between each
 `F.obj X ⟶ Y` and `X ⟶ G.obj Y`. -/
 @[simps!]
@@ -350,9 +353,13 @@ def mkOfHomEquiv (adj : CoreHomEquiv F G) : F ⊣ G :=
     homEquiv_unit := fun {X Y f} => by simp [← adj.homEquiv_naturality_right]
     homEquiv_counit := fun {X Y f} => by simp [← adj.homEquiv_naturality_left_symm] }
 
+lemma mkOfHomEquiv_homEquiv (adj : CoreHomEquiv F G) :
+    (mkOfHomEquiv adj).homEquiv = adj.homEquiv := by
+  ext X Y g
+  simp [mkOfHomEquiv, ← adj.homEquiv_naturality_right (𝟙 _) g]
+
 /-- Construct an adjunction between functors `F` and `G` given a unit and counit for the adjunction
 satisfying the triangle identities. -/
-
 @[simps!]
 def mkOfUnitCounit (adj : CoreUnitCounit F G) : F ⊣ G where
   unit := adj.unit
@@ -394,21 +401,34 @@ def equivHomsetRightOfNatIso {G G' : D ⥤ C} (iso : G ≅ G') {X : C} {Y : D} :
   right_inv g := by simp
 
 /-- Transport an adjunction along a natural isomorphism on the left. -/
-def ofNatIsoLeft {F G : C ⥤ D} {H : D ⥤ C} (adj : F ⊣ H) (iso : F ≅ G) : G ⊣ H where
-  unit := adj.unit ≫ whiskerRight iso.hom _
-  counit := whiskerLeft _ iso.inv ≫ adj.counit
-  right_triangle_components Y := by simp [← H.map_comp_assoc]
+def ofNatIsoLeft {F G : C ⥤ D} {H : D ⥤ C} (adj : F ⊣ H) (iso : F ≅ G) : G ⊣ H :=
+  Adjunction.mkOfHomEquiv
+    { homEquiv := fun X Y => (equivHomsetLeftOfNatIso iso.symm).trans (adj.homEquiv X Y) }
 
 /-- Transport an adjunction along a natural isomorphism on the right. -/
-def ofNatIsoRight {F : C ⥤ D} {G H : D ⥤ C} (adj : F ⊣ G) (iso : G ≅ H) : F ⊣ H where
-  unit := adj.unit ≫ whiskerLeft _ iso.hom
-  counit := whiskerRight iso.inv _ ≫ adj.counit
-  left_triangle_components X := by simp [← F.map_comp_assoc]
-  right_triangle_components Y := by
-    simp only [Functor.id_obj, Functor.comp_obj, NatTrans.comp_app, whiskerLeft_app,
-      whiskerRight_app, Functor.map_comp, assoc]
-    rw [← iso.hom.naturality_assoc, ← iso.hom.naturality]
-    simp only [unit_naturality_assoc, right_triangle_components_assoc, Iso.inv_hom_id_app]
+def ofNatIsoRight {F : C ⥤ D} {G H : D ⥤ C} (adj : F ⊣ G) (iso : G ≅ H) : F ⊣ H :=
+  Adjunction.mkOfHomEquiv
+    { homEquiv := fun X Y => (adj.homEquiv X Y).trans (equivHomsetRightOfNatIso iso) }
+
+-- /-- Transport an adjunction along a natural isomorphism on the left. -/
+-- def ofNatIsoLeft {F G : C ⥤ D} {H : D ⥤ C} (adj : F ⊣ H) (iso : F ≅ G) : G ⊣ H where
+--   unit := adj.unit ≫ whiskerRight iso.hom _
+--   counit := whiskerLeft _ iso.inv ≫ adj.counit
+--   right_triangle_components Y := by simp [← H.map_comp_assoc]
+
+-- /-- Transport an adjunction along a natural isomorphism on the right. -/
+-- def ofNatIsoRight {F : C ⥤ D} {G H : D ⥤ C} (adj : F ⊣ G) (iso : G ≅ H) : F ⊣ H where
+--   unit := adj.unit ≫ whiskerLeft _ iso.hom
+--   counit := whiskerRight iso.inv _ ≫ adj.counit
+--   left_triangle_components X := by simp [← F.map_comp_assoc]
+--   right_triangle_components Y := by
+--     simp only [Functor.id_obj, Functor.comp_obj, NatTrans.comp_app, whiskerLeft_app,
+--       whiskerRight_app, Functor.map_comp, assoc]
+--     rw [← iso.hom.naturality_assoc, ← iso.hom.naturality]
+--     simp only [unit_naturality_assoc, right_triangle_components_assoc, Iso.inv_hom_id_app]
+
+-- lemma ofNatIsoLeft_homEquiv {F G : C ⥤ D} {H : D ⥤ C} (adj : F ⊣ H) (iso : F ≅ G) :
+--     (adj.ofNatIsoLeft iso).homEquiv = equivHomsetLeftOfNatIso iso := sorry
 
 section
 
@@ -426,16 +446,19 @@ def comp : F ⋙ H ⊣ I ⋙ G :=
     counit :=
       (Functor.associator _ _ _).hom ≫ (whiskerLeft I <| whiskerRight adj₁.counit H) ≫ adj₂.counit }
 
-
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 lemma comp_unit_app (X : C) :
     (adj₁.comp adj₂).unit.app X = adj₁.unit.app X ≫ G.map (adj₂.unit.app (F.obj X)) := by
   simp [Adjunction.comp]
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 lemma comp_counit_app (X : E) :
     (adj₁.comp adj₂).counit.app X = H.map (adj₁.counit.app (I.obj X)) ≫ adj₂.counit.app X := by
   simp [Adjunction.comp]
+
+lemma comp_homEquiv :  (adj₁.comp adj₂).homEquiv =
+    fun _ _ ↦ Equiv.trans (adj₂.homEquiv _ _) (adj₁.homEquiv _ _) :=
+  mk'_homEquiv _
 
 end
 
