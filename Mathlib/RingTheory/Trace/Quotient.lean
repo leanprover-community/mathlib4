@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Riccardo Brasca
 -/
 
-import Mathlib.RingTheory.LocalRing.Quotient
 import Mathlib.RingTheory.DedekindDomain.Dvr
 import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
+import Mathlib.RingTheory.LocalRing.Quotient
 
 /-!
 
