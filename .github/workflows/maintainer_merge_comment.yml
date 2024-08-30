@@ -35,7 +35,7 @@ jobs:
             echo "name=${tlabels}" >> "$GITHUB_OUTPUT"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR: /repos/{owner}/{repo}/pulls/${{ github.event.number }}
+          PR: /repos/{owner}/{repo}/pulls/${{ github.event.issue.number }}
 
       - name: show_topic
         run: |
