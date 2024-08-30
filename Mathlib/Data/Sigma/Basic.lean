@@ -247,6 +247,10 @@ protected theorem eq {α : Sort*} {β : α → Sort*} : ∀ {p₁ p₂ : Σ' a, 
 theorem «forall» {p : (Σ'a, β a) → Prop} : (∀ x, p x) ↔ ∀ a b, p ⟨a, b⟩ :=
   ⟨fun h a b ↦ h ⟨a, b⟩, fun h ⟨a, b⟩ ↦ h a b⟩
 
+@[simp] lemma «exists» {p : (Σ' a, β a) → Prop} : (∃ x, p x) ↔ ∃ a b, p ⟨a, b⟩ where
+  mp := by rintro ⟨x, hx⟩; exact ⟨_, _, hx⟩
+  mpr := by rintro ⟨a, b, hab⟩; exact ⟨_, hab⟩
+
 #adaptation_note
 /--
 This should be renamed back to `exists` after `nightly-2024-07-31`.
