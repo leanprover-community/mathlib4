@@ -9,7 +9,7 @@ import Mathlib.Algebra.Order.Monoid.Submonoid
 /-!
 # Construct ordered groups from groups with a specified positive cone.
 
-In this file we provide the structure `GroupCone` and the predicate `GroupCone.IsMaximal`
+In this file we provide the structure `GroupCone` and the predicate `IsMaxCone`
 that encode axioms of `OrderedCommGroup` and `LinearOrderedCommGroup`
 in terms of the subset of non-negative elements.
 

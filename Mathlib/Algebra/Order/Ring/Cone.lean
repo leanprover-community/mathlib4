@@ -65,14 +65,14 @@ end RingCone
 
 variable {S R : Type*} [Ring R] [SetLike S R] (C : S)
 
-/-- Construct a partially ordered ring by designating a positive cone in a ring. -/
+/-- Construct a partially ordered ring by designating a cone in a ring. -/
 @[reducible] def OrderedRing.mkOfCone [RingConeClass S R] : OrderedRing R where
   __ := ‹Ring R›
   __ := OrderedAddCommGroup.mkOfCone C
   zero_le_one := show _ ∈ C by simpa using one_mem C
   mul_nonneg x y xnn ynn := show _ ∈ C by simpa using mul_mem xnn ynn
 
-/-- Construct a linearly ordered domain by designating a positive cone in a domain. -/
+/-- Construct a linearly ordered domain by designating a maximal cone in a domain. -/
 @[reducible] def LinearOrderedRing.mkOfCone
     [IsDomain R] [RingConeClass S R] [IsMaxCone C]
     (dec : DecidablePred (· ∈ C)) : LinearOrderedRing R where
