@@ -623,27 +623,18 @@ theorem ContDiffOn.continuousOn_iteratedFDerivWithin {m : ℕ} (h : ContDiffOn �
     (hmn : (m : ℕ∞) ≤ n) (hs : UniqueDiffOn 𝕜 s) : ContinuousOn (iteratedFDerivWithin 𝕜 m f s) s :=
   ((h.of_le hmn).ftaylorSeriesWithin hs).cont m le_rfl
 
-lemma foo {m : ℕ} (h : m < n) : (m + 1 : ℕ) ≤ n := by
-  match n with
-  | ω => simp
-  | ∞ =>
-      change (((m + 1 : ℕ) : ℕ∞)) ≤ ∞
-      rw [WithTop.coe_le_coe]
-      exact OrderTop.le_top _
-  | (n : ℕ) => simpa [-Nat.cast_add] using h
-
 theorem ContDiffOn.differentiableOn_iteratedFDerivWithin {m : ℕ} (h : ContDiffOn 𝕜 n f s)
     (hmn : (m : ℕ∞) < n) (hs : UniqueDiffOn 𝕜 s) :
     DifferentiableOn 𝕜 (iteratedFDerivWithin 𝕜 m f s) s := by
   intro x hx
-  have : (m + 1 : ℕ) ≤ n := foo hmn
+  have : (m + 1 : ℕ) ≤ n := ENat.add_one_nat_le_withTop_of_lt hmn
   apply (((h.of_le this).ftaylorSeriesWithin hs).fderivWithin m ?_ x hx).differentiableWithinAt
   simp only [Nat.cast_lt, lt_add_iff_pos_right, _root_.zero_lt_one]
 
 theorem ContDiffWithinAt.differentiableWithinAt_iteratedFDerivWithin {m : ℕ}
     (h : ContDiffWithinAt 𝕜 n f s x) (hmn : (m : ℕ∞) < n) (hs : UniqueDiffOn 𝕜 (insert x s)) :
     DifferentiableWithinAt 𝕜 (iteratedFDerivWithin 𝕜 m f s) s x := by
-  rcases h.contDiffOn' (foo hmn) with ⟨u, uo, xu, hu⟩
+  rcases h.contDiffOn' (ENat.add_one_nat_le_withTop_of_lt hmn) with ⟨u, uo, xu, hu⟩
   set t := insert x s ∩ u
   have A : t =ᶠ[𝓝[≠] x] s := by
     simp only [set_eventuallyEq_iff_inf_principal, ← nhdsWithin_inter']
@@ -962,7 +953,7 @@ theorem ContDiff.continuous_iteratedFDeriv {m : ℕ} (hm : (m : ℕ∞) ≤ n) (
 /-- If `f` is `C^n` then its `m`-times iterated derivative is differentiable for `m < n`. -/
 theorem ContDiff.differentiable_iteratedFDeriv {m : ℕ} (hm : (m : ℕ∞) < n) (hf : ContDiff 𝕜 n f) :
     Differentiable 𝕜 fun x => iteratedFDeriv 𝕜 m f x :=
-  (contDiff_iff_continuous_differentiable.mp (hf.of_le (foo hm))).2 m
+  (contDiff_iff_continuous_differentiable.mp (hf.of_le (ENat.add_one_nat_le_withTop_of_lt hm))).2 m
     (by exact_mod_cast lt_add_one m)
 
 theorem contDiff_of_differentiable_iteratedFDeriv {n : ℕ∞}

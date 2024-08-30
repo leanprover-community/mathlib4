@@ -230,6 +230,12 @@ theorem succ_def (m : ℕ∞) : Order.succ m = m + 1 := by cases m <;> rfl
 theorem add_one_le_of_lt (h : m < n) : m + 1 ≤ n :=
   m.succ_def ▸ Order.succ_le_of_lt h
 
+lemma add_one_nat_le_withTop_of_lt {m : ℕ} {n : WithTop ℕ∞} (h : m < n) : (m + 1 : ℕ) ≤ n := by
+  match n with
+  | ⊤ => exact le_top
+  | (⊤ : ℕ∞) => exact WithTop.coe_le_coe.2 (OrderTop.le_top _)
+  | (n : ℕ) => simpa only [Nat.cast_le, ge_iff_le, Nat.cast_lt] using h
+
 theorem add_one_le_iff (hm : m ≠ ⊤) : m + 1 ≤ n ↔ m < n :=
   m.succ_def ▸ (Order.succ_le_iff_of_not_isMax <| by rwa [isMax_iff_eq_top])
 
