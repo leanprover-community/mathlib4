@@ -45,7 +45,7 @@ lemma sum_Fin_eq_sum_Ico {x : ℕ → ℝ} : ∀ N, ∑ n : Fin N, x n = ∑ n �
 Specialization of Cauchy-Schwarz inequality with the sequences x n / √(y n) and √(y n)
 -/
 lemma Sedrakyan's_lemma {n : ℕ}{x y: EuclideanSpace ℝ (Fin n)}
-  (hN : 0 < n) (xi_pos : ∀ i, 0 < x i) (yi_pos : ∀ i, 0 < y i) :
+    (hN : 0 < n) (xi_pos : ∀ i, 0 < x i) (yi_pos : ∀ i, 0 < y i) :
   (∑ n : Fin n, x n)^2 / (∑ n : Fin n, y n) ≤ (∑ n : Fin n, ((x n)^2 / (y n))) := by
   let nonneg : ∀ f : Fin n → ℝ, (∀ i, 0 < f i) → ∀ i, 0 ≤ f i :=
     fun f h i => (lt_iff_le_and_ne.mp (h i)).left
