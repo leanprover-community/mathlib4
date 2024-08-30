@@ -1929,3 +1929,5 @@ theorem meas_ge_le_mul_pow_norm (f : Lp E p μ) (hp_ne_zero : p ≠ 0) (hp_ne_to
 end Lp
 
 end MeasureTheory
+
+set_option linter.style.longFile 2100

@@ -2912,3 +2912,5 @@ def noncenter (G : Type*) [Monoid G] : Set (ConjClasses G) :=
   g ∈ noncenter G ↔ g.carrier.Nontrivial := Iff.rfl
 
 end ConjClasses
+
+set_option linter.style.longFile 3000

@@ -1519,3 +1519,5 @@ instance toExpr (n : ℕ) : Lean.ToExpr (Fin n) where
       q(OfNat.ofNat $i)
 
 end Fin
+
+set_option linter.style.longFile 1700
