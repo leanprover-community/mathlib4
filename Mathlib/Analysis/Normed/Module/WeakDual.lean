@@ -329,7 +329,7 @@ lemma existance [ProperSpace 𝕜₁] (hC₁ : IsClosed C) (h : polar 𝕜₁ s 
   rw [inter_empty _ _ _ h]
   exact Set.inter_empty _
 
-lemma test : ⋂ i ∈ (∅ : Finset (U (n + 1))), K C s n i = univ := by
+lemma iInter_of_empty_univ : ⋂ i ∈ (∅ : Finset (U (n + 1))), K C s n i = univ := by
   simp_all only [Finset.not_mem_empty, iInter_of_empty, iInter_univ]
 
 lemma u_notempty (u : Finset (U (n + 1))) (h : (polar 𝕜₁ (U (n+2)) ∩ ⋂ i ∈ u, K C s n i) = ∅) :
@@ -337,14 +337,11 @@ lemma u_notempty (u : Finset (U (n + 1))) (h : (polar 𝕜₁ (U (n+2)) ∩ ⋂ 
   by_contra he
   have e1 : u = ∅ := by
     aesop
-  rw [e1, test, inter_univ] at h
+  rw [e1, iInter_of_empty_univ, inter_univ] at h
   have h2 : Nonempty (polar 𝕜₁ (U (E := E₁) (n + 2))) :=
     NormedSpace.instNonemptyElemDualPolar _ _
   subst e1
   simp_all only [nonempty_subtype, mem_empty_iff_false, exists_const]
-
-
-lemma ss1 (x : U (E := E₁) (n + 1)): K C s n x ⊆ polar 𝕜₁ (U (n+2)) := inter_subset_right
 
 lemma ss2 (x : U (E := E₁) (n + 1)) : (polar 𝕜₁ (U (n+2)) ∩ K C s n x ) = K C s n x := by
   rw [K, inter_comm, inter_assoc, inter_self]
@@ -360,25 +357,15 @@ lemma confusion (u : Finset (U (n + 1))) (h : Nonempty u):
   simp_rw [ss2]
   exact Eq.symm (biInter_eq_iInter (fun x ↦ x ∈ u.val) fun x _ ↦ K C s n x)
 
-  --rw [inter_iInter (polar 𝕜₁ (U (n+2))) (fun i => K C s n i)]
-  --simp only [iInter_coe_set, inter_eq_right]
-
-
---#check left_eq_inter.mpr
-
---lemma test (J K : Set E) (h₁ : J ⊆ K) : J ∩ K = J := by
---  Eq.symm ((fun {α} {s t} ↦ left_eq_inter.mpr) h₁)
-
 lemma existance' [ProperSpace 𝕜₁] (hC₁ : IsClosed C) (h : polar 𝕜₁ s ∩ C ∩ polar 𝕜₁ (U (n+1)) = ∅) :
     ∃ u : Finset (U (E := E₁) (n + 1)), ⋂ i ∈ u, K C s n i = ∅ := by
   obtain ⟨u,hu⟩ := existance C s n hC₁ h
   use u
   have e1 : Nonempty u := by exact u_notempty C s n u hu
-  rw [← more_confusion] at hu
-  rw [confusion] at hu
+  rw [← more_confusion _ _ _ _ e1, confusion _ _ _ _ e1] at hu
   exact hu
-  exact e1
-  exact e1
+
+
 
 
 
