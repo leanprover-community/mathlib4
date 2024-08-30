@@ -78,6 +78,9 @@ example : functorOp c ⋙ CostructuredArrow.proj toProfinite.op ⟨c.pt⟩ ≅ F
 /--
 If the projection maps in the cone are epimorphic and the cone is limiting, then
 `Profinite.Extend.functor` is initial.
+
+TODO: investigate how to weaken the assumption `∀ i, Epi (c.π.app i)` to
+`∀ i, ∃ j (_ : j ⟶ i), Epi (c.π.app j)`.
 -/
 lemma functor_initial (hc : IsLimit c) [∀ i, Epi (c.π.app i)] : Initial (functor c) := by
   let e : I ≌ ULiftHom.{w} (ULift.{w} I) := ULiftHomULiftCategory.equiv _
