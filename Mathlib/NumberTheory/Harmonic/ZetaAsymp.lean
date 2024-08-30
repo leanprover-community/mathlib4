@@ -37,7 +37,7 @@ namespace ZetaAsymptotics
 -- since the intermediate lemmas are of little interest in themselves we put them in a namespace
 
 /-!
-## Definitions
+## Definitions
 -/
 
 /-- Auxiliary function used in studying zeta-function asymptotics. -/

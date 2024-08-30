@@ -36,7 +36,7 @@ It also proves some `Basis` analogues of `Base` lemmas that, while they could be
 ## Implementation Notes
 
 Since `R` and `M.E` are both terms in `Set α`, to define the restriction `M ↾ R`,
-we need to either insist that `R ⊆ M.E`, or to say what happens when `R` contains the junk
+we need to either insist that `R ⊆ M.E`, or to say what happens when `R` contains the junk
 outside `M.E`.
 
 It turns out that `R ⊆ M.E` is just an unnecessary hypothesis; if we say the restriction
