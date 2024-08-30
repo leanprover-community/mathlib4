@@ -32,7 +32,7 @@ jobs:
               tlabels="generic"
             fi
             printf 'echo "name=%s"\n' "${tlabels}"
-            echo "name=${tlabels}" >> "$GITHUB_OUTPUT"
+             echo "name=topic::nightly-testing: ${tlabels}" >> "$GITHUB_OUTPUT"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR: /repos/{owner}/{repo}/pulls/${{ github.event.number }}
