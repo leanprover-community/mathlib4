@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
 
-import Mathlib.Analysis.Convex.Combination
+import Mathlib.Analysis.Convex.Basic
 import Mathlib.LinearAlgebra.Matrix.Permutation
 
 /-!
