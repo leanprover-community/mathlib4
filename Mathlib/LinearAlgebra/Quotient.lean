@@ -58,6 +58,9 @@ theorem mk'_eq_mk' {p : Submodule R M} (x : M) :
     @Quotient.mk' _ (quotientRel p) x = (mk : M → M ⧸ p) x :=
   rfl
 
+theorem mk_eq_mk {p : Submodule R M} : (_root_.Quotient.mk _ : M → M ⧸ p) = (mk : M → M ⧸ p) :=
+  rfl
+
 theorem mk''_eq_mk {p : Submodule R M} (x : M) : (Quotient.mk'' x : M ⧸ p) = (mk : M → M ⧸ p) x :=
   rfl
 
