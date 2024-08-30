@@ -403,7 +403,7 @@ instance categoryLaxBraidedFunctor : Category (LaxBraidedFunctor C D) :=
 @[ext]
 lemma ext' {F G : LaxBraidedFunctor C D} {α β : F ⟶ G} (w : ∀ X : C, α.hom.app X = β.hom.app X) :
     α = β :=
-  InducedCategory.hom_ext (MonoidalNatTrans.ext _ _ (funext w))
+  InducedCategory.hom_ext (MonoidalNatTrans.ext (funext w))
 
 @[simp]
 theorem comp_hom_toNatTrans {F G H : LaxBraidedFunctor C D} {α : F ⟶ G} {β : G ⟶ H} :
@@ -477,7 +477,7 @@ abbrev app {F G : BraidedFunctor C D} (α : F ⟶ G) (X : C) :
 lemma ext' {F G : BraidedFunctor C D} {α β : F ⟶ G}
     (w : ∀ X : C, app α X = app β X) : α = β :=
   InducedCategory.hom_ext
-    (InducedCategory.hom_ext (MonoidalNatTrans.ext _ _ (funext w)))
+    (InducedCategory.hom_ext (MonoidalNatTrans.ext (funext w)))
 
 @[simp]
 theorem comp_hom_hom_toNatTrans {F G H : BraidedFunctor C D} {α : F ⟶ G} {β : G ⟶ H} :
