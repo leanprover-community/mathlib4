@@ -113,25 +113,19 @@ lemma lt_sub_iff {n : ℕ} {a b : Fin n} : a < a - b ↔ a < b := by
   constructor
   · contrapose!
     intro h
-    simp only [Fin.not_lt] at h ⊢
-    obtain ⟨l, hl⟩ := Nat.exists_eq_add_of_le h
-    rw [le_iff_val_le_val, sub_def, hl]
-    simp only
-    rw [Nat.add_right_comm, Nat.add_sub_cancel' b.is_lt.le, Nat.add_mod_left, Nat.mod_eq_of_lt]
-    · simp
-    · refine a.is_lt.trans_le' ?_
-      simp [hl]
+    obtain ⟨l, hl⟩ := Nat.exists_eq_add_of_le (Fin.not_lt.mp h)
+    simpa only [Fin.not_lt, le_iff_val_le_val, sub_def, hl, ← Nat.add_assoc, Nat.add_mod_left,
+      Nat.mod_eq_of_lt, Nat.sub_add_cancel b.is_lt.le] using
+        (le_trans (mod_le _ _) (le_add_left _ _))
   · intro h
     rw [lt_iff_val_lt_val, sub_def]
     simp only
     obtain ⟨k, hk⟩ := Nat.exists_eq_add_of_lt b.is_lt
     have : n + 1 - b = k + 1 := by
-      simp_rw [hk] -- simp_rw because, otherwise, rw tries to rewrite inside `b : Fin (n + 1)`
-      rw [Nat.add_assoc, Nat.add_sub_cancel_left]
-    rw [this, Nat.mod_eq_of_lt]
-    · simp
-    · refine' hk.ge.trans_lt' ?_
-      simp [Nat.add_assoc, h]
+      simp_rw [hk, Nat.add_assoc, Nat.add_sub_cancel_left]
+      -- simp_rw because, otherwise, rw tries to rewrite inside `b : Fin (n + 1)`
+    rw [this, Nat.mod_eq_of_lt (hk.ge.trans_lt' ?_), Nat.lt_add_left_iff_pos] <;>
+    omega
 
 lemma sub_le_iff {n : ℕ} {a b : Fin n} : a - b ≤ a ↔ b ≤ a := by
   rw [← not_iff_not, Fin.not_le, Fin.not_le, lt_sub_iff]
