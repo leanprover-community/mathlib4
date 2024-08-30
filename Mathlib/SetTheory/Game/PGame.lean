@@ -676,7 +676,7 @@ instance : IsEquiv _ PGame.Equiv where
   trans := fun _ _ _ ⟨xy, yx⟩ ⟨yz, zy⟩ => ⟨xy.trans yz, zy.trans yx⟩
   symm _ _ := And.symm
 
--- Porting note: moved the setoid instance from Basic.lean to here
+-- Porting note: moved the setoid instance from Basic.lean to here
 
 instance setoid : Setoid PGame :=
   ⟨Equiv, refl, symm, Trans.trans⟩
