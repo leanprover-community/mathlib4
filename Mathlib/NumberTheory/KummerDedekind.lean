@@ -111,9 +111,9 @@ variable {I : Ideal R}
 theorem prod_mem_ideal_map_of_mem_conductor {p : R} {z : S}
     (hp : p ∈ Ideal.comap (algebraMap R S) (conductor R x)) (hz' : z ∈ I.map (algebraMap R S)) :
     algebraMap R S p * z ∈ algebraMap R<x> S '' ↑(I.map (algebraMap R R<x>)) := by
-  rw [Ideal.map, Ideal.span, Finsupp.mem_span_image_iff_total] at hz'
+  rw [Ideal.map, Ideal.span, Finsupp.mem_span_image_iff_linearCombination] at hz'
   obtain ⟨l, H, H'⟩ := hz'
-  rw [Finsupp.total_apply] at H'
+  rw [Finsupp.linearCombination_apply] at H'
   rw [← H', mul_comm, Finsupp.sum_mul]
   have lem : ∀ {a : R}, a ∈ I → l a • algebraMap R S a * algebraMap R S p ∈
       algebraMap R<x> S '' I.map (algebraMap R R<x>) := by
