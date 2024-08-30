@@ -138,7 +138,7 @@ theorem adjunctionToTypes_counit_app_val {G : Type max v₁ u₁ ⥤ D} (adj : G
   dsimp only [adjunctionToTypes, Adjunction.comp, NatTrans.comp_app,
     instCategorySheaf_comp_val, instCategorySheaf_id_val]
   rw [adjunction_counit_app_val]
-  erw [Category.id_comp, sheafifyMap_sheafifyLift, toSheafify_sheafifyLift, ]
+  erw [Category.id_comp, sheafifyMap_sheafifyLift, toSheafify_sheafifyLift]
   ext
   dsimp [sheafEquivSheafOfTypes, Equivalence.symm, Equivalence.toAdjunction,
     NatIso.ofComponents, Adjunction.whiskerRight, Adjunction.mkOfUnitCounit]
