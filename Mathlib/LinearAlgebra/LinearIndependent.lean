@@ -254,7 +254,7 @@ theorem LinearIndependent.map (hv : LinearIndependent R v) {f : M →ₗ[R] M'}
       LinearMap.ker_comp, hf_inj]
   exact fun _ => rfl
 
-/-- If `v` is an injective family of vectors such that `f ∘ v` is linearly independent, then `v`
+/-- If `v` is an injective family of vectors such that `f ∘ v` is linearly independent, then `v`
     spans a submodule disjoint from the kernel of `f` -/
 theorem Submodule.range_ker_disjoint {f : M →ₗ[R] M'}
     (hv : LinearIndependent R (f ∘ v)) :

@@ -141,7 +141,7 @@ def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ]
     simp [comap_const_of_not_mem (compl_singleton_mem_nhds hxy) (not_not_intro rfl)]
 
 /-!
-### Heine-Cantor theorem
+### Heine-Cantor theorem
 -/
 
 
