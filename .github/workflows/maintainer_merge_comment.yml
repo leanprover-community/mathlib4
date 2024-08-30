@@ -47,9 +47,9 @@ jobs:
           api-key: ${{ secrets.ZULIP_API_KEY }}
           email: 'github-mathlib4-bot@leanprover.zulipchat.com'
           organization-url: 'https://leanprover.zulipchat.com'
-          to: "adomani"
-          type: "private"
-          #topic: 't-data'
+          to: "bryan's testing channel"
+          type: "stream"
+          topic: 't-data'
           #${{ steps.tlabels.outputs.name }}
           content: 'my_content'
           #${{ steps.mathlib_stats.outputs.summary }}
