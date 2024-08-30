@@ -107,7 +107,7 @@ b = cfc id b = cfc (NNReal.sqrt ∘ (· ^ 2)) b =
 + `cfc : (R → R) → A → A`: an unbundled version of `cfcHom` which takes the junk value `0` when
   `cfcHom` is not defined.
 + `cfcUnits`: builds a unit from `cfc f a` when `f` is nonzero and continuous on the
-  specturm of `a`.
+  spectrum of `a`.
 
 ## Main theorems
 
