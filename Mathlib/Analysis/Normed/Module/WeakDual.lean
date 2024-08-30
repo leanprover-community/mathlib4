@@ -299,8 +299,8 @@ variable (s : Set E₁)
 variable (n : ℕ)
 
 /-- For all x, let K x be the intersection of 4 sets-/
-def K : (U (E := E₁) (n + 1)) → Set (WeakDual 𝕜₁ E₁) :=
-  fun x => polar 𝕜₁ s ∩ polar 𝕜₁ {↑x} ∩ C ∩ polar 𝕜₁ (U (n+2))
+def K : E₁ → Set (WeakDual 𝕜₁ E₁) :=
+  fun x => polar 𝕜₁ s ∩ polar 𝕜₁ {x} ∩ C ∩ polar 𝕜₁ (U (n+2))
 
 
 --#check Elem (U (E := E₁) (n + 1))
@@ -309,10 +309,6 @@ def K : (U (E := E₁) (n + 1)) → Set (WeakDual 𝕜₁ E₁) :=
 --variable  [ProperSpace 𝕜]
 --#check isCompact_iff_finite_subfamily_closed.mp (ι := (Elem (U (E := E) (n + 1))))
 --  (polarUcompact 𝕜 (E := E) (n+2)) (K 𝕜 C s n) --(isCompactK C s n)
-
-lemma isCompactK [ProperSpace 𝕜₁] (x : (U (E := E₁) (n + 1))) (hC₁ : IsClosed C) :
-    IsCompact (K C s n x) := IsCompact.inter_left (polarUcompact 𝕜₁ _)
-    (IsClosed.inter (IsClosed.inter (isClosed_polar 𝕜₁ s) (isClosed_polar _ _)) hC₁)
 
 lemma isClosedK (x : (U (E := E₁) (n + 1))) (hC₁ : IsClosed C) : IsClosed (K C s n x) :=
   IsClosed.inter (IsClosed.inter (IsClosed.inter (isClosed_polar 𝕜₁ s) (isClosed_polar 𝕜₁ _)) hC₁)
@@ -329,16 +325,16 @@ lemma inter_empty (h : polar 𝕜₁ s ∩ C ∩ polar 𝕜₁ (U (n+1)) = ∅) 
   rw [e1, inter_assoc _ _ C, inter_comm _ C, ← inter_assoc, h, empty_inter]
 
 lemma existance [ProperSpace 𝕜₁] (hC₁ : IsClosed C) (h : polar 𝕜₁ s ∩ C ∩ polar 𝕜₁ (U (n+1)) = ∅) :
-    ∃ u : Finset (U (n + 1)), (polar 𝕜₁ (U (n+2)) ∩ ⋂ i ∈ u, K C s n i) = ∅ := by
+    ∃ u : Finset (U (n + 1)), (polar 𝕜₁ (U (n+2)) ∩ ⋂ i ∈ u, K C s n i.val) = ∅ := by
   apply isCompact_iff_finite_subfamily_closed.mp (polarUcompact 𝕜₁ (n+2)) _
     (fun i => isClosedK _ _ _ i hC₁)
   rw [inter_empty _ _ _ h]
   exact Set.inter_empty _
 
-lemma iInter_of_empty_univ : ⋂ i ∈ (∅ : Finset (U (n + 1))), K C s n i = univ := by
+lemma iInter_of_empty_univ : ⋂ i ∈ (∅ : Finset (U (n + 1))), K C s n i.val = univ := by
   simp_all only [Finset.not_mem_empty, iInter_of_empty, iInter_univ]
 
-lemma u_notempty (u : Finset (U (n + 1))) (h : (polar 𝕜₁ (U (n+2)) ∩ ⋂ i ∈ u, K C s n i) = ∅) :
+lemma u_notempty (u : Finset (U (n + 1))) (h : (polar 𝕜₁ (U (n+2)) ∩ ⋂ i ∈ u, K C s n i.val) = ∅) :
   Nonempty u := by
   by_contra he
   have e1 : u = ∅ := by
@@ -354,11 +350,11 @@ lemma ss2 (x : U (E := E₁) (n + 1)) : (polar 𝕜₁ (U (n+2)) ∩ K C s n x )
 
 lemma more_confusion (u : Finset (U (n + 1))) (h : Nonempty u) :
     ((polar 𝕜₁ (U (n+2))) ∩ (⋂ (i : u), (K C s n i))) =
-      ((polar 𝕜₁ (U (n+2))) ∩ (⋂ (i ∈ u), (K C s n i))) :=
+      ((polar 𝕜₁ (U (n+2))) ∩ (⋂ (i ∈ u), (K C s n i.val))) :=
   by aesop
 
 lemma confusion (u : Finset (U (n + 1))) (h : Nonempty u):
-    ((polar 𝕜₁ (U (n+2))) ∩ (⋂ (i : u), (K C s n i))) = ⋂ (i ∈ u), (K C s n i) := by
+    ((polar 𝕜₁ (U (n+2))) ∩ (⋂ (i : u), (K C s n i))) = ⋂ (i ∈ u), (K C s n i.val) := by
   rw [inter_iInter]
   simp_rw [ss2]
   exact Eq.symm (biInter_eq_iInter (fun x ↦ x ∈ u.val) fun x _ ↦ K C s n x)
