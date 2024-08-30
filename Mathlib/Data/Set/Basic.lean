@@ -2173,3 +2173,5 @@ end Disjoint
 
 @[simp] theorem Prop.compl_singleton (p : Prop) : ({p}ᶜ : Set Prop) = {¬p} :=
   ext fun q ↦ by simpa [@Iff.comm q] using not_iff
+
+set_option linter.style.longFile 2300

@@ -2343,3 +2343,5 @@ lemma lookup_graph (f : α → β) {a : α} {as : List α} (h : a ∈ as) :
 end lookup
 
 end List
+
+set_option linter.style.longFile 2700

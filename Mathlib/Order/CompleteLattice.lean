@@ -1719,3 +1719,5 @@ instance instCompleteLinearOrder : CompleteLinearOrder PUnit where
   top_sdiff := by intros; trivial
 
 end PUnit
+
+set_option linter.style.longFile 1900

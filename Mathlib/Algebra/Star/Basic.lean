@@ -111,7 +111,7 @@ theorem star_eq_iff_star_eq [InvolutiveStar R] {r s : R} : star r = s ↔ star s
 /-- Typeclass for a trivial star operation. This is mostly meant for `ℝ`.
 -/
 class TrivialStar (R : Type u) [Star R] : Prop where
-  /-- Condition that star is trivial-/
+  /-- Condition that star is trivial -/
   star_trivial : ∀ r : R, star r = r
 
 export TrivialStar (star_trivial)
@@ -221,7 +221,7 @@ theorem star_id_of_comm {R : Type*} [CommSemiring R] {x : R} : star x = x :=
 end
 
 /-- A `*`-additive monoid `R` is an additive monoid with an involutive `star` operation which
-preserves addition.  -/
+preserves addition. -/
 class StarAddMonoid (R : Type u) [AddMonoid R] extends InvolutiveStar R where
   /-- `star` commutes with addition -/
   star_add : ∀ r s : R, star (r + s) = star r + star s
@@ -270,7 +270,7 @@ theorem star_zsmul [AddGroup R] [StarAddMonoid R] (x : R) (n : ℤ) : star (n �
 
 /-- A `*`-ring `R` is a non-unital, non-associative (semi)ring with an involutive `star` operation
 which is additive which makes `R` with its multiplicative structure into a `*`-multiplication
-(i.e. `star (r * s) = star s * star r`).  -/
+(i.e. `star (r * s) = star s * star r`). -/
 class StarRing (R : Type u) [NonUnitalNonAssocSemiring R] extends StarMul R where
   /-- `star` commutes with addition -/
   star_add : ∀ r s : R, star (r + s) = star r + star s
@@ -421,7 +421,7 @@ instance StarAddMonoid.toStarModuleNat {α} [AddCommMonoid α] [StarAddMonoid α
 namespace RingHomInvPair
 
 /-- Instance needed to define star-linear maps over a commutative star ring
-(ex: conjugate-linear maps when R = ℂ).  -/
+(ex: conjugate-linear maps when R = ℂ). -/
 instance [CommSemiring R] [StarRing R] : RingHomInvPair (starRingEnd R) (starRingEnd R) :=
   ⟨RingHom.ext star_star, RingHom.ext star_star⟩
 

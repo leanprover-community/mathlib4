@@ -566,7 +566,7 @@ theorem comp_comp_symm_mem_uniformity_sets {s : Set (α × α)} (hs : s ∈ 𝓤
 
 /-- The ball around `(x : β)` with respect to `(V : Set (β × β))`. Intended to be
 used for `V ∈ 𝓤 β`, but this is not needed for the definition. Recovers the
-notions of metric space ball when `V = {p | dist p.1 p.2 < r }`.  -/
+notions of metric space ball when `V = {p | dist p.1 p.2 < r }`. -/
 def UniformSpace.ball (x : β) (V : Set (β × β)) : Set β :=
   Prod.mk x ⁻¹' V
 
@@ -1793,3 +1793,5 @@ theorem Filter.Tendsto.congr_uniformity {α β} [UniformSpace β] {f g : α → 
 theorem Uniform.tendsto_congr {α β} [UniformSpace β] {f g : α → β} {l : Filter α} {b : β}
     (hfg : Tendsto (fun x => (f x, g x)) l (𝓤 β)) : Tendsto f l (𝓝 b) ↔ Tendsto g l (𝓝 b) :=
   ⟨fun h => h.congr_uniformity hfg, fun h => h.congr_uniformity hfg.uniformity_symm⟩
+
+set_option linter.style.longFile 1900

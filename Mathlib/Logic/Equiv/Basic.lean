@@ -494,7 +494,7 @@ the sum of the two subtypes `{a // p a}` and its complement `{a // ¬ p a}`
 is naturally equivalent to `α`.
 
 See `subtypeOrEquiv` for sum types over subtypes `{x // p x}` and `{x // q x}`
-that are not necessarily `IsCompl p q`.  -/
+that are not necessarily `IsCompl p q`. -/
 def sumCompl {α : Type*} (p : α → Prop) [DecidablePred p] :
     { a // p a } ⊕ { a // ¬p a } ≃ α where
   toFun := Sum.elim Subtype.val Subtype.val
@@ -1832,3 +1832,5 @@ theorem piCongrLeft'_symm_update [DecidableEq α] [DecidableEq β] (P : α → S
   simp [(e.piCongrLeft' P).symm_apply_eq, piCongrLeft'_update]
 
 end Function
+
+set_option linter.style.longFile 2000
