@@ -108,17 +108,24 @@ variable [HasFiniteCoproducts C] [HasFilteredColimitsOfSize.{w, w} C]
 
 local instance : HasColimitsOfShape (Discrete α) C := hasCoproducts_of_finite_and_filtered α
 
+@[reassoc]
+def liftToFinsetColimIsoAux (F : Discrete α ⥤ C) {J : Finset (Discrete α)} (j : J) :
+    Sigma.ι (F.obj ·.val) j ≫ colimit.ι (liftToFinset.obj F) J ≫
+      (colimit.isoColimitCocone (liftToFinsetColimitCocone F)).inv
+    = colimit.ι F j := by
+  simp [liftToFinsetColimitCocone, Discrete.natTrans, liftToFinset.obj,
+    colimit.isoColimitCocone, IsColimit.coconePointUniqueUpToIso]
+
 def liftToFinsetColimIso : liftToFinset C α ⋙ colim ≅ colim :=
   NatIso.ofComponents
     (fun F => Iso.symm <| colimit.isoColimitCocone (liftToFinsetColimitCocone F))
     (fun {F G} β => by
       simp only [Functor.comp_obj, colim_obj, Functor.comp_map, colim_map, Iso.symm_hom]
       ext J
-      simp only [liftToFinset_obj_obj, ι_colimMap_assoc, liftToFinset_map_app]
-      ext ⟨j, hj⟩
-      have := colimit.isoColimitCocone_ι_inv_assoc (liftToFinsetColimitCocone F) j (colimMap β)
-      simp at this ⊢
-      sorry)
+      simp only [liftToFinset_obj_obj, liftToFinset_map_app]
+      ext j
+      simp only [liftToFinset, ι_colimMap_assoc, liftToFinset.obj_obj, Discrete.functor_obj_eq_as,
+        Discrete.natTrans_app, liftToFinsetColimIsoAux, liftToFinsetColimIsoAux_assoc, ι_colimMap])
 
 end CoproductsFromFiniteFiltered
 
