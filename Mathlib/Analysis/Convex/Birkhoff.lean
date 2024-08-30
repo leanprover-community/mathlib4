@@ -25,15 +25,19 @@ import Mathlib.LinearAlgebra.Matrix.Permutation
 Doubly stochastic, Birkhoff's theorem, Birkhoff-von Neumann theorem
 -/
 
-variable {n : Type*} [Fintype n] [DecidableEq n] {M : Matrix n n ℝ}
-
 open BigOperators Finset Function Matrix
+
+variable {R n : Type*} [Fintype n] [DecidableEq n]
+
+section OrderedSemiring
+variable [OrderedSemiring R] {M : Matrix n n R}
 
 /--
 A square matrix is doubly stochastic iff all entries are nonnegative, and left or right
 multiplication by the vector of all 1s gives the vector of all 1s.
 -/
-def doublyStochastic (n : Type*) [Fintype n] [DecidableEq n] : Submonoid (Matrix n n ℝ) where
+def doublyStochastic (R n : Type*) [Fintype n] [DecidableEq n] [OrderedSemiring R] :
+    Submonoid (Matrix n n R) where
   carrier := {M | (∀ i j, 0 ≤ M i j) ∧ M *ᵥ 1 = 1 ∧ 1 ᵥ* M = 1 }
   mul_mem' {M N} hM hN := by
     refine ⟨fun i j => sum_nonneg fun i _ => mul_nonneg (hM.1 _ _) (hN.1 _ _), ?_, ?_⟩
@@ -42,47 +46,54 @@ def doublyStochastic (n : Type*) [Fintype n] [DecidableEq n] : Submonoid (Matrix
   one_mem' := by simp [zero_le_one_elem]
 
 lemma mem_doublyStochastic_iff_mul :
-    M ∈ doublyStochastic n ↔ (∀ i j, 0 ≤ M i j) ∧ M *ᵥ 1 = 1 ∧ 1 ᵥ* M = 1 :=
+    M ∈ doublyStochastic R n ↔ (∀ i j, 0 ≤ M i j) ∧ M *ᵥ 1 = 1 ∧ 1 ᵥ* M = 1 :=
   Iff.rfl
 
 lemma mem_doublyStochastic_iff_sum :
-    M ∈ doublyStochastic n ↔ (∀ i j, 0 ≤ M i j) ∧ (∀ i, ∑ j, M i j = 1) ∧ ∀ j, ∑ i, M i j = 1 := by
+    M ∈ doublyStochastic R n ↔
+      (∀ i j, 0 ≤ M i j) ∧ (∀ i, ∑ j, M i j = 1) ∧ ∀ j, ∑ i, M i j = 1 := by
   simp [funext_iff, doublyStochastic, mulVec, vecMul, dotProduct]
 
-lemma nonneg_doublyStochastic (hM : M ∈ doublyStochastic n) (i j : n) : 0 ≤ M i j :=
+lemma nonneg_doublyStochastic (hM : M ∈ doublyStochastic R n) (i j : n) : 0 ≤ M i j :=
   hM.1 _ _
 
-lemma row_sum_doublyStochastic (hM : M ∈ doublyStochastic n) (i : n) : ∑ j, M i j = 1 :=
+lemma row_sum_doublyStochastic (hM : M ∈ doublyStochastic R n) (i : n) : ∑ j, M i j = 1 :=
   (mem_doublyStochastic_iff_sum.1 hM).2.1 _
 
-lemma col_sum_doublyStochastic (hM : M ∈ doublyStochastic n) (j : n) : ∑ i, M i j = 1 :=
+lemma col_sum_doublyStochastic (hM : M ∈ doublyStochastic R n) (j : n) : ∑ i, M i j = 1 :=
   (mem_doublyStochastic_iff_sum.1 hM).2.2 _
 
-lemma doublyStochastic_mulVec_one (hM : M ∈ doublyStochastic n) : M *ᵥ 1 = 1 :=
+lemma doublyStochastic_mulVec_one (hM : M ∈ doublyStochastic R n) : M *ᵥ 1 = 1 :=
   (mem_doublyStochastic_iff_mul.1 hM).2.1
 
-lemma one_vecMul_doublyStochastic (hM : M ∈ doublyStochastic n) : 1 ᵥ* M = 1 :=
+lemma one_vecMul_doublyStochastic (hM : M ∈ doublyStochastic R n) : 1 ᵥ* M = 1 :=
   (mem_doublyStochastic_iff_mul.1 hM).2.2
 
-lemma doublyStochastic_le_one {M : Matrix n n ℝ} (hM : M ∈ doublyStochastic n) {i j : n} :
+lemma doublyStochastic_le_one (hM : M ∈ doublyStochastic R n) {i j : n} :
     M i j ≤ 1 := by
   rw [← row_sum_doublyStochastic hM i]
   exact single_le_sum (fun k _ => hM.1 _ k) (mem_univ j)
 
-lemma convex_doublyStochastic : Convex ℝ (doublyStochastic n : Set (Matrix n n ℝ)) := by
+lemma convex_doublyStochastic : Convex R (doublyStochastic R n : Set (Matrix n n R)) := by
   intro x hx y hy a b ha hb h
   simp only [SetLike.mem_coe, mem_doublyStochastic_iff_sum] at hx hy ⊢
   simp [add_nonneg, ha, hb, mul_nonneg, hx, hy, sum_add_distrib, ← mul_sum, h]
 
-lemma permMatrix_doublyStochastic {σ : Equiv.Perm n} : σ.permMatrix ℝ ∈ doublyStochastic n := by
+lemma permMatrix_doublyStochastic {σ : Equiv.Perm n} : σ.permMatrix R ∈ doublyStochastic R n := by
   rw [mem_doublyStochastic_iff_sum]
   refine ⟨fun i j => ?g1, ?g2, ?g3⟩
   case g1 => aesop
   case g2 => simp [Equiv.toPEquiv_apply]
   case g3 => simp [Equiv.toPEquiv_apply, ← Equiv.eq_symm_apply]
 
-lemma scalar_multiple_of_doublyStochastic_iff {M : Matrix n n ℝ} {s : ℝ} (hs : 0 ≤ s) :
-    (∃ M' ∈ doublyStochastic n, M = s • M') ↔
+end OrderedSemiring
+
+section LinearOrderedSemifield
+
+variable [LinearOrderedSemifield R] {M : Matrix n n R}
+
+lemma scalar_multiple_of_doublyStochastic_iff {M : Matrix n n R} {s : R} (hs : 0 ≤ s) :
+    (∃ M' ∈ doublyStochastic R n, M = s • M') ↔
       (∀ i j, 0 ≤ M i j) ∧ (∀ i, ∑ j, M i j = s) ∧ (∀ j, ∑ i, M i j = s) := by
   classical
   constructor
@@ -109,8 +120,8 @@ whose support is contained in the support of M.
 
 This proof uses Hall's marriage theorem in a fundamental way.
 -/
-private lemma exists_perm_eq_zero_implies_eq_zero [Nonempty n] {s : ℝ} (hs : 0 < s)
-    (hM : ∃ M' ∈ doublyStochastic n, M = s • M') :
+private lemma exists_perm_eq_zero_implies_eq_zero [Nonempty n] {s : R} (hs : 0 < s)
+    (hM : ∃ M' ∈ doublyStochastic R n, M = s • M') :
     ∃ σ : Equiv.Perm n, ∀ i j, M i j = 0 → σ.permMatrix ℝ i j = 0 := by
   rw [scalar_multiple_of_doublyStochastic_iff hs.le] at hM
   let f (i : n) : Finset n := univ.filter (M i · ≠ 0)
@@ -136,15 +147,21 @@ private lemma exists_perm_eq_zero_implies_eq_zero [Nonempty n] {s : ℝ} (hs : 0
   simp only [ne_eq, mem_filter, mem_univ, true_and, f] at hg'
   exact hg' _ hij
 
+end LinearOrderedSemifield
+
+section LinearOrderedField
+
+variable [LinearOrderedField R] {M : Matrix n n R}
+
 /--
 If M is a scalar multiple of a doubly stochastic matrix, then it is an conical combination of
 permutation matrices. This is most useful when M is a doubly stochastic matrix, in which case
 the combination is convex.
 -/
-private lemma doublyStochastic_sum_perm_aux (M : Matrix n n ℝ)
-    (s : ℝ) (hs : 0 ≤ s)
-    (hM : ∃ M' ∈ doublyStochastic n, M = s • M') :
-    ∃ w : Equiv.Perm n → ℝ, (∀ σ, 0 ≤ w σ) ∧ ∑ σ, w σ • σ.permMatrix ℝ = M := by
+private lemma doublyStochastic_sum_perm_aux (M : Matrix n n R)
+    (s : R) (hs : 0 ≤ s)
+    (hM : ∃ M' ∈ doublyStochastic R n, M = s • M') :
+    ∃ w : Equiv.Perm n → R, (∀ σ, 0 ≤ w σ) ∧ ∑ σ, w σ • σ.permMatrix R = M := by
   rcases isEmpty_or_nonempty n
   case inl => exact ⟨1, by simp, Subsingleton.elim _ _⟩
   set d : ℕ := (Finset.univ.filter fun i : n × n => M i.1 i.2 ≠ 0).card with ← hd
@@ -159,18 +176,18 @@ private lemma doublyStochastic_sum_perm_aux (M : Matrix n n ℝ)
   obtain ⟨σ, hσ⟩ := exists_perm_eq_zero_implies_eq_zero hs' hM
   obtain ⟨i, hi, hi'⟩ := exists_min_image _ (fun i => M i (σ i)) univ_nonempty
   rw [scalar_multiple_of_doublyStochastic_iff hs] at hM
-  let N := M - M i (σ i) • σ.permMatrix ℝ
+  let N : Matrix n n R := M - M i (σ i) • σ.permMatrix R
   let d' : ℕ := (univ.filter fun i : n × n => N i.1 i.2 ≠ 0).card
   have hMi' : 0 < M i (σ i) := by
     refine lt_of_le_of_ne' (hM.1 _ _) ?_
     intro h
     have := hσ _ _ h
     simp [PEquiv.toMatrix_apply, Equiv.toPEquiv_apply] at this
-  let s' : ℝ := s - M i (σ i)
+  let s' : R := s - M i (σ i)
   have hs' : 0 ≤ s' := by
     simp only [s', sub_nonneg, ← hM.2.1 i]
     exact single_le_sum (fun j _ => hM.1 i j) (by simp)
-  have : ∃ M' ∈ doublyStochastic n, N = s' • M' := by
+  have : ∃ M' ∈ doublyStochastic R n, N = s' • M' := by
     rw [scalar_multiple_of_doublyStochastic_iff hs']
     simp only [sub_apply, smul_apply, PEquiv.toMatrix_apply, Equiv.toPEquiv_apply, Option.mem_def,
       Option.some.injEq, smul_eq_mul, mul_ite, mul_one, mul_zero, sub_nonneg,
@@ -209,14 +226,14 @@ If M is a doubly stochastic matrix, then it is an convex combination of permutat
 permutation matrices, and this lemma is most useful for accessing the coefficients of each
 permutation matrices directly.
 -/
-lemma doublyStochastic_eq_sum_perm {M : Matrix n n ℝ} (hM : M ∈ doublyStochastic n) :
-    ∃ w : Equiv.Perm n → ℝ, (∀ σ, 0 ≤ w σ) ∧ ∑ σ, w σ = 1 ∧ ∑ σ, w σ • σ.permMatrix ℝ = M := by
+lemma doublyStochastic_eq_sum_perm (hM : M ∈ doublyStochastic R n) :
+    ∃ w : Equiv.Perm n → R, (∀ σ, 0 ≤ w σ) ∧ ∑ σ, w σ = 1 ∧ ∑ σ, w σ • σ.permMatrix R = M := by
   rcases isEmpty_or_nonempty n
   case inl => exact ⟨fun _ => 1, by simp, by simp, Subsingleton.elim _ _⟩
   obtain ⟨w, hw1, hw3⟩ := doublyStochastic_sum_perm_aux M 1 (by simp) ⟨M, hM, by simp⟩
   refine ⟨w, hw1, ?_, hw3⟩
   inhabit n
-  have : ∑ j, ∑ σ : Equiv.Perm n, w σ • Equiv.Perm.permMatrix ℝ σ default j = 1 := by
+  have : ∑ j, ∑ σ : Equiv.Perm n, w σ • σ.permMatrix R default j = 1 := by
     simp only [← smul_apply (m := n), ← Finset.sum_apply, hw3]
     rw [row_sum_doublyStochastic hM]
   simpa [sum_comm (γ := n), Equiv.toPEquiv_apply] using this
@@ -228,7 +245,7 @@ The set of doubly stochastic matrices is the convex hull of the permutation matr
 To show `doublyStochastic n` is convex, use `convex_doublyStochastic`.
 -/
 theorem doublyStochastic_eq_convexHull_perm :
-    doublyStochastic n = convexHull ℝ {σ.permMatrix ℝ | σ : Equiv.Perm n} := by
+    doublyStochastic R n = convexHull R {σ.permMatrix R | σ : Equiv.Perm n} := by
   refine (convexHull_min ?g1 convex_doublyStochastic).antisymm' ?g2
   case g1 =>
     rintro x ⟨h, rfl⟩
@@ -236,6 +253,8 @@ theorem doublyStochastic_eq_convexHull_perm :
   case g2 =>
     intro M hM
     rcases isEmpty_or_nonempty n
-    case inl => simp [Unique.exists_iff, Subsingleton.elim M ((Equiv.Perm.permMatrix ℝ 1))]
+    case inl => simp [Unique.exists_iff, Subsingleton.elim M ((Equiv.Perm.permMatrix R 1))]
     obtain ⟨w, hw1, hw2, hw3⟩ := doublyStochastic_eq_sum_perm hM
-    exact mem_convexHull_of_exists_fintype w (·.permMatrix ℝ) hw1 hw2 (by simp) hw3
+    exact mem_convexHull_of_exists_fintype w (·.permMatrix R) hw1 hw2 (by simp) hw3
+
+end LinearOrderedField
