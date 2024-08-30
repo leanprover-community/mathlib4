@@ -156,6 +156,12 @@ theorem isClosed_const {p : Prop} : IsClosed { _x : X | p } := ⟨isOpen_const (
 
 @[simp] theorem isClosed_univ : IsClosed (univ : Set X) := isClosed_const
 
+lemma IsOpen.isLocallyClosed (hs : IsOpen s) : IsLocallyClosed s :=
+  ⟨_, _, hs, isClosed_univ, (inter_univ _).symm⟩
+
+lemma IsClosed.isLocallyClosed (hs : IsClosed s) : IsLocallyClosed s :=
+  ⟨_, _, isOpen_univ, hs, (univ_inter _).symm⟩
+
 theorem IsClosed.union : IsClosed s₁ → IsClosed s₂ → IsClosed (s₁ ∪ s₂) := by
   simpa only [← isOpen_compl_iff, compl_union] using IsOpen.inter
 
