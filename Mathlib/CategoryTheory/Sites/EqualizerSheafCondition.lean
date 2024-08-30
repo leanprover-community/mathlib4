@@ -10,7 +10,7 @@ import Mathlib.Tactic.ApplyFun
 /-!
 # The equalizer diagram sheaf condition for a presieve
 
-In `Mathlib/CategoryTheory/Sites/IsSheafFor.lean` it is defined what it means for a presheaf to be a
+In `Mathlib/CategoryTheory/Sites/IsSheafFor.lean` it is defined what it means for a presheaf to be a
 sheaf *for* a particular presieve. In this file we provide equivalent conditions in terms of
 equalizer diagrams.
 
@@ -252,7 +252,7 @@ open Presieve
 
 variable {B : C} {I : Type} (X : I → C) (π : (i : I) → X i ⟶ B)
     [(Presieve.ofArrows X π).hasPullbacks]
--- TODO: allow `I : Type w` 
+-- TODO: allow `I : Type w`
 
 /--
 The middle object of the fork diagram of <https://stacks.math.columbia.edu/tag/00VM>.
