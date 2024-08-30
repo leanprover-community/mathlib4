@@ -554,7 +554,7 @@ lemma SeparableSpace.exists_measurable_partition_diam_le {ε : ℝ} (ε_pos : 0 
     simpa only [← aux] using iUnion_disjointed
   · exact disjoint_disjointed Bs
 
-lemma ProbabilityMeasure.continuous_equiv_symm_probabilityMeasure :
+lemma LevyProkhorov.continuous_equiv_symm_probabilityMeasure :
     Continuous (LevyProkhorov.equiv (α := ProbabilityMeasure Ω)).symm := by
   -- We check continuity of `id : ProbabilityMeasure Ω → LevyProkhorov (ProbabilityMeasure Ω)` at
   -- each point `P : ProbabilityMeasure Ω`.
@@ -656,7 +656,7 @@ coincides with the topology of convergence in distribution. -/
 theorem levyProkhorov_eq_convergenceInDistribution :
     (inferInstance : TopologicalSpace (ProbabilityMeasure Ω))
       = TopologicalSpace.coinduced LevyProkhorov.equiv inferInstance :=
-  le_antisymm (ProbabilityMeasure.continuous_equiv_symm_probabilityMeasure (Ω := Ω)).coinduced_le
+  le_antisymm (LevyProkhorov.continuous_equiv_symm_probabilityMeasure (Ω := Ω)).coinduced_le
               levyProkhorov_le_convergenceInDistribution
 
 /-- The identity map is a homeomorphism from `ProbabilityMeasure Ω` with the topology of
@@ -667,7 +667,7 @@ def homeomorph_probabilityMeasure_levyProkhorov :
   invFun := LevyProkhorov.equiv.symm
   left_inv := congrFun rfl
   right_inv := congrFun rfl
-  continuous_toFun := ProbabilityMeasure.continuous_equiv_symm_probabilityMeasure
+  continuous_toFun := LevyProkhorov.continuous_equiv_symm_probabilityMeasure
   continuous_invFun := LevyProkhorov.continuous_equiv_probabilityMeasure
 
 /-- The topology of convergence in distribution on a separable space is pseudo-metrizable. -/
