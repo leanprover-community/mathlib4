@@ -255,8 +255,9 @@ def formatErrors (errors : Array ErrorContext) (style : ErrorFormat) : IO Unit :
     IO.println (outputMessage e style)
 
 /-- Core logic of a text based linter: given a collection of lines,
-return an array of all style errors with line numbers. -/
-abbrev TextbasedLinter := Array String → Array (StyleError × ℕ)
+return an array of all style errors with line numbers and, optionally, an array of lines
+changed to fix the linter automatically. (This is not always possible, but sometimes it is.) -/
+abbrev TextbasedLinter := Array String → Array (StyleError × ℕ) × (Option (Array String))
 
 /-! Definitions of the actual text-based linters. -/
 section
@@ -305,7 +306,7 @@ def copyrightHeaderLinter : TextbasedLinter := fun lines ↦ Id.run do
       -- If it does, we check the authors line is formatted correctly.
       if !isCorrectAuthorsLine line then
         output := output.push (StyleError.authors, 4)
-  return output
+  return (output, none)
 
 /-- Lint on any occurrences of the string "Adaptation note:" or variants thereof. -/
 def adaptationNoteLinter : TextbasedLinter := fun lines ↦ Id.run do
@@ -316,7 +317,7 @@ def adaptationNoteLinter : TextbasedLinter := fun lines ↦ Id.run do
     if line.containsSubstr "daptation note" then
       errors := errors.push (StyleError.adaptationNote, lineNumber)
     lineNumber := lineNumber + 1
-  return errors
+  return (errors, none)
 
 /-- Lint a collection of input strings if one of them contains an unnecessarily broad import. -/
 def broadImportsLinter : TextbasedLinter := fun lines ↦ Id.run do
@@ -344,7 +345,7 @@ def broadImportsLinter : TextbasedLinter := fun lines ↦ Id.run do
             else if name == "Lake" || name.startsWith "Lake." then
               errors := errors.push (StyleError.broadImport BroadImports.Lake, lineNumber)
       lineNumber := lineNumber + 1
-  return errors
+  return (errors, none)
 
 
 /-- Lint a collection of input strings if one of them contains windows line endings. -/
@@ -355,7 +356,7 @@ def windowsLineEndingLinter : TextbasedLinter := fun lines ↦ Id.run do
     let rep := line.crlfToLf
     if rep != line then
       errors := errors.push (StyleError.windowsLineEnding, lineNumber)
-  return errors
+  return (errors, none) -- TODO: add auto-fix!
 
 /-- Whether a collection of lines consists *only* of imports, blank lines and single-line comments.
 In practice, this means it's an imports-only file and exempt from almost all linting. -/
@@ -416,8 +417,9 @@ def lintFile (path : FilePath) (sizeLimit : Option ℕ) (exceptions : Array Erro
   let mut errors := #[]
   if let some (StyleError.fileTooLong n limit ex) := checkFileLength lines sizeLimit then
     errors := #[ErrorContext.mk (StyleError.fileTooLong n limit ex) 1 path]
+  -- TODO: use auto-fixes if available
   let allOutput := (Array.map (fun lint ↦
-    (Array.map (fun (e, n) ↦ ErrorContext.mk e n path)) (lint lines))) allLinters
+    (Array.map (fun (e, n) ↦ ErrorContext.mk e n path)) (lint lines).1)) allLinters
   -- This list is not sorted: for github, this is fine.
   errors := errors.append
     (allOutput.flatten.filter (fun e ↦ (e.find?_comparable exceptions).isNone))
