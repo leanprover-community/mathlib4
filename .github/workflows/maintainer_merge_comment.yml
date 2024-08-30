@@ -26,16 +26,16 @@ jobs:
           topic="generic"
           t_label=""
           count=0
-          jq -r '.[].name' <<< "${{ github.event.pull_request.labels }}" | while read -r label; do
-            if [[ $label == t-* ]]; then
-              t_label=$label
+          while read -r label; do
+            if [[ "$label" == t-* ]]; then
+              t_label="$label"
               count=$((count + 1))
             fi
-          done
-          if [[ $count -eq 1 ]]; then
-            topic=$t_label
+          done < <(jq -r '.[].name' <<< "${{ github.event.pull_request.labels }}")
+          if [[ "$count" -eq 1 ]]; then
+            topic="$t_label"
           fi
-          echo "name=topic::maintainer merge: ${topic}" >> $GITHUB_OUTPUT
+          echo "name=topic::maintainer merge: ${topic}" >> "$GITHUB_OUTPUT"
 
       - name: Send message on Zulip
         uses: zulip/github-actions-zulip/send-message@v1
