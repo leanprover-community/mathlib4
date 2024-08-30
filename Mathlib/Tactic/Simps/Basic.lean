@@ -281,15 +281,17 @@ few exceptions to this general rule:
 
 This default behavior is customisable as such:
 * You can disable a projection by default by running
-  `initialize_simps_projections Equiv (-invFun)`
+  `initialize_simps_projections MulEquiv (-invFun)`
   This will ensure that no simp lemmas are generated for this projection,
   unless this projection is explicitly specified by the user (as in
-  `@[simps invFun] def myEquiv : Equiv _ _ := _`).
+  `@[simps invFun] def myEquiv : MulEquiv _ _ := _`).
 * Conversely, you can enable a projection by default by running
   `initialize_simps_projections MulEquiv (+toEquiv)`.
+* You can specify custom names by writing e.g.
+  `initialize_simps_projections MulEquiv (toFun → apply, invFun → symm_apply)`.
 * If you want the projection name added as a prefix in the generated lemma name, you can use
   `as_prefix fieldName`:
-  `initialize_simps_projections Equiv (toFun → coe, as_prefix coe)`
+  `initialize_simps_projections MulEquiv (toFun → coe, as_prefix coe)`
   Note that this does not influence the parsing of projection names: if you have a declaration
   `foo` and you want to apply the projections `snd`, `coe` (which is a prefix) and `fst`, in that
   order you can run `@[simps snd_coe_fst] def foo ...` and this will generate a lemma with the
