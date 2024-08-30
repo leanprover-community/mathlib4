@@ -5,8 +5,6 @@ Authors: Johan Commelin
 -/
 import Mathlib.Analysis.Normed.Field.Basic
 
-#align_import analysis.normed_space.int from "leanprover-community/mathlib"@"5cc2dfdd3e92f340411acea4427d701dc7ed26f8"
-
 /-!
 # The integers as normed ring
 
@@ -24,28 +22,23 @@ namespace Int
 theorem nnnorm_coe_units (e : ℤˣ) : ‖(e : ℤ)‖₊ = 1 := by
   obtain rfl | rfl := units_eq_one_or e <;>
     simp only [Units.coe_neg_one, Units.val_one, nnnorm_neg, nnnorm_one]
-#align int.nnnorm_coe_units Int.nnnorm_coe_units
 
 theorem norm_coe_units (e : ℤˣ) : ‖(e : ℤ)‖ = 1 := by
   rw [← coe_nnnorm, nnnorm_coe_units, NNReal.coe_one]
-#align int.norm_coe_units Int.norm_coe_units
 
 @[simp]
 theorem nnnorm_natCast (n : ℕ) : ‖(n : ℤ)‖₊ = n :=
   Real.nnnorm_natCast _
-#align int.nnnorm_coe_nat Int.nnnorm_natCast
 
 @[deprecated (since := "2024-04-05")] alias nnnorm_coe_nat := nnnorm_natCast
 
 @[simp]
 theorem toNat_add_toNat_neg_eq_nnnorm (n : ℤ) : ↑n.toNat + ↑(-n).toNat = ‖n‖₊ := by
   rw [← Nat.cast_add, toNat_add_toNat_neg_eq_natAbs, NNReal.natCast_natAbs]
-#align int.to_nat_add_to_nat_neg_eq_nnnorm Int.toNat_add_toNat_neg_eq_nnnorm
 
 @[simp]
 theorem toNat_add_toNat_neg_eq_norm (n : ℤ) : ↑n.toNat + ↑(-n).toNat = ‖n‖ := by
   simpa only [NNReal.coe_natCast, NNReal.coe_add] using
     congrArg NNReal.toReal (toNat_add_toNat_neg_eq_nnnorm n)
-#align int.to_nat_add_to_nat_neg_eq_norm Int.toNat_add_toNat_neg_eq_norm
 
 end Int

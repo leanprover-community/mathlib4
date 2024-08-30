@@ -6,8 +6,6 @@ Authors: Henrik Böving, Simon Hudon
 import Mathlib.Control.Random
 import Batteries.Data.List.Perm
 
-#align_import testing.slim_check.gen from "leanprover-community/mathlib"@"fdc286cc6967a012f41b87f76dcd2797b53152af"
-
 /-!
 # `Gen` Monad
 
@@ -94,7 +92,7 @@ def oneOf (xs : Array (Gen α)) (pos : 0 < xs.size := by decide) : Gen α := do
 /-- Given a list of examples, choose one to create an example. -/
 def elements (xs : List α) (pos : 0 < xs.length) : Gen α := do
   let ⟨x, _, h2⟩ ← ULiftable.up <| chooseNatLt 0 xs.length pos
-  pure <| xs.get ⟨x, h2⟩
+  pure <| xs[x]
 
 open List in
 /-- Generate a random permutation of a given list. -/
@@ -113,7 +111,7 @@ def prodOf {α : Type u} {β : Type v} (x : Gen α) (y : Gen β) : Gen (α × β
 
 end Gen
 
-/-- Execute a `Gen` inside the `IO` monad using `size` as the example size-/
+/-- Execute a `Gen` inside the `IO` monad using `size` as the example size -/
 def Gen.run {α : Type} (x : Gen α) (size : Nat) : BaseIO α :=
   letI : MonadLift Id BaseIO := ⟨fun f => pure <| Id.run f⟩
   IO.runRand (ReaderT.run x ⟨size⟩:)

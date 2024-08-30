@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Adjunction.Unique
-import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Sites.Sheaf
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 /-!
@@ -72,6 +72,12 @@ def sheafificationAdjunction [HasWeakSheafify J A] :
 instance [HasWeakSheafify J A] : (presheafToSheaf J A).IsLeftAdjoint :=
   ⟨_, ⟨sheafificationAdjunction J A⟩⟩
 
+instance [HasWeakSheafify J A] : Reflective (sheafToPresheaf J A) where
+  adj := sheafificationAdjunction _ _
+
+instance [HasSheafify J A] :  PreservesFiniteLimits (reflector (sheafToPresheaf J A)) :=
+  inferInstanceAs (PreservesFiniteLimits (presheafToSheaf _ _))
+
 end
 
 variable {D : Type*} [Category D] [HasWeakSheafify J D]
@@ -135,7 +141,7 @@ theorem isIso_toSheafify {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) : IsIso
     rfl
   · change (sheafToPresheaf _ _).map _ ≫ _ = _
     change _ ≫ (sheafificationAdjunction J D).unit.app ((sheafToPresheaf J D).obj ⟨P, hP⟩) = _
-    erw [← (sheafificationAdjunction J D).inv_counit_map  (X := ⟨P, hP⟩), comp_inv_eq_id]
+    erw [← (sheafificationAdjunction J D).inv_counit_map (X := ⟨P, hP⟩), comp_inv_eq_id]
 
 /-- If `P` is a sheaf, then `P` is isomorphic to `sheafify J P`. -/
 noncomputable def isoSheafify {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) : P ≅ sheafify J P :=
@@ -211,16 +217,13 @@ noncomputable def sheafificationIso (P : Sheaf J D) : P ≅ (presheafToSheaf J D
   inv_hom_id := by
     ext1
     apply (isoSheafify J P.2).inv_hom_id
-#align category_theory.sheafification_iso CategoryTheory.sheafificationIso
 
 instance isIso_sheafificationAdjunction_counit (P : Sheaf J D) :
     IsIso ((sheafificationAdjunction J D).counit.app P) :=
   isIso_of_fully_faithful (sheafToPresheaf J D) _
-#align category_theory.is_iso_sheafification_adjunction_counit CategoryTheory.isIso_sheafificationAdjunction_counit
 
 instance sheafification_reflective : IsIso (sheafificationAdjunction J D).counit :=
   NatIso.isIso_of_isIso_app _
-#align category_theory.sheafification_reflective CategoryTheory.sheafification_reflective
 
 variable (J D)
 

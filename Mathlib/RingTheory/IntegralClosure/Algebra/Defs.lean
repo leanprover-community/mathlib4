@@ -5,8 +5,6 @@ Authors: Kenny Lau
 -/
 import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
 
-#align_import ring_theory.integral_closure from "leanprover-community/mathlib"@"641b6a82006416ec431b2987b354af9311fed4f2"
-
 /-!
 # Integral algebras
 
@@ -33,7 +31,6 @@ variable (A)
 /-- An algebra is integral if every element of the extension is integral over the base ring. -/
 protected class Algebra.IsIntegral : Prop :=
   isIntegral : ∀ x : A, IsIntegral R x
-#align algebra.is_integral Algebra.IsIntegral
 
 variable {R A}
 
