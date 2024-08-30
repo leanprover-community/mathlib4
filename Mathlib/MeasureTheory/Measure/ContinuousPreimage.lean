@@ -79,7 +79,7 @@ theorem tendsto_measure_symmDiff_preimage_nhds_zero
   obtain ⟨K, hKg, hKco, hKcl, hKμ⟩ :
       ∃ K, MapsTo g K s ∧ IsCompact K ∧ IsClosed K ∧ μ (g ⁻¹' s \ K) < ε / 2 :=
     (hg.measurable hso.measurableSet).exists_isCompact_isClosed_diff_lt hνs' <| by simp [hε.ne']
-  have hKm : MeasurableSet K := hKcl.measurableSet
+  have hKm : NullMeasurableSet K μ := hKcl.nullMeasurableSet
   -- Take `a` such that `f a` is measure preserving and maps `K` to `s`.
   -- This is possible, because `K` is a compact set and `s` is an open set.
   filter_upwards [hf, ContinuousMap.tendsto_nhds_compactOpen.mp hfg K hKco s hso hKg] with a hfa ha

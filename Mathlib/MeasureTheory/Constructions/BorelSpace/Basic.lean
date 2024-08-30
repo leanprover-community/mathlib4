@@ -267,6 +267,9 @@ theorem IsClosed.nullMeasurableSet {μ} (h : IsClosed s) : NullMeasurableSet s �
 theorem IsCompact.measurableSet [T2Space α] (h : IsCompact s) : MeasurableSet s :=
   h.isClosed.measurableSet
 
+theorem IsCompact.nullMeasurableSet [T2Space α] {μ} (h : IsCompact s) : NullMeasurableSet s μ :=
+  h.isClosed.nullMeasurableSet
+
 /-- If two points are topologically inseparable,
 then they can't be separated by a Borel measurable set. -/
 theorem Inseparable.mem_measurableSet_iff {x y : γ} (h : Inseparable x y) {s : Set γ}
