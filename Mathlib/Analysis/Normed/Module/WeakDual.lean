@@ -376,10 +376,10 @@ lemma lala3 (u : Finset (U (E := E₁) (n + 1))) (h : Nonempty u) :
 
 lemma existance''' [ProperSpace 𝕜₁] (hC₁ : IsClosed C)
     (h : polar 𝕜₁ s ∩ C ∩ polar 𝕜₁ (U (n+1)) = ∅) :
-    ∃ F : Finset (U (E := E₁) (n + 1)),
-    polar 𝕜₁ (s ∪ F.toSet) ∩ C ∩ polar 𝕜₁ (U (n+2)) = ∅ := by
+    ∃ F, F.Finite ∧ F ⊆ (U (E := E₁) (n + 1)) ∧
+      polar 𝕜₁ (s ∪ F) ∩ C ∩ polar 𝕜₁ (U (n+2)) = ∅ := by
   obtain ⟨u,hu⟩ := existance C s n hC₁ h
-  use u
+  use u.toSet
   rw [polar_union]
   have e1: (⋂ i ∈ u, polar 𝕜₁ ({↑i} : Set E₁)) = polar 𝕜₁ (u.toSet : Set E₁) := by
     rw [image_eq_iUnion]
@@ -390,12 +390,7 @@ lemma existance''' [ProperSpace 𝕜₁] (hC₁ : IsClosed C)
   rw [← lala2 _ _ _ _ eu]
   rw [lala _ _ _ _ eu]
   rw [lala3 _ _ _ _ eu]
-  exact hu
-
-
-
-
-
+  exact ⟨toFinite _, ⟨Subtype.coe_image_subset _ _,hu⟩⟩
 
 /-
 lemma existance [ProperSpace 𝕜] : ∃ u : Finset (Elem (U (E := E) (n + 1))),
