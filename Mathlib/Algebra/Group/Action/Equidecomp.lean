@@ -189,8 +189,8 @@ def Equidecomp.trans (f : A ≃ₑ[G] B) (g : B ≃ₑ[G] C) : A ≃ₑ[G] C whe
     rcases g.decomp with ⟨T, hT⟩
     exact ⟨T * S, hT.comp hS⟩
 
-@[simp] theorem Embeddidecomp.coe_trans (f : A ↪ₑ[G] B) (g : B ↪ₑ[G] C) : ↑(f.trans g) = g ∘ f
-  := rfl
+@[simp] theorem Embeddidecomp.coe_trans (f : A ↪ₑ[G] B) (g : B ↪ₑ[G] C) :
+    ↑(f.trans g) = g ∘ f := rfl
 
 @[simp] theorem Equidecomp.coe_trans (f : A ≃ₑ[G] B) (g : B ≃ₑ[G] C) : ↑(f.trans g) = g ∘ f := rfl
 
