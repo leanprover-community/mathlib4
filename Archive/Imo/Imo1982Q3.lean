@@ -256,7 +256,7 @@ lemma eq₀ {x : ℕ → ℝ} (hx₀ : x 0 = (1 : ℝ)) :
 
 
 theorem Imo1982Q3_part_a {x : ℕ → ℝ} (x_pos : ∀ i, x i > (0 : ℝ)) (hx₀ : x 0 = (1 : ℝ))
-  (hx : ∀ i , x (i + 1) ≤ x i) : ∃ N : ℕ, 3.999 ≤ ∑ n : Fin N, (x n)^2 / x (n + 1) := by
+    (hx : ∀ i , x (i + 1) ≤ x i) : ∃ N : ℕ, 3.999 ≤ ∑ n : Fin N, (x n)^2 / x (n + 1) := by
   have div_prev_pos : ∀ N > 1, 0 < (↑N - 1) / (N : ℝ) :=  by
     intro N hN
     apply div_pos
