@@ -216,3 +216,7 @@ def Equidecomp.symm (f : A ≃ₑ[G] B) : B ≃ₑ[G] A where
     refine ⟨S⁻¹, hS.of_rightInverse <| Equiv.right_inv' _⟩
 
 end Group
+
+section SchroederBernstein
+
+end SchroederBernstein
