@@ -30,8 +30,8 @@ jobs:
             if [[ "$(wc -l <<<"${tlabels}")" -ne 1 ]]; then
               tlabels="generic"
             fi
-            printf 'echo "name=topic::maintainer merge: %s"\n' "${tlabels}"
-            echo "name=topic::maintainer merge: ${tlabels}" >> "$GITHUB_OUTPUT"
+            printf 'echo "name=%s"\n' "${tlabels}"
+            echo "name=${tlabels}" >> "$GITHUB_OUTPUT"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR: /repos/{owner}/{repo}/pulls/${{ github.event.number }}
