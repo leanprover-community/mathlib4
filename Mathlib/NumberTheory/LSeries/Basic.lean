@@ -282,7 +282,7 @@ lemma LSeriesSummable.le_const_mul_rpow {f : ℕ → ℂ} {s : ℂ} (h : LSeries
   obtain ⟨n, hn₀, hn⟩ := H (tsum fun n ↦ ‖term f s n‖)
   have := le_tsum h n fun _ _ ↦ norm_nonneg _
   rw [norm_term_eq, if_neg hn₀,
-    div_le_iff <| Real.rpow_pos_of_pos (Nat.cast_pos.mpr <| Nat.pos_of_ne_zero hn₀) _] at this
+    div_le_iff₀ <| Real.rpow_pos_of_pos (Nat.cast_pos.mpr <| Nat.pos_of_ne_zero hn₀) _] at this
   exact (this.trans_lt hn).false.elim
 
 open Filter in
@@ -320,7 +320,7 @@ lemma LSeriesSummable_of_le_const_mul_rpow {f : ℕ → ℂ} {x : ℝ} {s : ℂ}
   · simp only [term_zero, norm_zero]
     exact norm_nonneg _
   have hn' : 0 < (n : ℝ) ^ s.re := Real.rpow_pos_of_pos (Nat.cast_pos.mpr hn) _
-  simp_rw [term_of_ne_zero hn.ne', norm_div, norm_natCast_cpow_of_pos hn, div_le_iff hn',
+  simp_rw [term_of_ne_zero hn.ne', norm_div, norm_natCast_cpow_of_pos hn, div_le_iff₀ hn',
     norm_eq_abs (C : ℂ), abs_ofReal, _root_.abs_of_nonneg hC₀, div_eq_mul_inv, mul_assoc,
     ← Real.rpow_neg <| Nat.cast_nonneg _, ← Real.rpow_add <| Nat.cast_pos.mpr hn]
   simp only [add_re, sub_re, one_re, ofReal_re, neg_add_rev, neg_sub, neg_add_cancel_right]
@@ -344,7 +344,7 @@ lemma LSeriesSummable_of_isBigO_rpow {f : ℕ → ℂ} {x : ℝ} {s : ℂ} (hs :
     gcongr
     rw [Real.norm_eq_abs, abs_rpow_of_nonneg hn₀, _root_.abs_of_nonneg hn₀]
   · have hn' : 0 < n := Nat.pos_of_ne_zero hn₀
-    refine (div_le_iff <| rpow_pos_of_pos (cast_pos.mpr hn') _).mp ?_
+    refine (div_le_iff₀ <| rpow_pos_of_pos (cast_pos.mpr hn') _).mp ?_
     refine (le_max' _ _ <| mem_insert_of_mem ?_).trans <| le_max_right ..
     exact mem_image.mpr ⟨n, mem_range.mpr hn, rfl⟩
 

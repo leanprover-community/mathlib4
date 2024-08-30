@@ -12,7 +12,7 @@ import Mathlib.Probability.Kernel.Disintegration.MeasurableStieltjes
 
 Let `κ : Kernel α (β × ℝ)` and `ν : Kernel α β` be two finite kernels.
 A function `f : α × β → StieltjesFunction` is called a conditional kernel CDF of `κ` with respect
-to `ν` if it is measurable, tends to to 0 at -∞ and to 1 at +∞ for all `p : α × β`,
+to `ν` if it is measurable, tends to 0 at -∞ and to 1 at +∞ for all `p : α × β`,
 `fun b ↦ f (a, b) x` is `(ν a)`-integrable for all `a : α` and `x : ℝ` and for all measurable
 sets `s : Set β`, `∫ b in s, f (a, b) x ∂(ν a) = (κ a (s ×ˢ Iic x)).toReal`.
 
@@ -24,7 +24,7 @@ denoted by `hf.toKernel f` such that `κ = ν ⊗ₖ hf.toKernel f`.
 Let `κ : Kernel α (β × ℝ)` and `ν : Kernel α β`.
 
 * `ProbabilityTheory.IsCondKernelCDF`: a function `f : α × β → StieltjesFunction` is called
-  a conditional kernel CDF of `κ` with respect to `ν` if it is measurable, tends to to 0 at -∞ and
+  a conditional kernel CDF of `κ` with respect to `ν` if it is measurable, tends to 0 at -∞ and
   to 1 at +∞ for all `p : α × β`, if `fun b ↦ f (a, b) x` is `(ν a)`-integrable for all `a : α` and
   `x : ℝ` and for all measurable sets `s : Set β`,
   `∫ b in s, f (a, b) x ∂(ν a) = (κ a (s ×ˢ Iic x)).toReal`.
@@ -147,7 +147,7 @@ lemma setLIntegral_stieltjesOfMeasurableRat [IsFiniteKernel κ] (hf : IsRatCondK
       · exact mod_cast ha.le
       · refine le_of_forall_lt_rat_imp_le fun q hq ↦ h q ?_
         exact mod_cast hq
-    · exact fun _ ↦ measurableSet_Iic
+    · exact fun _ ↦ measurableSet_Iic.nullMeasurableSet
     · refine Monotone.directed_ge fun r r' hrr' ↦ Iic_subset_Iic.mpr ?_
       exact mod_cast hrr'
     · obtain ⟨q, hq⟩ := exists_rat_gt x
@@ -172,7 +172,7 @@ lemma setLIntegral_stieltjesOfMeasurableRat [IsFiniteKernel κ] (hf : IsRatCondK
     congr with y
     simp only [mem_iInter, mem_Iic, Subtype.forall, Subtype.coe_mk]
     exact ⟨le_of_forall_lt_rat_imp_le, fun hyx q hq ↦ hyx.trans hq.le⟩
-  · exact fun i ↦ hs.prod measurableSet_Iic
+  · exact fun i ↦ (hs.prod measurableSet_Iic).nullMeasurableSet
   · refine Monotone.directed_ge fun i j hij ↦ ?_
     refine prod_subset_prod_iff.mpr (Or.inl ⟨subset_rfl, Iic_subset_Iic.mpr ?_⟩)
     exact mod_cast hij
@@ -355,7 +355,7 @@ lemma _root_.MeasureTheory.Measure.iInf_rat_gt_prod_Iic {ρ : Measure (α × ℝ
     · refine le_of_forall_lt_rat_imp_le fun q htq ↦ h q ?_
       exact mod_cast htq
     · exact mod_cast hta.le
-  · exact fun _ => hs.prod measurableSet_Iic
+  · exact fun _ => (hs.prod measurableSet_Iic).nullMeasurableSet
   · refine Monotone.directed_ge fun r r' hrr' ↦ prod_subset_prod_iff.mpr (Or.inl ⟨subset_rfl, ?_⟩)
     refine Iic_subset_Iic.mpr ?_
     exact mod_cast hrr'
@@ -420,7 +420,7 @@ section IsCondKernelCDF
 variable {f : α × β → StieltjesFunction}
 
 /-- A function `f : α × β → StieltjesFunction` is called a conditional kernel CDF of `κ` with
-respect to `ν` if it is measurable, tends to to 0 at -∞ and to 1 at +∞ for all `p : α × β`,
+respect to `ν` if it is measurable, tends to 0 at -∞ and to 1 at +∞ for all `p : α × β`,
 `fun b ↦ f (a, b) x` is `(ν a)`-integrable for all `a : α` and `x : ℝ` and for all
 measurable sets `s : Set β`, `∫ b in s, f (a, b) x ∂(ν a) = (κ a (s ×ˢ Iic x)).toReal`. -/
 structure IsCondKernelCDF (f : α × β → StieltjesFunction) (κ : Kernel α (β × ℝ)) (ν : Kernel α β) :
@@ -589,7 +589,7 @@ lemma setLIntegral_toKernel_prod [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ 
     _ = κ a (s ×ˢ univ) - κ a (s ×ˢ t) := by
         rw [setLIntegral_toKernel_univ hf a hs, ht_lintegral]
     _ = κ a (s ×ˢ tᶜ) := by
-        rw [← measure_diff _ (hs.prod ht) (measure_ne_top _ _)]
+        rw [← measure_diff _ (hs.prod ht).nullMeasurableSet (measure_ne_top _ _)]
         · rw [prod_diff_prod, compl_eq_univ_diff]
           simp only [diff_self, empty_prod, union_empty]
         · rw [prod_subset_prod_iff]

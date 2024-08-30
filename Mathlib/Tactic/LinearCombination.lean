@@ -9,10 +9,9 @@ import Mathlib.Tactic.Ring
 # linear_combination Tactic
 
 In this file, the `linear_combination` tactic is created.  This tactic, which
-works over `Ring`s, attempts to simplify the target by creating a linear combination
-of a list of equalities and subtracting it from the target.  This file also includes a
-definition for `linear_combination_config`.  A `linear_combination_config`
-object can be passed into the tactic, allowing the user to specify a
+works over `CommRing`s, attempts to simplify the target by creating a linear combination
+of a list of equalities and subtracting it from the target. A `Syntax.Tactic`
+object can also be passed into the tactic, allowing the user to specify a
 normalization tactic.
 
 ## Implementation Notes

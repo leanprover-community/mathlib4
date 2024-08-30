@@ -482,7 +482,7 @@ We use this variant because the latter is often a different field with an auto-g
 -/
 private def dropPrefixIfNotNumber? (s : String) (pre : Substring) : Option Substring := do
   let ret ← Substring.dropPrefix? s pre
-  -- flag is true when the remaning part is nonempty and starts with a digit.
+  -- flag is true when the remaining part is nonempty and starts with a digit.
   let flag := ret.toString.data.head?.elim false Char.isDigit
   if flag then none else some ret
 
