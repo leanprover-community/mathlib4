@@ -820,6 +820,46 @@ theorem IsLittleO.prod_rightr (h : f =o[l] g') : f =o[l] fun x => (f' x, g' x) :
 
 end
 
+section
+
+variable {f : α × β → E} {g : α × β → F} {l' : Filter β}
+
+protected theorem IsBigO.fiberwise_right :
+    f =O[l ×ˢ l'] g → ∀ᶠ a in l, (f ⟨a, ·⟩) =O[l'] (g ⟨a, ·⟩) := by
+  simp only [isBigO_iff, eventually_iff, mem_prod_iff]
+  rintro ⟨c, t₁, ht₁, t₂, ht₂, ht⟩
+  exact mem_of_superset ht₁ fun _ ha ↦ ⟨c, mem_of_superset ht₂ fun _ hb ↦ ht ⟨ha, hb⟩⟩
+
+protected theorem IsBigO.fiberwise_left :
+    f =O[l ×ˢ l'] g → ∀ᶠ b in l', (f ⟨·, b⟩) =O[l] (g ⟨·, b⟩) := by
+  simp only [isBigO_iff, eventually_iff, mem_prod_iff]
+  rintro ⟨c, t₁, ht₁, t₂, ht₂, ht⟩
+  exact mem_of_superset ht₂ fun _ hb ↦ ⟨c, mem_of_superset ht₁ fun _ ha ↦ ht ⟨ha, hb⟩⟩
+
+end
+
+section
+
+variable (l' : Filter β)
+
+protected theorem IsBigO.comp_fst : f =O[l] g → (f ∘ Prod.fst) =O[l ×ˢ l'] (g ∘ Prod.fst) := by
+  simp only [isBigO_iff, eventually_prod_iff]
+  exact fun ⟨c, hc⟩ ↦ ⟨c, _, hc, fun _ ↦ True, eventually_true l', fun {_} h {_} _ ↦ h⟩
+
+protected theorem IsBigO.comp_snd : f =O[l] g → (f ∘ Prod.snd) =O[l' ×ˢ l] (g ∘ Prod.snd) := by
+  simp only [isBigO_iff, eventually_prod_iff]
+  exact fun ⟨c, hc⟩ ↦ ⟨c, fun _ ↦ True, eventually_true l', _, hc, fun _ ↦ id⟩
+
+protected theorem IsLittleO.comp_fst : f =o[l] g → (f ∘ Prod.fst) =o[l ×ˢ l'] (g ∘ Prod.fst) := by
+  simp only [isLittleO_iff, eventually_prod_iff]
+  exact fun h _ hc ↦ ⟨_, h hc, fun _ ↦ True, eventually_true l', fun {_} h {_} _ ↦ h⟩
+
+protected theorem IsLittleO.comp_snd : f =o[l] g → (f ∘ Prod.snd) =o[l' ×ˢ l] (g ∘ Prod.snd) := by
+  simp only [isLittleO_iff, eventually_prod_iff]
+  exact fun h _ hc ↦ ⟨fun _ ↦ True, eventually_true l', _, h hc, fun _ ↦ id⟩
+
+end
+
 theorem IsBigOWith.prod_left_same (hf : IsBigOWith c l f' k') (hg : IsBigOWith c l g' k') :
     IsBigOWith c l (fun x => (f' x, g' x)) k' := by
   rw [isBigOWith_iff] at *; filter_upwards [hf, hg] with x using max_le
@@ -1949,3 +1989,50 @@ theorem isLittleO_congr (e : α ≃ₜ β) {b : β} {f : β → E} {g : β → F
   exact forall₂_congr fun c _hc => e.isBigOWith_congr
 
 end Homeomorph
+
+namespace ContinuousOn
+
+variable {α E F : Type*} [TopologicalSpace α] {s : Set α} {f : α → E} {c : F}
+
+section IsBigO
+
+variable [SeminormedAddGroup E] [Norm F]
+
+protected theorem isBigOWith_principal
+    (hf : ContinuousOn f s) (hs : IsCompact s) (hc : ‖c‖ ≠ 0) :
+    IsBigOWith (sSup (Norm.norm '' (f '' s)) / ‖c‖) (𝓟 s) f fun _ => c := by
+  rw [isBigOWith_principal, div_mul_cancel₀ _ hc]
+  exact fun x hx ↦ hs.image_of_continuousOn hf |>.image continuous_norm
+   |>.isLUB_sSup (Set.image_nonempty.mpr <| Set.image_nonempty.mpr ⟨x, hx⟩)
+   |>.left <| Set.mem_image_of_mem _ <| Set.mem_image_of_mem _ hx
+
+protected theorem isBigO_principal (hf : ContinuousOn f s) (hs : IsCompact s)
+    (hc : ‖c‖ ≠ 0) : f =O[𝓟 s] fun _ => c :=
+  (hf.isBigOWith_principal hs hc).isBigO
+
+end IsBigO
+
+section IsBigORev
+
+variable [NormedAddGroup E] [SeminormedAddGroup F]
+
+protected theorem isBigOWith_rev_principal
+    (hf : ContinuousOn f s) (hs : IsCompact s) (hC : ∀ i ∈ s, f i ≠ 0) (c : F) :
+    IsBigOWith (‖c‖ / sInf (Norm.norm '' (f '' s))) (𝓟 s) (fun _ => c) f := by
+  refine isBigOWith_principal.mpr fun x hx ↦ ?_
+  rw [mul_comm_div]
+  replace hs := hs.image_of_continuousOn hf |>.image continuous_norm
+  have h_sInf := hs.isGLB_sInf <| Set.image_nonempty.mpr <| Set.image_nonempty.mpr ⟨x, hx⟩
+  refine le_mul_of_one_le_right (norm_nonneg c) <| (one_le_div ?_).mpr <|
+    h_sInf.1 <| Set.mem_image_of_mem _ <| Set.mem_image_of_mem _ hx
+  obtain ⟨_, ⟨x, hx, hCx⟩, hnormCx⟩ := hs.sInf_mem h_sInf.nonempty
+  rw [← hnormCx, ← hCx]
+  exact (norm_ne_zero_iff.mpr (hC x hx)).symm.lt_of_le (norm_nonneg _)
+
+protected theorem isBigO_rev_principal (hf : ContinuousOn f s)
+    (hs : IsCompact s) (hC : ∀ i ∈ s, f i ≠ 0) (c : F) : (fun _ => c) =O[𝓟 s] f :=
+  (hf.isBigOWith_rev_principal hs hC c).isBigO
+
+end IsBigORev
+
+end ContinuousOn
