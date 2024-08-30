@@ -86,12 +86,16 @@ protected def ofFunction : OuterMeasure α :=
         intro j
         apply subset_iUnion₂ i }
 
+/-- `ofFunction` of a set `s` is the infimum of `∑ᵢ, m (tᵢ)` for all collections of sets
+`tᵢ` that cover `s`. -/
 theorem ofFunction_apply (s : Set α) :
     OuterMeasure.ofFunction m m_empty s = ⨅ (t : ℕ → Set α) (_ : s ⊆ iUnion t), ∑' n, m (t n) :=
   rfl
 
-/-- Same as `ofFunction_apply`, except that the sets `t i` satisfy a predicate `P`,
-such that `m` is infinite for sets that don't satisfy `P`.
+/-- `ofFunction` of a set `s` is the infimum of `∑ᵢ, m (tᵢ)` for all collections of sets
+`tᵢ` that cover `s`, with all `tᵢ` satisfying a predicate `P` such that `m` is infinite for sets
+that don't satisfy `P`.
+This is similar to `ofFunction_apply`, except that the sets `tᵢ` satisfy `P`.
 The hypothesis `m_top` applies in particular to a function of the form `extend m'`. -/
 theorem ofFunction_eq_iInf_mem {P : Set α → Prop} (m_top : ∀ s, ¬ P s → m s = ∞) (s : Set α) :
     OuterMeasure.ofFunction m m_empty s =
