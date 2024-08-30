@@ -1081,7 +1081,7 @@ lemma measurable_set_mem (a : α) : Measurable fun s : Set α ↦ a ∈ s := mea
 
 @[aesop safe 100 apply (rule_sets := [Measurable])]
 lemma measurable_set_not_mem (a : α) : Measurable fun s : Set α ↦ a ∉ s :=
-  (measurable_discrete Not).comp <| measurable_set_mem a
+  (Measurable.of_discrete (f := Not)).comp <| measurable_set_mem a
 
 @[aesop safe 100 apply (rule_sets := [Measurable])]
 lemma measurableSet_mem (a : α) : MeasurableSet {s : Set α | a ∈ s} :=
