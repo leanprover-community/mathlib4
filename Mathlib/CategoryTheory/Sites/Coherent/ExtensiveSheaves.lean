@@ -75,7 +75,7 @@ theorem extensiveTopology.subcanonical : Sheaf.Subcanonical (extensiveTopology C
 variable [FinitaryExtensive C]
 
 /--
-A presheaf of sets on a category which is `FinitaryExtensive` is a sheaf iff it preserves finite
+A presheaf of sets on a category which is `FinitaryExtensive` is a sheaf iff it preserves finite
 products.
 -/
 theorem Presieve.isSheaf_iff_preservesFiniteProducts (F : Cᵒᵖ ⥤ Type w) :
@@ -111,7 +111,7 @@ theorem Presieve.isSheaf_iff_preservesFiniteProducts (F : Cᵒᵖ ⥤ Type w) :
     exact isSheafFor_extensive_of_preservesFiniteProducts R F
 
 /--
-A presheaf on a category which is `FinitaryExtensive` is a sheaf iff it preserves finite products.
+A presheaf on a category which is `FinitaryExtensive` is a sheaf iff it preserves finite products.
 -/
 theorem Presheaf.isSheaf_iff_preservesFiniteProducts (F : Cᵒᵖ ⥤ D) :
     IsSheaf (extensiveTopology C) F ↔ Nonempty (PreservesFiniteProducts F) := by
