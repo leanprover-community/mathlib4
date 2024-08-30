@@ -37,6 +37,10 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR: /repos/{owner}/{repo}/pulls/${{ github.event.number }}
 
+      - name: show_topic
+        run: |
+            printf '%s\n' "${{ steps.tlabels.outputs.name }}"
+
       - name: Post report on Zulip
         uses: zulip/github-actions-zulip/send-message@v1
         with:
@@ -45,7 +49,7 @@ jobs:
           organization-url: 'https://leanprover.zulipchat.com'
           to: 'nightly-testing'
           type: 'stream'
-          topic: ${{ steps.tlabels.outputs.name }}"
+          topic: ${{ steps.tlabels.outputs.name }}
           content: ${{ steps.mathlib_stats.outputs.summary }}
 
       #- name: Send message on Zulip
