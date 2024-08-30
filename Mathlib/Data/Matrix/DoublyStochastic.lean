@@ -26,7 +26,7 @@ import Mathlib.LinearAlgebra.Matrix.Permutation
 Doubly stochastic, Birkhoff's theorem, Birkhoff-von Neumann theorem
 -/
 
-open BigOperators Finset Function Matrix
+open Finset Function Matrix
 
 variable {R n : Type*} [Fintype n] [DecidableEq n]
 
@@ -46,7 +46,7 @@ def doublyStochastic (R n : Type*) [Fintype n] [DecidableEq n] [OrderedSemiring 
     next => rw [← vecMul_vecMul, hM.2.2, hN.2.2]
   one_mem' := by simp [zero_le_one_elem]
 
-lemma mem_doublyStochastic_iff_mul :
+lemma mem_doublyStochastic :
     M ∈ doublyStochastic R n ↔ (∀ i j, 0 ≤ M i j) ∧ M *ᵥ 1 = 1 ∧ 1 ᵥ* M = 1 :=
   Iff.rfl
 
@@ -69,11 +69,11 @@ lemma col_sum_doublyStochastic (hM : M ∈ doublyStochastic R n) (j : n) : ∑ i
 
 /-- A doubly stochastic matrix multiplied with the all-ones column vector is 1. -/
 lemma doublyStochastic_mulVec_one (hM : M ∈ doublyStochastic R n) : M *ᵥ 1 = 1 :=
-  (mem_doublyStochastic_iff_mul.1 hM).2.1
+  (mem_doublyStochastic.1 hM).2.1
 
 /-- The all-ones row vector multiplied with a doubly stochastic matrix is 1. -/
 lemma one_vecMul_doublyStochastic (hM : M ∈ doublyStochastic R n) : 1 ᵥ* M = 1 :=
-  (mem_doublyStochastic_iff_mul.1 hM).2.2
+  (mem_doublyStochastic.1 hM).2.2
 
 /-- Every entry of a doubly stochastic matrix is less than or equal to 1. -/
 lemma doublyStochastic_le_one (hM : M ∈ doublyStochastic R n) {i j : n} :
@@ -109,7 +109,7 @@ column sums are equal to `s`.
 This lemma is useful for the proof of Birkhoff's theorem - in particular because it allows scaling
 by nonnegative factors rather than positive ones only.
 -/
-lemma scalar_multiple_of_doublyStochastic_iff {M : Matrix n n R} {s : R} (hs : 0 ≤ s) :
+lemma exists_mem_doublyStochastic_eq_smul_iff {M : Matrix n n R} {s : R} (hs : 0 ≤ s) :
     (∃ M' ∈ doublyStochastic R n, M = s • M') ↔
       (∀ i j, 0 ≤ M i j) ∧ (∀ i, ∑ j, M i j = s) ∧ (∀ j, ∑ i, M i j = s) := by
   classical

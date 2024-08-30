@@ -19,12 +19,16 @@ import Mathlib.Tactic.Linarith
 * `doublyStochastic_eq_convexHull_perm`: The set of doubly stochastic matrices is the convex hull
   of the permutation matrices.
 
+## TODO
+
+Show that the extreme points of doubly stochastic matrices are the permutation matrices.
+
 ## Tags
 
 Doubly stochastic, Birkhoff's theorem, Birkhoff-von Neumann theorem
 -/
 
-open BigOperators Finset Function Matrix
+open Finset Function Matrix
 
 variable {R n : Type*} [Fintype n] [DecidableEq n]
 
@@ -39,7 +43,7 @@ whose support is contained in the support of M.
 private lemma exists_perm_eq_zero_implies_eq_zero [Nonempty n] {s : R} (hs : 0 < s)
     (hM : ∃ M' ∈ doublyStochastic R n, M = s • M') :
     ∃ σ : Equiv.Perm n, ∀ i j, M i j = 0 → σ.permMatrix R i j = 0 := by
-  rw [scalar_multiple_of_doublyStochastic_iff hs.le] at hM
+  rw [exists_mem_doublyStochastic_eq_smul_iff hs.le] at hM
   let f (i : n) : Finset n := univ.filter (M i · ≠ 0)
   have hf (A : Finset n) : A.card ≤ (A.biUnion f).card := by
     have (i) : ∑ j ∈ f i, M i j = s := by simp [sum_subset (filter_subset _ _), hM.2.1]
@@ -67,7 +71,7 @@ section LinearOrderedField
 variable [LinearOrderedField R] {M : Matrix n n R}
 
 /--
-If M is a scalar multiple of a doubly stochastic matrix, then it is an conical combination of
+If M is a scalar multiple of a doubly stochastic matrix, then it is a conical combination of
 permutation matrices. This is most useful when M is a doubly stochastic matrix, in which case
 the combination is convex.
 
@@ -91,7 +95,7 @@ private lemma doublyStochastic_sum_perm_aux (M : Matrix n n R)
     simp [hM]
   obtain ⟨σ, hσ⟩ := exists_perm_eq_zero_implies_eq_zero hs' hM
   obtain ⟨i, hi, hi'⟩ := exists_min_image _ (fun i => M i (σ i)) univ_nonempty
-  rw [scalar_multiple_of_doublyStochastic_iff hs] at hM
+  rw [exists_mem_doublyStochastic_eq_smul_iff hs] at hM
   let N : Matrix n n R := M - M i (σ i) • σ.permMatrix R
   have hMi' : 0 < M i (σ i) := (hM.1 _ _).lt_of_ne' fun h => by
     simpa [Equiv.toPEquiv_apply] using hσ _ _ h
@@ -100,7 +104,7 @@ private lemma doublyStochastic_sum_perm_aux (M : Matrix n n R)
     simp only [s', sub_nonneg, ← hM.2.1 i]
     exact single_le_sum (fun j _ => hM.1 i j) (by simp)
   have : ∃ M' ∈ doublyStochastic R n, N = s' • M' := by
-    rw [scalar_multiple_of_doublyStochastic_iff hs']
+    rw [exists_mem_doublyStochastic_eq_smul_iff hs']
     simp only [sub_apply, smul_apply, PEquiv.toMatrix_apply, Equiv.toPEquiv_apply, Option.mem_def,
       Option.some.injEq, smul_eq_mul, mul_ite, mul_one, mul_zero, sub_nonneg,
       sum_sub_distrib, sum_ite_eq, mem_univ, ↓reduceIte, N]
@@ -135,7 +139,7 @@ If M is a doubly stochastic matrix, then it is an convex combination of permutat
 permutation matrices, and this lemma is most useful for accessing the coefficients of each
 permutation matrices directly.
 -/
-lemma doublyStochastic_eq_sum_perm (hM : M ∈ doublyStochastic R n) :
+lemma exists_eq_sum_perm_of_mem_doublyStochastic (hM : M ∈ doublyStochastic R n) :
     ∃ w : Equiv.Perm n → R, (∀ σ, 0 ≤ w σ) ∧ ∑ σ, w σ = 1 ∧ ∑ σ, w σ • σ.permMatrix R = M := by
   rcases isEmpty_or_nonempty n
   case inl => exact ⟨fun _ => 1, by simp, by simp, Subsingleton.elim _ _⟩
@@ -153,14 +157,14 @@ The set of doubly stochastic matrices is the convex hull of the permutation matr
 `doublyStochastic_sum_perm` gives a convex weighting of each permutation matrix directly.
 To show `doublyStochastic n` is convex, use `convex_doublyStochastic`.
 -/
-theorem doublyStochastic_eq_convexHull_perm :
+theorem doublyStochastic_eq_convexHull_permMatrix :
     doublyStochastic R n = convexHull R {σ.permMatrix R | σ : Equiv.Perm n} := by
   refine (convexHull_min ?g1 convex_doublyStochastic).antisymm' fun M hM => ?g2
   case g1 =>
     rintro x ⟨h, rfl⟩
     exact permMatrix_mem_doublyStochastic
   case g2 =>
-    obtain ⟨w, hw1, hw2, hw3⟩ := doublyStochastic_eq_sum_perm hM
+    obtain ⟨w, hw1, hw2, hw3⟩ := exists_eq_sum_perm_of_mem_doublyStochastic hM
     exact mem_convexHull_of_exists_fintype w (·.permMatrix R) hw1 hw2 (by simp) hw3
 
 end LinearOrderedField
