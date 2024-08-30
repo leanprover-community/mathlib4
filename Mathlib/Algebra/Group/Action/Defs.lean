@@ -354,8 +354,8 @@ lemma smul_smul_smul_comm [SMul α β] [SMul α γ] [SMul β δ] [SMul α δ] [S
     [IsScalarTower α β δ] [IsScalarTower α γ δ] [SMulCommClass β γ δ] (a : α) (b : β) (c : γ)
     (d : δ) : (a • b) • c • d = (a • c) • b • d := by rw [smul_assoc, smul_assoc, smul_comm b]
 
-/-- Note that the `IsScalarTower α β β` and `[SMulCommClass α β β` typeclass arguments are
-usually satisfied by `Algebra α β`. -/
+/-- Note that the `IsScalarTower α β β` and `SMulCommClass α β β` typeclass arguments are usually
+satisfied by `Algebra α β`. -/
 @[to_additive]
 lemma smul_mul_smul_comm [Mul α] [Mul β] [SMul α β] [IsScalarTower α β β]
     [IsScalarTower α α β] [SMulCommClass α β β] (a : α) (b : β) (c : α) (d : β) :
@@ -365,8 +365,8 @@ lemma smul_mul_smul_comm [Mul α] [Mul β] [SMul α β] [IsScalarTower α β β]
 @[to_additive (attr := deprecated (since := "2024-08-29"))]
 alias smul_mul_smul := smul_mul_smul_comm
 
-/-- Note that the `IsScalarTower α β β` and `[SMulCommClass α β β` typeclass arguments are
-usually satisfied by `Algebra α β`. -/
+/-- Note that the `IsScalarTower α β β` and `SMulCommClass α β β` typeclass arguments are usually
+satisfied by `Algebra α β`. -/
 @[to_additive]
 lemma mul_smul_mul_comm [Mul α] [Mul β] [SMul α β] [IsScalarTower α β β]
     [IsScalarTower α α β] [SMulCommClass α β β] (a b : α) (c d : β) :
