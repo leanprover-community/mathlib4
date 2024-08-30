@@ -847,6 +847,10 @@ theorem continuous_inl : Continuous (@inl X Y) := ⟨fun _ => And.left⟩
 -- Porting note: the proof was `continuous_sup_rng_right continuous_coinduced_rng`
 theorem continuous_inr : Continuous (@inr X Y) := ⟨fun _ => And.right⟩
 
+@[fun_prop, continuity]
+lemma continuous_sum_swap : Continuous (@Sum.swap X Y) :=
+  Continuous.sum_elim continuous_inr continuous_inl
+
 theorem isOpen_sum_iff {s : Set (X ⊕ Y)} : IsOpen s ↔ IsOpen (inl ⁻¹' s) ∧ IsOpen (inr ⁻¹' s) :=
   Iff.rfl
 
