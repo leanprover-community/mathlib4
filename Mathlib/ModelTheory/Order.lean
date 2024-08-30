@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
 import Mathlib.ModelTheory.Complexity
+import Mathlib.ModelTheory.Fraisse
 
 /-!
 # Ordered First-Ordered Structures
@@ -36,7 +37,6 @@ namespace FirstOrder
 
 namespace Language
 
-
 open FirstOrder Structure
 
 variable {L : Language.{u, v}} {α : Type w} {M : Type w'} {n : ℕ}
@@ -45,24 +45,37 @@ variable {L : Language.{u, v}} {α : Type w} {M : Type w'} {n : ℕ}
 protected def order : Language :=
   Language.mk₂ Empty Empty Empty Empty Unit
 
-instance orderStructure [LE M] : Language.order.Structure M :=
-  Structure.mk₂ Empty.elim Empty.elim Empty.elim Empty.elim fun _ => (· ≤ ·)
+namespace order
 
-namespace Order
+@[simp]
+lemma forall_relations {P : ∀ (n) (_ : Language.order.Relations n), Prop} :
+    (∀ {n} (R), P n R) ↔ P 2 .unit := ⟨fun h => h _, fun h n R => by
+      match n, R with
+      | 2, .unit => exact h⟩
 
-instance Language.instIsRelational : IsRelational Language.order :=
+instance instIsRelational : IsRelational Language.order :=
   Language.isRelational_mk₂
 
-instance Language.instSubsingleton : Subsingleton (Language.order.Relations n) :=
+instance instSubsingleton : Subsingleton (Language.order.Relations n) :=
   Language.subsingleton_mk₂_relations
 
-end Order
+end order
+
+variable (L)
 
 /-- A language is ordered if it has a symbol representing `≤`. -/
 class IsOrdered (L : Language.{u, v}) where
   leSymb : L.Relations 2
 
 export IsOrdered (leSymb)
+
+variable {L}
+
+instance : IsOrdered Language.order :=
+  ⟨Unit.unit⟩
+
+@[simp]
+lemma order.relation_eq_leSymb {R : Language.order.Relations 2} : R = leSymb := rfl
 
 section IsOrdered
 
@@ -83,10 +96,27 @@ variable (L)
 def orderLHom : Language.order →ᴸ L :=
   LHom.mk₂ Empty.elim Empty.elim Empty.elim Empty.elim fun _ => leSymb
 
-end IsOrdered
+@[simp]
+lemma orderLHom_apply (R : Language.order.Relations 2) : L.orderLHom.onRelation R = leSymb := rfl
 
-instance : IsOrdered Language.order :=
-  ⟨Unit.unit⟩
+variable (M)
+
+/-- A structure is ordered if its language has a `≤` symbol whose interpretation is -/
+class OrderedStructure [LE M] [L.Structure M] : Prop where
+  relMap_leSymb : ∀ (x : Fin 2 → M), RelMap (leSymb : L.Relations 2) x ↔ (x 0 ≤ x 1)
+
+export OrderedStructure (relMap_leSymb)
+
+attribute [simp] relMap_leSymb
+
+instance [LE M] [L.Structure M] [L.OrderedStructure M]
+    [Language.order.Structure M] [Language.order.OrderedStructure M] :
+    LHom.IsExpansionOn (orderLHom L) M where
+  map_onRelation := by simp only [eq_iff_iff, order.forall_relations, order.relation_eq_leSymb,
+    orderLHom_apply, relMap_leSymb, Fin.isValue, implies_true]
+  map_onFunction := fun {n} => (IsRelational.empty_functions _).elim
+
+end IsOrdered
 
 @[simp]
 theorem orderLHom_leSymb [L.IsOrdered] :
@@ -100,12 +130,17 @@ theorem orderLHom_order : orderLHom Language.order = LHom.id Language.order :=
 instance sum.instIsOrdered : IsOrdered (L.sum Language.order) :=
   ⟨Sum.inr IsOrdered.leSymb⟩
 
+/-- Any linearly-ordered type is naturally a structure in the language `Language.order`.
+This is not an instance, because sometimes the `Language.order.Structure` is defined first. -/
+def orderStructure [LE M] : Language.order.Structure M :=
+  Structure.mk₂ Empty.elim Empty.elim Empty.elim Empty.elim fun _ => (· ≤ ·)
+
 section
 
 variable (L) [IsOrdered L]
 
 /-- The theory of preorders. -/
-def preorderTheory : L.Theory :=
+abbrev preorderTheory : L.Theory :=
   {leSymb.reflexive, leSymb.transitive}
 
 instance : Theory.IsUniversal L.preorderTheory := ⟨by
@@ -113,27 +148,22 @@ instance : Theory.IsUniversal L.preorderTheory := ⟨by
   exact ⟨leSymb.isUniversal_reflexive, leSymb.isUniversal_transitive⟩⟩
 
 /-- The theory of partial orders. -/
-def partialOrderTheory : L.Theory :=
-  {leSymb.reflexive, leSymb.antisymmetric, leSymb.transitive}
+abbrev partialOrderTheory : L.Theory := insert leSymb.antisymmetric L.preorderTheory
 
 instance : Theory.IsUniversal L.partialOrderTheory := ⟨by
   simp only [partialOrderTheory,
     Set.mem_insert_iff, Set.mem_singleton_iff, forall_eq_or_imp, forall_eq]
-  exact ⟨leSymb.isUniversal_reflexive, leSymb.isUniversal_antisymmetric,
+  exact ⟨leSymb.isUniversal_antisymmetric, leSymb.isUniversal_reflexive,
     leSymb.isUniversal_transitive⟩⟩
 
 /-- The theory of linear orders. -/
-def linearOrderTheory : L.Theory :=
-  {leSymb.reflexive, leSymb.antisymmetric, leSymb.transitive, leSymb.total}
+abbrev linearOrderTheory : L.Theory := insert leSymb.total L.partialOrderTheory
 
 instance : Theory.IsUniversal L.linearOrderTheory := ⟨by
   simp only [linearOrderTheory,
     Set.mem_insert_iff, Set.mem_singleton_iff, forall_eq_or_imp, forall_eq]
-  exact ⟨leSymb.isUniversal_reflexive, leSymb.isUniversal_antisymmetric,
-    leSymb.isUniversal_transitive, leSymb.isUniversal_total⟩⟩
-
-example [L.Structure M] [M ⊨ L.linearOrderTheory] (S : L.Substructure M) :
-    S ⊨ L.linearOrderTheory := inferInstance
+  exact ⟨leSymb.isUniversal_total, leSymb.isUniversal_antisymmetric, leSymb.isUniversal_reflexive,
+    leSymb.isUniversal_transitive⟩⟩
 
 /-- A sentence indicating that an order has no top element:
 $\forall x, \exists y, \neg y \le x$.   -/
@@ -151,75 +181,122 @@ def denselyOrderedSentence : L.Sentence :=
   ∀'∀'((&0).lt &1 ⟹ ∃'((&0).lt &2 ⊓ (&2).lt &1))
 
 /-- The theory of dense linear orders without endpoints. -/
-def dlo : L.Theory :=
+abbrev dlo : L.Theory :=
   L.linearOrderTheory ∪ {L.noTopOrderSentence, L.noBotOrderSentence, L.denselyOrderedSentence}
+
+variable [L.Structure M]
+
+instance [h : M ⊨ L.dlo] : M ⊨ L.linearOrderTheory := h.mono Set.subset_union_left
+
+instance [h : M ⊨ L.linearOrderTheory] : M ⊨ L.partialOrderTheory := h.mono (Set.subset_insert _ _)
+
+instance [h : M ⊨ L.partialOrderTheory] : M ⊨ L.preorderTheory := h.mono (Set.subset_insert _ _)
 
 end
 
-variable (L M)
-
-/-- A structure is ordered if its language has a `≤` symbol whose interpretation is -/
-abbrev OrderedStructure [IsOrdered L] [LE M] [L.Structure M] : Prop :=
-  LHom.IsExpansionOn (orderLHom L) M
-
-variable {L M}
+instance [IsOrdered L] [LE M] [Language.order.Structure M] [Language.order.OrderedStructure M]
+    [L.Structure M] [(orderLHom L).IsExpansionOn M] : L.OrderedStructure M where
+  relMap_leSymb := fun x => by
+    rw [← orderLHom_apply L leSymb, LHom.IsExpansionOn.map_onRelation, relMap_leSymb]
 
 @[simp]
-theorem orderedStructure_iff [IsOrdered L] [LE M] [L.Structure M] :
+theorem orderedStructure_iff [IsOrdered L] [LE M]
+    [Language.order.Structure M] [Language.order.OrderedStructure M] [L.Structure M] :
     L.OrderedStructure M ↔ LHom.IsExpansionOn (orderLHom L) M :=
-  Iff.rfl
+  ⟨fun _ => inferInstance, fun _ => inferInstance⟩
 
-instance orderedStructure_LE [LE M] : OrderedStructure Language.order M := by
-  rw [orderedStructure_iff, orderLHom_order]
-  exact LHom.id_isExpansionOn M
+section models_from_orders
 
-instance model_preorder [Preorder M] : M ⊨ Language.order.preorderTheory := by
-  simp only [preorderTheory, Theory.model_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
+variable [L.IsOrdered] [L.Structure M]
+
+instance model_preorder [Preorder M] [L.OrderedStructure M] :
+    M ⊨ L.preorderTheory := by
+  simp only [Theory.model_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
     forall_eq_or_imp, Relations.realize_reflexive, relMap_apply₂, forall_eq,
-    Relations.realize_transitive]
+    Relations.realize_transitive, relMap_leSymb]
   exact ⟨le_refl, fun _ _ _ => le_trans⟩
 
-instance model_partialOrder [PartialOrder M] : M ⊨ Language.order.partialOrderTheory := by
-  simp only [partialOrderTheory, Theory.model_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
+instance model_partialOrder [PartialOrder M] [L.OrderedStructure M] :
+    M ⊨ L.partialOrderTheory := by
+  simp only [Theory.model_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
     forall_eq_or_imp, Relations.realize_reflexive, relMap_apply₂, Relations.realize_antisymmetric,
-    forall_eq, Relations.realize_transitive]
-  exact ⟨le_refl, fun _ _ => le_antisymm, fun _ _ _ => le_trans⟩
+    forall_eq, Relations.realize_transitive, relMap_leSymb]
+  exact ⟨fun _ _ => le_antisymm, le_refl, fun _ _ _ => le_trans⟩
 
-instance model_linearOrder [LinearOrder M] : M ⊨ Language.order.linearOrderTheory := by
-  simp only [linearOrderTheory, Theory.model_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
+instance model_linearOrder [LinearOrder M] [L.OrderedStructure M] :
+    M ⊨ L.linearOrderTheory := by
+  simp only [Theory.model_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
     forall_eq_or_imp, Relations.realize_reflexive, relMap_apply₂, Relations.realize_antisymmetric,
-    Relations.realize_transitive, forall_eq, Relations.realize_total]
-  exact ⟨le_refl, fun _ _ => le_antisymm, fun _ _ _ => le_trans, le_total⟩
+    Relations.realize_transitive, forall_eq, Relations.realize_total, relMap_leSymb]
+  exact ⟨le_total, fun _ _ => le_antisymm, le_refl, fun _ _ _ => le_trans⟩
 
-section OrderedStructure
+end models_from_orders
+
+section orders_from_models
+
+variable (L) [IsOrdered L] (M) [L.Structure M]
+
+/-- Any structure in an ordered language can be ordered correspondingly. -/
+abbrev leOfStructure : LE M where
+  le := fun a b => Structure.RelMap (leSymb : L.Relations 2) ![a,b]
+
+instance : @OrderedStructure L M _ (L.leOfStructure M) _ := by
+  letI := L.leOfStructure M
+  constructor
+  simp only [Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.forall_fin_zero_pi]
+  intros
+  rfl
+
+instance [DecidableRel (fun (a b : M) => Structure.RelMap (leSymb : L.Relations 2) ![a,b])] :
+    DecidableRel (@LE.le M (L.leOfStructure M)) := by
+  letI := L.leOfStructure M
+  infer_instance
+
+def preorderOfModels [h : M ⊨ L.preorderTheory] : Preorder M where
+  __ := L.leOfStructure M
+  le_refl := Relations.realize_reflexive.1 ((Theory.model_iff _).1 h _
+    (by simp only [Set.mem_insert_iff, Set.mem_singleton_iff, true_or]))
+  le_trans := Relations.realize_transitive.1 ((Theory.model_iff _).1 h _
+    (by simp only [Set.mem_insert_iff, Set.mem_singleton_iff, or_true]))
+
+def partialOrderOfModels [h : M ⊨ L.partialOrderTheory] : PartialOrder M where
+  __ := L.preorderOfModels M
+  le_antisymm := Relations.realize_antisymmetric.1 ((Theory.model_iff _).1 h _
+    (by simp only [Set.mem_insert_iff, Set.mem_singleton_iff, true_or]))
+
+def linearOrderOfModels [h : M ⊨ L.linearOrderTheory]
+    [DecidableRel (fun (a b : M) => Structure.RelMap (leSymb : L.Relations 2) ![a,b])] :
+    LinearOrder M where
+  __ := L.partialOrderOfModels M
+  le_total := Relations.realize_total.1 ((Theory.model_iff _).1 h _
+    (by simp only [Set.mem_insert_iff, Set.mem_singleton_iff, true_or]))
+  decidableLE := inferInstance
+
+end orders_from_models
+
+namespace Term
 
 variable [IsOrdered L] [L.Structure M]
 
 @[simp]
-theorem relMap_leSymb [LE M] [L.OrderedStructure M] {a b : M} :
-    RelMap (leSymb : L.Relations 2) ![a, b] ↔ a ≤ b := by
-  rw [← orderLHom_leSymb, LHom.map_onRelation]
-  rfl
-
-@[simp]
-theorem Term.realize_le [LE M] [L.OrderedStructure M] {t₁ t₂ : L.Term (α ⊕ (Fin n))} {v : α → M}
+theorem realize_le [LE M] [L.OrderedStructure M] {t₁ t₂ : L.Term (α ⊕ (Fin n))} {v : α → M}
     {xs : Fin n → M} :
     (t₁.le t₂).Realize v xs ↔ t₁.realize (Sum.elim v xs) ≤ t₂.realize (Sum.elim v xs) := by
   simp [Term.le]
 
 @[simp]
-theorem Term.realize_lt [Preorder M] [L.OrderedStructure M] {t₁ t₂ : L.Term (α ⊕ (Fin n))}
+theorem realize_lt [Preorder M] [L.OrderedStructure M] {t₁ t₂ : L.Term (α ⊕ (Fin n))}
     {v : α → M} {xs : Fin n → M} :
     (t₁.lt t₂).Realize v xs ↔ t₁.realize (Sum.elim v xs) < t₂.realize (Sum.elim v xs) := by
   simp [Term.lt, lt_iff_le_not_le]
 
-end OrderedStructure
+end Term
 
 section LE
 
-variable [LE M]
+variable [L.IsOrdered] [L.Structure M] [LE M] [L.OrderedStructure M]
 
-theorem realize_noTopOrder_iff : M ⊨ Language.order.noTopOrderSentence ↔ NoTopOrder M := by
+theorem realize_noTopOrder_iff : M ⊨ L.noTopOrderSentence ↔ NoTopOrder M := by
   simp only [noTopOrderSentence, Sentence.Realize, Formula.Realize, BoundedFormula.realize_all,
     BoundedFormula.realize_ex, BoundedFormula.realize_not, Term.realize, Term.realize_le,
     Sum.elim_inr]
@@ -228,10 +305,10 @@ theorem realize_noTopOrder_iff : M ⊨ Language.order.noTopOrderSentence ↔ NoT
   exact exists_not_le a
 
 @[simp]
-theorem realize_noTopOrder [h : NoTopOrder M] : M ⊨ Language.order.noTopOrderSentence :=
+theorem realize_noTopOrder [h : NoTopOrder M] : M ⊨ L.noTopOrderSentence :=
   realize_noTopOrder_iff.2 h
 
-theorem realize_noBotOrder_iff : M ⊨ Language.order.noBotOrderSentence ↔ NoBotOrder M := by
+theorem realize_noBotOrder_iff : M ⊨ L.noBotOrderSentence ↔ NoBotOrder M := by
   simp only [noBotOrderSentence, Sentence.Realize, Formula.Realize, BoundedFormula.realize_all,
     BoundedFormula.realize_ex, BoundedFormula.realize_not, Term.realize, Term.realize_le,
     Sum.elim_inr]
@@ -240,13 +317,29 @@ theorem realize_noBotOrder_iff : M ⊨ Language.order.noBotOrderSentence ↔ NoB
   exact exists_not_ge a
 
 @[simp]
-theorem realize_noBotOrder [h : NoBotOrder M] : M ⊨ Language.order.noBotOrderSentence :=
+theorem realize_noBotOrder [h : NoBotOrder M] : M ⊨ L.noBotOrderSentence :=
   realize_noBotOrder_iff.2 h
+
+variable (L) (M)
+
+theorem noTopOrder_of_dlo [h: M ⊨ L.dlo] : NoTopOrder M :=
+  realize_noTopOrder_iff.1 (L.dlo.realize_sentence_of_mem (by
+    simp only [Set.union_insert, Set.union_singleton, Set.mem_insert_iff, Set.mem_singleton_iff,
+      true_or]))
+
+theorem noBotOrder_of_dlo [h: M ⊨ L.dlo] : NoBotOrder M :=
+  realize_noBotOrder_iff.1 (L.dlo.realize_sentence_of_mem (by
+    simp only [Set.union_insert, Set.union_singleton, Set.mem_insert_iff, Set.mem_singleton_iff,
+      true_or, or_true]))
 
 end LE
 
-theorem realize_denselyOrdered_iff [Preorder M] :
-    M ⊨ Language.order.denselyOrderedSentence ↔ DenselyOrdered M := by
+section Preorder
+
+variable [L.IsOrdered] [L.Structure M] [Preorder M] [L.OrderedStructure M]
+
+theorem realize_denselyOrdered_iff :
+    M ⊨ L.denselyOrderedSentence ↔ DenselyOrdered M := by
   simp only [denselyOrderedSentence, Sentence.Realize, Formula.Realize,
     BoundedFormula.realize_imp, BoundedFormula.realize_all, Term.realize, Term.realize_lt,
     Sum.elim_inr, BoundedFormula.realize_ex, BoundedFormula.realize_inf]
@@ -255,17 +348,47 @@ theorem realize_denselyOrdered_iff [Preorder M] :
   exact exists_between ab
 
 @[simp]
-theorem realize_denselyOrdered [Preorder M] [h : DenselyOrdered M] :
-    M ⊨ Language.order.denselyOrderedSentence :=
+theorem realize_denselyOrdered [h : DenselyOrdered M] :
+    M ⊨ L.denselyOrderedSentence :=
   realize_denselyOrdered_iff.2 h
 
-instance model_dlo [LinearOrder M] [DenselyOrdered M] [NoTopOrder M] [NoBotOrder M] :
-    M ⊨ Language.order.dlo := by
-  simp only [dlo, Set.union_insert, Set.union_singleton, Theory.model_iff, Set.mem_insert_iff,
-    forall_eq_or_imp, realize_noTopOrder, realize_noBotOrder, realize_denselyOrdered,
-    true_and_iff]
-  rw [← Theory.model_iff]
-  infer_instance
+end Preorder
+
+instance model_dlo [L.IsOrdered] [L.Structure M] [LinearOrder M] [DenselyOrdered M]
+    [NoTopOrder M] [NoBotOrder M] [L.OrderedStructure M] :
+    M ⊨ L.dlo := by
+  simp only [Set.union_insert, Set.union_singleton, Theory.model_iff, Set.mem_insert_iff,
+    Set.mem_singleton_iff, forall_eq_or_imp, realize_noTopOrder, realize_noBotOrder,
+    realize_denselyOrdered, Relations.realize_total, relMap_leSymb, Fin.isValue,
+    Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons, Relations.realize_antisymmetric,
+    Relations.realize_reflexive, forall_eq, Relations.realize_transitive, true_and]
+  exact ⟨le_total, fun _ _ => le_antisymm, le_refl, fun _ _ _ => le_trans⟩
+
+instance [Language.order.Structure M] [LE M] [Language.order.OrderedStructure M]
+    {N : Type*} [Language.order.Structure N] [LE N] [Language.order.OrderedStructure N] :
+    Language.order.StrongHomClass (M ↪o N) M N :=
+  ⟨fun _ => (IsRelational.empty_functions _).elim,
+    by simp only [order.forall_relations, order.relation_eq_leSymb, relMap_leSymb, Fin.isValue,
+    Function.comp_apply, RelEmbedding.map_rel_iff, implies_true]⟩
+
+lemma dlo_age (M : Type w)
+    [Language.order.Structure M] [Mdlo : M ⊨ Language.order.dlo] [Infinite M] :
+    Language.order.age M = {M : CategoryTheory.Bundled.{w} Language.order.Structure |
+      Finite M ∧ M ⊨ Language.order.linearOrderTheory} := by
+  rw [age]
+  ext N
+  haveI : M ⊨ Language.order.linearOrderTheory :=
+      Theory.Model.mono Mdlo Set.subset_union_left
+  refine ⟨fun ⟨hF, h⟩ => ⟨hF.finite, Theory.IsUniversal.models_of_embedding h.some⟩,
+    fun ⟨hF, h⟩ => ⟨FG.of_finite, ?_⟩⟩
+  haveI : DecidableRel fun (a b : M) ↦ RelMap (leSymb : Language.order.Relations 2) ![a, b] :=
+    Classical.decRel _
+  haveI : DecidableRel fun (a b : N) ↦ RelMap (leSymb : Language.order.Relations 2) ![a, b] :=
+    Classical.decRel _
+  letI := Language.order.linearOrderOfModels M
+  letI := Language.order.linearOrderOfModels N
+  haveI : Language.order.OrderedStructure N := inferInstance
+  exact ⟨StrongHomClass.toEmbedding (nonempty_orderEmbedding_of_finite_infinite N M).some⟩
 
 end Language
 
