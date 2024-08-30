@@ -73,7 +73,7 @@ abbrev mk : M → M ⧸ N :=
 theorem mk_eq_zero' {m : M} : mk (N := N) m = 0 ↔ m ∈ N :=
   Submodule.Quotient.mk_eq_zero N.toSubmodule
 
-theorem is_quotient_mk (m : M) : Quotient.mk'' m = (mk m : M ⧸ N) :=
+theorem is_quotient_mk (m : M) : ⟦m⟧ = (mk m : M ⧸ N) :=
   rfl
 
 variable [LieAlgebra R L] [LieModule R L M] (I J : LieIdeal R L)
