@@ -15,7 +15,7 @@ jobs:
 
     - name: Get labels
       run: |
-          labels="$(gh api --jq '.labels.[].name' /repos/{owner}/{repo}/pulls/${{ github.event.number }})"
+          labels="$(gh api --jq '.labels.[].name' "${PR}")"
           printf 'Labels:\n---\n%s\n---\n' "${labels}"
           #topic="generic"
           #printf '%s' "${labels}" | grep "^t-"
@@ -37,3 +37,4 @@ jobs:
           echo "name=topic::maintainer merge: ${topic}" #>> "$GITHUB_OUTPUT"
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        PR: /repos/{owner}/{repo}/pulls/${{ github.event.number }}
