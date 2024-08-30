@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
 import Mathlib.MeasureTheory.MeasurableSpace.Basic
+import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Topology.Constructions
 
 open MeasureTheory
@@ -77,58 +78,67 @@ end continuity
 
 end Generality
 
--- section Nat
+section Nat
 
--- variable {X : ℕ → Type*}
+variable {X : ℕ → Type*}
 
--- /-- Given a dependent function indexed by `ℕ`, specialize it as a function on `Iic n`. -/
--- @[simp]
--- def projNat (n : ℕ) := @proj ℕ X (Set.Iic n)
+/-- Given a dependent function indexed by `ℕ`, specialize it as a function on `Iic n`. -/
+@[simp]
+def projNat (n : ℕ) := @proj ℕ X (Set.Iic n)
 
--- /-- Given a dependent function indexed by `Iic n`, specialize it as a function on `Iic m` when
--- `m ≤ n`. -/
--- @[simp]
--- def projNat_le {m n : ℕ} (hmn : m ≤ n) := proj₂ (X := X) (Set.Iic_subset_Iic.2 hmn)
+/-- Given a dependent function indexed by `Iic n`, specialize it as a function on `Iic m` when
+`m ≤ n`. -/
+@[simp]
+def projNat₂ {m n : ℕ} (hmn : m ≤ n) := proj₂ (X := X) (Set.Iic_subset_Iic.2 hmn)
 
--- theorem projNat_le_comp_projNat {m n : ℕ} (hmn : m ≤ n) :
---     (projNat_le hmn) ∘ (@projNat X n) = projNat m := rfl
+/-- Given a dependent function indexed by `ℕ`, specialize it as a function on `Iic n`. This is
+different from `projNat n`, as the latter is gives a function indexed by `Set.Iic n` while the
+former gives a function indexed by `↑(Finset.Iic n)`. Those sets are equal but not
+definitionally. -/
+@[simp]
+def fprojNat (n : ℕ) := @proj ℕ X (Finset.Iic n)
 
--- /-- Given a dependent function indexed by `Iic n`, specialize it as a function on `Iic m` when
--- `m ≤ n`, `Finset` version. -/
--- @[simp]
--- abbrev fprojNat_le {m n : ℕ} (hmn : m ≤ n) := fproj₂ (X := X) (Finset.Iic_subset_Iic.2 hmn)
+/-- Given a dependent function indexed by `Iic n`, specialize it as a function on `Iic m` when
+`m ≤ n`, `Finset` version. -/
+@[simp]
+def fprojNat₂ {m n : ℕ} (hmn : m ≤ n) := fproj₂ (X := X) (Finset.Iic_subset_Iic.2 hmn)
 
--- theorem fprojNat_le_comp_fprojNat {m n : ℕ} (hmn : m ≤ n) :
---     (fprojNat_le hmn) ∘ (@fprojNat X n) = fprojNat m := rfl
+theorem projNat₂_comp_projNat {m n : ℕ} (hmn : m ≤ n) :
+    (projNat₂ hmn) ∘ (@projNat X n) = projNat m := rfl
 
--- section measurability
+theorem fprojNat₂_comp_fprojNat {m n : ℕ} (hmn : m ≤ n) :
+    (fprojNat₂ hmn) ∘ (@fprojNat X n) = fprojNat m := rfl
 
--- variable [∀ n, MeasurableSpace (X n)]
+section measurability
 
--- theorem measurable_projNat (n : ℕ) : Measurable (@projNat X n) := measurable_proj _
+variable [∀ n, MeasurableSpace (X n)]
 
--- theorem measurable_projNat_le {m n : ℕ} (hmn : m ≤ n) : Measurable (projNat_le (X := X) hmn) :=
---   measurable_proj₂ _
+theorem measurable_projNat (n : ℕ) : Measurable (@projNat X n) := measurable_proj _
 
--- theorem measurable_fprojNat (n : ℕ) : Measurable (@fprojNat X n) := measurable_fproj _
+theorem measurable_projNat₂ {m n : ℕ} (hmn : m ≤ n) : Measurable (projNat₂ (X := X) hmn) :=
+  measurable_proj₂ _
 
--- theorem measurable_fprojNat_le {m n : ℕ} (hmn : m ≤ n) : Measurable (fprojNat_le (X := X) hmn) :=
---   measurable_fproj₂ _
+theorem measurable_fprojNat (n : ℕ) : Measurable (@fprojNat X n) := measurable_proj _
 
--- end measurability
+theorem measurable_fprojNat₂ {m n : ℕ} (hmn : m ≤ n) : Measurable (fprojNat₂ (X := X) hmn) :=
+  measurable_fproj₂ _
 
--- section continuity
+end measurability
 
--- variable [∀ n, TopologicalSpace (X n)]
+section continuity
 
--- theorem continuous_projNat (n : ℕ) : Continuous (@projNat X n) := continuous_proj _
+variable [∀ n, TopologicalSpace (X n)]
 
--- theorem continuous_projNat_le {m n : ℕ} (hmn : m ≤ n) : Continuous (projNat_le (X := X) hmn) :=
---   continuous_proj₂ _
+theorem continuous_projNat (n : ℕ) : Continuous (@projNat X n) := continuous_proj _
 
--- theorem continuous_fprojNat (n : ℕ) : Continuous (@fprojNat X n) := continuous_fproj _
+theorem continuous_projNat₂ {m n : ℕ} (hmn : m ≤ n) : Continuous (projNat₂ (X := X) hmn) :=
+  continuous_proj₂ _
 
--- theorem continuous_fprojNat_le {m n : ℕ} (hmn : m ≤ n) : Continuous (fprojNat_le (X := X) hmn) :=
---   continuous_fproj₂ _
+theorem continuous_fprojNat (n : ℕ) : Continuous (@fprojNat X n) := continuous_proj _
 
--- end continuity
+theorem continuous_fprojNat₂ {m n : ℕ} (hmn : m ≤ n) : Continuous (fprojNat₂ (X := X) hmn) :=
+  continuous_fproj₂ _
+
+end continuity
+
+end Nat
