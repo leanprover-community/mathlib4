@@ -347,7 +347,7 @@ theorem norm_eq_iInf_iff_inner_eq_zero {u : E} {v : E} (hv : v ∈ K) :
       exact zero_re'
     exact (norm_eq_iInf_iff_real_inner_eq_zero K' hv).2 this
 
-/-- A subspace `K : Submodule 𝕜 E` has an orthogonal projection if evey vector `v : E` admits an
+/-- A subspace `K : Submodule 𝕜 E` has an orthogonal projection if every vector `v : E` admits an
 orthogonal projection to `K`. -/
 class HasOrthogonalProjection (K : Submodule 𝕜 E) : Prop where
   exists_orthogonal (v : E) : ∃ w ∈ K, v - w ∈ Kᗮ

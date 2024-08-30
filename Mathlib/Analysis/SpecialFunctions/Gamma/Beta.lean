@@ -270,7 +270,7 @@ theorem GammaSeq_eq_approx_Gamma_integral {s : ℂ} (hs : 0 < re s) {n : ℕ} (h
       mul_cpow_ofReal_nonneg hx.1.le (Nat.cast_pos.mpr (Nat.pos_of_ne_zero hn)).le]
   rw [A, B, cpow_natCast]; ring
 
-/-- The main techical lemma for `GammaSeq_tendsto_Gamma`, expressing the integral defining the
+/-- The main technical lemma for `GammaSeq_tendsto_Gamma`, expressing the integral defining the
 Gamma function for `0 < re s` as the limit of a sequence of integrals over finite intervals. -/
 theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
     Tendsto (fun n : ℕ => ∫ x : ℝ in (0)..n, ((1 - x / n) ^ n : ℝ) * (x : ℂ) ^ (s - 1)) atTop
