@@ -181,7 +181,7 @@ lemma iCondIndepSets_iff (π : ι → Set (Set Ω)) (hπ : ∀ i s (_hs : s ∈ 
     have h_ne_top : condexpKernel μ m' ω (⋂ i ∈ s, f i) ≠ ∞ :=
       (measure_ne_top (condexpKernel μ m' ω) _)
     have : (∏ i ∈ s, condexpKernel μ m' ω (f i)) ≠ ∞ :=
-      (ENNReal.prod_lt_top (fun _ _ ↦ measure_ne_top (condexpKernel μ m' ω) _)).ne
+      ENNReal.prod_ne_top fun _ _ ↦ measure_ne_top (condexpKernel μ m' ω) _
     rw [← ENNReal.ofReal_toReal h_ne_top, h_inter_eq, h, Finset.prod_apply,
       ← ENNReal.ofReal_toReal this, ENNReal.toReal_prod]
     congr 1
