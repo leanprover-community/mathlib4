@@ -367,6 +367,26 @@ theorem sumAssoc_symm_apply_inr_inl {α β γ} (b) :
 theorem sumAssoc_symm_apply_inr_inr {α β γ} (c) : (sumAssoc α β γ).symm (inr (inr c)) = inr c :=
   rfl
 
+/-- Four-way commutativity of `sum`. The name matches `add_add_add_comm`. -/
+@[simps apply]
+def sumSumSumComm (α β γ δ) : (α ⊕ β) ⊕ γ ⊕ δ ≃ (α ⊕ γ) ⊕ β ⊕ δ where
+  toFun :=
+    (sumAssoc (α ⊕ γ) β δ) ∘ (Sum.map (sumAssoc α γ β).symm (@id δ))
+      ∘ (Sum.map (Sum.map (@id α) (sumComm β γ)) (@id δ))
+      ∘ (Sum.map (sumAssoc α β γ) (@id δ))
+      ∘ (sumAssoc (α ⊕ β) γ δ).symm
+  invFun :=
+    (sumAssoc (α ⊕ β) γ δ) ∘ (Sum.map (sumAssoc α β γ).symm (@id δ))
+      ∘ (Sum.map (Sum.map (@id α) (sumComm β γ).symm) (@id δ))
+      ∘ (Sum.map (sumAssoc α γ β) (@id δ))
+      ∘ (sumAssoc (α ⊕ γ) β δ).symm
+  left_inv x := by simp [Function.comp]
+  right_inv x := by simp [Function.comp]
+
+@[simp]
+theorem sumSumSumComm_symm (α β γ δ) : (sumSumSumComm α β γ δ).symm = sumSumSumComm α γ β δ :=
+  rfl
+
 /-- Sum with `IsEmpty` is equivalent to the original type. -/
 @[simps symm_apply]
 def sumEmpty (α β) [IsEmpty β] : α ⊕ β ≃ α where
