@@ -421,11 +421,11 @@ theorem isFraisseLimit_of_countable_infinite
     exact fun hS => Cardinal.mk_le_aleph0
   ultrahomogeneous := by
     intro S hS f
-    haveI : Finite S := hS.finite
-    haveI : Infinite { x // x ∉ S } := (Set.Finite.infinite_compl (Set.toFinite _)).to_subtype
-    haveI : Finite f.toHom.range :=
+    have : Finite S := hS.finite
+    have : Infinite { x // x ∉ S } := (Set.Finite.infinite_compl (Set.toFinite _)).to_subtype
+    have : Finite f.toHom.range :=
       (Structure.FG.range ((Substructure.fg_iff_structure_fg S).1 hS) _).finite
-    haveI : Infinite { x // x ∉ f.toHom.range } :=
+    have : Infinite { x // x ∉ f.toHom.range } :=
       (Set.Finite.infinite_compl (Set.toFinite _)).to_subtype
     refine ⟨StrongHomClass.toEquiv (@Equiv.subtypeCongr _ _ _ (Classical.decPred _)
       (Classical.decPred _) f.equivRange.toEquiv (nonempty_equiv_of_countable).some), ?_⟩
@@ -438,7 +438,7 @@ theorem isFraisseLimit_of_countable_infinite
 
 /-- The class of finite structures in the empty language is Fraïssé. -/
 theorem isFraisse_finite : IsFraisse { S : Bundled.{w} Language.empty.Structure | Finite S } := by
-  haveI : Language.empty.Structure (ULift ℕ : Type w) := emptyStructure
+  have : Language.empty.Structure (ULift ℕ : Type w) := emptyStructure
   exact (isFraisseLimit_of_countable_infinite (ULift ℕ)).isFraisse
 
 end empty
