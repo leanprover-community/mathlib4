@@ -109,7 +109,7 @@ instance (W : MorphismProperty C) (D : Type*) [Category D] : Category (FunctorsI
 @[ext]
 lemma FunctorsInverting.hom_ext {W : MorphismProperty C} {F₁ F₂ : FunctorsInverting W D}
     {α β : F₁ ⟶ F₂} (h : α.hom.app = β.hom.app) : α = β :=
-  FullSubcategory.hom_ext (NatTrans.ext _ _ h)
+  FullSubcategory.hom_ext (NatTrans.ext h)
 
 /-- A constructor for `W.FunctorsInverting D` -/
 def FunctorsInverting.mk {W : MorphismProperty C} {D : Type*} [Category D] (F : C ⥤ D)
