@@ -106,9 +106,7 @@ namespace CoproductsFromFiniteFiltered
 
 variable [HasFiniteCoproducts C] [HasFilteredColimitsOfSize.{w, w} C]
 
-@[local instance, nolint docBlame]
-theorem liftToFinsetColimIsoInstnace : HasColimitsOfShape (Discrete α) C :=
-  hasCoproducts_of_finite_and_filtered α
+attribute [local instance] hasCoproducts_of_finite_and_filtered
 
 /-- Helper construction for `liftToFinsetColimIso`. -/
 @[reassoc]
