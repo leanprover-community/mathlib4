@@ -258,7 +258,7 @@ theorem countable_setOf_finite_subset {s : Set α} (hs : s.Countable) :
   exact mem_range_self _
 
 /-- The set of finite sets in a countable type is countable. -/
-theorem countable_setOf_finite [Countable α] : {s : Set α | s.Finite}.Countable := by
+theorem Countable.setOf_finite [Countable α] : {s : Set α | s.Finite}.Countable := by
   simpa using countable_setOf_finite_subset countable_univ
 
 theorem countable_univ_pi {π : α → Type*} [Finite α] {s : ∀ a, Set (π a)}

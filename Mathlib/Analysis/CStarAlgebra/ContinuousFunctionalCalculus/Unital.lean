@@ -107,7 +107,7 @@ b = cfc id b = cfc (NNReal.sqrt ∘ (· ^ 2)) b =
 + `cfc : (R → R) → A → A`: an unbundled version of `cfcHom` which takes the junk value `0` when
   `cfcHom` is not defined.
 + `cfcUnits`: builds a unit from `cfc f a` when `f` is nonzero and continuous on the
-  specturm of `a`.
+  spectrum of `a`.
 
 ## Main theorems
 
@@ -580,7 +580,7 @@ lemma cfc_comp_smul {S : Type*} [SMul S R] [ContinuousConstSMul S R] [SMulZeroCl
   rw [cfc_comp' .., cfc_smul_id ..]
 
 lemma cfc_comp_const_mul (r : R) (f : R → R) (a : A)
-    (hf : ContinuousOn f ((r * ·) '' (spectrum R a)) := by cfc_cont_tac)  (ha : p a := by cfc_tac) :
+    (hf : ContinuousOn f ((r * ·) '' (spectrum R a)) := by cfc_cont_tac) (ha : p a := by cfc_tac) :
     cfc (f <| r * ·) a = cfc f (r • a) := by
   rw [cfc_comp' .., cfc_const_mul_id ..]
 
