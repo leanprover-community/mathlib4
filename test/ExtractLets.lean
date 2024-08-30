@@ -32,7 +32,6 @@ example (h : let x := 1; let y := 2; x + 1 = y) : True := by
 
 example (h : let x := 1; let y := 2; x + 1 = y) : True := by
   extract_lets x at h
-  intros
   guard_hyp x : Nat := 1
   guard_hyp h :ₛ let y := 2; x + 1 = y
   trivial

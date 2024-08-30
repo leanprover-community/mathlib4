@@ -345,7 +345,7 @@ theorem mul_ofDigits (n : ℕ) {b : ℕ} {l : List ℕ} :
     rw [List.map_cons, ofDigits_cons, ofDigits_cons, ← ih]
     ring
 
-/-- The addition of ofDigits of two lists is equal to ofDigits of digit-wise addition of them-/
+/-- The addition of ofDigits of two lists is equal to ofDigits of digit-wise addition of them -/
 theorem ofDigits_add_ofDigits_eq_ofDigits_zipWith_of_length_eq {b : ℕ} {l1 l2 : List ℕ}
     (h : l1.length = l2.length) :
     ofDigits b l1 + ofDigits b l2 = ofDigits b (l1.zipWith (· + ·) l2) := by
@@ -544,8 +544,7 @@ theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits {p : ℕ}
             Ico_zero_eq_range, mul_add, mul_add, ih, range_one, sum_singleton, List.drop, ofDigits,
             mul_zero, add_zero, ← Nat.add_sub_assoc <| sum_le_ofDigits _ <| Nat.le_of_lt h]
         nth_rw 2 [← one_mul <| ofDigits p tl]
-        rw [← add_mul, one_eq_succ_zero, Nat.sub_add_cancel <| zero_lt_of_lt h,
-           Nat.add_sub_add_left]
+        rw [← add_mul, Nat.sub_add_cancel (one_le_of_lt h), Nat.add_sub_add_left]
   · simp [ofDigits_one]
   · simp [lt_one_iff.mp h]
     cases L

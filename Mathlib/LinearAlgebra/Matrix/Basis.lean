@@ -98,6 +98,9 @@ theorem toMatrix_isUnitSMul [DecidableEq ι] (e : Basis ι R₂ M₂) {w : ι �
     (hw : ∀ i, IsUnit (w i)) : e.toMatrix (e.isUnitSMul hw) = diagonal w :=
   e.toMatrix_unitsSMul _
 
+theorem toMatrix_smul_left {G} [Group G] [DistribMulAction G M] [SMulCommClass G R M] (g : G) :
+    (g • e).toMatrix v = e.toMatrix (g⁻¹ • v) := rfl
+
 @[simp]
 theorem sum_toMatrix_smul_self [Fintype ι] : ∑ i : ι, e.toMatrix v i j • e i = v j := by
   simp_rw [e.toMatrix_apply, e.sum_repr]
@@ -217,11 +220,12 @@ theorem basis_toMatrix_basisFun_mul (b : Basis ι R (ι → R)) (A : Matrix ι �
   simp only [basis_toMatrix_mul _ _ (Pi.basisFun R ι), Matrix.toLin_eq_toLin']
   ext i j
   rw [LinearMap.toMatrix_apply, Matrix.toLin'_apply, Pi.basisFun_apply,
-    Matrix.mulVec_stdBasis_apply, Matrix.of_apply]
+    Matrix.mulVec_single_one, Matrix.of_apply]
 
 /-- See also `Basis.toMatrix_reindex` which gives the `simp` normal form of this result. -/
 theorem Basis.toMatrix_reindex' [DecidableEq ι] [DecidableEq ι'] (b : Basis ι R M) (v : ι' → M)
-    (e : ι ≃ ι') : (b.reindex e).toMatrix v = Matrix.reindexAlgEquiv _ e (b.toMatrix (v ∘ e)) := by
+    (e : ι ≃ ι') : (b.reindex e).toMatrix v =
+    Matrix.reindexAlgEquiv R R e (b.toMatrix (v ∘ e)) := by
   ext
   simp only [Basis.toMatrix_apply, Basis.repr_reindex, Matrix.reindexAlgEquiv_apply,
     Matrix.reindex_apply, Matrix.submatrix_apply, Function.comp_apply, e.apply_symm_apply,

@@ -610,4 +610,18 @@ lemma IsColimit.isZero_pt {c : Cocone F} (hc : IsColimit c) (hF : IsZero F) : Is
 
 end
 
+section
+
+variable [HasZeroMorphisms C]
+
+lemma IsTerminal.isZero {X : C} (hX : IsTerminal X) : IsZero X := by
+  rw [IsZero.iff_id_eq_zero]
+  apply hX.hom_ext
+
+lemma IsInitial.isZero {X : C} (hX : IsInitial X) : IsZero X := by
+  rw [IsZero.iff_id_eq_zero]
+  apply hX.hom_ext
+
+end
+
 end CategoryTheory.Limits

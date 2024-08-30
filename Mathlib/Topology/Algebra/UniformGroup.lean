@@ -34,10 +34,8 @@ group naturally induces a uniform structure.
   the quotient of a Banach space by a subspace is complete.
 -/
 
-
 noncomputable section
 
-open scoped Classical
 open Uniformity Topology Filter Pointwise
 
 section UniformGroup
@@ -596,10 +594,10 @@ variable [TopologicalSpace α] [Group α] [TopologicalGroup α]
 
 -- β is a dense subgroup of α, inclusion is denoted by e
 variable [TopologicalSpace β] [Group β]
-variable [FunLike hom β α] [MonoidHomClass hom β α] {e : hom} (de : DenseInducing e)
+variable [FunLike hom β α] [MonoidHomClass hom β α] {e : hom}
 
 @[to_additive]
-theorem tendsto_div_comap_self (x₀ : α) :
+theorem tendsto_div_comap_self (de : DenseInducing e) (x₀ : α) :
     Tendsto (fun t : β × β => t.2 / t.1) ((comap fun p : β × β => (e p.1, e p.2)) <| 𝓝 (x₀, x₀))
       (𝓝 1) := by
   have comm : ((fun x : α × α => x.2 / x.1) ∘ fun t : β × β => (e t.1, e t.2)) =
@@ -621,16 +619,18 @@ variable {G : Type*}
 -- β is a dense subgroup of α, inclusion is denoted by e
 -- δ is a dense subgroup of γ, inclusion is denoted by f
 variable [TopologicalSpace α] [AddCommGroup α] [TopologicalAddGroup α]
-variable [TopologicalSpace β] [AddCommGroup β] [TopologicalAddGroup β]
+variable [TopologicalSpace β] [AddCommGroup β]
 variable [TopologicalSpace γ] [AddCommGroup γ] [TopologicalAddGroup γ]
-variable [TopologicalSpace δ] [AddCommGroup δ] [TopologicalAddGroup δ]
-variable [UniformSpace G] [AddCommGroup G] [UniformAddGroup G] [T0Space G] [CompleteSpace G]
+variable [TopologicalSpace δ] [AddCommGroup δ]
+variable [UniformSpace G] [AddCommGroup G]
 variable {e : β →+ α} (de : DenseInducing e)
 variable {f : δ →+ γ} (df : DenseInducing f)
 variable {φ : β →+ δ →+ G}
 variable (hφ : Continuous (fun p : β × δ => φ p.1 p.2))
 variable {W' : Set G} (W'_nhd : W' ∈ 𝓝 (0 : G))
+include de hφ
 
+include W'_nhd in
 private theorem extend_Z_bilin_aux (x₀ : α) (y₁ : δ) : ∃ U₂ ∈ comap e (𝓝 x₀), ∀ x ∈ U₂, ∀ x' ∈ U₂,
     (fun p : β × δ => φ p.1 p.2) (x' - x, y₁) ∈ W' := by
   let Nx := 𝓝 x₀
@@ -648,6 +648,9 @@ private theorem extend_Z_bilin_aux (x₀ : α) (y₁ : δ) : ∃ U₂ ∈ comap 
   simp_rw [forall_mem_comm]
   exact lim W' W'_nhd
 
+variable [UniformAddGroup G]
+
+include df W'_nhd in
 private theorem extend_Z_bilin_key (x₀ : α) (y₀ : γ) : ∃ U ∈ comap e (𝓝 x₀), ∃ V ∈ comap f (𝓝 y₀),
     ∀ x ∈ U, ∀ x' ∈ U, ∀ (y) (_ : y ∈ V) (y') (_ : y' ∈ V),
     (fun p : β × δ => φ p.1 p.2) (x', y') - (fun p : β × δ => φ p.1 p.2) (x, y) ∈ W' := by
@@ -696,6 +699,8 @@ private theorem extend_Z_bilin_key (x₀ : α) (y₀ : γ) : ∃ U ∈ comap e (
   exact W4 h₁ h₂ h₃ h₄
 
 open DenseInducing
+
+variable [T0Space G] [CompleteSpace G]
 
 /-- Bourbaki GT III.6.5 Theorem I:
 ℤ-bilinear continuous maps from dense images into a complete Hausdorff group extend by continuity.
@@ -824,7 +829,7 @@ instance QuotientGroup.completeSpace' (G : Type u) [Group G] [TopologicalSpace G
     exact fun m =>
       ⟨m, fun n hmn =>
         Nat.decreasingInduction'
-          (fun k _ _ hk => u_mul k ⟨_, hx' k, _, hk, div_mul_div_cancel' _ _ _⟩) hmn
+          (fun k _ _ hk => u_mul k ⟨_, hx' k, _, hk, div_mul_div_cancel _ _ _⟩) hmn
           (by simpa only [div_self'] using mem_of_mem_nhds (hu.mem _))⟩
   /- Since `G` is complete, `x'` converges to some `x₀`, and so the image of this sequence under
     the quotient map converges to `↑x₀`. The image of `x'` is a convergent subsequence of `x`, and
@@ -845,7 +850,7 @@ already equipped with a uniform structure.
 Even though `G` is equipped with a uniform structure, the quotient `G ⧸ N` does not inherit a
 uniform structure, so it is still provided manually via `TopologicalGroup.toUniformSpace`.
 In the most common use cases, this coincides (definitionally) with the uniform structure on the
-quotient obtained via other means.  -/
+quotient obtained via other means. -/
 @[to_additive "The quotient `G ⧸ N` of a complete first countable uniform additive group
 `G` by a normal additive subgroup is itself complete. Consequently, quotients of Banach spaces by
 subspaces are complete. In contrast to `QuotientAddGroup.completeSpace'`, in this version

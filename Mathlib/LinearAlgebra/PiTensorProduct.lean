@@ -313,7 +313,7 @@ def lifts (x : ⨂[R] i, s i) : Set (FreeAddMonoid (R × Π i, s i)) :=
   {p | AddCon.toQuotient (c := addConGen (PiTensorProduct.Eqv R s)) p = x}
 
 /-- An element `p` of `FreeAddMonoid (R × Π i, s i)` lifts an element `x` of `⨂[R] i, s i`
-if and only if `x` is equal to to the sum of `a • ⨂ₜ[R] i, m i` over all the entries
+if and only if `x` is equal to the sum of `a • ⨂ₜ[R] i, m i` over all the entries
 `(a, m)` of `p`.
 -/
 lemma mem_lifts_iff (x : ⨂[R] i, s i) (p : FreeAddMonoid (R × Π i, s i)) :
@@ -370,7 +370,7 @@ theorem ext {φ₁ φ₂ : (⨂[R] i, s i) →ₗ[R] E}
     PiTensorProduct.induction_on' z ?_ fun {x y} hx hy ↦ by rw [φ₁.map_add, φ₂.map_add, hx, hy]
   · intro r f
     rw [tprodCoeff_eq_smul_tprod, φ₁.map_smul, φ₂.map_smul]
-    apply _root_.congr_arg
+    apply congr_arg
     exact MultilinearMap.congr_fun H f
 
 /-- The pure tensors (i.e. the elements of the image of `PiTensorProduct.tprod`) span
