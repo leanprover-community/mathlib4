@@ -42,15 +42,15 @@ theorem zero_bot (n : ℕ) : Ico 0 n = range n := by rw [Ico, Nat.sub_zero, rang
 @[simp]
 theorem length (n m : ℕ) : length (Ico n m) = m - n := by
   dsimp [Ico]
-  simp [length_range', autoParam]
+  simp [length_range']
 
 theorem pairwise_lt (n m : ℕ) : Pairwise (· < ·) (Ico n m) := by
   dsimp [Ico]
-  simp [pairwise_lt_range', autoParam]
+  simp [pairwise_lt_range']
 
 theorem nodup (n m : ℕ) : Nodup (Ico n m) := by
   dsimp [Ico]
-  simp [nodup_range', autoParam]
+  simp [nodup_range']
 
 @[simp]
 theorem mem {n m l : ℕ} : l ∈ Ico n m ↔ n ≤ l ∧ l < m := by

@@ -287,7 +287,7 @@ variable [LinearOrder α] [TopologicalSpace α] [IsLower α]
 
 lemma isTopologicalBasis_insert_univ_subbasis :
     IsTopologicalBasis (insert univ {s : Set α | ∃ a, (Ici a)ᶜ = s}) :=
-  isTopologicalBasis_of_subbasis_of_inter (by rw [topology_eq α]; rfl) (by
+  isTopologicalBasis_of_subbasis_of_inter (by rw [topology_eq α, lower]) (by
     rintro _ ⟨b, rfl⟩ _ ⟨c, rfl⟩
     use b ⊓ c
     rw [compl_Ici, compl_Ici, compl_Ici, Iio_inter_Iio])

@@ -38,11 +38,11 @@ example : Continuous fun ((_, _, z) : ℝ × ℝ × ℝ) ↦ z := by fun_prop
 @[fun_prop]
 theorem ContinuousOn.log' : ContinuousOn Real.log {0}ᶜ := ContinuousOn.log (by fun_prop) (by aesop)
 
--- Notice that no theorems about measuability of log are used. It is infered from continuity.
+-- Notice that no theorems about measuability of log are used. It is inferred from continuity.
 example : Measurable (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) := by
   fun_prop
 
--- Notice that no theorems about measuability of log are used. It is infered from continuity.
+-- Notice that no theorems about measuability of log are used. It is inferred from continuity.
 example : AEMeasurable (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) := by
   fun_prop (config:={maxTransitionDepth:=2})
 

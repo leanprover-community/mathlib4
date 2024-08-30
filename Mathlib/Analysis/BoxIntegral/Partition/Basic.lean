@@ -36,11 +36,8 @@ We also define a `SemilatticeInf` structure on `BoxIntegral.Prepartition I` for 
 rectangular box, partition
 -/
 
-
 open Set Finset Function
-
-open scoped Classical
-open NNReal
+open scoped Classical NNReal
 
 noncomputable section
 

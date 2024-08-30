@@ -108,7 +108,7 @@ theorem exists_one_le_pow_mul_dist {Z N R : Type*} [PseudoMetricSpace R] {d : N 
   · -- `j z a = z / (a + 1)`: we prove that this ratio is close to `α`
     have : j z a ∈ closedBall α ε := by
       refine mem_closedBall'.mp (le_trans ?_ ((one_div_le me0 e0).mpr (le_max_left _ _)))
-      exact (le_div_iff me0).mpr (not_le.mp dm1).le
+      exact (le_div_iff₀ me0).mpr (not_le.mp dm1).le
     -- use the "separation from `1`" (assumption `L`) for numerators,
     refine (L this).trans ?_
     -- remove a common factor and use the Lipschitz assumption `B`
@@ -207,7 +207,7 @@ protected theorem transcendental {x : ℝ} (lx : Liouville x) : Transcendental �
   · lift b to ℕ using zero_le_one.trans b1.le
     specialize h a b.pred
     rwa [← Nat.cast_succ, Nat.succ_pred_eq_of_pos (zero_lt_one.trans _), ← mul_assoc, ←
-      div_le_iff hA] at h
+      div_le_iff₀ hA] at h
     exact Int.ofNat_lt.mp b1
 
 end Liouville

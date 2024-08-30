@@ -83,7 +83,7 @@ abbrev fullyFaithfulToCompHaus : toCompHaus.FullyFaithful  :=
 
 open CompHausLike
 
-instance  (X : Type*) [TopologicalSpace X]
+instance (X : Type*) [TopologicalSpace X]
     [ExtremallyDisconnected X] : HasProp (fun Y ↦ ExtremallyDisconnected Y) X :=
   ⟨(inferInstance : ExtremallyDisconnected X)⟩
 
