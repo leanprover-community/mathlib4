@@ -32,15 +32,17 @@ open Limits Functor PreGaloisCategory
 /-- Complement of the image of a morphism `f : X ⟶ Y` in `FintypeCat`. -/
 noncomputable def imageComplement {X Y : FintypeCat.{u}} (f : X ⟶ Y) :
     FintypeCat.{u} := by
-  haveI : Fintype (↑(Set.range f)ᶜ) := Fintype.ofFinite _
-  exact FintypeCat.of (↑(Set.range f)ᶜ)
+  haveI : Fintype (↑(Set.range f.hom)ᶜ) := Fintype.ofFinite _
+  exact FintypeCat.of (↑(Set.range f.hom)ᶜ)
 
 /-- The inclusion from the complement of the image of `f : X ⟶ Y` into `Y`. -/
 def imageComplementIncl {X Y : FintypeCat.{u}}
-    (f : X ⟶ Y) : imageComplement f ⟶ Y :=
-  Subtype.val
+    (f : X ⟶ Y) : imageComplement f ⟶ Y where
+  hom := Subtype.val
 
 variable (G : Type u) [Group G]
+
+attribute [local instance] ConcreteCategory.instFunLike
 
 /-- Given `f : X ⟶ Y` for `X Y : Action FintypeCat (MonCat.of G)`, the complement of the image
 of `f` has a natural `G`-action. -/
@@ -48,17 +50,16 @@ noncomputable def Action.imageComplement {X Y : Action FintypeCat (MonCat.of G)}
     (f : X ⟶ Y) : Action FintypeCat (MonCat.of G) where
   V := FintypeCat.imageComplement f.hom
   ρ := MonCat.ofHom <| {
-    toFun := fun g y ↦ Subtype.mk (Y.ρ g y.val) <| by
-      intro ⟨x, h⟩
+    toFun := fun g ↦ { hom := fun y ↦ ⟨Y.ρ g y.val, by
+      intro ⟨x, (h : f.hom x = _)⟩
       apply y.property
       use X.ρ g⁻¹ x
       calc (X.ρ g⁻¹ ≫ f.hom) x
           = (Y.ρ g⁻¹ * Y.ρ g) y.val := by rw [f.comm, FintypeCat.comp_apply, h]; rfl
-        _ = y.val := by rw [← map_mul, inv_mul_cancel, Action.ρ_one, FintypeCat.id_apply]
+        _ = y.val := by rw [← map_mul, inv_mul_cancel, MonCat.one_of, Action.ρ_one]; rfl ⟩ }
     map_one' := by simp only [Action.ρ_one]; rfl
     map_mul' := fun g h ↦ FintypeCat.hom_ext _ _ <| fun y ↦ Subtype.ext <| by
-      exact congrFun (MonoidHom.map_mul Y.ρ g h) y.val
-  }
+      exact congrFun ((forget _).congr_map (MonoidHom.map_mul Y.ρ g h)) y.val }
 
 /-- The inclusion from the complement of the image of `f : X ⟶ Y` into `Y`. -/
 def Action.imageComplementIncl {X Y : Action FintypeCat (MonCat.of G)} (f : X ⟶ Y) :
@@ -110,7 +111,7 @@ theorem Action.pretransitive_of_isConnected (X : Action FintypeCat (MonCat.of G)
     have : Fintype T := Fintype.ofFinite T
     letI : MulAction G (FintypeCat.of T) := inferInstanceAs <| MulAction G ↑(MulAction.orbit G x)
     let T' : Action FintypeCat (MonCat.of G) := Action.FintypeCat.ofMulAction G (FintypeCat.of T)
-    let i : T' ⟶ X := ⟨Subtype.val, fun _ ↦ rfl⟩
+    let i : T' ⟶ X := ⟨{ hom := Subtype.val }, fun _ ↦ rfl⟩
     have : Mono i := ConcreteCategory.mono_of_injective _ (Subtype.val_injective)
     have : IsIso i := by
       apply IsConnected.noTrivialComponent T' i

@@ -64,6 +64,10 @@ instance : ConcreteCategory BoolRing := by
 instance hasForgetToCommRing : HasForget₂ BoolRing CommRingCat :=
   BundledHom.forget₂ _ _
 
+/-- Constructs a omorphism of Boolean rings from a ring morphism between them. -/
+@[simps!]
+def Hom.mk {α β : BoolRing.{u}} (e : α →+* β) : α ⟶ β := (e : RingHom _ _)
+
 /-- Constructs an isomorphism of Boolean rings from a ring isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : BoolRing.{u}} (e : α ≃+* β) : α ≅ β where
@@ -79,8 +83,8 @@ end BoolRing
 @[simps]
 instance BoolRing.hasForgetToBoolAlg : HasForget₂ BoolRing BoolAlg where
   forget₂ :=
-    { obj := fun X => BoolAlg.of (AsBoolAlg X)
-      map := fun {X Y} => RingHom.asBoolAlg }
+    { obj := fun X ↦ BoolAlg.of (AsBoolAlg X)
+      map := fun f ↦ BoolAlg.Hom.mk (by apply RingHom.asBoolAlg f) }
 
 -- Porting note: Added. somehow it does not find this instance.
 instance {X : BoolAlg} :
@@ -91,7 +95,7 @@ instance {X : BoolAlg} :
 instance BoolAlg.hasForgetToBoolRing : HasForget₂ BoolAlg BoolRing where
   forget₂ :=
     { obj := fun X => BoolRing.of (AsBoolRing X)
-      map := fun {X Y} => BoundedLatticeHom.asBoolRing }
+      map := fun f ↦ (BoolRing.Hom.mk (by apply BoundedLatticeHom.asBoolRing f.hom.hom)) }
 
 /-- The equivalence between Boolean rings and Boolean algebras. This is actually an isomorphism. -/
 @[simps functor inverse]

@@ -162,6 +162,8 @@ end FiberFunctor
 variable {C : Type u₁} [Category.{u₂, u₁} C]
   (F : C ⥤ FintypeCat.{w})
 
+attribute [local instance] ConcreteCategory.instFunLike
+
 /-- The canonical action of `Aut F` on the fiber of each object. -/
 instance (X : C) : MulAction (Aut F) (F.obj X) where
   smul σ x := σ.hom.app X x
@@ -218,7 +220,7 @@ and `g`. -/
 noncomputable def fiberEqualizerEquiv {X Y : C} (f g : X ⟶ Y) :
     F.obj (equalizer f g) ≃ { x : F.obj X // F.map f x = F.map g x } :=
   (PreservesEqualizer.iso (F ⋙ FintypeCat.incl) f g ≪≫
-  Types.equalizerIso (F.map f) (F.map g)).toEquiv
+  Types.equalizerIso (F.map f).hom (F.map g).hom).toEquiv
 
 @[simp]
 lemma fiberEqualizerEquiv_symm_ι_apply {X Y : C} {f g : X ⟶ Y} (x : F.obj X)
@@ -232,7 +234,7 @@ lemma fiberEqualizerEquiv_symm_ι_apply {X Y : C} {f g : X ⟶ Y} (x : F.obj X)
 noncomputable def fiberPullbackEquiv {X A B : C} (f : A ⟶ X) (g : B ⟶ X) :
     F.obj (pullback f g) ≃ { p : F.obj A × F.obj B // F.map f p.1 = F.map g p.2 } :=
   (PreservesPullback.iso (F ⋙ FintypeCat.incl) f g ≪≫
-  Types.pullbackIsoPullback (F.map f) (F.map g)).toEquiv
+  Types.pullbackIsoPullback (F.map f).hom (F.map g).hom).toEquiv
 
 @[simp]
 lemma fiberPullbackEquiv_symm_fst_apply {X A B : C} {f : A ⟶ X} {g : B ⟶ X}
@@ -295,8 +297,8 @@ lemma evaluation_aut_injective_of_isConnected (A : C) [IsConnected A] (a : F.obj
 epimorphism. -/
 lemma epi_of_nonempty_of_isConnected {X A : C} [IsConnected A] [h : Nonempty (F.obj X)]
     (f : X ⟶ A) : Epi f := Epi.mk <| fun {Z} u v huv ↦ by
-  apply evaluation_injective_of_isConnected F A Z (F.map f (Classical.arbitrary _))
-  simpa using congr_fun (F.congr_map huv) _
+  apply evaluation_injective_of_isConnected F A Z (F.map f (Classical.arbitrary (F.obj X)))
+  simpa using congr_fun ((F ⋙ forget _).congr_map huv) _
 
 /-- An epimorphism induces a surjective map on fibers. -/
 lemma surjective_on_fiber_of_epi {X Y : C} (f : X ⟶ Y) [Epi f] : Function.Surjective (F.map f) :=
@@ -318,7 +320,7 @@ lemma isIso_of_mono_of_eq_card_fiber {X Y : C} (f : X ⟶ Y) [Mono f]
     (h : Nat.card (F.obj X) = Nat.card (F.obj Y)) : IsIso f := by
   have : IsIso (F.map f) := by
     apply (ConcreteCategory.isIso_iff_bijective (F.map f)).mpr
-    apply (Fintype.bijective_iff_injective_and_card (F.map f)).mpr
+    apply (Fintype.bijective_iff_injective_and_card (F.map f).hom).mpr
     refine ⟨injective_of_mono_of_preservesPullback (F.map f), ?_⟩
     simp only [← Nat.card_eq_fintype_card, h]
   exact isIso_of_reflects_iso f F
@@ -393,14 +395,14 @@ variable {C}
 instance (A X : C) [IsConnected A] : Finite (A ⟶ X) := by
   let F := GaloisCategory.getFiberFunctor C
   obtain ⟨a⟩ := nonempty_fiber_of_isConnected F A
-  apply Finite.of_injective (fun f ↦ F.map f a)
+  apply Finite.of_injective (fun f ↦ (F.map f).hom a)
   exact evaluation_injective_of_isConnected F A X a
 
 /-- In a `GaloisCategory` the set of automorphism of a connected object is finite. -/
 instance (A : C) [IsConnected A] : Finite (Aut A) := by
   let F := GaloisCategory.getFiberFunctor C
   obtain ⟨a⟩ := nonempty_fiber_of_isConnected F A
-  apply Finite.of_injective (fun f ↦ F.map f.hom a)
+  apply Finite.of_injective (fun f ↦ (F.map f.hom).hom a)
   exact evaluation_aut_injective_of_isConnected F A a
 
 /-- Coproduct inclusions are monic in Galois categories. -/
