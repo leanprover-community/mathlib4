@@ -59,10 +59,14 @@ with SCRIPTS_DIR.joinpath("style-exceptions.txt").open(encoding="utf-8") as f:
     for exline in f:
         filename, _, _, _, _, errno, *extra = exline.split()
         path = ROOT_DIR / filename
-        if errno == "ERR_MOD":
-            exceptions += [(ERR_MOD, path, None)]
-        elif errno == "ERR_IND":
-            exceptions += [(ERR_IND, path, None)]
+        map = {
+            "ERR_MOD": ERR_MOD, "ERR_IBY": ERR_IBY, "ERR_IWH": ERR_IWH,
+            "ERR_DOT": ERR_DOT, "ERR_SEM": ERR_SEM, "ERR_WIN": ERR_WIN,
+            "ERR_TWS": ERR_TWS, "ERR_CLN": ERR_CLN, "ERR_IND": ERR_IND,
+            "ERR_ARR": ERR_ARR, "ERR_NSP": ERR_NSP,
+        }
+        if errno in map:
+            exceptions += [(map[errno], path, None)]
         elif errno in ["ERR_COP", "ERR_LIN", "ERR_ADN", "ERR_NUM_LIN"]:
             pass # maintained by the Lean style linter now
         else:
