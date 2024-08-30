@@ -12,7 +12,7 @@ branch_name=nolints
 owner_name=leanprover-community
 
 # Exit if the branch already exists
-git fetch "$remote_name"
+git fetch --quiet "$remote_name"
 git rev-parse --verify --quiet "refs/remotes/${remote_name}/${branch_name}" && exit 0
 
 # Exit if there are no changes relative to master
@@ -34,7 +34,7 @@ gh_api() {
 
 git push "${remote_name}" "HEAD:$branch_name"
 
-pr_id=$(gh_api "repos/${owner_name}/mathlib/pulls" -X POST -d @- <<EOF | jq -r .number
+pr_id=$(gh_api "repos/${owner_name}/mathlib4/pulls" -X POST -d @- <<EOF | jq -r .number
 {
   "title": "$pr_title",
   "head": "$branch_name",
@@ -44,6 +44,6 @@ pr_id=$(gh_api "repos/${owner_name}/mathlib/pulls" -X POST -d @- <<EOF | jq -r .
 EOF
 )
 
-gh_api "repos/${owner_name}/mathlib/issues/${pr_id}/comments" -X POST -d @- <<EOF
+gh_api "repos/${owner_name}/mathlib4/issues/${pr_id}/comments" -X POST -d @- <<EOF
 { "body": "bors r+" }
 EOF
