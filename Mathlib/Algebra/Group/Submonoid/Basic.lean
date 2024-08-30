@@ -376,7 +376,7 @@ theorem closure_induction {p : M → Prop} {x} (h : x ∈ closure s) (mem : ∀ 
     (mul : ∀ x y, p x → p y → p (x * y)) : p x :=
   (@closure_le _ _ _ ⟨⟨p, mul _ _⟩, one⟩).2 mem h
 
-/-- A dependent version of `Submonoid.closure_induction`.  -/
+/-- A dependent version of `Submonoid.closure_induction`. -/
 @[to_additive (attr := elab_as_elim) "A dependent version of `AddSubmonoid.closure_induction`. "]
 theorem closure_induction' (s : Set M) {p : ∀ x, x ∈ closure s → Prop}
     (mem : ∀ (x) (h : x ∈ s), p x (subset_closure h)) (one : p 1 (one_mem _))
@@ -387,7 +387,7 @@ theorem closure_induction' (s : Set M) {p : ∀ x, x ∈ closure s → Prop}
     closure_induction hx (fun x hx => ⟨_, mem x hx⟩) ⟨_, one⟩ fun x y ⟨hx', hx⟩ ⟨hy', hy⟩ =>
       ⟨_, mul _ _ _ _ hx hy⟩
 
-/-- An induction principle for closure membership for predicates with two arguments.  -/
+/-- An induction principle for closure membership for predicates with two arguments. -/
 @[to_additive (attr := elab_as_elim)
       "An induction principle for additive closure membership for predicates with two arguments."]
 theorem closure_induction₂ {p : M → M → Prop} {x} {y : M} (hx : x ∈ closure s) (hy : y ∈ closure s)

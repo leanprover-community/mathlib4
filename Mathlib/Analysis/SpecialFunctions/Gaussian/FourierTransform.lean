@@ -41,7 +41,7 @@ namespace GaussianFourier
 variable {b : ℂ}
 
 /-- The integral of the Gaussian function over the vertical edges of a rectangle
-with vertices at `(±T, 0)` and `(±T, c)`.  -/
+with vertices at `(±T, 0)` and `(±T, c)`. -/
 def verticalIntegral (b : ℂ) (c T : ℝ) : ℂ :=
   ∫ y : ℝ in (0 : ℝ)..c, I * (cexp (-b * (T + y * I) ^ 2) - cexp (-b * (T - y * I) ^ 2))
 

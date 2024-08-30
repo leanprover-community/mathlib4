@@ -243,7 +243,7 @@ theorem exists_neg_pow_of_isOfFinOrder [IsCyclotomicExtension {n} ℚ K]
     convert IsPrimitiveRoot.orderOf (-ζ)
     rw [neg_eq_neg_one_mul, (Commute.all _ _).orderOf_mul_eq_mul_orderOf_of_coprime]
     · simp [hζ.eq_orderOf]
-    · simp [← hζ.eq_orderOf, Nat.odd_iff_not_even.1 hno]
+    · simp [← hζ.eq_orderOf, hno]
   obtain ⟨k, hkpos, hkn⟩ := isOfFinOrder_iff_pow_eq_one.1 hx
   obtain ⟨l, hl, hlroot⟩ := (isRoot_of_unity_iff hkpos _).1 hkn
   have hlzero : NeZero l := ⟨fun h ↦ by simp [h] at hl⟩
@@ -291,7 +291,7 @@ theorem norm_eq_one [IsDomain L] [IsCyclotomicExtension {n} K L] (hn : n ≠ 2)
   · replace h1 : 2 ≤ n := by
       by_contra! h
       exact h1 (PNat.eq_one_of_lt_two h)
--- Porting note: specyfing the type of `cyclotomic_coeff_zero K h1` was not needed.
+-- Porting note: specifying the type of `cyclotomic_coeff_zero K h1` was not needed.
     rw [← hζ.powerBasis_gen K, PowerBasis.norm_gen_eq_coeff_zero_minpoly, hζ.powerBasis_gen K, ←
       hζ.minpoly_eq_cyclotomic_of_irreducible hirr,
       (cyclotomic_coeff_zero K h1 : coeff (cyclotomic n K) 0 = 1), mul_one,
