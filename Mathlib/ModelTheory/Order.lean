@@ -305,9 +305,7 @@ theorem realize_noTopOrder_iff : M ⊨ L.noTopOrderSentence ↔ NoTopOrder M := 
   simp only [noTopOrderSentence, Sentence.Realize, Formula.Realize, BoundedFormula.realize_all,
     BoundedFormula.realize_ex, BoundedFormula.realize_not, Term.realize, Term.realize_le,
     Sum.elim_inr]
-  refine ⟨fun h => ⟨fun a => h a⟩, ?_⟩
-  intro h a
-  exact exists_not_le a
+  exact ⟨fun h => ⟨fun a => h a⟩, fun h a => exists_not_le a⟩
 
 @[simp]
 theorem realize_noTopOrder [h : NoTopOrder M] : M ⊨ L.noTopOrderSentence :=
@@ -317,9 +315,7 @@ theorem realize_noBotOrder_iff : M ⊨ L.noBotOrderSentence ↔ NoBotOrder M := 
   simp only [noBotOrderSentence, Sentence.Realize, Formula.Realize, BoundedFormula.realize_all,
     BoundedFormula.realize_ex, BoundedFormula.realize_not, Term.realize, Term.realize_le,
     Sum.elim_inr]
-  refine ⟨fun h => ⟨fun a => h a⟩, ?_⟩
-  intro h a
-  exact exists_not_ge a
+  exact ⟨fun h => ⟨fun a => h a⟩, fun h a => exists_not_ge a⟩
 
 @[simp]
 theorem realize_noBotOrder [h : NoBotOrder M] : M ⊨ L.noBotOrderSentence :=
@@ -380,19 +376,13 @@ lemma dlo_age (M : Type w)
     [Language.order.Structure M] [Mdlo : M ⊨ Language.order.dlo] [Infinite M] :
     Language.order.age M = {M : CategoryTheory.Bundled.{w} Language.order.Structure |
       Finite M ∧ M ⊨ Language.order.linearOrderTheory} := by
+  classical
   rw [age]
   ext N
-  haveI : M ⊨ Language.order.linearOrderTheory :=
-      Theory.Model.mono Mdlo Set.subset_union_left
   refine ⟨fun ⟨hF, h⟩ => ⟨hF.finite, Theory.IsUniversal.models_of_embedding h.some⟩,
     fun ⟨hF, h⟩ => ⟨FG.of_finite, ?_⟩⟩
-  haveI : DecidableRel fun (a b : M) ↦ RelMap (leSymb : Language.order.Relations 2) ![a, b] :=
-    Classical.decRel _
-  haveI : DecidableRel fun (a b : N) ↦ RelMap (leSymb : Language.order.Relations 2) ![a, b] :=
-    Classical.decRel _
   letI := Language.order.linearOrderOfModels M
   letI := Language.order.linearOrderOfModels N
-  haveI : Language.order.OrderedStructure N := inferInstance
   exact ⟨StrongHomClass.toEmbedding (nonempty_orderEmbedding_of_finite_infinite N M).some⟩
 
 end Language
