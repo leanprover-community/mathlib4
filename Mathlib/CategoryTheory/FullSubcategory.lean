@@ -83,7 +83,7 @@ instance category : Category.{v} (InducedCategory D F) where
 @[ext]
 lemma hom_ext {X Y : InducedCategory D F} {f g : X ⟶ Y} (h : f.hom = g.hom) :
     f = g :=
-  Hom.ext _ _ h
+  Hom.ext h
 
 /-- Constructor for isomorphisms in the category `InducedCategory D F`. -/
 @[simps]
