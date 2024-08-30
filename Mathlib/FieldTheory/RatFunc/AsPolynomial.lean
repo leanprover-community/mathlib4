@@ -223,6 +223,48 @@ instance : Valued (RatFunc K) ℤₘ₀ := Valued.mk' (idealX K).valuation
 theorem WithZero.valued_def {x : RatFunc K} :
     @Valued.v (RatFunc K) _ _ _ _ x = (idealX K).valuation x := rfl
 
+/-- If $k$ is any field, then the rational function field $k(t)$ is not a finite extension.
+For example the elements $\left\{t^n, n \in \mathbf{Z}\right\}$ are linearly independent over k.
+
+[Stacks: Lemma 09G6, first part](https://stacks.math.columbia.edu/tag/09G6) -/
+theorem not_finiteDimensional {F : Type*}[Field F]: ¬ FiniteDimensional F (RatFunc F) := by
+  by_contra nh
+  let v : ℕ → (RatFunc F) := fun n => { toFractionRing := Localization.mk (Polynomial.X ^ n) 1 }
+  have : LinearIndependent F v := by
+    by_contra nt
+    rw [not_linearIndependent_iff] at nt
+    rcases nt with ⟨s, map, feq, neq0⟩
+    unfold_let v at feq
+    simp only [FractionRing.mk_eq_div, map_pow, OneMemClass.coe_one, map_one, div_one,
+      RatFunc.ofFractionRing_eq, AlgEquiv.commutes, RatFunc.algebraMap_X] at feq
+    have : ∑ x ∈ s, map x • RatFunc.X ^ x =
+        algebraMap F[X] (RatFunc F) (∑ x ∈ s, map x • Polynomial.X ^ x) := by
+      rw [map_sum]
+      have (x : ℕ) : (algebraMap F[X] (RatFunc F)) (map x • Polynomial.X ^ x) =
+          map x • ((algebraMap F[X] (RatFunc F)) Polynomial.X) ^ x := by
+        simp only [Algebra.smul_def, algebraMap_eq, map_mul, RatFunc.algebraMap_C, map_pow,
+          RatFunc.algebraMap_X, RatFunc.algebraMap_eq_C]
+      simp_rw [this]
+      rfl
+    simp only [this] at feq
+    have support_empty : (∑ x ∈ s, (map x) • (Polynomial.X ^ x : F[X])).support = ∅ :=
+      support_eq_empty.mpr ((RatFunc.algebraMap_eq_zero_iff F).mp feq)
+    rcases neq0 with ⟨i, iins, ineq0⟩
+    have : i ∈ (∑ x ∈ s, (map x) • (Polynomial.X ^ x : F[X])).support := by
+      have : (∑ x ∈ s, map x • (Polynomial.X ^ x : F[X])).coeff i = map i := by
+        simp only [finset_sum_coeff, coeff_smul, coeff_X_pow, smul_eq_mul, mul_ite, mul_one,
+          mul_zero, Finset.sum_ite_eq, ite_eq_left_iff]
+        exact fun a => False.elim (a iins)
+      refine mem_support_iff.mpr ?_
+      rw [this]
+      exact ineq0
+    rw [support_empty] at this
+    contradiction
+  have : Cardinal.mk ℕ < Cardinal.aleph0 := LinearIndependent.lt_aleph0_of_finiteDimensional this
+  rw [Cardinal.mk_nat] at this
+  absurd this; push_neg
+  simp only [le_refl]
+
 end RatFunc
 
 end AdicValuation
