@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
 -/
 import Mathlib.Algebra.QuadraticDiscriminant
-import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
 import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 
 /-!
