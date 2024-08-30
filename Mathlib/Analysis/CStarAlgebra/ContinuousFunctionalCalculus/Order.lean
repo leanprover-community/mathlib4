@@ -124,7 +124,7 @@ lemma norm_mem_spectrum_of_nonneg [Nontrivial A] {a : A} (ha : 0 ≤ a := by cfc
     ‖a‖ ∈ spectrum ℝ a := by
   simpa using spectrum.algebraMap_mem ℝ <| nnnorm_mem_spectrum_of_nonneg ha
 
-lemma norm_le_iff_of_nonneg (a : A) {r : ℝ} (hr : 0 ≤ r) (ha : 0 ≤ a := by cfc_tac) :
+lemma norm_le_iff_le_algebraMap (a : A) {r : ℝ} (hr : 0 ≤ r) (ha : 0 ≤ a := by cfc_tac) :
     ‖a‖ ≤ r ↔ a ≤ algebraMap ℝ A r := by
   rw [le_algebraMap_iff_spectrum_le]
   obtain (h | _) := subsingleton_or_nontrivial A
@@ -146,7 +146,7 @@ lemma nnnorm_le_one_iff_of_nonneg (a : A) (ha : 0 ≤ a := by cfc_tac) :
   rw [← NNReal.coe_le_coe]
   exact norm_le_one_iff_of_nonneg a
 
-lemma norm_le_ofNat_iff_of_nonneg (a : A) (n : ℕ) (ha : 0 ≤ a := by cfc_tac) :
+lemma norm_le_natCast_iff_of_nonneg (a : A) (n : ℕ) (ha : 0 ≤ a := by cfc_tac) :
     ‖a‖ ≤ n ↔ a ≤ n := by
   simpa using norm_le_iff_of_nonneg a n.cast_nonneg
 
