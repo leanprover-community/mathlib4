@@ -264,6 +264,10 @@ lemma Odd.sub_odd (hm : Odd m) (hn : Odd n) : Even (m - n) :=
 
 alias _root_.Odd.tsub_odd := Nat.Odd.sub_odd
 
+@[simp]
+lemma odd_add_one {n : ℕ} : Odd (n + 1) ↔ ¬ Odd n := by
+  simpa using even_add_one.not
+
 lemma odd_mul : Odd (m * n) ↔ Odd m ∧ Odd n := by simp [not_or, even_mul, ← not_even_iff_odd]
 
 lemma Odd.of_mul_left (h : Odd (m * n)) : Odd m :=

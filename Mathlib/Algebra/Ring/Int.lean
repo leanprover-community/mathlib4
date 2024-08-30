@@ -134,6 +134,14 @@ lemma not_even_two_mul_add_one (n : ℤ) : ¬ Even (2 * n + 1) :=
 lemma even_sub' : Even (m - n) ↔ (Odd m ↔ Odd n) := by
   rw [even_sub, ← not_odd_iff_even, ← not_odd_iff_even, not_iff_not]
 
+@[simp]
+lemma odd_add_one {n : ℤ} : Odd (n + 1) ↔ ¬ Odd n := by
+  simpa using even_add_one.not
+
+@[simp]
+lemma odd_sub_one {n : ℤ} : Odd (n - 1) ↔ ¬ Odd n := by
+  simpa using even_sub_one.not
+
 lemma odd_mul : Odd (m * n) ↔ Odd m ∧ Odd n := by simp [← not_even_iff_odd, not_or, parity_simps]
 
 lemma Odd.of_mul_left (h : Odd (m * n)) : Odd m := (odd_mul.mp h).1
