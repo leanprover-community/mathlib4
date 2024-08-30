@@ -106,8 +106,9 @@ theorem tendsto_IicSnd_atBot [IsFiniteMeasure ρ] {s : Set α} (hs : MeasurableS
       simp_rw [neg_neg]
     rw [h_fun_eq]
     exact h_neg.comp tendsto_neg_atBot_atTop
-  refine tendsto_measure_iInter (fun q ↦ hs.prod measurableSet_Iic) ?_ ⟨0, measure_ne_top ρ _⟩
-  refine fun q r hqr ↦ prod_subset_prod_iff.mpr (Or.inl ⟨subset_rfl, fun x hx ↦ ?_⟩)
+  refine tendsto_measure_iInter (fun q ↦ (hs.prod measurableSet_Iic).nullMeasurableSet)
+    ?_ ⟨0, measure_ne_top ρ _⟩
+  refine fun q r hqr ↦ Set.prod_mono subset_rfl fun x hx ↦ ?_
   simp only [Rat.cast_neg, mem_Iic] at hx ⊢
   refine hx.trans (neg_le_neg ?_)
   exact mod_cast hqr
