@@ -47,8 +47,8 @@ variable {α : 𝕜} {A B : E →ₗ[𝕜] E} (hA : A.IsSymmetric) (hB : B.IsSym
     (hAB : A ∘ₗ B = B ∘ₗ A)
 
 /--If a pair of operators commute, then the eigenspaces of one are invariant under the other.-/
-theorem eigenspace_invariant_of_commute (α : 𝕜) :
-    ∀ v ∈ (eigenspace A α), (B v ∈ eigenspace A α) := by
+theorem eigenspace_invariant_of_commute (hA : A.IsSymmetric) (hB : B.IsSymmetric)
+    (hAB : A ∘ₗ B = B ∘ₗ A) (α : 𝕜) : ∀ v ∈ (eigenspace A α), (B v ∈ eigenspace A α) := by
   intro v hv
   rw [eigenspace, mem_ker, sub_apply, Module.algebraMap_end_apply, ← comp_apply A B v, hAB,
     comp_apply B A v, ← map_smul, ← map_sub, hv, map_zero] at *
@@ -60,7 +60,7 @@ one operator restricted to the eigenspace of the other, which is an invariant su
 operators commute. -/
 theorem eigenspace_inf_eigenspace (γ : 𝕜) :
     eigenspace A α ⊓ eigenspace B γ = map (Submodule.subtype (eigenspace A α))
-      (eigenspace (B.restrict (eigenspace_invariant_of_commute hAB α)) γ) :=
+      (eigenspace (B.restrict (eigenspace_invariant_of_commute hA hB hAB α)) γ) :=
   (eigenspace A α).inf_genEigenspace _ _ (k := 1)
 
 /-- If A and B are commuting symmetric operators on a finite dimensional inner product space
@@ -68,17 +68,17 @@ then the eigenspaces of the restriction of B to any eigenspace of A exhaust that
 theorem iSup_eigenspace_inf_eigenspace :
     (⨆ γ, eigenspace A α ⊓ eigenspace B γ) = eigenspace A α := by
   conv_rhs => rw [← (eigenspace A α).map_subtype_top]
-  simp only [eigenspace_inf_eigenspace hAB, ← Submodule.map_iSup]
+  simp only [eigenspace_inf_eigenspace hA hB hAB, ← Submodule.map_iSup]
   congr 1
   rw [← Submodule.orthogonal_eq_bot_iff]
   exact orthogonalComplement_iSup_eigenspaces_eq_bot <|
-    hB.restrict_invariant <| eigenspace_invariant_of_commute hAB α
+    hB.restrict_invariant <| eigenspace_invariant_of_commute hA hB hAB α
 
 /-- If A and B are commuting symmetric operators acting on a finite dimensional inner product space,
 then the simultaneous eigenspaces of A and B exhaust the space. -/
 theorem iSup_iSup_eigenspace_inf_eigenspace_eq_top :
     (⨆ α, ⨆ γ, eigenspace A α ⊓ eigenspace B γ) = ⊤ := by
-  simpa [iSup_eigenspace_inf_eigenspace hB hAB] using
+  simpa [iSup_eigenspace_inf_eigenspace hA hB hAB] using
     Submodule.orthogonal_eq_bot_iff.mp <| hA.orthogonalComplement_iSup_eigenspaces_eq_bot
 
 /--The simultaneous eigenspaces of a pair of commuting symmetric operators form an
