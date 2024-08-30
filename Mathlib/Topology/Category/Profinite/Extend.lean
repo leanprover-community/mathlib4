@@ -186,9 +186,16 @@ section ProfiniteAsLimit
 
 variable (S : Profinite.{u})
 
-/-- A functor `StructuredArrow S toProfinite ⥤ Profinite` whose limit is isomorphic to `S`. -/
+/--
+A functor `StructuredArrow S toProfinite ⥤ FintypeCat` whose limit in `Profinite` is isomorphic
+to `S`.
+-/
+abbrev fintypeDiagram' : StructuredArrow S toProfinite ⥤ FintypeCat :=
+  StructuredArrow.proj S toProfinite
+
+/-- An abbreviation for `S.fintypeDiagram' ⋙ toProfinite`. -/
 abbrev diagram' : StructuredArrow S toProfinite ⥤ Profinite :=
-  StructuredArrow.proj S toProfinite ⋙ toProfinite
+  S.fintypeDiagram' ⋙ toProfinite
 
 /-- A cone over `S.diagram'` whose cone point is `S`. -/
 abbrev asLimitCone' : Cone (S.diagram') := cone (𝟭 _) S
