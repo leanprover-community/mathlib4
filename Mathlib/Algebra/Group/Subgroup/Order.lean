@@ -117,7 +117,7 @@ lemma Subsemigroup.strictMono_topEquiv {G : Type*} [OrderedCommMonoid G] :
 
 @[to_additive]
 lemma MulEquiv.strictMono_subsemigroupCongr {G : Type*} [OrderedCommMonoid G] {S T : Subsemigroup G}
-    (h : S = T) : StrictMono (subsemigroupCongr h) := Equiv.strictMono_setCongr (by simp [h])
+    (h : S = T) : StrictMono (subsemigroupCongr h) := fun _ _ ↦ id
 
 @[to_additive]
 lemma MulEquiv.strictMono_symm {G G' : Type*} [LinearOrderedCommMonoid G]
