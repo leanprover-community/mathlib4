@@ -2429,6 +2429,7 @@ import Mathlib.Data.PNat.Xgcd
 import Mathlib.Data.PSigma.Order
 import Mathlib.Data.Part
 import Mathlib.Data.Pi.Interval
+import Mathlib.Data.Pi.Projections
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Prod.Lex
 import Mathlib.Data.Prod.PProd
@@ -3301,7 +3302,6 @@ import Mathlib.MeasureTheory.OuterMeasure.Induced
 import Mathlib.MeasureTheory.OuterMeasure.OfFunction
 import Mathlib.MeasureTheory.OuterMeasure.Operations
 import Mathlib.MeasureTheory.PiSystem
-import Mathlib.MeasureTheory.Projections
 import Mathlib.MeasureTheory.SetAlgebra
 import Mathlib.MeasureTheory.SetSemiring
 import Mathlib.ModelTheory.Algebra.Field.Basic
