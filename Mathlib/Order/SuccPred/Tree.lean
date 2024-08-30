@@ -99,6 +99,9 @@ section DecidableEq
 
 variable [DecidableEq α]
 
+/--
+The unique atom less than an element in an `OrderBot` with archimedean predecessor.
+-/
 def find_atom (r : α) : α :=
   Order.pred^[Nat.find (bot_le (a := r)).exists_pred_iterate - 1] r
 
@@ -140,7 +143,7 @@ lemma find_atom_eq_bot_iff {r : α} :
   mpr h := by simp [h]
 
 @[simp]
-def find_atom_is_atom (r : α) (hr : r ≠ ⊥) :
+lemma find_atom_is_atom (r : α) (hr : r ≠ ⊥) :
     IsAtom (find_atom r) := by
   constructor
   · simp [hr]
@@ -162,10 +165,15 @@ end IsPredArchimedean
 The type of rooted trees.
 -/
 structure RootedTree where
+  /-- The type representing the elements in the tree. -/
   α : Type*
+  /-- The type should be a `SemilatticeInf`, where `inf` is LCA in the tree. -/
   [order : SemilatticeInf α]
+  /-- The type should have a bottom, the root. -/
   [bot : OrderBot α]
+  /-- The type should have a predecessor for every element, its parent. -/
   [pred : PredOrder α]
+  /-- The predecessor relationship should be archimedean. -/
   [pred_archimedean : IsPredArchimedean α]
 
 attribute [coe] RootedTree.α
@@ -212,6 +220,9 @@ instance (t : RootedTree) : SetLike (SubRootedTree t) t where
 lemma mem_iff {t : RootedTree} {r : SubRootedTree t} {v : t} :
     v ∈ r ↔ r.root ≤ v := Iff.rfl
 
+/--
+The coersion from a `SubRootedTree` to a `RootedTree`.
+-/
 @[coe, reducible]
 def coeTree {t : RootedTree} [DecidableEq t] (r : SubRootedTree t) : RootedTree where
   α := r
@@ -226,10 +237,10 @@ lemma bot_mem_iff {t : RootedTree} (r : SubRootedTree t) :
 /--
 All of the immediate subtrees of a given rooted tree.
 -/
-def RootedTree.subtrees (t : RootedTree) [DecidableEq t] : Set (SubRootedTree t) :=
+def RootedTree.subtrees (t : RootedTree) : Set (SubRootedTree t) :=
   {x | IsAtom x.root}
 
-variable {t : RootedTree} [DecidableEq t]
+variable {t : RootedTree}
 
 lemma root_ne_bot_of_mem_subtrees (r : SubRootedTree t) (hr : r ∈ t.subtrees) :
     r.root ≠ ⊥ := by
@@ -279,10 +290,10 @@ def RootedTree.subtreeOf (t : RootedTree) [DecidableEq t] (r : t) : SubRootedTre
   t.subtree (IsPredArchimedean.find_atom r)
 
 @[simp]
-lemma RootedTree.mem_subtreeOf {r : t} :
+lemma RootedTree.mem_subtreeOf [DecidableEq t] {r : t} :
     r ∈ t.subtreeOf r := by
   simp [mem_iff, RootedTree.subtreeOf]
 
-lemma RootedTree.subtreeOf_mem_subtrees {r : t} (hr : r ≠ ⊥) :
+lemma RootedTree.subtreeOf_mem_subtrees [DecidableEq t] {r : t} (hr : r ≠ ⊥) :
     t.subtreeOf r ∈ t.subtrees := by
   simp [RootedTree.subtrees, RootedTree.subtreeOf, IsPredArchimedean.find_atom_is_atom r hr]
