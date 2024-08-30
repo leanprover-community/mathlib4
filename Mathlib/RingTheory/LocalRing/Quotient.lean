@@ -50,7 +50,7 @@ theorem quotient_span_eq_top_iff_span_eq_top (s : Set S) :
 
 attribute [local instance] Ideal.Quotient.field
 
-variable [Module.Free R S]
+variable [Module.Free R S] {ι : Type*}
 
 theorem finrank_quotient_map :
     finrank (R ⧸ p) (S ⧸ pS) = finrank R S := by
@@ -74,14 +74,14 @@ theorem finrank_quotient_map :
 
 /-- Given a basis of `S`, the induced basis of `S / Ideal.map (algebraMap R S) p`. -/
 noncomputable
-def basisQuotient {ι} [Fintype ι] (b : Basis ι R S) : Basis ι (R ⧸ p) (S ⧸ pS) :=
+def basisQuotient [Fintype ι] (b : Basis ι R S) : Basis ι (R ⧸ p) (S ⧸ pS) :=
   basisOfTopLeSpanOfCardEqFinrank (Ideal.Quotient.mk pS ∘ b)
     (by
       rw [Set.range_comp]
       exact ((quotient_span_eq_top_iff_span_eq_top _).mpr b.span_eq).ge)
     (by rw [finrank_quotient_map, finrank_eq_card_basis b])
 
-lemma basisQuotient_apply {ι} [Fintype ι] (b : Basis ι R S) (i) :
+lemma basisQuotient_apply [Fintype ι] (b : Basis ι R S) (i) :
     (basisQuotient b) i = Ideal.Quotient.mk pS (b i) := by
   delta basisQuotient
   rw [coe_basisOfTopLeSpanOfCardEqFinrank, Function.comp_apply]
