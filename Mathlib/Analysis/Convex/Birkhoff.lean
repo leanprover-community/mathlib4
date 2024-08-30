@@ -41,7 +41,7 @@ def doublyStochastic (n : Type*) [Fintype n] [DecidableEq n] : Submonoid (Matrix
     next => rw [← vecMul_vecMul, hM.2.2, hN.2.2]
   one_mem' := by simp [zero_le_one_elem]
 
-lemma mem_doublyStochastic_iff_mul {M : Matrix n n ℝ} :
+lemma mem_doublyStochastic_iff_mul :
     M ∈ doublyStochastic n ↔ (∀ i j, 0 ≤ M i j) ∧ M *ᵥ 1 = 1 ∧ 1 ᵥ* M = 1 :=
   Iff.rfl
 
@@ -205,8 +205,9 @@ private lemma doublyStochastic_sum_perm_aux (M : Matrix n n ℝ)
 
 /--
 If M is a doubly stochastic matrix, then it is an convex combination of permutation matrices. Note
-`doublyStochastic_eq_convexHull_perm` shows `doublyStochastic n` is the convex hull of permutation
-matrices.
+`doublyStochastic_eq_convexHull_perm` shows `doublyStochastic n` is exactly the convex hull of the
+permutation matrices, and this lemma is most useful for accessing the coefficients of each
+permutation matrices directly.
 -/
 lemma doublyStochastic_eq_sum_perm {M : Matrix n n ℝ} (hM : M ∈ doublyStochastic n) :
     ∃ w : Equiv.Perm n → ℝ, (∀ σ, 0 ≤ w σ) ∧ ∑ σ, w σ = 1 ∧ ∑ σ, w σ • σ.permMatrix ℝ = M := by
@@ -221,6 +222,7 @@ lemma doublyStochastic_eq_sum_perm {M : Matrix n n ℝ} (hM : M ∈ doublyStocha
   simpa [sum_comm (γ := n), Equiv.toPEquiv_apply] using this
 
 /--
+**Birkhoff's theorem**
 The set of doubly stochastic matrices is the convex hull of the permutation matrices.  Note
 `doublyStochastic_sum_perm` gives a convex weighting of each permutation matrix directly.
 To show `doublyStochastic n` is convex, use `convex_doublyStochastic`.
