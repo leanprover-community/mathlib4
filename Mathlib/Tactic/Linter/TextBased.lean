@@ -69,6 +69,8 @@ inductive StyleError where
   The `longFile` linter implements the line-length check as a syntax linter.
   This text-based check is present to ensure the limit on files that do not import the linter. -/
   | fileTooLong (numberLines : ℕ) (newSizeLimit : ℕ) (previousLimit : Option ℕ) : StyleError
+  /-- A line ends with windows line endings (\r\n) instead of unix ones (\n). -/
+  | windowsLineEnding
 deriving BEq
 
 /-- How to format style errors -/
@@ -107,6 +109,8 @@ def StyleError.errorMessage (err : StyleError) (style : ErrorFormat) : String :=
     | ErrorFormat.exceptionsFile =>
         s!"{sizeLimit} file contains {currentSize} lines, try to split it up"
     | ErrorFormat.humanReadable => s!"file contains {currentSize} lines, try to split it up"
+  | windowsLineEnding => "This line ends with a windows line ending (\r\n): please use Unix line\
+    endings (\n) instead"
 
 /-- The error code for a given style error. Keep this in sync with `parse?_errorContext` below! -/
 -- FUTURE: we're matching the old codes in `lint-style.py` for compatibility;
@@ -117,6 +121,7 @@ def StyleError.errorCode (err : StyleError) : String := match err with
   | StyleError.adaptationNote => "ERR_ADN"
   | StyleError.broadImport _ => "ERR_IMP"
   | StyleError.fileTooLong _ _ _ => "ERR_NUM_LIN"
+  | StyleError.windowsLineEnding => "ERR_WIN"
 
 /-- Context for a style error: the actual error, the line number in the file we're reading
 and the path to the file. -/
@@ -211,6 +216,7 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
         | "ERR_COP" => some (StyleError.copyright none)
         | "ERR_AUT" => some (StyleError.authors)
         | "ERR_ADN" => some (StyleError.adaptationNote)
+        | "ERR_WIN" => some (StyleError.windowsLineEnding)
         | "ERR_IMP" =>
           -- XXX tweak exceptions messages to ease parsing?
           if (errorMessage.get! 0).containsSubstr "tactic" then
@@ -341,6 +347,16 @@ def broadImportsLinter : TextbasedLinter := fun lines ↦ Id.run do
   return errors
 
 
+/-- Lint a collection of input strings if one of them contains windows line endings. -/
+def windowsLineEndingLinter : TextbasedLinter := fun lines ↦ Id.run do
+  let mut errors := Array.mkEmpty 0
+  let mut lineNumber := 0
+  for line in lines do
+    let rep := line.crlfToLf
+    if rep != line then
+      errors := errors.push (StyleError.windowsLineEnding, lineNumber)
+  return errors
+
 /-- Whether a collection of lines consists *only* of imports, blank lines and single-line comments.
 In practice, this means it's an imports-only file and exempt from almost all linting. -/
 def isImportsOnlyFile (lines : Array String) : Bool :=
@@ -373,7 +389,7 @@ end
 
 /-- All text-based linters registered in this file. -/
 def allLinters : Array TextbasedLinter := #[
-    copyrightHeaderLinter, adaptationNoteLinter, broadImportsLinter
+    copyrightHeaderLinter, adaptationNoteLinter, broadImportsLinter, windowsLineEndingLinter
   ]
 
 /-- Controls what kind of output this programme produces. -/
