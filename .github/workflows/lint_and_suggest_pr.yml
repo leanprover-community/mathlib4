@@ -30,7 +30,6 @@ jobs:
 
       # if you update this step (or its dependencies), please also update them in bot_fix_style_comment.yaml
       - name: lint
-        continue-on-error: true  # allows the following `reviewdog` step to add GitHub suggestions
         run: |
           lake exe lint-style --fix
 
@@ -46,9 +45,8 @@ jobs:
 
       # if you update this step (or its dependencies), please also update them in bot_fix_style_comment.yaml
       - name: lint references.bib
-        continue-on-error: true  # allows the following `reviewdog` step to add GitHub suggestions
         run: |
-          ./scripts/lint-bib.sh
+          ./scripts/lint-bib.sh || true
 
       - name: suggester / lint-bib
         uses: reviewdog/action-suggester@v1
@@ -75,8 +73,7 @@ jobs:
 
       # if you update this step (or its dependencies), please also update them in bot_fix_style_comment.yaml
       - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
-        continue-on-error: true  # allows the following `reviewdog` step to add GitHub suggestions
-        run: lake exe mk_all
+        run: lake exe mk_all || true
 
       - name: suggester / import list
         uses: reviewdog/action-suggester@v1
