@@ -207,7 +207,7 @@ theorem evalAt_mul : evalAt (g * h) X = 𝒅ₕ (L_apply I g h) (evalAt h X) := 
   ext f
   rw [← left_invariant, apply_hfdifferential, apply_hfdifferential, L_mul, fdifferential_comp,
     apply_fdifferential]
-  -- Porting note: more agressive here
+  -- Porting note: more aggressive here
   erw [LinearMap.comp_apply]
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [apply_fdifferential, ← apply_hfdifferential, left_invariant]
