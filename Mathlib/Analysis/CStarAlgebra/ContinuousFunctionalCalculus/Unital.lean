@@ -898,11 +898,11 @@ lemma one_le_cfc (f : R → R) (a : A) (h : ∀ x ∈ spectrum R a, 1 ≤ f x)
     1 ≤ cfc f a := by
   simpa using algebraMap_le_cfc f 1 a h
 
-lemma CFC.one_le {a : A} (h : ∀ x ∈ spectrum R a, x ≤ 1) (ha : p a := by cfc_tac) :
+lemma CFC.le_one {a : A} (h : ∀ x ∈ spectrum R a, x ≤ 1) (ha : p a := by cfc_tac) :
     a ≤ 1 := by
   simpa using le_algebraMap_of_spectrum_le h
 
-lemma CFC.le_one {a : A} (h : ∀ x ∈ spectrum R a, 1 ≤ x) (ha : p a := by cfc_tac) :
+lemma CFC.one_le {a : A} (h : ∀ x ∈ spectrum R a, 1 ≤ x) (ha : p a := by cfc_tac) :
     1 ≤ a := by
   simpa using algebraMap_le_of_le_spectrum h
 
@@ -977,11 +977,11 @@ lemma one_le_cfc_iff (f : R → R) (a : A)
     1 ≤ cfc f a ↔ ∀ x ∈ spectrum R a, 1 ≤ f x := by
   simpa using algebraMap_le_cfc_iff f 1 a
 
-lemma CFC.one_le_iff (a : A) (ha : p a := by cfc_tac) :
+lemma CFC.le_one_iff (a : A) (ha : p a := by cfc_tac) :
     a ≤ 1 ↔ ∀ x ∈ spectrum R a, x ≤ 1 := by
   simpa using le_algebraMap_iff_spectrum_le (r := (1 : R)) (a := a)
 
-lemma CFC.le_one_iff (a : A) (ha : p a := by cfc_tac) :
+lemma CFC.one_le_iff (a : A) (ha : p a := by cfc_tac) :
     1 ≤ a ↔ ∀ x ∈ spectrum R a, 1 ≤ x := by
   simpa using algebraMap_le_iff_le_spectrum (r := (1 : R)) (a := a)
 
