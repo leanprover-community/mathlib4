@@ -15,22 +15,8 @@ jobs:
 
     - name: Get labels
       run: |
-          labels="$(gh api --jq '.labels.[].name' "${PR}")"
-          #printf 'Labels:\n---\n%s\n---\n' "${labels}"
-          #topic="generic"
-          #printf '%s' "${labels}" | grep "^t-"
-          tlabels="$(printf '%s\n' "${labels}" | grep -- '^t-' || printf 'generic')"
+          tlabels="$(gh api --jq '.labels.[].name' "${PR}" | grep -- '^t-' || printf 'generic')"
           printf 't-labels:\n---\n%s\n---\n' "${tlabels}"
-          #printf 'topics:\n%s\n' "${tlabels}"
-          #t_label=""
-          #count=0
-          #while read -r label; do
-          #  printf $'inspecting "%s"\n' "${label}"
-          #  if [[ "$label" == t-* ]]; then
-          #    t_label="$label"
-          #    count=$((count + 1))
-          #  fi
-          #done < <(jq -r '.[].name' <<< "${{ github.event.pull_request.labels }}")
           if [[ "$(wc -l <<<"${tlabels}")" -ne 1 ]]; then
             tlabels="generic"
           fi
