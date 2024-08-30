@@ -26,7 +26,7 @@ jobs:
           topic="generic"
           t_label=""
           count=0
-          for label in ${{ github.event.pull_request.labels[*].name }}; do
+          for label in "${{ github.event.pull_request.labels[*].name }}"; do
             if [[ $label == t-* ]]; then
               t_label=$label
               count=$((count + 1))
@@ -35,7 +35,7 @@ jobs:
           if [[ $count -eq 1 ]]; then
             topic=$t_label
           fi
-          echo "::set-output name=topic::maintainer merge: ${topic}"
+          echo "name=topic::maintainer merge: ${topic}" >> $GITHUB_OUTPUT
 
       - name: Send message on Zulip
         uses: zulip/github-actions-zulip/send-message@v1
