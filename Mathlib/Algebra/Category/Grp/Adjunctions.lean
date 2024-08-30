@@ -178,19 +178,12 @@ def MonCat.units : MonCat.{u} ⥤ Grp.{u} where
 
 /-- The forgetful-units adjunction between `Grp` and `MonCat`. -/
 def Grp.forget₂MonAdj : forget₂ Grp MonCat ⊣ MonCat.units.{u} where
-  homEquiv X Y :=
-    { toFun := fun f => MonoidHom.toHomUnits f
-      invFun := fun f => (Units.coeHom Y).comp f
-      left_inv := fun f => MonoidHom.ext fun _ => rfl
-      right_inv := fun f => MonoidHom.ext fun _ => Units.ext rfl }
   unit :=
     { app := fun X => { (@toUnits X _).toMonoidHom with }
       naturality := fun X Y f => MonoidHom.ext fun x => Units.ext rfl }
   counit :=
     { app := fun X => Units.coeHom X
       naturality := by intros; exact MonoidHom.ext fun x => rfl }
-  homEquiv_unit := MonoidHom.ext fun _ => Units.ext rfl
-  homEquiv_counit := MonoidHom.ext fun _ => rfl
 
 instance : MonCat.units.{u}.IsRightAdjoint :=
   ⟨_, ⟨Grp.forget₂MonAdj⟩⟩
@@ -205,19 +198,12 @@ def CommMonCat.units : CommMonCat.{u} ⥤ CommGrp.{u} where
 
 /-- The forgetful-units adjunction between `CommGrp` and `CommMonCat`. -/
 def CommGrp.forget₂CommMonAdj : forget₂ CommGrp CommMonCat ⊣ CommMonCat.units.{u} where
-  homEquiv X Y :=
-    { toFun := fun f => MonoidHom.toHomUnits f
-      invFun := fun f => (Units.coeHom Y).comp f
-      left_inv := fun f => MonoidHom.ext fun _ => rfl
-      right_inv := fun f => MonoidHom.ext fun _ => Units.ext rfl }
   unit :=
     { app := fun X => { (@toUnits X _).toMonoidHom with }
       naturality := fun X Y f => MonoidHom.ext fun x => Units.ext rfl }
   counit :=
     { app := fun X => Units.coeHom X
       naturality := by intros; exact MonoidHom.ext fun x => rfl }
-  homEquiv_unit := MonoidHom.ext fun _ => Units.ext rfl
-  homEquiv_counit := MonoidHom.ext fun _ => rfl
 
 instance : CommMonCat.units.{u}.IsRightAdjoint :=
   ⟨_, ⟨CommGrp.forget₂CommMonAdj⟩⟩

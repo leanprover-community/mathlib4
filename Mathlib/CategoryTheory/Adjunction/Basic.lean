@@ -288,6 +288,36 @@ theorem homEquiv_naturality_right_symm (f : X ⟶ G.obj Y) (g : Y ⟶ Y') :
 
 end CoreHomEquiv
 
+/-- This is an auxiliary data structure useful for constructing adjunctions.
+See `Adjunction.mkOfUnitCounit`.
+This structure won't typically be used anywhere else.
+-/
+-- Porting note(#5171): `has_nonempty_instance` linter not ported yet
+-- @[nolint has_nonempty_instance]
+structure CoreUnitCounit (F : C ⥤ D) (G : D ⥤ C) where
+  /-- The unit of an adjunction between `F` and `G` -/
+  unit : 𝟭 C ⟶ F.comp G
+  /-- The counit of an adjunction between `F` and `G`s -/
+  counit : G.comp F ⟶ 𝟭 D
+  /-- Equality of the composition of the unit, associator, and counit with the identity
+  `F ⟶ (F G) F ⟶ F (G F) ⟶ F = NatTrans.id F` -/
+  left_triangle :
+    whiskerRight unit F ≫ (Functor.associator F G F).hom ≫ whiskerLeft F counit =
+      NatTrans.id (𝟭 C ⋙ F) := by
+    aesop_cat
+  /-- Equality of the composition of the unit, associator, and counit with the identity
+  `G ⟶ G (F G) ⟶ (F G) F ⟶ G = NatTrans.id G` -/
+  right_triangle :
+    whiskerLeft G unit ≫ (Functor.associator G F G).inv ≫ whiskerRight counit G =
+      NatTrans.id (G ⋙ 𝟭 C) := by
+    aesop_cat
+
+namespace CoreUnitCounit
+
+attribute [simp] left_triangle right_triangle
+
+end CoreUnitCounit
+
 variable {F : C ⥤ D} {G : D ⥤ C}
 
 @[simps]
@@ -319,6 +349,22 @@ def mkOfHomEquiv (adj : CoreHomEquiv F G) : F ⊣ G :=
     homEquiv := adj.homEquiv
     homEquiv_unit := fun {X Y f} => by simp [← adj.homEquiv_naturality_right]
     homEquiv_counit := fun {X Y f} => by simp [← adj.homEquiv_naturality_left_symm] }
+
+/-- Construct an adjunction between functors `F` and `G` given a unit and counit for the adjunction
+satisfying the triangle identities. -/
+
+@[simps!]
+def mkOfUnitCounit (adj : CoreUnitCounit F G) : F ⊣ G where
+  unit := adj.unit
+  counit := adj.counit
+  left_triangle_components X := by
+    have := adj.left_triangle
+    rw [NatTrans.ext_iff, funext_iff] at this
+    simpa [-CoreUnitCounit.left_triangle] using this X
+  right_triangle_components Y := by
+    have := adj.right_triangle
+    rw [NatTrans.ext_iff, funext_iff] at this
+    simpa [-CoreUnitCounit.right_triangle] using this Y
 
 /-- The adjunction between the identity functor on a category and itself. -/
 def id : 𝟭 C ⊣ 𝟭 C where
