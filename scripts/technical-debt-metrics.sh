@@ -54,7 +54,12 @@ for i in ${!titlesAndRegexes[@]}; do
 done
 
 printf '%s|%s\n' "$(grep -c 'docBlame' scripts/nolints.json)" "documentation nolint entries"
-printf '%s|%s\n' "$(grep -c 'ERR_NUM_LIN' scripts/style-exceptions.txt)" "large files"
+# the exceptions for files exceeding the 1500 line limit are split between the `longFile` and
+# the text-based linters.
+printf '%s|%s\n' "$(
+    { grep 'ERR_NUM_LIN' scripts/style-exceptions.txt
+      grep '^set_option linter.style.longFile [0-9]*' $(git ls-files '*.lean') ; } | wc -l
+  )" "large files"
 printf '%s|%s\n' "$(git grep "^open .*Classical" | grep -v " in$" -c)" "bare open (scoped) Classical"
 # We print the number of files, not the number of matches --- hence, the nested grep.
 printf '%s|%s\n' "$(git grep -c 'autoImplicit true' | grep -c -v 'test')" "non-test files with autoImplicit true"

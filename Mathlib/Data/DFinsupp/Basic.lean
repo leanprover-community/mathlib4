@@ -2093,3 +2093,5 @@ instance DFinsupp.infinite_of_right {ι : Sort _} {π : ι → Sort _} [∀ i, I
   DFinsupp.infinite_of_exists_right (Classical.arbitrary ι)
 
 end FiniteInfinite
+
+set_option linter.style.longFile 2200

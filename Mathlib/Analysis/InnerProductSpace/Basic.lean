@@ -2416,3 +2416,5 @@ instance innerProductSpace : InnerProductSpace 𝕜 (Completion E) where
 end UniformSpace.Completion
 
 end UniformSpace.Completion
+
+set_option linter.style.longFile 2500

@@ -2028,3 +2028,5 @@ theorem quasiMeasurePreserving_symm (μ : Measure α) (e : α ≃ᵐ β) :
 end MeasurableEquiv
 
 end
+
+set_option linter.style.longFile 2200
