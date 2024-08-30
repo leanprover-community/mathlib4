@@ -298,7 +298,8 @@ theorem dcongr_arg {ι : Type*} {F G : ι → C} (α : ∀ i, F i ⟶ G i) {i j 
   subst h
   simp
 
-lemma InducedCategory.eqToHom_hom {F : C → D} {X Y : InducedCategory D F} (h : X = Y) :
+lemma InducedCategory.eqToHom_hom {ι : Type*} {F : ι → C} {X Y : InducedCategory C F}
+    (h : X = Y) :
     (eqToHom h).hom = eqToHom (by rw [h]) := by subst h; rfl
 
 end CategoryTheory
