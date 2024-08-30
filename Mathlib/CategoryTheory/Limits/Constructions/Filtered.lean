@@ -70,8 +70,11 @@ def liftToFinsetColimitCocone [HasFilteredColimitsOfSize.{w, w} C] (F : Discrete
           rfl
         · aesop_cat }
 
+variable (C) (α)
+
 /-- The functor taking a functor `Discrete α ⥤ C` to a functor `Finset (Discrete α) ⥤ C` by taking
 coproducts. -/
+@[simps!]
 def liftToFinset : (Discrete α ⥤ C) ⥤ (Finset (Discrete α) ⥤ C) where
   obj := liftToFinset.obj
   map := fun β => { app := fun _ => Sigma.map (fun x => β.app x.val) }
@@ -98,5 +101,25 @@ theorem has_limits_of_finite_and_cofiltered [HasFiniteLimits C]
     [HasCofilteredLimitsOfSize.{w, w} C] : HasLimitsOfSize.{w, w} C :=
   have : HasProducts.{w} C := hasProducts_of_finite_and_cofiltered
   has_limits_of_hasEqualizers_and_products
+
+namespace CoproductsFromFiniteFiltered
+
+variable [HasFiniteCoproducts C] [HasFilteredColimitsOfSize.{w, w} C]
+
+local instance : HasColimitsOfShape (Discrete α) C := hasCoproducts_of_finite_and_filtered α
+
+def liftToFinsetColimIso : liftToFinset C α ⋙ colim ≅ colim :=
+  NatIso.ofComponents
+    (fun F => Iso.symm <| colimit.isoColimitCocone (liftToFinsetColimitCocone F))
+    (fun {F G} β => by
+      simp only [Functor.comp_obj, colim_obj, Functor.comp_map, colim_map, Iso.symm_hom]
+      ext J
+      simp only [liftToFinset_obj_obj, ι_colimMap_assoc, liftToFinset_map_app]
+      ext ⟨j, hj⟩
+      have := colimit.isoColimitCocone_ι_inv_assoc (liftToFinsetColimitCocone F) j (colimMap β)
+      simp at this ⊢
+      sorry)
+
+end CoproductsFromFiniteFiltered
 
 end CategoryTheory.Limits
