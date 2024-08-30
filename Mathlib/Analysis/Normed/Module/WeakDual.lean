@@ -396,8 +396,8 @@ lemma existance'' [ProperSpace 𝕜₁] (hC₁ : IsClosed C)
 
 lemma existance''' [ProperSpace 𝕜₁] (hC₁ : IsClosed C)
     (h : polar 𝕜₁ s ∩ C ∩ polar 𝕜₁ (U (n+1)) = ∅) :
-    ∃ u : Finset (U (E := E₁) (n + 1)),
-    polar 𝕜₁ (s ∪ u.toSet) ∩ C ∩ polar 𝕜₁ (U (n+2)) = ∅ := by
+    ∃ F : Finset (U (E := E₁) (n + 1)),
+    polar 𝕜₁ (s ∪ F.toSet) ∩ C ∩ polar 𝕜₁ (U (n+2)) = ∅ := by
   obtain ⟨u,hu⟩ := existance C s n hC₁ h
   use u
   rw [polar_union]
