@@ -526,7 +526,7 @@ theorem id_comp (f : M →[L] N) : (id L N).comp f = f :=
 end Hom
 
 /-- Any element of a `HomClass` can be realized as a first_order homomorphism. -/
-def HomClass.toHom {F M N} [L.Structure M] [L.Structure N] [FunLike F M N]
+@[simps] def HomClass.toHom {F M N} [L.Structure M] [L.Structure N] [FunLike F M N]
     [HomClass L F M N] : F → M →[L] N := fun φ =>
   ⟨φ, HomClass.map_fun φ, HomClass.map_rel φ⟩
 
@@ -681,7 +681,7 @@ theorem refl_toHom : (refl L M).toHom = Hom.id L M :=
 end Embedding
 
 /-- Any element of an injective `StrongHomClass` can be realized as a first_order embedding. -/
-def StrongHomClass.toEmbedding {F M N} [L.Structure M] [L.Structure N] [FunLike F M N]
+@[simps] def StrongHomClass.toEmbedding {F M N} [L.Structure M] [L.Structure N] [FunLike F M N]
     [EmbeddingLike F M N] [StrongHomClass L F M N] : F → M ↪[L] N := fun φ =>
   ⟨⟨φ, EmbeddingLike.injective φ⟩, StrongHomClass.map_fun φ, StrongHomClass.map_rel φ⟩
 
@@ -895,7 +895,7 @@ theorem comp_right_inj (h : M ≃[L] N) (f g : N ≃[L] P) : f.comp h = g.comp h
 end Equiv
 
 /-- Any element of a bijective `StrongHomClass` can be realized as a first_order isomorphism. -/
-def StrongHomClass.toEquiv {F M N} [L.Structure M] [L.Structure N] [EquivLike F M N]
+@[simps] def StrongHomClass.toEquiv {F M N} [L.Structure M] [L.Structure N] [EquivLike F M N]
     [StrongHomClass L F M N] : F → M ≃[L] N := fun φ =>
   ⟨⟨φ, EquivLike.inv φ, EquivLike.left_inv φ, EquivLike.right_inv φ⟩, StrongHomClass.map_fun φ,
     StrongHomClass.map_rel φ⟩
