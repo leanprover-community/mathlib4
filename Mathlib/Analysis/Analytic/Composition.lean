@@ -419,7 +419,7 @@ theorem id_comp (p : FormalMultilinearSeries 𝕜 E F) (h : p 0 = 0) : (id 𝕜 
       rfl
     · simp
 
-/-! ### Summability properties of the composition of formal power series-/
+/-! ### Summability properties of the composition of formal power series -/
 
 
 section

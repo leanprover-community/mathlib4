@@ -134,9 +134,9 @@ theorem derivative_smul {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarT
 @[simp]
 theorem iterate_derivative_smul {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R]
     (s : S) (p : R[X]) (k : ℕ) : derivative^[k] (s • p) = s • derivative^[k] p := by
-  induction' k with k ih generalizing p
-  · simp
-  · simp [ih]
+  induction k generalizing p with
+  | zero => simp
+  | succ k ih => simp [ih]
 
 @[simp]
 theorem iterate_derivative_C_mul (a : R) (p : R[X]) (k : ℕ) :
@@ -420,9 +420,11 @@ theorem dvd_iterate_derivative_pow (f : R[X]) (n : ℕ) {m : ℕ} (c : R) (hm : 
 
 theorem iterate_derivative_X_pow_eq_natCast_mul (n k : ℕ) :
     derivative^[k] (X ^ n : R[X]) = ↑(Nat.descFactorial n k : R[X]) * X ^ (n - k) := by
-  induction' k with k ih
-  · erw [Function.iterate_zero_apply, tsub_zero, Nat.descFactorial_zero, Nat.cast_one, one_mul]
-  · rw [Function.iterate_succ_apply', ih, derivative_natCast_mul, derivative_X_pow, C_eq_natCast,
+  induction k with
+  | zero =>
+    erw [Function.iterate_zero_apply, tsub_zero, Nat.descFactorial_zero, Nat.cast_one, one_mul]
+  | succ k ih =>
+    rw [Function.iterate_succ_apply', ih, derivative_natCast_mul, derivative_X_pow, C_eq_natCast,
       Nat.descFactorial_succ, Nat.sub_sub, Nat.cast_mul]
     simp [mul_comm, mul_assoc, mul_left_comm]
 
