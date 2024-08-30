@@ -1143,6 +1143,39 @@ lemma linearIndependent_algHom_toLinearMap' (K M L) [CommRing K]
   simp_rw [Algebra.smul_def, mul_one]
   exact NoZeroSMulDivisors.algebraMap_injective K L
 
+/-- Let $L$ be a field, $n \geq 1$ and $\alpha_1, \ldots, \alpha_n \in L$pairwise distinct elements
+of $L$. Then there exists an $e \geq 0$ such that $\sum_{i = 1, \ldots, n} \alpha_i^e \not = 0$.
+
+[Stacks: Lemma 0EM9](https://stacks.math.columbia.edu/tag/0EM9) -/
+theorem sum_of_pow_ne_zero_of_ne {n : ℕ} {L : Type u} [Field L] {α : Fin n → L} (hn₀ : n > 0)
+    (hne : ∀ i j : Fin n, i ≠ j → α i ≠ α j) : ∃ (e : ℕ), ∑ i, (α i) ^ e ≠ 0 := by
+  by_contra h₀; push_neg at h₀
+  let f : Fin n ↪ Multiplicative ℕ →* L :=
+    ⟨fun (i : Fin n) ↦ ⟨⟨fun e ↦ (α i) ^ (Multiplicative.toAdd e), by
+      simp only [toAdd_one, pow_zero]⟩, by
+        simp only [toAdd_mul, Multiplicative.forall, toAdd_ofAdd]
+        exact fun a b => pow_add (α i) a b⟩, fun a b heq => by
+    simp only [MonoidHom.mk.injEq, OneHom.mk.injEq] at heq
+    have : ∀ e : Multiplicative ℕ, α a ^ Multiplicative.toAdd e = α b ^ Multiplicative.toAdd e :=
+      fun e => congrFun heq (Multiplicative.toAdd e)
+    exact Decidable.byContradiction fun aneb ↦ hne a b aneb <|
+      (pow_one (α a)).symm.trans ((this (Multiplicative.ofAdd 1)).trans (pow_one (α b)))⟩
+  let s : Finset ((Multiplicative ℕ) →* L) := Finset.map f Finset.univ
+  have h' : ∑ i ∈ s, 1 • ⇑i = 0 := funext fun e => by
+    have h₀ := h₀ (Multiplicative.toAdd e)
+    simp only [one_smul, Pi.zero_apply, Finset.sum_apply]
+    let ϕ : (i : Fin n) → (i ∈ Finset.univ) → (Multiplicative ℕ →* L) := fun i ↦ (fun _ ↦ f i)
+    simpa only [← h₀] using (Finset.sum_bij ϕ (fun ⟨i, hi⟩ ↦ ((Finset.mem_map' f).mpr))
+      (fun _ _ _ _ hij => by simpa [ϕ] using hij) (fun x hx => by simpa [ϕ] using
+        ⟨(Finset.mem_map.mp hx).choose, (Finset.mem_map.mp hx).choose_spec.2⟩)
+          (fun _ _ => by simpa only [ϕ] using by exact rfl)).symm
+  have := linearIndependent_iff'.mp (linearIndependent_monoidHom (Multiplicative ℕ) L) s (fun _ ↦ 1)
+  simp only [one_smul] at h'
+  simp only [one_smul, one_ne_zero, imp_false] at this
+  have h₁' : f (Fin.mk 0 hn₀) ∈ s := by simp only [Finset.mem_map', Finset.mem_univ, s]
+  rw [Finset.eq_empty_of_forall_not_mem (this h')] at h₁'
+  tauto
+
 theorem le_of_span_le_span [Nontrivial R] {s t u : Set M} (hl : LinearIndependent R ((↑) : u → M))
     (hsu : s ⊆ u) (htu : t ⊆ u) (hst : span R s ≤ span R t) : s ⊆ t := by
   have :=
