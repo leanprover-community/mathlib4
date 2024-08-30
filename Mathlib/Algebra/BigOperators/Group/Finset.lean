@@ -1178,7 +1178,17 @@ lemma mulSupport_prod (s : Finset ι) (f : ι → α → β) :
   simp only [mulSupport_subset_iff', Set.mem_iUnion, not_exists, nmem_mulSupport]
   exact fun x ↦ prod_eq_one
 
-@[to_additive]
+/-- The product of a function `g` over the image of a finset `I` by a function `f` is equal to
+the product over `I` of `g ∘ f`.
+This lemma supposes that the images by `f` of two distinct elements of `I` are different,
+unless they are both `⊥` (hypothesis `hf_disj`), and that `g ⊥ = 1`.
+If `f` is injective on `I`, use `Finset.prod_image` instead. See also `Finset.prod_map`. -/
+@[to_additive
+"The sum of a function `g` over the image of a finset `I` by a function `f` is equal to
+the sum over `I` of `g ∘ f`.
+This lemma supposes that the images by `f` of two distinct elements of `I` are different,
+unless they are both `⊥` (hypothesis `hf_disj`), and that `g ⊥ = 0`.
+If `f` is injective on `I`, use `Finset.sum_image` instead. See also `Finset.sum_map`."]
 lemma prod_image_of_disjoint [PartialOrder α] [OrderBot α] [DecidableEq α]
     (hg_bot : g ⊥ = 1) {f : ι → α} {I : Finset ι} (hf_disj : (I : Set ι).PairwiseDisjoint f) :
     ∏ s in I.image f, g s = ∏ i in I, g (f i) := by
