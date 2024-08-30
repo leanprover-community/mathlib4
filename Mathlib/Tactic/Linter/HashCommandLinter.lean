@@ -6,7 +6,6 @@ Authors: Damiano Testa
 
 import Mathlib.Init
 import Lean.Elab.Command
-import Lean.Linter.Util
 import Batteries.Lean.HashSet
 
 /-!

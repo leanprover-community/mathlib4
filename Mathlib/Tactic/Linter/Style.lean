@@ -6,7 +6,6 @@ Authors: Michael Rothgang
 
 import Mathlib.Init
 import Lean.Elab.Command
-import Lean.Linter.Util
 
 /-!
 ## Style linters
