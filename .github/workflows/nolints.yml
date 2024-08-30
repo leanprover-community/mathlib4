@@ -1,10 +1,8 @@
 name: update nolints
 
 on:
-  push:
-    branches-ignore:
-      # ignore tmp branches used by bors
-      - 'staging.tmp*'
+  schedule:
+    - cron: "0 0 * * 0"
 
 jobs:
   build:
@@ -76,7 +74,6 @@ jobs:
           git config --unset http.https://github.com/.extraheader
 
       - name: file a new PR to update nolints.json and style-exceptions.txt
-        shell: bash
         run: ./scripts/update_nolints_CI.sh
         env:
           DEPLOY_GITHUB_TOKEN: ${{ secrets.UPDATE_NOLINTS_TOKEN }}
