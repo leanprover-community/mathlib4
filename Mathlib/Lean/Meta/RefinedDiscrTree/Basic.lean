@@ -190,22 +190,24 @@ instance : ToFormat StackEntry := ⟨StackEntry.format⟩
 This is used for computing the keys one by one. -/
 structure LazyEntry (α : Type) where
   /-- The stack, used to emulate recursion. -/
-  stack         : List StackEntry := []
+  stack   : List StackEntry := []
+  /-- The metavariable context, which may contain variables appearing in this entry. -/
+  mctx    : MetavarContext
   /-- The `MVarId` assignments for converting into `.star` keys. -/
-  stars         : RBMap MVarId Nat (·.name.quickCmp ·.name) := {}
+  stars   : RBMap MVarId Nat (·.name.quickCmp ·.name) := {}
   /-- The number to be used for the next new `.star` key. -/
-  nStars        : Nat := 0
+  nStars  : Nat := 0
   /-- The `Key`s that have already been computed. -/
-  results       : List Key := []
+  results : List Key := []
   /-- The cache of past computations that have multiple possible outcomes. -/
-  cache         : AssocList Expr (List Key) := .nil
+  cache   : AssocList Expr (List Key) := .nil
   /-- The return value. -/
-  val           : α
+  val     : α
 
 variable {α : Type}
 
 instance [Inhabited α] : Inhabited (LazyEntry α) where
-  default := { val := default }
+  default := { val := default, mctx := {} }
 
 private def LazyEntry.format [ToFormat α] (entry : LazyEntry α) : Format :=
   let results := if entry.results matches [] then f!"" else f!"results: {entry.results}, "

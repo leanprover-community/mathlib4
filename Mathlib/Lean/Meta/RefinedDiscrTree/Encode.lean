@@ -8,9 +8,11 @@ import Batteries.Data.List.Basic
 
 We compute the encoding of and expression in a lazy way.
 This is done by computing only one `Key` at a time,
-and storing the state of the computation in a `LazyEntry α`.
+and storing the state of the remaining computation in a `LazyEntry α`.
 
-Each step is computed by `evalLazyEntry : LazyEntry → MetaM (List (Key × LazyEntry α) ⊕ α)`
+Each step is computed by `evalLazyEntry : LazyEntry → MetaM (List (Key × LazyEntry α) ⊕ α)`.
+
+The first step, which is used in initializing the tree, is computed by `initializeLazyEntry`.
 
 -/
 
@@ -143,10 +145,14 @@ private structure Context where
   config : WhnfCoreConfig
 
 
-/-- The monad used for evaluating a `LazyEntr α`. -/
+/-- The monad used for evaluating a `LazyEntry α`. -/
 private abbrev LazyM (α : Type) := ReaderT Context StateRefT (LazyEntry α) MetaM
 
 variable {α : Type}
+
+private def LazyM.run {β : Type} (k : LazyM α β) (context : Context) (entry : LazyEntry α) :
+    MetaM (β × LazyEntry α) :=
+  withMCtx entry.mctx do k.run context |>.run entry
 
 private def mkStar (mvarId : MVarId) : LazyM α Key :=
   modifyGet fun entry =>
@@ -253,9 +259,9 @@ private def encodingStepAux (e : Expr) (lambdas : List FVarId) (root : Bool) (en
             let arg := arg.getD tmpStar
             let arg ← makeStackEntry arg
             modify fun s => { s with stack := arg :: s.stack }
-          return .const n args.size).run (← read) |>.run entry
+          return .const n args.size).run (← read) entry
 
-  return [← encodingStepAuxAux e lambdas root |>.run (← read) |>.run entry]
+  return [← encodingStepAuxAux e lambdas root |>.run (← read) entry]
 
 private def encodingStepAux' (e : Expr) (lambdas : List FVarId) (root : Bool) : LazyM α Key := do
   unless root do
@@ -284,7 +290,7 @@ private def etaPossibilities (e : Expr) (lambdas : List FVarId)
   | _, _ => return [])
 
 /-- run `etaPossibilities`, and cache the result if there are multiple possibilities. -/
-@[specialize]
+@[inline]
 private def cacheEtaPossibilities (e original : Expr) (lambdas : List FVarId)
     (cache : AssocList Expr (List Key))
     (ifCached : List Key → (Key × LazyEntry α))
@@ -325,12 +331,12 @@ private def encodingStep (original : Expr) (root : Bool) (entry : LazyEntry α) 
   lambdaTelescopeReduce original [] (← read).config
     (fun lambdas => do
       let (key, entry) := mkNewStar entry
-      let (key, entry) ← withLams lambdas (pure key) |>.run (← read) |>.run entry
+      let (key, entry) ← withLams lambdas (pure key) |>.run (← read) entry
       pure ([(key, entry)]))
-    fun e lambdas => do
-  cacheEtaPossibilities e original lambdas entry.cache
-    (fun | key :: keys => (key, { entry with results := keys }) | [] => (panic! "", entry))
-    (fun e lambdas => encodingStepAux e lambdas root entry)
+    (fun e lambdas => do
+      cacheEtaPossibilities e original lambdas entry.cache
+        (fun | key :: keys => (key, { entry with results := keys }) | [] => (panic! "", entry))
+        (fun e lambdas => encodingStepAux e lambdas root entry))
 
 /-- A single step in encoding an `Expr` into `Key`s. -/
 private def encodingStep' (original : Expr) (root : Bool) :
@@ -338,6 +344,18 @@ private def encodingStep' (original : Expr) (root : Bool) :
   lambdaTelescopeReduce original [] (← read).config
     (fun lambdas => withLams lambdas (modifyGet mkNewStar))
     (fun e lambdas => encodingStepAux' e lambdas root)
+
+/-- Encode `e` as a sequence of keys, computing only the first `Key`. -/
+def initializeLazyEntry (e : Expr) (val : α) (config : WhnfCoreConfig) :
+    MetaM (List (Key × LazyEntry α)) := do
+  let mctx ← getMCtx
+  encodingStep e true { val, mctx } |>.run { bvars := [], forbiddenVars := [], config}
+
+/-- Encode `e` as a sequence of keys, computing only the first `Key`. -/
+private def initializeLazyEntry' (e : Expr) (val : α) (config : WhnfCoreConfig) :
+    MetaM (Key × LazyEntry α) := do
+  let mctx ← getMCtx
+  encodingStep' e true |>.run { bvars := [], forbiddenVars := [], config} { val, mctx }
 
 
 private partial def processLazyEntryAux (entry : LazyEntry α) :
@@ -375,8 +393,7 @@ private partial def processLazyEntryAux' (entry : LazyEntry α) :
     return .inl (key, entry)
   | .expr info =>
     withLCtx info.lctx info.localInsts do
-    return .inl (
-      ← encodingStep' info.expr (root := false) |>.run { info with config := (← read)} |>.run entry)
+    return .inl (← encodingStep' info.expr false |>.run { info with config := (← read)} entry)
 
 /-- A single step in evaluating a `LazyEntry α`. -/
 def evalLazyEntry (entry : LazyEntry α) (config : WhnfCoreConfig) : MetaM (List (Key × LazyEntry α) ⊕ α) := do
@@ -392,44 +409,37 @@ private def evalLazyEntry' (entry : LazyEntry α) : ReaderT WhnfCoreConfig MetaM
   else
     processLazyEntryAux' entry
 
-/-- The first step in encoding an `Expr` into `Key`s. -/
-private def initializeLazyEntry (e : Expr) (val : α) (config : WhnfCoreConfig) :
-    MetaM (List (Key × LazyEntry α)) :=
-  encodingStep e true { val } |>.run { bvars := [], forbiddenVars := [], config}
 
-/-- The first step in encoding an `Expr` into `Key`s. -/
-private def initializeLazyEntry' (e : Expr) (val : α) (config : WhnfCoreConfig) :
-    MetaM (Key × LazyEntry α) :=
-  encodingStep' e true |>.run { bvars := [], forbiddenVars := [], config} |>.run { val }
-
-
-/-- Return as encodings of `e` as a `Array Key`. -/
-partial def encodeExpr (e : Expr) (config : WhnfCoreConfig) : MetaM (Array (List Key)) :=
+/-- Return as encodings of `e` as a `Array Key`.
+This is used for inserting `e` into a `RefinedDiscrTree`. -/
+partial def encodeExpr (e : Expr) (config : WhnfCoreConfig) : MetaM (Array (Array Key)) :=
   withReducible do
-    let (key, entry) ← initializeLazyEntry' e () config
-    go #[([key], entry)] #[]
+    let entries ← initializeLazyEntry e () config
+    let entries := entries.map fun (key, entry) => (#[key], entry)
+    go entries.toArray #[]
 where
-  go (todo : Array (List Key × LazyEntry Unit)) (result : Array (List Key)) :
-      MetaM (Array (List Key)) := do
+  go (todo : Array (Array Key × LazyEntry Unit)) (result : Array (Array Key)) :
+      MetaM (Array (Array Key)) := do
     if todo.isEmpty then
-      return result.map List.reverse
+      return result
     else
       let (keys, entry) := todo.back
       let todo := todo.pop
       match ← evalLazyEntry entry config with
       | .inl xs =>
-        let todo := xs.foldl (init := todo) (fun (key, entry) => ·.push (key :: keys, entry))
+        let todo := xs.foldl (init := todo) (fun (key, entry) => ·.push (keys.push key, entry))
         go todo result
       | .inr () =>
         go todo (result.push keys)
 
 
-/-- Return one encoding of `e` as a `Arary Key`. -/
-def encodeExpr' (e : Expr) (config : WhnfCoreConfig) : MetaM (List Key) := do
+/-- Return the canonical encoding of `e` as a `Array Key`.
+This is used for looking up `e` in a `RefinedDiscrTree`. -/
+def encodeExpr' (e : Expr) (config : WhnfCoreConfig) : MetaM (Key × List Key) := withReducible do
   let (key, entry) ← initializeLazyEntry' e () config
-  let mut result := [key]
+  let mut result := #[]
   let mut entry := entry
   repeat do match ← evalLazyEntry' entry |>.run config with
-    | .inl (key, entry') => entry := entry'; result := key :: result
+    | .inl (key, entry') => entry := entry'; result := result.push key
     | .inr () => break
-  return result.reverse
+  return (key, result.toList)
