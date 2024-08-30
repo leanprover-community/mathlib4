@@ -161,6 +161,7 @@ result for `AnalyticWithinOn`, as this requires a bit more work to show that loc
 be stitched together.
 -/
 
+set_option linter.multiGoal false in
 /-- `f` has power series `p` at `x` iff some local extension of `f` has that series -/
 lemma hasFPowerSeriesWithinOnBall_iff_exists_hasFPowerSeriesOnBall [CompleteSpace F] {f : E → F}
     {p : FormalMultilinearSeries 𝕜 E F} {s : Set E} {x : E} {r : ℝ≥0∞} :
