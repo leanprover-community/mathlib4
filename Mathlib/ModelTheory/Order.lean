@@ -56,6 +56,7 @@ end Order
 
 /-- A language is ordered if it has a symbol representing `≤`. -/
 class IsOrdered (L : Language.{u, v}) where
+  /-- The relation symbol representing `≤`. -/
   leSymb : L.Relations 2
 
 export IsOrdered (leSymb)
@@ -275,3 +276,4 @@ end order_to_structure
 end Language
 
 end FirstOrder
+#lint
