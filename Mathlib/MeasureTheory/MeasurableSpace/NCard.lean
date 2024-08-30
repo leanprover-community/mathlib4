@@ -19,9 +19,9 @@ variable {α : Type*} [Countable α]
 
 @[measurability]
 theorem measurable_encard : Measurable (Set.encard : Set α → ℕ∞) :=
-  ENat.measurable_iff.2 fun _n ↦ Countable.measurableSet <| countable_setOf_finite.mono fun _s hs ↦
+  ENat.measurable_iff.2 fun _n ↦ Countable.measurableSet <| Countable.setOf_finite.mono fun _s hs ↦
     finite_of_encard_eq_coe hs
 
 @[measurability]
 theorem measurable_ncard : Measurable (Set.ncard : Set α → ℕ) :=
-  (measurable_discrete ENat.toNat).comp measurable_encard
+  Measurable.of_discrete.comp measurable_encard
