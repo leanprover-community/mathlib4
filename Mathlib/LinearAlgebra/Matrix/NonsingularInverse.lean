@@ -504,6 +504,7 @@ lemma add_mul_mul_inv_mul_eq_one: (A+U*C*V)*(A⁻¹-A⁻¹*U*(C⁻¹+V*A⁻¹*U)
         simp only [Matrix.mul_add, Matrix.mul_inv_cancel_right_of_invertible, ← Matrix.mul_assoc]
       _ = 1 := by simp
 
+/-- If matrices `A`, `C`, and `C⁻¹ + V*A⁻¹*U` are invertible, then so is `A+U*C*V`-/
 noncomputable def add_mul_mul_inv: Invertible (A+U*C*V) := by
   apply Matrix.invertibleOfRightInverse _ _ (add_mul_mul_inv_mul_eq_one A U C V)
 
