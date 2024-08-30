@@ -83,9 +83,8 @@ def equivQuotMaximalIdealOfIsLocalization : R ⧸ p ≃+* Rₚ ⧸ maximalIdeal 
     refine ((inferInstanceAs <| (maximalIdeal Rₚ).IsPrime).mem_or_mem ?_).resolve_left this
     rw [mul_sub, IsLocalization.mul_mk'_eq_mk'_of_mul, IsLocalization.mk'_mul_cancel_left,
       ← map_mul, ← map_sub, ← Ideal.mem_comap, IsLocalization.AtPrime.comap_maximalIdeal Rₚ p,
-      mul_left_comm,
-      ← Ideal.Quotient.eq_zero_iff_mem, map_sub, map_mul, map_mul, hs, mul_inv_cancel₀, mul_one,
-      sub_self]
+      mul_left_comm, ← Ideal.Quotient.eq_zero_iff_mem, map_sub, map_mul, map_mul, hs,
+      mul_inv_cancel₀, mul_one, sub_self]
     rw [Ne, Ideal.Quotient.eq_zero_iff_mem]
     exact s.prop
 
