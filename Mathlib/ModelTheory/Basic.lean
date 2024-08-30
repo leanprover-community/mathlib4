@@ -268,10 +268,10 @@ variable (L) (M : Type w)
 class Structure where
   /-- Interpretation of the function symbols -/
   funMap : ∀ {n}, L.Functions n → (Fin n → M) → M :=
-    by intros; trivial
+    by exact fun {n} => (IsRelational.empty_functions _).elim
   /-- Interpretation of the relation symbols -/
   RelMap : ∀ {n}, L.Relations n → (Fin n → M) → Prop :=
-    by intros; trivial
+    by exact fun {n} => (IsAlgebraic.empty_relations _).elim
 
 variable (N : Type w') [L.Structure M] [L.Structure N]
 
