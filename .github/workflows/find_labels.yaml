@@ -15,6 +15,7 @@ jobs:
 
     - name: Get labels
       run: |
+          echo "${{ github.event.pull_request.labels }}"
           jq -r '.[].name' <<< "${{ github.event.pull_request.labels }}"
           topic="generic"
           t_label=""
