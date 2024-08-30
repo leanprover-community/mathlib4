@@ -7,7 +7,6 @@ Some proofs and docs came from mathlib3 `src/algebra/commute.lean` (c) Neil Stri
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Init.Logic
-import Mathlib.Tactic.Cases
 
 /-!
 # Semiconjugate elements of a semigroup

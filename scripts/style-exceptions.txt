@@ -22,13 +22,13 @@ Mathlib/Data/Matrix/Basic.lean : line 1 : ERR_NUM_LIN : 2700 file contains 2519 
 Mathlib/Data/Multiset/Basic.lean : line 1 : ERR_NUM_LIN : 2900 file contains 2725 lines, try to split it up
 Mathlib/Data/Num/Lemmas.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1576 lines, try to split it up
 Mathlib/Data/Ordmap/Ordset.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1580 lines, try to split it up
-Mathlib/Data/QPF/Multivariate/Basic.lean : line 76 : ERR_LIN : Line has 127 characters, which is more than 100
 Mathlib/Data/Real/EReal.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1778 lines, try to split it up
 Mathlib/Data/Seq/WSeq.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1622 lines, try to split it up
 Mathlib/Data/Set/Basic.lean : line 1 : ERR_NUM_LIN : 2300 file contains 2170 lines, try to split it up
 Mathlib/Data/Set/Finite.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1535 lines, try to split it up
 Mathlib/Data/Set/Function.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1740 lines, try to split it up
 Mathlib/Data/Set/Lattice.lean : line 1 : ERR_NUM_LIN : 2100 file contains 1932 lines, try to split it up
+Mathlib/Data/ZMod/Basic.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1533 lines, try to split it up
 Mathlib/LinearAlgebra/AffineSpace/AffineSubspace.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1693 lines, try to split it up
 Mathlib/LinearAlgebra/Dual.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1738 lines, try to split it up
 Mathlib/LinearAlgebra/Multilinear/Basic.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1775 lines, try to split it up
@@ -41,6 +41,7 @@ Mathlib/MeasureTheory/Integral/Lebesgue.lean : line 1 : ERR_NUM_LIN : 2200 file 
 Mathlib/MeasureTheory/Integral/SetIntegral.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1579 lines, try to split it up
 Mathlib/MeasureTheory/Integral/SetToL1.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1640 lines, try to split it up
 Mathlib/MeasureTheory/Measure/MeasureSpace.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2008 lines, try to split it up
+Mathlib/MeasureTheory/Measure/Typeclasses.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1531 lines, try to split it up
 Mathlib/Order/CompleteLattice.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1709 lines, try to split it up
 Mathlib/Order/ConditionallyCompleteLattice/Basic.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1549 lines, try to split it up
 Mathlib/Order/Filter/AtTopBot.lean : line 1 : ERR_NUM_LIN : 2000 file contains 1828 lines, try to split it up
