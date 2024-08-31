@@ -351,7 +351,7 @@ theorem listTransvecCol_get (i : Fin (listTransvecCol M).length) :
     (listTransvecCol M).get i =
       letI i' := Fin.cast (length_listTransvecCol M) i
       transvection (inl i') (inr unit) <| -M (inl i') (inr unit) / M (inr unit) (inr unit) :=
-  listTransvecCol_getElem ..
+  listTransvecCol_getElem _ i.isLt
 
 @[simp]
 theorem length_listTransvecRow : (listTransvecRow M).length = r := by simp [listTransvecRow]
@@ -367,7 +367,7 @@ theorem listTransvecRow_get (i : Fin (listTransvecRow M).length) :
     (listTransvecRow M).get i =
       letI i' := Fin.cast (length_listTransvecRow M) i
       transvection (inr unit) (inl i') <| -M (inr unit) (inl i') / M (inr unit) (inr unit) :=
-  listTransvecRow_getElem ..
+  listTransvecRow_getElem _ i.isLt
 
 /-- Multiplying by some of the matrices in `listTransvecCol M` does not change the last row. -/
 theorem listTransvecCol_mul_last_row_drop (i : Fin r ⊕ Unit) {k : ℕ} (hk : k ≤ r) :

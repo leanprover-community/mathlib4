@@ -76,12 +76,16 @@ def curry : (C × D ⥤ E) ⥤ C ⥤ D ⥤ E where
 /-- The equivalence of functor categories given by currying/uncurrying.
 -/
 @[simps!]
-def currying : C ⥤ D ⥤ E ≌ C × D ⥤ E :=
-  Equivalence.mk uncurry curry
-    (NatIso.ofComponents fun F =>
-        NatIso.ofComponents fun X => NatIso.ofComponents fun Y => Iso.refl _)
-    (NatIso.ofComponents fun F => NatIso.ofComponents (fun X => eqToIso (by simp))
-      (by intros X Y f; cases X; cases Y; cases f; dsimp at *; rw [← F.map_comp]; simp))
+def currying : C ⥤ D ⥤ E ≌ C × D ⥤ E where
+  functor := uncurry
+  inverse := curry
+  unitIso := NatIso.ofComponents (fun _ ↦ NatIso.ofComponents
+    (fun _ ↦ NatIso.ofComponents (fun _ ↦ Iso.refl _)))
+  counitIso := NatIso.ofComponents
+    (fun F ↦ NatIso.ofComponents (fun _ ↦ Iso.refl _) (by
+      rintro ⟨X₁, X₂⟩ ⟨Y₁, Y₂⟩ ⟨f₁, f₂⟩
+      dsimp at f₁ f₂ ⊢
+      simp only [← F.map_comp, prod_comp, Category.comp_id, Category.id_comp]))
 
 /-- `F.flip` is isomorphic to uncurrying `F`, swapping the variables, and currying. -/
 @[simps!]

@@ -47,7 +47,7 @@ theorem hasStrictDerivAt_log (hx : x ≠ 0) : HasStrictDerivAt log x⁻¹ x := b
 theorem hasDerivAt_log (hx : x ≠ 0) : HasDerivAt log x⁻¹ x :=
   (hasStrictDerivAt_log hx).hasDerivAt
 
-theorem differentiableAt_log (hx : x ≠ 0) : DifferentiableAt ℝ log x :=
+@[fun_prop] theorem differentiableAt_log (hx : x ≠ 0) : DifferentiableAt ℝ log x :=
   (hasDerivAt_log hx).differentiableAt
 
 theorem differentiableOn_log : DifferentiableOn ℝ log {0}ᶜ := fun _x hx =>
@@ -160,10 +160,11 @@ theorem ContDiff.log {n} (hf : ContDiff ℝ n f) (h : ∀ x, f x ≠ 0) :
     ContDiff ℝ n fun x => log (f x) :=
   contDiff_iff_contDiffAt.2 fun x => hf.contDiffAt.log (h x)
 
+@[fun_prop]
 theorem DifferentiableOn.log (hf : DifferentiableOn ℝ f s) (hx : ∀ x ∈ s, f x ≠ 0) :
     DifferentiableOn ℝ (fun x => log (f x)) s := fun x h => (hf x h).log (hx x h)
 
-@[simp]
+@[simp, fun_prop]
 theorem Differentiable.log (hf : Differentiable ℝ f) (hx : ∀ x, f x ≠ 0) :
     Differentiable ℝ fun x => log (f x) := fun x => (hf x).log (hx x)
 
