@@ -68,7 +68,8 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜
 
 open RCLike
 
-/-- **Hahn-Banach theorem** for continuous linear functions over `𝕜` satisfying `RCLike 𝕜`. -/
+/-- **Hahn-Banach theorem** for continuous linear functions over `𝕜`
+satisfying `IsRCLikeNormedField 𝕜`. -/
 theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : p →L[𝕜] 𝕜) :
     ∃ g : E →L[𝕜] 𝕜, (∀ x : p, g x = f x) ∧ ‖g‖ = ‖f‖ := by
   letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
@@ -112,8 +113,7 @@ open FiniteDimensional
 
 /-- Corollary of the **Hahn-Banach theorem**: if `f : p → F` is a continuous linear map
 from a submodule of a normed space `E` over `𝕜`, `𝕜 = ℝ` or `𝕜 = ℂ`,
-with a finite dimensional range,
-then `f` admits an extension to a continuous linear map `E → F`.
+with a finite dimensional range, then `f` admits an extension to a continuous linear map `E → F`.
 
 Note that contrary to the case `F = 𝕜`, see `exists_extension_norm_eq`,
 we provide no estimates on the norm of the extension.

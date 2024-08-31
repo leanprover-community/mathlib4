@@ -1059,7 +1059,7 @@ lemma map_neg_eq_conj [AddCommGroup G] (ψ : AddChar G K) (x : G) : ψ (-x) = co
 
 end AddChar
 
-namespace RCLike
+section
 
 /-- A mixin over a normed field, saying that the norm field structure is the same as `ℝ` or `ℂ`.
 To endow such a field with a compatible `RCLike` structure in a proof, use
@@ -1071,7 +1071,7 @@ instance {𝕜 : Type*} [h : RCLike 𝕜] : IsRCLikeNormedField 𝕜 := ⟨⟨h,
 
 /-- A copy of an `RCLike` field in which the `NormedField` field is adjusted to be become defeq
 to a propeq one. -/
-noncomputable def copy_of_normedField {𝕜 : Type*} (h : RCLike 𝕜) (hk : NormedField 𝕜)
+noncomputable def RCLike.copy_of_normedField {𝕜 : Type*} (h : RCLike 𝕜) (hk : NormedField 𝕜)
     (h'' : hk = h.toNormedField) : RCLike 𝕜 where
   __ := hk
   toPartialOrder := h.toPartialOrder
@@ -1116,4 +1116,4 @@ noncomputable def IsRCLikeNormedField.rclike (𝕜 : Type*)
   choose p hp using h.out
   exact p.copy_of_normedField hk hp
 
-end RCLike
+end
