@@ -71,11 +71,16 @@ instance : LargeCategory (FGModuleCat R) := by
   dsimp [FGModuleCat]
   infer_instance
 
-instance {M N : FGModuleCat R} : FunLike (M ⟶ N) M N :=
-  LinearMap.instFunLike
+instance : ConcreteCategory (FGModuleCat R) := by
+  dsimp [FGModuleCat]
+  infer_instance
 
-instance {M N : FGModuleCat R} : LinearMapClass (M ⟶ N) R M N :=
-  LinearMap.semilinearMapClass
+instance {M N : FGModuleCat R} : FunLike (M ⟶ N) M N :=
+  ConcreteCategory.instFunLike
+
+instance {M N : FGModuleCat R} : LinearMapClass (M ⟶ N) R M N where
+  map_add f := LinearMap.semilinearMapClass.map_add f.hom
+  map_smulₛₗ f := LinearMap.semilinearMapClass.map_smulₛₗ f.hom
 
 instance : ConcreteCategory (FGModuleCat R) := by
   dsimp [FGModuleCat]
@@ -110,10 +115,19 @@ instance : HasForget₂ (FGModuleCat.{u} R) (ModuleCat.{u} R) := by
   dsimp [FGModuleCat]
   infer_instance
 
-instance : (forget₂ (FGModuleCat R) (ModuleCat.{u} R)).Full where
-  map_surjective f := ⟨f, rfl⟩
+/-- The forgetful functor `FGModuleCat R ⥤ Module R` is fully faithful. -/
+def fullyFaithfulForget₂ : (forget₂ (FGModuleCat.{u} R) (ModuleCat.{u} R)).FullyFaithful :=
+  fullyFaithfulFullSubcategoryInclusion _
 
 variable {R}
+
+/-- Constructor for morphisms in `FGModuleCat R`. -/
+@[simps]
+def homMk {V W : FGModuleCat R} (f : V.obj ⟶ W.obj) : V ⟶ W where
+  hom := f
+
+instance : (forget₂ (FGModuleCat R) (ModuleCat.{u} R)).Full where
+  map_surjective f := ⟨homMk f, rfl⟩
 
 /-- Converts and isomorphism in the category `FGModuleCat R` to
 a `LinearEquiv` between the underlying modules. -/
@@ -126,8 +140,8 @@ def _root_.LinearEquiv.toFGModuleCatIso
     {V W : Type u} [AddCommGroup V] [Module R V] [Module.Finite R V]
     [AddCommGroup W] [Module R W] [Module.Finite R W] (e : V ≃ₗ[R] W) :
     FGModuleCat.of R V ≅ FGModuleCat.of R W where
-  hom := e.toLinearMap
-  inv := e.symm.toLinearMap
+  hom := homMk e.toLinearMap
+  inv := homMk e.symm.toLinearMap
   hom_inv_id := by ext x; exact e.left_inv x
   inv_hom_id := by ext x; exact e.right_inv x
 
@@ -187,7 +201,7 @@ instance forget₂Monoidal_linear : (forget₂Monoidal R).Linear R := by
   exact Functor.fullSubcategoryInclusionLinear _ _
 
 theorem Iso.conj_eq_conj {V W : FGModuleCat R} (i : V ≅ W) (f : End V) :
-    Iso.conj i f = LinearEquiv.conj (isoToLinearEquiv i) f :=
+    Iso.conj i f = homMk (LinearEquiv.conj (isoToLinearEquiv i) f.hom) := by
   rfl
 
 end CommRing
@@ -196,8 +210,11 @@ section Field
 
 variable (K : Type u) [Field K]
 
-instance (V W : FGModuleCat K) : Module.Finite K (V ⟶ W) :=
-  (by infer_instance : Module.Finite K (V →ₗ[K] W))
+instance (V W : FGModuleCat K) : Module.Finite K (V ⟶ W) := by
+  let e : (V ⟶ W) ≃ₗ[K] (V →ₗ[K] W) :=
+    LinearEquiv.ofBijective ((forget₂Monoidal K).toFunctor.mapLinearMap (R := K))
+      (fullyFaithfulForget₂ K).homEquiv.bijective
+  exact Module.Finite.equiv e.symm
 
 instance closedPredicateModuleFinite :
     MonoidalCategory.ClosedPredicate fun V : ModuleCat.{u} K ↦ Module.Finite K V where
@@ -226,8 +243,8 @@ def FGModuleCatDual : FGModuleCat K :=
 open CategoryTheory.MonoidalCategory
 
 /-- The coevaluation map is defined in `LinearAlgebra.coevaluation`. -/
-def FGModuleCatCoevaluation : 𝟙_ (FGModuleCat K) ⟶ V ⊗ FGModuleCatDual K V :=
-  coevaluation K V
+def FGModuleCatCoevaluation : 𝟙_ (FGModuleCat K) ⟶ V ⊗ FGModuleCatDual K V where
+  hom := coevaluation K V
 
 theorem FGModuleCatCoevaluation_apply_one :
     FGModuleCatCoevaluation K V (1 : K) =
@@ -236,8 +253,8 @@ theorem FGModuleCatCoevaluation_apply_one :
   coevaluation_apply_one K V
 
 /-- The evaluation morphism is given by the contraction map. -/
-def FGModuleCatEvaluation : FGModuleCatDual K V ⊗ V ⟶ 𝟙_ (FGModuleCat K) :=
-  contractLeft K V
+def FGModuleCatEvaluation : FGModuleCatDual K V ⊗ V ⟶ 𝟙_ (FGModuleCat K) where
+  hom := contractLeft K V
 
 @[simp]
 theorem FGModuleCatEvaluation_apply (f : FGModuleCatDual K V) (x : V) :
@@ -248,12 +265,14 @@ private theorem coevaluation_evaluation :
     letI V' : FGModuleCat K := FGModuleCatDual K V
     V' ◁ FGModuleCatCoevaluation K V ≫ (α_ V' V V').inv ≫ FGModuleCatEvaluation K V ▷ V' =
       (ρ_ V').hom ≫ (λ_ V').inv := by
+  apply (forget₂ _ (ModuleCat K)).map_injective
   apply contractLeft_assoc_coevaluation K V
 
 private theorem evaluation_coevaluation :
     FGModuleCatCoevaluation K V ▷ V ≫
         (α_ V (FGModuleCatDual K V) V).hom ≫ V ◁ FGModuleCatEvaluation K V =
       (λ_ V).hom ≫ (ρ_ V).inv := by
+  apply (forget₂ _ (ModuleCat K)).map_injective
   apply contractLeft_assoc_coevaluation' K V
 
 instance exactPairing : ExactPairing V (FGModuleCatDual K V) where
@@ -277,8 +296,9 @@ end FGModuleCat
 
 @[simp] theorem LinearMap.comp_id_fgModuleCat
     {R} [Ring R] {G : FGModuleCat.{u} R} {H : Type u} [AddCommGroup H] [Module R H]
-    (f : G →ₗ[R] H) : f.comp (𝟙 G) = f :=
+    (f : G →ₗ[R] H) : f.comp (𝟙 G.obj) = f :=
   Category.id_comp (ModuleCat.ofHom f)
+
 @[simp] theorem LinearMap.id_fgModuleCat_comp
     {R} [Ring R] {G : Type u} [AddCommGroup G] [Module R G] {H : FGModuleCat.{u} R}
     (f : G →ₗ[R] H) : LinearMap.comp (𝟙 H) f = f :=

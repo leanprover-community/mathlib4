@@ -115,6 +115,19 @@ open CategoryTheory.Limits
 instance : HasInitial (CommMon_ C) :=
   hasInitial_of_unique (trivial C)
 
+section
+
+variable {D : Type u₂} [Category.{v₂} D] (F : D ⥤ Mon_ C)
+  (hF : ∀ X, (β_ _ _).hom ≫ (F.obj X).mul = (F.obj X).mul)
+
+/-- Constructor for morphisms to `CommMon_ C`. -/
+@[simps! obj_toMon_ map_hom]
+def lift : D ⥤ CommMon_ C where
+  obj X := { F.obj X with mul_comm := hF X }
+  map f := homMk (F.map f)
+
+end
+
 end CommMon_
 
 namespace CategoryTheory.LaxBraidedFunctor
