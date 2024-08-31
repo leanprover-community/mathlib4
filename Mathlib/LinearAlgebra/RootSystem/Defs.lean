@@ -142,6 +142,24 @@ protected def flip : RootPairing ι R N M :=
     reflection_perm_coroot := P.reflection_perm_root }
 
 @[simp]
+lemma flip_root (P : RootPairing ι R M N) : P.flip.root = P.coroot :=
+  rfl
+
+@[simp]
+lemma flip_coroot (P : RootPairing ι R M N) : P.flip.coroot = P.root :=
+  rfl
+
+@[simp]
+lemma flip_reflection_perm (P : RootPairing ι R M N) (i : ι) :
+    P.flip.reflection_perm i = P.reflection_perm i :=
+  rfl
+
+@[simp]
+lemma flip_toLin_apply_apply (P : RootPairing ι R M N) (y : N) (x : M) :
+    (P.flip.toLin y) x = (P.toLin x) y :=
+  rfl
+
+@[simp]
 lemma flip_flip : P.flip.flip = P :=
   rfl
 

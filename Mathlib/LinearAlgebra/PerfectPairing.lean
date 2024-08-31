@@ -49,6 +49,25 @@ instance instFunLike : FunLike (PerfectPairing R M N) M (N →ₗ[R] R) where
   coe f := f.toLin
   coe_injective' x y h := by cases x; cases y; simpa using h
 
+@[ext]
+lemma ext {p q : PerfectPairing R M N} (h : ∀ x, p x = q x) : p = q := DFunLike.ext p q h
+
+/-- Copy of a `PerfectPairing` with a new `toLin` equal to the old one. Useful to fix definitional
+equalities. -/
+protected def copy (p : PerfectPairing R M N) (p' : M → N →ₗ[R] R) (h : p' = ⇑p) :
+    PerfectPairing R M N where
+  toLin :=
+  { toFun := fun x => p' x
+    map_add' := fun x y => h.symm ▸ p.toLin.map_add' x y
+    map_smul' := fun r x => h.symm ▸ p.toLin.map_smul' r x }
+  bijectiveLeft := h.symm ▸ p.bijectiveLeft
+  bijectiveRight := by
+    simp_rw [h]
+    exact p.bijectiveRight
+
+lemma toLin_apply (p : PerfectPairing R M N) {x : M} : p.toLin x = p x := by
+  rfl
+
 variable (p : PerfectPairing R M N)
 
 /-- Given a perfect pairing between `M` and `N`, we may interchange the roles of `M` and `N`. -/
@@ -57,7 +76,12 @@ protected def flip : PerfectPairing R N M where
   bijectiveLeft := p.bijectiveRight
   bijectiveRight := p.bijectiveLeft
 
-@[simp] lemma flip_flip : p.flip.flip = p := rfl
+@[simp]
+lemma flip_apply_apply {x : M} {y : N} : p.flip y x = p x y :=
+  rfl
+
+@[simp]
+lemma flip_flip : p.flip.flip = p := rfl
 
 /-- The linear equivalence from `M` to `Dual R N` induced by a perfect pairing. -/
 noncomputable def toDualLeft : M ≃ₗ[R] Dual R N :=

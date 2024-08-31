@@ -37,13 +37,17 @@ variable {R : Type u} [CommRing R]
 
 /-- The category of root pairings. -/
 structure RootPairingCat (R : Type u) [CommRing R] where
+  /-- The weight space of a root pairing. -/
   weight : Type v
   [weightIsAddCommGroup : AddCommGroup weight]
   [weightIsModule : Module R weight]
+  /-- The coweight space of a root pairing. -/
   coweight : Type v
   [coweightIsAddCommGroup : AddCommGroup coweight]
   [coweightIsModule : Module R coweight]
+  /-- The set that indexes roots and coroots. -/
   index : Type v
+  /-- The root pairing structure. -/
   pairing : RootPairing index R weight coweight
 
 attribute [instance] RootPairingCat.weightIsAddCommGroup RootPairingCat.weightIsModule
@@ -119,7 +123,7 @@ instance category : Category.{v, max (v+1) u} (RootPairingCat.{v} R) where
   id P := Hom.id P
   comp f g := Hom.comp g f
 
-/-- The endomorphism of a root pairing given by a reflection. Make this a Cat Hom?-/
+/-- The endomorphism of a root pairing given by a reflection. -/
 @[simps!]
 def reflection_hom {P : RootPairingCat R} (i : P.index) : Hom P P where
   weight_map := P.pairing.reflection i
@@ -131,9 +135,10 @@ def reflection_hom {P : RootPairingCat R} (i : P.index) : Hom P P where
       LinearEquiv.trans_apply]
     rw [RootPairing.reflection_apply, RootPairing.coreflection_apply]
     simp only [map_sub, map_smul, smul_eq_mul, LinearEquiv.apply_symm_apply,
-      PerfectPairing.toDualRight_apply, LinearMap.sub_apply, LinearMap.smul_apply, sub_right_inj]
-    erw [PerfectPairing.apply_apply_toDualRight_symm, LinearMap.flip_apply]
-    rw [mul_comm]
+      PerfectPairing.toDualRight_apply, LinearMap.sub_apply, LinearMap.smul_apply,
+      PerfectPairing.flip_apply_apply, sub_right_inj]
+    rw [PerfectPairing.toLin_apply, PerfectPairing.toLin_apply,
+      PerfectPairing.apply_apply_toDualRight_symm, mul_comm]
   root_weight_map := by ext; simp
   coroot_coweight_map := by ext; simp
 
