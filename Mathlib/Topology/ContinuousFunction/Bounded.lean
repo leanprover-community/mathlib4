@@ -1520,7 +1520,7 @@ section CompactlySupported
 def compactlySupported (α γ : Type*) [TopologicalSpace α] [NonUnitalNormedRing γ] :
     TwoSidedIdeal (α →ᵇ γ) :=
   .mk' {z | HasCompactSupport z} .zero .add .neg' .mul_left .mul_right
-  
+
 variable {α γ : Type*} [TopologicalSpace α] [NonUnitalNormedRing γ]
 
 @[inherit_doc]
@@ -1543,6 +1543,30 @@ lemma exist_norm_eq [c : Nonempty α] {f : α →ᵇ γ} (h : f ∈ C_cb(α, γ)
   · suffices f = 0 by simp [this]
     rwa [not_nonempty_iff_eq_empty, tsupport_eq_empty_iff, ← coe_zero, ← DFunLike.ext'_iff] at hs
 
+theorem norm_lt_iff_of_compactlySupported {f : α →ᵇ γ} (h : f ∈ C_cb(α, γ)) {M : ℝ}
+    (M0 : 0 < M) : ‖f‖ < M ↔ ∀ (x : α), ‖f x‖ < M := by
+  constructor
+  · intro hn x
+    exact lt_of_le_of_lt (norm_coe_le_norm f x) hn
+  · by_cases he : Nonempty α
+    · intro ha
+      obtain ⟨x, hx⟩ := exist_norm_eq h
+      rw [← hx]
+      exact ha x
+    · rw [not_nonempty_iff] at he
+      intro _
+      rw [norm_eq_zero_of_empty]
+      exact M0
+
+theorem norm_lt_iff_of_nonempty_compactlySupported [c : Nonempty α] {f : α →ᵇ γ}
+    (h : f ∈ C_cb(α, γ)) {M : ℝ} : ‖f‖ < M ↔ ∀ (x : α), ‖f x‖ < M := by
+  constructor
+  · intro hn x
+    exact lt_of_le_of_lt (norm_coe_le_norm f x) hn
+  · intro ha
+    obtain ⟨x, _⟩ := exists_true_iff_nonempty.mpr c
+    apply (norm_lt_iff_of_compactlySupported h (lt_of_le_of_lt (norm_nonneg (f x)) (ha x))).mpr ha
+
 theorem compactlySupported_eq_top_of_isCompact (h : IsCompact (Set.univ : Set α)) :
     C_cb(α, γ) = ⊤ :=
   eq_top_iff.mpr fun _ _ ↦ h.of_isClosed_subset (isClosed_tsupport _) (subset_univ _)
@@ -1560,11 +1584,11 @@ theorem compactlySupported_eq_top_iff [Nontrivial γ] :
   rw [eq_comm, Set.eq_univ_iff_forall]
   exact fun _ ↦ subset_tsupport _ <| by simpa [f]
 
-lemma HasCompactSupport_mul_continuous_compactlySupported (g : C(α, γ)) (f : C_cb(α ,γ)) :
+lemma hasCompactSupport_mul_of_continuous_compactlySupported (g : C(α, γ)) (f : C_cb(α, γ)) :
     HasCompactSupport (g * f : C(α, γ)) := HasCompactSupport.mul_left
-  ((mem_compactlySupported α γ).mp f.2)
+  (mem_compactlySupported.mp f.2)
 
-lemma Bounded_of_compactlySupported (g : C(α, γ)) (h : HasCompactSupport g) : ∃ (C : ℝ),
+lemma bounded_of_continuous_hasCompactSupport (g : C(α, γ)) (h : HasCompactSupport g) : ∃ (C : ℝ),
     ∀ (x y : α), dist (g x) (g y) ≤ C := by
   by_cases hs : (tsupport g).Nonempty
   · have : Continuous (fun x => ‖g x‖) := by
@@ -1596,12 +1620,12 @@ lemma Bounded_of_compactlySupported (g : C(α, γ)) (h : HasCompactSupport g) : 
 instance : SMul C(α, γ) C_cb(α, γ) where
   smul := fun (g : C(α, γ)) => (fun (f : C_cb(α, γ)) =>
     ⟨⟨g * f,
-    Bounded_of_compactlySupported α γ (g * f)
-      (HasCompactSupport_mul_continuous_compactlySupported α γ g f)⟩,
-    by apply (mem_compactlySupported α γ).mpr
+    bounded_of_continuous_hasCompactSupport (g * f : C(α, γ))
+      (hasCompactSupport_mul_of_continuous_compactlySupported g f)⟩,
+    by apply mem_compactlySupported.mpr
        rw [← BoundedContinuousFunction.coe_to_continuous_fun]
        simp only [ContinuousMap.coe_mul, ContinuousMap.coe_coe]
-       exact HasCompactSupport_mul_continuous_compactlySupported α γ g f
+       exact hasCompactSupport_mul_of_continuous_compactlySupported g f
     ⟩)
 
 end CompactlySupported
