@@ -618,15 +618,11 @@ lemma prod_totalDegree [Nontrivial R] {ι : Type*} (i : ι) (s : Finset R) :
   rw [mem_support_iff, prod_leadCoeff]
   exact one_ne_zero
 
-theorem euclDivd (S : σ → Finset R) (Sne : ∀ i, (S i).Nonempty) (f : MvPolynomial σ R) :
+theorem euclDivd [LinearOrder σ] (S : σ → Finset R) (Sne : ∀ i, (S i).Nonempty) (f : MvPolynomial σ R) :
     ∃ (h : σ → MvPolynomial σ R) (r : MvPolynomial σ R),
       f = Finset.univ.sum (fun i => (h i) * (S i).prod (fun (s : R) ↦ (X i - C s))) + r ∧
       (∀ i, (h i * (S i).prod (fun (s : R) ↦ (X i - C s))).totalDegree ≤ f.totalDegree) ∧
       (∀ i, r.weightedTotalDegree (Finsupp.single i 1) < (S i).card) := by
-  letI : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
-  haveI wfr : WellFoundedRelation (MvPolynomial σ R) := {
-    rel := Function.onFun (· < ·) fun f ↦ f.lexHomDegree
-    wf := WellFounded.onFun wellFounded_lt }
   by_cases hD0 : f.lexHomDegree = ⊥
   · use fun _ ↦ 0, f
     rw [lexHomDegree_eq_bot_iff] at hD0
@@ -654,7 +650,7 @@ theorem euclDivd (S : σ → Finset R) (Sne : ∀ i, (S i).Nonempty) (f : MvPoly
     split_ifs with h
     · simp [h]
     · simp [sub_zero, Ne.symm h]
-  haveI hf'D : f'.lexHomDegree < f.lexHomDegree := by
+  haveI hf'D : f'.lexHomDegree < f.lexHomDegree := by 
     rw [hd]
     unfold lexHomDegree
     rw [Finset.sup_lt_iff]
@@ -777,7 +773,7 @@ theorem euclDivd (S : σ → Finset R) (Sne : ∀ i, (S i).Nonempty) (f : MvPoly
         apply lt_of_lt_of_le (b := (S i).card)
         simp only [bot_eq_zero', Finset.card_pos, Sne i]
         exact Nat.le_add_left (S i).card d'.degree
-    haveI hf''2 : f''.lexHomDegree < f.lexHomDegree := by
+    haveI hf''2 : f''.lexHomDegree < f.lexHomDegree := by -- hf''2
       rw [LexHom.lt_iff]
       left
       simp only [lexHomDegree_degree]
@@ -834,6 +830,22 @@ theorem euclDivd (S : σ → Finset R) (Sne : ∀ i, (S i).Nonempty) (f : MvPoly
       apply lt_of_le_of_lt (weightedTotalDegree_add _)
       simp only [sup_lt_iff]
       exact ⟨Hr' i, Hr'' i⟩
+termination_by LexHom.wellFoundedLT.wf.wrap f.lexHomDegree
+decreasing_by 
+· change f'.lexHomDegree < f.lexHomDegree
+  rw [hd]
+  unfold lexHomDegree
+  rw [Finset.sup_lt_iff]
+  · intro c hc
+    simp only [hf', Finset.mem_erase] at hc
+    rw [lt_iff_le_and_ne, ← hd]
+    exact ⟨le_lexHomDegree hc.2, fun h ↦ hc.1 (toLexHom.injective h)⟩
+  · exact Ne.bot_lt' fun a ↦ hD0 a.symm
+· change f''.lexHomDegree < f.lexHomDegree 
+  rw [LexHom.lt_iff]
+  left
+  simp only [lexHomDegree_degree]
+  exact hf''_degree
 
 /- -- OLD VERSION
 theorem euclDivd (S : σ → Finset R) (Sne : ∀ i, (S i).Nonempty)
@@ -1059,6 +1071,10 @@ theorem Alon1 [IsDomain R] (S : σ → Finset R) (Sne : ∀ i, (S i).Nonempty)
     ∃ (h : σ → MvPolynomial σ R)
       (_ : ∀ i, (h i * (S i).prod (fun s ↦ X i - C s)).totalDegree ≤ f.totalDegree),
     f = Finset.univ.sum (fun i ↦ (h i) * (S i).prod (fun (s : R) ↦ (X i - C s))) := by
+  letI : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
+--  haveI wfr : WellFoundedRelation (MvPolynomial σ R) := {
+--    rel := Function.onFun (· < ·) fun f ↦ f.lexHomDegree
+--    wf := WellFounded.onFun wellFounded_lt }
   obtain ⟨h, r, hf, hh, hr⟩ := euclDivd S Sne f
   use h, hh
   simp only [hf, add_right_eq_self]
