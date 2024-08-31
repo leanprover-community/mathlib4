@@ -54,8 +54,6 @@ theorem not_injective_limitation_set : ¬ InjOn g (Iio (ord <| succ #α)) := by
   rw [mk_initialSeg_subtype, lift_lift, lift_le] at h
   exact not_le_of_lt (Order.lt_succ #α) h
 
-
-
 end Cardinal
 
 namespace OrdinalApprox
