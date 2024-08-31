@@ -295,11 +295,11 @@ open Functor.relativelyRepresentable
 variable {X Y : D} (P : MorphismProperty C)
 
 /-- Given a morphism property `P` in a category `C`, a morphism `f : X ⟶ Y` of presheaves in the
-category `Cᵒᵖ ⥤ Type v` satisfies the morphism property `P.map2` iff:
+category `Cᵒᵖ ⥤ Type v` satisfies the morphism property `P.relative` iff:
 * The morphism is representable.
 * For any morphism `g : F.obj X ⟶ G`, the property `P` holds for any represented pullback of
   `f` by `g`. -/
-def map2 : MorphismProperty D :=
+def relative : MorphismProperty D :=
   fun X Y f ↦ F.relativelyRepresentable f ∧
     ∀ ⦃a b : C⦄ (g : F.obj a ⟶ Y) (fst : F.obj b ⟶ X) (snd : b ⟶ a)
       (_ : IsPullback fst (F.map snd) f g), P snd
@@ -309,115 +309,113 @@ category `Cᵒᵖ ⥤ Type v` satisfies the morphism property `P.presheaf` iff:
 * The morphism is representable.
 * For any morphism `g : F.obj X ⟶ G`, the property `P` holds for any represented pullback of
   `f` by `g`. -/
-abbrev presheaf := P.map2 yoneda
+abbrev presheaf := P.relative yoneda
 
 variable {P} {F}
 
-/-- A morphism satisfying `P.map2` is representable. -/
-lemma map2.rep {f : X ⟶ Y} (hf : P.map2 F f) : F.relativelyRepresentable f :=
+/-- A morphism satisfying `P.relative` is representable. -/
+lemma relative.rep {f : X ⟶ Y} (hf : P.relative F f) : F.relativelyRepresentable f :=
   hf.1
 
-lemma map2.property {f : X ⟶ Y} (hf : P.map2 F f) :
+lemma relative.property {f : X ⟶ Y} (hf : P.relative F f) :
     ∀ ⦃a b : C⦄ (g : F.obj a ⟶ Y) (fst : F.obj b ⟶ X) (snd : b ⟶ a)
     (_ : IsPullback fst (F.map snd) f g), P snd :=
   hf.2
 
-lemma map2.property_snd {f : X ⟶ Y} (hf : P.map2 F f) {a : C} (g : F.obj a ⟶ Y) :
+lemma relative.property_snd {f : X ⟶ Y} (hf : P.relative F f) {a : C} (g : F.obj a ⟶ Y) :
     P (hf.rep.snd g) :=
   hf.property g _ _ (hf.rep.isPullback g)
 
 /-- Given a morphism property `P` which respects isomorphisms, then to show that a morphism
-`f : X ⟶ Y` satisfies `P.map2` it suffices to show that:
+`f : X ⟶ Y` satisfies `P.relative` it suffices to show that:
 * The morphism is representable.
 * For any morphism `g : F.obj X ⟶ G`, the property `P` holds for *some* represented pullback
 of `f` by `g`. -/
-lemma map2.of_exists [F.Faithful] [F.Full] [P.RespectsIso] {f : X ⟶ Y}
+lemma relative.of_exists [F.Faithful] [F.Full] [P.RespectsIso] {f : X ⟶ Y}
     (hf : F.relativelyRepresentable f) (h₀ : ∀ ⦃a : C⦄ (g : F.obj a ⟶ Y),
     ∃ (b : C) (fst : F.obj b ⟶ X) (snd : b ⟶ a) (_ : IsPullback fst (F.map snd) f g), P snd) :
-    P.map2 F f := by
+    P.relative F f := by
   refine ⟨hf, fun a b g fst snd h ↦ ?_⟩
   obtain ⟨c, g_fst, g_snd, BC, H⟩ := h₀ g
   refine (P.arrow_mk_iso_iff ?_).2 H
   exact Arrow.isoMk (F.preimageIso (h.isoIsPullback BC)) (Iso.refl _)
     (F.map_injective (by simp))
 
-lemma presheaf_of_snd [F.Faithful] [F.Full] [P.RespectsIso] {f : X ⟶ Y}
+lemma relative_of_snd [F.Faithful] [F.Full] [P.RespectsIso] {f : X ⟶ Y}
     (hf : F.relativelyRepresentable f) (h : ∀ ⦃a : C⦄ (g : F.obj a ⟶ Y), P (hf.snd g)) :
-    P.map2 F f :=
-  map2.of_exists hf (fun _ g ↦ ⟨hf.pullback g, hf.fst g, hf.snd g, hf.isPullback g, h g⟩)
+    P.relative F f :=
+  relative.of_exists hf (fun _ g ↦ ⟨hf.pullback g, hf.fst g, hf.snd g, hf.isPullback g, h g⟩)
 
 /-- If `P : MorphismProperty C` is stable under base change, and `C` has all pullbacks, then for any
-`f : X ⟶ Y` in `C`, `F.map f` satisfies `P.map2` if `f` satisfies `P`. -/
-lemma presheaf_yoneda_map [F.Faithful] [F.Full] [PreservesLimitsOfShape WalkingCospan F]
+`f : X ⟶ Y` in `C`, `F.map f` satisfies `P.relative` if `f` satisfies `P`. -/
+lemma relative_map [F.Faithful] [F.Full] [PreservesLimitsOfShape WalkingCospan F]
     [HasPullbacks C] (hP : StableUnderBaseChange P) {X Y : C} {f : X ⟶ Y}
-    (hf : P f) : P.map2 F (F.map f) := by
+    (hf : P f) : P.relative F (F.map f) := by
   have := StableUnderBaseChange.respectsIso hP
-  apply map2.of_exists (Functor.relativelyRepresentable.map F f)
+  apply relative.of_exists (Functor.relativelyRepresentable.map F f)
   intro Y' g
   obtain ⟨g, rfl⟩ := F.map_surjective g
   exact ⟨_, _, _, (IsPullback.of_hasPullback f g).map F, hP.snd _ _ hf⟩
 
-lemma of_presheaf_yoneda {X Y : C} {f : X ⟶ Y} (hf : P.map2 F (F.map f)) : P f :=
+lemma of_relative_map {X Y : C} {f : X ⟶ Y} (hf : P.relative F (F.map f)) : P f :=
   hf.property (𝟙 _) (𝟙 _) f (IsPullback.id_horiz (F.map f))
 
-lemma presheaf_yoneda_map_iff [F.Faithful] [F.Full] [PreservesLimitsOfShape WalkingCospan F]
+lemma relative_map_iff [F.Faithful] [F.Full] [PreservesLimitsOfShape WalkingCospan F]
     [HasPullbacks C] (hP : StableUnderBaseChange P) {X Y : C} {f : X ⟶ Y} :
-    P.map2 F (F.map f) ↔ P f :=
-  ⟨fun hf ↦ of_presheaf_yoneda hf, fun hf ↦ presheaf_yoneda_map hP hf⟩
-
-/-- Morphisms satisfying `(monomorphism C).presheaf` are in particular monomorphisms. -/
-lemma presheaf_monomorphisms_le_monomorphisms [F.Faithful] :
-    (monomorphisms C).map2 F ≤ monomorphisms D :=
-    fun X Y f hf ↦ by
-  suffices ∀ {a : C} {g h : F.obj a ⟶ X}, g ≫ f = h ≫ f → g = h from
-    ⟨fun _ _ h ↦ hf.rep.hom_ext (fun _ _ ↦ this (by simp only [assoc, h]))⟩
-  intro X a b h
-  /- It suffices to show that the lifts of `a` and `b` to morphisms
-  `X ⟶ hf.rep.pullback g` are equal, where `g = a ≫ f = a ≫ f`. -/
-  suffices hf.rep.lift (g := a ≫ f) a (𝟙 X) (by simp) =
-      hf.rep.lift b (𝟙 X) (by simp [← h]) by
-    simpa using F.congr_map this =≫ (hf.rep.fst (a ≫ f))
-  -- This follows from the fact that the induced maps `hf.rep.pullback g ⟶ X` are mono.
-  have : Mono (hf.rep.snd (a ≫ f)) := hf.property_snd (a ≫ f)
-  simp only [← cancel_mono (hf.rep.snd (a ≫ f)),
-    Presheaf.representable.lift_snd]
+    P.relative F (F.map f) ↔ P f :=
+  ⟨fun hf ↦ of_relative_map hf, fun hf ↦ relative_map hP hf⟩
 
 /-- If `P' : MorphismProperty C` is satisfied whenever `P` is, then also `P'.presheaf` is
-satisfied whenever `P.map2` is. -/
-lemma presheaf_monotone {P' : MorphismProperty C} (h : P ≤ P') :
-    P.map2 ≤ P'.presheaf := fun _ _ _ hf ↦
+satisfied whenever `P.relative` is. -/
+lemma relative_monotone {P' : MorphismProperty C} (h : P ≤ P') :
+    P.relative F ≤ P'.relative F := fun _ _ _ hf ↦
   ⟨hf.rep, fun _ _ g fst snd BC ↦ h _ (hf.property g fst snd BC)⟩
 
 section
 
 variable (P)
 
-lemma presheaf_stableUnderBaseChange : StableUnderBaseChange P.map2 :=
+lemma relative_stableUnderBaseChange : StableUnderBaseChange (P.relative F) :=
   fun _ _ _ _ _ _ _ _ hfBC hg ↦
-  ⟨stableUnderBaseChange hfBC hg.rep,
+  ⟨stableUnderBaseChange F hfBC hg.rep,
     fun _ _ _ _ _ BC ↦ hg.property _ _ _ (IsPullback.paste_horiz BC hfBC)⟩
 
-instance presheaf_isStableUnderComposition [P.IsStableUnderComposition] :
-    IsStableUnderComposition P.map2 where
+instance relative_isStableUnderComposition [F.Faithful] [F.Full] [P.IsStableUnderComposition] :
+    IsStableUnderComposition (P.relative F) where
   comp_mem {F G H} f g hf hg := by
     refine ⟨comp_mem _ _ _ hf.1 hg.1, fun Z X p fst snd h ↦ ?_⟩
     rw [← hg.1.lift_snd (fst ≫ f) snd (by simpa using h.w)]
     refine comp_mem _ _ _ (hf.property (hg.1.fst p) fst _
       (IsPullback.of_bot ?_ ?_ (hg.1.isPullback p))) (hg.property_snd p)
-    · rw [← Functor.map_comp, Presheaf.representable.lift_snd]
+    · rw [← Functor.map_comp, lift_snd]
       exact h
     · symm
       apply hg.1.lift_fst
 
-instance presheaf_respectsIso : RespectsIso P.map2 :=
-  (presheaf_stableUnderBaseChange P).respectsIso
+instance relative_respectsIso : RespectsIso (P.relative F) :=
+  (relative_stableUnderBaseChange P).respectsIso
 
-instance presheaf_isMultiplicative [P.IsMultiplicative] [P.RespectsIso] :
-    IsMultiplicative P.map2 where
-  id_mem X := map_of_exists (id_mem _ _)
+instance relative_isMultiplicative [F.Faithful] [F.Full] [P.IsMultiplicative] [P.RespectsIso] :
+    IsMultiplicative (P.relative F) where
+  id_mem X := relative.of_exists (id_mem _ _)
     (fun Y g ↦ ⟨Y, g, 𝟙 Y, by simpa using IsPullback.of_id_snd, id_mem _ _⟩)
 
 end
+
+/-- Morphisms satisfying `(monomorphism C).presheaf` are in particular monomorphisms. -/
+lemma presheaf_monomorphisms_le_monomorphisms :
+    (monomorphisms C).presheaf ≤ monomorphisms _ := fun F G f hf ↦ by
+  suffices ∀ {X : C} {a b : yoneda.obj X ⟶ F}, a ≫ f = b ≫ f → a = b from
+    ⟨fun _ _ h ↦ hom_ext_yoneda (fun _ _ ↦ this (by simp only [assoc, h]))⟩
+  intro X a b h
+  /- It suffices to show that the lifts of `a` and `b` to morphisms
+  `X ⟶ hf.rep.pullback g` are equal, where `g = a ≫ f = a ≫ f`. -/
+  suffices hf.rep.lift (g := a ≫ f) a (𝟙 X) (by simp) =
+      hf.rep.lift b (𝟙 X) (by simp [← h]) by
+    simpa using yoneda.congr_map this =≫ (hf.rep.fst (a ≫ f))
+  -- This follows from the fact that the induced maps `hf.rep.pullback g ⟶ X` are mono.
+  have : Mono (hf.rep.snd (a ≫ f)) := hf.property_snd (a ≫ f)
+  simp only [← cancel_mono (hf.rep.snd (a ≫ f)), lift_snd]
 
 end MorphismProperty
 
