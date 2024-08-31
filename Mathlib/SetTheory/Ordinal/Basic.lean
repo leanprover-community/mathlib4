@@ -577,7 +577,7 @@ theorem type_lift_preimage_aux {α : Type u} {β : Type v} (r : α → α → Pr
 
 /-- `lift.{max u v, u}` equals `lift.{v, u}`.
 
-  Unfortunately, the simp lemma doesn't seem to work. -/
+Unfortunately, the simp lemma doesn't seem to work. -/
 theorem lift_umax : lift.{max u v, u} = lift.{v, u} :=
   funext fun a =>
     inductionOn a fun _ r _ =>
@@ -585,13 +585,13 @@ theorem lift_umax : lift.{max u v, u} = lift.{v, u} :=
 
 /-- `lift.{max v u, u}` equals `lift.{v, u}`.
 
-  Unfortunately, the simp lemma doesn't seem to work. -/
+Unfortunately, the simp lemma doesn't seem to work. -/
 theorem lift_umax' : lift.{max v u, u} = lift.{v, u} :=
   lift_umax
 
 /-- An ordinal lifted to a lower or equal universe equals itself.
 
-  Unfortunately, the simp lemma doesn't work. -/
+Unfortunately, the simp lemma doesn't work. -/
 theorem lift_id' (a : Ordinal) : lift a = a :=
   inductionOn a fun _ r _ => Quotient.sound ⟨RelIso.preimage Equiv.ulift r⟩
 
