@@ -294,21 +294,24 @@ open Functor.relativelyRepresentable
 
 variable {X Y : D} (P : MorphismProperty C)
 
-/-- Given a morphism property `P` in a category `C`, a morphism `f : X ⟶ Y` of presheaves in the
-category `Cᵒᵖ ⥤ Type v` satisfies the morphism property `P.relative` iff:
-* The morphism is representable.
-* For any morphism `g : F.obj X ⟶ G`, the property `P` holds for any represented pullback of
+/-- Given a morphism property `P` in a category `C`, a functor `F : C ⥤ D` and a morphism
+`f : X ⟶ Y` in `D`. Then `f` satisfies the morphism property `P.relative` with respect to `F` iff:
+* The morphism is representable with respect to `F`
+* For any morphism `g : F.obj a ⟶ Y`, the property `P` holds for any represented pullback of
   `f` by `g`. -/
 def relative : MorphismProperty D :=
   fun X Y f ↦ F.relativelyRepresentable f ∧
     ∀ ⦃a b : C⦄ (g : F.obj a ⟶ Y) (fst : F.obj b ⟶ X) (snd : b ⟶ a)
       (_ : IsPullback fst (F.map snd) f g), P snd
 
-/-- Given a morphism property `P` in a category `C`, a morphism `f : X ⟶ Y` of presheaves in the
+/-- Given a morphism property `P` in a category `C`, a morphism `f : F ⟶ G` of presheaves in the
 category `Cᵒᵖ ⥤ Type v` satisfies the morphism property `P.presheaf` iff:
 * The morphism is representable.
 * For any morphism `g : F.obj X ⟶ G`, the property `P` holds for any represented pullback of
-  `f` by `g`. -/
+  `f` by `g`.
+
+This is implemented as a special case of the more general notion of `P.relative`, with respect to
+a functor `F : C ⥤ D`, to the case when `F = yoneda`. -/
 abbrev presheaf := P.relative yoneda
 
 variable {P} {F}
@@ -329,7 +332,7 @@ lemma relative.property_snd {f : X ⟶ Y} (hf : P.relative F f) {a : C} (g : F.o
 /-- Given a morphism property `P` which respects isomorphisms, then to show that a morphism
 `f : X ⟶ Y` satisfies `P.relative` it suffices to show that:
 * The morphism is representable.
-* For any morphism `g : F.obj X ⟶ G`, the property `P` holds for *some* represented pullback
+* For any morphism `g : F.obj a ⟶ G`, the property `P` holds for *some* represented pullback
 of `f` by `g`. -/
 lemma relative.of_exists [F.Faithful] [F.Full] [P.RespectsIso] {f : X ⟶ Y}
     (hf : F.relativelyRepresentable f) (h₀ : ∀ ⦃a : C⦄ (g : F.obj a ⟶ Y),
@@ -346,10 +349,11 @@ lemma relative_of_snd [F.Faithful] [F.Full] [P.RespectsIso] {f : X ⟶ Y}
     P.relative F f :=
   relative.of_exists hf (fun _ g ↦ ⟨hf.pullback g, hf.fst g, hf.snd g, hf.isPullback g, h g⟩)
 
-/-- If `P : MorphismProperty C` is stable under base change, and `C` has all pullbacks, then for any
-`f : X ⟶ Y` in `C`, `F.map f` satisfies `P.relative` if `f` satisfies `P`. -/
+/-- If `P : MorphismProperty C` is stable under base change, `F` is fully faithful and preserves
+pullbacks, and `C` has all pullbacks, then for any `f : a ⟶ b` in `C`, `F.map f` satisfies
+`P.relative` if `f` satisfies `P`. -/
 lemma relative_map [F.Faithful] [F.Full] [PreservesLimitsOfShape WalkingCospan F]
-    [HasPullbacks C] (hP : StableUnderBaseChange P) {X Y : C} {f : X ⟶ Y}
+    [HasPullbacks C] (hP : StableUnderBaseChange P) {a b : C} {f : a ⟶ b}
     (hf : P f) : P.relative F (F.map f) := by
   have := StableUnderBaseChange.respectsIso hP
   apply relative.of_exists (Functor.relativelyRepresentable.map F f)
@@ -357,7 +361,7 @@ lemma relative_map [F.Faithful] [F.Full] [PreservesLimitsOfShape WalkingCospan F
   obtain ⟨g, rfl⟩ := F.map_surjective g
   exact ⟨_, _, _, (IsPullback.of_hasPullback f g).map F, hP.snd _ _ hf⟩
 
-lemma of_relative_map {X Y : C} {f : X ⟶ Y} (hf : P.relative F (F.map f)) : P f :=
+lemma of_relative_map {a b : C} {f : a ⟶ b} (hf : P.relative F (F.map f)) : P f :=
   hf.property (𝟙 _) (𝟙 _) f (IsPullback.id_horiz (F.map f))
 
 lemma relative_map_iff [F.Faithful] [F.Full] [PreservesLimitsOfShape WalkingCospan F]
@@ -365,7 +369,7 @@ lemma relative_map_iff [F.Faithful] [F.Full] [PreservesLimitsOfShape WalkingCosp
     P.relative F (F.map f) ↔ P f :=
   ⟨fun hf ↦ of_relative_map hf, fun hf ↦ relative_map hP hf⟩
 
-/-- If `P' : MorphismProperty C` is satisfied whenever `P` is, then also `P'.presheaf` is
+/-- If `P' : MorphismProperty C` is satisfied whenever `P` is, then also `P'.relative` is
 satisfied whenever `P.relative` is. -/
 lemma relative_monotone {P' : MorphismProperty C} (h : P ≤ P') :
     P.relative F ≤ P'.relative F := fun _ _ _ hf ↦
