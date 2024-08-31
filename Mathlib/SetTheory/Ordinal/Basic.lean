@@ -66,17 +66,6 @@ universe u v w
 variable {α : Type u} {β : Type*} {γ : Type*} {r : α → α → Prop} {s : β → β → Prop}
   {t : γ → γ → Prop}
 
-/-! ### Well order on an arbitrary type -/
-
-
-section WellOrderingThm
-
--- Porting note: `parameter` does not work
--- parameter {σ : Type u}
-variable {σ : Type u}
-
-open Function
-
 /-! ### Definition of ordinals -/
 
 
