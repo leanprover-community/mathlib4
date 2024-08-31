@@ -426,14 +426,15 @@ theorem insertionSort_stable_pair {a b : α} {l : List α} (hab : r a b) (h : [a
     [a, b] <+ insertionSort r l :=
   insertionSort_stable (pairwise_pair.mpr hab) h
 
-variable [DecidableEq α] [IsAntisymm α r] [IsTotal α r] [IsTrans α r]
+variable [IsAntisymm α r] [IsTotal α r] [IsTrans α r]
 
 /--
 A version of `insertionSort_stable` which only assumes `c <+~ l` (instead of `c <+ l`), but
-additionally requires `DecidableEq α`, `IsAntisymm α r`, `IsTotal α r` and `IsTrans α r`.
+additionally requires `IsAntisymm α r`, `IsTotal α r` and `IsTrans α r`.
 -/
 theorem insertionSort_stable' {l c : List α} (hs : c.Sorted r) (hc : c <+~ l) :
     c <+ insertionSort r l := by
+  classical
   obtain ⟨d, hc, hd⟩ := hc
   induction l generalizing c d with
   | nil         => simp_all only [sublist_nil, insertionSort, nil_perm]
