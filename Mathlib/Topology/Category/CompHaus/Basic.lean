@@ -60,6 +60,11 @@ taking a type, and bundling the compact Hausdorff topology
 found by typeclass inference. -/
 abbrev of : CompHaus := CompHausLike.of _ X
 
+/-- Constructor for morphisms in `CompHaus`. -/
+@[simps]
+def homMk {X Y : CompHaus} (f : X.toTop ⟶ Y.toTop) : X ⟶ Y where
+  hom := f
+
 end CompHaus
 
 /-- The fully faithful embedding of `CompHaus` in `TopCat`. -/
@@ -82,15 +87,13 @@ noncomputable def stoneCechEquivalence (X : TopCat.{u}) (Y : CompHaus.{u}) :
     (stoneCechObj X ⟶ Y) ≃ (X ⟶ compHausToTop.obj Y) where
   toFun f :=
     { toFun := f ∘ stoneCechUnit
-      continuous_toFun := f.2.comp (@continuous_stoneCechUnit X _) }
-  invFun f :=
+      continuous_toFun := f.hom.2.comp (@continuous_stoneCechUnit X _) }
+  invFun f := CompHaus.homMk
     { toFun := stoneCechExtend f.2
       continuous_toFun := continuous_stoneCechExtend f.2 }
   left_inv := by
     rintro ⟨f : StoneCech X ⟶ Y, hf : Continuous f⟩
-    -- Porting note: `ext` fails.
-    apply ContinuousMap.ext
-    intro (x : StoneCech X)
+    ext x
     refine congr_fun ?_ x
     apply Continuous.ext_on denseRange_stoneCechUnit (continuous_stoneCechExtend _) hf
     · rintro _ ⟨y, rfl⟩
@@ -152,14 +155,14 @@ def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) : Li
         apply isClosed_iInter
         intro f
         apply isClosed_eq
-        · exact (ContinuousMap.continuous (F.map f)).comp (continuous_apply i)
+        · exact (ContinuousMap.continuous (F.map f).hom).comp (continuous_apply i)
         · exact continuous_apply j
       is_hausdorff :=
         show T2Space { u : ∀ j, F.obj j | ∀ {i j : J} (f : i ⟶ j), (F.map f) (u i) = u j } from
           inferInstance
       prop := trivial }
     π := {
-      app := fun j => (TopCat.limitCone FF).π.app j
+      app := fun j => homMk ((TopCat.limitCone FF).π.app j)
       naturality := by
         intro _ _ f
         ext ⟨x, hx⟩
@@ -170,9 +173,12 @@ def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) : Li
 def limitConeIsLimit {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) :
     Limits.IsLimit.{v} (limitCone.{v,u} F) :=
   letI FF : J ⥤ TopCat := F ⋙ compHausToTop
-  { lift := fun S => (TopCat.limitConeIsLimit FF).lift (compHausToTop.mapCone S)
-    fac := fun S => (TopCat.limitConeIsLimit FF).fac (compHausToTop.mapCone S)
-    uniq := fun S => (TopCat.limitConeIsLimit FF).uniq (compHausToTop.mapCone S) }
+  { lift := fun S => homMk ((TopCat.limitConeIsLimit FF).lift (compHausToTop.mapCone S))
+    fac := fun S j => (forget₂ _ TopCat).map_injective
+      ((TopCat.limitConeIsLimit FF).fac (compHausToTop.mapCone S) j)
+    uniq := fun S _ hm => (forget₂ _ TopCat).map_injective
+      ((TopCat.limitConeIsLimit FF).uniq (compHausToTop.mapCone S) _
+        (fun j ↦ (forget₂ _ TopCat).congr_map (hm j))) }
 
 theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by
   constructor
@@ -180,7 +186,7 @@ theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Functi
     contrapose!
     rintro ⟨y, hy⟩ hf
     let C := Set.range f
-    have hC : IsClosed C := (isCompact_range f.continuous).isClosed
+    have hC : IsClosed C := (isCompact_range f.hom.continuous).isClosed
     let D := ({y} : Set Y)
     have hD : IsClosed D := isClosed_singleton
     have hCD : Disjoint C D := by
