@@ -6,18 +6,18 @@ import Mathlib.Data.Finsupp.Lex
 
 section Dickson
 
-/-- A subset `B` of a set `S` in a preordered type is a basis 
+/-- A subset `B` of a set `S` in a preordered type is a basis
 if any element of `S` is larger than some element of `B`  -/
-def Set.isBasis {α : Type*} [Preorder α] (S B : Set α) : Prop := 
+def Set.isBasis {α : Type*} [Preorder α] (S B : Set α) : Prop :=
   B ⊆ S ∧ ∀ x ∈ S, ∃ y ∈ B, y ≤ x
 
 /-- A preordered type has the Dickson property if any set contains a finite basis -/
-def Preorder.isDickson (α : Type*) [Preorder α] : Prop := 
+def Preorder.isDickson (α : Type*) [Preorder α] : Prop :=
   ∀ (S : Set α), ∃ (B : Set α), S.isBasis B ∧ Finite B
 
 open Preorder
 
-variable {α : Type*} [Preorder α] 
+variable {α : Type*} [Preorder α]
 
 theorem Equiv.isDickson_of_monotone {β : Type*} [Preorder β] (f : α ≃ β) (hf : Monotone f)
   (H : isDickson α) :
@@ -27,7 +27,7 @@ theorem Equiv.isDickson_of_monotone {β : Type*} [Preorder β] (f : α ≃ β) (
   refine ⟨?_, Finite.Set.finite_image B ⇑f⟩
   refine ⟨Set.image_subset_iff.mpr hB.1, ?_⟩
   intro x hx
-  obtain ⟨b, hb, hbx⟩ := 
+  obtain ⟨b, hb, hbx⟩ :=
     hB.2 (f.symm x) (by simp only [Set.mem_preimage, Equiv.apply_symm_apply, hx])
   use f b
   refine ⟨Set.mem_image_of_mem (⇑f) hb, ?_⟩
@@ -36,7 +36,7 @@ theorem Equiv.isDickson_of_monotone {β : Type*} [Preorder β] (f : α ≃ β) (
 
 theorem exists_lt_and_le_of_isDickson (H : isDickson α) (a : ℕ → α) :
     ∃ i j, i < j ∧ a i ≤ a j := by
-  obtain ⟨B, hB, hB'⟩ := H (Set.range a) 
+  obtain ⟨B, hB, hB'⟩ := H (Set.range a)
   let B' : Set ℕ := a.invFun '' B
   have hB'' : Finite B' := Finite.Set.finite_image B (Function.invFun a)
   have : ∃ n, ∀ c ∈ B', c ≤ n := Set.exists_upper_bound_image B' (fun b ↦ b) hB''
@@ -44,14 +44,14 @@ theorem exists_lt_and_le_of_isDickson (H : isDickson α) (a : ℕ → α) :
   obtain ⟨b, hb, hb'⟩ := hB.2 (a (n + 1)) (Set.mem_range_self _)
   use a.invFun b, n + 1
   constructor
-  · apply Nat.lt_add_one_of_le 
+  · apply Nat.lt_add_one_of_le
     exact hn _ (Set.mem_image_of_mem (Function.invFun a) hb)
   · convert hb'
     apply Function.invFun_eq
     rw [← Set.mem_range]
     exact hB.1 hb
- 
-example {α : Type*} [PartialOrder α] 
+
+example {α : Type*} [PartialOrder α]
     (H : ∀ a : ℕ → α, ∃ i j, i < j ∧ a i ≤ a j) (S : Set α) (hSne : S.Nonempty) :
     let M := {x ∈ S | Minimal (fun x ↦ x ∈ S) x}
     M.Nonempty ∧ M.Finite := by
@@ -69,7 +69,7 @@ example {α : Type*} [PartialOrder α]
         apply hM x hx
         unfold Minimal
         refine ⟨hx, ?_⟩
-        intro y hy 
+        intro y hy
         rw [le_iff_eq_or_lt]
         rintro (hyx | hyx)
         · exact le_of_eq hyx.symm
@@ -92,11 +92,11 @@ example {α : Type*} [PartialOrder α]
     have := (a j).prop.2
     exact this.2 (a i).prop.1 H
 
-    
+
 theorem isDickson_tfae (α : Type*) [PartialOrder α] : List.TFAE [
     isDickson α,
     ∀ (a : ℕ → α), ∃ i j, i < j ∧ a i ≤ a j,
-    ∀ (S : Set α) (hSne : S.Nonempty), { x ∈ S | Minimal (fun x ↦ x ∈ S) x}.Nonempty 
+    ∀ (S : Set α) (hSne : S.Nonempty), { x ∈ S | Minimal (fun x ↦ x ∈ S) x}.Nonempty
         ∧ {x ∈ S | Minimal (fun x ↦ x ∈ S) x}.Finite] := by
   sorry
 
@@ -110,14 +110,14 @@ namespace Finsupp
 
 open Preorder
 
-structure MonomialOrder (σ : Type*) where 
+structure MonomialOrder (σ : Type*) where
   syn : Type*
   clacm : CanonicallyLinearOrderedAddCommMonoid syn
   toSyn : (σ →₀ ℕ) ≃+ syn
 
 instance (σ : Type*) (m : MonomialOrder σ) : CanonicallyLinearOrderedAddCommMonoid m.syn := m.clacm
 
-variable {σ : Type*} (m : MonomialOrder σ) 
+variable {σ : Type*} (m : MonomialOrder σ)
 
 lemma MonomialOrder.toSyn_monotone : Monotone (m.toSyn) := by
   intro a b h
@@ -132,11 +132,11 @@ lemma MonomialOrder.toSyn_strictMono : StrictMono (m.toSyn) := by
   apply m.toSyn_monotone.strictMono_of_injective m.toSyn.injective
 
 theorem MonomialOrder.isDickson {σ : Type*} [Finite σ] (m : MonomialOrder σ) :
-    Preorder.isDickson m.syn  := 
+    Preorder.isDickson m.syn  :=
   m.toSyn.isDickson_of_monotone m.toSyn_monotone (Finsupp.isDickson σ)
 
-theorem MonomialOrder.wf {σ : Type*} [Finite σ] (m : MonomialOrder σ) : 
-    WellFoundedLT m.syn := 
+theorem MonomialOrder.wf {σ : Type*} [Finite σ] (m : MonomialOrder σ) :
+    WellFoundedLT m.syn :=
   isDickson.wf (isDickson m)
 
 end Finsupp
@@ -147,12 +147,12 @@ open Finsupp
 
 variable {σ : Type*} [Finite σ] (m : MonomialOrder σ) {R : Type*} [CommRing R]
 
-notation:25 f "≺[" m:25 "]" g => MonomialOrder.toSyn m f < MonomialOrder.toSyn m g 
+notation:25 f "≺[" m:25 "]" g => MonomialOrder.toSyn m f < MonomialOrder.toSyn m g
 
-notation:25 f "≼[" m:25 "]" g => MonomialOrder.toSyn m f ≤ MonomialOrder.toSyn m g 
+notation:25 f "≼[" m:25 "]" g => MonomialOrder.toSyn m f ≤ MonomialOrder.toSyn m g
 
 /-- the degree of a multivariate polynomial with respect to a monomial ordering -/
-def monomialOrderDegree (m : MonomialOrder σ) (f : MvPolynomial σ R) : σ →₀ ℕ := 
+def monomialOrderDegree (m : MonomialOrder σ) (f : MvPolynomial σ R) : σ →₀ ℕ :=
     m.toSyn.symm (f.support.sup m.toSyn)
 
 variable (m : MonomialOrder σ)
@@ -160,8 +160,8 @@ variable (m : MonomialOrder σ)
 theorem monomialOrderDegree_eq_zero_iff {m : MonomialOrder σ} {f : MvPolynomial σ R} :
     f.monomialOrderDegree m = 0 ↔ f.totalDegree = 0 := by sorry
 
-theorem monomialOrderDiv (B : Set (MvPolynomial σ R)) (f : MvPolynomial σ R) : 
-    ∃ g r, f = g + r ∧ g ∈ Ideal.span B ∧ 
+theorem monomialOrderDiv (B : Set (MvPolynomial σ R)) (f : MvPolynomial σ R) :
+    ∃ g r, f = g + r ∧ g ∈ Ideal.span B ∧
       (r = 0 ∨ ∀ b ∈ B, r.monomialOrderDegree m ≺[m] b.monomialOrderDegree m) :=
     sorry
 
