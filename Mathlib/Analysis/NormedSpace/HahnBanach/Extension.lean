@@ -62,159 +62,17 @@ section RCLike
 
 -- open RCLike
 
-class IsRorC (𝕜 : Type*) [hk : NormedField 𝕜] : Prop :=
-  out : ∃ h : RCLike 𝕜, h.toNormedField = hk
 
-instance {𝕜 : Type*} [h : RCLike 𝕜] : IsRorC 𝕜 := ⟨⟨h, rfl⟩⟩
-
-instance : IsRorC ℝ := by infer_instance
-
-suppress_compilation
-
-/-- A copy of an `RCLike` field in which the `NormedField` field is adjusted to be become defeq
-to a propeq one. -/
-def RCLike.copy {𝕜 : Type*} (h : RCLike 𝕜)  (hk : NormedField 𝕜)
-    (h'' : h.toNormedField = hk) : RCLike 𝕜 where
-  __ := hk
-  lt_norm_lt := fun x y hx hy ↦ by simpa [h''] using h.lt_norm_lt x y hx hy
-  -- star fields
-  star := (@StarMul.toInvolutiveStar _ (_) (@StarRing.toStarMul _ (_) h.toStarRing)).star
-  star_involutive :=
-    @star_involutive _ (@StarMul.toInvolutiveStar _ (_) (@StarRing.toStarMul _ (_) h.toStarRing))
-  star_mul x y := by
-    convert @star_mul _ (_)  (@StarRing.toStarMul _ (_) h.toStarRing) x y <;> simp only [h'']
-  star_add x y := by
-    convert @StarRing.star_add _ (_) h.toStarRing x y <;> simp only [h'']
-  smul := (@Algebra.toSMul _ _ _ (_) (@NormedAlgebra.toAlgebra _ _ _ (_) h.toNormedAlgebra)).smul
-  -- algebra fields
-  toFun := @Algebra.toRingHom _ _ _ (_) (@NormedAlgebra.toAlgebra _ _ _ (_) h.toNormedAlgebra)
-  map_one' := sorry /-by
-    let Z := (@Algebra.toRingHom _ _ _ (_) (@NormedAlgebra.toAlgebra _ _ _ (_) h.toNormedAlgebra))
-    convert @OneHom.map_one' _ _ _ (_) (@MonoidHom.toOneHom _ _ _ (_)
-      (@RingHom.toMonoidHom _ _ _ (_) Z))
-    simp only [h'']-/
-  map_mul' x y := sorry /-by
-    let Z := (@Algebra.toRingHom _ _ _ (_) (@NormedAlgebra.toAlgebra _ _ _ (_) h.toNormedAlgebra))
-    convert @MulHom.map_mul' _ _ _ (_) (@MonoidHom.toMulHom _ _ _ (_)
-      (@RingHom.toMonoidHom _ _ _ (_) Z)) x y <;>
-    simp only [h'']-/
-  map_zero' := sorry /-by
-    let Z := (@Algebra.toRingHom _ _ _ (_) (@NormedAlgebra.toAlgebra _ _ _ (_) h.toNormedAlgebra))
-    convert @ZeroHom.map_zero' _ _ _ (_) (@AddMonoidHom.toZeroHom _ _ _ (_)
-      (@RingHom.toAddMonoidHom _ _ _ (_) Z)) <;>
-    simp only [h'']-/
-  map_add' x y := sorry /-by
-    let Z := (@Algebra.toRingHom _ _ _ (_) (@NormedAlgebra.toAlgebra _ _ _ (_) h.toNormedAlgebra))
-    convert @AddHom.map_add' _ _ _ (_) (@AddMonoidHom.toAddHom _ _ _ (_)
-      (@RingHom.toAddMonoidHom _ _ _ (_) Z)) x y <;>
-    simp only [h'']-/
-  commutes' r x := sorry /-by
-    convert @Algebra.commutes' _ _ _ (_) (@NormedAlgebra.toAlgebra _ _ _ (_) h.toNormedAlgebra) r x
-    <;> simp only [h''] -/
-  smul_def' r x := sorry /-by
-    convert @Algebra.smul_def' _ _ _ (_) (@NormedAlgebra.toAlgebra _ _ _ (_) h.toNormedAlgebra) r x
-    <;> simp only [h'']-/
-  norm_smul_le r x := by
-    convert @NormedAlgebra.norm_smul_le _ _ _ (_) h.toNormedAlgebra r x <;> simp only [h'']
-  complete := by
-    convert @CompleteSpace.complete _ (_) h.toCompleteSpace <;> simp only [h'']
-  -- RCLike fields
-  re :=
-    { toFun := h.re
-      map_zero' := by
-        convert @ZeroHom.map_zero' _ _ (_) _ (@AddMonoidHom.toZeroHom _ _ (_) _ h.re)
-        simp only [h'']
-      map_add' := by
-        intro x y
-        convert @AddHom.map_add' _ _ (_) _ (@AddMonoidHom.toAddHom _ _ (_) _ h.re) x y
-        <;> simp only [h''] }
-  im :=
-    { toFun := h.im
-      map_zero' := by
-        convert @ZeroHom.map_zero' _ _ (_) _ (@AddMonoidHom.toZeroHom _ _ (_) _ h.im)
-        simp only [h'']
-      map_add' := by
-        intro x y
-        convert @AddHom.map_add' _ _ (_) _ (@AddMonoidHom.toAddHom _ _ (_) _ h.im) x y
-        <;> simp only [h''] }
-  I := h.I
-  I_re_ax := sorry -- by convert h.I_re_ax <;> simp only [h'']
-  I_mul_I_ax := sorry -- by convert h.I_mul_I_ax <;> simp only [h'']
-  re_add_im_ax z := sorry -- by convert h.re_add_im_ax z <;> simp only [h'']
-  ofReal_re_ax r := sorry -- by convert h.ofReal_re_ax r <;> simp only [h'']
-  ofReal_im_ax r := sorry -- by convert h.ofReal_im_ax r <;> simp only [h'']
-  mul_re_ax z w := by convert h.mul_re_ax z w <;> simp only [h'']
-  mul_im_ax z w := by convert h.mul_im_ax z w <;> simp only [h'']
-  conj_re_ax z := by convert h.conj_re_ax z <;> simp only [h'']
-  conj_im_ax z := by convert h.conj_im_ax z <;> simp only [h'']
-  conj_I_ax := by convert h.conj_I_ax <;> simp only [h'']
-  norm_sq_eq_def_ax z := by convert h.norm_sq_eq_def_ax z <;> simp only [h'']
-  mul_im_I_ax := sorry
-  le_iff_re_im := sorry
-  toPartialOrder := h.toPartialOrder
-  toDecidableEq := h.toDecidableEq
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#exit
-
-  star :=
-  star_involutive :=
-  #exit
-
-  star_mul', 'star_add', 'smul', 'toFun', 'map_one'', 'map_mul'', 'map_zero'', 'map_add'', 'commutes'', 'smul_def'', 'norm_smul_le', 'complete', 're', 'im', 'I', 'I_re_ax', 'I_mul_I_ax', 're_add_im_ax', 'ofReal_re_ax', 'ofReal_im_ax', 'mul_re_ax', 'mul_im_ax', 'conj_re_ax', 'conj_im_ax', 'conj_I_ax', 'norm_sq_eq_def_ax', 'mul_im_I_ax', 'le_iff_re_im'
-
-
-
-#exit
-
-
-  let A : DenselyNormedField 𝕜 :=
-  { toNormedField := hk
-    lt_norm_lt := fun x y hx hy ↦ by simpa [h''] using h.lt_norm_lt x y hx hy }
-  let B : StarRing 𝕜 where
-    __ := hk
-
-
-#exit
-
-  refine
-  { toDenselyNormedField := A
-
-
-  }
-
-
-#exit
-
-variable {𝕜 : Type*} [RCLike 𝕜] {E F : Type*}
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [IsROrCNormedField 𝕜] {E F : Type*}
   [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+
+open RCLike
 
 /-- **Hahn-Banach theorem** for continuous linear functions over `𝕜` satisfying `RCLike 𝕜`. -/
 theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : p →L[𝕜] 𝕜) :
     ∃ g : E →L[𝕜] 𝕜, (∀ x : p, g x = f x) ∧ ‖g‖ = ‖f‖ := by
+  letI : RCLike 𝕜 := IsRorC.rclike 𝕜
   letI : Module ℝ E := RestrictScalars.module ℝ 𝕜 E
   letI : IsScalarTower ℝ 𝕜 E := RestrictScalars.isScalarTower _ _ _
   letI : NormedSpace ℝ E := NormedSpace.restrictScalars _ 𝕜 _
@@ -264,6 +122,7 @@ we provide no estimates on the norm of the extension.
 lemma ContinuousLinearMap.exist_extension_of_finiteDimensional_range {p : Submodule 𝕜 E}
     (f : p →L[𝕜] F) [FiniteDimensional 𝕜 (LinearMap.range f)] :
     ∃ g : E →L[𝕜] F, f = g.comp p.subtypeL := by
+  letI : RCLike 𝕜 := IsRorC.rclike 𝕜
   set b := finBasis 𝕜 (LinearMap.range f)
   set e := b.equivFunL
   set fi := fun i ↦ (LinearMap.toContinuousLinearMap (b.coord i)).comp
@@ -287,8 +146,6 @@ variable (𝕜 : Type v) [RCLike 𝕜]
 variable {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 open ContinuousLinearEquiv Submodule
-
-open scoped Classical
 
 theorem coord_norm' {x : E} (h : x ≠ 0) : ‖(‖x‖ : 𝕜) • coord 𝕜 x h‖ = 1 := by
   #adaptation_note
