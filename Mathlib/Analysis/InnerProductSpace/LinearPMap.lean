@@ -170,14 +170,17 @@ theorem adjoint_apply_of_dense (y : T†.domain) : T† y = adjointAux hT y := b
   change (if hT : Dense (T.domain : Set E) then adjointAux hT else 0) y = _
   simp only [hT, dif_pos, LinearMap.coe_mk]
 
+include hT in
 theorem adjoint_apply_eq (y : T†.domain) {x₀ : E} (hx₀ : ∀ x : T.domain, ⟪x₀, x⟫ = ⟪(y : F), T x⟫) :
     T† y = x₀ :=
   (adjoint_apply_of_dense hT y).symm ▸ adjointAux_unique hT _ hx₀
 
+include hT in
 /-- The fundamental property of the adjoint. -/
 theorem adjoint_isFormalAdjoint : T†.IsFormalAdjoint T := fun x =>
   (adjoint_apply_of_dense hT x).symm ▸ adjointAux_inner hT x
 
+include hT in
 /-- The adjoint is maximal in the sense that it contains every formal adjoint. -/
 theorem IsFormalAdjoint.le_adjoint (h : T.IsFormalAdjoint S) : S ≤ T† :=
   ⟨-- Trivially, every `x : S.domain` is in `T.adjoint.domain`

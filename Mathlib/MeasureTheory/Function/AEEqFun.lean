@@ -67,6 +67,9 @@ function space, almost everywhere equal, `L⁰`, ae_eq_fun
 
 -/
 
+-- Guard against import creep
+assert_not_exists InnerProductSpace
+
 noncomputable section
 
 open Topology Set Filter TopologicalSpace ENNReal EMetric MeasureTheory Function
@@ -90,7 +93,7 @@ variable (α)
 
 /-- The space of equivalence classes of almost everywhere strongly measurable functions, where two
     strongly measurable functions are equivalent if they agree almost everywhere, i.e.,
-    they differ on a set of measure `0`.  -/
+    they differ on a set of measure `0`. -/
 def AEEqFun (μ : Measure α) : Type _ :=
   Quotient (μ.aeEqSetoid β)
 
@@ -232,7 +235,7 @@ variable [TopologicalSpace γ] [MeasurableSpace β] {ν : MeasureTheory.Measure 
 /-- Composition of an almost everywhere equal function and a quasi measure preserving function.
 
 This is an important special case of `AEEqFun.compQuasiMeasurePreserving`. We use a separate
-definition so that lemmas that need `f` to be measure preserving can be `@[simp]` lemmas.  -/
+definition so that lemmas that need `f` to be measure preserving can be `@[simp]` lemmas. -/
 def compMeasurePreserving (g : β →ₘ[ν] γ) (f : α → β) (hf : MeasurePreserving f μ ν) : α →ₘ[μ] γ :=
   g.compQuasiMeasurePreserving f hf.quasiMeasurePreserving
 
@@ -902,6 +905,3 @@ def toAEEqFunLinearMap : C(α, γ) →ₗ[𝕜] α →ₘ[μ] γ :=
     map_smul' := fun c f => AEEqFun.smul_mk c f f.continuous.aestronglyMeasurable }
 
 end ContinuousMap
-
--- Guard against import creep
-assert_not_exists InnerProductSpace

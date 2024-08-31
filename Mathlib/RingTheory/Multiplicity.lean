@@ -529,8 +529,7 @@ theorem Finset.prod {β : Type*} {p : α} (hp : Prime p) (s : Finset β) (f : β
     induction' s using Finset.induction with a s has ih h
     · simp only [Finset.sum_empty, Finset.prod_empty]
       convert one_right hp.not_unit
-    · simp [has, ← ih]
-      convert multiplicity.mul hp
+    · simpa [has, ← ih] using multiplicity.mul hp
 
 -- Porting note: with protected could not use pow' k in the succ branch
 protected theorem pow' {p a : α} (hp : Prime p) (ha : Finite p a) :

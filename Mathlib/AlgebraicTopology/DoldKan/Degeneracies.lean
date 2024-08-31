@@ -86,7 +86,7 @@ theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1))
           SimplicialObject.δ_comp_σ_of_le X
             (show (0 : Fin 2) ≤ Fin.castSucc 0 by rw [Fin.castSucc_zero]),
           SimplicialObject.δ_comp_σ_self_assoc, SimplicialObject.δ_comp_σ_succ_assoc]
-        simp only [add_right_neg, add_zero, zero_add]
+        simp only [add_neg_cancel, add_zero, zero_add]
       · rw [← id_comp (X.σ i), ← (P_add_Q_f q n.succ : _ = 𝟙 (X.obj _)), add_comp, add_comp,
           P_succ]
         have v : HigherFacesVanish q ((P q).f n.succ ≫ X.σ i) :=

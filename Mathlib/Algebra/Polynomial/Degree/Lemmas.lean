@@ -352,9 +352,9 @@ theorem natDegree_comp : natDegree (p.comp q) = natDegree p * natDegree q := by
 @[simp]
 theorem natDegree_iterate_comp (k : ℕ) :
     (p.comp^[k] q).natDegree = p.natDegree ^ k * q.natDegree := by
-  induction' k with k IH
-  · simp
-  · rw [Function.iterate_succ_apply', natDegree_comp, IH, pow_succ', mul_assoc]
+  induction k with
+  | zero => simp
+  | succ k IH => rw [Function.iterate_succ_apply', natDegree_comp, IH, pow_succ', mul_assoc]
 
 theorem leadingCoeff_comp (hq : natDegree q ≠ 0) :
     leadingCoeff (p.comp q) = leadingCoeff p * leadingCoeff q ^ natDegree p := by
@@ -382,7 +382,7 @@ theorem irreducible_mul_leadingCoeff_inv {p : K[X]} :
 
 theorem monic_mul_leadingCoeff_inv {p : K[X]} (h : p ≠ 0) : Monic (p * C (leadingCoeff p)⁻¹) := by
   rw [Monic, leadingCoeff_mul, leadingCoeff_C,
-    mul_inv_cancel (show leadingCoeff p ≠ 0 from mt leadingCoeff_eq_zero.1 h)]
+    mul_inv_cancel₀ (show leadingCoeff p ≠ 0 from mt leadingCoeff_eq_zero.1 h)]
 
 -- `simp` normal form of `degree_mul_leadingCoeff_inv`
 @[simp] lemma degree_leadingCoeff_inv {p : K[X]} (hp0 : p ≠ 0) :

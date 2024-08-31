@@ -760,7 +760,7 @@ theorem det_fin_three (A : Matrix (Fin 3) (Fin 3) R) :
       A 0 0 * A 1 1 * A 2 2 - A 0 0 * A 1 2 * A 2 1
       - A 0 1 * A 1 0 * A 2 2 + A 0 1 * A 1 2 * A 2 0
       + A 0 2 * A 1 0 * A 2 1 - A 0 2 * A 1 1 * A 2 0 := by
-  simp only [det_succ_row_zero, Nat.odd_iff_not_even, submatrix_apply, Fin.succ_zero_eq_one,
+  simp only [det_succ_row_zero, ← Nat.not_even_iff_odd, submatrix_apply, Fin.succ_zero_eq_one,
     submatrix_submatrix, det_unique, Fin.default_eq_zero, comp_apply, Fin.succ_one_eq_two,
     Fin.sum_univ_succ, Fin.val_zero, Fin.zero_succAbove, univ_unique, Fin.val_succ,
     Fin.coe_fin_one, Fin.succ_succAbove_zero, sum_singleton, Fin.succ_succAbove_one, even_add_self]
