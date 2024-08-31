@@ -91,6 +91,9 @@ instance (X : CompHausLike.{u} P) : T2Space ((forget (CompHausLike P)).obj X) :=
 
 variable {P}
 
+lemma hom_ext {X Y : CompHausLike P} {f g : X ⟶ Y} (h : f.hom = g.hom) : f = g :=
+  (forget₂ _ TopCat).map_injective h
+
 /-- If `P` imples `P'`, then there is a functor from `CompHausLike P` to `CompHausLike P'`. -/
 @[simps]
 def toCompHausLike {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :

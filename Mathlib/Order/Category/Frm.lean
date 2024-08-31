@@ -92,5 +92,5 @@ def topCatOpToFrm : TopCatᵒᵖ ⥤ Frm where
   map_id X := Opens.comap_id
 
 -- Note, `CompHaus` is too strong. We only need `T0Space`.
-instance CompHausOpToFrame.faithful : (compHausToTop.op ⋙ topCatOpToFrm.{u}).Faithful :=
-  ⟨fun h => Quiver.Hom.unop_inj <| Opens.comap_injective h⟩
+instance CompHausOpToFrame.faithful : (compHausToTop.op ⋙ topCatOpToFrm.{u}).Faithful where
+  map_injective h := Quiver.Hom.unop_inj <| CompHausLike.hom_ext <| Opens.comap_injective h
