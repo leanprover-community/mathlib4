@@ -25,6 +25,9 @@ jobs:
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
       - uses: actions/checkout@v4
+        with:
+          ## fetch the whole repository, as we want to push to it later
+          fetch-depth: 0
 
       - name: print lean and lake versions
         run: |
@@ -61,7 +64,7 @@ jobs:
 
       - name: configure git setup
         run: |
-          git remote add origin-bot "https://leanprover-community-bot:${{ secrets.UPDATE_NOLINTS_TOKEN }}@github.com/leanprover-community/mathlib.git"
+          git remote add origin-bot "https://leanprover-community-bot:${{ secrets.UPDATE_NOLINTS_TOKEN }}@github.com/leanprover-community/mathlib4.git"
           git config user.email "leanprover.community@gmail.com"
           git config user.name "leanprover-community-bot"
 

@@ -112,7 +112,7 @@ structure CompositionAsSet (n : ℕ) where
   boundaries : Finset (Fin n.succ)
   /-- Proof that `0` is a member of `boundaries`-/
   zero_mem : (0 : Fin n.succ) ∈ boundaries
-  /-- Last element of the composition-/
+  /-- Last element of the composition -/
   getLast_mem : Fin.last n ∈ boundaries
 
 instance {n : ℕ} : Inhabited (CompositionAsSet n) :=

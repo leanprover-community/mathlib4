@@ -15,7 +15,7 @@ import Lean.Meta.Tactic.Symm
 import Lean.Meta.Tactic.Rfl
 import Lean.Meta.Match.MatcherInfo
 import Batteries.Lean.NameMapAttribute
-import Batteries.Tactic.Lint -- useful to lint this file and for for DiscrTree.elements
+import Batteries.Tactic.Lint -- useful to lint this file and for DiscrTree.elements
 import Mathlib.Tactic.Relation.Trans -- just to copy the attribute
 import Mathlib.Tactic.Eqns -- just to copy the attribute
 import Mathlib.Tactic.Simps.Basic
@@ -1506,3 +1506,5 @@ initialize registerBuiltinAttribute {
   }
 
 end ToAdditive
+
+set_option linter.style.longFile 1700
