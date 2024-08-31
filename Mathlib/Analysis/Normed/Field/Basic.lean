@@ -447,7 +447,7 @@ instance MulOpposite.instSeminormedRing : SeminormedRing αᵐᵒᵖ where
   __ := instRing
   __ := instNonUnitalSeminormedRing
 
-lemma norm_one_sub_mul (ha : ‖a‖ ≤ 1) : ‖c - a * b‖ ≤ ‖c - a‖ + ‖1 - b‖ :=
+lemma norm_sub_mul (ha : ‖a‖ ≤ 1) : ‖c - a * b‖ ≤ ‖c - a‖ + ‖1 - b‖ :=
   calc
     _ ≤ ‖c - a‖ + ‖a * (1 - b)‖ := by
         simpa [mul_one_sub] using norm_sub_le_norm_sub_add_norm_sub c a (a * b)
@@ -455,12 +455,12 @@ lemma norm_one_sub_mul (ha : ‖a‖ ≤ 1) : ‖c - a * b‖ ≤ ‖c - a‖ + 
     _ ≤ ‖c - a‖ + 1 * ‖1 - b‖ := by gcongr
     _ = ‖c - a‖ + ‖1 - b‖ := by simp
 
-lemma norm_one_sub_mul' (hb : ‖b‖ ≤ 1) : ‖c - a * b‖ ≤ ‖1 - a‖ + ‖c - b‖ := by
-  rw [add_comm]; exact norm_one_sub_mul (α := αᵐᵒᵖ) hb
+lemma norm_sub_mul' (hb : ‖b‖ ≤ 1) : ‖c - a * b‖ ≤ ‖1 - a‖ + ‖c - b‖ := by
+  rw [add_comm]; exact norm_sub_mul (α := αᵐᵒᵖ) hb
 
-lemma nnnorm_one_sub_mul (ha : ‖a‖₊ ≤ 1) : ‖c - a * b‖₊ ≤ ‖c - a‖₊ + ‖1 - b‖₊ := norm_one_sub_mul ha
-lemma nnnorm_one_sub_mul' (hb : ‖b‖₊ ≤ 1) : ‖c - a * b‖₊ ≤ ‖1 - a‖₊ + ‖c - b‖₊ :=
-  norm_one_sub_mul' hb
+lemma nnnorm_sub_mul (ha : ‖a‖₊ ≤ 1) : ‖c - a * b‖₊ ≤ ‖c - a‖₊ + ‖1 - b‖₊ := norm_sub_mul ha
+lemma nnnorm_sub_mul' (hb : ‖b‖₊ ≤ 1) : ‖c - a * b‖₊ ≤ ‖1 - a‖₊ + ‖c - b‖₊ :=
+  norm_sub_mul' hb
 
 end SeminormedRing
 
