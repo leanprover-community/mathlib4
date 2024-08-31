@@ -60,7 +60,7 @@ variable (A B : Set Nat)
 info: Unfolds for n ∈ A ∪ B:
 · Set.Mem n (A ∪ B)
 · (A ∪ B) n
-· Set.union A B n
+· A.union B n
 · {a | a ∈ A ∨ a ∈ B} n
 · n ∈ A ∨ n ∈ B
 -/

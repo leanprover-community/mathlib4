@@ -133,7 +133,7 @@ private partial def matchTreeStars (key : Key) (stars : HashMap Nat TrieIndex)
   if stars.isEmpty then
     todo
   else
-    let (dropped, keys) := drop [key] pMatch.keys
+    let (dropped, keys) := drop [key] pMatch.keys key.arity
     stars.fold (init := todo) fun todo id trie =>
       match pMatch.treeStars.find? id with
       | some assignment =>
@@ -146,7 +146,7 @@ private partial def matchTreeStars (key : Key) (stars : HashMap Nat TrieIndex)
         todo.push { pMatch with keys, trie, treeStars }
 where
   /-- Drop the keys corresponding to the next `n` expressions. -/
-  drop (dropped rest : List Key) (n : Nat := 1) : (List Key × List Key) := Id.run do
+  drop (dropped rest : List Key) (n : Nat) : (List Key × List Key) := Id.run do
     match n with
     | 0 => (dropped, rest)
     | n+1 =>

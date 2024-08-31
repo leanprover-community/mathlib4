@@ -120,7 +120,7 @@ def findImportMatches
   let dummy : IO.Ref (Option (RefinedDiscrTree α)) ← IO.mkRef none
   let ref := @EnvExtension.getState _ ⟨dummy⟩ ext (← getEnv)
   let importTree ← (← ref.get).getDM $ do
-    profileitM Exception  "lazy discriminator import initialization" (←getOptions) <|
+    profileitM Exception  "lazy discriminator import initialization" (← getOptions) <|
       createImportedDiscrTree (treeCtx cctx) cNGen (← getEnv) addEntry droppedKeys
                 (constantsPerTask := constantsPerTask)
   let (importCandidates, importTree) ← getMatch importTree ty false

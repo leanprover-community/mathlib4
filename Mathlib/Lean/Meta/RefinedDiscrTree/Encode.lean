@@ -365,7 +365,7 @@ private partial def processLazyEntryAux (entry : LazyEntry α) :
     let (key, entry) := mkNewStar entry
     return .inl [(key, entry)]
   | .expr info =>
-    withLCtx info.lctx info.localInsts do
+    withLCtx info.lctx info.localInsts do withMCtx entry.mctx do
     return .inl (
       ← encodingStep info.expr (root := false) entry |>.run { info with config := (← read) })
 
@@ -384,7 +384,7 @@ private partial def processLazyEntryAux' (entry : LazyEntry α) :
     let (key, entry) := mkNewStar entry
     return .inl (key, entry)
   | .expr info =>
-    withLCtx info.lctx info.localInsts do
+    withLCtx info.lctx info.localInsts do withMCtx entry.mctx do
     return .inl (← encodingStep' info.expr false |>.run { info with config := (← read)} entry)
 
 private def updateCaches (stack : List StackEntry) (key : Key) : List StackEntry :=
