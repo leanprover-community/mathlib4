@@ -1144,7 +1144,6 @@ theorem sup_not_succ_of_ne_sup {ι : Type u} {f : ι → Ordinal.{max u v}}
   succ_lt_iSup_of_ne_iSup hf hao
 
 -- TODO: generalize to conditionally complete linear orders.
-@[simp]
 theorem iSup_eq_zero_iff {ι : Type u} {f : ι → Ordinal.{max u v}} :
     iSup f = 0 ↔ ∀ i, f i = 0 := by
   refine
