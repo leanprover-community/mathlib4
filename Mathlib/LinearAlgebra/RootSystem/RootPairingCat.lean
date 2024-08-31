@@ -126,7 +126,7 @@ instance category : Category.{v, max (v+1) u} (RootPairingCat.{v} R) where
   id P := Hom.id P
   comp f g := Hom.comp g f
 
-/-- The endomorphism of a root pairing given by a reflection. Make this a Cat Hom?-/
+/-- The endomorphism of a root pairing given by a reflection. -/
 @[simps!]
 def reflection_hom {P : RootPairingCat R} (i : P.index) : Hom P P where
   weight_map := P.pairing.reflection i
