@@ -5,5 +5,5 @@ tlabels="$(gh api --jq '.labels.[].name' "${PR}" | grep -- '^t-' || printf 'gene
 if [[ "$(wc -l <<<"${tlabels}")" -ne 1 ]]; then
   tlabels="generic"
 fi
->&2 printf 'echo "name=%s"\n' "${tlabels}"
-echo "name=${tlabels}"
+>&2 printf 'echo "name=%s with a branch-addition"\n' "${tlabels}"
+echo "name=${tlabels} with a branch-addition"
