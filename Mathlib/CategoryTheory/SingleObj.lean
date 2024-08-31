@@ -242,7 +242,7 @@ def toCat : MonCat ⥤ Cat where
   obj x := Cat.of (SingleObj x)
   map {x y} f := SingleObj.mapHom x y f
 
-instance toCat_full : toCat.Full  where
+instance toCat_full : toCat.Full where
   map_surjective := (SingleObj.mapHom _ _).surjective
 
 instance toCat_faithful : toCat.Faithful where
