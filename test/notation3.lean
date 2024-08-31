@@ -2,6 +2,7 @@ import Mathlib.Util.Notation3
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Data.Nat.Defs
 
+set_option linter.style.setOption false
 set_option pp.unicode.fun true
 set_option autoImplicit true
 
@@ -151,6 +152,7 @@ matcher from the expansion. (Use `set_option trace.notation3 true` to get some d
 end
 
 section
+set_option linter.unusedTactic false
 local notation3 (prettyPrint := false) "#" n => Fin.mk n (by decide)
 
 example : Fin 5 := #1

@@ -589,7 +589,7 @@ theorem totallyBounded_iff_filter {s : Set α} :
     have hb : HasAntitoneBasis f fun t : Finset α ↦ s \ ⋃ y ∈ t, { x | (x, y) ∈ d } :=
       .iInf_principal fun _ _ ↦ diff_subset_diff_right ∘ biUnion_subset_biUnion_left
     have : Filter.NeBot f := hb.1.neBot_iff.2 fun _ ↦
-      nonempty_diff.2 <| hd_cover _ (Finset.finite_toSet _)
+      diff_nonempty.2 <| hd_cover _ (Finset.finite_toSet _)
     have : f ≤ 𝓟 s := iInf_le_of_le ∅ (by simp)
     refine ⟨f, ‹_›, ‹_›, fun c hcf hc => ?_⟩
     rcases mem_prod_same_iff.1 (hc.2 hd) with ⟨m, hm, hmd⟩

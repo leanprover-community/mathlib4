@@ -107,7 +107,7 @@ b = cfc id b = cfc (NNReal.sqrt ∘ (· ^ 2)) b =
 + `cfc : (R → R) → A → A`: an unbundled version of `cfcHom` which takes the junk value `0` when
   `cfcHom` is not defined.
 + `cfcUnits`: builds a unit from `cfc f a` when `f` is nonzero and continuous on the
-  specturm of `a`.
+  spectrum of `a`.
 
 ## Main theorems
 
@@ -260,6 +260,18 @@ theorem cfcHom_comp [UniqueContinuousFunctionalCalculus R A] (f : C(spectrum R a
 
 end cfcHom
 
+section cfcL
+
+/-- `cfcHom` bundled as a continuous linear map. -/
+@[simps apply]
+noncomputable def cfcL {a : A} (ha : p a) : C(spectrum R a, R) →L[R] A :=
+  { cfcHom ha with
+    toFun := cfcHom ha
+    map_smul' := map_smul _
+    cont := (cfcHom_closedEmbedding ha).continuous }
+
+end cfcL
+
 section CFC
 
 open scoped Classical in
@@ -309,6 +321,10 @@ lemma cfcHom_eq_cfc_extend {a : A} (g : R → R) (ha : p a) (f : C(spectrum R a,
     continuousOn_iff_continuous_restrict.mpr <| h ▸ map_continuous f
   rw [cfc_apply ..]
   congr!
+
+lemma cfc_eq_cfcL {a : A} {f : R → R} (ha : p a) (hf : ContinuousOn f (spectrum R a)) :
+    cfc f a = cfcL ha ⟨_, hf.restrict⟩ := by
+  rw [cfc_def, dif_pos ⟨ha, hf⟩, cfcL_apply]
 
 lemma cfc_cases (P : A → Prop) (a : A) (f : R → R) (h₀ : P 0)
     (haf : (hf : ContinuousOn f (spectrum R a)) → (ha : p a) → P (cfcHom ha ⟨_, hf.restrict⟩)) :
@@ -564,7 +580,7 @@ lemma cfc_comp_smul {S : Type*} [SMul S R] [ContinuousConstSMul S R] [SMulZeroCl
   rw [cfc_comp' .., cfc_smul_id ..]
 
 lemma cfc_comp_const_mul (r : R) (f : R → R) (a : A)
-    (hf : ContinuousOn f ((r * ·) '' (spectrum R a)) := by cfc_cont_tac)  (ha : p a := by cfc_tac) :
+    (hf : ContinuousOn f ((r * ·) '' (spectrum R a)) := by cfc_cont_tac) (ha : p a := by cfc_tac) :
     cfc (f <| r * ·) a = cfc f (r • a) := by
   rw [cfc_comp' .., cfc_const_mul_id ..]
 
@@ -645,6 +661,16 @@ instance IsStarNormal.cfc_map (f : R → R) (a : A) : IsStarNormal (cfc f a) whe
       congr! 2
       exact mul_comm _ _
     · simp [cfc_apply_of_not_continuousOn a h]
+
+variable (R) in
+/-- In an `R`-algebra with a continuous functional calculus, every element satisfying the predicate
+has nonempty `R`-spectrum. -/
+lemma CFC.spectrum_nonempty [Nontrivial A] (a : A) (ha : p a := by cfc_tac) :
+    (spectrum R a).Nonempty := by
+  by_contra! h
+  apply one_ne_zero (α := A)
+  rw [← cfc_one R a, ← cfc_zero R a]
+  exact cfc_congr fun x hx ↦ by simp_all
 
 end CFC
 
