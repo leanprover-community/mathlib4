@@ -1516,11 +1516,12 @@ end
 
 section CompactlySupported
 
-variable (α γ : Type*) [TopologicalSpace α] [NormedRing γ]
-
 /-- The two-sided ideal of compactly supported functions. -/
-def compactlySupported : TwoSidedIdeal (α →ᵇ γ) :=
+def compactlySupported (α γ : Type*) [TopologicalSpace α] [NonUnitalNormedRing γ] :
+    TwoSidedIdeal (α →ᵇ γ) :=
   .mk' {z | HasCompactSupport z} .zero .add .neg' .mul_left .mul_right
+  
+variable {α γ : Type*} [TopologicalSpace α] [NonUnitalNormedRing γ]
 
 @[inherit_doc]
 scoped[BoundedContinuousFunction] notation
