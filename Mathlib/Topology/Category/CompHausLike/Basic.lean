@@ -189,6 +189,11 @@ noncomputable def isoOfBijective {X Y : CompHausLike.{u} P} (f : X ⟶ Y)
   letI := isIso_of_bijective _ bij
   asIso f
 
+/-- Constructor for morphisms in `CompHausLike` categories. -/
+@[simps]
+def homMk {X Y : CompHausLike.{u} P} (f : X.toTop ⟶ Y.toTop) : X ⟶ Y where
+  hom := f
+
 /-- Construct an isomorphism from a homeomorphism. -/
 @[simps!]
 def isoOfHomeo {X Y : CompHausLike.{u} P} (f : X ≃ₜ Y) : X ≅ Y :=

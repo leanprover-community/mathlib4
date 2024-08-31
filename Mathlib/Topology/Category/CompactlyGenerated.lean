@@ -89,8 +89,8 @@ def homeoOfIso {X Y : CompactlyGenerated.{u, w}} (f : X ≅ Y) : X ≃ₜ Y wher
   invFun := f.inv
   left_inv x := by simp
   right_inv x := by simp
-  continuous_toFun := f.hom.continuous
-  continuous_invFun := f.inv.continuous
+  continuous_toFun := f.hom.hom.continuous
+  continuous_invFun := f.inv.hom.continuous
 
 /-- The equivalence between isomorphisms in `CompactlyGenerated` and homeomorphisms
 of topological spaces. -/

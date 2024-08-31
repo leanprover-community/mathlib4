@@ -46,10 +46,10 @@ instance projective_ultrafilter (X : Type*) : Projective (of <| Ultrafilter X) w
     use ⟨h, hh⟩
     apply (forget CompHaus).map_injective
     simp only [Functor.map_comp, ContinuousMap.coe_mk, coe_comp]
-    convert denseRange_pure.equalizer (g.continuous.comp hh) f.continuous _
+    convert denseRange_pure.equalizer (g.hom.continuous.comp hh) f.hom.continuous _
     -- Porting note: We need to get the coercions to functions under control.
     -- The next two lines should not be needed.
-    let g'' : ContinuousMap Y Z := g
+    let g'' : ContinuousMap Y Z := g.hom
     have : g'' ∘ g' = id := hg'.comp_eq_id
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [comp.assoc, ultrafilter_extend_extends, ← comp.assoc, this, id_comp]
