@@ -37,7 +37,7 @@ outer measure, Carathéodory-measurable, Carathéodory's criterion
 noncomputable section
 
 open Set Function Filter
-open scoped Classical NNReal Topology ENNReal
+open scoped NNReal Topology ENNReal
 
 namespace MeasureTheory
 namespace OuterMeasure
@@ -46,11 +46,11 @@ section OfFunction
 
 -- Porting note: "set_option eqn_compiler.zeta true" removed
 
-variable {α : Type*} (m : Set α → ℝ≥0∞) (m_empty : m ∅ = 0)
+variable {α : Type*}
 
-/-- Given any function `m` assigning measures to sets satisying `m ∅ = 0`, there is
+/-- Given any function `m` assigning measures to sets satisfying `m ∅ = 0`, there is
   a unique maximal outer measure `μ` satisfying `μ s ≤ m s` for all `s : Set α`. -/
-protected def ofFunction : OuterMeasure α :=
+protected def ofFunction (m : Set α → ℝ≥0∞) (m_empty : m ∅ = 0) : OuterMeasure α :=
   let μ s := ⨅ (f : ℕ → Set α) (_ : s ⊆ ⋃ i, f i), ∑' i, m (f i)
   { measureOf := μ
     empty :=
@@ -85,6 +85,8 @@ protected def ofFunction : OuterMeasure α :=
         rw [iUnion_unpair]
         intro j
         apply subset_iUnion₂ i }
+
+variable (m : Set α → ℝ≥0∞) (m_empty : m ∅ = 0)
 
 theorem ofFunction_apply (s : Set α) :
     OuterMeasure.ofFunction m m_empty s = ⨅ (t : ℕ → Set α) (_ : s ⊆ iUnion t), ∑' n, m (t n) :=
@@ -126,7 +128,7 @@ theorem ofFunction_eq_sSup : OuterMeasure.ofFunction m m_empty = sSup { μ | ∀
 
 E.g., if `α` is an (e)metric space and `m u = ∞` on any set of diameter `≥ r`, then this lemma
 implies that `μ (s ∪ t) = μ s + μ t` on any two sets such that `r ≤ edist x y` for all `x ∈ s`
-and `y ∈ t`.  -/
+and `y ∈ t`. -/
 theorem ofFunction_union_of_top_of_nonempty_inter {s t : Set α}
     (h : ∀ u, (s ∩ u).Nonempty → (t ∩ u).Nonempty → m u = ∞) :
     OuterMeasure.ofFunction m m_empty (s ∪ t) =
@@ -289,7 +291,7 @@ theorem comap_boundedBy {β} (f : β → α)
 
 E.g., if `α` is an (e)metric space and `m u = ∞` on any set of diameter `≥ r`, then this lemma
 implies that `μ (s ∪ t) = μ s + μ t` on any two sets such that `r ≤ edist x y` for all `x ∈ s`
-and `y ∈ t`.  -/
+and `y ∈ t`. -/
 theorem boundedBy_union_of_top_of_nonempty_inter {s t : Set α}
     (h : ∀ u, (s ∩ u).Nonempty → (t ∩ u).Nonempty → m u = ∞) :
     boundedBy m (s ∪ t) = boundedBy m s + boundedBy m t :=

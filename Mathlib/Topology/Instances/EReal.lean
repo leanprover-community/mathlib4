@@ -27,9 +27,8 @@ Most proofs are adapted from the corresponding proofs on `ℝ≥0∞`.
 
 noncomputable section
 
-open scoped Classical
 open Set Filter Metric TopologicalSpace Topology
-open scoped ENNReal NNReal Filter
+open scoped ENNReal
 
 variable {α : Type*} [TopologicalSpace α]
 
@@ -146,84 +145,32 @@ theorem tendsto_nhds_bot_iff_real {α : Type*} {m : α → EReal} {f : Filter α
     Tendsto m f (𝓝 ⊥) ↔ ∀ x : ℝ, ∀ᶠ a in f, m a < x :=
   nhds_bot_basis.tendsto_right_iff.trans <| by simp only [true_implies, mem_Iio]
 
+/-! ### Infs and Sups -/
+
+variable {α : Type*} {u v : α → EReal}
+
+lemma add_iInf_le_iInf_add : (⨅ x, u x) + (⨅ x, v x) ≤ ⨅ x, (u + v) x := by
+  refine add_le_of_forall_add_le fun a a_u b b_v ↦ ?_
+  rw [lt_iInf_iff] at a_u b_v
+  rcases a_u with ⟨c, a_c, c_u⟩
+  rcases b_v with ⟨d, b_d, d_v⟩
+  simp only [Pi.add_apply, le_iInf_iff]
+  exact fun x ↦ add_le_add (lt_of_lt_of_le a_c (c_u x)).le (lt_of_lt_of_le b_d (d_v x)).le
+
+lemma iSup_add_le_add_iSup (h : ⨆ x, u x ≠ ⊥ ∨ ⨆ x, v x ≠ ⊤) (h' : ⨆ x, u x ≠ ⊤ ∨ ⨆ x, v x ≠ ⊥) :
+    ⨆ x, (u + v) x ≤ (⨆ x, u x) + (⨆ x, v x) := by
+  refine le_add_of_forall_le_add h h' fun a a_u b b_v ↦ ?_
+  rw [gt_iff_lt, iSup_lt_iff] at a_u b_v
+  rcases a_u with ⟨c, a_c, c_u⟩
+  rcases b_v with ⟨d, b_d, d_v⟩
+  simp only [Pi.add_apply, iSup_le_iff]
+  exact fun x ↦ add_le_add (lt_of_le_of_lt (c_u x) a_c).le (lt_of_le_of_lt (d_v x) b_d).le
+
 /-! ### Liminfs and Limsups -/
 
 section LimInfSup
 
-variable {α : Type*} {f : Filter α} {u v : α → EReal} {a b : EReal}
-
-lemma liminf_le_liminf (h : u ≤ᶠ[f] v) :
-    liminf u f ≤ liminf v f := Filter.liminf_le_liminf h
-
-lemma limsup_le_limsup (h : u ≤ᶠ[f] v) :
-    limsup u f ≤ limsup v f := Filter.limsup_le_limsup h
-
-/-- This lemma is superseded by `limsup_add_le_of_le` (weaker hypothesis) and
-`limsup_add_lt_of_lt` (stronger thesis). -/
-private lemma limsup_add_le_of_lt (ha : limsup u f < a) (hb : limsup v f < b) :
-    limsup (u + v) f ≤ a + b := by
-  rcases eq_or_neBot f with (rfl | _)
-  · simp only [limsup_bot, bot_le]
-  rw [← @limsup_const EReal α _ f _ (a + b)]
-  apply limsup_le_limsup (Eventually.mp (Eventually.and (eventually_lt_of_limsup_lt ha)
-    (eventually_lt_of_limsup_lt hb)) (eventually_of_forall _))
-  simp only [Pi.add_apply, and_imp]
-  intro x
-  exact fun ux_lt_a vx_lt_b ↦ add_le_add (le_of_lt ux_lt_a) (le_of_lt vx_lt_b)
-
-lemma limsup_add_lt_of_lt (ha : limsup u f < a) (hb : limsup v f < b) :
-    limsup (u + v) f < a + b := by
-  obtain ⟨c, hc, hca⟩ := DenselyOrdered.dense _ _ ha
-  obtain ⟨d, hd, hdb⟩ := DenselyOrdered.dense _ _ hb
-  exact (limsup_add_le_of_lt hc hd).trans_lt (add_lt_add hca hdb)
-
-lemma limsup_add_bot_of_ne_top (h : limsup u f = ⊥) (h' : limsup v f ≠ ⊤) :
-    limsup (u + v) f = ⊥ := by
-  apply le_bot_iff.1
-  apply (le_iff_le_forall_real_gt ⊥ (limsup (u + v) f)).1
-  intro x
-  rcases exists_between_coe_real (h'.lt_top) with ⟨y, ⟨hy, _⟩⟩
-  rw [← sub_add_cancel x y, coe_add (x - y) y, coe_sub x y]
-  intro _
-  apply @limsup_add_le_of_lt α f u v (x - y) y _ hy
-  rw [h, ← coe_sub x y]
-  exact bot_lt_coe (x - y)
-
-lemma limsup_add_le_add_limsup
-    (h : limsup u f ≠ ⊥ ∨ limsup v f ≠ ⊤) (h' : limsup u f ≠ ⊤ ∨ limsup v f ≠ ⊥) :
-    limsup (u + v) f ≤ (limsup u f) + (limsup v f) := by
-  rcases eq_bot_or_bot_lt (limsup u f) with (u_bot | u_nbot)
-  · have v_ntop := h.neg_resolve_left u_bot
-    rw [limsup_add_bot_of_ne_top u_bot v_ntop]; exact bot_le
-  rcases eq_bot_or_bot_lt (limsup v f) with (v_bot | v_nbot)
-  · have u_ntop := h'.neg_resolve_right v_bot
-    rw [add_comm, limsup_add_bot_of_ne_top v_bot u_ntop]; exact bot_le
-  rcases eq_top_or_lt_top (limsup v f) with (v_top | v_ntop)
-  · rw [v_top, add_top_of_ne_bot (ne_of_gt u_nbot)]; exact le_top
-  have limsup_v_real := coe_toReal (ne_of_lt v_ntop) (ne_of_gt v_nbot)
-  apply (le_iff_le_forall_real_gt _ _).1
-  intros x hx
-  rcases lt_iff_exists_real_btwn.1 hx with ⟨y, ⟨sum_lt_y, y_lt_x⟩⟩
-  have key₁ : limsup u f < (y - limsup v f) := by
-    apply lt_of_eq_of_lt _ (sub_lt_sub_of_lt_of_le sum_lt_y (le_of_eq (Eq.refl (limsup v f)))
-      (ne_of_gt v_nbot) (ne_of_lt v_ntop))
-    rw [← limsup_v_real, add_sub_cancel_right]
-  have key₂ : limsup v f < limsup v f + x - y := by
-    rw [← limsup_v_real]; norm_cast; norm_cast at y_lt_x; linarith
-  apply le_of_le_of_eq (limsup_add_le_of_lt key₁ key₂)
-  rw [← limsup_v_real]; norm_cast; linarith
-
-lemma limsup_add_le_of_le (ha : limsup u f < a) (hb : limsup v f ≤ b) :
-    limsup (u + v) f ≤ a + b := by
-  rcases lt_or_eq_of_le hb with (hb | hb)
-  · exact limsup_add_le_of_lt ha hb
-  by_cases hb' : b = ⊤
-  · convert le_top
-    on_goal 1 => rw [hb']
-    -- This closes both remaining goals at once.
-    exact add_top_of_ne_bot ha.ne_bot
-  exact (limsup_add_le_add_limsup (hb ▸ Or.inr hb') (Or.inl ha.ne_top)).trans
-    (add_le_add ha.le hb.le)
+variable {α : Type*} {f : Filter α} {u v : α → EReal}
 
 lemma liminf_neg : liminf (- v) f = - limsup v f :=
   EReal.negOrderIso.limsup_apply.symm
@@ -231,58 +178,64 @@ lemma liminf_neg : liminf (- v) f = - limsup v f :=
 lemma limsup_neg : limsup (- v) f = - liminf v f :=
   EReal.negOrderIso.liminf_apply.symm
 
+lemma add_liminf_le_liminf_add : (liminf u f) + (liminf v f) ≤ liminf (u + v) f := by
+  refine add_le_of_forall_add_le fun a a_u b b_v ↦ (le_liminf_iff).2 fun c c_ab ↦ ?_
+  filter_upwards [eventually_lt_of_lt_liminf a_u, eventually_lt_of_lt_liminf b_v] with x a_x b_x
+  exact lt_trans c_ab (add_lt_add a_x b_x)
+
+lemma limsup_add_le_add_limsup (h : limsup u f ≠ ⊥ ∨ limsup v f ≠ ⊤)
+    (h' : limsup u f ≠ ⊤ ∨ limsup v f ≠ ⊥) :
+    limsup (u + v) f ≤ (limsup u f) + (limsup v f) := by
+  refine le_add_of_forall_le_add h h' fun a a_u b b_v ↦ (limsup_le_iff).2 fun c c_ab ↦ ?_
+  filter_upwards [eventually_lt_of_limsup_lt a_u, eventually_lt_of_limsup_lt b_v] with x a_x b_x
+  exact (add_lt_add a_x b_x).trans c_ab
+
+lemma limsup_add_liminf_le_limsup_add : (limsup u f) + (liminf v f) ≤ limsup (u + v) f :=
+  add_le_of_forall_add_le fun a a_u b b_v ↦ (le_limsup_iff).2 fun c c_ab ↦
+    Frequently.mono (Frequently.and_eventually ((frequently_lt_of_lt_limsup) a_u)
+    ((eventually_lt_of_lt_liminf) b_v)) fun _ ab_x ↦ c_ab.trans (add_lt_add ab_x.1 ab_x.2)
+
+lemma liminf_add_le_limsup_add_liminf (h : limsup u f ≠ ⊥ ∨ liminf v f ≠ ⊤)
+    (h' : limsup u f ≠ ⊤ ∨ liminf v f ≠ ⊥) :
+    liminf (u + v) f ≤ (limsup u f) + (liminf v f) :=
+  le_add_of_forall_le_add h h' fun a a_u b b_v ↦ (liminf_le_iff).2 fun c c_ab ↦
+    Frequently.mono (Frequently.and_eventually ((frequently_lt_of_liminf_lt) b_v)
+    ((eventually_lt_of_limsup_lt) a_u)) fun _ ab_x ↦ (add_lt_add ab_x.2 ab_x.1).trans c_ab
+
+variable {a b : EReal}
+
+lemma limsup_add_bot_of_ne_top (h : limsup u f = ⊥) (h' : limsup v f ≠ ⊤) :
+    limsup (u + v) f = ⊥ := by
+  apply le_bot_iff.1 (le_trans (limsup_add_le_add_limsup (Or.inr h') _) _)
+  · rw [h]; exact Or.inl bot_ne_top
+  · rw [h, bot_add]
+
+lemma limsup_add_le_of_le (ha : limsup u f < a) (hb : limsup v f ≤ b) :
+    limsup (u + v) f ≤ a + b := by
+  rcases eq_top_or_lt_top b with (rfl | h)
+  · rw [add_top_of_ne_bot ha.ne_bot]; exact le_top
+  · exact le_trans (limsup_add_le_add_limsup (Or.inr (lt_of_le_of_lt hb h).ne) (Or.inl ha.ne_top))
+      (add_le_add ha.le hb)
+
 lemma liminf_add_gt_of_gt (ha : a < liminf u f) (hb : b < liminf v f) :
-    a + b < liminf (u + v) f := by
-  have ha' : a ≠ ⊤ := ha.ne_top
-  have hb' : b ≠ ⊤ := hb.ne_top
-  have h : limsup (-(u + v)) f = limsup (-u + -v) f := by
-    apply limsup_congr
-    filter_upwards [eventually_lt_of_lt_liminf ha, eventually_lt_of_lt_liminf hb] with x hax hbx
-    dsimp
-    rw [neg_add (Or.inl hax.ne_bot) (Or.inr hbx.ne_bot), sub_eq_add_neg]
-  rw [← neg_lt_neg_iff, ← limsup_neg] at ha hb ⊢
-  rw [neg_add (Or.inr hb') (Or.inl ha'), h]
-  exact limsup_add_lt_of_lt ha hb
+    a + b < liminf (u + v) f :=
+  lt_of_lt_of_le (add_lt_add ha hb) add_liminf_le_liminf_add
 
 lemma liminf_add_top_of_ne_bot (h : liminf u f = ⊤) (h' : liminf v f ≠ ⊥) :
     liminf (u + v) f = ⊤ := by
-  apply top_le_iff.1 ((ge_iff_le_forall_real_lt (liminf (u + v) f) ⊤).1 _)
-  intro x
-  rcases exists_between_coe_real (Ne.bot_lt h') with ⟨y, ⟨_, hy⟩⟩
-  intro _
-  rw [← sub_add_cancel x y, coe_add (x - y) y]
-  exact coe_sub x y ▸ @liminf_add_gt_of_gt α f u v (x - y) y
-    (h ▸ coe_sub x y ▸ coe_lt_top (x-y)) hy |>.le
-
-lemma add_liminf_le_liminf_add : (liminf u f) + (liminf v f) ≤ liminf (u + v) f := by
-  by_cases hu : liminf u f = ⊥
-  · simp_all
-  by_cases hv : liminf v f = ⊥
-  · simp_all
-  have h' : limsup (-(u + v)) f = limsup (-u + -v) f := by
-    apply limsup_congr
-    filter_upwards [eventually_lt_of_lt_liminf (bot_lt_iff_ne_bot.mpr hu),
-      eventually_lt_of_lt_liminf (bot_lt_iff_ne_bot.mpr hv)] with x hux hvx
-    dsimp
-    rw [neg_add (Or.inl hux.ne_bot) (Or.inr hvx.ne_bot), sub_eq_add_neg]
-  rw [← neg_le_neg_iff, neg_add (Or.inl hu) (Or.inr hv), sub_eq_add_neg]
-  rw [← neg_inj, neg_bot] at hu hv
-  simp_rw [← limsup_neg] at hu hv ⊢
-  exact h' ▸ limsup_add_le_add_limsup (Or.inr hv) (Or.inl hu)
+  apply top_le_iff.1 (le_trans _ (add_liminf_le_liminf_add))
+  rw [h, top_add_of_ne_bot h']
 
 lemma limsup_le_iff {b : EReal} : limsup u f ≤ b ↔ ∀ c : ℝ, b < c → ∀ᶠ a : α in f, u a ≤ c := by
-  rw [← le_iff_le_forall_real_gt]
-  refine ⟨?_, ?_⟩ <;> intro h c b_lt_c
-  · rcases exists_between_coe_real b_lt_c with ⟨d, b_lt_d, d_lt_c⟩
-    specialize h d b_lt_d
-    have key := Filter.eventually_lt_of_limsup_lt (lt_of_le_of_lt h d_lt_c)
-    apply Filter.mem_of_superset key
+  rw [← le_of_forall_lt_iff_le]
+  refine ⟨?_, ?_⟩ <;> intro h c b_c
+  · rcases exists_between_coe_real b_c with ⟨d, b_d, d_c⟩
+    apply mem_of_superset (eventually_lt_of_limsup_lt (lt_of_le_of_lt (h d b_d) d_c))
     rw [Set.setOf_subset_setOf]
-    exact fun a h' ↦ le_of_lt h'
-  · rcases eq_or_neBot f with (rfl | _)
+    exact fun _ h' ↦ h'.le
+  · rcases eq_or_neBot f with rfl | _
     · simp only [limsup_bot, bot_le]
-    · specialize h c b_lt_c
-      exact @Filter.limsup_const EReal α _ f _ (c : EReal) ▸ limsup_le_limsup h
+    · exact (limsup_le_of_le) (h c b_c)
 
 end LimInfSup
 

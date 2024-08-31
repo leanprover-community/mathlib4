@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Directed
-import Mathlib.FieldTheory.IntermediateField
+import Mathlib.FieldTheory.IntermediateField.Algebraic
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.SplittingField.IsSplittingField
 import Mathlib.RingTheory.TensorProduct.Basic
@@ -28,8 +28,6 @@ For example, `Algebra.adjoin K {x}` might not include `x⁻¹`.
 -/
 
 open FiniteDimensional Polynomial
-
-open scoped Classical Polynomial
 
 namespace IntermediateField
 
@@ -358,12 +356,12 @@ theorem adjoin_adjoin_left (T : Set E) :
   apply Set.eq_of_subset_of_subset <;> rw [adjoin_subset_adjoin_iff] <;> constructor
   · rintro _ ⟨⟨x, hx⟩, rfl⟩; exact adjoin.mono _ _ _ Set.subset_union_left hx
   · exact subset_adjoin_of_subset_right _ _ Set.subset_union_right
--- Porting note: orginal proof times out
+-- Porting note: original proof times out
   · rintro x ⟨f, rfl⟩
     refine Subfield.subset_closure ?_
     left
     exact ⟨f, rfl⟩
--- Porting note: orginal proof times out
+-- Porting note: original proof times out
   · refine Set.union_subset (fun x hx => Subfield.subset_closure ?_)
       (fun x hx => Subfield.subset_closure ?_)
     · left
@@ -822,6 +820,7 @@ theorem exists_finset_of_mem_adjoin {S : Set E} {x : E} (hx : x ∈ adjoin F S) 
     ∃ T : Finset E, (T : Set E) ⊆ S ∧ x ∈ adjoin F (T : Set E) := by
   simp_rw [← biSup_adjoin_simple S, ← iSup_subtype''] at hx
   obtain ⟨s, hx'⟩ := exists_finset_of_mem_iSup hx
+  classical
   refine ⟨s.image Subtype.val, by simp, SetLike.le_def.mp ?_ hx'⟩
   simp_rw [Finset.coe_image, iSup_le_iff, adjoin_le_iff]
   rintro _ h _ rfl
@@ -1236,6 +1235,7 @@ theorem fg_of_noetherian (S : IntermediateField F E) [IsNoetherian F E] : S.FG :
 theorem induction_on_adjoin_finset (S : Finset E) (P : IntermediateField F E → Prop) (base : P ⊥)
     (ih : ∀ (K : IntermediateField F E), ∀ x ∈ S, P K → P (K⟮x⟯.restrictScalars F)) :
     P (adjoin F S) := by
+  classical
   refine Finset.induction_on' S ?_ (fun ha _ _ h => ?_)
   · simp [base]
   · rw [Finset.coe_insert, Set.insert_eq, Set.union_comm, ← adjoin_adjoin_left]

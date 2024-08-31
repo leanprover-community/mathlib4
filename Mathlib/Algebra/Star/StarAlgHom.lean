@@ -263,7 +263,7 @@ variable (R : Type*) {S A B : Type*} [Monoid R] [Monoid S] [Star A] [Star B]
     [IsScalarTower R S A] [IsScalarTower R S B]
 
 /-- If a monoid `R` acts on another monoid `S`, then a non-unital star algebra homomorphism
-over `S` can be viewed as a non-unital star algebra homomorphism over `R`.  -/
+over `S` can be viewed as a non-unital star algebra homomorphism over `R`. -/
 def restrictScalars (f : A →⋆ₙₐ[S] B) : A →⋆ₙₐ[R] B :=
   { (f : A →ₙₐ[S] B).restrictScalars R with
     map_star' := map_star f }
@@ -765,9 +765,6 @@ theorem toRingEquiv_eq_coe (e : A ≃⋆ₐ[R] B) : e.toRingEquiv = e :=
 theorem ext {f g : A ≃⋆ₐ[R] B} (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext f g h
 
-theorem ext_iff {f g : A ≃⋆ₐ[R] B} : f = g ↔ ∀ a, f a = g a :=
-  DFunLike.ext_iff
-
 /-- The identity map is a star algebra isomorphism. -/
 @[refl]
 def refl : A ≃⋆ₐ[R] A :=
@@ -810,9 +807,7 @@ theorem invFun_eq_symm {e : A ≃⋆ₐ[R] B} : EquivLike.inv e = e.symm :=
   rfl
 
 @[simp]
-theorem symm_symm (e : A ≃⋆ₐ[R] B) : e.symm.symm = e := by
-  ext
-  rfl
+theorem symm_symm (e : A ≃⋆ₐ[R] B) : e.symm.symm = e := rfl
 
 theorem symm_bijective : Function.Bijective (symm : (A ≃⋆ₐ[R] B) → B ≃⋆ₐ[R] A) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
@@ -824,7 +819,7 @@ theorem coe_mk (e h₁ h₂) : ⇑(⟨e, h₁, h₂⟩ : A ≃⋆ₐ[R] B) = e :
 theorem mk_coe (e : A ≃⋆ₐ[R] B) (e' h₁ h₂ h₃ h₄ h₅ h₆) :
     (⟨⟨⟨e, e', h₁, h₂⟩, h₃, h₄⟩, h₅, h₆⟩ : A ≃⋆ₐ[R] B) = e := ext fun _ => rfl
 
-/-- Auxilliary definition to avoid looping in `dsimp` with `StarAlgEquiv.symm_mk`. -/
+/-- Auxiliary definition to avoid looping in `dsimp` with `StarAlgEquiv.symm_mk`. -/
 protected def symm_mk.aux (f f') (h₁ h₂ h₃ h₄ h₅ h₆) :=
   (⟨⟨⟨f, f', h₁, h₂⟩, h₃, h₄⟩, h₅, h₆⟩ : A ≃⋆ₐ[R] B).symm
 

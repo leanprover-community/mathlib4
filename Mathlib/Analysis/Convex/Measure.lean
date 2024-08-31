@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Convex.Topology
-import Mathlib.Analysis.NormedSpace.AddTorsorBases
+import Mathlib.Analysis.Normed.Affine.AddTorsorBases
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 
 /-!
@@ -59,7 +59,7 @@ theorem addHaar_frontier (hs : Convex ℝ s) : μ (frontier s) = 0 := by
     `μ (closure s) ≤ μ (interior s)`. -/
   replace hb : μ (interior s) ≠ ∞ := (hb.subset interior_subset).measure_lt_top.ne
   suffices μ (closure s) ≤ μ (interior s) by
-    rwa [frontier, measure_diff interior_subset_closure isOpen_interior.measurableSet hb,
+    rwa [frontier, measure_diff interior_subset_closure isOpen_interior.nullMeasurableSet hb,
       tsub_eq_zero_iff_le]
   /- Due to `Convex.closure_subset_image_homothety_interior_of_one_lt`, for any `r > 1` we have
     `closure s ⊆ homothety x r '' interior s`, hence `μ (closure s) ≤ r ^ d * μ (interior s)`,

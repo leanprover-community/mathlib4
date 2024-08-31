@@ -53,7 +53,7 @@ suppress_compilation
 open scoped TensorProduct
 
 variable {R ι A B : Type*}
-variable [CommSemiring ι] [Module ι (Additive ℤˣ)] [DecidableEq ι]
+variable [CommSemiring ι] [DecidableEq ι]
 variable [CommRing R] [Ring A] [Ring B] [Algebra R A] [Algebra R B]
 variable (𝒜 : ι → Submodule R A) (ℬ : ι → Submodule R B)
 variable [GradedAlgebra 𝒜] [GradedAlgebra ℬ]
@@ -135,6 +135,8 @@ theorem auxEquiv_one : auxEquiv R 𝒜 ℬ 1 = 1 := by
 theorem auxEquiv_symm_one : (auxEquiv R 𝒜 ℬ).symm 1 = 1 :=
   (LinearEquiv.symm_apply_eq _).mpr (auxEquiv_one _ _).symm
 
+variable [Module ι (Additive ℤˣ)]
+
 /-- Auxiliary construction used to build the `Mul` instance and get distributivity of `+` and
 `\smul`. -/
 noncomputable def mulHom : (𝒜 ᵍ⊗[R] ℬ) →ₗ[R] (𝒜 ᵍ⊗[R] ℬ) →ₗ[R] (𝒜 ᵍ⊗[R] ℬ) := by
@@ -148,7 +150,7 @@ theorem mulHom_apply (x y : 𝒜 ᵍ⊗[R] ℬ) :
       = (auxEquiv R 𝒜 ℬ).symm (gradedMul R (𝒜 ·) (ℬ ·) (auxEquiv R 𝒜 ℬ x) (auxEquiv R 𝒜 ℬ y)) :=
   rfl
 
-/-- The multipication on the graded tensor product.
+/-- The multiplication on the graded tensor product.
 
 See `GradedTensorProduct.coe_mul_coe` for a characterization on pure tensors. -/
 instance : Mul (𝒜 ᵍ⊗[R] ℬ) where mul x y := mulHom 𝒜 ℬ x y
@@ -177,7 +179,7 @@ instance instRing : Ring (𝒜 ᵍ⊗[R] ℬ) where
   mul_zero x := by simp_rw [mul_def, map_zero]
   zero_mul x := by simp_rw [mul_def, LinearMap.map_zero₂]
 
-/-- The characterization of this multiplication on partially homogenous elements. -/
+/-- The characterization of this multiplication on partially homogeneous elements. -/
 theorem tmul_coe_mul_coe_tmul {j₁ i₂ : ι} (a₁ : A) (b₁ : ℬ j₁) (a₂ : 𝒜 i₂) (b₂ : B) :
     (a₁ ᵍ⊗ₜ[R] (b₁ : B) * (a₂ : A) ᵍ⊗ₜ[R] b₂ : 𝒜 ᵍ⊗[R] ℬ) =
       (-1 : ℤˣ)^(j₁ * i₂) • ((a₁ * a₂ : A) ᵍ⊗ₜ (b₁ * b₂ : B)) := by
@@ -187,10 +189,9 @@ theorem tmul_coe_mul_coe_tmul {j₁ i₂ : ι} (a₁ : A) (b₁ : ℬ j₁) (a�
   simp_rw [← lof_eq_of R]
   rw [tmul_of_gradedMul_of_tmul]
   simp_rw [lof_eq_of R]
-  rw [LinearEquiv.symm_symm]
   -- Note: #8386 had to specialize `map_smul` to `LinearEquiv.map_smul`
-  rw [@Units.smul_def _ _ (_) (_), ← Int.cast_smul_eq_nsmul R, LinearEquiv.map_smul, map_smul,
-    Int.cast_smul_eq_nsmul R, ← @Units.smul_def _ _ (_) (_)]
+  rw [@Units.smul_def _ _ (_) (_), ← Int.cast_smul_eq_zsmul R, LinearEquiv.map_smul, map_smul,
+    Int.cast_smul_eq_zsmul R, ← @Units.smul_def _ _ (_) (_)]
   rw [congr_symm_tmul]
   dsimp
   simp_rw [decompose_symm_mul, decompose_symm_of, Equiv.symm_apply_apply]
@@ -294,7 +295,7 @@ lemma algebraMap_def' (r : R) : algebraMap R (𝒜 ᵍ⊗[R] ℬ) r = 1 ᵍ⊗�
 variable {C} [Ring C] [Algebra R C]
 
 /-- The forwards direction of the universal property; an algebra morphism out of the graded tensor
-product can be assembed from maps on each component that (anti)commute on pure elements of the
+product can be assembled from maps on each component that (anti)commute on pure elements of the
 corresponding graded algebras. -/
 def lift (f : A →ₐ[R] C) (g : B →ₐ[R] C)
     (h_anti_commutes : ∀ ⦃i j⦄ (a : 𝒜 i) (b : ℬ j), f a * g b = (-1 : ℤˣ)^(j * i) • (g b * f a)) :
@@ -305,7 +306,7 @@ def lift (f : A →ₐ[R] C) (g : B →ₐ[R] C)
       ∘ₗ ((of R 𝒜 ℬ).symm : 𝒜 ᵍ⊗[R] ℬ →ₗ[R] A ⊗[R] B))
     (by
       dsimp [Algebra.TensorProduct.one_def]
-      simp only [_root_.map_one, mul_one])
+      simp only [map_one, mul_one])
     (by
       rw [LinearMap.map_mul_iff]
       ext a₁ : 3
@@ -315,10 +316,10 @@ def lift (f : A →ₐ[R] C) (g : B →ₐ[R] C)
       ext a₂ b₂ : 2
       dsimp
       rw [tmul_coe_mul_coe_tmul]
-      rw [@Units.smul_def _ _ (_) (_), ← Int.cast_smul_eq_nsmul R, map_smul, map_smul, map_smul]
-      rw [Int.cast_smul_eq_nsmul R, ← @Units.smul_def _ _ (_) (_)]
+      rw [@Units.smul_def _ _ (_) (_), ← Int.cast_smul_eq_zsmul R, map_smul, map_smul, map_smul]
+      rw [Int.cast_smul_eq_zsmul R, ← @Units.smul_def _ _ (_) (_)]
       rw [of_symm_of, map_tmul, LinearMap.mul'_apply]
-      simp_rw [AlgHom.toLinearMap_apply, _root_.map_mul]
+      simp_rw [AlgHom.toLinearMap_apply, map_mul]
       simp_rw [mul_assoc (f a₁), ← mul_assoc _ _ (g b₂), h_anti_commutes, mul_smul_comm,
         smul_mul_assoc, smul_smul, Int.units_mul_self, one_smul])
 
@@ -338,14 +339,14 @@ def liftEquiv :
   toFun fg := lift 𝒜 ℬ _ _ fg.prop
   invFun F := ⟨(F.comp (includeLeft 𝒜 ℬ), F.comp (includeRight 𝒜 ℬ)), fun i j a b => by
     dsimp
-    rw [← _root_.map_mul, ← _root_.map_mul F, tmul_coe_mul_coe_tmul, one_mul, mul_one,
-      AlgHom.map_smul_of_tower, tmul_one_mul_one_tmul, smul_smul, Int.units_mul_self, one_smul]⟩
-  left_inv fg := by ext <;> (dsimp; simp only [_root_.map_one, mul_one, one_mul])
+    rw [← map_mul, ← map_mul F, tmul_coe_mul_coe_tmul, one_mul, mul_one, AlgHom.map_smul_of_tower,
+      tmul_one_mul_one_tmul, smul_smul, Int.units_mul_self, one_smul]⟩
+  left_inv fg := by ext <;> (dsimp; simp only [map_one, mul_one, one_mul])
   right_inv F := by
     apply AlgHom.toLinearMap_injective
     ext
     dsimp
-    rw [← _root_.map_mul, tmul_one_mul_one_tmul]
+    rw [← map_mul, tmul_one_mul_one_tmul]
 
 /-- Two algebra morphism from the graded tensor product agree if their compositions with the left
 and right inclusions agree. -/
@@ -376,7 +377,7 @@ lemma auxEquiv_comm (x : 𝒜 ᵍ⊗[R] ℬ) :
     comm 𝒜 ℬ (a ᵍ⊗ₜ b) = (-1 : ℤˣ)^(j * i) • (b ᵍ⊗ₜ a : ℬ ᵍ⊗[R] 𝒜) :=
   (auxEquiv R ℬ 𝒜).injective <| by
     simp_rw [auxEquiv_comm, auxEquiv_tmul, decompose_coe, ← lof_eq_of R, gradedComm_of_tmul_of,
-      @Units.smul_def _ _ (_) (_), ← Int.cast_smul_eq_nsmul R]
+      @Units.smul_def _ _ (_) (_), ← Int.cast_smul_eq_zsmul R]
     -- Qualified `map_smul` to avoid a TC timeout #8386
     erw [LinearMap.map_smul, auxEquiv_tmul]
     simp_rw [decompose_coe, lof_eq_of]

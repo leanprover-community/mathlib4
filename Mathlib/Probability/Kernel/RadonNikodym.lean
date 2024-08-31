@@ -302,7 +302,7 @@ lemma singularPart_compl_mutuallySingularSetSlice (κ η : Kernel α γ) [IsSFin
   simp only [mem_compl_iff, mutuallySingularSetSlice, mem_setOf, not_le] at hx
   simp_rw [rnDeriv]
   rw [← ENNReal.ofReal_div_of_pos, div_eq_inv_mul, ← ENNReal.ofReal_mul, ← mul_assoc,
-    mul_inv_cancel, one_mul, tsub_self, Pi.zero_apply]
+    mul_inv_cancel₀, one_mul, tsub_self, Pi.zero_apply]
   · simp only [ne_eq, sub_eq_zero, hx.ne', not_false_eq_true]
   · simp only [sub_nonneg, hx.le]
   · simp only [sub_pos, hx]
@@ -375,7 +375,7 @@ lemma withDensity_rnDeriv_of_subset_compl_mutuallySingularSetSlice
   _ = ∫⁻ x in s, ENNReal.ofReal (rnDerivAux κ (κ + η) a x) ∂(κ + η) a := by
       refine setLIntegral_congr_fun hsm (ae_of_all _ fun x hx ↦ ?_)
       rw [h_coe, ← ENNReal.ofReal_div_of_pos, div_eq_inv_mul, ← ENNReal.ofReal_mul, ← mul_assoc,
-        mul_inv_cancel, one_mul]
+        mul_inv_cancel₀, one_mul]
       · rw [ne_eq, sub_eq_zero]
         exact (hs' x hx).ne'
       · simp [(hs' x hx).le]
@@ -391,7 +391,7 @@ lemma mutuallySingular_singularPart (κ η : Kernel α γ) [IsFiniteKernel κ] [
     measure_mutuallySingularSetSlice κ η a, singularPart_compl_mutuallySingularSetSlice κ η a⟩
 
 /-- Lebesgue decomposition of a finite kernel `κ` with respect to another one `η`.
-`κ` is the sum of an abolutely continuous part `withDensity η (rnDeriv κ η)` and a singular part
+`κ` is the sum of an absolutely continuous part `withDensity η (rnDeriv κ η)` and a singular part
 `singularPart κ η`. -/
 lemma rnDeriv_add_singularPart (κ η : Kernel α γ) [IsFiniteKernel κ] [IsFiniteKernel η] :
     withDensity η (rnDeriv κ η) + singularPart κ η = κ := by

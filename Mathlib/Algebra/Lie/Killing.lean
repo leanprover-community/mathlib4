@@ -54,7 +54,7 @@ attribute [simp] IsKilling.killingCompl_top_eq_bot
 
 namespace IsKilling
 
-variable [Module.Free R L] [Module.Finite R L] [IsKilling R L]
+variable [IsKilling R L]
 
 @[simp] lemma ker_killingForm_eq_bot :
     LinearMap.ker (killingForm R L) = ⊥ := by
@@ -65,7 +65,8 @@ lemma killingForm_nondegenerate :
   simp [LinearMap.BilinForm.nondegenerate_iff_ker_eq_bot]
 
 variable {R L} in
-lemma ideal_eq_bot_of_isLieAbelian [IsDomain R] [IsPrincipalIdealRing R]
+lemma ideal_eq_bot_of_isLieAbelian
+    [Module.Free R L] [Module.Finite R L] [IsDomain R] [IsPrincipalIdealRing R]
     (I : LieIdeal R L) [IsLieAbelian I] : I = ⊥ := by
   rw [eq_bot_iff, ← killingCompl_top_eq_bot]
   exact I.le_killingCompl_top_of_isLieAbelian
@@ -83,7 +84,9 @@ over fields with positive characteristic.
 
 Note that when the coefficients are a field this instance is redundant since we have
 `LieAlgebra.IsKilling.instSemisimple` and `LieAlgebra.IsSemisimple.instHasTrivialRadical`. -/
-instance instHasTrivialRadical [IsDomain R] [IsPrincipalIdealRing R] : HasTrivialRadical R L :=
+instance instHasTrivialRadical
+    [Module.Free R L] [Module.Finite R L] [IsDomain R] [IsPrincipalIdealRing R] :
+    HasTrivialRadical R L :=
   (hasTrivialRadical_iff_no_abelian_ideals R L).mpr IsKilling.ideal_eq_bot_of_isLieAbelian
 
 end IsKilling

@@ -236,10 +236,10 @@ section Bisim
 
 variable (R : Computation α → Computation α → Prop)
 
-/-- bisimilarity relation-/
+/-- bisimilarity relation -/
 local infixl:50 " ~ " => R
 
-/-- Bisimilarity over a sum of `Computation`s-/
+/-- Bisimilarity over a sum of `Computation`s -/
 def BisimO : α ⊕ (Computation α) → α ⊕ (Computation α) → Prop
   | Sum.inl a, Sum.inl a' => a = a'
   | Sum.inr s, Sum.inr s' => R s s'
@@ -247,7 +247,7 @@ def BisimO : α ⊕ (Computation α) → α ⊕ (Computation α) → Prop
 
 attribute [simp] BisimO
 
-/-- Attribute expressing bisimilarity over two `Computation`s-/
+/-- Attribute expressing bisimilarity over two `Computation`s -/
 def IsBisimulation :=
   ∀ ⦃s₁ s₂⦄, s₁ ~ s₂ → BisimO R (destruct s₁) (destruct s₂)
 
@@ -279,7 +279,7 @@ end Bisim
 
 -- It's more of a stretch to use ∈ for this relation, but it
 -- asserts that the computation limits to the given value.
-/-- Assertion that a `Computation` limits to a given value-/
+/-- Assertion that a `Computation` limits to a given value -/
 protected def Mem (a : α) (s : Computation α) :=
   some a ∈ s.1
 
@@ -519,7 +519,7 @@ theorem eq_thinkN' (s : Computation α) [_h : Terminates s] :
     s = thinkN (pure (get s)) (length s) :=
   eq_thinkN (results_of_terminates _)
 
-/-- Recursor based on membership-/
+/-- Recursor based on membership -/
 def memRecOn {C : Computation α → Sort v} {a s} (M : a ∈ s) (h1 : C (pure a))
     (h2 : ∀ s, C s → C (think s)) : C s := by
   haveI T := terminates_of_mem M
@@ -695,7 +695,7 @@ theorem length_bind (s : Computation α) (f : α → Computation β) [_T1 : Term
 theorem of_results_bind {s : Computation α} {f : α → Computation β} {b k} :
     Results (bind s f) b k → ∃ a m n, Results s a m ∧ Results (f a) b n ∧ k = n + m := by
   induction' k with n IH generalizing s <;> apply recOn s (fun a => _) fun s' => _ <;> intro e h
-  · simp only [ret_bind, Nat.zero_eq] at h
+  · simp only [ret_bind] at h
     exact ⟨e, _, _, results_pure _, h, rfl⟩
   · have := congr_arg head (eq_thinkN h)
     contradiction
@@ -820,7 +820,7 @@ theorem orElse_empty (c : Computation α) : (c <|> empty α) = c := by
 def Equiv (c₁ c₂ : Computation α) : Prop :=
   ∀ a, a ∈ c₁ ↔ a ∈ c₂
 
-/-- equivalence relation for computations-/
+/-- equivalence relation for computations -/
 scoped infixl:50 " ~ " => Equiv
 
 @[refl]
@@ -1041,7 +1041,7 @@ theorem map_congr {s1 s2 : Computation α} {f : α → β}
   rw [← lift_eq_iff_equiv]
   exact liftRel_map Eq _ ((lift_eq_iff_equiv _ _).2 h1) fun {a} b => congr_arg _
 
-/-- Alternate definition of `LiftRel` over relations between `Computation`s-/
+/-- Alternate definition of `LiftRel` over relations between `Computation`s -/
 def LiftRelAux (R : α → β → Prop) (C : Computation α → Computation β → Prop) :
     α ⊕ (Computation α) → β ⊕ (Computation β) → Prop
   | Sum.inl a, Sum.inl b => R a b

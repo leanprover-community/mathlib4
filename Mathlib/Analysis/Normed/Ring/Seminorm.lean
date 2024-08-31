@@ -298,7 +298,7 @@ instance : Inhabited (MulRingNorm R) :=
 variable {R : Type*} [Ring R]
 
 /-- Two multiplicative ring norms `f, g` on `R` are equivalent if there exists a positive constant
-  `c` such that for all `x ∈ R`, `(f x)^c = g x`.  -/
+  `c` such that for all `x ∈ R`, `(f x)^c = g x`. -/
 
 def equiv (f : MulRingNorm R) (g : MulRingNorm R) :=
   ∃ c : ℝ, 0 < c ∧ (fun x => (f x) ^ c) = g
@@ -335,7 +335,7 @@ def RingSeminorm.toRingNorm {K : Type*} [Field K] (f : RingSeminorm K) (hnt : f 
       obtain ⟨c, hc⟩ := RingSeminorm.ne_zero_iff.mp hnt
       by_contra hn0
       have hc0 : f c = 0 := by
-        rw [← mul_one c, ← mul_inv_cancel hn0, ← mul_assoc, mul_comm c, mul_assoc]
+        rw [← mul_one c, ← mul_inv_cancel₀ hn0, ← mul_assoc, mul_comm c, mul_assoc]
         exact
           le_antisymm
             (le_trans (map_mul_le_mul f _ _)
