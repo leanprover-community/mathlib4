@@ -162,9 +162,9 @@ instance : Nontrivial I := ⟨⟨1, 0, (one_ne_zero <| congrArg Subtype.val ·)�
 theorem mul_pos_mem_iff {a t : ℝ} (ha : 0 < a) : a * t ∈ I ↔ t ∈ Set.Icc (0 : ℝ) (1 / a) := by
   constructor <;> rintro ⟨h₁, h₂⟩ <;> constructor
   · exact nonneg_of_mul_nonneg_right h₁ ha
-  · rwa [le_div_iff ha, mul_comm]
+  · rwa [le_div_iff₀ ha, mul_comm]
   · exact mul_nonneg ha.le h₁
-  · rwa [le_div_iff ha, mul_comm] at h₂
+  · rwa [le_div_iff₀ ha, mul_comm] at h₂
 
 theorem two_mul_sub_one_mem_iff {t : ℝ} : 2 * t - 1 ∈ I ↔ t ∈ Set.Icc (1 / 2 : ℝ) 1 := by
   constructor <;> rintro ⟨h₁, h₂⟩ <;> constructor <;> linarith
