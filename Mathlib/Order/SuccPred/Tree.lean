@@ -229,11 +229,11 @@ lemma mem_iff {t : RootedTree} {r : SubRootedTree t} {v : t} :
 The coersion from a `SubRootedTree` to a `RootedTree`.
 -/
 @[coe, reducible]
-noncomputable def coeTree {t : RootedTree} [DecidableEq t] (r : SubRootedTree t) : RootedTree where
+noncomputable def coeTree {t : RootedTree} (r : SubRootedTree t) : RootedTree where
   α := r
   pred := inferInstanceAs (PredOrder (Set.Ici r.root))
 
-noncomputable instance (t : RootedTree) [DecidableEq t] : CoeOut (SubRootedTree t) RootedTree :=
+noncomputable instance (t : RootedTree) : CoeOut (SubRootedTree t) RootedTree :=
   ⟨coeTree⟩
 
 @[simp]
