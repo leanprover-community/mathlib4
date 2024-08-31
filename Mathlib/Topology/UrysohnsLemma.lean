@@ -453,7 +453,7 @@ such that `t ⊆ s`, there is a continuous function `f` supported in `s`, `f x =
 lemma exists_tsupport_one_of_isOpen_isClosed [NormalSpace X] {s t : Set X}
     (hs : IsOpen s) (ht : IsClosed t) (hst : t ⊆ s) : ∃ f : C(X, ℝ), tsupport f ⊆ s ∧ EqOn f 1 t
     ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1 := by
-    obtain ⟨U, V, hUV⟩ := normal_separation (IsOpen.isClosed_compl hs) ht
+  obtain ⟨U, V, hUV⟩ := normal_separation hs.isClosed_compl ht
       (HasSubset.Subset.disjoint_compl_left hst)
     have hDisjoint : Disjoint (closure U) t := by
       apply le_compl_iff_disjoint_right.mp
