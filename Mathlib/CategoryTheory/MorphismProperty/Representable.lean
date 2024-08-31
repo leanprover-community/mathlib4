@@ -26,9 +26,7 @@ Classically, a morphism `f : F ⟶ G` of presheaves is said to be representable 
 In this file, we define a notion of relative representability which works with respect to any
 functor, and not just `yoneda`. The fact that a morphism `f : F ⟶ G` between presheaves is
 representable in the classical case will then be given by `F.relativelyRepresentable f`.
-
-
-
+`
 ## Main definitions
 Throughout this file, `F : C ⥤ D` is a functor between categories `C` and `D`.
 
