@@ -732,7 +732,7 @@ variable {K : ℝ≥0} {f : X → Y}
 by the factor of `K ^ d`. -/
 theorem hausdorffMeasure_image_le (h : LipschitzWith K f) {d : ℝ} (hd : 0 ≤ d) (s : Set X) :
     μH[d] (f '' s) ≤ (K : ℝ≥0∞) ^ d * μH[d] s :=
-  (h.lipschitzOnWith s).hausdorffMeasure_image_le hd
+  h.lipschitzOnWith.hausdorffMeasure_image_le hd
 
 end LipschitzWith
 

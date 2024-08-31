@@ -27,7 +27,7 @@ are not prime, and so only at most `φ(k)/k` fraction of the numbers from `k` to
 
 ## Notation
 
-Wtih `open scoped Nat.Prime`, we use the standard notation `π` to represent the prime counting
+With `open scoped Nat.Prime`, we use the standard notation `π` to represent the prime counting
 function (and `π'` to represent the reindexed version).
 
 -/
