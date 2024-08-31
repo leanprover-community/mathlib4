@@ -131,7 +131,7 @@ theorem disjoint_primeFactors {a b : R} (hc : IsCoprime a b) :
     Disjoint (primeFactors a) (primeFactors b) :=
   Multiset.disjoint_toFinset.mpr (disjoint_normalizedFactors hc)
 
-theorem hMul_primeFactors_disjUnion {a b : R} (ha : a ≠ 0) (hb : b ≠ 0)
+theorem mul_primeFactors_disjUnion {a b : R} (ha : a ≠ 0) (hb : b ≠ 0)
     (hc : IsCoprime a b) :
     primeFactors (a * b) = (primeFactors a).disjUnion (primeFactors b) (disjoint_primeFactors hc)
     := by
@@ -144,7 +144,7 @@ theorem radical_neg_one : radical (-1 : R) = 1 :=
   radical_unit_eq_one isUnit_one.neg
 
 /-- Radical is multiplicative for coprime elements. -/
-theorem radical_hMul {a b : R} (hc : IsCoprime a b) :
+theorem radical_mul {a b : R} (hc : IsCoprime a b) :
     radical (a * b) = (radical a) * (radical b) := by
   by_cases ha : a = 0
   · subst ha; rw [isCoprime_zero_left] at hc
@@ -153,7 +153,7 @@ theorem radical_hMul {a b : R} (hc : IsCoprime a b) :
   · subst hb; rw [isCoprime_zero_right] at hc
     simp only [MulZeroClass.mul_zero, radical_zero_eq, mul_one, radical_unit_eq_one hc]
   simp_rw [radical]
-  rw [hMul_primeFactors_disjUnion ha hb hc]
+  rw [mul_primeFactors_disjUnion ha hb hc]
   rw [Finset.prod_disjUnion (disjoint_primeFactors hc)]
 
 theorem radical_neg {a : R} : radical (-a) = radical a :=
