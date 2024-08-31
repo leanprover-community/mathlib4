@@ -302,14 +302,6 @@ variable (n : ℕ)
 def K : E₁ → Set (WeakDual 𝕜₁ E₁) :=
   fun x => polar 𝕜₁ s ∩ polar 𝕜₁ {x} ∩ C ∩ polar 𝕜₁ (U (n+2))
 
-
---#check Elem (U (E := E₁) (n + 1))
---#check K 𝕜 C s n
-
---variable  [ProperSpace 𝕜]
---#check isCompact_iff_finite_subfamily_closed.mp (ι := (Elem (U (E := E) (n + 1))))
---  (polarUcompact 𝕜 (E := E) (n+2)) (K 𝕜 C s n) --(isCompactK C s n)
-
 lemma isClosedK (x : (U (E := E₁) (n + 1))) (hC₁ : IsClosed C) : IsClosed (K C s n x) :=
   IsClosed.inter (IsClosed.inter (IsClosed.inter (isClosed_polar 𝕜₁ s) (isClosed_polar 𝕜₁ _)) hC₁)
     (isClosed_polar 𝕜₁ (U (n + 2)))
@@ -365,26 +357,28 @@ lemma existance [ProperSpace 𝕜₁] (hC₁ : IsClosed C)
       rw [inter_empty _ _ _ h]
       exact Set.inter_empty _
     )
-  use u.toSet
-  rw [polar_union]
-  have e1: (⋂ i ∈ u, polar 𝕜₁ ({↑i} : Set E₁)) = polar 𝕜₁ (u.toSet : Set E₁) := by
-    rw [image_eq_iUnion]
-    simp [polar_iUnion]
-  rw [← e1]
-  have eu : Nonempty u := by
-    by_contra he
-    have e2 : u = ∅ := by
-      aesop
-    rw [e2, iInter_of_empty_univ, inter_univ] at hu
-    have h2 : Nonempty (polar 𝕜₁ (U (E := E₁) (n + 2))) :=
-      NormedSpace.instNonemptyElemDualPolar _ _
-    subst e2
-    simp_all only [nonempty_subtype, mem_empty_iff_false, exists_const]
-  rw [← more_confusion _ _ _ _ eu, confusion _ _ _ _ eu] at hu
-  rw [← lala2 _ _ _ _ eu]
-  rw [lala _ _ _ _ eu]
-  rw [lala3 _ _ _ _ eu]
-  exact ⟨toFinite _, ⟨Subtype.coe_image_subset _ _,hu⟩⟩
+  let F := (u.toSet : Set E₁)
+  use F
+  exact ⟨toFinite _, ⟨Subtype.coe_image_subset _ _, by
+    rw [polar_union]
+    have e1: (⋂ i ∈ u, polar 𝕜₁ ({↑i} : Set E₁)) = polar 𝕜₁ (u.toSet : Set E₁) := by
+      rw [image_eq_iUnion]
+      simp [polar_iUnion]
+    rw [← e1]
+    have eu : Nonempty u := by
+      by_contra he
+      have e2 : u = ∅ := by
+        aesop
+      rw [e2, iInter_of_empty_univ, inter_univ] at hu
+      have h2 : Nonempty (polar 𝕜₁ (U (E := E₁) (n + 2))) :=
+        NormedSpace.instNonemptyElemDualPolar _ _
+      subst e2
+      simp_all only [nonempty_subtype, mem_empty_iff_false, exists_const]
+    rw [← more_confusion _ _ _ _ eu, confusion _ _ _ _ eu] at hu
+    rw [← lala2 _ _ _ _ eu]
+    rw [lala _ _ _ _ eu]
+    rw [lala3 _ _ _ _ eu]
+    exact hu⟩⟩
 
 /-
 lemma existance [ProperSpace 𝕜] : ∃ u : Finset (Elem (U (E := E) (n + 1))),
