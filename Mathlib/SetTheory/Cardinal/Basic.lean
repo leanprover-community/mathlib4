@@ -286,6 +286,10 @@ theorem lift_uzero (a : Cardinal.{u}) : lift.{0} a = a :=
 theorem lift_lift.{u_1} (a : Cardinal.{u_1}) : lift.{w} (lift.{v} a) = lift.{max v w} a :=
   inductionOn a fun _ => (Equiv.ulift.trans <| Equiv.ulift.trans Equiv.ulift.symm).cardinal_eq
 
+theorem lift_down {a : Cardinal.{u}} {b : Cardinal.{max u v}} (h : b ≤ lift.{v, u} a) :
+    ∃ a', lift.{v, u} a' = b :=
+  lift.init_le h
+
 @[simp]
 lemma mk_preimage_down {s : Set α} : #(ULift.down.{v} ⁻¹' s) = lift.{v} (#s) := by
   rw [← mk_uLift, Cardinal.eq]
@@ -989,10 +993,6 @@ theorem lift_iInf {ι} (f : ι → Cardinal) : lift.{u, v} (iInf f) = ⨅ i, lif
   unfold iInf
   convert lift_sInf (range f)
   simp_rw [← comp_apply (f := lift), range_comp]
-
-theorem lift_down {a : Cardinal.{u}} {b : Cardinal.{max u v}} (h : b ≤ lift.{v, u} a) :
-    ∃ a', lift.{v,u} a' = b :=
-  lift.init_le
 
 theorem le_lift_iff {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
     b ≤ lift.{v, u} a ↔ ∃ a', lift.{v, u} a' = b ∧ a' ≤ a :=
