@@ -7,6 +7,7 @@ Authors: Michael Rothgang
 import Batteries.Data.String.Matcher
 import Batteries.Lean.HashSet
 import Mathlib.Data.Nat.Notation
+import Mathlib.Init.Data.String
 
 /-!
 ## Text-based linters
@@ -40,6 +41,12 @@ An executable running all these linters is defined in `scripts/lint-style.lean`.
 open System
 
 namespace Mathlib.Linter.TextBased
+
+/-- Following any unicode character, this indicates that the emoji-variant should be displayed -/
+def UnicodeVariant.emoji := '\uFE0F'
+
+/-- Following any unicode character, this indicates that the text-variant should be displayed -/
+def UnicodeVariant.text := '\uFE0E'
 
 -- TODO remove Repr instances (used for debugging) if it's bad to have them!
 
@@ -75,6 +82,13 @@ inductive StyleError where
   | fileTooLong (numberLines : ℕ) (newSizeLimit : ℕ) (previousLimit : Option ℕ) : StyleError
   /-- A unicode character was used that isn't recommended -/
   | unwantedUnicode (c : Char)
+  /-- Unicode variant selectors are used in a bad way.
+
+  * `c` is the string containing the unicode character and any unicode-variant-selector following it
+  * `selector` is the desired selector or `none`
+  * `pos`: the character position in the line.
+  -/
+  | unicodeVariant (c : String) (selector: Option Char) (pos : String.Pos)
 deriving BEq, Repr
 
 /-- How to format style errors -/
@@ -126,6 +140,19 @@ def StyleError.errorMessage (err : StyleError) (style : ErrorFormat) : String :=
   | StyleError.unwantedUnicode c =>
       s!"unicode character '{c}' ({printCodepointHex c}) is not recommended. \
         Consider adding it to the whitelist."
+  | StyleError.unicodeVariant c selector pos =>
+    let variant := if selector == UnicodeVariant.emoji then "emoji"
+      else if selector == UnicodeVariant.text then "text"
+      else "default"
+    let oldHex := " ".intercalate <| c.data.map printCodepointHex
+    let newC : String := match c, selector with
+    | ⟨c₀ :: _⟩, none => c₀.toString
+    | ⟨c₀ :: _⟩, some sel => ⟨[c₀, sel]⟩
+    | ⟨[]⟩, none => ""
+    | ⟨[]⟩, some _ => unreachable!
+    let newHex := " ".intercalate <| newC.data.map printCodepointHex
+    s!"bad unicode variant-selector used at char {pos}: \"{c}\" ({oldHex}). \
+    Please replace it with its {variant}-variant: \"{newC}\" ({newHex})! (character {pos})"
 
 /-- The error code for a given style error. Keep this in sync with `parse?_errorContext` below! -/
 -- FUTURE: we're matching the old codes in `lint-style.py` for compatibility;
@@ -137,6 +164,7 @@ def StyleError.errorCode (err : StyleError) : String := match err with
   | StyleError.broadImport _ => "ERR_IMP"
   | StyleError.fileTooLong _ _ _ => "ERR_NUM_LIN"
   | StyleError.unwantedUnicode _ => "ERR_UNICODE"
+  | StyleError.unicodeVariant _ _ _ => "ERR_UNICODE_VARIANT"
 
 /-- Context for a style error: the actual error, the line number in the file we're reading
 and the path to the file. -/
@@ -218,7 +246,7 @@ def outputMessage (errctx : ErrorContext) (style : ErrorFormat) : String :=
 -- TODO check if this doc change is correct as per intentions of original authors!!!
 
 /-- Try parsing an `ErrorContext` from a string: return `some` if successful, `none` otherwise.
-This should be the inverse of `fun ctx ↦ outputMessage ctx .exceptionsFile`-/
+This should be the inverse of `fun ctx ↦ outputMessage ctx .exceptionsFile` -/
 def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
   let parts := line.split (· == ' ')
   match parts with
@@ -256,6 +284,9 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
                 some (StyleError.unwantedUnicode c)
               else none
             else none
+        | "ERR_UNICODE_VARIANT" =>
+          -- some (StyleError.unicodeVariant _ _ _)
+          none --TODO
         | _ => none
       match String.toNat? lineNumber with
       | some n => err.map fun e ↦ (ErrorContext.mk e n path)
@@ -370,7 +401,6 @@ def broadImportsLinter : TextbasedLinter := fun lines ↦ Id.run do
       lineNumber := lineNumber + 1
   return errors
 
-
 /-- Whether a collection of lines consists *only* of imports, blank lines and single-line comments.
 In practice, this means it's an imports-only file and exempt from almost all linting. -/
 def isImportsOnlyFile (lines : Array String) : Bool :=
@@ -402,7 +432,7 @@ def checkFileLength (lines : Array String) (existingLimit : Option ℕ) : Option
 end
 
 
-section unicodeLinter
+namespace unicodeLinter
 
 /-- Hashable instance for use with the unicodeLinter -/
 local instance instHashableChar : Hashable Char where
@@ -558,37 +588,70 @@ def othersInMathlib := #[
 'ᴄ', 'ꜰ', 'ß', 'ᴢ', 'ᴏ', 'ᴀ', 'ꜱ', 'ɴ', 'ꞯ', 'ʟ',
 'ʜ', 'ᵟ', 'ʙ', 'ᵪ', 'ᵩ', 'ᵦ', 'ᴊ', 'ᴛ', 'ᴡ', 'ᴠ',
 'ɪ', '̀', 'ᴇ', 'ᴍ', 'ʀ', 'ᴅ', 'ɢ', 'ʏ', 'ᴘ', 'ĝ', 'ᵨ',
-'ᴋ', 'ś', '꙳', '𝓡', '𝕝', '𝖣', '⨳', '🎉'
-]
+'ᴋ', 'ś', '꙳', '𝓡', '𝕝', '𝖣', '⨳', '🎉', '🟡']
 
 /- TODO there are more symbols we could use that aren't in this list yet. E.g, see
  https://en.wikipedia.org/wiki/Mathematical_operators_and_symbols_in_Unicode
 -/
 
+/-- Unicode symbols in Mathilb that should always be followed by the emoji-variant selector -/
+def mathlibEmojiSymbols := #[
+'✅', '❌', '💥', '🟡', '💡', '🐙', '🔍', '🎉', '⏳', '🏁'
+]
+
+/-- Unicode symbols in mathilb that should always be followed by the text-variant selector -/
+def mathlibTextSymbols : Array Char := #[]
+
 /--
 Hash-set of all unicode characters allowed by the unicodeLinter.
 -/
 def unicodeWhitelist : Lean.HashSet Char := Lean.HashSet.ofArray (
-    printableASCII ++ withVSCodeAbbrev ++ othersInMathlib
+    printableASCII ++ withVSCodeAbbrev ++ othersInMathlib ++
+    #[UnicodeVariant.emoji, UnicodeVariant.text]
 )
 
 /-- Checks if a character is unrecommended, according to the unicodeLinter (`unwantedUnicode`)-/
 def isBadChar (c : Char) : Bool := !unicodeWhitelist.contains c
+
+end unicodeLinter
+
+open unicodeLinter in
 
 /-- Lint a collection of input strings if one of them contains unwanted unicode. -/
 def unicodeLinter : TextbasedLinter := fun lines ↦ Id.run do
   let mut errors : Array (StyleError × ℕ) := Array.mkEmpty 0
   let mut lineNumber := 1
   for line in lines do
+    -- Ensure no bad unicode characters are used
     let badChars := line.toList.filter isBadChar
     if badChars.length > 0 then
       let newErrors : Array (StyleError × ℕ) :=
         badChars.toArray.map (StyleError.unwantedUnicode ·, lineNumber)
       errors := errors.append newErrors
+
+    for (selector, symbols) in #[
+        (UnicodeVariant.emoji, mathlibEmojiSymbols),
+        (UnicodeVariant.text, mathlibTextSymbols) ] do
+      -- Ensure specified emojis/text-symbols have the correct variant-selector
+      let charPos := line.findAll (symbols.contains ·)
+      for pos in charPos do
+        let nextC := line.get₂ (line.next pos)
+        let previousC := line.get₂ (line.prev pos) -- may be the char. itself if `pos == 0`
+        unless (previousC == '\'' ∧ nextC == '\'') ∨ nextC == selector do
+          -- suggest to use the variant-selector
+          errors := errors.push
+            (StyleError.unicodeVariant (line.get₂ pos).toString selector pos, lineNumber)
+      -- Ensure the variant-selector does not appear elsewhere
+      for pos in line.findAll (· == selector) do
+        match pos with
+        | 0 => errors := errors.push (StyleError.unicodeVariant "" none 0, lineNumber)
+        | pos =>
+          unless charPos.contains (line.prev pos) do
+            let s : String := ⟨[line.get₂ (line.prev pos), line.get₂ pos]⟩
+            errors := errors.push
+              (StyleError.unicodeVariant s none (line.prev pos), lineNumber)
     lineNumber := lineNumber + 1
   return errors
-
-end unicodeLinter
 
 /-- All text-based linters registered in this file. -/
 def allLinters : Array TextbasedLinter := #[
