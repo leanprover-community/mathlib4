@@ -141,7 +141,7 @@ theorem reflexive_left : IsReflexive R M where
 
 include p in
 theorem reflexive_right : IsReflexive R N :=
-  reflexive_left p.flip
+  p.flip.reflexive_left
 
 end PerfectPairing
 

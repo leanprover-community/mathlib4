@@ -186,7 +186,7 @@ def reflection : M ≃ₗ[R] M :=
 
 @[simp]
 lemma root_reflection_perm (j : ι) :
-    P.root ((P.reflection_perm i) j) = (P.reflection i) (P.root j) :=
+    P.root (P.reflection_perm i j) = (P.reflection i) (P.root j) :=
   (P.reflection_perm_root i j).symm
 
 theorem mapsTo_reflection_root : MapsTo (P.reflection i) (range P.root) (range P.root) := by

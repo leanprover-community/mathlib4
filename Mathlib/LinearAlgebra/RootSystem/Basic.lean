@@ -280,11 +280,11 @@ def mk' [Finite ι] [CharZero R] [NoZeroSMulDivisors R M]
   root_coroot_two := hp
   reflection_perm i := RootPairing.equiv_of_mapsTo p root coroot i hr hp
   reflection_perm_root i j := by
-    rw [equiv_of_mapsTo_apply, (exist_eq_reflection_of_mapsTo  p root coroot i j hr).choose_spec,
+    rw [equiv_of_mapsTo_apply, (exist_eq_reflection_of_mapsTo p root coroot i j hr).choose_spec,
       preReflection_apply, LinearMap.flip_apply]
   reflection_perm_coroot i j := by
     refine (coroot_eq_coreflection_of_root_eq' p root coroot hp hr hc ?_).symm
-    rw [equiv_of_mapsTo_apply, (exist_eq_reflection_of_mapsTo  p root coroot i j hr).choose_spec]
+    rw [equiv_of_mapsTo_apply, (exist_eq_reflection_of_mapsTo p root coroot i j hr).choose_spec]
 
 end RootPairing
 
@@ -361,7 +361,6 @@ def mk' [CharZero R] [NoZeroSMulDivisors R M]
     (hs : ∀ i, MapsTo (preReflection (root i) (p.toLin.flip (coroot i))) (range root) (range root))
     (hsp : span R (range root) = ⊤) :
     RootSystem ι R M N where
-
   span_eq_top := hsp
   toRootPairing := RootPairing.mk' p root coroot hp hs <| by
     rintro i - ⟨j, rfl⟩
