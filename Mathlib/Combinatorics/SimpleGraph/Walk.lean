@@ -177,16 +177,21 @@ theorem adj_getVert_succ {u v} (w : G.Walk u v) {i : ℕ} (hi : i < w.length) :
     · simp [getVert, hxy]
     · exact ih (Nat.succ_lt_succ_iff.1 hi)
 
+lemma getVert_cons_one {u v w} (q : G.Walk v w) (hadj : G.Adj u v) :
+    (q.cons hadj).getVert 1 = v := by
+  have : (q.cons hadj).getVert 1 = q.getVert 0 := rfl
+  simpa [getVert_zero] using this
+
 @[simp]
-lemma cons_getVert_succ {u v w n} (p : G.Walk v w) (h : G.Adj u v) :
+lemma getVert_cons_succ {u v w n} (p : G.Walk v w) (h : G.Adj u v) :
     (p.cons h).getVert (n + 1) = p.getVert n := rfl
 
-lemma cons_getVert {u v w n} (p : G.Walk v w) (h : G.Adj u v) (hn : n ≠ 0) :
+lemma getVert_cons {u v w n} (p : G.Walk v w) (h : G.Adj u v) (hn : n ≠ 0) :
     (p.cons h).getVert n = p.getVert (n - 1) := by
   obtain ⟨i, hi⟩ : ∃ (i : ℕ), i.succ = n := by
     use n - 1; exact Nat.succ_pred_eq_of_ne_zero hn
   rw [← hi]
-  simp only [Nat.succ_eq_add_one, cons_getVert_succ, Nat.add_sub_cancel]
+  simp only [Nat.succ_eq_add_one, getVert_cons_succ, Nat.add_sub_cancel]
 
 @[simp]
 theorem cons_append {u v w x : V} (h : G.Adj u v) (p : G.Walk v w) (q : G.Walk w x) :
@@ -741,6 +746,9 @@ lemma nil_iff_support_eq {p : G.Walk v w} : p.Nil ↔ p.support = [v] := by
 lemma nil_iff_length_eq {p : G.Walk v w} : p.Nil ↔ p.length = 0 := by
   cases p <;> simp
 
+lemma not_nil_iff_lt_length {p : G.Walk v w} : ¬ p.Nil ↔ 0 < p.length := by
+  cases p <;> simp
+
 lemma not_nil_iff {p : G.Walk v w} :
     ¬ p.Nil ↔ ∃ (u : V) (h : G.Adj v u) (q : G.Walk u w), p = cons h q := by
   cases p <;> simp [*]
@@ -765,61 +773,77 @@ lemma notNilRec_cons {motive : {u w : V} → (p : G.Walk u w) → ¬ p.Nil → S
     motive (q.cons h) Walk.not_nil_cons) (h' : G.Adj u v) (q' : G.Walk v w) :
     @Walk.notNilRec _ _ _ _ _ cons _ _ = cons h' q' := by rfl
 
-/-- The second vertex along a non-nil walk. -/
-def sndOfNotNil (p : G.Walk v w) (hp : ¬ p.Nil) : V :=
-  p.notNilRec (@fun _ u _ _ _ => u) hp
+@[simp] lemma adj_getVert_one {p : G.Walk v w} (hp : ¬ p.Nil) :
+    G.Adj v (p.getVert 1) := by
+  simpa using adj_getVert_succ p (by simpa [not_nil_iff_lt_length] using hp : 0 < p.length)
 
-@[simp] lemma adj_sndOfNotNil {p : G.Walk v w} (hp : ¬ p.Nil) :
-    G.Adj v (p.sndOfNotNil hp) :=
-  p.notNilRec (fun h _ => h) hp
+/-- The walk obtained by removing the first `n` darts of a walk. -/
+def drop {u v : V} (p : G.Walk u v) (n : ℕ) : G.Walk (p.getVert n) v :=
+  match p, n with
+  | .nil, _ => .nil
+  | p, 0 => p.copy (getVert_zero p).symm rfl
+  | .cons h q, (n + 1) => (q.drop n).copy (getVert_cons_succ _ h).symm rfl
 
 /-- The walk obtained by removing the first dart of a non-nil walk. -/
-def tail (p : G.Walk u v) (hp : ¬ p.Nil) : G.Walk (p.sndOfNotNil hp) v :=
-  p.notNilRec (fun _ q => q) hp
+def tail (p : G.Walk u v) : G.Walk (p.getVert 1) v := p.drop 1
+
+@[simp]
+lemma tail_cons_nil (h : G.Adj u v) : (Walk.cons h .nil).tail = .nil := by rfl
+
+lemma tail_cons_eq (h : G.Adj u v) (p : G.Walk v w) :
+    (p.cons h).tail = p.copy (getVert_zero p).symm rfl := by
+  match p with
+  | .nil => rfl
+  | .cons h q => rfl
 
 /-- The first dart of a walk. -/
 @[simps]
 def firstDart (p : G.Walk v w) (hp : ¬ p.Nil) : G.Dart where
   fst := v
-  snd := p.sndOfNotNil hp
-  adj := p.adj_sndOfNotNil hp
+  snd := p.getVert 1
+  adj := p.adj_getVert_one hp
 
 lemma edge_firstDart (p : G.Walk v w) (hp : ¬ p.Nil) :
-    (p.firstDart hp).edge = s(v, p.sndOfNotNil hp) := rfl
+    (p.firstDart hp).edge = s(v, p.getVert 1) := rfl
 
 variable {x y : V} -- TODO: rename to u, v, w instead?
 
-@[simp] lemma cons_tail_eq (p : G.Walk x y) (hp : ¬ p.Nil) :
-    cons (p.adj_sndOfNotNil hp) (p.tail hp) = p :=
-  p.notNilRec (fun _ _ => rfl) hp
+lemma cons_tail_eq (p : G.Walk x y) (hp : ¬ p.Nil) :
+    cons (p.adj_getVert_one hp) p.tail = p := by
+  cases p with
+  | nil => simp only [nil_nil, not_true_eq_false] at hp
+  | cons h q =>
+    simp only [getVert_cons_succ, tail_cons_eq, cons_copy, copy_rfl_rfl]
 
 @[simp] lemma cons_support_tail (p : G.Walk x y) (hp : ¬p.Nil) :
-    x :: (p.tail hp).support = p.support := by
-  rw [← support_cons, cons_tail_eq]
+    x :: p.tail.support = p.support := by
+  rw [← support_cons, cons_tail_eq _ hp]
 
 @[simp] lemma length_tail_add_one {p : G.Walk x y} (hp : ¬ p.Nil) :
-    (p.tail hp).length + 1 = p.length := by
-  rw [← length_cons, cons_tail_eq]
+    p.tail.length + 1 = p.length := by
+  rw [← length_cons, cons_tail_eq _ hp]
 
 @[simp] lemma nil_copy {x' y' : V} {p : G.Walk x y} (hx : x = x') (hy : y = y') :
     (p.copy hx hy).Nil = p.Nil := by
   subst_vars; rfl
 
-@[simp] lemma support_tail (p : G.Walk v v) (hp) :
-    (p.tail hp).support = p.support.tail := by
+@[simp] lemma support_tail (p : G.Walk v v) (hp : ¬ p.Nil) :
+    p.tail.support = p.support.tail := by
   rw [← cons_support_tail p hp, List.tail_cons]
 
 @[simp]
 lemma tail_cons {t u v} (p : G.Walk u v) (h : G.Adj t u) :
-    (p.cons h).tail not_nil_cons = p := by
-  unfold Walk.tail; simp only [notNilRec_cons]
+    (p.cons h).tail = p.copy (getVert_zero p).symm rfl := by
+  match p with
+  | .nil => rfl
+  | .cons h q => rfl
 
-lemma tail_support_eq_support_tail (p : G.Walk u v) (hnp : ¬p.Nil) :
-    (p.tail hnp).support = p.support.tail :=
-  p.notNilRec (by
-    intro u v w huv q
-    unfold Walk.tail
-    simp only [notNilRec_cons, Walk.support_cons, List.tail_cons]) hnp
+lemma support_tail_of_not_nil (p : G.Walk u v) (hnp : ¬p.Nil) :
+    p.tail.support = p.support.tail := by
+  match p with
+  | .nil => simp only [nil_nil, not_true_eq_false] at hnp
+  | .cons h q =>
+    simp only [tail_cons, getVert_cons_succ, support_copy, support_cons, List.tail_cons]
 
 /-! ### Walk decompositions -/
 
@@ -995,17 +1019,23 @@ theorem exists_boundary_dart {u v : V} (p : G.Walk u v) (S : Set V) (uS : u ∈ 
       exact ⟨d, List.Mem.tail _ hd, hcd⟩
     · exact ⟨⟨(x, y), a⟩, List.Mem.head _, uS, h⟩
 
-lemma getVert_tail {u v n} (p : G.Walk u v) (hnp: ¬ p.Nil) :
-    (p.tail hnp).getVert n = p.getVert (n + 1) :=
-  p.notNilRec (fun _ _ ↦ by simp only [tail_cons, cons_getVert_succ]) hnp
+@[simp] lemma getVert_copy  {u v w x : V} (p : G.Walk u v) (i : ℕ) (h : u = w) (h' : v = x) :
+    (p.copy h h').getVert i = p.getVert i := by
+  subst_vars
+  match p, i with
+  | .nil, _ =>
+    rw [getVert_of_length_le _ (by simp only [length_nil, Nat.zero_le] : nil.length ≤ _)]
+    rw [getVert_of_length_le _ (by simp only [length_copy, length_nil, Nat.zero_le])]
+  | .cons hadj q, 0 => simp only [copy_rfl_rfl, getVert_zero]
+  | .cons hadj q, (n + 1) => simp only [copy_cons, getVert_cons_succ]; rfl
 
-@[simp]
-lemma cons_sndOfNotNil (q : G.Walk v w) (hadj : G.Adj u v) :
-    (q.cons hadj).sndOfNotNil not_nil_cons = v := by
-  unfold sndOfNotNil; simp only [notNilRec_cons]
-
-lemma getVert_one (p : G.Walk u v) (hnp : ¬ p.Nil) : p.getVert 1 = p.sndOfNotNil hnp :=
-  p.notNilRec (fun _ _ ↦ by simp only [cons_getVert_succ, getVert_zero, cons_sndOfNotNil]) hnp
+@[simp] lemma getVert_tail {u v n} (p : G.Walk u v) (hnp: ¬ p.Nil) :
+    p.tail.getVert n = p.getVert (n + 1) := by
+  match p with
+  | .nil => rfl
+  | .cons h q =>
+    simp only [getVert_cons_succ, tail_cons_eq, getVert_cons]
+    exact getVert_copy q n (getVert_zero q).symm rfl
 
 /-- Given a walk `w` and a node in the support, there exists a natural `n`, such that given node
 is the `n`-th node (zero-indexed) in the walk. In addition, `n` is at most the length of the path.
@@ -1032,13 +1062,18 @@ theorem mem_support_iff_exists_getVert {u v w : V} {p : G.Walk v w} :
         rw [@nil_iff_length_eq]
         have : 1 ≤ p.length := by omega
         exact Nat.not_eq_zero_of_lt this
-      rw [← tail_support_eq_support_tail _ hnp]
+      rw [← support_tail_of_not_nil _ hnp]
       rw [mem_support_iff_exists_getVert]
       use n - 1
-      simp only [Nat.sub_le_iff_le_add, length_tail_add_one, getVert_tail]
-      have : n - 1 + 1 = n := by omega
+      simp only [Nat.sub_le_iff_le_add]
+      rw [getVert_tail _ hnp, length_tail_add_one hnp]
+      have : (n - 1 + 1) = n:= by omega
       rwa [this]
 termination_by p.length
+decreasing_by
+· simp_wf
+  rw [@Nat.lt_iff_add_one_le]
+  rw [length_tail_add_one hnp]
 
 end Walk
 
