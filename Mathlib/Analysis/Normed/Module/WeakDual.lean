@@ -271,11 +271,8 @@ lemma polarUcompact [ProperSpace 𝕜] (n : ℕ) : IsCompact (polar 𝕜 (U (E :
 
 universe u
 
-variable {𝕜₁ : Type u} [RCLike 𝕜₁] --[NontriviallyNormedField 𝕜₁]
+variable {𝕜₁ : Type u} [RCLike 𝕜₁]
 variable {E₁ : Type u} [NormedAddCommGroup E₁] [NormedSpace 𝕜₁ E₁]
-
-
-
 
 /- The closed set, not containing the origin -/
 variable (C : Set (WeakDual 𝕜₁ E₁))
@@ -366,6 +363,25 @@ lemma existance [ProperSpace 𝕜₁] (hC₁ : IsClosed C)
       _ = ∅ := hu
     ⟩⟩
 
+theorem exists_seq_finite_subsets (hC₁ : IsClosed C) (hC₂ : 0 ∉ C): ∃ F : ℕ → Set E₁, ∀ n : ℕ,
+    (F n).Finite ∧ F n ⊆ (U n) ∧ polar 𝕜₁ (⋃₀ {F k | k < n }) ∩ polar 𝕜₁ (U n) ∩ C = ∅ := by
+  use (fun n => Nat.recOn n {(0 : E₁)} (fun n v => {(0 : E₁)}))
+  intro n
+  constructor
+  · simp only
+    cases n
+    · simp only [Nat.rec_zero, finite_singleton]
+    · simp only [finite_singleton]
+  · cases n
+    sorry
+    sorry
+
+    /-
+    · constructor
+      · simp only [Nat.rec_zero, CharP.cast_eq_zero, inv_zero, ball_zero, subset_empty_iff,
+        singleton_ne_empty]
+    -/
+
 /-
 lemma existance [ProperSpace 𝕜] : ∃ u : Finset (Elem (U (E := E) (n + 1))),
     (C ∩ ⋂ i ∈ u, K 𝕜 C s n i) = ∅ := by
@@ -452,21 +468,9 @@ theorem finite_subsets2 (U : Set (Dual 𝕜 E)) : ∃ F : ℕ → Set E, ∀ n :
   · simp only [finite_singleton]
 -/
 
-/-
-theorem finite_subsets (U : Set (Dual 𝕜 E)) : ∃ F : ℕ → Set E, ∀ n : ℕ, (F n).Finite ∧
-    F n ⊆ ball (0 : E) n⁻¹ ∧ polar 𝕜 (⋃₀ {F k | k < n }) ∩ ball 0 n  ⊆ U := by
-  use (fun n => Nat.recOn n {(0 : E)} (fun n v => {(0 : E)}))
-  intro n
-  constructor
-  · simp only
-    cases n
-    · simp only [Nat.rec_zero, finite_singleton]
-    · simp only [finite_singleton]
-  · cases n
-    · constructor
-      · simp only [Nat.rec_zero, CharP.cast_eq_zero, inv_zero, ball_zero, subset_empty_iff,
-        singleton_ne_empty]
--/
+
+
+
 
   --apply Exists.intro
   --induction n using by exact 𝕜
