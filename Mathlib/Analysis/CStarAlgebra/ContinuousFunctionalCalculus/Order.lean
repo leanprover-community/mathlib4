@@ -188,8 +188,8 @@ lemma norm_le_natCast_iff_of_nonneg (a : A) (n : ℕ) (ha : 0 ≤ a := by cfc_ta
     ‖a‖ ≤ n ↔ a ≤ n := by
   simpa using norm_le_iff_le_algebraMap a n.cast_nonneg
 
-lemma nnnorm_le_ofNat_iff_of_nonneg (a : A) (n : ℕ) (ha : 0 ≤ a := by cfc_tac) :
-    ‖a‖ ≤ n ↔ a ≤ n := by
+lemma nnnorm_le_natCast_iff_of_nonneg (a : A) (n : ℕ) (ha : 0 ≤ a := by cfc_tac) :
+    ‖a‖₊ ≤ n ↔ a ≤ n := by
   simpa using nnnorm_le_iff_of_nonneg a n
 
 end CStarRing
