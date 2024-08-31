@@ -485,7 +485,7 @@ end
 
 end ToMatrix
 
-/-! ### Adjoint pairs-/
+/-! ### Adjoint pairs -/
 
 
 section MatrixAdjoints
@@ -623,7 +623,7 @@ end MatrixAdjoints
 
 namespace LinearMap
 
-/-! ### Nondegenerate bilinear forms-/
+/-! ### Nondegenerate bilinear forms -/
 
 
 section Det
