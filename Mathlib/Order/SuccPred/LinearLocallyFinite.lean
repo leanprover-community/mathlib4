@@ -109,7 +109,6 @@ noncomputable instance (priority := 100) [LocallyFiniteOrder ι] : SuccOrder ι 
   le_succ := le_succFn
   max_of_succ_le h := isMax_of_succFn_le _ h
   succ_le_of_lt h := succFn_le_of_lt _ _ h
-  le_of_lt_succ h := le_of_lt_succFn _ _ h
 
 noncomputable instance (priority := 100) [LocallyFiniteOrder ι] : PredOrder ι :=
   (inferInstance : PredOrder (OrderDual ιᵒᵈ))
@@ -239,8 +238,8 @@ theorem toZ_iterate_succ_of_not_isMax (n : ℕ) (hn : ¬IsMax (succ^[n] i0)) :
 
 theorem toZ_iterate_pred_of_not_isMin (n : ℕ) (hn : ¬IsMin (pred^[n] i0)) :
     toZ i0 (pred^[n] i0) = -n := by
-  cases' n with n n
-  · simp only [Function.iterate_zero, id, toZ_of_eq, Nat.cast_zero, neg_zero]; rfl
+  cases' n with n
+  · simp
   have : pred^[n.succ] i0 < i0 := by
     refine lt_of_le_of_ne (pred_iterate_le _ _) fun h_pred_iterate_eq ↦ hn ?_
     have h_pred_eq_pred : pred^[n.succ] i0 = pred^[0] i0 := by
