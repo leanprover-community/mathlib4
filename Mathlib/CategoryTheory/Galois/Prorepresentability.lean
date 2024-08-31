@@ -6,7 +6,7 @@ Authors: Christian Merten
 import Mathlib.Algebra.Category.Grp.Limits
 import Mathlib.CategoryTheory.CofilteredSystem
 import Mathlib.CategoryTheory.Galois.Decomposition
-import Mathlib.CategoryTheory.Limits.FunctorCategory
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Limits.IndYoneda
 import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 
@@ -189,7 +189,7 @@ noncomputable def autGaloisSystem : PointedGaloisObject F ⥤ Grp.{u₂} where
     ext (σ : Aut A.obj)
     simp
 
-/-- The limit of `autGaloisSystem`.  -/
+/-- The limit of `autGaloisSystem`. -/
 noncomputable def AutGalois : Type (max u₁ u₂) :=
   (autGaloisSystem F ⋙ forget _).sections
 
@@ -222,15 +222,15 @@ lemma AutGalois.ext {f g : AutGalois F}
   ext A
   exact h A
 
+variable [FiberFunctor F]
+
 /-- `autGalois.π` is surjective for every pointed Galois object. -/
-theorem AutGalois.π_surjective [FiberFunctor F] (A : PointedGaloisObject F) :
+theorem AutGalois.π_surjective (A : PointedGaloisObject F) :
     Function.Surjective (AutGalois.π F A) := fun (σ : Aut A.obj) ↦ by
   have (i : PointedGaloisObject F) : Finite ((autGaloisSystem F ⋙ forget _).obj i) :=
     inferInstanceAs <| Finite (Aut (i.obj))
   exact eval_section_surjective_of_surjective
     (autGaloisSystem F ⋙ forget _) (autGaloisSystem_map_surjective F) A σ
-
-variable [FiberFunctor F]
 
 section EndAutGaloisIsomorphism
 
@@ -246,7 +246,7 @@ We first establish the isomorphism between `End F` and `AutGalois F`, from which
 
 - `endEquivSectionsFibers : End F ≅ (incl F ⋙ F').sections`: the endomorphisms of
   `F` are isomorphic to the limit over `F.obj A` for all Galois objects `A`.
-  This is obtained as the composition (slighty simplified):
+  This is obtained as the composition (slightly simplified):
 
   `End F ≅ (colimit ((incl F).op ⋙ coyoneda) ⟶ F) ≅ (incl F ⋙ F).sections`
 

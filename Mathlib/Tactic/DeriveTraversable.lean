@@ -55,7 +55,7 @@ def mapField (n : Name) (cl f α β e : Expr) : TermElabM Expr := do
     return e
 
 /-- Get the auxiliary local declaration corresponding to the current declaration. If there are
-multiple declaraions it will throw. -/
+multiple declarations it will throw. -/
 def getAuxDefOfDeclName : TermElabM FVarId := do
   let some declName ← getDeclName? | throwError "no 'declName?'"
   let auxDeclMap := (← read).auxDeclToFullName

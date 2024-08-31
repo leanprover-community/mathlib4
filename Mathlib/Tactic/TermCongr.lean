@@ -103,7 +103,7 @@ Note that there is no relation between `val` and the proof.
 We need to decouple these to support letting the proof's elaboration be deferred until
 we know whether we want an iff, eq, or heq, while also allowing it to choose
 to elaborate as an iff, eq, or heq.
-Later, the congruence generator handles any discrepencies.
+Later, the congruence generator handles any discrepancies.
 See `Mathlib.Tactic.TermCongr.CongrResult`. -/
 @[reducible, nolint unusedArguments]
 def cHole {α : Sort u} (val : α) {p : Prop} (_pf : p) : α := val
@@ -139,7 +139,7 @@ def cHole? (e : Expr) (mvarCounterSaved? : Option Nat := none) : Option (Bool ×
     return (forLhs, val, pf)
   | _ => none
 
-/-- Returns any subexpression that is a recent congruence hole.  -/
+/-- Returns any subexpression that is a recent congruence hole. -/
 def hasCHole (mvarCounterSaved : Nat) (e : Expr) : Option Expr :=
   e.find? fun e' => (cHole? e' mvarCounterSaved).isSome
 
@@ -638,3 +638,7 @@ def elabTermCongr : Term.TermElab := fun stx expectedType? => do
     let ty ← mkEq res.lhs res.rhs
     mkExpectedTypeHint pf ty
   | _ => throwUnsupportedSyntax
+
+end TermCongr
+
+end Mathlib.Tactic

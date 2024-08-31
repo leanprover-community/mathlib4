@@ -78,7 +78,7 @@ theorem exists_root_sum_quadratic [Fintype R] {f g : R[X]} (hf2 : degree f = 2) 
     simp only [disjoint_left, mem_image] at this
     push_neg at this
     rcases this with ⟨x, ⟨a, _, ha⟩, ⟨b, _, hb⟩⟩
-    exact ⟨a, b, by rw [ha, ← hb, eval_neg, neg_add_self]⟩
+    exact ⟨a, b, by rw [ha, ← hb, eval_neg, neg_add_cancel]⟩
   fun hd : Disjoint _ _ =>
   lt_irrefl (2 * ((univ.image fun x : R => eval x f) ∪ univ.image fun x : R => eval x (-g)).card) <|
     calc 2 * ((univ.image fun x : R => eval x f) ∪ univ.image fun x : R => eval x (-g)).card

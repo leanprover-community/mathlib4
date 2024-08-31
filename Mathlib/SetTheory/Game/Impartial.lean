@@ -132,7 +132,7 @@ theorem not_fuzzy_zero_iff : ¬G ‖ 0 ↔ (G ≈ 0) :=
   ⟨(equiv_or_fuzzy_zero G).resolve_right, Equiv.not_fuzzy⟩
 
 theorem add_self : G + G ≈ 0 :=
-  Equiv.trans (add_congr_left (neg_equiv_self G)) (add_left_neg_equiv G)
+  Equiv.trans (add_congr_left (neg_equiv_self G)) (neg_add_cancel_equiv G)
 
 -- Porting note: Changed `⟦G⟧` to `(⟦G⟧ : Quotient setoid)`
 @[simp]

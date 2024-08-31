@@ -67,6 +67,7 @@ lemma rank_eq_natTrailingDegree [Nontrivial R] [DecidableEq ι] :
 
 open FiniteDimensional
 
+include bₘ in
 lemma rank_le_card [Nontrivial R] : rank R L M ≤ Fintype.card ιₘ :=
   nilRank_le_card _ bₘ
 
@@ -139,6 +140,7 @@ lemma rank_eq_natTrailingDegree [Nontrivial R] [DecidableEq ι] :
 
 open FiniteDimensional
 
+include b in
 lemma rank_le_card [Nontrivial R] : rank R L ≤ Fintype.card ι :=
   nilRank_le_card _ b
 

@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Group.Action.Opposite
-import Mathlib.Algebra.Group.Action.Prod
 import Mathlib.Algebra.GroupWithZero.Action.Defs
+import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.GroupWithZero.Opposite
-import Mathlib.Algebra.GroupWithZero.Prod
 import Mathlib.Algebra.Ring.Defs
 
 /-!
@@ -197,15 +196,9 @@ theorem smul_inv₀ [SMulCommClass α β β] [IsScalarTower α β β] (c : α) (
   obtain rfl | hx := eq_or_ne x 0
   · simp only [inv_zero, smul_zero]
   · refine inv_eq_of_mul_eq_one_left ?_
-    rw [smul_mul_smul, inv_mul_cancel hc, inv_mul_cancel hx, one_smul]
+    rw [smul_mul_smul_comm, inv_mul_cancel₀ hc, inv_mul_cancel₀ hx, one_smul]
 
 end GroupWithZero
-
-/-- Scalar multiplication as a monoid homomorphism with zero. -/
-@[simps]
-def smulMonoidWithZeroHom {α β : Type*} [MonoidWithZero α] [MulZeroOneClass β]
-    [MulActionWithZero α β] [IsScalarTower α β β] [SMulCommClass α β β] : α × β →*₀ β :=
-  { smulMonoidHom with map_zero' := smul_zero _ }
 
 -- This instance seems a bit incongruous in this file, but `#find_home!` told me to put it here.
 instance NonUnitalNonAssocSemiring.toDistribSMul [NonUnitalNonAssocSemiring R] :

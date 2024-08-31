@@ -111,7 +111,7 @@ theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
         · refine (if_pos hx).symm.trans_le (le_bsup _ _ <| (hlub.1 hx).trans_lt (lt_succ _))
   tfae_have 5 → 6
   · rintro ⟨o, h₀, f, hfs, rfl⟩
-    exact ⟨_, out_nonempty_iff_ne_zero.2 h₀, familyOfBFamily o f, fun _ => hfs _ _, rfl⟩
+    exact ⟨_, toType_nonempty_iff_ne_zero.2 h₀, familyOfBFamily o f, fun _ => hfs _ _, rfl⟩
   tfae_have 6 → 1
   · rintro ⟨ι, hne, f, hfs, rfl⟩
     rw [sup, iSup]
@@ -122,7 +122,10 @@ theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
 theorem mem_closure_iff_sup :
     a ∈ closure s ↔
       ∃ (ι : Type u) (_ : Nonempty ι) (f : ι → Ordinal), (∀ i, f i ∈ s) ∧ sup.{u, u} f = a :=
-  ((mem_closure_tfae a s).out 0 5).trans <| by simp only [exists_prop]
+  calc
+    _ ↔ (∃ (ι : Type u), Nonempty ι ∧ ∃ f, (∀ (i : ι), f i ∈ s) ∧ sup f = a) :=
+             (mem_closure_tfae a s).out 0 5
+    _ ↔ _ := by simp only [exists_prop]
 
 theorem mem_closed_iff_sup (hs : IsClosed s) :
     a ∈ s ↔ ∃ (ι : Type u) (_hι : Nonempty ι) (f : ι → Ordinal),
@@ -133,7 +136,10 @@ theorem mem_closure_iff_bsup :
     a ∈ closure s ↔
       ∃ (o : Ordinal) (_ho : o ≠ 0) (f : ∀ a < o, Ordinal),
         (∀ i hi, f i hi ∈ s) ∧ bsup.{u, u} o f = a :=
-  ((mem_closure_tfae a s).out 0 4).trans <| by simp only [exists_prop]
+  calc
+    _ ↔ ∃ o, o ≠ 0 ∧ ∃ f, (∀ (x : Ordinal.{u}) (hx : x < o), f x hx ∈ s) ∧ o.bsup f = a :=
+             (mem_closure_tfae a s).out 0 4
+    _ ↔ _ := by simp only [exists_prop]
 
 theorem mem_closed_iff_bsup (hs : IsClosed s) :
     a ∈ s ↔
@@ -155,7 +161,7 @@ theorem isClosed_iff_bsup :
       ∀ {o : Ordinal}, o ≠ 0 → ∀ f : ∀ a < o, Ordinal,
         (∀ i hi, f i hi ∈ s) → bsup.{u, u} o f ∈ s := by
   rw [isClosed_iff_sup]
-  refine ⟨fun H o ho f hf => H (out_nonempty_iff_ne_zero.2 ho) _ ?_, fun H ι hι f hf => ?_⟩
+  refine ⟨fun H o ho f hf => H (toType_nonempty_iff_ne_zero.2 ho) _ ?_, fun H ι hι f hf => ?_⟩
   · exact fun i => hf _ _
   · rw [← bsup_eq_sup]
     apply H (type_ne_zero_iff_nonempty.2 hι)
@@ -190,7 +196,7 @@ theorem isNormal_iff_strictMono_and_continuous (f : Ordinal.{u} → Ordinal.{u})
     suffices o ∈ f ⁻¹' Set.Iic a from Set.mem_preimage.1 this
     rw [mem_closed_iff_sup (IsClosed.preimage h' (@isClosed_Iic _ _ _ _ a))]
     exact
-      ⟨_, out_nonempty_iff_ne_zero.2 ho.1, typein (· < ·), fun i => h _ (typein_lt_self i),
+      ⟨_, toType_nonempty_iff_ne_zero.2 ho.1, typein (· < ·), fun i => h _ (typein_lt_self i),
         sup_typein_limit ho.2⟩
 
 theorem enumOrd_isNormal_iff_isClosed (hs : s.Unbounded (· < ·)) :

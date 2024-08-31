@@ -124,7 +124,7 @@ theorem neLocus_neg_neg : neLocus (-f) (-g) = f.neLocus g :=
 theorem neLocus_neg : neLocus (-f) g = f.neLocus (-g) := by rw [← neLocus_neg_neg, neg_neg]
 
 theorem neLocus_eq_support_sub : f.neLocus g = (f - g).support := by
-  rw [← @neLocus_add_right α N _ _ _ _ _ (-g), add_right_neg, neLocus_zero_right, sub_eq_add_neg]
+  rw [← @neLocus_add_right α N _ _ _ _ _ (-g), add_neg_cancel, neLocus_zero_right, sub_eq_add_neg]
 
 @[simp]
 theorem neLocus_sub_left : neLocus (f - g₁) (f - g₂) = neLocus g₁ g₂ := by

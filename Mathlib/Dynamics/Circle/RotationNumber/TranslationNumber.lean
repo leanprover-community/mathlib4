@@ -115,7 +115,6 @@ Here are some short-term goals.
 circle homeomorphism, rotation number
 -/
 
-
 open Filter Set Int Topology
 open Function hiding Commute
 
@@ -586,11 +585,11 @@ theorem transnumAuxSeq_dist_lt (n : ℕ) :
     pow_mul, sq, mul_apply]
 
 theorem tendsto_translationNumber_aux : Tendsto f.transnumAuxSeq atTop (𝓝 <| τ f) :=
-  (cauchySeq_of_le_geometric_two 1 fun n => le_of_lt <| f.transnumAuxSeq_dist_lt n).tendsto_limUnder
+  (cauchySeq_of_le_geometric_two fun n => le_of_lt <| f.transnumAuxSeq_dist_lt n).tendsto_limUnder
 
 theorem dist_map_zero_translationNumber_le : dist (f 0) (τ f) ≤ 1 :=
   f.transnumAuxSeq_zero ▸
-    dist_le_of_le_geometric_two_of_tendsto₀ 1 (fun n => le_of_lt <| f.transnumAuxSeq_dist_lt n)
+    dist_le_of_le_geometric_two_of_tendsto₀ (fun n => le_of_lt <| f.transnumAuxSeq_dist_lt n)
       f.tendsto_translationNumber_aux
 
 theorem tendsto_translationNumber_of_dist_bounded_aux (x : ℕ → ℝ) (C : ℝ)
@@ -708,7 +707,7 @@ theorem le_translationNumber_of_add_le {z : ℝ} (hz : ∀ x, x + z ≤ f x) : z
 
 theorem translationNumber_le_of_le_add_int {x : ℝ} {m : ℤ} (h : f x ≤ x + m) : τ f ≤ m :=
   le_of_tendsto' (f.tendsto_translation_number' x) fun n =>
-    (div_le_iff' (n.cast_add_one_pos : (0 : ℝ) < _)).mpr <| sub_le_iff_le_add'.2 <|
+    (div_le_iff₀' (n.cast_add_one_pos : (0 : ℝ) < _)).mpr <| sub_le_iff_le_add'.2 <|
       (coe_pow f (n + 1)).symm ▸ @Nat.cast_add_one ℝ _ n ▸ f.iterate_le_of_map_le_add_int h (n + 1)
 
 theorem translationNumber_le_of_le_add_nat {x : ℝ} {m : ℕ} (h : f x ≤ x + m) : τ f ≤ m :=
@@ -716,7 +715,7 @@ theorem translationNumber_le_of_le_add_nat {x : ℝ} {m : ℕ} (h : f x ≤ x + 
 
 theorem le_translationNumber_of_add_int_le {x : ℝ} {m : ℤ} (h : x + m ≤ f x) : ↑m ≤ τ f :=
   ge_of_tendsto' (f.tendsto_translation_number' x) fun n =>
-    (le_div_iff (n.cast_add_one_pos : (0 : ℝ) < _)).mpr <| le_sub_iff_add_le'.2 <| by
+    (le_div_iff₀ (n.cast_add_one_pos : (0 : ℝ) < _)).mpr <| le_sub_iff_add_le'.2 <| by
       simp only [coe_pow, mul_comm (m : ℝ), ← Nat.cast_add_one, f.le_iterate_of_add_int_le_map h]
 
 theorem le_translationNumber_of_add_nat_le {x : ℝ} {m : ℕ} (h : x + m ≤ f x) : ↑m ≤ τ f :=

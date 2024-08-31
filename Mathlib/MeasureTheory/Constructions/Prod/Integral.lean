@@ -104,12 +104,12 @@ theorem MeasureTheory.StronglyMeasurable.integral_prod_right [SFinite ν] ⦃f :
       refine
         tendsto_integral_of_dominated_convergence (fun y => ‖f x y‖ + ‖f x y‖)
           (fun n => (s' n x).aestronglyMeasurable) (hfx.norm.add hfx.norm) ?_ ?_
-      · refine fun n => eventually_of_forall fun y =>
+      · refine fun n => Eventually.of_forall fun y =>
           SimpleFunc.norm_approxOn_zero_le ?_ ?_ (x, y) n
         -- Porting note: Lean 3 solved the following two subgoals on its own
         · exact hf.measurable
         · simp
-      · refine eventually_of_forall fun y => SimpleFunc.tendsto_approxOn ?_ ?_ ?_
+      · refine Eventually.of_forall fun y => SimpleFunc.tendsto_approxOn ?_ ?_ ?_
         -- Porting note: Lean 3 solved the following two subgoals on its own
         · exact hf.measurable.of_uncurry_left
         · simp
@@ -287,7 +287,7 @@ theorem Integrable.prod_smul {𝕜 : Type*} [NontriviallyNormedField 𝕜] [Norm
     Integrable (fun z : α × β => f z.1 • g z.2) (μ.prod ν) := by
   refine (integrable_prod_iff ?_).2 ⟨?_, ?_⟩
   · exact hf.1.fst.smul hg.1.snd
-  · exact eventually_of_forall fun x => hg.smul (f x)
+  · exact Eventually.of_forall fun x => hg.smul (f x)
   · simpa only [norm_smul, integral_mul_left] using hf.norm.mul_const _
 
 theorem Integrable.prod_mul {L : Type*} [RCLike L] {f : α → L} {g : β → L} (hf : Integrable f μ)
@@ -301,11 +301,11 @@ variable [NormedSpace ℝ E]
 theorem Integrable.integral_prod_left ⦃f : α × β → E⦄ (hf : Integrable f (μ.prod ν)) :
     Integrable (fun x => ∫ y, f (x, y) ∂ν) μ :=
   Integrable.mono hf.integral_norm_prod_left hf.aestronglyMeasurable.integral_prod_right' <|
-    eventually_of_forall fun x =>
+    Eventually.of_forall fun x =>
       (norm_integral_le_integral_norm _).trans_eq <|
         (norm_of_nonneg <|
             integral_nonneg_of_ae <|
-              eventually_of_forall fun y => (norm_nonneg (f (x, y)) : _)).symm
+              Eventually.of_forall fun y => (norm_nonneg (f (x, y)) : _)).symm
 
 theorem Integrable.integral_prod_right [SFinite μ] ⦃f : α × β → E⦄
     (hf : Integrable f (μ.prod ν)) : Integrable (fun y => ∫ x, f (x, y) ∂μ) ν :=
@@ -388,7 +388,7 @@ theorem continuous_integral_integral :
   rw [continuous_iff_continuousAt]; intro g
   refine
     tendsto_integral_of_L1 _ (L1.integrable_coeFn g).integral_prod_left
-      (eventually_of_forall fun h => (L1.integrable_coeFn h).integral_prod_left) ?_
+      (Eventually.of_forall fun h => (L1.integrable_coeFn h).integral_prod_left) ?_
   simp_rw [←
     lintegral_fn_integral_sub (fun x => (‖x‖₊ : ℝ≥0∞)) (L1.integrable_coeFn _)
       (L1.integrable_coeFn g)]
@@ -535,7 +535,7 @@ lemma integral_integral_swap_of_hasCompactSupport
     apply (integrableOn_iff_integrable_of_support_subset (subset_tsupport f.uncurry)).mp
     refine ⟨(h'f.stronglyMeasurable_of_prod hf).aestronglyMeasurable, ?_⟩
     obtain ⟨C, hC⟩ : ∃ C, ∀ p, ‖f.uncurry p‖ ≤ C := hf.bounded_above_of_compact_support h'f
-    exact hasFiniteIntegral_of_bounded (C := C) (eventually_of_forall hC)
+    exact hasFiniteIntegral_of_bounded (C := C) (Eventually.of_forall hC)
   _ = ∫ y, (∫ x in U, f x y ∂μ) ∂ν := by
     apply setIntegral_eq_integral_of_forall_compl_eq_zero (fun y hy ↦ ?_)
     have : ∀ x, f x y = 0 := by

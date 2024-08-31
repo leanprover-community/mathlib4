@@ -263,22 +263,10 @@ theorem IsCompact.exists_forall_le' [ClosedIicTopology α] [NoMaxOrder α] {f : 
   · obtain ⟨x, hx, hx'⟩ := hs.exists_isMinOn hs' hf
     exact ⟨f x, hf' x hx, hx'⟩
 
-/-- The **extreme value theorem**: a continuous function realizes its minimum on a compact set. -/
-@[deprecated IsCompact.exists_isMinOn (since := "2023-02-06")]
-theorem IsCompact.exists_forall_le [ClosedIicTopology α] {s : Set β} (hs : IsCompact s)
-    (ne_s : s.Nonempty) {f : β → α} (hf : ContinuousOn f s) : ∃ x ∈ s, ∀ y ∈ s, f x ≤ f y :=
-  hs.exists_isMinOn ne_s hf
-
 /-- The **extreme value theorem**: a continuous function realizes its maximum on a compact set. -/
 theorem IsCompact.exists_isMaxOn [ClosedIciTopology α] {s : Set β} (hs : IsCompact s)
     (ne_s : s.Nonempty) {f : β → α} (hf : ContinuousOn f s) : ∃ x ∈ s, IsMaxOn f s x :=
   IsCompact.exists_isMinOn (α := αᵒᵈ) hs ne_s hf
-
-/-- The **extreme value theorem**: a continuous function realizes its maximum on a compact set. -/
-@[deprecated IsCompact.exists_isMaxOn (since := "2023-02-06")]
-theorem IsCompact.exists_forall_ge [ClosedIciTopology α] {s : Set β} (hs : IsCompact s)
-    (ne_s : s.Nonempty) {f : β → α} (hf : ContinuousOn f s) : ∃ x ∈ s, ∀ y ∈ s, f y ≤ f x :=
-  IsCompact.exists_isMaxOn hs ne_s hf
 
 /-- The **extreme value theorem**: if a function `f` is continuous on a closed set `s` and it is
 larger than a value in its image away from compact sets, then it has a minimum on this set. -/
@@ -294,27 +282,11 @@ theorem ContinuousOn.exists_isMinOn' [ClosedIicTopology α] {s : Set β} {f : β
   exacts [hxf _ (Or.inr ⟨hyK, hy⟩), (hxf _ (Or.inl rfl)).trans (hKf ⟨hyK, hy⟩)]
 
 /-- The **extreme value theorem**: if a function `f` is continuous on a closed set `s` and it is
-larger than a value in its image away from compact sets, then it has a minimum on this set. -/
-@[deprecated ContinuousOn.exists_isMinOn' (since := "2023-02-06")]
-theorem ContinuousOn.exists_forall_le' [ClosedIicTopology α] {s : Set β} {f : β → α}
-    (hf : ContinuousOn f s) (hsc : IsClosed s) {x₀ : β} (h₀ : x₀ ∈ s)
-    (hc : ∀ᶠ x in cocompact β ⊓ 𝓟 s, f x₀ ≤ f x) : ∃ x ∈ s, ∀ y ∈ s, f x ≤ f y :=
-  hf.exists_isMinOn' hsc h₀ hc
-
-/-- The **extreme value theorem**: if a function `f` is continuous on a closed set `s` and it is
 smaller than a value in its image away from compact sets, then it has a maximum on this set. -/
 theorem ContinuousOn.exists_isMaxOn' [ClosedIciTopology α] {s : Set β} {f : β → α}
     (hf : ContinuousOn f s) (hsc : IsClosed s) {x₀ : β} (h₀ : x₀ ∈ s)
     (hc : ∀ᶠ x in cocompact β ⊓ 𝓟 s, f x ≤ f x₀) : ∃ x ∈ s, IsMaxOn f s x :=
   ContinuousOn.exists_isMinOn' (α := αᵒᵈ) hf hsc h₀ hc
-
-/-- The **extreme value theorem**: if a function `f` is continuous on a closed set `s` and it is
-smaller than a value in its image away from compact sets, then it has a maximum on this set. -/
-@[deprecated ContinuousOn.exists_isMaxOn' (since := "2023-02-06")]
-theorem ContinuousOn.exists_forall_ge' [ClosedIciTopology α] {s : Set β} {f : β → α}
-    (hf : ContinuousOn f s) (hsc : IsClosed s) {x₀ : β} (h₀ : x₀ ∈ s)
-    (hc : ∀ᶠ x in cocompact β ⊓ 𝓟 s, f x ≤ f x₀) : ∃ x ∈ s, ∀ y ∈ s, f y ≤ f x :=
-  hf.exists_isMaxOn' hsc h₀ hc
 
 /-- The **extreme value theorem**: if a continuous function `f` is larger than a value in its range
 away from compact sets, then it has a global minimum. -/
@@ -489,13 +461,6 @@ theorem IsCompact.exists_isMaxOn_mem_subset [ClosedIciTopology α] {f : β → �
     (hfz : ∀ z' ∈ t \ s, f z' < f z) : ∃ x ∈ s, IsMaxOn f t x :=
   let ⟨x, hxt, hfx⟩ := ht.exists_isMaxOn ⟨z, hz⟩ hf
   ⟨x, by_contra fun hxs => (hfz x ⟨hxt, hxs⟩).not_le (hfx hz), hfx⟩
-
-@[deprecated IsCompact.exists_isMinOn_mem_subset (since := "2023-02-06")]
-theorem IsCompact.exists_isLocalMinOn_mem_subset [ClosedIicTopology α] {f : β → α} {s t : Set β}
-    {z : β} (ht : IsCompact t) (hf : ContinuousOn f t) (hz : z ∈ t)
-    (hfz : ∀ z' ∈ t \ s, f z < f z') : ∃ x ∈ s, IsLocalMinOn f t x :=
-  let ⟨x, hxs, h⟩ := ht.exists_isMinOn_mem_subset hf hz hfz
-  ⟨x, hxs, h.localize⟩
 
 -- Porting note: rfc: assume `t ∈ 𝓝ˢ s` (a.k.a. `s ⊆ interior t`) instead of `s ⊆ t` and
 -- `IsOpen s`?
