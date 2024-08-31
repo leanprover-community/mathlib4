@@ -123,7 +123,7 @@ theorem nodupKeys_join {L : List (List (Sigma β))} :
   rw [nodupKeys_iff_pairwise, pairwise_join, pairwise_map]
   refine and_congr (forall₂_congr fun l _ => by simp [nodupKeys_iff_pairwise]) ?_
   apply iff_of_eq; congr with (l₁ l₂)
-  simp [keys, disjoint_iff_ne]
+  simp [keys, disjoint_iff_ne, Sigma.forall]
 
 theorem nodup_enum_map_fst (l : List α) : (l.enum.map Prod.fst).Nodup := by simp [List.nodup_range]
 

@@ -56,7 +56,7 @@ def ConnectedComponents.functorToDiscrete   (X : Type*)
   map g := Discrete.eqToHom (congrArg f (Quotient.sound (Zigzag.of_hom g)))
 
 /-- Every functor to a discrete category gives a function from connected components -/
-def ConnectedComponents.liftFunctor  (J) [Category J] {X : Type*} (F :J ⥤ Discrete X) :
+def ConnectedComponents.liftFunctor (J) [Category J] {X : Type*} (F :J ⥤ Discrete X) :
     (ConnectedComponents J → X) :=
   Quotient.lift (fun c => (F.obj c).as)
     (fun _ _ h => eq_of_zigzag X (zigzag_obj_of_zigzag F h))
