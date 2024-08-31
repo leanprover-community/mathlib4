@@ -229,23 +229,6 @@ theorem polar_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [
   refine ContinuousLinearMap.opNorm_le_of_ball hr (inv_nonneg.mpr hr.le) fun z _ => ?_
   simpa only [one_div] using LinearMap.bound_of_ball_bound' hr 1 x'.toLinearMap h z
 
-theorem polar_ball {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] {r : ℝ}
-    (hr : 0 < r) : polar 𝕜 (ball (0 : E) r) = closedBall (0 : Dual 𝕜 E) r⁻¹ := by
-  apply le_antisymm
-  · intro x hx
-    rw [mem_closedBall_zero_iff]
-    apply le_of_forall_le_of_dense
-    intro a ha
-    rw [← mem_closedBall_zero_iff, ← (mul_div_cancel_left₀ a (Ne.symm (ne_of_lt hr)))]
-    rw [← RCLike.norm_of_nonneg (K := 𝕜) (le_trans zero_le_one
-      (le_of_lt ((inv_pos_lt_iff_one_lt_mul' hr).mp ha)))]
-    apply polar_ball_subset_closedBall_div _ hr hx
-    rw [RCLike.norm_of_nonneg (K := 𝕜) (le_trans zero_le_one
-      (le_of_lt ((inv_pos_lt_iff_one_lt_mul' hr).mp ha)))]
-    exact (inv_pos_lt_iff_one_lt_mul' hr).mp ha
-  · rw [← polar_closedBall hr]
-    exact LinearMap.polar_antitone _ ball_subset_closedBall
-
 /-- Given a neighborhood `s` of the origin in a normed space `E`, the dual norms
 of all elements of the polar `polar 𝕜 s` are bounded by a constant. -/
 theorem isBounded_polar_of_mem_nhds_zero {s : Set E} (s_nhd : s ∈ 𝓝 (0 : E)) :
@@ -278,95 +261,6 @@ theorem sInter_polar_eq_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddComm
   conv_rhs => rw [← inv_inv r]
   rw [← polar_closedBall (inv_pos_of_pos hr), polar,
     (dualPairing 𝕜 E).flip.sInter_polar_finite_subset_eq_polar (closedBall (0 : E) r⁻¹)]
-
-/-
-theorem iInter_polar_eq_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E]
-    [NormedSpace 𝕜 E] {r : ℝ} (hr : 0 < r) :
-    ⋂ i ∈ closedBall (0 : E) r⁻¹, (polar 𝕜 { i }) = closedBall 0 r := by
-  conv_rhs => rw [← inv_inv r]
-  rw [← polar_closedBall (inv_pos_of_pos hr), polar,
-    (dualPairing 𝕜 E).flip.iInter_polar_singleton_eq_polar (closedBall (0 : E) r⁻¹)]
--/
-
-/-
-theorem finite_subsets1 (U : Set (Dual 𝕜 E)) : ∃ F : ℕ → Set E, ∀ n : ℕ, (F n).Finite := by
-  use (fun n => Nat.recOn n {(0 : E)} (fun m v => {(0 : E)}))
-  intro n
-  cases n
-  · simp only [Nat.rec_zero, finite_singleton]
-  · simp only [finite_singleton]
--/
-
---#check (⊥ : Set E)
-
-variable (g : ℕ → Set ℕ) (m : ℕ)
-
---#check ⋃₀ {g k | k < m}
-
-/-- Just demo we can do this sort of thing. -/
-def myF : ℕ → Set ℕ
-  | 0 => {0}
-  | n =>  ⋃₀ {myF j | j : { j // j < n } }
-  termination_by n => n
-  decreasing_by
-    exact j.2
-
---lemma polar_myF :
-
-
-/-
-theorem finite_subsets3 (U : Set (Dual 𝕜 E)) : ∃ F : ℕ → Set E, ∀ n : ℕ, (F n).Finite := by
-  use (fun m =>
-    | 0 => {0}
-    | n =>  ⋃₀ {myF2 j | j : { j // j < n } }
-    termination_by n => n
-    decreasing_by
-      exact j.2
-  )
--/
-
-/-
-decreasing_by
-  simp only [Nat.succ_eq_add_one]-/
-
-/-
-inductive F : ℕ → Set E
-  | F 0 : (⊥ : Set E)
-  | Fn : ∀ n : ℕ, F (n+1) = F n
--/
---def F (n : ℕ) : (F n).Finite :=
-
-/-
-theorem finite_subsets2 (U : Set (Dual 𝕜 E)) : ∃ F : ℕ → Set E, ∀ n : ℕ, (F n).Finite := by
-  use (induction n with
-        | zero => sorry
-  )
-  intro n
-  cases n
-  · simp only [Nat.rec_zero, finite_singleton]
-  · simp only [finite_singleton]
--/
-
-/-
-theorem finite_subsets (U : Set (Dual 𝕜 E)) : ∃ F : ℕ → Set E, ∀ n : ℕ, (F n).Finite ∧
-    F n ⊆ ball (0 : E) n⁻¹ ∧ polar 𝕜 (⋃₀ {F k | k < n }) ∩ ball 0 n  ⊆ U := by
-  use (fun n => Nat.recOn n {(0 : E)} (fun n v => {(0 : E)}))
-  intro n
-  constructor
-  · simp only
-    cases n
-    · simp only [Nat.rec_zero, finite_singleton]
-    · simp only [finite_singleton]
-  · cases n
-    · constructor
-      · simp only [Nat.rec_zero, CharP.cast_eq_zero, inv_zero, ball_zero, subset_empty_iff,
-        singleton_ne_empty]
--/
-
-  --apply Exists.intro
-  --induction n using by exact 𝕜
-  --intro n
-
 
 end PolarSets
 

@@ -258,18 +258,6 @@ instance (n : ℕ) : Nonempty (U (E := E) n) := by
   · simp only [Nat.cast_add, Nat.cast_one, mem_ball, dist_self, inv_pos]
     exact Nat.cast_add_one_pos n
 
-
-lemma polar_Un {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] (n : ℕ) :
-    polar 𝕜 (U n) = closedBall (0 : Dual 𝕜 E) n := by
-  cases' n with n
-  · rw [polar_U0]
-    simp only [CharP.cast_eq_zero]
-  · rw [U]
-    simp only [Nat.cast_add, Nat.cast_one]
-    rw [polar]
-    rw [polar_ball Nat.inv_pos_of_nat, inv_inv]
-    rfl
-
 lemma polarUcompact [ProperSpace 𝕜] (n : ℕ) : IsCompact (polar 𝕜 (U (E := E) n)) := by
   apply isCompact_polar
   rw [U]
@@ -397,5 +385,91 @@ lemma test (C : Set (Dual 𝕜 E)) (s : Set E) (n : ℕ)
     ∃ (F : Set E), Finite F ∧ F ⊆ (U (n+1))∧ (polar 𝕜 (s ∪ F)) ∩ (polar 𝕜 (U (n+1))) ∩ C = ∅ :=
   sorry
 -/
+
+variable (g : ℕ → Set ℕ) (m : ℕ)
+
+--#check ⋃₀ {g k | k < m}
+/-
+theorem iInter_polar_eq_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E]
+    [NormedSpace 𝕜 E] {r : ℝ} (hr : 0 < r) :
+    ⋂ i ∈ closedBall (0 : E) r⁻¹, (polar 𝕜 { i }) = closedBall 0 r := by
+  conv_rhs => rw [← inv_inv r]
+  rw [← polar_closedBall (inv_pos_of_pos hr), polar,
+    (dualPairing 𝕜 E).flip.iInter_polar_singleton_eq_polar (closedBall (0 : E) r⁻¹)]
+-/
+
+/-
+theorem finite_subsets1 (U : Set (Dual 𝕜 E)) : ∃ F : ℕ → Set E, ∀ n : ℕ, (F n).Finite := by
+  use (fun n => Nat.recOn n {(0 : E)} (fun m v => {(0 : E)}))
+  intro n
+  cases n
+  · simp only [Nat.rec_zero, finite_singleton]
+  · simp only [finite_singleton]
+-/
+
+--#check (⊥ : Set E)
+/-- Just demo we can do this sort of thing. -/
+def myF : ℕ → Set ℕ
+  | 0 => {0}
+  | n =>  ⋃₀ {myF j | j : { j // j < n } }
+  termination_by n => n
+  decreasing_by
+    exact j.2
+
+--lemma polar_myF :
+
+
+/-
+theorem finite_subsets3 (U : Set (Dual 𝕜 E)) : ∃ F : ℕ → Set E, ∀ n : ℕ, (F n).Finite := by
+  use (fun m =>
+    | 0 => {0}
+    | n =>  ⋃₀ {myF2 j | j : { j // j < n } }
+    termination_by n => n
+    decreasing_by
+      exact j.2
+  )
+-/
+
+/-
+decreasing_by
+  simp only [Nat.succ_eq_add_one]-/
+
+/-
+inductive F : ℕ → Set E
+  | F 0 : (⊥ : Set E)
+  | Fn : ∀ n : ℕ, F (n+1) = F n
+-/
+--def F (n : ℕ) : (F n).Finite :=
+
+/-
+theorem finite_subsets2 (U : Set (Dual 𝕜 E)) : ∃ F : ℕ → Set E, ∀ n : ℕ, (F n).Finite := by
+  use (induction n with
+        | zero => sorry
+  )
+  intro n
+  cases n
+  · simp only [Nat.rec_zero, finite_singleton]
+  · simp only [finite_singleton]
+-/
+
+/-
+theorem finite_subsets (U : Set (Dual 𝕜 E)) : ∃ F : ℕ → Set E, ∀ n : ℕ, (F n).Finite ∧
+    F n ⊆ ball (0 : E) n⁻¹ ∧ polar 𝕜 (⋃₀ {F k | k < n }) ∩ ball 0 n  ⊆ U := by
+  use (fun n => Nat.recOn n {(0 : E)} (fun n v => {(0 : E)}))
+  intro n
+  constructor
+  · simp only
+    cases n
+    · simp only [Nat.rec_zero, finite_singleton]
+    · simp only [finite_singleton]
+  · cases n
+    · constructor
+      · simp only [Nat.rec_zero, CharP.cast_eq_zero, inv_zero, ball_zero, subset_empty_iff,
+        singleton_ne_empty]
+-/
+
+  --apply Exists.intro
+  --induction n using by exact 𝕜
+  --intro n
 
 end WeakDual
