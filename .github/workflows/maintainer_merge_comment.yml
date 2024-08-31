@@ -26,13 +26,7 @@ jobs:
       - name: Get labels
         id: tlabels
         run: |
-            tlabels="$(gh api --jq '.labels.[].name' "${PR}" | grep -- '^t-' || printf 'generic')"
-            printf 't-labels:\n---\n%s\n---\n' "${tlabels}"
-            if [[ "$(wc -l <<<"${tlabels}")" -ne 1 ]]; then
-              tlabels="generic"
-            fi
-            printf 'echo "name=%s"\n' "${tlabels}"
-            echo "name=${tlabels}" >> "$GITHUB_OUTPUT"
+            ./scripts/get_tlabel.sh >> "$GITHUB_OUTPUT"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR: /repos/{owner}/{repo}/pulls/${{ github.event.issue.number }}
