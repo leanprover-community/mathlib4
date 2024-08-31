@@ -196,7 +196,7 @@ instance : Std.Commutative (α := α) (· ⊔ ·) := ⟨sup_comm⟩
 theorem sup_assoc (a b c : α) : a ⊔ b ⊔ c = a ⊔ (b ⊔ c) :=
   eq_of_forall_ge_iff fun x => by simp only [sup_le_iff]; rw [and_assoc]
 
-instance : Std.Associative (α := α)  (· ⊔ ·) := ⟨sup_assoc⟩
+instance : Std.Associative (α := α) (· ⊔ ·) := ⟨sup_assoc⟩
 
 theorem sup_left_right_swap (a b c : α) : a ⊔ b ⊔ c = c ⊔ b ⊔ a := by
   rw [sup_comm, sup_comm a, sup_assoc]

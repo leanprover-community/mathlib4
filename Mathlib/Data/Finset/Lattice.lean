@@ -18,7 +18,6 @@ import Mathlib.Order.Nat
 # Lattice operations on finsets
 -/
 
--- TODO:
 assert_not_exists OrderedCommMonoid
 assert_not_exists MonoidWithZero
 
@@ -1952,3 +1951,5 @@ theorem set_biInter_biUnion (s : Finset γ) (t : γ → Finset α) (f : α → S
   iInf_biUnion s t f
 
 end Finset
+
+set_option linter.style.longFile 2100
