@@ -215,7 +215,7 @@ theorem mk_set_le (s : Set α) : #s ≤ #α :=
   mk_subtype_le s
 
 /-- The universe lift operation on cardinals. You can specify the universes explicitly with
-  `lift.{u v} : Cardinal.{v} → Cardinal.{max v u}` -/
+`lift.{u v} : Cardinal.{v} → Cardinal.{max v u}` -/
 @[pp_with_univ]
 def lift : @InitialSeg Cardinal.{v} Cardinal.{max v u} (· < ·) (· < ·) where
   toFun := map ULift (fun _ _ e => Equiv.ulift.trans <| e.trans Equiv.ulift.symm)
@@ -229,21 +229,20 @@ def lift : @InitialSeg Cardinal.{v} Cardinal.{max v u} (· < ·) (· < ·) where
     intro a b
     refine inductionOn₂ a b ?_
     intro α β
-    dsimp
-    rw [← le_iff_le_iff_lt_iff_lt, le_def, le_def]
+    rw [← le_iff_le_iff_lt_iff_lt]
     constructor <;>
     rintro ⟨e⟩
     exacts [⟨e.congr Equiv.ulift Equiv.ulift⟩, ⟨e.congr Equiv.ulift.symm Equiv.ulift.symm⟩]
   init' a b := by
     refine inductionOn₂ a b ?_
     intro α β h
-    dsimp at *
-    sorry
+    obtain ⟨e⟩ := h.le
+    replace e := e.congr (Equiv.refl β) Equiv.ulift
+    refine ⟨#(range e), Cardinal.eq.2 ⟨Equiv.ulift.trans <| Equiv.symm ?_⟩⟩
+    apply (e.codRestrict _ mem_range_self).equivOfSurjective
+    rintro ⟨a, ⟨b, rfl⟩⟩
+    exact ⟨b, rfl⟩
 
-
-
-
-#exit
 @[simp]
 theorem mk_uLift (α) : #(ULift.{v, u} α) = lift.{v} #α :=
   rfl
@@ -252,8 +251,11 @@ theorem mk_uLift (α) : #(ULift.{v, u} α) = lift.{v} #α :=
 -- further down in this file
 /-- `lift.{max u v, u}` equals `lift.{v, u}`. -/
 @[simp, nolint simpNF]
-theorem lift_umax : lift.{max u v, u} = lift.{v, u} :=
-  funext fun a => inductionOn a fun _ => (Equiv.ulift.trans Equiv.ulift.symm).cardinal_eq
+theorem lift_umax : lift.{max u v, u} = lift.{v, u} := by
+  ext a
+  refine inductionOn a ?_
+  intro α
+  exact (Equiv.ulift.trans Equiv.ulift.symm).cardinal_eq
 
 -- Porting note: simpNF is not happy with universe levels, but this is needed as simp lemma
 -- further down in this file
@@ -988,15 +990,9 @@ theorem lift_iInf {ι} (f : ι → Cardinal) : lift.{u, v} (iInf f) = ⨅ i, lif
   convert lift_sInf (range f)
   simp_rw [← comp_apply (f := lift), range_comp]
 
-theorem lift_down {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
-    b ≤ lift.{v,u} a → ∃ a', lift.{v,u} a' = b :=
-  inductionOn₂ a b fun α β => by
-    rw [← lift_id #β, ← lift_umax, ← lift_umax.{u, v}, lift_mk_le.{v}]
-    exact fun ⟨f⟩ =>
-      ⟨#(Set.range f),
-        Eq.symm <| lift_mk_eq.{_, _, v}.2
-          ⟨Function.Embedding.equivOfSurjective (Embedding.codRestrict _ f Set.mem_range_self)
-              fun ⟨a, ⟨b, e⟩⟩ => ⟨b, Subtype.eq e⟩⟩⟩
+theorem lift_down {a : Cardinal.{u}} {b : Cardinal.{max u v}} (h : b ≤ lift.{v, u} a) :
+    ∃ a', lift.{v,u} a' = b :=
+  lift.init_le
 
 theorem le_lift_iff {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
     b ≤ lift.{v, u} a ↔ ∃ a', lift.{v, u} a' = b ∧ a' ≤ a :=

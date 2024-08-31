@@ -89,6 +89,11 @@ theorem init_iff (f : r ≼i s) {a : α} {b : β} : s b (f a) ↔ ∃ a', f a' =
     exact ⟨a', rfl, f.map_rel_iff.1 h⟩,
     fun ⟨a', e, h⟩ => e ▸ f.map_rel_iff.2 h⟩
 
+theorem init_le [Preorder α] [PartialOrder β] (f : @InitialSeg α β (· < ·) (· < ·)) {a : α} {b : β}
+    (h : b ≤ f a) : ∃ a', f a' = b := by
+  obtain rfl | hb := h.eq_or_lt
+  exacts [⟨a, rfl⟩, f.init hb]
+
 /-- An order isomorphism is an initial segment -/
 def ofIso (f : r ≃r s) : r ≼i s :=
   ⟨f, fun _ b _ => ⟨f.symm b, RelIso.apply_symm_apply f _⟩⟩
