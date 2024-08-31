@@ -474,6 +474,13 @@ example [Add α] (a : α) : Con (fun x0 : α =>
     fun z : α =>
       x + y + z) x0 a) := by fun_prop
 
+example [Add α] (a : α) :
+  let f := (fun x : α =>
+    let y := x + x
+    fun z : α =>
+      x + y + z)
+  Con (fun x => f x a) := by fun_prop
+
 example [Add α] (a a' : α) : Con (fun x0 : α =>
   (fun x =>
     let y := x + x
@@ -496,27 +503,21 @@ example [Add α] (a : α) :
 
 -- Test that local theorem is being used
 /--
-info: [Meta.Tactic.fun_prop] [✅] Con fun x => f x a
-  [Meta.Tactic.fun_prop] candidate local theorems for f #[h : Con f]
-  [Meta.Tactic.fun_prop] removing argument to later use h : Con f
+info: [Meta.Tactic.fun_prop] [✅] Con fun x => f x y
+  [Meta.Tactic.fun_prop] candidate local theorems for f #[this : Con f]
+  [Meta.Tactic.fun_prop] removing argument to later use this : Con f
   [Meta.Tactic.fun_prop] [✅] applying: Con_comp
-    [Meta.Tactic.fun_prop] [✅] Con fun f => f a
+    [Meta.Tactic.fun_prop] [✅] Con fun f => f y
       [Meta.Tactic.fun_prop] [✅] applying: Con_apply
     [Meta.Tactic.fun_prop] [✅] Con fun x => f x
-      [Meta.Tactic.fun_prop] candidate local theorems for f #[h : Con f]
-      [Meta.Tactic.fun_prop] [✅] applying: h : Con f
+      [Meta.Tactic.fun_prop] candidate local theorems for f #[this : Con f]
+      [Meta.Tactic.fun_prop] [✅] applying: this : Con f
 -/
 #guard_msgs in
-example [Add α] (a : α) :
-  let f := (fun x : α =>
-    let y := x + x
-    fun z : α =>
-      x + y + z)
-  Con (fun x =>
-    f x a) := by
+example [Add α] (y : α):
+  let f := (fun x y : α => x+x+y)
+  Con (fun x => f x y) := by
   intro f
-  have h : Con f := by fun_prop
+  have : Con f := by fun_prop
   set_option trace.Meta.Tactic.fun_prop true in
   fun_prop
-
-
