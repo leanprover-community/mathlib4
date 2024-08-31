@@ -61,6 +61,9 @@ class IsOrdered (L : Language.{u, v}) where
 
 export IsOrdered (leSymb)
 
+instance : IsOrdered Language.order :=
+  ⟨Unit.unit⟩
+
 section IsOrdered
 
 variable [IsOrdered L]
@@ -79,9 +82,6 @@ variable (L)
  language. -/
 def orderLHom : Language.order →ᴸ L :=
   LHom.mk₂ Empty.elim Empty.elim Empty.elim Empty.elim fun _ => leSymb
-
-instance : IsOrdered Language.order :=
-  ⟨Unit.unit⟩
 
 @[simp]
 theorem orderLHom_leSymb :
