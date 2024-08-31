@@ -504,7 +504,7 @@ protected theorem tendsto_inv_nat_nhds_zero : Tendsto (fun n : ℕ => (n : ℝ�
   ENNReal.inv_top ▸ ENNReal.tendsto_inv_iff.2 tendsto_nat_nhds_top
 
 theorem iSup_add {ι : Sort*} {s : ι → ℝ≥0∞} [Nonempty ι] : iSup s + a = ⨆ b, s b + a :=
-  Monotone.map_iSup_of_continuousAt' (continuousAt_id.add continuousAt_const) <|
+  Monotone.map_ciSup_of_continuousAt (continuousAt_id.add continuousAt_const) <|
     monotone_id.add monotone_const
 
 theorem biSup_add' {ι : Sort*} {p : ι → Prop} (h : ∃ i, p i) {f : ι → ℝ≥0∞} :
