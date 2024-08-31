@@ -127,8 +127,9 @@ lemma lie_mem_genWeightSpaceChain_of_genWeightSpace_eq_bot_right [LieAlgebra.IsN
     {y : M} (hy : y ∈ genWeightSpaceChain M α χ p q) :
     ⁅x, y⁆ ∈ genWeightSpaceChain M α χ p q := by
   rw [genWeightSpaceChain, iSup_subtype'] at hy
-  induction' hy using LieSubmodule.iSup_induction' with k z hz z₁ z₂ _ _ hz₁ hz₂
-  · obtain ⟨k, hk⟩ := k
+  induction hy using LieSubmodule.iSup_induction' with
+  | hN k z hz =>
+    obtain ⟨k, hk⟩ := k
     suffices genWeightSpace M ((k + 1) • α + χ) ≤ genWeightSpaceChain M α χ p q by
       apply this
       simpa using (rootSpaceWeightSpaceProduct R L H M α (k • α + χ) ((k + 1) • α + χ)
@@ -137,9 +138,8 @@ lemma lie_mem_genWeightSpaceChain_of_genWeightSpace_eq_bot_right [LieAlgebra.IsN
     rcases eq_or_ne (k + 1) q with rfl | hk'; · simp only [hq, bot_le]
     replace hk' : k + 1 ∈ Ioo p q := ⟨by linarith [hk.1], lt_of_le_of_ne hk.2 hk'⟩
     exact le_biSup (fun k ↦ genWeightSpace M (k • α + χ)) hk'
-  · simp
-  · rw [lie_add]
-    exact add_mem hz₁ hz₂
+  | h0 => simp
+  | hadd _ _ _ _ hz₁ hz₂ => rw [lie_add]; exact add_mem hz₁ hz₂
 
 lemma lie_mem_genWeightSpaceChain_of_genWeightSpace_eq_bot_left [LieAlgebra.IsNilpotent R H]
     (hp : genWeightSpace M (p • α + χ) = ⊥)

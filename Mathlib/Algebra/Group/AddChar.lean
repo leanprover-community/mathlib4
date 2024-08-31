@@ -317,6 +317,14 @@ lemma injective_iff {ψ : AddChar A M} : Injective ψ ↔ ∀ ⦃x⦄, ψ x = 1 
 
 end fromAddGrouptoDivisionCommMonoid
 
+section MonoidWithZero
+variable {A M₀ : Type*} [AddGroup A] [MonoidWithZero M₀] [Nontrivial M₀]
+
+@[simp] lemma coe_ne_zero (ψ : AddChar A M₀) : (ψ : A → M₀) ≠ 0 :=
+  ne_iff.2 ⟨0, fun h ↦ by simpa only [h, Pi.zero_apply, zero_ne_one] using map_zero_eq_one ψ⟩
+
+end MonoidWithZero
+
 /-!
 ## Additive characters of rings
 -/

@@ -668,10 +668,10 @@ def decidableNontrivialCoe : ∀ l : List α, Decidable (Nontrivial (l : Cycle �
     else isTrue ⟨x, y, h, by simp, by simp⟩
 
 instance {s : Cycle α} : Decidable (Nontrivial s) :=
-  Quot.recOnSubsingleton' s decidableNontrivialCoe
+  Quot.recOnSubsingleton s decidableNontrivialCoe
 
 instance {s : Cycle α} : Decidable (Nodup s) :=
-  Quot.recOnSubsingleton' s List.nodupDecidable
+  Quot.recOnSubsingleton s List.nodupDecidable
 
 instance fintypeNodupCycle [Fintype α] : Fintype { s : Cycle α // s.Nodup } :=
   Fintype.ofSurjective (fun l : { l : List α // l.Nodup } => ⟨l.val, by simpa using l.prop⟩)

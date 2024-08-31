@@ -18,7 +18,6 @@ For now, this only contains linters checking
 - existence of module docstrings (in the right place)
 - for certain disallowed imports
 - if the string "adaptation note" is used instead of the command #adaptation_note
-- lines are at most 100 characters long (except for URLs)
 - files are at most 1500 lines long (unless specifically allowed).
 
 For historic reasons, some of these checks are still written in a Python script `lint-style.py`:
@@ -27,10 +26,18 @@ these are gradually being rewritten in Lean.
 This linter maintains a list of exceptions, for legacy reasons.
 Ideally, the length of the list of exceptions tends to 0.
 
+The `longFile` and the `longLine` *syntax* linter take care of flagging lines that exceed the
+100 character limit and files that exceed the 1500 line limit.
+The text-based versions of this file are still used for the files where the linter is not imported.
+This means that the exceptions for the text-based linters are shorter, as they do not need to
+include those handled with `set_option linter.style.longFile x`/`set_option linter.longLine false`.
+
 An executable running all these linters is defined in `scripts/lint-style.lean`.
 -/
 
 open System
+
+namespace Mathlib.Linter.TextBased
 
 /-- Different kinds of "broad imports" that are linted against. -/
 inductive BroadImports
@@ -55,12 +62,12 @@ inductive StyleError where
   /-- Lint against "too broad" imports, such as `Mathlib.Tactic` or any module in `Lake`
   (unless carefully measured) -/
   | broadImport (module : BroadImports)
-  /-- Line longer than 100 characters -/
-  | lineLength (actual : Int) : StyleError
   /-- The current file was too large: this error contains the current number of lines
   as well as a size limit (slightly larger). On future runs, this linter will allow this file
   to grow up to this limit.
-  For diagnostic purposes, this may also contain a previous size limit, which is now exceeded. -/
+  For diagnostic purposes, this may also contain a previous size limit, which is now exceeded.
+  The `longFile` linter implements the line-length check as a syntax linter.
+  This text-based check is present to ensure the limit on files that do not import the linter. -/
   | fileTooLong (numberLines : ℕ) (newSizeLimit : ℕ) (previousLimit : Option ℕ) : StyleError
 deriving BEq
 
@@ -90,7 +97,6 @@ def StyleError.errorMessage (err : StyleError) (style : ErrorFormat) : String :=
       "In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter (see \
       e.g. mathlib4#13779). Please consider carefully if this import is useful and make sure to \
       benchmark it. If this is fine, feel free to allow this linter."
-  | StyleError.lineLength n => s!"Line has {n} characters, which is more than 100"
   | StyleError.fileTooLong currentSize sizeLimit previousLimit =>
     match style with
     | ErrorFormat.github =>
@@ -110,7 +116,6 @@ def StyleError.errorCode (err : StyleError) : String := match err with
   | StyleError.authors => "ERR_AUT"
   | StyleError.adaptationNote => "ERR_ADN"
   | StyleError.broadImport _ => "ERR_IMP"
-  | StyleError.lineLength _ => "ERR_LIN"
   | StyleError.fileTooLong _ _ _ => "ERR_NUM_LIN"
 
 /-- Context for a style error: the actual error, the line number in the file we're reading
@@ -161,7 +166,6 @@ def compare (existing new : ErrorContext) : ComparisonResult :=
   -- We do *not* care about the *kind* of wrong copyright,
   -- nor about the particular length of a too long line.
   | (StyleError.copyright _, StyleError.copyright _) => ComparisonResult.Comparable true
-  | (StyleError.lineLength _, StyleError.lineLength _) => ComparisonResult.Comparable true
   -- In all other cases, `StyleErrors` must compare equal.
   | (a, b) => if a == b then ComparisonResult.Comparable true else ComparisonResult.Different
 
@@ -205,12 +209,6 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
         -- Use default values for parameters which are ignored for comparing style exceptions.
         -- NB: keep this in sync with `compare` above!
         | "ERR_COP" => some (StyleError.copyright none)
-        | "ERR_LIN" =>
-          if let some n := errorMessage.get? 2 then
-            match String.toNat? n with
-              | some n => return StyleError.lineLength n
-              | none => none
-          else none
         | "ERR_AUT" => some (StyleError.authors)
         | "ERR_ADN" => some (StyleError.adaptationNote)
         | "ERR_IMP" =>
@@ -342,15 +340,6 @@ def broadImportsLinter : TextbasedLinter := fun lines ↦ Id.run do
       lineNumber := lineNumber + 1
   return errors
 
-/-- Iterates over a collection of strings, finding all lines which are longer than 101 chars.
-We allow URLs to be longer, though.
--/
-def lineLengthLinter : TextbasedLinter := fun lines ↦ Id.run do
-  let errors := (lines.toList.enumFrom 1).filterMap (fun (lineNumber, line) ↦
-    if line.length > 101 && !line.containsSubstr "http" then
-      some (StyleError.lineLength line.length, lineNumber)
-    else none)
-  errors.toArray
 
 /-- Whether a collection of lines consists *only* of imports, blank lines and single-line comments.
 In practice, this means it's an imports-only file and exempt from almost all linting. -/
@@ -370,17 +359,21 @@ def checkFileLength (lines : Array String) (existingLimit : Option ℕ) : Option
     | some mark => lines.size > mark
     | none => true
     if isLarger then
-      -- We add about 200 lines of slack to the current file size: small PRs will be unaffected,
-      -- but sufficiently large PRs will get nudged towards splitting up this file.
-      return some (StyleError.fileTooLong lines.size
-        ((Nat.div lines.size 100) * 100 + 200) existingLimit)
+      -- If the `longFile` linter is not active on the file, this text-based linter kicks in.
+      if (lines.filter ("set_option linter.style.longFile ".isPrefixOf)).isEmpty then
+        -- We add about 200 lines of slack to the current file size: small PRs will be unaffected,
+        -- but sufficiently large PRs will get nudged towards splitting up this file.
+        return some (StyleError.fileTooLong lines.size
+          ((Nat.div lines.size 100) * 100 + 200) existingLimit)
+      -- Otherwise, the `longFile` linter already manages the exception for this file.
+      else return none
   none
 
 end
 
 /-- All text-based linters registered in this file. -/
 def allLinters : Array TextbasedLinter := #[
-    copyrightHeaderLinter, adaptationNoteLinter, broadImportsLinter, lineLengthLinter
+    copyrightHeaderLinter, adaptationNoteLinter, broadImportsLinter
   ]
 
 /-- Controls what kind of output this programme produces. -/
@@ -409,7 +402,7 @@ def lintFile (path : FilePath) (sizeLimit : Option ℕ) (exceptions : Array Erro
     errors := #[ErrorContext.mk (StyleError.fileTooLong n limit ex) 1 path]
   let allOutput := (Array.map (fun lint ↦
     (Array.map (fun (e, n) ↦ ErrorContext.mk e n path)) (lint lines))) allLinters
-  -- This this list is not sorted: for github, this is fine.
+  -- This list is not sorted: for github, this is fine.
   errors := errors.append
     (allOutput.flatten.filter (fun e ↦ (e.find?_comparable exceptions).isNone))
   return errors
@@ -473,10 +466,12 @@ def lintModules (moduleNames : Array String) (mode : OutputSetting) (fix : Bool)
     -- previous exception if that is preferred.
     let mut tweaked := allUnexpectedErrors.map fun err ↦
       if let some existing := err.find?_comparable styleExceptions then
-        if let ComparisonResult.Comparable (true) := _root_.compare err existing then existing
+        if let ComparisonResult.Comparable (true) := compare err existing then existing
         else err
       else err
     let thisOutput := "\n".intercalate (tweaked.map
         (fun err ↦ outputMessage err ErrorFormat.exceptionsFile)).toList
     IO.FS.writeFile exceptionsFilePath s!"{pythonOutput}{thisOutput}\n"
   return numberErrorFiles
+
+end Mathlib.Linter.TextBased
