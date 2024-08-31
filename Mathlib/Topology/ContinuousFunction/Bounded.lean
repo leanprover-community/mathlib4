@@ -1568,16 +1568,9 @@ lemma exist_norm_eq [c : Nonempty α] {f : α →ᵇ γ} (h : f ∈ C_cb(α, γ)
     simp only [coe_zero]
     exact tsupport_eq_empty_iff.mp hs
 
-theorem compactlySupported_eq_Bounded (h : IsCompact (Set.univ : Set α)) : C_cb(α, γ) =
-    (⊤ : Set (α →ᵇ γ)) := by
-  ext f
-  constructor
-  · intro _
-    trivial
-  · intro _
-    simp only [SetLike.mem_coe]
-    apply (mem_compactlySupported α γ).mpr
-    exact IsCompact.of_isClosed_subset h (isClosed_tsupport f) (subset_univ _)
+theorem compactlySupported_eq_top_of_isCompact (h : IsCompact (Set.univ : Set α)) :
+    C_cb(α, γ) = ⊤ :=
+  eq_top_iff.mpr fun _ _ ↦ h.of_isClosed_subset (isClosed_tsupport _) (subset_univ _)
 
 theorem compactlySupported_eq_top [CompactSpace α] : C_cb(α, γ) = ⊤ :=
   compactlySupported_eq_top_of_isCompact CompactSpace.isCompact_univ
