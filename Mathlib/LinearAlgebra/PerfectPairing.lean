@@ -49,6 +49,9 @@ instance instFunLike : FunLike (PerfectPairing R M N) M (N →ₗ[R] R) where
   coe f := f.toLin
   coe_injective' x y h := by cases x; cases y; simpa using h
 
+lemma toLin_apply (p : PerfectPairing R M N) {x : M} : p.toLin x = p x := by
+  rfl
+
 variable (p : PerfectPairing R M N)
 
 /-- Given a perfect pairing between `M` and `N`, we may interchange the roles of `M` and `N`. -/
@@ -57,7 +60,13 @@ protected def flip : PerfectPairing R N M where
   bijectiveLeft := p.bijectiveRight
   bijectiveRight := p.bijectiveLeft
 
-@[simp] lemma flip_flip : p.flip.flip = p := rfl
+@[simp]
+lemma flip_apply_apply {x : M} {y : N} : p.flip y x = p x y :=
+  rfl
+
+@[simp]
+lemma flip_flip : p.flip.flip = p :=
+  rfl
 
 /-- The linear equivalence from `M` to `Dual R N` induced by a perfect pairing. -/
 noncomputable def toDualLeft : M ≃ₗ[R] Dual R N :=
@@ -83,7 +92,7 @@ theorem toDualRight_apply (a : N) : p.toDualRight a = p.flip a :=
 
 @[simp]
 theorem apply_apply_toDualRight_symm (x : M) (f : Dual R M) :
-    (p.toLin x) (p.toDualRight.symm f) = f x := by
+    (p x) (p.toDualRight.symm f) = f x := by
   have h := LinearEquiv.apply_symm_apply p.toDualRight f
   rw [toDualRight_apply] at h
   exact congrFun (congrArg DFunLike.coe h) x

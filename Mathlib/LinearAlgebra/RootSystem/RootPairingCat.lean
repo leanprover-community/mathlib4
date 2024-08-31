@@ -137,10 +137,7 @@ def reflection_hom {P : RootPairingCat R} (i : P.index) : Hom P P where
     simp only [LinearMap.dualMap_apply, LinearEquiv.coe_coe, LinearEquiv.comp_coe,
       LinearEquiv.trans_apply]
     rw [RootPairing.reflection_apply, RootPairing.coreflection_apply]
-    simp only [map_sub, map_smul, smul_eq_mul, LinearEquiv.apply_symm_apply,
-      PerfectPairing.toDualRight_apply, LinearMap.sub_apply, LinearMap.smul_apply, sub_right_inj]
-    rw [PerfectPairing.apply_apply_toDualRight_symm, ← LinearMap.flip_apply, mul_comm]
-    exact rfl -- I am having defeq problems with .toLin
+    simp [PerfectPairing.toLin_apply, mul_comm]
   root_weight_map := by ext; simp
   coroot_coweight_map := by ext; simp
 
