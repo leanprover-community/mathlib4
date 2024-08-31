@@ -232,7 +232,7 @@ variable [Preorder M]
 
 instance model_preorder : M ⊨ Language.order.preorderTheory := by
   simp only [preorderTheory, Theory.model_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
-    forall_eq_or_imp, Relations.realize_reflexive, relMap_apply₂, forall_eq,
+    forall_eq_or_imp, Relations.realize_reflexive, relMap_leSymb, forall_eq,
     Relations.realize_transitive]
   exact ⟨le_refl, fun _ _ _ => le_trans⟩
 
@@ -260,7 +260,7 @@ end Preorder
 
 instance model_partialOrder [PartialOrder M] : M ⊨ Language.order.partialOrderTheory := by
   simp only [partialOrderTheory, Theory.model_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
-    forall_eq_or_imp, Relations.realize_reflexive, relMap_apply₂, Relations.realize_antisymmetric,
+    forall_eq_or_imp, Relations.realize_reflexive, relMap_leSymb, Relations.realize_antisymmetric,
     forall_eq, Relations.realize_transitive]
   exact ⟨le_refl, fun _ _ => le_antisymm, fun _ _ _ => le_trans⟩
 
@@ -270,15 +270,14 @@ variable [LinearOrder M]
 
 instance model_linearOrder : M ⊨ Language.order.linearOrderTheory := by
   simp only [linearOrderTheory, Theory.model_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
-    forall_eq_or_imp, Relations.realize_reflexive, relMap_apply₂, Relations.realize_antisymmetric,
+    forall_eq_or_imp, Relations.realize_reflexive, relMap_leSymb, Relations.realize_antisymmetric,
     Relations.realize_transitive, forall_eq, Relations.realize_total]
   exact ⟨le_refl, fun _ _ => le_antisymm, fun _ _ _ => le_trans, le_total⟩
 
 instance model_dlo [DenselyOrdered M] [NoTopOrder M] [NoBotOrder M] :
     M ⊨ Language.order.dlo := by
   simp only [dlo, Set.union_insert, Set.union_singleton, Theory.model_iff, Set.mem_insert_iff,
-    forall_eq_or_imp, realize_noTopOrder, realize_noBotOrder, realize_denselyOrdered,
-    true_and_iff]
+    forall_eq_or_imp, realize_noTopOrder, realize_noBotOrder, realize_denselyOrdered, true_and]
   rw [← Theory.model_iff]
   infer_instance
 
