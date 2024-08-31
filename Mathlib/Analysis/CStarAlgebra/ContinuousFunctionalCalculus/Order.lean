@@ -64,6 +64,39 @@ lemma inr_nonneg_iff {a : A} : 0 ≤ (a : Unitization ℂ A) ↔ 0 ≤ a := by
 
 end Unitization
 
+/-- `cfc_le_iff` only applies to a scalar ring where `R` is an actual `Ring`, and not a `Semiring`.
+However, this theorem still holds for `ℝ≥0` as long as the algebra `A` itself is an `ℝ`-algebra. -/
+lemma cfc_nnreal_le_iff {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [PartialOrder A]
+    [StarOrderedRing A] [Algebra ℝ A] [TopologicalRing A] [NonnegSpectrumClass ℝ A]
+    [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
+    [UniqueContinuousFunctionalCalculus ℝ A]
+    (f : ℝ≥0 → ℝ≥0) (g : ℝ≥0 → ℝ≥0) (a : A)
+    (ha_spec : SpectrumRestricts a ContinuousMap.realToNNReal)
+    (hf : ContinuousOn f (spectrum ℝ≥0 a) := by cfc_cont_tac)
+    (hg : ContinuousOn g (spectrum ℝ≥0 a) := by cfc_cont_tac)
+    (ha : 0 ≤ a := by cfc_tac) :
+    cfc f a ≤ cfc g a ↔ ∀ x ∈ spectrum ℝ≥0 a, f x ≤ g x := by
+  have hf' := hf.ofReal_map_toNNReal <| ha_spec.image ▸ Set.mapsTo_image ..
+  have hg' := hg.ofReal_map_toNNReal <| ha_spec.image ▸ Set.mapsTo_image ..
+  rw [cfc_nnreal_eq_real, cfc_nnreal_eq_real, cfc_le_iff ..]
+  simp [NNReal.coe_le_coe, ← ha_spec.image]
+
+/-- In a unital `ℝ`-algebra `A` with a continuous functional calculus, an element `a : A` is larger
+than some `algebraMap ℝ A r` if and only if every element of the `ℝ`-spectrum is nonnegative. -/
+lemma CFC.exists_pos_algebraMap_le_iff {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A]
+    [PartialOrder A] [StarOrderedRing A] [Algebra ℝ A] [NonnegSpectrumClass ℝ A]
+    [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
+    {a : A} [CompactSpace (spectrum ℝ a)]
+    (h_non : (spectrum ℝ a).Nonempty) (ha : IsSelfAdjoint a := by cfc_tac) :
+    (∃ r > 0, algebraMap ℝ A r ≤ a) ↔ (∀ x ∈ spectrum ℝ a, 0 < x) := by
+  have h_cpct : IsCompact (spectrum ℝ a) := isCompact_iff_compactSpace.mpr inferInstance
+  simp_rw [algebraMap_le_iff_le_spectrum (a := a)]
+  refine ⟨?_, fun h ↦ ?_⟩
+  · rintro ⟨r, hr, hr_le⟩
+    exact (hr.trans_le <| hr_le · ·)
+  · obtain ⟨r, hr, hr_min⟩ := h_cpct.exists_isMinOn h_non continuousOn_id
+    exact ⟨r, h _ hr, hr_min⟩
+
 section CStar_unital
 
 variable {A : Type*} [NormedRing A] [StarRing A] [CStarRing A] [CompleteSpace A]
@@ -103,7 +136,9 @@ lemma IsSelfAdjoint.toReal_spectralRadius_eq_norm {a : A} (ha : IsSelfAdjoint a)
     (spectralRadius ℝ a).toReal = ‖a‖ := by
   simp [ha.spectrumRestricts.spectralRadius_eq, ha.spectralRadius_eq_nnnorm]
 
-lemma CStarRing.norm_or_neg_norm_mem_spectrum [Nontrivial A] {a : A}
+namespace CStarRing
+
+lemma norm_or_neg_norm_mem_spectrum [Nontrivial A] {a : A}
     (ha : IsSelfAdjoint a := by cfc_tac) : ‖a‖ ∈ spectrum ℝ a ∨ -‖a‖ ∈ spectrum ℝ a := by
   have ha' : SpectrumRestricts a Complex.reCLM := ha.spectrumRestricts
   rw [← ha.toReal_spectralRadius_eq_norm]
@@ -111,16 +146,48 @@ lemma CStarRing.norm_or_neg_norm_mem_spectrum [Nontrivial A] {a : A}
 
 variable [PartialOrder A] [StarOrderedRing A]
 
-lemma CStarRing.nnnorm_mem_spectrum_of_nonneg [Nontrivial A] {a : A} (ha : 0 ≤ a := by cfc_tac) :
+lemma nnnorm_mem_spectrum_of_nonneg [Nontrivial A] {a : A} (ha : 0 ≤ a := by cfc_tac) :
     ‖a‖₊ ∈ spectrum ℝ≥0 a := by
   have : IsSelfAdjoint a := .of_nonneg ha
   convert NNReal.spectralRadius_mem_spectrum (a := a) ?_ (.nnreal_of_nonneg ha)
   · simp [this.spectrumRestricts.spectralRadius_eq, this.spectralRadius_eq_nnnorm]
   · exact this.spectrumRestricts.image ▸ (spectrum.nonempty a).image _
 
-lemma CStarRing.norm_mem_spectrum_of_nonneg [Nontrivial A] {a : A} (ha : 0 ≤ a := by cfc_tac) :
+lemma norm_mem_spectrum_of_nonneg [Nontrivial A] {a : A} (ha : 0 ≤ a := by cfc_tac) :
     ‖a‖ ∈ spectrum ℝ a := by
-  simpa using spectrum.algebraMap_mem ℝ <| CStarRing.nnnorm_mem_spectrum_of_nonneg ha
+  simpa using spectrum.algebraMap_mem ℝ <| nnnorm_mem_spectrum_of_nonneg ha
+
+lemma norm_le_iff_le_algebraMap (a : A) {r : ℝ} (hr : 0 ≤ r) (ha : 0 ≤ a := by cfc_tac) :
+    ‖a‖ ≤ r ↔ a ≤ algebraMap ℝ A r := by
+  rw [le_algebraMap_iff_spectrum_le]
+  obtain (h | _) := subsingleton_or_nontrivial A
+  · simp [Subsingleton.elim a 0, hr]
+  · exact ⟨fun h x hx ↦ Real.le_norm_self x |>.trans (spectrum.norm_le_norm_of_mem hx) |>.trans h,
+      fun h ↦ h ‖a‖ <| norm_mem_spectrum_of_nonneg⟩
+
+lemma nnnorm_le_iff_of_nonneg (a : A) (r : ℝ≥0) (ha : 0 ≤ a := by cfc_tac) :
+    ‖a‖₊ ≤ r ↔ a ≤ algebraMap ℝ≥0 A r := by
+  rw [← NNReal.coe_le_coe]
+  exact norm_le_iff_le_algebraMap a r.2
+
+lemma norm_le_one_iff_of_nonneg (a : A) (ha : 0 ≤ a := by cfc_tac) :
+    ‖a‖ ≤ 1 ↔ a ≤ 1 := by
+  simpa using norm_le_iff_le_algebraMap a zero_le_one
+
+lemma nnnorm_le_one_iff_of_nonneg (a : A) (ha : 0 ≤ a := by cfc_tac) :
+    ‖a‖₊ ≤ 1 ↔ a ≤ 1 := by
+  rw [← NNReal.coe_le_coe]
+  exact norm_le_one_iff_of_nonneg a
+
+lemma norm_le_natCast_iff_of_nonneg (a : A) (n : ℕ) (ha : 0 ≤ a := by cfc_tac) :
+    ‖a‖ ≤ n ↔ a ≤ n := by
+  simpa using norm_le_iff_le_algebraMap a n.cast_nonneg
+
+lemma nnnorm_le_natCast_iff_of_nonneg (a : A) (n : ℕ) (ha : 0 ≤ a := by cfc_tac) :
+    ‖a‖₊ ≤ n ↔ a ≤ n := by
+  simpa using nnnorm_le_iff_of_nonneg a n
+
+end CStarRing
 
 end CStar_unital
 
@@ -130,13 +197,15 @@ variable {A : Type*} [NonUnitalNormedRing A] [CompleteSpace A] [PartialOrder A] 
   [StarOrderedRing A] [CStarRing A] [NormedSpace ℂ A] [StarModule ℂ A]
   [SMulCommClass ℂ A A] [IsScalarTower ℂ A A]
 
+namespace CStarRing
+
 open ComplexOrder in
-instance CStarRing.instNonnegSpectrumClassComplexNonUnital : NonnegSpectrumClass ℂ A where
+instance instNonnegSpectrumClassComplexNonUnital : NonnegSpectrumClass ℂ A where
   quasispectrum_nonneg_of_nonneg a ha x hx := by
     rw [Unitization.quasispectrum_eq_spectrum_inr' ℂ ℂ a] at hx
     exact spectrum_nonneg_of_nonneg (Unitization.inr_nonneg_iff.mpr ha) hx
 
-lemma CStarRing.norm_le_norm_of_nonneg_of_le {a b : A} (ha : 0 ≤ a := by cfc_tac) (hab : a ≤ b) :
+lemma norm_le_norm_of_nonneg_of_le {a b : A} (ha : 0 ≤ a := by cfc_tac) (hab : a ≤ b) :
     ‖a‖ ≤ ‖b‖ := by
   suffices ∀ a b : Unitization ℂ A, 0 ≤ a → a ≤ b → ‖a‖ ≤ ‖b‖ by
     have hb := ha.trans hab
@@ -156,7 +225,7 @@ lemma CStarRing.norm_le_norm_of_nonneg_of_le {a b : A} (ha : 0 ≤ a := by cfc_t
   rw [cfc_le_iff id (fun _ => ‖b‖) a] at h₂
   exact h₂ ‖a‖ <| norm_mem_spectrum_of_nonneg ha
 
-lemma CStarRing.conjugate_le_norm_smul {a b : A} (hb : IsSelfAdjoint b := by cfc_tac) :
+lemma conjugate_le_norm_smul {a b : A} (hb : IsSelfAdjoint b := by cfc_tac) :
     star a * b * a ≤ ‖b‖ • (star a * a) := by
   suffices ∀ a b : Unitization ℂ A, IsSelfAdjoint b → star a * b * a ≤ ‖b‖ • (star a * a) by
     rw [← Unitization.inr_le_iff _ _ (by aesop) ((IsSelfAdjoint.all _).smul (.star_mul_self a))]
@@ -167,11 +236,13 @@ lemma CStarRing.conjugate_le_norm_smul {a b : A} (hb : IsSelfAdjoint b := by cfc
       conjugate_le_conjugate hb.le_algebraMap_norm_self _
     _ = ‖b‖ • (star a * a) := by simp [Algebra.algebraMap_eq_smul_one]
 
-lemma CStarRing.conjugate_le_norm_smul' {a b : A} (hb : IsSelfAdjoint b := by cfc_tac) :
+lemma conjugate_le_norm_smul' {a b : A} (hb : IsSelfAdjoint b := by cfc_tac) :
     a * b * star a ≤ ‖b‖ • (a * star a) := by
   have h₁ : a * b * star a = star (star a) * b * star a := by simp
   have h₂ : a * star a = star (star a) * star a := by simp
   simp only [h₁, h₂]
   exact conjugate_le_norm_smul
+
+end CStarRing
 
 end CStar_nonunital
