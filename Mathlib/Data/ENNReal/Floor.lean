@@ -134,7 +134,7 @@ lemma floor_eq_natFloor_toNNReal (x_ne_top : x ≠ ∞) :
 
 lemma floor_lt_top {x : ℝ≥0∞} (x_ne_top : x ≠ ∞) :
     ⌊x⌋ᵢ < ∞ := by
-  simpa [floor_eq_natFloor_toNNReal x_ne_top] using (natCast_ne_top ⌊x.toNNReal⌋₊).symm.lt_top'
+  simp [floor_eq_natFloor_toNNReal x_ne_top]
 
 @[simp] lemma floor_add_one {x : ℝ≥0∞} :
     ⌊x + 1⌋ᵢ = ⌊x⌋ᵢ + 1 := by
