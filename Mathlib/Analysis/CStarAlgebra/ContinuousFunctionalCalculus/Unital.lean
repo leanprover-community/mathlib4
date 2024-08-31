@@ -908,6 +908,14 @@ lemma one_le_cfc (f : R → R) (a : A) (h : ∀ x ∈ spectrum R a, 1 ≤ f x)
     1 ≤ cfc f a := by
   simpa using algebraMap_le_cfc f 1 a h
 
+lemma CFC.le_one {a : A} (h : ∀ x ∈ spectrum R a, x ≤ 1) (ha : p a := by cfc_tac) :
+    a ≤ 1 := by
+  simpa using le_algebraMap_of_spectrum_le h
+
+lemma CFC.one_le {a : A} (h : ∀ x ∈ spectrum R a, 1 ≤ x) (ha : p a := by cfc_tac) :
+    1 ≤ a := by
+  simpa using algebraMap_le_of_le_spectrum h
+
 end Semiring
 
 section NNReal
@@ -931,7 +939,7 @@ variable {R A : Type*} {p : A → Prop} [OrderedCommRing R] [StarRing R]
 variable [MetricSpace R] [TopologicalRing R] [ContinuousStar R]
 variable [∀ (α) [TopologicalSpace α], StarOrderedRing C(α, R)]
 variable [TopologicalSpace A] [Ring A] [StarRing A] [PartialOrder A] [StarOrderedRing A]
-variable [Algebra R A] [ContinuousFunctionalCalculus R p]
+variable [Algebra R A] [instCFC : ContinuousFunctionalCalculus R p]
 variable [NonnegSpectrumClass R A]
 
 lemma cfcHom_le_iff {a : A} (ha : p a) {f g : C(spectrum R a, R)} :
@@ -948,6 +956,44 @@ lemma cfc_nonpos_iff (f : R → R) (a : A) (hf : ContinuousOn f (spectrum R a) :
     (ha : p a := by cfc_tac) : cfc f a ≤ 0 ↔ ∀ x ∈ spectrum R a, f x ≤ 0 := by
   simp_rw [← neg_nonneg, ← cfc_neg]
   exact cfc_nonneg_iff (fun x ↦ -f x) a
+
+lemma cfc_le_algebraMap_iff (f : R → R) (r : R) (a : A)
+    (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) (ha : p a := by cfc_tac) :
+    cfc f a ≤ algebraMap R A r ↔ ∀ x ∈ spectrum R a, f x ≤ r := by
+  rw [← cfc_const r a, cfc_le_iff ..]
+
+lemma algebraMap_le_cfc_iff (f : R → R) (r : R) (a : A)
+    (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) (ha : p a := by cfc_tac) :
+    algebraMap R A r ≤ cfc f a ↔ ∀ x ∈ spectrum R a, r ≤ f x := by
+  rw [← cfc_const r a, cfc_le_iff ..]
+
+lemma le_algebraMap_iff_spectrum_le {r : R} {a : A} (ha : p a := by cfc_tac) :
+    a ≤ algebraMap R A r ↔ ∀ x ∈ spectrum R a, x ≤ r := by
+  nth_rw 1 [← cfc_id R a]
+  exact cfc_le_algebraMap_iff id r a
+
+lemma algebraMap_le_iff_le_spectrum {r : R} {a : A} (ha : p a := by cfc_tac) :
+    algebraMap R A r ≤ a ↔ ∀ x ∈ spectrum R a, r ≤ x:= by
+  nth_rw 1 [← cfc_id R a]
+  exact algebraMap_le_cfc_iff id r a
+
+lemma cfc_le_one_iff (f : R → R) (a : A)
+    (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) (ha : p a := by cfc_tac) :
+    cfc f a ≤ 1 ↔ ∀ x ∈ spectrum R a, f x ≤ 1 := by
+  simpa using cfc_le_algebraMap_iff f 1 a
+
+lemma one_le_cfc_iff (f : R → R) (a : A)
+    (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) (ha : p a := by cfc_tac) :
+    1 ≤ cfc f a ↔ ∀ x ∈ spectrum R a, 1 ≤ f x := by
+  simpa using algebraMap_le_cfc_iff f 1 a
+
+lemma CFC.le_one_iff (a : A) (ha : p a := by cfc_tac) :
+    a ≤ 1 ↔ ∀ x ∈ spectrum R a, x ≤ 1 := by
+  simpa using le_algebraMap_iff_spectrum_le (r := (1 : R)) (a := a)
+
+lemma CFC.one_le_iff (a : A) (ha : p a := by cfc_tac) :
+    1 ≤ a ↔ ∀ x ∈ spectrum R a, 1 ≤ x := by
+  simpa using algebraMap_le_iff_le_spectrum (r := (1 : R)) (a := a)
 
 end Ring
 
