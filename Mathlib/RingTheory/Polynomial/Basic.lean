@@ -1255,3 +1255,21 @@ theorem Polynomial.exists_monic_irreducible_factor {F : Type*} [Field F] (f : F[
   have ha : Associated g (g * C g.leadingCoeff⁻¹) := associated_mul_unit_right _ _ <|
     isUnit_C.2 (leadingCoeff_ne_zero.2 hi.ne_zero).isUnit.inv
   exact ⟨_, monic_mul_leadingCoeff_inv hi.ne_zero, ha.irreducible hi, ha.dvd_iff_dvd_left.1 hf⟩
+
+/-- If  `k` is any field, we say that two polynomails in `k[x]` are relatively prime
+if they generate the unit ideal in `k[x]`.
+[Stacks: Definition 09GX, first part] (https://stacks.math.columbia.edu/tag/09GX)-/
+def IsRelprime  {k : Type*} [Field k] (p q : Polynomial k): Prop :=
+    Ideal.span {p, q} = ⊤
+/--Two polynomails in `k[x]` are relatively prime
+  iff they are coprime. -/
+theorem relprime_iff_coprime {k : Type*} [Field k] {p q: Polynomial k} :
+    IsRelprime p q ↔ IsCoprime p q := by
+  constructor
+  · intro h
+    simp only [IsRelprime] at h
+    have : 1 ∈ Ideal.span {p, q} := (Ideal.eq_top_iff_one (Ideal.span {p, q})).mp h
+    simpa only [IsCoprime, ← Ideal.mem_span_pair]
+  · intro h
+    rw [IsCoprime, ← Ideal.mem_span_pair] at h
+    simpa only [Ideal.eq_top_iff_one, IsRelprime]

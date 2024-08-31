@@ -416,4 +416,38 @@ instance [CharZero k] : CharZero (AlgebraicClosure k) :=
 instance {p : ℕ} [CharP k p] : CharP (AlgebraicClosure k) p :=
   charP_of_injective_algebraMap (RingHom.injective (algebraMap k (AlgebraicClosure k))) p
 
+/-- Let `F` be a field. Let `p > 0` be the characteristic of `F`. Let `P` be a polynomial over `F`.
+Then the set of roots of `P` and `P(xᵖ)` in the algebraic closure of `F` have the same cardinality
+(not counting multiplicity).
+[Stacks: Lemma 09H4, first part](https://stacks.math.columbia.edu/tag/09H4) -/
+theorem rootSet_expand_card_eq {F : Type*} [Field F] (p : ℕ) (P : Polynomial F) (p_pos : 0 < p )
+[CharP F p] :
+    Fintype.card (P.rootSet (AlgebraicClosure F)) =
+    Fintype.card ((P.comp (X ^ p)).rootSet (AlgebraicClosure F)) := by
+  symm ; apply Fintype.card_congr
+  apply Equiv.ofBijective fun x => ⟨x ^ p, by
+    obtain ⟨h1, h2⟩ := Polynomial.mem_rootSet.1 x.2
+    apply (mem_rootSet_of_ne ?_).2
+    · simp_all only [aeval_comp, aeval_X_pow, aeval_X]
+    · exact (expand_ne_zero p_pos).1 h1 ⟩
+  constructor
+  · intro x y hxy
+    simp only [Subtype.mk.injEq] at hxy
+    apply SetCoe.ext
+    replace hxy : (x.1 - y.1) ^ p = 0 := by
+      haveI : Fact (Nat.Prime p) := ⟨char_prime_of_ne_zero F (ne_of_gt p_pos)⟩
+      simp only [sub_pow_char , hxy, sub_self]
+    exact sub_eq_zero.1 (pow_eq_zero hxy)
+  · intro h
+    obtain ⟨h1, h2⟩ := Polynomial.mem_rootSet.1 h.2
+    obtain ⟨a, ha⟩ := IsAlgClosed.exists_pow_nat_eq h.1 p_pos
+    simp only [Subtype.exists]
+    use a
+    have : (a ∈ (P.comp (X ^ p)).rootSet (AlgebraicClosure F)) := by
+        apply (mem_rootSet_of_ne ?_).2
+        · simpa only [aeval_comp, aeval_X_pow, aeval_X, ha]
+        · exact (expand_ne_zero p_pos).2 h1
+    use this
+    simp_all only [ne_eq, Subtype.coe_eta]
+
 end AlgebraicClosure
