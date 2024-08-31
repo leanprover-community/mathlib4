@@ -342,7 +342,6 @@ def liftOrderEmbedding : Cardinal.{v} ↪o Cardinal.{max v u} :=
 theorem lift_injective : Injective lift.{u, v} :=
   lift.toOrderEmbedding.injective
 
-@[simp]
 theorem lift_inj {a b : Cardinal.{u}} : lift.{v, u} a = lift.{v, u} b ↔ a = b :=
   lift_injective.eq_iff
 
