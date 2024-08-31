@@ -222,8 +222,7 @@ theorem lfpApprox_le_of_mem_fixedPoints {a : α}
     | inl h_y =>
       let ⟨j, h_j_lt, h_j⟩ := h_y
       rw [← h_j, ← h_a]
-      apply f.monotone'
-      exact IH j h_j_lt
+      apply f.monotone' (IH j h_j_lt)
     | inr h_y =>
       rw [h_y]
       exact h_le_init
