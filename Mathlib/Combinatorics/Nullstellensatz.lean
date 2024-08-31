@@ -650,7 +650,7 @@ theorem euclDivd [LinearOrder σ] (S : σ → Finset R) (Sne : ∀ i, (S i).None
     split_ifs with h
     · simp [h]
     · simp [sub_zero, Ne.symm h]
-  haveI hf'D : f'.lexHomDegree < f.lexHomDegree := by 
+  haveI hf'D : f'.lexHomDegree < f.lexHomDegree := by
     rw [hd]
     unfold lexHomDegree
     rw [Finset.sup_lt_iff]
@@ -831,7 +831,7 @@ theorem euclDivd [LinearOrder σ] (S : σ → Finset R) (Sne : ∀ i, (S i).None
       simp only [sup_lt_iff]
       exact ⟨Hr' i, Hr'' i⟩
 termination_by LexHom.wellFoundedLT.wf.wrap f.lexHomDegree
-decreasing_by 
+decreasing_by
 · change f'.lexHomDegree < f.lexHomDegree
   rw [hd]
   unfold lexHomDegree
@@ -841,7 +841,7 @@ decreasing_by
     rw [lt_iff_le_and_ne, ← hd]
     exact ⟨le_lexHomDegree hc.2, fun h ↦ hc.1 (toLexHom.injective h)⟩
   · exact Ne.bot_lt' fun a ↦ hD0 a.symm
-· change f''.lexHomDegree < f.lexHomDegree 
+· change f''.lexHomDegree < f.lexHomDegree
   rw [LexHom.lt_iff]
   left
   simp only [lexHomDegree_degree]
