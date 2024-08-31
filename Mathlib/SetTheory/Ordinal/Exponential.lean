@@ -25,9 +25,6 @@ namespace Ordinal
 instance pow : Pow Ordinal Ordinal :=
   ⟨fun a b => if a = 0 then 1 - b else limitRecOn b 1 (fun _ IH => IH * a) fun b _ => bsup.{u, u} b⟩
 
--- Porting note: Ambiguous notations.
--- local infixr:0 "^" => @Pow.pow Ordinal Ordinal Ordinal.instPowOrdinalOrdinal
-
 theorem opow_def (a b : Ordinal) :
     a ^ b = if a = 0 then 1 - b else limitRecOn b 1 (fun _ IH => IH * a) fun b _ => bsup.{u, u} b :=
   rfl
@@ -95,6 +92,12 @@ theorem opow_eq_zero {a b : Ordinal} : a ^ b = 0 ↔ a = 0 ∧ b ≠ 0 := by
     · simp
     · simp [hb]
   · simp [opow_ne_zero b ha, ha]
+
+@[simp, norm_cast]
+theorem opow_natCast (a : Ordinal) (n : ℕ) : a ^ (n : Ordinal) = a ^ n := by
+  induction n with
+  | zero => rw [Nat.cast_zero, opow_zero, pow_zero]
+  | succ n IH => rw [Nat.cast_succ, add_one_eq_succ, opow_succ, pow_succ, IH]
 
 theorem opow_isNormal {a : Ordinal} (h : 1 < a) : IsNormal (a ^ ·) :=
   have a0 : 0 < a := zero_lt_one.trans h
@@ -438,8 +441,9 @@ theorem natCast_opow (m : ℕ) : ∀ n : ℕ, ↑(m ^ n : ℕ) = (m : Ordinal) ^
 @[deprecated (since := "2024-04-17")]
 alias nat_cast_opow := natCast_opow
 
-theorem sup_opow_nat {o : Ordinal} (ho : 0 < o) : (sup fun n : ℕ => o ^ (n : Ordinal)) = o ^ ω := by
-  rcases lt_or_eq_of_le (one_le_iff_pos.2 ho) with (ho₁ | rfl)
+theorem sup_opow_nat {o : Ordinal} (ho : 0 < o) : (sup fun n : ℕ => o ^ n) = o ^ ω := by
+  simp_rw [← opow_natCast]
+  rcases (one_le_iff_pos.2 ho).lt_or_eq with ho₁ | rfl
   · exact (opow_isNormal ho₁).apply_omega
   · rw [one_opow]
     refine le_antisymm (sup_le fun n => by rw [one_opow]) ?_

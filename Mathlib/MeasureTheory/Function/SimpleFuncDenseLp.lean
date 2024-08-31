@@ -293,7 +293,7 @@ theorem measure_preimage_lt_top_of_memℒp (hp_pos : p ≠ 0) (hp_ne_top : p ≠
   rw [eLpNorm_eq_eLpNorm' hp_pos hp_ne_top, f.eLpNorm'_eq, one_div,
     ← @ENNReal.lt_rpow_inv_iff _ _ p.toReal⁻¹ (by simp [hp_pos_real]),
     @ENNReal.top_rpow_of_pos p.toReal⁻¹⁻¹ (by simp [hp_pos_real]),
-    ENNReal.sum_lt_top_iff] at hf_eLpNorm
+    ENNReal.sum_lt_top] at hf_eLpNorm
   by_cases hyf : y ∈ f.range
   swap
   · suffices h_empty : f ⁻¹' {y} = ∅ by
@@ -322,11 +322,11 @@ theorem memℒp_of_finite_measure_preimage (p : ℝ≥0∞) {f : α →ₛ E}
   · rw [hp_top]; exact memℒp_top f μ
   refine ⟨f.aestronglyMeasurable, ?_⟩
   rw [eLpNorm_eq_eLpNorm' hp0 hp_top, f.eLpNorm'_eq]
-  refine ENNReal.rpow_lt_top_of_nonneg (by simp) (ENNReal.sum_lt_top_iff.mpr fun y _ => ?_).ne
+  refine ENNReal.rpow_lt_top_of_nonneg (by simp) (ENNReal.sum_lt_top.mpr fun y _ => ?_).ne
   by_cases hy0 : y = 0
   · simp [hy0, ENNReal.toReal_pos hp0 hp_top]
-  · refine ENNReal.mul_lt_top ?_ (hf y hy0).ne
-    exact (ENNReal.rpow_lt_top_of_nonneg ENNReal.toReal_nonneg ENNReal.coe_ne_top).ne
+  · refine ENNReal.mul_lt_top ?_ (hf y hy0)
+    exact ENNReal.rpow_lt_top_of_nonneg ENNReal.toReal_nonneg ENNReal.coe_ne_top
 
 theorem memℒp_iff {f : α →ₛ E} (hp_pos : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     Memℒp f p μ ↔ ∀ y, y ≠ 0 → μ (f ⁻¹' {y}) < ∞ :=
@@ -369,7 +369,7 @@ theorem measure_preimage_lt_top_of_integrable (f : α →ₛ E) (hf : Integrable
 theorem measure_support_lt_top [Zero β] (f : α →ₛ β) (hf : ∀ y, y ≠ 0 → μ (f ⁻¹' {y}) < ∞) :
     μ (support f) < ∞ := by
   rw [support_eq]
-  refine (measure_biUnion_finset_le _ _).trans_lt (ENNReal.sum_lt_top_iff.mpr fun y hy => ?_)
+  refine (measure_biUnion_finset_le _ _).trans_lt (ENNReal.sum_lt_top.mpr fun y hy => ?_)
   rw [Finset.mem_filter] at hy
   exact hf y hy.2
 

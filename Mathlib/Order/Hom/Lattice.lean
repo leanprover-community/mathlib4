@@ -1660,3 +1660,5 @@ def withTopWithBot' [BoundedOrder β] (f : LatticeHom α β) :
   map_bot' := rfl
 
 end LatticeHom
+
+set_option linter.style.longFile 1800
