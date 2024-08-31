@@ -391,7 +391,7 @@ lemma mutuallySingular_singularPart (κ η : Kernel α γ) [IsFiniteKernel κ] [
     measure_mutuallySingularSetSlice κ η a, singularPart_compl_mutuallySingularSetSlice κ η a⟩
 
 /-- Lebesgue decomposition of a finite kernel `κ` with respect to another one `η`.
-`κ` is the sum of an abolutely continuous part `withDensity η (rnDeriv κ η)` and a singular part
+`κ` is the sum of an absolutely continuous part `withDensity η (rnDeriv κ η)` and a singular part
 `singularPart κ η`. -/
 lemma rnDeriv_add_singularPart (κ η : Kernel α γ) [IsFiniteKernel κ] [IsFiniteKernel η] :
     withDensity η (rnDeriv κ η) + singularPart κ η = κ := by
