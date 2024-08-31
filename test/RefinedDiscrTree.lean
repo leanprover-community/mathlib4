@@ -1,8 +1,5 @@
 import Mathlib.Lean.Meta.RefinedDiscrTree.Encode
-import Qq
-import Mathlib.Data.Rat.Defs
-import Mathlib.GroupTheory.GroupAction.Basic
-
+import Mathlib
 
 open Qq Lean Meta RefinedDiscrTree
 
@@ -80,9 +77,10 @@ run_meta do
 #guard_msgs in
 # fun x : Nat => x
 
-/-- info: @Function.Bijective ℕ ℕ (@id ℕ) -/
+open BigOperators Finset in
+/-- info: @Finset.sum ℕ ℕ *0 (range 10) (@id ℕ) -/
 #guard_msgs in
-# Function.Bijective fun x : Nat => x
+# ∑ i in range 10, i
 
 /-- info: @Nat.fold ℕ (@HAdd.hAdd (ℕ → ℕ → ℕ) (ℕ → ℕ → ℕ) *0 *1 (λ, @id ℕ) (λ, λ, #1)) 10 1 -/
 #guard_msgs in

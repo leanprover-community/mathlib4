@@ -151,7 +151,7 @@ where
 /-- Add to the stack the match with `key`. -/
 private def matchKey (key : Key) (children : HashMap Key TrieIndex) (pMatch : PartialMatch)
     (todo : Array PartialMatch) : Array PartialMatch :=
-  if let .opaque := key then todo else
+  if key matches .opaque then todo else
   match children.find? key with
   | none      => todo
   | some trie => todo.push { pMatch with trie, score := pMatch.score + 1 }

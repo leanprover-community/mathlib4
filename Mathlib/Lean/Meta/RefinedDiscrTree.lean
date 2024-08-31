@@ -107,18 +107,18 @@ private def treeCtx (ctx : Core.Context) : Core.Context := {
   }
 
 def findImportMatches
-      (ext : EnvExtension (IO.Ref (Option (RefinedDiscrTree α))))
-      (addEntry : Name → ConstantInfo → MetaM (Array (Key × LazyEntry α)))
-      (droppedKeys : List (List RefinedDiscrTree.Key) := [])
-      (constantsPerTask : Nat := 1000)
-      (ty : Expr) : MetaM (MatchResult α) := do
+    (ext : EnvExtension (IO.Ref (Option (RefinedDiscrTree α))))
+    (addEntry : Name → ConstantInfo → MetaM (Array (Key × LazyEntry α)))
+    (droppedKeys : List (List RefinedDiscrTree.Key) := [])
+    (constantsPerTask : Nat := 1000)
+    (ty : Expr) : MetaM (MatchResult α) := do
   let cctx ← (read : CoreM Core.Context)
   let ngen ← getNGen
   let (cNGen, ngen) := ngen.mkChild
   setNGen ngen
   let dummy : IO.Ref (Option (RefinedDiscrTree α)) ← IO.mkRef none
   let ref := @EnvExtension.getState _ ⟨dummy⟩ ext (← getEnv)
-  let importTree ← (←ref.get).getDM $ do
+  let importTree ← (← ref.get).getDM $ do
     profileitM Exception  "lazy discriminator import initialization" (←getOptions) <|
       createImportedDiscrTree (treeCtx cctx) cNGen (← getEnv) addEntry droppedKeys
                 (constantsPerTask := constantsPerTask)
