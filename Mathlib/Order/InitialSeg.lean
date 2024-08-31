@@ -255,6 +255,11 @@ noncomputable def _root_.InitialSeg.toPrincipalSeg [IsWellOrder β s] (f : r ≼
   let H := f.eq_or_principal.resolve_left hf
   ⟨f, Classical.choose H, Classical.choose_spec H⟩
 
+@[simp]
+theorem _root_.InitialSeg.toPrincipalSeg_apply [IsWellOrder β s] (f : r ≼i s)
+    (hf : ¬ Surjective f) (x : α) : f.toPrincipalSeg hf x = f x :=
+  rfl
+
 theorem irrefl {r : α → α → Prop} [IsWellOrder α r] (f : r ≺i r) : False := by
   have h := f.lt_top f.top
   rw [show f f.top = f.top from InitialSeg.eq (↑f) (InitialSeg.refl r) f.top] at h
