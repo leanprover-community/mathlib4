@@ -18,8 +18,8 @@ first-price and second-price auctions, as well as several fundamental results an
 - `maxBid`: Function that computes the highest bid given a bidding function.
 - `winner`: Identifies the winner of the auction as the bidder with the highest bid.
 - `maxBidExcluding`: Function that computes the highest bid excluding a given participant.
-- `dominant`: Defines a dominant strategy in the context of a auction.
-- `Secondprice`: Computes the second highest bid in the auction.
+- `Dominant`: Defines a dominant strategy in the context of a auction.
+- `secondPrice`: Computes the second highest bid in the auction.
 - `Secondprice.utility`: Computes the utility of each bidder based on the outcome of the auction.
 - `Firstprice.utility`: Computes the utility for a first price auction.
 
@@ -34,7 +34,6 @@ first-price and second-price auctions, as well as several fundamental results an
 - `eq_winner_of_bid_gt`: If `i`'s bid is higher than all other bids, then `i` wins.
 - `exists_maxBid`: There exists a participant whose bid matches the highest bid
 - `bid_winner_eq_maxBid`: The winner's bid is the highest.
-- `winnerbid_ge_second`: The winner's bid is at least the second highest bid.
 - `Secondprice.utility_winner`: If `i` wins, utility is the valuation minus the second highest bid.
 - `Secondprice.utility_loser`: If `i` does not win, their utility is 0.
 - `bid_le_bid_winner`: The winner's bid is greater than or equal to all other bids.
@@ -88,7 +87,7 @@ lemma bid_le_bid_winner (j : I) : b j ≤ b (winner b) := by
   exact Finset.le_sup' b (Finset.mem_univ j)
 
 /-- If `i`'s bid is higher than all other bids, then `i` is the winner. -/
-lemma eq_winner_of_bid_gt (i : I) (H : ∀ j , j ≠ i → b j < b i) : i = winner b := by
+lemma eq_winner_of_bid_gt (i : I) (H : ∀ j, j ≠ i → b j < b i) : i = winner b := by
   contrapose! H
   exact ⟨winner b, H.symm, bid_le_bid_winner b i⟩
 
@@ -105,7 +104,7 @@ namespace Firstprice
 
 /-- Computes the utility for a first price auction where the winner pays their bid. -/
 @[simp]
-noncomputable def utility [DecidableEq I] (v b : I → ℝ) (i : I) : ℝ :=
+noncomputable def utility (v b : I → ℝ) (i : I) : ℝ :=
     if i = winner b then v i - b i else 0
 
 /-- If `i` is the winner in a first price auction, utility is their valuation minus their bid. -/
