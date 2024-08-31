@@ -2866,7 +2866,6 @@ import Mathlib.Lean.Meta.RefinedDiscrTree.Pi
 import Mathlib.Lean.Meta.Simp
 import Mathlib.Lean.Name
 import Mathlib.Lean.PrettyPrinter.Delaborator
-import Mathlib.Lean.SubExpr
 import Mathlib.Lean.Thunk
 import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
