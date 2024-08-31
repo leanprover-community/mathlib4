@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Sites.CoverLifting
+import Mathlib.CategoryTheory.Sites.CoverPreserving
 
 /-! Localization
 
@@ -76,7 +77,7 @@ lemma overEquiv_pullback {X : C} {Y₁ Y₂ : Over X} (f : Y₁ ⟶ Y₂) (S : S
     let T := Over.mk (b ≫ W.hom)
     let c : T ⟶ Y₁ := Over.homMk g (by dsimp [T]; rw [← Over.w a, ← reassoc_of% w, Over.w f])
     let d : T ⟶ W := Over.homMk b
-    refine' ⟨T, c, 𝟙 Z, _, by simp [c]⟩
+    refine ⟨T, c, 𝟙 Z, ?_, by simp [c]⟩
     rw [show c ≫ f = d ≫ a by ext; exact w]
     exact S.downward_closed h _
 
@@ -198,5 +199,11 @@ abbrev overMapPullback (A : Type u') [Category.{v'} A] {X Y : C} (f : X ⟶ Y) :
   (Over.map f).sheafPushforwardContinuous _ _ _
 
 end GrothendieckTopology
+
+variable {J}
+
+/-- Given `F : Sheaf J A` and `X : C`, this is the pullback of `F` on `J.over X`. -/
+abbrev Sheaf.over {A : Type u'} [Category.{v'} A] (F : Sheaf J A) (X : C) :
+    Sheaf (J.over X) A := (J.overPullback A X).obj F
 
 end CategoryTheory

@@ -21,6 +21,7 @@ in the do block are combined.
 
 -/
 
+import Mathlib.Init
 /-! StateList -/
 
 namespace Mathlib.Meta.FunProp
@@ -83,8 +84,7 @@ def StateListT.run' [Functor m] (x : StateListT σ m α) (s : σ) : m (List α) 
   StateList.toList' <$> x s
 
 /-- The combined state and list monad. -/
-@[reducible]
-def StateListM (σ α : Type u) : Type u := StateListT σ Id α
+abbrev StateListM (σ α : Type u) : Type u := StateListT σ Id α
 
 namespace StateListT
 section
@@ -169,3 +169,5 @@ instance StateListT.monadControl : MonadControl m (StateListT σ m) where
   stM      := StateList σ
   liftWith := fun f => do let s ← get; liftM (f (fun x => x s))
   restoreM := fun x _ => x
+
+end Mathlib.Meta.FunProp

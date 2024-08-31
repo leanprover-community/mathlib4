@@ -3,43 +3,61 @@ Copyright (c) 2023 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
+import Mathlib.Init
 import Lean.HeadIndex
 import Lean.Meta.ExprLens
 import Lean.Meta.Check
-/-! # Find the positions of a pattern in an expression -/
+
+/-!
+
+# Find the positions of a pattern in an expression
+
+This file defines some tools for dealing with sub expressions and occurrence numbers.
+This is used for creating a `rw` tactic call that rewrites a selected expression.
+
+`viewKAbstractSubExpr` takes an expression and a position in the expression, and returns
+the sub-expression together with an optional occurrence number that would be required to find
+the sub-expression using `kabstract` (which is what `rw` uses to find the position of the rewrite)
+
+`rw` can fail if the motive is not type correct. `kabstractIsTypeCorrect` checks
+whether this is the case.
+
+-/
 
 namespace Lean.Meta
 
-/-- Return the positions that `kabstract` would abstract.
-i.e. the positions that unify with the pattern -/
+/-- Return the positions that `kabstract` would abstract for pattern `p` in expression `e`.
+i.e. the positions that unify with `p`. -/
 def kabstractPositions (p e : Expr) : MetaM (Array SubExpr.Pos) := do
   let e ← instantiateMVars e
   let mctx ← getMCtx
   let pHeadIdx := p.toHeadIndex
   let pNumArgs := p.headNumArgs
   let rec
-  /-- The main loop that loops though all subexpressions -/
+  /-- The main loop that loops through all subexpressions -/
   visit (e : Expr) (pos : SubExpr.Pos) (positions : Array SubExpr.Pos) :
       MetaM (Array SubExpr.Pos) := do
     let visitChildren : Array SubExpr.Pos → MetaM (Array SubExpr.Pos) :=
       match e with
-      | .app f a         => visit f pos.pushAppFn
-                        >=> visit a pos.pushAppArg
-      | .mdata _ b       => visit b pos
-      | .proj _ _ b      => visit b pos.pushProj
-      | .letE _ t v b _  => visit t pos.pushLetVarType
-                        >=> visit v pos.pushLetValue
-                        >=> visit b pos.pushLetBody
-      | .lam _ d b _     => visit d pos.pushBindingDomain
-                        >=> visit b pos.pushBindingBody
-      | .forallE _ d b _ => visit d pos.pushBindingDomain
-                        >=> visit b pos.pushBindingBody
-      | _                => pure
-    if e.hasLooseBVars || e.toHeadIndex != pHeadIdx || e.headNumArgs != pNumArgs then
+      | .app fn arg                  => visit fn pos.pushAppFn
+                                    >=> visit arg pos.pushAppArg
+      | .mdata _ expr                => visit expr pos
+      | .proj _ _ struct             => visit struct pos.pushProj
+      | .letE _ type value body _    => visit type pos.pushLetVarType
+                                    >=> visit value pos.pushLetValue
+                                    >=> visit body pos.pushLetBody
+      | .lam _ binderType body _     => visit binderType pos.pushBindingDomain
+                                    >=> visit body pos.pushBindingBody
+      | .forallE _ binderType body _ => visit binderType pos.pushBindingDomain
+                                    >=> visit body pos.pushBindingBody
+      | _                            => pure
+    if e.hasLooseBVars then
+      visitChildren positions
+    else if e.toHeadIndex != pHeadIdx || e.headNumArgs != pNumArgs then
       visitChildren positions
     else
-      if (← isDefEq e p) then
-        setMCtx mctx
+      if ← isDefEq e p then
+        setMCtx mctx -- reset the `MetavarContext` because `isDefEq` can modify it if it succeeds
         visitChildren (positions.push pos)
       else
         visitChildren positions
@@ -69,3 +87,5 @@ example (h : [5] ≠ []) : List.getLast [5] h = 5 := by
 def kabstractIsTypeCorrect (e subExpr : Expr) (pos : SubExpr.Pos) : MetaM Bool := do
   withLocalDeclD `_a (← inferType subExpr) fun fvar => do
     isTypeCorrect (← replaceSubexpr (fun _ => pure fvar) pos e)
+
+end Lean.Meta

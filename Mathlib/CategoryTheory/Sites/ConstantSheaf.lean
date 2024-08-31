@@ -16,7 +16,7 @@ object (see `constantSheafAdj`).
 
 namespace CategoryTheory
 
-open Limits Opposite
+open Limits Opposite Category Functor Sheaf
 
 variable {C : Type*} [Category C] (J : GrothendieckTopology C)
 variable (D : Type*) [Category D]
@@ -39,7 +39,7 @@ noncomputable def constantPresheafAdj {T : C} (hT : IsTerminal T) :
 variable [HasWeakSheafify J D]
 
 /--
-The functor which maps an object of `D` to the constant sheaf at that object, i.e. the
+The functor which maps an object of `D` to the constant sheaf at that object, i.e. the
 sheafification of the constant presheaf.
 -/
 noncomputable def constantSheaf : D ⥤ Sheaf J D := Functor.const Cᵒᵖ ⋙ (presheafToSheaf J D)
@@ -48,5 +48,19 @@ noncomputable def constantSheaf : D ⥤ Sheaf J D := Functor.const Cᵒᵖ ⋙ (
 noncomputable def constantSheafAdj {T : C} (hT : IsTerminal T) :
     constantSheaf J D ⊣ (sheafSections J D).obj (op T) :=
   (constantPresheafAdj D hT).comp (sheafificationAdjunction J D)
+
+lemma constantSheafAdj_counit_app {T : C} (hT : IsTerminal T) (F : Sheaf J D) :
+    (constantSheafAdj J D hT).counit.app F =
+      (presheafToSheaf J D).map ((constantPresheafAdj D hT).counit.app F.val) ≫
+        (sheafificationAdjunction J D).counit.app F := by
+  apply Sheaf.hom_ext
+  apply sheafify_hom_ext _ _ _ F.cond
+  simp only [flip_obj_obj, sheafToPresheaf_obj, comp_obj, id_obj, constantSheafAdj, Adjunction.comp,
+    evaluation_obj_obj, constantPresheafAdj, Opposite.op_unop, Adjunction.mkOfUnitCounit_unit,
+    Adjunction.mkOfUnitCounit_counit, NatTrans.comp_app, associator_hom_app, whiskerLeft_app,
+    whiskerRight_app, instCategorySheaf_comp_val, instCategorySheaf_id_val,
+    sheafificationAdjunction_counit_app_val, sheafifyMap_sheafifyLift, comp_id,
+    toSheafify_sheafifyLift]
+  erw [id_comp, toSheafify_sheafifyLift]
 
 end CategoryTheory

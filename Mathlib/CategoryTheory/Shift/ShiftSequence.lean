@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Shift.Basic
+import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-! Sequences of functors from a category equipped with a shift
 
@@ -28,6 +29,7 @@ open CategoryTheory Category ZeroObject Limits
 
 variable {C A : Type*} [Category C] [Category A] (F : C ⥤ A)
   (M : Type*) [AddMonoid M] [HasShift C M]
+  {G : Type*} [AddGroup G] [HasShift C G]
 
 namespace CategoryTheory
 
@@ -190,6 +192,80 @@ lemma shiftIso_hom_app_comp (n m mn : M) (hnm : m + n = mn)
           (F.shiftIso mn a a'' (by rw [← hnm, ← ha'', ← ha', add_assoc])).hom.app X := by
   rw [F.shiftIso_add'_hom_app n m mn hnm a a' a'' ha' ha'', ← Functor.map_comp_assoc,
     Iso.inv_hom_id_app, Functor.map_id, id_comp]
+
+/-- The morphism `(F.shift a).obj X ⟶ (F.shift a').obj Y` induced by a morphism
+`f : X ⟶ Y⟦n⟧` when `n + a = a'`. -/
+def shiftMap {X Y : C} {n : M} (f : X ⟶ Y⟦n⟧) (a a' : M) (ha' : n + a = a') :
+    (F.shift a).obj X ⟶ (F.shift a').obj Y :=
+  (F.shift a).map f ≫ (F.shiftIso _ _ _ ha').hom.app Y
+
+@[reassoc]
+lemma shiftMap_comp {X Y Z : C} {n : M} (f : X ⟶ Y⟦n⟧) (g : Y ⟶ Z) (a a' : M) (ha' : n + a = a') :
+    F.shiftMap (f ≫ g⟦n⟧') a a' ha' = F.shiftMap f a a' ha' ≫ (F.shift a').map g := by
+  simp [shiftMap]
+
+@[reassoc]
+lemma shiftMap_comp' {X Y Z : C} {n : M} (f : X ⟶ Y) (g : Y ⟶ Z⟦n⟧) (a a' : M) (ha' : n + a = a') :
+    F.shiftMap (f ≫ g) a a' ha' = (F.shift a).map f ≫ F.shiftMap g a a' ha' := by
+  simp [shiftMap]
+
+/--
+When `f : X ⟶ Y⟦m⟧`, `m + n = mn`, `n + a = a'` and `ha'' : m + a' = a''`, this lemma
+relates the two morphisms `F.shiftMap f a' a'' ha''` and `(F.shift a).map (f⟦n⟧')`. Indeed,
+via canonical isomorphisms, they both identity to morphisms
+`(F.shift a').obj X ⟶ (F.shift a'').obj Y`.
+-/
+lemma shiftIso_hom_app_comp_shiftMap {X Y : C} {m : M} (f : X ⟶ Y⟦m⟧) (n mn : M) (hnm : m + n = mn)
+    (a a' a'' : M) (ha' : n + a = a') (ha'' : m + a' = a'') :
+    (F.shiftIso n a a' ha').hom.app X ≫ F.shiftMap f a' a'' ha'' =
+      (F.shift a).map (f⟦n⟧') ≫ (F.shift a).map ((shiftFunctorAdd' C m n mn hnm).inv.app Y) ≫
+        (F.shiftIso mn a a'' (by rw [← ha'', ← ha', ← hnm, add_assoc])).hom.app Y := by
+  simp only [F.shiftIso_add'_hom_app n m mn hnm a a' a'' ha' ha'' Y,
+    ← Functor.map_comp_assoc, Iso.inv_hom_id_app, Functor.map_id,
+    id_comp, comp_obj, shiftIso_hom_naturality_assoc, shiftMap]
+
+/--
+If `f : X ⟶ Y⟦m⟧`, `n + m = 0` and `ha' : m + a = a'`, this lemma relates the two
+morphisms `F.shiftMap f a a' ha'` and `(F.shift a').map (f⟦n⟧')`. Indeed,
+via canonical isomorphisms, they both identify to morphisms
+`(F.shift a).obj X ⟶ (F.shift a').obj Y`.
+-/
+lemma shiftIso_hom_app_comp_shiftMap_of_add_eq_zero [F.ShiftSequence G]
+    {X Y : C} {m : G} (f : X ⟶ Y⟦m⟧)
+    (n : G) (hnm : n + m = 0) (a a' : G) (ha' : m + a = a') :
+    (F.shiftIso n a' a (by rw [← ha', ← add_assoc, hnm, zero_add])).hom.app X ≫
+      F.shiftMap f a a' ha' =
+    (F.shift a').map (f⟦n⟧' ≫ (shiftFunctorCompIsoId C m n
+      (by rw [← add_left_inj m, add_assoc, hnm, zero_add, add_zero])).hom.app Y) := by
+  have hnm' : m + n = 0 := by
+    rw [← add_left_inj m, add_assoc, hnm, zero_add, add_zero]
+  dsimp
+  simp [F.shiftIso_hom_app_comp_shiftMap f n 0 hnm' a' a, shiftIso_zero_hom_app,
+    shiftFunctorCompIsoId]
+
+section
+
+variable [HasZeroMorphisms C] [HasZeroMorphisms A] [F.PreservesZeroMorphisms]
+  [∀ (n : M), (shiftFunctor C n).PreservesZeroMorphisms]
+
+instance (n : M) : (F.shift n).PreservesZeroMorphisms :=
+  preservesZeroMorphisms_of_iso (F.isoShift n)
+
+@[simp]
+lemma shiftMap_zero (X Y : C) (n a a' : M) (ha' : n + a = a') :
+    F.shiftMap (0 : X ⟶ Y⟦n⟧) a a' ha' = 0 := by
+  simp [shiftMap]
+
+end
+
+section
+
+variable [Preadditive C] [Preadditive A] [F.Additive]
+  [∀ (n : M), (shiftFunctor C n).Additive]
+
+instance (n : M) : (F.shift n).Additive := additive_of_iso (F.isoShift n)
+
+end
 
 end
 

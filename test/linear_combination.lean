@@ -4,6 +4,8 @@ import Mathlib.Tactic.Linarith
 
 set_option autoImplicit true
 
+private axiom test_sorry : ∀ {α}, α
+
 -- We deliberately mock R here so that we don't have to import the deps
 axiom Real : Type
 notation "ℝ" => Real
@@ -118,6 +120,10 @@ example {α} [h : CommRing α] {a b c d e f : α} (h1 : a * d = b * c) (h2 : c *
 example (x y z w : ℚ) (hzw : z = w) : x * z + 2 * y * z = x * w + 2 * y * w := by
   linear_combination (x + 2 * y) * hzw
 
+example (x : ℤ) : x ^ 2 = x ^ 2 := by linear_combination x ^ 2
+
+example (x y : ℤ) (h : x = 0) : y ^ 2 * x = 0 := by linear_combination y ^ 2 * h
+
 /-! ### Cases that explicitly use a config -/
 
 example (x y : ℚ) (h1 : 3 * x + 2 * y = 10) (h2 : 2 * x + 5 * y = 3) : -11 * y + 1 = 11 + 1 := by
@@ -178,13 +184,32 @@ example (x y : ℤ) (h1 : x * y + 2 * x = 1) (h2 : x = y) : x * y = -2 * y + 1 :
 
 /-! ### Cases that should fail -/
 
+/--
+error: ring failed, ring expressions not equal
+a : ℚ
+ha : a = 1
+⊢ -1 = 0
+-/
+#guard_msgs in
+example (a : ℚ) (ha : a = 1) : a = 2 := by linear_combination ha
+
 -- This should fail because the second coefficient has a different type than
 --   the equations it is being combined with.  This was a design choice for the
 --   sake of simplicity, but the tactic could potentially be modified to allow
 --   this behavior.
+/--
+error: application type mismatch
+  Mathlib.Tactic.LinearCombination.c_mul_pf h2 0
+argument
+  0
+has type
+  ℝ : Type
+but is expected to have type
+  ℤ : Type
+-/
+#guard_msgs in
 example (x y : ℤ) (h1 : x * y + 2 * x = 1) (h2 : x = y) : x * y + 2 * x = 1 := by
-  fail_if_success linear_combination h1 + (0 : ℝ) * h2
-  linear_combination h1
+  linear_combination h1 + (0 : ℝ) * h2
 
 -- This fails because the linear_combination tactic requires the equations
 --   and coefficients to use a type that fulfills the add_group condition,
@@ -230,3 +255,40 @@ example (h : g a = g b) : a ^ 4 = b ^ 4 := by
 example {r s a b : ℕ} (h₁ : (r : ℤ) = a + 1) (h₂ : (s : ℤ) = b + 1) :
     r * s = (a + 1 : ℤ) * (b + 1) := by
   linear_combination (↑b + 1) * h₁ + ↑r * h₂
+
+-- Implementation at the time of the port (Nov 2022) was 110,000 heartbeats.
+-- Eagerly elaborating leaf nodes brings this to 7,540 heartbeats.
+set_option maxHeartbeats 8000 in
+example (K : Type*) [Field K] [CharZero K] {x y z p q : K}
+    (h₀ : 3 * x ^ 2 + z ^ 2 * p = 0)
+    (h₁ : z * (2 * y) = 0)
+    (h₂ : -y ^ 2 + p * x * (2 * z) + q * (3 * z ^ 2) = 0) :
+    ((27 * q ^ 2 + 4 * p ^ 3) * x) ^ 4 = 0 := by
+  linear_combination (norm := skip)
+    (256 / 3 * p ^ 12 * x ^ 2 + 128 * q * p ^ 11 * x * z + 2304 * q ^ 2 * p ^ 9 * x ^ 2 +
+                                2592 * q ^ 3 * p ^ 8 * x * z -
+                              64 * q * p ^ 10 * y ^ 2 +
+                            23328 * q ^ 4 * p ^ 6 * x ^ 2 +
+                          17496 * q ^ 5 * p ^ 5 * x * z -
+                        1296 * q ^ 3 * p ^ 7 * y ^ 2 +
+                      104976 * q ^ 6 * p ^ 3 * x ^ 2 +
+                    39366 * q ^ 7 * p ^ 2 * x * z -
+                  8748 * q ^ 5 * p ^ 4 * y ^ 2 +
+                177147 * q ^ 8 * x ^ 2 -
+              19683 * q ^ 7 * p * y ^ 2) *
+            h₀ +
+          (-(64 / 3 * p ^ 12 * x * y) + 32 * q * p ^ 11 * z * y - 432 * q ^ 2 * p ^ 9 * x * y +
+                      648 * q ^ 3 * p ^ 8 * z * y -
+                    2916 * q ^ 4 * p ^ 6 * x * y +
+                  4374 * q ^ 5 * p ^ 5 * z * y -
+                6561 * q ^ 6 * p ^ 3 * x * y +
+              19683 / 2 * q ^ 7 * p ^ 2 * z * y) *
+            h₁ +
+        (-(128 / 3 * p ^ 12 * x * z) - 192 * q * p ^ 10 * x ^ 2 - 864 * q ^ 2 * p ^ 9 * x * z -
+                    3888 * q ^ 3 * p ^ 7 * x ^ 2 -
+                  5832 * q ^ 4 * p ^ 6 * x * z -
+                26244 * q ^ 5 * p ^ 4 * x ^ 2 -
+              13122 * q ^ 6 * p ^ 3 * x * z -
+            59049 * q ^ 7 * p * x ^ 2) *
+          h₂
+  exact test_sorry
