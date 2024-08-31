@@ -249,6 +249,12 @@ theorem coe_coe_fn' [IsTrans β s] (f : r ≺i s) : ((f : r ≼i s) : α → β)
 theorem init_iff [IsTrans β s] (f : r ≺i s) {a : α} {b : β} : s b (f a) ↔ ∃ a', f a' = b ∧ r a' a :=
   @InitialSeg.init_iff α β r s f a b
 
+/-- A principal segment is the same as a non-surjective initial segment. -/
+noncomputable def _root_.InitialSeg.toPrincipalSeg [IsWellOrder β s] (f : r ≼i s)
+    (hf : ¬ Surjective f) : r ≺i s :=
+  let H := f.eq_or_principal.resolve_left hf
+  ⟨f, Classical.choose H, Classical.choose_spec H⟩
+
 theorem irrefl {r : α → α → Prop} [IsWellOrder α r] (f : r ≺i r) : False := by
   have h := f.lt_top f.top
   rw [show f f.top = f.top from InitialSeg.eq (↑f) (InitialSeg.refl r) f.top] at h
