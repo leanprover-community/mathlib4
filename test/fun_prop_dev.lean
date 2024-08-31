@@ -6,6 +6,7 @@ Authors: Tomáš Skřivan
 import Mathlib.Tactic.FunProp
 import Mathlib.Logic.Function.Basic
 import Mathlib.Data.FunLike.Basic
+import Aesop
 
 /-! # Tests for the `fun_prop` tactic
 
@@ -465,3 +466,26 @@ Issues:
 -/
 #guard_msgs in
 example : Con (fun x : α => f3 x) := by fun_prop (config:={maxTransitionDepth:=0})
+
+
+@[fun_prop] opaque Dif (𝕜:Type) [Add 𝕜] {α β} (f : α → β) : Prop
+
+variable {𝕜 : Type}
+@[fun_prop] theorem Dif_id [Add 𝕜] : Dif 𝕜 (id : α → α) := silentSorry
+@[fun_prop] theorem Dif_const [Add 𝕜] (y : β) : Dif 𝕜 (fun x : α => y) := silentSorry
+@[fun_prop] theorem Dif_apply [Add 𝕜] (x : α) : Dif 𝕜 (fun f : α → β => f x) := silentSorry
+@[fun_prop] theorem Dif_applyDep [Add 𝕜] (x : α) : Dif 𝕜 (fun f : (x' : α) → E x' => f x) := silentSorry
+@[fun_prop] theorem Dif_comp [Add 𝕜] (f : β → γ) (g : α → β) (hf : Dif 𝕜 f) (hg : Dif 𝕜 g) : Dif 𝕜 (fun x => f (g x)) := silentSorry
+@[fun_prop] theorem Dif_pi [Add 𝕜] (f : β → (i : α) → (E i)) (hf : ∀ i, Dif 𝕜 (fun x => f x i)) : Dif 𝕜 (fun x i => f x i) := silentSorry
+
+@[fun_prop]
+theorem Dif_Con [Add 𝕜] (f : α → β) (hf : Dif 𝕜 f) : Con f := silentSorry
+
+def f4 (a : α) := a
+
+example (hf : Dif Nat (f4 : α → α)) : Con (f4 : α → α) := by fun_prop (disch:=trace_state; aesop)
+
+@[fun_prop]
+theorem f4_dif : Dif Nat (f4 : α → α) := silentSorry
+
+example (hf : Dif Nat (f4 : α → α)) : Con (f4 : α → α) := by fun_prop (disch:=aesop)
