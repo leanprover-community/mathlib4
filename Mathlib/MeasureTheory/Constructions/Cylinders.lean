@@ -151,11 +151,11 @@ section cylinder
 /-- Given a finite set `s` of indices, a cylinder is the preimage of a set `S` of `∀ i : s, α i` by
 the projection from `∀ i, α i` to `∀ i : s, α i`. -/
 def cylinder (s : Finset ι) (S : Set (∀ i : s, α i)) : Set (∀ i, α i) :=
-  proj s ⁻¹' S
+  fproj s ⁻¹' S
 
 @[simp]
 theorem mem_cylinder (s : Finset ι) (S : Set (∀ i : s, α i)) (f : ∀ i, α i) :
-    f ∈ cylinder s S ↔ proj s f ∈ S :=
+    f ∈ cylinder s S ↔ fproj s f ∈ S :=
   mem_preimage
 
 @[simp]
@@ -179,7 +179,7 @@ theorem cylinder_eq_empty_iff [h_nonempty : Nonempty (∀ i, α i)] (s : Finset 
   let f' : ∀ i, α i := fun i ↦ if hi : i ∈ s then f ⟨i, hi⟩ else h_nonempty.some i
   have hf' : f' ∈ cylinder s S := by
     rw [mem_cylinder]
-    simpa (config := { unfoldPartialApp := true }) only [f', Finset.coe_mem, dif_pos, proj]
+    simpa (config := { unfoldPartialApp := true }) only [fproj, Finset.coe_mem, dif_pos, f']
   rw [h] at hf'
   exact not_mem_empty _ hf'
 
@@ -226,15 +226,15 @@ theorem eq_of_cylinder_eq_of_subset [h_nonempty : Nonempty (∀ i, α i)] {I J :
   classical
   specialize h_eq fun i ↦ if hi : i ∈ I then f ⟨i, hi⟩ else h_nonempty.some i
   have h_mem : ∀ j : J, ↑j ∈ I := fun j ↦ hJI j.prop
-  simpa (config := { unfoldPartialApp := true }) only
-    [proj, Finset.coe_mem, dite_true, h_mem] using h_eq
+  simpa (config := { unfoldPartialApp := true }) only [fproj, Finset.coe_mem, dite_true,
+    h_mem] using h_eq
 
 theorem cylinder_eq_cylinder_union [DecidableEq ι] (I : Finset ι) (S : Set (∀ i : I, α i))
     (J : Finset ι) :
     cylinder I S =
       cylinder (I ∪ J) (fproj₂ Finset.subset_union_left ⁻¹' S) := by
-  ext1 f; simp (config := { unfoldPartialApp := true }) only [mem_cylinder, proj,
-    Finset.coe_sort_coe, fproj₂, mem_preimage]
+  ext1 f; simp (config := { unfoldPartialApp := true }) only [mem_cylinder, fproj, fproj₂,
+    mem_preimage]
 
 theorem disjoint_cylinder_iff [Nonempty (∀ i, α i)] {s t : Finset ι} {S : Set (∀ i : s, α i)}
     {T : Set (∀ i : t, α i)} [DecidableEq ι] :
@@ -354,9 +354,7 @@ theorem generateFrom_measurableCylinders :
     rintro t ht rfl
     refine ⟨{i}, {f | f ⟨i, Finset.mem_singleton_self i⟩ ∈ t i}, measurable_pi_apply _ (ht i), ?_⟩
     ext1 x
-    simp (config := { unfoldPartialApp := true }) only [eval, mem_preimage, mem_cylinder,
-      Finset.singleton_val, proj, Finset.coe_sort_coe]
-    rfl
+    simp only [mem_preimage, eval, mem_cylinder, mem_setOf_eq, fproj]
 
 end cylinders
 

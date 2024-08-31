@@ -106,7 +106,7 @@ end IsProjectiveMeasureFamily
 for all `I : Finset ι`, the projection from `∀ i, α i` to `∀ i : I, α i` maps `μ` to `P I`. -/
 def IsProjectiveLimit (μ : Measure (∀ i, α i))
     (P : ∀ J : Finset ι, Measure (∀ j : J, α j)) : Prop :=
-  ∀ I : Finset ι, (μ.map (proj I)) = P I
+  ∀ I : Finset ι, (μ.map (fproj I)) = P I
 
 namespace IsProjectiveLimit
 
