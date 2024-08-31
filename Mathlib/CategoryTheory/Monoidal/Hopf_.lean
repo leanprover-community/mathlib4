@@ -49,13 +49,13 @@ variable {C}
 
 /-- Morphisms of Hopf monoids intertwine the antipodes. -/
 theorem hom_antipode {A B : Hopf_ C} (f : A ⟶ B) :
-    f.hom.hom ≫ B.antipode = A.antipode ≫ f.hom.hom := by
+    f.hom.hom.hom ≫ B.antipode = A.antipode ≫ f.hom.hom.hom := by
   -- We show these elements are equal by exhibiting an element in the convolution algebra
   -- between `A` (as a comonoid) and `B` (as a monoid),
   -- such that the LHS is a left inverse, and the RHS is a right inverse.
   apply left_inv_eq_right_inv
     (M := Conv ((Bimon_.toComon_ C).obj A.X) B.X.X)
-    (a := f.hom.hom)
+    (a := f.hom.hom.hom)
   · erw [Conv.mul_eq, Conv.one_eq]
     simp only [Bimon_.toComon__obj_X, Bimon_.toComon__obj_comul, comp_whiskerRight, Category.assoc,
       Bimon_.toComon__obj_counit]
@@ -64,11 +64,11 @@ theorem hom_antipode {A B : Hopf_ C} (f : A ⟶ B) :
     slice_lhs 2 3 =>
       rw [← tensorHom_def]
     slice_lhs 1 2 =>
-      rw [← Bimon_.hom_comul_hom f]
+      rw [← Bimon_.hom_comul_hom f.hom]
     slice_lhs 2 4 =>
       rw [B.antipode_left]
     slice_lhs 1 2 =>
-      rw [Bimon_.hom_counit_hom f]
+      rw [Bimon_.hom_counit_hom f.hom]
   · erw [Conv.mul_eq, Conv.one_eq]
     simp only [Bimon_.toComon__obj_X, Bimon_.toComon__obj_comul, MonoidalCategory.whiskerLeft_comp,
       Category.assoc, Bimon_.toComon__obj_counit]
@@ -77,11 +77,11 @@ theorem hom_antipode {A B : Hopf_ C} (f : A ⟶ B) :
     slice_lhs 3 4 =>
       rw [← tensorHom_def]
     slice_lhs 3 4 =>
-      rw [← f.hom.mul_hom]
+      rw [← f.hom.hom.mul_hom]
     slice_lhs 1 3 =>
       rw [A.antipode_right]
     slice_lhs 2 3 =>
-      rw [f.hom.one_hom]
+      rw [f.hom.hom.one_hom]
 
 @[reassoc (attr := simp)]
 theorem one_antipode (A : Hopf_ C) : A.X.X.one ≫ A.antipode = A.X.X.one := by
