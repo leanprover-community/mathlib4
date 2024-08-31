@@ -621,8 +621,7 @@ lemma odd_card_insert_iff {a : α} (hs : s.Finite := by toFinite_tac) (ha : a �
 
 lemma even_card_insert_iff {a : α} (hs : s.Finite := by toFinite_tac) (ha : a ∉ s) :
     Even (insert a s).ncard ↔ Odd s.ncard := by
-  rw [ncard_insert_of_not_mem ha hs, Nat.even_add]
-  simp only [Nat.not_even_one, iff_false, Nat.odd_iff_not_even]
+  rw [ncard_insert_of_not_mem ha hs, Nat.even_add_one, Nat.not_even_iff_odd]
 
 end InsertErase
 
