@@ -267,6 +267,11 @@ instance IsSelfAdjoint.instContinuousFunctionalCalculus :
     Complex.isometry_ofReal.uniformEmbedding (.zero _)
     (fun _ ↦ isSelfAdjoint_iff_isStarNormal_and_spectrumRestricts)
 
+lemma IsSelfAdjoint.spectrum_nonempty {A : Type*} [Ring A] [StarRing A]
+    [TopologicalSpace A] [Algebra ℝ A] [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
+    [Nontrivial A] {a : A} (ha : IsSelfAdjoint a) : (σ ℝ a).Nonempty :=
+  CFC.spectrum_nonempty ℝ a ha
+
 end SelfAdjointUnital
 
 /-!
@@ -310,6 +315,12 @@ instance Nonneg.instNonUnitalContinuousFunctionalCalculus :
   QuasispectrumRestricts.cfc (q := IsSelfAdjoint) ContinuousMap.realToNNReal
     uniformEmbedding_subtype_val le_rfl
     (fun _ ↦ nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts)
+
+open NNReal in
+lemma NNReal.spectrum_nonempty {A : Type*} [Ring A] [StarRing A] [PartialOrder A]
+    [TopologicalSpace A] [Algebra ℝ≥0 A] [ContinuousFunctionalCalculus ℝ≥0 (fun x : A ↦ 0 ≤ x)]
+    [Nontrivial A] {a : A} (ha : 0 ≤ a) : (spectrum ℝ≥0 a).Nonempty :=
+  CFC.spectrum_nonempty ℝ≥0 a ha
 
 end Nonneg
 

@@ -662,6 +662,16 @@ instance IsStarNormal.cfc_map (f : R → R) (a : A) : IsStarNormal (cfc f a) whe
       exact mul_comm _ _
     · simp [cfc_apply_of_not_continuousOn a h]
 
+variable (R) in
+/-- In an `R`-algebra with a continuous functional calculus, every element satisfying the predicate
+has nonempty `R`-spectrum. -/
+lemma CFC.spectrum_nonempty [Nontrivial A] (a : A) (ha : p a := by cfc_tac) :
+    (spectrum R a).Nonempty := by
+  by_contra! h
+  apply one_ne_zero (α := A)
+  rw [← cfc_one R a, ← cfc_zero R a]
+  exact cfc_congr fun x hx ↦ by simp_all
+
 end CFC
 
 end Basic
