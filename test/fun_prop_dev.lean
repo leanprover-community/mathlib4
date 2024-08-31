@@ -465,3 +465,58 @@ Issues:
 -/
 #guard_msgs in
 example : Con (fun x : α => f3 x) := by fun_prop (config:={maxTransitionDepth:=0})
+
+
+-- Test improved beta reduction of the head function when we interleave lambdas and lets
+example [Add α] (a : α) : Con (fun x0 : α =>
+  (fun x =>
+    let y := x + x
+    fun z : α =>
+      x + y + z) x0 a) := by fun_prop
+
+example [Add α] (a a' : α) : Con (fun x0 : α =>
+  (fun x =>
+    let y := x + x
+    fun z : α =>
+      let h := x + y + z
+      fun w =>
+        w + x + y + z + h) x0 a a') := by fun_prop
+
+
+-- test that local function is being properly unfolded
+example [Add α] (a : α) :
+  let f := (fun x : α =>
+    let y := x + x
+    fun z : α =>
+      x + y + z)
+  Con (fun x =>
+    f x a) := by
+  fun_prop
+
+
+-- Test that local theorem is being used
+/--
+info: [Meta.Tactic.fun_prop] [✅] Con fun x => f x a
+  [Meta.Tactic.fun_prop] candidate local theorems for f #[h : Con f]
+  [Meta.Tactic.fun_prop] removing argument to later use h : Con f
+  [Meta.Tactic.fun_prop] [✅] applying: Con_comp
+    [Meta.Tactic.fun_prop] [✅] Con fun f => f a
+      [Meta.Tactic.fun_prop] [✅] applying: Con_apply
+    [Meta.Tactic.fun_prop] [✅] Con fun x => f x
+      [Meta.Tactic.fun_prop] candidate local theorems for f #[h : Con f]
+      [Meta.Tactic.fun_prop] [✅] applying: h : Con f
+-/
+#guard_msgs in
+example [Add α] (a : α) :
+  let f := (fun x : α =>
+    let y := x + x
+    fun z : α =>
+      x + y + z)
+  Con (fun x =>
+    f x a) := by
+  intro f
+  have h : Con f := by fun_prop
+  set_option trace.Meta.Tactic.fun_prop true in
+  fun_prop
+
+
