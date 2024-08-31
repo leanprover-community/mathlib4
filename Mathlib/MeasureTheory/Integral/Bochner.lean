@@ -1962,3 +1962,5 @@ def evalIntegral : PositivityExt where eval {u α} zα pα e := do
   | _ => throwError "not MeasureTheory.integral"
 
 end Mathlib.Meta.Positivity
+
+set_option linter.style.longFile 2100

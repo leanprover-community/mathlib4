@@ -219,6 +219,6 @@ theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Functi
 
 end CompHaus
 
-/-- Every `CompHausLike` admits a functor to `CompHaus`. -/
+/-- Every `CompHausLike` admits a functor to `CompHaus`. -/
 abbrev compHausLikeToCompHaus (P : TopCat → Prop) : CompHausLike P ⥤ CompHaus :=
   CompHausLike.toCompHausLike (by simp only [implies_true])

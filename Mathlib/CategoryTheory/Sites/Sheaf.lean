@@ -148,7 +148,7 @@ theorem isLimit_iff_isSheafFor :
   rw [Classical.nonempty_pi]; constructor
   · intro hu E x hx
     specialize hu hx.cone
-    erw [(homEquivAmalgamation hx).uniqueCongr.nonempty_congr] at hu
+    rw [(homEquivAmalgamation hx).uniqueCongr.nonempty_congr] at hu
     exact (unique_subtype_iff_exists_unique _).1 hu
   · rintro h ⟨E, π⟩
     let eqv := conesEquivSieveCompatibleFamily P S (op E)
@@ -575,7 +575,6 @@ theorem isSheaf_iff_multiequalizer [∀ (X : C) (S : J.Cover X), HasMultiequaliz
     · intro a
       symm
       erw [IsIso.inv_comp_eq]
-      dsimp
       simp
 
 end MultiequalizerConditions

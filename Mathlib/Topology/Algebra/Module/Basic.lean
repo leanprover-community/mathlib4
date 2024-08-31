@@ -2389,3 +2389,5 @@ instance t3_quotient_of_isClosed [TopologicalAddGroup M] [IsClosed (S : Set M)] 
 end Submodule
 
 end Quotient
+
+set_option linter.style.longFile 2500
