@@ -153,8 +153,8 @@ lemma maxBidExcluding_eq_maxBid_if_loser {i : I} (H : i ≠ winner b) :
 
 /-- Defines the utility of participant `i`,
 which is their valuation minus the second highest bid if `i` is the winner, otherwise, it's 0. -/
-noncomputable def utility [DecidableEq I] (v b : I → ℝ) (i : I) : ℝ :=
-    if i = winner b then v i - secondPrice b else 0
+noncomputable def utility (v b : I → ℝ) (i : I) : ℝ :=
+  if i = winner b then v i - secondPrice b else 0
 
 variable {i : I}
 
