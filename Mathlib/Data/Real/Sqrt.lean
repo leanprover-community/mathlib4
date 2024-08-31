@@ -147,8 +147,12 @@ theorem sqrt_eq_cases : √x = y ↔ y * y = x ∧ 0 ≤ y ∨ x < 0 ∧ y = 0 :
   · rintro (⟨rfl, hy⟩ | ⟨hx, rfl⟩)
     exacts [sqrt_mul_self hy, sqrt_eq_zero_of_nonpos hx.le]
 
-theorem sqrt_eq_iff_mul_self_eq (hx : 0 ≤ x) (hy : 0 ≤ y) : √x = y ↔ y * y = x :=
-  ⟨fun h => by rw [← h, mul_self_sqrt hx], fun h => by rw [← h, sqrt_mul_self hy]⟩
+theorem sqrt_eq_iff_mul_self_eq (hx : 0 ≤ x) (hy : 0 ≤ y) : √x = y ↔ x = y * y :=
+  ⟨fun h => by rw [← h, mul_self_sqrt hx], fun h => by rw [h, sqrt_mul_self hy]⟩
+
+@[deprecated sqrt_eq_iff_mul_self_eq (since := "2024-08-25")]
+theorem sqrt_eq_iff_eq_mul_self (hx : 0 ≤ x) (hy : 0 ≤ y) : √x = y ↔ y * y = x := by
+  rw [sqrt_eq_iff_mul_self_eq hx hy, eq_comm]
 
 theorem sqrt_eq_iff_mul_self_eq_of_pos (h : 0 < y) : √x = y ↔ y * y = x := by
   simp [sqrt_eq_cases, h.ne', h.le]
@@ -165,8 +169,12 @@ theorem sq_sqrt (h : 0 ≤ x) : √x ^ 2 = x := by rw [sq, mul_self_sqrt h]
 @[simp]
 theorem sqrt_sq (h : 0 ≤ x) : √(x ^ 2) = x := by rw [sq, sqrt_mul_self h]
 
-theorem sqrt_eq_iff_sq_eq (hx : 0 ≤ x) (hy : 0 ≤ y) : √x = y ↔ y ^ 2 = x := by
+theorem sqrt_eq_iff_eq_sq (hx : 0 ≤ x) (hy : 0 ≤ y) : √x = y ↔ x = y ^ 2 := by
   rw [sq, sqrt_eq_iff_mul_self_eq hx hy]
+
+@[deprecated sqrt_eq_iff_eq_sq (since := "2024-08-25")]
+theorem sqrt_eq_iff_sq_eq (hx : 0 ≤ x) (hy : 0 ≤ y) : √x = y ↔ y ^ 2 = x := by
+  rw [sqrt_eq_iff_eq_sq hx hy, eq_comm]
 
 theorem sqrt_mul_self_eq_abs (x : ℝ) : √(x * x) = |x| := by
   rw [← abs_mul_abs_self x, sqrt_mul_self (abs_nonneg _)]

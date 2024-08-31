@@ -1607,3 +1607,5 @@ instance : SMul C(α, γ) C_cb(α, γ) where
 end CompactlySupported
 
 end BoundedContinuousFunction
+
+set_option linter.style.longFile 1700

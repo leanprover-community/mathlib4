@@ -52,6 +52,19 @@ theorem StableUnderBaseChange.mk {P : MorphismProperty C} [HasPullbacks C] [Resp
   rw [← P.cancel_left_of_respectsIso e.inv, sq.flip.isoPullback_inv_fst]
   exact hP₂ _ _ _ f g hg
 
+variable (C) in
+lemma StableUnderBaseChange.monomorphisms :
+    (monomorphisms C).StableUnderBaseChange := by
+  intro X Y Y' S f g f' g' h hg
+  have : Mono g := hg
+  constructor
+  intro Z f₁ f₂ h₁₂
+  apply PullbackCone.IsLimit.hom_ext h.isLimit
+  · rw [← cancel_mono g]
+    dsimp
+    simp only [Category.assoc, h.w, reassoc_of% h₁₂]
+  · exact h₁₂
+
 theorem StableUnderBaseChange.respectsIso {P : MorphismProperty C} (hP : StableUnderBaseChange P) :
     RespectsIso P := by
   apply RespectsIso.of_respects_arrow_iso
@@ -111,6 +124,19 @@ theorem StableUnderCobaseChange.mk {P : MorphismProperty C} [HasPushouts C] [Res
   let e := sq.flip.isoPushout
   rw [← P.cancel_right_of_respectsIso _ e.hom, sq.flip.inr_isoPushout_hom]
   exact hP₂ _ _ _ f g hf
+
+variable (C) in
+lemma StableUnderCobaseChange.epimorphisms :
+    (epimorphisms C).StableUnderCobaseChange := by
+  intro X Y Y' S f g f' g' h hf
+  have : Epi f := hf
+  constructor
+  intro Z f₁ f₂ h₁₂
+  apply PushoutCocone.IsColimit.hom_ext h.isColimit
+  · exact h₁₂
+  · rw [← cancel_epi f]
+    dsimp
+    simp only [← reassoc_of% h.w, h₁₂]
 
 theorem StableUnderCobaseChange.respectsIso {P : MorphismProperty C}
     (hP : StableUnderCobaseChange P) : RespectsIso P :=

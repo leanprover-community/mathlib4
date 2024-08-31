@@ -197,7 +197,7 @@ theorem X_pow_sub_C_irreducible_of_odd
     {n : ℕ} (hn : Odd n) {a : K} (ha : ∀ p : ℕ, p.Prime → p ∣ n → ∀ b : K, b ^ p ≠ a) :
     Irreducible (X ^ n - C a) := by
   induction n using induction_on_primes generalizing K a with
-  | h₀ => simp at hn
+  | h₀ => simp [← Nat.not_even_iff_odd] at hn
   | h₁ => simpa using irreducible_X_sub_C a
   | h p n hp IH =>
     rw [mul_comm]
