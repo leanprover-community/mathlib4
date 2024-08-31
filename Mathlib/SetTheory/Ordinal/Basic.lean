@@ -1319,8 +1319,8 @@ theorem univ_id : univ.{u, u + 1} = #Ordinal :=
 theorem lift_univ : lift.{w} univ.{u, v} = univ.{u, max v w} :=
   lift_lift _
 
-theorem univ_umax : univ.{u, max (u + 1) v} = univ.{u, v} :=
-  congr_fun lift_umax _
+theorem univ_umax : univ.{u, max (u + 1) v} = univ.{u, v} := by
+  rw [univ, univ, lift_umax.{u + 1, v}]
 
 theorem lift_lt_univ (c : Cardinal) : lift.{u + 1, u} c < univ.{u, u + 1} := by
   simpa only [lift.principalSeg_coe, lift_ord, lift_succ, ord_le, succ_le_iff] using
