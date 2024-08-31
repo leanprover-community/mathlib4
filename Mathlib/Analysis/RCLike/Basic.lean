@@ -1063,8 +1063,8 @@ namespace RCLike
 
 /-- A mixin over a normed field, saying that the norm field structure is the same as `ℝ` or `ℂ`.
 To endow such a field with a compatible `RCLike` structure in a proof, use
-`letI := IsROrCNormedField.rclike 𝕜`.-/
-class IsROrCNormedField (𝕜 : Type*) [hk : NormedField 𝕜] : Prop :=
+`letI := IsRCLikeNormedField.rclike 𝕜`.-/
+class IsRCLikeNormedField (𝕜 : Type*) [hk : NormedField 𝕜] : Prop :=
   out : ∃ h : RCLike 𝕜, hk = h.toNormedField
 
 instance {𝕜 : Type*} [h : RCLike 𝕜] : IsROrCNormedField 𝕜 := ⟨⟨h, rfl⟩⟩
@@ -1111,8 +1111,8 @@ noncomputable def copy_of_normedField {𝕜 : Type*} (h : RCLike 𝕜) (hk : Nor
   mul_im_I_ax := by subst h''; exact h.mul_im_I_ax
   le_iff_re_im := by subst h''; exact h.le_iff_re_im
 
-noncomputable def IsROrCNormedField.rclike (𝕜 : Type*)
-    [hk : NormedField 𝕜] [h : IsROrCNormedField 𝕜] : RCLike 𝕜 := by
+noncomputable def IsRCLikeNormedField.rclike (𝕜 : Type*)
+    [hk : NormedField 𝕜] [h : IsRCLikeNormedField 𝕜] : RCLike 𝕜 := by
   choose p hp using h.out
   exact p.copy_of_normedField hk hp
 
