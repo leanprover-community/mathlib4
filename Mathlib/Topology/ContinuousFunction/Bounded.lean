@@ -1584,20 +1584,15 @@ theorem compactlySupported_eq_Bounded' [CompactSpace α] : C_cb(α, γ) =
     apply compactlySupported_eq_Bounded
     exact CompactSpace.isCompact_univ
 
-theorem compactlySupported_eq_Bounded_IsCompact [NeZero (1 : γ)] : C_cb(α, γ) = (⊤ : Set (α →ᵇ γ)) ↔
-    IsCompact (Set.univ : Set α) := by
-  constructor
-  · intro h
-    have : 1 ∈ (⊤ : Set (α →ᵇ γ)) := by
-      exact trivial
-    have : 1 ∈ C_cb(α, γ) := by
-      rw [← h] at this
-      exact this
-    rw [mem_compactlySupported α γ, HasCompactSupport, tsupport, coe_one] at this
-    rw [← closure_univ]
-    rw [Function.support_one] at this
-    exact this
-  · exact compactlySupported_eq_Bounded α γ
+theorem compactlySupported_eq_top_iff [Nontrivial γ] :
+    C_cb(α, γ) = ⊤ ↔ IsCompact (Set.univ : Set α) := by
+  refine ⟨fun h ↦ ?_, compactlySupported_eq_top_of_isCompact⟩
+  obtain ⟨x, hx⟩ := exists_ne (0 : γ)
+  let f : α →ᵇ γ := const α x
+  have hf : f ∈ C_cb(α, γ) := by rw [h]; trivial -- missing `TwoSidedIdeal.mem_top` simp lemma
+  convert (mem_compactlySupported.mp hf).isCompact
+  rw [eq_comm, Set.eq_univ_iff_forall]
+  exact fun _ ↦ subset_tsupport _ <| by simpa [f]
 
 lemma HasCompactSupport_mul_continuous_compactlySupported (g : C(α, γ)) (f : C_cb(α ,γ)) :
     HasCompactSupport (g * f : C(α, γ)) := HasCompactSupport.mul_left
