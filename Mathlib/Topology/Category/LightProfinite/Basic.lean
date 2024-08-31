@@ -17,7 +17,7 @@ implemented as totally disconnected second countable compact Hausdorff spaces.
 This file also defines the category `LightDiagram`, which consists of those spaces that can be
 written as a sequential limit (in `Profinite`) of finite sets.
 
-We define an equivalence of categories `LightProfinite ≌ LightDiagram` and prove that these are
+We define an equivalence of categories `LightProfinite ≌ LightDiagram` and prove that these are
 essentially small categories.
 -/
 
@@ -238,7 +238,7 @@ structure LightDiagram : Type (u+1) where
 
 namespace LightDiagram
 
-/-- The underlying `Profinite` of a `LightDiagram`. -/
+/-- The underlying `Profinite` of a `LightDiagram`. -/
 def toProfinite (S : LightDiagram) : Profinite := S.cone.pt
 
 @[simps!]

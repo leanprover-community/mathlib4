@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Adomas Baliuka
 -/
 import Lean.Elab.Command
-import Lean.Linter.Util
 
 /-!
 # The "admit" linter
