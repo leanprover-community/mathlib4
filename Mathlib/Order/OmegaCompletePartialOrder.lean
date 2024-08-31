@@ -729,7 +729,7 @@ instance : OmegaCompletePartialOrder (α →𝒄 β) :=
 
 namespace Prod
 
-/-- The application of continuous functions as a continuous function.  -/
+/-- The application of continuous functions as a continuous function. -/
 @[simps]
 def apply : (α →𝒄 β) × α →𝒄 β where
   toFun f := f.1 f.2

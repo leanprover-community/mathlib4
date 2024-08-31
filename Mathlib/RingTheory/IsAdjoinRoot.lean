@@ -195,7 +195,7 @@ variable (i x)
 -- To match `AdjoinRoot.lift`
 /-- Lift a ring homomorphism `R →+* T` to `S →+* T` by specifying a root `x` of `f` in `T`,
 where `S` is given by adjoining a root of `f` to `R`. -/
-def lift (h : IsAdjoinRoot S f) : S →+* T where
+def lift (h : IsAdjoinRoot S f) (hx : f.eval₂ i x = 0) : S →+* T where
   toFun z := (h.repr z).eval₂ i x
   map_zero' := by
     dsimp only -- Porting note (#10752): added `dsimp only`
@@ -370,7 +370,7 @@ Auxiliary definition for `IsAdjoinRootMonic.powerBasis`. -/
 def basis (h : IsAdjoinRootMonic S f) : Basis (Fin (natDegree f)) R S :=
   Basis.ofRepr
     { toFun := fun x => (h.modByMonicHom x).toFinsupp.comapDomain _ Fin.val_injective.injOn
-      invFun := fun g => h.map (ofFinsupp (g.mapDomain _))
+      invFun := fun g => h.map (ofFinsupp (g.mapDomain Fin.val))
       left_inv := fun x => by
         cases subsingleton_or_nontrivial R
         · subsingleton [h.subsingleton]
