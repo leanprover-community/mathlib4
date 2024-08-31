@@ -117,7 +117,7 @@ lemma ofENat_inj {m n : ℕ∞} : (m : Cardinal) = n ↔ m = n := ofENat_injecti
 @[simp] lemma ofNat_eq_ofENat {m : ℕ} {n : ℕ∞} [m.AtLeastTwo] :
     no_index (OfNat.ofNat m) = (n : Cardinal) ↔ OfNat.ofNat m = n := nat_eq_ofENat
 
-@[simp, norm_cast] lemma lift_ofENat : ∀ m : ℕ∞, lift.{u, v} m = m
+@[simp] lemma lift_ofENat : ∀ m : ℕ∞, lift.{u, v} m = m
   | (m : ℕ) => lift_natCast m
   | ⊤ => lift_aleph0
 
