@@ -17,7 +17,7 @@ This file characterises sheaves for the regular topology.
 
 ## Main results
 
-* `equalizerCondition_iff_isSheaf`: In a preregular category with pullbacks, the sheaves for the
+* `equalizerCondition_iff_isSheaf`: In a preregular category with pullbacks, the sheaves for the
   regular topology are precisely the presheaves satisfying an equaliser condition with respect to
   effective epimorphisms.
 
@@ -46,7 +46,7 @@ lemma equalizerCondition_w (P : Cᵒᵖ ⥤ D) {X B : C} {π : X ⟶ B} (c : Pul
   simp only [← Functor.map_comp, ← op_comp, c.condition]
 
 /--
-A contravariant functor on `C` satisifies `SingleEqualizerCondition` with respect to a morphism `π`
+A contravariant functor on `C` satisfies `SingleEqualizerCondition` with respect to a morphism `π`
 if it takes its kernel pair to an equalizer diagram.
 -/
 def SingleEqualizerCondition (P : Cᵒᵖ ⥤ D) ⦃X B : C⦄ (π : X ⟶ B) : Prop :=
@@ -54,7 +54,7 @@ def SingleEqualizerCondition (P : Cᵒᵖ ⥤ D) ⦃X B : C⦄ (π : X ⟶ B) : 
     Nonempty (IsLimit (Fork.ofι (P.map π.op) (equalizerCondition_w P c)))
 
 /--
-A contravariant functor on `C` satisfies `EqualizerCondition` if it takes kernel pairs of effective
+A contravariant functor on `C` satisfies `EqualizerCondition` if it takes kernel pairs of effective
 epimorphisms to equalizer diagrams.
 -/
 def EqualizerCondition (P : Cᵒᵖ ⥤ D) : Prop :=
@@ -148,7 +148,7 @@ theorem equalizerCondition_iff_isIso_lift (P : Cᵒᵖ ⥤ Type*) : EqualizerCon
     rw [mapToEqualizer_eq_comp, ← isIso_iff_bijective]
     infer_instance
 
-/-- `P` satisfies the equalizer condition iff its precomposition by an equivalence does. -/
+/-- `P` satisfies the equalizer condition iff its precomposition by an equivalence does. -/
 theorem equalizerCondition_iff_of_equivalence (P : Cᵒᵖ ⥤ D)
     (e : C ≌ E) : EqualizerCondition P ↔ EqualizerCondition (e.op.inverse ⋙ P) :=
   ⟨fun h ↦ equalizerCondition_precomp_of_preservesPullback P e.inverse h, fun h ↦
@@ -177,7 +177,7 @@ theorem parallelPair_pullback_initial {X B : C} (π : X ⟶ B)
     all_goals exact Comma.hom_ext _ _ (by erw [Over.comp_left]; simp [ij]) rfl
 
 /--
-Given a limiting pullback cone, the fork in `SingleEqualizerCondition` is limiting iff the diagram
+Given a limiting pullback cone, the fork in `SingleEqualizerCondition` is limiting iff the diagram
 in `Presheaf.isSheaf_iff_isLimit_coverage` is limiting.
 -/
 noncomputable def isLimit_forkOfι_equiv (P : Cᵒᵖ ⥤ D) {X B : C} (π : X ⟶ B)
