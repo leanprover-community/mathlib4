@@ -6,6 +6,16 @@ Authors: Yury Kudryashov
 import Mathlib.Topology.Algebra.Module.Multilinear.Topology
 import Mathlib.Topology.Algebra.Module.Alternating.Basic
 
+/-!
+# Topology on continuous alternating maps
+
+In this file we define `UniformSpace` and `TopologicalSpace` structures
+on the space of continuous alternating maps between topological vector spaces.
+
+The structures are induced by those on `ContinuousMultilinearMap`s,
+and most of the lemmas follow from the corresponding lemmas about `ContinuousMultilinearMap`s.
+-/
+
 open Bornology Function Set
 open scoped Topology UniformConvergence Filter
 
