@@ -512,3 +512,7 @@ theorem Polynomial.isRoot_of_isRoot_iff_dvd_derivative_mul {K : Type*} [Field K]
       _ ≤ rootMultiplicity a f - 1 + rootMultiplicity a g := add_le_add le_rfl (Nat.succ_le_iff.1
         ((rootMultiplicity_pos hg0).2 (h haf)))
   · simp [haf, rootMultiplicity_eq_zero haf]
+
+instance (K K' : Type*) [Field K] [IsAlgClosed K] [Field K'] [Algebra K K'] [IsAlgClosure K K'] :
+    FiniteDimensional K K' :=
+  .equiv (M := K) (IsAlgClosure.equiv K K K')

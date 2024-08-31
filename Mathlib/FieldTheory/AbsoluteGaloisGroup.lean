@@ -42,6 +42,16 @@ local notation "G_K" => absoluteGaloisGroup
 
 noncomputable instance : Group (G_K K) := AlgEquiv.aut
 
+namespace absoluteGaloisGroup
+
+instance [IsAlgClosed K] : Unique (G_K K) := AlgEquiv.instUnique _ _
+
+end absoluteGaloisGroup
+
+-- IsCyclic (G_K ℂ) := ⟨Complex.conjAe, sorry⟩
+-- Nat.card (G_K ℂ) = 2 -- Complex.real_algHom_eq_id_or_conj
+
+
 /-- `absoluteGaloisGroup` is a topological space with the Krull topology. -/
 noncomputable instance : TopologicalSpace (G_K K) := krullTopology K (AlgebraicClosure K)
 

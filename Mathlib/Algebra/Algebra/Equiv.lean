@@ -20,6 +20,8 @@ This file defines bundled isomorphisms of `R`-algebras.
 * `A ≃ₐ[R] B` : `R`-algebra equivalence from `A` to `B`.
 -/
 
+assert_not_exists Cardinal
+
 universe u v w u₁ v₁
 
 /-- An equivalence of algebras (denoted as `A ≃ₐ[R] B`)
@@ -596,8 +598,8 @@ instance aut : Group (A₁ ≃ₐ[R] A₁) where
   mul ϕ ψ := ψ.trans ϕ
   mul_assoc _ _ _ := rfl
   one := refl
-  one_mul _ := ext fun _ => rfl
-  mul_one _ := ext fun _ => rfl
+  one_mul _ := rfl
+  mul_one _ := rfl
   inv := symm
   inv_mul_cancel ϕ := ext <| symm_apply_apply ϕ
 
@@ -787,4 +789,3 @@ def ULift.algEquiv {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Alge
     ULift.{w} A ≃ₐ[R] A where
   __ := ULift.ringEquiv
   commutes' _ := rfl
-
