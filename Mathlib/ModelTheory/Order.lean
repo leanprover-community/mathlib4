@@ -232,7 +232,7 @@ variable [Preorder M]
 
 instance model_preorder : M ⊨ Language.order.preorderTheory := by
   simp only [preorderTheory, Theory.model_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
-    forall_eq_or_imp, Relations.realize_reflexive, relMap_apply₂, forall_eq,
+    forall_eq_or_imp, Relations.realize_reflexive, relMap_leSymb, forall_eq,
     Relations.realize_transitive]
   exact ⟨le_refl, fun _ _ _ => le_trans⟩
 
@@ -244,9 +244,10 @@ theorem Term.realize_lt [L.OrderedStructure M] {t₁ t₂ : L.Term (α ⊕ (Fin 
 
 theorem realize_denselyOrdered_iff :
     M ⊨ Language.order.denselyOrderedSentence ↔ DenselyOrdered M := by
-  simp only [denselyOrderedSentence, Sentence.Realize, Formula.Realize,
-    BoundedFormula.realize_imp, BoundedFormula.realize_all, Term.realize, Term.realize_lt,
-    Sum.elim_inr, BoundedFormula.realize_ex, BoundedFormula.realize_inf]
+  simp only [Sentence.Realize, Formula.Realize, denselyOrderedSentence, Nat.reduceAdd, Fin.isValue,
+    Function.comp_apply, BoundedFormula.realize_all, Nat.succ_eq_add_one,
+    BoundedFormula.realize_imp, Term.realize_lt, Term.realize, Sum.elim_inr,
+    BoundedFormula.realize_ex, BoundedFormula.realize_inf]
   refine ⟨fun h => ⟨fun a b ab => h a b ab⟩, ?_⟩
   intro h a b ab
   exact exists_between ab
@@ -260,7 +261,7 @@ end Preorder
 
 instance model_partialOrder [PartialOrder M] : M ⊨ Language.order.partialOrderTheory := by
   simp only [partialOrderTheory, Theory.model_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
-    forall_eq_or_imp, Relations.realize_reflexive, relMap_apply₂, Relations.realize_antisymmetric,
+    forall_eq_or_imp, Relations.realize_reflexive, relMap_leSymb, Relations.realize_antisymmetric,
     forall_eq, Relations.realize_transitive]
   exact ⟨le_refl, fun _ _ => le_antisymm, fun _ _ _ => le_trans⟩
 
@@ -270,15 +271,14 @@ variable [LinearOrder M]
 
 instance model_linearOrder : M ⊨ Language.order.linearOrderTheory := by
   simp only [linearOrderTheory, Theory.model_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
-    forall_eq_or_imp, Relations.realize_reflexive, relMap_apply₂, Relations.realize_antisymmetric,
+    forall_eq_or_imp, Relations.realize_reflexive, relMap_leSymb, Relations.realize_antisymmetric,
     Relations.realize_transitive, forall_eq, Relations.realize_total]
   exact ⟨le_refl, fun _ _ => le_antisymm, fun _ _ _ => le_trans, le_total⟩
 
 instance model_dlo [DenselyOrdered M] [NoTopOrder M] [NoBotOrder M] :
     M ⊨ Language.order.dlo := by
   simp only [dlo, Set.union_insert, Set.union_singleton, Theory.model_iff, Set.mem_insert_iff,
-    forall_eq_or_imp, realize_noTopOrder, realize_noBotOrder, realize_denselyOrdered,
-    true_and_iff]
+    forall_eq_or_imp, realize_noTopOrder, realize_noBotOrder, realize_denselyOrdered, true_and]
   rw [← Theory.model_iff]
   infer_instance
 
