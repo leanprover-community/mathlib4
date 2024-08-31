@@ -1002,10 +1002,7 @@ theorem one_lt_ncard_iff (hs : s.Finite := by toFinite_tac) :
 
 lemma one_lt_ncard_of_nonempty_of_even (hs : Set.Finite s) (hn : Set.Nonempty s := by toFinite_tac)
     (he : Even (s.ncard)) : 1 < s.ncard := by
-  have : s.ncard ≠ 0 := by
-    intro h
-    rw [Set.nonempty_iff_ne_empty] at hn
-    exact hn <| (Set.ncard_eq_zero hs).mp h
+  rw [← Set.ncard_pos hs] at hn
   have : s.ncard ≠ 1 := fun h ↦ by simp [h] at he
   omega
 
