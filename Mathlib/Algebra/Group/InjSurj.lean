@@ -26,7 +26,7 @@ And there are versions for (additive) (commutative) semigroups/monoids.
 
 ## Implementation note
 
-The `nsmul` and `zsmul` assumptions on any tranfer definition for an algebraic structure involving
+The `nsmul` and `zsmul` assumptions on any transfer definition for an algebraic structure involving
 both addition and multiplication (eg `AddMonoidWithOne`) is `∀ n x, f (n • x) = n • f x`, which is
 what we would expect.
 However, we cannot do the same for transfer definitions built using `to_additive` (eg `AddMonoid`)
@@ -240,7 +240,7 @@ protected abbrev divInvMonoid [DivInvMonoid M₂] (f : M₁ → M₂) (hf : Inje
 /-- A type endowed with `1`, `*`, `⁻¹`, and `/` is a `DivInvOneMonoid` if it admits an injective
 map that preserves `1`, `*`, `⁻¹`, and `/` to a `DivInvOneMonoid`. See note
 [reducible non-instances]. -/
-@[to_additive subNegZeroMonoid
+@[to_additive
 "A type endowed with `0`, `+`, unary `-`, and binary `-` is a
 `SubNegZeroMonoid` if it admits an injective map that preserves `0`, `+`, unary `-`, and binary
 `-` to a `SubNegZeroMonoid`. This version takes custom `nsmul` and `zsmul` as `[SMul ℕ M₁]` and
@@ -253,7 +253,7 @@ protected abbrev divInvOneMonoid [DivInvOneMonoid M₂] (f : M₁ → M₂) (hf 
 
 /-- A type endowed with `1`, `*`, `⁻¹`, and `/` is a `DivisionMonoid` if it admits an injective map
 that preserves `1`, `*`, `⁻¹`, and `/` to a `DivisionMonoid`. See note [reducible non-instances] -/
-@[to_additive subtractionMonoid
+@[to_additive
 "A type endowed with `0`, `+`, unary `-`, and binary `-`
 is a `SubtractionMonoid` if it admits an injective map that preserves `0`, `+`, unary `-`, and
 binary `-` to a `SubtractionMonoid`. This version takes custom `nsmul` and `zsmul` as `[SMul ℕ M₁]`

@@ -93,6 +93,11 @@ noncomputable def _root_.ContinuousMap.realToNNReal : C(ℝ, ℝ≥0) :=
 theorem continuous_coe : Continuous ((↑) : ℝ≥0 → ℝ) :=
   continuous_subtype_val
 
+lemma _root_.ContinuousOn.ofReal_map_toNNReal {f : ℝ≥0 → ℝ≥0} {s : Set ℝ} {t : Set ℝ≥0}
+    (hf : ContinuousOn f t) (h : Set.MapsTo Real.toNNReal s t) :
+    ContinuousOn (fun x ↦ f x.toNNReal : ℝ → ℝ) s :=
+  continuous_subtype_val.comp_continuousOn <| hf.comp continuous_real_toNNReal.continuousOn h
+
 /-- Embedding of `ℝ≥0` to `ℝ` as a bundled continuous map. -/
 @[simps (config := .asFn)]
 def _root_.ContinuousMap.coeNNRealReal : C(ℝ≥0, ℝ) :=
@@ -257,7 +262,7 @@ section Monotone
 /-- A monotone, bounded above sequence `f : ℕ → ℝ` has a finite limit. -/
 theorem _root_.Real.tendsto_of_bddAbove_monotone {f : ℕ → ℝ} (h_bdd : BddAbove (Set.range f))
     (h_mon : Monotone f) : ∃ r : ℝ, Tendsto f atTop (𝓝 r) := by
-  obtain ⟨B, hB⟩ := Real.exists_isLUB  (Set.range_nonempty f) h_bdd
+  obtain ⟨B, hB⟩ := Real.exists_isLUB (Set.range_nonempty f) h_bdd
   exact ⟨B, tendsto_atTop_isLUB h_mon hB⟩
 
 /-- An antitone, bounded below sequence `f : ℕ → ℝ` has a finite limit. -/

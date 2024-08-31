@@ -178,7 +178,7 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
   have hnle : ∀ n : ℕ, ‖h^[n] y‖ ≤ (1 / 2) ^ n * ‖y‖ := by
     intro n
     induction n with
-    | zero => simp only [one_div, Nat.zero_eq, one_mul, iterate_zero_apply, pow_zero, le_rfl]
+    | zero => simp only [one_div, one_mul, iterate_zero_apply, pow_zero, le_rfl]
     | succ n IH =>
       rw [iterate_succ']
       apply le_trans (hle _) _
@@ -531,7 +531,7 @@ section BijectivityCriteria
 
 namespace ContinuousLinearMap
 
-variable {σ : 𝕜 →+* 𝕜'}  {σ' : 𝕜' →+* 𝕜} [RingHomInvPair σ σ'] {f : E →SL[σ] F}
+variable {σ : 𝕜 →+* 𝕜'} {σ' : 𝕜' →+* 𝕜} [RingHomInvPair σ σ'] {f : E →SL[σ] F}
 variable {F : Type u_4} [NormedAddCommGroup F] [NormedSpace 𝕜' F]
 variable [CompleteSpace E]
 

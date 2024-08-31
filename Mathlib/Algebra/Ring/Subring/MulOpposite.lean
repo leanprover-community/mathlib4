@@ -73,17 +73,34 @@ def opEquiv : Subring R ≃o Subring Rᵐᵒᵖ where
   right_inv := op_unop
   map_rel_iff' := op_le_op_iff
 
+theorem op_injective : (@Subring.op R _).Injective := opEquiv.injective
+theorem unop_injective : (@Subring.unop R _).Injective := opEquiv.symm.injective
+@[simp] theorem op_inj {S T : Subring R} : S.op = T.op ↔ S = T := opEquiv.eq_iff_eq
+@[simp] theorem unop_inj {S T : Subring Rᵐᵒᵖ} : S.unop = T.unop ↔ S = T := opEquiv.symm.eq_iff_eq
+
 @[simp]
 theorem op_bot : (⊥ : Subring R).op = ⊥ := opEquiv.map_bot
+
+@[simp]
+theorem op_eq_bot {S : Subring R} : S.op = ⊥ ↔ S = ⊥ := op_injective.eq_iff' op_bot
 
 @[simp]
 theorem unop_bot : (⊥ : Subring Rᵐᵒᵖ).unop = ⊥ := opEquiv.symm.map_bot
 
 @[simp]
-theorem op_top : (⊤ : Subring R).op = ⊤ := opEquiv.map_top
+theorem unop_eq_bot {S : Subring Rᵐᵒᵖ} : S.unop = ⊥ ↔ S = ⊥ := unop_injective.eq_iff' unop_bot
 
 @[simp]
-theorem unop_top : (⊤ : Subring Rᵐᵒᵖ).unop = ⊤ := opEquiv.symm.map_top
+theorem op_top : (⊤ : Subring R).op = ⊤ := rfl
+
+@[simp]
+theorem op_eq_top {S : Subring R} : S.op = ⊤ ↔ S = ⊤ := op_injective.eq_iff' op_top
+
+@[simp]
+theorem unop_top : (⊤ : Subring Rᵐᵒᵖ).unop = ⊤ := rfl
+
+@[simp]
+theorem unop_eq_top {S : Subring Rᵐᵒᵖ} : S.unop = ⊤ ↔ S = ⊤ := unop_injective.eq_iff' unop_top
 
 theorem op_sup (S₁ S₂ : Subring R) : (S₁ ⊔ S₂).op = S₁.op ⊔ S₂.op :=
   opEquiv.map_sup _ _
@@ -91,10 +108,9 @@ theorem op_sup (S₁ S₂ : Subring R) : (S₁ ⊔ S₂).op = S₁.op ⊔ S₂.o
 theorem unop_sup (S₁ S₂ : Subring Rᵐᵒᵖ) : (S₁ ⊔ S₂).unop = S₁.unop ⊔ S₂.unop :=
   opEquiv.symm.map_sup _ _
 
-theorem op_inf (S₁ S₂ : Subring R) : (S₁ ⊓ S₂).op = S₁.op ⊓ S₂.op := opEquiv.map_inf _ _
+theorem op_inf (S₁ S₂ : Subring R) : (S₁ ⊓ S₂).op = S₁.op ⊓ S₂.op := rfl
 
-theorem unop_inf (S₁ S₂ : Subring Rᵐᵒᵖ) : (S₁ ⊓ S₂).unop = S₁.unop ⊓ S₂.unop :=
-  opEquiv.symm.map_inf _ _
+theorem unop_inf (S₁ S₂ : Subring Rᵐᵒᵖ) : (S₁ ⊓ S₂).unop = S₁.unop ⊓ S₂.unop := rfl
 
 theorem op_sSup (S : Set (Subring R)) : (sSup S).op = sSup (.unop ⁻¹' S) :=
   opEquiv.map_sSup_eq_sSup_symm_preimage _
@@ -124,9 +140,8 @@ theorem op_closure (s : Set R) : (closure s).op = closure (MulOpposite.unop ⁻�
   exact MulOpposite.unop_surjective.forall
 
 theorem unop_closure (s : Set Rᵐᵒᵖ) : (closure s).unop = closure (MulOpposite.op ⁻¹' s) := by
-  simp_rw [closure, unop_sInf, Set.preimage_setOf_eq, op_coe]
-  congr with a
-  exact MulOpposite.op_surjective.forall
+  rw [← op_inj, op_unop, op_closure]
+  rfl
 
 /-- Bijection between a subring `S` and its opposite. -/
 @[simps!]
