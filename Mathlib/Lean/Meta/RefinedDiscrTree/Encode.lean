@@ -6,7 +6,6 @@ Authors: Jovan Gerbscheid
 import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
 import Mathlib.Lean.Meta.RefinedDiscrTree.Pi
 import Lean.Meta.DiscrTree
-import Batteries.Data.List.Basic
 
 /-!
 # Encoding an `Expr` as a sequence of `Key`s

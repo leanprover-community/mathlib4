@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
 import Mathlib.Lean.Meta.RefinedDiscrTree.Evaluate
+import Lean.Meta.CompletionName
 
 /-!
 # Constructing a RefinedDiscrTree
