@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Set.Countable
 import Mathlib.Logic.Small.Set
+import Mathlib.Order.InitialSeg
 import Mathlib.Order.SuccPred.CompleteLinearOrder
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
 import Mathlib.Algebra.Order.Ring.Nat
@@ -79,7 +80,8 @@ Cantor's theorem, König's theorem, Konig's theorem
 assert_not_exists Field
 
 open Mathlib (Vector)
-open Function Set Order
+open Function Order Set
+open scoped InitialSeg
 
 noncomputable section
 
@@ -164,52 +166,6 @@ def map₂ (f : Type u → Type v → Type w) (hf : ∀ α β γ δ, α ≃ β �
     Cardinal.{u} → Cardinal.{v} → Cardinal.{w} :=
   Quotient.map₂ f fun α β ⟨e₁⟩ γ δ ⟨e₂⟩ => ⟨hf α β γ δ e₁ e₂⟩
 
-/-- The universe lift operation on cardinals. You can specify the universes explicitly with
-  `lift.{u v} : Cardinal.{v} → Cardinal.{max v u}` -/
-@[pp_with_univ]
-def lift (c : Cardinal.{v}) : Cardinal.{max v u} :=
-  map ULift.{u, v} (fun _ _ e => Equiv.ulift.trans <| e.trans Equiv.ulift.symm) c
-
-@[simp]
-theorem mk_uLift (α) : #(ULift.{v, u} α) = lift.{v} #α :=
-  rfl
-
--- Porting note: simpNF is not happy with universe levels, but this is needed as simp lemma
--- further down in this file
-/-- `lift.{max u v, u}` equals `lift.{v, u}`. -/
-@[simp, nolint simpNF]
-theorem lift_umax : lift.{max u v, u} = lift.{v, u} :=
-  funext fun a => inductionOn a fun _ => (Equiv.ulift.trans Equiv.ulift.symm).cardinal_eq
-
--- Porting note: simpNF is not happy with universe levels, but this is needed as simp lemma
--- further down in this file
-/-- `lift.{max v u, u}` equals `lift.{v, u}`. -/
-@[simp, nolint simpNF]
-theorem lift_umax' : lift.{max v u, u} = lift.{v, u} :=
-  lift_umax
-
--- Porting note: simpNF is not happy with universe levels, but this is needed as simp lemma
--- further down in this file
-/-- A cardinal lifted to a lower or equal universe equals itself. -/
-@[simp, nolint simpNF]
-theorem lift_id' (a : Cardinal.{max u v}) : lift.{u} a = a :=
-  inductionOn a fun _ => mk_congr Equiv.ulift
-
-/-- A cardinal lifted to the same universe equals itself. -/
-@[simp]
-theorem lift_id (a : Cardinal) : lift.{u, u} a = a :=
-  lift_id'.{u, u} a
-
-/-- A cardinal lifted to the zero universe equals itself. -/
--- porting note (#10618): simp can prove this
--- @[simp]
-theorem lift_uzero (a : Cardinal.{u}) : lift.{0} a = a :=
-  lift_id'.{0, u} a
-
-@[simp]
-theorem lift_lift.{u_1} (a : Cardinal.{u_1}) : lift.{w} (lift.{v} a) = lift.{max v w} a :=
-  inductionOn a fun _ => (Equiv.ulift.trans <| Equiv.ulift.trans Equiv.ulift.symm).cardinal_eq
-
 /-- We define the order on cardinal numbers by `#α ≤ #β` if and only if
   there exists an embedding (injective function) from α to β. -/
 instance : LE Cardinal.{u} :=
@@ -257,6 +213,76 @@ theorem mk_subtype_le {α : Type u} (p : α → Prop) : #(Subtype p) ≤ #α :=
 
 theorem mk_set_le (s : Set α) : #s ≤ #α :=
   mk_subtype_le s
+
+/-- The universe lift operation on cardinals. You can specify the universes explicitly with
+  `lift.{u v} : Cardinal.{v} → Cardinal.{max v u}` -/
+@[pp_with_univ]
+def lift : @InitialSeg Cardinal.{v} Cardinal.{max v u} (· < ·) (· < ·) where
+  toFun := map ULift (fun _ _ e => Equiv.ulift.trans <| e.trans Equiv.ulift.symm)
+  inj' a b := by
+    refine inductionOn₂ a b ?_
+    intro α β
+    rw [map_mk, map_mk, Cardinal.eq, Cardinal.eq]
+    rintro ⟨e⟩
+    exact ⟨(Equiv.ulift.symm.trans e).trans Equiv.ulift⟩
+  map_rel_iff' := by
+    intro a b
+    refine inductionOn₂ a b ?_
+    intro α β
+    dsimp
+    rw [← le_iff_le_iff_lt_iff_lt, le_def, le_def]
+    constructor <;>
+    rintro ⟨e⟩
+    exacts [⟨e.congr Equiv.ulift Equiv.ulift⟩, ⟨e.congr Equiv.ulift.symm Equiv.ulift.symm⟩]
+  init' a b := by
+    refine inductionOn₂ a b ?_
+    intro α β h
+    dsimp at *
+    sorry
+
+
+
+
+#exit
+@[simp]
+theorem mk_uLift (α) : #(ULift.{v, u} α) = lift.{v} #α :=
+  rfl
+
+-- Porting note: simpNF is not happy with universe levels, but this is needed as simp lemma
+-- further down in this file
+/-- `lift.{max u v, u}` equals `lift.{v, u}`. -/
+@[simp, nolint simpNF]
+theorem lift_umax : lift.{max u v, u} = lift.{v, u} :=
+  funext fun a => inductionOn a fun _ => (Equiv.ulift.trans Equiv.ulift.symm).cardinal_eq
+
+-- Porting note: simpNF is not happy with universe levels, but this is needed as simp lemma
+-- further down in this file
+/-- `lift.{max v u, u}` equals `lift.{v, u}`. -/
+@[simp, nolint simpNF]
+theorem lift_umax' : lift.{max v u, u} = lift.{v, u} :=
+  lift_umax
+
+-- Porting note: simpNF is not happy with universe levels, but this is needed as simp lemma
+-- further down in this file
+/-- A cardinal lifted to a lower or equal universe equals itself. -/
+@[simp, nolint simpNF]
+theorem lift_id' (a : Cardinal.{max u v}) : lift.{u} a = a :=
+  inductionOn a fun _ => mk_congr Equiv.ulift
+
+/-- A cardinal lifted to the same universe equals itself. -/
+@[simp]
+theorem lift_id (a : Cardinal) : lift.{u, u} a = a :=
+  lift_id'.{u, u} a
+
+/-- A cardinal lifted to the zero universe equals itself. -/
+-- porting note (#10618): simp can prove this
+-- @[simp]
+theorem lift_uzero (a : Cardinal.{u}) : lift.{0} a = a :=
+  lift_id'.{0, u} a
+
+@[simp]
+theorem lift_lift.{u_1} (a : Cardinal.{u_1}) : lift.{w} (lift.{v} a) = lift.{max v w} a :=
+  inductionOn a fun _ => (Equiv.ulift.trans <| Equiv.ulift.trans Equiv.ulift.symm).cardinal_eq
 
 @[simp]
 lemma mk_preimage_down {s : Set α} : #(ULift.down.{v} ⁻¹' s) = lift.{v} (#s) := by
