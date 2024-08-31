@@ -65,8 +65,7 @@ instance hasForgetToCommRing : HasForget₂ BoolRing CommRingCat :=
   BundledHom.forget₂ _ _
 
 /-- Constructs a omorphism of Boolean rings from a ring morphism between them. -/
-@[simps!]
-def Hom.mk {α β : BoolRing.{u}} (e : α →+* β) : α ⟶ β := (e : RingHom _ _)
+abbrev Hom.mk {α β : BoolRing.{u}} (e : α →+* β) : α ⟶ β := (e : RingHom _ _)
 
 /-- Constructs an isomorphism of Boolean rings from a ring isomorphism between them. -/
 @[simps]

@@ -41,6 +41,11 @@ variable {M : CommMon_ C}
 instance : Category (CommMon_ C) :=
   InducedCategory.category CommMon_.toMon_
 
+/-- Constructor for morphisms in `CommMon_ C`. -/
+@[simps]
+def homMk {M N : CommMon_ C} (f : M.toMon_ ⟶ N.toMon_) : M ⟶ N where
+  hom := f
+
 @[simp]
 theorem id_hom_hom (A : CommMon_ C) : Mon_.Hom.hom (InducedCategory.Hom.hom (𝟙 A)) = 𝟙 A.X :=
   rfl
@@ -54,7 +59,7 @@ theorem comp_hom_hom {R S T : CommMon_ C} (f : R ⟶ S) (g : S ⟶ T) :
 -- for morphisms in `CommMon_ C`
 @[ext]
 lemma hom_ext {A B : CommMon_ C} (f g : A ⟶ B) (h : f.hom.hom = g.hom.hom) : f = g :=
-  InducedCategory.hom_ext (Mon_.Hom.ext _ _ h)
+  InducedCategory.hom_ext (Mon_.Hom.ext h)
 
 -- Porting note (#10688): the following two lemmas `id'` and `comp'`
 -- have been added to ease automation;
@@ -64,6 +69,12 @@ lemma id' (A : CommMon_ C) : InducedCategory.Hom.hom (𝟙 A) = 𝟙 A.toMon_ :=
 @[simp]
 lemma comp' {A₁ A₂ A₃ : CommMon_ C} (f : A₁ ⟶ A₂) (g : A₂ ⟶ A₃) :
     (f ≫ g : A₁ ⟶ A₃).hom = f.hom ≫ g.hom := rfl
+
+/-- Constructor for isomorphisms in `CommMon_ C`. -/
+@[simps]
+def isoMk {M N : CommMon_ C} (f : M.toMon_ ≅ N.toMon_) : M ≅ N where
+  hom := homMk f.hom
+  inv := homMk f.inv
 
 section
 
@@ -76,6 +87,9 @@ def forget₂Mon_ : CommMon_ C ⥤ Mon_ C :=
 -- Porting note: no delta derive handler, see https://github.com/leanprover-community/mathlib4/issues/5020
 instance : (forget₂Mon_ C).Full := InducedCategory.full _
 instance : (forget₂Mon_ C).Faithful := InducedCategory.faithful _
+
+/-- The functor `forget₂Mon_ C : CommMon_ C ⥤ Mon_ C` is fully faithful. -/
+def fullyFaithfulForget₂Mon_ : (forget₂Mon_ C).FullyFaithful := fullyFaithfulInducedFunctor _
 
 @[simp]
 theorem forget₂_Mon_obj_one (A : CommMon_ C) : ((forget₂Mon_ C).obj A).one = A.one :=
@@ -93,7 +107,8 @@ theorem forget₂_Mon_map_hom {A B : CommMon_ C} (f : A ⟶ B) :
 end
 
 instance uniqueHomFromTrivial (A : CommMon_ C) : Unique (trivial C ⟶ A) :=
-  Mon_.uniqueHomFromTrivial A.toMon_
+  (by exact (fullyFaithfulForget₂Mon_ C).homEquiv (X := trivial C) (Y := A) : _ ≃
+    (Mon_.trivial C ⟶ A.toMon_)).unique
 
 open CategoryTheory.Limits
 
@@ -119,7 +134,7 @@ def mapCommMon (F : LaxBraidedFunctor C D) : CommMon_ C ⥤ CommMon_ D where
         have := F.braided
         slice_lhs 1 2 => rw [← this]
         slice_lhs 2 3 => rw [← CategoryTheory.Functor.map_comp, A.mul_comm] }
-  map f := F.toLaxMonoidalFunctor.mapMon.map f
+  map f := CommMon_.homMk (F.toLaxMonoidalFunctor.mapMon.map f.hom)
 
 variable (C) (D)
 
@@ -128,9 +143,7 @@ variable (C) (D)
 @[simps]
 def mapCommMonFunctor : LaxBraidedFunctor C D ⥤ CommMon_ C ⥤ CommMon_ D where
   obj := mapCommMon
-  map α :=
-    { app := fun A => { hom := α.app A.X }
-      naturality := by intros; ext; simp }
+  map α := { app := fun A ↦ CommMon_.homMk { hom := α.hom.app A.X } }
 
 end CategoryTheory.LaxBraidedFunctor
 
@@ -156,11 +169,11 @@ def commMonToLaxBraided : CommMon_ C ⥤ LaxBraidedFunctor (Discrete PUnit.{u + 
       μ := fun _ _ => A.mul
       map_id := fun _ => rfl
       map_comp := fun _ _ => (Category.id_comp (𝟙 A.X)).symm }
-  map f :=
-    { app := fun _ => f.hom
+  map f := LaxBraidedFunctor.homMk
+    { app := fun _ => f.hom.hom
       naturality := fun _ _ _ => by dsimp; rw [Category.id_comp, Category.comp_id]
-      unit := Mon_.Hom.one_hom f
-      tensor := fun _ _ => Mon_.Hom.mul_hom f }
+      unit := Mon_.Hom.one_hom f.hom
+      tensor := fun _ _ => Mon_.Hom.mul_hom f.hom }
 
 /-- Implementation of `CommMon_.equivLaxBraidedFunctorPUnit`. -/
 @[simps!]
@@ -177,10 +190,7 @@ def unitIso :
 /-- Implementation of `CommMon_.equivLaxBraidedFunctorPUnit`. -/
 @[simps!]
 def counitIso : commMonToLaxBraided C ⋙ laxBraidedToCommMon C ≅ 𝟭 (CommMon_ C) :=
-  NatIso.ofComponents
-    (fun F =>
-      { hom := { hom := 𝟙 _ }
-        inv := { hom := 𝟙 _ } })
+  NatIso.ofComponents (fun F ↦ CommMon_.isoMk (Mon_.mkIso (Iso.refl _)))
 
 end EquivLaxBraidedFunctorPUnit
 

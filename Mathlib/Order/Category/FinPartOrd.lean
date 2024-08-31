@@ -69,11 +69,16 @@ instance hasForgetToFintype : HasForget₂ FinPartOrd FintypeCat where
       -- Porting note: Originally `map := fun X Y => coeFn`
       map := fun f ↦ { hom := ⇑f } }
 
+/-- Construct a morphism of finite partial orders from an order morphism between them. -/
+@[simps]
+def Hom.mk {α β : FinPartOrd.{u}} (f : α →o β) : α ⟶ β where
+  hom := f
+
 /-- Constructs an isomorphism of finite partial orders from an order isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : FinPartOrd.{u}} (e : α ≃o β) : α ≅ β where
-  hom := { hom := (e : OrderHom _ _) }
-  inv := { hom := (e.symm : OrderHom _ _) }
+  hom := Hom.mk e
+  inv := Hom.mk e.symm
   hom_inv_id := by
     ext
     exact e.symm_apply_apply _

@@ -399,6 +399,12 @@ def comp (F : LaxBraidedFunctor C D) (G : LaxBraidedFunctor D E) : LaxBraidedFun
 instance categoryLaxBraidedFunctor : Category (LaxBraidedFunctor C D) :=
   InducedCategory.category LaxBraidedFunctor.toLaxMonoidalFunctor
 
+/-- Constructor for morphisms of lax braided monoidal functors. -/
+@[simps]
+def homMk {F G : LaxBraidedFunctor C D} (f : F.toLaxMonoidalFunctor ⟶ G.toLaxMonoidalFunctor) :
+    F ⟶ G where
+  hom := f
+
 -- Porting note: added, as `MonoidalNatTrans.ext` does not apply to morphisms.
 @[ext]
 lemma ext' {F G : LaxBraidedFunctor C D} {α β : F ⟶ G} (w : ∀ X : C, α.hom.app X = β.hom.app X) :
