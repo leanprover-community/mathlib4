@@ -1055,7 +1055,7 @@ theorem brange_bfamilyOfFamily {ι : Type u} (f : ι → α) : brange _ (bfamily
 @[simp]
 theorem brange_const {o : Ordinal} (ho : o ≠ 0) {c : α} : (brange o fun _ _ => c) = {c} := by
   rw [← range_familyOfBFamily]
-  exact @range_const _ o.toType (out_nonempty_iff_ne_zero.2 ho) c
+  exact @range_const _ o.toType (toType_nonempty_iff_ne_zero.2 ho) c
 
 theorem comp_bfamilyOfFamily' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] (f : ι → α)
     (g : α → β) : (fun i hi => g (bfamilyOfFamily' r f i hi)) = bfamilyOfFamily' r (g ∘ f) :=
