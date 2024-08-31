@@ -145,10 +145,8 @@ def projNat (n : ℕ) := @proj ℕ α (Set.Iic n)
 @[simp]
 def projNat₂ {m n : ℕ} (hmn : m ≤ n) := proj₂ (α := α) (Set.Iic_subset_Iic.2 hmn)
 
-/-- Given a dependent function indexed by `ℕ`, specialize it as a function on `Iic n`. This is
-different from `projNat n`, as the latter is gives a function indexed by `Set.Iic n` while the
-former gives a function indexed by `↑(Finset.Iic n)`. Those sets are equal but not
-definitionally. -/
+/-- Given a dependent function indexed by `ℕ`, specialize it as a function on `Iic n`,
+`Finset` version. -/
 @[simp]
 def fprojNat (n : ℕ) := @fproj ℕ α (Finset.Iic n)
 
