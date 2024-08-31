@@ -5,8 +5,9 @@ Authors: Frédéric Dupuis
 -/
 
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
-import Mathlib.Topology.ContinuousFunction.StarOrdered
 import Mathlib.Analysis.CStarAlgebra.Unitization
+import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow
+import Mathlib.Topology.ContinuousFunction.StarOrdered
 
 /-! # Facts about star-ordered rings that depend on the continuous functional calculus
 
@@ -193,6 +194,81 @@ lemma nnnorm_le_ofNat_iff_of_nonneg (a : A) (n : ℕ) (ha : 0 ≤ a := by cfc_ta
   simpa using nnnorm_le_iff_of_nonneg a n
 
 end CStarRing
+
+section Inv
+
+open CFC
+
+variable [PartialOrder A] [StarOrderedRing A]
+
+lemma CFC.conjugate_rpow_neg_one_half {a : A} (h₀ : IsUnit a) (ha : 0 ≤ a := by cfc_tac) :
+    a ^ (-(1 / 2) : ℝ) * a * a ^ (-(1 / 2) : ℝ) = 1 := by
+  lift a to Aˣ using h₀
+  nth_rw 2 [← rpow_one (a : A)]
+  simp only [← rpow_add (a.zero_not_mem_spectrum ℝ≥0)]
+  norm_num
+  exact rpow_zero _
+
+lemma CStarRing.isUnit_of_le {a b : A} (h₀ : IsUnit a) (ha : 0 ≤ a := by cfc_tac)
+    (hab : a ≤ b) : IsUnit b := by
+  rw [← spectrum.zero_not_mem_iff ℝ≥0] at h₀ ⊢
+  nontriviality A
+  have hb := (show 0 ≤ a from ha).trans hab
+  have ha' := IsSelfAdjoint.of_nonneg ha |>.spectrum_nonempty
+  have hb' := IsSelfAdjoint.of_nonneg hb |>.spectrum_nonempty
+  rw [zero_not_mem_iff, SpectrumRestricts.nnreal_lt_iff (.nnreal_of_nonneg ‹_›),
+    NNReal.coe_zero, ← CFC.exists_pos_algebraMap_le_iff ‹_›] at h₀ ⊢
+  peel h₀ with r hr _
+  exact this.trans hab
+
+lemma le_iff_norm_sqrt_mul_rpow {a b : A} (hbu : IsUnit b) (ha : 0 ≤ a) (hb : 0 ≤ (b : A)) :
+    a ≤ b ↔ ‖sqrt a * (b : A) ^ (-(1 / 2) : ℝ)‖ ≤ 1 := by
+  lift b to Aˣ using hbu
+  have hbab : 0 ≤ (b : A) ^ (-(1 / 2) : ℝ) * a * (b : A) ^ (-(1 / 2) : ℝ) :=
+    StarOrderedRing.mul_nonneg_mul rpow_nonneg ha
+  conv_rhs =>
+    rw [← sq_le_one_iff (norm_nonneg _), sq, ← CStarRing.norm_star_mul_self, star_mul,
+      IsSelfAdjoint.of_nonneg sqrt_nonneg, IsSelfAdjoint.of_nonneg rpow_nonneg,
+      ← mul_assoc, mul_assoc _ _ (sqrt a), sqrt_mul_sqrt_self a,
+      CStarRing.norm_le_one_iff_of_nonneg _ hbab]
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · calc
+      _ ≤ ↑b ^ (-(1 / 2) : ℝ) * (b : A) * ↑b ^ (-(1 / 2) : ℝ) :=
+        IsSelfAdjoint.of_nonneg rpow_nonneg |>.mul_mul_le_mul_mul h
+      _ = 1 := conjugate_rpow_neg_one_half b.isUnit
+  · calc
+      a = (sqrt ↑b * ↑b ^ (-(1 / 2) : ℝ)) * a * (↑b ^ (-(1 / 2) : ℝ) * sqrt ↑b) := by
+        simp only [CFC.sqrt_eq_rpow .., ← CFC.rpow_add (b.zero_not_mem_spectrum ℝ≥0)]
+        norm_num
+        simp [CFC.rpow_zero (b : A)]
+      _ = sqrt ↑b * (↑b ^ (-(1 / 2) : ℝ) * a * ↑b ^ (-(1 / 2) : ℝ)) * sqrt ↑b := by
+        simp only [mul_assoc]
+      _ ≤ b := StarOrderedRing.mul_mul_le_mul_mul sqrt_nonneg h |>.trans <| by
+        simp [CFC.sqrt_mul_sqrt_self (b : A)]
+
+lemma le_iff_norm_sqrt_mul_sqrt_inv {a : A} {b : Aˣ} (ha : 0 ≤ a) (hb : 0 ≤ (b : A)) :
+    a ≤ b ↔ ‖sqrt a * sqrt (↑b⁻¹ : A)‖ ≤ 1 := by
+  rw [CFC.sqrt_eq_rpow (a := (↑b⁻¹ : A)), ← CFC.rpow_neg_one_eq_inv b,
+    CFC.rpow_rpow (b : A) _ _ (by simp) (by norm_num), le_iff_norm_sqrt_mul_rpow b.isUnit ha hb]
+  norm_num
+
+protected lemma CFC.inv_le_inv {a b : Aˣ} (ha : 0 ≤ (a : A))
+    (hab : (a : A) ≤ b) : (↑b⁻¹ : A) ≤ a⁻¹ := by
+  have hb := ha.trans hab
+  have hb_inv : (0 : A) ≤ b⁻¹ := inv_nonneg_of_nonneg b hb
+  have ha_inv : (0 : A) ≤ a⁻¹ := inv_nonneg_of_nonneg a ha
+  rw [le_iff_norm_sqrt_mul_sqrt_inv ha hb, ← sq_le_one_iff (norm_nonneg _), sq,
+    ← CStarRing.norm_star_mul_self] at hab
+  rw [le_iff_norm_sqrt_mul_sqrt_inv hb_inv ha_inv, inv_inv, ← sq_le_one_iff (norm_nonneg _), sq,
+    ← CStarRing.norm_self_mul_star]
+  rwa [star_mul, IsSelfAdjoint.of_nonneg sqrt_nonneg,
+    IsSelfAdjoint.of_nonneg sqrt_nonneg] at hab ⊢
+
+protected lemma CFC.inv_le_inv_iff {a b : Aˣ} (ha : 0 ≤ (a : A)) (hb : 0 ≤ (b : A)) :
+    (↑a⁻¹ : A) ≤ b⁻¹ ↔ b ≤ a :=
+  ⟨CFC.inv_le_inv (inv_nonneg_of_nonneg a ha), CFC.inv_le_inv hb⟩
+
+end Inv
 
 end CStar_unital
 
