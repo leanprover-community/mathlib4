@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Floris van Doorn
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Order.RelIso.Set
 import Mathlib.Order.WellFounded
+import Mathlib.Order.Hom.Basic
 /-!
 # Initial and principal segments
 
@@ -69,6 +70,17 @@ instance : FunLike (r ≼i s) α β where
 
 instance : EmbeddingLike (r ≼i s) α β where
   injective' f := f.inj'
+
+/-- An initial segment embedding between the less-than relations of two partial orders is an order
+embedding. -/
+def toOrderEmbedding [PartialOrder α] [PartialOrder β]
+    (f : @InitialSeg α β (· < ·) (· < ·)) : α ↪o β :=
+  f.orderEmbeddingOfLTEmbedding
+
+@[simp]
+theorem toOrderEmbedding_apply [PartialOrder α] [PartialOrder β]
+    (f : @InitialSeg α β (· < ·) (· < ·)) (x : α) : f.toOrderEmbedding x = f x :=
+  rfl
 
 @[ext] lemma ext {f g : r ≼i s} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h

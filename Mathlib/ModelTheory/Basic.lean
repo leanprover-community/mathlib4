@@ -237,7 +237,7 @@ theorem card_sum :
     (L.sum L').card = Cardinal.lift.{max u' v'} L.card + Cardinal.lift.{max u v} L'.card := by
   simp only [card_eq_card_functions_add_card_relations, card_functions_sum, card_relations_sum,
     sum_add_distrib', lift_add, lift_sum, lift_lift]
-  simp only [add_assoc, add_comm (Cardinal.sum fun i => Cardinal.lift (#(L'.Functions i)))]
+  simp only [add_assoc, add_comm (Cardinal.sum fun i => Cardinal.lift #(L'.Functions i))]
 
 @[simp]
 theorem card_mk₂ (c f₁ f₂ : Type u) (r₁ r₂ : Type v) :
