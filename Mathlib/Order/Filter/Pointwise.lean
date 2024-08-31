@@ -86,6 +86,12 @@ theorem one_mem_one : (1 : Set α) ∈ (1 : Filter α) :=
 theorem pure_one : pure 1 = (1 : Filter α) :=
   rfl
 
+@[to_additive (attr := simp) zero_prod]
+theorem one_prod {l : Filter β} : (1 : Filter α) ×ˢ l = map (1, ·) l := pure_prod
+
+@[to_additive (attr := simp) prod_zero]
+theorem prod_one {l : Filter β} : l ×ˢ (1 : Filter α) = map (·, 1) l := prod_pure
+
 @[to_additive (attr := simp)]
 theorem principal_one : 𝓟 1 = (1 : Filter α) :=
   principal_singleton _
@@ -116,7 +122,7 @@ theorem eventually_one {p : α → Prop} : (∀ᶠ x in 1, p x) ↔ p 1 :=
 theorem tendsto_one {a : Filter β} {f : β → α} : Tendsto f a 1 ↔ ∀ᶠ x in a, f x = 1 :=
   tendsto_pure
 
-@[to_additive (attr := simp) zero_prod_zero]
+@[to_additive zero_prod_zero]
 theorem one_prod_one [One β] : (1 : Filter α) ×ˢ (1 : Filter β) = 1 :=
   prod_pure_pure
 
