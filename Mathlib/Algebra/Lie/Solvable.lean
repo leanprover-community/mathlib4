@@ -131,11 +131,12 @@ variable {R L}
 
 theorem derivedSeries_eq_derivedSeriesOfIdeal_comap (k : ℕ) :
     derivedSeries R I k = (derivedSeriesOfIdeal R L k I).comap I.incl := by
-  induction' k with k ih
-  · simp only [derivedSeries_def, comap_incl_self, derivedSeriesOfIdeal_zero]
-  · simp only [derivedSeries_def, derivedSeriesOfIdeal_succ] at ih ⊢; rw [ih]
-    exact comap_bracket_incl_of_le I
-      (derivedSeriesOfIdeal_le_self I k) (derivedSeriesOfIdeal_le_self I k)
+  induction k with
+  | zero => simp only [derivedSeries_def, comap_incl_self, derivedSeriesOfIdeal_zero]
+  | succ k ih =>
+    simp only [derivedSeries_def, derivedSeriesOfIdeal_succ] at ih ⊢; rw [ih]
+    exact comap_bracket_incl_of_le I (derivedSeriesOfIdeal_le_self I k)
+      (derivedSeriesOfIdeal_le_self I k)
 
 theorem derivedSeries_eq_derivedSeriesOfIdeal_map (k : ℕ) :
     (derivedSeries R I k).map I.incl = derivedSeriesOfIdeal R L k I := by
@@ -156,18 +157,20 @@ theorem derivedSeries_add_eq_bot {k l : ℕ} {I J : LieIdeal R L} (hI : derivedS
     _ ≤ ⊥ := by rw [hI, hJ]; simp
 
 theorem derivedSeries_map_le (k : ℕ) : (derivedSeries R L' k).map f ≤ derivedSeries R L k := by
-  induction' k with k ih
-  · simp only [derivedSeries_def, derivedSeriesOfIdeal_zero, le_top]
-  · simp only [derivedSeries_def, derivedSeriesOfIdeal_succ] at ih ⊢
+  induction k with
+  | zero => simp only [derivedSeries_def, derivedSeriesOfIdeal_zero, le_top]
+  | succ k ih =>
+    simp only [derivedSeries_def, derivedSeriesOfIdeal_succ] at ih ⊢
     exact le_trans (map_bracket_le f) (LieSubmodule.mono_lie ih ih)
 
 theorem derivedSeries_map_eq (k : ℕ) (h : Function.Surjective f) :
     (derivedSeries R L' k).map f = derivedSeries R L k := by
-  induction' k with k ih
-  · change (⊤ : LieIdeal R L').map f = ⊤
+  induction k with
+  | zero =>
+    change (⊤ : LieIdeal R L').map f = ⊤
     rw [← f.idealRange_eq_map]
     exact f.idealRange_eq_top_of_surjective h
-  · simp only [derivedSeries_def, map_bracket_eq f h, ih, derivedSeriesOfIdeal_succ]
+  | succ k ih => simp only [derivedSeries_def, map_bracket_eq f h, ih, derivedSeriesOfIdeal_succ]
 
 theorem derivedSeries_succ_eq_top_iff (n : ℕ) :
     derivedSeries R L (n + 1) = ⊤ ↔ derivedSeries R L 1 = ⊤ := by
@@ -263,7 +266,7 @@ def radical :=
 
 /-- The radical of a Noetherian Lie algebra is solvable. -/
 instance radicalIsSolvable [IsNoetherian R L] : IsSolvable R (radical R L) := by
-  have hwf := LieSubmodule.wellFounded_of_noetherian R L L
+  have hwf := (LieSubmodule.wellFoundedGT_of_noetherian R L L).wf
   rw [← CompleteLattice.isSupClosedCompact_iff_wellFounded] at hwf
   refine hwf { I : LieIdeal R L | IsSolvable R I } ⟨⊥, ?_⟩ fun I hI J hJ => ?_
   · exact LieAlgebra.isSolvableBot R L

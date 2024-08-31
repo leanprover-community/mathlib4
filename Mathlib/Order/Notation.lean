@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov, Yaël Dillies
 -/
-import Mathlib.Tactic.Basic
+import Mathlib.Tactic.TypeStar
 import Mathlib.Tactic.Simps.NotationClass
 
 /-!

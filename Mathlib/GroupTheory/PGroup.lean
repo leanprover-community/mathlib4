@@ -37,7 +37,7 @@ theorem of_card {n : ℕ} (hG : Nat.card G = p ^ n) : IsPGroup p G := fun g =>
   ⟨n, by rw [← hG, pow_card_eq_one']⟩
 
 theorem of_bot : IsPGroup p (⊥ : Subgroup G) :=
-  of_card (by rw [Subgroup.card_bot, pow_zero])
+  of_card (n := 0) (by rw [Subgroup.card_bot, pow_zero])
 
 theorem iff_card [Fact p.Prime] [Finite G] : IsPGroup p G ↔ ∃ n : ℕ, Nat.card G = p ^ n := by
   have hG : Nat.card G ≠ 0 := Nat.card_pos.ne'
