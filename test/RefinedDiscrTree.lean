@@ -1,4 +1,4 @@
-import Mathlib.Lean.Meta.RefinedDiscrTree
+import Mathlib.Lean.Meta.RefinedDiscrTree.Encode
 import Qq
 import Mathlib.Data.Rat.Defs
 import Mathlib.GroupTheory.GroupAction.Basic
@@ -8,7 +8,7 @@ open Qq Lean Meta RefinedDiscrTree
 
 macro "#" e:term : command =>
   `(command| run_meta do
-    for keys in ← mkKeys q($e) {} false do
+    for keys in ← encodeExpr q($e) {} do
       logInfo m! "{← keysAsPattern keys}")
 
 -- eta reduction:
@@ -18,15 +18,37 @@ macro "#" e:term : command =>
 
 -- potential eta reduction:
 /--
-info: @Function.Bijective ℤ ℤ (λ, Int.succ _0)
----
 info: @Function.Bijective ℤ ℤ Int.succ
+---
+info: @Function.Bijective ℤ ℤ (λ, Int.succ _0)
 -/
 #guard_msgs in
 run_meta do
   let m ← mkFreshExprMVarQ q(ℤ → ℤ)
-  for keys in ← mkKeys q(Function.Bijective fun x : Int => Int.succ ($m x)) {} false do
+  for keys in ← encodeExpr q(Function.Bijective fun x : Int => Int.succ ($m x)) {} do
       logInfo m! "{← keysAsPattern keys}"
+
+-- caching the way in which eta reduction is done:
+/--
+info: And (@Function.Bijective ℤ ℤ Int.succ) (@Function.Bijective ℤ ℤ Int.succ)
+---
+info: And (@Function.Bijective ℤ ℤ (λ, Int.succ _0)) (@Function.Bijective ℤ ℤ (λ, Int.succ _0))
+-/
+#guard_msgs in
+run_meta do
+  let m ← mkFreshExprMVarQ q(ℤ → ℤ)
+  for keys in ← encodeExpr q((Function.Bijective fun x : Int => Int.succ ($m x)) ∧
+      Function.Bijective fun x : Int => Int.succ ($m x)) {} do
+    logInfo m! "{← keysAsPattern keys}"
+
+--
+/-- info: And (@Eq (ℤ → ℤ) _0 _0) (@Eq (ℤ → ℤ) _1 _0) -/
+#guard_msgs in
+run_meta do
+  let m ← mkFreshExprMVarQ q(ℤ → ℤ)
+  let m' ← mkFreshExprMVarQ q(ℤ → ℤ)
+  for keys in ← encodeExpr q($m = $m ∧ $m' = $m) {} do
+    logInfo m! "{← keysAsPattern keys}"
 
 /-- info: @OfNat.ofNat ℕ 2 _0 -/
 #guard_msgs in
@@ -157,12 +179,12 @@ info: Nat.sqrt (@HAdd.hAdd (ℕ → ℕ) (ℕ → ℕ) _0 _1 (@HVAdd.hVAdd ℕ (
 #guard_msgs in
 # fun _ : Nat => 4
 
--- index constant functions as just a star pattern:
+-- index metavariable constant functions as just a star pattern:
 /-- info: @Function.Bijective ℕ ℕ _0 -/
 #guard_msgs in
 run_meta do
   let m ← mkFreshExprMVarQ q(ℕ)
-  for keys in ← mkKeys q(Function.Bijective fun _ : Nat => $m) {} false do
+  for keys in ← encodeExpr q(Function.Bijective fun _ : Nat => $m) {} do
     logInfo m! "{← keysAsPattern keys}"
 
 -- but not at the root:
@@ -170,5 +192,5 @@ run_meta do
 #guard_msgs in
 run_meta do
   let m ← mkFreshExprMVarQ q(ℕ)
-  for keys in ← mkKeys q(fun _ : Nat => $m) {} false do
+  for keys in ← encodeExpr q(fun _ : Nat => $m) {} do
     logInfo m! "{← keysAsPattern keys}"
