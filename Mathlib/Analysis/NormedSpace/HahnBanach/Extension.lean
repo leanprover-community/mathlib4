@@ -60,8 +60,7 @@ end Real
 
 section RCLike
 
--- open RCLike
-
+open RCLike
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜] {E F : Type*}
   [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -72,7 +71,7 @@ open RCLike
 /-- **Hahn-Banach theorem** for continuous linear functions over `𝕜` satisfying `RCLike 𝕜`. -/
 theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : p →L[𝕜] 𝕜) :
     ∃ g : E →L[𝕜] 𝕜, (∀ x : p, g x = f x) ∧ ‖g‖ = ‖f‖ := by
-  letI : RCLike 𝕜 := IsRCLikeNormedField.rclike.rclike 𝕜
+  letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
   letI : Module ℝ E := RestrictScalars.module ℝ 𝕜 E
   letI : IsScalarTower ℝ 𝕜 E := RestrictScalars.isScalarTower _ _ _
   letI : NormedSpace ℝ E := NormedSpace.restrictScalars _ 𝕜 _
