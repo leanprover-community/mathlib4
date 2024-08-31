@@ -105,7 +105,7 @@ namespace Firstprice
 /-- Computes the utility for a first price auction where the winner pays their bid. -/
 @[simp]
 noncomputable def utility (v b : I → ℝ) (i : I) : ℝ :=
-    if i = winner b then v i - b i else 0
+  if i = winner b then v i - b i else 0
 
 /-- If `i` is the winner in a first price auction, utility is their valuation minus their bid. -/
 lemma utility_winner (i : I) (H : i = winner b) : utility v b i = v i - b i := by
