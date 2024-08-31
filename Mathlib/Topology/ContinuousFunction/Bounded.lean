@@ -1534,39 +1534,14 @@ lemma mem_compactlySupported {f : α →ᵇ γ} :
 lemma exist_norm_eq [c : Nonempty α] {f : α →ᵇ γ} (h : f ∈ C_cb(α, γ)) : ∃ (x : α),
     ‖f x‖ = ‖f‖ := by
   by_cases hs : (tsupport f).Nonempty
-  · have : Continuous (fun x => ‖f x‖) := by
-      have : (fun x => ‖f x‖) = (fun x => ((fun y => ‖y‖) ∘ f) x) := rfl
-      rw [this]
-      exact Continuous.comp continuous_norm f.1.2
-    obtain ⟨x, hx⟩ := IsCompact.exists_isMaxOn ((mem_compactlySupported α γ).mp h) hs
-      (Continuous.continuousOn this)
-    use x
-    apply le_antisymm
-    · exact norm_coe_le_norm f x
-    · rw [norm_eq]
-      apply csInf_le
-      · use 0
-        rw [mem_lowerBounds]
-        intro z
-        simp only [mem_setOf_eq, and_imp]
-        exact fun a _ ↦ a
-      · simp only [mem_setOf_eq, norm_nonneg, true_and]
-        intro z
-        by_cases hz : z ∈ tsupport f
-        · exact (isMaxOn_iff.mp hx.2) z hz
-        · rw [image_eq_zero_of_nmem_tsupport hz]
-          simp only [norm_zero, norm_nonneg]
-  · push_neg at hs
-    obtain hex := (exists_true_iff_nonempty.mpr c)
-    obtain ⟨x, _⟩ := hex
-    use x
-    rw [tsupport_eq_empty_iff.mp hs]
-    simp only [Pi.zero_apply, norm_zero]
-    apply Eq.symm
-    apply norm_eq_zero.mpr
-    rw [DFunLike.ext'_iff]
-    simp only [coe_zero]
-    exact tsupport_eq_empty_iff.mp hs
+  · obtain ⟨x, _, hmax⟩ := mem_compactlySupported.mp h |>.exists_isMaxOn hs <|
+      (map_continuous f).norm.continuousOn
+    refine ⟨x, le_antisymm (norm_coe_le_norm f x) (norm_le (norm_nonneg _) |>.mpr fun y ↦ ?_)⟩
+    by_cases hy : y ∈ tsupport f
+    · exact hmax hy
+    · simp [image_eq_zero_of_nmem_tsupport hy]
+  · suffices f = 0 by simp [this]
+    rwa [not_nonempty_iff_eq_empty, tsupport_eq_empty_iff, ← coe_zero, ← DFunLike.ext'_iff] at hs
 
 theorem compactlySupported_eq_top_of_isCompact (h : IsCompact (Set.univ : Set α)) :
     C_cb(α, γ) = ⊤ :=
