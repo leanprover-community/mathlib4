@@ -375,10 +375,15 @@ lemma existance [ProperSpace 𝕜₁] (hC₁ : IsClosed C)
       subst e2
       simp_all only [nonempty_subtype, mem_empty_iff_false, exists_const]
     rw [← more_confusion _ _ _ _ eu, confusion _ _ _ _ eu] at hu
-    rw [← lala2 _ _ _ _ eu]
-    rw [lala _ _ _ _ eu]
-    rw [lala3 _ _ _ _ eu]
-    exact hu⟩⟩
+    calc
+      _ = (polar 𝕜₁ s ∩ ⋂ (i : u), polar 𝕜₁ {↑i }) ∩ C ∩ polar 𝕜₁ (U (n + 2)) := by
+        rw [← lala2 _ _ _ _ eu]
+      _ = (⋂ (i : u), polar 𝕜₁ s ∩ polar 𝕜₁ {↑i} ∩ C ∩ polar 𝕜₁ (U (n + 2))) := by
+        rw [lala _ _ _ _ eu]
+      _ = ⋂ i ∈ u, polar 𝕜₁ s ∩ polar 𝕜₁ {↑i} ∩ C ∩ polar 𝕜₁ (U (n + 2)) := by
+        rw [lala3 _ _ _ _ eu]
+      _ = ∅ := hu
+    ⟩⟩
 
 /-
 lemma existance [ProperSpace 𝕜] : ∃ u : Finset (Elem (U (E := E) (n + 1))),
