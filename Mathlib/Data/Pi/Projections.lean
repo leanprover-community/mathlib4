@@ -16,8 +16,7 @@ This is defined in this file as `Function.proj s f`.
 Similarly, if we have `s t : Set ι`, `hst : s ⊆ t` and `f : (i : ↑t) → α ↑i`,
 one might want to restrict it to variables contained in `s`.
 This is defined in this file as `Function.proj₂ hst f`.
-We also define `Function.fproj₂` when `s t : Finset ι`. This avoids to write
-`Function.proj₂ (Finset.coe_subset_iff.2 hst) f`.
+We also define analoguous functions when `Finset`s are provided.
 
 Having these definitions avoids heavy type ascription when manipulating these functions and allow
 some rewriting when composing them (see `Function.proj₂_comp_proj` for instance).
@@ -51,19 +50,25 @@ when `s ⊆ t`. -/
 @[simp]
 def proj₂ {s t : Set ι} (hst : s ⊆ t) (x : (i : t) → α i) (i : s) : α i := x ⟨i.1, hst i.2⟩
 
-/-- Given a dependent function of variables in `t`, restrict it to a function of variables in `s`
-when `s ⊆ t`.
+/-- Given a dependent function, restrict it to a function of variables in `s`, `Finset` version. -/
+@[simp]
+def fproj (s : Finset ι) (x : (i : ι) → α i) (i : s) : α i := x i
 
-This is a `Finset` version of `proj₂`, because otherwise the type of `s ⊆ t`
-is not correctly inferred. -/
+/-- Given a dependent function of variables in `t`, restrict it to a function of variables in `s`
+when `s ⊆ t`, `Finset` version. -/
 @[simp]
 def fproj₂ {s t : Finset ι} (hst : s ⊆ t) (x : (i : t) → α i) (i : s) : α i := x ⟨i.1, hst i.2⟩
+
+theorem fproj_eq_proj (s : Finset ι) : @fproj ι α s = proj (s : Set ι) := rfl
+
+theorem frpoj₂_eq_proj₂ {s t : Finset ι} (hst : s ⊆ t) :
+    fproj₂ (α := α) hst = fproj₂ (Finset.coe_subset.2 hst) := rfl
 
 theorem proj₂_comp_proj {s t : Set ι} (hst : s ⊆ t) :
     (proj₂ hst) ∘ (@proj ι α t) = proj s := rfl
 
-theorem fproj₂_comp_proj {s t : Finset ι} (hst : s ⊆ t) :
-    (fproj₂ hst) ∘ (@proj ι α t) = proj s.toSet := rfl
+theorem fproj₂_comp_fproj {s t : Finset ι} (hst : s ⊆ t) :
+    (fproj₂ hst) ∘ (@fproj ι α t) = fproj s := rfl
 
 theorem proj₂_comp_proj₂ {s t u : Set ι} (hst : s ⊆ t) (htu : t ⊆ u) :
     (proj₂ (α := α) hst) ∘ (proj₂ htu) = proj₂ (hst.trans htu) := rfl
@@ -86,6 +91,9 @@ theorem measurable_proj₂ {s t : Set ι} (hst : s ⊆ t) :
     Measurable (proj₂ (α := X) hst) :=
   measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
 
+theorem measurable_fproj (s : Finset ι) : Measurable (@fproj ι X s) :=
+  measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
+
 theorem measurable_fproj₂ {s t : Finset ι} (hst : s ⊆ t) :
     Measurable (fproj₂ (α := X) hst) :=
   measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
@@ -101,6 +109,9 @@ theorem continuous_proj (s : Set ι) : Continuous (@proj ι X s) :=
 
 theorem continuous_proj₂ {s t : Set ι} (hst : s ⊆ t) :
     Continuous (proj₂ (α := X) hst) :=
+  continuous_pi fun _ ↦ continuous_apply _
+
+theorem continuous_fproj (s : Finset ι) : Continuous (@fproj ι X s) :=
   continuous_pi fun _ ↦ continuous_apply _
 
 theorem continuous_fproj₂ {s t : Finset ι} (hst : s ⊆ t) :
@@ -131,7 +142,7 @@ different from `projNat n`, as the latter is gives a function indexed by `Set.Ii
 former gives a function indexed by `↑(Finset.Iic n)`. Those sets are equal but not
 definitionally. -/
 @[simp]
-def fprojNat (n : ℕ) := @proj ℕ α (Finset.Iic n)
+def fprojNat (n : ℕ) := @fproj ℕ α (Finset.Iic n)
 
 /-- Given a dependent function indexed by `Iic n`, specialize it as a function on `Iic m` when
 `m ≤ n`, `Finset` version. -/
