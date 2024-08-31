@@ -564,16 +564,16 @@ theorem comp_comp_symm_mem_uniformity_sets {s : Set (α × α)} (hs : s ∈ 𝓤
 ### Balls in uniform spaces
 -/
 
+namespace UniformSpace
+
 /-- The ball around `(x : β)` with respect to `(V : Set (β × β))`. Intended to be
 used for `V ∈ 𝓤 β`, but this is not needed for the definition. Recovers the
 notions of metric space ball when `V = {p | dist p.1 p.2 < r }`. -/
-def UniformSpace.ball (x : β) (V : Set (β × β)) : Set β :=
-  Prod.mk x ⁻¹' V
+def ball (x : β) (V : Set (β × β)) : Set β := Prod.mk x ⁻¹' V
 
 open UniformSpace (ball)
 
-theorem UniformSpace.mem_ball_self (x : α) {V : Set (α × α)} (hV : V ∈ 𝓤 α) : x ∈ ball x V :=
-  refl_mem_uniformity hV
+lemma mem_ball_self (x : α) {V : Set (α × α)} : V ∈ 𝓤 α → x ∈ ball x V := refl_mem_uniformity
 
 /-- The triangle inequality for `UniformSpace.ball` -/
 theorem mem_ball_comp {V W : Set (β × β)} {x y z} (h : y ∈ ball x V) (h' : z ∈ ball y W) :
@@ -612,11 +612,10 @@ theorem mem_comp_of_mem_ball {V W : Set (β × β)} {x y z : β} (hV : Symmetric
   rw [mem_ball_symmetry hV] at hx
   exact ⟨z, hx, hy⟩
 
-theorem UniformSpace.isOpen_ball (x : α) {V : Set (α × α)} (hV : IsOpen V) : IsOpen (ball x V) :=
+lemma isOpen_ball (x : α) {V : Set (α × α)} (hV : IsOpen V) : IsOpen (ball x V) :=
   hV.preimage <| continuous_const.prod_mk continuous_id
 
-theorem UniformSpace.isClosed_ball (x : α) {V : Set (α × α)} (hV : IsClosed V) :
-    IsClosed (ball x V) :=
+lemma isClosed_ball (x : α) {V : Set (α × α)} (hV : IsClosed V) : IsClosed (ball x V) :=
   hV.preimage <| continuous_const.prod_mk continuous_id
 
 theorem mem_comp_comp {V W M : Set (β × β)} (hW' : SymmetricRel W) {p : β × β} :
@@ -629,9 +628,13 @@ theorem mem_comp_comp {V W M : Set (β × β)} (hW' : SymmetricRel W) {p : β ×
     rw [mem_ball_symmetry hW'] at z_in
     exact ⟨z, ⟨w, w_in, hwz⟩, z_in⟩
 
+end UniformSpace
+
 /-!
 ### Neighborhoods in uniform spaces
 -/
+
+open UniformSpace
 
 theorem mem_nhds_uniformity_iff_right {x : α} {s : Set α} :
     s ∈ 𝓝 x ↔ { p : α × α | p.1 = x → p.2 ∈ s } ∈ 𝓤 α := by
