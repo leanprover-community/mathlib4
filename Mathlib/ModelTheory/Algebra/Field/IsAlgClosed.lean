@@ -32,7 +32,7 @@ algebraically closed field `K` which does not have a `Language.ring.Structure` i
 you must introduce the local instance `compatibleRingOfRing K`. Theorems whose statement requires
 both a `Language.ring.Structure` instance and a `Field` instance will all be stated with the
 assumption `Field K`, `CharP K p`, `IsAlgClosed K` and `CompatibleRing K` and there are instances
-defined saying that these assumption imply `Theory.field.Model K` and `(Theory.ACF p).Model K`
+defined saying that these assumptions imply `Theory.field.Model K` and `(Theory.ACF p).Model K`
 
 ## References
 
