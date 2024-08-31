@@ -312,7 +312,7 @@ lemma inter_empty (h : polar 𝕜₁ s ∩ C ∩ polar 𝕜₁ (U (n+1)) = ∅) 
   rw [← iInter_inter, ← iInter_inter, ← inter_iInter, iInter_coe_set]
   have e1 : ⋂ i ∈ U (n + 1), polar 𝕜₁ {i} = polar 𝕜₁ (U (E := E₁) (n+1)) := by
     simp_rw [polar, NormedSpace.polar]
-    rw [← (dualPairing 𝕜₁ E₁).flip.sInter_polar_finite_subset_eq_polar']
+    rw [← (dualPairing 𝕜₁ E₁).flip.iInter_polar_singleton_eq_polar]
     rfl
   rw [e1, inter_assoc _ _ C, inter_comm _ C, ← inter_assoc, h, empty_inter]
 

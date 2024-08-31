@@ -279,13 +279,14 @@ theorem sInter_polar_eq_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddComm
   rw [← polar_closedBall (inv_pos_of_pos hr), polar,
     (dualPairing 𝕜 E).flip.sInter_polar_finite_subset_eq_polar (closedBall (0 : E) r⁻¹)]
 
-theorem sInter_polar_eq_closedBall' {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E]
+/-
+theorem iInter_polar_eq_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E]
     [NormedSpace 𝕜 E] {r : ℝ} (hr : 0 < r) :
     ⋂ i ∈ closedBall (0 : E) r⁻¹, (polar 𝕜 { i }) = closedBall 0 r := by
   conv_rhs => rw [← inv_inv r]
   rw [← polar_closedBall (inv_pos_of_pos hr), polar,
-    (dualPairing 𝕜 E).flip.sInter_polar_finite_subset_eq_polar' (closedBall (0 : E) r⁻¹)]
-
+    (dualPairing 𝕜 E).flip.iInter_polar_singleton_eq_polar (closedBall (0 : E) r⁻¹)]
+-/
 
 /-
 theorem finite_subsets1 (U : Set (Dual 𝕜 E)) : ∃ F : ℕ → Set E, ∀ n : ℕ, (F n).Finite := by
