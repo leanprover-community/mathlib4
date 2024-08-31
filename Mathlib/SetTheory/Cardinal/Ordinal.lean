@@ -1487,7 +1487,6 @@ lemma mk_iUnion_Ordinal_lift_le_of_le {β : Type v} {o : Ordinal.{u}} {c : Cardi
     (hA : ∀ j < o, #(A j) ≤ c) : #(⋃ j < o, A j) ≤ c := by
   simp_rw [← mem_Iio, biUnion_eq_iUnion, iUnion, iSup, ← o.enumIsoToType.symm.surjective.range_comp]
   rw [← lift_le.{u}]
-  have : ℵ₀ ≤ lift.{u} c := aleph0_le_lift.2 hc
   apply ((mk_iUnion_le_lift _).trans _).trans_eq (mul_eq_self (aleph0_le_lift.2 hc))
   rw [mk_toType]
   refine mul_le_mul' ho (ciSup_le' ?_)
