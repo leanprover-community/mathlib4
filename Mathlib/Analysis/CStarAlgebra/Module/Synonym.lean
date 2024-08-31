@@ -181,7 +181,7 @@ theorem equiv_symm_smul : (equiv E).symm (c • x') = c • (equiv E).symm x' :=
 end Equiv
 
 /-- `WithCStarModule.equiv` as an additive equivalence. -/
-def equivAddEquiv [AddCommGroup E] : C⋆ᵐᵒᵈ E ≃+ E :=
+def addEquiv [AddCommGroup E] : C⋆ᵐᵒᵈ E ≃+ E :=
   { AddEquiv.refl _ with
     toFun := equiv _
     invFun := (equiv _).symm }
@@ -218,25 +218,20 @@ instance [Bornology E] : Bornology (C⋆ᵐᵒᵈ E) := Bornology.induced <| equ
 def uniformEquiv [UniformSpace E] : C⋆ᵐᵒᵈ E ≃ᵤ E := equiv E |>.toUniformEquivOfUniformInducing ⟨rfl⟩
 
 /-- `WithCStarModule.equiv` as a continuous linear equivalence between `C⋆ᵐᵒᵈ E` and `E`. -/
+@[simps! apply symm_apply]
 def equivL [Semiring R] [AddCommGroup E] [UniformSpace E] [Module R E] : C⋆ᵐᵒᵈ E ≃L[R] E :=
   { linearEquiv R E with
     continuous_toFun := UniformEquiv.continuous uniformEquiv
     continuous_invFun := UniformEquiv.continuous uniformEquiv.symm }
 
-lemma equiv_eq_equivL (R : Type*) (E : Type*) [Semiring R] [AddCommGroup E] [UniformSpace E]
-    [Module R E] {x : E} : equiv E x = equivL R x := rfl
-
-lemma equiv_symm_eq_equivL (R : Type*) (E : Type*) [Semiring R] [AddCommGroup E] [UniformSpace E]
-    [Module R E] {x : E} : (equiv E).symm x = (equivL R).symm x := rfl
-
 instance [UniformSpace E] [CompleteSpace E] : CompleteSpace (C⋆ᵐᵒᵈ E) :=
   uniformEquiv.completeSpace_iff.mpr inferInstance
 
 instance [AddCommGroup E] [UniformSpace E] [ContinuousAdd E] : ContinuousAdd (C⋆ᵐᵒᵈ E) :=
-  ContinuousAdd.induced (equivAddEquiv E)
+  ContinuousAdd.induced (addEquiv E)
 
 instance [AddCommGroup E] [UniformSpace E] [UniformAddGroup E] : UniformAddGroup (C⋆ᵐᵒᵈ E) :=
-  UniformAddGroup.comap (equivAddEquiv E)
+  UniformAddGroup.comap (addEquiv E)
 
 instance [Semiring R] [TopologicalSpace R] [AddCommGroup E] [UniformSpace E] [Module R E]
     [ContinuousSMul R E] : ContinuousSMul R (C⋆ᵐᵒᵈ E) :=
