@@ -20,9 +20,9 @@ as proving completeness of the theory and the Lefschetz Principle.
 ## Main definitions
 
 * `FirstOrder.Language.Theory.ACF p` : the theory of algebraically closed fields of characteristic
-`p` as a theory over the language of rings.
+  `p` as a theory over the language of rings.
 * `FirstOrder.Field.ACF_isComplete` : the theory of algebraically closed fields of characteristic
-`p` is complete whenever `p` is prime or zero.
+  `p` is complete whenever `p` is prime or zero.
 * `FirstOrder.Field.ACF0_realize_iff_infinite_ACF_prime_realize` : the Lefschetz principle.
 
 ## Implementation details
@@ -80,7 +80,7 @@ theorem realize_genericMonicPolyHasRoot [Field K] [CompatibleRing K] (n : ℕ) :
 
 /-- The theory of algebraically closed fields of characteristic `p` as a theory over
 the language of rings -/
-def _root_.FirstOrder.Language.Theory.ACF (p : ℕ) : Theory Language.ring :=
+def _root_.FirstOrder.Language.Theory.ACF (p : ℕ) : Theory .ring :=
   Theory.fieldOfChar p ∪ genericMonicPolyHasRoot '' {n | 0 < n}
 
 instance [Language.ring.Structure K] (p : ℕ) [h : (Theory.ACF p).Model K] :
@@ -148,7 +148,7 @@ open Cardinal
 
 /-- The Theory `Theory.ACF p` is `κ`-categorical whenever `κ` is an uncountable cardinal.
 At the moment this is not as universe polymorphic as it could be,
-it currently requires `κ : Cardinal.{0}`, but it is true for any universe.    -/
+it currently requires `κ : Cardinal.{0}`, but it is true for any universe. -/
 theorem ACF_categorical {p : ℕ} (κ : Cardinal.{0}) (hκ : ℵ₀ < κ) :
     Categorical κ (Theory.ACF p) := by
   rintro ⟨M⟩ ⟨N⟩ hM hN
