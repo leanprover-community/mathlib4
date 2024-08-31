@@ -266,7 +266,7 @@ We apply the following reductions whenever possible:
 - Absorbing lambdas: lambdas in front of the constant can be moved inside.
   For example `fun x => x + 1` is turned into `(fun x => x) + (fun x => 1)`.
 -/
-@[inline] def reducePi (e : Expr) (lambdas : List FVarId) :
+def reducePi (e : Expr) (lambdas : List FVarId) :
     MetaM (Option (Name × Array (Array (Option Expr) × List FVarId))) := do
   if let .const n _ := e.getAppFn then
     match n with

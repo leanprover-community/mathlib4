@@ -6,11 +6,11 @@ import Mathlib.Lean.Meta.RefinedDiscrTree.Evaluate
 This file defines the matching procedure for the `RefinedDiscrTree`.
 
 We first encode the expression as a `List Key`. Then using this, we find all matches
-with the tree. When `unify := true`, we also allow metavariables in the matching
+with the tree. When `unify := true`, we also allow metavariables in the target
 expression to be assigned.
 
 We use a very simple unification algorithm. For all star/metavariable patterns in the
-`RefinedDiscrTree` and in the target, we store the assignment, and when it is attempted
+`RefinedDiscrTree` (and possibly in the target), we store the assignment, and when it is attempted
 to be assigned again, we check that it is the same assignment.
 
 Since the Discrimination tree is lazy, we also return a new `RefinedDiscrTree`.
@@ -123,8 +123,8 @@ private partial def matchQueryStar (id : Nat) (trie : TrieIndex) (pMatch : Parti
 
 
 /-- Add to the stack all matches that result from a `.star _` in the discrimination tree. -/
-private partial def matchTreeStars (key : Key) (stars : HashMap Nat TrieIndex) (pMatch : PartialMatch)
-    (todo : Array PartialMatch) : Array PartialMatch :=
+private partial def matchTreeStars (key : Key) (stars : HashMap Nat TrieIndex)
+    (pMatch : PartialMatch) (todo : Array PartialMatch) : Array PartialMatch :=
   if stars.isEmpty then
     todo
   else
@@ -157,8 +157,8 @@ private def matchKey (key : Key) (children : HashMap Key TrieIndex) (pMatch : Pa
   | some trie => todo.push { pMatch with trie, score := pMatch.score + 1 }
 
 /-- Return the possible `Trie α` that match with `keys`. -/
-private partial def getMatchLoop (todo : Array PartialMatch) (result : MatchResult α) (unify : Bool) :
-    TreeM α (MatchResult α) := do
+private partial def getMatchLoop (todo : Array PartialMatch) (result : MatchResult α)
+    (unify : Bool) : TreeM α (MatchResult α) := do
   if todo.isEmpty then
     return result
   else

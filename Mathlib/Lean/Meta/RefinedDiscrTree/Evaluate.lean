@@ -3,13 +3,13 @@ import Mathlib.Lean.Meta.RefinedDiscrTree.Encode
 /-!
 # Evaluating brnaches of a RefinedDiscrTree
 
-`RefinedDiscrTree` is lazy, which is why we need to evaluate
-the branches that we want to lookup in.
+`RefinedDiscrTree` is lazy, so we always first need to evaluate branches that we use.
 
-We define the evaluating function `evalNode`.
+We define the `TreeM` monad for doing computations that affect the `RefinedDiscrTree`, and
+we define the function `evalNode` which evaluates a node of the `RefinedDiscrTree`.
 
-We also define `dropKey`, which deletes all values at a certain branch of the `RefinedDiscrTree`,
-for which it first needs to evaluate this branch.
+We also define `dropKey`, which deletes the values at a specified index of the `RefinedDiscrTree`.
+To do this, it first needs to evaluate this branch.
 
 -/
 
@@ -17,9 +17,10 @@ namespace Lean.Meta.RefinedDiscrTree
 
 variable {α β : Type}
 
-/- Monad for finding matches. -/
+/-- Monad for working with a `RefinedDiscrTree`. -/
 abbrev TreeM α := ReaderT WhnfCoreConfig (StateRefT (Array (Trie α)) MetaM)
 
+/-- Run a `TreeM` computation using a `RefinedDiscrTree`. -/
 def runTreeM (d : RefinedDiscrTree α) (m : TreeM α β) :
     MetaM (β × RefinedDiscrTree α) := do
   let { config, tries, root } := d
@@ -81,7 +82,7 @@ private def dropKeyAux (next : Option TrieIndex) (rest : List Key) :
       dropKeyAux (children.find? key) rest
 
 /--
-This drops a specific key from the lazy discrimination tree so that
+This drops a specific key from the `RefinedDiscrTree` so that
 all the entries matching that key exactly are removed.
 -/
 def dropKey (t : RefinedDiscrTree α) (path : List RefinedDiscrTree.Key) :
@@ -91,6 +92,8 @@ def dropKey (t : RefinedDiscrTree α) (path : List RefinedDiscrTree.Key) :
   | rootKey :: rest => do
     Prod.snd <$> runTreeM t (dropKeyAux (t.root.find? rootKey) rest)
 
+/-- This drops a list of specific keys from the `RefinedDiscrTree` so that
+all the entries matching those keys exactly are removed. -/
 def dropKeys (t : RefinedDiscrTree α) (keys : List (List RefinedDiscrTree.Key)) :
     MetaM (RefinedDiscrTree α) := do
   keys.foldlM (init := t) (·.dropKey ·)

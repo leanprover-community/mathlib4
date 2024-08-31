@@ -1,10 +1,16 @@
 import Lean.Meta.WHNF
 
 /-!
-# Basic Definitions for the RefinedDiscrTree
+# Basic Definitions for `RefinedDiscrTree`
 
-We define `Key`, `LazyEntry`, `Trie`, `RefinedDiscrTree`, and some basic functions for them.
+We define
+* `Key`, the discrimination tree key
+* `LazyEntry`, the partial, lazy computation of a sequence of `Key`s
+* `Trie`, a node of the discrimination tree, which is indexed with `Key`s
+  and stores an array of pending `LazyEntrie`s
+* `RefinedDiscrTree`, the driscrimination tree.
 -/
+
 open Lean Meta
 
 namespace Lean.Meta.RefinedDiscrTree
@@ -81,7 +87,7 @@ instance : LT Key := ⟨fun a b => Key.lt a b⟩
 instance (a b : Key) : Decidable (a < b) := inferInstanceAs (Decidable (Key.lt a b))
 
 private def Key.format : Key → Format
-  | .star id                => f!"_{id}"
+  | .star id                => f!"*{id}"
   | .opaque                 => "◾"
   | .const name nargs       => f!"⟨{name}, {nargs}⟩"
   | .fvar fvarId nargs      => f!"⟨{fvarId.name}, {nargs}⟩"
@@ -96,15 +102,18 @@ private def Key.format : Key → Format
 instance : ToFormat Key := ⟨Key.format⟩
 
 /--
-Helper function for converting an entry (i.e., `Array Key`) to the discrimination tree into
-`MessageData` that is more user-friendly. We use this function to implement diagnostic information.
+Converts an entry (i.e., `List Key`) to the discrimination tree into
+`MessageData` that is more user-friendly.
 -/
 partial def keysAsPattern (keys : List Key) : CoreM MessageData := do
-  go (paren := false) |>.run' keys
+  let (msg, keys) ← go (paren := false) |>.run keys
+  if !keys.isEmpty then
+    throwError "illegal discrimination tree entry: {keys.map Key.format}"
+  return msg
 where
   /-- Get the next key. -/
   next : StateRefT (List Key) CoreM Key := do
-    let key :: keys ← get | throwError m! "bad keys: {keys.map Key.format}"
+    let key :: keys ← get | throwError "illegal discrimination tree entry: {keys.map Key.format}"
     set keys
     return key
   /-- Format the application `f args`. -/
@@ -215,6 +224,7 @@ private def LazyEntry.format [ToFormat α] (entry : LazyEntry α) : Format :=
 
 instance [ToFormat α] : ToFormat (LazyEntry α) := ⟨LazyEntry.format⟩
 
+/-- Index of a `Trie α` in the `Array (Trie α)` of a `RefinedDiscrTree`. -/
 abbrev TrieIndex := Nat
 
 /-- Discrimination tree trie. See `RefinedDiscrTree`. -/
@@ -231,19 +241,6 @@ structure Trie (α : Type) where
 
 
 instance : Inhabited (Trie α) := ⟨.node #[] {} {} #[]⟩
-
--- private partial def Trie.format [ToFormat α] : Trie α → Format
---   | .node cs => Format.group $ Format.paren $
---     "node " ++ Format.join (cs.toList.map fun (k, c) =>
---       Format.line ++ Format.paren (format (prepend k c)))
---   | .values vs => if vs.isEmpty then Format.nil else Std.format vs
---   | .path ks c => Format.sbracket (Format.joinSep ks.toList (", "))
---       ++ " => " ++ Format.line ++ format c
--- where
---   prepend (k : Key) (t : Trie α) : Trie α := match t with
---     | .path ks c => .path (#[k] ++ ks) c
---     | t => .path #[k] t
--- instance [ToFormat α] : ToFormat (Trie α) := ⟨Trie.format⟩
 
 end RefinedDiscrTree
 
@@ -263,14 +260,3 @@ namespace RefinedDiscrTree
 variable {α : Type}
 
 instance : Inhabited (RefinedDiscrTree α) := ⟨{}⟩
-
--- private partial def format [ToFormat α] (d : RefinedDiscrTree α) : Format :=
---   let (_, r) := d.root.foldl
---     (fun (p : Bool × Format) k c =>
---       (false,
---         p.2 ++ (if p.1 then Format.nil else Format.line) ++
---           Format.paren (Std.format k ++ " => " ++ Std.format c)))
---     (true, Format.nil)
---   Format.group r
-
--- instance [ToFormat α] : ToFormat (RefinedDiscrTree α) := ⟨format⟩

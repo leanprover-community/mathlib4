@@ -2,12 +2,11 @@ import Mathlib.Lean.Meta.RefinedDiscrTree.Evaluate
 /-!
 # Constructing a RefinedDiscrTree
 
-This file defines the initialization of a `RefinedDiscrTree`.
+This file defines the initialization of a `RefinedDiscrTree`, and in particular for one that
+is built using all constants in the environment. For this we use a parallel computation.
 
 Because `RefinedDiscrTree` is lazy, adding entries initially only requires computing
 the first `Key` of the encoding.
-
-For initializing a `RefinedDiscrTree` with all lemmas in the library, we support parallellism.
 
 -/
 namespace Lean.Meta.RefinedDiscrTree
@@ -79,14 +78,14 @@ private def ImportData.new : BaseIO ImportData := do
   let errors ← IO.mkRef #[]
   pure { errors }
 
-structure Cache where
+private structure Cache where
   ngen : NameGenerator
   core : Lean.Core.Cache
   meta : Lean.Meta.Cache
 
-def Cache.empty (ngen : NameGenerator) : Cache := { ngen := ngen, core := {}, meta := {} }
+private def Cache.empty (ngen : NameGenerator) : Cache := { ngen := ngen, core := {}, meta := {} }
 
-def blacklistInsertion (env : Environment) (declName : Name) : Bool :=
+private def blacklistInsertion (env : Environment) (declName : Name) : Bool :=
   !allowCompletion env declName
   || declName == ``sorryAx
   || declName.isInternalDetail
@@ -110,7 +109,7 @@ private def addConstToPreDiscrTree
   let ctx : Meta.Context := { config := { transparency := .reducible } }
   let cm := (act name constInfo).run ctx mstate
   let cstate : Core.State := {env, cache := core_cache, ngen}
-  match ←(cm.run cctx cstate).toBaseIO with
+  match ← (cm.run cctx cstate).toBaseIO with
   | .ok ((a, ms), cs) =>
     cacheRef.set { ngen := cs.ngen, core := cs.cache, meta := ms.cache }
     pure <| a.foldl (fun t (key, entry) => t.push key entry) tree
@@ -131,9 +130,6 @@ the library search tree.
 private structure InitResults (α : Type) where
   tree  : PreDiscrTree α := {}
   errors : Array ImportFailure := #[]
-
-instance : Inhabited (InitResults α) where
-  default := {}
 
 namespace InitResults
 
@@ -216,7 +212,7 @@ def createImportedDiscrTree (cctx : Core.Context) (ngen : NameGenerator) (env : 
         let cnt := cnt + mdata.constants.size
         if cnt > constantsPerTask then
           let (childNGen, ngen) := ngen.mkChild
-          let t ← liftM <| createImportedEnvironmentInitResults cctx childNGen env act start (idx+1) |>.asTask
+          let t ← (createImportedEnvironmentInitResults cctx childNGen env act start (idx+1)).asTask
           go ngen (tasks.push t) (idx+1) 0 (idx+1)
         else
           go ngen tasks start cnt (idx+1)
@@ -229,7 +225,7 @@ def createImportedDiscrTree (cctx : Core.Context) (ngen : NameGenerator) (env : 
           pure tasks
     termination_by env.header.moduleData.size - idx
   let tasks ← go ngen #[] 0 0 0
-  let r := combineGet default tasks
+  let r := combineGet {} tasks
   r.errors.forM logImportFailure
   r.tree.toLazy.dropKeys droppedKeys
 
@@ -240,7 +236,8 @@ Note. We use different discriminator trees for imported and current module
 declarations since imported declarations are typically much more numerous but
 not changed after the environment is created.
 -/
-structure ModuleDiscrTreeRef (α : Type _)  where
+structure ModuleDiscrTreeRef (α : Type _) where
+  /-- The reference to the `RefinedDiscrTree`. -/
   ref : IO.Ref (RefinedDiscrTree α)
 
 private def createLocalPreDiscrTree
