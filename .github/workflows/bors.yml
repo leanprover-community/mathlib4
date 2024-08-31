@@ -26,6 +26,14 @@ jobs:
           all_but_latest: true
           access_token: ${{ github.token }}
 
+  get_tlabel:
+    name: Get t-label
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print t-label
+        run: |
+          ./scripts/get_tlabel.sh >> "$GITHUB_OUTPUT"
+
   style_lint:
     if: github.repository == 'leanprover-community/mathlib4'
     name: Lint style
