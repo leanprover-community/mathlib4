@@ -338,11 +338,6 @@ lemma lala2 (u : Finset (U (E := E₁) (n + 1))) (h : Nonempty u) :
     (polar 𝕜₁ s ∩ ⋂ (i : u), polar 𝕜₁ {↑i }) ∩ C ∩ polar 𝕜₁ (U (n + 2)) := by
   aesop
 
-lemma lala3 (u : Finset (U (E := E₁) (n + 1))) (h : Nonempty u) :
-    (⋂ (i : u), polar 𝕜₁ s ∩ polar 𝕜₁ {↑i} ∩ C ∩ polar 𝕜₁ (U (n + 2))) =
-  (⋂ (i ∈ u), polar 𝕜₁ s ∩ polar 𝕜₁ {↑i} ∩ C ∩ polar 𝕜₁ (U (n + 2))) := by
-  aesop
-
 lemma existance [ProperSpace 𝕜₁] (hC₁ : IsClosed C)
     (h : polar 𝕜₁ s ∩ C ∩ polar 𝕜₁ (U (n+1)) = ∅) :
     ∃ F, F.Finite ∧ F ⊆ (U (E := E₁) (n + 1)) ∧
@@ -377,7 +372,9 @@ lemma existance [ProperSpace 𝕜₁] (hC₁ : IsClosed C)
       _ = (⋂ (i : u), polar 𝕜₁ s ∩ polar 𝕜₁ {↑i} ∩ C ∩ polar 𝕜₁ (U (n + 2))) := by
         rw [inter_iInter, iInter_inter, iInter_inter]
       _ = ⋂ i ∈ u, polar 𝕜₁ s ∩ polar 𝕜₁ {↑i} ∩ C ∩ polar 𝕜₁ (U (n + 2)) := by
-        rw [lala3 _ _ _ _ eu]
+          simp_all only [nonempty_subtype, Subtype.exists, iInter_coe_set]
+          ext1 x
+          simp_all only [mem_iInter, mem_inter_iff, Subtype.forall]
       _ = ∅ := hu
     ⟩⟩
 
