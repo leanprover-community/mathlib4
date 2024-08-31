@@ -106,6 +106,7 @@ private def treeCtx (ctx : Core.Context) : Core.Context := {
     diag := getDiag ctx.options
   }
 
+/-- Returns candidates from all imported modules that match the expression. -/
 def findImportMatches
     (ext : EnvExtension (IO.Ref (Option (RefinedDiscrTree α))))
     (addEntry : Name → ConstantInfo → MetaM (Array (Key × LazyEntry α)))
