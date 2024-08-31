@@ -28,8 +28,10 @@ instance : FloorSemiring ℚ≥0 where
   gc_floor {a n} h := by rw [← NNRat.coe_le_coe, Nat.le_floor_iff] <;> norm_cast
   gc_ceil {a b} := by rw [← NNRat.coe_le_coe, Nat.ceil_le]; norm_cast
 
+@[simp, norm_cast]
 theorem floor_coe (q : ℚ≥0) : ⌊(q : ℚ)⌋₊ = ⌊q⌋₊ := rfl
 
+@[simp, norm_cast]
 theorem ceil_coe (q : ℚ≥0) : ⌈(q : ℚ)⌉₊ = ⌈q⌉₊ := rfl
 
 @[simp, norm_cast]
