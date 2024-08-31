@@ -225,6 +225,9 @@ theorem epi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
   · rw [← CategoryTheory.epi_iff_surjective]
     apply (forget LightProfinite).epi_of_epi_map
 
+instance : lightToProfinite.PreservesEpimorphisms where
+  preserves f _ := (Profinite.epi_iff_surjective _).mpr ((epi_iff_surjective f).mp inferInstance)
+
 end LightProfinite
 
 /-- A structure containing the data of sequential limit in `Profinite` of finite sets. -/
