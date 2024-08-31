@@ -239,7 +239,7 @@ private lemma lipschitzWith_toMatrixAux [DecidableEq m] :
   rw [one_mul, ← NNReal.coe_le_coe, coe_nnnorm, coe_nnnorm, Matrix.norm_le_iff (norm_nonneg _)]
   exact fun _ _ ↦ CStarMatrix.norm_entry_le_norm
 
---attribute [-instance] CStarMatrix.instNorm
+attribute [-instance] CStarMatrix.instNorm
 
 open CStarMatrix WithCStarModule in
 private lemma antilipschitzWith_toMatrixAux :
