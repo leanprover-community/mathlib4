@@ -1,6 +1,17 @@
 name: Dependent Issues
 
 on:
+  issues:
+    types:
+      - opened
+      - edited
+      - reopened
+  pull_request_target:
+    types:
+      - opened
+      - edited
+      - reopened
+      - synchronize
   schedule:
     - cron: '*/15 * * * *' # run every 15 minutes
 
