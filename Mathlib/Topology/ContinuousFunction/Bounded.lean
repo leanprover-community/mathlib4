@@ -1579,10 +1579,8 @@ theorem compactlySupported_eq_Bounded (h : IsCompact (Set.univ : Set α)) : C_cb
     apply (mem_compactlySupported α γ).mpr
     exact IsCompact.of_isClosed_subset h (isClosed_tsupport f) (subset_univ _)
 
-theorem compactlySupported_eq_Bounded' [CompactSpace α] : C_cb(α, γ) =
-    (⊤ : Set (α →ᵇ γ)) := by
-    apply compactlySupported_eq_Bounded
-    exact CompactSpace.isCompact_univ
+theorem compactlySupported_eq_top [CompactSpace α] : C_cb(α, γ) = ⊤ :=
+  compactlySupported_eq_top_of_isCompact CompactSpace.isCompact_univ
 
 theorem compactlySupported_eq_top_iff [Nontrivial γ] :
     C_cb(α, γ) = ⊤ ↔ IsCompact (Set.univ : Set α) := by
