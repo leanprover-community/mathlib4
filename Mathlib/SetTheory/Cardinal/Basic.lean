@@ -914,9 +914,12 @@ lemma exists_eq_of_iSup_eq_of_not_isLimit
   rw [← le_zero_iff] at h ⊢
   exact (le_ciSup hf _).trans h
 
+end Cardinal
+
 /-! ### Well-ordering theorem -/
 
 
+open Cardinal in
 theorem nonempty_embedding_to_cardinal : Nonempty (α ↪ Cardinal.{u}) :=
   (Embedding.total _ _).resolve_left fun ⟨⟨f, hf⟩⟩ =>
     let g : α → Cardinal.{u} := invFun f
@@ -941,6 +944,8 @@ instance IsWellOrder.subtype_nonempty : Nonempty { r // IsWellOrder α r } :=
 
 /-! ### Small sets of cardinals -/
 
+
+namespace Cardinal
 
 /-- The range of an indexed cardinal function, whose outputs live in a higher universe than the
     inputs, is always bounded above. -/
