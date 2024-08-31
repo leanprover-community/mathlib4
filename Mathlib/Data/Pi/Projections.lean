@@ -136,24 +136,42 @@ namespace Function
 
 variable {α : ℕ → Type*}
 
-/-- Given a dependent function indexed by `ℕ`, specialize it as a function on `Iic n`. -/
-@[simp]
+/-- Given a dependent function indexed by `ℕ`, specialize it as a function on `Iic n`.
+Contrary to `Function.proj`, this is not `simp` definition to avoid unfolding it
+when it's not fully applied. -/
 def projNat (n : ℕ) := @proj ℕ α (Set.Iic n)
 
-/-- Given a dependent function indexed by `Iic n`, specialize it as a function on `Iic m` when
-`m ≤ n`. -/
 @[simp]
+lemma projNat_def (n : ℕ) (x : Π n, α n) (i : Set.Iic n) : projNat n x i = x i := rfl
+
+/-- Given a dependent function indexed by `Iic n`, specialize it as a function on `Iic m` when
+`m ≤ n`.
+Contrary to `Function.proj`, this is not `simp` definition to avoid unfolding it
+when it's not fully applied. -/
 def projNat₂ {m n : ℕ} (hmn : m ≤ n) := proj₂ (α := α) (Set.Iic_subset_Iic.2 hmn)
 
-/-- Given a dependent function indexed by `ℕ`, specialize it as a function on `Iic n`,
-`Finset` version. -/
 @[simp]
+lemma projNat₂_def {m n : ℕ} (hmn : m ≤ n) (x : Π i : Set.Iic n, α i) (i : Set.Iic m) :
+    projNat₂ hmn x i = x ⟨i.1, Set.Iic_subset_Iic.2 hmn i.2⟩ := rfl
+
+/-- Given a dependent function indexed by `ℕ`, specialize it as a function on `Iic n`,
+`Finset` version.
+Contrary to `Function.proj`, this is not `simp` definition to avoid unfolding it
+when it's not fully applied. -/
 def fprojNat (n : ℕ) := @fproj ℕ α (Finset.Iic n)
 
-/-- Given a dependent function indexed by `Iic n`, specialize it as a function on `Iic m` when
-`m ≤ n`, `Finset` version. -/
 @[simp]
+lemma fprojNat_def (n : ℕ) (x : Π n, α n) (i : Finset.Iic n) : fprojNat n x i = x i := rfl
+
+/-- Given a dependent function indexed by `Iic n`, specialize it as a function on `Iic m` when
+`m ≤ n`, `Finset` version.
+Contrary to `Function.proj`, this is not `simp` definition to avoid unfolding it
+when it's not fully applied. -/
 def fprojNat₂ {m n : ℕ} (hmn : m ≤ n) := fproj₂ (α := α) (Finset.Iic_subset_Iic.2 hmn)
+
+@[simp]
+lemma fprojNat₂_def {m n : ℕ} (hmn : m ≤ n) (x : Π i : Finset.Iic n, α i) (i : Finset.Iic m) :
+    fprojNat₂ hmn x i = x ⟨i.1, Finset.Iic_subset_Iic.2 hmn i.2⟩ := rfl
 
 theorem projNat₂_comp_projNat {m n : ℕ} (hmn : m ≤ n) :
     (projNat₂ hmn) ∘ (@projNat α n) = projNat m := rfl
