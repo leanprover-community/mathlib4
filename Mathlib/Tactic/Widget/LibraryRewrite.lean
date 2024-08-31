@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid, Anand Rao
 -/
 import Mathlib.Lean.Meta.RefinedDiscrTree
-import Mathlib.Tactic.InteractiveUnfold
-import Std.Util.Cache
-import Std.Util.Pickle
+import Mathlib.Tactic.Widget.InteractiveUnfold
+import Batteries.Util.Cache
+import Batteries.Util.Pickle
 
 /-!
 # Point & click library rewriting
