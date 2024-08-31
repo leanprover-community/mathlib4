@@ -195,8 +195,8 @@ theorem convexBodyLT'_convex : Convex ℝ (convexBodyLT' K f w₀) := by
   refine Convex.prod (convex_pi (fun _ _ => convex_ball _ _)) (convex_pi (fun _ _ => ?_))
   split_ifs
   · simp_rw [abs_lt]
-    refine Convex.inter ((convex_halfspace_re_gt _).inter  (convex_halfspace_re_lt _))
-      ((convex_halfspace_im_gt _).inter  (convex_halfspace_im_lt _))
+    refine Convex.inter ((convex_halfspace_re_gt _).inter (convex_halfspace_re_lt _))
+      ((convex_halfspace_im_gt _).inter (convex_halfspace_im_lt _))
   · exact convex_ball _ _
 
 open MeasureTheory MeasureTheory.Measure

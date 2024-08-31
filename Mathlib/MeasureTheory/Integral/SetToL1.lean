@@ -1645,3 +1645,5 @@ theorem continuous_setToFun_of_dominated (hT : DominatedFinMeasAdditive μ T C) 
 end Function
 
 end MeasureTheory
+
+set_option linter.style.longFile 1800

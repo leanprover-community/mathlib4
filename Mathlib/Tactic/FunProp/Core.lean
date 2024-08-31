@@ -228,7 +228,7 @@ Try to prove `e` using *composition lambda theorem*.
 For example, `e = q(Continuous fun x => f (g x))` and `funPropDecl` is `FunPropDecl` for
 `Continuous`
 
-You also have to provide the functions `f` and `g`.  -/
+You also have to provide the functions `f` and `g`. -/
 def applyCompRule (funPropDecl : FunPropDecl) (e f g : Expr)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
 
@@ -346,7 +346,7 @@ def applyMorRules (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     trace[Debug.Meta.Tactic.fun_prop] "no theorem matched"
     return none
 
-/-- Prove function property of using *transition theorems*.  -/
+/-- Prove function property of using *transition theorems*. -/
 def applyTransitionRules (e : Expr) (funProp : Expr → FunPropM (Option Result)) :
     FunPropM (Option Result) := do
   withIncreasedTransitionDepth do
