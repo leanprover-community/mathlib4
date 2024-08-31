@@ -152,7 +152,7 @@ def StyleError.errorMessage (err : StyleError) (style : ErrorFormat) : String :=
     | ⟨[]⟩, some _ => unreachable!
     let newHex := " ".intercalate <| newC.data.map printCodepointHex
     s!"bad unicode variant-selector used at char {pos}: \"{c}\" ({oldHex}). \
-    Please replace it with its {variant}-variant: \"{newC}\" ({newHex})! (character {pos})"
+    Please replace it with its {variant}-variant: \"{newC}\" ({newHex})!"
 
 /-- The error code for a given style error. Keep this in sync with `parse?_errorContext` below! -/
 -- FUTURE: we're matching the old codes in `lint-style.py` for compatibility;
