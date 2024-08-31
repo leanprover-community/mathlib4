@@ -241,7 +241,6 @@ instance respectsIso : RespectsIso (Presheaf.representable (C := C)) :=
   stableUnderBaseChange.respectsIso
 
 end Presheaf.representable
-
 namespace MorphismProperty
 
 open Presheaf.representable
