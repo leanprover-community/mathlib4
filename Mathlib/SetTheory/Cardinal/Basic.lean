@@ -83,7 +83,7 @@ open Function Set Order
 
 noncomputable section
 
-universe u v w
+universe u v w v' w'
 
 variable {α β : Type u}
 
@@ -1027,8 +1027,6 @@ theorem lift_iSup_le_iff {ι : Type v} {f : ι → Cardinal.{w}} (hf : BddAbove 
     {t : Cardinal} : lift.{u} (iSup f) ≤ t ↔ ∀ i, lift.{u} (f i) ≤ t := by
   rw [lift_iSup hf]
   exact ciSup_le_iff' (bddAbove_range_comp.{_,_,u} hf _)
-
-universe v' w'
 
 /-- To prove an inequality between the lifts to a common universe of two different supremums,
 it suffices to show that the lift of each cardinal from the smaller supremum
