@@ -835,7 +835,7 @@ theorem euclDivd (S : σ → Finset R) (Sne : ∀ i, (S i).Nonempty) (f : MvPoly
       simp only [sup_lt_iff]
       exact ⟨Hr' i, Hr'' i⟩
 
-/- -- OLD VERSION 
+/- -- OLD VERSION
 theorem euclDivd (S : σ → Finset R) (Sne : ∀ i, (S i).Nonempty)
     (f : MvPolynomial σ R) :
     ∃ (h : σ → MvPolynomial σ R) (r : MvPolynomial σ R),
