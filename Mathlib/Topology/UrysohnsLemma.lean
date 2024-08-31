@@ -4,16 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Normed.Affine.AddTorsor
-import Mathlib.LinearAlgebra.AffineSpace.Ordered
-import Mathlib.Topology.ContinuousFunction.Basic
-import Mathlib.Topology.GDelta
+import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.Analysis.NormedSpace.FunctionSeries
 import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.LinearAlgebra.AffineSpace.Ordered
 import Mathlib.Topology.ContinuousFunction.Algebra
-import Mathlib.Topology.ContinuousFunction.Basic
-import Mathlib.Topology.GDelta
 import Mathlib.Topology.UnitInterval
 
 /-!
@@ -453,22 +448,22 @@ such that `t ⊆ s`, there is a continuous function `f` supported in `s`, `f x =
 lemma exists_tsupport_one_of_isOpen_isClosed [NormalSpace X] {s t : Set X}
     (hs : IsOpen s) (ht : IsClosed t) (hst : t ⊆ s) : ∃ f : C(X, ℝ), tsupport f ⊆ s ∧ EqOn f 1 t
     ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1 := by
-  obtain ⟨U, V, hUV⟩ := normal_separation hs.isClosed_compl ht
-      (HasSubset.Subset.disjoint_compl_left hst)
-    have hDisjoint : Disjoint (closure U) t := by
-      apply le_compl_iff_disjoint_right.mp
-      apply _root_.subset_trans _ (Set.compl_subset_compl.mpr hUV.2.2.2.1)
-      apply (IsClosed.closure_subset_iff (IsOpen.isClosed_compl hUV.2.1)).mpr
-      exact Set.subset_compl_iff_disjoint_right.mpr hUV.2.2.2.2
-    obtain ⟨f, hf⟩ := exists_continuous_zero_one_of_isClosed isClosed_closure ht hDisjoint
-    use f
-    constructor
-    · apply _root_.subset_trans _ (Set.compl_subset_comm.mp hUV.2.2.1)
-      rw [← IsClosed.closure_eq (IsOpen.isClosed_compl hUV.1)]
-      apply closure_mono
-      rw [Set.subset_compl_iff_disjoint_left, Function.disjoint_support_iff]
-      exact Set.EqOn.mono subset_closure hf.1
-    · exact hf.2
+  obtain ⟨U, V, hUopen, hVopen, hscsubU, htsubV, hDisjointUV⟩ := normal_separation hs.isClosed_compl
+    ht (HasSubset.Subset.disjoint_compl_left hst)
+  have hDisjoint : Disjoint (closure U) t := by
+    apply le_compl_iff_disjoint_right.mp
+    apply _root_.subset_trans _ (Set.compl_subset_compl.mpr htsubV)
+    apply (IsClosed.closure_subset_iff (IsOpen.isClosed_compl hVopen)).mpr
+    exact Set.subset_compl_iff_disjoint_right.mpr hDisjointUV
+  obtain ⟨f, hf⟩ := exists_continuous_zero_one_of_isClosed isClosed_closure ht hDisjoint
+  use f
+  constructor
+  · apply _root_.subset_trans _ (Set.compl_subset_comm.mp hscsubU)
+    rw [← IsClosed.closure_eq (IsOpen.isClosed_compl hUopen)]
+    apply closure_mono
+    rw [Set.subset_compl_iff_disjoint_left, Function.disjoint_support_iff]
+    exact Set.EqOn.mono subset_closure hf.1
+  · exact hf.2
 
 open Classical BigOperators
 
@@ -487,28 +482,24 @@ lemma exists_forall_tsupport_iUnion_one_iUnion_of_isOpen_isClosed [NormalSpace X
     have : t = ∅ := by
       rw [Set.iUnion_of_empty s] at hst
       exact subset_eq_empty hst rfl
-    constructor
-    · exact trivial
-    · intro x
-      rw [this]
-      exact fun a => a.elim
+    refine ⟨trivial, ?_⟩
+    intro x
+    rw [this]
+    exact fun a => a.elim
   · have htW : ∀ (x : X), x ∈ t → ∃ (Wx : Set X), x ∈ Wx ∧ IsOpen Wx ∧ IsCompact (closure Wx)
         ∧ ∃ (i : Fin (Nat.succ n)), (closure Wx) ⊆ s i := by
       intro x hx
       obtain ⟨i, hi⟩ := Set.mem_iUnion.mp ((Set.mem_of_subset_of_mem hst) hx)
-      obtain ⟨cWx, hWx⟩ := exists_compact_subset (hs i) hi
+      obtain ⟨cWx, hcWxCompact, hxinintcWx, hcWxsubsi⟩ := exists_compact_subset (hs i) hi
       use interior cWx
-      constructor
-      · exact hWx.2.1
-      constructor
+      refine ⟨hxinintcWx, ?_, ?_, ?_⟩
       · simp only [isOpen_interior]
-      constructor
-      · apply IsCompact.of_isClosed_subset hWx.1 isClosed_closure
-        nth_rw 2 [← closure_eq_iff_isClosed.mpr (IsCompact.isClosed hWx.1)]
+      · apply IsCompact.of_isClosed_subset hcWxCompact isClosed_closure
+        nth_rw 2 [← closure_eq_iff_isClosed.mpr (IsCompact.isClosed hcWxCompact)]
         exact closure_mono interior_subset
       · use i
-        apply _root_.subset_trans _ hWx.2.2
-        nth_rw 2 [← closure_eq_iff_isClosed.mpr (IsCompact.isClosed hWx.1)]
+        apply _root_.subset_trans _ hcWxsubsi
+        nth_rw 2 [← closure_eq_iff_isClosed.mpr (IsCompact.isClosed hcWxCompact)]
         exact closure_mono interior_subset
     set W : X → Set X := fun x => if hx : x ∈ t then Classical.choose (htW x hx) else default
       with hW
@@ -516,12 +507,11 @@ lemma exists_forall_tsupport_iUnion_one_iUnion_of_isOpen_isClosed [NormalSpace X
       intro x hx
       apply mem_nhds_iff.mpr
       use W x
-      constructor
-      · exact subset_refl (W x)
-      · rw [hW]
-        simp only
-        rw [dif_pos hx]
-        exact And.intro (Classical.choose_spec (htW x hx)).2.1 (Classical.choose_spec (htW x hx)).1
+      refine ⟨subset_refl (W x), ?_⟩
+      rw [hW]
+      simp only
+      rw [dif_pos hx]
+      exact And.intro (Classical.choose_spec (htW x hx)).2.1 (Classical.choose_spec (htW x hx)).1
     obtain ⟨ι, hι⟩ := IsCompact.elim_nhds_subcover htcp W htWnhds
     set Wx : Fin (Nat.succ n) → ι → Set X := fun i xj =>
       if closure (W xj) ⊆ s i then closure (W xj) else ∅
@@ -553,14 +543,13 @@ lemma exists_forall_tsupport_iUnion_one_iUnion_of_isOpen_isClosed [NormalSpace X
       fun i => (∏ j in { j : Fin (Nat.succ n) | j < i }.toFinset, (1 - g j)) * g i
       with hf
     use f
-    constructor
+    refine ⟨?_, ?_, ?_⟩
     · rw [hf]
       simp only
       intro i
       apply _root_.subset_trans tsupport_mul_subset_right
       exact (Classical.choose_spec
         (exists_tsupport_one_of_isOpen_isClosed (hs i) (IsClosedH i) (IsHSubS i))).1
-    constructor
     · have hsumf (m : ℕ) (hm : m < Nat.succ n) :
           ∑ j in { j : Fin (Nat.succ n) | j ≤ ⟨m, hm⟩ }.toFinset, f j
           = 1 - (∏ j in { j : Fin (Nat.succ n) | j ≤ ⟨m, hm⟩ }.toFinset, (1 - g j)) := by
