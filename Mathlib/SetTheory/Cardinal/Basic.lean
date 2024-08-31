@@ -331,18 +331,16 @@ theorem lift_mk_eq' {α : Type u} {β : Type v} : lift.{v} #α = lift.{u} #β �
 
 @[simp]
 theorem lift_le {a b : Cardinal.{v}} : lift.{u, v} a ≤ lift.{u, v} b ↔ a ≤ b :=
-  inductionOn₂ a b fun α β => by
-    rw [← lift_umax]
-    exact lift_mk_le.{u}
+  lift.toOrderEmbedding.le_iff_le
 
 -- Porting note: changed `simps` to `simps!` because the linter told to do so.
 /-- `Cardinal.lift` as an `OrderEmbedding`. -/
-@[simps! (config := .asFn)]
+@[deprecated lift (since := "2024-08-30")]
 def liftOrderEmbedding : Cardinal.{v} ↪o Cardinal.{max v u} :=
   OrderEmbedding.ofMapLEIff lift.{u, v} fun _ _ => lift_le
 
 theorem lift_injective : Injective lift.{u, v} :=
-  liftOrderEmbedding.injective
+  lift.toOrderEmbedding.injective
 
 @[simp]
 theorem lift_inj {a b : Cardinal.{u}} : lift.{v, u} a = lift.{v, u} b ↔ a = b :=
@@ -350,7 +348,7 @@ theorem lift_inj {a b : Cardinal.{u}} : lift.{v, u} a = lift.{v, u} b ↔ a = b 
 
 @[simp]
 theorem lift_lt {a b : Cardinal.{u}} : lift.{v, u} a < lift.{v, u} b ↔ a < b :=
-  liftOrderEmbedding.lt_iff_lt
+  lift.toOrderEmbedding.lt_iff_lt
 
 theorem lift_strictMono : StrictMono lift := fun _ _ => lift_lt.2
 
