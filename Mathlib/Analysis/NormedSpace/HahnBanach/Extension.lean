@@ -69,8 +69,7 @@ instance {𝕜 : Type*} [h : RCLike 𝕜] : IsRorC 𝕜 := ⟨⟨h, rfl⟩⟩
 
 instance : IsRorC ℝ := by infer_instance
 
-lemma foo {𝕜 : Type*} (h : RCLike 𝕜) : True := by
-  let Z := h.toStar
+suppress_compilation
 
 /-- A copy of an `RCLike` field in which the `NormedField` field is adjusted to be become defeq
 to a propeq one. -/
@@ -119,6 +118,7 @@ def RCLike.copy {𝕜 : Type*} (h : RCLike 𝕜)  (hk : NormedField 𝕜)
     convert @NormedAlgebra.norm_smul_le _ _ _ (_) h.toNormedAlgebra r x <;> simp only [h'']
   complete := by
     convert @CompleteSpace.complete _ (_) h.toCompleteSpace <;> simp only [h'']
+  -- RCLike fields
   re :=
     { toFun := h.re
       map_zero' := by
@@ -138,6 +138,23 @@ def RCLike.copy {𝕜 : Type*} (h : RCLike 𝕜)  (hk : NormedField 𝕜)
         convert @AddHom.map_add' _ _ (_) _ (@AddMonoidHom.toAddHom _ _ (_) _ h.im) x y
         <;> simp only [h''] }
   I := h.I
+  I_re_ax := sorry -- by convert h.I_re_ax <;> simp only [h'']
+  I_mul_I_ax := sorry -- by convert h.I_mul_I_ax <;> simp only [h'']
+  re_add_im_ax z := sorry -- by convert h.re_add_im_ax z <;> simp only [h'']
+  ofReal_re_ax r := sorry -- by convert h.ofReal_re_ax r <;> simp only [h'']
+  ofReal_im_ax r := sorry -- by convert h.ofReal_im_ax r <;> simp only [h'']
+  mul_re_ax z w := by convert h.mul_re_ax z w <;> simp only [h'']
+  mul_im_ax z w := by convert h.mul_im_ax z w <;> simp only [h'']
+  conj_re_ax z := by convert h.conj_re_ax z <;> simp only [h'']
+  conj_im_ax z := by convert h.conj_im_ax z <;> simp only [h'']
+  conj_I_ax := by convert h.conj_I_ax <;> simp only [h'']
+  norm_sq_eq_def_ax z := by convert h.norm_sq_eq_def_ax z <;> simp only [h'']
+  mul_im_I_ax := sorry
+  le_iff_re_im := sorry
+  toPartialOrder := h.toPartialOrder
+  toDecidableEq := h.toDecidableEq
+
+
 
 
 
