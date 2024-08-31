@@ -42,8 +42,8 @@ We prove a couple of auxiliary lemmas elaborating on facts such as
 
 
 /-- If `f` is differentiable on `(a,b)`, and `x ∈ (a,b)`, then `f` is differentiable at `x`.-/
-theorem differentiableOn_differentiableAt_Ioo {𝕜 : Type u_1} [NontriviallyNormedField 𝕜]
-  {E : Type u_2} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+theorem differentiableOn_differentiableAt_Ioo.{u_1, u_2, u_3} {𝕜 : Type u_1}
+  [NontriviallyNormedField 𝕜] {E : Type u_2} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     [LinearOrder E] [OrderClosedTopology E]
     {a x b : E} (hab : x ∈ Set.Ioo a b)
     {F : Type u_3} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
@@ -57,7 +57,7 @@ theorem differentiableOn_differentiableAt_Ioo {𝕜 : Type u_1} [NontriviallyNor
 
 /-- If `f` is continuous at `b` and differentiable on `(a,b)` then `f` is
   continuous on the half-open interval `(a,b]`. -/
-theorem continuous_Ioc {𝕜 : Type u_1} [NontriviallyNormedField 𝕜]
+theorem continuous_Ioc.{u_1, u_2, u_3} {𝕜 : Type u_1} [NontriviallyNormedField 𝕜]
   {E : Type u_2} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     [LinearOrder E] [OrderClosedTopology E]
     {F : Type u_3} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
@@ -80,7 +80,7 @@ theorem continuous_Ioc {𝕜 : Type u_1} [NontriviallyNormedField 𝕜]
 
 /-- If `f` is continuous at `b` and differentiable on `(b,c)` then `f` is
   continuous on the half-open interval `[b,c)`. -/
-theorem continuous_Ico {𝕜 : Type u_1} [NontriviallyNormedField 𝕜]
+theorem continuous_Ico.{u_1, u_2, u_3} {𝕜 : Type u_1} [NontriviallyNormedField 𝕜]
   {E : Type u_2} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     [LinearOrder E] [OrderClosedTopology E]
     {F : Type u_3} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
@@ -116,9 +116,8 @@ theorem differentiableOn_neg_Ioo
 /-- If `f'` is the derivative of `f` then  `f' x ≤ 0 → 0 ≤ (-f)' x`. -/
 theorem deriv_neg_nonneg {f : ℝ → ℝ} {a b : ℝ}
   (hd₀ : DifferentiableOn ℝ f (Set.Ioo a b))
-    (h₀ : ∀ x ∈ Set.Ioo a b, deriv f x ≤ 0) :
-    x ∈ Set.Ioo a b → 0 ≤ deriv (-f) x := by
-  intro hx
+    (h₀ : ∀ x ∈ Set.Ioo a b, deriv f x ≤ 0) (x : ℝ) (hx : x ∈ Set.Ioo a b)
+    : 0 ≤ deriv (-f) x := by
   show 0 ≤ deriv (((fun x => -x) ∘ (fun x => f x))) x
   rw [deriv.comp]
   simp
@@ -159,7 +158,7 @@ First-Derivative Test from calculus.
 
 /-- If `f` is monotone on `(a,b]` and antitone on `[b,c)` then `f` has
 a local maximum at `b`. -/
-lemma isLocalMax_of_mono_anti
+lemma isLocalMax_of_mono_anti.{u, v}
   {α : Type u} [TopologicalSpace α] [LinearOrder α] [OrderClosedTopology α]
     {β : Type v} [Preorder β]
     {a b c : α} (g₀ : a < b) (g₁ : b < c)
