@@ -170,6 +170,26 @@ instance instDecidableMemSupp (c : G.ConnectedComponent) (v : V) : Decidable (v 
   c.recOn (fun w ↦ decidable_of_iff (G.Reachable v w) <| by simp)
     (fun _ _ _ _ ↦ Subsingleton.elim _ _)
 
+variable {G} in
+lemma disjiUnion_supp_toFinset_eq_supp_toFinset {G' : SimpleGraph V} (h : G ≤ G')
+    (c' : ConnectedComponent G') [Fintype c'.supp]
+    [DecidablePred fun c : G.ConnectedComponent ↦ c.supp ⊆ c'.supp] :
+    .disjiUnion {c : ConnectedComponent G | c.supp ⊆ c'.supp} (fun c ↦ c.supp.toFinset)
+      (fun x _ y _ hxy ↦ by simpa using pairwise_disjoint_supp_connectedComponent _ hxy) =
+      c'.supp.toFinset :=
+  Finset.coe_injective <| by simpa using ConnectedComponent.biUnion_supp_eq_supp h _
+
+lemma ConnectedComponent.odd_card_supp_iff_odd_subcomponents {G'}
+    (h : G ≤ G') (c' : ConnectedComponent G') :
+    Odd (Nat.card c'.supp) ↔ Odd (Nat.card
+    ({c : ConnectedComponent G | c.supp ⊆ c'.supp ∧ Odd (Nat.card c.supp) })) := by
+  classical
+  -- have := Fintype.ofFinite:
+  rw [Nat.card_eq_card_toFinset, ← disjiUnion_supp_toFinset_eq_supp_toFinset h]
+  simp only [Finset.card_disjiUnion, Set.toFinset_card]
+  rw [Finset.odd_sum_iff_odd_card_odd, Nat.card_eq_fintype_card, Fintype.card_ofFinset]
+  simp only [Set.mem_setOf_eq, Nat.card_eq_fintype_card, Finset.filter_filter]
+
 end Finite
 
 lemma odd_card_iff_odd_components [Finite V] : Odd (Nat.card V) ↔
