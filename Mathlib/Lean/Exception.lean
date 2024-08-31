@@ -38,3 +38,7 @@ and the only commonality is the prefix of the string, so that's what we look for
 -/
 def isFailedToSynthesize (e : Exception) : IO Bool := do
   pure <| (← e.toMessageData.toString).startsWith "failed to synthesize"
+
+end Exception
+
+end Lean
