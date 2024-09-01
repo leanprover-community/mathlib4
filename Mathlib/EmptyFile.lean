@@ -11,5 +11,6 @@ import Mathlib.Data.Nat.Notation
 -/
 
 /-- with an unnecessary lemma. -/
-theorem Unneeded : True := by
+theorem Unneeded : True :=
+by
     exact .intro
