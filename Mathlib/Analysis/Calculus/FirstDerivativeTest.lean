@@ -5,7 +5,8 @@ Authors: Bjørn Kjos-Hanssen
 -/
 import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.Order.Interval.Set.Basic
-
+import Mathlib.Topology.Defs.Filter
+import Mathlib.Topology.Order.OrderClosedExtr
 /-!
 # The First-Derivative Test
 
@@ -32,7 +33,7 @@ using `monotoneOn_of_deriv_nonneg` from [Mathlib.Analysis.Calculus.MeanValue].
 derivative test, calculus
 -/
 
-open Set
+open Set Topology
 
 /-!
 ### Some facts about differentiability and continuity
@@ -123,31 +124,6 @@ Using the connection beetween monotonicity and derivatives we obtain the familia
 First-Derivative Test from calculus.
 -/
 
-/-- If `f` is monotone on `(a,b]` and antitone on `[b,c)` then `f` has
-a local maximum at `b`. -/
-lemma isLocalMax_of_mono_anti.{u, v}
-  {α : Type u} [TopologicalSpace α] [LinearOrder α] [OrderClosedTopology α]
-    {β : Type v} [Preorder β]
-    {a b c : α} (g₀ : a < b) (g₁ : b < c)
-    {f : α → β}
-    (h₀ : MonotoneOn f (Set.Ioc a b))
-    (h₁ : AntitoneOn f (Set.Ico b c)) : IsLocalMax f b := by
-  unfold IsLocalMax IsMaxFilter Filter.Eventually
-  rw [nhds_def, Filter.mem_iInf]
-  use {Set.Ioo a c}, (Set.toFinite _), (fun _ ↦ Set.Ioo a c ∪ {x | f x ≤ f b})
-  simp only [Set.mem_setOf_eq, Subtype.forall, Set.mem_singleton_iff, forall_eq, Set.mem_Ioo,
-    Set.iInter_coe_set, Set.iInter_iInter_eq_left]
-  constructor
-  · exact Filter.mem_iInf_of_mem
-      (by simp_all only [and_self, true_and]; apply isOpen_Ioo)
-      (by simp_all)
-  · ext u
-    simp only [Set.mem_setOf_eq, Set.mem_union, Set.mem_Ioo, iff_or_self, and_imp]
-    intros
-    exact (em (u < b)).elim
-      (fun H => h₀ (by simp_all only [mem_Ioc, true_and]; exact le_of_lt H)
-        (by simp_all) (le_of_lt H))
-      (fun H => h₁ (by simp_all) (by simp_all) (le_of_not_lt H))
 
  /-- The First-Derivative Test from calculus, maxima version.
   Suppose `a < b < c`,
