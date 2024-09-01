@@ -447,6 +447,25 @@ theorem omega_opow_mul_nat_lt (a : Ordinal) (n : ℕ) : ω ^ a * n < ω ^ succ a
   rw [opow_succ]
   exact mul_lt_mul_of_pos_left (nat_lt_omega n) (opow_pos a omega_pos)
 
+theorem sub_opow_log_omega_lt {a : Ordinal} (ha : a ≠ 0) : a - ω ^ log ω a < a := by
+  have H := div_add_mod a (ω ^ log ω a)
+  conv_lhs => left; rw [← H]
+  conv_rhs => rw [← H]
+  obtain ⟨n, hn⟩ := lt_omega.1 (div_opow_log_lt a one_lt_omega)
+  obtain rfl | n := n
+  · have := div_opow_log_pos ω ha
+    rw [hn, Nat.cast_zero] at this
+    exact (irrefl 0 this).elim
+  · rw [hn]
+    conv_lhs => rw [add_comm, Nat.cast_add, Nat.cast_one, mul_one_add, add_assoc, add_sub_cancel]
+    rw [Nat.cast_succ, mul_add_one, add_assoc, add_lt_add_iff_left]
+    exact (mod_lt a (opow_ne_zero _ omega_ne_zero)).trans_le <| le_add_right _ _
+
+theorem add_sub_cancel_omega_opow_log {a : Ordinal} (ha : a ≠ 0) :
+    ω ^ log ω a + (a - ω ^ log ω a) = a := by
+  rw [Ordinal.add_sub_cancel_of_le]
+  exact opow_log_le_self ω ha
+
 /-! ### Interaction with `Nat.cast` -/
 
 @[simp, norm_cast]
