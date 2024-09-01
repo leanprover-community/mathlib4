@@ -348,21 +348,6 @@ def broadImportsLinter : TextbasedLinter := fun lines ↦ Id.run do
   return (errors, none)
 
 
-/-- Lint a collection of input strings if one of them contains windows line endings. -/
-def windowsLineEndingLinter : TextbasedLinter := fun lines ↦ Id.run do
-  let mut errors := Array.mkEmpty 0
-  let mut fixedLines := lines
-  -- invariant: this equals the current index of 'line' in 'lines',
-  -- hence starts at 0 and is incremented *at the end* of the loop
-  let mut lineNumber := 0
-  for line in lines do
-    let replaced := line.crlfToLf
-    if replaced != line then
-      errors := errors.push (StyleError.windowsLineEnding, lineNumber)
-      fixedLines := fixedLines.set! 0 replaced
-    lineNumber := lineNumber + 1
-  return (errors, fixedLines)
-
 /-- Whether a collection of lines consists *only* of imports, blank lines and single-line comments.
 In practice, this means it's an imports-only file and exempt from almost all linting. -/
 def isImportsOnlyFile (lines : Array String) : Bool :=
@@ -395,7 +380,7 @@ end
 
 /-- All text-based linters registered in this file. -/
 def allLinters : Array TextbasedLinter := #[
-    copyrightHeaderLinter, adaptationNoteLinter, broadImportsLinter, windowsLineEndingLinter
+    copyrightHeaderLinter, adaptationNoteLinter, broadImportsLinter
   ]
 
 /-- Controls what kind of output this programme produces. -/
@@ -416,18 +401,29 @@ Return a list of all unexpected errors, and optionally automatically fixed lines
 `exceptions` are any other style exceptions. -/
 def lintFile (path : FilePath) (sizeLimit : Option ℕ) (exceptions : Array ErrorContext) :
     IO (Array ErrorContext × Option (Array String)) := do
-  let lines ← IO.FS.lines path
-  -- We don't need to run any checks on imports-only files.
-  if isImportsOnlyFile lines then
-    return (#[], none)
   let mut errors := #[]
+  -- Whether any changes were made by auto-fixes.
+  let mut changes_made := false
+  -- Check for windows line endings first: as `FS.lines` treats Unix and Windows lines the same,
+  -- we need to analyse the actual file contents.
+  let contents ← IO.FS.readFile path
+  let replaced := contents.crlfToLf
+  if replaced != then
+    changes_made := true
+    errors := errors.push (ErrorContext.mk StyleError.windowsLineEnding 1 path)
+  let lines := replaced.splitOn '\n'
+
+  -- We don't need to run any further checks on imports-only files.
+  if isImportsOnlyFile lines then
+    return (errors, if changes_made then some lines else none)
+
   if let some (StyleError.fileTooLong n limit ex) := checkFileLength lines sizeLimit then
-    errors := #[ErrorContext.mk (StyleError.fileTooLong n limit ex) 1 path]
-  -- All errors raised in this file.
+    errors := errors.push (ErrorContext.mk (StyleError.fileTooLong n limit ex) 1 path)
+  -- All further style errors raised in this file.
   let mut allOutput := #[]
   -- A working copy of the lines in this file, modified by applying the auto-fixes.
   let mut changed := lines
-  let mut change_made := false
+
   for lint in allLinters do
     let (err, changes) := lint changed
     allOutput := allOutput.append (Array.map (fun (e, n) ↦ #[(ErrorContext.mk e n path)]) err)
@@ -437,7 +433,7 @@ def lintFile (path : FilePath) (sizeLimit : Option ℕ) (exceptions : Array Erro
   -- This list is not sorted: for github, this is fine.
   errors := errors.append
     (allOutput.flatten.filter (fun e ↦ (e.find?_comparable exceptions).isNone))
-  return (errors, if change_made then some changed else none)
+  return (errors, if change_mades then some changed else none)
 
 
 /-- Lint a collection of modules for style violations.
