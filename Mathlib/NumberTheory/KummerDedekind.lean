@@ -97,7 +97,7 @@ lemma mem_coeSubmodule_conductor {L} [CommRing L] [Algebra S L] [Algebra R L]
       exact ⟨_, hy z, map_mul _ _ _⟩
     · intro H
       obtain ⟨y, _, e⟩ := H 1
-      rw [_root_.map_one, mul_one] at e
+      rw [map_one, mul_one] at e
       subst e
       simp only [← _root_.map_mul, (NoZeroSMulDivisors.algebraMap_injective S L).eq_iff,
         exists_eq_right] at H
@@ -111,9 +111,9 @@ variable {I : Ideal R}
 theorem prod_mem_ideal_map_of_mem_conductor {p : R} {z : S}
     (hp : p ∈ Ideal.comap (algebraMap R S) (conductor R x)) (hz' : z ∈ I.map (algebraMap R S)) :
     algebraMap R S p * z ∈ algebraMap R<x> S '' ↑(I.map (algebraMap R R<x>)) := by
-  rw [Ideal.map, Ideal.span, Finsupp.mem_span_image_iff_total] at hz'
+  rw [Ideal.map, Ideal.span, Finsupp.mem_span_image_iff_linearCombination] at hz'
   obtain ⟨l, H, H'⟩ := hz'
-  rw [Finsupp.total_apply] at H'
+  rw [Finsupp.linearCombination_apply] at H'
   rw [← H', mul_comm, Finsupp.sum_mul]
   have lem : ∀ {a : R}, a ∈ I → l a • algebraMap R S a * algebraMap R S p ∈
       algebraMap R<x> S '' I.map (algebraMap R R<x>) := by

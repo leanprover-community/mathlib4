@@ -5,7 +5,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Haitao Zhang
 -/
 import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.Attr.Register
-import Mathlib.Tactic.Basic
+import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.Eqns
 import Mathlib.Tactic.TypeStar
 import Batteries.Logic

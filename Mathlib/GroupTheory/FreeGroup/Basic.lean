@@ -522,7 +522,7 @@ instance : Group (FreeGroup α) where
   mul_assoc := by rintro ⟨L₁⟩ ⟨L₂⟩ ⟨L₃⟩; simp
   one_mul := by rintro ⟨L⟩; rfl
   mul_one := by rintro ⟨L⟩; simp [one_eq_mk]
-  mul_left_inv := by
+  inv_mul_cancel := by
     rintro ⟨L⟩
     exact
       List.recOn L rfl fun ⟨x, b⟩ tl ih =>
@@ -538,7 +538,7 @@ def of (x : α) : FreeGroup α :=
 @[to_additive]
 theorem Red.exact : mk L₁ = mk L₂ ↔ Join Red L₁ L₂ :=
   calc
-    mk L₁ = mk L₂ ↔ EqvGen Red.Step L₁ L₂ := Iff.intro (Quot.exact _) Quot.EqvGen_sound
+    mk L₁ = mk L₂ ↔ EqvGen Red.Step L₁ L₂ := Iff.intro (Quot.eqvGen_exact _) Quot.eqvGen_sound
     _ ↔ Join Red L₁ L₂ := eqvGen_step_iff_join_red
 
 /-- The canonical map from the type to the free group is an injection. -/

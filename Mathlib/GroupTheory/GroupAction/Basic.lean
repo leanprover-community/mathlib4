@@ -9,7 +9,6 @@ import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Set.Finite
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Data.Setoid.Basic
-import Mathlib.GroupTheory.GroupAction.Group
 
 /-!
 # Basic properties of group actions
@@ -378,6 +377,25 @@ lemma orbitRel_r_apply {a b : α} : (orbitRel G _).r a b ↔ a ∈ orbit G b :=
 lemma orbitRel_subgroup_le (H : Subgroup G) : orbitRel H α ≤ orbitRel G α :=
   Setoid.le_def.2 mem_orbit_of_mem_orbit_subgroup
 
+@[to_additive]
+lemma orbitRel_subgroupOf (H K : Subgroup G) :
+    orbitRel (H.subgroupOf K) α = orbitRel (H ⊓ K : Subgroup G) α := by
+  rw [← Subgroup.subgroupOf_map_subtype]
+  ext x
+  simp_rw [orbitRel_apply]
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rcases h with ⟨⟨gv, gp⟩, rfl⟩
+    simp only [Submonoid.mk_smul]
+    refine mem_orbit _ (⟨gv, ?_⟩ : Subgroup.map K.subtype (H.subgroupOf K))
+    simpa using gp
+  · rcases h with ⟨⟨gv, gp⟩, rfl⟩
+    simp only [Submonoid.mk_smul]
+    simp only [Subgroup.subgroupOf_map_subtype, Subgroup.mem_inf] at gp
+    refine mem_orbit _ (⟨⟨gv, ?_⟩, ?_⟩ : H.subgroupOf K)
+    · exact gp.2
+    · simp only [Subgroup.mem_subgroupOf]
+      exact gp.1
+
 /-- When you take a set `U` in `α`, push it down to the quotient, and pull back, you get the union
 of the orbit of `U` under `G`. -/
 @[to_additive
@@ -678,8 +696,8 @@ lemma stabilizer_mul_eq_right [Group α] [SMulCommClass G α α] (a b : α) :
 theorem stabilizer_smul_eq_stabilizer_map_conj (g : G) (a : α) :
     stabilizer G (g • a) = (stabilizer G a).map (MulAut.conj g).toMonoidHom := by
   ext h
-  rw [mem_stabilizer_iff, ← smul_left_cancel_iff g⁻¹, smul_smul, smul_smul, smul_smul, mul_left_inv,
-    one_smul, ← mem_stabilizer_iff, Subgroup.mem_map_equiv, MulAut.conj_symm_apply]
+  rw [mem_stabilizer_iff, ← smul_left_cancel_iff g⁻¹, smul_smul, smul_smul, smul_smul,
+    inv_mul_cancel, one_smul, ← mem_stabilizer_iff, Subgroup.mem_map_equiv, MulAut.conj_symm_apply]
 
 /-- A bijection between the stabilizers of two elements in the same orbit. -/
 noncomputable def stabilizerEquivStabilizerOfOrbitRel {a b : α} (h : (orbitRel G α).Rel a b) :
@@ -702,7 +720,7 @@ theorem stabilizer_vadd_eq_stabilizer_map_conj (g : G) (a : α) :
     stabilizer G (g +ᵥ a) = (stabilizer G a).map (AddAut.conj g).toAddMonoidHom := by
   ext h
   rw [mem_stabilizer_iff, ← vadd_left_cancel_iff (-g), vadd_vadd, vadd_vadd, vadd_vadd,
-    add_left_neg, zero_vadd, ← mem_stabilizer_iff, AddSubgroup.mem_map_equiv,
+    neg_add_cancel, zero_vadd, ← mem_stabilizer_iff, AddSubgroup.mem_map_equiv,
     AddAut.conj_symm_apply]
 
 /-- A bijection between the stabilizers of two elements in the same orbit. -/

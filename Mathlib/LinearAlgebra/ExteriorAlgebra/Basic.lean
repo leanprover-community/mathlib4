@@ -86,6 +86,7 @@ variable {R}
 theorem ι_sq_zero (m : M) : ι R m * ι R m = 0 :=
   (CliffordAlgebra.ι_sq_scalar _ m).trans <| map_zero _
 
+section
 variable {A : Type*} [Semiring A] [Algebra R A]
 
 -- @[simp] -- Porting note (#10618): simp can prove this
@@ -131,7 +132,7 @@ theorem hom_ext {f g : ExteriorAlgebra R M →ₐ[R] A}
   CliffordAlgebra.hom_ext h
 
 /-- If `C` holds for the `algebraMap` of `r : R` into `ExteriorAlgebra R M`, the `ι` of `x : M`,
-and is preserved under addition and muliplication, then it holds for all of `ExteriorAlgebra R M`.
+and is preserved under addition and multiplication, then it holds for all of `ExteriorAlgebra R M`.
 -/
 @[elab_as_elim]
 theorem induction {C : ExteriorAlgebra R M → Prop}
@@ -243,9 +244,10 @@ theorem ι_add_mul_swap (x y : M) : ι R x * ι R y + ι R y * ι R x = 0 :=
 
 theorem ι_mul_prod_list {n : ℕ} (f : Fin n → M) (i : Fin n) :
     (ι R <| f i) * (List.ofFn fun i => ι R <| f i).prod = 0 := by
-  induction' n with n hn
-  · exact i.elim0
-  · rw [List.ofFn_succ, List.prod_cons, ← mul_assoc]
+  induction n with
+  | zero => exact i.elim0
+  | succ n hn =>
+    rw [List.ofFn_succ, List.prod_cons, ← mul_assoc]
     by_cases h : i = 0
     · rw [h, ι_sq_zero, zero_mul]
     · replace hn :=
@@ -254,6 +256,8 @@ theorem ι_mul_prod_list {n : ℕ} (f : Fin n → M) (i : Fin n) :
       rw [Fin.succ_pred, ← mul_assoc, mul_zero] at hn
       refine (eq_zero_iff_eq_zero_of_add_eq_zero ?_).mp hn
       rw [← add_mul, ι_add_mul_swap, zero_mul]
+
+end
 
 variable (R)
 
@@ -268,7 +272,7 @@ def ιMulti (n : ℕ) : M [⋀^Fin n]→ₗ[R] ExteriorAlgebra R M :=
       dsimp [F]
       clear F
       wlog h : x < y
-      · exact this R (A := A) n f y x hfxy.symm hxy.symm (hxy.lt_or_lt.resolve_left h)
+      · exact this R n f y x hfxy.symm hxy.symm (hxy.lt_or_lt.resolve_left h)
       clear hxy
       induction' n with n hn
       · exact x.elim0

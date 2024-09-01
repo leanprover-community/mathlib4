@@ -12,9 +12,8 @@ import Mathlib.GroupTheory.Submonoid.Center
 
 -/
 
-
-open Function
-open Int
+assert_not_exists Multiset
+assert_not_exists Ring
 
 variable {G : Type*} [Group G]
 
@@ -142,6 +141,3 @@ theorem mk_bijOn (G : Type*) [Group G] :
     exact ⟨h, rfl⟩
 
 end ConjClasses
-
-assert_not_exists Multiset
-assert_not_exists Ring

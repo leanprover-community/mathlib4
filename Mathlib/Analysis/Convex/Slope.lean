@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Yury Kudriashov. All rights reserved.
+Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudriashov, Malo Jaffré
+Authors: Yury Kudryashov, Malo Jaffré
 -/
 import Mathlib.Analysis.Convex.Function
 import Mathlib.Tactic.AdaptationNote
@@ -113,7 +113,7 @@ theorem convexOn_of_slope_mono_adjacent (hs : Convex 𝕜 s)
       simp_rw [div_eq_iff hxz.ne', ← hab]
       ring
     rwa [sub_mul, sub_mul, sub_le_iff_le_add', ← add_sub_assoc, le_sub_iff_add_le, ← mul_add,
-      sub_add_sub_cancel, ← le_div_iff hxz, add_div, mul_div_assoc, mul_div_assoc, mul_comm (f x),
+      sub_add_sub_cancel, ← le_div_iff₀ hxz, add_div, mul_div_assoc, mul_div_assoc, mul_comm (f x),
       mul_comm (f z), ha, hb] at this
 
 /-- If for any three points `x < y < z`, the slope of the secant line of `f : 𝕜 → 𝕜` on `[x, y]` is
@@ -221,7 +221,7 @@ theorem ConvexOn.secant_mono_aux1 (hf : ConvexOn 𝕜 s f) {x y z : 𝕜} (hx : 
   have hxy' : 0 < y - x := by linarith
   have hyz' : 0 < z - y := by linarith
   have hxz' : 0 < z - x := by linarith
-  rw [← le_div_iff' hxz']
+  rw [← le_div_iff₀' hxz']
   have ha : 0 ≤ (z - y) / (z - x) := by positivity
   have hb : 0 ≤ (y - x) / (z - x) := by positivity
   calc

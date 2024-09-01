@@ -301,7 +301,7 @@ theorem prod_empty : (empty : NormalWord d).prod = 1 := by
   simp [prod, empty]
 
 /-- A constructor that multiplies a `NormalWord` by an element, with condition to make
-sure the underlying list does get longer.  -/
+sure the underlying list does get longer. -/
 @[simps!]
 noncomputable def cons {i} (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
     (hgr : g ∉ (φ i).range) : NormalWord d :=
@@ -328,7 +328,7 @@ variable [DecidableEq ι] [∀ i, DecidableEq (G i)]
 
 /-- Given a word in `CoprodI`, if every letter is in the transversal and when
 we multiply by an element of the base group it still has this property,
-then the element of the base group we multiplied by was one.  -/
+then the element of the base group we multiplied by was one. -/
 theorem eq_one_of_smul_normalized (w : CoprodI.Word G) {i : ι} (h : H)
     (hw : ∀ i g, ⟨i, g⟩ ∈ w.toList → g ∈ d.set i)
     (hφw : ∀ j g, ⟨j, g⟩ ∈ (CoprodI.of (φ i h) • w).toList → g ∈ d.set j) :
@@ -513,7 +513,7 @@ noncomputable def consRecOn {motive : NormalWord d → Sort _} (w : NormalWord d
           (h3 _ _ (List.mem_cons_self _ _))]
       · apply d.injective i
         simp only [cons, equiv_fst_eq_mul_inv, MonoidHom.apply_ofInjective_symm,
-          map_one, mul_one, mul_right_inv, (equiv_snd_eq_self_iff_mem (d.compl i) (one_mem _)).2
+          map_one, mul_one, mul_inv_cancel, (equiv_snd_eq_self_iff_mem (d.compl i) (one_mem _)).2
           (h3 _ _ (List.mem_cons_self _ _))]
       · rwa [← SetLike.mem_coe,
           ← coe_equiv_snd_eq_one_iff_mem (d.compl i) (d.one_mem _),
@@ -684,7 +684,7 @@ theorem inf_of_range_eq_base_range
       have := hw.eq_empty_of_mem_range hφ (by
         simp only [Word.prod, List.map_cons, List.prod_cons, List.prod_nil,
           List.map_nil, map_mul, ofCoprodI_of, hg₁, hg₂, map_inv, map_one, mul_one,
-          mul_inv_self, one_mem])
+          mul_inv_cancel, one_mem])
       simp [w, Word.empty] at this)
     (le_inf
       (by rw [← of_comp_eq_base i]
