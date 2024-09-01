@@ -58,7 +58,7 @@ jobs:
 
           echo "issue: ${{ github.event.issue.number }}"
           echo "pr number ${{ github.event.pull_request.number }}"
-          echo "with d: /repos/$OWNER/$REPO/pulls/$PULL_NUMBER"
+          #echo "with d: /repos/$OWNER/$REPO/pulls/$PULL_NUMBER"
           tlabels="$(gh api --jq '.labels.[].name' "${PR}" | grep -- '^t-' || printf 'generic')"
           >&2 printf 't-labels:\n---\n%s\n---\n' "${tlabels}"
           if [[ "$(wc -l <<<"${tlabels}")" -ne 1 ]]; then
@@ -68,7 +68,7 @@ jobs:
           echo "name=${tlabels} with a master-addition"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR:  /repos/{owner}/{repo}/issues/{pull_number} #/repos/OWNER/REPO/pulls/PULL_NUMBER #/repos/{owner}/{repo}/issues/{issue} #${{ github.event.pull_request.number }}
+          PR:  /repos/{owner}/{repo}/issues/16350 #{pull_number} #/repos/OWNER/REPO/pulls/PULL_NUMBER #/repos/{owner}/{repo}/issues/{issue} #${{ github.event.pull_request.number }}
 
   style_lint:
     if: github.repository == 'leanprover-community/mathlib4'
