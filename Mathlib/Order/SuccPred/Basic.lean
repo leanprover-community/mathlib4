@@ -1360,7 +1360,7 @@ section IsWellFounded
 
 variable [PartialOrder α]
 
-instance (priority := 100) IsWellFounded.toIsPredArchimedean [h : IsWellFounded α (· < ·)]
+instance (priority := 100) IsWellFounded.toIsPredArchimedean [h : WellFoundedLT α]
     [PredOrder α] : IsPredArchimedean α :=
   ⟨fun {a b} => by
     refine WellFounded.fix (C := fun b => a ≤ b → ∃ n, Nat.iterate pred n b = a)
@@ -1376,7 +1376,7 @@ instance (priority := 100) IsWellFounded.toIsPredArchimedean [h : IsWellFounded 
     refine ⟨k + 1, ?_⟩
     rw [iterate_add_apply, iterate_one, hk]⟩
 
-instance (priority := 100) IsWellFounded.toIsSuccArchimedean [h : IsWellFounded α (· > ·)]
+instance (priority := 100) IsWellFounded.toIsSuccArchimedean [h : WellFoundedGT α]
     [SuccOrder α] : IsSuccArchimedean α :=
   let h : IsPredArchimedean αᵒᵈ := by infer_instance
   ⟨h.1⟩
