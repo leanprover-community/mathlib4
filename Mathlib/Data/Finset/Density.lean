@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Data.Fintype.Card
+import Mathlib.Data.NNRat.Order
 import Mathlib.Data.Rat.Cast.CharZero
 
 /-!
@@ -105,6 +105,10 @@ lemma dens_map_le [Fintype β] (f : α ↪ β) : dens (s.map f) ≤ dens s := by
 
 @[simp] lemma dens_map_equiv [Fintype β] (e : α ≃ β) : (s.map e.toEmbedding).dens = s.dens := by
   simp [dens, Fintype.card_congr e]
+
+lemma dens_image [Fintype β] [DecidableEq β] {f : α → β} (hf : Bijective f) (s : Finset α) :
+    (s.image f).dens = s.dens := by
+  simpa [map_eq_image, -dens_map_equiv] using dens_map_equiv (.ofBijective f hf)
 
 lemma card_mul_dens (s : Finset α) : Fintype.card α * s.dens = s.card := by
   cases isEmpty_or_nonempty α

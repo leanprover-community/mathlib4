@@ -18,7 +18,6 @@ import Mathlib.Order.Nat
 # Lattice operations on finsets
 -/
 
--- TODO:
 assert_not_exists OrderedCommMonoid
 assert_not_exists MonoidWithZero
 
@@ -1306,14 +1305,14 @@ protected theorem le_min_iff {m : WithTop α} {s : Finset α} : m ≤ s.min ↔ 
 protected theorem min_eq_bot [OrderBot α] {s : Finset α} : s.min = ⊥ ↔ ⊥ ∈ s :=
   Finset.max_eq_top (α := αᵒᵈ)
 
-/-- Given a nonempty finset `s` in a linear order `α`, then `s.min' h` is its minimum, as an
-element of `α`, where `h` is a proof of nonemptiness. Without this assumption, use instead `s.min`,
+/-- Given a nonempty finset `s` in a linear order `α`, then `s.min' H` is its minimum, as an
+element of `α`, where `H` is a proof of nonemptiness. Without this assumption, use instead `s.min`,
 taking values in `WithTop α`. -/
 def min' (s : Finset α) (H : s.Nonempty) : α :=
   inf' s H id
 
-/-- Given a nonempty finset `s` in a linear order `α`, then `s.max' h` is its maximum, as an
-element of `α`, where `h` is a proof of nonemptiness. Without this assumption, use instead `s.max`,
+/-- Given a nonempty finset `s` in a linear order `α`, then `s.max' H` is its maximum, as an
+element of `α`, where `H` is a proof of nonemptiness. Without this assumption, use instead `s.max`,
 taking values in `WithBot α`. -/
 def max' (s : Finset α) (H : s.Nonempty) : α :=
   sup' s H id
@@ -1952,3 +1951,5 @@ theorem set_biInter_biUnion (s : Finset γ) (t : γ → Finset α) (f : α → S
   iInf_biUnion s t f
 
 end Finset
+
+set_option linter.style.longFile 2100
