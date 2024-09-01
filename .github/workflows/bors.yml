@@ -36,7 +36,7 @@ jobs:
       - name: Print t-label
         run: |
           currentHash="$(git rev-parse HEAD)"
-          hashURL="https://github.com/${{ github.repository }}/pull/${{ github.event.number }}/commits/${currentHash}"
+          hashURL="https://github.com/${{ github.repository }}/pull/16350/commits/${currentHash}"
           echo "${hashURL}"
           echo "${PR}"
           echo "event: ${{ github.event.number }}"
