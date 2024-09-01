@@ -409,7 +409,7 @@ lemma Chain'.chain {α : Type*} {R : α → α → Prop} {l : List α} {v : α}
     apply hv
   · exact List.chain'_iff_get.mp hl
 
-lemma Chain'.apply_eq {α : Type*} {f : α → α} {l : List α}
+lemma Chain'.iterate_eq_of_apply_eq {α : Type*} {f : α → α} {l : List α}
     (hl : l.Chain' (fun x y ↦ f x = y)) (i : ℕ) (hi : i < l.length) :
     f^[i] l[0] = l[i] := by
   induction' i with i h
