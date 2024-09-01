@@ -447,6 +447,7 @@ theorem insertionSort_stable' {l c : List α} (hs : c.Sorted r) (hc : c <+~ l) :
     cases hd with
     | cons  _ h => exact ih hs _ hc h |>.trans (sublist_orderedInsert ..)
     | cons₂ _ h =>
+      -- TODO(marcusrossel): Use `Pairwise.erase` here once we've moved to Lean v4.11.0.
       specialize ih (hs.sublist <| erase_sublist a _) _ (erase_cons_head a ‹List _› ▸ hc.erase a) h
       have hm := hc.mem_iff.mp <| mem_cons_self ..
       exact orderedInsert_erase _ _ hm hs ▸ orderedInsert_sublist _ ih (sorted_insertionSort ..)
