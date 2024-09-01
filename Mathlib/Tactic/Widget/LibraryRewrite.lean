@@ -57,25 +57,35 @@ def matchEqn? (e : Expr) : Option (Expr × Expr) :=
   | none => e.iff?
 
 /-- Return `true` if `s` and `t` are equal up to changing the `MVarId`s. -/
-def isSwap (t s : Expr) : Bool :=
-  go t s |>.run' {}
+def isMVarSwap (t s : Expr) : Bool :=
+  go t s {} |>.isSome
 where
-  go (t s : Expr) : StateM (HashMap MVarId MVarId) Bool := do match t, s with
-  | .const n₁ _       , .const n₂ _        => return n₁ == n₂
-  | .forallE _ d₁ b₁ _, .forallE _ d₂ b₂ _ => go d₁ d₂ <&&> go b₁ b₂
-  | .lam _ d₁ b₁ _    , .lam _ d₂ b₂ _     => go d₁ d₂ <&&> go b₁ b₂
-  | .mdata d₁ e₁      , .mdata d₂ e₂       => pure (d₁ == d₂) <&&> go e₁ e₂
-  | .letE _ t₁ v₁ b₁ _, .letE _ t₂ v₂ b₂ _ => go t₁ t₂ <&&> go v₁ v₂ <&&> go b₁ b₂
-  | .app f₁ a₁        , .app f₂ a₂         => go f₁ f₂ <&&> go a₁ a₂
-  | .proj n₁ i₁ e₁    , .proj n₂ i₂ e₂     => pure (n₁ == n₂ && i₁ == i₂) <&&> go e₁ e₂
-  | .mvar mvarId₁     , .mvar mvarId₂      =>
-    match (← get).find? mvarId₁ with
-    | none =>
-      modify (·.insert mvarId₁ mvarId₂ |>.insert mvarId₂ mvarId₁)
-      return true
-    | some mvarId =>
-      return mvarId == mvarId₂
-  | t                 , s                  => return t == s
+  /-- The main loop of `isMVarSwap`. Returning `none` corresponds to a failure. -/
+  go (t s : Expr) (l : AssocList MVarId MVarId) : Option (AssocList MVarId MVarId) := do
+  if t.hasMVar then
+    guard s.hasMVar
+    match t, s with
+    -- Note we don't bother keeping track of universe level metavariables.
+    | .const n₁ _       , .const n₂ _        => guard (n₁ == n₂); return l
+    | .sort _           , .sort _            => return l
+    | .forallE _ d₁ b₁ _, .forallE _ d₂ b₂ _ => go d₁ d₂ l >>= go b₁ b₂
+    | .lam _ d₁ b₁ _    , .lam _ d₂ b₂ _     => go d₁ d₂ l >>= go b₁ b₂
+    | .mdata d₁ e₁      , .mdata d₂ e₂       => guard (d₁ == d₂); go e₁ e₂ l
+    | .letE _ t₁ v₁ b₁ _, .letE _ t₂ v₂ b₂ _ => go t₁ t₂ l >>= go v₁ v₂ >>= go b₁ b₂
+    | .app f₁ a₁        , .app f₂ a₂         => go f₁ f₂ l >>= go a₁ a₂
+    | .proj n₁ i₁ e₁    , .proj n₂ i₂ e₂     => guard (n₁ == n₂ && i₁ == i₂); go e₁ e₂ l
+    | .mvar mvarId₁     , .mvar mvarId₂      =>
+      match l.find? mvarId₁ with
+      | none =>
+        let l := l.insert mvarId₁ mvarId₂
+        if mvarId₁ == mvarId₂ then
+          return l
+        else
+          return l.insert mvarId₂ mvarId₁
+      | some mvarId => guard (mvarId == mvarId₂); return l
+    | t                 , s                  => guard (t == s); return l
+  else
+    guard (t == s); return l
 
 /-- Try adding the lemma to the `RefinedDiscrTree`. -/
 def addRewriteEntry (name : Name) (cinfo : ConstantInfo) :
@@ -92,7 +102,7 @@ def addRewriteEntry (name : Name) (cinfo : ConstantInfo) :
     if (lhs.findMVar? (· == mvarId)).isNone then
       return #[]
   let result := (← RefinedDiscrTree.initializeLazyEntry lhs { name, symm := false } {}).toArray
-  if isSwap lhs rhs then
+  if isMVarSwap lhs rhs then
     return result
   return result.appendList (← RefinedDiscrTree.initializeLazyEntry rhs { name, symm := true } {})
 
