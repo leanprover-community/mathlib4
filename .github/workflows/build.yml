@@ -48,6 +48,14 @@ jobs:
           echo "${PR}"
           echo "event: ${{ github.event.number }}"
           echo "${{ github.ref }}"
+
+          branch_name=$(echo "${{ github.ref }}" | sed 's|refs/heads/||')
+          if [[ $branch_name =~ issue-([0-9]+) ]]; then
+            echo "ISSUE_NUMBER=${BASH_REMATCH[1]}" #>> $GITHUB_ENV
+          else
+            echo "No issue number found in branch name."
+          fi
+
           echo "issue: ${{ github.event.issue.number }}"
           echo "pr number ${{ github.event.pull_request.number }}"
           echo "with d: /repos/$OWNER/$REPO/pulls/$PULL_NUMBER"
