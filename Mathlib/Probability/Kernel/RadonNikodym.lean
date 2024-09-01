@@ -69,9 +69,9 @@ Theorem 1.28 in [O. Kallenberg, Random Measures, Theory and Applications][kallen
 
 -/
 
-open MeasureTheory Set Filter
+open MeasureTheory Set Filter ENNReal
 
-open scoped NNReal ENNReal MeasureTheory Topology ProbabilityTheory
+open scoped NNReal MeasureTheory Topology ProbabilityTheory
 
 namespace ProbabilityTheory.Kernel
 
@@ -157,8 +157,7 @@ lemma withDensity_rnDerivAux (κ η : Kernel α γ) [IsFiniteKernel κ] [IsFinit
   rw [Kernel.withDensity_apply']
   swap
   · exact (measurable_rnDerivAux _ _).ennreal_ofReal
-  have : ∀ b, (Real.toNNReal b : ℝ≥0∞) = ENNReal.ofReal b := fun _ ↦ rfl
-  simp_rw [this]
+  simp_rw [ofNNReal_toNNReal]
   exact setLIntegral_rnDerivAux κ η a hs
 
 lemma withDensity_one_sub_rnDerivAux (κ η : Kernel α γ) [IsFiniteKernel κ] [IsFiniteKernel η] :
@@ -217,11 +216,10 @@ lemma measurableSet_mutuallySingularSetSlice (κ η : Kernel α γ) (a : α) :
 lemma measure_mutuallySingularSetSlice (κ η : Kernel α γ) [IsFiniteKernel κ] [IsFiniteKernel η]
     (a : α) :
     η a (mutuallySingularSetSlice κ η a) = 0 := by
-  have h_coe : ∀ b, (Real.toNNReal b : ℝ≥0∞) = ENNReal.ofReal b := fun _ ↦ rfl
   suffices withDensity (κ + η) (fun a x ↦ Real.toNNReal
       (1 - rnDerivAux κ (κ + η) a x)) a {x | 1 ≤ rnDerivAux κ (κ + η) a x} = 0 by
     rwa [withDensity_one_sub_rnDerivAux κ η] at this
-  simp_rw [h_coe]
+  simp_rw [ofNNReal_toNNReal]
   rw [Kernel.withDensity_apply', lintegral_eq_zero_iff, EventuallyEq, ae_restrict_iff]
   rotate_left
   · exact (measurable_const.sub
@@ -289,10 +287,9 @@ lemma measurable_singularPart_fun_right (κ η : Kernel α γ) (a : α) :
 lemma singularPart_compl_mutuallySingularSetSlice (κ η : Kernel α γ) [IsSFiniteKernel κ]
     [IsSFiniteKernel η] (a : α) :
     singularPart κ η a (mutuallySingularSetSlice κ η a)ᶜ = 0 := by
-  have h_coe : ∀ b, (Real.toNNReal b : ℝ≥0∞) = ENNReal.ofReal b := fun _ ↦ rfl
   rw [singularPart, Kernel.withDensity_apply', lintegral_eq_zero_iff, EventuallyEq,
     ae_restrict_iff]
-  all_goals simp_rw [h_coe]
+  all_goals simp_rw [ofNNReal_toNNReal]
   rotate_left
   · exact measurableSet_preimage (measurable_singularPart_fun_right κ η a)
       (measurableSet_singleton _)
@@ -351,7 +348,6 @@ lemma withDensity_rnDeriv_of_subset_compl_mutuallySingularSetSlice
     [IsFiniteKernel κ] [IsFiniteKernel η] {a : α} {s : Set γ} (hsm : MeasurableSet s)
     (hs : s ⊆ (mutuallySingularSetSlice κ η a)ᶜ) :
     withDensity η (rnDeriv κ η) a s = κ a s := by
-  have h_coe : ∀ b, (Real.toNNReal b : ℝ≥0∞) = ENNReal.ofReal b := fun _ ↦ rfl
   have : withDensity η (rnDeriv κ η)
       = withDensity (withDensity (κ + η)
         (fun a x ↦ Real.toNNReal (1 - rnDerivAux κ (κ + η) a x))) (rnDeriv κ η) := by
@@ -374,8 +370,8 @@ lemma withDensity_rnDeriv_of_subset_compl_mutuallySingularSetSlice
         ENNReal.ofReal (1 - rnDerivAux κ (κ + η) a x)) ∂(κ + η) a
   _ = ∫⁻ x in s, ENNReal.ofReal (rnDerivAux κ (κ + η) a x) ∂(κ + η) a := by
       refine setLIntegral_congr_fun hsm (ae_of_all _ fun x hx ↦ ?_)
-      rw [h_coe, ← ENNReal.ofReal_div_of_pos, div_eq_inv_mul, ← ENNReal.ofReal_mul, ← mul_assoc,
-        mul_inv_cancel₀, one_mul]
+      rw [ofNNReal_toNNReal, ← ENNReal.ofReal_div_of_pos, div_eq_inv_mul, ← ENNReal.ofReal_mul,
+        ← mul_assoc, mul_inv_cancel₀, one_mul]
       · rw [ne_eq, sub_eq_zero]
         exact (hs' x hx).ne'
       · simp [(hs' x hx).le]
