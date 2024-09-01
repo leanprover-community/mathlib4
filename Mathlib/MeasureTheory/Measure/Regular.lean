@@ -457,8 +457,7 @@ lemma of_restrict {μ : Measure α} {s : ℕ → Set α}
   intro F hF r hr
   have hBU : ⋃ n, F ∩ s n = F := by rw [← inter_iUnion, univ_subset_iff.mp hs, inter_univ]
   have : μ F = ⨆ n, μ (F ∩ s n) := by
-    rw [← measure_iUnion_eq_iSup, hBU]
-    exact Monotone.directed_le fun m n h ↦ inter_subset_inter_right _ (hmono h)
+    rw [← (monotone_const.inter hmono).measure_iUnion, hBU]
   rw [this] at hr
   rcases lt_iSup_iff.1 hr with ⟨n, hn⟩
   rw [← restrict_apply hF] at hn
@@ -509,8 +508,7 @@ lemma of_sigmaFinite [SigmaFinite μ] :
   set B : ℕ → Set α := spanningSets μ
   have hBU : ⋃ n, s ∩ B n = s := by rw [← inter_iUnion, iUnion_spanningSets, inter_univ]
   have : μ s = ⨆ n, μ (s ∩ B n) := by
-    rw [← measure_iUnion_eq_iSup, hBU]
-    exact Monotone.directed_le fun m n h => inter_subset_inter_right _ (monotone_spanningSets μ h)
+    rw [← (monotone_const.inter (monotone_spanningSets μ)).measure_iUnion, hBU]
   rw [this] at hr
   rcases lt_iSup_iff.1 hr with ⟨n, hn⟩
   refine ⟨s ∩ B n, inter_subset_left, ⟨hs.inter (measurable_spanningSets μ n), ?_⟩, hn⟩
@@ -617,7 +615,7 @@ theorem of_pseudoMetrizableSpace {X : Type*} [TopologicalSpace X] [PseudoMetriza
   let A : PseudoMetricSpace X := TopologicalSpace.pseudoMetrizableSpacePseudoMetric X
   intro U hU r hr
   rcases hU.exists_iUnion_isClosed with ⟨F, F_closed, -, rfl, F_mono⟩
-  rw [measure_iUnion_eq_iSup F_mono.directed_le] at hr
+  rw [F_mono.measure_iUnion] at hr
   rcases lt_iSup_iff.1 hr with ⟨n, hn⟩
   exact ⟨F n, subset_iUnion _ _, F_closed n, hn⟩
 
@@ -629,8 +627,8 @@ theorem isCompact_isClosed {X : Type*} [TopologicalSpace X] [SigmaCompactSpace X
   have hBc : ∀ n, IsCompact (F ∩ B n) := fun n => (isCompact_compactCovering X n).inter_left hF
   have hBU : ⋃ n, F ∩ B n = F := by rw [← inter_iUnion, iUnion_compactCovering, Set.inter_univ]
   have : μ F = ⨆ n, μ (F ∩ B n) := by
-    rw [← measure_iUnion_eq_iSup, hBU]
-    exact Monotone.directed_le fun m n h => inter_subset_inter_right _ (compactCovering_subset _ h)
+    rw [← Monotone.measure_iUnion, hBU]
+    exact monotone_const.inter monotone_accumulate
   rw [this] at hr
   rcases lt_iSup_iff.1 hr with ⟨n, hn⟩
   exact ⟨_, inter_subset_left, hBc n, hn⟩
@@ -1051,8 +1049,8 @@ instance (priority := 100) {X : Type*}
     [TopologicalSpace X] [PseudoMetrizableSpace X] [SigmaCompactSpace X] [MeasurableSpace X]
     [BorelSpace X] (μ : Measure X) [SigmaFinite μ] : InnerRegular μ := by
   refine ⟨(InnerRegularWRT.isCompact_isClosed μ).trans ?_⟩
-  refine InnerRegularWRT.of_restrict (fun n ↦ ?_)
-    (univ_subset_iff.2 (iUnion_spanningSets μ)) (monotone_spanningSets μ)
+  refine InnerRegularWRT.of_restrict (fun n ↦ ?_) (iUnion_spanningSets μ).superset
+    (monotone_spanningSets μ)
   have : Fact (μ (spanningSets μ n) < ∞) := ⟨measure_spanningSets_lt_top μ n⟩
   exact WeaklyRegular.innerRegular_measurable.trans InnerRegularWRT.of_sigmaFinite
 

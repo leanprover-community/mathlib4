@@ -550,6 +550,8 @@ theorem tendsto_measure_iUnion_atTop [Preorder ι] [IsDirected ι (· ≤ ·)]
   rw [hm.measure_iUnion]
   exact tendsto_atTop_iSup fun n m hnm => measure_mono <| hm hnm
 
+@[deprecated (since := "2024-09-01")] alias tendsto_measure_iUnion := tendsto_measure_iUnion_atTop
+
 theorem tendsto_measure_iUnion_atBot [Preorder ι] [IsDirected ι (· ≥ ·)]
     [IsCountablyGenerated (atBot : Filter ι)] {s : ι → Set α} (hm : Antitone s) :
     Tendsto (μ ∘ s) atBot (𝓝 (μ (⋃ n, s n))) :=

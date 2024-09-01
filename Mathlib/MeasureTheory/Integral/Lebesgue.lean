@@ -385,8 +385,7 @@ theorem lintegral_iSup {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (
     _ = ∑ r ∈ (rs.map c).range, r * μ (⋃ n, rs.map c ⁻¹' {r} ∩ { a | r ≤ f n a }) := by
       simp only [(eq _).symm]
     _ = ∑ r ∈ (rs.map c).range, ⨆ n, r * μ (rs.map c ⁻¹' {r} ∩ { a | r ≤ f n a }) :=
-      (Finset.sum_congr rfl fun x _ => by
-        rw [measure_iUnion_eq_iSup (mono x).directed_le, ENNReal.mul_iSup])
+      Finset.sum_congr rfl fun x _ => by rw [(mono x).measure_iUnion, ENNReal.mul_iSup]
     _ = ⨆ n, ∑ r ∈ (rs.map c).range, r * μ (rs.map c ⁻¹' {r} ∩ { a | r ≤ f n a }) := by
       refine ENNReal.finsetSum_iSup_of_monotone fun p i j h ↦ ?_
       gcongr _ * μ ?_
