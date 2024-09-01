@@ -52,8 +52,26 @@ lemma IsTree.rootedAt.le_iff (hG : G.IsTree) (v : V) (a b : hG.rootedAt v) :
 
 lemma dist_lt_of_lt (hG : G.IsTree) (v : V) (a b : hG.rootedAt v) (h : a < b) :
     G.dist v a < G.dist v b := by
+  have ⟨pa, hpa₁, hpa₂⟩ := hG.isConnected.exists_path_of_dist v a
+  have ⟨pb, hpb₁, hpb₂⟩ := hG.isConnected.exists_path_of_dist v b
+  rw [lt_iff_le_and_ne, IsTree.rootedAt.le_iff] at h
+  have hab : a ∈ pb.support := by
+    convert h.1
+    apply (hG.existsUnique_path v b).choose_spec.2 pb hpb₁
+  have := hG.IsAcyclic.IsPrefix_of_mem_support pa pb hpa₁ hpb₁ hab
+  suffices pa.support.length < pb.support.length by
+    simp only [length_support, add_lt_add_iff_right] at this
+    exact hpa₂ ▸ hpb₂ ▸ this
+  apply lt_of_le_of_ne
+  exact this.length_le
+  intro nh
+  have := this.eq_of_length nh
+  replace : pa.support.getLast (by simp) = pb.support.getLast (by simp) := by simp_rw [this]
+  simp only [support_getLast] at this
+  exact h.2 this
 
-  sorry
+instance (hG : G.IsTree) (v : V) : WellFoundedLT (hG.rootedAt v) :=
+  StrictMono.wellFoundedLT (dist_lt_of_lt hG v)
 
 instance (hG : G.IsTree) (v : V) : OrderBot (hG.rootedAt v) where
   bot := v
@@ -140,7 +158,4 @@ noncomputable instance (hG : G.IsTree) (v : V) : PredOrder (hG.rootedAt v) where
     apply ((hG.existsUnique_path v _).choose_spec.2 ..).symm
     exact (hG.existsUnique_path v b).choose_spec.1.dropLast
 
--- instance (hG : G.IsTree) (v : V) : IsPredArchimedean (hG.rootedAt v) where
---   exists_pred_iterate_of_le {a b} hab := by
-
---     sorry
+end SimpleGraph
