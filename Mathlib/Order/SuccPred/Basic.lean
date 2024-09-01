@@ -1411,3 +1411,60 @@ lemma SuccOrder.forall_ne_bot_iff
   rw [← Nat.succ_pred_eq_of_pos hj]
   simp only [Function.iterate_succ', Function.comp_apply]
   apply h
+
+section OrdConnected
+
+variable {α : Type*} [PartialOrder α] [PredOrder α]
+
+open scoped Classical in
+noncomputable instance Set.OrdConnected.predOrder (s : Set α) [s.OrdConnected] :
+  PredOrder s where
+  pred x := if h : Order.pred x.1 ∈ s then ⟨Order.pred x.1, h⟩ else x
+  pred_le := fun ⟨x, hx⟩ ↦ by dsimp; split <;> simp_all [Order.pred_le]
+  min_of_le_pred := @fun ⟨x, hx⟩ h ↦ by
+    dsimp at h
+    split_ifs at h with h'
+    · simp only [Subtype.mk_le_mk, Order.le_pred_iff_isMin] at h
+      rintro ⟨y, _⟩ hy
+      simp [h hy]
+    · rintro ⟨y, hy⟩ h
+      rcases h.lt_or_eq with h | h
+      · simp only [Subtype.mk_lt_mk] at h
+        have := h.le_pred
+        absurd h'
+        apply out' hy hx
+        simp [this, Order.pred_le]
+      · simp [h]
+  le_pred_of_lt := @fun ⟨b, hb⟩ ⟨c, hc⟩ h ↦ by
+    rw [Subtype.mk_lt_mk] at h
+    dsimp only
+    split
+    · exact h.le_pred
+    · exact h.le
+
+instance Set.OrdConnected.isPredArchimedean [IsPredArchimedean α] (s : Set α) [s.OrdConnected] :
+    IsPredArchimedean s where
+  exists_pred_iterate_of_le := @fun ⟨b, hb⟩ ⟨c, hc⟩ hbc ↦ by classical
+    simp only [Subtype.mk_le_mk] at hbc
+    obtain ⟨n, hn⟩ := hbc.exists_pred_iterate
+    use n
+    induction n generalizing c with
+    | zero => simp_all
+    | succ n hi =>
+      simp_all only [Function.iterate_succ, Function.comp_apply]
+      change Order.pred^[n] (dite ..) = _
+      split_ifs with h
+      · dsimp only at h ⊢
+        apply hi _ _ _ hn
+        · rw [← hn]
+          apply Order.pred_iterate_le
+      · have : Order.pred (⟨c, hc⟩ : s) = ⟨c, hc⟩ := by
+          change dite .. = _
+          simp [h]
+        rw [Function.iterate_fixed]
+        · simp only [Order.pred_eq_iff_isMin] at this
+          apply (this.eq_of_le _).symm
+          exact hbc
+        · exact this
+
+end OrdConnected
