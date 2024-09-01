@@ -79,7 +79,7 @@ that uses the ideal of `R ⧸ I ^ (n + 1)`, compose with
 noncomputable
 def quotEquivPowQuotPowSuccEquiv (h : I.IsPrincipal) (h': I ≠ ⊥) (n : ℕ) :
     (R ⧸ I) ≃ (I ^ n : Ideal R) ⧸ (I • ⊤ : Submodule R (I ^ n : Ideal R)) :=
-  quot_equiv_pow_quot_pow_succ h h' n
+  quotEquivPowQuotPowSucc h h' n
 
 end IsPrincipal
 
