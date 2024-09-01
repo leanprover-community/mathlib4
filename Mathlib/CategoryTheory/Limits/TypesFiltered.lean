@@ -99,7 +99,7 @@ protected theorem rel_eq_eqvGen_quot_rel :
   constructor
   · apply eqvGen_quot_rel_of_rel
   · rw [← (FilteredColimit.rel_equiv F).eqvGen_iff]
-    exact EqvGen.mono (rel_of_quot_rel F)
+    exact Relation.EqvGen.mono (rel_of_quot_rel F)
 
 variable [HasColimit F]
 

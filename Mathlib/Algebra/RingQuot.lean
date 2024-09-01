@@ -77,7 +77,7 @@ open Relation in
 /-- `EqvGen (RingQuot.Rel r)` is a ring congruence. -/
 def ringCon (r : R → R → Prop) : RingCon R where
   r := EqvGen (Rel r)
-  iseqv := EqvGen.is_equivalence _
+  iseqv := Relation.EqvGen.is_equivalence _
   add' {a b c d} hab hcd := by
     induction hab generalizing c d with
     | rel _ _ hab =>
