@@ -3,7 +3,7 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.SetTheory.Ordinal.Arithmetic
+import Mathlib.SetTheory.Ordinal.Principal
 import Mathlib.Tactic.Abel
 
 /-!
@@ -13,8 +13,7 @@ The goal of this file is to define natural addition and multiplication on ordina
 the Hessenberg sum and product, and provide a basic API. The natural addition of two ordinals
 `a ♯ b` is recursively defined as the least ordinal greater than `a' ♯ b` and `a ♯ b'` for `a' < a`
 and `b' < b`. The natural multiplication `a ⨳ b` is likewise recursively defined as the least
-ordinal such that `a ⨳ b ♯ a' ⨳ b'` is greater than `a' ⨳ b ♯ a ⨳ b'` for any `a' < a` and
-`b' < b`.
+ordinal such that `a ⨳ b ♯ a' ⨳ b'` is greater than `a' ⨳ b ♯ a ⨳ b'` for any `a' < a` and `b' < b`.
 
 These operations form a rich algebraic structure: they're commutative, associative, preserve order,
 have the usual `0` and `1` from ordinals, and distribute over one another.
@@ -23,9 +22,9 @@ Moreover, these operations are the addition and multiplication of ordinals when 
 combinatorial `Game`s. This makes them particularly useful for game theory.
 
 Finally, both operations admit simple, intuitive descriptions in terms of the Cantor normal form.
-The natural addition of two ordinals corresponds to adding their Cantor normal forms as if they were
-polynomials in `ω`. Likewise, their natural multiplication corresponds to multiplying the Cantor
-normal forms as polynomials.
+The natural addition of two ordinals corresponds to adding their base `ω` Cantor normal forms as if
+they were polynomials in `ω`. Likewise, their natural multiplication corresponds to multiplying the
+base `ω` Cantor normal forms as polynomials.
 
 # Implementation notes
 
@@ -718,5 +717,185 @@ theorem mul_le_nmul (a b : Ordinal.{u}) : a * b ≤ a ⨳ b := by
 
 @[deprecated mul_le_nmul (since := "2024-08-20")]
 alias _root_.NatOrdinal.mul_le_nmul := mul_le_nmul
+
+/-! ### Powers of omega -/
+
+
+/-! The hard part of this proof is showing that `ω ^ c * n ♯ b < ω ^ a + b` for `c < a` and `n ∈ ℕ`.
+To do this, we write `b = ω ^ d + x`. If `c < d`, we write `ω ^ c * n ♯ b = ω ^ d ♯ (ω ^ c * n ♯ x)`
+and apply the inductive hypothesis. Otherwise, we write `ω ^ c * n ♯ b = ω ^ c ♯ ⋯ ♯ ω ^ c ♯ b` and
+repeatedly apply the inductive hypothesis. -/
+
+theorem omega_opow_nadd_of_lt {a b : Ordinal} (h : b < ω ^ succ a) : ω ^ a ♯ b = ω ^ a + b := by
+  obtain rfl | hb := eq_or_ne b 0; simp
+  obtain rfl | ha := eq_or_ne a 0
+  · rw [succ_zero, opow_one] at h
+    obtain ⟨n, rfl⟩ := lt_omega.1 h
+    simp
+  · apply (add_le_nadd _ _).antisymm'
+    rw [nadd_le_iff]
+    constructor <;> intro d hd
+    · obtain ⟨c, hc, n, hn⟩ := lt_omega_opow hd ha
+      apply (nadd_lt_nadd_right hn b).trans
+      clear hd hn d
+      have H₁ : log ω b ≤ a := by rwa [lt_opow_iff_log_lt one_lt_omega hb, lt_succ_iff] at h
+      have H₂ := sub_opow_log_omega_lt hb
+      have H : ∀ m : ℕ, ω ^ c * m = ω ^ c ⨳ m := by
+        intro m
+        induction' m with m IH
+        · rw [Nat.cast_zero, mul_zero, nmul_zero]
+        · conv_rhs => rw [Nat.cast_succ, nmul_add_one]
+          rw [add_comm, Nat.cast_add, Nat.cast_one, mul_one_add, ← omega_opow_nadd_of_lt, nadd_comm,
+            IH]
+          apply (mul_lt_mul_of_pos_left (nat_lt_omega m) (opow_pos c omega_pos)).trans_le
+          rw [opow_succ]
+      cases lt_or_le b (ω ^ succ c)
+      · suffices ω ^ c * n ♯ b < ω ^ succ c by
+          apply this.trans_le <| (opow_le_opow_right omega_pos _).trans (le_add_right _ b)
+          rwa [succ_le_iff]
+        induction' n with n IH
+        · rwa [Nat.cast_zero, mul_zero, zero_nadd]
+        · rw [H, Nat.cast_succ, nmul_add_one, nadd_comm _ (ω ^ c), nadd_assoc, ← H,
+            omega_opow_nadd_of_lt IH]
+          apply principal_add_omega_opow _ _ IH
+          rw [opow_lt_opow_iff_right one_lt_omega]
+          exact lt_succ c
+      · have H₃ := omega_opow_nadd_of_lt <| H₂.trans (lt_opow_succ_log_self one_lt_omega b)
+        have H₄ : ω ^ c * ↑n ♯ (b - ω ^ log ω b) < b := by
+          have : ω ^ c * ↑n < ω ^ log ω b := by
+            apply (omega_opow_mul_nat_lt c n).trans_le
+            rwa [opow_le_opow_iff_right one_lt_omega, ← opow_le_iff_le_log one_lt_omega hb]
+          apply (nadd_lt_nadd_right this _).trans_le
+          rw [H₃, Ordinal.add_sub_cancel_of_le]
+          exact opow_log_le_self ω hb
+        conv_lhs => rw [← Ordinal.add_sub_cancel_of_le (opow_log_le_self ω hb)]
+        rw [← H₃, ← nadd_assoc, nadd_comm (ω ^ c * n), nadd_assoc,
+          omega_opow_nadd_of_lt (H₄.trans <| lt_opow_succ_log_self one_lt_omega b)]
+        exact add_lt_add_of_le_of_lt (opow_le_opow_right omega_pos H₁) H₄
+    · rw [omega_opow_nadd_of_lt (hd.trans h)]
+      exact add_lt_add_left hd _
+termination_by (a, b)
+decreasing_by
+· exact Prod.Lex.left _ _ hc
+· exact Prod.Lex.left _ _ hc
+· exact Prod.Lex.toLex_strictMono <| Prod.mk_lt_mk_of_le_of_lt H₁ H₂
+· exact Prod.Lex.toLex_strictMono <| Prod.mk_lt_mk_of_le_of_lt H₁ H₄
+· exact Prod.Lex.right _ hd
+
+theorem nadd_omega_opow_of_lt {a b : Ordinal} (h : a < ω ^ succ b) : a ♯ ω ^ b = ω ^ b + a := by
+  rw [nadd_comm, omega_opow_nadd_of_lt h]
+
+theorem omega_opow_nadd_self (a : Ordinal) : ω ^ a ♯ ω ^ a = ω ^ a + ω ^ a := by
+  rw [omega_opow_nadd_of_lt]
+  rw [opow_lt_opow_iff_right one_lt_omega, lt_succ_iff]
+
+@[simp]
+theorem omega_opow_nmul_nat (a : Ordinal) (n : ℕ) : ω ^ a ⨳ n = ω ^ a * n := by
+  induction' n with n IH
+  · rw [Nat.cast_zero, nmul_zero, mul_zero]
+  · conv_lhs => rw [Nat.cast_succ, nmul_add_one, nadd_comm]
+    rw [add_comm, Nat.cast_add, Nat.cast_one, mul_one_add, IH, omega_opow_nadd_of_lt]
+    rw [opow_succ]
+    exact mul_lt_mul_of_pos_left (nat_lt_omega _) (opow_pos a omega_pos)
+
+@[simp]
+theorem nat_nmul_omega_opow (a : Ordinal) (n : ℕ) : n ⨳ ω ^ a = ω ^ a * n := by
+  rw [nmul_comm, omega_opow_nmul_nat]
+
+theorem nadd_sub_cancel_omega_opow_log {a : Ordinal} (ha : a ≠ 0) :
+    ω ^ log ω a ♯ (a - ω ^ log ω a) = a := by
+  rw [omega_opow_nadd_of_lt, Ordinal.add_sub_cancel_of_le]
+  · exact opow_log_le_self ω ha
+  · exact (sub_le_self a _).trans_lt (lt_opow_succ_log_self one_lt_omega a)
+
+theorem principal_nadd_omega_opow (a : Ordinal) : Principal (· ♯ ·) (ω ^ a) := by
+  obtain rfl | ha := eq_or_ne a 0
+  · rw [opow_zero, principal_one_iff, zero_nadd]
+  · rw [principal_mono_iff
+      (fun b _ _ h => nadd_le_nadd_left h b) (fun b _ _ h => nadd_le_nadd_right h b)]
+    intro b hb
+    obtain ⟨x, hx, m, hm⟩ := lt_omega_opow hb ha
+    apply (nadd_lt_nadd_of_le_of_lt hm.le hm).trans
+    rw [← omega_opow_nmul_nat, ← nmul_nadd, nadd_nat, ← Nat.cast_add, omega_opow_nmul_nat]
+    apply (omega_opow_mul_nat_lt _ _).trans_le
+    rwa [opow_le_opow_iff_right one_lt_omega, succ_le_iff]
+
+theorem omega_opow_add_nadd_assoc (a : Ordinal) {b c : Ordinal}
+    (hb : b < ω ^ succ a) (hc : c < ω ^ succ a) : ω ^ a + b ♯ c = ω ^ a + (b ♯ c) := by
+  rw [← omega_opow_nadd_of_lt hb, nadd_assoc,
+    omega_opow_nadd_of_lt (principal_nadd_omega_opow _ hb hc)]
+
+theorem omega_opow_mul_nadd_of_lt {a c : Ordinal} (h : c < ω ^ succ a) (b : Ordinal) :
+    ω ^ a * b ♯ c = ω ^ a * b + c := by
+  refine CNFRec_omega ?_ ?_ b
+  · rw [mul_zero, zero_nadd, zero_add]
+  · intro o ho IH
+    conv_lhs => rw [← add_sub_cancel_omega_opow_log ho]
+    rw [mul_add, ← opow_add, omega_opow_add_nadd_assoc, IH, opow_add, ← add_assoc, ← mul_add,
+      add_sub_cancel_omega_opow_log ho]
+    · rw [← add_succ, opow_add, mul_lt_mul_iff_left (opow_pos a omega_pos)]
+      exact (sub_le_self o _).trans_lt <| lt_opow_succ_log_self one_lt_omega _
+    · apply h.trans_le
+      rw [opow_le_opow_iff_right one_lt_omega, succ_le_succ_iff]
+      exact le_add_right a _
+
+theorem nadd_omega_opow_mul {a b : Ordinal} (h : b < ω ^ succ a) (c : Ordinal) :
+    b ♯ ω ^ a * c = ω ^ a * c + b := by
+  rw [nadd_comm, omega_opow_mul_nadd_of_lt h]
+
+theorem omega_opow_mul_add_nadd_assoc (a b : Ordinal) {c d : Ordinal}
+    (hc : c < ω ^ succ a) (hd : d < ω ^ succ a) : ω ^ a * b + c ♯ d = ω ^ a * b + (c ♯ d) := by
+  rw [← omega_opow_mul_nadd_of_lt hc, nadd_assoc,
+    omega_opow_mul_nadd_of_lt (principal_nadd_omega_opow _ hc hd)]
+
+theorem omega_opow_nadd {a b : Ordinal} : ω ^ (a ♯ b) = ω ^ a ⨳ ω ^ b := by
+  obtain rfl | ha := eq_or_ne a 0; simp
+  obtain rfl | hb := eq_or_ne b 0; simp
+  apply le_antisymm
+  · apply le_of_forall_lt
+    intro c hc
+    obtain ⟨d, hd, n, hn⟩ := lt_omega_opow hc (nadd_ne_zero_of_left ha _)
+    apply hn.trans
+    obtain ⟨e, he, he'⟩ | ⟨e, he, he'⟩ := lt_nadd_iff.1 hd <;>
+    apply (mul_le_mul_right' (opow_le_opow_right omega_pos he') _).trans_lt
+    · rw [← omega_opow_nmul_nat, omega_opow_nadd, nmul_comm, ← nmul_assoc, nat_nmul_omega_opow]
+      apply nmul_lt_nmul_of_pos_right ((omega_opow_mul_nat_lt _ _).trans_le _)
+        (opow_pos b omega_pos)
+      rwa [opow_le_opow_iff_right one_lt_omega, succ_le_iff]
+    · rw [← omega_opow_nmul_nat, omega_opow_nadd, nmul_assoc, omega_opow_nmul_nat]
+      apply nmul_lt_nmul_of_pos_left ((omega_opow_mul_nat_lt _ _).trans_le _)
+        (opow_pos a omega_pos)
+      rwa [opow_le_opow_iff_right one_lt_omega, succ_le_iff]
+  · rw [nmul_le_iff]
+    intro c hc d hd
+    obtain ⟨e, he, m, hm⟩ := lt_omega_opow hc ha
+    obtain ⟨f, hf, n, hn⟩ := lt_omega_opow hd hb
+    apply (principal_nadd_omega_opow _ _ _).trans_le (le_self_nadd _ _)
+    · apply (nmul_lt_nmul_of_pos_right hm (opow_pos b omega_pos)).trans
+      rw [← omega_opow_nmul_nat, nmul_assoc, nmul_comm m, ← nmul_assoc, ← omega_opow_nadd,
+        omega_opow_nmul_nat]
+      apply (omega_opow_mul_nat_lt _ _).trans_le
+      rwa [opow_le_opow_iff_right one_lt_omega, succ_le_iff, nadd_lt_nadd_iff_right]
+    · apply (nmul_lt_nmul_of_pos_left hn (opow_pos a omega_pos)).trans
+      rw [← omega_opow_nmul_nat, ← nmul_assoc, ← omega_opow_nadd, omega_opow_nmul_nat]
+      apply (omega_opow_mul_nat_lt _ _).trans_le
+      rwa [opow_le_opow_iff_right one_lt_omega, succ_le_iff, nadd_lt_nadd_iff_left]
+termination_by (a, b)
+
+theorem omega_opow_nmul {a b : Ordinal} : b < ω ^ ω ^ succ a → ω ^ ω ^ a ⨳ b = ω ^ ω ^ a * b := by
+  refine CNFRec_omega ?_ ?_ b
+  · simp
+  · intro o ho IH ho'
+    have H₁ : log ω o < ω ^ succ a := by
+      rwa [← lt_opow_iff_log_lt one_lt_omega ho]
+    have H₂ := (sub_le_self o (ω ^ log ω o)).trans_lt (lt_opow_succ_log_self one_lt_omega o)
+    have H₃ : o - ω ^ log ω o < ω ^ ω ^ succ a := by
+      apply H₂.trans_le
+      rwa [opow_le_opow_iff_right one_lt_omega, succ_le_iff]
+    have H₄ : ω ^ ω ^ a * (o - ω ^ log ω o) < ω ^ succ (ω ^ a + log ω o) := by
+      rwa [← add_succ, opow_add, mul_lt_mul_iff_left (opow_pos _ omega_pos)]
+    conv_lhs => rw [← add_sub_cancel_omega_opow_log ho]
+    rw [← omega_opow_nadd_of_lt H₂, nmul_nadd, IH H₃, ← omega_opow_nadd, omega_opow_nadd_of_lt H₁,
+      omega_opow_nadd_of_lt H₄, opow_add, ← mul_add, add_sub_cancel_omega_opow_log ho]
 
 end Ordinal
