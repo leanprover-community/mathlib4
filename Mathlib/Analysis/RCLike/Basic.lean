@@ -1067,7 +1067,7 @@ To endow such a field with a compatible `RCLike` structure in a proof, use
 class IsRCLikeNormedField (𝕜 : Type*) [hk : NormedField 𝕜] : Prop :=
   out : ∃ h : RCLike 𝕜, hk = h.toNormedField
 
-instance {𝕜 : Type*} [h : RCLike 𝕜] : IsRCLikeNormedField 𝕜 := ⟨⟨h, rfl⟩⟩
+instance (priority := 100) (𝕜 : Type*) [h : RCLike 𝕜] : IsRCLikeNormedField 𝕜 := ⟨⟨h, rfl⟩⟩
 
 /-- A copy of an `RCLike` field in which the `NormedField` field is adjusted to be become defeq
 to a propeq one. -/

@@ -66,8 +66,6 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜
   [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
-open RCLike
-
 /-- **Hahn-Banach theorem** for continuous linear functions over `𝕜`
 satisfying `IsRCLikeNormedField 𝕜`. -/
 theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : p →L[𝕜] 𝕜) :

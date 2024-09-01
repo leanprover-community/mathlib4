@@ -428,7 +428,7 @@ variable {𝕜 G : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField �
   [NormedSpace 𝕜 E] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
   {f g : E → G} {C : ℝ} {s : Set E} {x y : E} {f' g' : E → E →L[𝕜] G} {φ : E →L[𝕜] G}
 
-instance : PathConnectedSpace 𝕜 := by
+instance (priority := 100) : PathConnectedSpace 𝕜 := by
   letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
   infer_instance
 
