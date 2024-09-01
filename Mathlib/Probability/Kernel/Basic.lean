@@ -20,6 +20,7 @@ Classes of kernels:
 * `ProbabilityTheory.Kernel α β`: kernels from `α` to `β`.
 * `ProbabilityTheory.IsMarkovKernel κ`: a kernel from `α` to `β` is said to be a Markov kernel
   if for all `a : α`, `k a` is a probability measure.
+* `ProbabilityTheory.IsZeroOrMarkovKernel κ`: a kernel from `α` to `β` is zero or a Markov kernel.
 * `ProbabilityTheory.IsFiniteKernel κ`: a kernel from `α` to `β` is said to be finite if there
   exists `C : ℝ≥0∞` such that `C < ∞` and for all `a : α`, `κ a univ ≤ C`. This implies in
   particular that all measures in the image of `κ` are finite, but is stronger since it requires a
@@ -137,6 +138,10 @@ end Kernel
 class IsMarkovKernel (κ : Kernel α β) : Prop where
   isProbabilityMeasure : ∀ a, IsProbabilityMeasure (κ a)
 
+/-- A kernel is a Markov kernel if every measure in its image is a probability measure. -/
+class IsZeroOrMarkovKernel (κ : Kernel α β) : Prop where
+  eq_zero_or_isMarkovKernel : κ = 0 ∨ IsMarkovKernel κ
+
 /-- A kernel is finite if every measure in its image is finite, with a uniform bound. -/
 class IsFiniteKernel (κ : Kernel α β) : Prop where
   exists_univ_le : ∃ C : ℝ≥0∞, C < ∞ ∧ ∀ a, κ a Set.univ ≤ C
@@ -184,12 +189,26 @@ instance IsMarkovKernel.is_probability_measure' [IsMarkovKernel κ] (a : α) :
     IsProbabilityMeasure (κ a) :=
   IsMarkovKernel.isProbabilityMeasure a
 
+instance : IsZeroOrMarkovKernel (0 : Kernel α β) := ⟨Or.inl rfl⟩
+
+instance (priority := 100) IsMarkovKernel.IsZeroOrMarkovKernel [h : IsMarkovKernel κ] :
+    IsZeroOrMarkovKernel κ := ⟨Or.inr h⟩
+
+instance (priority := 100) IsZeroOrMarkovKernel.isZeroOrProbabilityMeasure
+    [h : IsZeroOrMarkovKernel κ] (a : α) : IsZeroOrProbabilityMeasure (κ a) := by
+  rcases h.eq_zero_or_isMarkovKernel with rfl | h'
+  · simp only [Kernel.zero_apply]
+    infer_instance
+  · infer_instance
+
 instance IsFiniteKernel.isFiniteMeasure [IsFiniteKernel κ] (a : α) : IsFiniteMeasure (κ a) :=
   ⟨(Kernel.measure_le_bound κ a Set.univ).trans_lt (IsFiniteKernel.bound_lt_top κ)⟩
 
-instance (priority := 100) IsMarkovKernel.isFiniteKernel [IsMarkovKernel κ] :
-    IsFiniteKernel κ :=
-  ⟨⟨1, ENNReal.one_lt_top, fun _ => prob_le_one⟩⟩
+instance (priority := 100) IsZeroOrMarkovKernel.isFiniteKernel [h : IsZeroOrMarkovKernel κ] :
+    IsFiniteKernel κ := by
+  rcases h.eq_zero_or_isMarkovKernel with rfl | _h'
+  · infer_instance
+  · exact ⟨⟨1, ENNReal.one_lt_top, fun _ => prob_le_one⟩⟩
 
 namespace Kernel
 
