@@ -721,6 +721,19 @@ instance instModule [Semiring R] [Module R V] : Module (HahnSeries Γ R)
 
 /-- HahnModule coefficient-wise map as a HahnSeries-linear map. -/
 def map [Semiring R] [Module R V] [AddCommMonoid U] [Module R U] (f : U →ₗ[R] V) :
+    HahnModule Γ' R U →ₗ[R] HahnModule Γ' R V where
+  toFun x := (of R) (HahnSeries.map ((of R).symm x) f)
+  map_add' x y := by ext; simp
+  map_smul' s x := by ext; simp
+
+@[simp]
+protected lemma map_coeff [Semiring R] [Module R V] [AddCommMonoid U] [Module R U]
+    (x : HahnModule Γ R U) (f : U →ₗ[R] V) (g : Γ) :
+    ((of R).symm (map f x)).coeff g = f (((of R).symm x).coeff g) := by
+  simp [map]
+
+/-- HahnModule coefficient-wise map as a HahnSeries-linear map. -/
+def hmap [Semiring R] [Module R V] [AddCommMonoid U] [Module R U] (f : U →ₗ[R] V) :
     HahnModule Γ' R U →ₗ[HahnSeries Γ R] HahnModule Γ' R V where
   toFun x := (of R) (HahnSeries.map ((of R).symm x) f)
   map_add' x y := by ext; simp
@@ -734,10 +747,10 @@ def map [Semiring R] [Module R V] [AddCommMonoid U] [Module R U] (f : U →ₗ[R
     apply fun h => hgh.2.1 (LinearMap.map_zero (R := R) (f := f) ▸ congrArg f h)
 
 @[simp]
-protected lemma map_coeff [Semiring R] [Module R V] [AddCommMonoid U] [Module R U]
+protected lemma hmap_coeff [Semiring R] [Module R V] [AddCommMonoid U] [Module R U]
     (x : HahnModule Γ R U) (f : U →ₗ[R] V) (g : Γ) :
-    ((of R).symm (map (Γ := Γ) f x)).coeff g = f (((of R).symm x).coeff g) := by
-  simp [map]
+    ((of R).symm (hmap (Γ := Γ) f x)).coeff g = f (((of R).symm x).coeff g) := by
+  simp [hmap]
 
 instance instGroupModule {V} [Ring R] [AddCommGroup V] [Module R V] : Module (HahnSeries Γ R)
     (HahnModule Γ' R V) where

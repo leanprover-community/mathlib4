@@ -396,13 +396,20 @@ theorem uncurry_symm_apply [PartialOrder Γ] [AddCommGroup U] [Module R U]
 
 section Composition
 
-variable [PartialOrder Γ] [PartialOrder Γ'] [AddCommGroup U] [Module R U]  [AddCommGroup X]
+variable [PartialOrder Γ] [PartialOrder Γ'] [AddCommGroup U] [Module R U] [AddCommGroup X]
 [Module R X]  [AddCommGroup Y] [Module R Y]
-/-!
+
 /-- Left iterated vertex operator. -/
-def leftTensorComp (A : HVertexOperator Γ R (U ⊗[R] V) W) (B : HVertexOperator Γ' R (W ⊗[R] X) Y) :
-    HVertexOperator (Γ ×ₗ Γ') R ((U ⊗[R] V) ⊗[R] W) Y :=
-  (HahnModule.map B) ∘ₗ HahnModule.rightTensorMap ∘ₗ (A ⊗ id) -- needs (of R), HahnSeries.ofIterate
+def leftTensorComp (A : HVertexOperator Γ R (U ⊗[R] V) X)
+    (B : HVertexOperator Γ' R (X ⊗[R] W) Y) :
+    ((U ⊗[R] V) ⊗[R] W) →ₗ[R] HahnModule Γ R (HahnModule Γ' R Y) :=
+  (HahnModule.map B) ∘ₗ HahnModule.rightTensorMap ∘ₗ (TensorProduct.map A LinearMap.id)
+
+/-!
+`simps!` yields
+((A.leftTensorComp B) a).coeff g =
+  B (((HahnModule.of R).symm (HahnModule.rightTensorMap
+    ((TensorProduct.map A LinearMap.id) a))).coeff g)
 
  Iterate starting with `Y_{UV}^W : U ⊗ V → W((z))` and `Y_{WX}^Y : W ⊗ X → Y((w))`, make
 `leftTensorComp`: `Y_{UVX}^Y (t_1, t_2) : U ⊗ V ⊗ X → W((z)) ⊗ X → (W ⊗ X)((z)) → Y((w))((z))`.
@@ -411,8 +418,6 @@ Second: `W((z)) ⊗ X → (W ⊗ X)((z))` is `HahnModule.rightTensorMap`.
 Third: `(W ⊗ X)((z)) → Y((w))((z))` is `HahnModule.map` applied to `Y_{WX}^Y`.
 
 `rightTensorComp`: `Y_{XW}^Y (x, t_0) Y_{UV}^W (u, t_1) v`
-
-
 
 Define things like order of a pair, creativity?
 
