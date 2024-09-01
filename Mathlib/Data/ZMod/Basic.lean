@@ -1503,3 +1503,5 @@ def Nat.residueClassesEquiv (N : ℕ) [NeZero N] : ℕ ≃ ZMod N × ℕ where
         cast_id', id_eq, zero_add]
     · simp only [add_comm p.1.val, mul_add_div (NeZero.pos _),
         (Nat.div_eq_zero_iff <| (NeZero.pos _)).2 p.1.val_lt, add_zero]
+
+set_option linter.style.longFile 1700
