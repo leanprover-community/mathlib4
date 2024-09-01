@@ -333,9 +333,9 @@ lemma natAbs_add_of_nonpos {a b : Int} (ha : a ≤ 0) (hb : b ≤ 0) :
 lemma natAbs_surjective : natAbs.Surjective := fun n => ⟨n, natAbs_ofNat n⟩
 
 lemma natAbs_pow (n : ℤ) (k : ℕ) : Int.natAbs (n ^ k) = Int.natAbs n ^ k := by
-  induction' k with k ih
-  · rfl
-  · rw [Int.pow_succ, natAbs_mul, Nat.pow_succ, ih, Nat.mul_comm]
+  induction k with
+  | zero => rfl
+  | succ k ih => rw [Int.pow_succ, natAbs_mul, Nat.pow_succ, ih, Nat.mul_comm]
 
 lemma pow_right_injective (h : 1 < a.natAbs) : ((a ^ ·) : ℕ → ℤ).Injective := by
   refine (?_ : (natAbs ∘ (a ^ · : ℕ → ℤ)).Injective).of_comp
@@ -604,3 +604,5 @@ attribute [simp] natCast_pow
 @[deprecated (since := "2024-04-02")] alias sign_coe_nat_of_nonzero := sign_natCast_of_ne_zero
 @[deprecated (since := "2024-04-02")] alias toNat_coe_nat := toNat_natCast
 @[deprecated (since := "2024-04-02")] alias toNat_coe_nat_add_one := toNat_natCast_add_one
+
+end Int
