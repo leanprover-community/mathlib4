@@ -5,7 +5,7 @@ Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Category.Grp.Basic
 import Mathlib.CategoryTheory.SingleObj
-import Mathlib.CategoryTheory.Limits.FunctorCategory
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Conj

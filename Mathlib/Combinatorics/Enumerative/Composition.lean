@@ -112,7 +112,7 @@ structure CompositionAsSet (n : ℕ) where
   boundaries : Finset (Fin n.succ)
   /-- Proof that `0` is a member of `boundaries`-/
   zero_mem : (0 : Fin n.succ) ∈ boundaries
-  /-- Last element of the composition-/
+  /-- Last element of the composition -/
   getLast_mem : Fin.last n ∈ boundaries
 
 instance {n : ℕ} : Inhabited (CompositionAsSet n) :=
@@ -629,7 +629,7 @@ theorem getElem_splitWrtCompositionAux (l : List α) (ns : List ℕ) {i : ℕ}
   · rw [Nat.add_zero, List.take_zero, sum_nil]
     simp
   · simp only [splitWrtCompositionAux, getElem_cons_succ, IH, take,
-        sum_cons, Nat.add_eq, add_zero, splitAt_eq_take_drop, drop_take, drop_drop]
+        sum_cons, Nat.add_eq, add_zero, splitAt_eq, drop_take, drop_drop]
     rw [add_comm (sum _) n, Nat.add_sub_add_left]
 
 /-- The `i`-th sublist in the splitting of a list `l` along a composition `c`, is the slice of `l`

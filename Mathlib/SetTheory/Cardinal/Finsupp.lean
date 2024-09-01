@@ -58,15 +58,15 @@ theorem mk_finsupp_nat (α : Type u) [Nonempty α] : #(α →₀ ℕ) = max #α 
 theorem mk_multiset_of_isEmpty (α : Type u) [IsEmpty α] : #(Multiset α) = 1 :=
   Multiset.toFinsupp.toEquiv.cardinal_eq.trans (by simp)
 
-open scoped Classical
-
 @[simp]
-theorem mk_multiset_of_nonempty (α : Type u) [Nonempty α] : #(Multiset α) = max #α ℵ₀ :=
-  Multiset.toFinsupp.toEquiv.cardinal_eq.trans (mk_finsupp_nat α)
+theorem mk_multiset_of_nonempty (α : Type u) [Nonempty α] : #(Multiset α) = max #α ℵ₀ := by
+  classical
+  exact Multiset.toFinsupp.toEquiv.cardinal_eq.trans (mk_finsupp_nat α)
 
 theorem mk_multiset_of_infinite (α : Type u) [Infinite α] : #(Multiset α) = #α := by simp
 
-theorem mk_multiset_of_countable (α : Type u) [Countable α] [Nonempty α] : #(Multiset α) = ℵ₀ :=
-  Multiset.toFinsupp.toEquiv.cardinal_eq.trans (by simp)
+theorem mk_multiset_of_countable (α : Type u) [Countable α] [Nonempty α] : #(Multiset α) = ℵ₀ := by
+  classical
+  exact Multiset.toFinsupp.toEquiv.cardinal_eq.trans (by simp)
 
 end Cardinal

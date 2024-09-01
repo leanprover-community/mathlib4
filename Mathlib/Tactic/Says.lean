@@ -134,3 +134,7 @@ elab_rules : tactic
     evalTactic result
 
 initialize Batteries.Linter.UnreachableTactic.addIgnoreTacticKind `Mathlib.Tactic.Says.says
+
+end Says
+
+end Mathlib.Tactic

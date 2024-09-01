@@ -107,7 +107,7 @@ b = cfc id b = cfc (NNReal.sqrt ∘ (· ^ 2)) b =
 + `cfc : (R → R) → A → A`: an unbundled version of `cfcHom` which takes the junk value `0` when
   `cfcHom` is not defined.
 + `cfcUnits`: builds a unit from `cfc f a` when `f` is nonzero and continuous on the
-  specturm of `a`.
+  spectrum of `a`.
 
 ## Main theorems
 
@@ -260,6 +260,18 @@ theorem cfcHom_comp [UniqueContinuousFunctionalCalculus R A] (f : C(spectrum R a
 
 end cfcHom
 
+section cfcL
+
+/-- `cfcHom` bundled as a continuous linear map. -/
+@[simps apply]
+noncomputable def cfcL {a : A} (ha : p a) : C(spectrum R a, R) →L[R] A :=
+  { cfcHom ha with
+    toFun := cfcHom ha
+    map_smul' := map_smul _
+    cont := (cfcHom_closedEmbedding ha).continuous }
+
+end cfcL
+
 section CFC
 
 open scoped Classical in
@@ -309,6 +321,10 @@ lemma cfcHom_eq_cfc_extend {a : A} (g : R → R) (ha : p a) (f : C(spectrum R a,
     continuousOn_iff_continuous_restrict.mpr <| h ▸ map_continuous f
   rw [cfc_apply ..]
   congr!
+
+lemma cfc_eq_cfcL {a : A} {f : R → R} (ha : p a) (hf : ContinuousOn f (spectrum R a)) :
+    cfc f a = cfcL ha ⟨_, hf.restrict⟩ := by
+  rw [cfc_def, dif_pos ⟨ha, hf⟩, cfcL_apply]
 
 lemma cfc_cases (P : A → Prop) (a : A) (f : R → R) (h₀ : P 0)
     (haf : (hf : ContinuousOn f (spectrum R a)) → (ha : p a) → P (cfcHom ha ⟨_, hf.restrict⟩)) :
@@ -564,7 +580,7 @@ lemma cfc_comp_smul {S : Type*} [SMul S R] [ContinuousConstSMul S R] [SMulZeroCl
   rw [cfc_comp' .., cfc_smul_id ..]
 
 lemma cfc_comp_const_mul (r : R) (f : R → R) (a : A)
-    (hf : ContinuousOn f ((r * ·) '' (spectrum R a)) := by cfc_cont_tac)  (ha : p a := by cfc_tac) :
+    (hf : ContinuousOn f ((r * ·) '' (spectrum R a)) := by cfc_cont_tac) (ha : p a := by cfc_tac) :
     cfc (f <| r * ·) a = cfc f (r • a) := by
   rw [cfc_comp' .., cfc_const_mul_id ..]
 
@@ -807,7 +823,7 @@ variable {R A : Type*} {p : A → Prop} [OrderedCommSemiring R] [StarRing R]
 variable [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
 variable [∀ (α) [TopologicalSpace α], StarOrderedRing C(α, R)]
 variable [TopologicalSpace A] [Ring A] [StarRing A] [PartialOrder A] [StarOrderedRing A]
-variable [Algebra R A] [ContinuousFunctionalCalculus R p]
+variable [Algebra R A] [instCFC : ContinuousFunctionalCalculus R p]
 
 lemma cfcHom_mono {a : A} (ha : p a) {f g : C(spectrum R a, R)} (hfg : f ≤ g) :
     cfcHom ha f ≤ cfcHom ha g :=
@@ -883,6 +899,21 @@ lemma one_le_cfc (f : R → R) (a : A) (h : ∀ x ∈ spectrum R a, 1 ≤ f x)
   simpa using algebraMap_le_cfc f 1 a h
 
 end Semiring
+
+section NNReal
+
+open scoped NNReal
+
+variable {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [PartialOrder A]
+  [Algebra ℝ≥0 A] [ContinuousFunctionalCalculus ℝ≥0 (fun (a : A) => 0 ≤ a)]
+
+lemma CFC.inv_nonneg_of_nonneg (a : Aˣ) (ha : (0 : A) ≤ a := by cfc_tac) : (0 : A) ≤ a⁻¹ :=
+  cfc_inv_id (R := ℝ≥0) a ▸ cfc_predicate _ (a : A)
+
+lemma CFC.inv_nonneg (a : Aˣ)  : (0 : A) ≤ a⁻¹ ↔ (0 : A) ≤ a :=
+  ⟨fun _ ↦ inv_inv a ▸ inv_nonneg_of_nonneg a⁻¹, fun _ ↦ inv_nonneg_of_nonneg a⟩
+
+end NNReal
 
 section Ring
 

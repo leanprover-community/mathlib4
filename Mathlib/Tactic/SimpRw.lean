@@ -78,3 +78,5 @@ elab s:"simp_rw " cfg:(config)? rws:rwRuleSeq g:(location)? : tactic => focus do
         `(tactic| simp%$e $[$cfg]? only [← $e:term] $g ?)
       else
         `(tactic| simp%$e $[$cfg]? only [$e:term] $g ?))
+
+end Mathlib.Tactic

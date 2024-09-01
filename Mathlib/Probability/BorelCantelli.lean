@@ -84,13 +84,13 @@ theorem measure_limsup_eq_one {s : ℕ → Set Ω} (hsm : ∀ n, MeasurableSet (
     rw [← sub_nonneg, Finset.sum_range_succ_sub_sum]
     exact ENNReal.toReal_nonneg
   · rintro ⟨B, hB⟩
-    refine not_eventually.2 (frequently_of_forall fun n => ?_) (htends B.toNNReal)
+    refine not_eventually.2 (Frequently.of_forall fun n => ?_) (htends B.toNNReal)
     rw [mem_upperBounds] at hB
     specialize hB (∑ k ∈ Finset.range n, μ (s (k + 1))).toReal _
     · refine ⟨n, ?_⟩
       rw [ENNReal.toReal_sum]
       exact fun _ _ => measure_ne_top _ _
-    · rw [not_lt, ← ENNReal.toReal_le_toReal (ENNReal.sum_lt_top _).ne ENNReal.coe_ne_top]
+    · rw [not_lt, ← ENNReal.toReal_le_toReal (ENNReal.sum_ne_top.2 _) ENNReal.coe_ne_top]
       · exact hB.trans (by simp)
       · exact fun _ _ => measure_ne_top _ _
 
