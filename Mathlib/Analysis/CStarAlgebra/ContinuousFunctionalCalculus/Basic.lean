@@ -25,8 +25,10 @@ description is perfectly accurate in finite dimension, but only heuristic in inf
 there might be no genuine eigenvector. In particular, when `f` is a polynomial `∑ cᵢ Xⁱ`, then
 `f a` is `∑ cᵢ aⁱ`. Also, `id a = a`.
 
-This file also includes a proof of the **spectral permanence** theorem for (unital) C⋆-algebras
-(see `StarSubalgebra.spectrum_eq`)
+The result we have established here is the strongest possible, but it is not the version which is
+most useful in practice. The generic API for the continuous functional calculus can be found in
+`Analysis.CStarAlgebra.ContinuousFunctionalCalculus` in the `Unital` and `NonUnital` files. The
+relevant instances on C⋆-algebra can be found in the `Instances` file.
 
 ## Main definitions
 
@@ -39,19 +41,7 @@ This file also includes a proof of the **spectral permanence** theorem for (unit
   algebra homomorphism. Moreover, this map is continuous and bijective and since the spaces involved
   are compact Hausdorff, it is a homeomorphism.
 
-## Main statements
-
-* `StarSubalgebra.coe_isUnit`: for `x : S` in a C⋆-Subalgebra `S` of `A`, then `↑x : A` is a Unit
-  if and only if `x` is a unit.
-* `StarSubalgebra.spectrum_eq`: **spectral_permanence** for `x : S`, where `S` is a C⋆-Subalgebra
-  of `A`, `spectrum ℂ x = spectrum ℂ (x : A)`.
-
-## Notes
-
-The result we have established here is the strongest possible, but it is likely not the version
-which will be most useful in practice. Future work will include developing an appropriate API for
-the continuous functional calculus (including one for real-valued functions with real argument that
-applies to self-adjoint elements of the algebra). -/
+ -/
 
 
 open scoped Pointwise ENNReal NNReal ComplexOrder
@@ -67,141 +57,7 @@ instance {R A : Type*} [CommRing R] [StarRing R] [NormedRing A] [Algebra R A] [S
   { SubringClass.toNormedRing (elementalStarAlgebra R a) with
     mul_comm := mul_comm }
 
--- Porting note: these hack instances no longer seem to be necessary
-
 variable [CompleteSpace A] (a : A) [IsStarNormal a] (S : StarSubalgebra ℂ A)
-
-/-- This lemma is used in the proof of `elementalStarAlgebra.isUnit_of_isUnit_of_isStarNormal`,
-which in turn is the key to spectral permanence `StarSubalgebra.spectrum_eq`, which is itself
-necessary for the continuous functional calculus. Using the continuous functional calculus, this
-lemma can be superseded by one that omits the `IsStarNormal` hypothesis. -/
-theorem spectrum_star_mul_self_of_isStarNormal :
-    spectrum ℂ (star a * a) ⊆ Set.Icc (0 : ℂ) ‖star a * a‖ := by
-  -- this instance should be found automatically, but without providing it Lean goes on a wild
-  -- goose chase when trying to apply `spectrum.gelfandTransform_eq`.
-  --letI := elementalStarAlgebra.Complex.normedAlgebra a
-  rcases subsingleton_or_nontrivial A with ⟨⟩
-  · simp only [spectrum.of_subsingleton, Set.empty_subset]
-  · set a' : elementalStarAlgebra ℂ a := ⟨a, self_mem ℂ a⟩
-    refine (spectrum.subset_subalgebra (star a' * a')).trans ?_
-    rw [← spectrum.gelfandTransform_eq (star a' * a'), ContinuousMap.spectrum_eq_range]
-    rintro - ⟨φ, rfl⟩
-    rw [gelfandTransform_apply_apply ℂ _ (star a' * a') φ, map_mul φ, map_star φ]
-    rw [Complex.eq_coe_norm_of_nonneg (star_mul_self_nonneg _), ← map_star, ← map_mul]
-    exact ⟨by positivity, Complex.real_le_real.2 (AlgHom.norm_apply_le_self φ (star a' * a'))⟩
-
-variable {a}
-
-/-- This is the key lemma on the way to establishing spectral permanence for C⋆-algebras, which is
-established in `StarSubalgebra.spectrum_eq`. This lemma is superseded by
-`StarSubalgebra.coe_isUnit`, which does not require an `IsStarNormal` hypothesis and holds for
-any closed star subalgebra. -/
-theorem elementalStarAlgebra.isUnit_of_isUnit_of_isStarNormal (h : IsUnit a) :
-    IsUnit (⟨a, self_mem ℂ a⟩ : elementalStarAlgebra ℂ a) := by
-  /- Sketch of proof: Because `a` is normal, it suffices to prove that `star a * a` is invertible
-    in `elementalStarAlgebra ℂ a`. For this it suffices to prove that it is sufficiently close to a
-    unit, namely `algebraMap ℂ _ ‖star a * a‖`, and in this case the required distance is
-    `‖star a * a‖`. So one must show `‖star a * a - algebraMap ℂ _ ‖star a * a‖‖ < ‖star a * a‖`.
-    Since `star a * a - algebraMap ℂ _ ‖star a * a‖` is selfadjoint, by a corollary of Gelfand's
-    formula for the spectral radius (`IsSelfAdjoint.spectralRadius_eq_nnnorm`) its norm is the
-    supremum of the norms of elements in its spectrum (we may use the spectrum in `A` here because
-    the norm in `A` and the norm in the subalgebra coincide).
-
-    By `spectrum_star_mul_self_of_isStarNormal`, the spectrum (in the algebra `A`) of `star a * a`
-    is contained in the interval `[0, ‖star a * a‖]`, and since `a` (and hence `star a * a`) is
-    invertible in `A`, we may omit `0` from this interval. Therefore, by basic spectral mapping
-    properties, the spectrum (in the algebra `A`) of `star a * a - algebraMap ℂ _ ‖star a * a‖` is
-    contained in `[0, ‖star a * a‖)`. The supremum of the (norms of) elements of the spectrum must
-    be *strictly* less that `‖star a * a‖` because the spectrum is compact, which completes the
-    proof. -/
-  /- We may assume `A` is nontrivial. It suffices to show that `star a * a` is invertible in the
-    commutative (because `a` is normal) ring `elementalStarAlgebra ℂ a`. Indeed, by commutativity,
-    if `star a * a` is invertible, then so is `a`. -/
-  nontriviality A
-  set a' : elementalStarAlgebra ℂ a := ⟨a, self_mem ℂ a⟩
-  suffices IsUnit (star a' * a') from (IsUnit.mul_iff.1 this).2
-  replace h := (show Commute (star a) a from star_comm_self' a).isUnit_mul_iff.2 ⟨h.star, h⟩
-  /- Since `a` is invertible, `‖star a * a‖ ≠ 0`, so `‖star a * a‖ • 1` is invertible in
-    `elementalStarAlgebra ℂ a`, and so it suffices to show that the distance between this unit and
-    `star a * a` is less than `‖star a * a‖`. -/
-  have h₁ : (‖star a * a‖ : ℂ) ≠ 0 := Complex.ofReal_ne_zero.mpr (norm_ne_zero_iff.mpr h.ne_zero)
-  set u : Units (elementalStarAlgebra ℂ a) :=
-    Units.map (algebraMap ℂ (elementalStarAlgebra ℂ a)).toMonoidHom (Units.mk0 _ h₁)
-  refine ⟨u.ofNearby _ ?_, rfl⟩
-  simp only [u, Units.coe_map, Units.val_inv_eq_inv_val, RingHom.toMonoidHom_eq_coe, Units.val_mk0,
-    Units.coe_map_inv, MonoidHom.coe_coe, norm_algebraMap', norm_inv, Complex.norm_eq_abs,
-    Complex.abs_ofReal, abs_norm, inv_inv]
-  /- Since `a` is invertible, by `spectrum_star_mul_self_of_isStarNormal`, the spectrum (in `A`)
-    of `star a * a` is contained in the half-open interval `(0, ‖star a * a‖]`. Therefore, by basic
-    spectral mapping properties, the spectrum of `‖star a * a‖ • 1 - star a * a` is contained in
-    `[0, ‖star a * a‖)`. -/
-  have h₂ : ∀ z ∈ spectrum ℂ (algebraMap ℂ A ‖star a * a‖ - star a * a), ‖z‖₊ < ‖star a * a‖₊ := by
-    intro z hz
-    rw [← spectrum.singleton_sub_eq, Set.singleton_sub] at hz
-    have h₃ : z ∈ Set.Icc (0 : ℂ) ‖star a * a‖ := by
-      replace hz := Set.image_subset _ (spectrum_star_mul_self_of_isStarNormal a) hz
-      rwa [Set.image_const_sub_Icc, sub_self, sub_zero] at hz
-    refine lt_of_le_of_ne (Complex.real_le_real.1 <| Complex.eq_coe_norm_of_nonneg h₃.1 ▸ h₃.2) ?_
-    · intro hz'
-      replace hz' := congr_arg (fun x : ℝ≥0 => ((x : ℝ) : ℂ)) hz'
-      simp only [coe_nnnorm] at hz'
-      rw [← Complex.eq_coe_norm_of_nonneg h₃.1] at hz'
-      obtain ⟨w, hw₁, hw₂⟩ := hz
-      refine (spectrum.zero_not_mem_iff ℂ).mpr h ?_
-      rw [hz', sub_eq_self] at hw₂
-      rwa [hw₂] at hw₁
-  /- The norm of `‖star a * a‖ • 1 - star a * a` in the subalgebra and in `A` coincide. In `A`,
-    because this element is selfadjoint, by `IsSelfAdjoint.spectralRadius_eq_nnnorm`, its norm is
-    the supremum of the norms of the elements of the spectrum, which is strictly less than
-    `‖star a * a‖` by `h₂` and because the spectrum is compact. -/
-  exact ENNReal.coe_lt_coe.1
-    (calc
-      (‖star a' * a' - algebraMap ℂ _ ‖star a * a‖‖₊ : ℝ≥0∞) =
-          ‖algebraMap ℂ A ‖star a * a‖ - star a * a‖₊ := by
-        rw [← nnnorm_neg, neg_sub]; rfl
-      _ = spectralRadius ℂ (algebraMap ℂ A ‖star a * a‖ - star a * a) := by
-        refine (IsSelfAdjoint.spectralRadius_eq_nnnorm ?_).symm
-        rw [IsSelfAdjoint, star_sub, star_mul, star_star, ← algebraMap_star_comm]
-        congr!
-        exact RCLike.conj_ofReal _
-      _ < ‖star a * a‖₊ := spectrum.spectralRadius_lt_of_forall_lt _ h₂)
-
-/-- For `x : A` which is invertible in `A`, the inverse lies in any unital C⋆-subalgebra `S`
-containing `x`. -/
-theorem StarSubalgebra.isUnit_coe_inv_mem {S : StarSubalgebra ℂ A} (hS : IsClosed (S : Set A))
-    {x : A} (h : IsUnit x) (hxS : x ∈ S) : ↑h.unit⁻¹ ∈ S := by
-  have hx := h.star.mul h
-  suffices this : (↑hx.unit⁻¹ : A) ∈ S by
-    rw [← one_mul (↑h.unit⁻¹ : A), ← hx.unit.inv_mul, mul_assoc, IsUnit.unit_spec, mul_assoc,
-      h.mul_val_inv, mul_one]
-    exact mul_mem this (star_mem hxS)
-  refine le_of_isClosed_of_mem ℂ hS (mul_mem (star_mem hxS) hxS) ?_
-  haveI := (IsSelfAdjoint.star_mul_self x).isStarNormal
-  have hx' := elementalStarAlgebra.isUnit_of_isUnit_of_isStarNormal hx
-  convert (↑hx'.unit⁻¹ : elementalStarAlgebra ℂ (star x * x)).prop using 1
-  refine left_inv_eq_right_inv hx.unit.inv_mul ?_
-  exact (congr_arg ((↑) : _ → A) hx'.unit.mul_inv)
-
-/-- For a unital C⋆-subalgebra `S` of `A` and `x : S`, if `↑x : A` is invertible in `A`, then
-`x` is invertible in `S`. -/
-theorem StarSubalgebra.coe_isUnit {S : StarSubalgebra ℂ A} (hS : IsClosed (S : Set A)) {x : S} :
-    IsUnit (x : A) ↔ IsUnit x := by
-  refine ⟨fun hx =>
-           ⟨⟨x, ⟨(↑hx.unit⁻¹ : A), StarSubalgebra.isUnit_coe_inv_mem hS hx x.prop⟩, ?_, ?_⟩, rfl⟩,
-          fun hx => hx.map S.subtype⟩
-  exacts [Subtype.coe_injective hx.mul_val_inv, Subtype.coe_injective hx.val_inv_mul]
-
-theorem StarSubalgebra.mem_spectrum_iff {S : StarSubalgebra ℂ A} (hS : IsClosed (S : Set A)) {x : S}
-    {z : ℂ} : z ∈ spectrum ℂ x ↔ z ∈ spectrum ℂ (x : A) :=
-  not_iff_not.2 (StarSubalgebra.coe_isUnit hS).symm
-
-/-- **Spectral permanence.** The spectrum of an element is invariant of the (closed)
-`StarSubalgebra` in which it is contained. -/
-theorem StarSubalgebra.spectrum_eq {S : StarSubalgebra ℂ A} (hS : IsClosed (S : Set A)) (x : S) :
-    spectrum ℂ x = spectrum ℂ (x : A) :=
-  Set.ext fun _z => StarSubalgebra.mem_spectrum_iff hS
-
-variable (a)
 
 /-- The natural map from `characterSpace ℂ (elementalStarAlgebra ℂ x)` to `spectrum ℂ x` given
 by evaluating `φ` at `x`. This is essentially just evaluation of the `gelfandTransform` of `x`,
@@ -212,9 +68,8 @@ noncomputable def elementalStarAlgebra.characterSpaceToSpectrum (x : A)
     (φ : characterSpace ℂ (elementalStarAlgebra ℂ x)) : spectrum ℂ x where
   val := φ ⟨x, self_mem ℂ x⟩
   property := by
-    simpa only [StarSubalgebra.spectrum_eq (elementalStarAlgebra.isClosed ℂ x)
-        ⟨x, self_mem ℂ x⟩] using
-      AlgHom.apply_mem_spectrum φ ⟨x, self_mem ℂ x⟩
+    simpa only [StarSubalgebra.spectrum_eq (hS := elementalStarAlgebra.isClosed ℂ x)
+      (a := ⟨x, self_mem ℂ x⟩)] using AlgHom.apply_mem_spectrum φ ⟨x, self_mem ℂ x⟩
 
 #adaptation_note /-- nightly-2024-04-01
 The simpNF linter now times out on this lemma.
@@ -234,8 +89,8 @@ theorem elementalStarAlgebra.bijective_characterSpaceToSpectrum :
   · simpa only [elementalStarAlgebra.characterSpaceToSpectrum, Subtype.mk_eq_mk,
       ContinuousMap.coe_mk] using h
   · rintro ⟨z, hz⟩
-    have hz' := (StarSubalgebra.spectrum_eq (elementalStarAlgebra.isClosed ℂ a)
-      ⟨a, self_mem ℂ a⟩).symm.subst hz
+    have hz' := (StarSubalgebra.spectrum_eq (hS := elementalStarAlgebra.isClosed ℂ a)
+      (a := ⟨a, self_mem ℂ a⟩).symm.subst hz)
     rw [CharacterSpace.mem_spectrum_iff_exists] at hz'
     obtain ⟨φ, rfl⟩ := hz'
     exact ⟨φ, rfl⟩

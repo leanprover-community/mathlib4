@@ -80,6 +80,46 @@ theorem iff_exists_tensorProduct [EssFiniteType R S] :
       use 1 ⊗ₜ[R] s - s ⊗ₜ[R] 1
       linear_combination ht₁ s
 
+lemma finite_of_free_aux (I) [DecidableEq I] (b : Basis I R S)
+    (f : I →₀ S) (x : S) (a : I → I →₀ R) (ha : a = fun i ↦ b.repr (b i * x)) :
+    (1 ⊗ₜ[R] x * Finsupp.sum f fun i y ↦ y ⊗ₜ[R] b i) =
+      Finset.sum (f.support.biUnion fun i ↦ (a i).support) fun k ↦
+    Finsupp.sum (b.repr (f.sum fun i y ↦ a i k • y)) fun j c ↦ c • b j ⊗ₜ[R] b k := by
+  rw [Finsupp.sum, Finset.mul_sum]
+  subst ha
+  let a i := b.repr (b i * x)
+  conv_lhs =>
+    simp only [TensorProduct.tmul_mul_tmul, one_mul, mul_comm x (b _),
+      ← show ∀ i, Finsupp.linearCombination _ b (a i) = b i * x from
+          fun _ ↦ b.linearCombination_repr _]
+  conv_lhs => simp only [Finsupp.linearCombination, Finsupp.coe_lsum,
+    LinearMap.coe_smulRight, LinearMap.id_coe, id_eq, Finsupp.sum, TensorProduct.tmul_sum,
+    ← TensorProduct.smul_tmul]
+  have h₁ : ∀ k,
+    (Finsupp.sum (Finsupp.sum f fun i y ↦ a i k • b.repr y) fun j z ↦ z • b j ⊗ₜ[R] b k) =
+      (f.sum fun i y ↦ (b.repr y).sum fun j z ↦ a i k • z • b j ⊗ₜ[R] b k) := by
+    intro i
+    rw [Finsupp.sum_sum_index]
+    congr
+    ext j s
+    rw [Finsupp.sum_smul_index]
+    simp only [mul_smul, Finsupp.sum, ← Finset.smul_sum]
+    · intro; simp only [zero_smul]
+    · intro; simp only [zero_smul]
+    · intros; simp only [add_smul]
+  have h₂ : ∀ (x : S), ((b.repr x).support.sum fun a ↦ b.repr x a • b a) = x := by
+    simpa only [Finsupp.linearCombination_apply, Finsupp.sum] using b.linearCombination_repr
+  simp_rw [map_finsupp_sum, map_smul, h₁, Finsupp.sum, Finset.sum_comm (t := f.support),
+    TensorProduct.smul_tmul', ← TensorProduct.sum_tmul, ← Finset.smul_sum, h₂]
+  apply Finset.sum_congr rfl
+  intros i hi
+  apply Finset.sum_subset_zero_on_sdiff
+  · exact Finset.subset_biUnion_of_mem (fun i ↦ (a i).support) hi
+  · simp only [Finset.mem_sdiff, Finset.mem_biUnion, Finsupp.mem_support_iff, ne_eq, not_not,
+      and_imp, forall_exists_index]
+    simp (config := {contextual := true})
+  · exact fun _ _ ↦ rfl
+
 variable [FormallyUnramified R S] [EssFiniteType R S]
 
 variable (R S) in
@@ -102,48 +142,10 @@ lemma one_tmul_mul_elem
     (s : S) : (1 ⊗ₜ s) * elem R S = (s ⊗ₜ 1) * elem R S := by
   rw [← sub_eq_zero, ← sub_mul, one_tmul_sub_tmul_one_mul_elem]
 
-lemma lmul_elem [EssFiniteType R S] [FormallyUnramified R S] :
+lemma lmul_elem :
     TensorProduct.lmul' R (elem R S) = 1 :=
   (iff_exists_tensorProduct.mp inferInstance).choose_spec.2
 
-lemma finite_of_free_aux (I) [DecidableEq I] (b : Basis I R S)
-    (f : I →₀ S) (x : S) (a : I → I →₀ R) (ha : a = fun i ↦ b.repr (b i * x)) :
-    (1 ⊗ₜ[R] x * Finsupp.sum f fun i y ↦ y ⊗ₜ[R] b i) =
-      Finset.sum (f.support.biUnion fun i ↦ (a i).support) fun k ↦
-    Finsupp.sum (b.repr (f.sum fun i y ↦ a i k • y)) fun j c ↦ c • b j ⊗ₜ[R] b k := by
-  rw [Finsupp.sum, Finset.mul_sum]
-  subst ha
-  let a i := b.repr (b i * x)
-  conv_lhs =>
-    simp only [TensorProduct.tmul_mul_tmul, one_mul, mul_comm x (b _),
-      ← show ∀ i, Finsupp.total _ _ _ b (a i) = b i * x from fun _ ↦ b.total_repr _]
-  conv_lhs => simp only [Finsupp.total, Finsupp.coe_lsum,
-    LinearMap.coe_smulRight, LinearMap.id_coe, id_eq, Finsupp.sum, TensorProduct.tmul_sum,
-    ← TensorProduct.smul_tmul]
-  have h₁ : ∀ k,
-    (Finsupp.sum (Finsupp.sum f fun i y ↦ a i k • b.repr y) fun j z ↦ z • b j ⊗ₜ[R] b k) =
-      (f.sum fun i y ↦ (b.repr y).sum fun j z ↦ a i k • z • b j ⊗ₜ[R] b k) := by
-    intro i
-    rw [Finsupp.sum_sum_index]
-    congr
-    ext j s
-    rw [Finsupp.sum_smul_index]
-    simp only [mul_smul, Finsupp.sum, ← Finset.smul_sum]
-    · intro; simp only [zero_smul]
-    · intro; simp only [zero_smul]
-    · intros; simp only [add_smul]
-  have h₂ : ∀ (x : S), ((b.repr x).support.sum fun a ↦ b.repr x a • b a) = x := by
-    simpa only [Finsupp.total_apply, Finsupp.sum] using b.total_repr
-  simp_rw [map_finsupp_sum, map_smul, h₁, Finsupp.sum, Finset.sum_comm (t := f.support),
-    TensorProduct.smul_tmul', ← TensorProduct.sum_tmul, ← Finset.smul_sum, h₂]
-  apply Finset.sum_congr rfl
-  intros i hi
-  apply Finset.sum_subset_zero_on_sdiff
-  · exact Finset.subset_biUnion_of_mem (fun i ↦ (a i).support) hi
-  · simp only [Finset.mem_sdiff, Finset.mem_biUnion, Finsupp.mem_support_iff, ne_eq, not_not,
-      and_imp, forall_exists_index]
-    simp (config := {contextual := true})
-  · exact fun _ _ ↦ rfl
 
 variable (R S)
 
@@ -158,7 +160,7 @@ lemma finite_of_free [Module.Free R S] : Module.Finite R S := by
   have ⟨f, hf⟩ : ∃ (a : I →₀ S), elem R S = a.sum (fun i x ↦ x ⊗ₜ b i) := by
     let b' := ((Basis.singleton PUnit.{1} S).tensorProduct b).reindex (Equiv.punitProd I)
     use b'.repr (elem R S)
-    conv_lhs => rw [← b'.total_repr (elem R S), Finsupp.total_apply]
+    conv_lhs => rw [← b'.linearCombination_repr (elem R S), Finsupp.linearCombination_apply]
     congr! with _ i x
     simp [b', Basis.tensorProduct, TensorProduct.smul_tmul']
   constructor
@@ -196,15 +198,15 @@ lemma finite_of_free [Module.Free R S] : Module.Finite R S := by
     simp only [Basis.repr_symm_apply, Finsupp.coe_lsum, LinearMap.coe_smulRight,
       LinearMap.id_coe, id_eq, Basis.tensorProduct_apply, Finsupp.finsuppProdEquiv,
       Equiv.coe_fn_symm_mk, Finsupp.uncurry, map_finsupp_sum,
-      Finsupp.total_single, Basis.tensorProduct_apply, Finsupp.equivCongrLeft_apply,
-      Finsupp.total_equivMapDomain, Equiv.coe_prodComm]
+      Finsupp.linearCombination_single, Basis.tensorProduct_apply, Finsupp.equivCongrLeft_apply,
+      Finsupp.linearCombination_equivMapDomain, Equiv.coe_prodComm]
     rw [Finsupp.onFinset_sum, Finsupp.onFinset_sum]
     simp only [Function.comp_apply, Prod.swap_prod_mk, Basis.tensorProduct_apply]
     have : ∀ i, ((b.repr (x * f i)).sum fun j k ↦ k • b j ⊗ₜ[R] b i) = (x * f i) ⊗ₜ[R] b i := by
       intro i
       simp_rw [Finsupp.sum, TensorProduct.smul_tmul', ← TensorProduct.sum_tmul]
       congr 1
-      exact b.total_repr _
+      exact b.linearCombination_repr _
     trans (x ⊗ₜ 1) * elem R S
     · simp_rw [this, hf, Finsupp.sum, Finset.mul_sum, TensorProduct.tmul_mul_tmul, one_mul]
     · rw [← one_tmul_mul_elem, hf, finite_of_free_aux]

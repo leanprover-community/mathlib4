@@ -107,7 +107,7 @@ theorem ae_eq_zero_of_forall_dual [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     [SecondCountableTopology E] {f : α → E} (hf : ∀ c : Dual 𝕜 E, (fun x => ⟪f x, c⟫) =ᵐ[μ] 0) :
     f =ᵐ[μ] 0 :=
   ae_eq_zero_of_forall_dual_of_isSeparable 𝕜 (.of_separableSpace Set.univ) hf
-    (eventually_of_forall fun _ => Set.mem_univ _)
+    (Eventually.of_forall fun _ => Set.mem_univ _)
 
 variable {𝕜}
 
@@ -260,7 +260,7 @@ theorem ae_nonneg_of_forall_setIntegral_nonneg (hf : Integrable f μ)
     have h_const_le : (∫ x in s, f x ∂μ) ≤ ∫ _ in s, b ∂μ := by
       refine setIntegral_mono_ae_restrict hf.integrableOn (integrableOn_const.mpr (Or.inr mus)) ?_
       rw [EventuallyLE, ae_restrict_iff₀ (hs.mono μ.restrict_le_self)]
-      exact eventually_of_forall fun x hxs => hxs
+      exact Eventually.of_forall fun x hxs => hxs
     rwa [setIntegral_const, smul_eq_mul, mul_comm] at h_const_le
   contrapose! h_int_gt with H
   calc
@@ -523,7 +523,7 @@ theorem ae_eq_zero_of_forall_setIntegral_eq_of_finStronglyMeasurable_trim (hm : 
   haveI : SigmaFinite ((μ.restrict t).trim hm) := by rwa [restrict_trim hm μ ht_meas] at htμ
   have htf_zero : f =ᵐ[μ.restrict tᶜ] 0 := by
     rw [EventuallyEq, ae_restrict_iff' (MeasurableSet.compl (hm _ ht_meas))]
-    exact eventually_of_forall htf_zero
+    exact Eventually.of_forall htf_zero
   have hf_meas_m : StronglyMeasurable[m] f := hf.stronglyMeasurable
   suffices f =ᵐ[μ.restrict t] 0 from
     ae_of_ae_restrict_of_ae_restrict_compl _ this htf_zero
@@ -581,7 +581,7 @@ alias Integrable.ae_eq_of_forall_set_integral_eq :=
 variable {β : Type*} [TopologicalSpace β] [MeasurableSpace β] [BorelSpace β]
 
 /-- If an integrable function has zero integral on all closed sets, then it is zero
-almost everwhere. -/
+almost everywhere. -/
 lemma ae_eq_zero_of_forall_setIntegral_isClosed_eq_zero {μ : Measure β} {f : β → E}
     (hf : Integrable f μ) (h'f : ∀ (s : Set β), IsClosed s → ∫ x in s, f x ∂μ = 0) :
     f =ᵐ[μ] 0 := by
@@ -604,7 +604,7 @@ alias ae_eq_zero_of_forall_set_integral_isClosed_eq_zero :=
   ae_eq_zero_of_forall_setIntegral_isClosed_eq_zero
 
 /-- If an integrable function has zero integral on all compact sets in a sigma-compact space, then
-it is zero almost everwhere. -/
+it is zero almost everywhere. -/
 lemma ae_eq_zero_of_forall_setIntegral_isCompact_eq_zero
     [SigmaCompactSpace β] [R1Space β] {μ : Measure β} {f : β → E} (hf : Integrable f μ)
     (h'f : ∀ (s : Set β), IsCompact s → ∫ x in s, f x ∂μ = 0) :
@@ -628,7 +628,7 @@ lemma ae_eq_zero_of_forall_setIntegral_isCompact_eq_zero
   · exact hf.integrableOn
 
 /-- If a locally integrable function has zero integral on all compact sets in a sigma-compact space,
-then it is zero almost everwhere. -/
+then it is zero almost everywhere. -/
 lemma ae_eq_zero_of_forall_setIntegral_isCompact_eq_zero'
     [SigmaCompactSpace β] [R1Space β] {μ : Measure β} {f : β → E} (hf : LocallyIntegrable f μ)
     (h'f : ∀ (s : Set β), IsCompact s → ∫ x in s, f x ∂μ = 0) :

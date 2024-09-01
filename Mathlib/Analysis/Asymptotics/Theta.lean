@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2022 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Asymptotics.Asymptotics
 import Mathlib.Analysis.Normed.Module.Basic
@@ -130,6 +130,9 @@ instance : Trans (α := α → E) (β := α → E) (γ := α → F) (EventuallyE
 
 lemma _root_.Filter.EventuallyEq.isTheta {f g : α → E} (h : f =ᶠ[l] g) : f =Θ[l] g :=
   h.trans_isTheta isTheta_rfl
+
+@[simp]
+theorem isTheta_bot : f =Θ[⊥] g := by simp [IsTheta]
 
 @[simp]
 theorem isTheta_norm_left : (fun x ↦ ‖f' x‖) =Θ[l] g ↔ f' =Θ[l] g := by simp [IsTheta]
@@ -280,4 +283,46 @@ lemma IsLittleO.add_isTheta {f₁ f₂ : α → E'} {g : α → F}
     (ho : f₁ =o[l] g) (hΘ : f₂ =Θ[l] g) : (f₁ + f₂) =Θ[l] g :=
   add_comm f₁ f₂ ▸ hΘ.add_isLittleO ho
 
+section
+
+variable {f : α × β → E} {g : α × β → F} {l' : Filter β}
+
+protected theorem IsTheta.fiberwise_right :
+    f =Θ[l ×ˢ l'] g → ∀ᶠ x in l, (f ⟨x, ·⟩) =Θ[l'] (g ⟨x, ·⟩) := by
+  simp only [IsTheta, eventually_and]
+  exact fun ⟨h₁, h₂⟩ ↦ ⟨h₁.fiberwise_right, h₂.fiberwise_right⟩
+
+protected theorem IsTheta.fiberwise_left :
+    f =Θ[l ×ˢ l'] g → ∀ᶠ y in l', (f ⟨·, y⟩) =Θ[l] (g ⟨·, y⟩) := by
+  simp only [IsTheta, eventually_and]
+  exact fun ⟨h₁, h₂⟩ ↦ ⟨h₁.fiberwise_left, h₂.fiberwise_left⟩
+
+end
+
+section
+
+variable (l' : Filter β)
+
+protected theorem IsTheta.comp_fst : f =Θ[l] g → (f ∘ Prod.fst) =Θ[l ×ˢ l'] (g ∘ Prod.fst) := by
+  simp only [IsTheta, eventually_and]
+  exact fun ⟨h₁, h₂⟩ ↦ ⟨h₁.comp_fst l', h₂.comp_fst l'⟩
+
+protected theorem IsTheta.comp_snd : f =Θ[l] g → (f ∘ Prod.snd) =Θ[l' ×ˢ l] (g ∘ Prod.snd) := by
+  simp only [IsTheta, eventually_and]
+  exact fun ⟨h₁, h₂⟩ ↦ ⟨h₁.comp_snd l', h₂.comp_snd l'⟩
+
+end
+
 end Asymptotics
+
+namespace ContinuousOn
+
+variable {α E F : Type*} [NormedAddGroup E] [SeminormedAddGroup F] [TopologicalSpace α]
+  {s : Set α} {f : α → E} {c : F}
+
+protected theorem isTheta_principal
+    (hf : ContinuousOn f s) (hs : IsCompact s) (hc : ‖c‖ ≠ 0) (hC : ∀ i ∈ s, f i ≠ 0) :
+    f =Θ[𝓟 s] fun _ => c :=
+  ⟨hf.isBigO_principal hs hc, hf.isBigO_rev_principal hs hC c⟩
+
+end ContinuousOn

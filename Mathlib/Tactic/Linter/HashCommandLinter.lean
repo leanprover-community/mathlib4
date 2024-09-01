@@ -5,8 +5,6 @@ Authors: Damiano Testa
 -/
 
 import Lean.Elab.Command
-import Lean.Linter.Util
-import Batteries.Lean.HashSet
 
 /-!
 # `#`-command linter
@@ -29,16 +27,13 @@ For example, `#guard true` and `#check_tactic True ~> True by skip` trigger a me
 There is a list of silent `#`-command that are allowed.
 -/
 register_option linter.hashCommand : Bool := {
-  defValue := true
+  defValue := false
   descr := "enable the `#`-command linter"
 }
 
 namespace HashCommandLinter
 
 open Lean Elab
-
-/-- Gets the value of the `linter.hashCommand` option. -/
-def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.hashCommand o
 
 open Command in
 /-- Exactly like `withSetOptionIn`, but recursively discards nested uses of `in`.
@@ -55,8 +50,8 @@ private partial def withSetOptionIn' (cmd : CommandElab) : CommandElab := fun st
   else
     cmd stx
 
-/-- `allowed_commands` is the `HashSet` of `#`-commands that are allowed in 'Mathlib'. -/
-private abbrev allowed_commands : HashSet String := { "#adaptation_note" }
+/-- `allowed_commands` is the `Array` of `#`-commands that are allowed in 'Mathlib'. -/
+private abbrev allowed_commands : Array String := #["#adaptation_note"]
 
 /-- Checks that no command beginning with `#` is present in 'Mathlib',
 except for the ones in `allowed_commands`.
@@ -68,7 +63,7 @@ However, in order to avoid local clutter, when `warningAsError` is `false`, the 
 logs a warning only for the `#`-commands that do not already emit a message. -/
 def hashCommandLinter : Linter where run := withSetOptionIn' fun stx => do
   let mod := (← getMainModule).components
-  if getLinterHash (← getOptions) &&
+  if Linter.getLinterValue linter.hashCommand (← getOptions) &&
     ((← get).messages.toList.isEmpty || warningAsError.get (← getOptions)) &&
     -- we check that the module is either not in `test` or, is `test.HashCommandLinter`
     (mod.getD 0 default != `test || (mod == [`test, `HashCommandLinter]))

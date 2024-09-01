@@ -1017,7 +1017,8 @@ end LatticeHom
 
 namespace OrderHomClass
 
-variable (α β) [LinearOrder α] [Lattice β] [FunLike F α β] [OrderHomClass F α β]
+variable (α β)
+variable [LinearOrder α] [Lattice β] [OrderHomClass F α β]
 
 /-- An order homomorphism from a linear order is a lattice homomorphism. -/
 -- Porting note: made it an `instance` because we're no longer afraid of loops
@@ -1659,3 +1660,5 @@ def withTopWithBot' [BoundedOrder β] (f : LatticeHom α β) :
   map_bot' := rfl
 
 end LatticeHom
+
+set_option linter.style.longFile 1800

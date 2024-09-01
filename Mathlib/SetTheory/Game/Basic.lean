@@ -68,7 +68,7 @@ instance instAddCommGroupWithOneGame : AddCommGroupWithOne Game where
   add_assoc := by
     rintro ⟨x⟩ ⟨y⟩ ⟨z⟩
     exact Quot.sound add_assoc_equiv
-  add_left_neg := Quotient.ind <| fun x => Quot.sound (add_left_neg_equiv x)
+  neg_add_cancel := Quotient.ind <| fun x => Quot.sound (neg_add_cancel_equiv x)
   add_comm := by
     rintro ⟨x⟩ ⟨y⟩
     exact Quot.sound add_comm_equiv
@@ -101,19 +101,23 @@ If `0 ⧏ x` (less or fuzzy with), then Left can win `x` as the first player. -/
 def LF : Game → Game → Prop :=
   Quotient.lift₂ PGame.LF fun _ _ _ _ hx hy => propext (lf_congr hx hy)
 
-local infixl:50 " ⧏ " => LF
-
 /-- On `Game`, simp-normal inequalities should use as few negations as possible. -/
 @[simp]
-theorem not_le : ∀ {x y : Game}, ¬x ≤ y ↔ y ⧏ x := by
+theorem not_le : ∀ {x y : Game}, ¬x ≤ y ↔ Game.LF y x := by
   rintro ⟨x⟩ ⟨y⟩
   exact PGame.not_le
 
 /-- On `Game`, simp-normal inequalities should use as few negations as possible. -/
 @[simp]
-theorem not_lf : ∀ {x y : Game}, ¬x ⧏ y ↔ y ≤ x := by
+theorem not_lf : ∀ {x y : Game}, ¬Game.LF x y ↔ y ≤ x := by
   rintro ⟨x⟩ ⟨y⟩
   exact PGame.not_lf
+
+/-- The fuzzy, confused, or incomparable relation on games.
+
+If `x ‖ 0`, then the first player can always win `x`. -/
+def Fuzzy : Game → Game → Prop :=
+  Quotient.lift₂ PGame.Fuzzy fun _ _ _ _ hx hy => propext (fuzzy_congr hx hy)
 
 -- Porting note: had to replace ⧏ with LF, otherwise cannot differentiate with the operator on PGame
 instance : IsTrichotomous Game LF :=
@@ -126,31 +130,36 @@ instance : IsTrichotomous Game LF :=
 /-! It can be useful to use these lemmas to turn `PGame` inequalities into `Game` inequalities, as
 the `AddCommGroup` structure on `Game` often simplifies many proofs. -/
 
--- Porting note: In a lot of places, I had to add explicitely that the quotient element was a Game.
+end Game
+
+namespace PGame
+
+-- Porting note: In a lot of places, I had to add explicitly that the quotient element was a Game.
 -- In Lean4, quotients don't have the setoid as an instance argument,
 -- but as an explicit argument, see https://leanprover.zulipchat.com/#narrow/stream/113489-new-members/topic/confusion.20between.20equivalence.20and.20instance.20setoid/near/360822354
-theorem PGame.le_iff_game_le {x y : PGame} : x ≤ y ↔ (⟦x⟧ : Game) ≤ ⟦y⟧ :=
+theorem le_iff_game_le {x y : PGame} : x ≤ y ↔ (⟦x⟧ : Game) ≤ ⟦y⟧ :=
   Iff.rfl
 
-theorem PGame.lf_iff_game_lf {x y : PGame} : PGame.LF x y ↔ ⟦x⟧ ⧏ ⟦y⟧ :=
+theorem lf_iff_game_lf {x y : PGame} : x ⧏ y ↔ Game.LF ⟦x⟧ ⟦y⟧ :=
   Iff.rfl
 
-theorem PGame.lt_iff_game_lt {x y : PGame} : x < y ↔ (⟦x⟧ : Game) < ⟦y⟧ :=
+theorem lt_iff_game_lt {x y : PGame} : x < y ↔ (⟦x⟧ : Game) < ⟦y⟧ :=
   Iff.rfl
 
-theorem PGame.equiv_iff_game_eq {x y : PGame} : x ≈ y ↔ (⟦x⟧ : Game) = ⟦y⟧ :=
+theorem equiv_iff_game_eq {x y : PGame} : x ≈ y ↔ (⟦x⟧ : Game) = ⟦y⟧ :=
   (@Quotient.eq' _ _ x y).symm
 
-/-- The fuzzy, confused, or incomparable relation on games.
+alias ⟨game_eq, _⟩ := equiv_iff_game_eq
 
-If `x ‖ 0`, then the first player can always win `x`. -/
-def Fuzzy : Game → Game → Prop :=
-  Quotient.lift₂ PGame.Fuzzy fun _ _ _ _ hx hy => propext (fuzzy_congr hx hy)
-
-local infixl:50 " ‖ " => Fuzzy
-
-theorem PGame.fuzzy_iff_game_fuzzy {x y : PGame} : PGame.Fuzzy x y ↔ ⟦x⟧ ‖ ⟦y⟧ :=
+theorem fuzzy_iff_game_fuzzy {x y : PGame} : x ‖ y ↔ Game.Fuzzy ⟦x⟧ ⟦y⟧ :=
   Iff.rfl
+
+end PGame
+
+namespace Game
+
+local infixl:50 " ⧏ " => LF
+local infixl:50 " ‖ " => Fuzzy
 
 instance covariantClass_add_le : CovariantClass Game Game (· + ·) (· ≤ ·) :=
   ⟨by
@@ -189,7 +198,7 @@ lemma bddAbove_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Game.{u}) 
     BddAbove (Set.range f) := by
   obtain ⟨x, hx⟩ := PGame.bddAbove_range_of_small (Quotient.out ∘ f)
   refine ⟨⟦x⟧, Set.forall_mem_range.2 fun i ↦ ?_⟩
-  simpa [PGame.le_iff_game_le] using hx $ Set.mem_range_self i
+  simpa [PGame.le_iff_game_le] using hx <| Set.mem_range_self i
 
 /-- A small set of games is bounded above. -/
 lemma bddAbove_of_small (s : Set Game.{u}) [Small.{u} s] : BddAbove s := by
@@ -200,7 +209,7 @@ lemma bddBelow_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Game.{u}) 
     BddBelow (Set.range f) := by
   obtain ⟨x, hx⟩ := PGame.bddBelow_range_of_small (Quotient.out ∘ f)
   refine ⟨⟦x⟧, Set.forall_mem_range.2 fun i ↦ ?_⟩
-  simpa [PGame.le_iff_game_le] using hx $ Set.mem_range_self i
+  simpa [PGame.le_iff_game_le] using hx <| Set.mem_range_self i
 
 /-- A small set of games is bounded below. -/
 lemma bddBelow_of_small (s : Set Game.{u}) [Small.{u} s] : BddBelow s := by
@@ -225,8 +234,8 @@ theorem quot_sub (a b : PGame) : ⟦a - b⟧ = (⟦a⟧ : Game) - ⟦b⟧ :=
 theorem quot_eq_of_mk'_quot_eq {x y : PGame} (L : x.LeftMoves ≃ y.LeftMoves)
     (R : x.RightMoves ≃ y.RightMoves) (hl : ∀ i, (⟦x.moveLeft i⟧ : Game) = ⟦y.moveLeft (L i)⟧)
     (hr : ∀ j, (⟦x.moveRight j⟧ : Game) = ⟦y.moveRight (R j)⟧) : (⟦x⟧ : Game) = ⟦y⟧ := by
-  exact Quot.sound (equiv_of_mk_equiv L R (fun _ => Game.PGame.equiv_iff_game_eq.2 (hl _))
-                                          (fun _ => Game.PGame.equiv_iff_game_eq.2 (hr _)))
+  exact Quot.sound (equiv_of_mk_equiv L R (fun _ => equiv_iff_game_eq.2 (hl _))
+                                          (fun _ => equiv_iff_game_eq.2 (hr _)))
 
 /-! Multiplicative operations can be defined at the level of pre-games,
 but to prove their properties we need to use the abelian group structure of games.
@@ -389,21 +398,19 @@ theorem quot_mul_comm (x y : PGame.{u}) : (⟦x * y⟧ : Game) = ⟦y * x⟧ :=
 theorem mul_comm_equiv (x y : PGame) : x * y ≈ y * x :=
   Quotient.exact <| quot_mul_comm _ _
 
-instance isEmpty_mul_zero_leftMoves (x : PGame.{u}) : IsEmpty (x * 0).LeftMoves := by
+instance isEmpty_leftMoves_mul (x y : PGame.{u})
+    [IsEmpty (x.LeftMoves × y.LeftMoves ⊕ x.RightMoves × y.RightMoves)] :
+    IsEmpty (x * y).LeftMoves := by
   cases x
-  exact instIsEmptySum
+  cases y
+  assumption
 
-instance isEmpty_mul_zero_rightMoves (x : PGame.{u}) : IsEmpty (x * 0).RightMoves := by
+instance isEmpty_rightMoves_mul (x y : PGame.{u})
+    [IsEmpty (x.LeftMoves × y.RightMoves ⊕ x.RightMoves × y.LeftMoves)] :
+    IsEmpty (x * y).RightMoves := by
   cases x
-  apply instIsEmptySum
-
-instance isEmpty_zero_mul_leftMoves (x : PGame.{u}) : IsEmpty (0 * x).LeftMoves := by
-  cases x
-  apply instIsEmptySum
-
-instance isEmpty_zero_mul_rightMoves (x : PGame.{u}) : IsEmpty (0 * x).RightMoves := by
-  cases x
-  apply instIsEmptySum
+  cases y
+  assumption
 
 /-- `x * 0` has exactly the same moves as `0`. -/
 def mulZeroRelabelling (x : PGame) : x * 0 ≡r 0 :=
