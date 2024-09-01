@@ -29,6 +29,8 @@ here allows us to consider composites and scalar-multiply by multivariable Laure
 
 -/
 
+assert_not_exists Cardinal
+
 noncomputable section
 
 variable {Γ : Type*} [PartialOrder Γ] {R : Type*} {V W : Type*} [CommRing R]

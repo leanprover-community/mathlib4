@@ -81,6 +81,12 @@ instance inhabited₂ [h : Inhabited a₂] : Inhabited (Sequence₂ a₀ a₁ a�
 
 instance {n : ℕ} : IsEmpty (Sequence₂ a₀ a₁ a₂ (n + 3)) := inferInstanceAs (IsEmpty PEmpty)
 
+instance [DecidableEq a₀] [DecidableEq a₁] [DecidableEq a₂] {n : ℕ} :
+    DecidableEq (Sequence₂ a₀ a₁ a₂ n) :=
+  match n with
+  | 0 | 1 | 2 => ‹_›
+  | _ + 3 => inferInstance
+
 @[simp]
 theorem lift_mk {i : ℕ} :
     Cardinal.lift.{v,u} #(Sequence₂ a₀ a₁ a₂ i)
@@ -239,6 +245,18 @@ theorem card_mk₂ (c f₁ f₂ : Type u) (r₁ r₂ : Type v) :
       Cardinal.lift.{v} #c + Cardinal.lift.{v} #f₁ + Cardinal.lift.{v} #f₂ +
           Cardinal.lift.{u} #r₁ + Cardinal.lift.{u} #r₂ := by
   simp [card_eq_card_functions_add_card_relations, add_assoc]
+
+/-- Passes a `DecidableEq` instance on a type of function symbols through the  `Language`
+constructor. Despite the fact that this is proven by `inferInstance`, it is still needed -
+see the `example`s in `ModelTheory/Ring/Basic`. -/
+instance instDecidableEqFunctions {f : ℕ → Type*} {R : ℕ → Type*} (n : ℕ) [DecidableEq (f n)] :
+    DecidableEq ((⟨f, R⟩ : Language).Functions n) := inferInstance
+
+/-- Passes a `DecidableEq` instance on a type of relation symbols through the  `Language`
+constructor. Despite the fact that this is proven by `inferInstance`, it is still needed -
+see the `example`s in `ModelTheory/Ring/Basic`. -/
+instance instDecidableEqRelations {f : ℕ → Type*} {R : ℕ → Type*} (n : ℕ) [DecidableEq (R n)] :
+    DecidableEq ((⟨f, R⟩ : Language).Relations n) := inferInstance
 
 variable (L) (M : Type w)
 
@@ -508,7 +526,7 @@ theorem id_comp (f : M →[L] N) : (id L N).comp f = f :=
 end Hom
 
 /-- Any element of a `HomClass` can be realized as a first_order homomorphism. -/
-def HomClass.toHom {F M N} [L.Structure M] [L.Structure N] [FunLike F M N]
+@[simps] def HomClass.toHom {F M N} [L.Structure M] [L.Structure N] [FunLike F M N]
     [HomClass L F M N] : F → M →[L] N := fun φ =>
   ⟨φ, HomClass.map_fun φ, HomClass.map_rel φ⟩
 
@@ -663,7 +681,7 @@ theorem refl_toHom : (refl L M).toHom = Hom.id L M :=
 end Embedding
 
 /-- Any element of an injective `StrongHomClass` can be realized as a first_order embedding. -/
-def StrongHomClass.toEmbedding {F M N} [L.Structure M] [L.Structure N] [FunLike F M N]
+@[simps] def StrongHomClass.toEmbedding {F M N} [L.Structure M] [L.Structure N] [FunLike F M N]
     [EmbeddingLike F M N] [StrongHomClass L F M N] : F → M ↪[L] N := fun φ =>
   ⟨⟨φ, EmbeddingLike.injective φ⟩, StrongHomClass.map_fun φ, StrongHomClass.map_rel φ⟩
 
@@ -877,7 +895,7 @@ theorem comp_right_inj (h : M ≃[L] N) (f g : N ≃[L] P) : f.comp h = g.comp h
 end Equiv
 
 /-- Any element of a bijective `StrongHomClass` can be realized as a first_order isomorphism. -/
-def StrongHomClass.toEquiv {F M N} [L.Structure M] [L.Structure N] [EquivLike F M N]
+@[simps] def StrongHomClass.toEquiv {F M N} [L.Structure M] [L.Structure N] [EquivLike F M N]
     [StrongHomClass L F M N] : F → M ≃[L] N := fun φ =>
   ⟨⟨φ, EquivLike.inv φ, EquivLike.left_inv φ, EquivLike.right_inv φ⟩, StrongHomClass.map_fun φ,
     StrongHomClass.map_rel φ⟩
@@ -916,14 +934,24 @@ end SumStructure
 
 section Empty
 
-section
+/-- Any type can be made uniquely into a structure over the empty language. -/
+def emptyStructure : Language.empty.Structure M :=
+  ⟨Empty.elim, Empty.elim⟩
+
+instance : Unique (Language.empty.Structure M) :=
+  ⟨⟨Language.emptyStructure⟩, fun a => by
+    ext _ f <;> exact Empty.elim f⟩
 
 variable [Language.empty.Structure M] [Language.empty.Structure N]
+
+instance (priority := 100) strongHomClassEmpty {F} [FunLike F M N] :
+    StrongHomClass Language.empty F M N :=
+  ⟨fun _ _ f => Empty.elim f, fun _ _ r => Empty.elim r⟩
 
 @[simp]
 theorem empty.nonempty_embedding_iff :
     Nonempty (M ↪[Language.empty] N) ↔ Cardinal.lift.{w'} #M ≤ Cardinal.lift.{w} #N :=
-  _root_.trans ⟨Nonempty.map fun f => f.toEmbedding, Nonempty.map fun f => { toEmbedding := f }⟩
+  _root_.trans ⟨Nonempty.map fun f => f.toEmbedding, Nonempty.map StrongHomClass.toEmbedding⟩
     Cardinal.lift_mk_le'.symm
 
 @[simp]
@@ -932,46 +960,11 @@ theorem empty.nonempty_equiv_iff :
   _root_.trans ⟨Nonempty.map fun f => f.toEquiv, Nonempty.map fun f => { toEquiv := f }⟩
     Cardinal.lift_mk_eq'.symm
 
-end
-
-instance emptyStructure : Language.empty.Structure M :=
-  ⟨Empty.elim, Empty.elim⟩
-
-instance : Unique (Language.empty.Structure M) :=
-  ⟨⟨Language.emptyStructure⟩, fun a => by
-    ext _ f <;> exact Empty.elim f⟩
-
-instance (priority := 100) strongHomClassEmpty {F M N} [FunLike F M N] :
-    StrongHomClass Language.empty F M N :=
-  ⟨fun _ _ f => Empty.elim f, fun _ _ r => Empty.elim r⟩
-
-/-- Makes a `Language.empty.Hom` out of any function. -/
+/-- Makes a `Language.empty.Hom` out of any function.
+This is only needed because there is no instance of `FunLike (M → N) M N`, and thus no instance of
+`Language.empty.HomClass M N`. -/
 @[simps]
 def _root_.Function.emptyHom (f : M → N) : M →[Language.empty] N where toFun := f
-
-/-- Makes a `Language.empty.Embedding` out of any function. -/
---@[simps] Porting note: commented out and lemmas added manually
-def _root_.Embedding.empty (f : M ↪ N) : M ↪[Language.empty] N where toEmbedding := f
-
-@[simp]
-theorem toFun_embedding_empty (f : M ↪ N) : (Embedding.empty f : M → N) = f :=
-  rfl
-
-@[simp]
-theorem toEmbedding_embedding_empty (f : M ↪ N) : (Embedding.empty f).toEmbedding = f :=
-  rfl
-
-/-- Makes a `Language.empty.Equiv` out of any function. -/
---@[simps] Porting note: commented out and lemmas added manually
-def _root_.Equiv.empty (f : M ≃ N) : M ≃[Language.empty] N where toEquiv := f
-
-@[simp]
-theorem toFun_equiv_empty (f : M ≃ N) : (Equiv.empty f : M → N) = f :=
-  rfl
-
-@[simp]
-theorem toEquiv_equiv_empty (f : M ≃ N) : (Equiv.empty f).toEquiv = f :=
-  rfl
 
 end Empty
 

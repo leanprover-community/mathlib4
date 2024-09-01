@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving, Simon Hudon
 -/
 import Mathlib.Algebra.Order.Ring.Int
-import Mathlib.Init.Data.List.Instances
+import Mathlib.Data.List.Monad
 import Mathlib.Testing.SlimCheck.Gen
 
 /-!
@@ -220,7 +220,7 @@ instance Bool.sampleableExt : SampleableExt Bool :=
 
 /-- This can be specialized into customized `SampleableExt Char` instances.
 The resulting instance has `1 / length` chances of making an unrestricted choice of characters
-and it otherwise chooses a character from `chars` with uniform probabilities.  -/
+and it otherwise chooses a character from `chars` with uniform probabilities. -/
 def Char.sampleable (length : Nat) (chars : List Char) (pos : 0 < chars.length) :
     SampleableExt Char :=
   mkSelfContained do
@@ -256,7 +256,7 @@ instance List.sampleableExt [SampleableExt α] : SampleableExt (List α) where
 
 end Samplers
 
-/-- An annotation for values that should never get shrinked. -/
+/-- An annotation for values that should never get shrunk. -/
 def NoShrink (α : Type u) := α
 
 namespace NoShrink

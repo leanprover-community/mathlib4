@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel, Floris Van Doorn, Yury Kudryashov
+Authors: Sébastien Gouëzel, Floris van Doorn, Yury Kudryashov
 -/
 import Mathlib.Topology.MetricSpace.HausdorffDistance
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
@@ -269,7 +269,11 @@ theorem mono {p' q' : Set α → Prop} (H : InnerRegularWRT μ p q)
 
 end InnerRegularWRT
 
-variable {α β : Type*} [MeasurableSpace α] [TopologicalSpace α] {μ : Measure α}
+variable {α β : Type*} [MeasurableSpace α] {μ : Measure α}
+
+section Classes
+
+variable [TopologicalSpace α]
 
 /-- A measure `μ` is outer regular if `μ(A) = inf {μ(U) | A ⊆ U open}` for a measurable set `A`.
 
@@ -315,7 +319,11 @@ instance (priority := 100) Regular.weaklyRegular [R1Space α] [Regular μ] :
     ⟨closure K, K_comp.closure_subset_of_isOpen hU KU, isClosed_closure,
       hK.trans_le (measure_mono subset_closure)⟩
 
+end Classes
+
 namespace OuterRegular
+
+variable [TopologicalSpace α]
 
 instance zero : OuterRegular (0 : Measure α) :=
   ⟨fun A _ _r hr => ⟨univ, subset_univ A, isOpen_univ, hr⟩⟩
@@ -353,7 +361,7 @@ theorem _root_.MeasurableSet.exists_isOpen_diff_lt [OuterRegular μ] {A : Set α
     ∃ U, U ⊇ A ∧ IsOpen U ∧ μ U < ∞ ∧ μ (U \ A) < ε := by
   rcases A.exists_isOpen_lt_add hA' hε with ⟨U, hAU, hUo, hU⟩
   use U, hAU, hUo, hU.trans_le le_top
-  exact measure_diff_lt_of_lt_add hA hAU hA' hU
+  exact measure_diff_lt_of_lt_add hA.nullMeasurableSet hAU hA' hU
 
 protected theorem map [OpensMeasurableSpace α] [MeasurableSpace β] [TopologicalSpace β]
     [BorelSpace β] (f : α ≃ₜ β) (μ : Measure α) [OuterRegular μ] :
@@ -429,7 +437,8 @@ end OuterRegular
 
 /-- If a measure `μ` admits finite spanning open sets such that the restriction of `μ` to each set
 is outer regular, then the original measure is outer regular as well. -/
-protected theorem FiniteSpanningSetsIn.outerRegular [OpensMeasurableSpace α] {μ : Measure α}
+protected theorem FiniteSpanningSetsIn.outerRegular
+    [TopologicalSpace α] [OpensMeasurableSpace α] {μ : Measure α}
     (s : μ.FiniteSpanningSetsIn { U | IsOpen U ∧ OuterRegular (μ.restrict U) }) :
     OuterRegular μ :=
   OuterRegular.of_restrict (s := fun n ↦ s.set n) (fun n ↦ (s.set_mem n).2)
@@ -438,6 +447,76 @@ protected theorem FiniteSpanningSetsIn.outerRegular [OpensMeasurableSpace α] {�
 namespace InnerRegularWRT
 
 variable {p q : Set α → Prop} {U s : Set α} {ε r : ℝ≥0∞}
+
+/-- If the restrictions of a measure to a monotone sequence of sets covering the space are
+inner regular for some property `p` and all measurable sets, then the measure itself is
+inner regular. -/
+lemma of_restrict {μ : Measure α} {s : ℕ → Set α}
+    (h : ∀ n, InnerRegularWRT (μ.restrict (s n)) p MeasurableSet)
+    (hs : univ ⊆ ⋃ n, s n) (hmono : Monotone s) : InnerRegularWRT μ p MeasurableSet := by
+  intro F hF r hr
+  have hBU : ⋃ n, F ∩ s n = F := by rw [← inter_iUnion, univ_subset_iff.mp hs, inter_univ]
+  have : μ F = ⨆ n, μ (F ∩ s n) := by
+    rw [← measure_iUnion_eq_iSup, hBU]
+    exact Monotone.directed_le fun m n h ↦ inter_subset_inter_right _ (hmono h)
+  rw [this] at hr
+  rcases lt_iSup_iff.1 hr with ⟨n, hn⟩
+  rw [← restrict_apply hF] at hn
+  rcases h n hF _ hn with ⟨K, KF, hKp, hK⟩
+  exact ⟨K, KF, hKp, hK.trans_le (restrict_apply_le _ _)⟩
+
+/-- If `μ` is inner regular for measurable finite measure sets with respect to some class of sets,
+then its restriction to any set is also inner regular for measurable finite measure sets, with
+respect to the same class of sets. -/
+lemma restrict (h : InnerRegularWRT μ p (fun s ↦ MeasurableSet s ∧ μ s ≠ ∞)) (A : Set α) :
+    InnerRegularWRT (μ.restrict A) p (fun s ↦ MeasurableSet s ∧ μ.restrict A s ≠ ∞) := by
+  rintro s ⟨s_meas, hs⟩ r hr
+  rw [restrict_apply s_meas] at hs
+  obtain ⟨K, K_subs, pK, rK⟩ : ∃ K, K ⊆ (toMeasurable μ (s ∩ A)) ∩ s ∧ p K ∧ r < μ K := by
+    have : r < μ ((toMeasurable μ (s ∩ A)) ∩ s) := by
+      apply hr.trans_le
+      rw [restrict_apply s_meas]
+      exact measure_mono <| subset_inter (subset_toMeasurable μ (s ∩ A)) inter_subset_left
+    refine h ⟨(measurableSet_toMeasurable _ _).inter s_meas, ?_⟩ _ this
+    apply (lt_of_le_of_lt _ hs.lt_top).ne
+    rw [← measure_toMeasurable (s ∩ A)]
+    exact measure_mono inter_subset_left
+  refine ⟨K, K_subs.trans inter_subset_right, pK, ?_⟩
+  calc
+  r < μ K := rK
+  _ = μ.restrict (toMeasurable μ (s ∩ A)) K := by
+    rw [restrict_apply' (measurableSet_toMeasurable μ (s ∩ A))]
+    congr
+    apply (inter_eq_left.2 ?_).symm
+    exact K_subs.trans inter_subset_left
+  _ = μ.restrict (s ∩ A) K := by rwa [restrict_toMeasurable]
+  _ ≤ μ.restrict A K := Measure.le_iff'.1 (restrict_mono inter_subset_right le_rfl) K
+
+/-- If `μ` is inner regular for measurable finite measure sets with respect to some class of sets,
+then its restriction to any finite measure set is also inner regular for measurable sets with
+respect to the same class of sets. -/
+lemma restrict_of_measure_ne_top (h : InnerRegularWRT μ p (fun s ↦ MeasurableSet s ∧ μ s ≠ ∞))
+    {A : Set α} (hA : μ A ≠ ∞) :
+    InnerRegularWRT (μ.restrict A) p (fun s ↦ MeasurableSet s) := by
+  have : Fact (μ A < ∞) := ⟨hA.lt_top⟩
+  exact (restrict h A).trans (of_imp (fun s hs ↦ ⟨hs, measure_ne_top _ _⟩))
+
+/-- Given a σ-finite measure, any measurable set can be approximated from inside by a measurable
+set of finite measure. -/
+lemma of_sigmaFinite [SigmaFinite μ] :
+    InnerRegularWRT μ (fun s ↦ MeasurableSet s ∧ μ s ≠ ∞) (fun s ↦ MeasurableSet s) := by
+  intro s hs r hr
+  set B : ℕ → Set α := spanningSets μ
+  have hBU : ⋃ n, s ∩ B n = s := by rw [← inter_iUnion, iUnion_spanningSets, inter_univ]
+  have : μ s = ⨆ n, μ (s ∩ B n) := by
+    rw [← measure_iUnion_eq_iSup, hBU]
+    exact Monotone.directed_le fun m n h => inter_subset_inter_right _ (monotone_spanningSets μ h)
+  rw [this] at hr
+  rcases lt_iSup_iff.1 hr with ⟨n, hn⟩
+  refine ⟨s ∩ B n, inter_subset_left, ⟨hs.inter (measurable_spanningSets μ n), ?_⟩, hn⟩
+  exact ((measure_mono inter_subset_right).trans_lt (measure_spanningSets_lt_top μ n)).ne
+
+variable [TopologicalSpace α]
 
 /-- If a measure is inner regular (using closed or compact sets) for open sets, then every
 measurable set of finite measure can be approximated by a (closed or compact) subset. -/
@@ -531,23 +610,6 @@ theorem weaklyRegular_of_finite [BorelSpace α] (μ : Measure α) [IsFiniteMeasu
         _ = μ (⋃ n, s n) + ∑' n, δ n := by rw [measure_iUnion hsd hsm, ENNReal.tsum_add]
         _ ≤ μ (⋃ n, s n) + ε := add_le_add_left (hδε.le.trans ENNReal.half_le_self) _
 
-/-- If the restrictions of a measure to a monotone sequence of sets covering the space are
-inner regular for some property `p` and all measurable sets, then the measure itself is
-inner regular. -/
-lemma of_restrict {μ : Measure α} {s : ℕ → Set α}
-    (h : ∀ n, InnerRegularWRT (μ.restrict (s n)) p MeasurableSet)
-    (hs : univ ⊆ ⋃ n, s n) (hmono : Monotone s) : InnerRegularWRT μ p MeasurableSet := by
-  intro F hF r hr
-  have hBU : ⋃ n, F ∩ s n = F := by  rw [← inter_iUnion, univ_subset_iff.mp hs, inter_univ]
-  have : μ F = ⨆ n, μ (F ∩ s n) := by
-    rw [← measure_iUnion_eq_iSup, hBU]
-    exact Monotone.directed_le fun m n h ↦ inter_subset_inter_right _ (hmono h)
-  rw [this] at hr
-  rcases lt_iSup_iff.1 hr with ⟨n, hn⟩
-  rw [← restrict_apply hF] at hn
-  rcases h n hF _ hn with ⟨K, KF, hKp, hK⟩
-  exact ⟨K, KF, hKp, hK.trans_le (restrict_apply_le _ _)⟩
-
 /-- In a metrizable space (or even a pseudo metrizable space), an open set can be approximated from
 inside by closed sets. -/
 theorem of_pseudoMetrizableSpace {X : Type*} [TopologicalSpace X] [PseudoMetrizableSpace X]
@@ -573,62 +635,11 @@ theorem isCompact_isClosed {X : Type*} [TopologicalSpace X] [SigmaCompactSpace X
   rcases lt_iSup_iff.1 hr with ⟨n, hn⟩
   exact ⟨_, inter_subset_left, hBc n, hn⟩
 
-/-- If `μ` is inner regular for measurable finite measure sets with respect to some class of sets,
-then its restriction to any set is also inner regular for measurable finite measure sets, with
-respect to the same class of sets. -/
-lemma restrict (h : InnerRegularWRT μ p (fun s ↦ MeasurableSet s ∧ μ s ≠ ∞)) (A : Set α) :
-    InnerRegularWRT (μ.restrict A) p (fun s ↦ MeasurableSet s ∧ μ.restrict A s ≠ ∞) := by
-  rintro s ⟨s_meas, hs⟩ r hr
-  rw [restrict_apply s_meas] at hs
-  obtain ⟨K, K_subs, pK, rK⟩ : ∃ K, K ⊆ (toMeasurable μ (s ∩ A)) ∩ s ∧ p K ∧ r < μ K := by
-    have : r < μ ((toMeasurable μ (s ∩ A)) ∩ s) := by
-      apply hr.trans_le
-      rw [restrict_apply s_meas]
-      exact measure_mono <| subset_inter (subset_toMeasurable μ (s ∩ A)) inter_subset_left
-    refine h ⟨(measurableSet_toMeasurable _ _).inter s_meas, ?_⟩ _ this
-    apply (lt_of_le_of_lt _ hs.lt_top).ne
-    rw [← measure_toMeasurable (s ∩ A)]
-    exact measure_mono inter_subset_left
-  refine ⟨K, K_subs.trans inter_subset_right, pK, ?_⟩
-  calc
-  r < μ K := rK
-  _ = μ.restrict (toMeasurable μ (s ∩ A)) K := by
-    rw [restrict_apply' (measurableSet_toMeasurable μ (s ∩ A))]
-    congr
-    apply (inter_eq_left.2 ?_).symm
-    exact K_subs.trans inter_subset_left
-  _ = μ.restrict (s ∩ A) K := by rwa [restrict_toMeasurable]
-  _ ≤ μ.restrict A K := Measure.le_iff'.1 (restrict_mono inter_subset_right le_rfl) K
-
-/-- If `μ` is inner regular for measurable finite measure sets with respect to some class of sets,
-then its restriction to any finite measure set is also inner regular for measurable sets with
-respect to the same class of sets. -/
-lemma restrict_of_measure_ne_top (h : InnerRegularWRT μ p (fun s ↦ MeasurableSet s ∧ μ s ≠ ∞))
-    {A : Set α} (hA : μ A ≠ ∞) :
-    InnerRegularWRT (μ.restrict A) p (fun s ↦ MeasurableSet s) := by
-  have : Fact (μ A < ∞) := ⟨hA.lt_top⟩
-  exact (restrict h A).trans (of_imp (fun s hs ↦ ⟨hs, measure_ne_top _ _⟩))
-
-/-- Given a σ-finite measure, any measurable set can be approximated from inside by a measurable
-set of finite measure. -/
-lemma of_sigmaFinite [SigmaFinite μ] :
-    InnerRegularWRT μ (fun s ↦ MeasurableSet s ∧ μ s ≠ ∞) (fun s ↦ MeasurableSet s) := by
-  intro s hs r hr
-  set B : ℕ → Set α := spanningSets μ
-  have hBU : ⋃ n, s ∩ B n = s := by rw [← inter_iUnion, iUnion_spanningSets, inter_univ]
-  have : μ s = ⨆ n, μ (s ∩ B n) := by
-    rw [← measure_iUnion_eq_iSup, hBU]
-    exact Monotone.directed_le fun m n h => inter_subset_inter_right _ (monotone_spanningSets μ h)
-  rw [this] at hr
-  rcases lt_iSup_iff.1 hr with ⟨n, hn⟩
-  refine ⟨s ∩ B n, inter_subset_left, ⟨hs.inter (measurable_spanningSets μ n), ?_⟩, hn⟩
-  exact ((measure_mono inter_subset_right).trans_lt (measure_spanningSets_lt_top μ n)).ne
-
 end InnerRegularWRT
 
 namespace InnerRegular
 
-variable {U : Set α} {ε : ℝ≥0∞}
+variable {U : Set α} {ε : ℝ≥0∞} [TopologicalSpace α]
 
 /-- The measure of a measurable set is the supremum of the measures of compact sets it contains. -/
 theorem _root_.MeasurableSet.measure_eq_iSup_isCompact ⦃U : Set α⦄ (hU : MeasurableSet U)
@@ -687,6 +698,8 @@ end InnerRegular
 
 namespace InnerRegularCompactLTTop
 
+variable [TopologicalSpace α]
+
 /-- If `μ` is inner regular for finite measure sets with respect to compact sets,
 then any measurable set of finite measure can be approximated by a
 compact subset. See also `MeasurableSet.exists_lt_isCompact_of_ne_top`. -/
@@ -717,7 +730,7 @@ theorem _root_.MeasurableSet.exists_isCompact_diff_lt [OpensMeasurableSpace α] 
     {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ K, K ⊆ A ∧ IsCompact K ∧ μ (A \ K) < ε := by
   rcases hA.exists_isCompact_lt_add h'A hε with ⟨K, hKA, hKc, hK⟩
-  exact ⟨K, hKA, hKc, measure_diff_lt_of_lt_add hKc.measurableSet hKA
+  exact ⟨K, hKA, hKc, measure_diff_lt_of_lt_add hKc.nullMeasurableSet hKA
     (ne_top_of_le_ne_top h'A <| measure_mono hKA) hK⟩
 
 /-- If `μ` is inner regular for finite measure sets with respect to compact sets,
@@ -729,7 +742,7 @@ theorem _root_.MeasurableSet.exists_isCompact_isClosed_diff_lt [BorelSpace α] [
     {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ K, K ⊆ A ∧ IsCompact K ∧ IsClosed K ∧ μ (A \ K) < ε := by
   rcases hA.exists_isCompact_isClosed_lt_add h'A hε with ⟨K, hKA, hKco, hKcl, hK⟩
-  exact ⟨K, hKA, hKco, hKcl, measure_diff_lt_of_lt_add hKcl.measurableSet hKA
+  exact ⟨K, hKA, hKco, hKcl, measure_diff_lt_of_lt_add hKcl.nullMeasurableSet hKA
     (ne_top_of_le_ne_top h'A <| measure_mono hKA) hK⟩
 
 /-- If `μ` is inner regular for finite measure sets with respect to compact sets,
@@ -802,7 +815,7 @@ protected theorem _root_.IsCompact.exists_isOpen_lt_add [InnerRegularCompactLTTo
 
 /-- Let `μ` be a locally finite measure on an R₁ topological space with Borel σ-algebra.
 If `μ` is inner regular for finite measure sets with respect to compact sets,
-then any finite measurable set can be approximated in measure by an open set.
+then any measurable set of finite measure can be approximated in measure by an open set.
 See also `Set.exists_isOpen_lt_of_lt` and `MeasurableSet.exists_isOpen_diff_lt`
 for the case of an outer regular measure. -/
 protected theorem _root_.MeasurableSet.exists_isOpen_symmDiff_lt [InnerRegularCompactLTTop μ]
@@ -813,14 +826,28 @@ protected theorem _root_.MeasurableSet.exists_isOpen_symmDiff_lt [InnerRegularCo
   rcases hs.exists_isCompact_isClosed_diff_lt hμs this with ⟨K, hKs, hKco, hKcl, hμK⟩
   rcases hKco.exists_isOpen_lt_add (μ := μ) this with ⟨U, hKU, hUo, hμU⟩
   refine ⟨U, hUo, hμU.trans_le le_top, ?_⟩
-  rw [← ENNReal.add_halves ε, measure_symmDiff_eq hUo.measurableSet hs]
+  rw [← ENNReal.add_halves ε, measure_symmDiff_eq hUo.nullMeasurableSet hs.nullMeasurableSet]
   gcongr
   · calc
       μ (U \ s) ≤ μ (U \ K) := by gcongr
       _ < ε / 2 := by
-        apply measure_diff_lt_of_lt_add hKcl.measurableSet hKU _ hμU
+        apply measure_diff_lt_of_lt_add hKcl.nullMeasurableSet hKU _ hμU
         exact ne_top_of_le_ne_top hμs (by gcongr)
   · exact lt_of_le_of_lt (by gcongr) hμK
+
+/-- Let `μ` be a locally finite measure on an R₁ topological space with Borel σ-algebra.
+If `μ` is inner regular for finite measure sets with respect to compact sets,
+then any null measurable set of finite measure can be approximated in measure by an open set.
+See also `Set.exists_isOpen_lt_of_lt` and `MeasurableSet.exists_isOpen_diff_lt`
+for the case of an outer regular measure. -/
+protected theorem _root_.MeasureTheory.NullMeasurableSet.exists_isOpen_symmDiff_lt
+    [InnerRegularCompactLTTop μ] [IsLocallyFiniteMeasure μ] [R1Space α] [BorelSpace α]
+    {s : Set α} (hs : NullMeasurableSet s μ) (hμs : μ s ≠ ∞) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
+    ∃ U, IsOpen U ∧ μ U < ∞ ∧ μ (U ∆ s) < ε := by
+  rcases hs with ⟨t, htm, hst⟩
+  rcases htm.exists_isOpen_symmDiff_lt (by rwa [← measure_congr hst]) hε with ⟨U, hUo, hμU, hUs⟩
+  refine ⟨U, hUo, hμU, ?_⟩
+  rwa [measure_congr <| (ae_eq_refl _).symmDiff hst]
 
 instance smul [h : InnerRegularCompactLTTop μ] (c : ℝ≥0∞) : InnerRegularCompactLTTop (c • μ) := by
   by_cases hc : c = 0
@@ -861,6 +888,8 @@ end InnerRegularCompactLTTop
 
 namespace WeaklyRegular
 
+variable [TopologicalSpace α]
+
 instance zero : WeaklyRegular (0 : Measure α) :=
   ⟨fun _ _ _r hr => ⟨∅, empty_subset _, isClosed_empty, hr⟩⟩
 
@@ -889,7 +918,7 @@ theorem _root_.MeasurableSet.exists_isClosed_diff_lt [OpensMeasurableSpace α] [
     ⦃A : Set α⦄ (hA : MeasurableSet A) (h'A : μ A ≠ ∞) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ F, F ⊆ A ∧ IsClosed F ∧ μ (A \ F) < ε := by
   rcases hA.exists_isClosed_lt_add h'A hε with ⟨F, hFA, hFc, hF⟩
-  exact ⟨F, hFA, hFc, measure_diff_lt_of_lt_add hFc.measurableSet hFA
+  exact ⟨F, hFA, hFc, measure_diff_lt_of_lt_add hFc.nullMeasurableSet hFA
     (ne_top_of_le_ne_top h'A <| measure_mono hFA) hF⟩
 
 /-- Given a weakly regular measure, any measurable set of finite mass can be approximated from
@@ -946,6 +975,8 @@ instance smul_nnreal [WeaklyRegular μ] (c : ℝ≥0) : WeaklyRegular (c • μ)
 end WeaklyRegular
 
 namespace Regular
+
+variable [TopologicalSpace α]
 
 instance zero : Regular (0 : Measure α) :=
   ⟨fun _ _ _r hr => ⟨∅, empty_subset _, isCompact_empty, hr⟩⟩
