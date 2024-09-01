@@ -39,33 +39,20 @@ jobs:
 
       - name: Print t-label
         run: |
-          currentHash="$(git rev-parse HEAD)"
-          hashURL="https://github.com/${{ github.repository }}/pull/16350/commits/${currentHash}"
-          echo "${hashURL}"
           echo "${PR}"
-          echo "event: ${{ github.event.number }}"
-          echo "${{ github.ref }}"
-
-          branch_name=$(echo "${{ github.ref }}" | sed 's|refs/heads/||')
-          if [[ $branch_name =~ issue-([0-9]+) ]]; then
-            echo "ISSUE_NUMBER=${BASH_REMATCH[1]}" #>> $GITHUB_ENV
-          else
-            echo "No issue number found in branch name."
-          fi
-
-          echo "issue: ${{ github.event.issue.number }}"
-          echo "pr number ${{ github.event.pull_request.number }}"
-          #echo "with d: /repos/$OWNER/$REPO/pulls/$PULL_NUMBER"
           tlabels="$(gh api --jq '.labels.[].name' "${PR}" | grep -- '^t-' || printf 'generic')"
+          # print to error, since the stdout is captured into `GITHUB_OUTPUT
           >&2 printf 't-labels:\n---\n%s\n---\n' "${tlabels}"
+          # if there isn't exactly 1 `t-xxx` label, use `generic`
           if [[ "$(wc -l <<<"${tlabels}")" -ne 1 ]]; then
             tlabels="generic"
           fi
-          >&2 printf 'echo "name=%s with a master-addition"\n' "${tlabels}"
-          echo "name=${tlabels} with a master-addition"
+          streamName="${tlabels} maintainer merges"
+          >&2 printf 'Post to topic: '%s'"\n' "${streamName}"
+          echo "name=${streamName}"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR:  /repos/{owner}/{repo}/issues/16350 #{pull_number} #/repos/OWNER/REPO/pulls/PULL_NUMBER #/repos/{owner}/{repo}/issues/{issue} #${{ github.event.pull_request.number }}
+          PR:  /repos/{owner}/{repo}/issues/16350 #{pull_number}
 
   style_lint:
     if: github.repository != 'leanprover-community/mathlib4'
