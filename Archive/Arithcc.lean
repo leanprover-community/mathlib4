@@ -5,6 +5,7 @@ Authors: Xi Wang
 -/
 import Mathlib.Data.Nat.Defs
 import Mathlib.Order.Basic
+import Mathlib.Tactic.Common
 
 /-!
 # A compiler for arithmetic expressions
@@ -143,9 +144,9 @@ def outcome : List Instruction → State → State
 @[simp]
 theorem outcome_append (p₁ p₂ : List Instruction) (η : State) :
     outcome (p₁ ++ p₂) η = outcome p₂ (outcome p₁ η) := by
-  induction p₁ generalizing η with
-  | nil => simp
-  | cons _ _ p₁_ih => apply p₁_ih
+  revert η
+  induction' p₁ with _ _ p₁_ih <;> intros <;> simp
+  apply p₁_ih
 
 end Target
 
@@ -242,7 +243,8 @@ theorem stateEq_implies_write_eq {t : Register} {ζ₁ ζ₂ : State} (h : ζ₁
   intro r hr
   have hr : r ≤ t := Register.le_of_lt_succ hr
   rcases lt_or_eq_of_le hr with hr | hr
-  · replace h := h.2 r hr
+  · cases' h with _ h
+    specialize h r hr
     simp_all
   · simp_all
 
@@ -260,7 +262,8 @@ theorem write_eq_implies_stateEq {t : Register} {v : Word} {ζ₁ ζ₂ : State}
   simp [StateEq, StateEqRs] at *
   constructor; · exact h.1
   intro r hr
-  replace h := h.2 r (lt_trans hr (Register.lt_succ_self _))
+  cases' h with _ h
+  specialize h r (lt_trans hr (Register.lt_succ_self _))
   rwa [if_neg (ne_of_lt hr)] at h
 
 /-- The main **compiler correctness theorem**.
@@ -320,7 +323,8 @@ theorem compiler_correctness
     have hζ₃_ν₂ : ζ₃.ac = ν₂ := by simp_all [StateEq]
     have hζ₃_ν₁ : read t ζ₃ = ν₁ := by
       simp [StateEq, StateEqRs] at hζ₃ ⊢
-      replace hζ₃ := hζ₃.2 t (Register.lt_succ_self _)
+      cases' hζ₃ with _ hζ₃
+      specialize hζ₃ t (Register.lt_succ_self _)
       simp_all
     have hζ₄ : ζ₄ ≃[t + 1] { write t ν₁ η with ac := ν } := calc
       ζ₄ = step (Instruction.add t) ζ₃ := by simp_all
