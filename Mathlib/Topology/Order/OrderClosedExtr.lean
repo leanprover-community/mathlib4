@@ -25,10 +25,9 @@ open Set Topology
 /-- If `f` is monotone on `(a,b]` and antitone on `[b,c)` then `f` has
 a local maximum at `b`. -/
 lemma isLocalMax_of_mono_anti.{u, v}
-  {α : Type u} [TopologicalSpace α] [LinearOrder α] [OrderClosedTopology α]
+    {α : Type u} [TopologicalSpace α] [LinearOrder α] [OrderClosedTopology α]
     {β : Type v} [Preorder β]
-    {a b c : α} (g₀ : a < b) (g₁ : b < c)
-    {f : α → β}
+    {a b c : α} (g₀ : a < b) (g₁ : b < c) {f : α → β}
     (h₀ : MonotoneOn f (Ioc a b))
     (h₁ : AntitoneOn f (Ico b c)) : IsLocalMax f b := by
   unfold IsLocalMax IsMaxFilter Filter.Eventually
