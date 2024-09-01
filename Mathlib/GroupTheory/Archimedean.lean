@@ -227,15 +227,6 @@ theorem Int.subgroup_cyclic (H : AddSubgroup ℤ) : ∃ a, H = AddSubgroup.closu
     hm.1.not_le (lt_add_one_iff.1 hm.2)
   AddSubgroup.cyclic_of_isolated_zero one_pos <| by simp [this]
 
-lemma AddSubgroup.closure_singleton_int_one_eq_top : closure ({1} : Set ℤ) = ⊤ := by
-  rw [eq_comm]
-  apply cyclic_of_min
-  refine ⟨?_, ?_⟩
-  · simp
-  · intro x
-    simp only [mem_top, true_and, mem_setOf_eq]
-    exact id
-
 /-- If an element of a linearly ordered archimedean additive group is the least positive element,
 then the whole group is isomorphic (and order-isomorphic) to the integers. -/
 noncomputable def LinearOrderedAddCommGroup.int_orderAddMonoidIso_of_isLeast_pos {x : G}
