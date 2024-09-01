@@ -30,11 +30,7 @@ giry monad
 
 noncomputable section
 
-open scoped Classical
-open ENNReal
-
-open scoped Classical
-open Set Filter
+open ENNReal Set Filter
 
 variable {α β : Type*}
 

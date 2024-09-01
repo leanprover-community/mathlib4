@@ -247,6 +247,9 @@ end NonUnitalSemiring
 section Semiring
 variable [Semiring R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
 
+instance : ZeroLEOneClass R where
+  zero_le_one := by simpa using star_mul_self_nonneg (1 : R)
+
 @[simp]
 lemma one_le_star_iff {x : R} : 1 ≤ star x ↔ 1 ≤ x := by
   simpa using star_le_star_iff (x := 1) (y := x)
@@ -291,7 +294,7 @@ lemma StarModule.smul_lt_smul_of_pos {a b : A} {c : R} (hab : a < b) (hc : 0 < c
         obtain ⟨y, hy⟩ := hx
         apply AddSubmonoid.subset_closure
         refine ⟨z • y, ?_⟩
-        simp only [star_smul, smul_mul_smul, hz, hy]
+        simp only [star_smul, smul_mul_smul_comm, hz, hy]
       case zeroc => simpa only [zero_smul] using zero_mem _
       case addc => exact fun c' d ↦ by simpa only [add_smul] using add_mem
     case zero => simpa only [smul_zero] using zero_mem _

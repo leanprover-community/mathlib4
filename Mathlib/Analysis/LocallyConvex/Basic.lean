@@ -5,7 +5,7 @@ Authors: Jean Lo, Bhavik Mehta, Yaël Dillies
 -/
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Analysis.Convex.Hull
-import Mathlib.Analysis.NormedSpace.Basic
+import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Topology.Bornology.Absorbs
 
 /-!

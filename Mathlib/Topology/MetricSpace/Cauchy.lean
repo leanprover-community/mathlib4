@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
 import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
+import Mathlib.Topology.EMetricSpace.Basic
 
 /-!
 ## Cauchy sequences in (pseudo-)metric spaces
@@ -72,8 +73,8 @@ theorem Metric.uniformCauchySeqOn_iff {γ : Type*} {F : β → γ → α} {s : S
   · intro h ε hε
     let u := { a : α × α | dist a.fst a.snd < ε }
     have hu : u ∈ 𝓤 α := Metric.mem_uniformity_dist.mpr ⟨ε, hε, by simp [u]⟩
-    rw [← @Filter.eventually_atTop_prod_self' _ _ _ fun m =>
-      ∀ x ∈ s, dist (F m.fst x) (F m.snd x) < ε]
+    rw [← Filter.eventually_atTop_prod_self' (p := fun m =>
+      ∀ x ∈ s, dist (F m.fst x) (F m.snd x) < ε)]
     specialize h u hu
     rw [prod_atTop_atTop_eq] at h
     exact h.mono fun n h x hx => h x hx
@@ -87,7 +88,7 @@ theorem Metric.uniformCauchySeqOn_iff {γ : Type*} {F : β → γ → α} {s : S
     exact hab (hN b.fst hbl.ge b.snd hbr.ge x hx)
 
 /-- If the distance between `s n` and `s m`, `n ≤ m` is bounded above by `b n`
-and `b` converges to zero, then `s` is a Cauchy sequence.  -/
+and `b` converges to zero, then `s` is a Cauchy sequence. -/
 theorem cauchySeq_of_le_tendsto_0' {s : β → α} (b : β → ℝ)
     (h : ∀ n m : β, n ≤ m → dist (s n) (s m) ≤ b n) (h₀ : Tendsto b atTop (𝓝 0)) : CauchySeq s :=
   Metric.cauchySeq_iff'.2 fun ε ε0 => (h₀.eventually (gt_mem_nhds ε0)).exists.imp fun N hN n hn =>
@@ -96,7 +97,7 @@ theorem cauchySeq_of_le_tendsto_0' {s : β → α} (b : β → ℝ)
     _ < ε := hN
 
 /-- If the distance between `s n` and `s m`, `n, m ≥ N` is bounded above by `b N`
-and `b` converges to zero, then `s` is a Cauchy sequence.  -/
+and `b` converges to zero, then `s` is a Cauchy sequence. -/
 theorem cauchySeq_of_le_tendsto_0 {s : β → α} (b : β → ℝ)
     (h : ∀ n m N : β, N ≤ n → N ≤ m → dist (s n) (s m) ≤ b N) (h₀ : Tendsto b atTop (𝓝 0)) :
     CauchySeq s :=

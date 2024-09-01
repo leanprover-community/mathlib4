@@ -30,7 +30,7 @@ Carathéodory-measurable, Carathéodory's criterion
 noncomputable section
 
 open Set Function Filter
-open scoped Classical NNReal Topology ENNReal
+open scoped NNReal Topology ENNReal
 
 namespace MeasureTheory
 namespace OuterMeasure
@@ -89,6 +89,21 @@ theorem isCaratheodory_inter (h₁ : IsCaratheodory m s₁) (h₂ : IsCaratheodo
   rw [← isCaratheodory_compl_iff, Set.compl_inter]
   exact isCaratheodory_union _ (isCaratheodory_compl _ h₁) (isCaratheodory_compl _ h₂)
 
+lemma isCaratheodory_diff (h₁ : IsCaratheodory m s₁) (h₂ : IsCaratheodory m s₂) :
+    IsCaratheodory m (s₁ \ s₂) := m.isCaratheodory_inter h₁ (m.isCaratheodory_compl h₂)
+
+lemma isCaratheodory_partialSups {s : ℕ → Set α} (h : ∀ i, m.IsCaratheodory (s i)) (i : ℕ) :
+    m.IsCaratheodory (partialSups s i) := by
+  induction i with
+  | zero => exact h 0
+  | succ i hi => exact m.isCaratheodory_union hi (h (i + 1))
+
+lemma isCaratheodory_disjointed {s : ℕ → Set α} (h : ∀ i, m.IsCaratheodory (s i)) (i : ℕ) :
+    m.IsCaratheodory (disjointed s i) := by
+  induction i with
+  | zero => exact h 0
+  | succ i _ => exact m.isCaratheodory_diff (h (i + 1)) (m.isCaratheodory_partialSups h i)
+
 theorem isCaratheodory_sum {s : ℕ → Set α} (h : ∀ i, IsCaratheodory m (s i))
     (hd : Pairwise (Disjoint on s)) {t : Set α} :
     ∀ {n}, (∑ i ∈ Finset.range n, m (t ∩ s i)) = m (t ∩ ⋃ i < n, s i)
@@ -99,13 +114,13 @@ theorem isCaratheodory_sum {s : ℕ → Set α} (h : ∀ i, IsCaratheodory m (s 
     intro a
     simpa using fun (h₁ : a ∈ s n) i (hi : i < n) h₂ => (hd (ne_of_gt hi)).le_bot ⟨h₁, h₂⟩
 
-set_option linter.deprecated false in -- not immediately obvious how to replace `iUnion` here.
-theorem isCaratheodory_iUnion_nat {s : ℕ → Set α} (h : ∀ i, IsCaratheodory m (s i))
+/-- Use `isCaratheodory_iUnion` instead, which does not require the disjoint assumption. -/
+theorem isCaratheodory_iUnion_of_disjoint {s : ℕ → Set α} (h : ∀ i, IsCaratheodory m (s i))
     (hd : Pairwise (Disjoint on s)) : IsCaratheodory m (⋃ i, s i) := by
       apply (isCaratheodory_iff_le' m).mpr
       intro t
       have hp : m (t ∩ ⋃ i, s i) ≤ ⨆ n, m (t ∩ ⋃ i < n, s i) := by
-        convert m.iUnion fun i => t ∩ s i using 1
+        convert measure_iUnion_le (μ := m) fun i => t ∩ s i using 1
         · simp [inter_iUnion]
         · simp [ENNReal.tsum_eq_iSup_nat, isCaratheodory_sum m h hd]
       refine le_trans (add_le_add_right hp _) ?_
@@ -114,6 +129,15 @@ theorem isCaratheodory_iUnion_nat {s : ℕ → Set α} (h : ∀ i, IsCaratheodor
         (ge_of_eq (isCaratheodory_iUnion_lt m (fun i _ => h i) _))
       refine m.mono (diff_subset_diff_right ?_)
       exact iUnion₂_subset fun i _ => subset_iUnion _ i
+
+@[deprecated (since := "2024-07-29")]
+alias isCaratheodory_iUnion_nat := isCaratheodory_iUnion_of_disjoint
+
+lemma isCaratheodory_iUnion {s : ℕ → Set α} (h : ∀ i, m.IsCaratheodory (s i)) :
+    m.IsCaratheodory (⋃ i, s i) := by
+  rw [← iUnion_disjointed]
+  exact m.isCaratheodory_iUnion_of_disjoint (m.isCaratheodory_disjointed h)
+    (disjoint_disjointed _)
 
 theorem f_iUnion {s : ℕ → Set α} (h : ∀ i, IsCaratheodory m (s i)) (hd : Pairwise (Disjoint on s)) :
     m (⋃ i, s i) = ∑' i, m (s i) := by
@@ -124,12 +148,12 @@ theorem f_iUnion {s : ℕ → Set α} (h : ∀ i, IsCaratheodory m (s i)) (hd : 
   simp only [inter_comm, inter_univ, univ_inter] at this; simp only [this]
   exact m.mono (iUnion₂_subset fun i _ => subset_iUnion _ i)
 
-/-- The Carathéodory-measurable sets for an outer measure `m` form a Dynkin system.  -/
+/-- The Carathéodory-measurable sets for an outer measure `m` form a Dynkin system. -/
 def caratheodoryDynkin : MeasurableSpace.DynkinSystem α where
   Has := IsCaratheodory m
   has_empty := isCaratheodory_empty m
   has_compl s := isCaratheodory_compl m s
-  has_iUnion_nat f hf hn := by apply isCaratheodory_iUnion_nat m hf f
+  has_iUnion_nat _ hf hn := by apply isCaratheodory_iUnion m hf
 
 /-- Given an outer measure `μ`, the Carathéodory-measurable space is
   defined such that `s` is measurable if `∀t, μ t = μ (t ∩ s) + μ (t \ s)`. -/

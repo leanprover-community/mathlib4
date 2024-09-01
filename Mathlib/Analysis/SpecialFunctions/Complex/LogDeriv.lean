@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
 -/
 import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Deriv
+import Mathlib.Analysis.Calculus.LogDeriv
 import Mathlib.Analysis.SpecialFunctions.Complex.Log
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 
@@ -132,5 +133,13 @@ theorem DifferentiableOn.clog {f : E → ℂ} {s : Set E} (h₁ : Differentiable
 theorem Differentiable.clog {f : E → ℂ} (h₁ : Differentiable ℂ f)
     (h₂ : ∀ x, f x ∈ slitPlane) : Differentiable ℂ fun t => log (f t) := fun x =>
   (h₁ x).clog (h₂ x)
+
+/-- The derivative of `log ∘ f` is the logarithmic derivative provided `f` is differentiable and
+we are on the slitPlane. -/
+lemma Complex.deriv_log_comp_eq_logDeriv {f : ℂ → ℂ} {x : ℂ} (h₁ : DifferentiableAt ℂ f x)
+    (h₂ : f x ∈ Complex.slitPlane) : deriv (Complex.log ∘ f) x = logDeriv f x := by
+  have A := (HasDerivAt.clog h₁.hasDerivAt h₂).deriv
+  rw [← h₁.hasDerivAt.deriv] at A
+  simp only [logDeriv, Pi.div_apply, ← A, Function.comp_def]
 
 end LogDeriv

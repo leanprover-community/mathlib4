@@ -36,7 +36,7 @@ It also proves some `Basis` analogues of `Base` lemmas that, while they could be
 ## Implementation Notes
 
 Since `R` and `M.E` are both terms in `Set α`, to define the restriction `M ↾ R`,
-we need to either insist that `R ⊆ M.E`, or to say what happens when `R` contains the junk
+we need to either insist that `R ⊆ M.E`, or to say what happens when `R` contains the junk
 outside `M.E`.
 
 It turns out that `R ⊆ M.E` is just an unnecessary hypothesis; if we say the restriction
@@ -105,16 +105,17 @@ section restrict
     exact ⟨e, ⟨⟨(hBIB' he.1.1).elim (fun h ↦ (he.2 h).elim) id,he.1.2⟩, he.2⟩,
       hI'.indep.subset (insert_subset he.1 hIJ), insert_subset he.1.2.1 hIY⟩
   indep_maximal := by
-    rintro A hAX I ⟨hI, _⟩ hIA
-    obtain ⟨J, hJ, hIJ⟩ := hI.subset_basis'_of_subset hIA; use J
-    rw [mem_maximals_setOf_iff, and_iff_left hJ.subset, and_iff_left hIJ,
-      and_iff_right ⟨hJ.indep, hJ.subset.trans hAX⟩]
-    exact fun K ⟨⟨hK, _⟩, _, hKA⟩ hJK ↦ hJ.eq_of_subset_indep hK hJK hKA
+    rintro A hAR I ⟨hI, _⟩ hIA
+    obtain ⟨J, hJ, hIJ⟩ := hI.subset_basis'_of_subset hIA
+    use J
+    simp only [hIJ, and_assoc, maximal_subset_iff, hJ.indep, hJ.subset, and_imp, true_and,
+      hJ.subset.trans hAR]
+    exact fun K hK _ hKA hJK ↦ hJ.eq_of_subset_indep hK hJK hKA
   subset_ground I := And.right
 
 /-- Change the ground set of a matroid to some `R : Set α`. The independent sets of the restriction
   are the independent subsets of the new ground set. Most commonly used when `R ⊆ M.E`,
-  but it is convenient not to require this. The elements of `R \ M.E` become 'loops'.  -/
+  but it is convenient not to require this. The elements of `R \ M.E` become 'loops'. -/
 def restrict (M : Matroid α) (R : Set α) : Matroid α := (M.restrictIndepMatroid R).matroid
 
 /-- `M ↾ R` means `M.restrict R`. -/
@@ -150,17 +151,13 @@ theorem restrict_restrict_eq {R₁ R₂ : Set α} (M : Matroid α) (hR : R₂ �
 
 @[simp] theorem base_restrict_iff (hX : X ⊆ M.E := by aesop_mat) :
     (M ↾ X).Base I ↔ M.Basis I X := by
-  simp_rw [base_iff_maximal_indep, basis_iff', restrict_indep_iff, and_iff_left hX, and_assoc]
-  aesop
+  simp_rw [base_iff_maximal_indep, Basis, and_iff_left hX, maximal_iff, restrict_indep_iff]
 
 theorem base_restrict_iff' : (M ↾ X).Base I ↔ M.Basis' I X := by
-  simp_rw [Basis', base_iff_maximal_indep, mem_maximals_setOf_iff, restrict_indep_iff]
+  simp_rw [base_iff_maximal_indep, Basis', maximal_iff, restrict_indep_iff]
 
-theorem Basis.restrict_base (h : M.Basis I X) : (M ↾ X).Base I := by
-  rw [basis_iff'] at h
-  simp_rw [base_iff_maximal_indep, restrict_indep_iff, and_imp, and_assoc, and_iff_right h.1.1,
-    and_iff_right h.1.2.1]
-  exact fun J hJ hJX hIJ ↦ h.1.2.2 _ hJ hIJ hJX
+theorem Basis.restrict_base (h : M.Basis I X) : (M ↾ X).Base I :=
+  (base_restrict_iff h.subset_ground).2 h
 
 instance restrict_finiteRk [M.FiniteRk] (R : Set α) : (M ↾ R).FiniteRk :=
   let ⟨_, hB⟩ := (M ↾ R).exists_base
@@ -180,7 +177,8 @@ theorem Basis.basis_restrict_of_subset (hI : M.Basis I X) (hXY : X ⊆ Y) : (M �
   rwa [← base_restrict_iff, M.restrict_restrict_eq hXY, base_restrict_iff]
 
 theorem basis'_restrict_iff : (M ↾ R).Basis' I X ↔ M.Basis' I (X ∩ R) ∧ I ⊆ R := by
-  simp_rw [Basis', mem_maximals_setOf_iff, restrict_indep_iff, subset_inter_iff, and_imp]; tauto
+  simp_rw [Basis', maximal_iff, restrict_indep_iff, subset_inter_iff, and_imp]
+  tauto
 
 theorem basis_restrict_iff' : (M ↾ R).Basis I X ↔ M.Basis I (X ∩ M.E) ∧ X ⊆ R := by
   rw [basis_iff_basis'_subset_ground, basis'_restrict_iff, restrict_ground_eq, and_congr_left_iff,

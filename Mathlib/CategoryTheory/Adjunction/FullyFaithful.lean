@@ -236,10 +236,10 @@ instance [L.IsEquivalence] : IsIso h.counit := by
   have := fun X => isIso_counit_app_of_iso h (L.objObjPreimageIso X).symm
   apply NatIso.isIso_of_isIso_app
 
-lemma isEquivalence_left_of_isEquivalence_right [R.IsEquivalence] : L.IsEquivalence :=
+lemma isEquivalence_left_of_isEquivalence_right (h : L ⊣ R) [R.IsEquivalence] : L.IsEquivalence :=
   h.toEquivalence.isEquivalence_functor
 
-lemma isEquivalence_right_of_isEquivalence_left [L.IsEquivalence] : R.IsEquivalence :=
+lemma isEquivalence_right_of_isEquivalence_left (h : L ⊣ R) [L.IsEquivalence] : R.IsEquivalence :=
   h.toEquivalence.isEquivalence_inverse
 
 instance [L.IsEquivalence] : IsIso h.unit := by

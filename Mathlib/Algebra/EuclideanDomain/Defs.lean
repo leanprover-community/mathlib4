@@ -67,7 +67,7 @@ universe u
   satisfying `b * (a / b) + a % b = a`.
   The definition of a Euclidean domain usually includes a valuation function `R → ℕ`.
   This definition is slightly generalised to include a well founded relation
-  `r` with the property that `r (a % b) b`, instead of a valuation.  -/
+  `r` with the property that `r (a % b) b`, instead of a valuation. -/
 class EuclideanDomain (R : Type u) extends CommRing R, Nontrivial R where
   /-- A division function (denoted `/`) on `R`.
     This satisfies the property `b * (a / b) + a % b = a`, where `%` denotes `remainder`. -/
@@ -151,12 +151,11 @@ theorem div_zero (a : R) : a / 0 = 0 :=
 
 section
 
-open scoped Classical
-
 @[elab_as_elim]
 theorem GCD.induction {P : R → R → Prop} (a b : R) (H0 : ∀ x, P 0 x)
-    (H1 : ∀ a b, a ≠ 0 → P (b % a) a → P a b) : P a b :=
-  if a0 : a = 0 then by
+    (H1 : ∀ a b, a ≠ 0 → P (b % a) a → P a b) : P a b := by
+  classical
+  exact if a0 : a = 0 then by
     -- Porting note: required for hygiene, the equation compiler introduces a dummy variable `x`
     -- See https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/unnecessarily.20tombstoned.20argument/near/314573315
     change P a b

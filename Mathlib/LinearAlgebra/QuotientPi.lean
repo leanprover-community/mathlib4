@@ -72,15 +72,25 @@ theorem quotientPiLift_mk (p : ∀ i, Submodule R (Ms i)) (f : ∀ i, Ms i →�
 -- Porting note (#11083): split up the definition to avoid timeouts. Still slow.
 namespace quotientPi_aux
 
-variable [Fintype ι] [DecidableEq ι] (p : ∀ i, Submodule R (Ms i))
+variable (p : ∀ i, Submodule R (Ms i))
 
 @[simp]
 def toFun : ((∀ i, Ms i) ⧸ pi Set.univ p) → ∀ i, Ms i ⧸ p i :=
   quotientPiLift p (fun i => (p i).mkQ) fun i => (ker_mkQ (p i)).ge
 
+theorem map_add (x y : ((i : ι) → Ms i) ⧸ pi Set.univ p) :
+    toFun p (x + y) = toFun p x + toFun p y :=
+  LinearMap.map_add (quotientPiLift p (fun i => (p i).mkQ) fun i => (ker_mkQ (p i)).ge) x y
+
+theorem map_smul (r : R) (x : ((i : ι) → Ms i) ⧸ pi Set.univ p) :
+    toFun p (r • x) = (RingHom.id R r) • toFun p x :=
+  LinearMap.map_smul (quotientPiLift p (fun i => (p i).mkQ) fun i => (ker_mkQ (p i)).ge) r x
+
+variable [Fintype ι] [DecidableEq ι]
+
 @[simp]
 def invFun : (∀ i, Ms i ⧸ p i) → (∀ i, Ms i) ⧸ pi Set.univ p :=
-  piQuotientLift p (pi Set.univ p) single fun _ => le_comap_single_pi p
+  piQuotientLift p (pi Set.univ p) _ fun _ => le_comap_single_pi p
 
 theorem left_inv : Function.LeftInverse (invFun p) (toFun p) := fun x =>
   Quotient.inductionOn' x fun x' => by
@@ -99,14 +109,6 @@ theorem right_inv : Function.RightInverse (invFun p) (toFun p) := by
   · subst hij
     rw [Pi.single_eq_same, Pi.single_eq_same]
   · rw [Pi.single_eq_of_ne (Ne.symm hij), Pi.single_eq_of_ne (Ne.symm hij), Quotient.mk_zero]
-
-theorem map_add (x y : ((i : ι) → Ms i) ⧸ pi Set.univ p) :
-    toFun p (x + y) = toFun p x + toFun p y :=
-  LinearMap.map_add (quotientPiLift p (fun i => (p i).mkQ) fun i => (ker_mkQ (p i)).ge) x y
-
-theorem map_smul (r : R) (x : ((i : ι) → Ms i) ⧸ pi Set.univ p) :
-    toFun p (r • x) = (RingHom.id R r) • toFun p x :=
-  LinearMap.map_smul (quotientPiLift p (fun i => (p i).mkQ) fun i => (ker_mkQ (p i)).ge) r x
 
 end quotientPi_aux
 

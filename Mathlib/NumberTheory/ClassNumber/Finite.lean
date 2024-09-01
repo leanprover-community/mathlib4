@@ -194,7 +194,7 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
     have := normBound_pos abv bS
     have := abv.nonneg b
     rw [ε_eq, Algebra.smul_def, eq_intCast, mul_rpow, ← rpow_mul, div_mul_cancel₀, rpow_neg_one,
-      mul_left_comm, mul_inv_cancel, mul_one, rpow_natCast] <;>
+      mul_left_comm, mul_inv_cancel₀, mul_one, rpow_natCast] <;>
       try norm_cast; omega
     · exact Iff.mpr Int.cast_nonneg this
     · linarith
@@ -317,8 +317,7 @@ theorem mkMMem_surjective [IsDedekindDomain S] [Algebra.IsAlgebraic R L] :
   obtain ⟨J, mk0_eq_mk0, J_dvd⟩ := exists_mk0_eq_mk0 L bS adm ⟨I, hI⟩
   exact ⟨⟨J, J_dvd⟩, mk0_eq_mk0.symm⟩
 
-open scoped Classical
-
+open Classical in
 /-- The **class number theorem**: the class group of an integral closure `S` of `R` in an
 algebraic extension `L` is finite if there is an admissible absolute value.
 

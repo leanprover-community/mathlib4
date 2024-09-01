@@ -5,7 +5,7 @@ Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Category.Grp.Basic
 import Mathlib.CategoryTheory.SingleObj
-import Mathlib.CategoryTheory.Limits.FunctorCategory
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Conj
@@ -17,7 +17,7 @@ The prototypical example is `V = ModuleCat R`,
 where `Action (ModuleCat R) G` is the category of `R`-linear representations of `G`.
 
 We check `Action V G ≌ (singleObj G ⥤ V)`,
-and construct the restriction functors `res {G H : Mon} (f : G ⟶ H) : Action V H ⥤ Action V G`.
+and construct the restriction functors `res {G H : MonCat} (f : G ⟶ H) : Action V H ⥤ Action V G`.
 -/
 
 
@@ -51,8 +51,8 @@ def ρAut {G : Grp.{u}} (A : Action V (MonCat.of G)) : G ⟶ Grp.of (Aut A.V) wh
   toFun g :=
     { hom := A.ρ g
       inv := A.ρ (g⁻¹ : G)
-      hom_inv_id := (A.ρ.map_mul (g⁻¹ : G) g).symm.trans (by rw [inv_mul_self, ρ_one])
-      inv_hom_id := (A.ρ.map_mul g (g⁻¹ : G)).symm.trans (by rw [mul_inv_self, ρ_one]) }
+      hom_inv_id := (A.ρ.map_mul (g⁻¹ : G) g).symm.trans (by rw [inv_mul_cancel, ρ_one])
+      inv_hom_id := (A.ρ.map_mul g (g⁻¹ : G)).symm.trans (by rw [mul_inv_cancel, ρ_one]) }
   map_one' := Aut.ext A.ρ.map_one
   map_mul' x y := Aut.ext (A.ρ.map_mul x y)
 
@@ -114,7 +114,7 @@ instance : Category (Action V G) where
 -- Porting note: added because `Hom.ext` is not triggered automatically
 @[ext]
 lemma hom_ext {M N : Action V G} (φ₁ φ₂ : M ⟶ N) (h : φ₁.hom = φ₂.hom) : φ₁ = φ₂ :=
-  Hom.ext _ _ h
+  Hom.ext h
 
 @[simp]
 theorem id_hom (M : Action V G) : (𝟙 M : Hom M M).hom = 𝟙 M.V :=
@@ -229,7 +229,7 @@ def forget : Action V G ⥤ V where
   obj M := M.V
   map f := f.hom
 
-instance : (forget V G).Faithful where map_injective w := Hom.ext _ _ w
+instance : (forget V G).Faithful where map_injective w := Hom.ext w
 
 instance [ConcreteCategory V] : ConcreteCategory (Action V G) where
   forget := forget V G ⋙ ConcreteCategory.forget

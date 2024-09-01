@@ -168,9 +168,9 @@ theorem Step.diamond_aux :
   | [], _, [(x3, b3)], _, _, _, _, _, H => by injections; subst_vars; simp
   | [(x3, b3)], _, [], _, _, _, _, _, H => by injections; subst_vars; simp
   | [], _, (x3, b3) :: (x4, b4) :: tl, _, _, _, _, _, H => by
-    injections; subst_vars; simp; right; exact ⟨_, Red.Step.not, Red.Step.cons_not⟩
+    injections; subst_vars; right; exact ⟨_, Red.Step.not, Red.Step.cons_not⟩
   | (x3, b3) :: (x4, b4) :: tl, _, [], _, _, _, _, _, H => by
-    injections; subst_vars; simp; right; exact ⟨_, Red.Step.cons_not, Red.Step.not⟩
+    injections; subst_vars; right; simpa using ⟨_, Red.Step.cons_not, Red.Step.not⟩
   | (x3, b3) :: tl, _, (x4, b4) :: tl2, _, _, _, _, _, H =>
     let ⟨H1, H2⟩ := List.cons.inj H
     match Step.diamond_aux H2 with
@@ -522,7 +522,7 @@ instance : Group (FreeGroup α) where
   mul_assoc := by rintro ⟨L₁⟩ ⟨L₂⟩ ⟨L₃⟩; simp
   one_mul := by rintro ⟨L⟩; rfl
   mul_one := by rintro ⟨L⟩; simp [one_eq_mk]
-  mul_left_inv := by
+  inv_mul_cancel := by
     rintro ⟨L⟩
     exact
       List.recOn L rfl fun ⟨x, b⟩ tl ih =>
@@ -538,7 +538,7 @@ def of (x : α) : FreeGroup α :=
 @[to_additive]
 theorem Red.exact : mk L₁ = mk L₂ ↔ Join Red L₁ L₂ :=
   calc
-    mk L₁ = mk L₂ ↔ EqvGen Red.Step L₁ L₂ := Iff.intro (Quot.exact _) Quot.EqvGen_sound
+    mk L₁ = mk L₂ ↔ EqvGen Red.Step L₁ L₂ := Iff.intro (Quot.eqvGen_exact _) Quot.eqvGen_sound
     _ ↔ Join Red L₁ L₂ := eqvGen_step_iff_join_red
 
 /-- The canonical map from the type to the free group is an injection. -/
@@ -620,8 +620,8 @@ theorem lift.of_eq (x : FreeGroup α) : lift FreeGroup.of x = x :=
 theorem lift.range_le {s : Subgroup β} (H : Set.range f ⊆ s) : (lift f).range ≤ s := by
   rintro _ ⟨⟨L⟩, rfl⟩;
   exact List.recOn L s.one_mem fun ⟨x, b⟩ tl ih ↦
-    Bool.recOn b (by simp at ih ⊢; exact s.mul_mem (s.inv_mem <| H ⟨x, rfl⟩) ih)
-      (by simp at ih ⊢; exact s.mul_mem (H ⟨x, rfl⟩) ih)
+    Bool.recOn b (by simpa using s.mul_mem (s.inv_mem <| H ⟨x, rfl⟩) ih)
+      (by simpa using s.mul_mem (H ⟨x, rfl⟩) ih)
 
 @[to_additive]
 theorem lift.range_eq_closure : (lift f).range = Subgroup.closure (Set.range f) := by
