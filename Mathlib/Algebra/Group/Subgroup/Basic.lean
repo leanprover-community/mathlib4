@@ -86,7 +86,7 @@ assert_not_exists Multiset
 assert_not_exists Ring
 
 open Function
-open Int
+open scoped Int
 
 variable {G G' G'' : Type*} [Group G] [Group G'] [Group G'']
 variable {A : Type*} [AddGroup A]
@@ -892,7 +892,7 @@ theorem closure_induction {p : G → Prop} {x} (h : x ∈ closure k) (mem : ∀ 
     (mul : ∀ x y, p x → p y → p (x * y)) (inv : ∀ x, p x → p x⁻¹) : p x :=
   (@closure_le _ _ ⟨⟨⟨setOf p, fun {x y} ↦ mul x y⟩, one⟩, fun {x} ↦ inv x⟩ k).2 mem h
 
-/-- A dependent version of `Subgroup.closure_induction`.  -/
+/-- A dependent version of `Subgroup.closure_induction`. -/
 @[to_additive (attr := elab_as_elim) "A dependent version of `AddSubgroup.closure_induction`. "]
 theorem closure_induction' {p : ∀ x, x ∈ closure k → Prop}
     (mem : ∀ (x) (h : x ∈ k), p x (subset_closure h)) (one : p 1 (one_mem _))
@@ -1020,6 +1020,10 @@ theorem mem_closure_singleton {x y : G} : y ∈ closure ({x} : Set G) ↔ ∃ n 
 theorem closure_singleton_one : closure ({1} : Set G) = ⊥ := by
   simp [eq_bot_iff_forall, mem_closure_singleton]
 
+@[to_additive (attr := simp)]
+lemma mem_closure_singleton_self (x : G) : x ∈ closure ({x} : Set G) := by
+  simpa [-subset_closure] using subset_closure (k := {x})
+
 @[to_additive]
 theorem le_closure_toSubmonoid (S : Set G) : Submonoid.closure S ≤ (closure S).toSubmonoid :=
   Submonoid.closure_le.2 subset_closure
@@ -1076,7 +1080,7 @@ theorem toAddSubgroup_comap {G₂ : Type*} [Group G₂] (f : G →* G₂) (s : S
 
 @[simp]
 theorem _root_.AddSubgroup.toSubgroup_comap {A A₂ : Type*} [AddGroup A] [AddGroup A₂]
-    (f : A →+ A₂)  (s : AddSubgroup A₂) :
+    (f : A →+ A₂) (s : AddSubgroup A₂) :
     s.toSubgroup.comap (AddMonoidHom.toMultiplicative f) = AddSubgroup.toSubgroup (s.comap f) := rfl
 
 @[to_additive (attr := simp)]
@@ -1366,7 +1370,7 @@ theorem top_prod_top : (⊤ : Subgroup G).prod (⊤ : Subgroup N) = ⊤ :=
 
 @[to_additive]
 theorem bot_prod_bot : (⊥ : Subgroup G).prod (⊥ : Subgroup N) = ⊥ :=
-  SetLike.coe_injective <| by simp [coe_prod, Prod.one_eq_mk]
+  SetLike.coe_injective <| by simp [coe_prod]
 
 @[to_additive le_prod_iff]
 theorem le_prod_iff {H : Subgroup G} {K : Subgroup N} {J : Subgroup (G × N)} :
@@ -1709,7 +1713,7 @@ def _root_.NormalizerCondition :=
 variable {G}
 
 /-- Alternative phrasing of the normalizer condition: Only the full group is self-normalizing.
-This may be easier to work with, as it avoids inequalities and negations.  -/
+This may be easier to work with, as it avoids inequalities and negations. -/
 theorem _root_.normalizerCondition_iff_only_full_group_self_normalizing :
     NormalizerCondition G ↔ ∀ H : Subgroup G, H.normalizer = H → H = ⊤ := by
   apply forall_congr'; intro H
@@ -2912,3 +2916,5 @@ def noncenter (G : Type*) [Monoid G] : Set (ConjClasses G) :=
   g ∈ noncenter G ↔ g.carrier.Nontrivial := Iff.rfl
 
 end ConjClasses
+
+set_option linter.style.longFile 3000
