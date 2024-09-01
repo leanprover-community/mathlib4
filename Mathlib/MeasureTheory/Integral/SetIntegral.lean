@@ -1161,10 +1161,8 @@ as `ContinuousLinearMap.compLp`. We take advantage of this construction here.
 -/
 
 open scoped ComplexConjugate
-open RCLike
 
-variable {μ : Measure X} {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {μ : Measure X} {𝕜 : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] {p : ENNReal}
 
 namespace ContinuousLinearMap
@@ -1186,11 +1184,10 @@ theorem continuous_integral_comp_L1 (L : E →L[𝕜] F) :
     Continuous fun φ : X →₁[μ] E => ∫ x : X, L (φ x) ∂μ := by
   rw [← funext L.integral_compLp]; exact continuous_integral.comp (L.compLpL 1 μ).continuous
 
-variable [CompleteSpace F] [NormedSpace ℝ E] [IsRCLikeNormedField 𝕜]
+variable [CompleteSpace F] [NormedSpace ℝ E]
 
-theorem integral_comp_comm  [CompleteSpace E] (L : E →L[𝕜] F) {φ : X → E} (φ_int : Integrable φ μ) :
+theorem integral_comp_comm [CompleteSpace E] (L : E →L[𝕜] F) {φ : X → E} (φ_int : Integrable φ μ) :
     ∫ x, L (φ x) ∂μ = L (∫ x, φ x ∂μ) := by
-  letI := IsRCLikeNormedField.rclike 𝕜
   apply φ_int.induction (P := fun φ => ∫ x, L (φ x) ∂μ = L (∫ x, φ x ∂μ))
   · intro e s s_meas _
     rw [integral_indicator_const e s_meas, ← @smul_one_smul E ℝ 𝕜 _ _ _ _ _ (μ s).toReal e,
@@ -1207,9 +1204,7 @@ theorem integral_comp_comm  [CompleteSpace E] (L : E →L[𝕜] F) {φ : X → E
     · exact integral_congr_ae (hfg.fun_comp L).symm
     · rw [integral_congr_ae hfg.symm]
 
-theorem integral_apply {𝕜 : Type*} [RCLike 𝕜]
-    {E H : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [NormedAddCommGroup H] [NormedSpace 𝕜 H] {φ : X → H →L[𝕜] E}
+theorem integral_apply {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H] {φ : X → H →L[𝕜] E}
     (φ_int : Integrable φ μ) (v : H) : (∫ x, φ x ∂μ) v = ∫ x, φ x v ∂μ := by
   by_cases hE : CompleteSpace E
   · exact ((ContinuousLinearMap.apply 𝕜 E v).integral_comp_comm φ_int).symm
