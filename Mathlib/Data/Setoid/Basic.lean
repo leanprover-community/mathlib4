@@ -192,6 +192,10 @@ def map_sInf {S : Set (Setoid α)} {s : Setoid α} (h : s ∈ S) :
     Quotient (sInf S) → Quotient s :=
   Setoid.map_of_le fun _ _ a ↦ a s h
 
+section EqvGen
+
+open Relation
+
 /-- The inductively defined equivalence closure of a binary relation r is the infimum
     of the set of all equivalence relations containing r. -/
 theorem eqvGen_eq (r : α → α → Prop) :
@@ -259,6 +263,8 @@ def gi : @GaloisInsertion (α → α → Prop) (Setoid α) _ _ EqvGen.Setoid Rel
   gc _ s := ⟨fun H _ _ h => H <| EqvGen.rel _ _ h, fun H => eqvGen_of_setoid s ▸ eqvGen_mono H⟩
   le_l_u x := (eqvGen_of_setoid x).symm ▸ le_refl x
   choice_eq _ _ := rfl
+
+end EqvGen
 
 open Function
 
@@ -335,7 +341,7 @@ variable {r f}
     closure of the relation on `f`'s image defined by '`x ≈ y` iff the elements of `f⁻¹(x)` are
     related to the elements of `f⁻¹(y)` by `r`.' -/
 def map (r : Setoid α) (f : α → β) : Setoid β :=
-  EqvGen.Setoid fun x y => ∃ a b, f a = x ∧ f b = y ∧ r.Rel a b
+  Relation.EqvGen.Setoid fun x y => ∃ a b, f a = x ∧ f b = y ∧ r.Rel a b
 
 /-- Given a surjective function f whose kernel is contained in an equivalence relation r, the
     equivalence relation on f's codomain defined by x ≈ y ↔ the elements of f⁻¹(x) are related to
@@ -428,7 +434,8 @@ theorem Quotient.subsingleton_iff {s : Setoid α} : Subsingleton (Quotient s) �
   simp_rw [Prop.top_eq_true, true_implies, Quotient.eq']
   rfl
 
-theorem Quot.subsingleton_iff (r : α → α → Prop) : Subsingleton (Quot r) ↔ EqvGen r = ⊤ := by
+theorem Quot.subsingleton_iff (r : α → α → Prop) :
+    Subsingleton (Quot r) ↔ Relation.EqvGen r = ⊤ := by
   simp only [_root_.subsingleton_iff, _root_.eq_top_iff, Pi.le_def, Pi.top_apply, forall_const]
   refine (surjective_quot_mk _).forall.trans (forall_congr' fun a => ?_)
   refine (surjective_quot_mk _).forall.trans (forall_congr' fun b => ?_)
