@@ -497,6 +497,13 @@ instance const.instIsMarkovKernel {μβ : Measure β} [hμβ : IsProbabilityMeas
     IsMarkovKernel (const α μβ) :=
   ⟨fun _ => hμβ⟩
 
+instance const.instIsZeroOrMarkovKernel {μβ : Measure β} [hμβ : IsZeroOrProbabilityMeasure μβ] :
+    IsZeroOrMarkovKernel (const α μβ) := by
+  rcases eq_zero_or_isProbabilityMeasure μβ with rfl | h
+  · simp only [const_zero]
+    infer_instance
+  · infer_instance
+
 lemma isSFiniteKernel_const [Nonempty α] {μβ : Measure β} :
     IsSFiniteKernel (const α μβ) ↔ SFinite μβ :=
   ⟨fun h ↦ h.sFinite (Classical.arbitrary α), fun _ ↦ inferInstance⟩
