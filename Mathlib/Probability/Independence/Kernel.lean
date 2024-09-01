@@ -125,12 +125,21 @@ lemma iIndepSets.meas_biInter (h : iIndepSets π κ μ) (s : Finset ι)
     {f : ι → Set Ω} (hf : ∀ i, i ∈ s → f i ∈ π i) :
     ∀ᵐ a ∂μ, κ a (⋂ i ∈ s, f i) = ∏ i ∈ s, κ a (f i) := h s hf
 
+lemma iIndepSets.ae_isProbabilityMeasure (h : iIndepSets π κ μ) :
+    ∀ᵐ a ∂μ, IsProbabilityMeasure (κ a) := by
+  filter_upwards [h.meas_biInter ∅ (f := fun _ ↦ Set.univ) (by simp)] with a ha
+  exact ⟨by simpa using ha⟩
+
 lemma iIndepSets.meas_iInter [Fintype ι] (h : iIndepSets π κ μ) (hs : ∀ i, s i ∈ π i) :
     ∀ᵐ a ∂μ, κ a (⋂ i, s i) = ∏ i, κ a (s i) := by
   filter_upwards [h.meas_biInter Finset.univ (fun _i _ ↦ hs _)] with a ha using by simp [← ha]
 
 lemma iIndep.iIndepSets' (hμ : iIndep m κ μ) :
     iIndepSets (fun x ↦ {s | MeasurableSet[m x] s}) κ μ := hμ
+
+lemma iIndep.ae_isProbabilityMeasure (h : iIndep m κ μ) :
+    ∀ᵐ a ∂μ, IsProbabilityMeasure (κ a) :=
+  h.iIndepSets'.ae_isProbabilityMeasure
 
 lemma iIndep.meas_biInter (hμ : iIndep m κ μ) (hs : ∀ i, i ∈ S → MeasurableSet[m i] (s i)) :
     ∀ᵐ a ∂μ, κ a (⋂ i ∈ S, s i) = ∏ i ∈ S, κ a (s i) := hμ _ hs
@@ -142,6 +151,10 @@ lemma iIndep.meas_iInter [Fintype ι] (h : iIndep m κ μ) (hs : ∀ i, Measurab
 
 protected lemma iIndepFun.iIndep (hf : iIndepFun mβ f κ μ) :
     iIndep (fun x ↦ (mβ x).comap (f x)) κ μ := hf
+
+lemma iIndepFun.ae_isProbabilityMeasure (h : iIndepFun mβ f κ μ) :
+    ∀ᵐ a ∂μ, IsProbabilityMeasure (κ a) :=
+  h.iIndep.ae_isProbabilityMeasure
 
 lemma iIndepFun.meas_biInter (hf : iIndepFun mβ f κ μ)
     (hs : ∀ i, i ∈ S → MeasurableSet[(mβ i).comap (f i)] (s i)) :
@@ -474,11 +487,9 @@ theorem IndepSets.indep' {_mΩ : MeasurableSpace Ω}
 
 variable {_mΩ : MeasurableSpace Ω} {κ : Kernel α Ω} {μ : Measure α}
 
-theorem indepSets_piiUnionInter_of_disjoint [IsZeroOrMarkovKernel κ] {s : ι → Set (Set Ω)}
+theorem indepSets_piiUnionInter_of_disjoint {s : ι → Set (Set Ω)}
     {S T : Set ι} (h_indep : iIndepSets s κ μ) (hST : Disjoint S T) :
     IndepSets (piiUnionInter s S) (piiUnionInter s T) κ μ := by
-  rcases eq_zero_or_isMarkovKernel κ with rfl | h
-  · simp
   rintro t1 t2 ⟨p1, hp1, f1, ht1_m, ht1_eq⟩ ⟨p2, hp2, f2, ht2_m, ht2_eq⟩
   classical
   let g i := ite (i ∈ p1) (f1 i) Set.univ ∩ ite (i ∈ p2) (f2 i) Set.univ
@@ -503,7 +514,8 @@ theorem indepSets_piiUnionInter_of_disjoint [IsZeroOrMarkovKernel κ] {s : ι �
           ⟨fun i hi => (h i (Or.inl hi)).1 hi, fun i hi => (h i (Or.inr hi)).2 hi⟩⟩
     filter_upwards [h_indep _ hgm] with a ha
     rw [ht1_eq, ht2_eq, h_p1_inter_p2, ← ha]
-  filter_upwards [h_P_inter, h_indep p1 ht1_m, h_indep p2 ht2_m] with a h_P_inter ha1 ha2
+  filter_upwards [h_P_inter, h_indep p1 ht1_m, h_indep p2 ht2_m, h_indep.ae_isProbabilityMeasure]
+    with a h_P_inter ha1 ha2 h'
   have h_μg : ∀ n, κ a (g n) = (ite (n ∈ p1) (κ a (f1 n)) 1) * (ite (n ∈ p2) (κ a (f2 n)) 1) := by
     intro n
     dsimp only [g]
@@ -515,7 +527,7 @@ theorem indepSets_piiUnionInter_of_disjoint [IsZeroOrMarkovKernel κ] {s : ι �
     Finset.prod_ite_mem (p1 ∪ p2) p2 (fun x => κ a (f2 x)), Finset.union_inter_cancel_right, ht1_eq,
       ← ha1, ht2_eq, ← ha2]
 
-theorem iIndepSet.indep_generateFrom_of_disjoint [IsZeroOrMarkovKernel κ] {s : ι → Set Ω}
+theorem iIndepSet.indep_generateFrom_of_disjoint {s : ι → Set Ω}
     (hsm : ∀ n, MeasurableSet (s n)) (hs : iIndepSet s κ μ) (S T : Set ι) (hST : Disjoint S T) :
     Indep (generateFrom { t | ∃ n ∈ S, s n = t }) (generateFrom { t | ∃ k ∈ T, s k = t }) κ μ := by
   rw [← generateFrom_piiUnionInter_singleton_left, ← generateFrom_piiUnionInter_singleton_left]
@@ -528,6 +540,8 @@ theorem iIndepSet.indep_generateFrom_of_disjoint [IsZeroOrMarkovKernel κ] {s : 
   · exact isPiSystem_piiUnionInter _ (fun k => IsPiSystem.singleton _) _
   · exact isPiSystem_piiUnionInter _ (fun k => IsPiSystem.singleton _) _
   · classical exact indepSets_piiUnionInter_of_disjoint (iIndep.iIndepSets (fun n => rfl) hs) hST
+
+#exit
 
 theorem indep_iSup_of_disjoint [IsZeroOrMarkovKernel κ] {m : ι → MeasurableSpace Ω}
     (h_le : ∀ i, m i ≤ _mΩ) (h_indep : iIndep m κ μ) {S T : Set ι} (hST : Disjoint S T) :
