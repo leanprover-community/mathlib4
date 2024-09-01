@@ -211,7 +211,7 @@ section Fintype
 variable [Fintype α] [Fintype β] [Fintype γ]
 
 lemma cliqueFinset_eq_image [NoAccidental t] : (graph t).cliqueFinset 3 = t.image toTriangle :=
-  coe_injective $ by push_cast; exact cliqueSet_eq_image _
+  coe_injective <| by push_cast; exact cliqueSet_eq_image _
 
 lemma cliqueFinset_eq_map [NoAccidental t] : (graph t).cliqueFinset 3 = t.map toTriangle := by
   simp [cliqueFinset_eq_image, map_eq_image]
@@ -224,7 +224,7 @@ lemma farFromTriangleFree [ExplicitDisjoint t] {ε : 𝕜}
     (graph t).FarFromTriangleFree ε :=
   farFromTriangleFree_of_disjoint_triangles (t.map toTriangle)
     (map_subset_iff_subset_preimage.2 fun x hx ↦ by simpa using toTriangle_is3Clique hx)
-    (map_toTriangle_disjoint t) $ by simpa [add_assoc] using ht
+    (map_toTriangle_disjoint t) <| by simpa [add_assoc] using ht
 
 end Fintype
 end DecidableEq

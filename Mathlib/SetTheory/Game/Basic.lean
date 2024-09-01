@@ -134,7 +134,7 @@ end Game
 
 namespace PGame
 
--- Porting note: In a lot of places, I had to add explicitely that the quotient element was a Game.
+-- Porting note: In a lot of places, I had to add explicitly that the quotient element was a Game.
 -- In Lean4, quotients don't have the setoid as an instance argument,
 -- but as an explicit argument, see https://leanprover.zulipchat.com/#narrow/stream/113489-new-members/topic/confusion.20between.20equivalence.20and.20instance.20setoid/near/360822354
 theorem le_iff_game_le {x y : PGame} : x ≤ y ↔ (⟦x⟧ : Game) ≤ ⟦y⟧ :=
@@ -198,7 +198,7 @@ lemma bddAbove_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Game.{u}) 
     BddAbove (Set.range f) := by
   obtain ⟨x, hx⟩ := PGame.bddAbove_range_of_small (Quotient.out ∘ f)
   refine ⟨⟦x⟧, Set.forall_mem_range.2 fun i ↦ ?_⟩
-  simpa [PGame.le_iff_game_le] using hx $ Set.mem_range_self i
+  simpa [PGame.le_iff_game_le] using hx <| Set.mem_range_self i
 
 /-- A small set of games is bounded above. -/
 lemma bddAbove_of_small (s : Set Game.{u}) [Small.{u} s] : BddAbove s := by
@@ -209,7 +209,7 @@ lemma bddBelow_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Game.{u}) 
     BddBelow (Set.range f) := by
   obtain ⟨x, hx⟩ := PGame.bddBelow_range_of_small (Quotient.out ∘ f)
   refine ⟨⟦x⟧, Set.forall_mem_range.2 fun i ↦ ?_⟩
-  simpa [PGame.le_iff_game_le] using hx $ Set.mem_range_self i
+  simpa [PGame.le_iff_game_le] using hx <| Set.mem_range_self i
 
 /-- A small set of games is bounded below. -/
 lemma bddBelow_of_small (s : Set Game.{u}) [Small.{u} s] : BddBelow s := by

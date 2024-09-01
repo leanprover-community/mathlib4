@@ -218,7 +218,7 @@ theorem hasFDerivAt_fourierIntegral
     (fourierIntegral_convergent_iff continuous_fourierChar
       (by apply L.continuous₂ : Continuous (fun p : V × W ↦ L.toLinearMap₂ p.1 p.2)) w').2 hf
   have h1 : ∀ᶠ w' in 𝓝 w, AEStronglyMeasurable (F w') μ :=
-    eventually_of_forall (fun w' ↦ (h0 w').aestronglyMeasurable)
+    Eventually.of_forall (fun w' ↦ (h0 w').aestronglyMeasurable)
   have h3 : AEStronglyMeasurable (F' w) μ := by
     refine .smul ?_ hf.1.fourierSMulRight
     refine (continuous_fourierChar.comp ?_).aestronglyMeasurable

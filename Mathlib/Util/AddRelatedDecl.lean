@@ -74,3 +74,5 @@ def addRelatedDecl (src : Name) (suffix : String) (ref : Syntax)
     let attrs ← elabAttrs attrs
     Term.applyAttributes src attrs
     Term.applyAttributes tgt attrs
+
+end Mathlib.Tactic

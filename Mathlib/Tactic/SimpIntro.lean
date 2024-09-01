@@ -74,3 +74,5 @@ elab "simp_intro" cfg:(config)? disch:(discharger)?
     g.withContext do
       let g? ← simpIntroCore g ctx (simprocs := simprocs) discharge? more.isSome ids.toList
       replaceMainGoal <| if let some g := g? then [g] else []
+
+end Mathlib.Tactic
