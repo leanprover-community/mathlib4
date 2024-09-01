@@ -39,6 +39,7 @@ namespace Ordinal
 
 /-! ### Recursion principles -/
 
+
 /-- Inducts on the base `b` expansion of an ordinal. -/
 @[elab_as_elim]
 noncomputable def CNFRec (b : Ordinal) {C : Ordinal → Sort*} (H0 : C 0)
@@ -80,6 +81,7 @@ theorem CNFRec_omega_pos {o : Ordinal} {C : Ordinal → Sort*} (ho : o ≠ 0) (H
   rw [CNFRec_omega, dif_neg ho]
 
 /-! ### Cantor normal form as a list -/
+
 
 /-- The Cantor normal form of an ordinal `o` is the list of coefficients and exponents in the
 base-`b` expansion of `o`.
