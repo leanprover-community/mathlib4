@@ -36,21 +36,21 @@ open CategoryTheory ModuleCat.monoidalCategory
 
 universe u
 
-section Ring
-
-variable (R : Type u) [Ring R]
-
 /-- Define `FGModuleCat` as the subtype of `ModuleCat.{u} R` of finitely generated modules. -/
-def FGModuleCat :=
+def FGModuleCat (R : Type u) [Ring R] :=
   FullSubcategory fun V : ModuleCat.{u} R => Module.Finite R V
 -- Porting note: still no derive handler via `dsimp`.
 -- see https://github.com/leanprover-community/mathlib4/issues/5020
 -- deriving LargeCategory, ConcreteCategory,Preadditive
 
-variable {R}
+namespace FGModuleCat
+
+section Ring
+
+variable {R : Type u} [Ring R]
 
 /-- A synonym for `M.obj.carrier`, which we can mark with `@[coe]`. -/
-def FGModuleCat.carrier (M : FGModuleCat R) : Type u := M.obj.carrier
+def carrier (M : FGModuleCat R) : Type u := M.obj.carrier
 
 instance : CoeSort (FGModuleCat R) (Type u) :=
   ⟨FGModuleCat.carrier⟩
@@ -90,9 +90,15 @@ instance : Preadditive (FGModuleCat R) := by
   dsimp [FGModuleCat]
   infer_instance
 
-end Ring
+/-- The multiplicative equivalence `End V ≃* (V →ₗ[k] V)` when `V : FGModuleCat k`. -/
+def endMulEquiv (V : FGModuleCat R) : End V ≃* (V →ₗ[R] V) where
+  toFun f := f.hom
+  invFun f := { hom := f }
+  left_inv _ := rfl
+  right_inv _ := rfl
+  map_mul' _ _ := rfl
 
-namespace FGModuleCat
+end Ring
 
 section Ring
 

@@ -46,6 +46,8 @@ namespace CategoryTheory
 
 namespace PreGaloisCategory
 
+attribute [local instance] ConcreteCategory.instFunLike
+
 open Limits Functor
 
 variable {C : Type u₁} [Category.{u₂} C] [GaloisCategory C]
@@ -302,7 +304,8 @@ noncomputable def autIsoFibers :
       ext (φ : Aut A.obj)
       dsimp
       erw [evaluationEquivOfIsGalois_apply, evaluationEquivOfIsGalois_apply]
-      simp [-Hom.comp, ← f.comp])
+      rw [← f.comp, comp_autMap_apply]
+      rfl)
 
 lemma autIsoFibers_inv_app (A : PointedGaloisObject F) (b : F.obj A) :
     (autIsoFibers F).inv.app A b = (evaluationEquivOfIsGalois F A A.pt).symm b :=
@@ -399,8 +402,8 @@ instance FiberFunctor.isPretransitive_of_isConnected (X : C) [IsConnected X] :
   obtain ⟨A, f, hgal⟩ := exists_hom_from_galois_of_connected F X
   have hs : Function.Surjective (F.map f) := surjective_of_nonempty_fiber_of_isConnected F f
   refine ⟨fun x y ↦ ?_⟩
-  obtain ⟨a, ha⟩ := hs x
-  obtain ⟨b, hb⟩ := hs y
+  obtain ⟨a : F.obj A, ha⟩ := hs x
+  obtain ⟨b : F.obj A, hb⟩ := hs y
   have : MulAction.IsPretransitive (Aut F) (F.obj A) := isPretransitive_of_isGalois F A
   obtain ⟨σ, (hσ : σ.hom.app A a = b)⟩ := MulAction.exists_smul_eq (Aut F) a b
   use σ

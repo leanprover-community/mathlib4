@@ -82,7 +82,7 @@ instance (V W : FDRep k G) : FiniteDimensional k (V ⟶ W) :=
 
 /-- The monoid homomorphism corresponding to the action of `G` onto `V : FDRep k G`. -/
 def ρ (V : FDRep k G) : G →* V →ₗ[k] V :=
-  Action.ρ V
+  V.V.endMulEquiv.toMonoidHom.comp (Action.ρ V)
 
 /-- The underlying `LinearEquiv` of an isomorphism of representations. -/
 def isoToLinearEquiv {V W : FDRep k G} (i : V ≅ W) : V ≃ₗ[k] W :=
@@ -99,7 +99,7 @@ theorem Iso.conj_ρ {V W : FDRep k G} (i : V ≅ W) (g : G) :
 @[simps ρ]
 def of {V : Type u} [AddCommGroup V] [Module k V] [FiniteDimensional k V]
     (ρ : Representation k G V) : FDRep k G :=
-  ⟨FGModuleCat.of k V, ρ⟩
+  ⟨FGModuleCat.of k V, (FGModuleCat.of k V).endMulEquiv.symm.toMonoidHom.comp ρ⟩
 
 instance : HasForget₂ (FDRep k G) (Rep k G) where
   forget₂ := (forget₂ (FGModuleCat k) (ModuleCat k)).mapAction (MonCat.of G)
@@ -132,12 +132,14 @@ theorem finrank_hom_simple_simple [IsAlgClosed k] (V W : FDRep k G) [Simple V] [
 def forget₂HomLinearEquiv (X Y : FDRep k G) :
     ((forget₂ (FDRep k G) (Rep k G)).obj X ⟶
       (forget₂ (FDRep k G) (Rep k G)).obj Y) ≃ₗ[k] X ⟶ Y where
-  toFun f := ⟨f.hom, f.comm⟩
+  toFun f := ⟨{ hom := f.hom }, fun g ↦ FullSubcategory.hom_ext (f.comm g) ⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-  invFun f := ⟨(forget₂ (FGModuleCat k) (ModuleCat k)).map f.hom, f.comm⟩
-  left_inv _ := by ext; rfl
-  right_inv _ := by ext; rfl
+  invFun f :=
+    { hom := (forget₂ (FGModuleCat k) (ModuleCat k)).map f.hom
+      comm := fun g ↦ (forget₂ _ (ModuleCat k)).congr_map (f.comm g) }
+  left_inv _ := rfl
+  right_inv _ := rfl
 
 end FDRep
 
