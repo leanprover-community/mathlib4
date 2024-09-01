@@ -859,7 +859,7 @@ def takeUntil {v w : V} : ∀ (p : G.Walk v w) (u : V), u ∈ p.support → G.Wa
   | nil, u, h => by rw [mem_support_nil_iff.mp h]
   | cons r p, u, h =>
     if hx : v = u then
-      by subst u; exact Walk.nil
+      nil.copy hx.symm rfl
     else
       cons r (takeUntil p u <| by
         cases h
@@ -872,9 +872,8 @@ that vertex. -/
 def dropUntil {v w : V} : ∀ (p : G.Walk v w) (u : V), u ∈ p.support → G.Walk u w
   | nil, u, h => by rw [mem_support_nil_iff.mp h]
   | cons r p, u, h =>
-    if hx : v = u then by
-      subst u
-      exact cons r p
+    if hx : v = u then
+      (cons r p).copy hx rfl
     else dropUntil p u <| by
       cases h
       · exact (hx rfl).elim
