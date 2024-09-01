@@ -268,7 +268,7 @@ theorem ofEquiv_curry_def {X Y Z : C} (f : X ⊗ Y ⟶ Z) :
         ((Iso.compInverseIso (H := adj.toEquivalence)
           (MonoidalFunctor.commTensorLeft F X)).hom.app Y ≫ f))) := by
   change ((adj.comp ((ihom.adjunction (F.obj X)).comp
-          adj.toEquivalence.symm.toAdjunction)).ofNatIsoLeft _).homEquiv _ _ _ = _
+      adj.toEquivalence.symm.toAdjunction)).ofNatIsoLeft _).homEquiv _ _ _ = _
   dsimp only [Adjunction.ofNatIsoLeft]
   rw [Adjunction.mkOfHomEquiv_homEquiv]
   dsimp
@@ -288,9 +288,8 @@ theorem ofEquiv_uncurry_def {X Y Z : C} :
             (adj.toEquivalence.symm.toAdjunction.homEquiv _ _).symm
               (MonoidalClosed.uncurry ((adj.homEquiv _ _).symm f)) := by
   intro f
-  letI := ofEquiv F adj
   change (((adj.comp ((ihom.adjunction (F.obj X)).comp
-          adj.toEquivalence.symm.toAdjunction)).ofNatIsoLeft _).homEquiv _ _).symm _ = _
+      adj.toEquivalence.symm.toAdjunction)).ofNatIsoLeft _).homEquiv _ _).symm _ = _
   dsimp only [Adjunction.ofNatIsoLeft]
   rw [Adjunction.mkOfHomEquiv_homEquiv]
   dsimp
