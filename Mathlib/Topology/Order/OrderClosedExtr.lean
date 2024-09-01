@@ -6,7 +6,8 @@ Authors: Bjørn Kjos-Hanssen
 import Mathlib.Topology.Separation
 import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Topology.Defs.Filter
-import Mathlib.Analysis.Calculus.MeanValue
+import Mathlib.Topology.Order.OrderClosed
+import Mathlib.Topology.Order.LocalExtr
 
 /-!
 # Local maxima from monotonicity and antitonicityOrder-closed topologies
