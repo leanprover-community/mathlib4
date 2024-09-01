@@ -1442,6 +1442,11 @@ noncomputable instance Set.OrdConnected.predOrder [PredOrder α] (s : Set α) [s
     · exact h.le_pred
     · exact h.le
 
+noncomputable instance Set.OrdConnected.succOrder [SuccOrder α] (s : Set α) [s.OrdConnected] :
+    SuccOrder s :=
+  letI : PredOrder sᵒᵈ := inferInstanceAs (PredOrder (OrderDual.ofDual ⁻¹' s))
+  inferInstanceAs (SuccOrder sᵒᵈᵒᵈ)
+
 instance Set.OrdConnected.isPredArchimedean [PredOrder α] [IsPredArchimedean α]
     (s : Set α) [s.OrdConnected] : IsPredArchimedean s where
   exists_pred_iterate_of_le := @fun ⟨b, hb⟩ ⟨c, hc⟩ hbc ↦ by classical
@@ -1466,5 +1471,10 @@ instance Set.OrdConnected.isPredArchimedean [PredOrder α] [IsPredArchimedean α
           apply (this.eq_of_le _).symm
           exact hbc
         · exact this
+
+instance Set.OrdConnected.isSuccArchimedean [SuccOrder α] [IsSuccArchimedean α]
+    (s : Set α) [s.OrdConnected] : IsSuccArchimedean s :=
+  letI : IsPredArchimedean sᵒᵈ := inferInstanceAs (IsPredArchimedean (OrderDual.ofDual ⁻¹' s))
+  inferInstanceAs (IsSuccArchimedean sᵒᵈᵒᵈ)
 
 end OrdConnected
