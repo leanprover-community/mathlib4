@@ -273,13 +273,13 @@ theorem M.bisim₀ {α : TypeVec n} (R : P.M α → P.M α → Prop) (h₀ : Equ
   rw [h₀.eqvGen_iff] at h₁
   exact h₁
 
-open Relation in
+open Relation Relation.EqvGen in
 theorem M.bisim' {α : TypeVec n} (R : P.M α → P.M α → Prop)
     (h : ∀ x y, R x y → (id ::: Quot.mk R) <$$> M.dest _ x = (id ::: Quot.mk R) <$$> M.dest _ y)
     (x y) (r : R x y) : x = y := by
   have := M.bisim₀ P (EqvGen R) ?_ ?_
   · solve_by_elim [EqvGen.rel]
-  · apply EqvGen.is_equivalence
+  · apply is_equivalence
   · clear r x y
     introv Hr
     have : ∀ x y, R x y → EqvGen R x y := @EqvGen.rel _ R
