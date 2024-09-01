@@ -40,7 +40,8 @@ jobs:
           >&2 printf 'echo "name=%s with a master-addition"\n' "${tlabels}"
           echo "name=${tlabels} with a master-addition"
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: /repos/{owner}/{repo}/pulls/${{ github.event.issue.number }}
 
   style_lint:
     if: github.repository == 'leanprover-community/mathlib4'
