@@ -184,6 +184,12 @@ instance (priority := 200) atBot.isCountablyGenerated [Preorder α] [Countable �
     (atBot : Filter <| α).IsCountablyGenerated :=
   isCountablyGenerated_seq _
 
+instance _root_.OrderDual.instIsCountablyGeneratedAtTop [Preorder α]
+    [IsCountablyGenerated (atBot : Filter α)] : IsCountablyGenerated (atTop : Filter αᵒᵈ) := ‹_›
+
+instance _root_.OrderDual.instIsCountablyGeneratedAtBot [Preorder α]
+    [IsCountablyGenerated (atTop : Filter α)] : IsCountablyGenerated (atBot : Filter αᵒᵈ) := ‹_›
+
 theorem _root_.IsTop.atTop_eq [Preorder α] {a : α} (ha : IsTop a) : atTop = 𝓟 (Ici a) :=
   (iInf_le _ _).antisymm <| le_iInf fun b ↦ principal_mono.2 <| Ici_subset_Ici.2 <| ha b
 
@@ -1691,7 +1697,7 @@ theorem exists_seq_monotone_tendsto_atTop_atTop (α : Type*) [Preorder α] [None
 theorem exists_seq_antitone_tendsto_atTop_atBot (α : Type*) [Preorder α] [Nonempty α]
     [IsDirected α (· ≥ ·)] [(atBot : Filter α).IsCountablyGenerated] :
     ∃ xs : ℕ → α, Antitone xs ∧ Tendsto xs atTop atBot :=
-  @exists_seq_monotone_tendsto_atTop_atTop αᵒᵈ _ _ _ ‹_›
+  exists_seq_monotone_tendsto_atTop_atTop αᵒᵈ
 
 /-- An abstract version of continuity of sequentially continuous functions on metric spaces:
 if a filter `k` is countably generated then `Tendsto f k l` iff for every sequence `u`
