@@ -297,8 +297,8 @@ to the multiplicative integers, or is densely ordered. -/
 lemma LinearOrderedCommGroup.discrete_or_denselyOrdered :
     Nonempty (G ≃*o Multiplicative ℤ) ∨ DenselyOrdered G := by
   refine (LinearOrderedAddCommGroup.discrete_or_denselyOrdered (Additive G)).imp ?_ id
-  rintro ⟨f⟩
-  exact ⟨f⟩
+  rintro ⟨f, hf⟩
+  exact ⟨AddEquiv.toMultiplicative' f, hf⟩
 
 /-- Any nontrivial (has other than 0 and 1) linearly ordered mul-archimedean group with zero is
 either isomorphic (and order-isomorphic) to `ℤₘ₀`, or is densely ordered. -/
@@ -308,16 +308,17 @@ lemma LinearOrderedCommGroupWithZero.discrete_or_denselyOrdered (G : Type*)
   classical
   refine (LinearOrderedCommGroup.discrete_or_denselyOrdered Gˣ).imp ?_ ?_
   · intro ⟨f⟩
-    refine ⟨(WithZero.unitsWithZeroEquivGroupWithZero _).symm.trans f.withZeroCongr, ?_⟩
-    intro x y h
-    simp only [WithZero.unitsWithZeroEquivGroupWithZero, MulEquiv.symm_mk, MulEquiv.withZeroCongr,
-      MulEquiv.toMonoidHom_eq_coe, MulEquiv.trans_apply, MulEquiv.coe_mk, Equiv.coe_fn_symm_mk,
-      Equiv.coe_fn_mk]
-    split_ifs
-    · simp_all
-    · exact WithZero.zero_lt_coe (f _)
-    · simp_all
-    · simpa using hf h
+    refine ⟨OrderMonoidIso.trans
+      ⟨(WithZero.unitsWithZeroEquivGroupWithZero G).symm, ?_⟩ ⟨f.withZeroCongr, ?_⟩⟩
+    · intro
+      simp only [WithZero.unitsWithZeroEquivGroupWithZero, MulEquiv.symm_mk,
+        MulEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe, MulEquiv.coe_mk,
+        Equiv.coe_fn_symm_mk ]
+      split_ifs <;>
+      simp_all [← Units.val_le_val]
+    · intro a b
+      induction a <;> induction b <;>
+      simp [MulEquiv.withZeroCongr]
   · intro H
     refine ⟨fun x y h ↦ ?_⟩
     rcases (zero_le' (a := x)).eq_or_lt with rfl|hx
