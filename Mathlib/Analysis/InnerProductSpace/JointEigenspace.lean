@@ -11,6 +11,9 @@ import Mathlib.LinearAlgebra.Eigenspace.Basic
 
 /-! # Joint eigenspaces of a commuting pair of symmetric operators
 
+NEED TO UPDATE ALL OF THIS FOR TUPLES!!!
+ALSO RENAMING RESULTS BELOW IN ACCORDANCE WITH PAIR CHANGES, AND DOCSTRINGS.
+
 This file collects various decomposition results for joint eigenspaces of a commuting pair
 of symmetric operators on a finite-dimensional inner product space.
 
@@ -197,11 +200,11 @@ theorem orthogonalFamily_iInf_eigenspaces
 
 /-- Given a finite commuting family of symmetric linear operators, the Hilbert space on which they
 act decomposes as an internal direct sum of simultaneous eigenspaces. -/
-theorem DirectSum.IsInternal_of_simultaneous_eigenspaces_of_commuting_symmetric_tuple
+theorem DirectSum.IsInternal_of_simultaneous_eigenspaces_of_commuting_symmetric_tuple [Fintype n]
     [FiniteDimensional 𝕜 E] (hT :(∀ (i : n), ((T i).IsSymmetric))) :
     DirectSum.IsInternal (fun (α : n → 𝕜) ↦ ⨅ (j : n), (eigenspace (T j) (α j))) := by
   rw [OrthogonalFamily.isInternal_iff]
-  · exact orthogonalComplement_iSup_iInf_eigenspaces_eq_bot T hT hC
+  · exact orthogonalComplement_iSup_iInf_eigenspaces_eq_bot T hT
   · exact orthogonalFamily_iInf_eigenspaces T hT
 
 end Tuple
