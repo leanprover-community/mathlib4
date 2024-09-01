@@ -83,8 +83,7 @@ lemma first_derivative_test_max {f : ℝ → ℝ} {a b c : ℝ} (g₀ : a < b) (
     (hd₀ : DifferentiableOn ℝ f (Set.Ioo a b))
     (hd₁ : DifferentiableOn ℝ f (Set.Ioo b c))
     (h₀ :  ∀ x ∈ Set.Ioo a b, 0 ≤ deriv f x)
-    (h₁ :  ∀ x ∈ Set.Ioo b c, deriv f x ≤ 0)
-    : IsLocalMax f b :=
+    (h₁ :  ∀ x ∈ Set.Ioo b c, deriv f x ≤ 0) : IsLocalMax f b :=
   have continuous_Ioc : ContinuousOn f (Ioc a b) :=
     fun _ hx ↦ (Ioo_union_right g₀ ▸ hx).elim
     (fun hx ↦ (hd₀.differentiableAt <| Ioo_mem_nhds hx.1 hx.2).continuousAt.continuousWithinAt)
@@ -105,8 +104,7 @@ lemma first_derivative_test_min {f : ℝ → ℝ} {a b c : ℝ} (h : ContinuousA
     (hd₀ : DifferentiableOn ℝ f (Set.Ioo a b))
     (hd₁ : DifferentiableOn ℝ f (Set.Ioo b c))
     (h₀ : ∀ x ∈ Set.Ioo a b, deriv f x ≤ 0)
-    (h₁ : ∀ x ∈ Set.Ioo b c, 0 ≤ deriv f x)
-    : IsLocalMin f b := by
+    (h₁ : ∀ x ∈ Set.Ioo b c, 0 ≤ deriv f x) : IsLocalMin f b := by
     have Q := @first_derivative_test_max (-f) a b c g₀ g₁
       (by simp_all)
       (DifferentiableOn.neg hd₀)
