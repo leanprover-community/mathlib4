@@ -1436,7 +1436,7 @@ theorem map_val_atTop_of_Ici_subset [SemilatticeSup α] {a : α} {s : Set α} (h
 /-- The image of the filter `atTop` on `Ici a` under the coercion equals `atTop`. -/
 @[simp]
 theorem map_val_Ici_atTop [SemilatticeSup α] (a : α) : map ((↑) : Ici a → α) atTop = atTop :=
-  map_val_atTop_of_Ici_subset (Subset.refl _)
+  map_val_atTop_of_Ici_subset Subset.rfl
 
 /-- The image of the filter `atTop` on `Ioi a` under the coercion equals `atTop`. -/
 @[simp]
@@ -1673,21 +1673,25 @@ theorem exists_seq_tendsto (f : Filter α) [IsCountablyGenerated f] [NeBot f] :
   choose x hx using fun n => Filter.nonempty_of_mem (h.mem n)
   exact ⟨x, h.tendsto hx⟩
 
-theorem exists_seq_monotone_tendsto_atTop_atTop (α : Type*) [SemilatticeSup α] [Nonempty α]
-    [(atTop : Filter α).IsCountablyGenerated] :
+theorem exists_seq_monotone_tendsto_atTop_atTop (α : Type*) [Preorder α] [Nonempty α]
+    [IsDirected α (· ≤ ·)] [(atTop : Filter α).IsCountablyGenerated] :
     ∃ xs : ℕ → α, Monotone xs ∧ Tendsto xs atTop atTop := by
   obtain ⟨ys, h⟩ := exists_seq_tendsto (atTop : Filter α)
-  let xs : ℕ → α := fun n => Finset.sup' (Finset.range (n + 1)) Finset.nonempty_range_succ ys
-  have h_mono : Monotone xs := fun i j hij ↦ by
-    simp only [xs] -- Need to unfold `xs` and do alpha reduction, otherwise `gcongr` fails
-    gcongr
-  refine ⟨xs, h_mono, tendsto_atTop_mono (fun n ↦ Finset.le_sup' _ ?_) h⟩
-  simp
+  choose c hleft hright using exists_ge_ge (α := α)
+  set xs : ℕ → α := fun n => (List.range n).foldl (fun x n ↦ c x (ys n)) (ys 0)
+  have hsucc (n : ℕ) : xs (n + 1) = c (xs n) (ys n) := by simp [xs, List.range_succ]
+  refine ⟨xs, ?_, ?_⟩
+  · refine monotone_nat_of_le_succ fun n ↦ ?_
+    rw [hsucc]
+    apply hleft
+  · refine (tendsto_add_atTop_iff_nat 1).1 <| tendsto_atTop_mono (fun n ↦ ?_) h
+    rw [hsucc]
+    apply hright
 
-theorem exists_seq_antitone_tendsto_atTop_atBot (α : Type*) [SemilatticeInf α] [Nonempty α]
-    [h2 : (atBot : Filter α).IsCountablyGenerated] :
+theorem exists_seq_antitone_tendsto_atTop_atBot (α : Type*) [Preorder α] [Nonempty α]
+    [IsDirected α (· ≥ ·)] [(atBot : Filter α).IsCountablyGenerated] :
     ∃ xs : ℕ → α, Antitone xs ∧ Tendsto xs atTop atBot :=
-  @exists_seq_monotone_tendsto_atTop_atTop αᵒᵈ _ _ h2
+  @exists_seq_monotone_tendsto_atTop_atTop αᵒᵈ _ _ _ ‹_›
 
 /-- An abstract version of continuity of sequentially continuous functions on metric spaces:
 if a filter `k` is countably generated then `Tendsto f k l` iff for every sequence `u`
