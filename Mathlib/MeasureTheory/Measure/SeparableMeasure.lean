@@ -358,7 +358,8 @@ section SecondCountableLp
 /-- If the measure `μ` is separable (in particular if `X` is countably generated and `μ` is
 `s`-finite), if `E` is a second-countable `NormedAddCommGroup`, and if `1 ≤ p < +∞`,
 then the associated `Lᵖ` space is second-countable. -/
-instance [IsSeparable μ] [SecondCountableTopology E] : SecondCountableTopology (Lp E p μ) := by
+instance Lp.SecondCountableTopology [IsSeparable μ] [TopologicalSpace.SeparableSpace E] :
+    SecondCountableTopology (Lp E p μ) := by
   -- It is enough to show that the space is separable, i.e. admits a countable and dense susbet.
   refine @UniformSpace.secondCountable_of_separable _ _ _ ?_
   -- There exists a countable and measure-dense family, and we can keep only the sets with finite
