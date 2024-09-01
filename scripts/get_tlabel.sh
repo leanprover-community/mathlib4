@@ -13,4 +13,4 @@ if [[ "$(wc -l <<<"${tlabels}")" -ne 1 ]]; then
 fi
 streamName="${tlabels} maintainer merges"
 >&2 printf $'Post to topic: \'%s\'"\n' "${streamName}"
-echo "name=${streamName}"
+echo "topic=${streamName}"
