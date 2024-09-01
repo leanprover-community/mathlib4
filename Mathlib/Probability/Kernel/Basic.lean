@@ -140,11 +140,16 @@ class IsMarkovKernel (κ : Kernel α β) : Prop where
 
 /-- A kernel is a Markov kernel if every measure in its image is a probability measure. -/
 class IsZeroOrMarkovKernel (κ : Kernel α β) : Prop where
-  eq_zero_or_isMarkovKernel : κ = 0 ∨ IsMarkovKernel κ
+  eq_zero_or_isMarkovKernel' : κ = 0 ∨ IsMarkovKernel κ
 
 /-- A kernel is finite if every measure in its image is finite, with a uniform bound. -/
 class IsFiniteKernel (κ : Kernel α β) : Prop where
   exists_univ_le : ∃ C : ℝ≥0∞, C < ∞ ∧ ∀ a, κ a Set.univ ≤ C
+
+theorem eq_zero_or_isMarkovKernel
+    (κ : Kernel α β) [h : IsZeroOrMarkovKernel κ] :
+    κ = 0 ∨ IsMarkovKernel κ :=
+  h.eq_zero_or_isMarkovKernel'
 
 /-- A constant `C : ℝ≥0∞` such that `C < ∞` (`ProbabilityTheory.IsFiniteKernel.bound_lt_top κ`) and
 for all `a : α` and `s : Set β`, `κ a s ≤ C` (`ProbabilityTheory.Kernel.measure_le_bound κ a s`).
@@ -195,8 +200,8 @@ instance (priority := 100) IsMarkovKernel.IsZeroOrMarkovKernel [h : IsMarkovKern
     IsZeroOrMarkovKernel κ := ⟨Or.inr h⟩
 
 instance (priority := 100) IsZeroOrMarkovKernel.isZeroOrProbabilityMeasure
-    [h : IsZeroOrMarkovKernel κ] (a : α) : IsZeroOrProbabilityMeasure (κ a) := by
-  rcases h.eq_zero_or_isMarkovKernel with rfl | h'
+    [IsZeroOrMarkovKernel κ] (a : α) : IsZeroOrProbabilityMeasure (κ a) := by
+  rcases eq_zero_or_isMarkovKernel κ with rfl | h'
   · simp only [Kernel.zero_apply]
     infer_instance
   · infer_instance
@@ -206,7 +211,7 @@ instance IsFiniteKernel.isFiniteMeasure [IsFiniteKernel κ] (a : α) : IsFiniteM
 
 instance (priority := 100) IsZeroOrMarkovKernel.isFiniteKernel [h : IsZeroOrMarkovKernel κ] :
     IsFiniteKernel κ := by
-  rcases h.eq_zero_or_isMarkovKernel with rfl | _h'
+  rcases eq_zero_or_isMarkovKernel κ with rfl | _h'
   · infer_instance
   · exact ⟨⟨1, ENNReal.one_lt_top, fun _ => prob_le_one⟩⟩
 

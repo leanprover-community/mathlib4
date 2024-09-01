@@ -651,10 +651,10 @@ lemma IsMarkovKernel.map (κ : Kernel α β) [IsMarkovKernel κ] (hf : Measurabl
     IsMarkovKernel (map κ f) :=
   ⟨fun a => ⟨by rw [map_apply' κ hf a MeasurableSet.univ, Set.preimage_univ, measure_univ]⟩⟩
 
-instance IsZeroOrMarkovKernel.map (κ : Kernel α β) [h : IsZeroOrMarkovKernel κ] (f : β → γ) :
+instance IsZeroOrMarkovKernel.map (κ : Kernel α β) [IsZeroOrMarkovKernel κ] (f : β → γ) :
     IsZeroOrMarkovKernel (map κ f) := by
   by_cases hf : Measurable f
-  · rcases h.eq_zero_or_isMarkovKernel with rfl | h
+  · rcases eq_zero_or_isMarkovKernel κ with rfl | h
     · simp only [map_zero]; infer_instance
     · have := IsMarkovKernel.map κ hf; infer_instance
   · simp only [map_of_not_measurable _ hf]; infer_instance
@@ -1159,10 +1159,10 @@ instance IsMarkovKernel.prod (κ : Kernel α β) [IsMarkovKernel κ] (η : Kerne
     [IsMarkovKernel η] : IsMarkovKernel (κ ×ₖ η) := by rw [Kernel.prod]; infer_instance
 
 nonrec instance IsZeroOrMarkovKernel.prod (κ : Kernel α β) [h : IsZeroOrMarkovKernel κ]
-    (η : Kernel α γ) [h' : IsZeroOrMarkovKernel η] : IsZeroOrMarkovKernel (κ ×ₖ η) := by
-  rcases h.eq_zero_or_isMarkovKernel with rfl | h
+    (η : Kernel α γ) [IsZeroOrMarkovKernel η] : IsZeroOrMarkovKernel (κ ×ₖ η) := by
+  rcases eq_zero_or_isMarkovKernel κ with rfl | h
   · simp only [prod, swapLeft_prodMkLeft, compProd_zero_left]; infer_instance
-  rcases h'.eq_zero_or_isMarkovKernel with rfl | h'
+  rcases eq_zero_or_isMarkovKernel κ' with rfl | h'
   · simp only [prod, swapLeft, prodMkLeft_zero, comap_zero, compProd_zero_right]; infer_instance
   infer_instance
 
