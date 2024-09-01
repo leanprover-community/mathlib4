@@ -61,7 +61,7 @@ def fproj₂ {s t : Finset ι} (hst : s ⊆ t) (x : (i : t) → α i) (i : s) : 
 
 theorem fproj_eq_proj (s : Finset ι) : @fproj ι α s = proj (s : Set ι) := rfl
 
-theorem frpoj₂_eq_proj₂ {s t : Finset ι} (hst : s ⊆ t) :
+theorem fproj₂_eq_proj₂ {s t : Finset ι} (hst : s ⊆ t) :
     fproj₂ (α := α) hst = fproj₂ (Finset.coe_subset.2 hst) := rfl
 
 theorem proj₂_comp_proj {s t : Set ι} (hst : s ⊆ t) :
