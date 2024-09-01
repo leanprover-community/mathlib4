@@ -1414,11 +1414,11 @@ lemma SuccOrder.forall_ne_bot_iff
 
 section OrdConnected
 
-variable {α : Type*} [PartialOrder α] [PredOrder α]
+variable {α : Type*} [PartialOrder α]
 
 open scoped Classical in
-noncomputable instance Set.OrdConnected.predOrder (s : Set α) [s.OrdConnected] :
-  PredOrder s where
+noncomputable instance Set.OrdConnected.predOrder [PredOrder α] (s : Set α) [s.OrdConnected] :
+    PredOrder s where
   pred x := if h : Order.pred x.1 ∈ s then ⟨Order.pred x.1, h⟩ else x
   pred_le := fun ⟨x, hx⟩ ↦ by dsimp; split <;> simp_all [Order.pred_le]
   min_of_le_pred := @fun ⟨x, hx⟩ h ↦ by
@@ -1442,8 +1442,8 @@ noncomputable instance Set.OrdConnected.predOrder (s : Set α) [s.OrdConnected] 
     · exact h.le_pred
     · exact h.le
 
-instance Set.OrdConnected.isPredArchimedean [IsPredArchimedean α] (s : Set α) [s.OrdConnected] :
-    IsPredArchimedean s where
+instance Set.OrdConnected.isPredArchimedean [PredOrder α] [IsPredArchimedean α]
+    (s : Set α) [s.OrdConnected] : IsPredArchimedean s where
   exists_pred_iterate_of_le := @fun ⟨b, hb⟩ ⟨c, hc⟩ hbc ↦ by classical
     simp only [Subtype.mk_le_mk] at hbc
     obtain ⟨n, hn⟩ := hbc.exists_pred_iterate

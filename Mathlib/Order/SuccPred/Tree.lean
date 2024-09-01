@@ -53,21 +53,21 @@ variable [DecidableEq α]
 /--
 The unique atom less than an element in an `OrderBot` with archimedean predecessor.
 -/
-def find_atom (r : α) : α :=
+def findAtom (r : α) : α :=
   Order.pred^[Nat.find (bot_le (a := r)).exists_pred_iterate - 1] r
 
 @[simp]
-lemma find_atom_le (r : α) : find_atom r ≤ r :=
+lemma findAtom_le (r : α) : findAtom r ≤ r :=
   Order.pred_iterate_le _ _
 
 @[simp]
-lemma find_atom_bot : find_atom (⊥ : α) = ⊥ := by
+lemma findAtom_bot : findAtom (⊥ : α) = ⊥ := by
   apply Function.iterate_fixed
   simp
 
 @[simp]
-lemma pred_find_atom (r : α) : Order.pred (find_atom r) = ⊥ := by
-  unfold find_atom
+lemma pred_findAtom (r : α) : Order.pred (findAtom r) = ⊥ := by
+  unfold findAtom
   generalize h : Nat.find (bot_le (a := r)).exists_pred_iterate = n
   cases n
   · have : Order.pred^[0] r = ⊥ := by
@@ -79,23 +79,23 @@ lemma pred_find_atom (r : α) : Order.pred (find_atom r) = ⊥ := by
     rw [← h]
     apply Nat.find_spec (bot_le (a := r)).exists_pred_iterate
 
-lemma find_atom_ne_bot {r : α} (hr : r ≠ ⊥) :
-    find_atom r ≠ ⊥ := by
-  unfold find_atom
+lemma findAtom_ne_bot {r : α} (hr : r ≠ ⊥) :
+    findAtom r ≠ ⊥ := by
+  unfold findAtom
   intro nh
   have := Nat.find_min' (bot_le (a := r)).exists_pred_iterate nh
   replace : Nat.find (bot_le (a := r)).exists_pred_iterate = 0 := by omega
   simp [this, hr] at nh
 
 @[simp]
-lemma find_atom_eq_bot_iff {r : α} :
-    find_atom r = ⊥ ↔ r = ⊥ where
-  mp h := by_contra fun nh ↦ find_atom_ne_bot nh h
+lemma findAtom_eq_bot_iff {r : α} :
+    findAtom r = ⊥ ↔ r = ⊥ where
+  mp h := by_contra fun nh ↦ findAtom_ne_bot nh h
   mpr h := by simp [h]
 
 @[simp]
-lemma find_atom_is_atom (r : α) (hr : r ≠ ⊥) :
-    IsAtom (find_atom r) := by
+lemma findAtom_is_atom (r : α) (hr : r ≠ ⊥) :
+    IsAtom (findAtom r) := by
   constructor
   · simp [hr]
   · intro b hb
@@ -108,7 +108,7 @@ instance instIsAtomic : IsAtomic α where
   eq_bot_or_exists_atom_le b := by classical
     rw [Classical.or_iff_not_imp_left]
     intro hb
-    use find_atom b, find_atom_is_atom b hb, find_atom_le b
+    use findAtom b, findAtom_is_atom b hb, findAtom_le b
 
 end IsPredArchimedean
 
@@ -129,8 +129,7 @@ structure RootedTree where
 
 attribute [coe] RootedTree.α
 
-instance coeSort : CoeSort RootedTree (Type*) := ⟨RootedTree.α⟩
-
+instance coeSort : CoeSort RootedTree Type* := ⟨RootedTree.α⟩
 
 instance (t : RootedTree) : SemilatticeInf t := t.order
 instance (t : RootedTree) : PredOrder t := t.pred
@@ -151,7 +150,6 @@ def SubRootedTree.root {t : RootedTree} (v : SubRootedTree t) : t := v
 The `SubRootedTree` rooted at a given node.
 -/
 def RootedTree.subtree (t : RootedTree) (r : t) : SubRootedTree t := r
-
 
 @[simp]
 lemma RootedTree.root_subtree (t : RootedTree) (r : t) : (t.subtree r).root = r := rfl
@@ -240,7 +238,7 @@ lemma subtrees_disjoint {t₁ t₂ : SubRootedTree t}
 The subtree of `t` containing `r`, or all of `t` if `r` is the root.
 -/
 def RootedTree.subtreeOf (t : RootedTree) [DecidableEq t] (r : t) : SubRootedTree t :=
-  t.subtree (IsPredArchimedean.find_atom r)
+  t.subtree (IsPredArchimedean.findAtom r)
 
 @[simp]
 lemma RootedTree.mem_subtreeOf [DecidableEq t] {r : t} :
@@ -249,4 +247,4 @@ lemma RootedTree.mem_subtreeOf [DecidableEq t] {r : t} :
 
 lemma RootedTree.subtreeOf_mem_subtrees [DecidableEq t] {r : t} (hr : r ≠ ⊥) :
     t.subtreeOf r ∈ t.subtrees := by
-  simp [RootedTree.subtrees, RootedTree.subtreeOf, IsPredArchimedean.find_atom_is_atom r hr]
+  simp [RootedTree.subtrees, RootedTree.subtreeOf, IsPredArchimedean.findAtom_is_atom r hr]
