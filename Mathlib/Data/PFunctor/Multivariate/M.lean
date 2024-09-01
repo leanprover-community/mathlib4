@@ -241,6 +241,7 @@ theorem M.bisim {α : TypeVec n} (R : P.M α → P.M α → Prop)
   · exact (congr_fun (congr_fun e₃ i) c : _)
   · exact IH _ _ (h'' _)
 
+open Relation in
 theorem M.bisim₀ {α : TypeVec n} (R : P.M α → P.M α → Prop) (h₀ : Equivalence R)
     (h : ∀ x y, R x y → (id ::: Quot.mk R) <$$> M.dest _ x = (id ::: Quot.mk R) <$$> M.dest _ y)
     (x y) (r : R x y) : x = y := by
@@ -268,10 +269,11 @@ theorem M.bisim₀ {α : TypeVec n} (R : P.M α → P.M α → Prop) (h₀ : Equ
   intro i
   replace h₁ := congr_fun (congr_fun h₁ Fin2.fz) i
   simp only [TypeVec.comp, appendFun, splitFun] at h₁
-  replace h₁ := Quot.eqvGen_exact _ h₁
+  replace h₁ := Quot.eqvGen_exact h₁
   rw [h₀.eqvGen_iff] at h₁
   exact h₁
 
+open Relation in
 theorem M.bisim' {α : TypeVec n} (R : P.M α → P.M α → Prop)
     (h : ∀ x y, R x y → (id ::: Quot.mk R) <$$> M.dest _ x = (id ::: Quot.mk R) <$$> M.dest _ y)
     (x y) (r : R x y) : x = y := by

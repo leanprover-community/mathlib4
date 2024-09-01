@@ -43,6 +43,7 @@ theorem rel_of_quot_rel (x y : Σ j, F.obj j) :
     Quot.Rel F x y → FilteredColimit.Rel.{v, u} F x y :=
   fun ⟨f, h⟩ => ⟨y.1, f, 𝟙 y.1, by rw [← h, FunctorToTypes.map_id_apply]⟩
 
+open Relation in
 theorem eqvGen_quot_rel_of_rel (x y : Σ j, F.obj j) :
     FilteredColimit.Rel.{v, u} F x y → EqvGen (Quot.Rel F) x y := fun ⟨k, f, g, h⟩ => by
   refine EqvGen.trans _ ⟨k, F.map f x.2⟩ _ ?_ ?_
@@ -91,6 +92,7 @@ protected theorem rel_equiv : _root_.Equivalence (FilteredColimit.Rel.{v, u} F) 
         _ = F.map (gl ≫ n) (F.map g' z.2) := by rw [h']
         _ = F.map (g' ≫ gl ≫ n) z.2 := by simp⟩
 
+open Relation in
 protected theorem rel_eq_eqvGen_quot_rel :
     FilteredColimit.Rel.{v, u} F = EqvGen (Quot.Rel F) := by
   ext ⟨j, x⟩ ⟨j', y⟩

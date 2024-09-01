@@ -73,6 +73,7 @@ theorem Rel.sub_right {R : Type uR} [Ring R] {r : R → R → Prop} ⦃a b c : R
 theorem Rel.smul {r : A → A → Prop} (k : S) ⦃a b : A⦄ (h : Rel r a b) : Rel r (k • a) (k • b) := by
   simp only [Algebra.smul_def, Rel.mul_right h]
 
+open Relation in
 /-- `EqvGen (RingQuot.Rel r)` is a ring congruence. -/
 def ringCon (r : R → R → Prop) : RingCon R where
   r := EqvGen (Rel r)
@@ -110,6 +111,7 @@ def ringCon (r : R → R → Prop) : RingCon R where
     | symm x y _ hxy => exact (hxy hcd.symm).symm
     | trans x y z _ _ h h' => exact (h hcd).trans _ _ _ (h' <| EqvGen.refl _)
 
+open Relation in
 theorem eqvGen_rel_eq (r : R → R → Prop) : EqvGen (Rel r) = RingConGen.Rel r := by
   ext x₁ x₂
   constructor
