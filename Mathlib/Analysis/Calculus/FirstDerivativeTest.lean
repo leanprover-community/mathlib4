@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bjørn Kjos-Hanssen
 -/
 import Mathlib.Analysis.Calculus.MeanValue
+import Mathlib.Order.Interval.Set.Basic
 
 /-!
 # The First-Derivative Test
@@ -31,7 +32,7 @@ using `monotoneOn_of_deriv_nonneg` from [Mathlib.Analysis.Calculus.MeanValue].
 derivative test, calculus
 -/
 
-
+open Set
 
 /-!
 ### Some facts about differentiability and continuity
@@ -64,19 +65,10 @@ theorem continuous_Ioc.{u_1, u_2, u_3} {𝕜 : Type u_1} [NontriviallyNormedFiel
     {f : E → F}
     {a b : E}
     (g₀ : a < b) (h : ContinuousAt f b)
-    (hd₀ : DifferentiableOn 𝕜 f (Set.Ioo a b)) : ContinuousOn f (Set.Ioc a b) := by
-  intro x hx
-  by_cases H : x = b
-  · subst H;simp_all;exact ContinuousAt.continuousWithinAt h
-  · have hab: x ∈ Set.Ioo a b := by
-      contrapose H
-      simp_all only [Set.mem_Ioo, and_imp, Set.mem_Ioc, true_and, not_lt, Decidable.not_not]
-      apply le_antisymm
-      tauto;tauto
-    have hD : DifferentiableAt 𝕜 f x := by
-      apply differentiableOn_differentiableAt_Ioo;repeat tauto
-    apply ContinuousAt.continuousWithinAt
-    exact DifferentiableAt.continuousAt hD
+    (hd₀ : DifferentiableOn 𝕜 f (Set.Ioo a b)) : ContinuousOn f (Set.Ioc a b) :=
+  fun _ hx ↦ (Ioo_union_right g₀ ▸ hx).elim
+  (fun hx ↦ (hd₀.differentiableAt <| Ioo_mem_nhds hx.1 hx.2).continuousAt.continuousWithinAt)
+  (fun hx ↦ mem_singleton_iff.1 hx ▸ h.continuousWithinAt)
 
 /-- If `f` is continuous at `b` and differentiable on `(b,c)` then `f` is
   continuous on the half-open interval `[b,c)`. -/
@@ -87,67 +79,42 @@ theorem continuous_Ico.{u_1, u_2, u_3} {𝕜 : Type u_1} [NontriviallyNormedFiel
     {f : E → F}
     {b c : E} (g₁ : b < c)
     (h : ContinuousAt f b) (hd₁ : DifferentiableOn 𝕜 f (Set.Ioo b c)) :
-    ContinuousOn f (Set.Ico b c) := by
-  intro x hx
-  by_cases H : x = b
-  · subst H;simp_all;exact ContinuousAt.continuousWithinAt h
-  · have hab: x ∈ Set.Ioo b c := by
-      refine Set.mem_Ioo.mpr ?_;
-      constructor
-      · contrapose H; simp_all;
-        apply le_antisymm;tauto;tauto
-      · exact hx.2
-    have hD : DifferentiableAt 𝕜 f x := by
-      apply differentiableOn_differentiableAt_Ioo;repeat tauto
-    apply ContinuousAt.continuousWithinAt
-    · exact DifferentiableAt.continuousAt hD
+    ContinuousOn f (Set.Ico b c) :=
+  fun _ hx ↦ (Ioo_union_left g₁ ▸ hx).elim
+  (fun hx ↦ (hd₁.differentiableAt <| Ioo_mem_nhds hx.1 hx.2).continuousAt.continuousWithinAt)
+  (fun hx ↦ mem_singleton_iff.1 hx ▸ h.continuousWithinAt)
 
 /-- If `f` is differentiable on a set `s` then so is `-f`. -/
 theorem differentiableOn_neg_Ioo
   {f : ℝ → ℝ} {s : Set ℝ} (hd₀ : DifferentiableOn ℝ f s) :
-    DifferentiableOn ℝ (-f) s := by
-  show DifferentiableOn ℝ ((fun x => -x) ∘ (fun x => f x)) s
-  apply DifferentiableOn.comp
-  · apply differentiableOn_neg
-  · tauto
-  · show Set.MapsTo f s Set.univ
-    exact fun ⦃x⦄ _ ↦ trivial
+    DifferentiableOn ℝ (-f) s :=
+    (show -f = ((fun x => -x) ∘ (fun x => f x)) by rfl)
+      ▸ (DifferentiableOn.comp (differentiableOn_neg Set.univ) hd₀)
+        (fun _ _ ↦ trivial)
 
 /-- If `f'` is the derivative of `f` then  `f' x ≤ 0 → 0 ≤ (-f)' x`. -/
 theorem deriv_neg_nonneg {f : ℝ → ℝ} {a b : ℝ}
   (hd₀ : DifferentiableOn ℝ f (Set.Ioo a b))
-    (h₀ : ∀ x ∈ Set.Ioo a b, deriv f x ≤ 0) (x : ℝ) (hx : x ∈ Set.Ioo a b)
-    : 0 ≤ deriv (-f) x := by
-  show 0 ≤ deriv (((fun x => -x) ∘ (fun x => f x))) x
-  rw [deriv.comp]
-  simp
-  apply h₀
-  tauto
-  refine Differentiable.differentiableAt ?hh₂.h
-  · exact differentiable_neg
-  · apply DifferentiableOn.differentiableAt
-    · exact hd₀
-    · refine Ioo_mem_nhds ?hh.hs.ha ?hh.hs.hb
-      · exact hx.1
-      · linarith[hx.2]
+    (h₀ : ∀ x ∈ Set.Ioo a b, deriv f x ≤ 0) (x : ℝ)
+    (hx : x ∈ Set.Ioo a b) : 0 ≤ deriv (-f) x :=
+  (@deriv.comp ℝ _ x ℝ _ _ f (fun x => -x)
+    (Differentiable.differentiableAt differentiable_neg)
+    (DifferentiableOn.differentiableAt hd₀ (Ioo_mem_nhds hx.1 hx.2))) ▸ (by
+    rw [deriv_neg'', neg_mul, one_mul, Left.nonneg_neg_iff];
+    exact h₀ _ hx
+  )
 
 /-- If `f'` is the derivative of `f` then  `0 ≤ f' x → (-f)' x ≤ 0`. -/
 theorem deriv_neg_nonpos {f : ℝ → ℝ} {b c : ℝ}
   (hd₁ : DifferentiableOn ℝ f (Set.Ioo b c))
   (h₁ : ∀ x ∈ Set.Ioo b c, 0 ≤ deriv f x) (x : ℝ) :
-  x ∈ Set.Ioo b c → deriv (-f) x ≤ 0 := by
-        intro hx
-        show deriv (((fun x => -x) ∘ (fun x => f x))) x ≤ 0
-        rw [deriv.comp]
-        simp
-        apply h₁;tauto
-
-        apply differentiable_neg
-        apply DifferentiableOn.differentiableAt
-        exact hd₁
-        apply Ioo_mem_nhds
-        exact hx.1
-        linarith[hx.2]
+  x ∈ Set.Ioo b c → deriv (-f) x ≤ 0 :=
+    fun hx => (@deriv.comp ℝ _ x ℝ _ _ f (fun x => -x)
+    (Differentiable.differentiableAt differentiable_neg)
+    (DifferentiableOn.differentiableAt hd₁ (Ioo_mem_nhds hx.1 hx.2))) ▸ (by
+    rw [deriv_neg'', neg_mul, one_mul, Left.neg_nonpos_iff]
+    exact h₁ _ hx
+  )
 
 /-!
 ### The First-Derivative Test
@@ -167,28 +134,20 @@ lemma isLocalMax_of_mono_anti.{u, v}
     (h₁ : AntitoneOn f (Set.Ico b c)) : IsLocalMax f b := by
   unfold IsLocalMax IsMaxFilter Filter.Eventually
   rw [nhds_def, Filter.mem_iInf]
-  exists {Set.Ioo a c}, (Set.toFinite _), (fun _ ↦ Set.Ioo a c ∪ {x | f x ≤ f b})
+  use {Set.Ioo a c}, (Set.toFinite _), (fun _ ↦ Set.Ioo a c ∪ {x | f x ≤ f b})
   simp only [Set.mem_setOf_eq, Subtype.forall, Set.mem_singleton_iff, forall_eq, Set.mem_Ioo,
     Set.iInter_coe_set, Set.iInter_iInter_eq_left]
-
   constructor
-  apply Filter.mem_iInf_of_mem
-  · simp_all
-  · simp_all only [and_self, true_and]; apply isOpen_Ioo
+  · exact Filter.mem_iInf_of_mem
+      (by simp_all only [and_self, true_and]; apply isOpen_Ioo)
+      (by simp_all)
   · ext u
     simp only [Set.mem_setOf_eq, Set.mem_union, Set.mem_Ioo, iff_or_self, and_imp]
     intros
-    by_cases u < b
-    · apply h₀
-      · simp_all only [Set.mem_Ioc, true_and]
-        apply le_of_lt; tauto
-      · simp_all only [Set.mem_Ioc, le_refl, and_self]
-      · apply le_of_lt; tauto
-    · apply h₁
-      · simp_all
-      · simp_all
-      · apply le_of_not_lt
-        tauto
+    exact (em (u < b)).elim
+      (fun H => h₀ (by simp_all only [mem_Ioc, true_and]; exact le_of_lt H)
+        (by simp_all) (le_of_lt H))
+      (fun H => h₁ (by simp_all) (by simp_all) (le_of_not_lt H))
 
  /-- The First-Derivative Test from calculus, maxima version.
   Suppose `a < b < c`,
@@ -197,25 +156,18 @@ lemma isLocalMax_of_mono_anti.{u, v}
     the derivative `f'` is nonpositive on `(b,c)`.
   Then `f` has a local maximum at `a`. -/
 lemma first_derivative_test_max {f : ℝ → ℝ} {a b c : ℝ}
-    (g₀ : a < b) (g₁ : b < c)
+  (g₀ : a < b) (g₁ : b < c)
     (h : ContinuousAt f b)
     (hd₀ : DifferentiableOn ℝ f (Set.Ioo a b))
     (hd₁ : DifferentiableOn ℝ f (Set.Ioo b c))
     (h₀ :  ∀ x ∈ Set.Ioo a b, 0 ≤ deriv f x)
     (h₁ :  ∀ x ∈ Set.Ioo b c, deriv f x ≤ 0)
-    : IsLocalMax f b := by
-  apply isLocalMax_of_mono_anti
-  exact g₀;exact g₁;
-  · apply monotoneOn_of_deriv_nonneg
-    · exact convex_Ioc a b
-    · apply @continuous_Ioc ℝ;repeat tauto
-    · simp_all
-    · intro x hx; simp_all;
-  · apply antitoneOn_of_deriv_nonpos
-    · exact convex_Ico b c
-    · apply @continuous_Ico ℝ; repeat tauto
-    · simp_all
-    · intro x hx; simp_all
+    : IsLocalMax f b :=
+  isLocalMax_of_mono_anti g₀ g₁
+    (monotoneOn_of_deriv_nonneg (convex_Ioc a b)
+    (continuous_Ioc g₀ h hd₀) (by simp_all) (by simp_all))
+    (antitoneOn_of_deriv_nonpos (convex_Ico b c)
+    (continuous_Ico g₁ h hd₁) (by simp_all) (by simp_all))
 
 /-- The First-Derivative Test from calculus, minima version. -/
 lemma first_derivative_test_min {f : ℝ → ℝ} {a b c : ℝ}
