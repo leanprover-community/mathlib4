@@ -7,9 +7,12 @@ import Mathlib.RingTheory.Derivation.Basic
 import Mathlib.Algebra.Polynomial.Module.Basic
 
 /-!
-# Derivations of univariate polynomials
+# Coefficient-wise derivation
 
-In this file we prove properties about `R`-derivations of `Polynomial A`.
+In this file we define applying a derivation on the coefficients of a polynomial,
+show this forms a derivation, and prove `apply_eval_eq`, which shows that for a derivation `D`,
+`D(p(x)) = (D.mapCoeffs p)(x) + D(x) * p'(x)`. `apply_aeval_eq` and `apply_aeval_eq'`
+are generalizations of that for algebras.
 -/
 
 noncomputable section
