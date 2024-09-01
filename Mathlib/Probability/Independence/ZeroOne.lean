@@ -71,7 +71,7 @@ theorem condexp_eq_zero_or_one_of_condIndepSet_self
   | inl h => exact Or.inl (Or.inl h)
   | inr h => exact Or.inr h
 
-variable [IsMarkovKernel κ]
+variable [IsZeroOrMarkovKernel κ]
 
 open Filter
 
@@ -79,7 +79,7 @@ theorem Kernel.indep_biSup_compl (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s 
     Indep (⨆ n ∈ t, s n) (⨆ n ∈ tᶜ, s n) κ μα :=
   indep_iSup_of_disjoint h_le h_indep disjoint_compl_right
 
-theorem indep_biSup_compl [IsProbabilityMeasure μ]
+theorem indep_biSup_compl [IsZeroOrProbabilityMeasure μ]
     (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s μ) (t : Set ι) :
     Indep (⨆ n ∈ t, s n) (⨆ n ∈ tᶜ, s n) μ :=
   Kernel.indep_biSup_compl h_le h_indep t

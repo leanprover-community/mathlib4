@@ -1162,7 +1162,7 @@ nonrec instance IsZeroOrMarkovKernel.prod (κ : Kernel α β) [h : IsZeroOrMarko
     (η : Kernel α γ) [IsZeroOrMarkovKernel η] : IsZeroOrMarkovKernel (κ ×ₖ η) := by
   rcases eq_zero_or_isMarkovKernel κ with rfl | h
   · simp only [prod, swapLeft_prodMkLeft, compProd_zero_left]; infer_instance
-  rcases eq_zero_or_isMarkovKernel κ' with rfl | h'
+  rcases eq_zero_or_isMarkovKernel η with rfl | h'
   · simp only [prod, swapLeft, prodMkLeft_zero, comap_zero, compProd_zero_right]; infer_instance
   infer_instance
 
