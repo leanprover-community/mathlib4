@@ -1111,6 +1111,8 @@ noncomputable def RCLike.copy_of_normedField {𝕜 : Type*} (h : RCLike 𝕜) (h
   mul_im_I_ax := by subst h''; exact h.mul_im_I_ax
   le_iff_re_im := by subst h''; exact h.le_iff_re_im
 
+/-- Given a normed field `𝕜` satisfying `IsRCLikeNormedField 𝕜`, build an associated `RCLike 𝕜`
+structure on `𝕜` which is definitionally compatible with the given normed field structure. -/
 noncomputable def IsRCLikeNormedField.rclike (𝕜 : Type*)
     [hk : NormedField 𝕜] [h : IsRCLikeNormedField 𝕜] : RCLike 𝕜 := by
   choose p hp using h.out
