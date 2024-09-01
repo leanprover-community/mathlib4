@@ -346,7 +346,7 @@ theorem summable_norm_mul_geometric_of_norm_lt_one {R : Type*} [NormedRing R] {k
       apply (norm_mul_le _ _).trans
       have : ‖(u n : R)‖ * ‖r ^ n‖ ≤ (u n * ‖(1 : R)‖) * ‖r‖ ^ n := by
         gcongr; exact norm_cast_le (u n)
-      exact this.trans (le_of_eq (by ring))
+      exact this.trans_eq (by ring)
   _ =O[atTop] fun n ↦ ↑(n ^ k) * ‖r‖ ^ n := hu.mul (isBigO_refl _ _)
   _ =O[atTop] fun n ↦ r' ^ n := by
       simp only [cast_pow]
