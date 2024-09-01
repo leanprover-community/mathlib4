@@ -108,7 +108,7 @@ theorem n_le_N {m n : ℕ} (h1 : NatPredicate N m n) : n ≤ N := mod_cast h1.n_
 Now we can use induction to show that solutions must be Fibonacci numbers.
 -/
 theorem imp_fib {n : ℕ} : ∀ m : ℕ, NatPredicate N m n → ∃ k : ℕ, m = fib k ∧ n = fib (k + 1) := by
-  refine Nat.strongRecOn n ?_
+  refine Nat.strong_induction_on n ?_
   intro n h1 m h2
   have h3 : m ≤ n := h2.m_le_n
   obtain (rfl : 1 = n) | (h4 : 1 < n) := (succ_le_iff.mpr h2.n_pos).eq_or_lt

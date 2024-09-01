@@ -826,10 +826,19 @@ lemma le_induction {m : ℕ} {P : ∀ n, m ≤ n → Prop} (base : P m m.le_refl
 
 /-- Induction principle deriving the next case from the two previous ones. -/
 def twoStepInduction {P : ℕ → Sort*} (zero : P 0) (one : P 1)
-    (more : ∀ n, P n → P (n + 1) → P (n + 2)) : ∀ a : ℕ, P a
+    (more : ∀ n, P n → P (n + 1) → P (n + 2)) : ∀ a, P a
   | 0 => zero
   | 1 => one
   | _ + 2 => more _ (twoStepInduction zero one more _) (twoStepInduction zero one more _)
+
+@[elab_as_elim]
+protected theorem strong_induction_on {p : ℕ → Prop} (n : ℕ)
+    (h : ∀ n, (∀ m, m < n → p m) → p n) : p n :=
+  Nat.strongInductionOn n h
+
+protected theorem case_strong_induction_on {p : ℕ → Prop} (a : ℕ) (hz : p 0)
+    (hi : ∀ n, (∀ m, m ≤ n → p m) → p (n + 1)) : p a :=
+  Nat.caseStrongInductionOn a hz hi
 
 /-- Decreasing induction: if `P (k+1)` implies `P k` for all `k < n`, then `P n` implies `P m` for
 all `m ≤ n`.

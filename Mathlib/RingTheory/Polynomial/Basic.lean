@@ -926,7 +926,7 @@ protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNo
         rw [this]
         intro p hp
         generalize hn : p.natDegree = k
-        induction' k using Nat.strongInductionOn with k ih generalizing p
+        induction' k using Nat.strong_induction_on with k ih generalizing p
         rcases le_or_lt k N with h | h
         · subst k
           refine hs2 ⟨Polynomial.mem_degreeLE.2

@@ -305,7 +305,7 @@ theorem digits_inj_iff {b n m : ℕ} : b.digits n = b.digits m ↔ n = m :=
   (digits.injective b).eq_iff
 
 theorem digits_len (b n : ℕ) (hb : 1 < b) (hn : n ≠ 0) : (b.digits n).length = b.log n + 1 := by
-  induction' n using Nat.strongInductionOn with n IH
+  induction' n using Nat.strong_induction_on with n IH
   rw [digits_eq_cons_digits_div hb hn, List.length]
   by_cases h : n / b = 0
   · have hb0 : b ≠ 0 := (Nat.succ_le_iff.1 hb).ne_bot

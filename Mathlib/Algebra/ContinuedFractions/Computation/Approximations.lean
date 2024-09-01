@@ -206,7 +206,7 @@ open Nat
 
 theorem fib_le_of_contsAux_b :
     n ≤ 1 ∨ ¬(of v).TerminatedAt (n - 2) → (fib n : K) ≤ ((of v).contsAux n).b :=
-  Nat.strongRecOn n
+  Nat.strong_induction_on n
     (by
       intro n IH hyp
       rcases n with (_ | _ | n)

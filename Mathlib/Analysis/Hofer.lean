@@ -51,9 +51,9 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
   -- Key properties of u, to be proven by induction
   have key : ∀ n, d (u n) (u (n + 1)) ≤ ε / 2 ^ n ∧ 2 * ϕ (u n) < ϕ (u (n + 1)) := by
     intro n
-    induction n using Nat.caseStrongInductionOn with
-    | zero => simpa [u, ε_pos.le] using hu 0
-    | ind n IH =>
+    induction n using Nat.case_strong_induction_on with
+    | hz => simpa [u, ε_pos.le] using hu 0
+    | hi n IH =>
       have A : d (u (n + 1)) x ≤ 2 * ε := by
         rw [dist_comm]
         let r := range (n + 1) -- range (n+1) = {0, ..., n}

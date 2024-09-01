@@ -222,8 +222,8 @@ theorem succ_nth_conv'_eq_squashGCF_nth_conv' :
 
 /-- The auxiliary continuants before the squashed position stay the same. -/
 theorem contsAux_eq_contsAux_squashGCF_of_le {m : ℕ} :
-    m ≤ n → contsAux g m = (squashGCF g n).contsAux m := by
-  apply Nat.strongInductionOn m
+    m ≤ n → contsAux g m = (squashGCF g n).contsAux m :=
+  Nat.strong_induction_on m
     (by
       clear m
       intro m IH m_le_n

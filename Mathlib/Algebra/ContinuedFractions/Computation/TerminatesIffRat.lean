@@ -57,8 +57,8 @@ finite correctness proof (`of_correctness_of_terminates`) of `GenContFract.of` t
 variable (v : K) (n : ℕ)
 
 nonrec theorem exists_gcf_pair_rat_eq_of_nth_contsAux :
-    ∃ conts : Pair ℚ, (of v).contsAux n = (conts.map (↑) : Pair K) := by
-  apply Nat.strongInductionOn n
+    ∃ conts : Pair ℚ, (of v).contsAux n = (conts.map (↑) : Pair K) :=
+  Nat.strong_induction_on n
     (by
       clear n
       let g := of v

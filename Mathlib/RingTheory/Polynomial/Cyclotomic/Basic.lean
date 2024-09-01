@@ -181,7 +181,7 @@ theorem int_coeff_of_cyclotomic' {K : Type*} [CommRing K] [IsDomain K] {ζ : K} 
     (h : IsPrimitiveRoot ζ n) : ∃ P : ℤ[X], map (Int.castRingHom K) P =
       cyclotomic' n K ∧ P.degree = (cyclotomic' n K).degree ∧ P.Monic := by
   refine lifts_and_degree_eq_and_monic ?_ (cyclotomic'.monic n K)
-  induction' n using Nat.strongInductionOn with k ihk generalizing ζ
+  induction' n using Nat.strong_induction_on with k ihk generalizing ζ
   rcases k.eq_zero_or_pos with (rfl | hpos)
   · use 1
     simp only [cyclotomic'_zero, coe_mapRingHom, Polynomial.map_one]
@@ -465,7 +465,7 @@ theorem X_pow_sub_one_dvd_prod_cyclotomic (R : Type*) [CommRing R] {n m : ℕ} (
 theorem cyclotomic_eq_prod_X_sub_primitiveRoots {K : Type*} [CommRing K] [IsDomain K] {ζ : K}
     {n : ℕ} (hz : IsPrimitiveRoot ζ n) : cyclotomic n K = ∏ μ ∈ primitiveRoots n K, (X - C μ) := by
   rw [← cyclotomic']
-  induction' n using Nat.strongInductionOn with k hk generalizing ζ
+  induction' n using Nat.strong_induction_on with k hk generalizing ζ
   obtain hzero | hpos := k.eq_zero_or_pos
   · simp only [hzero, cyclotomic'_zero, cyclotomic_zero]
   have h : ∀ i ∈ k.properDivisors, cyclotomic i K = cyclotomic' i K := by

@@ -76,7 +76,7 @@ theorem log_one_right (b : ℕ) : log b 1 = 0 :=
 `Nat.le_log_of_pow_le` for individual implications under weaker assumptions. -/
 theorem pow_le_iff_le_log {b : ℕ} (hb : 1 < b) {x y : ℕ} (hy : y ≠ 0) :
     b ^ x ≤ y ↔ x ≤ log b y := by
-  induction y using Nat.strongInductionOn generalizing x with | ind y ih => ?_
+  induction y using Nat.strong_induction_on generalizing x with | h y ih => ?_
   cases x with
   | zero => dsimp; omega
   | succ x =>
@@ -242,7 +242,7 @@ theorem clog_eq_one {b n : ℕ} (hn : 2 ≤ n) (h : n ≤ b) : clog b n = 1 := b
 
 /-- `clog b` and `pow b` form a Galois connection. -/
 theorem le_pow_iff_clog_le {b : ℕ} (hb : 1 < b) {x y : ℕ} : x ≤ b ^ y ↔ clog b x ≤ y := by
-  induction x using Nat.strongInductionOn generalizing y with | ind x ih => ?_
+  induction x using Nat.strong_induction_on generalizing y with | h x ih => ?_
   cases y
   · rw [Nat.pow_zero]
     refine ⟨fun h => (clog_of_right_le_one h b).le, ?_⟩

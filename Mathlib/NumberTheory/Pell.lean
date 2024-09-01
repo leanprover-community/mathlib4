@@ -603,7 +603,7 @@ theorem eq_pow_of_nonneg {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : So
   lift a.x to ℕ using hax.le with ax hax'
   -- Porting note: added
   clear hax
-  induction' ax using Nat.strongInductionOn with x ih generalizing a
+  induction' ax using Nat.strong_induction_on with x ih generalizing a
   rcases hay.eq_or_lt with hy | hy
   · -- case 1: `a = 1`
     refine ⟨0, ?_⟩

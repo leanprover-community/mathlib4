@@ -53,16 +53,6 @@ def subInduction {P : ℕ → ℕ → Sort u} (H1 : ∀ m, P 0 m) (H2 : ∀ n, P
   | succ _n, 0 => H2 _
   | succ n, succ m => H3 _ _ (subInduction H1 H2 H3 n m)
 
-@[elab_as_elim, deprecated Nat.strongInductionOn (since := "2024-08-23")]
-protected theorem strong_induction_on {p : Nat → Prop} (n : Nat)
-    (h : ∀ n, (∀ m, m < n → p m) → p n) : p n :=
-  Nat.strongInductionOn n h
-
-@[elab_as_elim, deprecated Nat.caseStrongInductionOn (since := "2024-08-23")]
-protected theorem case_strong_induction_on {p : Nat → Prop} (a : Nat) (hz : p 0)
-    (hi : ∀ n, (∀ m, m ≤ n → p m) → p (succ n)) : p a :=
-  Nat.caseStrongInductionOn a hz hi
-
 /-! mod -/
 
 -- Unused in Mathlib;
