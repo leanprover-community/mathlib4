@@ -323,15 +323,12 @@ def broadImportsLinter : TextbasedLinter := fun lines ↦ Id.run do
 def trailingWhitespaceLinter : TextbasedLinter := fun lines ↦ Id.run do
   let mut errors := Array.mkEmpty 0
   let mut fixedLines := lines
-  -- invariant: this equals the current index of 'line' in 'lines',
-  -- hence starts at 0 and is incremented *at the end* of the loop
-  let mut lineNumber := 0
-  for line in lines do
+  for h : idx in [:lines.size] do
+    let line := lines[idx]
     if line.back == ' ' then
-      errors := errors.push (StyleError.trailingWhitespace, lineNumber)
-      fixedLines := fixedLines.set! 0 (line.dropRightWhile (· == ' '))
-    lineNumber := lineNumber + 1
-  return (errors, fixedLines)
+      errors := errors.push (StyleError.trailingWhitespace, idx + 1)
+      fixedLines := fixedLines.set! idx (line.dropRightWhile (· == ' '))
+  return (errors, if errors.size > 0 then some fixedLines else none)
 
 
 /-- Whether a collection of lines consists *only* of imports, blank lines and single-line comments.
