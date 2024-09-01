@@ -55,7 +55,7 @@ lemma IsCorner.mono (hAB : A ⊆ B) (hA : IsCorner A x₁ y₁ x₂ y₂) : IsCo
   add_eq_add := hA.add_eq_add
 
 lemma IsCornerFree.mono (hAB : A ⊆ B) (hB : IsCornerFree B) : IsCornerFree A :=
-  fun _x₁ _y₁ _x₂ _y₂ hxyd ↦ hB $ hxyd.mono hAB
+  fun _x₁ _y₁ _x₂ _y₂ hxyd ↦ hB <| hxyd.mono hAB
 
 @[simp] lemma not_isCorner_empty : ¬ IsCorner ∅ x₁ y₁ x₂ y₂ := by simp [isCorner_iff]
 
@@ -76,7 +76,7 @@ lemma IsCorner.image (hf : IsAddFreimanHom 2 s t f) (hAs : (A : Set (G × G)) �
 lemma IsCornerFree.of_image (hf : IsAddFreimanHom 2 s t f) (hf' : s.InjOn f)
     (hAs : (A : Set (G × G)) ⊆ s ×ˢ s) (hA : IsCornerFree (Prod.map f f '' A)) : IsCornerFree A :=
   fun _x₁ _y₁ _x₂ _y₂ hxy ↦
-    hf' (hAs hxy.fst_fst_mem).1 (hAs hxy.snd_fst_mem).1 $ hA $ hxy.image hf hAs
+    hf' (hAs hxy.fst_fst_mem).1 (hAs hxy.snd_fst_mem).1 <| hA <| hxy.image hf hAs
 
 lemma isCorner_image (hf : IsAddFreimanIso 2 s t f) (hAs : A ⊆ s ×ˢ s)
     (hx₁ : x₁ ∈ s) (hy₁ : y₁ ∈ s) (hx₂ : x₂ ∈ s) (hy₂ : y₂ ∈ s) :

@@ -455,8 +455,10 @@ Please consider using `IsScalarTower` and/or `RestrictScalars 𝕜 𝕜' E` inst
 This definition allows the `RestrictScalars.normedSpace` instance to be put directly on `E`
 rather on `RestrictScalars 𝕜 𝕜' E`. This would be a very bad instance; both because `𝕜'` cannot be
 inferred, and because it is likely to create instance diamonds.
+
+See Note [reducible non-instances].
 -/
-def NormedSpace.restrictScalars : NormedSpace 𝕜 E :=
+abbrev NormedSpace.restrictScalars : NormedSpace 𝕜 E :=
   RestrictScalars.normedSpace _ 𝕜' E
 
 end NormedSpace
@@ -488,8 +490,10 @@ Please consider using `IsScalarTower` and/or `RestrictScalars 𝕜 𝕜' E` inst
 This definition allows the `RestrictScalars.normedAlgebra` instance to be put directly on `E`
 rather on `RestrictScalars 𝕜 𝕜' E`. This would be a very bad instance; both because `𝕜'` cannot be
 inferred, and because it is likely to create instance diamonds.
+
+See Note [reducible non-instances].
 -/
-def NormedAlgebra.restrictScalars : NormedAlgebra 𝕜 E :=
+abbrev NormedAlgebra.restrictScalars : NormedAlgebra 𝕜 E :=
   RestrictScalars.normedAlgebra _ 𝕜' _
 
 end NormedAlgebra

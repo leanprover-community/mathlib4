@@ -5,10 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.GroupAction.Quotient
-import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.Topology.Algebra.Monoid
 import Mathlib.Topology.Algebra.Constructions
 import Mathlib.Algebra.Order.Archimedean.Basic
+import Mathlib.GroupTheory.QuotientGroup.Basic
 
 /-!
 # Topological groups
@@ -1915,3 +1915,5 @@ theorem coinduced_continuous {α β : Type*} [t : TopologicalSpace α] [Group β
   exact continuous_iff_coinduced_le.2 ht'
 
 end GroupTopology
+
+set_option linter.style.longFile 2100

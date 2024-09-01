@@ -63,7 +63,7 @@ variable {n : ℕ}
 theorem stream_eq_none_of_fr_eq_zero {ifp_n : IntFractPair K}
     (stream_nth_eq : IntFractPair.stream v n = some ifp_n) (nth_fr_eq_zero : ifp_n.fr = 0) :
     IntFractPair.stream v (n + 1) = none := by
-  cases' ifp_n with _ fr
+  obtain ⟨_, fr⟩ := ifp_n
   change fr = 0 at nth_fr_eq_zero
   simp [IntFractPair.stream, stream_nth_eq, nth_fr_eq_zero]
 
@@ -304,7 +304,7 @@ are all equal to `a`.
 -/
 theorem convs'_of_int (a : ℤ) : (of (a : K)).convs' n = a := by
   induction n with
-  | zero => simp only [zeroth_conv'_eq_h, of_h_eq_floor, floor_intCast, Nat.zero_eq]
+  | zero => simp only [zeroth_conv'_eq_h, of_h_eq_floor, floor_intCast]
   | succ =>
     rw [convs', of_h_eq_floor, floor_intCast, add_right_eq_self]
     exact convs'Aux_succ_none ((of_s_of_int K a).symm ▸ Stream'.Seq.get?_nil 0) _
