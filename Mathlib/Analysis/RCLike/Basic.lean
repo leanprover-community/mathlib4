@@ -3,12 +3,11 @@ Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-import Mathlib.Algebra.Star.Order
-import Mathlib.Analysis.CstarAlgebra.Basic
-import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
-import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.Data.Real.Sqrt
 import Mathlib.Algebra.Algebra.Field
+import Mathlib.Algebra.Star.Order
+import Mathlib.Analysis.CStarAlgebra.Basic
+import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
+import Mathlib.Data.Real.Sqrt
 
 /-!
 # `RCLike`: a typeclass for ℝ or ℂ
@@ -40,11 +39,11 @@ their counterparts in `Mathlib/Analysis/Complex/Basic.lean` (which causes linter
 A few lemmas requiring heavier imports are in `Mathlib/Data/RCLike/Lemmas.lean`.
 -/
 
+open scoped ComplexConjugate
+
 section
 
 local notation "𝓚" => algebraMap ℝ _
-
-open ComplexConjugate
 
 /--
 This typeclass captures properties shared by ℝ and ℂ, with an API that closely matches that of ℂ.
@@ -81,8 +80,6 @@ end
 variable {K E : Type*} [RCLike K]
 
 namespace RCLike
-
-open ComplexConjugate
 
 /-- Coercion from `ℝ` to an `RCLike` field. -/
 @[coe] abbrev ofReal : ℝ → K := Algebra.cast
@@ -233,7 +230,7 @@ theorem norm_ofReal (r : ℝ) : ‖(r : K)‖ = |r| :=
 /-! ### Characteristic zero -/
 
 -- see Note [lower instance priority]
-/-- ℝ and ℂ are both of characteristic zero.  -/
+/-- ℝ and ℂ are both of characteristic zero. -/
 instance (priority := 100) charZero_rclike : CharZero K :=
   (RingHom.charZero_iff (algebraMap ℝ K).injective).1 inferInstance
 
@@ -333,7 +330,9 @@ theorem is_real_TFAE (z : K) : TFAE [conj z = z, ∃ r : ℝ, (r : K) = z, ↑(r
   tfae_finish
 
 theorem conj_eq_iff_real {z : K} : conj z = z ↔ ∃ r : ℝ, z = (r : K) :=
-  ((is_real_TFAE z).out 0 1).trans <| by simp only [eq_comm]
+  calc
+    _ ↔ ∃ r : ℝ, (r : K) = z := (is_real_TFAE z).out 0 1
+    _ ↔ _                    := by simp only [eq_comm]
 
 theorem conj_eq_iff_re {z : K} : conj z = z ↔ (re z : K) = z :=
   (is_real_TFAE z).out 0 2
@@ -418,7 +417,7 @@ theorem mul_conj (z : K) : z * conj z = ‖z‖ ^ 2 := by
 theorem conj_mul (z : K) : conj z * z = ‖z‖ ^ 2 := by rw [mul_comm, mul_conj]
 
 lemma inv_eq_conj (hz : ‖z‖ = 1) : z⁻¹ = conj z :=
-  inv_eq_of_mul_eq_one_left $ by simp_rw [conj_mul, hz, algebraMap.coe_one, one_pow]
+  inv_eq_of_mul_eq_one_left <| by simp_rw [conj_mul, hz, algebraMap.coe_one, one_pow]
 
 theorem normSq_sub (z w : K) : normSq (z - w) = normSq z + normSq w - 2 * re (z * conj w) := by
   simp only [normSq_add, sub_eq_add_neg, map_neg, mul_neg, normSq_neg, map_neg]
@@ -436,7 +435,7 @@ theorem inv_def (z : K) : z⁻¹ = conj z * ((‖z‖ ^ 2)⁻¹ : ℝ) := by
   rcases eq_or_ne z 0 with (rfl | h₀)
   · simp
   · apply inv_eq_of_mul_eq_one_right
-    rw [← mul_assoc, mul_conj, ofReal_inv, ofReal_pow, mul_inv_cancel]
+    rw [← mul_assoc, mul_conj, ofReal_inv, ofReal_pow, mul_inv_cancel₀]
     simpa
 
 @[simp, rclike_simps]
@@ -503,17 +502,22 @@ theorem normSq_inv (z : K) : normSq z⁻¹ = (normSq z)⁻¹ :=
 theorem normSq_div (z w : K) : normSq (z / w) = normSq z / normSq w :=
   map_div₀ normSq z w
 
-@[rclike_simps] -- porting note (#10618): was `simp`
-theorem norm_conj {z : K} : ‖conj z‖ = ‖z‖ := by simp only [← sqrt_normSq_eq_norm, normSq_conj]
+@[simp 1100, rclike_simps]
+theorem norm_conj (z : K) : ‖conj z‖ = ‖z‖ := by simp only [← sqrt_normSq_eq_norm, normSq_conj]
 
-instance (priority := 100) : CstarRing K where
-  norm_mul_self_le x := le_of_eq <| ((norm_mul _ _).trans <| congr_arg (· * ‖x‖) norm_conj).symm
+@[simp, rclike_simps] lemma nnnorm_conj (z : K) : ‖conj z‖₊ = ‖z‖₊ := by simp [nnnorm]
+
+instance (priority := 100) : CStarRing K where
+  norm_mul_self_le x := le_of_eq <| ((norm_mul _ _).trans <| congr_arg (· * ‖x‖) (norm_conj _)).symm
 
 /-! ### Cast lemmas -/
 
 @[rclike_simps, norm_cast]
 theorem ofReal_natCast (n : ℕ) : ((n : ℝ) : K) = n :=
   map_natCast (algebraMap ℝ K) n
+
+@[rclike_simps, norm_cast]
+lemma ofReal_nnratCast (q : ℚ≥0) : ((q : ℝ) : K) = q := map_nnratCast (algebraMap ℝ K) _
 
 @[simp, rclike_simps] -- Porting note: removed `norm_cast`
 theorem natCast_re (n : ℕ) : re (n : K) = n := by rw [← ofReal_natCast, ofReal_re]
@@ -575,20 +579,45 @@ theorem norm_natCast (n : ℕ) : ‖(n : K)‖ = n := by
   rw [← ofReal_natCast]
   exact norm_of_nonneg (Nat.cast_nonneg n)
 
+@[simp, rclike_simps, norm_cast] lemma nnnorm_natCast (n : ℕ) : ‖(n : K)‖₊ = n := by simp [nnnorm]
+
 @[simp, rclike_simps]
 theorem norm_ofNat (n : ℕ) [n.AtLeastTwo] : ‖(no_index (OfNat.ofNat n) : K)‖ = OfNat.ofNat n :=
   norm_natCast n
 
+@[simp, rclike_simps]
+lemma nnnorm_ofNat (n : ℕ) [n.AtLeastTwo] : ‖(no_index (OfNat.ofNat n) : K)‖₊ = OfNat.ofNat n :=
+  nnnorm_natCast n
+
+lemma norm_two : ‖(2 : K)‖ = 2 := norm_ofNat 2
+lemma nnnorm_two : ‖(2 : K)‖₊ = 2 := nnnorm_ofNat 2
+
+@[simp, rclike_simps, norm_cast]
+lemma norm_nnratCast (q : ℚ≥0) : ‖(q : K)‖ = q := by
+  rw [← ofReal_nnratCast]; exact norm_of_nonneg q.cast_nonneg
+
+@[simp, rclike_simps, norm_cast]
+lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : K)‖₊ = q := by simp [nnnorm]
+
 variable (K) in
 lemma norm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) : ‖n • x‖ = n • ‖x‖ := by
-  rw [← Nat.cast_smul_eq_nsmul K, norm_smul, RCLike.norm_natCast, nsmul_eq_mul]
+  simpa [Nat.cast_smul_eq_nsmul] using norm_smul (n : K) x
+
+variable (K) in
+lemma nnnorm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) :
+    ‖n • x‖₊ = n • ‖x‖₊ := by simpa [Nat.cast_smul_eq_nsmul] using nnnorm_smul (n : K) x
+
+variable (K) in
+lemma norm_nnqsmul [NormedField E] [CharZero E] [NormedSpace K E] (q : ℚ≥0) (x : E) :
+    ‖q • x‖ = q • ‖x‖ := by simpa [NNRat.cast_smul_eq_nnqsmul] using norm_smul (q : K) x
+
+variable (K) in
+lemma nnnorm_nnqsmul [NormedField E] [CharZero E] [NormedSpace K E] (q : ℚ≥0) (x : E) :
+    ‖q • x‖₊ = q • ‖x‖₊ := by simpa [NNRat.cast_smul_eq_nnqsmul] using nnnorm_smul (q : K) x
 
 theorem mul_self_norm (z : K) : ‖z‖ * ‖z‖ = normSq z := by rw [normSq_eq_def', sq]
 
 attribute [rclike_simps] norm_zero norm_one norm_eq_zero abs_norm norm_inv norm_div
-
--- Porting note: removed @[simp, rclike_simps], b/c generalized to `norm_ofNat`
-theorem norm_two : ‖(2 : K)‖ = 2 := norm_ofNat 2
 
 theorem abs_re_le_norm (z : K) : |re z| ≤ ‖z‖ := by
   rw [mul_self_le_mul_self_iff (abs_nonneg _) (norm_nonneg _), abs_mul_abs_self, mul_self_norm]
@@ -666,7 +695,7 @@ end RCLike
 
 section Instances
 
-noncomputable instance Real.RCLike : RCLike ℝ where
+noncomputable instance Real.instRCLike : RCLike ℝ where
   re := AddMonoidHom.id ℝ
   im := 0
   I := 0
@@ -803,7 +832,7 @@ theorem toOrderedSMul : OrderedSMul ℝ K :=
 
 scoped[ComplexOrder] attribute [instance] RCLike.toOrderedSMul
 
-/-- A star algebra over `K` has a scalar multiplication that respects the order.  -/
+/-- A star algebra over `K` has a scalar multiplication that respects the order. -/
 lemma _root_.StarModule.instOrderedSMul {A : Type*} [NonUnitalRing A] [StarRing A] [PartialOrder A]
     [StarOrderedRing A] [Module K A] [StarModule K A] [IsScalarTower K A A] [SMulCommClass K A A] :
     OrderedSMul K A where
@@ -811,13 +840,16 @@ lemma _root_.StarModule.instOrderedSMul {A : Type*} [NonUnitalRing A] [StarRing 
   lt_of_smul_lt_smul_of_pos {x y c} hxy hc := by
     have : c⁻¹ • c • x < c⁻¹ • c • y :=
       StarModule.smul_lt_smul_of_pos hxy (RCLike.inv_pos_of_pos hc)
-    simpa [smul_smul, inv_mul_cancel hc.ne'] using this
+    simpa [smul_smul, inv_mul_cancel₀ hc.ne'] using this
+
+instance {A : Type*} [NonUnitalRing A] [StarRing A] [PartialOrder A] [StarOrderedRing A]
+    [Module ℝ A] [StarModule ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] :
+    OrderedSMul ℝ A :=
+  StarModule.instOrderedSMul
 
 scoped[ComplexOrder] attribute [instance] StarModule.instOrderedSMul
 
 end Order
-
-open ComplexConjugate
 
 section CleanupLemmas
 
@@ -919,7 +951,7 @@ theorem conjAe_coe : (conjAe : K → K) = conj :=
 
 /-- Conjugate as a linear isometry -/
 noncomputable def conjLIE : K ≃ₗᵢ[ℝ] K :=
-  ⟨conjAe.toLinearEquiv, fun _ => norm_conj⟩
+  ⟨conjAe.toLinearEquiv, norm_conj⟩
 
 @[simp, rclike_simps]
 theorem conjLIE_apply : (conjLIE : K → K) = conj :=
@@ -1015,3 +1047,14 @@ noncomputable def realLinearIsometryEquiv (h : I = (0 : K)) : K ≃ₗᵢ[ℝ] �
 end CaseSpecific
 
 end RCLike
+
+namespace AddChar
+variable {G : Type*} [Finite G]
+
+lemma inv_apply_eq_conj [AddLeftCancelMonoid G] (ψ : AddChar G K) (x : G) : (ψ x)⁻¹ = conj (ψ x) :=
+  RCLike.inv_eq_conj <| norm_apply _ _
+
+lemma map_neg_eq_conj [AddCommGroup G] (ψ : AddChar G K) (x : G) : ψ (-x) = conj (ψ x) := by
+  rw [map_neg_eq_inv, inv_apply_eq_conj]
+
+end AddChar

@@ -42,7 +42,7 @@ The script uses some heuristics to guide this process.
 BASH_DOC_MODULE
 
 ## we narrow the diff to lines beginning with `theorem`, `lemma` and a few other commands
-begs="(theorem|lemma|inductive|structure|def|class|instance|alias)"
+begs="(theorem|lemma|inductive|structure|def|class|instance|alias|abbrev)"
 
 if [ "${1}" == "long" ]
 then
@@ -165,6 +165,7 @@ printf $'<details>
 ./scripts/declarations_diff.sh long <optional_commit>
 ```
 </details>
+
 The doc-module for `script/declarations_diff.sh` contains some details about this script.'
 
  : <<ReferenceTest
@@ -180,4 +181,5 @@ def testingLongDiff2 im a def
 def testingLongDiff3 im a def
 @[trying to fool you] instance. the messing dot
 alias ⟨d1, d2⟩ := d  check the "split an iff alias"
+abbrev a_new_one := I was not here before
 ReferenceTest

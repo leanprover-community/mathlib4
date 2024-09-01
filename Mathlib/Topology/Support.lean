@@ -212,15 +212,8 @@ theorem comp₂_left (hf : HasCompactMulSupport f)
     (hf₂ : HasCompactMulSupport f₂) (hm : m 1 1 = 1) :
     HasCompactMulSupport fun x => m (f x) (f₂ x) := by
   rw [hasCompactMulSupport_iff_eventuallyEq] at hf hf₂ ⊢
-  #adaptation_note /-- `nightly-2024-03-11`
-  If we *either* (1) remove the type annotations on the
-  binders in the following `fun` or (2) revert `simp only` to `simp_rw`, `to_additive` fails
-  because an `OfNat.ofNat 1` is not replaced with `0`. Notably, as of this nightly, what used to
-  look like `OfNat.ofNat (nat_lit 1) x` in the proof term now looks like
-  `OfNat.ofNat (OfNat.ofNat (α := ℕ) (nat_lit 1)) x`, and this seems to trip up `to_additive`.
-  -/
-  filter_upwards [hf, hf₂] using fun x (hx : f x = (1 : α → β) x) (hx₂ : f₂ x = (1 : α → γ) x) => by
-    simp only [hx, hx₂, Pi.one_apply, hm]
+  filter_upwards [hf, hf₂] with x hx hx₂
+  simp_rw [hx, hx₂, Pi.one_apply, hm]
 
 @[to_additive]
 lemma isCompact_preimage [TopologicalSpace β]
@@ -230,7 +223,11 @@ lemma isCompact_preimage [TopologicalSpace β]
   apply subset_mulTSupport
   aesop
 
-variable [T2Space α'] (hf : HasCompactMulSupport f) {g : α → α'} (cont : Continuous g)
+variable [T2Space α']
+
+section
+variable (hf : HasCompactMulSupport f) {g : α → α'} (cont : Continuous g)
+include hf cont
 
 @[to_additive]
 theorem mulTSupport_extend_one_subset :
@@ -250,6 +247,8 @@ theorem mulTSupport_extend_one (inj : g.Injective) :
     (image_closure_subset_closure_image cont).trans
       (closure_mono (mulSupport_extend_one inj).superset)
 
+end
+
 @[to_additive]
 theorem continuous_extend_one [TopologicalSpace β] {U : Set α'} (hU : IsOpen U) {f : U → β}
     (cont : Continuous f) (supp : HasCompactMulSupport f) :
@@ -262,7 +261,7 @@ theorem continuous_extend_one [TopologicalSpace β] {U : Set α'} (hU : IsOpen U
 
 /-- If `f` has compact multiplicative support, then `f` tends to 1 at infinity. -/
 @[to_additive "If `f` has compact support, then `f` tends to zero at infinity."]
-theorem is_one_at_infty {f : α → γ} [TopologicalSpace γ] [One γ]
+theorem is_one_at_infty {f : α → γ} [TopologicalSpace γ]
     (h : HasCompactMulSupport f) : Tendsto f (cocompact α) (𝓝 1) := by
   intro N hN
   rw [mem_map, mem_cocompact']
@@ -276,7 +275,7 @@ end HasCompactMulSupport
 
 section Compact
 
-variable [CompactSpace α] [One γ] [TopologicalSpace γ]
+variable [CompactSpace α]
 
 /-- In a compact space `α`, any function has compact support. -/
 @[to_additive]
@@ -344,7 +343,7 @@ end MulZeroClass
 
 section OrderedAddGroup
 
-variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [AddGroup β] [Lattice β]
+variable {α β : Type*} [TopologicalSpace α] [AddGroup β] [Lattice β]
   [CovariantClass β β (· + ·) (· ≤ ·)]
 
 protected theorem HasCompactSupport.abs {f : α → β} (hf : HasCompactSupport f) :

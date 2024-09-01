@@ -28,21 +28,23 @@ jobs:
           ./elan-init -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
+      # if you update this step (or its dependencies), please also update them in bot_fix_style_comment.yaml
       - name: lint
         continue-on-error: true  # allows the following `reviewdog` step to add GitHub suggestions
         run: |
-          ./scripts/lint-style.sh --fix
+          lake exe lint-style --fix
 
       - name: suggester / lint-style
         uses: reviewdog/action-suggester@v1
         with:
-          tool_name: lint-style
+          tool_name: lint-style (comment with "bot fix style" to have the bot commit all style suggestions)
 
       - name: Install bibtool
         run: |
           sudo apt-get update
           sudo apt-get install -y bibtool
 
+      # if you update this step (or its dependencies), please also update them in bot_fix_style_comment.yaml
       - name: lint references.bib
         continue-on-error: true  # allows the following `reviewdog` step to add GitHub suggestions
         run: |
@@ -51,7 +53,7 @@ jobs:
       - name: suggester / lint-bib
         uses: reviewdog/action-suggester@v1
         with:
-          tool_name: lint-bib
+          tool_name: lint-bib (comment with "bot fix style" to have the bot commit all style suggestions)
 
   check_imported:
     if: github.repository == 'leanprover-community/mathlib4' && github.event.pull_request.draft == false
@@ -71,6 +73,7 @@ jobs:
           ./elan-init -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
+      # if you update this step (or its dependencies), please also update them in bot_fix_style_comment.yaml
       - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
         continue-on-error: true  # allows the following `reviewdog` step to add GitHub suggestions
         run: lake exe mk_all
@@ -78,4 +81,4 @@ jobs:
       - name: suggester / import list
         uses: reviewdog/action-suggester@v1
         with:
-          tool_name: imports
+          tool_name: imports (comment with "bot fix style" to have the bot commit all style suggestions)

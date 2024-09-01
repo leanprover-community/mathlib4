@@ -13,8 +13,9 @@ import Mathlib.Lean.Name
 import Lean.Elab.Tactic.Ext
 import Lean.Meta.Tactic.Symm
 import Lean.Meta.Tactic.Rfl
+import Lean.Meta.Match.MatcherInfo
 import Batteries.Lean.NameMapAttribute
-import Batteries.Tactic.Lint -- useful to lint this file and for for DiscrTree.elements
+import Batteries.Tactic.Lint -- useful to lint this file and for DiscrTree.elements
 import Mathlib.Tactic.Relation.Trans -- just to copy the attribute
 import Mathlib.Tactic.Eqns -- just to copy the attribute
 import Mathlib.Tactic.Simps.Basic
@@ -729,6 +730,16 @@ def findAuxDecls (e : Expr) (pre : Name) : NameSet :=
     else
       l
 
+/-- It's just the same as `Lean.Meta.setInlineAttribute` but with type `CoreM Unit`.
+
+TODO (lean4#4965): make `Lean.Meta.setInlineAttribute` a `CoreM Unit` and remove this definition. -/
+def setInlineAttribute (declName : Name) (kind := Compiler.InlineAttributeKind.inline) :
+    CoreM Unit := do
+  let env ← getEnv
+  match Compiler.setInlineAttribute env declName kind with
+  | .ok env    => setEnv env
+  | .error msg => throwError msg
+
 /-- transform the declaration `src` and all declarations `pre._proof_i` occurring in `src`
 using the transforms dictionary.
 `replace_all`, `trace`, `ignore` and `reorder` are configuration options.
@@ -793,6 +804,11 @@ partial def transformDeclAux
     setEnv <| addNoncomputable (← getEnv) tgt
   else
     addAndCompile trgDecl.toDeclaration!
+  if let .defnDecl { hints := .abbrev, .. } := trgDecl.toDeclaration! then
+    if (← getReducibilityStatus src) == .reducible then
+      setReducibilityStatus tgt .reducible
+    if Compiler.getInlineAttribute? (← getEnv) src == some .inline then
+      setInlineAttribute tgt
   -- now add declaration ranges so jump-to-definition works
   -- note: we currently also do this for auxiliary declarations, while they are not normally
   -- generated for those. We could change that.
@@ -801,6 +817,11 @@ partial def transformDeclAux
     selectionRange := ← getDeclarationRange cfg.ref }
   if isProtected (← getEnv) src then
     setEnv <| addProtected (← getEnv) tgt
+  if let some matcherInfo ← getMatcherInfo? src then
+    -- Use
+    --   Match.addMatcherInfo tgt matcherInfo
+    -- once on lean 4.13.
+    modifyEnv fun env => Match.Extension.addMatcherInfo env tgt matcherInfo
 
 /-- Copy the instance attribute in a `to_additive`
 
@@ -1029,6 +1050,10 @@ def fixAbbreviation : List String → List String
   | "le" :: "Zero" :: "Part" :: s         => "negPart" :: fixAbbreviation s
   | "three" :: "GPFree" :: s         => "three" :: "APFree" :: fixAbbreviation s
   | "Three" :: "GPFree" :: s         => "Three" :: "APFree" :: fixAbbreviation s
+  | "Division" :: "Add" :: "Monoid" :: s => "SubtractionMonoid" :: fixAbbreviation s
+  | "division" :: "Add" :: "Monoid" :: s => "subtractionMonoid" :: fixAbbreviation s
+  | "Sub" :: "Neg" :: "Zero" :: "Add" :: "Monoid" :: s => "SubNegZeroMonoid" :: fixAbbreviation s
+  | "sub" :: "Neg" :: "Zero" :: "Add" :: "Monoid" :: s => "subNegZeroMonoid" :: fixAbbreviation s
   | x :: s                            => x :: fixAbbreviation s
   | []                                => []
 
@@ -1481,3 +1506,5 @@ initialize registerBuiltinAttribute {
   }
 
 end ToAdditive
+
+set_option linter.style.longFile 1700

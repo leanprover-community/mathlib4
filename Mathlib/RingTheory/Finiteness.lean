@@ -10,6 +10,7 @@ import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.GroupTheory.Finiteness
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Nilpotent.Defs
+import Mathlib.LinearAlgebra.Basis.Cardinality
 
 /-!
 # Finiteness conditions in commutative algebra
@@ -34,6 +35,7 @@ In this file we define a notion of finiteness that is common in commutative alge
 
 
 open Function (Surjective)
+open Finsupp
 
 namespace Submodule
 
@@ -226,7 +228,7 @@ theorem fg_pi {ι : Type*} {M : ι → Type*} [Finite ι] [∀ i, AddCommMonoid 
     simp_rw [fg_def] at hsb ⊢
     choose t htf hts using hsb
     refine
-      ⟨⋃ i, (LinearMap.single i : _ →ₗ[R] _) '' t i, Set.finite_iUnion fun i => (htf i).image _, ?_⟩
+      ⟨⋃ i, (LinearMap.single R _ i) '' t i, Set.finite_iUnion fun i => (htf i).image _, ?_⟩
     -- Note: #8386 changed `span_image` into `span_image _`
     simp_rw [span_iUnion, span_image _, hts, Submodule.iSup_map_single]
 
@@ -273,14 +275,14 @@ theorem fg_of_fg_map_of_fg_inf_ker {R M P : Type*} [Ring R] [AddCommGroup M] [Mo
   have : f x ∈ s.map f := by
     rw [mem_map]
     exact ⟨x, hx, rfl⟩
-  rw [← ht1, ← Set.image_id (t1 : Set P), Finsupp.mem_span_image_iff_total] at this
+  rw [← ht1, ← Set.image_id (t1 : Set P), Finsupp.mem_span_image_iff_linearCombination] at this
   rcases this with ⟨l, hl1, hl2⟩
   refine
     mem_sup.2
-      ⟨(Finsupp.total M M R id).toFun ((Finsupp.lmapDomain R R g : (P →₀ R) → M →₀ R) l), ?_,
-        x - Finsupp.total M M R id ((Finsupp.lmapDomain R R g : (P →₀ R) → M →₀ R) l), ?_,
+      ⟨(linearCombination R id).toFun ((lmapDomain R R g : (P →₀ R) → M →₀ R) l), ?_,
+        x - linearCombination R id ((lmapDomain R R g : (P →₀ R) → M →₀ R) l), ?_,
         add_sub_cancel _ _⟩
-  · rw [← Set.image_id (g '' ↑t1), Finsupp.mem_span_image_iff_total]
+  · rw [← Set.image_id (g '' ↑t1), Finsupp.mem_span_image_iff_linearCombination]
     refine ⟨_, ?_, rfl⟩
     haveI : Inhabited P := ⟨0⟩
     rw [← Finsupp.lmapDomain_supported _ _ g, mem_map]
@@ -289,14 +291,14 @@ theorem fg_of_fg_map_of_fg_inf_ker {R M P : Type*} [Ring R] [AddCommGroup M] [Mo
   rw [ht2, mem_inf]
   constructor
   · apply s.sub_mem hx
-    rw [Finsupp.total_apply, Finsupp.lmapDomain_apply, Finsupp.sum_mapDomain_index]
+    rw [Finsupp.linearCombination_apply, Finsupp.lmapDomain_apply, Finsupp.sum_mapDomain_index]
     · refine s.sum_mem ?_
       intro y hy
       exact s.smul_mem _ (hg y (hl1 hy)).1
     · exact zero_smul _
     · exact fun _ _ _ => add_smul _ _ _
   · rw [LinearMap.mem_ker, f.map_sub, ← hl2]
-    rw [Finsupp.total_apply, Finsupp.total_apply, Finsupp.lmapDomain_apply]
+    rw [Finsupp.linearCombination_apply, Finsupp.linearCombination_apply, Finsupp.lmapDomain_apply]
     rw [Finsupp.sum_mapDomain_index, Finsupp.sum, Finsupp.sum, map_sum]
     · rw [sub_eq_zero]
       refine Finset.sum_congr rfl fun y hy => ?_
@@ -626,11 +628,11 @@ theorem Module.End.isNilpotent_iff_of_finite {R M : Type*} [CommSemiring R] [Add
   use Finset.sup S g
   ext m
   have hm : m ∈ Submodule.span R S := by simp [hS]
-  induction hm using Submodule.span_induction'
-  · next x hx => exact LinearMap.pow_map_zero_of_le (Finset.le_sup hx) (hg x)
-  · simp
-  · simp_all
-  · simp_all
+  induction hm using Submodule.span_induction' with
+  | mem x hx => exact LinearMap.pow_map_zero_of_le (Finset.le_sup hx) (hg x)
+  | zero => simp
+  | add => simp_all
+  | smul => simp_all
 
 variable {R}
 

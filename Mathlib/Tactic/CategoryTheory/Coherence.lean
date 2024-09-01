@@ -31,10 +31,12 @@ open CategoryTheory FreeMonoidalCategory
 -- we put everything inside a namespace.
 namespace Mathlib.Tactic.Coherence
 
-variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
+variable {C : Type u} [Category.{v} C]
 open scoped MonoidalCategory
 
 noncomputable section lifting
+
+variable [MonoidalCategory C]
 
 /-- A typeclass carrying a choice of lift of an object from `C` to `FreeMonoidalCategory C`.
 It must be the case that `projectObj id (LiftObj.lift x) = x` by defeq. -/
@@ -291,6 +293,4 @@ elab_rules : tactic
 
 end Coherence
 
-end Tactic
-
-end Mathlib
+end Mathlib.Tactic

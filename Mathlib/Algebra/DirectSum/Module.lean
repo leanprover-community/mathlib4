@@ -5,7 +5,7 @@ Authors: Kenny Lau
 -/
 import Mathlib.Algebra.DirectSum.Basic
 import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.LinearAlgebra.Basis
+import Mathlib.LinearAlgebra.Basis.Defs
 
 /-!
 # Direct sum of modules
@@ -28,12 +28,12 @@ universe u v w u₁
 
 namespace DirectSum
 
-open DirectSum
+open DirectSum Finsupp
 
 section General
 
 variable {R : Type u} [Semiring R]
-variable {ι : Type v} [dec_ι : DecidableEq ι]
+variable {ι : Type v}
 variable {M : ι → Type w} [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
 
 instance : Module R (⨁ i, M i) :=
@@ -54,6 +54,10 @@ theorem smul_apply (b : R) (v : ⨁ i, M i) (i : ι) : (b • v) i = b • v i :
   DFinsupp.smul_apply _ _ _
 
 variable (R ι M)
+
+section DecidableEq
+
+variable [DecidableEq ι]
 
 /-- Create the direct sum given a family `M` of `R` modules indexed over `ι`. -/
 def lmk : ∀ s : Finset ι, (∀ i : (↑s : Set ι), M i.val) →ₗ[R] ⨁ i, M i :=
@@ -144,18 +148,20 @@ def linearEquivFunOnFintype [Fintype ι] : (⨁ i, M i) ≃ₗ[R] ∀ i, M i :=
 variable {ι M}
 
 @[simp]
-theorem linearEquivFunOnFintype_lof [Fintype ι] [DecidableEq ι] (i : ι) (m : M i) :
+theorem linearEquivFunOnFintype_lof [Fintype ι] (i : ι) (m : M i) :
     (linearEquivFunOnFintype R ι M) (lof R ι M i m) = Pi.single i m := by
   ext a
   change (DFinsupp.equivFunOnFintype (lof R ι M i m)) a = _
   convert _root_.congr_fun (DFinsupp.equivFunOnFintype_single i m) a
 
 @[simp]
-theorem linearEquivFunOnFintype_symm_single [Fintype ι] [DecidableEq ι] (i : ι) (m : M i) :
+theorem linearEquivFunOnFintype_symm_single [Fintype ι] (i : ι) (m : M i) :
     (linearEquivFunOnFintype R ι M).symm (Pi.single i m) = lof R ι M i m := by
   change (DFinsupp.equivFunOnFintype.symm (Pi.single i m)) = _
   rw [DFinsupp.equivFunOnFintype_symm_single i m]
   rfl
+
+end DecidableEq
 
 @[simp]
 theorem linearEquivFunOnFintype_symm_coe [Fintype ι] (f : ⨁ i, M i) :
@@ -167,8 +173,6 @@ protected def lid (M : Type v) (ι : Type* := PUnit) [AddCommMonoid M] [Module R
     (⨁ _ : ι, M) ≃ₗ[R] M :=
   { DirectSum.id M ι, toModule R ι M fun _ ↦ LinearMap.id with }
 
-variable (ι M)
-
 /-- The projection map onto one component, as a linear map. -/
 def component (i : ι) : (⨁ i, M i) →ₗ[R] M i :=
   DFinsupp.lapply i
@@ -177,7 +181,8 @@ variable {ι M}
 
 theorem apply_eq_component (f : ⨁ i, M i) (i : ι) : f i = component R ι M i f := rfl
 
-@[ext]
+-- Note(kmill): `@[ext]` cannot prove `ext_iff` because `R` is not determined by `f` or `g`.
+@[ext (iff := false)]
 theorem ext {f g : ⨁ i, M i} (h : ∀ i, component R ι M i f = component R ι M i g) : f = g :=
   DFinsupp.ext h
 
@@ -185,14 +190,15 @@ theorem ext_iff {f g : ⨁ i, M i} : f = g ↔ ∀ i, component R ι M i f = com
   ⟨fun h _ ↦ by rw [h], ext R⟩
 
 @[simp]
-theorem lof_apply (i : ι) (b : M i) : ((lof R ι M i) b) i = b :=
+theorem lof_apply [DecidableEq ι] (i : ι) (b : M i) : ((lof R ι M i) b) i = b :=
   DFinsupp.single_eq_same
 
 @[simp]
-theorem component.lof_self (i : ι) (b : M i) : component R ι M i ((lof R ι M i) b) = b :=
+theorem component.lof_self [DecidableEq ι] (i : ι) (b : M i) :
+    component R ι M i ((lof R ι M i) b) = b :=
   lof_apply R i b
 
-theorem component.of (i j : ι) (b : M j) :
+theorem component.of [DecidableEq ι] (i j : ι) (b : M j) :
     component R ι M i ((lof R ι M j) b) = if h : j = i then Eq.recOn h b else 0 :=
   DFinsupp.single_apply
 
@@ -214,7 +220,7 @@ end CongrLeft
 section Sigma
 
 variable {α : ι → Type*} {δ : ∀ i, α i → Type w}
-variable [∀ i j, AddCommMonoid (δ i j)] [∀ i j, Module R (δ i j)]
+variable [DecidableEq ι] [∀ i j, AddCommMonoid (δ i j)] [∀ i j, Module R (δ i j)]
 
 /-- `curry` as a linear map. -/
 def sigmaLcurry : (⨁ i : Σi, _, δ i.1 i.2) →ₗ[R] ⨁ (i) (j), δ i j :=
@@ -329,7 +335,7 @@ theorem IsInternal.collectedBasis_coe (h : IsInternal A) {α : ι → Type*}
   -- Porting note: was
   -- simp only [IsInternal.collectedBasis, toModule, coeLinearMap, Basis.coe_ofRepr,
   --   Basis.repr_symm_apply, DFinsupp.lsum_apply_apply, DFinsupp.mapRange.linearEquiv_apply,
-  --   DFinsupp.mapRange.linearEquiv_symm, DFinsupp.mapRange_single, Finsupp.total_single,
+  --   DFinsupp.mapRange.linearEquiv_symm, DFinsupp.mapRange_single, linearCombination_single,
   --   LinearEquiv.ofBijective_apply, LinearEquiv.symm_symm, LinearEquiv.symm_trans_apply, one_smul,
   --   sigmaFinsuppAddEquivDFinsupp_apply, sigmaFinsuppEquivDFinsupp_single,
   --   sigmaFinsuppLequivDFinsupp_apply]
@@ -340,7 +346,7 @@ theorem IsInternal.collectedBasis_coe (h : IsInternal A) {α : ι → Type*}
     sigmaFinsuppAddEquivDFinsupp_apply]
   rw [DFinsupp.mapRange.linearEquiv_symm]
   erw [DFinsupp.mapRange.linearEquiv_apply]
-  simp only [DFinsupp.mapRange_single, Basis.repr_symm_apply, Finsupp.total_single, one_smul,
+  simp only [DFinsupp.mapRange_single, Basis.repr_symm_apply, linearCombination_single, one_smul,
     toModule]
   erw [DFinsupp.lsum_single]
   simp only [Submodule.coeSubtype]

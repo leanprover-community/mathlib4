@@ -25,7 +25,7 @@ the one element space in `CompHaus`.
 of the constant sheaf functor.
 * `isDiscrete_iff_of_equivalence` : The property of a sheaf of being discrete is invariant under
 equivalence of sheaf categories.
-* `isDiscrete_iff_forget` : Given a "forgetful" functor `U : A ⥤ B` a sheaf `F : Sheaf J A` is
+* `isDiscrete_iff_forget` : Given a "forgetful" functor `U : A ⥤ B` a sheaf `F : Sheaf J A` is
 discrete if and only if the sheaf given by postcomposition with `U` is discrete.
 
 ## Future work
@@ -39,8 +39,10 @@ open CategoryTheory Limits Functor Adjunction Opposite Category Functor
 namespace CategoryTheory.Sheaf
 
 variable {C : Type*} [Category C] (J : GrothendieckTopology C) {A : Type*} [Category A]
-  [HasWeakSheafify J A] [(constantSheaf J A).Faithful] [(constantSheaf J A).Full]
-  {t : C} (ht : IsTerminal t)
+  [HasWeakSheafify J A] {t : C} (ht : IsTerminal t)
+
+section
+variable [(constantSheaf J A).Faithful] [(constantSheaf J A).Full]
 
 /--
 A sheaf is discrete if it is a discrete object of the "underlying object" functor from the sheaf
@@ -80,8 +82,6 @@ variable (G : C ⥤ D)
   [∀ (X : Dᵒᵖ), HasLimitsOfShape (StructuredArrow X G.op) A]
   [G.IsDenseSubsite J K] (ht' : IsTerminal (G.obj t))
 
-variable [(constantSheaf J A).Faithful] [(constantSheaf J A).Full]
-
 open Functor.IsDenseSubsite
 
 noncomputable example :
@@ -94,8 +94,9 @@ variable (A) in
 /--
 The constant sheaf functor commutes up to isomorphism with any equivalence of sheaf categories.
 
-This is an auxiliary definition used to prove `Sheaf.isDiscrete_iff` below, which says that the
-property of a sheaf of being a discrete object is invariant under equivalence of sheaf categories.
+This is an auxiliary definition used to prove `Sheaf.isDiscrete_iff_of_equivalence` below, which
+says that the property of a sheaf of being a discrete object is invariant under equivalence of
+sheaf categories.
 -/
 noncomputable def equivCommuteConstant :
     let e : Sheaf J A ≌ Sheaf K A :=
@@ -110,8 +111,9 @@ variable (A) in
 /--
 The constant sheaf functor commutes up to isomorphism with any equivalence of sheaf categories.
 
-This is an auxiliary definition used to prove `Sheaf.isDiscrete_iff` below, which says that the
-property of a sheaf of being a discrete object is invariant under equivalence of sheaf categories.
+This is an auxiliary definition used to prove `Sheaf.isDiscrete_iff_of_equivalence` below, which
+says that the property of a sheaf of being a discrete object is invariant under equivalence of
+sheaf categories.
 -/
 noncomputable def equivCommuteConstant' :
     let e : Sheaf J A ≌ Sheaf K A :=
@@ -152,12 +154,11 @@ lemma isDiscrete_iff_of_equivalence (F : Sheaf K A) :
 
 end Equivalence
 
+end
+
 section Forget
 
-variable {B : Type*} [Category B] (U : A ⥤ B)
-  [HasWeakSheafify J A] [HasWeakSheafify J B]
-  [(constantSheaf J A).Faithful] [(constantSheaf J A).Full]
-  [(constantSheaf J B).Faithful] [(constantSheaf J B).Full]
+variable {B : Type*} [Category B] (U : A ⥤ B) [HasWeakSheafify J B]
   [J.PreservesSheafification U] [J.HasSheafCompose U] (F : Sheaf J A)
 
 open Limits
@@ -259,12 +260,13 @@ lemma sheafCompose_reflects_discrete [(sheafCompose J U).ReflectsIsomorphisms]
       sheafToPresheaf_map, f, ← constantSheafAdj_counit_w]
     exact inferInstanceAs (IsIso (_ ≫ ((sheafToPresheaf J B).map
       ((constantSheafAdj J B ht).counit.app ((sheafCompose J U).obj F)))))
-  have : IsIso f := by
-    apply ReflectsIsomorphisms.reflects (sheafToPresheaf J B) _
-  apply ReflectsIsomorphisms.reflects (sheafCompose J U) _
+  have := isIso_of_reflects_iso f (sheafToPresheaf J B)
+  exact isIso_of_reflects_iso _ (sheafCompose J U)
 
-instance [h : F.IsDiscrete J ht] :
-    ((sheafCompose J U).obj F).IsDiscrete J ht := by
+variable [(constantSheaf J A).Full] [(constantSheaf J A).Faithful]
+  [(constantSheaf J B).Full] [(constantSheaf J B).Faithful]
+
+instance [h : F.IsDiscrete J ht] : ((sheafCompose J U).obj F).IsDiscrete J ht := by
   rw [isDiscrete_iff_mem_essImage] at h ⊢
   obtain ⟨Y, ⟨i⟩⟩ := h
   exact ⟨U.obj Y, ⟨(fullyFaithfulSheafToPresheaf _ _).preimageIso

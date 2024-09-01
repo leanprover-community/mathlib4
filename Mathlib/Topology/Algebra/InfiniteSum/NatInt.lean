@@ -108,7 +108,7 @@ end Multipliable
 
 section tprod
 
-variable [T2Space M] {α β γ : Type*}
+variable {α β γ : Type*}
 
 section Encodable
 
@@ -175,7 +175,7 @@ end Countable
 
 section ContinuousMul
 
-variable [ContinuousMul M]
+variable [T2Space M] [ContinuousMul M]
 
 @[to_additive]
 theorem prod_mul_tprod_nat_mul'
@@ -358,7 +358,7 @@ lemma HasProd.of_nat_of_neg_add_one {f : ℤ → M}
 
 @[to_additive Summable.of_nat_of_neg_add_one]
 lemma Multipliable.of_nat_of_neg_add_one {f : ℤ → M}
-    (hf₁ : Multipliable fun n : ℕ ↦ f n)  (hf₂ : Multipliable fun n : ℕ ↦ f (-(n + 1))) :
+    (hf₁ : Multipliable fun n : ℕ ↦ f n) (hf₂ : Multipliable fun n : ℕ ↦ f (-(n + 1))) :
     Multipliable f :=
   (hf₁.hasProd.of_nat_of_neg_add_one hf₂.hasProd).multipliable
 

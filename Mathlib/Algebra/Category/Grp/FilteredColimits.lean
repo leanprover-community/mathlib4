@@ -26,13 +26,9 @@ universe v u
 
 noncomputable section
 
-open scoped Classical
+open CategoryTheory Limits
 
-open CategoryTheory
-
-open CategoryTheory.Limits
-
-open CategoryTheory.IsFiltered renaming max → max' -- avoid name collision with `_root_.max`.
+open IsFiltered renaming max → max' -- avoid name collision with `_root_.max`.
 
 namespace Grp.FilteredColimits
 
@@ -62,7 +58,7 @@ abbrev G.mk : (Σ j, F.obj j) → G.{v, u} F :=
 theorem G.mk_eq (x y : Σ j, F.obj j)
     (h : ∃ (k : J) (f : x.1 ⟶ k) (g : y.1 ⟶ k), F.map f x.2 = F.map g y.2) :
     G.mk.{v, u} F x = G.mk F y :=
-  Quot.EqvGen_sound (Types.FilteredColimit.eqvGen_quot_rel_of_rel (F ⋙ forget Grp) x y h)
+  Quot.eqvGen_sound (Types.FilteredColimit.eqvGen_quot_rel_of_rel (F ⋙ forget Grp) x y h)
 
 /-- The "unlifted" version of taking inverses in the colimit. -/
 @[to_additive "The \"unlifted\" version of negation in the colimit."]
@@ -96,14 +92,14 @@ theorem colimit_inv_mk_eq (x : Σ j, F.obj j) : (G.mk.{v, u} F x)⁻¹ = G.mk F 
 @[to_additive]
 noncomputable instance colimitGroup : Group (G.{v, u} F) :=
   { colimitInv.{v, u} F, (G.{v, u} F).str with
-    mul_left_inv := fun x => by
+    inv_mul_cancel := fun x => by
       refine Quot.inductionOn x ?_; clear x; intro x
-      cases' x with j x
+      obtain ⟨j, x⟩ := x
       erw [colimit_inv_mk_eq,
         colimit_mul_mk_eq (F ⋙ forget₂ Grp MonCat.{max v u}) ⟨j, _⟩ ⟨j, _⟩ j (𝟙 j) (𝟙 j),
         colimit_one_eq (F ⋙ forget₂ Grp MonCat.{max v u}) j]
       dsimp
-      erw [CategoryTheory.Functor.map_id, mul_left_inv] }
+      erw [CategoryTheory.Functor.map_id, inv_mul_cancel] }
 
 /-- The bundled group giving the filtered colimit of a diagram. -/
 @[to_additive "The bundled additive group giving the filtered colimit of a diagram."]

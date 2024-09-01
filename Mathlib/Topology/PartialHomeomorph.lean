@@ -210,11 +210,6 @@ theorem replaceEquiv_eq_self (e' : PartialEquiv X Y)
 theorem source_preimage_target : e.source ⊆ e ⁻¹' e.target :=
   e.mapsTo
 
-@[deprecated toPartialEquiv_injective (since := "2023-02-18")]
-theorem eq_of_partialEquiv_eq {e e' : PartialHomeomorph X Y}
-    (h : e.toPartialEquiv = e'.toPartialEquiv) : e = e' :=
-  toPartialEquiv_injective h
-
 theorem eventually_left_inverse {x} (hx : x ∈ e.source) :
     ∀ᶠ y in 𝓝 x, e.symm (e y) = y :=
   (e.open_source.eventually_mem hx).mono e.left_inv'
@@ -288,12 +283,6 @@ called `EqOnSource`. -/
 protected theorem ext (e' : PartialHomeomorph X Y) (h : ∀ x, e x = e' x)
     (hinv : ∀ x, e.symm x = e'.symm x) (hs : e.source = e'.source) : e = e' :=
   toPartialEquiv_injective (PartialEquiv.ext h hinv hs)
-
-protected theorem ext_iff {e e' : PartialHomeomorph X Y} :
-    e = e' ↔ (∀ x, e x = e' x) ∧ (∀ x, e.symm x = e'.symm x) ∧ e.source = e'.source :=
-  ⟨by
-    rintro rfl
-    exact ⟨fun x => rfl, fun x => rfl, rfl⟩, fun h => e.ext e' h.1 h.2.1 h.2.2⟩
 
 @[simp, mfld_simps]
 theorem symm_toPartialEquiv : e.symm.toPartialEquiv = e.toPartialEquiv.symm :=
@@ -372,7 +361,7 @@ theorem eventually_nhdsWithin' {x : X} (p : X → Prop) {s : Set X}
 
 /-- This lemma is useful in the manifold library in the case that `e` is a chart. It states that
   locally around `e x` the set `e.symm ⁻¹' s` is the same as the set intersected with the target
-  of `e` and some other neighborhood of `f x` (which will be the source of a chart on `Z`).  -/
+  of `e` and some other neighborhood of `f x` (which will be the source of a chart on `Z`). -/
 theorem preimage_eventuallyEq_target_inter_preimage_inter {e : PartialHomeomorph X Y} {s : Set X}
     {t : Set Z} {x : X} {f : X → Z} (hf : ContinuousWithinAt f s x) (hxe : x ∈ e.source)
     (ht : t ∈ 𝓝 (f x)) :
@@ -1013,7 +1002,7 @@ theorem continuousOn_iff_continuousOn_comp_right {f : Y → Z} {s : Set Y} (h : 
 
 /-- Continuity within a set at a point can be read under left composition with a local
 homeomorphism if a neighborhood of the initial point is sent to the source of the local
-homeomorphism-/
+homeomorphism -/
 theorem continuousWithinAt_iff_continuousWithinAt_comp_left {f : Z → X} {s : Set Z} {x : Z}
     (hx : f x ∈ e.source) (h : f ⁻¹' e.source ∈ 𝓝[s] x) :
     ContinuousWithinAt f s x ↔ ContinuousWithinAt (e ∘ f) s x := by
@@ -1026,7 +1015,7 @@ theorem continuousWithinAt_iff_continuousWithinAt_comp_left {f : Z → X} {s : S
   exact this.congr (fun y hy => by simp [e.left_inv hy.2]) (by simp [e.left_inv hx])
 
 /-- Continuity at a point can be read under left composition with a partial homeomorphism if a
-neighborhood of the initial point is sent to the source of the partial homeomorphism-/
+neighborhood of the initial point is sent to the source of the partial homeomorphism -/
 theorem continuousAt_iff_continuousAt_comp_left {f : Z → X} {x : Z} (h : f ⁻¹' e.source ∈ 𝓝 x) :
     ContinuousAt f x ↔ ContinuousAt (e ∘ f) x := by
   have hx : f x ∈ e.source := (mem_of_mem_nhds h : _)

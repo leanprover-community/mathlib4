@@ -81,9 +81,6 @@ theorem coe_mk_apply (f₁ : α → Option β) (f₂ : β → Option α) (h) (x 
 @[ext] theorem ext {f g : α ≃. β} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
 
-theorem ext_iff {f g : α ≃. β} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
-
 /-- The identity map as a partial equivalence. -/
 @[refl]
 protected def refl (α : Type*) : α ≃. α where
@@ -121,7 +118,7 @@ theorem symm_refl : (PEquiv.refl α).symm = PEquiv.refl α :=
   rfl
 
 @[simp]
-theorem symm_symm (f : α ≃. β) : f.symm.symm = f := by cases f; rfl
+theorem symm_symm (f : α ≃. β) : f.symm.symm = f := rfl
 
 theorem symm_bijective : Function.Bijective (PEquiv.symm : (α ≃. β) → β ≃. α) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
@@ -370,7 +367,7 @@ instance instPartialOrderPEquiv : PartialOrder (α ≃. β) where
     ext
       (by
         intro a
-        cases' h : g a with b
+        rcases h : g a with _ | b
         · exact eq_none_iff_forall_not_mem.2 fun b hb => Option.not_mem_none b <| h ▸ fg a b hb
         · exact gf _ _ h)
 

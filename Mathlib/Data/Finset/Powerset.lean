@@ -112,12 +112,12 @@ instance decidableForallOfDecidableSubsets {s : Finset α} {p : ∀ t ⊆ s, Pro
 /-- For predicate `p` decidable on subsets, it is decidable whether `p` holds for any subset. -/
 instance decidableExistsOfDecidableSubsets' {s : Finset α} {p : Finset α → Prop}
     [∀ t, Decidable (p t)] : Decidable (∃ t ⊆ s, p t) :=
-  decidable_of_iff (∃ (t : _) (_h : t ⊆ s), p t) $ by simp
+  decidable_of_iff (∃ (t : _) (_h : t ⊆ s), p t) <| by simp
 
 /-- For predicate `p` decidable on subsets, it is decidable whether `p` holds for every subset. -/
 instance decidableForallOfDecidableSubsets' {s : Finset α} {p : Finset α → Prop}
     [∀ t, Decidable (p t)] : Decidable (∀ t ⊆ s, p t) :=
-  decidable_of_iff (∀ (t : _) (_h : t ⊆ s), p t) $ by simp
+  decidable_of_iff (∀ (t : _) (_h : t ⊆ s), p t) <| by simp
 
 end Powerset
 
@@ -195,7 +195,7 @@ theorem powersetCard_zero (s : Finset α) : s.powersetCard 0 = {∅} := by
       exact ⟨empty_subset s, rfl⟩⟩
 
 lemma powersetCard_empty_subsingleton (n : ℕ) :
-    (powersetCard n (∅ : Finset α) : Set $ Finset α).Subsingleton := by
+    (powersetCard n (∅ : Finset α) : Set <| Finset α).Subsingleton := by
   simp [Set.Subsingleton, subset_empty]
 
 @[simp]
@@ -209,9 +209,9 @@ theorem powersetCard_one (s : Finset α) :
 
 @[simp]
 lemma powersetCard_eq_empty : powersetCard n s = ∅ ↔ s.card < n := by
-  refine ⟨?_, fun h ↦ card_eq_zero.1 $ by rw [card_powersetCard, Nat.choose_eq_zero_of_lt h]⟩
+  refine ⟨?_, fun h ↦ card_eq_zero.1 <| by rw [card_powersetCard, Nat.choose_eq_zero_of_lt h]⟩
   contrapose!
-  exact fun h ↦ nonempty_iff_ne_empty.1 $ (exists_subset_card_eq h).imp $ by simp
+  exact fun h ↦ nonempty_iff_ne_empty.1 <| (exists_subset_card_eq h).imp <| by simp
 
 @[simp] lemma powersetCard_card_add (s : Finset α) (hn : 0 < n) :
     s.powersetCard (s.card + n) = ∅ := by simpa

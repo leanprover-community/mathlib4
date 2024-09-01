@@ -36,7 +36,7 @@ namespace Equiv.Perm
 
 section CycleOf
 
-variable {f g : Perm α} {x y : α} [DecidableRel f.SameCycle] [DecidableRel g.SameCycle]
+variable {f g : Perm α} {x y : α}
 
 /-- `f.cycleOf x` is the cycle of the permutation `f` to which `x` belongs. -/
 def cycleOf (f : Perm α) [DecidableRel f.SameCycle] (x : α) : Perm α :=
@@ -61,9 +61,10 @@ theorem cycleOf_inv (f : Perm α) [DecidableRel f.SameCycle] (x : α) :
 theorem cycleOf_pow_apply_self (f : Perm α) [DecidableRel f.SameCycle] (x : α) :
     ∀ n : ℕ, (cycleOf f x ^ n) x = (f ^ n) x := by
   intro n
-  induction' n with n hn
-  · rfl
-  · rw [pow_succ', mul_apply, cycleOf_apply, hn, if_pos, pow_succ', mul_apply]
+  induction n with
+  | zero => rfl
+  | succ n hn =>
+    rw [pow_succ', mul_apply, cycleOf_apply, hn, if_pos, pow_succ', mul_apply]
     exact ⟨n, rfl⟩
 
 @[simp]
@@ -74,13 +75,16 @@ theorem cycleOf_zpow_apply_self (f : Perm α) [DecidableRel f.SameCycle] (x : α
   · exact cycleOf_pow_apply_self f x z
   · rw [zpow_negSucc, ← inv_pow, cycleOf_inv, zpow_negSucc, ← inv_pow, cycleOf_pow_apply_self]
 
-theorem SameCycle.cycleOf_apply : SameCycle f x y → cycleOf f x y = f y :=
+theorem SameCycle.cycleOf_apply [DecidableRel f.SameCycle] :
+    SameCycle f x y → cycleOf f x y = f y :=
   ofSubtype_apply_of_mem _
 
-theorem cycleOf_apply_of_not_sameCycle : ¬SameCycle f x y → cycleOf f x y = y :=
+theorem cycleOf_apply_of_not_sameCycle [DecidableRel f.SameCycle] :
+    ¬SameCycle f x y → cycleOf f x y = y :=
   ofSubtype_apply_of_not_mem _
 
-theorem SameCycle.cycleOf_eq (h : SameCycle f x y) : cycleOf f x = cycleOf f y := by
+theorem SameCycle.cycleOf_eq [DecidableRel f.SameCycle] (h : SameCycle f x y) :
+    cycleOf f x = cycleOf f y := by
   ext z
   rw [Equiv.Perm.cycleOf_apply]
   split_ifs with hz
@@ -108,7 +112,8 @@ theorem cycleOf_apply_apply_self (f : Perm α) [DecidableRel f.SameCycle] (x : �
 theorem cycleOf_apply_self (f : Perm α) [DecidableRel f.SameCycle] (x : α) : cycleOf f x x = f x :=
   SameCycle.rfl.cycleOf_apply
 
-theorem IsCycle.cycleOf_eq (hf : IsCycle f) (hx : f x ≠ x) : cycleOf f x = f :=
+theorem IsCycle.cycleOf_eq [DecidableRel f.SameCycle]
+    (hf : IsCycle f) (hx : f x ≠ x) : cycleOf f x = f :=
   Equiv.ext fun y =>
     if h : SameCycle f x y then by rw [h.cycleOf_apply]
     else by
@@ -138,8 +143,8 @@ theorem cycleOf_self_apply_zpow (f : Perm α) [DecidableRel f.SameCycle] (n : �
     cycleOf f ((f ^ n) x) = cycleOf f x :=
   SameCycle.rfl.zpow_left.cycleOf_eq
 
-protected theorem IsCycle.cycleOf [DecidableEq α] (hf : IsCycle f) :
-    cycleOf f x = if f x = x then 1 else f := by
+protected theorem IsCycle.cycleOf [DecidableRel f.SameCycle] [DecidableEq α]
+    (hf : IsCycle f) : cycleOf f x = if f x = x then 1 else f := by
   by_cases hx : f x = x
   · rwa [if_pos hx, cycleOf_eq_one_iff]
   · rwa [if_neg hx, hf.cycleOf_eq]
@@ -181,7 +186,8 @@ theorem pow_mod_orderOf_cycleOf_apply (f : Perm α) [DecidableRel f.SameCycle] (
     (f ^ (n % orderOf (cycleOf f x))) x = (f ^ n) x := by
   rw [← cycleOf_pow_apply_self f, ← cycleOf_pow_apply_self f, pow_mod_orderOf]
 
-theorem cycleOf_mul_of_apply_right_eq_self [DecidableRel (f * g).SameCycle]
+theorem cycleOf_mul_of_apply_right_eq_self [DecidableRel f.SameCycle]
+    [DecidableRel (f * g).SameCycle]
     (h : Commute f g) (x : α) (hx : g x = x) : (f * g).cycleOf x = f.cycleOf x := by
   ext y
   by_cases hxy : (f * g).SameCycle x y
@@ -194,8 +200,8 @@ theorem cycleOf_mul_of_apply_right_eq_self [DecidableRel (f * g).SameCycle]
     refine ⟨z, ?_⟩
     simp [h.mul_zpow, zpow_apply_eq_self_of_apply_eq_self hx]
 
-theorem Disjoint.cycleOf_mul_distrib [DecidableRel (f * g).SameCycle]
-    [DecidableRel (g * f).SameCycle]  (h : f.Disjoint g) (x : α) :
+theorem Disjoint.cycleOf_mul_distrib [DecidableRel f.SameCycle] [DecidableRel g.SameCycle]
+    [DecidableRel (f * g).SameCycle] [DecidableRel (g * f).SameCycle] (h : f.Disjoint g) (x : α) :
     (f * g).cycleOf x = f.cycleOf x * g.cycleOf x := by
   cases' (disjoint_iff_eq_or_eq.mp h) x with hfx hgx
   · simp [h.commute.eq, cycleOf_mul_of_apply_right_eq_self h.symm.commute, hfx]
@@ -275,7 +281,7 @@ theorem SameCycle.exists_pow_eq [DecidableEq α] [Fintype α] (f : Perm α) (h :
     · refine ⟨(f.cycleOf x).support.card, ?_, self_le_add_right _ _, ?_⟩
       · refine zero_lt_one.trans (one_lt_card_support_of_ne_one ?_)
         simpa using hx
-      · simp only [Nat.zero_eq, pow_zero, coe_one, id_eq] at hk'
+      · simp only [pow_zero, coe_one, id_eq] at hk'
         subst hk'
         rw [← (isCycle_cycleOf _ <| mem_support.1 hx).orderOf, ← cycleOf_pow_apply_self,
           pow_orderOf_eq_one, one_apply]
