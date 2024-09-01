@@ -208,7 +208,7 @@ structure LazyEntry (α : Type) where
   /-- The metavariable context, which may contain variables appearing in this entry. -/
   mctx    : MetavarContext
   /-- The `MVarId` assignments for converting into `.star` keys. -/
-  stars   : RBMap MVarId Nat (·.name.quickCmp ·.name) := {}
+  stars   : AssocList MVarId Nat := {}
   /-- The number to be used for the next new `.star` key. -/
   nStars  : Nat := 0
   /-- The `Key`s that have already been computed. -/

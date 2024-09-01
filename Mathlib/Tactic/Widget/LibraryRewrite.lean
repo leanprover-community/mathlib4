@@ -138,9 +138,8 @@ can be excluded.
 Exclude lemmas from modules
 in the `librarySearch.excludedModules` option. -/
 def getCandidates (e : Expr) : MetaM (Array (Array RewriteLemma)) := do
-  let constantsPerTask := 1000
   let matchResult ← RefinedDiscrTree.findImportMatches
-    importedRewriteLemmasExt addRewriteEntry droppedKeys constantsPerTask e
+    importedRewriteLemmasExt addRewriteEntry droppedKeys (constantsPerTask := 5000) e
   let candidates := matchResult.elts.reverse.concatMap id
   let excludedModules := getLibrarySearchExcludedModules (← getOptions)
   let env ← getEnv

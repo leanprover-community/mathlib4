@@ -266,7 +266,7 @@ private def etaPossibilities (e : Expr) (lambdas : List FVarId)
   | _, _ => return [])
 
 /-- run `etaPossibilities`, and cache the result if there are multiple possibilities. -/
-@[inline]
+@[specialize]
 private def cacheEtaPossibilities (e original : Expr) (lambdas : List FVarId)
     (entry : LazyEntry α)
     (ifCached : List Key → (Key × LazyEntry α))

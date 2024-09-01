@@ -107,6 +107,7 @@ private def treeCtx (ctx : Core.Context) : Core.Context := {
   }
 
 /-- Returns candidates from all imported modules that match the expression. -/
+@[specialize]
 def findImportMatches
     (ext : EnvExtension (IO.Ref (Option (RefinedDiscrTree α))))
     (addEntry : Name → ConstantInfo → MetaM (Array (Key × LazyEntry α)))
@@ -157,6 +158,7 @@ based on priority and cache module declarations
   decide when to create new task.
 * `ty` is the expression type.
 -/
+@[specialize]
 def findMatchesExt
     (moduleTreeRef : ModuleDiscrTreeRef α)
     (ext : EnvExtension (IO.Ref (Option (RefinedDiscrTree α))))
@@ -180,6 +182,7 @@ def findMatchesExt
   decide when to create new task.
 * `ty` is the expression type.
 -/
+@[specialize]
 def findMatches (ext : EnvExtension (IO.Ref (Option (RefinedDiscrTree α))))
     (addEntry : Name → ConstantInfo → MetaM (Array (Key × LazyEntry α)))
     (droppedKeys : List (List RefinedDiscrTree.Key) := [])

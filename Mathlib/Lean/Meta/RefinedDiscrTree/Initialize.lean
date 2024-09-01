@@ -99,6 +99,7 @@ private def blacklistInsertion (env : Environment) (declName : Name) : Bool :=
   || (declName matches .str _ "inj")
   || (declName matches .str _ "noConfusionType")
 
+@[specialize]
 private def addConstToPreDiscrTree
     (cctx : Core.Context)
     (env : Environment)
@@ -156,6 +157,7 @@ private def toFlat (d : ImportData) (tree : PreDiscrTree α) :
   let de ← d.errors.swap #[]
   pure ⟨tree, de⟩
 
+@[specialize]
 private partial def loadImportedModule
     (cctx : Core.Context)
     (env : Environment)
@@ -174,6 +176,7 @@ private partial def loadImportedModule
   else
     pure tree
 
+@[specialize]
 private def importedEnvironmentInitResults (cctx : Core.Context) (ngen : NameGenerator)
     (env : Environment) (act : Name → ConstantInfo → MetaM (Array (Key × LazyEntry α)))
     (start stop : Nat) : BaseIO (InitResults α) := do
@@ -205,6 +208,7 @@ private def logImportFailure (f : ImportFailure) : MetaM Unit :=
   logError m!"Processing failure with {f.const} in {f.module}:\n  {f.exception.toMessageData}"
 
 /-- Create a discriminator tree for imported environment. -/
+@[specialize]
 def createImportedDiscrTree (cctx : Core.Context) (ngen : NameGenerator) (env : Environment)
     (act : Name → ConstantInfo → MetaM (Array (Key × LazyEntry α)))
     (droppedKeys : List (List RefinedDiscrTree.Key))
