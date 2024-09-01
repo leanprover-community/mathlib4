@@ -71,8 +71,8 @@ theorem Finset.ciInf_eq_min'_image {s : Finset ι} (h : ∃ x ∈ s, f x ≤ sIn
     (h' : (s.image f).Nonempty := by classical exact image_nonempty.mpr (h.imp fun _ ↦ And.left)) :
     ⨅ i ∈ s, f i = (s.image f).min' h' := by
   classical
-  rw [← OrderDual.toDual_inj, toDual_min', toDual_ciInf]
-  simp only [Function.comp_apply, toDual_ciInf]
+  rw [← OrderDual.toDual_inj, toDual_min', toDual_iInf]
+  simp only [Function.comp_apply, toDual_iInf]
   rw [ciSup_eq_max'_image _ h]
   simp only [image_image]
   congr
