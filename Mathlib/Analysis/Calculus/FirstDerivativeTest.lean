@@ -57,34 +57,6 @@ theorem differentiableOn_differentiableAt_Ioo.{u_1, u_2, u_3} {𝕜 : Type u_1}
   refine IsOpen.mem_nhds ?hs.hs hab
   apply isOpen_Ioo
 
-/-- If `f` is continuous at `b` and differentiable on `(a,b)` then `f` is
-  continuous on the half-open interval `(a,b]`. -/
-theorem continuous_Ioc.{u_1, u_2, u_3} {𝕜 : Type u_1} [NontriviallyNormedField 𝕜]
-  {E : Type u_2} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [LinearOrder E] [OrderClosedTopology E]
-    {F : Type u_3} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-    {f : E → F}
-    {a b : E}
-    (g₀ : a < b) (h : ContinuousAt f b)
-    (hd₀ : DifferentiableOn 𝕜 f (Set.Ioo a b)) : ContinuousOn f (Set.Ioc a b) :=
-  fun _ hx ↦ (Ioo_union_right g₀ ▸ hx).elim
-  (fun hx ↦ (hd₀.differentiableAt <| Ioo_mem_nhds hx.1 hx.2).continuousAt.continuousWithinAt)
-  (fun hx ↦ mem_singleton_iff.1 hx ▸ h.continuousWithinAt)
-
-/-- If `f` is continuous at `b` and differentiable on `(b,c)` then `f` is
-  continuous on the half-open interval `[b,c)`. -/
-theorem continuous_Ico.{u_1, u_2, u_3} {𝕜 : Type u_1} [NontriviallyNormedField 𝕜]
-  {E : Type u_2} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [LinearOrder E] [OrderClosedTopology E]
-    {F : Type u_3} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-    {f : E → F}
-    {b c : E} (g₁ : b < c)
-    (h : ContinuousAt f b) (hd₁ : DifferentiableOn 𝕜 f (Set.Ioo b c)) :
-    ContinuousOn f (Set.Ico b c) :=
-  fun _ hx ↦ (Ioo_union_left g₁ ▸ hx).elim
-  (fun hx ↦ (hd₁.differentiableAt <| Ioo_mem_nhds hx.1 hx.2).continuousAt.continuousWithinAt)
-  (fun hx ↦ mem_singleton_iff.1 hx ▸ h.continuousWithinAt)
-
 /-- If `f` is differentiable on a set `s` then so is `-f`. -/
 theorem differentiableOn_neg_Ioo
   {f : ℝ → ℝ} {s : Set ℝ} (hd₀ : DifferentiableOn ℝ f s) :
@@ -139,11 +111,19 @@ lemma first_derivative_test_max {f : ℝ → ℝ} {a b c : ℝ}
     (h₀ :  ∀ x ∈ Set.Ioo a b, 0 ≤ deriv f x)
     (h₁ :  ∀ x ∈ Set.Ioo b c, deriv f x ≤ 0)
     : IsLocalMax f b :=
+  have continuous_Ioc : ContinuousOn f (Ioc a b) :=
+    fun _ hx ↦ (Ioo_union_right g₀ ▸ hx).elim
+    (fun hx ↦ (hd₀.differentiableAt <| Ioo_mem_nhds hx.1 hx.2).continuousAt.continuousWithinAt)
+    (fun hx ↦ mem_singleton_iff.1 hx ▸ h.continuousWithinAt)
+  have continuous_Ico : ContinuousOn f (Ico b c) :=
+    fun _ hx ↦ (Ioo_union_left g₁ ▸ hx).elim
+    (fun hx ↦ (hd₁.differentiableAt <| Ioo_mem_nhds hx.1 hx.2).continuousAt.continuousWithinAt)
+    (fun hx ↦ mem_singleton_iff.1 hx ▸ h.continuousWithinAt)
   isLocalMax_of_mono_anti g₀ g₁
     (monotoneOn_of_deriv_nonneg (convex_Ioc a b)
-    (continuous_Ioc g₀ h hd₀) (by simp_all) (by simp_all))
+    continuous_Ioc (by simp_all) (by simp_all))
     (antitoneOn_of_deriv_nonpos (convex_Ico b c)
-    (continuous_Ico g₁ h hd₁) (by simp_all) (by simp_all))
+    continuous_Ico (by simp_all) (by simp_all))
 
 /-- The First-Derivative Test from calculus, minima version. -/
 lemma first_derivative_test_min {f : ℝ → ℝ} {a b c : ℝ}
