@@ -107,12 +107,11 @@ private def treeCtx (ctx : Core.Context) : Core.Context := {
   }
 
 /-- Returns candidates from all imported modules that match the expression. -/
-@[specialize]
 def findImportMatches
     (ext : EnvExtension (IO.Ref (Option (RefinedDiscrTree α))))
-    (addEntry : Name → ConstantInfo → MetaM (Array (Key × LazyEntry α)))
+    (addEntry : Name → ConstantInfo → MetaM (List (Key × LazyEntry α)))
     (droppedKeys : List (List RefinedDiscrTree.Key) := [])
-    (constantsPerTask : Nat := 1000)
+    (constantsPerTask : Nat := 1000) (capacityPerTask : Nat := 128)
     (ty : Expr) : MetaM (MatchResult α) := do
   let cctx ← (read : CoreM Core.Context)
   let ngen ← getNGen
@@ -123,7 +122,7 @@ def findImportMatches
   let importTree ← (← ref.get).getDM $ do
     profileitM Exception  "lazy discriminator import initialization" (← getOptions) <|
       createImportedDiscrTree (treeCtx cctx) cNGen (← getEnv) addEntry droppedKeys
-                (constantsPerTask := constantsPerTask)
+        (constantsPerTask := constantsPerTask) (capacityPerTask := capacityPerTask)
   let (importCandidates, importTree) ← getMatch importTree ty false
   ref.set (some importTree)
   return importCandidates
@@ -158,16 +157,15 @@ based on priority and cache module declarations
   decide when to create new task.
 * `ty` is the expression type.
 -/
-@[specialize]
 def findMatchesExt
     (moduleTreeRef : ModuleDiscrTreeRef α)
     (ext : EnvExtension (IO.Ref (Option (RefinedDiscrTree α))))
-    (addEntry : Name → ConstantInfo → MetaM (Array (Key × LazyEntry α)))
+    (addEntry : Name → ConstantInfo → MetaM (List (Key × LazyEntry α)))
     (droppedKeys : List (List RefinedDiscrTree.Key) := [])
-    (constantsPerTask : Nat := 1000)
+    (constantsPerTask : Nat := 1000) (capacityPerTask : Nat := 128)
     (ty : Expr) : MetaM (MatchResult α × MatchResult α) := do
   let moduleMatches ← findModuleMatches moduleTreeRef ty
-  let importMatches ← findImportMatches ext addEntry droppedKeys constantsPerTask ty
+  let importMatches ← findImportMatches ext addEntry droppedKeys constantsPerTask capacityPerTask ty
   return (moduleMatches, importMatches)
 
 /--
@@ -182,11 +180,10 @@ def findMatchesExt
   decide when to create new task.
 * `ty` is the expression type.
 -/
-@[specialize]
 def findMatches (ext : EnvExtension (IO.Ref (Option (RefinedDiscrTree α))))
-    (addEntry : Name → ConstantInfo → MetaM (Array (Key × LazyEntry α)))
+    (addEntry : Name → ConstantInfo → MetaM (List (Key × LazyEntry α)))
     (droppedKeys : List (List RefinedDiscrTree.Key) := [])
-    (constantsPerTask : Nat := 1000)
+    (constantsPerTask : Nat := 1000) (capacityPerTask : Nat := 128)
     (ty : Expr) : MetaM (MatchResult α × MatchResult α) := do
   let moduleTreeRef ← createModuleTreeRef addEntry droppedKeys
-  findMatchesExt moduleTreeRef ext addEntry droppedKeys constantsPerTask ty
+  findMatchesExt moduleTreeRef ext addEntry droppedKeys constantsPerTask capacityPerTask ty

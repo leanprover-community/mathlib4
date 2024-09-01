@@ -33,13 +33,13 @@ private structure PreDiscrTree (α : Type) where
 
 namespace PreDiscrTree
 
+@[specialize]
 private def modifyAt (d : PreDiscrTree α) (k : Key)
     (f : Array (LazyEntry α) → Array (LazyEntry α)) : PreDiscrTree α :=
   let { root, tries } := d
   match root.find? k with
   | .none =>
-    let root := root.insert k tries.size
-    { root, tries := tries.push (f #[]) }
+    { root := root.insert k tries.size, tries := tries.push (f #[]) }
   | .some i =>
     { root, tries := tries.modify i f }
 
@@ -99,7 +99,6 @@ private def blacklistInsertion (env : Environment) (declName : Name) : Bool :=
   || (declName matches .str _ "inj")
   || (declName matches .str _ "noConfusionType")
 
-@[specialize]
 private def addConstToPreDiscrTree
     (cctx : Core.Context)
     (env : Environment)
@@ -107,7 +106,7 @@ private def addConstToPreDiscrTree
     (d : ImportData)
     (cacheRef : IO.Ref Cache)
     (tree : PreDiscrTree α)
-    (act : Name → ConstantInfo → MetaM (Array (Key × LazyEntry α)))
+    (act : Name → ConstantInfo → MetaM (List (Key × LazyEntry α)))
     (name : Name) (constInfo : ConstantInfo) : BaseIO (PreDiscrTree α) := do
   if constInfo.isUnsafe then return tree
   if blacklistInsertion env name then return tree
@@ -157,11 +156,10 @@ private def toFlat (d : ImportData) (tree : PreDiscrTree α) :
   let de ← d.errors.swap #[]
   pure ⟨tree, de⟩
 
-@[specialize]
 private partial def loadImportedModule
     (cctx : Core.Context)
     (env : Environment)
-    (act : Name → ConstantInfo → MetaM (Array (Key × LazyEntry α)))
+    (act : Name → ConstantInfo → MetaM (List (Key × LazyEntry α)))
     (d : ImportData)
     (cacheRef : IO.Ref Cache)
     (tree : PreDiscrTree α)
@@ -176,12 +174,12 @@ private partial def loadImportedModule
   else
     pure tree
 
-@[specialize]
 private def importedEnvironmentInitResults (cctx : Core.Context) (ngen : NameGenerator)
-    (env : Environment) (act : Name → ConstantInfo → MetaM (Array (Key × LazyEntry α)))
-    (start stop : Nat) : BaseIO (InitResults α) := do
-      let cacheRef ← IO.mkRef (Cache.empty ngen)
-      go (← ImportData.new) cacheRef {} start stop
+    (env : Environment) (act : Name → ConstantInfo → MetaM (List (Key × LazyEntry α)))
+    (capacity start stop : Nat) : BaseIO (InitResults α) := do
+  let cacheRef ← IO.mkRef (Cache.empty ngen)
+  let trie := { root := mkHashMap capacity }
+  go (← ImportData.new) cacheRef trie start stop
 where
   go (d : ImportData) (cacheRef : IO.Ref Cache) (tree : PreDiscrTree α) (start stop : Nat) :
       BaseIO (InitResults α) := do
@@ -208,11 +206,10 @@ private def logImportFailure (f : ImportFailure) : MetaM Unit :=
   logError m!"Processing failure with {f.const} in {f.module}:\n  {f.exception.toMessageData}"
 
 /-- Create a discriminator tree for imported environment. -/
-@[specialize]
 def createImportedDiscrTree (cctx : Core.Context) (ngen : NameGenerator) (env : Environment)
-    (act : Name → ConstantInfo → MetaM (Array (Key × LazyEntry α)))
+    (act : Name → ConstantInfo → MetaM (List (Key × LazyEntry α)))
     (droppedKeys : List (List RefinedDiscrTree.Key))
-    (constantsPerTask : Nat := 1000) :
+    (constantsPerTask : Nat := 1000) (capacityPerTask := 128) :
     MetaM (RefinedDiscrTree α) := do
   let numModules := env.header.moduleData.size
   let rec
@@ -223,21 +220,29 @@ def createImportedDiscrTree (cctx : Core.Context) (ngen : NameGenerator) (env : 
         let cnt := cnt + mdata.constants.size
         if cnt > constantsPerTask then
           let (childNGen, ngen) := ngen.mkChild
-          let t ← (importedEnvironmentInitResults cctx childNGen env act start (idx+1)).asTask
+          let t ← BaseIO.asTask (pure <| ← importedEnvironmentInitResults cctx childNGen env act capacityPerTask start (idx+1))
           go ngen (tasks.push t) (idx+1) 0 (idx+1)
         else
           go ngen tasks start cnt (idx+1)
       else
         if start < numModules then
           let (childNGen, _) := ngen.mkChild
-          let t ← (importedEnvironmentInitResults cctx childNGen env act start numModules).asTask
+          let t ← BaseIO.asTask (pure <| ← importedEnvironmentInitResults cctx childNGen env act capacityPerTask start numModules)
           pure (tasks.push t)
         else
           pure tasks
     termination_by env.header.moduleData.size - idx
+  -- let t0 ← IO.monoMsNow
+  let h0 ← IO.getNumHeartbeats
   let tasks ← go ngen #[] 0 0 0
+  -- let t1 ← IO.monoMsNow
+  let h1 ← IO.getNumHeartbeats
   let r := combineGet {} tasks
+  -- let t2 ← IO.monoMsNow
+  let h2 ← IO.getNumHeartbeats
   r.errors.forM logImportFailure
+  -- logInfo m! "{(t1-t0)}, and glueing: {(t2-t1)}"
+  logInfo m! "{(h1-h0)/10000}, and glueing: {(h2-h1)/10000}"
   r.tree.toLazy.dropKeys droppedKeys
 
 /--
@@ -256,7 +261,7 @@ private def createLocalPreDiscrTree
     (ngen : NameGenerator)
     (env : Environment)
     (d : ImportData)
-    (act : Name → ConstantInfo → MetaM (Array (Key × LazyEntry α))) :
+    (act : Name → ConstantInfo → MetaM (List (Key × LazyEntry α))) :
     BaseIO (PreDiscrTree α) := do
   let modName := env.header.mainModule
   let cacheRef ← IO.mkRef (Cache.empty ngen)
@@ -265,7 +270,7 @@ private def createLocalPreDiscrTree
 
 /-- Create a discriminator tree for current module declarations. -/
 def createModuleDiscrTree
-    (entriesForConst : Name → ConstantInfo → MetaM (Array (Key × LazyEntry α)))
+    (entriesForConst : Name → ConstantInfo → MetaM (List (Key × LazyEntry α)))
     (droppedKeys : List (List RefinedDiscrTree.Key)) :
     MetaM (RefinedDiscrTree α) := do
   let env ← getEnv
@@ -279,7 +284,7 @@ def createModuleDiscrTree
 /--
 Creates reference for lazy discriminator tree that only contains this module's definitions.
 -/
-def createModuleTreeRef (entriesForConst : Name → ConstantInfo → MetaM (Array (Key × LazyEntry α)))
+def createModuleTreeRef (entriesForConst : Name → ConstantInfo → MetaM (List (Key × LazyEntry α)))
     (droppedKeys : List (List RefinedDiscrTree.Key)) : MetaM (ModuleDiscrTreeRef α) := do
   profileitM Exception "build module discriminator tree" (←getOptions) $ do
     let t ← createModuleDiscrTree entriesForConst droppedKeys

@@ -27,9 +27,6 @@ To compute all the keys at once, we have
 
 namespace Lean.Meta.RefinedDiscrTree
 
-private def tmpMVarId : MVarId := { name := `_discr_tree_tmp }
-private def tmpStar := mkMVar tmpMVarId
-
 /-- Return `true` if `e` is one of the following
 - A nat literal (numeral)
 - `Nat.zero`
@@ -166,19 +163,27 @@ private def makeStackEntry (expr : Expr) : LazyM α StackEntry := do
 and return a list consisting of one `StackEntry` for each argument. -/
 private def getEntries (fn : Expr) (args : Array Expr) : LazyM α (List StackEntry) := do
   let mut fnType ← inferType fn
-  let mut j := 0
-  let mut entries := []
-  for i in [:args.size] do
-    unless fnType.isForall do
-      fnType ← whnfD (fnType.instantiateRevRange j i args)
-      j := i
-    let .forallE _ d b bi := fnType | throwError m! "expected function type {indentExpr fnType}"
-    fnType := b
-    let arg := args[i]!
-    let entry ← if ← isIgnoredArg arg d bi then pure .star else makeStackEntry arg
-    entries := entry :: entries
-  return entries
+  loop fnType 0 0 []
 where
+  /-- The main loop of `getEntries` -/
+  loop (fnType : Expr) (i j : Nat) (entries : List StackEntry) : LazyM α (List StackEntry) := do
+    if h : i < args.size then
+      let arg := args[i]
+      let cont d b bi := do
+        if ← isIgnoredArg arg d bi then
+          loop b (i+1) j (.star :: entries)
+        else
+          loop b (i+1) j ((← makeStackEntry arg) :: entries)
+      match fnType with
+      | .forallE _ d b bi => cont d b bi
+      | fnType =>
+        match ← whnfD (fnType.instantiateRevRange j i args) with
+        | .forallE _ d b bi => cont d b bi
+        | fnType =>
+          throwError m! "expected function type {indentExpr fnType}"
+    else
+      return entries
+
   /-- Determine whether the argument should be ignored. -/
   isIgnoredArg (arg domain : Expr) (binderInfo : BinderInfo) : MetaM Bool := do
     if domain.isOutParam then
@@ -208,13 +213,16 @@ private def encodingStepAux (e : Expr) (lambdas : List FVarId) (root : Bool) : L
     return (.const n nargs)
   | .proj n i a =>
     withLams lambdas do
-    let struct ← makeStackEntry (if isClass (← getEnv) n then tmpStar else a)
     stackArgs
-    modify fun s => { s with stack := struct :: s.stack}
+    if isClass (← getEnv) n then
+      modify fun s => { s with stack := .star :: s.stack}
+    else
+      let struct ← makeStackEntry a
+      modify fun s => { s with stack := struct :: s.stack}
     return .proj n i nargs
   | .fvar fvarId =>
     /- we index `fun x => x` as `id` when not at the root -/
-    if args.isEmpty && !root then
+    if !root && nargs == 0 then
       if let fvarId' :: lambdas := lambdas then
         if fvarId' == fvarId then
           return ← withLams lambdas do
@@ -222,18 +230,15 @@ private def encodingStepAux (e : Expr) (lambdas : List FVarId) (root : Bool) : L
           modify fun s => { s with stack := type :: s.stack }
           return .const ``id 1
     withLams lambdas do
-    if let some idx := (← read).bvars.indexOf? fvarId then
-      stackArgs
-      return .bvar idx nargs
     stackArgs
+    if let some idx := (← read).bvars.indexOf? fvarId then
+      return .bvar idx nargs
     return .fvar fvarId nargs
   | .mvar mvarId =>
-    if mvarId == tmpMVarId then
-      withLams lambdas (mkStar mvarId)
     /- If there are arguments, don't index the lambdas, as `e` might contain the bound variables
     When not at the root, don't index the lambdas, as it should be able to match with
     `fun _ => x + y`, which is indexed as `(fun _ => x) + (fun _ => y)`. -/
-    else if args.isEmpty && (root || lambdas.isEmpty) then
+    if nargs == 0 && (root || lambdas.isEmpty) then
       withLams lambdas (mkStar mvarId)
     else
       modifyGet mkNewStar

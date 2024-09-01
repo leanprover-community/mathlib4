@@ -106,6 +106,145 @@ Pattern a + b
 #rw?? n+1
 
 /--
+info: Pattern p = 2
+· Even 5
+  ⊢ Nat.Prime 5
+  Nat.Prime.even_iff
+
+Pattern a = b
+· 5 ≤ 2 ∧ 2 ≤ 5
+  Nat.le_antisymm_iff
+· Nat.beq 5 2 = true
+  Nat.beq_eq
+· Nat.succ 5 = Nat.succ 2
+  Nat.succ_inj
+· ↑5 = ↑2
+  Int.ofNat_inj
+· ↑5 = ↑2
+  Num.of_nat_inj
+· Int.negSucc 5 = Int.negSucc 2
+  Int.negSucc_inj
+· 5 + 1 = 2 + 1
+  Nat.add_one_inj
+· 5 ^^^ 2 = 0
+  Nat.xor_eq_zero
+· ↑5 = ↑2
+  Rat.natCast_inj
+· Nonempty (Fin 5 ≃ Fin 2)
+  Fin.equiv_iff_eq
+· Nat.divisors 5 = Nat.divisors 2
+  Nat.divisors_inj
+· 5 * 5 = 2 * 2
+  Nat.mul_self_inj
+· Nat.succPNat 5 = Nat.succPNat 2
+  Nat.succPNat_inj
+· compare 5 2 = Ordering.eq
+  Nat.compare_eq_eq
+· (5 == 2) = true
+  Nat.beq_eq_true_eq
+· 5 ≡ 2 [MOD 0]
+  Nat.modEq_zero_iff
+· ∀ (a : ℕ), a ∣ 5 ↔ a ∣ 2
+  Nat.dvd_left_iff_eq
+· (2 ^ 5).testBit 2 = true
+  Nat.testBit_two_pow
+· ↑5 = ↑2
+  Ordinal.natCast_inj
+· ↑5 = ↑2
+  Cardinal.natCast_inj
+· ↑5 = ↑2
+  EReal.natCast_eq_iff
+· ∀ (a : ℕ), 5 ∣ a ↔ 2 ∣ a
+  Nat.dvd_right_iff_eq
+· ↑5 = ↑2
+  Ordinal.nat_cast_inj
+· ↑5 = ↑2
+  PartENat.natCast_inj
+· Batteries.UnionFind.empty.Equiv 5 2
+  Batteries.UnionFind.equiv_empty
+· ack 5 ?n = ack 2 ?n
+  ack_inj_left
+· ack ?m 5 = ack ?m 2
+  ack_inj_right
+· 5 + ?n = 2 + ?n
+  Nat.add_left_inj
+· 5 ^^^ ?n = 2 ^^^ ?n
+  Nat.xor_left_inj
+· ?n + 5 = ?n + 2
+  Nat.add_right_inj
+· Nat.factorial 5 = Nat.factorial 2
+  ⊢ 1 < 5
+  Nat.factorial_inj
+· ?n ^^^ 5 = ?n ^^^ 2
+  Nat.xor_right_inj
+· ?b.digits 5 = ?b.digits 2
+  Nat.digits_inj_iff
+· ?n + 5 = ?n + 2
+  Nat.add_left_cancel_iff
+· 5 + ?n = 2 + ?n
+  Nat.add_right_cancel_iff
+· ∀ (p : ℕ), Nat.Prime p → (p ∣ 5 ↔ p ∣ 2)
+  ⊢ Squarefree 5
+  ⊢ Squarefree 2
+  Nat.Squarefree.ext_iff
+· ∀ (p : ℕ), Nat.Prime p → padicValNat p 5 = padicValNat p 2
+  ⊢ 5 ≠ 0
+  ⊢ 2 ≠ 0
+  Nat.eq_iff_prime_padicValNat_eq
+· 5 * ?a = 2 * ?a
+  ⊢ ?a ≠ 0
+  Nat.mul_left_inj
+· ?a * 5 = ?a * 2
+  ⊢ ?a ≠ 0
+  Nat.mul_right_inj
+· 5 ∣ 2
+  ⊢ Nat.Prime 2
+  ⊢ 2 ≤ 5
+  Nat.dvd_prime_two_le
+· 2 ∣ 5
+  ⊢ Nat.Prime 5
+  ⊢ 2 ≠ 1
+  Nat.Prime.dvd_iff_eq
+· List.replicate 5 ?a = List.replicate 2 ?a
+  List.replicate_left_inj
+· ?n * 5 = ?n * 2
+  ⊢ 0 < ?n
+  Nat.mul_left_cancel_iff
+· 5 * ?m = 2 * ?m
+  ⊢ 0 < ?m
+  Nat.mul_right_cancel_iff
+· ⟨5, ?h⟩ = ⟨2, ?h'⟩
+  Fin.mk_eq_mk
+· ⟨5, ?ha⟩ = ⟨2, ?hb⟩
+  Fin.mk.inj_iff
+· 5 / ?d = 2 / ?d
+  ⊢ ?d ∣ 5
+  ⊢ ?d ∣ 2
+  Nat.div_left_inj
+· ?n / 5 = ?n / 2
+  ⊢ ?n ≠ 0
+  ⊢ 5 ∣ ?n
+  ⊢ 2 ∣ ?n
+  Nat.div_eq_iff_eq_of_dvd_dvd
+· ?l[5] = ?l[2]
+  ⊢ ?l.Nodup
+  List.Nodup.getElem_inj_iff
+· ?f^[5] ?x = ?f^[2] ?x
+  ⊢ 5 < Function.minimalPeriod ?f ?x
+  ⊢ 2 < Function.minimalPeriod ?f ?x
+  Function.iterate_eq_iterate_iff_of_lt_minimalPeriod
+-/
+#guard_msgs in
+#rw?? 5=2
+
+#exit
+-- 1188831
+-- 1080396
+-- 951785, 2637 - 2947
+-- 849044, 2686 - 2630 - 2719 - 2658
+-- 742...
+
+/--
 info: Pattern n / 2
 · n.div2
   Nat.div2_val

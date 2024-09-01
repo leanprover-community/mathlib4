@@ -62,8 +62,9 @@ def isMVarSwap (t s : Expr) : Bool :=
 where
   /-- The main loop of `isMVarSwap`. Returning `none` corresponds to a failure. -/
   go (t s : Expr) (l : AssocList MVarId MVarId) : Option (AssocList MVarId MVarId) := do
-  if t.hasMVar then
-    guard s.hasMVar
+  let isTricky e := e.hasExprMVar || e.hasLevelParam
+  if isTricky t then
+    guard (isTricky s)
     match t, s with
     -- Note we don't bother keeping track of universe level metavariables.
     | .const n₁ _       , .const n₂ _        => guard (n₁ == n₂); return l
@@ -89,22 +90,22 @@ where
 
 /-- Try adding the lemma to the `RefinedDiscrTree`. -/
 def addRewriteEntry (name : Name) (cinfo : ConstantInfo) :
-    MetaM (Array (RefinedDiscrTree.Key × RefinedDiscrTree.LazyEntry RewriteLemma)) := do
+    MetaM (List (RefinedDiscrTree.Key × RefinedDiscrTree.LazyEntry RewriteLemma)) := do
   if name matches .str _ "injEq" | .str _ "sizeOf_spec" then
-    return #[]
+    return []
   let (_, _, eqn) ← forallMetaTelescope cinfo.type
-  let some (lhs, rhs) := matchEqn? eqn | return #[]
+  let some (lhs, rhs) := matchEqn? eqn | return []
   -- don't index lemmas of the form `a = ?b` where `?b` is a variable not appearing in `a`
   if let .mvar mvarId := lhs then
     if (rhs.findMVar? (· == mvarId)).isNone then
-      return #[]
+      return []
   if let .mvar mvarId := rhs then
     if (lhs.findMVar? (· == mvarId)).isNone then
-      return #[]
-  let result := (← RefinedDiscrTree.initializeLazyEntry lhs { name, symm := false } {}).toArray
+      return []
+  let result ← RefinedDiscrTree.initializeLazyEntry lhs { name, symm := false } {}
   if isMVarSwap lhs rhs then
     return result
-  return result.appendList (← RefinedDiscrTree.initializeLazyEntry rhs { name, symm := true } {})
+  return result ++ (← RefinedDiscrTree.initializeLazyEntry rhs { name, symm := true } {})
 
 
 private abbrev ExtState := IO.Ref (Option (RefinedDiscrTree RewriteLemma))
@@ -140,7 +141,7 @@ def containsPrefixOf (names : List Name) (name : Name) : Bool :=
   names.any (·.isPrefixOf name)
 
 private def droppedKeys : List (List RefinedDiscrTree.Key) :=
-  [[.star 0], [.const `Eq 3, .star 0, .star 1, .star 2]]
+  [[.star 0], [.const ``Eq 3, .star 0, .star 1, .star 2]]
 
 /-- Get all potential rewrite lemmas from the imported environment.
 By setting the `librarySearch.excludedModules` option, all lemmas from certain modules
@@ -148,8 +149,8 @@ can be excluded.
 Exclude lemmas from modules
 in the `librarySearch.excludedModules` option. -/
 def getCandidates (e : Expr) : MetaM (Array (Array RewriteLemma)) := do
-  let matchResult ← RefinedDiscrTree.findImportMatches
-    importedRewriteLemmasExt addRewriteEntry droppedKeys (constantsPerTask := 5000) e
+  let matchResult ← RefinedDiscrTree.findImportMatches importedRewriteLemmasExt addRewriteEntry
+    droppedKeys (constantsPerTask := 5000) (capacityPerTask := 256) e
   let candidates := matchResult.elts.reverse.concatMap id
   let excludedModules := getLibrarySearchExcludedModules (← getOptions)
   let env ← getEnv
