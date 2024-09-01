@@ -946,6 +946,7 @@ import Mathlib.Analysis.Calculus.FDeriv.Prod
 import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
 import Mathlib.Analysis.Calculus.FDeriv.Star
 import Mathlib.Analysis.Calculus.FDeriv.Symmetric
+import Mathlib.Analysis.Calculus.FirstDerivativeTest
 import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 import Mathlib.Analysis.Calculus.Gradient.Basic
 import Mathlib.Analysis.Calculus.Implicit
@@ -4517,6 +4518,7 @@ import Mathlib.Topology.Order.MonotoneContinuity
 import Mathlib.Topology.Order.MonotoneConvergence
 import Mathlib.Topology.Order.NhdsSet
 import Mathlib.Topology.Order.OrderClosed
+import Mathlib.Topology.Order.OrderClosedExtr
 import Mathlib.Topology.Order.PartialSups
 import Mathlib.Topology.Order.Priestley
 import Mathlib.Topology.Order.ProjIcc
