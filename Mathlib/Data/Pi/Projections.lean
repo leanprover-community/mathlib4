@@ -27,8 +27,7 @@ We also define analoguous functions for sets of the form `Set.Iic n` and `Finset
 ## Main definitions
 
 * `Function.proj s f`: Restricts the function `f` to the variables contained in `s`.
-* `Function.projNat`: Restricts the function `f` to the variables indexed by integers
-  smaller than `n`.
+* `Function.projNat n f`: Restricts the function `f` to the variables indexed by integers `≤ n`.
 -/
 
 open MeasureTheory Function
