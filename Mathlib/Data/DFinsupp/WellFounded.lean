@@ -6,8 +6,8 @@ Authors: Junyan Xu
 import Mathlib.Data.DFinsupp.Lex
 import Mathlib.Order.GameAdd
 import Mathlib.Order.Antisymmetrization
-import Mathlib.SetTheory.Ordinal.Basic
 import Mathlib.Tactic.AdaptationNote
+import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Well-foundedness of the lexicographic and product orders on `DFinsupp` and `Pi`
