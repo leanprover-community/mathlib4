@@ -51,7 +51,7 @@ jobs:
           echo "name=${tlabels} with a master-addition"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR: /repos/{owner}/{repo}/pulls/${{ github.event.number }}
+          PR: /repos/{owner}/{repo}/pulls/${{ github.event.pull_request.number }}
 
   style_lint:
     if: github.repository == 'leanprover-community/mathlib4'
