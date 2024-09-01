@@ -7,6 +7,7 @@ import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Topology.Defs.Filter
 import Mathlib.Topology.Order.OrderClosedExtr
+import Mathlib.Analysis.Calculus.FDeriv.Add
 /-!
 # The First-Derivative Test
 
@@ -57,13 +58,6 @@ theorem differentiableOn_differentiableAt_Ioo.{u_1, u_2, u_3} {𝕜 : Type u_1}
   refine IsOpen.mem_nhds ?hs.hs hab
   apply isOpen_Ioo
 
-/-- If `f` is differentiable on a set `s` then so is `-f`. -/
-theorem differentiableOn_neg_Ioo
-  {f : ℝ → ℝ} {s : Set ℝ} (hd₀ : DifferentiableOn ℝ f s) :
-    DifferentiableOn ℝ (-f) s :=
-    (show -f = ((fun x => -x) ∘ (fun x => f x)) by rfl)
-      ▸ (DifferentiableOn.comp (differentiableOn_neg Set.univ) hd₀)
-        (fun _ _ ↦ trivial)
 
 /-- If `f'` is the derivative of `f` then  `f' x ≤ 0 → 0 ≤ (-f)' x`. -/
 theorem deriv_neg_nonneg {f : ℝ → ℝ} {a b : ℝ}
@@ -136,8 +130,8 @@ lemma first_derivative_test_min {f : ℝ → ℝ} {a b c : ℝ}
     : IsLocalMin f b := by
     have Q := @first_derivative_test_max (-f) a b c g₀ g₁
       (by simp_all)
-      (by simp_all[differentiableOn_neg_Ioo])
-      (by simp_all[differentiableOn_neg_Ioo])
+      (DifferentiableOn.neg hd₀)
+      (DifferentiableOn.neg hd₁)
       (by intro x;apply deriv_neg_nonneg;repeat tauto)
       (by intro x;apply deriv_neg_nonpos;repeat tauto)
     unfold IsLocalMin IsMinFilter
