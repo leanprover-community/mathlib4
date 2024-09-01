@@ -1356,7 +1356,7 @@ lemma StrictAnti.not_bddBelow_range [NoMaxOrder α] [PredOrder β] [IsPredArchim
 
 end bdd_range
 
-section IsWellOrder
+section IsWellFounded
 
 variable [PartialOrder α]
 
@@ -1381,7 +1381,7 @@ instance (priority := 100) IsWellFounded.toIsSuccArchimedean [h : IsWellFounded 
   let h : IsPredArchimedean αᵒᵈ := by infer_instance
   ⟨h.1⟩
 
-end IsWellOrder
+end IsWellFounded
 
 section OrderBot
 
