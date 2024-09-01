@@ -1476,6 +1476,8 @@ lemma pow_pow_zmod_val_inv (hn : (Nat.card α).Coprime n) (a : α) :
 
 end Group
 
+open ZMod
+
 /-- The range of `(m * · + k)` on natural numbers is the set of elements `≥ k` in the
 residue class of `k` mod `m`. -/
 lemma Nat.range_mul_add (m k : ℕ) :
@@ -1489,3 +1491,17 @@ lemma Nat.range_mul_add (m k : ℕ) :
     simp only [ha, Nat.cast_add, add_right_eq_self, ZMod.natCast_zmod_eq_zero_iff_dvd] at H₁
     obtain ⟨b, rfl⟩ := H₁
     exact ⟨b, ha⟩
+
+/-- Equivalence between `ℕ` and `ZMod N × ℕ`, sending `n` to `(n mod N, n / N)`. -/
+def Nat.residueClassesEquiv (N : ℕ) [NeZero N] : ℕ ≃ ZMod N × ℕ where
+  toFun n := (↑n, n / N)
+  invFun p := p.1.val + N * p.2
+  left_inv n := by simpa only [val_natCast] using mod_add_div n N
+  right_inv p := by
+    ext1
+    · simp only [add_comm p.1.val, cast_add, cast_mul, natCast_self, zero_mul, natCast_val,
+        cast_id', id_eq, zero_add]
+    · simp only [add_comm p.1.val, mul_add_div (NeZero.pos _),
+        (Nat.div_eq_zero_iff <| (NeZero.pos _)).2 p.1.val_lt, add_zero]
+
+set_option linter.style.longFile 1700
