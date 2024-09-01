@@ -677,12 +677,11 @@ open Relation
 
 variable {r : α → α → Prop} {a b : α}
 
-theorem Quot.eqvGen_exact {a b : α} (H : Quot.mk r a = Quot.mk r b) : EqvGen r a b :=
+theorem Quot.eqvGen_exact (H : Quot.mk r a = Quot.mk r b) : EqvGen r a b :=
   @Quotient.exact _ (EqvGen.setoid r) a b (congrArg
     (Quot.lift (Quotient.mk (EqvGen.setoid r)) (fun x y h ↦ Quot.sound (EqvGen.rel x y h))) H)
 
-theorem Quot.eqvGen_sound {r : α → α → Prop} {a b : α} (H : EqvGen r a b) :
-    Quot.mk r a = Quot.mk r b :=
+theorem Quot.eqvGen_sound (H : EqvGen r a b) : Quot.mk r a = Quot.mk r b :=
   EqvGen.rec
     (fun _ _ h ↦ Quot.sound h)
     (fun _ ↦ rfl)
@@ -690,7 +689,6 @@ theorem Quot.eqvGen_sound {r : α → α → Prop} {a b : α} (H : EqvGen r a b)
     (fun _ _ _ _ _ IH₁ IH₂ ↦ Eq.trans IH₁ IH₂)
     H
 
-open Decidable in
 instance Quotient.decidableEq {α : Sort*} {s : Setoid α} [d : ∀ a b : α, Decidable (a ≈ b)] :
     DecidableEq (Quotient s) :=
   fun q₁ q₂ : Quotient s ↦
