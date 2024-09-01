@@ -942,7 +942,7 @@ variable {R : Type*} [CommRing R] (I : Ideal R) (n : ℕ)
 /-- I ^ n ⧸ I ^ (n + 1) is equivalent as a quotient of I ^ n or as an ideal of
 R ⧸ I ^ (n + 1). -/
 noncomputable
-def pow_quot_pow_succ_equiv_map_mk_pow_succ_pow :
+def powQuotPowSuccEquivMapMkPowSuccPow :
     ((I ^ n : Ideal R) ⧸ (I • ⊤ : Submodule R (I ^ n : Ideal R))) ≃ₗ[R]
     Ideal.map (Ideal.Quotient.mk (I ^ (n + 1))) (I ^ n) := by
   refine { LinearMap.codRestrict
@@ -968,10 +968,10 @@ def pow_quot_pow_succ_equiv_map_mk_pow_succ_pow :
 R ⧸ I ^ (n + 1). Supplied as a plain equiv to bypass typeclass synthesis issues on complex
 `Module` goals. -/
 noncomputable
-def pow_quot_pow_succ_equiv_map_mk_pow_succ_pow_equiv :
+def powQuotPowSuccEquivMapMkPowSuccPowEquiv :
     ((I ^ n : Ideal R) ⧸ (I • ⊤ : Submodule R (I ^ n : Ideal R))) ≃
     Ideal.map (Ideal.Quotient.mk (I ^ (n + 1))) (I ^ n) :=
-pow_quot_pow_succ_equiv_map_mk_pow_succ_pow I n
+  pow_quot_pow_succ_equiv_map_mk_pow_succ_pow I n
 
 end PowQuot
 
