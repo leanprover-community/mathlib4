@@ -40,7 +40,7 @@ theorem Dart.ext (d₁ d₂ : G.Dart) (h : d₁.toProd = d₂.toProd) : d₁ = d
 -- even though there is not actually a `SimpleGraph.Dart.fst` or `SimpleGraph.Dart.snd`.
 
 @[simp]
-theorem Dart.ne (d : G.Dart) : d.toProd.1 ≠ d.toProd.2 :=
+theorem Dart.fst_ne_snd (d : G.Dart) : d.fst ≠ d.snd :=
   fun h ↦ G.irrefl (h ▸ d.adj)
 
 theorem Dart.toProd_injective : Function.Injective (Dart.toProd : G.Dart → V × V) :=

@@ -496,11 +496,11 @@ theorem support_reverse {u v : V} (p : G.Walk u v) : p.reverse.support = p.suppo
 theorem support_ne_nil {u v : V} (p : G.Walk u v) : p.support ≠ [] := by cases p <;> simp
 
 @[simp]
-theorem support_head {G : SimpleGraph V} {a b : V} (p : G.Walk a b) :
+theorem head_support {G : SimpleGraph V} {a b : V} (p : G.Walk a b) :
     p.support.head (by simp) = a := by cases p <;> simp
 
 @[simp]
-theorem support_getLast {G : SimpleGraph V} {a b : V} (p : G.Walk a b) :
+theorem getLast_support {G : SimpleGraph V} {a b : V} (p : G.Walk a b) :
     p.support.getLast (by simp) = b := by
   induction p
   · simp
@@ -649,8 +649,8 @@ theorem map_fst_darts {u v : V} (p : G.Walk u v) : p.darts.map (·.fst) = p.supp
   simpa! using congr_arg List.dropLast (map_fst_darts_append p)
 
 @[simp]
-theorem darts_head_fst {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (hp : p.darts ≠ []) :
-    (p.darts.head hp).toProd.1 = a := by
+theorem head_darts_fst {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (hp : p.darts ≠ []) :
+    (p.darts.head hp).fst = a := by
   cases p
   · contradiction
   · simp
