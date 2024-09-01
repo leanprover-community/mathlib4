@@ -12,8 +12,8 @@ import Mathlib.Tactic.SimpRw
 /-!
 # Relation closures
 
-This file defines the reflexive, transitive, and reflexive transitive closures of relations.
-It also proves some basic results on definitions such as `EqvGen`.
+This file defines the reflexive, transitive, reflexive transitive and equivalence closures
+of relations and proves some basic results on them.
 
 Note that this is about unbundled relations, that is terms of types of the form `α → β → Prop`. For
 the bundled version, see `Rel`.
@@ -233,14 +233,12 @@ variable (r) in
 /-- `EqvGen r`: equivalence closure of `r`. -/
 @[mk_iff]
 inductive EqvGen : α → α → Prop
-  | rel : ∀ x y, r x y → EqvGen x y
-  | refl : ∀ x, EqvGen x x
-  | symm : ∀ x y, EqvGen x y → EqvGen y x
-  | trans : ∀ x y z, EqvGen x y → EqvGen y z → EqvGen x z
+  | rel x y : r x y → EqvGen x y
+  | refl x : EqvGen x x
+  | symm x y : EqvGen x y → EqvGen y x
+  | trans x y z : EqvGen x y → EqvGen y z → EqvGen x z
 
 attribute [mk_iff] TransGen
-
-
 attribute [refl] ReflGen.refl
 
 namespace ReflGen
