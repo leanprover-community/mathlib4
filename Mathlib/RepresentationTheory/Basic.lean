@@ -6,8 +6,8 @@ Authors: Antoine Labelle
 import Mathlib.Algebra.Group.Equiv.TypeTags
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.MonoidAlgebra.Basic
-import Mathlib.LinearAlgebra.Dual
 import Mathlib.LinearAlgebra.Contraction
+import Mathlib.LinearAlgebra.Dual
 import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!

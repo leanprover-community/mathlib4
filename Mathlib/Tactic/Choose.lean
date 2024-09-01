@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Mario Carneiro, Reid Barton, Johan Commelin
 -/
 
-import Mathlib.Util.Tactic
 import Mathlib.Logic.Function.Basic
+import Mathlib.Util.Tactic
 
 /-!
 # `choose` tactic

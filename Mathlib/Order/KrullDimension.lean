@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Fangming Li
 -/
 
+import Mathlib.Data.Nat.Lattice
 import Mathlib.Order.RelSeries
 import Mathlib.Order.WithBot
-import Mathlib.Data.Nat.Lattice
 
 /-!
 # Krull dimension of a preordered set

@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Group.Submonoid.Operations
+import Mathlib.Algebra.Regular.Basic
 import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.Algebra.Star.StarRingHom
-import Mathlib.Algebra.Regular.Basic
 
 /-! # Star ordered rings
 

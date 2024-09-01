@@ -7,8 +7,8 @@ import Mathlib.Algebra.BigOperators.Group.List
 import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Ring.Basic
-import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Algebra.Ring.Commute
+import Mathlib.Algebra.Ring.Divisibility.Basic
 
 /-!
 # Big operators on a list in rings

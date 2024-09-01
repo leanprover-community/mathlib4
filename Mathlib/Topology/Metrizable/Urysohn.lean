@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Topology.UrysohnsLemma
 import Mathlib.Topology.ContinuousFunction.Bounded
 import Mathlib.Topology.Metrizable.Basic
+import Mathlib.Topology.UrysohnsLemma
 /-!
 # Urysohn's Metrization Theorem
 

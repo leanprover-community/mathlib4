@@ -7,8 +7,8 @@ Authors: Chris Birkbeck, David Loeffler
 import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 import Mathlib.Analysis.NormedSpace.FunctionSeries
 import Mathlib.Analysis.PSeries
-import Mathlib.Order.Interval.Finset.Box
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
+import Mathlib.Order.Interval.Finset.Box
 
 /-!
 # Uniform convergence of Eisenstein series

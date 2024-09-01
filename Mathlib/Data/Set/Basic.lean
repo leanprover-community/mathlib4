@@ -7,8 +7,8 @@ import Mathlib.Algebra.Group.ZeroOne
 import Mathlib.Data.Set.Operations
 import Mathlib.Order.Basic
 import Mathlib.Order.SymmDiff
-import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.ByContra
+import Mathlib.Tactic.Tauto
 import Mathlib.Util.Delaborators
 
 /-!

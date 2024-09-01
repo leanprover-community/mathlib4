@@ -3,9 +3,9 @@ Copyright (c) 2021 Justus Springer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justus Springer
 -/
+import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.Topology.Sheaves.Forget
 import Mathlib.Topology.Sheaves.SheafCondition.PairwiseIntersections
-import Mathlib.CategoryTheory.Limits.Shapes.Types
 
 /-!
 # The sheaf condition in terms of unique gluings

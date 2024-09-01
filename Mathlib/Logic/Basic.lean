@@ -3,14 +3,14 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
+import Batteries.Logic
+import Batteries.Tactic.Lint.Basic
+import Batteries.Util.LibraryNote
+import Mathlib.Data.Int.Notation
+import Mathlib.Data.Nat.Notation
+import Mathlib.Order.Defs
 import Mathlib.Tactic.Attr.Register
 import Mathlib.Tactic.Basic
-import Batteries.Logic
-import Batteries.Util.LibraryNote
-import Batteries.Tactic.Lint.Basic
-import Mathlib.Data.Nat.Notation
-import Mathlib.Data.Int.Notation
-import Mathlib.Order.Defs
 
 /-!
 # Basic logic properties

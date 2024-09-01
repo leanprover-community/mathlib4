@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Felix Weilacher
 -/
 
-import Mathlib.Topology.Perfect
-import Mathlib.Topology.MetricSpace.Polish
 import Mathlib.Topology.MetricSpace.CantorScheme
+import Mathlib.Topology.MetricSpace.Polish
+import Mathlib.Topology.Perfect
 
 /-!
 # Perfect Sets

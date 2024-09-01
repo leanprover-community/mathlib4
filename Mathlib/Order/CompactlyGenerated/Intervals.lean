@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 
-import Mathlib.Order.CompleteLatticeIntervals
 import Mathlib.Order.CompactlyGenerated.Basic
+import Mathlib.Order.CompleteLatticeIntervals
 
 /-!
 # Results about compactness properties for intervals in complete lattices

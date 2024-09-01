@@ -3,11 +3,11 @@ Copyright (c) 2023 Andrew Yang, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.RootsOfUnity.Basic
-import Mathlib.RingTheory.AdjoinRoot
 import Mathlib.FieldTheory.Galois
 import Mathlib.LinearAlgebra.Eigenspace.Minpoly
+import Mathlib.RingTheory.AdjoinRoot
 import Mathlib.RingTheory.Norm.Basic
+import Mathlib.RingTheory.RootsOfUnity.Basic
 /-!
 # Kummer Extensions
 

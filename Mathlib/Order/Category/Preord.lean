@@ -6,8 +6,8 @@ Authors: Johan Commelin
 import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
-import Mathlib.Order.Hom.Basic
 import Mathlib.Order.CompleteBooleanAlgebra
+import Mathlib.Order.Hom.Basic
 
 /-!
 # Category of preorders

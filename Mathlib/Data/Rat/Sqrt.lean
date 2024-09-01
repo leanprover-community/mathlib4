@@ -5,8 +5,8 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Algebra.Order.Ring.Rat
-import Mathlib.Data.Rat.Lemmas
 import Mathlib.Data.Int.Sqrt
+import Mathlib.Data.Rat.Lemmas
 
 /-!
 # Square root on rational numbers

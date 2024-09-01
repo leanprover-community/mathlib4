@@ -3,8 +3,8 @@ Copyright (c) 2020 Xi Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xi Wang
 -/
-import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Data.Nat.Defs
+import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Order.Basic
 import Mathlib.Tactic.Common
 

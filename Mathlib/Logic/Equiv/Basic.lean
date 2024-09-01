@@ -11,13 +11,13 @@ import Mathlib.Data.Subtype
 import Mathlib.Data.Sum.Basic
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Function.Conjugate
-import Mathlib.Tactic.Coe
-import Mathlib.Tactic.Lift
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.Contrapose
-import Mathlib.Tactic.GeneralizeProofs
-import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.CC
+import Mathlib.Tactic.Coe
+import Mathlib.Tactic.Contrapose
+import Mathlib.Tactic.Convert
+import Mathlib.Tactic.GeneralizeProofs
+import Mathlib.Tactic.Lift
+import Mathlib.Tactic.SimpRw
 
 /-!
 # Equivalence between types

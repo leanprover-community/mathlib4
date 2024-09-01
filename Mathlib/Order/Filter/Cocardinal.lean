@@ -3,12 +3,12 @@ Copyright (c) 2024 Josha Dekker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josha Dekker
 -/
+import Mathlib.Order.Filter.Bases
+import Mathlib.Order.Filter.CardinalInter
 import Mathlib.Order.Filter.Cofinite
 import Mathlib.Order.Filter.CountableInter
-import Mathlib.Order.Filter.CardinalInter
-import Mathlib.SetTheory.Cardinal.Ordinal
 import Mathlib.SetTheory.Cardinal.Cofinality
-import Mathlib.Order.Filter.Bases
+import Mathlib.SetTheory.Cardinal.Ordinal
 
 /-!
 # The cocardinal filter

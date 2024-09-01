@@ -3,9 +3,9 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
+import Mathlib.Analysis.Normed.Field.UnitBall
 import Mathlib.Analysis.SpecialFunctions.Exp
 import Mathlib.Topology.ContinuousFunction.Basic
-import Mathlib.Analysis.Normed.Field.UnitBall
 
 /-!
 # The circle

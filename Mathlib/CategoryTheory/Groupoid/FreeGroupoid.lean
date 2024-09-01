@@ -6,10 +6,10 @@ Authors: Rémi Bottinelli
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.CategoryTheory.Functor.Basic
 import Mathlib.CategoryTheory.Groupoid
-import Mathlib.Tactic.NthRewrite
 import Mathlib.CategoryTheory.PathCategory
 import Mathlib.CategoryTheory.Quotient
 import Mathlib.Combinatorics.Quiver.Symmetric
+import Mathlib.Tactic.NthRewrite
 
 /-!
 # Free groupoid on a quiver

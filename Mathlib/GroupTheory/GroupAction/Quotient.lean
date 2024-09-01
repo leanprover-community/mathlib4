@@ -5,10 +5,10 @@ Authors: Chris Hughes, Thomas Browning
 -/
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Dynamics.PeriodicPts
+import Mathlib.GroupTheory.Commutator.Basic
+import Mathlib.GroupTheory.Coset.Basic
 import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.GroupAction.Hom
-import Mathlib.GroupTheory.Coset.Basic
-import Mathlib.GroupTheory.Commutator.Basic
 
 /-!
 # Properties of group actions involving quotient groups

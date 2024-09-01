@@ -3,8 +3,8 @@ Copyright (c) 2022 Joachim Breitner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joachim Breitner
 -/
-import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Data.Nat.GCD.BigOperators
+import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Order.SupIndep
 
 /-!

@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Order.Filter.Lift
-import Mathlib.Topology.Separation
 import Mathlib.Order.Interval.Set.Monotone
+import Mathlib.Topology.Separation
 
 /-!
 # Topology on the set of filters on a type

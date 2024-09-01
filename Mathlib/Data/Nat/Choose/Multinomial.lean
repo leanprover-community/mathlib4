@@ -5,12 +5,12 @@ Authors: Kyle Miller, Pim Otte
 -/
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.Order.Antidiag.Pi
-import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.Data.Nat.Factorial.BigOperators
-import Mathlib.Data.Nat.Factorial.DoubleFactorial
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.Finset.Sym
 import Mathlib.Data.Finsupp.Multiset
+import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.Data.Nat.Factorial.BigOperators
+import Mathlib.Data.Nat.Factorial.DoubleFactorial
 
 /-!
 # Multinomial

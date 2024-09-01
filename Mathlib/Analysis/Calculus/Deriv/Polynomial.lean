@@ -5,8 +5,8 @@ Authors: Sébastien Gouëzel, Eric Wieser
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Derivative
-import Mathlib.Analysis.Calculus.Deriv.Pow
 import Mathlib.Analysis.Calculus.Deriv.Add
+import Mathlib.Analysis.Calculus.Deriv.Pow
 
 /-!
 # Derivatives of polynomials

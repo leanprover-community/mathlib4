@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.FieldTheory.IntermediateField.Basic
-import Mathlib.RingTheory.Algebraic
-import Mathlib.FieldTheory.Tower
 import Mathlib.FieldTheory.Minpoly.Basic
+import Mathlib.FieldTheory.Tower
+import Mathlib.RingTheory.Algebraic
 
 /-!
 # Results on finite dimensionality and algebraicity of intermediate fields.

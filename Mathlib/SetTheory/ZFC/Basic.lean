@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Set.Lattice
-import Mathlib.Logic.Small.Basic
 import Mathlib.Logic.Function.OfArity
+import Mathlib.Logic.Small.Basic
 import Mathlib.Order.WellFounded
 
 /-!

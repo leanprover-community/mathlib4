@@ -3,10 +3,10 @@ Copyright (c) 2024 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Init
+import Lean.Elab.SyntheticMVars
 import Lean.Elab.Tactic.Basic
 import Lean.PrettyPrinter
-import Lean.Elab.SyntheticMVars
+import Mathlib.Init
 
 /-!
 # `#check` tactic

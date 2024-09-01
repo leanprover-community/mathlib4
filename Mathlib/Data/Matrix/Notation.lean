@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Eric Wieser
 -/
 import Mathlib.Algebra.Group.Fin.Tuple
+import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Matrix.RowCol
-import Mathlib.Data.Fin.VecNotation
 import Mathlib.Tactic.FinCases
 
 /-!

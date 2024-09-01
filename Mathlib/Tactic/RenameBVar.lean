@@ -5,8 +5,8 @@ Authors: Arthur Paulino, Patrick Massot
 -/
 
 import Lean
-import Mathlib.Util.Tactic
 import Mathlib.Lean.Expr.Basic
+import Mathlib.Util.Tactic
 
 /-!
 # The `rename_bvar` tactic

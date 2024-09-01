@@ -3,12 +3,12 @@ Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
+import Batteries.Tactic.Exact
 import Lean
+import Mathlib.Lean.Expr.Basic
 import Mathlib.Tactic.FunProp.Theorems
 import Mathlib.Tactic.FunProp.ToBatteries
 import Mathlib.Tactic.FunProp.Types
-import Mathlib.Lean.Expr.Basic
-import Batteries.Tactic.Exact
 
 /-!
 # Tactic `fun_prop` for proving function properties like `Continuous f`, `Differentiable ℝ f`, ...

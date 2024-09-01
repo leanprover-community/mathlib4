@@ -6,8 +6,8 @@ Authors: Kyle Miller, Adam Topaz, Rémi Bottinelli, Junyan Xu
 import Mathlib.CategoryTheory.Filtered.Basic
 import Mathlib.Data.Set.Finite
 import Mathlib.Data.Set.Subsingleton
-import Mathlib.Topology.Category.TopCat.Limits.Konig
 import Mathlib.Tactic.AdaptationNote
+import Mathlib.Topology.Category.TopCat.Limits.Konig
 
 /-!
 # Cofiltered systems

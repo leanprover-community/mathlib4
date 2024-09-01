@@ -3,15 +3,15 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
-import Mathlib.Data.Int.Notation
+import Batteries.Logic
 import Mathlib.Algebra.Group.ZeroOne
+import Mathlib.Data.Int.Notation
 import Mathlib.Logic.Function.Defs
 import Mathlib.Tactic.Lemma
-import Mathlib.Tactic.TypeStar
 import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.ToAdditive
+import Mathlib.Tactic.TypeStar
 import Mathlib.Util.AssertExists
-import Batteries.Logic
 
 /-!
 # Typeclasses for (semi)groups and monoids

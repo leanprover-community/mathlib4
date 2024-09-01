@@ -8,8 +8,8 @@ import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Algebra.Order.Invertible
 import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.Algebra.Order.Module.Synonym
-import Mathlib.LinearAlgebra.AffineSpace.Slope
 import Mathlib.LinearAlgebra.AffineSpace.Midpoint
+import Mathlib.LinearAlgebra.AffineSpace.Slope
 import Mathlib.Tactic.FieldSimp
 
 /-!

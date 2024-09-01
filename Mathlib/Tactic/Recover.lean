@@ -3,8 +3,8 @@ Copyright (c) 2022 Siddhartha Gadgil. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Siddhartha Gadgil, Jannis Limperg
 -/
-import Mathlib.Init
 import Lean
+import Mathlib.Init
 
 /-!
 # The `recover` tactic modifier

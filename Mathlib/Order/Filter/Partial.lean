@@ -3,8 +3,8 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Order.Filter.Basic
 import Mathlib.Data.PFun
+import Mathlib.Order.Filter.Basic
 
 /-!
 # `Tendsto` for relations and partial functions

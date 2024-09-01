@@ -5,10 +5,10 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 -/
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
-import Mathlib.Topology.Algebra.Module.StrongTopology
-import Mathlib.Analysis.Normed.Operator.LinearIsometry
 import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
+import Mathlib.Analysis.Normed.Operator.LinearIsometry
 import Mathlib.Tactic.SuppressCompilation
+import Mathlib.Topology.Algebra.Module.StrongTopology
 
 /-!
 # Operator norm on the space of continuous linear maps

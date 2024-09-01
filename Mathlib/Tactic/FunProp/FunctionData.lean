@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
 import Lean
+import Mathlib.Tactic.FunProp.Mor
 import Qq
 
-import Mathlib.Tactic.FunProp.Mor
 
 /-!
 ## `funProp` data structure holding information about a function

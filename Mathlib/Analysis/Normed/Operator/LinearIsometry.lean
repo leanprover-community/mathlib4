@@ -7,8 +7,8 @@ import Mathlib.Algebra.Star.Basic
 import Mathlib.Analysis.Normed.Group.Constructions
 import Mathlib.Analysis.Normed.Group.Submodule
 import Mathlib.Analysis.Normed.Group.Uniform
-import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.LinearAlgebra.Basis.Defs
+import Mathlib.Topology.Algebra.Module.Basic
 
 /-!
 # (Semi-)linear isometries

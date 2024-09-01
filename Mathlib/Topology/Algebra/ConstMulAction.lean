@@ -3,12 +3,12 @@ Copyright (c) 2021 Alex Kontorovich, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Kontorovich, Heather Macbeth
 -/
-import Mathlib.Topology.Algebra.Constructions
-import Mathlib.Topology.Homeomorph
-import Mathlib.GroupTheory.GroupAction.Basic
-import Mathlib.Topology.Bases
-import Mathlib.Topology.Support
 import Mathlib.Algebra.Module.ULift
+import Mathlib.GroupTheory.GroupAction.Basic
+import Mathlib.Topology.Algebra.Constructions
+import Mathlib.Topology.Bases
+import Mathlib.Topology.Homeomorph
+import Mathlib.Topology.Support
 
 /-!
 # Monoid actions continuous in the second variable

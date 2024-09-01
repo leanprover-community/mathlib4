@@ -5,8 +5,8 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Data.Set.Function
 import Mathlib.Logic.Equiv.Defs
-import Mathlib.Tactic.Core
 import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.Core
 
 /-!
 # Partial equivalences

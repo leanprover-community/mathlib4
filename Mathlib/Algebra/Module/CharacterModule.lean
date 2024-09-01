@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Junyan Xu
 -/
 
-import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.Algebra.Category.Grp.Injective
-import Mathlib.Topology.Instances.AddCircle
+import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.LinearAlgebra.Isomorphisms
+import Mathlib.Topology.Instances.AddCircle
 
 /-!
 # Character module of a module

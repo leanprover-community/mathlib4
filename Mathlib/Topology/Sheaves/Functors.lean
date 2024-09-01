@@ -3,8 +3,8 @@ Copyright (c) 2021 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu, Andrew Yang
 -/
-import Mathlib.Topology.Sheaves.SheafCondition.Sites
 import Mathlib.CategoryTheory.Sites.Pullback
+import Mathlib.Topology.Sheaves.SheafCondition.Sites
 
 /-!
 # functors between categories of sheaves

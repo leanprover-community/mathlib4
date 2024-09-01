@@ -3,9 +3,9 @@ Copyright (c) 2022 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Sébastien Gouëzel, Heather Macbeth, Floris van Doorn
 -/
+import Mathlib.Analysis.NormedSpace.OperatorNorm.Prod
 import Mathlib.Topology.FiberBundle.Constructions
 import Mathlib.Topology.VectorBundle.Basic
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Prod
 
 /-!
 # Standard constructions on vector bundles

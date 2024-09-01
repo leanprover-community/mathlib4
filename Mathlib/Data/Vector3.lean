@@ -5,8 +5,8 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Fin.Fin2
 import Mathlib.Init.Logic
-import Mathlib.Util.Notation3
 import Mathlib.Tactic.TypeStar
+import Mathlib.Util.Notation3
 
 /-!
 # Alternate definition of `Vector` in terms of `Fin2`

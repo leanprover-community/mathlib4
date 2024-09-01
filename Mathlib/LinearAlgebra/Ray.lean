@@ -5,8 +5,8 @@ Authors: Joseph Myers
 -/
 import Mathlib.Algebra.Group.Subgroup.Actions
 import Mathlib.Algebra.Order.Module.Algebra
-import Mathlib.LinearAlgebra.LinearIndependent
 import Mathlib.Algebra.Ring.Subring.Units
+import Mathlib.LinearAlgebra.LinearIndependent
 
 /-!
 # Rays in modules

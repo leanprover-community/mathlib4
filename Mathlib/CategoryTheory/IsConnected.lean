@@ -3,10 +3,10 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Jakob von Raumer
 -/
-import Mathlib.Data.List.Chain
-import Mathlib.CategoryTheory.PUnit
-import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.Category.ULift
+import Mathlib.CategoryTheory.Groupoid
+import Mathlib.CategoryTheory.PUnit
+import Mathlib.Data.List.Chain
 
 /-!
 # Connected category

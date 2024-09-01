@@ -3,10 +3,10 @@ Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
+import Batteries.Tactic.Congr
+import Mathlib.Control.Lawful
 import Mathlib.Control.Monad.Basic
 import Mathlib.Control.Monad.Writer
-import Mathlib.Control.Lawful
-import Batteries.Tactic.Congr
 
 /-!
 # Continuation Monad

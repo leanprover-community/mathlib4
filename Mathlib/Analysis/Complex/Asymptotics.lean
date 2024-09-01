@@ -3,8 +3,8 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Complex.Basic
 import Mathlib.Analysis.Asymptotics.Theta
+import Mathlib.Analysis.Complex.Basic
 
 /-!
 # Lemmas about asymptotics and the natural embedding `ℝ → ℂ`

@@ -3,10 +3,10 @@ Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Uni Marx
 -/
-import Mathlib.CategoryTheory.Iso
 import Mathlib.CategoryTheory.EssentialImage
-import Mathlib.CategoryTheory.Types
+import Mathlib.CategoryTheory.Iso
 import Mathlib.CategoryTheory.Opposites
+import Mathlib.CategoryTheory.Types
 import Mathlib.Data.Rel
 
 /-!

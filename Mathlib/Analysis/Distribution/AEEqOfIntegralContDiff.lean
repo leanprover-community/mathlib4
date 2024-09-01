@@ -3,8 +3,8 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Geometry.Manifold.PartitionOfUnity
 import Mathlib.Geometry.Manifold.Metrizable
+import Mathlib.Geometry.Manifold.PartitionOfUnity
 import Mathlib.MeasureTheory.Function.AEEqOfIntegral
 
 /-!

@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Analysis.Complex.Basic
-import Mathlib.Analysis.RCLike.Lemmas
-import Mathlib.Topology.TietzeExtension
 import Mathlib.Analysis.NormedSpace.HomeomorphBall
 import Mathlib.Analysis.NormedSpace.RCLike
+import Mathlib.Analysis.RCLike.Lemmas
+import Mathlib.Topology.TietzeExtension
 /-!
 # Finite dimensional topological vector spaces over `ℝ` satisfy the Tietze extension property
 

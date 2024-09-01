@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Elementwise
-import Mathlib.Topology.Sequences
-import Mathlib.Topology.Instances.Discrete
 import Mathlib.Topology.Category.TopCat.Basic
+import Mathlib.Topology.Instances.Discrete
+import Mathlib.Topology.Sequences
 /-!
 
 # The category of sequential topological spaces

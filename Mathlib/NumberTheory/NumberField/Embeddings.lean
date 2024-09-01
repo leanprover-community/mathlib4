@@ -5,11 +5,11 @@ Authors: Alex J. Best, Xavier Roblot
 -/
 import Mathlib.Algebra.Algebra.Hom.Rat
 import Mathlib.Analysis.Complex.Polynomial.Basic
-import Mathlib.NumberTheory.NumberField.Norm
 import Mathlib.NumberTheory.NumberField.Basic
+import Mathlib.NumberTheory.NumberField.Norm
 import Mathlib.RingTheory.Norm.Basic
-import Mathlib.Topology.Instances.Complex
 import Mathlib.RingTheory.RootsOfUnity.Basic
+import Mathlib.Topology.Instances.Complex
 
 /-!
 # Embeddings of number fields

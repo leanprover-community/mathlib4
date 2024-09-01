@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Bannon, Jack Cheverton, Samyak Dhar Tuladhar
 -/
 
-import Mathlib.Analysis.InnerProductSpace.Spectrum
 import Mathlib.Analysis.InnerProductSpace.Projection
-import Mathlib.Order.CompleteLattice
+import Mathlib.Analysis.InnerProductSpace.Spectrum
 import Mathlib.LinearAlgebra.Eigenspace.Basic
+import Mathlib.Order.CompleteLattice
 
 /-! # Joint eigenspaces of a commuting pair of symmetric operators
 

@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
 
-import Mathlib.NumberTheory.ModularForms.EisensteinSeries.UniformConvergence
-import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
 import Mathlib.Analysis.Complex.LocallyUniformLimit
+import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
 import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
+import Mathlib.NumberTheory.ModularForms.EisensteinSeries.UniformConvergence
 
 /-!
 # Holomorphicity of Eisenstein series

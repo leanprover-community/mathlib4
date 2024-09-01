@@ -3,10 +3,10 @@ Copyright (c) 2020 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Johan Commelin
 -/
-import Mathlib.RingTheory.RootsOfUnity.Basic
-import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 import Mathlib.Algebra.GCDMonoid.IntegrallyClosed
 import Mathlib.FieldTheory.Finite.Basic
+import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
+import Mathlib.RingTheory.RootsOfUnity.Basic
 
 /-!
 # Minimal polynomial of roots of unity

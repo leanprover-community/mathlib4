@@ -3,14 +3,14 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.GroupTheory.GroupAction.Pointwise
-import Mathlib.Analysis.LocallyConvex.Basic
 import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
+import Mathlib.Analysis.LocallyConvex.Basic
 import Mathlib.Analysis.Seminorm
-import Mathlib.Topology.Bornology.Basic
-import Mathlib.Topology.Algebra.UniformGroup
-import Mathlib.Topology.UniformSpace.Cauchy
+import Mathlib.GroupTheory.GroupAction.Pointwise
 import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Topology.Algebra.UniformGroup
+import Mathlib.Topology.Bornology.Basic
+import Mathlib.Topology.UniformSpace.Cauchy
 
 /-!
 # Von Neumann Boundedness

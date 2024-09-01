@@ -3,8 +3,8 @@ Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.NumberTheory.ModularForms.JacobiTheta.TwoVariable
 import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
+import Mathlib.NumberTheory.ModularForms.JacobiTheta.TwoVariable
 
 /-! # Jacobi's theta function
 

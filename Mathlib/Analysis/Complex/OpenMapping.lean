@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vincent Beffara
 -/
 import Mathlib.Analysis.Analytic.IsolatedZeros
-import Mathlib.Analysis.Complex.CauchyIntegral
 import Mathlib.Analysis.Complex.AbsMax
+import Mathlib.Analysis.Complex.CauchyIntegral
 import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 
 /-!

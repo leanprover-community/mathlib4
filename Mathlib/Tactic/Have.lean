@@ -3,10 +3,10 @@ Copyright (c) 2022 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Edward Ayers, Mario Carneiro
 -/
-import Mathlib.Init
 import Lean.Elab.Binders
 import Lean.Elab.SyntheticMVars
 import Lean.Meta.Tactic.Assert
+import Mathlib.Init
 
 /-!
 # Extending `have`, `let` and `suffices`

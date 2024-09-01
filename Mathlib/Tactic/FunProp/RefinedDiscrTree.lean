@@ -3,8 +3,8 @@ Copyright (c) 2023 J. W. Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: J. W. Gerbscheid
 -/
-import Mathlib.Tactic.FunProp.StateList
 import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Tactic.FunProp.StateList
 
 /-!
 We define discrimination trees for the purpose of unifying local expressions with library results.

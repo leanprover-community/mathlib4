@@ -3,11 +3,11 @@ Copyright (c) 2022 Jiale Miao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiale Miao, Utensil Song, Eric Wieser
 -/
-import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.Algebra.Star.Unitary
-import Mathlib.LinearAlgebra.CliffordAlgebra.Star
+import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.LinearAlgebra.CliffordAlgebra.Even
 import Mathlib.LinearAlgebra.CliffordAlgebra.Inversion
+import Mathlib.LinearAlgebra.CliffordAlgebra.Star
 
 /-!
 # The Pin group and the Spin group

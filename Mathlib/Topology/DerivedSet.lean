@@ -3,8 +3,8 @@ Copyright (c) 2024 Daniel Weber. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Weber
 -/
-import Mathlib.Topology.Perfect
 import Mathlib.Tactic.Peel
+import Mathlib.Topology.Perfect
 
 /-!
 # Derived set

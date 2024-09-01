@@ -3,9 +3,9 @@ Copyright (c) 2023 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
+import Mathlib.RingTheory.Discriminant
 import Mathlib.RingTheory.Localization.Module
 import Mathlib.RingTheory.Norm.Basic
-import Mathlib.RingTheory.Discriminant
 
 /-!
 

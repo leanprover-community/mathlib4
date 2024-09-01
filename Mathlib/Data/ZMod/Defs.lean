@@ -5,8 +5,8 @@ Authors: Eric Rodriguez
 -/
 import Mathlib.Algebra.Group.Fin.Basic
 import Mathlib.Algebra.NeZero
-import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Nat.ModEq
 
 /-!
 # Definition of `ZMod n` + basic results.

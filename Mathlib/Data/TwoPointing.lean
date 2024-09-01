@@ -3,9 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Logic.Nontrivial.Defs
-import Mathlib.Logic.Nonempty
 import Batteries.Data.Sum.Lemmas
+import Mathlib.Logic.Nonempty
+import Mathlib.Logic.Nontrivial.Defs
 
 /-!
 # Two-pointings

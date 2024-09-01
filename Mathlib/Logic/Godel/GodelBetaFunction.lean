@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shogo Saito. Adapted for mathlib by Hunter Monroe
 -/
 
-import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Nat.ChineseRemainder
-import Mathlib.Data.Nat.Prime.Defs
+import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Nat.Pairing
+import Mathlib.Data.Nat.Prime.Defs
 
 /-!
 # Gödel's Beta Function Lemma

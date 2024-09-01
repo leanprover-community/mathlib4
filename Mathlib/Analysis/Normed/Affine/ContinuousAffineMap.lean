@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Analysis.Normed.Affine.Isometry
-import Mathlib.Topology.Algebra.ContinuousAffineMap
 import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
+import Mathlib.Topology.Algebra.ContinuousAffineMap
 
 /-!
 # Continuous affine maps between normed spaces.

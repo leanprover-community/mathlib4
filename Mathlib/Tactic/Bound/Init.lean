@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Geoffrey Irving
 -/
 
-import Mathlib.Init
 import Aesop.Frontend.Command
+import Mathlib.Init
 
 /-!
 # Bound Rule Set

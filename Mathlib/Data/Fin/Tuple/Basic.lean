@@ -3,9 +3,9 @@ Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes
 -/
+import Batteries.Data.Fin.Lemmas
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Nat.Find
-import Batteries.Data.Fin.Lemmas
 
 /-!
 # Operation on tuples

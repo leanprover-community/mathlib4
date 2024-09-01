@@ -3,8 +3,8 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Order.ExtendFrom
 import Mathlib.Topology.Algebra.Order.Compact
+import Mathlib.Topology.Order.ExtendFrom
 import Mathlib.Topology.Order.LocalExtr
 import Mathlib.Topology.Order.T5
 

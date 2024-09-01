@@ -3,9 +3,9 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.LinearAlgebra.TensorProduct.Graded.External
 import Mathlib.RingTheory.GradedAlgebra.Basic
-import Mathlib.GroupTheory.GroupAction.Ring
 
 /-!
 # Graded tensor products over graded algebras

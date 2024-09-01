@@ -3,8 +3,8 @@ Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Dagur Asgeirsson
 -/
-import Mathlib.Topology.Category.Profinite.Basic
 import Mathlib.Topology.Category.CompHausLike.Limits
+import Mathlib.Topology.Category.Profinite.Basic
 /-!
 
 # Explicit limits and colimits

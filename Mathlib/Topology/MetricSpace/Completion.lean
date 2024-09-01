@@ -3,10 +3,10 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.UniformSpace.Completion
+import Mathlib.Topology.Instances.Real
 import Mathlib.Topology.MetricSpace.Isometry
 import Mathlib.Topology.MetricSpace.Lipschitz
-import Mathlib.Topology.Instances.Real
+import Mathlib.Topology.UniformSpace.Completion
 
 /-!
 # The completion of a metric space

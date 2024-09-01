@@ -3,8 +3,8 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Analytic.Linear
 import Mathlib.Analysis.Analytic.Composition
+import Mathlib.Analysis.Analytic.Linear
 import Mathlib.Analysis.Normed.Module.Completion
 
 /-!

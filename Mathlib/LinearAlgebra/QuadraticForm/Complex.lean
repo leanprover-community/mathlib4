@@ -3,8 +3,8 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Kexing Ying, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
 import Mathlib.Analysis.SpecialFunctions.Pow.Complex
+import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
 
 /-!
 # Quadratic forms over the complex numbers

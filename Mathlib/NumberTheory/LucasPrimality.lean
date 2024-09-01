@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey
 -/
 import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Nat.Totient
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Tactic.Zify
-import Mathlib.Data.Nat.Totient
 
 /-!
 # The Lucas test for primes.

@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 
-import Mathlib.ModelTheory.Syntax
-import Mathlib.ModelTheory.Semantics
 import Mathlib.Algebra.Ring.Equiv
+import Mathlib.ModelTheory.Semantics
+import Mathlib.ModelTheory.Syntax
 
 /-!
 # First Order Language of Rings

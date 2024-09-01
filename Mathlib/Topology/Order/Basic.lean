@@ -5,8 +5,8 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 import Mathlib.Order.Filter.Interval
 import Mathlib.Order.Interval.Set.Pi
-import Mathlib.Tactic.TFAE
 import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.TFAE
 import Mathlib.Topology.Order.LeftRight
 import Mathlib.Topology.Order.OrderClosed
 

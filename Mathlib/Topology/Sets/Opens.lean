@@ -3,12 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Order.Hom.CompleteLattice
-import Mathlib.Topology.Bases
-import Mathlib.Topology.Homeomorph
-import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Order.CompactlyGenerated.Basic
 import Mathlib.Order.Copy
+import Mathlib.Order.Hom.CompleteLattice
+import Mathlib.Topology.Bases
+import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.Topology.Homeomorph
 
 /-!
 # Open sets

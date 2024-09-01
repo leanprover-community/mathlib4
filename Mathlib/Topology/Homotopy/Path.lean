@@ -3,9 +3,9 @@ Copyright (c) 2021 Shing Tak Lam. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam
 -/
-import Mathlib.Topology.Homotopy.Basic
-import Mathlib.Topology.Connected.PathConnected
 import Mathlib.Analysis.Convex.Basic
+import Mathlib.Topology.Connected.PathConnected
+import Mathlib.Topology.Homotopy.Basic
 
 /-!
 # Homotopy between paths

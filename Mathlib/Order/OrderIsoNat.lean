@@ -5,10 +5,10 @@ Authors: Mario Carneiro
 -/
 
 import Mathlib.Data.Nat.Lattice
+import Mathlib.Data.Set.Subsingleton
 import Mathlib.Logic.Denumerable
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Order.Hom.Basic
-import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Relation embeddings from the naturals

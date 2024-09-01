@@ -3,9 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
 -/
-import Mathlib.LinearAlgebra.Span
 import Mathlib.Algebra.Module.Equiv.Basic
 import Mathlib.GroupTheory.QuotientGroup.Basic
+import Mathlib.LinearAlgebra.Span
 import Mathlib.SetTheory.Cardinal.Finite
 
 /-!

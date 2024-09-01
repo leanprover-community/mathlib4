@@ -3,8 +3,8 @@ Copyright (c) 2024 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.Algebra.Ring.NegOnePow
+import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 
 /-!
 # Miscellaneous results about determinant

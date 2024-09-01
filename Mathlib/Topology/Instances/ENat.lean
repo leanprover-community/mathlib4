@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
 import Mathlib.Data.ENat.Basic
+import Mathlib.Order.Interval.Set.WithBotTop
 import Mathlib.Topology.Algebra.Monoid
 import Mathlib.Topology.Instances.Discrete
-import Mathlib.Order.Interval.Set.WithBotTop
 
 /-!
 # Topology on extended natural numbers

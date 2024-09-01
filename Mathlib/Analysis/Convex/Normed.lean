@@ -6,9 +6,9 @@ Authors: Alexander Bentkamp, Yury Kudryashov
 import Mathlib.Analysis.Convex.Between
 import Mathlib.Analysis.Convex.Jensen
 import Mathlib.Analysis.Convex.Topology
-import Mathlib.Analysis.Normed.Group.Pointwise
 import Mathlib.Analysis.Normed.Affine.AddTorsor
 import Mathlib.Analysis.Normed.Affine.AddTorsorBases
+import Mathlib.Analysis.Normed.Group.Pointwise
 
 /-!
 # Topological and metric properties of convex sets in normed spaces

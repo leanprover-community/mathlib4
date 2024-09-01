@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
 import Mathlib.Data.Fintype.Basic
-import Mathlib.Data.List.ProdSigma
 import Mathlib.Data.List.Pi
+import Mathlib.Data.List.ProdSigma
 
 /-!
 Type class for finitely enumerable types. The property is stronger

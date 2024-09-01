@@ -5,11 +5,11 @@ Authors: Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Dynamics.Ergodic.MeasurePreserving
-import Mathlib.MeasureTheory.Function.SimpleFunc
-import Mathlib.MeasureTheory.Measure.MutuallySingular
-import Mathlib.MeasureTheory.Measure.Count
-import Mathlib.Topology.IndicatorConstPointwise
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
+import Mathlib.MeasureTheory.Function.SimpleFunc
+import Mathlib.MeasureTheory.Measure.Count
+import Mathlib.MeasureTheory.Measure.MutuallySingular
+import Mathlib.Topology.IndicatorConstPointwise
 
 /-!
 # Lower Lebesgue integral for `ℝ≥0∞`-valued functions

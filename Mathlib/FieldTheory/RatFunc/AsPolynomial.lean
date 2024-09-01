@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import Mathlib.FieldTheory.RatFunc.Basic
-import Mathlib.RingTheory.EuclideanDomain
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
+import Mathlib.RingTheory.EuclideanDomain
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Polynomial.Content
 

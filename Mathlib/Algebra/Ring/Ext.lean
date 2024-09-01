@@ -3,8 +3,8 @@ Copyright (c) 2024 Raghuram Sundararajan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Raghuram Sundararajan
 -/
-import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Group.Ext
+import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Extensionality lemmas for rings and similar structures

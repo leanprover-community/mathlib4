@@ -5,8 +5,8 @@ Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Damiano Testa, Jens Wage
 -/
 import Mathlib.Algebra.MonoidAlgebra.Division
 import Mathlib.Algebra.Polynomial.Degree.Definitions
-import Mathlib.Algebra.Polynomial.Induction
 import Mathlib.Algebra.Polynomial.EraseLead
+import Mathlib.Algebra.Polynomial.Induction
 import Mathlib.Order.Interval.Finset.Nat
 
 /-!

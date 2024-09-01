@@ -3,9 +3,9 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Data.Part
 import Mathlib.Data.Nat.Find
 import Mathlib.Data.Nat.Upto
+import Mathlib.Data.Part
 import Mathlib.Data.Stream.Defs
 import Mathlib.Tactic.Common
 

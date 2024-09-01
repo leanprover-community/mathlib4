@@ -3,9 +3,9 @@ Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.CategoryTheory.Linear.Basic
 import Mathlib.Algebra.Module.LinearMap.Rat
+import Mathlib.CategoryTheory.Linear.Basic
+import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
 # Linear Functors

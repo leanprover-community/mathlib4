@@ -3,12 +3,12 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Aurélien Saue, Mario Carneiro
 -/
+import Batteries.Tactic.OpenPrivate
 import Lean.Elab.PreDefinition.Basic
 import Lean.Elab.Tactic.ElabTerm
-import Lean.Util.Paths
 import Lean.Meta.Tactic.Intro
+import Lean.Util.Paths
 import Mathlib.Lean.Expr.Basic
-import Batteries.Tactic.OpenPrivate
 
 /-!
 # Generally useful tactics.

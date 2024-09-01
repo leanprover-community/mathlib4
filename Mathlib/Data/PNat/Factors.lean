@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland
 -/
 import Mathlib.Algebra.BigOperators.Group.Multiset
-import Mathlib.Data.PNat.Prime
-import Mathlib.Data.Nat.Factors
 import Mathlib.Data.Multiset.OrderedMonoid
 import Mathlib.Data.Multiset.Sort
+import Mathlib.Data.Nat.Factors
+import Mathlib.Data.PNat.Prime
 
 /-!
 # Prime factors of nonzero naturals

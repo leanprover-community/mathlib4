@@ -4,15 +4,15 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
-import Mathlib.Topology.Algebra.Ring.Basic
+import Mathlib.Algebra.Algebra.Defs
+import Mathlib.LinearAlgebra.Finsupp
+import Mathlib.LinearAlgebra.Pi
+import Mathlib.LinearAlgebra.Projection
 import Mathlib.Topology.Algebra.MulAction
+import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Algebra.UniformGroup
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Topology.UniformSpace.UniformEmbedding
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.LinearAlgebra.Projection
-import Mathlib.LinearAlgebra.Pi
-import Mathlib.LinearAlgebra.Finsupp
 
 /-!
 # Theory of topological modules and continuous linear maps.

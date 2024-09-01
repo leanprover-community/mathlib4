@@ -8,12 +8,12 @@ import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Algebra.Order.Group.MinMax
 import Mathlib.Algebra.Order.Ring.Basic
+import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Finset.Preimage
-import Mathlib.Order.Interval.Set.Disjoint
-import Mathlib.Order.Interval.Set.OrderIso
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.Filter.Bases
-import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Order.Interval.Set.Disjoint
+import Mathlib.Order.Interval.Set.OrderIso
 
 /-!
 # `Filter.atTop` and `Filter.atBot` filters on preorders, monoids and groups.

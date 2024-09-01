@@ -6,8 +6,8 @@ Authors: Bhavik Mehta, Aaron Anderson
 import Mathlib.Algebra.Order.Antidiag.Finsupp
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Combinatorics.Enumerative.Partition
-import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Fin.Tuple.NatAntidiagonal
+import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.Order
 import Mathlib.Tactic.ApplyFun

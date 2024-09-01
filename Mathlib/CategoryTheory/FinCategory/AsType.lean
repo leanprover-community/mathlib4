@@ -3,8 +3,8 @@ Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Data.Fintype.Card
 import Mathlib.CategoryTheory.FinCategory.Basic
+import Mathlib.Data.Fintype.Card
 
 /-!
 # Finite categories are equivalent to category in `Type 0`.

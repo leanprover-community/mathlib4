@@ -3,12 +3,12 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Justus Springer
 -/
-import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
-import Mathlib.AlgebraicGeometry.StructureSheaf
-import Mathlib.RingTheory.Localization.LocalizationLocalization
-import Mathlib.Topology.Sheaves.SheafCondition.Sites
-import Mathlib.Topology.Sheaves.Functors
 import Mathlib.Algebra.Module.LocalizedModule
+import Mathlib.AlgebraicGeometry.StructureSheaf
+import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
+import Mathlib.RingTheory.Localization.LocalizationLocalization
+import Mathlib.Topology.Sheaves.Functors
+import Mathlib.Topology.Sheaves.SheafCondition.Sites
 
 /-!
 # $Spec$ as a functor to locally ringed spaces.

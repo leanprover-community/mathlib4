@@ -5,8 +5,8 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Order.Field.Power
 import Mathlib.Data.Int.LeastGreatest
-import Mathlib.Data.Rat.Floor
 import Mathlib.Data.NNRat.Defs
+import Mathlib.Data.Rat.Floor
 
 /-!
 # Archimedean groups and fields.

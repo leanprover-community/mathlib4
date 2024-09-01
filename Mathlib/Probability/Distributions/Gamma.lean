@@ -3,9 +3,9 @@ Copyright (c) 2024 Josha Dekker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josha Dekker
 -/
-import Mathlib.Probability.Notation
-import Mathlib.Probability.CDF
 import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
+import Mathlib.Probability.CDF
+import Mathlib.Probability.Notation
 
 /-! # Gamma distributions over ℝ
 

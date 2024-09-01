@@ -3,9 +3,9 @@ Copyright (c) 2022 Ivan Sadofschi Costa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ivan Sadofschi Costa
 -/
+import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Topology.Order
 import Mathlib.Topology.Sets.Opens
-import Mathlib.Topology.ContinuousFunction.Basic
 
 /-!
 # Any T0 space embeds in a product of copies of the Sierpinski space.

@@ -3,8 +3,8 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.RingTheory.Ideal.Quotient
+import Mathlib.Topology.Algebra.Ring.Basic
 
 /-!
 # Ideals and quotients of topological rings

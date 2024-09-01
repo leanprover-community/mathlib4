@@ -3,9 +3,9 @@ Copyright (c) 2023 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Init
-import Lean.Widget.InteractiveGoal
 import Lean.Elab.Deriving.Basic
+import Lean.Widget.InteractiveGoal
+import Mathlib.Init
 
 /-! # SelectInsertParamsClass
 

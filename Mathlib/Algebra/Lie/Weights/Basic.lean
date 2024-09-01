@@ -3,13 +3,13 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Ring.Divisibility.Lemmas
-import Mathlib.Algebra.Lie.Nilpotent
 import Mathlib.Algebra.Lie.Engel
+import Mathlib.Algebra.Lie.Nilpotent
+import Mathlib.Algebra.Ring.Divisibility.Lemmas
 import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
-import Mathlib.RingTheory.Artinian
-import Mathlib.LinearAlgebra.Trace
 import Mathlib.LinearAlgebra.FreeModule.PID
+import Mathlib.LinearAlgebra.Trace
+import Mathlib.RingTheory.Artinian
 
 /-!
 # Weight spaces of Lie modules of nilpotent Lie algebras

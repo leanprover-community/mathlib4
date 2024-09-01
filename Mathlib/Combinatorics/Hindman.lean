@@ -3,9 +3,9 @@ Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
-import Mathlib.Topology.StoneCech
-import Mathlib.Topology.Algebra.Semigroup
 import Mathlib.Data.Stream.Init
+import Mathlib.Topology.Algebra.Semigroup
+import Mathlib.Topology.StoneCech
 
 /-!
 # Hindman's theorem on finite sums

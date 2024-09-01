@@ -3,11 +3,11 @@ Copyright (c) 2022 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.RingTheory.Valuation.Integers
+import Mathlib.RingTheory.Bezout
+import Mathlib.RingTheory.DiscreteValuationRing.Basic
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Integer
-import Mathlib.RingTheory.DiscreteValuationRing.Basic
-import Mathlib.RingTheory.Bezout
+import Mathlib.RingTheory.Valuation.Integers
 import Mathlib.Tactic.FieldSimp
 
 /-!

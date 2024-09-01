@@ -5,8 +5,8 @@ Authors: Frédéric Dupuis
 -/
 
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
-import Mathlib.Topology.ContinuousFunction.StarOrdered
 import Mathlib.Analysis.CStarAlgebra.Unitization
+import Mathlib.Topology.ContinuousFunction.StarOrdered
 
 /-! # Facts about star-ordered rings that depend on the continuous functional calculus
 

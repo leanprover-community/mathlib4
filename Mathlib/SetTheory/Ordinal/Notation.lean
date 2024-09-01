@@ -5,9 +5,9 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Data.Ordering.Lemmas
+import Mathlib.Data.PNat.Basic
 import Mathlib.SetTheory.Ordinal.Principal
 import Mathlib.Tactic.NormNum
-import Mathlib.Data.PNat.Basic
 
 /-!
 # Ordinal notation

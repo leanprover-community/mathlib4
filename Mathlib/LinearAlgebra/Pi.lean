@@ -3,13 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Eric Wieser
 -/
-import Mathlib.Algebra.Group.Fin.Tuple
 import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 import Mathlib.Algebra.BigOperators.Pi
+import Mathlib.Algebra.Group.Fin.Tuple
+import Mathlib.Algebra.Module.Equiv.Basic
 import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Module.Submodule.Ker
 import Mathlib.Algebra.Module.Submodule.Range
-import Mathlib.Algebra.Module.Equiv.Basic
 import Mathlib.Logic.Equiv.Fin
 
 /-!

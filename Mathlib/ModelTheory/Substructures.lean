@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Gabin Kolly
 -/
 import Mathlib.Data.Fintype.Order
-import Mathlib.Order.Closure
-import Mathlib.ModelTheory.Semantics
 import Mathlib.ModelTheory.Encoding
+import Mathlib.ModelTheory.Semantics
+import Mathlib.Order.Closure
 
 /-!
 # First-Order Substructures

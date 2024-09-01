@@ -7,8 +7,8 @@ import Mathlib.Algebra.BigOperators.Associated
 import Mathlib.Algebra.GCDMonoid.Basic
 import Mathlib.Data.Finsupp.Multiset
 import Mathlib.Data.Nat.Factors
-import Mathlib.RingTheory.Noetherian
 import Mathlib.RingTheory.Multiplicity
+import Mathlib.RingTheory.Noetherian
 
 /-!
 

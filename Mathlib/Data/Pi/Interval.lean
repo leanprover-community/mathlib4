@@ -3,8 +3,8 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Interval.Finset.Basic
 import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Order.Interval.Finset.Basic
 
 /-!
 # Intervals in a pi type

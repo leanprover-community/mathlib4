@@ -3,10 +3,10 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.CategoryTheory.Monoidal.Braided.Opposite
-import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
-import Mathlib.CategoryTheory.Monoidal.Comon_
 import Mathlib.Algebra.Category.CoalgebraCat.Basic
+import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
+import Mathlib.CategoryTheory.Monoidal.Braided.Opposite
+import Mathlib.CategoryTheory.Monoidal.Comon_
 
 /-!
 # The category equivalence between `R`-coalgebras and comonoid objects in `R-Mod`

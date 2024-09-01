@@ -3,9 +3,9 @@ Copyright (c) 2022 Justin Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justin Thomas
 -/
+import Mathlib.Algebra.Polynomial.Module.AEval
 import Mathlib.FieldTheory.Minpoly.Field
 import Mathlib.RingTheory.PrincipalIdealDomain
-import Mathlib.Algebra.Polynomial.Module.AEval
 
 /-!
 # Annihilating Ideal

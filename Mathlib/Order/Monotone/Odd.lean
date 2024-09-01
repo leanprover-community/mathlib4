@@ -3,8 +3,8 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Monotone.Union
 import Mathlib.Algebra.Order.Group.Instances
+import Mathlib.Order.Monotone.Union
 
 /-!
 # Monotonicity of odd functions

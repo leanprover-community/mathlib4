@@ -5,8 +5,8 @@ Authors: Alexander Bentkamp
 -/
 import Mathlib.Algebra.Algebra.Spectrum
 import Mathlib.Algebra.Module.LinearMap.Basic
-import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.RingTheory.Nilpotent.Basic
 
 /-!

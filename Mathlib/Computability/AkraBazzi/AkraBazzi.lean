@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
 
-import Mathlib.Computability.AkraBazzi.GrowsPolynomially
 import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
+import Mathlib.Computability.AkraBazzi.GrowsPolynomially
 
 /-!
 # Divide-and-conquer recurrences and the Akra-Bazzi theorem

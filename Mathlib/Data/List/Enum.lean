@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yakov Pechersky, Eric Wieser
 -/
 import Batteries.Tactic.Alias
-import Mathlib.Tactic.TypeStar
 import Mathlib.Data.Nat.Notation
+import Mathlib.Tactic.TypeStar
 
 /-!
 # Properties of `List.enum`

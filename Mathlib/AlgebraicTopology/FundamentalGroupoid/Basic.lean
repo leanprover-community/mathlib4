@@ -5,9 +5,9 @@ Authors: Shing Tak Lam
 -/
 import Mathlib.CategoryTheory.Category.Grpd
 import Mathlib.CategoryTheory.Groupoid
+import Mathlib.Data.Set.Subsingleton
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Topology.Homotopy.Path
-import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Fundamental groupoid of a space

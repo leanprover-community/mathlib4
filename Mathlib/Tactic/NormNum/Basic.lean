@@ -3,13 +3,13 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Thomas Murrills
 -/
-import Mathlib.Tactic.NormNum.Core
-import Mathlib.Tactic.HaveI
-import Mathlib.Data.Nat.Cast.Commute
-import Mathlib.Algebra.Ring.Int
 import Mathlib.Algebra.GroupWithZero.Invertible
-import Mathlib.Tactic.ClearExclamation
+import Mathlib.Algebra.Ring.Int
 import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Data.Nat.Cast.Commute
+import Mathlib.Tactic.ClearExclamation
+import Mathlib.Tactic.HaveI
+import Mathlib.Tactic.NormNum.Core
 
 /-!
 ## `norm_num` basic plugins

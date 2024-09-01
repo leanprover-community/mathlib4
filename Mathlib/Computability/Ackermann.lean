@@ -5,8 +5,8 @@ Authors: Violeta Hernández Palacios
 -/
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Computability.Primrec
-import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Ring
 
 /-!
 # Ackermann function

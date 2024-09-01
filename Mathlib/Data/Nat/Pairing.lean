@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Prod
-import Mathlib.Data.Set.Lattice
 import Mathlib.Data.Nat.Sqrt
+import Mathlib.Data.Set.Lattice
 
 /-!
 # Naturals pairing function

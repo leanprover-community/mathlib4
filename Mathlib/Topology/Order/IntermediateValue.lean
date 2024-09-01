@@ -3,8 +3,8 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Alistair Tucker, Wen Yang
 -/
-import Mathlib.Order.Interval.Set.Image
 import Mathlib.Order.CompleteLatticeIntervals
+import Mathlib.Order.Interval.Set.Image
 import Mathlib.Topology.Order.DenselyOrdered
 import Mathlib.Topology.Order.Monotone
 

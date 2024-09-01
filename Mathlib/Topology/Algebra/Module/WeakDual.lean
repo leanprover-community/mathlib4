@@ -3,8 +3,8 @@ Copyright (c) 2021 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä, Moritz Doll
 -/
-import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.LinearAlgebra.BilinearMap
+import Mathlib.Topology.Algebra.Module.Basic
 
 /-!
 # Weak dual topology

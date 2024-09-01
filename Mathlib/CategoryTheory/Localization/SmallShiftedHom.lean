@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Localization.SmallHom
-import Mathlib.CategoryTheory.Shift.ShiftedHom
 import Mathlib.CategoryTheory.Shift.Localization
+import Mathlib.CategoryTheory.Shift.ShiftedHom
 
 /-!
 # Shrinking morphisms in localized categories equipped with shifts

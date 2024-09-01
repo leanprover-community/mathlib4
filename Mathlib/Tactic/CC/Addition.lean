@@ -3,14 +3,14 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Miyahara Kō
 -/
-import Mathlib.Logic.Basic
+import Batteries.Data.RBMap.Alter
 import Mathlib.Data.Option.Defs
 import Mathlib.Lean.Expr.Basic
-import Mathlib.Tactic.Relation.Rfl
-import Mathlib.Tactic.Relation.Symm
+import Mathlib.Logic.Basic
 import Mathlib.Tactic.CC.Datatypes
 import Mathlib.Tactic.CC.Lemmas
-import Batteries.Data.RBMap.Alter
+import Mathlib.Tactic.Relation.Rfl
+import Mathlib.Tactic.Relation.Symm
 
 /-!
 # Process when an new equation is added to a congruence closure

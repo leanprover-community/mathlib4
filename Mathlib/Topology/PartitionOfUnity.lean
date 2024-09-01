@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.SetTheory.Ordinal.Basic
-import Mathlib.Topology.ContinuousFunction.Algebra
 import Mathlib.Topology.Compactness.Paracompact
+import Mathlib.Topology.ContinuousFunction.Algebra
 import Mathlib.Topology.ShrinkingLemma
 import Mathlib.Topology.UrysohnsLemma
 

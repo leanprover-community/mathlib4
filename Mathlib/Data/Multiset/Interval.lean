@@ -5,8 +5,8 @@ Authors: Eric Wieser
 -/
 import Mathlib.Data.DFinsupp.Interval
 import Mathlib.Data.DFinsupp.Multiset
-import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Data.Nat.Lattice
+import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Finite intervals of multisets

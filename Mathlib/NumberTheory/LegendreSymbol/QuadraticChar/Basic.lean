@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
 import Mathlib.Data.Fintype.Parity
-import Mathlib.NumberTheory.LegendreSymbol.ZModChar
 import Mathlib.FieldTheory.Finite.Basic
+import Mathlib.NumberTheory.LegendreSymbol.ZModChar
 
 /-!
 # Quadratic characters of finite fields

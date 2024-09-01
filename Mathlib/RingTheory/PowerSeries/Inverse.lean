@@ -5,10 +5,10 @@ Authors: Johan Commelin, Kenny Lau, María Inés de Frutos-Fernández, Filippo A
 -/
 
 import Mathlib.RingTheory.DiscreteValuationRing.Basic
+import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 import Mathlib.RingTheory.MvPowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.RingTheory.PowerSeries.Order
-import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 
 /-! # Formal power series - Inverses
 

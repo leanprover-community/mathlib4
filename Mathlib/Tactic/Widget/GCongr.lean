@@ -3,8 +3,8 @@ Copyright (c) 2023 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Tactic.GCongr
+import Mathlib.Tactic.Widget.SelectPanelUtils
 
 /-! # GCongr widget
 

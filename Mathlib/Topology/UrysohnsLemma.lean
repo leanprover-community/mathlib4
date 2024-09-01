@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Normed.Affine.AddTorsor
+import Mathlib.Analysis.NormedSpace.FunctionSeries
+import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.LinearAlgebra.AffineSpace.Ordered
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Topology.GDelta
-import Mathlib.Analysis.NormedSpace.FunctionSeries
-import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
 # Urysohn's lemma

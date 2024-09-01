@@ -7,10 +7,10 @@ As `HashMap` has been completely reimplemented in `Batteries`,
 nothing from the mathlib3 file `data.hash_map` is reflected here.
 The porting header is just here to mark that no further work on `data.hash_map` is desired.
 -/
-import Mathlib.Init
-import Mathlib.Tactic.TypeStar
 import Batteries.Data.HashMap.Basic
 import Batteries.Data.RBMap.Basic
+import Mathlib.Init
+import Mathlib.Tactic.TypeStar
 
 /-!
 # Additional API for `HashMap` and `RBSet`.

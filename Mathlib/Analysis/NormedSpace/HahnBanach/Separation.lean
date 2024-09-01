@@ -5,10 +5,10 @@ Authors: Bhavik Mehta, Yaël Dillies
 -/
 import Mathlib.Analysis.Convex.Cone.Extension
 import Mathlib.Analysis.Convex.Gauge
+import Mathlib.Analysis.NormedSpace.Extend
+import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 import Mathlib.Topology.Algebra.Module.LocallyConvex
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Analysis.NormedSpace.Extend
 
 /-!
 # Separation Hahn-Banach theorem

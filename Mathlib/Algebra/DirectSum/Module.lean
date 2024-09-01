@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Algebra.DirectSum.Basic
-import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.LinearAlgebra.Basis.Defs
+import Mathlib.LinearAlgebra.DFinsupp
 
 /-!
 # Direct sum of modules

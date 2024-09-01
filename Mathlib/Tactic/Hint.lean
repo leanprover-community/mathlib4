@@ -3,9 +3,9 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Lean.Meta.Tactic.TryThis
-import Batteries.Linter.UnreachableTactic
 import Batteries.Control.Nondet.Basic
+import Batteries.Linter.UnreachableTactic
+import Lean.Meta.Tactic.TryThis
 import Mathlib.Tactic.FailIfNoProgress
 
 /-!

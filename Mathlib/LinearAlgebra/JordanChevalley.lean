@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Dynamics.Newton
-import Mathlib.LinearAlgebra.Semisimple
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+import Mathlib.LinearAlgebra.Semisimple
 
 /-!
 # Jordan-Chevalley-Dunford decomposition

@@ -3,8 +3,8 @@ Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Logic.Small.Defs
 import Mathlib.Logic.Equiv.TransferInstance
+import Mathlib.Logic.Small.Defs
 
 /-!
 # Transfer group structures from `α` to `Shrink α`.

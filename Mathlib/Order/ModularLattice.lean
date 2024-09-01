@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Yaël Dillies
 -/
 import Mathlib.Order.Cover
-import Mathlib.Order.LatticeIntervals
 import Mathlib.Order.GaloisConnection
+import Mathlib.Order.LatticeIntervals
 
 /-!
 # Modular Lattices

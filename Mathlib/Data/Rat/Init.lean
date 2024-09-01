@@ -3,11 +3,11 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yaël Dillies
 -/
+import Batteries.Classes.RatCast
 import Mathlib.Data.Nat.Notation
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.ProjectionNotation
 import Mathlib.Tactic.TypeStar
-import Batteries.Classes.RatCast
 
 /-!
 # Basic definitions around the rational numbers

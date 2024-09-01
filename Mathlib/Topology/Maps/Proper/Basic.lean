@@ -3,9 +3,9 @@ Copyright (c) 2023 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Etienne Marion
 -/
-import Mathlib.Topology.Homeomorph
-import Mathlib.Topology.Filter
 import Mathlib.Topology.Defs.Sequences
+import Mathlib.Topology.Filter
+import Mathlib.Topology.Homeomorph
 
 /-!
 # Proper maps between topological spaces

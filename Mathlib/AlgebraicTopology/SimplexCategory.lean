@@ -3,12 +3,12 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Scott Morrison, Adam Topaz
 -/
-import Mathlib.Tactic.Linarith
+import Mathlib.CategoryTheory.Functor.ReflectsIso
+import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.Data.Fintype.Sort
 import Mathlib.Order.Category.NonemptyFinLinOrd
-import Mathlib.CategoryTheory.Functor.ReflectsIso
-import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+import Mathlib.Tactic.Linarith
 
 /-! # The simplex category
 

@@ -5,8 +5,8 @@ Authors: Antoine Chambert-Loir
 -/
 
 
-import Mathlib.Logic.Function.CompTypeclasses
 import Mathlib.Algebra.Group.Hom.Defs
+import Mathlib.Logic.Function.CompTypeclasses
 
 /-!
 # Propositional typeclasses on several monoid homs

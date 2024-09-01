@@ -5,8 +5,8 @@ Authors: Zhouhang Zhou
 -/
 import Mathlib.Order.Filter.AtTopBot
 import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Linarith.Frontend
+import Mathlib.Tactic.LinearCombination
 
 /-!
 # Quadratic discriminants and roots of a quadratic

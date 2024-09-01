@@ -3,8 +3,8 @@ Copyright (c) 2021 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey, Ralf Stephan
 -/
-import Mathlib.Data.Nat.Totient
 import Mathlib.Data.Nat.Nth
+import Mathlib.Data.Nat.Totient
 import Mathlib.NumberTheory.SmoothNumbers
 
 /-!

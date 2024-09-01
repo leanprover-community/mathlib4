@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Patrick Massot
 -/
 import Mathlib.Algebra.Group.Basic
-import Mathlib.Data.Set.Function
-import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
+import Mathlib.Data.Set.Function
+import Mathlib.Order.Interval.Set.Basic
 
 /-!
 # Images of intervals under `(+ d)`

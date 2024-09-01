@@ -3,10 +3,10 @@ Copyright (c) 2022 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Amelia Livingston, Joël Riou
 -/
-import Mathlib.CategoryTheory.Abelian.Opposite
 import Mathlib.Algebra.Homology.Additive
 import Mathlib.Algebra.Homology.ImageToKernel
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+import Mathlib.CategoryTheory.Abelian.Opposite
 
 /-!
 # Opposite categories of complexes

@@ -5,8 +5,8 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Countable.Basic
 import Mathlib.Data.Fin.VecNotation
-import Mathlib.Order.Disjointed
 import Mathlib.MeasureTheory.OuterMeasure.Defs
+import Mathlib.Order.Disjointed
 
 /-!
 # Outer Measures

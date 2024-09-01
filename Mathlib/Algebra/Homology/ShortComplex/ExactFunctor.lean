@@ -3,11 +3,11 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Jujian Zhang
 -/
+import Mathlib.Algebra.Homology.ShortComplex.Abelian
 import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
 import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-import Mathlib.Algebra.Homology.ShortComplex.Abelian
-import Mathlib.CategoryTheory.Preadditive.LeftExact
 import Mathlib.CategoryTheory.Abelian.Exact
+import Mathlib.CategoryTheory.Preadditive.LeftExact
 
 /-!
 # Exact functors

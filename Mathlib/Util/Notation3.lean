@@ -3,12 +3,12 @@ Copyright (c) 2021 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kyle Miller
 -/
+import Batteries.Lean.Syntax
+import Batteries.Linter.UnreachableTactic
+import Batteries.Util.ExtendedBinder
 import Mathlib.Lean.Elab.Term
 import Mathlib.Lean.PrettyPrinter.Delaborator
 import Mathlib.Tactic.ScopedNS
-import Batteries.Linter.UnreachableTactic
-import Batteries.Util.ExtendedBinder
-import Batteries.Lean.Syntax
 
 /-!
 # The notation3 macro, simulating Lean 3's notation.

@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 
-import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 import Mathlib.CategoryTheory.HomCongr
+import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 
 /-!
 # Bijections between morphisms in two localized categories

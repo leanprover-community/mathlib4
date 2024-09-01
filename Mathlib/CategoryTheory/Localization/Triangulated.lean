@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions.ComposableArrows
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Preadditive
-import Mathlib.CategoryTheory.Triangulated.Functor
 import Mathlib.CategoryTheory.Shift.Localization
+import Mathlib.CategoryTheory.Triangulated.Functor
 
 /-! # Localization of triangulated categories
 

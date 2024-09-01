@@ -3,8 +3,8 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Interval.Set.UnorderedInterval
 import Mathlib.Order.Hom.Basic
+import Mathlib.Order.Interval.Set.UnorderedInterval
 
 /-!
 # Preimages of intervals under order embeddings

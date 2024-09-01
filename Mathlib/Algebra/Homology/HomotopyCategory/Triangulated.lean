@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
-import Mathlib.CategoryTheory.Triangulated.Triangulated
 import Mathlib.CategoryTheory.ComposableArrows
+import Mathlib.CategoryTheory.Triangulated.Triangulated
 
 /-! The triangulated structure on the homotopy category of complexes
 

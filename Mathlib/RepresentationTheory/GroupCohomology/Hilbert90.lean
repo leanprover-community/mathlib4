@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
 import Mathlib.FieldTheory.Fixed
-import Mathlib.RepresentationTheory.GroupCohomology.LowDegree
 import Mathlib.LinearAlgebra.LinearIndependent
+import Mathlib.RepresentationTheory.GroupCohomology.LowDegree
 
 /-!
 # Hilbert's Theorem 90

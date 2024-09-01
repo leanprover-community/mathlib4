@@ -3,11 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Data.Set.Image
 import Mathlib.Data.Set.Notation
-import Mathlib.Order.SetNotation
 import Mathlib.Logic.Embedding.Basic
 import Mathlib.Logic.Pairwise
-import Mathlib.Data.Set.Image
+import Mathlib.Order.SetNotation
 
 /-!
 # Interactions between embeddings and sets.

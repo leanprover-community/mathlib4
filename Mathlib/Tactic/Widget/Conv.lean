@@ -3,10 +3,10 @@ Copyright (c) 2023 Robin Böhne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Böhne, Wojciech Nawrocki, Patrick Massot
 -/
-import Mathlib.Tactic.Widget.SelectPanelUtils
-import Mathlib.Data.String.Defs
-import Batteries.Tactic.Lint
 import Batteries.Lean.Position
+import Batteries.Tactic.Lint
+import Mathlib.Data.String.Defs
+import Mathlib.Tactic.Widget.SelectPanelUtils
 
 /-! # Conv widget
 

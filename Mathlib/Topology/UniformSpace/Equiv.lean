@@ -5,8 +5,8 @@ Authors: Johannes Hölzl, Patrick Massot, Sébastien Gouëzel, Zhouhang Zhou, Re
 Anatole Dedecker
 -/
 import Mathlib.Topology.Homeomorph
-import Mathlib.Topology.UniformSpace.UniformEmbedding
 import Mathlib.Topology.UniformSpace.Pi
+import Mathlib.Topology.UniformSpace.UniformEmbedding
 
 /-!
 # Uniform isomorphisms
