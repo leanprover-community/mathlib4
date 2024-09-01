@@ -529,7 +529,7 @@ theorem compProd_apply_univ_le (κ : Kernel α β) (η : Kernel (α × β) γ) [
 instance IsFiniteKernel.compProd (κ : Kernel α β) [IsFiniteKernel κ] (η : Kernel (α × β) γ)
     [IsFiniteKernel η] : IsFiniteKernel (κ ⊗ₖ η) :=
   ⟨⟨IsFiniteKernel.bound κ * IsFiniteKernel.bound η,
-      ENNReal.mul_lt_top (IsFiniteKernel.bound_ne_top κ) (IsFiniteKernel.bound_ne_top η), fun a =>
+      ENNReal.mul_lt_top (IsFiniteKernel.bound_lt_top κ) (IsFiniteKernel.bound_lt_top η), fun a =>
       calc
         (κ ⊗ₖ η) a Set.univ ≤ κ a Set.univ * IsFiniteKernel.bound η := compProd_apply_univ_le κ η a
         _ ≤ IsFiniteKernel.bound κ * IsFiniteKernel.bound η :=

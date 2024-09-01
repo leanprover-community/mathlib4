@@ -298,7 +298,7 @@ instance : Inhabited (MulRingNorm R) :=
 variable {R : Type*} [Ring R]
 
 /-- Two multiplicative ring norms `f, g` on `R` are equivalent if there exists a positive constant
-  `c` such that for all `x ∈ R`, `(f x)^c = g x`.  -/
+  `c` such that for all `x ∈ R`, `(f x)^c = g x`. -/
 
 def equiv (f : MulRingNorm R) (g : MulRingNorm R) :=
   ∃ c : ℝ, 0 < c ∧ (fun x => (f x) ^ c) = g
