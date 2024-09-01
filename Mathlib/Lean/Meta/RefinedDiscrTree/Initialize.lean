@@ -220,29 +220,21 @@ def createImportedDiscrTree (cctx : Core.Context) (ngen : NameGenerator) (env : 
         let cnt := cnt + mdata.constants.size
         if cnt > constantsPerTask then
           let (childNGen, ngen) := ngen.mkChild
-          let t ← BaseIO.asTask (pure <| ← importedEnvironmentInitResults cctx childNGen env act capacityPerTask start (idx+1))
+          let t ← (importedEnvironmentInitResults cctx childNGen env act capacityPerTask start (idx+1)).asTask
           go ngen (tasks.push t) (idx+1) 0 (idx+1)
         else
           go ngen tasks start cnt (idx+1)
       else
         if start < numModules then
           let (childNGen, _) := ngen.mkChild
-          let t ← BaseIO.asTask (pure <| ← importedEnvironmentInitResults cctx childNGen env act capacityPerTask start numModules)
+          let t ← (importedEnvironmentInitResults cctx childNGen env act capacityPerTask start numModules).asTask
           pure (tasks.push t)
         else
           pure tasks
     termination_by env.header.moduleData.size - idx
-  -- let t0 ← IO.monoMsNow
-  let h0 ← IO.getNumHeartbeats
   let tasks ← go ngen #[] 0 0 0
-  -- let t1 ← IO.monoMsNow
-  let h1 ← IO.getNumHeartbeats
   let r := combineGet {} tasks
-  -- let t2 ← IO.monoMsNow
-  let h2 ← IO.getNumHeartbeats
   r.errors.forM logImportFailure
-  -- logInfo m! "{(t1-t0)}, and glueing: {(t2-t1)}"
-  logInfo m! "{(h1-h0)/10000}, and glueing: {(h2-h1)/10000}"
   r.tree.toLazy.dropKeys droppedKeys
 
 /--
