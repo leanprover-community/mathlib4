@@ -14,7 +14,7 @@ This file deals with taking quotients of powers of principal ideals.
 
 ## Main definitions and results
 
-* `Ideal.quot_equiv_pow_quot_pow_succ`: for a principal ideal `I`, `R ⧸ I ≃ₗ[R] I ^ n ⧸ I ^ (n + 1)`
+* `Ideal.quotEquivPowQuotPowSucc`: for a principal ideal `I`, `R ⧸ I ≃ₗ[R] I ^ n ⧸ I ^ (n + 1)`
 
 ## Implementation details
 
@@ -37,7 +37,7 @@ variable {R : Type*} [CommRing R] [IsDomain R] {I : Ideal R}
 that uses the ideal of `R ⧸ I ^ (n + 1)`, compose with
 `Ideal.pow_quot_pow_succ_equiv_map_mk_pow_succ_pow`. -/
 noncomputable
-def quot_equiv_pow_quot_pow_succ (h : I.IsPrincipal) (h': I ≠ ⊥) (n : ℕ) :
+def quotEquivPowQuotPowSucc (h : I.IsPrincipal) (h': I ≠ ⊥) (n : ℕ) :
     (R ⧸ I) ≃ₗ[R] (I ^ n : Ideal R) ⧸ (I • ⊤ : Submodule R (I ^ n : Ideal R)) := by
   let f : (I ^ n : Ideal R) →ₗ[R] (I ^ n : Ideal R) ⧸ (I • ⊤ : Submodule R (I ^ n : Ideal R)) :=
     Submodule.mkQ _
@@ -77,7 +77,7 @@ typeclass synthesis issues on complex `Module` goals.  To convert into a form
 that uses the ideal of `R ⧸ I ^ (n + 1)`, compose with
 `Ideal.pow_quot_pow_succ_equiv_map_mk_pow_succ_pow_equiv`. -/
 noncomputable
-def quot_equiv_pow_quot_pow_succ_equiv (h : I.IsPrincipal) (h': I ≠ ⊥) (n : ℕ) :
+def quotEquivPowQuotPowSuccEquiv (h : I.IsPrincipal) (h': I ≠ ⊥) (n : ℕ) :
     (R ⧸ I) ≃ (I ^ n : Ideal R) ⧸ (I • ⊤ : Submodule R (I ^ n : Ideal R)) :=
   quot_equiv_pow_quot_pow_succ h h' n
 
