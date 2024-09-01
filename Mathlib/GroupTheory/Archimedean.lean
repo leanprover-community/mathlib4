@@ -244,7 +244,8 @@ theorem Int.subgroup_cyclic (H : AddSubgroup ℤ) : ∃ a, H = AddSubgroup.closu
 
 /-- If an element of a linearly ordered archimedean additive group is the least positive element,
 then the whole group is isomorphic (and order-isomorphic) to the integers. -/
-noncomputable def LinearOrderedAddCommGroup.int_orderAddMonoidIso_of_isLeast_pos {x : G}
+noncomputable def LinearOrderedAddCommGroup.int_orderAddMonoidIso_of_isLeast_pos {G : Type*}
+    [LinearOrderedAddCommGroup G] [Archimedean G] {x : G}
     (h : IsLeast {y : G | 0 < y} x) : G ≃+o ℤ := by
   have : IsLeast {y : G | y ∈ (⊤ : AddSubgroup G) ∧ 0 < y} x := by simpa using h
   replace this := AddSubgroup.cyclic_of_min this
@@ -268,11 +269,12 @@ noncomputable def LinearOrderedCommGroup.multiplicative_int_orderMonoidIso_of_is
     {x : G} (h : IsLeast {y : G | 1 < y} x) : G ≃*o Multiplicative ℤ := by
   have : IsLeast {y : Additive G | 0 < y} (.ofMul x) := h
   let f' := LinearOrderedAddCommGroup.int_orderAddMonoidIso_of_isLeast_pos (G := Additive G) this
-  exact f'
+  exact ⟨AddEquiv.toMultiplicative' f', by simp⟩
 
 /-- Any linearly ordered archimedean additive group is either isomorphic (and order-isomorphic)
 to the integers, or is densely ordered. -/
-lemma LinearOrderedAddCommGroup.discrete_or_denselyOrdered :
+lemma LinearOrderedAddCommGroup.discrete_or_denselyOrdered (G : Type*)
+    [LinearOrderedAddCommGroup G] [Archimedean G] :
     Nonempty (G ≃+o ℤ) ∨ DenselyOrdered G := by
   by_cases H : ∃ x, IsLeast {y : G | 0 < y} x
   · obtain ⟨x, hx⟩ := H
@@ -293,7 +295,7 @@ variable (G) in
 to the multiplicative integers, or is densely ordered. -/
 @[to_additive existing]
 lemma LinearOrderedCommGroup.discrete_or_denselyOrdered :
-    Nonempty (G ≃+o Multiplicative ℤ) ∨ DenselyOrdered G := by
+    Nonempty (G ≃*o Multiplicative ℤ) ∨ DenselyOrdered G := by
   refine (LinearOrderedAddCommGroup.discrete_or_denselyOrdered (Additive G)).imp ?_ id
   rintro ⟨f⟩
   exact ⟨f⟩
