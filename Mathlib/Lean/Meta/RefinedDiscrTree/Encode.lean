@@ -273,8 +273,8 @@ private def cacheEtaPossibilities (e original : Expr) (lambdas : List FVarId)
     (k : LazyEntry α → Expr → List FVarId → ReaderT Context MetaM (List (Key × LazyEntry α))) :
     ReaderT Context MetaM (List (Key × LazyEntry α)) := do
   match e, lambdas with
-  | .app _ a, fvarId :: _ =>
-    if isStarWithArg (.fvar fvarId) a then
+  | .app f a, fvarId :: _ =>
+    if !f.getAppFn.isMVar && isStarWithArg (.fvar fvarId) a then
       match entry.cache.find? original with
       | some keys => return [ifCached keys]
       | none =>

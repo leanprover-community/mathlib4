@@ -174,7 +174,7 @@ private partial def loadImportedModule
   else
     pure tree
 
-private def createImportedEnvironmentInitResults (cctx : Core.Context) (ngen : NameGenerator)
+private def importedEnvironmentInitResults (cctx : Core.Context) (ngen : NameGenerator)
     (env : Environment) (act : Name → ConstantInfo → MetaM (Array (Key × LazyEntry α)))
     (start stop : Nat) : BaseIO (InitResults α) := do
       let cacheRef ← IO.mkRef (Cache.empty ngen)
@@ -210,23 +210,23 @@ def createImportedDiscrTree (cctx : Core.Context) (ngen : NameGenerator) (env : 
     (droppedKeys : List (List RefinedDiscrTree.Key))
     (constantsPerTask : Nat := 1000) :
     MetaM (RefinedDiscrTree α) := do
-  let n := env.header.moduleData.size
+  let numModules := env.header.moduleData.size
   let rec
     /-- Allocate constants to tasks according to `constantsPerTask`. -/
-    go ngen tasks start cnt idx := do
-      if h : idx < env.header.moduleData.size then
+    go (ngen : NameGenerator) (tasks : Array (Task (InitResults α))) (start cnt idx : Nat) := do
+      if h : idx < numModules then
         let mdata := env.header.moduleData[idx]
         let cnt := cnt + mdata.constants.size
         if cnt > constantsPerTask then
           let (childNGen, ngen) := ngen.mkChild
-          let t ← (createImportedEnvironmentInitResults cctx childNGen env act start (idx+1)).asTask
+          let t ← (importedEnvironmentInitResults cctx childNGen env act start (idx+1)).asTask
           go ngen (tasks.push t) (idx+1) 0 (idx+1)
         else
           go ngen tasks start cnt (idx+1)
       else
-        if start < n then
+        if start < numModules then
           let (childNGen, _) := ngen.mkChild
-          let t ← (createImportedEnvironmentInitResults cctx childNGen env act start n).asTask
+          let t ← (importedEnvironmentInitResults cctx childNGen env act start numModules).asTask
           pure (tasks.push t)
         else
           pure tasks

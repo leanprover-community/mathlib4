@@ -49,7 +49,7 @@ and returning the new `values`, `stars` and `children`. -/
 def evalNode (trie : TrieIndex) :
     TreeM α (Array α × HashMap Nat TrieIndex × HashMap Key TrieIndex) := do
   let .node values stars children pending := (← get).get! trie
-  if pending.size == 0 then
+  if pending.isEmpty then
     return (values, stars, children)
   setTrie trie default
   let mut values := values

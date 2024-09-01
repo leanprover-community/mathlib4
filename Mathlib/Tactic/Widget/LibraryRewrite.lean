@@ -47,6 +47,9 @@ structure RewriteLemma where
   symm : Bool
 deriving BEq, Inhabited
 
+instance : ToFormat RewriteLemma where
+  format lem := f! "{if lem.symm then "← " else ""}{lem.name}"
+
 /-- Extract the left and right hand sides of an equality or iff statement. -/
 def matchEqn? (e : Expr) : Option (Expr × Expr) :=
   match e.eq? with
@@ -54,10 +57,11 @@ def matchEqn? (e : Expr) : Option (Expr × Expr) :=
   | none => e.iff?
 
 /-- Return `true` if `s` and `t` are equal up to changing the `MVarId`s. -/
-private def isSwap (t s : Expr) : Bool :=
+def isSwap (t s : Expr) : Bool :=
   go t s |>.run' {}
 where
   go (t s : Expr) : StateM (HashMap MVarId MVarId) Bool := do match t, s with
+  | .const n₁ _       , .const n₂ _        => return n₁ == n₂
   | .forallE _ d₁ b₁ _, .forallE _ d₂ b₂ _ => go d₁ d₂ <&&> go b₁ b₂
   | .lam _ d₁ b₁ _    , .lam _ d₂ b₂ _     => go d₁ d₂ <&&> go b₁ b₂
   | .mdata d₁ e₁      , .mdata d₂ e₂       => pure (d₁ == d₂) <&&> go e₁ e₂
