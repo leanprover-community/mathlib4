@@ -351,30 +351,33 @@ theorem cons_sublist_orderedInsert {l c : List α} {a : α} (hl : c <+ l) (ha : 
   | nil         => simp_all only [sublist_nil, orderedInsert, Sublist.refl]
   | cons _ _ ih =>
     unfold orderedInsert
-    split
+    split_ifs with hr
     · exact .cons₂ _ hl
-    · cases hl
-      · exact .cons _ <| ih ‹_›
-      · exact absurd (ha _ <| mem_cons_self ..) ‹_›
+    · cases hl with
+      | cons _ h => exact .cons _ <| ih h
+      | cons₂    => exact absurd (ha _ <| mem_cons_self ..) hr
 
 theorem orderedInsert_sublist [IsTrans α r] {as bs} (x) (hs : as <+ bs) (hb : bs.Sorted r) :
     orderedInsert r x as <+ orderedInsert r x bs := by
-  cases as
-  · simp
-  · cases bs
-    · contradiction
-    · unfold orderedInsert
-      cases hs <;> split <;> try split
-      · exact .cons₂ _ <| .cons _ ‹_›
-      · have ih := orderedInsert_sublist x ‹_› hb.of_cons
-        simp only [‹r x _›, orderedInsert, ite_true] at ih
+  cases as with
+  | nil => simp
+  | cons a as =>
+    cases bs with
+    | nil => contradiction
+    | cons b bs =>
+      unfold orderedInsert
+      cases hs <;> split_ifs with hr
+      · exact .cons₂ _ <| .cons _ ‹a :: as <+ bs›
+      · have ih := orderedInsert_sublist x ‹a :: as <+ bs›  hb.of_cons
+        simp only [hr, orderedInsert, ite_true] at ih
         exact .trans ih <| .cons _ (.refl _)
-      · exact absurd (trans_of _ ‹_› <| (pairwise_cons.mp hb).left _ (mem_of_cons_sublist ‹_›)) ‹_›
-      · have ih := orderedInsert_sublist x ‹_› hb.of_cons
-        rw [orderedInsert, if_neg ‹_›] at ih
-        exact .cons _ ‹_›
+      · have hba := pairwise_cons.mp hb |>.left _ (mem_of_cons_sublist ‹a :: as <+ bs›)
+        exact absurd (trans_of _ ‹r x b› hba) hr
+      · have ih := orderedInsert_sublist x ‹a :: as <+ bs› hb.of_cons
+        rw [orderedInsert, if_neg hr] at ih
+        exact .cons _ ih
       · simp_all only [sorted_cons, cons_sublist_cons]
-      · exact .cons₂ _ <| orderedInsert_sublist x ‹_› hb.of_cons
+      · exact .cons₂ _ <| orderedInsert_sublist x ‹as <+ bs› hb.of_cons
 
 section TotalAndTransitive
 
@@ -413,9 +416,11 @@ theorem insertionSort_stable {l c : List α} (hr : c.Pairwise r) (hc : c <+ l) :
   induction l generalizing c with
   | nil         => simp_all only [sublist_nil, insertionSort, Sublist.refl]
   | cons _ _ ih =>
-    cases hc
-    · exact ih ‹_› ‹_› |>.trans (sublist_orderedInsert ..)
-    · cases hr; exact cons_sublist_orderedInsert (ih ‹_› ‹_›) ‹_›
+    cases hc with
+    | cons  _ h => exact ih hr h |>.trans (sublist_orderedInsert ..)
+    | cons₂ _ h =>
+      obtain ⟨hr, hp⟩ := pairwise_cons.mp hr
+      exact cons_sublist_orderedInsert (ih hp h) hr
 
 /--
 Another statement of stability of insertion sort.
@@ -439,11 +444,12 @@ theorem insertionSort_stable' {l c : List α} (hs : c.Sorted r) (hc : c <+~ l) :
   induction l generalizing c d with
   | nil         => simp_all only [sublist_nil, insertionSort, nil_perm]
   | cons a _ ih =>
-    cases hd
-    · exact ih ‹_› _ ‹_› ‹_› |>.trans (sublist_orderedInsert ..)
-    · specialize ih (hs.sublist <| erase_sublist a _) _ (erase_cons_head a _ ▸ hc.erase _) ‹_›
-      have := hc.mem_iff.mp <| mem_cons_self ..
-      exact orderedInsert_erase _ _ ‹_› ‹_› ▸ orderedInsert_sublist _ ih (sorted_insertionSort ..)
+    cases hd with
+    | cons  _ h => exact ih hs _ hc h |>.trans (sublist_orderedInsert ..)
+    | cons₂ _ h =>
+      specialize ih (hs.sublist <| erase_sublist a _) _ (erase_cons_head a ‹List _› ▸ hc.erase a) h
+      have hm := hc.mem_iff.mp <| mem_cons_self ..
+      exact orderedInsert_erase _ _ hm hs ▸ orderedInsert_sublist _ ih (sorted_insertionSort ..)
 
 /--
 Another statement of stability of insertion sort.
