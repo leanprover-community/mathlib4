@@ -271,7 +271,7 @@ noncomputable def LinearOrderedCommGroup.multiplicative_int_orderMonoidIso_of_is
   let f' := LinearOrderedAddCommGroup.int_orderAddMonoidIso_of_isLeast_pos (G := Additive G) this
   exact ⟨AddEquiv.toMultiplicative' f', by simp⟩
 
-/-- Any linearly ordered archimedean additive group is either is isomorphic (and order-isomorphic)
+/-- Any linearly ordered archimedean additive group is either isomorphic (and order-isomorphic)
 to the integers, or is densely ordered. -/
 lemma LinearOrderedAddCommGroup.discrete_or_denselyOrdered (G : Type*)
     [LinearOrderedAddCommGroup G] [Archimedean G] :
@@ -291,7 +291,7 @@ lemma LinearOrderedAddCommGroup.discrete_or_denselyOrdered (G : Type*)
     · simpa [lt_sub_iff_add_lt'] using hz.right
 
 variable (G) in
-/-- Any linearly ordered mul-archimedean group is either is isomorphic (and order-isomorphic)
+/-- Any linearly ordered mul-archimedean group is either isomorphic (and order-isomorphic)
 to the multiplicative integers, or is densely ordered. -/
 @[to_additive existing]
 lemma LinearOrderedCommGroup.discrete_or_denselyOrdered :
