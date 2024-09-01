@@ -35,6 +35,9 @@ jobs:
 
       - name: Print t-label
         run: |
+          currentHash="$(git rev-parse HEAD)"
+          hashURL="https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}/commits/${currentHash}"
+          echo "${hashURL}"
           echo "${PR}"
           tlabels="$(gh api --jq '.labels.[].name' "${PR}" | grep -- '^t-' || printf 'generic')"
           >&2 printf 't-labels:\n---\n%s\n---\n' "${tlabels}"
