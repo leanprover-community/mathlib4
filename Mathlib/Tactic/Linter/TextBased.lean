@@ -128,8 +128,9 @@ inductive ComparisonResult
 and, if it is, if we prefer replacing the new exception or keeping the previous one. -/
 def compare (existing new : ErrorContext) : ComparisonResult :=
   -- Two comparable error contexts must have the same path.
-  if existing.path != new.path then
-    ComparisonResult.Different
+  -- To avoid issues with different path separators across different operating systems,
+  -- we compare the set of path components instead.
+  if existing.path.components != new.path.components then ComparisonResult.Different
   -- We entirely ignore their line numbers: not sure if this is best.
 
   -- NB: keep the following in sync with `parse?_errorContext` below.
