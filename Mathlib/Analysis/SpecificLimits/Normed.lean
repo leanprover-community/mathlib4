@@ -5,15 +5,15 @@ Authors: Anatole Dedecker, Sébastien Gouëzel, Yury Kudryashov, Dylan MacKenzie
 -/
 import Mathlib.Algebra.BigOperators.Module
 import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Order.Filter.ModEq
 import Mathlib.Analysis.Asymptotics.Asymptotics
+import Mathlib.Analysis.Normed.Field.InfiniteSum
+import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Data.List.TFAE
-import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Data.Nat.Choose.Bounds
-import Mathlib.Tactic.NoncommRing
-import Mathlib.Analysis.Normed.Field.InfiniteSum
+import Mathlib.Order.Filter.ModEq
 import Mathlib.RingTheory.Polynomial.Pochhammer
+import Mathlib.Tactic.NoncommRing
 
 /-!
 # A collection of specific limit computations
@@ -433,7 +433,7 @@ theorem summable_pow_mul_geometric_of_norm_lt_one (k : ℕ) {r : 𝕜} (hr : ‖
     apply (summable_descFactorial_mul_geometric_of_norm_lt_one k hr).sub
     apply summable_sum (fun i hi ↦ ?_)
     simp_rw [mul_assoc]
-    simp at hi
+    simp only [Finset.mem_range] at hi
     exact (hk _ hi).mul_left _
   convert this using 1
   ext n
