@@ -74,7 +74,7 @@ variable (e : Pretrivialization F proj) {x : Z}
 /-- Coercion of a pretrivialization to a function. We don't use `e.toFun` in the `CoeFun` instance
 because it is actually `e.toPartialEquiv.toFun`, so `simp` will apply lemmas about
 `toPartialEquiv`. While we may want to switch to this behavior later, doing it mid-port will break a
-lot of proofs.  -/
+lot of proofs. -/
 @[coe] def toFun' : Z → (B × F) := e.toFun
 
 instance : CoeFun (Pretrivialization F proj) fun _ => Z → B × F := ⟨toFun'⟩
@@ -282,7 +282,7 @@ lemma ext' (e e' : Trivialization F proj) (h₁ : e.toPartialHomeomorph = e'.toP
 /-- Coercion of a trivialization to a function. We don't use `e.toFun` in the `CoeFun` instance
 because it is actually `e.toPartialEquiv.toFun`, so `simp` will apply lemmas about
 `toPartialEquiv`. While we may want to switch to this behavior later, doing it mid-port will break a
-lot of proofs.  -/
+lot of proofs. -/
 @[coe] def toFun' : Z → (B × F) := e.toFun
 
 /-- Natural identification as a `Pretrivialization`. -/
@@ -465,7 +465,7 @@ theorem preimageSingletonHomeomorph_symm_apply {b : B} (hb : b ∈ e.baseSet) (p
       ⟨e.symm (b, p), by rw [mem_preimage, e.proj_symm_apply' hb, mem_singleton_iff]⟩ :=
   rfl
 
-/-- In the domain of a bundle trivialization, the projection is continuous-/
+/-- In the domain of a bundle trivialization, the projection is continuous -/
 theorem continuousAt_proj (ex : x ∈ e.source) : ContinuousAt proj x :=
   (e.map_proj_nhds ex).le
 

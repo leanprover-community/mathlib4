@@ -169,7 +169,7 @@ def Matroid.ExchangeProperty {α : Type _} (P : Set α → Prop) : Prop :=
   ∀ X Y, P X → P Y → ∀ a ∈ X \ Y, ∃ b ∈ Y \ X, P (insert b (X \ {a}))
 
 /-- A set `X` has the maximal subset property for a predicate `P` if every subset of `X` satisfying
-  `P` is contained in a maximal subset of `X` satisfying `P`.  -/
+  `P` is contained in a maximal subset of `X` satisfying `P`. -/
 def Matroid.ExistsMaximalSubsetProperty {α : Type _} (P : Set α → Prop) (X : Set α) : Prop :=
   ∀ I, P I → I ⊆ X → ∃ J, I ⊆ J ∧ Maximal (fun K ↦ P K ∧ K ⊆ X) J
 
@@ -713,7 +713,7 @@ def Basis (M : Matroid α) (I X : Set α) : Prop :=
   Maximal (fun A ↦ M.Indep A ∧ A ⊆ X) I ∧ X ⊆ M.E
 
 /-- A `Basis'` is a basis without the requirement that `X ⊆ M.E`. This is convenient for some
-  API building, especially when working with rank and closure.  -/
+  API building, especially when working with rank and closure. -/
 def Basis' (M : Matroid α) (I X : Set α) : Prop :=
   Maximal (fun A ↦ M.Indep A ∧ A ⊆ X) I
 
