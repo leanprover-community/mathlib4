@@ -295,17 +295,17 @@ to the multiplicative integers, or is densely ordered. -/
 lemma LinearOrderedCommGroup.discrete_or_denselyOrdered :
     Nonempty (G ≃+o Multiplicative ℤ) ∨ DenselyOrdered G := by
   refine (LinearOrderedAddCommGroup.discrete_or_denselyOrdered (Additive G)).imp ?_ id
-  rintro ⟨f, hf⟩
-  exact ⟨AddEquiv.toMultiplicative' f, hf⟩
+  rintro ⟨f⟩
+  exact ⟨f⟩
 
 /-- Any nontrivial (has other than 0 and 1) linearly ordered mul-archimedean group with zero is
 either isomorphic (and order-isomorphic) to `ℤₘ₀`, or is densely ordered. -/
 lemma LinearOrderedCommGroupWithZero.discrete_or_denselyOrdered (G : Type*)
     [LinearOrderedCommGroupWithZero G] [Nontrivial Gˣ] [MulArchimedean G] :
-    (∃ f : G ≃* WithZero (Multiplicative ℤ), StrictMono f) ∨ DenselyOrdered G := by
+    Nonempty (G ≃*o WithZero (Multiplicative ℤ)) ∨ DenselyOrdered G := by
   classical
   refine (LinearOrderedCommGroup.discrete_or_denselyOrdered Gˣ).imp ?_ ?_
-  · intro ⟨f, hf⟩
+  · intro ⟨f⟩
     refine ⟨(WithZero.unitsWithZeroEquivGroupWithZero _).symm.trans f.withZeroCongr, ?_⟩
     intro x y h
     simp only [WithZero.unitsWithZeroEquivGroupWithZero, MulEquiv.symm_mk, MulEquiv.withZeroCongr,
