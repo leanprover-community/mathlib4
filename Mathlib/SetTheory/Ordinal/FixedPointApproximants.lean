@@ -101,7 +101,7 @@ theorem lfpApprox_succ {f : α →o α} {x : α} (h : x ≤ f x) (a : Ordinal) :
 @[deprecated lfpApprox_succ (since := "2024-08-31")]
 theorem lfpApprox_add_one {f : α →o α} {x : α} (h : x ≤ f x) (a : Ordinal) :
     lfpApprox f x (a + 1) = f (lfpApprox f x a) := by
-  rw [Ordinal.add_one_eq_succ, lfpApprox_succ h]
+  lfpApprox_succ h a
 
 /-- The ordinal approximants of the least fixed point are stabilizing
   when reaching a fixed point of f -/
@@ -198,11 +198,10 @@ theorem gfpApprox_succ {f : α →o α} {x : α} (h : f x ≤ x) (a : Ordinal) :
     gfpApprox f x (succ a) = f (gfpApprox f x a) :=
   lfpApprox_succ (f := OrderHom.dual f) h a
 
-set_option linter.deprecated false in
 @[deprecated gfpApprox_succ (since := "2024-08-31")]
 theorem gfpApprox_add_one {f : α →o α} {x : α} (h : f x ≤ x) (a : Ordinal) :
     gfpApprox f x (a + 1) = f (gfpApprox f x a) :=
-  lfpApprox_add_one (f := OrderHom.dual f) h a
+  gfpApprox_succ h a
 
 /-- The ordinal approximants of the least fixed point are stabilizing
   when reaching a fixed point of f -/
