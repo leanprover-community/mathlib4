@@ -44,7 +44,7 @@ jobs:
             tlabels="generic"
           fi
           streamName="${tlabels} maintainer merges"
-          >&2 printf 'Post to topic: '%s'"\n' "${streamName}"
+          >&2 printf $'Post to topic: \'%s\'"\n' "${streamName}"
           echo "name=${streamName}"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
