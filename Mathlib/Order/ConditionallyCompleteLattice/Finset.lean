@@ -46,32 +46,6 @@ theorem Set.Finite.csSup_lt_iff (hs : s.Finite) (h : s.Nonempty) : sSup s < a �
 theorem Set.Finite.lt_csInf_iff (hs : s.Finite) (h : s.Nonempty) : a < sInf s ↔ ∀ x ∈ s, a < x :=
   @Set.Finite.csSup_lt_iff αᵒᵈ _ _ _ hs h
 
-theorem toDual_csSup {s : Set α} (h : s.Nonempty) (hs : Set.Finite s) :
-    OrderDual.toDual (sSup s) = sInf (OrderDual.toDual '' s) := by
-  refine le_antisymm ?_ ?_
-  · refine le_csInf (h.image _) ?_
-    simpa using fun _ ↦ le_csSup hs.bddAbove
-  · refine csInf_le ?_ ?_
-    · exact Antitone.map_bddAbove (fun ⦃a b⦄ a ↦ a) hs.bddAbove
-    · simp only [mem_image_equiv, OrderDual.toDual_symm_eq, OrderDual.ofDual_toDual]
-      exact h.csSup_mem hs
-
-theorem toDual_csInf {s : Set α} (h : s.Nonempty) (hs : Set.Finite s) :
-    OrderDual.toDual (sInf s) = sSup (OrderDual.toDual '' s) :=
-  toDual_csSup (α := αᵒᵈ) h hs
-
-theorem toDual_csSup' {s : Set α} (hs : Set.Finite s)
-    (he : OrderDual.toDual (sSup ∅) = sInf (∅ : Set αᵒᵈ)) :
-    OrderDual.toDual (sSup s) = sInf (OrderDual.toDual '' s) := by
-  rcases s.eq_empty_or_nonempty with rfl|h
-  · simpa using he
-  exact toDual_csSup h hs
-
-theorem toDual_csInf' {s : Set α} (hs : Set.Finite s)
-    (he : OrderDual.toDual (sInf ∅) = sSup (∅ : Set αᵒᵈ)) :
-    OrderDual.toDual (sInf s) = sSup (OrderDual.toDual '' s) :=
-  toDual_csSup' (α := αᵒᵈ) hs he
-
 variable (f : ι → α)
 
 theorem Finset.ciSup_eq_max'_image {s : Finset ι} (h : ∃ x ∈ s, sSup ∅ ≤ f x)
