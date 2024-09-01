@@ -9,6 +9,7 @@ import Mathlib.Data.Countable.Small
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.RingTheory.Derivation.DifferentialRing
 import Mathlib.RingTheory.LocalRing.Basic
+import Mathlib.Tactic.FieldSimp
 
 /-!
 # Differential Fields
