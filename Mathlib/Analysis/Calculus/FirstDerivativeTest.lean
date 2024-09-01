@@ -43,22 +43,6 @@ We prove a couple of auxiliary lemmas elaborating on facts such as
 "differentiable implies continuous",
 "an open interval is an open set", and "`fun x => -x` is antitone". -/
 
-
-/-- If `f` is differentiable on `(a,b)`, and `x ∈ (a,b)`, then `f` is differentiable at `x`.-/
-theorem differentiableOn_differentiableAt_Ioo.{u_1, u_2, u_3} {𝕜 : Type u_1}
-  [NontriviallyNormedField 𝕜] {E : Type u_2} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [LinearOrder E] [OrderClosedTopology E]
-    {a x b : E} (hab : x ∈ Set.Ioo a b)
-    {F : Type u_3} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-    {f : E → F}
-    (hd₀ : DifferentiableOn 𝕜 f (Set.Ioo a b)) :
-    DifferentiableAt 𝕜 f x := by
-  apply DifferentiableOn.differentiableAt
-  exact hd₀
-  refine IsOpen.mem_nhds ?hs.hs hab
-  apply isOpen_Ioo
-
-
 /-- If `f'` is the derivative of `f` then  `f' x ≤ 0 → 0 ≤ (-f)' x`. -/
 theorem deriv_neg_nonneg {f : ℝ → ℝ} {a b : ℝ}
   (hd₀ : DifferentiableOn ℝ f (Set.Ioo a b))
