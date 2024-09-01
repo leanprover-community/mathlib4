@@ -3,10 +3,7 @@ Copyright (c) 2024 Daniel Weber. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Weber
 -/
-import Mathlib.Algebra.Algebra.Field
 import Mathlib.Algebra.EuclideanDomain.Field
-import Mathlib.Data.Countable.Small
-import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.RingTheory.Derivation.DifferentialRing
 import Mathlib.RingTheory.LocalRing.Basic
 import Mathlib.Tactic.FieldSimp
