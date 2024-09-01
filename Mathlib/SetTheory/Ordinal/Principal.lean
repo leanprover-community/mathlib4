@@ -207,6 +207,12 @@ theorem principal_add_omega_opow (x : Ordinal) : Principal (· + ·) (ω ^ x) :=
 theorem add_omega_opow {a b : Ordinal} : a < ω ^ b → a + ω ^ b = ω ^ b :=
   (principal_add_omega_opow b).add_absorp
 
+theorem add_absorp {a b : Ordinal} : a < ω ^ b → a + ω ^ b = ω ^ b :=
+  (principal_add_omega_opow b).add_absorp
+
+theorem add_absorp_of_ge {a b c : Ordinal} : a < ω ^ b → ω ^ b ≤ c → a + c = c :=
+  (principal_add_omega_opow b).add_absorp_of_ge
+
 /-- The main characterization theorem for additive principal ordinals. -/
 theorem principal_add_iff_zero_or_omega_opow {o : Ordinal} :
     Principal (· + ·) o ↔ o = 0 ∨ o ∈ Set.range (ω ^ · : Ordinal → Ordinal) := by
@@ -237,10 +243,6 @@ theorem opow_principal_add_of_principal_add {a} (ha : Principal (· + ·) a) (b 
     exact principal_add_omega_opow _
 
 alias Principal.opow := opow_principal_add_of_principal_add
-
-@[deprecated Principal.add_absorp_of_ge (since := "2024-08-19")]
-theorem add_absorp {a b c : Ordinal} : a < ω ^ b → ω ^ b ≤ c → a + c = c :=
-  (principal_add_omega_opow b).add_absorp_of_ge
 
 theorem mul_principal_add_is_principal_add (a : Ordinal.{u}) {b : Ordinal.{u}} (hb₁ : b ≠ 1)
     (hb : Principal (· + ·) b) : Principal (· + ·) (a * b) := by
