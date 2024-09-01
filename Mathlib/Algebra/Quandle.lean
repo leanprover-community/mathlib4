@@ -152,13 +152,13 @@ identity holds.
 -/
 lemma act_act_self_eq (x y : S) : (x ◃ y) ◃ x = x ◃ y := by
   have h : (x ◃ y) ◃ x = (x ◃ y) ◃ (x ◃ 1) := by rw [act_one]
-  rw [h, ← Shelf.self_distrib, act_one]
+  rw [h, ←Shelf.self_distrib, act_one]
 
-lemma act_idem (x : S) : (x ◃ x) = x := by rw [← act_one x, ← Shelf.self_distrib, act_one]
+lemma act_idem (x : S) : (x ◃ x) = x := by rw [←act_one x, ←Shelf.self_distrib, act_one]
 
 lemma act_self_act_eq (x y : S) : x ◃ (x ◃ y) = x ◃ y := by
   have h : x ◃ (x ◃ y) = (x ◃ 1) ◃ (x ◃ y) := by rw [act_one]
-  rw [h, ← Shelf.self_distrib, one_act]
+  rw [h, ←Shelf.self_distrib, one_act]
 
 /--
 The associativity of a unital shelf comes for free.
@@ -217,7 +217,7 @@ theorem left_cancel_inv (x : R) {y y' : R} : x ◃⁻¹ y = x ◃⁻¹ y' ↔ y 
   rfl
 
 theorem self_distrib_inv {x y z : R} : x ◃⁻¹ y ◃⁻¹ z = (x ◃⁻¹ y) ◃⁻¹ x ◃⁻¹ z := by
-  rw [← left_cancel (x ◃⁻¹ y), right_inv, ← left_cancel x, right_inv, self_distrib]
+  rw [←left_cancel (x ◃⁻¹ y), right_inv, ←left_cancel x, right_inv, self_distrib]
   repeat' rw [right_inv]
 
 /-- The *adjoint action* of a rack on itself is `op'`, and the adjoint
@@ -255,7 +255,7 @@ theorem op_invAct_op_eq {x y : R} : op x ◃⁻¹ op y = op (x ◃ y) :=
   rfl
 
 @[simp]
-theorem self_act_act_eq {x y : R} : (x ◃ x) ◃ y = x ◃ y := by rw [← right_inv x y, ← self_distrib]
+theorem self_act_act_eq {x y : R} : (x ◃ x) ◃ y = x ◃ y := by rw [←right_inv x y, ←self_distrib]
 
 @[simp]
 theorem self_invAct_invAct_eq {x y : R} : (x ◃⁻¹ x) ◃⁻¹ y = x ◃⁻¹ y := by
@@ -264,7 +264,7 @@ theorem self_invAct_invAct_eq {x y : R} : (x ◃⁻¹ x) ◃⁻¹ y = x ◃⁻¹
 
 @[simp]
 theorem self_act_invAct_eq {x y : R} : (x ◃ x) ◃⁻¹ y = x ◃⁻¹ y := by
-  rw [← left_cancel (x ◃ x)]
+  rw [←left_cancel (x ◃ x)]
   rw [right_inv]
   rw [self_act_act_eq]
   rw [right_inv]
@@ -279,8 +279,8 @@ theorem self_act_eq_iff_eq {x y : R} : x ◃ x = y ◃ y ↔ x = y := by
   · rintro rfl; rfl
   intro h
   trans (x ◃ x) ◃⁻¹ x ◃ x
-  · rw [← left_cancel (x ◃ x), right_inv, self_act_act_eq]
-  · rw [h, ← left_cancel (y ◃ y), right_inv, self_act_act_eq]
+  · rw [←left_cancel (x ◃ x), right_inv, self_act_act_eq]
+  · rw [h, ←left_cancel (y ◃ y), right_inv, self_act_act_eq]
 
 theorem self_invAct_eq_iff_eq {x y : R} : x ◃⁻¹ x = y ◃⁻¹ y ↔ x = y := by
   have h := @self_act_eq_iff_eq _ _ (op x) (op y)
@@ -302,7 +302,7 @@ def IsInvolutory (R : Type*) [Rack R] : Prop :=
 
 theorem involutory_invAct_eq_act {R : Type*} [Rack R] (h : IsInvolutory R) (x y : R) :
     x ◃⁻¹ y = x ◃ y := by
-  rw [← left_cancel x, right_inv, h x]
+  rw [←left_cancel x, right_inv, h x]
 
 /-- An abelian rack is one for which the mediality axiom holds.
 -/
@@ -366,7 +366,7 @@ attribute [simp] fix
 
 @[simp]
 theorem fix_inv {x : Q} : x ◃⁻¹ x = x := by
-  rw [← left_cancel x]
+  rw [←left_cancel x]
   simp
 
 instance oppositeQuandle : Quandle Qᵐᵒᵖ where
@@ -687,7 +687,7 @@ def toEnvelGroup.map {R : Type*} [Rack R] {G : Type*} [Group G] :
           simp only [MonoidHom.coe_mk, OneHom.coe_mk, Quotient.lift_mk]
           suffices ∀ x y, F (Mul.mul x y) = F (x) * F (y) by
             simp_all only [MonoidHom.coe_mk, OneHom.coe_mk, Quotient.lift_mk, hm]
-            rw [← ih_x, ← ih_y, mapAux]
+            rw [←ih_x, ←ih_y, mapAux]
           exact F.map_mul
         | inv x ih_x =>
           have hm : ⟦x.inv⟧ = @Inv.inv (EnvelGroup R) _ ⟦x⟧ := rfl
