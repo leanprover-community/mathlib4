@@ -869,7 +869,7 @@ lemma norm_eq_one_iff_ne_zero_discrete {x : 𝕜} : ‖x‖ = 1 ↔ x ≠ 0 := b
     · push_neg at h
       rcases h.eq_or_lt with h|h
       · rw [h]
-      replace h := norm_inv x ▸ _root_.inv_lt_one_iff.mpr (Or.inr h)
+      replace h := norm_inv x ▸ inv_lt_one h
       rw [← inv_inj, inv_one, ← norm_inv]
       exact H (by simpa) h' h
     obtain ⟨k, hk⟩ : ∃ k : ℕ, ‖x‖ ^ k < ε := exists_pow_lt_of_lt_one εpos h
