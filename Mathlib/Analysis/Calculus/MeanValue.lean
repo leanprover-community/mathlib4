@@ -428,6 +428,10 @@ variable {𝕜 G : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField �
   [NormedSpace 𝕜 E] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
   {f g : E → G} {C : ℝ} {s : Set E} {x y : E} {f' g' : E → E →L[𝕜] G} {φ : E →L[𝕜] G}
 
+instance : PathConnectedSpace 𝕜 := by
+  letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
+  infer_instance
+
 /-- The mean value theorem on a convex set: if the derivative of a function is bounded by `C`, then
 the function is `C`-Lipschitz. Version with `HasFDerivWithinAt`. -/
 theorem norm_image_sub_le_of_norm_hasFDerivWithin_le
