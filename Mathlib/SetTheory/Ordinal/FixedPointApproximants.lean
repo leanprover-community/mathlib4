@@ -100,7 +100,7 @@ theorem lfpApprox_succ {f : α →o α} {x : α} (h : x ≤ f x) (a : Ordinal) :
 
 @[deprecated lfpApprox_succ (since := "2024-08-31")]
 theorem lfpApprox_add_one {f : α →o α} {x : α} (h : x ≤ f x) (a : Ordinal) :
-    lfpApprox f x (a + 1) = f (lfpApprox f x a) := by
+    lfpApprox f x (a + 1) = f (lfpApprox f x a) :=
   lfpApprox_succ h a
 
 /-- The ordinal approximants of the least fixed point are stabilizing
