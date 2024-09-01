@@ -7,7 +7,7 @@ import Mathlib.RingTheory.Derivation.Basic
 import Mathlib.Algebra.Polynomial.Module.Basic
 
 /-!
-# Coefficient-wise derivation
+# Coefficient-wise derivation on polynomials
 
 In this file we define applying a derivation on the coefficients of a polynomial,
 show this forms a derivation, and prove `apply_eval_eq`, which shows that for a derivation `D`,
