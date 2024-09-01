@@ -65,11 +65,11 @@ theorem moveLeft_nim_hEq (o : Ordinal) :
 theorem moveRight_nim_hEq (o : Ordinal) :
     HEq (nim o).moveRight fun i : o.toType => nim ((enumIsoToType o).symm i) := by rw [nim_def]; rfl
 
-/-- Turns an ordinal less than `o` into a left move for `nim o` and viceversa. -/
+/-- Turns an ordinal less than `o` into a left move for `nim o` and vice versa. -/
 noncomputable def toLeftMovesNim {o : Ordinal} : Set.Iio o ≃ (nim o).LeftMoves :=
   (enumIsoToType o).toEquiv.trans (Equiv.cast (leftMoves_nim o).symm)
 
-/-- Turns an ordinal less than `o` into a right move for `nim o` and viceversa. -/
+/-- Turns an ordinal less than `o` into a right move for `nim o` and vice versa. -/
 noncomputable def toRightMovesNim {o : Ordinal} : Set.Iio o ≃ (nim o).RightMoves :=
   (enumIsoToType o).toEquiv.trans (Equiv.cast (rightMoves_nim o).symm)
 

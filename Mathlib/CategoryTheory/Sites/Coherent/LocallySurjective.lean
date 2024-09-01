@@ -78,9 +78,9 @@ lemma extensiveTopology.surjective_of_isLocallySurjective_sheafOfTypes [Finitary
     Cofan.mk_ι_app]
   have : f.app ⟨Y a⟩ (y a) = G.map (π a).op x := (h' a).choose_spec
   change _ = G.map (π a).op x
-  erw [← this, ← NatTrans.naturality_apply (φ := f)]
-  apply congrArg
-  change (i.hom ≫ F.map (π a).op) y = _
+  rw [← this]
+  erw [← NatTrans.naturality_apply (φ := f)]
+  change f.app _ ((i.hom ≫ F.map (π a).op) y) = _
   erw [IsLimit.map_π]
   rfl
 
