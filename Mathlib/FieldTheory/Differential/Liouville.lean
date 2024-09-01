@@ -23,13 +23,13 @@ way with `v, cᵢ, uᵢ ∈ F`.
 class IsLiouville (F : Type*) (K : Type*) [Field F] [Field K] [Differential F] [Differential K]
     [Algebra F K] [DifferentialAlgebra F K] : Prop where
   is_liouville (a : F) (ι : Type) [Fintype ι] (c : ι → F) (hc : ∀ x, (c x)′ = 0)
-    (u : ι → K) (v : K) (h : a = ∑ x, c x * logDeriv (u x) + v′) :
+    (u : ι → K) (v : K) (h : a = ∑ x, c x * logd (u x) + v′) :
     ∃ (ι' : Type) (_ : Fintype ι') (c' : ι' → F) (_ : ∀ x, (c' x)′ = 0)
-      (u' : ι' → F) (v' : F), a = ∑ x, c' x * logDeriv (u' x) + v'′
+      (u' : ι' → F) (v' : F), a = ∑ x, c' x * logd (u' x) + v'′
 
 instance IsLiouville.rfl (F : Type*) [Field F] [Differential F] : IsLiouville F F where
   is_liouville (a : F) (ι : Type) [Fintype ι] (c : ι → F) (hc : ∀ x, (c x)′ = 0)
-      (u : ι → F) (v : F) (h : a = ∑ x, c x * logDeriv (u x) + v′) :=
+      (u : ι → F) (v : F) (h : a = ∑ x, c x * logd (u x) + v′) :=
     ⟨ι, _, c, hc, u, v, h⟩
 
 lemma IsLiouville.trans {F : Type*} {K : Type*} {A : Type*} [Field F]
@@ -39,7 +39,7 @@ lemma IsLiouville.trans {F : Type*} {K : Type*} {A : Type*} [Field F]
     [IsScalarTower F K A] [Differential.ContainConstants F K]
     (inst1 : IsLiouville F K) (inst2 : IsLiouville K A) : IsLiouville F A where
   is_liouville (a : F) (ι : Type) [Fintype ι] (c : ι → F) (hc : ∀ x, (c x)′ = 0)
-      (u : ι → A) (v : A) (h : a = ∑ x, c x * logDeriv (u x) + v′) := by
+      (u : ι → A) (v : A) (h : a = ∑ x, c x * logd (u x) + v′) := by
     obtain ⟨ι'', _, c'', hc', u'', v', h'⟩ := inst2.is_liouville (a : K) ι
         ((↑) ∘ c)
         (fun _ ↦ by simp only [Function.comp_apply, ← coe_deriv, lift_map_eq_zero_iff, hc])
