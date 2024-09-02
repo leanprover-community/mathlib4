@@ -154,6 +154,7 @@ theorem star_exp [T2Space 𝔸] [StarRing 𝔸] [ContinuousStar 𝔸] (x : 𝔸)
 
 variable (𝕂)
 
+@[aesop safe apply]
 theorem _root_.IsSelfAdjoint.exp [T2Space 𝔸] [StarRing 𝔸] [ContinuousStar 𝔸] {x : 𝔸}
     (h : IsSelfAdjoint x) : IsSelfAdjoint (exp 𝕂 x) :=
   (star_exp x).trans <| h.symm ▸ rfl
