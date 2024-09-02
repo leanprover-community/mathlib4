@@ -48,7 +48,7 @@ noncomputable def stabilizationIndex {f : ℕ → α} (hf : EventuallyConst f at
 noncomputable def selfIncreasingFixedPointIndex (hf : id ≤ f) (x : α) : ℕ :=
   stabilizationIndex (eventuallyConst_iterate_of_wellFoundedGT hf x)
 
-lemma fixedPointIndex_spec (hf : id ≤ f) (x : α) :
+lemma selfIncreasingFixedPointIndex_spec (hf : id ≤ f) (x : α) :
     ∀ m ≥ selfIncreasingFixedPointIndex hf x,
       f^[m] x = f^[selfIncreasingFixedPointIndex hf x] x :=
   (eventuallyConst_atTop.mp (eventuallyConst_iterate_of_wellFoundedGT hf x)).choose_spec
@@ -58,16 +58,16 @@ noncomputable def eventualValue (hf : id ≤ f) (x : α) :=
   f^[selfIncreasingFixedPointIndex hf x] x
 
 /-- The eventual value is a fixed point of `f`. -/
-lemma fixed_eventualValue (hf : id ≤ f) (x : α) : IsFixedPt f (eventualValue hf x) := by
+lemma isFixedPt_eventualValue (hf : id ≤ f) (x : α) : IsFixedPt f (eventualValue hf x) := by
   unfold IsFixedPt
   simp only [eventualValue, ← iterate_succ_apply']
-  apply fixedPointIndex_spec
+  apply selfIncreasingFixedPointIndex_spec
   simp
 
 /-- The eventual value is larger or equal than `x` itself. -/
 lemma self_le_eventualValue (hf : id ≤ f) (x : α) : x ≤ eventualValue hf x := by
   simp only [eventualValue]
-  conv_lhs => rw [show x = f^[0] x from rfl]
+  conv_lhs => rw [← iterate_zero_apply f x]
   apply f.monotone_iterate_of_id_le hf
   simp
 
