@@ -118,7 +118,7 @@ open FiniteDimensional
 
 open scoped Classical
 
--- We need to provide this instance explicitely as otherwise `finrank_hom_simple_simple` gives a
+-- We need to provide this instance explicitly as otherwise `finrank_hom_simple_simple` gives a
 -- deterministic timeout.
 instance : HasKernels (FDRep k G) := by infer_instance
 

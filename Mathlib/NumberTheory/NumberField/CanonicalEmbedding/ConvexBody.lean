@@ -195,8 +195,8 @@ theorem convexBodyLT'_convex : Convex ℝ (convexBodyLT' K f w₀) := by
   refine Convex.prod (convex_pi (fun _ _ => convex_ball _ _)) (convex_pi (fun _ _ => ?_))
   split_ifs
   · simp_rw [abs_lt]
-    refine Convex.inter ((convex_halfspace_re_gt _).inter  (convex_halfspace_re_lt _))
-      ((convex_halfspace_im_gt _).inter  (convex_halfspace_im_lt _))
+    refine Convex.inter ((convex_halfspace_re_gt _).inter (convex_halfspace_re_lt _))
+      ((convex_halfspace_im_gt _).inter (convex_halfspace_im_lt _))
   · exact convex_ball _ _
 
 open MeasureTheory MeasureTheory.Measure
@@ -483,8 +483,8 @@ theorem volume_fundamentalDomain_fractionalIdealLatticeBasis :
 
 theorem minkowskiBound_lt_top : minkowskiBound K I < ⊤ := by
   refine ENNReal.mul_lt_top ?_ ?_
-  · exact ne_of_lt (fundamentalDomain_isBounded _).measure_lt_top
-  · exact ne_of_lt (ENNReal.pow_lt_top (lt_top_iff_ne_top.mpr ENNReal.two_ne_top) _)
+  · exact (fundamentalDomain_isBounded _).measure_lt_top
+  · exact ENNReal.pow_lt_top (lt_top_iff_ne_top.mpr ENNReal.two_ne_top) _
 
 theorem minkowskiBound_pos : 0 < minkowskiBound K I := by
   refine zero_lt_iff.mpr (mul_ne_zero ?_ ?_)

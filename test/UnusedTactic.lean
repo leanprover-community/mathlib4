@@ -22,7 +22,7 @@ example : 0 = 0 := by
   --rfl
 
 example : True := by
-  #adaptation_note /--hi-/
+  #adaptation_note /-- hi -/
   exact .intro
 
 -- both `;` and `<;>` are unseen by the linter

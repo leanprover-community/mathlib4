@@ -33,7 +33,7 @@ The adjunction `Γ ⊣ Spec` is constructed in `Mathlib/AlgebraicGeometry/GammaS
 -/
 
 
--- Explicit universe annotations were used in this file to improve perfomance #12737
+-- Explicit universe annotations were used in this file to improve performance #12737
 
 noncomputable section
 
@@ -269,7 +269,7 @@ section SpecΓ
 
 open AlgebraicGeometry.LocallyRingedSpace
 
-/-- The counit morphism `R ⟶ Γ(Spec R)` given by `AlgebraicGeometry.StructureSheaf.toOpen`.  -/
+/-- The counit morphism `R ⟶ Γ(Spec R)` given by `AlgebraicGeometry.StructureSheaf.toOpen`. -/
 @[simps!]
 def toSpecΓ (R : CommRingCat.{u}) : R ⟶ Γ.obj (op (Spec.toLocallyRingedSpace.obj (op R))) :=
   StructureSheaf.toOpen R ⊤

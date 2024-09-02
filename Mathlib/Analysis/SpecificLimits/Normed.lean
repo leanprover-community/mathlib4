@@ -258,7 +258,7 @@ theorem tendsto_pow_atTop_nhds_zero_of_abs_lt_one {r : ℝ} (h : |r| < 1) :
 @[deprecated (since := "2024-01-31")]
 alias tendsto_pow_atTop_nhds_0_of_abs_lt_1 := tendsto_pow_atTop_nhds_zero_of_abs_lt_one
 
-/-! ### Geometric series-/
+/-! ### Geometric series -/
 
 
 section Geometric
