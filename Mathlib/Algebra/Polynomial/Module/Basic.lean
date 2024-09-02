@@ -66,7 +66,7 @@ theorem add_apply (g₁ g₂ : PolynomialModule R M) (a : ℕ) : (g₁ + g₂) a
   Finsupp.add_apply g₁ g₂ a
 
 /-- The monomial `m * x ^ i`. This is defeq to `Finsupp.singleAddHom`, and is redefined here
-so that it has the desired type signature.  -/
+so that it has the desired type signature. -/
 noncomputable def single (i : ℕ) : M →+ PolynomialModule R M :=
   Finsupp.singleAddHom i
 
@@ -221,7 +221,7 @@ lemma equivPolynomial_single {S : Type*} [CommRing S] [Algebra R S] (n : ℕ) (x
     equivPolynomial (single R n x) = monomial n x := rfl
 
 variable (R' : Type*) {M' : Type*} [CommRing R'] [AddCommGroup M'] [Module R' M']
-variable [Algebra R R'] [Module R M'] [IsScalarTower R R' M']
+variable [Module R M']
 
 /-- The image of a polynomial under a linear map. -/
 noncomputable def map (f : M →ₗ[R] M') : PolynomialModule R M →ₗ[R] PolynomialModule R' M' :=
@@ -230,6 +230,8 @@ noncomputable def map (f : M →ₗ[R] M') : PolynomialModule R M →ₗ[R] Poly
 @[simp]
 theorem map_single (f : M →ₗ[R] M') (i : ℕ) (m : M) : map R' f (single R i m) = single R' i (f m) :=
   Finsupp.mapRange_single (hf := f.map_zero)
+
+variable [Algebra R R'] [IsScalarTower R R' M']
 
 theorem map_smul (f : M →ₗ[R] M') (p : R[X]) (q : PolynomialModule R M) :
     map R' f (p • q) = p.map (algebraMap R R') • map R' f q := by
@@ -303,7 +305,7 @@ lemma aeval_equivPolynomial {S : Type*} [CommRing S] [Algebra S R]
     rw [equivPolynomial_single, aeval_monomial, mul_comm, map_single,
       Algebra.linearMap_apply, eval_single, smul_eq_mul]
 
-/-- `comp p q` is the composition of `p : R[X]` and `q : M[X]` as `q(p(x))`.  -/
+/-- `comp p q` is the composition of `p : R[X]` and `q : M[X]` as `q(p(x))`. -/
 @[simps!]
 noncomputable def comp (p : R[X]) : PolynomialModule R M →ₗ[R] PolynomialModule R M :=
   LinearMap.comp ((eval p).restrictScalars R) (map R[X] (lsingle R 0))

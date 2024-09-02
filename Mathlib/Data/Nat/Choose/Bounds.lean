@@ -3,7 +3,7 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Eric Rodriguez
 -/
-import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Data.Nat.Cast.Order.Basic
 import Mathlib.Data.Nat.Choose.Basic
 
@@ -27,7 +27,7 @@ variable {α : Type*} [LinearOrderedSemifield α]
 namespace Nat
 
 theorem choose_le_pow_div (r n : ℕ) : (n.choose r : α) ≤ (n ^ r : α) / r ! := by
-  rw [le_div_iff']
+  rw [le_div_iff₀']
   · norm_cast
     rw [← Nat.descFactorial_eq_factorial_mul_choose]
     exact n.descFactorial_le_pow r
@@ -37,12 +37,14 @@ lemma choose_le_descFactorial (n k : ℕ) : n.choose k ≤ n.descFactorial k := 
   rw [choose_eq_descFactorial_div_factorial]
   exact Nat.div_le_self _ _
 
+/-- This lemma was changed on 2024/08/29, the old statement is available
+in `Nat.choose_le_pow_div`. -/
 lemma choose_le_pow (n k : ℕ) : n.choose k ≤ n ^ k :=
   (choose_le_descFactorial n k).trans (descFactorial_le_pow n k)
 
 -- horrific casting is due to ℕ-subtraction
 theorem pow_le_choose (r n : ℕ) : ((n + 1 - r : ℕ) ^ r : α) / r ! ≤ n.choose r := by
-  rw [div_le_iff']
+  rw [div_le_iff₀']
   · norm_cast
     rw [← Nat.descFactorial_eq_factorial_mul_choose]
     exact n.pow_sub_le_descFactorial r

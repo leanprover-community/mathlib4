@@ -32,10 +32,9 @@ In this file, we denote `⊤ : ℕ∞` with `∞`.
 derivative, differentiability, higher derivative, `C^n`, multilinear, Taylor series, formal series
 -/
 
-
 noncomputable section
 
-open scoped Classical NNReal Nat
+open scoped NNReal Nat
 
 local notation "∞" => (⊤ : ℕ∞)
 
@@ -241,7 +240,7 @@ theorem ContinuousLinearEquiv.iteratedFDerivWithin_comp_left (g : F ≃L[𝕜] G
       (g : F →L[𝕜] G).compContinuousMultilinearMap (iteratedFDerivWithin 𝕜 i f s x) := by
   induction' i with i IH generalizing x
   · ext1 m
-    simp only [Nat.zero_eq, iteratedFDerivWithin_zero_apply, comp_apply,
+    simp only [iteratedFDerivWithin_zero_apply, comp_apply,
       ContinuousLinearMap.compContinuousMultilinearMap_coe, coe_coe]
   · ext1 m
     rw [iteratedFDerivWithin_succ_apply_left]
@@ -383,7 +382,7 @@ theorem ContinuousLinearEquiv.iteratedFDerivWithin_comp_right (g : G ≃L[𝕜] 
       (iteratedFDerivWithin 𝕜 i f s (g x)).compContinuousLinearMap fun _ => g := by
   induction' i with i IH generalizing x
   · ext1
-    simp only [Nat.zero_eq, iteratedFDerivWithin_zero_apply, comp_apply,
+    simp only [iteratedFDerivWithin_zero_apply, comp_apply,
      ContinuousMultilinearMap.compContinuousLinearMap_apply]
   · ext1 m
     simp only [ContinuousMultilinearMap.compContinuousLinearMap_apply,
@@ -883,7 +882,7 @@ then there is a function `f' : E → F →L[𝕜] G` that is `C^n` at `x₀` wit
 sufficiently close to `x₀` within `s ∪ {x₀}` the function `y ↦ f x y` has derivative `f' x` at `g x`
 within `t ⊆ F`.  For convenience, we return an explicit set of `x`'s where this holds that is a
 subset of `s ∪ {x₀}`.  We need one additional condition, namely that `t` is a neighborhood of
-`g(x₀)` within `g '' s`.  -/
+`g(x₀)` within `g '' s`. -/
 theorem ContDiffWithinAt.hasFDerivWithinAt_nhds {f : E → F → G} {g : E → F} {t : Set F} {n : ℕ}
     {x₀ : E} (hf : ContDiffWithinAt 𝕜 (n + 1) (uncurry f) (insert x₀ s ×ˢ t) (x₀, g x₀))
     (hg : ContDiffWithinAt 𝕜 n g s x₀) (hgt : t ∈ 𝓝[g '' s] g x₀) :
@@ -1043,7 +1042,7 @@ continuous. -/
 theorem ContDiffOn.continuousOn_fderivWithin_apply (hf : ContDiffOn 𝕜 n f s) (hs : UniqueDiffOn 𝕜 s)
     (hn : 1 ≤ n) :
     ContinuousOn (fun p : E × E => (fderivWithin 𝕜 f s p.1 : E → F) p.2) (s ×ˢ univ) :=
-  (contDiffOn_fderivWithin_apply hf hs <| by rwa [zero_add]).continuousOn
+  (contDiffOn_fderivWithin_apply (m := 0) hf hs hn).continuousOn
 
 /-- The bundled derivative of a `C^{n+1}` function is `C^n`. -/
 theorem ContDiff.contDiff_fderiv_apply {f : E → F} (hf : ContDiff 𝕜 n f) (hmn : m + 1 ≤ n) :
@@ -1949,3 +1948,5 @@ theorem ContDiff.restrict_scalars (h : ContDiff 𝕜' n f) : ContDiff 𝕜 n f :
   contDiff_iff_contDiffAt.2 fun _ => h.contDiffAt.restrict_scalars _
 
 end RestrictScalars
+
+set_option linter.style.longFile 2100

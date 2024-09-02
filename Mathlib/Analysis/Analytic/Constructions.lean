@@ -19,10 +19,8 @@ We show that the following are analytic:
 
 noncomputable section
 
-open scoped Classical
-open Topology NNReal Filter ENNReal
-
-open Set Filter Asymptotics
+open scoped Classical Topology
+open Filter Asymptotics ENNReal NNReal
 
 variable {α : Type*}
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -183,7 +181,7 @@ lemma AnalyticAt.pow {f : E → A} {z : E} (hf : AnalyticAt 𝕜 f z) (n : ℕ) 
     AnalyticAt 𝕜 (fun x ↦ f x ^ n) z := by
   induction n with
   | zero =>
-    simp only [Nat.zero_eq, pow_zero]
+    simp only [pow_zero]
     apply analyticAt_const
   | succ m hm =>
     simp only [pow_succ]
@@ -229,6 +227,7 @@ lemma one_le_formalMultilinearSeries_geometric_radius (𝕜 : Type*) [Nontrivial
 lemma formalMultilinearSeries_geometric_radius (𝕜 : Type*) [NontriviallyNormedField 𝕜]
     (A : Type*) [NormedRing A] [NormOneClass A] [NormedAlgebra 𝕜 A] :
     (formalMultilinearSeries_geometric 𝕜 A).radius = 1 := by
+<<<<<<< HEAD
   apply le_antisymm ?_  (one_le_formalMultilinearSeries_geometric_radius 𝕜 A)
   refine le_of_forall_nnreal_lt (fun r hr ↦ ?_)
   rw [← ENNReal.coe_one, ENNReal.coe_le_coe]
@@ -299,6 +298,30 @@ lemma analyticAt_inverse (𝕜 : Type*) [NontriviallyNormedField 𝕜]
     · exact analyticAt_const.sub (analyticAt_const.mul (analyticAt_id _ _))
 
 
+=======
+  apply le_antisymm
+  · refine le_of_forall_nnreal_lt (fun r hr ↦ ?_)
+    rw [← ENNReal.coe_one, ENNReal.coe_le_coe]
+    have := FormalMultilinearSeries.isLittleO_one_of_lt_radius _ hr
+    simp_rw [formalMultilinearSeries_geometric_apply_norm, one_mul] at this
+    contrapose! this
+    simp_rw [IsLittleO, IsBigOWith, not_forall, norm_one, mul_one,
+      not_eventually]
+    refine ⟨1, one_pos, ?_⟩
+    refine ((eventually_ne_atTop 0).mp (Eventually.of_forall ?_)).frequently
+    intro n hn
+    push_neg
+    rwa [norm_pow, one_lt_pow_iff_of_nonneg (norm_nonneg _) hn,
+      Real.norm_of_nonneg (NNReal.coe_nonneg _), ← NNReal.coe_one,
+      NNReal.coe_lt_coe]
+  · refine le_of_forall_nnreal_lt (fun r hr ↦ ?_)
+    rw [← Nat.cast_one, ENNReal.coe_lt_natCast, Nat.cast_one] at hr
+    apply FormalMultilinearSeries.le_radius_of_isBigO
+    simp_rw [formalMultilinearSeries_geometric_apply_norm, one_mul]
+    refine isBigO_of_le atTop (fun n ↦ ?_)
+    rw [norm_one, Real.norm_of_nonneg (pow_nonneg (coe_nonneg r) _)]
+    exact pow_le_one _ (coe_nonneg r) hr.le
+>>>>>>> origin/master
 
 lemma hasFPowerSeriesOnBall_inv_one_sub
     (𝕜 𝕝 : Type*) [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕝] [NormedAlgebra 𝕜 𝕝] :

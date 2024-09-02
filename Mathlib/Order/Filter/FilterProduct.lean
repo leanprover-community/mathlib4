@@ -23,8 +23,6 @@ universe u v
 
 variable {α : Type u} {β : Type v} {φ : Ultrafilter α}
 
-open scoped Classical
-
 namespace Filter
 
 local notation3 "∀* "(...)", "r:(scoped p => Filter.Eventually p (Ultrafilter.toFilter φ)) => r
@@ -39,7 +37,7 @@ instance instGroupWithZero [GroupWithZero β] : GroupWithZero β* where
   __ := instDivInvMonoid
   __ := instMonoidWithZero
   mul_inv_cancel f := inductionOn f fun f hf ↦ coe_eq.2 <| (φ.em fun y ↦ f y = 0).elim
-    (fun H ↦ (hf <| coe_eq.2 H).elim) fun H ↦ H.mono fun x ↦ mul_inv_cancel
+    (fun H ↦ (hf <| coe_eq.2 H).elim) fun H ↦ H.mono fun x ↦ mul_inv_cancel₀
   inv_zero := coe_eq.2 <| by simp only [Function.comp, inv_zero, EventuallyEq.rfl]
 
 instance instDivisionSemiring [DivisionSemiring β] : DivisionSemiring β* where
@@ -81,8 +79,9 @@ theorem lt_def [Preorder β] : ((· < ·) : β* → β* → Prop) = LiftRel (· 
 
 instance isTotal [LE β] [IsTotal β (· ≤ ·)] : IsTotal β* (· ≤ ·) :=
   ⟨fun f g =>
-    inductionOn₂ f g fun _f _g => eventually_or.1 <| eventually_of_forall fun _x => total_of _ _ _⟩
+    inductionOn₂ f g fun _f _g => eventually_or.1 <| Eventually.of_forall fun _x => total_of _ _ _⟩
 
+open Classical in
 /-- If `φ` is an ultrafilter then the ultraproduct is a linear order. -/
 noncomputable instance instLinearOrder [LinearOrder β] : LinearOrder β* :=
   Lattice.toLinearOrder _

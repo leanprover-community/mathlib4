@@ -257,7 +257,7 @@ attribute [-simp, nolint simpNF] IsBilimit.mk.injEq
 attribute [local ext] Bicone.IsBilimit
 
 instance subsingleton_isBilimit {f : J → C} {c : Bicone f} : Subsingleton c.IsBilimit :=
-  ⟨fun _ _ => Bicone.IsBilimit.ext _ _ (Subsingleton.elim _ _) (Subsingleton.elim _ _)⟩
+  ⟨fun _ _ => Bicone.IsBilimit.ext (Subsingleton.elim _ _) (Subsingleton.elim _ _)⟩
 
 section Whisker
 
@@ -640,6 +640,7 @@ lemma biproduct.whiskerEquiv_inv_eq_lift {f : J → C} {g : K → C} (e : J ≃ 
     · rintro rfl
       simp at h
 
+attribute [local simp] Sigma.forall in
 instance {ι} (f : ι → Type*) (g : (i : ι) → (f i) → C)
     [∀ i, HasBiproduct (g i)] [HasBiproduct fun i => ⨁ g i] :
     HasBiproduct fun p : Σ i, f i => g p.1 p.2 where
@@ -1275,7 +1276,7 @@ abbrev toBinaryBicone {X Y : C} (b : Bicone (pairFunction X Y)) : BinaryBicone X
   toBinaryBiconeFunctor.obj b
 
 /-- A bicone over a pair is a limit cone if and only if the corresponding binary bicone is a limit
-    cone.  -/
+    cone. -/
 def toBinaryBiconeIsLimit {X Y : C} (b : Bicone (pairFunction X Y)) :
     IsLimit b.toBinaryBicone.toCone ≃ IsLimit b.toCone :=
   IsLimit.equivIsoLimit <| Cones.ext (Iso.refl _) fun j => by rcases j with ⟨⟨⟩⟩ <;> simp
@@ -1761,7 +1762,7 @@ def biprod.fstKernelFork : KernelFork (biprod.fst : X ⊞ Y ⟶ X) :=
 theorem biprod.fstKernelFork_ι : Fork.ι (biprod.fstKernelFork X Y) = (biprod.inr : Y ⟶ X ⊞ Y) :=
   rfl
 
-/-- The fork `biprod.fstKernelFork` is indeed a limit.  -/
+/-- The fork `biprod.fstKernelFork` is indeed a limit. -/
 def biprod.isKernelFstKernelFork : IsLimit (biprod.fstKernelFork X Y) :=
   BinaryBicone.isLimitFstKernelFork (BinaryBiproduct.isLimit _ _)
 
@@ -1774,7 +1775,7 @@ def biprod.sndKernelFork : KernelFork (biprod.snd : X ⊞ Y ⟶ Y) :=
 theorem biprod.sndKernelFork_ι : Fork.ι (biprod.sndKernelFork X Y) = (biprod.inl : X ⟶ X ⊞ Y) :=
   rfl
 
-/-- The fork `biprod.sndKernelFork` is indeed a limit.  -/
+/-- The fork `biprod.sndKernelFork` is indeed a limit. -/
 def biprod.isKernelSndKernelFork : IsLimit (biprod.sndKernelFork X Y) :=
   BinaryBicone.isLimitSndKernelFork (BinaryBiproduct.isLimit _ _)
 
@@ -1787,7 +1788,7 @@ def biprod.inlCokernelCofork : CokernelCofork (biprod.inl : X ⟶ X ⊞ Y) :=
 theorem biprod.inlCokernelCofork_π : Cofork.π (biprod.inlCokernelCofork X Y) = biprod.snd :=
   rfl
 
-/-- The cofork `biprod.inlCokernelFork` is indeed a colimit.  -/
+/-- The cofork `biprod.inlCokernelFork` is indeed a colimit. -/
 def biprod.isCokernelInlCokernelFork : IsColimit (biprod.inlCokernelCofork X Y) :=
   BinaryBicone.isColimitInlCokernelCofork (BinaryBiproduct.isColimit _ _)
 
@@ -1800,7 +1801,7 @@ def biprod.inrCokernelCofork : CokernelCofork (biprod.inr : Y ⟶ X ⊞ Y) :=
 theorem biprod.inrCokernelCofork_π : Cofork.π (biprod.inrCokernelCofork X Y) = biprod.fst :=
   rfl
 
-/-- The cofork `biprod.inrCokernelFork` is indeed a colimit.  -/
+/-- The cofork `biprod.inrCokernelFork` is indeed a colimit. -/
 def biprod.isCokernelInrCokernelFork : IsColimit (biprod.inrCokernelCofork X Y) :=
   BinaryBicone.isColimitInrCokernelCofork (BinaryBiproduct.isColimit _ _)
 
@@ -1996,3 +1997,5 @@ theorem isIso_right_of_isIso_biprod_map {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z
   isIso_left_of_isIso_biprod_map g f
 
 end CategoryTheory
+
+set_option linter.style.longFile 2100

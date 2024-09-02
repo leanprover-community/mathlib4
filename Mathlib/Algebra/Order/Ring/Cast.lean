@@ -3,6 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Data.Nat.Cast.Order.Ring
 
@@ -27,7 +28,7 @@ namespace Int
 section OrderedAddCommGroupWithOne
 
 variable [AddCommGroupWithOne R] [PartialOrder R] [CovariantClass R R (· + ·) (· ≤ ·)]
-variable [ZeroLEOneClass R] [NeZero (1 : R)]
+variable [ZeroLEOneClass R]
 
 lemma cast_mono : Monotone (Int.cast : ℤ → R) := by
   intro m n h
@@ -36,7 +37,7 @@ lemma cast_mono : Monotone (Int.cast : ℤ → R) := by
   rw [← sub_nonneg, ← cast_sub, ← hk, cast_natCast]
   exact k.cast_nonneg'
 
-variable [Nontrivial R] {m n : ℤ}
+variable [NeZero (1 : R)] {m n : ℤ}
 
 @[simp] lemma cast_nonneg : ∀ {n : ℤ}, (0 : R) ≤ n ↔ 0 ≤ n
   | (n : ℕ) => by simp
@@ -85,10 +86,10 @@ lemma cast_le_neg_one_or_one_le_cast_of_ne_zero (hn : n ≠ 0) : (n : R) ≤ -1 
 lemma nneg_mul_add_sq_of_abs_le_one (n : ℤ) (hx : |x| ≤ 1) : (0 : R) ≤ n * x + n * n := by
   have hnx : 0 < n → 0 ≤ x + n := fun hn => by
     have := _root_.add_le_add (neg_le_of_abs_le hx) (cast_one_le_of_pos hn)
-    rwa [add_left_neg] at this
+    rwa [neg_add_cancel] at this
   have hnx' : n < 0 → x + n ≤ 0 := fun hn => by
     have := _root_.add_le_add (le_of_abs_le hx) (cast_le_neg_one_of_neg hn)
-    rwa [add_right_neg] at this
+    rwa [add_neg_cancel] at this
   rw [← mul_add, mul_nonneg_iff]
   rcases lt_trichotomy n 0 with (h | rfl | h)
   · exact Or.inr ⟨mod_cast h.le, hnx' h⟩

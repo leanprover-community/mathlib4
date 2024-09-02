@@ -50,12 +50,13 @@ open Set LinearMap Submodule
 variable {R : Type u} {M : Type v} {N : Type w}
   [CommSemiring R] [AddCommMonoid M] [Module R M]
 
-variable {σ : Type*} [DecidableEq σ]
+variable {σ : Type*}
 
 variable {S : Type*} [CommSemiring S] [Algebra R S]
 
 section Module
 
+variable [DecidableEq σ]
 variable [AddCommMonoid N] [Module R N]
 
 /-- The tensor product of a polynomial ring by a module is
@@ -141,6 +142,9 @@ lemma coeff_rTensorAlgHom_tmul
   rw [algebraMap_eq, mul_comm, coeff_C_mul]
   simp [mapAlgHom, coeff_map]
 
+section DecidableEq
+variable [DecidableEq σ]
+
 lemma coeff_rTensorAlgHom_monomial_tmul
     (e : σ →₀ ℕ) (s : S) (n : N) (d : σ →₀ ℕ) :
     coeff d (rTensorAlgHom (monomial e s ⊗ₜ[R] n)) =
@@ -185,6 +189,8 @@ noncomputable def rTensorAlgEquiv :
 noncomputable def scalarRTensorAlgEquiv :
     MvPolynomial σ R ⊗[R] N ≃ₐ[R] MvPolynomial σ N :=
   rTensorAlgEquiv.trans (mapAlgEquiv σ (Algebra.TensorProduct.lid R N))
+
+end DecidableEq
 
 variable (R)
 variable (A : Type*) [CommSemiring A] [Algebra R A]

@@ -1,18 +1,18 @@
 /-
 Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anatole Dedecker, Sébastien Gouëzel, Yury G. Kudryashov, Dylan MacKenzie, Patrick Massot
+Authors: Anatole Dedecker, Sébastien Gouëzel, Yury Kudryashov, Dylan MacKenzie, Patrick Massot
 -/
 import Mathlib.Algebra.BigOperators.Module
 import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Order.Filter.ModEq
 import Mathlib.Analysis.Asymptotics.Asymptotics
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Data.List.TFAE
 import Mathlib.Analysis.Normed.Field.InfiniteSum
 import Mathlib.Analysis.Normed.Module.Basic
+import Mathlib.Analysis.SpecificLimits.Basic
+import Mathlib.Data.List.TFAE
 import Mathlib.Data.Nat.Choose.Bounds
-import Mathlib.Data.Nat.Factorial.BigOperators
+import Mathlib.Order.Filter.ModEq
+import Mathlib.RingTheory.Polynomial.Pochhammer
 import Mathlib.Tactic.NoncommRing
 
 /-!
@@ -256,7 +256,7 @@ theorem tendsto_pow_atTop_nhds_zero_of_abs_lt_one {r : ℝ} (h : |r| < 1) :
 @[deprecated (since := "2024-01-31")]
 alias tendsto_pow_atTop_nhds_0_of_abs_lt_1 := tendsto_pow_atTop_nhds_zero_of_abs_lt_one
 
-/-! ### Geometric series-/
+/-! ### Geometric series -/
 
 /-- A normed ring has summable geometric series if, for all `ξ` of norm `< 1`, the geometric series
 `∑ ξ ^ n` converges. This holds both in complete normed rings and in normed fields, providing a
@@ -512,13 +512,25 @@ lemma summable_descFactorial_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr 
 theorem summable_pow_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr : ‖r‖ < 1) :
     Summable (fun n ↦ (n : R) ^ k * r ^ n : ℕ → R) := by
   refine Nat.strong_induction_on k fun k hk => ?_
-  obtain ⟨a, ha⟩ : ∃ (a : Fin k → ℕ), ∀ n, (n + k).descFactorial k =
-    n ^ k + ∑ i, a i * n ^ (i : ℕ) := exists_descFactorial_eq_polynomial (k : ℕ)
-  have : Summable (fun n ↦ (n + k).descFactorial k * r ^ n - ∑ i, a i * n ^ (i : ℕ) * r ^ n) := by
+  obtain ⟨a, ha⟩ : ∃ (a : ℕ → ℕ), ∀ n, (n + k).descFactorial k
+      = n ^ k + ∑ i ∈ range k, a i * n ^ i := by
+    let P : Polynomial ℕ := (ascPochhammer ℕ k).comp (Polynomial.X + C 1)
+    refine ⟨fun i ↦ P.coeff i, fun n ↦ ?_⟩
+    have mP : Monic P := Monic.comp_X_add_C (monic_ascPochhammer ℕ k) _
+    have dP : P.natDegree = k := by
+      simp only [P, natDegree_comp, ascPochhammer_natDegree, mul_one, natDegree_X_add_C]
+    have A : (n + k).descFactorial k = P.eval n := by
+      have : n + 1 + k - 1 = n + k := by omega
+      simp [P, ascPochhammer_nat_eq_descFactorial, this]
+    conv_lhs => rw [A, mP.as_sum, dP]
+    simp [eval_finset_sum]
+  have : Summable (fun n ↦ (n + k).descFactorial k * r ^ n
+      - ∑ i ∈ range k, a i * n ^ (i : ℕ) * r ^ n) := by
     apply (summable_descFactorial_mul_geometric_of_norm_lt_one k hr).sub
-    apply summable_sum (fun i _ ↦ ?_)
+    apply summable_sum (fun i hi ↦ ?_)
     simp_rw [mul_assoc]
-    exact (hk _ i.2).mul_left _
+    simp only [Finset.mem_range] at hi
+    exact (hk _ hi).mul_left _
   convert this using 1
   ext n
   simp [ha n, add_mul, sum_mul]
@@ -676,7 +688,7 @@ theorem summable_of_ratio_test_tendsto_lt_one {α : Type*} [NormedAddCommGroup �
   rcases exists_between hl₁ with ⟨r, hr₀, hr₁⟩
   refine summable_of_ratio_norm_eventually_le hr₁ ?_
   filter_upwards [eventually_le_of_tendsto_lt hr₀ h, hf] with _ _ h₁
-  rwa [← div_le_iff (norm_pos_iff.mpr h₁)]
+  rwa [← div_le_iff₀ (norm_pos_iff.mpr h₁)]
 
 theorem not_summable_of_ratio_norm_eventually_ge {α : Type*} [SeminormedAddCommGroup α] {f : ℕ → α}
     {r : ℝ} (hr : 1 < r) (hf : ∃ᶠ n in atTop, ‖f n‖ ≠ 0)
@@ -709,7 +721,7 @@ theorem not_summable_of_ratio_test_tendsto_gt_one {α : Type*} [SeminormedAddCom
   rcases exists_between hl with ⟨r, hr₀, hr₁⟩
   refine not_summable_of_ratio_norm_eventually_ge hr₀ key.frequently ?_
   filter_upwards [eventually_ge_of_tendsto_gt hr₁ h, key] with _ _ h₁
-  rwa [← le_div_iff (lt_of_le_of_ne (norm_nonneg _) h₁.symm)]
+  rwa [← le_div_iff₀ (lt_of_le_of_ne (norm_nonneg _) h₁.symm)]
 
 section NormedDivisionRing
 
@@ -725,7 +737,7 @@ theorem summable_powerSeries_of_norm_lt {w z : α}
   refine cauchySeq_finset_of_geometric_bound (r := ‖z‖ / ‖w‖) (C := C) ((div_lt_one hw).mpr hz)
     (fun n ↦ ?_)
   rw [norm_mul, norm_pow, div_pow, ← mul_comm_div]
-  conv at hC => enter [n]; rw [norm_mul, norm_pow, ← _root_.le_div_iff (by positivity)]
+  conv at hC => enter [n]; rw [norm_mul, norm_pow, ← _root_.le_div_iff₀ (by positivity)]
   exact mul_le_mul_of_nonneg_right (hC n) (pow_nonneg (norm_nonneg z) n)
 
 /-- If a power series converges at 1, it converges absolutely at all `z` of smaller norm. -/
@@ -752,7 +764,7 @@ theorem Monotone.cauchySeq_series_mul_of_tendsto_zero_of_bounded (hfa : Monotone
   simp_rw [Finset.sum_range_by_parts _ _ (Nat.succ _), sub_eq_add_neg, Nat.succ_sub_succ_eq_sub,
     tsub_zero]
   apply (NormedField.tendsto_zero_smul_of_tendsto_zero_of_bounded hf0
-    ⟨b, eventually_map.mpr <| eventually_of_forall fun n ↦ hgb <| n + 1⟩).cauchySeq.add
+    ⟨b, eventually_map.mpr <| Eventually.of_forall fun n ↦ hgb <| n + 1⟩).cauchySeq.add
   refine CauchySeq.neg ?_
   refine cauchySeq_range_of_norm_bounded _ ?_
     (fun n ↦ ?_ : ∀ n, ‖(f (n + 1) + -f n) • (Finset.range (n + 1)).sum z‖ ≤ b * |f (n + 1) - f n|)

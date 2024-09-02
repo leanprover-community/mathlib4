@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Scott Morrison
 -/
 import Mathlib.Algebra.BigOperators.Finsupp
+import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Regular.SMul
 import Mathlib.Data.Rat.BigOperators
@@ -1701,3 +1702,5 @@ theorem sigmaFinsuppAddEquivPiFinsupp_apply {α : Type*} {ιs : η → Type*} [A
 end Sigma
 
 end Finsupp
+
+set_option linter.style.longFile 1900

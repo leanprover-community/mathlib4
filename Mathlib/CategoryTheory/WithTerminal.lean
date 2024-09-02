@@ -448,7 +448,7 @@ def mapComp {D E : Type*} [Category D] [Category E] (F : C ⥤ D) (G : D ⥤ E) 
     | of x => Iso.refl _
     | star => Iso.refl _) (by aesop_cat)
 
-/-- From a natrual transformation of functors `C ⥤ D`, the induced natural transformation
+/-- From a natural transformation of functors `C ⥤ D`, the induced natural transformation
 of functors `WithInitial C ⥤ WithInitial D`. -/
 @[simps]
 def map₂ {D : Type*} [Category D] {F G : C ⥤ D} (η : F ⟶ G) : map F ⟶ map G where
