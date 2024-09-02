@@ -155,29 +155,25 @@ lemma List.iSup_mem_map_of_exists_sSup_empty_le {l : List ι} (f : ι → α)
     (h : ∃ x ∈ l, sSup ∅ ≤ f x) :
     ⨆ x ∈ l, f x ∈ l.map f := by
   classical
-  have := l.toFinset.ciSup_mem_image f (by simpa using h)
-  simpa using this
+  simpa using l.toFinset.ciSup_mem_image f (by simpa using h)
 
 lemma List.iInf_mem_map_of_exists_le_sInf_empty {l : List ι} (f : ι → α)
     (h : ∃ x ∈ l, f x ≤ sInf ∅) :
     ⨅ x ∈ l, f x ∈ l.map f := by
   classical
-  have := l.toFinset.ciInf_mem_image f (by simpa using h)
-  simpa using this
+  simpa using l.toFinset.ciInf_mem_image f (by simpa using h)
 
 lemma Multiset.iSup_mem_map_of_exists_sSup_empty_le {s : Multiset ι} (f : ι → α)
     (h : ∃ x ∈ s, sSup ∅ ≤ f x) :
     ⨆ x ∈ s, f x ∈ s.map f := by
   classical
-  have := s.toFinset.ciSup_mem_image f (by simpa using h)
-  simpa using this
+  simpa using s.toFinset.ciSup_mem_image f (by simpa using h)
 
 lemma Multiset.iInf_mem_map_of_exists_le_sInf_empty {s : Multiset ι} (f : ι → α)
     (h : ∃ x ∈ s, f x ≤ sInf ∅) :
     ⨅ x ∈ s, f x ∈ s.map f := by
   classical
-  have := s.toFinset.ciInf_mem_image f (by simpa using h)
-  simpa using this
+  simpa using s.toFinset.ciInf_mem_image f (by simpa using h)
 
 theorem exists_eq_ciSup_of_finite [Nonempty ι] [Finite ι] {f : ι → α} : ∃ i, f i = ⨆ i, f i :=
   Nonempty.csSup_mem (range_nonempty f) (finite_range f)
