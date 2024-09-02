@@ -337,8 +337,7 @@ theorem Chain'.induction (p : α → Prop) (l : List α) (h : Chain' r l)
   unfold Chain' at h
   split at h
   · simp
-  · simp_all only [ne_eq, not_false_eq_true, head_cons, true_implies, mem_cons, forall_eq_or_imp,
-      true_and]
+  · simp_all only [ne_eq, head_cons, mem_cons, forall_eq_or_imp]
     constructor
     exact initial (by simp)
     exact h.induction p _ carries (initial (by simp))
@@ -354,7 +353,7 @@ theorem Chain.backwards_induction (p : α → Prop) (l : List α) (h : Chain r a
   replace this := chain'_reverse.mpr this
   simp_rw (config := {singlePass := true}) [← List.mem_reverse]
   apply this.induction _ _ (fun _ _ h ↦ carries h)
-  simp only [ne_eq, reverse_eq_nil_iff, not_false_eq_true, head_reverse, forall_true_left, hb]
+  simp only [ne_eq, reverse_eq_nil_iff, head_reverse, hb]
   intro
   exact final
 
