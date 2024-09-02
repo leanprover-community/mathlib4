@@ -1077,7 +1077,7 @@ theorem bddAbove_range {ι : Type u} (f : ι → Ordinal.{max u v}) : BddAbove (
   exact (Cardinal.lt_ord.2 ((lt_succ _).trans_le
     (le_ciSup (Cardinal.bddAbove_range.{u, v} _) _))).le
 
-/-- `le_iSup` whenever the outputs live in a higher universe than the inputs. -/
+/-- `le_ciSup` whenever the outputs live in a higher universe than the inputs. -/
 protected theorem le_iSup {ι : Type u} (f : ι → Ordinal.{max u v}) : ∀ i, f i ≤ iSup f :=
   le_ciSup (bddAbove_range f)
 
@@ -1086,7 +1086,7 @@ set_option linter.deprecated false in
 theorem le_sup {ι : Type u} (f : ι → Ordinal.{max u v}) : ∀ i, f i ≤ sup.{_, v} f := fun i =>
   Ordinal.le_iSup f i
 
-/-- `iSup_le_iff'` whenever the outputs live in a higher universe than the inputs. -/
+/-- `ciSup_le_iff'` whenever the outputs live in a higher universe than the inputs. -/
 protected theorem iSup_le_iff {ι : Type u} {f : ι → Ordinal.{max u v}} {a} :
     iSup f ≤ a ↔ ∀ i, f i ≤ a :=
   ciSup_le_iff' (bddAbove_range f)
@@ -1096,7 +1096,7 @@ set_option linter.deprecated false in
 theorem sup_le_iff {ι : Type u} {f : ι → Ordinal.{max u v}} {a} : sup.{_, v} f ≤ a ↔ ∀ i, f i ≤ a :=
   Ordinal.iSup_le_iff
 
-/-- `iSup_le'` whenever the outputs live in a higher universe than the inputs. -/
+/-- `ciSup_le'` whenever the outputs live in a higher universe than the inputs. -/
 protected theorem iSup_le {ι : Type u} {f : ι → Ordinal.{max u v}} {a} :
     (∀ i, f i ≤ a) → iSup f ≤ a :=
   ciSup_le'
@@ -1106,7 +1106,7 @@ set_option linter.deprecated false in
 theorem sup_le {ι : Type u} {f : ι → Ordinal.{max u v}} {a} : (∀ i, f i ≤ a) → sup.{_, v} f ≤ a :=
   Ordinal.iSup_le
 
--- TODO: generalize to conditionally complete lattices.
+-- TODO: generalize to conditionally complete linear orders.
 protected theorem lt_iSup {ι : Type u} {f : ι → Ordinal.{max u v}} {a} :
     a < iSup f ↔ ∃ i, a < f i := by
   rw [← not_iff_not]
@@ -1128,7 +1128,6 @@ theorem ne_sup_iff_lt_sup {ι : Type u} {f : ι → Ordinal.{max u v}} :
   ne_iSup_iff_lt_iSup
 
 -- TODO: state in terms of `IsSuccLimit`.
-
 theorem succ_lt_iSup_of_ne_iSup {ι : Type u} {f : ι → Ordinal.{max u v}}
     (hf : ∀ i, f i ≠ iSup f) {a} (hao : a < iSup f) : succ a < iSup f := by
   by_contra! hoa
