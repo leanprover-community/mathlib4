@@ -108,24 +108,22 @@ noncomputable def LinearOrderedCommGroup.closure_equiv_closure {G G' : Type*}
       exact ⟨_, rfl⟩
     · intro a
       generalize_proofs A B C D
-      rw [Subtype.ext_iff, ← (C a).choose_spec, (zpow_right_strictMono xpos).injective.eq_iff,
-          ← (zpow_right_strictMono ypos).injective.eq_iff, (A ⟨_, D a⟩).choose_spec]
+      rw [Subtype.ext_iff, ← (C a).choose_spec, zpow_right_inj xpos,
+          ← zpow_right_inj ypos, (A ⟨_, D a⟩).choose_spec]
     · intro a
       generalize_proofs A B C D
-      rw [Subtype.ext_iff, ← (C a).choose_spec, (zpow_right_strictMono ypos).injective.eq_iff,
-          ← (zpow_right_strictMono xpos).injective.eq_iff, (A ⟨_, D a⟩).choose_spec]
+      rw [Subtype.ext_iff, ← (C a).choose_spec, zpow_right_inj ypos,
+          ← zpow_right_inj xpos, (A ⟨_, D a⟩).choose_spec]
     · intro a b
       generalize_proofs A B C D E F
       simp only [Submonoid.coe_mul, coe_toSubmonoid, Submonoid.mk_mul_mk, Subtype.mk.injEq]
-      rw [← zpow_add, (zpow_right_strictMono ypos).injective.eq_iff,
-          ← (zpow_right_strictMono xpos).injective.eq_iff, zpow_add,
+      rw [← zpow_add, zpow_right_inj ypos, ← zpow_right_inj xpos, zpow_add,
           (A a).choose_spec, (A b).choose_spec, (A (a * b)).choose_spec]
       simp
     · intro a b
       simp only [MulEquiv.coe_mk, Equiv.coe_fn_mk, Subtype.mk_le_mk]
       generalize_proofs A B C D
-      simp [(zpow_right_strictMono ypos).le_iff_le, ← (zpow_right_strictMono xpos).le_iff_le,
-          A.choose_spec, B.choose_spec]
+      simp [zpow_le_zpow_iff ypos, ← zpow_le_zpow_iff xpos, A.choose_spec, B.choose_spec]
 
 variable {G : Type*} [LinearOrderedAddCommGroup G] [Archimedean G]
 
@@ -199,7 +197,7 @@ lemma AddSubgroup.isLeast_closure_iff_eq_abs {a b : G} :
     simp only [mem_closure_singleton, mem_setOf_eq, ← mul_zsmul] at this
     obtain ⟨m, hm⟩ := this.left
     have key : m * n = 1 := by
-      rw [← (zsmul_strictMono_left this.right).injective.eq_iff, hm, one_zsmul]
+      rw [← zsmul_left_inj this.right, hm, one_zsmul]
     rw [Int.mul_eq_one_iff_eq_one_or_neg_one] at key
     rw [eq_comm]
     rcases key with ⟨rfl, rfl⟩|⟨rfl, rfl⟩ <;>
