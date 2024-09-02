@@ -154,12 +154,14 @@ end MissingEnd
 The `cdot` linter is a syntax-linter that flags uses of the "cdot" `·` that are achieved
 by typing a character different from `·`.
 For instance, a "plain" dot `.` is allowed syntax, but is flagged by the linter.
+It also flags "isolated cdots", i.e. when the `·` is on its own line.
 -/
 
 /--
 The `cdot` linter flags uses of the "cdot" `·` that are achieved by typing a character
 different from `·`.
-For instance, a "plain" dot `.` is allowed syntax, but is flagged by the linter. -/
+For instance, a "plain" dot `.` is allowed syntax, but is flagged by the linter.
+It also flags "isolated cdots", i.e. when the `·` is on its own line. -/
 register_option linter.cdot : Bool := {
   defValue := false
   descr := "enable the `cdot` linter"
@@ -200,6 +202,13 @@ def cdotLinter : Linter where run := withSetOptionIn fun stx ↦ do
       return
     for s in unwanted_cdot stx do
       Linter.logLint linter.cdot s m!"Please, use '·' (typed as `\\.`) instead of '{s}' as 'cdot'."
+    -- We also check for isolated cdot's, i.e. when the cdot is on its own line.
+    for cdot in Mathlib.Linter.findCDot stx do
+      match cdot.find? (·.isOfKind `token.«· ») with
+      | some (.node _ _ #[.atom (.original _ _ afterCDot _) _]) =>
+        if (afterCDot.takeWhile (·.isWhitespace)).contains '\n' then
+          logWarningAt cdot m!"This central dot `·` is isolated; please merge it with the next line."
+      | _ => return
 
 initialize addLinter cdotLinter
 
