@@ -37,7 +37,7 @@ jobs:
       - name: suggester / lint-style
         uses: reviewdog/action-suggester@v1
         with:
-          tool_name: lint-style
+          tool_name: lint-style (comment with "bot fix style" to have the bot commit all style suggestions)
 
       - name: Install bibtool
         run: |
@@ -53,7 +53,7 @@ jobs:
       - name: suggester / lint-bib
         uses: reviewdog/action-suggester@v1
         with:
-          tool_name: lint-bib
+          tool_name: lint-bib (comment with "bot fix style" to have the bot commit all style suggestions)
 
   check_imported:
     if: github.repository == 'leanprover-community/mathlib4' && github.event.pull_request.draft == false
@@ -81,4 +81,4 @@ jobs:
       - name: suggester / import list
         uses: reviewdog/action-suggester@v1
         with:
-          tool_name: imports
+          tool_name: imports (comment with "bot fix style" to have the bot commit all style suggestions)

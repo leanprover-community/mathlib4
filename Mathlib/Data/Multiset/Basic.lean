@@ -26,7 +26,7 @@ open List Subtype Nat Function
 variable {α : Type*} {β : Type v} {γ : Type*}
 
 /-- `Multiset α` is the quotient of `List α` by list permutation. The result
-  is a type of finite sets with duplicates allowed.  -/
+  is a type of finite sets with duplicates allowed. -/
 def Multiset.{u} (α : Type u) : Type u :=
   Quotient (List.isSetoid α)
 
@@ -2740,3 +2740,5 @@ theorem coe_subsingletonEquiv [Subsingleton α] :
 @[deprecated (since := "2023-12-27")] alias card_lt_of_lt := card_lt_card
 
 end Multiset
+
+set_option linter.style.longFile 2900
