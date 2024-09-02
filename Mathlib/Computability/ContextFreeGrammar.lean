@@ -193,7 +193,10 @@ end ContextFreeGrammar
 
 /-- Context-free languages are defined by context-free grammars. -/
 def Language.IsContextFree (L : Language T) : Prop :=
-  ∃ g : ContextFreeGrammar.{uT} T, g.language = L
+  ∃ g : ContextFreeGrammar.{0} T, g.language = L
+
+proof_wanted Language.isContextFree_iff {L : Language T} :
+    L.IsContextFree ↔ ∃ g : ContextFreeGrammar.{uN} T, g.language = L
 
 section closure_reversal
 

@@ -434,10 +434,13 @@ instance : SupSet (LieSubmodule R L M) where
         obtain ⟨s, hs, hsm⟩ := Submodule.mem_sSup_iff_exists_finset.mp hm
         clear hm
         classical
-        induction' s using Finset.induction_on with q t hqt ih generalizing m
-        · replace hsm : m = 0 := by simpa using hsm
+        induction s using Finset.induction_on generalizing m with
+        | empty =>
+          replace hsm : m = 0 := by simpa using hsm
           simp [hsm]
-        · rw [Finset.iSup_insert] at hsm
+        | insert hqt ih =>
+          rename_i q t
+          rw [Finset.iSup_insert] at hsm
           obtain ⟨m', hm', u, hu, rfl⟩ := Submodule.mem_sup.mp hsm
           rw [lie_add]
           refine add_mem ?_ (ih (Subset.trans (by simp) hs) hu)
@@ -558,18 +561,14 @@ variable (R L M)
     inj' := coeSubmodule_injective
     map_rel_iff' := Iff.rfl }
 
-theorem wellFounded_of_noetherian [IsNoetherian R M] :
-    WellFounded ((· > ·) : LieSubmodule R L M → LieSubmodule R L M → Prop) :=
-  RelHomClass.wellFounded (toSubmodule_orderEmbedding R L M).dual.ltEmbedding <|
-    isNoetherian_iff_wellFounded.mp inferInstance
+instance wellFoundedGT_of_noetherian [IsNoetherian R M] : WellFoundedGT (LieSubmodule R L M) :=
+  RelHomClass.isWellFounded (toSubmodule_orderEmbedding R L M).dual.ltEmbedding
 
-theorem wellFounded_of_isArtinian [IsArtinian R M] :
-    WellFounded ((· < ·) : LieSubmodule R L M → LieSubmodule R L M → Prop) :=
-  RelHomClass.wellFounded (toSubmodule_orderEmbedding R L M).ltEmbedding <|
-    IsArtinian.wellFounded_submodule_lt R M
+theorem wellFoundedLT_of_isArtinian [IsArtinian R M] : WellFoundedLT (LieSubmodule R L M) :=
+  RelHomClass.isWellFounded (toSubmodule_orderEmbedding R L M).ltEmbedding
 
 instance [IsArtinian R M] : IsAtomic (LieSubmodule R L M) :=
-  isAtomic_of_orderBot_wellFounded_lt <| wellFounded_of_isArtinian R L M
+  isAtomic_of_orderBot_wellFounded_lt <| (wellFoundedLT_of_isArtinian R L M).wf
 
 @[simp]
 theorem subsingleton_iff : Subsingleton (LieSubmodule R L M) ↔ Subsingleton M :=
