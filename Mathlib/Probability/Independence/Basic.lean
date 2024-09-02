@@ -400,21 +400,18 @@ theorem IndepSets.indep' [IsZeroOrProbabilityMeasure μ]
 
 theorem indepSets_piiUnionInter_of_disjoint {s : ι → Set (Set Ω)}
     {S T : Set ι} (h_indep : iIndepSets s μ) (hST : Disjoint S T) :
-    IndepSets (piiUnionInter s S) (piiUnionInter s T) μ := by
-  have : IsProbabilityMeasure μ := h_indep.isProbabilityMeasure
-  exact Kernel.indepSets_piiUnionInter_of_disjoint h_indep hST
+    IndepSets (piiUnionInter s S) (piiUnionInter s T) μ :=
+  Kernel.indepSets_piiUnionInter_of_disjoint h_indep hST
 
 theorem iIndepSet.indep_generateFrom_of_disjoint {s : ι → Set Ω}
     (hsm : ∀ n, MeasurableSet (s n)) (hs : iIndepSet s μ) (S T : Set ι) (hST : Disjoint S T) :
-    Indep (generateFrom { t | ∃ n ∈ S, s n = t }) (generateFrom { t | ∃ k ∈ T, s k = t }) μ := by
-  have : IsProbabilityMeasure μ := hs.isProbabilityMeasure
-  exact Kernel.iIndepSet.indep_generateFrom_of_disjoint hsm hs S T hST
+    Indep (generateFrom { t | ∃ n ∈ S, s n = t }) (generateFrom { t | ∃ k ∈ T, s k = t }) μ :=
+  Kernel.iIndepSet.indep_generateFrom_of_disjoint hsm hs S T hST
 
 theorem indep_iSup_of_disjoint
     (h_le : ∀ i, m i ≤ _mΩ) (h_indep : iIndep m μ) {S T : Set ι} (hST : Disjoint S T) :
-    Indep (⨆ i ∈ S, m i) (⨆ i ∈ T, m i) μ := by
-  have : IsProbabilityMeasure μ := h_indep.isProbabilityMeasure
-  exact Kernel.indep_iSup_of_disjoint h_le h_indep hST
+    Indep (⨆ i ∈ S, m i) (⨆ i ∈ T, m i) μ :=
+  Kernel.indep_iSup_of_disjoint h_le h_indep hST
 
 theorem indep_iSup_of_directed_le
     [IsZeroOrProbabilityMeasure μ] (h_indep : ∀ i, Indep (m i) m1 μ)
@@ -424,22 +421,19 @@ theorem indep_iSup_of_directed_le
 
 theorem iIndepSet.indep_generateFrom_lt [Preorder ι] {s : ι → Set Ω}
     (hsm : ∀ n, MeasurableSet (s n)) (hs : iIndepSet s μ) (i : ι) :
-    Indep (generateFrom {s i}) (generateFrom { t | ∃ j < i, s j = t }) μ := by
-  have : IsProbabilityMeasure μ := hs.isProbabilityMeasure
-  exact Kernel.iIndepSet.indep_generateFrom_lt hsm hs i
+    Indep (generateFrom {s i}) (generateFrom { t | ∃ j < i, s j = t }) μ :=
+  Kernel.iIndepSet.indep_generateFrom_lt hsm hs i
 
 theorem iIndepSet.indep_generateFrom_le [LinearOrder ι]
     {s : ι → Set Ω}
     (hsm : ∀ n, MeasurableSet (s n)) (hs : iIndepSet s μ) (i : ι) {k : ι} (hk : i < k) :
-    Indep (generateFrom {s k}) (generateFrom { t | ∃ j ≤ i, s j = t }) μ := by
-  have : IsProbabilityMeasure μ := hs.isProbabilityMeasure
-  exact Kernel.iIndepSet.indep_generateFrom_le hsm hs i hk
+    Indep (generateFrom {s k}) (generateFrom { t | ∃ j ≤ i, s j = t }) μ :=
+  Kernel.iIndepSet.indep_generateFrom_le hsm hs i hk
 
 theorem iIndepSet.indep_generateFrom_le_nat {s : ℕ → Set Ω}
     (hsm : ∀ n, MeasurableSet (s n)) (hs : iIndepSet s μ) (n : ℕ) :
-    Indep (generateFrom {s (n + 1)}) (generateFrom { t | ∃ k ≤ n, s k = t }) μ := by
-  have : IsProbabilityMeasure μ := hs.isProbabilityMeasure
-  exact Kernel.iIndepSet.indep_generateFrom_le_nat hsm hs n
+    Indep (generateFrom {s (n + 1)}) (generateFrom { t | ∃ k ≤ n, s k = t }) μ :=
+  Kernel.iIndepSet.indep_generateFrom_le_nat hsm hs n
 
 theorem indep_iSup_of_monotone [SemilatticeSup ι] [IsZeroOrProbabilityMeasure μ]
     (h_indep : ∀ i, Indep (m i) m1 μ) (h_le : ∀ i, m i ≤ _mΩ) (h_le' : m1 ≤ _mΩ) (hm : Monotone m) :
@@ -460,9 +454,8 @@ theorem iIndepSets.piiUnionInter_of_not_mem {π : ι → Set (Set Ω)} {a : ι} 
 theorem iIndepSets.iIndep
     (h_le : ∀ i, m i ≤ _mΩ) (π : ι → Set (Set Ω)) (h_pi : ∀ n, IsPiSystem (π n))
     (h_generate : ∀ i, m i = generateFrom (π i)) (h_ind : iIndepSets π μ) :
-    iIndep m μ := by
-  have : IsProbabilityMeasure μ := h_ind.isProbabilityMeasure
-  exact Kernel.iIndepSets.iIndep m h_le π h_pi h_generate h_ind
+    iIndep m μ :=
+  Kernel.iIndepSets.iIndep m h_le π h_pi h_generate h_ind
 
 end FromPiSystemsToMeasurableSpaces
 
@@ -524,30 +517,18 @@ theorem iIndepSet.meas_biInter {f : ι → Set Ω} (h : iIndepSet f μ) (s : Fin
   simpa using Kernel.iIndepSet.meas_biInter h s
 
 theorem iIndepSet_iff_iIndepSets_singleton {f : ι → Set Ω} (hf : ∀ i, MeasurableSet (f i)) :
-    iIndepSet f μ ↔ iIndepSets (fun i ↦ {f i}) μ := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · have : IsProbabilityMeasure μ := h.isProbabilityMeasure
-    exact (Kernel.iIndepSet_iff_iIndepSets_singleton hf).1 h
-  · have : IsProbabilityMeasure μ := h.isProbabilityMeasure
-    exact (Kernel.iIndepSet_iff_iIndepSets_singleton hf).2 h
+    iIndepSet f μ ↔ iIndepSets (fun i ↦ {f i}) μ :=
+  Kernel.iIndepSet_iff_iIndepSets_singleton hf
 
 theorem iIndepSet_iff_meas_biInter {f : ι → Set Ω} (hf : ∀ i, MeasurableSet (f i)) :
     iIndepSet f μ ↔ ∀ s, μ (⋂ i ∈ s, f i) = ∏ i ∈ s, μ (f i) := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · have : IsProbabilityMeasure μ := h.isProbabilityMeasure
-    simp_rw [iIndepSet, Kernel.iIndepSet_iff_meas_biInter hf, ae_dirac_eq, Filter.eventually_pure,
-      Kernel.const_apply] at h
-    exact h
-  · have : IsProbabilityMeasure μ := ⟨by simpa using h ∅⟩
-    simp_rw [iIndepSet, Kernel.iIndepSet_iff_meas_biInter hf, ae_dirac_eq, Filter.eventually_pure,
-      Kernel.const_apply]
-    exact h
+  simp_rw [iIndepSet, Kernel.iIndepSet_iff_meas_biInter hf, ae_dirac_eq, Filter.eventually_pure,
+    Kernel.const_apply]
 
 theorem iIndepSets.iIndepSet_of_mem {π : ι → Set (Set Ω)} {f : ι → Set Ω}
     (hfπ : ∀ i, f i ∈ π i) (hf : ∀ i, MeasurableSet (f i))
-    (hπ : iIndepSets π μ) : iIndepSet f μ := by
-  have : IsProbabilityMeasure μ := hπ.isProbabilityMeasure
-  exact Kernel.iIndepSets.iIndepSet_of_mem hfπ hf hπ
+    (hπ : iIndepSets π μ) : iIndepSet f μ :=
+  Kernel.iIndepSets.iIndepSet_of_mem hfπ hf hπ
 
 end IndepSet
 
@@ -643,13 +624,11 @@ tuple `(f i)_i` for `i ∈ T`. -/
 lemma iIndepFun.indepFun_finset (S T : Finset ι) (hST : Disjoint S T) (hf_Indep : iIndepFun m f μ)
     (hf_meas : ∀ i, Measurable (f i)) :
     IndepFun (fun a (i : S) ↦ f i a) (fun a (i : T) ↦ f i a) μ :=
-  have := hf_Indep.isProbabilityMeasure
   Kernel.iIndepFun.indepFun_finset S T hST hf_Indep hf_meas
 
 lemma iIndepFun.indepFun_prod_mk (hf_Indep : iIndepFun m f μ) (hf_meas : ∀ i, Measurable (f i))
     (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
     IndepFun (fun a => (f i a, f j a)) (f k) μ :=
-  have := hf_Indep.isProbabilityMeasure
   Kernel.iIndepFun.indepFun_prod_mk hf_Indep hf_meas i j k hik hjk
 
 open Finset in
@@ -671,14 +650,12 @@ variable {β : Type*} {m : MeasurableSpace β} [Mul β] [MeasurableMul₂ β] {f
 lemma iIndepFun.indepFun_mul_left (hf_indep : iIndepFun (fun _ ↦ m) f μ)
     (hf_meas : ∀ i, Measurable (f i)) (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
     IndepFun (f i * f j) (f k) μ :=
-  have := hf_indep.isProbabilityMeasure
   Kernel.iIndepFun.indepFun_mul_left hf_indep hf_meas i j k hik hjk
 
 @[to_additive]
 lemma iIndepFun.indepFun_mul_right (hf_indep : iIndepFun (fun _ ↦ m) f μ)
     (hf_meas : ∀ i, Measurable (f i)) (i j k : ι) (hij : i ≠ j) (hik : i ≠ k) :
     IndepFun (f i) (f j * f k) μ :=
-  have := hf_indep.isProbabilityMeasure
   Kernel.iIndepFun.indepFun_mul_right hf_indep hf_meas i j k hij hik
 
 @[to_additive]
@@ -686,7 +663,6 @@ lemma iIndepFun.indepFun_mul_mul (hf_indep : iIndepFun (fun _ ↦ m) f μ)
     (hf_meas : ∀ i, Measurable (f i))
     (i j k l : ι) (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l) :
     IndepFun (f i * f j) (f k * f l) μ :=
-  have := hf_indep.isProbabilityMeasure
   Kernel.iIndepFun.indepFun_mul_mul hf_indep hf_meas i j k l hik hil hjk hjl
 
 end Mul
@@ -698,14 +674,12 @@ variable {β : Type*} {m : MeasurableSpace β} [Div β] [MeasurableDiv₂ β] {f
 lemma iIndepFun.indepFun_div_left (hf_indep : iIndepFun (fun _ ↦ m) f μ)
     (hf_meas : ∀ i, Measurable (f i)) (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
     IndepFun (f i / f j) (f k) μ :=
-  have := hf_indep.isProbabilityMeasure
   Kernel.iIndepFun.indepFun_div_left hf_indep hf_meas i j k hik hjk
 
 @[to_additive]
 lemma iIndepFun.indepFun_div_right (hf_indep : iIndepFun (fun _ ↦ m) f μ)
     (hf_meas : ∀ i, Measurable (f i)) (i j k : ι) (hij : i ≠ j) (hik : i ≠ k) :
     IndepFun (f i) (f j / f k) μ :=
-  have := hf_indep.isProbabilityMeasure
   Kernel.iIndepFun.indepFun_div_right hf_indep hf_meas i j k hij hik
 
 @[to_additive]
@@ -713,7 +687,6 @@ lemma iIndepFun.indepFun_div_div (hf_indep : iIndepFun (fun _ ↦ m) f μ)
     (hf_meas : ∀ i, Measurable (f i))
     (i j k l : ι) (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l) :
     IndepFun (f i / f j) (f k / f l) μ :=
-  have := hf_indep.isProbabilityMeasure
   Kernel.iIndepFun.indepFun_div_div hf_indep hf_meas i j k l hik hil hjk hjl
 
 end Div
@@ -725,13 +698,11 @@ variable {β : Type*} {m : MeasurableSpace β} [CommMonoid β] [MeasurableMul₂
 lemma iIndepFun.indepFun_finset_prod_of_not_mem (hf_Indep : iIndepFun (fun _ ↦ m) f μ)
     (hf_meas : ∀ i, Measurable (f i)) {s : Finset ι} {i : ι} (hi : i ∉ s) :
     IndepFun (∏ j ∈ s, f j) (f i) μ :=
-  have := hf_Indep.isProbabilityMeasure
   Kernel.iIndepFun.indepFun_finset_prod_of_not_mem hf_Indep hf_meas hi
 
 @[to_additive]
 lemma iIndepFun.indepFun_prod_range_succ {f : ℕ → Ω → β} (hf_Indep : iIndepFun (fun _ ↦ m) f μ)
     (hf_meas : ∀ i, Measurable (f i)) (n : ℕ) : IndepFun (∏ j ∈ Finset.range n, f j) (f n) μ :=
-  have := hf_Indep.isProbabilityMeasure
   Kernel.iIndepFun.indepFun_prod_range_succ hf_Indep hf_meas n
 
 end CommMonoid

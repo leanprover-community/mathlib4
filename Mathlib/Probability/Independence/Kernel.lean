@@ -255,19 +255,6 @@ section Indep
 
 variable {_mα : MeasurableSpace α}
 
-@[simp] theorem indepSets_zero {_mΩ : MeasurableSpace Ω} {μ : Measure α}
-    {s₁ s₂ : Set (Set Ω)} : IndepSets s₁ s₂ (0 : Kernel α Ω) μ := by
-  simp [IndepSets]
-
-@[simp] theorem indep_zero  {m₁ m₂ : MeasurableSpace Ω} {_mΩ : MeasurableSpace Ω}
-    {μ : Measure α} : Indep m₁ m₂ (0 : Kernel α Ω) μ := by
-  simp [Indep]
-
-@[simp] theorem indepSet_zero {_mΩ : MeasurableSpace Ω}
-    {μ : Measure α} (s t : Set Ω) :
-    IndepSet s t (0 : Kernel α Ω) μ := by
-  simp [IndepSet]
-
 @[symm]
 theorem IndepSets.symm {_mΩ : MeasurableSpace Ω} {κ : Kernel α Ω} {μ : Measure α}
     {s₁ s₂ : Set (Set Ω)} (h : IndepSets s₁ s₂ κ μ) :
