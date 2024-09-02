@@ -234,9 +234,8 @@ instance instIsMarkovKernelBorelMarkovFromReal (η : Kernel α ℝ) [IsMarkovKer
   · rw [deterministic_apply]
     simp [(range_nonempty (embeddingReal Ω)).choose_spec]
 
-/-- For `κ' := map κ (Prod.map (id : β → β) e) `, the
-hypothesis `hη` is `fst κ' ⊗ₖ η = κ'`. The conclusion of the lemma is
-`fst κ ⊗ₖ borelMarkovFromReal Ω η = comapRight (fst κ' ⊗ₖ η) _`. -/
+/-- For `κ' := map κ (Prod.map (id : β → β) e)`, the hypothesis `hη` is `fst κ' ⊗ₖ η = κ'`.
+The conclusion of the lemma is `fst κ ⊗ₖ borelMarkovFromReal Ω η = comapRight (fst κ' ⊗ₖ η) _`. -/
 lemma compProd_fst_borelMarkovFromReal_eq_comapRight_compProd
     (κ : Kernel α (β × Ω)) [IsSFiniteKernel κ] (η : Kernel (α × β) ℝ) [IsSFiniteKernel η]
     (hη : (fst (map κ (Prod.map (id : β → β) (embeddingReal Ω)))) ⊗ₖ η
@@ -284,9 +283,8 @@ lemma compProd_fst_borelMarkovFromReal_eq_comapRight_compProd
   rw [piecewise_apply, if_pos]
   exact ha
 
-/-- For `κ' := map κ (Prod.map (id : β → β) e)`, the
-hypothesis `hη` is `fst κ' ⊗ₖ η = κ'`. With that hypothesis,
-`fst κ ⊗ₖ borelMarkovFromReal κ η = κ`.-/
+/-- For `κ' := map κ (Prod.map (id : β → β) e)`, the hypothesis `hη` is `fst κ' ⊗ₖ η = κ'`.
+With that hypothesis, `fst κ ⊗ₖ borelMarkovFromReal κ η = κ`.-/
 lemma compProd_fst_borelMarkovFromReal (κ : Kernel α (β × Ω)) [IsSFiniteKernel κ]
     (η : Kernel (α × β) ℝ) [IsSFiniteKernel η]
     (hη : (fst (map κ (Prod.map (id : β → β) (embeddingReal Ω)))) ⊗ₖ η

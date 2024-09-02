@@ -20,7 +20,8 @@ Classes of kernels:
 * `ProbabilityTheory.Kernel α β`: kernels from `α` to `β`.
 * `ProbabilityTheory.IsMarkovKernel κ`: a kernel from `α` to `β` is said to be a Markov kernel
   if for all `a : α`, `k a` is a probability measure.
-* `ProbabilityTheory.IsZeroOrMarkovKernel κ`: a kernel from `α` to `β` is zero or a Markov kernel.
+* `ProbabilityTheory.IsZeroOrMarkovKernel κ`: a kernel from `α` to `β` which is zero or
+  a Markov kernel.
 * `ProbabilityTheory.IsFiniteKernel κ`: a kernel from `α` to `β` is said to be finite if there
   exists `C : ℝ≥0∞` such that `C < ∞` and for all `a : α`, `κ a univ ≤ C`. This implies in
   particular that all measures in the image of `κ` are finite, but is stronger since it requires a
@@ -138,7 +139,7 @@ end Kernel
 class IsMarkovKernel (κ : Kernel α β) : Prop where
   isProbabilityMeasure : ∀ a, IsProbabilityMeasure (κ a)
 
-/-- A kernel is a Markov kernel if every measure in its image is a probability measure. -/
+/-- A class for kernels which are zero or a Markov kernel. -/
 class IsZeroOrMarkovKernel (κ : Kernel α β) : Prop where
   eq_zero_or_isMarkovKernel' : κ = 0 ∨ IsMarkovKernel κ
 
