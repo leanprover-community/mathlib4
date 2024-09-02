@@ -290,6 +290,21 @@ noncomputable def _root_.MulEquiv.withZeroCongr [Group β] (e : α ≃* β) :
     induction x <;> induction y <;>
     simp
 
+/-- The inverse of `MulEquiv.withZeroCongr`. -/
+noncomputable def _root_.MulEquiv.unzeroCongr [Group β] (e : WithZero α ≃* WithZero β) :
+    α ≃* β where
+  toFun x := unzero (x := e x) (by simp [ne_eq, ← e.eq_symm_apply])
+  invFun x := unzero (x := e.symm x) (by simp [e.symm_apply_eq])
+  left_inv _ := by simp
+  right_inv _ := by simp
+  map_mul' := by
+    intro x y
+    simp only [coe_mul, map_mul]
+    generalize_proofs A B C
+    suffices (((unzero A) : β) : WithZero β) = (unzero B) * (unzero C) by
+      rwa [← WithZero.coe_mul, WithZero.coe_inj] at this
+    simp
+
 end Group
 
 instance commGroupWithZero [CommGroup α] : CommGroupWithZero (WithZero α) :=
