@@ -390,7 +390,8 @@ theorem IndepSets.indep_aux {m₂ m : MeasurableSpace Ω}
     have : t1 ∩ tᶜ = t1 \ (t1 ∩ t) := by
       rw [Set.diff_self_inter, Set.diff_eq_compl_inter, Set.inter_comm]
     rw [this,
-      measure_diff Set.inter_subset_left (ht1m.inter (h2 _ ht)) (measure_ne_top (κ a) _),
+      measure_diff Set.inter_subset_left (ht1m.inter (h2 _ ht)).nullMeasurableSet
+        (measure_ne_top (κ a) _),
       measure_compl (h2 _ ht) (measure_ne_top (κ a) t), measure_univ,
       ENNReal.mul_sub (fun _ _ ↦ measure_ne_top (κ a) _), mul_one, ha]
   · intros f hf_disj hf_meas h
@@ -428,7 +429,7 @@ theorem IndepSets.indep {m1 m2 m : MeasurableSpace Ω} {κ : Kernel α Ω} {μ :
     have : tᶜ ∩ t2 = t2 \ (t ∩ t2) := by
       rw [Set.inter_comm t, Set.diff_self_inter, Set.diff_eq_compl_inter]
     rw [this, Set.inter_comm t t2,
-      measure_diff Set.inter_subset_left ((h2 _ ht2).inter (h1 _ ht))
+      measure_diff Set.inter_subset_left ((h2 _ ht2).inter (h1 _ ht)).nullMeasurableSet
         (measure_ne_top (κ a) _),
       Set.inter_comm, ha, measure_compl (h1 _ ht) (measure_ne_top (κ a) t), measure_univ,
       mul_comm (1 - κ a t), ENNReal.mul_sub (fun _ _ ↦ measure_ne_top (κ a) _), mul_one, mul_comm]
