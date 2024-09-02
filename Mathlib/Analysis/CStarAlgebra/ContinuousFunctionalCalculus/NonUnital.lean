@@ -266,23 +266,6 @@ lemma cfcₙ_predicate_zero : p 0 :=
 lemma cfcₙ_predicate (f : R → R) (a : A) : p (cfcₙ f a) :=
   cfcₙ_cases p a f (cfcₙ_predicate_zero R) fun _ _ _ ↦ cfcₙHom_predicate ..
 
--- The following three lemmas are just `cfcₙ_predicate`, but specific enough for the `@[simp]` tag.
-@[simp]
-lemma isStarNormal_cfcₙ [NonUnitalContinuousFunctionalCalculus R (IsStarNormal : A → Prop)]
-    {f : R → R} {a : A} : IsStarNormal (cfcₙ f a) :=
-  cfcₙ_predicate _ _
-
-@[simp]
-lemma isSelfAdjoint_cfcₙ [NonUnitalContinuousFunctionalCalculus R (IsSelfAdjoint : A → Prop)]
-    {f : R → R} {a : A} : IsSelfAdjoint (cfcₙ f a) :=
-  cfcₙ_predicate _ _
-
-@[simp]
-lemma cfcₙ_nonneg_of_predicate [PartialOrder A]
-    [NonUnitalContinuousFunctionalCalculus R (fun (a : A) => 0 ≤ a)] {f : R → R} {a : A} :
-    0 ≤ cfcₙ f a :=
-  cfcₙ_predicate _ _
-
 lemma cfcₙ_congr {f g : R → R} {a : A} (hfg : (σₙ R a).EqOn f g) :
     cfcₙ f a = cfcₙ g a := by
   by_cases h : p a ∧ ContinuousOn g (σₙ R a) ∧ g 0 = 0
@@ -475,6 +458,7 @@ lemma CFC.quasispectrum_zero_eq : σₙ R (0 : A) = {0} := by
     simpa [CFC.quasispectrum_zero_eq]
   · exact cfcₙ_apply_of_not_map_zero _ hf0
 
+@[simp]
 instance IsStarNormal.cfcₙ_map (f : R → R) (a : A) : IsStarNormal (cfcₙ f a) where
   star_comm_self := by
     refine cfcₙ_cases (fun x ↦ Commute (star x) x) _ _ (Commute.zero_right _) fun _ _ _ ↦ ?_
@@ -482,6 +466,18 @@ instance IsStarNormal.cfcₙ_map (f : R → R) (a : A) : IsStarNormal (cfcₙ f 
     rw [← cfcₙ_apply f a, ← cfcₙ_star, ← cfcₙ_mul .., ← cfcₙ_mul ..]
     congr! 2
     exact mul_comm _ _
+
+-- The following two lemmas are just `cfcₙ_predicate`, but specific enough for the `@[simp]` tag.
+@[simp]
+lemma IsSelfAdjoint.cfcₙ [NonUnitalContinuousFunctionalCalculus R (IsSelfAdjoint : A → Prop)]
+    {f : R → R} {a : A} : IsSelfAdjoint (cfcₙ f a) :=
+  cfcₙ_predicate _ _
+
+@[simp]
+lemma cfcₙ_nonneg_of_predicate [PartialOrder A]
+    [NonUnitalContinuousFunctionalCalculus R (fun (a : A) => 0 ≤ a)] {f : R → R} {a : A} :
+    0 ≤ cfcₙ f a :=
+  cfcₙ_predicate _ _
 
 end CFCn
 
