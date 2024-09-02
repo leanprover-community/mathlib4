@@ -336,9 +336,8 @@ lemma homogeneousLocalizationToStalk_stalkToFiberRingHom (x z) :
 lemma stalkToFiberRingHom_homogeneousLocalizationToStalk (x z) :
     stalkToFiberRingHom 𝒜 x (homogeneousLocalizationToStalk 𝒜 x z) = z := by
   obtain ⟨z, rfl⟩ := Quotient.surjective_mk z
-  rw [homogeneousLocalizationToStalk, @Quotient.liftOn'_mk,
+  rw [homogeneousLocalizationToStalk, Quotient.liftOn_mk,
     stalkToFiberRingHom_germ', sectionInBasicOpen]
-  rfl
 
 /-- Using `homogeneousLocalizationToStalk`, we construct a ring isomorphism between stalk at `x`
 and homogeneous localization at `x` for any point `x` in `Proj`. -/
