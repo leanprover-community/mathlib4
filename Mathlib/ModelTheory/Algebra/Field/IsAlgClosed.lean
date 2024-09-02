@@ -23,7 +23,7 @@ as proving completeness of the theory and the Lefschetz Principle.
   `p` as a theory over the language of rings.
 * `FirstOrder.Field.ACF_isComplete` : the theory of algebraically closed fields of characteristic
   `p` is complete whenever `p` is prime or zero.
-* `FirstOrder.Field.ACF0_realize_iff_infinite_ACF_prime_realize` : the Lefschetz principle.
+* `FirstOrder.Field.ACF_zero_realize_iff_infinite_ACF_prime_realize` : the Lefschetz principle.
 
 ## Implementation details
 
@@ -230,11 +230,11 @@ the theory of algebraically closed fields of characteristic `p` for infinitely m
 theorem ACF_zero_realize_iff_infinite_ACF_prime_realize {φ : Language.ring.Sentence} :
     Theory.ACF 0 ⊨ᵇ φ ↔ Set.Infinite { p : Nat.Primes | Theory.ACF p ⊨ᵇ φ } := by
   refine ⟨fun h => Set.infinite_of_finite_compl
-      (finite_ACF_prime_not_realize_of_ACF0_realize φ h),
+      (finite_ACF_prime_not_realize_of_ACF_zero_realize φ h),
     not_imp_not.1 ?_⟩
   simpa [(ACF_isComplete (Or.inr rfl)).models_not_iff,
       fun p : Nat.Primes => (ACF_isComplete (Or.inl p.2)).models_not_iff] using
-    finite_ACF_prime_not_realize_of_ACF0_realize φ.not
+    finite_ACF_prime_not_realize_of_ACF_zero_realize φ.not
 
 end Field
 
