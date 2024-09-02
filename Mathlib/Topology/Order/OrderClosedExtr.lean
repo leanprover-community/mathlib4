@@ -39,8 +39,8 @@ lemma isLocalMax_of_mono_anti.{u, v}
   rcases le_total x b with hx' | hx' <;> aesop
 
 /-- Obtain a "predictably-sided" neighborhood of `b` from two one-sided neighborhoods. -/
-theorem nhds_of_Ici_Iic.{v, u} {α : Type u} [TopologicalSpace α] [LinearOrder α] [OrderTopology α]
-    [NoMinOrder α] [NoMaxOrder α] {β : Type v} [Preorder β] {b : α}
+theorem nhds_of_Ici_Iic.{u} {α : Type u} [TopologicalSpace α] [LinearOrder α] [OrderTopology α]
+    [NoMinOrder α] [NoMaxOrder α] {b : α}
     {a : Set α} (ha : a ∈ 𝓝[≤] b)
     {c : Set α} (hc : c ∈ 𝓝[≥] b) : a ∩ Iic b ∪ c ∩ Ici b ∈ 𝓝 b := by
   rw [mem_nhdsWithin_Iic_iff_exists_Ioc_subset] at ha
@@ -68,7 +68,6 @@ theorem nhds_of_Ici_Iic.{v, u} {α : Type u} [TopologicalSpace α] [LinearOrder 
 lemma isLocalMax_of_mono_anti'.{u, v}
     {α : Type u} [TopologicalSpace α] [LinearOrder α] [OrderTopology α]
     [NoMinOrder α] [NoMaxOrder α]
-    [OrderClosedTopology α]
     {β : Type v} [Preorder β]
     {b : α} {f : α → β}
     {a : Set α} (ha : a ∈ 𝓝[≤] b)
@@ -77,7 +76,7 @@ lemma isLocalMax_of_mono_anti'.{u, v}
     (h₁ : AntitoneOn f c) : IsLocalMax f b := by
   unfold IsLocalMax IsMaxFilter Filter.Eventually
   have : (a ∩ Set.Iic b) ∪ (c ∩ Set.Ici b) ∈ 𝓝 b := by
-    exact @nhds_of_Ici_Iic α _ _ _ _ _ β _ b a ha c hc
+    exact @nhds_of_Ici_Iic α _ _ _ _ _ b a ha c hc
   apply Filter.mem_of_superset this
   intro x hx
   rcases le_total x b with hx' | hx' <;> aesop
