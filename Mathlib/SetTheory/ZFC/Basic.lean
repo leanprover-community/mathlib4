@@ -531,13 +531,14 @@ theorem mk_out : ∀ x : ZFSet, mk x.out = x :=
   function. This isn't exactly definability, but is useful as a sufficient
   condition for functions that have a computable image. -/
 class Definable (n) (f : (Fin n → ZFSet.{u}) → ZFSet.{u}) where
-  /-- Turns a definable function into a n-ary `PSet` function. -/
+  /-- Turns a definable function into an n-ary `PSet` function. -/
   out : (Fin n → PSet.{u}) → PSet.{u}
+  /-- A set function `f` is the image of `Definable.out f`. -/
   mk_out : ∀ xs, mk (out xs) = f (mk <| xs ·) := by simp
 
 attribute [simp] Definable.mk_out
 
-/-- An abbrev of `ZFSet.Definable` for unary function. -/
+/-- An abbrev of `ZFSet.Definable` for unary functions. -/
 abbrev Definable₁ (f : ZFSet.{u} → ZFSet.{u}) := Definable 1 (fun s ↦ f (s 0))
 
 /-- A simpler constructor for `ZFSet.Definable₁`. -/
@@ -557,7 +558,7 @@ lemma Definable₁.mk_out {f : ZFSet.{u} → ZFSet.{u}} [Definable₁ f]
     .mk (out f x) = f (.mk x) :=
   Definable.mk_out ![x]
 
-/-- An abbrev of `ZFSet.Definable` for binary function. -/
+/-- An abbrev of `ZFSet.Definable` for binary functions. -/
 abbrev Definable₂ (f : ZFSet.{u} → ZFSet.{u} → ZFSet.{u}) := Definable 2 (fun s ↦ f (s 0) (s 1))
 
 /-- A simpler constructor for `ZFSet.Definable₂`. -/
