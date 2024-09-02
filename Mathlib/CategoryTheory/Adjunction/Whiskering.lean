@@ -35,6 +35,19 @@ protected def whiskerRight (adj : F ⊣ G) :
         (Functor.associator _ _ _).hom ≫ whiskerLeft X adj.counit ≫ (Functor.rightUnitor _).hom
       naturality := by intros; ext; dsimp; simp }
 
+@[simp]
+lemma whiskerRight_homEquiv_app (adj : F ⊣ G) (X : C ⥤ D) (Y : C ⥤ E) (f : X ⋙ F ⟶ Y) (x : C) :
+    ((adj.whiskerRight C).homEquiv X Y f).app x = adj.unit.app (X.obj x) ≫ G.map (f.app x) := by
+  dsimp only [homEquiv_apply]
+  simp
+
+@[simp]
+lemma whiskerRight_homEquiv_symm_app (adj : F ⊣ G) (X : C ⥤ D) (Y : C ⥤ E) (f : X ⟶ Y ⋙ G)
+    (x : C) : (((adj.whiskerRight C).homEquiv X Y).symm f).app x =
+      F.map (f.app x) ≫ adj.counit.app (Y.obj x) := by
+  rw [homEquiv_symm_apply]
+  simp
+
 /-- Given an adjunction `F ⊣ G`, this provides the natural adjunction
   `(whiskeringLeft _ _ C).obj G ⊣ (whiskeringLeft _ _ C).obj F`. -/
 @[simps! unit_app_app counit_app_app]

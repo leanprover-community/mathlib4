@@ -208,21 +208,21 @@ theorem unit_naturality {X Y : C} (f : X ⟶ Y) :
     adj.unit.app X ≫ G.map (F.map f) = f ≫ adj.unit.app Y :=
   (adj.unit.naturality f).symm
 
+lemma unit_comp_map_eq_iff {A : C} {B : D} (f : F.obj A ⟶ B) (g : A ⟶ G.obj B) :
+    adj.unit.app A ≫ G.map f = g ↔ f = F.map g ≫ adj.counit.app B :=
+  ⟨fun h => by simp [← h], fun h => by simp [h]⟩
+
+lemma eq_unit_comp_map_iff {A : C} {B : D} (f : F.obj A ⟶ B) (g : A ⟶ G.obj B) :
+    g = adj.unit.app A ≫ G.map f ↔ F.map g ≫ adj.counit.app B = f :=
+  ⟨fun h => by simp [h], fun h => by simp [← h]⟩
+
 theorem homEquiv_apply_eq {A : C} {B : D} (f : F.obj A ⟶ B) (g : A ⟶ G.obj B) :
     adj.homEquiv A B f = g ↔ f = (adj.homEquiv A B).symm g :=
-  ⟨fun h => by
-    cases h
-    simp, fun h => by
-    cases h
-    simp⟩
+  unit_comp_map_eq_iff adj f g
 
 theorem eq_homEquiv_apply {A : C} {B : D} (f : F.obj A ⟶ B) (g : A ⟶ G.obj B) :
     g = adj.homEquiv A B f ↔ (adj.homEquiv A B).symm g = f :=
-  ⟨fun h => by
-    cases h
-    simp, fun h => by
-    cases h
-    simp⟩
+  eq_unit_comp_map_iff adj f g
 
 end
 
