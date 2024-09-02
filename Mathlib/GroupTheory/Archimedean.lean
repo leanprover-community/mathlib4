@@ -30,7 +30,6 @@ subgroups of `ℝ`.
 -/
 
 open Set
-
 variable {G : Type*} [LinearOrderedAddCommGroup G] [Archimedean G]
 
 /-- Given a subgroup `H` of a decidable linearly ordered archimedean abelian group `G`, if there
