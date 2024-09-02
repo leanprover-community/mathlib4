@@ -8,10 +8,7 @@ import Mathlib.Topology.ContinuousFunction.Algebra
 import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
 import Mathlib.Analysis.CStarAlgebra.Basic
-import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 import Mathlib.Topology.Bornology.BoundedOperation
-import Mathlib.RingTheory.Congruence.Basic
-import Mathlib.RingTheory.TwoSidedIdeal.Lattice
 
 /-!
 # Bounded continuous functions
