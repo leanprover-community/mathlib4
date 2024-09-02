@@ -24,9 +24,10 @@ namespace Mathlib.Linter
 abbrev exclusions : HashSet SyntaxNodeKind := HashSet.empty
   |>.insert `Batteries.Tactic.«tacticOn_goal-_=>_»
   |>.insert `«tactic#adaptation_note_»
+  |>.insert ``Lean.Parser.Tactic.tacticRepeat_
   |>.insert ``Lean.cdot
-  |>.insert `«;»
-  |>.insert `null
+  --|>.insert `«;»
+  --|>.insert `null
   |>.insert ``Lean.Parser.Tactic.induction
   |>.insert `Mathlib.Tactic.induction'
   --|>.insert ``Lean.Parser.Term.byTactic
@@ -35,14 +36,20 @@ abbrev exclusions : HashSet SyntaxNodeKind := HashSet.empty
 partial
 def findRanges (stx : Syntax) : HashSet (String.Range × SyntaxNodeKind) :=
   let next := stx.foldArgs (fun arg r => r.merge (findRanges arg)) {}
-  -- ignore default values when they involve tactics
-  if let .node _ ``Lean.Parser.Term.binderTactic _ := stx then {} else
-  if let .node _ ``Lean.Parser.Tactic.tacticSeq1Indented #[.node _ _ args] := stx then
-    let tacs := args.filter (! exclusions.contains ·.getKind)
-    if 2 ≤ tacs.size then
-      next.insertMany <| (tacs.filterMap fun t => t.getRange?.map (·, t.getKind)).toList.reduceOption
-    else next
-  else next
+  match stx.getKind with
+      -- ignore default values when they involve tactics and syntax quotations
+    | ``Lean.Parser.Term.binderTactic | ``Lean.Parser.Tactic.quot => {}
+    | ``Lean.Parser.Tactic.tacticSeq1Indented =>
+      -- first, we sift out `;` and `null` nodes that are interspersed in `tacticSeq`
+      let tacs := stx[0].getArgs.filter (! [`«;», `null].contains ·.getKind)
+      -- if there are at least two tactics in the block...
+      if 2 ≤ tacs.size then
+        -- we exclude the `exclusions` and add everything else to the ranges to be inspected
+        let tacs := tacs.filter (! exclusions.contains ·.getKind)
+        next.insertMany <|
+          (tacs.filterMap fun t => t.getRange?.map (·, t.getKind)).toList.reduceOption
+      else next
+    | _ => next
 
 partial
 def erasable (rgs : HashSet (String.Range × SyntaxNodeKind)) (tree : InfoTree) :
