@@ -480,12 +480,13 @@ instance IsStarNormal.cfcₙ_map (f : R → R) (a : A) : IsStarNormal (cfcₙ f 
 
 -- The following two lemmas are just `cfcₙ_predicate`, but specific enough for the `@[simp]` tag.
 @[simp]
-protected lemma IsSelfAdjoint.cfcₙ [NonUnitalContinuousFunctionalCalculus R (IsSelfAdjoint : A → Prop)]
-    {f : R → R} {a : A} : IsSelfAdjoint (cfcₙ f a) :=
+protected lemma IsSelfAdjoint.cfcₙ
+    [NonUnitalContinuousFunctionalCalculus R (IsSelfAdjoint : A → Prop)] {f : R → R} {a : A} :
+    IsSelfAdjoint (cfcₙ f a) :=
   cfcₙ_predicate _ _
 
 @[simp]
-lemma cfcₙ_nonneg [PartialOrder A]
+lemma cfcₙ_nonneg_of_predicate [PartialOrder A]
     [NonUnitalContinuousFunctionalCalculus R (fun (a : A) => 0 ≤ a)] {f : R → R} {a : A} :
     0 ≤ cfcₙ f a :=
   cfcₙ_predicate _ _
