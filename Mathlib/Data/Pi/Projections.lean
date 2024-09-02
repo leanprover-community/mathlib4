@@ -3,7 +3,7 @@ Copyright (c) 2024 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.Data.Finset.Basic
+import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Projection of a function
@@ -126,7 +126,7 @@ end Function
 -- end continuity
 
 end Generality
-/-
+
 section Nat
 
 namespace Function
@@ -183,7 +183,7 @@ theorem fprojNat₂_comp_fprojNat₂ {m n k : ℕ} (hmn : m ≤ n) (hnk : n ≤ 
     (fprojNat₂ (α := α) hmn) ∘ (fprojNat₂ hnk) = fprojNat₂ (hmn.trans hnk) := rfl
 
 end Function
-
+/-
 variable {X : ℕ → Type*}
 
 section measurability
@@ -224,7 +224,6 @@ theorem continuous_fprojNat (n : ℕ) : Continuous (@fprojNat X n) := continuous
 theorem continuous_fprojNat₂ {m n : ℕ} (hmn : m ≤ n) : Continuous (fprojNat₂ (α := X) hmn) :=
   continuous_fproj₂ _
 
-end continuity
+end continuity-/
 
 end Nat
--/

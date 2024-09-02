@@ -873,6 +873,22 @@ theorem measurable_fproj₂ {s t : Finset δ} (hst : s ⊆ t) :
     Measurable (fproj₂ (α := π) hst) :=
   measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
 
+variable {X : ℕ → Type*} [∀ n, MeasurableSpace (X n)]
+
+@[measurability, fun_prop]
+theorem measurable_projNat (n : ℕ) : Measurable (@projNat X n) := measurable_proj _
+
+@[measurability, fun_prop]
+theorem measurable_projNat₂ {m n : ℕ} (hmn : m ≤ n) : Measurable (projNat₂ (α := X) hmn) :=
+  measurable_proj₂ _
+
+@[measurability, fun_prop]
+theorem measurable_fprojNat (n : ℕ) : Measurable (@fprojNat X n) := measurable_proj _
+
+@[measurability, fun_prop]
+theorem measurable_fprojNat₂ {m n : ℕ} (hmn : m ≤ n) : Measurable (fprojNat₂ (α := X) hmn) :=
+  measurable_fproj₂ _
+
 variable (π) in
 theorem measurable_eq_mp {i i' : δ} (h : i = i') : Measurable (congr_arg π h).mp := by
   cases h
