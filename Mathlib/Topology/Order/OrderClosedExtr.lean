@@ -33,10 +33,16 @@ lemma isLocalMax_of_mono_anti.{u, v}
     {β : Type v} [Preorder β]
     {a b c : α} (g₀ : a < b) (g₁ : b < c) {f : α → β}
     (h₀ : MonotoneOn f (Ioc a b))
-    (h₁ : AntitoneOn f (Ico b c)) : IsLocalMax f b := by
-  apply Filter.mem_of_superset (Ioo_mem_nhds g₀ g₁)
-  intro x hx
-  rcases le_total x b with hx' | hx' <;> aesop
+    (h₁ : AntitoneOn f (Ico b c)) : IsLocalMax f b :=
+  Filter.mem_of_superset (Ioo_mem_nhds g₀ g₁) (fun x _ => by rcases le_total x b <;> aesop)
+
+/-- If `f` is antitone on `(a,b]` and monotone on `[b,c)` then `f` has
+a local minimum at `b`. -/
+lemma isLocalMin_of_anti_mono.{u, v}
+    {α : Type u} [TopologicalSpace α] [LinearOrder α] [OrderClosedTopology α]
+    {β : Type v} [Preorder β] {a b c : α} (g₀ : a < b) (g₁ : b < c) {f : α → β}
+    (h₀ : AntitoneOn f (Ioc a b)) (h₁ : MonotoneOn f (Ico b c)) : IsLocalMin f b :=
+  Filter.mem_of_superset (Ioo_mem_nhds g₀ g₁) (fun x hx => by rcases le_total x b  <;> aesop)
 
 /-- Obtain a "predictably-sided" neighborhood of `b` from two one-sided neighborhoods. -/
 theorem nhds_of_Ici_Iic.{u} {α : Type u} [TopologicalSpace α] [LinearOrder α] [OrderTopology α]
@@ -62,37 +68,13 @@ theorem nhds_of_Ici_Iic.{u} {α : Type u} [TopologicalSpace α] [LinearOrder α]
       exact le_of_not_ge H
   constructor
   · exact isOpen_Ioo
-  tauto
+  · tauto
 
 /-- If `f` is monotone to the left and antitone to the right, then it has a local maximum. -/
-lemma isLocalMax_of_mono_anti'.{u, v}
-    {α : Type u} [TopologicalSpace α] [LinearOrder α] [OrderTopology α]
-    [NoMinOrder α] [NoMaxOrder α]
-    {β : Type v} [Preorder β]
-    {b : α} {f : α → β}
-    {a : Set α} (ha : a ∈ 𝓝[≤] b)
-    {c : Set α} (hc : c ∈ 𝓝[≥] b)
-    (h₀ : MonotoneOn f a)
-    (h₁ : AntitoneOn f c) : IsLocalMax f b := by
-  apply Filter.mem_of_superset (nhds_of_Ici_Iic ha hc)
-  intro x hx
-  rcases le_total x b with hx' | hx'
-  cases hx with
-  | inl h => simp_all; exact h₀ h (mem_of_mem_nhdsWithin (by simp) ha) hx'
-  | inr h => exact h₁ (mem_of_mem_nhdsWithin (by simp) hc) h.1 h.2
-  cases hx with
-  | inl h => exact h₀ h.1 (mem_of_mem_nhdsWithin (by simp) ha) h.2
-  | inr h => exact h₁ (mem_of_mem_nhdsWithin (by simp) hc) h.1 hx'
-
-/-- If `f` is antitone on `(a,b]` and monotone on `[b,c)` then `f` has
-a local minimum at `b`. -/
-lemma isLocalMin_of_anti_mono.{u, v}
-    {α : Type u} [TopologicalSpace α] [LinearOrder α] [OrderClosedTopology α]
-    {β : Type v} [Preorder β]
-    {a b c : α} (g₀ : a < b) (g₁ : b < c) {f : α → β}
-    (h₀ : AntitoneOn f (Ioc a b))
-    (h₁ : MonotoneOn f (Ico b c)) : IsLocalMin f b := by
-
-  apply Filter.mem_of_superset (Ioo_mem_nhds g₀ g₁)
-  intro x hx
-  rcases le_total x b with hx' | hx' <;> aesop
+lemma isLocalMax_of_mono_anti'.{u, v} {α : Type u} [TopologicalSpace α] [LinearOrder α]
+    [OrderTopology α] [NoMinOrder α] [NoMaxOrder α] {β : Type v} [Preorder β] {b : α} {f : α → β}
+    {a : Set α} (ha : a ∈ 𝓝[≤] b) {c : Set α} (hc : c ∈ 𝓝[≥] b)
+    (h₀ : MonotoneOn f a) (h₁ : AntitoneOn f c) : IsLocalMax f b :=
+  have : b ∈ a := mem_of_mem_nhdsWithin (by simp) ha
+  have : b ∈ c := mem_of_mem_nhdsWithin (by simp) hc
+  Filter.mem_of_superset (nhds_of_Ici_Iic ha hc) (fun x _ => by rcases le_total x b <;> aesop)

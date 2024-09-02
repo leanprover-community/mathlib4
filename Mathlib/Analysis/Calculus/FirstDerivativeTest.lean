@@ -47,7 +47,7 @@ We prove a couple of auxiliary lemmas elaborating on facts such as
 
 /-- If `f'` is the derivative of `f` then  `f' x ≤ 0 → 0 ≤ (-f)' x`. -/
 theorem deriv_neg_nonneg {f : ℝ → ℝ} {a b : ℝ} (hd₀ : DifferentiableOn ℝ f (Set.Ioo a b))
-    (h₀ : ∀ x ∈ Set.Ioo a b, deriv f x ≤ 0) (x : ℝ) (hx : x ∈ Set.Ioo a b) : 0 ≤ deriv (-f) x :=
+    (h₀ : ∀ x ∈ Set.Ioo a b, deriv f x ≤ 0) {x : ℝ} (hx : x ∈ Set.Ioo a b) : 0 ≤ deriv (-f) x :=
   (@deriv.comp ℝ _ x ℝ _ _ f (fun x => -x)
     (Differentiable.differentiableAt differentiable_neg)
     (DifferentiableOn.differentiableAt hd₀ (Ioo_mem_nhds hx.1 hx.2))) ▸ (by
@@ -57,9 +57,8 @@ theorem deriv_neg_nonneg {f : ℝ → ℝ} {a b : ℝ} (hd₀ : DifferentiableOn
 
 /-- If `f'` is the derivative of `f` then  `0 ≤ f' x → (-f)' x ≤ 0`. -/
 theorem deriv_neg_nonpos {f : ℝ → ℝ} {b c : ℝ} (hd₁ : DifferentiableOn ℝ f (Set.Ioo b c))
-    (h₁ : ∀ x ∈ Set.Ioo b c, 0 ≤ deriv f x) (x : ℝ) :
-  x ∈ Set.Ioo b c → deriv (-f) x ≤ 0 :=
-    fun hx => (@deriv.comp ℝ _ x ℝ _ _ f (fun x => -x)
+    (h₁ : ∀ x ∈ Set.Ioo b c, 0 ≤ deriv f x) {x : ℝ} (hx : x ∈ Set.Ioo b c) : deriv (-f) x ≤ 0 :=
+    (@deriv.comp ℝ _ x ℝ _ _ f (fun x => -x)
     (Differentiable.differentiableAt differentiable_neg)
     (DifferentiableOn.differentiableAt hd₁ (Ioo_mem_nhds hx.1 hx.2))) ▸ (by
     rw [deriv_neg'', neg_mul, one_mul, Left.neg_nonpos_iff]
@@ -75,11 +74,9 @@ First-Derivative Test from calculus.
 
 
  /-- The First-Derivative Test from calculus, maxima version.
-  Suppose `a < b < c`,
-    `f : ℝ → ℝ` is continuous at `b`,
-    the derivative `f'` is nonnegative on `(a,b)`, and
-    the derivative `f'` is nonpositive on `(b,c)`.
-  Then `f` has a local maximum at `a`. -/
+  Suppose `a < b < c`, `f : ℝ → ℝ` is continuous at `b`,
+  the derivative `f'` is nonnegative on `(a,b)`, and
+  the derivative `f'` is nonpositive on `(b,c)`. Then `f` has a local maximum at `a`. -/
 lemma first_derivative_test_max {f : ℝ → ℝ} {a b c : ℝ} (g₀ : a < b) (g₁ : b < c)
     (h : ContinuousAt f b)
     (hd₀ : DifferentiableOn ℝ f (Set.Ioo a b))
@@ -127,20 +124,15 @@ lemma first_derivative_test_max' {f : ℝ → ℝ} {b : ℝ} (h : ContinuousAt f
       (fun x _ => by apply hv₁.2;simp_all)
 
 
-
 /-- The First-Derivative Test from calculus, minima version. -/
 lemma first_derivative_test_min {f : ℝ → ℝ} {a b c : ℝ} (h : ContinuousAt f b)
-    {g₀ : a < b} {g₁ : b < c}
-    (hd₀ : DifferentiableOn ℝ f (Set.Ioo a b))
-    (hd₁ : DifferentiableOn ℝ f (Set.Ioo b c))
+    (g₀ : a < b) (g₁ : b < c)
+    (hd₀ : DifferentiableOn ℝ f (Set.Ioo a b)) (hd₁ : DifferentiableOn ℝ f (Set.Ioo b c))
     (h₀ : ∀ x ∈ Set.Ioo a b, deriv f x ≤ 0)
     (h₁ : ∀ x ∈ Set.Ioo b c, 0 ≤ deriv f x) : IsLocalMin f b := by
     have Q := @first_derivative_test_max (-f) a b c g₀ g₁
-      (by simp_all)
-      (DifferentiableOn.neg hd₀)
-      (DifferentiableOn.neg hd₁)
-      (by intro x;apply deriv_neg_nonneg;repeat tauto)
-      (by intro x;apply deriv_neg_nonpos;repeat tauto)
-    unfold IsLocalMin IsMinFilter
+      (by simp_all) (DifferentiableOn.neg hd₀) (DifferentiableOn.neg hd₁)
+      (fun _ => deriv_neg_nonneg hd₀ h₀) (fun _ => deriv_neg_nonpos hd₁ h₁)
     unfold IsLocalMax IsMaxFilter at Q
-    simp only [Pi.neg_apply, neg_le_neg_iff] at Q; exact Q
+    simp only [Pi.neg_apply, neg_le_neg_iff] at Q
+    exact Q
