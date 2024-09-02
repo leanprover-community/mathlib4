@@ -69,11 +69,14 @@ jobs:
       - name: lint references.bib
         if: steps.user_permission.outputs.require-result == 'true'
         run: |
+          # ignoring the return code allows the following `reviewdog` step to add GitHub suggestions
           ./scripts/lint-bib.sh || true
 
       - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
         if: steps.user_permission.outputs.require-result == 'true'
-        run: lake exe mk_all || true
+        run: |
+          # ignoring the return code allows the following `reviewdog` step to add GitHub suggestions
+          lake exe mk_all || true
 
       - name: Commit and push changes
         if: steps.user_permission.outputs.require-result == 'true'
