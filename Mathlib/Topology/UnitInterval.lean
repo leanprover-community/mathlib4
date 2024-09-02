@@ -189,14 +189,14 @@ theorem nonneg' {t : I} : 0 ≤ t :=
 theorem le_one' {t : I} : t ≤ 1 :=
   t.2.2
 
-lemma pos_iff_ne_zero {x : I} : 0 < x ↔ x ≠ 0 := bot_lt_iff_ne_bot
+protected lemma pos_iff_ne_zero {x : I} : 0 < x ↔ x ≠ 0 := bot_lt_iff_ne_bot
 
-lemma lt_one_iff_ne {x : I} : x < 1 ↔ x ≠ 1 := lt_top_iff_ne_top
+protected lemma lt_one_iff_ne {x : I} : x < 1 ↔ x ≠ 1 := lt_top_iff_ne_top
 
 lemma eq_one_or_eq_zero_of_le_mul {i j : I} (h : i ≤ j * i) : i = 0 ∨ j = 1 := by
   contrapose! h
-  simp only [ne_eq, ← lt_one_iff_ne, ← coe_lt_one, ← pos_iff_ne_zero, ← coe_pos] at h
-  simp only [← Subtype.coe_lt_coe, coe_mul]
+  rw [← unitInterval.lt_one_iff_ne, ← coe_lt_one, ← unitInterval.pos_iff_ne_zero, ← coe_pos] at h
+  rw [← Subtype.coe_lt_coe, coe_mul]
   simpa using mul_lt_mul_of_pos_right h.right h.left
 
 instance : Nontrivial I := ⟨⟨1, 0, (one_ne_zero <| congrArg Subtype.val ·)⟩⟩
