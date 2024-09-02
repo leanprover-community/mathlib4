@@ -328,6 +328,11 @@ theorem ContMDiff.extend_one [T2Space M] [One M'] {n : ℕ∞} {U : Opens M} {f 
   exact diff.contMDiffAt
 
 theorem contMDiff_inclusion {n : ℕ∞} {U V : Opens M} (h : U ≤ V) :
+    #adaptation_note
+    /--
+    After lean4#5020, many instances for Lie algebras and manifolds are no longer found.
+    See https://leanprover.zulipchat.com/#narrow/stream/428973-nightly-testing/topic/.2316244.20adaptations.20for.20nightly-2024-08-28/near/466219124
+    -/
     letI : ChartedSpace H U := U.instChartedSpace
     letI : ChartedSpace H V := V.instChartedSpace
     ContMDiff I I n (Set.inclusion h : U → V) := by
@@ -349,6 +354,11 @@ theorem Smooth.extend_one [T2Space M] [One M'] {U : Opens M} {f : U → M'}
   ContMDiff.extend_one supp diff
 
 theorem smooth_inclusion {U V : Opens M} (h : U ≤ V) :
+    #adaptation_note
+    /--
+    After lean4#5020, many instances for Lie algebras and manifolds are no longer found.
+    See https://leanprover.zulipchat.com/#narrow/stream/428973-nightly-testing/topic/.2316244.20adaptations.20for.20nightly-2024-08-28/near/466219124
+    -/
     letI : ChartedSpace H U := U.instChartedSpace
     letI : ChartedSpace H V := V.instChartedSpace
     Smooth I I (Set.inclusion h : U → V) :=

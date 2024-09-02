@@ -287,6 +287,11 @@ instance [IsSolvable R L] : IsSolvable R (⊤ : LieSubalgebra R L) := by
 
 @[simp] lemma radical_eq_top_of_isSolvable [IsSolvable R L] :
     radical R L = ⊤ := by
+  #adaptation_note
+  /--
+  After lean4#5020, many instances for Lie algebras and manifolds are no longer found.
+  See https://leanprover.zulipchat.com/#narrow/stream/428973-nightly-testing/topic/.2316244.20adaptations.20for.20nightly-2024-08-28/near/466219124
+  -/
   rw [eq_top_iff]; exact le_sSup <| LieAlgebra.instIsSolvableSubtypeMemLieSubalgebraTop R L
 
 /-- Given a solvable Lie ideal `I` with derived series `I = D₀ ≥ D₁ ≥ ⋯ ≥ Dₖ = ⊥`, this is the
