@@ -76,7 +76,7 @@ theorem cardinal_lift_le_rank {ι : Type w} {v : ι → M}
     (hv : LinearIndependent R v) :
     Cardinal.lift.{v} #ι ≤ Cardinal.lift.{w} (Module.rank R M) := by
   rw [Module.rank]
-  refine le_trans ?_ (lift_le.mpr <| le_ciSup (bddAbove_range.{v, v} _) ⟨_, hv.coe_range⟩)
+  refine le_trans ?_ (lift_le.mpr <| le_ciSup (bddAbove_range.{v} _) ⟨_, hv.coe_range⟩)
   exact lift_mk_le'.mpr ⟨(Equiv.ofInjective _ hv.injective).toEmbedding⟩
 
 lemma aleph0_le_rank {ι : Type w} [Infinite ι] {v : ι → M}
@@ -120,7 +120,8 @@ theorem lift_rank_le_of_injective_injective (i : R' → R) (j : M →+ M')
     (hc : ∀ (r : R') (m : M), j (i r • m) = r • j m) :
     lift.{v'} (Module.rank R M) ≤ lift.{v} (Module.rank R' M') := by
   simp_rw [Module.rank, lift_iSup (bddAbove_range.{v', v'} _), lift_iSup (bddAbove_range.{v, v} _)]
-  exact ciSup_mono' (bddAbove_range.{v', v} _) fun ⟨s, h⟩ ↦ ⟨⟨j '' s,
+  have := small_max
+  exact ciSup_mono' (bddAbove_range _) fun ⟨s, h⟩ ↦ ⟨⟨j '' s,
     (h.map_of_injective_injective i j hi (fun _ _ ↦ hj <| by rwa [j.map_zero]) hc).image⟩,
       lift_mk_le'.mpr ⟨(Equiv.Set.image j s hj).toEmbedding⟩⟩
 
