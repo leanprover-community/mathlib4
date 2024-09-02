@@ -40,7 +40,6 @@ import shutil
 ERR_MOD = 2 # module docstring
 ERR_IBY = 11 # isolated by
 ERR_IWH = 22 # isolated where
-ERR_DOT = 12 # isolated or low focusing dot
 ERR_SEM = 13 # the substring " ;"
 ERR_WIN = 14 # Windows line endings "\r\n"
 ERR_TWS = 15 # trailing whitespace
@@ -60,14 +59,13 @@ with SCRIPTS_DIR.joinpath("style-exceptions.txt").open(encoding="utf-8") as f:
         filename, _, _, _, _, errno, *extra = exline.split()
         path = ROOT_DIR / filename
         map = {
-            "ERR_MOD": ERR_MOD, "ERR_IBY": ERR_IBY, "ERR_IWH": ERR_IWH,
-            "ERR_DOT": ERR_DOT, "ERR_SEM": ERR_SEM, "ERR_WIN": ERR_WIN,
-            "ERR_TWS": ERR_TWS, "ERR_CLN": ERR_CLN, "ERR_IND": ERR_IND,
-            "ERR_ARR": ERR_ARR, "ERR_NSP": ERR_NSP,
+            "ERR_MOD": ERR_MOD, "ERR_IBY": ERR_IBY, "ERR_IWH": ERR_IWH, "ERR_SEM": ERR_SEM,
+            "ERR_WIN": ERR_WIN, "ERR_TWS": ERR_TWS, "ERR_CLN": ERR_CLN,
+            "ERR_IND": ERR_IND, "ERR_ARR": ERR_ARR, "ERR_NSP": ERR_NSP,
         }
         if errno in map:
             exceptions += [(map[errno], path, None)]
-        elif errno in ["ERR_COP", "ERR_ADN"]:
+        elif errno in ["ERR_COP", "ERR_ADN", "ERR_DOT"]:
             pass # maintained by the Lean style linter now
         else:
             print(f"Error: unexpected errno in style-exceptions.txt: {errno}")
@@ -270,11 +268,6 @@ def isolated_by_dot_semicolon_check(lines, path):
                     line = f"{indent}{line.lstrip()[3:]}"
         elif line.lstrip() == "where":
             errors += [(ERR_IWH, line_nr, path)]
-        if line.lstrip().startswith(". "):
-            errors += [(ERR_DOT, line_nr, path)]
-            line = line.replace(". ", "· ", 1)
-        if line.strip() in (".", "·"):
-            errors += [(ERR_DOT, line_nr, path)]
         if " ;" in line:
             errors += [(ERR_SEM, line_nr, path)]
             line = line.replace(" ;", ";")
@@ -324,8 +317,6 @@ def format_errors(errors):
             output_message(path, line_nr, "ERR_IBY", "Line is an isolated 'by'")
         if errno == ERR_IWH:
             output_message(path, line_nr, "ERR_IWH", "Line is an isolated where")
-        if errno == ERR_DOT:
-            output_message(path, line_nr, "ERR_DOT", "Line is an isolated focusing dot or uses . instead of ·")
         if errno == ERR_SEM:
             output_message(path, line_nr, "ERR_SEM", "Line contains a space before a semicolon")
         if errno == ERR_WIN:
