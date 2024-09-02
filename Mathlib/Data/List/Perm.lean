@@ -513,13 +513,6 @@ theorem get_permutations'Aux (s : List α) (x : α) (n : ℕ)
     (permutations'Aux x s).get ⟨n, hn⟩ = s.insertNth n x := by
   simp [getElem_permutations'Aux]
 
-set_option linter.deprecated false in
-@[deprecated get_permutations'Aux (since := "2024-04-23")]
-theorem nthLe_permutations'Aux (s : List α) (x : α) (n : ℕ)
-    (hn : n < length (permutations'Aux x s)) :
-    (permutations'Aux x s).nthLe n hn = s.insertNth n x :=
-  get_permutations'Aux s x n hn
-
 theorem count_permutations'Aux_self [DecidableEq α] (l : List α) (x : α) :
     count (x :: l) (permutations'Aux x l) = length (takeWhile (x = ·) l) + 1 := by
   induction' l with y l IH generalizing x
@@ -564,37 +557,34 @@ theorem nodup_permutations'Aux_of_not_mem (s : List α) (x : α) (hx : x ∉ s) 
     · exact IH hx.right
     · simp
 
-set_option linter.deprecated false in
 theorem nodup_permutations'Aux_iff {s : List α} {x : α} : Nodup (permutations'Aux x s) ↔ x ∉ s := by
-  refine ⟨fun h => ?_, nodup_permutations'Aux_of_not_mem _ _⟩
-  intro H
-  obtain ⟨k, hk, hk'⟩ := nthLe_of_mem H
-  rw [nodup_iff_nthLe_inj] at h
-  refine k.succ_ne_self.symm <| h k (k + 1) ?_ ?_ ?_
-  · simpa [Nat.lt_succ_iff] using hk.le
-  · simpa using hk
-  rw [nthLe_permutations'Aux, nthLe_permutations'Aux]
+  refine ⟨fun h H ↦ ?_, nodup_permutations'Aux_of_not_mem _ _⟩
+  obtain ⟨⟨k, hk⟩, hk'⟩ := get_of_mem H
+  rw [nodup_iff_injective_get] at h
+  apply k.succ_ne_self.symm
+  have kl : k < (permutations'Aux x s).length := by simpa [Nat.lt_succ_iff] using hk.le
+  have k1l : k + 1 < (permutations'Aux x s).length := by simpa using hk
+  rw [← @Fin.mk.inj_iff _ _ _ kl k1l]; apply h
+  rw [get_permutations'Aux, get_permutations'Aux]
   have hl : length (insertNth k x s) = length (insertNth (k + 1) x s) := by
     rw [length_insertNth _ _ hk.le, length_insertNth _ _ (Nat.succ_le_of_lt hk)]
-  refine ext_nthLe hl fun n hn hn' => ?_
+  refine ext_get hl fun n hn hn' => ?_
   rcases lt_trichotomy n k with (H | rfl | H)
-  · rw [nthLe_insertNth_of_lt _ _ _ _ H (H.trans hk),
-      nthLe_insertNth_of_lt _ _ _ _ (H.trans (Nat.lt_succ_self _))]
-  · rw [nthLe_insertNth_self _ _ _ hk.le, nthLe_insertNth_of_lt _ _ _ _ (Nat.lt_succ_self _) hk,
-      hk']
+  · rw [get_insertNth_of_lt _ _ _ _ H (H.trans hk),
+      get_insertNth_of_lt _ _ _ _ (H.trans (Nat.lt_succ_self _))]
+  · rw [get_insertNth_self _ _ _ hk.le, get_insertNth_of_lt _ _ _ _ (Nat.lt_succ_self _) hk, hk']
   · rcases (Nat.succ_le_of_lt H).eq_or_lt with (rfl | H')
-    · rw [nthLe_insertNth_self _ _ _ (Nat.succ_le_of_lt hk)]
+    · rw [get_insertNth_self _ _ _ (Nat.succ_le_of_lt hk)]
       convert hk' using 1
-      exact nthLe_insertNth_add_succ _ _ _ 0 _
+      exact get_insertNth_add_succ _ _ _ 0 _
     · obtain ⟨m, rfl⟩ := Nat.exists_eq_add_of_lt H'
       erw [length_insertNth _ _ hk.le, Nat.succ_lt_succ_iff, Nat.succ_add] at hn
-      rw [nthLe_insertNth_add_succ]
-      · convert nthLe_insertNth_add_succ s x k m.succ (by simpa using hn) using 2
+      rw [get_insertNth_add_succ]
+      · convert get_insertNth_add_succ s x k m.succ (by simpa using hn) using 2
         · simp [Nat.add_assoc, Nat.add_left_comm]
         · simp [Nat.add_left_comm, Nat.add_comm]
       · simpa [Nat.succ_add] using hn
 
-set_option linter.deprecated false in
 theorem nodup_permutations (s : List α) (hs : Nodup s) : Nodup s.permutations := by
   rw [(permutations_perm_permutations' s).nodup_iff]
   induction' hs with x l h h' IH
@@ -614,24 +604,23 @@ theorem nodup_permutations (s : List α) (hs : Nodup s) : Nodup s.permutations :
       rw [mem_permutations'] at ha hb
       have hl : as.length = bs.length := (ha.trans hb.symm).length_eq
       simp only [Nat.lt_succ_iff, length_permutations'Aux] at hn hm
-      rw [← nthLe, nthLe_permutations'Aux] at hn' hm'
+      rw [get_permutations'Aux] at hn' hm'
       have hx :
-        nthLe (insertNth n x as) m (by rwa [length_insertNth _ _ hn, Nat.lt_succ_iff, hl]) = x := by
+        (insertNth n x as)[m]'(by rwa [length_insertNth _ _ hn, Nat.lt_succ_iff, hl]) = x := by
         simp [hn', ← hm', hm]
       have hx' :
-        nthLe (insertNth m x bs) n (by rwa [length_insertNth _ _ hm, Nat.lt_succ_iff, ← hl]) =
-          x := by
+        (insertNth m x bs)[n]'(by rwa [length_insertNth _ _ hm, Nat.lt_succ_iff, ← hl]) = x := by
         simp [hm', ← hn', hn]
       rcases lt_trichotomy n m with (ht | ht | ht)
       · suffices x ∈ bs by exact h x (hb.subset this) rfl
-        rw [← hx', nthLe_insertNth_of_lt _ _ _ _ ht (ht.trans_le hm)]
-        exact nthLe_mem _ _ _
+        rw [← hx', getElem_insertNth_of_lt _ _ _ _ ht (ht.trans_le hm)]
+        exact get_mem _ _ _
       · simp only [ht] at hm' hn'
         rw [← hm'] at hn'
         exact H (insertNth_injective _ _ hn')
       · suffices x ∈ as by exact h x (ha.subset this) rfl
-        rw [← hx, nthLe_insertNth_of_lt _ _ _ _ ht (ht.trans_le hn)]
-        exact nthLe_mem _ _ _
+        rw [← hx, getElem_insertNth_of_lt _ _ _ _ ht (ht.trans_le hn)]
+        exact get_mem _ _ _
 
 lemma permutations_take_two (x y : α) (s : List α) :
     (x :: y :: s).permutations.take 2 = [x :: y :: s, y :: x :: s] := by

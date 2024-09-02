@@ -356,7 +356,7 @@ theorem measurePreserving_prod_mul_swap_right [IsMulRightInvariant μ] :
 " The map `(x, y) ↦ (x + y, y)` preserves the measure `μ × ν`. "]
 theorem measurePreserving_mul_prod [IsMulRightInvariant μ] :
     MeasurePreserving (fun z : G × G => (z.1 * z.2, z.2)) (μ.prod ν) (μ.prod ν) :=
-  measurePreserving_swap.comp <| by apply measurePreserving_prod_mul_swap_right μ ν
+  measurePreserving_swap.comp (measurePreserving_prod_mul_swap_right μ ν)
 
 variable [MeasurableInv G]
 
@@ -378,7 +378,7 @@ theorem measurePreserving_prod_div_swap [IsMulRightInvariant μ] :
 " The map `(x, y) ↦ (x - y, y)` preserves the measure `μ × ν`. "]
 theorem measurePreserving_div_prod [IsMulRightInvariant μ] :
     MeasurePreserving (fun z : G × G => (z.1 / z.2, z.2)) (μ.prod ν) (μ.prod ν) :=
-  measurePreserving_swap.comp <| by apply measurePreserving_prod_div_swap μ ν
+  measurePreserving_swap.comp (measurePreserving_prod_div_swap μ ν)
 
 /-- The map `(x, y) ↦ (xy, x⁻¹)` is measure-preserving. -/
 @[to_additive measurePreserving_add_prod_neg_right

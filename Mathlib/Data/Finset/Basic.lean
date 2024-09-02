@@ -105,8 +105,9 @@ In Lean, we use lattice notation to talk about things involving unions and inter
 
 ### Equivalences between finsets
 
-* The `Mathlib/Data/Equiv.lean` files describe a general type of equivalence, so look in there for
-  any lemmas. There is some API for rewriting sums and products from `s` to `t` given that `s ≃ t`.
+* The `Mathlib/Logic/Equiv/Defs.lean` files describe a general type of equivalence, so look in there
+  for any lemmas. There is some API for rewriting sums and products from `s` to `t` given that
+  `s ≃ t`.
   TODO: examples
 
 ## Tags
@@ -214,17 +215,13 @@ instance decidableMem' [DecidableEq α] (a : α) (s : Finset α) : Decidable (a 
 
 /-! ### extensionality -/
 
-
-theorem ext_iff {s₁ s₂ : Finset α} : s₁ = s₂ ↔ ∀ a, a ∈ s₁ ↔ a ∈ s₂ :=
-  val_inj.symm.trans <| s₁.nodup.ext s₂.nodup
-
 @[ext]
-theorem ext {s₁ s₂ : Finset α} : (∀ a, a ∈ s₁ ↔ a ∈ s₂) → s₁ = s₂ :=
-  ext_iff.2
+theorem ext {s₁ s₂ : Finset α} (h : ∀ a, a ∈ s₁ ↔ a ∈ s₂) : s₁ = s₂ :=
+  (val_inj.symm.trans <| s₁.nodup.ext s₂.nodup).mpr h
 
 @[simp, norm_cast]
 theorem coe_inj {s₁ s₂ : Finset α} : (s₁ : Set α) = s₂ ↔ s₁ = s₂ :=
-  Set.ext_iff.trans ext_iff.symm
+  Set.ext_iff.trans Finset.ext_iff.symm
 
 theorem coe_injective {α} : Injective ((↑) : Finset α → Set α) := fun _s _t => coe_inj.1
 
@@ -1445,6 +1442,10 @@ theorem singleton_inter_of_not_mem {a : α} {s : Finset α} (H : a ∉ s) : {a} 
   eq_empty_of_forall_not_mem <| by
     simp only [mem_inter, mem_singleton]; rintro x ⟨rfl, h⟩; exact H h
 
+lemma singleton_inter {a : α} {s : Finset α} :
+    {a} ∩ s = if a ∈ s then {a} else ∅ := by
+  split_ifs with h <;> simp [h]
+
 @[simp]
 theorem inter_singleton_of_mem {a : α} {s : Finset α} (h : a ∈ s) : s ∩ {a} = {a} := by
   rw [inter_comm, singleton_inter_of_mem h]
@@ -1452,6 +1453,10 @@ theorem inter_singleton_of_mem {a : α} {s : Finset α} (h : a ∈ s) : s ∩ {a
 @[simp]
 theorem inter_singleton_of_not_mem {a : α} {s : Finset α} (h : a ∉ s) : s ∩ {a} = ∅ := by
   rw [inter_comm, singleton_inter_of_not_mem h]
+
+lemma inter_singleton {a : α} {s : Finset α} :
+    s ∩ {a} = if a ∈ s then {a} else ∅ := by
+  split_ifs with h <;> simp [h]
 
 @[mono, gcongr]
 theorem inter_subset_inter {x y s t : Finset α} (h : x ⊆ y) (h' : s ⊆ t) : x ∩ s ⊆ y ∩ t := by
@@ -1764,11 +1769,11 @@ theorem inter_sdiff_self (s₁ s₂ : Finset α) : s₁ ∩ (s₂ \ s₁) = ∅ 
 
 instance : GeneralizedBooleanAlgebra (Finset α) :=
   { sup_inf_sdiff := fun x y => by
-      simp only [ext_iff, mem_union, mem_sdiff, inf_eq_inter, sup_eq_union, mem_inter,
+      simp only [Finset.ext_iff, mem_union, mem_sdiff, inf_eq_inter, sup_eq_union, mem_inter,
         ← and_or_left, em, and_true, implies_true]
     inf_inf_sdiff := fun x y => by
-      simp only [ext_iff, inter_sdiff_self, inter_empty, inter_assoc, false_iff_iff, inf_eq_inter,
-        not_mem_empty, bot_eq_empty, not_false_iff, implies_true] }
+      simp only [Finset.ext_iff, inter_sdiff_self, inter_empty, inter_assoc, false_iff_iff,
+        inf_eq_inter, not_mem_empty, bot_eq_empty, not_false_iff, implies_true] }
 
 theorem not_mem_sdiff_of_mem_right (h : a ∈ t) : a ∉ s \ t := by
   simp only [mem_sdiff, h, not_true, not_false_iff, and_false_iff]
@@ -2179,7 +2184,7 @@ def knownToBeFinsetNotSet (expectedType? : Option Expr) : TermElabM Bool :=
 `Finset ?α` or the expected type is not `Set ?α` and `s` has expected type `Finset ?α`.
 
 See also
-* `Init.Set` for the `Set` builder notation elaborator that this elaborator partly overrides.
+* `Data.Set.Defs` for the `Set` builder notation elaborator that this elaborator partly overrides.
 * `Data.Fintype.Basic` for the `Finset` builder notation elaborator handling syntax of the form
   `{x | p x}`, `{x : α | p x}`, `{x ∉ s | p x}`, `{x ≠ a | p x}`.
 * `Order.LocallyFinite.Basic` for the `Finset` builder notation elaborator handling syntax of the
@@ -2493,9 +2498,11 @@ theorem filter_union_filter_neg_eq [∀ x, Decidable (¬p x)] (s : Finset α) :
 
 end
 
-lemma filter_inj : s.filter p = t.filter p ↔ ∀ ⦃a⦄, p a → (a ∈ s ↔ a ∈ t) := by simp [ext_iff]
+lemma filter_inj : s.filter p = t.filter p ↔ ∀ ⦃a⦄, p a → (a ∈ s ↔ a ∈ t) := by
+  simp [Finset.ext_iff]
 
-lemma filter_inj' : s.filter p = s.filter q ↔ ∀ ⦃a⦄, a ∈ s → (p a ↔ q a) := by simp [ext_iff]
+lemma filter_inj' : s.filter p = s.filter q ↔ ∀ ⦃a⦄, a ∈ s → (p a ↔ q a) := by
+  simp [Finset.ext_iff]
 
 end Filter
 
@@ -3063,3 +3070,5 @@ def proveFinsetNonempty {u : Level} {α : Q(Type u)} (s : Q(Finset $α)) :
   Lean.getExprMVarAssignment? mvar
 
 end Mathlib.Meta
+
+set_option linter.style.longFile 3100
