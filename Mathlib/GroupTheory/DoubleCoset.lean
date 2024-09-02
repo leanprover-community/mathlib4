@@ -72,15 +72,15 @@ def Quotient (H K : Set G) : Type _ :=
   _root_.Quotient (setoid H K)
 
 theorem rel_iff {H K : Subgroup G} {x y : G} :
-    (setoid ↑H ↑K).Rel x y ↔ ∃ a ∈ H, ∃ b ∈ K, y = a * x * b :=
+    setoid ↑H ↑K x y ↔ ∃ a ∈ H, ∃ b ∈ K, y = a * x * b :=
   Iff.trans
     ⟨fun hxy => (congr_arg _ hxy).mpr (mem_doset_self H K y), fun hxy => (doset_eq_of_mem hxy).symm⟩
     mem_doset
 
 theorem bot_rel_eq_leftRel (H : Subgroup G) :
-    (setoid ↑(⊥ : Subgroup G) ↑H).Rel = (QuotientGroup.leftRel H).Rel := by
+    ⇑(setoid ↑(⊥ : Subgroup G) ↑H) = ⇑(QuotientGroup.leftRel H) := by
   ext a b
-  rw [rel_iff, Setoid.Rel, QuotientGroup.leftRel_apply]
+  rw [rel_iff, QuotientGroup.leftRel_apply]
   constructor
   · rintro ⟨a, rfl : a = 1, b, hb, rfl⟩
     change a⁻¹ * (1 * a * b) ∈ H
@@ -89,9 +89,9 @@ theorem bot_rel_eq_leftRel (H : Subgroup G) :
     exact ⟨1, rfl, a⁻¹ * b, h, by rw [one_mul, mul_inv_cancel_left]⟩
 
 theorem rel_bot_eq_right_group_rel (H : Subgroup G) :
-    (setoid ↑H ↑(⊥ : Subgroup G)).Rel = (QuotientGroup.rightRel H).Rel := by
+    ⇑(setoid ↑H ↑(⊥ : Subgroup G)) = ⇑(QuotientGroup.rightRel H) := by
   ext a b
-  rw [rel_iff, Setoid.Rel, QuotientGroup.rightRel_apply]
+  rw [rel_iff, QuotientGroup.rightRel_apply]
   constructor
   · rintro ⟨b, hb, a, rfl : a = 1, rfl⟩
     change b * a * 1 * a⁻¹ ∈ H
@@ -177,7 +177,6 @@ theorem left_bot_eq_left_quot (H : Subgroup G) :
   congr
   ext
   simp_rw [← bot_rel_eq_leftRel H]
-  rfl
 
 theorem right_bot_eq_right_quot (H : Subgroup G) :
     Quotient (H.1 : Set G) (⊥ : Subgroup G) = _root_.Quotient (QuotientGroup.rightRel H) := by
@@ -185,6 +184,5 @@ theorem right_bot_eq_right_quot (H : Subgroup G) :
   congr
   ext
   simp_rw [← rel_bot_eq_right_group_rel H]
-  rfl
 
 end Doset

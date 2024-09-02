@@ -137,7 +137,7 @@ theorem efixedPoint_eq_of_edist_lt_top (hf : ContractingWith K f) {x : α} (hx :
     efixedPoint f hf x hx = efixedPoint f hf y hy := by
   refine (hf.eq_or_edist_eq_top_of_fixedPoints ?_ ?_).elim id fun h' ↦ False.elim (ne_of_lt ?_ h')
     <;> try apply efixedPoint_isFixedPt
-  change edistLtTopSetoid.Rel _ _
+  change edistLtTopSetoid _ _
   trans x
   · apply Setoid.symm' -- Porting note: Originally `symm`
     exact hf.edist_efixedPoint_lt_top hx
@@ -221,7 +221,7 @@ theorem efixedPoint_eq_of_edist_lt_top' (hf : ContractingWith K f) {s : Set α} 
     efixedPoint' f hsc hsf hfs x hxs hx = efixedPoint' f htc htf hft y hyt hy := by
   refine (hf.eq_or_edist_eq_top_of_fixedPoints ?_ ?_).elim id fun h' ↦ False.elim (ne_of_lt ?_ h')
     <;> try apply efixedPoint_isFixedPt'
-  change edistLtTopSetoid.Rel _ _
+  change edistLtTopSetoid _ _
   trans x
   · apply Setoid.symm' -- Porting note: Originally `symm`
     apply edist_efixedPoint_lt_top'
