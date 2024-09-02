@@ -15,16 +15,19 @@ This file defines the localization of a fractional ideal at a prime ideal.
 
 ## Main definition
 
-* `FractionalIdeal.localizationAtPrime`: The localization of a fractional ideal at a prime ideal.
+* `FractionalIdeal.localizedAtPrime`: The localization of a fractional ideal at a prime ideal.
 
 ## Main results
 
-* `coe_localizedAtPrime`: The localization of `I` is `Submodule.span Aₚ I`.
-* `localizedAtPrime_add`: Localizing commutes with addition.
-* `localizedAtPrime_mul`: Localizing commutes with multiplication.
-* `localizedAtPrime_div`: Localizing commutes with division for finitely-generated denominator.
-* `localizedAtPrime_inv`: Localizing commutes with inverses for finitely-generated `I`.
-* `not_le_of_localizedAtPrime_eq_one`: If `I.localizedAtPrime P = 1`, then `¬ I ≤ P`.
+* `FractionalIdeal.coe_localizedAtPrime`: The localization of `I` is `Submodule.span Aₚ I`.
+* `FractionalIdeal.localizedAtPrime_add`: Localizing commutes with addition.
+* `FractionalIdeal.localizedAtPrime_mul`: Localizing commutes with multiplication.
+* `FractionalIdeal.localizedAtPrime_div`: Localizing commutes with division for finitely-generated
+    denominator.
+* `FractionalIdeal.localizedAtPrime_inv`: Localizing commutes with inverses for finitely-generated
+    `I`.
+* `FractionalIdeal.not_le_of_localizedAtPrime_eq_one`: If `I.localizedAtPrime P = 1`,
+    then `¬ I ≤ P`.
 
 ## Tags
 
@@ -38,8 +41,11 @@ variable (I : FractionalIdeal A⁰ (FractionRing A)) (J : FractionalIdeal A⁰ (
 
 local notation "Aₚ" => Localization.AtPrime P
 local notation "K" => FractionRing A
-local notation "hf" => nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _ <|
-  IsLocalization.injective Aₚ P.primeCompl_le_nonZeroDivisors
+
+variable {P} in
+private lemma hf : A⁰ ≤ Submonoid.comap (algebraMap A Aₚ) Aₚ⁰ :=
+  nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _ <|
+    IsLocalization.injective Aₚ P.primeCompl_le_nonZeroDivisors
 
 instance : IsScalarTower A Aₚ K :=
   localization_isScalarTower_of_submonoid_le Aₚ K P.primeCompl A⁰ P.primeCompl_le_nonZeroDivisors
@@ -65,12 +71,18 @@ theorem self_subset_localizedAtPrime : (I : Set K) ⊆ I.localizedAtPrime P := b
   exact Submodule.subset_span hx
 
 /-- The inclusion `I →ₗ[A] I.localizedAtPrime P`. -/
-def localizedAtPrime_inclusion : I →ₗ[A] I.localizedAtPrime P where
+def localizedAtPrimeInclusion : I →ₗ[A] I.localizedAtPrime P where
   toFun := Set.inclusion (I.self_subset_localizedAtPrime P)
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
-theorem mem_localizedAtPrime_iff_eq (x : K) : x ∈ I.localizedAtPrime P ↔
+@[simp]
+lemma localizedAtPrimeInclusion_mk {x : K} (hx : x ∈ I) :
+    I.localizedAtPrimeInclusion P ⟨x, hx⟩ = ⟨x, self_subset_localizedAtPrime _ _ hx⟩ := by
+  simp [localizedAtPrimeInclusion]
+
+variable {P} in
+theorem mem_localizedAtPrime (x : K) : x ∈ I.localizedAtPrime P ↔
     ∃ i : I, ∃ s : P.primeCompl, x = mk 1 s • i := by
   refine ⟨fun h ↦ ?_, fun ⟨i, s, h⟩ ↦ ?_⟩; swap
   · exact h ▸ (smul_mem _ (mk 1 s) <| I.self_subset_localizedAtPrime P (Subtype.coe_prop i))
@@ -94,13 +106,13 @@ variable {I} {P}
 
 theorem exists_smul_mem_of_mem_localizedAtPrime {x : K} (hx : x ∈ I.localizedAtPrime P) :
     ∃ s ∈ P.primeCompl, s • x ∈ I := by
-  obtain ⟨i, s, rfl⟩ := (I.mem_localizedAtPrime_iff_eq P x).1 hx
+  obtain ⟨i, s, rfl⟩ := (I.mem_localizedAtPrime x).1 hx
   use s, Subtype.coe_prop s
   rw [← smul_assoc, smul_mk, mk_eq_mk', smul_eq_mul, mk'_mul_cancel_left, _root_.map_one, one_smul]
   apply SetLike.coe_mem
 
 -- `I.localizedAtPrime P` is actually the localization of `I` at `P`.
-instance : IsLocalizedModule P.primeCompl (I.localizedAtPrime_inclusion P) where
+instance : IsLocalizedModule P.primeCompl (I.localizedAtPrimeInclusion P) where
   map_units s := by
     refine (End_isUnit_iff _).mpr ⟨fun ⟨_, _⟩ ⟨_, _⟩ h ↦ ?_, fun x ↦ ⟨(mk 1 s) • x, ?_⟩⟩
     · have s0 : (s : A) ≠ 0 := fun hs ↦ (hs ▸ Subtype.coe_prop s) P.zero_mem
@@ -111,15 +123,21 @@ instance : IsLocalizedModule P.primeCompl (I.localizedAtPrime_inclusion P) where
       simp
   surj' x :=
     have ⟨s, sP, sxI⟩ := exists_smul_mem_of_mem_localizedAtPrime (Subtype.coe_prop x)
-    ⟨⟨⟨s • x, sxI⟩, ⟨s, sP⟩⟩, by rw [localizedAtPrime_inclusion]; rfl⟩
-  exists_of_eq h := ⟨1, by simpa [localizedAtPrime_inclusion] using h⟩
+    ⟨⟨⟨s • x, sxI⟩, ⟨s, sP⟩⟩, (I.localizedAtPrimeInclusion_mk _ _).symm⟩
+  exists_of_eq h := ⟨1, by simpa [localizedAtPrimeInclusion] using h⟩
+
+theorem localizedAtPrime_eq_zero_iff : I.localizedAtPrime P = 0 ↔ I = 0 := by
+  constructor
+  · rw [eq_zero_iff, eq_zero_iff]
+    intro h x xI
+    exact h _ (self_subset_localizedAtPrime _ _ xI)
+  · rintro rfl
+    simp
 
 variable (P)
 
-theorem localizedAtPrime_ne_zero (hI : I ≠ 0) : I.localizedAtPrime P ≠ 0 := by
-  simp_rw [ne_eq, eq_zero_iff, not_forall] at hI ⊢
-  rcases hI with ⟨x, xI, x0⟩
-  exact ⟨x, I.self_subset_localizedAtPrime P xI, x0⟩
+theorem localizedAtPrime_ne_zero (hI : I ≠ 0) : I.localizedAtPrime P ≠ 0 :=
+  mt localizedAtPrime_eq_zero_iff.mp hI
 
 variable (I)
 
@@ -188,23 +206,20 @@ theorem localizedAtPrime_div (hJ : J.coeToSubmodule.FG) :
 
 variable {I}
 
+@[simp]
 theorem localizedAtPrime_inv (hI : I.coeToSubmodule.FG) :
-    (I⁻¹).localizedAtPrime P = (I.localizedAtPrime P)⁻¹ := by
+    I⁻¹.localizedAtPrime P = (I.localizedAtPrime P)⁻¹ := by
   rw [inv_eq, localizedAtPrime_div P 1 hI, localizedAtPrime_one, inv_eq]
 
 variable (I)
 
 theorem not_le_of_localizedAtPrime_eq_one (hI : I.localizedAtPrime P = 1) : ¬ I ≤ P := by
-  have ⟨i, s, h⟩ := (I.mem_localizedAtPrime_iff_eq P 1).1 <| hI.symm ▸ one_mem_one Aₚ⁰ (P := K)
+  have ⟨i, s, h⟩ := (I.mem_localizedAtPrime 1).mp (hI.symm ▸ one_mem_one Aₚ⁰)
   unfold coeIdeal coeSubmodule
   refine Set.not_subset.2 ⟨i, Subtype.coe_prop i, ?_⟩
   have : (i : K) = (algebraMap A K) (s : A) := calc
-    (i : K) = ((s : A) • Localization.mk 1 s) • i := by rw [smul_mk]; simp
-    _       = (s : A) • (Localization.mk 1 s • i) := by field_simp
+    (i : K) = (s : A) • (Localization.mk 1 s • i) := by rw [← smul_assoc, smul_mk]; simp
     _       = (algebraMap A K) s                  := by rw [← h, Algebra.algebraMap_eq_smul_one]
-  simp only [map_coe, linearMap_apply, Set.mem_image, mem_coe, not_exists, not_and, this]
-  intro p hp s_eq_p
-  replace s_eq_p := (NoZeroSMulDivisors.algebraMap_injective A K s_eq_p).symm
-  exact (s_eq_p ▸ (Subtype.coe_prop s)) hp
+  simpa [this] using Set.not_mem_of_mem_compl (Subtype.coe_prop s)
 
 end FractionalIdeal
