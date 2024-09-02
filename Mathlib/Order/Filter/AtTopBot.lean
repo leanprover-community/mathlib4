@@ -1335,9 +1335,7 @@ lemma tendsto_finset_prod_atTop :
     simpa using Finset.product_subset_product hpq.1 hpq.2
   · intro b
     use (Finset.image Prod.fst b, Finset.image Prod.snd b)
-    rintro ⟨d1, d2⟩ hd
-    simp only [Finset.mem_product, Finset.mem_image, Prod.exists, exists_and_right, exists_eq_right]
-    exact ⟨⟨d2, hd⟩, ⟨d1, hd⟩⟩
+    exact Finset.subset_product
 
 theorem prod_atBot_atBot_eq [Preorder α] [Preorder β] :
     (atBot : Filter α) ×ˢ (atBot : Filter β) = (atBot : Filter (α × β)) :=
