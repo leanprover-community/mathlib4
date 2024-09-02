@@ -46,6 +46,7 @@ jobs:
       # if you update this step (or its dependencies), please also update them in bot_fix_style_comment.yaml
       - name: lint references.bib
         run: |
+          # ignoring the return code allows the following `reviewdog` step to add GitHub suggestions
           ./scripts/lint-bib.sh || true
 
       - name: suggester / lint-bib
@@ -73,7 +74,9 @@ jobs:
 
       # if you update this step (or its dependencies), please also update them in bot_fix_style_comment.yaml
       - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
-        run: lake exe mk_all || true
+        run: 
+          # ignoring the return code allows the following `reviewdog` step to add GitHub suggestions
+          lake exe mk_all || true
 
       - name: suggester / import list
         uses: reviewdog/action-suggester@v1
