@@ -18,6 +18,9 @@ jobs:
           token: ${{ secrets.MATHLIB_REVIEWERS_TEAM_KEY }} # required. Personal Access Token with the `read:org` permission
           exit: true # optional. If the action should exit if the user is not part of the team. Defaults to true.
 
+      - uses: actions/checkout@v4
+        with:
+          ref: master
       - name: Determine Zulip topic
         id: determine_topic
         run: |
