@@ -25,41 +25,43 @@ abbrev exclusions : HashSet SyntaxNodeKind := HashSet.empty
   |>.insert `Batteries.Tactic.«tacticOn_goal-_=>_»
   |>.insert ``Lean.Parser.Tactic.induction
   |>.insert `«tactic#adaptation_note_»
-
-def keepTactic (s : Syntax) : Bool :=
-  (s.getAtomVal != ";" && !s.isOfKind `null) &&
-  ! exclusions.contains s.getKind
-
-
+  |>.insert `«;»
+  |>.insert `null
+  --|>.insert ``Lean.Parser.Term.byTactic
+  --|>.insert `by
+#check HashMap
 partial
-def findRanges (stx : Syntax) : HashSet String.Range :=
+def findRanges (stx : Syntax) : HashSet (String.Range × SyntaxNodeKind) :=
   let next := stx.foldArgs (fun arg r => r.merge (findRanges arg)) {}
   if let .node _ ``Lean.Parser.Tactic.tacticSeq1Indented #[.node _ _ args] := stx then
-    let tacs := args.filter keepTactic
+    let tacs := args.filter (! exclusions.contains ·.getKind)
     if 2 ≤ tacs.size then
-      next.insertMany <| (tacs.map (·.getRange?)).toList.reduceOption
+      next.insertMany <| (tacs.filterMap fun t => t.getRange?.map (·, t.getKind)).toList.reduceOption
     else next
   else next
 
 partial
-def wr : HashSet String.Range → InfoTree → HashSet (String.Range × String)
+def wr : HashSet (String.Range × SyntaxNodeKind) → InfoTree → HashSet (String.Range × SyntaxNodeKind)
   | rgs, .context _ t => wr rgs t
   | rgs, .node info args =>
     --let rest := args.foldl (fun a b => (wr rgs b).merge a) {}
     if let .ofTacticInfo i := info then
-      let rg := rgs.find? ((i.stx.getRange? true).getD default)
-      if rg.isSome && i.goalsBefore == i.goalsAfter
-        then
-        let rest := args.foldl (fun a b => (wr (rgs.erase rg.get!) b).merge a) {}
-        --dbg_trace "adding {i.stx}"
-        rest.insert (i.stx.getRange?.getD default, s!"{i.stx.getKind}\n{i.stx}")
+      let rg := rgs.find? ((i.stx.getRange? true).getD default, i.stx.getKind)
+      if rg.isSome && i.goalsBefore != i.goalsAfter then
+        let newRgs := rgs.erase rg.get!
+        let rest := args.foldl (fun a b => (wr newRgs b).merge (a.erase rg.get!)) newRgs
+        dbg_trace "erasing"
+        rest.erase (i.stx.getRange?.getD default, i.stx.getKind)
       else
-        --dbg_trace "tactic, not equal\n{i.stx}\n"
-      args.foldl (fun a b => (wr rgs b).merge a) {}
+        if rg.isSome then
+          dbg_trace "{i.stx.getKind} -- unused"
+          args.foldl (fun a b => (wr rgs b).merge a) rgs
+        else
+          args.foldl (fun a b => (wr rgs b).merge a) rgs
 
     else
-      args.foldl (fun a b => (wr rgs b).merge a) {}
-  | _rgs, _  => {}
+      args.foldl (fun a b => (wr rgs b).merge a) rgs
+  | rgs, _  => rgs
 
 /-- The "unnecessaryTactic" linter emits a warning when there are multiple active goals. -/
 register_option linter.unnecessaryTactic : Bool := {
@@ -80,11 +82,12 @@ def unnecessaryTacticLinter : Linter where run := withSetOptionIn fun stx ↦ do
   --  logInfoAt (.ofRange r) m!"found you {(r.start, r.stop - r.start)}!"
   let trees ← getInfoTrees
   let mut fd := {}
+  dbg_trace "found {trees.size} infotrees"
   for t in trees do
     fd := wr rgs t
     --dbg_trace "size: {fd.size}, rgs: {rgs.size}"
     for (e, str) in fd do
-      Linter.logLint linter.unnecessaryTactic (.ofRange e) m!"'{str}' is unnecessary."
+      Linter.logLint linter.unnecessaryTactic (.ofRange e) m!"'{str}, {(e.start, e.stop - e.start)}' is unnecessary."
 
 initialize addLinter unnecessaryTacticLinter
 
