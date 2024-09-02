@@ -121,6 +121,10 @@ noncomputable def sheafificationAdjunction :
         rw [Functor.map_comp]
         apply Adjunction.homEquiv_naturality_right }
 
+lemma sheaififcationAdjunction_homEquiv_apply {P : PresheafOfModules.{v} R₀}
+    {F : SheafOfModules.{v} R} (f : (sheafification α).obj P ⟶ F) :
+    (sheafificationAdjunction α).homEquiv P F f = sheafificationHomEquiv α f := rfl
+
 @[simp]
 lemma sheafificationAdjunction_unit_app_hom (M₀ : PresheafOfModules.{v} R₀) :
     ((sheafificationAdjunction α).unit.app M₀).hom = CategoryTheory.toSheafify J M₀.presheaf := by
