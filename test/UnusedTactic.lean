@@ -21,6 +21,10 @@ example : 0 = 0 := by
   --skip
   linear_combination (norm := skip)
   --rfl
+inspect
+example : True := by
+  simp (disch := intros; rfl)
+
 
 example : True := by
   #adaptation_note /-- hi -/
