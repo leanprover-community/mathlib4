@@ -687,7 +687,7 @@ noncomputable def allDefinable : ∀ {n} (F : OfArity ZFSet ZFSet n), Definable 
 
 /-- All functions are classically definable. -/
 noncomputable def allZFSetDefinable {n} (F : (Fin n → ZFSet.{u}) → ZFSet.{u}) : Definable n F where
-  out xs := (F (⟦xs ·⟧)).out
+  out xs := (F (mk <| xs ·)).out
 
 end Classical
 
