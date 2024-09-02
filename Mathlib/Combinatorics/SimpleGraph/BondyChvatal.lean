@@ -127,7 +127,7 @@ lemma self_le_closure : G ≤ closure G := by
 
 lemma closure_spec : ∀ {u} {v}, u ≠ v →
     G.closure.degree u + G.closure.degree v ≥ ‖V‖ → G.closure.Adj u v := by
-  have : closureStep (closure G) = closure G := fixed_eventualValue self_le_closureStep G
+  have : closureStep (closure G) = closure G := isFixedPt_eventualValue self_le_closureStep G
   rwa [closureStep_eq_iff] at this
 
 variable {G}
@@ -393,7 +393,7 @@ theorem dirac_theorem (hV : ‖V‖ ≥ 3) (hG : ∀ u, 2 * G.degree u ≥ ‖V�
       have := hG v
       omega
     _ ≤ G.closure.degree u + G.closure.degree v :=
-      add_le_add (degree_mono u (self_le_closure G)) (degree_mono v (self_le_closure G))
+      add_le_add (degree_mono (self_le_closure G)) (degree_mono (self_le_closure G))
 
 theorem ore_theorem (hV : ‖V‖ ≥ 3) (hG : ∀ {u} {v}, ¬G.Adj u v → G.degree u + G.degree v ≥ ‖V‖) :
     G.IsHamiltonian := by
@@ -408,6 +408,6 @@ theorem ore_theorem (hV : ‖V‖ ≥ 3) (hG : ∀ {u} {v}, ¬G.Adj u v → G.de
     calc
       ‖V‖ ≤ G.degree u + G.degree v := hG adj
       _ ≤ G.closure.degree u + G.closure.degree v :=
-        add_le_add (degree_mono u (self_le_closure G)) (degree_mono v (self_le_closure G))
+        add_le_add (degree_mono (self_le_closure G)) (degree_mono (self_le_closure G))
 
 end SimpleGraph
