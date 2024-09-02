@@ -91,6 +91,8 @@ lemma hasCompactSupport_mul_of_continuous_compactlySupported (f : α →ᵇ γ) 
     (g : α → γ) : HasCompactSupport ((g * f : α → γ)) := HasCompactSupport.mul_left
   (mem_compactlySupported.mp hf)
 
+/- A compactly supported continuous function is automatically bounded. This constructor gives
+an object of `α →ᵇ γ` from `g : α → γ` and these assumptions. -/
 def ofCompactSupport (g : α → γ) (hg₁ : Continuous g) (hg₂ : HasCompactSupport g) : α →ᵇ γ where
   toFun := g
   continuous_toFun := hg₁
