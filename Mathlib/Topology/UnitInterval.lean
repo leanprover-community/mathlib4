@@ -191,11 +191,12 @@ theorem le_one' {t : I} : t ≤ 1 :=
 
 protected lemma pos_iff_ne_zero {x : I} : 0 < x ↔ x ≠ 0 := bot_lt_iff_ne_bot
 
-protected lemma lt_one_iff_ne {x : I} : x < 1 ↔ x ≠ 1 := lt_top_iff_ne_top
+protected lemma lt_one_iff_ne_one {x : I} : x < 1 ↔ x ≠ 1 := lt_top_iff_ne_top
 
 lemma eq_one_or_eq_zero_of_le_mul {i j : I} (h : i ≤ j * i) : i = 0 ∨ j = 1 := by
   contrapose! h
-  rw [← unitInterval.lt_one_iff_ne, ← coe_lt_one, ← unitInterval.pos_iff_ne_zero, ← coe_pos] at h
+  rw [← unitInterval.lt_one_iff_ne_one, ← coe_lt_one, ← unitInterval.pos_iff_ne_zero,
+    ← coe_pos] at h
   rw [← Subtype.coe_lt_coe, coe_mul]
   simpa using mul_lt_mul_of_pos_right h.right h.left
 
