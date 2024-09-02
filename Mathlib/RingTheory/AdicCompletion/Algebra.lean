@@ -45,12 +45,12 @@ theorem transitionMap_map_one {m n : ℕ} (hmn : m ≤ n) : transitionMap I R hm
 @[local simp]
 theorem transitionMap_map_mul {m n : ℕ} (hmn : m ≤ n) (x y : R ⧸ (I ^ n • ⊤ : Ideal R)) :
     transitionMap I R hmn (x * y) = transitionMap I R hmn x * transitionMap I R hmn y :=
-  Quotient.inductionOn₂' x y (fun _ _ ↦ rfl)
+  Quotient.inductionOn₂ x y (fun _ _ ↦ rfl)
 
 @[local simp]
 theorem transitionMap_map_pow {m n a : ℕ} (hmn : m ≤ n) (x : R ⧸ (I ^ n • ⊤ : Ideal R)) :
     transitionMap I R hmn (x ^ a) = transitionMap I R hmn x ^ a :=
-  Quotient.inductionOn' x (fun _ ↦ rfl)
+  Quotient.inductionOn x (fun _ ↦ rfl)
 
 /-- `AdicCompletion.transitionMap` as an algebra homomorphism. -/
 def transitionMapₐ {m n : ℕ} (hmn : m ≤ n) :
@@ -197,8 +197,8 @@ theorem smul_mk {m n : ℕ} (hmn : m ≤ n) (r : AdicCauchySequence I R)
 good definitional behaviour for the module instance on adic completions -/
 instance : SMul (R ⧸ (I • ⊤ : Ideal R)) (M ⧸ (I • ⊤ : Submodule R M)) where
   smul r x :=
-    Quotient.liftOn r (· • x) fun b₁ b₂ (h : Setoid.Rel _ b₁ b₂) ↦ by
-      refine Quotient.inductionOn' x (fun x ↦ ?_)
+    Quotient.liftOn r (· • x) fun b₁ b₂ h ↦ by
+      refine Quotient.inductionOn x (fun x ↦ ?_)
       have h : b₁ - b₂ ∈ (I : Submodule R R) := by
         rwa [show I = I • ⊤ by simp, ← Submodule.quotientRel_r_def]
       rw [← sub_eq_zero, ← sub_smul, Submodule.Quotient.mk''_eq_mk,
@@ -214,7 +214,7 @@ theorem mk_smul_mk (r : R) (x : M) :
 theorem val_smul_eq_evalₐ_smul (n : ℕ) (r : AdicCompletion I R)
     (x : M ⧸ (I ^ n • ⊤ : Submodule R M)) : r.val n • x = evalₐ I n r • x := by
   apply induction_on I R r (fun r ↦ ?_)
-  exact Quotient.inductionOn' x (fun x ↦ rfl)
+  exact Quotient.inductionOn x (fun x ↦ rfl)
 
 instance : Module (R ⧸ (I • ⊤ : Ideal R)) (M ⧸ (I • ⊤ : Submodule R M)) :=
   Function.Surjective.moduleLeft (Ideal.Quotient.mk (I • ⊤ : Ideal R))
@@ -222,8 +222,8 @@ instance : Module (R ⧸ (I • ⊤ : Ideal R)) (M ⧸ (I • ⊤ : Submodule R 
 
 instance : IsScalarTower R (R ⧸ (I • ⊤ : Ideal R)) (M ⧸ (I • ⊤ : Submodule R M)) where
   smul_assoc r s x := by
-    refine Quotient.inductionOn' s (fun s ↦ ?_)
-    refine Quotient.inductionOn' x (fun x ↦ ?_)
+    refine Quotient.inductionOn s (fun s ↦ ?_)
+    refine Quotient.inductionOn x (fun x ↦ ?_)
     simp only [Submodule.Quotient.mk''_eq_mk]
     rw [← Submodule.Quotient.mk_smul, Ideal.Quotient.mk_eq_mk, mk_smul_mk, smul_assoc]
     rfl

@@ -69,7 +69,7 @@ variable {α X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [Topologic
 @[ext] -- Porting note: in Lean 4, uses projection to `r` instead of `Setoid`.
 structure DiscreteQuotient (X : Type*) [TopologicalSpace X] extends Setoid X where
   /-- For every point `x`, the set `{ y | Rel x y }` is an open set. -/
-  protected isOpen_setOf_rel : ∀ x, IsOpen (setOf (toSetoid.Rel x))
+  protected isOpen_setOf_rel : ∀ x, IsOpen (setOf (toSetoid x))
 
 namespace DiscreteQuotient
 
@@ -81,13 +81,13 @@ lemma toSetoid_injective : Function.Injective (@toSetoid X _)
 /-- Construct a discrete quotient from a clopen set. -/
 def ofIsClopen {A : Set X} (h : IsClopen A) : DiscreteQuotient X where
   toSetoid := ⟨fun x y => x ∈ A ↔ y ∈ A, fun _ => Iff.rfl, Iff.symm, Iff.trans⟩
-  isOpen_setOf_rel x := by by_cases hx : x ∈ A <;> simp [Setoid.Rel, hx, h.1, h.2, ← compl_setOf]
+  isOpen_setOf_rel x := by by_cases hx : x ∈ A <;> simp [hx, h.1, h.2, ← compl_setOf]
 
-theorem refl : ∀ x, S.Rel x x := S.refl'
+theorem refl : ∀ x, S.toSetoid x x := S.refl'
 
-theorem symm (x y : X) : S.Rel x y → S.Rel y x := S.symm'
+theorem symm (x y : X) : S.toSetoid x y → S.toSetoid y x := S.symm'
 
-theorem trans (x y z : X) : S.Rel x y → S.Rel y z → S.Rel x z := S.trans'
+theorem trans (x y z : X) : S.toSetoid x y → S.toSetoid y z → S.toSetoid x z := S.trans'
 
 /-- The setoid whose quotient yields the discrete quotient. -/
 add_decl_doc toSetoid
@@ -99,13 +99,13 @@ instance : TopologicalSpace S :=
   inferInstanceAs (TopologicalSpace (Quotient S.toSetoid))
 
 /-- The projection from `X` to the given discrete quotient. -/
-def proj : X → S := Quotient.mk''
+def proj : X → S := Quotient.mk _
 
-theorem fiber_eq (x : X) : S.proj ⁻¹' {S.proj x} = setOf (S.Rel x) :=
-  Set.ext fun _ => eq_comm.trans Quotient.eq''
+theorem fiber_eq (x : X) : S.proj ⁻¹' {S.proj x} = setOf (S.toSetoid x) :=
+  Set.ext fun _ => eq_comm.trans Quotient.eq
 
 theorem proj_surjective : Function.Surjective S.proj :=
-  Quotient.surjective_Quotient_mk''
+  Quotient.surjective_mk
 
 theorem proj_quotientMap : QuotientMap S.proj :=
   quotientMap_quot_mk
@@ -130,7 +130,7 @@ theorem isOpen_preimage (A : Set S) : IsOpen (S.proj ⁻¹' A) :=
 theorem isClosed_preimage (A : Set S) : IsClosed (S.proj ⁻¹' A) :=
   (S.isClopen_preimage A).1
 
-theorem isClopen_setOf_rel (x : X) : IsClopen (setOf (S.Rel x)) := by
+theorem isClopen_setOf_rel (x : X) : IsClopen (setOf (S.toSetoid x)) := by
   rw [← fiber_eq]
   apply isClopen_preimage
 
@@ -182,7 +182,7 @@ variable {A B C : DiscreteQuotient X}
 
 /-- The map induced by a refinement of a discrete quotient. -/
 def ofLE (h : A ≤ B) : A → B :=
-  Quotient.map' (fun x => x) h
+  Quotient.map (fun x => x) h
 
 @[simp]
 theorem ofLE_refl : ofLE (le_refl A) = id := by
@@ -230,7 +230,7 @@ instance [LocallyConnectedSpace X] : OrderBot (DiscreteQuotient X) where
 @[simp]
 theorem proj_bot_eq [LocallyConnectedSpace X] {x y : X} :
     proj ⊥ x = proj ⊥ y ↔ connectedComponent x = connectedComponent y :=
-  Quotient.eq''
+  Quotient.eq
 
 theorem proj_bot_inj [DiscreteTopology X] {x y : X} : proj ⊥ x = proj ⊥ y ↔ x = y := by simp
 
@@ -264,7 +264,7 @@ theorem LEComap.mono (h : LEComap f A B) (hA : A' ≤ A) (hB : B ≤ B') : LECom
   hA.trans <| h.trans <| comap_mono _ hB
 
 /-- Map a discrete quotient along a continuous map. -/
-def map (f : C(X, Y)) (cond : LEComap f A B) : A → B := Quotient.map' f cond
+def map (f : C(X, Y)) (cond : LEComap f A B) : A → B := Quotient.map f cond
 
 theorem map_continuous (cond : LEComap f A B) : Continuous (map f cond) :=
   continuous_of_discreteTopology
@@ -359,7 +359,7 @@ lemma comp_finsetClopens [CompactSpace X] :
     (Set.image (fun (t : Clopens X) ↦ t.carrier) ∘ Finset.toSet) ∘
       finsetClopens X = fun ⟨f, _⟩ ↦ f.classes := by
   ext d
-  simp only [Setoid.classes, Setoid.Rel, Set.mem_setOf_eq, Function.comp_apply,
+  simp only [Setoid.classes, Set.mem_setOf_eq, Function.comp_apply,
     finsetClopens, Set.coe_toFinset, Set.mem_image, Set.mem_range,
     exists_exists_eq_and]
   constructor
@@ -403,7 +403,7 @@ def discreteQuotient : DiscreteQuotient X where
 /-- The (locally constant) function from the discrete quotient associated to a locally constant
 function. -/
 def lift : LocallyConstant f.discreteQuotient α :=
-  ⟨fun a => Quotient.liftOn' a f fun _ _ => id, fun _ => isOpen_discrete _⟩
+  ⟨fun a => Quotient.liftOn a f fun _ _ => id, fun _ => isOpen_discrete _⟩
 
 @[simp]
 theorem lift_comp_proj : f.lift ∘ f.discreteQuotient.proj = f := rfl

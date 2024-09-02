@@ -109,7 +109,7 @@ protected theorem ind {β : X[S⁻¹] → Prop}
 @[to_additive]
 theorem oreDiv_eq_iff {r₁ r₂ : X} {s₁ s₂ : S} :
     r₁ /ₒ s₁ = r₂ /ₒ s₂ ↔ ∃ (u : S) (v : R), u • r₂ = v • r₁ ∧ u * s₂ = v * s₁ :=
-  Quotient.eq''
+  Quotient.eq
 
 /-- A fraction `r /ₒ s` is equal to its expansion by an arbitrary factor `t` if `t * s ∈ S`. -/
 @[to_additive "A difference `r -ₒ s` is equal to its expansion by an

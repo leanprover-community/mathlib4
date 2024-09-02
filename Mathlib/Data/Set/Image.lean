@@ -502,7 +502,7 @@ theorem image_subset_image_iff {f : α → β} (hf : Injective f) : f '' s ⊆ f
   exact preimage_mono h
 
 theorem prod_quotient_preimage_eq_image [s : Setoid α] (g : Quotient s → β) {h : α → β}
-    (Hh : h = g ∘ Quotient.mk'') (r : Set (β × β)) :
+    (Hh : h = g ∘ Quotient.mk _) (r : Set (β × β)) :
     { x : Quotient s × Quotient s | (g x.1, g x.2) ∈ r } =
       (fun a : α × α => (⟦a.1⟧, ⟦a.2⟧)) '' ((fun a : α × α => (h a.1, h a.2)) ⁻¹' r) :=
   Hh.symm ▸
@@ -810,20 +810,19 @@ theorem image_preimage_inl_union_image_preimage_inr (s : Set (α ⊕ β)) :
 
 @[simp]
 theorem range_quot_mk (r : α → α → Prop) : range (Quot.mk r) = univ :=
-  (surjective_quot_mk r).range_eq
+  Quot.surjective_mk.range_eq
 
 @[simp]
 theorem range_quot_lift {r : ι → ι → Prop} (hf : ∀ x y, r x y → f x = f y) :
     range (Quot.lift f hf) = range f :=
-  ext fun _ => (surjective_quot_mk _).exists
+  ext fun _ => Quot.surjective_mk.exists
 
--- Porting note: the `Setoid α` instance is not being filled in
 @[simp]
-theorem range_quotient_mk [sa : Setoid α] : (range (α := Quotient sa) fun x : α => ⟦x⟧) = univ :=
+theorem range_quotient_mk {s : Setoid α} : range (Quotient.mk s) = univ :=
   range_quot_mk _
 
 @[simp]
-theorem range_quotient_lift [s : Setoid ι] (hf) :
+theorem range_quotient_lift {s : Setoid ι} (hf) :
     range (Quotient.lift f hf : Quotient s → α) = range f :=
   range_quot_lift _
 
@@ -831,13 +830,13 @@ theorem range_quotient_lift [s : Setoid ι] (hf) :
 theorem range_quotient_mk' {s : Setoid α} : range (Quotient.mk' : α → Quotient s) = univ :=
   range_quot_mk _
 
-@[simp] lemma Quotient.range_mk'' {sa : Setoid α} : range (Quotient.mk'' (s₁ := sa)) = univ :=
-  range_quotient_mk
-
 @[simp]
-theorem range_quotient_lift_on' {s : Setoid ι} (hf) :
-    (range fun x : Quotient s => Quotient.liftOn' x f hf) = range f :=
+theorem range_quotient_liftOn {s : Setoid ι} (hf) :
+    (range fun x : Quotient s => Quotient.liftOn x f hf) = range f :=
   range_quot_lift _
+
+@[deprecated (since := "2024-08-29")] alias Quotient.range_mk'' := range_quotient_mk
+@[deprecated (since := "2024-08-29")] alias range_quotient_lift_on' := range_quotient_liftOn
 
 instance canLift (c) (p) [CanLift α β c p] :
     CanLift (Set α) (Set β) (c '' ·) fun s => ∀ x ∈ s, p x where

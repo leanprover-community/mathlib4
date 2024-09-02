@@ -73,7 +73,7 @@ theorem of_surjective {H : Type*} [Group H] (ϕ : G →* H) (hϕ : Function.Surj
   rw [← hg, ← ϕ.map_pow, hk, ϕ.map_one]
 
 theorem to_quotient (H : Subgroup G) [H.Normal] : IsPGroup p (G ⧸ H) :=
-  hG.of_surjective (QuotientGroup.mk' H) Quotient.surjective_Quotient_mk''
+  hG.of_surjective (QuotientGroup.mk' H) Quotient.surjective_mk
 
 theorem of_equiv {H : Type*} [Group H] (ϕ : G ≃* H) : IsPGroup p H :=
   hG.of_surjective ϕ.toMonoidHom ϕ.surjective
@@ -157,29 +157,29 @@ theorem card_modEq_card_fixedPoints : Nat.card α ≡ Nat.card (fixedPoints G α
   rw [Nat.card_eq_fintype_card, Nat.card_eq_fintype_card]
   classical
     calc
-      card α = card (Σy : Quotient (orbitRel G α), { x // Quotient.mk'' x = y }) :=
-        card_congr (Equiv.sigmaFiberEquiv (@Quotient.mk'' _ (orbitRel G α))).symm
-      _ = ∑ a : Quotient (orbitRel G α), card { x // Quotient.mk'' x = a } := card_sigma
+      card α = card (Σy : Quotient (orbitRel G α), { x // ⟦x⟧ = y }) :=
+        card_congr (Equiv.sigmaFiberEquiv (Quotient.mk (orbitRel G α))).symm
+      _ = ∑ a : Quotient (orbitRel G α), card { x // ⟦x⟧ = a } := card_sigma
       _ ≡ ∑ _a : fixedPoints G α, 1 [MOD p] := ?_
       _ = _ := by simp
     rw [← ZMod.eq_iff_modEq_nat p, Nat.cast_sum, Nat.cast_sum]
     have key :
       ∀ x,
-        card { y // (Quotient.mk'' y : Quotient (orbitRel G α)) = Quotient.mk'' x } =
+        card { y // (Quotient.mk (orbitRel G α) y) = ⟦x⟧ } =
           card (orbit G x) :=
-      fun x => by simp only [Quotient.eq'']; congr
+      fun x => by simp only [Quotient.eq]; congr
     refine
       Eq.symm
-        (Finset.sum_bij_ne_zero (fun a _ _ => Quotient.mk'' a.1) (fun _ _ _ => Finset.mem_univ _)
+        (Finset.sum_bij_ne_zero (fun a _ _ => ⟦a.1⟧) (fun _ _ _ => Finset.mem_univ _)
           (fun a₁ _ _ a₂ _ _ h =>
             Subtype.eq (mem_fixedPoints'.mp a₂.2 a₁.1 (Quotient.exact' h)))
-          (fun b => Quotient.inductionOn' b fun b _ hb => ?_) fun a ha _ => by
+          (fun b => Quotient.inductionOn b fun b _ hb => ?_) fun a ha _ => by
           rw [key, mem_fixedPoints_iff_card_orbit_eq_one.mp a.2])
     obtain ⟨k, hk⟩ := hG.card_orbit b
     rw [Nat.card_eq_fintype_card] at hk
     have : k = 0 := by
       contrapose! hb
-      simp [-Quotient.eq'', key, hk, hb]
+      simp [-Quotient.eq, key, hk, hb]
     exact
       ⟨⟨b, mem_fixedPoints_iff_card_orbit_eq_one.2 <| by rw [hk, this, pow_zero]⟩,
         Finset.mem_univ _, ne_of_eq_of_ne Nat.cast_one one_ne_zero, rfl⟩

@@ -55,11 +55,11 @@ variable (K : Type v) [Field K] [Algebra A K]
 /-- The value group of the valuation ring `A`. Note: this is actually a group with zero. -/
 def ValueGroup : Type v := Quotient (MulAction.orbitRel Aˣ K)
 
-instance : Inhabited (ValueGroup A K) := ⟨Quotient.mk'' 0⟩
+instance : Inhabited (ValueGroup A K) := ⟨⟦0⟧⟩
 
 instance : LE (ValueGroup A K) :=
   LE.mk fun x y =>
-    Quotient.liftOn₂' x y (fun a b => ∃ c : A, c • b = a)
+    Quotient.liftOn₂ x y (fun a b => ∃ c : A, c • b = a)
       (by
         rintro _ _ a b ⟨c, rfl⟩ ⟨d, rfl⟩; ext
         constructor
@@ -71,13 +71,13 @@ instance : LE (ValueGroup A K) :=
           simp_rw [Units.smul_def, ← he, mul_smul]
           rw [← mul_smul _ _ b, Units.inv_mul, one_smul])
 
-instance : Zero (ValueGroup A K) := ⟨Quotient.mk'' 0⟩
+instance : Zero (ValueGroup A K) := ⟨⟦0⟧⟩
 
-instance : One (ValueGroup A K) := ⟨Quotient.mk'' 1⟩
+instance : One (ValueGroup A K) := ⟨⟦1⟧⟩
 
 instance : Mul (ValueGroup A K) :=
   Mul.mk fun x y =>
-    Quotient.liftOn₂' x y (fun a b => Quotient.mk'' <| a * b)
+    Quotient.liftOn₂ x y (fun a b => ⟦a * b⟧)
       (by
         rintro _ _ a b ⟨c, rfl⟩ ⟨d, rfl⟩
         apply Quotient.sound'
@@ -88,7 +88,7 @@ instance : Mul (ValueGroup A K) :=
 
 instance : Inv (ValueGroup A K) :=
   Inv.mk fun x =>
-    Quotient.liftOn' x (fun a => Quotient.mk'' a⁻¹)
+    Quotient.liftOn x (fun a => ⟦a⁻¹⟧)
       (by
         rintro _ a ⟨b, rfl⟩
         apply Quotient.sound'
@@ -141,22 +141,22 @@ noncomputable instance linearOrder : LinearOrder (ValueGroup A K) where
 noncomputable instance linearOrderedCommGroupWithZero :
     LinearOrderedCommGroupWithZero (ValueGroup A K) :=
   { linearOrder .. with
-    mul_assoc := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩; apply Quotient.sound'; rw [mul_assoc]; apply Setoid.refl'
-    one_mul := by rintro ⟨a⟩; apply Quotient.sound'; rw [one_mul]; apply Setoid.refl'
-    mul_one := by rintro ⟨a⟩; apply Quotient.sound'; rw [mul_one]; apply Setoid.refl'
-    mul_comm := by rintro ⟨a⟩ ⟨b⟩; apply Quotient.sound'; rw [mul_comm]; apply Setoid.refl'
+    mul_assoc := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩; apply Quotient.sound'; rw [mul_assoc]
+    one_mul := by rintro ⟨a⟩; apply Quotient.sound'; rw [one_mul]
+    mul_one := by rintro ⟨a⟩; apply Quotient.sound'; rw [mul_one]
+    mul_comm := by rintro ⟨a⟩ ⟨b⟩; apply Quotient.sound'; rw [mul_comm]
     mul_le_mul_left := by
       rintro ⟨a⟩ ⟨b⟩ ⟨c, rfl⟩ ⟨d⟩
       use c; simp only [Algebra.smul_def]; ring
-    zero_mul := by rintro ⟨a⟩; apply Quotient.sound'; rw [zero_mul]; apply Setoid.refl'
-    mul_zero := by rintro ⟨a⟩; apply Quotient.sound'; rw [mul_zero]; apply Setoid.refl'
+    zero_mul := by rintro ⟨a⟩; apply Quotient.sound'; rw [zero_mul]
+    mul_zero := by rintro ⟨a⟩; apply Quotient.sound'; rw [mul_zero]
     zero_le_one := ⟨0, by rw [zero_smul]⟩
     exists_pair_ne := by
       use 0, 1
       intro c; obtain ⟨d, hd⟩ := Quotient.exact' c
       apply_fun fun t => d⁻¹ • t at hd
       simp only [inv_smul_smul, smul_zero, one_ne_zero] at hd
-    inv_zero := by apply Quotient.sound'; rw [inv_zero]; apply Setoid.refl'
+    inv_zero := by apply Quotient.sound'; rw [inv_zero]
     mul_inv_cancel := by
       rintro ⟨a⟩ ha
       apply Quotient.sound'
@@ -170,7 +170,7 @@ noncomputable instance linearOrderedCommGroupWithZero :
 
 /-- Any valuation ring induces a valuation on its fraction field. -/
 def valuation : Valuation K (ValueGroup A K) where
-  toFun := Quotient.mk''
+  toFun := Quotient.mk _
   map_zero' := rfl
   map_one' := rfl
   map_mul' _ _ := rfl

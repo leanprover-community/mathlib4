@@ -106,7 +106,7 @@ spaces in compact Hausdorff spaces.
 -/
 def Profinite.toCompHausEquivalence (X : CompHaus.{u}) (Y : Profinite.{u}) :
     (CompHaus.toProfiniteObj X ⟶ Y) ≃ (X ⟶ profiniteToCompHaus.obj Y) where
-  toFun f := f.comp ⟨Quotient.mk'', continuous_quotient_mk'⟩
+  toFun f := f.comp ⟨Quotient.mk _, continuous_quotient_mk'⟩
   invFun g :=
     { toFun := Continuous.connectedComponentsLift g.2
       continuous_toFun := Continuous.connectedComponentsLift_continuous g.2 }

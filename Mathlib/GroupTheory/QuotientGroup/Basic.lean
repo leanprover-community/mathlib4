@@ -132,7 +132,7 @@ theorem eq_iff_div_mem {N : Subgroup G} [nN : N.Normal] {x y : G} :
 @[to_additive]
 instance Quotient.commGroup {G : Type*} [CommGroup G] (N : Subgroup G) : CommGroup (G ⧸ N) :=
   { toGroup := have := N.normal_of_comm; QuotientGroup.Quotient.group N
-    mul_comm := fun a b => Quotient.inductionOn₂' a b fun a b => congr_arg mk (mul_comm a b) }
+    mul_comm := fun a b => Quotient.inductionOn₂ a b fun a b => congr_arg mk (mul_comm a b) }
 
 local notation " Q " => G ⧸ N
 
@@ -332,7 +332,7 @@ theorem kerLift_mk' (g : G) : (kerLift φ) (mk g) = φ g :=
 
 @[to_additive]
 theorem kerLift_injective : Injective (kerLift φ) := fun a b =>
-  Quotient.inductionOn₂' a b fun a b (h : φ a = φ b) =>
+  Quotient.inductionOn₂ a b fun a b (h : φ a = φ b) =>
     Quotient.sound' <| by rw [leftRel_apply, mem_ker, φ.map_mul, ← h, φ.map_inv, inv_mul_cancel]
 
 -- Note that `ker φ` isn't definitionally `ker (φ.rangeRestrict)`
@@ -344,7 +344,7 @@ def rangeKerLift : G ⧸ ker φ →* φ.range :=
 
 @[to_additive]
 theorem rangeKerLift_injective : Injective (rangeKerLift φ) := fun a b =>
-  Quotient.inductionOn₂' a b fun a b (h : φ.rangeRestrict a = φ.rangeRestrict b) =>
+  Quotient.inductionOn₂ a b fun a b (h : φ.rangeRestrict a = φ.rangeRestrict b) =>
     Quotient.sound' <| by
       rw [leftRel_apply, ← ker_rangeRestrict, mem_ker, φ.rangeRestrict.map_mul, ← h,
         φ.rangeRestrict.map_inv, inv_mul_cancel]
@@ -393,7 +393,7 @@ isomorphic. -/
 isomorphic."]
 def quotientMulEquivOfEq {M N : Subgroup G} [M.Normal] [N.Normal] (h : M = N) : G ⧸ M ≃* G ⧸ N :=
   { Subgroup.quotientEquivOfEq h with
-    map_mul' := fun q r => Quotient.inductionOn₂' q r fun _g _h => rfl }
+    map_mul' := fun q r => Quotient.inductionOn₂ q r fun _g _h => rfl }
 
 @[to_additive (attr := simp)]
 theorem quotientMulEquivOfEq_mk {M N : Subgroup G} [M.Normal] [N.Normal] (h : M = N) (x : G) :
@@ -475,7 +475,7 @@ theorem equivQuotientZPowOfEquiv_refl :
     MulEquiv.refl (A ⧸ (zpowGroupHom n : A →* A).range) =
       equivQuotientZPowOfEquiv (MulEquiv.refl A) n := by
   ext x
-  rw [← Quotient.out_eq' x]
+  rw [← Quotient.out_eq x]
   rfl
 
 @[to_additive (attr := simp)]
@@ -488,7 +488,7 @@ theorem equivQuotientZPowOfEquiv_trans :
     (equivQuotientZPowOfEquiv e n).trans (equivQuotientZPowOfEquiv d n) =
       equivQuotientZPowOfEquiv (e.trans d) n := by
   ext x
-  rw [← Quotient.out_eq' x]
+  rw [← Quotient.out_eq x]
   rfl
 
 end ZPow
@@ -509,7 +509,7 @@ noncomputable def quotientInfEquivProdNormalQuotient (H N : Subgroup G) [N.Norma
       _ ⧸ N.subgroupOf (H ⊔ N) :=
     (mk' <| N.subgroupOf (H ⊔ N)).comp (inclusion le_sup_left)
   have φ_surjective : Surjective φ := fun x =>
-    x.inductionOn' <| by
+    x.inductionOn <| by
       rintro ⟨y, hy : y ∈ (H ⊔ N)⟩
       rw [← SetLike.mem_coe] at hy
       rw [mul_normal H N] at hy

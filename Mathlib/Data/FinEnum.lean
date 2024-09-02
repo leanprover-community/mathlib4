@@ -100,7 +100,7 @@ instance fin {n} : FinEnum (Fin n) :=
 
 instance Quotient.enum [FinEnum α] (s : Setoid α) [DecidableRel ((· ≈ ·) : α → α → Prop)] :
     FinEnum (Quotient s) :=
-  FinEnum.ofSurjective Quotient.mk'' fun x => Quotient.inductionOn x fun x => ⟨x, rfl⟩
+  FinEnum.ofSurjective (Quotient.mk _) fun x => Quotient.inductionOn x fun x => ⟨x, rfl⟩
 
 /-- enumerate all finite sets of a given type -/
 def Finset.enum [DecidableEq α] : List α → List (Finset α)

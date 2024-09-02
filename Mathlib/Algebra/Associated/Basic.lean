@@ -964,7 +964,7 @@ instance [Nontrivial α] : Nontrivial (Associates α) :=
   ⟨⟨1, 0, mk_ne_zero.2 one_ne_zero⟩⟩
 
 theorem exists_non_zero_rep {a : Associates α} : a ≠ 0 → ∃ a0 : α, a0 ≠ 0 ∧ Associates.mk a0 = a :=
-  Quotient.inductionOn a fun b nz => ⟨b, mt (congr_arg Quotient.mk'') nz, rfl⟩
+  Quotient.inductionOn a fun b nz => ⟨b, mt (congr_arg (Quotient.mk _)) nz, rfl⟩
 
 end MonoidWithZero
 

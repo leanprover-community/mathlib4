@@ -480,14 +480,14 @@ def ConnectedComponents (α : Type u) [TopologicalSpace α] :=
 namespace ConnectedComponents
 
 /-- Coercion from a topological space to the set of connected components of this space. -/
-def mk : α → ConnectedComponents α := Quotient.mk''
+def mk : α → ConnectedComponents α := Quotient.mk _
 
 instance : CoeTC α (ConnectedComponents α) := ⟨mk⟩
 
 @[simp]
 theorem coe_eq_coe {x y : α} :
     (x : ConnectedComponents α) = y ↔ connectedComponent x = connectedComponent y :=
-  Quotient.eq''
+  Quotient.eq
 
 theorem coe_ne_coe {x y : α} :
     (x : ConnectedComponents α) ≠ y ↔ connectedComponent x ≠ connectedComponent y :=
@@ -503,7 +503,7 @@ instance : TopologicalSpace (ConnectedComponents α) :=
   inferInstanceAs (TopologicalSpace (Quotient _))
 
 theorem surjective_coe : Surjective (mk : α → ConnectedComponents α) :=
-  surjective_quot_mk _
+  Quot.surjective_mk
 
 theorem quotientMap_coe : QuotientMap (mk : α → ConnectedComponents α) :=
   quotientMap_quot_mk

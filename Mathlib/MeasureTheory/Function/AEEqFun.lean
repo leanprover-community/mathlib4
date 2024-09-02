@@ -114,7 +114,7 @@ variable [TopologicalSpace β]
 /-- Construct the equivalence class `[f]` of an almost everywhere measurable function `f`, based
     on the equivalence relation of being almost everywhere equal. -/
 def mk {β : Type*} [TopologicalSpace β] (f : α → β) (hf : AEStronglyMeasurable f μ) : α →ₘ[μ] β :=
-  Quotient.mk'' ⟨f, hf⟩
+  ⟦⟨f, hf⟩⟧
 
 open scoped Classical in
 /-- Coercion from a space of equivalence classes of almost everywhere strongly measurable
@@ -124,7 +124,7 @@ then we choose that one. -/
 def cast (f : α →ₘ[μ] β) : α → β :=
   if h : ∃ (b : β), f = mk (const α b) aestronglyMeasurable_const then
     const α <| Classical.choose h else
-    AEStronglyMeasurable.mk _ (Quotient.out' f : { f : α → β // AEStronglyMeasurable f μ }).2
+    AEStronglyMeasurable.mk _ (Quotient.out f : { f : α → β // AEStronglyMeasurable f μ }).2
 
 /-- A measurable representative of an `AEEqFun` [f] -/
 instance instCoeFun : CoeFun (α →ₘ[μ] β) fun _ => α → β := ⟨cast⟩
@@ -153,14 +153,14 @@ theorem quot_mk_eq_mk (f : α → β) (hf) :
 
 @[simp]
 theorem mk_eq_mk {f g : α → β} {hf hg} : (mk f hf : α →ₘ[μ] β) = mk g hg ↔ f =ᵐ[μ] g :=
-  Quotient.eq''
+  Quotient.eq
 
 @[simp]
 theorem mk_coeFn (f : α →ₘ[μ] β) : mk f f.aestronglyMeasurable = f := by
   conv_lhs => simp only [cast]
   split_ifs with h
   · exact Classical.choose_spec h |>.symm
-  conv_rhs => rw [← Quotient.out_eq' f]
+  conv_rhs => rw [← Quotient.out_eq f]
   rw [← mk, mk_eq_mk]
   exact (AEStronglyMeasurable.ae_eq_mk _).symm
 
@@ -173,7 +173,7 @@ theorem coeFn_mk (f : α → β) (hf) : (mk f hf : α →ₘ[μ] β) =ᵐ[μ] f 
 
 @[elab_as_elim]
 theorem induction_on (f : α →ₘ[μ] β) {p : (α →ₘ[μ] β) → Prop} (H : ∀ f hf, p (mk f hf)) : p f :=
-  Quotient.inductionOn' f <| Subtype.forall.2 H
+  Quotient.inductionOn f <| Subtype.forall.2 H
 
 @[elab_as_elim]
 theorem induction_on₂ {α' β' : Type*} [MeasurableSpace α'] [TopologicalSpace β'] {μ' : Measure α'}
@@ -206,7 +206,7 @@ open MeasureTheory.Measure (QuasiMeasurePreserving)
 See also `AEEqFun.compMeasurePreserving`. -/
 def compQuasiMeasurePreserving (g : β →ₘ[ν] γ) (f : α → β) (hf : QuasiMeasurePreserving f μ ν) :
     α →ₘ[μ] γ :=
-  Quotient.liftOn' g (fun g ↦ mk (g ∘ f) <| g.2.comp_quasiMeasurePreserving hf) fun _ _ h ↦
+  Quotient.liftOn g (fun g ↦ mk (g ∘ f) <| g.2.comp_quasiMeasurePreserving hf) fun _ _ h ↦
     mk_eq_mk.2 <| h.comp_tendsto hf.tendsto_ae
 
 @[simp]
@@ -262,7 +262,7 @@ variable [TopologicalSpace β] [TopologicalSpace γ]
     return the equivalence class of `g ∘ f`, i.e., the almost everywhere equal function
     `[g ∘ f] : α →ₘ γ`. -/
 def comp (g : β → γ) (hg : Continuous g) (f : α →ₘ[μ] β) : α →ₘ[μ] γ :=
-  Quotient.liftOn' f (fun f => mk (g ∘ (f : α → β)) (hg.comp_aestronglyMeasurable f.2))
+  Quotient.liftOn f (fun f => mk (g ∘ (f : α → β)) (hg.comp_aestronglyMeasurable f.2))
     fun _ _ H => mk_eq_mk.2 <| H.fun_comp g
 
 @[simp]
@@ -294,7 +294,7 @@ variable [MeasurableSpace β] [PseudoMetrizableSpace β] [BorelSpace β] [Measur
     return the equivalence class of `g ∘ f`, i.e., the almost everywhere equal function
     `[g ∘ f] : α →ₘ γ`. This requires that `γ` has a second countable topology. -/
 def compMeasurable (g : β → γ) (hg : Measurable g) (f : α →ₘ[μ] β) : α →ₘ[μ] γ :=
-  Quotient.liftOn' f
+  Quotient.liftOn f
     (fun f' => mk (g ∘ (f' : α → β)) (hg.comp_aemeasurable f'.2.aemeasurable).aestronglyMeasurable)
     fun _ _ H => mk_eq_mk.2 <| H.fun_comp g
 
@@ -319,7 +319,7 @@ end CompMeasurable
 
 /-- The class of `x ↦ (f x, g x)`. -/
 def pair (f : α →ₘ[μ] β) (g : α →ₘ[μ] γ) : α →ₘ[μ] β × γ :=
-  Quotient.liftOn₂' f g (fun f g => mk (fun x => (f.1 x, g.1 x)) (f.2.prod_mk g.2))
+  Quotient.liftOn₂ f g (fun f g => mk (fun x => (f.1 x, g.1 x)) (f.2.prod_mk g.2))
     fun _f _g _f' _g' Hf Hg => mk_eq_mk.2 <| Hf.prod_mk Hg
 
 @[simp]
@@ -408,7 +408,7 @@ end
 /-- Interpret `f : α →ₘ[μ] β` as a germ at `ae μ` forgetting that `f` is almost everywhere
     strongly measurable. -/
 def toGerm (f : α →ₘ[μ] β) : Germ (ae μ) β :=
-  Quotient.liftOn' f (fun f => ((f : α → β) : Germ (ae μ) β)) fun _ _ H => Germ.coe_eq.2 H
+  Quotient.liftOn f (fun f => ((f : α → β) : Germ (ae μ) β)) fun _ _ H => Germ.coe_eq.2 H
 
 @[simp]
 theorem mk_toGerm (f : α → β) (hf) : (mk f hf : α →ₘ[μ] β).toGerm = f :=
@@ -810,7 +810,7 @@ open ENNReal
 
 /-- For `f : α → ℝ≥0∞`, define `∫ [f]` to be `∫ f` -/
 def lintegral (f : α →ₘ[μ] ℝ≥0∞) : ℝ≥0∞ :=
-  Quotient.liftOn' f (fun f => ∫⁻ a, (f : α → ℝ≥0∞) a ∂μ) fun _ _ => lintegral_congr_ae
+  Quotient.liftOn f (fun f => ∫⁻ a, (f : α → ℝ≥0∞) a ∂μ) fun _ _ => lintegral_congr_ae
 
 @[simp]
 theorem lintegral_mk (f : α → ℝ≥0∞) (hf) : (mk f hf : α →ₘ[μ] ℝ≥0∞).lintegral = ∫⁻ a, f a ∂μ :=

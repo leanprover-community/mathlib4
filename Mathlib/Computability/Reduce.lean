@@ -304,19 +304,19 @@ namespace ManyOneDegree
 
 /-- The many-one degree of a set on a primcodable type. -/
 def of (p : α → Prop) : ManyOneDegree :=
-  Quotient.mk'' (toNat p)
+  ⟦toNat p⟧
 
 @[elab_as_elim]
 protected theorem ind_on {C : ManyOneDegree → Prop} (d : ManyOneDegree)
     (h : ∀ p : Set ℕ, C (of p)) : C d :=
-  Quotient.inductionOn' d h
+  Quotient.inductionOn d h
 
 /-- Lifts a function on sets of natural numbers to many-one degrees.
 -/
 -- @[elab_as_elim] -- Porting note: unexpected eliminator resulting type
 protected abbrev liftOn {φ} (d : ManyOneDegree) (f : Set ℕ → φ)
     (h : ∀ p q, ManyOneEquiv p q → f p = f q) : φ :=
-  Quotient.liftOn' d f h
+  Quotient.liftOn d f h
 
 @[simp]
 protected theorem liftOn_eq {φ} (p : Set ℕ) (f : Set ℕ → φ)
@@ -344,7 +344,7 @@ protected theorem liftOn₂_eq {φ} (p q : Set ℕ) (f : Set ℕ → Set ℕ →
 
 @[simp]
 theorem of_eq_of {p : α → Prop} {q : β → Prop} : of p = of q ↔ ManyOneEquiv p q := by
-  rw [of, of, Quotient.eq'']
+  rw [of, of, Quotient.eq]
   unfold Setoid.r
   simp
 

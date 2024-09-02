@@ -53,11 +53,11 @@ variable {V}
 
 /-- Construct an element of the projectivization from a nonzero vector. -/
 def mk (v : V) (hv : v ≠ 0) : ℙ K V :=
-  Quotient.mk'' ⟨v, hv⟩
+  ⟦⟨v, hv⟩⟧
 
 /-- A variant of `Projectivization.mk` in terms of a subtype. `mk` is preferred. -/
 def mk' (v : { v : V // v ≠ 0 }) : ℙ K V :=
-  Quotient.mk'' v
+  ⟦v⟧
 
 @[simp]
 theorem mk'_eq_mk (v : { v : V // v ≠ 0 }) : mk' K v = mk K ↑v v.2 := rfl
@@ -70,19 +70,19 @@ variable {K}
 
 /-- Choose a representative of `v : Projectivization K V` in `V`. -/
 protected noncomputable def rep (v : ℙ K V) : V :=
-  v.out'
+  v.out
 
 theorem rep_nonzero (v : ℙ K V) : v.rep ≠ 0 :=
-  v.out'.2
+  v.out.2
 
 @[simp]
-theorem mk_rep (v : ℙ K V) : mk K v.rep v.rep_nonzero = v := Quotient.out_eq' _
+theorem mk_rep (v : ℙ K V) : mk K v.rep v.rep_nonzero = v := Quotient.out_eq _
 
 open FiniteDimensional
 
 /-- Consider an element of the projectivization as a submodule of `V`. -/
 protected def submodule (v : ℙ K V) : Submodule K V :=
-  (Quotient.liftOn' v fun v => K ∙ (v : V)) <| by
+  (Quotient.liftOn v fun v => K ∙ (v : V)) <| by
     rintro ⟨a, ha⟩ ⟨b, hb⟩ ⟨x, rfl : x • b = a⟩
     exact Submodule.span_singleton_group_smul_eq _ x _
 
@@ -90,7 +90,7 @@ variable (K)
 
 theorem mk_eq_mk_iff (v w : V) (hv : v ≠ 0) (hw : w ≠ 0) :
     mk K v hv = mk K w hw ↔ ∃ a : Kˣ, a • w = v :=
-  Quotient.eq''
+  Quotient.eq
 
 /-- Two nonzero vectors go to the same point in projective space if and only if one is
 a scalar multiple of the other. -/
@@ -112,7 +112,7 @@ variable {K}
 /-- An induction principle for `Projectivization`. Use as `induction v`. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 theorem ind {P : ℙ K V → Prop} (h : ∀ (v : V) (h : v ≠ 0), P (mk K v h)) : ∀ p, P p :=
-  Quotient.ind' <| Subtype.rec <| h
+  Quotient.ind <| Subtype.rec <| h
 
 @[simp]
 theorem submodule_mk (v : V) (hv : v ≠ 0) : (mk K v hv).submodule = K ∙ v :=
@@ -172,7 +172,7 @@ variable {L W : Type*} [DivisionRing L] [AddCommGroup W] [Module L W]
 
 /-- An injective semilinear map of vector spaces induces a map on projective spaces. -/
 def map {σ : K →+* L} (f : V →ₛₗ[σ] W) (hf : Function.Injective f) : ℙ K V → ℙ L W :=
-  Quotient.map' (fun v => ⟨f v, fun c => v.2 (hf (by simp [c]))⟩)
+  Quotient.map (fun v => ⟨f v, fun c => v.2 (hf (by simp [c]))⟩)
     (by
       rintro ⟨u, hu⟩ ⟨v, hv⟩ ⟨a, ha⟩
       use Units.map σ.toMonoidHom a

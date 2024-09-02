@@ -512,7 +512,7 @@ variable {t : Set (SeparationQuotient X)}
 namespace SeparationQuotient
 
 /-- The natural map from a topological space to its separation quotient. -/
-def mk : X → SeparationQuotient X := Quotient.mk''
+def mk : X → SeparationQuotient X := Quotient.mk _
 
 theorem quotientMap_mk : QuotientMap (mk : X → SeparationQuotient X) :=
   quotientMap_quot_mk
@@ -523,10 +523,10 @@ theorem continuous_mk : Continuous (mk : X → SeparationQuotient X) :=
 
 @[simp]
 theorem mk_eq_mk : mk x = mk y ↔ (x ~ᵢ y) :=
-  Quotient.eq''
+  Quotient.eq
 
 theorem surjective_mk : Surjective (mk : X → SeparationQuotient X) :=
-  surjective_quot_mk _
+  Quot.surjective_mk
 
 @[simp]
 theorem range_mk : range (mk : X → SeparationQuotient X) = univ :=
@@ -616,7 +616,7 @@ theorem quotientMap_prodMap_mk : QuotientMap (Prod.map mk mk : X × Y → _) := 
 /-- Lift a map `f : X → α` such that `Inseparable x y → f x = f y` to a map
 `SeparationQuotient X → α`. -/
 def lift (f : X → α) (hf : ∀ x y, (x ~ᵢ y) → f x = f y) : SeparationQuotient X → α := fun x =>
-  Quotient.liftOn' x f hf
+  Quotient.liftOn x f hf
 
 @[simp]
 theorem lift_mk {f : X → α} (hf : ∀ x y, (x ~ᵢ y) → f x = f y) (x : X) : lift f hf (mk x) = f x :=
@@ -661,7 +661,7 @@ theorem continuous_lift {hf : ∀ x y, (x ~ᵢ y) → f x = f y} :
 /-- Lift a map `f : X → Y → α` such that `Inseparable a b → Inseparable c d → f a c = f b d` to a
 map `SeparationQuotient X → SeparationQuotient Y → α`. -/
 def lift₂ (f : X → Y → α) (hf : ∀ a b c d, (a ~ᵢ c) → (b ~ᵢ d) → f a b = f c d) :
-    SeparationQuotient X → SeparationQuotient Y → α := fun x y => Quotient.liftOn₂' x y f hf
+    SeparationQuotient X → SeparationQuotient Y → α := fun x y => Quotient.liftOn₂ x y f hf
 
 @[simp]
 theorem lift₂_mk {f : X → Y → α} (hf : ∀ a b c d, (a ~ᵢ c) → (b ~ᵢ d) → f a b = f c d) (x : X)

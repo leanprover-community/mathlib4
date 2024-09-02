@@ -194,9 +194,9 @@ namespace Subobject
 section OrderTop
 
 instance orderTop {X : C} : OrderTop (Subobject X) where
-  top := Quotient.mk'' ⊤
+  top := ⟦⊤⟧
   le_top := by
-    refine Quotient.ind' fun f => ?_
+    refine Quotient.ind fun f => ?_
     exact ⟨MonoOver.leTop f⟩
 
 instance {X : C} : Inhabited (Subobject X) :=
@@ -260,9 +260,9 @@ section OrderBot
 variable [HasInitial C] [InitialMonoClass C]
 
 instance orderBot {X : C} : OrderBot (Subobject X) where
-  bot := Quotient.mk'' ⊥
+  bot := ⟦⊥⟧
   bot_le := by
-    refine Quotient.ind' fun f => ?_
+    refine Quotient.ind fun f => ?_
     exact ⟨MonoOver.botLE f⟩
 
 theorem bot_eq_initial_to {B : C} : (⊥ : Subobject B) = Subobject.mk (initial.to B) :=
@@ -335,13 +335,13 @@ def inf {A : C} : Subobject A ⥤ Subobject A ⥤ Subobject A :=
   ThinSkeleton.map₂ MonoOver.inf
 
 theorem inf_le_left {A : C} (f g : Subobject A) : (inf.obj f).obj g ≤ f :=
-  Quotient.inductionOn₂' f g fun _ _ => ⟨MonoOver.infLELeft _ _⟩
+  Quotient.inductionOn₂ f g fun _ _ => ⟨MonoOver.infLELeft _ _⟩
 
 theorem inf_le_right {A : C} (f g : Subobject A) : (inf.obj f).obj g ≤ g :=
-  Quotient.inductionOn₂' f g fun _ _ => ⟨MonoOver.infLERight _ _⟩
+  Quotient.inductionOn₂ f g fun _ _ => ⟨MonoOver.infLERight _ _⟩
 
 theorem le_inf {A : C} (h f g : Subobject A) : h ≤ f → h ≤ g → h ≤ (inf.obj f).obj g :=
-  Quotient.inductionOn₃' h f g
+  Quotient.inductionOn₃ h f g
     (by
       rintro f g h ⟨k⟩ ⟨l⟩
       exact ⟨MonoOver.leInf _ _ _ k l⟩)
@@ -365,7 +365,7 @@ theorem inf_factors {A B : C} {X Y : Subobject B} (f : A ⟶ B) :
     (X ⊓ Y).Factors f ↔ X.Factors f ∧ Y.Factors f :=
   ⟨fun h => ⟨factors_left_of_inf_factors h, factors_right_of_inf_factors h⟩, by
     revert X Y
-    apply Quotient.ind₂'
+    apply Quotient.ind₂
     rintro X Y ⟨⟨g₁, rfl⟩, ⟨g₂, hg₂⟩⟩
     exact ⟨_, pullback.lift_snd_assoc _ _ hg₂ _⟩⟩
 
@@ -401,13 +401,13 @@ theorem finset_inf_arrow_factors {I : Type*} {B : C} (s : Finset I) (P : I → S
       exact ih _ m
 
 theorem inf_eq_map_pullback' {A : C} (f₁ : MonoOver A) (f₂ : Subobject A) :
-    (Subobject.inf.obj (Quotient.mk'' f₁)).obj f₂ =
+    (Subobject.inf.obj ⟦f₁⟧).obj f₂ =
       (Subobject.map f₁.arrow).obj ((Subobject.pullback f₁.arrow).obj f₂) := by
-  induction' f₂ using Quotient.inductionOn' with f₂
+  induction' f₂ using Quotient.inductionOn with f₂
   rfl
 
 theorem inf_eq_map_pullback {A : C} (f₁ : MonoOver A) (f₂ : Subobject A) :
-    (Quotient.mk'' f₁ ⊓ f₂ : Subobject A) = (map f₁.arrow).obj ((pullback f₁.arrow).obj f₂) :=
+    (⟦f₁⟧ ⊓ f₂ : Subobject A) = (map f₁.arrow).obj ((pullback f₁.arrow).obj f₂) :=
   inf_eq_map_pullback' f₁ f₂
 
 theorem prod_eq_inf {A : C} {f₁ f₂ : Subobject A} [HasBinaryProduct f₁ f₂] :
@@ -424,7 +424,7 @@ theorem inf_def {B : C} (m m' : Subobject B) : m ⊓ m' = (inf.obj m).obj m' :=
 theorem inf_pullback {X Y : C} (g : X ⟶ Y) (f₁ f₂) :
     (pullback g).obj (f₁ ⊓ f₂) = (pullback g).obj f₁ ⊓ (pullback g).obj f₂ := by
   revert f₁
-  apply Quotient.ind'
+  apply Quotient.ind
   intro f₁
   erw [inf_def, inf_def, inf_eq_map_pullback', inf_eq_map_pullback', ← pullback_comp, ←
     map_pullback pullback.condition (pullbackIsPullback f₁.arrow g), ← pullback_comp,
@@ -435,7 +435,7 @@ theorem inf_pullback {X Y : C} (g : X ⟶ Y) (f₁ f₂) :
 theorem inf_map {X Y : C} (g : Y ⟶ X) [Mono g] (f₁ f₂) :
     (map g).obj (f₁ ⊓ f₂) = (map g).obj f₁ ⊓ (map g).obj f₂ := by
   revert f₁
-  apply Quotient.ind'
+  apply Quotient.ind
   intro f₁
   erw [inf_def, inf_def, inf_eq_map_pullback', inf_eq_map_pullback', ← map_comp]
   dsimp
@@ -453,10 +453,10 @@ def sup {A : C} : Subobject A ⥤ Subobject A ⥤ Subobject A :=
 
 instance semilatticeSup {B : C} : SemilatticeSup (Subobject B) where
   sup := fun m n => (sup.obj m).obj n
-  le_sup_left := fun m n => Quotient.inductionOn₂' m n fun _ _ => ⟨MonoOver.leSupLeft _ _⟩
-  le_sup_right := fun m n => Quotient.inductionOn₂' m n fun _ _ => ⟨MonoOver.leSupRight _ _⟩
+  le_sup_left := fun m n => Quotient.inductionOn₂ m n fun _ _ => ⟨MonoOver.leSupLeft _ _⟩
+  le_sup_right := fun m n => Quotient.inductionOn₂ m n fun _ _ => ⟨MonoOver.leSupRight _ _⟩
   sup_le := fun m n k =>
-    Quotient.inductionOn₃' m n k fun _ _ _ ⟨i⟩ ⟨j⟩ => ⟨MonoOver.supLe _ _ _ i j⟩
+    Quotient.inductionOn₃ m n k fun _ _ _ ⟨i⟩ ⟨j⟩ => ⟨MonoOver.supLe _ _ _ i j⟩
 
 theorem sup_factors_of_factors_left {A B : C} {X Y : Subobject B} {f : A ⟶ B} (P : X.Factors f) :
     (X ⊔ Y).Factors f :=

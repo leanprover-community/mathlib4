@@ -299,7 +299,7 @@ open HomogeneousLocalization in
 stalk at `x` obtained by `sectionInBasicOpen`. This is the inverse of `stalkToFiberRingHom`.
 -/
 def homogeneousLocalizationToStalk (x : ProjectiveSpectrum.top 𝒜) (y : at x) :
-    (Proj.structureSheaf 𝒜).presheaf.stalk x := Quotient.liftOn' y (fun f =>
+    (Proj.structureSheaf 𝒜).presheaf.stalk x := Quotient.liftOn y (fun f =>
   (Proj.structureSheaf 𝒜).presheaf.germ ⟨x, mem_basicOpen_den _ x f⟩ (sectionInBasicOpen _ x f))
   fun f g (e : f.embedding = g.embedding) ↦ by
     simp only [HomogeneousLocalization.NumDenSameDeg.embedding, Localization.mk_eq_mk',
@@ -325,7 +325,7 @@ lemma homogeneousLocalizationToStalk_stalkToFiberRingHom (x z) :
   obtain ⟨U, hxU, s, rfl⟩ := (Proj.structureSheaf 𝒜).presheaf.germ_exist x z
   obtain ⟨V, hxV, i, n, a, b, h, e⟩ := s.2 ⟨x, hxU⟩
   simp only at e
-  rw [stalkToFiberRingHom_germ', homogeneousLocalizationToStalk, e ⟨x, hxV⟩, Quotient.liftOn'_mk'']
+  rw [stalkToFiberRingHom_germ', homogeneousLocalizationToStalk, e ⟨x, hxV⟩, Quotient.liftOn_mk]
   refine Presheaf.germ_ext _ V hxV (by exact homOfLE <| fun _ h' ↦ h ⟨_, h'⟩) i ?_
   apply Subtype.ext
   ext ⟨t, ht⟩
@@ -335,8 +335,8 @@ lemma homogeneousLocalizationToStalk_stalkToFiberRingHom (x z) :
 
 lemma stalkToFiberRingHom_homogeneousLocalizationToStalk (x z) :
     stalkToFiberRingHom 𝒜 x (homogeneousLocalizationToStalk 𝒜 x z) = z := by
-  obtain ⟨z, rfl⟩ := Quotient.surjective_Quotient_mk'' z
-  rw [homogeneousLocalizationToStalk, Quotient.liftOn'_mk'',
+  obtain ⟨z, rfl⟩ := Quotient.surjective_mk z
+  rw [homogeneousLocalizationToStalk, Quotient.liftOn_mk,
     stalkToFiberRingHom_germ', sectionInBasicOpen]
 
 /-- Using `homogeneousLocalizationToStalk`, we construct a ring isomorphism between stalk at `x`

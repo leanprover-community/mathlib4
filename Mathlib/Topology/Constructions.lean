@@ -164,12 +164,12 @@ theorem Quotient.preimage_mem_nhds [TopologicalSpace X] [s : Setoid X] {V : Set 
 /-- The image of a dense set under `Quotient.mk'` is a dense set. -/
 theorem Dense.quotient [Setoid X] [TopologicalSpace X] {s : Set X} (H : Dense s) :
     Dense (Quotient.mk' '' s) :=
-  Quotient.surjective_Quotient_mk''.denseRange.dense_image continuous_coinduced_rng H
+  Quotient.surjective_mk.denseRange.dense_image continuous_coinduced_rng H
 
 /-- The composition of `Quotient.mk'` and a function with dense range has dense range. -/
 theorem DenseRange.quotient [Setoid X] [TopologicalSpace X] {f : Y → X} (hf : DenseRange f) :
     DenseRange (Quotient.mk' ∘ f) :=
-  Quotient.surjective_Quotient_mk''.denseRange.comp hf continuous_coinduced_rng
+  Quotient.surjective_mk.denseRange.comp hf continuous_coinduced_rng
 
 theorem continuous_map_of_le {α : Type*} [TopologicalSpace α]
     {s t : Setoid α} (h : s ≤ t) : Continuous (Setoid.map_of_le h) :=
@@ -1127,12 +1127,12 @@ theorem Continuous.quotient_lift {f : X → Y} (h : Continuous f) (hs : ∀ a b,
 
 theorem Continuous.quotient_liftOn' {f : X → Y} (h : Continuous f)
     (hs : ∀ a b, @Setoid.r _ s a b → f a = f b) :
-    Continuous (fun x => Quotient.liftOn' x f hs : Quotient s → Y) :=
+    Continuous (fun x => Quotient.liftOn x f hs : Quotient s → Y) :=
   h.quotient_lift hs
 
 @[continuity, fun_prop]
 theorem Continuous.quotient_map' {t : Setoid Y} {f : X → Y} (hf : Continuous f)
-    (H : (s.r ⇒ t.r) f f) : Continuous (Quotient.map' f H) :=
+    (H : (s.r ⇒ t.r) f f) : Continuous (Quotient.map f H) :=
   (continuous_quotient_mk'.comp hf).quotient_lift _
 
 end Quotient

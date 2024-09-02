@@ -101,7 +101,7 @@ theorem boundedFormula_realize_cast {β : Type*} {n : ℕ} (φ : L.BoundedFormul
     simp only [BoundedFormula.Realize, h2, term_realize_cast]
     erw [(Sum.comp_elim ((↑) : (∀ a, M a) → (u : Filter α).Product M) x v).symm,
       term_realize_cast, term_realize_cast]
-    exact Quotient.eq''
+    exact Quotient.eq
   · have h2 : ∀ a : α, (Sum.elim (fun i : β => x i a) fun i => v i a) = fun i => Sum.elim x v i a :=
       fun a => funext fun i => Sum.casesOn i (fun i => rfl) fun i => rfl
     simp only [BoundedFormula.Realize, h2]

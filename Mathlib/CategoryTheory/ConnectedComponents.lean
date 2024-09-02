@@ -47,7 +47,7 @@ lemma Functor.mapConnectedComponents_mk {K : Type u₂} [Category.{v₂} K] (F :
     F.mapConnectedComponents (Quotient.mk _ j) = Quotient.mk _ (F.obj j) := rfl
 
 instance [Inhabited J] : Inhabited (ConnectedComponents J) :=
-  ⟨Quotient.mk'' default⟩
+  ⟨⟦default⟧⟩
 
 /-- Every function from connected components of a category gives a functor to discrete category -/
 def ConnectedComponents.functorToDiscrete   (X : Type*)
@@ -77,7 +77,7 @@ def ConnectedComponents.typeToCatHomEquiv (J) [Category J] (X : Type*) :
 
 /-- Given an index for a connected component, produce the actual component as a full subcategory. -/
 def Component (j : ConnectedComponents J) : Type u₁ :=
-  FullSubcategory fun k => Quotient.mk'' k = j
+  FullSubcategory fun k => ⟦k⟧ = j
 
 instance {j : ConnectedComponents J} : Category (Component j) :=
   FullSubcategory.category _
@@ -96,7 +96,7 @@ instance {j : ConnectedComponents J} : Functor.Faithful (Component.ι j) :=
 
 /-- Each connected component of the category is nonempty. -/
 instance (j : ConnectedComponents J) : Nonempty (Component j) := by
-  induction j using Quotient.inductionOn'
+  induction j using Quotient.inductionOn
   exact ⟨⟨_, rfl⟩⟩
 
 instance (j : ConnectedComponents J) : Inhabited (Component j) :=
@@ -112,7 +112,7 @@ instance (j : ConnectedComponents J) : IsConnected (Component j) := by
   -- Get an explicit zigzag as a list
   rcases List.exists_chain_of_relationReflTransGen h₁₂ with ⟨l, hl₁, hl₂⟩
   -- Everything which has a zigzag to j₂ can be lifted to the same component as `j₂`.
-  let f : ∀ x, Zigzag x j₂ → Component (Quotient.mk'' j₂) := fun x h => ⟨x, Quotient.sound' h⟩
+  let f : ∀ x, Zigzag x j₂ → Component ⟦j₂⟧ := fun x h => ⟨x, Quotient.sound' h⟩
   -- Everything in our chosen zigzag from `j₁` to `j₂` has a zigzag to `j₂`.
   have hf : ∀ a : J, a ∈ l → Zigzag a j₂ := by
     intro i hi
@@ -158,7 +158,7 @@ instance : (decomposedTo J).Full where
     rintro ⟨j', X, hX⟩ ⟨k', Y, hY⟩ f
     dsimp at f
     have : j' = k' := by
-      rw [← hX, ← hY, Quotient.eq'']
+      rw [← hX, ← hY, Quotient.eq]
       exact Relation.ReflTransGen.single (Or.inl ⟨f⟩)
     subst this
     exact ⟨Sigma.SigmaHom.mk f, rfl⟩

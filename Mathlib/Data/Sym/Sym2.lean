@@ -112,7 +112,7 @@ protected theorem exact {p p' : α × α} (h : Sym2.mk p = Sym2.mk p') : Sym2.Re
 
 @[simp]
 protected theorem eq {p p' : α × α} : Sym2.mk p = Sym2.mk p' ↔ Sym2.Rel α p p' :=
-  Quotient.eq' (s₁ := Sym2.Rel.setoid α)
+  Quotient.eq (r := Sym2.Rel.setoid α)
 
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 protected theorem ind {f : Sym2 α → Prop} (h : ∀ x y, f s(x, y)) : ∀ i, f i :=
@@ -147,11 +147,11 @@ protected abbrev recOnSubsingleton {motive : Sym2 α → Sort*}
 
 protected theorem «exists» {α : Sort _} {f : Sym2 α → Prop} :
     (∃ x : Sym2 α, f x) ↔ ∃ x y, f s(x, y) :=
-  (surjective_quot_mk _).exists.trans Prod.exists
+  Quot.surjective_mk.exists.trans Prod.exists
 
 protected theorem «forall» {α : Sort _} {f : Sym2 α → Prop} :
     (∀ x : Sym2 α, f x) ↔ ∀ x y, f s(x, y) :=
-  (surjective_quot_mk _).forall.trans Prod.forall
+  Quot.surjective_mk.forall.trans Prod.forall
 
 theorem eq_swap {a b : α} : s(a, b) = s(b, a) := Quot.sound (Rel.swap _ _)
 

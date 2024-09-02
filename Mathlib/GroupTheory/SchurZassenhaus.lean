@@ -62,17 +62,17 @@ variable [Normal H]
 
 noncomputable instance : MulAction G H.QuotientDiff where
   smul g :=
-    Quotient.map' (fun α => op g⁻¹ • α) fun α β h =>
+    Quotient.map (fun α => op g⁻¹ • α) fun α β h =>
       Subtype.ext
         (by
           rwa [smul_diff_smul', coe_mk, coe_one, mul_eq_one_iff_eq_inv, mul_right_eq_self, ←
             coe_one, ← Subtype.ext_iff])
   mul_smul g₁ g₂ q :=
-    Quotient.inductionOn' q fun T =>
-      congr_arg Quotient.mk'' (by rw [mul_inv_rev]; exact mul_smul (op g₁⁻¹) (op g₂⁻¹) T)
+    Quotient.inductionOn q fun T =>
+      congr_arg (Quotient.mk _) (by rw [mul_inv_rev]; exact mul_smul (op g₁⁻¹) (op g₂⁻¹) T)
   one_smul q :=
-    Quotient.inductionOn' q fun T =>
-      congr_arg Quotient.mk'' (by rw [inv_one]; apply one_smul Gᵐᵒᵖ T)
+    Quotient.inductionOn q fun T =>
+      congr_arg (Quotient.mk _) (by rw [inv_one]; apply one_smul Gᵐᵒᵖ T)
 
 theorem smul_diff' (h : H) :
     diff (MonoidHom.id H) α (op (h : G) • β) = diff (MonoidHom.id H) α β * h ^ H.index := by
@@ -87,7 +87,7 @@ theorem smul_diff' (h : H) :
 
 theorem eq_one_of_smul_eq_one (hH : Nat.Coprime (Nat.card H) H.index) (α : H.QuotientDiff)
     (h : H) : h • α = α → h = 1 :=
-  Quotient.inductionOn' α fun α hα =>
+  Quotient.inductionOn α fun α hα =>
     (powCoprime hH).injective <|
       calc
         h ^ H.index = diff (MonoidHom.id H) (op ((h⁻¹ : H) : G) • α) α := by
@@ -96,8 +96,8 @@ theorem eq_one_of_smul_eq_one (hH : Nat.Coprime (Nat.card H) H.index) (α : H.Qu
 
 theorem exists_smul_eq (hH : Nat.Coprime (Nat.card H) H.index) (α β : H.QuotientDiff) :
     ∃ h : H, h • α = β :=
-  Quotient.inductionOn' α
-    (Quotient.inductionOn' β fun β α =>
+  Quotient.inductionOn α
+    (Quotient.inductionOn β fun β α =>
       Exists.imp (fun n => Quotient.sound')
         ⟨(powCoprime hH).symm (diff (MonoidHom.id H) β α),
           (diff_inv _ _ _).symm.trans
@@ -184,7 +184,7 @@ private theorem step1 (K : Subgroup G) (hK : K ⊔ N = ⊤) : K = ⊤ := by
 include h2 in
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 private theorem step2 (K : Subgroup G) [K.Normal] (hK : K ≤ N) : K = ⊥ ∨ K = N := by
-  have : Function.Surjective (QuotientGroup.mk' K) := Quotient.surjective_Quotient_mk''
+  have : Function.Surjective (QuotientGroup.mk' K) := Quotient.surjective_mk
   have h4 := step1 h1 h2 h3
   contrapose! h4
   have h5 : Nat.card (G ⧸ K) < Nat.card G := by

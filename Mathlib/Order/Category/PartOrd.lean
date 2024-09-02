@@ -92,10 +92,10 @@ def preordToPartOrd : Preord.{u} ⥤ PartOrd where
   map f := f.antisymmetrization
   map_id X := by
     ext x
-    exact Quotient.inductionOn' x fun x => Quotient.map'_mk'' _ (fun a b => id) _
+    exact Quotient.inductionOn x fun x => Quotient.map_mk _ (fun a b => id) _
   map_comp f g := by
     ext x
-    exact Quotient.inductionOn' x fun x => OrderHom.antisymmetrization_apply_mk _ _
+    exact Quotient.inductionOn x fun x => OrderHom.antisymmetrization_apply_mk _ _
 
 /-- `preordToPartOrd` is left adjoint to the forgetful functor, meaning it is the free
 functor from `Preord` to `PartOrd`. -/
@@ -106,13 +106,13 @@ def preordToPartOrdForgetAdjunction :
         { toFun := fun f =>
             ⟨f.toFun ∘ toAntisymmetrization (· ≤ ·), f.mono.comp toAntisymmetrization_mono⟩
           invFun := fun f =>
-            ⟨fun a => Quotient.liftOn' a f.toFun (fun _ _ h => (AntisymmRel.image h f.mono).eq),
-              fun a b => Quotient.inductionOn₂' a b fun _ _ h => f.mono h⟩
+            ⟨fun a => Quotient.liftOn a f.toFun (fun _ _ h => (AntisymmRel.image h f.mono).eq),
+              fun a b => Quotient.inductionOn₂ a b fun _ _ h => f.mono h⟩
           left_inv := fun _ =>
-            OrderHom.ext _ _ <| funext fun x => Quotient.inductionOn' x fun _ => rfl
+            OrderHom.ext _ _ <| funext fun x => Quotient.inductionOn x fun _ => rfl
           right_inv := fun _ => OrderHom.ext _ _ <| funext fun _ => rfl }
       homEquiv_naturality_left_symm := fun _ _ =>
-        OrderHom.ext _ _ <| funext fun x => Quotient.inductionOn' x fun _ => rfl
+        OrderHom.ext _ _ <| funext fun x => Quotient.inductionOn x fun _ => rfl
       homEquiv_naturality_right := fun _ _ => OrderHom.ext _ _ <| funext fun _ => rfl }
 
 -- The `simpNF` linter would complain as `Functor.comp_obj`, `Preord.dual_obj` both apply to LHS
@@ -122,7 +122,7 @@ def preordToPartOrdForgetAdjunction :
 def preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd :
     preordToPartOrd.{u} ⋙ PartOrd.dual ≅ Preord.dual ⋙ preordToPartOrd :=
   NatIso.ofComponents (fun _ => PartOrd.Iso.mk <| OrderIso.dualAntisymmetrization _)
-    (fun _ => OrderHom.ext _ _ <| funext fun x => Quotient.inductionOn' x fun _ => rfl)
+    (fun _ => OrderHom.ext _ _ <| funext fun x => Quotient.inductionOn x fun _ => rfl)
 
 -- This lemma was always bad, but the linter only noticed after lean4#2644
 attribute [nolint simpNF] preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd_inv_app_coe

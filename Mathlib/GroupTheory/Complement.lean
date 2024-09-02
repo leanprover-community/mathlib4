@@ -199,32 +199,32 @@ theorem mem_rightTransversals_iff_existsUnique_mul_inv_mem :
 @[to_additive]
 theorem mem_leftTransversals_iff_existsUnique_quotient_mk''_eq :
     S ∈ leftTransversals (H : Set G) ↔
-      ∀ q : Quotient (QuotientGroup.leftRel H), ∃! s : S, Quotient.mk'' s.1 = q := by
+      ∀ q : Quotient (QuotientGroup.leftRel H), ∃! s : S, ⟦s.1⟧ = q := by
   simp_rw [mem_leftTransversals_iff_existsUnique_inv_mul_mem, SetLike.mem_coe, ←
     QuotientGroup.eq]
-  exact ⟨fun h q => Quotient.inductionOn' q h, fun h g => h (Quotient.mk'' g)⟩
+  exact ⟨fun h q => Quotient.inductionOn q h, fun h g => h ⟦g⟧⟩
 
 @[to_additive]
 theorem mem_rightTransversals_iff_existsUnique_quotient_mk''_eq :
     S ∈ rightTransversals (H : Set G) ↔
-      ∀ q : Quotient (QuotientGroup.rightRel H), ∃! s : S, Quotient.mk'' s.1 = q := by
+      ∀ q : Quotient (QuotientGroup.rightRel H), ∃! s : S, ⟦s.1⟧ = q := by
   simp_rw [mem_rightTransversals_iff_existsUnique_mul_inv_mem, SetLike.mem_coe, ←
-    QuotientGroup.rightRel_apply, ← Quotient.eq'']
-  exact ⟨fun h q => Quotient.inductionOn' q h, fun h g => h (Quotient.mk'' g)⟩
+    QuotientGroup.rightRel_apply, ← Quotient.eq]
+  exact ⟨fun h q => Quotient.inductionOn q h, fun h g => h ⟦g⟧⟩
 
 @[to_additive]
 theorem mem_leftTransversals_iff_bijective :
     S ∈ leftTransversals (H : Set G) ↔
-      Function.Bijective (S.restrict (Quotient.mk'' : G → Quotient (QuotientGroup.leftRel H))) :=
+      Function.Bijective (S.restrict (Quotient.mk _ : G → Quotient (QuotientGroup.leftRel H))) :=
   mem_leftTransversals_iff_existsUnique_quotient_mk''_eq.trans
-    (Function.bijective_iff_existsUnique (S.restrict Quotient.mk'')).symm
+    (Function.bijective_iff_existsUnique (S.restrict (Quotient.mk _))).symm
 
 @[to_additive]
 theorem mem_rightTransversals_iff_bijective :
     S ∈ rightTransversals (H : Set G) ↔
-      Function.Bijective (S.restrict (Quotient.mk'' : G → Quotient (QuotientGroup.rightRel H))) :=
+      Function.Bijective (S.restrict (Quotient.mk _ : G → Quotient (QuotientGroup.rightRel H))) :=
   mem_rightTransversals_iff_existsUnique_quotient_mk''_eq.trans
-    (Function.bijective_iff_existsUnique (S.restrict Quotient.mk'')).symm
+    (Function.bijective_iff_existsUnique (S.restrict (Quotient.mk _))).symm
 
 @[to_additive]
 theorem card_left_transversal (h : S ∈ leftTransversals (H : Set G)) : Nat.card S = H.index :=
@@ -246,7 +246,7 @@ theorem range_mem_leftTransversals {f : G ⧸ H → G} (hf : ∀ q, ↑(f q) = q
 
 @[to_additive]
 theorem range_mem_rightTransversals {f : Quotient (QuotientGroup.rightRel H) → G}
-    (hf : ∀ q, Quotient.mk'' (f q) = q) : Set.range f ∈ rightTransversals (H : Set G) :=
+    (hf : ∀ q, ⟦f q⟧ = q) : Set.range f ∈ rightTransversals (H : Set G) :=
   mem_rightTransversals_iff_bijective.mpr
     ⟨by rintro ⟨-, q₁, rfl⟩ ⟨-, q₂, rfl⟩ h
         exact Subtype.ext <| congr_arg f <| ((hf q₁).symm.trans h).trans (hf q₂),
@@ -257,11 +257,11 @@ lemma exists_left_transversal (H : Subgroup G) (g : G) :
     ∃ S ∈ leftTransversals (H : Set G), g ∈ S := by
   classical
     refine
-      ⟨Set.range (Function.update Quotient.out' _ g), range_mem_leftTransversals fun q => ?_,
-        Quotient.mk'' g, Function.update_same (Quotient.mk'' g) g Quotient.out'⟩
-    by_cases hq : q = Quotient.mk'' g
-    · exact hq.symm ▸ congr_arg _ (Function.update_same (Quotient.mk'' g) g Quotient.out')
-    · refine (Function.update_noteq ?_ g Quotient.out') ▸ q.out_eq'
+      ⟨Set.range (Function.update Quotient.out _ g), range_mem_leftTransversals fun q => ?_,
+        ⟦g⟧, Function.update_same ⟦g⟧ g Quotient.out⟩
+    by_cases hq : q = ⟦g⟧
+    · exact hq.symm ▸ congr_arg _ (Function.update_same ⟦g⟧ g Quotient.out)
+    · refine (Function.update_noteq ?_ g Quotient.out) ▸ q.out_eq
       exact hq
 
 @[to_additive]
@@ -269,11 +269,11 @@ lemma exists_right_transversal (H : Subgroup G) (g : G) :
     ∃ S ∈ rightTransversals (H : Set G), g ∈ S := by
   classical
     refine
-      ⟨Set.range (Function.update Quotient.out' _ g), range_mem_rightTransversals fun q => ?_,
-        Quotient.mk'' g, Function.update_same (Quotient.mk'' g) g Quotient.out'⟩
-    by_cases hq : q = Quotient.mk'' g
-    · exact hq.symm ▸ congr_arg _ (Function.update_same (Quotient.mk'' g) g Quotient.out')
-    · exact Eq.trans (congr_arg _ (Function.update_noteq hq g Quotient.out')) q.out_eq'
+      ⟨Set.range (Function.update Quotient.out _ g), range_mem_rightTransversals fun q => ?_,
+        ⟦g⟧, Function.update_same ⟦g⟧ g Quotient.out⟩
+    by_cases hq : q = ⟦g⟧
+    · exact hq.symm ▸ congr_arg _ (Function.update_same ⟦g⟧ g Quotient.out)
+    · exact Eq.trans (congr_arg _ (Function.update_noteq hq g Quotient.out)) q.out_eq
 
 /-- Given two subgroups `H' ⊆ H`, there exists a left transversal to `H'` inside `H`. -/
 @[to_additive "Given two subgroups `H' ⊆ H`, there exists a transversal to `H'` inside `H`"]
@@ -469,7 +469,7 @@ theorem finite_iff
 
 @[to_additive]
 theorem mk''_toEquiv (hS : S ∈ Subgroup.leftTransversals (H : Set G)) (q : G ⧸ H) :
-    Quotient.mk'' (toEquiv hS q : G) = q :=
+    ⟦(toEquiv hS q : G)⟧ = q :=
   (toEquiv hS).symm_apply_apply q
 
 @[to_additive]
@@ -483,7 +483,7 @@ theorem toEquiv_apply {f : G ⧸ H → G} (hf : ∀ q, (f q : G ⧸ H) = q) (q :
 @[to_additive "A left transversal can be viewed as a function mapping each element of the group
   to the chosen representative from that left coset."]
 noncomputable def toFun (hS : S ∈ Subgroup.leftTransversals (H : Set G)) : G → S :=
-  toEquiv hS ∘ Quotient.mk''
+  toEquiv hS ∘ Quotient.mk _
 
 @[to_additive]
 theorem inv_toFun_mul_mem (hS : S ∈ Subgroup.leftTransversals (H : Set G)) (g : G) :
@@ -515,12 +515,12 @@ theorem finite_iff
 
 @[to_additive]
 theorem mk''_toEquiv (hS : S ∈ Subgroup.rightTransversals (H : Set G))
-    (q : Quotient (QuotientGroup.rightRel H)) : Quotient.mk'' (toEquiv hS q : G) = q :=
+    (q : Quotient (QuotientGroup.rightRel H)) : ⟦(toEquiv hS q : G)⟧ = q :=
   (toEquiv hS).symm_apply_apply q
 
 @[to_additive]
 theorem toEquiv_apply {f : Quotient (QuotientGroup.rightRel H) → G}
-    (hf : ∀ q, Quotient.mk'' (f q) = q) (q : Quotient (QuotientGroup.rightRel H)) :
+    (hf : ∀ q, ⟦f q⟧ = q) (q : Quotient (QuotientGroup.rightRel H)) :
     (toEquiv (range_mem_rightTransversals hf) q : G) = f q := by
   refine (Subtype.ext_iff.mp ?_).trans (Subtype.coe_mk (f q) ⟨q, rfl⟩)
   exact (toEquiv (range_mem_rightTransversals hf)).apply_eq_iff_eq_symm_apply.mpr (hf q).symm
@@ -530,7 +530,7 @@ theorem toEquiv_apply {f : Quotient (QuotientGroup.rightRel H) → G}
 @[to_additive "A right transversal can be viewed as a function mapping each element of the group
   to the chosen representative from that right coset."]
 noncomputable def toFun (hS : S ∈ Subgroup.rightTransversals (H : Set G)) : G → S :=
-  toEquiv hS ∘ Quotient.mk''
+  toEquiv hS ∘ Quotient.mk _
 
 @[to_additive]
 theorem mul_inv_toFun_mem (hS : S ∈ Subgroup.rightTransversals (H : Set G)) (g : G) :
@@ -576,7 +576,7 @@ theorem smul_toFun (f : F) (T : leftTransversals (H : Set G)) (g : G) :
 @[to_additive]
 theorem smul_toEquiv (f : F) (T : leftTransversals (H : Set G)) (q : G ⧸ H) :
     f • (toEquiv T.2 q : G) = toEquiv (f • T).2 (f • q) :=
-  Quotient.inductionOn' q fun g => smul_toFun f T g
+  Quotient.inductionOn q fun g => smul_toFun f T g
 
 @[to_additive]
 theorem smul_apply_eq_smul_apply_inv_smul (f : F) (T : leftTransversals (H : Set G)) (q : G ⧸ H) :
@@ -587,11 +587,11 @@ end Action
 
 @[to_additive]
 instance : Inhabited (leftTransversals (H : Set G)) :=
-  ⟨⟨Set.range Quotient.out', range_mem_leftTransversals Quotient.out_eq'⟩⟩
+  ⟨⟨Set.range Quotient.out, range_mem_leftTransversals Quotient.out_eq⟩⟩
 
 @[to_additive]
 instance : Inhabited (rightTransversals (H : Set G)) :=
-  ⟨⟨Set.range Quotient.out', range_mem_rightTransversals Quotient.out_eq'⟩⟩
+  ⟨⟨Set.range Quotient.out, range_mem_rightTransversals Quotient.out_eq⟩⟩
 
 theorem IsComplement'.isCompl (h : IsComplement' H K) : IsCompl H K := by
   refine
@@ -666,17 +666,17 @@ variable {G : Type u} [Group G] (H : Subgroup G) (g : G)
 
 /-- Partition `G ⧸ H` into orbits of the action of `g : G`. -/
 noncomputable def quotientEquivSigmaZMod :
-    G ⧸ H ≃ Σq : orbitRel.Quotient (zpowers g) (G ⧸ H), ZMod (minimalPeriod (g • ·) q.out') :=
+    G ⧸ H ≃ Σq : orbitRel.Quotient (zpowers g) (G ⧸ H), ZMod (minimalPeriod (g • ·) q.out) :=
   (selfEquivSigmaOrbits (zpowers g) (G ⧸ H)).trans
-    (sigmaCongrRight fun q => orbitZPowersEquiv g q.out')
+    (sigmaCongrRight fun q => orbitZPowersEquiv g q.out)
 
 theorem quotientEquivSigmaZMod_symm_apply (q : orbitRel.Quotient (zpowers g) (G ⧸ H))
-    (k : ZMod (minimalPeriod (g • ·) q.out')) :
-    (quotientEquivSigmaZMod H g).symm ⟨q, k⟩ = g ^ (cast k : ℤ) • q.out' :=
+    (k : ZMod (minimalPeriod (g • ·) q.out)) :
+    (quotientEquivSigmaZMod H g).symm ⟨q, k⟩ = g ^ (cast k : ℤ) • q.out :=
   rfl
 
 theorem quotientEquivSigmaZMod_apply (q : orbitRel.Quotient (zpowers g) (G ⧸ H)) (k : ℤ) :
-    quotientEquivSigmaZMod H g (g ^ k • q.out') = ⟨q, k⟩ := by
+    quotientEquivSigmaZMod H g (g ^ k • q.out) = ⟨q, k⟩ := by
   rw [apply_eq_iff_eq_symm_apply, quotientEquivSigmaZMod_symm_apply, ZMod.coe_intCast,
     zpow_smul_mod_minimalPeriod]
 
@@ -684,16 +684,16 @@ theorem quotientEquivSigmaZMod_apply (q : orbitRel.Quotient (zpowers g) (G ⧸ H
   in `G ⧸ H`, an element `g ^ k • q₀` is mapped to `g ^ k • g₀` for a fixed choice of
   representative `g₀` of `q₀`. -/
 noncomputable def transferFunction : G ⧸ H → G := fun q =>
-  g ^ (cast (quotientEquivSigmaZMod H g q).2 : ℤ) * (quotientEquivSigmaZMod H g q).1.out'.out'
+  g ^ (cast (quotientEquivSigmaZMod H g q).2 : ℤ) * (quotientEquivSigmaZMod H g q).1.out.out
 
 theorem transferFunction_apply (q : G ⧸ H) :
     transferFunction H g q =
       g ^ (cast (quotientEquivSigmaZMod H g q).2 : ℤ) *
-        (quotientEquivSigmaZMod H g q).1.out'.out' :=
+        (quotientEquivSigmaZMod H g q).1.out.out :=
   rfl
 
 theorem coe_transferFunction (q : G ⧸ H) : ↑(transferFunction H g q) = q := by
-  rw [transferFunction_apply, ← smul_eq_mul, Quotient.coe_smul_out',
+  rw [transferFunction_apply, ← smul_eq_mul, Quotient.coe_smul_out,
     ← quotientEquivSigmaZMod_symm_apply, Sigma.eta, symm_apply_apply]
 
 /-- The transfer transversal as a set. Contains elements of the form `g ^ k • g₀` for fixed choices
@@ -714,17 +714,17 @@ theorem transferTransversal_apply (q : G ⧸ H) :
   toEquiv_apply (coe_transferFunction H g) q
 
 theorem transferTransversal_apply' (q : orbitRel.Quotient (zpowers g) (G ⧸ H))
-    (k : ZMod (minimalPeriod (g • ·) q.out')) :
-    ↑(toEquiv (transferTransversal H g).2 (g ^ (cast k : ℤ) • q.out')) =
-      g ^ (cast k : ℤ) * q.out'.out' := by
+    (k : ZMod (minimalPeriod (g • ·) q.out)) :
+    ↑(toEquiv (transferTransversal H g).2 (g ^ (cast k : ℤ) • q.out)) =
+      g ^ (cast k : ℤ) * q.out.out := by
   rw [transferTransversal_apply, transferFunction_apply, ← quotientEquivSigmaZMod_symm_apply,
     apply_symm_apply]
 
 theorem transferTransversal_apply'' (q : orbitRel.Quotient (zpowers g) (G ⧸ H))
-    (k : ZMod (minimalPeriod (g • ·) q.out')) :
-    ↑(toEquiv (g • transferTransversal H g).2 (g ^ (cast k : ℤ) • q.out')) =
-      if k = 0 then g ^ minimalPeriod (g • ·) q.out' * q.out'.out'
-      else g ^ (cast k : ℤ) * q.out'.out' := by
+    (k : ZMod (minimalPeriod (g • ·) q.out)) :
+    ↑(toEquiv (g • transferTransversal H g).2 (g ^ (cast k : ℤ) • q.out)) =
+      if k = 0 then g ^ minimalPeriod (g • ·) q.out * q.out.out
+      else g ^ (cast k : ℤ) * q.out.out := by
   rw [smul_apply_eq_smul_apply_inv_smul, transferTransversal_apply, transferFunction_apply, ←
     mul_smul, ← zpow_neg_one, ← zpow_add, quotientEquivSigmaZMod_apply, smul_eq_mul, ← mul_assoc,
     ← zpow_one_add, Int.cast_add, Int.cast_neg, Int.cast_one, intCast_cast, cast_id', id, ←
