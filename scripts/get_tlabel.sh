@@ -11,6 +11,6 @@ tlabels="$(gh api --jq '.labels.[].name' "${PR}" | grep -- '^t-' || printf 'gene
 if [[ "$(wc -l <<<"${tlabels}")" -ne 1 ]]; then
   tlabels="generic"
 fi
-streamName="${tlabels} maintainer merges"
->&2 printf $'Post to topic: \'%s\'"\n' "${streamName}"
-echo "topic=${streamName}"
+topicName="$maintainer merge: {tlabels}"
+>&2 printf $'Post to topic: \'%s\'"\n' "${topicName}"
+echo "topic=${topicName}"
