@@ -106,7 +106,11 @@ theorem card_Ico : (Ico a b).card = (b - a).toNat := (card_map _).trans <| card_
 @[simp]
 theorem card_Ioc : (Ioc a b).card = (b - a).toNat := (card_map _).trans <| card_range _
 
-@[simp]
+#adaptation_note
+/--
+Due to an error in nightly-2024-08-29, I've removed `@[simp]` here.
+Hopefully it can be restored, if needed, after nightly-2024-08-30.
+-/
 theorem card_Ioo : (Ioo a b).card = (b - a - 1).toNat := (card_map _).trans <| card_range _
 
 @[simp]
