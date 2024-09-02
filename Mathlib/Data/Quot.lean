@@ -319,7 +319,7 @@ theorem surjective_quotient_mk {α : Sort*} (s : Setoid α) :
   Quot.exists_rep
 
 /-- `Quotient.mk'` is a surjective function. -/
-theorem surjective_quotient_mk' (α : Sort*) {s : Setoid α} :
+theorem surjective_quotient_mk' (α : Sort*) [s : Setoid α] :
     Function.Surjective (Quotient.mk' : α → Quotient s) :=
   Quot.exists_rep
 
