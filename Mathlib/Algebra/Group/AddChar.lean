@@ -257,6 +257,7 @@ variable {ι A M : Type*} [AddMonoid A] [CommMonoid M]
 
 /-- When `M` is commutative, `AddChar A M` is a commutative monoid. -/
 instance instCommMonoid : CommMonoid (AddChar A M) := toMonoidHomEquiv.commMonoid
+/-- When `M` is commutative, `AddChar A M` is an additive commutative monoid. -/
 instance instAddCommMonoid : AddCommMonoid (AddChar A M) := Additive.addCommMonoid
 
 @[simp, norm_cast] lemma coe_mul (ψ χ : AddChar A M) : ⇑(ψ * χ) = ψ * χ := rfl
