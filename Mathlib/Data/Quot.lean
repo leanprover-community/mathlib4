@@ -580,16 +580,25 @@ theorem surjective_Quotient_mk'' : Function.Surjective (Quotient.mk'' : α → Q
 instance argument. -/
 -- Porting note: removed `@[elab_as_elim]` because it gave "unexpected eliminator resulting type"
 -- porting note (#11083): removed `@[reducible]` because it caused extremely slow `simp`
+@[deprecated Quotient.liftOn (since := "2024-08-09")]
 protected def liftOn' (q : Quotient s₁) (f : α → φ) (h : ∀ a b, s₁ a b → f a = f b) :
     φ :=
   Quotient.liftOn q f h
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated Quotient.liftOn_mk (since := "2024-08-09"), simp]
 protected theorem liftOn'_mk'' (f : α → φ) (h) (x : α) :
     Quotient.liftOn' (@Quotient.mk'' _ s₁ x) f h = f x :=
   rfl
 
-@[simp] lemma surjective_liftOn' {f : α → φ} (h) :
+@[simp]
+lemma surjective_liftOn {f : α → φ} (h) :
+    Function.Surjective (fun x : Quotient s₁ ↦ x.liftOn f h) ↔ Function.Surjective f :=
+  Quot.surjective_lift _
+
+set_option linter.deprecated false in
+@[deprecated Quotient.surjective_liftOn (since := "2024-08-09"), simp]
+lemma surjective_liftOn' {f : α → φ} (h) :
     Function.Surjective (fun x : Quotient s₁ ↦ x.liftOn' f h) ↔ Function.Surjective f :=
   Quot.surjective_lift _
 
@@ -597,11 +606,13 @@ protected theorem liftOn'_mk'' (f : α → φ) (h) (x : α) :
 instead of instance arguments. -/
 -- Porting note: removed `@[elab_as_elim]` because it gave "unexpected eliminator resulting type"
 -- porting note (#11083): removed `@[reducible]` because it caused extremely slow `simp`
+@[deprecated Quotient.liftOn₂ (since := "2024-08-09")]
 protected def liftOn₂' (q₁ : Quotient s₁) (q₂ : Quotient s₂) (f : α → β → γ)
     (h : ∀ a₁ a₂ b₁ b₂, s₁ a₁ b₁ → s₂ a₂ b₂ → f a₁ a₂ = f b₁ b₂) : γ :=
   Quotient.liftOn₂ q₁ q₂ f h
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated Quotient.liftOn₂_mk (since := "2024-08-09"), simp]
 protected theorem liftOn₂'_mk'' (f : α → β → γ) (h) (a : α) (b : β) :
     Quotient.liftOn₂' (@Quotient.mk'' _ s₁ a) (@Quotient.mk'' _ s₂ b) f h = f a b :=
   rfl
@@ -691,11 +702,13 @@ variable {s : Setoid α}
 protected theorem mk''_eq_mk : Quotient.mk'' = Quotient.mk s :=
   rfl
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated Quotient.liftOn_mk (since := "2024-09-02"), simp]
 protected theorem liftOn'_mk (x : α) (f : α → β) (h) : (Quotient.mk s x).liftOn' f h = f x :=
   rfl
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated Quotient.liftOn₂_mk (since := "2024-09-02"), simp]
 protected theorem liftOn₂'_mk {t : Setoid β} (f : α → β → γ) (h) (a : α) (b : β) :
     Quotient.liftOn₂' (Quotient.mk s a) (Quotient.mk t b) f h = f a b :=
   Quotient.liftOn₂'_mk'' _ _ _ _
@@ -708,9 +721,24 @@ end
 
 instance (q : Quotient s₁) (f : α → Prop) (h : ∀ a b, s₁ a b → f a = f b)
     [DecidablePred f] :
+    Decidable (Quotient.liftOn q f h) :=
+  Quotient.lift.decidablePred _ _ q
+
+instance (q₁ : Quotient s₁) (q₂ : Quotient s₂) (f : α → β → Prop)
+    (h : ∀ a₁ b₁ a₂ b₂, s₁ a₁ a₂ → s₂ b₁ b₂ → f a₁ b₁ = f a₂ b₂)
+    [∀ a, DecidablePred (f a)] :
+    Decidable (Quotient.liftOn₂ q₁ q₂ f h) :=
+  Quotient.lift₂.decidablePred _ h _ _
+
+set_option linter.deprecated false in
+@[deprecated (since := "2024-09-02")]
+instance (q : Quotient s₁) (f : α → Prop) (h : ∀ a b, @Setoid.r α s₁ a b → f a = f b)
+    [DecidablePred f] :
     Decidable (Quotient.liftOn' q f h) :=
   Quotient.lift.decidablePred _ _ q
 
+set_option linter.deprecated false in
+@[deprecated (since := "2024-09-02")]
 instance (q₁ : Quotient s₁) (q₂ : Quotient s₂) (f : α → β → Prop)
     (h : ∀ a₁ b₁ a₂ b₂, s₁ a₁ a₂ → s₂ b₁ b₂ → f a₁ b₁ = f a₂ b₂)
     [∀ a, DecidablePred (f a)] :
