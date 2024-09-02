@@ -12,30 +12,6 @@ jobs:
           all_but_latest: true
           access_token: ${{ github.token }}
 
-  get_tlabel:
-    name: Get t-label
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Print t-label
-        run: |
-          echo "${PR}"
-          tlabels="$(gh api --jq '.labels.[].name' "${PR}" | grep -- '^t-' || printf 'generic')"
-          # print to error, since the stdout is captured into `GITHUB_OUTPUT
-          >&2 printf 't-labels:\n---\n%s\n---\n' "${tlabels}"
-          # if there isn't exactly 1 `t-xxx` label, use `generic`
-          if [[ "$(wc -l <<<"${tlabels}")" -ne 1 ]]; then
-            tlabels="generic"
-          fi
-          streamName="${tlabels} maintainer merges"
-          >&2 printf $'Post to topic: \'%s\'"\n' "${streamName}"
-          echo "name=${streamName}"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR:  /repos/{owner}/{repo}/issues/16350 #{pull_number}
-
   style_lint:
     if: github.repository MAIN_OR_FORK 'leanprover-community/mathlib4'
     name: Lint styleJOB_NAME
