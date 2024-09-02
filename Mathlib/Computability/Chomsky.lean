@@ -66,6 +66,5 @@ theorem Language.IsRegular.isContextFree {L : Language α} (hL : L.IsRegular) : 
   classical
   obtain ⟨_, _, M, rfl⟩ := hL
   use M.toContextFreeGrammar
-  -- will work after merging https://github.com/leanprover-community/mathlib4/pull/16268
   ext w
   exact M.toContextFreeGrammar_mem_language
