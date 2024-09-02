@@ -45,6 +45,7 @@ def findRanges (stx : Syntax) : HashSet (String.Range × SyntaxNodeKind) :=
   match stx.getKind with
       -- ignore default values when they involve tactics and syntax quotations
     | ``Lean.Parser.Term.binderTactic
+    | ``Lean.Parser.Tactic.discharger
     | ``Lean.Parser.Tactic.quot
     | ``Lean.Parser.Term.dynamicQuot => {}
     | ``Lean.Parser.Tactic.tacticSeq1Indented =>
