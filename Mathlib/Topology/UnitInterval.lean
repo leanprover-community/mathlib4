@@ -189,8 +189,7 @@ theorem nonneg' {t : I} : 0 ≤ t :=
 theorem le_one' {t : I} : t ≤ 1 :=
   t.2.2
 
-lemma pos_iff_ne_zero {x : I} : 0 < x ↔ x ≠ 0 := by
-  rw [← coe_ne_zero, ← coe_pos, lt_iff_le_and_ne, and_iff_right (nonneg x), ne_comm]
+lemma pos_iff_ne_zero {x : I} : 0 < x ↔ x ≠ 0 := bot_lt_iff_ne_bot
 
 lemma lt_one_iff_ne {x : I} : x < 1 ↔ x ≠ 1 := lt_top_iff_ne_top
 
