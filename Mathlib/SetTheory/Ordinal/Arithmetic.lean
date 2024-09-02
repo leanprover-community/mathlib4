@@ -1141,7 +1141,7 @@ theorem sup_not_succ_of_ne_sup {ι : Type u} {f : ι → Ordinal.{max u v}}
     (hf : ∀ i, f i ≠ sup.{_, v} f) {a} (hao : a < sup.{_, v} f) : succ a < sup.{_, v} f :=
   succ_lt_iSup_of_ne_iSup hf hao
 
--- TODO: generalize to conditionally complete linear orders.
+-- TODO: generalize to conditionally complete lattices.
 theorem iSup_eq_zero_iff {ι : Type u} {f : ι → Ordinal.{max u v}} :
     iSup f = 0 ↔ ∀ i, f i = 0 := by
   refine
