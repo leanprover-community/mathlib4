@@ -117,7 +117,7 @@ lemma head_eq_U (p : DyckWord) (h) : p.toList.head h = U := by
 lemma getLast_eq_D (p : DyckWord) (h) : p.toList.getLast h = D := by
   by_contra f; have s := p.count_U_eq_count_D
   rw [← dropLast_append_getLast h, (dichotomy _).resolve_right f] at s
-  simp_rw [dropLast_eq_take, count_append, count_singleton', ite_true, ite_false] at s
+  simp_rw [dropLast_eq_take, count_append, count_singleton', ite_true, reduceCtorEq, ite_false] at s
   have := p.count_D_le_count_U (p.toList.length - 1); omega
 
 include h in
@@ -166,7 +166,7 @@ def nest : DyckWord where
     apply add_le_add _ (p.count_D_le_count_U _)
     rcases i.eq_zero_or_pos with hi | hi; · simp [hi]
     rw [take_of_length_le (show [U].length ≤ i by rwa [length_singleton]), count_singleton']
-    simp only [ite_true, ite_false]
+    simp only [reduceCtorEq, ite_true, ite_false]
     rw [add_comm]
     exact add_le_add (zero_le _) ((count_le_length _ _).trans (by simp))
 
@@ -320,7 +320,7 @@ lemma firstReturn_nest : p.nest.firstReturn = p.toList.length + 1 := by
     · rw [take_of_length_le (by simp), ← u, p.nest.count_U_eq_count_D]
     · intro j hj
       simp_rw [cons_append, take_succ_cons, count_cons, beq_self_eq_true, ite_true,
-        beq_iff_eq, ite_false, take_append_eq_append_take,
+        beq_iff_eq, reduceCtorEq, ite_false, take_append_eq_append_take,
         show j - p.toList.length = 0 by omega, take_zero, append_nil]
       have := p.count_D_le_count_U j
       omega

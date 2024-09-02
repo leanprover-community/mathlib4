@@ -1431,7 +1431,8 @@ instance uniqueFinOne : Unique (Fin 1) where
 theorem coe_fin_one (a : Fin 1) : (a : ℕ) = 0 := by simp [Subsingleton.elim a 0]
 
 lemma eq_one_of_neq_zero (i : Fin 2) (hi : i ≠ 0) : i = 1 :=
-  fin_two_eq_of_eq_zero_iff (by simpa only [one_eq_zero_iff, succ.injEq, iff_false] using hi)
+  fin_two_eq_of_eq_zero_iff
+    (by simpa only [one_eq_zero_iff, succ.injEq, iff_false, reduceCtorEq] using hi)
 
 @[simp]
 theorem coe_neg_one : ↑(-1 : Fin (n + 1)) = n := by

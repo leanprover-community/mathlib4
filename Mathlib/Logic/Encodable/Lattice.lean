@@ -39,7 +39,7 @@ theorem iUnion_decode₂_cases {f : β → Set α} {C : Set α → Prop} (H0 : C
     C (⋃ b ∈ decode₂ β n, f b) :=
   match decode₂ β n with
   | none => by
-    simp only [Option.mem_def, iUnion_of_empty, iUnion_empty]
+    simp only [Option.mem_def, iUnion_of_empty, iUnion_empty, reduceCtorEq]
     apply H0
   | some b => by
     convert H1 b

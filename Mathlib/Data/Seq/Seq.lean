@@ -126,7 +126,7 @@ def tail (s : Seq α) : Seq α :=
     exact al n'⟩
 
 /-- member definition for `Seq`-/
-protected def Mem (a : α) (s : Seq α) :=
+protected def Mem (s : Seq α) (a : α) :=
   some a ∈ s.1
 
 instance : Membership α (Seq α) :=
