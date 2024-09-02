@@ -1590,8 +1590,8 @@ lemma hasCompactSupport_mul_of_continuous_compactlySupported (g : C(α, γ)) (f 
     HasCompactSupport (g * f : C(α, γ)) := HasCompactSupport.mul_left
   (mem_compactlySupported.mp f.2)
 
-lemma bounded_of_continuous_hasCompactSupport (g : C(α, γ)) (h : HasCompactSupport g) : ∃ (C : ℝ),
-    ∀ (x y : α), dist (g x) (g y) ≤ C := by
+lemma ofCompactSupport (g : α → γ) (hg₁ : Continuous g)
+    (hg₂ : HasCompactSupport g) : α →ᵇ γ := by
   by_cases hs : (tsupport g).Nonempty
   · have : Continuous (fun x => ‖g x‖) := by
       have : (fun x => ‖g x‖) = (fun x => ((fun y => ‖y‖) ∘ g) x) := rfl
