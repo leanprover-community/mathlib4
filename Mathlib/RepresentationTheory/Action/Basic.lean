@@ -16,7 +16,7 @@ import Mathlib.CategoryTheory.Conj
 The prototypical example is `V = ModuleCat R`,
 where `Action (ModuleCat R) G` is the category of `R`-linear representations of `G`.
 
-We check `Action V G ≌ (singleObj G ⥤ V)`,
+We check `Action V G ≌ (CategoryTheory.singleObj G ⥤ V)`,
 and construct the restriction functors `res {G H : MonCat} (f : G ⟶ H) : Action V H ⥤ Action V G`.
 -/
 
