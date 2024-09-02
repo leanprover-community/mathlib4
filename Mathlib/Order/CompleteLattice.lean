@@ -1273,12 +1273,24 @@ theorem iInf_sigma {p : β → Type*} {f : Sigma p → α} : ⨅ x, f x = ⨅ (i
   @iSup_sigma αᵒᵈ _ _ _ _
 
 lemma iSup_sigma' {κ : β → Type*} (f : ∀ i, κ i → α) :
-    (⨆ i, ⨆ j, f i j) = ⨆ x : Σ i, κ i, f x.1 x.2 :=
-(iSup_sigma (f := fun x ↦ f x.1 x.2)).symm
+    (⨆ i, ⨆ j, f i j) = ⨆ x : Σ i, κ i, f x.1 x.2 := (iSup_sigma (f := fun x ↦ f x.1 x.2)).symm
 
 lemma iInf_sigma' {κ : β → Type*} (f : ∀ i, κ i → α) :
-    (⨅ i, ⨅ j, f i j) = ⨅ x : Σ i, κ i, f x.1 x.2 :=
-(iInf_sigma (f := fun x ↦ f x.1 x.2)).symm
+    (⨅ i, ⨅ j, f i j) = ⨅ x : Σ i, κ i, f x.1 x.2 := (iInf_sigma (f := fun x ↦ f x.1 x.2)).symm
+
+lemma iSup_psigma {ι : Sort*} {κ : ι → Sort*} (f : (Σ' i, κ i) → α) :
+    ⨆ ij, f ij = ⨆ i, ⨆ j, f ⟨i, j⟩ :=
+  eq_of_forall_ge_iff fun c ↦ by simp only [iSup_le_iff, PSigma.forall]
+
+lemma iInf_psigma {ι : Sort*} {κ : ι → Sort*} (f : (Σ' i, κ i) → α) :
+    ⨅ ij, f ij = ⨅ i, ⨅ j, f ⟨i, j⟩ :=
+  eq_of_forall_le_iff fun c ↦ by simp only [le_iInf_iff, PSigma.forall]
+
+lemma iSup_psigma' {ι : Sort*} {κ : ι → Sort*} (f : ∀ i, κ i → α) :
+    (⨆ i, ⨆ j, f i j) = ⨆ ij : Σ' i, κ i, f ij.1 ij.2 := (iSup_psigma fun x ↦ f x.1 x.2).symm
+
+lemma iInf_psigma' {ι : Sort*} {κ : ι → Sort*} (f : ∀ i, κ i → α) :
+    (⨅ i, ⨅ j, f i j) = ⨅ ij : Σ' i, κ i, f ij.1 ij.2 := (iInf_psigma fun x ↦ f x.1 x.2).symm
 
 theorem iSup_prod {f : β × γ → α} : ⨆ x, f x = ⨆ (i) (j), f (i, j) :=
   eq_of_forall_ge_iff fun c => by simp only [iSup_le_iff, Prod.forall]
@@ -1411,6 +1423,12 @@ theorem iSup_eq_top (f : ι → α) : iSup f = ⊤ ↔ ∀ b < ⊤, ∃ i, b < f
 
 theorem iInf_eq_bot (f : ι → α) : iInf f = ⊥ ↔ ∀ b > ⊥, ∃ i, f i < b := by
   simp only [← sInf_range, sInf_eq_bot, Set.exists_range_iff]
+
+lemma iSup₂_eq_top (f : ∀ i, κ i → α) : ⨆ i, ⨆ j, f i j = ⊤ ↔ ∀ b < ⊤, ∃ i j, b < f i j := by
+  simp_rw [iSup_psigma', iSup_eq_top, PSigma.exists]
+
+lemma iInf₂_eq_bot (f : ∀ i, κ i → α) : ⨅ i, ⨅ j, f i j = ⊥ ↔ ∀ b > ⊥, ∃ i j, f i j < b := by
+  simp_rw [iInf_psigma', iInf_eq_bot, PSigma.exists]
 
 end CompleteLinearOrder
 
