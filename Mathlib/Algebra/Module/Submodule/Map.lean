@@ -411,7 +411,7 @@ lemma comap_neg {f : M →ₗ[R] M₂} {p : Submodule R M₂} :
 
 lemma map_toAddSubgroup (f : M →ₗ[R] M₂) (p : Submodule R M) :
     (p.map f).toAddSubgroup = p.toAddSubgroup.map (f : M →+ M₂) :=
-  SetLike.coe_injective rfl
+  rfl
 
 end AddCommGroup
 
