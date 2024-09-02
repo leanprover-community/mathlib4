@@ -22,6 +22,12 @@ example : True := .intro
 @[stacks 0X14 "I can also have a comment"]
 example : True := .intro
 
+@[stacks 0BR2, stacks 0X14 "I can also have a comment"]
+example : True := .intro
+
+@[stacks 0X14 "I can also have a comment"]
+example : True := .intro
+
 /-- error: <input>:1:3: Stacks tags must be exactly 4 characters -/
 #guard_exceptions in Mathlib.Stacks.stacksTagFn "A05"
 
