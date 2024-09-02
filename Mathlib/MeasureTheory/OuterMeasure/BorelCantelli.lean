@@ -69,6 +69,20 @@ theorem ae_finite_setOf_mem {s : ι → Set α} (h : ∑' i, μ (s i) ≠ ∞) :
   congr 1 with x
   simp [mem_limsup_iff_frequently_mem, Filter.Frequently]
 
+/-- A version of the **Borel-Cantelli lemma**: if `pᵢ` is a sequence of predicates such that
+`∑ μ {x | pᵢ x}` is finite, then the measure of `x` such that `pᵢ x` holds frequently as `i → ∞` (or
+equivalently, `pᵢ x` holds for infinitely many `i`) is equal to zero. -/
+theorem measure_setOf_frequently_eq_zero {p : ℕ → α → Prop} (hp : ∑' i, μ { x | p i x } ≠ ∞) :
+    μ { x | ∃ᶠ n in atTop, p n x } = 0 := by
+  simpa only [limsup_eq_iInf_iSup_of_nat, frequently_atTop, ← bex_def, setOf_forall,
+    setOf_exists] using measure_limsup_atTop_eq_zero hp
+
+/-- A version of the **Borel-Cantelli lemma**: if `sᵢ` is a sequence of sets such that
+`∑ μ sᵢ` exists, then for almost all `x`, `x` does not belong to almost all `sᵢ`. -/
+theorem ae_eventually_not_mem {s : ℕ → Set α} (hs : (∑' i, μ (s i)) ≠ ∞) :
+    ∀ᵐ x ∂μ, ∀ᶠ n in atTop, x ∉ s n :=
+  measure_setOf_frequently_eq_zero hs
+
 theorem measure_liminf_cofinite_eq_zero [Infinite ι]  {s : ι → Set α} (h : ∑' i, μ (s i) ≠ ∞) :
     μ (liminf s cofinite) = 0 := by
   rw [← le_zero_iff, ← measure_limsup_cofinite_eq_zero h]
