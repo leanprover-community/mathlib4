@@ -1183,7 +1183,7 @@ theorem sup_empty {ι} [IsEmpty ι] (f : ι → Ordinal) : sup f = 0 :=
 
 set_option linter.deprecated false in
 @[deprecated ciSup_const (since := "2024-08-27")]
-theorem sup_const {ι} [_hι : Nonempty ι] (o : Ordinal) : sup (fun _ : ι => o) = o :=
+theorem sup_const {ι} [_hι : Nonempty ι] (o : Ordinal) : (sup fun _ : ι => o) = o :=
   ciSup_const
 
 set_option linter.deprecated false in
