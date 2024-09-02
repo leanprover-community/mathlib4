@@ -3,9 +3,6 @@ Copyright (c) 2024 Rida Hamadani. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rida Hamadani
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Comp
-import Mathlib.Geometry.Manifold.ChartedSpace
-import Mathlib.Topology.Algebra.Module.Determinant
 import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
 
 /-!
