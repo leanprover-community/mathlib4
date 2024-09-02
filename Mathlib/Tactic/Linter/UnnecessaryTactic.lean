@@ -41,6 +41,31 @@ def findRanges (stx : Syntax) : HashSet (String.Range × SyntaxNodeKind) :=
   else next
 
 partial
+def erasable (toErase rgs : HashSet (String.Range × SyntaxNodeKind)) (tree : InfoTree) :
+    HashSet (String.Range × SyntaxNodeKind) := Id.run do
+  let mut toErase := toErase
+  match tree with
+    | .context _ t => erasable toErase rgs t
+    | .node info args =>
+      let rest := args.foldl (fun a b => (erasable toErase rgs b).merge a) {}
+      if let .ofTacticInfo i := info then
+        let rg := rgs.find? ((i.stx.getRange? true).getD default, i.stx.getKind)
+        if rg.isSome && i.goalsBefore != i.goalsAfter then
+          dbg_trace "{i.stx.getKind} -- erasing"
+          toErase := toErase.insert rg.get!
+          return args.foldl (fun a b => (erasable toErase rgs b).merge a) {}
+        else
+          if rg.isSome then
+            dbg_trace "{i.stx.getKind} -- unused"
+            args.foldl (fun a b => (wr rgs b).merge a) rgs
+          else
+            args.foldl (fun a b => (wr rgs b).merge a) rgs
+
+      else
+        args.foldl (fun a b => (wr rgs b).merge a) rgs
+    | _  => rgs
+
+partial
 def wr : HashSet (String.Range × SyntaxNodeKind) → InfoTree → HashSet (String.Range × SyntaxNodeKind)
   | rgs, .context _ t => wr rgs t
   | rgs, .node info args =>
@@ -50,7 +75,7 @@ def wr : HashSet (String.Range × SyntaxNodeKind) → InfoTree → HashSet (Stri
       if rg.isSome && i.goalsBefore != i.goalsAfter then
         let newRgs := rgs.erase rg.get!
         let rest := args.foldl (fun a b => (wr newRgs b).merge (a.erase rg.get!)) newRgs
-        dbg_trace "erasing"
+        dbg_trace "{i.stx.getKind} -- erasing"
         rest.erase (i.stx.getRange?.getD default, i.stx.getKind)
       else
         if rg.isSome then
