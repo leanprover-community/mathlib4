@@ -220,16 +220,7 @@ instance : LinearOrderedCommMonoidWithZero I where
     simp only [← Subtype.coe_le_coe, coe_mul]
     apply mul_le_mul le_rfl ?_ (nonneg i) (nonneg k)
     simp [h_ij]
-  le_total := LinearOrder.le_total
-  decidableLE := LinearOrder.decidableLE
-  min_def := LinearOrder.min_def
-  max_def := LinearOrder.max_def
-  compare_eq_compareOfLessAndEq i j := by
-    simp only [compare, compareOfLessAndEq, Subtype.coe_lt_coe]
-    split_ifs
-    all_goals try rfl
-    case pos h_ne h_eq => exact h_ne <| Subtype.coe_inj.mpr h_eq
-    case neg h_eq h_ne => exact h_ne <| Subtype.coe_inj.mp h_eq
+  __ := inferInstanceAs (LinearOrder I)
 
 end unitInterval
 
