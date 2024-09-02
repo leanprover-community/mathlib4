@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 
-import Mathlib.ModelTheory.Algebra.Field.CharP
+import Mathlib.Data.Nat.PrimeFin
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 import Mathlib.FieldTheory.IsAlgClosed.Classification
+import Mathlib.ModelTheory.Algebra.Field.CharP
 import Mathlib.ModelTheory.Satisfiability
-import Mathlib.Data.Nat.PrimeFin
 
 /-!
 
