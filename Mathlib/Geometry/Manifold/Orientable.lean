@@ -76,7 +76,7 @@ lemma orientationPreserving_comp [Nontrivial H] [FiniteDimensional ℝ H] {f g :
   rw [(fderiv ℝ g (f x)).toLinearMap.det_comp (fderiv ℝ f x).toLinearMap]
   exact mul_pos (hg (f x) hxv) (hf x hxu)
 
-lemma orientationPreserving_comp_orientationReversing [Nontrivial H] [FiniteDimensional ℝ H]
+lemma orientationReversing_comp_OrientationPreserving [Nontrivial H] [FiniteDimensional ℝ H]
     {f g : H → H} {u v : Set H} (hf : OrientationPreserving f u) (hg : OrientationReversing g v) :
     OrientationReversing (g ∘ f) (u ∩ f ⁻¹' v) := by
   intro x ⟨hxu, hxv⟩
@@ -85,7 +85,7 @@ lemma orientationPreserving_comp_orientationReversing [Nontrivial H] [FiniteDime
   rw [(fderiv ℝ g (f x)).toLinearMap.det_comp (fderiv ℝ f x).toLinearMap]
   exact mul_neg_of_neg_of_pos (hg (f x) hxv) (hf x hxu)
 
-lemma orientationReversing_comp_orientationPreserving [Nontrivial H] [FiniteDimensional ℝ H]
+lemma OrientationPreserving_comp_orientationReversing [Nontrivial H] [FiniteDimensional ℝ H]
     {f g : H → H} {u v : Set H} (hf : OrientationReversing f u) (hg : OrientationPreserving g v) :
     OrientationReversing (g ∘ f) (u ∩ f ⁻¹' v) := by
   intro x ⟨hxu, hxv⟩
