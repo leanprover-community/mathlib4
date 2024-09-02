@@ -8,6 +8,7 @@ import Mathlib.FieldTheory.IntermediateField.Algebraic
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.SplittingField.IsSplittingField
 import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.FieldTheory.RatFunc.Basic
 
 /-!
 # Adjoining Elements to Fields
@@ -968,7 +969,10 @@ theorem aeval_gen_minpoly (α : E) : aeval (AdjoinSimple.gen F α) (minpoly F α
   exact (aeval_algebraMap_apply E (AdjoinSimple.gen F α) _).symm
 
 -- Porting note: original proof used `Exists.cases_on`.
-/-- algebra isomorphism between `AdjoinRoot` and `F⟮α⟯` -/
+/-- algebra isomorphism between `AdjoinRoot` and `F⟮α⟯`
+
+[Stacks: Lemma 09G1 Part 2](https://stacks.math.columbia.edu/tag/09G1)
+-/
 noncomputable def adjoinRootEquivAdjoin (h : IsIntegral F α) :
     AdjoinRoot (minpoly F α) ≃ₐ[F] F⟮α⟯ :=
   AlgEquiv.ofBijective
@@ -999,6 +1003,40 @@ theorem adjoinRootEquivAdjoin_apply_root (h : IsIntegral F α) :
 
 theorem adjoin_root_eq_top (p : K[X]) [Fact (Irreducible p)] : K⟮AdjoinRoot.root p⟯ = ⊤ :=
   (eq_adjoin_of_eq_algebra_adjoin K _ ⊤ (AdjoinRoot.adjoinRoot_eq_top (f := p)).symm).symm
+
+/--
+If α is not algebraic, then there is algebraic isomorphic between F⟮α⟯ and RatFunc
+
+[Stacks: Lemma 09G1 Part 1](https://stacks.math.columbia.edu/tag/09G1)
+-/
+noncomputable def ratFuncEquivAdjoin (h: ¬ IsAlgebraic F α) :
+    RatFunc F ≃ₐ[F] F⟮α⟯ :=
+  let tmp : F[X] →ₐ[F] F⟮α⟯ := aevalTower
+    ⟨algebraMap F F⟮α⟯, fun _ => rfl⟩ (AdjoinSimple.gen F α)
+  have tmp_property (p : F[X]): tmp p = (aeval α) p := by
+    have : (aeval α p) = (algebraMap F⟮α⟯ E) (aeval (AdjoinSimple.gen F α) p) := by
+      rw [← aeval_algebraMap_apply, AdjoinSimple.algebraMap_gen F α]
+    rw [this]; rfl
+  let important: RatFunc F →ₐ[F] F⟮α⟯ := by
+    refine RatFunc.liftAlgHom tmp ?_h
+    refine nonZeroDivisors_le_comap_nonZeroDivisors_of_injective tmp ?_
+    have (p : F[X]) (hp: tmp p = 0): p = 0 := by
+      have hpp : aeval α p = 0 := tmp_property p ▸ hp ▸ of_eq_true (eq_self 0)
+      unfold IsAlgebraic at h
+      push_neg at h
+      by_contra hne
+      exact (h p hne) hpp
+    exact (injective_iff_map_eq_zero tmp).mpr this
+  have hinj: Function.Injective important := important.toRingHom.injective
+  have hsur: Function.Surjective important := fun ⟨y, ymem⟩ => by
+    apply (IntermediateField.mem_adjoin_simple_iff _ y).mp at ymem
+    rcases ymem with ⟨rpoly, spoly, rfl⟩
+    use (RatFunc.mk rpoly spoly)
+    unfold_let important
+    simp only [RatFunc.mk_eq_div, map_div₀, RatFunc.liftAlgHom_apply_div']
+    simp_rw [← tmp_property rpoly, ← tmp_property spoly]
+    rfl
+  AlgEquiv.ofBijective important ⟨hinj, hsur⟩
 
 section PowerBasis
 
