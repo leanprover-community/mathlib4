@@ -237,6 +237,7 @@ section Metric
 
 variable [PseudoMetricSpace X] [MetricSpace Y] {C r : ℝ≥0} {f : X → Y}
 
+@[simp]
 lemma holderWith_eq_zero_iff : HolderWith 0 r f ↔ ∀ x₁ x₂, f x₁ = f x₂ := by
   refine ⟨fun h x₁ x₂ => ?_, fun h x₁ x₂ => h x₁ x₂ ▸ ?_⟩
   · specialize h x₁ x₂
