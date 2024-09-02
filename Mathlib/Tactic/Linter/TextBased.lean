@@ -350,17 +350,15 @@ def lintFile (path : FilePath) (exceptions : Array ErrorContext) :
   -- we need to analyse the actual file contents.
   let contents ← IO.FS.readFile path
   let replaced := contents.crlfToLf
-  if replaced != then
+  if replaced != contents then
     changes_made := true
     errors := errors.push (ErrorContext.mk StyleError.windowsLineEnding 1 path)
-  let lines := replaced.splitOn '\n'
+  let lines := (replaced.splitOn "\n").toArray
 
   -- We don't need to run any further checks on imports-only files.
   if isImportsOnlyFile lines then
     return (errors, if changes_made then some lines else none)
 
-  if let some (StyleError.fileTooLong n limit ex) := checkFileLength lines sizeLimit then
-    errors := errors.push (ErrorContext.mk (StyleError.fileTooLong n limit ex) 1 path)
   -- All further style errors raised in this file.
   let mut allOutput := #[]
   -- A working copy of the lines in this file, modified by applying the auto-fixes.
@@ -371,11 +369,11 @@ def lintFile (path : FilePath) (exceptions : Array ErrorContext) :
     allOutput := allOutput.append (Array.map (fun (e, n) ↦ #[(ErrorContext.mk e n path)]) err)
     if let some c := changes then
       changed := c
-      change_made := true
+      changes_made := true
   -- This list is not sorted: for github, this is fine.
   errors := errors.append
     (allOutput.flatten.filter (fun e ↦ (e.find?_comparable exceptions).isNone))
-  return (errors, if change_mades then some changed else none)
+  return (errors, if changes_made then some changed else none)
 
 
 /-- Lint a collection of modules for style violations.
