@@ -302,6 +302,8 @@ theorem subsingleton_of_hasTrivialRadical_lie_abelian [HasTrivialRadical R L] [h
 
 theorem abelian_radical_of_hasTrivialRadical [HasTrivialRadical R L] :
     IsLieAbelian (radical R L) := by
+  #adaptation_note /-- After lean4#5020, many instances for Lie algebras and manifolds are no
+  longer found. -/
   letI : Unique (⊥ : LieIdeal R L) := Submodule.uniqueBot
   letI : Subsingleton (⊥ : LieIdeal R L) := Unique.instSubsingleton
   letI : LieModule.IsTrivial L (⊥ : LieIdeal R L) := LieModule.instIsTrivialOfSubsingleton' ..

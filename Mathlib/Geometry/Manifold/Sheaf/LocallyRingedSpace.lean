@@ -94,6 +94,8 @@ theorem smoothSheafCommRing.isUnit_stalk_iff {x : M}
         apply inv_mul_cancel₀
         exact hVf y
     · intro y
+      #adaptation_note /-- After lean4#5020, many instances for Lie algebras and manifolds are no
+      longer found. -/
       letI : ChartedSpace HM V := V.instChartedSpace
       exact ((contDiffAt_inv _ (hVf y)).contMDiffAt).comp y
         (f.smooth.comp (smooth_inclusion hUV)).smoothAt

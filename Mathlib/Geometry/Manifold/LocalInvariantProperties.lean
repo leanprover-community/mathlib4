@@ -518,6 +518,8 @@ theorem liftProp_inclusion {Q : (H → H) → Set H → H → Prop} (hG : LocalI
     letI : ChartedSpace H { x // x ∈ V } := V.instChartedSpace
     letI : ChartedSpace H { x // x ∈ U } := U.instChartedSpace
     LiftProp Q (Set.inclusion hUV : U → V) := by
+  #adaptation_note /-- After lean4#5020, many instances for Lie algebras and manifolds are no
+  longer found (also in the statement of this theorem). -/
   letI : ChartedSpace H { x // x ∈ V } := V.instChartedSpace
   letI : ChartedSpace H { x // x ∈ U } := U.instChartedSpace
   intro x

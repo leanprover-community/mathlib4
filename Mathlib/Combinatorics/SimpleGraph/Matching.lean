@@ -198,6 +198,8 @@ variable [Fintype V]
 lemma even_card_of_isPerfectMatching [DecidableEq V] [DecidableRel G.Adj]
     (c : ConnectedComponent G) (hM : M.IsPerfectMatching) :
     Even (Fintype.card c.supp) := by
+  #adaptation_note /-- After lean4#5020, many instances for Lie algebras and manifolds are no
+  longer found. -/
   letI : DecidablePred fun x ↦ x ∈ (M.induce c.supp).verts := fun a ↦ G.instDecidableMemSupp c a
   simpa using (hM.induce_connectedComponent_isMatching c).even_card
 

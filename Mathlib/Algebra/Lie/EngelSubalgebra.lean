@@ -113,6 +113,7 @@ lemma normalizer_eq_self_of_engel_le [IsArtinian R L]
     rwa [← lie_skew, neg_mem_iff (G := L)]
   have aux₂ : ∀ n ∈ N, ⁅x, n⁆ ∈ N := fun n hn ↦ le_normalizer H (aux₁ _ hn)
   let dx : N →ₗ[R] N := (ad R L x).restrict aux₂
+  #adaptation_note /-- After lean4#5020, many instances are no longer found. -/
   have : IsArtinian R { x // x ∈ N } := isArtinian_submodule' _
   obtain ⟨k, hk⟩ : ∃ a, ∀ b ≥ a, Codisjoint (LinearMap.ker (dx ^ b)) (LinearMap.range (dx ^ b)) :=
     eventually_atTop.mp <| dx.eventually_codisjoint_ker_pow_range_pow

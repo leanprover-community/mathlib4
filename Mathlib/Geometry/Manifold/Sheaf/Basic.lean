@@ -55,6 +55,8 @@ def StructureGroupoid.LocalInvariantProp.localPredicate (hG : LocalInvariantProp
   res := by
     intro U V i f h x
     have hUV : U ≤ V := CategoryTheory.leOfHom i
+    #adaptation_note /-- After lean4#5020, many instances for Lie algebras and manifolds are no
+    longer found. -/
     letI : ChartedSpace H U := U.instChartedSpace
     show ChartedSpace.LiftPropAt P (f ∘ Set.inclusion hUV) x
     rw [← hG.liftPropAt_iff_comp_inclusion hUV]

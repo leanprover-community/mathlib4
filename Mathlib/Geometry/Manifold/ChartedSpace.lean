@@ -1161,6 +1161,8 @@ theorem chartAt_subtype_val_symm_eventuallyEq (U : Opens M) {x : U} :
   exact Filter.eventuallyEq_of_mem heUx_nhds (e.subtypeRestr_symm_eqOn ⟨x⟩)
 
 theorem chartAt_inclusion_symm_eventuallyEq {U V : Opens M} (hUV : U ≤ V) {x : U} :
+    #adaptation_note /-- After lean4#5020, many instances for Lie algebras and manifolds are no
+    longer found. -/
     letI : ChartedSpace H V := V.instChartedSpace
     (chartAt H (Set.inclusion hUV x)).symm
     =ᶠ[𝓝 (chartAt H (Set.inclusion hUV x) (Set.inclusion hUV x))]
