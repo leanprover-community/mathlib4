@@ -449,7 +449,7 @@ theorem summable_norm_mul_geometric_of_norm_lt_one {k : ℕ} {r : R}
 
 theorem summable_norm_pow_mul_geometric_of_norm_lt_one (k : ℕ) {r : R}
     (hr : ‖r‖ < 1) : Summable fun n : ℕ ↦ ‖((n : R) ^ k * r ^ n : R)‖ := by
-  simp [← cast_pow]
+  simp only [← cast_pow]
   exact summable_norm_mul_geometric_of_norm_lt_one (k := k) (u := fun n ↦ n ^ k) hr
     (isBigO_refl _ _)
 
@@ -482,7 +482,7 @@ lemma hasSum_choose_mul_geometric_of_norm_lt_one'
           apply Finset.sum_congr rfl (fun i hi ↦ ?_)
           simp only [Finset.mem_range] at hi
           rw [mul_assoc, ← pow_add, show i + (n - i) = n by omega]
-        simp only [this, ← sum_mul, ← Nat.cast_sum, sum_range_add_choose k n]
+        simp [this, ← sum_mul, ← Nat.cast_sum, sum_range_add_choose n k, add_assoc]
       · rw [ih.tsum_eq, (hasSum_geom_series_inverse r hr).tsum_eq, pow_succ]
 
 lemma summable_choose_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr : ‖r‖ < 1) :
@@ -509,6 +509,7 @@ lemma summable_descFactorial_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr 
     using 2 with n
   simp [← mul_assoc, descFactorial_eq_factorial_mul_choose (n + k) k]
 
+open Polynomial in
 theorem summable_pow_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr : ‖r‖ < 1) :
     Summable (fun n ↦ (n : R) ^ k * r ^ n : ℕ → R) := by
   refine Nat.strong_induction_on k fun k hk => ?_
