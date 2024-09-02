@@ -335,10 +335,8 @@ theorem sublistForall₂_map_right_iff {f : γ → β} {l₁ : List α} {l₂ : 
   simp only [sublistForall₂_iff]
   constructor
   · rintro ⟨l1, h1, h2⟩
-    rw [sublist_map_iff] at h2
-    obtain ⟨l', hl1, hl2⟩ := h2
+    obtain ⟨l', hl1, rfl⟩ := sublist_map_iff.mp h2
     use l'
-    rw [hl2] at h1
     simpa [hl1] using h1
   · rintro ⟨l1, h1, h2⟩
     use l1.map f
