@@ -1,5 +1,18 @@
 #!/usr/bin/env bash
 
+ : <<'BASH_MODULE_DOCS'
+
+This script is used by the maintainer merge actions to extract
+* either `t-xxx` if `t-xxx` is the unique `t-`label of the PR;
+* or `generic` otherwise
+and stores it in `tlabels`.
+
+In turn, the string `tlabels` extracted above is converted into the
+topic name `maintainer merge: tlabels` for the post to the
+`maintainer merge` stream.
+
+BASH_MODULE_DOCS
+
 PR="${1}"
 
 >&2 printf $'Using PR: \'%s\'\n' "${PR}"
