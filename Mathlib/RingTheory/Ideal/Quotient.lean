@@ -288,7 +288,7 @@ variable (ι : Type v)
 /-- `R^n/I^n` is a `R/I`-module. -/
 instance modulePi : Module (R ⧸ I) ((ι → R) ⧸ I.pi ι) where
   smul c m :=
-    Quotient.liftOn₂' c m (fun r m => Submodule.Quotient.mk <| r • m) <| by
+    Quotient.liftOn₂ c m (fun r m => Submodule.Quotient.mk <| r • m) <| by
       intro c₁ m₁ c₂ m₂ hc hm
       apply Ideal.Quotient.eq.2
       rw [Submodule.quotientRel_r_def] at hc hm
@@ -322,7 +322,7 @@ instance modulePi : Module (R ⧸ I) ((ι → R) ⧸ I.pi ι) where
 /-- `R^n/I^n` is isomorphic to `(R/I)^n` as an `R/I`-module. -/
 noncomputable def piQuotEquiv : ((ι → R) ⧸ I.pi ι) ≃ₗ[R ⧸ I] ι → (R ⧸ I) where
   toFun := fun x ↦
-      Quotient.liftOn' x (fun f i => Ideal.Quotient.mk I (f i)) fun a b hab =>
+      Quotient.liftOn x (fun f i => Ideal.Quotient.mk I (f i)) fun a b hab =>
         funext fun i => (Submodule.Quotient.eq' _).2 (QuotientAddGroup.leftRel_apply.mp hab i)
   map_add' := by rintro ⟨_⟩ ⟨_⟩; rfl
   map_smul' := by rintro ⟨_⟩ ⟨_⟩; rfl

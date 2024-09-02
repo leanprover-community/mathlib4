@@ -245,7 +245,7 @@ theorem quot_mk_eq_coe {M : Type*} [Mul M] (c : Con M) (x : M) : Quot.mk c x = (
 induced by a function that is constant on `c`'s equivalence classes."]
 protected def liftOn {β} {c : Con M} (q : c.Quotient) (f : M → β) (h : ∀ a b, c a b → f a = f b) :
     β :=
-  Quotient.liftOn' q f h
+  Quotient.liftOn q f h
 
 -- Porting note (#11215): TODO: restore `elab_as_elim`
 /-- The binary function on the quotient by a congruence relation `c` induced by a binary function
@@ -254,7 +254,7 @@ protected def liftOn {β} {c : Con M} (q : c.Quotient) (f : M → β) (h : ∀ a
 induced by a binary function that is constant on `c`'s equivalence classes."]
 protected def liftOn₂ {β} {c : Con M} (q r : c.Quotient) (f : M → M → β)
     (h : ∀ a₁ a₂ b₁ b₂, c a₁ b₁ → c a₂ b₂ → f a₁ a₂ = f b₁ b₂) : β :=
-  Quotient.liftOn₂' q r f h
+  Quotient.liftOn₂ q r f h
 
 /-- A version of `Quotient.hrecOn₂'` for quotients by `Con`. -/
 @[to_additive "A version of `Quotient.hrecOn₂'` for quotients by `AddCon`."]

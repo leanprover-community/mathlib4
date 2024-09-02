@@ -368,7 +368,7 @@ noncomputable def Quotient.outRelEmbedding [Setoid α] {r : α → α → Prop}
 @[simps]
 noncomputable def Quotient.out'RelEmbedding {_ : Setoid α} {r : α → α → Prop}
     (H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂) :
-    (fun a b => Quotient.liftOn₂' a b r H) ↪r r :=
+    (fun a b => Quotient.liftOn₂ a b r H) ↪r r :=
   { Quotient.outRelEmbedding H with toFun := Quotient.out' }
 
 @[simp]
@@ -385,7 +385,7 @@ theorem acc_lift₂_iff [Setoid α] {r : α → α → Prop}
 
 @[simp]
 theorem acc_liftOn₂'_iff {s : Setoid α} {r : α → α → Prop} {H} {a} :
-    Acc (fun x y => Quotient.liftOn₂' x y r H) (Quotient.mk'' a : Quotient s) ↔ Acc r a :=
+    Acc (fun x y => Quotient.liftOn₂ x y r H) (Quotient.mk'' a : Quotient s) ↔ Acc r a :=
   acc_lift₂_iff (H := H)
 
 /-- A relation is well founded iff its lift to a quotient is. -/
@@ -403,7 +403,7 @@ alias ⟨WellFounded.of_quotient_lift₂, WellFounded.quotient_lift₂⟩ := wel
 
 @[simp]
 theorem wellFounded_liftOn₂'_iff {s : Setoid α} {r : α → α → Prop} {H} :
-    (WellFounded fun x y : Quotient s => Quotient.liftOn₂' x y r H) ↔ WellFounded r :=
+    (WellFounded fun x y : Quotient s => Quotient.liftOn₂ x y r H) ↔ WellFounded r :=
   wellFounded_lift₂_iff (H := H)
 
 alias ⟨WellFounded.of_quotient_liftOn₂', WellFounded.quotient_liftOn₂'⟩ := wellFounded_liftOn₂'_iff

@@ -235,7 +235,7 @@ theorem Continuous.image_eq_of_connectedComponent_eq (h : Continuous f) (a b : �
 The lift to `connectedComponents α` of a continuous map from `α` to a totally disconnected space
 -/
 def Continuous.connectedComponentsLift (h : Continuous f) : ConnectedComponents α → β := fun x =>
-  Quotient.liftOn' x f h.image_eq_of_connectedComponent_eq
+  Quotient.liftOn x f h.image_eq_of_connectedComponent_eq
 
 @[continuity]
 theorem Continuous.connectedComponentsLift_continuous (h : Continuous f) :

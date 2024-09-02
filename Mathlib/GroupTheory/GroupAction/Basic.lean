@@ -477,7 +477,7 @@ variable {G α}
 /-- The orbit corresponding to an element of the quotient by `MulAction.orbitRel` -/
 @[to_additive "The orbit corresponding to an element of the quotient by `AddAction.orbitRel`"]
 nonrec def orbitRel.Quotient.orbit (x : orbitRel.Quotient G α) : Set α :=
-  Quotient.liftOn' x (orbit G) fun _ _ => MulAction.orbit_eq_iff.2
+  Quotient.liftOn x (orbit G) fun _ _ => MulAction.orbit_eq_iff.2
 
 @[to_additive (attr := simp)]
 theorem orbitRel.Quotient.orbit_mk (a : α) :

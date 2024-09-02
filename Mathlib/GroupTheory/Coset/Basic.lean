@@ -374,7 +374,7 @@ instance : Coe α (α ⧸ s) :=
 @[to_additive (attr := deprecated (since := "2024-08-04"))] alias induction_on' := induction_on
 
 @[to_additive (attr := simp)]
-theorem quotient_liftOn_mk {β} (f : α → β) (h) (x : α) : Quotient.liftOn' (x : α ⧸ s) f h = f x :=
+theorem quotient_liftOn_mk {β} (f : α → β) (h) (x : α) : Quotient.liftOn (x : α ⧸ s) f h = f x :=
   rfl
 
 @[to_additive]

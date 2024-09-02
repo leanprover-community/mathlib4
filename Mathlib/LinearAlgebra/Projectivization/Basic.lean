@@ -82,7 +82,7 @@ open FiniteDimensional
 
 /-- Consider an element of the projectivization as a submodule of `V`. -/
 protected def submodule (v : ℙ K V) : Submodule K V :=
-  (Quotient.liftOn' v fun v => K ∙ (v : V)) <| by
+  (Quotient.liftOn v fun v => K ∙ (v : V)) <| by
     rintro ⟨a, ha⟩ ⟨b, hb⟩ ⟨x, rfl : x • b = a⟩
     exact Submodule.span_singleton_group_smul_eq _ x _
 

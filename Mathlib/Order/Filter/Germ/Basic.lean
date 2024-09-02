@@ -164,7 +164,7 @@ def map' {lc : Filter γ} (F : (α → β) → γ → δ) (hF : (l.EventuallyEq 
 to the same value, returns the value `F` takes on functions having germ `f` at `l`. -/
 def liftOn {γ : Sort*} (f : Germ l β) (F : (α → β) → γ) (hF : (l.EventuallyEq ⇒ (· = ·)) F F) :
     γ :=
-  Quotient.liftOn' f F hF
+  Quotient.liftOn f F hF
 
 @[simp]
 theorem map'_coe {lc : Filter γ} (F : (α → β) → γ → δ) (hF : (l.EventuallyEq ⇒ lc.EventuallyEq) F F)
@@ -299,7 +299,7 @@ theorem liftPred_const_iff [NeBot l] {p : β → Prop} {x : β} : LiftPred p (�
 
 /-- Lift a relation `r : β → γ → Prop` to `Germ l β → Germ l γ → Prop`. -/
 def LiftRel (r : β → γ → Prop) (f : Germ l β) (g : Germ l γ) : Prop :=
-  Quotient.liftOn₂' f g (fun f g => ∀ᶠ x in l, r (f x) (g x)) fun _f _g _f' _g' Hf Hg =>
+  Quotient.liftOn₂ f g (fun f g => ∀ᶠ x in l, r (f x) (g x)) fun _f _g _f' _g' Hf Hg =>
     propext <| eventually_congr <| Hg.mp <| Hf.mono fun _x hf hg => hf ▸ hg ▸ Iff.rfl
 
 @[simp]

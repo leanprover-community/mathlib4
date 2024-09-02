@@ -108,7 +108,7 @@ instance lieQuotientLieModule : LieModule R L (M ⧸ N) :=
 instance lieQuotientHasBracket : Bracket (L ⧸ I) (L ⧸ I) :=
   ⟨by
     intro x y
-    apply Quotient.liftOn₂' x y fun x' y' => mk ⁅x', y'⁆
+    apply Quotient.liftOn₂ x y fun x' y' => mk ⁅x', y'⁆
     intro x₁ x₂ y₁ y₂ h₁ h₂
     apply (Submodule.Quotient.eq I.toSubmodule).2
     rw [Submodule.quotientRel_r_def] at h₁ h₂
