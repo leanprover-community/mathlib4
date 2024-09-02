@@ -326,39 +326,43 @@ open OrderDual
 
 section
 
+section OrderDual
+
+@[simp]
+theorem toDual_sSup [SupSet α] (s : Set α) : toDual (sSup s) = sInf (ofDual ⁻¹' s) :=
+  rfl
+
+@[simp]
+theorem toDual_sInf [InfSet α] (s : Set α) : toDual (sInf s) = sSup (ofDual ⁻¹' s) :=
+  rfl
+
+@[simp]
+theorem ofDual_sSup [InfSet α] (s : Set αᵒᵈ) : ofDual (sSup s) = sInf (toDual ⁻¹' s) :=
+  rfl
+
+@[simp]
+theorem ofDual_sInf [SupSet α] (s : Set αᵒᵈ) : ofDual (sInf s) = sSup (toDual ⁻¹' s) :=
+  rfl
+
+@[simp]
+theorem toDual_iSup [SupSet α] (f : ι → α) : toDual (⨆ i, f i) = ⨅ i, toDual (f i) :=
+  rfl
+
+@[simp]
+theorem toDual_iInf [InfSet α] (f : ι → α) : toDual (⨅ i, f i) = ⨆ i, toDual (f i) :=
+  rfl
+
+@[simp]
+theorem ofDual_iSup [InfSet α] (f : ι → αᵒᵈ) : ofDual (⨆ i, f i) = ⨅ i, ofDual (f i) :=
+  rfl
+
+@[simp]
+theorem ofDual_iInf [SupSet α] (f : ι → αᵒᵈ) : ofDual (⨅ i, f i) = ⨆ i, ofDual (f i) :=
+  rfl
+
+end OrderDual
+
 variable [CompleteLattice α] {s t : Set α} {a b : α}
-
-@[simp]
-theorem toDual_sSup (s : Set α) : toDual (sSup s) = sInf (ofDual ⁻¹' s) :=
-  rfl
-
-@[simp]
-theorem toDual_sInf (s : Set α) : toDual (sInf s) = sSup (ofDual ⁻¹' s) :=
-  rfl
-
-@[simp]
-theorem ofDual_sSup (s : Set αᵒᵈ) : ofDual (sSup s) = sInf (toDual ⁻¹' s) :=
-  rfl
-
-@[simp]
-theorem ofDual_sInf (s : Set αᵒᵈ) : ofDual (sInf s) = sSup (toDual ⁻¹' s) :=
-  rfl
-
-@[simp]
-theorem toDual_iSup (f : ι → α) : toDual (⨆ i, f i) = ⨅ i, toDual (f i) :=
-  rfl
-
-@[simp]
-theorem toDual_iInf (f : ι → α) : toDual (⨅ i, f i) = ⨆ i, toDual (f i) :=
-  rfl
-
-@[simp]
-theorem ofDual_iSup (f : ι → αᵒᵈ) : ofDual (⨆ i, f i) = ⨅ i, ofDual (f i) :=
-  rfl
-
-@[simp]
-theorem ofDual_iInf (f : ι → αᵒᵈ) : ofDual (⨅ i, f i) = ⨆ i, ofDual (f i) :=
-  rfl
 
 theorem sInf_le_sSup (hs : s.Nonempty) : sInf s ≤ sSup s :=
   isGLB_le_isLUB (isGLB_sInf s) (isLUB_sSup s) hs
@@ -865,6 +869,9 @@ theorem iSup_eq_bot : iSup s = ⊥ ↔ ∀ i, s i = ⊥ :=
 @[simp]
 theorem iInf_eq_top : iInf s = ⊤ ↔ ∀ i, s i = ⊤ :=
   sInf_eq_top.trans forall_mem_range
+
+@[simp] lemma bot_lt_iSup : ⊥ < ⨆ i, s i ↔ ∃ i, ⊥ < s i := by simp [bot_lt_iff_ne_bot]
+@[simp] lemma iInf_lt_top : ⨅ i, s i < ⊤ ↔ ∃ i, s i < ⊤ := by simp [lt_top_iff_ne_top]
 
 theorem iSup₂_eq_bot {f : ∀ i, κ i → α} : ⨆ (i) (j), f i j = ⊥ ↔ ∀ i j, f i j = ⊥ := by
   simp
