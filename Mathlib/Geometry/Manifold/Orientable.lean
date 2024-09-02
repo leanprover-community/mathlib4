@@ -6,6 +6,7 @@ Authors: Rida Hamadani
 import Mathlib.Analysis.Calculus.FDeriv.Comp
 import Mathlib.Geometry.Manifold.ChartedSpace
 import Mathlib.Topology.Algebra.Module.Determinant
+import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
 
 /-!
 # Orientable Manifolds
@@ -124,8 +125,13 @@ end OrientationPreserving
 section OrientableManifold
 
 /-- Typeclass defining orientable manifolds. -/
-class OrientableManifold [Nontrivial H] [FiniteDimensional ℝ H]
-    (M : Type*) [TopologicalSpace M] [ChartedSpace H M] extends
+class OrientableManifold (H : Type*) [Nontrivial H] [NormedAddCommGroup H] [NormedSpace ℝ H]
+    [FiniteDimensional ℝ H] (M : Type*) [TopologicalSpace M] [ChartedSpace H M] extends
   HasGroupoid M (@orientationPreservingGroupoid H _ _ _ _) : Prop
+
+class OrientableSmoothManifold (H : Type*) [Nontrivial H] [NormedAddCommGroup H] [NormedSpace ℝ H]
+    [FiniteDimensional ℝ H] (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
+    [OrientableManifold H M] (I : ModelWithCorners ℝ H M) [SmoothManifoldWithCorners I M] extends
+  SmoothManifoldWithCorners I M ∧ OrientableManifold H M : Prop
 
 end OrientableManifold
