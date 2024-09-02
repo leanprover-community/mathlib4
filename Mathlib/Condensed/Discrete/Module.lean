@@ -3,7 +3,7 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Sites.IsConstant
+import Mathlib.CategoryTheory.Sites.ConstantSheaf
 import Mathlib.Condensed.Discrete.LocallyConstant
 import Mathlib.Condensed.Light.Module
 import Mathlib.Condensed.Module
@@ -90,14 +90,15 @@ noncomputable def functorIsoDiscreteAux₂ (M : ModuleCat R) :
 
 instance (M : ModuleCat R) : IsIso ((forget R).map
     ((discreteUnderlyingAdj (ModuleCat R)).counit.app ((functor R).obj M))) := by
-  erw [← Sheaf.constantSheafAdj_counit_w]
+  dsimp [Condensed.forget, discreteUnderlyingAdj]
+  rw [← constantSheafAdj_counit_w]
   refine @IsIso.comp_isIso _ _ _ _ _ _ _ inferInstance ?_
-  change Sheaf.IsConstant _ _ _
   have : (constantSheaf (coherentTopology CompHaus) (Type (u + 1))).Faithful :=
     inferInstanceAs (discrete _).Faithful
   have : (constantSheaf (coherentTopology CompHaus) (Type (u + 1))).Full :=
     inferInstanceAs (discrete _).Full
-  rw [Sheaf.isConstant_iff_mem_essImage]
+  rw [← Sheaf.isConstant_iff_isIso_counit_app]
+  constructor
   change _ ∈ (discrete _).essImage
   rw [essImage_eq_of_natIso CondensedSet.LocallyConstant.iso.symm]
   exact obj_mem_essImage CondensedSet.LocallyConstant.functor M
@@ -120,8 +121,8 @@ noncomputable def functorIsoDiscrete : functor R ≅ discrete _ :=
     dsimp
     rw [Iso.eq_inv_comp, ← Category.assoc, Iso.comp_inv_eq]
     dsimp [functorIsoDiscreteComponents]
-    rw [assoc, ← Iso.eq_inv_comp]
-    erw [← (discreteUnderlyingAdj (ModuleCat R)).counit.naturality]
+    rw [assoc, ← Iso.eq_inv_comp,
+      ← (discreteUnderlyingAdj (ModuleCat R)).counit_naturality]
     simp only [← assoc]
     congr 1
     rw [← Iso.comp_inv_eq]
@@ -202,14 +203,15 @@ instance (M : ModuleCat R) :
     IsIso ((LightCondensed.forget R).map
     ((discreteUnderlyingAdj (ModuleCat R)).counit.app
       ((functor R).obj M))) := by
-  erw [← Sheaf.constantSheafAdj_counit_w]
+  dsimp [LightCondensed.forget, discreteUnderlyingAdj]
+  rw [← constantSheafAdj_counit_w]
   refine @IsIso.comp_isIso _ _ _ _ _ _ _ inferInstance ?_
-  change Sheaf.IsConstant _ _ _
   have : (constantSheaf (coherentTopology LightProfinite) (Type u)).Faithful :=
     inferInstanceAs (discrete _).Faithful
   have : (constantSheaf (coherentTopology LightProfinite) (Type u)).Full :=
     inferInstanceAs (discrete _).Full
-  rw [Sheaf.isConstant_iff_mem_essImage]
+  rw [← Sheaf.isConstant_iff_isIso_counit_app]
+  constructor
   change _ ∈ (discrete _).essImage
   rw [essImage_eq_of_natIso LightCondSet.LocallyConstant.iso.symm]
   exact obj_mem_essImage LightCondSet.LocallyConstant.functor M
@@ -232,8 +234,8 @@ noncomputable def functorIsoDiscrete : functor R ≅ discrete _ :=
     dsimp
     rw [Iso.eq_inv_comp, ← Category.assoc, Iso.comp_inv_eq]
     dsimp [functorIsoDiscreteComponents]
-    rw [Category.assoc, ← Iso.eq_inv_comp]
-    erw [← (discreteUnderlyingAdj (ModuleCat R)).counit.naturality]
+    rw [Category.assoc, ← Iso.eq_inv_comp,
+      ← (discreteUnderlyingAdj (ModuleCat R)).counit_naturality]
     simp only [← assoc]
     congr 1
     rw [← Iso.comp_inv_eq]
