@@ -56,7 +56,7 @@ each relation to a polynomial in the generators.
 -/
 @[nolint checkUnivs]
 structure Algebra.Presentation extends Algebra.Generators.{w} R S where
-  /-- The type of relations.  -/
+  /-- The type of relations. -/
   rels : Type t
   /-- The assignment of each relation to a polynomial in the generators. -/
   relation : rels → toGenerators.Ring

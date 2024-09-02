@@ -69,7 +69,7 @@ theorem exists_orderEmbedding_covby_of_forall_covby_finite (hfin : ∀ (a : α),
   obtain ⟨f, hf⟩ := exists_seq_covby_of_forall_covby_finite hfin hb
   exact ⟨OrderEmbedding.ofStrictMono f (strictMono_nat_of_lt_succ (fun i ↦ (hf.2 i).lt)), hf⟩
 
-/-- A version of Kőnig's lemma where the sequence starts at the minimum of an infinite order.  -/
+/-- A version of Kőnig's lemma where the sequence starts at the minimum of an infinite order. -/
 theorem exists_orderEmbedding_covby_of_forall_covby_finite_of_bot [OrderBot α] [Infinite α]
     (hfin : ∀ (a : α), {x | a ⋖ x}.Finite) : ∃ f : ℕ ↪o α, f 0 = ⊥ ∧ ∀ i, f i ⋖ f (i+1) :=
   exists_orderEmbedding_covby_of_forall_covby_finite hfin (by simpa using infinite_univ)

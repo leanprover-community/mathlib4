@@ -1816,7 +1816,7 @@ theorem inner_sum_smul_sum_smul_of_sum_eq_zero {ι₁ : Type*} {s₁ : Finset ι
 variable (𝕜)
 
 /-- `innerSL` is an isometry. Note that the associated `LinearIsometry` is defined in
-`InnerProductSpace.Dual` as `toDualMap`.  -/
+`InnerProductSpace.Dual` as `toDualMap`. -/
 @[simp]
 theorem innerSL_apply_norm (x : E) : ‖innerSL 𝕜 x‖ = ‖x‖ := by
   refine
@@ -2416,3 +2416,5 @@ instance innerProductSpace : InnerProductSpace 𝕜 (Completion E) where
 end UniformSpace.Completion
 
 end UniformSpace.Completion
+
+set_option linter.style.longFile 2500
