@@ -67,7 +67,7 @@ lemma isFixedPt_eventualValue (hf : id ≤ f) (x : α) : IsFixedPt f (eventualVa
 /-- The eventual value is larger or equal than `x` itself. -/
 lemma self_le_eventualValue (hf : id ≤ f) (x : α) : x ≤ eventualValue hf x := by
   simp only [eventualValue]
-  conv_lhs => rw [show x = f^[0] x from rfl]
+  conv_lhs => rw [← iterate_zero_apply f x]
   apply f.monotone_iterate_of_id_le hf
   simp
 
