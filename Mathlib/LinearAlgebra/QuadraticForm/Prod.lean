@@ -268,7 +268,7 @@ def IsometryEquiv.pi [Fintype ι]
 @[simps!]
 def Isometry.single [Fintype ι] [DecidableEq ι] (Q : ∀ i, QuadraticMap R (Mᵢ i) P) (i : ι) :
     Q i →qᵢ pi Q where
-  toLinearMap := LinearMap.single i
+  toLinearMap := LinearMap.single _ _ i
   map_app' := pi_apply_single _ _
 
 /-- `LinearMap.proj` as an isometry, when all but one quadratic form is zero. -/

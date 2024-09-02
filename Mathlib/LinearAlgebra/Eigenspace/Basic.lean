@@ -213,10 +213,8 @@ noncomputable def maxGenEigenspaceIndex (f : End R M) (μ : R) :=
 /-- For an endomorphism of a Noetherian module, the maximal eigenspace is always of the form kernel
 `(f - μ • id) ^ k` for some `k`. -/
 theorem maxGenEigenspace_eq [h : IsNoetherian R M] (f : End R M) (μ : R) :
-    maxGenEigenspace f μ =
-      f.genEigenspace μ (maxGenEigenspaceIndex f μ) := by
-  rw [isNoetherian_iff_wellFounded] at h
-  exact (WellFounded.iSup_eq_monotonicSequenceLimit h (f.genEigenspace μ) : _)
+    maxGenEigenspace f μ = f.genEigenspace μ (maxGenEigenspaceIndex f μ) :=
+  h.wf.iSup_eq_monotonicSequenceLimit (f.genEigenspace μ)
 
 /-- A generalized eigenvalue for some exponent `k` is also
     a generalized eigenvalue for exponents larger than `k`. -/

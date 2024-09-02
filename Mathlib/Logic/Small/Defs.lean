@@ -88,8 +88,6 @@ theorem small_type : Small.{max (u + 1) v} (Type u) :=
 
 section
 
-open scoped Classical
-
 theorem small_congr {α : Type*} {β : Type*} (e : α ≃ β) : Small.{w} α ↔ Small.{w} β :=
   ⟨fun h => @small_map _ _ h e.symm, fun h => @small_map _ _ h e⟩
 
