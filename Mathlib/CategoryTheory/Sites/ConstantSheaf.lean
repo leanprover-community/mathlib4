@@ -76,7 +76,7 @@ variable {D}
 namespace Sheaf
 
 /--
-A sheaf is constant if the counit of the constant sheaf adjunction applied to it is an isomorphism.
+A sheaf is constant if it is in the essential image of the constant sheaf functor.
 -/
 class IsConstant (F : Sheaf J D) : Prop where
   mem_essImage : F ∈ (constantSheaf J D).essImage
