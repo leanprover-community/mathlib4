@@ -438,6 +438,18 @@ theorem preimage_image_mk_eq_iUnion_image (N : Subgroup α) (s : Set α) :
   rw [preimage_image_mk, iUnion_congr_of_surjective (·⁻¹) inv_surjective]
   exact fun x ↦ image_mul_right'
 
+open MulAction in
+@[to_additive]
+lemma orbit_mk_eq_smul (x : α) : MulAction.orbitRel.Quotient.orbit (x : α ⧸ s) = x • s := by
+  ext
+  rw [orbitRel.Quotient.mem_orbit]
+  simpa [mem_smul_set_iff_inv_smul_mem, ← leftRel_apply] using Setoid.comm' _
+
+@[to_additive]
+lemma orbit_eq_out'_smul (x : α ⧸ s) : MulAction.orbitRel.Quotient.orbit x = x.out' • s := by
+  induction x using QuotientGroup.induction_on
+  simp only [orbit_mk_eq_smul, ← eq_class_eq_leftCoset, Quotient.out_eq']
+
 end QuotientGroup
 
 namespace Subgroup
@@ -686,15 +698,13 @@ noncomputable def preimageMkEquivSubgroupProdSet (s : Subgroup α) (t : Set (α 
   left_inv := fun ⟨a, ha⟩ => Subtype.eq <| show _ * _ = a by simp
   right_inv := fun ⟨⟨a, ha⟩, ⟨x, hx⟩⟩ => by ext <;> simp [ha]
 
+open MulAction in
 /-- A group is made up of a disjoint union of cosets of a subgroup. -/
 @[to_additive "An additive group is made up of a disjoint union of cosets of an additive
 subgroup."]
 lemma univ_eq_iUnion_smul (H : Subgroup α) :
     (Set.univ (α := α)) = ⋃ x : α ⧸ H, x.out' • (H : Set _) := by
-  ext x
-  simp only [Set.mem_univ, Set.image_add_right, Set.mem_iUnion, Set.mem_preimage, SetLike.mem_coe,
-    true_iff, mem_smul_set_iff_inv_smul_mem]
-  refine ⟨x, ?_⟩
-  simp [← QuotientGroup.eq]
+  simp_rw [univ_eq_iUnion_orbit H.op, orbit_eq_out'_smul]
+  rfl
 
 end QuotientGroup
