@@ -14,11 +14,13 @@ import Mathlib.Tactic.NormNum
 Constructive ordinal arithmetic for ordinals below `ε₀`.
 
 We define a type `ONote`, with constructors `0 : ONote` and `ONote.oadd e n a` representing
-`ω ^ e * n + a`. We say that `o` is in Cantor normal form - `ONote.NF o` - if either `o = 0` or
+`ω ^ e * n + a`. 
+We say that `o` is in Cantor normal form - `ONote.NF o` - if either `o = 0` or
 `o = ω ^ e * n + a` with `a < ω ^ e` and `a` in Cantor normal form.
 
-The type `NONote` is the type of ordinals below `ε₀` in Cantor normal form. Various operations
-(addition, subtraction, multiplication, exponentiation) are defined on `ONote` and `NONote`.
+The type `NONote` is the type of ordinals below `ε₀` in Cantor normal form. 
+Various operations (addition, subtraction, multiplication, exponentiation) 
+are defined on `ONote` and `NONote`.
 -/
 
 
