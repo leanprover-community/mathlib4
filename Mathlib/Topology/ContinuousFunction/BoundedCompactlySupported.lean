@@ -11,9 +11,8 @@ open Set BoundedContinuousFunction
 /-!
 # Compactly supported bounded continuous functions
 
-The two-sided ideal of compactly supported bounded continuous functions taking values in a metric space, with
-the uniform distance.
-
+The two-sided ideal of compactly supported bounded continuous functions taking values in a metric
+space, with the uniform distance.
 -/
 
 section CompactlySupported
