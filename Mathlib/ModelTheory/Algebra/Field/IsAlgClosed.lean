@@ -184,7 +184,7 @@ theorem ACF_isComplete {p : ℕ} (hp : p.Prime ∨ p = 0) :
     have := isAlgClosed_of_model_ACF p M
     infer_instance
 
-theorem finite_ACF_prime_not_realize_of_ACF0_realize
+theorem finite_ACF_prime_not_realize_of_ACF_zero_realize
     (φ : Language.ring.Sentence) (h : Theory.ACF 0 ⊨ᵇ φ) :
     Set.Finite { p : Nat.Primes | ¬ Theory.ACF p ⊨ᵇ φ } := by
   rw [Theory.models_iff_finset_models] at h
