@@ -640,7 +640,7 @@ variable (p 𝕜)
 variable (E : Type*) [SeminormedAddCommGroup E] [Module 𝕜 E]
 
 /-- An equivalence of finite domains induces a linearly isometric equivalence of finitely supported
-functions-/
+functions -/
 def _root_.LinearIsometryEquiv.piLpCongrLeft (e : ι ≃ ι') :
     (PiLp p fun _ : ι => E) ≃ₗᵢ[𝕜] PiLp p fun _ : ι' => E where
   toLinearEquiv := LinearEquiv.piCongrLeft' 𝕜 (fun _ : ι => E) e

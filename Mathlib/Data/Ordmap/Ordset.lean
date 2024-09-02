@@ -1578,3 +1578,5 @@ def map {β} [Preorder β] (f : α → β) (f_strict_mono : StrictMono f) (s : O
   ⟨Ordnode.map f s.val, Ordnode.map.valid f_strict_mono s.property⟩
 
 end Ordset
+
+set_option linter.style.longFile 1700

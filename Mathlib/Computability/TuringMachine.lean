@@ -2569,3 +2569,5 @@ end
 end TM2to1
 
 end Turing
+
+set_option linter.style.longFile 2700

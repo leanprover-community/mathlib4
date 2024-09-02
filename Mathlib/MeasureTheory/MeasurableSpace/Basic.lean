@@ -1081,7 +1081,7 @@ lemma measurable_set_mem (a : α) : Measurable fun s : Set α ↦ a ∈ s := mea
 
 @[aesop safe 100 apply (rule_sets := [Measurable])]
 lemma measurable_set_not_mem (a : α) : Measurable fun s : Set α ↦ a ∉ s :=
-  (measurable_discrete Not).comp <| measurable_set_mem a
+  (Measurable.of_discrete (f := Not)).comp <| measurable_set_mem a
 
 @[aesop safe 100 apply (rule_sets := [Measurable])]
 lemma measurableSet_mem (a : α) : MeasurableSet {s : Set α | a ∈ s} :=
@@ -1093,6 +1093,20 @@ lemma measurableSet_not_mem (a : α) : MeasurableSet {s : Set α | a ∉ s} :=
 
 lemma measurable_compl : Measurable ((·ᶜ) : Set α → Set α) :=
   measurable_set_iff.2 fun _ ↦ measurable_set_not_mem _
+
+lemma MeasurableSet.setOf_finite [Countable α] : MeasurableSet {s : Set α | s.Finite} :=
+  Countable.setOf_finite.measurableSet
+
+lemma MeasurableSet.setOf_infinite [Countable α] : MeasurableSet {s : Set α | s.Infinite} :=
+  .setOf_finite |> .compl
+
+lemma MeasurableSet.sep_finite [Countable α] {S : Set (Set α)} (hS : MeasurableSet S) :
+    MeasurableSet {s ∈ S | s.Finite} :=
+  hS.inter .setOf_finite
+
+lemma MeasurableSet.sep_infinite [Countable α] {S : Set (Set α)} (hS : MeasurableSet S) :
+    MeasurableSet {s ∈ S | s.Infinite} :=
+  hS.inter .setOf_infinite
 
 end Set
 end Constructions

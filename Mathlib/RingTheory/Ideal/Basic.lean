@@ -35,7 +35,7 @@ open Set Function
 open Pointwise
 
 /-- A (left) ideal in a semiring `R` is an additive submonoid `s` such that
-`a * b ∈ s` whenever `b ∈ s`. If `R` is a ring, then `s` is an additive subgroup.  -/
+`a * b ∈ s` whenever `b ∈ s`. If `R` is a ring, then `s` is an additive subgroup. -/
 abbrev Ideal (R : Type u) [Semiring R] :=
   Submodule R R
 
@@ -570,7 +570,7 @@ theorem span_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : ℕ) :
     · rw [Set.image_empty, hs]
       trivial
     · exact subset_span ⟨_, hx, pow_zero _⟩
-  rw [eq_top_iff_one, span, Finsupp.mem_span_iff_total] at hs
+  rw [eq_top_iff_one, span, Finsupp.mem_span_iff_linearCombination] at hs
   rcases hs with ⟨f, hf⟩
   have hf : (f.support.sum fun a => f a * a) = 1 := hf -- Porting note: was `change ... at hf`
   have := sum_pow_mem_span_pow f.support (fun a => f a * a) n

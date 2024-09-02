@@ -17,7 +17,7 @@ limits, see `sequentialFunctor_initial`.
 
 ## Projects
 
-* There is a series of `proof_wanted` at the bottom of this file, implying that all cofiltered
+* There is a series of `proof_wanted` at the bottom of this file, implying that all cofiltered
   limits over countable categories are isomorphic to sequential limits.
 
 * Prove the dual result for filtered colimits.
@@ -36,7 +36,7 @@ instance and `J : Type` has a limit.
 -/
 class HasCountableLimits : Prop where
   /-- `C` has all limits over any type `J` whose objects and morphisms lie in the same universe
-  and which has countably many objects and morphisms-/
+  and which has countably many objects and morphisms -/
   out (J : Type) [SmallCategory J] [CountableCategory J] : HasLimitsOfShape J C
 
 instance (priority := 100) hasFiniteLimits_of_hasCountableLimits [HasCountableLimits C] :
@@ -58,7 +58,7 @@ instance and `J : Type` has a colimit.
 -/
 class HasCountableColimits : Prop where
   /-- `C` has all limits over any type `J` whose objects and morphisms lie in the same universe
-  and which has countably many objects and morphisms-/
+  and which has countably many objects and morphisms -/
   out (J : Type) [SmallCategory J] [CountableCategory J] : HasColimitsOfShape J C
 
 instance (priority := 100) hasFiniteColimits_of_hasCountableColimits [HasCountableColimits C] :
@@ -127,7 +127,7 @@ proof_wanted preorder_of_cofiltered (J : Type*) [Category J] [IsCofiltered J] :
     ∃ (I : Type*) (_ : Preorder I) (_ : IsCofiltered I) (F : I ⥤ J), F.Initial
 
 /--
-The proof of `preorder_of_cofiltered` should give a countable `I` in the case that `J` is a
+The proof of `preorder_of_cofiltered` should give a countable `I` in the case that `J` is a
 countable category.
 -/
 proof_wanted preorder_of_cofiltered_countable

@@ -249,7 +249,7 @@ theorem integral_compProd :
 theorem setIntegral_compProd {f : β × γ → E} {s : Set β} {t : Set γ} (hs : MeasurableSet s)
     (ht : MeasurableSet t) (hf : IntegrableOn f (s ×ˢ t) ((κ ⊗ₖ η) a)) :
     ∫ z in s ×ˢ t, f z ∂(κ ⊗ₖ η) a = ∫ x in s, ∫ y in t, f (x, y) ∂η (a, x) ∂κ a := by
-  -- Porting note: `compProd_restrict` needed some explicit argumnts
+  -- Porting note: `compProd_restrict` needed some explicit arguments
   rw [← Kernel.restrict_apply (κ ⊗ₖ η) (hs.prod ht), ← compProd_restrict hs ht, integral_compProd]
   · simp_rw [Kernel.restrict_apply]
   · rw [compProd_restrict, Kernel.restrict_apply]; exact hf

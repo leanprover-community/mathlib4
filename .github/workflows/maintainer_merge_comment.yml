@@ -20,6 +20,13 @@ jobs:
                                                   # This feature is only applicable in an issue (or PR) context
           exit: true # optional. If the action should exit if the user is not part of the team. Defaults to true.
 
+      - name: Determine Zulip topic
+        id: determine_topic
+        run: |
+          ./scripts/get_tlabel.sh "${PR}" >> "$GITHUB_OUTPUT"
+        env:
+          PR:  /repos/{owner}/{repo}/issues/{pull_number}
+
       - name: Send message on Zulip
         uses: zulip/github-actions-zulip/send-message@v1
         with:
@@ -28,7 +35,7 @@ jobs:
           organization-url: 'https://leanprover.zulipchat.com'
           to: 'mathlib reviewers'
           type: 'stream'
-          topic: 'maintainer merge'
+          topic: ${{ steps.determine_topic.outputs.topic }}
           content: |
             ${{ format('{0} requested a maintainer merge from comment on PR [#{1}]({2}):', github.event.comment.user.login, github.event.issue.number, github.event.issue.html_url ) }}
 

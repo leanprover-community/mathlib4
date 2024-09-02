@@ -1650,3 +1650,5 @@ instance : NoMaxOrder (Set.Iio x) :=
     exact ⟨⟨b, hb₂⟩, hb₁⟩⟩
 
 end Dense
+
+set_option linter.style.longFile 1800
