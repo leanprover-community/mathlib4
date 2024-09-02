@@ -1,10 +1,11 @@
-import Mathlib.Tactic.Linter.UnusedTactic
+--import Mathlib.Tactic.Linter.UnusedTactic
 import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.Linter.UnnecessaryTactic
-import Mathlib.adomaniLeanUtils.inspect_syntax
 
 open Lean hiding Rat
 open Elab Meta Term
+
+set_option linter.unusedTactic false
 
 syntax normStx := atomic(" (" &"norm" " := ") withoutPosition(tactic) ")"
 syntax (name := linearCombination) "linear_combination"
@@ -16,12 +17,11 @@ elab_rules : tactic
 
 def why2 : True → True := (by refine ·)
 
-inspect
 example : 0 = 0 := by
   --skip
   linear_combination (norm := skip)
   --rfl
-inspect
+
 example : True := by
   simp (disch := intros; rfl)
 
@@ -34,16 +34,16 @@ example : True := by
 example : True ∧ True := by
   constructor <;> trivial;
 
-set_option linter.unusedTactic false
+set_option linter.unnecessaryTactic false
 /--
-warning: 'congr' tactic does nothing
-note: this linter can be disabled with `set_option linter.unusedTactic false`
+warning: 'Lean.Parser.Tactic.congr, (1354, 5)' is unnecessary.
+note: this linter can be disabled with `set_option linter.unnecessaryTactic false`
 ---
-warning: 'done' tactic does nothing
-note: this linter can be disabled with `set_option linter.unusedTactic false`
+warning: 'Lean.Parser.Tactic.done, (1376, 4)' is unnecessary.
+note: this linter can be disabled with `set_option linter.unnecessaryTactic false`
 -/
 #guard_msgs in
-set_option linter.unusedTactic true in
+set_option linter.unnecessaryTactic true in
 -- the linter notices that `congr` is unused
 example : True := by
   congr
@@ -67,15 +67,14 @@ elab "no " _tac:tactic : tactic => return
 set_option linter.unnecessaryTactic false
 
 /--
-warning: 'Lean.Parser.Tactic.skip, (2098, 4)' is unnecessary.
+warning: 'tacticNo_, (2172, 47)' is unnecessary.
 note: this linter can be disabled with `set_option linter.unnecessaryTactic false`
 ---
-warning: 'tacticNo_, (2061, 47)' is unnecessary.
+warning: 'Lean.Parser.Tactic.skip, (2209, 4)' is unnecessary.
 note: this linter can be disabled with `set_option linter.unnecessaryTactic false`
 -/
 #guard_msgs in
 set_option linter.unnecessaryTactic true in
-set_option linter.unusedTactic true in
 example : True := by
   no (
     #adaptation_note /-- -/
@@ -84,15 +83,11 @@ example : True := by
   exact .intro
 
 /--
-warning: 'Lean.Parser.Tactic.skip, (2098, 4)' is unnecessary.
-note: this linter can be disabled with `set_option linter.unnecessaryTactic false`
----
-warning: 'tacticNo_, (2061, 47)' is unnecessary.
+warning: 'tacticNo_, (2457, 19)' is unnecessary.
 note: this linter can be disabled with `set_option linter.unnecessaryTactic false`
 -/
 #guard_msgs in
 set_option linter.unnecessaryTactic true in
-set_option linter.unusedTactic true in
 example : True := by
   no (
     skip
@@ -116,10 +111,10 @@ set_option linter.unnecessaryTactic true in
 variable (n : Nat := by intros; exact 0)
 
 /--
-warning: 'Lean.Parser.Tactic.done, (2983, 4)' is unnecessary.
+warning: 'Lean.Parser.Tactic.done, (3351, 4)' is unnecessary.
 note: this linter can be disabled with `set_option linter.unnecessaryTactic false`
 ---
-warning: 'Lean.Parser.Tactic.skip, (2991, 4)' is unnecessary.
+warning: 'Lean.Parser.Tactic.skip, (3359, 4)' is unnecessary.
 note: this linter can be disabled with `set_option linter.unnecessaryTactic false`
 -/
 #guard_msgs in

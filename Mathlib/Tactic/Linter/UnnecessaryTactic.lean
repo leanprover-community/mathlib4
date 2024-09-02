@@ -32,12 +32,12 @@ abbrev exclusions : HashSet SyntaxNodeKind := HashSet.empty
   |>.insert `«tactic#adaptation_note_»
   |>.insert ``Lean.Parser.Tactic.tacticRepeat_
   |>.insert ``Lean.cdot
-  --|>.insert `«;»
-  --|>.insert `null
   |>.insert ``Lean.Parser.Tactic.induction
   |>.insert `Mathlib.Tactic.induction'
-  --|>.insert ``Lean.Parser.Term.byTactic
-  --|>.insert `by
+  -- silencing tests
+  |>.insert ``Lean.Parser.Tactic.guardHyp
+  |>.insert ``Lean.Parser.Tactic.guardTarget
+  |>.insert ``Lean.Parser.Tactic.failIfSuccess
 
 partial
 def findRanges (stx : Syntax) : HashSet (String.Range × SyntaxNodeKind) :=
