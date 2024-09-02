@@ -328,6 +328,8 @@ theorem _root_.IsOpen.polishSpace {α : Type*} [TopologicalSpace α] [PolishSpac
     (hs : IsOpen s) : PolishSpace s := by
   letI := upgradePolishSpace α
   lift s to Opens α using hs
+  #adaptation_note /-- After lean4#5020, many instances for Lie algebras and manifolds are no
+  longer found. -/
   have : SecondCountableTopology s.CompleteCopy :=
     TopologicalSpace.Subtype.secondCountableTopology _
   exact inferInstanceAs (PolishSpace s.CompleteCopy)
