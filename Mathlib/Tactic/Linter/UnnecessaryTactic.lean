@@ -44,7 +44,9 @@ def findRanges (stx : Syntax) : HashSet (String.Range × SyntaxNodeKind) :=
   let next := stx.foldArgs (fun arg r => r.merge (findRanges arg)) {}
   match stx.getKind with
       -- ignore default values when they involve tactics and syntax quotations
-    | ``Lean.Parser.Term.binderTactic | ``Lean.Parser.Tactic.quot => {}
+    | ``Lean.Parser.Term.binderTactic
+    | ``Lean.Parser.Tactic.quot
+    | ``Lean.Parser.Term.dynamicQuot => {}
     | ``Lean.Parser.Tactic.tacticSeq1Indented =>
       -- first, we sift out `;` and `null` nodes that are interspersed in `tacticSeq`
       let tacs := stx[0].getArgs.filter (! [`«;», `null].contains ·.getKind)
