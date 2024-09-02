@@ -43,48 +43,88 @@ It extends the `Tag` environment extension with the data `declName, tag, comment
 def addTagEntry {m : Type → Type} [MonadEnv m] (declName : Name) (tag comment : String) : m Unit :=
   modifyEnv (tagExt.addEntry · { declName := declName, tag := tag, comment := comment })
 
-/--
-The syntax for a Stacks tag: it is an optional number followed by an optional identifier.
-This allows `044Q3` and `GH3F6` as possibilities.
--/
-declare_syntax_cat stackTag
+open Parser
 
-@[inherit_doc Parser.Category.stackTag]
-syntax (num)? (ident)? : stackTag
+/-- `stacksTag` is the node kind of Stacks Project Tags: a sequence of digits and
+uppercase letters. -/
+abbrev stacksTagKind : SyntaxNodeKind := `stacksTag
 
-/-- The `stacks` attribute.
-Use it as `@[stacks TAG "Optional comment"]`.
-The `TAG` is mandatory.
+/-- The main parser for Stacks Project Tags: it accepts any sequence of 4 digits or
+uppercase letters. -/
+def stacksTagFn : ParserFn := fun c s =>
+  let i := s.pos
+  let s := takeWhileFn (fun c => c.isAlphanum) c s
+  if s.hasError then
+    s
+  else if s.pos == i then
+    ParserState.mkError s "stacks tag"
+  else
+    let tag := Substring.mk c.input i s.pos |>.toString
+    if !tag.all fun c => c.isDigit || c.isUpper then
+      ParserState.mkUnexpectedError s
+        "Stacks tags must consist only of digits and uppercase letters."
+    else if tag.length != 4 then
+      ParserState.mkUnexpectedError s "Stacks tags must be exactly 4 characters"
+    else
+      mkNodeToken stacksTagKind i c s
 
-See the [Tags page](https://stacks.math.columbia.edu/tags) in the Stacks project for more details.
--/
-syntax (name := stacks) "stacks " (stackTag)? (ppSpace str)? : attr
-
-initialize Lean.registerBuiltinAttribute {
-  name := `stacks
-  descr := "Apply a Stacks project tag to a theorem."
-  add := fun decl stx _attrKind => Lean.withRef stx do
-    -- check that the tag consists of 4 characters and
-    -- that only digits and uppercase letter are present
-    let tag := stx[1]
-    match tag.getSubstring? with
-      | none => logWarning "Please, enter a Tag after `stacks`."
-      | some str =>
-        let str := str.toString.trimRight
-        if str.length != 4 then
-          logWarningAt tag
-            m!"Tag '{str}' is {str.length} characters long, but it should be 4 characters long"
-        else if 2 ≤ (str.split (fun c => (!c.isUpper) && !c.isDigit)).length then
-          logWarningAt tag m!"Tag '{str}' should only consist of digits and uppercase letters"
-        else match stx with
-          | `(attr| stacks $_:stackTag $comment:str) => addTagEntry decl str comment.getString
-          | `(attr| stacks $_:stackTag) => addTagEntry decl str ""
-          | _ => throwUnsupportedSyntax
+@[inherit_doc stacksTagFn]
+def stacksTagNoAntiquot : Parser := {
+  fn   := stacksTagFn
+  info := mkAtomicInfo "stacksTag"
 }
+
+@[inherit_doc stacksTagFn]
+def stacksTag : Parser :=
+  withAntiquot (mkAntiquot "stacksTag" stacksTagKind) stacksTagNoAntiquot
 
 end Mathlib.Stacks
 
 open Mathlib.Stacks
+
+/-- Extract the underlying tag as a string from a `stacksTag` node. -/
+def Lean.TSyntax.getStacksTag (stx : TSyntax stacksTagKind) : CoreM String := do
+  let some val := Syntax.isLit? stacksTagKind stx | throwError "Malformed Stacks tag"
+  return val
+
+namespace Lean.PrettyPrinter
+
+namespace Formatter
+
+/-- The formatter for Stacks Project Tags syntax. -/
+@[combinator_formatter stacksTagNoAntiquot] def stacksTagNoAntiquot.formatter :=
+  visitAtom stacksTagKind
+
+end Formatter
+
+namespace Parenthesizer
+
+/-- The parenthesizer for Stacks Project Tags syntax. -/
+@[combinator_parenthesizer stacksTagNoAntiquot] def stacksTagAntiquot.parenthesizer := visitToken
+
+end Lean.PrettyPrinter.Parenthesizer
+
+namespace Mathlib.Stacks
+
+/-- The `stacks` attribute.
+Use it as `@[stacks TAG "Optional comment"]`.
+The `TAG` is mandatory and should be a sequence of 4 digits or uppercase letters.
+
+See the [Tags page](https://stacks.math.columbia.edu/tags) in the Stacks project for more details.
+-/
+syntax (name := stacks) "stacks " stacksTag (ppSpace str)? : attr
+
+initialize Lean.registerBuiltinAttribute {
+  name := `stacks
+  descr := "Apply a Stacks project tag to a theorem."
+  add := fun decl stx _attrKind => match stx with
+    | `(attr| stacks $tag $[$comment]?) => do
+      addTagEntry decl (← tag.getStacksTag) <| (comment.map (·.getString)).getD ""
+    | _ => throwUnsupportedSyntax
+}
+
+end Mathlib.Stacks
+
 /--
 `getSortedStackProjectTags env` returns the array of `Tags`, sorted by alphabetical order of tag.
 -/
