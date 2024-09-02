@@ -665,12 +665,12 @@ instance IsStarNormal.cfc_map (f : R → R) (a : A) : IsStarNormal (cfc f a) whe
 
 -- The following two lemmas are just `cfc_predicate`, but specific enough for the `@[simp]` tag.
 @[simp]
-lemma IsSelfAdjoint.cfc [ContinuousFunctionalCalculus R (IsSelfAdjoint : A → Prop)]
+protected lemma IsSelfAdjoint.cfc [ContinuousFunctionalCalculus R (IsSelfAdjoint : A → Prop)]
     {f : R → R} {a : A} : IsSelfAdjoint (cfc f a) :=
   cfc_predicate _ _
 
 @[simp]
-lemma cfc_nonneg_of_predicate [PartialOrder A]
+lemma cfc_nonneg [PartialOrder A]
     [ContinuousFunctionalCalculus R (fun (a : A) => 0 ≤ a)] {f : R → R} {a : A} : 0 ≤ cfc f a :=
   cfc_predicate _ _
 
