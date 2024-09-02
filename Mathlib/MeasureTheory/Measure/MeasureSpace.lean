@@ -483,9 +483,9 @@ theorem _root_.Antitone.measure_iUnion [Preorder ι] [IsDirected ι (· ≥ ·)]
 
 /-- Continuity from below: the measure of the union of a sequence of
 (not necessarily measurable) sets is the supremum of the measures of the partial unions. -/
-theorem measure_iUnion_eq_iSup_accumulate {α ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)]
-    [(atTop : Filter ι).IsCountablyGenerated] [MeasurableSpace α] {μ : Measure α}
-    {f : ι → Set α} : μ (⋃ i, f i) = ⨆ i, μ (Accumulate f i) := by
+theorem measure_iUnion_eq_iSup_accumulate [Preorder ι] [IsDirected ι (· ≤ ·)]
+    [(atTop : Filter ι).IsCountablyGenerated] {f : ι → Set α} :
+    μ (⋃ i, f i) = ⨆ i, μ (Accumulate f i) := by
   rw [← iUnion_accumulate]
   exact monotone_accumulate.measure_iUnion
 
