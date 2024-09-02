@@ -56,7 +56,7 @@ example {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [Eff
 
 /--
 This is an auxiliary lemma used twice in the definition of  `EffectiveEpiFamilyOfEffectiveEpiDesc`.
-It is the `h` hypothesis of `EffectiveEpi.desc` and `EffectiveEpi.fac`. 
+It is the `h` hypothesis of `EffectiveEpi.desc` and `EffectiveEpi.fac`.
 -/
 theorem effectiveEpiFamilyStructOfEffectiveEpiDesc_aux {B : C} {α : Type*} {X : α → C}
     {π : (a : α) → X a ⟶ B} [HasCoproduct X]

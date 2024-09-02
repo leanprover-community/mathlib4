@@ -267,7 +267,7 @@ end Quotient
 
 theorem Quot.eq {α : Type*} {r : α → α → Prop} {x y : α} :
     Quot.mk r x = Quot.mk r y ↔ EqvGen r x y :=
-  ⟨Quot.exact r, Quot.EqvGen_sound⟩
+  ⟨Quot.eqvGen_exact r, Quot.eqvGen_sound⟩
 
 @[simp]
 theorem Quotient.eq [r : Setoid α] {x y : α} : Quotient.mk r x = ⟦y⟧ ↔ x ≈ y :=

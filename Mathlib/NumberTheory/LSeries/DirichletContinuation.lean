@@ -10,7 +10,7 @@ import Mathlib.NumberTheory.DirichletCharacter.Basic
 # Analytic continuation of Dirichlet L-functions
 
 We show that if `χ` is a Dirichlet character `ZMod N → ℂ`, for a positive integer `N`, then the
-L-series of `χ` has meromorphic continuation (away from a pole at `s = 1` if `χ` is trivial).
+L-series of `χ` has analytic continuation (away from a pole at `s = 1` if `χ` is trivial).
 
 All definitions and theorems are in the `DirichletCharacter` namespace.
 
@@ -78,11 +78,13 @@ The completed L-function of a Dirichlet character, almost everywhere equal to
 noncomputable def completedLFunction (χ : DirichletCharacter ℂ N) (s : ℂ) : ℂ :=
   ZMod.completedLFunction χ s
 
-/-- The L-function of the (unique) Dirichlet character mod 1 is the Riemann zeta function. -/
-lemma LFunction_modOne_eq {χ : DirichletCharacter ℂ 1} :
+/--
+The L-function of the (unique) Dirichlet character mod 1 is the Riemann zeta function.
+(Compare `DirichletCharacter.LSeries_modOne_eq`.)
+--/
+@[simp] lemma LFunction_modOne_eq {χ : DirichletCharacter ℂ 1} :
     LFunction χ = riemannZeta := by
-  ext1 s
-  rw [LFunction, ZMod.LFunction_modOne_eq, show (0 : ZMod 1) = 1 by rfl, map_one, one_mul]
+  ext1; rw [LFunction, ZMod.LFunction_modOne_eq, (by rfl : (0 : ZMod 1) = 1), map_one, one_mul]
 
 /--
 The completed L-function of the (unique) Dirichlet character mod 1 is the completed Riemann zeta
