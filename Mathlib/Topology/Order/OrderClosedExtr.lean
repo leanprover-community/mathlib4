@@ -38,24 +38,6 @@ lemma isLocalMax_of_mono_anti.{u, v}
   intro x hx
   rcases le_total x b with hx' | hx' <;> aesop
 
-/-- Each element `b` belongs to `𝓝[≤] b`. -/
-theorem mem_nhds_self_le.{u} {α : Type u} [TopologicalSpace α] [LinearOrder α] {b : α}
-    {a : Set α} (ha : a ∈ 𝓝[≤] b) : b ∈ a := by
-  rw [mem_nhdsWithin] at ha
-  obtain ⟨u,hu⟩ := ha
-  apply hu.2.2
-  simp
-  tauto
-
-/-- Each element `b` belongs to `𝓝[≥] b`. -/
-theorem mem_nhds_self_ge.{u} {α : Type u} [TopologicalSpace α] [LinearOrder α] {b : α}
-    {a : Set α} (ha : a ∈ 𝓝[≥] b) : b ∈ a := by
-  rw [mem_nhdsWithin] at ha
-  obtain ⟨u,hu⟩ := ha
-  apply hu.2.2
-  simp
-  tauto
-
 /-- Obtain a "predictably-sided" neighborhood of `b` from two one-sided neighborhoods. -/
 theorem nhds_of_Ici_Iic.{v, u} {α : Type u} [TopologicalSpace α] [LinearOrder α] [OrderTopology α]
     [NoMinOrder α] [NoMaxOrder α] {β : Type v} [Preorder β] {b : α}
@@ -101,18 +83,18 @@ lemma isLocalMax_of_mono_anti'.{u, v}
   rcases le_total x b with hx' | hx' <;> aesop
   apply h₀
   · exact h
-  · exact mem_nhds_self_le ha
+  · exact mem_of_mem_nhdsWithin (by simp) ha
   · exact hx'
   apply h₀
   · have : x = b := by apply le_antisymm;tauto;tauto
     subst this
-    exact mem_nhds_self_le ha
-  · exact mem_nhds_self_le ha
+    exact mem_of_mem_nhdsWithin (by simp) ha
+  · exact mem_of_mem_nhdsWithin (by simp) ha
   · exact hx'
   · have : x = b := by apply le_antisymm;tauto;tauto
     subst this
     simp
-  · exact h₁ (mem_nhds_self_ge hc) h_1 hx'
+  · exact h₁ (mem_of_mem_nhdsWithin (by simp) hc) h_1 hx'
 
 /-- If `f` is antitone on `(a,b]` and monotone on `[b,c)` then `f` has
 a local minimum at `b`. -/
