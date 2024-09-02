@@ -126,6 +126,7 @@ class OrientableManifold (H : Type*) [Nontrivial H] [NormedAddCommGroup H] [Norm
     [FiniteDimensional ℝ H] (M : Type*) [TopologicalSpace M] [ChartedSpace H M] extends
   HasGroupoid M (@orientationPreservingGroupoid H _ _ _ _) : Prop
 
+/-- Typeclass defining orientable smooth manifolds. -/
 class OrientableSmoothManifold (H : Type*) [Nontrivial H] [NormedAddCommGroup H] [NormedSpace ℝ H]
     [FiniteDimensional ℝ H] (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
     [OrientableManifold H M] (I : ModelWithCorners ℝ H M) [SmoothManifoldWithCorners I M] extends
