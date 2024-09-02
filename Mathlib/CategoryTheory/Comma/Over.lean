@@ -705,7 +705,7 @@ def ofDiagEquivalence' (X : T × T) :
     StructuredArrow X (Functor.diag _) ≌ StructuredArrow X.1 (Under.forget X.2) :=
   (ofDiagEquivalence X).trans <|
     (ofStructuredArrowProjEquivalence (𝟭 T) X.1 X.2).trans <|
-    StructuredArrow.mapNatIso (eqToIso (Functor.comp_id (Under.forget X.2)))
+    StructuredArrow.mapNatIso (Under.forget X.2).rightUnitor
 
 end StructuredArrow
 
@@ -772,7 +772,7 @@ def ofDiagEquivalence' (X : T × T) :
     CostructuredArrow (Functor.diag _) X ≌ CostructuredArrow (Over.forget X.2) X.1 :=
   (ofDiagEquivalence X).trans <|
     (ofCostructuredArrowProjEquivalence (𝟭 T) X.1 X.2).trans <|
-    CostructuredArrow.mapNatIso (eqToIso (Functor.comp_id (Over.forget X.2)))
+    CostructuredArrow.mapNatIso (Over.forget X.2).rightUnitor
 
 end CostructuredArrow
 
