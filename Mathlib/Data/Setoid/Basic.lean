@@ -91,7 +91,7 @@ def ker (f : α → β) : Setoid α :=
 theorem ker_mk_eq (r : Setoid α) : ker (@Quotient.mk'' _ r) = r :=
   ext' fun _ _ => Quotient.eq
 
-theorem ker_apply_mk_out {f : α → β} (a : α) : f (haveI := Setoid.ker f; ⟦a⟧.out) = f a :=
+theorem ker_apply_mk_out {f : α → β} (a : α) : f (⟦a⟧ : Quotient (Setoid.ker f)).out = f a :=
   @Quotient.mk_out _ (Setoid.ker f) a
 
 theorem ker_apply_mk_out' {f : α → β} (a : α) :
@@ -175,8 +175,7 @@ theorem eq_top_iff {s : Setoid α} : s = (⊤ : Setoid α) ↔ ∀ x y : α, s.R
   simp only [Pi.top_apply, Prop.top_eq_true, forall_true_left]
 
 lemma sInf_equiv {S : Set (Setoid α)} {x y : α} :
-    letI := sInf S
-    x ≈ y ↔ ∀ s ∈ S, s.Rel x y := Iff.rfl
+    sInf S x y ↔ ∀ s ∈ S, s.Rel x y := Iff.rfl
 
 lemma quotient_mk_sInf_eq {S : Set (Setoid α)} {x y : α} :
     Quotient.mk (sInf S) x = Quotient.mk (sInf S) y ↔ ∀ s ∈ S, s.Rel x y := by
