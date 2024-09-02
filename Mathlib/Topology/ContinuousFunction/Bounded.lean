@@ -1571,6 +1571,8 @@ theorem compactlySupported_eq_top_of_isCompact (h : IsCompact (Set.univ : Set α
     C_cb(α, γ) = ⊤ :=
   eq_top_iff.mpr fun _ _ ↦ h.of_isClosed_subset (isClosed_tsupport _) (subset_univ _)
 
+/- This is intentionally not marked `@[simp]` to prevent Lean looking for a `CompactSpace α`
+instance every time it sees `C_cb(α, γ)`. -/
 theorem compactlySupported_eq_top [CompactSpace α] : C_cb(α, γ) = ⊤ :=
   compactlySupported_eq_top_of_isCompact CompactSpace.isCompact_univ
 
