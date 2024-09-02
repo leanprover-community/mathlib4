@@ -237,7 +237,7 @@ theorem gfpApprox_eq_of_mem_fixedPoints {a b : Ordinal} (h_init : f x ≤ x) (h_
     (h : gfpApprox f x a ∈ fixedPoints f) : gfpApprox f x b = gfpApprox f x a :=
   lfpApprox_eq_of_mem_fixedPoints (OrderHom.dual f) x h_init h_ab h
 
-/-- There are distinct ordinal indices smaller than at ordinal-successor index of
+/-- There are distinct ordinal indices smaller than the ordinal-successor index of
   the domains cardinals with equal value -/
 theorem exists_gfpApprox_eq_gfpApprox : ∃ a < ord <| succ #α, ∃ b < ord <| succ #α,
     a ≠ b ∧ gfpApprox f x a = gfpApprox f x b :=
