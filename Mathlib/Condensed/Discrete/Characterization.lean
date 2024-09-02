@@ -29,9 +29,9 @@ noncomputable
 def constantSheafProfiniteCompHausIso : constantSheaf (coherentTopology Profinite) (Type (u+1)) ≅
     constantSheaf (coherentTopology CompHaus) (Type (u+1)) ⋙
     (Condensed.ProfiniteCompHaus.equivalence _).inverse :=
-  (Sheaf.equivCommuteConstant' (coherentTopology Profinite) (Type (u+1))
-    Profinite.isTerminalPUnit
-    (coherentTopology CompHaus) profiniteToCompHaus CompHaus.isTerminalPUnit)
+  (equivCommuteConstant' (coherentTopology Profinite) (Type (u+1))
+    (coherentTopology CompHaus) profiniteToCompHaus Profinite.isTerminalPUnit
+     CompHaus.isTerminalPUnit)
 
 instance : (constantSheaf (coherentTopology Profinite) (Type (u+1))).Faithful :=
   Functor.Faithful.of_iso constantSheafProfiniteCompHausIso.symm
@@ -63,8 +63,7 @@ noncomputable abbrev LocallyConstant.adjunction :
 A condensed set is discrete if it is discrete as a sheaf with respect to the terminal object
 `PUnit` in `CompHaus`.
 -/
-abbrev IsDiscrete (M : CondensedSet.{u}) :=
-  Sheaf.IsConstant (coherentTopology CompHaus) CompHaus.isTerminalPUnit M
+abbrev IsDiscrete (M : CondensedSet.{u}) := Sheaf.IsConstant (coherentTopology CompHaus) M
 
 open List in
 theorem isDiscrete_tfae  (X : CondensedSet.{u}) :
@@ -74,24 +73,27 @@ theorem isDiscrete_tfae  (X : CondensedSet.{u}) :
     , X ∈ (Condensed.discrete _).essImage
     , X ∈ CondensedSet.LocallyConstant.functor.essImage
     , IsIso (CondensedSet.LocallyConstant.adjunction.counit.app X)
-    , Sheaf.IsConstant (coherentTopology Profinite) Profinite.isTerminalPUnit
+    , Sheaf.IsConstant (coherentTopology Profinite)
         ((Condensed.ProfiniteCompHaus.equivalence _).inverse.obj X)
     , ∀ S : Profinite.{u}, Nonempty
         (IsColimit <| (profiniteToCompHaus.op ⋙ X.val).mapCocone S.asLimitCone.op)
     ] := by
   tfae_have 1 ↔ 2
-  · exact Sheaf.isConstant_iff_isIso_counit_app _ _ _ _
+  · exact Sheaf.isConstant_iff_isIso_counit_app _ _ _
   tfae_have 1 ↔ 3
-  · exact Sheaf.isConstant_iff_mem_essImage _ _ _
+  · exact ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
   tfae_have 1 ↔ 4
+  · exact Sheaf.isConstant_iff_mem_essImage _ CompHaus.isTerminalPUnit
+      CondensedSet.LocallyConstant.adjunction _
+  tfae_have 1 ↔ 5
   · have : LocallyConstant.functor.Faithful := inferInstance
     have : LocallyConstant.functor.Full := inferInstance
-    exact Sheaf.isConstant_iff_mem_essImage' _ _ CondensedSet.LocallyConstant.adjunction _
-  tfae_have 1 ↔ 5
-  · exact Sheaf.isConstant_iff_isIso_counit_app _ _ CondensedSet.LocallyConstant.adjunction _
+    -- These `have` statements above shouldn't be needed, but they are.
+    exact Sheaf.isConstant_iff_isIso_counit_app' _ CompHaus.isTerminalPUnit
+      CondensedSet.LocallyConstant.adjunction _
   tfae_have 1 ↔ 6
   · exact (Sheaf.isConstant_iff_of_equivalence (coherentTopology Profinite)
-      Profinite.isTerminalPUnit  (coherentTopology CompHaus) profiniteToCompHaus
+      (coherentTopology CompHaus) profiniteToCompHaus Profinite.isTerminalPUnit
       CompHaus.isTerminalPUnit _).symm
   tfae_have 7 → 4
   · intro h
@@ -114,12 +116,12 @@ A condensed module is discrete if it is discrete as a sheaf with respect to the 
 `PUnit` in `CompHaus`.
 -/
 abbrev IsDiscrete (M : CondensedMod R) :=
-  Sheaf.IsConstant (coherentTopology CompHaus) CompHaus.isTerminalPUnit M
+  Sheaf.IsConstant (coherentTopology CompHaus) M
 
 lemma isDiscrete_iff_isDiscrete_forget (M : CondensedMod R) :
     IsDiscrete R M ↔ CondensedSet.IsDiscrete ((Condensed.forget R).obj M) :=
-  Sheaf.isConstant_iff_forget (coherentTopology CompHaus) CompHaus.isTerminalPUnit
-    (CategoryTheory.forget (ModuleCat R)) M
+  Sheaf.isConstant_iff_forget (coherentTopology CompHaus)
+    (CategoryTheory.forget (ModuleCat R)) M CompHaus.isTerminalPUnit
 
 end CondensedMod
 
@@ -154,7 +156,7 @@ A light condensed set is discrete if it is discrete as a sheaf with respect to t
 `PUnit` in `LightProfinite`.
 -/
 abbrev IsDiscrete (M : LightCondSet.{u}) :=
-  Sheaf.IsConstant (coherentTopology LightProfinite) LightProfinite.isTerminalPUnit M
+  Sheaf.IsConstant (coherentTopology LightProfinite) M
 
 open List in
 theorem isDiscrete_tfae  (X : LightCondSet.{u}) :
@@ -168,15 +170,18 @@ theorem isDiscrete_tfae  (X : LightCondSet.{u}) :
         (IsColimit <| X.val.mapCocone (coconeRightOpOfCone S.asLimitCone))
     ] := by
   tfae_have 1 ↔ 2
-  · exact Sheaf.isConstant_iff_isIso_counit_app _ _ _ _
+  · exact Sheaf.isConstant_iff_isIso_counit_app _ _ _
   tfae_have 1 ↔ 3
-  · exact Sheaf.isConstant_iff_mem_essImage _ _ _
+  · exact ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
   tfae_have 1 ↔ 4
+  · exact Sheaf.isConstant_iff_mem_essImage _ LightProfinite.isTerminalPUnit
+      LightCondSet.LocallyConstant.adjunction X
+  tfae_have 1 ↔ 5
   · have : LocallyConstant.functor.Faithful := inferInstance
     have : LocallyConstant.functor.Full := inferInstance
-    exact Sheaf.isConstant_iff_mem_essImage' _ _ LightCondSet.LocallyConstant.adjunction X
-  tfae_have 1 ↔ 5
-  · exact Sheaf.isConstant_iff_isIso_counit_app _ _ LightCondSet.LocallyConstant.adjunction X
+    -- These `have` statements above shouldn't be needed, but they are.
+    exact Sheaf.isConstant_iff_isIso_counit_app' _ LightProfinite.isTerminalPUnit
+      LightCondSet.LocallyConstant.adjunction X
   tfae_have 6 → 4
   · intro h
     exact mem_locallyContant_essImage_of_isColimit_mapCocone X (fun S ↦ (h S).some)
@@ -197,11 +202,11 @@ A light condensed module is discrete if it is discrete as a sheaf with respect t
 object `PUnit` in `LightProfinite`.
 -/
 abbrev IsDiscrete (M : LightCondMod R) :=
-  Sheaf.IsConstant (coherentTopology LightProfinite) LightProfinite.isTerminalPUnit M
+  Sheaf.IsConstant (coherentTopology LightProfinite) M
 
 lemma isDiscrete_iff_isDiscrete_forget (M : LightCondMod R) :
     IsDiscrete R M ↔ LightCondSet.IsDiscrete ((LightCondensed.forget R).obj M) :=
-  Sheaf.isConstant_iff_forget (coherentTopology LightProfinite) LightProfinite.isTerminalPUnit
-    (CategoryTheory.forget (ModuleCat R)) M
+  Sheaf.isConstant_iff_forget (coherentTopology LightProfinite)
+    (CategoryTheory.forget (ModuleCat R)) M LightProfinite.isTerminalPUnit
 
 end LightCondMod
