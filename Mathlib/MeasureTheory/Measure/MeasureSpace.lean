@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.MeasureTheory.Measure.NullMeasurable
 import Mathlib.MeasureTheory.MeasurableSpace.Embedding
+import Mathlib.MeasureTheory.OuterMeasure.BorelCantelli
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
 
 /-!
@@ -1969,4 +1970,4 @@ end MeasurableEquiv
 
 end
 
-set_option linter.style.longFile 2200
+set_option linter.style.longFile 2000
