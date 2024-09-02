@@ -118,7 +118,7 @@ theorem mellin_comp_rpow (f : ℝ → E) (s : ℂ) (a : ℝ) :
   conv_rhs => rw [← integral_comp_rpow_Ioi _ ha, ← integral_smul]
   refine setIntegral_congr measurableSet_Ioi fun t ht => ?_
   dsimp only
-  rw [← mul_smul, ← mul_assoc, inv_mul_cancel (mt abs_eq_zero.1 ha), one_mul, ← smul_assoc,
+  rw [← mul_smul, ← mul_assoc, inv_mul_cancel₀ (mt abs_eq_zero.1 ha), one_mul, ← smul_assoc,
     real_smul]
   rw [ofReal_cpow (le_of_lt ht), ← cpow_mul_ofReal_nonneg (le_of_lt ht), ←
     cpow_add _ _ (ofReal_ne_zero.mpr <| ne_of_gt ht), ofReal_sub, ofReal_one, mul_sub,
@@ -229,7 +229,7 @@ theorem mellin_convergent_zero_of_isBigO {b : ℝ} {f : ℝ → ℝ}
       rw [← IntegrableOn, ← integrableOn_Ioc_iff_integrableOn_Ioo, ←
         intervalIntegrable_iff_integrableOn_Ioc_of_le hε.le]
       exact intervalIntegral.intervalIntegrable_rpow' (by linarith)
-    · refine (ae_restrict_iff' measurableSet_Ioo).mpr (eventually_of_forall fun t ht => ?_)
+    · refine (ae_restrict_iff' measurableSet_Ioo).mpr (Eventually.of_forall fun t ht => ?_)
       rw [mul_comm, norm_mul]
       specialize hε' _ ht.1
       · rw [dist_eq_norm, sub_zero, norm_of_nonneg (le_of_lt ht.1)]
@@ -278,8 +278,8 @@ theorem isBigO_rpow_top_log_smul [NormedSpace ℝ E] {a b : ℝ} {f : ℝ → E}
     (fun t : ℝ => log t • f t) =O[atTop] (· ^ (-b)) := by
   refine
     ((isLittleO_log_rpow_atTop (sub_pos.mpr hab)).isBigO.smul hf).congr'
-      (eventually_of_forall fun t => by rfl)
-      ((eventually_gt_atTop 0).mp (eventually_of_forall fun t ht => ?_))
+      (Eventually.of_forall fun t => by rfl)
+      ((eventually_gt_atTop 0).mp (Eventually.of_forall fun t ht => ?_))
   simp only
   rw [smul_eq_mul, ← rpow_add ht, ← sub_eq_add_neg, sub_eq_add_neg a, add_sub_cancel_left]
 
@@ -290,13 +290,13 @@ theorem isBigO_rpow_zero_log_smul [NormedSpace ℝ E] {a b : ℝ} {f : ℝ → E
   have : log =o[𝓝[>] 0] fun t : ℝ => t ^ (a - b) := by
     refine ((isLittleO_log_rpow_atTop (sub_pos.mpr hab)).neg_left.comp_tendsto
           tendsto_inv_zero_atTop).congr'
-      (eventually_nhdsWithin_iff.mpr <| eventually_of_forall fun t ht => ?_)
-      (eventually_nhdsWithin_iff.mpr <| eventually_of_forall fun t ht => ?_)
+      (eventually_nhdsWithin_iff.mpr <| Eventually.of_forall fun t ht => ?_)
+      (eventually_nhdsWithin_iff.mpr <| Eventually.of_forall fun t ht => ?_)
     · simp_rw [Function.comp_apply, ← one_div, log_div one_ne_zero (ne_of_gt ht), Real.log_one,
         zero_sub, neg_neg]
     · simp_rw [Function.comp_apply, inv_rpow (le_of_lt ht), ← rpow_neg (le_of_lt ht), neg_sub]
-  refine (this.isBigO.smul hf).congr' (eventually_of_forall fun t => by rfl)
-      (eventually_nhdsWithin_iff.mpr (eventually_of_forall fun t ht => ?_))
+  refine (this.isBigO.smul hf).congr' (Eventually.of_forall fun t => by rfl)
+      (eventually_nhdsWithin_iff.mpr (Eventually.of_forall fun t ht => ?_))
   simp_rw [smul_eq_mul, ← rpow_add ht]
   congr 1
   abel
@@ -319,7 +319,7 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [NormedSpace ℂ E] {a b : ℝ}
       ⟨min w w', lt_min hw1 hw1', (min_le_right _ _).trans_lt hw2', (min_le_left _ _).trans_lt hw2⟩
   let bound : ℝ → ℝ := fun t : ℝ => (t ^ (s.re + v - 1) + t ^ (s.re - v - 1)) * |log t| * ‖f t‖
   have h1 : ∀ᶠ z : ℂ in 𝓝 s, AEStronglyMeasurable (F z) (volume.restrict <| Ioi 0) := by
-    refine eventually_of_forall fun z => AEStronglyMeasurable.smul ?_ hfc.aestronglyMeasurable
+    refine Eventually.of_forall fun z => AEStronglyMeasurable.smul ?_ hfc.aestronglyMeasurable
     refine ContinuousOn.aestronglyMeasurable ?_ measurableSet_Ioi
     refine ContinuousAt.continuousOn fun t ht => ?_
     exact continuousAt_ofReal_cpow_const _ _ (Or.inr <| ne_of_gt ht)

@@ -5,7 +5,7 @@ Authors: David Loeffler
 -/
 
 import Mathlib.Analysis.PSeries
-import Mathlib.Analysis.NormedSpace.FiniteDimension
+import Mathlib.Analysis.Normed.Module.FiniteDimension
 import Mathlib.Data.Complex.FiniteDimensional
 
 /-!

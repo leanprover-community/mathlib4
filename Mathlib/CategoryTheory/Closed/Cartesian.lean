@@ -31,7 +31,7 @@ for closed monoidal categories, and these could be generalised.
 -/
 
 
-universe v u u₂
+universe v v₂ u u₂
 
 noncomputable section
 
@@ -232,8 +232,8 @@ The typeclass argument is explicit: any instance can be used.
 -/
 def expTerminalIsoSelf [Exponentiable (⊤_ C)] : (⊤_ C) ⟹ X ≅ X :=
   Yoneda.ext ((⊤_ C) ⟹ X) X
-    (fun {Y} f => (prod.leftUnitor Y).inv ≫ CartesianClosed.uncurry f)
-    (fun {Y} f => CartesianClosed.curry ((prod.leftUnitor Y).hom ≫ f))
+    (fun {Y} f => (Limits.prod.leftUnitor Y).inv ≫ CartesianClosed.uncurry f)
+    (fun {Y} f => CartesianClosed.curry ((Limits.prod.leftUnitor Y).hom ≫ f))
     (fun g => by
       rw [curry_eq_iff, Iso.hom_inv_id_assoc])
     (fun g => by simp)
@@ -308,7 +308,7 @@ def powZero {I : C} (t : IsInitial I) [CartesianClosed C] : I ⟹ B ≅ ⊤_ C w
     rw [← curry_natural_left, curry_eq_iff, ← cancel_epi (mulZero t).inv]
     apply t.hom_ext
 
--- TODO: Generalise the below to its commutated variants.
+-- TODO: Generalise the below to its commuted variants.
 -- TODO: Define a distributive category, so that zero_mul and friends can be derived from this.
 /-- In a CCC with binary coproducts, the distribution morphism is an isomorphism. -/
 def prodCoprodDistrib [HasBinaryCoproducts C] [CartesianClosed C] (X Y Z : C) :
@@ -353,7 +353,7 @@ theorem initial_mono {I : C} (B : C) (t : IsInitial I) [CartesianClosed C] : Mon
 instance Initial.mono_to [HasInitial C] (B : C) [CartesianClosed C] : Mono (initial.to B) :=
   initial_mono B initialIsInitial
 
-variable {D : Type u₂} [Category.{v} D]
+variable {D : Type u₂} [Category.{v₂} D]
 
 section Functor
 

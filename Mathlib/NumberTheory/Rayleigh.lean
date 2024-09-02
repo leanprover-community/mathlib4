@@ -55,16 +55,17 @@ noncomputable def beattySeq' (r : ℝ) : ℤ → ℤ :=
 
 namespace Beatty
 
-variable {r s : ℝ} (hrs : r.IsConjExponent s) {j k : ℤ}
+variable {r s : ℝ} {j k : ℤ}
 
 /-- Let `r > 1` and `1/r + 1/s = 1`. Then `B_r` and `B'_s` are disjoint (i.e. no collision exists).
 -/
-private theorem no_collision : Disjoint {beattySeq r k | k} {beattySeq' s k | k} := by
+private theorem no_collision (hrs : r.IsConjExponent s) :
+    Disjoint {beattySeq r k | k} {beattySeq' s k | k} := by
   rw [Set.disjoint_left]
   intro j ⟨k, h₁⟩ ⟨m, h₂⟩
-  rw [beattySeq, Int.floor_eq_iff, ← div_le_iff hrs.pos, ← lt_div_iff hrs.pos] at h₁
+  rw [beattySeq, Int.floor_eq_iff, ← div_le_iff₀ hrs.pos, ← lt_div_iff hrs.pos] at h₁
   rw [beattySeq', sub_eq_iff_eq_add, Int.ceil_eq_iff, Int.cast_add, Int.cast_one,
-    add_sub_cancel_right, ← div_lt_iff hrs.symm.pos, ← le_div_iff hrs.symm.pos] at h₂
+    add_sub_cancel_right, ← div_lt_iff hrs.symm.pos, ← le_div_iff₀ hrs.symm.pos] at h₂
   have h₃ := add_lt_add_of_le_of_lt h₁.1 h₂.1
   have h₄ := add_lt_add_of_lt_of_le h₁.2 h₂.2
   simp_rw [div_eq_inv_mul, ← right_distrib, hrs.inv_add_inv_conj, one_mul] at h₃ h₄
@@ -74,7 +75,7 @@ private theorem no_collision : Disjoint {beattySeq r k | k} {beattySeq' s k | k}
 
 /-- Let `r > 1` and `1/r + 1/s = 1`. Suppose there is an integer `j` where `B_r` and `B'_s` both
 jump over `j` (i.e. an anti-collision). Then this leads to a contradiction. -/
-private theorem no_anticollision :
+private theorem no_anticollision (hrs : r.IsConjExponent s) :
     ¬∃ j k m : ℤ, k < j / r ∧ (j + 1) / r ≤ k + 1 ∧ m ≤ j / s ∧ (j + 1) / s < m + 1 := by
   intro ⟨j, k, m, h₁₁, h₁₂, h₂₁, h₂₂⟩
   have h₃ := add_lt_add_of_lt_of_le h₁₁ h₂₁
@@ -101,7 +102,7 @@ private theorem hit_or_miss' (h : r > 0) :
     j ∈ {beattySeq' r k | k} ∨ ∃ k : ℤ, k ≤ j / r ∧ (j + 1) / r < k + 1 := by
   -- for both cases, the candidate is `k = ⌊(j + 1) / r⌋`
   cases le_or_gt (⌊(j + 1) / r⌋ * r) j
-  · exact Or.inr ⟨⌊(j + 1) / r⌋, (le_div_iff h).2 ‹_›, Int.lt_floor_add_one _⟩
+  · exact Or.inr ⟨⌊(j + 1) / r⌋, (le_div_iff₀ h).2 ‹_›, Int.lt_floor_add_one _⟩
   · refine Or.inl ⟨⌊(j + 1) / r⌋, ?_⟩
     rw [beattySeq', sub_eq_iff_eq_add, Int.ceil_eq_iff, Int.cast_add, Int.cast_one]
     constructor

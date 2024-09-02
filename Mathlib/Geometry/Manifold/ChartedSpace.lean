@@ -576,6 +576,14 @@ lemma chart_mem_atlas (H : Type*) {M : Type*} [TopologicalSpace H] [TopologicalS
 
 section ChartedSpace
 
+/-- An empty type is a charted space over any topological space. -/
+def ChartedSpace.empty (H : Type*) [TopologicalSpace H]
+    (M : Type*) [TopologicalSpace M] [IsEmpty M] : ChartedSpace H M where
+  atlas := ∅
+  chartAt x := (IsEmpty.false x).elim
+  mem_chart_source x := (IsEmpty.false x).elim
+  chart_mem_atlas x := (IsEmpty.false x).elim
+
 /-- Any space is a `ChartedSpace` modelled over itself, by just using the identity chart. -/
 instance chartedSpaceSelf (H : Type*) [TopologicalSpace H] : ChartedSpace H H where
   atlas := {PartialHomeomorph.refl H}
@@ -960,15 +968,14 @@ theorem StructureGroupoid.trans_restricted {e e' : PartialHomeomorph M H} {G : S
 
 section MaximalAtlas
 
-variable (M) (G : StructureGroupoid H)
+variable (G : StructureGroupoid H)
 
+variable (M) in
 /-- Given a charted space admitting a structure groupoid, the maximal atlas associated to this
 structure groupoid is the set of all charts that are compatible with the atlas, i.e., such
 that changing coordinates with an atlas member gives an element of the groupoid. -/
 def StructureGroupoid.maximalAtlas : Set (PartialHomeomorph M H) :=
   { e | ∀ e' ∈ atlas H M, e.symm ≫ₕ e' ∈ G ∧ e'.symm ≫ₕ e ∈ G }
-
-variable {M}
 
 /-- The elements of the atlas belong to the maximal atlas for any structure groupoid. -/
 theorem StructureGroupoid.subset_maximalAtlas [HasGroupoid M G] : atlas H M ⊆ G.maximalAtlas M :=

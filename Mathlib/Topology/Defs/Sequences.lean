@@ -72,9 +72,11 @@ variable (X)
 converging subsequence. -/
 @[mk_iff]
 class SeqCompactSpace : Prop where
-  seq_compact_univ : IsSeqCompact (univ : Set X)
+  isSeqCompact_univ : IsSeqCompact (univ : Set X)
 
-export SeqCompactSpace (seq_compact_univ)
+export SeqCompactSpace (isSeqCompact_univ)
+
+@[deprecated (since := "2024-07-25")] alias seq_compact_univ := isSeqCompact_univ
 
 /-- A topological space is called a *Fréchet-Urysohn space*, if the sequential closure of any set
 is equal to its closure. Since one of the inclusions is trivial, we require only the non-trivial one

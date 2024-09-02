@@ -75,6 +75,4 @@ alias int_cast_ne := intCast_ne
 
 end Qify
 
-end Tactic
-
-end Mathlib
+end Mathlib.Tactic

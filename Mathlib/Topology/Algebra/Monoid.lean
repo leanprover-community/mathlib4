@@ -18,14 +18,10 @@ applications the underlying type is a monoid (multiplicative or additive), we do
 the definitions.
 -/
 
-
 universe u v
 
-open scoped Classical
 open Set Filter TopologicalSpace
-
-open scoped Classical
-open Topology Pointwise
+open scoped Topology Pointwise
 
 variable {ι α M N X : Type*} [TopologicalSpace X]
 
@@ -60,7 +56,7 @@ variable [TopologicalSpace M] [Mul M] [ContinuousMul M]
 instance : ContinuousMul Mᵒᵈ :=
   ‹ContinuousMul M›
 
-@[to_additive (attr := continuity)]
+@[to_additive (attr := continuity, fun_prop)]
 theorem continuous_mul : Continuous fun p : M × M => p.1 * p.2 :=
   ContinuousMul.continuous_mul
 
@@ -80,6 +76,15 @@ instance ContinuousMul.to_continuousSMul_op : ContinuousSMul Mᵐᵒᵖ M :=
   ⟨show Continuous ((fun p : M × M => p.1 * p.2) ∘ Prod.swap ∘ Prod.map MulOpposite.unop id) from
       continuous_mul.comp <|
         continuous_swap.comp <| Continuous.prod_map MulOpposite.continuous_unop continuous_id⟩
+
+@[to_additive]
+theorem ContinuousMul.induced {α : Type*} {β : Type*} {F : Type*} [FunLike F α β] [MulOneClass α]
+    [MulOneClass β] [MonoidHomClass F α β] [tβ : TopologicalSpace β] [ContinuousMul β] (f : F) :
+    @ContinuousMul α (tβ.induced f) _ := by
+  let tα := tβ.induced f
+  refine ⟨continuous_induced_rng.2 ?_⟩
+  simp only [Function.comp, map_mul]
+  fun_prop
 
 @[to_additive (attr := continuity, fun_prop)]
 theorem Continuous.mul {f g : X → M} (hf : Continuous f) (hg : Continuous g) :
@@ -139,6 +144,7 @@ section tendsto_nhds
 
 variable {𝕜 : Type*} [Preorder 𝕜] [Zero 𝕜] [Mul 𝕜] [TopologicalSpace 𝕜] [ContinuousMul 𝕜]
   {l : Filter α} {f : α → 𝕜} {b c : 𝕜} (hb : 0 < b)
+include hb
 
 theorem Filter.TendstoNhdsWithinIoi.const_mul [PosMulStrictMono 𝕜] [PosMulReflectLT 𝕜]
     (h : Tendsto f l (𝓝[>] c)) : Tendsto (fun a => b * f a) l (𝓝[>] (b * c)) :=
@@ -326,7 +332,7 @@ monoid homomorphisms"]
 def monoidHomOfTendsto (f : M₁ → M₂) (g : α → F) [l.NeBot]
     (h : Tendsto (fun a x => g a x) l (𝓝 f)) : M₁ →* M₂ :=
   monoidHomOfMemClosureRangeCoe f <|
-    mem_closure_of_tendsto h <| eventually_of_forall fun _ => mem_range_self _
+    mem_closure_of_tendsto h <| Eventually.of_forall fun _ => mem_range_self _
 
 variable (M₁ M₂)
 

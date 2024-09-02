@@ -99,6 +99,8 @@ theorem continuous_sqrt : Continuous sqrt := sqrt.continuous
 
 alias ⟨_, sqrt_pos_of_pos⟩ := sqrt_pos
 
+attribute [bound] sqrt_pos_of_pos
+
 end NNReal
 
 namespace Real
@@ -113,15 +115,6 @@ noncomputable def sqrt (x : ℝ) : ℝ :=
 @[inherit_doc]
 prefix:max "√" => Real.sqrt
 
-/- quotient.lift_on x
-  (λ f, mk ⟨sqrt_aux f, (sqrt_aux_converges f).fst⟩)
-  (λ f g e, begin
-    rcases sqrt_aux_converges f with ⟨hf, x, x0, xf, xs⟩,
-    rcases sqrt_aux_converges g with ⟨hg, y, y0, yg, ys⟩,
-    refine xs.trans (eq.trans _ ys.symm),
-    rw [← @mul_self_inj_of_nonneg ℝ _ x y x0 y0, xf, yg],
-    congr' 1, exact quotient.sound e
-  end)-/
 variable {x y : ℝ}
 
 @[simp, norm_cast]
@@ -134,8 +127,7 @@ theorem continuous_sqrt : Continuous (√· : ℝ → ℝ) :=
 
 theorem sqrt_eq_zero_of_nonpos (h : x ≤ 0) : sqrt x = 0 := by simp [sqrt, Real.toNNReal_eq_zero.2 h]
 
-theorem sqrt_nonneg (x : ℝ) : 0 ≤ √x :=
-  NNReal.coe_nonneg _
+@[simp] theorem sqrt_nonneg (x : ℝ) : 0 ≤ √x := NNReal.coe_nonneg _
 
 @[simp]
 theorem mul_self_sqrt (h : 0 ≤ x) : √x * √x = x := by
@@ -154,8 +146,12 @@ theorem sqrt_eq_cases : √x = y ↔ y * y = x ∧ 0 ≤ y ∨ x < 0 ∧ y = 0 :
   · rintro (⟨rfl, hy⟩ | ⟨hx, rfl⟩)
     exacts [sqrt_mul_self hy, sqrt_eq_zero_of_nonpos hx.le]
 
-theorem sqrt_eq_iff_mul_self_eq (hx : 0 ≤ x) (hy : 0 ≤ y) : √x = y ↔ y * y = x :=
-  ⟨fun h => by rw [← h, mul_self_sqrt hx], fun h => by rw [← h, sqrt_mul_self hy]⟩
+theorem sqrt_eq_iff_mul_self_eq (hx : 0 ≤ x) (hy : 0 ≤ y) : √x = y ↔ x = y * y :=
+  ⟨fun h => by rw [← h, mul_self_sqrt hx], fun h => by rw [h, sqrt_mul_self hy]⟩
+
+@[deprecated sqrt_eq_iff_mul_self_eq (since := "2024-08-25")]
+theorem sqrt_eq_iff_eq_mul_self (hx : 0 ≤ x) (hy : 0 ≤ y) : √x = y ↔ y * y = x := by
+  rw [sqrt_eq_iff_mul_self_eq hx hy, eq_comm]
 
 theorem sqrt_eq_iff_mul_self_eq_of_pos (h : 0 < y) : √x = y ↔ y * y = x := by
   simp [sqrt_eq_cases, h.ne', h.le]
@@ -172,8 +168,12 @@ theorem sq_sqrt (h : 0 ≤ x) : √x ^ 2 = x := by rw [sq, mul_self_sqrt h]
 @[simp]
 theorem sqrt_sq (h : 0 ≤ x) : √(x ^ 2) = x := by rw [sq, sqrt_mul_self h]
 
-theorem sqrt_eq_iff_sq_eq (hx : 0 ≤ x) (hy : 0 ≤ y) : √x = y ↔ y ^ 2 = x := by
+theorem sqrt_eq_iff_eq_sq (hx : 0 ≤ x) (hy : 0 ≤ y) : √x = y ↔ x = y ^ 2 := by
   rw [sq, sqrt_eq_iff_mul_self_eq hx hy]
+
+@[deprecated sqrt_eq_iff_eq_sq (since := "2024-08-25")]
+theorem sqrt_eq_iff_sq_eq (hx : 0 ≤ x) (hy : 0 ≤ y) : √x = y ↔ y ^ 2 = x := by
+  rw [sqrt_eq_iff_eq_sq hx hy, eq_comm]
 
 theorem sqrt_mul_self_eq_abs (x : ℝ) : √(x * x) = |x| := by
   rw [← abs_mul_abs_self x, sqrt_mul_self (abs_nonneg _)]
@@ -197,12 +197,12 @@ theorem sqrt_lt_sqrt_iff (hx : 0 ≤ x) : √x < √y ↔ x < y :=
 theorem sqrt_lt_sqrt_iff_of_pos (hy : 0 < y) : √x < √y ↔ x < y := by
   rw [Real.sqrt, Real.sqrt, NNReal.coe_lt_coe, NNReal.sqrt_lt_sqrt, toNNReal_lt_toNNReal_iff hy]
 
-@[gcongr]
+@[gcongr, bound]
 theorem sqrt_le_sqrt (h : x ≤ y) : √x ≤ √y := by
   rw [Real.sqrt, Real.sqrt, NNReal.coe_le_coe, NNReal.sqrt_le_sqrt]
   exact toNNReal_le_toNNReal h
 
-@[gcongr]
+@[gcongr, bound]
 theorem sqrt_lt_sqrt (hx : 0 ≤ x) (h : x < y) : √x < √y :=
   (sqrt_lt_sqrt_iff hx).2 h
 
@@ -265,7 +265,7 @@ alias ⟨_, sqrt_pos_of_pos⟩ := sqrt_pos
 
 lemma sqrt_le_sqrt_iff' (hx : 0 < x) : √x ≤ √y ↔ x ≤ y := by
   obtain hy | hy := le_total y 0
-  · exact iff_of_false ((sqrt_eq_zero_of_nonpos hy).trans_lt $ sqrt_pos.2 hx).not_le
+  · exact iff_of_false ((sqrt_eq_zero_of_nonpos hy).trans_lt <| sqrt_pos.2 hx).not_le
       (hy.trans_lt hx).not_le
   · exact sqrt_le_sqrt_iff hy
 
@@ -431,7 +431,7 @@ open Finset
 /-- **Cauchy-Schwarz inequality** for finsets using square roots in `ℝ≥0`. -/
 lemma sum_mul_le_sqrt_mul_sqrt (s : Finset ι) (f g : ι → ℝ≥0) :
     ∑ i ∈ s, f i * g i ≤ sqrt (∑ i ∈ s, f i ^ 2) * sqrt (∑ i ∈ s, g i ^ 2) :=
-  (le_sqrt_iff_sq_le.2 $ sum_mul_sq_le_sq_mul_sq _ _ _).trans_eq <| sqrt_mul _ _
+  (le_sqrt_iff_sq_le.2 <| sum_mul_sq_le_sq_mul_sq _ _ _).trans_eq <| sqrt_mul _ _
 
 /-- **Cauchy-Schwarz inequality** for finsets using square roots in `ℝ≥0`. -/
 lemma sum_sqrt_mul_sqrt_le (s : Finset ι) (f g : ι → ℝ≥0) :
