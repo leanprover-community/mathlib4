@@ -156,8 +156,8 @@ theorem sUnion_classes (r : Setoid α) : ⋃₀ r.classes = Set.univ :=
 /-- The equivalence between the quotient by an equivalence relation and its
 type of equivalence classes. -/
 noncomputable def quotientEquivClasses (r : Setoid α) : Quotient r ≃ Setoid.classes r := by
-  let f (a : α) : Setoid.classes r := ⟨{ x | Setoid.r x a }, Setoid.mem_classes r a⟩
-  have f_respects_relation (a b : α) (a_rel_b : Setoid.r a b) : f a = f b := by
+  let f (a : α) : Setoid.classes r := ⟨{ x | r x a }, Setoid.mem_classes r a⟩
+  have f_respects_relation (a b : α) (a_rel_b : r a b) : f a = f b := by
     rw [Subtype.mk.injEq]
     exact Setoid.eq_of_mem_classes (Setoid.mem_classes r a) (Setoid.symm a_rel_b)
         (Setoid.mem_classes r b) (Setoid.refl b)
@@ -168,7 +168,7 @@ noncomputable def quotientEquivClasses (r : Setoid α) : Quotient r ≃ Setoid.c
     induction' q_b using Quotient.ind with b
     simp only [Subtype.ext_iff, Quotient.lift_mk, Subtype.ext_iff] at h_eq
     apply Quotient.sound
-    show a ∈ { x | Setoid.r x b }
+    show a ∈ { x | r x b }
     rw [← h_eq]
     exact Setoid.refl a
   · rw [Quot.surjective_lift]
