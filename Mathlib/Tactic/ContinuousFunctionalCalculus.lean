@@ -43,4 +43,5 @@ calculus, specifically concerning whether `f 0 = 0`. -/
 syntax (name := cfcZeroTac) "cfc_zero_tac" : tactic
 macro_rules
   | `(tactic| cfc_zero_tac) =>
-      `(tactic| try (first | aesop (rule_sets := [$(Lean.mkIdent `CStarAlgebra):ident]) | assumption))
+      `(tactic| try
+          (first | aesop (rule_sets := [$(Lean.mkIdent `CStarAlgebra):ident]) | assumption))
