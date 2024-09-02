@@ -1137,8 +1137,10 @@ theorem succ_lt_iSup_of_ne_iSup {ι : Type u} {f : ι → Ordinal.{max u v}}
 set_option linter.deprecated false in
 @[deprecated succ_lt_iSup_of_ne_iSup (since := "2024-08-27")]
 theorem sup_not_succ_of_ne_sup {ι : Type u} {f : ι → Ordinal.{max u v}}
-    (hf : ∀ i, f i ≠ sup.{_, v} f) {a} (hao : a < sup.{_, v} f) : succ a < sup.{_, v} f :=
-  succ_lt_iSup_of_ne_iSup hf hao
+    (hf : ∀ i, f i ≠ sup.{_, v} f) {a} (hao : a < sup.{_, v} f) : succ a < sup.{_, v} f := by
+  by_contra! hoa
+  exact
+    hao.not_le (sup_le fun i => le_of_lt_succ <| (lt_of_le_of_ne (le_sup _ _) (hf i)).trans_le hoa)
 
 -- TODO: generalize to conditionally complete lattices.
 theorem iSup_eq_zero_iff {ι : Type u} {f : ι → Ordinal.{max u v}} :
@@ -1152,8 +1154,12 @@ theorem iSup_eq_zero_iff {ι : Type u} {f : ι → Ordinal.{max u v}} :
 set_option linter.deprecated false in
 @[deprecated iSup_eq_zero_iff (since := "2024-08-27")]
 theorem sup_eq_zero_iff {ι : Type u} {f : ι → Ordinal.{max u v}} :
-    sup.{_, v} f = 0 ↔ ∀ i, f i = 0 :=
-  iSup_eq_zero_iff
+    sup.{_, v} f = 0 ↔ ∀ i, f i = 0 := by
+  refine
+    ⟨fun h i => ?_, fun h =>
+      le_antisymm (sup_le fun i => Ordinal.le_zero.2 (h i)) (Ordinal.zero_le _)⟩
+  rw [← Ordinal.le_zero, ← h]
+  exact le_sup f i
 
 -- TODO: generalize universes, make sSup version.
 theorem IsNormal.iSup {f : Ordinal.{max u v} → Ordinal.{max u w}} (H : IsNormal f) {ι : Type u}
