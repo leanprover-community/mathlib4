@@ -411,8 +411,14 @@ theorem iSup_pow {o : Ordinal} (ho : 0 < o) : ⨆ n : ℕ, o ^ n = o ^ ω := by
 
 set_option linter.deprecated false in
 @[deprecated iSup_pow (since := "2024-08-27")]
-theorem sup_opow_nat {o : Ordinal} (ho : 0 < o) : (sup fun n : ℕ => o ^ n) = o ^ ω :=
-  iSup_pow ho
+theorem sup_opow_nat {o : Ordinal} (ho : 0 < o) : (sup fun n : ℕ => o ^ n) = o ^ ω := by
+  simp_rw [← opow_natCast]
+  rcases (one_le_iff_pos.2 ho).lt_or_eq with ho₁ | rfl
+  · exact (opow_isNormal ho₁).apply_omega
+  · rw [one_opow]
+    refine le_antisymm (sup_le fun n => by rw [one_opow]) ?_
+    convert le_sup (fun n : ℕ => 1 ^ (n : Ordinal)) 0
+    rw [Nat.cast_zero, opow_zero]
 
 end Ordinal
 

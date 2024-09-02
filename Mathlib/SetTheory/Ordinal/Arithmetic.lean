@@ -1071,11 +1071,11 @@ theorem sSup_eq_sup {ι : Type u} (f : ι → Ordinal.{max u v}) : sSup (Set.ran
 
 /-- The range of an indexed ordinal function, whose outputs live in a higher universe than the
 inputs, is always bounded above. See `Ordinal.lsub` for an explicit bound. -/
-theorem bddAbove_range {ι : Type u} (f : ι → Ordinal.{max u v}) : BddAbove (Set.range f) := by
-  use (iSup (succ ∘ card ∘ f)).ord
-  rintro a ⟨i, rfl⟩
-  exact (Cardinal.lt_ord.2 ((lt_succ _).trans_le
-    (le_ciSup (Cardinal.bddAbove_range.{u, v} _) _))).le
+theorem bddAbove_range {ι : Type u} (f : ι → Ordinal.{max u v}) : BddAbove (Set.range f) :=
+  ⟨(iSup (succ ∘ card ∘ f)).ord, by
+    rintro a ⟨i, rfl⟩
+    exact le_of_lt (Cardinal.lt_ord.2 ((lt_succ _).trans_le
+      (le_ciSup (Cardinal.bddAbove_range.{_, v} _) _)))⟩
 
 /-- `le_ciSup` whenever the outputs live in a higher universe than the inputs. -/
 protected theorem le_iSup {ι : Type u} (f : ι → Ordinal.{max u v}) : ∀ i, f i ≤ iSup f :=
@@ -1114,8 +1114,8 @@ protected theorem lt_iSup {ι : Type u} {f : ι → Ordinal.{max u v}} {a} :
 
 set_option linter.deprecated false in
 @[deprecated Ordinal.lt_iSup (since := "2024-08-27")]
-theorem lt_sup {ι : Type u} {f : ι → Ordinal.{max u v}} {a} : a < sup.{_, v} f ↔ ∃ i, a < f i :=
-  Ordinal.lt_iSup
+theorem lt_sup {ι : Type u} {f : ι → Ordinal.{max u v}} {a} : a < sup.{_, v} f ↔ ∃ i, a < f i := by
+  simpa only [not_forall, not_le] using not_congr (@sup_le_iff.{_, v} _ f a)
 
 theorem ne_iSup_iff_lt_iSup {ι : Type u} {f : ι → Ordinal.{max u v}} :
     (∀ i, f i ≠ iSup f) ↔ ∀ i, f i < iSup f :=
@@ -1234,8 +1234,15 @@ set_option linter.deprecated false in
 @[deprecated iSup_sum (since := "2024-08-27")]
 theorem sup_sum {α : Type u} {β : Type v} (f : α ⊕ β → Ordinal.{max u v w}) :
     sup.{max u v, w} f =
-      max (sup.{u, max v w} fun a => f (Sum.inl a)) (sup.{v, max u w} fun b => f (Sum.inr b)) :=
-  iSup_sum f
+      max (sup.{u, max v w} fun a => f (Sum.inl a)) (sup.{v, max u w} fun b => f (Sum.inr b)) := by
+  apply (sup_le_iff.2 _).antisymm (max_le_iff.2 ⟨_, _⟩)
+  · rintro (i | i)
+    · exact le_max_of_le_left (le_sup _ i)
+    · exact le_max_of_le_right (le_sup _ i)
+  all_goals
+    apply sup_le_of_range_subset.{_, max u v, w}
+    rintro i ⟨a, rfl⟩
+    apply mem_range_self
 
 theorem unbounded_range_of_iSup_ge {α β : Type u} (r : α → α → Prop) [IsWellOrder α r] (f : β → α)
     (h : type r ≤ ⨆ i, typein r (f i)) : Unbounded r (range f) :=
@@ -2357,8 +2364,11 @@ theorem iSup_mul_nat (o : Ordinal) : ⨆ n : ℕ, o * n = o * ω := by
 
 set_option linter.deprecated false in
 @[deprecated iSup_add_nat (since := "2024-08-27")]
-theorem sup_mul_nat (o : Ordinal) : (sup fun n : ℕ => o * n) = o * ω :=
-  iSup_mul_nat o
+theorem sup_mul_nat (o : Ordinal) : (sup fun n : ℕ => o * n) = o * ω := by
+  rcases eq_zero_or_pos o with (rfl | ho)
+  · rw [zero_mul]
+    exact sup_eq_zero_iff.2 fun n => zero_mul (n : Ordinal)
+  · exact (mul_isNormal ho).apply_omega
 
 end Ordinal
 

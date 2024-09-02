@@ -78,9 +78,9 @@ theorem nfpFamily_monotone (hf : ∀ i, Monotone (f i)) : Monotone (nfpFamily.{u
   exact (List.foldr_monotone hf l h).trans (Ordinal.le_iSup _ l)
 
 theorem apply_lt_nfpFamily (H : ∀ i, IsNormal (f i)) {a b} (hb : b < nfpFamily.{u, v} f a) (i) :
-    f i b < nfpFamily.{u, v} f a := by
+    f i b < nfpFamily.{u, v} f a :=
   let ⟨l, hl⟩ := lt_nfpFamily.1 hb
-  exact Ordinal.lt_iSup.2 ⟨i::l, (H i).strictMono hl⟩
+  Ordinal.lt_iSup.2 ⟨i::l, (H i).strictMono hl⟩
 
 theorem apply_lt_nfpFamily_iff [Nonempty ι] (H : ∀ i, IsNormal (f i)) {a b} :
     (∀ i, f i b < nfpFamily.{u, v} f a) ↔ b < nfpFamily.{u, v} f a := by
@@ -387,8 +387,14 @@ theorem iSup_iterate_eq_nfp (f : Ordinal.{u} → Ordinal.{u}) (a : Ordinal.{u}) 
 set_option linter.deprecated false in
 @[deprecated (since := "2024-08-27")]
 theorem sup_iterate_eq_nfp (f : Ordinal.{u} → Ordinal.{u}) (a : Ordinal.{u}) :
-    (sup fun n : ℕ => f^[n] a) = nfp f a :=
-  iSup_iterate_eq_nfp f a
+    (sup fun n : ℕ => f^[n] a) = nfp f a := by
+  refine le_antisymm ?_ (sup_le fun l => ?_)
+  · rw [sup_le_iff]
+    intro n
+    rw [← List.length_replicate n Unit.unit, ← List.foldr_const f a]
+    apply le_sup
+  · rw [List.foldr_const f a l]
+    exact le_sup _ _
 
 theorem iterate_le_nfp (f a n) : f^[n] a ≤ nfp f a := by
   rw [← iSup_iterate_eq_nfp]

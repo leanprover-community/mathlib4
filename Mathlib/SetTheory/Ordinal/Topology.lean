@@ -14,7 +14,7 @@ We prove some miscellaneous results involving the order topology of ordinals.
 
 ### Main results
 
-* `Ordinal.isClosed_iff_sup` / `Ordinal.isClosed_iff_bsup`: A set of ordinals is closed iff it's
+* `Ordinal.isClosed_iff_iSup` / `Ordinal.isClosed_iff_bsup`: A set of ordinals is closed iff it's
   closed under suprema.
 * `Ordinal.isNormal_iff_strictMono_and_continuous`: A characterization of normal ordinal
   functions.
@@ -169,8 +169,12 @@ set_option linter.deprecated false in
 @[deprecated mem_closed_iff_iSup (since := "2024-08-27")]
 theorem isClosed_iff_sup :
     IsClosed s ↔
-      ∀ {ι : Type u}, Nonempty ι → ∀ f : ι → Ordinal, (∀ i, f i ∈ s) → iSup f ∈ s :=
-  isClosed_iff_iSup
+      ∀ {ι : Type u}, Nonempty ι → ∀ f : ι → Ordinal, (∀ i, f i ∈ s) → iSup f ∈ s := by
+  use fun hs ι hι f hf => (mem_closed_iff_sup hs).2 ⟨ι, hι, f, hf, rfl⟩
+  rw [← closure_subset_iff_isClosed]
+  intro h x hx
+  rcases mem_closure_iff_sup.1 hx with ⟨ι, hι, f, hf, rfl⟩
+  exact h hι f hf
 
 theorem isClosed_iff_bsup :
     IsClosed s ↔
