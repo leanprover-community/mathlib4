@@ -8,7 +8,7 @@ import Mathlib.Algebra.Ring.Action.Field
 import Mathlib.Algebra.Ring.Action.Invariant
 import Mathlib.FieldTheory.Normal
 import Mathlib.FieldTheory.Separable
-import Mathlib.FieldTheory.Tower
+import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 
 /-!
 # Fixed field under a group action.
