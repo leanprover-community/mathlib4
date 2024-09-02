@@ -1070,7 +1070,7 @@ theorem sSup_eq_sup {ι : Type u} (f : ι → Ordinal.{max u v}) : sSup (Set.ran
   rfl
 
 /-- The range of an indexed ordinal function, whose outputs live in a higher universe than the
-inputs, is always bounded above. See `Ordinal.lsub` for an explicit bound. -/
+    inputs, is always bounded above. See `Ordinal.lsub` for an explicit bound. -/
 theorem bddAbove_range {ι : Type u} (f : ι → Ordinal.{max u v}) : BddAbove (Set.range f) :=
   ⟨(iSup (succ ∘ card ∘ f)).ord, by
     rintro a ⟨i, rfl⟩

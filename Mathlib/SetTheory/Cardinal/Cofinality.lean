@@ -325,8 +325,9 @@ theorem cof_iSup_le {ι} {f : ι → Ordinal} (H : ∀ i, f i < iSup f) :
 set_option linter.deprecated false in
 @[deprecated cof_iSup_le (since := "2024-08-27")]
 theorem cof_sup_le {ι} {f : ι → Ordinal} (H : ∀ i, f i < sup.{u, u} f) :
-    cof (sup.{u, u} f) ≤ #ι :=
-  cof_iSup_le H
+    cof (sup.{u, u} f) ≤ #ι := by
+  rw [← (#ι).lift_id]
+  exact cof_sup_le_lift H
 
 theorem iSup_lt_ord_lift {ι} {f : ι → Ordinal} {c : Ordinal} (hι : Cardinal.lift.{v, u} #ι < c.cof)
     (hf : ∀ i, f i < c) : iSup f < c :=
@@ -344,9 +345,9 @@ theorem iSup_lt_ord {ι} {f : ι → Ordinal} {c : Ordinal} (hι : #ι < c.cof) 
 
 set_option linter.deprecated false in
 @[deprecated iSup_lt_ord (since := "2024-08-27")]
-theorem sup_lt_ord {ι} {f : ι → Ordinal} {c : Ordinal} (hι : #ι < c.cof)
-    (hf : ∀ i, f i < c) : sup.{u, u} f < c :=
-  iSup_lt_ord hι hf
+theorem sup_lt_ord {ι} {f : ι → Ordinal} {c : Ordinal} (hι : #ι < c.cof) :
+    (∀ i, f i < c) → sup.{u, u} f < c :=
+  sup_lt_ord_lift (by rwa [(#ι).lift_id])
 
 theorem iSup_lt_lift {ι} {f : ι → Cardinal} {c : Cardinal}
     (hι : Cardinal.lift.{v, u} #ι < c.ord.cof)
@@ -1195,8 +1196,10 @@ set_option linter.deprecated false in
 @[deprecated iSup_sequence_lt_omega1 (since := "2024-08-27")]
 lemma sup_sequence_lt_omega1 {α : Type u} [Countable α]
     (o : α → Ordinal.{max u v}) (ho : ∀ n, o n < ω₁) :
-    sup o < ω₁ :=
-  iSup_sequence_lt_omega1 o ho
+    sup o < ω₁ := by
+  apply sup_lt_ord_lift _ ho
+  rw [Cardinal.isRegular_aleph_one.cof_eq]
+  exact lt_of_le_of_lt mk_le_aleph0 aleph0_lt_aleph_one
 
 end Ordinal
 
