@@ -1390,7 +1390,7 @@ instance (priority := 75) normedCommGroup [NormedCommGroup E] {S : Type*} [SetLi
 
 end SubgroupClass
 
-section BigOperators
+section ListMultisetFinset
 
 variable {S M ι : Type*} [SeminormedAddGroup S] [SeminormedAddCommGroup M]
 
@@ -1438,4 +1438,4 @@ lemma Finset.Nonempty.iSup_norm_mem_image {s : Finset ι} (hs : s.Nonempty) (f :
     · simpa using Real.iSup_nonneg (by simp)
   · simpa [Finset.nonempty_iff_ne_empty] using hs
 
-end BigOperators
+end ListMultisetFinset
