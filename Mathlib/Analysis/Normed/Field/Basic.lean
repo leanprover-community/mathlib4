@@ -5,6 +5,7 @@ Authors: Patrick Massot, Johannes Hölzl
 -/
 import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Group.AddChar
 import Mathlib.Algebra.Order.Ring.Finset
 import Mathlib.Analysis.Normed.Group.Bounded
 import Mathlib.Analysis.Normed.Group.Constructions
@@ -244,7 +245,7 @@ theorem mulRight_bound (x : α) : ∀ y : α, ‖AddMonoidHom.mulRight x y‖ �
   exact norm_mul_le y x
 
 /-- A non-unital subalgebra of a non-unital seminormed ring is also a non-unital seminormed ring,
-with the restriction of the norm.  -/
+with the restriction of the norm. -/
 instance NonUnitalSubalgebra.nonUnitalSeminormedRing {𝕜 : Type*} [CommRing 𝕜] {E : Type*}
     [NonUnitalSeminormedRing E] [Module 𝕜 E] (s : NonUnitalSubalgebra 𝕜 E) :
     NonUnitalSeminormedRing s :=
@@ -252,7 +253,7 @@ instance NonUnitalSubalgebra.nonUnitalSeminormedRing {𝕜 : Type*} [CommRing �
     norm_mul := fun a b => norm_mul_le a.1 b.1 }
 
 /-- A non-unital subalgebra of a non-unital seminormed ring is also a non-unital seminormed ring,
-with the restriction of the norm.  -/
+with the restriction of the norm. -/
 -- necessary to require `SMulMemClass S 𝕜 E` so that `𝕜` can be determined as an `outParam`
 @[nolint unusedArguments]
 instance (priority := 75) NonUnitalSubalgebraClass.nonUnitalSeminormedRing {S 𝕜 E : Type*}
@@ -263,14 +264,14 @@ instance (priority := 75) NonUnitalSubalgebraClass.nonUnitalSeminormedRing {S �
     norm_mul := fun a b => norm_mul_le a.1 b.1 }
 
 /-- A non-unital subalgebra of a non-unital normed ring is also a non-unital normed ring, with the
-restriction of the norm.  -/
+restriction of the norm. -/
 instance NonUnitalSubalgebra.nonUnitalNormedRing {𝕜 : Type*} [CommRing 𝕜] {E : Type*}
     [NonUnitalNormedRing E] [Module 𝕜 E] (s : NonUnitalSubalgebra 𝕜 E) : NonUnitalNormedRing s :=
   { s.nonUnitalSeminormedRing with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
 /-- A non-unital subalgebra of a non-unital normed ring is also a non-unital normed ring,
-with the restriction of the norm.  -/
+with the restriction of the norm. -/
 instance (priority := 75) NonUnitalSubalgebraClass.nonUnitalNormedRing {S 𝕜 E : Type*}
     [CommRing 𝕜] [NonUnitalNormedRing E] [Module 𝕜 E] [SetLike S E] [NonUnitalSubringClass S E]
     [SMulMemClass S 𝕜 E] (s : S) :
@@ -325,7 +326,7 @@ end NonUnitalSeminormedRing
 
 section SeminormedRing
 
-variable [SeminormedRing α]
+variable [SeminormedRing α] {a b c : α}
 
 /-- A subalgebra of a seminormed ring is also a seminormed ring, with the restriction of the
 norm. -/
@@ -412,7 +413,7 @@ theorem nnnorm_pow_le' (a : α) : ∀ {n : ℕ}, 0 < n → ‖a ^ n‖₊ ≤ �
 /-- If `α` is a seminormed ring with `‖1‖₊ = 1`, then `‖a ^ n‖₊ ≤ ‖a‖₊ ^ n`.
 See also `nnnorm_pow_le'`. -/
 theorem nnnorm_pow_le [NormOneClass α] (a : α) (n : ℕ) : ‖a ^ n‖₊ ≤ ‖a‖₊ ^ n :=
-  Nat.recOn n (by simp only [Nat.zero_eq, pow_zero, nnnorm_one, le_rfl])
+  Nat.recOn n (by simp only [pow_zero, nnnorm_one, le_rfl])
     fun k _hk => nnnorm_pow_le' a k.succ_pos
 
 /-- If `α` is a seminormed ring, then `‖a ^ n‖ ≤ ‖a‖ ^ n` for `n > 0`. See also `norm_pow_le`. -/
@@ -422,7 +423,7 @@ theorem norm_pow_le' (a : α) {n : ℕ} (h : 0 < n) : ‖a ^ n‖ ≤ ‖a‖ ^ 
 /-- If `α` is a seminormed ring with `‖1‖ = 1`, then `‖a ^ n‖ ≤ ‖a‖ ^ n`.
 See also `norm_pow_le'`. -/
 theorem norm_pow_le [NormOneClass α] (a : α) (n : ℕ) : ‖a ^ n‖ ≤ ‖a‖ ^ n :=
-  Nat.recOn n (by simp only [Nat.zero_eq, pow_zero, norm_one, le_rfl])
+  Nat.recOn n (by simp only [pow_zero, norm_one, le_rfl])
     fun n _hn => norm_pow_le' a n.succ_pos
 
 theorem eventually_norm_pow_le (a : α) : ∀ᶠ n : ℕ in atTop, ‖a ^ n‖ ≤ ‖a‖ ^ n :=
@@ -445,6 +446,29 @@ instance Pi.seminormedRing {π : ι → Type*} [Fintype ι] [∀ i, SeminormedRi
 instance MulOpposite.instSeminormedRing : SeminormedRing αᵐᵒᵖ where
   __ := instRing
   __ := instNonUnitalSeminormedRing
+
+/-- This inequality is particularly useful when `c = 1` and `‖a‖ = ‖b‖ = 1` as it then shows that
+chord length is a metric on the unit complex numbers. -/
+lemma norm_sub_mul_le (ha : ‖a‖ ≤ 1) : ‖c - a * b‖ ≤ ‖c - a‖ + ‖1 - b‖ :=
+  calc
+    _ ≤ ‖c - a‖ + ‖a * (1 - b)‖ := by
+        simpa [mul_one_sub] using norm_sub_le_norm_sub_add_norm_sub c a (a * b)
+    _ ≤ ‖c - a‖ + ‖a‖ * ‖1 - b‖ := by gcongr; exact norm_mul_le ..
+    _ ≤ ‖c - a‖ + 1 * ‖1 - b‖ := by gcongr
+    _ = ‖c - a‖ + ‖1 - b‖ := by simp
+
+/-- This inequality is particularly useful when `c = 1` and `‖a‖ = ‖b‖ = 1` as it then shows that
+chord length is a metric on the unit complex numbers. -/
+lemma norm_sub_mul_le' (hb : ‖b‖ ≤ 1) : ‖c - a * b‖ ≤ ‖1 - a‖ + ‖c - b‖ := by
+  rw [add_comm]; exact norm_sub_mul_le (α := αᵐᵒᵖ) hb
+
+/-- This inequality is particularly useful when `c = 1` and `‖a‖ = ‖b‖ = 1` as it then shows that
+chord length is a metric on the unit complex numbers. -/
+lemma nnnorm_sub_mul_le (ha : ‖a‖₊ ≤ 1) : ‖c - a * b‖₊ ≤ ‖c - a‖₊ + ‖1 - b‖₊ := norm_sub_mul_le ha
+
+/-- This inequality is particularly useful when `c = 1` and `‖a‖ = ‖b‖ = 1` as it then shows that
+chord length is a metric on the unit complex numbers. -/
+lemma nnnorm_sub_mul_le' (hb : ‖b‖₊ ≤ 1) : ‖c - a * b‖₊ ≤ ‖1 - a‖₊ + ‖c - b‖₊ := norm_sub_mul_le' hb
 
 end SeminormedRing
 
@@ -532,14 +556,14 @@ section NonUnitalNormedCommRing
 variable [NonUnitalNormedCommRing α]
 
 /-- A non-unital subalgebra of a non-unital seminormed commutative ring is also a non-unital
-seminormed commutative ring, with the restriction of the norm.  -/
+seminormed commutative ring, with the restriction of the norm. -/
 instance NonUnitalSubalgebra.nonUnitalSeminormedCommRing {𝕜 : Type*} [CommRing 𝕜] {E : Type*}
     [NonUnitalSeminormedCommRing E] [Module 𝕜 E] (s : NonUnitalSubalgebra 𝕜 E) :
     NonUnitalSeminormedCommRing s :=
   { s.nonUnitalSeminormedRing, s.toNonUnitalCommRing with }
 
 /-- A non-unital subalgebra of a non-unital normed commutative ring is also a non-unital normed
-commutative ring, with the restriction of the norm.  -/
+commutative ring, with the restriction of the norm. -/
 instance NonUnitalSubalgebra.nonUnitalNormedCommRing {𝕜 : Type*} [CommRing 𝕜] {E : Type*}
     [NonUnitalNormedCommRing E] [Module 𝕜 E] (s : NonUnitalSubalgebra 𝕜 E) :
     NonUnitalNormedCommRing s :=
@@ -593,13 +617,13 @@ end SeminormedCommRing
 section NormedCommRing
 
 /-- A subalgebra of a seminormed commutative ring is also a seminormed commutative ring, with the
-restriction of the norm.  -/
+restriction of the norm. -/
 instance Subalgebra.seminormedCommRing {𝕜 : Type*} [CommRing 𝕜] {E : Type*} [SeminormedCommRing E]
     [Algebra 𝕜 E] (s : Subalgebra 𝕜 E) : SeminormedCommRing s :=
   { s.seminormedRing, s.toCommRing with }
 
 /-- A subalgebra of a normed commutative ring is also a normed commutative ring, with the
-restriction of the norm.  -/
+restriction of the norm. -/
 instance Subalgebra.normedCommRing {𝕜 : Type*} [CommRing 𝕜] {E : Type*} [NormedCommRing E]
     [Algebra 𝕜 E] (s : Subalgebra 𝕜 E) : NormedCommRing s :=
   { s.seminormedCommRing, s.normedRing with }
@@ -833,7 +857,7 @@ instance (priority := 100) NormedDivisionRing.to_hasContinuousInv₀ : HasContin
       -- Porting note: `ENNReal.{mul_sub, sub_mul}` should be `protected`
       _ = ‖r - e‖ / ‖r‖ / ‖e‖ := by field_simp [mul_comm]
       _ ≤ ‖r - e‖ / ‖r‖ / ε := by gcongr
-  refine squeeze_zero' (eventually_of_forall fun _ => norm_nonneg _) this ?_
+  refine squeeze_zero' (Eventually.of_forall fun _ => norm_nonneg _) this ?_
   refine (((continuous_const.sub continuous_id).norm.div_const _).div_const _).tendsto' _ _ ?_
   simp
 
@@ -843,10 +867,13 @@ instance (priority := 100) NormedDivisionRing.to_topologicalDivisionRing :
     TopologicalDivisionRing α where
 
 protected lemma IsOfFinOrder.norm_eq_one (ha : IsOfFinOrder a) : ‖a‖ = 1 :=
-  ((normHom : α →*₀ ℝ).toMonoidHom.isOfFinOrder ha).eq_one $ norm_nonneg _
+  ((normHom : α →*₀ ℝ).toMonoidHom.isOfFinOrder ha).eq_one <| norm_nonneg _
 
 example [Monoid β] (φ : β →* α) {x : β} {k : ℕ+} (h : x ^ (k : ℕ) = 1) :
     ‖φ x‖ = 1 := (φ.isOfFinOrder <| isOfFinOrder_iff_pow_eq_one.2 ⟨_, k.2, h⟩).norm_eq_one
+
+@[simp] lemma AddChar.norm_apply {G : Type*} [AddLeftCancelMonoid G] [Finite G] (ψ : AddChar G α)
+    (x : G) : ‖ψ x‖ = 1 := (ψ.toMonoidHom.isOfFinOrder <| isOfFinOrder_of_finite _).norm_eq_one
 
 end NormedDivisionRing
 

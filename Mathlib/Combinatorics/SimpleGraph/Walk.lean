@@ -1134,7 +1134,7 @@ theorem map_injective_of_injective {f : G →g G'} (hinj : Function.Injective f)
 abbrev mapLe {G G' : SimpleGraph V} (h : G ≤ G') {u v : V} (p : G.Walk u v) : G'.Walk u v :=
   p.map (Hom.mapSpanningSubgraphs h)
 
-/-! ### Transferring between graphs -/
+/-! ### Transferring between graphs -/
 
 /-- The walk `p` transferred to lie in `H`, given that `H` contains its edges. -/
 @[simp]

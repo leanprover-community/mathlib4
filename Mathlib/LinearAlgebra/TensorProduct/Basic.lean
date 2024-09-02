@@ -669,7 +669,7 @@ theorem comm_tmul (m : M) (n : N) : (TensorProduct.comm R M N) (m ⊗ₜ n) = n 
 theorem comm_symm_tmul (m : M) (n : N) : (TensorProduct.comm R M N).symm (n ⊗ₜ m) = m ⊗ₜ n :=
   rfl
 
-lemma lift_comp_comm_eq  (f : M →ₗ[R] N →ₗ[R] P) :
+lemma lift_comp_comm_eq (f : M →ₗ[R] N →ₗ[R] P) :
     lift f ∘ₗ TensorProduct.comm R N M = lift f.flip :=
   ext rfl
 end
@@ -837,9 +837,9 @@ protected theorem map_mul (f₁ f₂ : M →ₗ[R] M) (g₁ g₂ : N →ₗ[R] N
 @[simp]
 protected theorem map_pow (f : M →ₗ[R] M) (g : N →ₗ[R] N) (n : ℕ) :
     map f g ^ n = map (f ^ n) (g ^ n) := by
-  induction' n with n ih
-  · simp only [pow_zero, TensorProduct.map_one]
-  · simp only [pow_succ', ih, TensorProduct.map_mul]
+  induction n with
+  | zero => simp only [pow_zero, TensorProduct.map_one]
+  | succ n ih => simp only [pow_succ', ih, TensorProduct.map_mul]
 
 theorem map_add_left (f₁ f₂ : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     map (f₁ + f₂) g = map f₁ g + map f₂ g := by
