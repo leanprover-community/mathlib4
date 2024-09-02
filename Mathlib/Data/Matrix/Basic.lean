@@ -2533,3 +2533,5 @@ theorem map_mulVec [NonAssocSemiring R] [NonAssocSemiring S] (f : R →+* S) (M 
   simp only [Matrix.mulVec, Matrix.map_apply, RingHom.map_dotProduct, Function.comp]
 
 end RingHom
+
+set_option linter.style.longFile 2700

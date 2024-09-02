@@ -5,7 +5,6 @@ Authors: Michael Rothgang
 -/
 
 import Lean.Elab.Command
-import Lean.Linter.Util
 
 /-!
 ## Style linters

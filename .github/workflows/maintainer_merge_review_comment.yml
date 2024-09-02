@@ -21,7 +21,9 @@ jobs:
       - name: Determine Zulip topic
         id: determine_topic
         run: |
-          ./scripts/get_tlabel.sh >> "$GITHUB_OUTPUT"
+          ./scripts/get_tlabel.sh "${PR}" >> "$GITHUB_OUTPUT"
+        env:
+          PR:  /repos/{owner}/{repo}/issues/{pull_number}
 
       - name: Send message on Zulip
         uses: zulip/github-actions-zulip/send-message@v1

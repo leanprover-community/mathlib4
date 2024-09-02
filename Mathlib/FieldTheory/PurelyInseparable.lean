@@ -282,7 +282,7 @@ theorem mem_perfectClosure_iff_pow_mem (q : ℕ) [ExpChar F q] {x : E} :
     x ∈ perfectClosure F E ↔ ∃ n : ℕ, x ^ q ^ n ∈ (algebraMap F E).range := by
   rw [mem_perfectClosure_iff, ringExpChar.eq F q]
 
-/-- An element is contained in the relative perfect closure if and only if its mininal polynomial
+/-- An element is contained in the relative perfect closure if and only if its minimal polynomial
 has separable degree one. -/
 theorem mem_perfectClosure_iff_natSepDegree_eq_one {x : E} :
     x ∈ perfectClosure F E ↔ (minpoly F x).natSepDegree = 1 := by
@@ -629,7 +629,7 @@ namespace IntermediateField
 instance isPurelyInseparable_bot : IsPurelyInseparable F (⊥ : IntermediateField F E) :=
   (botEquiv F E).symm.isPurelyInseparable
 
-/-- `F⟮x⟯ / F` is a purely inseparable extension if and only if the mininal polynomial of `x`
+/-- `F⟮x⟯ / F` is a purely inseparable extension if and only if the minimal polynomial of `x`
 has separable degree one. -/
 theorem isPurelyInseparable_adjoin_simple_iff_natSepDegree_eq_one {x : E} :
     IsPurelyInseparable F F⟮x⟯ ↔ (minpoly F x).natSepDegree = 1 := by
