@@ -91,11 +91,7 @@ theorem prod_cons [CommMonoid β] {n : ℕ} (x : β) (f : Fin n → β) :
     (∏ i : Fin n.succ, (cons x f : Fin n.succ → β) i) = x * ∏ i : Fin n, f i := by
   simp_rw [prod_univ_succ, cons_zero, cons_succ]
 
-<<<<<<< HEAD
-@[to_additive]
-=======
 @[to_additive (attr := simp)]
->>>>>>> origin/master
 theorem prod_snoc [CommMonoid β] {n : ℕ} (x : β) (f : Fin n → β) :
     (∏ i : Fin n.succ, (snoc f x : Fin n.succ → β) i) = (∏ i : Fin n, f i) * x := by
   simp [prod_univ_castSucc]
