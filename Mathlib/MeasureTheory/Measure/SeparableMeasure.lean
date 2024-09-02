@@ -91,6 +91,17 @@ structure Measure.MeasureDense (μ : Measure X) (𝒜 : Set (Set X)) : Prop :=
   approx : ∀ s, MeasurableSet s → μ s ≠ ∞ → ∀ (ε : ℝ),
     0 < ε → ∃ t ∈ 𝒜, μ (s ∆ t) < ENNReal.ofReal ε
 
+theorem Measure.MeasureDense.nonempty (h𝒜 : μ.MeasureDense 𝒜) : 𝒜.Nonempty := by
+  rcases h𝒜.approx ∅ MeasurableSet.empty (by simp) 1 (by norm_num) with ⟨t, ht, -⟩
+  exact ⟨t, ht⟩
+
+theorem Measure.MeasureDense.nonempty' (h𝒜 : μ.MeasureDense 𝒜) :
+    {s | s ∈ 𝒜 ∧ μ s ≠ ∞}.Nonempty := by
+  rcases h𝒜.approx ∅ MeasurableSet.empty (by simp) 1 (by norm_num) with ⟨t, ht, hμt⟩
+  refine ⟨t, ht, ?_⟩
+  convert ne_top_of_lt hμt
+  rw [← bot_eq_empty, bot_symmDiff]
+
 /-- The set of measurable sets is measure-dense. -/
 theorem measureDense_measurableSet : μ.MeasureDense {s | MeasurableSet s} where
   measurable := fun _ h ↦ h
@@ -103,6 +114,43 @@ lemma Measure.MeasureDense.fin_meas_approx (h𝒜 : μ.MeasureDense 𝒜) {s : S
     ∃ t ∈ 𝒜, μ t ≠ ∞ ∧ μ (s ∆ t) < ENNReal.ofReal ε := by
   rcases h𝒜.approx s ms hμs ε ε_pos with ⟨t, t_mem, ht⟩
   exact ⟨t, t_mem, (measure_ne_top_iff_of_symmDiff <| ne_top_of_lt ht).1 hμs, ht⟩
+
+variable (p) in
+theorem Measure.MeasureDense.dense_lp (h𝒜 : μ.MeasureDense 𝒜) (c : E) :
+    {f : Lp E p μ |
+      ∃ (s : Set X) (hs : MeasurableSet s) (hμs : μ s ≠ ∞),
+        f = indicatorConstLp p hs hμs c} ⊆
+    closure {f : Lp E p μ |
+      ∃ (s : Set X) (hs : s ∈ 𝒜) (hμs : μ s ≠ ∞),
+        f = indicatorConstLp p (h𝒜.measurable s hs) hμs c} := by
+  rcases eq_or_ne c 0 with rfl | hc
+  · refine Subset.trans ?_ subset_closure
+    rintro - ⟨s, ms, hμs, rfl⟩
+    rcases h𝒜.nonempty' with ⟨t, ht, hμt⟩
+    refine ⟨t, ht, hμt, ?_⟩
+    simp_rw [indicatorConstLp]
+    congr
+    simp
+  · have p_pos : 0 < p := lt_of_lt_of_le (by norm_num) one_le_p.elim
+    rintro - ⟨s, ms, hμs, rfl⟩
+    refine Metric.mem_closure_iff.2 fun ε hε ↦ ?_
+    have aux : 0 < (ε / ‖c‖) ^ p.toReal := rpow_pos_of_pos (div_pos hε (norm_pos_iff.2 hc)) _
+    rcases h𝒜.fin_meas_approx ms hμs ((ε / ‖c‖) ^ p.toReal) aux with ⟨t, ht, hμt, hμst⟩
+    refine ⟨indicatorConstLp p (h𝒜.measurable t ht) hμt c,
+      ⟨t, ht, hμt, rfl⟩, ?_⟩
+    rw [dist_indicatorConstLp_eq_norm, norm_indicatorConstLp p_pos.ne.symm p_ne_top.elim]
+    calc
+      ‖c‖ * (μ (s ∆ t)).toReal ^ (1 / p.toReal)
+        < ‖c‖ * (ENNReal.ofReal ((ε / ‖c‖) ^ p.toReal)).toReal ^ (1 / p.toReal) := by
+          rw [_root_.mul_lt_mul_left (norm_pos_iff.2 hc)]
+          refine Real.rpow_lt_rpow (by simp) ?_
+            (one_div_pos.2 <| toReal_pos p_pos.ne.symm p_ne_top.elim)
+          rwa [toReal_lt_toReal (measure_symmDiff_ne_top hμs hμt) ofReal_ne_top]
+      _ = ε := by
+        rw [toReal_ofReal (rpow_nonneg (div_nonneg hε.le (norm_nonneg _)) _),
+          one_div, Real.rpow_rpow_inv (div_nonneg hε.le (norm_nonneg _))
+            (toReal_pos p_pos.ne.symm p_ne_top.elim).ne.symm,
+          mul_div_cancel₀ _ (norm_ne_zero_iff.2 hc)]
 
 /-- If a family of sets `𝒜` is measure-dense in `X`, then it is also the case for the sets in `𝒜`
 with finite measure. -/
@@ -397,6 +445,8 @@ instance Lp.SecondCountableTopology [IsSeparable μ] [TopologicalSpace.Separable
     -- This is given by `Lp.induction`.
     refine Lp.induction p_ne_top.elim (P := fun f ↦ f ∈ closure D) ?_ ?_ isClosed_closure
     · intro a s ms hμs
+      -- refine ((h𝒜.dense_lp p a).trans <| closure_mono ?_) ⟨s, ms, hμs.ne, rfl⟩
+      -- rintro - ⟨t, ht, hμt, rfl⟩
       -- We want to approximate `a • 𝟙ₛ`.
       apply ne_of_lt at hμs
       rw [SeminormedAddCommGroup.mem_closure_iff]
@@ -404,10 +454,11 @@ instance Lp.SecondCountableTopology [IsSeparable μ] [TopologicalSpace.Separable
       have μs_pow_nonneg : 0 ≤ (μ s).toReal ^ (1 / p.toReal) :=
         Real.rpow_nonneg ENNReal.toReal_nonneg _
       -- To do so, we first pick `b ∈ u` such that `‖a - b‖ < ε / (3 * (1 + (μ s)^(1/p)))`.
-      have approx_a_pos : 0 < ε / (3 * (1 + (μ s).toReal ^ (1 / p.toReal))) :=
+      have approx_a_pos : 0 < ε / (2 * (1 + (μ s).toReal ^ (1 / p.toReal))) :=
         div_pos ε_pos (by linarith [μs_pow_nonneg])
       have ⟨b, b_mem, hb⟩ := SeminormedAddCommGroup.mem_closure_iff.1 (dense_u a) _ approx_a_pos
       -- Then we pick `t ∈ 𝒜₀` such that `μ (s ∆ t) < (ε / 3 * (1 + ‖b‖))^p`.
+      rcases SeminormedAddCommGroup.mem_closure_iff.1 h𝒜.dense_lp
       have approx_s_pos : 0 < (ε / (3 * (1 + ‖b‖))) ^ p.toReal :=
         Real.rpow_pos_of_pos (div_pos ε_pos (by linarith [norm_nonneg b])) _
       rcases h𝒜₀.approx s ms hμs _ approx_s_pos with ⟨t, ht, hμst⟩
