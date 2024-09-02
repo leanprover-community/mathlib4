@@ -138,8 +138,7 @@ lemma sum_range_add_choose (n k : ℕ) :
     ∑ i ∈ Finset.range (n + 1), (i + k).choose k = (n + k + 1).choose (k + 1) := by
   rw [← sum_Icc_choose, range_eq_Ico]
   convert (sum_map _ (addRightEmbedding k) (·.choose k)).symm using 2
-  rw [map_add_right_Ico, zero_add, add_right_comm]
-  rfl
+  rw [map_add_right_Ico, zero_add, add_right_comm, Nat.Ico_succ_right]
 
 end Nat
 
