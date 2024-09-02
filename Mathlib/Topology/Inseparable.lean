@@ -525,7 +525,7 @@ theorem mk_eq_mk : mk x = mk y ↔ (x ~ᵢ y) :=
   Quotient.eq''
 
 theorem surjective_mk : Surjective (mk : X → SeparationQuotient X) :=
-  surjective_quot_mk _
+  Quot.surjective_mk
 
 @[simp]
 theorem range_mk : range (mk : X → SeparationQuotient X) = univ :=

@@ -1637,7 +1637,7 @@ lemma mk_eq {x y : X} : mk x = mk y ↔ ∀ s : Setoid X, T2Space (Quotient s) �
 
 variable (X)
 
-lemma surjective_mk : Surjective (mk : X → t2Quotient X) := surjective_quotient_mk _
+lemma surjective_mk : Surjective (mk : X → t2Quotient X) := Quotient.surjective_mk
 
 lemma continuous_mk : Continuous (mk : X → t2Quotient X) :=
   continuous_quotient_mk'
