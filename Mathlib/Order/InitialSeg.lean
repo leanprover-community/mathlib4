@@ -437,8 +437,7 @@ of the range) or an order isomorphism (if the range is everything). -/
 noncomputable def InitialSeg.ltOrEq [IsWellOrder β s] (f : r ≼i s) : (r ≺i s) ⊕ (r ≃r s) := by
   by_cases h : Surjective f
   · exact Sum.inr (RelIso.ofSurjective f h)
-  · have h' : _ := (InitialSeg.eq_or_principal f).resolve_left h
-    exact Sum.inl ⟨f, Classical.choose h', Classical.choose_spec h'⟩
+  · exact Sum.inl (f.toPrincipalSeg h)
 
 theorem InitialSeg.ltOrEq_apply_left [IsWellOrder β s] (f : r ≼i s) (g : r ≺i s) (a : α) :
     g a = f a :=
