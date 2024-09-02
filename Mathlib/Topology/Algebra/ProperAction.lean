@@ -132,7 +132,7 @@ theorem t2Space_quotient_mulAction_of_properSMul [ProperSMul G X] :
   have : QuotientMap (Prod.map π π) :=
     (isOpenMap_quotient_mk'_mul.prod isOpenMap_quotient_mk'_mul).to_quotientMap
       (continuous_quotient_mk'.prod_map continuous_quotient_mk')
-      ((surjective_quotient_mk' _).prodMap (surjective_quotient_mk' _))
+      (Quotient.surjective_mk'.prodMap Quotient.surjective_mk')
   rw [← this.isClosed_preimage]
   convert ProperSMul.isProperMap_smul_pair.isClosedMap.isClosed_range
   · ext ⟨x₁, x₂⟩
