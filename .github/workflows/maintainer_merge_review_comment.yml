@@ -26,8 +26,8 @@ jobs:
         run: |
           ./scripts/get_tlabel.sh "${PR}" >> "$GITHUB_OUTPUT"
         env:
-          github-token: ${{secrets.GITHUB_TOKEN}}
           PR:  /repos/{owner}/{repo}/issues/{pull_number}
+          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
       - name: Send message on Zulip
         uses: zulip/github-actions-zulip/send-message@v1
