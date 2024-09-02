@@ -20,6 +20,9 @@ jobs:
                                                   # This feature is only applicable in an issue (or PR) context
           exit: true # optional. If the action should exit if the user is not part of the team. Defaults to true.
 
+      - uses: actions/checkout@v4
+        with:
+          ref: master
       - name: Determine Zulip topic
         id: determine_topic
         run: |
