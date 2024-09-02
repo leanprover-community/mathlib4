@@ -320,6 +320,11 @@ end CoreUnitCounit
 
 variable {F : C ⥤ D} {G : D ⥤ C}
 
+/--
+Construct an adjunction from the data of a `CoreHomEquivUnitCounit`, i.e. a hom set
+equivalence, unit and counit natural transformations together with proofs of the equalities
+`homEquiv_unit` and `homEquiv_counit` relating them to each other.
+-/
 @[simps]
 def mk' (adj : CoreHomEquivUnitCounit F G) : F ⊣ G where
   unit := adj.unit
@@ -554,9 +559,10 @@ variable (e : C ≌ D)
 
 /-- The adjunction given by an equivalence of categories. (To obtain the opposite adjunction,
 simply use `e.symm.toAdjunction`. -/
-@[simps! unit counit]
-def toAdjunction : e.functor ⊣ e.inverse :=
-  ⟨e.unit, e.counit, by simp, by simp⟩
+@[simps]
+def toAdjunction : e.functor ⊣ e.inverse where
+  unit := e.unit
+  counit := e.counit
 
 lemma isLeftAdjoint_functor : e.functor.IsLeftAdjoint where
   exists_rightAdjoint := ⟨_, ⟨e.toAdjunction⟩⟩
