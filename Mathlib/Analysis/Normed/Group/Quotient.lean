@@ -213,7 +213,7 @@ theorem quotient_nhd_basis (S : AddSubgroup M) :
     refine fun ε ↦ Set.ext <| forall_mk.2 fun x ↦ ?_
     rw [ball_zero_eq, mem_setOf_eq, norm_lt_iff, mem_image]
     exact exists_congr fun _ ↦ and_comm
-  rw [← mk_zero, nhds_eq, ← funext this]
+  rw [← QuotientAddGroup.mk_zero, nhds_eq, ← funext this]
   exact .map _ Metric.nhds_basis_ball
 
 /-- The seminormed group structure on the quotient by an additive subgroup. -/

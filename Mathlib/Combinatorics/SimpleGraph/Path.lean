@@ -572,7 +572,7 @@ theorem mapEmbedding_injective (f : G ↪g G') (u v : V) :
 
 end Path
 
-/-! ### Transferring between graphs -/
+/-! ### Transferring between graphs -/
 
 namespace Walk
 

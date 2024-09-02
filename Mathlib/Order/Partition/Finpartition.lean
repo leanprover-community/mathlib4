@@ -67,7 +67,7 @@ structure Finpartition [Lattice α] [OrderBot α] (a : α) where
   supIndep : parts.SupIndep id
   /-- The supremum of the partition is `a` -/
   sup_parts : parts.sup id = a
-  /-- No element of the partition is bottom-/
+  /-- No element of the partition is bottom -/
   not_bot_mem : ⊥ ∉ parts
   deriving DecidableEq
 
