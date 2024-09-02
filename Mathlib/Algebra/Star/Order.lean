@@ -175,8 +175,8 @@ theorem conjugate_nonneg' {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ c * a * star c 
   simpa only [star_star] using conjugate_nonneg ha (star c)
 
 @[aesop 90% apply (rule_sets := [CStarAlgebra])]
-theorem IsSelfAdjoint.conjugate_nonneg {a : R} (ha : 0 ≤ a) {c : R} (hc : IsSelfAdjoint c) :
-    0 ≤ c * a * c := by
+protected theorem IsSelfAdjoint.conjugate_nonneg {a : R} (ha : 0 ≤ a) {c : R}
+    (hc : IsSelfAdjoint c) : 0 ≤ c * a * c := by
   nth_rewrite 2 [← hc]; exact conjugate_nonneg' ha c
 
 theorem conjugate_nonneg_of_nonneg {a : R} (ha : 0 ≤ a) {c : R} (hc : 0 ≤ c) :
