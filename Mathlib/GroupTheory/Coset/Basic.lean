@@ -689,11 +689,11 @@ noncomputable def preimageMkEquivSubgroupProdSet (s : Subgroup α) (t : Set (α 
 /-- A group is made up of a disjoint union of cosets of a subgroup. -/
 @[to_additive "An additive group is made up of a disjoint union of cosets of an additive
 subgroup."]
-lemma univ_eq_iUnion_image_mul (H : Subgroup α) :
-    (Set.univ (α := α)) = ⋃ x : α ⧸ H, (x.out' * ·) '' H := by
+lemma univ_eq_iUnion_smul (H : Subgroup α) :
+    (Set.univ (α := α)) = ⋃ x : α ⧸ H, x.out' • (H : Set _) := by
   ext x
   simp only [Set.mem_univ, Set.image_add_right, Set.mem_iUnion, Set.mem_preimage, SetLike.mem_coe,
-    true_iff]
+    true_iff, mem_smul_set_iff_inv_smul_mem]
   refine ⟨x, ?_⟩
   simp [← QuotientGroup.eq]
 
