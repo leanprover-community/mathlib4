@@ -118,7 +118,7 @@ The type of rooted trees.
 structure RootedTree where
   /-- The type representing the elements in the tree. -/
   α : Type*
-  /-- The type should be a `SemilatticeInf`, where `inf` is LCA in the tree. -/
+  /-- The type should be a `SemilatticeInf`, where `inf` is the least common ancestor in the tree. -/
   [order : SemilatticeInf α]
   /-- The type should have a bottom, the root. -/
   [bot : OrderBot α]
