@@ -48,7 +48,7 @@ noncomputable def stabilizationIndex {f : ℕ → α} (hf : EventuallyConst f at
 noncomputable def selfIncreasingFixedPointIndex (hf : id ≤ f) (x : α) : ℕ :=
   stabilizationIndex (eventuallyConst_iterate_of_wellFoundedGT hf x)
 
-lemma fixedPointIndex_spec (hf : id ≤ f) (x : α) :
+lemma selfIncreasingFixedPointIndex_spec (hf : id ≤ f) (x : α) :
     ∀ m ≥ selfIncreasingFixedPointIndex hf x,
       f^[m] x = f^[selfIncreasingFixedPointIndex hf x] x :=
   (eventuallyConst_atTop.mp (eventuallyConst_iterate_of_wellFoundedGT hf x)).choose_spec
