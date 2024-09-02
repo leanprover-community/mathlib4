@@ -51,10 +51,6 @@ Then the rest is usual set theory.
 
 To avoid confusion between the Lean `Set` and the ZFC `Set`, docstrings in this file refer to them
 respectively as "`Set`" and "ZFC set".
-
-## TODO
-
-Prove `ZFSet.mapDefinableAux` computably.
 -/
 
 
@@ -455,12 +451,16 @@ def embed : PSet.{max (u + 1) v} :=
 theorem lift_mem_embed : ∀ x : PSet.{u}, PSet.Lift.{u, max (u + 1) v} x ∈ embed.{u, v} := fun x =>
   ⟨⟨x⟩, Equiv.rfl⟩
 
+set_option linter.deprecated false
+
 /-- Function equivalence is defined so that `f ~ g` iff `∀ x y, x ~ y → f x ~ g y`. This extends to
 equivalence of `n`-ary functions. -/
+@[deprecated (since := "2024-09-02")]
 def Arity.Equiv : ∀ {n}, OfArity PSet.{u} PSet.{u} n → OfArity PSet.{u} PSet.{u} n → Prop
   | 0, a, b => PSet.Equiv a b
   | _ + 1, a, b => ∀ x y : PSet, PSet.Equiv x y → Arity.Equiv (a x) (b y)
 
+@[deprecated (since := "2024-09-02")]
 theorem Arity.equiv_const {a : PSet.{u}} :
     ∀ n, Arity.Equiv (OfArity.const PSet.{u} a n) (OfArity.const PSet.{u} a n)
   | 0 => Equiv.rfl
@@ -468,40 +468,46 @@ theorem Arity.equiv_const {a : PSet.{u}} :
 
 /-- `resp n` is the collection of n-ary functions on `PSet` that respect
   equivalence, i.e. when the inputs are equivalent the output is as well. -/
+@[deprecated (since := "2024-09-02")]
 def Resp (n) :=
   { x : OfArity PSet.{u} PSet.{u} n // Arity.Equiv x x }
 
+@[deprecated (since := "2024-09-02")]
 instance Resp.inhabited {n} : Inhabited (Resp n) :=
   ⟨⟨OfArity.const _ default _, Arity.equiv_const _⟩⟩
 
 /-- The `n`-ary image of a `(n + 1)`-ary function respecting equivalence as a function respecting
 equivalence. -/
+@[deprecated (since := "2024-09-02")]
 def Resp.f {n} (f : Resp (n + 1)) (x : PSet) : Resp n :=
   ⟨f.1 x, f.2 _ _ <| Equiv.refl x⟩
 
 /-- Function equivalence for functions respecting equivalence. See `PSet.Arity.Equiv`. -/
+@[deprecated (since := "2024-09-02")]
 def Resp.Equiv {n} (a b : Resp n) : Prop :=
   Arity.Equiv a.1 b.1
 
-@[refl]
+@[deprecated (since := "2024-09-02"), refl]
 protected theorem Resp.Equiv.refl {n} (a : Resp n) : Resp.Equiv a a :=
   a.2
 
+@[deprecated (since := "2024-09-02")]
 protected theorem Resp.Equiv.euc :
     ∀ {n} {a b c : Resp n}, Resp.Equiv a b → Resp.Equiv c b → Resp.Equiv a c
   | 0, _, _, _, hab, hcb => PSet.Equiv.euc hab hcb
   | n + 1, a, b, c, hab, hcb => fun x y h =>
     @Resp.Equiv.euc n (a.f x) (b.f y) (c.f y) (hab _ _ h) (hcb _ _ <| PSet.Equiv.refl y)
 
-@[symm]
+@[deprecated (since := "2024-09-02"), symm]
 protected theorem Resp.Equiv.symm {n} {a b : Resp n} : Resp.Equiv a b → Resp.Equiv b a :=
   (Resp.Equiv.refl b).euc
 
-@[trans]
+@[deprecated (since := "2024-09-02"), trans]
 protected theorem Resp.Equiv.trans {n} {x y z : Resp n} (h1 : Resp.Equiv x y)
     (h2 : Resp.Equiv y z) : Resp.Equiv x z :=
   h1.euc h2.symm
 
+@[deprecated (since := "2024-09-02")]
 instance Resp.setoid {n} : Setoid (Resp n) :=
   ⟨Resp.Equiv, Resp.Equiv.refl, Resp.Equiv.symm, Resp.Equiv.trans⟩
 
@@ -512,11 +518,99 @@ end PSet
 def ZFSet : Type (u + 1) :=
   Quotient PSet.setoid.{u}
 
+namespace ZFSet
+
+/-- Turns a pre-set into a ZFC set. -/
+def mk : PSet → ZFSet :=
+  Quotient.mk''
+
+@[simp]
+theorem mk_eq (x : PSet) : @Eq ZFSet ⟦x⟧ (mk x) :=
+  rfl
+
+@[simp]
+theorem mk_out : ∀ x : ZFSet, mk x.out = x :=
+  Quotient.out_eq
+
+/-- A set function is "definable" if it is the image of some n-ary pre-set
+  function. This isn't exactly definability, but is useful as a sufficient
+  condition for functions that have a computable image. -/
+class Definable (n) (f : (Fin n → ZFSet.{u}) → ZFSet.{u}) where
+  out : (Fin n → PSet.{u}) → PSet.{u}
+  mk_out : ∀ xs, mk (out xs) = f (mk <| xs ·) := by simp
+
+attribute [simp] Definable.mk_out
+
+abbrev Definable₁ (f : ZFSet.{u} → ZFSet.{u}) := Definable 1 (fun s ↦ f (s 0))
+
+abbrev Definable₁.mk {f : ZFSet.{u} → ZFSet.{u}}
+    (out : PSet.{u} → PSet.{u}) (mk_out : ∀ x, ⟦out x⟧ = f ⟦x⟧) :
+    Definable₁ f where
+  out xs := out (xs 0)
+  mk_out xs := mk_out (xs 0)
+
+abbrev Definable₁.out (f : ZFSet.{u} → ZFSet.{u}) [Definable₁ f] :
+    PSet.{u} → PSet.{u} :=
+  fun x ↦ Definable.out (fun s ↦ f (s 0)) ![x]
+
+lemma Definable₁.mk_out {f : ZFSet.{u} → ZFSet.{u}} [Definable₁ f]
+    {x : PSet} :
+    .mk (out f x) = f (.mk x) :=
+  Definable.mk_out ![x]
+
+abbrev Definable₂ (f : ZFSet.{u} → ZFSet.{u} → ZFSet.{u}) := Definable 2 (fun s ↦ f (s 0) (s 1))
+
+abbrev Definable₂.mk {f : ZFSet.{u} → ZFSet.{u} → ZFSet.{u}}
+    (out : PSet.{u} → PSet.{u} → PSet.{u}) (mk_out : ∀ x y, ⟦out x y⟧ = f ⟦x⟧ ⟦y⟧) :
+    Definable₂ f where
+  out xs := out (xs 0) (xs 1)
+  mk_out xs := mk_out (xs 0) (xs 1)
+
+abbrev Definable₂.out (f : ZFSet.{u} → ZFSet.{u} → ZFSet.{u}) [Definable₂ f] :
+    PSet.{u} → PSet.{u} → PSet.{u} :=
+  fun x y ↦ Definable.out (fun s ↦ f (s 0) (s 1)) ![x, y]
+
+lemma Definable₂.mk_out {f : ZFSet.{u} → ZFSet.{u} → ZFSet.{u}} [Definable₂ f]
+    {x y : PSet} :
+    .mk (out f x y) = f (.mk x) (.mk y) :=
+  Definable.mk_out ![x, y]
+
+instance (f) [Definable₁ f] (n g) [Definable n g] : Definable n (fun s ↦ f (g s)) where
+  out xs := Definable₁.out f (Definable.out g xs)
+
+instance (f) [Definable₂ f] (n g₁ g₂) [Definable n g₁] [Definable n g₂] :
+    Definable n (fun s ↦ f (g₁ s) (g₂ s)) where
+  out xs := Definable₂.out f (Definable.out g₁ xs) (Definable.out g₂ xs)
+
+instance (n) (i) : Definable n (fun s ↦ s i) where
+  out s := s i
+
+lemma Definable.out_equiv {n} (f : (Fin n → ZFSet.{u}) → ZFSet.{u}) [Definable n f]
+    {xs ys : Fin n → PSet} (h : ∀ i, xs i ≈ ys i) :
+    out f xs ≈ out f ys := by
+  rw [← Quotient.eq, mk_eq, mk_eq, mk_out, mk_out]
+  exact congrArg _ (funext fun i ↦ Quotient.sound (h i))
+
+lemma Definable₁.out_equiv (f : ZFSet.{u} → ZFSet.{u}) [Definable₁ f]
+    {x y : PSet} (h : x ≈ y) :
+    out f x ≈ out f y :=
+  Definable.out_equiv _ (by simp [h])
+
+lemma Definable₂.out_equiv (f : ZFSet.{u} → ZFSet.{u} → ZFSet.{u}) [Definable₂ f]
+    {x₁ y₁ x₂ y₂ : PSet} (h₁ : x₁ ≈ y₁) (h₂ : x₂ ≈ y₂) :
+    out f x₁ x₂ ≈ out f y₁ y₂ :=
+  Definable.out_equiv _ (by simp [Fin.forall_fin_succ, h₁, h₂])
+
+end ZFSet
+
 namespace PSet
+
+set_option linter.deprecated false
 
 namespace Resp
 
 /-- Helper function for `PSet.eval`. -/
+@[deprecated (since := "2024-09-02")]
 def evalAux :
     ∀ {n},
       { f : Resp n → OfArity ZFSet.{u} ZFSet.{u} n // ∀ a b : Resp n, Resp.Equiv a b → f a = f b }
@@ -531,9 +625,11 @@ def evalAux :
           evalAux.2 (Resp.f b z) (Resp.f c z) (h _ _ (PSet.Equiv.refl z))⟩
 
 /-- An equivalence-respecting function yields an n-ary ZFC set function. -/
+@[deprecated (since := "2024-09-02")]
 def eval (n) : Resp n → OfArity ZFSet.{u} ZFSet.{u} n :=
   evalAux.1
 
+@[deprecated (since := "2024-09-02")]
 theorem eval_val {n f x} :
     (@eval (n + 1) f : ZFSet → OfArity ZFSet ZFSet n) ⟦x⟧ = eval n (Resp.f f x) :=
   rfl
@@ -543,20 +639,24 @@ end Resp
 /-- A set function is "definable" if it is the image of some n-ary pre-set
   function. This isn't exactly definability, but is useful as a sufficient
   condition for functions that have a computable image. -/
+@[deprecated (since := "2024-09-02")]
 class inductive Definable (n) : OfArity ZFSet.{u} ZFSet.{u} n → Type (u + 1)
   | mk (f) : Definable n (Resp.eval n f)
 
-attribute [instance] Definable.mk
+attribute [deprecated (since := "2024-09-02"), instance] Definable.mk
 
 /-- The evaluation of a function respecting equivalence is definable, by that same function. -/
+@[deprecated (since := "2024-09-02")]
 def Definable.EqMk {n} (f) :
     ∀ {s : OfArity ZFSet.{u} ZFSet.{u} n} (_ : Resp.eval _ f = s), Definable n s
   | _, rfl => ⟨f⟩
 
 /-- Turns a definable function into a function that respects equivalence. -/
+@[deprecated (since := "2024-09-02")]
 def Definable.Resp {n} : ∀ (s : OfArity ZFSet.{u} ZFSet.{u} n) [Definable n s], Resp n
   | _, ⟨f⟩ => f
 
+@[deprecated (since := "2024-09-02")]
 theorem Definable.eq {n} :
     ∀ (s : OfArity ZFSet.{u} ZFSet.{u} n) [H : Definable n s], (@Definable.Resp n s H).eval _ = s
   | _, ⟨_⟩ => rfl
@@ -565,9 +665,11 @@ end PSet
 
 namespace Classical
 
-open PSet
+open PSet ZFSet
 
+set_option linter.deprecated false in
 /-- All functions are classically definable. -/
+@[deprecated (since := "2024-09-02")]
 noncomputable def allDefinable : ∀ {n} (F : OfArity ZFSet ZFSet n), Definable n F
   | 0, F =>
     let p := @Quotient.exists_rep PSet _ F
@@ -575,7 +677,7 @@ noncomputable def allDefinable : ∀ {n} (F : OfArity ZFSet ZFSet n), Definable 
   | n + 1, (F : OfArity ZFSet ZFSet (n + 1)) => by
     have I : (x : ZFSet) → Definable n (F x) := fun x => allDefinable (F x)
     refine @Definable.EqMk (n + 1) ⟨fun x : PSet => (@Definable.Resp _ _ (I ⟦x⟧)).1, ?_⟩ _ ?_
-    · dsimp [Arity.Equiv]
+    · dsimp only [Arity.Equiv]
       intro x y h
       rw [@Quotient.sound PSet _ _ _ h]
       exact (Definable.Resp (F ⟦y⟧)).2
@@ -583,23 +685,15 @@ noncomputable def allDefinable : ∀ {n} (F : OfArity ZFSet ZFSet n), Definable 
     simp_rw [Resp.eval_val, Resp.f]
     exact @Definable.eq _ (F ⟦x⟧) (I ⟦x⟧)
 
+/-- All functions are classically definable. -/
+noncomputable def allZFSetDefinable {n} (F : (Fin n → ZFSet.{u}) → ZFSet.{u}) : Definable n F where
+  out xs := (F (⟦xs ·⟧)).out
+
 end Classical
 
 namespace ZFSet
 
-open PSet
-
-/-- Turns a pre-set into a ZFC set. -/
-def mk : PSet → ZFSet :=
-  Quotient.mk''
-
-@[simp]
-theorem mk_eq (x : PSet) : @Eq ZFSet ⟦x⟧ (mk x) :=
-  rfl
-
-@[simp]
-theorem mk_out : ∀ x : ZFSet, mk x.out = x :=
-  Quotient.out_eq
+open PSet hiding Definable
 
 theorem eq {x y : PSet} : mk x = mk y ↔ Equiv x y :=
   Quotient.eq
@@ -610,7 +704,8 @@ theorem sound {x y : PSet} (h : PSet.Equiv x y) : mk x = mk y :=
 theorem exact {x y : PSet} : mk x = mk y → PSet.Equiv x y :=
   Quotient.exact
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated (since := "2024-09-02"), simp]
 theorem eval_mk {n f x} :
     (@Resp.eval (n + 1) f : ZFSet → OfArity ZFSet ZFSet n) (mk x) = Resp.eval n (Resp.f f x) :=
   rfl
@@ -739,8 +834,8 @@ theorem eq_empty_or_nonempty (u : ZFSet) : u = ∅ ∨ u.Nonempty := by
 
 /-- `Insert x y` is the set `{x} ∪ y` -/
 protected def Insert : ZFSet → ZFSet → ZFSet :=
-  Resp.eval 2
-    ⟨PSet.insert, fun _ _ uv ⟨_, _⟩ ⟨_, _⟩ ⟨αβ, βα⟩ =>
+  Quotient.lift₂ (⟦PSet.insert · ·⟧)
+    fun _ ⟨_, _⟩ _ ⟨_, _⟩ uv ⟨αβ, βα⟩ => Quotient.sound
       ⟨fun o =>
         match o with
         | some a =>
@@ -752,7 +847,7 @@ protected def Insert : ZFSet → ZFSet → ZFSet :=
         | some b =>
           let ⟨a, ha⟩ := βα b
           ⟨some a, ha⟩
-        | none => ⟨none, uv⟩⟩⟩
+        | none => ⟨none, uv⟩⟩
 
 instance : Insert ZFSet ZFSet :=
   ⟨ZFSet.Insert⟩
@@ -815,14 +910,14 @@ theorem omega_succ {n} : n ∈ omega.{u} → insert n n ∈ omega.{u} :=
 
 /-- `{x ∈ a | p x}` is the set of elements in `a` satisfying `p` -/
 protected def sep (p : ZFSet → Prop) : ZFSet → ZFSet :=
-  Resp.eval 1
-    ⟨PSet.sep fun y => p (mk y), fun ⟨α, A⟩ ⟨β, B⟩ ⟨αβ, βα⟩ =>
+  Quotient.lift (⟦(PSet.sep fun y => p (mk y)) ·⟧)
+    fun ⟨α, A⟩ ⟨β, B⟩ ⟨αβ, βα⟩ => Quotient.sound
       ⟨fun ⟨a, pa⟩ =>
         let ⟨b, hb⟩ := αβ a
         ⟨⟨b, by simpa only [mk_func, ← ZFSet.sound hb]⟩, hb⟩,
         fun ⟨b, pb⟩ =>
         let ⟨a, ha⟩ := βα b
-        ⟨⟨a, by simpa only [mk_func, ZFSet.sound ha]⟩, ha⟩⟩⟩
+        ⟨⟨a, by simpa only [mk_func, ZFSet.sound ha]⟩, ha⟩⟩
 
 -- Porting note: the { x | p x } notation appears to be disabled in Lean 4.
 instance : Sep ZFSet ZFSet :=
@@ -842,8 +937,8 @@ theorem toSet_sep (a : ZFSet) (p : ZFSet → Prop) :
 
 /-- The powerset operation, the collection of subsets of a ZFC set -/
 def powerset : ZFSet → ZFSet :=
-  Resp.eval 1
-    ⟨PSet.powerset, fun ⟨_, A⟩ ⟨_, B⟩ ⟨αβ, βα⟩ =>
+  Quotient.lift (⟦PSet.powerset ·⟧)
+    fun ⟨_, A⟩ ⟨_, B⟩ ⟨αβ, βα⟩ => Quotient.sound
       ⟨fun p =>
         ⟨{ b | ∃ a, p a ∧ Equiv (A a) (B b) }, fun ⟨a, pa⟩ =>
           let ⟨b, ab⟩ := αβ a
@@ -852,7 +947,7 @@ def powerset : ZFSet → ZFSet :=
         fun q =>
         ⟨{ a | ∃ b, q b ∧ Equiv (A a) (B b) }, fun ⟨_, b, qb, ab⟩ => ⟨⟨b, qb⟩, ab⟩, fun ⟨b, qb⟩ =>
           let ⟨a, ab⟩ := βα b
-          ⟨⟨a, b, qb, ab⟩, ab⟩⟩⟩⟩
+          ⟨⟨a, b, qb, ab⟩, ab⟩⟩⟩
 
 @[simp]
 theorem mem_powerset {x y : ZFSet.{u}} : y ∈ powerset x ↔ y ⊆ x :=
@@ -875,12 +970,12 @@ theorem sUnion_lem {α β : Type u} (A : α → PSet) (B : β → PSet) (αβ : 
 
 /-- The union operator, the collection of elements of elements of a ZFC set -/
 def sUnion : ZFSet → ZFSet :=
-  Resp.eval 1
-    ⟨PSet.sUnion, fun ⟨_, A⟩ ⟨_, B⟩ ⟨αβ, βα⟩ =>
+  Quotient.lift (⟦PSet.sUnion ·⟧)
+    fun ⟨_, A⟩ ⟨_, B⟩ ⟨αβ, βα⟩ => Quotient.sound
       ⟨sUnion_lem A B αβ, fun a =>
         Exists.elim
           (sUnion_lem B A (fun b => Exists.elim (βα b) fun c hc => ⟨c, PSet.Equiv.symm hc⟩) a)
-          fun b hb => ⟨b, PSet.Equiv.symm hb⟩⟩⟩
+          fun b hb => ⟨b, PSet.Equiv.symm hb⟩⟩
 
 @[inherit_doc]
 prefix:110 "⋃₀ " => ZFSet.sUnion
@@ -1036,32 +1131,31 @@ theorem regularity (x : ZFSet.{u}) (h : x ≠ ∅) : ∃ y ∈ x, x ∩ y = ∅ 
           IH w wz wx⟩
 
 /-- The image of a (definable) ZFC set function -/
-def image (f : ZFSet → ZFSet) [Definable 1 f] : ZFSet → ZFSet :=
-  let ⟨r, hr⟩ := @Definable.Resp 1 f _
-  Resp.eval 1
-    ⟨PSet.image r, fun _ _ e =>
+def image (f : ZFSet → ZFSet) [Definable₁ f] : ZFSet → ZFSet :=
+  let r := Definable₁.out f
+  Quotient.lift (⟦PSet.image r ·⟧)
+    fun _ _ e => Quotient.sound <|
       Mem.ext fun _ =>
-        (mem_image hr).trans <|
+        (mem_image (fun _ _ ↦ Definable₁.out_equiv _)).trans <|
           Iff.trans
               ⟨fun ⟨w, h1, h2⟩ => ⟨w, (Mem.congr_right e).1 h1, h2⟩, fun ⟨w, h1, h2⟩ =>
                 ⟨w, (Mem.congr_right e).2 h1, h2⟩⟩ <|
-            (mem_image hr).symm⟩
+            (mem_image (fun _ _ ↦ Definable₁.out_equiv _)).symm
 
-theorem image.mk :
-    ∀ (f : ZFSet.{u} → ZFSet.{u}) [H : Definable 1 f] (x) {y} (_ : y ∈ x), f y ∈ @image f H x
-  | _, ⟨F⟩, x, y => Quotient.inductionOn₂ x y fun ⟨_, _⟩ _ ⟨a, ya⟩ => ⟨a, F.2 _ _ ya⟩
-
-@[simp]
-theorem mem_image :
-    ∀ {f : ZFSet.{u} → ZFSet.{u}} [H : Definable 1 f] {x y : ZFSet.{u}},
-      y ∈ @image f H x ↔ ∃ z ∈ x, f z = y
-  | _, ⟨_⟩, x, y =>
-    Quotient.inductionOn₂ x y fun ⟨_, A⟩ _ =>
-      ⟨fun ⟨a, ya⟩ => ⟨⟦A a⟧, Mem.mk A a, Eq.symm <| Quotient.sound ya⟩, fun ⟨_, hz, e⟩ =>
-        e ▸ image.mk _ _ hz⟩
+theorem image.mk (f : ZFSet.{u} → ZFSet.{u}) [Definable₁ f] (x) {y} : y ∈ x → f y ∈ image f x :=
+  Quotient.inductionOn₂ x y fun ⟨_, _⟩ _ ⟨a, ya⟩ => by
+    simp only [mk_eq, ← Definable₁.mk_out (f := f)]
+    exact ⟨a, Definable₁.out_equiv f ya⟩
 
 @[simp]
-theorem toSet_image (f : ZFSet → ZFSet) [H : Definable 1 f] (x : ZFSet) :
+theorem mem_image {f : ZFSet.{u} → ZFSet.{u}} [Definable₁ f] {x y : ZFSet.{u}} :
+    y ∈ image f x ↔ ∃ z ∈ x, f z = y :=
+  Quotient.inductionOn₂ x y fun ⟨_, A⟩ _ =>
+    ⟨fun ⟨a, ya⟩ => ⟨⟦A a⟧, Mem.mk A a, ((Quotient.sound ya).trans Definable₁.mk_out).symm⟩,
+      fun ⟨_, hz, e⟩ => e ▸ image.mk _ _ hz⟩
+
+@[simp]
+theorem toSet_image (f : ZFSet → ZFSet) [Definable₁ f] (x : ZFSet) :
     (image f x).toSet = f '' x.toSet := by
   ext
   simp
@@ -1158,24 +1252,24 @@ def funs (x y : ZFSet.{u}) : ZFSet.{u} :=
 @[simp]
 theorem mem_funs {x y f : ZFSet.{u}} : f ∈ funs x y ↔ IsFunc x y f := by simp [funs, IsFunc]
 
--- TODO(Mario): Prove this computably
-/- Porting note: the `Definable` argument in `mapDefinableAux` is unused, though the TODO remark
-   suggests it shouldn't be. -/
-@[nolint unusedArguments]
-noncomputable instance mapDefinableAux (f : ZFSet → ZFSet) [Definable 1 f] :
-    Definable 1 fun (y : ZFSet) => pair y (f y) :=
-  @Classical.allDefinable 1 _
+instance : Definable₁ ({·}) := .mk ({·}) (fun _ ↦ rfl)
+instance : Definable₂ insert := .mk insert (fun _ _ ↦ rfl)
+
+instance mapDefinableAux (f : ZFSet → ZFSet) [Definable₁ f] :
+    Definable₁ fun (y : ZFSet) => pair y (f y) := by
+  unfold pair
+  infer_instance
 
 /-- Graph of a function: `map f x` is the ZFC function which maps `a ∈ x` to `f a` -/
-noncomputable def map (f : ZFSet → ZFSet) [Definable 1 f] : ZFSet → ZFSet :=
+def map (f : ZFSet → ZFSet) [Definable₁ f] : ZFSet → ZFSet :=
   image fun y => pair y (f y)
 
 @[simp]
-theorem mem_map {f : ZFSet → ZFSet} [Definable 1 f] {x y : ZFSet} :
+theorem mem_map {f : ZFSet → ZFSet} [Definable₁ f] {x y : ZFSet} :
     y ∈ map f x ↔ ∃ z ∈ x, pair z (f z) = y :=
   mem_image
 
-theorem map_unique {f : ZFSet.{u} → ZFSet.{u}} [H : Definable 1 f] {x z : ZFSet.{u}}
+theorem map_unique {f : ZFSet.{u} → ZFSet.{u}} [Definable₁ f] {x z : ZFSet.{u}}
     (zx : z ∈ x) : ∃! w, pair z w ∈ map f x :=
   ⟨f z, image.mk _ _ zx, fun y yx => by
     let ⟨w, _, we⟩ := mem_image.1 yx
@@ -1183,7 +1277,7 @@ theorem map_unique {f : ZFSet.{u} → ZFSet.{u}} [H : Definable 1 f] {x z : ZFSe
     rw [← fy, wz]⟩
 
 @[simp]
-theorem map_isFunc {f : ZFSet → ZFSet} [Definable 1 f] {x y : ZFSet} :
+theorem map_isFunc {f : ZFSet → ZFSet} [Definable₁ f] {x y : ZFSet} :
     IsFunc x y (map f x) ↔ ∀ z ∈ x, f z ∈ y :=
   ⟨fun ⟨ss, h⟩ z zx =>
     let ⟨_, t1, t2⟩ := h z zx
@@ -1512,7 +1606,7 @@ end Class
 namespace ZFSet
 
 @[simp]
-theorem map_fval {f : ZFSet.{u} → ZFSet.{u}} [H : PSet.Definable 1 f] {x y : ZFSet.{u}}
+theorem map_fval {f : ZFSet.{u} → ZFSet.{u}} [Definable₁ f] {x y : ZFSet.{u}}
     (h : y ∈ x) : (ZFSet.map f x ′ y : Class.{u}) = f y :=
   Class.iota_val _ _ fun z => by
     rw [Class.toSet_of_ZFSet, Class.coe_apply, mem_map]
@@ -1527,7 +1621,7 @@ variable (x : ZFSet.{u})
 
 /-- A choice function on the class of nonempty ZFC sets. -/
 noncomputable def choice : ZFSet :=
-  @map (fun y => Classical.epsilon fun z => z ∈ y) (Classical.allDefinable _) x
+  @map (fun y => Classical.epsilon fun z => z ∈ y) (Classical.allZFSetDefinable _) x
 
 theorem choice_mem_aux (h : ∅ ∉ x) (y : ZFSet.{u}) (yx : y ∈ x) :
     (Classical.epsilon fun z : ZFSet.{u} => z ∈ y) ∈ y :=
@@ -1535,13 +1629,13 @@ theorem choice_mem_aux (h : ∅ ∉ x) (y : ZFSet.{u}) (yx : y ∈ x) :
     by_contradiction fun n => h <| by rwa [← (eq_empty y).2 fun z zx => n ⟨z, zx⟩]
 
 theorem choice_isFunc (h : ∅ ∉ x) : IsFunc x (⋃₀ x) (choice x) :=
-  (@map_isFunc _ (Classical.allDefinable _) _ _).2 fun y yx =>
+  (@map_isFunc _ (Classical.allZFSetDefinable _) _ _).2 fun y yx =>
     mem_sUnion.2 ⟨y, yx, choice_mem_aux x h y yx⟩
 
 theorem choice_mem (h : ∅ ∉ x) (y : ZFSet.{u}) (yx : y ∈ x) :
     (choice x ′ y : Class.{u}) ∈ (y : Class.{u}) := by
   delta choice
-  rw [@map_fval _ (Classical.allDefinable _) x y yx, Class.coe_mem, Class.coe_apply]
+  rw [@map_fval _ (Classical.allZFSetDefinable _) x y yx, Class.coe_mem, Class.coe_apply]
   exact choice_mem_aux x h y yx
 
 private lemma toSet_equiv_aux {s : Set ZFSet.{u}} (hs : Small.{u} s) :
