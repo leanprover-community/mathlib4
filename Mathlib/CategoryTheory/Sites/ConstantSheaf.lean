@@ -164,7 +164,7 @@ include hT hT' in
 The property of a sheaf of being constant is invariant under equivalence of sheaf
 categories.
 -/
-lemma isConstant_iff_of_equivalence (F : Sheaf K D) :
+lemma Sheaf.isConstant_iff_of_equivalence (F : Sheaf K D) :
     let e : Sheaf J D ≌ Sheaf K D := sheafEquiv G J K D
     (e.inverse.obj F).IsConstant J ↔ IsConstant K F := by
   intro e
@@ -182,7 +182,10 @@ section Forget
 variable {B : Type*} [Category B] (U : D ⥤ B) [HasWeakSheafify J B]
   [J.PreservesSheafification U] [J.HasSheafCompose U] (F : Sheaf J D)
 
-/-- The constant sheaf functor commutes with `sheafCompose` up to isomorphism. -/
+/--
+The constant sheaf functor commutes with `sheafCompose J U` up to isomorphism, provided that `U` 
+preserves sheafification.
+-/
 noncomputable def constantCommuteCompose :
     constantSheaf J D ⋙ sheafCompose J U ≅ U ⋙ constantSheaf J B :=
   (isoWhiskerLeft (const Cᵒᵖ)
@@ -210,7 +213,7 @@ lemma constantSheafAdj_counit_w {T : C} (hT : IsTerminal T) :
       whiskerRight_app]
   simp [← map_comp, ← NatTrans.comp_app]
 
-lemma sheafCompose_reflects_constant [constantSheaf J D |>.Faithful] [constantSheaf J D |>.Full]
+lemma Sheaf.isConstant_of_forget [constantSheaf J D |>.Faithful] [constantSheaf J D |>.Full]
     [constantSheaf J B |>.Faithful] [constantSheaf J B |>.Full]
     [(sheafCompose J U).ReflectsIsomorphisms] [((sheafCompose J U).obj F).IsConstant J]
     {T : C} (hT : IsTerminal T) : F.IsConstant J := by
@@ -227,11 +230,11 @@ instance [h : F.IsConstant J] : ((sheafCompose J U).obj F).IsConstant J := by
       (presheafToSheaf J B ⋙ sheafToPresheaf J B).mapIso (constComp Cᵒᵖ Y U)).symm ≪≫
         (sheafToPresheaf _ _).mapIso ((sheafCompose J U).mapIso i))⟩⟩
 
-lemma isConstant_iff_forget [constantSheaf J D |>.Faithful] [constantSheaf J D |>.Full]
+lemma Sheaf.isConstant_iff_forget [constantSheaf J D |>.Faithful] [constantSheaf J D |>.Full]
     [constantSheaf J B |>.Faithful] [constantSheaf J B |>.Full]
       [(sheafCompose J U).ReflectsIsomorphisms] {T : C} (hT : IsTerminal T) :
         F.IsConstant J ↔ ((sheafCompose J U).obj F).IsConstant J :=
-  ⟨fun _ ↦ inferInstance, fun _ ↦ sheafCompose_reflects_constant _ U F hT⟩
+  ⟨fun _ ↦ inferInstance, fun _ ↦ Sheaf.isConstant_of_forget _ U F hT⟩
 
 end Forget
 
