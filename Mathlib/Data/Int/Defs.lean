@@ -561,12 +561,7 @@ lemma toNat_lt_toNat {a b : ℤ} (hb : 0 < b) : toNat a < toNat b ↔ a < b wher
 lemma lt_of_toNat_lt {a b : ℤ} (h : toNat a < toNat b) : a < b :=
   (toNat_lt_toNat <| lt_toNat.1 <| Nat.lt_of_le_of_lt (Nat.zero_le _) h).1 h
 
-#adaptation_note
-/--
-Due to an error in nightly-2024-08-29, I've removed `@[simp]` here.
-Hopefully it can be restored, if needed, after nightly-2024-08-30.
--/
-lemma toNat_pred_coe_of_pos {i : ℤ} (h : 0 < i) : ((i.toNat - 1 : ℕ) : ℤ) = i - 1 := by
+@[simp] lemma toNat_pred_coe_of_pos {i : ℤ} (h : 0 < i) : ((i.toNat - 1 : ℕ) : ℤ) = i - 1 := by
   simp only [lt_toNat, Nat.cast_ofNat_Int, h, natCast_pred_of_pos, Int.le_of_lt h, toNat_of_nonneg]
 
 @[simp] lemma toNat_eq_zero : ∀ {n : ℤ}, n.toNat = 0 ↔ n ≤ 0
