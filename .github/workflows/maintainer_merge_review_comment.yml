@@ -25,8 +25,9 @@ jobs:
         id: determine_topic
         run: |
           ./scripts/get_tlabel.sh "${PR}" >> "$GITHUB_OUTPUT"
-        env:
+        with:
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        env:
           PR:  /repos/{owner}/{repo}/issues/{pull_number}
 
       - name: Send message on Zulip
