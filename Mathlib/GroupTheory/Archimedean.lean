@@ -246,7 +246,7 @@ noncomputable def LinearOrderedAddCommGroup.int_orderAddMonoidIso_of_isLeast_pos
   let f := closure_equiv_closure x (1 : ℤ) (by simp [h.left.ne'])
   exact ((((e.trans e').trans f).trans g').trans g : G ≃+o ℤ)
 
-/-- Any linearly ordered archimedean additive group is either is isomorphic (and order-isomorphic)
+/-- Any linearly ordered archimedean additive group is either isomorphic (and order-isomorphic)
 to the integers, or is densely ordered. -/
 lemma LinearOrderedAddCommGroup.discrete_or_denselyOrdered :
     Nonempty (G ≃+o ℤ) ∨ DenselyOrdered G := by
