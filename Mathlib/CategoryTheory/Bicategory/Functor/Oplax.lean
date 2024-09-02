@@ -121,7 +121,7 @@ instance : Inhabited (OplaxFunctor B B) :=
   ⟨id B⟩
 
 /-- Composition of oplax functors. -/
--- @[simps]
+--@[simps]
 def comp (F : OplaxFunctor B C) (G : OplaxFunctor C D) : OplaxFunctor B D where
   toPrelaxFunctor := F.toPrelaxFunctor.comp G.toPrelaxFunctor
   mapId := fun a => (G.mapFunctor _ _).map (F.mapId a) ≫ G.mapId (F.obj a)
