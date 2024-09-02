@@ -106,7 +106,7 @@ def preordToPartOrdForgetAdjunction :
         { toFun := fun f =>
             ⟨f.toFun ∘ toAntisymmetrization (· ≤ ·), f.mono.comp toAntisymmetrization_mono⟩
           invFun := fun f =>
-            ⟨fun a => Quotient.liftOn' a f.toFun (fun _ _ h => (AntisymmRel.image h f.mono).eq),
+            ⟨fun a => Quotient.liftOn a f.toFun (fun _ _ h => (AntisymmRel.image h f.mono).eq),
               fun a b => Quotient.inductionOn₂ a b fun _ _ h => f.mono h⟩
           left_inv := fun _ =>
             OrderHom.ext _ _ <| funext fun x => Quotient.inductionOn x fun _ => rfl

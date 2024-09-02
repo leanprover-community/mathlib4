@@ -134,7 +134,7 @@ protected def lift {α : Sort*} {X : C} (F : ∀ ⦃A : C⦄ (f : A ⟶ X) [Mono
       ∀ ⦃A B : C⦄ (f : A ⟶ X) (g : B ⟶ X) [Mono f] [Mono g] (i : A ≅ B),
         i.hom ≫ g = f → F f = F g) :
     Subobject X → α := fun P =>
-  Quotient.liftOn' P (fun m => F m.arrow) fun m n ⟨i⟩ =>
+  Quotient.liftOn P (fun m => F m.arrow) fun m n ⟨i⟩ =>
     h m.arrow n.arrow ((MonoOver.forget X ⋙ Over.forget X).mapIso i) (Over.w i.hom)
 
 @[simp]

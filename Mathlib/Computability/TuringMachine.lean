@@ -176,7 +176,7 @@ instance ListBlank.inhabited {Γ} [Inhabited Γ] : Inhabited (ListBlank Γ) :=
 instance ListBlank.hasEmptyc {Γ} [Inhabited Γ] : EmptyCollection (ListBlank Γ) :=
   ⟨Quotient.mk'' []⟩
 
-/-- A modified version of `Quotient.liftOn'` specialized for `ListBlank`, with the stronger
+/-- A modified version of `Quotient.liftOn` specialized for `ListBlank`, with the stronger
 precondition `BlankExtends` instead of `BlankRel`. -/
 -- Porting note: Removed `@[elab_as_elim]`
 protected abbrev ListBlank.liftOn {Γ} [Inhabited Γ] {α} (l : ListBlank Γ) (f : List Γ → α)

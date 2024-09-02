@@ -123,7 +123,7 @@ variable [MulAction α β] (x : β)
 /-- The canonical map from the quotient of the stabilizer to the set. -/
 @[to_additive "The canonical map from the quotient of the stabilizer to the set. "]
 def ofQuotientStabilizer (g : α ⧸ MulAction.stabilizer α x) : β :=
-  Quotient.liftOn' g (· • x) fun g1 g2 H =>
+  Quotient.liftOn g (· • x) fun g1 g2 H =>
     calc
       g1 • x = g1 • (g1⁻¹ * g2) • x := congr_arg _ (leftRel_apply.mp H).symm
       _ = g2 • x := by rw [smul_smul, mul_inv_cancel_left]
@@ -295,7 +295,7 @@ instance finite_quotient_of_pretransitive_of_finite_quotient [IsPretransitive α
   · have h' : Finite (Quotient (rightRel H)) :=
       Finite.of_equiv _ (quotientRightRelEquivQuotientLeftRel _).symm
     let f : Quotient (rightRel H) → orbitRel.Quotient H β :=
-      fun a ↦ Quotient.liftOn' a (fun g ↦ ⟦g • b⟧) fun g₁ g₂ r ↦ by
+      fun a ↦ Quotient.liftOn a (fun g ↦ ⟦g • b⟧) fun g₁ g₂ r ↦ by
         replace r := Setoid.symm' _ r
         change (rightRel H).r _ _ at r
         rw [rightRel_eq] at r
@@ -303,7 +303,7 @@ instance finite_quotient_of_pretransitive_of_finite_quotient [IsPretransitive α
         change g₁ • b ∈ orbit H (g₂ • b)
         rw [mem_orbit_iff]
         exact ⟨⟨g₁ * g₂⁻¹, r⟩, by simp [mul_smul]⟩
-    exact Finite.of_surjective f ((Quotient.surjective_liftOn' _).2
+    exact Finite.of_surjective f ((Quotient.surjective_liftOn _).2
       (Quotient.surjective_Quotient_mk''.comp (MulAction.surjective_smul _ _)))
 
 variable {β}

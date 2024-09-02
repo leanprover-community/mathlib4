@@ -594,7 +594,7 @@ theorem Nodup.nontrivial_iff {s : Cycle α} (h : Nodup s) : Nontrivial s ↔ ¬S
 /-- The `s : Cycle α` as a `Multiset α`.
 -/
 def toMultiset (s : Cycle α) : Multiset α :=
-  Quotient.liftOn' s (↑) fun _ _ h => Multiset.coe_eq_coe.mpr h.perm
+  Quotient.liftOn s (↑) fun _ _ h => Multiset.coe_eq_coe.mpr h.perm
 
 @[simp]
 theorem coe_toMultiset (l : List α) : (l : Cycle α).toMultiset = l :=
@@ -635,7 +635,7 @@ theorem mem_map {β : Type*} {f : α → β} {b : β} {s : Cycle α} :
 
 /-- The `Multiset` of lists that can make the cycle. -/
 def lists (s : Cycle α) : Multiset (List α) :=
-  Quotient.liftOn' s (fun l => (l.cyclicPermutations : Multiset (List α))) fun l₁ l₂ h => by
+  Quotient.liftOn s (fun l => (l.cyclicPermutations : Multiset (List α))) fun l₁ l₂ h => by
     simpa using h.cyclicPermutations.perm
 
 @[simp]
@@ -645,7 +645,7 @@ theorem lists_coe (l : List α) : lists (l : Cycle α) = ↑l.cyclicPermutations
 @[simp]
 theorem mem_lists_iff_coe_eq {s : Cycle α} {l : List α} : l ∈ s.lists ↔ (l : Cycle α) = s :=
   Quotient.inductionOn s fun l => by
-    rw [lists, Quotient.liftOn'_mk'']
+    rw [lists, Quotient.liftOn_mk]
     simp
 
 @[simp]
@@ -780,7 +780,7 @@ unsafe instance [Repr α] : Repr (Cycle α) :=
 
 `chain R ([a, b, c] : Cycle α) ↔ R a b ∧ R b c ∧ R c a` -/
 nonrec def Chain (r : α → α → Prop) (c : Cycle α) : Prop :=
-  Quotient.liftOn' c
+  Quotient.liftOn c
     (fun l =>
       match l with
       | [] => True
@@ -829,7 +829,7 @@ theorem chain_map {β : Type*} {r : α → α → Prop} (f : β → α) {s : Cyc
     cases' l with a l
     · rfl
     dsimp only [Chain, Quotient.liftOn_mk, Cycle.map, Quotient.map', Quot.map,
-      Quotient.liftOn', Quotient.liftOn, Quot.liftOn_mk, List.map]
+      Quotient.liftOn, Quotient.liftOn, Quot.liftOn_mk, List.map]
     rw [← concat_eq_append, ← List.map_concat, List.chain_map f]
     simp
 
