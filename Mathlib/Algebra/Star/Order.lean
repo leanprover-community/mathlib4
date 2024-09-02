@@ -194,6 +194,14 @@ theorem conjugate_le_conjugate' {a b : R} (hab : a ≤ b) (c : R) :
     c * a * star c ≤ c * b * star c := by
   simpa only [star_star] using conjugate_le_conjugate hab (star c)
 
+protected theorem IsSelfAdjoint.conjugate_le_conjugate {a b : R} (hab : a ≤ b) {c : R}
+    (hc : IsSelfAdjoint c) : c * a * c ≤ c * b * c := by
+  simpa only [hc.star_eq] using conjugate_le_conjugate hab c
+
+theorem conjugate_le_conjugate_of_nonneg {a b : R} (hab : a ≤ b) {c : R} (hc : 0 ≤ c) :
+    c * a * c ≤ c * b * c :=
+  IsSelfAdjoint.of_nonneg hc |>.conjugate_le_conjugate hab
+
 @[simp]
 lemma star_le_star_iff {x y : R} : star x ≤ star y ↔ x ≤ y := by
   suffices ∀ x y, x ≤ y → star x ≤ star y from
