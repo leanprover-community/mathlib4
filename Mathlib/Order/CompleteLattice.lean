@@ -870,6 +870,9 @@ theorem iSup_eq_bot : iSup s = ⊥ ↔ ∀ i, s i = ⊥ :=
 theorem iInf_eq_top : iInf s = ⊤ ↔ ∀ i, s i = ⊤ :=
   sInf_eq_top.trans forall_mem_range
 
+@[simp] lemma bot_lt_iSup : ⊥ < ⨆ i, s i ↔ ∃ i, ⊥ < s i := by simp [bot_lt_iff_ne_bot]
+@[simp] lemma iInf_lt_top : ⨅ i, s i < ⊤ ↔ ∃ i, s i < ⊤ := by simp [lt_top_iff_ne_top]
+
 theorem iSup₂_eq_bot {f : ∀ i, κ i → α} : ⨆ (i) (j), f i j = ⊥ ↔ ∀ i j, f i j = ⊥ := by
   simp
 
