@@ -688,7 +688,7 @@ noncomputable def preimageMkEquivSubgroupProdSet (s : Subgroup α) (t : Set (α 
 
 /-- A group is made up of a disjoint union of cosets of a subgroup. -/
 @[to_additive "An additive group is made up of a disjoint union of cosets of an additive
-subgroup. -/"]
+subgroup."]
 lemma univ_eq_iUnion_image_mul (H : Subgroup α) :
     (Set.univ (α := α)) = ⋃ x : α ⧸ H, (x.out' * ·) '' H := by
   ext x
