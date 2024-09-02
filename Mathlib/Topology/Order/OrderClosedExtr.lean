@@ -74,26 +74,15 @@ lemma isLocalMax_of_mono_anti'.{u, v}
     {c : Set α} (hc : c ∈ 𝓝[≥] b)
     (h₀ : MonotoneOn f a)
     (h₁ : AntitoneOn f c) : IsLocalMax f b := by
-  unfold IsLocalMax IsMaxFilter Filter.Eventually
-  have : (a ∩ Set.Iic b) ∪ (c ∩ Set.Ici b) ∈ 𝓝 b := by
-    exact @nhds_of_Ici_Iic α _ _ _ _ _ b a ha c hc
-  apply Filter.mem_of_superset this
+  apply Filter.mem_of_superset (nhds_of_Ici_Iic ha hc)
   intro x hx
-  rcases le_total x b with hx' | hx' <;> aesop
-  apply h₀
-  · exact h
-  · exact mem_of_mem_nhdsWithin (by simp) ha
-  · exact hx'
-  apply h₀
-  · have : x = b := by apply le_antisymm;tauto;tauto
-    subst this
-    exact mem_of_mem_nhdsWithin (by simp) ha
-  · exact mem_of_mem_nhdsWithin (by simp) ha
-  · exact hx'
-  · have : x = b := by apply le_antisymm;tauto;tauto
-    subst this
-    simp
-  · exact h₁ (mem_of_mem_nhdsWithin (by simp) hc) h_1 hx'
+  rcases le_total x b with hx' | hx'
+  cases hx with
+  | inl h => simp_all; exact h₀ h (mem_of_mem_nhdsWithin (by simp) ha) hx'
+  | inr h => exact h₁ (mem_of_mem_nhdsWithin (by simp) hc) h.1 h.2
+  cases hx with
+  | inl h => exact h₀ h.1 (mem_of_mem_nhdsWithin (by simp) ha) h.2
+  | inr h => exact h₁ (mem_of_mem_nhdsWithin (by simp) hc) h.1 hx'
 
 /-- If `f` is antitone on `(a,b]` and monotone on `[b,c)` then `f` has
 a local minimum at `b`. -/
