@@ -48,8 +48,6 @@ theorem Quot.eqvGen_exact {a b : α} (H : Quot.mk r a = Quot.mk r b) : EqvGen r 
   @Quotient.exact _ (EqvGen.Setoid r) a b (congrArg
     (Quot.lift (Quotient.mk (EqvGen.Setoid r)) (fun x y h ↦ Quot.sound (EqvGen.rel x y h))) H)
 
-@[deprecated (since := "2024-08-29")] alias Quot.exact := Quot.eqvGen_exact
-
 theorem Quot.eqvGen_sound {r : α → α → Prop} {a b : α} (H : EqvGen r a b) :
     Quot.mk r a = Quot.mk r b :=
   EqvGen.rec
