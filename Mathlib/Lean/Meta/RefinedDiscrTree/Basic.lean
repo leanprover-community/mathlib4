@@ -176,8 +176,6 @@ structure ExprInfo where
   /-- Variables that come from a lambda or forall binder.
   The list index gives the De Bruijn index. -/
   bvars : List FVarId := []
-  /-- Variables that come from a lambda that has been removed via η-reduction. -/
-  forbiddenVars : List FVarId := []
   /-- The local context, which contains the introduced bound variables. -/
   lctx : LocalContext
   /-- The local instances, which may contain the introduced bound variables. -/
@@ -203,20 +201,22 @@ instance : ToFormat StackEntry := ⟨StackEntry.format⟩
 /-- A `LazyEntry` represents a snapshot of the computation of encoding an `Expr` as `Array Key`.
 This is used for computing the keys one by one. -/
 structure LazyEntry (α : Type) where
+  /-- If the previous expression creates more StackEntries, then we store its `ExprInfo`. -/
+  previous : Option ExprInfo := none
   /-- The stack, used to emulate recursion. -/
-  stack   : List StackEntry := []
+  stack    : List StackEntry := []
   /-- The metavariable context, which may contain variables appearing in this entry. -/
-  mctx    : MetavarContext
+  mctx     : MetavarContext
   /-- The `MVarId` assignments for converting into `.star` keys. -/
-  stars   : AssocList MVarId Nat := {}
+  stars    : AssocList MVarId Nat := {}
   /-- The number to be used for the next new `.star` key. -/
-  nStars  : Nat := 0
+  nStars   : Nat := 0
   /-- The `Key`s that have already been computed. -/
-  results : List Key := []
+  results  : List Key := []
   /-- The cache of past computations that have multiple possible outcomes. -/
-  cache   : AssocList Expr (List Key) := .nil
+  cache    : AssocList Expr (List Key) := {}
   /-- The return value. -/
-  val     : α
+  val      : α
 
 variable {α : Type}
 

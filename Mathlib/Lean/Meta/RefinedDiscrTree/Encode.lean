@@ -119,8 +119,6 @@ private structure Context where
   /-- Variables that come from a lambda or forall binder.
   The list index gives the De Bruijn index. -/
   bvars : List FVarId
-  /-- Variables that come from a lambda that has been removed via η-reduction. -/
-  forbiddenVars : List FVarId
   /-- The `whnfCore` configuration -/
   config : WhnfCoreConfig
 
@@ -145,116 +143,78 @@ private def mkNewStar (entry : LazyEntry α) : Key × LazyEntry α :=
   (.star entry.nStars, { entry with nStars := entry.nStars + 1 })
 
 @[inline]
-private def withLams (lambdas : List FVarId) (key : LazyM α Key) : LazyM α Key := do
+private def withLams (lambdas : List FVarId) (key : Key) : LazyM α Key := do
   match lambdas with
-  | [] => key
+  | [] => return key
   | _ :: tail =>
-    let key ← withReader (fun c => { c with bvars := lambdas ++ c.bvars }) key
     modify ({ · with results := tail.foldl (init := [key]) fun keys _ => .lam :: keys })
     return .lam
 
-private def makeStackEntry (expr : Expr) : LazyM α StackEntry := do
-    return .expr { (← read) with
-      expr
-      lctx := ← getLCtx
-      localInsts := ← getLocalInstances }
-
-/-- Determine for each argument whether it should be ignored,
-and return a list consisting of one `StackEntry` for each argument. -/
-private def getEntries (fn : Expr) (args : Array Expr) : LazyM α (List StackEntry) := do
-  let mut fnType ← inferType fn
-  loop fnType 0 0 []
-where
-  /-- The main loop of `getEntries` -/
-  loop (fnType : Expr) (i j : Nat) (entries : List StackEntry) : LazyM α (List StackEntry) := do
-    if h : i < args.size then
-      let arg := args[i]
-      let cont d b bi := do
-        if ← isIgnoredArg arg d bi then
-          loop b (i+1) j (.star :: entries)
-        else
-          loop b (i+1) j ((← makeStackEntry arg) :: entries)
-      match fnType with
-      | .forallE _ d b bi => cont d b bi
-      | fnType =>
-        match ← whnfD (fnType.instantiateRevRange j i args) with
-        | .forallE _ d b bi => cont d b bi
-        | fnType =>
-          throwError m! "expected function type {indentExpr fnType}"
-    else
-      return entries
-
-  /-- Determine whether the argument should be ignored. -/
-  isIgnoredArg (arg domain : Expr) (binderInfo : BinderInfo) : MetaM Bool := do
-    if domain.isOutParam then
-      return true
-    match binderInfo with
-    | .instImplicit => return true
-    | .implicit
-    | .strictImplicit => return !(← isType arg)
-    | .default => isProof arg
-
 private def encodingStepAux (e : Expr) (lambdas : List FVarId) (root : Bool) : LazyM α Key := do
-  e.withApp fun fn args => do
-  let nargs := e.getAppNumArgs
-  let stackArgs : LazyM α Unit := do
-    let entries ← getEntries fn args
-    modify fun s => { s with stack := entries.reverseAux s.stack }
+  let setEAsPrevious : LazyM α Unit := do
+    let info := {
+      expr       := e
+      bvars      := lambdas ++ (← read).bvars
+      lctx       := ← getLCtx
+      localInsts := ← getLocalInstances }
+    modify fun s => { s with previous := some info }
 
-  match fn with
+  match e.getAppFn with
   | .const n _ =>
     unless root do
       /- since `(fun _ => 0) = 0` and `(fun _ => 1) = 1`,
       we don't index lambdas before literals -/
       if let some v := toNatLit? e then
         return .lit v
-    withLams lambdas do
-    stackArgs
-    return (.const n nargs)
-  | .proj n i a =>
-    withLams lambdas do
-    stackArgs
-    if isClass (← getEnv) n then
-      modify fun s => { s with stack := .star :: s.stack}
-    else
-      let struct ← makeStackEntry a
-      modify fun s => { s with stack := struct :: s.stack}
-    return .proj n i nargs
+    unless e.getAppNumArgs == 0 do
+      setEAsPrevious
+    withLams lambdas <| .const n e.getAppNumArgs
+  | .proj n i _ =>
+    setEAsPrevious
+    withLams lambdas <| .proj n i e.getAppNumArgs
   | .fvar fvarId =>
     /- we index `fun x => x` as `id` when not at the root -/
-    if !root && nargs == 0 then
+    if !root && e.getAppNumArgs == 0 then
       if let fvarId' :: lambdas := lambdas then
         if fvarId' == fvarId then
-          return ← withLams lambdas do
-          let type ← makeStackEntry (← fvarId.getType)
-          modify fun s => { s with stack := type :: s.stack }
-          return .const ``id 1
-    withLams lambdas do
-    stackArgs
-    if let some idx := (← read).bvars.indexOf? fvarId then
-      return .bvar idx nargs
-    return .fvar fvarId nargs
+          let info := {
+            expr       := ← fvarId.getType
+            bvars      := lambdas ++ (← read).bvars
+            lctx       := ← getLCtx
+            localInsts := ← getLocalInstances }
+          modify fun s => { s with stack := .expr info :: s.stack }
+          return ← withLams lambdas <| .const ``id 1
+    let bvars := lambdas ++ (← read).bvars
+    unless e.getAppNumArgs == 0 do
+      setEAsPrevious
+    if let some idx := bvars.indexOf? fvarId then
+      withLams lambdas <| .bvar idx e.getAppNumArgs
+    else
+      withLams lambdas <| .fvar fvarId e.getAppNumArgs
   | .mvar mvarId =>
-    /- If there are arguments, don't index the lambdas, as `e` might contain the bound variables
-    When not at the root, don't index the lambdas, as it should be able to match with
-    `fun _ => x + y`, which is indexed as `(fun _ => x) + (fun _ => y)`. -/
-    if nargs == 0 && (root || lambdas.isEmpty) then
-      withLams lambdas (mkStar mvarId)
+    if root then
+      if e.isApp then
+        -- if there are arguemnts, we don't index the lambdas:
+        -- because, for example `fun x => ?m x x` may be any function
+        return .star 0
+      else
+        -- by indexing the lambdas, we only allow matches with constant functions
+        withLams lambdas <| .star 0
+    -- even if there are no arguments, we don't index the lambdas:
+    -- because, it should be able to match with
+    -- `fun _ => x + y`, which is indexed as `(fun _ => x) + (fun _ => y)`.
+    else if lambdas.isEmpty then
+      mkStar mvarId
     else
       modifyGet mkNewStar
 
-  | .forallE n d b bi =>
-    withLams lambdas do
-    let d' ← makeStackEntry d
-    let b' ← withLocalDecl n bi d fun fvar =>
-      withReader (fun c => { c with bvars := fvar.fvarId! :: c.bvars }) do
-        makeStackEntry (b.instantiate1 fvar)
-    modify fun s => { s with stack := d' :: b' :: s.stack }
-    return .forall
-  | .lit v      => withLams lambdas <| return .lit v
-  | .sort _     => withLams lambdas <| return .sort
-  | .letE ..    => withLams lambdas <| return .opaque
-  | .lam ..     => withLams lambdas <| return .opaque
+  | .forallE .. =>
+    setEAsPrevious
+    withLams lambdas .forall
+  | .lit v      => withLams lambdas <| .lit v
+  | .sort _     => withLams lambdas <| .sort
+  | .letE ..    => withLams lambdas <| .opaque
+  | .lam ..     => withLams lambdas <| .opaque
   | _           => unreachable!
 
 /-- Run `k` on all pairs of body, bound variables that could possibly appear due to η-reduction -/
@@ -263,9 +223,8 @@ private def etaPossibilities (e : Expr) (lambdas : List FVarId)
     (k : Expr → List FVarId → ReaderT Context MetaM (List α)) : ReaderT Context MetaM (List α) :=
   return (← k e lambdas) ++ (← match e, lambdas with
   | .app f a, fvarId :: lambdas =>
-    if isStarWithArg (.fvar fvarId) a then
-      withReader (fun c => { c with forbiddenVars := fvarId :: c.forbiddenVars }) do
-        etaPossibilities f lambdas k
+    if isStarWithArg (.fvar fvarId) a && !(f.getAppFn.isMVar || f.containsFVar fvarId) then
+      etaPossibilities f lambdas k
     else
       return []
   | _, _ => return [])
@@ -279,7 +238,7 @@ private def cacheEtaPossibilities (e original : Expr) (lambdas : List FVarId)
     ReaderT Context MetaM (List (Key × LazyEntry α)) := do
   match e, lambdas with
   | .app f a, fvarId :: _ =>
-    if !f.getAppFn.isMVar && isStarWithArg (.fvar fvarId) a then
+    if isStarWithArg (.fvar fvarId) a && !(f.getAppFn.isMVar || f.containsFVar fvarId) then
       match entry.cache.find? original with
       | some keys => return [ifCached keys]
       | none =>
@@ -305,14 +264,16 @@ private partial def lambdaTelescopeReduce {m} [Monad m] [MonadLiftT MetaM m] [Mo
     | e => k e lambdas
 
 private def useReducePi (name : Name) : Array (Option Expr) × List FVarId → LazyM α Key
-| (args, lambdas) => withLams lambdas do
-  let stack ← args.foldrM (init := (← get).stack) fun arg stack => do
-    let entry ← match arg with
-      | none     => pure .star
-      | some arg => makeStackEntry arg
-    return entry :: stack
+| (args, lambdas) => do
+  let bvars := lambdas ++ (← read).bvars
+  let lctx ← getLCtx
+  let localInsts ← getLocalInstances
+  let stack := args.foldr (init := (← get).stack) fun arg stack =>
+    match arg with
+    | none     => .star :: stack
+    | some arg => .expr { expr := arg, bvars, lctx, localInsts } :: stack
   modify ({ · with stack })
-  return .const name args.size
+  withLams lambdas <| .const name args.size
 
 /-- A single step in encoding an `Expr` into `Key`s. -/
 private def encodingStep (original : Expr) (root : Bool) (entry : LazyEntry α) :
@@ -320,7 +281,7 @@ private def encodingStep (original : Expr) (root : Bool) (entry : LazyEntry α) 
   lambdaTelescopeReduce original [] (← read).config
     (fun lambdas => do
       let (key, entry) := mkNewStar entry
-      let (key, entry) ← (withLams lambdas (pure key)).run (← read) entry
+      let (key, entry) ← (withLams lambdas key).run (← read) entry
       pure ([(key, entry)]))
     (fun e lambdas => do
       unless root do
@@ -336,7 +297,7 @@ private def encodingStep (original : Expr) (root : Bool) (entry : LazyEntry α) 
 private def encodingStep' (original : Expr) (root : Bool) :
     LazyM α Key := do
   lambdaTelescopeReduce original [] (← read).config
-    (fun lambdas => withLams lambdas (modifyGet mkNewStar))
+    (fun lambdas => do withLams lambdas (← modifyGet mkNewStar))
     (fun e lambdas => do
       unless root do
         if let some (n, as) ← reducePi e lambdas then
@@ -347,62 +308,133 @@ private def encodingStep' (original : Expr) (root : Bool) :
 def initializeLazyEntry (e : Expr) (val : α) (config : WhnfCoreConfig) :
     MetaM (List (Key × LazyEntry α)) := do
   let mctx ← getMCtx
-  encodingStep e true { val, mctx } |>.run { bvars := [], forbiddenVars := [], config}
+  encodingStep e true { val, mctx } |>.run { bvars := [], config}
 
 /-- Encode `e` as a sequence of keys, computing only the first `Key`. -/
 private def initializeLazyEntry' (e : Expr) (val : α) (config : WhnfCoreConfig) :
     MetaM (Key × LazyEntry α) := do
   let mctx ← getMCtx
-  encodingStep' e true |>.run { bvars := [], forbiddenVars := [], config} { val, mctx }
+  encodingStep' e true |>.run { bvars := [], config} { val, mctx }
 
 
 private partial def processLazyEntryAux (entry : LazyEntry α) :
     ReaderT WhnfCoreConfig MetaM (List (Key × LazyEntry α) ⊕ α) := do
-  let stackEntry :: stack := entry.stack | return .inr entry.val
-  let entry := { entry with stack }
-  match stackEntry with
-  | .cache key valueRev =>
-    let value := valueRev.reverse
-    let entry := if hasLooseBVars value then entry else
-      { entry with cache := entry.cache.insert key value }
-    processLazyEntryAux entry
-  | .star =>
-    let (key, entry) := mkNewStar entry
-    return .inl [(key, entry)]
-  | .expr info =>
-    withLCtx info.lctx info.localInsts do withMCtx entry.mctx do
-    return .inl (
-      ← encodingStep info.expr (root := false) entry |>.run { info with config := (← read) })
+  match entry.stack with
+  | [] => return .inr entry.val
+  | stackEntry :: stack =>
+    let entry := { entry with stack }
+    match stackEntry with
+    | .cache key valueRev =>
+      let value := valueRev.reverse
+      let entry := if hasLooseBVars value then entry else
+        { entry with cache := entry.cache.insert key value }
+      processLazyEntryAux entry
+    | .star =>
+      let (key, entry) := mkNewStar entry
+      return .inl [(key, entry)]
+    | .expr info =>
+      withLCtx info.lctx info.localInsts do
+      return .inl (
+        ← encodingStep info.expr (root := false) entry |>.run { info with config := (← read) })
 
 private partial def processLazyEntryAux' (entry : LazyEntry α) :
     ReaderT WhnfCoreConfig MetaM ((Key × LazyEntry α) ⊕ α) := do
-  let stackEntry :: stack := entry.stack | return .inr entry.val
-  let entry := { entry with stack }
-  match stackEntry with
-  | .cache key valueRev =>
-    let value := valueRev.reverse
-    let entry := if hasLooseBVars value then
-      { entry with cache := entry.cache.insert key value }
-      else entry
-    processLazyEntryAux' entry
-  | .star =>
-    let (key, entry) := mkNewStar entry
-    return .inl (key, entry)
-  | .expr info =>
-    withLCtx info.lctx info.localInsts do withMCtx entry.mctx do
-    return .inl (← encodingStep' info.expr false |>.run { info with config := (← read)} entry)
+  match entry.stack with
+  | [] => return .inr entry.val
+  | stackEntry :: stack =>
+    let entry := { entry with stack }
+    match stackEntry with
+    | .cache key valueRev =>
+      let value := valueRev.reverse
+      let entry := if hasLooseBVars value then
+        { entry with cache := entry.cache.insert key value }
+        else entry
+      processLazyEntryAux' entry
+    | .star =>
+      let (key, entry) := mkNewStar entry
+      return .inl (key, entry)
+    | .expr info =>
+      withLCtx info.lctx info.localInsts do
+      return .inl (← encodingStep' info.expr false |>.run { info with config := (← read)} entry)
 
 private def updateCaches (stack : List StackEntry) (key : Key) : List StackEntry :=
   stack.map fun
     | .cache k value => .cache k (key :: value)
     | x => x
 
+
+/-- Determine for each argument whether it should be ignored,
+and return a list consisting of one `StackEntry` for each argument. -/
+private def getEntries (fn : Expr) (args : Array Expr) (bvars : List FVarId) (lctx : LocalContext)
+    (localInsts : LocalInstances) : MetaM (List StackEntry) := do
+  let mut fnType ← inferType fn
+  loop fnType 0 0 []
+where
+  /-- The main loop of `getEntries` -/
+  loop (fnType : Expr) (i j : Nat) (entries : List StackEntry) : MetaM (List StackEntry) := do
+    if h : i < args.size then
+      let arg := args[i]
+      let cont j d b bi := do
+        if ← isIgnoredArg arg d bi then
+          loop b (i+1) j (.star :: entries)
+        else
+          loop b (i+1) j (( .expr { expr := arg, bvars, lctx, localInsts }) :: entries)
+      match fnType with
+      | .forallE _ d b bi => cont j d b bi
+      | fnType =>
+        match ← whnfD (fnType.instantiateRevRange j i args) with
+        | .forallE _ d b bi => cont i d b bi
+        | fnType =>
+          throwError m! "expected function type {indentExpr fnType}"
+    else
+      return entries
+  /-- Determine whether the argument should be ignored. -/
+  isIgnoredArg (arg domain : Expr) (binderInfo : BinderInfo) : MetaM Bool := do
+    if domain.isOutParam then
+      return true
+    match binderInfo with
+    | .instImplicit => return true
+    | .implicit
+    | .strictImplicit => return !(← isType arg)
+    | .default => isProof arg
+
+private def processPrevious (entry : LazyEntry α) : MetaM (LazyEntry α) := do
+  let some { expr, bvars, lctx, localInsts } := entry.previous | return entry
+  let entry := { entry with previous := none }
+  withLCtx lctx localInsts do
+  expr.withApp fun fn args => do
+
+  let stackArgs (entry : LazyEntry α) : MetaM (LazyEntry α) := do
+    let entries ← getEntries fn args bvars lctx localInsts
+    return { entry with stack := entries.reverseAux entry.stack }
+
+  match fn with
+  | .forallE n d b bi =>
+    let d' := .expr { expr := d, bvars, lctx, localInsts }
+    let b' ← withLocalDecl n bi d fun fvar =>
+      return .expr {
+        expr       := b.instantiate1 fvar
+        bvars      := fvar.fvarId! :: bvars
+        lctx       := ← getLCtx
+        localInsts := ← getLocalInstances }
+    return { entry with stack := d' :: b' :: entry.stack }
+  | .proj n _ a =>
+    if isClass (← getEnv) n then
+      let entry ← stackArgs entry
+      return { entry with stack := .star :: entry.stack}
+    else
+      let entry ← stackArgs entry
+      return { entry with stack := .expr { expr := a, bvars, lctx, localInsts } :: entry.stack}
+  | _ => stackArgs entry
+
+
 /-- A single step in evaluating a `LazyEntry α`. -/
 def evalLazyEntry (entry : LazyEntry α) (config : WhnfCoreConfig) :
     MetaM (List (Key × LazyEntry α) ⊕ α) := do
   if let key :: results := entry.results then
     return .inl [(key, { entry with results, stack := updateCaches entry.stack key })]
-  else
+  else withMCtx entry.mctx do
+    let entry ← processPrevious entry
     let result ← processLazyEntryAux entry |>.run config
     return match result with
       | .inl entries => .inl <| entries.map fun (key, entry) =>
@@ -414,7 +446,8 @@ private def evalLazyEntry' (entry : LazyEntry α) :
     ReaderT WhnfCoreConfig MetaM ((Key × LazyEntry α) ⊕ α) := do
   if let key :: results := entry.results then
     return .inl (key, { entry with results, stack := updateCaches entry.stack key })
-  else
+  else withMCtx entry.mctx do
+    let entry ← processPrevious entry
     let result ← processLazyEntryAux' entry
     return match result with
       | .inl (key, entry) => .inl (key, { entry with stack := updateCaches entry.stack key })

@@ -88,12 +88,46 @@ where
   else
     guard (t == s); return l
 
+/--
+Because this is performance critical when building the `RefinedDiscrTree`,
+we use a more optimized version of `forallMetaTelescope`.
+-/
+private partial def forallMetaTelescope' (e : Expr) : MetaM Expr := do
+  unless e matches .forallE .. do
+    return e
+  let lctx ← getLCtx
+  let localInstances ← getLocalInstances
+  let mctx ← getMCtx
+  let depth := mctx.depth
+
+  let rec go (mvars : Array Expr) (type : Expr) (ngen : NameGenerator)
+      (decls : PersistentHashMap MVarId MetavarDecl) (mvarCounter : Nat) : MetaM Expr := do
+    match type with
+    | .forallE _ d b _ =>
+      let type := d.instantiateRev mvars
+      let mvarId : MVarId := ⟨ngen.curr⟩
+      let decls := decls.insert mvarId {
+        depth
+        index := mvarCounter
+        userName := .anonymous
+        lctx
+        localInstances
+        type
+        kind := .natural
+        numScopeArgs := 0 }
+      go (mvars.push (.mvar mvarId)) b ngen.next decls (mvarCounter + 1)
+    | _ =>
+      setMCtx { mctx with decls, mvarCounter }
+      setNGen ngen
+      return type.instantiateRev mvars;
+  go #[] e (← getNGen) mctx.decls mctx.mvarCounter
+
 /-- Try adding the lemma to the `RefinedDiscrTree`. -/
 def addRewriteEntry (name : Name) (cinfo : ConstantInfo) :
     MetaM (List (RefinedDiscrTree.Key × RefinedDiscrTree.LazyEntry RewriteLemma)) := do
   if name matches .str _ "injEq" | .str _ "sizeOf_spec" then
     return []
-  let (_, _, eqn) ← forallMetaTelescope cinfo.type
+  let eqn ← forallMetaTelescope' cinfo.type
   let some (lhs, rhs) := matchEqn? eqn | return []
   -- don't index lemmas of the form `a = ?b` where `?b` is a variable not appearing in `a`
   if let .mvar mvarId := lhs then
