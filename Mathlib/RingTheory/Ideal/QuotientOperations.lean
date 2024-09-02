@@ -971,7 +971,7 @@ noncomputable
 def powQuotPowSuccEquivMapMkPowSuccPowEquiv :
     ((I ^ n : Ideal R) ⧸ (I • ⊤ : Submodule R (I ^ n : Ideal R))) ≃
     Ideal.map (Ideal.Quotient.mk (I ^ (n + 1))) (I ^ n) :=
-  pow_quot_pow_succ_equiv_map_mk_pow_succ_pow I n
+  powQuotPowSuccEquivMapMkPowSuccPow I n
 
 end PowQuot
 
