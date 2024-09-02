@@ -29,6 +29,8 @@ using `monotoneOn_of_deriv_nonneg` from [Mathlib.Analysis.Calculus.MeanValue].
 
 * `first_derivative_test_min`: The dual of `first_derivative_max`, for minima.
 
+* `first_derivative_test_max'`: A version of `first_derivative_test_max` for filters.
+
 ## Tags
 
 derivative test, calculus
@@ -97,6 +99,34 @@ lemma first_derivative_test_max {f : ℝ → ℝ} {a b c : ℝ} (g₀ : a < b) (
     continuous_Ioc (by simp_all) (by simp_all))
     (antitoneOn_of_deriv_nonpos (convex_Ico b c)
     continuous_Ico (by simp_all) (by simp_all))
+
+ /-- The First-Derivative Test from calculus, maxima version, expressed in terms of filters. -/
+lemma first_derivative_test_max' {f : ℝ → ℝ} {b : ℝ} (h : ContinuousAt f b)
+    (hd₀ : ∀ᶠ x in 𝓝[<] b, DifferentiableAt ℝ f x) (hd₁ : ∀ᶠ x in 𝓝[>] b, DifferentiableAt ℝ f x)
+    (h₀  : ∀ᶠ x in 𝓝[<] b, 0 ≤ deriv f x) (h₁  : ∀ᶠ x in 𝓝[>] b, deriv f x ≤ 0) :
+    IsLocalMax f b := by
+  unfold Filter.Eventually at h₀ h₁ hd₀ hd₁
+  rw [mem_nhdsWithin_Iio_iff_exists_Ioo_subset] at h₀ hd₀
+  rw [mem_nhdsWithin_Ioi_iff_exists_Ioo_subset] at h₁ hd₁
+  obtain ⟨u₀,hu₀⟩ := hd₀; obtain ⟨u₁,hu₁⟩ := hd₁
+  obtain ⟨v₀,hv₀⟩ := h₀; obtain ⟨v₁,hv₁⟩ := h₁
+  apply isLocalMax_of_mono_anti
+  · show max u₀ v₀ < b; exact max_lt (by simp_all) (by simp_all)
+  · show b < min u₁ v₁; exact lt_min (by simp_all) (by simp_all)
+  · exact monotoneOn_of_deriv_nonneg
+      (convex_Ioc _ _)
+      (fun x _ => ContinuousAt.continuousWithinAt ((em (x = b)).elim (fun H => H ▸ h)
+        (fun H => DifferentiableAt.continuousAt (hu₀.2 (by contrapose H;simp_all;linarith)))))
+      (fun x _ => DifferentiableAt.differentiableWithinAt (hu₀.2 (by simp_all)))
+      (fun x _ => by apply hv₀.2;simp_all)
+  · exact antitoneOn_of_deriv_nonpos
+      (convex_Ico _ _)
+      (fun x _ => ContinuousAt.continuousWithinAt ((em (x = b)).elim (fun H => H ▸ h)
+        (fun H => DifferentiableAt.continuousAt (hu₁.2 (by contrapose H;simp_all;linarith)))))
+      (fun x _ => DifferentiableAt.differentiableWithinAt (hu₁.2 (by simp_all)))
+      (fun x _ => by apply hv₁.2;simp_all)
+
+
 
 /-- The First-Derivative Test from calculus, minima version. -/
 lemma first_derivative_test_min {f : ℝ → ℝ} {a b c : ℝ} (h : ContinuousAt f b)
