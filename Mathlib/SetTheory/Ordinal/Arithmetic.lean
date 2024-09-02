@@ -2341,7 +2341,7 @@ theorem iSup_add_nat (o : Ordinal) : ⨆ n : ℕ, o + n = o + ω :=
 set_option linter.deprecated false in
 @[deprecated iSup_add_nat (since := "2024-08-27")]
 theorem sup_add_nat (o : Ordinal) : (sup fun n : ℕ => o + n) = o + ω :=
-  iSup_add_nat o
+  (add_isNormal o).apply_omega
 
 @[simp]
 theorem iSup_mul_nat (o : Ordinal) : ⨆ n : ℕ, o * n = o * ω := by
