@@ -105,7 +105,7 @@ theorem fiber_eq (x : X) : S.proj ⁻¹' {S.proj x} = setOf (S.toSetoid x) :=
   Set.ext fun _ => eq_comm.trans Quotient.eq''
 
 theorem proj_surjective : Function.Surjective S.proj :=
-  Quotient.surjective_Quotient_mk''
+  Quotient.surjective_mk
 
 theorem proj_quotientMap : QuotientMap S.proj :=
   quotientMap_quot_mk

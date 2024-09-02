@@ -319,16 +319,33 @@ theorem Quotient.liftOn₂_mk {α : Sort*} {β : Sort*} {_ : Setoid α} (f : α 
   rfl
 
 /-- `Quot.mk r` is a surjective function. -/
+theorem Quot.surjective_mk {r : α → α → Prop} : Function.Surjective (Quot.mk r) :=
+  Quot.exists_rep
+
+/-- `Quotient.mk` is a surjective function. -/
+theorem Quotient.surjective_mk {s : Setoid α} :
+    Function.Surjective (Quotient.mk s) :=
+  Quot.exists_rep
+
+/-- `Quotient.mk'` is a surjective function. -/
+theorem Quotient.surjective_mk' [s : Setoid α] :
+    Function.Surjective (Quotient.mk' : α → Quotient s) :=
+  Quot.exists_rep
+
+/-- `Quot.mk r` is a surjective function. -/
+@[deprecated Quot.surjective_mk (since := "2024-09-02")]
 theorem surjective_quot_mk (r : α → α → Prop) : Function.Surjective (Quot.mk r) :=
   Quot.exists_rep
 
 /-- `Quotient.mk` is a surjective function. -/
+@[deprecated Quotient.surjective_mk (since := "2024-09-02")]
 theorem surjective_quotient_mk {α : Sort*} (s : Setoid α) :
     Function.Surjective (Quotient.mk s) :=
   Quot.exists_rep
 
 /-- `Quotient.mk'` is a surjective function. -/
-theorem surjective_quotient_mk' (α : Sort*) {s : Setoid α} :
+@[deprecated Quotient.surjective_mk' (since := "2024-09-02")]
+theorem surjective_quotient_mk' (α : Sort*) [s : Setoid α] :
     Function.Surjective (Quotient.mk' : α → Quotient s) :=
   Quot.exists_rep
 
@@ -555,6 +572,7 @@ protected abbrev mk'' (a : α) : Quotient s₁ :=
   ⟦a⟧
 
 /-- `Quotient.mk''` is a surjective function. -/
+@[deprecated Quotient.surjective_mk (since := "2024-09-02")]
 theorem surjective_Quotient_mk'' : Function.Surjective (Quotient.mk'' : α → Quotient s₁) :=
   Quot.exists_rep
 
