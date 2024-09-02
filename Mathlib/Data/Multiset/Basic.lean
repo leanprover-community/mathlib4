@@ -232,7 +232,7 @@ theorem mem_cons_self (a : α) (s : Multiset α) : a ∈ a ::ₘ s :=
 
 theorem forall_mem_cons {p : α → Prop} {a : α} {s : Multiset α} :
     (∀ x ∈ a ::ₘ s, p x) ↔ p a ∧ ∀ x ∈ s, p x :=
-  Quotient.inductionOn' s fun _ => List.forall_mem_cons
+  Quotient.inductionOn s fun _ => List.forall_mem_cons
 
 theorem exists_cons_of_mem {s : Multiset α} {a : α} : a ∈ s → ∃ t, s = a ::ₘ t :=
   Quot.inductionOn s fun l (h : a ∈ l) =>
@@ -1021,7 +1021,7 @@ theorem map_hcongr {β' : Type v} {m : Multiset α} {f : α → β} {f' : α →
 
 theorem forall_mem_map_iff {f : α → β} {p : β → Prop} {s : Multiset α} :
     (∀ y ∈ s.map f, p y) ↔ ∀ x ∈ s, p (f x) :=
-  Quotient.inductionOn' s fun _L => List.forall_mem_map
+  Quotient.inductionOn s fun _L => List.forall_mem_map
 
 @[simp, norm_cast] lemma map_coe (f : α → β) (l : List α) : map f l = l.map f := rfl
 

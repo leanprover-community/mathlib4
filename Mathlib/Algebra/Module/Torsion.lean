@@ -499,7 +499,7 @@ instance IsTorsionBySet.isScalarTower (hM : IsTorsionBySet R M I)
     @IsScalarTower S (R ⧸ I) M _ (IsTorsionBySet.module hM).toSMul _ :=
   -- Porting note: still needed to be fed the Module R / I M instance
   @IsScalarTower.mk S (R ⧸ I) M _ (IsTorsionBySet.module hM).toSMul _
-    (fun b d x => Quotient.inductionOn' d fun c => (smul_assoc b c x : _))
+    (fun b d x => Quotient.inductionOn d fun c => (smul_assoc b c x : _))
 
 /-- An `(R ⧸ Ideal.span {r})`-module is an `R`-module for which `IsTorsionBy R M r`. -/
 abbrev IsTorsionBy.module (hM : IsTorsionBy R M r) : Module (R ⧸ Ideal.span {r}) M :=
@@ -746,9 +746,9 @@ variable [CommRing R] [AddCommGroup M] [Module R M]
 @[simp]
 theorem torsion_eq_bot : torsion R (M ⧸ torsion R M) = ⊥ :=
   eq_bot_iff.mpr fun z =>
-    Quotient.inductionOn' z fun x ⟨a, hax⟩ => by
-      rw [Quotient.mk''_eq_mk, ← Quotient.mk_smul, Quotient.mk_eq_zero] at hax
-      rw [mem_bot, Quotient.mk''_eq_mk, Quotient.mk_eq_zero]
+    Quotient.inductionOn z fun x ⟨a, hax⟩ => by
+      rw [Quotient.mk_eq_mk, ← Quotient.mk_smul, Quotient.mk_eq_zero] at hax
+      rw [mem_bot, Quotient.mk_eq_mk, Quotient.mk_eq_zero]
       cases' hax with b h
       exact ⟨b * a, (mul_smul _ _ _).trans h⟩
 

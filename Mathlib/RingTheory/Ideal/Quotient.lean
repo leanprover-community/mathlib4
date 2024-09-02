@@ -98,7 +98,7 @@ See note [partially-applied ext lemmas]. -/
 @[ext 1100]
 theorem ringHom_ext [NonAssocSemiring S] ⦃f g : R ⧸ I →+* S⦄ (h : f.comp (mk I) = g.comp (mk I)) :
     f = g :=
-  RingHom.ext fun x => Quotient.inductionOn' x <| (RingHom.congr_fun h : _)
+  RingHom.ext fun x => Quotient.inductionOn x <| (RingHom.congr_fun h : _)
 
 instance inhabited : Inhabited (R ⧸ I) :=
   ⟨mk I 37⟩
@@ -139,7 +139,7 @@ instance : Unique (R ⧸ (⊤ : Ideal R)) :=
   ⟨⟨0⟩, by rintro ⟨x⟩; exact Quotient.eq_zero_iff_mem.mpr Submodule.mem_top⟩
 
 theorem mk_surjective : Function.Surjective (mk I) := fun y =>
-  Quotient.inductionOn' y fun x => Exists.intro x rfl
+  Quotient.inductionOn y fun x => Exists.intro x rfl
 
 instance : RingHomSurjective (mk I) :=
   ⟨mk_surjective⟩
@@ -155,7 +155,7 @@ theorem quotient_ring_saturate (I : Ideal R) (s : Set R) :
       ⟨a, ha, by rw [← Eq, sub_add_eq_sub_sub_swap, sub_self, zero_sub]; exact I.neg_mem hi⟩⟩
 
 instance noZeroDivisors (I : Ideal R) [hI : I.IsPrime] : NoZeroDivisors (R ⧸ I) where
-    eq_zero_or_eq_zero_of_mul_eq_zero {a b} := Quotient.inductionOn₂' a b fun {_ _} hab =>
+    eq_zero_or_eq_zero_of_mul_eq_zero {a b} := Quotient.inductionOn₂ a b fun {_ _} hab =>
       (hI.mem_or_mem (eq_zero_iff_mem.1 hab)).elim (Or.inl ∘ eq_zero_iff_mem.2)
         (Or.inr ∘ eq_zero_iff_mem.2)
 
@@ -231,7 +231,7 @@ lift it to the quotient by this ideal. -/
 def lift (I : Ideal R) (f : R →+* S) (H : ∀ a : R, a ∈ I → f a = 0) : R ⧸ I →+* S :=
   { QuotientAddGroup.lift I.toAddSubgroup f.toAddMonoidHom H with
     map_one' := f.map_one
-    map_mul' := fun a₁ a₂ => Quotient.inductionOn₂' a₁ a₂ f.map_mul }
+    map_mul' := fun a₁ a₂ => Quotient.inductionOn₂ a₁ a₂ f.map_mul }
 
 @[simp]
 theorem lift_mk (I : Ideal R) (f : R →+* S) (H : ∀ a : R, a ∈ I → f a = 0) :

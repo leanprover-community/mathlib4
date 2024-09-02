@@ -276,7 +276,7 @@ def liftEquiv (r : Setoid α) : { f : α → β // r ≤ ker f } ≃ (Quotient r
   toFun f := Quotient.lift (f : α → β) f.2
   invFun f := ⟨f ∘ Quotient.mk'', fun x y h => by simp [ker_def, Quotient.sound' h]⟩
   left_inv := fun ⟨f, hf⟩ => Subtype.eq <| funext fun x => rfl
-  right_inv f := funext fun x => Quotient.inductionOn' x fun x => rfl
+  right_inv f := funext fun x => Quotient.inductionOn x fun x => rfl
 
 /-- The uniqueness part of the universal property for quotients of an arbitrary type. -/
 theorem lift_unique {r : Setoid α} {f : α → β} (H : r ≤ ker f) (g : Quotient r → β)
@@ -288,7 +288,7 @@ theorem lift_unique {r : Setoid α} {f : α → β} (H : r ≤ ker f) (g : Quoti
 /-- Given a map f from α to β, the natural map from the quotient of α by the kernel of f is
     injective. -/
 theorem ker_lift_injective (f : α → β) : Injective (@Quotient.lift _ _ (ker f) f fun _ _ h => h) :=
-  fun x y => Quotient.inductionOn₂' x y fun _ _ h => Quotient.sound' h
+  fun x y => Quotient.inductionOn₂ x y fun _ _ h => Quotient.sound' h
 
 /-- Given a map f from α to β, the kernel of f is the unique equivalence relation on α whose
     induced map from the quotient of α to β is injective. -/
@@ -318,7 +318,7 @@ def quotientKerEquivOfRightInverse (g : β → α) (hf : Function.RightInverse g
     Quotient (ker f) ≃ β where
   toFun a := (Quotient.liftOn' a f) fun _ _ => id
   invFun b := Quotient.mk'' (g b)
-  left_inv a := Quotient.inductionOn' a fun a => Quotient.sound' <| hf (f a)
+  left_inv a := Quotient.inductionOn a fun a => Quotient.sound' <| hf (f a)
   right_inv := hf
 
 /-- The quotient of α by the kernel of a surjective function f bijects with f's codomain.
@@ -381,13 +381,13 @@ def quotientQuotientEquivQuotient (s : Setoid α) (h : r ≤ s) :
   toFun x :=
     (Quotient.liftOn' x fun w =>
         (Quotient.liftOn' w (@Quotient.mk'' _ s)) fun x y H => Quotient.sound <| h H)
-      fun x y => Quotient.inductionOn₂' x y fun w z H => show @Quot.mk _ _ _ = @Quot.mk _ _ _ from H
+      fun x y => Quotient.inductionOn₂ x y fun w z H => show @Quot.mk _ _ _ = @Quot.mk _ _ _ from H
   invFun x :=
     (Quotient.liftOn' x fun w => @Quotient.mk'' _ (ker <| Quot.mapRight h) <| @Quotient.mk'' _ r w)
       fun x y H => Quotient.sound' <| show @Quot.mk _ _ _ = @Quot.mk _ _ _ from Quotient.sound H
   left_inv x :=
-    Quotient.inductionOn' x fun y => Quotient.inductionOn' y fun w => by show ⟦_⟧ = _; rfl
-  right_inv x := Quotient.inductionOn' x fun y => by show ⟦_⟧ = _; rfl
+    Quotient.inductionOn x fun y => Quotient.inductionOn y fun w => by show ⟦_⟧ = _; rfl
+  right_inv x := Quotient.inductionOn x fun y => by show ⟦_⟧ = _; rfl
 
 variable {r f}
 

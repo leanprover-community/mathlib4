@@ -261,7 +261,7 @@ protected def liftOn₂ {β} {c : Con M} (q r : c.Quotient) (f : M → M → β)
 protected def hrecOn₂ {cM : Con M} {cN : Con N} {φ : cM.Quotient → cN.Quotient → Sort*}
     (a : cM.Quotient) (b : cN.Quotient) (f : ∀ (x : M) (y : N), φ x y)
     (h : ∀ x y x' y', cM x x' → cN y y' → HEq (f x y) (f x' y')) : φ a b :=
-  Quotient.hrecOn₂' a b f h
+  Quotient.hrecOn₂ a b f h
 
 @[to_additive (attr := simp)]
 theorem hrec_on₂_coe {cM : Con M} {cN : Con N} {φ : cM.Quotient → cN.Quotient → Sort*} (a : M)
@@ -277,14 +277,14 @@ variable {c}
 @[to_additive (attr := elab_as_elim) "The inductive principle used to prove propositions about
 the elements of a quotient by an additive congruence relation."]
 protected theorem induction_on {C : c.Quotient → Prop} (q : c.Quotient) (H : ∀ x : M, C x) : C q :=
-  Quotient.inductionOn' q H
+  Quotient.inductionOn q H
 
 /-- A version of `Con.induction_on` for predicates which take two arguments. -/
 @[to_additive (attr := elab_as_elim) "A version of `AddCon.induction_on` for predicates which take
 two arguments."]
 protected theorem induction_on₂ {d : Con N} {C : c.Quotient → d.Quotient → Prop} (p : c.Quotient)
     (q : d.Quotient) (H : ∀ (x : M) (y : N), C x y) : C p q :=
-  Quotient.inductionOn₂' p q H
+  Quotient.inductionOn₂ p q H
 
 variable (c)
 
@@ -618,8 +618,8 @@ variable [MulOneClass M] [MulOneClass N] [MulOneClass P] (c : Con M)
 an `AddMonoid`."]
 instance mulOneClass : MulOneClass c.Quotient where
   one := ((1 : M) : c.Quotient)
-  mul_one x := Quotient.inductionOn' x fun _ => congr_arg ((↑) : M → c.Quotient) <| mul_one _
-  one_mul x := Quotient.inductionOn' x fun _ => congr_arg ((↑) : M → c.Quotient) <| one_mul _
+  mul_one x := Quotient.inductionOn x fun _ => congr_arg ((↑) : M → c.Quotient) <| mul_one _
+  one_mul x := Quotient.inductionOn x fun _ => congr_arg ((↑) : M → c.Quotient) <| one_mul _
 
 variable {c}
 
@@ -854,7 +854,7 @@ theorem kerLift_range_eq : MonoidHom.mrange (kerLift f) = MonoidHom.mrange f :=
 @[to_additive "An `AddMonoid` homomorphism `f` induces an injective homomorphism on the quotient
 by `f`'s kernel."]
 theorem kerLift_injective (f : M →* P) : Injective (kerLift f) := fun x y =>
-  Quotient.inductionOn₂' x y fun _ _ => (ker f).eq.2
+  Quotient.inductionOn₂ x y fun _ _ => (ker f).eq.2
 
 /-- Given congruence relations `c, d` on a monoid such that `d` contains `c`, `d`'s quotient
     map induces a homomorphism from the quotient by `c` to the quotient by `d`. -/
@@ -1155,13 +1155,13 @@ theorem coe_smul {α M : Type*} [MulOneClass M] [SMul α M] [IsScalarTower α M 
 @[to_additive]
 instance mulAction {α M : Type*} [Monoid α] [MulOneClass M] [MulAction α M] [IsScalarTower α M M]
     (c : Con M) : MulAction α c.Quotient where
-  one_smul := Quotient.ind' fun _ => congr_arg Quotient.mk'' <| one_smul _ _
-  mul_smul _ _ := Quotient.ind' fun _ => congr_arg Quotient.mk'' <| mul_smul _ _ _
+  one_smul := Quotient.ind fun _ => congr_arg Quotient.mk'' <| one_smul _ _
+  mul_smul _ _ := Quotient.ind fun _ => congr_arg Quotient.mk'' <| mul_smul _ _ _
 
 instance mulDistribMulAction {α M : Type*} [Monoid α] [Monoid M] [MulDistribMulAction α M]
     [IsScalarTower α M M] (c : Con M) : MulDistribMulAction α c.Quotient :=
   { smul_one := fun _ => congr_arg Quotient.mk'' <| smul_one _
-    smul_mul := fun _ => Quotient.ind₂' fun _ _ => congr_arg Quotient.mk'' <| smul_mul' _ _ _ }
+    smul_mul := fun _ => Quotient.ind₂ fun _ _ => congr_arg Quotient.mk'' <| smul_mul' _ _ _ }
 
 end Actions
 

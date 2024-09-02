@@ -198,7 +198,7 @@ lemma MulAction.automorphize_smul_left [Group α] [MulAction α β] (f : β → 
     MulAction.automorphize ((g ∘ (@Quotient.mk' _ (_))) • f)
       = g • (MulAction.automorphize f : Quotient (MulAction.orbitRel α β) → M) := by
   ext x
-  apply @Quotient.inductionOn' β (MulAction.orbitRel α β) _ x _
+  apply @Quotient.inductionOn β (MulAction.orbitRel α β) _ x _
   intro b
   simp only [automorphize, Pi.smul_apply', comp_apply]
   set π : β → Quotient (MulAction.orbitRel α β) := Quotient.mk (MulAction.orbitRel α β)
@@ -217,7 +217,7 @@ lemma AddAction.automorphize_smul_left [AddGroup α] [AddAction α β]  (f : β 
     AddAction.automorphize ((g ∘ (@Quotient.mk' _ (_))) • f)
       = g • (AddAction.automorphize f : Quotient (AddAction.orbitRel α β) → M) := by
   ext x
-  apply @Quotient.inductionOn' β (AddAction.orbitRel α β) _ x _
+  apply @Quotient.inductionOn β (AddAction.orbitRel α β) _ x _
   intro b
   simp only [automorphize, Pi.smul_apply', comp_apply]
   set π : β → Quotient (AddAction.orbitRel α β) := Quotient.mk (AddAction.orbitRel α β)

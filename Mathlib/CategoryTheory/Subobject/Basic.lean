@@ -113,7 +113,7 @@ attribute [local ext] CategoryTheory.Comma
 
 protected theorem ind {X : C} (p : Subobject X → Prop)
     (h : ∀ ⦃A : C⦄ (f : A ⟶ X) [Mono f], p (Subobject.mk f)) (P : Subobject X) : p P := by
-  apply Quotient.inductionOn'
+  apply Quotient.inductionOn
   intro a
   exact h a.arrow
 
@@ -121,7 +121,7 @@ protected theorem ind₂ {X : C} (p : Subobject X → Subobject X → Prop)
     (h : ∀ ⦃A B : C⦄ (f : A ⟶ X) (g : B ⟶ X) [Mono f] [Mono g],
       p (Subobject.mk f) (Subobject.mk g))
     (P Q : Subobject X) : p P Q := by
-  apply Quotient.inductionOn₂'
+  apply Quotient.inductionOn₂
   intro a b
   exact h a.arrow b.arrow
 
@@ -232,7 +232,7 @@ theorem mk_le_mk_of_comm {B A₁ A₂ : C} {f₁ : A₁ ⟶ B} {f₂ : A₂ ⟶ 
 
 @[simp]
 theorem mk_arrow (P : Subobject X) : mk P.arrow = P :=
-  Quotient.inductionOn' P fun Q => by
+  Quotient.inductionOn P fun Q => by
     obtain ⟨e⟩ := @Quotient.mk_out' _ (isIsomorphicSetoid _) Q
     exact Quotient.sound' ⟨MonoOver.isoMk (Iso.refl _) ≪≫ e⟩
 
@@ -492,12 +492,12 @@ def pullback (f : X ⟶ Y) : Subobject Y ⥤ Subobject X :=
   lower (MonoOver.pullback f)
 
 theorem pullback_id (x : Subobject X) : (pullback (𝟙 X)).obj x = x := by
-  induction' x using Quotient.inductionOn' with f
+  induction' x using Quotient.inductionOn with f
   exact Quotient.sound ⟨MonoOver.pullbackId.app f⟩
 
 theorem pullback_comp (f : X ⟶ Y) (g : Y ⟶ Z) (x : Subobject Z) :
     (pullback (f ≫ g)).obj x = (pullback f).obj ((pullback g).obj x) := by
-  induction' x using Quotient.inductionOn' with t
+  induction' x using Quotient.inductionOn with t
   exact Quotient.sound ⟨(MonoOver.pullbackComp _ _).app t⟩
 
 instance (f : X ⟶ Y) : (pullback f).Faithful where
@@ -513,12 +513,12 @@ def map (f : X ⟶ Y) [Mono f] : Subobject X ⥤ Subobject Y :=
   lower (MonoOver.map f)
 
 theorem map_id (x : Subobject X) : (map (𝟙 X)).obj x = x := by
-  induction' x using Quotient.inductionOn' with f
+  induction' x using Quotient.inductionOn with f
   exact Quotient.sound ⟨(MonoOver.mapId _).app f⟩
 
 theorem map_comp (f : X ⟶ Y) (g : Y ⟶ Z) [Mono f] [Mono g] (x : Subobject X) :
     (map (f ≫ g)).obj x = (map g).obj ((map f).obj x) := by
-  induction' x using Quotient.inductionOn' with t
+  induction' x using Quotient.inductionOn with t
   exact Quotient.sound ⟨(MonoOver.mapComp _ _).app t⟩
 
 /-- Isomorphic objects have equivalent subobject lattices. -/
@@ -572,7 +572,7 @@ theorem map_pullback [HasPullbacks C] {X Y Z W : C} {f : X ⟶ Y} {g : X ⟶ Z} 
     [Mono h] [Mono g] (comm : f ≫ h = g ≫ k) (t : IsLimit (PullbackCone.mk f g comm))
     (p : Subobject Y) : (map g).obj ((pullback f).obj p) = (pullback k).obj ((map h).obj p) := by
   revert p
-  apply Quotient.ind'
+  apply Quotient.ind
   intro a
   apply Quotient.sound
   apply ThinSkeleton.equiv_of_both_ways

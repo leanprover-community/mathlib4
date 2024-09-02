@@ -127,7 +127,7 @@ theorem X_sq (i : Fin 3) : K.gen i * K.gen i = (0 : K) := by
 
 /-- If an element multiplied by `αβγ` is zero then it squares to zero. -/
 theorem sq_zero_of_αβγ_mul {x : K} : α * β * γ * x = 0 → x * x = 0 := by
-  induction x using Quotient.inductionOn'
+  induction x using Quotient.inductionOn
   change Ideal.Quotient.mk _ _ = 0 → Ideal.Quotient.mk _ _ = 0
   rw [Ideal.Quotient.eq_zero_iff_mem, Ideal.Quotient.eq_zero_iff_mem]
   exact mul_self_mem_kIdeal_of_X0_X1_X2_mul_mem
