@@ -3,9 +3,7 @@ Copyright (c) 2024 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.MeasureTheory.MeasurableSpace.Basic
-import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.Topology.Constructions
+import Mathlib.Data.Finset.Basic
 
 /-!
 # Projection of a function
@@ -30,7 +28,7 @@ We also define analoguous functions for sets of the form `Set.Iic n` and `Finset
 * `Function.projNat n f`: Restricts the function `f` to the variables indexed by integers `≤ n`.
 -/
 
-open MeasureTheory Function
+open Function
 
 section Generality
 
@@ -77,58 +75,58 @@ theorem fproj₂_comp_fproj₂ {s t u : Finset ι} (hst : s ⊆ t) (htu : t ⊆ 
 
 end Function
 
-variable {X : ι → Type*}
+-- variable {X : ι → Type*}
 
-section measurability
+-- section measurability
 
-variable [∀ i, MeasurableSpace (X i)]
+-- variable [∀ i, MeasurableSpace (X i)]
 
-@[measurability, fun_prop]
-theorem measurable_proj (s : Set ι) : Measurable (@proj ι X s) :=
-  measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
+-- @[measurability, fun_prop]
+-- theorem measurable_proj (s : Set ι) : Measurable (@proj ι X s) :=
+--   measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
 
-@[measurability, fun_prop]
-theorem measurable_proj₂ {s t : Set ι} (hst : s ⊆ t) :
-    Measurable (proj₂ (α := X) hst) :=
-  measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
+-- @[measurability, fun_prop]
+-- theorem measurable_proj₂ {s t : Set ι} (hst : s ⊆ t) :
+--     Measurable (proj₂ (α := X) hst) :=
+--   measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
 
-@[measurability, fun_prop]
-theorem measurable_fproj (s : Finset ι) : Measurable (@fproj ι X s) :=
-  measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
+-- @[measurability, fun_prop]
+-- theorem measurable_fproj (s : Finset ι) : Measurable (@fproj ι X s) :=
+--   measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
 
-@[measurability, fun_prop]
-theorem measurable_fproj₂ {s t : Finset ι} (hst : s ⊆ t) :
-    Measurable (fproj₂ (α := X) hst) :=
-  measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
+-- @[measurability, fun_prop]
+-- theorem measurable_fproj₂ {s t : Finset ι} (hst : s ⊆ t) :
+--     Measurable (fproj₂ (α := X) hst) :=
+--   measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
 
-end measurability
+-- end measurability
 
-section continuity
+-- section continuity
 
-variable [∀ i, TopologicalSpace (X i)]
+-- variable [∀ i, TopologicalSpace (X i)]
 
-@[fun_prop]
-theorem continuous_proj (s : Set ι) : Continuous (@proj ι X s) :=
-  continuous_pi fun _ ↦ continuous_apply _
+-- @[fun_prop]
+-- theorem continuous_proj (s : Set ι) : Continuous (@proj ι X s) :=
+--   continuous_pi fun _ ↦ continuous_apply _
 
-@[fun_prop]
-theorem continuous_proj₂ {s t : Set ι} (hst : s ⊆ t) :
-    Continuous (proj₂ (α := X) hst) :=
-  continuous_pi fun _ ↦ continuous_apply _
+-- @[fun_prop]
+-- theorem continuous_proj₂ {s t : Set ι} (hst : s ⊆ t) :
+--     Continuous (proj₂ (α := X) hst) :=
+--   continuous_pi fun _ ↦ continuous_apply _
 
-@[fun_prop]
-theorem continuous_fproj (s : Finset ι) : Continuous (@fproj ι X s) :=
-  continuous_pi fun _ ↦ continuous_apply _
+-- @[fun_prop]
+-- theorem continuous_fproj (s : Finset ι) : Continuous (@fproj ι X s) :=
+--   continuous_pi fun _ ↦ continuous_apply _
 
-@[fun_prop]
-theorem continuous_fproj₂ {s t : Finset ι} (hst : s ⊆ t) :
-    Continuous (fproj₂ (α := X) hst) :=
-  continuous_pi fun _ ↦ continuous_apply _
+-- @[fun_prop]
+-- theorem continuous_fproj₂ {s t : Finset ι} (hst : s ⊆ t) :
+--     Continuous (fproj₂ (α := X) hst) :=
+--   continuous_pi fun _ ↦ continuous_apply _
 
-end continuity
+-- end continuity
 
 end Generality
-
+/-
 section Nat
 
 namespace Function
@@ -229,3 +227,4 @@ theorem continuous_fprojNat₂ {m n : ℕ} (hmn : m ≤ n) : Continuous (fprojNa
 end continuity
 
 end Nat
+-/

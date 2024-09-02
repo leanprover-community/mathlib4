@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Finset.Update
+import Mathlib.Data.Pi.Projections
 import Mathlib.Data.Prod.TProd
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.MeasureTheory.MeasurableSpace.Instances
@@ -853,6 +854,24 @@ theorem measurable_update (f : ∀ a : δ, π a) {a : δ} [DecidableEq δ] : Mea
 theorem measurable_update_left {a : δ} [DecidableEq δ] {x : π a} :
     Measurable (update · a x) :=
   measurable_update'.comp measurable_prod_mk_right
+
+@[measurability, fun_prop]
+theorem measurable_proj (s : Set δ) : Measurable (@proj δ π s) :=
+  measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
+
+@[measurability, fun_prop]
+theorem measurable_proj₂ {s t : Set δ} (hst : s ⊆ t) :
+    Measurable (proj₂ (α := π) hst) :=
+  measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
+
+@[measurability, fun_prop]
+theorem measurable_fproj (s : Finset δ) : Measurable (@fproj δ π s) :=
+  measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
+
+@[measurability, fun_prop]
+theorem measurable_fproj₂ {s t : Finset δ} (hst : s ⊆ t) :
+    Measurable (fproj₂ (α := π) hst) :=
+  measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
 
 variable (π) in
 theorem measurable_eq_mp {i i' : δ} (h : i = i') : Measurable (congr_arg π h).mp := by
