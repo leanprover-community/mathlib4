@@ -138,6 +138,11 @@ theorem WfDvdMonoid.of_wellFoundedLT_associates [CancelCommMonoidWithZero α]
       ext
       exact Associates.dvdNotUnit_iff_lt⟩
 
+@[deprecated WfDvdMonoid.of_wellFoundedLT_associates (since := "2024-09-02")]
+theorem WfDvdMonoid.of_wellFounded_associates [CancelCommMonoidWithZero α]
+    (h : WellFounded (Associates α)) : WfDvdMonoid α :=
+  WfDvdMonoid.of_wellFounded_associates ⟨h⟩ 
+
 theorem WfDvdMonoid.iff_wellFounded_associates [CancelCommMonoidWithZero α] :
     WfDvdMonoid α ↔ WellFoundedLT (Associates α) :=
   ⟨by apply WfDvdMonoid.wellFoundedLT_associates, WfDvdMonoid.of_wellFoundedLT_associates⟩
