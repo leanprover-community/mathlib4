@@ -61,7 +61,7 @@ noncomputable def eventualValue (hf : id ≤ f) (x : α) :=
 lemma isFixedPt_eventualValue (hf : id ≤ f) (x : α) : IsFixedPt f (eventualValue hf x) := by
   unfold IsFixedPt
   simp only [eventualValue, ← iterate_succ_apply']
-  apply fixedPointIndex_spec
+  apply selfIncreasingFixedPointIndex_spec
   simp
 
 /-- The eventual value is larger or equal than `x` itself. -/
