@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.Algebra.Star.StarRingHom
 import Mathlib.Algebra.Regular.Basic
+import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-! # Star ordered rings
 
@@ -137,12 +138,26 @@ section NonUnitalSemiring
 
 variable [NonUnitalSemiring R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
 
+lemma IsSelfAdjoint.mono {x y : R} (h : x ≤ y) (hx : IsSelfAdjoint x) : IsSelfAdjoint y := by
+  rw [StarOrderedRing.le_iff] at h
+  obtain ⟨d, hd, rfl⟩ := h
+  rw [IsSelfAdjoint, star_add, hx.star_eq]
+  congr
+  refine AddMonoidHom.eqOn_closureM (f := starAddEquiv (R := R)) (g := .id R) ?_ hd
+  rintro - ⟨s, rfl⟩
+  simp
+
+@[aesop 10% apply]
+lemma IsSelfAdjoint.of_nonneg {x : R} (hx : 0 ≤ x) : IsSelfAdjoint x :=
+  .mono hx <| .zero R
+
 theorem star_mul_self_nonneg (r : R) : 0 ≤ star r * r :=
   StarOrderedRing.nonneg_iff.mpr <| AddSubmonoid.subset_closure ⟨r, rfl⟩
 
 theorem mul_star_self_nonneg (r : R) : 0 ≤ r * star r := by
   simpa only [star_star] using star_mul_self_nonneg (star r)
 
+@[aesop safe apply]
 theorem conjugate_nonneg {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ star c * a * c := by
   rw [StarOrderedRing.nonneg_iff] at ha
   refine AddSubmonoid.closure_induction ha (fun x hx => ?_)
@@ -155,8 +170,18 @@ theorem conjugate_nonneg {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ star c * a * c :
       _ ≤ star c * x * c + star c * y * c := add_le_add_left hy _
       _ ≤ _ := by rw [mul_add, add_mul]
 
+@[aesop safe apply]
 theorem conjugate_nonneg' {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ c * a * star c := by
   simpa only [star_star] using conjugate_nonneg ha (star c)
+
+@[aesop 90% apply (rule_sets := [CStarAlgebra])]
+protected theorem IsSelfAdjoint.conjugate_nonneg {a : R} (ha : 0 ≤ a) {c : R}
+    (hc : IsSelfAdjoint c) : 0 ≤ c * a * c := by
+  nth_rewrite 2 [← hc]; exact conjugate_nonneg' ha c
+
+theorem conjugate_nonneg_of_nonneg {a : R} (ha : 0 ≤ a) {c : R} (hc : 0 ≤ c) :
+    0 ≤ c * a * c :=
+  IsSelfAdjoint.of_nonneg hc |>.conjugate_nonneg ha
 
 theorem conjugate_le_conjugate {a b : R} (hab : a ≤ b) (c : R) :
     star c * a * c ≤ star c * b * c := by
@@ -168,6 +193,14 @@ theorem conjugate_le_conjugate {a b : R} (hab : a ≤ b) (c : R) :
 theorem conjugate_le_conjugate' {a b : R} (hab : a ≤ b) (c : R) :
     c * a * star c ≤ c * b * star c := by
   simpa only [star_star] using conjugate_le_conjugate hab (star c)
+
+protected theorem IsSelfAdjoint.conjugate_le_conjugate {a b : R} (hab : a ≤ b) {c : R}
+    (hc : IsSelfAdjoint c) : c * a * c ≤ c * b * c := by
+  simpa only [hc.star_eq] using conjugate_le_conjugate hab c
+
+theorem conjugate_le_conjugate_of_nonneg {a b : R} (hab : a ≤ b) {c : R} (hc : 0 ≤ c) :
+    c * a * c ≤ c * b * c :=
+  IsSelfAdjoint.of_nonneg hc |>.conjugate_le_conjugate hab
 
 @[simp]
 lemma star_le_star_iff {x y : R} : star x ≤ star y ↔ x ≤ y := by
@@ -206,19 +239,6 @@ lemma star_pos_iff {x : R} : 0 < star x ↔ 0 < x := by
 @[simp]
 lemma star_neg_iff {x : R} : star x < 0 ↔ x < 0 := by
   simpa using star_lt_star_iff (x := x) (y := 0)
-
-lemma IsSelfAdjoint.mono {x y : R} (h : x ≤ y) (hx : IsSelfAdjoint x) : IsSelfAdjoint y := by
-  rw [StarOrderedRing.le_iff] at h
-  obtain ⟨d, hd, rfl⟩ := h
-  rw [IsSelfAdjoint, star_add, hx.star_eq]
-  congr
-  refine AddMonoidHom.eqOn_closureM (f := starAddEquiv (R := R)) (g := .id R) ?_ hd
-  rintro - ⟨s, rfl⟩
-  simp
-
-@[aesop 10% apply]
-lemma IsSelfAdjoint.of_nonneg {x : R} (hx : 0 ≤ x) : IsSelfAdjoint x :=
-  .mono hx <| .zero R
 
 theorem conjugate_lt_conjugate {a b : R} (hab : a < b) {c : R} (hc : IsRegular c) :
     star c * a * c < star c * b * c := by
