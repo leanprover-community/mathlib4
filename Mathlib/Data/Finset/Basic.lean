@@ -3070,3 +3070,5 @@ def proveFinsetNonempty {u : Level} {α : Q(Type u)} (s : Q(Finset $α)) :
   Lean.getExprMVarAssignment? mvar
 
 end Mathlib.Meta
+
+set_option linter.style.longFile 3100

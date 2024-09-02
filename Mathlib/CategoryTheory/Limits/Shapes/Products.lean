@@ -258,7 +258,7 @@ instance {f : β → C} [HasCoproduct f] : IsIso (Sigma.desc (fun a ↦ Sigma.ι
   ext
   simp
 
-/-- A version of `Cocones.ext` for `Cofan`s. -/
+/-- A version of `Cocones.ext` for `Cofan`s. -/
 @[simps!]
 def Cofan.ext {f : β → C} {c₁ c₂ : Cofan f} (e : c₁.pt ≅ c₂.pt)
     (w : ∀ (b : β), c₁.inj b ≫ e.hom = c₂.inj b := by aesop_cat) : c₁ ≅ c₂ :=

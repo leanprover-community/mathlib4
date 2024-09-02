@@ -74,11 +74,11 @@ lemma toRows₂_apply (A : Matrix (m₁ ⊕ m₂) n R) (i : m₂) (j : n) :
     (toRows₂ A) i j = A (Sum.inr i) j := rfl
 
 @[simp]
-lemma toRows₁_fromRows  (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R) :
+lemma toRows₁_fromRows (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R) :
     toRows₁ (fromRows A₁ A₂) = A₁ := rfl
 
 @[simp]
-lemma toRows₂_fromRows  (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R) :
+lemma toRows₂_fromRows (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R) :
     toRows₂ (fromRows A₁ A₂) = A₂ := rfl
 
 @[simp]
