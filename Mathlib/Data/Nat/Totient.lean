@@ -8,6 +8,7 @@ import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Data.Nat.Factorization.Induction
 import Mathlib.Data.Nat.Periodic
 import Mathlib.Data.ZMod.Basic
+import Mathlib.NumberTheory.Divisors
 
 /-!
 # Euler's totient function
@@ -76,7 +77,7 @@ theorem Ico_filter_coprime_le {a : ℕ} (k n : ℕ) (a_pos : 0 < a) :
   induction' n / a with i ih
   · rw [← filter_coprime_Ico_eq_totient a k]
     simp only [add_zero, mul_one, mul_zero, le_of_lt (mod_lt n a_pos),
-      Nat.zero_eq, zero_add]
+      zero_add]
     gcongr
     exact Ico_subset_Ico rfl.le (add_le_add_left (le_of_lt (mod_lt n a_pos)) k)
   simp only [mul_succ]

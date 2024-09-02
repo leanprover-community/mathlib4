@@ -144,8 +144,8 @@ theorem tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux
       _ ≤ ∫ x in t, ‖φ i x‖ * δ ∂μ := by
         apply setIntegral_mono_set
         · exact I.norm.mul_const _
-        · exact eventually_of_forall fun x => mul_nonneg (norm_nonneg _) δpos.le
-        · exact eventually_of_forall ut
+        · exact Eventually.of_forall fun x => mul_nonneg (norm_nonneg _) δpos.le
+        · exact Eventually.of_forall ut
       _ = ∫ x in t, φ i x * δ ∂μ := by
         apply setIntegral_congr ht fun x hx => ?_
         rw [Real.norm_of_nonneg (hφpos _ (hts hx))]
@@ -319,7 +319,7 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_measure_n
             · intro x hx
               exact pow_le_pow_left t'_pos.le (le_of_lt (hv hx)) _
           _ ≤ ∫ y in s, c y ^ n ∂μ :=
-            setIntegral_mono_set (I n) (J n) (eventually_of_forall inter_subset_right)
+            setIntegral_mono_set (I n) (J n) (Eventually.of_forall inter_subset_right)
       simp_rw [φ, ← div_eq_inv_mul, div_pow, div_div]
       apply div_le_div (pow_nonneg t_pos n) _ _ B
       · exact pow_le_pow_left (hnc _ hx.1) (ht x hx) _
@@ -341,10 +341,10 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_measure_n
     have B : Tendsto (fun i ↦ ∫ (x : α) in s, φ i x ∂μ) atTop (𝓝 1) :=
       tendsto_const_nhds.congr (fun n ↦ (hiφ n).symm)
     have C : ∀ᶠ (i : ℕ) in atTop, AEStronglyMeasurable (fun x ↦ φ i x) (μ.restrict s) := by
-      apply eventually_of_forall (fun n ↦ ((I n).const_mul _).aestronglyMeasurable)
+      apply Eventually.of_forall (fun n ↦ ((I n).const_mul _).aestronglyMeasurable)
     exact tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto hs.measurableSet
       hs.measurableSet (Subset.rfl) (self_mem_nhdsWithin)
-      hs.measure_lt_top.ne (eventually_of_forall hnφ) A B C hmg hcg
+      hs.measure_lt_top.ne (Eventually.of_forall hnφ) A B C hmg hcg
   convert this
   simp_rw [φ, ← smul_smul, integral_smul]
 

@@ -160,3 +160,5 @@ example {s t : α → Prop} (h : s = t) (p : α → Prop) :
   congr(∀ (n : Subtype $h), p n)
 
 end limitations
+
+end Tests

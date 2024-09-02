@@ -638,7 +638,7 @@ theorem leftResponse_spec {x : PGame} (h : 0 ≤ x) (j : x.RightMoves) :
 /-- A small family of pre-games is bounded above. -/
 lemma bddAbove_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → PGame.{u}) :
     BddAbove (Set.range f) := by
-  let x : PGame.{u} := ⟨Σ i, (f $ (equivShrink.{u} ι).symm i).LeftMoves, PEmpty,
+  let x : PGame.{u} := ⟨Σ i, (f <| (equivShrink.{u} ι).symm i).LeftMoves, PEmpty,
     fun x ↦ moveLeft _ x.2, PEmpty.elim⟩
   refine ⟨x, Set.forall_mem_range.2 fun i ↦ ?_⟩
   rw [← (equivShrink ι).symm_apply_apply i, le_iff_forall_lf]
@@ -651,7 +651,7 @@ lemma bddAbove_of_small (s : Set PGame.{u}) [Small.{u} s] : BddAbove s := by
 /-- A small family of pre-games is bounded below. -/
 lemma bddBelow_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → PGame.{u}) :
     BddBelow (Set.range f) := by
-  let x : PGame.{u} := ⟨PEmpty, Σ i, (f $ (equivShrink.{u} ι).symm i).RightMoves, PEmpty.elim,
+  let x : PGame.{u} := ⟨PEmpty, Σ i, (f <| (equivShrink.{u} ι).symm i).RightMoves, PEmpty.elim,
     fun x ↦ moveRight _ x.2⟩
   refine ⟨x, Set.forall_mem_range.2 fun i ↦ ?_⟩
   rw [← (equivShrink ι).symm_apply_apply i, le_iff_forall_lf]
@@ -676,7 +676,7 @@ instance : IsEquiv _ PGame.Equiv where
   trans := fun _ _ _ ⟨xy, yx⟩ ⟨yz, zy⟩ => ⟨xy.trans yz, zy.trans yx⟩
   symm _ _ := And.symm
 
--- Porting note: moved the setoid instance from Basic.lean to here
+-- Porting note: moved the setoid instance from Basic.lean to here
 
 instance setoid : Setoid PGame :=
   ⟨Equiv, refl, symm, Trans.trans⟩
@@ -1759,3 +1759,5 @@ theorem zero_lf_one : (0 : PGame) ⧏ 1 :=
 end PGame
 
 end SetTheory
+
+set_option linter.style.longFile 1900

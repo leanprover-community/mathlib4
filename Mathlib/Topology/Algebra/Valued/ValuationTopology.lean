@@ -15,10 +15,7 @@ The main definition is a `Valued` type class which equips a ring with a valuatio
 values in a group with zero. Other instances are then deduced from this.
 -/
 
-
-open scoped Classical
-open Topology uniformity
-
+open scoped Topology uniformity
 open Set Valuation
 
 noncomputable section

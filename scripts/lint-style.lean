@@ -14,7 +14,7 @@ This files defines the `lint-style` executable which runs all text-based style l
 The linters themselves are defined in `Mathlib.Tactic.Linter.TextBased`.
 -/
 
-open Cli
+open Cli Mathlib.Linter.TextBased
 
 /-- Implementation of the `lint-style` command line program. -/
 def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
@@ -25,13 +25,16 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
   -- Read all module names to lint.
   let mut allModules := #[]
   for s in ["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
-    -- note: since we manually add "Batteries" to "Mathlib.lean", we remove it here manually
-    allModules := allModules.append ((← IO.FS.lines s).filter (!·.containsSubstr "Batteries")
-      |>.map (·.stripPrefix "import "))
-  let numberErrorFiles ← lintModules allModules mode
-  -- Make sure to return an exit code of at most 125, so this return value can be used further
-  -- in shell scripts.
-  return min numberErrorFiles 125
+    allModules := allModules.append ((← IO.FS.lines s).map (·.stripPrefix "import "))
+  -- note: since we manually add "Batteries" to "Mathlib.lean", we remove it here manually
+  allModules := allModules.erase "Batteries"
+  let numberErrorFiles ← lintModules allModules mode (args.hasFlag "fix")
+  -- If run with the `--update` or `--fix` argument, return a zero exit code.
+  -- Otherwise, make sure to return an exit code of at most 125,
+  -- so this return value can be used further in shell scripts.
+  if args.hasFlag "update" || args.hasFlag "fix" then
+    return 0
+  else return min numberErrorFiles 125
 
 /-- Setting up command line options and help text for `lake exe lint-style`. -/
 -- so far, no help options or so: perhaps that is fine?
@@ -48,6 +51,7 @@ def lintStyle : Cmd := `[Cli|
       and tries to not modify exception entries unless necessary.
       To fully regenerate the list of style exceptions, delete `style-exceptions.txt`
       and run this script again with this flag."
+    fix;        "Automatically fix the style error, if possible"
 ]
 
 /-- The entry point to the `lake exe lint-style` command. -/

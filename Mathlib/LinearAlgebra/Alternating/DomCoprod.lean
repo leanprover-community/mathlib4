@@ -6,6 +6,7 @@ Authors: Eric Wieser
 import Mathlib.LinearAlgebra.Alternating.Basic
 import Mathlib.LinearAlgebra.Multilinear.TensorProduct
 import Mathlib.GroupTheory.GroupAction.Quotient
+import Mathlib.Algebra.Group.Subgroup.Finite
 /-!
 # Exterior product of alternating maps
 

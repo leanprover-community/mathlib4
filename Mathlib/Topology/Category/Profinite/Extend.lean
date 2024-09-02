@@ -31,7 +31,7 @@ attribute [local instance] ConcreteCategory.instFunLike
 
 namespace Profinite
 
-variable {I : Type u} [Category.{u} I] [IsCofiltered I]
+variable {I : Type u} [SmallCategory I] [IsCofiltered I]
     {F : I ⥤ FintypeCat.{max u w}} (c : Cone <| F ⋙ toProfinite)
 
 /--
@@ -78,6 +78,9 @@ example : functorOp c ⋙ CostructuredArrow.proj toProfinite.op ⟨c.pt⟩ ≅ F
 /--
 If the projection maps in the cone are epimorphic and the cone is limiting, then
 `Profinite.Extend.functor` is initial.
+
+TODO: investigate how to weaken the assumption `∀ i, Epi (c.π.app i)` to
+`∀ i, ∃ j (_ : j ⟶ i), Epi (c.π.app j)`.
 -/
 lemma functor_initial (hc : IsLimit c) [∀ i, Epi (c.π.app i)] : Initial (functor c) := by
   let e : I ≌ ULiftHom.{w} (ULift.{w} I) := ULiftHomULiftCategory.equiv _
@@ -186,9 +189,16 @@ section ProfiniteAsLimit
 
 variable (S : Profinite.{u})
 
-/-- A functor `StructuredArrow S toProfinite ⥤ Profinite` whose limit is isomorphic to `S`. -/
+/--
+A functor `StructuredArrow S toProfinite ⥤ FintypeCat` whose limit in `Profinite` is isomorphic
+to `S`.
+-/
+abbrev fintypeDiagram' : StructuredArrow S toProfinite ⥤ FintypeCat :=
+  StructuredArrow.proj S toProfinite
+
+/-- An abbreviation for `S.fintypeDiagram' ⋙ toProfinite`. -/
 abbrev diagram' : StructuredArrow S toProfinite ⥤ Profinite :=
-  StructuredArrow.proj S toProfinite ⋙ toProfinite
+  S.fintypeDiagram' ⋙ toProfinite
 
 /-- A cone over `S.diagram'` whose cone point is `S`. -/
 abbrev asLimitCone' : Cone (S.diagram') := cone (𝟭 _) S
