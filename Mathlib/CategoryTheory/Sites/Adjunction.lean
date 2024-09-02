@@ -36,6 +36,9 @@ namespace Sheaf
 
 noncomputable section
 
+/-- An adjunction `adj : G ⊣ F` with `F : D ⥤ E` and `G : E ⥤ D` induces an adjunction
+between `Sheaf J D` and `Sheaf J E`, in contexts where one can sheafify `D`-valued presheaves,
+and postcomposing with `F` preserves the property of being a sheaf. -/
 def adjunction [HasWeakSheafify J D] [HasSheafCompose J F] (adj : G ⊣ F) :
     composeAndSheafify J G ⊣ sheafCompose J F :=
   Adjunction.restrictFullyFaithful ((adj.whiskerRight Cᵒᵖ).comp (sheafificationAdjunction J D))
