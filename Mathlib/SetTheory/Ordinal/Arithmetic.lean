@@ -1117,8 +1117,6 @@ set_option linter.deprecated false in
 theorem lt_sup {ι : Type u} {f : ι → Ordinal.{max u v}} {a} : a < sup.{_, v} f ↔ ∃ i, a < f i :=
   Ordinal.lt_iSup
 
--- TODO: generalize to Sup, take `bddAbove` as an assumption.
-
 theorem ne_iSup_iff_lt_iSup {ι : Type u} {f : ι → Ordinal.{max u v}} :
     (∀ i, f i ≠ iSup f) ↔ ∀ i, f i < iSup f :=
   ⟨fun hf _ => lt_of_le_of_ne (Ordinal.le_iSup _ _) (hf _), fun hf _ => ne_of_lt (hf _)⟩
