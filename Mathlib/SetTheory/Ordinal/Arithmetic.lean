@@ -1232,7 +1232,7 @@ theorem iSup_sum {α : Type u} {β : Type v} (f : α ⊕ β → Ordinal.{max u v
 
 set_option linter.deprecated false in
 @[deprecated iSup_sum (since := "2024-08-27")]
-theorem sup_sum {α : Type u} {β : Type v} (f : α ⊕ β → Ordinal.{max u v w}) :
+theorem sup_sum {α : Type u} {β : Type v} (f : α ⊕ β → Ordinal) :
     sup.{max u v, w} f =
       max (sup.{u, max v w} fun a => f (Sum.inl a)) (sup.{v, max u w} fun b => f (Sum.inr b)) := by
   apply (sup_le_iff.2 _).antisymm (max_le_iff.2 ⟨_, _⟩)

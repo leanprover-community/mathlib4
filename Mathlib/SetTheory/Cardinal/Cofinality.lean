@@ -1194,8 +1194,7 @@ lemma iSup_sequence_lt_omega1 {α : Type u} [Countable α]
 
 set_option linter.deprecated false in
 @[deprecated iSup_sequence_lt_omega1 (since := "2024-08-27")]
-lemma sup_sequence_lt_omega1 {α : Type u} [Countable α]
-    (o : α → Ordinal.{max u v}) (ho : ∀ n, o n < ω₁) :
+lemma sup_sequence_lt_omega1 {α} [Countable α] (o : α → Ordinal) (ho : ∀ n, o n < ω₁) :
     sup o < ω₁ := by
   apply sup_lt_ord_lift _ ho
   rw [Cardinal.isRegular_aleph_one.cof_eq]
