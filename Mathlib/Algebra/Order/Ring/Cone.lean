@@ -72,7 +72,9 @@ variable {S R : Type*} [Ring R] [SetLike S R] (C : S)
   zero_le_one := show _ ∈ C by simpa using one_mem C
   mul_nonneg x y xnn ynn := show _ ∈ C by simpa using mul_mem xnn ynn
 
-/-- Construct a linearly ordered domain by designating a maximal cone in a domain. -/
+/-- Construct a linearly ordered domain by designating a maximal cone in a domain.
+Warning: using this def as a constructor in an instance can lead to diamonds
+due to non-customisable fields: `lt`, `decidableLT`, `decidableEq`, `compare`. -/
 @[reducible] def LinearOrderedRing.mkOfCone
     [IsDomain R] [RingConeClass S R] [IsMaxCone C]
     (dec : DecidablePred (· ∈ C)) : LinearOrderedRing R where
