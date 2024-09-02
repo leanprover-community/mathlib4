@@ -326,7 +326,7 @@ end NonUnitalSeminormedRing
 
 section SeminormedRing
 
-variable [SeminormedRing α]
+variable [SeminormedRing α] {a b c : α}
 
 /-- A subalgebra of a seminormed ring is also a seminormed ring, with the restriction of the
 norm. -/
@@ -446,6 +446,29 @@ instance Pi.seminormedRing {π : ι → Type*} [Fintype ι] [∀ i, SeminormedRi
 instance MulOpposite.instSeminormedRing : SeminormedRing αᵐᵒᵖ where
   __ := instRing
   __ := instNonUnitalSeminormedRing
+
+/-- This inequality is particularly useful when `c = 1` and `‖a‖ = ‖b‖ = 1` as it then shows that
+chord length is a metric on the unit complex numbers. -/
+lemma norm_sub_mul_le (ha : ‖a‖ ≤ 1) : ‖c - a * b‖ ≤ ‖c - a‖ + ‖1 - b‖ :=
+  calc
+    _ ≤ ‖c - a‖ + ‖a * (1 - b)‖ := by
+        simpa [mul_one_sub] using norm_sub_le_norm_sub_add_norm_sub c a (a * b)
+    _ ≤ ‖c - a‖ + ‖a‖ * ‖1 - b‖ := by gcongr; exact norm_mul_le ..
+    _ ≤ ‖c - a‖ + 1 * ‖1 - b‖ := by gcongr
+    _ = ‖c - a‖ + ‖1 - b‖ := by simp
+
+/-- This inequality is particularly useful when `c = 1` and `‖a‖ = ‖b‖ = 1` as it then shows that
+chord length is a metric on the unit complex numbers. -/
+lemma norm_sub_mul_le' (hb : ‖b‖ ≤ 1) : ‖c - a * b‖ ≤ ‖1 - a‖ + ‖c - b‖ := by
+  rw [add_comm]; exact norm_sub_mul_le (α := αᵐᵒᵖ) hb
+
+/-- This inequality is particularly useful when `c = 1` and `‖a‖ = ‖b‖ = 1` as it then shows that
+chord length is a metric on the unit complex numbers. -/
+lemma nnnorm_sub_mul_le (ha : ‖a‖₊ ≤ 1) : ‖c - a * b‖₊ ≤ ‖c - a‖₊ + ‖1 - b‖₊ := norm_sub_mul_le ha
+
+/-- This inequality is particularly useful when `c = 1` and `‖a‖ = ‖b‖ = 1` as it then shows that
+chord length is a metric on the unit complex numbers. -/
+lemma nnnorm_sub_mul_le' (hb : ‖b‖₊ ≤ 1) : ‖c - a * b‖₊ ≤ ‖1 - a‖₊ + ‖c - b‖₊ := norm_sub_mul_le' hb
 
 end SeminormedRing
 
