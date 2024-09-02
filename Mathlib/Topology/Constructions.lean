@@ -1127,7 +1127,7 @@ theorem Continuous.quotient_lift {f : X → Y} (h : Continuous f) (hs : ∀ a b,
 
 theorem Continuous.quotient_liftOn' {f : X → Y} (h : Continuous f)
     (hs : ∀ a b, s a b → f a = f b) :
-    Continuous (fun x => Quotient.liftOn' x f hs : Quotient s → Y) :=
+    Continuous (fun x => Quotient.liftOn x f hs : Quotient s → Y) :=
   h.quotient_lift hs
 
 @[continuity, fun_prop]

@@ -279,7 +279,7 @@ variable {R : Type u} [CommRing R] (I : Ideal R) {ι : Type v} [Fintype ι] {ι'
 /-- An `R`-linear map `R^n → R^m` induces a function `R^n/I^n → R^m/I^m`. -/
 private def induced_map (I : Ideal R) (e : (ι → R) →ₗ[R] ι' → R) :
     (ι → R) ⧸ I.pi ι → (ι' → R) ⧸ I.pi ι' := fun x =>
-  Quotient.liftOn' x (fun y => Ideal.Quotient.mk (I.pi ι') (e y))
+  Quotient.liftOn x (fun y => Ideal.Quotient.mk (I.pi ι') (e y))
     (by
       refine fun a b hab => Ideal.Quotient.eq.2 fun h => ?_
       rw [Submodule.quotientRel_def] at hab

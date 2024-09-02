@@ -291,7 +291,7 @@ lemma mk_surjective : Function.Surjective (mk (𝒜 := 𝒜) (x := x)) :=
 numerator and denominator are of the same grading.
 -/
 def val (y : HomogeneousLocalization 𝒜 x) : at x :=
-  Quotient.liftOn' y (NumDenSameDeg.embedding 𝒜 x) fun _ _ => id
+  Quotient.liftOn y (NumDenSameDeg.embedding 𝒜 x) fun _ _ => id
 
 @[simp]
 theorem val_mk (i : NumDenSameDeg 𝒜 x) :

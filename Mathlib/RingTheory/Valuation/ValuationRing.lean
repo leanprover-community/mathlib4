@@ -59,7 +59,7 @@ instance : Inhabited (ValueGroup A K) := ⟨Quotient.mk'' 0⟩
 
 instance : LE (ValueGroup A K) :=
   LE.mk fun x y =>
-    Quotient.liftOn₂' x y (fun a b => ∃ c : A, c • b = a)
+    Quotient.liftOn₂ x y (fun a b => ∃ c : A, c • b = a)
       (by
         rintro _ _ a b ⟨c, rfl⟩ ⟨d, rfl⟩; ext
         constructor
@@ -77,7 +77,7 @@ instance : One (ValueGroup A K) := ⟨Quotient.mk'' 1⟩
 
 instance : Mul (ValueGroup A K) :=
   Mul.mk fun x y =>
-    Quotient.liftOn₂' x y (fun a b => Quotient.mk'' <| a * b)
+    Quotient.liftOn₂ x y (fun a b => Quotient.mk'' <| a * b)
       (by
         rintro _ _ a b ⟨c, rfl⟩ ⟨d, rfl⟩
         apply Quotient.sound'
@@ -88,7 +88,7 @@ instance : Mul (ValueGroup A K) :=
 
 instance : Inv (ValueGroup A K) :=
   Inv.mk fun x =>
-    Quotient.liftOn' x (fun a => Quotient.mk'' a⁻¹)
+    Quotient.liftOn x (fun a => Quotient.mk'' a⁻¹)
       (by
         rintro _ a ⟨b, rfl⟩
         apply Quotient.sound'

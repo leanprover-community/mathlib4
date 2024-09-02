@@ -616,7 +616,7 @@ theorem quotientMap_prodMap_mk : QuotientMap (Prod.map mk mk : X × Y → _) := 
 /-- Lift a map `f : X → α` such that `Inseparable x y → f x = f y` to a map
 `SeparationQuotient X → α`. -/
 def lift (f : X → α) (hf : ∀ x y, (x ~ᵢ y) → f x = f y) : SeparationQuotient X → α := fun x =>
-  Quotient.liftOn' x f hf
+  Quotient.liftOn x f hf
 
 @[simp]
 theorem lift_mk {f : X → α} (hf : ∀ x y, (x ~ᵢ y) → f x = f y) (x : X) : lift f hf (mk x) = f x :=
@@ -661,7 +661,7 @@ theorem continuous_lift {hf : ∀ x y, (x ~ᵢ y) → f x = f y} :
 /-- Lift a map `f : X → Y → α` such that `Inseparable a b → Inseparable c d → f a c = f b d` to a
 map `SeparationQuotient X → SeparationQuotient Y → α`. -/
 def lift₂ (f : X → Y → α) (hf : ∀ a b c d, (a ~ᵢ c) → (b ~ᵢ d) → f a b = f c d) :
-    SeparationQuotient X → SeparationQuotient Y → α := fun x y => Quotient.liftOn₂' x y f hf
+    SeparationQuotient X → SeparationQuotient Y → α := fun x y => Quotient.liftOn₂ x y f hf
 
 @[simp]
 theorem lift₂_mk {f : X → Y → α} (hf : ∀ a b c d, (a ~ᵢ c) → (b ~ᵢ d) → f a b = f c d) (x : X)

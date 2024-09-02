@@ -316,7 +316,7 @@ protected theorem ind_on {C : ManyOneDegree → Prop} (d : ManyOneDegree)
 -- @[elab_as_elim] -- Porting note: unexpected eliminator resulting type
 protected abbrev liftOn {φ} (d : ManyOneDegree) (f : Set ℕ → φ)
     (h : ∀ p q, ManyOneEquiv p q → f p = f q) : φ :=
-  Quotient.liftOn' d f h
+  Quotient.liftOn d f h
 
 @[simp]
 protected theorem liftOn_eq {φ} (p : Set ℕ) (f : Set ℕ → φ)

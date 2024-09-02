@@ -837,7 +837,7 @@ lemma Quotient.range_mk'' {sa : Setoid α} : range (Quotient.mk'' (s₁ := sa)) 
 
 @[simp]
 theorem range_quotient_lift_on' {s : Setoid ι} (hf) :
-    (range fun x : Quotient s => Quotient.liftOn' x f hf) = range f :=
+    (range fun x : Quotient s => Quotient.liftOn x f hf) = range f :=
   range_quot_lift _
 
 instance canLift (c) (p) [CanLift α β c p] :
