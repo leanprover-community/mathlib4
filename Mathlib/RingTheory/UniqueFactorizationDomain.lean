@@ -66,6 +66,10 @@ instance wfDvdMonoid_associates : WfDvdMonoid (Associates α) :=
 theorem wellFoundedLT_associates : WellFoundedLT (Associates α) :=
   ⟨Subrelation.wf dvdNotUnit_of_lt wellFounded_dvdNotUnit⟩
 
+@[deprecated wellFoundedLT_associates (since := "2024-09-02")]
+theorem wellFounded_associates : WellFounded ((· < ·) : Associates α → Associates α → Prop) :=
+  Subrelation.wf dvdNotUnit_of_lt wellFounded_dvdNotUnit
+
 -- Porting note: elab_as_elim can only be global and cannot be changed on an imported decl
 -- attribute [local elab_as_elim] WellFounded.fix
 
