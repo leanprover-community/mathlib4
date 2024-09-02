@@ -33,12 +33,7 @@ Then the rest is usual set theory.
 * `PSet.Func`: Underlying family of pre-sets of a pre-set.
 * `PSet.Equiv`: Extensional equivalence of pre-sets. Defined inductively.
 * `PSet.omega`, `ZFSet.omega`: The von Neumann ordinal `ω` as a `PSet`, as a `Set`.
-* `PSet.Arity.Equiv`: Extensional equivalence of `n`-ary `PSet`-valued functions. Extension of
-  `PSet.Equiv`.
-* `PSet.Resp`: Collection of `n`-ary `PSet`-valued functions that respect extensional equivalence.
-* `PSet.eval`: Turns a `PSet`-valued function that respect extensional equivalence into a
-  `ZFSet`-valued function.
-* `Classical.allDefinable`: All functions are classically definable.
+* `Classical.allZFSetDefinable`: All functions are classically definable.
 * `ZFSet.IsFunc` : Predicate that a ZFC set is a subset of `x × y` that can be considered as a ZFC
   function `x → y`. That is, each member of `x` is related by the ZFC set to exactly one member of
   `y`.
@@ -532,23 +527,27 @@ theorem mk_eq (x : PSet) : @Eq ZFSet ⟦x⟧ (mk x) :=
 theorem mk_out : ∀ x : ZFSet, mk x.out = x :=
   Quotient.out_eq
 
-/-- A set function is "definable" if it is the image of some n-ary pre-set
+/-- A set function is "definable" if it is the image of some n-ary `PSet`
   function. This isn't exactly definability, but is useful as a sufficient
   condition for functions that have a computable image. -/
 class Definable (n) (f : (Fin n → ZFSet.{u}) → ZFSet.{u}) where
+  /-- Turns a definable function into a n-ary `PSet` function. -/
   out : (Fin n → PSet.{u}) → PSet.{u}
   mk_out : ∀ xs, mk (out xs) = f (mk <| xs ·) := by simp
 
 attribute [simp] Definable.mk_out
 
+/-- An abbrev of `ZFSet.Definable` for unary function. -/
 abbrev Definable₁ (f : ZFSet.{u} → ZFSet.{u}) := Definable 1 (fun s ↦ f (s 0))
 
+/-- A simpler constructor for `ZFSet.Definable₁`. -/
 abbrev Definable₁.mk {f : ZFSet.{u} → ZFSet.{u}}
     (out : PSet.{u} → PSet.{u}) (mk_out : ∀ x, ⟦out x⟧ = f ⟦x⟧) :
     Definable₁ f where
   out xs := out (xs 0)
   mk_out xs := mk_out (xs 0)
 
+/-- Turns a unary definable function into a unary `PSet` function. -/
 abbrev Definable₁.out (f : ZFSet.{u} → ZFSet.{u}) [Definable₁ f] :
     PSet.{u} → PSet.{u} :=
   fun x ↦ Definable.out (fun s ↦ f (s 0)) ![x]
@@ -558,14 +557,17 @@ lemma Definable₁.mk_out {f : ZFSet.{u} → ZFSet.{u}} [Definable₁ f]
     .mk (out f x) = f (.mk x) :=
   Definable.mk_out ![x]
 
+/-- An abbrev of `ZFSet.Definable` for binary function. -/
 abbrev Definable₂ (f : ZFSet.{u} → ZFSet.{u} → ZFSet.{u}) := Definable 2 (fun s ↦ f (s 0) (s 1))
 
+/-- A simpler constructor for `ZFSet.Definable₂`. -/
 abbrev Definable₂.mk {f : ZFSet.{u} → ZFSet.{u} → ZFSet.{u}}
     (out : PSet.{u} → PSet.{u} → PSet.{u}) (mk_out : ∀ x y, ⟦out x y⟧ = f ⟦x⟧ ⟦y⟧) :
     Definable₂ f where
   out xs := out (xs 0) (xs 1)
   mk_out xs := mk_out (xs 0) (xs 1)
 
+/-- Turns a binary definable function into a binary `PSet` function. -/
 abbrev Definable₂.out (f : ZFSet.{u} → ZFSet.{u} → ZFSet.{u}) [Definable₂ f] :
     PSet.{u} → PSet.{u} → PSet.{u} :=
   fun x y ↦ Definable.out (fun s ↦ f (s 0) (s 1)) ![x, y]
@@ -575,7 +577,8 @@ lemma Definable₂.mk_out {f : ZFSet.{u} → ZFSet.{u} → ZFSet.{u}} [Definable
     .mk (out f x y) = f (.mk x) (.mk y) :=
   Definable.mk_out ![x, y]
 
-instance (f) [Definable₁ f] (n g) [Definable n g] : Definable n (fun s ↦ f (g s)) where
+instance (f) [Definable₁ f] (n g) [Definable n g] :
+    Definable n (fun s ↦ f (g s)) where
   out xs := Definable₁.out f (Definable.out g xs)
 
 instance (f) [Definable₂ f] (n g₁ g₂) [Definable n g₁] [Definable n g₂] :
