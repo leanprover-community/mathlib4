@@ -139,10 +139,9 @@ variable (D) in
 The constant sheaf functor commutes up to isomorphism the equivalence of sheaf categories induced
 by a dense subsite.
 -/
-noncomputable def equivCommuteConstant : let e : Sheaf J D ≌ Sheaf K D := sheafEquiv G J K D
-    constantSheaf J D ⋙ e.functor ≅ constantSheaf K D :=
-  let e : Sheaf J D ≌ Sheaf K D := sheafEquiv G J K D
-  ((constantSheafAdj J D hT).comp e.toAdjunction).leftAdjointUniq
+noncomputable def equivCommuteConstant :
+    constantSheaf J D ⋙ (sheafEquiv G J K D).functor ≅ constantSheaf K D :=
+  ((constantSheafAdj J D hT).comp (sheafEquiv G J K D).toAdjunction).leftAdjointUniq
     (constantSheafAdj K D hT')
 
 variable (D) in
@@ -150,11 +149,10 @@ variable (D) in
 The constant sheaf functor commutes up to isomorphism the inverse equivalence of sheaf categories
 induced by a dense subsite.
 -/
-noncomputable def equivCommuteConstant' : let e : Sheaf J D ≌ Sheaf K D := sheafEquiv G J K D
-    constantSheaf J D ≅ constantSheaf K D ⋙ e.inverse :=
-  let e : Sheaf J D ≌ Sheaf K D := sheafEquiv G J K D
-  isoWhiskerLeft (constantSheaf J D) e.unitIso ≪≫
-    isoWhiskerRight (equivCommuteConstant J D K G hT hT') e.inverse
+noncomputable def equivCommuteConstant' :
+    constantSheaf J D ≅ constantSheaf K D ⋙ (sheafEquiv G J K D).inverse :=
+  isoWhiskerLeft (constantSheaf J D) (sheafEquiv G J K D).unitIso ≪≫
+    isoWhiskerRight (equivCommuteConstant J D K G hT hT') (sheafEquiv G J K D).inverse
 
 /- TODO: find suitable assumptions for proving generalizations of `equivCommuteConstant` and
 `equivCommuteConstant'` above, to commute `constantSheaf` with pullback/pushforward of sheaves. -/
@@ -165,15 +163,12 @@ The property of a sheaf of being constant is invariant under equivalence of shea
 categories.
 -/
 lemma Sheaf.isConstant_iff_of_equivalence (F : Sheaf K D) :
-    let e : Sheaf J D ≌ Sheaf K D := sheafEquiv G J K D
-    (e.inverse.obj F).IsConstant J ↔ IsConstant K F := by
-  intro e
+    ((sheafEquiv G J K D).inverse.obj F).IsConstant J ↔ IsConstant K F := by
   constructor
-  · intro ⟨Y, ⟨i⟩⟩
-    exact ⟨_, ⟨(equivCommuteConstant J D K G hT hT').symm.app _ ≪≫
-      e.functor.mapIso i ≪≫ e.counitIso.app _⟩⟩
-  · intro ⟨Y, ⟨i⟩⟩
-    exact ⟨_, ⟨(equivCommuteConstant' J D K G hT hT').app _ ≪≫ e.inverse.mapIso i⟩⟩
+  · exact fun ⟨Y, ⟨i⟩⟩ ↦ ⟨_, ⟨(equivCommuteConstant J D K G hT hT').symm.app _ ≪≫
+      (sheafEquiv G J K D).functor.mapIso i ≪≫ (sheafEquiv G J K D).counitIso.app _⟩⟩
+  · exact fun ⟨Y, ⟨i⟩⟩ ↦ ⟨_, ⟨(equivCommuteConstant' J D K G hT hT').app _ ≪≫
+      (sheafEquiv G J K D).inverse.mapIso i⟩⟩
 
 end Equivalence
 
