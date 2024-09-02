@@ -281,7 +281,7 @@ def cons (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.head ∈ d.set u)
       rintro ⟨u', g'⟩ hu' hw1
       exact h2 _ (by simp_all) hw1 }
 
-/-- A recursor to induct on a `NormalWord`, by proving the propert is preserved under `cons` -/
+/-- A recursor to induct on a `NormalWord`, by proving the property is preserved under `cons` -/
 @[elab_as_elim]
 def consRecOn {motive : NormalWord d → Sort*} (w : NormalWord d)
     (ofGroup : ∀g, motive (ofGroup g))
@@ -347,7 +347,7 @@ theorem unitsSMulGroup_snd (u : ℤˣ) (g : G) :
 
 variable {d}
 
-/-- `Cancels u w` is a predicate expressing whether `t^u` cancels with some occurence
+/-- `Cancels u w` is a predicate expressing whether `t^u` cancels with some occurrence
 of `t^-u` when we multiply `t^u` by `w`. -/
 def Cancels (u : ℤˣ) (w : NormalWord d) : Prop :=
   (w.head ∈ (toSubgroup A B u : Subgroup G)) ∧ w.toList.head?.map Prod.fst = some (-u)
@@ -653,9 +653,9 @@ theorem exists_normalWord_prod_eq
       simp [mul_assoc, unitsSMulGroup, (d.compl _).coe_equiv_snd_eq_one_iff_mem]
 
 /-- Two reduced words representing the same element of the `HNNExtension G A B φ` have the same
-length corresponding list, with the same pattern of occurences of `t^1` and `t^(-1)`,
+length corresponding list, with the same pattern of occurrences of `t^1` and `t^(-1)`,
 and also the `head` is in the same left coset of `toSubgroup A B (-u)`, where `u : ℤˣ`
-is the exponent of the first occurence of `t` in the word. -/
+is the exponent of the first occurrence of `t` in the word. -/
 theorem map_fst_eq_and_of_prod_eq {w₁ w₂ : ReducedWord G A B}
     (hprod : w₁.prod φ = w₂.prod φ) :
     w₁.toList.map Prod.fst = w₂.toList.map Prod.fst ∧
@@ -674,7 +674,7 @@ theorem map_fst_eq_and_of_prod_eq {w₁ w₂ : ReducedWord G A B}
   rwa [← List.head?_map, ← hw₂'2, hw₁'2, List.head?_map]
 
 /-- **Britton's Lemma**. Any reduced word whose product is an element of `G`, has no
-occurences of `t`. -/
+occurrences of `t`. -/
 theorem toList_eq_nil_of_mem_of_range (w : ReducedWord G A B)
     (hw : w.prod φ ∈ (of.range : Subgroup (HNNExtension G A B φ))) :
     w.toList = [] := by

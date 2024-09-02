@@ -29,9 +29,12 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
   -- note: since we manually add "Batteries" to "Mathlib.lean", we remove it here manually
   allModules := allModules.erase "Batteries"
   let numberErrorFiles ← lintModules allModules mode (args.hasFlag "fix")
-  -- Make sure to return an exit code of at most 125, so this return value can be used further
-  -- in shell scripts.
-  return min numberErrorFiles 125
+  -- If run with the `--update` or `--fix` argument, return a zero exit code.
+  -- Otherwise, make sure to return an exit code of at most 125,
+  -- so this return value can be used further in shell scripts.
+  if args.hasFlag "update" || args.hasFlag "fix" then
+    return 0
+  else return min numberErrorFiles 125
 
 /-- Setting up command line options and help text for `lake exe lint-style`. -/
 -- so far, no help options or so: perhaps that is fine?
