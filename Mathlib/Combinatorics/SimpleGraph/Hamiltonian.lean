@@ -148,23 +148,23 @@ lemma mem_dropLast_support (hp : p.IsHamiltonianCycle) : b ∈ p.support.dropLas
   apply hp.mem_tail_support
 
 /-- The dart in the Hamiltonian cycle that starts at `b` -/
-noncomputable def dart_with_fst (hp : p.IsHamiltonianCycle) : G.Dart :=
+noncomputable def dartWithFst (hp : p.IsHamiltonianCycle) : G.Dart :=
   Exists.choose <| show ∃d ∈ p.darts, d.fst = b by
     simpa [← Walk.map_fst_darts] using hp.mem_dropLast_support b
 
 /-- The dart in the Hamiltonian cycle that ends at `b` -/
-noncomputable def dart_with_snd (hp : p.IsHamiltonianCycle) : G.Dart :=
+noncomputable def dartWithSnd (hp : p.IsHamiltonianCycle) : G.Dart :=
   Exists.choose <| show ∃d ∈ p.darts, d.snd = b by
     simpa [← Walk.map_snd_darts] using hp.mem_tail_support b
 
 /-- The next vertex in the Hamiltonian cycle -/
-protected noncomputable def next (hp : p.IsHamiltonianCycle) := (hp.dart_with_fst b).snd
+protected noncomputable def next (hp : p.IsHamiltonianCycle) := (hp.dartWithFst b).snd
 /-- The previous vertex in the Hamiltonian cycle -/
-protected noncomputable def prev (hp : p.IsHamiltonianCycle) := (hp.dart_with_snd b).fst
+protected noncomputable def prev (hp : p.IsHamiltonianCycle) := (hp.dartWithSnd b).fst
 
 lemma prev_self_in_darts (hp : p.IsHamiltonianCycle) :
     ∃ d ∈ p.darts, d.fst = hp.prev b ∧ d.snd = b := by
-  unfold IsHamiltonianCycle.prev dart_with_snd
+  unfold IsHamiltonianCycle.prev dartWithSnd
   generalize_proofs hd
   have := hd.choose_spec
   set d := hd.choose
@@ -173,14 +173,14 @@ lemma prev_self_in_darts (hp : p.IsHamiltonianCycle) :
 
 lemma self_next_in_darts (hp : p.IsHamiltonianCycle) :
     ∃ d ∈ p.darts, d.fst = b ∧ d.snd = hp.next b := by
-  unfold IsHamiltonianCycle.next dart_with_fst
+  unfold IsHamiltonianCycle.next dartWithFst
   generalize_proofs hd
   have := hd.choose_spec
   set d := hd.choose
   use d
   simpa using this
 
-lemma Adj_prev_self (hp : p.IsHamiltonianCycle) : G.Adj (hp.prev b) b := by
+lemma adj_prev_left (hp : p.IsHamiltonianCycle) : G.Adj (hp.prev b) b := by
   obtain ⟨d, _, hd'⟩ := hp.prev_self_in_darts b
   exact hd'.1 ▸ hd'.2 ▸ d.adj
 
@@ -203,7 +203,7 @@ lemma Adj_self_next (hp : p.IsHamiltonianCycle) : G.Adj b (hp.next b) := by
   exact hp.1.next_unique hd₁ hd₂ hd₁'.1
 
 lemma rotate_next (hp : p.IsHamiltonianCycle) (b': α) : (hp.rotate b').next b = hp.next b := by
-  unfold IsHamiltonianCycle.next dart_with_fst
+  unfold IsHamiltonianCycle.next dartWithFst
   congr
   ext d
   apply Iff.and

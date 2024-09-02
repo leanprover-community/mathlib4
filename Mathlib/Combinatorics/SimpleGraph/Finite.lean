@@ -273,6 +273,24 @@ theorem IsRegularOfDegree.compl [Fintype V] [DecidableEq V] {G : SimpleGraph V} 
 
 end LocallyFinite
 
+section Degree
+
+@[gcongr] protected lemma GCongr.degree_le_degree
+    {G H : SimpleGraph V} {u : V}
+    [Fintype (G.neighborSet u)] [Fintype (H.neighborSet u)] (hGH : G ≤ H) :
+  degree G u ≤ degree H u := by
+  simp only [← card_neighborFinset_eq_degree]
+  gcongr
+  intro v hv
+  simp at hv
+  simpa using hGH hv
+
+open Classical in
+lemma degree_mono [Fintype V] {u : V} : Monotone (fun G => degree G u) :=
+  fun _ _ => GCongr.degree_le_degree
+
+end Degree
+
 section Finite
 
 variable [Fintype V]
@@ -302,15 +320,6 @@ theorem complete_graph_degree [DecidableEq V] (v : V) :
 theorem bot_degree (v : V) : (⊥ : SimpleGraph V).degree v = 0 := by
   erw [degree, neighborFinset_eq_filter, filter_False]
   exact Finset.card_empty
-
-open Classical in
-lemma degree_mono (u : V) : Monotone (fun G => degree G u) := by
-  intro G H le
-  simp only [← card_neighborFinset_eq_degree]
-  apply Finset.card_le_card
-  intro v hv
-  simp at hv
-  simpa using le hv
 
 theorem IsRegularOfDegree.top [DecidableEq V] :
     (⊤ : SimpleGraph V).IsRegularOfDegree (Fintype.card V - 1) := by
