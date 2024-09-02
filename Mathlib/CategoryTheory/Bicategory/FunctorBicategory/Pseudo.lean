@@ -77,6 +77,16 @@ end StrongTrans
 
 variable (B C)
 
+example (B : Type u₁) [inst : CategoryTheory.Bicategory B] (C : Type u₂)
+  [inst_1 : CategoryTheory.Bicategory C] {X Y Z : CategoryTheory.Pseudofunctor B C}
+  (η : X ⟶ Y) (θ : Y ⟶ Z) {a b : B} (f : a ⟶ b) :
+    ((η ≫ θ).naturality f).inv =
+      (α_ (η.app a) (θ.app a) (Z.map f)).hom ≫
+        η.app a ◁ (θ.naturality f).inv ≫
+          (α_ (η.app a) (Y.map f) (θ.app b)).inv ≫
+            (η.naturality f).inv ▷ θ.app b ≫ (α_ (X.map f) (η.app b) (θ.app b)).hom := by
+  simp
+
 /-- A bicategory structure on the pseudofunctors between two bicategories. -/
 @[simps!]
 instance bicategory : Bicategory (Pseudofunctor B C) where
@@ -86,16 +96,5 @@ instance bicategory : Bicategory (Pseudofunctor B C) where
   leftUnitor {F G} := StrongTrans.leftUnitor
   rightUnitor {F G} := StrongTrans.rightUnitor
   whisker_exchange {a b c f g h i} η θ := by ext; exact whisker_exchange _ _
-
--- example (B : Type u₁) [inst : CategoryTheory.Bicategory B] (C : Type u₂)
---   [inst_1 : CategoryTheory.Bicategory C] {X Y Z : CategoryTheory.Pseudofunctor B C}
---   (η : X ⟶ Y) (θ : Y ⟶ Z) {a b : B} (f : a ⟶ b) :
---     ((η ≫ θ).naturality f).inv =
---       (α_ (η.app a) (θ.app a) (Z.map f)).hom ≫
---         η.app a ◁ (θ.naturality f).inv ≫
---           (α_ (η.app a) (Y.map f) (θ.app b)).inv ≫
---             (η.naturality f).inv ▷ θ.app b ≫ (α_ (X.map f) (η.app b) (θ.app b)).hom := by
---   --apply bicategory_comp_naturality_inv _ _ _
---   simp only [Pseudofunctor.categoryStruct_comp, Pseudofunctor.StrongTrans.vcomp_naturality_inv]
 
 end CategoryTheory.Pseudofunctor

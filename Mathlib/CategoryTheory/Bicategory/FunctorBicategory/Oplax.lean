@@ -67,16 +67,17 @@ end OplaxTrans
 
 variable (B C)
 
--- example (B : Type u₁) [inst : CategoryTheory.Bicategory B] (C : Type u₂)
--- [inst_1 : CategoryTheory.Bicategory C]
---         {X Y Z : CategoryTheory.OplaxFunctor B C} (η : X ⟶ Y)
---         (θ : CategoryTheory.OplaxTrans Y Z) {a b : B} (f : a ⟶ b) :
---         (η ≫ θ).naturality f =
---           (α_ (X.map f) (η.app b) (θ.app b)).inv ≫
---             η.naturality f ▷ θ.app b ≫
---               (α_ (η.app a) (Y.map f) (θ.app b)).hom ≫ η.app a ◁ θ.naturality f ≫
--- (α_ (η.app a) (θ.app a) (Z.map f)).inv := by
---   simp only [OplaxTrans.instCategoryStructOplaxFunctor_comp, OplaxTrans.vcomp_naturality]
+example (B : Type u₁) [inst : CategoryTheory.Bicategory B] (C : Type u₂)
+[inst_1 : CategoryTheory.Bicategory C]
+        {X Y Z : CategoryTheory.OplaxFunctor B C} (η : X ⟶ Y)
+        (θ : CategoryTheory.OplaxTrans Y Z) {a b : B} (f : a ⟶ b) :
+        (η ≫ θ).naturality f =
+          (α_ (X.map f) (η.app b) (θ.app b)).inv ≫
+            η.naturality f ▷ θ.app b ≫
+              (α_ (η.app a) (Y.map f) (θ.app b)).hom ≫ η.app a ◁ θ.naturality f ≫
+(α_ (η.app a) (θ.app a) (Z.map f)).inv := by
+  simp
+  -- simp only [OplaxTrans.instCategoryStructOplaxFunctor_comp, OplaxTrans.vcomp_naturality]
 
 /-- A bicategory structure on the oplax functors between bicategories. -/
 @[simps!]

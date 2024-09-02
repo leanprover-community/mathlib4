@@ -74,12 +74,12 @@ variable (Γ : Modification η θ)
 -- instance hasCoeToOplax : Coe (Modification η θ) (Oplax.Modification η.toOplax θ.toOplax) :=
 --   ⟨toOplax⟩
 
-/-- The modification between strong transformations of pseudofunctors associated to a modification
-between the underlying oplax transformations of oplax functors. -/
-@[simps]
-def mkOfOplax (Γ : Oplax.Modification η.toOplax θ.toOplax) : Modification η θ where
-  app a := Γ.app a
-  naturality f := by simpa using Γ.naturality f
+-- /-- The modification between strong transformations of pseudofunctors associated to a modification
+-- between the underlying oplax transformations of oplax functors. -/
+-- @[simps]
+-- def mkOfOplax (Γ : Oplax.Modification η.toOplax θ.toOplax) : Modification η θ where
+--   app a := Γ.app a
+--   naturality f := by simpa using Γ.naturality f
 
 section
 
