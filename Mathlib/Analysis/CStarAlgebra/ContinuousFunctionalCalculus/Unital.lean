@@ -670,7 +670,7 @@ protected lemma IsSelfAdjoint.cfc [ContinuousFunctionalCalculus R (IsSelfAdjoint
   cfc_predicate _ _
 
 @[simp]
-lemma cfc_nonneg [PartialOrder A]
+lemma cfc_nonneg_of_predicate [PartialOrder A]
     [ContinuousFunctionalCalculus R (fun (a : A) => 0 ≤ a)] {f : R → R} {a : A} : 0 ≤ cfc f a :=
   cfc_predicate _ _
 
