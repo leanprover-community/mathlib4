@@ -1321,6 +1321,18 @@ theorem prod_atTop_atTop_eq [Preorder α] [Preorder β] :
   · subsingleton
   simpa [atTop, prod_iInf_left, prod_iInf_right, iInf_prod] using iInf_comm
 
+lemma tendsto_finset_prod_atTop :
+    Tendsto (fun (p : Finset ι × Finset ι') ↦ p.1 ×ˢ p.2) atTop atTop := by
+  classical
+  apply Monotone.tendsto_atTop_atTop
+  · intro p q hpq
+    simpa using Finset.product_subset_product hpq.1 hpq.2
+  · intro b
+    use (Finset.image Prod.fst b, Finset.image Prod.snd b)
+    rintro ⟨d1, d2⟩ hd
+    simp only [Finset.mem_product, Finset.mem_image, Prod.exists, exists_and_right, exists_eq_right]
+    exact ⟨⟨d2, hd⟩, ⟨d1, hd⟩⟩
+
 theorem prod_atBot_atBot_eq [Preorder α] [Preorder β] :
     (atBot : Filter α) ×ˢ (atBot : Filter β) = (atBot : Filter (α × β)) :=
   @prod_atTop_atTop_eq αᵒᵈ βᵒᵈ _ _
@@ -1831,3 +1843,5 @@ filters `atTop.map (fun s ↦ ∑ i ∈ s, f (g i))` and `atTop.map (fun s ↦ �
 This lemma is used to prove the equality `∑' x, f (g x) = ∑' y, f y` under
 the same assumptions. -/
 add_decl_doc Function.Injective.map_atTop_finset_sum_eq
+
+set_option linter.style.longFile 2000
