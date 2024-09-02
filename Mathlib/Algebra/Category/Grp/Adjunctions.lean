@@ -78,6 +78,9 @@ instance : free.{u}.IsLeftAdjoint :=
 instance : (forget AddCommGrp.{u}).IsRightAdjoint :=
   ⟨_, ⟨adj⟩⟩
 
+instance : AddCommGrp.free.{u}.IsLeftAdjoint :=
+  ⟨_, ⟨adj⟩⟩
+
 /-- As an example, we now give a high-powered proof that
 the monomorphisms in `AddCommGroup` are just the injective functions.
 

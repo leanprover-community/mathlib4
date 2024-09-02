@@ -380,11 +380,11 @@ theorem strong_law_aux1 {c : ℝ} (c_one : 1 < c) {ε : ℝ} (εpos : 0 < ε) : 
     ε * ⌊c ^ n⌋₊ := by
   /- Let `S n = ∑ i ∈ range n, Y i` where `Y i = truncation (X i) i`. We should show that
     `|S k - 𝔼[S k]| / k ≤ ε` along the sequence of powers of `c`. For this, we apply Borel-Cantelli:
-    it suffices to show that the converse probabilites are summable. From Chebyshev inequality, this
-    will follow from a variance control `∑' Var[S (c^i)] / (c^i)^2 < ∞`. This is checked in `I2`
-    using pairwise independence to expand the variance of the sum as the sum of the variances,
+    it suffices to show that the converse probabilities are summable. From Chebyshev inequality,
+    this will follow from a variance control `∑' Var[S (c^i)] / (c^i)^2 < ∞`. This is checked in
+    `I2` using pairwise independence to expand the variance of the sum as the sum of the variances,
     and then a straightforward but tedious computation (essentially boiling down to the fact that
-    the sum of `1/(c ^ i)^2` beyong a threshold `j` is comparable to `1/j^2`).
+    the sum of `1/(c ^ i)^2` beyond a threshold `j` is comparable to `1/j^2`).
     Note that we have written `c^i` in the above proof sketch, but rigorously one should put integer
     parts everywhere, making things more painful. We write `u i = ⌊c^i⌋₊` for brevity. -/
   have c_pos : 0 < c := zero_lt_one.trans c_one
@@ -602,9 +602,22 @@ identically distributed integrable real-valued random variables, then `∑ i ∈
 converges almost surely to `𝔼[X 0]`. We give here the strong version, due to Etemadi, that only
 requires pairwise independence. Superseded by `strong_law_ae`, which works for random variables
 taking values in any Banach space. -/
-theorem strong_law_ae_real (X : ℕ → Ω → ℝ) (hint : Integrable (X 0))
+theorem strong_law_ae_real {Ω : Type*} [MeasureSpace Ω]
+    (X : ℕ → Ω → ℝ) (hint : Integrable (X 0))
     (hindep : Pairwise fun i j => IndepFun (X i) (X j)) (hident : ∀ i, IdentDistrib (X i) (X 0)) :
     ∀ᵐ ω, Tendsto (fun n : ℕ => (∑ i ∈ range n, X i ω) / n) atTop (𝓝 𝔼[X 0]) := by
+  -- first get rid of the trivial case where the space is not a probability space
+  by_cases h : ∀ᵐ ω, X 0 ω = 0
+  · have I : ∀ᵐ ω, ∀ i, X i ω = 0 := by
+      rw [ae_all_iff]
+      intro i
+      exact (hident i).symm.ae_snd (p := fun x ↦ x = 0) measurableSet_eq h
+    filter_upwards [I] with ω hω
+    simpa [hω] using (integral_eq_zero_of_ae h).symm
+  have : IsProbabilityMeasure (ℙ : Measure Ω) :=
+    hint.isProbabilityMeasure_of_indepFun (X 0) (X 1) h (hindep zero_ne_one)
+  -- then consider separately the positive and the negative part, and apply the result
+  -- for nonnegative functions to them.
   let pos : ℝ → ℝ := fun x => max x 0
   let neg : ℝ → ℝ := fun x => max (-x) 0
   have posm : Measurable pos := measurable_id'.max measurable_const
@@ -773,10 +786,20 @@ lemma strong_law_ae_of_measurable
 identically distributed integrable random variables taking values in a Banach space,
 then `n⁻¹ • ∑ i ∈ range n, X i` converges almost surely to `𝔼[X 0]`. We give here the strong
 version, due to Etemadi, that only requires pairwise independence. -/
-theorem strong_law_ae
+theorem strong_law_ae {Ω : Type*} [MeasureSpace Ω]
     (X : ℕ → Ω → E) (hint : Integrable (X 0))
     (hindep : Pairwise (fun i j ↦ IndepFun (X i) (X j))) (hident : ∀ i, IdentDistrib (X i) (X 0)) :
     ∀ᵐ ω, Tendsto (fun n : ℕ ↦ (n : ℝ) ⁻¹ • (∑ i ∈ range n, X i ω)) atTop (𝓝 𝔼[X 0]) := by
+  -- First exclude the trivial case where the space is not a probability space
+  by_cases h : ∀ᵐ ω, X 0 ω = 0
+  · have I : ∀ᵐ ω, ∀ i, X i ω = 0 := by
+      rw [ae_all_iff]
+      intro i
+      exact (hident i).symm.ae_snd (p := fun x ↦ x = 0) measurableSet_eq h
+    filter_upwards [I] with ω hω
+    simpa [hω] using (integral_eq_zero_of_ae h).symm
+  have : IsProbabilityMeasure (ℙ : Measure Ω) :=
+    hint.isProbabilityMeasure_of_indepFun (X 0) (X 1) h (hindep zero_ne_one)
   -- we reduce to the case of strongly measurable random variables, by using `Y i` which is strongly
   -- measurable and ae equal to `X i`.
   have A : ∀ i, Integrable (X i) := fun i ↦ (hident i).integrable_iff.2 hint
@@ -799,7 +822,7 @@ end StrongLawVectorSpace
 
 section StrongLawLp
 
-variable {Ω : Type*} [MeasureSpace Ω] [IsProbabilityMeasure (ℙ : Measure Ω)]
+variable {Ω : Type*} [MeasureSpace Ω]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
   [MeasurableSpace E] [BorelSpace E]
 
@@ -808,8 +831,23 @@ identically distributed random variables in Lᵖ, then `n⁻¹ • ∑ i ∈ ran
 converges in `Lᵖ` to `𝔼[X 0]`. -/
 theorem strong_law_Lp {p : ℝ≥0∞} (hp : 1 ≤ p) (hp' : p ≠ ∞) (X : ℕ → Ω → E) (hℒp : Memℒp (X 0) p)
     (hindep : Pairwise fun i j => IndepFun (X i) (X j)) (hident : ∀ i, IdentDistrib (X i) (X 0)) :
-    Tendsto (fun (n : ℕ) => eLpNorm (fun ω => (n : ℝ) ⁻¹ • (∑ i ∈ range n, X i ω) - 𝔼[X 0]) p ℙ)
+    Tendsto (fun (n : ℕ) => eLpNorm (fun ω => (n : ℝ) ⁻¹ • (∑ i ∈ range n, X i ω) - 𝔼[X 0]) p)
       atTop (𝓝 0) := by
+  -- First exclude the trivial case where the space is not a probability space
+  by_cases h : ∀ᵐ ω, X 0 ω = 0
+  · have I : ∀ᵐ ω, ∀ i, X i ω = 0 := by
+      rw [ae_all_iff]
+      intro i
+      exact (hident i).symm.ae_snd (p := fun x ↦ x = 0) measurableSet_eq h
+    have A (n : ℕ) : eLpNorm (fun ω => (n : ℝ) ⁻¹ • (∑ i ∈ range n, X i ω) - 𝔼[X 0]) p ℙ = 0 := by
+      simp only [integral_eq_zero_of_ae h, sub_zero]
+      apply eLpNorm_eq_zero_of_ae_zero
+      filter_upwards [I] with ω hω
+      simp [hω]
+    simp [A]
+  -- Then use ae convergence and uniform integrability
+  have : IsProbabilityMeasure (ℙ : Measure Ω) := Memℒp.isProbabilityMeasure_of_indepFun
+    (X 0) (X 1) (zero_lt_one.trans_le hp).ne' hp' hℒp h (hindep zero_ne_one)
   have hmeas : ∀ i, AEStronglyMeasurable (X i) ℙ := fun i =>
     (hident i).aestronglyMeasurable_iff.2 hℒp.1
   have hint : Integrable (X 0) ℙ := hℒp.integrable hp

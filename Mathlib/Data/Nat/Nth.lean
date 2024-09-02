@@ -12,7 +12,7 @@ import Mathlib.Order.OrderIsoNat
 /-!
 # The `n`th Number Satisfying a Predicate
 
-This file defines a function for "what is the `n`th number that satisifies a given predicate `p`",
+This file defines a function for "what is the `n`th number that satisfies a given predicate `p`",
 and provides lemmas that deal with this function and its connection to `Nat.count`.
 
 ## Main definitions

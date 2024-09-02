@@ -11,7 +11,7 @@ import Mathlib.Analysis.Complex.CauchyIntegral
 We show that the Taylor series around some point `c : ℂ` of a function `f` that is complex
 differentiable on the open ball of radius `r` around `c` converges to `f` on that open ball;
 see `Complex.hasSum_taylorSeries_on_ball` and `Complex.taylorSeries_eq_on_ball` for versions
-(in terms of `HasSum` and `tsum`, repsectively) for functions to a complete normed
+(in terms of `HasSum` and `tsum`, respectively) for functions to a complete normed
 space over `ℂ`, and `Complex.taylorSeries_eq_on_ball'` for a variant when `f : ℂ → ℂ`.
 
 There are corresponding statements for `EMEtric.ball`s; see

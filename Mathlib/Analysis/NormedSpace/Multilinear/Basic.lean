@@ -160,7 +160,7 @@ theorem exists_bound_of_continuous (hf : Continuous f) :
   refine ⟨_, this, ?_⟩
   refine f.bound_of_shell_of_continuous hf (fun _ => ε0) (fun _ => hc) fun m hcm hm => ?_
   refine (hε m ((pi_norm_lt_iff ε0).2 hm)).le.trans ?_
-  rw [← div_le_iff' this, one_div, ← inv_pow, inv_div, Fintype.card, ← prod_const]
+  rw [← div_le_iff₀' this, one_div, ← inv_pow, inv_div, Fintype.card, ← prod_const]
   exact prod_le_prod (fun _ _ => div_nonneg ε0.le (norm_nonneg _)) fun i _ => hcm i
 
 /-- If `f` satisfies a boundedness property around `0`, one can deduce a bound on `f m₁ - f m₂`
@@ -796,11 +796,11 @@ theorem nnnorm_smulRight (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
     rw [mul_right_comm]
     gcongr
     exact le_opNNNorm _ _
-  · obtain hz | hz := eq_or_ne ‖z‖₊ 0
+  · obtain hz | hz := eq_zero_or_pos ‖z‖₊
     · simp [hz]
-    rw [← NNReal.le_div_iff hz, opNNNorm_le_iff]
+    rw [← le_div_iff₀ hz, opNNNorm_le_iff]
     intro m
-    rw [div_mul_eq_mul_div, NNReal.le_div_iff hz]
+    rw [div_mul_eq_mul_div, le_div_iff₀ hz]
     refine le_trans ?_ ((f.smulRight z).le_opNNNorm m)
     rw [smulRight_apply, nnnorm_smul]
 
