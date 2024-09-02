@@ -383,8 +383,8 @@ theorem eqvGen_step_iff_join_red : EqvGen Red.Step L₁ L₂ ↔ Join Red L₁ L
     (fun h =>
       have : EqvGen (Join Red) L₁ L₂ := h.mono fun _ _ => join_red_of_step
       equivalence_join_red.eqvGen_iff.1 this)
-    (join_of_equivalence (EqvGen.is_equivalence _) fun _ _ =>
-      reflTransGen_of_equivalence (EqvGen.is_equivalence _) EqvGen.rel)
+    (join_of_equivalence (Relation.EqvGen.is_equivalence _) fun _ _ =>
+      reflTransGen_of_equivalence (Relation.EqvGen.is_equivalence _) EqvGen.rel)
 
 end FreeGroup
 
@@ -538,7 +538,7 @@ def of (x : α) : FreeGroup α :=
 @[to_additive]
 theorem Red.exact : mk L₁ = mk L₂ ↔ Join Red L₁ L₂ :=
   calc
-    mk L₁ = mk L₂ ↔ EqvGen Red.Step L₁ L₂ := Iff.intro (Quot.eqvGen_exact _) Quot.eqvGen_sound
+    mk L₁ = mk L₂ ↔ EqvGen Red.Step L₁ L₂ := Iff.intro Quot.eqvGen_exact Quot.eqvGen_sound
     _ ↔ Join Red L₁ L₂ := eqvGen_step_iff_join_red
 
 /-- The canonical map from the type to the free group is an injection. -/
