@@ -170,10 +170,7 @@ lemma sheafComposeNatTrans_fac (P : Cᵒᵖ ⥤ A) :
     adj₂.unit.app (P ⋙ F) ≫
       (sheafToPresheaf J B).map ((sheafComposeNatTrans J F adj₁ adj₂).app P) =
         whiskerRight (adj₁.unit.app P) F  := by
-  dsimp only [sheafComposeNatTrans]
-  rw [Adjunction.homEquiv_symm_apply]
-  erw [Adjunction.unit_naturality_assoc, adj₂.right_triangle_components]
-  simp
+  simp [sheafComposeNatTrans, -sheafToPresheaf_obj, -sheafToPresheaf_map]
 
 lemma sheafComposeNatTrans_app_uniq (P : Cᵒᵖ ⥤ A)
     (α : G₂.obj (P ⋙ F) ⟶ (sheafCompose J F).obj (G₁.obj P))

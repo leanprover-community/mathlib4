@@ -403,8 +403,8 @@ theorem ihom_obj_ρ_def (A B : Rep k G) : ((ihom A).obj B).ρ = ((Rep.ihom A).ob
   rfl
 
 @[simp]
-theorem homEquiv_def (A B C : Rep k G) : (ihom.adjunction A).homEquiv B C = Rep.homEquiv A B C := by
-  erw [Adjunction.mkOfHomEquiv_homEquiv]
+theorem homEquiv_def (A B C : Rep k G) : (ihom.adjunction A).homEquiv B C = Rep.homEquiv A B C :=
+  congrFun (congrFun (Adjunction.mkOfHomEquiv_homEquiv _) _) _
 
 @[simp]
 theorem ihom_ev_app_hom (A B : Rep k G) :
