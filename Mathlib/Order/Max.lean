@@ -348,32 +348,6 @@ protected theorem IsTop.not_isBot [Nontrivial α] (ha : IsTop a) : ¬ IsBot a :=
 
 end PartialOrder
 
-section LinearOrder
-
-variable [LinearOrder α] {a : α}
-
-protected theorem IsMin.isBot (ha : IsMin a) : IsBot a := by
-  intro b
-  obtain hb | hb := le_total a b
-  exacts [hb, ha hb]
-
-theorem isMin_iff_isBot : IsMin a ↔ IsBot a :=
-  ⟨IsMin.isBot, IsBot.isMin⟩
-
-protected theorem IsMax.isTop (ha : IsMax a) : IsTop a :=
-  ha.toDual.isBot.ofDual
-
-theorem isMax_iff_isTop : IsMax a ↔ IsTop a :=
-  ⟨IsMax.isTop, IsTop.isMax⟩
-
-protected theorem IsMin.not_isMax [Nontrivial α] (ha : IsMin a) : ¬ IsMax a :=
-  fun ha' ↦ ha'.isTop.not_isBot ha.isBot
-
-protected theorem IsMax.not_isMin [Nontrivial α] (ha : IsMax a) : ¬ IsMin a :=
-  fun ha' ↦ ha'.isBot.not_isTop ha.isTop
-
-end LinearOrder
-
 section Prod
 
 variable [Preorder α] [Preorder β] {a a₁ a₂ : α} {b b₁ b₂ : β} {x y : α × β}
