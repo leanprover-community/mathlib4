@@ -236,7 +236,7 @@ lemma IsSymmetric.antitone_supDegree [LinearOrder σ] {p : MvPolynomial σ R} (h
   apply (le_sup (s := p.support) (f := toLex) _).not_lt
   pick_goal 3
   · rw [← hp (Equiv.swap i j), mem_support_iff, coeff_rename_mapDomain]
-    · rwa [Ne, ← leadingCoeff_eq_zero toLex.injective, leadingCoeff_eq] at h0
+    · rwa [Ne, ← leadingCoeff_eq_zero toLex.injective, leadingCoeff_toLex] at h0
     · apply Equiv.injective
   refine ⟨i, fun k hk ↦ ?_, ?_⟩
   all_goals dsimp only [Pi.toLex_apply, ofLex_toLex]
@@ -292,7 +292,7 @@ lemma bijective_esymmAlgHom_fin (n : ℕ) :
     · exact surjective_accumulate le_rfl hp.antitone_supDegree
     · rwa [Ne, leadingCoeff_eq_zero toLex.injective]
   obtain he | hne := eq_or_ne p (esymmAlgHom_monomial _ t <| p.leadingCoeff toLex)
-  · convert AlgHom.mem_range_self _ (monomial t <| p.leadingCoeff toLex); exact he
+  · convert AlgHom.mem_range_self _ (monomial t <| p.leadingCoeff toLex)
   have := (supDegree_sub_lt_of_leadingCoeff_eq toLex.injective hd.symm ?_).resolve_right hne
   · specialize ih _ this _ (Subalgebra.sub_mem _ hp <| isSymmetric_esymmAlgHom_monomial _ _) _ rfl
     · rwa [sub_ne_zero]
