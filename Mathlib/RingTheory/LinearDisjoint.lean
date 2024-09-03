@@ -233,7 +233,6 @@ in the opposite ring. -/
 theorem linearIndependent_left_op_of_flat (H : A.LinearDisjoint B) [Module.Flat R B]
     {ι : Type*} {a : ι → A} (ha : LinearIndependent R a) :
     LinearIndependent B.op (MulOpposite.op ∘ A.val ∘ a) := by
-  haveI : Module.Flat R (toSubmodule B) := ‹_›
   have h := H.1.linearIndependent_left_of_flat ha
   rwa [mulLeftMap_ker_eq_bot_iff_linearIndependent_op] at h
 
@@ -265,7 +264,6 @@ variable {A B} in
 theorem linearIndependent_right_of_flat (H : A.LinearDisjoint B) [Module.Flat R A]
     {ι : Type*} {b : ι → B} (hb : LinearIndependent R b) :
     LinearIndependent A (B.val ∘ b) := by
-  haveI : Module.Flat R (toSubmodule A) := ‹_›
   have h := H.1.linearIndependent_right_of_flat hb
   rwa [mulRightMap_ker_eq_bot_iff_linearIndependent] at h
 
@@ -298,9 +296,8 @@ variable {A B} in
 also `R`-linearly independent. -/
 theorem linearIndependent_mul_of_flat_left (H : A.LinearDisjoint B) [Module.Flat R A]
     {κ ι : Type*} {a : κ → A} {b : ι → B} (ha : LinearIndependent R a)
-    (hb : LinearIndependent R b) : LinearIndependent R fun (i : κ × ι) ↦ (a i.1).1 * (b i.2).1 := by
-  haveI : Module.Flat R (toSubmodule A) := ‹_›
-  exact H.1.linearIndependent_mul_of_flat_left ha hb
+    (hb : LinearIndependent R b) : LinearIndependent R fun (i : κ × ι) ↦ (a i.1).1 * (b i.2).1 :=
+  H.1.linearIndependent_mul_of_flat_left ha hb
 
 variable {A B} in
 /-- If `A` and `B` are linearly disjoint, if `B` is flat, then for any family of
@@ -309,9 +306,8 @@ variable {A B} in
 also `R`-linearly independent. -/
 theorem linearIndependent_mul_of_flat_right (H : A.LinearDisjoint B) [Module.Flat R B]
     {κ ι : Type*} {a : κ → A} {b : ι → B} (ha : LinearIndependent R a)
-    (hb : LinearIndependent R b) : LinearIndependent R fun (i : κ × ι) ↦ (a i.1).1 * (b i.2).1 := by
-  haveI : Module.Flat R (toSubmodule B) := ‹_›
-  exact H.1.linearIndependent_mul_of_flat_right ha hb
+    (hb : LinearIndependent R b) : LinearIndependent R fun (i : κ × ι) ↦ (a i.1).1 * (b i.2).1 :=
+  H.1.linearIndependent_mul_of_flat_right ha hb
 
 variable {A B} in
 /-- If `A` and `B` are linearly disjoint, if one of `A` and `B` is flat, then for any family of
@@ -336,14 +332,12 @@ variable {A B}
 variable (H : A.LinearDisjoint B)
 
 theorem of_le_left_of_flat {A' : Subalgebra R S}
-    (h : A' ≤ A) [Module.Flat R B] : A'.LinearDisjoint B := by
-  haveI : Module.Flat R (toSubmodule B) := ‹_›
-  exact ⟨H.1.of_le_left_of_flat h⟩
+    (h : A' ≤ A) [Module.Flat R B] : A'.LinearDisjoint B :=
+  ⟨H.1.of_le_left_of_flat h⟩
 
 theorem of_le_right_of_flat {B' : Subalgebra R S}
-    (h : B' ≤ B) [Module.Flat R A] : A.LinearDisjoint B' := by
-  haveI : Module.Flat R (toSubmodule A) := ‹_›
-  exact ⟨H.1.of_le_right_of_flat h⟩
+    (h : B' ≤ B) [Module.Flat R A] : A.LinearDisjoint B' :=
+  ⟨H.1.of_le_right_of_flat h⟩
 
 theorem of_le_of_flat_right {A' B' : Subalgebra R S}
     (ha : A' ≤ A) (hb : B' ≤ B) [Module.Flat R B] [Module.Flat R A'] :
