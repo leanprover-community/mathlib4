@@ -44,7 +44,7 @@ extractVariations () {
 commits="$(
   # retrieve the last comment, make sure that it is by `leanprover-bot`
   gh pr view "${PR}" --json comments |
-    jq '.comments | last | select(.author.login=="leanprover-bot") | .body' |
+    jq '.comments | last | select(.author.login=="adomani") | .body' |
     # clean up everything except the source and target commit
     sed -n '/[significant changes]/{ s=.*http://speed.lean-fro.org/mathlib4/compare/\([^/]*\)/to/\([^)]*\)).*=\1,\2=p }'
 )"
