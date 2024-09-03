@@ -341,7 +341,7 @@ protected theorem IsTop.lt_of_ne (ha : IsTop a) (h : b ≠ a) : b < a :=
 protected theorem IsBot.not_isTop [Nontrivial α] (ha : IsBot a) : ¬ IsTop a := by
   intro ha'
   obtain ⟨b, hb⟩ := exists_ne a
-  exact(ha.lt_of_ne hb.symm).not_lt (ha'.lt_of_ne hb)
+  exact (ha.lt_of_ne hb.symm).not_lt (ha'.lt_of_ne hb)
 
 protected theorem IsTop.not_isBot [Nontrivial α] (ha : IsTop a) : ¬ IsBot a :=
   fun ha' ↦ ha.toDual.not_isTop ha'.toDual
