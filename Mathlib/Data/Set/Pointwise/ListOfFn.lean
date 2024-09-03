@@ -5,7 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.BigOperators.Group.List
 import Mathlib.Data.List.OfFn
-import Mathlib.Data.Set.Pointwise.Basic
+import Mathlib.Algebra.Ring.Pointwise.Set
 
 /-!
 # Pointwise operations with lists of sets

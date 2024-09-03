@@ -6,7 +6,7 @@ Authors: Eric Wieser
 import Mathlib.Algebra.Group.Submonoid.Pointwise
 import Mathlib.Algebra.Ring.Action.Basic
 import Mathlib.Algebra.Ring.Subsemiring.Basic
-import Mathlib.Data.Set.Pointwise.Basic
+import Mathlib.Algebra.Ring.Pointwise.Set
 
 /-! # Pointwise instances on `Subsemiring`s
 

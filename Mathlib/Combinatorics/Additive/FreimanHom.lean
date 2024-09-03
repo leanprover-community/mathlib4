@@ -7,7 +7,7 @@ import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.Order.BigOperators.Group.Multiset
 import Mathlib.Data.ZMod.Defs
-import Mathlib.Data.Set.Pointwise.Basic
+import Mathlib.Algebra.Ring.Pointwise.Set
 
 /-!
 # Freiman homomorphisms

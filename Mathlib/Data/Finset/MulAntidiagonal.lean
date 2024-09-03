@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Monoid.Defs
-import Mathlib.Data.Set.Pointwise.Basic
+import Mathlib.Algebra.Ring.Pointwise.Set
 import Mathlib.Data.Set.MulAntidiagonal
 
 /-! # Multiplication antidiagonal as a `Finset`.

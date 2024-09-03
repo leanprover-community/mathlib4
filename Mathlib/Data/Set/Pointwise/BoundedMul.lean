@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury KudryashovJ
 -/
 import Mathlib.Algebra.Order.Monoid.Defs
-import Mathlib.Data.Set.Pointwise.Basic
+import Mathlib.Algebra.Ring.Pointwise.Set
 
 /-!
 

@@ -7,7 +7,7 @@ import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.GroupWithZero.Action.Basic
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Data.Set.Pairwise.Basic
-import Mathlib.Data.Set.Pointwise.Basic
+import Mathlib.Algebra.Ring.Pointwise.Set
 
 /-!
 # Pointwise operations of sets

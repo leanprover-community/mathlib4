@@ -5,7 +5,7 @@ Authors: Floris van Doorn
 -/
 import Mathlib.Algebra.Order.Kleene
 import Mathlib.Algebra.Order.Ring.Canonical
-import Mathlib.Data.Set.Pointwise.Basic
+import Mathlib.Algebra.Ring.Pointwise.Set
 
 /-!
 # Sets as a semiring under union

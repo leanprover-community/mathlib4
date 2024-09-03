@@ -5,7 +5,7 @@ Authors: Yury Kudryashov, Patrick Massot
 -/
 import Mathlib.Order.Interval.Set.UnorderedInterval
 import Mathlib.Algebra.Order.Interval.Set.Monoid
-import Mathlib.Data.Set.Pointwise.Basic
+import Mathlib.Algebra.Ring.Pointwise.Set
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Group.MinMax
 

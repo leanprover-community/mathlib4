@@ -5,7 +5,7 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Star.Basic
 import Mathlib.Data.Set.Finite
-import Mathlib.Data.Set.Pointwise.Basic
+import Mathlib.Algebra.Ring.Pointwise.Set
 
 /-!
 # Pointwise star operation on sets

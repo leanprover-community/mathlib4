@@ -6,7 +6,7 @@ Authors: Yaël Dillies
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Data.Fintype.Card
-import Mathlib.Data.Set.Pointwise.Basic
+import Mathlib.Algebra.Ring.Pointwise.Set
 
 /-!
 # Dissociation and span

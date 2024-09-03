@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Iván Renison, Bhavik Mehta
 -/
 import Mathlib.Combinatorics.SimpleGraph.Hasse
-import Mathlib.Data.Set.Pointwise.Basic
+import Mathlib.Algebra.Ring.Pointwise.Set
 
 /-!
 # Definition of circulant graphs
