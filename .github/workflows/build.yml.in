@@ -149,7 +149,7 @@ jobs:
         id: get
         run: |
           printf '\nls -ao .lake/build/lib/Mathlib/\n'
-          ls -ao .lake/build/lib/Mathlib/
+          ls -aor .lake/build/lib/Mathlib/
           lake exe cache clean
           # Fail quickly if the cache is completely cold, by checking for Mathlib.Init
           printf '\nls -ao .lake/build/lib/Mathlib/\n'
