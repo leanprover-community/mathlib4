@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Check if there are changes to `nolints.json` and file a PR updating these files otherwise.
+# Check if there are changes to `nolints.json` and file a PR updating it if necessary.
 # DO NOT run this as a human; this is meant only for automation usage!
 
 set -e
