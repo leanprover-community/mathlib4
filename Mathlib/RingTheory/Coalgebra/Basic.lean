@@ -38,12 +38,15 @@ class CoalgebraStruct (R : Type u) (A : Type v)
   /-- The counit of the coalgebra -/
   counit : A →ₗ[R] R
 
+section
+variable (R : Type u) {A : Type v} [CommSemiring R] [AddCommMonoid A]
+  [Module R A] [CoalgebraStruct R A] (a : A)
+
 /--
 A representation of an element `a` of a coalgebra `A` is a finite sum of pure tensors `∑ xᵢ ⊗ yᵢ`
 that is equal to `comul a`.
 -/
-structure Coalgebra.Repr (R : Type u) {A : Type v}
-    [CommSemiring R] [AddCommMonoid A] [Module R A] [CoalgebraStruct R A] (a : A) where
+structure Coalgebra.Repr where
   /-- the indexing type of a representation of `comul a` -/
   {ι : Type*}
   /-- the finite indexing set of a representation of `comul a` -/
@@ -56,11 +59,15 @@ structure Coalgebra.Repr (R : Type u) {A : Type v}
   (eq : ∑ i ∈ index, left i ⊗ₜ[R] right i = CoalgebraStruct.comul a)
 
 /-- An arbitrarily chosen representation. -/
-def Coalgebra.Repr.arbitrary (R : Type u) {A : Type v}
-    [CommSemiring R] [AddCommMonoid A] [Module R A] [CoalgebraStruct R A] (a : A) :
+def Coalgebra.Repr.arbitrary :
     Coalgebra.Repr R a where
   index := TensorProduct.exists_finset (R := R) (CoalgebraStruct.comul a) |>.choose
   eq := TensorProduct.exists_finset (R := R) (CoalgebraStruct.comul a) |>.choose_spec.symm
+
+/-- Abbreviation for an arbitrary choice of representation of `comul a`. -/
+abbrev ℛ := Coalgebra.Repr.arbitrary R a
+
+end
 
 namespace Coalgebra
 export CoalgebraStruct (comul counit)
@@ -115,6 +122,15 @@ lemma sum_tmul_counit_eq {a : A} (repr : Coalgebra.Repr R a) :
     ∑ i ∈ repr.index, (repr.left i) ⊗ₜ counit (R := R) (repr.right i) = a ⊗ₜ[R] 1 := by
   simpa [← repr.eq, map_sum] using congr($(lTensor_counit_comp_comul (R := R) (A := A)) a)
 
+lemma sum_coassoc {a : A} (repr : Repr R a)
+    (a₁ : (i : repr.ι) → Repr R (repr.left i) := fun i => ℛ R (repr.left i))
+    (a₂ : (i : repr.ι) → Repr R (repr.right i) := fun i => ℛ R (repr.right i)) :
+    ∑ i in repr.index, ∑ j in (a₁ i).index,
+      (a₁ i).left j ⊗ₜ[R] (a₁ i).right j ⊗ₜ[R] repr.right i
+      = ∑ i in repr.index, ∑ j in (a₂ i).index,
+      repr.left i ⊗ₜ[R] (a₂ i).left j ⊗ₜ[R] (a₂ i).right j := by
+  simpa [(a₂ _).eq, ← (a₁ _).eq, ← TensorProduct.tmul_sum,
+    TensorProduct.sum_tmul, ← repr.eq] using congr($(coassoc (R := R) ) a)
 
 end Coalgebra
 
