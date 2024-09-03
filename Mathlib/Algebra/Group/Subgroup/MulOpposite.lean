@@ -28,6 +28,10 @@ protected def op (H : Subgroup G) : Subgroup Gᵐᵒᵖ where
   mul_mem' ha hb := H.mul_mem hb ha
   inv_mem' := H.inv_mem
 
+#adaptation_note /-- After lean4#5020, some instances need to be copied to obtain the correct
+discrimination tree key. -/
+@[to_additive] instance instSMul (H : Subgroup G) : SMul H.op G := Submonoid.smul ..
+
 @[to_additive (attr := simp)]
 theorem mem_op {x : Gᵐᵒᵖ} {S : Subgroup G} : x ∈ S.op ↔ x.unop ∈ S := Iff.rfl
 
