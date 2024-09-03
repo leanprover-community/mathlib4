@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Finset.Update
-import Mathlib.Data.Pi.Projections
 import Mathlib.Data.Prod.TProd
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.MeasureTheory.MeasurableSpace.Instances
@@ -856,38 +855,22 @@ theorem measurable_update_left {a : δ} [DecidableEq δ] {x : π a} :
   measurable_update'.comp measurable_prod_mk_right
 
 @[measurability, fun_prop]
-theorem measurable_proj (s : Set δ) : Measurable (@proj δ π s) :=
+theorem measurable_set_restrict (s : Set δ) : Measurable (s.restrict (π := π)) :=
   measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
 
 @[measurability, fun_prop]
-theorem measurable_proj₂ {s t : Set δ} (hst : s ⊆ t) :
-    Measurable (proj₂ (α := π) hst) :=
+theorem measurable_set_restrict₂ {s t : Set δ} (hst : s ⊆ t) :
+    Measurable (restrict₂ (π := π) hst) :=
   measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
 
 @[measurability, fun_prop]
-theorem measurable_fproj (s : Finset δ) : Measurable (@fproj δ π s) :=
+theorem measurable_finset_restrict (s : Finset δ) : Measurable (s.restrict (β := π)) :=
   measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
 
 @[measurability, fun_prop]
-theorem measurable_fproj₂ {s t : Finset δ} (hst : s ⊆ t) :
-    Measurable (fproj₂ (α := π) hst) :=
+theorem measurable_finset_restrict₂ {s t : Finset δ} (hst : s ⊆ t) :
+    Measurable (Finset.restrict₂ (β := π) hst) :=
   measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
-
-variable {X : ℕ → Type*} [∀ n, MeasurableSpace (X n)]
-
-@[measurability, fun_prop]
-theorem measurable_projNat (n : ℕ) : Measurable (@projNat X n) := measurable_proj _
-
-@[measurability, fun_prop]
-theorem measurable_projNat₂ {m n : ℕ} (hmn : m ≤ n) : Measurable (projNat₂ (α := X) hmn) :=
-  measurable_proj₂ _
-
-@[measurability, fun_prop]
-theorem measurable_fprojNat (n : ℕ) : Measurable (@fprojNat X n) := measurable_proj _
-
-@[measurability, fun_prop]
-theorem measurable_fprojNat₂ {m n : ℕ} (hmn : m ≤ n) : Measurable (fprojNat₂ (α := X) hmn) :=
-  measurable_fproj₂ _
 
 variable (π) in
 theorem measurable_eq_mp {i i' : δ} (h : i = i') : Measurable (congr_arg π h).mp := by
