@@ -14,7 +14,7 @@ This file defines abundant, pseudoperfect, deficient, and weird numbers and form
   relations with prime and perfect numbers.
 
 ## Main Definitions
-* `Nat.Abundant`: a natural number `n` is _abundant_ if the sum of its proper divisors are greater
+* `Nat.Abundant`: a natural number `n` is _abundant_ if the sum of its proper divisors is greater
   than `n`
 * `Nat.Pseudoperfect`: a natural number `n` is _pseudoperfect_ if a subset of its proper divisors
   equals `n`
