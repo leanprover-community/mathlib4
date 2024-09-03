@@ -138,12 +138,15 @@ lemma nilpotencyClass_eq_succ_iff {k : ℕ} :
     nilpotencyClass (0 : R) = 1 :=
   nilpotencyClass_eq_succ_iff.mpr <| by constructor <;> simp
 
-@[simp] lemma pos_nilpotencyClass_iff [Nontrivial R] :
-    0 < nilpotencyClass x ↔ IsNilpotent x := by
-  refine ⟨isNilpotent_of_pos_nilpotencyClass, fun hx ↦ Nat.pos_of_ne_zero fun hx' ↦ ?_⟩
+lemma nilpotencyClass_pos [Nontrivial R] (hx : IsNilpotent x) : 0 < nilpotencyClass x := by
+  apply Nat.pos_of_ne_zero (fun hx' => ?_)
   replace hx := pow_nilpotencyClass hx
   rw [hx', pow_zero] at hx
   exact one_ne_zero hx
+
+@[simp] lemma pos_nilpotencyClass_iff [Nontrivial R] :
+    0 < nilpotencyClass x ↔ IsNilpotent x :=
+  ⟨isNilpotent_of_pos_nilpotencyClass, nilpotencyClass_pos⟩
 
 lemma pow_pred_nilpotencyClass [Nontrivial R] (hx : IsNilpotent x) :
     x ^ (nilpotencyClass x - 1) ≠ 0 :=
