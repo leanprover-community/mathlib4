@@ -43,6 +43,7 @@ lemma conjneg_ne_conjneg : conjneg f ≠ conjneg g ↔ f ≠ g := conjneg_inject
 @[simp] lemma conjneg_zero : conjneg (0 : G → R) = 0 := by ext; simp
 @[simp] lemma conjneg_one : conjneg (1 : G → R) = 1 := by ext; simp
 @[simp] lemma conjneg_add (f g : G → R) : conjneg (f + g) = conjneg f + conjneg g := by ext; simp
+@[simp] lemma conjneg_mul (f g : G → R) : conjneg (f * g) = conjneg f * conjneg g := by ext; simp
 
 @[simp] lemma conjneg_sum (s : Finset ι) (f : ι → G → R) :
     conjneg (∑ i in s, f i) = ∑ i in s, conjneg (f i) := by
@@ -66,6 +67,14 @@ lemma sum_conjneg [Fintype G] (f : G → R) : ∑ a, conjneg f a = ∑ a, conj (
 
 @[simp] lemma support_conjneg (f : G → R) : support (conjneg f) = -support f := by
   ext; simp [starRingEnd_apply]
+
+/-- `conjneg` bundled as a ring homomorphism. -/
+@[simps] def conjnegRingHom : (G → R) →+* (G → R) where
+  toFun := conjneg
+  map_zero' := conjneg_zero
+  map_one' := conjneg_one
+  map_add' := conjneg_add
+  map_mul' := conjneg_mul
 
 end CommSemiring
 
