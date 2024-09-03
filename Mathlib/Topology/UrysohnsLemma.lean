@@ -493,40 +493,30 @@ theorem exists_continuous_nonneg_pos [RegularSpace X] [LocallyCompactSpace X] (x
   simp only [ContinuousMap.coe_mk, Pi.one_apply] at this
   simp [this]
 
-/-- A variation of Urysohn's lemma. In a normal space `X`, for a closed set `t` and an open set `s`
-such that `t ⊆ s`, there is a continuous function `f` supported in `s`, `f x = 1` on `t` and
-`0 ≤ f x ≤ 1`. -/
-lemma exists_tsupport_one_of_isOpen_isClosed [NormalSpace X] {s t : Set X}
-    (hs : IsOpen s) (ht : IsClosed t) (hst : t ⊆ s) : ∃ f : C(X, ℝ), tsupport f ⊆ s ∧ EqOn f 1 t
-    ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1 := by
-  obtain ⟨U, V, hUopen, hVopen, hscsubU, htsubV, hDisjointUV⟩ := normal_separation hs.isClosed_compl
-    ht (HasSubset.Subset.disjoint_compl_left hst)
-  have hDisjoint : Disjoint (closure U) t := by
-    apply le_compl_iff_disjoint_right.mp
-    apply _root_.subset_trans _ (Set.compl_subset_compl.mpr htsubV)
-    apply (IsClosed.closure_subset_iff (IsOpen.isClosed_compl hVopen)).mpr
-    exact Set.subset_compl_iff_disjoint_right.mpr hDisjointUV
-  obtain ⟨f, hf⟩ := exists_continuous_zero_one_of_isClosed isClosed_closure ht hDisjoint
-  use f
-  constructor
-  · apply _root_.subset_trans _ (Set.compl_subset_comm.mp hscsubU)
-    rw [← IsClosed.closure_eq (IsOpen.isClosed_compl hUopen)]
-    apply closure_mono
-    rw [Set.subset_compl_iff_disjoint_left, Function.disjoint_support_iff]
-    exact Set.EqOn.mono subset_closure hf.1
-  · exact hf.2
-
 open Classical BigOperators
 
 /-- A variation of Urysohn's lemma. In a normal T2 space `X`, for a compact set `t` and a finite
-family of open sets `{s i}_i` such that `t ⊆ ⋃ i, s i`, there is a family of continuous function
-`{f i}` supported in `s i`, `∑ i, f i x = 1` on `t` and `0 ≤ f x ≤ 1`. -/
-lemma exists_forall_tsupport_iUnion_one_iUnion_of_isOpen_isClosed [NormalSpace X] [T2Space X]
-    [LocallyCompactSpace X] {n : ℕ} {t : Set X} {s : Fin n → Set X}
-    (hs : ∀ (i : Fin n), IsOpen (s i))
-    (htcp : IsCompact t) (hst : t ⊆ ⋃ i, s i) :
-    ∃ f : Fin n → C(X, ℝ), (∀ (i : Fin n), tsupport (f i) ⊆ s i) ∧ EqOn (∑ i, f i) 1 t
-    ∧ ∀ (i : Fin n), ∀ (x : X), f i x ∈ Icc (0 : ℝ) 1 := by
+family of open sets `{s i}_i` such that `t ⊆ ⋃ i, s i`, there is a family of compactly supported
+continuous functions `{f i}_i` supported in `s i`, `∑ i, f i x = 1` on `t` and `0 ≤ f i x ≤ 1`. -/
+lemma exists_forall_tsupport_iUnion_one_iUnion_of_isOpen_isClose [T2Space X] [LocallyCompactSpace X]
+    {n : ℕ} {t : Set X} {s : Fin n → Set X} (hs : ∀ (i : Fin n), IsOpen (s i)) (htcp : IsCompact t)
+    (hst : t ⊆ ⋃ i, s i) : ∃ f : Fin n → C(X, ℝ), (∀ (i : Fin n), tsupport (f i) ⊆ s i) ∧
+    EqOn (∑ i, f i) 1 t ∧ (∀ (i : Fin n), ∀ (x : X), f i x ∈ Icc (0 : ℝ) 1) ∧ (∀ (i : Fin n),
+    HasCompactSupport (f i)) := by
+  have : ∃ sc : Fin n → Set X, (∀ (i : Fin n), IsOpen (sc i)) ∧ (∀ (i : Fin n), IsCompact
+    (closure (sc i))) ∧ t ⊆ ⋃ i, sc i ∧ (∀ (i : Fin n), sc i ⊆ s i):= by
+    set sc := fun (i : Fin n) => Classical.choose (exists_isOpen_superset_and_isCompact_closure
+      htcp) ∩ s i
+    set spsc := Classical.choose_spec (exists_isOpen_superset_and_isCompact_closure htcp)
+    use sc
+    refine ⟨fun i => IsOpen.inter spsc.1 (hs i), ?_, ?_, ?_⟩
+    · intro i
+      apply IsCompact.of_isClosed_subset spsc.2.2 isClosed_closure
+      exact closure_mono inter_subset_left
+    · rw [← inter_iUnion _ s]
+      exact subset_inter spsc.2.1 hst
+    · exact fun i => inter_subset_right
+  obtain ⟨sc, hscopen, hscccompact, htsubsc, hssubsc⟩ := this
   rcases n with _ | n
   · simp only [Nat.zero_eq, Finset.univ_eq_empty, Finset.sum_empty, mem_Icc, IsEmpty.forall_iff,
     and_true, exists_const]
@@ -538,10 +528,10 @@ lemma exists_forall_tsupport_iUnion_one_iUnion_of_isOpen_isClosed [NormalSpace X
     rw [this]
     exact fun a => a.elim
   · have htW : ∀ (x : X), x ∈ t → ∃ (Wx : Set X), x ∈ Wx ∧ IsOpen Wx ∧ IsCompact (closure Wx)
-        ∧ ∃ (i : Fin (Nat.succ n)), (closure Wx) ⊆ s i := by
+        ∧ ∃ (i : Fin (Nat.succ n)), (closure Wx) ⊆ sc i := by
       intro x hx
-      obtain ⟨i, hi⟩ := Set.mem_iUnion.mp ((Set.mem_of_subset_of_mem hst) hx)
-      obtain ⟨cWx, hcWxCompact, hxinintcWx, hcWxsubsi⟩ := exists_compact_subset (hs i) hi
+      obtain ⟨i, hi⟩ := Set.mem_iUnion.mp ((Set.mem_of_subset_of_mem htsubsc) hx)
+      obtain ⟨cWx, hcWxCompact, hxinintcWx, hcWxsubsi⟩ := exists_compact_subset (hscopen i) hi
       use interior cWx
       refine ⟨hxinintcWx, ?_, ?_, ?_⟩
       · simp only [isOpen_interior]
@@ -565,7 +555,7 @@ lemma exists_forall_tsupport_iUnion_one_iUnion_of_isOpen_isClosed [NormalSpace X
       exact And.intro (Classical.choose_spec (htW x hx)).2.1 (Classical.choose_spec (htW x hx)).1
     obtain ⟨ι, hι⟩ := IsCompact.elim_nhds_subcover htcp W htWnhds
     set Wx : Fin (Nat.succ n) → ι → Set X := fun i xj =>
-      if closure (W xj) ⊆ s i then closure (W xj) else ∅
+      if closure (W xj) ⊆ sc i then closure (W xj) else ∅
       with hWx
     set H : Fin (Nat.succ n) → Set X := fun i => ⋃ xj, closure (Wx i xj)
       with hH
@@ -574,7 +564,7 @@ lemma exists_forall_tsupport_iUnion_one_iUnion_of_isOpen_isClosed [NormalSpace X
       rw [hH]
       simp only
       exact isClosed_iUnion_of_finite (fun (xj : ι) => isClosed_closure)
-    have IsHSubS : ∀ (i : Fin (Nat.succ n)), H i ⊆ s i := by
+    have IsHSubS : ∀ (i : Fin (Nat.succ n)), H i ⊆ sc i := by
       intro i
       rw [hH]
       simp only
@@ -582,25 +572,25 @@ lemma exists_forall_tsupport_iUnion_one_iUnion_of_isOpen_isClosed [NormalSpace X
       intro xj
       rw [hWx]
       simp only
-      by_cases hmV : closure (W xj) ⊆ s i
+      by_cases hmV : closure (W xj) ⊆ sc i
       · rw [if_pos hmV, closure_closure]
         exact hmV
       · rw [if_neg hmV, closure_empty]
         exact Set.empty_subset _
     set g : Fin (Nat.succ n) → C(X, ℝ) := fun i => Classical.choose
-      (exists_tsupport_one_of_isOpen_isClosed (hs i) (IsClosedH i) (IsHSubS i))
+      (exists_tsupport_one_of_isOpen_isClosed (hscopen i) (hscccompact i) (IsClosedH i) (IsHSubS i))
       with hg
     set f : Fin (Nat.succ n) → C(X, ℝ) :=
       fun i => (∏ j in { j : Fin (Nat.succ n) | j < i }.toFinset, (1 - g j)) * g i
       with hf
     use f
-    refine ⟨?_, ?_, ?_⟩
-    · rw [hf]
-      simp only
-      intro i
+    refine ⟨?_, ?_, ?_, ?_⟩
+    · intro i
       apply _root_.subset_trans tsupport_mul_subset_right
+      apply subset_trans _ (hssubsc i)
       exact (Classical.choose_spec
-        (exists_tsupport_one_of_isOpen_isClosed (hs i) (IsClosedH i) (IsHSubS i))).1
+        (exists_tsupport_one_of_isOpen_isClosed (hscopen i) (hscccompact i) (IsClosedH i)
+        (IsHSubS i))).1
     · have hsumf (m : ℕ) (hm : m < Nat.succ n) :
           ∑ j in { j : Fin (Nat.succ n) | j ≤ ⟨m, hm⟩ }.toFinset, f j
           = 1 - (∏ j in { j : Fin (Nat.succ n) | j ≤ ⟨m, hm⟩ }.toFinset, (1 - g j)) := by
@@ -711,7 +701,7 @@ lemma exists_forall_tsupport_iUnion_one_iUnion_of_isOpen_isClosed [NormalSpace X
       rw [hg]
       simp only [mem_Icc]
       rw [(Classical.choose_spec (exists_tsupport_one_of_isOpen_isClosed
-        (hs i) (IsClosedH i) (IsHSubS i))).2.1 hxHi]
+        (hscopen i) (hscccompact i) (IsClosedH i) (IsHSubS i))).2.1 hxHi]
       simp only [Pi.one_apply, sub_self]
     · intro i x
       rw [hf]
@@ -722,9 +712,16 @@ lemma exists_forall_tsupport_iUnion_one_iUnion_of_isOpen_isClosed [NormalSpace X
         intro c _
         simp only [Pi.sub_apply, Pi.one_apply]
         rw [hg, ← unitInterval.mem_iff_one_sub_mem]
-        exact (Classical.choose_spec (exists_tsupport_one_of_isOpen_isClosed (hs c) (IsClosedH c)
-          (IsHSubS c))).2.2 x
+        exact (Classical.choose_spec (exists_tsupport_one_of_isOpen_isClosed (hscopen c)
+          (hscccompact c) (IsClosedH c) (IsHSubS c))).2.2 x
       · rw [hg]
         simp only
-        exact (Classical.choose_spec (exists_tsupport_one_of_isOpen_isClosed (hs i) (IsClosedH i)
-          (IsHSubS i))).2.2 x
+        exact (Classical.choose_spec (exists_tsupport_one_of_isOpen_isClosed (hscopen i)
+          (hscccompact i) (IsClosedH i) (IsHSubS i))).2.2 x
+    · intro i
+      apply IsCompact.of_isClosed_subset (hscccompact i) (isClosed_closure)
+      apply closure_mono
+      apply _root_.subset_trans (Function.support_mul_subset_right _ _)
+      exact subset_trans subset_closure (Classical.choose_spec
+        (exists_tsupport_one_of_isOpen_isClosed (hscopen i) (hscccompact i) (IsClosedH i)
+        (IsHSubS i))).1
