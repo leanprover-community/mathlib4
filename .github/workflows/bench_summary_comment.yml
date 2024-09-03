@@ -22,7 +22,6 @@ jobs:
           ref: master
 
       - name: Summarize bench output
-        id: bench_summary
         run: |
           comment="$(./scripts/bench.sh "${PR}")"
           printf 'Posting the following to PR #%s:\n---\n%s\n---\n' "${PR}" "${comment}"
@@ -30,10 +29,3 @@ jobs:
         env:
           PR:  ${{ github.event.issue.number }}
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
-
-      - name: Add comment to PR
-        if: ${{ steps.bench_summary.outputs.bench_tally != '' }}
-        uses: GrantBirki/comment@v2
-        with:
-          issue-number: ${{ github.event.issue.number }}
-          body: ${{ steps.bench_summary.outputs.bench_tally }}
