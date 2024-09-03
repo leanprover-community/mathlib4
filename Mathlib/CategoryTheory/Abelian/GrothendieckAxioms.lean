@@ -20,14 +20,21 @@ basic facts about them.
 - `AB5` -- an abelian category satisfies `AB5` provided that filtered colimits are exact.
 - The duals of the above definitions, called `AB4Star` and `AB5Star`.
 
-## Implementation Details
+## Remarks
 
 For `AB4` and `AB5`, we only require left exactness as right exactness is automatic.
+A comparison with Grothendieck's original formulation of the properties can be found in the
+comments of the linked Stacks page.
+Exactness as the preservation of short exact sequences is introduced in
+`CategoryTheory.Abelian.Exact`.
 
 ## Projects
 
 - Add additional axioms, especially define Grothendieck categories.
 - Prove that `AB5` implies `AB4`.
+
+## References
+* [Stacks: Grothendieck's AB conditions](https://stacks.math.columbia.edu/tag/079A)
 
 -/
 
