@@ -169,16 +169,17 @@ jobs:
       - name: get cache
         id: get
         run: |
-          printf '\nls -ao .lake/build/lib/Mathlib/\n'
+          printf '\n* ls -ao .lake/build/lib/Mathlib/\n'
           ls -aor .lake/build/lib/Mathlib/ || echo "no libs"
-          lake exe cache clean
+          echo "* lake exe cache clean!"
+          lake exe cache clean!
           # Fail quickly if the cache is completely cold, by checking for Mathlib.Init
-          printf '\nls -ao .lake/build/lib/Mathlib/\n'
+          printf '\n* ls -ao .lake/build/lib/Mathlib/\n'
           ls -ao .lake/build/lib/Mathlib/ || echo "no libs"
-          printf '\nlake exe cache get Mathlib.Init\n'
+          printf '\n* lake exe cache get Mathlib.Init\n'
           lake exe cache get Mathlib.Init
-          echo "error code: $?"
-          printf '\nls -ao .lake/build/lib/Mathlib/\n'
+          echo "* 'cache get' error code: $?"
+          printf '\n* ls -ao .lake/build/lib/Mathlib/\n'
           ls -ao .lake/build/lib/Mathlib/ || echo "no libs"
           lake build --no-build Mathlib.Init && lake exe cache get
           #! test -e .lake/build/lib/Mathlib/Init.olean; echo $?
