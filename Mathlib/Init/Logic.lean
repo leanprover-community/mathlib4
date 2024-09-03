@@ -413,13 +413,9 @@ variable (g : α → α → α)
 /-- Local notation for `g`, high priority to avoid ambiguity with `HAdd.hAdd`. -/
 local infix:65 (priority := high) " + " => g
 
-@[deprecated Std.Commutative (since := "2024-09-03")]
-def Commutative       := ∀ a b, a * b = b * a
-@[deprecated Std.Associative (since := "2024-09-03")]
-def Associative       := ∀ a b c, (a * b) * c = a * (b * c)
-@[deprecated Std.LawfulLeftIdentity (since := "2024-09-03")]
+@[deprecated (since := "2024-09-03")] -- unused in Mathlib
 def LeftIdentity      := ∀ a, one * a = a
-@[deprecated Std.LawfulRightIdentity (since := "2024-09-03")]
+@[deprecated (since := "2024-09-03")] -- unused in Mathlib
 def RightIdentity     := ∀ a, a * one = a
 @[deprecated (since := "2024-09-03")] -- unused in Mathlib
 def RightInverse      := ∀ a, a * a⁻¹ = one
@@ -432,6 +428,8 @@ def LeftDistributive  := ∀ a b c, a * (b + c) = a * b + a * c
 @[deprecated (since := "2024-09-03")] -- unused in Mathlib
 def RightDistributive := ∀ a b c, (a + b) * c = a * c + b * c
 
+def Commutative       := ∀ a b, a * b = b * a
+def Associative       := ∀ a b c, (a * b) * c = a * (b * c)
 def RightCommutative (h : β → α → β) := ∀ b a₁ a₂, h (h b a₁) a₂ = h (h b a₂) a₁
 def LeftCommutative (h : α → β → β) := ∀ a₁ a₂ b, h a₁ (h a₂ b) = h a₂ (h a₁ b)
 

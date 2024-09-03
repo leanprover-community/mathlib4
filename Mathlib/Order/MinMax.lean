@@ -234,16 +234,34 @@ theorem le_of_max_le_left {a b c : α} (h : max a b ≤ c) : a ≤ c :=
 theorem le_of_max_le_right {a b c : α} (h : max a b ≤ c) : b ≤ c :=
   le_trans (le_max_right _ _) h
 
-theorem max_commutative : Std.Commutative (max : α → α → α) := ⟨max_comm⟩
-theorem max_associative : Std.Associative (max : α → α → α) := ⟨max_assoc⟩
-instance : Std.Commutative (α := α) max where comm := max_comm
-instance : Std.Associative (α := α) max where assoc := max_assoc
-theorem max_left_commutative : LeftCommutative (max : α → α → α) := max_left_comm
+theorem max_commutative : Commutative (max : α → α → α) :=
+  max_comm
 
-theorem min_commutative : Std.Commutative (min : α → α → α) := ⟨min_comm⟩
-theorem min_associative : Std.Associative (α := α) min := ⟨min_assoc⟩
-instance : Std.Commutative (α := α) min where comm := min_comm
-instance : Std.Associative (α := α) min where assoc := min_assoc
-theorem min_left_commutative : LeftCommutative (min : α → α → α) := min_left_comm
+theorem max_associative : Associative (max : α → α → α) :=
+  max_assoc
+
+instance : Std.Commutative (α := α) max where
+  comm := max_comm
+
+instance : Std.Associative (α := α) max where
+  assoc := max_assoc
+
+theorem max_left_commutative : LeftCommutative (max : α → α → α) :=
+  max_left_comm
+
+theorem min_commutative : Commutative (min : α → α → α) :=
+  min_comm
+
+theorem min_associative : Associative (α := α) min :=
+  min_assoc
+
+instance : Std.Commutative (α := α) min where
+  comm := min_comm
+
+instance : Std.Associative (α := α) min where
+  assoc := min_assoc
+
+theorem min_left_commutative : LeftCommutative (min : α → α → α) :=
+  min_left_comm
 
 end
