@@ -465,7 +465,7 @@ lemma Monic.supDegree_mul_of_ne_zero
     (p * q).supDegree D = p.supDegree D + q.supDegree D := by
   cases subsingleton_or_nontrivial R; · exact (hp (Subsingleton.elim _ _)).elim
   apply supDegree_eq_of_max
-  · rw [← AddHom.srange_mk hadd]
+  · rw [← AddHom.mem_srange_mk hadd]
     exact add_mem (supDegree_mem_range D hp) (supDegree_mem_range D hq.ne_zero)
   · simp_rw [Finsupp.mem_support_iff, apply_supDegree_add_supDegree hD hadd, hq, mul_one,
       Ne, leadingCoeff_eq_zero hD, hp, not_false_eq_true]
