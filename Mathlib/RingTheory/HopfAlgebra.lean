@@ -50,12 +50,17 @@ suppress_compilation
 
 universe u v w
 
+/-- Isolates the antipode of a Hopf algebra, to allow API to be constructed before proving the
+Hopf algebra axioms. See `HopfAlgebra` for documentation. -/
+class HopfAlgebraStruct (R : Type u) (A : Type v) [CommSemiring R] [Semiring A]
+    extends Bialgebra R A where
+  /-- The antipode of the Hopf algebra. -/
+  antipode : A →ₗ[R] A
+
 /-- A Hopf algebra over a commutative (semi)ring `R` is a bialgebra over `R` equipped with an
 `R`-linear endomorphism `antipode` satisfying the antipode axioms. -/
 class HopfAlgebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends
-    Bialgebra R A where
-  /-- The antipode of the Hopf algebra. -/
-  antipode : A →ₗ[R] A
+    HopfAlgebraStruct R A where
   /-- One of the antipode axioms for a Hopf algebra. -/
   mul_antipode_rTensor_comul :
     LinearMap.mul' R A ∘ₗ antipode.rTensor A ∘ₗ comul = (Algebra.linearMap R A) ∘ₗ counit
@@ -64,6 +69,8 @@ class HopfAlgebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extend
     LinearMap.mul' R A ∘ₗ antipode.lTensor A ∘ₗ comul = (Algebra.linearMap R A) ∘ₗ counit
 
 namespace HopfAlgebra
+
+export HopfAlgebraStruct (antipode)
 
 variable {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [HopfAlgebra R A]
 
@@ -109,6 +116,7 @@ lemma sum_mul_antipode_eq_smul {a : A} (repr : Repr R a) :
   rw [sum_mul_antipode_eq, Algebra.smul_def, mul_one]
 
 end HopfAlgebra
+
 namespace CommSemiring
 
 variable (R : Type u) [CommSemiring R]
@@ -125,88 +133,82 @@ instance toHopfAlgebra : HopfAlgebra R R where
 theorem antipode_eq_id : antipode (R := R) (A := R) = .id := rfl
 
 end CommSemiring
+
 namespace MonoidAlgebra
+
+open HopfAlgebra
 
 variable {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [HopfAlgebra R A]
 variable {G : Type w} [Group G]
 
 variable (R A G) in
-/-- The antipode in the `R`-Hopf algebra structure on `MonoidAlgebra A G`, sending
-`single g a` to `single g⁻¹ (antipode a)`. -/
-def antipode :
-    MonoidAlgebra A G →ₗ[R] MonoidAlgebra A G :=
-  Finsupp.lsum R fun g => Finsupp.lsingle g⁻¹ ∘ₗ HopfAlgebra.antipode
+instance instHopfAlgebraStruct : HopfAlgebraStruct R (MonoidAlgebra A G) where
+  antipode := Finsupp.lsum R fun g => Finsupp.lsingle g⁻¹ ∘ₗ antipode
 
 @[simp]
 lemma antipode_single (g : G) (a : A) :
-    antipode R A G (single g a) = single g⁻¹ (HopfAlgebra.antipode (R := R) a) := by
+    antipode (R := R) (single g a) = single g⁻¹ (antipode (R := R) a) := by
   simp only [MonoidAlgebra, antipode, Finsupp.coe_lsum, map_zero, Finsupp.sum_single_index]
   rfl
 
-@[simps! antipode]
-instance instHopfAlgebra : HopfAlgebra R (MonoidAlgebra A G) :=
-  { instBialgebra R A G with
-    antipode := antipode R A G
-    mul_antipode_rTensor_comul := lhom_ext fun a b => by
-      simp only [LinearMap.coe_comp, Function.comp_apply, comul_single,
-        ← (Coalgebra.Repr.arbitrary R b).eq, map_sum,
-        TensorProduct.map_tmul, lsingle_apply, LinearMap.rTensor_tmul, antipode_single,
-        LinearMap.mul'_apply, single_mul_single, inv_mul_cancel, counit_single,
-        Algebra.linearMap_apply, coe_algebraMap]
-      simp only [← lsingle_apply (k := R), ← map_sum (lsingle R A (1 : G)),
-        HopfAlgebra.sum_antipode_mul_eq_smul, Algebra.algebraMap_eq_smul_one]
-    mul_antipode_lTensor_comul := lhom_ext fun a b => by
-      simp only [LinearMap.coe_comp, Function.comp_apply, comul_single,
-        ← (Coalgebra.Repr.arbitrary R b).eq, map_sum, TensorProduct.map_tmul,
-        lsingle_apply, LinearMap.lTensor_tmul, antipode_single, LinearMap.mul'_apply,
-        single_mul_single, mul_inv_cancel, counit_single, Algebra.linearMap_apply, coe_algebraMap]
-      simp only [← lsingle_apply (k := R), ← map_sum (lsingle R A (1 : G)),
-        HopfAlgebra.sum_mul_antipode_eq_smul, Algebra.algebraMap_eq_smul_one] }
+instance instHopfAlgebra : HopfAlgebra R (MonoidAlgebra A G) where
+  toHopfAlgebraStruct := instHopfAlgebraStruct R A G
+  mul_antipode_rTensor_comul := lhom_ext fun a b => by
+    simp only [LinearMap.coe_comp, Function.comp_apply, comul_single,
+      ← (Coalgebra.Repr.arbitrary R b).eq, map_sum,
+      TensorProduct.map_tmul, lsingle_apply, LinearMap.rTensor_tmul, antipode_single,
+      LinearMap.mul'_apply, single_mul_single, inv_mul_cancel, counit_single,
+      Algebra.linearMap_apply, coe_algebraMap]
+    simp only [← lsingle_apply (k := R), ← map_sum (lsingle R A (1 : G)),
+      sum_antipode_mul_eq_smul, Algebra.algebraMap_eq_smul_one]
+  mul_antipode_lTensor_comul := lhom_ext fun a b => by
+    simp only [LinearMap.coe_comp, Function.comp_apply, comul_single,
+      ← (Coalgebra.Repr.arbitrary R b).eq, map_sum, TensorProduct.map_tmul,
+      lsingle_apply, LinearMap.lTensor_tmul, antipode_single, LinearMap.mul'_apply,
+      single_mul_single, mul_inv_cancel, counit_single, Algebra.linearMap_apply, coe_algebraMap]
+    simp only [← lsingle_apply (k := R), ← map_sum (lsingle R A (1 : G)),
+      sum_mul_antipode_eq_smul, Algebra.algebraMap_eq_smul_one]
 
 end MonoidAlgebra
 
 namespace AddMonoidAlgebra
 
+open HopfAlgebra
+
 variable {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [HopfAlgebra R A]
 variable {G : Type w} [AddGroup G]
 
 variable (R A G) in
-/-- The antipode in the `R`-Hopf algebra structure on `A[G]`, sending
-`single g a` to `single -g (antipode a)`. -/
-def antipode : A[G] →ₗ[R] A[G] :=
-  Finsupp.lsum R fun g => Finsupp.lsingle (-g) ∘ₗ HopfAlgebra.antipode
+instance instHopfAlgebraStruct : HopfAlgebraStruct R A[G] where
+  antipode := Finsupp.lsum R fun g => Finsupp.lsingle (-g) ∘ₗ antipode
 
-lemma antipode_single' (g : G) (a : A) :
-    antipode R A G (single g a) = single (-g) (HopfAlgebra.antipode (R := R) a) := by
+@[simp]
+lemma antipode_single (g : G) (a : A) :
+    antipode (R := R) (single g a) = single (-g) (antipode (R := R) a) := by
   simp only [AddMonoidAlgebra, antipode, Finsupp.coe_lsum, map_zero, Finsupp.sum_single_index]
   rfl
 
-@[simps! (config := .lemmasOnly) antipode]
-instance instHopfAlgebra : HopfAlgebra R A[G] :=
-  { instBialgebra R A G with
-    antipode := antipode R A G
-    mul_antipode_rTensor_comul := lhom_ext fun a b => by
-      simp only [LinearMap.coe_comp, Function.comp_apply, comul_single,
-        ← (Coalgebra.Repr.arbitrary R b).eq, map_sum, TensorProduct.map_tmul, lsingle_apply,
-        LinearMap.rTensor_tmul, antipode_single', LinearMap.mul'_apply, single_mul_single,
-        neg_add_cancel, counit_single, Algebra.linearMap_apply, coe_algebraMap]
-      simp only [← lsingle_apply (k := R), ← map_sum (lsingle R A (0 : G)),
-        HopfAlgebra.sum_antipode_mul_eq_smul, Algebra.algebraMap_eq_smul_one]
-    mul_antipode_lTensor_comul := lhom_ext fun a b => by
-      simp only [LinearMap.coe_comp, Function.comp_apply, comul_single,
-        ← (Coalgebra.Repr.arbitrary R b).eq, map_sum, TensorProduct.map_tmul,
-        lsingle_apply, LinearMap.lTensor_tmul, antipode_single', LinearMap.mul'_apply,
-        single_mul_single, add_neg_cancel, counit_single, Algebra.linearMap_apply, coe_algebraMap]
-      simp only [← lsingle_apply (k := R), ← map_sum (lsingle R A (0 : G)),
-        HopfAlgebra.sum_mul_antipode_eq_smul, Algebra.algebraMap_eq_smul_one] }
-
-@[simp]
-theorem antipode_single (g : G) (a : A) :
-    HopfAlgebra.antipode (R := R) (single g a) = single (-g) (HopfAlgebra.antipode (R := R) a) :=
-  antipode_single' _ _
+instance instHopfAlgebra : HopfAlgebra R A[G] where
+  toHopfAlgebraStruct := instHopfAlgebraStruct R A G
+  mul_antipode_rTensor_comul := lhom_ext fun a b => by
+    simp only [LinearMap.coe_comp, Function.comp_apply, comul_single,
+      ← (Coalgebra.Repr.arbitrary R b).eq, map_sum, TensorProduct.map_tmul, lsingle_apply,
+      LinearMap.rTensor_tmul, antipode_single, LinearMap.mul'_apply, single_mul_single,
+      neg_add_cancel, counit_single, Algebra.linearMap_apply, coe_algebraMap]
+    simp only [← lsingle_apply (k := R), ← map_sum (lsingle R A (0 : G)),
+      HopfAlgebra.sum_antipode_mul_eq_smul, Algebra.algebraMap_eq_smul_one]
+  mul_antipode_lTensor_comul := lhom_ext fun a b => by
+    simp only [LinearMap.coe_comp, Function.comp_apply, comul_single,
+      ← (Coalgebra.Repr.arbitrary R b).eq, map_sum, TensorProduct.map_tmul,
+      lsingle_apply, LinearMap.lTensor_tmul, antipode_single, LinearMap.mul'_apply,
+      single_mul_single, add_neg_cancel, counit_single, Algebra.linearMap_apply, coe_algebraMap]
+    simp only [← lsingle_apply (k := R), ← map_sum (lsingle R A (0 : G)),
+      HopfAlgebra.sum_mul_antipode_eq_smul, Algebra.algebraMap_eq_smul_one]
 
 end AddMonoidAlgebra
+
 namespace LaurentPolynomial
+
 open Finsupp
 
 variable (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [HopfAlgebra R A]
