@@ -187,6 +187,14 @@ instance (r : α → α → Prop) (s : β → β → Prop) (q₁ : Quot r) (q₂
 
 end Quot
 
+-- Porting note: in mathlib3 this notation took the Setoid as an instance-implicit argument,
+-- now it's explicit but left as a metavariable.
+-- We have not yet decided which one works best, since the setoid instance can't always be
+-- reliably found but it can't always be inferred from the expected type either.
+-- See also: https://leanprover.zulipchat.com/#narrow/stream/113489-new-members/topic/confusion.20between.20equivalence.20and.20instance.20setoid/near/360822354
+@[inherit_doc Quotient.mk]
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 namespace Quotient
 
 variable {sa : Setoid α} {sb : Setoid β}
@@ -344,6 +352,7 @@ theorem Quotient.eq_mk_iff_out {s : Setoid α} {x : Quotient s} {y : α} :
 theorem Quotient.out_equiv_out {s : Setoid α} {x y : Quotient s} : x.out ≈ y.out ↔ x = y := by
   rw [← Quotient.eq_mk_iff_out, Quotient.out_eq]
 
+@[simp]
 theorem Quotient.out_injective {s : Setoid α} : Function.Injective (@Quotient.out α s) :=
   fun _ _ h ↦ Quotient.out_equiv_out.1 <| h ▸ Setoid.refl _
 

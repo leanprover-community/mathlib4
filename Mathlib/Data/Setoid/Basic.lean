@@ -32,6 +32,9 @@ reason about them using the existing `Setoid` and its infrastructure.
 setoid, equivalence, iseqv, relation, equivalence relation
 -/
 
+@[inherit_doc Quotient.mk]
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 attribute [refl] Setoid.refl
 attribute [symm] Setoid.symm
 attribute [trans] Setoid.trans

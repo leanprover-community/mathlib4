@@ -21,6 +21,15 @@ assert_not_exists OrderedCommMonoid
 
 universe v
 
+namespace List
+
+instance {α} : IsEquiv (List α) Perm where
+  refl := .refl
+  symm _ _ := .symm
+  trans _ _ _ := .trans
+
+end List
+
 open List Subtype Nat Function
 
 variable {α : Type*} {β : Type v} {γ : Type*}
@@ -32,17 +41,20 @@ def Multiset.{u} (α : Type u) : Type u :=
 
 namespace Multiset
 
+instance : QuotLike (Multiset α) (List α) List.Perm where
+scoped instance : QuotLike.HasQuot (List α) (Multiset α) List.Perm where
+
 -- Porting note: new
 /-- The quotient map from `List α` to `Multiset α`. -/
 @[coe]
 def ofList : List α → Multiset α :=
-  Quot.mk _
+  mkQ
 
 instance : Coe (List α) (Multiset α) :=
   ⟨ofList⟩
 
 @[simp]
-theorem quot_mk_to_coe (l : List α) : @Eq (Multiset α) ⟦l⟧ l :=
+theorem quot_mk_to_coe (l : List α) : @Eq (Multiset α) (Quotient.mk _ l) l :=
   rfl
 
 @[simp]
@@ -54,9 +66,13 @@ theorem quot_mk_to_coe'' (l : List α) : @Eq (Multiset α) (Quot.mk Setoid.r l) 
   rfl
 
 @[simp]
+theorem mkQ_to_coe (l : List α) : ⟦l⟧' = l :=
+  rfl
+
+@[simp]
 theorem lift_coe {α β : Type*} (x : List α) (f : List α → β)
-    (h : ∀ a b : List α, a ≈ b → f a = f b) : Quotient.lift f h (x : Multiset α) = f x :=
-  Quotient.lift_mk _ _ _
+    (h : ∀ a b : List α, a ≈ b → f a = f b) : QuotLike.lift f h (x : Multiset α) = f x :=
+  QuotLike.lift_mkQ _ _ _
 
 @[simp]
 theorem coe_eq_coe {l₁ l₂ : List α} : (l₁ : Multiset α) = l₂ ↔ l₁ ~ l₂ :=
@@ -67,14 +83,14 @@ theorem coe_eq_coe {l₁ l₂ : List α} : (l₁ : Multiset α) = l₂ ↔ l₁ 
 instance [DecidableEq α] (l₁ l₂ : List α) : Decidable (l₁ ≈ l₂) :=
   inferInstanceAs (Decidable (l₁ ~ l₂))
 
--- Porting note: `Quotient.recOnSubsingleton₂ s₁ s₂` was in parens which broke elaboration
+-- Porting note: `QuotLike.recOnSubsingleton₂ s₁ s₂` was in parens which broke elaboration
 instance decidableEq [DecidableEq α] : DecidableEq (Multiset α)
-  | s₁, s₂ => Quotient.recOnSubsingleton₂ s₁ s₂ fun _ _ => decidable_of_iff' _ Quotient.eq
+  | s₁, s₂ => QuotLike.recOnSubsingleton₂ s₁ s₂ fun _ _ => decidable_of_iff' _ Quotient.eq
 
 /-- defines a size for a multiset by referring to the size of the underlying list -/
 protected
 def sizeOf [SizeOf α] (s : Multiset α) : ℕ :=
-  (Quot.liftOn s SizeOf.sizeOf) fun _ _ => Perm.sizeOf_eq_sizeOf
+  (QuotLike.liftOn s SizeOf.sizeOf) fun _ _ => Perm.sizeOf_eq_sizeOf
 
 instance [SizeOf α] : SizeOf (Multiset α) :=
   ⟨Multiset.sizeOf⟩
@@ -118,7 +134,7 @@ theorem coe_eq_zero_iff_isEmpty (l : List α) : (l : Multiset α) = 0 ↔ l.isEm
 
 /-- `cons a s` is the multiset which contains `s` plus one more instance of `a`. -/
 def cons (a : α) (s : Multiset α) : Multiset α :=
-  Quot.liftOn s (fun l => (a :: l : Multiset α)) fun _ _ p => Quot.sound (p.cons a)
+  QuotLike.liftOn s (fun l => (a :: l : Multiset α)) fun _ _ p => Quot.sound (p.cons a)
 
 @[inherit_doc Multiset.cons]
 infixr:67 " ::ₘ " => Multiset.cons
@@ -204,7 +220,7 @@ section Mem
 
 /-- `a ∈ s` means that `a` has nonzero multiplicity in `s`. -/
 def Mem (a : α) (s : Multiset α) : Prop :=
-  Quot.liftOn s (fun l => a ∈ l) fun l₁ l₂ (e : l₁ ~ l₂) => propext <| e.mem_iff
+  QuotLike.liftOn s (fun l => a ∈ l) fun l₁ l₂ (e : l₁ ~ l₂) => propext <| e.mem_iff
 
 instance : Membership α (Multiset α) :=
   ⟨Mem⟩
@@ -214,7 +230,7 @@ theorem mem_coe {a : α} {l : List α} : a ∈ (l : Multiset α) ↔ a ∈ l :=
   Iff.rfl
 
 instance decidableMem [DecidableEq α] (a : α) (s : Multiset α) : Decidable (a ∈ s) :=
-  Quot.recOnSubsingleton s fun l ↦ inferInstanceAs (Decidable (a ∈ l))
+  QuotLike.recOnSubsingleton s fun l ↦ inferInstanceAs (Decidable (a ∈ l))
 
 @[simp]
 theorem mem_cons {a b : α} {s : Multiset α} : a ∈ b ::ₘ s ↔ a = b ∨ a ∈ s :=
@@ -444,7 +460,7 @@ end ToList
 /-- `s ≤ t` means that `s` is a sublist of `t` (up to permutation).
   Equivalently, `s ≤ t` means that `count a s ≤ count a t` for all `a`. -/
 protected def Le (s t : Multiset α) : Prop :=
-  (Quotient.liftOn₂ s t (· <+~ ·)) fun _ _ _ _ p₁ p₂ =>
+  (QuotLike.liftOn₂ s t (· <+~ ·)) fun _ _ _ _ p₁ p₂ =>
     propext (p₂.subperm_left.trans p₁.subperm_right)
 
 instance : PartialOrder (Multiset α) where
@@ -454,7 +470,7 @@ instance : PartialOrder (Multiset α) where
   le_antisymm := by rintro ⟨l₁⟩ ⟨l₂⟩ h₁ h₂; exact Quot.sound (Subperm.antisymm h₁ h₂)
 
 instance decidableLE [DecidableEq α] : DecidableRel ((· ≤ ·) : Multiset α → Multiset α → Prop) :=
-  fun s t => Quotient.recOnSubsingleton₂ s t List.decidableSubperm
+  fun s t => QuotLike.recOnSubsingleton₂ s t List.decidableSubperm
 
 section
 
@@ -478,7 +494,7 @@ theorem coe_le {l₁ l₂ : List α} : (l₁ : Multiset α) ≤ l₂ ↔ l₁ <+
 @[elab_as_elim]
 theorem leInductionOn {C : Multiset α → Multiset α → Prop} {s t : Multiset α} (h : s ≤ t)
     (H : ∀ {l₁ l₂ : List α}, l₁ <+ l₂ → C l₁ l₂) : C s t :=
-  Quotient.inductionOn₂ s t (fun l₁ _ ⟨l, p, s⟩ => (show ⟦l⟧ = ⟦l₁⟧ from Quot.sound p) ▸ H s) h
+  QuotLike.inductionOn₂ s t (fun l₁ _ ⟨l, p, s⟩ => (show ⟦l⟧ = ⟦l₁⟧ from Quot.sound p) ▸ H s) h
 
 theorem zero_le (s : Multiset α) : 0 ≤ s :=
   Quot.inductionOn s fun l => (nil_sublist l).subperm
@@ -564,7 +580,7 @@ end
   This adds the multiplicities of each element,
   i.e. `count a (s + t) = count a s + count a t`. -/
 protected def add (s₁ s₂ : Multiset α) : Multiset α :=
-  (Quotient.liftOn₂ s₁ s₂ fun l₁ l₂ => ((l₁ ++ l₂ : List α) : Multiset α)) fun _ _ _ _ p₁ p₂ =>
+  (QuotLike.liftOn₂ s₁ s₂ fun l₁ l₂ => ((l₁ ++ l₂ : List α) : Multiset α)) fun _ _ _ _ p₁ p₂ =>
     Quot.sound <| p₁.append p₂
 
 instance : Add (Multiset α) :=
@@ -649,7 +665,7 @@ theorem nsmul_cons {s : Multiset α} (n : ℕ) (a : α) :
 /-- The cardinality of a multiset is the sum of the multiplicities
   of all its elements, or simply the length of the underlying list. -/
 def card : Multiset α →+ ℕ where
-  toFun s := (Quot.liftOn s length) fun _l₁ _l₂ => Perm.length_eq
+  toFun s := (QuotLike.liftOn s length) fun _l₁ _l₂ => Perm.length_eq
   map_zero' := rfl
   map_add' s t := Quotient.inductionOn₂ s t length_append
 
@@ -880,7 +896,7 @@ variable [DecidableEq α] {s t : Multiset α} {a b : α}
 
 /-- `erase s a` is the multiset that subtracts 1 from the multiplicity of `a`. -/
 def erase (s : Multiset α) (a : α) : Multiset α :=
-  Quot.liftOn s (fun l => (l.erase a : Multiset α)) fun _l₁ _l₂ p => Quot.sound (p.erase a)
+  QuotLike.liftOn s (fun l => (l.erase a : Multiset α)) fun _l₁ _l₂ p => Quot.sound (p.erase a)
 
 @[simp]
 theorem coe_erase (l : List α) (a : α) : erase (l : Multiset α) a = l.erase a :=
@@ -1002,7 +1018,7 @@ theorem coe_reverse (l : List α) : (reverse l : Multiset α) = l :=
   of `b` in `map f s` is the number of `a ∈ s` (counting multiplicity)
   such that `f a = b`. -/
 def map (f : α → β) (s : Multiset α) : Multiset β :=
-  Quot.liftOn s (fun l : List α => (l.map f : Multiset β)) fun _l₁ _l₂ p => Quot.sound (p.map f)
+  QuotLike.liftOn s (fun l : List α => (l.map f : Multiset β)) fun _l₁ _l₂ p => Quot.sound (p.map f)
 
 @[congr]
 theorem map_congr {f g : α → β} {s t : Multiset α} :
@@ -1193,7 +1209,7 @@ theorem map_surjective_of_surjective {f : α → β} (hf : Function.Surjective f
   which folds `f` over the multiset. It is well defined when `f` is right-commutative,
   that is, `f (f b a₁) a₂ = f (f b a₂) a₁`. -/
 def foldl (f : β → α → β) (H : RightCommutative f) (b : β) (s : Multiset α) : β :=
-  Quot.liftOn s (fun l => List.foldl f b l) fun _l₁ _l₂ p => p.foldl_eq H b
+  QuotLike.liftOn s (fun l => List.foldl f b l) fun _l₁ _l₂ p => p.foldl_eq H b
 
 @[simp]
 theorem foldl_zero (f : β → α → β) (H b) : foldl f H b 0 = b :=
@@ -1211,7 +1227,7 @@ theorem foldl_add (f : β → α → β) (H b s t) : foldl f H b (s + t) = foldl
   which folds `f` over the multiset. It is well defined when `f` is left-commutative,
   that is, `f a₁ (f a₂ b) = f a₂ (f a₁ b)`. -/
 def foldr (f : α → β → β) (H : LeftCommutative f) (b : β) (s : Multiset α) : β :=
-  Quot.liftOn s (fun l => List.foldr f b l) fun _l₁ _l₂ p => p.foldr_eq H b
+  QuotLike.liftOn s (fun l => List.foldr f b l) fun _l₁ _l₂ p => p.foldr_eq H b
 
 @[simp]
 theorem foldr_zero (f : α → β → β) (H b) : foldr f H b 0 = b :=
@@ -1282,7 +1298,7 @@ theorem foldl_induction (f : α → α → α) (H : RightCommutative f) (x : α)
 /-- Lift of the list `pmap` operation. Map a partial function `f` over a multiset
   `s` whose elements are all in the domain of `f`. -/
 nonrec def pmap {p : α → Prop} (f : ∀ a, p a → β) (s : Multiset α) : (∀ a ∈ s, p a) → Multiset β :=
-  Quot.recOn s (fun l H => ↑(pmap f l H)) fun l₁ l₂ (pp : l₁ ~ l₂) =>
+  QuotLike.recOn s (fun l H => ↑(pmap f l H)) fun l₁ l₂ (pp : l₁ ~ l₂) =>
     funext fun H₂ : ∀ a ∈ l₂, p a =>
       have H₁ : ∀ a ∈ l₁, p a := fun a h => H₂ a (pp.subset h)
       have : ∀ {s₂ e H}, @Eq.ndrec (Multiset α) l₁ (fun s => (∀ a ∈ s, p a) → Multiset β)
@@ -1383,7 +1399,7 @@ variable {m : Multiset α}
 so is the predicate that all elements of a multiset satisfy `p`. -/
 protected def decidableForallMultiset {p : α → Prop} [hp : ∀ a, Decidable (p a)] :
     Decidable (∀ a ∈ m, p a) :=
-  Quotient.recOnSubsingleton m fun l => decidable_of_iff (∀ a ∈ l, p a) <| by simp
+  QuotLike.recOnSubsingleton m fun l => decidable_of_iff (∀ a ∈ l, p a) <| by simp
 
 instance decidableDforallMultiset {p : ∀ a ∈ m, Prop} [_hp : ∀ (a) (h : a ∈ m), Decidable (p a h)] :
     Decidable (∀ (a) (h : a ∈ m), p a h) :=
@@ -1399,7 +1415,7 @@ instance decidableEqPiMultiset {β : α → Type*} [h : ∀ a, DecidableEq (β a
 /-- If `p` is a decidable predicate,
 so is the existence of an element in a multiset satisfying `p`. -/
 protected def decidableExistsMultiset {p : α → Prop} [DecidablePred p] : Decidable (∃ x ∈ m, p x) :=
-  Quotient.recOnSubsingleton m fun l => decidable_of_iff (∃ a ∈ l, p a) <| by simp
+  QuotLike.recOnSubsingleton m fun l => decidable_of_iff (∃ a ∈ l, p a) <| by simp
 
 instance decidableDexistsMultiset {p : ∀ a ∈ m, Prop} [_hp : ∀ (a) (h : a ∈ m), Decidable (p a h)] :
     Decidable (∃ (a : _) (h : a ∈ m), p a h) :=
@@ -1420,7 +1436,7 @@ variable [DecidableEq α] {s t u : Multiset α} {a b : α}
 /-- `s - t` is the multiset such that `count a (s - t) = count a s - count a t` for all `a`
   (note that it is truncated subtraction, so it is `0` if `count a t ≥ count a s`). -/
 protected def sub (s t : Multiset α) : Multiset α :=
-  (Quotient.liftOn₂ s t fun l₁ l₂ => (l₁.diff l₂ : Multiset α)) fun _v₁ _v₂ _w₁ _w₂ p₁ p₂ =>
+  (QuotLike.liftOn₂ s t fun l₁ l₂ => (l₁.diff l₂ : Multiset α)) fun _v₁ _v₂ _w₁ _w₂ p₁ p₂ =>
     Quot.sound <| p₁.diff p₂
 
 instance : Sub (Multiset α) :=
@@ -1529,7 +1545,7 @@ theorem map_union [DecidableEq β] {f : α → β} (finj : Function.Injective f)
   multiset `≤`. The multiplicity of `a` in `s ∩ t` is the minimum
   of the multiplicities in `s` and `t`. -/
 def inter (s t : Multiset α) : Multiset α :=
-  Quotient.liftOn₂ s t (fun l₁ l₂ => (l₁.bagInter l₂ : Multiset α)) fun _v₁ _v₂ _w₁ _w₂ p₁ p₂ =>
+  QuotLike.liftOn₂ s t (fun l₁ l₂ => (l₁.bagInter l₂ : Multiset α)) fun _v₁ _v₂ _w₁ _w₂ p₁ p₂ =>
     Quot.sound <| p₁.bagInter p₂
 
 instance : Inter (Multiset α) :=
@@ -1675,7 +1691,8 @@ variable (p : α → Prop) [DecidablePred p]
 /-- `Filter p s` returns the elements in `s` (with the same multiplicities)
   which satisfy `p`, and removes the rest. -/
 def filter (s : Multiset α) : Multiset α :=
-  Quot.liftOn s (fun l => (List.filter p l : Multiset α)) fun _l₁ _l₂ h => Quot.sound <| h.filter p
+  QuotLike.liftOn s (fun l => (List.filter p l : Multiset α))
+    fun _l₁ _l₂ h => Quot.sound <| h.filter p
 
 @[simp, norm_cast] lemma filter_coe (l : List α) : filter p l = l.filter p := rfl
 
@@ -1854,7 +1871,7 @@ lemma card_filter_le_iff (s : Multiset α) (P : α → Prop) [DecidablePred P] (
   if `f a` is `some b` then `b` is added to the result, otherwise
   `a` is removed from the resulting multiset. -/
 def filterMap (f : α → Option β) (s : Multiset α) : Multiset β :=
-  Quot.liftOn s (fun l => (List.filterMap f l : Multiset β))
+  QuotLike.liftOn s (fun l => (List.filterMap f l : Multiset β))
     fun _l₁ _l₂ h => Quot.sound <| h.filterMap f
 
 @[simp, norm_cast]
@@ -1927,7 +1944,7 @@ theorem filterMap_le_filterMap (f : α → Option β) {s t : Multiset α} (h : s
 /-- `countP p s` counts the number of elements of `s` (with multiplicity) that
   satisfy `p`. -/
 def countP (s : Multiset α) : ℕ :=
-  Quot.liftOn s (List.countP p) fun _l₁ _l₂ => Perm.countP_eq (p ·)
+  QuotLike.liftOn s (List.countP p) fun _l₁ _l₂ => Perm.countP_eq (p ·)
 
 @[simp]
 theorem coe_countP (l : List α) : countP p l = l.countP p :=
@@ -2685,7 +2702,7 @@ variable (p : α → Prop) [DecidablePred p] (l : Multiset α)
 /-- Given a proof `hp` that there exists a unique `a ∈ l` such that `p a`, `chooseX p l hp` returns
 that `a` together with proofs of `a ∈ l` and `p a`. -/
 def chooseX : ∀ _hp : ∃! a, a ∈ l ∧ p a, { a // a ∈ l ∧ p a } :=
-  Quotient.recOn l (fun l' ex_unique => List.chooseX p l' (ExistsUnique.exists ex_unique))
+  QuotLike.recOn l (fun l' ex_unique => List.chooseX p l' (ExistsUnique.exists ex_unique))
     (by
       intros a b _
       funext hp
@@ -2721,7 +2738,7 @@ variable (α)
 def subsingletonEquiv [Subsingleton α] : List α ≃ Multiset α where
   toFun := ofList
   invFun :=
-    (Quot.lift id) fun (a b : List α) (h : a ~ b) =>
+    (QuotLike.lift id) fun (a b : List α) (h : a ~ b) =>
       (List.ext_get h.length_eq) fun _ _ _ => Subsingleton.elim _ _
   left_inv _ := rfl
   right_inv m := Quot.inductionOn m fun _ => rfl

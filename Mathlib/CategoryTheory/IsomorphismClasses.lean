@@ -33,27 +33,26 @@ def isIsomorphicSetoid : Setoid C where
   r := IsIsomorphic
   iseqv := ⟨fun X => ⟨Iso.refl X⟩, fun ⟨α⟩ => ⟨α.symm⟩, fun ⟨α⟩ ⟨β⟩ => ⟨α.trans β⟩⟩
 
+instance : IsEquiv C IsIsomorphic where
+  refl X := ⟨Iso.refl X⟩
+  symm _ _ := fun ⟨α⟩ => ⟨α.symm⟩
+  trans _ _ _ := fun ⟨α⟩ ⟨β⟩ => ⟨α.trans β⟩
+
 end Category
 
 /-- The functor that sends each category to the quotient space of its objects up to an isomorphism.
 -/
 def isomorphismClasses : Cat.{v, u} ⥤ Type u where
-  obj C := Quotient (isIsomorphicSetoid C.α)
-  map {C D} F := Quot.map F.obj fun X Y ⟨f⟩ => ⟨F.mapIso f⟩
+  obj C := Quot IsIsomorphic
+  map {C D} F := QuotLike.map F.obj fun X Y ⟨f⟩ => ⟨F.mapIso f⟩
   map_id {C} := by  -- Porting note: this used to be `tidy`
     dsimp; apply funext; intro x
-    apply @Quot.recOn _ _ _ x
-    · intro _ _ p
-      simp only [types_id_apply]
-    · intro _
-      rfl
+    induction x using QuotLike.ind
+    simp [types_id_apply]
   map_comp {C D E} f g := by -- Porting note(s): idem
     dsimp; apply funext; intro x
-    apply @Quot.recOn _ _ _ x
-    · intro _ _ _
-      simp only [types_id_apply]
-    · intro _
-      rfl
+    induction x using QuotLike.ind
+    simp [types_id_apply]
 
 theorem Groupoid.isIsomorphic_iff_nonempty_hom {C : Type u} [Groupoid.{v} C] {X Y : C} :
     IsIsomorphic X Y ↔ Nonempty (X ⟶ Y) :=

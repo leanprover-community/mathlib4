@@ -120,9 +120,12 @@ protected def setoid (α : Type*) [Monoid α] : Setoid α where
   r := IsConj
   iseqv := ⟨IsConj.refl, IsConj.symm, IsConj.trans⟩
 
-end IsConj
+instance (α : Type*) [Monoid α] : IsEquiv α IsConj where
+  refl := refl
+  symm _ _ := symm
+  trans _ _ _ := trans
 
-attribute [local instance] IsConj.setoid
+end IsConj
 
 /-- The quotient type of conjugacy classes of a group. -/
 def ConjClasses (α : Type*) [Monoid α] : Type _ :=
@@ -130,49 +133,57 @@ def ConjClasses (α : Type*) [Monoid α] : Type _ :=
 
 namespace ConjClasses
 
+instance [Monoid α] : QuotLike (ConjClasses α) α IsConj where
+
+scoped instance [Monoid α] : QuotLike.HasQuot α (ConjClasses α) IsConj where
+
 section Monoid
 
 variable [Monoid α] [Monoid β]
 
 /-- The canonical quotient map from a monoid `α` into the `ConjClasses` of `α` -/
-protected def mk {α : Type*} [Monoid α] (a : α) : ConjClasses α := ⟦a⟧
+@[deprecated (since := "2024-09-04")]
+protected def mk {α : Type*} [Monoid α] (a : α) : ConjClasses α := Quotient.mk _ a
 
 instance : Inhabited (ConjClasses α) := ⟨⟦1⟧⟩
 
-theorem mk_eq_mk_iff_isConj {a b : α} : ConjClasses.mk a = ConjClasses.mk b ↔ IsConj a b :=
-  Iff.intro Quotient.exact Quot.sound
+theorem mk_eq_mk_iff_isConj {a b : α} : ⟦a⟧' = ⟦b⟧' ↔ IsConj a b :=
+  mkQ_eq_mkQ
 
-theorem quotient_mk_eq_mk (a : α) : ⟦a⟧ = ConjClasses.mk a :=
+@[deprecated (since := "2024-09-03")]
+theorem quotient_mk_eq_mk (a : α) : Quotient.mk _ a = ⟦a⟧' :=
   rfl
 
-theorem quot_mk_eq_mk (a : α) : Quot.mk Setoid.r a = ConjClasses.mk a :=
+set_option linter.deprecated false in
+@[deprecated (since := "2024-09-03")]
+theorem quot_mk_eq_mk (a : α) : Quot.mk (IsConj.setoid _) a = ⟦a⟧' :=
   rfl
 
-theorem forall_isConj {p : ConjClasses α → Prop} : (∀ a, p a) ↔ ∀ a, p (ConjClasses.mk a) :=
-  Iff.intro (fun h _ => h _) fun h a => Quotient.inductionOn a h
+theorem forall_isConj {p : ConjClasses α → Prop} : (∀ a, p a) ↔ ∀ a, p ⟦a⟧ :=
+  Iff.intro (fun h _ => h _) fun h a => QuotLike.inductionOn a h
 
-theorem mk_surjective : Function.Surjective (@ConjClasses.mk α _) :=
+theorem mk_surjective : Function.Surjective (mkQ (Q := ConjClasses α)) :=
   forall_isConj.2 fun a => ⟨a, rfl⟩
 
 instance : One (ConjClasses α) :=
   ⟨⟦1⟧⟩
 
-theorem one_eq_mk_one : (1 : ConjClasses α) = ConjClasses.mk 1 :=
+theorem one_eq_mk_one : (1 : ConjClasses α) = ⟦1⟧ :=
   rfl
 
-theorem exists_rep (a : ConjClasses α) : ∃ a0 : α, ConjClasses.mk a0 = a :=
+theorem exists_rep (a : ConjClasses α) : ∃ a0 : α, ⟦a0⟧ = a :=
   Quot.exists_rep a
 
 /-- A `MonoidHom` maps conjugacy classes of one group to conjugacy classes of another. -/
 def map (f : α →* β) : ConjClasses α → ConjClasses β :=
-  Quotient.lift (ConjClasses.mk ∘ f) fun _ _ ab => mk_eq_mk_iff_isConj.2 (f.map_isConj ab)
+  QuotLike.map f fun _ _ ab => f.map_isConj ab
 
 theorem map_surjective {f : α →* β} (hf : Function.Surjective f) :
     Function.Surjective (ConjClasses.map f) := by
   intro b
   obtain ⟨b, rfl⟩ := ConjClasses.mk_surjective b
   obtain ⟨a, rfl⟩ := hf b
-  exact ⟨ConjClasses.mk a, rfl⟩
+  exact ⟨⟦a⟧, rfl⟩
 
 -- Porting note: This has not been adapted to mathlib4, is it still accurate?
 library_note "slow-failing instance priority"/--
@@ -206,7 +217,7 @@ the instance priority should be even lower, see Note [lower instance priority].
 
 -- see Note [slow-failing instance priority]
 instance (priority := 900) [DecidableRel (IsConj : α → α → Prop)] : DecidableEq (ConjClasses α) :=
-  inferInstanceAs <| DecidableEq <| Quotient (IsConj.setoid α)
+  inferInstance
 
 end Monoid
 
@@ -214,18 +225,18 @@ section CommMonoid
 
 variable [CommMonoid α]
 
-theorem mk_injective : Function.Injective (@ConjClasses.mk α _) := fun _ _ =>
+theorem mk_injective : Function.Injective (mkQ (Q := ConjClasses α)) := fun _ _ =>
   (mk_eq_mk_iff_isConj.trans isConj_iff_eq).1
 
-theorem mk_bijective : Function.Bijective (@ConjClasses.mk α _) :=
+theorem mk_bijective : Function.Bijective (mkQ (Q := ConjClasses α)) :=
   ⟨mk_injective, mk_surjective⟩
 
 /-- The bijection between a `CommGroup` and its `ConjClasses`. -/
 def mkEquiv : α ≃ ConjClasses α :=
-  ⟨ConjClasses.mk, Quotient.lift id fun (a : α) b => isConj_iff_eq.1, Quotient.lift_mk _ _, by
+  ⟨mkQ, QuotLike.lift (r := IsConj) id fun (a : α) b => isConj_iff_eq.1, QuotLike.lift_mkQ _ _, by
     rw [Function.RightInverse, Function.LeftInverse, forall_isConj]
     intro x
-    rw [← quotient_mk_eq_mk, ← quotient_mk_eq_mk, Quotient.lift_mk, id]⟩
+    rw [QuotLike.lift_mkQ, id]⟩
 
 end CommMonoid
 
@@ -260,20 +271,20 @@ attribute [local instance] IsConj.setoid
 
 /-- Given a conjugacy class `a`, `carrier a` is the set it represents. -/
 def carrier : ConjClasses α → Set α :=
-  Quotient.lift conjugatesOf fun (_ : α) _ ab => IsConj.conjugatesOf_eq ab
+  QuotLike.lift conjugatesOf fun (_ : α) _ ab => IsConj.conjugatesOf_eq ab
 
-theorem mem_carrier_mk {a : α} : a ∈ carrier (ConjClasses.mk a) :=
+theorem mem_carrier_mk {a : α} : a ∈ carrier ⟦a⟧' :=
   IsConj.refl _
 
 theorem mem_carrier_iff_mk_eq {a : α} {b : ConjClasses α} :
-    a ∈ carrier b ↔ ConjClasses.mk a = b := by
+    a ∈ carrier b ↔ ⟦a⟧' = b := by
   revert b
   rw [forall_isConj]
   intro b
-  rw [carrier, eq_comm, mk_eq_mk_iff_isConj, ← quotient_mk_eq_mk, Quotient.lift_mk]
+  rw [carrier, eq_comm, mk_eq_mk_iff_isConj, QuotLike.lift_mkQ]
   rfl
 
-theorem carrier_eq_preimage_mk {a : ConjClasses α} : a.carrier = ConjClasses.mk ⁻¹' {a} :=
+theorem carrier_eq_preimage_mk {a : ConjClasses α} : a.carrier = mkQ (Q := ConjClasses α) ⁻¹' {a} :=
   Set.ext fun _ => mem_carrier_iff_mk_eq
 
 end ConjClasses

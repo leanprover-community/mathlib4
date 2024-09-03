@@ -142,6 +142,11 @@ protected theorem equiv_of_isEmpty (x y : PSet) [IsEmpty x.Type] [IsEmpty y.Type
 instance setoid : Setoid PSet :=
   ⟨PSet.Equiv, Equiv.refl, Equiv.symm, Equiv.trans⟩
 
+instance : IsEquiv PSet Equiv where
+  refl := .refl
+  symm _ _ := .symm
+  trans _ _ _ := .trans
+
 /-- A pre-set is a subset of another pre-set if every element of the first family is extensionally
 equivalent to some element of the second family. -/
 protected def Subset (x y : PSet) : Prop :=
@@ -520,7 +525,7 @@ namespace Resp
 def evalAux :
     ∀ {n},
       { f : Resp n → OfArity ZFSet.{u} ZFSet.{u} n // ∀ a b : Resp n, Resp.Equiv a b → f a = f b }
-  | 0 => ⟨fun a => ⟦a.1⟧, fun _ _ h => Quotient.sound h⟩
+  | 0 => ⟨fun a => Quotient.mk _ a.1, fun _ _ h => Quotient.sound h⟩
   | n + 1 =>
     let F : Resp (n + 1) → OfArity ZFSet ZFSet (n + 1) := fun a =>
       @Quotient.lift _ _ PSet.setoid (fun x => evalAux.1 (a.f x)) fun _ _ h =>
@@ -535,7 +540,7 @@ def eval (n) : Resp n → OfArity ZFSet.{u} ZFSet.{u} n :=
   evalAux.1
 
 theorem eval_val {n f x} :
-    (@eval (n + 1) f : ZFSet → OfArity ZFSet ZFSet n) ⟦x⟧ = eval n (Resp.f f x) :=
+    (@eval (n + 1) f : ZFSet → OfArity ZFSet ZFSet n) (Quotient.mk _ x) = eval n (Resp.f f x) :=
   rfl
 
 end Resp
@@ -574,14 +579,15 @@ noncomputable def allDefinable : ∀ {n} (F : OfArity ZFSet ZFSet n), Definable 
     @Definable.EqMk 0 ⟨choose p, Equiv.rfl⟩ _ (choose_spec p)
   | n + 1, (F : OfArity ZFSet ZFSet (n + 1)) => by
     have I : (x : ZFSet) → Definable n (F x) := fun x => allDefinable (F x)
-    refine @Definable.EqMk (n + 1) ⟨fun x : PSet => (@Definable.Resp _ _ (I ⟦x⟧)).1, ?_⟩ _ ?_
+    refine @Definable.EqMk (n + 1)
+      ⟨fun x : PSet => (@Definable.Resp _ _ (I (Quotient.mk _ x))).1, ?_⟩ _ ?_
     · dsimp [Arity.Equiv]
       intro x y h
       rw [@Quotient.sound PSet _ _ _ h]
-      exact (Definable.Resp (F ⟦y⟧)).2
+      exact (Definable.Resp (F (Quotient.mk _ y))).2
     refine funext fun q => Quotient.inductionOn q fun x => ?_
     simp_rw [Resp.eval_val, Resp.f]
-    exact @Definable.eq _ (F ⟦x⟧) (I ⟦x⟧)
+    exact @Definable.eq _ (F (Quotient.mk _ x)) (I (Quotient.mk _ x))
 
 end Classical
 
@@ -590,41 +596,45 @@ namespace ZFSet
 open PSet
 
 /-- Turns a pre-set into a ZFC set. -/
+@[deprecated (since := "2024-09-04")]
 def mk : PSet → ZFSet :=
   Quotient.mk''
 
+instance : QuotLike ZFSet PSet PSet.Equiv where
+instance : QuotLike.HasQuot PSet ZFSet PSet.Equiv where
+
 @[simp]
-theorem mk_eq (x : PSet) : @Eq ZFSet ⟦x⟧ (mk x) :=
+theorem mk_eq (x : PSet) : @Eq ZFSet (Quotient.mk _ x) ⟦x⟧ :=
   rfl
 
 @[simp]
-theorem mk_out : ∀ x : ZFSet, mk x.out = x :=
-  Quotient.out_eq
+theorem mk_out : ∀ x : ZFSet, ⟦x.out⟧ = x :=
+  QuotLike.mkQ_out
 
-theorem eq {x y : PSet} : mk x = mk y ↔ Equiv x y :=
-  Quotient.eq
+theorem eq {x y : PSet} : ⟦x⟧' = ⟦y⟧' ↔ Equiv x y :=
+  QuotLike.eq
 
-theorem sound {x y : PSet} (h : PSet.Equiv x y) : mk x = mk y :=
-  Quotient.sound h
+theorem sound {x y : PSet} (h : PSet.Equiv x y) : ⟦x⟧' = ⟦y⟧' :=
+  QuotLike.sound h
 
-theorem exact {x y : PSet} : mk x = mk y → PSet.Equiv x y :=
-  Quotient.exact
+theorem exact {x y : PSet} : ⟦x⟧' = ⟦y⟧' → PSet.Equiv x y :=
+  QuotLike.exact
 
 @[simp]
 theorem eval_mk {n f x} :
-    (@Resp.eval (n + 1) f : ZFSet → OfArity ZFSet ZFSet n) (mk x) = Resp.eval n (Resp.f f x) :=
+    (@Resp.eval (n + 1) f : ZFSet → OfArity ZFSet ZFSet n) ⟦x : PSet⟧' = Resp.eval n (Resp.f f x) :=
   rfl
 
 /-- The membership relation for ZFC sets is inherited from the membership relation for pre-sets. -/
 protected def Mem : ZFSet → ZFSet → Prop :=
-  Quotient.lift₂ PSet.Mem fun _ _ _ _ hx hy =>
+  QuotLike.lift₂ PSet.Mem fun _ _ _ _ hx hy =>
     propext ((Mem.congr_left hx).trans (Mem.congr_right hy))
 
 instance : Membership ZFSet ZFSet :=
   ⟨ZFSet.Mem⟩
 
 @[simp]
-theorem mk_mem_iff {x y : PSet} : mk x ∈ mk y ↔ x ∈ y :=
+theorem mk_mem_iff {x y : PSet} : ⟦x⟧' ∈ ⟦y⟧' ↔ x ∈ y :=
   Iff.rfl
 
 /-- Convert a ZFC set into a `Set` of ZFC sets -/
@@ -636,13 +646,13 @@ theorem mem_toSet (a u : ZFSet.{u}) : a ∈ u.toSet ↔ a ∈ u :=
   Iff.rfl
 
 instance small_toSet (x : ZFSet.{u}) : Small.{u} x.toSet :=
-  Quotient.inductionOn x fun a => by
-    let f : a.Type → (mk a).toSet := fun i => ⟨mk <| a.Func i, func_mem a i⟩
+  QuotLike.inductionOn x fun a => by
+    let f : a.Type → ⟦a⟧'.toSet := fun i => ⟨⟦a.Func i⟧, func_mem a i⟩
     suffices Function.Surjective f by exact small_of_surjective this
     rintro ⟨y, hb⟩
-    induction y using Quotient.inductionOn
+    induction y using QuotLike.inductionOn
     cases' hb with i h
-    exact ⟨i, Subtype.coe_injective (Quotient.sound h.symm)⟩
+    exact ⟨i, Subtype.coe_injective (QuotLike.sound h.symm)⟩
 
 /-- A nonempty set is one that contains some element. -/
 protected def Nonempty (u : ZFSet) : Prop :=
@@ -675,10 +685,10 @@ instance : IsTrans ZFSet (· ⊆ ·) :=
   ⟨fun _ _ _ hxy hyz _ ha => hyz (hxy ha)⟩
 
 @[simp]
-theorem subset_iff : ∀ {x y : PSet}, mk x ⊆ mk y ↔ x ⊆ y
+theorem subset_iff : ∀ {x y : PSet}, ⟦x⟧' ⊆ ⟦y⟧' ↔ x ⊆ y
   | ⟨_, A⟩, ⟨_, _⟩ =>
     ⟨fun h a => @h ⟦A a⟧ (Mem.mk A a), fun h z =>
-      Quotient.inductionOn z fun _ ⟨a, za⟩ =>
+      QuotLike.inductionOn z fun _ ⟨a, za⟩ =>
         let ⟨b, ab⟩ := h a
         ⟨b, za.trans ab⟩⟩
 
@@ -688,7 +698,7 @@ theorem toSet_subset_iff {x y : ZFSet} : x.toSet ⊆ y.toSet ↔ x ⊆ y := by
 
 @[ext]
 theorem ext {x y : ZFSet.{u}} : (∀ z : ZFSet.{u}, z ∈ x ↔ z ∈ y) → x = y :=
-  Quotient.inductionOn₂ x y fun _ _ h => Quotient.sound (Mem.ext fun w => h ⟦w⟧)
+  QuotLike.inductionOn₂ x y fun _ _ h => QuotLike.sound (Mem.ext fun w => h ⟦w⟧)
 
 theorem toSet_injective : Function.Injective toSet := fun _ _ h => ext <| Set.ext_iff.1 h
 
@@ -701,7 +711,7 @@ instance : IsAntisymm ZFSet (· ⊆ ·) :=
 
 /-- The empty ZFC set -/
 protected def empty : ZFSet :=
-  mk ∅
+  ⟦∅⟧
 
 instance : EmptyCollection ZFSet :=
   ⟨ZFSet.empty⟩
@@ -711,23 +721,23 @@ instance : Inhabited ZFSet :=
 
 @[simp]
 theorem not_mem_empty (x) : x ∉ (∅ : ZFSet.{u}) :=
-  Quotient.inductionOn x PSet.not_mem_empty
+  QuotLike.inductionOn x PSet.not_mem_empty
 
 @[simp]
 theorem toSet_empty : toSet ∅ = ∅ := by simp [toSet]
 
 @[simp]
 theorem empty_subset (x : ZFSet.{u}) : (∅ : ZFSet) ⊆ x :=
-  Quotient.inductionOn x fun y => subset_iff.2 <| PSet.empty_subset y
+  QuotLike.inductionOn x fun y => subset_iff.2 <| PSet.empty_subset y
 
 @[simp]
 theorem not_nonempty_empty : ¬ZFSet.Nonempty ∅ := by simp [ZFSet.Nonempty]
 
 @[simp]
-theorem nonempty_mk_iff {x : PSet} : (mk x).Nonempty ↔ x.Nonempty := by
-  refine ⟨?_, fun ⟨a, h⟩ => ⟨mk a, h⟩⟩
+theorem nonempty_mk_iff {x : PSet} : ⟦x⟧'.Nonempty ↔ x.Nonempty := by
+  refine ⟨?_, fun ⟨a, h⟩ => ⟨⟦a⟧, h⟩⟩
   rintro ⟨a, h⟩
-  induction a using Quotient.inductionOn
+  induction a using QuotLike.inductionOn
   exact ⟨_, h⟩
 
 theorem eq_empty (x : ZFSet.{u}) : x = ∅ ↔ ∀ y : ZFSet.{u}, y ∉ x := by
@@ -765,7 +775,7 @@ instance : LawfulSingleton ZFSet ZFSet :=
 
 @[simp]
 theorem mem_insert_iff {x y z : ZFSet.{u}} : x ∈ insert y z ↔ x = y ∨ x ∈ z :=
-  Quotient.inductionOn₃ x y z fun _ _ _ => PSet.mem_insert_iff.trans (or_congr_left eq.symm)
+  QuotLike.inductionOn₃ x y z fun _ _ _ => PSet.mem_insert_iff.trans (or_congr_left eq.symm)
 
 theorem mem_insert (x y : ZFSet) : x ∈ insert x y :=
   mem_insert_iff.2 <| Or.inl rfl
@@ -780,7 +790,7 @@ theorem toSet_insert (x y : ZFSet) : (insert x y).toSet = insert x y.toSet := by
 
 @[simp]
 theorem mem_singleton {x y : ZFSet.{u}} : x ∈ @singleton ZFSet.{u} ZFSet.{u} _ y ↔ x = y :=
-  Quotient.inductionOn₂ x y fun _ _ => PSet.mem_singleton.trans eq.symm
+  QuotLike.inductionOn₂ x y fun _ _ => PSet.mem_singleton.trans eq.symm
 
 @[simp]
 theorem toSet_singleton (x : ZFSet) : ({x} : ZFSet).toSet = {x} := by
@@ -798,7 +808,7 @@ theorem mem_pair {x y z : ZFSet.{u}} : x ∈ ({y, z} : ZFSet) ↔ x = y ∨ x = 
 
 /-- `omega` is the first infinite von Neumann ordinal -/
 def omega : ZFSet :=
-  mk PSet.omega
+  ⟦PSet.omega⟧
 
 @[simp]
 theorem omega_zero : ∅ ∈ omega :=
@@ -809,14 +819,14 @@ theorem omega_succ {n} : n ∈ omega.{u} → insert n n ∈ omega.{u} :=
   Quotient.inductionOn n fun x ⟨⟨n⟩, h⟩ =>
     ⟨⟨n + 1⟩,
       ZFSet.exact <|
-        show insert (mk x) (mk x) = insert (mk <| ofNat n) (mk <| ofNat n) by
+        show insert ⟦x⟧ ⟦x⟧ = insert ⟦ofNat n⟧ ⟦ofNat n⟧ by
           rw [ZFSet.sound h]
           rfl⟩
 
 /-- `{x ∈ a | p x}` is the set of elements in `a` satisfying `p` -/
 protected def sep (p : ZFSet → Prop) : ZFSet → ZFSet :=
   Resp.eval 1
-    ⟨PSet.sep fun y => p (mk y), fun ⟨α, A⟩ ⟨β, B⟩ ⟨αβ, βα⟩ =>
+    ⟨PSet.sep fun y => p ⟦y⟧, fun ⟨α, A⟩ ⟨β, B⟩ ⟨αβ, βα⟩ =>
       ⟨fun ⟨a, pa⟩ =>
         let ⟨b, hb⟩ := αβ a
         ⟨⟨b, by simpa only [mk_func, ← ZFSet.sound hb]⟩, hb⟩,
@@ -832,7 +842,7 @@ instance : Sep ZFSet ZFSet :=
 theorem mem_sep {p : ZFSet.{u} → Prop} {x y : ZFSet.{u}} :
     y ∈ ZFSet.sep p x ↔ y ∈ x ∧ p y :=
   Quotient.inductionOn₂ x y fun _ _ =>
-    PSet.mem_sep (p := p ∘ mk) fun _ _ h => (Quotient.sound h).subst
+    PSet.mem_sep (p := p ∘ mkQ) fun _ _ h => (Quotient.sound h).subst
 
 @[simp]
 theorem toSet_sep (a : ZFSet) (p : ZFSet → Prop) :
@@ -1545,7 +1555,7 @@ theorem choice_mem (h : ∅ ∉ x) (y : ZFSet.{u}) (yx : y ∈ x) :
   exact choice_mem_aux x h y yx
 
 private lemma toSet_equiv_aux {s : Set ZFSet.{u}} (hs : Small.{u} s) :
-  (mk <| PSet.mk (Shrink s) fun x ↦ ((equivShrink s).symm x).1.out).toSet = s := by
+  ⟦PSet.mk (Shrink s) fun x ↦ ((equivShrink s).symm x).1.out⟧'.toSet = s := by
     ext x
     rw [mem_toSet, ← mk_out x, mk_mem_iff, mk_out]
     refine ⟨?_, fun xs ↦ ⟨equivShrink s (Subtype.mk x xs), ?_⟩⟩
@@ -1558,7 +1568,7 @@ private lemma toSet_equiv_aux {s : Set ZFSet.{u}} (hs : Small.{u} s) :
 @[simps apply_coe]
 noncomputable def toSet_equiv : ZFSet.{u} ≃ {s : Set ZFSet.{u} // Small.{u, u+1} s} where
   toFun x := ⟨x.toSet, x.small_toSet⟩
-  invFun := fun ⟨s, h⟩ ↦ mk <| PSet.mk (Shrink s) fun x ↦ ((equivShrink.{u, u+1} s).symm x).1.out
+  invFun := fun ⟨s, h⟩ ↦ ⟦PSet.mk (Shrink s) fun x ↦ ((equivShrink.{u, u+1} s).symm x).1.out⟧
   left_inv := Function.rightInverse_of_injective_of_leftInverse (by intros x y; simp)
     fun s ↦ Subtype.coe_injective <| toSet_equiv_aux s.2
   right_inv s := Subtype.coe_injective <| toSet_equiv_aux s.2
