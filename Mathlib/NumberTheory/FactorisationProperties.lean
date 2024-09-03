@@ -16,7 +16,7 @@ This file defines abundant, pseudoperfect, deficient, and weird numbers and form
 ## Main Definitions
 * `Nat.Abundant`: a natural number `n` is _abundant_ if the sum of its proper divisors is greater
   than `n`
-* `Nat.Pseudoperfect`: a natural number `n` is _pseudoperfect_ if the sum of a subset of its proper 
+* `Nat.Pseudoperfect`: a natural number `n` is _pseudoperfect_ if the sum of a subset of its proper
   divisors
   equals `n`
 * `Nat.Deficient`: a natural number `n` is _deficient_ if the sum of its proper divisors is less
