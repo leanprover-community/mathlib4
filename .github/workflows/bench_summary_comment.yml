@@ -19,14 +19,14 @@ jobs:
         run: |
           comment="$(./scripts/bench.sh "${PR}")"
           printf 'Posting the following to the PR:\n---\n%s\n---\n' "${comment}"
-          printf 'comment=%s' "${comment}" >> "$GITHUB_OUTPUT"
+          printf 'bench_tally=%s' "${comment}" >> "$GITHUB_OUTPUT"
         env:
           PR:  ${{ github.event.issue.number }}
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
       - name: Add comment to PR
-        if: ${{ steps.bench_summary.outputs.topic != '' }}
+        if: ${{ steps.bench_summary.outputs.bench_tally != '' }}
         uses: GrantBirki/comment@v2
         with:
           issue-number: ${{ github.event.issue.number }}
-          body: ${{ steps.bench_summary.outputs.topic }}
+          body: ${{ steps.bench_summary.outputs.bench_tally }}
