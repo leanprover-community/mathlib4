@@ -142,41 +142,48 @@ theorem prod_range_eq_add_Ico (f : ℕ → M) {n : ℕ} (hn : 0 < n) :
 
 end for_elsewhere
 
-theorem pow_leibniz' (D : LieDerivation R L L) (n : ℕ) : ∀ a b,
+#check Nat.choose_succ_succ'
+
+theorem pow_leibniz' (D : LieDerivation R L L) (n : ℕ) (a b : L) :
     D.toLinearMap^[n] ⁅a, b⁆ = ∑ i in Finset.range (n + 1),
       Nat.choose n i • ⁅D.toLinearMap^[i] a, D.toLinearMap^[n - i] b⁆ := by
   induction n with
   | zero => simp
-  | succ n ih =>
-    intro a b
-    simp only [Function.iterate_succ_apply']
-    rw [ih a b]
-    simp only [coeFn_coe, map_sum, map_nsmul, apply_lie_eq_sub, nsmul_sub, Finset.sum_sub_distrib,
-      ← Function.iterate_succ_apply']
-    rw [sum_range_eq_add_Ico]
-    nth_rw 1 [Finset.range_eq_Ico]
-    nth_rw 2 [sum_Ico_eq_add_sub _ _ _ 1]
-    nth_rw 2 [Finset.sum_Ico_succ_top]
-    simp only [Nat.choose_zero_right, Function.iterate_zero, id_eq, tsub_zero, zero_add,
-      add_tsub_cancel_right, Nat.choose_self, le_refl, tsub_eq_zero_of_le]
-    rw [← sub_sub, add_sub_assoc, ← Finset.sum_sub_distrib]
-    have temp : ∀ x ∈ Finset.Ico 1 (n + 1),
-        (n.choose x • ⁅(⇑D)^[x] a, (⇑D)^[(n - x).succ] b⁆ -
-            n.choose (x - 1) • ⁅(⇑D)^[n - (x - 1)] b, (⇑D)^[(x - 1).succ] a⁆) =
-        (n + 1).choose x • ⁅D^[x] a, D^[n + 1 - x] b⁆ := by
+  | succ n ih => calc
+    D.toLinearMap^[n + 1] ⁅a, b⁆ =
+    -- TODO: fix succ issues in this statement already
+        ∑ x ∈ Finset.range (n + 1), n.choose x • ⁅(⇑D)^[x] a, (⇑D)^[(n - x).succ] b⁆ -
+          ∑ x ∈ Finset.range (n + 1), n.choose x • ⁅(⇑D)^[n - x] b, (⇑D)^[x.succ] a⁆ := by
+      simp only [Function.iterate_succ_apply', ih]
+      simp
+    _ = ⁅a, (⇑D)^[n.succ] b⁆ +
+          ∑ x ∈ Finset.Ico 1 (n + 1), (n.choose x • ⁅(⇑D)^[x] a, (⇑D)^[(n - x).succ] b⁆ -
+            n.choose (x - 1) • ⁅(⇑D)^[n - (x - 1)] b, (⇑D)^[(x - 1).succ] a⁆) -
+          ⁅b, (⇑D)^[n.succ] a⁆ := by
+      rw [sum_range_eq_add_Ico _ (Nat.zero_lt_succ n)]
+      nth_rw 1 [Finset.range_eq_Ico]
+      nth_rw 2 [sum_Ico_eq_add_sub _ _ _ 1]
+      nth_rw 2 [Finset.sum_Ico_succ_top (by exact Nat.le_add_left (0 + 1) n)]
+      simp [← sub_sub, add_sub_assoc, ← Finset.sum_sub_distrib]
+    _ = ⁅a, (⇑D)^[n.succ] b⁆ +
+          ∑ x ∈ Finset.Ico 1 (n + 1), (n + 1).choose x • ⁅(⇑D)^[x] a, (⇑D)^[n + 1 - x] b⁆ -
+            ⁅b, (⇑D)^[n.succ] a⁆ := by
+      rw [Finset.sum_congr rfl _]
       intro k hk
       obtain ⟨hk₁, hk₂⟩ := Finset.mem_Ico.1 hk
       rw [sub_eq_add_neg, ← smul_neg, lie_skew]
       simp only [Nat.succ_eq_add_one]
-      rw [Nat.sub_one_add_one, Nat.sub_add_comm, tsub_tsub_assoc]
-      rw [← add_smul]
-      all_goals sorry
-    rw [Finset.sum_congr _ temp]
-    rw [Finset.sum_range_succ, sum_range_eq_add_Ico]
-    simp
-    nth_rw 4 [← lie_skew]
-    rw [sub_eq_add_neg]
-    all_goals sorry
+      rw [Nat.sub_one_add_one (Nat.not_eq_zero_of_lt hk₁), Nat.sub_add_comm (Nat.le_of_lt_succ hk₂),
+        tsub_tsub_assoc (Nat.le_of_lt_succ hk₂) hk₁, ← add_smul]
+      congr
+      rw [add_comm, Nat.choose_succ]
+      --rw [Nat.choose_succ_succ']
+      sorry -- NONTRIVIAL SORRY!
+    _ = _ := by
+      rw [Finset.sum_range_succ, sum_range_eq_add_Ico _ (Nat.zero_lt_succ n)]
+      simp
+      nth_rw 4 [← lie_skew]
+      rw [sub_eq_add_neg]
 
 instance instZero : Zero (LieDerivation R L M) where
   zero :=
