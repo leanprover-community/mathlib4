@@ -27,6 +27,7 @@ namespace Mathlib.Linter
 --    else next
 --  else next
 
+/-- `SyntaxNodeKind`s that do nothing, and yet the linter ignores. -/
 abbrev exclusions : HashSet SyntaxNodeKind := HashSet.empty
   |>.insert `Batteries.Tactic.«tacticOn_goal-_=>_»
   |>.insert `«tactic#adaptation_note_»
@@ -39,6 +40,7 @@ abbrev exclusions : HashSet SyntaxNodeKind := HashSet.empty
   |>.insert ``Lean.Parser.Tactic.guardTarget
   |>.insert ``Lean.Parser.Tactic.failIfSuccess
 
+/-- the ranges of all the tactics appearing in a `tacticSeq` with at least two tactics. -/
 partial
 def findRanges (stx : Syntax) : HashSet (String.Range × SyntaxNodeKind) :=
   let next := stx.foldArgs (fun arg r => r.merge (findRanges arg)) {}
@@ -60,6 +62,7 @@ def findRanges (stx : Syntax) : HashSet (String.Range × SyntaxNodeKind) :=
       else next
     | _ => next
 
+/-- erases the ranges corresponding to tactics that actually do something. -/
 partial
 def erasable (rgs : HashSet (String.Range × SyntaxNodeKind)) (tree : InfoTree) :
     HashSet (String.Range × SyntaxNodeKind) := Id.run do
@@ -82,6 +85,7 @@ def erasable (rgs : HashSet (String.Range × SyntaxNodeKind)) (tree : InfoTree) 
         return args.foldl (fun a b => (erasable rgs b).merge a) {}
     | _  => return {}
 
+/-
 def ctorInfo : Info → String
   | .ofTacticInfo _ => "TacticInfo"
   | .ofTermInfo _ => "TermInfo"
@@ -127,6 +131,7 @@ def wr : HashSet (String.Range × SyntaxNodeKind) → InfoTree → HashSet (Stri
     else
       args.foldl (fun a b => (wr rgs b).merge a) rgs
   | rgs, _  => rgs
+-/
 
 /-- The "unnecessaryTactic" linter emits a warning when there are multiple active goals. -/
 register_option linter.unnecessaryTactic : Bool := {
@@ -156,7 +161,7 @@ def unnecessaryTacticLinter : Linter where run := withSetOptionIn fun stx ↦ do
         --dbg_trace "{(rg.start, rg.stop)} -- {rg.stop - rg.start}"
         continue
     --dbg_trace traceIT t
-    fd := wr rgs t
+    --fd := wr rgs t
     fd := erasable rgs t
     --dbg_trace "size: {fd.size}, rgs: {rgs.size}"
     for (e, str) in rgs do
