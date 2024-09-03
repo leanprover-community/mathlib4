@@ -205,20 +205,6 @@ lemma not_denselyOrdered_of_isPrincipalIdealRing [IsPrincipalIdealRing O] (hv : 
   · obtain ⟨a, rfl⟩ := hv.exists_of_le_one (by simpa using hz'.le)
     simp
 
-instance Submonoid.instOrderedCommMonoid {M : Type*} [OrderedCommMonoid M]
-    (S : Submonoid M) : OrderedCommMonoid S where
-  __ := Subtype.partialOrder _
-  mul_le_mul_left := by
-    rintro ⟨a, ha⟩ ⟨b, hb⟩
-    simp only [Subtype.mk_le_mk, Subtype.forall, Submonoid.mk_mul_mk]
-    intro h _ _
-    exact mul_le_mul_left' h _
-
-instance Submonoid.instLinearOrderedCommMonoid {M : Type*} [LinearOrderedCommMonoid M]
-    (S : Submonoid M) : LinearOrderedCommMonoid S where
-  __ := Submonoid.instOrderedCommMonoid _
-  __ := Subtype.instLinearOrder _
-
 instance Submonoid.instMulArchimedean {M : Type*} [OrderedCommMonoid M] [MulArchimedean M]
     (S : Submonoid M) : MulArchimedean S := by
   constructor
