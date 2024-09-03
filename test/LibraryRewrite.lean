@@ -1,7 +1,6 @@
 import Mathlib
 
 -- set_option trace.profiler true
--- set_option trace.profiler.threshold 5
 -- set_option trace.rw?? true
 
 variable (n : Nat)
@@ -300,11 +299,6 @@ Pattern ∑ i ∈ Finset.range n, f i
 · ∑ k ∈ Finset.range ?m, (k + 1) + ∑ k ∈ Finset.Ico ?m n, (k + 1)
   ⊢ ?m ≤ n
   Finset.sum_range_add_sum_Ico
-· ?s n
-  ⊢ ℕ → ℕ
-  ⊢ ?s 0 = 0
-  ⊢ ∀ (n : ℕ), ?s (n + 1) = ?s n + (n + 1)
-  Finset.sum_range_induction
 · ∑ k ∈ Finset.range ?N, (k + 1)
   ⊢ ∀ n ≥ ?N, n + 1 = 0
   ⊢ ?N ≤ n

@@ -77,39 +77,45 @@ private structure ImportFailure where
   /-- Exception that triggers error. -/
   exception : Exception
 
-private structure State (α : Type) where
-  tree   : PreDiscrTree α := {}
-  ngen   : NameGenerator
-  core   : Lean.Core.Cache := {}
-  meta   : Lean.Meta.Cache := {}
-  errors : Array ImportFailure := #[]
-deriving Inhabited
+/-- Information generation from imported modules. -/
+private structure ImportData where
+  errors : IO.Ref (Array ImportFailure)
 
+private def ImportData.new : BaseIO ImportData := do
+  return { errors := ← IO.mkRef #[] }
+
+/-
+It is expensive to create two new `IO.Ref` references for every `MetaM` operation,
+so instead we reuse the same references `mstate` and `cstate`. These are also used to
+store the cache, and the namegenerator
+-/
 private def addConstToPreDiscrTree
     (cctx : Core.Context)
     (env : Environment)
     (modName : Name)
+    (data : ImportData)
+    (mstate : IO.Ref Meta.State)
+    (cstate : IO.Ref Core.State)
     (act : Name → ConstantInfo → MetaM (List (Key × LazyEntry α)))
-    (state : State α) (name : Name) (constInfo : ConstantInfo) : BaseIO (State α) := do
-  if constInfo.isUnsafe then return state
-  if LazyDiscrTree.blacklistInsertion env name then return state
-  let { ngen, core := core_cache, meta := meta_cache, tree, errors } := state
-  let mstate : Meta.State := { cache := meta_cache }
+    (tree : PreDiscrTree α) (name : Name) (constInfo : ConstantInfo) :
+    BaseIO (PreDiscrTree α) := do
+  if constInfo.isUnsafe then return tree
+  if LazyDiscrTree.blacklistInsertion env name then return tree
+  /- We need to reset the metavariable context in `mstate` every time. -/
+  mstate.modify fun s => { cache := s.cache }
   let ctx : Meta.Context := { config := { transparency := .reducible } }
-  let cm := (act name constInfo).run ctx mstate
-  let cstate : Core.State := {env, cache := core_cache, ngen}
-  match ← (cm.run cctx cstate).toBaseIO with
-  | .ok ((a, ms), cs) =>
-    let tree := a.foldl (fun t (key, entry) => t.push key entry) tree
-    return { state with tree, ngen := cs.ngen, core := cs.cache, meta := ms.cache }
+  /- There seems to be no reason to reset `cstate`. -/
+  -- cstate.modify fun s => { env := s.env, cache := s.cache, ngen := s.ngen }
+  match ← (((act name constInfo) ctx mstate) cctx cstate).toBaseIO with
+  | .ok a =>
+    return a.foldl (fun t (key, entry) => t.push key entry) tree
   | .error e =>
     let i : ImportFailure := {
       module := modName,
       const := name,
-      exception := e
-    }
-    let errors := errors.push i
-    return { state with errors, core := {}, meta := {} }
+      exception := e }
+    data.errors.modify (·.push i)
+    return tree
 
 
 /--
@@ -133,40 +139,48 @@ instance : Append (InitResults α) where
 
 end InitResults
 
-private def State.toInitResults (state : State α) : InitResults α := { state with }
+private def toFlat (data : ImportData) (tree : PreDiscrTree α) :
+    BaseIO (InitResults α) := do
+  let de ← data.errors.swap #[]
+  pure ⟨tree, de⟩
 
 private partial def loadImportedModule
     (cctx : Core.Context)
     (env : Environment)
+    (data : ImportData)
+    (mstate : IO.Ref Meta.State)
+    (cstate : IO.Ref Core.State)
     (act : Name → ConstantInfo → MetaM (List (Key × LazyEntry α)))
     (mname : Name)
     (mdata : ModuleData)
-    (state : State α)
-    (i : Nat := 0) : BaseIO (State α) := do
+    (tree : PreDiscrTree α)
+    (i : Nat := 0) : BaseIO (PreDiscrTree α) := do
   if h : i < mdata.constNames.size then
     let name := mdata.constNames[i]
     let constInfo := mdata.constants[i]!
-    let state ← addConstToPreDiscrTree cctx env mname act state name constInfo
-    loadImportedModule cctx env act mname mdata state (i+1)
+    let state ← addConstToPreDiscrTree cctx env mname data mstate cstate act tree name constInfo
+    loadImportedModule cctx env data mstate cstate act mname mdata state (i+1)
   else
-    pure state
+    return tree
 
-private def importedEnvironmentInitResults (cctx : Core.Context) (ngen : NameGenerator)
+private def createImportInitResults (cctx : Core.Context) (ngen : NameGenerator)
     (env : Environment) (act : Name → ConstantInfo → MetaM (List (Key × LazyEntry α)))
     (capacity start stop : Nat) : BaseIO (InitResults α) := do
   let tree := { root := mkHashMap capacity }
-  let state := { tree, ngen }
-  go start stop state
+  go start stop tree (← ImportData.new) (← ST.mkRef {}) (← ST.mkRef { env, ngen })
 where
-  go (start stop : Nat) (state : State α) :
+  go (start stop : Nat) (tree : PreDiscrTree α)
+      (data : ImportData)
+      (mstate : IO.Ref Meta.State)
+      (cstate : IO.Ref Core.State) :
       BaseIO (InitResults α) := do
     if start < stop then
       let mname := env.header.moduleNames[start]!
       let mdata := env.header.moduleData[start]!
-      let state ← loadImportedModule cctx env act mname mdata state
-      go (start+1) stop state
+      let tree ← loadImportedModule cctx env data mstate cstate act mname mdata tree
+      go (start+1) stop tree data mstate cstate
     else
-      return state.toInitResults
+      toFlat data tree
   termination_by stop - start
 
 /-- Get the results of each task and merge using combining function -/
@@ -185,7 +199,6 @@ private def logImportFailure (f : ImportFailure) : MetaM Unit :=
 /-- Create a discriminator tree for imported environment. -/
 def createImportedDiscrTree (cctx : Core.Context) (ngen : NameGenerator) (env : Environment)
     (act : Name → ConstantInfo → MetaM (List (Key × LazyEntry α)))
-    (droppedKeys : List (List RefinedDiscrTree.Key))
     (constantsPerTask : Nat := 1000) (capacityPerTask := 128) :
     MetaM (RefinedDiscrTree α) := do
   let numModules := env.header.moduleData.size
@@ -197,14 +210,16 @@ def createImportedDiscrTree (cctx : Core.Context) (ngen : NameGenerator) (env : 
         let cnt := cnt + mdata.constants.size
         if cnt > constantsPerTask then
           let (childNGen, ngen) := ngen.mkChild
-          let t ← (importedEnvironmentInitResults cctx childNGen env act capacityPerTask start (idx+1)).asTask
+          let t ← (createImportInitResults
+            cctx childNGen env act capacityPerTask start (idx+1)).asTask
           go ngen (tasks.push t) (idx+1) 0 (idx+1)
         else
           go ngen tasks start cnt (idx+1)
       else
         if start < numModules then
           let (childNGen, _) := ngen.mkChild
-          let t ← (importedEnvironmentInitResults cctx childNGen env act capacityPerTask start numModules).asTask
+          let t ← (createImportInitResults
+            cctx childNGen env act capacityPerTask start numModules).asTask
           pure (tasks.push t)
         else
           pure tasks
@@ -212,7 +227,7 @@ def createImportedDiscrTree (cctx : Core.Context) (ngen : NameGenerator) (env : 
   let tasks ← go ngen #[] 0 0 0
   let r := combineGet {} tasks
   r.errors.forM logImportFailure
-  r.tree.toLazy.dropKeys droppedKeys
+  return r.tree.toLazy
 
 /--
 A discriminator tree for the current module's declarations only.
@@ -230,9 +245,12 @@ private def createLocalPreDiscrTree
     (ngen : NameGenerator)
     (env : Environment)
     (act : Name → ConstantInfo → MetaM (List (Key × LazyEntry α))) :
-    BaseIO (State α) := do
+    BaseIO (InitResults α) := do
   let modName := env.header.mainModule
-  env.constants.map₂.foldlM (addConstToPreDiscrTree cctx env modName act) { ngen }
+  let data ← ImportData.new
+  let r ← env.constants.map₂.foldlM (addConstToPreDiscrTree
+    cctx env modName data (← IO.mkRef {}) (← IO.mkRef { env, ngen }) act) { }
+  toFlat data r
 
 /-- Create a discriminator tree for current module declarations. -/
 def createModuleDiscrTree (act : Name → ConstantInfo → MetaM (List (Key × LazyEntry α))) :
@@ -240,7 +258,7 @@ def createModuleDiscrTree (act : Name → ConstantInfo → MetaM (List (Key × L
   let env ← getEnv
   let ngen ← getChildNgen
   let ctx ← readThe Core.Context
-  let { errors, tree, .. } ← createLocalPreDiscrTree ctx ngen env act
+  let { tree, errors } ← createLocalPreDiscrTree ctx ngen env act
   errors.forM logImportFailure
   return tree.toLazy
 
