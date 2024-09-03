@@ -151,7 +151,7 @@ jobs:
           lake --version
 
       - name: check {Mathlib, Tactic, Counterexamples, Archive}.lean are up to date
-        run: echo "lake exe mk_all --check"
+        run: lake exe mk_all --check
 
       - name: build cache
         run: |
