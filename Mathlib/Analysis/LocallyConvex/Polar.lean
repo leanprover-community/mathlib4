@@ -102,7 +102,6 @@ theorem polar_singleton {a : E} : B.polar {a} = { y | ‖B a y‖ ≤ 1 } := le_
 theorem mem_polar_singleton {x : E} (y : F) : y ∈ B.polar {x} ↔ ‖B x y‖ ≤ 1 := by
   simp only [polar_singleton, Set.mem_setOf_eq]
 
-@[simp]
 theorem polar_zero : B.polar ({0} : Set E) = Set.univ := by
   simp only [polar_singleton, map_zero, zero_apply, norm_zero, zero_le_one, Set.setOf_true]
 

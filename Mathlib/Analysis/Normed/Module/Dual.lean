@@ -275,7 +275,6 @@ theorem polar_singleton {a : E} : polar 𝕜 {a} = { x | ‖x a‖ ≤ 1 } := by
 theorem mem_polar_singleton {a : E} (y : Dual 𝕜 E) : y ∈ polar 𝕜 {a} ↔ ‖y a‖ ≤ 1 := by
   simp only [polar_singleton, mem_setOf_eq]
 
-@[simp]
 theorem polar_zero : polar 𝕜 ({0} : Set E) = Set.univ := by
   simp only [polar_singleton, map_zero, norm_zero, zero_le_one, setOf_true]
 
