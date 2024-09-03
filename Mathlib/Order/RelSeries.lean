@@ -734,17 +734,19 @@ noncomputable def comap (p : LTSeries β) (f : α → β)
   LTSeries α := mk p.length (fun i ↦ (surjective (p i)).choose)
     (fun i j h ↦ comap (by simpa only [(surjective _).choose_spec] using p.strictMono h))
 
-/-- The strict series `0 < … < n` in `ℕ`. -/
-def iota (n : ℕ) : LTSeries ℕ where
+/-- The strict series `start < … < start+n` in `ℕ`. -/
+def range (n : ℕ) (start := 0) : LTSeries ℕ where
   length := n
-  toFun := (↑)
-  step i := Nat.lt_add_one i
+  toFun := fun i => start + i
+  step i := Nat.lt_add_one (start + i)
 
-@[simp] lemma length_iota (n : ℕ) : (iota n).length = n := rfl
+@[simp] lemma length_range (n start : ℕ) : (range n start).length = n := rfl
 
-@[simp] lemma head_iota (n : ℕ) : (iota n).head = 0 := rfl
+@[simp] lemma range_apply (n start : ℕ) (i : Fin (n+1)) : (range n start) i = start + i := rfl
 
-@[simp] lemma last_iota (n : ℕ) : (iota n).last = n := rfl
+@[simp] lemma head_range (n start : ℕ) : (range n start).head = start := rfl
+
+@[simp] lemma last_range (n start : ℕ) : (range n start).last = start + n := rfl
 
 section Fintype
 
