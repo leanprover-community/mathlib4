@@ -103,28 +103,15 @@ where
 private def hasLooseBVars (keys : List Key) : Bool :=
   hasLooseBVarsAux 0 keys |>.isNone
 
-/-- Reduction procedure for the `RefinedDiscrTree` indexing. -/
-private partial def reduce (e : Expr) (config : WhnfCoreConfig) : MetaM Expr := do
-  let e ← whnfCore e config
-  match (← unfoldDefinition? e) with
-  | some e => reduce e config
-  | none => match e.etaExpandedStrict? with
-    | some e => reduce e config
-    | none   => return e
-
-
 
 /-- The context for the `LazyM α` monad-/
 private structure Context where
   /-- Variables that come from a lambda or forall binder.
   The list index gives the De Bruijn index. -/
   bvars : List FVarId
-  /-- The `whnfCore` configuration -/
-  config : WhnfCoreConfig
-
 
 /-- The monad used for evaluating a `LazyEntry α`. -/
-private abbrev LazyM (α : Type) := ReaderT Context StateRefT (LazyEntry α) MetaM
+private abbrev LazyM (α : Type) := ReaderT Context <| StateT (LazyEntry α) MetaM
 
 variable {α : Type}
 
@@ -257,7 +244,7 @@ private partial def lambdaTelescopeReduce {m} [Monad m] [MonadLiftT MetaM m] [Mo
   if DiscrTree.hasNoindexAnnotation e then
     noIndex lambdas
   else
-    match ← reduce e config with
+    match ← DiscrTree.reduce e config with
     | .lam n d b bi =>
       withLocalDecl n bi d fun fvar =>
         lambdaTelescopeReduce (b.instantiate1 fvar) (fvar.fvarId! :: lambdas) config noIndex k
@@ -276,9 +263,9 @@ private def useReducePi (name : Name) : Array (Option Expr) × List FVarId → L
   withLams lambdas <| .const name args.size
 
 /-- A single step in encoding an `Expr` into `Key`s. -/
-private def encodingStep (original : Expr) (root : Bool) (entry : LazyEntry α) :
+private def encodingStep (original : Expr) (root : Bool) (config : WhnfCoreConfig) (entry : LazyEntry α) :
     ReaderT Context MetaM (List (Key × LazyEntry α)) := do
-  lambdaTelescopeReduce original [] (← read).config
+  lambdaTelescopeReduce original [] config
     (fun lambdas => do
       let (key, entry) := mkNewStar entry
       let (key, entry) ← (withLams lambdas key).run (← read) entry
@@ -294,9 +281,9 @@ private def encodingStep (original : Expr) (root : Bool) (entry : LazyEntry α) 
           return [← (encodingStepAux e lambdas root).run (← read) entry]))
 
 /-- A single step in encoding an `Expr` into `Key`s. -/
-private def encodingStep' (original : Expr) (root : Bool) :
+private def encodingStep' (original : Expr) (root : Bool) (config : WhnfCoreConfig) :
     LazyM α Key := do
-  lambdaTelescopeReduce original [] (← read).config
+  lambdaTelescopeReduce original [] config
     (fun lambdas => do withLams lambdas (← modifyGet mkNewStar))
     (fun e lambdas => do
       unless root do
@@ -307,18 +294,16 @@ private def encodingStep' (original : Expr) (root : Bool) :
 /-- Encode `e` as a sequence of keys, computing only the first `Key`. -/
 def initializeLazyEntry (e : Expr) (val : α) (config : WhnfCoreConfig) :
     MetaM (List (Key × LazyEntry α)) := do
-  let mctx ← getMCtx
-  encodingStep e true { val, mctx } |>.run { bvars := [], config}
+  encodingStep e true config { val, mctx := ← getMCtx } |>.run { bvars := [] }
 
 /-- Encode `e` as a sequence of keys, computing only the first `Key`. -/
 private def initializeLazyEntry' (e : Expr) (val : α) (config : WhnfCoreConfig) :
     MetaM (Key × LazyEntry α) := do
-  let mctx ← getMCtx
-  encodingStep' e true |>.run { bvars := [], config} { val, mctx }
+  encodingStep' e true config |>.run { bvars := [] } { val, mctx := ← getMCtx }
 
 
-private partial def processLazyEntryAux (entry : LazyEntry α) :
-    ReaderT WhnfCoreConfig MetaM (List (Key × LazyEntry α) ⊕ α) := do
+private partial def processLazyEntryAux (entry : LazyEntry α) (config : WhnfCoreConfig) :
+    MetaM (List (Key × LazyEntry α) ⊕ α) := do
   match entry.stack with
   | [] => return .inr entry.val
   | stackEntry :: stack =>
@@ -328,17 +313,17 @@ private partial def processLazyEntryAux (entry : LazyEntry α) :
       let value := valueRev.reverse
       let entry := if hasLooseBVars value then entry else
         { entry with cache := entry.cache.insert key value }
-      processLazyEntryAux entry
+      processLazyEntryAux entry config
     | .star =>
       let (key, entry) := mkNewStar entry
       return .inl [(key, entry)]
     | .expr info =>
       withLCtx info.lctx info.localInsts do
       return .inl (
-        ← encodingStep info.expr (root := false) entry |>.run { info with config := (← read) })
+        ← encodingStep info.expr false config entry |>.run { bvars := info.bvars })
 
-private partial def processLazyEntryAux' (entry : LazyEntry α) :
-    ReaderT WhnfCoreConfig MetaM ((Key × LazyEntry α) ⊕ α) := do
+private partial def processLazyEntryAux' (entry : LazyEntry α) (config : WhnfCoreConfig) :
+    MetaM ((Key × LazyEntry α) ⊕ α) := do
   match entry.stack with
   | [] => return .inr entry.val
   | stackEntry :: stack =>
@@ -349,13 +334,13 @@ private partial def processLazyEntryAux' (entry : LazyEntry α) :
       let entry := if hasLooseBVars value then
         { entry with cache := entry.cache.insert key value }
         else entry
-      processLazyEntryAux' entry
+      processLazyEntryAux' entry config
     | .star =>
       let (key, entry) := mkNewStar entry
       return .inl (key, entry)
     | .expr info =>
       withLCtx info.lctx info.localInsts do
-      return .inl (← encodingStep' info.expr false |>.run { info with config := (← read)} entry)
+      return .inl (← encodingStep' info.expr false config |>.run { bvars := info.bvars } entry)
 
 private def updateCaches (stack : List StackEntry) (key : Key) : List StackEntry :=
   stack.map fun
@@ -435,20 +420,20 @@ def evalLazyEntry (entry : LazyEntry α) (config : WhnfCoreConfig) :
     return .inl [(key, { entry with results, stack := updateCaches entry.stack key })]
   else withMCtx entry.mctx do
     let entry ← processPrevious entry
-    let result ← processLazyEntryAux entry |>.run config
+    let result ← processLazyEntryAux entry config
     return match result with
       | .inl entries => .inl <| entries.map fun (key, entry) =>
           (key, { entry with stack := updateCaches entry.stack key })
       | result => result
 
 /-- A single step in evaluating a `LazyEntry α`. -/
-private def evalLazyEntry' (entry : LazyEntry α) :
-    ReaderT WhnfCoreConfig MetaM ((Key × LazyEntry α) ⊕ α) := do
+private def evalLazyEntry' (entry : LazyEntry α) (config : WhnfCoreConfig) :
+    MetaM ((Key × LazyEntry α) ⊕ α) := do
   if let key :: results := entry.results then
     return .inl (key, { entry with results, stack := updateCaches entry.stack key })
   else withMCtx entry.mctx do
     let entry ← processPrevious entry
-    let result ← processLazyEntryAux' entry
+    let result ← processLazyEntryAux' entry config
     return match result with
       | .inl (key, entry) => .inl (key, { entry with stack := updateCaches entry.stack key })
       | result => result
@@ -485,7 +470,7 @@ def encodeExpr' (e : Expr) (config : WhnfCoreConfig) : MetaM (Key × List Key) :
   let (key, entry) ← initializeLazyEntry' e () config
   let mut result := #[]
   let mut entry := entry
-  repeat do match ← evalLazyEntry' entry |>.run config with
+  repeat do match ← evalLazyEntry' entry config with
     | .inl (key, entry') => entry := entry'; result := result.push key
     | .inr () => break
   return (key, result.toList)

@@ -99,16 +99,29 @@ def addRewriteEntry (name : Name) (cinfo : ConstantInfo) :
   let (_,_,eqn) ← forallMetaTelescope cinfo.type
   let some (lhs, rhs) := matchEqn? eqn | return []
   -- don't index lemmas of the form `a = ?b` where `?b` is a variable not appearing in `a`
-  if let .mvar mvarId := lhs then
+  if let .mvar mvarId := lhs.getAppFn then
     if (rhs.findMVar? (· == mvarId)).isNone then
       return []
-  if let .mvar mvarId := rhs then
+  if let .mvar mvarId := rhs.getAppFn then
     if (lhs.findMVar? (· == mvarId)).isNone then
       return []
-  let result ← RefinedDiscrTree.initializeLazyEntry lhs { name, symm := false } {}
-  if isMVarSwap lhs rhs then
-    return result
-  return result ++ (← RefinedDiscrTree.initializeLazyEntry rhs { name, symm := true } {})
+  let badMatch e :=
+    e.getAppFn.isMVar ||
+    (match e with
+    | mkApp3 (.const ``Eq _) α l r =>
+      α.getAppFn.isMVar && l.getAppFn.isMVar && r.getAppFn.isMVar && l != r
+    | _ => false)
+  if badMatch lhs then
+    if badMatch rhs then
+      return []
+    else
+      RefinedDiscrTree.initializeLazyEntry rhs { name, symm := true } {}
+  else
+    let result ← RefinedDiscrTree.initializeLazyEntry lhs { name, symm := false } {}
+    if badMatch rhs || isMVarSwap lhs rhs then
+      return result
+    else
+      return result ++ (← RefinedDiscrTree.initializeLazyEntry rhs { name, symm := true } {})
 
 
 private abbrev ExtState := IO.Ref (Option (RefinedDiscrTree RewriteLemma))
@@ -143,9 +156,6 @@ def getLibrarySearchExcludedModules (o : Options) : List Name :=
 def containsPrefixOf (names : List Name) (name : Name) : Bool :=
   names.any (·.isPrefixOf name)
 
-private def droppedKeys : List (List RefinedDiscrTree.Key) :=
-  [[.star 0], [.const ``Eq 3, .star 0, .star 1, .star 2]]
-
 /-- Get all potential rewrite lemmas from the imported environment.
 By setting the `librarySearch.excludedModules` option, all lemmas from certain modules
 can be excluded.
@@ -153,20 +163,20 @@ Exclude lemmas from modules
 in the `librarySearch.excludedModules` option. -/
 def getCandidates (e : Expr) : MetaM (Array (Array RewriteLemma)) := do
   let matchResult ← RefinedDiscrTree.findImportMatches importedRewriteLemmasExt addRewriteEntry
-    droppedKeys (constantsPerTask := 5000) (capacityPerTask := 256) e
+    (constantsPerTask := 5000) (capacityPerTask := 256) e
   let candidates := matchResult.elts.reverse.concatMap id
   let excludedModules := getLibrarySearchExcludedModules (← getOptions)
   let env ← getEnv
   return candidates.map <|
-    Array.filterMap fun rw =>
-      env.const2ModIdx.find? rw.name >>= fun idx =>
-      if containsPrefixOf excludedModules env.header.moduleNames[idx.toNat]!
-      then none else some rw
+    Array.filter fun rw =>
+      let moduleIdx := env.const2ModIdx.find! rw.name
+      let moduleName := env.header.moduleNames[moduleIdx.toNat]!
+      !excludedModules.any (·.isPrefixOf moduleName)
 
 /-- Get all potential rewrite lemmas from the current file. Exclude lemmas from modules
 in the `librarySearch.excludedModules` option. -/
 def getLocalCandidates (e : Expr) : MetaM (Array (Array RewriteLemma)) := do
-  let moduleTreeRef ← RefinedDiscrTree.createModuleTreeRef addRewriteEntry droppedKeys
+  let moduleTreeRef ← RefinedDiscrTree.createModuleTreeRef addRewriteEntry
   let matchResult ← RefinedDiscrTree.findModuleMatches moduleTreeRef e
   return matchResult.elts.reverse.concatMap id
 

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
 import Mathlib.Lean.Meta.RefinedDiscrTree.Evaluate
-import Lean.Meta.CompletionName
+import Lean.Meta.LazyDiscrTree
 
 /-!
 # Constructing a RefinedDiscrTree
@@ -85,13 +85,6 @@ private structure State (α : Type) where
   errors : Array ImportFailure := #[]
 deriving Inhabited
 
-private def blacklistInsertion (env : Environment) (declName : Name) : Bool :=
-  !allowCompletion env declName
-  || declName == ``sorryAx
-  || declName.isInternalDetail
-  || (declName matches .str _ "inj")
-  || (declName matches .str _ "noConfusionType")
-
 private def addConstToPreDiscrTree
     (cctx : Core.Context)
     (env : Environment)
@@ -99,8 +92,8 @@ private def addConstToPreDiscrTree
     (act : Name → ConstantInfo → MetaM (List (Key × LazyEntry α)))
     (state : State α) (name : Name) (constInfo : ConstantInfo) : BaseIO (State α) := do
   if constInfo.isUnsafe then return state
-  if blacklistInsertion env name then return state
-  let { ngen, core := core_cache, meta := meta_cache, tree, .. } := state
+  if LazyDiscrTree.blacklistInsertion env name then return state
+  let { ngen, core := core_cache, meta := meta_cache, tree, errors } := state
   let mstate : Meta.State := { cache := meta_cache }
   let ctx : Meta.Context := { config := { transparency := .reducible } }
   let cm := (act name constInfo).run ctx mstate
@@ -115,7 +108,7 @@ private def addConstToPreDiscrTree
       const := name,
       exception := e
     }
-    let errors := state.errors.push i
+    let errors := errors.push i
     return { state with errors, core := {}, meta := {} }
 
 
@@ -152,7 +145,7 @@ private partial def loadImportedModule
     (i : Nat := 0) : BaseIO (State α) := do
   if h : i < mdata.constNames.size then
     let name := mdata.constNames[i]
-    let constInfo  := mdata.constants[i]!
+    let constInfo := mdata.constants[i]!
     let state ← addConstToPreDiscrTree cctx env mname act state name constInfo
     loadImportedModule cctx env act mname mdata state (i+1)
   else
@@ -242,22 +235,20 @@ private def createLocalPreDiscrTree
   env.constants.map₂.foldlM (addConstToPreDiscrTree cctx env modName act) { ngen }
 
 /-- Create a discriminator tree for current module declarations. -/
-def createModuleDiscrTree
-    (act : Name → ConstantInfo → MetaM (List (Key × LazyEntry α)))
-    (droppedKeys : List (List RefinedDiscrTree.Key)) :
+def createModuleDiscrTree (act : Name → ConstantInfo → MetaM (List (Key × LazyEntry α))) :
     MetaM (RefinedDiscrTree α) := do
   let env ← getEnv
   let ngen ← getChildNgen
   let ctx ← readThe Core.Context
   let { errors, tree, .. } ← createLocalPreDiscrTree ctx ngen env act
   errors.forM logImportFailure
-  tree.toLazy.dropKeys droppedKeys
+  return tree.toLazy
 
 /--
 Creates reference for lazy discriminator tree that only contains this module's definitions.
 -/
-def createModuleTreeRef (act : Name → ConstantInfo → MetaM (List (Key × LazyEntry α)))
-    (droppedKeys : List (List RefinedDiscrTree.Key)) : MetaM (ModuleDiscrTreeRef α) := do
+def createModuleTreeRef (act : Name → ConstantInfo → MetaM (List (Key × LazyEntry α))) :
+    MetaM (ModuleDiscrTreeRef α) := do
   profileitM Exception "build module discriminator tree" (←getOptions) $ do
-    let t ← createModuleDiscrTree act droppedKeys
+    let t ← createModuleDiscrTree act
     pure { ref := ← IO.mkRef t }

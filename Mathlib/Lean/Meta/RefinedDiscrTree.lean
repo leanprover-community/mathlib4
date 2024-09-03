@@ -110,7 +110,6 @@ private def treeCtx (ctx : Core.Context) : Core.Context := {
 def findImportMatches
     (ext : EnvExtension (IO.Ref (Option (RefinedDiscrTree α))))
     (addEntry : Name → ConstantInfo → MetaM (List (Key × LazyEntry α)))
-    (droppedKeys : List (List RefinedDiscrTree.Key) := [])
     (constantsPerTask : Nat := 1000) (capacityPerTask : Nat := 128)
     (ty : Expr) : MetaM (MatchResult α) := do
   let cctx ← (read : CoreM Core.Context)
@@ -121,7 +120,7 @@ def findImportMatches
   let ref := @EnvExtension.getState _ ⟨dummy⟩ ext (← getEnv)
   let importTree ← (← ref.get).getDM $ do
     profileitM Exception  "lazy discriminator import initialization" (← getOptions) <|
-      createImportedDiscrTree (treeCtx cctx) cNGen (← getEnv) addEntry droppedKeys
+      createImportedDiscrTree (treeCtx cctx) cNGen (← getEnv) addEntry
         (constantsPerTask := constantsPerTask) (capacityPerTask := capacityPerTask)
   let (importCandidates, importTree) ← getMatch importTree ty false
   ref.set (some importTree)
@@ -161,11 +160,10 @@ def findMatchesExt
     (moduleTreeRef : ModuleDiscrTreeRef α)
     (ext : EnvExtension (IO.Ref (Option (RefinedDiscrTree α))))
     (addEntry : Name → ConstantInfo → MetaM (List (Key × LazyEntry α)))
-    (droppedKeys : List (List RefinedDiscrTree.Key) := [])
     (constantsPerTask : Nat := 1000) (capacityPerTask : Nat := 128)
     (ty : Expr) : MetaM (MatchResult α × MatchResult α) := do
   let moduleMatches ← findModuleMatches moduleTreeRef ty
-  let importMatches ← findImportMatches ext addEntry droppedKeys constantsPerTask capacityPerTask ty
+  let importMatches ← findImportMatches ext addEntry constantsPerTask capacityPerTask ty
   return (moduleMatches, importMatches)
 
 /--
@@ -182,8 +180,7 @@ def findMatchesExt
 -/
 def findMatches (ext : EnvExtension (IO.Ref (Option (RefinedDiscrTree α))))
     (addEntry : Name → ConstantInfo → MetaM (List (Key × LazyEntry α)))
-    (droppedKeys : List (List RefinedDiscrTree.Key) := [])
     (constantsPerTask : Nat := 1000) (capacityPerTask : Nat := 128)
     (ty : Expr) : MetaM (MatchResult α × MatchResult α) := do
-  let moduleTreeRef ← createModuleTreeRef addEntry droppedKeys
-  findMatchesExt moduleTreeRef ext addEntry droppedKeys constantsPerTask capacityPerTask ty
+  let moduleTreeRef ← createModuleTreeRef addEntry
+  findMatchesExt moduleTreeRef ext addEntry constantsPerTask capacityPerTask ty
