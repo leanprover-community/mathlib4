@@ -132,10 +132,6 @@ theorem prod_Ico_eq_add_sub
   simp only [← map_add_right_Ico, prod_map, addRightEmbedding_apply, add_tsub_cancel_right]
 
 @[to_additive]
-theorem Finset.prod_Ico_one (f : ℕ → M) : ∏ x ∈ Ico 0 1, f x = f 0 := by
-  simp only [Nat.Ico_succ_singleton, prod_singleton]
-
-@[to_additive]
 theorem prod_range_eq_add_Ico (f : ℕ → M) {n : ℕ} (hn : 0 < n) :
     ∏ x ∈ Finset.range n, f x = f 0 * ∏ x ∈ Ico 1 n, f x := by
   rw [Finset.range_eq_Ico, Finset.prod_eq_prod_Ico_succ_bot hn]
@@ -153,7 +149,6 @@ theorem pow_leibniz (D : LieDerivation R L L) (n : ℕ) (a b : L) :
           ∑ x ∈ Finset.range (n + 1), n.choose x • ⁅(⇑D)^[x + 1] a, (⇑D)^[n - x] b⁆ := by
       simp only [Function.iterate_succ_apply', ih]
       simp [apply_lie_eq_add, -apply_lie_eq_sub, Finset.sum_add_distrib]
-
     _ = ⁅a, (⇑D)^[n.succ] b⁆ +
           ∑ x ∈ Finset.Ico 1 (n + 1), (n.choose x • ⁅(⇑D)^[x] a, (⇑D)^[(n - x) + 1] b⁆ +
             n.choose (x - 1) • ⁅(⇑D)^[(x - 1) + 1] a, (⇑D)^[n - (x - 1)] b⁆) +
@@ -163,7 +158,6 @@ theorem pow_leibniz (D : LieDerivation R L L) (n : ℕ) (a b : L) :
       rw [← add_assoc, Finset.sum_eq_sum_Ico_succ_bot (Nat.zero_lt_succ n)]
       nth_rw 2 [add_assoc]
       simp [Finset.sum_add_distrib]
-
     _ = ⁅a, (⇑D)^[n.succ] b⁆ +
           ∑ x ∈ Finset.Ico 1 (n + 1), (n + 1).choose x • ⁅(⇑D)^[x] a, (⇑D)^[n + 1 - x] b⁆ +
             ⁅(⇑D)^[n + 1] a, b⁆ := by
@@ -173,7 +167,6 @@ theorem pow_leibniz (D : LieDerivation R L L) (n : ℕ) (a b : L) :
       rw [Nat.sub_one_add_one (Nat.not_eq_zero_of_lt hk₁), Nat.sub_add_comm (Nat.le_of_lt_succ hk₂),
         tsub_tsub_assoc (Nat.le_of_lt_succ hk₂) hk₁, ← add_smul]
       nth_rw 1 [add_comm, Nat.choose_succ _ _ hk₁]
-
     _ = _ := by simp [Finset.sum_range_succ, sum_range_eq_add_Ico _ (Nat.zero_lt_succ n)]
 
 instance instZero : Zero (LieDerivation R L M) where
