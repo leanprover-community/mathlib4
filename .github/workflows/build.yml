@@ -175,6 +175,7 @@ jobs:
           ls -ao .lake/build/lib/Mathlib/
           printf '\nlake exe cache get Mathlib.Init\n'
           lake exe cache get Mathlib.Init
+          echo "error code: $?"
           printf '\nls -ao .lake/build/lib/Mathlib/\n'
           ls -ao .lake/build/lib/Mathlib/
           ! test -e .lake/build/lib/Mathlib/Init.olean; echo $?
