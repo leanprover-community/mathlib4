@@ -151,6 +151,7 @@ def piDiag (s : Finset α) (ι : Type*) [DecidableEq (ι → α)] : Finset (ι �
 variable {β : ι → Type*}
 
 /-- Restrict domain of a function `f` to a finite set `s`. -/
+@[simp]
 def restrict (s : Finset ι) (f : (i : ι) → β i) : (i : s) → β i := fun x ↦ f x
 
 /-- If a function `f` is restricted to a finite set `t`, and `s ⊆ t`,
