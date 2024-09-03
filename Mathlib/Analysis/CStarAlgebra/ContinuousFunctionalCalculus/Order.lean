@@ -220,7 +220,7 @@ lemma le_iff_norm_sqrt_mul_rpow {a b : A} (hbu : IsUnit b) (ha : 0 ≤ a) (hb : 
     a ≤ b ↔ ‖sqrt a * (b : A) ^ (-(1 / 2) : ℝ)‖ ≤ 1 := by
   lift b to Aˣ using hbu
   have hbab : 0 ≤ (b : A) ^ (-(1 / 2) : ℝ) * a * (b : A) ^ (-(1 / 2) : ℝ) :=
-    StarOrderedRing.mul_nonneg_mul rpow_nonneg ha
+    conjugate_nonneg_of_nonneg ha rpow_nonneg
   conv_rhs =>
     rw [← sq_le_one_iff (norm_nonneg _), sq, ← CStarRing.norm_star_mul_self, star_mul,
       IsSelfAdjoint.of_nonneg sqrt_nonneg, IsSelfAdjoint.of_nonneg rpow_nonneg,
@@ -229,7 +229,7 @@ lemma le_iff_norm_sqrt_mul_rpow {a b : A} (hbu : IsUnit b) (ha : 0 ≤ a) (hb : 
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · calc
       _ ≤ ↑b ^ (-(1 / 2) : ℝ) * (b : A) * ↑b ^ (-(1 / 2) : ℝ) :=
-        IsSelfAdjoint.of_nonneg rpow_nonneg |>.mul_mul_le_mul_mul h
+        IsSelfAdjoint.of_nonneg rpow_nonneg |>.conjugate_le_conjugate h
       _ = 1 := conjugate_rpow_neg_one_half b.isUnit
   · calc
       a = (sqrt ↑b * ↑b ^ (-(1 / 2) : ℝ)) * a * (↑b ^ (-(1 / 2) : ℝ) * sqrt ↑b) := by
@@ -238,7 +238,7 @@ lemma le_iff_norm_sqrt_mul_rpow {a b : A} (hbu : IsUnit b) (ha : 0 ≤ a) (hb : 
         simp [CFC.rpow_zero (b : A)]
       _ = sqrt ↑b * (↑b ^ (-(1 / 2) : ℝ) * a * ↑b ^ (-(1 / 2) : ℝ)) * sqrt ↑b := by
         simp only [mul_assoc]
-      _ ≤ b := StarOrderedRing.mul_mul_le_mul_mul sqrt_nonneg h |>.trans <| by
+      _ ≤ b := conjugate_le_conjugate_of_nonneg h sqrt_nonneg |>.trans <| by
         simp [CFC.sqrt_mul_sqrt_self (b : A)]
 
 lemma le_iff_norm_sqrt_mul_sqrt_inv {a : A} {b : Aˣ} (ha : 0 ≤ a) (hb : 0 ≤ (b : A)) :
