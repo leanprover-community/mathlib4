@@ -67,6 +67,9 @@ class IsMaxCone {S G : Type*} [AddCommGroup G] [SetLike S G] (C : S) : Prop wher
 class IsMaxMulCone {S G : Type*} [CommGroup G] [SetLike S G] (C : S) : Prop where
   mem_or_inv_mem (a : G) : a ∈ C ∨ a⁻¹ ∈ C
 
+export IsMaxCone (mem_or_neg_mem)
+export IsMaxMulCone (mem_or_inv_mem)
+
 namespace GroupCone
 variable {H : Type*} [OrderedCommGroup H] {a : H}
 
@@ -113,5 +116,5 @@ def LinearOrderedCommGroup.mkOfCone
     [GroupConeClass S G] [IsMaxMulCone C] (dec : DecidablePred (· ∈ C)) :
     LinearOrderedCommGroup G where
   __ := OrderedCommGroup.mkOfCone C
-  le_total a b := by simpa using IsMaxMulCone.mem_or_inv_mem (b / a)
+  le_total a b := by simpa using mem_or_inv_mem (b / a)
   decidableLE a b := dec _

@@ -59,7 +59,7 @@ def nonneg : RingCone T where
 @[simp, norm_cast] lemma coe_nonneg : nonneg T = {x : T | 0 ≤ x} := rfl
 
 instance nonneg.isMaxCone {T : Type*} [LinearOrderedRing T] : IsMaxCone (nonneg T) where
-  mem_or_neg_mem := IsMaxCone.mem_or_neg_mem (C := AddGroupCone.nonneg T)
+  mem_or_neg_mem := mem_or_neg_mem (C := AddGroupCone.nonneg T)
 
 end RingCone
 
@@ -80,5 +80,5 @@ due to non-customisable fields: `lt`, `decidableLT`, `decidableEq`, `compare`. -
     (dec : DecidablePred (· ∈ C)) : LinearOrderedRing R where
   __ := OrderedRing.mkOfCone C
   __ := OrderedRing.toStrictOrderedRing R
-  le_total a b := by simpa using IsMaxCone.mem_or_neg_mem (b - a)
+  le_total a b := by simpa using mem_or_neg_mem (b - a)
   decidableLE a b := dec _
