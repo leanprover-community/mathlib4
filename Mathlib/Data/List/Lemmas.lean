@@ -5,7 +5,6 @@ Authors: Yakov Pechersky, Yury Kudryashov
 -/
 import Mathlib.Data.Set.Image
 import Mathlib.Data.List.InsertNth
-import Mathlib.Init.Data.List.Lemmas
 
 /-! # Some lemmas about lists involving sets
 
