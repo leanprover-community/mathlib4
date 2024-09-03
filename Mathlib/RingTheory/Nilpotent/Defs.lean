@@ -158,6 +158,11 @@ lemma eq_zero_of_nilpotencyClass_eq_one (hx : nilpotencyClass x = 1) :
     nilpotencyClass x = 1 ↔ x = 0 :=
   ⟨eq_zero_of_nilpotencyClass_eq_one, fun hx ↦ hx ▸ nilpotencyClass_zero⟩
 
+lemma pow_eq_zero_of_nilpotencyClass_le (hx : IsNilpotent x) {k : ℕ} (hk : nilpotencyClass x ≤ k) :
+    x ^ k = 0 := by
+  obtain ⟨l, rfl⟩ := Nat.le.dest hk
+  rw [pow_add, pow_nilpotencyClass hx, zero_mul]
+
 end MonoidWithZero
 
 end NilpotencyClass
