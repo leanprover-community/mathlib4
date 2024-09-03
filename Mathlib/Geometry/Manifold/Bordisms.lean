@@ -16,6 +16,119 @@ open FiniteDimensional Set
 
 noncomputable section
 
+section temp
+
+structure SingularNManifoldDummy (X : Type*) [TopologicalSpace X] (n : ℕ) where
+  E : Type*
+  [normedAddCommGroup : NormedAddCommGroup E]
+  [normedSpace: NormedSpace ℝ E]
+  M : Type*
+  [topSpaceM : TopologicalSpace M]
+  H : Type*
+  [topSpaceH : TopologicalSpace H]
+  [chartedSpace : ChartedSpace H M]
+  I : ModelWithCorners ℝ E H
+  [smoothMfd : SmoothManifoldWithCorners I M]
+  [compactSpace : CompactSpace M]
+  [boundaryless: BoundarylessManifold I M]
+  [findim: FiniteDimensional ℝ E]
+  [hdim : finrank ℝ E = n]
+  /-- The underlying map `M → X` of a singular `n`-manifold `(M,f)` on `X` -/
+  f : M → X
+  hf : Continuous f
+
+variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+
+instance {n : ℕ} {s : SingularNManifoldDummy X n} : NormedAddCommGroup s.E := s.normedAddCommGroup
+
+instance {n : ℕ} {s : SingularNManifoldDummy X n} : NormedSpace ℝ s.E := s.normedSpace
+
+instance {n : ℕ} {s : SingularNManifoldDummy X n} : TopologicalSpace s.M := s.topSpaceM
+
+instance {n : ℕ} {s : SingularNManifoldDummy X n} : TopologicalSpace s.H := s.topSpaceH
+
+instance {n : ℕ} {s : SingularNManifoldDummy X n} : ChartedSpace s.H s.M := s.chartedSpace
+
+instance {n : ℕ} {s : SingularNManifoldDummy X n} : SmoothManifoldWithCorners s.I s.M := s.smoothMfd
+
+instance {n : ℕ} {s : SingularNManifoldDummy X n} : CompactSpace s.M := s.compactSpace
+
+instance {n : ℕ} {s : SingularNManifoldDummy X n} : BoundarylessManifold s.I s.M := s.boundaryless
+
+instance {n : ℕ} {s : SingularNManifoldDummy X n} : FiniteDimensional ℝ s.E := s.findim
+
+instance {n : ℕ} {s : SingularNManifoldDummy X n} : finrank ℝ s.E = n := s.hdim
+
+namespace SingularNManifoldDummy
+
+-- Let M, M' and W be smooth manifolds.
+variable {E E' E'' E''' H H' H'' H''' : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  [NormedAddCommGroup E'] [NormedSpace ℝ E'] [NormedAddCommGroup E'']  [NormedSpace ℝ E'']
+  [NormedAddCommGroup E'''] [NormedSpace ℝ E''']
+  [TopologicalSpace H] [TopologicalSpace H'] [TopologicalSpace H''] [TopologicalSpace H''']
+
+variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  {I : ModelWithCorners ℝ E H} [SmoothManifoldWithCorners I M]
+  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+  {I' : ModelWithCorners ℝ E' H'} [SmoothManifoldWithCorners I' M'] {n : ℕ}
+  [BoundarylessManifold I M] [CompactSpace M] [FiniteDimensional ℝ E]
+  [BoundarylessManifold I' M'] [CompactSpace M'] [FiniteDimensional ℝ E']
+
+variable (M) in
+/-- If `M` is `n`-dimensional and closed, it is a singular `n`-manifold over itself. -/
+noncomputable def refl (hdim : finrank ℝ E = n) : SingularNManifoldDummy M n where
+  H := H
+  I := I
+  hdim := hdim
+  f := id
+  hf := continuous_id
+
+/-- A map of topological spaces induces a corresponding map of singular n-manifolds. -/
+-- This is part of proving functoriality of the bordism groups.
+noncomputable def map (s : SingularNManifoldDummy X n)
+    {φ : X → Y} (hφ : Continuous φ) : SingularNManifoldDummy Y n where
+  E := s.E
+  H := s.H
+  I := s.I
+  f := φ ∘ s.f
+  hf := hφ.comp s.hf
+  hdim := s.hdim
+
+@[simp]
+lemma map_f (s : SingularNManifoldDummy X n) {φ : X → Y} (hφ : Continuous φ) :
+    (s.map hφ).f = φ ∘ s.f :=
+  rfl
+
+lemma map_comp (s : SingularNManifoldDummy X n)
+    {φ : X → Y} {ψ : Y → Z} (hφ : Continuous φ) (hψ : Continuous ψ) :
+    ((s.map hφ).map hψ).f = (ψ ∘ φ) ∘ s.f := by
+  simp [Function.comp_def]
+  rfl
+
+/-- If `(M', f)` is a singular `n`-manifold on `X` and `M'` another `n`-dimensional smooth manifold,
+a smooth map `φ : M → M'` induces a singular `n`-manifold structure `(M, f ∘ φ)` on `X`. -/
+noncomputable def comap [Fact (finrank ℝ E = n)]
+    (s : SingularNManifoldDummy X n)
+    {φ : s.M → M'} (hφ : Smooth s.I I' φ) : SingularNManifoldDummy X n where
+  E := s.E
+  M := s.M
+  H := s.H
+  I := s.I
+  f := s.f ∘ φ
+  hf := s.hf.comp hφ.continuous
+
+@[simp]
+lemma comap_f [Fact (finrank ℝ E = n)]
+    (s : SingularNManifold X n M' I') {φ : M → M'} (hφ : Smooth I I' φ) :
+    (s.comap hφ).f = s.f ∘ φ :=
+  rfl
+
+end SingularNManifoldDummy
+
+end temp
+
+#exit
+
 -- Let M, M' and W be smooth manifolds.
 variable {E E' E'' E''' H H' H'' H''' : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup E'] [NormedSpace ℝ E'] [NormedAddCommGroup E'']  [NormedSpace ℝ E'']
@@ -23,6 +136,7 @@ variable {E E' E'' E''' H H' H'' H''' : Type*} [NormedAddCommGroup E] [NormedSpa
   [TopologicalSpace H] [TopologicalSpace H'] [TopologicalSpace H''] [TopologicalSpace H''']
 
 variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+
 
 /-- A **singular `n`-manifold** on a topological space `X` consists of a
 closed smooth `n`-manifold `M` and a continuous map `f : M → X`. -/
@@ -58,6 +172,9 @@ noncomputable def map [Fact (finrank ℝ E = n)] (s : SingularNManifold X n M I)
     {φ : X → Y} (hφ : Continuous φ) : SingularNManifold Y n M I where
   f := φ ∘ s.f
   hf := hφ.comp s.hf
+
+
+#exit
 
 @[simp]
 lemma map_f [Fact (finrank ℝ E = n)]
