@@ -9,7 +9,6 @@ import Mathlib.Algebra.Group.Int
 import Mathlib.Data.Int.Lemmas
 import Mathlib.Data.Nat.Cast.Order.Field
 import Mathlib.Data.Set.Subsingleton
-import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Order.GaloisConnection
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Linarith
