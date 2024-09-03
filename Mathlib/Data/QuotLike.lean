@@ -16,11 +16,13 @@ universe u ua ub uc v
 theorem Quot.exact {α r} [IsEquiv α r] {a b : α} : Quot.mk r a = Quot.mk r b → r a b :=
   Quotient.exact (s := ⟨r, refl, symm, _root_.trans⟩)
 
+/-- [TODO] -/
 class QuotLike (Q : Sort u) (α : outParam (Sort u)) (r : outParam (α → α → Prop)) where
   /-- The canonical quotient map. -/
   mkQ : α → Q := by exact Quot.mk _
   /-- The canonical map from quotient to `Quot r`. -/
   toQuot : Q → Quot r := by exact (·)
+  /-- [TODO] -/
   toQuot_mkQ : ∀ a, toQuot (mkQ a) = Quot.mk r a := by exact fun _ ↦ rfl
   /-- The analogue of `Quot.ind`: every element of `Q` is of the form `mkQ a` -/
   ind {motive : Q → Prop} : (∀ a : α, motive (mkQ a)) → ∀ q : Q, motive q := by exact Quot.ind
