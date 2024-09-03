@@ -44,7 +44,7 @@ Although I don't know whether it's of any use, `ModularCyclotomicCharacter'`
 is the general case for integral domains, with target in `(ZMod d)ˣ`
 where `d` is the number of `n`th roots of unity in `L`.
 
-## Todo
+## TODO
 
 * Prove the compatibility of `ModularCyclotomicCharacter n` and `ModularCyclotomicCharacter m`
   if `n ∣ m`.
@@ -195,7 +195,7 @@ lemma spec (g : L ≃+* L) {t : Lˣ} (ht : t ∈ rootsOfUnity n L) :
   congr 1
   exact (ZMod.ringEquivCongr_val _ _).symm
 
-lemma unique (g : L ≃+* L) {c : ZMod n}  (hc : ∀ t ∈ rootsOfUnity n L, g t = t ^ c.val) :
+lemma unique (g : L ≃+* L) {c : ZMod n} (hc : ∀ t ∈ rootsOfUnity n L, g t = t ^ c.val) :
     c = ModularCyclotomicCharacter L hn g := by
   change c = (ZMod.ringEquivCongr hn) (toFun n g)
   rw [← toFun_unique' n g (ZMod.ringEquivCongr hn.symm c)

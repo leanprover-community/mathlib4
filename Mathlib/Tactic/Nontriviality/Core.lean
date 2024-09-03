@@ -9,10 +9,10 @@ import Mathlib.Tactic.Attr.Core
 
 /-! # The `nontriviality` tactic. -/
 
-set_option autoImplicit true
+universe u
 
 namespace Mathlib.Tactic.Nontriviality
-open Lean Elab Meta Tactic Qq Std.Tactic
+open Lean Elab Meta Tactic Qq
 
 theorem subsingleton_or_nontrivial_elim {p : Prop} {α : Type u}
     (h₁ : Subsingleton α → p) (h₂ : Nontrivial α → p) : p :=
@@ -24,7 +24,8 @@ Tries to generate a `Nontrivial α` instance by performing case analysis on
 attempting to discharge the subsingleton branch using lemmas with `@[nontriviality]` attribute,
 including `Subsingleton.le` and `eq_iff_true_of_subsingleton`.
 -/
-def nontrivialityByElim (α : Q(Type u)) (g : MVarId) (simpArgs : Array Syntax) : MetaM MVarId := do
+def nontrivialityByElim {u : Level} (α : Q(Type u)) (g : MVarId) (simpArgs : Array Syntax) :
+    MetaM MVarId := do
   let p : Q(Prop) ← g.getType
   guard (← instantiateMVars (← inferType p)).isProp
   g.withContext do
@@ -122,3 +123,7 @@ syntax (name := nontriviality) "nontriviality" (ppSpace colGt term)?
       g.assert `inst ty m
     let g ← liftM <| tac <|> nontrivialityByElim α g stx[2][1].getSepArgs
     replaceMainGoal [(← g.intro1).2]
+
+end Nontriviality
+
+end Mathlib.Tactic

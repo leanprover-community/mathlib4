@@ -8,7 +8,7 @@
   author : Chris Hughes
 3:
   title  : The Denumerability of the Rational Numbers
-  decl   : Rat.instDenumerableRat
+  decl   : Rat.instDenumerable
   author : Chris Hughes
 4:
   title  : Pythagorean Theorem
@@ -314,7 +314,7 @@
 80:
   title  : The Fundamental Theorem of Arithmetic
   decls  :
-    - Nat.factors_unique
+    - Nat.primeFactorsList_unique
     - Int.euclideanDomain
     - EuclideanDomain.to_principal_ideal_domain
     - UniqueFactorizationMonoid
@@ -400,6 +400,11 @@
   author : Bolton Bailey, Patrick Stevens
 99:
   title  : Buffon Needle Problem
+  links  :
+  decls  :
+    - BuffonsNeedle.buffon_short
+    - BuffonsNeedle.buffon_long
+  author : Enrico Z. Borba
 100:
   title  : Descartes Rule of Signs
   links  :

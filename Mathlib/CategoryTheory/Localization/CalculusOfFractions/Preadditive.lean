@@ -33,16 +33,15 @@ a preadditive structure, but only one of these two constructions can be made an 
 
 namespace CategoryTheory
 
-open MorphismProperty Preadditive
+open MorphismProperty Preadditive Limits Category
 
 variable {C D : Type*} [Category C] [Category D] [Preadditive C] (L : C ⥤ D)
-  {W : MorphismProperty C} [L.IsLocalization W] [W.HasLeftCalculusOfFractions]
+  {W : MorphismProperty C} [L.IsLocalization W]
 
 namespace MorphismProperty
 
 /-- The opposite of a left fraction. -/
-@[reducible]
-def LeftFraction.neg {X Y : C} (φ : W.LeftFraction X Y) :
+abbrev LeftFraction.neg {X Y : C} (φ : W.LeftFraction X Y) :
     W.LeftFraction X Y where
   Y' := φ.Y'
   f := -φ.f
@@ -54,8 +53,7 @@ namespace LeftFraction₂
 variable {X Y : C} (φ : W.LeftFraction₂ X Y)
 
 /-- The sum of two left fractions with the same denominator. -/
-@[reducible]
-def add : W.LeftFraction X Y where
+abbrev add : W.LeftFraction X Y where
   Y' := φ.Y'
   f := φ.f + φ.f'
   s := φ.s
@@ -66,6 +64,13 @@ lemma symm_add : φ.symm.add = φ.add := by
   dsimp [add, symm]
   congr 1
   apply add_comm
+
+@[simp]
+lemma map_add (F : C ⥤ D) (hF : W.IsInvertedBy F) [Preadditive D] [F.Additive] :
+    φ.add.map F hF = φ.fst.map F hF + φ.snd.map F hF := by
+  have := hF φ.s φ.hs
+  rw [← cancel_mono (F.map φ.s), add_comp, LeftFraction.map_comp_map_s,
+    LeftFraction.map_comp_map_s, LeftFraction.map_comp_map_s, F.map_add]
 
 end LeftFraction₂
 
@@ -86,7 +91,7 @@ should only rely on the fact that the localization functor is additive, as this
 completely determines the preadditive structure on the localized category when
 there is a calculus of left fractions. -/
 
-variable {X Y Z : C}
+variable [W.HasLeftCalculusOfFractions] {X Y Z : C}
 variable {L}
 
 /-- The opposite of a map `L.obj X ⟶ L.obj Y` when `L : C ⥤ D` is a localization
@@ -153,13 +158,13 @@ lemma zero_add' (f : L.obj X ⟶ L.obj Y) :
     add' W (L.map 0) f = f := by
   rw [add'_comm, add'_zero]
 
-lemma add'_left_neg' (f : L.obj X ⟶ L.obj Y) :
+lemma neg'_add'_self (f : L.obj X ⟶ L.obj Y) :
     add' W (neg' W f) f = L.map 0 := by
   obtain ⟨α, rfl⟩ := exists_leftFraction L W f
   have := inverts L W _ α.hs
   rw [add'_eq W _ _ (LeftFraction₂.mk (-α.f) α.f α.s α.hs) (neg'_eq W _ _ rfl) rfl]
   simp only [← cancel_mono (L.map α.s), LeftFraction.map_comp_map_s, ← L.map_comp,
-    Limits.zero_comp, add_left_neg]
+    Limits.zero_comp, neg_add_cancel]
 
 lemma add'_assoc (f₁ f₂ f₃ : L.obj X ⟶ L.obj Y) :
     add' W (add' W f₁ f₂) f₃ = add' W f₁ (add' W f₂ f₃) := by
@@ -224,7 +229,7 @@ noncomputable def addCommGroup' : AddCommGroup (L.obj X ⟶ L.obj Y) := by
       add_zero := add'_zero _
       add_comm := add'_comm _
       zero_add := zero_add' _
-      add_left_neg := add'_left_neg' _
+      neg_add_cancel := neg'_add'_self _
       nsmul := nsmulRec
       zsmul := zsmulRec }
 
@@ -268,8 +273,8 @@ lemma add_eq_add {X'' Y'' : C} (eX' : L.obj X'' ≅ X') (eY' : L.obj Y'' ≅ Y')
     add W eX eY f₁ f₂ = add W eX' eY' f₁ f₂ := by
   have h₁ := comp_add W eX' eX eY (𝟙 _) f₁ f₂
   have h₂ := add_comp W eX' eY eY' f₁ f₂ (𝟙 _)
-  simp only [Category.id_comp] at h₁
-  simp only [Category.comp_id] at h₂
+  simp only [id_comp] at h₁
+  simp only [comp_id] at h₂
   rw [h₁, h₂]
 
 variable (L X' Y') in
@@ -297,6 +302,8 @@ end ImplementationDetails
 
 end Preadditive
 
+variable [W.HasLeftCalculusOfFractions]
+
 /-- The preadditive structure on `D`, when `L : C ⥤ D` is a localization
 functor, `C` is preadditive and there is a left calculus of fractions. -/
 noncomputable def preadditive : Preadditive D where
@@ -311,16 +318,40 @@ lemma functor_additive :
   ⟨by apply Preadditive.map_add⟩
 
 attribute [irreducible] preadditive
+include W in
+lemma functor_additive_iff {E : Type*} [Category E] [Preadditive E] [Preadditive D] [L.Additive]
+    (G : D ⥤ E) :
+    G.Additive ↔ (L ⋙ G).Additive := by
+  constructor
+  · intro
+    infer_instance
+  · intro h
+    suffices ∀ ⦃X Y : C⦄ (f g : L.obj X ⟶ L.obj Y), G.map (f + g) = G.map f + G.map g by
+      refine ⟨fun {X Y f g} => ?_⟩
+      have hL := essSurj L W
+      have eq := this ((L.objObjPreimageIso X).hom ≫ f ≫ (L.objObjPreimageIso Y).inv)
+        ((L.objObjPreimageIso X).hom ≫ g ≫ (L.objObjPreimageIso Y).inv)
+      rw [Functor.map_comp, Functor.map_comp, Functor.map_comp, Functor.map_comp,
+        ← comp_add, ← comp_add, ← add_comp, ← add_comp, Functor.map_comp, Functor.map_comp] at eq
+      rw [← cancel_mono (G.map (L.objObjPreimageIso Y).inv),
+        ← cancel_epi (G.map (L.objObjPreimageIso X).hom), eq]
+    intros X Y f g
+    obtain ⟨φ, rfl, rfl⟩ := exists_leftFraction₂ L W f g
+    have := Localization.inverts L W φ.s φ.hs
+    rw [← φ.map_add L (inverts L W), ← cancel_mono (G.map (L.map φ.s)), ← G.map_comp,
+      add_comp, ← G.map_comp, ← G.map_comp, LeftFraction.map_comp_map_s,
+      LeftFraction.map_comp_map_s, LeftFraction.map_comp_map_s, ← Functor.comp_map,
+      Functor.map_add, Functor.comp_map, Functor.comp_map]
 
 noncomputable instance : Preadditive W.Localization := preadditive W.Q W
-
 instance : W.Q.Additive := functor_additive W.Q W
+instance [HasZeroObject C] : HasZeroObject W.Localization := W.Q.hasZeroObject_of_additive
 
 variable [W.HasLocalization]
 
 noncomputable instance : Preadditive W.Localization' := preadditive W.Q' W
-
 instance : W.Q'.Additive := functor_additive W.Q' W
+instance [HasZeroObject C] : HasZeroObject W.Localization' := W.Q'.hasZeroObject_of_additive
 
 end Localization
 

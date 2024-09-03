@@ -5,7 +5,8 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.Pi.Lemmas
-import Mathlib.GroupTheory.GroupAction.Defs
+import Mathlib.Algebra.GroupWithZero.Action.Defs
+import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Type tags for right action on the domain of a function
@@ -260,3 +261,5 @@ instance [Monoid M] [Monoid A] [MulDistribMulAction M A] [CommMonoid B] :
   DFunLike.coe_injective.mulDistribMulAction (MonoidHom.coeFn A B) fun _ _ ↦ rfl
 
 end AddMonoidHom
+
+end DomMulAct
