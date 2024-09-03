@@ -12,9 +12,9 @@ import Mathlib.Algebra.Module.Defs
 We define even functions `α → β` assuming `α` has a negation, and odd functions assuming both `α`
 and `β` have negation.
 
-These definitions are called `EvenFun` and `OddFun` to avoid conflicting with the root-level
-definitions `Even` and `Odd` (which, for functions, mean that the function takes even resp. odd
-_values_, a wholly different concept).
+These definitions are `Function.Even` and `Function.Odd`; and they are `protected`, to avoid
+conflicting with the root-level definitions `Even` and `Odd` (which, for functions, mean that the
+function takes even resp. odd _values_, a wholly different concept).
 -/
 
 namespace Function
