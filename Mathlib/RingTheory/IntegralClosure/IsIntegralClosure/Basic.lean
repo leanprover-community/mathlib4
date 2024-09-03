@@ -560,7 +560,7 @@ theorem Algebra.IsIntegral.isField_iff_isField {R S : Type*} [CommRing R]
 end Algebra
 
 theorem integralClosure_idem {R A : Type*} [CommRing R] [CommRing A] [Algebra R A] :
-    integralClosure (integralClosure R A : Set A) A = ⊥ :=
+    integralClosure (integralClosure R A) A = ⊥ :=
   letI := (integralClosure R A).algebra
   eq_bot_iff.2 fun x hx ↦ Algebra.mem_bot.2
     ⟨⟨x, isIntegral_trans (A := integralClosure R A) x hx⟩, rfl⟩

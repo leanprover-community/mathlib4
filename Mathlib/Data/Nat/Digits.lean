@@ -246,9 +246,7 @@ theorem ofDigits_digits (b n : ℕ) : ofDigits b (digits b n) = n := by
       · rfl
       · rw [Nat.zero_add] at ih ⊢
         simp only [ih, add_comm 1, ofDigits_one_cons, Nat.cast_id, digits_one_succ]
-    · apply Nat.strongInductionOn n _
-      clear n
-      intro n h
+    · induction n using Nat.strongRecOn with | ind n h => ?_
       cases n
       · rw [digits_zero]
         rfl
@@ -328,8 +326,8 @@ theorem getLast_digit_ne_zero (b : ℕ) {m : ℕ} (hm : m ≠ 0) :
     simp only [zero_add, digits_one, List.getLast_replicate_succ m 1]
     exact Nat.one_ne_zero
   revert hm
-  apply Nat.strongInductionOn m
-  intro n IH hn
+  induction m using Nat.strongRecOn with | ind n IH => ?_
+  intro hn
   by_cases hnb : n < b + 2
   · simpa only [digits_of_lt (b + 2) n hn hnb]
   · rw [digits_getLast n (le_add_left 2 b)]
@@ -362,8 +360,8 @@ theorem ofDigits_add_ofDigits_eq_ofDigits_zipWith_of_length_eq {b : ℕ} {l1 l2 
 
 /-- The digits in the base b+2 expansion of n are all less than b+2 -/
 theorem digits_lt_base' {b m : ℕ} : ∀ {d}, d ∈ digits (b + 2) m → d < b + 2 := by
-  apply Nat.strongInductionOn m
-  intro n IH d hd
+  induction m using Nat.strongRecOn with | ind n IH => ?_
+  intro d hd
   cases' n with n
   · rw [digits_zero] at hd
     cases hd
