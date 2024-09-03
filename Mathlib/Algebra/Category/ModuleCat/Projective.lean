@@ -59,11 +59,11 @@ instance moduleCat_enoughProjectives : EnoughProjectives (ModuleCat.{max u v} R)
         f := Finsupp.basisSingleOne.constr ℕ _root_.id
         epi := (epi_iff_range_eq_top _).mpr
             (range_eq_top.2 fun m => ⟨Finsupp.single m (1 : R), by
-              -- Porting note: simp [Finsupp.total_single] fails but rw succeeds
+              -- Porting note: simp [Finsupp.linearCombination_single] fails but rw succeeds
               dsimp [Basis.constr]
               simp only [Finsupp.lmapDomain_id, comp_id]
               -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-              erw [Finsupp.total_single]
+              erw [Finsupp.linearCombination_single]
               rw [one_smul]
               rfl ⟩) }⟩
 

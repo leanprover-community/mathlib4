@@ -132,8 +132,8 @@ theorem card_sigma : #(Σn, L.Term (α ⊕ (Fin n))) = max ℵ₀ #(α ⊕ (Σi,
       · simp only [Sum.elim_inl, Sigma.mk.inj_iff, heq_eq_eq, var.injEq, Sum.inl.injEq, true_and]
           at h
         rw [h]
-      · simp only [Sum.elim_inl, Sum.elim_inr, Sigma.mk.inj_iff, false_and] at h
-      · simp only [Sum.elim_inr, Sum.elim_inl, Sigma.mk.inj_iff, false_and] at h
+      · simp only [Sum.elim_inl, Sum.elim_inr, Sigma.mk.inj_iff, false_and, reduceCtorEq] at h
+      · simp only [Sum.elim_inr, Sum.elim_inl, Sigma.mk.inj_iff, false_and, reduceCtorEq] at h
       · simp only [Sum.elim_inr, Sigma.mk.inj_iff, heq_eq_eq, func.injEq, true_and] at h
         rw [Sigma.ext_iff.2 ⟨h.1, h.2.1⟩]
 

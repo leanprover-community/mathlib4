@@ -275,6 +275,9 @@ theorem log_le_sub_one_of_pos {x : ℝ} (hx : 0 < x) : log x ≤ x - 1 := by
   convert add_one_le_exp (log x)
   rw [exp_log hx]
 
+lemma one_sub_inv_le_log_of_pos (hx : 0 < x) : 1 - x⁻¹ ≤ log x := by
+  simpa [add_comm] using log_le_sub_one_of_pos (inv_pos.2 hx)
+
 /-- Bound for `|log x * x|` in the interval `(0, 1]`. -/
 theorem abs_log_mul_self_lt (x : ℝ) (h1 : 0 < x) (h2 : x ≤ 1) : |log x * x| < 1 := by
   have : 0 < 1 / x := by simpa only [one_div, inv_pos] using h1
@@ -363,7 +366,33 @@ theorem isLittleO_const_log_atTop {c : ℝ} : (fun _ => c) =o[atTop] log := by
   refine Asymptotics.isLittleO_of_tendsto' ?_
     <| Tendsto.div_atTop (a := c) (by simp) tendsto_log_atTop
   filter_upwards [eventually_gt_atTop 1] with x hx
-  aesop (add safe forward log_pos)
+  #adaptation_note
+  /--
+  Prior to https://github.com/leanprover/lean4/pull/5225 and
+  https://github.com/leanprover/lean4/pull/5226, this worked via
+  `aesop (add safe forward log_pos)`
+  but this now fails with
+  ```
+  aesop: failed to prove the goal.
+  Some goals were not explored because the maximum rule application depth (30) was reached.
+  Set option 'maxRuleApplicationDepth' to increase the limit.
+  ```
+  -/
+  intro a
+  simp_all only [log_eq_zero]
+  have fwd : 0 < log x := log_pos hx
+  cases a with
+  | inl h =>
+    subst h
+    simp_all only [log_zero, lt_self_iff_false]
+  | inr h_1 =>
+    cases h_1 with
+    | inl h =>
+      subst h
+      simp_all only [lt_self_iff_false]
+    | inr h_2 =>
+      subst h_2
+      simp_all only [lt_neg_self_iff, log_neg_eq_log, log_one, lt_self_iff_false]
 
 end Real
 
