@@ -70,7 +70,7 @@ theorem choose_succ_right (n k : ℕ) (hn : 1 ≤ n) :
   obtain ⟨l, rfl⟩ : ∃ l, n = l + 1 := Nat.exists_eq_add_of_le' hn
   rfl
 
-theorem choose_eq_choose_pred_add (n k : ℕ) (hn : 1 ≤ n) (hk : 1 ≤ k) :
+theorem choose_eq_choose_pred_add {n k : ℕ} (hn : 1 ≤ n) (hk : 1 ≤ k) :
     choose n k = choose (n - 1) (k - 1) + choose (n - 1) k := by
   obtain ⟨l, rfl⟩ : ∃ l, k = l + 1 := Nat.exists_eq_add_of_le' hk
   rw [choose_succ_right _ _ hn, Nat.add_one_sub_one]
