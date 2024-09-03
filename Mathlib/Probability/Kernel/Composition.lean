@@ -578,9 +578,9 @@ noncomputable def mapOfMeasurable (κ : Kernel α β) (f : β → γ) (hf : Meas
 
 open Classical in
 /-- The pushforward of a kernel along a function.
-If the function is not measurable, we use a constant function instead. This choice of junk
-value ensures that typeclass inference can infer that the `map` of a Markov kernel
-is again a Markov kernel. -/
+If the function is not measurable, we use zero instead. This choice of junk
+value ensures that typeclass inference can infer that the `map` of a kernel
+satisfying `IsZeroOrMarkovKernel` again satisfies this property. -/
 noncomputable def map (κ : Kernel α β) (f : β → γ) : Kernel α γ :=
   if hf : Measurable f then mapOfMeasurable κ f hf else 0
 
