@@ -153,19 +153,17 @@ theorem pow_leibniz (D : LieDerivation R L L) (n : ℕ) (a b : L) :
           ∑ x ∈ Finset.range (n + 1), n.choose x • ⁅(⇑D)^[x + 1] a, (⇑D)^[n - x] b⁆ := by
       simp only [Function.iterate_succ_apply', ih]
       simp [apply_lie_eq_add, -apply_lie_eq_sub, Finset.sum_add_distrib]
+
     _ = ⁅a, (⇑D)^[n.succ] b⁆ +
           ∑ x ∈ Finset.Ico 1 (n + 1), (n.choose x • ⁅(⇑D)^[x] a, (⇑D)^[(n - x) + 1] b⁆ +
             n.choose (x - 1) • ⁅(⇑D)^[(x - 1) + 1] a, (⇑D)^[n - (x - 1)] b⁆) +
           ⁅(⇑D)^[n.succ] a, b⁆ := by
-      rw [sum_range_eq_add_Ico _ (Nat.zero_lt_succ n)]
-      nth_rw 1 [Finset.range_eq_Ico]
-      nth_rw 2 [sum_Ico_eq_add_sub _ _ _ 1,
-        Finset.sum_Ico_succ_top (by exact Nat.le_add_left (0 + 1) n)]
-      simp only [Nat.choose_zero_right, Function.iterate_zero, id_eq, tsub_zero,
-        Function.iterate_succ, Function.comp_apply, one_smul, Nat.succ_eq_add_one, zero_add,
-        add_tsub_cancel_right, Nat.choose_self, le_refl, tsub_eq_zero_of_le, ← add_assoc,
-        add_left_inj]
-      rw [add_assoc, Finset.sum_add_distrib]
+      rw [Finset.range_eq_Ico]
+      nth_rw 2 [sum_Ico_eq_add_sub (c := 1), Finset.sum_Ico_succ_top (by norm_num)]
+      rw [← add_assoc, Finset.sum_eq_sum_Ico_succ_bot (Nat.zero_lt_succ n)]
+      nth_rw 2 [add_assoc]
+      simp [Finset.sum_add_distrib]
+
     _ = ⁅a, (⇑D)^[n.succ] b⁆ +
           ∑ x ∈ Finset.Ico 1 (n + 1), (n + 1).choose x • ⁅(⇑D)^[x] a, (⇑D)^[n + 1 - x] b⁆ +
             ⁅(⇑D)^[n + 1] a, b⁆ := by
@@ -175,6 +173,7 @@ theorem pow_leibniz (D : LieDerivation R L L) (n : ℕ) (a b : L) :
       rw [Nat.sub_one_add_one (Nat.not_eq_zero_of_lt hk₁), Nat.sub_add_comm (Nat.le_of_lt_succ hk₂),
         tsub_tsub_assoc (Nat.le_of_lt_succ hk₂) hk₁, ← add_smul]
       nth_rw 1 [add_comm, Nat.choose_succ _ _ hk₁]
+
     _ = _ := by simp [Finset.sum_range_succ, sum_range_eq_add_Ico _ (Nat.zero_lt_succ n)]
 
 instance instZero : Zero (LieDerivation R L M) where
