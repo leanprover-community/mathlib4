@@ -753,7 +753,7 @@ theorem surj_on_of_inj_on_of_ncard_le {t : Set β} (f : ∀ a ∈ s, β) (hf : �
   have hft := ht.fintype
   have hft' := Fintype.ofInjective f' finj
   set f'' : ∀ a, a ∈ s.toFinset → β := fun a h ↦ f a (by simpa using h)
-  convert @Finset.surj_on_of_inj_on_of_card_le _ _ _ t.toFinset f'' _ _ _ _ (by simpa)
+  convert @Finset.surj_on_of_inj_on_of_card_le _ _ _ t.toFinset f'' _ _ _ _ (by simpa) using 1
   · simp
   · simp [hf]
   · intros a₁ a₂ ha₁ ha₂ h
@@ -947,7 +947,8 @@ theorem exists_eq_insert_iff_ncard (hs : s.Finite := by toFinite_tac) :
     convert Iff.rfl using 2; simp only [Finite.mem_toFinset]
     ext x
     simp [Finset.ext_iff, Set.ext_iff]
-  simp only [ht.ncard, exists_prop, add_eq_zero, and_false, iff_false, not_exists, not_and]
+  simp only [ht.ncard, exists_prop, add_eq_zero, and_false, iff_false, not_exists, not_and,
+    reduceCtorEq]
   rintro x - rfl
   exact ht (hs.insert x)
 

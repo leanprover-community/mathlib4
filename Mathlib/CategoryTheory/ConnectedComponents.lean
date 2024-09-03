@@ -7,6 +7,7 @@ import Mathlib.Data.List.Chain
 import Mathlib.CategoryTheory.IsConnected
 import Mathlib.CategoryTheory.Sigma.Basic
 import Mathlib.CategoryTheory.FullSubcategory
+import Mathlib.Data.List.Infix
 
 /-!
 # Connected components of a category
@@ -124,7 +125,7 @@ instance (j : ConnectedComponents J) : IsConnected (Component j) := by
   refine ⟨l.pmap f hf, ?_, ?_⟩
   · refine @List.chain_pmap_of_chain _ _ _ _ _ f (fun x y _ _ h => ?_) _ _ hl₁ h₁₂ _
     exact zag_of_zag_obj (Component.ι _) h
-  · erw [List.getLast_pmap _ f (j₁ :: l) (by simpa [h₁₂] using hf) (List.cons_ne_nil _ _)]
+  · erw [List.getLast_pmap f (j₁ :: l) (by simpa [h₁₂] using hf) (List.cons_ne_nil _ _)]
     exact FullSubcategory.ext hl₂
 
 /-- The disjoint union of `J`s connected components, written explicitly as a sigma-type with the

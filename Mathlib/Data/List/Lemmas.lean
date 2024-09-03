@@ -18,20 +18,14 @@ variable {α β γ : Type*}
 
 namespace List
 
--- TODO: Replace `List.getElem_reverse`
-theorem getElem_reverse' (l : List α) (i : Nat) (h1 h2) :
-    (reverse l)[i]'h1 = l[length l - 1 - i]'h2 := by
-  rw [← getElem_reverse l _ (by omega) (by omega)]
-  congr
-  simp at h1
-  omega
+@[deprecated (since := "2024-08-20")] alias getElem_reverse' := getElem_reverse
 
 theorem tail_reverse_eq_reverse_dropLast (l : List α) :
     l.reverse.tail = l.dropLast.reverse := by
   ext i v; by_cases hi : i < l.length - 1
   · simp only [← drop_one]
     rw [getElem?_eq_getElem (by simpa), getElem?_eq_getElem (by simpa),
-      ← getElem_drop _, getElem_reverse', getElem_reverse', getElem_dropLast]
+      ← getElem_drop' _, getElem_reverse, getElem_reverse, getElem_dropLast]
     simp [show l.length - 1 - (1 + i) = l.length - 1 - 1 - i by omega]
     all_goals ((try simp); omega)
   · rw [getElem?_eq_none, getElem?_eq_none]
@@ -41,7 +35,7 @@ theorem getLast_tail (l : List α) (hl : l.tail ≠ []) :
     l.tail.getLast hl = l.getLast (by intro h; rw [h] at hl; simp at hl) := by
   simp only [← drop_one, ne_eq, drop_eq_nil_iff_le,
     not_le, getLast_eq_getElem, length_drop] at hl |-
-  rw [← getElem_drop]
+  rw [← getElem_drop']
   simp [show 1 + (l.length - 1 - 1) = l.length - 1 by omega]
   omega
 

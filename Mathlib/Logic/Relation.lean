@@ -343,9 +343,7 @@ theorem trans_left (hab : TransGen r a b) (hbc : ReflTransGen r b c) : TransGen 
 instance : Trans (TransGen r) (ReflTransGen r) (TransGen r) :=
   ⟨trans_left⟩
 
-@[trans]
-theorem trans (hab : TransGen r a b) (hbc : TransGen r b c) : TransGen r a c :=
-  trans_left hab hbc.to_reflTransGen
+attribute [trans] trans
 
 instance : Trans (TransGen r) (TransGen r) (TransGen r) :=
   ⟨trans⟩

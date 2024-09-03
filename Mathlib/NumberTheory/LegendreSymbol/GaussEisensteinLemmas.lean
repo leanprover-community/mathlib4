@@ -34,7 +34,7 @@ theorem Ico_map_valMinAbs_natAbs_eq_Ico_map_id (p : ℕ) [hp : Fact p.Prime] (a 
     lt_of_le_of_lt (he hx).2 (Nat.div_lt_self hp.1.pos (by decide))
   have hpe : ∀ {x}, x ∈ Ico 1 (p / 2).succ → ¬p ∣ x := fun hx hpx =>
     not_lt_of_ge (le_of_dvd (Nat.pos_of_ne_zero (he hx).1) hpx) (hep hx)
-  have hmem : ∀ (x : ℕ) (hx : x ∈ Ico 1 (p / 2).succ),
+  have hmem : ∀ (x : ℕ) (_ : x ∈ Ico 1 (p / 2).succ),
       (a * x : ZMod p).valMinAbs.natAbs ∈ Ico 1 (p / 2).succ := by
     intro x hx
     simp [hap, CharP.cast_eq_zero_iff (ZMod p) p, hpe hx, Nat.lt_succ_iff, succ_le_iff,

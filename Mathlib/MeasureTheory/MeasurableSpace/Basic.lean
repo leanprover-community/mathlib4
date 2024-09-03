@@ -508,7 +508,7 @@ alias Measurable.subtype_val := Measurable.subtype_coe
 @[measurability]
 theorem Measurable.subtype_mk {p : β → Prop} {f : α → β} (hf : Measurable f) {h : ∀ x, p (f x)} :
     Measurable fun x => (⟨f x, h x⟩ : Subtype p) := fun t ⟨s, hs⟩ =>
-  hs.2 ▸ by simp only [← preimage_comp, (· ∘ ·), Subtype.coe_mk, hf hs.1]
+  hs.2 ▸ by simp only [← preimage_comp, Function.comp_def, Subtype.coe_mk, hf hs.1]
 
 @[measurability]
 protected theorem Measurable.rangeFactorization {f : α → β} (hf : Measurable f) :
@@ -805,7 +805,7 @@ variable [∀ a, MeasurableSpace (π a)] [MeasurableSpace γ]
 
 theorem measurable_pi_iff {g : α → ∀ a, π a} : Measurable g ↔ ∀ a, Measurable fun x => g x a := by
   simp_rw [measurable_iff_comap_le, MeasurableSpace.pi, MeasurableSpace.comap_iSup,
-    MeasurableSpace.comap_comp, Function.comp, iSup_le_iff]
+    MeasurableSpace.comap_comp, Function.comp_def, iSup_le_iff]
 
 @[fun_prop, aesop safe 100 apply (rule_sets := [Measurable])]
 theorem measurable_pi_apply (a : δ) : Measurable fun f : ∀ a, π a => f a :=
@@ -1218,7 +1218,7 @@ namespace MeasurableSet
 variable [MeasurableSpace α]
 
 instance Subtype.instMembership : Membership α (Subtype (MeasurableSet : Set α → Prop)) :=
-  ⟨fun a s => a ∈ (s : Set α)⟩
+  ⟨fun s a => a ∈ (s : Set α)⟩
 
 @[simp]
 theorem mem_coe (a : α) (s : Subtype (MeasurableSet : Set α → Prop)) : a ∈ (s : Set α) ↔ a ∈ s :=

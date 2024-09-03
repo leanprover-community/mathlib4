@@ -280,6 +280,9 @@ section FintypeInstances
 instance fintypeUniv [Fintype α] : Fintype (@univ α) :=
   Fintype.ofEquiv α (Equiv.Set.univ α).symm
 
+-- Redeclared with appropriate keys
+instance fintypeTop [Fintype α] : Fintype (⊤ : Set α) := inferInstanceAs (Fintype (univ : Set α))
+
 /-- If `(Set.univ : Set α)` is finite then `α` is a finite type. -/
 noncomputable def fintypeOfFiniteUniv (H : (univ (α := α)).Finite) : Fintype α :=
   @Fintype.ofEquiv _ (univ : Set α) H.fintype (Equiv.Set.univ _)

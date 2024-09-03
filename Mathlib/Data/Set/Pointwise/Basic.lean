@@ -707,10 +707,9 @@ scoped[Pointwise] attribute [instance] Set.monoid Set.addMonoid
 @[to_additive]
 theorem pow_mem_pow (ha : a ∈ s) : ∀ n : ℕ, a ^ n ∈ s ^ n
   | 0 => by
-    rw [pow_zero]
-    exact one_mem_one
+    simp only [pow_zero, mem_one]
   | n + 1 => by
-    rw [pow_succ]
+    simp only [pow_succ]
     exact mul_mem_mul (pow_mem_pow ha _) ha
 
 @[to_additive]

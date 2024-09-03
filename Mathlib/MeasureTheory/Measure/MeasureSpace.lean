@@ -429,7 +429,7 @@ theorem measure_iUnion_eq_iSup [Countable ι] {s : ι → Set α} (hd : Directed
   replace hd : Directed (· ⊆ ·) t := ht ▸ hd.extend_bot Encodable.encode_injective
   suffices μ (⋃ n, t n) = ⨆ n, μ (t n) by
     simp only [← ht, Function.apply_extend μ, ← iSup_eq_iUnion,
-      iSup_extend_bot Encodable.encode_injective, (· ∘ ·), Pi.bot_apply, bot_eq_empty,
+      iSup_extend_bot Encodable.encode_injective, Function.comp_def, Pi.bot_apply, bot_eq_empty,
       measure_empty] at this
     exact this.trans (iSup_extend_bot Encodable.encode_injective _)
   clear! ι

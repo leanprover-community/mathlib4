@@ -634,7 +634,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq [FiniteDimensional ℝ F]
       (fderiv ℝ e (u x)).opNorm_comp_le (fderiv ℝ u x)
     _ = C₂ * ‖fderiv ℝ u x‖ := by simp_rw [e.fderiv, C₂, coe_nnnorm]
   calc eLpNorm u p' μ
-      = eLpNorm (e.symm ∘ v) p' μ := by simp_rw [v, Function.comp, e.symm_apply_apply]
+      = eLpNorm (e.symm ∘ v) p' μ := by simp_rw [v, Function.comp_def, e.symm_apply_apply]
     _ ≤ C₁ • eLpNorm v p' μ := by
       apply eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul
       exact Eventually.of_forall (fun x ↦ (e.symm : F' →L[ℝ] F).le_opNNNorm _)

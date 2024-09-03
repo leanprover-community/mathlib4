@@ -164,8 +164,8 @@ lemma span_coeff_minpolyDiv :
       Submodule.span_le]
     simp only [Finset.coe_image, Finset.coe_range, Set.image_subset_iff]
     intro i
-    apply Nat.strongInductionOn i
-    intro i hi hi'
+    induction i using Nat.strongRecOn with | ind i hi => ?_
+    intro hi'
     have : coeff (minpolyDiv R x) (natDegree (minpolyDiv R x) - i) ∈
         Submodule.span R (Set.range (coeff (minpolyDiv R x))) :=
       Submodule.subset_span (Set.mem_range_self _)

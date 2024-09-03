@@ -546,14 +546,14 @@ theorem iIndepSet.indep_generateFrom_lt [Preorder ι] [IsMarkovKernel κ] {s : �
     (hsm : ∀ n, MeasurableSet (s n)) (hs : iIndepSet s κ μ) (i : ι) :
     Indep (generateFrom {s i}) (generateFrom { t | ∃ j < i, s j = t }) κ μ := by
   convert iIndepSet.indep_generateFrom_of_disjoint hsm hs {i} { j | j < i }
-    (Set.disjoint_singleton_left.mpr (lt_irrefl _))
+    (Set.disjoint_singleton_left.mpr (lt_irrefl _)) using 1
   simp only [Set.mem_singleton_iff, exists_prop, exists_eq_left, Set.setOf_eq_eq_singleton']
 
 theorem iIndepSet.indep_generateFrom_le [LinearOrder ι] [IsMarkovKernel κ] {s : ι → Set Ω}
     (hsm : ∀ n, MeasurableSet (s n)) (hs : iIndepSet s κ μ) (i : ι) {k : ι} (hk : i < k) :
     Indep (generateFrom {s k}) (generateFrom { t | ∃ j ≤ i, s j = t }) κ μ := by
   convert iIndepSet.indep_generateFrom_of_disjoint hsm hs {k} { j | j ≤ i }
-      (Set.disjoint_singleton_left.mpr hk.not_le)
+      (Set.disjoint_singleton_left.mpr hk.not_le) using 1
   simp only [Set.mem_singleton_iff, exists_prop, exists_eq_left, Set.setOf_eq_eq_singleton']
 
 theorem iIndepSet.indep_generateFrom_le_nat [IsMarkovKernel κ] {s : ℕ → Set Ω}
