@@ -72,7 +72,7 @@ variable {K : SimplicialComplex 𝕜 E} {s t : Finset E} {x : E}
 
 /-- A `Finset` belongs to a `SimplicialComplex` if it's a face of it. -/
 instance : Membership (Finset E) (SimplicialComplex 𝕜 E) :=
-  ⟨fun s K => s ∈ K.faces⟩
+  ⟨fun K s => s ∈ K.faces⟩
 
 /-- The underlying space of a simplicial complex is the union of its faces. -/
 def space (K : SimplicialComplex 𝕜 E) : Set E :=
@@ -166,7 +166,7 @@ theorem face_subset_face_iff (hs : s ∈ K.faces) (ht : t ∈ K.faces) :
   ⟨fun h _ hxs =>
     (vertex_mem_convexHull_iff
           (K.down_closed hs (Finset.singleton_subset_iff.2 hxs) <| singleton_ne_empty _) ht).1
-      (h (subset_convexHull 𝕜 (↑s) hxs)),
+      (h (subset_convexHull 𝕜 (E := E) s hxs)),
     convexHull_mono⟩
 
 /-! ### Facets -/
@@ -211,7 +211,7 @@ instance : Inf (SimplicialComplex 𝕜 E) :=
       inter_subset_convexHull := fun hs ht => K.inter_subset_convexHull hs.1 ht.1 }⟩
 
 instance : SemilatticeInf (SimplicialComplex 𝕜 E) :=
-  { PartialOrder.lift faces SimplicialComplex.ext with
+  { PartialOrder.lift faces (fun _ _ => SimplicialComplex.ext) with
     inf := (· ⊓ ·)
     inf_le_left := fun _ _ _ hs => hs.1
     inf_le_right := fun _ _ _ hs => hs.2

@@ -38,7 +38,6 @@ commutative domain.
 
 open Finset Function
 
-open scoped Classical
 open Pointwise
 
 noncomputable section
@@ -54,7 +53,7 @@ theorem isPWO_iUnion_support_powers [LinearOrderedCancelAddCommMonoid Γ] [Ring 
       (le_trans (le_of_lt hx) (orderTop_le_of_coeff_ne_zero hg))
   refine Set.iUnion_subset fun n => ?_
   induction' n with n ih <;> intro g hn
-  · simp only [Nat.zero_eq, pow_zero, support_one, Set.mem_singleton_iff] at hn
+  · simp only [pow_zero, support_one, Set.mem_singleton_iff] at hn
     rw [hn, SetLike.mem_coe]
     exact AddSubmonoid.zero_mem _
   · obtain ⟨i, hi, j, hj, rfl⟩ := support_mul_subset_add_support hn
@@ -200,9 +199,9 @@ instance : Neg (SummableFamily Γ R α) :=
 instance : AddCommGroup (SummableFamily Γ R α) :=
   { inferInstanceAs (AddCommMonoid (SummableFamily Γ R α)) with
     zsmul := zsmulRec
-    add_left_neg := fun a => by
+    neg_add_cancel := fun a => by
       ext
-      apply add_left_neg }
+      apply neg_add_cancel }
 
 @[simp]
 theorem coe_neg : ⇑(-s) = -s :=
@@ -344,6 +343,7 @@ section EmbDomain
 
 variable [PartialOrder Γ] [AddCommMonoid R] {α β : Type*}
 
+open Classical in
 /-- A summable family can be reindexed by an embedding without changing its sum. -/
 def embDomain (s : SummableFamily Γ R α) (f : α ↪ β) : SummableFamily Γ R β where
   toFun b := if h : b ∈ Set.range f then s (Classical.choose h) else 0
@@ -365,6 +365,7 @@ def embDomain (s : SummableFamily Γ R α) (f : α ↪ β) : SummableFamily Γ R
 
 variable (s : SummableFamily Γ R α) (f : α ↪ β) {a : α} {b : β}
 
+open Classical in
 theorem embDomain_apply :
     s.embDomain f b = if h : b ∈ Set.range f then s (Classical.choose h) else 0 :=
   rfl
@@ -380,6 +381,7 @@ theorem embDomain_notin_range (h : b ∉ Set.range f) : s.embDomain f b = 0 := b
 
 @[simp]
 theorem hsum_embDomain : (s.embDomain f).hsum = s.hsum := by
+  classical
   ext g
   simp only [hsum_coeff, embDomain_apply, apply_dite HahnSeries.coeff, dite_apply, zero_coeff]
   exact finsum_emb_domain f fun a => (s a).coeff g
@@ -469,12 +471,12 @@ theorem unit_aux (x : HahnSeries Γ R) {r : R} (hr : r * x.leadingCoeff = 1) :
     by_cases h : x = 0; · simp [h]
     rw [← order_eq_orderTop_of_ne h, orderTop_single
       (fun _ => by simp_all only [zero_mul, zero_ne_one]), ← @WithTop.coe_add,
-      WithTop.coe_nonneg, add_left_neg]
+      WithTop.coe_nonneg, neg_add_cancel]
   · apply coeff_orderTop_ne h.symm
     simp only [C_apply, single_mul_single, zero_add, mul_one, sub_coeff', Pi.sub_apply, one_coeff,
       ↓reduceIte]
     have hrc := mul_coeff_order_add_order ((single (-x.order)) r) x
-    rw [order_single hrz, leadingCoeff_of_single, neg_add_self, hr] at hrc
+    rw [order_single hrz, leadingCoeff_of_single, neg_add_cancel, hr] at hrc
     rw [hrc, sub_self]
 
 theorem isUnit_iff {x : HahnSeries Γ R} : IsUnit x ↔ IsUnit (x.leadingCoeff) := by
@@ -494,18 +496,19 @@ theorem isUnit_iff {x : HahnSeries Γ R} : IsUnit x ↔ IsUnit (x.leadingCoeff) 
 
 end IsDomain
 
+open Classical in
 instance instField [Field R] : Field (HahnSeries Γ R) where
   __ : IsDomain (HahnSeries Γ R) := inferInstance
   inv x :=
     if x0 : x = 0 then 0
     else
       (single (-x.order)) (x.leadingCoeff)⁻¹ *
-        (SummableFamily.powers _ (unit_aux x (inv_mul_cancel (leadingCoeff_ne_iff.mpr x0)))).hsum
+        (SummableFamily.powers _ (unit_aux x (inv_mul_cancel₀ (leadingCoeff_ne_iff.mpr x0)))).hsum
   inv_zero := dif_pos rfl
-  mul_inv_cancel x x0 := (congr rfl (dif_neg x0)).trans $ by
+  mul_inv_cancel x x0 := (congr rfl (dif_neg x0)).trans <| by
     have h :=
       SummableFamily.one_sub_self_mul_hsum_powers
-        (unit_aux x (inv_mul_cancel (leadingCoeff_ne_iff.mpr x0)))
+        (unit_aux x (inv_mul_cancel₀ (leadingCoeff_ne_iff.mpr x0)))
     rw [sub_sub_cancel] at h
     rw [← mul_assoc, mul_comm x, h]
   nnqsmul := _

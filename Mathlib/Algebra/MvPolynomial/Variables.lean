@@ -117,9 +117,10 @@ theorem vars_one : (1 : MvPolynomial σ R).vars = ∅ :=
 
 theorem vars_pow (φ : MvPolynomial σ R) (n : ℕ) : (φ ^ n).vars ⊆ φ.vars := by
   classical
-  induction' n with n ih
-  · simp
-  · rw [pow_succ']
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [pow_succ']
     apply Finset.Subset.trans (vars_mul _ _)
     exact Finset.union_subset (Finset.Subset.refl _) ih
 
@@ -271,7 +272,7 @@ theorem eval₂Hom_congr' {f₁ f₂ : R →+* S} {g₁ g₂ : σ → S} {p₁ p
 
 /-- If `f₁` and `f₂` are ring homs out of the polynomial ring and `p₁` and `p₂` are polynomials,
   then `f₁ p₁ = f₂ p₂` if `p₁ = p₂` and `f₁` and `f₂` are equal on `R` and on the variables
-  of `p₁`.  -/
+  of `p₁`. -/
 theorem hom_congr_vars {f₁ f₂ : MvPolynomial σ R →+* S} {p₁ p₂ : MvPolynomial σ R}
     (hC : f₁.comp C = f₂.comp C) (hv : ∀ i, i ∈ p₁.vars → i ∈ p₂.vars → f₁ (X i) = f₂ (X i))
     (hp : p₁ = p₂) : f₁ p₁ = f₂ p₂ :=

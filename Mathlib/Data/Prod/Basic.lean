@@ -20,17 +20,13 @@ variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
 namespace Prod
 
+def mk.injArrow {x₁ : α} {y₁ : β} {x₂ : α} {y₂ : β} :
+    (x₁, y₁) = (x₂, y₂) → ∀ ⦃P : Sort*⦄, (x₁ = x₂ → y₁ = y₂ → P) → P :=
+  fun h₁ _ h₂ ↦ Prod.noConfusion h₁ h₂
+
 @[simp]
 theorem mk.eta : ∀ {p : α × β}, (p.1, p.2) = p
   | (_, _) => rfl
-
-@[simp]
-theorem «forall» {p : α × β → Prop} : (∀ x, p x) ↔ ∀ a b, p (a, b) :=
-  ⟨fun h a b ↦ h (a, b), fun h ⟨a, b⟩ ↦ h a b⟩
-
-@[simp]
-theorem «exists» {p : α × β → Prop} : (∃ x, p x) ↔ ∃ a b, p (a, b) :=
-  ⟨fun ⟨⟨a, b⟩, h⟩ ↦ ⟨a, b, h⟩, fun ⟨a, b, h⟩ ↦ ⟨⟨a, b⟩, h⟩⟩
 
 theorem forall' {p : α → β → Prop} : (∀ x : α × β, p x.1 x.2) ↔ ∀ a b, p a b :=
   Prod.forall
@@ -97,9 +93,6 @@ theorem mk.inj_right {α β : Type*} (b : β) :
 lemma mk_inj_left {a : α} {b₁ b₂ : β} : (a, b₁) = (a, b₂) ↔ b₁ = b₂ := (mk.inj_left _).eq_iff
 
 lemma mk_inj_right {a₁ a₂ : α} {b : β} : (a₁, b) = (a₂, b) ↔ a₁ = a₂ := (mk.inj_right _).eq_iff
-
-theorem ext_iff {p q : α × β} : p = q ↔ p.1 = q.1 ∧ p.2 = q.2 := by
-  rw [mk.inj_iff]
 
 theorem map_def {f : α → γ} {g : β → δ} : Prod.map f g = fun p : α × β ↦ (f p.1, g p.2) :=
   funext fun p ↦ Prod.ext (map_fst f g p) (map_snd f g p)
@@ -177,6 +170,10 @@ theorem swap_inj {p q : α × β} : swap p = swap q ↔ p = q :=
 is equal to the composition of `Prod.swap` with `Prod.map g f`.-/
 theorem map_comp_swap (f : α → β) (g : γ → δ) :
     Prod.map f g ∘ Prod.swap = Prod.swap ∘ Prod.map g f := rfl
+
+theorem _root_.Function.Semiconj.swap_map (f : α → α) (g : β → β) :
+    Function.Semiconj swap (map f g) (map g f) :=
+  Function.semiconj_iff_comp_eq.2 (map_comp_swap g f).symm
 
 theorem eq_iff_fst_eq_snd_eq : ∀ {p q : α × β}, p = q ↔ p.1 = q.1 ∧ p.2 = q.2
   | ⟨p₁, p₂⟩, ⟨q₁, q₂⟩ => by simp

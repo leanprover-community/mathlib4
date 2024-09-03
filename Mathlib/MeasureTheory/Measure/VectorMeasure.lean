@@ -43,7 +43,6 @@ vector measure, signed measure, complex measure
 
 noncomputable section
 
-open scoped Classical
 open NNReal ENNReal MeasureTheory
 
 namespace MeasureTheory
@@ -348,6 +347,7 @@ end VectorMeasure
 
 namespace Measure
 
+open Classical in
 /-- A finite measure coerced into a real function is a signed measure. -/
 @[simps]
 def toSignedMeasure (μ : Measure α) [hμ : IsFiniteMeasure μ] : SignedMeasure α where
@@ -400,6 +400,7 @@ theorem toSignedMeasure_smul (μ : Measure α) [IsFiniteMeasure μ] (r : ℝ≥0
   rw [toSignedMeasure_apply_measurable hi, VectorMeasure.smul_apply,
     toSignedMeasure_apply_measurable hi, coe_smul, Pi.smul_apply, ENNReal.toReal_smul]
 
+open Classical in
 /-- A measure is a vector measure over `ℝ≥0∞`. -/
 @[simps]
 def toENNRealVectorMeasure (μ : Measure α) : VectorMeasure α ℝ≥0∞ where
@@ -479,6 +480,7 @@ variable [MeasurableSpace α] [MeasurableSpace β]
 variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M]
 variable (v : VectorMeasure α M)
 
+open Classical in
 /-- The pushforward of a vector measure along a function. -/
 def map (v : VectorMeasure α M) (f : α → β) : VectorMeasure β M :=
   if hf : Measurable f then
@@ -577,6 +579,7 @@ end Module
 
 end
 
+open Classical in
 /-- The restriction of a vector measure on some set. -/
 def restrict (v : VectorMeasure α M) (i : Set α) : VectorMeasure α M :=
   if hi : MeasurableSet i then
@@ -1090,6 +1093,7 @@ end MutuallySingular
 
 section Trim
 
+open Classical in
 /-- Restriction of a vector measure onto a sub-σ-algebra. -/
 @[simps]
 def trim {m n : MeasurableSpace α} (v : VectorMeasure α M) (hle : m ≤ n) :

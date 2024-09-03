@@ -11,14 +11,9 @@ import Mathlib.Topology.UniformSpace.Basic
 # Theory of Cauchy filters in uniform spaces. Complete uniform spaces. Totally bounded subsets.
 -/
 
-
 universe u v
 
-open scoped Classical
-open Filter TopologicalSpace Set UniformSpace Function
-
-open scoped Classical
-open Uniformity Topology Filter
+open Filter Function TopologicalSpace Topology Set UniformSpace Uniformity
 
 variable {α : Type u} {β : Type v} [uniformSpace : UniformSpace α]
 
@@ -104,7 +99,7 @@ lemma cauchy_iInf_uniformSpace' {ι : Sort*} {u : ι → UniformSpace β}
     Cauchy (uniformSpace := ⨅ i, u i) l ↔ ∀ i, Cauchy (uniformSpace := u i) l := by
   simp_rw [cauchy_iff_le (uniformSpace := _), iInf_uniformity, le_iInf_iff]
 
-lemma cauchy_comap_uniformSpace {u : UniformSpace β} {f : α → β} {l : Filter α} :
+lemma cauchy_comap_uniformSpace {u : UniformSpace β} {α} {f : α → β} {l : Filter α} :
     Cauchy (uniformSpace := comap f u) l ↔ Cauchy (map f l) := by
   simp only [Cauchy, map_neBot_iff, prod_map_map_eq, map_le_iff_le_comap]
   rfl
@@ -212,7 +207,7 @@ theorem Function.Bijective.cauchySeq_comp_iff {f : ℕ → ℕ} (hf : Bijective 
     CauchySeq (u ∘ f) ↔ CauchySeq u := by
   refine ⟨fun H => ?_, fun H => H.comp_injective hf.injective⟩
   lift f to ℕ ≃ ℕ using hf
-  simpa only [(· ∘ ·), f.apply_symm_apply] using H.comp_injective f.symm.injective
+  simpa only [Function.comp_def, f.apply_symm_apply] using H.comp_injective f.symm.injective
 
 theorem CauchySeq.subseq_subseq_mem {V : ℕ → Set (α × α)} (hV : ∀ n, V n ∈ 𝓤 α) {u : ℕ → α}
     (hu : CauchySeq u) {f g : ℕ → ℕ} (hf : Tendsto f atTop atTop) (hg : Tendsto g atTop atTop) :
@@ -567,9 +562,9 @@ theorem TotallyBounded.image [UniformSpace β] {f : α → β} {s : Set α} (hs 
     simp only [mem_image, iUnion_exists, biUnion_and', iUnion_iUnion_eq_right, image_subset_iff,
       preimage_iUnion, preimage_setOf_eq]
     simp? [subset_def] at hct says
-      simp only [mem_setOf_eq, subset_def, mem_iUnion, exists_prop] at hct
-    intro x hx; simp
-    exact hct x hx⟩
+      simp only [mem_setOf_eq, subset_def, mem_iUnion, exists_prop', nonempty_prop] at hct
+    intro x hx
+    simpa using hct x hx⟩
 
 theorem Ultrafilter.cauchy_of_totallyBounded {s : Set α} (f : Ultrafilter α) (hs : TotallyBounded s)
     (h : ↑f ≤ 𝓟 s) : Cauchy (f : Filter α) :=
@@ -594,7 +589,7 @@ theorem totallyBounded_iff_filter {s : Set α} :
     have hb : HasAntitoneBasis f fun t : Finset α ↦ s \ ⋃ y ∈ t, { x | (x, y) ∈ d } :=
       .iInf_principal fun _ _ ↦ diff_subset_diff_right ∘ biUnion_subset_biUnion_left
     have : Filter.NeBot f := hb.1.neBot_iff.2 fun _ ↦
-      nonempty_diff.2 <| hd_cover _ (Finset.finite_toSet _)
+      diff_nonempty.2 <| hd_cover _ (Finset.finite_toSet _)
     have : f ≤ 𝓟 s := iInf_le_of_le ∅ (by simp)
     refine ⟨f, ‹_›, ‹_›, fun c hcf hc => ?_⟩
     rcases mem_prod_same_iff.1 (hc.2 hd) with ⟨m, hm, hmd⟩
@@ -666,7 +661,6 @@ that this is a Cauchy sequence. If this sequence converges to some `a`, then `f 
 namespace SequentiallyComplete
 
 variable {f : Filter α} (hf : Cauchy f) {U : ℕ → Set (α × α)} (U_mem : ∀ n, U n ∈ 𝓤 α)
-  (U_le : ∀ s ∈ 𝓤 α, ∃ n, U n ⊆ s)
 
 open Set Finset
 
@@ -710,11 +704,12 @@ theorem seq_pair_mem ⦃N m n : ℕ⦄ (hm : N ≤ m) (hn : N ≤ n) :
     (seq hf U_mem m, seq hf U_mem n) ∈ U N :=
   setSeq_prod_subset hf U_mem hm hn ⟨seq_mem hf U_mem m, seq_mem hf U_mem n⟩
 
-theorem seq_is_cauchySeq : CauchySeq <| seq hf U_mem :=
+theorem seq_is_cauchySeq (U_le : ∀ s ∈ 𝓤 α, ∃ n, U n ⊆ s) : CauchySeq <| seq hf U_mem :=
   cauchySeq_of_controlled U U_le <| seq_pair_mem hf U_mem
 
 /-- If the sequence `SequentiallyComplete.seq` converges to `a`, then `f ≤ 𝓝 a`. -/
-theorem le_nhds_of_seq_tendsto_nhds ⦃a : α⦄ (ha : Tendsto (seq hf U_mem) atTop (𝓝 a)) : f ≤ 𝓝 a :=
+theorem le_nhds_of_seq_tendsto_nhds (U_le : ∀ s ∈ 𝓤 α, ∃ n, U n ⊆ s)
+    ⦃a : α⦄ (ha : Tendsto (seq hf U_mem) atTop (𝓝 a)) : f ≤ 𝓝 a :=
   le_nhds_of_cauchy_adhp_aux
     (fun s hs => by
       rcases U_le s hs with ⟨m, hm⟩

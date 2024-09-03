@@ -136,7 +136,7 @@ instance : IsFractionRing A K where
     by_cases h : z = 0; · use (0, 1); simp [h]
     cases' A.mem_or_inv_mem z with hh hh
     · use (⟨z, hh⟩, 1); simp
-    · refine ⟨⟨1, ⟨⟨_, hh⟩, ?_⟩⟩, mul_inv_cancel h⟩
+    · refine ⟨⟨1, ⟨⟨_, hh⟩, ?_⟩⟩, mul_inv_cancel₀ h⟩
       exact mem_nonZeroDivisors_iff_ne_zero.2 fun c => h (inv_eq_zero.mp (congr_arg Subtype.val c))
   exists_of_eq {a b} h := ⟨1, by ext; simpa using h⟩
 
@@ -532,8 +532,6 @@ theorem image_maximalIdeal : ((↑) : A → K) '' LocalRing.maximalIdeal A = A.n
   simp only [Set.mem_image, SetLike.mem_coe, mem_nonunits_iff_exists_mem_maximalIdeal]
   erw [Subtype.exists]
   simp_rw [exists_and_right, exists_eq_right]
-  -- Porting note: added
-  simp
 
 end nonunits
 
@@ -613,7 +611,7 @@ def principalUnitGroupEquiv :
       A.coe_mem_principalUnitGroup_iff.1 x.2⟩
   invFun x :=
     ⟨A.unitGroupMulEquiv.symm x, by
-      rw [A.coe_mem_principalUnitGroup_iff]; simpa using SetLike.coe_mem x⟩
+      rw [A.coe_mem_principalUnitGroup_iff]; simp⟩
   left_inv x := by simp
   right_inv x := by simp
   map_mul' x y := rfl

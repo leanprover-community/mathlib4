@@ -107,7 +107,7 @@ def approxChain : Chain ((a : _) → Part <| β a) :=
   ⟨approx f, approx_mono f⟩
 
 theorem le_f_of_mem_approx {x} : x ∈ approxChain f → x ≤ f x := by
-  simp only [(· ∈ ·), forall_exists_index]
+  simp only [Membership.mem, forall_exists_index]
   rintro i rfl
   apply approx_mono'
 
@@ -249,9 +249,8 @@ variable [∀ x y, OmegaCompletePartialOrder <| γ x y]
 section Curry
 
 variable {f : ((x : _) → (y : β x) → γ x y) →o (x : _) → (y : β x) → γ x y}
-variable (hc : Continuous f)
 
-theorem uncurry_curry_continuous :
+theorem uncurry_curry_continuous (hc : Continuous f) :
     Continuous <| (monotoneUncurry α β γ).comp <| f.comp <| monotoneCurry α β γ :=
   continuous_comp _ _ (continuous_comp _ _ (continuous_curry _ _ _) hc) (continuous_uncurry _ _ _)
 

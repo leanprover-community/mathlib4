@@ -7,19 +7,22 @@ import Mathlib.ModelTheory.Quotients
 import Mathlib.Order.Filter.Germ.Basic
 import Mathlib.Order.Filter.Ultrafilter
 
-/-! # Ultraproducts and Łoś's Theorem
+/-!
+# Ultraproducts and Łoś's Theorem
 
 ## Main Definitions
-* `FirstOrder.Language.Ultraproduct.Structure` is the ultraproduct structure on `Filter.Product`.
+
+- `FirstOrder.Language.Ultraproduct.Structure` is the ultraproduct structure on `Filter.Product`.
 
 ## Main Results
-* Łoś's Theorem: `FirstOrder.Language.Ultraproduct.sentence_realize`. An ultraproduct models a
-sentence `φ` if and only if the set of structures in the product that model `φ` is in the
-ultrafilter.
+
+- Łoś's Theorem: `FirstOrder.Language.Ultraproduct.sentence_realize`. An ultraproduct models a
+  sentence `φ` if and only if the set of structures in the product that model `φ` is in the
+  ultrafilter.
 
 ## Tags
-ultraproduct, Los's theorem
 
+ultraproduct, Los's theorem
 -/
 
 universe u v
@@ -121,7 +124,7 @@ theorem boundedFormula_realize_cast {β : Type*} {n : ℕ} (φ : L.BoundedFormul
       · simp only [Fin.snoc_last]
       · simp only [Fin.snoc_castSucc]
     simp only [← Fin.comp_snoc]
-    simp only [Function.comp, ih, h']
+    simp only [Function.comp_def, ih, h']
     refine ⟨fun h => ?_, fun h m => ?_⟩
     · contrapose! h
       simp_rw [← Ultrafilter.eventually_not, not_forall] at h
