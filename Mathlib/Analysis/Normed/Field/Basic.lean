@@ -825,7 +825,7 @@ theorem tendsto_mul_right_cobounded {a : α} (ha : a ≠ 0) :
 lemma inv_cobounded₀ : (cobounded α)⁻¹ = 𝓝[≠] 0 := by
   rw [← comap_norm_atTop, ← Filter.comap_inv, ← comap_norm_nhdsWithin_Ioi_zero,
     ← inv_atTop₀, ← Filter.comap_inv]
-  simp only [comap_comap, (· ∘ ·), norm_inv]
+  simp only [comap_comap, Function.comp_def, norm_inv]
 
 @[simp]
 lemma inv_nhdsWithin_ne_zero : (𝓝[≠] (0 : α))⁻¹ = cobounded α := by
