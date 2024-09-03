@@ -64,19 +64,26 @@ lemma map_f [Fact (finrank ℝ E = n)]
     (s : SingularNManifold X n M I) {φ : X → Y} (hφ : Continuous φ) : (s.map hφ).f = φ ∘ s.f :=
   rfl
 
+lemma map_comp [Fact (finrank ℝ E = n)] (s : SingularNManifold X n M I)
+    {φ : X → Y} {ψ : Y → Z} (hφ : Continuous φ) (hψ : Continuous ψ) :
+    ((s.map hφ).map hψ).f = (ψ ∘ φ) ∘ s.f := by
+  simp [Function.comp_def]
+
 /-- If `(M', f)` is a singular `n`-manifold on `X` and `M'` another `n`-dimensional smooth manifold,
-a smooth map `φ : M → M'` induces a singular `n`-manifold structore on `M`. -/
-noncomputable def comap [Fact (finrank ℝ E = n)] [Fact (finrank ℝ E' = n)]
+a smooth map `φ : M → M'` induces a singular `n`-manifold structure on `M`. -/
+noncomputable def comap [Fact (finrank ℝ E = n)]
     (s : SingularNManifold X n M' I')
     {φ : M → M'} (hφ : Smooth I I' φ) : SingularNManifold X n M I where
   f := s.f ∘ φ
   hf := s.hf.comp hφ.continuous
 
 @[simp]
-lemma comap_f [Fact (finrank ℝ E = n)] [Fact (finrank ℝ E' = n)]
-    (s : SingularNManifold X n M' I') {φ : M → M'} (hφ : Smooth I I' φ) : (s.comap hφ).f = s.f ∘ φ :=
+lemma comap_f [Fact (finrank ℝ E = n)]
+    (s : SingularNManifold X n M' I') {φ : M → M'} (hφ : Smooth I I' φ) :
+    (s.comap hφ).f = s.f ∘ φ :=
   rfl
 
+variable (M) in
 /-- The canonical singular `n`-manifold associated to the empty set (seen as an `n`-dimensional
 manifold, i.e. modelled on an `n`-dimensional space). -/
 def empty [Fact (finrank ℝ E = n)] [IsEmpty M] : SingularNManifold X n M I where
