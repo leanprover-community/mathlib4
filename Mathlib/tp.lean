@@ -1,4 +1,5 @@
-import Lean.Elab.Command
+import Lean.Data.Json.FromToJson
+import Lean.Data.Json.Parser
 
 open Lean
 
@@ -54,7 +55,7 @@ def benchOutput (js : System.FilePath) : IO Unit := do
   let dats ← IO.ofExcept (Json.parse (← IO.FS.readFile js) >>= fromJson? (α := Array Bench))
   let (pos, neg) := dats.partition (0 < ·.diff)
   let header := "|File|Instructions|%|\n|-|-:|:-:|"
-  let mut msg := #[s!"{header}\n|`Increase`|||"]
+  let mut msg := #["Report", s!"{header}\n|`Increase`|||"]
   for d in pos.qsort (·.diff > ·.diff) do
     msg := msg.push (summary d)
   msg := msg.push s!"|`Decrease`|||"
@@ -62,4 +63,5 @@ def benchOutput (js : System.FilePath) : IO Unit := do
     msg := msg.push (summary d)
   IO.println ("\n".intercalate msg.toList)
 
-run_cmd benchOutput "benchOutput.json"
+#eval
+  benchOutput "benchOutput.json"

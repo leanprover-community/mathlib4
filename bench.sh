@@ -1,7 +1,4 @@
-#! /bin/bash
-
-src='f01069e1-9ea8-4195-8185-e5876b95baff' #'9a197688-9bf0-4c59-8bb4-16affe9579f1'
-tgt='613072c0-b56d-4fd5-88cb-990b4680f7fb' #'cf9a210c-14f3-42e0-8ad8-827f5aed7f56'
+#!/usr/bin/env bash
 
 # usage: parse this file with `. bench.sh` and then run
 # `extractVariations commit1 commit2 > benchOutput.json`
@@ -9,6 +6,20 @@ tgt='613072c0-b56d-4fd5-88cb-990b4680f7fb' #'cf9a210c-14f3-42e0-8ad8-827f5aed7f5
 # gets the json file for the comparison from http://speed.lean-fro.org/mathlib4
 # and prints the files / categories with an instruction change of at least 10^9,
 # first the ones that got slower, then the ones that got faster
+
+PR="16419"
+PR="16423"
+
+# The Lean module containing the Lean code to process the bench data.
+leanFile='Mathlib.tp'
+
+# The file is where the command stores the bench information.
+# It is used by the associated Lean file `$leanFile`.
+# If you rename it, do so in both locations!
+benchFile='benchOutput.json'
+
+# this is the temporary file that `$leanFile`
+benchComment='benchComment.md'
 
 extractVariations () {
   local threshold=1000000000
@@ -29,6 +40,36 @@ extractVariations () {
     jq -c '[{file: .dimension.benchmark, diff: .diff, reldiff: .reldiff}]' |
     jq -n 'reduce inputs as $in (null; . + $in)'
 }
+
+#src=${1:-'fcdfe902-9b48-4cde-9a80-d959e29d8694'} #'9a197688-9bf0-4c59-8bb4-16affe9579f1'
+#tgt=${2:-'2f76f6f6-aa1c-43e0-904b-eebbd5c74d0f'} #'cf9a210c-14f3-42e0-8ad8-827f5aed7f56'
+
+commits="$(
+  # retrieve the last comment, make sure that it is by `leanprover-bot`
+  gh pr view "${PR}" --json comments |
+    jq '.comments | last | select(.author.login=="leanprover-bot") | .body' |
+    # clean up everything except the source and target commit
+    sed -n '/[significant changes]/{ s=.*http://speed.lean-fro.org/mathlib4/compare/\([^/]*\)/to/\([^)]*\)).*=\1,\2=p }'
+)"
+
+src="${commits/%,*/}"
+tgt="${commits/#*,/}"
+
+printf $'Using commits\nsrc: \'%s\'\ntgt: \'%s\'\n' "${src}" "${tgt}"
+
+if [ -z "${src}" ] || [ -z "${tgt}" ]
+then
+  printf 'Missing source or target information.\n'
+  exit 0
+fi
+
+extractVariations "${src}" "${tgt}" > "${benchFile}"
+
+lake build "${leanFile}" | grep '^|' > "${benchComment}"
+
+gh pr comment "${PR}" --body-file "${benchComment}"
+
+#rm -rf "${benchFile}" "${benchComment}"
 
  : <<'BASH_MAGMA_CODE'
 
