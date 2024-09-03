@@ -264,28 +264,6 @@ theorem mul_star_self_pos [Nontrivial R] {x : R} (hx : IsRegular x) : 0 < x * st
 
 end NonUnitalSemiring
 
-section NonUnitalRing
-
-variable [NonUnitalRing R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
-
-lemma IsSelfAdjoint.mul_nonneg_mul {a b : R} (ha : IsSelfAdjoint a) (hb : 0 ≤ b) :
-    0 ≤ a * b * a := by
-  simpa only [ha.star_eq] using conjugate_nonneg hb a
-
-lemma IsSelfAdjoint.mul_mul_le_mul_mul {a b c : R} (ha : IsSelfAdjoint a) (hbc : b ≤ c) :
-    a * b * a ≤ a * c * a := by
-  simpa only [ha.star_eq] using conjugate_le_conjugate hbc a
-
-lemma StarOrderedRing.mul_nonneg_mul {a b : R} (ha : 0 ≤ a) (hb : 0 ≤ b) :
-    0 ≤ a * b * a :=
-  IsSelfAdjoint.of_nonneg ha |>.mul_nonneg_mul hb
-
-lemma StarOrderedRing.mul_mul_le_mul_mul {a b c : R} (ha : 0 ≤ a) (hbc : b ≤ c) :
-    a * b * a ≤ a * c * a :=
-  IsSelfAdjoint.of_nonneg ha |>.mul_mul_le_mul_mul hbc
-
-end NonUnitalRing
-
 section Semiring
 variable [Semiring R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
 
