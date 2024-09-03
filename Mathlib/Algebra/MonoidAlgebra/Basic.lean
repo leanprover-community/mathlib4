@@ -926,6 +926,7 @@ section Linear
 
 variable {A : Type*} [Semiring k] [Semiring A] [Module k A]
 
+variable (k A) in
 /-- Interpret `single i` as a linear map (but with `MonoidAlgebra` in the type, rather than
 `Finsupp`). -/
 def lsingle (i : G) : A →ₗ[k] MonoidAlgebra A G :=
@@ -941,7 +942,7 @@ lemma lsingle_apply (i : G) (a : A) :
 @[ext]
 theorem lhom_ext {B : Type*} [AddCommMonoid B] [Module k B]
     {f g : MonoidAlgebra A G →ₗ[k] B}
-    (h : ∀ a b, f (lsingle a b) = g (lsingle a b)) : f = g :=
+    (h : ∀ a b, f (lsingle k A a b) = g (lsingle k A a b)) : f = g :=
   Finsupp.lhom_ext h
 
 end Linear
@@ -1895,6 +1896,7 @@ section Linear
 
 variable {A : Type*} [Semiring k] [Semiring A] [Module k A]
 
+variable (k A) in
 /-- Interpret `single i` as a linear map (but with `AddMonoidAlgebra` in the type, rather than
 `Finsupp`). -/
 def lsingle (i : G) : A →ₗ[k] A[G] :=
@@ -1910,7 +1912,7 @@ lemma lsingle_apply (i : G) (a : A) :
 @[ext]
 theorem lhom_ext {B : Type*} [AddCommMonoid B] [Module k B]
     {f g : A[G] →ₗ[k] B}
-    (h : ∀ a b, f (lsingle a b) = g (lsingle a b)) : f = g :=
+    (h : ∀ a b, f (lsingle k A a b) = g (lsingle k A a b)) : f = g :=
   Finsupp.lhom_ext h
 
 end Linear
