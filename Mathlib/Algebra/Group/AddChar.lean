@@ -29,6 +29,9 @@ Due to their role as the dual of an additive group, additive characters must the
 additive group. This contrasts to their pointwise operations which make them a multiplicative group.
 We simply define both the additive and multiplicative group structures and prove them equal.
 
+For more information on this design decision, see the following zulip thread:
+https://leanprover.zulipchat.com/#narrow/stream/116395-maths/topic/Additive.20characters
+
 ## Tags
 
 additive character
