@@ -2,7 +2,6 @@
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Rename
 import Mathlib.Tactic.Set
-import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Order.Basic
 import Mathlib.Data.Nat.Defs
 

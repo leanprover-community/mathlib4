@@ -653,6 +653,7 @@ lemma cfc_algebraMap (r : R) (f : R → R) : cfc f (algebraMap R A r) = algebraM
 @[simp] lemma cfc_apply_one {f : R → R} : cfc f (1 : A) = algebraMap R A (f 1) := by
   simpa using cfc_algebraMap (A := A) 1 f
 
+@[simp]
 instance IsStarNormal.cfc_map (f : R → R) (a : A) : IsStarNormal (cfc f a) where
   star_comm_self := by
     rw [Commute, SemiconjBy]
@@ -661,6 +662,17 @@ instance IsStarNormal.cfc_map (f : R → R) (a : A) : IsStarNormal (cfc f a) whe
       congr! 2
       exact mul_comm _ _
     · simp [cfc_apply_of_not_continuousOn a h]
+
+-- The following two lemmas are just `cfc_predicate`, but specific enough for the `@[simp]` tag.
+@[simp]
+protected lemma IsSelfAdjoint.cfc [ContinuousFunctionalCalculus R (IsSelfAdjoint : A → Prop)]
+    {f : R → R} {a : A} : IsSelfAdjoint (cfc f a) :=
+  cfc_predicate _ _
+
+@[simp]
+lemma cfc_nonneg_of_predicate [PartialOrder A]
+    [ContinuousFunctionalCalculus R (fun (a : A) => 0 ≤ a)] {f : R → R} {a : A} : 0 ≤ cfc f a :=
+  cfc_predicate _ _
 
 variable (R) in
 /-- In an `R`-algebra with a continuous functional calculus, every element satisfying the predicate
