@@ -25,11 +25,11 @@ arbitrarily small when `t ∈ 𝒜`. We show below that such a family can be cho
 sets with finite measure.
 The term "measure-dense" is justified by the fact that the approximating condition translates
 to the usual notion of density in the metric space made by constant indicators of measurable sets
-equipped with the `L¹` norm.
+equipped with the `Lᵖ` norm.
 
 A measure `μ` is **separable** if it admits a countable and measure-dense family of sets.
 The term "separable" is justified by the fact that the definition translates to the usual notion
-of separability in the metric space made by constant indicators equipped with the `L¹` norm.
+of separability in the metric space made by constant indicators equipped with the `Lᵖ` norm.
 
 ## Main definitions
 
@@ -83,7 +83,7 @@ sets with finite measures.
 
 The term "measure-dense" is justified by the fact that the approximating condition translates
 to the usual notion of density in the metric space made by constant indicators of measurable sets
-equipped with the `L¹` norm. -/
+equipped with the `Lᵖ` norm. -/
 structure Measure.MeasureDense (μ : Measure X) (𝒜 : Set (Set X)) : Prop :=
   /-- Each set has to be measurable. -/
   measurable : ∀ s ∈ 𝒜, MeasurableSet s
@@ -326,7 +326,7 @@ section IsSeparable
 /-- A measure `μ` is separable if there exists a countable and measure-dense family of sets.
 
 The term "separable" is justified by the fact that the definition translates to the usual notion
-of separability in the metric space made by constant indicators equipped with the `L¹` norm. -/
+of separability in the metric space made by constant indicators equipped with the `Lᵖ` norm. -/
 class IsSeparable (μ : Measure X) : Prop :=
   exists_countable_measureDense : ∃ 𝒜, 𝒜.Countable ∧ μ.MeasureDense 𝒜
 
