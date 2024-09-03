@@ -234,7 +234,7 @@ def leLFDecidable : ∀ (x y : PGame.{u}) [Short x] [Short y], Decidable (x ≤ 
   | mk xl xr xL xR, mk yl yr yL yR, shortx, shorty => by
     constructor
     · refine @decidable_of_iff' _ _ mk_le_mk (id ?_)
-      apply @And.decidable _ _ ?_ ?_
+      apply @instDecidableAnd _ _ ?_ ?_
       · apply @Fintype.decidableForallFintype xl _ ?_ _
         intro i
         apply (leLFDecidable _ _).2
@@ -242,7 +242,7 @@ def leLFDecidable : ∀ (x y : PGame.{u}) [Short x] [Short y], Decidable (x ≤ 
         intro i
         apply (leLFDecidable _ _).2
     · refine @decidable_of_iff' _ _ mk_lf_mk (id ?_)
-      apply @Or.decidable _ _ ?_ ?_
+      apply @instDecidableOr _ _ ?_ ?_
       · apply @Fintype.decidableExistsFintype yl _ ?_ _
         intro i
         apply (leLFDecidable _ _).1
@@ -258,10 +258,10 @@ instance lfDecidable (x y : PGame.{u}) [Short x] [Short y] : Decidable (x ⧏ y)
   (leLFDecidable x y).2
 
 instance ltDecidable (x y : PGame.{u}) [Short x] [Short y] : Decidable (x < y) :=
-  And.decidable
+  instDecidableAnd
 
 instance equivDecidable (x y : PGame.{u}) [Short x] [Short y] : Decidable (x ≈ y) :=
-  And.decidable
+  instDecidableAnd
 
 example : Short 0 := by infer_instance
 
