@@ -199,7 +199,7 @@ private def logImportFailure (f : ImportFailure) : MetaM Unit :=
 /-- Create a discriminator tree for imported environment. -/
 def createImportedDiscrTree (cctx : Core.Context) (ngen : NameGenerator) (env : Environment)
     (act : Name → ConstantInfo → MetaM (List (Key × LazyEntry α)))
-    (constantsPerTask : Nat := 1000) (capacityPerTask := 128) :
+    (constantsPerTask capacityPerTask : Nat) (config : WhnfCoreConfig) :
     MetaM (RefinedDiscrTree α) := do
   let numModules := env.header.moduleData.size
   let rec
@@ -227,7 +227,7 @@ def createImportedDiscrTree (cctx : Core.Context) (ngen : NameGenerator) (env : 
   let tasks ← go ngen #[] 0 0 0
   let r := combineGet {} tasks
   r.errors.forM logImportFailure
-  return r.tree.toLazy
+  return r.tree.toLazy config
 
 /--
 A discriminator tree for the current module's declarations only.

@@ -109,9 +109,9 @@ private def treeCtx (ctx : Core.Context) : Core.Context := {
 /-- Returns candidates from all imported modules that match the expression. -/
 def findImportMatches
     (ext : EnvExtension (IO.Ref (Option (RefinedDiscrTree α))))
-    (addEntry : Name → ConstantInfo → MetaM (List (Key × LazyEntry α)))
+    (addEntry : Name → ConstantInfo → MetaM (List (Key × LazyEntry α))) (ty : Expr)
     (constantsPerTask : Nat := 1000) (capacityPerTask : Nat := 128)
-    (ty : Expr) : MetaM (MatchResult α) := do
+    (config : WhnfCoreConfig := {}) : MetaM (MatchResult α) := do
   let cctx ← (read : CoreM Core.Context)
   let ngen ← getNGen
   let (cNGen, ngen) := ngen.mkChild
@@ -120,8 +120,8 @@ def findImportMatches
   let ref := @EnvExtension.getState _ ⟨dummy⟩ ext (← getEnv)
   let importTree ← (← ref.get).getDM $ do
     profileitM Exception  "lazy discriminator import initialization" (← getOptions) <|
-      createImportedDiscrTree (treeCtx cctx) cNGen (← getEnv) addEntry
-        (constantsPerTask := constantsPerTask) (capacityPerTask := capacityPerTask)
+      createImportedDiscrTree
+        (treeCtx cctx) cNGen (← getEnv) addEntry constantsPerTask capacityPerTask config
   let (importCandidates, importTree) ← getMatch importTree ty false
   ref.set (some importTree)
   return importCandidates
@@ -160,10 +160,10 @@ def findMatchesExt
     (moduleTreeRef : ModuleDiscrTreeRef α)
     (ext : EnvExtension (IO.Ref (Option (RefinedDiscrTree α))))
     (addEntry : Name → ConstantInfo → MetaM (List (Key × LazyEntry α)))
-    (constantsPerTask : Nat := 1000) (capacityPerTask : Nat := 128)
-    (ty : Expr) : MetaM (MatchResult α × MatchResult α) := do
+    (ty : Expr) (constantsPerTask : Nat := 1000) (capacityPerTask : Nat := 128)
+    (config : WhnfCoreConfig := {}) : MetaM (MatchResult α × MatchResult α) := do
   let moduleMatches ← findModuleMatches moduleTreeRef ty
-  let importMatches ← findImportMatches ext addEntry constantsPerTask capacityPerTask ty
+  let importMatches ← findImportMatches ext addEntry ty constantsPerTask capacityPerTask config
   return (moduleMatches, importMatches)
 
 /--
@@ -180,7 +180,7 @@ def findMatchesExt
 -/
 def findMatches (ext : EnvExtension (IO.Ref (Option (RefinedDiscrTree α))))
     (addEntry : Name → ConstantInfo → MetaM (List (Key × LazyEntry α)))
-    (constantsPerTask : Nat := 1000) (capacityPerTask : Nat := 128)
-    (ty : Expr) : MetaM (MatchResult α × MatchResult α) := do
+    (ty : Expr) (constantsPerTask : Nat := 1000) (capacityPerTask : Nat := 128)
+    (config : WhnfCoreConfig := {}) : MetaM (MatchResult α × MatchResult α) := do
   let moduleTreeRef ← createModuleTreeRef addEntry
-  findMatchesExt moduleTreeRef ext addEntry constantsPerTask capacityPerTask ty
+  findMatchesExt moduleTreeRef ext addEntry ty constantsPerTask capacityPerTask config

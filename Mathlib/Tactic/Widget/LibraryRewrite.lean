@@ -5,6 +5,7 @@ Authors: Jovan Gerbscheid, Anand Rao
 -/
 import Mathlib.Lean.Meta.RefinedDiscrTree
 import Mathlib.Tactic.Widget.InteractiveUnfold
+import ProofWidgets.Component.FilterDetails
 
 /-!
 # Point & click library rewriting
@@ -504,24 +505,6 @@ where
           if showNames then #[<br/>, <InteractiveCode fmt={rw.prettyLemma}/>] else #[] }
       </li>
 
-/-- The props for the `FilterDetails` component. -/
-structure FilterDetailsProps where
-  /-- The title -/
-  message : String
-  /-- What is shown in the filtered state -/
-  filtered : Html
-  /-- What is shown in the non-filtered state -/
-  all : Html
-  /-- Whether to start in the filtered state -/
-  initiallyFiltered : Bool
-deriving RpcEncodable
-
-/-- `FilterDetails` is a details component that has a button for switching between a filtered
-and a non-filtered view. -/
-@[widget_module]
-def FilterDetails : Component FilterDetailsProps where
-  javascript := include_str "LibraryRewrite" / "FilterDetails.js"
-
 @[server_rpc_method_cancellable]
 private def rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
   RequestM.asTask do
@@ -555,7 +538,7 @@ private def rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
       let filtered ← renderRewrites subExpr filtered unfoldsHtml props.replaceRange doc false
       let all      ← renderRewrites subExpr all      unfoldsHtml props.replaceRange doc true
       return <FilterDetails
-        message={"Rewrite suggestions:"}
+        summary={.text "Rewrite suggestions:"}
         all={all}
         filtered={filtered}
         initiallyFiltered={true} />
