@@ -121,10 +121,6 @@ variable {n m : Type u} [Fintype m] --(T : n → (E →ₗ[𝕜] E))
 
 open Classical
 
---imported the [Fintype n] and hC from above into the statement. More of this will have to happen
---below, but it may be finicky because we need to call all of these functions and the explicit
---arguments may be needed.
-
 theorem invariance_iInf [Fintype n] [Nonempty n] (T : n → (E →ₗ[𝕜] E))
     (hC : (∀ (i j : n), (T i) ∘ₗ (T j) = (T j) ∘ₗ (T i))) (i : n) :
     ∀ γ : {x // x ≠ i} → 𝕜, ∀ v ∈ (⨅ (j : {x // x ≠ i}),
@@ -183,16 +179,14 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot [Fintype n] [FiniteDim
     (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
   revert T
   refine Fintype.induction_subsingleton_or_nontrivial n ?_ ?_
-  · intro m _ hhm T hT hC
-    --Next line is supposed to be a simp only, but trying to sort out why the orthoprojection isn't
-    --visible...
-    have := Submodule.orthogonal_eq_bot_iff (K := (⨆ (γ : m → 𝕜), ⨅ (j : m), eigenspace (T j) (γ j))).mp
+  · intro m _ hhm T hT _
+    simp only [Submodule.orthogonal_eq_bot_iff]
     by_cases case : Nonempty m
     · have i := choice case
       have := uniqueOfSubsingleton i
-      conv => lhs; rhs; rhs; ext γ; rw [ciInf_subsingleton i]
+      conv => lhs; rhs; ext γ; rw [ciInf_subsingleton i]
       rw [← (Equiv.funUnique m 𝕜).symm.iSup_comp]
-      apply (hT i).orthogonalComplement_iSup_eigenspaces_eq_bot
+      apply Submodule.orthogonal_eq_bot_iff.mp ((hT i).orthogonalComplement_iSup_eigenspaces_eq_bot)
     · simp only [not_nonempty_iff] at case
       simp only [iInf_of_empty, ciSup_unique]
   · intro m hm hmm H T hT hC
