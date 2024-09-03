@@ -150,7 +150,11 @@ jobs:
         run: |
           lake exe cache clean
           # Fail quickly if the cache is completely cold, by checking for Mathlib.Init
+          printf '\nls -ao .lake/build/lib/Mathlib/\n'
+          ls -ao .lake/build/lib/Mathlib/
+          printf '\nlake exe cache get Mathlib.Init\n'
           lake exe cache get Mathlib.Init
+          printf '\nls -ao .lake/build/lib/Mathlib/\n'
           ls -ao .lake/build/lib/Mathlib/
           ! test -e .lake/build/lib/Mathlib/Init.olean; echo $?
           ! test -e .lake/build/lib/Mathlib/Init.olean || lake exe cache get
