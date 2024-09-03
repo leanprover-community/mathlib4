@@ -3,8 +3,6 @@ Copyright (c) 2023 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-
-import Lean.Linter.Util
 import Batteries.Tactic.Lint
 
 /-!
@@ -156,12 +154,14 @@ end Style.missingEnd
 The `cdot` linter is a syntax-linter that flags uses of the "cdot" `·` that are achieved
 by typing a character different from `·`.
 For instance, a "plain" dot `.` is allowed syntax, but is flagged by the linter.
+It also flags "isolated cdots", i.e. when the `·` is on its own line.
 -/
 
 /--
 The `cdot` linter flags uses of the "cdot" `·` that are achieved by typing a character
 different from `·`.
-For instance, a "plain" dot `.` is allowed syntax, but is flagged by the linter. -/
+For instance, a "plain" dot `.` is allowed syntax, but is flagged by the linter.
+It also flags "isolated cdots", i.e. when the `·` is on its own line. -/
 register_option linter.style.cdot : Bool := {
   defValue := false
   descr := "enable the `cdot` linter"
@@ -203,6 +203,14 @@ def cdotLinter : Linter where run := withSetOptionIn fun stx ↦ do
     for s in unwanted_cdot stx do
       Linter.logLint linter.style.cdot s
         m!"Please, use '·' (typed as `\\.`) instead of '{s}' as 'cdot'."
+    -- We also check for isolated cdot's, i.e. when the cdot is on its own line.
+    for cdot in Mathlib.Linter.findCDot stx do
+      match cdot.find? (·.isOfKind `token.«· ») with
+      | some (.node _ _ #[.atom (.original _ _ afterCDot _) _]) =>
+        if (afterCDot.takeWhile (·.isWhitespace)).contains '\n' then
+          logWarningAt cdot <| .tagged linter.style.cdot.name
+            m!"This central dot `·` is isolated; please merge it with the next line."
+      | _ => return
 
 initialize addLinter cdotLinter
 
@@ -293,6 +301,73 @@ def lambdaSyntaxLinter : Linter where run := withSetOptionIn fun stx ↦ do
 initialize addLinter lambdaSyntaxLinter
 
 end Style.lambdaSyntax
+
+/-!
+#  The "longFile" linter
+
+The "longFile" linter emits a warning on files which are longer than a certain number of lines
+(1500 by default).
+-/
+
+/--
+The "longFile" linter emits a warning on files which are longer than a certain number of lines
+(1500 by default). If this option is set to `N` lines, the linter warns once a file has more than
+`N` lines. A value of `0` silences the linter entirely.
+-/
+register_option linter.style.longFile : Nat := {
+  defValue := 1500
+  descr := "enable the longFile linter"
+}
+
+namespace Style.longFile
+
+@[inherit_doc Mathlib.Linter.linter.style.longFile]
+def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
+  let linterBound := linter.style.longFile.get (← getOptions)
+  if linterBound == 0 then
+    return
+  let defValue := linter.style.longFile.defValue
+  let smallOption := match stx with
+      | `(set_option linter.style.longFile $x) => TSyntax.getNat ⟨x.raw⟩ ≤ defValue
+      | _ => false
+  if smallOption then
+    logWarningAt stx <| .tagged linter.style.longFile.name
+      m!"The default value of the `longFile` linter is {defValue}.\n\
+        The current value of {linterBound} does not exceed the allowed bound.\n\
+        Please, remove the `set_option linter.style.longFile {linterBound}`."
+  else
+  -- Thanks to the above check, the linter option is either not set (and hence equal
+  -- to the default) or set to some value *larger* than the default.
+  -- `Parser.isTerminalCommand` allows `stx` to be `#exit`: this is useful for tests.
+  unless Parser.isTerminalCommand stx do return
+  -- We exclude `Mathlib.lean` from the linter: it exceeds linter's default number of allowed
+  -- lines, and it is an auto-generated import-only file.
+  -- TODO: if there are more such files, revise the implementation.
+  if (← getMainModule) == `Mathlib then return
+  if let some init := stx.getTailPos? then
+    -- the last line: we subtract 1, since the last line is expected to be empty
+    let lastLine := ((← getFileMap).toPosition init).line
+    if lastLine ≤ defValue && defValue < linterBound then
+      logWarningAt stx <| .tagged linter.style.longFile.name
+        m!"The default value of the `longFile` linter is {defValue}.\n\
+          This file is {lastLine} lines long which does not exceed the allowed bound.\n\
+          Please, remove the `set_option linter.style.longFile {linterBound}`."
+    else
+    -- `candidate` is divisible by `100` and satisfies `lastLine + 100 < candidate ≤ lastLine + 200`
+    -- note that either `lastLine ≤ defValue` and `defValue = linterBound` hold or
+    -- `candidate` is necessarily bigger than `lastLine` and hence bigger than `defValue`
+    let candidate := (lastLine / 100) * 100 + 200
+    let candidate := max candidate defValue
+    if linterBound < lastLine then
+      logWarningAt stx <| .tagged linter.style.longFile.name
+        m!"This file is {lastLine} lines long, but the limit is {linterBound}.\n\n\
+          You can extend the allowed length of the file using \
+          `set_option linter.style.longFile {candidate}`.\n\
+          You can completely disable this linter by setting the length limit to `0`."
+
+initialize addLinter longFileLinter
+
+end Style.longFile
 
 /-! # The "longLine linter" -/
 
