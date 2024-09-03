@@ -1,5 +1,5 @@
-import Mathlib.Tactic.Linter.HashCommandLinter
 import Mathlib.Tactic.Linter.GlobalAttributeIn
+import Mathlib.Tactic.Linter.HashCommandLinter
 -- This file imports Batteries.Tactic.Lint, where the `env_linter` attribute is defined.
 import Mathlib.Tactic.Linter.Lint
 import Mathlib.Tactic.Linter.Style
