@@ -299,8 +299,6 @@ theorem map_reverseAux (f : α → β) (l₁ l₂ : List α) :
 
 @[deprecated (since := "2024-08-15")] alias isEmpty_iff_eq_nil := isEmpty_iff
 
-/-! ### dropLast -/
-
 /-! ### getLast -/
 
 attribute [simp] getLast_cons
