@@ -76,6 +76,7 @@ include() {
     s/MAIN_OR_FORK/$3/g;
     s/JOB_NAME/$4/g;
     s/STYLE_LINT_RUNNER/$5/g;
+    /^#.*autogenerating/d
   " ../build.in.yml
 }
 
