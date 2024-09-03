@@ -338,7 +338,7 @@ theorem borel_eq_top_of_countable {α : Type*} [TopologicalSpace α] [T0Space α
     borel α = ⊤ := by
   refine top_unique fun s _ ↦ ?_
   borelize α
-  exact measurableSet_discrete s
+  exact .of_discrete
 
 -- see Note [lower instance priority]
 instance (priority := 100) OpensMeasurableSpace.toMeasurableSingletonClass [T1Space α] :
