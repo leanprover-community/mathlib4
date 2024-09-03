@@ -113,10 +113,7 @@ noncomputable instance (priority := 100) [LocallyFiniteOrder ι] : SuccOrder ι 
 noncomputable instance (priority := 100) [LocallyFiniteOrder ι] : PredOrder ι :=
   (inferInstance : PredOrder (OrderDual ιᵒᵈ))
 
-end LinearLocallyFiniteOrder
-
-instance (priority := 100) LinearLocallyFiniteOrder.isSuccArchimedean [LocallyFiniteOrder ι] :
-    IsSuccArchimedean ι where
+instance (priority := 100) [LocallyFiniteOrder ι] : IsSuccArchimedean ι where
   exists_succ_iterate_of_le := by
     intro i j hij
     rw [le_iff_lt_or_eq] at hij
@@ -145,8 +142,14 @@ instance (priority := 100) LinearLocallyFiniteOrder.isSuccArchimedean [LocallyFi
     have h_max : IsMax (succ^[n] i) := isMax_iterate_succ_of_eq_of_ne h_eq hnm.ne
     exact not_le.mpr (h_lt n) (h_max (h_lt n).le)
 
-instance (priority := 100) LinearOrder.isPredArchimedean_of_isSuccArchimedean [SuccOrder ι]
-    [PredOrder ι] [IsSuccArchimedean ι] : IsPredArchimedean ι where
+end LinearLocallyFiniteOrder
+
+namespace LinearOrder
+
+variable [SuccOrder ι] [PredOrder ι]
+
+instance (priority := 100) isPredArchimedean_of_isSuccArchimedean [IsSuccArchimedean ι] :
+    IsPredArchimedean ι where
   exists_pred_iterate_of_le := by
     intro i j hij
     have h_exists := exists_succ_iterate_of_le hij
@@ -164,6 +167,16 @@ instance (priority := 100) LinearOrder.isPredArchimedean_of_isSuccArchimedean [S
         exact le_succ _
       · rw [hn_eq]
         exact hn_lt_ne _ (Nat.lt_succ_self n)
+
+-- We don't make this an instance to avoid loops with `isPredArchimedean_of_isSuccArchimedean`.
+theorem isSuccArchimedean_of_isPredArchimedean [IsPredArchimedean ι] : IsSuccArchimedean ι :=
+  inferInstanceAs (IsSuccArchimedean ιᵒᵈᵒᵈ)
+
+theorem isSuccArchimedean_iff_isPredArchimedean : IsSuccArchimedean ι ↔ IsPredArchimedean ι :=
+  ⟨@isPredArchimedean_of_isSuccArchimedean _ _ _ _,
+    @isSuccArchimedean_of_isPredArchimedean _ _ _ _⟩
+
+end LinearOrder
 
 section toZ
 
