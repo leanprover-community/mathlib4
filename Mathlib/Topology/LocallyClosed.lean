@@ -88,12 +88,6 @@ lemma isClosed_preimage_val_coborder :
     IsClosed (coborder s ↓∩ s) := by
   rw [isClosed_preimage_val, inter_eq_right.mpr subset_coborder, coborder_inter_closure]
 
-lemma IsOpen.isLocallyClosed (hs : IsOpen s) : IsLocallyClosed s :=
-  ⟨_, _, hs, isClosed_univ, (inter_univ _).symm⟩
-
-lemma IsClosed.isLocallyClosed (hs : IsClosed s) : IsLocallyClosed s :=
-  ⟨_, _, isOpen_univ, hs, (univ_inter _).symm⟩
-
 lemma IsLocallyClosed.inter (hs : IsLocallyClosed s) (ht : IsLocallyClosed t) :
     IsLocallyClosed (s ∩ t) := by
   obtain ⟨U₁, Z₁, hU₁, hZ₁, rfl⟩ := hs
