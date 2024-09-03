@@ -27,7 +27,6 @@ There is also a term elaborator `to_app_of% t` for use within proofs.
 
 open Lean Meta Elab Tactic
 open Mathlib.Tactic
-open Qq
 
 namespace CategoryTheory
 
