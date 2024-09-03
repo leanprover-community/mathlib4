@@ -735,12 +735,14 @@ instance nf_mulNat (o) [NF o] (n) : NF (mulNat o n) := by simpa using ONote.mul_
 instance nf_opowAux (e a0 a) [NF e] [NF a0] [NF a] : ∀ k m, NF (opowAux e a0 a k m) := by
   intro k m
   unfold opowAux
-  rcases m with m | m
-  · cases k <;> exact NF.zero
-  rcases k with k | k
-  · exact NF.oadd_zero _ _
-  · haveI := nf_opowAux e a0 a k
-    simp only [Nat.succ_ne_zero m, IsEmpty.forall_iff, mulNat_eq_mul]; infer_instance
+  cases m with
+  | zero => cases k <;> exact NF.zero
+  | succ m =>
+    cases k with
+    | zero => exact NF.oadd_zero _ _
+    | succ k =>
+      haveI := nf_opowAux e a0 a k
+      simp only [Nat.succ_ne_zero m, IsEmpty.forall_iff, mulNat_eq_mul]; infer_instance
 
 instance nf_opow (o₁ o₂) [NF o₁] [NF o₂] : NF (o₁ ^ o₂) := by
   cases' e₁ : split o₁ with a m

@@ -118,7 +118,7 @@ theorem one_lt_ack_succ_right : ∀ m n, 1 < ack m (n + 1)
   | 0, n => by simp
   | m + 1, n => by
     rw [ack_succ_succ]
-    rcases exists_eq_succ_of_ne_zero (ack_pos (m + 1) n).ne' with h | h
+    obtain ⟨_, h⟩ := exists_eq_succ_of_ne_zero (ack_pos (m + 1) n).ne'
     rw [h]
     apply one_lt_ack_succ_right
 

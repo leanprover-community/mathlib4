@@ -901,7 +901,7 @@ theorem fuzzy_of_equiv_of_fuzzy {x y z : PGame} (h₁ : x ≈ y) (h₂ : y ‖ z
 
 /-- Exactly one of the following is true (although we don't prove this here). -/
 theorem lt_or_equiv_or_gt_or_fuzzy (x y : PGame) : x < y ∨ (x ≈ y) ∨ y < x ∨ x ‖ y := by
-  rcases le_or_gf x y with h₁ h₁ <;> cases' le_or_gf y x with h₂ | h₂
+  rcases le_or_gf x y with h₁ | h₁ <;> rcases le_or_gf y x with h₂ | h₂
   · right
     left
     exact ⟨h₁, h₂⟩

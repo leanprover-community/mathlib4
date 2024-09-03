@@ -116,7 +116,7 @@ theorem cmp_to_nat_lemma {m n : PosNum} : (m : ℕ) < n → (bit1 m : ℕ) < bit
     intro h; rw [Nat.add_right_comm m m 1, add_assoc]; exact Nat.add_le_add h h
 
 theorem cmp_swap (m) : ∀ n, (cmp m n).swap = cmp n m := by
-  induction' m with m IH m IH <;> intro n <;> rcases n with n | n <;> unfold cmp <;>
+  induction' m with m IH m IH <;> intro n <;> rcases n with - | n | n <;> unfold cmp <;>
     try { rfl } <;> rw [← IH] <;> cases cmp m n <;> rfl
 
 theorem cmp_to_nat : ∀ m n, (Ordering.casesOn (cmp m n) ((m : ℕ) < n) (m = n) ((n : ℕ) < m) : Prop)
@@ -836,7 +836,7 @@ theorem castNum_shiftRight (m : Num) (n : Nat) : ↑(m >>> n) = (m : ℕ) >>> (n
   induction' n with n IH generalizing m
   · cases m <;> rfl
   have hdiv2 : ∀ m, Nat.div2 (m + m) = m := by intro; rw [Nat.div2_val]; omega
-  rcases m with m | m <;> dsimp only [PosNum.shiftr, ← PosNum.shiftr_eq_shiftRight]
+  rcases m with - | m | m <;> dsimp only [PosNum.shiftr, ← PosNum.shiftr_eq_shiftRight]
   · rw [Nat.shiftRight_eq_div_pow]
     symm
     apply Nat.div_eq_of_lt

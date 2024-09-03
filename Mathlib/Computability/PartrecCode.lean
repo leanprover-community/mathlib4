@@ -938,7 +938,7 @@ theorem evaln_prim : Primrec fun a : (ℕ × Code) × ℕ => evaln a.1.1 a.1.2 a
             evaln k' c' n := by
         intro k₁ c₁ n₁ hl
         simp [lup, List.getElem?_range hl, evaln_map, Bind.bind]
-      rcases c with cf cg | cf cg cf cg cf <;>
+      rcases c with - | - | - | - | ⟨cf, cg⟩ | ⟨cf, cg⟩ | ⟨cf, cg⟩ | cf <;>
         simp [evaln, nk, Bind.bind, Functor.map, Seq.seq, pure]
       · cases' encode_lt_pair cf cg with lf lg
         rw [hg (Nat.pair_lt_pair_right _ lf), hg (Nat.pair_lt_pair_right _ lg)]

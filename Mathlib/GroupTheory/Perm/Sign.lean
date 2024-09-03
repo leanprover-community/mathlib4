@@ -39,7 +39,8 @@ def modSwap (i j : α) : Setoid (Perm α) :=
   ⟨fun σ τ => σ = τ ∨ σ = swap i j * τ, fun σ => Or.inl (refl σ), fun {σ τ} h =>
     Or.casesOn h (fun h => Or.inl h.symm) fun h => Or.inr (by rw [h, swap_mul_self_mul]),
     fun {σ τ υ} hστ hτυ => by
-    rcases hστ with hστ hστ <;> cases' hτυ with hτυ | hτυ <;> try rw [hστ, hτυ, swap_mul_self_mul] <;>
+    rcases hστ with hστ | hστ <;> rcases hτυ with hτυ | hτυ <;>
+      try rw [hστ, hτυ, swap_mul_self_mul] <;>
     simp [hστ, hτυ] -- Porting note: should close goals, but doesn't
     · simp [hστ, hτυ]
     · simp [hστ, hτυ]

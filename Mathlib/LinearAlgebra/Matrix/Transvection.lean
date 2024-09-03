@@ -246,7 +246,7 @@ theorem toMatrix_sumInl (t : TransvectionStruct n R) :
     (t.sumInl p).toMatrix = fromBlocks t.toMatrix 0 0 1 := by
   cases t
   ext a b
-  rcases a with a a <;> cases' b with b | b
+  rcases a with a | a <;> rcases b with b | b
   · by_cases h : a = b <;> simp [TransvectionStruct.sumInl, transvection, h, stdBasisMatrix]
   · simp [TransvectionStruct.sumInl, transvection]
   · simp [TransvectionStruct.sumInl, transvection]

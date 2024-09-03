@@ -1159,13 +1159,14 @@ instance : PredOrder (WithBot α) where
     · exact bot_le
     · exact coe_le_coe.2 (pred_le a)
   min_of_le_pred {a} ha := by
-    rcases a with a | a
-    · exact isMin_bot
-    dsimp only at ha
-    split_ifs at ha with ha'
-    · exact (not_coe_le_bot _ ha).elim
-    · rw [coe_le_coe, le_pred_iff_isMin, ← pred_eq_iff_isMin] at ha
-      exact (ha' ha).elim
+    cases a with
+    | bot => exact isMin_bot
+    | coe a =>
+      dsimp only at ha
+      split_ifs at ha with ha'
+      · exact (not_coe_le_bot _ ha).elim
+      · rw [coe_le_coe, le_pred_iff_isMin, ← pred_eq_iff_isMin] at ha
+        exact (ha' ha).elim
   le_pred_of_lt {a b} h := by
     cases a
     · exact bot_le
