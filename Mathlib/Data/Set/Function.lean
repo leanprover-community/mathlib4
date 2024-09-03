@@ -121,7 +121,6 @@ theorem restrict₂_comp_restrict {s t : Set α} (hst : s ⊆ t) :
 theorem restrict₂_comp_restrict₂ {s t u : Set α} (hst : s ⊆ t) (htu : t ⊆ u) :
     (restrict₂ (π := π) hst) ∘ (restrict₂ htu) = restrict₂ (hst.trans htu) := rfl
 
-/--/
 theorem range_extend_subset (f : α → β) (g : α → γ) (g' : β → γ) :
     range (extend f g g') ⊆ range g ∪ g' '' (range f)ᶜ := by
   classical
