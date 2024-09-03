@@ -205,7 +205,8 @@ theorem iInf_toSubfield {ι : Sort*} (S : ι → IntermediateField F E) :
 @[simp]
 theorem iSup_toSubfield {ι : Sort*} [Nonempty ι] (S : ι → IntermediateField F E) :
     (iSup S).toSubfield = ⨆ i, (S i).toSubfield := by
-  simp only [iSup, Set.range_nonempty, sSup_toSubfield, ← Set.range_comp, Function.comp]
+  simp only [iSup, Set.range_nonempty, sSup_toSubfield, ← Set.range_comp]
+  rfl
 
 /-- Construct an algebra isomorphism from an equality of intermediate fields -/
 @[simps! apply]
