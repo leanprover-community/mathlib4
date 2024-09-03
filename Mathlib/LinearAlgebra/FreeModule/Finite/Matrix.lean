@@ -65,6 +65,9 @@ theorem FiniteDimensional.rank_linearMap_self :
 theorem FiniteDimensional.finrank_linearMap_self : finrank S (M →ₗ[R] S) = finrank R M := by
   rw [finrank_linearMap, finrank_self, mul_one]
 
+@[deprecated (since := "2024-01-12")]
+alias FiniteDimensional.finrank_linear_map' := FiniteDimensional.finrank_linearMap_self
+
 end Ring
 
 section AlgHom
