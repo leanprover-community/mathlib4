@@ -1,0 +1,32 @@
+name: Maintainer merge (comment)
+
+on:
+  issue_comment:
+    types: created
+
+jobs:
+  ping_zulip:
+    name: Post bench summary
+    if: (github.event.issue.pull_request != 'null') && (startsWith(github.event.comment.body, 'Here are the [benchmark results]'))
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+
+      - name: Summarize bench output
+        id: bench_summary
+        run: |
+          comment="$(./scripts/bench.sh "${PR}")"
+          printf 'Posting the following to the PR:\n---\n%s\n---\n' "${comment}"
+          printf 'comment=%s' "${comment}" >> "$GITHUB_OUTPUT"
+        env:
+          PR:  ${{ github.event.issue.number }}
+          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+      - name: Add comment to PR
+        if: ${{ steps.bench_summary.outputs.topic != '' }}
+        uses: GrantBirki/comment@v2
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          body: ${{ steps.bench_summary.outputs.topic }}
