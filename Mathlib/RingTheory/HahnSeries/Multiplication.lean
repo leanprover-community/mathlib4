@@ -6,6 +6,7 @@ Authors: Aaron Anderson, Scott Carnahan
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Data.Finset.MulAntidiagonal
 import Mathlib.Data.Finset.SMulAntidiagonal
+import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.RingTheory.HahnSeries.Addition
 
 /-!
