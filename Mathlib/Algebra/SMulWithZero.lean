@@ -7,7 +7,6 @@ import Mathlib.Algebra.Group.Action.Opposite
 import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.GroupWithZero.Opposite
-import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Introduce `SMulWithZero`
