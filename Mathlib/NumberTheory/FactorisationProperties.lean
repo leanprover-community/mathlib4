@@ -154,10 +154,8 @@ theorem prime_pow_deficient (h : Prime n) : Deficient (n ^ m) := by
           exact (Nat.pow_lt_pow_iff_right (Prime.two_le h)).mpr hx
     have h2 : ∑ i in image (fun x => n ^ x) (range m), i = ∑ i in range m, n^i := by
       rw [Finset.sum_image]
-      rintro x _ y _ hnxy
-      by_contra hc
-      rcases (Ne.lt_or_lt hc) with hx | hx <;>
-      linarith [(pow_lt_pow_iff_right (Prime.one_lt h)).mpr hx]
+      rintro x _ y _
+      apply pow_injective_of_not_unit h.not_unit <| Prime.ne_zero h
     rw [Deficient, h1, h2]
     calc
       ∑ i ∈ range m, n ^ i
