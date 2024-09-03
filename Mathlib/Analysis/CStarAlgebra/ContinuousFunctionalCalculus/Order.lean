@@ -247,7 +247,7 @@ lemma le_iff_norm_sqrt_mul_sqrt_inv {a : A} {b : Aˣ} (ha : 0 ≤ a) (hb : 0 ≤
     CFC.rpow_rpow (b : A) _ _ (by simp) (by norm_num), le_iff_norm_sqrt_mul_rpow b.isUnit ha hb]
   norm_num
 
-protected lemma CFC.inv_le_inv {a b : Aˣ} (ha : 0 ≤ (a : A))
+protected lemma CStarRing.inv_le_inv {a b : Aˣ} (ha : 0 ≤ (a : A))
     (hab : (a : A) ≤ b) : (↑b⁻¹ : A) ≤ a⁻¹ := by
   have hb := ha.trans hab
   have hb_inv : (0 : A) ≤ b⁻¹ := inv_nonneg_of_nonneg b hb
@@ -259,9 +259,9 @@ protected lemma CFC.inv_le_inv {a b : Aˣ} (ha : 0 ≤ (a : A))
   rwa [star_mul, IsSelfAdjoint.of_nonneg sqrt_nonneg,
     IsSelfAdjoint.of_nonneg sqrt_nonneg] at hab ⊢
 
-protected lemma CFC.inv_le_inv_iff {a b : Aˣ} (ha : 0 ≤ (a : A)) (hb : 0 ≤ (b : A)) :
+protected lemma CStarRing.inv_le_inv_iff {a b : Aˣ} (ha : 0 ≤ (a : A)) (hb : 0 ≤ (b : A)) :
     (↑a⁻¹ : A) ≤ b⁻¹ ↔ b ≤ a :=
-  ⟨CFC.inv_le_inv (inv_nonneg_of_nonneg a ha), CFC.inv_le_inv hb⟩
+  ⟨CStarRing.inv_le_inv (inv_nonneg_of_nonneg a ha), CStarRing.inv_le_inv hb⟩
 
 end Inv
 

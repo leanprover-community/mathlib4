@@ -50,23 +50,18 @@ noncomputable def IicSnd (r : ℝ) : Measure α :=
 
 theorem IicSnd_apply (r : ℝ) {s : Set α} (hs : MeasurableSet s) :
     ρ.IicSnd r s = ρ (s ×ˢ Iic r) := by
-  rw [IicSnd, fst_apply hs,
-    restrict_apply' (MeasurableSet.univ.prod (measurableSet_Iic : MeasurableSet (Iic r))), ←
-    prod_univ, prod_inter_prod, inter_univ, univ_inter]
+  rw [IicSnd, fst_apply hs, restrict_apply' (MeasurableSet.univ.prod measurableSet_Iic),
+    univ_prod, Set.prod_eq]
 
 theorem IicSnd_univ (r : ℝ) : ρ.IicSnd r univ = ρ (univ ×ˢ Iic r) :=
   IicSnd_apply ρ r MeasurableSet.univ
 
+@[gcongr]
 theorem IicSnd_mono {r r' : ℝ} (h_le : r ≤ r') : ρ.IicSnd r ≤ ρ.IicSnd r' := by
-  refine Measure.le_iff.2 fun s hs ↦ ?_
-  simp_rw [IicSnd_apply ρ _ hs]
-  refine measure_mono (prod_subset_prod_iff.mpr (Or.inl ⟨subset_rfl, Iic_subset_Iic.mpr ?_⟩))
-  exact mod_cast h_le
+  unfold IicSnd; gcongr
 
-theorem IicSnd_le_fst (r : ℝ) : ρ.IicSnd r ≤ ρ.fst := by
-  refine Measure.le_iff.2 fun s hs ↦ ?_
-  simp_rw [fst_apply hs, IicSnd_apply ρ r hs]
-  exact measure_mono (prod_subset_preimage_fst _ _)
+theorem IicSnd_le_fst (r : ℝ) : ρ.IicSnd r ≤ ρ.fst :=
+  fst_mono restrict_le_self
 
 theorem IicSnd_ac_fst (r : ℝ) : ρ.IicSnd r ≪ ρ.fst :=
   Measure.absolutelyContinuous_of_le (IicSnd_le_fst ρ r)
