@@ -199,8 +199,3 @@ theorem smul_inv₀ [SMulCommClass α β β] [IsScalarTower α β β] (c : α) (
     rw [smul_mul_smul_comm, inv_mul_cancel₀ hc, inv_mul_cancel₀ hx, one_smul]
 
 end GroupWithZero
-
--- This instance seems a bit incongruous in this file, but `#find_home!` told me to put it here.
-instance NonUnitalNonAssocSemiring.toDistribSMul [NonUnitalNonAssocSemiring R] :
-    DistribSMul R R where
-  smul_add := mul_add
