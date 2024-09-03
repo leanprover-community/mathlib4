@@ -1185,16 +1185,16 @@ variable (ι : Type*)
 variable (M : Type*) [AddCommGroup M] {R : Type*} [CommRing R] [Module R M] (I : Ideal R)
 variable (v : ι → M) (hv : Submodule.span R (Set.range v) = ⊤)
 
-/-- A variant of `Finsupp.total` that takes in vectors valued in `I`. -/
+/-- A variant of `Finsupp.linearCombination` that takes in vectors valued in `I`. -/
 noncomputable def finsuppTotal : (ι →₀ I) →ₗ[R] M :=
-  (Finsupp.total R v).comp (Finsupp.mapRange.linearMap I.subtype)
+  (Finsupp.linearCombination R v).comp (Finsupp.mapRange.linearMap I.subtype)
 
 variable {ι M v}
 
 theorem finsuppTotal_apply (f : ι →₀ I) :
     finsuppTotal ι M I v f = f.sum fun i x => (x : R) • v i := by
   dsimp [finsuppTotal]
-  rw [Finsupp.total_apply, Finsupp.sum_mapRange_index]
+  rw [Finsupp.linearCombination_apply, Finsupp.sum_mapRange_index]
   exact fun _ => zero_smul _ _
 
 theorem finsuppTotal_apply_eq_of_fintype [Fintype ι] (f : ι →₀ I) :
@@ -1209,7 +1209,8 @@ theorem range_finsuppTotal :
   refine ⟨fun ⟨f, h⟩ => ⟨Finsupp.mapRange.linearMap I.subtype f, fun i => (f i).2, h⟩, ?_⟩
   rintro ⟨a, ha, rfl⟩
   classical
-    refine ⟨a.mapRange (fun r => if h : r ∈ I then ⟨r, h⟩ else 0) (by simp), ?_⟩
+    refine ⟨a.mapRange (fun r => if h : r ∈ I then ⟨r, h⟩ else 0)
+      (by simp only [Submodule.zero_mem, ↓reduceDIte]; rfl), ?_⟩
     rw [finsuppTotal_apply, Finsupp.sum_mapRange_index]
     · apply Finsupp.sum_congr
       intro i _

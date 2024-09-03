@@ -807,7 +807,7 @@ theorem HasFPowerSeriesOnBall.tendstoUniformlyOn' {r' : ℝ≥0} (hf : HasFPower
     (h : (r' : ℝ≥0∞) < r) :
     TendstoUniformlyOn (fun n y => p.partialSum n (y - x)) f atTop (Metric.ball (x : E) r') := by
   convert (hf.tendstoUniformlyOn h).comp fun y => y - x using 1
-  · simp [(· ∘ ·)]
+  · simp [Function.comp_def]
   · ext z
     simp [dist_eq_norm]
 

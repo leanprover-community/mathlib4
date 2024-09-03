@@ -266,7 +266,7 @@ theorem supDegree_withBot_some_comp {s : AddMonoidAlgebra R A} (hs : s.support.N
 
 theorem supDegree_eq_of_isMaxOn {p : R[A]} {a : A} (hmem : a ∈ p.support)
     (hmax : IsMaxOn D p.support a) : p.supDegree D = D a :=
-  (Finset.sup_le hmax).antisymm (Finset.le_sup hmem)
+  sup_eq_of_isMaxOn hmem hmax
 
 variable [AddZeroClass A] {p q : R[A]}
 
@@ -279,11 +279,8 @@ theorem ne_zero_of_not_supDegree_le {b : B} (h : ¬ p.supDegree D ≤ b) : p ≠
   ne_zero_of_supDegree_ne_bot (fun he => h <| he ▸ bot_le)
 
 theorem supDegree_eq_of_max {b : B} (hb : b ∈ Set.range D) (hmem : D.invFun b ∈ p.support)
-    (hmax : ∀ a ∈ p.support, D a ≤ b) : p.supDegree D = b := by
-  obtain ⟨a, rfl⟩ := hb
-  rw [← Function.apply_invFun_apply (f := D)]
-  apply supDegree_eq_of_isMaxOn hmem; intro
-  rw [Function.apply_invFun_apply (f := D)]; apply hmax
+    (hmax : ∀ a ∈ p.support, D a ≤ b) : p.supDegree D = b :=
+  sup_eq_of_max hb hmem hmax
 
 variable [Add B]
 
@@ -371,7 +368,7 @@ lemma supDegree_mem_range (hp : p ≠ 0) : p.supDegree D ∈ Set.range D := by
 variable {ι : Type*} {s : Finset ι} {i : ι} (hi : i ∈ s) {f : ι → R[A]}
 
 lemma supDegree_sum_lt (hs : s.Nonempty) {b : B}
-    (h : ∀ i ∈ s, (f i).supDegree D < b) : (∑ i in s, f i).supDegree D < b := by
+    (h : ∀ i ∈ s, (f i).supDegree D < b) : (∑ i ∈ s, f i).supDegree D < b := by
   refine supDegree_sum_le.trans_lt ((Finset.sup_lt_iff ?_).mpr h)
   obtain ⟨i, hi⟩ := hs; exact bot_le.trans_lt (h i hi)
 
