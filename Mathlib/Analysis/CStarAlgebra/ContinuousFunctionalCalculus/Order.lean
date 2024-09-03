@@ -65,11 +65,6 @@ lemma inr_nonneg_iff {a : A} : 0 ≤ (a : Unitization ℂ A) ↔ 0 ≤ a := by
 
 end Unitization
 
-lemma ContinuousOn.ofReal_map_toNNReal {f : ℝ≥0 → ℝ≥0} {s : Set ℝ} {t : Set ℝ≥0}
-    (hf : ContinuousOn f t) (h : Set.MapsTo Real.toNNReal s t) :
-    ContinuousOn (fun x ↦ f x.toNNReal : ℝ → ℝ) s :=
-  continuous_subtype_val.comp_continuousOn <| hf.comp continuous_real_toNNReal.continuousOn h
-
 /-- `cfc_le_iff` only applies to a scalar ring where `R` is an actual `Ring`, and not a `Semiring`.
 However, this theorem still holds for `ℝ≥0` as long as the algebra `A` itself is an `ℝ`-algebra. -/
 lemma cfc_nnreal_le_iff {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [PartialOrder A]
@@ -189,8 +184,8 @@ lemma norm_le_natCast_iff_of_nonneg (a : A) (n : ℕ) (ha : 0 ≤ a := by cfc_ta
     ‖a‖ ≤ n ↔ a ≤ n := by
   simpa using norm_le_iff_le_algebraMap a n.cast_nonneg
 
-lemma nnnorm_le_ofNat_iff_of_nonneg (a : A) (n : ℕ) (ha : 0 ≤ a := by cfc_tac) :
-    ‖a‖ ≤ n ↔ a ≤ n := by
+lemma nnnorm_le_natCast_iff_of_nonneg (a : A) (n : ℕ) (ha : 0 ≤ a := by cfc_tac) :
+    ‖a‖₊ ≤ n ↔ a ≤ n := by
   simpa using nnnorm_le_iff_of_nonneg a n
 
 end CStarRing
