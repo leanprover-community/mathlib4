@@ -152,13 +152,14 @@ theorem pow_leibniz' (D : LieDerivation R L L) (n : ℕ) (a b : L) :
   | succ n ih => calc
     D.toLinearMap^[n + 1] ⁅a, b⁆ =
     -- TODO: fix succ issues in this statement already
+    -- + should already be a sum here!
         ∑ x ∈ Finset.range (n + 1), n.choose x • ⁅(⇑D)^[x] a, (⇑D)^[(n - x).succ] b⁆ -
-          ∑ x ∈ Finset.range (n + 1), n.choose x • ⁅(⇑D)^[n - x] b, (⇑D)^[x.succ] a⁆ := by
+          ∑ x ∈ Finset.range (n + 1), n.choose x • ⁅(⇑D)^[n - x] b, (⇑D)^[x + 1] a⁆ := by
       simp only [Function.iterate_succ_apply', ih]
       simp
     _ = ⁅a, (⇑D)^[n.succ] b⁆ +
           ∑ x ∈ Finset.Ico 1 (n + 1), (n.choose x • ⁅(⇑D)^[x] a, (⇑D)^[(n - x).succ] b⁆ -
-            n.choose (x - 1) • ⁅(⇑D)^[n - (x - 1)] b, (⇑D)^[(x - 1).succ] a⁆) -
+            n.choose (x - 1) • ⁅(⇑D)^[n - (x - 1)] b, (⇑D)^[(x - 1) + 1] a⁆) -
           ⁅b, (⇑D)^[n.succ] a⁆ := by
       rw [sum_range_eq_add_Ico _ (Nat.zero_lt_succ n)]
       nth_rw 1 [Finset.range_eq_Ico]
@@ -167,7 +168,7 @@ theorem pow_leibniz' (D : LieDerivation R L L) (n : ℕ) (a b : L) :
       simp [← sub_sub, add_sub_assoc, ← Finset.sum_sub_distrib]
     _ = ⁅a, (⇑D)^[n.succ] b⁆ +
           ∑ x ∈ Finset.Ico 1 (n + 1), (n + 1).choose x • ⁅(⇑D)^[x] a, (⇑D)^[n + 1 - x] b⁆ -
-            ⁅b, (⇑D)^[n.succ] a⁆ := by
+            ⁅b, (⇑D)^[n + 1] a⁆ := by
       rw [Finset.sum_congr rfl _]
       intro k hk
       obtain ⟨hk₁, hk₂⟩ := Finset.mem_Ico.1 hk
