@@ -32,6 +32,8 @@ An executable running all these linters is defined in `scripts/lint-style.lean`.
 
 open System
 
+namespace Mathlib.Linter.TextBased
+
 /-- Different kinds of "broad imports" that are linted against. -/
 inductive BroadImports
   /-- Importing the entire "Mathlib.Tactic" folder -/
@@ -409,7 +411,7 @@ def lintFile (path : FilePath) (sizeLimit : Option ℕ) (exceptions : Array Erro
     errors := #[ErrorContext.mk (StyleError.fileTooLong n limit ex) 1 path]
   let allOutput := (Array.map (fun lint ↦
     (Array.map (fun (e, n) ↦ ErrorContext.mk e n path)) (lint lines))) allLinters
-  -- This this list is not sorted: for github, this is fine.
+  -- This list is not sorted: for github, this is fine.
   errors := errors.append
     (allOutput.flatten.filter (fun e ↦ (e.find?_comparable exceptions).isNone))
   return errors
@@ -457,10 +459,12 @@ def lintModules (moduleNames : Array String) (mode : OutputSetting) (fix : Bool)
     -- or wait until lint-style.py is fully rewritten in Lean.
     let args := if fix then #["--fix"] else #[]
     let pythonOutput ← IO.Process.run { cmd := "./scripts/print-style-errors.sh", args := args }
-    if pythonOutput != "" then IO.println pythonOutput
+    if pythonOutput != "" then
+      numberErrorFiles := numberErrorFiles + 1
+      IO.print pythonOutput
     formatErrors allUnexpectedErrors style
-    if numberErrorFiles > 0 && mode matches OutputSetting.print _ then
-      IO.println s!"error: found {allUnexpectedErrors.size} new style errors\n\
+    if allUnexpectedErrors.size > 0 && mode matches OutputSetting.print _ then
+      IO.println s!"error: found {allUnexpectedErrors.size} new style error(s)\n\
         run `lake exe lint-style --update` to ignore all of them"
   | OutputSetting.update =>
     formatErrors allUnexpectedErrors ErrorFormat.humanReadable
@@ -471,10 +475,12 @@ def lintModules (moduleNames : Array String) (mode : OutputSetting) (fix : Bool)
     -- previous exception if that is preferred.
     let mut tweaked := allUnexpectedErrors.map fun err ↦
       if let some existing := err.find?_comparable styleExceptions then
-        if let ComparisonResult.Comparable (true) := _root_.compare err existing then existing
+        if let ComparisonResult.Comparable (true) := compare err existing then existing
         else err
       else err
     let thisOutput := "\n".intercalate (tweaked.map
         (fun err ↦ outputMessage err ErrorFormat.exceptionsFile)).toList
     IO.FS.writeFile exceptionsFilePath s!"{pythonOutput}{thisOutput}\n"
   return numberErrorFiles
+
+end Mathlib.Linter.TextBased

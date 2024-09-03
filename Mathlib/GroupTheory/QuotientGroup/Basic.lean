@@ -423,7 +423,7 @@ Applying this equiv is nicer than rewriting along the equalities, since the type
 -/
 @[to_additive "Let `A', A, B', B` be subgroups of `G`. If `A' = B'` and `A = B`, then the quotients
 `A / (A' ⊓ A)` and `B / (B' ⊓ B)` are isomorphic. Applying this equiv is nicer than rewriting along
-the equalities, since the type of `(A'.addSubgroupOf A : AddSubgroup A)` depends on on `A`. "]
+the equalities, since the type of `(A'.addSubgroupOf A : AddSubgroup A)` depends on `A`. "]
 def equivQuotientSubgroupOfOfEq {A' A B' B : Subgroup G} [hAN : (A'.subgroupOf A).Normal]
     [hBN : (B'.subgroupOf B).Normal] (h' : A' = B') (h : A = B) :
     A ⧸ A'.subgroupOf A ≃* B ⧸ B'.subgroupOf B :=

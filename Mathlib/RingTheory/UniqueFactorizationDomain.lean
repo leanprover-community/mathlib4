@@ -41,9 +41,9 @@ export WfDvdMonoid (wellFounded_dvdNotUnit)
 
 -- see Note [lower instance priority]
 instance (priority := 100) IsNoetherianRing.wfDvdMonoid [CommRing α] [IsDomain α]
-    [IsNoetherianRing α] : WfDvdMonoid α :=
+    [h : IsNoetherianRing α] : WfDvdMonoid α :=
   ⟨by
-    convert InvImage.wf (fun a => Ideal.span ({a} : Set α)) (wellFounded_submodule_gt _ _)
+    convert InvImage.wf (fun a => Ideal.span ({a} : Set α)) h.wf
     ext
     exact Ideal.span_singleton_lt_span_singleton.symm⟩
 
@@ -1849,7 +1849,7 @@ noncomputable def fintypeSubtypeDvd {M : Type*} [CancelCommMonoidWithZero M]
   haveI : NormalizationMonoid M := UniqueFactorizationMonoid.normalizationMonoid
   haveI := Classical.decEq M
   haveI := Classical.decEq (Associates M)
-  -- We'll show `λ (u : Mˣ) (f ⊆ factors y) → u * Π f` is injective
+  -- We'll show `fun (u : Mˣ) (f ⊆ factors y) ↦ u * Π f` is injective
   -- and has image exactly the divisors of `y`.
   refine
     Fintype.ofFinset
