@@ -52,18 +52,15 @@ def toCatExpr (e : Expr) : MetaM Expr := do
       match (← inferType η).getAppFnArgs with
       | (`Quiver.Hom, #[_, _, f, _]) =>
         match (← inferType f).getAppFnArgs with
-        | (`Quiver.Hom, #[_, _, a, _]) =>
-        inferType a
+        | (`Quiver.Hom, #[_, _, a, _]) => inferType a
         | _ => throwError "The conclusion {conclusion} is not an equality of 2-morphisms!"
       | _ => throwError "The conclusion {conclusion} is not an equality of 2-morphisms!"
     | _ => throwError "The conclusion {conclusion} is not an equality!"
-  let some BIdx := args.findIdx? (· == B)
-    | throwError "Can not find the bicategory {B} in the arguments this declaration"
-  -- Create level metavariables to be used for `Cat.{v u}`
+  -- Create level metavariables to be used for `Cat.{v, u}`
   let u ← mkFreshLevelMVar
   let v ← mkFreshLevelMVar
   -- Assign `B` to `Cat.{v, u}`
-  let _ ← isDefEq B (.const ``Cat [u, v])
+  let _ ← isDefEq B (.const ``Cat [v, u])
   -- Assign the right bicategory instance to `Cat.{v, u}`
   let some inst ← args.findM? fun x => do
       return (← inferType x).getAppFnArgs == (`CategoryTheory.Bicategory, #[B])
@@ -72,21 +69,18 @@ def toCatExpr (e : Expr) : MetaM Expr := do
   let _ ← isDefEq inst (.const ``CategoryTheory.Cat.bicategory [u, v])
   -- Construct the new expression
   let value := mkAppN e args
-  let mvars := (← getMVars value).map (Expr.mvar)
-  -- Erease the binderinfos for the bicategory and the instance
-  let binderInfos := binderInfos.eraseIdx BIdx
-  let binderInfos := binderInfos.eraseIdx BIdx
   let rec
   /-- Recursive function which applies `mkLambdaFVars` stepwise
   (so that each step can have different binderinfos) -/
     apprec (i : Nat) (e : Expr) : MetaM Expr := do
-    if i < mvars.size then
-      let mvar := mvars[i]!
-      let bi := binderInfos[i]!
-      let e ← mkLambdaFVars #[mvar] (← apprec (i + 1) e) (binderInfoForMVars := bi)
-      return e
-    else
-      return e
+      if i < args.size then
+        let arg := args[i]!
+        let bi := binderInfos[i]!
+        let e' ← apprec (i + 1) e
+        unless arg != B && arg != inst do return e'
+        mkLambdaFVars #[arg] e' (binderInfoForMVars := bi)
+      else
+        return e
   let value ← apprec 0 value
   return value
 
