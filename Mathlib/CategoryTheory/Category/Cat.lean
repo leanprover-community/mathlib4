@@ -133,6 +133,14 @@ lemma associator_inv_app {B C D E : Cat} (F : B ⟶ C) (G : C ⟶ D) (H : D ⟶ 
     (α_ F G H).inv.app X = eqToHom (by simp) :=
   rfl
 
+/-- The identity in the category of categories equals the identity functor.-/
+theorem id_eq_id (X : Cat) : 𝟙 X = 𝟭 X := rfl
+
+/-- Composition in the category of categories equals functor composition.-/
+theorem comp_eq_comp {X Y Z : Cat} (F : X ⟶ Y) (G : Y ⟶ Z) : F ≫ G = F ⋙ G := rfl
+
+@[simp] theorem of_α (C) [Category C] : (of C).α = C := rfl
+
 /-- Functor that gets the set of objects of a category. It is not
 called `forget`, because it is not a faithful functor. -/
 def objects : Cat.{v, u} ⥤ Type u where

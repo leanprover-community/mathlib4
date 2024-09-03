@@ -67,6 +67,30 @@ theorem comp_right {a b c : C} (g : b ⟶ c) :
     ∀ (f₁ f₂ : a ⟶ b) (_ : CompClosure r f₁ f₂), CompClosure r (f₁ ≫ g) (f₂ ≫ g)
   | _, _, ⟨x, m₁, m₂, y, h⟩ => by simpa using CompClosure.intro x m₁ m₂ (y ≫ g) h
 
+theorem CompClosure.congruence :
+    Congruence fun a b => Relation.EqvGen (@CompClosure C _ r a b) where
+  equivalence := Relation.EqvGen.is_equivalence _
+  compLeft f g g' rel := by
+    induction rel with
+    | rel _ _ h =>
+      let .intro f' m₁ m₂ g h := h
+      apply Relation.EqvGen.rel
+      rw [← Category.assoc, ← Category.assoc f]
+      exact ⟨_, _, _, _, h⟩
+    | refl => exact Relation.EqvGen.refl _
+    | symm _ _ _ ih => exact Relation.EqvGen.symm _ _ ih
+    | trans _ _ _ _ _ ih₁ ih₂ => exact Relation.EqvGen.trans _ _ _ ih₁ ih₂
+  compRight g rel := by
+    induction rel with
+    | rel _ _ h =>
+      let .intro f' m₁ m₂ g h := h
+      apply Relation.EqvGen.rel
+      repeat rw [Category.assoc]
+      exact ⟨_, _, _, _, h⟩
+    | refl => exact Relation.EqvGen.refl _
+    | symm _ _ _ ih => exact Relation.EqvGen.symm _ _ ih
+    | trans _ _ _ _ _ ih₁ ih₂ => exact Relation.EqvGen.trans _ _ _ ih₁ ih₂
+
 /-- Hom-sets of the quotient category. -/
 def Hom (s t : Quotient r) :=
   Quot <| @CompClosure C _ r s.as t.as

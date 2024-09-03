@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Scott Morrison, Adam Topaz
 -/
 import Mathlib.AlgebraicTopology.SimplicialObject
+import Mathlib.CategoryTheory.Adjunction.Reflective
+import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Yoneda
 import Mathlib.Data.Fin.VecNotation
@@ -33,7 +35,7 @@ a morphism `Δ[n] ⟶ ∂Δ[n]`.
 
 universe v u
 
-open CategoryTheory CategoryTheory.Limits
+open CategoryTheory CategoryTheory.Limits CategoryTheory.Functor
 
 open Simplicial
 
@@ -335,18 +337,64 @@ instance Truncated.hasColimits {n : ℕ} : HasColimits (Truncated n) := by
   dsimp only [Truncated]
   infer_instance
 
+/-- The ulift functor `SSet.Truncated.{u} ⥤ SSet.Truncated.{max u v}` on truncated
+simplicial sets. -/
+def Truncated.uliftFunctor (k : ℕ) : SSet.Truncated.{u} k ⥤ SSet.Truncated.{max u v} k :=
+  (whiskeringRight _ _ _).obj CategoryTheory.uliftFunctor.{v, u}
+
 -- Porting note (#5229): added an `ext` lemma.
 @[ext]
 lemma Truncated.hom_ext {n : ℕ} {X Y : Truncated n} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) :
     f = g :=
   NatTrans.ext (funext w)
 
-/-- The skeleton functor on simplicial sets. -/
-def sk (n : ℕ) : SSet ⥤ SSet.Truncated n :=
-  SimplicialObject.sk n
+/-- The truncation functor on simplicial sets. -/
+def truncation (n : ℕ) : SSet ⥤ SSet.Truncated n :=
+  SimplicialObject.truncation n
 
 instance {n} : Inhabited (SSet.Truncated n) :=
-  ⟨(sk n).obj <| Δ[0]⟩
+  ⟨(truncation n).obj <| Δ[0]⟩
+
+section adjunctions
+open SimplexCategory
+
+noncomputable def skAdj (n) : lan (Δ.ι n).op ⊣ truncation.{u} n := lanAdjunction _ _
+
+noncomputable def coskAdj (n) : truncation.{u} n ⊣ ran (Δ.ι n).op := ranAdjunction _ _
+
+instance coskeleton_reflective (n) : IsIso ((coskAdj n).counit) :=
+  reflective' (Δ.ι n).op
+
+instance skeleton_reflective (n) : IsIso ((skAdj n).unit) :=
+  coreflective' (Δ.ι n).op
+
+noncomputable instance coskeleton.fullyFaithful (n) :
+    (ran (H := Type u) (Δ.ι n).op).FullyFaithful := by
+  apply Adjunction.fullyFaithfulROfIsIsoCounit (coskAdj n)
+
+instance coskeleton.full (k) : (ran (H := Type u) (Δ.ι k).op).Full :=
+  FullyFaithful.full (coskeleton.fullyFaithful k)
+
+instance coskeleton.faithful (k) : (ran (H := Type u) (Δ.ι k).op).Faithful :=
+  FullyFaithful.faithful (coskeleton.fullyFaithful k)
+
+noncomputable instance coskAdj.reflective (k) : Reflective (ran (H := Type u) (Δ.ι k).op) :=
+  Reflective.mk (truncation k) (coskAdj k)
+
+noncomputable instance skeleton.fullyFaithful (k) :
+    (lan (H := Type u) (Δ.ι k).op).FullyFaithful := by
+  apply Adjunction.fullyFaithfulLOfIsIsoUnit (skAdj k)
+
+instance skeleton.full (k) : (lan (H := Type u) (Δ.ι k).op).Full :=
+  FullyFaithful.full (skeleton.fullyFaithful k)
+
+instance skeleton.faithful (k) : (lan (H := Type u) (Δ.ι k).op).Faithful :=
+  FullyFaithful.faithful (skeleton.fullyFaithful k)
+
+noncomputable instance skAdj.coreflective (k) : Coreflective (lan (H := Type u) (Δ.ι k).op) :=
+  Coreflective.mk (truncation k) (skAdj k)
+
+end adjunctions
 
 /-- The category of augmented simplicial sets, as a particular case of
 augmented simplicial objects. -/

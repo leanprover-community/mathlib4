@@ -165,6 +165,42 @@ theorem const_comp (x : SimplexCategory) {y z : SimplexCategory}
     const x y i ≫ f = const x z (f.toOrderHom i) :=
   rfl
 
+theorem const_fac_thru_zero (n m : SimplexCategory) (i : Fin (m.len + 1)) :
+    const n m i = const n [0] 0 ≫ SimplexCategory.const [0] m i := by
+  rw [const_comp]; rfl
+
+theorem eq_const_of_zero {n : SimplexCategory} (f : ([0] : SimplexCategory) ⟶ n) :
+    f = const _ n (f.toOrderHom 0) := by
+  ext x; match x with | 0 => rfl
+
+theorem eq_const_of_zero' {n : SimplexCategory} (f : ([0] : SimplexCategory) ⟶ n) :
+    ∃ a, f = const _ n a := ⟨_, eq_const_of_zero _⟩
+
+theorem eq_const_to_zero {n : SimplexCategory} (f : n ⟶ [0]) :
+    f = const n _ 0 := by
+  ext : 3
+  apply @Subsingleton.elim (Fin 1)
+
+theorem eq_of_one_to_one (f : ([1] : SimplexCategory) ⟶ [1]) :
+    (∃ a, f = const [1] _ a) ∨ f = 𝟙 _ := by
+  match e0 : f.toOrderHom 0, e1 : f.toOrderHom 1 with
+  | 0, 0 | 1, 1 =>
+    refine .inl ⟨f.toOrderHom 0, ?_⟩
+    ext i : 3
+    match i with
+    | 0 => rfl
+    | 1 => exact e1.trans e0.symm
+  | 0, 1 =>
+    right
+    ext i : 3
+    match i with
+    | 0 => exact e0
+    | 1 => exact e1
+  | 1, 0 =>
+    have := f.toOrderHom.monotone (by decide : (0 : Fin 2) ≤ 1)
+    rw [e0, e1] at this
+    exact Not.elim (by decide) this
+
 /-- Make a morphism `[n] ⟶ [m]` from a monotone map between fin's.
 This is useful for constructing morphisms between `[n]` directly
 without identifying `n` with `[n].len`.
@@ -172,6 +208,32 @@ without identifying `n` with `[n].len`.
 @[simp]
 def mkHom {n m : ℕ} (f : Fin (n + 1) →o Fin (m + 1)) : ([n] : SimplexCategory) ⟶ [m] :=
   SimplexCategory.Hom.mk f
+
+def mkOfLe {n} (i j : Fin (n+1)) (h : i ≤ j) : ([1] : SimplexCategory) ⟶ [n] :=
+  SimplexCategory.mkHom {
+    toFun := fun | 0 => i | 1 => j
+    monotone' := fun
+      | 0, 0, _ | 1, 1, _ => le_rfl
+      | 0, 1, _ => h
+  }
+
+def mkOfSucc {n} (i : Fin n) : ([1] : SimplexCategory) ⟶ [n] :=
+  SimplexCategory.mkHom {
+    toFun := fun | 0 => i.castSucc | 1 => i.succ
+    monotone' := fun
+      | 0, 0, _ | 1, 1, _ => le_rfl
+      | 0, 1, _ => Fin.le_succ i
+  }
+
+def mkOfLeComp {n} (i j k : Fin (n+1)) (h₁ : i ≤ j) (h₂ : j ≤ k): ([2] : SimplexCategory) ⟶ [n] :=
+  SimplexCategory.mkHom {
+    toFun := fun | 0 => i | 1 => j | 2 => k
+    monotone' := fun
+      | 0, 0, _ | 1, 1, _ | 2, 2, _  => le_rfl
+      | 0, 1, _ => h₁
+      | 1, 2, _ => h₂
+      | 0, 2, _ => Fin.le_trans h₁ h₂
+  }
 
 theorem hom_zero_zero (f : ([0] : SimplexCategory) ⟶ [0]) : f = 𝟙 _ := by
   ext : 3
@@ -487,8 +549,19 @@ def inclusion {n : ℕ} : SimplexCategory.Truncated n ⥤ SimplexCategory :=
 
 instance (n : ℕ) : (inclusion : Truncated n ⥤ _).Full := FullSubcategory.full _
 instance (n : ℕ) : (inclusion : Truncated n ⥤ _).Faithful := FullSubcategory.faithful _
+noncomputable instance (n : ℕ) : (inclusion : Truncated n ⥤ _).op.FullyFaithful :=
+  Functor.FullyFaithful.ofFullyFaithful _
+
+@[ext]
+theorem Hom.ext {n} {a b : Truncated n} (f g : a ⟶ b) :
+    f.toOrderHom = g.toOrderHom → f = g := SimplexCategory.Hom.ext _ _
 
 end Truncated
+
+/-- An abbreviation for the truncated inclusion because skAdj and coskAdj in SimplicialSet
+break without it..-/
+abbrev Δ.ι (k) : SimplexCategory.Truncated k ⥤ SimplexCategory :=
+  SimplexCategory.Truncated.inclusion
 
 section Concrete
 
