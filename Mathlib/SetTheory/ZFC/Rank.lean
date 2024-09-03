@@ -91,6 +91,24 @@ theorem rank_powerset : rank (powerset x) = succ (rank x) := by
     apply rank_lt_of_mem
     simp
 
+/-- For the rank of `⋃₀ x`, we only have `rank (⋃₀ x) ≤ rank x ≤ rank (⋃₀ x) + 1`.
+
+This inequality is splitted into `rank_sUnion_le` and `le_succ_rank_sUnion`. -/
+theorem rank_sUnion_le : rank (⋃₀ x) ≤ rank x := by
+  simp_rw [rank_le_iff, mem_sUnion]
+  intro _ ⟨_, _, _⟩
+  trans <;> apply rank_lt_of_mem <;> assumption
+
+theorem le_succ_rank_sUnion : rank x ≤ succ (rank (⋃₀ x)) := by
+  rw [← rank_powerset]
+  apply rank_mono
+  rw [subset_iff]
+  intro z _
+  rw [mem_powerset, subset_iff]
+  intro _ _
+  rw [mem_sUnion]
+  exists z
+
 /-- `PSet.rank` is equal to the `WellFounded.rank` over `∈`. -/
 theorem rank_eq_wfRank : lift.{u + 1, u} (rank x) = mem_wf.rank x := by
   induction' x using mem_wf.induction with x ih
