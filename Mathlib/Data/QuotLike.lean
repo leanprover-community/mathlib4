@@ -6,6 +6,7 @@ Authors: Yuyang Zhao
 import Mathlib.Logic.Relator
 import Mathlib.Logic.Unique
 import Mathlib.Util.Notation3
+import Qq.MetaM
 
 /-!
 # Typeclass for quotient types
@@ -16,6 +17,9 @@ universe u ua ub uc v
 theorem Quot.exact {α r} [IsEquiv α r] {a b : α} : Quot.mk r a = Quot.mk r b → r a b :=
   Quotient.exact (s := ⟨r, refl, symm, _root_.trans⟩)
 
+namespace QuotLike
+
+set_option linter.dupNamespace false in
 /-- [TODO] -/
 class QuotLike (Q : Sort u) (α : outParam (Sort u)) (r : outParam (α → α → Prop)) where
   /-- The canonical quotient map. -/
@@ -32,16 +36,90 @@ class QuotLike (Q : Sort u) (α : outParam (Sort u)) (r : outParam (α → α �
   -/
   sound {a b : α} : r a b → mkQ a = mkQ b := by exact Quot.sound
 
-attribute [elab_as_elim] QuotLike.ind
+export QuotLike (mkQ toQuot toQuot_mkQ ind sound)
 
-instance Quot.instQuotLike {α} (r : α → α → Prop) : QuotLike (Quot r) α r where
-instance Quotient.instQuotLike {α} (s : Setoid α) : QuotLike (Quotient s) α (· ≈ ·) where
-  mkQ := Quotient.mk _
-
-namespace QuotLike
+attribute [elab_as_elim] ind
 
 @[inherit_doc mkQ]
 notation3:arg "⟦" a "⟧" => mkQ a
+
+open Lean Elab Term Meta Qq
+
+/-- [TODO] -/
+class HasQuot (α : Sort u) (Q : outParam (Sort u)) (r : outParam (α → α → Prop))
+    [QuotLike Q α r] where
+
+/-- [TODO] -/
+elab:arg "⟦" t:term "⟧'" : term => do
+  let t ← withSynthesize do elabTerm t none
+  synthesizeSyntheticMVars
+  let t ← instantiateMVars t
+  let α ← inferType t
+  let u ← match ← inferType α with | .sort u => pure u | _ => mkFreshLevelMVar
+  have α : Q(Sort u) := α
+  have t : Q($α) := t
+  let Q ← mkFreshExprMVarQ q(Sort u)
+  let r ← mkFreshExprMVarQ q($α → $α → Prop)
+  let inst ← mkFreshExprMVarQ q(QuotLike $Q $α $r)
+  let .some _ ← trySynthInstanceQ q(@HasQuot $α $Q $r $inst) |
+    throwError "Cannot find `HasQuot` instance for type `{α}`."
+  pure q(@mkQ $Q $α $r $inst $t)
+
+/-- [TODO] -/
+macro:arg "⟦" t:term " : " α:term "⟧'" : term => `(⟦($t : $α)⟧')
+
+/-- [TODO] -/
+class HasQuotHint (α : Sort u) (Hint : Sort v) (hint : Hint)
+    (Q : outParam (Sort u)) (r : outParam (α → α → Prop)) [QuotLike Q α r] where
+
+/-- [TODO] -/
+elab:arg "⟦" t:term "⟧_" noWs h:term:max : term => do
+  let t ← withSynthesize do elabTerm t none
+  let h ← withSynthesize do elabTerm h none
+  synthesizeSyntheticMVars
+  let t ← instantiateMVars t
+  let α ← inferType t
+  let h ← instantiateMVars h
+  let H ← inferType h
+  let u ← match ← inferType α with | .sort u => pure u | _ => mkFreshLevelMVar
+  let v ← match ← inferType H with | .sort v => pure v | _ => mkFreshLevelMVar
+  have α : Q(Sort u) := α
+  have t : Q($α) := t
+  have H : Q(Sort v) := H
+  have h : Q($H) := h
+  let Q ← mkFreshExprMVarQ q(Sort u)
+  let r ← mkFreshExprMVarQ q($α → $α → Prop)
+  let inst ← mkFreshExprMVarQ q(QuotLike $Q $α $r)
+  let .some _ ← trySynthInstanceQ q(@HasQuotHint $α $H $h $Q $r $inst) |
+    throwError "Cannot find `HasQuotHint` instance for type `{α}` and hint `{h}`."
+  pure q(@mkQ $Q $α $r $inst $t)
+
+/-- [TODO] -/
+macro:arg "⟦" t:term " : " α:term "⟧_" noWs h:term:max : term => `(⟦($t : $α)⟧_$h)
+
+end QuotLike
+
+export QuotLike (QuotLike mkQ)
+
+namespace Quot
+
+instance instQuotLike {α} (r : α → α → Prop) : QuotLike (Quot r) α r where
+
+scoped instance instHasQuotHint {α} (r : α → α → Prop) :
+    QuotLike.HasQuotHint α (α → α → Prop) r (Quot r) r where
+
+end Quot
+
+namespace Quotient
+
+instance instQuotLike {α} (s : Setoid α) : QuotLike (Quotient s) α (· ≈ ·) where
+  mkQ := Quotient.mk _
+
+scoped instance instHasQuot {α} [s : Setoid α] : QuotLike.HasQuot α (Quotient s) (· ≈ ·) where
+
+end Quotient
+
+namespace QuotLike
 
 section
 
@@ -58,8 +136,8 @@ protected def lift {β : Sort v} (f : α → β) (h : ∀ (a b : α), r a b → 
 The analogue of `Quot.liftOn`: if `f : α → β` respects the equivalence relation `r`,
 then it lifts to a function on `Q` such that `liftOn ⟦a⟧ f h = f a`.
 -/
-protected abbrev liftOn {β : Sort v} (q : Q) (f : α → β) (c : (a b : α) → r a b → f a = f b) : β :=
-  QuotLike.lift f c q
+protected abbrev liftOn {β : Sort v} (q : Q) (f : α → β) (h : (a b : α) → r a b → f a = f b) : β :=
+  QuotLike.lift f h q
 
 @[simp]
 theorem lift_mkQ {β : Sort v} (f : α → β) (h : ∀ a₁ a₂, r a₁ a₂ → f a₁ = f a₂) (a : α) :
@@ -101,7 +179,7 @@ end
 
 /-- The analogue of `Quot.rec` for `QuotLike`. See `Quot.rec`. -/
 @[inline, elab_as_elim]
-def recQ {motive : Q → Sort v}
+protected def rec {motive : Q → Sort v}
     (f : (a : α) → motive ⟦a⟧)
     (h : (a b : α) → (p : r a b) → Eq.ndrec (f a) (sound p) = f b)
     (q : Q) :
@@ -110,21 +188,21 @@ def recQ {motive : Q → Sort v}
     ((QuotLike.lift (QuotLike.indep f) (QuotLike.indepCoherent f h) q).2)
 
 @[simp]
-theorem recQ_mkQ {motive : Q → Sort v}
+theorem rec_mkQ {motive : Q → Sort v}
     (f : (a : α) → motive ⟦a⟧)
     (h : (a b : α) → (p : r a b) → Eq.ndrec (f a) (sound p) = f b)
     (a : α) :
-    recQ f h ⟦a⟧ = f a := by
-  rw [recQ, ← heq_iff_eq, eqRec_heq_iff_heq, lift_mkQ]
+    _root_.QuotLike.rec f h ⟦a⟧ = f a := by
+  rw [_root_.QuotLike.rec, ← heq_iff_eq, eqRec_heq_iff_heq, lift_mkQ]
 
 /-- The analogue of `Quot.recOn` for `QuotLike`. See `Quot.recOn`. -/
 @[elab_as_elim]
-abbrev recOnQ {motive : Q → Sort v}
+protected abbrev recOn {motive : Q → Sort v}
     (q : Q)
     (f : (a : α) → motive ⟦a⟧)
     (h : (a b : α) → (p : r a b) → Eq.ndrec (f a) (sound p) = f b) :
     motive q :=
-  recQ f h q
+  _root_.QuotLike.rec f h q
 
 /-- The analogue of `Quot.recOnSubsingleton` for `QuotLike`. See `Quot.recOnSubsingleton`. -/
 @[elab_as_elim]
@@ -133,7 +211,7 @@ protected abbrev recOnSubsingleton {motive : Q → Sort v}
     (q : Q)
     (f : (a : α) → motive ⟦a⟧) :
     motive q :=
-  recOnQ q f (fun _ _ _ ↦ Subsingleton.elim _ _)
+  _root_.QuotLike.recOn q f (fun _ _ _ ↦ Subsingleton.elim _ _)
 
 /-- The analogue of `Quot.hrecOn` for `QuotLike`. See `Quot.hrecOn`. -/
 @[elab_as_elim]
@@ -142,7 +220,7 @@ protected abbrev hrecOn {motive : Q → Sort v}
     (f : (a : α) → motive ⟦a⟧)
     (h : (a b : α) → r a b → HEq (f a) (f b)) :
     motive q :=
-  recOnQ q f fun a b p ↦ eq_of_heq <| (eqRec_heq_self _ _).trans (h a b p)
+  _root_.QuotLike.recOn q f fun a b p ↦ eq_of_heq <| (eqRec_heq_self _ _).trans (h a b p)
 
 theorem hrecOn_mkQ {motive : Q → Sort v}
     (a : α)
@@ -333,13 +411,19 @@ protected theorem «forall» {p : Q → Prop} : (∀ q, p q) ↔ ∀ a, p ⟦a�
 protected theorem «exists» {p : Q → Prop} : (∃ q, p q) ↔ ∃ a, p ⟦a⟧ :=
   ⟨fun ⟨q, hq⟩ ↦ QuotLike.ind .intro q hq, fun ⟨a, ha⟩ ↦ ⟨⟦a⟧, ha⟩⟩
 
-instance [Inhabited α] : Inhabited Q :=
+instance (priority := 800) [Inhabited α] : Inhabited Q :=
   ⟨⟦default⟧⟩
 
-instance [Subsingleton α] : Subsingleton Q where
+instance (priority := 800) [Subsingleton α] : Subsingleton Q where
   allEq := QuotLike.ind₂ fun x y ↦ congrArg mkQ (Subsingleton.elim x y)
 
-instance [Unique α] : Unique Q := Unique.mk' _
+instance (priority := 800) [Unique α] : Unique Q := Unique.mk' _
+
+instance (priority := 800) [IsEquiv α r] [dec : DecidableRel r] : DecidableEq Q :=
+  fun q₁ q₂ ↦ QuotLike.recOnSubsingleton₂ q₁ q₂ fun a₁ a₂ ↦
+    match dec a₁ a₂ with
+    | isTrue  h₁ => isTrue (QuotLike.sound h₁)
+    | isFalse h₂ => isFalse (fun h ↦ absurd (QuotLike.exact h) h₂)
 
 @[simp]
 theorem surjective_lift {β : Sort v} {f : α → β} {h : ∀ a b, r a b → f a = f b} :
@@ -357,11 +441,11 @@ theorem lift_comp_mkQ {β : Sort v} {f : α → β} (h : ∀ a b, r a b → f a 
     (QuotLike.lift f h : Q → β) ∘ mkQ = f :=
   funext <| QuotLike.lift_mkQ f h
 
-instance (f : α → Prop) [hf : DecidablePred f] (h : ∀ a b, r a b → f a = f b) :
+instance (priority := 800) (f : α → Prop) [hf : DecidablePred f] (h : ∀ a b, r a b → f a = f b) :
     DecidablePred (QuotLike.lift f h : Q → Prop) :=
   fun q ↦ QuotLike.recOnSubsingleton q fun _ ↦ by simpa using hf _
 
-instance
+instance (priority := 800)
     {Qa α : Sort ua} {ra : α → α → Prop} [QuotLike Qa α ra] [IsRefl α ra]
     {Qb β : Sort ub} {rb : β → β → Prop} [QuotLike Qb β rb] [IsRefl β rb]
     (f : α → β → Prop) [hf : ∀ a, DecidablePred (f a)]
