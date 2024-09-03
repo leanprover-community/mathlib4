@@ -26,6 +26,8 @@ structure ContextFreeRule (T : Type uT) (N : Type uN) where
   input : N
   /-- Output string a.k.a. right-hand side. -/
   output : List (Symbol T N)
+deriving
+  DecidableEq
 
 /-- Context-free grammar that generates words over the alphabet `T` (a type of terminals). -/
 structure ContextFreeGrammar.{uN,uT} (T : Type uT) where
@@ -34,7 +36,7 @@ structure ContextFreeGrammar.{uN,uT} (T : Type uT) where
   /-- Initial nonterminal. -/
   initial : NT
   /-- Rewrite rules. -/
-  rules : List (ContextFreeRule T NT)
+  rules : Finset (ContextFreeRule T NT)
 
 universe uT uN
 variable {T : Type uT}
@@ -205,20 +207,22 @@ def ContextFreeRule.reverse {N : Type uN} (r : ContextFreeRule T N) : ContextFre
   ⟨r.input, r.output.reverse⟩
 
 /-- Grammar for a reversed language. -/
-def ContextFreeGrammar.reverse (g : ContextFreeGrammar T) : ContextFreeGrammar T :=
-  ⟨g.NT, g.initial, g.rules.map .reverse⟩
+def ContextFreeGrammar.reverse [DecidableEq T] (g : ContextFreeGrammar T) [DecidableEq g.NT] :
+    ContextFreeGrammar T :=
+  ⟨g.NT, g.initial, g.rules.image ContextFreeRule.reverse⟩
 
 lemma ContextFreeRule.reverse_involutive {N : Type uN} :
     Function.Involutive (@ContextFreeRule.reverse T N) := by
   intro x
   simp [ContextFreeRule.reverse]
 
-lemma ContextFreeGrammar.reverse_involutive :
+lemma ContextFreeGrammar.reverse_involutive [DecidableEq T] :
     Function.Involutive (@ContextFreeGrammar.reverse T) := by
   intro x
   simp [ContextFreeGrammar.reverse, ContextFreeRule.reverse_involutive]
 
-lemma ContextFreeGrammar.reverse_derives (g : ContextFreeGrammar T) {s : List (Symbol T g.NT)}
+lemma ContextFreeGrammar.reverse_derives [DecidableEq T] {g : ContextFreeGrammar T}
+    [DecidableEq g.NT] {s : List (Symbol T g.NT)}
     (hgs : g.reverse.Derives [Symbol.nonterminal g.reverse.initial] s) :
     g.Derives [Symbol.nonterminal g.initial] s.reverse := by
   induction hgs with
@@ -236,14 +240,14 @@ lemma ContextFreeGrammar.reverse_derives (g : ContextFreeGrammar T) {s : List (S
     use q.reverse, p.reverse
     simp [ContextFreeRule.reverse]
 
-lemma ContextFreeGrammar.reverse_mem_language_of_mem_reverse_language (g : ContextFreeGrammar T)
-    {w : List T} (hgw : w ∈ g.reverse.language) :
+lemma ContextFreeGrammar.reverse_mem_language_of_mem_reverse_language [DecidableEq T]
+    {g : ContextFreeGrammar T} [DecidableEq g.NT] {w : List T} (hgw : w ∈ g.reverse.language) :
     w.reverse ∈ g.language := by
   convert g.reverse_derives hgw
   simp [List.map_reverse]
 
-lemma ContextFreeGrammar.mem_reverse_language_iff_reverse_mem_language (g : ContextFreeGrammar T)
-    (w : List T) :
+lemma ContextFreeGrammar.mem_reverse_language_iff_reverse_mem_language [DecidableEq T]
+    (g : ContextFreeGrammar T) [DecidableEq g.NT] (w : List T) :
     w ∈ g.reverse.language ↔ w.reverse ∈ g.language := by
   refine ⟨reverse_mem_language_of_mem_reverse_language _, fun hw => ?_⟩
   rw [← ContextFreeGrammar.reverse_involutive g] at hw
@@ -251,7 +255,7 @@ lemma ContextFreeGrammar.mem_reverse_language_iff_reverse_mem_language (g : Cont
   exact g.reverse.reverse_mem_language_of_mem_reverse_language hw
 
 /-- The class of context-free languages is closed under reversal. -/
-theorem Language.IsContextFree.reverse (L : Language T) :
+theorem Language.IsContextFree.reverse [DecidableEq T] (L : Language T) :
     L.IsContextFree → L.reverse.IsContextFree :=
   fun ⟨g, hg⟩ => ⟨g.reverse, hg ▸ Set.ext g.mem_reverse_language_iff_reverse_mem_language⟩
 
