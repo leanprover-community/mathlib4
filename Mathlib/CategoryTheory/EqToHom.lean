@@ -51,7 +51,7 @@ theorem eqToHom_trans {X Y Z : C} (p : X = Y) (q : Y = Z) :
   cases q
   simp
 
-/-- Two morphisms are conjugate via eqToHom if and only if they are heterogeneously equal. -/
+/-- Two morphisms are conjugate via eqToHom if and only if they are heterogeneously equal. Note this used to be in the Functor namespace, where it doesn't belong. -/
 theorem conj_eqToHom_iff_heq {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) (h : W = Y) (h' : X = Z) :
     f = eqToHom h ≫ g ≫ eqToHom h'.symm ↔ HEq f g := by
   cases h

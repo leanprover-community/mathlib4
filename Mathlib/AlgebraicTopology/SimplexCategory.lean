@@ -201,6 +201,7 @@ theorem eq_of_one_to_one (f : ([1] : SimplexCategory) ⟶ [1]) :
     rw [e0, e1] at this
     exact Not.elim (by decide) this
 
+
 /-- Make a morphism `[n] ⟶ [m]` from a monotone map between fin's.
 This is useful for constructing morphisms between `[n]` directly
 without identifying `n` with `[n].len`.
@@ -459,6 +460,40 @@ lemma factor_δ_spec {m n : ℕ} (f : ([m] : SimplexCategory) ⟶ [n+1]) (j : Fi
       swap
       · rwa [succ_le_castSucc_iff, lt_pred_iff]
       rw [succ_pred]
+
+
+theorem eq_of_one_to_two (f : ([1] : SimplexCategory) ⟶ [2]) :
+    f = (δ (n := 1) 0) ∨ f = (δ (n := 1) 1) ∨ f = (δ (n := 1) 2) ∨
+      ∃ a, f = SimplexCategory.const _ _ a := by
+  have : f.toOrderHom 0 ≤ f.toOrderHom 1 := f.toOrderHom.monotone (by decide : (0 : Fin 2) ≤ 1)
+  match e0 : f.toOrderHom 0, e1 : f.toOrderHom 1 with
+  | 1, 2 =>
+    left
+    ext i : 3
+    match i with
+    | 0 => exact e0
+    | 1 => exact e1
+  | 0, 2 =>
+    right; left
+    ext i : 3
+    match i with
+    | 0 => exact e0
+    | 1 => exact e1
+  | 0, 1 =>
+    right; right; left
+    ext i : 3
+    match i with
+    | 0 => exact e0
+    | 1 => exact e1
+  | 0, 0 | 1, 1 | 2, 2 =>
+    right; right; right; use f.toOrderHom 0
+    ext i : 3
+    match i with
+    | 0 => rfl
+    | 1 => exact e1.trans e0.symm
+  | 1, 0 | 2, 0 | 2, 1 =>
+    rw [e0, e1] at this
+    exact Not.elim (by decide) this
 
 end Generators
 
