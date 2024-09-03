@@ -372,7 +372,7 @@ theorem ceil_logb_natCast {b : ℕ} {r : ℝ} (hb : 1 < b) (hr : 0 ≤ r) :
 @[deprecated (since := "2024-04-17")]
 alias ceil_logb_nat_cast := ceil_logb_natCast
 
-lemma nat_log_le_real_logb {a b : ℕ} (_ : 0 < a) (hb : 1 < b) : Nat.log b a ≤ Real.logb b a := by
+lemma nat_log_le_real_logb {a b : ℕ} (hb : 1 < b) : Nat.log b a ≤ Real.logb b a := by
   apply le_trans _ (Int.floor_le ((b : ℝ).logb a))
   rw [Real.floor_logb_natCast hb (Nat.cast_nonneg a), Int.log_natCast, Int.cast_natCast]
 
