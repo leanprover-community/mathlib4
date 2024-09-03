@@ -22,43 +22,47 @@ namespace Function
 variable {α β : Type*} [Neg α]
 
 /-- A function `f` is _even_ if it satisfies `f (-x) = f x` for all `x`. -/
-def EvenFun (f : α → β) : Prop := ∀ a, f (-a) = f a
+protected def Even (f : α → β) : Prop := ∀ a, f (-a) = f a
 
 /-- A function `f` is _odd_ if it satisfies `f (-x) = -f x` for all `x`. -/
-def OddFun [Neg β] (f : α → β) : Prop := ∀ a, f (-a) = -(f a)
+protected def Odd [Neg β] (f : α → β) : Prop := ∀ a, f (-a) = -(f a)
 
 /-- Any constant function is even. -/
-lemma EvenFun.const (b : β) : EvenFun (fun _ : α ↦ b) := fun _ ↦ rfl
+lemma Even.const (b : β) : Function.Even (fun _ : α ↦ b) := fun _ ↦ rfl
+
+/-- The zero function is even. -/
+lemma Even.zero [Zero β] : Function.Even (fun (_ : α) ↦ (0 : β)) := Even.const 0
 
 /-- The zero function is odd. -/
-lemma OddFun.zero [NegZeroClass β] : OddFun (fun (_ : α) ↦ (0 : β)) := fun _ ↦ neg_zero.symm
+lemma Odd.zero [NegZeroClass β] : Function.Odd (fun (_ : α) ↦ (0 : β)) := fun _ ↦ neg_zero.symm
 
 section composition
 
 variable {γ : Type*}
 
 /-- If `f` is arbitrary and `g` is even, then `f ∘ g` is even. -/
-lemma EvenFun.left_comp {g : α → β} (hg : EvenFun g) (f : β → γ) : EvenFun (f ∘ g) :=
+lemma Even.left_comp {g : α → β} (hg : g.Even) (f : β → γ) : (f ∘ g).Even :=
   (congr_arg f <| hg ·)
 
 /-- If `f` is even and `g` is odd, then `f ∘ g` is even. -/
-lemma EvenFun.comp_oddFun [Neg β] {f : β → γ} (hf : EvenFun f) {g : α → β} (hg : OddFun g) :
-    EvenFun (f ∘ g) :=
-  fun r ↦ by rw [comp_apply, hg, hf, comp_apply]
+lemma Even.comp_odd [Neg β] {f : β → γ} (hf : f.Even) {g : α → β} (hg : g.Odd) :
+    (f ∘ g).Even := by
+  intro a
+  simp only [comp_apply, hg a, hf _]
 
 /-- If `f` and `g` are odd, then `f ∘ g` is odd. -/
-lemma OddFun.comp_oddFun [Neg β] [Neg γ] {f : β → γ} (hf : OddFun f) {g : α → β} (hg : OddFun g) :
-    OddFun (f ∘ g) :=
-  fun r ↦ by rw [comp_apply, hg, hf, comp_apply]
+lemma Odd.comp_odd [Neg β] [Neg γ] {f : β → γ} (hf : f.Odd) {g : α → β} (hg : g.Odd) :
+    (f ∘ g).Odd := by
+  intro a
+  simp only [comp_apply, hg a, hf _]
 
 end composition
 
-lemma EvenFun.add [Add β] {f g : α → β} (hf : EvenFun f) (hg : EvenFun g) : EvenFun (f + g) := by
+lemma Even.add [Add β] {f g : α → β} (hf : f.Even) (hg : g.Even) : (f + g).Even := by
   intro a
   simp only [hf a, hg a, Pi.add_apply]
 
-lemma OddFun.add [SubtractionCommMonoid β] {f g : α → β} (hf : OddFun f) (hg : OddFun g) :
-    OddFun (f + g) := by
+lemma Odd.add [SubtractionCommMonoid β] {f g : α → β} (hf : f.Odd) (hg : g.Odd) : (f + g).Odd := by
   intro a
   simp only [hf a, hg a, Pi.add_apply, neg_add]
 
@@ -66,32 +70,31 @@ section smul
 
 variable {γ : Type*} {f : α → β} {g : α → γ}
 
-lemma EvenFun.smul_evenFun [SMul β γ] (hf : EvenFun f) (hg : EvenFun g) : EvenFun (f • g) := by
+lemma Even.smul_even [SMul β γ] (hf : f.Even) (hg : g.Even) : (f • g).Even := by
   intro a
   simp only [Pi.smul_apply', hf a, hg a]
 
-lemma EvenFun.smul_oddFun [Monoid β] [AddGroup γ] [DistribMulAction β γ]
-    (hf : EvenFun f) (hg : OddFun g) :
-    OddFun (f • g) := by
+lemma Even.smul_odd [Monoid β] [AddGroup γ] [DistribMulAction β γ] (hf : f.Even) (hg : g.Odd) :
+    (f • g).Odd := by
   intro a
   simp only [Pi.smul_apply', hf a, hg a, smul_neg]
 
-lemma OddFun.smul_evenFun [Ring β] [AddCommGroup γ] [Module β γ] (hf : OddFun f) (hg : EvenFun g) :
-    OddFun (f • g) := by
+lemma Odd.smul_even [Ring β] [AddCommGroup γ] [Module β γ] (hf : f.Odd) (hg : g.Even) :
+    (f • g).Odd := by
   intro a
   simp only [Pi.smul_apply', hf a, hg a, neg_smul]
 
-lemma OddFun.smul_oddFun [Ring β] [AddCommGroup γ] [Module β γ] (hf : OddFun f) (hg : OddFun g) :
-    EvenFun (f • g) := by
+lemma Odd.smul_odd [Ring β] [AddCommGroup γ] [Module β γ] (hf : f.Odd) (hg : g.Odd) :
+    (f • g).Even := by
   intro a
   simp only [Pi.smul_apply', hf a, hg a, smul_neg, neg_smul, neg_neg]
 
-lemma EvenFun.const_smul [SMul β γ] (hg : EvenFun g) (r : β) : EvenFun (r • g) := by
+lemma Even.const_smul [SMul β γ] (hg : g.Even) (r : β) : (r • g).Even := by
   intro a
   simp only [Pi.smul_apply, hg a]
 
-lemma OddFun.const_smul [Monoid β] [AddGroup γ] [DistribMulAction β γ] (hg : OddFun g) (r : β) :
-    OddFun (r • g) := by
+lemma Odd.const_smul [Monoid β] [AddGroup γ] [DistribMulAction β γ] (hg : g.Odd) (r : β) :
+    (r • g).Odd := by
   intro a
   simp only [Pi.smul_apply, hg a, smul_neg]
 
@@ -101,19 +104,19 @@ section mul
 
 variable {R : Type*} [Mul R] {f g : α → R}
 
-lemma EvenFun.mul_evenFun (hf : EvenFun f) (hg : EvenFun g) : EvenFun (f * g) := by
+lemma Even.mul_even (hf : f.Even) (hg : g.Even) : (f * g).Even := by
   intro a
   simp only [Pi.mul_apply, hf a, hg a]
 
-lemma EvenFun.mul_oddFun [HasDistribNeg R] (hf : EvenFun f) (hg : OddFun g) : OddFun (f * g) := by
+lemma Even.mul_odd [HasDistribNeg R] (hf : f.Even) (hg : g.Odd) : (f * g).Odd := by
   intro a
   simp only [Pi.mul_apply, hf a, hg a, mul_neg]
 
-lemma OddFun.mul_evenFun [HasDistribNeg R] (hf : OddFun f) (hg : EvenFun g) : OddFun (f * g) := by
+lemma Odd.mul_even [HasDistribNeg R] (hf : f.Odd) (hg : g.Even) : (f * g).Odd := by
   intro a
   simp only [Pi.mul_apply, hf a, hg a, neg_mul]
 
-lemma OddFun.mul_oddFun [HasDistribNeg R] (hf : OddFun f) (hg : OddFun g) : EvenFun (f * g) := by
+lemma Odd.mul_odd [HasDistribNeg R] (hf : f.Odd) (hg : g.Odd) : (f * g).Even := by
   intro a
   simp only [Pi.mul_apply, hf a, hg a, mul_neg, neg_mul, neg_neg]
 
@@ -123,8 +126,8 @@ end mul
 If `f` is both even and odd, and its target is a torsion-free commutative additive group,
 then `f = 0`.
 -/
-lemma zero_of_evenFun_and_oddFun [AddCommGroup β] [NoZeroSMulDivisors ℕ β]
-    {f : α → β} (he : EvenFun f) (ho : OddFun f) :
+lemma zero_of_even_and_odd [AddCommGroup β] [NoZeroSMulDivisors ℕ β]
+    {f : α → β} (he : f.Even) (ho : f.Odd) :
     f = 0 := by
   ext r
   rw [Pi.zero_apply, ← neg_eq_self ℕ, ← ho, he]
