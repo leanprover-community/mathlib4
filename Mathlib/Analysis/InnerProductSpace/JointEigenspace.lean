@@ -115,8 +115,8 @@ section Tuple
 
 universe u
 
-variable {n m : Type u} [Fintype m] (T : n → (E →ₗ[𝕜] E))
-    (hT :(∀ (i : n), ((T i).IsSymmetric)))
+variable {n m : Type u} [Fintype m] --(T : n → (E →ₗ[𝕜] E))
+   -- (hT :(∀ (i : n), ((T i).IsSymmetric)))
    -- (hC : (∀ (i j : n), (T i) ∘ₗ (T j) = (T j) ∘ₗ (T i)))
 
 open Classical
@@ -125,7 +125,7 @@ open Classical
 --below, but it may be finicky because we need to call all of these functions and the explicit
 --arguments may be needed.
 
-theorem invariance_iInf [Fintype n] [Nonempty n]
+theorem invariance_iInf [Fintype n] [Nonempty n] (T : n → (E →ₗ[𝕜] E))
     (hC : (∀ (i j : n), (T i) ∘ₗ (T j) = (T j) ∘ₗ (T i))) (i : n) :
     ∀ γ : {x // x ≠ i} → 𝕜, ∀ v ∈ (⨅ (j : {x // x ≠ i}),
     eigenspace ((Subtype.restrict (fun x ↦ x ≠ i) T) j) (γ j)), (T i) v ∈ (⨅ (j : {x // x ≠ i}),
@@ -153,22 +153,49 @@ theorem invariant_subspace_eigenspace_exhaust [FiniteDimensional 𝕜 E] {F : Su
  have H : IsSymmetric (S.restrict hInv) := fun x y ↦ hS (F.subtype x) ↑y
  apply Submodule.orthogonal_eq_bot_iff.mp (H.orthogonalComplement_iSup_eigenspaces_eq_bot)
 
-theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot [Fintype n]
-    (hT :(∀ (i : n), ((T i).IsSymmetric))):
+/--Must replace the following with use of `orthogonalFamily_eigenspace_inf_eigenspace` or something
+else above-/
+theorem invariant_subspace_inf_eigenspace_eq_restrict {F : Submodule 𝕜 E} (S : E →ₗ[𝕜] E)
+    (μ : 𝕜) (hInv : ∀ v ∈ F, S v ∈ F) : (eigenspace S μ) ⊓ F =
+    Submodule.map (Submodule.subtype F)
+    (eigenspace (S.restrict (hInv)) μ) := by
+  ext v
+  constructor
+  · intro h
+    simp only [Submodule.mem_map, Submodule.coeSubtype, Subtype.exists, exists_and_right,
+      exists_eq_right, mem_eigenspace_iff]; use h.2
+    exact Eq.symm (SetCoe.ext (_root_.id (Eq.symm (mem_eigenspace_iff.mp h.1))))
+  · intro h
+    simp only [Submodule.mem_inf]
+    constructor
+    · simp only [Submodule.mem_map, Submodule.coeSubtype, Subtype.exists, exists_and_right,
+      exists_eq_right, mem_eigenspace_iff, SetLike.mk_smul_mk, restrict_apply,
+      Subtype.mk.injEq] at h
+      obtain ⟨_, hy⟩ := h
+      simpa [mem_eigenspace_iff]
+    · simp only [Submodule.coeSubtype] at h
+      obtain ⟨_, hy⟩ := h
+      simp only [← hy.2, Submodule.coeSubtype, SetLike.coe_mem]
+
+theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot [Fintype n] [FiniteDimensional 𝕜 E]
+    (T : n → (E →ₗ[𝕜] E)) (hT :(∀ (i : n), ((T i).IsSymmetric)))
+    (hC : (∀ (i j : n), (T i) ∘ₗ (T j) = (T j) ∘ₗ (T i))) :
     (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
   revert T
   refine Fintype.induction_subsingleton_or_nontrivial n ?_ ?_
-  · intro m _ hhm T hT
-    simp only [Submodule.orthogonal_eq_bot_iff]
+  · intro m _ hhm T hT hC
+    --Next line is supposed to be a simp only, but trying to sort out why the orthoprojection isn't
+    --visible...
+    have := Submodule.orthogonal_eq_bot_iff (K := (⨆ (γ : m → 𝕜), ⨅ (j : m), eigenspace (T j) (γ j))).mp
     by_cases case : Nonempty m
     · have i := choice case
       have := uniqueOfSubsingleton i
-      conv => lhs; rhs; ext γ; rw [ciInf_subsingleton i]
+      conv => lhs; rhs; rhs; ext γ; rw [ciInf_subsingleton i]
       rw [← (Equiv.funUnique m 𝕜).symm.iSup_comp]
-      apply Submodule.orthogonal_eq_bot_iff.mp ((hT i).orthogonalComplement_iSup_eigenspaces_eq_bot)
+      apply (hT i).orthogonalComplement_iSup_eigenspaces_eq_bot
     · simp only [not_nonempty_iff] at case
       simp only [iInf_of_empty, ciSup_unique]
-  · intro m hm hmm H T hT
+  · intro m hm hmm H T hT hC
     obtain ⟨w, i , h⟩ := exists_pair_ne m
     simp only [ne_eq] at h
     have D := H {x // x ≠ i} (Fintype.card_subtype_lt (p := fun (x : m) ↦ ¬x = i) (x := i)
@@ -186,7 +213,7 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot [Fintype n]
     rw [iSup_iInf_fun_index_split_single i (fun _ ↦ (fun μ ↦ (eigenspace (T _) μ )))]
     exact D
 
-theorem orthogonalFamily_iInf_eigenspaces
+theorem orthogonalFamily_iInf_eigenspaces (T : n → (E →ₗ[𝕜] E))
     (hT :(∀ (i : n), ((T i).IsSymmetric))) : OrthogonalFamily 𝕜 (fun (γ : n → 𝕜) =>
     (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))
     (fun (γ : n → 𝕜) => (⨅ (j : n), (eigenspace (T j) (γ j))).subtypeₗᵢ) := by
@@ -201,10 +228,11 @@ theorem orthogonalFamily_iInf_eigenspaces
 /-- Given a finite commuting family of symmetric linear operators, the Hilbert space on which they
 act decomposes as an internal direct sum of simultaneous eigenspaces. -/
 theorem DirectSum.IsInternal_of_simultaneous_eigenspaces_of_commuting_symmetric_tuple [Fintype n]
-    [FiniteDimensional 𝕜 E] (hT :(∀ (i : n), ((T i).IsSymmetric))) :
+    [FiniteDimensional 𝕜 E] (T : n → (E →ₗ[𝕜] E)) (hT :(∀ (i : n), ((T i).IsSymmetric)))
+    (hC : (∀ (i j : n), (T i) ∘ₗ (T j) = (T j) ∘ₗ (T i))) :
     DirectSum.IsInternal (fun (α : n → 𝕜) ↦ ⨅ (j : n), (eigenspace (T j) (α j))) := by
   rw [OrthogonalFamily.isInternal_iff]
-  · exact orthogonalComplement_iSup_iInf_eigenspaces_eq_bot T hT
+  · exact orthogonalComplement_iSup_iInf_eigenspaces_eq_bot T hT hC
   · exact orthogonalFamily_iInf_eigenspaces T hT
 
 end Tuple
