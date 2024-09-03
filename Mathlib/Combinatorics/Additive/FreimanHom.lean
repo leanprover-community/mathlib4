@@ -5,9 +5,9 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.CharP.Defs
+import Mathlib.Algebra.Group.Pointwise.Set
 import Mathlib.Algebra.Order.BigOperators.Group.Multiset
 import Mathlib.Data.ZMod.Defs
-import Mathlib.Algebra.Ring.Pointwise.Set
 
 /-!
 # Freiman homomorphisms
