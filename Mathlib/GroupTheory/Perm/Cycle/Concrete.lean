@@ -463,8 +463,6 @@ def isoCycle' : { f : Perm α // IsCycle f } ≃ { s : Cycle α // s.Nodup ∧ s
     left_inv := Fintype.rightInverse_bijInv _
     right_inv := Fintype.leftInverse_bijInv _ }
 
--- mutes `'decide' tactic does nothing [linter.unusedTactic]`
-set_option linter.unusedTactic false in
 notation3 (prettyPrint := false) "c["(l", "* => foldr (h t => List.cons h t) List.nil)"]" =>
   Cycle.formPerm (Cycle.ofList l) (Iff.mpr Cycle.nodup_coe_iff (by decide))
 
