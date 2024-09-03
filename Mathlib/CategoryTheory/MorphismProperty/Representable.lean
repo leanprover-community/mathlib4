@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 
 In this file we define and develop basic results about relatively representable morphisms.
 
-Clasically, a morphism `f : X ⟶ Y` of presheaves is said to be representable if for any morphism
+Classically, a morphism `f : X ⟶ Y` of presheaves is said to be representable if for any morphism
 `g : yoneda.obj X ⟶ G`, there exists a pullback square of the following form
 ```
   yoneda.obj Y --yoneda.map snd--> yoneda.obj X
