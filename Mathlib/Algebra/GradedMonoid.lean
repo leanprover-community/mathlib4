@@ -302,7 +302,7 @@ variable {A}
 
 @[simp]
 theorem mk_zero_smul {i} (a : A 0) (b : A i) : mk _ (a • b) = mk _ a * mk _ b :=
-  Sigma.ext (zero_add _).symm <| eq_rec_heq _ _
+  Sigma.ext (zero_add _).symm <| eqRec_heq _ _
 
 @[scoped simp]
 theorem GradeZero.smul_eq_mul (a b : A 0) : a • b = a * b :=
@@ -321,7 +321,7 @@ variable {A}
 
 @[simp]
 theorem mk_zero_pow (a : A 0) (n : ℕ) : mk _ (a ^ n) = mk _ a ^ n :=
-  Sigma.ext (nsmul_zero n).symm <| eq_rec_heq _ _
+  Sigma.ext (nsmul_zero n).symm <| eqRec_heq _ _
 
 variable (A)
 
