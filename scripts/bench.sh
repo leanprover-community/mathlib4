@@ -10,8 +10,11 @@
 #PR="16419"
 #PR="16423"
 
-# The Lean module containing the Lean code to process the bench data.
-leanFile='Mathlib.tp'
+# the PR number
+PR="${1}"
+
+# The file containing the Lean code to process the bench data.
+leanFile="${2}"
 
 # The file is where the command stores the bench information.
 # It is used by the associated Lean file `$leanFile`.
@@ -62,7 +65,7 @@ fi
 
 extractVariations "${src}" "${tgt}" > "${benchFile}"
 
-lake build "${leanFile}" | grep '^|' | gh pr comment "${PR}" --body-file -
+cat "${leanFile}" | lake env lean --stdin - | grep '^|' | gh pr comment "${PR}" --body-file -
 
 #rm -rf "${benchFile}"
 
