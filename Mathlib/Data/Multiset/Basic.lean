@@ -9,7 +9,6 @@ import Mathlib.Data.List.Perm
 import Mathlib.Data.Set.List
 import Mathlib.Init.Quot
 import Mathlib.Order.Hom.Basic
-import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 
 /-!
 # Multisets
