@@ -3,9 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
+import Mathlib.Data.QuotLike
 import Mathlib.Logic.Relation
-import Mathlib.Logic.Unique
-import Mathlib.Util.Notation3
 
 /-!
 # Quotient types
@@ -31,24 +30,13 @@ namespace Quot
 
 variable {ra : α → α → Prop} {rb : β → β → Prop} {φ : Quot ra → Quot rb → Sort*}
 
-@[inherit_doc Quot.mk]
-local notation3:arg "⟦" a "⟧" => Quot.mk _ a
-
 @[elab_as_elim]
 protected theorem induction_on {α : Sort*} {r : α → α → Prop} {β : Quot r → Prop} (q : Quot r)
     (h : ∀ a, β (Quot.mk r a)) : β q :=
   ind h q
 
-instance (r : α → α → Prop) [Inhabited α] : Inhabited (Quot r) :=
-  ⟨⟦default⟧⟩
-
-protected instance Subsingleton [Subsingleton α] : Subsingleton (Quot ra) :=
-  ⟨fun x ↦ Quot.induction_on x fun _ ↦ Quot.ind fun _ ↦ congr_arg _ (Subsingleton.elim _ _)⟩
-
 @[deprecated (since := "2024-08-26")] alias recOn' := Quot.recOn
 @[deprecated (since := "2024-08-26")] alias recOnSubsingleton' := Quot.recOnSubsingleton
-
-instance [Unique α] : Unique (Quot ra) := Unique.mk' _
 
 /-- Recursion on two `Quotient` arguments `a` and `b`, result type depends on `⟦a⟧` and `⟦b⟧`. -/
 protected def hrecOn₂ (qa : Quot ra) (qb : Quot rb) (f : ∀ a b, φ ⟦a⟧ ⟦b⟧)
@@ -59,9 +47,9 @@ protected def hrecOn₂ (qa : Quot ra) (qb : Quot rb) (f : ∀ a b, φ ⟦a⟧ �
     (fun a ↦ Quot.hrecOn qb (f a) (fun b₁ b₂ pb ↦ cb pb))
     fun a₁ a₂ pa ↦
       Quot.induction_on qb fun b ↦
-        have h₁ : HEq (@Quot.hrecOn _ _ (φ _) ⟦b⟧ (f a₁) (@cb _)) (f a₁ b) := by
+        have h₁ : HEq (@Quot.hrecOn _ _ (φ _) (.mk _ b) (f a₁) (@cb _)) (f a₁ b) := by
           simp [heq_self_iff_true]
-        have h₂ : HEq (f a₂ b) (@Quot.hrecOn _ _ (φ _) ⟦b⟧ (f a₂) (@cb _)) := by
+        have h₂ : HEq (f a₂ b) (@Quot.hrecOn _ _ (φ _) (.mk _ b) (f a₂) (@cb _)) := by
           simp [heq_self_iff_true]
         (h₁.trans (ca pa)).trans h₂
 
@@ -192,23 +180,7 @@ namespace Quotient
 variable [sa : Setoid α] [sb : Setoid β]
 variable {φ : Quotient sa → Quotient sb → Sort*}
 
--- Porting note: in mathlib3 this notation took the Setoid as an instance-implicit argument,
--- now it's explicit but left as a metavariable.
--- We have not yet decided which one works best, since the setoid instance can't always be
--- reliably found but it can't always be inferred from the expected type either.
--- See also: https://leanprover.zulipchat.com/#narrow/stream/113489-new-members/topic/confusion.20between.20equivalence.20and.20instance.20setoid/near/360822354
-@[inherit_doc Quotient.mk]
-notation3:arg "⟦" a "⟧" => Quotient.mk _ a
-
-instance instInhabitedQuotient (s : Setoid α) [Inhabited α] : Inhabited (Quotient s) :=
-  ⟨⟦default⟧⟩
-
-instance instSubsingletonQuotient (s : Setoid α) [Subsingleton α] : Subsingleton (Quotient s) :=
-  Quot.Subsingleton
-
-instance instUniqueQuotient (s : Setoid α) [Unique α] : Unique (Quotient s) := Unique.mk' _
-
-instance {α : Type*} [Setoid α] : IsEquiv α (· ≈ ·) where
+instance {α : Sort*} [Setoid α] : IsEquiv α (· ≈ ·) where
   refl := Setoid.refl
   symm _ _ := Setoid.symm
   trans _ _ _ := Setoid.trans
@@ -324,8 +296,8 @@ theorem surjective_quotient_mk' (α : Sort*) [s : Setoid α] :
 
 /-- Choose an element of the equivalence class using the axiom of choice.
   Sound but noncomputable. -/
-noncomputable def Quot.out {r : α → α → Prop} (q : Quot r) : α :=
-  Classical.choose (Quot.exists_rep q)
+noncomputable abbrev Quot.out {r : α → α → Prop} (q : Quot r) : α :=
+  QuotLike.out q
 
 /-- Unwrap the VM representation of a quotient to obtain an element of the equivalence class.
   Computable but unsound. -/
@@ -338,25 +310,22 @@ theorem Quot.out_eq {r : α → α → Prop} (q : Quot r) : Quot.mk r q.out = q 
 
 /-- Choose an element of the equivalence class using the axiom of choice.
   Sound but noncomputable. -/
-noncomputable def Quotient.out [s : Setoid α] : Quotient s → α :=
-  Quot.out
+noncomputable abbrev Quotient.out [s : Setoid α] : Quotient s → α :=
+  QuotLike.out
 
-@[simp]
 theorem Quotient.out_eq [s : Setoid α] (q : Quotient s) : ⟦q.out⟧ = q :=
   Quot.out_eq q
 
-theorem Quotient.mk_out [Setoid α] (a : α) : ⟦a⟧.out ≈ a :=
+theorem Quotient.mk_out [Setoid α] (a : α) : (⟦a⟧ : Quotient _).out ≈ a :=
   Quotient.exact (Quotient.out_eq _)
 
 theorem Quotient.mk_eq_iff_out [s : Setoid α] {x : α} {y : Quotient s} :
-    ⟦x⟧ = y ↔ x ≈ Quotient.out y := by
-  refine Iff.trans ?_ Quotient.eq
-  rw [Quotient.out_eq y]
+    ⟦x⟧ = y ↔ x ≈ Quotient.out y :=
+  QuotLike.mkQ_eq_iff_out
 
 theorem Quotient.eq_mk_iff_out [s : Setoid α] {x : Quotient s} {y : α} :
-    x = ⟦y⟧ ↔ Quotient.out x ≈ y := by
-  refine Iff.trans ?_ Quotient.eq
-  rw [Quotient.out_eq x]
+    x = ⟦y⟧ ↔ Quotient.out x ≈ y :=
+  QuotLike.eq_mkQ_iff_out
 
 @[simp]
 theorem Quotient.out_equiv_out {s : Setoid α} {x y : Quotient s} : x.out ≈ y.out ↔ x = y := by
@@ -365,7 +334,6 @@ theorem Quotient.out_equiv_out {s : Setoid α} {x y : Quotient s} : x.out ≈ y.
 theorem Quotient.out_injective {s : Setoid α} : Function.Injective (@Quotient.out α s) :=
   fun _ _ h ↦ Quotient.out_equiv_out.1 <| h ▸ Setoid.refl _
 
-@[simp]
 theorem Quotient.out_inj {s : Setoid α} {x y : Quotient s} : x.out = y.out ↔ x = y :=
   ⟨fun h ↦ Quotient.out_injective h, fun h ↦ h ▸ rfl⟩
 
@@ -426,6 +394,10 @@ namespace Trunc
 /-- Constructor for `Trunc α` -/
 def mk (a : α) : Trunc α :=
   Quot.mk _ a
+
+instance instQuotLike {α} : QuotLike (Trunc α) α (fun _ _ ↦ True) where
+  mkQ := Trunc.mk
+  sound _ := Quot.sound .intro
 
 instance [Inhabited α] : Inhabited (Trunc α) :=
   ⟨mk default⟩
