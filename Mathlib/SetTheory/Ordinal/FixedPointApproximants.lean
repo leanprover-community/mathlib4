@@ -213,8 +213,8 @@ theorem lfp_mem_range_lfpApprox : lfp f ∈ Set.range (lfpApprox f ⊥) := by
 
 set_option linter.unusedVariables false in
 /-- The ordinal-indexed sequence approximating the greatest fixed point greater than
-  an initial value `x`. It is defined in such a way that we have `lfpApprox 0 x = x` and
-  `lfpApprox a x = ⨅ b < a, f (lfpApprox b x)`. -/
+  an initial value `x`. It is defined in such a way that we have `gfpApprox 0 x = x` and
+  `gfpApprox a x = ⨅ b < a, f (lfpApprox b x)`. -/
 def gfpApprox (a : Ordinal.{u}) : α :=
   sInf ({ f (gfpApprox b) | (b : Ordinal) (h : b < a) } ∪ {x})
 termination_by a
