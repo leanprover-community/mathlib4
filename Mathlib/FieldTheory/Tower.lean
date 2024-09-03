@@ -46,9 +46,10 @@ theorem left [Nontrivial A] : Module.Finite F K :=
   Module.Finite.of_injective
     (LinearMap.ringLmapEquivSelf K ℕ A |>.symm x |>.restrictScalars F) (smul_left_injective K hx)
 
-/-- [Stacks: Example 09G5](https://stacks.math.columbia.edu/tag/09G5) -/
 variable [Semiring F] [Semiring K] [Module F K]
   [AddCommMonoid A] [Module K A] [Module F A] [IsScalarTower F K A] in
+/-- [Stacks: Example 09G5](https://stacks.math.columbia.edu/tag/09G5) -/
+@[stacks 09G5]
 theorem right [hf : Module.Finite F A] : Module.Finite K A :=
   let ⟨⟨b, hb⟩⟩ := hf
   ⟨⟨b, Submodule.restrictScalars_injective F _ _ <| by
