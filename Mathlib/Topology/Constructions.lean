@@ -3,7 +3,6 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Data.Pi.Projections
 import Mathlib.Topology.Maps.Basic
 import Mathlib.Topology.NhdsSet
 
@@ -1244,40 +1243,22 @@ theorem continuous_update [DecidableEq ι] (i : ι) :
   continuous_fst.update i continuous_snd
 
 @[continuity, fun_prop]
-theorem continuous_proj (s : Set ι) : Continuous (@proj ι π s) :=
+theorem continuous_set_restrict (s : Set ι) : Continuous (s.restrict (π := π)) :=
   continuous_pi fun _ ↦ continuous_apply _
 
 @[continuity, fun_prop]
-theorem continuous_proj₂ {s t : Set ι} (hst : s ⊆ t) :
-    Continuous (proj₂ (α := π) hst) :=
+theorem continuous_set_restrict₂ {s t : Set ι} (hst : s ⊆ t) :
+    Continuous (restrict₂ (π := π) hst) :=
   continuous_pi fun _ ↦ continuous_apply _
 
 @[continuity, fun_prop]
-theorem continuous_fproj (s : Finset ι) : Continuous (@fproj ι π s) :=
+theorem continuous_finset_restrict (s : Finset ι) : Continuous (s.restrict (β := π)) :=
   continuous_pi fun _ ↦ continuous_apply _
 
 @[continuity, fun_prop]
-theorem continuous_fproj₂ {s t : Finset ι} (hst : s ⊆ t) :
-    Continuous (fproj₂ (α := π) hst) :=
+theorem continuous_finset_restrict₂ {s t : Finset ι} (hst : s ⊆ t) :
+    Continuous (Finset.restrict₂ (β := π) hst) :=
   continuous_pi fun _ ↦ continuous_apply _
-
-variable {X : ℕ → Type*} [∀ n, TopologicalSpace (X n)] in
-@[continuity, fun_prop]
-theorem continuous_projNat (n : ℕ) : Continuous (@projNat X n) := continuous_proj _
-
-variable {X : ℕ → Type*} [∀ n, TopologicalSpace (X n)] in
-@[continuity, fun_prop]
-theorem continuous_projNat₂ {m n : ℕ} (hmn : m ≤ n) : Continuous (projNat₂ (α := X) hmn) :=
-  continuous_proj₂ _
-
-variable {X : ℕ → Type*} [∀ n, TopologicalSpace (X n)] in
-@[continuity, fun_prop]
-theorem continuous_fprojNat (n : ℕ) : Continuous (@fprojNat X n) := continuous_proj _
-
-variable {X : ℕ → Type*} [∀ n, TopologicalSpace (X n)] in
-@[continuity, fun_prop]
-theorem continuous_fprojNat₂ {m n : ℕ} (hmn : m ≤ n) : Continuous (fprojNat₂ (α := X) hmn) :=
-  continuous_fproj₂ _
 
 /-- `Pi.mulSingle i x` is continuous in `x`. -/
 -- Porting note (#11215): TODO: restore @[continuity]
