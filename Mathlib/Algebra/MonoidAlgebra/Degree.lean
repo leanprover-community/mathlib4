@@ -368,7 +368,7 @@ lemma supDegree_mem_range (hp : p ≠ 0) : p.supDegree D ∈ Set.range D := by
 variable {ι : Type*} {s : Finset ι} {i : ι} (hi : i ∈ s) {f : ι → R[A]}
 
 lemma supDegree_sum_lt (hs : s.Nonempty) {b : B}
-    (h : ∀ i ∈ s, (f i).supDegree D < b) : (∑ i in s, f i).supDegree D < b := by
+    (h : ∀ i ∈ s, (f i).supDegree D < b) : (∑ i ∈ s, f i).supDegree D < b := by
   refine supDegree_sum_le.trans_lt ((Finset.sup_lt_iff ?_).mpr h)
   obtain ⟨i, hi⟩ := hs; exact bot_le.trans_lt (h i hi)
 

@@ -313,7 +313,7 @@ section Lex
 
 variable [LinearOrder σ]
 
-lemma leadingCoeff_eq : p.leadingCoeff toLex = p.coeff (ofLex <| p.supDegree toLex) := by
+lemma leadingCoeff_toLex : p.leadingCoeff toLex = p.coeff (ofLex <| p.supDegree toLex) := by
   rw [leadingCoeff]
   apply congr_arg p.coeff
   apply toLex.injective
