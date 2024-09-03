@@ -175,8 +175,7 @@ jobs:
           echo "error code: $?"
           printf '\nls -ao .lake/build/lib/Mathlib/\n'
           ls -ao .lake/build/lib/Mathlib/
-          lake build --no-build Mathlib.Init
-          echo $? || lake exe cache get
+          lake build --no-build Mathlib.Init && lake exe cache get
           #! test -e .lake/build/lib/Mathlib/Init.olean; echo $?
           #! test -e .lake/build/lib/Mathlib/Init.olean || lake exe cache get
 
