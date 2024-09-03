@@ -111,7 +111,7 @@ noncomputable instance (priority := 100) [LocallyFiniteOrder ι] : SuccOrder ι 
   succ_le_of_lt h := succFn_le_of_lt _ _ h
 
 noncomputable instance (priority := 100) [LocallyFiniteOrder ι] : PredOrder ι :=
-  (inferInstance : PredOrder (OrderDual ιᵒᵈ))
+  inferInstanceAs (PredOrder ιᵒᵈᵒᵈ)
 
 instance (priority := 100) [LocallyFiniteOrder ι] : IsSuccArchimedean ι where
   exists_succ_iterate_of_le := by
@@ -141,6 +141,9 @@ instance (priority := 100) [LocallyFiniteOrder ι] : IsSuccArchimedean ι where
       · exact ⟨m, n, lt_of_le_of_ne h_le hnm_ne.symm, hnm_eq.symm⟩
     have h_max : IsMax (succ^[n] i) := isMax_iterate_succ_of_eq_of_ne h_eq hnm.ne
     exact not_le.mpr (h_lt n) (h_max (h_lt n).le)
+
+-- The `IsPredArchimedean` instance follows from the above and
+-- `isPredArchimedean_of_isSuccArchimedean`.
 
 end LinearLocallyFiniteOrder
 
