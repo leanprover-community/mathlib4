@@ -175,6 +175,8 @@ instance (priority := 100) isPredArchimedean_of_isSuccArchimedean [IsSuccArchime
 theorem isSuccArchimedean_of_isPredArchimedean [IsPredArchimedean ι] : IsSuccArchimedean ι :=
   inferInstanceAs (IsSuccArchimedean ιᵒᵈᵒᵈ)
 
+/-- In a linear `SuccOrder` that's also a `PredOrder`, `IsSuccArchimedean` and `IsPredArchimedean`
+are equivalent. -/
 theorem isSuccArchimedean_iff_isPredArchimedean : IsSuccArchimedean ι ↔ IsPredArchimedean ι :=
   ⟨@isPredArchimedean_of_isSuccArchimedean _ _ _ _,
     @isSuccArchimedean_of_isPredArchimedean _ _ _ _⟩
