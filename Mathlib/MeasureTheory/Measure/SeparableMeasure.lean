@@ -116,7 +116,10 @@ lemma Measure.MeasureDense.fin_meas_approx (h𝒜 : μ.MeasureDense 𝒜) {s : S
   exact ⟨t, t_mem, (measure_ne_top_iff_of_symmDiff <| ne_top_of_lt ht).1 hμs, ht⟩
 
 variable (p) in
-theorem Measure.MeasureDense.dense_lp (h𝒜 : μ.MeasureDense 𝒜) (c : E) :
+/-- If `𝒜` is a measure-dense family of sets and `c : E`, then the set of constant indicators
+with constant `c` whose underlying set is in `𝒜` is dense in the set of constant indicators
+which are in `Lp E p μ` when `1 ≤ p < ∞`. -/
+theorem Measure.MeasureDense.indicatorConstLp_subset_closure (h𝒜 : μ.MeasureDense 𝒜) (c : E) :
     {f : Lp E p μ |
       ∃ (s : Set X) (hs : MeasurableSet s) (hμs : μ s ≠ ∞),
         f = indicatorConstLp p hs hμs c} ⊆
@@ -445,8 +448,6 @@ instance Lp.SecondCountableTopology [IsSeparable μ] [TopologicalSpace.Separable
     -- This is given by `Lp.induction`.
     refine Lp.induction p_ne_top.elim (P := fun f ↦ f ∈ closure D) ?_ ?_ isClosed_closure
     · intro a s ms hμs
-      -- refine ((h𝒜.dense_lp p a).trans <| closure_mono ?_) ⟨s, ms, hμs.ne, rfl⟩
-      -- rintro - ⟨t, ht, hμt, rfl⟩
       -- We want to approximate `a • 𝟙ₛ`.
       apply ne_of_lt at hμs
       rw [SeminormedAddCommGroup.mem_closure_iff]
@@ -454,56 +455,36 @@ instance Lp.SecondCountableTopology [IsSeparable μ] [TopologicalSpace.Separable
       have μs_pow_nonneg : 0 ≤ (μ s).toReal ^ (1 / p.toReal) :=
         Real.rpow_nonneg ENNReal.toReal_nonneg _
       -- To do so, we first pick `b ∈ u` such that `‖a - b‖ < ε / (3 * (1 + (μ s)^(1/p)))`.
-      have approx_a_pos : 0 < ε / (2 * (1 + (μ s).toReal ^ (1 / p.toReal))) :=
+      have approx_a_pos : 0 < ε / (3 * (1 + (μ s).toReal ^ (1 / p.toReal))) :=
         div_pos ε_pos (by linarith [μs_pow_nonneg])
       have ⟨b, b_mem, hb⟩ := SeminormedAddCommGroup.mem_closure_iff.1 (dense_u a) _ approx_a_pos
-      -- Then we pick `t ∈ 𝒜₀` such that `μ (s ∆ t) < (ε / 3 * (1 + ‖b‖))^p`.
-      rcases SeminormedAddCommGroup.mem_closure_iff.1 h𝒜.dense_lp
-      have approx_s_pos : 0 < (ε / (3 * (1 + ‖b‖))) ^ p.toReal :=
-        Real.rpow_pos_of_pos (div_pos ε_pos (by linarith [norm_nonneg b])) _
-      rcases h𝒜₀.approx s ms hμs _ approx_s_pos with ⟨t, ht, hμst⟩
+      -- Then we pick `t ∈ 𝒜₀` such that `‖b • 𝟙ₛ - b • 𝟙ₜ‖ < ε / 3`.
+      rcases SeminormedAddCommGroup.mem_closure_iff.1
+        (h𝒜₀.indicatorConstLp_subset_closure p b ⟨s, ms, hμs, rfl⟩)
+          (ε / 3) (by linarith [ε_pos]) with ⟨-, ⟨t, ht, hμt, rfl⟩, hst⟩
       have mt := h𝒜₀.measurable t ht
-      have hμt := ht.2
       -- We now show that `‖a • 𝟙ₛ - b • 𝟙ₜ‖ₚ < ε`, as follows:
       -- `‖a • 𝟙ₛ - b • 𝟙ₜ‖ₚ`
       --   `= ‖a • 𝟙ₛ - b • 𝟙ₛ + b • 𝟙ₛ - b • 𝟙ₜ‖ₚ`
-      --   `≤ ‖a - b‖ * ‖𝟙ₛ‖ₚ + ‖b‖ * ‖𝟙ₛ - 𝟙ₜ‖ₚ`
-      --   `= ‖a - b‖ * (μ s)^(1/p) + ‖b‖ * (μ (s ∆ t))^(1/p)`
-      --   `< ε * (μ s)^(1/p) / (3 * (1 + (μ s)^(1/p))) + ‖b‖ * ((ε / (3 * (1 + ‖b‖)))^p)^(1/p)`
+      --   `≤ ‖a - b‖ * ‖𝟙ₛ‖ₚ + ε / 3`
+      --   `= ‖a - b‖ * (μ s)^(1/p) + ε / 3`
+      --   `< ε * (μ s)^(1/p) / (3 * (1 + (μ s)^(1/p))) + ε / 3`
       --   `≤ ε / 3 + ε / 3 < ε`.
       refine ⟨indicatorConstLp p mt hμt b,
         ⟨1, fun _ ↦ ⟨b, b_mem⟩, fun _ ↦ ⟨t, ht⟩, by simp [key]⟩, ?_⟩
       rw [Lp.simpleFunc.coe_indicatorConst,
-        ← sub_add_sub_cancel _ (indicatorConstLp p ms hμs b)]
-      refine lt_of_le_of_lt (b := ε / 3 + ε / 3) (norm_add_le_of_le ?_ ?_) (by linarith [ε_pos])
-      · rw [indicatorConstLp_sub, norm_indicatorConstLp p_ne_zero p_ne_top.elim]
-        calc
-          ‖a - b‖ * (μ s).toReal ^ (1 / p.toReal)
-            ≤ (ε / (3 * (1 + (μ s).toReal ^ (1 / p.toReal)))) * (μ s).toReal ^ (1 / p.toReal) :=
-                mul_le_mul_of_nonneg_right (le_of_lt hb) μs_pow_nonneg
-          _ ≤ ε / 3 := by
-              rw [← mul_one (ε / 3), div_mul_eq_div_mul_one_div, mul_assoc, one_div_mul_eq_div]
-              exact mul_le_mul_of_nonneg_left
-                ((div_le_one (by linarith [μs_pow_nonneg])).2 (by linarith))
-                (by linarith [ε_pos])
-      · rw [← dist_eq_norm, dist_indicatorConstLp_eq_norm,
-          norm_indicatorConstLp p_ne_zero p_ne_top.elim]
-        have : (μ (s ∆ t)).toReal ^ (1 / p.toReal) ≤ ε / (3 * ( 1 + ‖b‖)) := by
-          rw [← rpow_le_rpow_iff (rpow_nonneg toReal_nonneg _)
-              (div_nonneg (le_of_lt ε_pos) (by linarith [norm_nonneg b]))
-              (toReal_pos p_ne_zero p_ne_top.elim), one_div,
-            rpow_inv_rpow toReal_nonneg (toReal_ne_zero.2 ⟨p_ne_zero, p_ne_top.elim⟩),
-            ← toReal_ofReal <| le_of_lt approx_s_pos]
-          exact toReal_mono ofReal_ne_top (le_of_lt hμst)
-        calc
-          ‖b‖ * (μ (s ∆ t)).toReal ^ ( 1 / p.toReal)
-            ≤ ‖b‖ * (ε / (3 * ( 1 + ‖b‖))) := mul_le_mul_of_nonneg_left this (norm_nonneg ..)
-          _ ≤ ε / 3 := by
-              rw [← mul_one (ε / 3), div_mul_eq_div_mul_one_div, ← mul_assoc, mul_comm ‖b‖,
-                mul_assoc, mul_one_div]
-              exact mul_le_mul_of_nonneg_left
-                ((div_le_one (by linarith [norm_nonneg b])).2 (by linarith))
-                (by linarith [ε_pos])
+        ← sub_add_sub_cancel _ (indicatorConstLp p ms hμs b), ← add_halves ε]
+      refine lt_of_le_of_lt (b := ε / 3 + ε / 3) (norm_add_le_of_le ?_ hst.le) (by linarith [ε_pos])
+      rw [indicatorConstLp_sub, norm_indicatorConstLp p_ne_zero p_ne_top.elim]
+      calc
+        ‖a - b‖ * (μ s).toReal ^ (1 / p.toReal)
+          ≤ (ε / (3 * (1 + (μ s).toReal ^ (1 / p.toReal)))) * (μ s).toReal ^ (1 / p.toReal) :=
+              mul_le_mul_of_nonneg_right (le_of_lt hb) μs_pow_nonneg
+        _ ≤ ε / 3 := by
+            rw [← mul_one (ε / 3), div_mul_eq_div_mul_one_div, mul_assoc, one_div_mul_eq_div]
+            exact mul_le_mul_of_nonneg_left
+              ((div_le_one (by linarith [μs_pow_nonneg])).2 (by linarith))
+              (by linarith [ε_pos])
     · -- Now we have to show that the closure of `D` is closed by sum. Let `f` and `g` be two
       -- functions in `Lᵖ` which are also in the closure of `D`.
       rintro f g hf hg - f_mem g_mem
