@@ -138,9 +138,9 @@ variable {β : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
 
 @[simp] lemma iIndepSet_zero_right : iIndepSet s κ 0 := by simp [iIndepSet]
 
-@[simp] lemma indepSet_zero_right {s t : Set Ω}: IndepSet s t κ 0 := by simp [IndepSet]
+@[simp] lemma indepSet_zero_right {s t : Set Ω} : IndepSet s t κ 0 := by simp [IndepSet]
 
-@[simp] lemma indepSet_zero_left {s t : Set Ω}: IndepSet s t (0 : Kernel α Ω) μ := by
+@[simp] lemma indepSet_zero_left {s t : Set Ω} : IndepSet s t (0 : Kernel α Ω) μ := by
   simp [IndepSet]
 
 @[simp] lemma iIndepFun_zero_right {β : ι → Type*} {m : ∀ x : ι, MeasurableSpace (β x)}
