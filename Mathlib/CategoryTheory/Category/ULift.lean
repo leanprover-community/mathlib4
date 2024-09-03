@@ -50,11 +50,20 @@ def ULift.upFunctor : C ⥤ ULift.{u₂} C where
   obj := ULift.up
   map f := f
 
+#adaptation_note
+/--
+Prior to https://github.com/leanprover/lean4/pull/5225 and
+https://github.com/leanprover/lean4/pull/5226, the proofs for `map_id` and `map_comp`
+worked automatically via the `aesop` autoparam.
+-/
+
 /-- The functorial version of `ULift.down`. -/
 @[simps]
 def ULift.downFunctor : ULift.{u₂} C ⥤ C where
   obj := ULift.down
   map f := f
+  map_id _ := rfl
+  map_comp _ _ := rfl
 
 /-- The categorical equivalence between `C` and `ULift C`. -/
 @[simps]

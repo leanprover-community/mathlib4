@@ -72,13 +72,14 @@ theorem count_equiv_one_or_two_mod3_of_derivable (en : Miustr) :
   any_goals apply mod3_eq_1_or_mod3_eq_2 h_ih
   -- Porting note: `simp_rw [count_append]` usually doesn't work
   · left; rw [count_append, count_append]; rfl
-  · right; simp_rw [count_append, count_cons, beq_iff_eq, ite_false, add_zero, two_mul]
+  · right; simp_rw [count_append, count_cons, beq_iff_eq, reduceCtorEq, ite_false, add_zero,
+      two_mul]
   · left; rw [count_append, count_append, count_append]
-    simp_rw [count_cons_self, count_nil, count_cons, beq_iff_eq, ite_false, add_right_comm,
-      add_mod_right]
+    simp_rw [count_cons_self, count_nil, count_cons, beq_iff_eq, reduceCtorEq, ite_false,
+      add_right_comm, add_mod_right]
     simp
   · left; rw [count_append, count_append, count_append]
-    simp only [ne_eq, not_false_eq_true, count_cons_of_ne, count_nil, add_zero]
+    simp only [ne_eq, not_false_eq_true, count_cons_of_ne, count_nil, add_zero, reduceCtorEq]
 
 /-- Using the above theorem, we solve the MU puzzle, showing that `"MU"` is not derivable.
 Once we have proved that `Derivable` is an instance of `DecidablePred`, this will follow
@@ -128,7 +129,7 @@ theorem goodm_of_rule1 (xs : Miustr) (h₁ : Derivable (xs ++ ↑[I])) (h₂ : G
     exact mhead
   · change ¬M ∈ tail (xs ++ ↑([I] ++ [U]))
     rw [← append_assoc, tail_append_singleton_of_ne_nil]
-    · simp_rw [mem_append, mem_singleton, or_false]; exact nmtail
+    · simp_rw [mem_append, mem_singleton, reduceCtorEq, or_false]; exact nmtail
     · exact append_ne_nil_of_left_ne_nil this _
 
 theorem goodm_of_rule2 (xs : Miustr) (_ : Derivable (M :: xs)) (h₂ : Goodm (M :: xs)) :

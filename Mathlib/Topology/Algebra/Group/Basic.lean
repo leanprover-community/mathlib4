@@ -164,7 +164,7 @@ theorem ContinuousInv.induced {α : Type*} {β : Type*} {F : Type*} [FunLike F �
     @ContinuousInv α (tβ.induced f) _ := by
   let _tα := tβ.induced f
   refine ⟨continuous_induced_rng.2 ?_⟩
-  simp only [Function.comp, map_inv]
+  simp only [Function.comp_def, map_inv]
   fun_prop
 
 @[to_additive]
@@ -376,7 +376,7 @@ end LatticeOps
 theorem Inducing.continuousInv {G H : Type*} [Inv G] [Inv H] [TopologicalSpace G]
     [TopologicalSpace H] [ContinuousInv H] {f : G → H} (hf : Inducing f)
     (hf_inv : ∀ x, f x⁻¹ = (f x)⁻¹) : ContinuousInv G :=
-  ⟨hf.continuous_iff.2 <| by simpa only [(· ∘ ·), hf_inv] using hf.continuous.inv⟩
+  ⟨hf.continuous_iff.2 <| by simpa only [Function.comp_def, hf_inv] using hf.continuous.inv⟩
 
 section TopologicalGroup
 
@@ -742,8 +742,8 @@ theorem continuous_of_continuousAt_one {M hom : Type*} [MulOneClass M] [Topologi
     (hf : ContinuousAt f 1) :
     Continuous f :=
   continuous_iff_continuousAt.2 fun x => by
-    simpa only [ContinuousAt, ← map_mul_left_nhds_one x, tendsto_map'_iff, (· ∘ ·), map_mul,
-      map_one, mul_one] using hf.tendsto.const_mul (f x)
+    simpa only [ContinuousAt, ← map_mul_left_nhds_one x, tendsto_map'_iff, Function.comp_def,
+      map_mul, map_one, mul_one] using hf.tendsto.const_mul (f x)
 
 @[to_additive continuous_of_continuousAt_zero₂]
 theorem continuous_of_continuousAt_one₂ {H M : Type*} [CommMonoid M] [TopologicalSpace M]
@@ -752,7 +752,7 @@ theorem continuous_of_continuousAt_one₂ {H M : Type*} [CommMonoid M] [Topologi
     (hl : ∀ x, ContinuousAt (f x) 1) (hr : ∀ y, ContinuousAt (f · y) 1) :
     Continuous (fun x : G × H ↦ f x.1 x.2) := continuous_iff_continuousAt.2 fun (x, y) => by
   simp only [ContinuousAt, nhds_prod_eq, ← map_mul_left_nhds_one x, ← map_mul_left_nhds_one y,
-    prod_map_map_eq, tendsto_map'_iff, (· ∘ ·), map_mul, MonoidHom.mul_apply] at *
+    prod_map_map_eq, tendsto_map'_iff, Function.comp_def, map_mul, MonoidHom.mul_apply] at *
   refine ((tendsto_const_nhds.mul ((hr y).comp tendsto_fst)).mul
     (((hl x).comp tendsto_snd).mul hf)).mono_right (le_of_eq ?_)
   simp only [map_one, mul_one, MonoidHom.one_apply]
@@ -778,8 +778,8 @@ theorem ContinuousInv.of_nhds_one {G : Type*} [Group G] [TopologicalSpace G]
   refine ⟨continuous_iff_continuousAt.2 fun x₀ => ?_⟩
   have : Tendsto (fun x => x₀⁻¹ * (x₀ * x⁻¹ * x₀⁻¹)) (𝓝 1) (map (x₀⁻¹ * ·) (𝓝 1)) :=
     (tendsto_map.comp <| hconj x₀).comp hinv
-  simpa only [ContinuousAt, hleft x₀, hleft x₀⁻¹, tendsto_map'_iff, (· ∘ ·), mul_assoc, mul_inv_rev,
-    inv_mul_cancel_left] using this
+  simpa only [ContinuousAt, hleft x₀, hleft x₀⁻¹, tendsto_map'_iff, Function.comp_def, mul_assoc,
+    mul_inv_rev, inv_mul_cancel_left] using this
 
 @[to_additive]
 theorem TopologicalGroup.of_nhds_one' {G : Type u} [Group G] [TopologicalSpace G]
@@ -806,7 +806,7 @@ theorem TopologicalGroup.of_nhds_one {G : Type u} [Group G] [TopologicalSpace G]
   replace hconj : ∀ x₀ : G, map (x₀ * · * x₀⁻¹) (𝓝 1) = 𝓝 1 :=
     fun x₀ => map_eq_of_inverse (x₀⁻¹ * · * x₀⁻¹⁻¹) (by ext; simp [mul_assoc]) (hconj _) (hconj _)
   rw [← hconj x₀]
-  simpa [(· ∘ ·)] using hleft _
+  simpa [Function.comp_def] using hleft _
 
 @[to_additive]
 theorem TopologicalGroup.of_comm_of_nhds_one {G : Type u} [CommGroup G] [TopologicalSpace G]

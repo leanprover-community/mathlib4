@@ -194,7 +194,6 @@ def applyConstRule (funPropDecl : FunPropDecl) (e : Expr)
     logError msg
     trace[Meta.Tactic.fun_prop] msg
     return none
-
   for thm in thms do
     let .const := thm.thmArgs | return none
     if let .some r ← tryTheorem? e (.decl thm.thmName) funProp then
@@ -210,7 +209,6 @@ For example, `e = q(Continuous fun f => f x)` and `funPropDecl` is `FunPropDecl`
 def applyApplyRule (funPropDecl : FunPropDecl) (e : Expr)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
   let thms := (← getLambdaTheorems funPropDecl.funPropName .apply)
-
   for thm in thms do
     if let .some r ← tryTheoremWithHint? e (.decl thm.thmName) #[] funProp then
       return r

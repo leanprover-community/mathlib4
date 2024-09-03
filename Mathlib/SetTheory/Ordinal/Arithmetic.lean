@@ -613,8 +613,8 @@ instance leftDistribClass : LeftDistribClass Ordinal.{u} :=
       Quotient.sound
         ⟨⟨sumProdDistrib _ _ _, by
           rintro ⟨a₁ | a₁, a₂⟩ ⟨b₁ | b₁, b₂⟩ <;>
-            simp only [Prod.lex_def, Sum.lex_inl_inl, Sum.Lex.sep, Sum.lex_inr_inl,
-              Sum.lex_inr_inr, sumProdDistrib_apply_left, sumProdDistrib_apply_right] <;>
+            simp only [Prod.lex_def, Sum.lex_inl_inl, Sum.Lex.sep, Sum.lex_inr_inl, Sum.lex_inr_inr,
+              sumProdDistrib_apply_left, sumProdDistrib_apply_right, reduceCtorEq] <;>
             -- Porting note: `Sum.inr.inj_iff` is required.
             simp only [Sum.inl.inj_iff, Sum.inr.inj_iff,
               true_or_iff, false_and_iff, false_or_iff]⟩⟩⟩
