@@ -5,7 +5,7 @@ on:
     types: created
 
 jobs:
-  ping_zulip:
+  Produce_bench_summary:
     name: Post bench summary
     if: (github.event.issue.pull_request != 'null') && (startsWith(github.event.comment.body, 'Here are the [benchmark results]'))
     runs-on: ubuntu-latest
