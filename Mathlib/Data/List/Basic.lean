@@ -325,8 +325,6 @@ theorem map_reverseAux (f : α → β) (l₁ l₂ : List α) :
 
 theorem isEmpty_iff_eq_nil {l : List α} : l.isEmpty ↔ l = [] := by cases l <;> simp [isEmpty]
 
-/-! ### dropLast -/
-
 /-! ### getLast -/
 
 attribute [simp] getLast_cons
