@@ -206,11 +206,7 @@ variable [Semiring R] [Ring R']
 
 section SupDegree
 
-variable (D : A → B)
-
-section SemilatticeSup
-
-variable [SemilatticeSup B] [OrderBot B]
+variable [SemilatticeSup B] [OrderBot B] (D : A → B)
 
 /-- Let `R` be a semiring, let `A` be an `AddZeroClass`, let `B` be an `OrderBot`,
 and let `D : A → B` be a "degree" function.
@@ -228,14 +224,6 @@ by taking `D := toLex`, and different monomial orders could be accessed via diff
 synonyms once they are added. -/
 abbrev supDegree (f : R[A]) : B :=
   f.support.sup D
-
-/-- If `D` is an injection into a linear order `B`, the leading coefficient of `f : R[A]` is the
-  nonzero coefficient of highest degree according to `D`, or 0 if `f = 0`. In general, it is defined
-  to be the coefficient at an inverse image of `supDegree f` (if such exists). -/
-noncomputable def leadingCoeff [Nonempty A] (f : R[A]) : R := f (D.invFun <| f.supDegree D)
-
-/-- An element `f : R[A]` is monic if its leading coefficient is one. -/
-@[reducible] def Monic [Nonempty A] (f : R[A]) : Prop := f.leadingCoeff D = 1
 
 variable {D}
 
@@ -266,14 +254,6 @@ theorem supDegree_single (a : A) (r : R) :
     (single a r).supDegree D = if r = 0 then ⊥ else D a := by
   split_ifs with hr <;> simp [supDegree_single_ne_zero, hr]
 
-theorem leadingCoeff_single [Nonempty A] (hD : D.Injective) (a : A) (r : R) :
-    (single a r).leadingCoeff D = r := by
-  classical
-  rw [leadingCoeff, supDegree_single]
-  split_ifs with hr
-  · simp [hr]
-  · rw [Function.leftInverse_invFun hD, single_apply, if_pos rfl]
-
 theorem apply_eq_zero_of_not_le_supDegree {p : R[A]} {a : A} (hlt : ¬ D a ≤ p.supDegree D) :
     p a = 0 := by
   contrapose! hlt
@@ -293,18 +273,10 @@ variable [AddZeroClass A] {p q : R[A]}
 @[simp]
 theorem supDegree_zero : (0 : R[A]).supDegree D = ⊥ := by simp [supDegree]
 
-theorem leadingCoeff_zero : (0 : R[A]).leadingCoeff D = 0 := rfl
-
 theorem ne_zero_of_supDegree_ne_bot : p.supDegree D ≠ ⊥ → p ≠ 0 := mt (fun h => h ▸ supDegree_zero)
 
 theorem ne_zero_of_not_supDegree_le {b : B} (h : ¬ p.supDegree D ≤ b) : p ≠ 0 :=
   ne_zero_of_supDegree_ne_bot (fun he => h <| he ▸ bot_le)
-
-lemma Monic.ne_zero [Nontrivial R] (hp : p.Monic D) : p ≠ 0 := fun h => by
-  simp_rw [Monic, h, leadingCoeff_zero, zero_ne_one] at hp
-
-theorem monic_one (hD : D.Injective) : (1 : R[A]).Monic D := by
-  rw [Monic, one_def, leadingCoeff_single hD]
 
 theorem supDegree_eq_of_max {b : B} (hb : b ∈ Set.range D) (hmem : D.invFun b ∈ p.support)
     (hmax : ∀ a ∈ p.support, D a ≤ b) : p.supDegree D = b := by
@@ -354,19 +326,47 @@ theorem apply_add_of_supDegree_le (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
   · refine fun h => Finset.sum_eq_zero (fun a _ => ite_eq_right_iff.mpr <| fun _ => ?_)
     rw [Finsupp.not_mem_support_iff.mp h, zero_mul]
 
-end SemilatticeSup
+end SupDegree
 
 section LinearOrder
 
-variable [LinearOrder B] [OrderBot B] {p q : R[A]}
+variable [LinearOrder B] [OrderBot B] {p q : R[A]} (D : A → B)
 
+/-- If `D` is an injection into a linear order `B`, the leading coefficient of `f : R[A]` is the
+  nonzero coefficient of highest degree according to `D`, or 0 if `f = 0`. In general, it is defined
+  to be the coefficient at an inverse image of `supDegree f` (if such exists). -/
+noncomputable def leadingCoeff [Nonempty A] (f : R[A]) : R :=
+  f (D.invFun <| f.supDegree D)
+
+/-- An element `f : R[A]` is monic if its leading coefficient is one. -/
+@[reducible] def Monic [Nonempty A] (f : R[A]) : Prop :=
+  f.leadingCoeff D = 1
+
+variable {D}
+
+theorem leadingCoeff_single [Nonempty A] (hD : D.Injective) (a : A) (r : R) :
+    (single a r).leadingCoeff D = r := by
+  classical
+  rw [leadingCoeff, supDegree_single]
+  split_ifs with hr
+  · simp [hr]
+  · rw [Function.leftInverse_invFun hD, single_apply, if_pos rfl]
+
+theorem leadingCoeff_zero [Nonempty A] : (0 : R[A]).leadingCoeff D = 0 := rfl
+
+lemma Monic.ne_zero [Nonempty A] [Nontrivial R] (hp : p.Monic D) : p ≠ 0 := fun h => by
+  simp_rw [Monic, h, leadingCoeff_zero, zero_ne_one] at hp
+
+theorem monic_one [AddZeroClass A] (hD : D.Injective) : (1 : R[A]).Monic D := by
+  rw [Monic, one_def, leadingCoeff_single hD]
+
+variable (D) in
 lemma exists_supDegree_mem_support (hp : p ≠ 0) : ∃ a ∈ p.support, p.supDegree D = D a :=
   Finset.exists_mem_eq_sup _ (Finsupp.support_nonempty_iff.mpr hp) D
 
+variable (D) in
 lemma supDegree_mem_range (hp : p ≠ 0) : p.supDegree D ∈ Set.range D := by
   obtain ⟨a, -, he⟩ := exists_supDegree_mem_support D hp; exact ⟨a, he.symm⟩
-
-variable {D}
 
 variable {ι : Type*} {s : Finset ι} {i : ι} (hi : i ∈ s) {f : ι → R[A]}
 
@@ -521,8 +521,6 @@ end AddMonoid
 
 end LinearOrder
 
-end SupDegree
-
 section InfDegree
 
 variable [SemilatticeInf T] [OrderTop T] (D : A → T)
@@ -537,12 +535,11 @@ using the minimum of the exponents. -/
 abbrev infDegree (f : R[A]) : T :=
   f.support.inf D
 
-variable {D}
-
 theorem le_infDegree_add (f g : R[A]) :
     (f.infDegree D) ⊓ (g.infDegree D) ≤ (f + g).infDegree D :=
   le_inf_support_add D f g
 
+variable {D} in
 theorem infDegree_withTop_some_comp {s : AddMonoidAlgebra R A} (hs : s.support.Nonempty) :
     infDegree (WithTop.some ∘ D) s = infDegree D s := by
   unfold AddMonoidAlgebra.infDegree
@@ -551,7 +548,7 @@ theorem infDegree_withTop_some_comp {s : AddMonoidAlgebra R A} (hs : s.support.N
 theorem le_infDegree_mul
     [AddZeroClass A] [Add T]
     [CovariantClass T T (· + ·) (· ≤ ·)] [CovariantClass T T (Function.swap (· + ·)) (· ≤ ·)]
-    {D : AddHom A T} (f g : R[A]) :
+    (D : AddHom A T) (f g : R[A]) :
     f.infDegree D + g.infDegree D ≤ (f * g).infDegree D :=
   le_inf_support_mul (fun {a b : A} => (map_add D a b).ge) _ _
 
