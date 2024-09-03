@@ -178,6 +178,19 @@ theorem IsTrail.count_edges_eq_one [DecidableEq V] {u v : V} {p : G.Walk u v} (h
     {e : Sym2 V} (he : e ∈ p.edges) : p.edges.count e = 1 :=
   List.count_eq_one_of_mem h.edges_nodup he
 
+theorem IsTrail.length_le_card_edgeFinset [Fintype G.edgeSet] {u v : V}
+    {w : G.Walk u v} (h : w.IsTrail) : w.length ≤ G.edgeFinset.card := by
+  classical
+  let edges := w.edges.toFinset
+  have : edges.card = w.length := length_edges _ ▸ List.toFinset_card_of_nodup h.edges_nodup
+  rw [← this]
+  have : edges ⊆ G.edgeFinset := by
+    intro e h
+    refine mem_edgeFinset.mpr ?_
+    apply w.edges_subset_edgeSet
+    simpa [edges] using h
+  exact Finset.card_le_card this
+
 theorem IsPath.nil {u : V} : (nil : G.Walk u u).IsPath := by constructor <;> simp
 
 theorem IsPath.of_cons {u v w : V} {h : G.Adj u v} {p : G.Walk v w} :

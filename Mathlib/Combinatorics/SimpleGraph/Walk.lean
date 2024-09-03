@@ -713,6 +713,19 @@ theorem edges_nodup_of_support_nodup {u v : V} {p : G.Walk u v} (h : p.support.N
     simp only [edges_cons, support_cons, List.nodup_cons] at h ⊢
     exact ⟨fun h' => h.1 (fst_mem_support_of_mem_edges p' h'), ih h.2⟩
 
+theorem edges_injective {u v : V} : Function.Injective (Walk.edges : G.Walk u v → List (Sym2 V))
+  | .nil, .nil, _ => rfl
+  | .nil, .cons _ _, h => by simp at h
+  | .cons _ _, .nil, h => by simp at h
+  | .cons' u v c h₁ w₁, .cons' _ v' _ h₂ w₂, h => by
+    have h₃ : u ≠ v' := by rintro rfl; exact G.loopless _ h₂
+    obtain ⟨rfl, h₃⟩ : v = v' ∧ w₁.edges = w₂.edges := by simpa [h₁, h₃] using h
+    obtain rfl := Walk.edges_injective h₃
+    rfl
+
+theorem darts_injective {u v : V} : Function.Injective (Walk.darts : G.Walk u v → List G.Dart) :=
+  edges_injective.of_comp
+
 /-- Predicate for the empty walk.
 
 Solves the dependent type problem where `p = G.Walk.nil` typechecks
