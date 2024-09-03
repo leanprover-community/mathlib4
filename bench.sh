@@ -52,18 +52,17 @@ commits="$(
 src="${commits/%,*/}"
 tgt="${commits/#*,/}"
 
-printf $'Using commits\nsrc: \'%s\'\ntgt: \'%s\'\n' "${src}" "${tgt}"
+>2& printf $'Using commits\nsrc: \'%s\'\ntgt: \'%s\'\n' "${src}" "${tgt}"
 
 if [ -z "${src}" ] || [ -z "${tgt}" ]
 then
-  printf 'Missing source or target information.\n'
+  >2& printf 'Missing source or target information.\n'
   exit 0
 fi
 
 extractVariations "${src}" "${tgt}" > "${benchFile}"
 
-lake build "${leanFile}" | grep '^|' |
-  gh pr comment "${PR}" --body-file -
+lake build "${leanFile}" | grep '^|' | gh pr comment "${PR}" --body-file -
 
 #rm -rf "${benchFile}"
 
