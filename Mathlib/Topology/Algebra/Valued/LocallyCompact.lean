@@ -151,7 +151,9 @@ lemma finite_quotient_maximalIdeal_pow_of_finite_residueField [DiscreteValuation
   | succ n ih =>
     have : 𝓂[K] ^ (n + 1) ≤ 𝓂[K] ^ n := Ideal.pow_le_pow_right (by simp)
     replace ih := Finite.of_equiv _ (DoubleQuot.quotQuotEquivQuotOfLE this).symm.toEquiv
-    refine Finite.of_finite_quot_finite_ideal ?_ ih
+    suffices Finite (Ideal.map (Ideal.Quotient.mk (𝓂[K] ^ (n + 1))) (𝓂[K] ^ n)) from
+      Finite.of_finite_quot_finite_ideal
+        (I := Ideal.map (Ideal.Quotient.mk _) (𝓂[K] ^ n))
     exact @Finite.of_equiv _ _ h
       ((Ideal.quotEquivPowQuotPowSuccEquiv (IsPrincipalIdealRing.principal 𝓂[K])
         (DiscreteValuationRing.not_a_field _) n).trans
