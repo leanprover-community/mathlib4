@@ -328,7 +328,10 @@ theorem _root_.IsOpen.polishSpace {α : Type*} [TopologicalSpace α] [PolishSpac
     (hs : IsOpen s) : PolishSpace s := by
   letI := upgradePolishSpace α
   lift s to Opens α using hs
-  have : SecondCountableTopology s.CompleteCopy := inferInstanceAs (SecondCountableTopology s)
+  #adaptation_note /-- After lean4#5020, many instances for Lie algebras and manifolds are no
+  longer found. -/
+  have : SecondCountableTopology s.CompleteCopy :=
+    TopologicalSpace.Subtype.secondCountableTopology _
   exact inferInstanceAs (PolishSpace s.CompleteCopy)
 
 end CompleteCopy
@@ -365,7 +368,13 @@ theorem _root_.IsClosed.isClopenable [TopologicalSpace α] [PolishSpace α] {s :
   · rw [← f.induced_symm]
     exact f.symm.polishSpace_induced
   · rw [isOpen_coinduced, isOpen_sum_iff]
-    simp [f, preimage_preimage]
+    simp only [preimage_preimage, f]
+    have inl (x : s) : (Equiv.Set.sumCompl s) (Sum.inl x) = x := Equiv.Set.sumCompl_apply_inl ..
+    have inr (x : ↑sᶜ) : (Equiv.Set.sumCompl s) (Sum.inr x) = x := Equiv.Set.sumCompl_apply_inr ..
+    simp_rw [inl, inr, Subtype.coe_preimage_self]
+    simp only [isOpen_univ, true_and]
+    rw [Subtype.preimage_coe_compl']
+    simp
 
 theorem IsClopenable.compl [TopologicalSpace α] {s : Set α} (hs : IsClopenable s) :
     IsClopenable sᶜ := by

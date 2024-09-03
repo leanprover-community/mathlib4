@@ -170,18 +170,21 @@ theorem convexBodyLT'_mem {x : K} :
       (∀ w : InfinitePlace K, w ≠ w₀ → w x < f w) ∧
       |(w₀.val.embedding x).re| < 1 ∧ |(w₀.val.embedding x).im| < (f w₀ : ℝ) ^ 2 := by
   simp_rw [mixedEmbedding, RingHom.prod_apply, Set.mem_prod, Set.mem_pi, Set.mem_univ,
-    forall_true_left, Pi.ringHom_apply, apply_ite, mem_ball_zero_iff, ← Complex.norm_real,
-    embedding_of_isReal_apply, norm_embedding_eq, Subtype.forall, Set.mem_setOf_eq]
+    forall_true_left, Pi.ringHom_apply, mem_ball_zero_iff, ← Complex.norm_real,
+    embedding_of_isReal_apply, norm_embedding_eq, Subtype.forall]
   refine ⟨fun ⟨h₁, h₂⟩ ↦ ⟨fun w h_ne ↦ ?_, ?_⟩, fun ⟨h₁, h₂⟩ ↦ ⟨fun w hw ↦ ?_, fun w hw ↦ ?_⟩⟩
   · by_cases hw : IsReal w
     · exact norm_embedding_eq w _ ▸ h₁ w hw
     · specialize h₂ w (not_isReal_iff_isComplex.mp hw)
+      rw [apply_ite (w.embedding x ∈ ·), Set.mem_setOf_eq,
+        mem_ball_zero_iff, norm_embedding_eq] at h₂
       rwa [if_neg (by exact Subtype.coe_ne_coe.1 h_ne)] at h₂
   · simpa [if_true] using h₂ w₀.val w₀.prop
   · exact h₁ w (ne_of_isReal_isComplex hw w₀.prop)
   · by_cases h_ne : w = w₀
     · simpa [h_ne]
     · rw [if_neg (by exact Subtype.coe_ne_coe.1 h_ne)]
+      rw [mem_ball_zero_iff, norm_embedding_eq]
       exact h₁ w h_ne
 
 theorem convexBodyLT'_neg_mem (x : E K) (hx : x ∈ convexBodyLT' K f w₀) :
@@ -502,7 +505,7 @@ theorem exists_ne_zero_mem_ideal_lt (h : minkowskiBound K I < volume (convexBody
     ∃ a ∈ (I : FractionalIdeal (𝓞 K)⁰ K), a ≠ 0 ∧ ∀ w : InfinitePlace K, w a < f w := by
   have h_fund := Zspan.isAddFundamentalDomain (fractionalIdealLatticeBasis K I) volume
   have : Countable (span ℤ (Set.range (fractionalIdealLatticeBasis K I))).toAddSubgroup := by
-    change Countable (span ℤ (Set.range (fractionalIdealLatticeBasis K I)) : Set (E K))
+    change Countable (span ℤ (Set.range (fractionalIdealLatticeBasis K I)))
     infer_instance
   obtain ⟨⟨x, hx⟩, h_nz, h_mem⟩ := exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure
     h_fund (convexBodyLT_neg_mem K f) (convexBodyLT_convex K f) h
@@ -518,7 +521,7 @@ theorem exists_ne_zero_mem_ideal_lt' (w₀ : {w : InfinitePlace K // IsComplex w
       |(w₀.val.embedding a).re| < 1 ∧ |(w₀.val.embedding a).im| < (f w₀ : ℝ) ^ 2 := by
   have h_fund := Zspan.isAddFundamentalDomain (fractionalIdealLatticeBasis K I) volume
   have : Countable (span ℤ (Set.range (fractionalIdealLatticeBasis K I))).toAddSubgroup := by
-    change Countable (span ℤ (Set.range (fractionalIdealLatticeBasis K I)) : Set (E K))
+    change Countable (span ℤ (Set.range (fractionalIdealLatticeBasis K I)))
     infer_instance
   obtain ⟨⟨x, hx⟩, h_nz, h_mem⟩ := exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure
     h_fund (convexBodyLT'_neg_mem K f w₀) (convexBodyLT'_convex K f w₀) h
@@ -606,7 +609,7 @@ theorem exists_ne_zero_mem_ideal_of_norm_le {B : ℝ}
   have h2 : 0 ≤ B / (finrank ℚ K) := div_nonneg hB (Nat.cast_nonneg _)
   have h_fund := Zspan.isAddFundamentalDomain (fractionalIdealLatticeBasis K I) volume
   have : Countable (span ℤ (Set.range (fractionalIdealLatticeBasis K I))).toAddSubgroup := by
-    change Countable (span ℤ (Set.range (fractionalIdealLatticeBasis K I)) : Set (E K))
+    change Countable (span ℤ (Set.range (fractionalIdealLatticeBasis K I)))
     infer_instance
   obtain ⟨⟨x, hx⟩, h_nz, h_mem⟩ := exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure
       h_fund (fun _ ↦ convexBodySum_neg_mem K B) (convexBodySum_convex K B)

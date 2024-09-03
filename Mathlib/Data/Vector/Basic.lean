@@ -636,7 +636,7 @@ protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : Vector 
   · simp! [cast, *, functor_norm]
     rfl
   · rw [Vector.traverse_def, ih]
-    simp [functor_norm, (· ∘ ·)]
+    simp [functor_norm, Function.comp_def]
 
 protected theorem traverse_eq_map_id {α β} (f : α → β) :
     ∀ x : Vector α n, x.traverse ((pure : _ → Id _) ∘ f) = (pure : _ → Id _) (map f x) := by

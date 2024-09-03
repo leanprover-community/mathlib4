@@ -325,7 +325,7 @@ def prodPseudoEMetricAux [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
             (if · = 0 then edist f.fst g.fst else edist f.snd g.snd)
             (if · = 0 then edist g.fst h.fst else edist g.snd h.snd) hp
           simp only [Finset.mem_singleton, not_false_eq_true, Finset.sum_insert,
-            Finset.sum_singleton] at this
+            Finset.sum_singleton, reduceCtorEq] at this
           exact this
 
 attribute [local instance] WithLp.prodPseudoEMetricAux

@@ -124,7 +124,7 @@ theorem boundedFormula_realize_cast {β : Type*} {n : ℕ} (φ : L.BoundedFormul
       · simp only [Fin.snoc_last]
       · simp only [Fin.snoc_castSucc]
     simp only [← Fin.comp_snoc]
-    simp only [Function.comp, ih, h']
+    simp only [Function.comp_def, ih, h']
     refine ⟨fun h => ?_, fun h m => ?_⟩
     · contrapose! h
       simp_rw [← Ultrafilter.eventually_not, not_forall] at h

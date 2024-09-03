@@ -359,7 +359,7 @@ instance inv.instIsMulRightInvariant [IsMulLeftInvariant μ] : IsMulRightInvaria
   intro g
   conv_rhs => rw [← map_mul_left_eq_self μ g⁻¹]
   simp_rw [Measure.inv, map_map (measurable_mul_const g) measurable_inv,
-    map_map measurable_inv (measurable_const_mul g⁻¹), Function.comp, mul_inv_rev, inv_inv]
+    map_map measurable_inv (measurable_const_mul g⁻¹), Function.comp_def, mul_inv_rev, inv_inv]
 
 @[to_additive]
 instance inv.instIsMulLeftInvariant [IsMulRightInvariant μ] : IsMulLeftInvariant μ.inv := by
@@ -367,7 +367,7 @@ instance inv.instIsMulLeftInvariant [IsMulRightInvariant μ] : IsMulLeftInvarian
   intro g
   conv_rhs => rw [← map_mul_right_eq_self μ g⁻¹]
   simp_rw [Measure.inv, map_map (measurable_const_mul g) measurable_inv,
-    map_map measurable_inv (measurable_mul_const g⁻¹), Function.comp, mul_inv_rev, inv_inv]
+    map_map measurable_inv (measurable_mul_const g⁻¹), Function.comp_def, mul_inv_rev, inv_inv]
 
 @[to_additive]
 theorem measurePreserving_div_left (μ : Measure G) [IsInvInvariant μ] [IsMulLeftInvariant μ]

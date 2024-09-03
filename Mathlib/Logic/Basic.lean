@@ -39,9 +39,6 @@ section Miscellany
 
 attribute [simp] cast_heq
 
--- This can be removed once we move to Lean v4.11
-attribute [simp] insert_emptyc_eq
-
 /-- An identity function with its main argument implicit. This will be printed as `hidden` even
 if it is applied to a large term, so it can be used for elision,
 as done in the `elide` and `unelide` tactics. -/
@@ -827,8 +824,6 @@ theorem exists_mem_of_exists (H : ∀ x, p x) : (∃ x, q x) → ∃ (x : _) (_ 
 
 theorem exists_of_exists_mem : (∃ (x : _) (_ : p x), q x) → ∃ x, q x
   | ⟨x, _, hq⟩ => ⟨x, hq⟩
-
-theorem exists₂_imp : (∃ x h, P x h) → b ↔ ∀ x h, P x h → b := by simp
 
 @[deprecated (since := "2024-03-23")] alias bex_of_exists := exists_mem_of_exists
 @[deprecated (since := "2024-03-23")] alias exists_of_bex := exists_of_exists_mem

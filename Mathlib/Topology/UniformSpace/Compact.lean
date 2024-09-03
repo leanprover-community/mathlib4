@@ -134,7 +134,7 @@ def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ]
     -- So we have a contradiction
     exact hU₁₂.le_bot ⟨uw_in.2, wv_in.1⟩
   nhds_eq_comap_uniformity x := by
-    simp_rw [nhdsSet_diagonal, comap_iSup, nhds_prod_eq, comap_prod, (· ∘ ·), comap_id']
+    simp_rw [nhdsSet_diagonal, comap_iSup, nhds_prod_eq, comap_prod, Function.comp_def, comap_id']
     rw [iSup_split_single _ x, comap_const_of_mem fun V => mem_of_mem_nhds]
     suffices ∀ y ≠ x, comap (fun _ : γ ↦ x) (𝓝 y) ⊓ 𝓝 y ≤ 𝓝 x by simpa
     intro y hxy

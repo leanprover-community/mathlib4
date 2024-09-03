@@ -248,7 +248,7 @@ theorem exists_code.comp {m n} {f : Vector ℕ n →. ℕ} {g : Fin n → Vector
   · obtain ⟨cf, hf⟩ := hf
     exact
       ⟨cf.comp cg, fun v => by
-        simp [hg, hf, map_bind, seq_bind_eq, Function.comp]
+        simp [hg, hf, map_bind, seq_bind_eq, Function.comp_def]
         rfl⟩
   clear hf f; induction' n with n IH
   · exact ⟨nil, fun v => by simp [Vector.mOfFn, Bind.bind]; rfl⟩
@@ -341,7 +341,7 @@ theorem exists_code {n} {f : Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
       simp only [hf, Part.bind_some] at this
       split_ifs at this with h
       · simp only [List.headI_nil, List.headI_cons, exists_false, or_false_iff, Part.mem_some_iff,
-          List.tail_cons, false_and_iff, Sum.inl.injEq] at this
+          List.tail_cons, false_and_iff, Sum.inl.injEq, reduceCtorEq] at this
         subst this
         exact ⟨_, ⟨h, @(hm)⟩, rfl⟩
       · refine IH (n.succ::v.val) (by simp_all) _ rfl fun m h' => ?_
@@ -898,6 +898,7 @@ def natEnd : Γ' → Bool
   | Γ'.consₗ => true
   | Γ'.cons => true
   | _ => false
+attribute [nolint simpNF] natEnd.eq_3
 
 /-- Pop a value from the stack and place the result in local store. -/
 @[simp]
@@ -1233,7 +1234,7 @@ theorem move_ok {p k₁ k₂ q s L₁ o L₂} {S : K' → List Γ'} (h₁ : k₁
       rfl
     simp only [splitAtPred, Option.elim, List.head?, List.tail_cons, Option.iget_some] at e ⊢
     revert e; cases p a <;> intro e <;>
-      simp only [cond_false, cond_true, Prod.mk.injEq, true_and, false_and] at e ⊢
+      simp only [cond_false, cond_true, Prod.mk.injEq, true_and, false_and, reduceCtorEq] at e ⊢
     simp only [e]
     rfl
   · refine TransGen.head rfl ?_
@@ -1288,7 +1289,7 @@ theorem clear_ok {p k q s L₁ o L₂} {S : K' → List Γ'} (e : splitAtPred p 
       rfl
     simp only [splitAtPred, Option.elim, List.head?, List.tail_cons] at e ⊢
     revert e; cases p a <;> intro e <;>
-      simp only [cond_false, cond_true, Prod.mk.injEq, true_and, false_and] at e ⊢
+      simp only [cond_false, cond_true, Prod.mk.injEq, true_and, false_and, reduceCtorEq] at e ⊢
     rcases e with ⟨e₁, e₂⟩
     rw [e₁, e₂]
   · refine TransGen.head rfl ?_
@@ -1405,7 +1406,7 @@ theorem succ_ok {q s n} {c d : List Γ'} :
         Reaches₁ (TM2.step tr) ⟨some q.succ, s, K'.elim (trPosNum a ++ [Γ'.cons]) l₁ c d⟩
           ⟨some (unrev q), s', K'.elim (l₂' ++ [Γ'.cons]) l₁' c d⟩ by
     obtain ⟨l₁', l₂', s', e, h⟩ := this []
-    simp? [List.reverseAux] at e says simp only [List.reverseAux] at e
+    simp? [List.reverseAux] at e says simp only [List.reverseAux, List.reverseAux_eq] at e
     refine h.trans ?_
     convert unrev_ok using 2
     simp [e, List.reverseAux_eq]

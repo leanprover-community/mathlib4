@@ -369,9 +369,8 @@ noncomputable def Module.basisOfFiniteTypeTorsionFree [Fintype ι] {s : ι → M
         apply this
       intro i
       calc
-        (∏ j, a j) • s i = (∏ j ∈ {i}ᶜ, a j) • a i • s i := by
-          rw [Fintype.prod_eq_prod_compl_mul i, mul_smul]
-        _ ∈ N := N.smul_mem _ (ha' i)
+        (∏ j ∈ {i}ᶜ, a j) • a i • s i ∈ N := N.smul_mem _ (ha' i)
+        _ = (∏ j, a j) • s i := by rw [Fintype.prod_eq_prod_compl_mul i, mul_smul]
 
     -- Since a submodule of a free `R`-module is free, we get that `A • M` is free
     obtain ⟨n, b : Basis (Fin n) R (LinearMap.range φ)⟩ := Submodule.basisOfPidOfLE this sI_basis

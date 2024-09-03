@@ -1600,7 +1600,7 @@ theorem snd_iInf [InfSet α] [InfSet β] (f : ι → α × β) : (iInf f).snd = 
   congr_arg sInf (range_comp _ _).symm
 
 theorem swap_iInf [InfSet α] [InfSet β] (f : ι → α × β) : (iInf f).swap = ⨅ i, (f i).swap := by
-  simp_rw [iInf, swap_sInf, ← range_comp, Function.comp]  -- Porting note: need to unfold `∘`
+  simp_rw [iInf, swap_sInf, ← range_comp, comp_def]  -- Porting note: need to unfold `∘`
 
 theorem iInf_mk [InfSet α] [InfSet β] (f : ι → α) (g : ι → β) :
     ⨅ i, (f i, g i) = (⨅ i, f i, ⨅ i, g i) :=
@@ -1613,7 +1613,7 @@ theorem snd_iSup [SupSet α] [SupSet β] (f : ι → α × β) : (iSup f).snd = 
   congr_arg sSup (range_comp _ _).symm
 
 theorem swap_iSup [SupSet α] [SupSet β] (f : ι → α × β) : (iSup f).swap = ⨆ i, (f i).swap := by
-  simp_rw [iSup, swap_sSup, ← range_comp, Function.comp]  -- Porting note: need to unfold `∘`
+  simp_rw [iSup, swap_sSup, ← range_comp, comp_def]  -- Porting note: need to unfold `∘`
 
 theorem iSup_mk [SupSet α] [SupSet β] (f : ι → α) (g : ι → β) :
     ⨆ i, (f i, g i) = (⨆ i, f i, ⨆ i, g i) :=

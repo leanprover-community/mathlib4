@@ -161,13 +161,19 @@ lemma Dual.eq_of_preReflection_mapsTo' [CharZero R] [NoZeroSMulDivisors R M]
   set Φ' : Set (span R Φ) := range (inclusion <| Submodule.subset_span (R := R) (s := Φ))
   rw [← finite_coe_iff] at hΦ₁
   have hΦ'₁ : Φ'.Finite := finite_range (inclusion Submodule.subset_span)
-  have hΦ'₂ : span R Φ' = ⊤ := by simp [Φ']
+  have hΦ'₂ : span R Φ' = ⊤ := by
+    simp only [Φ']
+    rw [range_inclusion]
+    simp
   let x' : span R Φ := ⟨x, hx'⟩
   have hx' : x' ≠ 0 := Subtype.coe_ne_coe.1 hx
   have this : ∀ {F : Dual R M}, MapsTo (preReflection x F) Φ Φ →
       MapsTo (preReflection x' ((span R Φ).subtype.dualMap F)) Φ' Φ' := by
     intro F hF ⟨y, hy⟩ hy'
-    simp only [Φ', range_inclusion, SetLike.coe_sort_coe, mem_setOf_eq] at hy' ⊢
+    simp only [Φ'] at hy' ⊢
+    rw [range_inclusion] at hy'
+    simp only [SetLike.coe_sort_coe, mem_setOf_eq] at hy' ⊢
+    rw [range_inclusion]
     exact hF hy'
   exact eq_of_preReflection_mapsTo hx' hΦ'₁ hΦ'₂ hf₁ (this hf₂) hg₁ (this hg₂)
 

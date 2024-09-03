@@ -103,7 +103,8 @@ lemma isNilpotent.restrict {R M : Type*} [Semiring R] [AddCommMonoid M] [Module 
     {f : M →ₗ[R] M} {p : Submodule R M} (hf : MapsTo f p p) (hnil : IsNilpotent f) :
     IsNilpotent (f.restrict hf) := by
   obtain ⟨n, hn⟩ := hnil
-  exact ⟨n, LinearMap.ext fun m ↦ by simp [LinearMap.pow_restrict n, LinearMap.restrict_apply, hn]⟩
+  exact ⟨n, LinearMap.ext fun m ↦ by simp only [LinearMap.pow_restrict n, hn,
+    LinearMap.restrict_apply, LinearMap.zero_apply]; rfl⟩
 
 variable {M : Type v} [Ring R] [AddCommGroup M] [Module R M]
 variable {f : Module.End R M} {p : Submodule R M} (hp : p ≤ p.comap f)
