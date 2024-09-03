@@ -84,16 +84,22 @@ theorem smoothSheafCommRing.isUnit_stalk_iff {x : M}
         convert RingHom.map_one _
         apply Subtype.ext
         ext y
-        apply mul_inv_cancel
+        apply mul_inv_cancel₀
         exact hVf y
       · rw [← map_mul]
         -- Qualified the name to avoid Lean not finding a `OneHomClass` #8386
         convert RingHom.map_one _
         apply Subtype.ext
         ext y
-        apply inv_mul_cancel
+        apply inv_mul_cancel₀
         exact hVf y
     · intro y
+      #adaptation_note
+      /--
+      After lean4#5020, many instances for Lie algebras and manifolds are no longer found.
+      See https://leanprover.zulipchat.com/#narrow/stream/428973-nightly-testing/topic/.2316244.20adaptations.20for.20nightly-2024-08-28/near/466219124
+      -/
+      letI : ChartedSpace HM V := V.instChartedSpace
       exact ((contDiffAt_inv _ (hVf y)).contMDiffAt).comp y
         (f.smooth.comp (smooth_inclusion hUV)).smoothAt
 

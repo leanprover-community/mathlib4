@@ -6,8 +6,6 @@ Authors: Oliver Nash
 import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Algebra.Lie.Basic
 
-#align_import algebra.lie.non_unital_non_assoc_algebra from "leanprover-community/mathlib"@"841ac1a3d9162bf51c6327812ecb6e5e71883ac4"
-
 /-!
 # Lie algebras as non-unital, non-associative algebras
 
@@ -44,7 +42,6 @@ variable (R : Type u) (L : Type v) [CommRing R] [LieRing L] [LieAlgebra R L]
 A `LieRing` can be regarded as a `NonUnitalNonAssocSemiring` by turning its
 `Bracket` (denoted `⁅, ⁆`) into a `Mul` (denoted `*`). -/
 def CommutatorRing (L : Type v) : Type v := L
-#align commutator_ring CommutatorRing
 
 /-- A `LieRing` can be regarded as a `NonUnitalNonAssocSemiring` by turning its
 `Bracket` (denoted `⁅, ⁆`) into a `Mul` (denoted `*`). -/
@@ -70,13 +67,11 @@ instance : LieAlgebra R (CommutatorRing L) := show LieAlgebra R L by infer_insta
 /-- Regarding the `LieRing` of a `LieAlgebra` as a `NonUnitalNonAssocSemiring`, we can
 reinterpret the `smul_lie` law as an `IsScalarTower`. -/
 instance isScalarTower : IsScalarTower R (CommutatorRing L) (CommutatorRing L) := ⟨smul_lie⟩
-#align lie_algebra.is_scalar_tower LieAlgebra.isScalarTower
 
 /-- Regarding the `LieRing` of a `LieAlgebra` as a `NonUnitalNonAssocSemiring`, we can
 reinterpret the `lie_smul` law as an `SMulCommClass`. -/
 instance smulCommClass : SMulCommClass R (CommutatorRing L) (CommutatorRing L) :=
   ⟨fun t x y => (lie_smul t x y).symm⟩
-#align lie_algebra.smul_comm_class LieAlgebra.smulCommClass
 
 end LieAlgebra
 
@@ -93,11 +88,9 @@ def toNonUnitalAlgHom (f : L →ₗ⁅R⁆ L₂) : CommutatorRing L →ₙₐ[R]
     toFun := f
     map_zero' := f.map_zero
     map_mul' := f.map_lie }
-#align lie_hom.to_non_unital_alg_hom LieHom.toNonUnitalAlgHom
 
 theorem toNonUnitalAlgHom_injective :
     Function.Injective (toNonUnitalAlgHom : _ → CommutatorRing L →ₙₐ[R] CommutatorRing L₂) :=
   fun _ _ h => ext <| NonUnitalAlgHom.congr_fun h
-#align lie_hom.to_non_unital_alg_hom_injective LieHom.toNonUnitalAlgHom_injective
 
 end LieHom

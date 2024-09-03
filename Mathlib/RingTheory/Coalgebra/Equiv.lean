@@ -38,7 +38,7 @@ attribute [nolint docBlame] CoalgEquiv.toLinearEquiv
 notation:50 A " ≃ₗc[" R "] " B => CoalgEquiv R A B
 
 /-- `CoalgEquivClass F R A B` asserts `F` is a type of bundled coalgebra equivalences
-from `A` to `B`.  -/
+from `A` to `B`. -/
 class CoalgEquivClass (F : Type*) (R A B : outParam Type*) [CommSemiring R]
     [AddCommMonoid A] [AddCommMonoid B] [Module R A] [Module R B]
     [CoalgebraStruct R A] [CoalgebraStruct R B] [EquivLike F A B]
@@ -156,9 +156,6 @@ variable {e e'}
 @[ext]
 theorem ext (h : ∀ x, e x = e' x) : e = e' :=
   DFunLike.ext _ _ h
-
-theorem ext_iff : e = e' ↔ ∀ x, e x = e' x :=
-  DFunLike.ext_iff
 
 protected theorem congr_arg {x x'} : x = x' → e x = e x' :=
   DFunLike.congr_arg e
