@@ -18,9 +18,6 @@ leanFile='Mathlib.tp'
 # If you rename it, do so in both locations!
 benchFile='benchOutput.json'
 
-# this is the temporary file that `$leanFile`
-benchComment='benchComment.md'
-
 extractVariations () {
   local threshold=1000000000
   local reg='^[0-9]+$'
@@ -65,11 +62,10 @@ fi
 
 extractVariations "${src}" "${tgt}" > "${benchFile}"
 
-lake build "${leanFile}" | grep '^|' > "${benchComment}"
+lake build "${leanFile}" | grep '^|' |
+  gh pr comment "${PR}" --body-file -
 
-gh pr comment "${PR}" --body-file "${benchComment}"
-
-#rm -rf "${benchFile}" "${benchComment}"
+#rm -rf "${benchFile}"
 
  : <<'BASH_MAGMA_CODE'
 
