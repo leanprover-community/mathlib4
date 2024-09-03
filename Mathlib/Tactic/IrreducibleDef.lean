@@ -69,6 +69,7 @@ open Command in elab_rules : command
 
 syntax irredDefLemma := atomic(" (" &"lemma" " := ") ident ")"
 
+set_option linter.unnecessaryTactic false in
 /--
 Introduces an irreducible definition.
 `irreducible_def foo := 42` generates
