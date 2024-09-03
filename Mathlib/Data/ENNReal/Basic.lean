@@ -186,8 +186,7 @@ protected def toReal (a : ℝ≥0∞) : Real := a.toNNReal
 /-- `ofReal x` returns `x` if it is nonnegative, `0` otherwise. -/
 protected noncomputable def ofReal (r : Real) : ℝ≥0∞ := r.toNNReal
 
-@[simp, norm_cast]
-theorem toNNReal_coe : (r : ℝ≥0∞).toNNReal = r := rfl
+@[simp, norm_cast] lemma toNNReal_coe (r : ℝ≥0) : (r : ℝ≥0∞).toNNReal = r := rfl
 
 @[simp]
 theorem coe_toNNReal : ∀ {a : ℝ≥0∞}, a ≠ ∞ → ↑a.toNNReal = a
@@ -215,6 +214,8 @@ theorem ofReal_eq_coe_nnreal {x : ℝ} (h : 0 ≤ x) :
     ENNReal.ofReal x = ofNNReal ⟨x, h⟩ :=
   (coe_nnreal_eq ⟨x, h⟩).symm
 
+theorem ofNNReal_toNNReal (x : ℝ) : (Real.toNNReal x : ℝ≥0∞) = ENNReal.ofReal x := rfl
+
 @[simp] theorem ofReal_coe_nnreal : ENNReal.ofReal p = p := (coe_nnreal_eq p).symm
 
 @[simp, norm_cast] theorem coe_zero : ↑(0 : ℝ≥0) = (0 : ℝ≥0∞) := rfl
@@ -222,6 +223,11 @@ theorem ofReal_eq_coe_nnreal {x : ℝ} (h : 0 ≤ x) :
 @[simp, norm_cast] theorem coe_one : ↑(1 : ℝ≥0) = (1 : ℝ≥0∞) := rfl
 
 @[simp] theorem toReal_nonneg {a : ℝ≥0∞} : 0 ≤ a.toReal := a.toNNReal.2
+
+@[norm_cast] theorem coe_toNNReal_eq_toReal (z : ℝ≥0∞) : (z.toNNReal : ℝ) = z.toReal := rfl
+
+@[simp] theorem toNNReal_toReal_eq (z : ℝ≥0∞) : z.toReal.toNNReal = z.toNNReal := by
+  ext; simp [coe_toNNReal_eq_toReal]
 
 @[simp] theorem top_toNNReal : ∞.toNNReal = 0 := rfl
 
@@ -397,7 +403,7 @@ def neTopEquivNNReal : { a | a ≠ ∞ } ≃ ℝ≥0 where
   toFun x := ENNReal.toNNReal x
   invFun x := ⟨x, coe_ne_top⟩
   left_inv := fun x => Subtype.eq <| coe_toNNReal x.2
-  right_inv _ := toNNReal_coe
+  right_inv := toNNReal_coe
 
 theorem cinfi_ne_top [InfSet α] (f : ℝ≥0∞ → α) : ⨅ x : { x // x ≠ ∞ }, f x = ⨅ x : ℝ≥0, f x :=
   Eq.symm <| neTopEquivNNReal.symm.surjective.iInf_congr _ fun _ => rfl
@@ -466,6 +472,7 @@ theorem coe_natCast (n : ℕ) : ((n : ℝ≥0) : ℝ≥0∞) = n := rfl
   ofReal_natCast n
 
 @[simp] theorem natCast_ne_top (n : ℕ) : (n : ℝ≥0∞) ≠ ∞ := WithTop.natCast_ne_top n
+@[simp] theorem natCast_lt_top (n : ℕ) : (n : ℝ≥0∞) < ∞ := WithTop.natCast_lt_top n
 
 @[simp] theorem top_ne_natCast (n : ℕ) : ∞ ≠ n := WithTop.top_ne_natCast n
 

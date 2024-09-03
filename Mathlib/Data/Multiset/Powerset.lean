@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.List.Sublists
+import Mathlib.Data.List.Zip
 import Mathlib.Data.Multiset.Bind
 
 /-!
@@ -218,7 +219,7 @@ theorem powersetCard_cons (n : ℕ) (a : α) (s) :
 
 theorem powersetCard_one (s : Multiset α) : powersetCard 1 s = s.map singleton :=
   Quotient.inductionOn s fun l ↦ by
-    simp [powersetCard_coe, sublistsLen_one, map_reverse, Function.comp]
+    simp [powersetCard_coe, sublistsLen_one, map_reverse, Function.comp_def]
 
 @[simp]
 theorem mem_powersetCard {n : ℕ} {s t : Multiset α} : s ∈ powersetCard n t ↔ s ≤ t ∧ card s = n :=

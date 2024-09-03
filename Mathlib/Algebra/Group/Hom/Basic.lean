@@ -101,7 +101,7 @@ section Group
 variable [Group G] [CommGroup H]
 
 /-- A homomorphism from a group to a monoid is injective iff its kernel is trivial.
-For the iff statement on the triviality of the kernel, see `injective_iff_map_eq_one'`.  -/
+For the iff statement on the triviality of the kernel, see `injective_iff_map_eq_one'`. -/
 @[to_additive
   "A homomorphism from an additive group to an additive monoid is injective iff
   its kernel is trivial. For the iff statement on the triviality of the kernel,
@@ -110,7 +110,7 @@ theorem _root_.injective_iff_map_eq_one {G H} [Group G] [MulOneClass H]
     [FunLike F G H] [MonoidHomClass F G H]
     (f : F) : Function.Injective f ↔ ∀ a, f a = 1 → a = 1 :=
   ⟨fun h x => (map_eq_one_iff f h).mp, fun h x y hxy =>
-    mul_inv_eq_one.1 <| h _ <| by rw [map_mul, hxy, ← map_mul, mul_inv_self, map_one]⟩
+    mul_inv_eq_one.1 <| h _ <| by rw [map_mul, hxy, ← map_mul, mul_inv_cancel, map_one]⟩
 
 /-- A homomorphism from a group to a monoid is injective iff its kernel is trivial,
 stated as an iff on the triviality of the kernel.
@@ -142,7 +142,7 @@ def ofMapMulInv {H : Type*} [Group H] (f : G → H)
         { simp only [one_mul, inv_one, ← map_div, inv_inv] }
       _ = f x * f y := by
         { simp only [map_div]
-          simp only [mul_right_inv, one_mul, inv_inv] }
+          simp only [mul_inv_cancel, one_mul, inv_inv] }
 
 @[to_additive (attr := simp)]
 theorem coe_of_map_mul_inv {H : Type*} [Group H] (f : G → H)

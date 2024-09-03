@@ -94,13 +94,13 @@ def ceil (m : E) : span ℤ (Set.range b) := ∑ i, ⌈b.repr m i⌉ • b.restr
 
 @[simp]
 theorem repr_floor_apply (m : E) (i : ι) : b.repr (floor b m) i = ⌊b.repr m i⌋ := by
-  classical simp only [floor, ← Int.cast_smul_eq_nsmul K, b.repr.map_smul, Finsupp.single_apply,
+  classical simp only [floor, ← Int.cast_smul_eq_zsmul K, b.repr.map_smul, Finsupp.single_apply,
     Finset.sum_apply', Basis.repr_self, Finsupp.smul_single', mul_one, Finset.sum_ite_eq', coe_sum,
     Finset.mem_univ, if_true, coe_smul_of_tower, Basis.restrictScalars_apply, map_sum]
 
 @[simp]
 theorem repr_ceil_apply (m : E) (i : ι) : b.repr (ceil b m) i = ⌈b.repr m i⌉ := by
-  classical simp only [ceil, ← Int.cast_smul_eq_nsmul K, b.repr.map_smul, Finsupp.single_apply,
+  classical simp only [ceil, ← Int.cast_smul_eq_zsmul K, b.repr.map_smul, Finsupp.single_apply,
     Finset.sum_apply', Basis.repr_self, Finsupp.smul_single', mul_one, Finset.sum_ite_eq', coe_sum,
     Finset.mem_univ, if_true, coe_smul_of_tower, Basis.restrictScalars_apply, map_sum]
 
@@ -200,11 +200,13 @@ variable [Unique ι]
 
 @[simp]
 theorem coe_floor_self (k : K) : (floor (Basis.singleton ι K) k : K) = ⌊k⌋ :=
-  Basis.ext_elem _ fun _ => by rw [repr_floor_apply, Basis.singleton_repr, Basis.singleton_repr]
+  Basis.ext_elem (Basis.singleton ι K) fun _ => by
+    rw [repr_floor_apply, Basis.singleton_repr, Basis.singleton_repr]
 
 @[simp]
 theorem coe_fract_self (k : K) : (fract (Basis.singleton ι K) k : K) = Int.fract k :=
-  Basis.ext_elem _ fun _ => by rw [repr_fract_apply, Basis.singleton_repr, Basis.singleton_repr]
+  Basis.ext_elem (Basis.singleton ι K) fun _ => by
+    rw [repr_fract_apply, Basis.singleton_repr, Basis.singleton_repr]
 
 end Unique
 
@@ -542,8 +544,8 @@ theorem Zlattice.rank [hs : IsZlattice K L] : finrank ℤ L = finrank K E := by
       rwa [Ne, add_eq_zero_iff_eq_neg.not, neg_inj, Rat.coe_int_inj, ← Ne]
     apply (smul_mem_iff _ h_nz).mp
     refine span_subset_span ℤ ℚ _ ?_
-    rwa [add_smul, neg_smul, SetLike.mem_coe, ← Zspan.fract_eq_fract, Int.cast_smul_eq_nsmul ℚ,
-      Int.cast_smul_eq_nsmul ℚ]
+    rwa [add_smul, neg_smul, SetLike.mem_coe, ← Zspan.fract_eq_fract, Int.cast_smul_eq_zsmul ℚ,
+      Int.cast_smul_eq_zsmul ℚ]
   · -- To prove that `finrank K E ≤ finrank ℤ L`, we use the fact `b` generates `E` over `K`
     -- and thus `finrank K E ≤ card b = finrank ℤ L`
     rw [← topEquiv.finrank_eq, ← h_spanE]
@@ -599,8 +601,7 @@ theorem Zlattice.isAddFundamentalDomain {E : Type*} [NormedAddCommGroup E] [Norm
 instance instCountable_of_discrete_addSubgroup {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] (L : AddSubgroup E) [DiscreteTopology L] [IsZlattice ℝ L] :
     Countable L := by
-  rw [← (Module.Free.chooseBasis ℤ L).ofZlatticeBasis_span ℝ]
-  change Countable (span ℤ (Set.range (Basis.ofZlatticeBasis ℝ L _)))
+  simp_rw [← (Module.Free.chooseBasis ℤ L).ofZlatticeBasis_span ℝ, mem_toAddSubgroup]
   infer_instance
 
 end Zlattice

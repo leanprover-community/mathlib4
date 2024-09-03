@@ -7,24 +7,27 @@ import Mathlib.ModelTheory.Basic
 
 /-!
 # Language Maps
+
 Maps between first-order languages in the style of the
 [Flypitch project](https://flypitch.github.io/), as well as several important maps between
 structures.
 
 ## Main Definitions
-* A `FirstOrder.Language.LHom`, denoted `L →ᴸ L'`, is a map between languages, sending the symbols
+
+- A `FirstOrder.Language.LHom`, denoted `L →ᴸ L'`, is a map between languages, sending the symbols
   of one to symbols of the same kind and arity in the other.
-* A `FirstOrder.Language.LEquiv`, denoted `L ≃ᴸ L'`, is an invertible language homomorphism.
-* `FirstOrder.Language.withConstants` is defined so that if `M` is an `L.Structure` and
+- A `FirstOrder.Language.LEquiv`, denoted `L ≃ᴸ L'`, is an invertible language homomorphism.
+- `FirstOrder.Language.withConstants` is defined so that if `M` is an `L.Structure` and
   `A : Set M`, `L.withConstants A`, denoted `L[[A]]`, is a language which adds constant symbols for
   elements of `A` to `L`.
 
 ## References
+
 For the Flypitch project:
 - [J. Han, F. van Doorn, *A formal proof of the independence of the continuum hypothesis*]
-[flypitch_cpp]
+  [flypitch_cpp]
 - [J. Han, F. van Doorn, *A formalization of forcing and the unprovability of
-the continuum hypothesis*][flypitch_itp]
+  the continuum hypothesis*][flypitch_itp]
 
 -/
 
@@ -401,7 +404,7 @@ theorem card_withConstants :
     L[[α]].card = Cardinal.lift.{w'} L.card + Cardinal.lift.{max u v} #α := by
   rw [withConstants, card_sum, card_constantsOn]
 
-/-- The language map adding constants.  -/
+/-- The language map adding constants. -/
 @[simps!] -- Porting note: add `!` to `simps`
 def lhomWithConstants : L →ᴸ L[[α]] :=
   LHom.sumInl
@@ -417,7 +420,7 @@ protected def con (a : α) : L[[α]].Constants :=
 
 variable {L} (α)
 
-/-- Adds constants to a language map.  -/
+/-- Adds constants to a language map. -/
 def LHom.addConstants {L' : Language} (φ : L →ᴸ L') : L[[α]] →ᴸ L'[[α]] :=
   φ.sumMap (LHom.id _)
 
@@ -426,7 +429,7 @@ instance paramsStructure (A : Set α) : (constantsOn A).Structure α :=
 
 variable (L)
 
-/-- The language map removing an empty constant set.  -/
+/-- The language map removing an empty constant set. -/
 @[simps]
 def LEquiv.addEmptyConstants [ie : IsEmpty α] : L ≃ᴸ L[[α]] where
   toLHom := lhomWithConstants L α
@@ -448,7 +451,7 @@ theorem withConstants_relMap_sum_inl [L[[α]].Structure M] [(lhomWithConstants L
     {n} {R : L.Relations n} {x : Fin n → M} : @RelMap (L[[α]]) M _ n (Sum.inl R) x = RelMap R x :=
   (lhomWithConstants L α).map_onRelation R x
 
-/-- The language map extending the constant set.  -/
+/-- The language map extending the constant set. -/
 def lhomWithConstantsMap (f : α → β) : L[[α]] →ᴸ L[[β]] :=
   LHom.sumMap (LHom.id L) (LHom.constantsOnMap f)
 

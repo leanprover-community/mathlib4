@@ -44,7 +44,7 @@ of a matrix.
 
 The norm induced by the identification of `Matrix m n 𝕜` with
 `EuclideanSpace n 𝕜 →L[𝕜] EuclideanSpace m 𝕜` (i.e., the ℓ² operator norm) can be found in
-`Analysis.CstarAlgebra.Matrix`. It is separated to avoid extraneous imports in this file.
+`Analysis.CStarAlgebra.Matrix`. It is separated to avoid extraneous imports in this file.
 -/
 
 noncomputable section
@@ -389,7 +389,7 @@ protected def linftyOpNormedAlgebra [NormedField R] [SeminormedRing α] [NormedA
 
 
 section
-variable [NormedDivisionRing α] [NormedAlgebra ℝ α] [CompleteSpace α]
+variable [NormedDivisionRing α] [NormedAlgebra ℝ α]
 
 /-- Auxiliary construction; an element of norm 1 such that `a * unitOf a = ‖a‖`. -/
 private def unitOf (a : α) : α := by classical exact if a = 0 then 1 else ‖a‖ • a⁻¹
@@ -399,14 +399,13 @@ private theorem norm_unitOf (a : α) : ‖unitOf a‖₊ = 1 := by
   split_ifs with h
   · simp
   · rw [← nnnorm_eq_zero] at h
-    rw [nnnorm_smul, nnnorm_inv, nnnorm_norm, mul_inv_cancel h]
+    rw [nnnorm_smul, nnnorm_inv, nnnorm_norm, mul_inv_cancel₀ h]
 
-set_option tactic.skipAssignedInstances false in
 private theorem mul_unitOf (a : α) : a * unitOf a = algebraMap _ _ (‖a‖₊ : ℝ)  := by
   simp only [unitOf, coe_nnnorm]
   split_ifs with h
   · simp [h]
-  · rw [mul_smul_comm, mul_inv_cancel h, Algebra.algebraMap_eq_smul_one]
+  · rw [mul_smul_comm, mul_inv_cancel₀ h, Algebra.algebraMap_eq_smul_one]
 
 end
 

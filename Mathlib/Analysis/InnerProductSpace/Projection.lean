@@ -46,7 +46,7 @@ open RCLike Real Filter
 
 open LinearMap (ker range)
 
-open Topology
+open Topology Finsupp
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]
@@ -332,7 +332,7 @@ theorem norm_eq_iInf_iff_inner_eq_zero {u : E} {v : E} (hv : v ∈ K) :
   · intro H
     have A : ∀ w ∈ K, re ⟪u - v, w⟫ = 0 := (norm_eq_iInf_iff_real_inner_eq_zero K' hv).1 H
     intro w hw
-    apply ext
+    apply RCLike.ext
     · simp [A w hw]
     · symm
       calc
@@ -347,7 +347,7 @@ theorem norm_eq_iInf_iff_inner_eq_zero {u : E} {v : E} (hv : v ∈ K) :
       exact zero_re'
     exact (norm_eq_iInf_iff_real_inner_eq_zero K' hv).2 this
 
-/-- A subspace `K : Submodule 𝕜 E` has an orthogonal projection if evey vector `v : E` admits an
+/-- A subspace `K : Submodule 𝕜 E` has an orthogonal projection if every vector `v : E` admits an
 orthogonal projection to `K`. -/
 class HasOrthogonalProjection (K : Submodule 𝕜 E) : Prop where
   exists_orthogonal (v : E) : ∃ w ∈ K, v - w ∈ Kᗮ
@@ -471,13 +471,13 @@ theorem orthogonalProjectionFn_eq (v : E) :
     orthogonalProjectionFn K v = (orthogonalProjection K v : E) :=
   rfl
 
-/-- The characterization of the orthogonal projection.  -/
+/-- The characterization of the orthogonal projection. -/
 @[simp]
 theorem orthogonalProjection_inner_eq_zero (v : E) :
     ∀ w ∈ K, ⟪v - orthogonalProjection K v, w⟫ = 0 :=
   orthogonalProjectionFn_inner_eq_zero v
 
-/-- The difference of `v` from its orthogonal projection onto `K` is in `Kᗮ`.  -/
+/-- The difference of `v` from its orthogonal projection onto `K` is in `Kᗮ`. -/
 @[simp]
 theorem sub_orthogonalProjection_mem_orthogonal (v : E) : v - orthogonalProjection K v ∈ Kᗮ := by
   intro w hw
@@ -780,7 +780,7 @@ is the topological closure of `K`.
 
 Note that the completeness assumption is necessary. Let `E` be the space `ℕ →₀ ℝ` with inner space
 structure inherited from `PiLp 2 (fun _ : ℕ ↦ ℝ)`. Let `K` be the subspace of sequences with the sum
-of all elements equal to zero. Then `Kᗮ = ⊥`, `Kᗮᗮ = ⊤`.  -/
+of all elements equal to zero. Then `Kᗮ = ⊥`, `Kᗮᗮ = ⊤`. -/
 theorem Submodule.orthogonal_orthogonal_eq_closure [CompleteSpace E] :
     Kᗮᗮ = K.topologicalClosure := by
   refine le_antisymm ?_ ?_
@@ -1329,8 +1329,8 @@ theorem maximal_orthonormal_iff_orthogonalComplement_eq_bot (hv : Orthonormal �
     intro hxv y hy
     have hxv' : (⟨x, hxu⟩ : u) ∉ ((↑) ⁻¹' v : Set u) := by simp [huv, hxv]
     obtain ⟨l, hl, rfl⟩ :
-      ∃ l ∈ Finsupp.supported 𝕜 𝕜 ((↑) ⁻¹' v : Set u), (Finsupp.total (↥u) E 𝕜 (↑)) l = y := by
-      rw [← Finsupp.mem_span_image_iff_total]
+      ∃ l ∈ supported 𝕜 𝕜 ((↑) ⁻¹' v : Set u), (linearCombination 𝕜 ((↑) : u → E)) l = y := by
+      rw [← Finsupp.mem_span_image_iff_linearCombination]
       simp [huv, inter_eq_self_of_subset_right, hy]
     exact hu.inner_finsupp_eq_zero hxv' hl
 

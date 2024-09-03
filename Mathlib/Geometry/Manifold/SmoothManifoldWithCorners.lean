@@ -20,13 +20,13 @@ With this groupoid at hand and the general machinery of charted spaces, we thus 
 of `C^n` manifold with respect to any model with corners `I` on `(E, H)`. We also introduce a
 specific type class for `C^∞` manifolds as these are the most commonly used.
 
-Some texts assume manifolds to be Hausdorff and secound countable. We (in mathlib) assume neither,
+Some texts assume manifolds to be Hausdorff and second countable. We (in mathlib) assume neither,
 but add these assumptions later as needed. (Quite a few results still do not require them.)
 
 ## Main definitions
 
 * `ModelWithCorners 𝕜 E H` :
-  a structure containing informations on the way a space `H` embeds in a
+  a structure containing information on the way a space `H` embeds in a
   model vector space E over the field `𝕜`. This is all that is needed to
   define a smooth manifold with model space `H`, and model vector space `E`.
 * `modelWithCornersSelf 𝕜 E` :
@@ -129,7 +129,7 @@ scoped[Manifold] notation "∞" => (⊤ : ℕ∞)
 /-! ### Models with corners. -/
 
 
-/-- A structure containing informations on the way a space `H` embeds in a
+/-- A structure containing information on the way a space `H` embeds in a
 model vector space `E` over the field `𝕜`. This is all what is needed to
 define a smooth manifold with model space `H`, and model vector space `E`.
 -/
@@ -427,7 +427,7 @@ section Boundaryless
 
 /-- Property ensuring that the model with corners `I` defines manifolds without boundary. This
   differs from the more general `BoundarylessManifold`, which requires every point on the manifold
-  to be an interior point.  -/
+  to be an interior point. -/
 class ModelWithCorners.Boundaryless {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) : Prop where
@@ -1339,13 +1339,13 @@ section Topology
 variable
   {E : Type*} {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-  (I : ModelWithCorners 𝕜 E H) {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  [HasGroupoid M (contDiffGroupoid 0 I)]
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
 /-- A finite-dimensional manifold modelled on a locally compact field
   (such as ℝ, ℂ or the `p`-adic numbers) is locally compact. -/
-lemma Manifold.locallyCompact_of_finiteDimensional [LocallyCompactSpace 𝕜]
-    [FiniteDimensional 𝕜 E] : LocallyCompactSpace M := by
+lemma Manifold.locallyCompact_of_finiteDimensional
+    (I : ModelWithCorners 𝕜 E H) [LocallyCompactSpace 𝕜] [FiniteDimensional 𝕜 E] :
+    LocallyCompactSpace M := by
   have : ProperSpace E := FiniteDimensional.proper 𝕜 E
   have : LocallyCompactSpace H := I.locallyCompactSpace
   exact ChartedSpace.locallyCompactSpace H M
