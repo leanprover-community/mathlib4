@@ -689,11 +689,19 @@ lemma sign_finAddFlip :
     (C x).resultant Q = x ^ Q.natDegree := by
   rw [resultant, C_sylvesterMatrix, det_diagonal, Fin.prod_const, natDegree_C, zero_add]
 
-@[simp] lemma resultant_zero (P : Polynomial R) (hP : P.natDegree ≠ 0) :
+@[simp] lemma resultant_zero' (P : Polynomial R) :
+    P.resultant 0 = 0 ^ P.natDegree := by
+  rw [← map_zero C, resultant_C]
+
+@[simp] lemma zero_resultant' (Q : Polynomial R) :
+    resultant 0 Q = 0 ^ Q.natDegree := by
+  rw [← map_zero C, C_resultant]
+
+lemma resultant_zero (P : Polynomial R) (hP : P.natDegree ≠ 0) :
     P.resultant 0 = 0 := by
   rw [← map_zero C, resultant_C, zero_pow hP]
 
-@[simp] lemma zero_resultant (Q : Polynomial R) (hQ : Q.natDegree ≠ 0) :
+lemma zero_resultant (Q : Polynomial R) (hQ : Q.natDegree ≠ 0) :
     resultant 0 Q = 0 := by
   rw [← map_zero C, C_resultant, zero_pow hQ]
 
@@ -3006,6 +3014,10 @@ noncomputable def resultantPolynomialRoots : MvPolynomial (ι ⊕ κ) K :=
   simp [resultantPolynomialRoots, eval_bind₁, eval_resultantPolynomialCoeff, eval_rename,
     Function.comp, ofVec_coeffOfRoots_one]
 
+lemma resultantPolynomialRoots_of_isEmpty [IsEmpty ι] [Infinite K] :
+    resultantPolynomialRoots (K := K) (ι := ι) (κ := κ) = MvPolynomial.C 1 :=
+  MvPolynomial.eq_of_eval_eq _ _ fun x => by simp
+
 theorem prod_root_differences_dvd_resultantPolynomialRoots [DecidableEq ι] [DecidableEq κ] [Infinite K] :
     ∏ (i : ι), ∏ (j : κ), (MvPolynomial.X (Sum.inl i) - MvPolynomial.X (Sum.inr j)) ∣
       (resultantPolynomialRoots (K := K)) :=
@@ -3097,8 +3109,8 @@ lemma MvPolynomial.isWeightedHomogeneous_resultantPolynomialRoots [Infinite K] :
     · simpa using (isWeightedHomogeneous_coeffOfRoots (R := K) i).rename (f := Sum.inr) (w₂ := fun _ => 1) (fun _ => rfl)
 
 open MvPolynomial in
-/-- If P = C x * ∏ (X - t i) and Q = C y * ∏ (X - u i), then
-  Res_(n,m) (P, Q) = ∏ (-1)^(n*m) * x^m * y^n (t i - u j) -/
+/-- If P = ∏ (X - t i) and Q = ∏ (X - u i), then
+  Res_(n,m) (P, Q) = ∏ (-1)^(n*m) * (t i - u j) -/
 lemma resultant_eq_prod_roots_aux [DecidableEq ι] [DecidableEq κ]
     (x y : K)
     [Infinite K] : -- TODO: we don't need this hypothesis if we work over `ℤ`
@@ -3140,7 +3152,14 @@ lemma resultant_eq_prod_roots_aux [DecidableEq ι] [DecidableEq κ]
   suffices c = ((-1) ^ (Fintype.card ι * Fintype.card κ)) by
     rw [← hc, this]
   -- By evaluation at a suitable value!
-  sorry
+  -- Probably something along the lines of `Res(X^m, 1)`.
+  -- (Except the thing on the right has the wrong degree...)
+  obtain (x | ⟨⟨i⟩⟩) := isEmpty_or_nonempty ι
+  · simp? [resultantPolynomialRoots_of_isEmpty] at hc
+    simpa using MvPolynomial.C_injective _ _ hc
+  · have := congr_arg (MvPolynomial.eval (Sum.elim (Pi.single i 1) 0)) hc
+    simp at this
+    sorry
 
 /-- If P = a_n ∏ (X - t i) and Q = b_n ∏ (X - u i, then
   Res_(n,m) (P, Q) = ∏ (-1)^(n*m) * (a_n)^m * (b_m)^n (t i - u j) -/
@@ -3166,3 +3185,68 @@ lemma resultant_eq_prod_roots [Infinite K] -- TODO: should work over `ℤ`
   · rwa [natDegree_C_mul_prod_X_sub_C, Finset.card_univ, Fintype.card_fin]
     · assumption
 
+lemma Multiset.toList_cons (a : ι) (s : Multiset ι) :
+    (a ::ₘ s).toList.Perm (a :: s.toList) := by
+  rw [← coe_eq_coe, coe_toList, ← cons_coe, coe_toList]
+
+lemma Multiset.toList_map (f : ι → κ) (s : Multiset ι) :
+    (s.map f).toList.Perm (s.toList.map f) := by
+  rw [← coe_eq_coe, coe_toList, ← map_coe, coe_toList]
+
+lemma Finset.toList_map (f : ι ↪ κ) (s : Finset ι) :
+    (s.map f).toList.Perm (s.toList.map f) :=
+  Multiset.toList_map _ _
+
+lemma List.get_univ_toList_perm_self (a : List ι) :
+    (Finset.univ.toList.map a.get).Perm a := by
+  induction a
+  case nil =>
+    simp
+  case cons a as ih =>
+    simp only [length_cons, Fin.univ_succ]
+    refine ((Finset.toList_cons _).map _).trans ?_
+    rw [map_cons, get_cons_zero, perm_cons]
+    refine ((Finset.toList_map _ _).map _).trans ?_
+    rw [← List.comp_map]
+    exact ih
+
+@[simp]
+lemma List.finset_prod_get (a : List ι) (f : ι → R) :
+    ∏ i : Fin a.length, f (a.get i) = (a.map f).prod := by
+  refine (Finset.prod_to_list _ _).symm.trans (List.Perm.prod_eq ?_)
+  show (List.map (f ∘ a.get) Finset.univ.toList).Perm (a.map f)
+  rw [List.comp_map]
+  exact (List.get_univ_toList_perm_self _).map _
+
+lemma resultant_list_eq_prod_roots {ι κ : Type*} (a : List ι) (b : List κ) [Infinite K]
+    (t : ι → K) (u : κ → K) (x y : K) (hx : x ≠ 0) (hy : y ≠ 0) :
+    Polynomial.resultant
+        (C x * (a.map (fun i => X - C (t i))).prod)
+        (C y * (b.map (fun i => (X - C (u i)))).prod) =
+      (-1)^(a.length * b.length) * x ^ b.length * y ^ a.length *
+        (a.map (fun i => (b.map (fun j => t i - u j)).prod)).prod := by
+  convert resultant_eq_prod_roots (t ∘ a.get) (u ∘ b.get) x y hx hy
+  · exact (List.finset_prod_get a _).symm
+  · exact (List.finset_prod_get b _).symm
+  · rw [← List.finset_prod_get a]
+    refine Fintype.prod_congr _ _ (fun i => ?_)
+    exact (List.finset_prod_get b _).symm
+
+lemma resultant_multiset_eq_prod_roots {ι κ : Type*} (a : Multiset ι) (b : Multiset κ) [Infinite K]
+    (t : ι → K) (u : κ → K) (x y : K) (hx : x ≠ 0) (hy : y ≠ 0) :
+    Polynomial.resultant
+        (C x * (a.map (fun i => X - C (t i))).prod)
+        (C y * (b.map (fun i => (X - C (u i)))).prod) =
+      (-1)^(Multiset.card a * Multiset.card b) * x ^ Multiset.card b * y ^ Multiset.card a *
+        (a.map (fun i => (b.map (fun j => t i - u j)).prod)).prod := by
+  convert resultant_list_eq_prod_roots a.toList b.toList t u x y hx hy
+  · exact (Multiset.prod_toList _).symm.trans (List.Perm.prod_eq (Multiset.toList_map _ _))
+  · exact (Multiset.prod_toList _).symm.trans (List.Perm.prod_eq (Multiset.toList_map _ _))
+  · simp
+  · simp
+  · simp
+  · simp
+  · rw [(Multiset.prod_toList _).symm.trans (List.Perm.prod_eq (Multiset.toList_map _ _))]
+    congr
+    ext i
+    exact (Multiset.prod_toList _).symm.trans (List.Perm.prod_eq (Multiset.toList_map _ _))
