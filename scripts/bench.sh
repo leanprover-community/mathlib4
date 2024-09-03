@@ -7,8 +7,8 @@
 # and prints the files / categories with an instruction change of at least 10^9,
 # first the ones that got slower, then the ones that got faster
 
-PR="16419"
-PR="16423"
+#PR="16419"
+#PR="16423"
 
 # The Lean module containing the Lean code to process the bench data.
 leanFile='Mathlib.tp'
