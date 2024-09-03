@@ -259,7 +259,7 @@ end SeparatedNhds
 
 /-- A T₀ space, also known as a Kolmogorov space, is a topological space such that for every pair
 `x ≠ y`, there is an open set containing one but not the other. We formulate the definition in terms
-of the `Inseparable` relation.  -/
+of the `Inseparable` relation. -/
 class T0Space (X : Type u) [TopologicalSpace X] : Prop where
   /-- Two inseparable points in a T₀ space are equal. -/
   t0 : ∀ ⦃x y : X⦄, Inseparable x y → x = y
@@ -974,13 +974,13 @@ theorem Filter.HasBasis.exists_inter_eq_singleton_of_mem_discrete {ι : Type*} {
   exact ⟨i, hi, hix.antisymm <| singleton_subset_iff.2 ⟨mem_of_mem_nhds <| hb.mem_of_mem hi, hx⟩⟩
 
 /-- A point `x` in a discrete subset `s` of a topological space admits a neighbourhood
-that only meets `s` at `x`.  -/
+that only meets `s` at `x`. -/
 theorem nhds_inter_eq_singleton_of_mem_discrete {s : Set X} [DiscreteTopology s] {x : X}
     (hx : x ∈ s) : ∃ U ∈ 𝓝 x, U ∩ s = {x} := by
   simpa using (𝓝 x).basis_sets.exists_inter_eq_singleton_of_mem_discrete hx
 
 /-- Let `x` be a point in a discrete subset `s` of a topological space, then there exists an open
-set that only meets `s` at `x`.  -/
+set that only meets `s` at `x`. -/
 theorem isOpen_inter_eq_singleton_of_mem_discrete {s : Set X} [DiscreteTopology s] {x : X}
     (hx : x ∈ s) : ∃ U : Set X, IsOpen U ∧ U ∩ s = {x} := by
   obtain ⟨U, hU_nhds, hU_inter⟩ := nhds_inter_eq_singleton_of_mem_discrete hx
@@ -1103,7 +1103,7 @@ theorem exists_isCompact_superset_iff {s : Set X} :
 alias exists_compact_superset_iff := exists_isCompact_superset_iff
 
 /-- If `K` and `L` are disjoint compact sets in an R₁ topological space
-and `L` is also closed, then `K` and `L` have disjoint neighborhoods.  -/
+and `L` is also closed, then `K` and `L` have disjoint neighborhoods. -/
 theorem SeparatedNhds.of_isCompact_isCompact_isClosed {K L : Set X} (hK : IsCompact K)
     (hL : IsCompact L) (h'L : IsClosed L) (hd : Disjoint K L) : SeparatedNhds K L := by
   simp_rw [separatedNhds_iff_disjoint, hK.disjoint_nhdsSet_left, hL.disjoint_nhdsSet_right,
@@ -1880,7 +1880,7 @@ of filters `𝓝ˢ s` and `𝓝 a`. -/
 @[mk_iff]
 class RegularSpace (X : Type u) [TopologicalSpace X] : Prop where
   /-- If `a` is a point that does not belong to a closed set `s`, then `a` and `s` admit disjoint
-  neighborhoods.  -/
+  neighborhoods. -/
   regular : ∀ {s : Set X} {a}, IsClosed s → a ∉ s → Disjoint (𝓝ˢ s) (𝓝 a)
 
 theorem regularSpace_TFAE (X : Type u) [TopologicalSpace X] :
@@ -1945,6 +1945,7 @@ alias RegularSpace.ofExistsMemNhdsIsClosedSubset := RegularSpace.of_exists_mem_n
 instance (priority := 100) [WeaklyLocallyCompactSpace X] [R1Space X] : RegularSpace X :=
   .of_hasBasis isCompact_isClosed_basis_nhds fun _ _ ⟨_, _, h⟩ ↦ h
 
+section
 variable [RegularSpace X] {x : X} {s : Set X}
 
 theorem disjoint_nhdsSet_nhds : Disjoint (𝓝ˢ s) (𝓝 x) ↔ x ∉ closure s := by
@@ -2057,9 +2058,11 @@ lemma SeparatedNhds.of_isCompact_isClosed {s t : Set X}
 @[deprecated (since := "2024-01-28")]
 alias separatedNhds_of_isCompact_isClosed := SeparatedNhds.of_isCompact_isClosed
 
+end
+
 /-- This technique to witness `HasSeparatingCover` in regular Lindelöf topological spaces
 will be used to prove regular Lindelöf spaces are normal. -/
-lemma IsClosed.HasSeparatingCover {s t : Set X} [LindelofSpace X]
+lemma IsClosed.HasSeparatingCover {s t : Set X} [LindelofSpace X] [RegularSpace X]
     (s_cl : IsClosed s) (t_cl : IsClosed t) (st_dis : Disjoint s t) : HasSeparatingCover s t := by
   -- `IsLindelof.indexed_countable_subcover` requires the space be Nonempty
   rcases isEmpty_or_nonempty X with empty_X | nonempty_X
@@ -2168,7 +2171,7 @@ end T25
 section T3
 
 /-- A T₃ space is a T₀ space which is a regular space. Any T₃ space is a T₁ space, a T₂ space, and
-a T₂.₅ space.  -/
+a T₂.₅ space. -/
 class T3Space (X : Type u) [TopologicalSpace X] extends T0Space X, RegularSpace X : Prop
 
 instance (priority := 90) instT3Space [T0Space X] [RegularSpace X] : T3Space X := ⟨⟩
@@ -2261,6 +2264,7 @@ instance (priority := 100) NormalSpace.of_compactSpace_r1Space [CompactSpace X] 
     NormalSpace X where
   normal _s _t hs ht := .of_isCompact_isCompact_isClosed hs.isCompact ht.isCompact ht
 
+set_option pp.universes true in
 /-- A regular topological space with a Lindelöf topology is a normal space. A consequence of e.g.
 Corollaries 20.8 and 20.10 of [Willard's *General Topology*][zbMATH02107988] (without the
 assumption of Hausdorff). -/
@@ -2565,7 +2569,7 @@ theorem isTopologicalBasis_isClopen : IsTopologicalBasis { s : Set X | IsClopen 
   tauto
 
 /-- Every member of an open set in a compact Hausdorff totally disconnected space
-  is contained in a clopen set contained in the open set.  -/
+  is contained in a clopen set contained in the open set. -/
 theorem compact_exists_isClopen_in_isOpen {x : X} {U : Set X} (is_open : IsOpen U) (memU : x ∈ U) :
     ∃ V : Set X, IsClopen V ∧ x ∈ V ∧ V ⊆ U :=
   isTopologicalBasis_isClopen.mem_nhds_iff.1 (is_open.mem_nhds memU)
@@ -2640,3 +2644,5 @@ instance ConnectedComponents.t2 [T2Space X] [CompactSpace X] : T2Space (Connecte
   rw [ConnectedComponents.quotientMap_coe.isClopen_preimage] at hU
   refine ⟨Vᶜ, V, hU.compl.isOpen, hU.isOpen, ?_, hb mem_connectedComponent, disjoint_compl_left⟩
   exact fun h => flip Set.Nonempty.ne_empty ha ⟨a, mem_connectedComponent, h⟩
+
+set_option linter.style.longFile 2800

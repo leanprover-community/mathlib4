@@ -267,8 +267,8 @@ instance : ContinuousAdd ℝ≥0∞ := by
   · exact tendsto_nhds_top_mono' continuousAt_fst fun p => le_add_right le_rfl
   rcases b with (_ | b)
   · exact tendsto_nhds_top_mono' continuousAt_snd fun p => le_add_left le_rfl
-  simp only [ContinuousAt, some_eq_coe, nhds_coe_coe, ← coe_add, tendsto_map'_iff, (· ∘ ·),
-    tendsto_coe, tendsto_add]
+  simp only [ContinuousAt, some_eq_coe, nhds_coe_coe, ← coe_add, tendsto_map'_iff,
+    Function.comp_def, tendsto_coe, tendsto_add]
 
 protected theorem tendsto_atTop_zero [Nonempty β] [SemilatticeSup β] {f : β → ℝ≥0∞} :
     Tendsto f atTop (𝓝 0) ↔ ∀ ε > 0, ∃ N, ∀ n ≥ N, f n ≤ ε :=
@@ -291,7 +291,7 @@ theorem tendsto_sub : ∀ {a b : ℝ≥0∞}, (a ≠ ∞ ∨ b ≠ ∞) →
       (lt_mem_nhds <| @coe_lt_top (a + 1))).mono fun x hx =>
         tsub_eq_zero_iff_le.2 (hx.1.trans hx.2).le
   | (a : ℝ≥0), (b : ℝ≥0), _ => by
-    simp only [nhds_coe_coe, tendsto_map'_iff, ← ENNReal.coe_sub, (· ∘ ·), tendsto_coe]
+    simp only [nhds_coe_coe, tendsto_map'_iff, ← ENNReal.coe_sub, Function.comp_def, tendsto_coe]
     exact continuous_sub.tendsto (a, b)
 
 protected theorem Tendsto.sub {f : Filter α} {ma : α → ℝ≥0∞} {mb : α → ℝ≥0∞} {a b : ℝ≥0∞}
@@ -316,10 +316,11 @@ protected theorem tendsto_mul (ha : a ≠ 0 ∨ b ≠ ∞) (hb : b ≠ 0 ∨ a �
     induction b with
     | top =>
       simp only [ne_eq, or_false, not_true_eq_false] at ha
-      simpa [(· ∘ ·), mul_comm, mul_top ha]
+      simpa [Function.comp_def, mul_comm, mul_top ha]
         using (ht a ha).comp (continuous_swap.tendsto (ofNNReal a, ∞))
     | coe b =>
-      simp only [nhds_coe_coe, ← coe_mul, tendsto_coe, tendsto_map'_iff, (· ∘ ·), tendsto_mul]
+      simp only [nhds_coe_coe, ← coe_mul, tendsto_coe, tendsto_map'_iff, Function.comp_def,
+        tendsto_mul]
 
 protected theorem Tendsto.mul {f : Filter α} {ma : α → ℝ≥0∞} {mb : α → ℝ≥0∞} {a b : ℝ≥0∞}
     (hma : Tendsto ma f (𝓝 a)) (ha : a ≠ 0 ∨ b ≠ ∞) (hmb : Tendsto mb f (𝓝 b))
@@ -444,7 +445,7 @@ theorem iInf_mul_left' {ι} {f : ι → ℝ≥0∞} {a : ℝ≥0∞} (h : a = �
     cases isEmpty_or_nonempty ι
     · rw [iInf_of_empty, iInf_of_empty, mul_top]
       exact mt h0 (not_nonempty_iff.2 ‹_›)
-    · exact (ENNReal.mul_left_mono.map_iInf_of_continuousAt'
+    · exact (ENNReal.mul_left_mono.map_ciInf_of_continuousAt
         (ENNReal.continuousAt_const_mul H)).symm
 
 theorem iInf_mul_left {ι} [Nonempty ι] {f : ι → ℝ≥0∞} {a : ℝ≥0∞}
@@ -504,7 +505,7 @@ protected theorem tendsto_inv_nat_nhds_zero : Tendsto (fun n : ℕ => (n : ℝ�
   ENNReal.inv_top ▸ ENNReal.tendsto_inv_iff.2 tendsto_nat_nhds_top
 
 theorem iSup_add {ι : Sort*} {s : ι → ℝ≥0∞} [Nonempty ι] : iSup s + a = ⨆ b, s b + a :=
-  Monotone.map_iSup_of_continuousAt' (continuousAt_id.add continuousAt_const) <|
+  Monotone.map_ciSup_of_continuousAt (continuousAt_id.add continuousAt_const) <|
     monotone_id.add monotone_const
 
 theorem biSup_add' {ι : Sort*} {p : ι → Prop} (h : ∃ i, p i) {f : ι → ℝ≥0∞} :
@@ -610,7 +611,7 @@ protected theorem tendsto_coe_sub {b : ℝ≥0∞} :
 
 theorem sub_iSup {ι : Sort*} [Nonempty ι] {b : ι → ℝ≥0∞} (hr : a < ∞) :
     (a - ⨆ i, b i) = ⨅ i, a - b i :=
-  antitone_const_tsub.map_iSup_of_continuousAt' (continuous_sub_left hr.ne).continuousAt
+  antitone_const_tsub.map_ciSup_of_continuousAt (continuous_sub_left hr.ne).continuousAt
 
 theorem exists_countable_dense_no_zero_top :
     ∃ s : Set ℝ≥0∞, s.Countable ∧ Dense s ∧ 0 ∉ s ∧ ∞ ∉ s := by
@@ -1168,7 +1169,7 @@ theorem tsum_comp_le_tsum_of_inj {β : Type*} {f : α → ℝ} (hf : Summable f)
     {i : β → α} (hi : Function.Injective i) : tsum (f ∘ i) ≤ tsum f := by
   lift f to α → ℝ≥0 using hn
   rw [NNReal.summable_coe] at hf
-  simpa only [(· ∘ ·), ← NNReal.coe_tsum] using NNReal.tsum_comp_le_tsum_of_inj hf hi
+  simpa only [Function.comp_def, ← NNReal.coe_tsum] using NNReal.tsum_comp_le_tsum_of_inj hf hi
 
 /-- Comparison test of convergence of series of non-negative real numbers. -/
 theorem Summable.of_nonneg_of_le {f g : β → ℝ} (hg : ∀ b, 0 ≤ g b) (hgf : ∀ b, g b ≤ f b)
@@ -1523,3 +1524,5 @@ lemma limsup_toReal_eq {ι : Type*} {F : Filter ι} [NeBot F] {b : ℝ≥0∞} (
 end LimsupLiminf
 
 end ENNReal -- namespace
+
+set_option linter.style.longFile 1700

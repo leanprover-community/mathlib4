@@ -267,6 +267,9 @@ theorem IsClosed.nullMeasurableSet {μ} (h : IsClosed s) : NullMeasurableSet s �
 theorem IsCompact.measurableSet [T2Space α] (h : IsCompact s) : MeasurableSet s :=
   h.isClosed.measurableSet
 
+theorem IsCompact.nullMeasurableSet [T2Space α] {μ} (h : IsCompact s) : NullMeasurableSet s μ :=
+  h.isClosed.nullMeasurableSet
+
 /-- If two points are topologically inseparable,
 then they can't be separated by a Borel measurable set. -/
 theorem Inseparable.mem_measurableSet_iff {x y : γ} (h : Inseparable x y) {s : Set γ}
@@ -286,7 +289,7 @@ the measure of the closure of a compact set `K` is equal to the measure of `K`.
 
 See also `MeasureTheory.Measure.OuterRegular.measure_closure_eq_of_isCompact`
 for a version that assumes `μ` to be outer regular
-but does not assume the `σ`-algebra to be Borel.  -/
+but does not assume the `σ`-algebra to be Borel. -/
 theorem IsCompact.measure_closure [R1Space γ] {K : Set γ} (hK : IsCompact K) (μ : Measure γ) :
     μ (closure K) = μ K := by
   refine le_antisymm ?_ (measure_mono subset_closure)
@@ -624,7 +627,7 @@ instance _root_.ULift.instBorelSpace : BorelSpace (ULift α) :=
 
 instance DiscreteMeasurableSpace.toBorelSpace {α : Type*} [TopologicalSpace α] [DiscreteTopology α]
     [MeasurableSpace α] [DiscreteMeasurableSpace α] : BorelSpace α := by
-  constructor; ext; simp [MeasurableSpace.measurableSet_generateFrom, measurableSet_discrete]
+  constructor; ext; simp [MeasurableSpace.measurableSet_generateFrom, MeasurableSet.of_discrete]
 
 protected theorem Embedding.measurableEmbedding {f : α → β} (h₁ : Embedding f)
     (h₂ : MeasurableSet (range f)) : MeasurableEmbedding f :=

@@ -77,7 +77,7 @@ open Structure Substructure
 
 variable (L : Language.{u, v})
 
-/-! ### The Age of a Structure and Fraïssé Classes-/
+/-! ### The Age of a Structure and Fraïssé Classes -/
 
 
 /-- The age of a structure `M` is the class of finitely-generated structures that embed into it. -/
@@ -88,7 +88,7 @@ variable {L}
 variable (K : Set (Bundled.{w} L.Structure))
 
 /-- A class `K` has the hereditary property when all finitely-generated structures that embed into
-  structures in `K` are also in `K`.  -/
+  structures in `K` are also in `K`. -/
 def Hereditary : Prop :=
   ∀ M : Bundled.{w} L.Structure, M ∈ K → L.age M ⊆ K
 
