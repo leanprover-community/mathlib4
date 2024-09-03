@@ -68,7 +68,7 @@ open Function fixedPoints Cardinal Order OrderHom
 
 set_option linter.unusedVariables false in
 /-- The ordinal-indexed sequence approximating the least fixed point greater than
-  an initial value x. It is defined in such a way that we have `lfpApprox 0 x = x` and
+  an initial value `x`. It is defined in such a way that we have `lfpApprox 0 x = x` and
   `lfpApprox a x = ⨆ b < a, f (lfpApprox b x)`. -/
 def lfpApprox (a : Ordinal.{u}) : α :=
   sSup ({ f (lfpApprox b) | (b : Ordinal) (h : b < a) } ∪ {x})
@@ -160,7 +160,7 @@ lemma lfpApprox_mem_fixedPoints_of_eq {a b c : Ordinal}
   · exact h_ac
   · exact lfpApprox_mem_fixedPoint
 
-/-- A fixed point of f is reached at the successor of the domain's cardinality -/
+/-- The approximation at the index of the successor of the domain's cardinality is a fixed point -/
 theorem lfpApprox_ord_mem_fixedPoint (h_init : x ≤ f x) :
     lfpApprox f x (ord <| succ #α) ∈ fixedPoints f := by
   let ⟨a, h_a, b, h_b, h_nab, h_fab⟩ := exists_lfpApprox_eq_lfpApprox f x
@@ -193,8 +193,8 @@ theorem lfpApprox_le_of_mem_fixedPoints {a : α}
       rw [h_y]
       exact h_le_init
 
-/-- The approximation sequence converges to the least fixed point if starting from `⊥` at the
-  successor of the domain's cardinality. -/
+/-- The approximation sequence converges at the successor of the domain's cardinality
+  to the least fixed point if starting from `⊥` -/
 theorem lfpApprox_ord_eq_lfp : lfpApprox f ⊥ (ord <| succ #α) = lfp f := by
   apply le_antisymm
   · have h_lfp : ∃ y : fixedPoints f, lfp f = y := by use ⊥; exact rfl
@@ -213,7 +213,7 @@ theorem lfp_mem_range_lfpApprox : lfp f ∈ Set.range (lfpApprox f ⊥) := by
 
 set_option linter.unusedVariables false in
 /-- The ordinal-indexed sequence approximating the greatest fixed point greater than
-  an initial value x. It is defined in such a way that we have `lfpApprox 0 x = x` and
+  an initial value `x`. It is defined in such a way that we have `lfpApprox 0 x = x` and
   `lfpApprox a x = ⨅ b < a, f (lfpApprox b x)`. -/
 def gfpApprox (a : Ordinal.{u}) : α :=
   sInf ({ f (gfpApprox b) | (b : Ordinal) (h : b < a) } ∪ {x})
@@ -246,7 +246,7 @@ theorem exists_gfpApprox_eq_gfpApprox : ∃ a < ord <| succ #α, ∃ b < ord <| 
     a ≠ b ∧ gfpApprox f x a = gfpApprox f x b :=
   exists_lfpApprox_eq_lfpApprox (OrderHom.dual f) x
 
-/-- A fixed point of f is reached at the successor of the domain's cardinality -/
+/-- The approximation at the index of the successor of the domain's cardinality is a fixed point -/
 lemma gfpApprox_ord_mem_fixedPoint (h_init : f x ≤ x) :
     gfpApprox f x (ord <| succ #α) ∈ fixedPoints f :=
   lfpApprox_ord_mem_fixedPoint (OrderHom.dual f) x h_init
@@ -257,8 +257,8 @@ lemma le_gfpApprox_of_mem_fixedPoints {a : α}
     (h_a : a ∈ fixedPoints f) (h_le_init : a ≤ x) (i : Ordinal) : a ≤ gfpApprox f x i :=
   lfpApprox_le_of_mem_fixedPoints (OrderHom.dual f) x h_a h_le_init i
 
-/-- The approximation sequence converges to the greatest fixed point if starting from `⊤` at the
-  successor of the domain's cardinality. -/
+/-- The approximation sequence converges at the successor of the domain's cardinality
+  to the greatest fixed point if starting from `⊥` -/
 theorem gfpApprox_ord_eq_gfp : gfpApprox f ⊤ (ord <| succ #α) = gfp f :=
   lfpApprox_ord_eq_lfp (OrderHom.dual f)
 
