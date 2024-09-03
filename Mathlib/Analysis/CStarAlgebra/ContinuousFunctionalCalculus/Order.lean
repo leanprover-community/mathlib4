@@ -28,6 +28,7 @@ the spectral order.
   `‖a‖ ≤ ‖b‖`.
 * `CStarRing.conjugate_le_norm_smul`: in a non-unital C⋆-algebra, we have that
   `star a * b * a ≤ ‖b‖ • (star a * a)` (and a primed version for the `a * b * star a` case).
+* `CStarRing.inv_le_inv_iff`: in a unital C⋆-algebra, `b⁻¹ ≤ a⁻¹` iff `a ≤ b`.
 
 ## Tags
 
@@ -204,6 +205,8 @@ lemma CFC.conjugate_rpow_neg_one_half {a : A} (h₀ : IsUnit a) (ha : 0 ≤ a :=
   norm_num
   exact rpow_zero _
 
+/-- In a unital C⋆-algebra, if `a` is nonnegative and invertible, and `a ≤ b`, then `b` is
+invertible. -/
 lemma CStarRing.isUnit_of_le {a b : A} (h₀ : IsUnit a) (ha : 0 ≤ a := by cfc_tac)
     (hab : a ≤ b) : IsUnit b := by
   rw [← spectrum.zero_not_mem_iff ℝ≥0] at h₀ ⊢
@@ -247,6 +250,7 @@ lemma le_iff_norm_sqrt_mul_sqrt_inv {a : A} {b : Aˣ} (ha : 0 ≤ a) (hb : 0 ≤
     CFC.rpow_rpow (b : A) _ _ (by simp) (by norm_num), le_iff_norm_sqrt_mul_rpow b.isUnit ha hb]
   norm_num
 
+/-- In a unital C⋆-algebra, if `0 ≤ a ≤ b` and `a` and `b` are units, then `b⁻¹ ≤ a⁻¹`. -/
 protected lemma CStarRing.inv_le_inv {a b : Aˣ} (ha : 0 ≤ (a : A))
     (hab : (a : A) ≤ b) : (↑b⁻¹ : A) ≤ a⁻¹ := by
   have hb := ha.trans hab
@@ -259,6 +263,8 @@ protected lemma CStarRing.inv_le_inv {a b : Aˣ} (ha : 0 ≤ (a : A))
   rwa [star_mul, IsSelfAdjoint.of_nonneg sqrt_nonneg,
     IsSelfAdjoint.of_nonneg sqrt_nonneg] at hab ⊢
 
+/-- In a unital C⋆-algebra, if `0 ≤ a` and `0 ≤ b` and `a` and `b` are units, then `a⁻¹ ≤ b⁻¹`
+if and only if `b ≤ a`. -/
 protected lemma CStarRing.inv_le_inv_iff {a b : Aˣ} (ha : 0 ≤ (a : A)) (hb : 0 ≤ (b : A)) :
     (↑a⁻¹ : A) ≤ b⁻¹ ↔ b ≤ a :=
   ⟨CStarRing.inv_le_inv (inv_nonneg_of_nonneg a ha), CStarRing.inv_le_inv hb⟩
