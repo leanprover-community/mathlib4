@@ -53,7 +53,7 @@ theorem heron {p1 p2 p3 : P} (h1 : p1 ≠ p2) (h2 : p3 ≠ p2) :
   have numerator_nonneg : 0 ≤ numerator := by
     have frac_nonneg : 0 ≤ numerator / denominator :=
       (sub_nonneg.mpr (cos_sq_le_one γ)).trans_eq split_to_frac
-    cases' div_nonneg_iff.mp frac_nonneg with h h
+    rcases div_nonneg_iff.mp frac_nonneg with h | h
     · exact h.left
     · simpa [numerator, denominator, a, b, c, h1, h2] using le_antisymm h.right (sq_nonneg _)
   have ab2_nonneg : 0 ≤ 2 * a * b := by positivity
