@@ -138,9 +138,8 @@ theorem prime_not_perfect (h : Prime p) : ¬ Perfect p := by
 
 /-- Any natural number power of a prime is deficient -/
 theorem prime_pow_deficient (h : Prime n) : Deficient (n ^ m) := by
-  rcases Nat.eq_zero_or_pos m with (hL | _)
-  · rw [hL, Nat.pow_zero]
-    exact Deficient_one
+  rcases Nat.eq_zero_or_pos m with (rfl | _)
+  · simpa using Deficient_one
   · have h1 : properDivisors (n ^ m) = image (n ^ ·) (range m) := by
       apply subset_antisymm <;> intro a
       · simp only [mem_properDivisors, mem_image, mem_range, dvd_prime_pow h]
