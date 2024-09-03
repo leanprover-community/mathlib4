@@ -19,6 +19,7 @@ theorem Quot.exact {α r} [IsEquiv α r] {a b : α} : Quot.mk r a = Quot.mk r b 
 class QuotLike (Q : Sort u) (α : outParam (Sort u)) (r : outParam (α → α → Prop)) where
   /-- The canonical quotient map. -/
   mkQ : α → Q := by exact Quot.mk _
+  /-- The canonical map from quotient to `Quot r`. -/
   toQuot : Q → Quot r := by exact (·)
   toQuot_mkQ : ∀ a, toQuot (mkQ a) = Quot.mk r a := by exact fun _ ↦ rfl
   /-- The analogue of `Quot.ind`: every element of `Q` is of the form `mkQ a` -/
@@ -33,11 +34,12 @@ attribute [elab_as_elim] QuotLike.ind
 
 instance Quot.instQuotLike {α} (r : α → α → Prop) : QuotLike (Quot r) α r where
 instance Quotient.instQuotLike {α} (s : Setoid α) : QuotLike (Quotient s) α (· ≈ ·) where
+  mkQ := Quotient.mk _
 
 namespace QuotLike
 
-@[inherit_doc QuotLike.mkQ]
-notation3:arg "⟦" a "⟧" => QuotLike.mkQ a
+@[inherit_doc mkQ]
+notation3:arg "⟦" a "⟧" => mkQ a
 
 section
 
@@ -300,6 +302,7 @@ section
 
 variable {Q α : Sort u} {r : α → α → Prop} [QuotLike Q α r]
 
+/-- Makes a quotient from `Quot r`. -/
 def ofQuot : Quot r → Q :=
   Quot.lift mkQ fun _ _ ↦ sound
 
@@ -373,7 +376,7 @@ noncomputable def out (q : Q) : α :=
 theorem mkQ_out (q : Q) : ⟦QuotLike.out q⟧ = q :=
   Classical.choose_spec (exists_rep q)
 
-@[simp]
+-- Note: cannot be a `simp` lemma because lhs has variable as head symbol
 theorem out_mkQ [IsEquiv α r] (a : α) : r (out (⟦a⟧ : Q)) a :=
   exact (mkQ_out _)
 
@@ -385,7 +388,8 @@ theorem eq_mkQ_iff_out [IsEquiv α r] {x : Q} {y : α} :
     x = ⟦y⟧ ↔ r (out x) y := by
   rw [← eq (Q := Q), mkQ_out]
 
-@[simp] -- Note: not sure about the name
+-- Note: cannot be a `simp` lemma because lhs has variable as head symbol
+-- Note: not sure about the name
 theorem out_equiv_out [IsEquiv α r] {x y : Q} : r (out x) (out y) ↔ x = y := by
   rw [← eq_mkQ_iff_out (Q := Q), mkQ_out]
 
