@@ -164,8 +164,8 @@ jobs:
         run: |
           printf '\n* ls -ao .lake/build/lib/Mathlib/\n'
           ls -aor .lake/build/lib/Mathlib/ || echo "no libs"
-          echo "* lake exe cache clean!"
-          lake exe cache clean!
+          echo "* rm -rf .lake/build/lib/Mathlib/"
+          rm -rf .lake/build/lib/Mathlib/
           # Fail quickly if the cache is completely cold, by checking for Mathlib.Init
           printf '\n* ls -ao .lake/build/lib/Mathlib/\n'
           ls -ao .lake/build/lib/Mathlib/ || echo "no libs"
