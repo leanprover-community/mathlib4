@@ -332,7 +332,47 @@ protected theorem IsMax.eq_of_le (ha : IsMax a) (h : a ≤ b) : a = b :=
 protected theorem IsMax.eq_of_ge (ha : IsMax a) (h : a ≤ b) : b = a :=
   h.antisymm' <| ha h
 
+protected theorem IsBot.lt_of_ne (ha : IsBot a) (h : a ≠ b) : a < b :=
+  (ha b).lt_of_ne h
+
+protected theorem IsTop.lt_of_ne (ha : IsTop a) (h : b ≠ a) : b < a :=
+  (ha b).lt_of_ne h
+
+protected theorem IsBot.not_isTop [Nontrivial α] (ha : IsBot a) : ¬ IsTop a := by
+  intro ha'
+  obtain ⟨b, hb⟩ := exists_ne a
+  exact(ha.lt_of_ne hb.symm).not_lt (ha'.lt_of_ne hb)
+
+protected theorem IsTop.not_isBot [Nontrivial α] (ha : IsTop a) : ¬ IsBot a :=
+  fun ha' ↦ ha.toDual.not_isTop ha'.toDual
+
 end PartialOrder
+
+section LinearOrder
+
+variable [LinearOrder α] {a : α}
+
+protected theorem IsMin.isBot (ha : IsMin a) : IsBot a := by
+  intro b
+  obtain hb | hb := le_total a b
+  exacts [hb, ha hb]
+
+theorem isMin_iff_isBot : IsMin a ↔ IsBot a :=
+  ⟨IsMin.isBot, IsBot.isMin⟩
+
+protected theorem IsMax.isTop (ha : IsMax a) : IsTop a :=
+  ha.toDual.isBot.ofDual
+
+theorem isMax_iff_isTop : IsMax a ↔ IsTop a :=
+  ⟨IsMax.isTop, IsTop.isMax⟩
+
+protected theorem IsMin.not_isMax [Nontrivial α] (ha : IsMin a) : ¬ IsMax a :=
+  fun ha' ↦ ha'.isTop.not_isBot ha.isBot
+
+protected theorem IsMax.not_isMin [Nontrivial α] (ha : IsMax a) : ¬ IsMin a :=
+  fun ha' ↦ ha'.isBot.not_isTop ha.isTop
+
+end LinearOrder
 
 section Prod
 
