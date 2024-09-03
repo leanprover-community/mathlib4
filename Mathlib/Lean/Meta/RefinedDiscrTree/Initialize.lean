@@ -224,21 +224,10 @@ def createImportedDiscrTree (cctx : Core.Context) (ngen : NameGenerator) (env : 
         else
           pure tasks
     termination_by env.header.moduleData.size - idx
-  let t0 ← IO.monoMsNow
-  let h0 ← IO.getNumHeartbeats
   let tasks ← go ngen #[] 0 0 0
-  let t1 ← IO.monoMsNow
-  let h1 ← IO.getNumHeartbeats
   let r := combineGet {} tasks
-  let t2 ← IO.monoMsNow
-  let h2 ← IO.getNumHeartbeats
   r.errors.forM logImportFailure
-  let r := r.tree.toLazy config
-  let t3 ← IO.monoMsNow
-  let h3 ← IO.getNumHeartbeats
-  logInfo m! "heartbeats: {(h1-h0)/10000}, and glueing: {(h2-h1)/10000}, and finishing: {(h3-h2)/1000}"
-  logInfo m! "time: {(t1-t0)}, and glueing: {(t2-t1)}, and finishing: {(t3-t2)}"
-  return r
+  return r.tree.toLazy config
 
 /--
 A discriminator tree for the current module's declarations only.
