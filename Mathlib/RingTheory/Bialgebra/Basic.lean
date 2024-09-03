@@ -179,7 +179,7 @@ lemma counit_single (x : X) (a : A) :
 @[simp]
 lemma comul_single (x : X) (a : A) :
     Coalgebra.comul (single x a)
-      = (TensorProduct.map (lsingle R A x) (lsingle R A x) : _ →ₗ[R] _) (Coalgebra.comul a) :=
+      = TensorProduct.map (lsingle R A x) (lsingle R A x) (Coalgebra.comul a) :=
   Finsupp.comul_single _ _ _ _ _
 
 end
@@ -225,7 +225,7 @@ lemma counit_single (x : X) (a : A) :
 @[simp]
 lemma comul_single (x : X) (a : A) :
     Coalgebra.comul (single x a)
-      = (TensorProduct.map (lsingle R A x) (lsingle R A x) : _ →ₗ[R] _) (Coalgebra.comul a) :=
+      = TensorProduct.map (lsingle R A x) (lsingle R A x) (Coalgebra.comul a) :=
   Finsupp.comul_single _ _ _ _ _
 
 end
