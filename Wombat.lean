@@ -6,14 +6,11 @@ Authors: Johan Commelin
 
 import Mathlib.AlgebraicTopology.Nerve
 import Mathlib.AlgebraicTopology.Quasicategory
+import Batteries.Tactic.ShowUnused
 
 open CategoryTheory CategoryTheory.Limits Opposite
 
 open Simplicial
-
--- TODO: move
-instance fin_zero_le_one (n : ℕ) : ZeroLEOneClass (Fin (n+2)) where
-  zero_le_one := by rw [← Fin.val_fin_le]; exact zero_le'
 
 namespace CategoryTheory
 
@@ -58,7 +55,7 @@ variable {C : Type} [inst : Category C]
 
 -- TODO: move
 /-- A constructor for `n`-simplices of the nerve of a category,
-by specifying `n+1` objects and a morphism between each of the `n` pairs of adjecent objects. -/
+by specifying `n+1` objects and a morphism between each of the `n` pairs of adjacent objects. -/
 noncomputable
 def nerve.mk (n : ℕ)
     (obj : Fin (n+1) → C) (mor : ∀ (i : Fin n), obj i.castSucc ⟶ obj i.succ) :
@@ -74,8 +71,8 @@ def nerve.δ_mk_mor (n : ℕ)
     refine eqToHom (congrArg _ ?_) ≫ mor k.castSucc ≫ eqToHom (congrArg _ ?_)
     · have : k.val < j.val := by omega
       exact Fin.succAbove_of_castSucc_lt j k.castSucc this
-    · have eq : k.succ.castSucc = k.castSucc.succ := by rfl
-      rw [← eq]
+    · have eq : k.castSucc.succ = k.succ.castSucc := by rfl
+      rw [eq]
       exact Eq.symm (Fin.succAbove_of_castSucc_lt j k.succ hkj)
   case eq =>
     refine eqToHom (congrArg _ ?_) ≫ mor k.castSucc ≫ mor k.succ ≫ eqToHom (congrArg _ ?_)
@@ -110,21 +107,21 @@ lemma nerve.δ_mk (n : ℕ)
   split <;> rename_i hij
   · simp only [Fin.castSucc_mk, Fin.succ_mk]
     rw [← hmap, ← hmap, aux₀, ← Functor.map_comp, ← Functor.map_comp]
-    rfl
+    · rfl
     · ext; simp [Fin.succAbove, Fin.lt_iff_val_lt_val, hij]
     · have : i < j.val := by linarith only [hij]
       simp [Fin.succAbove, Fin.lt_iff_val_lt_val, this]
   split <;> rename_i hij'
   · simp only [Fin.castSucc_mk, Fin.succ_mk]
     rw [← hmap, ← hmap, aux₁, ← Functor.map_comp, ← Functor.map_comp]
-    rfl
+    · rfl
     · have : ¬ i + 1 < j.val := by omega
       ext; simp [Fin.succAbove, Fin.lt_iff_val_lt_val, this]
     · have : ¬ i < j.val := by omega
       ext; simp [Fin.succAbove, Fin.lt_iff_val_lt_val, this]
   · simp only [Fin.castSucc_mk, Fin.succ_mk]
     rw [← hmap, ← hmap, aux₀, aux₁, ← Functor.map_comp, ← Functor.map_comp, ← Functor.map_comp]
-    rfl
+    · rfl
     · simp [Fin.succAbove, Fin.lt_iff_val_lt_val, hij]
     · simp [Fin.succAbove, Fin.lt_iff_val_lt_val]; omega
 
@@ -451,10 +448,12 @@ end
 /-- The nerve of a category is a quasicategory.
 
 [Kerodon, 0032] -/
-instance (C : Type) [Category C] : Quasicategory (nerve C) := by
+instance quasicategory_nerve (C : Type) [Category C] : Quasicategory (nerve C) := by
   refine quasicategory_of_filler _ fun n i σ₀ h₀ hₙ ↦ ⟨filler σ₀ h₀ hₙ, fun j hj ↦ ?_⟩
   cases n using Nat.casesAuxOn with
   | zero => exact filler_spec_zero _ _ _ _ hj
   | succ n => exact filler_spec_succ _ _ _ _ hj
+
+#show_unused quasicategory_nerve
 
 end SSet
