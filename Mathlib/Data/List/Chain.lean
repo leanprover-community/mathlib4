@@ -338,7 +338,7 @@ theorem Chain'.induction (p : α → Prop) (l : List α) (h : Chain' r l)
   split at h
   · simp
   · simp_all only [ne_eq, not_false_eq_true, head_cons, true_implies, mem_cons, forall_eq_or_imp,
-      true_and]
+      true_and, reduceCtorEq]
     exact h.induction p _ carries initial
 
 /-- Given a chain from `a` to `b`, and a predicate true at `b`, if `r x y → p y → p x` then
@@ -352,7 +352,8 @@ theorem Chain.backwards_induction (p : α → Prop) (l : List α) (h : Chain r a
   replace this := chain'_reverse.mpr this
   simp_rw (config := {singlePass := true}) [← List.mem_reverse]
   apply this.induction _ _ (fun _ _ h ↦ carries h)
-  simpa only [ne_eq, reverse_eq_nil_iff, not_false_eq_true, head_reverse, forall_true_left, hb]
+  simpa only [ne_eq, reverse_eq_nil_iff, not_false_eq_true, head_reverse, forall_true_left, hb,
+    reduceCtorEq]
 
 /-- Given a chain from `a` to `b`, and a predicate true at `b`, if `r x y → p y → p x` then
 the predicate is true at `a`.
