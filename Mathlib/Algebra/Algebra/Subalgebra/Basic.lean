@@ -619,6 +619,10 @@ def adjoin (s : Set A) : Subalgebra R A :=
   { Subsemiring.closure (Set.range (algebraMap R A) ∪ s) with
     algebraMap_mem' := fun r => Subsemiring.subset_closure <| Or.inl ⟨r, rfl⟩ }
 
+@[simp]
+theorem adjoin_toSubsemiring (s : Set A) :
+    (adjoin R s).toSubsemiring = Subsemiring.closure (Set.range (algebraMap R A) ∪ s) := rfl
+
 variable {R}
 
 protected theorem gc : GaloisConnection (adjoin R : Set A → Subalgebra R A) (↑) := fun s S =>
@@ -637,6 +641,10 @@ instance : CompleteLattice (Subalgebra R A) where
   __ := GaloisInsertion.liftCompleteLattice Algebra.gi
   bot := (Algebra.ofId R A).range
   bot_le _S := fun _a ⟨_r, hr⟩ => hr ▸ algebraMap_mem _ _
+
+theorem sup_def (S T : Subalgebra R A) : S ⊔ T = adjoin R (S ∪ T : Set A) := rfl
+
+theorem sSup_def (S : Set (Subalgebra R A)) : sSup S = adjoin R (⋃₀ (SetLike.coe '' S)) := rfl
 
 @[simp]
 theorem coe_top : (↑(⊤ : Subalgebra R A) : Set A) = Set.univ := rfl
@@ -699,11 +707,11 @@ theorem inf_toSubsemiring (S T : Subalgebra R A) :
 theorem sup_toSubsemiring (S T : Subalgebra R A) :
     (S ⊔ T).toSubsemiring = S.toSubsemiring ⊔ T.toSubsemiring := by
   rw [← S.toSubsemiring.closure_eq, ← T.toSubsemiring.closure_eq, ← Subsemiring.closure_union]
-  change Subsemiring.closure (Set.range (algebraMap R A) ∪ (S ∪ T)) = Subsemiring.closure (S ∪ T)
+  simp_rw [sup_def, adjoin_toSubsemiring, Subalgebra.coe_toSubsemiring]
   congr 1
   rw [Set.union_eq_right]
   rintro _ ⟨x, rfl⟩
-  exact Or.inl (algebraMap_mem S x)
+  exact Set.mem_union_left _ (algebraMap_mem S x)
 
 @[simp, norm_cast]
 theorem coe_sInf (S : Set (Subalgebra R A)) : (↑(sInf S) : Set A) = ⋂ s ∈ S, ↑s :=
@@ -730,9 +738,7 @@ theorem sSup_toSubsemiring (S : Set (Subalgebra R A)) (hS : S.Nonempty) :
     rw [Set.image_image]
     congr! with x
     exact x.toSubsemiring.closure_eq.symm
-  rw [h, sSup_image, ← Subsemiring.closure_sUnion]
-  change Subsemiring.closure (Set.range (algebraMap R A) ∪ ⋃₀ (SetLike.coe '' S)) =
-    Subsemiring.closure (⋃₀ (SetLike.coe '' S))
+  rw [h, sSup_image, ← Subsemiring.closure_sUnion, sSup_def, adjoin_toSubsemiring]
   congr 1
   rw [Set.union_eq_right]
   rintro _ ⟨x, rfl⟩
@@ -756,14 +762,12 @@ theorem iInf_toSubmodule {ι : Sort*} (S : ι → Subalgebra R A) :
 @[simp]
 theorem iInf_toSubsemiring {ι : Sort*} (S : ι → Subalgebra R A) :
     (iInf S).toSubsemiring = ⨅ i, (S i).toSubsemiring := by
-  simp only [iInf, sInf_toSubsemiring, ← Set.range_comp]
-  rfl
+  simp only [iInf, sInf_toSubsemiring, ← Set.range_comp, Function.comp]
 
 @[simp]
 theorem iSup_toSubsemiring {ι : Sort*} [Nonempty ι] (S : ι → Subalgebra R A) :
     (iSup S).toSubsemiring = ⨆ i, (S i).toSubsemiring := by
-  simp only [iSup, Set.range_nonempty, sSup_toSubsemiring, ← Set.range_comp]
-  rfl
+  simp only [iSup, Set.range_nonempty, sSup_toSubsemiring, ← Set.range_comp, Function.comp]
 
 instance : Inhabited (Subalgebra R A) := ⟨⊥⟩
 
