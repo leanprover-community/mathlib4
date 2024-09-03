@@ -455,7 +455,7 @@ theorem collinear_pair (p₁ p₂ : P) : Collinear k ({p₁, p₂} : Set P) := b
   use p₁, p₂ -ᵥ p₁
   intro p hp
   rw [Set.mem_insert_iff, Set.mem_singleton_iff] at hp
-  cases' hp with hp hp
+  rcases hp with hp | hp
   · use 0
     simp [hp]
   · use 1

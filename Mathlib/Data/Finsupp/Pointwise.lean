@@ -58,7 +58,7 @@ theorem support_mul [DecidableEq α] {g₁ g₂ : α →₀ β} :
   rw [← not_or]
   intro w
   apply h
-  cases' w with w w <;> (rw [w]; simp)
+  rcases w with w | w <;> (rw [w]; simp)
 
 instance : MulZeroClass (α →₀ β) :=
   DFunLike.coe_injective.mulZeroClass _ coe_zero coe_mul

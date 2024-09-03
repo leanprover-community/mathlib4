@@ -1082,7 +1082,7 @@ lemma succAbove_lt_ge (p : Fin (n + 1)) (i : Fin n) :
 results in a value that is less than `p`. -/
 lemma succAbove_lt_iff_castSucc_lt (p : Fin (n + 1)) (i : Fin n) :
     p.succAbove i < p ↔ castSucc i < p := by
-  cases' castSucc_lt_or_lt_succ p i with H H
+  rcases castSucc_lt_or_lt_succ p i with H | H
   · rwa [iff_true_right H, succAbove_of_castSucc_lt _ _ H]
   · rw [castSucc_lt_iff_succ_le, iff_false_right (Fin.not_le.2 H), succAbove_of_lt_succ _ _ H]
     exact Fin.not_lt.2 <| Fin.le_of_lt H
@@ -1095,7 +1095,7 @@ lemma succAbove_lt_iff_succ_le (p : Fin (n + 1)) (i : Fin n) :
 results in a value that is greater than `p`. -/
 lemma lt_succAbove_iff_le_castSucc (p : Fin (n + 1)) (i : Fin n) :
     p < p.succAbove i ↔ p ≤ castSucc i := by
-  cases' castSucc_lt_or_lt_succ p i with H H
+  rcases castSucc_lt_or_lt_succ p i with H | H
   · rw [iff_false_right (Fin.not_le.2 H), succAbove_of_castSucc_lt _ _ H]
     exact Fin.not_lt.2 <| Fin.le_of_lt H
   · rwa [succAbove_of_lt_succ _ _ H, iff_true_left H, le_castSucc_iff]

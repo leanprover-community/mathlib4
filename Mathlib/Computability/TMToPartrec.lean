@@ -1614,7 +1614,7 @@ theorem trStmts₁_trans {q q'} : q' ∈ trStmts₁ q → trStmts₁ q' ⊆ trSt
       exact Or.inr (Or.inr <| q_ih h h')
   · refine ⟨fun h x h' => ?_, fun _ x h' => ?_, fun h x h' => ?_⟩ <;> simp
     · exact Or.inr (Or.inr <| Or.inl <| q₁_ih h h')
-    · cases' Finset.mem_insert.1 h' with h' h' <;> simp [h', unrev]
+    · rcases Finset.mem_insert.1 h' with h' | h' <;> simp [h', unrev]
     · exact Or.inr (Or.inr <| Or.inr <| q₂_ih h h')
 
 theorem trStmts₁_self (q) : q ∈ trStmts₁ q := by

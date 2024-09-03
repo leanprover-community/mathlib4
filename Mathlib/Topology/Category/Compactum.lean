@@ -165,7 +165,7 @@ theorem isClosed_iff {X : Compactum} (S : Set X) :
     contradiction
   · intro h1 F h2
     specialize h1 F
-    cases' F.mem_or_compl_mem S with h h
+    rcases F.mem_or_compl_mem S with h | h
     exacts [absurd (h1 h) h2, h]
 
 instance {X : Compactum} : CompactSpace X := by
@@ -242,7 +242,7 @@ private theorem cl_cl {X : Compactum} (A : Set X) : cl (cl A) ⊆ cl A := by
   have claim6 : ∀ P ∈ C2, (P : Set (Ultrafilter X)).Nonempty := by
     suffices ∀ P ∈ C2, P ∈ C0 ∨ ∃ Q ∈ C0, P = AA ∩ Q by
       intro P hP
-      cases' this P hP with h h
+      rcases this P hP with h | h
       · exact claim2 _ h
       · rcases h with ⟨Q, hQ, rfl⟩
         exact claim3 _ hQ
@@ -300,7 +300,7 @@ theorem str_eq_of_le_nhds {X : Compactum} (F : Ultrafilter X) (x : X) : ↑F ≤
   have claim6 : ∀ S ∈ T2, Set.Nonempty S := by
     suffices ∀ S ∈ T2, S ∈ T0 ∨ ∃ Q ∈ T0, S = AA ∩ Q by
       intro S hS
-      cases' this _ hS with h h
+      rcases this _ hS with h | h
       · exact claim5 S h
       · rcases h with ⟨Q, hQ, rfl⟩
         exact claim4 Q hQ

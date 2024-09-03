@@ -561,14 +561,14 @@ theorem mul_rpow_eq_ite (x y : ℝ≥0∞) (z : ℝ) :
   wlog hxy : x ≤ y
   · convert this y x z hz (le_of_not_le hxy) using 2 <;> simp only [mul_comm, and_comm, or_comm]
   rcases eq_or_ne x 0 with (rfl | hx0)
-  · induction y <;> cases' hz with hz hz <;> simp [*, hz.not_lt]
+  · induction y <;> rcases hz with hz | hz <;> simp [*, hz.not_lt]
   rcases eq_or_ne y 0 with (rfl | hy0)
   · exact (hx0 (bot_unique hxy)).elim
   induction x
-  · cases' hz with hz hz <;> simp [hz, top_unique hxy]
+  · rcases hz with hz | hz <;> simp [hz, top_unique hxy]
   induction y
   · rw [ne_eq, coe_eq_zero] at hx0
-    cases' hz with hz hz <;> simp [*]
+    rcases hz with hz | hz <;> simp [*]
   simp only [*, false_and_iff, and_false_iff, false_or_iff, if_false]
   norm_cast at *
   rw [coe_rpow_of_ne_zero (mul_ne_zero hx0 hy0), NNReal.mul_rpow]

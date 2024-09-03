@@ -116,7 +116,7 @@ theorem cmp_to_nat_lemma {m n : PosNum} : (m : ℕ) < n → (bit1 m : ℕ) < bit
     intro h; rw [Nat.add_right_comm m m 1, add_assoc]; exact Nat.add_le_add h h
 
 theorem cmp_swap (m) : ∀ n, (cmp m n).swap = cmp n m := by
-  induction' m with m IH m IH <;> intro n <;> cases' n with n n <;> unfold cmp <;>
+  induction' m with m IH m IH <;> intro n <;> rcases n with n | n <;> unfold cmp <;>
     try { rfl } <;> rw [← IH] <;> cases cmp m n <;> rfl
 
 theorem cmp_to_nat : ∀ m n, (Ordering.casesOn (cmp m n) ((m : ℕ) < n) (m = n) ((n : ℕ) < m) : Prop)
@@ -782,7 +782,7 @@ theorem castNum_eq_bitwise {f : Num → Num → Num} {g : Bool → Bool → Bool
   · rw [fnn]
     have : ∀ (b) (n : PosNum), (cond b (↑n) 0 : ℕ) = ↑(cond b (pos n) 0 : Num) := by
       intros b _; cases b <;> rfl
-    induction' m with m IH m IH generalizing n <;> cases' n with n n
+    induction' m with m IH m IH generalizing n <;> rcases n with n | n
     any_goals simp only [show one = 1 from rfl, show pos 1 = 1 from rfl,
       show PosNum.bit0 = PosNum.bit false from rfl, show PosNum.bit1 = PosNum.bit true from rfl,
       show ((1 : Num) : ℕ) = Nat.bit true 0 from rfl]
@@ -836,7 +836,7 @@ theorem castNum_shiftRight (m : Num) (n : Nat) : ↑(m >>> n) = (m : ℕ) >>> (n
   induction' n with n IH generalizing m
   · cases m <;> rfl
   have hdiv2 : ∀ m, Nat.div2 (m + m) = m := by intro; rw [Nat.div2_val]; omega
-  cases' m with m m <;> dsimp only [PosNum.shiftr, ← PosNum.shiftr_eq_shiftRight]
+  rcases m with m | m <;> dsimp only [PosNum.shiftr, ← PosNum.shiftr_eq_shiftRight]
   · rw [Nat.shiftRight_eq_div_pow]
     symm
     apply Nat.div_eq_of_lt
@@ -862,7 +862,7 @@ theorem castNum_testBit (m n) : testBit m n = Nat.testBit m n := by
     rw [show (Num.zero : Nat) = 0 from rfl, Nat.zero_testBit]
   | pos m =>
     rw [cast_pos]
-    induction' n with n IH generalizing m <;> cases' m with m m
+    induction' n with n IH generalizing m <;> rcases m with m | m
         <;> dsimp only [PosNum.testBit]
     · rfl
     · rw [PosNum.cast_bit1, ← two_mul, ← congr_fun Nat.bit_true, Nat.testBit_bit_zero]

@@ -142,7 +142,7 @@ theorem opow_le_opow_left {a b : Ordinal} (c : Ordinal) (ab : a ≤ b) : a ^ c �
 
 theorem left_le_opow (a : Ordinal) {b : Ordinal} (b1 : 0 < b) : a ≤ a ^ b := by
   nth_rw 1 [← opow_one a]
-  cases' le_or_gt a 1 with a1 a1
+  rcases le_or_gt a 1 with a1 | a1
   · rcases lt_or_eq_of_le a1 with a0 | a1
     · rw [lt_one_iff_zero] at a0
       rw [a0, zero_opow Ordinal.one_ne_zero]
@@ -201,7 +201,7 @@ theorem opow_mul (a b c : Ordinal) : a ^ (b * c) = (a ^ b) ^ c := by
     by_cases c0 : c = 0
     · simp only [c0, mul_zero, opow_zero]
     simp only [zero_opow b0, zero_opow c0, zero_opow (mul_ne_zero b0 c0)]
-  cases' eq_or_lt_of_le (one_le_iff_ne_zero.2 a0) with a1 a1
+  rcases eq_or_lt_of_le (one_le_iff_ne_zero.2 a0) with a1 | a1
   · subst a1
     simp only [one_opow]
   induction c using limitRecOn with
@@ -362,7 +362,7 @@ theorem log_opow_mul_add {b u v w : Ordinal} (hb : 1 < b) (hv : v ≠ 0) (hvb : 
     (hw : w < b ^ u) : log b (b ^ u * v + w) = u := by
   have hne' := (opow_mul_add_pos (zero_lt_one.trans hb).ne' u hv w).ne'
   by_contra! hne
-  cases' lt_or_gt_of_ne hne with h h
+  rcases lt_or_gt_of_ne hne with h | h
   · rw [← lt_opow_iff_log_lt hb hne'] at h
     exact h.not_le ((le_mul_left _ (Ordinal.pos_iff_ne_zero.2 hv)).trans (le_add_right _ _))
   · conv at h => change u < log b (b ^ u * v + w)

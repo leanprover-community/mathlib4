@@ -1000,7 +1000,7 @@ instance : SuccOrder (WithTop α) where
     | ⊤ => ⊤
     | Option.some a => ite (succ a = a) ⊤ (some (succ a))
   le_succ a := by
-    cases' a with a a
+    rcases a with a | a
     · exact le_top
     change _ ≤ ite _ _ _
     split_ifs
@@ -1152,14 +1152,14 @@ instance : PredOrder (WithBot α) where
     | ⊥ => ⊥
     | Option.some a => ite (pred a = a) ⊥ (some (pred a))
   pred_le a := by
-    cases' a with a a
+    rcases a with a | a
     · exact bot_le
     change ite _ _ _ ≤ _
     split_ifs
     · exact bot_le
     · exact coe_le_coe.2 (pred_le a)
   min_of_le_pred {a} ha := by
-    cases' a with a a
+    rcases a with a | a
     · exact isMin_bot
     dsimp only at ha
     split_ifs at ha with ha'

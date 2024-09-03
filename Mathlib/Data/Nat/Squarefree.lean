@@ -83,7 +83,7 @@ theorem Squarefree.ext_iff {n m : ℕ} (hn : Squarefree n) (hm : Squarefree m) :
     have h₂ := hn.natFactorization_le_one p
     have h₃ := hm.natFactorization_le_one p
     rw [Nat.le_add_one_iff, Nat.le_zero] at h₂ h₃
-    cases' h₂ with h₂ h₂
+    rcases h₂ with h₂ | h₂
     · rwa [h₂, eq_comm, ← h₁]
     · rw [h₂, h₃.resolve_left]
       rw [← h₁, h₂]

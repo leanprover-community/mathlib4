@@ -401,7 +401,7 @@ theorem exists_of_kerase {a : α} {l : List (Sigma β)} (h : a ∈ l.keys) :
     · subst e
       exact ⟨hd.2, [], tl, by simp, by cases hd; rfl, by simp⟩
     · simp only [keys_cons, mem_cons] at h
-      cases' h with h h
+      rcases h with h | h
       · exact absurd h e
       rcases ih h with ⟨b, tl₁, tl₂, h₁, h₂, h₃⟩
       exact ⟨b, hd :: tl₁, tl₂, not_mem_cons_of_ne_of_not_mem e h₁, by (rw [h₂]; rfl), by
@@ -484,7 +484,7 @@ theorem kerase_append_left {a} :
   | [], _, h => by cases h
   | s :: l₁, l₂, h₁ => by
     if h₂ : a = s.1 then simp [h₂]
-    else simp at h₁; cases' h₁ with h₁ h₁ <;> [exact absurd h₁ h₂; simp [h₂, kerase_append_left h₁]]
+    else simp at h₁; rcases h₁ with h₁ | h₁ <;> [exact absurd h₁ h₂; simp [h₂, kerase_append_left h₁]]
 
 theorem kerase_append_right {a} :
     ∀ {l₁ l₂ : List (Sigma β)}, a ∉ l₁.keys → kerase a (l₁ ++ l₂) = l₁ ++ kerase a l₂
@@ -681,7 +681,7 @@ theorem Perm.kunion {l₁ l₂ l₃ l₄ : List (Sigma β)} (nd₃ : l₃.NodupK
 @[simp]
 theorem dlookup_kunion_left {a} {l₁ l₂ : List (Sigma β)} (h : a ∈ l₁.keys) :
     dlookup a (kunion l₁ l₂) = dlookup a l₁ := by
-  induction' l₁ with s _ ih generalizing l₂ <;> simp at h; cases' h with h h <;> cases' s with a'
+  induction' l₁ with s _ ih generalizing l₂ <;> simp at h; rcases h with h | h <;> cases' s with a'
   · subst h
     simp
   · rw [kunion_cons]

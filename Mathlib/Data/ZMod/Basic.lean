@@ -1186,7 +1186,7 @@ theorem valMinAbs_spec {n : ℕ} [NeZero n] (x : ZMod n) (y : ℤ) :
 
 theorem natAbs_valMinAbs_le {n : ℕ} [NeZero n] (x : ZMod n) : x.valMinAbs.natAbs ≤ n / 2 := by
   rw [Nat.le_div_two_iff_mul_two_le]
-  cases' x.valMinAbs.natAbs_eq with h h
+  rcases x.valMinAbs.natAbs_eq with h | h
   · rw [← h]
     exact x.valMinAbs_mem_Ioc.2
   · rw [← neg_le_neg_iff, ← neg_mul, ← h]
@@ -1220,7 +1220,7 @@ alias nat_cast_natAbs_valMinAbs := natCast_natAbs_valMinAbs
 
 theorem valMinAbs_neg_of_ne_half {n : ℕ} {a : ZMod n} (ha : 2 * a.val ≠ n) :
     (-a).valMinAbs = -a.valMinAbs := by
-  cases' eq_zero_or_neZero n with h h
+  rcases eq_zero_or_neZero n with h | h
   · subst h
     rfl
   refine (valMinAbs_spec _ _).2 ⟨?_, ?_, ?_⟩

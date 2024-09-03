@@ -620,7 +620,7 @@ theorem cycleFactorsFinset_mul_inv_mem_eq_sdiff [DecidableEq α] [Fintype α] {f
         erase_eq_of_not_mem, mul_assoc, Disjoint.cycleFactorsFinset_mul_eq_union, hσ hf]
       · rw [mem_cycleFactorsFinset_iff] at hf
         intro x
-        cases' hd.symm x with hx hx
+        rcases hd.symm x with hx | hx
         · exact Or.inl hx
         · refine Or.inr ?_
           by_cases hfx : f x = x
@@ -635,7 +635,7 @@ theorem cycleFactorsFinset_mul_inv_mem_eq_sdiff [DecidableEq α] [Fintype α] {f
         Disjoint.cycleFactorsFinset_mul_eq_union, hτ hf]
       · rw [mem_cycleFactorsFinset_iff] at hf
         intro x
-        cases' hd x with hx hx
+        rcases hd x with hx | hx
         · exact Or.inl hx
         · refine Or.inr ?_
           by_cases hfx : f x = x

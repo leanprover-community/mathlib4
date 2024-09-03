@@ -293,21 +293,21 @@ theorem cmp_compares : ∀ (a b : ONote) [NF a] [NF b], (cmp a b).Compares a b
       unfold _root_.cmp; cases nh : cmpUsing (· < ·) (n₁ : ℕ) n₂ <;>
       rw [cmpUsing, ite_eq_iff, not_lt] at nh
       case lt =>
-        cases' nh with nh nh
+        rcases nh with nh | nh
         · exact oadd_lt_oadd_2 h₁ nh.left
-        · rw [ite_eq_iff] at nh; cases' nh.right with nh nh <;> cases nh <;> contradiction
+        · rw [ite_eq_iff] at nh; rcases nh.right with nh | nh <;> cases nh <;> contradiction
       case gt =>
-        cases' nh with nh nh
+        rcases nh with nh | nh
         · cases nh; contradiction
         · cases' nh with _ nh
-          rw [ite_eq_iff] at nh; cases' nh with nh nh
+          rw [ite_eq_iff] at nh; rcases nh with nh | nh
           · exact oadd_lt_oadd_2 h₂ nh.left
           · cases nh; contradiction
-      cases' nh with nh nh
+      rcases nh with nh | nh
       · cases nh; contradiction
       cases' nh with nhl nhr
       rw [ite_eq_iff] at nhr
-      cases' nhr with nhr nhr
+      rcases nhr with nhr | nhr
       · cases nhr; contradiction
       obtain rfl := Subtype.eq (nhl.eq_of_not_lt nhr.1)
       have IHa := @cmp_compares _ _ h₁.snd h₂.snd
@@ -735,9 +735,9 @@ instance nf_mulNat (o) [NF o] (n) : NF (mulNat o n) := by simpa using ONote.mul_
 instance nf_opowAux (e a0 a) [NF e] [NF a0] [NF a] : ∀ k m, NF (opowAux e a0 a k m) := by
   intro k m
   unfold opowAux
-  cases' m with m m
+  rcases m with m | m
   · cases k <;> exact NF.zero
-  cases' k with k k
+  rcases k with k | k
   · exact NF.oadd_zero _ _
   · haveI := nf_opowAux e a0 a k
     simp only [Nat.succ_ne_zero m, IsEmpty.forall_iff, mulNat_eq_mul]; infer_instance

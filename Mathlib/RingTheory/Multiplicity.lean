@@ -381,7 +381,7 @@ protected theorem neg (a b : α) : multiplicity a (-b) = multiplicity a b :=
                 (mt dvd_neg.1 (is_greatest' _ (lt_succ_self _)))))
 
 theorem Int.natAbs (a : ℕ) (b : ℤ) : multiplicity a b.natAbs = multiplicity (a : ℤ) b := by
-  cases' Int.natAbs_eq b with h h <;> conv_rhs => rw [h]
+  rcases Int.natAbs_eq b with h | h <;> conv_rhs => rw [h]
   · rw [Int.natCast_multiplicity]
   · rw [multiplicity.neg, Int.natCast_multiplicity]
 
@@ -521,7 +521,7 @@ protected theorem mul {p a b : α} (hp : Prime p) :
         PartENat.natCast_inj, multiplicity.mul' hp]
   else by
     rw [eq_top_iff_not_finite.2 (mt (finite_mul_iff hp).1 h)]
-    cases' not_and_or.1 h with h h <;> simp [eq_top_iff_not_finite.2 h]
+    rcases not_and_or.1 h with h | h <;> simp [eq_top_iff_not_finite.2 h]
 
 theorem Finset.prod {β : Type*} {p : α} (hp : Prime p) (s : Finset β) (f : β → α) :
     multiplicity p (∏ x ∈ s, f x) = ∑ x ∈ s, multiplicity p (f x) := by

@@ -118,7 +118,7 @@ theorem one_lt_ack_succ_right : ∀ m n, 1 < ack m (n + 1)
   | 0, n => by simp
   | m + 1, n => by
     rw [ack_succ_succ]
-    cases' exists_eq_succ_of_ne_zero (ack_pos (m + 1) n).ne' with h h
+    rcases exists_eq_succ_of_ne_zero (ack_pos (m + 1) n).ne' with h | h
     rw [h]
     apply one_lt_ack_succ_right
 
@@ -218,7 +218,7 @@ theorem ack_le_ack {m₁ m₂ n₁ n₂ : ℕ} (hm : m₁ ≤ m₂) (hn : n₁ �
   (ack_mono_left n₁ hm).trans <| ack_mono_right m₂ hn
 
 theorem ack_succ_right_le_ack_succ_left (m n : ℕ) : ack m (n + 1) ≤ ack (m + 1) n := by
-  cases' n with n n
+  rcases n with n | n
   · simp
   · rw [ack_succ_succ]
     apply ack_mono_right m (le_trans _ <| add_add_one_le_ack _ n)
@@ -228,7 +228,7 @@ theorem ack_succ_right_le_ack_succ_left (m n : ℕ) : ack m (n + 1) ≤ ack (m +
 private theorem sq_le_two_pow_add_one_minus_three (n : ℕ) : n ^ 2 ≤ 2 ^ (n + 1) - 3 := by
   induction' n with k hk
   · norm_num
-  · cases' k with k k
+  · rcases k with k | k
     · norm_num
     · rw [add_sq, Nat.pow_succ 2, mul_comm _ 2, two_mul (2 ^ _),
           add_tsub_assoc_of_le, add_comm (2 ^ _), add_assoc]
@@ -317,7 +317,7 @@ theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) :
         simp only
         apply (hb _).trans ((ack_pair_lt _ _ _).trans_le _)
         -- If m is the maximum, we get a very weak inequality.
-        cases' lt_or_le _ m with h₁ h₁
+        rcases lt_or_le _ m with h₁ | h₁
         · rw [max_eq_left h₁.le]
           exact ack_le_ack (Nat.add_le_add (le_max_right a b) <| by norm_num)
                            (self_le_add_right m _)
@@ -325,7 +325,7 @@ theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) :
         -- We get rid of the second `pair`.
         apply (ack_pair_lt _ _ _).le.trans
         -- If n is the maximum, we get a very weak inequality.
-        cases' lt_or_le _ n with h₂ h₂
+        rcases lt_or_le _ n with h₂ | h₂
         · rw [max_eq_left h₂.le, add_assoc]
           exact
             ack_le_ack (Nat.add_le_add (le_max_right a b) <| by norm_num)

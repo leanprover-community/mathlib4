@@ -444,7 +444,7 @@ theorem liftRel_destruct_iff {R : α → β → Prop} {s : WSeq α} {t : WSeq β
       LiftRel R s t ∨ Computation.LiftRel (LiftRelO R (LiftRel R)) (destruct s) (destruct t),
       Or.inr h, fun {s t} h => by
       have h : Computation.LiftRel (LiftRelO R (LiftRel R)) (destruct s) (destruct t) := by
-        cases' h with h h
+        rcases h with h | h
         · exact liftRel_destruct h
         · assumption
       apply Computation.LiftRel.imp _ _ _ h
@@ -871,7 +871,7 @@ theorem get?_mem {s : WSeq α} {a n} : some a ∈ get? s n → a ∈ s := by
 theorem exists_get?_of_mem {s : WSeq α} {a} (h : a ∈ s) : ∃ n, some a ∈ get? s n := by
   apply mem_rec_on h
   · intro a' s' h
-    cases' h with h h
+    rcases h with h | h
     · exists 0
       simp only [get?, drop, head_cons]
       rw [h]

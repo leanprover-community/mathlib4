@@ -690,7 +690,7 @@ theorem mul_eq_bot {R : Type*} [CommSemiring R] [NoZeroDivisors R] {I J : Ideal 
       J.eq_bot_iff.mpr fun j hj =>
         let ⟨i, hi, ne0⟩ := I.ne_bot_iff.mp I_ne_bot
         Or.resolve_left (mul_eq_zero.mp ((I * J).eq_bot_iff.mp hij _ (mul_mem_mul hi hj))) ne0,
-    fun h => by cases' h with h h <;> rw [← Ideal.mul_bot, h, Ideal.mul_comm]⟩
+    fun h => by rcases h with h | h <;> rw [← Ideal.mul_bot, h, Ideal.mul_comm]⟩
 
 instance {R : Type*} [CommSemiring R] [NoZeroDivisors R] : NoZeroDivisors (Ideal R) where
   eq_zero_or_eq_zero_of_mul_eq_zero := mul_eq_bot.1

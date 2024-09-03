@@ -1034,7 +1034,7 @@ theorem ContinuousOn.if' {s : Set α} {p : α → Prop} {f g : α → β} [∀ a
   by_cases hx' : x ∈ frontier { a | p a }
   · exact (hpf x ⟨hx, hx'⟩).piecewise_nhdsWithin (hpg x ⟨hx, hx'⟩)
   · rw [← inter_univ s, ← union_compl_self { a | p a }, inter_union_distrib_left] at hx ⊢
-    cases' hx with hx hx
+    rcases hx with hx | hx
     · apply ContinuousWithinAt.union
       · exact (hf x hx).congr (fun y hy => if_pos hy.2) (if_pos hx.2)
       · have : x ∉ closure { a | p a }ᶜ := fun h => hx' ⟨subset_closure hx.2, by

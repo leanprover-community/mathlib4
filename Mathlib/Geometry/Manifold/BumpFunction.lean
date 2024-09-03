@@ -146,7 +146,7 @@ theorem image_eq_inter_preimage_of_subset_support {s : Set M} (hs : s ⊆ suppor
 
 theorem mem_Icc : f x ∈ Icc (0 : ℝ) 1 := by
   have : f x = 0 ∨ f x = _ := indicator_eq_zero_or_self _ _ _
-  cases' this with h h <;> rw [h]
+  rcases this with h | h <;> rw [h]
   exacts [left_mem_Icc.2 zero_le_one, ⟨f.nonneg, f.le_one⟩]
 
 theorem nonneg : 0 ≤ f x :=

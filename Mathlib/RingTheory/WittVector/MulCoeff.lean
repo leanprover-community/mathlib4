@@ -251,7 +251,7 @@ theorem nth_mul_coeff' (n : ℕ) :
       congr!
       simp
     refine ⟨a.fst, ⟨a.snd, ?_⟩⟩
-    cases' ha' with ha ha <;> omega
+    rcases ha' with ha | ha <;> omega
   use f
   intro x y
   dsimp [f, peval]

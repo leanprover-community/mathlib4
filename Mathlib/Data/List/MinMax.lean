@@ -77,7 +77,7 @@ theorem not_of_mem_foldl_argAux (hr₀ : Irreflexive r) (hr₁ : Transitive r) :
     simp_all [hf.1, hf.2, hr₀ _]
   rw [hf, Option.mem_def] at ho
   dsimp only at ho
-  split_ifs at ho with hac <;> cases' mem_append.1 hb with h h <;>
+  split_ifs at ho with hac <;> rcases mem_append.1 hb with h | h <;>
     injection ho with ho <;> subst ho
   · exact fun hba => ih h hf (hr₁ hba hac)
   · simp_all [hr₀ _]

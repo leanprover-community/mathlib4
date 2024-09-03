@@ -1301,7 +1301,7 @@ theorem direction_sup {s1 s2 : AffineSubspace k P} {p1 p2 : P} (hp1 : p1 ∈ s1)
     rw [direction_affineSpan, vectorSpan_eq_span_vsub_set_right k (Set.mem_union_left _ hp1),
       Submodule.span_le]
     rintro v ⟨p3, hp3, rfl⟩
-    cases' hp3 with hp3 hp3
+    rcases hp3 with hp3 | hp3
     · rw [sup_assoc, sup_comm, SetLike.mem_coe, Submodule.mem_sup]
       use 0, Submodule.zero_mem _, p3 -ᵥ p1, vsub_mem_direction hp3 hp1
       rw [zero_add]

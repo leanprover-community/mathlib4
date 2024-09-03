@@ -864,7 +864,7 @@ theorem chain_of_pairwise : (∀ a ∈ s, ∀ b ∈ s, r a b) → Chain r s := b
         ⟨pairwise_of_forall_mem_list fun b hb c hc => hs b (Hl hb) c (Hl hc),
           pairwise_singleton r a, fun b hb c hc => ?_⟩⟩
   · rw [mem_append] at hb
-    cases' hb with hb hb
+    rcases hb with hb | hb
     · exact hs a Ha b (Hl hb)
     · rw [mem_singleton] at hb
       rw [hb]

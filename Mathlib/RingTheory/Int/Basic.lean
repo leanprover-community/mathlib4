@@ -61,7 +61,7 @@ theorem sq_of_gcd_eq_one {a b c : ℤ} (h : Int.gcd a b = 1) (heq : a * b = c ^ 
   obtain ⟨d, ⟨u, hu⟩⟩ := exists_associated_pow_of_mul_eq_pow h' heq
   use d
   rw [← hu]
-  cases' Int.units_eq_one_or u with hu' hu' <;>
+  rcases Int.units_eq_one_or u with hu' | hu' <;>
     · rw [hu']
       simp
 

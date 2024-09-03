@@ -278,7 +278,7 @@ theorem IndepFun.integral_mul (hXY : IndepFun X Y μ) (hX : AEStronglyMeasurable
       rintro ⟨HX, HY⟩
       exact h (hXY.integrable_mul HX HY)
     rw [not_and_or] at I
-    cases' I with I I <;> simp [integral_undef I]
+    rcases I with I | I <;> simp [integral_undef I]
 
 theorem IndepFun.integral_mul' (hXY : IndepFun X Y μ) (hX : AEStronglyMeasurable X μ)
     (hY : AEStronglyMeasurable Y μ) :

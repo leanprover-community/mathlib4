@@ -66,7 +66,7 @@ lemma isOfFinOrder_iff_zpow_eq_one {G} [Group G] {x : G} :
   rw [isOfFinOrder_iff_pow_eq_one]
   refine ⟨fun ⟨n, hn, hn'⟩ ↦ ⟨n, Int.natCast_ne_zero_iff_pos.mpr hn, zpow_natCast x n ▸ hn'⟩,
     fun ⟨n, hn, hn'⟩ ↦ ⟨n.natAbs, Int.natAbs_pos.mpr hn, ?_⟩⟩
-  cases' (Int.natAbs_eq_iff (a := n)).mp rfl with h h
+  rcases (Int.natAbs_eq_iff (a := n)).mp rfl with h | h
   · rwa [h, zpow_natCast] at hn'
   · rwa [h, zpow_neg, inv_eq_one, zpow_natCast] at hn'
 
@@ -860,7 +860,7 @@ theorem orderOf_dvd_card : orderOf x ∣ Fintype.card G := by
 
 @[to_additive]
 theorem orderOf_dvd_natCard {G : Type*} [Group G] (x : G) : orderOf x ∣ Nat.card G := by
-  cases' fintypeOrInfinite G with h h
+  rcases fintypeOrInfinite G with h | h
   · simp only [Nat.card_eq_fintype_card, orderOf_dvd_card]
   · simp only [card_eq_zero_of_infinite, dvd_zero]
 
@@ -1030,12 +1030,12 @@ theorem orderOf_abs_ne_one (h : |x| ≠ 1) : orderOf x = 0 := by
   rw [orderOf_eq_zero_iff']
   intro n hn hx
   replace hx : |x| ^ n = 1 := by simpa only [abs_one, abs_pow] using congr_arg abs hx
-  cases' h.lt_or_lt with h h
+  rcases h.lt_or_lt with h | h
   · exact ((pow_lt_one (abs_nonneg x) h hn.ne').ne hx).elim
   · exact ((one_lt_pow h hn.ne').ne' hx).elim
 
 theorem LinearOrderedRing.orderOf_le_two : orderOf x ≤ 2 := by
-  cases' ne_or_eq |x| 1 with h h
+  rcases ne_or_eq |x| 1 with h | h
   · simp [orderOf_abs_ne_one h]
   rcases eq_or_eq_neg_of_abs_eq h with (rfl | rfl)
   · simp

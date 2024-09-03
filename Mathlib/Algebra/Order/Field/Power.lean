@@ -142,7 +142,7 @@ alias ⟨_, Odd.zpow_neg⟩ := Odd.zpow_neg_iff
 alias ⟨_, Odd.zpow_nonpos⟩ := Odd.zpow_nonpos_iff
 
 theorem Even.zpow_abs {p : ℤ} (hp : Even p) (a : α) : |a| ^ p = a ^ p := by
-  cases' abs_choice a with h h <;> simp only [h, hp.neg_zpow _]
+  rcases abs_choice a with h | h <;> simp only [h, hp.neg_zpow _]
 
 /-! ### Bernoulli's inequality -/
 

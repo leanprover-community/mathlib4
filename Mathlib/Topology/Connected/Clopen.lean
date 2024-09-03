@@ -148,7 +148,7 @@ lemma subsingleton_of_disjoint_isClopen
   obtain ⟨i, j, h_ne⟩ := contra
   replace h_ne : s i ∩ s j = ∅ := by
     simpa only [← bot_eq_empty, eq_bot_iff, ← inf_eq_inter, ← disjoint_iff_inf_le] using h_disj h_ne
-  cases' isClopen_iff.mp (h_clopen i) with hi hi
+  rcases isClopen_iff.mp (h_clopen i) with hi | hi
   · exact h_nonempty i hi
   · rw [hi, univ_inter] at h_ne
     exact h_nonempty j h_ne
@@ -264,7 +264,7 @@ theorem isPreconnected_iff_subset_of_disjoint {s : Set α} :
     by_contra H
     specialize h u v hu hv hs (Set.not_nonempty_iff_eq_empty.mp H)
     apply H
-    cases' h with h h
+    rcases h with h | h
     · rcases hsv with ⟨x, hxs, hxv⟩
       exact ⟨x, hxs, ⟨h hxs, hxv⟩⟩
     · rcases hsu with ⟨x, hxs, hxu⟩
@@ -322,7 +322,7 @@ theorem isPreconnected_iff_subset_of_disjoint_closed :
     by_contra H
     specialize h u v hu hv hs (Set.not_nonempty_iff_eq_empty.mp H)
     apply H
-    cases' h with h h
+    rcases h with h | h
     · rcases hsv with ⟨x, hxs, hxv⟩
       exact ⟨x, hxs, ⟨h hxs, hxv⟩⟩
     · rcases hsu with ⟨x, hxs, hxu⟩

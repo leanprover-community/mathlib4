@@ -463,15 +463,15 @@ theorem adjoin_induction₂ {s : Set A} {p : A → A → Prop} {a b : A} (ha : a
   refine
     Algebra.adjoin_induction₂ ha hb (fun x hx y hy => ?_) Halg (fun r x hx => ?_) (fun r x hx => ?_)
       Hadd_left Hadd_right Hmul_left Hmul_right
-  · cases' hx with hx hx <;> cases' hy with hy hy
+  · rcases hx with hx hx <;> cases' hy with hy | hy
     · exact Hs x hx y hy
     · exact star_star y ▸ Hstar_right _ _ (Hs _ hx _ hy)
     · exact star_star x ▸ Hstar_left _ _ (Hs _ hx _ hy)
     · exact star_star x ▸ star_star y ▸ Hstar _ _ (Hs _ hx _ hy)
-  · cases' hx with hx hx
+  · rcases hx with hx | hx
     · exact Halg_left _ _ hx
     · exact star_star x ▸ Hstar_right _ _ (Halg_left r _ hx)
-  · cases' hx with hx hx
+  · rcases hx with hx | hx
     · exact Halg_right _ _ hx
     · exact star_star x ▸ Hstar_left _ _ (Halg_right r _ hx)
 
@@ -509,7 +509,7 @@ abbrev adjoinCommSemiringOfComm {s : Set A}
         Algebra.adjoinCommSemiringOfComm R
           (by
             intro a ha b hb
-            cases' ha with ha ha <;> cases' hb with hb hb
+            rcases ha with ha ha <;> cases' hb with hb | hb
             · exact hcomm _ ha _ hb
             · exact star_star b ▸ hcomm_star _ ha _ hb
             · exact star_star a ▸ (hcomm_star _ hb _ ha).symm

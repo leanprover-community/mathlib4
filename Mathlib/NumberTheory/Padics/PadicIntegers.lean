@@ -368,7 +368,7 @@ theorem valuation_p_pow_mul (n : ℕ) (c : ℤ_[p]) (hc : c ≠ 0) :
   have aux : (p : ℤ_[p]) ^ n * c ≠ 0 := by
     contrapose! hc
     rw [mul_eq_zero] at hc
-    cases' hc with hc hc
+    rcases hc with hc | hc
     · refine (hp.1.ne_zero ?_).elim
       exact_mod_cast pow_eq_zero hc
     · exact hc

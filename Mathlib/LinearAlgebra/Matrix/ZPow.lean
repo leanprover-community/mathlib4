@@ -53,7 +53,7 @@ theorem pow_sub' (A : M) {m n : ℕ} (ha : IsUnit A.det) (h : n ≤ m) :
 theorem pow_inv_comm' (A : M) (m n : ℕ) : A⁻¹ ^ m * A ^ n = A ^ n * A⁻¹ ^ m := by
   induction' n with n IH generalizing m
   · simp
-  cases' m with m m
+  rcases m with m | m
   · simp
   rcases nonsing_inv_cancel_or_zero A with (⟨h, h'⟩ | h)
   · calc
@@ -105,7 +105,7 @@ theorem zpow_neg_natCast (A : M) (n : ℕ) : A ^ (-n : ℤ) = (A ^ n)⁻¹ := by
 @[deprecated (since := "2024-04-05")] alias zpow_neg_coe_nat := zpow_neg_natCast
 
 theorem _root_.IsUnit.det_zpow {A : M} (h : IsUnit A.det) (n : ℤ) : IsUnit (A ^ n).det := by
-  cases' n with n n
+  rcases n with n | n
   · simpa using h.pow n
   · simpa using h.pow n.succ
 

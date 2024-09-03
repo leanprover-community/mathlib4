@@ -1022,7 +1022,7 @@ theorem noZeroDivisors_of_le_nonZeroDivisors [Algebra A S] {M : Submonoid A} [Is
         z * w * algebraMap A S y.2 * algebraMap A S x.2 = algebraMap A S x.1 * algebraMap A S y.1 :=
         by rw [mul_assoc z, hy, ← hx]; ring
       rw [h, zero_mul, zero_mul, ← (algebraMap A S).map_mul] at this
-      cases' eq_zero_or_eq_zero_of_mul_eq_zero ((to_map_eq_zero_iff S hM).mp this.symm) with H H
+      rcases eq_zero_or_eq_zero_of_mul_eq_zero ((to_map_eq_zero_iff S hM).mp this.symm) with H | H
       · exact Or.inl (eq_zero_of_fst_eq_zero hx H)
       · exact Or.inr (eq_zero_of_fst_eq_zero hy H) }
 

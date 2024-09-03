@@ -408,7 +408,7 @@ theorem Cofix.bisim_rel (r : Cofix F → Cofix F → Prop)
     left
     rfl
   · intro x y r'xy
-    cases' r'xy with r'xy r'xy
+    rcases r'xy with r'xy | r'xy
     · rw [r'xy]
     have : ∀ x y, r x y → r' x y := fun x y h => Or.inr h
     rw [← Quot.factor_mk_eq _ _ this]

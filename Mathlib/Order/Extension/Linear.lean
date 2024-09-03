@@ -36,13 +36,13 @@ theorem extend_partialOrder {α : Type u} (r : α → α → Prop) [IsPartialOrd
     · rintro x y z ⟨s₁, h₁s₁, h₂s₁⟩ ⟨s₂, h₁s₂, h₂s₂⟩
       haveI : IsPartialOrder _ _ := hc₁ h₁s₁
       haveI : IsPartialOrder _ _ := hc₁ h₁s₂
-      cases' hc₂.total h₁s₁ h₁s₂ with h h
+      rcases hc₂.total h₁s₁ h₁s₂ with h | h
       · exact ⟨s₂, h₁s₂, _root_.trans (h _ _ h₂s₁) h₂s₂⟩
       · exact ⟨s₁, h₁s₁, _root_.trans h₂s₁ (h _ _ h₂s₂)⟩
     · rintro x y ⟨s₁, h₁s₁, h₂s₁⟩ ⟨s₂, h₁s₂, h₂s₂⟩
       haveI : IsPartialOrder _ _ := hc₁ h₁s₁
       haveI : IsPartialOrder _ _ := hc₁ h₁s₂
-      cases' hc₂.total h₁s₁ h₁s₂ with h h
+      rcases hc₂.total h₁s₁ h₁s₂ with h | h
       · exact antisymm (h _ _ h₂s₁) h₂s₂
       · apply antisymm h₂s₁ (h _ _ h₂s₂)
   obtain ⟨s, hrs, hs⟩ := zorn_le_nonempty₀ S hS r ‹_›

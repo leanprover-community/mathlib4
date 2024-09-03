@@ -433,7 +433,7 @@ theorem realize_constantsVarsEquiv [L[[α]].Structure M] [(lhomWithConstants L �
   erw [← (lhomWithConstants L α).map_onRelation
       (Equiv.sumEmpty (L.Relations n) ((constantsOn α).Relations n) R) xs]
   rcongr
-  cases' R with R R
+  rcases R with R | R
   · simp
   · exact isEmptyElim R
 

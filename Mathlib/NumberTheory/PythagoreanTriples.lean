@@ -119,8 +119,8 @@ theorem mul_isClassified (k : ℤ) (hc : h.IsClassified) : (h.mul k).IsClassifie
 
 theorem even_odd_of_coprime (hc : Int.gcd x y = 1) :
     x % 2 = 0 ∧ y % 2 = 1 ∨ x % 2 = 1 ∧ y % 2 = 0 := by
-  cases' Int.emod_two_eq_zero_or_one x with hx hx <;>
-    cases' Int.emod_two_eq_zero_or_one y with hy hy
+  rcases Int.emod_two_eq_zero_or_one x with hx | hx <;>
+    rcases Int.emod_two_eq_zero_or_one y with hy | hy
   -- x even, y even
   · exfalso
     apply Nat.not_coprime_of_dvd_of_dvd (by decide : 1 < 2) _ _ hc
@@ -225,7 +225,7 @@ theorem isPrimitiveClassified_of_coprime_of_zero_left (hc : Int.gcd x y = 1) (hx
   subst x
   change Nat.gcd 0 (Int.natAbs y) = 1 at hc
   rw [Nat.gcd_zero_left (Int.natAbs y)] at hc
-  cases' Int.natAbs_eq y with hy hy
+  rcases Int.natAbs_eq y with hy | hy
   · use 1, 0
     rw [hy, hc, Int.gcd_zero_right]
     decide
@@ -498,8 +498,8 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
   have hmncp : Int.gcd m n = 1 := by
     rw [Int.gcd_comm]
     exact hnmcp
-  cases' Int.emod_two_eq_zero_or_one m with hm2 hm2 <;>
-    cases' Int.emod_two_eq_zero_or_one n with hn2 hn2
+  rcases Int.emod_two_eq_zero_or_one m with hm2 | hm2 <;>
+    rcases Int.emod_two_eq_zero_or_one n with hn2 | hn2
   · -- m even, n even
     exfalso
     have h1 : 2 ∣ (Int.gcd n m : ℤ) :=

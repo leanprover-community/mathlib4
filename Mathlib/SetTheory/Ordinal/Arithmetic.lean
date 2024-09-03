@@ -427,7 +427,7 @@ theorem add_le_of_limit {a b c : Ordinal} (h : IsLimit b) : a + b ≤ c ↔ ∀ 
           suffices ∀ x : β, Sum.Lex r s (Sum.inr x) (enum _ ⟨_, l⟩) by
             -- Porting note: `revert` & `intro` is required because `cases'` doesn't replace
             --               `enum _ _ l` in `this`.
-            revert this; cases' enum _ ⟨_, l⟩ with x x <;> intro this
+            revert this; rcases enum _ ⟨_, l⟩ with x | x <;> intro this
             · cases this (enum s ⟨0, h.pos⟩)
             · exact irrefl _ (this _)
           intro x
@@ -1409,7 +1409,7 @@ theorem lsub_le_sup_succ {ι : Type u} (f : ι → Ordinal.{max u v}) :
 
 theorem sup_eq_lsub_or_sup_succ_eq_lsub {ι : Type u} (f : ι → Ordinal.{max u v}) :
     sup.{_, v} f = lsub.{_, v} f ∨ succ (sup.{_, v} f) = lsub.{_, v} f := by
-  cases' eq_or_lt_of_le (sup_le_lsub.{_, v} f) with h h
+  rcases eq_or_lt_of_le (sup_le_lsub.{_, v} f) with h | h
   · exact Or.inl h
   · exact Or.inr ((succ_le_of_lt h).antisymm (lsub_le_sup_succ f))
 

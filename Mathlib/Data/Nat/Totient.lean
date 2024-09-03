@@ -121,7 +121,7 @@ theorem totient_even {n : ℕ} (hn : 2 < n) : Even n.totient := by
 
 theorem totient_mul {m n : ℕ} (h : m.Coprime n) : φ (m * n) = φ m * φ n :=
   if hmn0 : m * n = 0 then by
-    cases' Nat.mul_eq_zero.1 hmn0 with h h <;>
+    rcases Nat.mul_eq_zero.1 hmn0 with h | h <;>
       simp only [totient_zero, mul_zero, zero_mul, h]
   else by
     haveI : NeZero (m * n) := ⟨hmn0⟩
@@ -227,7 +227,7 @@ theorem card_units_zmod_lt_sub_one {p : ℕ} (hp : 1 < p) [Fintype (ZMod p)ˣ] :
 
 theorem prime_iff_card_units (p : ℕ) [Fintype (ZMod p)ˣ] :
     p.Prime ↔ Fintype.card (ZMod p)ˣ = p - 1 := by
-  cases' eq_zero_or_neZero p with hp hp
+  rcases eq_zero_or_neZero p with hp | hp
   · subst hp
     simp only [ZMod, not_prime_zero, false_iff_iff, zero_tsub]
     -- the subst created a non-defeq but subsingleton instance diamond; resolve it

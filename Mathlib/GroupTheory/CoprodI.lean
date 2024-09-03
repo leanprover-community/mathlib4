@@ -871,7 +871,7 @@ include hcard in
 theorem lift_word_prod_nontrivial_of_not_empty {i j} (w : NeWord H i j) :
     lift f w.prod ≠ 1 := by
   classical
-    cases' hcard with hcard hcard
+    rcases hcard with hcard | hcard
     · obtain ⟨i, h1, h2⟩ := Cardinal.three_le hcard i j
       exact lift_word_prod_nontrivial_of_other_i f X hXnonempty hXdisj hpp w h1 h2
     · cases' hcard with k hcard

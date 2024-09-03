@@ -73,7 +73,7 @@ theorem Infinite.nonempty_field {α : Type u} [Infinite α] : Nonempty (Field α
 /-- There is a field structure on type if and only if its cardinality is a prime power. -/
 theorem Field.nonempty_iff {α : Type u} : Nonempty (Field α) ↔ IsPrimePow #α := by
   rw [Cardinal.isPrimePow_iff]
-  cases' fintypeOrInfinite α with h h
+  rcases fintypeOrInfinite α with h | h
   · simpa only [Cardinal.mk_fintype, Nat.cast_inj, exists_eq_left',
       (Cardinal.nat_lt_aleph0 _).not_le, false_or_iff] using Fintype.nonempty_field_iff
   · simpa only [← Cardinal.infinite_iff, h, true_or_iff, iff_true_iff] using Infinite.nonempty_field

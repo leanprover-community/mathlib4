@@ -191,7 +191,7 @@ theorem clog_of_right_le_zero (b : ℕ) {r : R} (hr : r ≤ 0) : clog b r = 0 :=
 
 @[simp]
 theorem clog_inv (b : ℕ) (r : R) : clog b r⁻¹ = -log b r := by
-  cases' lt_or_le 0 r with hrp hrp
+  rcases lt_or_le 0 r with hrp | hrp
   · obtain hr | hr := le_total 1 r
     · rw [clog_of_right_le_one _ (inv_le_one hr), log_of_one_le_right _ hr, inv_inv]
     · rw [clog_of_one_le_right _ (one_le_inv hrp hr), log_of_right_le_one _ hr, neg_neg]

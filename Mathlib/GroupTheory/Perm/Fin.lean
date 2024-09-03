@@ -243,7 +243,7 @@ theorem succAbove_cycleRange {n : ℕ} (i j : Fin n) :
 @[simp]
 theorem cycleRange_succAbove {n : ℕ} (i : Fin (n + 1)) (j : Fin n) :
     i.cycleRange (i.succAbove j) = j.succ := by
-  cases' lt_or_ge (castSucc j) i with h h
+  rcases lt_or_ge (castSucc j) i with h | h
   · rw [Fin.succAbove_of_castSucc_lt _ _ h, Fin.cycleRange_of_lt h, Fin.coeSucc_eq_succ]
   · rw [Fin.succAbove_of_le_castSucc _ _ h, Fin.cycleRange_of_gt (Fin.le_castSucc_iff.mp h)]
 

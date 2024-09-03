@@ -187,7 +187,7 @@ theorem le_iff_derivFamily (H : ∀ i, IsNormal (f i)) {a} :
       rw [derivFamily_succ]
       exact nfpFamily_le_fp (fun i => (H i).monotone) (succ_le_of_lt h) ha
     · intro h₁
-      cases' eq_or_lt_of_le h₁ with h h
+      rcases eq_or_lt_of_le h₁ with h | h
       · exact ⟨_, h.symm⟩
       rw [derivFamily_limit _ l, ← not_le, bsup_le_iff, not_forall₂] at h
       exact
@@ -587,7 +587,7 @@ theorem mul_eq_right_iff_opow_omega_dvd {a b : Ordinal} : a * b = b ↔ (a^omega
   · rw [dvd_iff_mod_eq_zero]
     rw [← div_add_mod b (a^omega), mul_add, ← mul_assoc, ← opow_one_add, one_add_omega,
       add_left_cancel] at hab
-    cases' eq_zero_or_opow_omega_le_of_mul_eq_right hab with hab hab
+    rcases eq_zero_or_opow_omega_le_of_mul_eq_right hab with hab | hab
     · exact hab
     refine (not_lt_of_le hab (mod_lt b (opow_ne_zero omega ?_))).elim
     rwa [← Ordinal.pos_iff_ne_zero]

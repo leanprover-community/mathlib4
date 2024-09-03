@@ -328,7 +328,7 @@ theorem WfDvdMonoid.of_exists_prime_factors : WfDvdMonoid α :=
           rw [con, Multiset.prod_zero]
         · intro x hadd
           rw [Multiset.mem_add] at hadd
-          cases' hadd with h h <;> apply (Classical.choose_spec (pf _ _)).1 _ h <;> assumption
+          rcases hadd with h | h <;> apply (Classical.choose_spec (pf _ _)).1 _ h <;> assumption
         · rw [Multiset.prod_add]
           trans a * c
           · apply Associated.mul_mul <;> apply (Classical.choose_spec (pf _ _)).2 <;> assumption
@@ -638,7 +638,7 @@ theorem normalizedFactors_zero : normalizedFactors (0 : α) = 0 := by
 
 @[simp]
 theorem normalizedFactors_one : normalizedFactors (1 : α) = 0 := by
-  cases' subsingleton_or_nontrivial α with h h
+  rcases subsingleton_or_nontrivial α with h | h
   · dsimp [normalizedFactors, factors]
     simp [Subsingleton.elim (1 : α) 0]
   · rw [← Multiset.rel_zero_right]
@@ -1751,7 +1751,7 @@ theorem count_factors_eq_find_of_dvd_pow {a p : Associates α}
     symm
     exact eq_pow_count_factors_of_dvd_pow hp h
   · have hph := pow_ne_zero (@Nat.find (fun n => a ∣ p ^ n) _ ⟨n, h⟩) hp.ne_zero
-    cases' subsingleton_or_nontrivial α with hα hα
+    rcases subsingleton_or_nontrivial α with hα | hα
     · simp [eq_iff_true_of_subsingleton] at hph
     convert count_le_count_of_le hph hp (@Nat.find_spec (fun n => a ∣ p ^ n) _ ⟨n, h⟩)
     rw [count_pow hp.ne_zero hp, count_self hp, mul_one]

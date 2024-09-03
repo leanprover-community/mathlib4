@@ -1208,7 +1208,7 @@ theorem mem_of_max {s : Finset α} : ∀ {a : α}, s.max = a → a ∈ s := by
     by_cases p : b = a
     · induction p
       exact mem_insert_self b s
-    · cases' max_choice (↑b) s.max with q q <;> rw [max_insert, q] at h
+    · rcases max_choice (↑b) s.max with q | q <;> rw [max_insert, q] at h
       · cases h
         cases p rfl
       · exact mem_insert_of_mem (ih h)

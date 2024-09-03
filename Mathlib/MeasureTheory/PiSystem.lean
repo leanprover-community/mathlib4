@@ -79,18 +79,18 @@ theorem IsPiSystem.singleton {α} (S : Set α) : IsPiSystem ({S} : Set (Set α))
 theorem IsPiSystem.insert_empty {α} {S : Set (Set α)} (h_pi : IsPiSystem S) :
     IsPiSystem (insert ∅ S) := by
   intro s hs t ht hst
-  cases' hs with hs hs
+  rcases hs with hs | hs
   · simp [hs]
-  · cases' ht with ht ht
+  · rcases ht with ht | ht
     · simp [ht]
     · exact Set.mem_insert_of_mem _ (h_pi s hs t ht hst)
 
 theorem IsPiSystem.insert_univ {α} {S : Set (Set α)} (h_pi : IsPiSystem S) :
     IsPiSystem (insert Set.univ S) := by
   intro s hs t ht hst
-  cases' hs with hs hs
-  · cases' ht with ht ht <;> simp [hs, ht]
-  · cases' ht with ht ht
+  rcases hs with hs | hs
+  · rcases ht with ht | ht <;> simp [hs, ht]
+  · rcases ht with ht | ht
     · simp [hs, ht]
     · exact Set.mem_insert_of_mem _ (h_pi s hs t ht hst)
 
@@ -343,7 +343,7 @@ theorem piiUnionInter_singleton (π : ι → Set (Set α)) (i : ι) :
       -- Porting note: `Finset.not_mem_empty` required
       simp [ht_empty, Finset.not_mem_empty, iInter_false, iInter_univ, Set.mem_singleton univ,
         or_true_iff]
-  · cases' h with hs hs
+  · rcases h with hs | hs
     · refine ⟨{i}, ?_, fun _ => s, ⟨fun x hx => ?_, ?_⟩⟩
       · rw [Finset.coe_singleton]
       · rw [Finset.mem_singleton] at hx

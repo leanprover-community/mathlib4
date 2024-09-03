@@ -715,7 +715,7 @@ theorem noZeroSMulDivisors_iff_torsion_eq_bot : NoZeroSMulDivisors R M ↔ torsi
     rw [eq_bot_iff]
     rintro x ⟨a, hax⟩
     change (a : R) • x = 0 at hax
-    cases' eq_zero_or_eq_zero_of_smul_eq_zero hax with h0 h0
+    rcases eq_zero_or_eq_zero_of_smul_eq_zero hax with h0 | h0
     · exfalso
       exact nonZeroDivisors.coe_ne_zero a h0
     · exact h0

@@ -326,7 +326,7 @@ theorem grundyValue_nim_add_nim (n m : ℕ) :
   · -- If `u < m ^^^ n`, then either `u ^^^ n < m` or `u ^^^ m < n`.
     obtain ⟨u, rfl⟩ := Ordinal.lt_omega.1 (hu.trans (Ordinal.nat_lt_omega _))
     replace hu := Ordinal.natCast_lt.1 hu
-    cases' Nat.lt_xor_cases hu with h h
+    rcases Nat.lt_xor_cases hu with h | h
     -- In the first case, reducing the `m` pile to `u ^^^ n` gives the desired Grundy value.
     · refine ⟨toLeftMovesAdd (Sum.inl <| toLeftMovesNim ⟨_, Ordinal.natCast_lt.2 h⟩), ?_⟩
       simp [Nat.xor_cancel_right, hn _ h]

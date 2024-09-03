@@ -83,7 +83,7 @@ theorem preErgodic_of_preErgodic_conjugate (hg : MeasurePreserving g μ μ') (hf
   ⟨by
     intro s hs₀ hs₁
     replace hs₁ : f ⁻¹' (g ⁻¹' s) = g ⁻¹' s := by rw [← preimage_comp, h_comm, preimage_comp, hs₁]
-    cases' hf.ae_empty_or_univ (hg.measurable hs₀) hs₁ with hs₂ hs₂ <;> [left; right]
+    rcases hf.ae_empty_or_univ (hg.measurable hs₀) hs₁ with hs₂ | hs₂ <;> [left; right]
     · simpa only [ae_eq_empty, hg.measure_preimage hs₀.nullMeasurableSet] using hs₂
     · simpa only [ae_eq_univ, ← preimage_compl,
         hg.measure_preimage hs₀.compl.nullMeasurableSet] using hs₂⟩

@@ -303,7 +303,7 @@ def Equiv.piFinCastSucc (n : ℕ) (β : Type u) : (Fin (n + 1) → β) ≃ β ×
 def finSumFinEquiv : Fin m ⊕ Fin n ≃ Fin (m + n) where
   toFun := Sum.elim (Fin.castAdd n) (Fin.natAdd m)
   invFun i := @Fin.addCases m n (fun _ => Fin m ⊕ Fin n) Sum.inl Sum.inr i
-  left_inv x := by cases' x with y y <;> dsimp <;> simp
+  left_inv x := by rcases x with y | y <;> dsimp <;> simp
   right_inv x := by refine Fin.addCases (fun i => ?_) (fun i => ?_) x <;> simp
 
 @[simp]

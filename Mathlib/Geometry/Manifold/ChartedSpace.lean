@@ -271,14 +271,14 @@ necessary from the definition). -/
 def idGroupoid (H : Type u) [TopologicalSpace H] : StructureGroupoid H where
   members := {PartialHomeomorph.refl H} ∪ { e : PartialHomeomorph H H | e.source = ∅ }
   trans' e e' he he' := by
-    cases' he with he he
+    rcases he with he | he
     · simpa only [mem_singleton_iff.1 he, refl_trans]
     · have : (e ≫ₕ e').source ⊆ e.source := sep_subset _ _
       rw [he] at this
       have : e ≫ₕ e' ∈ { e : PartialHomeomorph H H | e.source = ∅ } := eq_bot_iff.2 this
       exact (mem_union _ _ _).2 (Or.inr this)
   symm' e he := by
-    cases' (mem_union _ _ _).1 he with E E
+    rcases (mem_union _ _ _).1 he with E | E
     · simp [mem_singleton_iff.mp E]
     · right
       simpa only [e.toPartialEquiv.image_source_eq_target.symm, mfld_simps] using E
@@ -293,7 +293,7 @@ def idGroupoid (H : Type u) [TopologicalSpace H] : StructureGroupoid H where
       have x's : x ∈ (e.restr s).source := by
         rw [restr_source, open_s.interior_eq]
         exact ⟨hx, xs⟩
-      cases' hs with hs hs
+      rcases hs with hs | hs
       · replace hs : PartialHomeomorph.restr e s = PartialHomeomorph.refl H := by
           simpa only using hs
         have : (e.restr s).source = univ := by
@@ -309,7 +309,7 @@ def idGroupoid (H : Type u) [TopologicalSpace H] : StructureGroupoid H where
         rw [mem_setOf_eq] at hs
         rwa [hs] at x's
   mem_of_eqOnSource' e e' he he'e := by
-    cases' he with he he
+    rcases he with he | he
     · left
       have : e = e' := by
         refine eq_of_eqOnSource_univ (Setoid.symm he'e) ?_ ?_ <;>
@@ -326,7 +326,7 @@ instance instStructureGroupoidOrderBot : OrderBot (StructureGroupoid H) where
     intro u f hf
     have hf : f ∈ {PartialHomeomorph.refl H} ∪ { e : PartialHomeomorph H H | e.source = ∅ } := hf
     simp only [singleton_union, mem_setOf_eq, mem_insert_iff] at hf
-    cases' hf with hf hf
+    rcases hf with hf | hf
     · rw [hf]
       apply u.id_mem
     · apply u.locality

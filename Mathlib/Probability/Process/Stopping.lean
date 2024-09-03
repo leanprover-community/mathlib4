@@ -574,7 +574,7 @@ theorem measurableSet_inter_le [TopologicalSpace ι] [SecondCountableTopology ι
       intro
       constructor <;> intro h
       · exact Or.inl h
-      · cases' h with h h
+      · rcases h with h | h
         · exact h
         · exact hτi.trans h
     simp only [hτi, false_or_iff, and_false_iff, false_and_iff, iff_false_iff, not_and, not_le,

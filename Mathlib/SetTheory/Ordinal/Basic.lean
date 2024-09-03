@@ -838,7 +838,7 @@ instance add_swap_covariantClass_le :
               ⟨f.sumMap (Embedding.refl _), by
                 intro a b
                 constructor <;> intro H
-                · cases' a with a a <;> cases' b with b b <;> cases H <;> constructor <;>
+                · rcases a with a a <;> cases' b with b | b <;> cases H <;> constructor <;>
                     [rwa [← fo]; assumption]
                 · cases H <;> constructor <;> [rwa [fo]; assumption]⟩
 

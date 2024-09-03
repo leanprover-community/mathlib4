@@ -447,7 +447,7 @@ noncomputable def InitialSeg.leLT [IsWellOrder β s] [IsTrans γ t] (f : r ≼i 
 @[simp]
 theorem InitialSeg.leLT_apply [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g : s ≺i t) (a : α) :
     (f.leLT g) a = g (f a) := by
-  delta InitialSeg.leLT; cases' f.ltOrEq with f' f'
+  delta InitialSeg.leLT; rcases f.ltOrEq with f' | f'
   · simp only [PrincipalSeg.trans_apply, f.ltOrEq_apply_left]
   · simp only [PrincipalSeg.equivLT_apply, f.ltOrEq_apply_right]
 
