@@ -219,8 +219,7 @@ private def etaPossibilities (e : Expr) (lambdas : List FVarId)
 /-- run `etaPossibilities`, and cache the result if there are multiple possibilities. -/
 @[specialize]
 private def cacheEtaPossibilities (e original : Expr) (lambdas : List FVarId)
-    (entry : LazyEntry α)
-    (ifCached : List Key → (Key × LazyEntry α))
+    (entry : LazyEntry α) (ifCached : List Key → (Key × LazyEntry α))
     (k : LazyEntry α → Expr → List FVarId → ReaderT Context MetaM (List (Key × LazyEntry α))) :
     ReaderT Context MetaM (List (Key × LazyEntry α)) := do
   match e, lambdas with
@@ -263,8 +262,8 @@ private def useReducePi (name : Name) : Array (Option Expr) × List FVarId → L
   withLams lambdas <| .const name args.size
 
 /-- A single step in encoding an `Expr` into `Key`s. -/
-private def encodingStep (original : Expr) (root : Bool) (config : WhnfCoreConfig) (entry : LazyEntry α) :
-    ReaderT Context MetaM (List (Key × LazyEntry α)) := do
+private def encodingStep (original : Expr) (root : Bool) (config : WhnfCoreConfig)
+    (entry : LazyEntry α) : ReaderT Context MetaM (List (Key × LazyEntry α)) :=
   lambdaTelescopeReduce original [] config
     (fun lambdas => do
       let (key, entry) := mkNewStar entry
@@ -281,8 +280,7 @@ private def encodingStep (original : Expr) (root : Bool) (config : WhnfCoreConfi
           return [← (encodingStepAux e lambdas root).run (← read) entry]))
 
 /-- A single step in encoding an `Expr` into `Key`s. -/
-private def encodingStep' (original : Expr) (root : Bool) (config : WhnfCoreConfig) :
-    LazyM α Key := do
+private def encodingStep' (original : Expr) (root : Bool) (config : WhnfCoreConfig) : LazyM α Key :=
   lambdaTelescopeReduce original [] config
     (fun lambdas => do withLams lambdas (← modifyGet mkNewStar))
     (fun e lambdas => do

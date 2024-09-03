@@ -3,7 +3,7 @@ Copyright (c) 2024 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
-import Mathlib.Lean.Meta.RefinedDiscrTree.Evaluate
+import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
 import Lean.Meta.LazyDiscrTree
 
 /-!
@@ -167,7 +167,7 @@ private def createImportInitResults (cctx : Core.Context) (ngen : NameGenerator)
     (env : Environment) (act : Name → ConstantInfo → MetaM (List (Key × LazyEntry α)))
     (capacity start stop : Nat) : BaseIO (InitResults α) := do
   let tree := { root := mkHashMap capacity }
-  go start stop tree (← ImportData.new) (← ST.mkRef {}) (← ST.mkRef { env, ngen })
+  go start stop tree (← ImportData.new) (← IO.mkRef {}) (← IO.mkRef { env, ngen })
 where
   go (start stop : Nat) (tree : PreDiscrTree α)
       (data : ImportData)
@@ -210,24 +210,35 @@ def createImportedDiscrTree (cctx : Core.Context) (ngen : NameGenerator) (env : 
         let cnt := cnt + mdata.constants.size
         if cnt > constantsPerTask then
           let (childNGen, ngen) := ngen.mkChild
-          let t ← (createImportInitResults
-            cctx childNGen env act capacityPerTask start (idx+1)).asTask
+          let t ← (pure (← createImportInitResults
+            cctx childNGen env act capacityPerTask start (idx+1)) : BaseIO _).asTask
           go ngen (tasks.push t) (idx+1) 0 (idx+1)
         else
           go ngen tasks start cnt (idx+1)
       else
         if start < numModules then
           let (childNGen, _) := ngen.mkChild
-          let t ← (createImportInitResults
-            cctx childNGen env act capacityPerTask start numModules).asTask
+          let t ← (pure (← createImportInitResults
+            cctx childNGen env act capacityPerTask start numModules) : BaseIO _).asTask
           pure (tasks.push t)
         else
           pure tasks
     termination_by env.header.moduleData.size - idx
+  let t0 ← IO.monoMsNow
+  let h0 ← IO.getNumHeartbeats
   let tasks ← go ngen #[] 0 0 0
+  let t1 ← IO.monoMsNow
+  let h1 ← IO.getNumHeartbeats
   let r := combineGet {} tasks
+  let t2 ← IO.monoMsNow
+  let h2 ← IO.getNumHeartbeats
   r.errors.forM logImportFailure
-  return r.tree.toLazy config
+  let r := r.tree.toLazy config
+  let t3 ← IO.monoMsNow
+  let h3 ← IO.getNumHeartbeats
+  logInfo m! "heartbeats: {(h1-h0)/10000}, and glueing: {(h2-h1)/10000}, and finishing: {(h3-h2)/1000}"
+  logInfo m! "time: {(t1-t0)}, and glueing: {(t2-t1)}, and finishing: {(t3-t2)}"
+  return r
 
 /--
 A discriminator tree for the current module's declarations only.
