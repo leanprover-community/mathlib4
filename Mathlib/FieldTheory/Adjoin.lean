@@ -152,11 +152,11 @@ theorem inf_toSubfield (S T : IntermediateField F E) :
 theorem sup_toSubfield (S T : IntermediateField F E) :
     (S ⊔ T).toSubfield = S.toSubfield ⊔ T.toSubfield := by
   rw [← S.toSubfield.closure_eq, ← T.toSubfield.closure_eq, ← Subfield.closure_union]
-  change Subfield.closure (Set.range (algebraMap F E) ∪ (S ∪ T)) = Subfield.closure (S ∪ T)
+  simp_rw [sup_def, adjoin_toSubfield, coe_toSubfield]
   congr 1
   rw [Set.union_eq_right]
   rintro _ ⟨x, rfl⟩
-  exact Or.inl (algebraMap_mem S x)
+  exact Set.mem_union_left _ (algebraMap_mem S x)
 
 @[simp, norm_cast]
 theorem coe_sInf (S : Set (IntermediateField F E)) : (↑(sInf S) : Set E) =
@@ -180,9 +180,7 @@ theorem sSup_toSubfield (S : Set (IntermediateField F E)) (hS : S.Nonempty) :
     rw [Set.image_image]
     congr! with x
     exact x.toSubfield.closure_eq.symm
-  rw [h, sSup_image, ← Subfield.closure_sUnion]
-  change Subfield.closure (Set.range (algebraMap F E) ∪ ⋃₀ (SetLike.coe '' S)) =
-    Subfield.closure (⋃₀ (SetLike.coe '' S))
+  rw [h, sSup_image, ← Subfield.closure_sUnion, sSup_def, adjoin_toSubfield]
   congr 1
   rw [Set.union_eq_right]
   rintro _ ⟨x, rfl⟩
