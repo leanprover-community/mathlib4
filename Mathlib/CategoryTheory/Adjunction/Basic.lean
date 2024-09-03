@@ -57,7 +57,7 @@ Uniqueness of adjoints is shown in `CategoryTheory.Adjunction.Unique`.
 See <https://stacks.math.columbia.edu/tag/0037>.
 -/
 structure Adjunction (F : C ⥤ D) (G : D ⥤ C) where
-  /-- The equivalence between `Hom (F X) Y` and `Hom X (G Y)` coming from an adjunction -/
+  /-- The unit of an adjunction -/
   unit : 𝟭 C ⟶ F.comp G
   /-- The counit of an adjunction -/
   counit : G.comp F ⟶ 𝟭 D
