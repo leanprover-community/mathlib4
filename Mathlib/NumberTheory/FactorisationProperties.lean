@@ -20,7 +20,7 @@ This file defines abundant, pseudoperfect, deficient, and weird numbers and form
   equals `n`
 * `Nat.Deficient`: a natural number `n` is _deficient_ if the sum of its proper divisors is less
   than `n`
-* `Nat.Weird`: a natural number is _weird_ if it is both abundant but not pseudoperfect
+* `Nat.Weird`: a natural number is _weird_ if it is abundant but not pseudoperfect
 
 ## Main Results
 * `Nat.deficient_or_perfect_or_abundant`: A positive natural number is either deficient,
