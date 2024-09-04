@@ -46,16 +46,15 @@ def formatPercent (reldiff : Float) : String :=
   let reldiff := sgnf * reldiff
   formatPerc (sgn * reldiff.toUInt32.val) 0 2
 
+def formatFile (file : String) : String :=
+  "`" ++ file.dropWhile (!·.isAlpha) ++ "`"
 
 /-- converts a `Bench` into a formatted string of the form `| file | ±x.y⬝10⁹ | ±z.w% |`. -/
 def summary (bc : Bench) : String :=
-  let instrs := bc.diff
-  let reldiff := bc.reldiff * 10 ^ 4
-  let (sgn : Int) := if reldiff < 0 then -1 else 1
+  let reldiff := bc.reldiff --* 10 ^ 4
+  --let (sgn : Int) := if reldiff < 0 then -1 else 1
   let (sgnf : Float) := if reldiff < 0 then -1 else 1
-  let reldiff := sgnf * reldiff
-  let middle :=
-    [bc.file.dropWhile (!·.isAlpha), formatDiff instrs, formatPerc (sgn * reldiff.toUInt32.val) 0 2]
+  let middle := [formatFile bc.file, formatDiff bc.diff, formatPercent (sgnf * reldiff)]
   "|".intercalate (""::middle ++ [""])
 
 def formatArrayBench (bound : Int) (arr : Array Bench) : String :=
@@ -90,15 +89,23 @@ def benchOutput (js : System.FilePath) : IO Unit := do
     --  head := head.push gp
     --else
   --    tallied := tallied.push gp
-  for (a, g) in grouped.toArray.qsort (·.1 > ·.1) do
+  let sortHead := (head.qsort (·.file < ·.file)).map (0, #[·])
+  let togetherSorted := sortHead ++ grouped.toArray.qsort (·.1 > ·.1)
+  for (roundedDiff, g) in togetherSorted do
     --let instrs := (g.getD 0 default).diff / 10^9
-    let (s, a) :=
+    --let (s, a) :=
+    --  match g with
+    --    | #[g] => (g.file.dropWhile (!·.isAlpha), [formatDiff g.diff, formatPercent g.reldiff])
+    --    | _ => (s!"{g.size} files", [formatDiff <| roundedDiff * 10 ^ 9])
+    let entry :=
       match g with
-        | #[g] => (g.file.dropWhile (!·.isAlpha), [formatDiff g.diff, formatPercent g.reldiff])
-        | _ => (s!"{g.size} files", [formatDiff <| a * 10 ^ 9])
-    let summ := s!"<summary>{s}, Instructions {", ".intercalate a}</summary>"
-    let indentTable := (tableArrayBench g).replace "\n" "\n  "
-    IO.println <| s!"\n* <details>{summ}\n\n  {indentTable}\n  </details>"
+        | #[g] => (formatFile g.file ++ s!", Instructions {", ".intercalate [formatDiff g.diff, formatPercent (g.reldiff)]}\n")
+        | _ => s!"<details><summary>{g.size} files, Instructions {formatDiff <| roundedDiff * 10 ^ 9}</summary>\n\n{tableArrayBench (g.qsort (·.diff > ·.diff))}\n</details>"
+        --(s!"{g.size} files", [formatDiff <| roundedDiff * 10 ^ 9])
+    --let summ := s!"<summary>{s}, Instructions {", ".intercalate a}</summary>"
+    --let indentTable := (tableArrayBench g).replace "\n" "\n  "
+    --IO.println <| s!"\n* <details>{summ}\n\n  {indentTable}\n  </details>"
+    IO.println <| entry
   IO.println <| s!"\n* <details><summary>{grouped.size} files</summary>\n\n  ".intercalate (""::((grouped.toArray.map Prod.snd).map tableArrayBench).toList.map (·.replace "\n" "\n  " ++ "\n  </details>"))
   let head := (head.qsort (·.file < ·.file)).map fun d => (d.diff / (10 ^ 9), #[d])
   let withSize := head ++ grouped.toArray.qsort (·.1 > ·.1)
