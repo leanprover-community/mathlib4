@@ -159,7 +159,6 @@ end LinearOrder
 
 /-! ### Successor order -/
 
-
 namespace Order
 
 section Preorder
@@ -546,7 +545,6 @@ theorem succ_eq_csInf [ConditionallyCompleteLattice α] [SuccOrder α] [NoMaxOrd
 
 /-! ### Predecessor order -/
 
-
 section Preorder
 
 variable [Preorder α] [PredOrder α] {a b : α}
@@ -912,7 +910,6 @@ theorem pred_eq_csSup [ConditionallyCompleteLattice α] [PredOrder α] [NoMinOrd
   succ_eq_csInf (α := αᵒᵈ) a
 
 /-! ### Successor-predecessor orders -/
-
 
 section SuccPredOrder
 section Preorder
