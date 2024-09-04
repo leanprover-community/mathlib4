@@ -996,11 +996,6 @@ theorem card_erase_eq_ite {a : α} {s : Multiset α} :
   · rwa [card_erase_of_mem h, if_pos]
   · rwa [erase_of_not_mem h, if_neg]
 
-theorem in_of_ne_of_cons_erase {a a0: α} {M X : Multiset α}
-    (H : M = (a0 ::ₘ X).erase a) (hyp : ¬ a = a0) : a0 ∈ M := by
-  rw [H, Multiset.mem_erase_of_ne fun h ↦ hyp <| id <| Eq.symm h, Multiset.mem_cons]
-  tauto
-
 end Erase
 
 @[simp]
@@ -2332,7 +2327,7 @@ theorem map_count_True_eq_filter_card (s : Multiset α) (p : α → Prop) [Decid
   simp only [count_eq_card_filter_eq, filter_map, card_map, Function.id_comp,
     eq_true_eq_id, Function.comp_apply]
 
-theorem sub_singleton [DecidableEq α] (a : α) (s : Multiset α) : s - {a} = s.erase a := by
+@[simp] theorem sub_singleton [DecidableEq α] (a : α) (s : Multiset α) : s - {a} = s.erase a := by
   ext
   simp [Multiset.erase_singleton, Multiset.count_singleton]
   split <;> simp_all
@@ -2366,16 +2361,12 @@ theorem singleton_add_sub_of_cons_add [DecidableEq α] {a a0: α} {M X : Multise
       rw [this]
       simp_all
 
-theorem mem_sub_of_not_mem_of_mem {α} [DecidableEq α] (x : α) (X Y: Multiset α) (x_in_X : x ∈ X)
-    (x_notin_Y : x ∉ Y) : x ∈ X - Y  := by
-  have : Multiset.count x X ≥ 1 := by
-    rw [← Multiset.one_le_count_iff_mem] at x_in_X
-    exact x_in_X
-  rw [← Multiset.one_le_count_iff_mem, Multiset.count_sub]
-  simp_all
+theorem mem_sub [DecidableEq α] {a : α} {s t : Multiset α} : a ∈ s - t ↔
+    t.count a < s.count a := by
+  rw [← count_pos, count_sub, Nat.sub_pos_iff_lt]
 
-theorem inter_add_sub_of_eq {α} [dec : DecidableEq α] {M N P Q: Multiset α} (h : M + N = P + Q) :
-    N = N ∩ Q + (P - M) := by
+theorem inter_add_sub_of_eq [DecidableEq α] {M N P Q : Multiset α} (h : M + N = P + Q) :
+    N = (N ∩ Q) + (P - M) := by
   ext x
   rw [Multiset.count_add, Multiset.count_inter, Multiset.count_sub]
   have h0 : M.count x + N.count x = P.count x + Q.count x := by
