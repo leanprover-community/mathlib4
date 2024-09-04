@@ -266,8 +266,31 @@ protected lemma CStarRing.inv_le_inv {a b : Aˣ} (ha : 0 ≤ (a : A))
 /-- In a unital C⋆-algebra, if `0 ≤ a` and `0 ≤ b` and `a` and `b` are units, then `a⁻¹ ≤ b⁻¹`
 if and only if `b ≤ a`. -/
 protected lemma CStarRing.inv_le_inv_iff {a b : Aˣ} (ha : 0 ≤ (a : A)) (hb : 0 ≤ (b : A)) :
-    (↑a⁻¹ : A) ≤ b⁻¹ ↔ b ≤ a :=
+    (↑a⁻¹ : A) ≤ b⁻¹ ↔ (b : A) ≤ a :=
   ⟨CStarRing.inv_le_inv (inv_nonneg_of_nonneg a ha), CStarRing.inv_le_inv hb⟩
+
+lemma CStarRing.inv_le_iff {a b : Aˣ} (ha : 0 ≤ (a : A)) (hb : 0 ≤ (↑b : A)) :
+    (↑a⁻¹ : A) ≤ b ↔ (↑b⁻¹ : A) ≤ a := by
+  simpa using CStarRing.inv_le_inv_iff ha (inv_nonneg_of_nonneg b hb)
+
+lemma CStarRing.le_inv_iff {a b : Aˣ} (ha : 0 ≤ (a : A)) (hb : 0 ≤ (↑b : A)) :
+    a ≤ (↑b⁻¹ : A) ↔ b ≤ (↑a⁻¹ : A) := by
+  simpa using CStarRing.inv_le_inv_iff (inv_nonneg_of_nonneg a ha) hb
+
+lemma CStarRing.one_le_inv_iff_le_one {a : Aˣ} (ha : 0 ≤ (a : A)) :
+    1 ≤ (↑a⁻¹ : A) ↔ a ≤ 1 := by
+  simpa using CStarRing.le_inv_iff (a := 1) (by simp) ha
+
+lemma CStarRing.inv_le_one_iff_one_le_inv {a : Aˣ} (ha : 0 ≤ (a : A)) :
+    (↑a⁻¹ : A) ≤ 1 ↔ 1 ≤ a := by
+  simpa using CStarRing.inv_le_iff ha (b := 1) (by simp)
+
+lemma CStarRing.rpow_neg_one_le_rpow_neg_one {a b : A} (ha : 0 ≤ a) (hab : a ≤ b) (hau : IsUnit a) :
+    b ^ (-1 : ℝ) ≤ a ^ (-1 : ℝ) := by
+  lift b to Aˣ using CStarRing.isUnit_of_le hau ha hab
+  lift a to Aˣ using hau
+  rw [rpow_neg_one_eq_inv a, rpow_neg_one_eq_inv b (ha.trans hab)]
+  exact CStarRing.inv_le_inv ha hab
 
 end Inv
 
