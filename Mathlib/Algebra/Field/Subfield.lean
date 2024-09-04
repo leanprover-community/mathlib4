@@ -493,7 +493,6 @@ theorem fieldRange_eq_map : f.fieldRange = Subfield.map f ⊤ := by
 theorem map_fieldRange : f.fieldRange.map g = (g.comp f).fieldRange := by
   simpa only [fieldRange_eq_map] using (⊤ : Subfield K).map_map g f
 
-@[simp]
 theorem mem_fieldRange_self (x : K) : f x ∈ f.fieldRange :=
   exists_apply_eq_apply _ _
 

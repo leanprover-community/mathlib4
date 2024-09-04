@@ -50,6 +50,7 @@ number field, embeddings, infinite places, completion
 noncomputable section
 
 /-- Type synonym equipping a semiring with an absolute value. -/
+@[nolint unusedArguments]
 def WithAbs {R S} [Semiring R] [OrderedSemiring S] : AbsoluteValue R S → Type _ := fun _ => R
 
 namespace WithAbs
