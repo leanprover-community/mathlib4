@@ -1022,7 +1022,9 @@ theorem nat_pos_tsum2' [TopologicalSpace α] [AddCommMonoid α]  (f : ℕ → α
 
 theorem lhs_summable (z : ℤᶜ) : Summable fun n : ℕ+ => 1 / ((z : ℂ) - n) + 1 / (z + n) := by
   rw [nat_pos_tsum2' fun n => 1 / ((z : ℂ) - n) + 1 / (z + n)]
-  apply lhs_summable2
+  have := lhs_summable2 z
+  simp at *
+  apply this
 
 theorem cot_series_rep' (z : ℤᶜ) : ↑π * Complex.cot (↑π * z) - 1 / z =
     ∑' n : ℕ, (1 / ((z : ℂ) - (n + 1)) + 1 / (z + (n + 1))) := by
