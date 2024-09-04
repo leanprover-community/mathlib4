@@ -59,6 +59,28 @@ instance {n : ℕ} {s : SingularNManifold X n} : finrank ℝ s.E = n := s.dimens
 
 namespace SingularNManifold
 
+variable {n : ℕ}
+
+/-- A map of topological spaces induces a corresponding map of singular n-manifolds. -/
+-- This is part of proving functoriality of the bordism groups.
+noncomputable def map (s : SingularNManifold X n)
+    {φ : X → Y} (hφ : Continuous φ) : SingularNManifold Y n where
+  model := s.model
+  f := φ ∘ s.f
+  hf := hφ.comp s.hf
+  dimension := s.dimension
+
+@[simp]
+lemma map_f (s : SingularNManifold X n) {φ : X → Y} (hφ : Continuous φ) :
+    (s.map hφ).f = φ ∘ s.f :=
+  rfl
+
+lemma map_comp (s : SingularNManifold X n)
+    {φ : X → Y} {ψ : Y → Z} (hφ : Continuous φ) (hψ : Continuous ψ) :
+    ((s.map hφ).map hψ).f = (ψ ∘ φ) ∘ s.f := by
+  simp [Function.comp_def]
+  rfl
+
 -- Let M, M' and W be smooth manifolds.
 variable {E E' E'' E''' H H' H'' H''' : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup E'] [NormedSpace ℝ E'] [NormedAddCommGroup E'']  [NormedSpace ℝ E'']
@@ -81,26 +103,6 @@ noncomputable def refl (hdim : finrank ℝ E = n) : SingularNManifold M n where
   f := id
   hf := continuous_id
 
-/-- A map of topological spaces induces a corresponding map of singular n-manifolds. -/
--- This is part of proving functoriality of the bordism groups.
-noncomputable def map (s : SingularNManifold X n)
-    {φ : X → Y} (hφ : Continuous φ) : SingularNManifold Y n where
-  model := s.model
-  f := φ ∘ s.f
-  hf := hφ.comp s.hf
-  dimension := s.dimension
-
-@[simp]
-lemma map_f (s : SingularNManifold X n) {φ : X → Y} (hφ : Continuous φ) :
-    (s.map hφ).f = φ ∘ s.f :=
-  rfl
-
-lemma map_comp (s : SingularNManifold X n)
-    {φ : X → Y} {ψ : Y → Z} (hφ : Continuous φ) (hψ : Continuous ψ) :
-    ((s.map hφ).map hψ).f = (ψ ∘ φ) ∘ s.f := by
-  simp [Function.comp_def]
-  rfl
-
 -- TODO: fix these two!
 -- /-- If `(M', f)` is a singular `n`-manifold on `X` and `M'` another `n`-dimensional smooth manifold,
 -- a smooth map `φ : M → M'` induces a singular `n`-manifold structure `(M, f ∘ φ)` on `X`. -/
@@ -119,6 +121,40 @@ lemma map_comp (s : SingularNManifold X n)
 --     (s : SingularNManifold X n M' I') {φ : M → M'} (hφ : Smooth I I' φ) :
 --     (s.comap hφ).f = s.f ∘ φ :=
 --   rfl
+
+variable (M) in
+/-- The canonical singular `n`-manifold associated to the empty set (seen as an `n`-dimensional
+manifold, i.e. modelled on an `n`-dimensional space). -/
+def empty [Fact (finrank ℝ E = n)] (M : Type*) [IsEmpty M] : SingularNManifold X n where
+  -- TODO: need to ask for previous data with M, etc!
+  M := M
+  E := E
+  H := H
+  model := I
+  f := fun x ↦ (IsEmpty.false x).elim
+  hf := by
+    sorry -- tODO!
+    --rw [continuous_iff_continuousAt]
+    --exact fun x ↦ (IsEmpty.false x).elim
+
+/-- An `n`-dimensional manifold induces a singular `n`-manifold on the one-point space. -/
+def trivial [h: Fact (finrank ℝ E = n)] : SingularNManifold PUnit n where
+  E := E
+  M := M
+  model := I
+  dimension := h.out
+  f := fun _ ↦ PUnit.unit
+  hf := continuous_const
+
+/-- The product of a singular `n`- and a `m`-manifold into a one-point space
+is a singular `n+m`-manifold. -/
+-- FUTURE: prove that this observation inducess a commutative ring structure
+-- on the unoriented bordism group `Ω_n^O = Ω_n^O(pt)`.
+def prod {m n : ℕ} [h : Fact (finrank ℝ E = m)] [k : Fact (finrank ℝ E' = n)] :
+    SingularNManifoldOld PUnit (m + n) (M × M') (I.prod I') where
+  f := fun _ ↦ PUnit.unit
+  hf := continuous_const
+  hdim := Fact.mk (by rw [finrank_prod, h.out, k.out])
 
 end SingularNManifold
 
@@ -153,12 +189,6 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   [BoundarylessManifold I M] [CompactSpace M] [FiniteDimensional ℝ E]
   [BoundarylessManifold I' M'] [CompactSpace M'] [FiniteDimensional ℝ E']
 
-/-- If `M` is `n`-dimensional and closed, it is a singular `n`-manifold over itself. -/
-noncomputable def refl (hdim : finrank ℝ E = n) : SingularNManifoldOld M n M I where
-  hdim := Fact.mk hdim
-  f := id
-  hf := continuous_id
-
 /-- A map of topological spaces induces a corresponding map of singular n-manifolds. -/
 -- This is part of proving functoriality of the bordism groups.
 noncomputable def map [Fact (finrank ℝ E = n)] (s : SingularNManifoldOld X n M I)
@@ -166,16 +196,6 @@ noncomputable def map [Fact (finrank ℝ E = n)] (s : SingularNManifoldOld X n M
   f := φ ∘ s.f
   hf := hφ.comp s.hf
 
-
-@[simp]
-lemma map_f [Fact (finrank ℝ E = n)]
-    (s : SingularNManifoldOld X n M I) {φ : X → Y} (hφ : Continuous φ) : (s.map hφ).f = φ ∘ s.f :=
-  rfl
-
-lemma map_comp [Fact (finrank ℝ E = n)] (s : SingularNManifoldOld X n M I)
-    {φ : X → Y} {ψ : Y → Z} (hφ : Continuous φ) (hψ : Continuous ψ) :
-    ((s.map hφ).map hψ).f = (ψ ∘ φ) ∘ s.f := by
-  simp [Function.comp_def]
 
 /-- If `(M', f)` is a singular `n`-manifold on `X` and `M'` another `n`-dimensional smooth manifold,
 a smooth map `φ : M → M'` induces a singular `n`-manifold structure on `M`. -/
