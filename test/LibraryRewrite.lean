@@ -29,9 +29,6 @@ info: Pattern n + 1
   List.Nat.length_antidiagonal
 · Multiset.card (Multiset.Nat.antidiagonal n)
   Multiset.Nat.card_antidiagonal
-· (ArithmeticFunction.sigma 0) (?p ^ n)
-  ⊢ Nat.Prime ?p
-  ArithmeticFunction.sigma_zero_apply_prime_pow
 
 Pattern n + m
 · 1 + n
@@ -44,15 +41,6 @@ Pattern n + m
   Nat.add_succ_sub_one
 · n.succ + 1 - 1
   Nat.succ_add_sub_one
-· (List.range' n ?m)[1]
-  ⊢ 1 < (List.range' n ?m).length
-  List.nthLe_range'_1
-· (List.range' n ?m)[1]
-  ⊢ 1 < (List.range' n ?m).length
-  List.getElem_range'_1
-· ?a + n - (?a - 1)
-  ⊢ 1 ≤ ?a
-  Nat.add_sub_sub_cancel
 
 Pattern x + 1
 · ∑ i ∈ Finset.range 2, n ^ i
@@ -83,23 +71,6 @@ Pattern a + b
   OrderEmbedding.addLeft_apply
 · (OrderEmbedding.addRight 1) n
   OrderEmbedding.addRight_apply
-· ?y + n
-  ⊢ AddSemiconjBy n 1 ?y
-  AddSemiconjBy.eq
-· ?a + n - (?a - 1)
-  ⊢ 1 ≤ ?a
-  add_tsub_tsub_cancel
-· !![n, ?b; ?c, 1].trace
-  ⊢ ℕ
-  ⊢ ℕ
-  Matrix.trace_fin_two_of
-· ?a + n - (?a - 1)
-  ⊢ AddLECancellable (?a - 1)
-  ⊢ 1 ≤ ?a
-  AddLECancellable.add_tsub_tsub_cancel
-· ?x₂ + ?y₁
-  ⊢ IsCorner ?A n ?y₁ ?x₂ 1
-  IsCorner.add_eq_add
 -/
 #guard_msgs in
 #rw?? n+1
@@ -161,27 +132,9 @@ Pattern a = b
   PartENat.natCast_inj
 · Batteries.UnionFind.empty.Equiv 5 2
   Batteries.UnionFind.equiv_empty
-· ack 5 ?n = ack 2 ?n
-  ack_inj_left
-· ack ?m 5 = ack ?m 2
-  ack_inj_right
-· 5 + ?n = 2 + ?n
-  Nat.add_left_inj
-· 5 ^^^ ?n = 2 ^^^ ?n
-  Nat.xor_left_inj
-· ?n + 5 = ?n + 2
-  Nat.add_right_inj
 · Nat.factorial 5 = Nat.factorial 2
   ⊢ 1 < 5
   Nat.factorial_inj
-· ?n ^^^ 5 = ?n ^^^ 2
-  Nat.xor_right_inj
-· ?b.digits 5 = ?b.digits 2
-  Nat.digits_inj_iff
-· ?n + 5 = ?n + 2
-  Nat.add_left_cancel_iff
-· 5 + ?n = 2 + ?n
-  Nat.add_right_cancel_iff
 · ∀ (p : ℕ), Nat.Prime p → (p ∣ 5 ↔ p ∣ 2)
   ⊢ Squarefree 5
   ⊢ Squarefree 2
@@ -190,12 +143,6 @@ Pattern a = b
   ⊢ 5 ≠ 0
   ⊢ 2 ≠ 0
   Nat.eq_iff_prime_padicValNat_eq
-· 5 * ?a = 2 * ?a
-  ⊢ ?a ≠ 0
-  Nat.mul_left_inj
-· ?a * 5 = ?a * 2
-  ⊢ ?a ≠ 0
-  Nat.mul_right_inj
 · 5 ∣ 2
   ⊢ Nat.Prime 2
   ⊢ 2 ≤ 5
@@ -204,38 +151,43 @@ Pattern a = b
   ⊢ Nat.Prime 5
   ⊢ 2 ≠ 1
   Nat.Prime.dvd_iff_eq
-· List.replicate 5 ?a = List.replicate 2 ?a
-  List.replicate_left_inj
-· ?n * 5 = ?n * 2
-  ⊢ 0 < ?n
-  Nat.mul_left_cancel_iff
-· 5 * ?m = 2 * ?m
-  ⊢ 0 < ?m
-  Nat.mul_right_cancel_iff
-· ⟨5, ?h⟩ = ⟨2, ?h'⟩
-  Fin.mk_eq_mk
-· ⟨5, ?ha⟩ = ⟨2, ?hb⟩
-  Fin.mk.inj_iff
-· 5 / ?d = 2 / ?d
-  ⊢ ?d ∣ 5
-  ⊢ ?d ∣ 2
-  Nat.div_left_inj
-· ?n / 5 = ?n / 2
-  ⊢ ?n ≠ 0
-  ⊢ 5 ∣ ?n
-  ⊢ 2 ∣ ?n
-  Nat.div_eq_iff_eq_of_dvd_dvd
-· ?l[5] = ?l[2]
-  ⊢ ?l.Nodup
-  List.Nodup.getElem_inj_iff
-· ?f^[5] ?x = ?f^[2] ?x
-  ⊢ 5 < Function.minimalPeriod ?f ?x
-  ⊢ 2 < Function.minimalPeriod ?f ?x
-  Function.iterate_eq_iterate_iff_of_lt_minimalPeriod
 -/
 #guard_msgs in
 #rw?? 5=2
 
+/--
+info: Pattern n / 2
+· n.div2
+  Nat.div2_val
+
+Pattern x / y
+· if 0 < 2 ∧ 2 ≤ n then (n - 2) / 2 + 1 else 0
+  Nat.div_eq
+· (n - n % 2) / 2
+  Nat.div_eq_sub_mod_div
+· (Finset.filter (fun e => 2 ∣ e + 1) (Finset.range n)).card
+  Nat.card_multiples
+· (Finset.filter (fun k => k ≠ 0 ∧ 2 ∣ k) (Finset.range n.succ)).card
+  Nat.card_multiples'
+· n ⌊/⌋ 2
+  Nat.floorDiv_eq_div
+· (Finset.filter (fun x => 2 ∣ x) (Finset.Ioc 0 n)).card
+  Nat.Ioc_filter_dvd_card_eq_div
+· 0
+  ⊢ n < 2
+  Nat.div_eq_of_lt
+· (n + 1) / 2
+  ⊢ ¬2 ∣ n + 1
+  Nat.succ_div_of_not_dvd
+· (n - 2) / 2 + 1
+  ⊢ 0 < 2
+  ⊢ 2 ≤ n
+  Nat.div_eq_sub_div
+-/
+#guard_msgs in
+#rw?? n/2
+
+-- showing all rewrites:
 /--
 info: Pattern n / 2
 · n.div2
@@ -270,17 +222,37 @@ Pattern x / y
 · n * ?m / (2 * ?m)
   ⊢ 0 < ?m
   Nat.mul_div_mul_right
+· ?k
+  ⊢ ?k * 2 ≤ n
+  ⊢ n < (?k + 1) * 2
+  Nat.div_eq_of_lt_le
 · (Finset.filter (fun x => x * 2 ≤ n) (Finset.Ico 1 ?c.succ)).card
   ⊢ 0 < 2
   ⊢ n / 2 ≤ ?c
   ZMod.div_eq_filter_card
+· ?k
+  ⊢ 0 < 2
+  ⊢ n = ?k * 2
+  Nat.div_eq_of_eq_mul_left
+· ?k
+  ⊢ 0 < 2
+  ⊢ n = 2 * ?k
+  Nat.div_eq_of_eq_mul_right
 · n / (2 / ?b) / ?b
   ⊢ ?b ∣ 2
   ⊢ 2 ∣ n
   Nat.div_div_div_eq_div
+· ?a
+  ⊢ 2 ≠ 0
+  ⊢ ?a * 2 = n
+  Nat.eq_div_of_mul_eq_left
+· ?a
+  ⊢ 2 ≠ 0
+  ⊢ 2 * ?a = n
+  Nat.eq_div_of_mul_eq_right
 -/
 #guard_msgs in
-#rw?? n/2
+#rw?? all n/2
 
 open BigOperators
 
@@ -296,18 +268,6 @@ Pattern ∑ i ∈ Finset.range n, f i
   Finset.sum_range
 · ∑ j ∈ Finset.range n, (n - 1 - j + 1)
   Finset.sum_range_reflect
-· ∑ k ∈ Finset.range ?m, (k + 1) + ∑ k ∈ Finset.Ico ?m n, (k + 1)
-  ⊢ ?m ≤ n
-  Finset.sum_range_add_sum_Ico
-· ∑ k ∈ Finset.range ?N, (k + 1)
-  ⊢ ∀ n ≥ ?N, n + 1 = 0
-  ⊢ ?N ≤ n
-  Finset.eventually_constant_sum
-
-Pattern ∑ x ∈ s, f x
-· (Finset.range n).card * ?m
-  ⊢ ∀ x ∈ Finset.range n, x + 1 = ?m
-  Finset.sum_const_nat
 
 Pattern ∑ x ∈ s, f x
 · Finset.fold (fun x x_1 => x + x_1) 0 (fun x => x + 1) (Finset.range n)
@@ -349,191 +309,9 @@ Pattern ∑ x ∈ s, f x
 · (Finsupp.indicator (Finset.range n) fun x x => 1).sum HAdd.hAdd
   ⊢ ∀ a ∈ Finset.range n, a + 0 = 0
   Finsupp.sum_indicator_index
-· ∑ x ∈ Finset.range n ∩ ?t, (x + 1) + ∑ x ∈ Finset.range n \ ?t, (x + 1)
-  ⊢ Finset ℕ
-  Finset.sum_inter_add_sum_diff
 · ∑ᶠ (i : ℕ), (i + 1)
   ⊢ (Function.support fun i => i + 1) ⊆ ↑(Finset.range n)
   finsum_eq_sum_of_support_subset
-· (Finset.range n).card • ?b
-  ⊢ ∀ a ∈ Finset.range n, a + 1 = ?b
-  Finset.sum_eq_card_nsmul
-· ?i + 1 + ∑ x ∈ Finset.range n \ {?i}, (x + 1)
-  ⊢ ?i ∈ Finset.range n
-  Finset.sum_eq_add_sum_diff_singleton
-· ∑ x ∈ Finset.range n \ {?i}, (x + 1) + (?i + 1)
-  ⊢ ?i ∈ Finset.range n
-  Finset.sum_eq_sum_diff_singleton_add
-· ∑ x ∈ (Finset.range n).erase ?a, (x + 1)
-  ⊢ ?a + 1 = 0
-  Finset.sum_erase
-· ∑ x ∈ Finset.range n \ ?s₁, (x + 1) + ∑ x ∈ ?s₁, (x + 1)
-  ⊢ ?s₁ ⊆ Finset.range n
-  Finset.sum_sdiff
-· ∑ x ∈ Finset.range n, (?σ x + 1)
-  ⊢ Equiv.Perm ℕ
-  ⊢ {a | ?σ a ≠ a} ⊆ ↑(Finset.range n)
-  Equiv.Perm.sum_comp
-· ?a + 1 + ∑ x ∈ (Finset.range n).erase ?a, (x + 1)
-  ⊢ ?a ∈ Finset.range n
-  Finset.add_sum_erase
-· ∑ x ∈ (Finset.range n).erase ?a, (x + 1) + (?a + 1)
-  ⊢ ?a ∈ Finset.range n
-  Finset.sum_erase_add
-· (Finsupp.onFinset (Finset.range n) (fun a => 1) ?hf).sum HAdd.hAdd
-  ⊢ ∀ (a : ℕ), 1 ≠ 0 → a ∈ Finset.range n
-  ⊢ ∀ (a : ℕ), a + 0 = 0
-  Finsupp.onFinset_sum
-· ∑ x ∈ insert ?a (Finset.range n), (x + 1)
-  ⊢ ?a + 1 = 0
-  Finset.sum_insert_zero
-· ∑ a ∈ Finset.range n ∪ ?s₂, (a + 1)
-  ⊢ ∀ a ∈ ?s₂, a ∉ Finset.range n → a + 1 = 0
-  Finset.sum_union_eq_left
-· ∑ a ∈ ?s₁ ∪ Finset.range n, (a + 1)
-  ⊢ ∀ a ∈ ?s₁, a ∉ Finset.range n → a + 1 = 0
-  Finset.sum_union_eq_right
-· ∑ i ∈ ?t, (↑(Finset.range n)).indicator (fun i => i + 1) i
-  ⊢ Finset.range n ⊆ ?t
-  Finset.sum_indicator_subset
-· ∑ᶠ (i : ℕ) (_ : ?p i), (i + 1)
-  ⊢ ∀ {x : ℕ}, x + 1 ≠ 0 → (?p x ↔ x ∈ Finset.range n)
-  finsum_cond_eq_sum_of_cond_iff
-· ∑ᶠ (i : ℕ) (_ : i ∈ ?s), (i + 1)
-  ⊢ (?s ∩ Function.support fun i => i + 1) = ↑(Finset.range n) ∩ Function.support fun i => i + 1
-  finsum_mem_eq_sum_of_inter_support_eq
-· ∑ x ∈ insert ?a (Finset.range n), (x + 1)
-  ⊢ ?a ∉ Finset.range n → ?a + 1 = 0
-  Finset.sum_insert_of_eq_zero_if_not_mem
-· ∑ x ∈ ?s₂, (x + 1)
-  ⊢ Finset.range n ⊆ ?s₂
-  ⊢ ∀ x ∈ ?s₂, x ∉ Finset.range n → x + 1 = 0
-  Finset.sum_subset
-· ∑ a : Subtype ?p, (↑a + 1)
-  ⊢ ∀ (x : ℕ), x ∈ Finset.range n ↔ ?p x
-  Finset.sum_subtype
-· ?a + 1
-  ⊢ ℕ
-  ⊢ ∀ b ∈ Finset.range n, b ≠ ?a → b + 1 = 0
-  ⊢ ?a ∉ Finset.range n → ?a + 1 = 0
-  Finset.sum_eq_single
-· ?a + 1
-  ⊢ ℕ
-  ⊢ ?a ∈ Finset.range n
-  ⊢ ∀ b ∈ Finset.range n, b ≠ ?a → b + 1 = 0
-  Finset.sum_eq_single_of_mem
-· ∑ x ∈ (Finset.range n).preimage ?f ⋯, (?f x + 1)
-  ⊢ ?ι → ℕ
-  ⊢ Set.BijOn ?f (?f ⁻¹' ↑(Finset.range n)) ↑(Finset.range n)
-  Finset.sum_preimage_of_bij
-· ∑ᶠ (i : ℕ) (_ : i ∈ ?s), (i + 1)
-  ⊢ (?s ∩ Function.support fun i => i + 1) ⊆ ↑(Finset.range n)
-  ⊢ ↑(Finset.range n) ⊆ ?s
-  finsum_mem_eq_sum_of_subset
-· ∑ x ∈ Finset.range n, Function.update (fun x => x + 1) ?i ?b x
-  ⊢ ?i ∉ Finset.range n
-  ⊢ ℕ
-  Finset.sum_update_of_not_mem
-· ∑ i ∈ ?t, (i + (↑(Finset.range n)).indicator (fun i => 1) i)
-  ⊢ Finset.range n ⊆ ?t
-  ⊢ ∀ (a : ℕ), a + 0 = 0
-  Finset.sum_indicator_subset_of_eq_zero
-· ?s₂.sum ?g
-  ⊢ Finset.range n = ?s₂
-  ⊢ ∀ x ∈ ?s₂, x + 1 = ?g x
-  Finset.sum_congr
-· ∑ x ∈ (Finset.range n).preimage ?f ?hf, (?f x + 1)
-  ⊢ ?ι → ℕ
-  ⊢ Set.InjOn ?f (?f ⁻¹' ↑(Finset.range n))
-  ⊢ ∀ x ∈ Finset.range n, x ∉ Set.range ?f → x + 1 = 0
-  Finset.sum_preimage
-· ∑ x ∈ Finset.range n, if ?p x then x + 1 else ?g x
-  ⊢ ∀ x ∈ Finset.range n, ?p x
-  ⊢ ℕ → ℕ
-  Finset.sum_ite_of_true
-· ∑ x ∈ Finset.range n, if ?p x then ?f x else x + 1
-  ⊢ ∀ x ∈ Finset.range n, ¬?p x
-  ⊢ ℕ → ℕ
-  Finset.sum_ite_of_false
-· ∑ i ∈ ?s₂, ?g i
-  ⊢ Finset.range n ⊆ ?s₂
-  ⊢ ∀ x ∈ ?s₂ \ Finset.range n, ?g x = 0
-  ⊢ ∀ x ∈ Finset.range n, x + 1 = ?g x
-  Finset.sum_subset_zero_on_sdiff
-· ∑ i ∈ ?t, ?g i
-  ⊢ ℕ ≃ ?κ
-  ⊢ ∀ (i : ℕ), i ∈ Finset.range n ↔ ?e i ∈ ?t
-  ⊢ ∀ i ∈ Finset.range n, i + 1 = ?g (?e i)
-  Finset.sum_equiv
-· ?a + 1 + (?b + 1)
-  ⊢ ℕ
-  ⊢ ℕ
-  ⊢ ?a ≠ ?b
-  ⊢ ∀ c ∈ Finset.range n, c ≠ ?a ∧ c ≠ ?b → c + 1 = 0
-  ⊢ ?a ∉ Finset.range n → ?a + 1 = 0
-  ⊢ ?b ∉ Finset.range n → ?b + 1 = 0
-  Finset.sum_eq_add
-· ?a + 1 + (?b + 1)
-  ⊢ ℕ
-  ⊢ ℕ
-  ⊢ ?a ∈ Finset.range n
-  ⊢ ?b ∈ Finset.range n
-  ⊢ ?a ≠ ?b
-  ⊢ ∀ c ∈ Finset.range n, c ≠ ?a ∧ c ≠ ?b → c + 1 = 0
-  Finset.sum_eq_add_of_mem
-· ∑ i ∈ ?t, ?g i
-  ⊢ ℕ → ?κ
-  ⊢ Function.Bijective ?e
-  ⊢ ∀ (i : ℕ), i ∈ Finset.range n ↔ ?e i ∈ ?t
-  ⊢ ∀ i ∈ Finset.range n, i + 1 = ?g (?e i)
-  Finset.sum_bijective
-· ∑ x ∈ ?t, ?g x
-  ⊢ (a : ℕ) → a ∈ Finset.range n → ?κ
-  ⊢ ∀ (a : ℕ) (ha : a ∈ Finset.range n), ?i a ha ∈ ?t
-  ⊢ ∀ (a₁ : ℕ) (ha₁ : a₁ ∈ Finset.range n) (a₂ : ℕ) (ha₂ : a₂ ∈ Finset.range n), ?i a₁ ha₁ = ?i a₂ ha₂ → a₁ = a₂
-  ⊢ ∀ b ∈ ?t, ∃ a, ∃ (ha : a ∈ Finset.range n), ?i a ha = b
-  ⊢ ∀ (a : ℕ) (ha : a ∈ Finset.range n), a + 1 = ?g (?i a ha)
-  Finset.sum_bij
-· ∑ x ∈ ?t, ?g x
-  ⊢ ℕ → ?κ
-  ⊢ ∀ a ∈ Finset.range n, ?i a ∈ ?t
-  ⊢ Set.InjOn ?i ↑(Finset.range n)
-  ⊢ Set.SurjOn ?i ↑(Finset.range n) ↑?t
-  ⊢ ∀ a ∈ Finset.range n, a + 1 = ?g (?i a)
-  Finset.sum_nbij
-· ∑ j ∈ ?t, ?g j
-  ⊢ ℕ → ?κ
-  ⊢ Set.InjOn ?e ↑(Finset.range n)
-  ⊢ Set.MapsTo ?e ↑(Finset.range n) ↑?t
-  ⊢ ∀ i ∈ ?t, i ∉ ?e '' ↑(Finset.range n) → ?g i = 0
-  ⊢ ∀ i ∈ Finset.range n, i + 1 = ?g (?e i)
-  Finset.sum_of_injOn
-· ∑ x ∈ ?t, ?g x
-  ⊢ (a : ℕ) → a ∈ Finset.range n → a + 1 ≠ 0 → ?γ
-  ⊢ ∀ (a : ℕ) (h₁ : a ∈ Finset.range n) (h₂ : a + 1 ≠ 0), ?i a h₁ h₂ ∈ ?t
-  ⊢ ∀ (a₁ : ℕ) (h₁₁ : a₁ ∈ Finset.range n) (h₁₂ : a₁ + 1 ≠ 0) (a₂ : ℕ) (h₂₁ : a₂ ∈ Finset.range n) (h₂₂ : a₂ + 1 ≠ 0),
-    ?i a₁ h₁₁ h₁₂ = ?i a₂ h₂₁ h₂₂ → a₁ = a₂
-  ⊢ ∀ b ∈ ?t, ?g b ≠ 0 → ∃ a, ∃ (h₁ : a ∈ Finset.range n) (h₂ : a + 1 ≠ 0), ?i a h₁ h₂ = b
-  ⊢ ∀ (a : ℕ) (h₁ : a ∈ Finset.range n) (h₂ : a + 1 ≠ 0), a + 1 = ?g (?i a h₁ h₂)
-  Finset.sum_bij_ne_zero
-· ∑ x ∈ ?t, ?g x
-  ⊢ (a : ℕ) → a ∈ Finset.range n → ?κ
-  ⊢ (a : ?κ) → a ∈ ?t → ℕ
-  ⊢ ∀ (a : ℕ) (ha : a ∈ Finset.range n), ?i a ha ∈ ?t
-  ⊢ ∀ (a : ?κ) (ha : a ∈ ?t), ?j a ha ∈ Finset.range n
-  ⊢ ∀ (a : ℕ) (ha : a ∈ Finset.range n), ?j (?i a ha) ⋯ = a
-  ⊢ ∀ (a : ?κ) (ha : a ∈ ?t), ?i (?j a ha) ⋯ = a
-  ⊢ ∀ (a : ℕ) (ha : a ∈ Finset.range n), a + 1 = ?g (?i a ha)
-  Finset.sum_bij'
-· ∑ x ∈ ?t, ?g x
-  ⊢ ℕ → ?κ
-  ⊢ ?κ → ℕ
-  ⊢ ∀ a ∈ Finset.range n, ?i a ∈ ?t
-  ⊢ ∀ a ∈ ?t, ?j a ∈ Finset.range n
-  ⊢ ∀ a ∈ Finset.range n, ?j (?i a) = a
-  ⊢ ∀ a ∈ ?t, ?i (?j a) = a
-  ⊢ ∀ a ∈ Finset.range n, a + 1 = ?g (?i a)
-  Finset.sum_nbij'
 -/
 #guard_msgs in
 #rw?? ∑ n ∈ Finset.range n, (n + 1)
@@ -579,20 +357,6 @@ Pattern Continuous f
   continuous_iff_lower_upperSemicontinuous
 · Continuous (-Inv.inv)
   continuous_neg_iff
-· Continuous (SeparationQuotient.lift Inv.inv ?hf)
-  SeparationQuotient.continuous_lift
-· Continuous ?g
-  ⊢ ∀ (x : ℚ), x⁻¹ = ?g x
-  continuous_congr
-· Continuous ?g
-  ⊢ ∀ (x : ℚ), Inseparable x⁻¹ (?g x)
-  continuous_congr_of_inseparable
-· ∀ s ∈ ?S, ContinuousOn Inv.inv s
-  ⊢ RestrictGenTopology ?S
-  RestrictGenTopology.continuous_iff
-· ∀ s ∈ ?B, IsOpen (Inv.inv ⁻¹' s)
-  ⊢ TopologicalSpace.IsTopologicalBasis ?B
-  TopologicalSpace.IsTopologicalBasis.continuous_iff
 -/
 #guard_msgs in
 #rw?? Continuous (Inv.inv : Rat → Rat)
@@ -638,40 +402,10 @@ Pattern n.Coprime m
 · Nat.Coprime 2 (3 - 2)
   ⊢ 2 ≤ 3
   Nat.coprime_sub_self_right
-· (2 + 3 * ?k).Coprime 3
-  ⊢ ℕ
-  Nat.coprime_add_mul_left_left
-· (3 * ?k + 2).Coprime 3
-  ⊢ ℕ
-  Nat.coprime_mul_left_add_left
-· Nat.Coprime 2 (3 + 2 * ?k)
-  ⊢ ℕ
-  Nat.coprime_add_mul_left_right
-· (2 + ?k * 3).Coprime 3
-  ⊢ ℕ
-  Nat.coprime_add_mul_right_left
-· Nat.Coprime 2 (2 * ?k + 3)
-  ⊢ ℕ
-  Nat.coprime_mul_left_add_right
-· (?k * 3 + 2).Coprime 3
-  ⊢ ℕ
-  Nat.coprime_mul_right_add_left
-· Nat.Coprime 2 (3 + ?k * 2)
-  ⊢ ℕ
-  Nat.coprime_add_mul_right_right
-· Nat.Coprime 2 (?k * 2 + 3)
-  ⊢ ℕ
-  Nat.coprime_mul_right_add_right
 · 2 ≠ 3
   ⊢ Nat.Prime 2
   ⊢ Nat.Prime 3
   Nat.coprime_primes
-· (2 ^ ?n).Coprime 3
-  ⊢ 0 < ?n
-  Nat.coprime_pow_left_iff
-· Nat.Coprime 2 (3 ^ ?n)
-  ⊢ 0 < ?n
-  Nat.coprime_pow_right_iff
 · Disjoint (Nat.primeFactors 2) (Nat.primeFactors 3)
   ⊢ 2 ≠ 0
   ⊢ 3 ≠ 0

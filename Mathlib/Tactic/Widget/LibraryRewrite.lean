@@ -93,13 +93,6 @@ def addRewriteEntry (name : Name) (cinfo : ConstantInfo) :
     return []
   let (_,_,eqn) ← forallMetaTelescope cinfo.type
   let cont lhs rhs := do
-    -- don't index lemmas of the form `a = ?b` where `?b` is a variable not appearing in `a`
-    if let .mvar mvarId := lhs.getAppFn then
-      if (rhs.findMVar? (· == mvarId)).isNone then
-        return []
-    if let .mvar mvarId := rhs.getAppFn then
-      if (lhs.findMVar? (· == mvarId)).isNone then
-        return []
     let badMatch e :=
       e.getAppFn.isMVar ||
       e.eq?.any fun (α, l, r) =>
@@ -201,6 +194,8 @@ structure Rewrite where
   replacement : Expr
   /-- The extra goals created by the rewrite -/
   extraGoals : Array (MVarId × BinderInfo)
+  /-- Whether the rewrite introduces new metavariables with the replacement. -/
+  makesNewMVars : Bool
 
 /-- Extract the left and right hand sides of an equality or iff statement. -/
 def matchEqn? (e : Expr) : MetaM (Option (Expr × Expr)) := do
@@ -239,8 +234,9 @@ def checkRewrite (thm e : Expr) (symm : Bool) : MetaM (Option Rewrite) := do
         extraGoals := extraGoals.push (mvar.mvarId!, bi)
 
   let replacement ← instantiateMVars rhs
+  let makesNewMVars := (replacement.findMVar? fun mvarId => mvars.any (·.mvarId! == mvarId)).isSome
   let proof ← instantiateMVars (mkAppN thm mvars)
-  return some { symm, proof, replacement, extraGoals }
+  return some { symm, proof, replacement, extraGoals, makesNewMVars }
 
 initialize
   registerTraceClass `rw??
@@ -263,11 +259,11 @@ def checkAndSortRewriteLemmas (e : Expr) (rewrites : Array RewriteLemma) :
 
 /-- Return all applicable library rewrites of `e`.
 Note that the result may contain duplicate rewrites. These can be removed with `filterRewrites`. -/
-def getRewrites (e : Expr) : MetaM (Array (Array (Rewrite × Name))) := do
+def getImportRewrites (e : Expr) : MetaM (Array (Array (Rewrite × Name))) := do
   (← getCandidates e).mapM (checkAndSortRewriteLemmas e)
 
-/-- Same as `getRewrites`, but for lemmas from the current file. -/
-def getLocalRewrites (e : Expr) : MetaM (Array (Array (Rewrite × Name))) := do
+/-- Same as `getImportRewrites`, but for lemmas from the current file. -/
+def getModuleRewrites (e : Expr) : MetaM (Array (Array (Rewrite × Name))) := do
   (← getLocalCandidates e).mapM (checkAndSortRewriteLemmas e)
 
 /-! ### Rewriting by hypotheses -/
@@ -284,7 +280,7 @@ def getHypotheses (except : Option FVarId) : MetaM (RefinedDiscrTree (FVarId × 
   -- throwError "{x}"
   return tree.toLazy
 
-/-- Return all applicable hypothesis rewrites of `e`. Similar to `getRewrites`. -/
+/-- Return all applicable hypothesis rewrites of `e`. Similar to `getImportRewrites`. -/
 def getHypothesisRewrites (e : Expr) (except : Option FVarId) :
     MetaM (Array (Array (Rewrite × FVarId))) := do
   let (results, _) ← (← getHypotheses except).getMatch e (unify := false) (matchRootStar := true)
@@ -329,14 +325,16 @@ partial def isExplicitEq (t s : Expr) : MetaM Bool := do
       isDefEq tArgs[i]! sArgs[i]!
 
 /-- Filter out duplicate rewrites or reflexive rewrites. -/
-def filterRewrites {α} (e : Expr) (rewrites : Array α) (replacement : α → Expr) :
-    MetaM (Array α) :=
+@[specialize]
+def filterRewrites {α} (e : Expr) (rewrites : Array α) (replacement : α → Expr)
+    (makesNewMVars : α → Bool) : MetaM (Array α) :=
   withNewMCtxDepth do
   let mut filtered := #[]
   for rw in rewrites do
-    unless (← isExplicitEq (replacement rw) e <||>
-        filtered.anyM (isExplicitEq (replacement rw) <| replacement ·)) do
-      filtered := filtered.push rw
+    if makesNewMVars rw then continue
+    if ← isExplicitEq (replacement rw) e then continue
+    if ← filtered.anyM (isExplicitEq (replacement rw) <| replacement ·) then continue
+    filtered := filtered.push rw
   return filtered
 
 
@@ -423,6 +421,8 @@ structure RewriteInterface where
   prettyLemma : CodeWithInfos
   /-- The type of the lemma -/
   lemmaType : Expr
+  /-- Whether the rewrite introduces new metavariables with the replacement. -/
+  makesNewMVars : Bool
 
 /-- Construct the `RewriteInterface` from a `Rewrite`. -/
 def Rewrite.toInterface (rw : Rewrite) (name : Name ⊕ FVarId) (occ : Option Nat) (loc : Option Name)
@@ -459,23 +459,23 @@ inductive Kind where
 def getRewriteInterfaces (e : Expr) (occ : Option Nat) (loc : Option Name) (except : Option FVarId)
     (initNames : PersistentHashMap Name MVarId) :
     MetaM (Array (Array RewriteInterface × Kind) × Array (Array RewriteInterface × Kind)) := do
-  let mut dedup := #[]
+  let mut filtr := #[]
   let mut all := #[]
   for rewrites in ← getHypothesisRewrites e except do
     let rewrites ← rewrites.mapM fun (rw, fvarId) => rw.toInterface (.inr fvarId) occ loc initNames
     all := all.push (rewrites, .hypothesis)
-    dedup := dedup.push (← filterRewrites e rewrites (·.replacement), .hypothesis)
+    filtr := filtr.push (← filterRewrites e rewrites (·.replacement) (·.makesNewMVars), .hypothesis)
 
-  for rewrites in ← getLocalRewrites e do
+  for rewrites in ← getModuleRewrites e do
     let rewrites ← rewrites.mapM fun (rw, name) => rw.toInterface (.inl name) occ loc initNames
     all := all.push (rewrites, .fromFile)
-    dedup := dedup.push (← filterRewrites e rewrites (·.replacement), .fromFile)
+    filtr := filtr.push (← filterRewrites e rewrites (·.replacement) (·.makesNewMVars), .fromFile)
 
-  for rewrites in ← getRewrites e do
+  for rewrites in ← getImportRewrites e do
     let rewrites ← rewrites.mapM fun (rw, name) => rw.toInterface (.inl name) occ loc initNames
     all := all.push (rewrites, .fromCache)
-    dedup := dedup.push (← filterRewrites e rewrites (·.replacement), .fromCache)
-  return (dedup, all)
+    filtr := filtr.push (← filterRewrites e rewrites (·.replacement) (·.makesNewMVars), .fromCache)
+  return (filtr, all)
 
 /-- Render the matching side of the rewrite lemma.
 This is shown at the header of each section of rewrite results. -/
@@ -607,25 +607,34 @@ def SectionToMessageData (sec : Array (Rewrite × Name) × Bool) : MetaM (Option
 
 /-- `#rw?? e` gives all possible rewrites of `e`.
 In tactic mode, use `rw??` instead. -/
-syntax (name := rw??Command) "#rw??" term : command
+syntax (name := rw??Command) "#rw??" ("all")? term : command
 
 open Elab
 /-- Elaborate a `#rw??` command. -/
 @[command_elab rw??Command]
 def elabrw??Command : Command.CommandElab := fun stx =>
   withoutModifyingEnv <| Command.runTermElabM fun _ => do
-    let e ← Term.elabTerm stx[1] none
-    Term.synthesizeSyntheticMVarsNoPostponing
-    let e ← Term.levelMVarToParam (← instantiateMVars e)
-    let mut rewrites := #[]
-    for rws in ← getLocalRewrites e do
-      rewrites := rewrites.push (← filterRewrites e rws (·.1.replacement), true)
-    for rws in ← getRewrites e do
-      rewrites := rewrites.push (← filterRewrites e rws (·.1.replacement), false)
-    let sections ← liftMetaM <| rewrites.filterMapM SectionToMessageData
-    if sections.isEmpty then
-      logInfo m! "No rewrites found for {e}"
-    else
-      logInfo (.joinSep sections.toList "\n\n")
+  let e ← Term.elabTerm stx[2] none
+  Term.synthesizeSyntheticMVarsNoPostponing
+  let e ← Term.levelMVarToParam (← instantiateMVars e)
+
+  let filter := stx[1].isNone
+  let mut rewrites := #[]
+  for rws in ← getModuleRewrites e do
+    let rws ← if filter then
+      filterRewrites e rws (·.1.replacement) (·.1.makesNewMVars)
+      else pure rws
+    rewrites := rewrites.push (rws, true)
+  for rws in ← getImportRewrites e do
+    let rws ← if filter then
+      filterRewrites e rws (·.1.replacement) (·.1.makesNewMVars)
+      else pure rws
+    rewrites := rewrites.push (rws, false)
+
+  let sections ← liftMetaM <| rewrites.filterMapM SectionToMessageData
+  if sections.isEmpty then
+    logInfo m! "No rewrites found for {e}"
+  else
+    logInfo (.joinSep sections.toList "\n\n")
 
 end Mathlib.Tactic.LibraryRewrite
