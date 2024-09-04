@@ -29,8 +29,6 @@ structure ContextFreeRule (T : Type uT) (N : Type uN) where
   input : N
   /-- Output string a.k.a. right-hand side. -/
   output : List (Symbol T N)
-deriving
-  DecidableEq
 
 /-- Context-free grammar that generates words over the alphabet `T` (a type of terminals). -/
 structure ContextFreeGrammar.{uN,uT} (T : Type uT) where
@@ -286,7 +284,7 @@ protected lemma Derives.reverse (hg : g.Derives u v) : g.reverse.Derives u.rever
 lemma derives_reverse : g.reverse.Derives u.reverse v.reverse ↔ g.Derives u v :=
   ⟨fun h ↦ by convert h.reverse <;> simp, .reverse⟩
 
-@[simp] lemma derivees_reverse_comm : g.reverse.Derives u v ↔ g.Derives u.reverse v.reverse := by
+@[simp] lemma derives_reverse_comm : g.reverse.Derives u v ↔ g.Derives u.reverse v.reverse := by
   rw [iff_comm, ← derives_reverse, List.reverse_reverse, List.reverse_reverse]
 
 lemma generates_reverse : g.reverse.Generates u.reverse ↔ g.Generates u := by simp [Generates]
@@ -301,8 +299,9 @@ alias ⟨_, Generates.reverse⟩ := generates_reverse
 end ContextFreeGrammar
 
 /-- The class of context-free languages is closed under reversal. -/
-theorem Language.IsContextFree.reverse [DecidableEq T] (L : Language T) :
+theorem Language.IsContextFree.reverse (L : Language T) :
     L.IsContextFree → L.reverse.IsContextFree := by
-  rintro ⟨g, rfl⟩; exact ⟨g.reverse, by simp⟩
+  rintro ⟨g, rfl⟩
+  exact ⟨g.reverse, by simp⟩
 
 end closure_reversal
