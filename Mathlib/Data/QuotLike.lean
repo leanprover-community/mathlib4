@@ -39,63 +39,111 @@ class QuotLike (Q : Sort u) (α : outParam (Sort u)) (r : outParam (α → α �
 export QuotLike (mkQ toQuot toQuot_mkQ ind sound)
 
 attribute [elab_as_elim] ind
+attribute [simp] toQuot_mkQ
 
 @[inherit_doc mkQ]
-notation3:arg "⟦" a "⟧" => mkQ a
+notation3 "⟦" a "⟧" => mkQ a
+
+/-- [TODO] -/
+macro "⟦" t:term " : " α:term "⟧" : term => `(⟦($t : $α)⟧)
 
 open Lean Elab Term Meta Qq
 
 /-- [TODO] -/
-class HasQuot (α : Sort u) (Q : outParam (Sort u)) (r : outParam (α → α → Prop))
-    [QuotLike Q α r] where
+class HasQuot (Q : outParam (Sort u)) (α : Sort u) (r : outParam (α → α → Prop))
+    [QuotLike Q α r] : Prop where
 
 /-- [TODO] -/
-elab:arg "⟦" t:term "⟧'" : term => do
-  let t ← withSynthesize do elabTerm t none
-  synthesizeSyntheticMVars
-  let t ← instantiateMVars t
-  let α ← inferType t
+syntax (name := mkQ') "mkQ'" : term
+
+@[term_elab QuotLike.mkQ', inherit_doc QuotLike.mkQ']
+def mkQ'Impl : TermElab := fun stx typ? => do
+  let .some expectedType := typ? |
+    let α ← mkFreshTypeMVar
+    let β ← mkFreshTypeMVar
+    postponeElabTerm stx (some (← mkArrow α β))
+  let .forallE _ α _ _ ← whnf expectedType |
+    throwError m!"Expected type is not a function."
+  if α.isMVar then
+    tryPostpone
+    throwError m!"The input type must be known."
   let u ← match ← inferType α with | .sort u => pure u | _ => mkFreshLevelMVar
   have α : Q(Sort u) := α
-  have t : Q($α) := t
   let Q ← mkFreshExprMVarQ q(Sort u)
   let r ← mkFreshExprMVarQ q($α → $α → Prop)
   let inst ← mkFreshExprMVarQ q(QuotLike $Q $α $r)
-  let .some _ ← trySynthInstanceQ q(@HasQuot $α $Q $r $inst) |
-    throwError "Cannot find `HasQuot` instance for type `{α}`."
-  pure q(@mkQ $Q $α $r $inst $t)
+  let .some _ ← trySynthInstanceQ q(@HasQuot $Q $α $r $inst) |
+    tryPostpone
+    throwError m!"Cannot find `QuotLike.HasQuot` instance for type `{α}`."
+  pure q(@mkQ $Q $α $r $inst)
 
 /-- [TODO] -/
-macro:arg "⟦" t:term " : " α:term "⟧'" : term => `(⟦($t : $α)⟧')
+macro "⟦" t:term "⟧'" : term => `(mkQ' $t)
 
 /-- [TODO] -/
-class HasQuotHint (α : Sort u) (Hint : Sort v) (hint : Hint)
-    (Q : outParam (Sort u)) (r : outParam (α → α → Prop)) [QuotLike Q α r] where
+macro "⟦" t:term " : " α:term "⟧'" : term => `(⟦($t : $α)⟧')
 
 /-- [TODO] -/
-elab:arg "⟦" t:term "⟧_" noWs h:term:max : term => do
-  let t ← withSynthesize do elabTerm t none
+class Hint (Hint : Sort v) (hint : Hint)
+    (Q : outParam (Sort u)) (α : outParam (Sort u)) (r : outParam (α → α → Prop))
+    [QuotLike Q α r] : Prop where
+
+/-- [TODO] -/
+class HasQuotHint (Hint : Sort v) (hint : Hint)
+    (Q : outParam (Sort u)) (α : Sort u) (r : outParam (α → α → Prop))
+    [QuotLike Q α r] : Prop where
+
+/-- [TODO] -/
+syntax:max (name := mkQ_) "mkQ_" term:max : term
+
+@[term_elab QuotLike.mkQ_, inherit_doc QuotLike.mkQ_]
+def mkQ_Impl : TermElab := fun stx typ? => do
+  let `(mkQ_ $h) := stx | throwUnsupportedSyntax
   let h ← withSynthesize do elabTerm h none
   synthesizeSyntheticMVars
-  let t ← instantiateMVars t
-  let α ← inferType t
   let h ← instantiateMVars h
   let H ← inferType h
-  let u ← match ← inferType α with | .sort u => pure u | _ => mkFreshLevelMVar
   let v ← match ← inferType H with | .sort v => pure v | _ => mkFreshLevelMVar
-  have α : Q(Sort u) := α
-  have t : Q($α) := t
+  have H : Q(Sort v) := H
+  have h : Q($H) := h
+
+  let u ← mkFreshLevelMVar
+  let Q ← mkFreshExprMVarQ q(Sort u)
+  let α ← mkFreshExprMVarQ q(Sort u)
+  let r ← mkFreshExprMVarQ q($α → $α → Prop)
+  let inst ← mkFreshExprMVarQ q(QuotLike $Q $α $r)
+  if let .some _ ← trySynthInstanceQ q(@Hint $H $h $Q $α $r $inst) then
+    return q(@mkQ $Q $α $r $inst)
+
+  let .some expectedType := typ? |
+    let α ← mkFreshTypeMVar
+    let β ← mkFreshTypeMVar
+    postponeElabTerm stx (some (← mkArrow α β))
+  let .forallE _ α _ _ ← whnf expectedType |
+    throwError m!"Expected type is not a function."
+  if α.isMVar then
+    tryPostpone
+    throwError m!"The input type is not known, cannot find an instance of `QuotLike.Hint` \
+for hint `{h}`."
+
+  let u ← match ← inferType α with | .sort u => pure u | _ => mkFreshLevelMVar
   have H : Q(Sort v) := H
   have h : Q($H) := h
   let Q ← mkFreshExprMVarQ q(Sort u)
+  have α : Q(Sort u) := α
   let r ← mkFreshExprMVarQ q($α → $α → Prop)
   let inst ← mkFreshExprMVarQ q(QuotLike $Q $α $r)
-  let .some _ ← trySynthInstanceQ q(@HasQuotHint $α $H $h $Q $r $inst) |
-    throwError "Cannot find `HasQuotHint` instance for type `{α}` and hint `{h}`."
-  pure q(@mkQ $Q $α $r $inst $t)
+  let .some _ ← trySynthInstanceQ q(@HasQuotHint $H $h $Q $α $r $inst) |
+    tryPostpone
+    throwError m!"Cannot find an instance of `QuotLike.Hint` for hint `{h}` or \
+an instance of `QuotLike.HasQuotHint` for input type `{α}` and hint `{h}`."
+  pure q(@mkQ $Q $α $r $inst)
 
 /-- [TODO] -/
-macro:arg "⟦" t:term " : " α:term "⟧_" noWs h:term:max : term => `(⟦($t : $α)⟧_$h)
+macro:max "⟦" t:term "⟧_" h:term:max : term => `(mkQ_$h $t)
+
+/-- [TODO] -/
+macro:max "⟦" t:term " : " α:term "⟧_" h:term:max : term => `(⟦($t : $α)⟧_$h)
 
 end QuotLike
 
@@ -105,8 +153,8 @@ namespace Quot
 
 instance instQuotLike {α} (r : α → α → Prop) : QuotLike (Quot r) α r where
 
-scoped instance instHasQuotHint {α} (r : α → α → Prop) :
-    QuotLike.HasQuotHint α (α → α → Prop) r (Quot r) r where
+instance instHint {α} (r : α → α → Prop) :
+    QuotLike.HasQuotHint (α → α → Prop) r (Quot r) α r where
 
 end Quot
 
@@ -115,7 +163,7 @@ namespace Quotient
 instance instQuotLike {α} (s : Setoid α) : QuotLike (Quotient s) α (· ≈ ·) where
   mkQ := Quotient.mk _
 
-scoped instance instHasQuot {α} [s : Setoid α] : QuotLike.HasQuot α (Quotient s) (· ≈ ·) where
+scoped instance instHasQuot {α} [s : Setoid α] : QuotLike.HasQuot (Quotient s) α (· ≈ ·) where
 
 end Quotient
 
@@ -136,8 +184,8 @@ protected def lift {β : Sort v} (f : α → β) (h : ∀ (a b : α), r a b → 
 The analogue of `Quot.liftOn`: if `f : α → β` respects the equivalence relation `r`,
 then it lifts to a function on `Q` such that `liftOn ⟦a⟧ f h = f a`.
 -/
-protected abbrev liftOn {β : Sort v} (q : Q) (f : α → β) (h : (a b : α) → r a b → f a = f b) : β :=
-  QuotLike.lift f h q
+protected abbrev liftOn {β : Sort v} (q : Q) (f : α → β) (c : (a b : α) → r a b → f a = f b) : β :=
+  QuotLike.lift f c q
 
 @[simp]
 theorem lift_mkQ {β : Sort v} (f : α → β) (h : ∀ a₁ a₂, r a₁ a₂ → f a₁ = f a₂) (a : α) :
@@ -285,13 +333,13 @@ lemma liftOn₂'_mkQ
 /-- Lift a binary function to a quotient on both arguments. -/
 protected abbrev lift₂ [IsRefl α ra] [IsRefl β rb]
     (f : α → β → φ)
-    (h : ∀ a₁ a₂ b₁ b₂, ra a₁ a₂ → rb b₁ b₂ → f a₁ b₁ = f a₂ b₂) :
+    (h : ∀ a₁ b₁ a₂ b₂, ra a₁ a₂ → rb b₁ b₂ → f a₁ b₁ = f a₂ b₂) :
     Qa → Qb → φ :=
-  QuotLike.lift₂' f (h · · · _ · (refl _)) (h · _ · · (refl _) ·)
+  QuotLike.lift₂' f (h · _ · · · (refl _)) (h · · _ · (refl _) ·)
 
 lemma lift₂_mkQ [IsRefl α ra] [IsRefl β rb]
     (f : α → β → φ)
-    (h : ∀ a₁ a₂ b₁ b₂, ra a₁ a₂ → rb b₁ b₂ → f a₁ b₁ = f a₂ b₂)
+    (h : ∀ a₁ b₁ a₂ b₂, ra a₁ a₂ → rb b₁ b₂ → f a₁ b₁ = f a₂ b₂)
     (a : α) (b : β) :
     QuotLike.lift₂ f h (⟦a⟧ : Qa) (⟦b⟧ : Qb) = f a b := by
   simp
@@ -300,13 +348,13 @@ lemma lift₂_mkQ [IsRefl α ra] [IsRefl β rb]
 protected abbrev liftOn₂ [IsRefl α ra] [IsRefl β rb]
     (qa : Qa) (qb : Qb)
     (f : α → β → φ)
-    (h : ∀ a₁ a₂ b₁ b₂, ra a₁ a₂ → rb b₁ b₂ → f a₁ b₁ = f a₂ b₂) : φ :=
+    (h : ∀ a₁ b₁ a₂ b₂, ra a₁ a₂ → rb b₁ b₂ → f a₁ b₁ = f a₂ b₂) : φ :=
   QuotLike.lift₂ f h qa qb
 
 lemma liftOn₂_mkQ [IsRefl α ra] [IsRefl β rb]
     (a : α) (b : β)
     (f : α → β → φ)
-    (h : ∀ a₁ a₂ b₁ b₂, ra a₁ a₂ → rb b₁ b₂ → f a₁ b₁ = f a₂ b₂) :
+    (h : ∀ a₁ b₁ a₂ b₂, ra a₁ a₂ → rb b₁ b₂ → f a₁ b₁ = f a₂ b₂) :
     QuotLike.liftOn₂ (⟦a⟧ : Qa) (⟦b⟧ : Qb) f h = f a b := by
   simp
 
@@ -349,7 +397,7 @@ protected def recOnSubsingleton₂ {motive : Qa → Qb → Sort*}
 @[elab_as_elim]
 protected def hrecOn₂ [IsRefl α ra] [IsRefl β rb] {motive : Qa → Qb → Sort*}
     (qa : Qa) (qb : Qb) (f : ∀ a b, motive ⟦a⟧ ⟦b⟧)
-    (h : ∀ a₁ a₂ b₁ b₂, ra a₁ a₂ → rb b₁ b₂ → HEq (f a₁ b₁) (f a₂ b₂)) :
+    (h : ∀ a₁ b₁ a₂ b₂, ra a₁ a₂ → rb b₁ b₂ → HEq (f a₁ b₁) (f a₂ b₂)) :
     motive qa qb :=
   QuotLike.hrecOn qa
     (fun a ↦ QuotLike.hrecOn qb (f a) (fun b₁ b₂ pb ↦ h _ _ _ _ (refl _) pb))
@@ -358,7 +406,7 @@ protected def hrecOn₂ [IsRefl α ra] [IsRefl β rb] {motive : Qa → Qb → So
 @[simp]
 theorem hrecOn₂_mkQ [IsRefl α ra] [IsRefl β rb] {motive : Qa → Qb → Sort*}
     (a : α) (b : β) (f : ∀ a b, motive ⟦a⟧ ⟦b⟧)
-    (h : ∀ a₁ a₂ b₁ b₂, ra a₁ a₂ → rb b₁ b₂ → HEq (f a₁ b₁) (f a₂ b₂)) :
+    (h : ∀ a₁ b₁ a₂ b₂, ra a₁ a₂ → rb b₁ b₂ → HEq (f a₁ b₁) (f a₂ b₂)) :
     QuotLike.hrecOn₂ ⟦a⟧ ⟦b⟧ f h = f a b := by
   simp [QuotLike.hrecOn₂]
 
@@ -390,6 +438,10 @@ def ofQuot : Quot r → Q :=
 theorem ofQuot_toQuot (q : Q) : ofQuot (toQuot q) = q :=
   ind (fun a ↦ by rw [toQuot_mkQ, ofQuot]) q
 
+@[simp]
+theorem toQuot_ofQuot (q : Quot r) : toQuot (ofQuot q : Q) = q :=
+  Quot.ind (β := fun q ↦ toQuot (ofQuot q) = q) toQuot_mkQ q
+
 theorem toQuot_injective : Function.Injective (toQuot (Q := Q)) :=
   Function.LeftInverse.injective ofQuot_toQuot
 
@@ -410,6 +462,9 @@ protected theorem «forall» {p : Q → Prop} : (∀ q, p q) ↔ ∀ a, p ⟦a�
 
 protected theorem «exists» {p : Q → Prop} : (∃ q, p q) ↔ ∃ a, p ⟦a⟧ :=
   ⟨fun ⟨q, hq⟩ ↦ QuotLike.ind .intro q hq, fun ⟨a, ha⟩ ↦ ⟨⟦a⟧, ha⟩⟩
+
+instance (priority := 800) [Nonempty α] : Nonempty Q :=
+  Nonempty.map mkQ ‹_›
 
 instance (priority := 800) [Inhabited α] : Inhabited Q :=
   ⟨⟦default⟧⟩
@@ -449,7 +504,7 @@ instance (priority := 800)
     {Qa α : Sort ua} {ra : α → α → Prop} [QuotLike Qa α ra] [IsRefl α ra]
     {Qb β : Sort ub} {rb : β → β → Prop} [QuotLike Qb β rb] [IsRefl β rb]
     (f : α → β → Prop) [hf : ∀ a, DecidablePred (f a)]
-    (h : ∀ a₁ a₂ b₁ b₂, ra a₁ a₂ → rb b₁ b₂ → f a₁ b₁ = f a₂ b₂)
+    (h : ∀ a₁ b₁ a₂ b₂, ra a₁ a₂ → rb b₁ b₂ → f a₁ b₁ = f a₂ b₂)
     (qa : Qa) (qb : Qb) :
     Decidable (QuotLike.lift₂ f h qa qb) :=
   QuotLike.recOnSubsingleton₂ qa qb fun _ _ ↦ by simpa using hf _ _
@@ -462,10 +517,6 @@ noncomputable def out (q : Q) : α :=
 theorem mkQ_out (q : Q) : ⟦QuotLike.out q⟧ = q :=
   Classical.choose_spec (exists_rep q)
 
--- Note: cannot be a `simp` lemma because lhs has variable as head symbol
-theorem out_mkQ [IsEquiv α r] (a : α) : r (out (⟦a⟧ : Q)) a :=
-  exact (mkQ_out _)
-
 theorem mkQ_eq_iff_out [IsEquiv α r] {x : α} {y : Q} :
     ⟦x⟧ = y ↔ r x (out y) := by
   rw [← eq (Q := Q), mkQ_out]
@@ -474,13 +525,20 @@ theorem eq_mkQ_iff_out [IsEquiv α r] {x : Q} {y : α} :
     x = ⟦y⟧ ↔ r (out x) y := by
   rw [← eq (Q := Q), mkQ_out]
 
--- Note: cannot be a `simp` lemma because lhs has variable as head symbol
--- Note: not sure about the name
+variable (Q) in
+theorem out_mkQ_equiv [IsEquiv α r] (a : α) : r (out (⟦a⟧ : Q)) a :=
+  exact (mkQ_out _)
+
+variable (Q) in
+theorem equiv_out_mkQ [IsEquiv α r] (a : α) : r a (out (⟦a⟧ : Q)) :=
+  exact (mkQ_out _).symm
+
+variable (Q) in
 theorem out_equiv_out [IsEquiv α r] {x y : Q} : r (out x) (out y) ↔ x = y := by
   rw [← eq_mkQ_iff_out (Q := Q), mkQ_out]
 
 theorem out_injective [IsEquiv α r] : Function.Injective (QuotLike.out : Q → α) :=
-  fun _ _ h ↦ out_equiv_out.1 <| h ▸ refl _
+  fun _ _ h ↦ out_equiv_out _ |>.1 <| h ▸ refl _
 
 @[simp]
 theorem out_inj {x y : Q} [IsEquiv α r] : out x = out y ↔ x = y :=
