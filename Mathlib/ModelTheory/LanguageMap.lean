@@ -319,10 +319,10 @@ variable (α : Type u')
 @[simp]
 def constantsOnFunc : ℕ → Type u'
   | 0 => α
-  | _ => PEmpty
+  | (_ + 1) => PEmpty
 
 /-- A language with constants indexed by a type. -/
-@[simp]
+@[simps]
 def constantsOn : Language.{u', 0} := ⟨constantsOnFunc α, fun _ => Empty⟩
 
 variable {α}
