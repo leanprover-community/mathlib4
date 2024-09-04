@@ -487,27 +487,6 @@ def reverse : FreeMonoid α → FreeMonoid α := List.reverse
 theorem reverse_mul {a b : FreeMonoid α} : reverse (a * b) = reverse b * reverse a :=
   List.reverse_append _ _
 
-
-/-! ### foldr -/
-
-/--
-Applies function `f` to all of the elements of the free monoid, from right to left.
-* `foldr f init (of a * of b * of c) = f a <| f b <| f c <| init
--/
-@[to_additive (attr := specialize) "Applies function `f` to all of the elements of the free monoid,
-from right to left. `foldr f init (of a + of b + of c) = f a <| f b <| f c <| init"]
-def foldr (f : α → α → α) (init : α) (a : FreeMonoid α) := List.foldr f init a
-
-@[to_additive (attr := simp)]
-theorem foldr_one f (init : α) : foldr f init 1 = init := rfl
-
-@[to_additive (attr := simp)]
-theorem foldr_of f (init first : α) : foldr f init (of first) = f first init := rfl
-
-@[to_additive (attr := simp)]
-theorem foldr_mul_of f (init first : α) (a : FreeMonoid α) :
-    foldr f init (of first * a) = f first (foldr f init a) := rfl
-
 /-- The only invertible element of the free monoid is 1; this instance enables `units_eq_one`. -/
 @[to_additive]
 instance uniqueUnits : Unique (FreeMonoid α)ˣ where
