@@ -78,7 +78,7 @@ instance [Inhabited α] : Inhabited (Chain α) :=
   ⟨⟨default, fun _ _ _ => le_rfl⟩⟩
 
 instance : Membership α (Chain α) :=
-  ⟨fun a (c : ℕ →o α) => ∃ i, a = c i⟩
+  ⟨fun (c : ℕ →o α) a => ∃ i, a = c i⟩
 
 variable (c c' : Chain α)
 variable (f : α →o β)
@@ -729,7 +729,7 @@ instance : OmegaCompletePartialOrder (α →𝒄 β) :=
 
 namespace Prod
 
-/-- The application of continuous functions as a continuous function.  -/
+/-- The application of continuous functions as a continuous function. -/
 @[simps]
 def apply : (α →𝒄 β) × α →𝒄 β where
   toFun f := f.1 f.2
