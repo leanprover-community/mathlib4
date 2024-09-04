@@ -46,13 +46,14 @@ lemma autEmbedding_injective : Function.Injective (autEmbedding F) := by
   have : σ.app X = τ.app X := congr_fun h X
   rw [← Iso.app_hom, ← Iso.app_hom, this]
 
-instance (X : C) : TopologicalSpace (F.obj X) := ⊥
-instance (X : C) : DiscreteTopology (F.obj X) := ⟨rfl⟩
-instance (X : C) : TopologicalSpace (Aut (F.obj X)) := ⊥
-instance (X : C) : DiscreteTopology (Aut (F.obj X)) := ⟨rfl⟩
+scoped instance (X : C) : TopologicalSpace (F.obj X) := ⊥
+scoped instance (X : C) : DiscreteTopology (F.obj X) := ⟨rfl⟩
+scoped instance (X : C) : TopologicalSpace (Aut (F.obj X)) := ⊥
+scoped instance (X : C) : DiscreteTopology (Aut (F.obj X)) := ⟨rfl⟩
 
 /-- `Aut F` is equipped with the by the embedding into `∀ X, Aut (F.obj X)` induced embedding. -/
-instance : TopologicalSpace (Aut F) := TopologicalSpace.induced (autEmbedding F) inferInstance
+instance : TopologicalSpace (Aut F) :=
+  TopologicalSpace.induced (autEmbedding F) inferInstance
 
 /-- The image of `Aut F` in `∀ X, Aut (F.obj X)` are precisely the compatible families of
 automorphisms. -/
