@@ -55,15 +55,23 @@ section in_other_prs -- should be empty when this PR gets submitted
 
 variable {α : Type*}
 
+namespace LTSeries
+
 /-- https://github.com/leanprover-community/mathlib4/pull/15555 -/
-def LTSeries.iota (n : ℕ) : LTSeries ℕ :=
-  { length := n, toFun := fun i => i, step := fun _ => Nat.lt_add_one _ }
+def range (n : ℕ) : LTSeries ℕ where
+  length := n
+  toFun := fun i => i
+  step i := Nat.lt_add_one i
 
-@[simp] theorem LTSeries.length_iota (n : ℕ) : (LTSeries.iota n).length = n := rfl
+@[simp] lemma length_range (n : ℕ) : (range n).length = n := rfl
 
-@[simp] theorem LTSeries.head_iota (n : ℕ) : (LTSeries.iota n).head = 0 := rfl
+@[simp] lemma range_apply (n : ℕ) (i : Fin (n+1)) : (range n) i = i := rfl
 
-@[simp] theorem LTSeries.last_iota (n : ℕ) : (LTSeries.iota n).last = n := rfl
+@[simp] lemma head_range (n : ℕ) : (range n).head = 0 := rfl
+
+@[simp] lemma last_range (n : ℕ) : (range n).last = n := rfl
+
+end LTSeries
 
 end in_other_prs
 
@@ -588,12 +596,12 @@ variable {α : Type*} [Preorder α]
   apply le_antisymm
   · apply (height_le_coe_iff ..).mpr
     simp (config := { contextual := true }) only [ih, Nat.cast_lt, implies_true]
-  · exact length_le_height_last (.iota n)
+  · exact length_le_height_last (.range n)
 
 @[simp] lemma coheight_nat (n : ℕ) : coheight n = ⊤ := by
   rw [coheight_eq_top_iff]
   intro m
-  use (LTSeries.iota m).map (· + n) (StrictMono.add_const (fun _ _ x ↦ x) n)
+  use (LTSeries.range m).map (· + n) (StrictMono.add_const (fun _ _ x ↦ x) n)
   simp
 
 @[simp]
@@ -614,14 +622,14 @@ lemma krullDim_nat : krullDim ℕ = ⊤ := by
 @[simp] lemma height_int (a : ℤ) : height a = ⊤ := by
   rw [height_eq_top_iff]
   intro n
-  use (LTSeries.iota n).map (a - (n : ℤ) + ·)
+  use (LTSeries.range n).map (a - (n : ℤ) + ·)
     (StrictMono.const_add Int.natCast_strictMono (a - (n : ℤ)))
   simp
 
 @[simp] lemma coheight_int (a : ℤ) : coheight a = ⊤ := by
   rw [coheight_eq_top_iff]
   intro n
-  use (LTSeries.iota n).map (fun i => a + (i : ℤ)) (StrictMono.const_add Int.natCast_strictMono a)
+  use (LTSeries.range n).map (fun i => a + (i : ℤ)) (StrictMono.const_add Int.natCast_strictMono a)
   simp
 
 @[simp]
