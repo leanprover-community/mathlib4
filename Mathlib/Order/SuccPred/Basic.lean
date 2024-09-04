@@ -1411,3 +1411,53 @@ lemma SuccOrder.forall_ne_bot_iff
   rw [← Nat.succ_pred_eq_of_pos hj]
   simp only [Function.iterate_succ', Function.comp_apply]
   apply h
+
+section OrderIso
+
+@[reducible]
+def SuccOrder.of_orderIso {X Y : Type*} [Preorder X] [Preorder Y] [SuccOrder X] (f : X ≃o Y) :
+    SuccOrder Y where
+  succ y := f (succ (f.symm y))
+  le_succ y := by rw [← map_inv_le_iff f]; exact le_succ (f.symm y)
+  max_of_succ_le h := by
+    rw [← f.symm.isMax_apply]
+    refine max_of_succ_le ?_
+    simp [f.le_symm_apply, h]
+  succ_le_of_lt h := by rw [← le_map_inv_iff]; exact succ_le_of_lt (by simp [h])
+
+@[reducible]
+def PredOrder.of_orderIso {X Y : Type*} [Preorder X] [Preorder Y] [PredOrder X] (f : X ≃o Y) :
+    PredOrder Y where
+  pred y := f (pred (f.symm y))
+  pred_le y := by rw [← le_map_inv_iff f]; exact pred_le (f.symm y)
+  min_of_le_pred h := by
+    rw [← f.symm.isMin_apply]
+    refine min_of_le_pred ?_
+    simp [f.symm_apply_le, h]
+  le_pred_of_lt h := by rw [← map_inv_le_iff]; exact le_pred_of_lt (by simp [h])
+
+lemma IsSuccArchimedean.of_orderIso {X Y : Type*} [PartialOrder X] [PartialOrder Y]
+    [SuccOrder X] [IsSuccArchimedean X] [SuccOrder Y] (f : X ≃o Y) : IsSuccArchimedean Y where
+  exists_succ_iterate_of_le {a b} h := by
+    refine (exists_succ_iterate_of_le ((map_inv_le_map_inv_iff f).mpr h)).imp ?_
+    intro n
+    rw [← f.apply_eq_iff_eq, EquivLike.apply_inv_apply]
+    rintro rfl
+    clear h
+    induction n generalizing a with
+    | zero => simp
+    | succ n IH => simp only [Function.iterate_succ', Function.comp_apply, IH, f.map_succ]
+
+lemma IsPredArchimedean.of_orderIso {X Y : Type*} [PartialOrder X] [PartialOrder Y]
+    [PredOrder X] [IsPredArchimedean X] [PredOrder Y] (f : X ≃o Y) : IsPredArchimedean Y where
+  exists_pred_iterate_of_le {a b} h := by
+    refine (exists_pred_iterate_of_le ((map_inv_le_map_inv_iff f).mpr h)).imp ?_
+    intro n
+    rw [← f.apply_eq_iff_eq, EquivLike.apply_inv_apply]
+    rintro rfl
+    clear h
+    induction n generalizing b with
+    | zero => simp
+    | succ n IH => simp only [Function.iterate_succ', Function.comp_apply, IH, f.map_pred]
+
+end OrderIso
