@@ -1159,7 +1159,7 @@ noncomputable def quotientKerEquivOfSurjective (f : M →* P) (hf : Surjective f
 with c : Con N -/
 @[to_additive "If e : M →* N is surjective then (c.comap e).Quotient ≃* c.Quotient
 with c : AddCon N"]
-noncomputable def comapQuotientEquivOfSurj(c : Con M) (f : N →* M) (hf : Function.Surjective f) :
+noncomputable def comapQuotientEquivOfSurj (c : Con M) (f : N →* M) (hf : Function.Surjective f) :
     (Con.comap f f.map_mul c).Quotient ≃* c.Quotient :=
   (Con.congr Con.comap_eq).trans <| Con.quotientKerEquivOfSurjective
   (c.mk'.comp f) <| Con.mk'_surjective.comp hf
