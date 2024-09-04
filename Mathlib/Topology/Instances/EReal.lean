@@ -243,8 +243,8 @@ end LimInfSup
 
 theorem continuousAt_add_coe_coe (a b : ℝ) :
     ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (a, b) := by
-  simp only [ContinuousAt, nhds_coe_coe, ← coe_add, tendsto_map'_iff, (· ∘ ·), tendsto_coe,
-    tendsto_add]
+  simp only [ContinuousAt, nhds_coe_coe, ← coe_add, tendsto_map'_iff, Function.comp_def,
+    tendsto_coe, tendsto_add]
 
 theorem continuousAt_add_top_coe (a : ℝ) :
     ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (⊤, a) := by
@@ -255,7 +255,7 @@ theorem continuousAt_add_top_coe (a : ℝ) :
 
 theorem continuousAt_add_coe_top (a : ℝ) :
     ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (a, ⊤) := by
-  simpa only [add_comm, (· ∘ ·), ContinuousAt, Prod.swap]
+  simpa only [add_comm, Function.comp_def, ContinuousAt, Prod.swap]
     using Tendsto.comp (continuousAt_add_top_coe a) (continuous_swap.tendsto ((a : EReal), ⊤))
 
 theorem continuousAt_add_top_top : ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (⊤, ⊤) := by
@@ -273,7 +273,7 @@ theorem continuousAt_add_bot_coe (a : ℝ) :
 
 theorem continuousAt_add_coe_bot (a : ℝ) :
     ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (a, ⊥) := by
-  simpa only [add_comm, (· ∘ ·), ContinuousAt, Prod.swap]
+  simpa only [add_comm, Function.comp_def, ContinuousAt, Prod.swap]
     using Tendsto.comp (continuousAt_add_bot_coe a) (continuous_swap.tendsto ((a : EReal), ⊥))
 
 theorem continuousAt_add_bot_bot : ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (⊥, ⊥) := by
@@ -340,7 +340,7 @@ private lemma continuousAt_mul_symm3 {a b : EReal}
 private lemma continuousAt_mul_coe_coe (a b : ℝ) :
     ContinuousAt (fun p : EReal × EReal ↦ p.1 * p.2) (a, b) := by
   simp [ContinuousAt, EReal.nhds_coe_coe, ← EReal.coe_mul, Filter.tendsto_map'_iff,
-    (· ∘ ·), EReal.tendsto_coe, tendsto_mul]
+    Function.comp_def, EReal.tendsto_coe, tendsto_mul]
 
 private lemma continuousAt_mul_top_top :
     ContinuousAt (fun p : EReal × EReal ↦ p.1 * p.2) (⊤, ⊤) := by
