@@ -547,6 +547,51 @@ lemma krullDim_eq_iSup_coheight_of_nonempty [Nonempty α] : krullDim α = ⨆ (a
   rw [← krullDim_orderDual]
   exact krullDim_eq_iSup_height_of_nonempty (α := αᵒᵈ)
 
+/--
+The Krull dimension is the supremum of the element's height plus coheight.
+-/
+lemma krullDim_eq_iSup_height_add_coheight :
+    krullDim α = ⨆ (a : α), ↑(height a + coheight a) := by
+  cases isEmpty_or_nonempty α with
+  | inl h => simp [krullDim_eq_bot_of_isEmpty]
+  | inr h =>
+    rw [← WithBot.coe_iSup (OrderTop.bddAbove _)]
+    apply le_antisymm
+    · rw [krullDim_eq_iSup_height_of_nonempty]
+      apply WithBot.coe_mono
+      apply ciSup_mono (by bddDefault)
+      intro
+      exact le_self_add
+    · wlog hnottop : krullDim α < ⊤
+      · simp_all
+      rw [krullDim_eq_iSup_length]
+      simp only [WithBot.coe_le_coe, iSup_le_iff]
+      intro a
+      cases hh : height a with
+      | top =>
+        suffices (⊤ : ℕ∞) ≤ krullDim α by simp_all
+        rw [krullDim_eq_iSup_height_of_nonempty, WithBot.coe_le_coe]
+        apply le_iSup_of_le a (by simpa)
+      | coe n =>
+        obtain ⟨p₁, hlast, hlen₁⟩ := exists_series_of_height_eq_coe a hh
+        cases hch : coheight a with
+        | top =>
+          suffices (⊤ : ℕ∞) ≤ krullDim α by simp_all
+          rw [krullDim_eq_iSup_coheight_of_nonempty, WithBot.coe_le_coe]
+          apply le_iSup_of_le a (by simpa)
+        | coe m =>
+          obtain ⟨p₂, hhead, hlen⟩ := exists_series_of_coheight_eq_coe a hch
+          apply le_iSup_of_le ((p₁.smash p₂) (by simp [*]))
+          simp [*]
+
+/--
+The Krull dimension is the supremum of the element's height plus coheight.
+Variant of `krullDim_eq_iSup_height_add_coheight`
+-/
+lemma krullDim_eq_iSup_height_add_coheight_of_nonempty [Nonempty α] :
+    krullDim α = ⨆ (a : α), height a + coheight a := by
+  rw [krullDim_eq_iSup_height_add_coheight, WithBot.coe_iSup (OrderTop.bddAbove _)]
+
 @[simp] -- not as useful as a simp lemma as it looks, due to the coe on the left
 lemma height_top_eq_krullDim [OrderTop α] : height (⊤ : α) = krullDim α := by
   rw [krullDim_eq_iSup_length]
