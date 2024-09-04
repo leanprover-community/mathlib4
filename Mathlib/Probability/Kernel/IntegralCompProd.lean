@@ -226,7 +226,7 @@ theorem integral_compProd :
   · simp [integral, hE]
   apply Integrable.induction
   · intro c s hs h2s
-    simp_rw [integral_indicator hs, ← indicator_comp_right, Function.comp,
+    simp_rw [integral_indicator hs, ← indicator_comp_right, Function.comp_def,
       integral_indicator (measurable_prod_mk_left hs), MeasureTheory.setIntegral_const,
       integral_smul_const]
     congr 1
