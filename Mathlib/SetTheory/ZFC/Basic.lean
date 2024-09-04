@@ -448,7 +448,8 @@ theorem mem_image {f : PSet.{u} → PSet.{u}} (H : ∀ x y, Equiv x y → Equiv 
     ⟨fun ⟨a, ya⟩ => ⟨A a, Mem.mk A a, ya⟩, fun ⟨_, ⟨a, za⟩, yz⟩ => ⟨a, yz.trans <| H _ _ za⟩⟩
 
 /-- Kuratowski ordered pair -/
-def pair (x y : PSet) : PSet := {{x}, {x, y}}
+def pair (x y : PSet) : PSet :=
+  {{x}, {x, y}}
 
 theorem pair_equiv_iff {x y x' y' : PSet.{u}} :
     Equiv (pair x y) (pair x' y') ↔ Equiv x x' ∧ Equiv y y' := by
