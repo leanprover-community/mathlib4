@@ -40,19 +40,28 @@ open FirstOrder Structure
 
 variable {L : Language.{u, v}} {α : Type w} {M : Type w'} {n : ℕ}
 
-/-- The language consisting of a single relation representing `≤`. -/
-protected def order : Language :=
-  Language.mk₂ Empty Empty Empty Empty Unit
+/-- The type of relations for the language of orders, consisting of a single binary relation `le`.
+-/
+inductive orderRel : ℕ → Type
+  | le : orderRel 2
+  deriving DecidableEq
 
-namespace Order
+/-- The relational language consisting of a single relation representing `≤`. -/
+protected def order : Language := ⟨fun _ => Empty, orderRel⟩
+  deriving IsRelational
 
-instance Language.instIsRelational : IsRelational Language.order :=
-  Language.isRelational_mk₂
+namespace order
 
-instance Language.instSubsingleton : Subsingleton (Language.order.Relations n) :=
-  Language.subsingleton_mk₂_relations
+@[simp]
+lemma forall_relations {P : ∀ (n) (_ : Language.order.Relations n), Prop} :
+    (∀ {n} (R), P n R) ↔ P 2 .le := ⟨fun h => h _, fun h n R =>
+      match n, R with
+      | 2, .le => h⟩
 
-end Order
+instance instSubsingleton : Subsingleton (Language.order.Relations n) :=
+  ⟨by rintro ⟨⟩ ⟨⟩; rfl⟩
+
+end order
 
 /-- A language is ordered if it has a symbol representing `≤`. -/
 class IsOrdered (L : Language.{u, v}) where
@@ -62,7 +71,7 @@ class IsOrdered (L : Language.{u, v}) where
 export IsOrdered (leSymb)
 
 instance : IsOrdered Language.order :=
-  ⟨Unit.unit⟩
+  ⟨.le⟩
 
 section IsOrdered
 
@@ -80,8 +89,12 @@ variable (L)
 
 /-- The language homomorphism sending the unique symbol `≤` of `Language.order` to `≤` in an ordered
  language. -/
-def orderLHom : Language.order →ᴸ L :=
-  LHom.mk₂ Empty.elim Empty.elim Empty.elim Empty.elim fun _ => leSymb
+def orderLHom : Language.order →ᴸ L where
+  onRelation | _, .le => leSymb
+
+@[simp]
+lemma orderLHom_apply : (R : Language.order.Relations 2) → L.orderLHom.onRelation R = leSymb
+  | .le => rfl
 
 @[simp]
 theorem orderLHom_leSymb :
@@ -149,8 +162,8 @@ instance sum.instIsOrdered : IsOrdered (L.sum Language.order) :=
 
 variable (L M)
 
-instance orderStructure [LE M] : Language.order.Structure M :=
-  Structure.mk₂ Empty.elim Empty.elim Empty.elim Empty.elim fun _ => (· ≤ ·)
+instance orderStructure [LE M] : Language.order.Structure M where
+  RelMap | .le => (fun x => x 0 ≤ x 1)
 
 /-- A structure is ordered if its language has a `≤` symbol whose interpretation is -/
 abbrev OrderedStructure [IsOrdered L] [LE M] [L.Structure M] : Prop :=
@@ -212,14 +225,13 @@ theorem realize_noBotOrder [h : NoBotOrder M] : M ⊨ Language.order.noBotOrderS
   realize_noBotOrder_iff.2 h
 
 end LE
-
 section Preorder
 
 variable [Preorder M]
 
 instance model_preorder : M ⊨ Language.order.preorderTheory := by
   simp only [preorderTheory, Theory.model_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
-    forall_eq_or_imp, Relations.realize_reflexive, relMap_apply₂, forall_eq,
+    forall_eq_or_imp, Relations.realize_reflexive, relMap_leSymb, forall_eq,
     Relations.realize_transitive]
   exact ⟨le_refl, fun _ _ _ => le_trans⟩
 
@@ -247,7 +259,7 @@ end Preorder
 
 instance model_partialOrder [PartialOrder M] : M ⊨ Language.order.partialOrderTheory := by
   simp only [partialOrderTheory, Theory.model_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
-    forall_eq_or_imp, Relations.realize_reflexive, relMap_apply₂, Relations.realize_antisymmetric,
+    forall_eq_or_imp, Relations.realize_reflexive, relMap_leSymb, Relations.realize_antisymmetric,
     forall_eq, Relations.realize_transitive]
   exact ⟨le_refl, fun _ _ => le_antisymm, fun _ _ _ => le_trans⟩
 
@@ -257,15 +269,14 @@ variable [LinearOrder M]
 
 instance model_linearOrder : M ⊨ Language.order.linearOrderTheory := by
   simp only [linearOrderTheory, Theory.model_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
-    forall_eq_or_imp, Relations.realize_reflexive, relMap_apply₂, Relations.realize_antisymmetric,
+    forall_eq_or_imp, Relations.realize_reflexive, relMap_leSymb, Relations.realize_antisymmetric,
     Relations.realize_transitive, forall_eq, Relations.realize_total]
   exact ⟨le_refl, fun _ _ => le_antisymm, fun _ _ _ => le_trans, le_total⟩
 
 instance model_dlo [DenselyOrdered M] [NoTopOrder M] [NoBotOrder M] :
     M ⊨ Language.order.dlo := by
   simp only [dlo, Set.union_insert, Set.union_singleton, Theory.model_iff, Set.mem_insert_iff,
-    forall_eq_or_imp, realize_noTopOrder, realize_noBotOrder, realize_denselyOrdered,
-    true_and_iff]
+    forall_eq_or_imp, realize_noTopOrder, realize_noBotOrder, realize_denselyOrdered, true_and]
   rw [← Theory.model_iff]
   infer_instance
 
