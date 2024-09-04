@@ -3644,6 +3644,7 @@ import Mathlib.Order.Sublattice
 import Mathlib.Order.SuccPred.Basic
 import Mathlib.Order.SuccPred.CompleteLinearOrder
 import Mathlib.Order.SuccPred.IntervalSucc
+import Mathlib.Order.SuccPred.Inverse
 import Mathlib.Order.SuccPred.Limit
 import Mathlib.Order.SuccPred.LinearLocallyFinite
 import Mathlib.Order.SuccPred.Relation
