@@ -303,12 +303,10 @@ section cycleFactors
 open scoped List in
 /-- Given a list `l : List α` and a permutation `f : Perm α` whose nonfixed points are all in `l`,
   recursively factors `f` into cycles. -/
-def cycleFactorsAux [DecidableEq α] [Fintype α] :
-    ∀ (l : List α) (f : Perm α),
-      (∀ {x}, f x ≠ x → x ∈ l) →
-        { l : List (Perm α) // l.prod = f ∧ (∀ g ∈ l, IsCycle g) ∧ l.Pairwise Disjoint } := by
-  intro l f h
-  exact match l with
+def cycleFactorsAux [DecidableEq α] [Fintype α] (l : List α) (f : Perm α)
+    (h : ∀ {x}, f x ≠ x → x ∈ l) :
+    { l : List (Perm α) // l.prod = f ∧ (∀ g ∈ l, IsCycle g) ∧ l.Pairwise Disjoint } :=
+  match l with
   | [] => ⟨[], by
       { simp only [imp_false, List.Pairwise.nil, List.not_mem_nil, forall_const, and_true_iff,
           forall_prop_of_false, Classical.not_not, not_false_iff, List.prod_nil] at *
