@@ -258,6 +258,28 @@ instance canLift : CanLift ℂ ℝ ((↑) : ℝ → ℂ) fun z => 0 = z.im := by
   refine { prf := ?prf }
  -/
 
+lemma upper_half_plane_ne_int (z : ℍ) : ∀ n : ℤ, z.1 ≠ n := by
+  intro n
+  have h1 := z.2
+  aesop
+
+lemma upper_half_plane_ne_int_pow_two (z : ℍ) (n : ℤ) : (z : ℂ) ^ 2 - n ^ 2 ≠ 0 := by
+  intro h
+  rw [sq_sub_sq, mul_eq_zero] at h
+  cases h with
+  | inr h =>
+    have := upper_half_plane_ne_int z n
+    rw [sub_eq_zero] at h
+    apply absurd h this
+  | inl h =>
+    have := upper_half_plane_ne_int z (-n)
+    rw [add_eq_zero_iff_eq_neg] at h
+    simp only [ Int.cast_neg, ne_eq] at *
+    apply absurd h this
+
+instance : Coe ℍ ℤᶜ := ⟨fun x => ⟨x, by simpa using upper_half_plane_ne_int x⟩⟩
+
+
 lemma int_comp_not_zero (x : ℂ) (hx : x ∈ {z : ℂ | ¬ ∃ (n : ℤ), z = ↑n}) : x ≠ 0 := by
   intro h
   rw [h] at hx
@@ -803,21 +825,19 @@ lemma pnat_inv_sub_squares (z : ℤᶜ) :
   simpa using int_comp_add_ne_zero z z.2 (-n : ℤ)
   apply int_comp_add_ne_zero z z.2 n
 
-lemma wrfgw (r : ℝ) : Tendsto (fun n : ℕ => r/ (n^2)) atTop (𝓝 0) := by
-
-  have h := Filter.Tendsto.const_mul r (l := atTop) (f := fun (n : ℕ ) => 1/ (n^2)) (c := 0) ?_
-  simp at *
+lemma tendsto_const_div_pow (r : ℝ) (k : ℕ) (hk : k ≠ 0) :
+    Tendsto (fun n : ℕ => r / n^k) atTop (𝓝 0) := by
+  have h := Filter.Tendsto.const_mul r (l := atTop) (f := fun (n : ℕ ) => 1 / n^k) (c := 0) ?_
+  simp only [one_div, mul_zero] at *
   apply h.congr
   intro y
   ring
-  have := tendsto_one_div_atTop_nhds_zero_nat
-  simp
+  simp only [one_div]
   apply tendsto_inv_atTop_zero.comp
-  have hn : 2 ≠ 0 := by sorry
-
-  --rw [EReal.tendsto_coe ]
-
-  sorry
+  have ha := Filter.tendsto_pow_atTop hk (α := ℕ)
+  have hb := tendsto_natCast_atTop_atTop (R := ℝ)
+  apply (hb.comp ha).congr
+  simp only [Nat.reduceAdd, comp_apply, Nat.cast_pow, implies_true]
 
 
 lemma half_le (a : ℝ) (ha : a < 1/2) : 1 / 2 ≤  |a - 1| := by
@@ -826,8 +846,7 @@ lemma half_le (a : ℝ) (ha : a < 1/2) : 1 / 2 ≤  |a - 1| := by
   rw [abs_sub_comm]
   have : (1 : ℝ) + -(1/2) = 1/2 := by
     ring
-  rw [this] at hb
-  rw [@Mathlib.Tactic.RingNF.add_neg] at hb
+  rw [this, Mathlib.Tactic.RingNF.add_neg] at hb
   have : |1 -a| = 1 - a := by
     rw [abs_eq_self]
     linarith
@@ -853,7 +872,7 @@ theorem lhs_summable_re (z : ℤᶜ) (hz : z.1.im = 0) : Summable fun n : ℕ =>
     norm_cast
   rw [this]
   set Z := z.1.re
-  have := Filter.Tendsto.sub_const (wrfgw (Z^2)) 1
+  have := Filter.Tendsto.sub_const (tendsto_const_div_pow (Z^2) 2 (by omega)) 1
   simp at this
   rw [Metric.tendsto_atTop] at this
   simp at this
@@ -905,8 +924,54 @@ theorem lhs_summable_re (z : ℤᶜ) (hz : z.1.im = 0) : Summable fun n : ℕ =>
     · norm_num
 
 
-theorem lhs_summable_up (z : ℍ) : Summable fun n : ℕ => 1 / ((z : ℂ) - (n+1)) + 1 / (z + (n+1)) := by
-  sorry
+theorem upbnd (z : ℍ) (d : ℤ) :
+    (d ^ 2 : ℝ) * EisensteinSeries.r z ^ 2 ≤ Complex.abs (z ^ 2 - d ^ 2) := by
+  by_cases hd : d ≠ 0
+  have h1 : (z ^ 2 : ℂ) - d ^ 2 = d ^ 2 * (1 / d ^ 2 * z ^ 2 - 1) := by ring_nf; simp [hd]
+  rw [h1, map_mul]
+  have ha  := EisensteinSeries.auxbound2 z (c:= 1/d) (d:= -1)
+  have hb := EisensteinSeries.auxbound2 z (c:= 1/d) (d:= 1)
+  simp only [ne_eq, one_div, even_two, Even.neg_pow, one_pow, le_refl, ofReal_inv, ofReal_intCast,
+    ofReal_neg, ofReal_one, true_implies, map_pow, abs_intCast, _root_.sq_abs, ge_iff_le] at *
+  have h4 := mul_le_mul ha hb (EisensteinSeries.r_pos z).le (Complex.abs.nonneg _)
+  rw [← AbsoluteValue.map_mul, ← pow_two] at h4
+  gcongr
+  apply le_trans h4
+  apply le_of_eq
+  congr
+  ring
+  simp only [ne_eq, Decidable.not_not] at hd
+  rw [hd]
+  simp
+
+theorem lhs_summable_up (z : ℍ) :
+    Summable fun n : ℕ => 1 / ((z : ℂ) - (n+1)) + 1 / (z + (n+1)) := by
+  rw [nat_inv_sub_squares z]
+  apply Summable.mul_left
+  apply summable_norm_iff.1
+  simp
+  have hs : Summable fun n : ℕ => (EisensteinSeries.r z ^ 2 * (n +1) ^ 2)⁻¹ := by
+    simp_rw [mul_inv]
+    apply Summable.mul_left
+    have := summable_nat_add_iff (f := fun x => 1/ (x^2 : ℝ)) 1
+    simpa using this
+  apply Summable.of_nonneg_of_le _ _ hs
+  · intro b
+    rw [inv_nonneg]
+    apply Complex.abs.nonneg
+  intro b
+  rw [inv_le_inv]
+  · have := upbnd z (b+1)
+    rw [mul_comm]
+    norm_cast at *
+  · simp at *
+    simpa using  (upper_half_plane_ne_int_pow_two z (b+1))
+  apply mul_pos
+  · norm_cast
+    apply pow_pos
+    apply EisensteinSeries.r_pos
+  norm_cast
+  aesop
 
 
 theorem lhs_summable2 (z : ℤᶜ) : Summable fun n : ℕ => 1 / ((z : ℂ) - (n+1)) + 1 / (z + (n+1)) := by
@@ -915,7 +980,9 @@ theorem lhs_summable2 (z : ℤᶜ) : Summable fun n : ℕ => 1 / ((z : ℂ) - (n
    by_cases hz2 : z.1.im > 0
    apply lhs_summable_up ⟨z, hz2⟩
    simp at *
-   have hz3 : (-z.1).im > 0 := by sorry
+   have hz3 : (-z.1).im > 0 := by
+    simp at *
+    exact lt_of_le_of_ne hz2 hz
    have := lhs_summable_up ⟨-z, hz3⟩
    simp at this
    rw [← summable_norm_iff ] at *
@@ -939,71 +1006,6 @@ theorem lhs_summable2 (z : ℤᶜ) : Summable fun n : ℕ => 1 / ((z : ℂ) - (n
    simp
    rfl
 
-
-
-
-
-theorem lhs_summable (z : ℤᶜ) : Summable fun n : ℕ+ => 1 / ((z : ℂ) - n) + 1 / (z + n) := by
-  have h1 := pnat_inv_sub_squares z
-  rw [h1]
-  apply Summable.mul_left
-  apply summable_norm_iff.1
-  simp
-  let v : ℤᶜ → ℕ → ℝ := fun z => ((fun i : ℕ =>|((Complex.abs z.1)^2 / i^2 - 1)|))
-  have := Finset.exists_min_image (Finset.range ((Nat.ceil (Complex.abs z)))) (v z)
-  simp only [Set.mem_setOf_eq, nonempty_range_iff, ne_eq, Nat.ceil_eq_zero, not_le,
-    AbsoluteValue.pos_iff, mem_range] at this
-  let e : ℤᶜ → ℝ := fun z => |(Complex.abs z.1)^2 / (Nat.ceil (Complex.abs z.1))^2 - 1|
-  let r : ℤᶜ → ℝ := fun z => min (e z) (t z)
-  have hs : Summable fun n : ℕ+ => (r z  * n ^ 2)⁻¹ := by sorry
-  apply Summable.of_nonneg_of_le _ _ hs
-  · intro b
-    rw [inv_nonneg]
-    apply Complex.abs.nonneg
-  · intro b
-    rw [inv_le_inv]
-    conv =>
-      enter [2]
-      rw [show (z : ℂ)^2 - b^2 = ((z/b)^2 - 1)* b^2 by field_simp]
-      rw [map_mul]
-    gcongr
-    simp_rw [r]
-    simp
-    by_cases h : b ≤ Nat.ceil (Complex.abs z)
-
-    sorry
-    sorry
-    sorry
-    sorry
-
-    sorry
-
-/-   have hs : Summable fun n : ℕ+ => (EisensteinSeries.r z ^ 2 * n ^ 2)⁻¹ :=
-    by
-    have := aux_rie_sum z 2 le_rfl
-    simp at this
-    norm_cast at *
-    simp at *
-    apply this
-  apply Summable.of_nonneg_of_le _ _ hs
-  · intro b
-    rw [inv_nonneg]
-    apply Complex.abs.nonneg
-  intro b
-  rw [inv_le_inv]
-  · rw [mul_comm]
-    have := upbnd z b
-    norm_cast at *
-  · simp at *
-    simpa using  (upper_half_plane_ne_int_pow_two z b)
-  apply mul_pos
-  · norm_cast
-    apply pow_pos
-    apply rfunct_pos
-  have hb := b.2
-  norm_cast
-  apply pow_pos
- -/
 theorem nat_pos_tsum2' [TopologicalSpace α] [AddCommMonoid α]  (f : ℕ → α) :
     (Summable fun x : ℕ+ => f x) ↔ Summable fun x : ℕ => f (x + 1) :=
   by
@@ -1017,6 +1019,10 @@ theorem nat_pos_tsum2' [TopologicalSpace α] [AddCommMonoid α]  (f : ℕ → α
   apply Summable.congr hf
   intro b
   simp
+
+theorem lhs_summable (z : ℤᶜ) : Summable fun n : ℕ+ => 1 / ((z : ℂ) - n) + 1 / (z + n) := by
+  rw [nat_pos_tsum2' fun n => 1 / ((z : ℂ) - n) + 1 / (z + n)]
+  apply lhs_summable2
 
 theorem cot_series_rep' (z : ℤᶜ) : ↑π * Complex.cot (↑π * z) - 1 / z =
     ∑' n : ℕ, (1 / ((z : ℂ) - (n + 1)) + 1 / (z + (n + 1))) := by
