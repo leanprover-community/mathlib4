@@ -19,12 +19,12 @@ In case that `α` is empty, then its Krull dimension is defined to be negative i
 length of all series `a₀ < a₁ < ... < aₙ` is unbounded, then its Krull dimension is defined to be
 positive infinity.
 
-For `a : α`, its height (in ℕ∞) is defined to be `sup {n | a₀ < a₁ < ... < aₙ = a}` while its
+For `a : α`, its height (in `ℕ∞`) is defined to be `sup {n | a₀ < a₁ < ... < aₙ = a}` while its
 coheight is defined to be `sup {n | a = a₀ < a₁ < ... < aₙ}` .
 
 ## Main results
 
-* The Krull dimension is the same as that in the dual order (`krullDim_orderDual`).
+* The Krull dimension is the same as that of the dual order (`krullDim_orderDual`).
 
 * The Krull dimension is the supremum of the heights of the elements (`krullDim_eq_iSup_height`),
   or their coheights.
@@ -77,7 +77,7 @@ The **coheight** of an element `a` in a preorder `α` is the supremum of the rig
 relation series of `α` ordered by `<` and beginning with `a`.
 
 The definition of `coheight` is via the `height` in the dual order, in order to easily transfer
-theorems between `height` and `coheight`. See `coheight_eq_isup_head` for the definition with a
+theorems between `height` and `coheight`. See `coheight_eq_iSup_head` for the definition with a
 series ordered by `<` and beginning with `a`.
 -/
 noncomputable def coheight {α : Type*} [Preorder α] (a : α) : ℕ∞ := height (α := αᵒᵈ) a
@@ -120,7 +120,7 @@ lemma coheight_le (x : α) (n : ℕ∞) :
     (∀ (p : LTSeries α), p.head = x → p.length ≤ n) → coheight x ≤ n :=
   (coheight_le_iff x n).mpr
 
-lemma le_height_of_last_le (x : α) (p : LTSeries α) (hlast : p.last ≤ x) :
+lemma length_le_height (x : α) (p : LTSeries α) (hlast : p.last ≤ x) :
     p.length ≤ height x := by
   by_cases hlen0 : p.length ≠ 0
   · let p' := p.eraseLast.snoc x (by
@@ -139,15 +139,15 @@ lemma le_height_of_last_le (x : α) (p : LTSeries α) (hlast : p.last ≤ x) :
     exact le_refl _
   · simp_all
 
-lemma le_coheight_of_le_head (x : α) (p : LTSeries α) (hhead : x ≤ p.head) :
+lemma length_le_coheight (x : α) (p : LTSeries α) (hhead : x ≤ p.head) :
     p.length ≤ coheight x :=
-  le_height_of_last_le (α := αᵒᵈ) x p.reverse (by simpa)
+  length_le_height (α := αᵒᵈ) x p.reverse (by simpa)
 
 lemma length_le_height_last (p : LTSeries α) : p.length ≤ height p.last :=
-  le_height_of_last_le _ p (le_refl _)
+  length_le_height _ p le_rfl
 
 lemma length_le_coheight_last (p : LTSeries α) : p.length ≤ coheight p.head :=
-  le_coheight_of_le_head _ p (le_refl _)
+  length_le_coheight _ p (le_refl _)
 
 lemma index_le_height (p : LTSeries α) (i : Fin (p.length + 1)) : i ≤ height (p i) :=
   length_le_height_last (p.take i)
@@ -178,7 +178,10 @@ lemma height_mono : Monotone (α := α) height := by
   intro x y hxy
   apply height_le
   intros p hlast _
-  apply le_height_of_last_le y p (hlast ▸ hxy)
+  apply length_le_height y p (hlast ▸ hxy)
+
+@[gcongr] protected lemma _root_.GCongr.height_le_height (a b : α) (hab : a ≤ b) :
+    height a ≤ height b := height_mono hab
 
 lemma coheight_mono : Antitone (α := α) coheight :=
   fun _ _ hxy => height_mono (α := αᵒᵈ) hxy
@@ -449,7 +452,7 @@ lemma krullDim_nonneg_of_nonempty [Nonempty α] : 0 ≤ krullDim α :=
   le_sSup ⟨⟨0, fun _ ↦ @Nonempty.some α inferInstance, fun f ↦ f.elim0⟩, rfl⟩
 
 /-- A definition of krullDim for nonempty `α` that avoids `WithBot` -/
-lemma krullDim_eq_of_nonempty [Nonempty α] :
+lemma krullDim_eq_iSup_length [Nonempty α] :
     krullDim α = ⨆ (p : LTSeries α), (p.length : ℕ∞) := by
   unfold krullDim
   rw [WithBot.coe_iSup (OrderTop.bddAbove _)]
@@ -515,7 +518,7 @@ lemma krullDim_eq_iSup_height : krullDim α = ⨆ (a : α), (height a : WithBot 
       suffices p.length ≤ ⨆ (a : α), height a by
         exact (WithBot.unbot'_le_iff fun _ => this).mp this
       apply le_iSup_of_le p.last (length_le_height_last p)
-    · rw [krullDim_eq_of_nonempty]
+    · rw [krullDim_eq_iSup_length]
       simp only [WithBot.coe_le_coe, iSup_le_iff]
       intro x
       exact height_le _ _ (fun p _ ↦ le_iSup_of_le p (le_refl _))
@@ -546,11 +549,11 @@ lemma krullDim_eq_iSup_coheight_of_nonempty [Nonempty α] : krullDim α = ⨆ (a
 
 @[simp] -- not as useful as a simp lemma as it looks, due to the coe on the left
 lemma height_top_eq_krullDim [OrderTop α] : height (⊤ : α) = krullDim α := by
-  rw [krullDim_eq_of_nonempty]
+  rw [krullDim_eq_iSup_length]
   simp only [WithBot.coe_inj]
   apply le_antisymm
   · exact height_le _ _ (fun p _ ↦ le_iSup_of_le p (le_refl _))
-  · exact iSup_le (fun p => le_height_of_last_le ⊤ p le_top)
+  · exact iSup_le (fun p => length_le_height ⊤ p le_top)
 
 @[simp] -- not as useful as a simp lemma as it looks, due to the coe on the left
 lemma coheight_bot_eq_krullDim [OrderBot α] : coheight (⊥ : α) = krullDim α := by
