@@ -85,7 +85,7 @@ theorem ContinuousSMul.induced {R : Type*} {α : Type*} {β : Type*} {F : Type*}
     (f : F) : @ContinuousSMul R α _ _ (tβ.induced f) := by
   let tα := tβ.induced f
   refine ⟨continuous_induced_rng.2 ?_⟩
-  simp only [Function.comp, map_smul]
+  simp only [Function.comp_def, map_smul]
   fun_prop
 
 @[to_additive]

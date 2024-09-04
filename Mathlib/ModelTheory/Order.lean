@@ -232,6 +232,23 @@ variable [Preorder M]
 
 instance model_preorder : M ⊨ Language.order.preorderTheory := by
   simp only [preorderTheory, Theory.model_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
+    forall_eq_or_imp, Relations.realize_reflexive, relMap_apply₂, forall_eq,
+    Relations.realize_transitive]
+  exact ⟨le_refl, fun _ _ _ => le_trans⟩
+
+@[simp]
+theorem Term.realize_lt [L.OrderedStructure M] {t₁ t₂ : L.Term (α ⊕ (Fin n))}
+    {v : α → M} {xs : Fin n → M} :
+    (t₁.lt t₂).Realize v xs ↔ t₁.realize (Sum.elim v xs) < t₂.realize (Sum.elim v xs) := by
+  simp [Term.lt, lt_iff_le_not_le]
+
+theorem realize_denselyOrdered_iff :
+section Preorder
+
+variable [Preorder M]
+
+instance model_preorder : M ⊨ Language.order.preorderTheory := by
+  simp only [preorderTheory, Theory.model_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
     forall_eq_or_imp, Relations.realize_reflexive, relMap_leSymb, forall_eq,
     Relations.realize_transitive]
   exact ⟨le_refl, fun _ _ _ => le_trans⟩
@@ -256,6 +273,25 @@ theorem realize_denselyOrdered [h : DenselyOrdered M] :
     M ⊨ Language.order.denselyOrderedSentence :=
   realize_denselyOrdered_iff.2 h
 
+end Preorder
+
+instance model_partialOrder [PartialOrder M] : M ⊨ Language.order.partialOrderTheory := by
+  simp only [partialOrderTheory, Theory.model_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
+    forall_eq_or_imp, Relations.realize_reflexive, relMap_apply₂, Relations.realize_antisymmetric,
+    forall_eq, Relations.realize_transitive]
+  exact ⟨le_refl, fun _ _ => le_antisymm, fun _ _ _ => le_trans⟩
+
+section LinearOrder
+
+variable [LinearOrder M]
+
+instance model_linearOrder : M ⊨ Language.order.linearOrderTheory := by
+  simp only [linearOrderTheory, Theory.model_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
+    forall_eq_or_imp, Relations.realize_reflexive, relMap_apply₂, Relations.realize_antisymmetric,
+    Relations.realize_transitive, forall_eq, Relations.realize_total]
+  exact ⟨le_refl, fun _ _ => le_antisymm, fun _ _ _ => le_trans, le_total⟩
+
+instance model_dlo [DenselyOrdered M] [NoTopOrder M] [NoBotOrder M] :
 end Preorder
 
 instance model_partialOrder [PartialOrder M] : M ⊨ Language.order.partialOrderTheory := by
