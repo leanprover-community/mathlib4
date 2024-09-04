@@ -248,6 +248,14 @@ theorem ωScottContinuous_curry :
     rw [map_comp, map_comp]
     rfl
 
+set_option linter.deprecated false in
+@[deprecated ωScottContinuous_curry (since := "2024-08-26")]
+theorem continuous_curry : Continuous <| monotoneCurry α β γ := fun c ↦ by
+  ext x y
+  dsimp [curry, ωSup]
+  rw [map_comp, map_comp]
+  rfl
+
 theorem continuous_uncurry :
     ωScottContinuous (monotoneUncurry α β γ) :=
     .of_map_ωSup_of_orderHom fun c ↦ by
