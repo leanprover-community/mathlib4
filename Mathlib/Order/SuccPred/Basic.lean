@@ -1045,6 +1045,17 @@ theorem pred'_le_iff_le_succ_of_not_isMax (ha : ¬ IsMax a) (hb : ¬ IsMax b) :
     pred' a ≤ b ↔ a ≤ succ b :=
   le_iff_le_iff_lt_iff_lt.2 (lt_pred'_iff_succ_lt_of_not_isMax hb ha)
 
+theorem pred'_mono : Monotone (pred' : α → α) := by
+  intro a b h
+  by_cases ha : IsMax a
+  · obtain rfl := ha.eq_of_le h
+    rfl
+  · by_cases H : ∃ c, ¬ IsMax c ∧ succ c = b
+    · obtain ⟨c, hc, rfl⟩ := H
+      rwa [pred'_succ_of_not_isMax hc, pred'_le_iff_le_succ_of_not_isMax ha hc]
+    · conv_rhs => rw [pred', dif_neg H]
+      exact (pred'_le_self a).trans h
+
 section NoMaxOrder
 
 variable [NoMaxOrder α]
@@ -1165,6 +1176,9 @@ theorem succ'_lt_iff_lt_pred_of_not_isMin (ha : ¬ IsMin a) (hb : ¬ IsMin b) :
 theorem le_succ'_iff_pred_le_of_not_isMin (ha : ¬ IsMin a) (hb : ¬ IsMin b) :
     a ≤ succ' b ↔ pred a ≤ b :=
   pred'_le_iff_le_succ_of_not_isMax (α := αᵒᵈ) hb ha
+
+theorem succ'_mono : Monotone (succ' : α → α) :=
+  fun _ _ h ↦ pred'_mono (α := αᵒᵈ) h
 
 section NoMinOrder
 
