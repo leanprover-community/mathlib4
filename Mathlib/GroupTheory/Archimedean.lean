@@ -121,7 +121,8 @@ noncomputable def LinearOrderedCommGroup.closure_equiv_closure {G G' : Type*}
           ← (zpow_right_strictMono xpos).injective.eq_iff, (A ⟨_, D a⟩).choose_spec]
     · intro a b
       generalize_proofs A B C D E F
-      simp only [Submonoid.coe_mul, coe_toSubmonoid, Submonoid.mk_mul_mk, Subtype.mk.injEq]
+      simp only [Submonoid.coe_mul, coe_toSubmonoid, Submonoid.mk_mul_mk, Subtype.mk.injEq,
+                 coe_mul, MulMemClass.mk_mul_mk]
       rw [← zpow_add, (zpow_right_strictMono ypos).injective.eq_iff,
           ← (zpow_right_strictMono xpos).injective.eq_iff, zpow_add,
           (A a).choose_spec, (A b).choose_spec, (A (a * b)).choose_spec]

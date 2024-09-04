@@ -67,27 +67,6 @@ lemma isCoatom_comap_of_surjective
 end Subgroup
 end Coatom
 
-namespace SubmonoidClass
-variable {G S : Type*} [SetLike S G]
-
--- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
-/-- A submonoid of an `OrderedCommMonoid` is an `OrderedCommMonoid`. -/
-@[to_additive "An additive submonoid of an `AddOrderedCommMonoid` is an `AddOrderedCommMonoid`."]
-instance (priority := 75) toOrderedCommMonoid [OrderedCommMonoid G]
-    [SubmonoidClass S G] (H : S) : OrderedCommMonoid H :=
-  Subtype.coe_injective.orderedCommMonoid _ rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
-
--- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
-/-- A submonoid of a `LinearOrderedCommMonoid` is a `LinearOrderedCommMonoid`. -/
-@[to_additive
-      "An additive submonoid of a `LinearOrderedAddCommMonoid` is a
-        `LinearOrderedAddCommMonoid`."]
-instance (priority := 75) toLinearOrderedCommMonoid [LinearOrderedCommMonoid G]
-    [SubmonoidClass S G] (H : S) : LinearOrderedCommMonoid H :=
-  Subtype.coe_injective.linearOrderedCommMonoid _ rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
-    (fun _ _ ↦ rfl) fun _ _ ↦ rfl
-
-end SubmonoidClass
 namespace SubgroupClass
 variable {G S : Type*} [SetLike S G]
 

@@ -3,7 +3,6 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.GroupTheory.Archimedean
 import Mathlib.RingTheory.Valuation.Basic
 
 /-!
@@ -204,73 +203,6 @@ lemma not_denselyOrdered_of_isPrincipalIdealRing [IsPrincipalIdealRing O] (hv : 
   · simpa using hz'
   · obtain ⟨a, rfl⟩ := hv.exists_of_le_one (by simpa using hz'.le)
     simp
-
-instance Submonoid.instMulArchimedean {M : Type*} [OrderedCommMonoid M] [MulArchimedean M]
-    (S : Submonoid M) : MulArchimedean S := by
-  constructor
-  rintro x _
-  simp only [← Subtype.coe_lt_coe, OneMemClass.coe_one, SubmonoidClass.mk_pow, Subtype.mk_le_mk]
-  exact MulArchimedean.arch x.val
-
-lemma isPrincipalIdealRing_iff_not_denselyOrdered [MulArchimedean Γ₀] (hv : Integers v O) :
-    IsPrincipalIdealRing O ↔ ¬ DenselyOrdered (Set.range v) := by
-  refine ⟨fun _ ↦ not_denselyOrdered_of_isPrincipalIdealRing hv, fun H ↦ ?_⟩
-  let l : LinearOrderedCommGroupWithZero (MonoidHom.mrange v) :=
-  { __ := Submonoid.instLinearOrderedCommMonoid _
-    zero := ⟨0, by simp⟩
-    zero_mul := by
-      intro a
-      exact Subtype.ext (zero_mul a.val)
-    mul_zero := by
-      intro a
-      exact Subtype.ext (mul_zero a.val)
-    zero_le_one := Subtype.coe_le_coe.mp (zero_le_one)
-    inv := fun x ↦ ⟨x⁻¹, by
-      obtain ⟨y, hy⟩ := x.prop
-      simp_rw [← hy, ← v.map_inv]
-      exact MonoidHom.mem_mrange.mpr ⟨_, rfl⟩⟩
-    exists_pair_ne := ⟨⟨v 0, by simp⟩, ⟨v 1, by simp [- _root_.map_one]⟩, by simp⟩
-    inv_zero := Subtype.ext inv_zero
-    mul_inv_cancel := by
-      rintro ⟨a, ha⟩ h
-      simp only [ne_eq, Subtype.ext_iff] at h
-      simpa using mul_inv_cancel₀ h }
-  rcases subsingleton_or_nontrivial (MonoidHom.mrange v)ˣ with hs|_
-  · have : ∀ x : (MonoidHom.mrange v)ˣ, x.val = 1 := by
-      intro x
-      rw [← Units.val_one, Units.eq_iff]
-      exact Subsingleton.elim _ _
-    replace this : ∀ x ≠ 0, v x = 1 := by
-      intros x hx
-      specialize this (Units.mk0 ⟨v x, by simp⟩ _)
-      · simp only [ne_eq, Subtype.ext_iff]
-        exact (map_ne_zero v).mpr hx
-      simpa [Subtype.ext_iff] using this
-    suffices ∀ I : Ideal O, I = ⊥ ∨ I = ⊤ by
-      constructor
-      intro I
-      rcases this I with rfl|rfl
-      -- TODO
-      · exact ⟨0, by ext; simp [Ideal.mem_span_singleton', eq_comm]⟩
-      · exact ⟨1, by simp only [Ideal.submodule_span_eq, Ideal.span_singleton_one]⟩
-    intro I
-    rcases eq_or_ne I ⊤ with rfl|hI
-    · simp
-    simp only [hI, or_false]
-    ext x
-    rcases eq_or_ne x 0 with rfl|hx
-    · simp
-    · specialize this (algebraMap O F x) (by simp [map_eq_zero_iff _ hv.hom_inj, hx])
-      simp only [Ideal.mem_bot, hx, iff_false]
-      contrapose! hI
-      exact Ideal.eq_top_of_isUnit_mem _ hI (isUnit_of_one' _ this)
-  replace H : ¬ DenselyOrdered (MonoidHom.mrange v) := H
-  rw [← LinearOrderedCommGroupWithZero.discrete_iff_not_denselyOrdered (MonoidHom.mrange v)] at H
-  obtain ⟨e⟩ := H
-  constructor
-  intro S
-  rw [isPrincipal_iff_exists_isGreatest hv]
-  sorry
 
 end Integers
 
