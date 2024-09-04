@@ -197,6 +197,8 @@ open CFC
 
 variable [PartialOrder A] [StarOrderedRing A]
 
+-- TODO : relate everything in this section to strict positivity
+
 lemma CFC.conjugate_rpow_neg_one_half {a : A} (h₀ : IsUnit a) (ha : 0 ≤ a := by cfc_tac) :
     a ^ (-(1 / 2) : ℝ) * a * a ^ (-(1 / 2) : ℝ) = 1 := by
   lift a to Aˣ using h₀
@@ -285,12 +287,23 @@ lemma CStarRing.inv_le_one_iff_one_le_inv {a : Aˣ} (ha : 0 ≤ (a : A)) :
     (↑a⁻¹ : A) ≤ 1 ↔ 1 ≤ a := by
   simpa using CStarRing.inv_le_iff ha (b := 1) (by simp)
 
+lemma CStarRing.inv_le_one {a : Aˣ} (ha : 1 ≤ a) : (↑a⁻¹ : A) ≤ 1 :=
+  CStarRing.inv_le_one_iff_one_le_inv (zero_le_one.trans ha) |>.mpr ha
+
+lemma CStarRing.le_one_of_inv_le_one {a : Aˣ} (ha : 1 ≤ (↑a⁻¹ : A)) : (a : A) ≤ 1 := by
+  simpa using CStarRing.inv_le_one ha
+
 lemma CStarRing.rpow_neg_one_le_rpow_neg_one {a b : A} (ha : 0 ≤ a) (hab : a ≤ b) (hau : IsUnit a) :
     b ^ (-1 : ℝ) ≤ a ^ (-1 : ℝ) := by
-  lift b to Aˣ using CStarRing.isUnit_of_le hau ha hab
+  lift b to Aˣ using isUnit_of_le hau ha hab
   lift a to Aˣ using hau
-  rw [rpow_neg_one_eq_inv a, rpow_neg_one_eq_inv b (ha.trans hab)]
+  rw [rpow_neg_one_eq_inv a ha, rpow_neg_one_eq_inv b (ha.trans hab)]
   exact CStarRing.inv_le_inv ha hab
+
+lemma CStarRing.rpow_neg_one_le_one {a : A} (ha : 1 ≤ a) : a ^ (-1 : ℝ) ≤ 1 := by
+  lift a to Aˣ using isUnit_of_le isUnit_one zero_le_one ha
+  rw [rpow_neg_one_eq_inv a (zero_le_one.trans ha)]
+  exact inv_le_one ha
 
 end Inv
 
