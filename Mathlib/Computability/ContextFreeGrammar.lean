@@ -208,7 +208,7 @@ proof_wanted Language.isContextFree_iff {L : Language T} :
 section closure_reversal
 
 namespace ContextFreeRule
-variable {N : Type uN} {r : ContextFreeRule T N} {u v : List (Symbol T N)}
+variable {N : Type uN} {r : ContextFreeRule T N}
 
 /-- Rules for a grammar for a reversed language. -/
 def reverse (r : ContextFreeRule T N) : ContextFreeRule T N := ⟨r.input, r.output.reverse⟩
@@ -234,6 +234,8 @@ protected lemma Rewrites.reverse : ∀ {u v}, r.Rewrites u v → r.reverse.Rewri
   | _, _, head s => by simpa using .append_left .input_output _
   | _, _, @cons _ _ _ x u v h => by simpa using h.reverse.append_right _
 
+variable {u v : List (Symbol T N)}
+
 lemma rewrites_reverse : r.reverse.Rewrites u.reverse v.reverse ↔ r.Rewrites u v :=
   ⟨fun h ↦ by simpa using h.reverse, .reverse⟩
 
@@ -243,7 +245,7 @@ lemma rewrites_reverse : r.reverse.Rewrites u.reverse v.reverse ↔ r.Rewrites u
 end ContextFreeRule
 
 namespace ContextFreeGrammar
-variable {g : ContextFreeGrammar T} {s u v : List (Symbol T g.NT)} {w : List T}
+variable {g : ContextFreeGrammar T}
 
 /-- Grammar for a reversed language. -/
 @[simps] def reverse (g : ContextFreeGrammar T) : ContextFreeGrammar T :=
@@ -263,6 +265,8 @@ lemma reverse_injective : Injective (reverse : ContextFreeGrammar T → ContextF
 
 lemma reverse_surjective : Surjective (reverse : ContextFreeGrammar T → ContextFreeGrammar T) :=
   reverse_involutive.surjective
+
+variable {u v : List (Symbol T g.NT)}
 
 lemma produces_reverse : g.reverse.Produces u.reverse v.reverse ↔ g.Produces u v :=
   (Equiv.ofBijective _ ContextFreeRule.reverse_bijective).exists_congr
