@@ -231,6 +231,18 @@ def ff : ℕ → Bool := fun n ↦ if n = 0 then false else if n = 1 then false 
 def tt := (λ n : ℕ ↦ ite (n=0) true (ite (n=1) true false))
 def tf := (λ n : ℕ ↦ ite (n=0) true (ite (n=1) false false))
 
+
+-- theorem extracted_1 {b : Bool} (i : ℕ → Bool) :
+--   i 0 = b →
+--     ∀ (i_2 : ℕ → Bool), i_2 0 = b →
+--     ENNReal.ofNNReal ⟨if i ≠ i_2 then (1 / 2) ^ PiNat.firstDiff i i_2 else 0, by
+--       simp only [ne_eq, one_div, inv_pow, ite_not]
+--       split_ifs
+--       exact Preorder.le_refl 0
+--       simp only [inv_nonneg, Nat.ofNat_nonneg, pow_nonneg]
+--     ⟩ ≤ 1 / 2 := by
+--     sorry
+
 lemma edist_half {b : Bool} :
     ⨆ x ∈ {x : ℕ → Bool | x 0 = b}, ⨆ y ∈ {x | x 0 = b}, edist x y ≤ 1 / 2 := by
   unfold
