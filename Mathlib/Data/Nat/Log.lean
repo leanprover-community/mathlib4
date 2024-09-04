@@ -109,6 +109,15 @@ theorem log_lt_of_lt_pow {b x y : ℕ} (hy : y ≠ 0) : y < b ^ x → log b y < 
 theorem lt_pow_of_log_lt {b x y : ℕ} (hb : 1 < b) : log b y < x → y < b ^ x :=
   lt_imp_lt_of_le_imp_le (le_log_of_pow_le hb)
 
+lemma log_lt_self (b : ℕ) {x : ℕ} (hx : x ≠ 0) : log b x < x :=
+  match le_or_lt b 1 with
+  | .inl h => log_of_left_le_one h x ▸ Nat.pos_iff_ne_zero.2 hx
+  | .inr h => log_lt_of_lt_pow hx <| lt_pow_self h _
+
+lemma log_le_self (b x : ℕ) : log b x ≤ x :=
+  if hx : x = 0 then by simp [hx]
+  else (log_lt_self b hx).le
+
 theorem lt_pow_succ_log_self {b : ℕ} (hb : 1 < b) (x : ℕ) : x < b ^ (log b x).succ :=
   lt_pow_of_log_lt hb (lt_succ_self _)
 
@@ -198,8 +207,9 @@ theorem add_pred_div_lt {b n : ℕ} (hb : 1 < b) (hn : 2 ≤ n) : (n + b - 1) / 
   exact Nat.add_le_mul hn hb
 
 lemma log2_eq_log_two {n : ℕ} : Nat.log2 n = Nat.log 2 n := by
-  induction n using Nat.strongRec
-  next n ih =>
+  induction n using Nat.strongRec with
+  | _ =>
+    rename_i n ih
     unfold Nat.log2 Nat.log
     by_cases h : n = 0
     · simp [h]
@@ -207,18 +217,6 @@ lemma log2_eq_log_two {n : ℕ} : Nat.log2 n = Nat.log 2 n := by
       simp only [ge_iff_le, lt_succ_self, and_true]
       exact ih (n/2) (Nat.div_lt_self (Nat.pos_of_ne_zero h) (by simp))
 
-lemma log_two_le_self {n : ℕ} : Nat.log 2 n ≤ n := by
-  rw [← Nat.log2_eq_log_two]
-  exact log2_le_self n
-
-lemma log_le_self {b n : ℕ} : b.log n ≤ n := by
-  induction b with
-  | zero => simp
-  | succ m ih =>
-    by_cases h : 1 < m
-    · exact le_trans (Nat.log_anti_left h (by omega)) ih
-    · simp [Nat.le_one_iff_eq_zero_or_eq_one] at h
-      obtain rfl | rfl := h <;> simp [Nat.log_two_le_self]
 
 /-! ### Ceil logarithm -/
 
