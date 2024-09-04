@@ -116,8 +116,8 @@ def benchOutput (js : System.FilePath) : IO Unit := do
     --    | _ => (s!"{g.size} files", [formatDiff <| roundedDiff * 10 ^ 9])
     let entry :=
       match roundedDiff with
-        | none => gs.map fun g : Bench => (formatFile g.file ++ s!", Instructions {", ".intercalate [formatDiff g.diff, formatPercent (g.reldiff)]}\n")
-        | some roundedDiff => #[s!"<details><summary>{gs.size} files, Instructions {formatDiff <| roundedDiff * 10 ^ 9}</summary>\n\n" ++ tableArrayBench (gs.qsort (·.diff > ·.diff)) ++ "\n</details>"]
+        | none => tableArrayBench gs
+        | some roundedDiff => s!"<details><summary>{gs.size} files, Instructions {formatDiff <| roundedDiff * 10 ^ 9}</summary>\n\n" ++ tableArrayBench (gs.qsort (·.diff > ·.diff)) ++ "\n</details>"
         --(s!"{g.size} files", [formatDiff <| roundedDiff * 10 ^ 9])
     --let summ := s!"<summary>{s}, Instructions {", ".intercalate a}</summary>"
     --let indentTable := (tableArrayBench g).replace "\n" "\n  "
