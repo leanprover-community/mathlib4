@@ -219,8 +219,10 @@ def formatErrors (errors : Array ErrorContext) (style : ErrorFormat) : IO Unit :
     IO.println (outputMessage e style)
 
 /-- Core logic of a text based linter: given a collection of lines,
-return an array of all style errors with line numbers and, optionally, an array of lines
-changed to fix the linter automatically. (This is not always possible, but sometimes it is.) -/
+return an array of all style errors with line numbers and, optionally,
+the collection of lines changed to fix the linter errors automatically.
+(Such automatic fixes are only possible for some kinds of `StyleError`s.)
+-/
 abbrev TextbasedLinter := Array String → Array (StyleError × ℕ) × (Option (Array String))
 
 /-! Definitions of the actual text-based linters. -/

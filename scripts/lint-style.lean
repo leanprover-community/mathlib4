@@ -32,7 +32,7 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
     allModules := allModules.append ((← IO.FS.lines s).map (·.stripPrefix "import "))
   -- note: since we manually add "Batteries" to "Mathlib.lean", we remove it here manually
   allModules := allModules.erase "Batteries"
-  let numberErrorFiles ← lintModules allModules mode (args.hasFlag "fix")
+  let numberErrorFiles ← lintModules allModules mode fix
   -- If run with the `--update` or `--fix` argument, return a zero exit code.
   -- Otherwise, make sure to return an exit code of at most 125,
   -- so this return value can be used further in shell scripts.
