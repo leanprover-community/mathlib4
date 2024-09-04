@@ -3,7 +3,6 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Data.Countable.Small
 import Mathlib.Topology.Category.CompHausLike.Limits
 /-!
 
@@ -40,11 +39,8 @@ def sigmaComparison : X.obj ⟨(of P ((a : α) × σ a))⟩ ⟶ ((a : α) → X.
   fun x a ↦ X.map ⟨Sigma.mk a, continuous_sigmaMk⟩ x
 
 noncomputable instance : PreservesLimitsOfShape (Discrete α) X :=
-  let α' := (Countable.toSmall α).equiv_small.choose
-  let e : α ≃ α' := (Countable.toSmall α).equiv_small.choose_spec.some
   letI : Fintype α := Fintype.ofFinite _
-  letI : Fintype α' := Fintype.ofEquiv α e
-  preservesLimitsOfShapeOfEquiv (Discrete.equivalence e.symm) X
+  preservesFiniteProductsOfPreservesBinaryAndTerminal X α
 
 theorem sigmaComparison_eq_comp_isos : sigmaComparison X σ =
     (X.mapIso (opCoproductIsoProduct'
@@ -61,9 +57,8 @@ theorem sigmaComparison_eq_comp_isos : sigmaComparison X σ =
   simp only [sigmaComparison]
   apply congrFun
   congr 2
-  erw [← opCoproductIsoProduct_inv_comp_ι]
+  rw [← opCoproductIsoProduct_inv_comp_ι]
   simp only [coe_of, Opposite.unop_op, unop_comp, Quiver.Hom.unop_op, Category.assoc]
-  change finiteCoproduct.ι.{u, u} (fun a ↦ of P (σ a)) _ = _
   simp only [opCoproductIsoProduct, ← unop_comp, opCoproductIsoProduct'_comp_self]
   erw [IsColimit.fac]
   rfl

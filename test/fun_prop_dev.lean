@@ -28,18 +28,13 @@ set_option linter.unusedVariables false
 -- define function propositions --
 ----------------------------------
 
-class Obj (α : Type _) : Type where
-
-instance [Obj α] [Obj β] : Obj (α × β) := ⟨⟩
-instance [∀ x, Obj (E x)] : Obj ((x' : α) → E x') := ⟨⟩
-instance : Obj Nat := ⟨⟩
-
 @[fun_prop] opaque Con {α β} (f : α → β) : Prop
 @[fun_prop] opaque Lin {α β} (f : α → β) : Prop
 
 -- state basic lambda calculus rules --
 ---------------------------------------
 
+-- variable [Obj α] [Obj β] [Obj γ] [Obj δ] [∀ x, Obj (E x)]
 
 @[fun_prop] theorem Con_id : Con (id : α → α) := silentSorry
 @[fun_prop] theorem Con_const (y : β) : Con (fun x : α => y) := silentSorry
@@ -51,7 +46,7 @@ instance : Obj Nat := ⟨⟩
 
 -- Lin is missing `const` theorem
 @[fun_prop] theorem Lin_id : Lin (fun x : α => x) := silentSorry
-@[fun_prop] theorem Lin_const {β} [Obj β] [Zero β] : Lin (fun x : α => (0 : β)) := silentSorry
+@[fun_prop] theorem Lin_const {β} [Zero β] : Lin (fun x : α => (0 : β)) := silentSorry
 @[fun_prop] theorem Lin_apply (x : α) : Lin (fun f : α → β => f x) := silentSorry
 @[fun_prop] theorem Lin_applyDep (x : α) : Lin (fun f : (x' : α) → E x' => f x) := silentSorry
 @[fun_prop] theorem Lin_comp (f : β → γ) (g : α → β) (hf : Lin f) (hg : Lin g) : Lin (f ∘ g) := silentSorry
@@ -132,9 +127,6 @@ instance : HasUncurry (α -o β) α β :=
 instance [HasUncurry β γ δ] : HasUncurry (α -o β) (α × γ) δ :=
   ⟨fun f p ↦ (↿(f p.1)) p.2⟩
 
-
-instance : Obj (α ->> β) := ⟨⟩
-instance : Obj (α -o β) := ⟨⟩
 
 -- morphism theorems i.e. theorems about `FunLike.coe` --
 ---------------------------------------------------------
@@ -320,7 +312,7 @@ example (x) : Con fun (f : α ->> α) => f (f x) := by fun_prop
 example (x) : Con fun (f : α ->> α) => f (f (f x)) := by fun_prop
 
 
-example [Zero α] [Obj α] [Add α] : Lin (fun x : α => (0 : α) + x + (0 : α) + (0 : α) + x) := by fun_prop
+example [Zero α] [Add α] : Lin (fun x : α => (0 : α) + x + (0 : α) + (0 : α) + x) := by fun_prop
 
 noncomputable
 def foo : α ->> α ->> α := silentSorry
