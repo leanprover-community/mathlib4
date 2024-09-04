@@ -59,7 +59,11 @@ export Nat (add)
 
 end add
 
-set_option linter.cdot false in
+section cdotLinter
+
+set_option linter.cdot false
+
+set_option linter.globalAttributeIn false in
 /--
 warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
 note: this linter can be disabled with `set_option linter.cdot false`
@@ -79,7 +83,6 @@ instance : Inhabited Nat where
       · have : Nat → Nat → Nat := (· + .)
         . exact 0
 
-set_option linter.cdot false in
 /--
 warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
 note: this linter can be disabled with `set_option linter.cdot false`
@@ -88,6 +91,40 @@ note: this linter can be disabled with `set_option linter.cdot false`
 set_option linter.cdot true in
 example : Add Nat where add := (. + ·)
 
+/--
+warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
+note: this linter can be disabled with `set_option linter.cdot false`
+---
+warning: This central dot `·` is isolated; please merge it with the next line.
+---
+warning: This central dot `·` is isolated; please merge it with the next line.
+-/
+#guard_msgs in
+set_option linter.cdot true in
+example : Nat := by
+  have : Nat := by
+    ·
+      -- some empty have
+      have := 0
+      ·
+
+        -- another
+        have := 1
+        . exact 2
+  exact 0
+
+#guard_msgs in
+set_option linter.cdot true in
+example : True := by
+  have : Nat := by
+    -- This is how code should look: no error.
+    · -- comment
+      exact 37
+  trivial
+
+end cdotLinter
+
+set_option linter.globalAttributeIn false in
 set_option linter.dollarSyntax false in
 /--
 warning: Please use '<|' instead of '$' for the pipe operator.
@@ -208,23 +245,6 @@ example : ℕ → ℕ := set_option linter.style.lambdaSyntax true in λ _ ↦ 0
 
 end lambdaSyntaxLinter
 
-set_option linter.dollarSyntax false in
-/--
-warning: Please use '<|' instead of '$' for the pipe operator.
-note: this linter can be disabled with `set_option linter.dollarSyntax false`
----
-warning: Please use '<|' instead of '$' for the pipe operator.
-note: this linter can be disabled with `set_option linter.dollarSyntax false`
--/
-#guard_msgs in
-set_option linter.dollarSyntax true in
-attribute [instance] Int.add in
-instance (f g : Nat → Nat) : Inhabited Nat where
-  default := by
-    · have := 0
-      · have : Nat := f $ g $ 0
-        · exact 0
-
 set_option linter.longLine false
 /--
 warning: This line exceeds the 100 character limit, please shorten it!
@@ -254,3 +274,70 @@ info: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
 -/
 #guard_msgs in
 #eval List.range 27
+
+/-
+# Testing the `longFile` linter
+
+Things to note:
+* `set_option linter.style.longFile 0` disables the linter, allowing us to set a value smaller than
+  `1500` without triggering the warning for setting a small value for the option;
+* `guard_msgs ... in #exit` and `set_option ... in #exit` allow processing of the file *beyond*
+  `#exit`, since they wrap `#exit` inside an anonymous section,
+  making Lean active again *after* that anonymous section.
+
+-/
+
+section longFile
+
+/--
+warning: The default value of the `longFile` linter is 1500.
+The current value of 1500 does not exceed the allowed bound.
+Please, remove the `set_option linter.style.longFile 1500`.
+-/
+#guard_msgs in
+-- Do not allow setting a "small" `longFile` linter option
+set_option linter.style.longFile 1500
+
+/--
+warning: using 'exit' to interrupt Lean
+---
+warning: The default value of the `longFile` linter is 1500.
+This file is 311 lines long which does not exceed the allowed bound.
+Please, remove the `set_option linter.style.longFile 1600`.
+-/
+#guard_msgs in
+-- Do not allow unnecessarily increasing the `longFile` linter option
+set_option linter.style.longFile 1600 in
+#exit
+
+/--
+warning: using 'exit' to interrupt Lean
+---
+warning: This file is 326 lines long, but the limit is 10.
+
+You can extend the allowed length of the file using `set_option linter.style.longFile 1500`.
+You can completely disable this linter by setting the length limit to `0`.
+-/
+#guard_msgs in
+-- First, we silence the linter, so that we can set a default value smaller than 1500.
+set_option linter.style.longFile 0 in
+-- Next, we test that the `longFile` linter warns when a file exceeds the allowed value.
+set_option linter.style.longFile 10 in
+#exit
+
+/--
+warning: using 'exit' to interrupt Lean
+---
+warning: The default value of the `longFile` linter is 1500.
+This file is 341 lines long which does not exceed the allowed bound.
+Please, remove the `set_option linter.style.longFile 1700`.
+-/
+#guard_msgs in
+-- First, we silence the linter, so that we can set a default value smaller than 1500.
+set_option linter.style.longFile 0 in
+-- If we set the allowed bound for the `longFile` linter that is too large,
+-- the linter tells us to use a smaller bound.
+set_option linter.style.longFile 1700 in
+#exit
+
+end longFile

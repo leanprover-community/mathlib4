@@ -876,7 +876,7 @@ theorem subtype_substructureEquivMap (f : M ↪[L] N) (s : L.Substructure M) :
   ext; rfl
 
 /-- The equivalence between the domain and the range of an embedding `f`. -/
-noncomputable def equivRange (f : M ↪[L] N) : M ≃[L] f.toHom.range where
+@[simps toEquiv_apply] noncomputable def equivRange (f : M ↪[L] N) : M ≃[L] f.toHom.range where
   toFun := codRestrict f.toHom.range f f.toHom.mem_range_self
   invFun n := Classical.choose n.2
   left_inv m :=

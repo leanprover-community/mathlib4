@@ -83,7 +83,7 @@ lemma inverseImage_iff (P : MorphismProperty D) (F : C ⥤ D) {X Y : C} (f : X �
 
 /-- The image (up to isomorphisms) of a `MorphismProperty C` by a functor `C ⥤ D` -/
 def map (P : MorphismProperty C) (F : C ⥤ D) : MorphismProperty D := fun _ _ f =>
-  ∃ (X' Y' : C)  (f' : X' ⟶ Y') (_ : P f'), Nonempty (Arrow.mk (F.map f') ≅ Arrow.mk f)
+  ∃ (X' Y' : C) (f' : X' ⟶ Y') (_ : P f'), Nonempty (Arrow.mk (F.map f') ≅ Arrow.mk f)
 
 lemma map_mem_map (P : MorphismProperty C) (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) (hf : P f) :
     (P.map F) (F.map f) := ⟨X, Y, f, hf, ⟨Iso.refl _⟩⟩

@@ -66,7 +66,7 @@ variable (L : Language.{u, v})
 abbrev IsRelational : Prop := ∀ n, IsEmpty (L.Functions n)
 
 /-- A language is algebraic when it has no relation symbols. -/
-abbrev IsAlgebraic := ∀ n, IsEmpty (L.Relations n)
+abbrev IsAlgebraic : Prop := ∀ n, IsEmpty (L.Relations n)
 
 /-- The empty language has no symbols. -/
 protected def empty : Language :=
@@ -141,13 +141,13 @@ theorem card_sum :
 
 /-- Passes a `DecidableEq` instance on a type of function symbols through the  `Language`
 constructor. Despite the fact that this is proven by `inferInstance`, it is still needed -
-see the `example`s in `ModelTheory/Ring/Basic`.  -/
+see the `example`s in `ModelTheory/Ring/Basic`. -/
 instance instDecidableEqFunctions {f : ℕ → Type*} {R : ℕ → Type*} (n : ℕ) [DecidableEq (f n)] :
     DecidableEq ((⟨f, R⟩ : Language).Functions n) := inferInstance
 
 /-- Passes a `DecidableEq` instance on a type of relation symbols through the  `Language`
 constructor. Despite the fact that this is proven by `inferInstance`, it is still needed -
-see the `example`s in `ModelTheory/Ring/Basic`.  -/
+see the `example`s in `ModelTheory/Ring/Basic`. -/
 instance instDecidableEqRelations {f : ℕ → Type*} {R : ℕ → Type*} (n : ℕ) [DecidableEq (R n)] :
     DecidableEq ((⟨f, R⟩ : Language).Relations n) := inferInstance
 
@@ -366,7 +366,7 @@ theorem id_comp (f : M →[L] N) : (id L N).comp f = f :=
 end Hom
 
 /-- Any element of a `HomClass` can be realized as a first_order homomorphism. -/
-def HomClass.toHom {F M N} [L.Structure M] [L.Structure N] [FunLike F M N]
+@[simps] def HomClass.toHom {F M N} [L.Structure M] [L.Structure N] [FunLike F M N]
     [HomClass L F M N] : F → M →[L] N := fun φ =>
   ⟨φ, HomClass.map_fun φ, HomClass.map_rel φ⟩
 
@@ -521,7 +521,7 @@ theorem refl_toHom : (refl L M).toHom = Hom.id L M :=
 end Embedding
 
 /-- Any element of an injective `StrongHomClass` can be realized as a first_order embedding. -/
-def StrongHomClass.toEmbedding {F M N} [L.Structure M] [L.Structure N] [FunLike F M N]
+@[simps] def StrongHomClass.toEmbedding {F M N} [L.Structure M] [L.Structure N] [FunLike F M N]
     [EmbeddingLike F M N] [StrongHomClass L F M N] : F → M ↪[L] N := fun φ =>
   ⟨⟨φ, EmbeddingLike.injective φ⟩, StrongHomClass.map_fun φ, StrongHomClass.map_rel φ⟩
 
@@ -735,7 +735,7 @@ theorem comp_right_inj (h : M ≃[L] N) (f g : N ≃[L] P) : f.comp h = g.comp h
 end Equiv
 
 /-- Any element of a bijective `StrongHomClass` can be realized as a first_order isomorphism. -/
-def StrongHomClass.toEquiv {F M N} [L.Structure M] [L.Structure N] [EquivLike F M N]
+@[simps] def StrongHomClass.toEquiv {F M N} [L.Structure M] [L.Structure N] [EquivLike F M N]
     [StrongHomClass L F M N] : F → M ≃[L] N := fun φ =>
   ⟨⟨φ, EquivLike.inv φ, EquivLike.left_inv φ, EquivLike.right_inv φ⟩, StrongHomClass.map_fun φ,
     StrongHomClass.map_rel φ⟩

@@ -225,7 +225,6 @@ theorem realize_noBotOrder [h : NoBotOrder M] : M ⊨ Language.order.noBotOrderS
   realize_noBotOrder_iff.2 h
 
 end LE
-
 section Preorder
 
 variable [Preorder M]

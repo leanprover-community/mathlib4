@@ -499,7 +499,7 @@ theorem HasLineDerivWithinAt.smul (h : HasLineDerivWithinAt 𝕜 f f' s x v) (c 
   have A : HasDerivAt g c 0 := by simpa using (hasDerivAt_id (0 : 𝕜)).const_smul c
   have B : HasDerivWithinAt (fun t ↦ f (x + t • v)) f' s' (g 0) := by simpa [g] using h
   have Z := B.scomp (0 : 𝕜) A.hasDerivWithinAt (mapsTo_preimage g s')
-  simp only [g, s', Function.comp, smul_eq_mul, mul_comm c, ← smul_smul] at Z
+  simp only [g, s', Function.comp_def, smul_eq_mul, mul_comm c, ← smul_smul] at Z
   convert Z
   ext t
   simp [← smul_smul]
