@@ -21,14 +21,12 @@ jobs:
         with:
           ref: master
           sparse-checkout: |
-            scripts/bench.sh
-            Mathlib/tp.lean
+            scripts/bench_summary.lean
 
       - name: Summarize bench output
         run: |
-          comment="$(./scripts/bench.sh "${PR}" scripts/bench_summary.lean)"
-          printf 'Posting to PR #%s\n%s\n' "${PR}" "${comment}"
-          printf 'bench_tally<<EOF\n%s\nEOF' "${comment}" >> "$GITHUB_OUTPUT"
+          sed "s=--\(run_cmd .*\) putPR=\1 ${PR}=" scripts/bench_summary.lean |
+            lake env lean --stdin
         env:
           PR:  ${{ github.event.issue.number }}
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}

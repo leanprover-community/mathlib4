@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 
-import Lean.Data.Json.FromToJson
-import Lean.Data.Json.Parser
+import Lean.Elab.Command
 
 /-!
 # Summary of `!bench` results
@@ -101,9 +100,9 @@ def toCollapsibleTable (bcs : Array Bench) (roundDiff : Int) : String :=
     </summary>\n\n{toTable (bcs.qsort (·.diff > ·.diff))}\n</details>\n"
 
 /-- Assuming that the input is a `json`-string formatted to produce an array of `Bench`,
-`benchOutput` prints the "significant" changes in numbers of instructions. -/
-def benchOutput (js : System.FilePath) : IO Unit := do
-  let dats ← IO.ofExcept (Json.parse (← IO.FS.readFile js) >>= fromJson? (α := Array Bench))
+`benchOutput` returns the "significant" changes in numbers of instructions as a string. -/
+def benchOutput (jsonInput : String) : IO String := do
+  let dats ← IO.ofExcept (Json.parse jsonInput >>= fromJson? (α := Array Bench))
   -- `head` contains `build` and `lint`, `dats` contains the filenames, prefixed by `~`
   let (head, dats) := dats.partition (·.file.take 1 != "~")
   -- gather together `Bench`es into subsets each containing `Bench`es with difference of
@@ -124,14 +123,62 @@ def benchOutput (js : System.FilePath) : IO Unit := do
       [(none, l.foldl (· ++ ·.2) #[])]
     else
       l.map fun (n, ar) => (some n, ar)
+  let mut tot := []
   for (bound, gs) in ts2 do
-    IO.println <|
+    tot := tot ++ [
       match bound with
         | none => -- `bound = none`: these entries are "singleton" files in their range
           toTable gs
         | some roundedDiff => -- these instead should be a collapsible summary
-          toCollapsibleTable gs roundedDiff
+          toCollapsibleTable gs roundedDiff]
+  return "\n".intercalate tot
 
-#eval benchOutput "benchOutput.json"
+open Lean Elab Command in
+def addBenchSummaryComment (PR : Nat) (repo : String) (jsonFile : String := "benchOutput.json") :
+    CommandElabM Unit := do
+  let PR := s!"{PR}" --"12"
+  let jq := ".comments | last | select(.author.login==\"leanprover-bot\") | .body"
+  let gh_pr_comments : IO.Process.SpawnArgs :=
+    { cmd := "gh", args := #["pr", "view", PR, "--repo", repo, "--json", "comments", "--jq", jq] }
+  let output ← IO.Process.run gh_pr_comments
+  let frags := output.split (· == '/')
+  let some compIdx := frags.findIdx? (· == "compare") |
+    logInfo "No 'compare' found in URL."
+    return
+  let src := frags.getD (compIdx + 1) ""
+  let tgt := (frags.getD (compIdx + 3) "").takeWhile (· != ')')
+  if (src.length, tgt.length) != (36, 36) then
+    logInfo m!"Found\nsrc: '{src}'\ntgt: '{tgt}'\ninstead of two commit hashes."
+    return
+  dbg_trace s!"Using commits\nsrc: '{src}'\ntgt: '{tgt}'\n"
+  let curlSpeedCenter : IO.Process.SpawnArgs :=
+    { cmd := "curl"
+      args := #[s!"http://speed.lean-fro.org/mathlib4/api/compare/{src}/to/{tgt}?all_values=true"] }
+  let bench ← IO.Process.run curlSpeedCenter
+  IO.FS.writeFile jsonFile bench
+  let threshold := s!"{10 ^ 9}"
+  let jq1 : IO.Process.SpawnArgs :=
+    { cmd := "jq"
+      args := #["-r", "--arg", "thr", threshold,
+        ".differences | .[] | ($thr|tonumber) as $th |
+        select(.dimension.metric == \"instructions\" and ((.diff >= $th) or (.diff <= -$th)))",
+        jsonFile] }
+  let firstFilter ← IO.Process.run jq1
+  IO.FS.writeFile jsonFile firstFilter
+  let jq2 : IO.Process.SpawnArgs :=
+    { cmd := "jq"
+      args := #["-c", "[{file: .dimension.benchmark, diff: .diff, reldiff: .reldiff}]", jsonFile] }
+  let secondFilter ← IO.Process.run jq2
+  IO.FS.writeFile jsonFile secondFilter
+  let jq3 : IO.Process.SpawnArgs :=
+    { cmd := "jq", args := #["-n", "reduce inputs as $in (null; . + $in)", jsonFile] }
+  let thirdFilter ← IO.Process.run jq3
+  let report ← benchOutput thirdFilter
+  IO.println report
+  let add_comment : IO.Process.SpawnArgs :=
+    { cmd := "gh", args := #["pr", "comment", PR, "--repo", repo, "--body", report] }
+  let _ ← IO.Process.run add_comment
+
+--run_cmd addBenchSummaryComment putPR "leanprover-community/mathlib4"
 
 end BenchAction
