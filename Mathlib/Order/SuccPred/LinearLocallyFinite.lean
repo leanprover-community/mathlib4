@@ -171,8 +171,7 @@ instance (priority := 100) isPredArchimedean_of_isSuccArchimedean [IsSuccArchime
       · rw [hn_eq]
         exact hn_lt_ne _ (Nat.lt_succ_self n)
 
--- We don't make this an instance to avoid loops with `isPredArchimedean_of_isSuccArchimedean`.
-theorem isSuccArchimedean_of_isPredArchimedean [IsPredArchimedean ι] : IsSuccArchimedean ι :=
+instance isSuccArchimedean_of_isPredArchimedean [IsPredArchimedean ι] : IsSuccArchimedean ι :=
   inferInstanceAs (IsSuccArchimedean ιᵒᵈᵒᵈ)
 
 /-- In a linear `SuccOrder` that's also a `PredOrder`, `IsSuccArchimedean` and `IsPredArchimedean`
