@@ -160,14 +160,14 @@ theorem fix_le {X : (a : _) → Part <| β a} (hX : f X ≤ X) : Part.fix f ≤ 
 
 variable {g : ((a : _) → Part <| β a) → (a : _) → Part <| β a}
 
-theorem fix_eq_ωSup' (hc : ωScottContinuous g) : Part.fix g =
+theorem fix_eq_ωSup_of_ωScottContinuous (hc : ωScottContinuous g) : Part.fix g =
     ωSup (approxChain (⟨g,hc.monotone⟩ : ((a : _) → Part <| β a) →o (a : _) → Part <| β a)) := by
   rw [← fix_eq_ωSup]
   rfl
 
 theorem fix_eq (hc : ωScottContinuous g) :
     Part.fix g = g (Part.fix g) := by
-  rw [fix_eq_ωSup', hc.map_ωSup]
+  rw [fix_eq_ωSup_of_ωScottContinuous, hc.map_ωSup]
   apply le_antisymm
   · apply ωSup_le_ωSup_of_le _
     exact hc
