@@ -110,18 +110,25 @@ unary and binary relations. -/
 protected def mk₂ (c f₁ f₂ : Type u) (r₁ r₂ : Type v) : Language :=
   ⟨Sequence₂ c f₁ f₂, Sequence₂ PEmpty r₁ r₂⟩
 
+variable (L : Language.{u, v})
+
+/-- A language is relational when it has no function symbols. -/
+abbrev IsRelational : Prop := ∀ n, IsEmpty (L.Functions n)
+
+/-- A language is algebraic when it has no relation symbols. -/
+abbrev IsAlgebraic := ∀ n, IsEmpty (L.Relations n)
+
 /-- The empty language has no symbols. -/
 protected def empty : Language :=
   ⟨fun _ => Empty, fun _ => Empty⟩
+  deriving IsAlgebraic, IsRelational
 
 instance : Inhabited Language :=
   ⟨Language.empty⟩
 
 /-- The sum of two languages consists of the disjoint union of their symbols. -/
-protected def sum (L : Language.{u, v}) (L' : Language.{u', v'}) : Language :=
+protected def sum (L' : Language.{u', v'}) : Language :=
   ⟨fun n => L.Functions n ⊕ L'.Functions n, fun n => L.Relations n ⊕ L'.Relations n⟩
-
-variable (L : Language.{u, v})
 
 /-- The type of constants in a given language. -/
 -- Porting note(#5171): this linter isn't ported yet.
@@ -144,16 +151,6 @@ def Symbols :=
 def card : Cardinal :=
   #L.Symbols
 
-/-- A language is relational when it has no function symbols. -/
-class IsRelational : Prop where
-  /-- There are no function symbols in the language. -/
-  empty_functions : ∀ n, IsEmpty (L.Functions n)
-
-/-- A language is algebraic when it has no relation symbols. -/
-class IsAlgebraic : Prop where
-  /-- There are no relation symbols in the language. -/
-  empty_relations : ∀ n, IsEmpty (L.Relations n)
-
 variable {L} {L' : Language.{u', v'}}
 
 theorem card_eq_card_functions_add_card_relations :
@@ -162,42 +159,23 @@ theorem card_eq_card_functions_add_card_relations :
         Cardinal.sum fun l => Cardinal.lift.{u} #(L.Relations l) := by
   simp [card, Symbols]
 
-instance [L.IsRelational] {n : ℕ} : IsEmpty (L.Functions n) :=
-  IsRelational.empty_functions n
-
-instance [L.IsAlgebraic] {n : ℕ} : IsEmpty (L.Relations n) :=
-  IsAlgebraic.empty_relations n
-
-instance isRelational_of_empty_functions {symb : ℕ → Type*} :
-    IsRelational ⟨fun _ => Empty, symb⟩ :=
-  ⟨fun _ => instIsEmptyEmpty⟩
-
-instance isAlgebraic_of_empty_relations {symb : ℕ → Type*} : IsAlgebraic ⟨symb, fun _ => Empty⟩ :=
-  ⟨fun _ => instIsEmptyEmpty⟩
-
-instance isRelational_empty : IsRelational Language.empty :=
-  Language.isRelational_of_empty_functions
-
-instance isAlgebraic_empty : IsAlgebraic Language.empty :=
-  Language.isAlgebraic_of_empty_relations
-
 instance isRelational_sum [L.IsRelational] [L'.IsRelational] : IsRelational (L.sum L') :=
-  ⟨fun _ => instIsEmptySum⟩
+  fun _ => instIsEmptySum
 
 instance isAlgebraic_sum [L.IsAlgebraic] [L'.IsAlgebraic] : IsAlgebraic (L.sum L') :=
-  ⟨fun _ => instIsEmptySum⟩
+  fun _ => instIsEmptySum
 
 instance isRelational_mk₂ {c f₁ f₂ : Type u} {r₁ r₂ : Type v} [h0 : IsEmpty c] [h1 : IsEmpty f₁]
     [h2 : IsEmpty f₂] : IsRelational (Language.mk₂ c f₁ f₂ r₁ r₂) :=
-  ⟨fun n =>
+  fun n =>
     Nat.casesOn n h0 fun n => Nat.casesOn n h1 fun n => Nat.casesOn n h2 fun _ =>
-      inferInstanceAs (IsEmpty PEmpty)⟩
+      inferInstanceAs (IsEmpty PEmpty)
 
 instance isAlgebraic_mk₂ {c f₁ f₂ : Type u} {r₁ r₂ : Type v} [h1 : IsEmpty r₁] [h2 : IsEmpty r₂] :
     IsAlgebraic (Language.mk₂ c f₁ f₂ r₁ r₂) :=
-  ⟨fun n =>
+  fun n =>
     Nat.casesOn n (inferInstanceAs (IsEmpty PEmpty)) fun n =>
-      Nat.casesOn n h1 fun n => Nat.casesOn n h2 fun _ => inferInstanceAs (IsEmpty PEmpty)⟩
+      Nat.casesOn n h1 fun n => Nat.casesOn n h2 fun _ => inferInstanceAs (IsEmpty PEmpty)
 
 instance subsingleton_mk₂_functions {c f₁ f₂ : Type u} {r₁ r₂ : Type v} [h0 : Subsingleton c]
     [h1 : Subsingleton f₁] [h2 : Subsingleton f₂] {n : ℕ} :
@@ -267,9 +245,11 @@ variable (L) (M : Type w)
 @[ext]
 class Structure where
   /-- Interpretation of the function symbols -/
-  funMap : ∀ {n}, L.Functions n → (Fin n → M) → M
+  funMap : ∀ {n}, L.Functions n → (Fin n → M) → M := by
+    exact fun {n} => isEmptyElim
   /-- Interpretation of the relation symbols -/
-  RelMap : ∀ {n}, L.Relations n → (Fin n → M) → Prop
+  RelMap : ∀ {n}, L.Relations n → (Fin n → M) → Prop := by
+    exact fun {n} => isEmptyElim
 
 variable (N : Type w') [L.Structure M] [L.Structure N]
 
@@ -429,7 +409,7 @@ instance (priority := 100) StrongHomClass.homClass {F : Type*} [L.Structure M]
 theorem HomClass.strongHomClassOfIsAlgebraic [L.IsAlgebraic] {F M N} [L.Structure M] [L.Structure N]
     [FunLike F M N] [HomClass L F M N] : StrongHomClass L F M N where
   map_fun := HomClass.map_fun
-  map_rel _ n R _ := (IsAlgebraic.empty_relations n).elim R
+  map_rel _ _ := isEmptyElim
 
 theorem HomClass.map_constants {F M N} [L.Structure M] [L.Structure N] [FunLike F M N]
     [HomClass L F M N] (φ : F) (c : L.Constants) : φ c = c :=
@@ -935,8 +915,7 @@ end SumStructure
 section Empty
 
 /-- Any type can be made uniquely into a structure over the empty language. -/
-def emptyStructure : Language.empty.Structure M :=
-  ⟨Empty.elim, Empty.elim⟩
+def emptyStructure : Language.empty.Structure M where
 
 instance : Unique (Language.empty.Structure M) :=
   ⟨⟨Language.emptyStructure⟩, fun a => by
