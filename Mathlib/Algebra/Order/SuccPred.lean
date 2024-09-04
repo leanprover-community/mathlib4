@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Violeta Hernández Palacios
+Authors: Violeta Hernández Palacios, Yaël Dillies
 -/
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Order.ZeroLEOne

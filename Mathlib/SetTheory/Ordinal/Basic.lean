@@ -3,9 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn
 -/
+import Mathlib.Algebra.Order.SuccPred
 import Mathlib.Data.Sum.Order
 import Mathlib.Order.InitialSeg
-import Mathlib.Order.SuccPred.Arithmetic
 import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.Tactic.PPWithUniv
 
