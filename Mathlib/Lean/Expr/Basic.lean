@@ -8,7 +8,8 @@ import Mathlib.Init
 import Lean.Meta.Tactic.Rewrite
 import Batteries.Lean.Expr
 import Batteries.Data.Rat.Basic
-import Batteries.Data.List.Basic
+import Batteries.Tactic.Alias
+import Lean.Elab.Binders
 
 /-!
 # Additional operations on Expr and related types
