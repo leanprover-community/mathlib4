@@ -76,7 +76,7 @@ theorem mulIndicator_eq_one_or_self (s : Set α) (f : α → M) (a : α) :
 @[to_additive (attr := simp)]
 theorem mulIndicator_apply_eq_self : s.mulIndicator f a = f a ↔ a ∉ s → f a = 1 :=
   letI := Classical.dec (a ∈ s)
-  ite_eq_left_iff.trans (by rw [@eq_comm _ (f a)])
+  (ite_eq_left_iff _ _ _).trans (by rw [@eq_comm _ (f a)])
 
 @[to_additive (attr := simp)]
 theorem mulIndicator_eq_self : s.mulIndicator f = f ↔ mulSupport f ⊆ s := by
@@ -91,7 +91,7 @@ theorem mulIndicator_eq_self_of_superset (h1 : s.mulIndicator f = f) (h2 : s ⊆
 @[to_additive (attr := simp)]
 theorem mulIndicator_apply_eq_one : mulIndicator s f a = 1 ↔ a ∈ s → f a = 1 :=
   letI := Classical.dec (a ∈ s)
-  ite_eq_right_iff
+  ite_eq_right_iff _ _ _
 
 @[to_additive (attr := simp)]
 theorem mulIndicator_eq_one : (mulIndicator s f = fun x => 1) ↔ Disjoint (mulSupport f) s := by
