@@ -193,7 +193,7 @@ lemma associator_inv_apply (K L M N : C ⥤ D) {X : C}
 
 @[simp]
 lemma associator_hom_apply (K L M N : C ⥤ D) {X : C}
-    (x : ( ((K.functorHom L) ⊗ (L.functorHom M)) ⊗ (M.functorHom N)).obj X) :
+    (x : (((K.functorHom L) ⊗ (L.functorHom M)) ⊗ (M.functorHom N)).obj X) :
     (α_ ((K.functorHom L).obj X) ((L.functorHom M).obj X) ((M.functorHom N).obj X)).hom x =
     ⟨x.1.1, x.1.2, x.2⟩ := rfl
 
