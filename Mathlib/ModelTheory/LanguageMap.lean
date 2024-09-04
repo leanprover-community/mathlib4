@@ -48,9 +48,9 @@ variable (L : Language.{u, v}) (L' : Language.{u', v'}) {M : Type w} [L.Structur
 /-- A language homomorphism maps the symbols of one language to symbols of another. -/
 structure LHom where
   onFunction : ∀ ⦃n⦄, L.Functions n → L'.Functions n := by
-    exact fun {n} => (IsRelational.empty_functions n).elim
+    exact fun {n} => isEmptyElim
   onRelation : ∀ ⦃n⦄, L.Relations n → L'.Relations n :=by
-    exact fun {n} => (IsAlgebraic.empty_relations n).elim
+    exact fun {n} => isEmptyElim
 
 @[inherit_doc FirstOrder.Language.LHom]
 infixl:10 " →ᴸ " => LHom
@@ -222,10 +222,10 @@ all symbols on that structure. -/
 class IsExpansionOn (M : Type*) [L.Structure M] [L'.Structure M] : Prop where
   map_onFunction :
     ∀ {n} (f : L.Functions n) (x : Fin n → M), funMap (ϕ.onFunction f) x = funMap f x := by
-      exact fun {n} => (IsRelational.empty_functions _).elim
+      exact fun {n} => isEmptyElim
   map_onRelation :
     ∀ {n} (R : L.Relations n) (x : Fin n → M), RelMap (ϕ.onRelation R) x = RelMap R x := by
-      exact fun {n} => (IsAlgebraic.empty_relations _).elim
+      exact fun {n} => isEmptyElim
 
 @[simp]
 theorem map_onFunction {M : Type*} [L.Structure M] [L'.Structure M] [ϕ.IsExpansionOn M] {n}
@@ -406,7 +406,7 @@ theorem card_withConstants :
     L[[α]].card = Cardinal.lift.{w'} L.card + Cardinal.lift.{max u v} #α := by
   rw [withConstants, card_sum, card_constantsOn]
 
-/-- The language map adding constants.  -/
+/-- The language map adding constants. -/
 @[simps!] -- Porting note: add `!` to `simps`
 def lhomWithConstants : L →ᴸ L[[α]] :=
   LHom.sumInl
@@ -422,7 +422,7 @@ protected def con (a : α) : L[[α]].Constants :=
 
 variable {L} (α)
 
-/-- Adds constants to a language map.  -/
+/-- Adds constants to a language map. -/
 def LHom.addConstants {L' : Language} (φ : L →ᴸ L') : L[[α]] →ᴸ L'[[α]] :=
   φ.sumMap (LHom.id _)
 
@@ -431,7 +431,7 @@ instance paramsStructure (A : Set α) : (constantsOn A).Structure α :=
 
 variable (L)
 
-/-- The language map removing an empty constant set.  -/
+/-- The language map removing an empty constant set. -/
 @[simps]
 def LEquiv.addEmptyConstants [ie : IsEmpty α] : L ≃ᴸ L[[α]] where
   toLHom := lhomWithConstants L α
@@ -453,7 +453,7 @@ theorem withConstants_relMap_sum_inl [L[[α]].Structure M] [(lhomWithConstants L
     {n} {R : L.Relations n} {x : Fin n → M} : @RelMap (L[[α]]) M _ n (Sum.inl R) x = RelMap R x :=
   (lhomWithConstants L α).map_onRelation R x
 
-/-- The language map extending the constant set.  -/
+/-- The language map extending the constant set. -/
 def lhomWithConstantsMap (f : α → β) : L[[α]] →ᴸ L[[β]] :=
   LHom.sumMap (LHom.id L) (LHom.constantsOnMap f)
 

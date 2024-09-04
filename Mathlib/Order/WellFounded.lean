@@ -133,7 +133,7 @@ private theorem eq_strictMono_iff_eq_range_aux {f g : β → γ} (hf : StrictMon
   obtain ⟨c, hc⟩ : g b ∈ Set.range f := by
     rw [hfg]
     exact Set.mem_range_self b
-  cases' lt_or_le c b with hcb hbc
+  rcases lt_or_le c b with hcb | hbc
   · rw [H c hcb] at hc
     rw [hg.injective hc] at hcb
     exact hcb.false.elim

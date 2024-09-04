@@ -413,9 +413,16 @@ theorem realize_restrictFreeVar [DecidableEq α] {n : ℕ} {φ : L.BoundedFormul
     (φ.restrictFreeVar (Set.inclusion h)).Realize (v ∘ (↑)) xs ↔ φ.Realize v xs := by
   induction' φ with _ _ _ _ _ _ _ _ _ _ _ ih1 ih2 _ _ ih3
   · rfl
-  · simp [restrictFreeVar, Realize]
-  · simp [restrictFreeVar, Realize]
-  · simp [restrictFreeVar, Realize, ih1, ih2]
+  · simp only [Realize, freeVarFinset.eq_2]
+    rw [Set.inclusion_comp_inclusion, Set.inclusion_comp_inclusion]
+    simp
+  · simp only [Realize, freeVarFinset.eq_3, Finset.biUnion_val]
+    congr!
+    erw [Set.inclusion_comp_inclusion _ h]
+    simp
+  · simp only [Realize, freeVarFinset.eq_4]
+    rw [Set.inclusion_comp_inclusion, Set.inclusion_comp_inclusion]
+    simp [ih1, ih2]
   · simp [restrictFreeVar, Realize, ih3]
 
 theorem realize_constantsVarsEquiv [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
@@ -692,7 +699,6 @@ theorem model_union_iff {T' : L.Theory} : M ⊨ T ∪ T' ↔ M ⊨ T ∧ M ⊨ T
 @[simp]
 theorem model_singleton_iff {φ : L.Sentence} : M ⊨ ({φ} : L.Theory) ↔ M ⊨ φ := by simp
 
-@[simp]
 theorem model_insert_iff {φ : L.Sentence} : M ⊨ insert φ T ↔ M ⊨ φ ∧ M ⊨ T := by
   rw [Set.insert_eq, model_union_iff, model_singleton_iff]
 
@@ -748,12 +754,12 @@ theorem _root_.FirstOrder.Language.Formula.realize_iAlls
       ∀ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
   let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
   rw [Formula.iAlls]
-  simp only [Nat.add_zero, realize_alls, realize_relabel, Function.comp,
+  simp only [Nat.add_zero, realize_alls, realize_relabel, Function.comp_def,
     castAdd_zero, finCongr_refl, OrderIso.refl_apply, Sum.elim_map, id_eq]
   refine Equiv.forall_congr ?_ ?_
   · exact ⟨fun v => v ∘ e, fun v => v ∘ e.symm,
-      fun _ => by simp [Function.comp],
-      fun _ => by simp [Function.comp]⟩
+      fun _ => by simp [Function.comp_def],
+      fun _ => by simp [Function.comp_def]⟩
   · intro x
     rw [Formula.Realize, iff_iff_eq]
     congr
@@ -774,13 +780,13 @@ theorem _root_.FirstOrder.Language.Formula.realize_iExs
       ∃ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
   let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
   rw [Formula.iExs]
-  simp only [Nat.add_zero, realize_exs, realize_relabel, Function.comp,
+  simp only [Nat.add_zero, realize_exs, realize_relabel, Function.comp_def,
     castAdd_zero, finCongr_refl, OrderIso.refl_apply, Sum.elim_map, id_eq]
   rw [← not_iff_not, not_exists, not_exists]
   refine Equiv.forall_congr ?_ ?_
   · exact ⟨fun v => v ∘ e, fun v => v ∘ e.symm,
-      fun _ => by simp [Function.comp],
-      fun _ => by simp [Function.comp]⟩
+      fun _ => by simp [Function.comp_def],
+      fun _ => by simp [Function.comp_def]⟩
   · intro x
     rw [Formula.Realize, iff_iff_eq]
     congr
@@ -808,7 +814,7 @@ theorem realize_toFormula (φ : L.BoundedFormula α n) (v : α ⊕ (Fin n) → M
     have h := ih3 (Sum.elim (v ∘ Sum.inl) (snoc (v ∘ Sum.inr) a))
     simp only [Sum.elim_comp_inl, Sum.elim_comp_inr] at h
     rw [← h, realize_relabel, Formula.Realize, iff_iff_eq]
-    simp only [Function.comp]
+    simp only [Function.comp_def]
     congr with x
     · cases' x with _ x
       · simp
