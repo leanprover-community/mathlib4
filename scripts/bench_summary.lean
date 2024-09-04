@@ -13,7 +13,7 @@ structure Bench :=
   file    : String
   diff    : Int
   reldiff : Float
-  deriving FromJson, ToJson
+  deriving FromJson, ToJson, Inhabited
 
 /-- `intDecs z exp prec` is a "generic" formatting of an integer `z`.
 It writes the number as `x.y * 10 ^ expr`, where `y` has `prec` digits and returns
@@ -38,6 +38,13 @@ def formatPerc (z : Int) (exp : Nat := 9) (prec : Nat := 3) : String :=
   let (sgn, intDigs, decDigs) := intDecs z exp prec
   s!"({sgn}{intDigs}.{decDigs}%)"
 
+def formatArrayBench (bound : Int) (arr : Array Bench) : Array String :=
+  let files := arr.map (·.file)
+  if arr.size ≤ 2 then
+    files
+  else
+    #[s!"<details><summary>{arr.size} files ~{bound}</summary>"] ++ files ++ #["</details>"]
+
 /-- converts a `Bench` into a formatted string of the form `| file | ±x.y⬝10⁹ | ±z.w% |`. -/
 def summary (bc : Bench) :=
   let instrs := bc.diff
@@ -53,9 +60,27 @@ def summary (bc : Bench) :=
 `benchOutput` prints the "significant" changes in numbers of instructions. -/
 def benchOutput (js : System.FilePath) : IO Unit := do
   let dats ← IO.ofExcept (Json.parse (← IO.FS.readFile js) >>= fromJson? (α := Array Bench))
+  let dats := dats.push {file := "neg1", diff := -10^10, reldiff := -0.5}
+  let dats := dats.push {file := "neg2", diff := -10^11, reldiff := -0.3}
   let (pos, neg) := dats.partition (0 < ·.diff)
+  let grouped := dats.groupByKey (·.diff / (10 ^ 9))
+  let mut (head, tallied) := (#[], #[])
+  for gp@(_i, arr) in grouped do
+    if (arr.getD 0 default).file == "build" then
+      head := #[gp] ++ head
+    else
+    if (arr.getD 0 default).file == "lint" then
+      head := head.push gp
+    else
+      tallied := tallied.push gp
+  let withSize := head ++ tallied.qsort (·.1 > ·.1)
+  let fmt := withSize.map (fun (a, b) => formatArrayBench a b)
+  IO.println <| "\n".intercalate fmt.flatten.toList
+  for (i, arr) in withSize do
+    dbg_trace (i, arr.map (·.file))
   let header := "|File|Instructions|%|\n|-|-:|:-:|"
   let mut msg := #["Report", s!"{header}\n|`Increase`|||"]
+  --let mut msg' := #["Report", s!"{header}\n|`Increase`|||"]
   for d in pos.qsort (·.diff > ·.diff) do
     msg := msg.push (summary d)
   msg := msg.push s!"|`Decrease`|||"
@@ -65,3 +90,5 @@ def benchOutput (js : System.FilePath) : IO Unit := do
 
 #eval
   benchOutput "benchOutput.json"
+#check List.groupBy
+#check Array.groupByKey
