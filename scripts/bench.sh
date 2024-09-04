@@ -1,12 +1,23 @@
 #!/usr/bin/env bash
 
-# usage: parse this file with `. bench.sh` and then run
-# `extractVariations commit1 commit2 > benchOutput.json`
-#
-# gets the json file for the comparison from http://speed.lean-fro.org/mathlib4
-# and prints the files / categories with an instruction change of at least 10^9,
-# first the ones that got slower, then the ones that got faster
+ : <<'BASH_MODULE_DOCS'
 
+usage: `./scripts/bench.sh <PR_number> <path_to_lean_file>`
+
+The script retrieves the last comment on #<PR_number>. If the comment
+* was posted by `leanprover-bot` and
+* contains `[significant changes]`
+
+then the script
+* extracts the two reference commits from the message,
+* queries `http://speed.lean-fro.org/mathlib4` for the json data for the changes that exceed
+  `10 ^ 9` instructions,
+* saves the data to `benchOutput.json`.
+
+Next, it calls the Lean file `<path_to_lean_file>` that produces the md-formatted output
+from the json file.
+
+BASH_MODULE_DOCS
 #PR="16419"
 #PR="16423"
 
@@ -41,9 +52,6 @@ extractVariations () {
     jq -n 'reduce inputs as $in (null; . + $in)'
 }
 
-#src=${1:-'fcdfe902-9b48-4cde-9a80-d959e29d8694'} #'9a197688-9bf0-4c59-8bb4-16affe9579f1'
-#tgt=${2:-'2f76f6f6-aa1c-43e0-904b-eebbd5c74d0f'} #'cf9a210c-14f3-42e0-8ad8-827f5aed7f56'
-
 commits="$(
   # retrieve the last comment, make sure that it is by `leanprover-bot`
   gh pr view "${PR}" --json comments |
@@ -54,6 +62,8 @@ commits="$(
 
 src="${commits/%,*/}"
 tgt="${commits/#*,/}"
+#src='aef3c49b-d869-43e9-b73b-81c72c1a56cd'
+#tgt='2775e67f-d4a3-4838-a274-c42249c0082d'
 
 >2& printf $'Using commits\nsrc: \'%s\'\ntgt: \'%s\'\n' "${src}" "${tgt}"
 
