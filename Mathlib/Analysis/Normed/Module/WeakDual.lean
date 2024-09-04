@@ -250,20 +250,21 @@ lemma polar_U0 : polar 𝕜 (U 0) = closedBall (0 : Dual 𝕜 E) 0 := by
   simp only [polar_univ]
   rfl
 
+lemma test : U (E := E) 0 = univ := rfl
+
 instance (n : ℕ) : Nonempty (U (E := E) n) := by
   use 0
-  rw [U]
-  cases' n with n
-  · trivial
-  · simp only [Nat.cast_add, Nat.cast_one, mem_ball, dist_self, inv_pos]
-    exact Nat.cast_add_one_pos n
+  cases n
+  · rw [U]
+    trivial
+  · simp only [U, Nat.cast_add, Nat.cast_one, mem_ball, dist_self, inv_pos]
+    exact Nat.cast_add_one_pos _
 
 lemma polarUcompact [ProperSpace 𝕜] (n : ℕ) : IsCompact (polar 𝕜 (U (E := E) n)) := by
   apply isCompact_polar
-  rw [U]
   cases' n with m
-  · simp only [univ_mem]
-  · simp only [Nat.cast_add, Nat.cast_one]
+  · simp only [U, univ_mem]
+  · simp only [U, Nat.cast_add, Nat.cast_one]
     rw [Metric.mem_nhds_iff]
     use (↑m + 1)⁻¹
     simp only [gt_iff_lt, inv_pos, subset_refl, and_true]
