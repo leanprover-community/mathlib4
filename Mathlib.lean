@@ -2842,7 +2842,6 @@ import Mathlib.InformationTheory.Hamming
 import Mathlib.Init
 import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Data.Nat.Lemmas
-import Mathlib.Init.Data.String
 import Mathlib.Init.Logic
 import Mathlib.Lean.CoreM
 import Mathlib.Lean.Elab.Tactic.Basic
