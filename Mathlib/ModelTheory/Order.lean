@@ -262,7 +262,7 @@ instance model_linearOrder : M ⊨ Language.order.linearOrderTheory := by
 
 instance model_dlo [DenselyOrdered M] [NoTopOrder M] [NoBotOrder M] :
     M ⊨ Language.order.dlo := by
-  simp [dlo, model_linearOrder]
+  simp [dlo, model_linearOrder, Theory.model_insert_iff]
 
 end LinearOrder
 

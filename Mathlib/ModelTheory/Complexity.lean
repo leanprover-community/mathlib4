@@ -420,7 +420,7 @@ class Theory.IsUniversal (T : L.Theory) : Prop where
 lemma Theory.IsUniversal.models_of_embedding {T : L.Theory} [hT : T.IsUniversal]
     {N : Type*} [L.Structure N] [N ⊨ T] (f : M ↪[L] N) : M ⊨ T := by
   simp only [model_iff]
-  refine fun φ hφ => (hT.isUniversal_of_mem φ hφ).realize_embedding f (?_)
+  refine fun φ hφ => (hT.isUniversal_of_mem hφ).realize_embedding f (?_)
   rw [Subsingleton.elim (f ∘ default) default, Subsingleton.elim (f ∘ default) default]
   exact Theory.realize_sentence_of_mem T hφ
 
