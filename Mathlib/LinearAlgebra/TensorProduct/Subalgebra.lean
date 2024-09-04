@@ -3,10 +3,10 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
+import Mathlib.LinearAlgebra.Dimension.Constructions
+import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.LinearAlgebra.TensorProduct.Submodule
 import Mathlib.RingTheory.TensorProduct.Basic
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.LinearAlgebra.Dimension.Constructions
 
 /-!
 
@@ -215,3 +215,4 @@ theorem finrank_sup_le_of_free [Module.Free R A] [Module.Free R B] :
 end CommRing
 
 end Subalgebra
+#min_imports
