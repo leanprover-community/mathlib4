@@ -24,6 +24,11 @@ equivalence of categories in `CompactumToCompHaus.isEquivalence`.
 See `Mathlib/Topology/Category/Compactum.lean` for a more detailed discussion where these
 definitions are introduced.
 
+## Implementation
+
+The category `CompHaus` is defined using the structure `CompHausLike`. See the file
+`CompHausLike.Basic` for more information.
+
 -/
 
 
