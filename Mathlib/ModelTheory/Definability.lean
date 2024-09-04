@@ -74,7 +74,7 @@ theorem definable_iff_exists_formula_sum :
 theorem empty_definable_iff :
     (∅ : Set M).Definable L s ↔ ∃ φ : L.Formula α, s = setOf φ.Realize := by
   rw [Definable, Equiv.exists_congr_left (LEquiv.addEmptyConstants L (∅ : Set M)).onFormula]
-  simp [-constantsOn]
+  simp
 
 theorem definable_iff_empty_definable_with_params :
     A.Definable L s ↔ (∅ : Set M).Definable (L[[A]]) s :=
