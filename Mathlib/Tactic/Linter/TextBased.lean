@@ -5,7 +5,6 @@ Authors: Michael Rothgang
 -/
 
 import Batteries.Data.String.Matcher
-import Batteries.Lean.HashSet
 import Mathlib.Data.Nat.Notation
 
 /-!
