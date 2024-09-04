@@ -51,10 +51,6 @@ Then the rest is usual set theory.
 
 To avoid confusion between the Lean `Set` and the ZFC `Set`, docstrings in this file refer to them
 respectively as "`Set`" and "ZFC set".
-
-## TODO
-
-Prove `ZFSet.mapDefinableAux` computably.
 -/
 
 
@@ -372,6 +368,15 @@ theorem mem_singleton {x y : PSet} : x ∈ ({y} : PSet) ↔ Equiv x y :=
 theorem mem_pair {x y z : PSet} : x ∈ ({y, z} : PSet) ↔ Equiv x y ∨ Equiv x z := by
   simp
 
+theorem singleton_equiv_iff {x y : PSet.{u}} : Equiv {x} {y} ↔ Equiv x y := by
+  rw [equiv_iff_mem]
+  simp only [mem_singleton]
+  constructor
+  · intro h
+    exact h.1 Equiv.rfl
+  · intro h w
+    exact ⟨fun h' => h'.trans h, fun h' => h'.trans h.symm⟩
+
 /-- The n-th von Neumann ordinal -/
 def ofNat : ℕ → PSet
   | 0 => ∅
@@ -441,6 +446,59 @@ theorem mem_image {f : PSet.{u} → PSet.{u}} (H : ∀ x y, Equiv x y → Equiv 
     ∀ {x y : PSet.{u}}, y ∈ image f x ↔ ∃ z ∈ x, Equiv y (f z)
   | ⟨_, A⟩, _ =>
     ⟨fun ⟨a, ya⟩ => ⟨A a, Mem.mk A a, ya⟩, fun ⟨_, ⟨a, za⟩, yz⟩ => ⟨a, yz.trans <| H _ _ za⟩⟩
+
+/-- Kuratowski ordered pair -/
+def pair (x y : PSet) : PSet := {{x}, {x, y}}
+
+theorem pair_equiv_iff {x y x' y' : PSet.{u}} :
+    Equiv (pair x y) (pair x' y') ↔ Equiv x x' ∧ Equiv y y' := by
+  constructor
+  · intro h
+    rw [equiv_iff_mem] at h
+    simp only [pair, mem_pair] at h
+    have hxx' : Equiv x x' := by
+      obtain hxx' | hxx'y' := (@h {x}).1 (Or.inl Equiv.rfl)
+      · exact singleton_equiv_iff.1 hxx'
+      · exact (mem_singleton.1 ((Mem.congr_right hxx'y' (w := x')).2 (by simp [Equiv.rfl]))).symm
+    refine ⟨hxx', ?_⟩
+    have he : Equiv x y → Equiv y y' := by
+      intro hxy
+      have := (@h {x, y'}).2 (Or.inr (by
+        rw [equiv_iff_mem]
+        simp only [mem_pair]
+        exact or_congr_left ⟨fun h => h.trans hxx', fun h => h.trans hxx'.symm⟩))
+      obtain hxy'x | hxy'xy := this
+      · have := (Mem.congr_right hxy'x (w := y')).1 (by simp [Equiv.rfl])
+        rw [mem_singleton] at this
+        exact hxy.symm.trans this.symm
+      · obtain hy'x | hy'y :=
+          mem_pair.1 ((Mem.congr_right hxy'xy (w := y')).1 (by simp [Equiv.rfl]))
+        · exact hxy.symm.trans hy'x.symm
+        · exact hy'y.symm
+    obtain hxyx' | hxyx'y' := (@h {x, y}).1 (by simp [Equiv.rfl])
+    · have := (equiv_iff_mem.1 hxyx' (w := y)).1 (by simp [Equiv.rfl])
+      rw [mem_singleton] at this
+      exact he (hxx'.trans this.symm)
+    · have := (equiv_iff_mem.1 hxyx'y' (w := y)).1 (by simp [Equiv.rfl])
+      rw [mem_pair] at this
+      obtain hyx' | hyy' := this
+      · exact he (hxx'.trans hyx'.symm)
+      · exact hyy'
+  · intro ⟨h₁, h₂⟩
+    have hxx' := singleton_equiv_iff.2 h₁
+    have hxyx'y' : Equiv {x, y} {x', y'} := by
+      rw [equiv_iff_mem]
+      simp only [mem_pair]
+      intro
+      apply or_congr
+      · exact ⟨fun h => h.trans h₁, fun h => h.trans h₁.symm⟩
+      · exact ⟨fun h => h.trans h₂, fun h => h.trans h₂.symm⟩
+    rw [equiv_iff_mem]
+    simp only [pair, mem_pair]
+    intro w
+    apply or_congr
+    · exact ⟨fun h => h.trans hxx', fun h => h.trans hxx'.symm⟩
+    · exact ⟨fun h => h.trans hxyx'y', fun h => h.trans hxyx'y'.symm⟩
 
 /-- Universe lift operation -/
 protected def Lift : PSet.{u} → PSet.{max u v}
@@ -1110,30 +1168,11 @@ theorem mem_pairSep {p} {x y z : ZFSet.{u}} :
     exact Or.inl ax
   · rintro (rfl | rfl) <;> [left; right] <;> assumption
 
-theorem pair_injective : Function.Injective2 pair := fun x x' y y' H => by
-  have ae := ZFSet.ext_iff.1 H
-  simp only [pair, mem_pair] at ae
-  obtain rfl : x = x' := by
-    cases' (ae {x}).1 (by simp) with h h
-    · exact singleton_injective h
-    · have m : x' ∈ ({x} : ZFSet) := by simp [h]
-      rw [mem_singleton.mp m]
-  have he : x = y → y = y' := by
-    rintro rfl
-    cases' (ae {x, y'}).2 (by simp only [eq_self_iff_true, or_true_iff]) with xy'x xy'xx
-    · rw [eq_comm, ← mem_singleton, ← xy'x, mem_pair]
-      exact Or.inr rfl
-    · simpa [eq_comm] using (ZFSet.ext_iff.1 xy'xx y').1 (by simp)
-  obtain xyx | xyy' := (ae {x, y}).1 (by simp)
-  · obtain rfl := mem_singleton.mp ((ZFSet.ext_iff.1 xyx y).1 <| by simp)
-    simp [he rfl]
-  · obtain rfl | yy' := mem_pair.mp ((ZFSet.ext_iff.1 xyy' y).1 <| by simp)
-    · simp [he rfl]
-    · simp [yy']
-
 @[simp]
 theorem pair_inj {x y x' y' : ZFSet} : pair x y = pair x' y' ↔ x = x' ∧ y = y' :=
-  pair_injective.eq_iff
+  Quotient.inductionOn₃ x y x' fun _ _ _ =>
+    Quotient.inductionOn y' fun _ =>
+      eq.trans (PSet.pair_equiv_iff.trans (and_congr eq.symm eq.symm))
 
 /-- The cartesian product, `{(a, b) | a ∈ x, b ∈ y}` -/
 def prod : ZFSet.{u} → ZFSet.{u} → ZFSet.{u} :=
@@ -1158,16 +1197,15 @@ def funs (x y : ZFSet.{u}) : ZFSet.{u} :=
 @[simp]
 theorem mem_funs {x y f : ZFSet.{u}} : f ∈ funs x y ↔ IsFunc x y f := by simp [funs, IsFunc]
 
--- TODO(Mario): Prove this computably
-/- Porting note: the `Definable` argument in `mapDefinableAux` is unused, though the TODO remark
-   suggests it shouldn't be. -/
-@[nolint unusedArguments]
-noncomputable instance mapDefinableAux (f : ZFSet → ZFSet) [Definable 1 f] :
-    Definable 1 fun (y : ZFSet) => pair y (f y) :=
-  @Classical.allDefinable 1 _
+instance mapDefinableAux : ∀ (f : ZFSet → ZFSet) [Definable 1 f],
+    Definable 1 fun (y : ZFSet) => pair y (f y)
+  | _, ⟨F⟩ =>
+    Definable.EqMk (n := 1)
+      ⟨fun x => PSet.pair x (F.1 x), fun _ _ h => pair_equiv_iff.2 ⟨h, F.2 _ _ h⟩⟩
+      (funext fun y => Quotient.inductionOn y fun _ => rfl)
 
 /-- Graph of a function: `map f x` is the ZFC function which maps `a ∈ x` to `f a` -/
-noncomputable def map (f : ZFSet → ZFSet) [Definable 1 f] : ZFSet → ZFSet :=
+def map (f : ZFSet → ZFSet) [Definable 1 f] : ZFSet → ZFSet :=
   image fun y => pair y (f y)
 
 @[simp]
@@ -1179,7 +1217,7 @@ theorem map_unique {f : ZFSet.{u} → ZFSet.{u}} [H : Definable 1 f] {x z : ZFSe
     (zx : z ∈ x) : ∃! w, pair z w ∈ map f x :=
   ⟨f z, image.mk _ _ zx, fun y yx => by
     let ⟨w, _, we⟩ := mem_image.1 yx
-    let ⟨wz, fy⟩ := pair_injective we
+    let ⟨wz, fy⟩ := pair_inj.1 we
     rw [← fy, wz]⟩
 
 @[simp]
@@ -1518,7 +1556,7 @@ theorem map_fval {f : ZFSet.{u} → ZFSet.{u}} [H : PSet.Definable 1 f] {x y : Z
     rw [Class.toSet_of_ZFSet, Class.coe_apply, mem_map]
     exact
       ⟨fun ⟨w, _, pr⟩ => by
-        let ⟨wy, fw⟩ := ZFSet.pair_injective pr
+        let ⟨wy, fw⟩ := ZFSet.pair_inj.1 pr
         rw [← fw, wy], fun e => by
         subst e
         exact ⟨_, h, rfl⟩⟩
