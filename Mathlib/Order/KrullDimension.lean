@@ -89,7 +89,7 @@ lemma height_le (x : α) (n : ℕ∞) :
     (∀ (p : LTSeries α), p.last = x → p.length ≤ n) → height x ≤ n :=
   (height_le_iff x n).mpr
 
-lemma le_height_of_last_le (x : α) (p : LTSeries α) (hlast : p.last ≤ x) :
+lemma length_le_height (x : α) (p : LTSeries α) (hlast : p.last ≤ x) :
     p.length ≤ height x := by
   by_cases hlen0 : p.length ≠ 0
   · let p' := p.eraseLast.snoc x (by
