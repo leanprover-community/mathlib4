@@ -100,7 +100,7 @@ variable (hx : AlgebraicIndependent R x)
 include hx
 
 theorem algebraMap_injective : Injective (algebraMap R A) := by
-  simpa [Function.comp] using
+  simpa [Function.comp_def] using
     (Injective.of_comp_iff (algebraicIndependent_iff_injective_aeval.1 hx) MvPolynomial.C).2
       (MvPolynomial.C_injective _ _)
 
@@ -135,7 +135,7 @@ theorem map {f : A →ₐ[R] A'} (hf_inj : Set.InjOn f (adjoin R (range x))) :
     intro p
     rw [AlgHom.mem_range]
     refine ⟨MvPolynomial.rename (codRestrict x (range x) mem_range_self) p, ?_⟩
-    simp [Function.comp, aeval_rename]
+    simp [Function.comp_def, aeval_rename]
   intro x y hxy
   rw [this] at hxy
   rw [adjoin_eq_range] at hf_inj
