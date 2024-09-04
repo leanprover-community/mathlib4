@@ -46,6 +46,9 @@ def Ioo (a b : α) :=
 def Ico (a b : α) :=
   { x | a ≤ x ∧ x < b }
 
+/-- The left endpoint `a ∈ Ico a b`, as a point in `Ico a b` (assuming `a < b`). -/
+abbrev Ico.right {a b : α} (h : a < b) : Ico a b:= ⟨a, ⟨le_refl a, h⟩⟩
+
 /-- Left-infinite right-open interval -/
 def Iio (a : α) :=
   { x | x < a }
@@ -54,21 +57,32 @@ def Iio (a : α) :=
 def Icc (a b : α) :=
   { x | a ≤ x ∧ x ≤ b }
 
+/-- The left endpoint `a ∈ Icc a b`, as a point in `Icc a b` (assuming `a ≤ b`). -/
 abbrev Icc.left {a b : α} (h : a ≤ b) : Icc a b := ⟨a, ⟨le_refl a, h⟩⟩
 
+/-- The right endpoint `b ∈ Icc a b`, as a point in `Icc a b` (assuming `a ≤ b`). -/
 abbrev Icc.right {a b : α} (h : a ≤ b) : Icc a b := ⟨b, ⟨h, le_refl b⟩⟩
 
 /-- Left-infinite right-closed interval -/
 def Iic (b : α) :=
   { x | x ≤ b }
 
+/-- The right endpoint `b ∈ Iic b`, as a point in `Iic b`. -/
+abbrev Iic.right {b : α} : Iic b := ⟨b, le_refl b⟩
+
 /-- Left-open right-closed interval -/
 def Ioc (a b : α) :=
   { x | a < x ∧ x ≤ b }
 
+/-- The right endpoint `b ∈ Ioc b`, as a point in `Ioc b`. -/
+abbrev Ioc.right {b : α} : Iic b := ⟨b, le_refl b⟩
+
 /-- Left-closed right-infinite interval -/
 def Ici (a : α) :=
   { x | a ≤ x }
+
+/-- The left endpoint `a ∈ Ici a`, as a point in `Ici a`. -/
+abbrev Ici.left {a : α} : Ici a := ⟨a, le_refl a⟩
 
 /-- Left-open right-infinite interval -/
 def Ioi (a : α) :=
