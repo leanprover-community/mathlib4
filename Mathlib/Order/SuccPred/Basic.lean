@@ -1414,6 +1414,7 @@ lemma SuccOrder.forall_ne_bot_iff
 
 section OrderIso
 
+/-- A `SuccOrder` can be transfered across an `OrderIso`. -/
 @[reducible]
 def SuccOrder.of_orderIso {X Y : Type*} [Preorder X] [Preorder Y] [SuccOrder X] (f : X ≃o Y) :
     SuccOrder Y where
@@ -1425,6 +1426,7 @@ def SuccOrder.of_orderIso {X Y : Type*} [Preorder X] [Preorder Y] [SuccOrder X] 
     simp [f.le_symm_apply, h]
   succ_le_of_lt h := by rw [← le_map_inv_iff]; exact succ_le_of_lt (by simp [h])
 
+/-- A `PredOrder` can be transfered across an `OrderIso`. -/
 @[reducible]
 def PredOrder.of_orderIso {X Y : Type*} [Preorder X] [Preorder Y] [PredOrder X] (f : X ≃o Y) :
     PredOrder Y where
