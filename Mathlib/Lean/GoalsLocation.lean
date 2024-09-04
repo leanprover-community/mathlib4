@@ -12,10 +12,10 @@ import Lean.SubExpr
 namespace Lean.SubExpr.GoalsLocation
 /-- The root expression of the position specified by the `GoalsLocation`. -/
 def rootExpr : GoalsLocation → MetaM Expr
-  | ⟨_, .hyp fvarId⟩        => fvarId.getType
-  | ⟨_, .hypType fvarId _⟩  => fvarId.getType
-  | ⟨_, .hypValue fvarId _⟩ => do return (← fvarId.getDecl).value
-  | ⟨mvarId, .target _⟩     => mvarId.getType
+  | ⟨_, .hyp fvarId⟩        => do instantiateMVars (← fvarId.getType)
+  | ⟨_, .hypType fvarId _⟩  => do instantiateMVars (← fvarId.getType)
+  | ⟨_, .hypValue fvarId _⟩ => do instantiateMVars (← fvarId.getDecl).value
+  | ⟨mvarId, .target _⟩     => do instantiateMVars (← mvarId.getType)
 
 /-- The `SubExpr.Pos` specified by the `GoalsLocation`. -/
 def pos : GoalsLocation → Pos
