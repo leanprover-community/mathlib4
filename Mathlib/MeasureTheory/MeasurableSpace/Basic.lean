@@ -855,20 +855,20 @@ theorem measurable_update_left {a : δ} [DecidableEq δ] {x : π a} :
   measurable_update'.comp measurable_prod_mk_right
 
 @[measurability, fun_prop]
-theorem measurable_set_restrict (s : Set δ) : Measurable (s.restrict (π := π)) :=
+theorem Set.measurable_restrict (s : Set δ) : Measurable (s.restrict (π := π)) :=
   measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
 
 @[measurability, fun_prop]
-theorem measurable_set_restrict₂ {s t : Set δ} (hst : s ⊆ t) :
+theorem Set.measurable_restrict₂ {s t : Set δ} (hst : s ⊆ t) :
     Measurable (restrict₂ (π := π) hst) :=
   measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
 
 @[measurability, fun_prop]
-theorem measurable_finset_restrict (s : Finset δ) : Measurable (s.restrict (β := π)) :=
+theorem Finset.measurable_restrict (s : Finset δ) : Measurable (s.restrict (β := π)) :=
   measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
 
 @[measurability, fun_prop]
-theorem measurable_finset_restrict₂ {s t : Finset δ} (hst : s ⊆ t) :
+theorem Finset.measurable_restrict₂ {s t : Finset δ} (hst : s ⊆ t) :
     Measurable (Finset.restrict₂ (β := π) hst) :=
   measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
 

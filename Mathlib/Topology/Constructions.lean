@@ -1208,9 +1208,23 @@ lemma Pi.induced_precomp [TopologicalSpace Y] {ι' : Type*} (φ : ι' → ι) :
     ⨅ i', induced (eval (φ i')) ‹TopologicalSpace Y› :=
   induced_precomp' φ
 
+@[continuity, fun_prop]
 lemma Pi.continuous_restrict (S : Set ι) :
     Continuous (S.restrict : (∀ i : ι, π i) → (∀ i : S, π i)) :=
   Pi.continuous_precomp' ((↑) : S → ι)
+
+@[continuity, fun_prop]
+lemma Pi.continuous_restrict₂ {s t : Set ι} (hst : s ⊆ t) : Continuous (restrict₂ (π := π) hst) :=
+  continuous_pi fun _ ↦ continuous_apply _
+
+@[continuity, fun_prop]
+theorem Finset.continuous_restrict (s : Finset ι) : Continuous (s.restrict (β := π)) :=
+  continuous_pi fun _ ↦ continuous_apply _
+
+@[continuity, fun_prop]
+theorem Finset.continuous_restrict₂ {s t : Finset ι} (hst : s ⊆ t) :
+    Continuous (Finset.restrict₂ (β := π) hst) :=
+  continuous_pi fun _ ↦ continuous_apply _
 
 lemma Pi.induced_restrict (S : Set ι) :
     induced (S.restrict) Pi.topologicalSpace =
@@ -1241,24 +1255,6 @@ theorem Continuous.update [DecidableEq ι] (hf : Continuous f) (i : ι) {g : X �
 theorem continuous_update [DecidableEq ι] (i : ι) :
     Continuous fun f : (∀ j, π j) × π i => update f.1 i f.2 :=
   continuous_fst.update i continuous_snd
-
-@[continuity, fun_prop]
-theorem continuous_set_restrict (s : Set ι) : Continuous (s.restrict (π := π)) :=
-  continuous_pi fun _ ↦ continuous_apply _
-
-@[continuity, fun_prop]
-theorem continuous_set_restrict₂ {s t : Set ι} (hst : s ⊆ t) :
-    Continuous (restrict₂ (π := π) hst) :=
-  continuous_pi fun _ ↦ continuous_apply _
-
-@[continuity, fun_prop]
-theorem continuous_finset_restrict (s : Finset ι) : Continuous (s.restrict (β := π)) :=
-  continuous_pi fun _ ↦ continuous_apply _
-
-@[continuity, fun_prop]
-theorem continuous_finset_restrict₂ {s t : Finset ι} (hst : s ⊆ t) :
-    Continuous (Finset.restrict₂ (β := π) hst) :=
-  continuous_pi fun _ ↦ continuous_apply _
 
 /-- `Pi.mulSingle i x` is continuous in `x`. -/
 -- Porting note (#11215): TODO: restore @[continuity]

@@ -3245,7 +3245,7 @@ import Mathlib.MeasureTheory.MeasurableSpace.Defs
 import Mathlib.MeasureTheory.MeasurableSpace.Embedding
 import Mathlib.MeasureTheory.MeasurableSpace.Instances
 import Mathlib.MeasureTheory.MeasurableSpace.Invariants
-import Mathlib.MeasureTheory.MeasurableSpace.NatRestrict
+import Mathlib.MeasureTheory.MeasurableSpace.PreorderRestrict
 import Mathlib.MeasureTheory.Measure.AEDisjoint
 import Mathlib.MeasureTheory.Measure.AEMeasurable
 import Mathlib.MeasureTheory.Measure.AddContent
@@ -4594,7 +4594,6 @@ import Mathlib.Topology.Metrizable.Basic
 import Mathlib.Topology.Metrizable.ContinuousMap
 import Mathlib.Topology.Metrizable.Uniformity
 import Mathlib.Topology.Metrizable.Urysohn
-import Mathlib.Topology.NatRestrict
 import Mathlib.Topology.NhdsSet
 import Mathlib.Topology.NoetherianSpace
 import Mathlib.Topology.OmegaCompletePartialOrder
@@ -4634,6 +4633,7 @@ import Mathlib.Topology.Partial
 import Mathlib.Topology.PartialHomeomorph
 import Mathlib.Topology.PartitionOfUnity
 import Mathlib.Topology.Perfect
+import Mathlib.Topology.PreorderRestrict
 import Mathlib.Topology.QuasiSeparated
 import Mathlib.Topology.RestrictGenTopology
 import Mathlib.Topology.Semicontinuous
