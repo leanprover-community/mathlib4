@@ -62,6 +62,7 @@ def Coalgebra.Repr.arbitrary (R : Type u) {A : Type v}
   index := TensorProduct.exists_finset (R := R) (CoalgebraStruct.comul a) |>.choose
   eq := TensorProduct.exists_finset (R := R) (CoalgebraStruct.comul a) |>.choose_spec.symm
 
+@[inherit_doc Coalgebra.Repr.arbitrary]
 scoped[Coalgebra] notation "ℛ" => Coalgebra.Repr.arbitrary
 
 namespace Coalgebra

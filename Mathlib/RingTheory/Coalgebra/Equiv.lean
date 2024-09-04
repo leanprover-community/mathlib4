@@ -196,11 +196,12 @@ def symm (e : A ≃ₗc[R] B) : B ≃ₗc[R] A :=
         LinearEquiv.ofLinear_toLinearMap, ← LinearMap.comp_assoc, CoalgHomClass.map_comp_comul,
         LinearEquiv.eq_comp_toLinearMap_symm] }
 
+@[simp]
 theorem symm_toLinearEquiv (e : A ≃ₗc[R] B) :
     e.symm = (e : A ≃ₗ[R] B).symm := rfl
 
-theorem symm_toLinearEquiv_apply (e : A ≃ₗc[R] B) :
-   ⇑(e.symm) = (e : A ≃ₗ[R] B).symm := rfl
+theorem coe_symm_toLinearEquiv (e : A ≃ₗc[R] B) :
+    ⇑(e : A ≃ₗ[R] B).symm = e.symm := rfl
 
 @[simp]
 theorem symm_toCoalgHom (e : A ≃ₗc[R] B) :
@@ -267,7 +268,7 @@ structure on `B`. -/
     ext x
     simpa only [toCoalgHom_eq_coe, CoalgHom.toLinearMap_eq_coe, LinearMap.coe_comp,
       LinearEquiv.coe_coe, Function.comp_apply, ← (ℛ R _).eq, map_sum, TensorProduct.map_tmul,
-      LinearMap.coe_coe, CoalgHom.coe_coe, LinearMap.rTensor_tmul, ← symm_toLinearEquiv_apply,
+      LinearMap.coe_coe, CoalgHom.coe_coe, LinearMap.rTensor_tmul, coe_symm_toLinearEquiv,
       symm_apply_apply, LinearMap.lTensor_comp_map, TensorProduct.sum_tmul,
       TensorProduct.assoc_tmul, TensorProduct.tmul_sum] using (sum_map_tmul_tmul_eq f f f x).symm
   rTensor_counit_comp_comul := by
@@ -275,12 +276,12 @@ structure on `B`. -/
       ← (f.toLinearEquiv.comp_toLinearMap_symm_eq _ _).2 f.map_comp_comul, ← LinearMap.comp_assoc,
       f.toLinearEquiv.comp_toLinearMap_symm_eq]
     ext x
-    simp [← (ℛ R _).eq, ← symm_toLinearEquiv_apply]
+    simp [← (ℛ R _).eq, coe_symm_toLinearEquiv]
   lTensor_counit_comp_comul := by
     simp_rw [(f.toLinearEquiv.eq_comp_toLinearMap_symm _ _).2 f.counit_comp,
       ← (f.toLinearEquiv.comp_toLinearMap_symm_eq _ _).2 f.map_comp_comul, ← LinearMap.comp_assoc,
       f.toLinearEquiv.comp_toLinearMap_symm_eq]
     ext x
-    simp [← (ℛ R _).eq, ← symm_toLinearEquiv_apply]
+    simp [← (ℛ R _).eq, coe_symm_toLinearEquiv]
 
 end CoalgEquiv
