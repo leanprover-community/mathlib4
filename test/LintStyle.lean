@@ -136,8 +136,20 @@ lemma foo' : True := trivial
 
 end setOption
 
+section unicodeLinter
 
-open Mathlib.Linter.TextBased in
+open Mathlib.Linter.TextBased
+
 #guard let errContext : ErrorContext := {
     error := .unwantedUnicode 'Z', lineNumber := 4, path:="./MYFILE.lean"}
   (parse?_errorContext <| outputMessage errContext .exceptionsFile) == some errContext
+
+-- if false, some symbols have been added to `mathlibEmojiSymbols` but actually have no effect.
+open unicodeLinter in
+#guard unicodeWhitelist.toList ∩ mathlibEmojiSymbols.toList = ∅
+
+-- if false, some symbols have been added to `mathlibTextSymbols` but actually have no effect.
+open unicodeLinter in
+#guard unicodeWhitelist.toList ∩ mathlibTextSymbols.toList = ∅
+
+end unicodeLinter

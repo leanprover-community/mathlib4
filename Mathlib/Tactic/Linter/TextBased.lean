@@ -145,13 +145,17 @@ def StyleError.errorMessage (err : StyleError) (style : ErrorFormat) : String :=
       else if selector == UnicodeVariant.text then "text"
       else "default"
     let oldHex := " ".intercalate <| s.data.map printCodepointHex
-    let instruction : String := match s, selector with
-    | ⟨c₀ :: _⟩, some sel =>
+    match s, selector with
+    | ⟨c₀ :: [c₁]⟩, some sel =>
       let newC : String := ⟨[c₀, sel]⟩
       let newHex := " ".intercalate <| newC.data.map printCodepointHex
-      s!"Please use the {variant}-variant: \"{newC}\" ({newHex})!"
-    | _, _ => "It does not select anything, consider deleting it."
-    s!"bad or missing unicode variant-selector at char {pos}: \"{s}\" ({oldHex}). {instruction}"
+      let wrongOrMissing := if c₁ == UnicodeVariant.emoji ∨ c₁ == UnicodeVariant.text
+        then "wrong" else "missing"
+      s!"{wrongOrMissing} unicode variant-selector at char {pos}: \"{s}\" ({oldHex}). \
+        Please use the {variant}-variant: \"{newC}\" ({newHex})!"
+    | _, _ =>
+      s!"unexpected unicode variant-selector at char {pos}: \"{s}\" ({oldHex}). \
+        Consider deleting it."
 
 /-- The error code for a given style error. Keep this in sync with `parse?_errorContext` below! -/
 -- FUTURE: we're matching the old codes in `lint-style.py` for compatibility;
@@ -629,7 +633,8 @@ def mathlibEmojiSymbols := #[
 ]
 
 /-- Unicode symbols in mathilb that should always be followed by the text-variant selector -/
-def mathlibTextSymbols : Array Char := #['↗', '↘'] -- TODO fix / make complete
+def mathlibTextSymbols : Array Char := #[] -- TODO fix / make complete
+-- TODO maybe #['↗', '↘', '✝', '▼', '▶']
 
 end unicodeLinter
 
