@@ -341,55 +341,56 @@ theorem limitRecOn_limit {C} (o H₁ H₂ H₃ h) :
 /-- Bounded recursion on ordinals. Similar to `limitRecOn`, with the assumption `o < l`
   added to all cases. The final term's domain is the ordinals below `l`. -/
 @[elab_as_elim]
-def boundedLimitRec {l : Ordinal} (hLim : l.IsLimit) {C : Π o < l, Sort*} (H₁ : C 0 hLim.pos)
-    (H₂ : ∀ o, (h : o < l) → C o h → C (o + 1) (hLim.succ_lt h))
-    (H₃ : ∀ o, (h : o < l) → IsLimit o → (∀ o', (h' : o' < o) → C o' (h'.trans h)) → C o h) :
-    (o : Ordinal) → (h : o < l) → C o h :=
-  fun o ↦ limitRecOn o (fun _ ↦ H₁) (fun o ih h ↦ H₂ _ _ <| ih <| (lt_succ o).trans h)
-    fun _o ho ih _ ↦ H₃ _ _ ho fun _o' h ↦ ih _ h _
+def boundedLimitRec {l : Ordinal} (hLim : l.IsLimit) {C : Iio l → Sort*} (H₁ : C ⟨0, hLim.pos⟩)
+    (H₂ : (o : Iio l) → C o → C ⟨o + 1, hLim.succ_lt o.2⟩)
+    (H₃ : (o : Iio l) → IsLimit o → (Π o' < o, C o') → C o) :
+    (o : Iio l) → C o :=
+  fun o ↦ limitRecOn (C := fun p ↦ (h : p < l) → C ⟨p, h⟩) o.1 (fun _ ↦ H₁)
+    (fun o ih h ↦ H₂ ⟨o, _⟩ <| ih <| (lt_succ o).trans h)
+    (fun _o ho ih _ ↦ H₃ _ ho fun _o' h ↦ ih _ h _) o.2
 
 @[simp]
 theorem boundedLimitRec_zero {l} (lLim : l.IsLimit) {C} (H₁ H₂ H₃) :
-    @boundedLimitRec l lLim C H₁ H₂ H₃ 0 lLim.pos = H₁ := by
+    @boundedLimitRec l lLim C H₁ H₂ H₃ ⟨0, lLim.pos⟩ = H₁ := by
   simp_all only [boundedLimitRec, limitRecOn_zero, id_eq,
     eq_mpr_eq_cast, eq_mp_eq_cast, cast_cast, cast_eq]
 
 @[simp]
-theorem boundedLimitRec_succ {l} (lLim : l.IsLimit) {C} (o ho H₁ H₂ H₃) :
-    @boundedLimitRec l lLim C H₁ H₂ H₃ (succ o) (lLim.2 o ho) = H₂ o ho
-    (@boundedLimitRec l lLim C H₁ H₂ H₃ o ho) := by
+theorem boundedLimitRec_succ {l} (lLim : l.IsLimit) {C} (o : Iio l) (H₁ H₂ H₃) :
+    @boundedLimitRec l lLim C H₁ H₂ H₃ ⟨succ o.1, lLim.succ_lt o.2⟩ = H₂ o
+    (@boundedLimitRec l lLim C H₁ H₂ H₃ o) := by
   simp_all only [add_one_eq_succ, boundedLimitRec, eq_mpr_eq_cast, eq_mp_eq_cast,
     limitRecOn_succ, dite_true, cast_cast, cast_eq]
 
 @[simp]
-theorem boundedLimitRec_limit {l : Ordinal} (lLim : l.IsLimit) {C} (o oltl H₁ H₂ H₃ oLim) :
-    @boundedLimitRec l lLim C H₁ H₂ H₃ o oltl = H₃ o oltl oLim (fun x hx ↦
-    @boundedLimitRec l lLim C H₁ H₂ H₃ x (hx.trans oltl)) := by
+theorem boundedLimitRec_limit {l : Ordinal} (lLim : l.IsLimit) {C} (o H₁ H₂ H₃ oLim) :
+    @boundedLimitRec l lLim C H₁ H₂ H₃ o = H₃ o oLim (fun x _ ↦
+    @boundedLimitRec l lLim C H₁ H₂ H₃ x) := by
   simp_all only [boundedLimitRec, eq_mpr_eq_cast, eq_mp_eq_cast, limitRecOn_limit,
     dite_true, cast_cast, cast_eq]
 
 /-- Bounded recursion on the ordinals with a constant return type. Similar to `boundedLimitRec`,
-  but with a constant motive function. Useful for defining function to ordinals. -/
+  but with a constant motive function. Useful for defining functions to ordinals. -/
 def boundedLimitRec' {α : Sort*} {l : Ordinal} (lLim : l.IsLimit) (H₁ : α)
-    (H₂ : ∀ o, o < l → α → α) (H₃ : ∀ o, o < l → IsLimit o → (∀ o' < o, α) → α) :
-    (o : Ordinal) → (h : o < l) → α := fun o h ↦
-  boundedLimitRec lLim (C := fun _ _ ↦ α) H₁ H₂ H₃ o h
+    (H₂ : (o : Iio l) → α → α) (H₃ : (o : Iio l) → IsLimit o → (Π o' < o, α) → α) :
+    Iio l → α := fun o ↦
+  boundedLimitRec lLim (C := fun _ ↦ α) H₁ H₂ H₃ o
 
 @[simp]
-theorem boundedLimitRec'_zero {α} {l} (lLim : l.IsLimit) (H₁ H₂ H₃ h) :
-    @boundedLimitRec' α l lLim H₁ H₂ H₃ 0 h = H₁ := by
+theorem boundedLimitRec'_zero {α} {l} (lLim : l.IsLimit) (H₁ H₂ H₃) :
+    @boundedLimitRec' α l lLim H₁ H₂ H₃ ⟨0, lLim.pos⟩ = H₁ := by
   simp_all only [boundedLimitRec', boundedLimitRec_zero]
 
 @[simp]
-theorem boundedLimitRec'_succ {α} {l} (lLim : l.IsLimit) (o H₁ H₂ H₃ h) :
-    @boundedLimitRec' α l lLim H₁ H₂ H₃ (succ o) h = H₂ o (lt_of_le_of_lt (le_succ o) h)
-    (@boundedLimitRec' α l lLim H₁ H₂ H₃ o (lt_of_le_of_lt (le_succ o) h)) := by
-  simp only [boundedLimitRec', lt_of_le_of_lt (le_succ o) h, boundedLimitRec_succ]
+theorem boundedLimitRec'_succ {α} {l} (lLim : l.IsLimit) (o H₁ H₂ H₃) :
+    @boundedLimitRec' α l lLim H₁ H₂ H₃ ⟨succ o.1, lLim.succ_lt o.2⟩ =
+    H₂ o (@boundedLimitRec' α l lLim H₁ H₂ H₃ o) := by
+  simp only [boundedLimitRec', lLim.succ_lt o.2, boundedLimitRec_succ]
 
 @[simp]
-theorem boundedLimitRec'_limit {α} {l : Ordinal} (lLim : l.IsLimit) (o h H₁ H₂ H₃ oLim) :
-    @boundedLimitRec' α l lLim H₁ H₂ H₃ o h = H₃ o h oLim fun x hx ↦
-    @boundedLimitRec' α l lLim H₁ H₂ H₃ x (hx.trans h) := by
+theorem boundedLimitRec'_limit {α} {l : Ordinal} (lLim : l.IsLimit) (o H₁ H₂ H₃ oLim) :
+    @boundedLimitRec' α l lLim H₁ H₂ H₃ o = H₃ o oLim fun x _ ↦
+    @boundedLimitRec' α l lLim H₁ H₂ H₃ x := by
   simp_all only [boundedLimitRec', boundedLimitRec_limit]
 
 instance orderTopOutSucc (o : Ordinal) : OrderTop (succ o).out.α :=
@@ -2051,6 +2052,20 @@ theorem IsNormal.eq_iff_zero_and_succ {f g : Ordinal.{u} → Ordinal.{u}} (hf : 
       ext b hb
       exact H b hb⟩
 #align ordinal.is_normal.eq_iff_zero_and_succ Ordinal.IsNormal.eq_iff_zero_and_succ
+
+theorem iSup_eq_bsup {δ : Ordinal.{u}} (h : 0 ≠ δ) (s : Iio δ → Ordinal.{u}) :
+    iSup s = bsup δ (fun o h ↦ s ⟨o, h⟩) := by
+  haveI : Nonempty (Iio δ) := ⟨0, lt_of_le_not_le (Ordinal.zero_le δ) fun h' ↦
+      h (Ordinal.le_zero.mp h').symm⟩
+  set g : Π o < δ, Ordinal := fun o h ↦ s ⟨o, h⟩
+  refine le_antisymm ?_ ?_
+  · apply (ciSup_le_iff (by apply bddAbove_of_small)).mpr
+    intro o
+    exact le_bsup g o.1 o.2
+  · apply bsup_le
+    intro o ho
+    dsimp [g]
+    apply le_ciSup; apply bddAbove_of_small
 
 /-- A two-argument version of `Ordinal.blsub`.
 We don't develop a full API for this, since it's only used in a handful of existence results. -/
