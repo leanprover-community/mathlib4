@@ -95,7 +95,7 @@ variable (L)
 
 /-- The language homomorphism sending the unique symbol `≤` of `Language.order` to `≤` in an ordered
  language. -/
-@[simp] def orderLHom : Language.order →ᴸ L where
+@[simps] def orderLHom : Language.order →ᴸ L where
   onRelation | _, .le => leSymb
 
 @[simp]
