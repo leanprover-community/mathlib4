@@ -9,11 +9,11 @@ import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 /-!
 # Continuous linear maps on a Hilbert space are a `StarOrderedRing`
 
-In this file we show that the continuous linear maps on a compelx Hilbert space form a
+In this file we show that the continuous linear maps on a complex Hilbert space form a
 `StarOrderedRing`.  Note that they are already equipped with the Loewner partial order. We also
 prove that, with respect to this partial order, a map is positive if every element of the
-real spetrum is nonnegative. Consequently, when `H` is a Hilbert space, then `H →L[ℂ] H` is
-equipped wth all the usual instances of the continuous functional calculus.
+real spectrum is nonnegative. Consequently, when `H` is a Hilbert space, then `H →L[ℂ] H` is
+equipped with all the usual instances of the continuous functional calculus.
 
  -/
 
@@ -47,8 +47,6 @@ instance : NonnegSpectrumClass ℝ (H →L[𝕜] H) where
   quasispectrum_nonneg_of_nonneg f hf :=
     QuasispectrumRestricts.nnreal_iff.mp <| sub_zero f ▸ hf.spectrumRestricts
 
-variable [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : (H →L[𝕜] H) → Prop)]
-
 /-- Because this takes `ContinuousFunctionalCalculus ℝ IsSelfAdjoint` as an argument, and for
 the moment we only have this for `𝕜 := ℂ`, this is not registered as an instance. -/
 lemma instStarOrderedRingRCLike
@@ -71,7 +69,7 @@ lemma instStarOrderedRingRCLike
       | one => exact isPositive_zero
       | mul f _ g _ hf hg => exact hf.add hg
 
-noncomputable instance instStarOrderedRing {H : Type*} [NormedAddCommGroup H]
+instance instStarOrderedRing {H : Type*} [NormedAddCommGroup H]
     [InnerProductSpace ℂ H] [CompleteSpace H] : StarOrderedRing (H →L[ℂ] H) :=
   instStarOrderedRingRCLike
 
