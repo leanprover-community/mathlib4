@@ -38,13 +38,6 @@ def formatPerc (z : Int) (exp : Nat := 9) (prec : Nat := 3) : String :=
   let (sgn, intDigs, decDigs) := intDecs z exp prec
   s!"({sgn}{intDigs}.{decDigs}%)"
 
-def formatArrayBench (bound : Int) (arr : Array Bench) : Array String :=
-  let files := arr.map (·.file)
-  if arr.size ≤ 2 then
-    files
-  else
-    #[s!"<details><summary>{arr.size} files ~{bound}</summary>"] ++ files ++ #["</details>"]
-
 /-- converts a `Bench` into a formatted string of the form `| file | ±x.y⬝10⁹ | ±z.w% |`. -/
 def summary (bc : Bench) :=
   let instrs := bc.diff
@@ -56,29 +49,38 @@ def summary (bc : Bench) :=
     [bc.file.dropWhile (!·.isAlpha), formatDiff instrs, formatPerc (sgn * reldiff.toUInt32.val) 0 2]
   "|".intercalate (""::middle ++ [""])
 
+def formatArrayBench (bound : Int) (arr : Array Bench) : String :=
+  let files := arr.map (s!"{bound}·10⁹", ·)
+  if arr.size ≤ 2 then
+    "".intercalate (files.map fun (b, f) => s!"|{f.file}|{b}|{f.reldiff}|").toList
+  else
+    s!"|<details><summary>{arr.size} files </summary>{", ".intercalate (files.toList.map (fun (_, f) => s!"{f.file}, {f.reldiff}%"))}</details>|~{bound}||"
+
 /-- Assuming that the input is a `json`-string formatted to produce an array of `Bench`,
 `benchOutput` prints the "significant" changes in numbers of instructions. -/
 def benchOutput (js : System.FilePath) : IO Unit := do
   let dats ← IO.ofExcept (Json.parse (← IO.FS.readFile js) >>= fromJson? (α := Array Bench))
-  let dats := dats.push {file := "neg1", diff := -10^10, reldiff := -0.5}
-  let dats := dats.push {file := "neg2", diff := -10^11, reldiff := -0.3}
+  --let dats := dats.push {file := "neg1", diff := -10^10, reldiff := -0.5}
+  --let dats := dats.push {file := "neg2", diff := -10^11, reldiff := -0.3}
+  let (head, dats) := dats.partition (["build", "lint"].contains ·.file)
   let (pos, neg) := dats.partition (0 < ·.diff)
   let grouped := dats.groupByKey (·.diff / (10 ^ 9))
-  let mut (head, tallied) := (#[], #[])
-  for gp@(_i, arr) in grouped do
-    if (arr.getD 0 default).file == "build" then
-      head := #[gp] ++ head
-    else
-    if (arr.getD 0 default).file == "lint" then
-      head := head.push gp
-    else
-      tallied := tallied.push gp
-  let withSize := head ++ tallied.qsort (·.1 > ·.1)
+  --let mut (tallied) := (#[])
+  --for gp@(_i, arr) in grouped do
+    --if (arr.getD 0 default).file == "build" then
+    --  head := #[gp] ++ head
+    --else
+    --if (arr.getD 0 default).file == "lint" then
+    --  head := head.push gp
+    --else
+  --    tallied := tallied.push gp
+  let head := (head.qsort (·.file < ·.file)).map fun d => (d.diff / (10 ^ 9), #[d])
+  let withSize := head ++ grouped.toArray.qsort (·.1 > ·.1)
   let fmt := withSize.map (fun (a, b) => formatArrayBench a b)
-  IO.println <| "\n".intercalate fmt.flatten.toList
-  for (i, arr) in withSize do
-    dbg_trace (i, arr.map (·.file))
   let header := "|File|Instructions|%|\n|-|-:|:-:|"
+  IO.println <| "\n".intercalate (header :: fmt.toList)
+  --for (i, arr) in withSize do
+  --  dbg_trace (i, arr.map (·.file))
   let mut msg := #["Report", s!"{header}\n|`Increase`|||"]
   --let mut msg' := #["Report", s!"{header}\n|`Increase`|||"]
   for d in pos.qsort (·.diff > ·.diff) do
@@ -86,7 +88,7 @@ def benchOutput (js : System.FilePath) : IO Unit := do
   msg := msg.push s!"|`Decrease`|||"
   for d in neg.qsort (·.diff < ·.diff) do
     msg := msg.push (summary d)
-  IO.println ("\n".intercalate msg.toList)
+  --IO.println ("\n".intercalate msg.toList)
 
 #eval
   benchOutput "benchOutput.json"
