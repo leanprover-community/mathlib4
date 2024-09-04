@@ -38,10 +38,16 @@ namespace NumberField
 
 open InfinitePlace InfinitePlace.Completion AbsoluteValue.Completion DedekindDomain IsDedekindDomain
 
-
 open scoped Classical
 
 variable (K : Type*) [Field K] (v : InfinitePlace K)
+
+/-! ## The infinite adele ring
+
+The infinite adele ring is the finite product of completions of a number field over its
+infinite places. See `NumberField.InfinitePlace` for the definition of an infinite place and
+`NumberField.InfinitePlace.completion` for the associated completion.
+-/
 
 /-- The infinite adele ring of a number field. -/
 def InfiniteAdeleRing := (v : InfinitePlace K) → v.completion
@@ -122,6 +128,8 @@ theorem mixedEmbedding_eq_globalEmbedding_comp {x : K} :
 end InfiniteAdeleRing
 
 variable [NumberField K]
+
+/-! ## The adele ring of a number field -/
 
 /-- The adele ring of a number field. -/
 def AdeleRing := InfiniteAdeleRing K × FiniteAdeleRing (𝓞 K) K
