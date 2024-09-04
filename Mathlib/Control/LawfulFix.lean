@@ -192,7 +192,7 @@ theorem ωScottContinuous_toUnitMono (f : Part α →o Part α) (hc : ωScottCon
 
 instance lawfulFix : LawfulFix (Part α) :=
   ⟨fun {f : Part α → Part α} hc ↦ show Part.fix (toUnitMono ⟨f,hc.monotone⟩) () = _ by
-    rw [Part.fix_eq (to_unit_cont f hc)]; rfl⟩
+    rw [Part.fix_eq (ωScottContinuous_toUnitMono ⟨f,hc.monotone⟩ hc)]; rfl⟩
 
 end Part
 
