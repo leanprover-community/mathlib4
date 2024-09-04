@@ -37,7 +37,7 @@ sense of `ω`-complete partial orders, which excludes the example because it is 
 class LawfulFix (α : Type*) [OmegaCompletePartialOrder α] extends Fix α where
   fix_eq : ∀ {f : α → α}, ωScottContinuous f → Fix.fix f = f (Fix.fix f)
 
-@[deprecated (since := "2024-08-26")]
+@[deprecated LawfulFix.fix_eq (since := "2024-08-26")]
 theorem LawfulFix.fix_eq' {α} [OmegaCompletePartialOrder α] [LawfulFix α] {f : α → α}
     (hf : ωScottContinuous f) : Fix.fix f = f (Fix.fix f) :=
   LawfulFix.fix_eq hf
