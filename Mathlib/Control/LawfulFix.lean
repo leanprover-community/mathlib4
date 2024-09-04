@@ -256,9 +256,16 @@ theorem continuous_curry : Continuous <| monotoneCurry α β γ := fun c ↦ by
   rw [map_comp, map_comp]
   rfl
 
-theorem continuous_uncurry :
+theorem ωScottContinuous_uncurry :
     ωScottContinuous (monotoneUncurry α β γ) :=
     .of_map_ωSup_of_orderHom fun c ↦ by
+  ext ⟨x, y⟩
+  dsimp [uncurry, ωSup]
+  rw [map_comp, map_comp]
+  rfl
+
+@[deprecated ωScottContinuous_uncurry  (since := "2024-08-26")]
+theorem continuous_uncurry : Continuous <| monotoneUncurry α β γ := fun c ↦ by
   ext ⟨x, y⟩
   dsimp [uncurry, ωSup]
   rw [map_comp, map_comp]
