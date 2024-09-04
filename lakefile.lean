@@ -28,6 +28,7 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
   ⟨`linter.cdot, true⟩,
   ⟨`linter.dollarSyntax, true⟩,
   ⟨`linter.style.lambdaSyntax, true⟩,
+  ⟨`linter.style.longFile, .ofNat 1500⟩,
   ⟨`linter.longLine, true⟩,
   ⟨`linter.oldObtain, true,⟩,
   ⟨`linter.refine, true⟩,

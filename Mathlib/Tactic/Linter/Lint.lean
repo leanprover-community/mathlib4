@@ -312,7 +312,7 @@ The "longFile" linter emits a warning on files which are longer than a certain n
 `N` lines. A value of `0` silences the linter entirely.
 -/
 register_option linter.style.longFile : Nat := {
-  defValue := 1500
+  defValue := 0
   descr := "enable the longFile linter"
 }
 
