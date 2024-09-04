@@ -6,6 +6,7 @@ Authors: Jz Pan
 import Mathlib.LinearAlgebra.TensorProduct.Submodule
 import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+import Mathlib.LinearAlgebra.Dimension.Constructions
 
 /-!
 
