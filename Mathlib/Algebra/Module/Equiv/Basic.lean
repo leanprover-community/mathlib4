@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne Baanen,
   Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Algebra.Module.Equiv.Defs
 import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.GroupWithZero.Action.Basic
+import Mathlib.Algebra.Module.Equiv.Defs
 import Mathlib.Algebra.Module.Hom
 import Mathlib.Algebra.Module.LinearMap.End
 import Mathlib.Algebra.Module.Pi
-import Mathlib.GroupTheory.GroupAction.Group
 
 /-!
 # Further results on (semi)linear equivalences.
@@ -403,23 +403,23 @@ end Subsingleton
 
 section Uncurry
 
-variable [Semiring R] [Semiring R₂] [Semiring R₃]
-variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
-variable (V V₂ R)
+variable [Semiring R]
+variable [AddCommMonoid M] [Module R M]
+variable (V V₂ R M)
 
 /-- Linear equivalence between a curried and uncurried function.
   Differs from `TensorProduct.curry`. -/
-protected def curry : (V × V₂ → R) ≃ₗ[R] V → V₂ → R :=
+protected def curry : (V × V₂ → M) ≃ₗ[R] V → V₂ → M :=
   { Equiv.curry _ _ _ with
     map_add' := fun _ _ ↦ rfl
     map_smul' := fun _ _ ↦ rfl }
 
 @[simp]
-theorem coe_curry : ⇑(LinearEquiv.curry R V V₂) = curry :=
+theorem coe_curry : ⇑(LinearEquiv.curry R M V V₂) = curry :=
   rfl
 
 @[simp]
-theorem coe_curry_symm : ⇑(LinearEquiv.curry R V V₂).symm = uncurry :=
+theorem coe_curry_symm : ⇑(LinearEquiv.curry R M V V₂).symm = uncurry :=
   rfl
 
 end Uncurry

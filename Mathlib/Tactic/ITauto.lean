@@ -732,3 +732,5 @@ macro_rules
 --     category := DocCategory.tactic
 --     declNames := [`tactic.interactive.itauto]
 --     tags := ["logic", "propositional logic", "intuitionistic logic", "decision procedure"] }
+
+end Mathlib.Tactic.ITauto

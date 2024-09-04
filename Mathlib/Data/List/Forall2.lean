@@ -136,10 +136,6 @@ theorem Forall₂.get :
   | _, _, Forall₂.cons ha _, 0, _, _ => ha
   | _, _, Forall₂.cons _ hl, succ _, _, _ => hl.get _ _
 
-set_option linter.deprecated false in
-@[deprecated (since := "2024-05-05")] theorem Forall₂.nthLe {x y} (h : Forall₂ R x y) ⦃i : ℕ⦄
-    (hx : i < x.length) (hy : i < y.length) : R (x.nthLe i hx) (y.nthLe i hy) := h.get hx hy
-
 theorem forall₂_of_length_eq_of_get :
     ∀ {x : List α} {y : List β},
       x.length = y.length → (∀ i h₁ h₂, R (x.get ⟨i, h₁⟩) (y.get ⟨i, h₂⟩)) → Forall₂ R x y
@@ -149,19 +145,9 @@ theorem forall₂_of_length_eq_of_get :
       (forall₂_of_length_eq_of_get (succ.inj hl) fun i h₁ h₂ =>
         h i.succ (succ_lt_succ h₁) (succ_lt_succ h₂))
 
-set_option linter.deprecated false in
-@[deprecated (since := "2024-05-05")] theorem forall₂_of_length_eq_of_nthLe {x y}
-    (H : x.length = y.length) (H' : ∀ i h₁ h₂, R (x.nthLe i h₁) (y.nthLe i h₂)) :
-    Forall₂ R x y := forall₂_of_length_eq_of_get H H'
-
 theorem forall₂_iff_get {l₁ : List α} {l₂ : List β} :
     Forall₂ R l₁ l₂ ↔ l₁.length = l₂.length ∧ ∀ i h₁ h₂, R (l₁.get ⟨i, h₁⟩) (l₂.get ⟨i, h₂⟩) :=
   ⟨fun h => ⟨h.length_eq, h.get⟩, fun h => forall₂_of_length_eq_of_get h.1 h.2⟩
-
-set_option linter.deprecated false in
-@[deprecated (since := "2024-05-05")] theorem forall₂_iff_nthLe {l₁ : List α} {l₂ : List β} :
-    Forall₂ R l₁ l₂ ↔ l₁.length = l₂.length ∧ ∀ i h₁ h₂, R (l₁.nthLe i h₁) (l₂.nthLe i h₂) :=
-  forall₂_iff_get
 
 theorem forall₂_zip : ∀ {l₁ l₂}, Forall₂ R l₁ l₂ → ∀ {a b}, (a, b) ∈ zip l₁ l₂ → R a b
   | _, _, Forall₂.cons h₁ h₂, x, y, hx => by
@@ -323,5 +309,23 @@ theorem Sublist.sublistForall₂ {l₁ l₂ : List α} (h : l₁ <+ l₂) [IsRef
 
 theorem tail_sublistForall₂_self [IsRefl α Rₐ] (l : List α) : SublistForall₂ Rₐ l.tail l :=
   l.tail_sublist.sublistForall₂
+
+@[simp]
+theorem sublistForall₂_map_left_iff {f : γ → α} {l₁ : List γ} {l₂ : List β} :
+    SublistForall₂ R (map f l₁) l₂ ↔ SublistForall₂ (fun c b => R (f c) b) l₁ l₂ := by
+  simp [sublistForall₂_iff]
+
+@[simp]
+theorem sublistForall₂_map_right_iff {f : γ → β} {l₁ : List α} {l₂ : List γ} :
+    SublistForall₂ R l₁ (map f l₂) ↔ SublistForall₂ (fun a c => R a (f c)) l₁ l₂ := by
+  simp only [sublistForall₂_iff]
+  constructor
+  · rintro ⟨l1, h1, h2⟩
+    obtain ⟨l', hl1, rfl⟩ := sublist_map_iff.mp h2
+    use l'
+    simpa [hl1] using h1
+  · rintro ⟨l1, h1, h2⟩
+    use l1.map f
+    simp [h1, h2.map]
 
 end List

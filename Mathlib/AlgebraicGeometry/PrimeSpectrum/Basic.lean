@@ -391,7 +391,7 @@ def primeSpectrumProdHomeo :
   refine ((primeSpectrumProd R S).symm.toHomeomorphOfInducing ?_).symm
   refine (closedEmbedding_of_continuous_injective_closed ?_ (Equiv.injective _) ?_).toInducing
   · rw [continuous_sum_dom]
-    simp only [Function.comp, primeSpectrumProd_symm_inl, primeSpectrumProd_symm_inr]
+    simp only [Function.comp_def, primeSpectrumProd_symm_inl, primeSpectrumProd_symm_inr]
     exact ⟨(comap _).2, (comap _).2⟩
   · rw [isClosedMap_sum]
     constructor
