@@ -382,8 +382,8 @@ noncomputable instance coskAdj.reflective (k) : Reflective (ran (H := Type u) (�
   Reflective.mk (truncation k) (coskAdj k)
 
 noncomputable instance skeleton.fullyFaithful (k) :
-    (lan (H := Type u) (Δ.ι k).op).FullyFaithful := by
-  apply Adjunction.fullyFaithfulLOfIsIsoUnit (skAdj k)
+    (lan (H := Type u) (Δ.ι k).op).FullyFaithful :=
+  Adjunction.fullyFaithfulLOfIsIsoUnit (skAdj k)
 
 instance skeleton.full (k) : (lan (H := Type u) (Δ.ι k).op).Full :=
   FullyFaithful.full (skeleton.fullyFaithful k)

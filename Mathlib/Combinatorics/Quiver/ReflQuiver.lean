@@ -3,7 +3,6 @@ Copyright (c) 2024 Mario Carneiro and Emily Riehl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Emily Riehl
 -/
-
 import Mathlib.CategoryTheory.Category.Quiv
 import Mathlib.Data.Set.Function
 
@@ -16,7 +15,6 @@ a quiver with a specified endoarrow on each term in its type of objects.
 We also introduce morphisms between reflexive quivers, called reflexive prefunctors or "refl
 prefunctors" for short.
 -/
-
 namespace CategoryTheory
 universe v v₁ v₂ u u₁ u₂
 
@@ -123,6 +121,5 @@ instance discreteReflQuiver (V : Type u) : ReflQuiver.{u+1} (Discrete V) :=
   { discreteCategory V with }
 
 end ReflQuiver
-
 
 end CategoryTheory

@@ -168,10 +168,8 @@ def adj.counit.app (C : Cat) : Cat.freeRefl.obj (forget.obj C) ⥤ C := by
   · intro x y f g rel
     cases rel
     unfold Quiv.adj
-    simp only [id_obj, forget_obj, Cat.free_obj, Quiv.forget_obj,
-      Adjunction.mkOfHomEquiv_counit_app, Equiv.invFun_as_coe, Equiv.coe_fn_symm_mk, Quiv.lift_obj,
-      ReflQuiver.id_eq_id, Quiv.lift_map, Prefunctor.mapPath_toPath, composePath_toPath,
-      Prefunctor.mapPath_nil, composePath_nil]
+    simp only [Adjunction.mkOfHomEquiv_counit_app, Quiv.lift_map, Prefunctor.mapPath_toPath,
+      composePath_toPath]
     rfl
 
 /-- This is used in the proof of both triangle equalities. -/
@@ -223,9 +221,6 @@ nonrec def adj : Cat.freeRefl.{max u v, u} ⊣ ReflQuiv.forget :=
       exact Functor.id_comp _
     right_triangle := by
       ext C
-      simp only [comp_obj, forget_obj, id_obj, NatTrans.comp_app, Cat.freeRefl_obj_α, of_val,
-        whiskerLeft_app, associator_inv_app, whiskerRight_app, forget_map, id_comp,
-        NatTrans.id_app']
       exact forgetToQuiv_faithful _ _ (Quiv.adj.right_triangle_components C)
   }
 

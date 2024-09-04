@@ -11,9 +11,7 @@ import Mathlib.CategoryTheory.PathCategory
 # The category of quivers
 
 The category of (bundled) quivers, and the free/forgetful adjunction between `Cat` and `Quiv`.
-
 -/
-
 
 universe v u
 
@@ -57,7 +55,6 @@ theorem id_eq_id (X : Quiv) : 𝟙 X = 𝟭q X := rfl
 /-- Composition in the category of quivers equals prefunctor composition.-/
 theorem comp_eq_comp {X Y Z : Quiv} (F : X ⟶ Y) (G : Y ⟶ Z) : F ≫ G = F ⋙q G := rfl
 
-
 end Quiv
 
 namespace Cat
@@ -72,14 +69,14 @@ def free : Quiv.{v, u} ⥤ Cat.{max u v, u} where
       map_comp := fun f g => F.mapPath_comp f g }
   map_id V := by
     change (show Paths V ⥤ _ from _) = _
-    ext; swap
-    · apply eq_conj_eqToHom
+    ext
     · rfl
+    · exact eq_conj_eqToHom _
   map_comp {U _ _} F G := by
     change (show Paths U ⥤ _ from _) = _
-    ext; swap
-    · apply eq_conj_eqToHom
+    ext
     · rfl
+    · exact eq_conj_eqToHom _
 
 end Cat
 
@@ -112,9 +109,9 @@ def adj : Cat.free ⊣ Quiv.forget :=
             exact Category.id_comp _ }
       homEquiv_naturality_left_symm := fun {V _ _} f g => by
         change (show Paths V ⥤ _ from _) = _
-        ext; swap
-        · apply eq_conj_eqToHom
-        · rfl }
+        ext
+        · rfl
+        · apply eq_conj_eqToHom }
 
 end Quiv
 
