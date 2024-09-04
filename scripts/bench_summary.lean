@@ -38,8 +38,17 @@ def formatPerc (z : Int) (exp : Nat := 9) (prec : Nat := 3) : String :=
   let (sgn, intDigs, decDigs) := intDecs z exp prec
   s!"({sgn}{intDigs}.{decDigs}%)"
 
+/-- converts a `Bench.reldiff` into a formatted string of the form `±z.w%`. -/
+def formatPercent (reldiff : Float) : String :=
+  let reldiff := reldiff * 10 ^ 4
+  let (sgn : Int) := if reldiff < 0 then -1 else 1
+  let (sgnf : Float) := if reldiff < 0 then -1 else 1
+  let reldiff := sgnf * reldiff
+  formatPerc (sgn * reldiff.toUInt32.val) 0 2
+
+
 /-- converts a `Bench` into a formatted string of the form `| file | ±x.y⬝10⁹ | ±z.w% |`. -/
-def summary (bc : Bench) :=
+def summary (bc : Bench) : String :=
   let instrs := bc.diff
   let reldiff := bc.reldiff * 10 ^ 4
   let (sgn : Int) := if reldiff < 0 then -1 else 1
@@ -50,11 +59,18 @@ def summary (bc : Bench) :=
   "|".intercalate (""::middle ++ [""])
 
 def formatArrayBench (bound : Int) (arr : Array Bench) : String :=
-  let files := arr.map (s!"{bound}·10⁹", ·)
   if arr.size ≤ 2 then
-    "".intercalate (files.map fun (b, f) => s!"|{f.file}|{b}|{f.reldiff}|").toList
+    "\n".intercalate (arr.map summary).toList
+    --"".intercalate (files.map fun (b, f) => s!"|{f.file}|{b}|{f.reldiff}|").toList
   else
-    s!"|<details><summary>{arr.size} files </summary>{", ".intercalate (files.toList.map (fun (_, f) => s!"{f.file}, {f.reldiff}%"))}</details>|~{bound}||"
+    let fils := s!"<details><summary>{arr.size} files </summary>{", ".intercalate (arr.toList.map (s!"{·.file.dropWhile (!·.isAlpha)}"))}</details>"
+    let files := arr.map (s!"{bound}·10⁹", ·)
+    "|<" ++ (summary {file := fils, diff := bound*10^9, reldiff := default}).drop 1
+    --s!"|<details><summary>{arr.size} files </summary>{", ".intercalate (files.toList.map (fun (_, f) => s!"{f.file}, {f.reldiff}%"))}</details>|~{bound}||"
+
+def tableArrayBench (arr : Array Bench) : String :=
+  let header := "|File|Instructions|%|\n|-|-:|:-:|"
+  "\n".intercalate (header :: (arr.map summary).toList)
 
 /-- Assuming that the input is a `json`-string formatted to produce an array of `Bench`,
 `benchOutput` prints the "significant" changes in numbers of instructions. -/
@@ -62,7 +78,7 @@ def benchOutput (js : System.FilePath) : IO Unit := do
   let dats ← IO.ofExcept (Json.parse (← IO.FS.readFile js) >>= fromJson? (α := Array Bench))
   --let dats := dats.push {file := "neg1", diff := -10^10, reldiff := -0.5}
   --let dats := dats.push {file := "neg2", diff := -10^11, reldiff := -0.3}
-  let (head, dats) := dats.partition (["build", "lint"].contains ·.file)
+  let (head, dats) := dats.partition (·.file.take 1 != "~")
   let (pos, neg) := dats.partition (0 < ·.diff)
   let grouped := dats.groupByKey (·.diff / (10 ^ 9))
   --let mut (tallied) := (#[])
@@ -74,6 +90,16 @@ def benchOutput (js : System.FilePath) : IO Unit := do
     --  head := head.push gp
     --else
   --    tallied := tallied.push gp
+  for (a, g) in grouped.toArray.qsort (·.1 > ·.1) do
+    --let instrs := (g.getD 0 default).diff / 10^9
+    let (s, a) :=
+      match g with
+        | #[g] => (g.file.dropWhile (!·.isAlpha), [formatDiff g.diff, formatPercent g.reldiff])
+        | _ => (s!"{g.size} files", [formatDiff <| a * 10 ^ 9])
+    let summ := s!"<summary>{s}, Instructions {", ".intercalate a}</summary>"
+    let indentTable := (tableArrayBench g).replace "\n" "\n  "
+    IO.println <| s!"\n* <details>{summ}\n\n  {indentTable}\n  </details>"
+  IO.println <| s!"\n* <details><summary>{grouped.size} files</summary>\n\n  ".intercalate (""::((grouped.toArray.map Prod.snd).map tableArrayBench).toList.map (·.replace "\n" "\n  " ++ "\n  </details>"))
   let head := (head.qsort (·.file < ·.file)).map fun d => (d.diff / (10 ^ 9), #[d])
   let withSize := head ++ grouped.toArray.qsort (·.1 > ·.1)
   let fmt := withSize.map (fun (a, b) => formatArrayBench a b)
@@ -89,6 +115,9 @@ def benchOutput (js : System.FilePath) : IO Unit := do
   for d in neg.qsort (·.diff < ·.diff) do
     msg := msg.push (summary d)
   --IO.println ("\n".intercalate msg.toList)
+
+#eval #[0, 1, -1, -2].qsort (· > ·)
+#eval #["~M", "b"].qsort (· > ·)
 
 #eval
   benchOutput "benchOutput.json"
