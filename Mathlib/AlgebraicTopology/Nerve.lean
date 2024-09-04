@@ -185,38 +185,32 @@ def ran.lift' {C : Cat} {n}
         StructuredArrow (op [n]) (Δ.ι 2).op :=
           .mk (Y := op [2]₂) (.op (tri f g))
       let facemap₂ {i j k : Fin (n+1)} (f : i ⟶ j) (g : j ⟶ k) : tri' f g ⟶ ar' f := by
-        refine StructuredArrow.homMk (.op (SimplexCategory.δ 2)) ?_
-        apply Quiver.Hom.unop_inj
+        refine StructuredArrow.homMk (.op (SimplexCategory.δ 2)) (Quiver.Hom.unop_inj ?_)
         ext z; revert z;
         simp [ar']
         intro | 0 | 1 => rfl
       let facemap₀ {i j k : Fin (n+1)} (f : i ⟶ j) (g : j ⟶ k) : (tri' f g) ⟶ (ar' g) := by
-        refine StructuredArrow.homMk (.op (SimplexCategory.δ 0)) ?_
-        apply Quiver.Hom.unop_inj
+        refine StructuredArrow.homMk (.op (SimplexCategory.δ 0)) (Quiver.Hom.unop_inj ?_)
         ext z; revert z;
         simp [ar']
         intro | 0 | 1 => rfl
       let facemap₁ {i j k : Fin (n+1)} (f : i ⟶ j) (g : j ⟶ k) : (tri' f g) ⟶ ar' (f ≫ g) := by
-        refine StructuredArrow.homMk (.op (SimplexCategory.δ 1)) ?_
-        apply Quiver.Hom.unop_inj
+        refine StructuredArrow.homMk (.op (SimplexCategory.δ 1)) (Quiver.Hom.unop_inj ?_)
         ext z; revert z;
         simp [ar']
         intro | 0 | 1 => rfl
       let tri₀ {i j k : Fin (n+1)} (f : i ⟶ j) (g : j ⟶ k) : tri' f g ⟶ pt' i := by
-        refine StructuredArrow.homMk (.op (SimplexCategory.const [0] _ 0)) ?_
-        apply Quiver.Hom.unop_inj
+        refine StructuredArrow.homMk (.op (SimplexCategory.const [0] _ 0)) (Quiver.Hom.unop_inj ?_)
         ext z; revert z
         simp [ar']
         intro | 0 => rfl
       let tri₁ {i j k : Fin (n+1)} (f : i ⟶ j) (g : j ⟶ k) : tri' f g ⟶ pt' j := by
-        refine StructuredArrow.homMk (.op (SimplexCategory.const [0] _ 1)) ?_
-        apply Quiver.Hom.unop_inj
+        refine StructuredArrow.homMk (.op (SimplexCategory.const [0] _ 1)) (Quiver.Hom.unop_inj ?_)
         ext z; revert z
         simp [ar']
         intro | 0 => rfl
       let tri₂ {i j k : Fin (n+1)} (f : i ⟶ j) (g : j ⟶ k) : tri' f g ⟶ pt' k := by
-        refine StructuredArrow.homMk (.op (SimplexCategory.const [0] _ 2)) ?_
-        apply Quiver.Hom.unop_inj
+        refine StructuredArrow.homMk (.op (SimplexCategory.const [0] _ 2)) (Quiver.Hom.unop_inj ?_)
         ext z; revert z
         simp [ar']
         intro | 0 => rfl
@@ -227,9 +221,6 @@ def ran.lift' {C : Cat} {n}
       have h'f := congr_arg_heq (·.map' 0 1) (congr_fun (s.π.naturality (facemap₂ f g)) x)
       have h'g := congr_arg_heq (·.map' 0 1) (congr_fun (s.π.naturality (facemap₀ f g)) x)
       have h'fg := congr_arg_heq (·.map' 0 1) (congr_fun (s.π.naturality (facemap₁ f g)) x)
-      dsimp at h'f ⊢
-      dsimp at h'g ⊢
-      dsimp at h'fg ⊢
       refine ((heq_comp ?_ ?_ ?_ h'f ((eqToHom_comp_heq_iff ..).2 h'g)).trans ?_).symm
       · exact (ran.lift.eq ..).symm.trans congr($(congr_fun (s.π.naturality (tri₀ f g)) x).obj 0)
       · exact (ran.lift.eq₂ ..).symm.trans congr($(congr_fun (s.π.naturality (tri₁ f g)) x).obj 0)
