@@ -205,7 +205,7 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
   source := { z : Icc x y | z.val < y }
   target := { z : EuclideanHalfSpace 1 | z.val 0 < y - x }
   toFun := fun z : Icc x y => ⟨fun _ => z.val - x, sub_nonneg.mpr z.property.1⟩
-  invFun z := ⟨min (z.val 0 + x) y, by simp [le_refl, z.prop, le_of_lt h.out]⟩
+  invFun z := ⟨min (z.val 0 + x) y, by simp [le_refl, z.prop, h.out.le]⟩
   map_source' := by simp only [imp_self, sub_lt_sub_iff_right, mem_setOf_eq, forall_true_iff]
   map_target' := by
     simp only [min_lt_iff, mem_setOf_eq]; intro z hz; left
@@ -273,7 +273,7 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
   target := { z : EuclideanHalfSpace 1 | z.val 0 < y - x }
   toFun z := ⟨fun _ => y - z.val, sub_nonneg.mpr z.property.2⟩
   invFun z :=
-    ⟨max (y - z.val 0) x, by simp [le_refl, z.prop, le_of_lt h.out, sub_eq_add_neg]⟩
+    ⟨max (y - z.val 0) x, by simp [le_refl, z.prop, h.out.le, sub_eq_add_neg]⟩
   map_source' := by simp only [imp_self, mem_setOf_eq, sub_lt_sub_iff_left, forall_true_iff]
   map_target' := by
     simp only [lt_max_iff, mem_setOf_eq]; intro z hz; left
