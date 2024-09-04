@@ -276,8 +276,10 @@ section Curry
 variable {f : (∀ a b, γ a b) → ∀ a b, γ a b}
 
 theorem uncurry_curry_ωScottContinuous (hc : ωScottContinuous f) :
-    ωScottContinuous <| (monotoneUncurry α β γ).comp <| f.comp <| monotoneCurry α β γ :=
-  (continuous_uncurry _ _ _).comp (hc.comp (continuous_curry _ _ _))
+    ωScottContinuous <| (monotoneUncurry α β γ).comp <|
+      (⟨f,hc.monotone⟩ : ((x : _) → (y : β x) → γ x y) →o (x : _) → (y : β x) → γ x y).comp <|
+      monotoneCurry α β γ :=
+  (continuous_uncurry _ _ _).comp (hc.comp (ωScottContinuous_curry _ _ _))
 
 end Curry
 
@@ -285,7 +287,7 @@ instance lawfulFix' [LawfulFix <| (x : Sigma β) → γ x.1 x.2] :
     LawfulFix ((x y : _) → γ x y) where
   fix_eq {_f} hc := by
     dsimp [fix]
-    conv_lhs => erw [LawfulFix.fix_eq (uncurry_curry_continuous hc)]
+    conv_lhs => erw [LawfulFix.fix_eq (uncurry_curry_ωScottContinuous hc)]
     rfl
 
 end Pi
