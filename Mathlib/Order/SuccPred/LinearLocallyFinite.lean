@@ -62,8 +62,7 @@ variable [SuccOrder ι] [PredOrder ι]
 
 instance (priority := 100) isPredArchimedean_of_isSuccArchimedean [IsSuccArchimedean ι] :
     IsPredArchimedean ι where
-  exists_pred_iterate_of_le := by
-    intro i j hij
+  exists_pred_iterate_of_le {i j} hij := by
     have h_exists := exists_succ_iterate_of_le hij
     obtain ⟨n, hn_eq, hn_lt_ne⟩ : ∃ n, succ^[n] i = j ∧ ∀ m < n, succ^[m] i ≠ j :=
       ⟨Nat.find h_exists, Nat.find_spec h_exists, fun m hmn ↦ Nat.find_min h_exists hmn⟩
