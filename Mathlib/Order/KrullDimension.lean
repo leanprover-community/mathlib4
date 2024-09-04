@@ -186,7 +186,7 @@ private lemma height_add_const (a : α) (n : ℕ∞) :
     height a + n = ⨆ (p : LTSeries α ) (_ : p.last = a), p.length + n := by
   have hne : Nonempty { p : LTSeries α // p.last = a } := ⟨RelSeries.singleton _ a, rfl⟩
   rw [height, iSup_subtype', iSup_subtype']
-  rw [Monotone.map_iSup_of_continuousAt' (f := (· + n))
+  rw [Monotone.map_ciSup_of_continuousAt (f := (· + n))
     (continuousAt_id.add continuousAt_const) (monotone_id.add monotone_const)]
 
 -- only true for finite height
@@ -568,7 +568,7 @@ variable {α : Type*} [Preorder α]
 
 
 @[simp] lemma height_nat (n : ℕ) : height n = n := by
-  induction n using Nat.strongInductionOn with | ind n ih =>
+  induction n using Nat.strongRecOn with | ind n ih =>
   apply le_antisymm
   · apply (height_le_coe_iff ..).mpr
     simp (config := { contextual := true }) only [ih, Nat.cast_lt, implies_true]
@@ -681,7 +681,7 @@ lemma coheight_coe_WithBot (x : α) : coheight (x : WithBot α) = coheight x :=
 lemma krullDim_WithTop [Nonempty α] : krullDim (WithTop α) = krullDim α + 1 := by
   rw [← height_top_eq_krullDim, krullDim_eq_iSup_height_of_nonempty, height_eq_isup_lt_height]
   norm_cast
-  rw [Monotone.map_iSup_of_continuousAt' (f := (· + 1))
+  rw [Monotone.map_ciSup_of_continuousAt (f := (· + 1))
     (continuousAt_id.add continuousAt_const) (monotone_id.add monotone_const)]
   apply le_antisymm
   · apply iSup₂_le
