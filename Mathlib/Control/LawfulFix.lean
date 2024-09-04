@@ -158,8 +158,6 @@ theorem fix_le {X : (a : _) → Part <| β a} (hX : f X ≤ X) : Part.fix f ≤ 
     · apply f.monotone i_ih
     · apply hX
 
-variable {f}
-
 theorem fix_eq (hc : ωScottContinuous f) : Part.fix f = f (Part.fix f) := by
   rw [fix_eq_ωSup f, hc.map_ωSup_of_orderHom]
   apply le_antisymm
@@ -168,6 +166,27 @@ theorem fix_eq (hc : ωScottContinuous f) : Part.fix f = f (Part.fix f) := by
     exists i
     intro x
     -- intros x y hx,
+    apply le_f_of_mem_approx _ ⟨i, rfl⟩
+  · apply ωSup_le_ωSup_of_le _
+    intro i
+    exists i.succ
+
+variable {g : ((a : _) → Part <| β a) → (a : _) → Part <| β a}
+
+theorem fix_eq_ωSup' (hc : ωScottContinuous g) : Part.fix g =
+    ωSup (approxChain (⟨g,hc.monotone⟩ : ((a : _) → Part <| β a) →o (a : _) → Part <| β a)) := by
+  rw [← fix_eq_ωSup]
+  rfl
+
+theorem fix_eq' (hc : ωScottContinuous g) :
+    Part.fix g = g (Part.fix g) := by
+  rw [fix_eq_ωSup', hc.map_ωSup]
+  apply le_antisymm
+  · apply ωSup_le_ωSup_of_le _
+    exact hc
+    intro i
+    exists i
+    intro x
     apply le_f_of_mem_approx _ ⟨i, rfl⟩
   · apply ωSup_le_ωSup_of_le _
     intro i
@@ -183,7 +202,7 @@ def toUnitMono (f : Part α →o Part α) : (Unit → Part α) →o Unit → Par
   toFun x u := f (x u)
   monotone' x y (h : x ≤ y) u := f.monotone <| h u
 
-@[deprecated (since := "2024-08-26")]
+--@[deprecated (since := "2024-08-26")]
 theorem ωScottContinuous_toUnitMono (f : Part α → Part α) (hc : ωScottContinuous f) :
     ωScottContinuous (toUnitMono ⟨f,hc.monotone⟩) := .of_map_ωSup_of_orderHom fun _ => by
     ext ⟨⟩ : 1
@@ -192,7 +211,7 @@ theorem ωScottContinuous_toUnitMono (f : Part α → Part α) (hc : ωScottCont
 
 instance lawfulFix : LawfulFix (Part α) :=
   ⟨fun {f : Part α → Part α} hc ↦ show Part.fix (toUnitMono ⟨f,hc.monotone⟩) () = _ by
-    rw [Part.fix_eq (ωScottContinuous_toUnitMono f hc)]; rfl⟩
+    rw [Part.fix_eq' (ωScottContinuous_toUnitMono f hc)]; rfl⟩
 
 end Part
 
@@ -201,7 +220,7 @@ open Sigma
 namespace Pi
 
 instance lawfulFix {β} : LawfulFix (α → Part β) :=
-  ⟨fun {_f} ↦ Part.fix_eq⟩
+  ⟨fun {_f} ↦ Part.fix_eq'⟩
 
 variable {γ : ∀ a : α, β a → Type*}
 
