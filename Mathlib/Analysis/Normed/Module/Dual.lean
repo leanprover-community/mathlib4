@@ -160,8 +160,8 @@ theorem mem_polar_iff {x' : Dual 𝕜 E} (s : Set E) : x' ∈ polar 𝕜 s ↔ �
   Iff.rfl
 
 @[simp]
-theorem zero_mem_polar (s : Set E) : (0 : Dual 𝕜 E) ∈ polar 𝕜 s := fun _ _ => by
-  simp only [map_zero, norm_zero, zero_le_one]
+theorem zero_mem_polar (s : Set E) : (0 : Dual 𝕜 E) ∈ polar 𝕜 s :=
+  LinearMap.zero_mem_polar _ s
 
 instance (s : Set E) : Nonempty (polar 𝕜 s) := by
   use 0
