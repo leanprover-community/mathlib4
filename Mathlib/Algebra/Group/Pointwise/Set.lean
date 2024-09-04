@@ -6,10 +6,7 @@ Authors: Johan Commelin, Floris van Doorn
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.Algebra.Opposites
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Data.Set.Lattice
-import Mathlib.Tactic.Common
 
 /-!
 # Pointwise operations of sets
@@ -50,7 +47,7 @@ set multiplication, set addition, pointwise addition, pointwise multiplication,
 pointwise subtraction
 -/
 
-
+assert_not_exists MonoidWithZero
 assert_not_exists OrderedAddCommMonoid
 
 library_note "pointwise nat action"/--
@@ -827,56 +824,6 @@ protected noncomputable def divisionCommMonoid [DivisionCommMonoid α] :
     DivisionCommMonoid (Set α) :=
   { Set.divisionMonoid, Set.commSemigroup with }
 
-/-- `Set α` has distributive negation if `α` has. -/
-protected noncomputable def hasDistribNeg [Mul α] [HasDistribNeg α] : HasDistribNeg (Set α) :=
-  { Set.involutiveNeg with
-    neg_mul := fun _ _ => by
-      simp_rw [← image_neg]
-      exact image2_image_left_comm neg_mul
-    mul_neg := fun _ _ => by
-      simp_rw [← image_neg]
-      exact image_image2_right_comm mul_neg }
-
-scoped[Pointwise]
-  attribute [instance] Set.divisionCommMonoid Set.subtractionCommMonoid Set.hasDistribNeg
-
-section Distrib
-
-variable [Distrib α] (s t u : Set α)
-
-/-!
-Note that `Set α` is not a `Distrib` because `s * t + s * u` has cross terms that `s * (t + u)`
-lacks.
--/
-
-
-theorem mul_add_subset : s * (t + u) ⊆ s * t + s * u :=
-  image2_distrib_subset_left mul_add
-
-theorem add_mul_subset : (s + t) * u ⊆ s * u + t * u :=
-  image2_distrib_subset_right add_mul
-
-end Distrib
-
-section MulZeroClass
-
-variable [MulZeroClass α] {s t : Set α}
-
-/-! Note that `Set` is not a `MulZeroClass` because `0 * ∅ ≠ 0`. -/
-
-
-theorem mul_zero_subset (s : Set α) : s * 0 ⊆ 0 := by simp [subset_def, mem_mul]
-
-theorem zero_mul_subset (s : Set α) : 0 * s ⊆ 0 := by simp [subset_def, mem_mul]
-
-theorem Nonempty.mul_zero (hs : s.Nonempty) : s * 0 = 0 :=
-  s.mul_zero_subset.antisymm <| by simpa [mem_mul] using hs
-
-theorem Nonempty.zero_mul (hs : s.Nonempty) : 0 * s = 0 :=
-  s.zero_mul_subset.antisymm <| by simpa [mem_mul] using hs
-
-end MulZeroClass
-
 section Group
 
 variable [Group α] {s t : Set α} {a b : α}
@@ -956,22 +903,6 @@ theorem univ_mul (ht : t.Nonempty) : (univ : Set α) * t = univ :=
   eq_univ_of_forall fun b => ⟨b * a⁻¹, trivial, a, ha, inv_mul_cancel_right _ _⟩
 
 end Group
-
-section GroupWithZero
-
-variable [GroupWithZero α] {s t : Set α}
-
-theorem div_zero_subset (s : Set α) : s / 0 ⊆ 0 := by simp [subset_def, mem_div]
-
-theorem zero_div_subset (s : Set α) : 0 / s ⊆ 0 := by simp [subset_def, mem_div]
-
-theorem Nonempty.div_zero (hs : s.Nonempty) : s / 0 = 0 :=
-  s.div_zero_subset.antisymm <| by simpa [mem_div] using hs
-
-theorem Nonempty.zero_div (hs : s.Nonempty) : 0 / s = 0 :=
-  s.zero_div_subset.antisymm <| by simpa [mem_div] using hs
-
-end GroupWithZero
 
 section Mul
 
