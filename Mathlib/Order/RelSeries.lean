@@ -734,6 +734,22 @@ noncomputable def comap (p : LTSeries β) (f : α → β)
   LTSeries α := mk p.length (fun i ↦ (surjective (p i)).choose)
     (fun i j h ↦ comap (by simpa only [(surjective _).choose_spec] using p.strictMono h))
 
+/-- The strict series `0 < … < n` in `ℕ`. -/
+def range (n : ℕ) : LTSeries ℕ where
+  length := n
+  toFun := fun i => i
+  step i := Nat.lt_add_one i
+
+@[simp] lemma length_range (n : ℕ) : (range n).length = n := rfl
+
+@[simp] lemma range_apply (n : ℕ) (i : Fin (n+1)) : (range n) i = i := rfl
+
+@[simp] lemma head_range (n : ℕ) : (range n).head = 0 := rfl
+
+@[simp] lemma last_range (n : ℕ) : (range n).last = n := rfl
+
+section Fintype
+
 variable [Fintype α]
 
 lemma length_lt_card (s : LTSeries α) : s.length < Fintype.card α := by
@@ -750,6 +766,8 @@ instance [DecidableRel ((· < ·) : α → α → Prop)] : Fintype (LTSeries α)
     obtain ⟨l, f, mf⟩ := s
     simp_rw [Finset.mem_map, Finset.mem_univ, true_and, Subtype.exists]
     use ⟨⟨l, bl⟩, f⟩, Fin.strictMono_iff_lt_succ.mpr mf; rfl
+
+end Fintype
 
 end LTSeries
 

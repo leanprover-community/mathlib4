@@ -226,7 +226,7 @@ theorem canonicalEquiv_symm : (canonicalEquiv S P P').symm = canonicalEquiv S P'
       exact ⟨fun ⟨y, mem, Eq⟩ => ⟨y, mem, Eq⟩, fun ⟨y, mem, Eq⟩ => ⟨y, mem, Eq⟩⟩
 
 theorem canonicalEquiv_flip (I) : canonicalEquiv S P P' (canonicalEquiv S P' P I) = I := by
-  rw [← canonicalEquiv_symm]; erw [RingEquiv.apply_symm_apply]
+  rw [← canonicalEquiv_symm, RingEquiv.symm_apply_apply]
 
 @[simp]
 theorem canonicalEquiv_canonicalEquiv (P'' : Type*) [CommRing P''] [Algebra R P'']
