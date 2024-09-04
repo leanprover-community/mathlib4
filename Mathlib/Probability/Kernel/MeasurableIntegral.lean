@@ -71,7 +71,7 @@ theorem measurable_kernel_prod_mk_left_of_finite {t : Set (α × β)} (ht : Meas
         κ a Set.univ - κ a (Prod.mk a ⁻¹' t') := by
       ext1 a
       rw [← Set.diff_inter_self_eq_diff, Set.inter_univ, measure_diff (Set.subset_univ _)]
-      · exact (@measurable_prod_mk_left α β _ _ a) ht'
+      · exact (measurable_prod_mk_left ht').nullMeasurableSet
       · exact measure_ne_top _ _
     rw [this]
     exact Measurable.sub (Kernel.measurable_coe κ MeasurableSet.univ) h_meas
@@ -285,11 +285,11 @@ theorem StronglyMeasurable.integral_kernel_prod_right ⦃f : α → β → E⦄
         tendsto_integral_of_dominated_convergence (fun y => ‖f x y‖ + ‖f x y‖)
           (fun n => (s' n x).aestronglyMeasurable) (hfx.norm.add hfx.norm) ?_ ?_
       · -- Porting note: was
-        -- exact fun n => eventually_of_forall fun y =>
+        -- exact fun n => Eventually.of_forall fun y =>
         --   SimpleFunc.norm_approxOn_zero_le _ _ (x, y) n
-        exact fun n => eventually_of_forall fun y =>
+        exact fun n => Eventually.of_forall fun y =>
           SimpleFunc.norm_approxOn_zero_le hf.measurable (by simp) (x, y) n
-      · refine eventually_of_forall fun y => SimpleFunc.tendsto_approxOn hf.measurable (by simp) ?_
+      · refine Eventually.of_forall fun y => SimpleFunc.tendsto_approxOn hf.measurable (by simp) ?_
         apply subset_closure
         simp [-uncurry_apply_pair]
     · simp [f', hfx, integral_undef]

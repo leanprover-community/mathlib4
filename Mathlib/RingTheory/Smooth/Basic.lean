@@ -68,7 +68,7 @@ theorem exists_lift {B : Type u} [CommRing B] [_RB : Algebra R B]
   revert g
   change Function.Surjective (Ideal.Quotient.mkₐ R I).comp
   revert _RB
-  apply Ideal.IsNilpotent.induction_on (R := B) I hI
+  apply Ideal.IsNilpotent.induction_on (S := B) I hI
   · intro B _ I hI _; exact FormallySmooth.comp_surjective I hI
   · intro B _ I J hIJ h₁ h₂ _ g
     let this : ((B ⧸ I) ⧸ J.map (Ideal.Quotient.mk I)) ≃ₐ[R] B ⧸ J :=
@@ -189,7 +189,7 @@ section OfSurjective
 
 variable {R S : Type u} [CommRing R] [CommSemiring S]
 variable {P A : Type u} [CommRing A] [Algebra R A] [CommRing P] [Algebra R P]
-variable (I : Ideal P) (f : P →ₐ[R] A) (hf : Function.Surjective f)
+variable (I : Ideal P) (f : P →ₐ[R] A)
 
 theorem of_split [FormallySmooth R P] (g : A →ₐ[R] P ⧸ (RingHom.ker f.toRingHom) ^ 2)
     (hg : f.kerSquareLift.comp g = AlgHom.id R A) : FormallySmooth R A := by
@@ -210,6 +210,9 @@ theorem of_split [FormallySmooth R P] (g : A →ₐ[R] P ⧸ (RingHom.ker f.toRi
     ext x
     exact (FormallySmooth.mk_lift I ⟨2, hI⟩ (i.comp f) x).symm
   exact ⟨l.comp g, by rw [← AlgHom.comp_assoc, ← this, AlgHom.comp_assoc, hg, AlgHom.comp_id]⟩
+
+variable (hf : Function.Surjective f)
+include hf
 
 /-- Let `P →ₐ[R] A` be a surjection with kernel `J`, and `P` a formally smooth `R`-algebra,
 then `A` is formally smooth over `R` iff the surjection `P ⧸ J ^ 2 →ₐ[R] A` has a section.
@@ -281,6 +284,7 @@ variable (M : Submonoid R)
 variable [Algebra R S] [Algebra R Sₘ] [Algebra S Sₘ] [Algebra R Rₘ] [Algebra Rₘ Sₘ]
 variable [IsScalarTower R Rₘ Sₘ] [IsScalarTower R S Sₘ]
 variable [IsLocalization M Rₘ] [IsLocalization (M.map (algebraMap R S)) Sₘ]
+include M
 
 -- Porting note: no longer supported
 -- attribute [local elab_as_elim] Ideal.IsNilpotent.induction_on

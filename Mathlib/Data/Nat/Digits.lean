@@ -246,9 +246,7 @@ theorem ofDigits_digits (b n : ℕ) : ofDigits b (digits b n) = n := by
       · rfl
       · rw [Nat.zero_add] at ih ⊢
         simp only [ih, add_comm 1, ofDigits_one_cons, Nat.cast_id, digits_one_succ]
-    · apply Nat.strongInductionOn n _
-      clear n
-      intro n h
+    · induction n using Nat.strongRecOn with | ind n h => ?_
       cases n
       · rw [digits_zero]
         rfl
@@ -328,8 +326,8 @@ theorem getLast_digit_ne_zero (b : ℕ) {m : ℕ} (hm : m ≠ 0) :
     simp only [zero_add, digits_one, List.getLast_replicate_succ m 1]
     exact Nat.one_ne_zero
   revert hm
-  apply Nat.strongInductionOn m
-  intro n IH hn
+  induction m using Nat.strongRecOn with | ind n IH => ?_
+  intro hn
   by_cases hnb : n < b + 2
   · simpa only [digits_of_lt (b + 2) n hn hnb]
   · rw [digits_getLast n (le_add_left 2 b)]
@@ -345,7 +343,7 @@ theorem mul_ofDigits (n : ℕ) {b : ℕ} {l : List ℕ} :
     rw [List.map_cons, ofDigits_cons, ofDigits_cons, ← ih]
     ring
 
-/-- The addition of ofDigits of two lists is equal to ofDigits of digit-wise addition of them-/
+/-- The addition of ofDigits of two lists is equal to ofDigits of digit-wise addition of them -/
 theorem ofDigits_add_ofDigits_eq_ofDigits_zipWith_of_length_eq {b : ℕ} {l1 l2 : List ℕ}
     (h : l1.length = l2.length) :
     ofDigits b l1 + ofDigits b l2 = ofDigits b (l1.zipWith (· + ·) l2) := by
@@ -362,8 +360,8 @@ theorem ofDigits_add_ofDigits_eq_ofDigits_zipWith_of_length_eq {b : ℕ} {l1 l2 
 
 /-- The digits in the base b+2 expansion of n are all less than b+2 -/
 theorem digits_lt_base' {b m : ℕ} : ∀ {d}, d ∈ digits (b + 2) m → d < b + 2 := by
-  apply Nat.strongInductionOn m
-  intro n IH d hd
+  induction m using Nat.strongRecOn with | ind n IH => ?_
+  intro d hd
   cases' n with n
   · rw [digits_zero] at hd
     cases hd
@@ -544,8 +542,7 @@ theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits {p : ℕ}
             Ico_zero_eq_range, mul_add, mul_add, ih, range_one, sum_singleton, List.drop, ofDigits,
             mul_zero, add_zero, ← Nat.add_sub_assoc <| sum_le_ofDigits _ <| Nat.le_of_lt h]
         nth_rw 2 [← one_mul <| ofDigits p tl]
-        rw [← add_mul, one_eq_succ_zero, Nat.sub_add_cancel <| zero_lt_of_lt h,
-           Nat.add_sub_add_left]
+        rw [← add_mul, Nat.sub_add_cancel (one_le_of_lt h), Nat.add_sub_add_left]
   · simp [ofDigits_one]
   · simp [lt_one_iff.mp h]
     cases L

@@ -43,7 +43,7 @@ protected def map {α β : Type u} (f : α → β) (x : t' α) : t' β :=
   eqv β <| map f ((eqv α).symm x)
 
 /-- The function `Equiv.map` transfers the functoriality of `t` to
-`t'` using the equivalences `eqv`.  -/
+`t'` using the equivalences `eqv`. -/
 protected def functor : Functor t' where map := Equiv.map eqv
 
 variable [LawfulFunctor t]

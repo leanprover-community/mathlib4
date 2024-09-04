@@ -28,11 +28,9 @@ Currently, there are two disjoint sets of simp lemmas: one for `DFA.eval`, and a
 - Should `mem_accepts` and `mem_acceptsFrom` be marked `@[simp]`?
 -/
 
-
-open Computability
-
 universe u v
 
+open Computability
 
 /-- A DFA is a set of states (`σ`), a transition function from state to state labelled by the
   alphabet (`step`), a starting state (`start`) and a set of acceptance states (`accept`). -/
@@ -247,3 +245,11 @@ theorem comap_reindex (f : α' → α) (g : σ ≃ σ') :
 end Maps
 
 end DFA
+
+/-- A regular language is a language that is defined by a DFA with finite states. -/
+def Language.IsRegular {T : Type u} (L : Language T) : Prop :=
+  ∃ σ : Type, ∃ _ : Fintype σ, ∃ M : DFA T σ, M.accepts = L
+
+proof_wanted Language.isRegular_iff {T : Type u} {L : Language T} :
+    L.IsRegular ↔ ∃ σ : Type v, ∃ _ : Fintype σ, ∃ M : DFA T σ, M.accepts = L
+-- probably needs `import Mathlib.Data.Countable.Small`

@@ -64,13 +64,14 @@ class RepresentablyFlat (F : C ⥤ D) : Prop where
 
 attribute [instance] RepresentablyFlat.cofiltered
 
-instance RepresentablyFlat.of_isRightAdjoint (F : C ⥤ D) [F.IsRightAdjoint] :
-    RepresentablyFlat F where
+variable (F : C ⥤ D)
+
+instance RepresentablyFlat.of_isRightAdjoint [F.IsRightAdjoint] : RepresentablyFlat F where
   cofiltered _ := IsCofiltered.of_isInitial _ (mkInitialOfLeftAdjoint _ (.ofIsRightAdjoint F) _)
 
 theorem RepresentablyFlat.id : RepresentablyFlat (𝟭 C) := inferInstance
 
-instance RepresentablyFlat.comp (F : C ⥤ D) (G : D ⥤ E) [RepresentablyFlat F]
+instance RepresentablyFlat.comp (G : D ⥤ E) [RepresentablyFlat F]
     [RepresentablyFlat G] : RepresentablyFlat (F ⋙ G) := by
   refine ⟨fun X => IsCofiltered.of_cone_nonempty.{0} _ (fun {J} _ _ H => ?_)⟩
   obtain ⟨c₁⟩ := IsCofiltered.cone_nonempty (H ⋙ StructuredArrow.pre X F G)
@@ -82,6 +83,13 @@ instance RepresentablyFlat.comp (F : C ⥤ D) (G : D ⥤ E) [RepresentablyFlat F
   exact ⟨⟨StructuredArrow.mk (c₁.pt.hom ≫ G.map c₂.pt.hom),
     ⟨fun j => StructuredArrow.homMk (c₂.π.app j).right (by simp [← G.map_comp, (c₂.π.app j).w]),
      fun j j' f => by simpa using (c₂.w f).symm⟩⟩⟩
+
+variable {F}
+
+/-- Being a representably flat functor is closed under natural isomorphisms. -/
+theorem RepresentablyFlat.of_iso [RepresentablyFlat F] {G : C ⥤ D} (α : F ≅ G) :
+    RepresentablyFlat G where
+  cofiltered _ := IsCofiltered.of_equivalence (StructuredArrow.mapNatIso α)
 
 end RepresentablyFlat
 
