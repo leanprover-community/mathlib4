@@ -264,8 +264,8 @@ theorem isBounded_polar_of_mem_nhds_zero {s : Set E} (s_nhd : s ∈ 𝓝 (0 : E)
       polar_ball_subset_closedBall_div ha r_pos)
 
 @[simp]
-theorem polar_empty : polar 𝕜 (∅ : Set E) = Set.univ := by
-  rw [polar, LinearMap.polar_empty]
+theorem polar_empty : polar 𝕜 (∅ : Set E) = Set.univ :=
+  LinearMap.polar_empty _
 
 @[simp]
 theorem polar_singleton {a : E} : polar 𝕜 {a} = { x | ‖x a‖ ≤ 1 } := by
@@ -274,8 +274,8 @@ theorem polar_singleton {a : E} : polar 𝕜 {a} = { x | ‖x a‖ ≤ 1 } := by
 theorem mem_polar_singleton {a : E} (y : Dual 𝕜 E) : y ∈ polar 𝕜 {a} ↔ ‖y a‖ ≤ 1 := by
   simp only [polar_singleton, mem_setOf_eq]
 
-theorem polar_zero : polar 𝕜 ({0} : Set E) = Set.univ := by
-  simp only [polar_singleton, map_zero, norm_zero, zero_le_one, setOf_true]
+theorem polar_zero : polar 𝕜 ({0} : Set E) = Set.univ :=
+  LinearMap.polar_zero _
 
 theorem sInter_polar_eq_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {r : ℝ} (hr : 0 < r) :
