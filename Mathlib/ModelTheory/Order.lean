@@ -192,7 +192,7 @@ variable [LE M]
 instance [Language.order.Structure M] [Language.order.OrderedStructure M]
     [(orderLHom L).IsExpansionOn M] : L.OrderedStructure M where
   relMap_leSymb := fun x => by
-    rw [← orderLHom_apply L leSymb, LHom.IsExpansionOn.map_onRelation, relMap_leSymb]
+    rw [← orderLHom_leSymb L, LHom.IsExpansionOn.map_onRelation, relMap_leSymb]
 
 variable [L.OrderedStructure M]
 
@@ -286,7 +286,7 @@ instance model_linearOrder : M ⊨ L.linearOrderTheory := by
 
 instance model_dlo [DenselyOrdered M] [NoTopOrder M] [NoBotOrder M] :
     M ⊨ L.dlo := by
-  simp [dlo, model_linearOrder]
+  simp [dlo, model_linearOrder, Theory.model_insert_iff]
 
 end LinearOrder
 
