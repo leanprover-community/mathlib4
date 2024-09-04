@@ -86,8 +86,8 @@ instance isSuccArchimedean_of_isPredArchimedean [IsPredArchimedean ι] : IsSuccA
 /-- In a linear `SuccOrder` that's also a `PredOrder`, `IsSuccArchimedean` and `IsPredArchimedean`
 are equivalent. -/
 theorem isSuccArchimedean_iff_isPredArchimedean : IsSuccArchimedean ι ↔ IsPredArchimedean ι :=
-  ⟨@isPredArchimedean_of_isSuccArchimedean _ _ _ _,
-    @isSuccArchimedean_of_isPredArchimedean _ _ _ _⟩
+  ⟨fun  _ => isPredArchimedean_of_isSuccArchimedean,
+    fun  _ => isSuccArchimedean_of_isPredArchimedean⟩
 
 end LinearOrder
 
