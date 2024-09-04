@@ -246,18 +246,9 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
 
 variable {x y : ℝ} [hxy : Fact (x < y)]
 
-/-- The endpoint `x ∈ Icc x y`, as a point in `Icc x y` (assuming `x < y`). -/
-abbrev IccManifold.left : Icc x y := ⟨x, ⟨le_refl x, by have := hxy.out; linarith⟩⟩
-
--- TODO: replace by Set.Icc.{left,right} instead!
-
-/-- The endpoint `y ∈ Icc x y`, as a point in `Icc x y` (assuming `x < y`). -/
-abbrev IccManifold.right : Icc x y := ⟨y, ⟨by have := hxy.out; linarith, le_refl y⟩⟩
-
-open IccManifold (left right)
-
-lemma IccLeftChart_extend_left_eq : ((IccLeftChart x y).extend (𝓡∂ 1)) left = 0 := by
-  calc ((IccLeftChart x y).extend (𝓡∂ 1)) left
+lemma IccLeftChart_extend_left_eq :
+    ((IccLeftChart x y).extend (𝓡∂ 1)) (Icc.left hxy.out.le) = 0 := by
+  calc ((IccLeftChart x y).extend (𝓡∂ 1)) (Icc.left hxy.out.le)
     _ = (𝓡∂ 1) ⟨fun _ ↦ 0, by norm_num⟩ := by norm_num [IccLeftChart]
     _ = 0 := rfl
 
@@ -269,7 +260,7 @@ lemma IccLeftChart_extend_interior_pos {p : Set.Icc x y} (hp : x < p.val ∧ p.v
   norm_num [hp.1]
 
 lemma IccLeftChart_extend_left_mem_frontier :
-    (IccLeftChart x y).extend (𝓡∂ 1) left ∈ frontier (range (𝓡∂ 1)) := by
+    (IccLeftChart x y).extend (𝓡∂ 1) (Icc.left hxy.out.le) ∈ frontier (range (𝓡∂ 1)) := by
   rw [IccLeftChart_extend_left_eq, frontier_range_modelWithCornersEuclideanHalfSpace]
   exact rfl
 
@@ -321,13 +312,14 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
     have B : Continuous fun z : EuclideanSpace ℝ (Fin 1) => z 0 := continuous_apply 0
     exact (A.comp B).comp continuous_subtype_val
 
-lemma IccRightChart_extend_right_eq : (IccRightChart x y).extend (𝓡∂ 1) right = 0 := by
-  calc ((IccRightChart x y).extend (𝓡∂ 1)) right
+lemma IccRightChart_extend_right_eq :
+    (IccRightChart x y).extend (𝓡∂ 1) (Icc.right hxy.out.le) = 0 := by
+  calc ((IccRightChart x y).extend (𝓡∂ 1)) (Icc.right hxy.out.le)
     _ = (𝓡∂ 1) ⟨fun _ ↦ 0, by norm_num⟩ := by norm_num [IccRightChart]
     _ = 0 := rfl
 
 lemma IccRightChart_extend_right_mem_frontier :
-    (IccRightChart x y).extend (𝓡∂ 1) right ∈ frontier (range (𝓡∂ 1)) := by
+    (IccRightChart x y).extend (𝓡∂ 1) (Icc.right hxy.out.le) ∈ frontier (range (𝓡∂ 1)) := by
   rw [IccRightChart_extend_right_eq, frontier_range_modelWithCornersEuclideanHalfSpace]
   exact rfl
 
