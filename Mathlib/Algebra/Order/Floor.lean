@@ -9,7 +9,6 @@ import Mathlib.Algebra.Group.Int
 import Mathlib.Data.Int.Lemmas
 import Mathlib.Data.Nat.Cast.Order.Field
 import Mathlib.Data.Set.Subsingleton
-import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Order.GaloisConnection
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Linarith
@@ -1501,7 +1500,7 @@ theorem Int.natCast_ceil_eq_ceil (ha : 0 ≤ a) : (⌈a⌉₊ : ℤ) = ⌈a⌉ :
 theorem natCast_floor_eq_intCast_floor (ha : 0 ≤ a) : (⌊a⌋₊ : α) = ⌊a⌋ := by
   rw [← Int.natCast_floor_eq_floor ha, Int.cast_natCast]
 
-theorem natCast_ceil_eq_intCast_ceil  (ha : 0 ≤ a) : (⌈a⌉₊ : α) = ⌈a⌉ := by
+theorem natCast_ceil_eq_intCast_ceil (ha : 0 ≤ a) : (⌈a⌉₊ : α) = ⌈a⌉ := by
   rw [← Int.natCast_ceil_eq_ceil ha, Int.cast_natCast]
 
 @[deprecated (since := "2024-08-20")] alias Int.ofNat_floor_eq_floor := natCast_floor_eq_floor
@@ -1581,3 +1580,5 @@ def evalIntCeil : PositivityExt where eval {u α} _zα _pα e := do
   | _, _, _ => throwError "failed to match on Int.ceil application"
 
 end Mathlib.Meta.Positivity
+
+set_option linter.style.longFile 1700

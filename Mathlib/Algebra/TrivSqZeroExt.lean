@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Eric Wieser
 -/
 import Mathlib.Algebra.Algebra.Defs
-import Mathlib.GroupTheory.GroupAction.BigOperators
+import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 import Mathlib.LinearAlgebra.Prod
 
 /-!
@@ -624,7 +624,7 @@ instance monoid [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulActio
           · simp [List.range_succ]
           rw [List.sum_range_succ']
           simp only [pow_zero, op_one, Nat.sub_zero, one_smul, Nat.succ_sub_succ_eq_sub, fst_pow,
-            Nat.pred_succ, List.smul_sum, List.map_map, Function.comp]
+            Nat.pred_succ, List.smul_sum, List.map_map, Function.comp_def]
           simp_rw [← smul_comm (_ : R) (_ : Rᵐᵒᵖ), smul_smul, pow_succ]
           rfl) }
 
@@ -647,9 +647,9 @@ theorem snd_list_prod [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐ�
   | nil => simp
   | cons x xs ih =>
     rw [List.enum_cons, ← List.map_fst_add_enum_eq_enumFrom]
-    simp_rw [List.map_cons, List.map_map, Function.comp, Prod.map_snd, Prod.map_fst, id,
-      List.take_zero, List.take_cons, List.prod_nil, List.prod_cons, snd_mul, one_smul, List.drop,
-      mul_smul, List.sum_cons, fst_list_prod, ih, List.smul_sum, List.map_map,
+    simp_rw [List.map_cons, List.map_map, Function.comp_def, Prod.map_snd, Prod.map_fst, id,
+      List.take_zero, List.take_succ_cons, List.prod_nil, List.prod_cons, snd_mul, one_smul,
+      List.drop, mul_smul, List.sum_cons, fst_list_prod, ih, List.smul_sum, List.map_map,
       ← smul_comm (_ : R) (_ : Rᵐᵒᵖ)]
     exact add_comm _ _
 
@@ -873,7 +873,7 @@ def lift (f : R →ₐ[S] A) (g : M →ₗ[S] A)
     (TrivSqZeroExt.ind fun r₁ m₁ =>
       TrivSqZeroExt.ind fun r₂ m₂ => by
         dsimp
-        simp only [add_zero, zero_add, add_mul, mul_add, smul_mul_smul, hg, smul_zero,
+        simp only [add_zero, zero_add, add_mul, mul_add, smul_mul_smul_comm, hg, smul_zero,
           op_smul_eq_smul]
         rw [← map_mul, LinearMap.map_add, add_comm (g _), add_assoc, hfg, hgf])
 
