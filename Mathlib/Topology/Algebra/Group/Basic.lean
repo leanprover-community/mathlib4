@@ -844,23 +844,21 @@ end TopologicalGroup
 
 namespace QuotientGroup
 
-variable [TopologicalSpace G] [Group G] [TopologicalGroup G] (N : Subgroup G)
+variable [TopologicalSpace G] [Group G]
 
 @[to_additive]
-instance instTopologicalSpace {G : Type*} [Group G] [TopologicalSpace G]
-    (N : Subgroup G) : TopologicalSpace (G ⧸ N) :=
+instance instTopologicalSpace (N : Subgroup G) : TopologicalSpace (G ⧸ N) :=
   instTopologicalSpaceQuotient
 
 @[to_additive]
-theorem quotientMap_mk : QuotientMap (mk : G → G ⧸ N) :=
+theorem quotientMap_mk (N : Subgroup G) : QuotientMap (mk : G → G ⧸ N) :=
   quotientMap_quot_mk
 
+variable [TopologicalGroup G] (N : Subgroup G)
+
 @[to_additive]
-theorem isOpenMap_coe : IsOpenMap ((↑) : G → G ⧸ N) := by
-  intro s s_op
-  change IsOpen (((↑) : G → G ⧸ N) ⁻¹' ((↑) '' s))
-  rw [QuotientGroup.preimage_image_mk N s]
-  exact isOpen_iUnion fun n => (continuous_mul_right _).isOpen_preimage s s_op
+theorem isOpenMap_coe : IsOpenMap ((↑) : G → G ⧸ N) :=
+  isOpenMap_quotient_mk'_mul
 
 @[to_additive (attr := simp)]
 theorem dense_preimage_mk {s : Set (G ⧸ N)} : Dense ((↑) ⁻¹' s : Set G) ↔ Dense s :=
