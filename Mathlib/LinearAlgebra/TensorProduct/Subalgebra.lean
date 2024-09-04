@@ -215,4 +215,3 @@ theorem finrank_sup_le_of_free [Module.Free R A] [Module.Free R B] :
 end CommRing
 
 end Subalgebra
-#min_imports
