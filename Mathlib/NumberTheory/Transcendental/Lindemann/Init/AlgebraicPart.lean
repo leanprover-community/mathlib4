@@ -137,7 +137,7 @@ instance : AddCommMonoid (⊥ : IntermediateField ℚ (K s)) :=
   letI : AddCommGroup (⊥ : IntermediateField ℚ (K s)) := NonUnitalNonAssocRing.toAddCommGroup
   AddCommGroup.toAddCommMonoid
 instance : Algebra ℚ (⊥ : IntermediateField ℚ (K s)) :=
-  IntermediateField.algebra _
+  DivisionRing.toRatAlgebra
 
 @[simps!]
 def RatCoeffEquiv.aux : ratCoeff s ≃ₐ[ℚ] AddMonoidAlgebra (⊥ : IntermediateField ℚ (K s)) (K s)
@@ -292,7 +292,7 @@ def toConjLinearEquiv : mapDomainFixed s F ≃ₗ[F] GalConjClasses ℚ (K s) �
     invFun := (toConjEquiv s F).symm
     map_add' := fun x y => by
       ext i
-      simp_rw [Finsupp.coe_add, Pi.add_apply, toConjEquiv_apply_apply, Subsemiring.coe_add,
+      simp_rw [Finsupp.coe_add, Pi.add_apply, toConjEquiv_apply_apply, AddMemClass.coe_add,
         (Finsupp.add_apply)]
     map_smul' := fun r x => by
       ext i; simp_rw [Finsupp.coe_smul, toConjEquiv_apply_apply]
@@ -379,6 +379,10 @@ instance : CommRing (GalConjClasses ℚ (K s) →₀ F) :=
       simp only [mul_def, ← map_add, ← mul_add]
     right_distrib := fun a b c => by
       simp only [mul_def, ← map_add, ← add_mul] }
+
+-- Shortcut
+instance : SMulCommClass F { x // x ∈ mapDomainFixed s F } { x // x ∈ mapDomainFixed s F } :=
+  SetLike.instSMulCommClass (mapDomainFixed s F)
 
 instance : Algebra F (GalConjClasses ℚ (K s) →₀ F) :=
   Algebra.ofModule'
@@ -719,7 +723,8 @@ theorem linear_independent_exp_aux'' (u : ι → ℂ) (hu : ∀ i, IsIntegral �
       = 0
   · congr 1
     · norm_cast
-    · refine sum_congr rfl fun i hi => ?_
+    · dsimp only
+      refine sum_congr rfl fun i hi => ?_
       rw [← hw' i hi, Rat.num_intCast, Int.cast_smul_eq_zsmul]
   · simp_rw [mul_comm _ (N : ℂ), mul_comm _ (N : ℚ), ← smul_smul, ← smul_sum, ← nsmul_eq_mul,
       Nat.cast_smul_eq_nsmul, ← smul_add, h, nsmul_zero]

@@ -21,7 +21,7 @@ variable [Monoid R] [Monoid S] [MulAction S R] [IsScalarTower S R R] [SMulCommCl
     (l.map (s • ·)).prod = s ^ l.length • l.prod := by
   induction' l with hd tl ih
   · simp
-  · simp [ih, pow_add, smul_mul_smul, pow_mul_comm', pow_succ]
+  · simp [ih, pow_add, smul_mul_smul_comm, pow_mul_comm', pow_succ]
 
 end List
 
@@ -128,7 +128,7 @@ lemma scaleAEvalRoots_eq_aevalMultiset (q : S[X]) (p : symmetricSubalgebra σ R)
   trans aeval (fun i : Fin _ ↦ algebraMap S A (q.leadingCoeff ^ (i + 1 : ℕ)) *
     (q.map (algebraMap S A)).roots.esymm (↑i + 1))
       ((equiv_symmetricSubalgebra R rfl).symm p)
-  · simp_rw [← aeval_algebraMap_apply, (· ∘ ·), map_mul, ← Polynomial.coeff_map]
+  · simp_rw [← aeval_algebraMap_apply, Function.comp_def, map_mul, ← Polynomial.coeff_map]
     congr
     funext i
     have hroots' :
