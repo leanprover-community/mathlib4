@@ -27,7 +27,8 @@ coheight is defined to be `sup {n | a = a₀ < a₁ < ... < aₙ}` .
 * The Krull dimension is the same as that of the dual order (`krullDim_orderDual`).
 
 * The Krull dimension is the supremum of the heights of the elements (`krullDim_eq_iSup_height`),
-  or their coheights.
+  or their coheights (`krullDim_eq_iSup_coheight`), or the sum of height and coheight.
+  (`krullDim_eq_iSup_height_add_coheight`)
 
 * The height in the dual order equals the coheight, and vice versa.
 
