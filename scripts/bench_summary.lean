@@ -94,7 +94,7 @@ def benchOutput (js : System.FilePath) : IO Unit := do
   let ts1 := togetherSorted.toList.groupBy (·.2.size == 1 && ·.2.size == 1)
   let ts2 := List.join <| ts1.map fun l =>
     if (l.getD 0 default).2.size == 1 then
-      [(none, (l.map Prod.snd).foldl (· ++ ·) #[])]
+      [(none, l.foldl (· ++ ·.2) #[])]
     else l.map fun (n, ar) => (some n, ar)
 /-
   for (roundedDiff, g) in togetherSorted do
@@ -117,7 +117,7 @@ def benchOutput (js : System.FilePath) : IO Unit := do
     let entry :=
       match roundedDiff with
         | none => tableArrayBench gs
-        | some roundedDiff => s!"<details><summary>{gs.size} files, Instructions {formatDiff <| roundedDiff * 10 ^ 9}</summary>\n\n" ++ tableArrayBench (gs.qsort (·.diff > ·.diff)) ++ "\n</details>"
+        | some roundedDiff => s!"<details><summary>{gs.size} files, Instructions {formatDiff <| roundedDiff * 10 ^ 9}</summary>\n\n" ++ tableArrayBench (gs.qsort (·.diff > ·.diff)) ++ "\n</details>\n"
         --(s!"{g.size} files", [formatDiff <| roundedDiff * 10 ^ 9])
     --let summ := s!"<summary>{s}, Instructions {", ".intercalate a}</summary>"
     --let indentTable := (tableArrayBench g).replace "\n" "\n  "
