@@ -228,7 +228,7 @@ variable [(x y : _) → OmegaCompletePartialOrder <| γ x y]
 open OmegaCompletePartialOrder.Chain
 
 theorem ωScottContinuous_curry :
-    ωScottContinuous (Sigma.curry : (∀ ab : Σ a, β a, γ ab.1 ab.2) → ∀ a b, γ a b)) :=
+    ωScottContinuous (Sigma.curry : (∀ ab : Σ a, β a, γ ab.1 ab.2) → ∀ a b, γ a b) :=
   ωScottContinuous.of_map_ωSup_of_orderHom (fun c ↦ by
     ext x y
     dsimp [curry, ωSup]
@@ -236,7 +236,7 @@ theorem ωScottContinuous_curry :
     rfl)
 
 theorem continuous_uncurry :
-    ωScottContinuous (Sigma.curry : (∀ a b, γ a b) → ∀ ab : Σ a, β a, γ ab.1 ab.2)) :=
+    ωScottContinuous (Sigma.curry : (∀ a b, γ a b) → ∀ ab : Σ a, β a, γ ab.1 ab.2) :=
     .of_map_ωSup_of_orderHom fun c ↦ by
   ext ⟨x, y⟩
   dsimp [uncurry, ωSup]
