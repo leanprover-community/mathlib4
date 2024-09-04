@@ -159,6 +159,7 @@ end LinearOrder
 
 /-! ### Successor order -/
 
+
 namespace Order
 
 section Preorder
