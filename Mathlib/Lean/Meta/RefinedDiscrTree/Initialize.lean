@@ -24,7 +24,7 @@ variable {α β : Type}
 Structure for quickly initializing a lazy discrimination tree with a large number
 of elements using concurrent functions for generating entries.
 -/
-private structure PreDiscrTree (α : Type) where
+structure PreDiscrTree (α : Type) where
   /-- Maps keys to index in tries array. -/
   root : HashMap Key Nat := {}
   /-- Lazy entries for root of trie. -/
@@ -44,16 +44,16 @@ private def modifyAt (d : PreDiscrTree α) (k : Key)
     { root, tries := tries.modify i f }
 
 /-- Add an entry to the pre-discrimination tree.-/
-private def push (d : PreDiscrTree α) (k : Key) (e : LazyEntry α) : PreDiscrTree α :=
+def push (d : PreDiscrTree α) (k : Key) (e : LazyEntry α) : PreDiscrTree α :=
   d.modifyAt k (·.push e)
 
 /-- Convert a pre-discrimination tree to a lazy discrimination tree. -/
-private def toLazy (d : PreDiscrTree α) (config : WhnfCoreConfig := {}) : RefinedDiscrTree α :=
+def toLazy (d : PreDiscrTree α) (config : WhnfCoreConfig := {}) : RefinedDiscrTree α :=
   let { root, tries } := d
   { config, root, tries := tries.map (.node #[] {} {}) }
 
 /-- Merge two discrimination trees. -/
-protected def append (x y : PreDiscrTree α) : PreDiscrTree α :=
+def append (x y : PreDiscrTree α) : PreDiscrTree α :=
   let (x, y, f) :=
         if x.root.size ≥ y.root.size then
           (x, y, fun y x => x ++ y)

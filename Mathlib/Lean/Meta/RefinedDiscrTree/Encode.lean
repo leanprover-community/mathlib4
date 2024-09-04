@@ -461,14 +461,17 @@ where
       | .inr () =>
         go todo (result.push keys.reverse)
 
+/-- Evaluate all of the keys from a `LazyEntry α`. -/
+def LazyEntry.toList (entry : LazyEntry α) (config : WhnfCoreConfig) : MetaM (List Key) := do
+  let mut entry := entry
+  let mut result := []
+  repeat do match ← evalLazyEntry' entry config with
+    | .inl (key, entry') => entry := entry'; result := key :: result
+    | .inr _ => break
+  return result.reverse
 
 /-- Return the canonical encoding of `e` as a `Array Key`.
 This is used for looking up `e` in a `RefinedDiscrTree`. -/
 def encodeExpr' (e : Expr) (config : WhnfCoreConfig) : MetaM (Key × List Key) := withReducible do
   let (key, entry) ← initializeLazyEntry' e () config
-  let mut result := #[]
-  let mut entry := entry
-  repeat do match ← evalLazyEntry' entry config with
-    | .inl (key, entry') => entry := entry'; result := result.push key
-    | .inr () => break
-  return (key, result.toList)
+  return (key, ← entry.toList config)

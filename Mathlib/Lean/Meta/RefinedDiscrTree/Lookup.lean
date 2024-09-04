@@ -248,7 +248,7 @@ private def matchTreeRootStar (root : HashMap Key TrieIndex) : TreeM α (MatchRe
 
 /-- Find values that match `e` in `d`.
 `unify == true` if metavarables in `e` can be assigned. -/
-def getMatch (d : RefinedDiscrTree α) (e : Expr) (unify : Bool) :
+def getMatch (d : RefinedDiscrTree α) (e : Expr) (unify matchRootStar : Bool) :
     MetaM (MatchResult α × RefinedDiscrTree α) := do
   let (key, keys) ← encodeExpr' e d.config
   withReducible do runTreeM d do
@@ -259,6 +259,8 @@ def getMatch (d : RefinedDiscrTree α) (e : Expr) (unify : Bool) :
       else
         matchTreeRootStar d.root
     else
-      let result ← matchTreeRootStar d.root
       let todo := matchKey key d.root pMatch #[]
-      getMatchLoop todo result unify
+      if matchRootStar then
+        getMatchLoop todo (← matchTreeRootStar d.root) unify
+      else
+        getMatchLoop todo {} unify

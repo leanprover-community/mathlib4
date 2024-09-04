@@ -25,10 +25,10 @@ def pos : GoalsLocation → Pos
   | ⟨_, .target pos⟩     => pos
 
 /-- The hypothesis specified by the `GoalsLocation`. -/
-def location : GoalsLocation → MetaM (Option Name)
-  | ⟨_, .hyp fvarId⟩        => some <$> fvarId.getUserName
-  | ⟨_, .hypType fvarId _⟩  => some <$> fvarId.getUserName
-  | ⟨_, .hypValue fvarId _⟩ => some <$> fvarId.getUserName
-  | ⟨_, .target _⟩          => return none
+def fvarId : GoalsLocation → Option FVarId
+  | ⟨_, .hyp fvarId⟩        => fvarId
+  | ⟨_, .hypType fvarId _⟩  => fvarId
+  | ⟨_, .hypValue fvarId _⟩ => fvarId
+  | ⟨_, .target _⟩          => none
 
 end Lean.SubExpr.GoalsLocation

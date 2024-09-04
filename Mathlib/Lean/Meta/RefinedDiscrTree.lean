@@ -122,7 +122,7 @@ def findImportMatches
     profileitM Exception  "lazy discriminator import initialization" (← getOptions) <|
       createImportedDiscrTree
         (treeCtx cctx) cNGen (← getEnv) addEntry constantsPerTask capacityPerTask config
-  let (importCandidates, importTree) ← getMatch importTree ty false
+  let (importCandidates, importTree) ← getMatch importTree ty false false
   ref.set (some importTree)
   return importCandidates
 
@@ -135,7 +135,7 @@ this module's definitions.
 def findModuleMatches (moduleRef : ModuleDiscrTreeRef α) (ty : Expr) : MetaM (MatchResult α) := do
   profileitM Exception  "lazy discriminator local search" (← getOptions) $ do
     let discrTree ← moduleRef.ref.get
-    let (localCandidates, localTree) ← getMatch discrTree ty false
+    let (localCandidates, localTree) ← getMatch discrTree ty false false
     moduleRef.ref.set localTree
     return localCandidates
 
