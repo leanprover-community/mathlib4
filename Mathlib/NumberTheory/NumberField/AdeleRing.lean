@@ -28,6 +28,9 @@ direct product of the infinite adele ring and the finite adele ring.
  - `NumberField.InfiniteAdeleRing.locallyCompactSpace` : the infinite adele ring is a
    locally compact space.
 
+## References
+ * [J.W.S. Cassels, A. Frölich, *Algebraic Number Theory*][cassels1967algebraic]
+
 ## Tags
 infinite adele ring, adele ring, number field
 -/
