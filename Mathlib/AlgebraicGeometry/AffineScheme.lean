@@ -31,7 +31,7 @@ We also define predicates about affine schemes and affine open sets.
 
 -/
 
--- Explicit universe annotations were used in this file to improve perfomance #12737
+-- Explicit universe annotations were used in this file to improve performance #12737
 
 noncomputable section
 
@@ -417,7 +417,7 @@ theorem exists_basicOpen_le {V : X.Opens} (x : V) (h : ↑x ∈ U) :
     ∃ f : Γ(X, U), X.basicOpen f ≤ V ∧ ↑x ∈ X.basicOpen f := by
   have : IsAffine _ := hU
   obtain ⟨_, ⟨_, ⟨r, rfl⟩, rfl⟩, h₁, h₂⟩ :=
-    (isBasis_basicOpen U).exists_subset_of_mem_open (x.2 : ⟨x, h⟩ ∈ _)
+    (isBasis_basicOpen U).exists_subset_of_mem_open (x.2 : (⟨x, h⟩ : U) ∈ _)
       ((Opens.map U.inclusion).obj V).isOpen
   have :
     U.ι ''ᵁ (U.toScheme.basicOpen r) =
@@ -578,7 +578,7 @@ def _root_.AlgebraicGeometry.Scheme.affineBasicOpen
 include hU in
 /--
 In an affine open set `U`, a family of basic open covers `U` iff the sections span `Γ(X, U)`.
-See `iSup_basicOpen_of_span_eq_top` for the inverse direction without the affine-ness assuption.
+See `iSup_basicOpen_of_span_eq_top` for the inverse direction without the affine-ness assumption.
 -/
 theorem basicOpen_union_eq_self_iff (s : Set Γ(X, U)) :
     ⨆ f : s, X.basicOpen (f : Γ(X, U)) = U ↔ Ideal.span s = ⊤ := by

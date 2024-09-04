@@ -39,9 +39,6 @@ section Miscellany
 
 attribute [simp] cast_heq
 
--- This can be removed once we move to Lean v4.11
-attribute [simp] insert_emptyc_eq
-
 /-- An identity function with its main argument implicit. This will be printed as `hidden` even
 if it is applied to a large term, so it can be used for elision,
 as done in the `elide` and `unelide` tactics. -/
@@ -416,16 +413,13 @@ theorem eqRec_heq' {α : Sort*} {a' : α} {motive : (a : α) → a' = a → Sort
     HEq (@Eq.rec α a' motive p a t) p := by
   subst t; rfl
 
-set_option autoImplicit true in
-theorem rec_heq_of_heq {C : α → Sort*} {x : C a} {y : β} (e : a = b) (h : HEq x y) :
-    HEq (e ▸ x) y := by subst e; exact h
+theorem rec_heq_of_heq {α β : Sort _} {a b : α} {C : α → Sort*} {x : C a} {y : β}
+    (e : a = b) (h : HEq x y) : HEq (e ▸ x) y := by subst e; exact h
 
-set_option autoImplicit true in
-theorem rec_heq_iff_heq {C : α → Sort*} {x : C a} {y : β} {e : a = b} :
+theorem rec_heq_iff_heq {α β : Sort _} {a b : α} {C : α → Sort*} {x : C a} {y : β} {e : a = b} :
     HEq (e ▸ x) y ↔ HEq x y := by subst e; rfl
 
-set_option autoImplicit true in
-theorem heq_rec_iff_heq {C : α → Sort*} {x : β} {y : C a} {e : a = b} :
+theorem heq_rec_iff_heq {α β : Sort _} {a b : α} {C : α → Sort*} {x : β} {y : C a} {e : a = b} :
     HEq x (e ▸ y) ↔ HEq x y := by subst e; rfl
 
 end Equality
@@ -830,8 +824,6 @@ theorem exists_mem_of_exists (H : ∀ x, p x) : (∃ x, q x) → ∃ (x : _) (_ 
 
 theorem exists_of_exists_mem : (∃ (x : _) (_ : p x), q x) → ∃ x, q x
   | ⟨x, _, hq⟩ => ⟨x, hq⟩
-
-theorem exists₂_imp : (∃ x h, P x h) → b ↔ ∀ x h, P x h → b := by simp
 
 @[deprecated (since := "2024-03-23")] alias bex_of_exists := exists_mem_of_exists
 @[deprecated (since := "2024-03-23")] alias exists_of_bex := exists_of_exists_mem

@@ -197,7 +197,7 @@ lemma toColex_lt_singleton : toColex s < toColex {a} ↔ ∀ b ∈ s, b < a := b
   · refine h.2 <| eq_singleton_iff_unique_mem.2 ⟨hb, fun c hc ↦ (h.1 _ hc).2 hb⟩
   · simp at h
 
-/-- `{a} ≤ s` in colex iff `s` contains an element greated than or equal to `a`. -/
+/-- `{a} ≤ s` in colex iff `s` contains an element greater than or equal to `a`. -/
 lemma singleton_le_toColex : (toColex {a} : Colex α) ≤ toColex s ↔ ∃ x ∈ s, a ≤ x := by
   simp [toColex_le_toColex]; by_cases a ∈ s <;> aesop
 

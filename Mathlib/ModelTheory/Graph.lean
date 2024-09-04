@@ -104,7 +104,7 @@ theorem structure_simpleGraphOfStructure [S : Language.graph.Structure V] [V ⊨
     (simpleGraphOfStructure V).structure = S := by
   ext
   case funMap n f xs =>
-    exact (IsRelational.empty_functions n).elim f
+    exact isEmptyElim f
   case RelMap n r xs =>
     rw [iff_eq_eq]
     cases' n with n

@@ -201,24 +201,15 @@ theorem realize_onTerm [L'.Structure M] (φ : L →ᴸ L') [φ.IsExpansionOn M] 
 end LHom
 
 @[simp]
-theorem Hom.realize_term (g : M →[L] N) {t : L.Term α} {v : α → M} :
+theorem HomClass.realize_term {F : Type*} [FunLike F M N] [HomClass L F M N]
+    (g : F) {t : L.Term α} {v : α → M} :
     t.realize (g ∘ v) = g (t.realize v) := by
   induction t
   · rfl
-  · rw [Term.realize, Term.realize, g.map_fun]
+  · rw [Term.realize, Term.realize, HomClass.map_fun]
     refine congr rfl ?_
     ext x
     simp [*]
-
-@[simp]
-theorem Embedding.realize_term {v : α → M} (t : L.Term α) (g : M ↪[L] N) :
-    t.realize (g ∘ v) = g (t.realize v) :=
-  g.toHom.realize_term
-
-@[simp]
-theorem Equiv.realize_term {v : α → M} (t : L.Term α) (g : M ≃[L] N) :
-    t.realize (g ∘ v) = g (t.realize v) :=
-  g.toHom.realize_term
 
 variable {n : ℕ}
 
@@ -422,9 +413,16 @@ theorem realize_restrictFreeVar [DecidableEq α] {n : ℕ} {φ : L.BoundedFormul
     (φ.restrictFreeVar (Set.inclusion h)).Realize (v ∘ (↑)) xs ↔ φ.Realize v xs := by
   induction' φ with _ _ _ _ _ _ _ _ _ _ _ ih1 ih2 _ _ ih3
   · rfl
-  · simp [restrictFreeVar, Realize]
-  · simp [restrictFreeVar, Realize]
-  · simp [restrictFreeVar, Realize, ih1, ih2]
+  · simp only [Realize, freeVarFinset.eq_2]
+    rw [Set.inclusion_comp_inclusion, Set.inclusion_comp_inclusion]
+    simp
+  · simp only [Realize, freeVarFinset.eq_3, Finset.biUnion_val]
+    congr!
+    erw [Set.inclusion_comp_inclusion _ h]
+    simp
+  · simp only [Realize, freeVarFinset.eq_4]
+    rw [Set.inclusion_comp_inclusion, Set.inclusion_comp_inclusion]
+    simp [ih1, ih2]
   · simp [restrictFreeVar, Realize, ih3]
 
 theorem realize_constantsVarsEquiv [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
@@ -752,12 +750,12 @@ theorem _root_.FirstOrder.Language.Formula.realize_iAlls
       ∀ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
   let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
   rw [Formula.iAlls]
-  simp only [Nat.add_zero, realize_alls, realize_relabel, Function.comp,
+  simp only [Nat.add_zero, realize_alls, realize_relabel, Function.comp_def,
     castAdd_zero, finCongr_refl, OrderIso.refl_apply, Sum.elim_map, id_eq]
   refine Equiv.forall_congr ?_ ?_
   · exact ⟨fun v => v ∘ e, fun v => v ∘ e.symm,
-      fun _ => by simp [Function.comp],
-      fun _ => by simp [Function.comp]⟩
+      fun _ => by simp [Function.comp_def],
+      fun _ => by simp [Function.comp_def]⟩
   · intro x
     rw [Formula.Realize, iff_iff_eq]
     congr
@@ -778,13 +776,13 @@ theorem _root_.FirstOrder.Language.Formula.realize_iExs
       ∃ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
   let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
   rw [Formula.iExs]
-  simp only [Nat.add_zero, realize_exs, realize_relabel, Function.comp,
+  simp only [Nat.add_zero, realize_exs, realize_relabel, Function.comp_def,
     castAdd_zero, finCongr_refl, OrderIso.refl_apply, Sum.elim_map, id_eq]
   rw [← not_iff_not, not_exists, not_exists]
   refine Equiv.forall_congr ?_ ?_
   · exact ⟨fun v => v ∘ e, fun v => v ∘ e.symm,
-      fun _ => by simp [Function.comp],
-      fun _ => by simp [Function.comp]⟩
+      fun _ => by simp [Function.comp_def],
+      fun _ => by simp [Function.comp_def]⟩
   · intro x
     rw [Formula.Realize, iff_iff_eq]
     congr
@@ -812,7 +810,7 @@ theorem realize_toFormula (φ : L.BoundedFormula α n) (v : α ⊕ (Fin n) → M
     have h := ih3 (Sum.elim (v ∘ Sum.inl) (snoc (v ∘ Sum.inr) a))
     simp only [Sum.elim_comp_inl, Sum.elim_comp_inr] at h
     rw [← h, realize_relabel, Formula.Realize, iff_iff_eq]
-    simp only [Function.comp]
+    simp only [Function.comp_def]
     congr with x
     · cases' x with _ x
       · simp
@@ -842,16 +840,19 @@ theorem realize_iInf (s : Finset β) (f : β → L.BoundedFormula α n)
 
 end BoundedFormula
 
-namespace Equiv
+namespace StrongHomClass
+
+variable {F : Type*} [EquivLike F M N] [StrongHomClass L F M N] (g : F)
 
 @[simp]
-theorem realize_boundedFormula (g : M ≃[L] N) (φ : L.BoundedFormula α n) {v : α → M}
+theorem realize_boundedFormula (φ : L.BoundedFormula α n) {v : α → M}
     {xs : Fin n → M} : φ.Realize (g ∘ v) (g ∘ xs) ↔ φ.Realize v xs := by
   induction' φ with _ _ _ _ _ _ _ _ _ _ _ ih1 ih2 _ _ ih3
   · rfl
-  · simp only [BoundedFormula.Realize, ← Sum.comp_elim, Equiv.realize_term, g.injective.eq_iff]
-  · simp only [BoundedFormula.Realize, ← Sum.comp_elim, Equiv.realize_term]
-    exact g.map_rel _ _
+  · simp only [BoundedFormula.Realize, ← Sum.comp_elim, HomClass.realize_term,
+      EmbeddingLike.apply_eq_iff_eq g]
+  · simp only [BoundedFormula.Realize, ← Sum.comp_elim, HomClass.realize_term]
+    exact StrongHomClass.map_rel g _ _
   · rw [BoundedFormula.Realize, ih1, ih2, BoundedFormula.Realize]
   · rw [BoundedFormula.Realize, BoundedFormula.Realize]
     constructor
@@ -860,26 +861,29 @@ theorem realize_boundedFormula (g : M ≃[L] N) (φ : L.BoundedFormula α n) {v 
       rw [← Fin.comp_snoc, ih3] at h'
       exact h'
     · intro h a
-      have h' := h (g.symm a)
-      rw [← ih3, Fin.comp_snoc, g.apply_symm_apply] at h'
+      have h' := h (EquivLike.inv g a)
+      rw [← ih3, Fin.comp_snoc, EquivLike.apply_inv_apply g] at h'
       exact h'
 
 @[simp]
-theorem realize_formula (g : M ≃[L] N) (φ : L.Formula α) {v : α → M} :
+theorem realize_formula (φ : L.Formula α) {v : α → M} :
     φ.Realize (g ∘ v) ↔ φ.Realize v := by
-  rw [Formula.Realize, Formula.Realize, ← g.realize_boundedFormula φ, iff_eq_eq,
+  rw [Formula.Realize, Formula.Realize, ← realize_boundedFormula g φ, iff_eq_eq,
     Unique.eq_default (g ∘ default)]
 
-theorem realize_sentence (g : M ≃[L] N) (φ : L.Sentence) : M ⊨ φ ↔ N ⊨ φ := by
-  rw [Sentence.Realize, Sentence.Realize, ← g.realize_formula, Unique.eq_default (g ∘ default)]
+include g
 
-theorem theory_model (g : M ≃[L] N) [M ⊨ T] : N ⊨ T :=
-  ⟨fun φ hφ => (g.realize_sentence φ).1 (Theory.realize_sentence_of_mem T hφ)⟩
+theorem realize_sentence (φ : L.Sentence) : M ⊨ φ ↔ N ⊨ φ := by
+  rw [Sentence.Realize, Sentence.Realize, ← realize_formula g,
+    Unique.eq_default (g ∘ default)]
 
-theorem elementarilyEquivalent (g : M ≃[L] N) : M ≅[L] N :=
-  elementarilyEquivalent_iff.2 g.realize_sentence
+theorem theory_model [M ⊨ T] : N ⊨ T :=
+  ⟨fun φ hφ => (realize_sentence g φ).1 (Theory.realize_sentence_of_mem T hφ)⟩
 
-end Equiv
+theorem elementarilyEquivalent : M ≅[L] N :=
+  elementarilyEquivalent_iff.2 (realize_sentence g)
+
+end StrongHomClass
 
 namespace Relations
 

@@ -358,7 +358,7 @@ variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 
 theorem ι_mul_ι (r₁ r₂) : ι (0 : QuadraticForm R R) r₁ * ι (0 : QuadraticForm R R) r₂ = 0 := by
   rw [← mul_one r₁, ← mul_one r₂, ← smul_eq_mul R, ← smul_eq_mul R, LinearMap.map_smul,
-    LinearMap.map_smul, smul_mul_smul, ι_sq_scalar, QuadraticMap.zero_apply, RingHom.map_zero,
+    LinearMap.map_smul, smul_mul_smul_comm, ι_sq_scalar, QuadraticMap.zero_apply, RingHom.map_zero,
     smul_zero]
 
 /-- The clifford algebra over a 1-dimensional vector space with 0 quadratic form is isomorphic to
