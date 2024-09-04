@@ -24,7 +24,7 @@ algebra and we provide some basic definitions for doing so here.
 ## Main definitions
 
   * `CommutatorRing` turns a Lie ring into a `NonUnitalNonAssocSemiring` by turning its
-    `Bracket` (denoted `⁅, ⁆`) into a `Mul` (denoted `*`).
+    `Bracket` (denoted `⁅ , ⁆`) into a `Mul` (denoted `*`).
   * `LieHom.toNonUnitalAlgHom`
 
 ## Tags
