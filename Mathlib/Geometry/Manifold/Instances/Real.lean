@@ -37,7 +37,6 @@ The manifold structure on the interval `[x, y] = Icc x y` requires the assumptio
 typeclass. We provide it as `[Fact (x < y)]`.
 -/
 
-
 noncomputable section
 
 open Set Function
@@ -249,6 +248,8 @@ variable {x y : ℝ} [hxy : Fact (x < y)]
 
 /-- The endpoint `x ∈ Icc x y`, as a point in `Icc x y` (assuming `x < y`). -/
 abbrev IccManifold.left : Icc x y := ⟨x, ⟨le_refl x, by have := hxy.out; linarith⟩⟩
+
+-- TODO: replace by Set.Icc.{left,right} instead!
 
 /-- The endpoint `y ∈ Icc x y`, as a point in `Icc x y` (assuming `x < y`). -/
 abbrev IccManifold.right : Icc x y := ⟨y, ⟨by have := hxy.out; linarith, le_refl y⟩⟩

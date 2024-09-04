@@ -54,6 +54,10 @@ def Iio (a : α) :=
 def Icc (a b : α) :=
   { x | a ≤ x ∧ x ≤ b }
 
+abbrev Icc.left {a b : α} (h : a ≤ b) : Icc a b := ⟨a, ⟨le_refl a, h⟩⟩
+
+abbrev Icc.right {a b : α} (h : a ≤ b) : Icc a b := ⟨b, ⟨h, le_refl b⟩⟩
+
 /-- Left-infinite right-closed interval -/
 def Iic (b : α) :=
   { x | x ≤ b }
