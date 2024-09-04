@@ -61,9 +61,10 @@ theorem cycleOf_inv (f : Perm α) [DecidableRel f.SameCycle] (x : α) :
 theorem cycleOf_pow_apply_self (f : Perm α) [DecidableRel f.SameCycle] (x : α) :
     ∀ n : ℕ, (cycleOf f x ^ n) x = (f ^ n) x := by
   intro n
-  induction' n with n hn
-  · rfl
-  · rw [pow_succ', mul_apply, cycleOf_apply, hn, if_pos, pow_succ', mul_apply]
+  induction n with
+  | zero => rfl
+  | succ n hn =>
+    rw [pow_succ', mul_apply, cycleOf_apply, hn, if_pos, pow_succ', mul_apply]
     exact ⟨n, rfl⟩
 
 @[simp]
@@ -280,7 +281,7 @@ theorem SameCycle.exists_pow_eq [DecidableEq α] [Fintype α] (f : Perm α) (h :
     · refine ⟨(f.cycleOf x).support.card, ?_, self_le_add_right _ _, ?_⟩
       · refine zero_lt_one.trans (one_lt_card_support_of_ne_one ?_)
         simpa using hx
-      · simp only [Nat.zero_eq, pow_zero, coe_one, id_eq] at hk'
+      · simp only [pow_zero, coe_one, id_eq] at hk'
         subst hk'
         rw [← (isCycle_cycleOf _ <| mem_support.1 hx).orderOf, ← cycleOf_pow_apply_self,
           pow_orderOf_eq_one, one_apply]
@@ -302,12 +303,10 @@ section cycleFactors
 open scoped List in
 /-- Given a list `l : List α` and a permutation `f : Perm α` whose nonfixed points are all in `l`,
   recursively factors `f` into cycles. -/
-def cycleFactorsAux [DecidableEq α] [Fintype α] :
-    ∀ (l : List α) (f : Perm α),
-      (∀ {x}, f x ≠ x → x ∈ l) →
-        { l : List (Perm α) // l.prod = f ∧ (∀ g ∈ l, IsCycle g) ∧ l.Pairwise Disjoint } := by
-  intro l f h
-  exact match l with
+def cycleFactorsAux [DecidableEq α] [Fintype α] (l : List α) (f : Perm α)
+    (h : ∀ {x}, f x ≠ x → x ∈ l) :
+    { l : List (Perm α) // l.prod = f ∧ (∀ g ∈ l, IsCycle g) ∧ l.Pairwise Disjoint } :=
+  match l with
   | [] => ⟨[], by
       { simp only [imp_false, List.Pairwise.nil, List.not_mem_nil, forall_const, and_true_iff,
           forall_prop_of_false, Classical.not_not, not_false_iff, List.prod_nil] at *

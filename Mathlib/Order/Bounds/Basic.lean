@@ -466,7 +466,7 @@ theorem le_glb_Ioi (a : α) (hb : IsGLB (Ioi a) b) : a ≤ b :=
 
 theorem lub_Iio_eq_self_or_Iio_eq_Iic [PartialOrder γ] {j : γ} (i : γ) (hj : IsLUB (Iio i) j) :
     j = i ∨ Iio i = Iic j := by
-  cases' eq_or_lt_of_le (lub_Iio_le i hj) with hj_eq_i hj_lt_i
+  rcases eq_or_lt_of_le (lub_Iio_le i hj) with hj_eq_i | hj_lt_i
   · exact Or.inl hj_eq_i
   · right
     exact Set.ext fun k => ⟨fun hk_lt => hj.1 hk_lt, fun hk_le_j => lt_of_le_of_lt hk_le_j hj_lt_i⟩
@@ -609,7 +609,7 @@ variable [SemilatticeSup γ] [DenselyOrdered γ]
 
 theorem isGLB_Ioo {a b : γ} (h : a < b) : IsGLB (Ioo a b) a :=
   ⟨fun x hx => hx.1.le, fun x hx => by
-    cases' eq_or_lt_of_le (le_sup_right : a ≤ x ⊔ a) with h₁ h₂
+    rcases eq_or_lt_of_le (le_sup_right : a ≤ x ⊔ a) with h₁ | h₂
     · exact h₁.symm ▸ le_sup_left
     obtain ⟨y, lty, ylt⟩ := exists_between h₂
     apply (not_lt_of_le (sup_le (hx ⟨lty, ylt.trans_le (sup_le _ h.le)⟩) lty.le) ylt).elim
@@ -1058,13 +1058,15 @@ namespace Monotone
 
 variable [Preorder α] [Preorder β] {f : α → β} (Hf : Monotone f) {a : α} {s : Set α}
 
+include Hf
+
 theorem mem_upperBounds_image (Ha : a ∈ upperBounds s) : f a ∈ upperBounds (f '' s) :=
   forall_mem_image.2 fun _ H => Hf (Ha H)
 
 theorem mem_lowerBounds_image (Ha : a ∈ lowerBounds s) : f a ∈ lowerBounds (f '' s) :=
   forall_mem_image.2 fun _ H => Hf (Ha H)
 
-theorem image_upperBounds_subset_upperBounds_image (Hf : Monotone f) :
+theorem image_upperBounds_subset_upperBounds_image :
     f '' upperBounds s ⊆ upperBounds (f '' s) := by
   rintro _ ⟨a, ha, rfl⟩
   exact Hf.mem_upperBounds_image ha
@@ -1095,6 +1097,8 @@ end Monotone
 namespace Antitone
 
 variable [Preorder α] [Preorder β] {f : α → β} (hf : Antitone f) {a : α} {s : Set α}
+
+include hf
 
 theorem mem_upperBounds_image : a ∈ lowerBounds s → f a ∈ upperBounds (f '' s) :=
   hf.dual_right.mem_lowerBounds_image
@@ -1135,6 +1139,8 @@ section MonotoneMonotone
 
 variable (h₀ : ∀ b, Monotone (swap f b)) (h₁ : ∀ a, Monotone (f a))
 
+include h₀ h₁
+
 theorem mem_upperBounds_image2 (ha : a ∈ upperBounds s) (hb : b ∈ upperBounds t) :
     f a b ∈ upperBounds (image2 f s t) :=
   forall_image2_iff.2 fun _ hx _ hy => (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
@@ -1152,13 +1158,13 @@ theorem image2_lowerBounds_lowerBounds_subset :
   image2_subset_iff.2 fun _ ha _ hb ↦ mem_lowerBounds_image2 h₀ h₁ ha hb
 
 /-- See also `Monotone.map_bddAbove`. -/
-protected theorem BddAbove.image2 (h₀ : ∀ b, Monotone (swap f b)) (h₁ : ∀ a, Monotone (f a)) :
+protected theorem BddAbove.image2 :
     BddAbove s → BddAbove t → BddAbove (image2 f s t) := by
   rintro ⟨a, ha⟩ ⟨b, hb⟩
   exact ⟨f a b, mem_upperBounds_image2 h₀ h₁ ha hb⟩
 
 /-- See also `Monotone.map_bddBelow`. -/
-protected theorem BddBelow.image2 (h₀ : ∀ b, Monotone (swap f b)) (h₁ : ∀ a, Monotone (f a)) :
+protected theorem BddBelow.image2 :
     BddBelow s → BddBelow t → BddBelow (image2 f s t) := by
   rintro ⟨a, ha⟩ ⟨b, hb⟩
   exact ⟨f a b, mem_lowerBounds_image2 h₀ h₁ ha hb⟩
@@ -1176,6 +1182,8 @@ end MonotoneMonotone
 section MonotoneAntitone
 
 variable (h₀ : ∀ b, Monotone (swap f b)) (h₁ : ∀ a, Antitone (f a))
+
+include h₀ h₁
 
 theorem mem_upperBounds_image2_of_mem_upperBounds_of_mem_lowerBounds (ha : a ∈ upperBounds s)
     (hb : b ∈ lowerBounds t) : f a b ∈ upperBounds (image2 f s t) :=
@@ -1221,6 +1229,8 @@ section AntitoneAntitone
 
 variable (h₀ : ∀ b, Antitone (swap f b)) (h₁ : ∀ a, Antitone (f a))
 
+include h₀ h₁
+
 theorem mem_upperBounds_image2_of_mem_lowerBounds (ha : a ∈ lowerBounds s)
     (hb : b ∈ lowerBounds t) : f a b ∈ upperBounds (image2 f s t) :=
   forall_image2_iff.2 fun _ hx _ hy => (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
@@ -1260,6 +1270,8 @@ end AntitoneAntitone
 section AntitoneMonotone
 
 variable (h₀ : ∀ b, Antitone (swap f b)) (h₁ : ∀ a, Monotone (f a))
+
+include h₀ h₁
 
 theorem mem_upperBounds_image2_of_mem_upperBounds_of_mem_upperBounds (ha : a ∈ lowerBounds s)
     (hb : b ∈ upperBounds t) : f a b ∈ upperBounds (image2 f s t) :=

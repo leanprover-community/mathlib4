@@ -280,6 +280,9 @@ section FintypeInstances
 instance fintypeUniv [Fintype α] : Fintype (@univ α) :=
   Fintype.ofEquiv α (Equiv.Set.univ α).symm
 
+-- Redeclared with appropriate keys
+instance fintypeTop [Fintype α] : Fintype (⊤ : Set α) := inferInstanceAs (Fintype (univ : Set α))
+
 /-- If `(Set.univ : Set α)` is finite then `α` is a finite type. -/
 noncomputable def fintypeOfFiniteUniv (H : (univ (α := α)).Finite) : Fintype α :=
   @Fintype.ofEquiv _ (univ : Set α) H.fintype (Equiv.Set.univ _)
@@ -1563,3 +1566,5 @@ theorem DirectedOn.exists_mem_subset_of_finset_subset_biUnion {α ι : Type*} {f
   rw [Set.biUnion_eq_iUnion] at hs
   haveI := hn.coe_sort
   simpa using (directed_comp.2 hc.directed_val).exists_mem_subset_of_finset_subset_biUnion hs
+
+set_option linter.style.longFile 1700

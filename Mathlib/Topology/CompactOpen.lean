@@ -277,7 +277,7 @@ theorem tendsto_compactOpen_iff_forall {ι : Type*} {l : Filter ι} (F : ι → 
     Tendsto F l (𝓝 f) ↔
       ∀ K, IsCompact K → Tendsto (fun i => (F i).restrict K) l (𝓝 (f.restrict K)) := by
   rw [compactOpen_eq_iInf_induced]
-  simp [nhds_iInf, nhds_induced, Filter.tendsto_comap_iff, Function.comp]
+  simp [nhds_iInf, nhds_induced, Filter.tendsto_comap_iff, Function.comp_def]
 
 /-- A family `F` of functions in `C(X, Y)` converges in the compact-open topology, if and only if
 it converges in the compact-open topology on each compact subset of `X`. -/

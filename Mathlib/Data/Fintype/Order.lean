@@ -154,6 +154,18 @@ end Nonempty
 
 end Fintype
 
+/-! ### Properties for PartialOrders -/
+
+lemma Finite.exists_ge_minimal {α} [Finite α] [PartialOrder α] {a : α} {p : α → Prop} (h : p a) :
+    ∃ b, b ≤ a ∧ Minimal p b := by
+  obtain ⟨b, ⟨hba, hb⟩, hbmin⟩ :=
+    Set.Finite.exists_minimal_wrt id {x | x ≤ a ∧ p x} (Set.toFinite _) ⟨a, rfl.le, h⟩
+  exact ⟨b, hba, hb, fun x hx hxb ↦ (hbmin x ⟨hxb.trans hba, hx⟩ hxb).le⟩
+
+lemma Finite.exists_le_maximal {α} [Finite α] [PartialOrder α] {a : α} {p : α → Prop} (h : p a) :
+    ∃ b, a ≤ b ∧ Maximal p b :=
+  Finite.exists_ge_minimal (α := αᵒᵈ) h
+
 /-! ### Concrete instances -/
 
 noncomputable instance Fin.completeLinearOrder {n : ℕ} [NeZero n] : CompleteLinearOrder (Fin n) :=
@@ -176,7 +188,7 @@ variable {α : Type*} {r : α → α → Prop} [IsTrans α r] {β γ : Type*} [N
 
 theorem Directed.finite_set_le (D : Directed r f) {s : Set γ} (hs : s.Finite) :
     ∃ z, ∀ i ∈ s, r (f i) (f z) := by
-  convert D.finset_le hs.toFinset; rw [Set.Finite.mem_toFinset]
+  convert D.finset_le hs.toFinset using 3; rw [Set.Finite.mem_toFinset]
 
 theorem Directed.finite_le (D : Directed r f) (g : β → γ) : ∃ z, ∀ i, r (f (g i)) (f z) := by
   classical
@@ -199,12 +211,14 @@ theorem Set.Finite.exists_ge [IsDirected α (· ≥ ·)] {s : Set α} (hs : s.Fi
     ∃ M, ∀ i ∈ s, M ≤ i :=
   directed_id.finite_set_le (r := (· ≥ ·)) hs
 
+@[simp]
 theorem Finite.bddAbove_range [IsDirected α (· ≤ ·)] (f : β → α) : BddAbove (Set.range f) := by
   obtain ⟨M, hM⟩ := Finite.exists_le f
   refine ⟨M, fun a ha => ?_⟩
   obtain ⟨b, rfl⟩ := ha
   exact hM b
 
+@[simp]
 theorem Finite.bddBelow_range [IsDirected α (· ≥ ·)] (f : β → α) : BddBelow (Set.range f) := by
   obtain ⟨M, hM⟩ := Finite.exists_ge f
   refine ⟨M, fun a ha => ?_⟩

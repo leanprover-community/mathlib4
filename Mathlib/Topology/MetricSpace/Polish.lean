@@ -315,8 +315,8 @@ instance instCompleteSpace [CompleteSpace α] : CompleteSpace (CompleteCopy s) :
     rw [← s.isOpen.isClosed_compl.not_mem_iff_infDist_pos ⟨x, xs⟩]; exact not_not.symm
   have I : ∀ n, 1 / C ≤ infDist (u n).1 sᶜ := fun n ↦ by
     have : 0 < infDist (u n).1 sᶜ := Hmem.1 (u n).2
-    rw [div_le_iff' Cpos]
-    exact (div_le_iff this).1 (hC n).le
+    rw [div_le_iff₀' Cpos]
+    exact (div_le_iff₀ this).1 (hC n).le
   have I' : 1 / C ≤ infDist x sᶜ :=
     have : Tendsto (fun n => infDist (u n).1 sᶜ) atTop (𝓝 (infDist x sᶜ)) :=
       ((continuous_infDist_pt (sᶜ : Set α)).tendsto x).comp xlim
@@ -328,7 +328,10 @@ theorem _root_.IsOpen.polishSpace {α : Type*} [TopologicalSpace α] [PolishSpac
     (hs : IsOpen s) : PolishSpace s := by
   letI := upgradePolishSpace α
   lift s to Opens α using hs
-  have : SecondCountableTopology s.CompleteCopy := inferInstanceAs (SecondCountableTopology s)
+  #adaptation_note /-- After lean4#5020, many instances for Lie algebras and manifolds are no
+  longer found. -/
+  have : SecondCountableTopology s.CompleteCopy :=
+    TopologicalSpace.Subtype.secondCountableTopology _
   exact inferInstanceAs (PolishSpace s.CompleteCopy)
 
 end CompleteCopy
@@ -365,7 +368,13 @@ theorem _root_.IsClosed.isClopenable [TopologicalSpace α] [PolishSpace α] {s :
   · rw [← f.induced_symm]
     exact f.symm.polishSpace_induced
   · rw [isOpen_coinduced, isOpen_sum_iff]
-    simp [f, preimage_preimage]
+    simp only [preimage_preimage, f]
+    have inl (x : s) : (Equiv.Set.sumCompl s) (Sum.inl x) = x := Equiv.Set.sumCompl_apply_inl ..
+    have inr (x : ↑sᶜ) : (Equiv.Set.sumCompl s) (Sum.inr x) = x := Equiv.Set.sumCompl_apply_inr ..
+    simp_rw [inl, inr, Subtype.coe_preimage_self]
+    simp only [isOpen_univ, true_and]
+    rw [Subtype.preimage_coe_compl']
+    simp
 
 theorem IsClopenable.compl [TopologicalSpace α] {s : Set α} (hs : IsClopenable s) :
     IsClopenable sᶜ := by

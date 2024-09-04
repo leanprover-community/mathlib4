@@ -128,7 +128,7 @@ theorem Set.Finite.isOpen_biInter {s : Set α} {f : α → Set X} (hs : s.Finite
 
 theorem isOpen_iInter_of_finite [Finite ι] {s : ι → Set X} (h : ∀ i, IsOpen (s i)) :
     IsOpen (⋂ i, s i) :=
-  (finite_range _).isOpen_sInter  (forall_mem_range.2 h)
+  (finite_range _).isOpen_sInter (forall_mem_range.2 h)
 
 theorem isOpen_biInter_finset {s : Finset α} {f : α → Set X} (h : ∀ i ∈ s, IsOpen (f i)) :
     IsOpen (⋂ i ∈ s, f i) :=
@@ -155,6 +155,12 @@ theorem isClosed_const {p : Prop} : IsClosed { _x : X | p } := ⟨isOpen_const (
 @[simp] theorem isClosed_empty : IsClosed (∅ : Set X) := isClosed_const
 
 @[simp] theorem isClosed_univ : IsClosed (univ : Set X) := isClosed_const
+
+lemma IsOpen.isLocallyClosed (hs : IsOpen s) : IsLocallyClosed s :=
+  ⟨_, _, hs, isClosed_univ, (inter_univ _).symm⟩
+
+lemma IsClosed.isLocallyClosed (hs : IsClosed s) : IsLocallyClosed s :=
+  ⟨_, _, isOpen_univ, hs, (univ_inter _).symm⟩
 
 theorem IsClosed.union : IsClosed s₁ → IsClosed s₂ → IsClosed (s₁ ∪ s₂) := by
   simpa only [← isOpen_compl_iff, compl_union] using IsOpen.inter
@@ -1085,7 +1091,7 @@ theorem mem_closure_iff_nhdsWithin_neBot : x ∈ closure s ↔ NeBot (𝓝[s] x)
 lemma nhdsWithin_neBot : (𝓝[s] x).NeBot ↔ ∀ ⦃t⦄, t ∈ 𝓝 x → (t ∩ s).Nonempty := by
   rw [nhdsWithin, inf_neBot_iff]
   exact forall₂_congr fun U _ ↦
-    ⟨fun h ↦ h (mem_principal_self _), fun h u hsu ↦ h.mono $ inter_subset_inter_right _ hsu⟩
+    ⟨fun h ↦ h (mem_principal_self _), fun h u hsu ↦ h.mono <| inter_subset_inter_right _ hsu⟩
 
 @[gcongr]
 theorem nhdsWithin_mono (x : X) {s t : Set X} (h : s ⊆ t) : 𝓝[s] x ≤ 𝓝[t] x :=
@@ -1362,6 +1368,14 @@ theorem ContinuousAt.eventually_mem {f : X → Y} {x : X} (hf : ContinuousAt f x
     (hs : s ∈ 𝓝 (f x)) : ∀ᶠ y in 𝓝 x, f y ∈ s :=
   hf hs
 
+/-- If a function ``f` tends to somewhere other than `𝓝 (f x)` at `x`,
+then `f` is not continuous at `x`
+-/
+lemma not_continuousAt_of_tendsto {f : X → Y} {l₁ : Filter X} {l₂ : Filter Y} {x : X}
+    (hf : Tendsto f l₁ l₂) [l₁.NeBot] (hl₁ : l₁ ≤ 𝓝 x) (hl₂ : Disjoint (𝓝 (f x)) l₂) :
+    ¬ ContinuousAt f x := fun cont ↦
+  (cont.mono_left hl₁).not_tendsto hl₂ hf
+
 /-- Deprecated, please use `not_mem_tsupport_iff_eventuallyEq` instead. -/
 @[deprecated (since := "2024-01-15")]
 theorem eventuallyEq_zero_nhds {M₀} [Zero M₀] {f : X → M₀} :
@@ -1443,7 +1457,7 @@ theorem Filter.EventuallyEq.continuousAt (h : f =ᶠ[𝓝 x] fun _ => y) :
 
 theorem continuous_of_const (h : ∀ x y, f x = f y) : Continuous f :=
   continuous_iff_continuousAt.mpr fun x =>
-    Filter.EventuallyEq.continuousAt <| eventually_of_forall fun y => h y x
+    Filter.EventuallyEq.continuousAt <| Eventually.of_forall fun y => h y x
 
 theorem continuousAt_id : ContinuousAt id x :=
   continuous_id.continuousAt
@@ -1730,3 +1744,5 @@ example [TopologicalSpace X] [TopologicalSpace Y] {x₀ : X} (f : X → X → Y)
   -- hf.comp_of_eq (continuousAt_id.prod continuousAt_id) rfl -- works
 ```
 -/
+
+set_option linter.style.longFile 1900
