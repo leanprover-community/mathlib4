@@ -48,7 +48,7 @@ def bodd (n : ℕ) : Bool := (boddDiv2 n).1
 
 @[simp] lemma bodd_zero : bodd 0 = false := rfl
 
-lemma bodd_one : bodd 1 = true := rfl
+@[simp]lemma bodd_one : bodd 1 = true := rfl
 
 lemma bodd_two : bodd 2 = false := rfl
 
@@ -88,12 +88,12 @@ lemma mod_two_of_bodd (n : ℕ) : n % 2 = cond (bodd n) 1 0 := by
 
 @[simp] lemma div2_zero : div2 0 = 0 := rfl
 
-lemma div2_one : div2 1 = 0 := rfl
+@[simp] lemma div2_one : div2 1 = 0 := rfl
 
 lemma div2_two : div2 2 = 1 := rfl
 
 @[simp]
-lemma div2_succ (n : ℕ) : div2 (succ n) = cond (bodd n) (succ (div2 n)) (div2 n) := by
+lemma div2_succ (n : ℕ) : div2 (n + 1) = cond (bodd n) (succ (div2 n)) (div2 n) := by
   simp only [bodd, boddDiv2, div2]
   rcases boddDiv2 n with ⟨_|_, _⟩ <;> simp
 
@@ -194,6 +194,12 @@ lemma binaryRec_zero {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit
     binaryRec z f 0 = z := by
   rw [binaryRec]
   rfl
+
+@[simp]
+lemma binaryRec_one {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) :
+    binaryRec z f 1 = f true 0 z := by
+  rw [binaryRec]
+  simp
 
 /-! bitwise ops -/
 
