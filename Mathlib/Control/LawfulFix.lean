@@ -189,12 +189,19 @@ def toUnitMono (f : Part α →o Part α) : (Unit → Part α) →o Unit → Par
   toFun x u := f (x u)
   monotone' x y (h : x ≤ y) u := f.monotone <| h u
 
---@[deprecated (since := "2024-08-26")]
 theorem ωScottContinuous_toUnitMono (f : Part α → Part α) (hc : ωScottContinuous f) :
     ωScottContinuous (toUnitMono ⟨f,hc.monotone⟩) := .of_map_ωSup_of_orderHom fun _ => by
     ext ⟨⟩ : 1
     dsimp [OmegaCompletePartialOrder.ωSup]
     erw [hc.map_ωSup, Chain.map_comp]; rfl
+
+set_option linter.deprecated false in
+@[deprecated ωScottContinuous_toUnitMono (since := "2024-08-26")]
+theorem to_unit_cont (f : Part α →o Part α) (hc : Continuous f) : Continuous (toUnitMono f)
+  | _ => by
+    ext ⟨⟩ : 1
+    dsimp [OmegaCompletePartialOrder.ωSup]
+    erw [hc, Chain.map_comp]; rfl
 
 instance lawfulFix : LawfulFix (Part α) :=
   ⟨fun {f : Part α → Part α} hc ↦ show Part.fix (toUnitMono ⟨f,hc.monotone⟩) () = _ by
