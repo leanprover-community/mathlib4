@@ -67,9 +67,11 @@ theorem toOuterMeasure_pure_apply : (pure a).toOuterMeasure s = if a ∈ s then 
   refine (toOuterMeasure_apply (pure a) s).trans ?_
   split_ifs with ha
   · refine (tsum_congr fun b => ?_).trans (tsum_ite_eq a 1)
-    exact ite_eq_left_iff.2 fun hb => symm (ite_eq_right_iff.2 fun h => (hb <| h.symm ▸ ha).elim)
+    exact (ite_eq_left_iff _ _ _).2 fun hb =>
+      symm ((ite_eq_right_iff _ _ _).2 fun h => (hb <| h.symm ▸ ha).elim)
   · refine (tsum_congr fun b => ?_).trans tsum_zero
-    exact ite_eq_right_iff.2 fun hb => ite_eq_right_iff.2 fun h => (ha <| h ▸ hb).elim
+    exact (ite_eq_right_iff _ _ _).2 fun hb =>
+      (ite_eq_right_iff _ _ _).2 fun h => (ha <| h ▸ hb).elim
 
 variable [MeasurableSpace α]
 
@@ -220,7 +222,7 @@ theorem bindOnSupport_eq_bind (p : PMF α) (f : α → PMF β) :
     (p.bindOnSupport fun a _ => f a) = p.bind f := by
   ext b
   have : ∀ a, ite (p a = 0) 0 (p a * f a b) = p a * f a b :=
-    fun a => ite_eq_right_iff.2 fun h => h.symm ▸ symm (zero_mul <| f a b)
+    fun a => (ite_eq_right_iff _ _ _).2 fun h => h.symm ▸ symm (zero_mul <| f a b)
   simp only [bindOnSupport_apply fun a _ => f a, p.bind_apply f, dite_eq_ite, mul_ite,
     mul_zero, this]
 
