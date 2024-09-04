@@ -537,18 +537,12 @@ theorem linear_independent_exp_aux2 (s : Finset ℂ) (x : AddMonoidAlgebra ℚ (
     erw [map_one]
     rw [AlgEquiv.one_apply]
     exact Ideal.mul_mem_right _ _ x_ker
-  set V' := toConjAlgEquiv s ℚ ⟨V, hV⟩ with V'_def
+  set V' := toConjAlgEquiv s ℚ ⟨V, hV⟩
   have V'0 : V' ≠ 0 := by
     dsimp only [V']; rw [AddEquivClass.map_ne_zero_iff]
     exact fun h => absurd (Subtype.mk.inj h) V0
   obtain ⟨i, hi⟩ := Finsupp.support_nonempty_iff.mpr V'0
   set V'' := V' * Finsupp.single (-i) (1 : ℚ) with V''_def
-  have V''0 : V'' ≠ 0 := by
-    have : NoZeroDivisors (GalConjClasses ℚ (K s) →₀ ℚ) := IsDomain.to_noZeroDivisors _
-    rw [V''_def]
-    refine mul_ne_zero V'0 fun h => ?_
-    rw [Finsupp.single_eq_zero] at h
-    exact one_ne_zero h
   have hV'' : V'' 0 ≠ 0 := by
     rw [V''_def, ← V'.sum_single, Finsupp.sum, ← add_sum_erase _ _ hi, add_mul, sum_mul,
       Finsupp.add_apply]

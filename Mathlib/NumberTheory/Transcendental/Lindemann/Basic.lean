@@ -164,7 +164,7 @@ theorem linear_independent_exp (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i
       ‖algebraMap ℤ ℂ (k ^ (P.natDegree * q) * n * w + q * ∑ j, w' j • sz j)‖ := by
     simp_rw [IsScalarTower.algebraMap_apply ℤ K ℂ, algebraMap_int_eq, Int.coe_castRingHom]
     norm_cast
-  rw [this, algebraMap_int_eq, Int.coe_castRingHom, norm_int, ← Int.cast_abs,
+  rw [this, algebraMap_int_eq, Int.coe_castRingHom, norm_intCast, ← Int.cast_abs,
     ← Int.cast_one, Int.cast_lt, Int.abs_lt_one_iff] at H
   replace H : (k ^ (P.natDegree * q) * n * w + q * ∑ j : Fin m, w' j • sz j) % q = 0 := by
     rw [H, Int.zero_emod]
