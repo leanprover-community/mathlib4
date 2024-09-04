@@ -83,6 +83,19 @@ theorem add_pred [AddGroup α] [One α] [PredSubOrder α] (x y : α) :
     x + pred y = pred (x + y) := by
   rw [pred_eq_sub_one, pred_eq_sub_one, add_sub]
 
+theorem succ_add [AddCommSemigroup α] [One α] [SuccAddOrder α] (x y : α) :
+    succ x + y = succ (x + y) := by
+  rw [add_comm, add_succ, add_comm]
+
+theorem pred_add [AddCommGroup α] [One α] [PredSubOrder α] (x y : α) :
+    pred x + y = pred (x + y) := by
+  rw [add_comm, add_pred, add_comm]
+
+theorem natCast_succ [AddMonoidWithOne α] [SuccAddOrder α] (n : ℕ) : n.succ = succ (n : α) := by
+  cases n with
+  | zero => rw [Nat.cast_zero, succ_zero, Nat.cast_one]
+  | succ n => rw [succ_eq_add_one, Nat.cast_add_one, Nat.cast_succ]
+
 @[simp]
 theorem wcovBy_add_one [Add α] [One α] [SuccAddOrder α] (x : α) : x ⩿ x + 1 := by
   rw [← succ_eq_add_one]
