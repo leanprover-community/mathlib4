@@ -48,7 +48,8 @@ lemma conjneg_ne_conjneg : conjneg f ≠ conjneg g ↔ f ≠ g := conjneg_inject
 @[simp] lemma conjneg_sum (s : Finset ι) (f : ι → G → R) :
     conjneg (∑ i ∈ s, f i) = ∑ i ∈ s, conjneg (f i) := by ext; simp
 
-@[simp] lemma conjneg_prod (s : Finset ι) (f : ι → G → R) :conjneg (∏ i ∈ s, f i) = ∏ i ∈ s, conjneg (f i) := by ext; simp
+@[simp] lemma conjneg_prod (s : Finset ι) (f : ι → G → R) :
+    conjneg (∏ i ∈ s, f i) = ∏ i ∈ s, conjneg (f i) := by ext; simp
 
 @[simp] lemma conjneg_eq_zero : conjneg f = 0 ↔ f = 0 := by
   rw [← conjneg_inj, conjneg_conjneg, conjneg_zero]
