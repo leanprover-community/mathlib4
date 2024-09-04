@@ -309,8 +309,8 @@ lemma ss2 (x : U (E := E₁) (n + 1)) : (polar 𝕜₁ (U (n+2)) ∩ K C s n x )
 
 lemma more_confusion (u : Finset (U (n + 1))) (h : Nonempty u) :
     ((polar 𝕜₁ (U (n+2))) ∩ (⋂ (i : u), (K C s n i))) =
-      ((polar 𝕜₁ (U (n+2))) ∩ (⋂ (i ∈ u), (K C s n i.val))) :=
-  by aesop
+      ((polar 𝕜₁ (U (n+2))) ∩ (⋂ (i ∈ u), (K C s n i.val))) := by
+  aesop
 
 lemma confusion (u : Finset (U (n + 1))) (h : Nonempty u):
     ((polar 𝕜₁ (U (n+2))) ∩ (⋂ (i : u), (K C s n i))) = ⋂ (i ∈ u), (K C s n i.val) := by
