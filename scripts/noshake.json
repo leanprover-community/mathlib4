@@ -330,10 +330,6 @@
   "Mathlib.Lean.Expr.ExtraRecognizers": ["Mathlib.Data.Set.Operations"],
   "Mathlib.Lean.Expr.Basic": ["Batteries.Logic"],
   "Mathlib.Init.Data.Nat.Lemmas": ["Batteries.Data.Nat.Lemmas", "Batteries.WF"],
-  "Mathlib.Init.Data.List.Lemmas": ["Batteries.Data.List.Lemmas"],
-  "Mathlib.Init.Data.List.Basic": ["Batteries.Data.List.Basic"],
-  "Mathlib.Init.Data.Int.Basic": ["Batteries.Data.Int.Order"],
-  "Mathlib.Init.Data.Bool.Lemmas": ["Mathlib.Tactic.AdaptationNote"],
   "Mathlib.GroupTheory.MonoidLocalization.Basic": ["Mathlib.Init.Data.Prod"],
   "Mathlib.Geometry.Manifold.Sheaf.Smooth":
   ["Mathlib.CategoryTheory.Sites.Whiskering"],
