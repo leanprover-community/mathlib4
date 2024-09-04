@@ -91,6 +91,12 @@ def benchOutput (js : System.FilePath) : IO Unit := do
   --    tallied := tallied.push gp
   let sortHead := (head.qsort (·.file < ·.file)).map (0, #[·])
   let togetherSorted := sortHead ++ grouped.toArray.qsort (·.1 > ·.1)
+  let ts1 := togetherSorted.toList.groupBy (·.2.size == 1 && ·.2.size == 1)
+  let ts2 := List.join <| ts1.map fun l =>
+    if (l.getD 0 default).2.size == 1 then
+      [(none, (l.map Prod.snd).foldl (· ++ ·) #[])]
+    else l.map fun (n, ar) => (some n, ar)
+/-
   for (roundedDiff, g) in togetherSorted do
     --let instrs := (g.getD 0 default).diff / 10^9
     --let (s, a) :=
@@ -101,6 +107,17 @@ def benchOutput (js : System.FilePath) : IO Unit := do
       match g with
         | #[g] => (formatFile g.file ++ s!", Instructions {", ".intercalate [formatDiff g.diff, formatPercent (g.reldiff)]}\n")
         | _ => s!"<details><summary>{g.size} files, Instructions {formatDiff <| roundedDiff * 10 ^ 9}</summary>\n\n{tableArrayBench (g.qsort (·.diff > ·.diff))}\n</details>"
+-/
+  for (roundedDiff, gs) in ts2 do
+    --let instrs := (g.getD 0 default).diff / 10^9
+    --let (s, a) :=
+    --  match g with
+    --    | #[g] => (g.file.dropWhile (!·.isAlpha), [formatDiff g.diff, formatPercent g.reldiff])
+    --    | _ => (s!"{g.size} files", [formatDiff <| roundedDiff * 10 ^ 9])
+    let entry :=
+      match roundedDiff with
+        | none => gs.map fun g : Bench => (formatFile g.file ++ s!", Instructions {", ".intercalate [formatDiff g.diff, formatPercent (g.reldiff)]}\n")
+        | some roundedDiff => #[s!"<details><summary>{gs.size} files, Instructions {formatDiff <| roundedDiff * 10 ^ 9}</summary>\n\n" ++ tableArrayBench (gs.qsort (·.diff > ·.diff)) ++ "\n</details>"]
         --(s!"{g.size} files", [formatDiff <| roundedDiff * 10 ^ 9])
     --let summ := s!"<summary>{s}, Instructions {", ".intercalate a}</summary>"
     --let indentTable := (tableArrayBench g).replace "\n" "\n  "
@@ -125,6 +142,7 @@ def benchOutput (js : System.FilePath) : IO Unit := do
 
 #eval #[0, 1, -1, -2].qsort (· > ·)
 #eval #["~M", "b"].qsort (· > ·)
+#check List.groupBy
 
 #eval
   benchOutput "benchOutput.json"
