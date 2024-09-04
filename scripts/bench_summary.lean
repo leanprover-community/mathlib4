@@ -48,48 +48,57 @@ def formatDiff (z : Int) : String :=
   let (sgn, intDigs, decDigs) := intDecs z
   s!"{sgn}{intDigs}.{decDigs}⬝10⁹"
 
-/-- `formatPercentAux z exp prec` uses `intDecs` to format an integer as `±x.y%`.
-This is used in `formatPercent`.
--/
-def formatPercentAux (z : Int) (exp : Nat := 9) (prec : Nat := 3) : String :=
-  let (sgn, intDigs, decDigs) := intDecs z exp prec
-  s!"({sgn}{intDigs}.{decDigs}%)"
-
 /-- converts a `Float` into a formatted string of the form `±z.w%`. -/
 def formatPercent (reldiff : Float) : String :=
   -- shift by `2` twice: the first one, to get a `%`; the second, for 2 decimal digits of precision
   let reldiff := reldiff * 10 ^ 4
   let (sgn : Int) := if reldiff < 0 then -1 else 1
-  let (sgnf : Float) := if reldiff < 0 then -1 else 1
+  let (sgnf : Float) := .ofInt sgn
   let reldiff := sgnf * reldiff
-  formatPercentAux (sgn * reldiff.toUInt32.val) 0 2
+  let (sgn, intDigs, decDigs) := intDecs (sgn * reldiff.toUInt32.val) 0 2
+  s!"({sgn}{intDigs}.{decDigs}%)"
 
-#guard
-  let floats : Array Float := #[0, 1/7, 0.002]
-  floats.map formatPercent == #["(+0.0%)", "(+14.28%)", "(+0.20%)"]
+/-- info: #["(+0.0%)", "(+14.28%)", "(+0.20%)", "(-0.60%)"] -/
+#guard_msgs in
+#eval
+  let floats : Array Float := #[0, 1/7, 0.002, -0.006]
+  floats.map formatPercent
 
-/-- converts a `String` into a formatted string of the form `` `file``, removing leading
-non-letters. -/
+/--
+`formatFile file` converts a `String` into a formatted string of the form `` `file``,
+removing leading non-letters. It is expected that `~` is the only leading non-letter.
+-/
 def formatFile (file : String) : String :=
   "`" ++ file.dropWhile (!·.isAlpha) ++ "`"
 
-/-- converts a `Bench` into a formatted string of the form `| file | ±x.y⬝10⁹ | ±z.w% |`. -/
+/--
+`summary bc` converts a `Bench` into a formatted string of the form
+`| file | ±x.y⬝10⁹ | ±z.w% |` (technically, without the spaces).
+-/
 def summary (bc : Bench) : String :=
   let reldiff := bc.reldiff
   let (sgnf : Float) := if reldiff < 0 then -1 else 1
   let middle := [formatFile bc.file, formatDiff bc.diff, formatPercent (sgnf * reldiff)]
   "|".intercalate (""::middle ++ [""])
 
-/-- formats an array of `Bench`es into an md-table whose columns are `File`, `Instructions` and `%`.
+/--
+`tableArrayBench bcs` formats an array of `Bench`es into an md-table whose columns are
+`File`, `Instructions` and `%`.
 A typical entry may look like ``|`Mathlib.Analysis.Seminorm`|+2.509⬝10⁹|(+1.41%)|``
 -/
-def tableArrayBench (arr : Array Bench) : String :=
+def tableArrayBench (bcs : Array Bench) : String :=
   let header := "|File|Instructions|%|\n|-|-:|:-:|"
-  "\n".intercalate (header :: (arr.map summary).toList)
+  "\n".intercalate (header :: (bcs.map summary).toList)
 
-def summaryTable (arr : Array Bench) (roundDiff : Int) : String :=
-  s!"<details><summary>{arr.size} files, Instructions {formatDiff <| roundDiff / (10 ^ 9) * 10 ^ 9}\
-    </summary>\n\n{tableArrayBench (arr.qsort (·.diff > ·.diff))}\n</details>\n"
+/--
+`summaryTable bcs roundDiff` is similar to `tableArrayBench bcs`, except that it encloses it
+in a `<details><summary>` html-block.
+The `<summary>` part tallies the number of entries in `bcs` and the significant change in
+number of instructions `roundDiff`.
+-/
+def summaryTable (bcs : Array Bench) (roundDiff : Int) : String :=
+  s!"<details><summary>{bcs.size} files, Instructions {formatDiff <| roundDiff * 10 ^ 9}\
+    </summary>\n\n{tableArrayBench (bcs.qsort (·.diff > ·.diff))}\n</details>\n"
 
 /-- Assuming that the input is a `json`-string formatted to produce an array of `Bench`,
 `benchOutput` prints the "significant" changes in numbers of instructions. -/
