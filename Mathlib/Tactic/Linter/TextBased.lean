@@ -389,7 +389,7 @@ local instance instHashableChar : Hashable Char where
 def ASCII.whitespace (c : Char) := #[' ', '\n'].contains c
 
 /-- Printable ASCII characters, not including whitespace. -/
-def ASCII.printable (c : Char) := 21 ≤ c.toNat && c.toNat ≤ 126
+def ASCII.printable (c : Char) := 0x21 ≤ c.toNat && c.toNat ≤ 0x7e
 
 /--
 Symbols with VSCode extension abbreviation as of Aug. 28, 2024
