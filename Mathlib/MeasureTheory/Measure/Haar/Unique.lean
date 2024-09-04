@@ -778,7 +778,7 @@ theorem measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
         Summable.countable_support_ennreal this.ne
       have : support (fun (i : m) ↦ ρ (s ∩ (i : G) • k)) = univ := by
         refine eq_univ_iff_forall.2 fun i ↦ ?_
-        refine ne_of_gt <| hρ (i : G) (hms i.2) _ ?_
+        refine ne_of_gt (hρ (i : G) (hms i.2) _ ?_)
         exact inter_mem_nhdsWithin s (by simpa)
       rw [this] at C
       have : Countable m := countable_univ_iff.mp C
