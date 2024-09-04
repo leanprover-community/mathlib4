@@ -14,7 +14,7 @@ This file is designed for development of fun_prop and does not depend on most of
 two function properties `Con` and `Lin` which roughly correspond to `Continuity` and `IsLinearMap`.
 -/
 
-set_option linter.longLine false
+set_option linter.style.longLine false
 
 open Function
 
