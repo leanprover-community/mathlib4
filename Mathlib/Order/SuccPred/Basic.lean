@@ -1210,7 +1210,6 @@ end WithBot
 
 /-! ### Archimedeanness -/
 
-
 /-- A `SuccOrder` is succ-archimedean if one can go from any two comparable elements by iterating
 `succ` -/
 class IsSuccArchimedean (α : Type*) [Preorder α] [SuccOrder α] : Prop where
