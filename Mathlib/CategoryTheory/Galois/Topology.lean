@@ -46,10 +46,17 @@ lemma autEmbedding_injective : Function.Injective (autEmbedding F) := by
   have : σ.app X = τ.app X := congr_fun h X
   rw [← Iso.app_hom, ← Iso.app_hom, this]
 
+/-- We put the discrete topology on `F.obj X`. -/
 scoped instance (X : C) : TopologicalSpace (F.obj X) := ⊥
-scoped instance (X : C) : DiscreteTopology (F.obj X) := ⟨rfl⟩
+
+@[scoped instance]
+lemma obj_discreteTopology (X : C) : DiscreteTopology (F.obj X) := ⟨rfl⟩
+
+/-- We put the discrete topology on `Aut (F.obj X)`. -/
 scoped instance (X : C) : TopologicalSpace (Aut (F.obj X)) := ⊥
-scoped instance (X : C) : DiscreteTopology (Aut (F.obj X)) := ⟨rfl⟩
+
+@[scoped instance]
+lemma aut_discreteTopology (X : C) : DiscreteTopology (Aut (F.obj X)) := ⟨rfl⟩
 
 /-- `Aut F` is equipped with the by the embedding into `∀ X, Aut (F.obj X)` induced embedding. -/
 instance : TopologicalSpace (Aut F) :=
