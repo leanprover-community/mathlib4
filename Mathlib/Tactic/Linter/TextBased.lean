@@ -625,7 +625,7 @@ def mathlibEmojiSymbols := #[
 .ofNat 0x1F50D, -- 🔍️
 .ofNat 0x1F389, -- 🎉️
 '\u23F3', -- ⏳️
-.ofNat 0x1F3C1 -- '\u1F3C1'  -- 🏁️
+.ofNat 0x1F3C1  -- 🏁️
 ]
 
 -- this changes how it's displayed
@@ -646,7 +646,7 @@ def mathlibEmojiSymbols := #[
 def mathlibTextSymbols : Array Char := #['↗', '↘'] -- TODO fix / make complete
 
 end unicodeLinter
-
+-- é or é  \u0301
 open unicodeLinter in
 /-- Lint a collection of input strings if one of them contains unwanted unicode. -/
 def unicodeLinter : TextbasedLinter := fun lines ↦ Id.run do
@@ -657,14 +657,11 @@ def unicodeLinter : TextbasedLinter := fun lines ↦ Id.run do
     let suspiciousCharsIdx := line.findAll (!isWhitelisted ·)
     -- check if the suspicious character is allowed by special circumstances
     for pos in suspiciousCharsIdx do
-      -- TODO according to docstring of `prev` / `next`, this may not be valid position
-      -- then result unspecified!?
-      -- For example, this line will be linted and error message contains U+fffd:
-          -- 🎉
-      -- because the character occurs at the end of the line without selector
+      -- Note that `pos`, being returned by `findAll`, is a valid position.
       let previousC := line.get₂ (line.prev pos) -- may be `thisC` if `pos == 0`
       let thisC := line.get₂ pos
-      let nextC := line.get₂ (line.next pos)
+      -- using '\n' would be proper but we don't want linebreaks in the linter warning output.
+      let nextC := if pos == line.endPos then '\uFFFD' else line.get₂ (line.next pos)
       -- Ensure specified emojis/text-symbols have the correct variant-selector
       -- Ensure variant-selectors only appear when there is someting to select
       if thisC ∈ mathlibEmojiSymbols then
