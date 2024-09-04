@@ -109,13 +109,13 @@ lemma length_le_height (x : α) (p : LTSeries α) (hlast : p.last ≤ x) :
   · simp_all
 
 lemma length_le_height_last (p : LTSeries α) : p.length ≤ height p.last :=
-  le_height_of_last_le _ p le_rfl
+  length_le_height _ p le_rfl
 
 lemma height_mono : Monotone (α := α) height := by
   intro x y hxy
   apply height_le
   intros p hlast _
-  apply le_height_of_last_le y p (hlast ▸ hxy)
+  apply length_le_height y p (hlast ▸ hxy)
 
 end height
 
@@ -199,7 +199,7 @@ lemma krullDim_eq_iSup_height : krullDim α = ⨆ (a : α), (height a : WithBot 
       suffices p.length ≤ ⨆ (a : α), height a by
         exact (WithBot.unbot'_le_iff fun _ => this).mp this
       apply le_iSup_of_le p.last (length_le_height_last p)
-    · rw [krullDim_eq_of_nonempty]
+    · rw [krullDim_eq_iSup_length]
       simp only [WithBot.coe_le_coe, iSup_le_iff]
       intro x
       exact height_le _ _ (fun p _ ↦ le_iSup_of_le p (le_refl _))
