@@ -264,6 +264,7 @@ theorem ωScottContinuous_uncurry :
   rw [map_comp, map_comp]
   rfl
 
+set_option linter.deprecated false in
 @[deprecated ωScottContinuous_uncurry  (since := "2024-08-26")]
 theorem continuous_uncurry : Continuous <| monotoneUncurry α β γ := fun c ↦ by
   ext ⟨x, y⟩
@@ -288,7 +289,7 @@ theorem uncurry_curry_ωScottContinuous (hc : ωScottContinuous f) :
     ωScottContinuous <| (monotoneUncurry α β γ).comp <|
       (⟨f,hc.monotone⟩ : ((x : _) → (y : β x) → γ x y) →o (x : _) → (y : β x) → γ x y).comp <|
       monotoneCurry α β γ :=
-  (continuous_uncurry _ _ _).comp (hc.comp (ωScottContinuous_curry _ _ _))
+  (ωScottContinuous_uncurry _ _ _).comp (hc.comp (ωScottContinuous_curry _ _ _))
 
 end Curry
 
