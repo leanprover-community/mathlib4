@@ -9,7 +9,7 @@ import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Order.SuccPred.Basic
 
 /-!
-# Interaction of successors and arithmetic
+# Interaction between successors and arithmetic
 
 We define the `SuccAddOrder` and `PredSubOrder` typeclasses, for orders satisfying `succ x = x + 1`
 and `pred x = x - 1` respectively. This allows us to transfer the API for successors and

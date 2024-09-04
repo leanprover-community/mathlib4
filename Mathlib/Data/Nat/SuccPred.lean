@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Fin.Basic
-import Mathlib.Order.SuccPred.SuccAddOrder
+import Mathlib.Order.SuccPred.Arithmetic
 
 /-!
 # Successors and predecessors of naturals
