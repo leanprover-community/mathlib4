@@ -3643,13 +3643,13 @@ import Mathlib.Order.RelSeries
 import Mathlib.Order.SemiconjSup
 import Mathlib.Order.SetNotation
 import Mathlib.Order.Sublattice
+import Mathlib.Order.SuccPred.Arithmetic
 import Mathlib.Order.SuccPred.Basic
 import Mathlib.Order.SuccPred.CompleteLinearOrder
 import Mathlib.Order.SuccPred.IntervalSucc
 import Mathlib.Order.SuccPred.Limit
 import Mathlib.Order.SuccPred.LinearLocallyFinite
 import Mathlib.Order.SuccPred.Relation
-import Mathlib.Order.SuccPred.Arithmetic
 import Mathlib.Order.SupClosed
 import Mathlib.Order.SupIndep
 import Mathlib.Order.SymmDiff
