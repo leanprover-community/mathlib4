@@ -652,6 +652,8 @@ import Mathlib.Algebra.Order.Ring.Unbundled.Basic
 import Mathlib.Algebra.Order.Ring.Unbundled.Nonneg
 import Mathlib.Algebra.Order.Ring.Unbundled.Rat
 import Mathlib.Algebra.Order.Ring.WithTop
+import Mathlib.Algebra.Order.Star.Basic
+import Mathlib.Algebra.Order.Star.Conjneg
 import Mathlib.Algebra.Order.Sub.Basic
 import Mathlib.Algebra.Order.Sub.Defs
 import Mathlib.Algebra.Order.Sub.Prod
@@ -776,11 +778,11 @@ import Mathlib.Algebra.Star.BigOperators
 import Mathlib.Algebra.Star.CHSH
 import Mathlib.Algebra.Star.Center
 import Mathlib.Algebra.Star.CentroidHom
+import Mathlib.Algebra.Star.Conjneg
 import Mathlib.Algebra.Star.Free
 import Mathlib.Algebra.Star.Module
 import Mathlib.Algebra.Star.NonUnitalSubalgebra
 import Mathlib.Algebra.Star.NonUnitalSubsemiring
-import Mathlib.Algebra.Star.Order
 import Mathlib.Algebra.Star.Pi
 import Mathlib.Algebra.Star.Pointwise
 import Mathlib.Algebra.Star.Prod
@@ -1364,7 +1366,8 @@ import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.Adjunction.Comma
 import Mathlib.CategoryTheory.Adjunction.Evaluation
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
-import Mathlib.CategoryTheory.Adjunction.Lifting
+import Mathlib.CategoryTheory.Adjunction.Lifting.Left
+import Mathlib.CategoryTheory.Adjunction.Lifting.Right
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Adjunction.Mates
 import Mathlib.CategoryTheory.Adjunction.Opposites
@@ -2838,7 +2841,6 @@ import Mathlib.GroupTheory.Transfer
 import Mathlib.InformationTheory.Hamming
 import Mathlib.Init
 import Mathlib.Init.Algebra.Classes
-import Mathlib.Init.Data.List.Lemmas
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Logic
 import Mathlib.Lean.CoreM
@@ -3247,6 +3249,7 @@ import Mathlib.MeasureTheory.MeasurableSpace.Defs
 import Mathlib.MeasureTheory.MeasurableSpace.Embedding
 import Mathlib.MeasureTheory.MeasurableSpace.Instances
 import Mathlib.MeasureTheory.MeasurableSpace.Invariants
+import Mathlib.MeasureTheory.MeasurableSpace.NCard
 import Mathlib.MeasureTheory.Measure.AEDisjoint
 import Mathlib.MeasureTheory.Measure.AEMeasurable
 import Mathlib.MeasureTheory.Measure.AddContent
@@ -3983,6 +3986,7 @@ import Mathlib.RingTheory.TensorProduct.MvPolynomial
 import Mathlib.RingTheory.Trace.Basic
 import Mathlib.RingTheory.Trace.Defs
 import Mathlib.RingTheory.TwoSidedIdeal.Basic
+import Mathlib.RingTheory.TwoSidedIdeal.Instances
 import Mathlib.RingTheory.TwoSidedIdeal.Lattice
 import Mathlib.RingTheory.UniqueFactorizationDomain
 import Mathlib.RingTheory.Unramified.Basic
@@ -4402,6 +4406,7 @@ import Mathlib.Topology.Category.CompHaus.Projective
 import Mathlib.Topology.Category.CompHausLike.Basic
 import Mathlib.Topology.Category.CompHausLike.EffectiveEpi
 import Mathlib.Topology.Category.CompHausLike.Limits
+import Mathlib.Topology.Category.CompHausLike.SigmaComparison
 import Mathlib.Topology.Category.CompactlyGenerated
 import Mathlib.Topology.Category.Compactum
 import Mathlib.Topology.Category.FinTopCat
@@ -4718,6 +4723,5 @@ import Mathlib.Util.Superscript
 import Mathlib.Util.SynthesizeUsing
 import Mathlib.Util.Tactic
 import Mathlib.Util.TermBeta
-import Mathlib.Util.Time
 import Mathlib.Util.WhatsNew
 import Mathlib.Util.WithWeakNamespace

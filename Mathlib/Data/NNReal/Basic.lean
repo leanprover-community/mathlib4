@@ -432,7 +432,7 @@ theorem orderIsoIccZeroCoe_symm_apply_coe (a : ℝ≥0) (b : Set.Iic a) :
 
 -- note we need the `@` to make the `Membership.mem` have a sensible type
 theorem coe_image {s : Set ℝ≥0} :
-    (↑) '' s = { x : ℝ | ∃ h : 0 ≤ x, @Membership.mem ℝ≥0 _ _ ⟨x, h⟩ s } :=
+    (↑) '' s = { x : ℝ | ∃ h : 0 ≤ x, @Membership.mem ℝ≥0 _ _ s ⟨x, h⟩ } :=
   Subtype.coe_image
 
 theorem bddAbove_coe {s : Set ℝ≥0} : BddAbove (((↑) : ℝ≥0 → ℝ) '' s) ↔ BddAbove s :=
