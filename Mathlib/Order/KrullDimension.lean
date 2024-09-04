@@ -117,6 +117,9 @@ lemma height_mono : Monotone (α := α) height := by
   intros p hlast _
   apply length_le_height y p (hlast ▸ hxy)
 
+@[gcongr] protected lemma _root_.GCongr.height_le_height (a b : α) (hab : a ≤ b) :
+    height a ≤ height b := height_mono hab
+
 end height
 
 section krullDim
