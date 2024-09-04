@@ -108,18 +108,19 @@ section
 abbrev OrderHomClass (F : Type*) (α β : outParam Type*) [LE α] [LE β] [FunLike F α β] :=
   RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop)
 
+
 /-- `OrderIsoClass F α β` states that `F` is a type of order isomorphisms.
 
 You should extend this class when you extend `OrderIso`. -/
-class OrderIsoClass (F α β : Type*) [LE α] [LE β] [EquivLike F α β] : Prop where
-  /-- An order isomorphism respects `≤`. -/
-  map_le_map_iff (f : F) {a b : α} : f a ≤ f b ↔ a ≤ b
+abbrev OrderIsoClass (F α β : Type*) [LE α] [LE β] [EquivLike F α β] :=
+  StrongRelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop)
 
 end
 
-export OrderIsoClass (map_le_map_iff)
-
-attribute [simp] map_le_map_iff
+@[simp] theorem map_le_map_iff {F α β : Type*}
+    [LE α] [LE β] [EquivLike F α β] [OrderIsoClass F α β] (f : F) {a b : α} :
+    f a ≤ f b ↔ a ≤ b :=
+  map_rel_iff f
 
 /-- Turn an element of a type `F` satisfying `OrderIsoClass F α β` into an actual
 `OrderIso`. This is declared as the default coercion from `F` to `α ≃o β`. -/
@@ -715,7 +716,7 @@ instance : EquivLike (α ≃o β) α β where
     congr
 
 instance : OrderIsoClass (α ≃o β) α β where
-  map_le_map_iff f _ _ := f.map_rel_iff'
+  map_rel_iff f _ _ := f.map_rel_iff'
 
 @[simp]
 theorem toFun_eq_coe {f : α ≃o β} : f.toFun = f :=

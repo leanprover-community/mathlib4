@@ -190,6 +190,29 @@ theorem preimage_equivalence {α β} (f : α → β) {s : β → β → Prop} (h
     Equivalence (f ⁻¹'o s) :=
   ⟨fun _ => hs.1 _, fun h => hs.2 h, fun h₁ h₂ => hs.3 h₁ h₂⟩
 
+section
+
+/-- `RelHomClass F r s` asserts that `F` is a type of functions such that all `f : F`
+satisfy `r a b → s (f a) (f b)`.
+
+The relations `r` and `s` are `outParam`s since figuring them out from a goal is a higher-order
+matching problem that Lean usually can't do unaided.
+-/
+class StrongRelHomClass (F : Type*) {α β : Type*} (r : outParam <| α → α → Prop)
+  (s : outParam <| β → β → Prop) [FunLike F α β] : Prop where
+  /-- A `RelHomClass` sends related elements to related elements -/
+  map_rel_iff : ∀ (f : F) {a b}, s (f a) (f b) ↔ r a b
+
+-- See note [lower instance priority]
+instance (priority := 100) StrongRelHomClass.toRelrHomClass (F : Type*) {α β : Type*}
+  (r : outParam <| α → α → Prop) (s : outParam <| β → β → Prop)
+  [FunLike F α β] [StrongRelHomClass F r s] : RelHomClass F r s :=
+  { map_rel := fun f _ _ => (map_rel_iff f).2 }
+
+export StrongRelHomClass (map_rel_iff)
+
+end
+
 namespace RelEmbedding
 
 /-- A relation embedding is also a relation homomorphism -/
@@ -200,7 +223,6 @@ def toRelHom (f : r ↪r s) : r →r s where
 instance : Coe (r ↪r s) (r →r s) :=
   ⟨toRelHom⟩
 
--- TODO: define and instantiate a `RelEmbeddingClass` when `EmbeddingLike` is defined
 instance : FunLike (r ↪r s) α β where
   coe := fun x => x.toFun
   coe_injective' f g h := by
@@ -208,9 +230,8 @@ instance : FunLike (r ↪r s) α β where
     rcases g with ⟨⟨⟩⟩
     congr
 
--- TODO: define and instantiate a `RelEmbeddingClass` when `EmbeddingLike` is defined
-instance : RelHomClass (r ↪r s) r s where
-  map_rel f _ _ := Iff.mpr (map_rel_iff' f)
+instance : StrongRelHomClass (r ↪r s) r s where
+  map_rel_iff := map_rel_iff'
 
 initialize_simps_projections RelEmbedding (toFun → apply)
 
