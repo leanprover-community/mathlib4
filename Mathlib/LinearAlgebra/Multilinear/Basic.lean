@@ -450,7 +450,7 @@ coordinate. Here, we give an auxiliary statement tailored for an inductive proof
 theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, (A i).card) = n) :
     (f fun i => ∑ j ∈ A i, g i j) = ∑ r ∈ piFinset A, f fun i => g i (r i) := by
   letI := fun i => Classical.decEq (α i)
-  induction' n using Nat.strong_induction_on with n IH generalizing A
+  induction' n using Nat.strongRecOn with n IH generalizing A
   -- If one of the sets is empty, then all the sums are zero
   by_cases Ai_empty : ∃ i, A i = ∅
   · rcases Ai_empty with ⟨i, hi⟩

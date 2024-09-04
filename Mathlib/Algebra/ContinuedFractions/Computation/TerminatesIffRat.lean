@@ -58,7 +58,7 @@ variable (v : K) (n : ℕ)
 
 nonrec theorem exists_gcf_pair_rat_eq_of_nth_contsAux :
     ∃ conts : Pair ℚ, (of v).contsAux n = (conts.map (↑) : Pair K) :=
-  Nat.strong_induction_on n
+  Nat.strongRecOn n
     (by
       clear n
       let g := of v

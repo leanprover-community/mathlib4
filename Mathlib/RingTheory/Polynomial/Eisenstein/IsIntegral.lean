@@ -261,7 +261,7 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
   -- It is enough to prove that all coefficients of `Q` are divisible by `p`, by induction.
   -- The base case is `dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt`.
   refine mem_adjoin_of_dvd_coeff_of_dvd_aeval hp.ne_zero (fun i => ?_) hQ
-  induction' i using Nat.case_strong_induction_on with j hind
+  induction' i using Nat.caseStrongRecOn with j hind
   · intro _
     exact dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt hp hBint hQ hzint hei
   · intro hj

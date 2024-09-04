@@ -103,7 +103,7 @@ theorem zero_le_powHalf (n : ℕ) : 0 ≤ powHalf n :=
   (powHalf_pos n).le
 
 theorem add_powHalf_succ_self_eq_powHalf (n) : powHalf (n + 1) + powHalf (n + 1) ≈ powHalf n := by
-  induction' n using Nat.strong_induction_on with n hn
+  induction' n using Nat.strongRecOn with n hn
   constructor <;> rw [le_iff_forall_lf] <;> constructor
   · rintro (⟨⟨⟩⟩ | ⟨⟨⟩⟩) <;> apply lf_of_lt
     · calc

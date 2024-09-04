@@ -518,7 +518,7 @@ end
 /-- The technical version of *Legendre's Theorem*. -/
 theorem exists_rat_eq_convergent' {v : ℕ} (h : ContfracLegendre.Ass ξ u v) :
     ∃ n, (u / v : ℚ) = ξ.convergent n := by
-  induction v using Nat.strong_induction_on generalizing ξ u with | h v ih => ?_
+  induction v using Nat.strongRecOn generalizing ξ u with | h v ih => ?_
   rcases lt_trichotomy v 1 with (ht | rfl | ht)
   · replace h := h.2.2
     simp only [Nat.lt_one_iff.mp ht, Nat.cast_zero, div_zero, tsub_zero, zero_mul,
