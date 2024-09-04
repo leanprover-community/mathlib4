@@ -19,6 +19,13 @@ jobs:
           token: ${{ secrets.MATHLIB_REVIEWERS_TEAM_KEY }} # required. Personal Access Token with the `read:org` permission
           exit: true # optional. If the action should exit if the user is not part of the team. Defaults to true.
 
+      - name: Install GitHub CLI
+        run: |
+          sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key C99B11DEB97541F0
+          sudo apt-add-repository https://cli.github.com/packages
+          sudo apt update
+          sudo apt install gh
+
       - uses: actions/checkout@v4
         with:
           ref: master
@@ -27,7 +34,7 @@ jobs:
         run: |
           ./scripts/get_tlabel.sh "${PR}" >> "$GITHUB_OUTPUT"
         env:
-          PR:  /repos/leanprover-community/mathlib4/issues/${{ github.event.issue.number }}
+          PR:  /repos/leanprover-community/mathlib4/issues/${{ github.event.pull_request.number }}
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
       - name: Send message on Zulip
