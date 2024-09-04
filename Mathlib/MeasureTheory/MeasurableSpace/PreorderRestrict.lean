@@ -7,7 +7,7 @@ import Mathlib.Order.Restriction
 import Mathlib.MeasureTheory.MeasurableSpace.Basic
 
 /-!
-# Measurability of the restriction function for functions indexed by `ℕ`
+# Measurability of the restriction function for functions indexed by a preorder
 
 We prove that the map which restricts a function `f : (i : α) → X i` to elements `≤ a` is
 measurable.
@@ -36,3 +36,5 @@ theorem measurable_frestrict (a : α) : Measurable (frestrict (β := X) a) :=
 @[measurability, fun_prop]
 theorem measurable_frestrict₂ {a b : α} (hab : a ≤ b) : Measurable (frestrict₂ (β := X) hab) :=
   Finset.measurable_restrict₂ _
+
+end Preorder
