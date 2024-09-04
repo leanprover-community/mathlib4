@@ -341,6 +341,7 @@ noncomputable def leadingCoeff [Nonempty A] (f : R[A]) : R :=
 
 variable {D}
 
+@[simp]
 theorem leadingCoeff_single [Nonempty A] (hD : D.Injective) (a : A) (r : R) :
     (single a r).leadingCoeff D = r := by
   classical
@@ -349,11 +350,13 @@ theorem leadingCoeff_single [Nonempty A] (hD : D.Injective) (a : A) (r : R) :
   · simp [hr]
   · rw [Function.leftInverse_invFun hD, single_apply, if_pos rfl]
 
+@[simp]
 theorem leadingCoeff_zero [Nonempty A] : (0 : R[A]).leadingCoeff D = 0 := rfl
 
 lemma Monic.ne_zero [Nonempty A] [Nontrivial R] (hp : p.Monic D) : p ≠ 0 := fun h => by
   simp_rw [Monic, h, leadingCoeff_zero, zero_ne_one] at hp
 
+@[simp]
 theorem monic_one [AddZeroClass A] (hD : D.Injective) : (1 : R[A]).Monic D := by
   rw [Monic, one_def, leadingCoeff_single hD]
 
@@ -395,6 +398,7 @@ lemma supDegree_mem_support (hD : D.Injective) (hp : p ≠ 0) :
   obtain ⟨a, ha, he⟩ := exists_supDegree_mem_support D hp
   rw [he, Function.leftInverse_invFun hD]; exact ha
 
+@[simp]
 lemma leadingCoeff_eq_zero (hD : D.Injective) : p.leadingCoeff D = 0 ↔ p = 0 := by
   refine ⟨(fun h => ?_).mtr, fun h => h ▸ leadingCoeff_zero⟩
   rw [leadingCoeff, ← Ne, ← Finsupp.mem_support_iff]
@@ -412,8 +416,8 @@ lemma supDegree_sub_lt_of_leadingCoeff_eq (hD : D.Injective) {R} [CommRing R] {p
 
 lemma supDegree_leadingCoeff_sum_eq
     (hi : i ∈ s) (hmax : ∀ j ∈ s, j ≠ i → (f j).supDegree D < (f i).supDegree D) :
-    (∑ j in s, f j).supDegree D = (f i).supDegree D ∧
-    (∑ j in s, f j).leadingCoeff D = (f i).leadingCoeff D := by
+    (∑ j ∈ s, f j).supDegree D = (f i).supDegree D ∧
+    (∑ j ∈ s, f j).leadingCoeff D = (f i).leadingCoeff D := by
   classical
   rw [← s.add_sum_erase _ hi]
   by_cases hs : s.erase i = ∅
@@ -426,7 +430,7 @@ lemma supDegree_leadingCoeff_sum_eq
 open Finset in
 lemma sum_ne_zero_of_injOn_supDegree' (hs : ∃ i ∈ s, f i ≠ 0)
     (hd : (s : Set ι).InjOn (supDegree D ∘ f)) :
-    ∑ i in s, f i ≠ 0 := by
+    ∑ i ∈ s, f i ≠ 0 := by
   obtain ⟨j, hj, hne⟩ := hs
   obtain ⟨i, hi, he⟩ := exists_mem_eq_sup _ ⟨j, hj⟩ (supDegree D ∘ f)
   by_cases h : ∀ k ∈ s, k = i
@@ -441,7 +445,7 @@ lemma sum_ne_zero_of_injOn_supDegree' (hs : ∃ i ∈ s, f i ≠ 0)
 
 lemma sum_ne_zero_of_injOn_supDegree (hs : s ≠ ∅)
     (hf : ∀ i ∈ s, f i ≠ 0) (hd : (s : Set ι).InjOn (supDegree D ∘ f)) :
-    ∑ i in s, f i ≠ 0 :=
+    ∑ i ∈ s, f i ≠ 0 :=
   let ⟨i, hi⟩ := Finset.nonempty_iff_ne_empty.2 hs
   sum_ne_zero_of_injOn_supDegree' ⟨i, hi, hf i hi⟩ hd
 
