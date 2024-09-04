@@ -628,25 +628,11 @@ def mathlibEmojiSymbols := #[
 .ofNat 0x1F3C1  -- 🏁️
 ]
 
--- this changes how it's displayed
-#eval s!"✅{UnicodeVariant.emoji}"
-#eval s!"✅{UnicodeVariant.text}"
-
--- However, these are rendered the same:
-#eval s!"🐙{UnicodeVariant.emoji}"
-#eval s!"🐙{UnicodeVariant.text}" -- TODO why does this not change anything?
--- TODO can we recheck if all variants really all make sense?
-
--- Mathlib uses this arrow with text-selector sometimes
-#eval s!"↗{UnicodeVariant.emoji}"
-#eval s!"↗{UnicodeVariant.text}" -- TODO why does this not change anything?
--- TODO can we check if these variants really all make sense?
-
 /-- Unicode symbols in mathilb that should always be followed by the text-variant selector -/
 def mathlibTextSymbols : Array Char := #['↗', '↘'] -- TODO fix / make complete
 
 end unicodeLinter
--- é or é  \u0301
+
 open unicodeLinter in
 /-- Lint a collection of input strings if one of them contains unwanted unicode. -/
 def unicodeLinter : TextbasedLinter := fun lines ↦ Id.run do
