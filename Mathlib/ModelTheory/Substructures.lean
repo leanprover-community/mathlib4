@@ -301,7 +301,7 @@ variable (L)
 
 @[simp]
 lemma mem_closed_of_isRelational [L.IsRelational] (s : Set M) : s ∈ (closure L).closed :=
-  (mem_closed_iff s).2 (IsRelational.empty_functions _).elim
+  (mem_closed_iff s).2 isEmptyElim
 
 theorem _root_.Set.Countable.substructure_closure
     [Countable (Σl, L.Functions l)] (h : s.Countable) : Countable.{w + 1} (closure L s) := by
