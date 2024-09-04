@@ -51,30 +51,6 @@ in this file would generalize as well. But we don't think it would be useful, so
 Krull dimension of a preorder.
 -/
 
-section in_other_prs -- should be empty when this PR gets submitted
-
-variable {α : Type*}
-
-namespace LTSeries
-
-/-- https://github.com/leanprover-community/mathlib4/pull/15555 -/
-def range (n : ℕ) : LTSeries ℕ where
-  length := n
-  toFun := fun i => i
-  step i := Nat.lt_add_one i
-
-@[simp] lemma length_range (n : ℕ) : (range n).length = n := rfl
-
-@[simp] lemma range_apply (n : ℕ) (i : Fin (n+1)) : (range n) i = i := rfl
-
-@[simp] lemma head_range (n : ℕ) : (range n).head = 0 := rfl
-
-@[simp] lemma last_range (n : ℕ) : (range n).last = n := rfl
-
-end LTSeries
-
-end in_other_prs
-
 namespace Order
 
 section definitions
