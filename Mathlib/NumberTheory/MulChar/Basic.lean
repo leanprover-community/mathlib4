@@ -454,7 +454,7 @@ lemma injective_ringHomComp {f : R' →+* R''} (hf : Function.Injective f) :
 
 lemma ringHomComp_eq_one_iff {f : R' →+* R''} (hf : Function.Injective f) {χ : MulChar R R'} :
     χ.ringHomComp f = 1 ↔ χ = 1 := by
-  conv_lhs => rw [← (show  (1 : MulChar R R').ringHomComp f = 1 by ext; simp)]
+  conv_lhs => rw [← (show (1 : MulChar R R').ringHomComp f = 1 by ext; simp)]
   exact (injective_ringHomComp hf).eq_iff
 
 lemma ringHomComp_ne_one_iff {f : R' →+* R''} (hf : Function.Injective f) {χ : MulChar R R'} :

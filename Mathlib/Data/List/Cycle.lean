@@ -165,7 +165,7 @@ theorem next_getLast_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ 
   intro H
   obtain ⟨⟨_ | k, hk⟩, hk'⟩ := get_of_mem H
   · rw [← Option.some_inj] at hk'
-    rw [← get?_eq_get, dropLast_eq_take, get?_eq_getElem?, getElem?_take, getElem?_cons_zero,
+    rw [← get?_eq_get, dropLast_eq_take, get?_eq_getElem?, getElem?_take_of_lt, getElem?_cons_zero,
       Option.some_inj] at hk'
     · exact hy (Eq.symm hk')
     rw [length_cons]
@@ -178,7 +178,7 @@ theorem next_getLast_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ 
     refine Fin.val_eq_of_eq <| @hl ⟨k, Nat.lt_of_succ_lt <| by simpa using hk⟩
       ⟨tl.length, by simp⟩ ?_
     rw [← Option.some_inj] at hk'
-    rw [← get?_eq_get, dropLast_eq_take, get?_eq_getElem?, getElem?_take, getElem?_cons_succ,
+    rw [← get?_eq_get, dropLast_eq_take, get?_eq_getElem?, getElem?_take_of_lt, getElem?_cons_succ,
       getElem?_eq_getElem, Option.some_inj] at hk'
     · rw [get_eq_getElem, hk']
       simp only [getLast_eq_getElem, length_cons, Nat.succ_eq_add_one, Nat.succ_sub_succ_eq_sub,
@@ -357,14 +357,13 @@ theorem prev_reverse_eq_next (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l)
   have lpos : 0 < l.length := k.zero_le.trans_lt hk
   have key : l.length - 1 - k < l.length := by omega
   rw [← getElem_pmap l.next (fun _ h => h) (by simpa using hk)]
-  simp_rw [← getElem_reverse l k (key.trans_le (by simp)), pmap_next_eq_rotate_one _ h]
+  simp_rw [getElem_eq_getElem_reverse (l := l), pmap_next_eq_rotate_one _ h]
   rw [← getElem_pmap l.reverse.prev fun _ h => h]
   · simp_rw [pmap_prev_eq_rotate_length_sub_one _ (nodup_reverse.mpr h), rotate_reverse,
       length_reverse, Nat.mod_eq_of_lt (Nat.sub_lt lpos Nat.succ_pos'),
       Nat.sub_sub_self (Nat.succ_le_of_lt lpos)]
-    rw [← getElem_reverse]
+    rw [getElem_eq_getElem_reverse]
     · simp [Nat.sub_sub_self (Nat.le_sub_one_of_lt hk)]
-    · simpa using (Nat.sub_le _ _).trans_lt (Nat.sub_lt lpos Nat.succ_pos')
   · simpa
 
 theorem next_reverse_eq_prev (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
@@ -456,7 +455,7 @@ theorem induction_on {C : Cycle α → Prop} (s : Cycle α) (H0 : C nil)
     assumption'
 
 /-- For `x : α`, `s : Cycle α`, `x ∈ s` indicates that `x` occurs at least once in `s`. -/
-def Mem (a : α) (s : Cycle α) : Prop :=
+def Mem (s : Cycle α) (a : α) : Prop :=
   Quot.liftOn s (fun l => a ∈ l) fun _ _ e => propext <| e.mem_iff
 
 instance : Membership α (Cycle α) :=
@@ -668,10 +667,10 @@ def decidableNontrivialCoe : ∀ l : List α, Decidable (Nontrivial (l : Cycle �
     else isTrue ⟨x, y, h, by simp, by simp⟩
 
 instance {s : Cycle α} : Decidable (Nontrivial s) :=
-  Quot.recOnSubsingleton' s decidableNontrivialCoe
+  Quot.recOnSubsingleton s decidableNontrivialCoe
 
 instance {s : Cycle α} : Decidable (Nodup s) :=
-  Quot.recOnSubsingleton' s List.nodupDecidable
+  Quot.recOnSubsingleton s List.nodupDecidable
 
 instance fintypeNodupCycle [Fintype α] : Fintype { s : Cycle α // s.Nodup } :=
   Fintype.ofSurjective (fun l : { l : List α // l.Nodup } => ⟨l.val, by simpa using l.prop⟩)

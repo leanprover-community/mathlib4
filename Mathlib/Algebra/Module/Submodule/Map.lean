@@ -191,9 +191,9 @@ theorem comap_mono {f : F} {q q' : Submodule R₂ M₂} : q ≤ q' → comap f q
 
 theorem le_comap_pow_of_le_comap (p : Submodule R M) {f : M →ₗ[R] M} (h : p ≤ p.comap f) (k : ℕ) :
     p ≤ p.comap (f ^ k) := by
-  induction' k with k ih
-  · simp [LinearMap.one_eq_id]
-  · simp [LinearMap.iterate_succ, comap_comp, h.trans (comap_mono ih)]
+  induction k with
+  | zero => simp [LinearMap.one_eq_id]
+  | succ k ih => simp [LinearMap.iterate_succ, comap_comp, h.trans (comap_mono ih)]
 
 section
 
@@ -408,6 +408,10 @@ protected theorem map_neg (f : M →ₗ[R] M₂) : map (-f) p = map f p :=
 lemma comap_neg {f : M →ₗ[R] M₂} {p : Submodule R M₂} :
     p.comap (-f) = p.comap f := by
   ext; simp
+
+lemma map_toAddSubgroup (f : M →ₗ[R] M₂) (p : Submodule R M) :
+    (p.map f).toAddSubgroup = p.toAddSubgroup.map (f : M →+ M₂) :=
+  rfl
 
 end AddCommGroup
 

@@ -302,6 +302,10 @@ theorem cos_periodic : Function.Periodic cos (2 * π) :=
   cos_antiperiodic.periodic_two_mul
 
 @[simp]
+theorem abs_cos_int_mul_pi (k : ℤ) : |cos (k * π)| = 1 := by
+  simp [abs_cos_eq_sqrt_one_sub_sin_sq]
+
+@[simp]
 theorem cos_add_pi (x : ℝ) : cos (x + π) = -cos x :=
   cos_antiperiodic x
 
@@ -679,7 +683,7 @@ theorem sin_sq_pi_over_two_pow_succ (n : ℕ) :
 @[simp]
 theorem sin_pi_over_two_pow_succ (n : ℕ) :
     sin (π / 2 ^ (n + 2)) = √(2 - sqrtTwoAddSeries 0 n) / 2 := by
-  rw [eq_div_iff_mul_eq two_ne_zero, eq_comm, sqrt_eq_iff_sq_eq, mul_pow,
+  rw [eq_div_iff_mul_eq two_ne_zero, eq_comm, sqrt_eq_iff_eq_sq, mul_pow,
     sin_sq_pi_over_two_pow_succ, sub_mul]
   · congr <;> norm_num
   · rw [sub_nonneg]
