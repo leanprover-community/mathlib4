@@ -165,7 +165,7 @@ theorem fix_eq_ωSup_of_ωScottContinuous (hc : ωScottContinuous g) : Part.fix 
   rw [← fix_eq_ωSup]
   rfl
 
-theorem fix_eq (hc : ωScottContinuous g) :
+theorem fix_eq_of_ωScottContinuous (hc : ωScottContinuous g) :
     Part.fix g = g (Part.fix g) := by
   rw [fix_eq_ωSup_of_ωScottContinuous, hc.map_ωSup]
   apply le_antisymm
@@ -174,6 +174,23 @@ theorem fix_eq (hc : ωScottContinuous g) :
     intro i
     exists i
     intro x
+    apply le_f_of_mem_approx _ ⟨i, rfl⟩
+  · apply ωSup_le_ωSup_of_le _
+    intro i
+    exists i.succ
+
+variable {f}
+
+set_option linter.deprecated false in
+@[deprecated fix_eq_of_ωScottContinuous (since := "2024-08-26")]
+theorem fix_eq (hc : Continuous f) : Part.fix f = f (Part.fix f) := by
+  rw [fix_eq_ωSup f, hc]
+  apply le_antisymm
+  · apply ωSup_le_ωSup_of_le _
+    intro i
+    exists i
+    intro x
+    -- intros x y hx,
     apply le_f_of_mem_approx _ ⟨i, rfl⟩
   · apply ωSup_le_ωSup_of_le _
     intro i
@@ -205,7 +222,7 @@ theorem to_unit_cont (f : Part α →o Part α) (hc : Continuous f) : Continuous
 
 instance lawfulFix : LawfulFix (Part α) :=
   ⟨fun {f : Part α → Part α} hc ↦ show Part.fix (toUnitMono ⟨f,hc.monotone⟩) () = _ by
-    rw [Part.fix_eq (ωScottContinuous_toUnitMono f hc)]; rfl⟩
+    rw [Part.fix_eq_of_ωScottContinuous (ωScottContinuous_toUnitMono f hc)]; rfl⟩
 
 end Part
 
@@ -214,7 +231,7 @@ open Sigma
 namespace Pi
 
 instance lawfulFix {β} : LawfulFix (α → Part β) :=
-  ⟨fun {_f} ↦ Part.fix_eq⟩
+  ⟨fun {_f} ↦ Part.fix_eq_of_ωScottContinuous⟩
 
 variable {γ : ∀ a : α, β a → Type*}
 
