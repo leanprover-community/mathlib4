@@ -243,6 +243,20 @@ lemma conjugate_le_norm_smul' {a b : A} (hb : IsSelfAdjoint b := by cfc_tac) :
   simp only [h₁, h₂]
   exact conjugate_le_norm_smul
 
+/-- The set of nonnegative elements in a C⋆-algebra is closed. -/
+lemma isClosed_nonneg : IsClosed {a : A | 0 ≤ a} := by
+  suffices IsClosed {a : Unitization ℂ A | 0 ≤ a} by
+    rw [Unitization.isometry_inr (𝕜 := ℂ) |>.closedEmbedding.closed_iff_image_closed]
+    convert this.inter <| (Unitization.isometry_inr (𝕜 := ℂ)).closedEmbedding.isClosed_range
+    ext a
+    simp only [Set.mem_image, Set.mem_setOf_eq, Set.mem_inter_iff, Set.mem_range, ← exists_and_left]
+    congr! 2 with x
+    exact and_congr_left fun h ↦ by simp [← h]
+  simp only [nonneg_iff_isSelfAdjoint_and_spectrumRestricts,
+    and_congr_right (SpectrumRestricts.nnreal_iff_nnnorm · le_rfl), Set.setOf_and]
+  refine isClosed_eq ?_ ?_ |>.inter <| isClosed_le ?_ ?_
+  all_goals fun_prop
+
 end CStarRing
 
 end CStar_nonunital
