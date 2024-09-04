@@ -308,8 +308,9 @@ The "longFile" linter emits a warning on files which are longer than a certain n
 
 /--
 The "longFile" linter emits a warning on files which are longer than a certain number of lines
-(1500 by default). If this option is set to `N` lines, the linter warns once a file has more than
-`N` lines. A value of `0` silences the linter entirely.
+(1500 by default on mathlib, no limit for downstream projects).
+If this option is set to `N` lines, the linter warns once a file has more than `N` lines.
+A value of `0` silences the linter entirely.
 -/
 register_option linter.style.longFile : Nat := {
   defValue := 0
