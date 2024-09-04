@@ -51,8 +51,7 @@ variable [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : (H →L[𝕜] H) →
 
 /-- Because this takes `ContinuousFunctionalCalculus ℝ IsSelfAdjoint` as an argument, and for
 the moment we only have this for `𝕜 := ℂ`, this is not registered as an instance. -/
-@[reducible]
-noncomputable def instStarOrderedRingRCLike
+lemma instStarOrderedRingRCLike
     [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : (H →L[𝕜] H) → Prop)] :
     StarOrderedRing (H →L[𝕜] H) where
   le_iff f g := by
