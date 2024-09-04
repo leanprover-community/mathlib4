@@ -144,12 +144,9 @@ open Mathlib.Linter.TextBased
     error := .unwantedUnicode 'Z', lineNumber := 4, path:="./MYFILE.lean"}
   (parse?_errorContext <| outputMessage errContext .exceptionsFile) == some errContext
 
--- if false, some symbols have been added to `mathlibEmojiSymbols` but actually have no effect.
-open unicodeLinter in
-#guard unicodeWhitelist.toList ∩ mathlibEmojiSymbols.toList = ∅
-
--- if false, some symbols have been added to `mathlibTextSymbols` but actually have no effect.
-open unicodeLinter in
-#guard unicodeWhitelist.toList ∩ mathlibTextSymbols.toList = ∅
+-- The list `othersInMathlib` should only contain characters not present in another list.
+#guard unicodeLinter.othersInMathlib.toList ∩ unicodeLinter.withVSCodeAbbrev.toList = ∅
+#guard unicodeLinter.othersInMathlib.toList ∩ unicodeLinter.emojis.toList = ∅
+#guard unicodeLinter.othersInMathlib.toList ∩ unicodeLinter.nonEmojis.toList = ∅
 
 end unicodeLinter
