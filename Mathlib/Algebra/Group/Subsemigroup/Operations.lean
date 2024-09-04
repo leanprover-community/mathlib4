@@ -607,9 +607,6 @@ private theorem srange_mk_aux_mul {f : M → N} (hf : ∀ (x y : M), f (x * y) =
 @[to_additive (attr := simp)] theorem srange_mk (f : M → N) (hf) :
     srange ⟨f, hf⟩ = ⟨Set.range f, srange_mk_aux_mul hf⟩ := rfl
 
-@[to_additive] theorem mem_srange_mk {f : M → N} (hf) {y : N} :
-    y ∈ srange ⟨f, hf⟩ ↔ y ∈ Set.range f := Iff.rfl
-
 @[to_additive]
 theorem srange_eq_map (f : M →ₙ* N) : f.srange = (⊤ : Subsemigroup M).map f :=
   copy_eq _
