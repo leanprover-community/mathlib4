@@ -218,7 +218,7 @@ theorem hall_hard_inductive (ht : ∀ s : Finset ι, s.card ≤ (s.biUnion t).ca
     ∃ f : ι → α, Function.Injective f ∧ ∀ x, f x ∈ t x := by
   cases nonempty_fintype ι
   generalize hn : Fintype.card ι = m
-  induction m using Nat.strongInductionOn generalizing ι with | ind n ih => _
+  induction m using Nat.strongRecOn generalizing ι with | ind n ih => _
   rcases n with (_ | n)
   · rw [Fintype.card_eq_zero_iff] at hn
     exact ⟨isEmptyElim, isEmptyElim, isEmptyElim⟩
