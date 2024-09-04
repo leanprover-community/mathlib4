@@ -291,6 +291,13 @@ theorem uncurry_curry_ωScottContinuous (hc : ωScottContinuous f) :
       monotoneCurry α β γ :=
   (ωScottContinuous_uncurry _ _ _).comp (hc.comp (ωScottContinuous_curry _ _ _))
 
+set_option linter.deprecated false in
+@[deprecated uncurry_curry_ωScottContinuous  (since := "2024-08-26")]
+theorem uncurry_curry_continuous {f : ((x : _) → (y : β x) → γ x y) →o (x : _) → (y : β x) → γ x y}
+    (hc : Continuous f) :
+    Continuous <| (monotoneUncurry α β γ).comp <| f.comp <| monotoneCurry α β γ :=
+  continuous_comp _ _ (continuous_comp _ _ (continuous_curry _ _ _) hc) (continuous_uncurry _ _ _)
+
 end Curry
 
 instance lawfulFix' [LawfulFix <| (x : Sigma β) → γ x.1 x.2] :
