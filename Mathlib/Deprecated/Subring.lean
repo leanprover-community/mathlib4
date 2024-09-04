@@ -104,7 +104,7 @@ theorem exists_list_of_mem_closure {a : R} (h : a ∈ closure s) :
       ⟨L1.map (List.cons (-1)),
         fun L2 h2 ↦ match L2, List.mem_map.1 h2 with
         | _, ⟨L3, h3, rfl⟩ => List.forall_mem_cons.2 ⟨Or.inr rfl, h1 L3 h3⟩, by
-        simp only [List.map_map, (· ∘ ·), List.prod_cons, neg_one_mul]
+        simp only [List.map_map, Function.comp_def, List.prod_cons, neg_one_mul]
         refine List.recOn L1 neg_zero.symm fun hd tl ih ↦ ?_
         rw [List.map_cons, List.sum_cons, ih, List.map_cons, List.sum_cons, neg_add]⟩
     fun {r1 r2} _ _ ih1 ih2 ↦ match r1, r2, ih1, ih2 with
@@ -115,7 +115,7 @@ theorem exists_list_of_mem_closure {a : R} (h : a ∈ closure s) :
 protected theorem InClosure.recOn {C : R → Prop} {x : R} (hx : x ∈ closure s) (h1 : C 1)
     (hneg1 : C (-1)) (hs : ∀ z ∈ s, ∀ n, C n → C (z * n)) (ha : ∀ {x y}, C x → C y → C (x + y)) :
     C x := by
-  have h0 : C 0 := add_neg_self (1 : R) ▸ ha h1 hneg1
+  have h0 : C 0 := add_neg_cancel (1 : R) ▸ ha h1 hneg1
   rcases exists_list_of_mem_closure hx with ⟨L, HL, rfl⟩
   clear hx
   induction' L with hd tl ih

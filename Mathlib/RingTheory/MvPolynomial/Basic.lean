@@ -178,6 +178,9 @@ lemma algebraMap_def :
     algebraMap (MvPolynomial σ R) (MvPolynomial σ S) = MvPolynomial.map (algebraMap R S) :=
   rfl
 
+instance : IsScalarTower R (MvPolynomial σ R) (MvPolynomial σ S) :=
+  IsScalarTower.of_algebraMap_eq' (by ext; simp)
+
 end Algebra
 
 end MvPolynomial

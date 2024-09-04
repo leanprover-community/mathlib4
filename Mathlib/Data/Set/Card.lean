@@ -133,6 +133,8 @@ theorem Finite.exists_encard_eq_coe (h : s.Finite) : ∃ (n : ℕ), s.encard = n
 @[simp] theorem encard_eq_top_iff : s.encard = ⊤ ↔ s.Infinite := by
   rw [← not_iff_not, ← Ne, ← lt_top_iff_ne_top, encard_lt_top_iff, not_infinite]
 
+alias ⟨_, encard_eq_top⟩ := encard_eq_top_iff
+
 theorem encard_ne_top_iff : s.encard ≠ ⊤ ↔ s.Finite := by
   simp
 
@@ -387,7 +389,7 @@ theorem _root_.Function.Injective.encard_image (hf : f.Injective) (s : Set α) :
     (f '' s).encard = s.encard :=
   hf.injOn.encard_image
 
-theorem _root_.Function.Embedding.enccard_le (e : s ↪ t) : s.encard ≤ t.encard := by
+theorem _root_.Function.Embedding.encard_le (e : s ↪ t) : s.encard ≤ t.encard := by
   rw [← encard_univ_coe, ← e.injective.encard_image, ← Subtype.coe_injective.encard_image]
   exact encard_mono (by simp)
 
@@ -555,7 +557,7 @@ section InsertErase
     hs.cast_ncard_eq, encard_insert_of_not_mem h]
 
 theorem ncard_insert_of_mem {a : α} (h : a ∈ s) : ncard (insert a s) = s.ncard := by
-    rw [insert_eq_of_mem h]
+  rw [insert_eq_of_mem h]
 
 theorem ncard_insert_le (a : α) (s : Set α) : (insert a s).ncard ≤ s.ncard + 1 := by
   obtain hs | hs := s.finite_or_infinite
@@ -751,7 +753,7 @@ theorem surj_on_of_inj_on_of_ncard_le {t : Set β} (f : ∀ a ∈ s, β) (hf : �
   have hft := ht.fintype
   have hft' := Fintype.ofInjective f' finj
   set f'' : ∀ a, a ∈ s.toFinset → β := fun a h ↦ f a (by simpa using h)
-  convert @Finset.surj_on_of_inj_on_of_card_le _ _ _ t.toFinset f'' _ _ _ _ (by simpa)
+  convert @Finset.surj_on_of_inj_on_of_card_le _ _ _ t.toFinset f'' _ _ _ _ (by simpa) using 1
   · simp
   · simp [hf]
   · intros a₁ a₂ ha₁ ha₂ h
@@ -942,10 +944,11 @@ theorem exists_eq_insert_iff_ncard (hs : s.Finite := by toFinite_tac) :
   cases' t.finite_or_infinite with ht ht
   · rw [ncard_eq_toFinset_card _ hs, ncard_eq_toFinset_card _ ht,
       ← @Finite.toFinset_subset_toFinset _ _ _ hs ht, ← Finset.exists_eq_insert_iff]
-    convert Iff.rfl using 2; simp
+    convert Iff.rfl using 2; simp only [Finite.mem_toFinset]
     ext x
     simp [Finset.ext_iff, Set.ext_iff]
-  simp only [ht.ncard, exists_prop, add_eq_zero, and_false, iff_false, not_exists, not_and]
+  simp only [ht.ncard, exists_prop, add_eq_zero, and_false, iff_false, not_exists, not_and,
+    reduceCtorEq]
   rintro x - rfl
   exact ht (hs.insert x)
 
@@ -1010,9 +1013,8 @@ theorem eq_insert_of_ncard_eq_succ {n : ℕ} (h : s.ncard = n + 1) :
   obtain ⟨a, t, hat, hts, rfl⟩ := h
   simp only [Finset.ext_iff, Finset.mem_insert, Finite.mem_toFinset] at hts
   refine ⟨a, t, hat, ?_, ?_⟩
-  · simp only [Finset.mem_coe, ext_iff, mem_insert_iff]
-    tauto
-  simp
+  · simp [Set.ext_iff, hts]
+  · simp
 
 theorem ncard_eq_succ {n : ℕ} (hs : s.Finite := by toFinite_tac) :
     s.ncard = n + 1 ↔ ∃ a t, a ∉ t ∧ insert a t = s ∧ t.ncard = n := by
@@ -1024,13 +1026,13 @@ theorem ncard_eq_two : s.ncard = 2 ↔ ∃ x y, x ≠ y ∧ s = {x, y} := by
   rw [← encard_eq_two, ncard_def, ← Nat.cast_inj (R := ℕ∞), Nat.cast_ofNat]
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rwa [ENat.coe_toNat] at h; rintro h'; simp [h'] at h
-  rw [h]; rfl
+  simp [h]
 
 theorem ncard_eq_three : s.ncard = 3 ↔ ∃ x y z, x ≠ y ∧ x ≠ z ∧ y ≠ z ∧ s = {x, y, z} := by
   rw [← encard_eq_three, ncard_def, ← Nat.cast_inj (R := ℕ∞), Nat.cast_ofNat]
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rwa [ENat.coe_toNat] at h; rintro h'; simp [h'] at h
-  rw [h]; rfl
+  simp [h]
 
 end ncard
 

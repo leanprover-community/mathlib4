@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
 import Mathlib.Data.Matrix.Block
 import Mathlib.Data.Matrix.RowCol
+import Mathlib.Data.Matrix.Notation
 
 /-!
 # Trace of a matrix
@@ -178,13 +179,10 @@ section Fin
 
 variable [AddCommMonoid R]
 
-/-! ### Special cases for `Fin n`
-
-While `simp [Fin.sum_univ_succ]` can prove these, we include them for convenience and consistency
-with `Matrix.det_fin_two` etc.
+/-! ### Special cases for `Fin n` for low values of `n`
 -/
 
-
+@[simp]
 theorem trace_fin_zero (A : Matrix (Fin 0) (Fin 0) R) : trace A = 0 :=
   rfl
 
@@ -197,6 +195,19 @@ theorem trace_fin_two (A : Matrix (Fin 2) (Fin 2) R) : trace A = A 0 0 + A 1 1 :
 theorem trace_fin_three (A : Matrix (Fin 3) (Fin 3) R) : trace A = A 0 0 + A 1 1 + A 2 2 := by
   rw [← add_zero (A 2 2), add_assoc]
   rfl
+
+@[simp]
+theorem trace_fin_one_of (a : R) : trace !![a] = a :=
+  trace_fin_one _
+
+@[simp]
+theorem trace_fin_two_of (a b c d : R) : trace !![a, b; c, d] = a + d :=
+  trace_fin_two _
+
+@[simp]
+theorem trace_fin_three_of (a b c d e f g h i : R) :
+    trace !![a, b, c; d, e, f; g, h, i] = a + e + i :=
+  trace_fin_three _
 
 end Fin
 

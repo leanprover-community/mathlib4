@@ -24,7 +24,6 @@ variable {C : Type u₁} [Category.{v₁} C] (J : GrothendieckTopology C)
 variable {D : Type u₂} [Category.{v₂} D]
 variable {E : Type*} [Category E]
 variable {F : D ⥤ E} {G : E ⥤ D}
-variable [HasWeakSheafify J D]
 
 /-- The forgetful functor from `Sheaf J D` to sheaves of types, for a concrete category `D`
 whose forgetful functor preserves the correct limits. -/
@@ -38,7 +37,8 @@ noncomputable section
 
 /-- An auxiliary definition to be used in defining `CategoryTheory.Sheaf.adjunction` below. -/
 @[simps]
-def composeEquiv [HasSheafCompose J F] (adj : G ⊣ F) (X : Sheaf J E) (Y : Sheaf J D) :
+def composeEquiv [HasWeakSheafify J D] [HasSheafCompose J F] (adj : G ⊣ F)
+    (X : Sheaf J E) (Y : Sheaf J D) :
     ((composeAndSheafify J G).obj X ⟶ Y) ≃ (X ⟶ (sheafCompose J F).obj Y) :=
   let A := adj.whiskerRight Cᵒᵖ
   { toFun := fun η => ⟨A.homEquiv _ _ (toSheafify J _ ≫ η.val)⟩
@@ -65,7 +65,7 @@ attribute [nolint simpNF] CategoryTheory.Sheaf.composeEquiv_apply_val
 between `Sheaf J D` and `Sheaf J E`, in contexts where one can sheafify `D`-valued presheaves,
 and `F` preserves the correct limits. -/
 @[simps! unit_app_val counit_app_val]
-def adjunction [HasSheafCompose J F] (adj : G ⊣ F) :
+def adjunction [HasWeakSheafify J D] [HasSheafCompose J F] (adj : G ⊣ F) :
     composeAndSheafify J G ⊣ sheafCompose J F :=
   Adjunction.mkOfHomEquiv
     { homEquiv := composeEquiv J adj
@@ -80,13 +80,12 @@ def adjunction [HasSheafCompose J F] (adj : G ⊣ F) :
         ext
         dsimp [composeEquiv]
         erw [Adjunction.homEquiv_unit, Adjunction.homEquiv_unit]
-        dsimp
         simp }
 
-instance [F.IsRightAdjoint] : (sheafCompose J F).IsRightAdjoint :=
+instance [HasWeakSheafify J D] [F.IsRightAdjoint] : (sheafCompose J F).IsRightAdjoint :=
   (adjunction J (Adjunction.ofIsRightAdjoint F)).isRightAdjoint
 
-instance [G.IsLeftAdjoint] : (composeAndSheafify J G).IsLeftAdjoint :=
+instance [HasWeakSheafify J D] [G.IsLeftAdjoint] : (composeAndSheafify J G).IsLeftAdjoint :=
   (adjunction J (Adjunction.ofIsLeftAdjoint G)).isLeftAdjoint
 
 lemma preservesSheafification_of_adjunction (adj : G ⊣ F) :
@@ -108,7 +107,7 @@ instance [G.IsLeftAdjoint] : J.PreservesSheafification G :=
 
 section ForgetToType
 
-variable [ConcreteCategory D] [HasSheafCompose J (forget D)]
+variable [HasWeakSheafify J D] [ConcreteCategory D] [HasSheafCompose J (forget D)]
 
 /-- This is the functor sending a sheaf of types `X` to the sheafification of `X ⋙ G`. -/
 abbrev composeAndSheafifyFromTypes (G : Type max v₁ u₁ ⥤ D) : SheafOfTypes J ⥤ Sheaf J D :=

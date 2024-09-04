@@ -45,10 +45,9 @@ variable {C : Type u₁} [Category.{v} C] [Preadditive C]
 variable {D : Type u₂} [Category.{v} D] [Abelian D]
 variable (F : C ⥤ D)
 variable (G : D ⥤ C) [Functor.PreservesZeroMorphisms G]
-variable (i : F ⋙ G ≅ 𝟭 C) (adj : G ⊣ F)
 
 /-- No point making this an instance, as it requires `i`. -/
-theorem hasKernels [PreservesFiniteLimits G] : HasKernels C :=
+theorem hasKernels [PreservesFiniteLimits G] (i : F ⋙ G ≅ 𝟭 C) : HasKernels C :=
   { has_limit := fun f => by
       have := NatIso.naturality_1 i f
       simp? at this says
@@ -58,7 +57,7 @@ theorem hasKernels [PreservesFiniteLimits G] : HasKernels C :=
       apply Limits.hasKernel_iso_comp }
 
 /-- No point making this an instance, as it requires `i` and `adj`. -/
-theorem hasCokernels : HasCokernels C :=
+theorem hasCokernels (i : F ⋙ G ≅ 𝟭 C) (adj : G ⊣ F) : HasCokernels C :=
   { has_colimit := fun f => by
       have : PreservesColimits G := adj.leftAdjointPreservesColimits
       have := NatIso.naturality_1 i f
@@ -71,7 +70,8 @@ theorem hasCokernels : HasCokernels C :=
 variable [Limits.HasCokernels C]
 
 /-- Auxiliary construction for `coimageIsoImage` -/
-def cokernelIso {X Y : C} (f : X ⟶ Y) : G.obj (cokernel (F.map f)) ≅ cokernel f := by
+def cokernelIso (i : F ⋙ G ≅ 𝟭 C) (adj : G ⊣ F) {X Y : C} (f : X ⟶ Y) :
+    G.obj (cokernel (F.map f)) ≅ cokernel f := by
   -- We have to write an explicit `PreservesColimits` type here,
   -- as `leftAdjointPreservesColimits` has universe variables.
   have : PreservesColimits G := adj.leftAdjointPreservesColimits
@@ -85,7 +85,7 @@ def cokernelIso {X Y : C} (f : X ⟶ Y) : G.obj (cokernel (F.map f)) ≅ cokerne
 variable [Limits.HasKernels C] [PreservesFiniteLimits G]
 
 /-- Auxiliary construction for `coimageIsoImage` -/
-def coimageIsoImageAux {X Y : C} (f : X ⟶ Y) :
+def coimageIsoImageAux (i : F ⋙ G ≅ 𝟭 C) (adj : G ⊣ F) {X Y : C} (f : X ⟶ Y) :
     kernel (G.map (cokernel.π (F.map f))) ≅ kernel (cokernel.π f) := by
   have : PreservesColimits G := adj.leftAdjointPreservesColimits
   calc
@@ -111,7 +111,8 @@ variable [Functor.PreservesZeroMorphisms F]
 /-- Auxiliary definition: the abelian coimage and abelian image agree.
 We still need to check that this agrees with the canonical morphism.
 -/
-def coimageIsoImage {X Y : C} (f : X ⟶ Y) : Abelian.coimage f ≅ Abelian.image f := by
+def coimageIsoImage (i : F ⋙ G ≅ 𝟭 C) (adj : G ⊣ F) {X Y : C} (f : X ⟶ Y) :
+    Abelian.coimage f ≅ Abelian.image f := by
   have : PreservesLimits F := adj.rightAdjointPreservesLimits
   calc
     Abelian.coimage f ≅ cokernel (kernel.ι f) := Iso.refl _
@@ -127,7 +128,7 @@ def coimageIsoImage {X Y : C} (f : X ⟶ Y) : Abelian.coimage f ≅ Abelian.imag
     _ ≅ Abelian.image f := Iso.refl _
 
 -- The account of this proof in the Stacks project omits this calculation.
-theorem coimageIsoImage_hom {X Y : C} (f : X ⟶ Y) :
+theorem coimageIsoImage_hom (i : F ⋙ G ≅ 𝟭 C) (adj : G ⊣ F) {X Y : C} (f : X ⟶ Y) :
     (coimageIsoImage F G i adj f).hom = Abelian.coimageImageComparison f := by
   dsimp [coimageIsoImage, cokernelIso, cokernelEpiComp, cokernelCompIsIso_inv,
     coimageIsoImageAux, kernelCompMono]

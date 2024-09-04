@@ -3,6 +3,7 @@ Copyright (c) 2023 Alex J. Best. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best
 -/
+import Mathlib.Init
 import Lean.Elab.Tactic.Basic
 
 /-!
@@ -33,6 +34,7 @@ elab "sleep_heartbeats " n:num : tactic => do
      option -/
   | some m => sleepAtLeastHeartbeats (m * 1000)
 
+set_option linter.unusedTactic false in
 example : 1 = 1 := by
   sleep_heartbeats 1000
   rfl

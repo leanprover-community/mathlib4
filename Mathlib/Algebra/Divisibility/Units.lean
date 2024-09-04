@@ -67,44 +67,45 @@ namespace IsUnit
 
 section Monoid
 
-variable [Monoid α] {a b u : α} (hu : IsUnit u)
+variable [Monoid α] {a b u : α}
 
 /-- Units of a monoid divide any element of the monoid. -/
 @[simp]
-theorem dvd : u ∣ a := by
+theorem dvd (hu : IsUnit u) : u ∣ a := by
   rcases hu with ⟨u, rfl⟩
   apply Units.coe_dvd
 
 @[simp]
-theorem dvd_mul_right : a ∣ b * u ↔ a ∣ b := by
+theorem dvd_mul_right (hu : IsUnit u) : a ∣ b * u ↔ a ∣ b := by
   rcases hu with ⟨u, rfl⟩
   apply Units.dvd_mul_right
 
 /-- In a monoid, an element a divides an element b iff all associates of `a` divide `b`. -/
 @[simp]
-theorem mul_right_dvd : a * u ∣ b ↔ a ∣ b := by
+theorem mul_right_dvd (hu : IsUnit u) : a * u ∣ b ↔ a ∣ b := by
   rcases hu with ⟨u, rfl⟩
   apply Units.mul_right_dvd
 
-theorem isPrimal : IsPrimal u := fun _ _ _ ↦ ⟨u, 1, hu.dvd, one_dvd _, (mul_one u).symm⟩
+theorem isPrimal (hu : IsUnit u) : IsPrimal u :=
+  fun _ _ _ ↦ ⟨u, 1, hu.dvd, one_dvd _, (mul_one u).symm⟩
 
 end Monoid
 
 section CommMonoid
 
-variable [CommMonoid α] {a b u : α} (hu : IsUnit u)
+variable [CommMonoid α] {a b u : α}
 
 /-- In a commutative monoid, an element `a` divides an element `b` iff `a` divides all left
     associates of `b`. -/
 @[simp]
-theorem dvd_mul_left : a ∣ u * b ↔ a ∣ b := by
+theorem dvd_mul_left (hu : IsUnit u) : a ∣ u * b ↔ a ∣ b := by
   rcases hu with ⟨u, rfl⟩
   apply Units.dvd_mul_left
 
 /-- In a commutative monoid, an element `a` divides an element `b` iff all
   left associates of `a` divide `b`. -/
 @[simp]
-theorem mul_left_dvd : u * a ∣ b ↔ a ∣ b := by
+theorem mul_left_dvd (hu : IsUnit u) : u * a ∣ b ↔ a ∣ b := by
   rcases hu with ⟨u, rfl⟩
   apply Units.mul_left_dvd
 
@@ -178,6 +179,8 @@ theorem IsRelPrime.isUnit_of_dvd (H : IsRelPrime x y) (d : x ∣ y) : IsUnit x :
 section IsUnit
 
 variable (hu : IsUnit x)
+
+include hu
 
 theorem isRelPrime_mul_unit_left_left : IsRelPrime (x * y) z ↔ IsRelPrime y z :=
   ⟨IsRelPrime.of_mul_left_right, fun H _ h ↦ H (hu.dvd_mul_left.mp h)⟩

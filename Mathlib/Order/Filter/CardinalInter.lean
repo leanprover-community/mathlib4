@@ -302,7 +302,7 @@ theorem mem_cardinaleGenerate_iff {s : Set α} {hreg : c.IsRegular} :
   constructor <;> intro h
   · induction' h with s hs s t _ st ih S Sct _ ih
     · refine ⟨{s}, singleton_subset_iff.mpr hs, ?_⟩
-      norm_num; exact ⟨IsRegular.nat_lt hreg 1, subset_rfl⟩
+      simpa [subset_refl] using IsRegular.nat_lt hreg 1
     · exact ⟨∅, ⟨empty_subset g, mk_eq_zero (∅ : Set <| Set α) ▸ IsRegular.nat_lt hreg 0, by simp⟩⟩
     · exact Exists.imp (by tauto) ih
     choose T Tg Tct hT using ih

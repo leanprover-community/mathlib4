@@ -76,7 +76,7 @@ open Topology
 
 lemma isOpen_mk {p h₁ h₂ h₃} : IsOpen[⟨p, h₁, h₂, h₃⟩] s ↔ p s := Iff.rfl
 
-@[ext]
+@[ext (iff := false)]
 protected theorem TopologicalSpace.ext :
     ∀ {f g : TopologicalSpace X}, IsOpen[f] = IsOpen[g] → f = g
   | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, rfl => rfl
@@ -128,7 +128,7 @@ theorem Set.Finite.isOpen_biInter {s : Set α} {f : α → Set X} (hs : s.Finite
 
 theorem isOpen_iInter_of_finite [Finite ι] {s : ι → Set X} (h : ∀ i, IsOpen (s i)) :
     IsOpen (⋂ i, s i) :=
-  (finite_range _).isOpen_sInter  (forall_mem_range.2 h)
+  (finite_range _).isOpen_sInter (forall_mem_range.2 h)
 
 theorem isOpen_biInter_finset {s : Finset α} {f : α → Set X} (h : ∀ i ∈ s, IsOpen (f i)) :
     IsOpen (⋂ i ∈ s, f i) :=
@@ -143,7 +143,7 @@ theorem IsOpen.and : IsOpen { x | p₁ x } → IsOpen { x | p₂ x } → IsOpen 
 @[simp] theorem isOpen_compl_iff : IsOpen sᶜ ↔ IsClosed s :=
   ⟨fun h => ⟨h⟩, fun h => h.isOpen_compl⟩
 
-theorem TopologicalSpace.ext_iff_isClosed {t₁ t₂ : TopologicalSpace X} :
+theorem TopologicalSpace.ext_iff_isClosed {X} {t₁ t₂ : TopologicalSpace X} :
     t₁ = t₂ ↔ ∀ s, IsClosed[t₁] s ↔ IsClosed[t₂] s := by
   rw [TopologicalSpace.ext_iff, compl_surjective.forall]
   simp only [@isOpen_compl_iff _ _ t₁, @isOpen_compl_iff _ _ t₂]
@@ -155,6 +155,12 @@ theorem isClosed_const {p : Prop} : IsClosed { _x : X | p } := ⟨isOpen_const (
 @[simp] theorem isClosed_empty : IsClosed (∅ : Set X) := isClosed_const
 
 @[simp] theorem isClosed_univ : IsClosed (univ : Set X) := isClosed_const
+
+lemma IsOpen.isLocallyClosed (hs : IsOpen s) : IsLocallyClosed s :=
+  ⟨_, _, hs, isClosed_univ, (inter_univ _).symm⟩
+
+lemma IsClosed.isLocallyClosed (hs : IsClosed s) : IsLocallyClosed s :=
+  ⟨_, _, isOpen_univ, hs, (univ_inter _).symm⟩
 
 theorem IsClosed.union : IsClosed s₁ → IsClosed s₂ → IsClosed (s₁ ∪ s₂) := by
   simpa only [← isOpen_compl_iff, compl_union] using IsOpen.inter
@@ -984,7 +990,7 @@ theorem accPt_iff_frequently (x : X) (C : Set X) : AccPt x (𝓟 C) ↔ ∃ᶠ y
   simp [acc_principal_iff_cluster, clusterPt_principal_iff_frequently, and_comm]
 
 /-- If `x` is an accumulation point of `F` and `F ≤ G`, then
-`x` is an accumulation point of `D`. -/
+`x` is an accumulation point of `G`. -/
 theorem AccPt.mono {F G : Filter X} (h : AccPt x F) (hFG : F ≤ G) : AccPt x G :=
   NeBot.mono h (inf_le_inf_left _ hFG)
 
@@ -1020,7 +1026,7 @@ theorem isOpen_iff_nhds : IsOpen s ↔ ∀ x ∈ s, 𝓝 x ≤ 𝓟 s :=
     IsOpen s ↔ s ⊆ interior s := subset_interior_iff_isOpen.symm
     _ ↔ ∀ x ∈ s, 𝓝 x ≤ 𝓟 s := by simp_rw [interior_eq_nhds, subset_def, mem_setOf]
 
-theorem TopologicalSpace.ext_iff_nhds {t t' : TopologicalSpace X} :
+theorem TopologicalSpace.ext_iff_nhds {X} {t t' : TopologicalSpace X} :
     t = t' ↔ ∀ x, @nhds _ t x = @nhds _ t' x :=
   ⟨fun H x ↦ congrFun (congrArg _ H) _, fun H ↦ by ext; simp_rw [@isOpen_iff_nhds _ _ _, H]⟩
 
@@ -1085,7 +1091,7 @@ theorem mem_closure_iff_nhdsWithin_neBot : x ∈ closure s ↔ NeBot (𝓝[s] x)
 lemma nhdsWithin_neBot : (𝓝[s] x).NeBot ↔ ∀ ⦃t⦄, t ∈ 𝓝 x → (t ∩ s).Nonempty := by
   rw [nhdsWithin, inf_neBot_iff]
   exact forall₂_congr fun U _ ↦
-    ⟨fun h ↦ h (mem_principal_self _), fun h u hsu ↦ h.mono $ inter_subset_inter_right _ hsu⟩
+    ⟨fun h ↦ h (mem_principal_self _), fun h u hsu ↦ h.mono <| inter_subset_inter_right _ hsu⟩
 
 @[gcongr]
 theorem nhdsWithin_mono (x : X) {s t : Set X} (h : s ⊆ t) : 𝓝[s] x ≤ 𝓝[t] x :=
@@ -1312,7 +1318,7 @@ open Topology
 
 section Continuous
 
-variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+variable {X Y Z : Type*}
 
 open TopologicalSpace
 
@@ -1322,6 +1328,7 @@ theorem continuous_def {_ : TopologicalSpace X} {_ : TopologicalSpace Y} {f : X 
     Continuous f ↔ ∀ s, IsOpen s → IsOpen (f ⁻¹' s) :=
   ⟨fun hf => hf.1, fun h => ⟨h⟩⟩
 
+variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 variable {f : X → Y} {s : Set X} {x : X} {y : Y}
 
 theorem IsOpen.preimage (hf : Continuous f) {t : Set Y} (h : IsOpen t) :
@@ -1360,6 +1367,14 @@ This is essentially `Filter.Tendsto.eventually_mem`, but infers in more cases wh
 theorem ContinuousAt.eventually_mem {f : X → Y} {x : X} (hf : ContinuousAt f x) {s : Set Y}
     (hs : s ∈ 𝓝 (f x)) : ∀ᶠ y in 𝓝 x, f y ∈ s :=
   hf hs
+
+/-- If a function ``f` tends to somewhere other than `𝓝 (f x)` at `x`,
+then `f` is not continuous at `x`
+-/
+lemma not_continuousAt_of_tendsto {f : X → Y} {l₁ : Filter X} {l₂ : Filter Y} {x : X}
+    (hf : Tendsto f l₁ l₂) [l₁.NeBot] (hl₁ : l₁ ≤ 𝓝 x) (hl₂ : Disjoint (𝓝 (f x)) l₂) :
+    ¬ ContinuousAt f x := fun cont ↦
+  (cont.mono_left hl₁).not_tendsto hl₂ hf
 
 /-- Deprecated, please use `not_mem_tsupport_iff_eventuallyEq` instead. -/
 @[deprecated (since := "2024-01-15")]
@@ -1442,7 +1457,7 @@ theorem Filter.EventuallyEq.continuousAt (h : f =ᶠ[𝓝 x] fun _ => y) :
 
 theorem continuous_of_const (h : ∀ x y, f x = f y) : Continuous f :=
   continuous_iff_continuousAt.mpr fun x =>
-    Filter.EventuallyEq.continuousAt <| eventually_of_forall fun y => h y x
+    Filter.EventuallyEq.continuousAt <| Eventually.of_forall fun y => h y x
 
 theorem continuousAt_id : ContinuousAt id x :=
   continuous_id.continuousAt
@@ -1729,3 +1744,5 @@ example [TopologicalSpace X] [TopologicalSpace Y] {x₀ : X} (f : X → X → Y)
   -- hf.comp_of_eq (continuousAt_id.prod continuousAt_id) rfl -- works
 ```
 -/
+
+set_option linter.style.longFile 1900

@@ -19,15 +19,11 @@ of continuity is equivalent to continuity in ωCPOs.
 
 -/
 
-
 open Set OmegaCompletePartialOrder
-
-open scoped Classical
 
 universe u
 
 -- "Scott", "ωSup"
-
 namespace Scott
 
 /-- `x` is an `ω`-Sup of a chain `c` if it is the least upper bound of the range of `c`. -/
@@ -53,7 +49,7 @@ theorem IsOpen.inter (s t : Set α) : IsOpen α s → IsOpen α t → IsOpen α 
 
 theorem isOpen_sUnion (s : Set (Set α)) (hs : ∀ t ∈ s, IsOpen α t) : IsOpen α (⋃₀ s) := by
   simp only [IsOpen] at hs ⊢
-  convert CompleteLattice.sSup_continuous' (setOf ⁻¹' s) hs
+  convert CompleteLattice.sSup_continuous' (setOf ⁻¹' s) hs using 2
   simp only [sSup_apply, setOf_bijective.surjective.exists, exists_prop, mem_preimage,
     SetCoe.exists, iSup_Prop_eq, mem_setOf_eq, mem_sUnion]
 

@@ -35,7 +35,7 @@ open Set Function
 open Pointwise
 
 /-- A (left) ideal in a semiring `R` is an additive submonoid `s` such that
-`a * b ∈ s` whenever `b ∈ s`. If `R` is a ring, then `s` is an additive subgroup.  -/
+`a * b ∈ s` whenever `b ∈ s`. If `R` is a ring, then `s` is an additive subgroup. -/
 abbrev Ideal (R : Type u) [Semiring R] :=
   Submodule R R
 
@@ -76,9 +76,9 @@ theorem sum_mem (I : Ideal α) {ι : Type*} {t : Finset ι} {f : ι → α} :
 theorem eq_top_of_unit_mem (x y : α) (hx : x ∈ I) (h : y * x = 1) : I = ⊤ :=
   eq_top_iff.2 fun z _ =>
     calc
-      z = z * (y * x) := by simp [h]
-      _ = z * y * x := Eq.symm <| mul_assoc z y x
-      _ ∈ I := I.mul_mem_left _ hx
+      z * y * x ∈ I := I.mul_mem_left _ hx
+      _ = z * (y * x) := mul_assoc z y x
+      _ = z := by rw [h, mul_one]
 
 theorem eq_top_of_isUnit_mem {x} (hx : x ∈ I) (h : IsUnit x) : I = ⊤ :=
   let ⟨y, hy⟩ := h.exists_left_inv
@@ -221,10 +221,12 @@ theorem IsPrime.mem_or_mem_of_mul_eq_zero {I : Ideal α} (hI : I.IsPrime) {x y :
 
 theorem IsPrime.mem_of_pow_mem {I : Ideal α} (hI : I.IsPrime) {r : α} (n : ℕ) (H : r ^ n ∈ I) :
     r ∈ I := by
-  induction' n with n ih
-  · rw [pow_zero] at H
+  induction n with
+  | zero =>
+    rw [pow_zero] at H
     exact (mt (eq_top_iff_one _).2 hI.1).elim H
-  · rw [pow_succ] at H
+  | succ n ih =>
+    rw [pow_succ] at H
     exact Or.casesOn (hI.mem_or_mem H) ih id
 
 theorem not_isPrime_iff {I : Ideal α} :
@@ -239,7 +241,7 @@ theorem zero_ne_one_of_proper {I : Ideal α} (h : I ≠ ⊤) : (0 : α) ≠ 1 :=
   I.ne_top_iff_one.1 h <| hz ▸ I.zero_mem
 
 theorem bot_prime [IsDomain α] : (⊥ : Ideal α).IsPrime :=
-  ⟨fun h => one_ne_zero (by rwa [Ideal.eq_top_iff_one, Submodule.mem_bot] at h), fun h =>
+  ⟨fun h => one_ne_zero (α := α) (by rwa [Ideal.eq_top_iff_one, Submodule.mem_bot] at h), fun h =>
     mul_eq_zero.mp (by simpa only [Submodule.mem_bot] using h)⟩
 
 /-- An ideal is maximal if it is maximal in the collection of proper ideals. -/
@@ -568,7 +570,7 @@ theorem span_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : ℕ) :
     · rw [Set.image_empty, hs]
       trivial
     · exact subset_span ⟨_, hx, pow_zero _⟩
-  rw [eq_top_iff_one, span, Finsupp.mem_span_iff_total] at hs
+  rw [eq_top_iff_one, span, Finsupp.mem_span_iff_linearCombination] at hs
   rcases hs with ⟨f, hf⟩
   have hf : (f.support.sum fun a => f a * a) = 1 := hf -- Porting note: was `change ... at hf`
   have := sum_pow_mem_span_pow f.support (fun a => f a * a) n
