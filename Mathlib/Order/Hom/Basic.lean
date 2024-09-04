@@ -108,6 +108,9 @@ section
 abbrev OrderHomClass (F : Type*) (α β : outParam Type*) [LE α] [LE β] [FunLike F α β] :=
   RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop)
 
+/-- `OrderEmbeddingClass F α β` states that `F` is a type of order embeddings. -/
+abbrev OrderEmbeddingClass (F α β : Type*) [LE α] [LE β] [FunLike F α β] [EmbeddingLike F α β] :=
+  StrongRelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop)
 
 /-- `OrderIsoClass F α β` states that `F` is a type of order isomorphisms.
 
@@ -117,10 +120,28 @@ abbrev OrderIsoClass (F α β : Type*) [LE α] [LE β] [EquivLike F α β] :=
 
 end
 
-@[simp] theorem map_le_map_iff {F α β : Type*}
+/-- Turn an element of a type `F` satisfying `OrderEmbeddingClass F α β` into an actual
+`OrderEmbedding`. This is declared as the default coercion from `F` to `α ↪o β`. -/
+@[coe]
+def OrderEmbeddingClass.toOrderEmbedding [LE α] [LE β] [FunLike F α β] [EmbeddingLike F α β]
+    [OrderEmbeddingClass F α β] (f : F) :
+    α ↪o β where
+  toFun := f
+  inj' := EmbeddingLike.injective f
+  map_rel_iff' := map_rel_iff f
+
+/-- Any type satisfying `OrderEmbeddingClass` can be cast into `OrderEmbedding` via
+`OrderEmbeddingClass.toOrderEmbedding`. -/
+instance [LE α] [LE β] [FunLike F α β] [EmbeddingLike F α β]
+    [OrderEmbeddingClass F α β] : CoeTC F (α ↪o β) :=
+  ⟨OrderEmbeddingClass.toOrderEmbedding⟩
+
+@[simp] theorem OrderIso.map_le_map_iff {F α β : Type*}
     [LE α] [LE β] [EquivLike F α β] [OrderIsoClass F α β] (f : F) {a b : α} :
     f a ≤ f b ↔ a ≤ b :=
   map_rel_iff f
+
+export OrderIso (map_le_map_iff)
 
 /-- Turn an element of a type `F` satisfying `OrderIsoClass F α β` into an actual
 `OrderIso`. This is declared as the default coercion from `F` to `α ≃o β`. -/
