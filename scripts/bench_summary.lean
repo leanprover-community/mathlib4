@@ -82,23 +82,23 @@ def summary (bc : Bench) : String :=
   "|".intercalate (""::middle ++ [""])
 
 /--
-`tableArrayBench bcs` formats an array of `Bench`es into an md-table whose columns are
+`toTable bcs` formats an array of `Bench`es into an md-table whose columns are
 `File`, `Instructions` and `%`.
 A typical entry may look like ``|`Mathlib.Analysis.Seminorm`|+2.509⬝10⁹|(+1.41%)|``
 -/
-def tableArrayBench (bcs : Array Bench) : String :=
+def toTable (bcs : Array Bench) : String :=
   let header := "|File|Instructions|%|\n|-|-:|:-:|"
   "\n".intercalate (header :: (bcs.map summary).toList)
 
 /--
-`summaryTable bcs roundDiff` is similar to `tableArrayBench bcs`, except that it encloses it
+`toCollapsibleTable bcs roundDiff` is similar to `toTable bcs`, except that it encloses it
 in a `<details><summary>` html-block.
 The `<summary>` part tallies the number of entries in `bcs` and the significant change in
 number of instructions `roundDiff`.
 -/
-def summaryTable (bcs : Array Bench) (roundDiff : Int) : String :=
+def toCollapsibleTable (bcs : Array Bench) (roundDiff : Int) : String :=
   s!"<details><summary>{bcs.size} files, Instructions {formatDiff <| roundDiff * 10 ^ 9}\
-    </summary>\n\n{tableArrayBench (bcs.qsort (·.diff > ·.diff))}\n</details>\n"
+    </summary>\n\n{toTable (bcs.qsort (·.diff > ·.diff))}\n</details>\n"
 
 /-- Assuming that the input is a `json`-string formatted to produce an array of `Bench`,
 `benchOutput` prints the "significant" changes in numbers of instructions. -/
@@ -128,9 +128,9 @@ def benchOutput (js : System.FilePath) : IO Unit := do
     IO.println <|
       match bound with
         | none => -- `bound = none`: these entries are "singleton" files in their range
-          tableArrayBench gs
+          toTable gs
         | some roundedDiff => -- these instead should be a collapsible summary
-          summaryTable gs roundedDiff
+          toCollapsibleTable gs roundedDiff
 
 #eval benchOutput "benchOutput.json"
 
