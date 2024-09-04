@@ -345,8 +345,8 @@ lemma existance [ProperSpace 𝕜₁] (hC₁ : IsClosed C)
       have e2 : u = ∅ := by
         aesop
       rw [e2, iInter_of_empty_univ, inter_univ] at hu
-      have h2 : Nonempty (polar 𝕜₁ (U (E := E₁) (n + 2))) :=
-        NormedSpace.instNonemptyElemDualPolar _ _
+      haveI : Nonempty (polar 𝕜₁ (E:=E₁) (U (n + 2))) :=
+        LinearMap.polar_nonempty (dualPairing 𝕜₁ E₁).flip (U (n + 2))
       subst e2
       simp_all only [nonempty_subtype, mem_empty_iff_false, exists_const]
     letI : Nonempty u := eu
@@ -363,6 +363,7 @@ lemma existance [ProperSpace 𝕜₁] (hC₁ : IsClosed C)
       _ = ∅ := hu
     ⟩⟩
 
+/-
 theorem exists_seq_finite_subsets (hC₁ : IsClosed C) (hC₂ : 0 ∉ C): ∃ F : ℕ → Set E₁, ∀ n : ℕ,
     (F n).Finite ∧ F n ⊆ (U n) ∧ polar 𝕜₁ (⋃₀ {F k | k < n }) ∩ polar 𝕜₁ (U n) ∩ C = ∅ := by
   use (fun n => Nat.recOn n {(0 : E₁)} (fun n v => {(0 : E₁)}))
@@ -375,6 +376,7 @@ theorem exists_seq_finite_subsets (hC₁ : IsClosed C) (hC₂ : 0 ∉ C): ∃ F 
   · cases n
     sorry
     sorry
+-/
 
     /-
     · constructor
