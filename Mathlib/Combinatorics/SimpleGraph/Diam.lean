@@ -114,7 +114,7 @@ lemma ediam_bot [Nontrivial α] : (⊥ : SimpleGraph α).ediam = ⊤ :=
 
 @[simp]
 lemma ediam_top [Nontrivial α] : (⊤ : SimpleGraph α).ediam = 1 := by
-  apply le_antisymm ?_ <| ENat.one_le_iff_pos.mpr <| pos_iff_ne_zero.mpr ediam_ne_zero
+  apply le_antisymm ?_ <| Order.one_le_iff_pos.mpr <| pos_iff_ne_zero.mpr ediam_ne_zero
   apply ediam_def ▸ iSup_le_iff.mpr
   intro p
   by_cases h : (⊤ : SimpleGraph α).Adj p.1 p.2
@@ -129,7 +129,7 @@ lemma ediam_eq_one [Nontrivial α] : G.ediam = 1 ↔ G = ⊤ := by
   apply G.edist_pos_of_ne at h₂
   apply le_of_eq at h₁
   rw [ediam_def, iSup_le_iff] at h₁
-  exact edist_eq_one_iff_adj.mp <| le_antisymm (h₁ (u, v)) <| ENat.one_le_iff_pos.mpr h₂
+  exact edist_eq_one_iff_adj.mp <| le_antisymm (h₁ (u, v)) <| Order.one_le_iff_pos.mpr h₂
 
 end ediam
 

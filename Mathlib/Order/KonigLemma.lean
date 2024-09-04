@@ -80,7 +80,7 @@ theorem GradeMinOrder.exists_nat_orderEmbedding_of_forall_covby_finite
   obtain ⟨f, h0, hf⟩ := exists_orderEmbedding_covby_of_forall_covby_finite_of_bot hfin
   refine ⟨f, h0, hf, fun i ↦ ?_⟩
   induction' i with i ih; simp [h0]
-  simpa [Nat.covBy_iff_succ_eq, ih, eq_comm] using CovBy.grade ℕ <| hf i
+  simpa [covBy_iff_add_one_eq, ih, eq_comm] using CovBy.grade ℕ <| hf i
 
 end Sequence
 
