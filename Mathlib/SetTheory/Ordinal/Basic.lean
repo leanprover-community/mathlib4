@@ -923,22 +923,27 @@ instance noMaxOrder : NoMaxOrder Ordinal :=
 instance succOrder : SuccOrder Ordinal.{u} :=
   SuccOrder.ofSuccLeIff (fun o => o + 1) succ_le_iff'
 
+instance succAddOrder : SuccAddOrder Ordinal := ⟨fun _ => rfl⟩
+
 @[simp]
 theorem add_one_eq_succ (o : Ordinal) : o + 1 = succ o :=
   rfl
 
-@[simp]
+@[deprecated Order.succ_zero (since := "2024-09-04")]
 theorem succ_zero : succ (0 : Ordinal) = 1 :=
-  zero_add 1
+  Order.succ_zero
 
--- Porting note: Proof used to be rfl
-@[simp]
-theorem succ_one : succ (1 : Ordinal) = 2 := by congr; simp only [Nat.unaryCast, zero_add]
+@[deprecated Order.succ_one (since := "2024-09-04")]
+theorem succ_one : succ (1 : Ordinal) = 2 :=
+  Order.succ_one
 
+@[deprecated Order.add_succ (since := "2024-09-04")]
 theorem add_succ (o₁ o₂ : Ordinal) : o₁ + succ o₂ = succ (o₁ + o₂) :=
-  (add_assoc _ _ _).symm
+  Order.add_succ o₁ o₂
 
-theorem one_le_iff_pos {o : Ordinal} : 1 ≤ o ↔ 0 < o := by rw [← succ_zero, succ_le_iff]
+@[deprecated Order.one_le_iff_pos (since := "2024-09-04")]
+theorem one_le_iff_pos {o : Ordinal} : 1 ≤ o ↔ 0 < o :=
+  Order.one_le_iff_pos
 
 theorem one_le_iff_ne_zero {o : Ordinal} : 1 ≤ o ↔ o ≠ 0 := by
   rw [one_le_iff_pos, Ordinal.pos_iff_ne_zero]
