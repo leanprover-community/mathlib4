@@ -6,6 +6,7 @@ Authors: Christian Merten
 import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.CategoryTheory.FintypeCat
 import Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.CategoryTheory.Galois.Basic
 
 /-!
 
@@ -139,6 +140,20 @@ instance (X : C) : SMul (Aut (F.obj X)) (F.obj X) := ⟨fun σ a => σ.hom a⟩
 instance (X : C) : ContinuousSMul (Aut (F.obj X)) (F.obj X) := by
   constructor
   fun_prop
+
+instance (X : C) : ContinuousSMul (Aut F) (F.obj X) := by
+  constructor
+  let g : Aut (F.obj X) × F.obj X → F.obj X := fun ⟨σ, x⟩ => σ.hom x
+  let h' : Aut F → Aut (F.obj X) := fun σ => σ.app X
+  let h : Aut F × F.obj X → Aut (F.obj X) × F.obj X :=
+    fun ⟨σ, x⟩ => ⟨h' σ, x⟩
+  have : Continuous g := continuous_smul
+  show Continuous (g ∘ h)
+  apply Continuous.comp
+  trivial
+  refine Continuous.prod_map ?_ continuous_id
+  show Continuous ((fun p => p X) ∘ autEmbedding F)
+  apply Continuous.comp (continuous_apply X) (continuous_induced_dom)
 
 end PreGaloisCategory
 
