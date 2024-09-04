@@ -456,6 +456,9 @@ lemma krullDim_eq_of_nonempty [Nonempty α] :
 
 lemma krullDim_eq_bot_of_isEmpty [IsEmpty α] : krullDim α = ⊥ := WithBot.ciSup_empty _
 
+lemma krullDim_neq_bot_of_Nonempty [Nonempty α] : krullDim α ≠ ⊥ :=
+  ne_bot_of_le_ne_bot WithBot.zero_ne_bot krullDim_nonneg_of_nonempty
+
 lemma krullDim_eq_top_of_infiniteDimensionalOrder [InfiniteDimensionalOrder α] :
     krullDim α = ⊤ :=
   le_antisymm le_top <| le_iSup_iff.mpr <| fun m hm ↦ match m, hm with
@@ -543,18 +546,20 @@ lemma krullDim_eq_iSup_coheight_of_nonempty [Nonempty α] : krullDim α = ⨆ (a
   rw [← krullDim_orderDual]
   exact krullDim_eq_iSup_height_of_nonempty (α := αᵒᵈ)
 
-@[simp] -- not as useful as a simp lemma as it looks, due to the coe on the left
-lemma height_top_eq_krullDim [OrderTop α] : height (⊤ : α) = krullDim α := by
-  rw [krullDim_eq_of_nonempty]
-  simp only [WithBot.coe_inj]
+@[simp]
+lemma height_top_eq_krullDim [OrderTop α] :
+    height (⊤ : α) = (krullDim α).unbot krullDim_neq_bot_of_Nonempty := by
+  simp_rw [krullDim_eq_of_nonempty, WithBot.unbot_coe]
   apply le_antisymm
   · exact height_le _ _ (fun p _ ↦ le_iSup_of_le p (le_refl _))
   · exact iSup_le (fun p => le_height_of_last_le ⊤ p le_top)
 
-@[simp] -- not as useful as a simp lemma as it looks, due to the coe on the left
-lemma coheight_bot_eq_krullDim [OrderBot α] : coheight (⊥ : α) = krullDim α := by
-  rw [← krullDim_orderDual]
-  exact height_top_eq_krullDim (α := αᵒᵈ)
+@[simp]
+lemma coheight_bot_eq_krullDim [OrderBot α] :
+    coheight (⊥ : α) = (krullDim α).unbot krullDim_neq_bot_of_Nonempty := by
+  show height (⊤ : αᵒᵈ) = _
+  apply WithBot.coe_inj.mp
+  simp [height_top_eq_krullDim (α := αᵒᵈ), WithBot.coe_unbot, krullDim_orderDual]
 
 end krullDim
 
