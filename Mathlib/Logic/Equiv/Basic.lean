@@ -1382,6 +1382,60 @@ theorem subtypeQuotientEquivQuotientSubtype_symm_mk (p₁ : α → Prop)
     (subtypeQuotientEquivQuotientSubtype p₁ p₂ hp₂ h).symm ⟦x⟧ = ⟨⟦x⟧, (hp₂ _).1 x.property⟩ :=
   rfl
 
+/-- The canonical map from quotient to `Quot r` as a `Equiv`. -/
+@[simps]
+def QuotLike.toQuotEquiv (Q : Sort u) {α : Sort u} {r : α → α → Prop}
+    [QuotLike Q α r] : Q ≃ Quot r where
+  toFun := QuotLike.toQuot
+  invFun := QuotLike.ofQuot
+  left_inv := QuotLike.ofQuot_toQuot
+  right_inv := QuotLike.toQuot_ofQuot
+
+/-- The canonical map from quotient to `Quotient r` as a `Equiv`. -/
+@[simps!]
+def QuotLike.toQuotientEquiv (Q : Sort u) {α : Sort u} {r : α → α → Prop}
+    [QuotLike Q α r] [IsEquiv α r] : Q ≃ Quotient ⟨r, refl, symm, _root_.trans⟩ :=
+  QuotLike.toQuotEquiv Q
+
+/-- Subtype of the quotient is equivalent to the quotient of the subtype. Let `α` be a setoid with
+equivalence relation `~`. Let `p₂` be a predicate on the quotient type `α/~`, and `p₁` be the lift
+of this predicate to `α`: `p₁ a ↔ p₂ ⟦a⟧`. Let `~₂` be the restriction of `~` to `{x // p₁ x}`.
+Then `{x // p₂ x}` is equivalent to the quotient of `{x // p₁ x}` by `~₂`. -/
+def subtypeQuotLikeEquivQuotLikeSubtype
+    {Q₁ : Type u} {α : Type u} {r₁ : α → α → Prop} [QuotLike Q₁ α r₁] [IsEquiv α r₁]
+    {Q₂ : Type u} (p₁ : α → Prop) {r₂ : Subtype p₁ → Subtype p₁ → Prop}
+    [QuotLike Q₂ _ r₂] [IsEquiv _ r₂]
+    (p₂ : Q₁ → Prop) (hp₂ : ∀ a, p₁ a ↔ p₂ ⟦a⟧)
+    (h : ∀ x y : Subtype p₁, r₂ x y ↔ r₁ x y) : {x // p₂ x} ≃ Q₂ :=
+  ((QuotLike.toQuotientEquiv Q₁).subtypeEquivOfSubtype' (p := p₂).trans
+    (subtypeQuotientEquivQuotientSubtype _ _ hp₂ h)).trans (QuotLike.toQuotientEquiv Q₂).symm
+
+@[simp]
+theorem subtypeQuotLikeEquivQuotLikeSubtype_mk
+    {Q₁ : Type u} {α : Type u} {r₁ : α → α → Prop} [QuotLike Q₁ α r₁] [IsEquiv α r₁]
+    {Q₂ : Type u} (p₁ : α → Prop) {r₂ : Subtype p₁ → Subtype p₁ → Prop}
+    [QuotLike Q₂ _ r₂] [IsEquiv _ r₂]
+    (p₂ : Q₁ → Prop) (hp₂ : ∀ a, p₁ a ↔ p₂ ⟦a⟧)
+    (h : ∀ x y : Subtype p₁, r₂ x y ↔ r₁ x y) (x hx) :
+    subtypeQuotLikeEquivQuotLikeSubtype p₁ p₂ hp₂ h ⟨⟦x⟧, hx⟩ = (⟦⟨x, (hp₂ _).2 hx⟩⟧ : Q₂) := by
+  apply QuotLike.toQuot_injective
+  dsimp [subtypeQuotLikeEquivQuotLikeSubtype, subtypeEquivOfSubtype', subtypeEquivOfSubtype]
+  simp only [QuotLike.toQuot_mkQ, QuotLike.toQuot_ofQuot]
+  rfl
+
+@[simp]
+theorem subtypeQuotLikeEquivQuotLikeSubtype_symm_mk
+    {Q₁ : Type u} {α : Type u} {r₁ : α → α → Prop} [QuotLike Q₁ α r₁] [IsEquiv α r₁]
+    {Q₂ : Type u} (p₁ : α → Prop) {r₂ : Subtype p₁ → Subtype p₁ → Prop}
+    [QuotLike Q₂ _ r₂] [IsEquiv _ r₂]
+    (p₂ : Q₁ → Prop) (hp₂ : ∀ a, p₁ a ↔ p₂ ⟦a⟧)
+    (h : ∀ x y : Subtype p₁, r₂ x y ↔ r₁ x y) (x) :
+    (subtypeQuotLikeEquivQuotLikeSubtype p₁ p₂ hp₂ h).symm (⟦x⟧ : Q₂) =
+      ⟨⟦x : α⟧, (hp₂ _).1 x.2⟩ := by
+  dsimp [subtypeQuotLikeEquivQuotLikeSubtype]
+  simp only [QuotLike.toQuot_mkQ, QuotLike.toQuot_ofQuot]
+  rfl
+
 section Swap
 
 variable [DecidableEq α]

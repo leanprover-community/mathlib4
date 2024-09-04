@@ -134,8 +134,7 @@ def ConjClasses (α : Type*) [Monoid α] : Type _ :=
 namespace ConjClasses
 
 instance [Monoid α] : QuotLike (ConjClasses α) α IsConj where
-
-scoped instance [Monoid α] : QuotLike.HasQuot α (ConjClasses α) IsConj where
+scoped instance [Monoid α] : QuotLike.HasQuot (ConjClasses α) α IsConj where
 
 section Monoid
 
@@ -284,7 +283,7 @@ theorem mem_carrier_iff_mk_eq {a : α} {b : ConjClasses α} :
   rw [carrier, eq_comm, mk_eq_mk_iff_isConj, QuotLike.lift_mkQ]
   rfl
 
-theorem carrier_eq_preimage_mk {a : ConjClasses α} : a.carrier = mkQ (Q := ConjClasses α) ⁻¹' {a} :=
+theorem carrier_eq_preimage_mk {a : ConjClasses α} : a.carrier = mkQ ⁻¹' {a} :=
   Set.ext fun _ => mem_carrier_iff_mk_eq
 
 end ConjClasses

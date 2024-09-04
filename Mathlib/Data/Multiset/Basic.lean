@@ -42,7 +42,7 @@ def Multiset.{u} (α : Type u) : Type u :=
 namespace Multiset
 
 instance : QuotLike (Multiset α) (List α) List.Perm where
-scoped instance : QuotLike.HasQuot (List α) (Multiset α) List.Perm where
+scoped instance : QuotLike.HasQuot (Multiset α) (List α) List.Perm where
 
 -- Porting note: new
 /-- The quotient map from `List α` to `Multiset α`. -/
@@ -71,7 +71,7 @@ theorem mkQ_to_coe (l : List α) : ⟦l⟧' = l :=
 
 @[simp]
 theorem lift_coe {α β : Type*} (x : List α) (f : List α → β)
-    (h : ∀ a b : List α, a ≈ b → f a = f b) : QuotLike.lift f h (x : Multiset α) = f x :=
+    (h : ∀ a b : List α, List.Perm a b → f a = f b) : QuotLike.lift f h (x : Multiset α) = f x :=
   QuotLike.lift_mkQ _ _ _
 
 @[simp]

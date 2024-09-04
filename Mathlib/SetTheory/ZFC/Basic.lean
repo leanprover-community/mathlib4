@@ -601,7 +601,7 @@ def mk : PSet → ZFSet :=
   Quotient.mk''
 
 instance : QuotLike ZFSet PSet PSet.Equiv where
-instance : QuotLike.HasQuot PSet ZFSet PSet.Equiv where
+instance : QuotLike.HasQuot ZFSet PSet PSet.Equiv where
 
 @[simp]
 theorem mk_eq (x : PSet) : @Eq ZFSet (Quotient.mk _ x) ⟦x⟧ :=

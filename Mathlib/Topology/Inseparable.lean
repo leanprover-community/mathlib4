@@ -511,101 +511,111 @@ variable {t : Set (SeparationQuotient X)}
 
 namespace SeparationQuotient
 
+instance : IsEquiv X Inseparable where
+  refl := (inseparableSetoid X).refl
+  symm _ _ := (inseparableSetoid X).symm
+  trans _ _ _ := (inseparableSetoid X).trans
+
+instance : QuotLike (SeparationQuotient X) X Inseparable where
+scoped instance : QuotLike.HasQuot (SeparationQuotient X) X Inseparable where
+
 /-- The natural map from a topological space to its separation quotient. -/
+@[deprecated (since := "2024-09-04")]
 def mk : X → SeparationQuotient X := Quotient.mk''
 
-theorem quotientMap_mk : QuotientMap (mk : X → SeparationQuotient X) :=
+theorem quotientMap_mk : QuotientMap (mkQ : X → SeparationQuotient X) :=
   quotientMap_quot_mk
 
 @[fun_prop, continuity]
-theorem continuous_mk : Continuous (mk : X → SeparationQuotient X) :=
+theorem continuous_mk : Continuous (mkQ : X → SeparationQuotient X) :=
   continuous_quot_mk
 
 @[simp]
-theorem mk_eq_mk : mk x = mk y ↔ (x ~ᵢ y) :=
+theorem mk_eq_mk : ⟦x⟧' = ⟦y⟧' ↔ (x ~ᵢ y) :=
   Quotient.eq''
 
-theorem surjective_mk : Surjective (mk : X → SeparationQuotient X) :=
+theorem surjective_mk : Surjective (mkQ : X → SeparationQuotient X) :=
   surjective_quot_mk _
 
 @[simp]
-theorem range_mk : range (mk : X → SeparationQuotient X) = univ :=
+theorem range_mk : range (mkQ : X → SeparationQuotient X) = univ :=
   surjective_mk.range_eq
 
 instance [Nonempty X] : Nonempty (SeparationQuotient X) :=
-  Nonempty.map mk ‹_›
+  Nonempty.map mkQ ‹_›
 
 instance [Inhabited X] : Inhabited (SeparationQuotient X) :=
-  ⟨mk default⟩
+  ⟨mkQ default⟩
 
 instance [Subsingleton X] : Subsingleton (SeparationQuotient X) :=
   surjective_mk.subsingleton
 
-@[to_additive] instance [One X] : One (SeparationQuotient X) := ⟨mk 1⟩
+@[to_additive] instance [One X] : One (SeparationQuotient X) := ⟨mkQ 1⟩
 
-@[to_additive (attr := simp)] theorem mk_one [One X] : mk (1 : X) = 1 := rfl
+@[to_additive (attr := simp)] theorem mk_one [One X] : ⟦1 : X⟧' = 1 := rfl
 
-theorem preimage_image_mk_open (hs : IsOpen s) : mk ⁻¹' (mk '' s) = s := by
+theorem preimage_image_mk_open (hs : IsOpen s) :
+    mkQ ⁻¹' (mkQ' '' s) = s := by
   refine Subset.antisymm ?_ (subset_preimage_image _ _)
   rintro x ⟨y, hys, hxy⟩
   exact ((mk_eq_mk.1 hxy).mem_open_iff hs).1 hys
 
-theorem isOpenMap_mk : IsOpenMap (mk : X → SeparationQuotient X) := fun s hs =>
+theorem isOpenMap_mk : IsOpenMap (mkQ : X → SeparationQuotient X) := fun s hs =>
   quotientMap_mk.isOpen_preimage.1 <| by rwa [preimage_image_mk_open hs]
 
-theorem preimage_image_mk_closed (hs : IsClosed s) : mk ⁻¹' (mk '' s) = s := by
+theorem preimage_image_mk_closed (hs : IsClosed s) : mkQ ⁻¹' (mkQ' '' s) = s := by
   refine Subset.antisymm ?_ (subset_preimage_image _ _)
   rintro x ⟨y, hys, hxy⟩
   exact ((mk_eq_mk.1 hxy).mem_closed_iff hs).1 hys
 
-theorem inducing_mk : Inducing (mk : X → SeparationQuotient X) :=
+theorem inducing_mk : Inducing (mkQ : X → SeparationQuotient X) :=
   ⟨le_antisymm (continuous_iff_le_induced.1 continuous_mk) fun s hs =>
-      ⟨mk '' s, isOpenMap_mk s hs, preimage_image_mk_open hs⟩⟩
+      ⟨mkQ '' s, isOpenMap_mk s hs, preimage_image_mk_open hs⟩⟩
 
-theorem isClosedMap_mk : IsClosedMap (mk : X → SeparationQuotient X) :=
+theorem isClosedMap_mk : IsClosedMap (mkQ : X → SeparationQuotient X) :=
   inducing_mk.isClosedMap <| by rw [range_mk]; exact isClosed_univ
 
 @[simp]
-theorem comap_mk_nhds_mk : comap mk (𝓝 (mk x)) = 𝓝 x :=
+theorem comap_mk_nhds_mk : comap mkQ (𝓝 ⟦x⟧') = 𝓝 x :=
   (inducing_mk.nhds_eq_comap _).symm
 
 @[simp]
-theorem comap_mk_nhdsSet_image : comap mk (𝓝ˢ (mk '' s)) = 𝓝ˢ s :=
+theorem comap_mk_nhdsSet_image : comap mkQ (𝓝ˢ (mkQ' '' s)) = 𝓝ˢ s :=
   (inducing_mk.nhdsSet_eq_comap _).symm
 
-theorem map_mk_nhds : map mk (𝓝 x) = 𝓝 (mk x) := by
+theorem map_mk_nhds : map mkQ (𝓝 x) = 𝓝 ⟦x⟧' := by
   rw [← comap_mk_nhds_mk, map_comap_of_surjective surjective_mk]
 
-theorem map_mk_nhdsSet : map mk (𝓝ˢ s) = 𝓝ˢ (mk '' s) := by
+theorem map_mk_nhdsSet : map mkQ (𝓝ˢ s) = 𝓝ˢ (mkQ' '' s) := by
   rw [← comap_mk_nhdsSet_image, map_comap_of_surjective surjective_mk]
 
-theorem comap_mk_nhdsSet : comap mk (𝓝ˢ t) = 𝓝ˢ (mk ⁻¹' t) := by
+theorem comap_mk_nhdsSet : comap mkQ (𝓝ˢ t) = 𝓝ˢ (mkQ ⁻¹' t) := by
   conv_lhs => rw [← image_preimage_eq t surjective_mk, comap_mk_nhdsSet_image]
 
-theorem preimage_mk_closure : mk ⁻¹' closure t = closure (mk ⁻¹' t) :=
+theorem preimage_mk_closure : mkQ ⁻¹' closure t = closure (mkQ ⁻¹' t) :=
   isOpenMap_mk.preimage_closure_eq_closure_preimage continuous_mk t
 
-theorem preimage_mk_interior : mk ⁻¹' interior t = interior (mk ⁻¹' t) :=
+theorem preimage_mk_interior : mkQ ⁻¹' interior t = interior (mkQ ⁻¹' t) :=
   isOpenMap_mk.preimage_interior_eq_interior_preimage continuous_mk t
 
-theorem preimage_mk_frontier : mk ⁻¹' frontier t = frontier (mk ⁻¹' t) :=
+theorem preimage_mk_frontier : mkQ ⁻¹' frontier t = frontier (mkQ ⁻¹' t) :=
   isOpenMap_mk.preimage_frontier_eq_frontier_preimage continuous_mk t
 
-theorem image_mk_closure : mk '' closure s = closure (mk '' s) :=
+theorem image_mk_closure : mkQ '' closure s = closure (mkQ' '' s) :=
   (image_closure_subset_closure_image continuous_mk).antisymm <|
     isClosedMap_mk.closure_image_subset _
 
 theorem map_prod_map_mk_nhds (x : X) (y : Y) :
-    map (Prod.map mk mk) (𝓝 (x, y)) = 𝓝 (mk x, mk y) := by
+    map (Prod.map mkQ mkQ) (𝓝 (x, y)) = 𝓝 (mkQ' x, mkQ' y) := by
   rw [nhds_prod_eq, ← prod_map_map_eq', map_mk_nhds, map_mk_nhds, nhds_prod_eq]
 
 theorem map_mk_nhdsWithin_preimage (s : Set (SeparationQuotient X)) (x : X) :
-    map mk (𝓝[mk ⁻¹' s] x) = 𝓝[s] mk x := by
+    map mkQ (𝓝[mkQ ⁻¹' s] x) = 𝓝[s] mkQ x := by
   rw [nhdsWithin, ← comap_principal, Filter.push_pull, nhdsWithin, map_mk_nhds]
 
-/-- The map `(x, y) ↦ (mk x, mk y)` is a quotient map. -/
-theorem quotientMap_prodMap_mk : QuotientMap (Prod.map mk mk : X × Y → _) := by
-  have hsurj : Surjective (Prod.map mk mk : X × Y → _) := surjective_mk.prodMap surjective_mk
+/-- The map `(x, y) ↦ (mkQ x, mkQ y)` is a quotient map. -/
+theorem quotientMap_prodMap_mk : QuotientMap (Prod.map mkQ' mkQ' : X × Y → _) := by
+  have hsurj : Surjective (Prod.map mkQ mkQ : X × Y → _) := surjective_mk.prodMap surjective_mk
   refine quotientMap_iff.2 ⟨hsurj, fun s ↦ ?_⟩
   refine ⟨fun hs ↦ hs.preimage (continuous_mk.prod_map continuous_mk), fun hs ↦ ?_⟩
   refine isOpen_iff_mem_nhds.2 <| hsurj.forall.2 fun (x, y) h ↦ ?_
@@ -619,38 +629,38 @@ def lift (f : X → α) (hf : ∀ x y, (x ~ᵢ y) → f x = f y) : SeparationQuo
   Quotient.liftOn' x f hf
 
 @[simp]
-theorem lift_mk {f : X → α} (hf : ∀ x y, (x ~ᵢ y) → f x = f y) (x : X) : lift f hf (mk x) = f x :=
+theorem lift_mk {f : X → α} (hf : ∀ x y, (x ~ᵢ y) → f x = f y) (x : X) : lift f hf (mkQ x) = f x :=
   rfl
 
 @[simp]
-theorem lift_comp_mk {f : X → α} (hf : ∀ x y, (x ~ᵢ y) → f x = f y) : lift f hf ∘ mk = f :=
+theorem lift_comp_mk {f : X → α} (hf : ∀ x y, (x ~ᵢ y) → f x = f y) : lift f hf ∘ mkQ = f :=
   rfl
 
 @[simp]
 theorem tendsto_lift_nhds_mk {f : X → α} {hf : ∀ x y, (x ~ᵢ y) → f x = f y} {l : Filter α} :
-    Tendsto (lift f hf) (𝓝 <| mk x) l ↔ Tendsto f (𝓝 x) l := by
+    Tendsto (lift f hf) (𝓝 <| mkQ x) l ↔ Tendsto f (𝓝 x) l := by
   simp only [← map_mk_nhds, tendsto_map'_iff, lift_comp_mk]
 
 @[simp]
 theorem tendsto_lift_nhdsWithin_mk {f : X → α} {hf : ∀ x y, (x ~ᵢ y) → f x = f y}
     {s : Set (SeparationQuotient X)} {l : Filter α} :
-    Tendsto (lift f hf) (𝓝[s] mk x) l ↔ Tendsto f (𝓝[mk ⁻¹' s] x) l := by
+    Tendsto (lift f hf) (𝓝[s] mkQ x) l ↔ Tendsto f (𝓝[mkQ ⁻¹' s] x) l := by
   simp only [← map_mk_nhdsWithin_preimage, tendsto_map'_iff, lift_comp_mk]
 
 @[simp]
 theorem continuousAt_lift {hf : ∀ x y, (x ~ᵢ y) → f x = f y} :
-    ContinuousAt (lift f hf) (mk x) ↔ ContinuousAt f x :=
+    ContinuousAt (lift f hf) (mkQ x) ↔ ContinuousAt f x :=
   tendsto_lift_nhds_mk
 
 @[simp]
 theorem continuousWithinAt_lift {hf : ∀ x y, (x ~ᵢ y) → f x = f y}
     {s : Set (SeparationQuotient X)} :
-    ContinuousWithinAt (lift f hf) s (mk x) ↔ ContinuousWithinAt f (mk ⁻¹' s) x :=
+    ContinuousWithinAt (lift f hf) s (mkQ x) ↔ ContinuousWithinAt f (mkQ ⁻¹' s) x :=
   tendsto_lift_nhdsWithin_mk
 
 @[simp]
 theorem continuousOn_lift {hf : ∀ x y, (x ~ᵢ y) → f x = f y} {s : Set (SeparationQuotient X)} :
-    ContinuousOn (lift f hf) s ↔ ContinuousOn f (mk ⁻¹' s) := by
+    ContinuousOn (lift f hf) s ↔ ContinuousOn f (mkQ ⁻¹' s) := by
   simp only [ContinuousOn, surjective_mk.forall, continuousWithinAt_lift, mem_preimage]
 
 @[simp]
@@ -665,41 +675,41 @@ def lift₂ (f : X → Y → α) (hf : ∀ a b c d, (a ~ᵢ c) → (b ~ᵢ d) �
 
 @[simp]
 theorem lift₂_mk {f : X → Y → α} (hf : ∀ a b c d, (a ~ᵢ c) → (b ~ᵢ d) → f a b = f c d) (x : X)
-    (y : Y) : lift₂ f hf (mk x) (mk y) = f x y :=
+    (y : Y) : lift₂ f hf (mkQ x) (mkQ y) = f x y :=
   rfl
 
 @[simp]
 theorem tendsto_lift₂_nhds {f : X → Y → α} {hf : ∀ a b c d, (a ~ᵢ c) → (b ~ᵢ d) → f a b = f c d}
     {x : X} {y : Y} {l : Filter α} :
-    Tendsto (uncurry <| lift₂ f hf) (𝓝 (mk x, mk y)) l ↔ Tendsto (uncurry f) (𝓝 (x, y)) l := by
+    Tendsto (uncurry <| lift₂ f hf) (𝓝 (mkQ x, mkQ y)) l ↔ Tendsto (uncurry f) (𝓝 (x, y)) l := by
   rw [← map_prod_map_mk_nhds, tendsto_map'_iff]
   rfl
 
 @[simp] theorem tendsto_lift₂_nhdsWithin {f : X → Y → α}
     {hf : ∀ a b c d, (a ~ᵢ c) → (b ~ᵢ d) → f a b = f c d} {x : X} {y : Y}
     {s : Set (SeparationQuotient X × SeparationQuotient Y)} {l : Filter α} :
-    Tendsto (uncurry <| lift₂ f hf) (𝓝[s] (mk x, mk y)) l ↔
-      Tendsto (uncurry f) (𝓝[Prod.map mk mk ⁻¹' s] (x, y)) l := by
+    Tendsto (uncurry <| lift₂ f hf) (𝓝[s] (mkQ x, mkQ y)) l ↔
+      Tendsto (uncurry f) (𝓝[Prod.map mkQ mkQ ⁻¹' s] (x, y)) l := by
   rw [nhdsWithin, ← map_prod_map_mk_nhds, ← Filter.push_pull, comap_principal]
   rfl
 
 @[simp]
 theorem continuousAt_lift₂ {f : X → Y → Z} {hf : ∀ a b c d, (a ~ᵢ c) → (b ~ᵢ d) → f a b = f c d}
     {x : X} {y : Y} :
-    ContinuousAt (uncurry <| lift₂ f hf) (mk x, mk y) ↔ ContinuousAt (uncurry f) (x, y) :=
+    ContinuousAt (uncurry <| lift₂ f hf) (mkQ x, mkQ y) ↔ ContinuousAt (uncurry f) (x, y) :=
   tendsto_lift₂_nhds
 
 @[simp] theorem continuousWithinAt_lift₂ {f : X → Y → Z}
     {hf : ∀ a b c d, (a ~ᵢ c) → (b ~ᵢ d) → f a b = f c d}
     {s : Set (SeparationQuotient X × SeparationQuotient Y)} {x : X} {y : Y} :
-    ContinuousWithinAt (uncurry <| lift₂ f hf) s (mk x, mk y) ↔
-      ContinuousWithinAt (uncurry f) (Prod.map mk mk ⁻¹' s) (x, y) :=
+    ContinuousWithinAt (uncurry <| lift₂ f hf) s (mkQ x, mkQ y) ↔
+      ContinuousWithinAt (uncurry f) (Prod.map mkQ mkQ ⁻¹' s) (x, y) :=
   tendsto_lift₂_nhdsWithin
 
 @[simp]
 theorem continuousOn_lift₂ {f : X → Y → Z} {hf : ∀ a b c d, (a ~ᵢ c) → (b ~ᵢ d) → f a b = f c d}
     {s : Set (SeparationQuotient X × SeparationQuotient Y)} :
-    ContinuousOn (uncurry <| lift₂ f hf) s ↔ ContinuousOn (uncurry f) (Prod.map mk mk ⁻¹' s) := by
+    ContinuousOn (uncurry <| lift₂ f hf) s ↔ ContinuousOn (uncurry f) (Prod.map mkQ mkQ ⁻¹' s) := by
   simp_rw [ContinuousOn, (surjective_mk.prodMap surjective_mk).forall, Prod.forall, Prod.map,
     continuousWithinAt_lift₂]
   rfl

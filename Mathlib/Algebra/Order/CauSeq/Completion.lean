@@ -28,22 +28,26 @@ variable {β : Type*} [Ring β] (abv : β → α) [IsAbsoluteValue abv]
 def Cauchy :=
   @Quotient (CauSeq _ abv) CauSeq.equiv
 
+instance : QuotLike (Cauchy abv) (CauSeq _ abv) CauSeq.equiv where
+instance : QuotLike.HasQuot (Cauchy abv) (CauSeq _ abv) CauSeq.equiv where
+
 variable {abv}
 
 /-- The map from Cauchy sequences into the Cauchy completion. -/
+@[deprecated (since := "2024-09-04")]
 def mk : CauSeq _ abv → Cauchy abv :=
   Quotient.mk''
 
 @[simp]
-theorem mk_eq_mk (f : CauSeq _ abv) : @Eq (Cauchy abv) ⟦f⟧ (mk f) :=
+theorem mk_eq_mk (f : CauSeq _ abv) : @Eq (Cauchy abv) (Quotient.mk _ f) ⟦f⟧ :=
   rfl
 
-theorem mk_eq {f g : CauSeq _ abv} : mk f = mk g ↔ f ≈ g :=
+theorem mk_eq {f g : CauSeq _ abv} : ⟦f⟧' = ⟦g⟧' ↔ f ≈ g :=
   Quotient.eq
 
 /-- The map from the original ring into the Cauchy completion. -/
 def ofRat (x : β) : Cauchy abv :=
-  mk (const abv x)
+  ⟦const abv x⟧
 
 instance : Zero (Cauchy abv) :=
   ⟨ofRat 0⟩
@@ -61,58 +65,58 @@ theorem ofRat_one : (ofRat 1 : Cauchy abv) = 1 :=
   rfl
 
 @[simp]
-theorem mk_eq_zero {f : CauSeq _ abv} : mk f = 0 ↔ LimZero f := by
-  have : mk f = 0 ↔ LimZero (f - 0) := Quotient.eq
+theorem mk_eq_zero {f : CauSeq _ abv} : ⟦f⟧' = 0 ↔ LimZero f := by
+  have : ⟦f⟧' = 0 ↔ LimZero (f - 0) := Quotient.eq
   rwa [sub_zero] at this
 
 instance : Add (Cauchy abv) :=
-  ⟨(Quotient.map₂ (· + ·)) fun _ _ hf _ _ hg => add_equiv_add hf hg⟩
+  ⟨(QuotLike.map₂ (· + ·)) fun _ _ hf _ _ hg => add_equiv_add hf hg⟩
 
 @[simp]
-theorem mk_add (f g : CauSeq β abv) : mk f + mk g = mk (f + g) :=
+theorem mk_add (f g : CauSeq β abv) : ⟦f⟧' + ⟦g⟧' = ⟦f + g⟧' :=
   rfl
 
 instance : Neg (Cauchy abv) :=
-  ⟨(Quotient.map Neg.neg) fun _ _ hf => neg_equiv_neg hf⟩
+  ⟨(QuotLike.map Neg.neg) fun _ _ hf => neg_equiv_neg hf⟩
 
 @[simp]
-theorem mk_neg (f : CauSeq β abv) : -mk f = mk (-f) :=
+theorem mk_neg (f : CauSeq β abv) : -⟦f⟧' = ⟦-f⟧' :=
   rfl
 
 instance : Mul (Cauchy abv) :=
-  ⟨(Quotient.map₂ (· * ·)) fun _ _ hf _ _ hg => mul_equiv_mul hf hg⟩
+  ⟨(QuotLike.map₂ (· * ·)) fun _ _ hf _ _ hg => mul_equiv_mul hf hg⟩
 
 @[simp]
-theorem mk_mul (f g : CauSeq β abv) : mk f * mk g = mk (f * g) :=
+theorem mk_mul (f g : CauSeq β abv) : ⟦f⟧' * ⟦g⟧' = ⟦f * g⟧ :=
   rfl
 
 instance : Sub (Cauchy abv) :=
-  ⟨(Quotient.map₂ Sub.sub) fun _ _ hf _ _ hg => sub_equiv_sub hf hg⟩
+  ⟨(QuotLike.map₂ Sub.sub) fun _ _ hf _ _ hg => sub_equiv_sub hf hg⟩
 
 @[simp]
-theorem mk_sub (f g : CauSeq β abv) : mk f - mk g = mk (f - g) :=
+theorem mk_sub (f g : CauSeq β abv) : ⟦f⟧' - ⟦g⟧' = ⟦f - g⟧' :=
   rfl
 
 instance {γ : Type*} [SMul γ β] [IsScalarTower γ β β] : SMul γ (Cauchy abv) :=
-  ⟨fun c => (Quotient.map (c • ·)) fun _ _ hf => smul_equiv_smul _ hf⟩
+  ⟨fun c => (QuotLike.map (c • ·)) fun _ _ hf => smul_equiv_smul _ hf⟩
 
 @[simp]
 theorem mk_smul {γ : Type*} [SMul γ β] [IsScalarTower γ β β] (c : γ) (f : CauSeq β abv) :
-    c • mk f = mk (c • f) :=
+    c • ⟦f⟧' = ⟦c • f⟧' :=
   rfl
 
 instance : Pow (Cauchy abv) ℕ :=
-  ⟨fun x n => Quotient.map (· ^ n) (fun _ _ hf => pow_equiv_pow hf _) x⟩
+  ⟨fun x n => QuotLike.map (· ^ n) (fun _ _ hf => pow_equiv_pow hf _) x⟩
 
 @[simp]
-theorem mk_pow (n : ℕ) (f : CauSeq β abv) : mk f ^ n = mk (f ^ n) :=
+theorem mk_pow (n : ℕ) (f : CauSeq β abv) : ⟦f⟧' ^ n = ⟦f ^ n⟧' :=
   rfl
 
 instance : NatCast (Cauchy abv) :=
-  ⟨fun n => mk n⟩
+  ⟨fun n => ⟦n⟧⟩
 
 instance : IntCast (Cauchy abv) :=
-  ⟨fun n => mk n⟩
+  ⟨fun n => ⟦n⟧⟩
 
 @[simp]
 theorem ofRat_natCast (n : ℕ) : (ofRat n : Cauchy abv) = n :=
@@ -124,23 +128,23 @@ theorem ofRat_intCast (z : ℤ) : (ofRat z : Cauchy abv) = z :=
 
 theorem ofRat_add (x y : β) :
     ofRat (x + y) = (ofRat x + ofRat y : Cauchy abv) :=
-  congr_arg mk (const_add _ _)
+  congr_arg mkQ (const_add _ _)
 
 theorem ofRat_neg (x : β) : ofRat (-x) = (-ofRat x : Cauchy abv) :=
-  congr_arg mk (const_neg _)
+  congr_arg mkQ (const_neg _)
 
 theorem ofRat_mul (x y : β) :
     ofRat (x * y) = (ofRat x * ofRat y : Cauchy abv) :=
-  congr_arg mk (const_mul _ _)
+  congr_arg mkQ (const_mul _ _)
 
-private theorem zero_def : 0 = mk (abv := abv) 0 :=
+private theorem zero_def : 0 = ⟦0 : CauSeq _ abv⟧' :=
   rfl
 
-private theorem one_def : 1 = mk (abv := abv) 1 :=
+private theorem one_def : 1 = ⟦1 : CauSeq _ abv⟧' :=
   rfl
 
 instance Cauchy.ring : Ring (Cauchy abv) :=
-  Function.Surjective.ring mk (surjective_quotient_mk' _) zero_def.symm one_def.symm
+  Function.Surjective.ring mkQ (surjective_quotient_mk' _) zero_def.symm one_def.symm
     (fun _ _ => (mk_add _ _).symm) (fun _ _ => (mk_mul _ _).symm) (fun _ => (mk_neg _).symm)
     (fun _ _ => (mk_sub _ _).symm) (fun _ _ => (mk_smul _ _).symm) (fun _ _ => (mk_smul _ _).symm)
     (fun _ _ => (mk_pow _ _).symm) (fun _ => rfl) fun _ => rfl
@@ -155,7 +159,7 @@ def ofRatRingHom : β →+* (Cauchy abv) where
   map_mul' := ofRat_mul
 
 theorem ofRat_sub (x y : β) : ofRat (x - y) = (ofRat x - ofRat y : Cauchy abv) :=
-  congr_arg mk (const_sub _ _)
+  congr_arg mkQ (const_sub _ _)
 
 end
 
@@ -165,7 +169,7 @@ variable {α : Type*} [LinearOrderedField α]
 variable {β : Type*} [CommRing β] {abv : β → α} [IsAbsoluteValue abv]
 
 instance Cauchy.commRing : CommRing (Cauchy abv) :=
-  Function.Surjective.commRing mk (surjective_quotient_mk' _) zero_def.symm one_def.symm
+  Function.Surjective.commRing mkQ (surjective_quotient_mk' _) zero_def.symm one_def.symm
     (fun _ _ => (mk_add _ _).symm) (fun _ _ => (mk_mul _ _).symm) (fun _ => (mk_neg _).symm)
     (fun _ _ => (mk_sub _ _).symm) (fun _ _ => (mk_smul _ _).symm) (fun _ _ => (mk_smul _ _).symm)
     (fun _ _ => (mk_pow _ _).symm) (fun _ => rfl) fun _ => rfl
@@ -186,26 +190,26 @@ instance instRatCast : RatCast (Cauchy abv) where ratCast q := ofRat q
 open Classical in
 noncomputable instance : Inv (Cauchy abv) :=
   ⟨fun x =>
-    (Quotient.liftOn x fun f => mk <| if h : LimZero f then 0 else inv f h) fun f g fg => by
+    (Quotient.liftOn x fun f => mkQ <| if h : LimZero f then 0 else inv f h) fun f g fg => by
       have := limZero_congr fg
       by_cases hf : LimZero f
       · simp [hf, this.1 hf, Setoid.refl]
       · have hg := mt this.2 hf
         simp only [hf, dite_false, hg]
-        have If : mk (inv f hf) * mk f = 1 := mk_eq.2 (inv_mul_cancel hf)
-        have Ig : mk (inv g hg) * mk g = 1 := mk_eq.2 (inv_mul_cancel hg)
-        have Ig' : mk g * mk (inv g hg) = 1 := mk_eq.2 (mul_inv_cancel hg)
+        have If : ⟦inv f hf⟧' * ⟦f⟧' = 1 := mk_eq.2 (inv_mul_cancel hf)
+        have Ig : ⟦inv g hg⟧' * ⟦g⟧' = 1 := mk_eq.2 (inv_mul_cancel hg)
+        have Ig' : ⟦g⟧' * ⟦inv g hg⟧' = 1 := mk_eq.2 (mul_inv_cancel hg)
         rw [mk_eq.2 fg, ← Ig] at If
-        rw [← mul_one (mk (inv f hf)), ← Ig', ← mul_assoc, If, mul_assoc, Ig', mul_one]⟩
+        rw [← mul_one ⟦inv f hf⟧', ← Ig', ← mul_assoc, If, mul_assoc, Ig', mul_one]⟩
 
 -- porting note (#10618): simp can prove this
 -- @[simp]
 theorem inv_zero : (0 : (Cauchy abv))⁻¹ = 0 :=
-  congr_arg mk <| by rw [dif_pos] <;> [rfl; exact zero_limZero]
+  congr_arg mkQ <| by rw [dif_pos] <;> [rfl; exact zero_limZero]
 
 @[simp]
-theorem inv_mk {f} (hf) : (mk (abv := abv) f)⁻¹ = mk (inv f hf) :=
-  congr_arg mk <| by rw [dif_neg]
+theorem inv_mk {f : CauSeq _ abv} (hf) : (mkQ f)⁻¹ = mkQ' (inv f hf) :=
+  congr_arg mkQ <| by rw [dif_neg]
 
 theorem cau_seq_zero_ne_one : ¬(0 : CauSeq _ abv) ≈ 1 := fun h =>
   have : LimZero (1 - 0 : CauSeq _ abv) := Setoid.symm h
@@ -227,7 +231,7 @@ protected theorem mul_inv_cancel {x : (Cauchy abv)} : x ≠ 0 → x * x⁻¹ = 1
     exact Quotient.sound (CauSeq.mul_inv_cancel hf)
 
 theorem ofRat_inv (x : β) : ofRat x⁻¹ = ((ofRat x)⁻¹ : (Cauchy abv)) :=
-  congr_arg mk <| by split_ifs with h <;>
+  congr_arg mkQ <| by split_ifs with h <;>
     [simp only [const_limZero.1 h, GroupWithZero.inv_zero, const_zero]; rfl]
 
 noncomputable instance instDivInvMonoid : DivInvMonoid (Cauchy abv) where
@@ -244,8 +248,8 @@ noncomputable instance Cauchy.divisionRing : DivisionRing (Cauchy abv) where
   qsmul := (· • ·)
   nnratCast_def q := by simp_rw [← ofRat_nnratCast, NNRat.cast_def, ofRat_div, ofRat_natCast]
   ratCast_def q := by rw [← ofRat_ratCast, Rat.cast_def, ofRat_div, ofRat_natCast, ofRat_intCast]
-  nnqsmul_def q x := Quotient.inductionOn x fun f ↦ congr_arg mk <| ext fun i ↦ NNRat.smul_def _ _
-  qsmul_def q x := Quotient.inductionOn x fun f ↦ congr_arg mk <| ext fun i ↦ Rat.smul_def _ _
+  nnqsmul_def q x := Quotient.inductionOn x fun f ↦ congr_arg mkQ <| ext fun i ↦ NNRat.smul_def _ _
+  qsmul_def q x := Quotient.inductionOn x fun f ↦ congr_arg mkQ <| ext fun i ↦ Rat.smul_def _ _
 
 /-- Show the first 10 items of a representative of this equivalence class of cauchy sequences.
 

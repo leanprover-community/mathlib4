@@ -47,14 +47,16 @@ abbrev Game :=
 
 namespace Game
 
+instance instQuotLike : QuotLike Game PGame PGame.Equiv where
+
 -- Porting note (#11445): added this definition
 /-- Negation of games. -/
 instance : Neg Game where
-  neg := Quot.map Neg.neg <| fun _ _ => (neg_equiv_neg_iff).2
+  neg := QuotLike.map Neg.neg <| fun _ _ => (neg_equiv_neg_iff).2
 
 instance : Zero Game where zero := ⟦0⟧
 instance : Add Game where
-  add := Quotient.map₂ HAdd.hAdd <| fun _ _ hx _ _ hy => PGame.add_congr hx hy
+  add := QuotLike.map₂ HAdd.hAdd <| fun _ _ hx _ _ hy => PGame.add_congr hx hy
 
 instance instAddCommGroupWithOneGame : AddCommGroupWithOne Game where
   zero := ⟦0⟧
@@ -117,14 +119,14 @@ theorem not_lf : ∀ {x y : Game}, ¬Game.LF x y ↔ y ≤ x := by
 
 If `x ‖ 0`, then the first player can always win `x`. -/
 def Fuzzy : Game → Game → Prop :=
-  Quotient.lift₂ PGame.Fuzzy fun _ _ _ _ hx hy => propext (fuzzy_congr hx hy)
+  QuotLike.lift₂ PGame.Fuzzy fun _ _ _ _ hx hy => propext (fuzzy_congr hx hy)
 
 -- Porting note: had to replace ⧏ with LF, otherwise cannot differentiate with the operator on PGame
 instance : IsTrichotomous Game LF :=
   ⟨by
     rintro ⟨x⟩ ⟨y⟩
     change _ ∨ ⟦x⟧ = ⟦y⟧ ∨ _
-    rw [Quotient.eq]
+    rw [QuotLike.eq]
     apply lf_or_equiv_or_gf⟩
 
 /-! It can be useful to use these lemmas to turn `PGame` inequalities into `Game` inequalities, as
@@ -196,7 +198,7 @@ instance orderedAddCommGroup : OrderedAddCommGroup Game :=
 /-- A small family of games is bounded above. -/
 lemma bddAbove_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Game.{u}) :
     BddAbove (Set.range f) := by
-  obtain ⟨x, hx⟩ := PGame.bddAbove_range_of_small (Quotient.out ∘ f)
+  obtain ⟨x, hx⟩ := PGame.bddAbove_range_of_small (QuotLike.out ∘ f)
   refine ⟨⟦x⟧, Set.forall_mem_range.2 fun i ↦ ?_⟩
   simpa [PGame.le_iff_game_le] using hx <| Set.mem_range_self i
 
@@ -207,7 +209,7 @@ lemma bddAbove_of_small (s : Set Game.{u}) [Small.{u} s] : BddAbove s := by
 /-- A small family of games is bounded below. -/
 lemma bddBelow_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Game.{u}) :
     BddBelow (Set.range f) := by
-  obtain ⟨x, hx⟩ := PGame.bddBelow_range_of_small (Quotient.out ∘ f)
+  obtain ⟨x, hx⟩ := PGame.bddBelow_range_of_small (QuotLike.out ∘ f)
   refine ⟨⟦x⟧, Set.forall_mem_range.2 fun i ↦ ?_⟩
   simpa [PGame.le_iff_game_le] using hx <| Set.mem_range_self i
 

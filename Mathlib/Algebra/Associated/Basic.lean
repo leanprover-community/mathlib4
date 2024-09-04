@@ -751,7 +751,7 @@ protected abbrev mk {α : Type*} [Monoid α] (a : α) : Associates α :=
   Quotient.mk _ a
 
 instance [Monoid α] : QuotLike (Associates α) α Associated where
-scoped instance [Monoid α] : QuotLike.HasQuot α (Associates α) Associated where
+scoped instance [Monoid α] : QuotLike.HasQuot (Associates α) α Associated where
 
 instance [Monoid α] : Inhabited (Associates α) :=
   ⟨⟦1⟧⟩
@@ -785,7 +785,7 @@ instance [Monoid α] : One (Associates α) :=
   ⟨⟦1⟧⟩
 
 @[simp]
-theorem mk_one [Monoid α] : ⟦(1 : α)⟧' = 1 :=
+theorem mk_one [Monoid α] : ⟦1 : α⟧' = 1 :=
   rfl
 
 theorem one_eq_mk_one [Monoid α] : (1 : Associates α) = ⟦1⟧ :=
@@ -926,7 +926,7 @@ theorem mk_le_mk_iff_dvd {a b : α} : ⟦a⟧' ≤ ⟦b⟧' ↔ a ∣ b := mk_dv
 @[deprecated (since := "2024-03-16")] alias mk_le_mk_iff_dvd_iff := mk_le_mk_iff_dvd
 
 @[simp]
-theorem isPrimal_mk {a : α} : IsPrimal (⟦a⟧') ↔ IsPrimal a := by
+theorem isPrimal_mk {a : α} : IsPrimal ⟦a⟧' ↔ IsPrimal a := by
   simp_rw [IsPrimal, forall_associated, mk_surjective.exists, mk_mul_mk, mk_dvd_mk]
   constructor <;> intro h b c dvd <;> obtain ⟨a₁, a₂, h₁, h₂, eq⟩ := @h b c dvd
   · obtain ⟨u, rfl⟩ := mk_eq_mk_iff_associated.mp eq.symm
@@ -944,7 +944,7 @@ instance instDecompositionMonoid [DecompositionMonoid α] : DecompositionMonoid 
 
 @[simp]
 theorem mk_isRelPrime_iff {a b : α} :
-    IsRelPrime (⟦a⟧') (⟦b⟧') ↔ IsRelPrime a b := by
+    IsRelPrime ⟦a⟧' ⟦b⟧' ↔ IsRelPrime a b := by
   simp_rw [IsRelPrime, forall_associated, mk_dvd_mk, isUnit_mk]
 
 end CommMonoid

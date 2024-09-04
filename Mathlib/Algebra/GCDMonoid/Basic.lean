@@ -114,7 +114,7 @@ theorem associated_normalize_iff {x y : α} : Associated x (normalize y) ↔ Ass
 theorem normalize_associated_iff {x y : α} : Associated (normalize x) y ↔ Associated x y :=
   ⟨fun h => (associated_normalize _).trans h, fun h => (normalize_associated _).trans h⟩
 
-theorem Associates.mk_normalize (x : α) : Associates.mk (normalize x) = Associates.mk x :=
+theorem Associates.mk_normalize (x : α) : ⟦normalize x⟧' = ⟦x⟧ :=
   Associates.mk_eq_mk_iff_associated.2 (normalize_associated _)
 
 @[simp]
@@ -194,7 +194,7 @@ protected def out : Associates α → α :=
     hu ▸ normalize_eq_normalize ⟨_, rfl⟩ (Units.mul_right_dvd.2 <| dvd_refl a)
 
 @[simp]
-theorem out_mk (a : α) : (Associates.mk a).out = normalize a :=
+theorem out_mk (a : α) : ⟦a⟧'.out = normalize a :=
   rfl
 
 @[simp]
@@ -202,16 +202,16 @@ theorem out_one : (1 : Associates α).out = 1 :=
   normalize_one
 
 theorem out_mul (a b : Associates α) : (a * b).out = a.out * b.out :=
-  Quotient.inductionOn₂ a b fun _ _ => by
-    simp only [Associates.quotient_mk_eq_mk, out_mk, mk_mul_mk, normalize.map_mul]
+  QuotLike.inductionOn₂ a b fun _ _ => by
+    simp only [out_mk, mk_mul_mk, normalize.map_mul]
 
-theorem dvd_out_iff (a : α) (b : Associates α) : a ∣ b.out ↔ Associates.mk a ≤ b :=
-  Quotient.inductionOn b <| by
-    simp [Associates.out_mk, Associates.quotient_mk_eq_mk, mk_le_mk_iff_dvd]
+theorem dvd_out_iff (a : α) (b : Associates α) : a ∣ b.out ↔ ⟦a⟧ ≤ b :=
+  QuotLike.inductionOn b <| by
+    simp [Associates.out_mk, mk_le_mk_iff_dvd]
 
-theorem out_dvd_iff (a : α) (b : Associates α) : b.out ∣ a ↔ b ≤ Associates.mk a :=
-  Quotient.inductionOn b <| by
-    simp [Associates.out_mk, Associates.quotient_mk_eq_mk, mk_le_mk_iff_dvd]
+theorem out_dvd_iff (a : α) (b : Associates α) : b.out ∣ a ↔ b ≤ ⟦a⟧ :=
+  QuotLike.inductionOn b <| by
+    simp [Associates.out_mk, mk_le_mk_iff_dvd]
 
 @[simp]
 theorem out_top : (⊤ : Associates α).out = 0 :=
@@ -223,7 +223,7 @@ theorem normalize_out (a : Associates α) : normalize a.out = a.out :=
   Quotient.inductionOn a normalize_idem
 
 @[simp]
-theorem mk_out (a : Associates α) : Associates.mk a.out = a :=
+theorem mk_out (a : Associates α) : ⟦a.out⟧ = a :=
   Quotient.inductionOn a mk_normalize
 
 theorem out_injective : Function.Injective (Associates.out : _ → α) :=
@@ -876,7 +876,7 @@ theorem normalize_eq (x : α) : normalize x = x :=
 @[simps]
 def associatesEquivOfUniqueUnits : Associates α ≃* α where
   toFun := Associates.out
-  invFun := Associates.mk
+  invFun := mkQ
   left_inv := Associates.mk_out
   right_inv _ := (Associates.out_mk _).trans <| normalize_eq _
   map_mul' := Associates.out_mul
@@ -914,17 +914,17 @@ open Associates
 variable [CancelCommMonoidWithZero α]
 
 private theorem map_mk_unit_aux [DecidableEq α] {f : Associates α →* α}
-    (hinv : Function.RightInverse f Associates.mk) (a : α) :
-    a * ↑(Classical.choose (associated_map_mk hinv a)) = f (Associates.mk a) :=
+    (hinv : Function.RightInverse f mkQ) (a : α) :
+    a * ↑(Classical.choose (associated_map_mk hinv a)) = f ⟦a⟧ :=
   Classical.choose_spec (associated_map_mk hinv a)
 
 /-- Define `NormalizationMonoid` on a structure from a `MonoidHom` inverse to `Associates.mk`. -/
 def normalizationMonoidOfMonoidHomRightInverse [DecidableEq α] (f : Associates α →* α)
-    (hinv : Function.RightInverse f Associates.mk) :
+    (hinv : Function.RightInverse f mkQ) :
     NormalizationMonoid α where
   normUnit a :=
     if a = 0 then 1
-    else Classical.choose (Associates.mk_eq_mk_iff_associated.1 (hinv (Associates.mk a)).symm)
+    else Classical.choose (Associates.mk_eq_mk_iff_associated.1 (hinv (mkQ a)).symm)
   normUnit_zero := if_pos rfl
   normUnit_mul {a b} ha hb := by
     simp_rw [if_neg (mul_ne_zero ha hb), if_neg ha, if_neg hb, Units.ext_iff, Units.val_mul]
@@ -1337,12 +1337,12 @@ instance instGCDMonoid : GCDMonoid (Associates α) where
     rintro ⟨a⟩ ⟨b⟩
     rw [associated_iff_eq]
     exact Quotient.sound <| gcd_mul_lcm _ _
-  lcm_zero_left := by rintro ⟨a⟩; exact congr_arg Associates.mk <| lcm_zero_left _
-  lcm_zero_right := by rintro ⟨a⟩; exact congr_arg Associates.mk <| lcm_zero_right _
+  lcm_zero_left := by rintro ⟨a⟩; exact congr_arg mkQ <| lcm_zero_left _
+  lcm_zero_right := by rintro ⟨a⟩; exact congr_arg mkQ <| lcm_zero_right _
 
-theorem gcd_mk_mk {a b : α} : gcd (Associates.mk a) (Associates.mk b) = Associates.mk (gcd a b) :=
+theorem gcd_mk_mk {a b : α} : gcd ⟦a⟧ ⟦b⟧ = ⟦gcd a b⟧' :=
   rfl
-theorem lcm_mk_mk {a b : α} : lcm (Associates.mk a) (Associates.mk b) = Associates.mk (lcm a b) :=
+theorem lcm_mk_mk {a b : α} : lcm ⟦a⟧ ⟦b⟧ = ⟦lcm a b⟧' :=
   rfl
 
 end Associates

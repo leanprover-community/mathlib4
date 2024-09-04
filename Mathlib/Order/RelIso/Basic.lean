@@ -356,6 +356,13 @@ def Quotient.mkRelHom [Setoid α] {r : α → α → Prop}
     (H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂) : r →r Quotient.lift₂ r H :=
   ⟨@Quotient.mk' α _, id⟩
 
+/-- `mkQ` as a relation homomorphism between the relation and the lift of a relation. -/
+@[simps]
+def mkQRelHom {Q : Type _} [QuotLike Q α r] [IsRefl α r] {s : α → α → Prop}
+    (H : ∀ (a₁ b₁ a₂ b₂ : α), r a₁ a₂ → r b₁ b₂ → s a₁ b₁ = s a₂ b₂) :
+    s →r QuotLike.lift₂ (Qa := Q) (Qb := Q) s H :=
+  ⟨mkQ, by simp⟩
+
 /-- `Quotient.out` as a relation embedding between the lift of a relation and the relation. -/
 @[simps!]
 noncomputable def Quotient.outRelEmbedding [Setoid α] {r : α → α → Prop}

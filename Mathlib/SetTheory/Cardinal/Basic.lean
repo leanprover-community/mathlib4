@@ -107,13 +107,25 @@ def Cardinal : Type (u + 1) :=
 namespace Cardinal
 
 /-- The cardinal number of a type -/
+@[deprecated (since := "2024-09-04")]
 def mk : Type u → Cardinal :=
   Quotient.mk'
 
-@[inherit_doc]
-scoped prefix:max "#" => Cardinal.mk
+instance instQuotLike : QuotLike Cardinal (Type _) Cardinal.isEquivalent where
 
-instance canLiftCardinalType : CanLift Cardinal.{u} (Type u) mk fun _ => True :=
+/-- The cardinal number of a type -/
+scoped prefix:max "#" => (@mkQ Cardinal (Type _) Cardinal.isEquivalent instQuotLike)
+
+open Lean PrettyPrinter.Delaborator SubExpr in
+/-- Delaborator for `mkQ (Q := Cardinal)` -/
+@[delab app.QuotLike.QuotLike.mkQ]
+def delabInner : Delab := do
+  guard <| (← getExpr).isAppOfArity' ``mkQ 5
+  let .const ``Cardinal _ ← withNaryArg 0 getExpr | failure
+  let α ← withNaryArg 4 delab
+  `(#$α)
+
+instance canLiftCardinalType : CanLift Cardinal.{u} (Type u) mkQ fun _ => True :=
   ⟨fun c _ => Quot.inductionOn c fun α => ⟨α, rfl⟩⟩
 
 @[elab_as_elim]
@@ -134,7 +146,7 @@ protected theorem eq : #α = #β ↔ Nonempty (α ≃ β) :=
   Quotient.eq'
 
 @[simp]
-theorem mk'_def (α : Type u) : @Eq Cardinal ⟦α⟧ #α :=
+theorem mk'_def (α : Type u) : @Eq Cardinal (Quotient.mk _ α) #α :=
   rfl
 
 @[simp]
@@ -730,7 +742,7 @@ theorem isSuccLimit_zero : IsSuccLimit (0 : Cardinal) :=
 /-- The indexed sum of cardinals is the cardinality of the
   indexed disjoint union, i.e. sigma type. -/
 def sum {ι} (f : ι → Cardinal) : Cardinal :=
-  mk (Σi, (f i).out)
+  #(Σi, (f i).out)
 
 theorem le_sum {ι} (f : ι → Cardinal) (i) : f i ≤ sum f := by
   rw [← Quotient.out_eq (f i)]

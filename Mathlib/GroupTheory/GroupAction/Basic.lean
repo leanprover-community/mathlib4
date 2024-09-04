@@ -396,16 +396,19 @@ lemma orbitRel_subgroupOf (H K : Subgroup G) :
     · simp only [Subgroup.mem_subgroupOf]
       exact gp.1
 
+section
+
+open scoped Quot
+
 /-- When you take a set `U` in `α`, push it down to the quotient, and pull back, you get the union
 of the orbit of `U` under `G`. -/
 @[to_additive
       "When you take a set `U` in `α`, push it down to the quotient, and pull back, you get the
       union of the orbit of `U` under `G`."]
 theorem quotient_preimage_image_eq_union_mul (U : Set α) :
-    letI := orbitRel G α
-    Quotient.mk' ⁻¹' (Quotient.mk' '' U) = ⋃ g : G, (g • ·) '' U := by
+    mkQ_(orbitRel G α) ⁻¹' (mkQ '' U) = ⋃ g : G, (g • ·) '' U := by
   letI := orbitRel G α
-  set f : α → Quotient (MulAction.orbitRel G α) := Quotient.mk'
+  set f : α → Quot (MulAction.orbitRel G α) := mkQ
   ext a
   constructor
   · rintro ⟨b, hb, hab⟩
@@ -416,15 +419,14 @@ theorem quotient_preimage_image_eq_union_mul (U : Set α) :
     rw [Set.mem_iUnion] at hx
     obtain ⟨g, u, hu₁, hu₂⟩ := hx
     rw [Set.mem_preimage, Set.mem_image]
-    refine ⟨g⁻¹ • a, ?_, by simp only [f, Quotient.eq']; use g⁻¹⟩
+    refine ⟨g⁻¹ • a, ?_, by simp only [f, QuotLike.eq]; use g⁻¹⟩
     rw [← hu₂]
     convert hu₁
     simp only [inv_smul_smul]
 
 @[to_additive]
 theorem disjoint_image_image_iff {U V : Set α} :
-    letI := orbitRel G α
-    Disjoint (Quotient.mk' '' U) (Quotient.mk' '' V) ↔ ∀ x ∈ U, ∀ g : G, g • x ∉ V := by
+    Disjoint (mkQ_(orbitRel G α) '' U) (mkQ '' V) ↔ ∀ x ∈ U, ∀ g : G, g • x ∉ V := by
   letI := orbitRel G α
   set f : α → Quotient (MulAction.orbitRel G α) := Quotient.mk'
   refine
@@ -439,9 +441,10 @@ theorem disjoint_image_image_iff {U V : Set α} :
 
 @[to_additive]
 theorem image_inter_image_iff (U V : Set α) :
-    letI := orbitRel G α
-    Quotient.mk' '' U ∩ Quotient.mk' '' V = ∅ ↔ ∀ x ∈ U, ∀ g : G, g • x ∉ V :=
+    mkQ_(orbitRel G α) '' U ∩ mkQ '' V = ∅ ↔ ∀ x ∈ U, ∀ g : G, g • x ∉ V :=
   Set.disjoint_iff_inter_eq_empty.symm.trans disjoint_image_image_iff
+
+end
 
 variable (G α)
 
@@ -450,6 +453,16 @@ variable (G α)
     "The quotient by `AddAction.orbitRel`, given a name to enable dot notation."]
 abbrev orbitRel.Quotient : Type _ :=
   _root_.Quotient <| orbitRel G α
+
+@[to_additive]
+instance : QuotLike (orbitRel.Quotient G α) α (orbitRel G α) where
+
+@[to_additive]
+scoped instance : QuotLike.HasQuotHint _ G (orbitRel.Quotient G α) α (orbitRel G α) where
+
+@[to_additive]
+scoped instance (H : Subgroup G) :
+    QuotLike.HasQuotHint _ H (orbitRel.Quotient H α) α (orbitRel H α) where
 
 /-- An action is pretransitive if and only if the quotient by `MulAction.orbitRel` is a
 subsingleton. -/
@@ -477,24 +490,24 @@ variable {G α}
 /-- The orbit corresponding to an element of the quotient by `MulAction.orbitRel` -/
 @[to_additive "The orbit corresponding to an element of the quotient by `AddAction.orbitRel`"]
 nonrec def orbitRel.Quotient.orbit (x : orbitRel.Quotient G α) : Set α :=
-  Quotient.liftOn' x (orbit G) fun _ _ => MulAction.orbit_eq_iff.2
+  QuotLike.liftOn x (orbit G) fun _ _ => MulAction.orbit_eq_iff.2
 
 @[to_additive (attr := simp)]
 theorem orbitRel.Quotient.orbit_mk (a : α) :
-    orbitRel.Quotient.orbit (Quotient.mk'' a : orbitRel.Quotient G α) = MulAction.orbit G a :=
+    orbitRel.Quotient.orbit ⟦a⟧_G = MulAction.orbit G a :=
   rfl
 
 @[to_additive]
 theorem orbitRel.Quotient.mem_orbit {a : α} {x : orbitRel.Quotient G α} :
-    a ∈ x.orbit ↔ Quotient.mk'' a = x := by
-  induction x using Quotient.inductionOn'
-  rw [Quotient.eq'']
+    a ∈ x.orbit ↔ ⟦a⟧_G = x := by
+  induction x using QuotLike.inductionOn
+  rw [QuotLike.eq]
   rfl
 
 /-- Note that `hφ = Quotient.out_eq'` is a useful choice here. -/
 @[to_additive "Note that `hφ = Quotient.out_eq'` is a useful choice here."]
 theorem orbitRel.Quotient.orbit_eq_orbit_out (x : orbitRel.Quotient G α)
-    {φ : orbitRel.Quotient G α → α} (hφ : letI := orbitRel G α; RightInverse φ Quotient.mk') :
+    {φ : orbitRel.Quotient G α → α} (hφ : RightInverse φ mkQ) :
     orbitRel.Quotient.orbit x = MulAction.orbit G (φ x) := by
   conv_lhs => rw [← hφ x]
   rfl
@@ -513,11 +526,11 @@ lemma orbitRel.Quotient.orbit_inj {x y : orbitRel.Quotient G α} : x.orbit = y.o
 
 @[to_additive]
 lemma orbitRel.quotient_eq_of_quotient_subgroup_eq {H : Subgroup G} {a b : α}
-    (h : (⟦a⟧ : orbitRel.Quotient H α) = ⟦b⟧) : (⟦a⟧ : orbitRel.Quotient G α) = ⟦b⟧ := by
-  rw [@Quotient.eq] at h ⊢
+    (h : ⟦a⟧_H = ⟦b⟧) : ⟦a⟧_G = ⟦b⟧ := by
+  rw [QuotLike.eq] at h ⊢
   exact mem_orbit_of_mem_orbit_subgroup h
 
-@[to_additive]
+@[to_additive (attr := deprecated (since := "2024-09-04"))]
 lemma orbitRel.quotient_eq_of_quotient_subgroup_eq' {H : Subgroup G} {a b : α}
     (h : (Quotient.mk'' a : orbitRel.Quotient H α) = Quotient.mk'' b) :
     (Quotient.mk'' a : orbitRel.Quotient G α) = Quotient.mk'' b :=
@@ -549,9 +562,9 @@ lemma orbitRel.Quotient.orbit.coe_smul {g : G} {x : orbitRel.Quotient G α} {a :
 @[to_additive]
 instance (x : orbitRel.Quotient G α) : IsPretransitive G x.orbit where
   exists_smul_eq := by
-    induction x using Quotient.inductionOn'
+    induction x using QuotLike.inductionOn
     rintro ⟨y, yh⟩ ⟨z, zh⟩
-    rw [orbitRel.Quotient.mem_orbit, Quotient.eq''] at yh zh
+    rw [orbitRel.Quotient.mem_orbit, QuotLike.eq] at yh zh
     rcases yh with ⟨g, rfl⟩
     rcases zh with ⟨h, rfl⟩
     refine ⟨h * g⁻¹, ?_⟩
@@ -573,25 +586,26 @@ lemma orbitRel.Quotient.mem_subgroup_orbit_iff {H : Subgroup G} {x : orbitRel.Qu
 
 @[to_additive]
 lemma orbitRel.Quotient.subgroup_quotient_eq_iff {H : Subgroup G} {x : orbitRel.Quotient G α}
-    {a b : x.orbit} : (⟦a⟧ : orbitRel.Quotient H x.orbit) = ⟦b⟧ ↔
-      (⟦↑a⟧ : orbitRel.Quotient H α) = ⟦↑b⟧ := by
-  simp_rw [← @Quotient.mk''_eq_mk, Quotient.eq'']
+    {a b : x.orbit} :
+    ⟦a⟧_H = ⟦b⟧ ↔ ⟦a : α⟧_H = ⟦↑b⟧ := by
+  simp_rw [QuotLike.eq]
   exact orbitRel.Quotient.mem_subgroup_orbit_iff.symm
 
 @[to_additive]
 lemma orbitRel.Quotient.mem_subgroup_orbit_iff' {H : Subgroup G} {x : orbitRel.Quotient G α}
-    {a b : x.orbit} {c : α} (h : (⟦a⟧ : orbitRel.Quotient H x.orbit) = ⟦b⟧) :
+    {a b : x.orbit} {c : α} (h : ⟦a⟧_H = ⟦b⟧) :
     (a : α) ∈ MulAction.orbit H c ↔ (b : α) ∈ MulAction.orbit H c := by
   simp_rw [mem_orbit_symm (a₂ := c)]
   convert Iff.rfl using 2
   rw [orbit_eq_iff]
-  suffices hb : ↑b ∈ orbitRel.Quotient.orbit (⟦a⟧ : orbitRel.Quotient H x.orbit) by
-    rw [orbitRel.Quotient.orbit_eq_orbit_out (⟦a⟧ : orbitRel.Quotient H x.orbit) Quotient.out_eq']
+  suffices hb : ↑b ∈ orbitRel.Quotient.orbit ⟦a⟧_H by
+    rw [orbitRel.Quotient.orbit_eq_orbit_out (⟦a⟧ : orbitRel.Quotient H x.orbit) QuotLike.mkQ_out]
        at hb
     rw [orbitRel.Quotient.mem_subgroup_orbit_iff]
     convert hb using 1
-    rw [orbit_eq_iff, ← orbitRel_r_apply, ← Quotient.eq'', Quotient.out_eq', @Quotient.mk''_eq_mk]
-  rw [orbitRel.Quotient.mem_orbit, h, @Quotient.mk''_eq_mk]
+    rw [orbit_eq_iff, ← orbitRel_r_apply]
+    exact QuotLike.equiv_out_mkQ _ _
+  rw [orbitRel.Quotient.mem_orbit, h]
 
 variable (G) (α)
 

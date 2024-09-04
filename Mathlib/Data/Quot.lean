@@ -27,6 +27,11 @@ run_cmd Lean.Elab.Command.liftTermElabM do
 instance : CoeFun (Setoid α) (fun _ ↦ α → α → Prop) where
   coe := @Setoid.r _
 
+instance {s : Setoid α} : IsEquiv α s where
+  refl := refl
+  symm _ _ := symm
+  trans _ _ _ := trans
+
 theorem ext {α : Sort*} : ∀ {s t : Setoid α}, (∀ a b, s a b ↔ t a b) → s = t
   | ⟨r, _⟩, ⟨p, _⟩, Eq =>
   by have : r = p := funext fun a ↦ funext fun b ↦ propext <| Eq a b
@@ -38,6 +43,8 @@ end Setoid
 namespace Quot
 
 variable {ra : α → α → Prop} {rb : β → β → Prop} {φ : Quot ra → Quot rb → Sort*}
+
+scoped instance (s : Setoid α) : QuotLike.Hint (Setoid α) s (Quot s) α s where
 
 @[inherit_doc Quot.mk]
 local notation3:arg (priority := high) "⟦" a "⟧" => Quot.mk _ a
