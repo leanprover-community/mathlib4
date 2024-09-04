@@ -47,10 +47,16 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 /-- `F ⊣ G` represents the data of an adjunction between two functors
 `F : C ⥤ D` and `G : D ⥤ C`. `F` is the left adjoint and `G` is the right adjoint.
 
-To construct an `adjunction` between two functors, it's often easier to instead use the
-constructors `mkOfHomEquiv` or `mkOfUnitCounit`. To construct a left adjoint,
-there are also constructors `leftAdjointOfEquiv` and `adjunctionOfEquivLeft` (as
-well as their duals) which can be simpler in practice.
+We use the unit-counit definition of an adjunction. There is a constructor `Adjunction.mk'`
+which constructs an adjunction from the data of a hom set equivalence, a unit, and a counit,
+together with proofs of the equalities `homEquiv_unit` and `homEquiv_counit` relating them to each
+other.
+
+There is also a constructor `Adjunction.mkOfHomEquiv` which constructs an adjunction from a natural
+hom set equivalence.
+
+To construct adjoints to a given functor, there are constructors `leftAdjointOfEquiv` and
+`adjunctionOfEquivLeft` (as well as their duals).
 
 Uniqueness of adjoints is shown in `CategoryTheory.Adjunction.Unique`.
 
@@ -61,12 +67,10 @@ structure Adjunction (F : C ⥤ D) (G : D ⥤ C) where
   unit : 𝟭 C ⟶ F.comp G
   /-- The counit of an adjunction -/
   counit : G.comp F ⟶ 𝟭 D
-  /-- Equality of the composition of the unit, associator, and counit with the identity
-  `F ⟶ (F G) F ⟶ F (G F) ⟶ F = NatTrans.id F` -/
+  /-- Equality of the composition of the unit and counit with the identity `F ⟶ FGF ⟶ F = 𝟙` -/
   left_triangle_components (X : C) :
       F.map (unit.app X) ≫ counit.app (F.obj X) = 𝟙 (F.obj X) := by aesop_cat
-  /-- Equality of the composition of the unit, associator, and counit with the identity
-  `G ⟶ G (F G) ⟶ (F G) F ⟶ G = NatTrans.id G` -/
+  /-- Equality of the composition of the unit and counit with the identity `G ⟶ GFG ⟶ G = 𝟙` -/
   right_triangle_components (Y : D) :
       unit.app (G.obj Y) ≫ G.map (counit.app Y) = 𝟙 (G.obj Y) := by aesop_cat
 
