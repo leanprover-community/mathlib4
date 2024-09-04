@@ -154,9 +154,6 @@ variable (L M)
 instance orderStructure [LE M] : Language.order.Structure M :=
   Structure.mk₂ Empty.elim Empty.elim Empty.elim Empty.elim fun _ => (· ≤ ·)
 
-instance orderStructure [LE M] : Language.order.Structure M :=
-  Structure.mk₂ Empty.elim Empty.elim Empty.elim Empty.elim fun _ => (· ≤ ·)
-
 /-- A structure is ordered if its language has a `≤` symbol whose interpretation is -/
 abbrev OrderedStructure [IsOrdered L] [LE M] [L.Structure M] : Prop :=
   LHom.IsExpansionOn (orderLHom L) M
@@ -170,23 +167,9 @@ theorem relMap_leSymb [IsOrdered L] [LE M] [L.Structure M] [L.OrderedStructure M
   rfl
 
 @[simp]
-theorem relMap_leSymb [IsOrdered L] [LE M] [L.Structure M] [L.OrderedStructure M] {a b : M} :
-    RelMap (leSymb : L.Relations 2) ![a, b] ↔ a ≤ b := by
-  rw [← orderLHom_leSymb, LHom.map_onRelation]
-  rfl
-
-@[simp]
 theorem orderedStructure_iff [IsOrdered L] [LE M] [L.Structure M] :
     L.OrderedStructure M ↔ LHom.IsExpansionOn (orderLHom L) M :=
   Iff.rfl
-
-section order_to_structure
-
-variable [IsOrdered L] [L.Structure M]
-
-section LE
-
-variable [LE M] [L.OrderedStructure M]
 
 section order_to_structure
 
