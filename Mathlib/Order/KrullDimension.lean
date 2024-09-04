@@ -65,8 +65,7 @@ The **coheight** of an element `a` in a preorder `α` is the supremum of the rig
 relation series of `α` ordered by `<` and beginning with `a`.
 
 The definition of `coheight` is via the `height` in the dual order, in order to easily transfer
-theorems between `height` and `coheight`. See `coheight_eq_isup_head` for the definition with a
-series ordered by `<` and beginning with `a`.
+theorems between `height` and `coheight`.
 -/
 noncomputable def coheight {α : Type*} [Preorder α] (a : α) : ℕ∞ := height (α := αᵒᵈ) a
 
