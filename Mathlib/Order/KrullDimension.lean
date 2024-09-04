@@ -17,12 +17,12 @@ In case that `α` is empty, then its Krull dimension is defined to be negative i
 length of all series `a₀ < a₁ < ... < aₙ` is unbounded, then its Krull dimension is defined to be
 positive infinity.
 
-For `a : α`, its height (in ℕ∞) is defined to be `sup {n | a₀ < a₁ < ... < aₙ = a}` while its
+For `a : α`, its height (in `ℕ∞`) is defined to be `sup {n | a₀ < a₁ < ... < aₙ = a}` while its
 coheight is defined to be `sup {n | a = a₀ < a₁ < ... < aₙ}` .
 
 ## Main results
 
-* The Krull dimension is the same as that in the dual order (`krullDim_orderDual`).
+* The Krull dimension is the same as that of the dual order (`krullDim_orderDual`).
 
 * The Krull dimension is the supremum of the heights of the elements (`krullDim_eq_iSup_height`).
 
@@ -110,7 +110,7 @@ lemma le_height_of_last_le (x : α) (p : LTSeries α) (hlast : p.last ≤ x) :
   · simp_all
 
 lemma length_le_height_last (p : LTSeries α) : p.length ≤ height p.last :=
-  le_height_of_last_le _ p (le_refl _)
+  le_height_of_last_le _ p le_rfl
 
 lemma height_mono : Monotone (α := α) height := by
   intro x y hxy
@@ -134,7 +134,7 @@ lemma krullDim_nonneg_of_nonempty [Nonempty α] : 0 ≤ krullDim α :=
   le_sSup ⟨⟨0, fun _ ↦ @Nonempty.some α inferInstance, fun f ↦ f.elim0⟩, rfl⟩
 
 /-- A definition of krullDim for nonempty `α` that avoids `WithBot` -/
-lemma krullDim_eq_of_nonempty [Nonempty α] :
+lemma krullDim_eq_iSup_length [Nonempty α] :
     krullDim α = ⨆ (p : LTSeries α), (p.length : ℕ∞) := by
   unfold krullDim
   rw [WithBot.coe_iSup (OrderTop.bddAbove _)]
