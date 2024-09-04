@@ -129,7 +129,7 @@ instance : HasSubset (Lists' α true) :=
 /-- ZFA prelist membership. A ZFA list is in a ZFA prelist if some element of this ZFA prelist is
 equivalent as a ZFA list to this ZFA list. -/
 instance {b} : Membership (Lists α) (Lists' α b) :=
-  ⟨fun a l => ∃ a' ∈ l.toList, a ~ a'⟩
+  ⟨fun l a => ∃ a' ∈ l.toList, a ~ a'⟩
 
 theorem mem_def {b a} {l : Lists' α b} : a ∈ l ↔ ∃ a' ∈ l.toList, a ~ a' :=
   Iff.rfl
@@ -246,8 +246,8 @@ def mem (a : Lists α) : Lists α → Prop
   | ⟨false, _⟩ => False
   | ⟨_, l⟩ => a ∈ l
 
-instance : Membership (Lists α) (Lists α) :=
-  ⟨mem⟩
+instance : Membership (Lists α) (Lists α) where
+  mem ls l := mem l ls
 
 theorem isList_of_mem {a : Lists α} : ∀ {l : Lists α}, a ∈ l → IsList l
   | ⟨_, Lists'.nil⟩, _ => rfl
@@ -298,16 +298,6 @@ instance instSetoidLists : Setoid (Lists α) :=
   ⟨(· ~ ·), Equiv.refl, @Equiv.symm _, @Equiv.trans _⟩
 
 section Decidable
-
-/-- Auxiliary function to prove termination of decidability checking -/
-@[simp, deprecated (since := "2023-06-24")]
-def Equiv.decidableMeas :
-    ((Σ' _l₁ : Lists α, Lists α) ⊕'
-        ((Σ' _l₁ : Lists' α true, Lists' α true) ⊕' (Σ' _a : Lists α, Lists' α true))) →
-      ℕ
-  | PSum.inl ⟨l₁, l₂⟩ => SizeOf.sizeOf l₁ + SizeOf.sizeOf l₂
-  | PSum.inr <| PSum.inl ⟨l₁, l₂⟩ => SizeOf.sizeOf l₁ + SizeOf.sizeOf l₂
-  | PSum.inr <| PSum.inr ⟨l₁, l₂⟩ => SizeOf.sizeOf l₁ + SizeOf.sizeOf l₂
 
 theorem sizeof_pos {b} (l : Lists' α b) : 0 < SizeOf.sizeOf l := by
   cases l <;> simp only [Lists'.atom.sizeOf_spec, Lists'.nil.sizeOf_spec, Lists'.cons'.sizeOf_spec,

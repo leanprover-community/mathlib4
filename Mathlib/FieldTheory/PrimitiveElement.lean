@@ -384,6 +384,7 @@ theorem primitive_element_iff_minpoly_degree_eq (α : E) :
 
 variable [Algebra.IsSeparable F E] (A : Type*) [Field A] [Algebra F A]
   (hA : ∀ x : E, (minpoly F x).Splits (algebraMap F A))
+include hA
 
 theorem primitive_element_iff_algHom_eq_of_eval' (α : E) :
     F⟮α⟯ = ⊤ ↔ Function.Injective fun φ : E →ₐ[F] A ↦ φ α := by

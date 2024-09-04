@@ -86,6 +86,12 @@ theorem one_mem_one : (1 : Set α) ∈ (1 : Filter α) :=
 theorem pure_one : pure 1 = (1 : Filter α) :=
   rfl
 
+@[to_additive (attr := simp) zero_prod]
+theorem one_prod {l : Filter β} : (1 : Filter α) ×ˢ l = map (1, ·) l := pure_prod
+
+@[to_additive (attr := simp) prod_zero]
+theorem prod_one {l : Filter β} : l ×ˢ (1 : Filter α) = map (·, 1) l := prod_pure
+
 @[to_additive (attr := simp)]
 theorem principal_one : 𝓟 1 = (1 : Filter α) :=
   principal_singleton _
@@ -116,9 +122,11 @@ theorem eventually_one {p : α → Prop} : (∀ᶠ x in 1, p x) ↔ p 1 :=
 theorem tendsto_one {a : Filter β} {f : β → α} : Tendsto f a 1 ↔ ∀ᶠ x in a, f x = 1 :=
   tendsto_pure
 
-@[to_additive (attr := simp)]
+@[to_additive zero_prod_zero]
 theorem one_prod_one [One β] : (1 : Filter α) ×ˢ (1 : Filter β) = 1 :=
   prod_pure_pure
+
+@[deprecated (since := "2024-08-16")] alias zero_sum_zero := zero_prod_zero
 
 /-- `pure` as a `OneHom`. -/
 @[to_additive "`pure` as a `ZeroHom`."]
@@ -587,7 +595,7 @@ variable [DivisionMonoid α] {f g : Filter α}
 @[to_additive]
 protected theorem mul_eq_one_iff : f * g = 1 ↔ ∃ a b, f = pure a ∧ g = pure b ∧ a * b = 1 := by
   refine ⟨fun hfg => ?_, ?_⟩
-  · obtain ⟨t₁, h₁, t₂, h₂, h⟩ : (1 : Set α) ∈ f * g := hfg.symm.subst one_mem_one
+  · obtain ⟨t₁, h₁, t₂, h₂, h⟩ : (1 : Set α) ∈ f * g := hfg.symm ▸ one_mem_one
     have hfg : (f * g).NeBot := hfg.symm.subst one_neBot
     rw [(hfg.nonempty_of_mem <| mul_mem_mul h₁ h₂).subset_one_iff, Set.mul_eq_one_iff] at h
     obtain ⟨a, b, rfl, rfl, h⟩ := h
@@ -598,9 +606,8 @@ protected theorem mul_eq_one_iff : f * g = 1 ↔ ∃ a b, f = pure a ∧ g = pur
     rw [pure_mul_pure, h, pure_one]
 
 /-- `Filter α` is a division monoid under pointwise operations if `α` is. -/
-@[to_additive subtractionMonoid "`Filter α` is a subtraction monoid under pointwise operations if
+@[to_additive "`Filter α` is a subtraction monoid under pointwise operations if
  `α` is."]
--- Porting note: `to_additive` guessed `divisionAddMonoid`
 protected def divisionMonoid : DivisionMonoid (Filter α) :=
   { Filter.monoid, Filter.instInvolutiveInv, Filter.instDiv, Filter.instZPow (α := α) with
     mul_inv_rev := fun s t => map_map₂_antidistrib mul_inv_rev
@@ -1041,7 +1048,7 @@ protected def mulAction [Monoid α] [MulAction α β] : MulAction (Filter α) (F
 @[to_additive "An additive action of an additive monoid on a type `β` gives an additive action on
  `Filter β`."]
 protected def mulActionFilter [Monoid α] [MulAction α β] : MulAction α (Filter β) where
-  mul_smul a b f := by simp only [← Filter.map_smul, map_map, Function.comp, ← mul_smul]
+  mul_smul a b f := by simp only [← Filter.map_smul, map_map, Function.comp_def, ← mul_smul]
   one_smul f := by simp only [← Filter.map_smul, one_smul, map_id']
 
 scoped[Pointwise] attribute [instance] Filter.mulAction Filter.addAction Filter.mulActionFilter

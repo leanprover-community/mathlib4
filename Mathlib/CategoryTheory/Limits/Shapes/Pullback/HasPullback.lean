@@ -16,7 +16,7 @@ pullacks.
   express the fact that a given pair of morphisms has a pullback.
 
 * `HasPullbacks`: expresses the fact that `C` admits all pullbacks, it is implemented as an
-  abbrevation for `HasLimitsOfShape WalkingCospan C`
+  abbreviation for `HasLimitsOfShape WalkingCospan C`
 
 * `pullback f g`: Given a `HasPullback f g` instance, this function returns the choice of a limit
   object corresponding to the pullback of `f` and `g`. It fits into the following diagram:
@@ -33,7 +33,7 @@ pullback.snd f g                       g
 * `HasPushout f g`: this is an abbreviation for `HasColimit (span f g)`, and is a typeclass used to
   express the fact that a given pair of morphisms has a pushout.
 * `HasPushouts`: expresses the fact that `C` admits all pushouts, it is implemented as an
-abbrevation for `HasColimitsOfShape WalkingSpan C`
+abbreviation for `HasColimitsOfShape WalkingSpan C`
 * `pushout f g`: Given a `HasPushout f g` instance, this function returns the choice of a colimit
   object corresponding to the pushout of `f` and `g`. It fits into the following diagram:
 ```

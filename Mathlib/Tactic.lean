@@ -9,6 +9,9 @@ import Mathlib.Tactic.ArithMult.Init
 import Mathlib.Tactic.Attr.Core
 import Mathlib.Tactic.Attr.Register
 import Mathlib.Tactic.Basic
+import Mathlib.Tactic.Bound
+import Mathlib.Tactic.Bound.Attribute
+import Mathlib.Tactic.Bound.Init
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.CC
 import Mathlib.Tactic.CC.Addition
@@ -66,7 +69,6 @@ import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Find
 import Mathlib.Tactic.FunProp
-import Mathlib.Tactic.FunProp.AEMeasurable
 import Mathlib.Tactic.FunProp.Attr
 import Mathlib.Tactic.FunProp.ContDiff
 import Mathlib.Tactic.FunProp.Core
@@ -115,9 +117,12 @@ import Mathlib.Tactic.Linarith.Parsing
 import Mathlib.Tactic.Linarith.Preprocessing
 import Mathlib.Tactic.Linarith.Verification
 import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.LinearCombination'
 import Mathlib.Tactic.Linter
+import Mathlib.Tactic.Linter.AdmitLinter
 import Mathlib.Tactic.Linter.GlobalAttributeIn
 import Mathlib.Tactic.Linter.HashCommandLinter
+import Mathlib.Tactic.Linter.HaveLetLinter
 import Mathlib.Tactic.Linter.Lint
 import Mathlib.Tactic.Linter.MinImports
 import Mathlib.Tactic.Linter.OldObtain
@@ -199,6 +204,7 @@ import Mathlib.Tactic.Simps.NotationClass
 import Mathlib.Tactic.SlimCheck
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Spread
+import Mathlib.Tactic.StacksAttribute
 import Mathlib.Tactic.Subsingleton
 import Mathlib.Tactic.Substs
 import Mathlib.Tactic.SuccessIfFailWithMsg

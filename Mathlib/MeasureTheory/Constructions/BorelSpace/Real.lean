@@ -470,7 +470,8 @@ end NNReal
 spanning measurable sets with finite measure on which `f` is bounded.
 See also `StronglyMeasurable.exists_spanning_measurableSet_norm_le` for functions into normed
 groups. -/
-theorem exists_spanning_measurableSet_le {m : MeasurableSpace α} {f : α → ℝ≥0}
+-- We redeclare `α` to temporarily avoid the `[MeasurableSpace α]` instance.
+theorem exists_spanning_measurableSet_le {α : Type*} {m : MeasurableSpace α} {f : α → ℝ≥0}
     (hf : Measurable f) (μ : Measure α) [SigmaFinite μ] :
     ∃ s : ℕ → Set α,
       (∀ n, MeasurableSet (s n) ∧ μ (s n) < ∞ ∧ ∀ x ∈ s n, f x ≤ n) ∧
@@ -504,7 +505,7 @@ variable (μ : Measure ℝ) [IsFiniteMeasureOnCompacts μ]
 lemma tendsto_measure_Icc_nhdsWithin_right' (b : ℝ) :
     Tendsto (fun δ ↦ μ (Icc (b - δ) (b + δ))) (𝓝[>] (0 : ℝ)) (𝓝 (μ {b})) := by
   rw [Real.singleton_eq_inter_Icc]
-  apply tendsto_measure_biInter_gt (fun r hr ↦ measurableSet_Icc)
+  apply tendsto_measure_biInter_gt (fun r hr ↦ measurableSet_Icc.nullMeasurableSet)
   · intro r s _rpos hrs
     exact Icc_subset_Icc (by linarith) (by linarith)
   · exact ⟨1, zero_lt_one, isCompact_Icc.measure_ne_top⟩

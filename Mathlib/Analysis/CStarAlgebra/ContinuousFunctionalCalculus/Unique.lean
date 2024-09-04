@@ -92,9 +92,13 @@ lemma toNNReal_neg_one : (-1 : C(X, ℝ)).toNNReal = 0 := toNNReal_neg_algebraMa
 
 end ContinuousMap
 
-variable {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [Algebra ℝ A] [TopologicalRing A]
+variable {A : Type*} [Ring A] [StarRing A] [Algebra ℝ A]
 
 namespace StarAlgHom
+
+section TopologicalRing
+
+variable [TopologicalSpace A] [TopologicalRing A]
 
 /-- Given a star `ℝ≥0`-algebra homomorphism `φ` from `C(X, ℝ≥0)` into an `ℝ`-algebra `A`, this is
 the unique extension of `φ` from `C(X, ℝ)` to `A` as a star `ℝ`-algebra homomorphism. -/
@@ -135,6 +139,8 @@ lemma continuous_realContinuousMapOfNNReal (φ : C(X, ℝ≥0) →⋆ₐ[ℝ≥0
   simp [realContinuousMapOfNNReal]
   fun_prop
 
+end TopologicalRing
+
 @[simp high]
 lemma realContinuousMapOfNNReal_apply_comp_toReal (φ : C(X, ℝ≥0) →⋆ₐ[ℝ≥0] A)
     (f : C(X, ℝ≥0)) :
@@ -154,6 +160,8 @@ lemma realContinuousMapOfNNReal_injective :
   simpa using congr($(h) ((ContinuousMap.mk toReal continuous_coe).comp f))
 
 end StarAlgHom
+
+variable [TopologicalSpace A] [TopologicalRing A]
 
 instance NNReal.instUniqueContinuousFunctionalCalculus [UniqueContinuousFunctionalCalculus ℝ A] :
     UniqueContinuousFunctionalCalculus ℝ≥0 A where
@@ -283,12 +291,15 @@ lemma toNNReal_add_add_neg_add_neg_eq (f g : C(X, ℝ)₀) :
 
 end ContinuousMapZero
 
-variable {A : Type*} [TopologicalSpace A] [NonUnitalRing A] [StarRing A] [Module ℝ A]
-variable [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] [TopologicalRing A]
+variable {A : Type*} [NonUnitalRing A] [StarRing A] [Module ℝ A]
 
 namespace NonUnitalStarAlgHom
 
 open ContinuousMapZero
+
+section TopologicalRing
+
+variable [TopologicalSpace A] [TopologicalRing A]
 
 /-- Given a non-unital star `ℝ≥0`-algebra homomorphism `φ` from `C(X, ℝ≥0)₀` into a non-unital
 `ℝ`-algebra `A`, this is the unique extension of `φ` from `C(X, ℝ)₀` to `A` as a non-unital
@@ -331,6 +342,8 @@ lemma continuous_realContinuousMapZeroOfNNReal (φ : C(X, ℝ≥0)₀ →⋆ₙ�
   simp [realContinuousMapZeroOfNNReal]
   fun_prop
 
+end TopologicalRing
+
 @[simp high]
 lemma realContinuousMapZeroOfNNReal_apply_comp_toReal (φ : C(X, ℝ≥0)₀ →⋆ₙₐ[ℝ≥0] A)
     (f : C(X, ℝ≥0)₀) :
@@ -355,6 +368,7 @@ end NonUnitalStarAlgHom
 open ContinuousMapZero
 
 instance NNReal.instUniqueNonUnitalContinuousFunctionalCalculus
+    [TopologicalSpace A] [TopologicalRing A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A]
     [UniqueNonUnitalContinuousFunctionalCalculus ℝ A] :
     UniqueNonUnitalContinuousFunctionalCalculus ℝ≥0 A where
   compactSpace_quasispectrum a := by

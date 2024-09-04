@@ -64,7 +64,7 @@ instance : LawfulTraversable LazyList := by
     · simp only [LazyList.traverse, toList, List.traverse, map_pure, ofList]
     · replace ih : tl.get.traverse f = ofList <$> tl.get.toList.traverse f := ih
       simp [traverse.eq_2, ih, Functor.map_map, seq_map_assoc, toList, List.traverse, map_seq,
-        Function.comp, Thunk.pure, ofList]
+        Function.comp_def, Thunk.pure, ofList]
     · apply ih
 
 @[deprecated (since := "2024-07-22"), simp]
