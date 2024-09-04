@@ -176,7 +176,7 @@ structure StructureGroupoid (H : Type u) [TopologicalSpace H] where
 variable [TopologicalSpace H]
 
 instance : Membership (PartialHomeomorph H H) (StructureGroupoid H) :=
-  ⟨fun (e : PartialHomeomorph H H) (G : StructureGroupoid H) ↦ e ∈ G.members⟩
+  ⟨fun (G : StructureGroupoid H) (e : PartialHomeomorph H H) ↦ e ∈ G.members⟩
 
 instance (H : Type u) [TopologicalSpace H] :
     SetLike (StructureGroupoid H) (PartialHomeomorph H H) where
@@ -1161,6 +1161,12 @@ theorem chartAt_subtype_val_symm_eventuallyEq (U : Opens M) {x : U} :
   exact Filter.eventuallyEq_of_mem heUx_nhds (e.subtypeRestr_symm_eqOn ⟨x⟩)
 
 theorem chartAt_inclusion_symm_eventuallyEq {U V : Opens M} (hUV : U ≤ V) {x : U} :
+    #adaptation_note
+    /--
+    After lean4#5020, many instances for Lie algebras and manifolds are no longer found.
+    See https://leanprover.zulipchat.com/#narrow/stream/428973-nightly-testing/topic/.2316244.20adaptations.20for.20nightly-2024-08-28/near/466219124
+    -/
+    letI : ChartedSpace H V := V.instChartedSpace
     (chartAt H (Set.inclusion hUV x)).symm
     =ᶠ[𝓝 (chartAt H (Set.inclusion hUV x) (Set.inclusion hUV x))]
     Set.inclusion hUV ∘ (chartAt H x).symm := by
@@ -1289,7 +1295,13 @@ theorem StructureGroupoid.restriction_mem_maximalAtlas_subtype
   rw [PartialHomeomorph.subtypeRestr_def, PartialHomeomorph.trans_refl]
   let goal := e.toHomeomorphSourceTarget.toPartialHomeomorph ≫ₕ (t.partialHomeomorphSubtypeCoe this)
   have : goal ≈ e.subtypeRestr (s := s) hs :=
-    (goal.eqOnSource_iff (e.subtypeRestr (s := s) hs)).mpr ⟨by simp [s, goal], by intro _ _; rfl⟩
+    (goal.eqOnSource_iff (e.subtypeRestr (s := s) hs)).mpr
+      ⟨by
+        simp only [trans_toPartialEquiv, PartialEquiv.trans_source,
+          Homeomorph.toPartialHomeomorph_source, toFun_eq_coe, Homeomorph.toPartialHomeomorph_apply,
+          Opens.partialHomeomorphSubtypeCoe_source, preimage_univ, inter_self, subtypeRestr_source,
+          goal, s]
+        exact Subtype.coe_preimage_self _ |>.symm, by intro _ _; rfl⟩
   exact G.mem_maximalAtlas_of_eqOnSource (M := s) this (G.restriction_in_maximalAtlas he hs)
 
 /-- Each chart of a charted space is a structomorphism between its source and target. -/
