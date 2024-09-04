@@ -546,6 +546,7 @@ theorem succ_eq_csInf [ConditionallyCompleteLattice α] [SuccOrder α] [NoMaxOrd
 
 /-! ### Predecessor order -/
 
+
 section Preorder
 
 variable [Preorder α] [PredOrder α] {a b : α}
@@ -910,7 +911,282 @@ theorem pred_eq_csSup [ConditionallyCompleteLattice α] [PredOrder α] [NoMinOrd
     pred a = sSup (Set.Iio a) :=
   succ_eq_csInf (α := αᵒᵈ) a
 
+/-! ### Predecessor from successor -/
+
+
+open Classical in
+/-- A predecessor-like operation defined in a succesor order.
+
+If `a` is the succesor of some non-maximal `b`, `pred' a` returns an arbitrary such `b`. Otherwise,
+`pred' a = a`. -/
+noncomputable def pred' [Preorder α] [SuccOrder α] (a : α) : α :=
+  if h : ∃ b, ¬ IsMax b ∧ succ b = a then Classical.choose h else a
+
+section Preorder
+
+variable [Preorder α] [SuccOrder α] {a b : α}
+
+theorem pred'_ne_self_iff' : pred' a ≠ a ↔ ∃ b, ¬ IsMax b ∧ succ b = a := by
+  constructor <;>
+  intro H
+  · by_contra ha
+    rw [pred', dif_neg ha] at H
+    exact H.irrefl
+  · rw [pred', dif_pos H]
+    obtain ⟨hb, hb'⟩ := Classical.choose_spec H
+    conv_rhs => rw [← hb']
+    exact (lt_succ_of_not_isMax hb).ne
+
+theorem pred'_eq_self_iff' : pred' a = a ↔ ∀ b, succ b = a → IsMax b := by
+  simp_rw [← not_ne_iff, pred'_ne_self_iff', not_exists, not_and', not_not]
+
+/-- See `pred'_eq_self_iff'` for the most general version. -/
+theorem pred'_eq_self (ha : a ∉ range succ) : pred' a = a :=
+  pred'_eq_self_iff'.2 fun b h => (ha ⟨b, h⟩).elim
+
+theorem not_isMax_pred'_succ (ha : ¬ IsMax a) : ¬ IsMax (pred' (succ a)) := by
+  have H : ∃ b, ¬ IsMax b ∧ succ b = succ a := ⟨_, ha, rfl⟩
+  rw [pred', dif_pos H]
+  exact (Classical.choose_spec H).1
+
+@[simp]
+theorem succ_pred'_succ_of_not_isMax (ha : ¬ IsMax a) : succ (pred' (succ a)) = succ a := by
+  have H : ∃ b, ¬ IsMax b ∧ succ b = succ a := ⟨_, ha, rfl⟩
+  rw [pred', dif_pos H]
+  exact (Classical.choose_spec H).2
+
+theorem pred'_le_self (a : α) : pred' a ≤ a := by
+  by_cases H : ∃ b, ¬ IsMax b ∧ succ b = a
+  · obtain ⟨b, hb, rfl⟩ := H
+    apply (le_succ _).trans
+    rw [succ_pred'_succ_of_not_isMax hb]
+  · rw [pred', dif_neg H]
+
+theorem succ_pred'_eq_self_iff_of_not_isMax (ha : ¬ IsMax a) :
+    succ (pred' a) = a ↔ a ∈ range succ := by
+  refine ⟨fun h ↦ ⟨_, h⟩, ?_⟩
+  rintro ⟨b, rfl⟩
+  rw [succ_pred'_succ_of_not_isMax]
+  obtain ⟨c, hc⟩ := not_isMax_iff.1 ha
+  exact ((le_succ b).trans_lt hc).not_isMax
+
+theorem pred'_wcovBy (a : α) : pred' a ⩿ a := by
+  by_cases H : ∃ b, ¬ IsMax b ∧ succ b = a
+  · obtain ⟨b, hb, rfl⟩ := H
+    conv_rhs => rw [← succ_pred'_succ_of_not_isMax hb]
+    exact wcovBy_succ _
+  · rw [pred', dif_neg H]
+
+section NoMaxOrder
+
+variable [NoMaxOrder α]
+
+theorem pred'_ne_self_iff : pred' a ≠ a ↔ a ∈ range succ := by
+  simp [pred'_ne_self_iff']
+
+theorem pred'_eq_self_iff : pred' a = a ↔ a ∉ range succ := by
+  rw [← not_iff_not, not_not_mem, ← pred'_ne_self_iff]
+
+theorem succ_pred'_succ : succ (pred' (succ a)) = succ a :=
+  succ_pred'_succ_of_not_isMax (not_isMax a)
+
+theorem succ_pred'_eq_self_iff : succ (pred' a) = a ↔ a ∈ range succ :=
+  succ_pred'_eq_self_iff_of_not_isMax (not_isMax a)
+
+end NoMaxOrder
+
+end Preorder
+
+section PartialOrder
+
+variable [PartialOrder α] [SuccOrder α] {a : α}
+
+theorem _root_.IsMin.pred'_eq (ha : IsMin a) : pred' a = a :=
+  ha.eq_of_le (pred'_le_self a)
+
+@[simp]
+theorem pred'_bot [OrderBot α] : pred' (⊥ : α) = ⊥ :=
+  isMin_bot.pred'_eq
+
+section NoMaxOrder
+
+variable [NoMaxOrder α]
+
+theorem pred'_lt_self_iff : pred' a < a ↔ a ∈ range succ := by
+  rw [(pred'_le_self a).lt_iff_ne, pred'_ne_self_iff]
+
+end NoMaxOrder
+
+end PartialOrder
+
+section LinearOrder
+
+variable [LinearOrder α] [SuccOrder α] {a b : α}
+
+@[simp]
+theorem pred'_succ_of_not_isMax (ha : ¬ IsMax a) : pred' (succ a) = a := by
+  rw [← succ_eq_succ_iff_of_not_isMax (not_isMax_pred'_succ ha) ha, succ_pred'_succ_of_not_isMax ha]
+
+@[simp]
+theorem lt_pred'_iff_succ_lt_of_not_isMax (ha : ¬ IsMax a) (hb : ¬ IsMax b) :
+    a < pred' b ↔ succ a < b := by
+  by_cases H : ∃ c, ¬ IsMax c ∧ succ c = b
+  · obtain ⟨c, hc, rfl⟩ := H
+    rw [pred'_succ_of_not_isMax hc, succ_lt_succ_iff_of_not_isMax ha hc]
+  · rw [pred', dif_neg H]
+    constructor <;>
+    intro h
+    · rw [← succ_le_iff_of_not_isMax ha] at h
+      exact h.lt_of_ne fun hb ↦ H ⟨a, ha, hb⟩
+    · exact (le_succ a).trans_lt h
+
+@[simp]
+theorem pred'_le_iff_le_succ_of_not_isMax (ha : ¬ IsMax a) (hb : ¬ IsMax b) :
+    pred' a ≤ b ↔ a ≤ succ b :=
+  le_iff_le_iff_lt_iff_lt.2 (lt_pred'_iff_succ_lt_of_not_isMax hb ha)
+
+section NoMaxOrder
+
+variable [NoMaxOrder α]
+
+theorem pred'_succ (a : α) : pred' (succ a) = a :=
+  pred'_succ_of_not_isMax (not_isMax a)
+
+theorem lt_pred'_iff_succ_lt : a < pred' b ↔ succ a < b :=
+  lt_pred'_iff_succ_lt_of_not_isMax (not_isMax a) (not_isMax b)
+
+theorem pred'_le_iff_le_succ : pred' a ≤ b ↔ a ≤ succ b :=
+  pred'_le_iff_le_succ_of_not_isMax (not_isMax a) (not_isMax b)
+
+lemma gc_pred'_succ : GaloisConnection (pred' : α → α) succ := fun _ _ ↦ pred'_le_iff_le_succ
+
+end NoMaxOrder
+
+end LinearOrder
+
+/-! ### Successor from predecessor -/
+
+
+open Classical in
+/-- A successor-like operation defined in a predecessor order.
+
+If `a` is the predecessor of some non-minimal `b`, `succ' a` returns an arbitrary such `b`.
+Otherwise, `succ' a = a`. -/
+noncomputable def succ' [Preorder α] [PredOrder α] (a : α) : α :=
+  pred' (α := αᵒᵈ) (toDual a)
+
+section Preorder
+
+variable [Preorder α] [PredOrder α] {a b : α}
+
+theorem succ'_ne_self_iff' : succ' a ≠ a ↔ ∃ b, ¬ IsMin b ∧ pred b = a :=
+  pred'_ne_self_iff' (α := αᵒᵈ)
+
+theorem succ'_eq_self_iff' : succ' a = a ↔ ∀ b, pred b = a → IsMin b :=
+  pred'_eq_self_iff' (α := αᵒᵈ)
+
+/-- See `succ'_eq_self_iff'` for the most general version. -/
+theorem succ'_eq_self (ha : a ∉ range pred) : succ' a = a :=
+  pred'_eq_self (α := αᵒᵈ) ha
+
+theorem not_isMin_succ'_pred (ha : ¬ IsMin a) : ¬ IsMin (succ' (pred a)) :=
+  not_isMax_pred'_succ (α := αᵒᵈ) ha
+
+@[simp]
+theorem pred_succ'_pred_of_not_isMin (ha : ¬ IsMin a) : pred (succ' (pred a)) = pred a :=
+  succ_pred'_succ_of_not_isMax (α := αᵒᵈ) ha
+
+theorem self_le_succ' (a : α) : a ≤ succ' a :=
+  pred'_le_self (α := αᵒᵈ) _
+
+theorem pred_succ'_eq_self_iff_of_not_isMin (ha : ¬ IsMin a) :
+    pred (succ' a) = a ↔ a ∈ range pred :=
+  succ_pred'_eq_self_iff_of_not_isMax (α := αᵒᵈ) ha
+
+theorem wcovBy_succ' (a : α) : a ⩿ succ' a :=
+  (pred'_wcovBy (toDual a)).ofDual
+
+section NoMinOrder
+
+variable [NoMinOrder α]
+
+theorem succ'_ne_self_iff : succ' a ≠ a ↔ a ∈ range pred :=
+  pred'_ne_self_iff (α := αᵒᵈ)
+
+theorem succ'_eq_self_iff : succ' a = a ↔ a ∉ range pred :=
+  pred'_eq_self_iff (α := αᵒᵈ)
+
+theorem pred_succ'_pred : pred (succ' (pred a)) = pred a :=
+  succ_pred'_succ (α := αᵒᵈ)
+
+theorem pred_succ'_eq_self_iff : pred (succ' a) = a ↔ a ∈ range pred :=
+  succ_pred'_eq_self_iff (α := αᵒᵈ)
+
+end NoMinOrder
+
+end Preorder
+
+section PartialOrder
+
+variable [PartialOrder α] [PredOrder α] {a : α}
+
+theorem _root_.IsMax.succ'_eq (ha : IsMax a) : succ' a = a :=
+  ha.toDual.pred'_eq
+
+@[simp]
+theorem succ'_top [OrderTop α] : succ' (⊤ : α) = ⊤ :=
+  isMax_top.succ'_eq
+
+section NoMinOrder
+
+variable [NoMinOrder α]
+
+theorem self_lt_succ'_iff : a < succ' a ↔ a ∈ range pred :=
+  pred'_lt_self_iff (α := αᵒᵈ)
+
+end NoMinOrder
+
+end PartialOrder
+
+section LinearOrder
+
+variable [LinearOrder α] [PredOrder α] {a b : α}
+
+@[simp]
+theorem succ'_pred_of_not_isMin (ha : ¬ IsMin a) : succ' (pred a) = a :=
+  pred'_succ_of_not_isMax (α := αᵒᵈ) ha
+
+@[simp]
+theorem succ'_lt_iff_lt_pred_of_not_isMin (ha : ¬ IsMin a) (hb : ¬ IsMin b) :
+    succ' a < b ↔ a < pred b :=
+  lt_pred'_iff_succ_lt_of_not_isMax (α := αᵒᵈ) hb ha
+
+@[simp]
+theorem le_succ'_iff_pred_le_of_not_isMin (ha : ¬ IsMin a) (hb : ¬ IsMin b) :
+    a ≤ succ' b ↔ pred a ≤ b :=
+  pred'_le_iff_le_succ_of_not_isMax (α := αᵒᵈ) hb ha
+
+section NoMinOrder
+
+variable [NoMinOrder α]
+
+theorem succ'_pred (a : α) : succ' (pred a) = a :=
+  pred'_succ (α := αᵒᵈ) a
+
+theorem succ'_lt_iff_lt_pred : succ' a < b ↔ a < pred b :=
+  lt_pred'_iff_succ_lt (α := αᵒᵈ)
+
+theorem le_succ'_iff_pred_le : a ≤ succ' b ↔ pred a ≤ b :=
+  pred'_le_iff_le_succ (α := αᵒᵈ)
+
+lemma gc_pred_succ' : GaloisConnection (pred : α → α) succ' := fun _ _ ↦ le_succ'_iff_pred_le.symm
+
+end NoMinOrder
+
+end LinearOrder
+
 /-! ### Successor-predecessor orders -/
+
 
 section SuccPredOrder
 section Preorder
@@ -942,6 +1218,27 @@ theorem succ_pred [NoMinOrder α] (a : α) : succ (pred a) = a :=
 
 theorem pred_succ [NoMaxOrder α] (a : α) : pred (succ a) = a :=
   CovBy.pred_eq (covBy_succ _)
+
+@[simp]
+lemma pred'_eq_pred : pred' = @pred α _ _ := by
+  ext a
+  obtain ha | ha := (pred'_wcovBy a).covBy_or_eq
+  · rw [ha.pred_eq]
+  · by_cases ha' : IsMin a
+    · rw [ha'.pred_eq, ha'.pred'_eq]
+    · rw [pred'_eq_self_iff'] at ha
+      rw [(ha (pred a) (succ_pred_of_not_isMin ha')).eq_of_le (pred_le a)]
+      rwa [pred'_eq_self_iff']
+
+lemma pred'_eq_pred_apply (a : α) : pred' a = pred a := by
+  rw [pred'_eq_pred]
+
+@[simp]
+lemma succ'_eq_succ : succ' = @succ α _ _ :=
+  pred'_eq_pred (α := αᵒᵈ)
+
+lemma succ'_eq_succ_apply (a : α) : succ' a = succ a := by
+  rw [succ'_eq_succ]
 
 theorem pred_succ_iterate_of_not_isMax (i : α) (n : ℕ) (hin : ¬IsMax (succ^[n - 1] i)) :
     pred^[n] (succ^[n] i) = i := by
@@ -1211,6 +1508,7 @@ end WithBot
 
 /-! ### Archimedeanness -/
 
+
 /-- A `SuccOrder` is succ-archimedean if one can go from any two comparable elements by iterating
 `succ` -/
 class IsSuccArchimedean (α : Type*) [Preorder α] [SuccOrder α] : Prop where
@@ -1411,3 +1709,5 @@ lemma SuccOrder.forall_ne_bot_iff
   rw [← Nat.succ_pred_eq_of_pos hj]
   simp only [Function.iterate_succ', Function.comp_apply]
   apply h
+
+set_option linter.style.longFile 1900
