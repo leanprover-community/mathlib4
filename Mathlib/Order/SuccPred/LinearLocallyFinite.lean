@@ -7,6 +7,7 @@ import Mathlib.Data.Countable.Basic
 import Mathlib.Logic.Encodable.Basic
 import Mathlib.Order.SuccPred.Basic
 import Mathlib.Order.Interval.Finset.Defs
+import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.Ring.Nat
 
 /-!

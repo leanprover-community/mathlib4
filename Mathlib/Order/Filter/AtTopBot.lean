@@ -13,6 +13,7 @@ import Mathlib.Order.Interval.Set.Disjoint
 import Mathlib.Order.Interval.Set.OrderIso
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.Filter.Bases
+import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.Ring.Nat
 
 /-!

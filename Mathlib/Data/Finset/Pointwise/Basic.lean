@@ -11,6 +11,7 @@ import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Data.Set.Pointwise.ListOfFn
 import Mathlib.Data.ULift
 import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.Ring.Nat
 
 /-!

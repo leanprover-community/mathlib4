@@ -792,3 +792,14 @@ theorem bot_eq_false : ⊥ = false :=
   rfl
 
 end Bool
+
+namespace Nat
+
+instance instOrderBot : OrderBot ℕ where
+  bot := 0
+  bot_le := zero_le
+
+-- We want to use this lemma earlier than the lemma simp can prove it with
+@[simp, nolint simpNF] protected lemma bot_eq_zero : ⊥ = 0 := rfl
+
+end Nat

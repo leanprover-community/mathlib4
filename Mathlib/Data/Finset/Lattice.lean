@@ -12,7 +12,6 @@ import Mathlib.Data.Multiset.Lattice
 import Mathlib.Data.Set.Lattice
 import Mathlib.Order.Hom.Lattice
 import Mathlib.Order.Minimal
-import Mathlib.Order.Nat
 
 /-!
 # Lattice operations on finsets
