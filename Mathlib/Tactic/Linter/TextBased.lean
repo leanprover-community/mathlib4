@@ -390,7 +390,7 @@ local instance instHashableChar : Hashable Char where
 def ASCII.whitespace (c : Char) := #[' ', '\n'].contains c
 
 /-- Printable ASCII characters, not including whitespace. -/
-def ASCII.printable (c : Char) := 21 ≤ c.toNat || c.toNat ≤ 126
+def ASCII.printable (c : Char) := 21 ≤ c.toNat && c.toNat ≤ 126
 
 /--
 Symbols with VSCode extension abbreviation as of Aug. 28, 2024
@@ -558,10 +558,9 @@ TODO there are more symbols we could use that aren't in this list yet. E.g, see
 https://en.wikipedia.org/wiki/Mathematical_operators_and_symbols_in_Unicode
 -/
 
-open Std in
-
-/-- Checks if in any of the defined Mathlib whitelists. -/
-def allowedCharacters (c : Char) : Bool :=
+/-- If `false` the character is not allowed in Mathlib.
+Consider adding it to one of the whitelists. -/
+def isAllowedCharacter (c : Char) : Bool :=
   ASCII.whitespace c
   || ASCII.printable c
   || withVSCodeAbbrev.contains c
@@ -587,24 +586,24 @@ def findBadUnicodeAux (s : String) (pos : String.Pos) (c : Char)
       -- bad: unwanted text-variant selector
       let errₙ := err.push (.unicodeVariant ⟨[c, cₙ]⟩ none pos)
       findBadUnicodeAux s posₙ cₙ errₙ
-    else if emojis.contains c && cₙ != UnicodeVariant.emoji then
+    else if cₙ != UnicodeVariant.emoji && emojis.contains c then
       -- bad: missing emoji-variant selector
       let errₙ := err.push (.unicodeVariant ⟨[c, cₙ]⟩ UnicodeVariant.emoji pos)
       findBadUnicodeAux s posₙ cₙ errₙ
-    else if nonEmojis.contains c && cₙ != UnicodeVariant.text then
+    else if cₙ != UnicodeVariant.text && nonEmojis.contains c then
       -- bad: missing text-variant selector
       let errₙ := err.push (.unicodeVariant ⟨[c, cₙ]⟩ UnicodeVariant.text pos)
       findBadUnicodeAux s posₙ cₙ errₙ
-    else if ! allowedCharacters c then
-      -- character not allowed
+    else if ! isAllowedCharacter c then
+      -- bad: character not allowed
       let errₙ := err.push (.unwantedUnicode c)
       findBadUnicodeAux s posₙ cₙ errₙ
     else
       -- okay
       findBadUnicodeAux s posₙ cₙ err
+  -- emojis/non-emojis should not be the last character in the line
+  -- in practise, the last char is `\n`, so this is in theory superfluous.
   else if emojis.contains c || nonEmojis.contains c then
-    -- emojis/non-emojis should not be the last character in the line
-    -- in practise, the last char is `\n`, so this is in theory superfluous.
     err.push (.unicodeVariant ⟨[c, '\uFFFD']⟩ none pos)
   else
     err
