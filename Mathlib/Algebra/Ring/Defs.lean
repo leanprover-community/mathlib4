@@ -23,7 +23,10 @@ the present file is about their interaction.
   dealing with multiplicative submonoids which are closed under negation without being closed under
   addition, for example `Units`.
 * `(NonUnital)(NonAssoc)(Semi)Ring`: Typeclasses for possibly non-unital or non-associative
-  rings and semirings. Some combinations are not defined yet because they haven't found use.
+  rings and semirings. Some combinations are not defined yet because they haven't found use. 
+  For Lie Rings, there is a type synonim `CommutatorRing` defined in `Mathlib/Algebra/Algebra/NonUnitalHom.lean`
+  turning the bracket into a multiplication so that the instance `instNonUnitalNonAssocSemiringCommutatorRing`
+  can be defined.
 
 ## Tags
 
@@ -109,7 +112,8 @@ that `Semiring -> NonAssocSemiring` is tried before `NonAssocRing -> NonAssocSem
 TODO: clean this once lean4#2115 is fixed
 -/
 
-/-- A not-necessarily-unital, not-necessarily-associative semiring. -/
+/-- A not-necessarily-unital, not-necessarily-associative semiring. See `CommutatoRing` and the documentation thereof
+in you need to out a `NonUnitalNonAssocSemiring` instance on a Lie ring/algebra. -/
 class NonUnitalNonAssocSemiring (α : Type u) extends AddCommMonoid α, Distrib α, MulZeroClass α
 
 /-- An associative but not-necessarily unital semiring. -/
