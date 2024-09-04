@@ -931,19 +931,19 @@ theorem add_one_eq_succ (o : Ordinal) : o + 1 = succ o :=
   rfl
 
 @[deprecated Order.succ_zero (since := "2024-09-04")]
-theorem succ_zero : succ (0 : Ordinal) = 1 :=
+protected theorem succ_zero : succ (0 : Ordinal) = 1 :=
   Order.succ_zero
 
 @[deprecated Order.succ_one (since := "2024-09-04")]
-theorem succ_one : succ (1 : Ordinal) = 2 :=
+protected theorem succ_one : succ (1 : Ordinal) = 2 :=
   Order.succ_one
 
 @[deprecated Order.add_succ (since := "2024-09-04")]
-theorem add_succ (o₁ o₂ : Ordinal) : o₁ + succ o₂ = succ (o₁ + o₂) :=
+protected theorem add_succ (o₁ o₂ : Ordinal) : o₁ + succ o₂ = succ (o₁ + o₂) :=
   Order.add_succ o₁ o₂
 
 @[deprecated Order.one_le_iff_pos (since := "2024-09-04")]
-theorem one_le_iff_pos {o : Ordinal} : 1 ≤ o ↔ 0 < o :=
+protected theorem one_le_iff_pos {o : Ordinal} : 1 ≤ o ↔ 0 < o :=
   Order.one_le_iff_pos
 
 theorem one_le_iff_ne_zero {o : Ordinal} : 1 ≤ o ↔ o ≠ 0 := by

@@ -55,7 +55,6 @@ def NatOrdinal : Type _ :=
 
 instance NatOrdinal.linearOrder : LinearOrder NatOrdinal := {Ordinal.linearOrder with}
 instance NatOrdinal.succOrder : SuccOrder NatOrdinal := {Ordinal.succOrder with}
-instance NatOrdinal.succAddOrder : SuccAddOrder NatOrdinal := {Ordinal.succAddOrder with}
 
 /-- The identity function between `Ordinal` and `NatOrdinal`. -/
 @[match_pattern]
@@ -308,8 +307,8 @@ namespace NatOrdinal
 
 open Ordinal NaturalOps
 
-instance : Add NatOrdinal :=
-  ⟨nadd⟩
+instance : Add NatOrdinal := ⟨nadd⟩
+instance : SuccAddOrder NatOrdinal := ⟨fun x => (nadd_one x).symm⟩
 
 instance add_covariantClass_lt : CovariantClass NatOrdinal.{u} NatOrdinal.{u} (· + ·) (· < ·) :=
   ⟨fun a _ _ h => nadd_lt_nadd_left h a⟩
@@ -339,8 +338,8 @@ instance addMonoidWithOne : AddMonoidWithOne NatOrdinal :=
   AddMonoidWithOne.unary
 
 @[simp]
-theorem add_one_eq_succ : ∀ a : NatOrdinal, a + 1 = succ a :=
-  nadd_one
+theorem add_one_eq_succ (a : NatOrdinal) : a + 1 = succ a :=
+  (Order.succ_eq_add_one a).symm
 
 @[simp]
 theorem toOrdinal_cast_nat (n : ℕ) : toOrdinal n = n := by
