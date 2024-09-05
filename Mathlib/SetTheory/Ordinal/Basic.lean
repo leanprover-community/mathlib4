@@ -930,19 +930,16 @@ instance succAddOrder : SuccAddOrder Ordinal := ⟨fun _ => rfl⟩
 theorem add_one_eq_succ (o : Ordinal) : o + 1 = succ o :=
   rfl
 
-@[deprecated Order.succ_zero (since := "2024-09-04")]
-protected theorem succ_zero : succ (0 : Ordinal) = 1 :=
+@[simp]
+theorem succ_zero : succ (0 : Ordinal) = 1 :=
   Order.succ_zero
 
-@[deprecated Order.succ_one (since := "2024-09-04")]
-protected theorem succ_one : succ (1 : Ordinal) = 2 :=
+theorem succ_one : succ (1 : Ordinal) = 2 :=
   Order.succ_one
 
-@[deprecated Order.add_succ (since := "2024-09-04")]
 protected theorem add_succ (o₁ o₂ : Ordinal) : o₁ + succ o₂ = succ (o₁ + o₂) :=
   Order.add_succ o₁ o₂
 
-@[deprecated Order.one_le_iff_pos (since := "2024-09-04")]
 protected theorem one_le_iff_pos {o : Ordinal} : 1 ≤ o ↔ 0 < o :=
   Order.one_le_iff_pos
 

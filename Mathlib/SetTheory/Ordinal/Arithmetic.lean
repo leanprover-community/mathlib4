@@ -259,7 +259,7 @@ theorem IsLimit.pos {o : Ordinal} (h : IsLimit o) : 0 < o :=
   lt_of_le_of_ne (Ordinal.zero_le _) h.1.symm
 
 theorem IsLimit.one_lt {o : Ordinal} (h : IsLimit o) : 1 < o := by
-  simpa only [Order.succ_zero] using h.2 _ h.pos
+  simpa only [succ_zero] using h.2 _ h.pos
 
 theorem IsLimit.nat_lt {o : Ordinal} (h : IsLimit o) : ∀ n : ℕ, (n : Ordinal) < o
   | 0 => h.pos
@@ -750,7 +750,7 @@ theorem smul_eq_mul : ∀ (n : ℕ) (a : Ordinal), n • a = a * n
 /-- The set in the definition of division is nonempty. -/
 theorem div_nonempty {a b : Ordinal} (h : b ≠ 0) : { o | a < b * succ o }.Nonempty :=
   ⟨a, (succ_le_iff (a := a) (b := b * succ a)).1 <| by
-    simpa only [Order.succ_zero, one_mul] using
+    simpa only [succ_zero, one_mul] using
       mul_le_mul_right' (succ_le_of_lt (Ordinal.pos_iff_ne_zero.2 h)) (succ a)⟩
 
 /-- `a / b` is the unique ordinal `o` satisfying `a = b * o + o'` with `o' < b`. -/
@@ -816,7 +816,7 @@ theorem mul_add_div (a) {b : Ordinal} (b0 : b ≠ 0) (c) : (b * a + c) / b = a +
 
 theorem div_eq_zero_of_lt {a b : Ordinal} (h : a < b) : a / b = 0 := by
   rw [← Ordinal.le_zero, div_le <| Ordinal.pos_iff_ne_zero.1 <| (Ordinal.zero_le _).trans_lt h]
-  simpa only [Order.succ_zero, mul_one] using h
+  simpa only [succ_zero, mul_one] using h
 
 @[simp]
 theorem mul_div_cancel (a) {b : Ordinal} (b0 : b ≠ 0) : b * a / b = a := by
@@ -2207,7 +2207,7 @@ theorem add_mul_limit_aux {a b c : Ordinal} (ba : b + a = a) (l : IsLimit c)
 
 theorem add_mul_succ {a b : Ordinal} (c) (ba : b + a = a) : (a + b) * succ c = a * succ c + b := by
   induction c using limitRecOn with
-  | H₁ => simp only [Order.succ_zero, mul_one]
+  | H₁ => simp only [succ_zero, mul_one]
   | H₂ c IH =>
     rw [mul_succ, IH, ← add_assoc, add_assoc _ b, ba, ← mul_succ]
   | H₃ c l IH =>

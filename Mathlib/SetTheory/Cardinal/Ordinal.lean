@@ -296,7 +296,7 @@ theorem aleph'_isNormal : IsNormal (ord ∘ aleph') :=
 theorem aleph_isNormal : IsNormal (ord ∘ aleph) :=
   aleph'_isNormal.trans <| add_isNormal ω
 
-theorem succ_aleph0 : succ ℵ₀ = aleph 1 := by rw [← aleph_zero, ← aleph_succ, Order.succ_zero]
+theorem succ_aleph0 : succ ℵ₀ = aleph 1 := by rw [← aleph_zero, ← aleph_succ, succ_zero]
 
 theorem aleph0_lt_aleph_one : ℵ₀ < aleph 1 := by
   rw [← succ_aleph0]

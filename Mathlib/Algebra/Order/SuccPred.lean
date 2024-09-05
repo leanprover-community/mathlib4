@@ -14,6 +14,12 @@ import Mathlib.Order.SuccPred.Basic
 We define the `SuccAddOrder` and `PredSubOrder` typeclasses, for orders satisfying `succ x = x + 1`
 and `pred x = x - 1` respectively. This allows us to transfer the API for successors and
 predecessors into these common arithmetical forms.
+
+## Todo
+
+In the future, we will make `x + 1` and `x - 1` the `simp`-normal forms for `succ x` and `pred x`
+respectively. This will require a refactor of `Ordinal` first, as the `simp`-normal form is
+currently set the other way around.
 -/
 
 /-- A typeclass for `succ x = x + 1`. -/
@@ -61,42 +67,6 @@ theorem le_sub_one_iff [Sub α] [One α] [PredSubOrder α] [NoMinOrder α] : x �
   le_sub_one_iff_of_not_isMin (not_isMin y)
 
 @[simp]
-theorem succ_zero [AddZeroClass α] [One α] [SuccAddOrder α] : succ (0 : α) = 1 := by
-  rw [succ_eq_add_one, zero_add]
-
-@[simp]
-theorem pred_zero [SubNegMonoid α] [One α] [PredSubOrder α] : pred (0 : α) = -1 := by
-  rw [pred_eq_sub_one, zero_sub]
-
-theorem succ_one [AddMonoidWithOne α] [SuccAddOrder α] : succ (1 : α) = 2 := by
-  rw [succ_eq_add_one, one_add_one_eq_two]
-
-@[simp]
-theorem pred_one [AddGroup α] [One α] [PredSubOrder α] : pred (1 : α) = 0 := by
-  rw [pred_eq_sub_one, sub_self]
-
-theorem add_succ [AddSemigroup α] [One α] [SuccAddOrder α] (x y : α) :
-    x + succ y = succ (x + y) := by
-  rw [succ_eq_add_one, succ_eq_add_one, add_assoc]
-
-theorem add_pred [AddGroup α] [One α] [PredSubOrder α] (x y : α) :
-    x + pred y = pred (x + y) := by
-  rw [pred_eq_sub_one, pred_eq_sub_one, add_sub]
-
-theorem succ_add [AddCommSemigroup α] [One α] [SuccAddOrder α] (x y : α) :
-    succ x + y = succ (x + y) := by
-  rw [add_comm, add_succ, add_comm]
-
-theorem pred_add [AddCommGroup α] [One α] [PredSubOrder α] (x y : α) :
-    pred x + y = pred (x + y) := by
-  rw [add_comm, add_pred, add_comm]
-
-theorem natCast_succ [AddMonoidWithOne α] [SuccAddOrder α] (n : ℕ) : n.succ = succ (n : α) := by
-  cases n with
-  | zero => rw [Nat.cast_zero, succ_zero, Nat.cast_one]
-  | succ n => rw [succ_eq_add_one, Nat.cast_add_one, Nat.cast_succ]
-
-@[simp]
 theorem wcovBy_add_one [Add α] [One α] [SuccAddOrder α] (x : α) : x ⩿ x + 1 := by
   rw [← succ_eq_add_one]
   exact wcovBy_succ x
@@ -116,14 +86,20 @@ theorem sub_one_covBy [Sub α] [One α] [PredSubOrder α] [NoMinOrder α] (x : �
   rw [← pred_eq_sub_one]
   exact pred_covBy x
 
+@[simp]
+theorem succ_zero [AddZeroClass α] [One α] [SuccAddOrder α] : succ (0 : α) = 1 := by
+  rw [succ_eq_add_one, zero_add]
+
+@[simp]
 theorem succ_iterate [AddMonoidWithOne α] [SuccAddOrder α] (x : α) (n : ℕ) :
     succ^[n] x = x + n := by
   induction n with
   | zero =>
     rw [Function.iterate_zero_apply, Nat.cast_zero, add_zero]
   | succ n IH =>
-    rw [Function.iterate_succ_apply', IH, Nat.cast_add, ← add_succ, succ_eq_add_one, Nat.cast_one]
+    rw [Function.iterate_succ_apply', IH, Nat.cast_add, succ_eq_add_one, Nat.cast_one, add_assoc]
 
+@[simp]
 theorem pred_iterate [AddCommGroupWithOne α] [PredSubOrder α] (x : α) (n : ℕ) :
     pred^[n] x = x - n := by
   induction n with
@@ -144,14 +120,14 @@ theorem not_isMax_zero [Zero α] [One α] [ZeroLEOneClass α] [NeZero (1 : α)] 
 
 theorem one_le_iff_pos [AddMonoidWithOne α] [ZeroLEOneClass α] [NeZero (1 : α)]
     [SuccAddOrder α] : 1 ≤ x ↔ 0 < x := by
-  rw [← succ_zero, succ_le_iff_of_not_isMax not_isMax_zero]
+  rw [← succ_le_iff_of_not_isMax not_isMax_zero, succ_zero]
 
 theorem covBy_iff_add_one_eq [Add α] [One α] [SuccAddOrder α] [NoMaxOrder α] :
     x ⋖ y ↔ x + 1 = y := by
   rw [← succ_eq_add_one]
   exact succ_eq_iff_covBy.symm
 
-theorem covBy_iff_eq_sub_one [Sub α] [One α] [PredSubOrder α] [NoMinOrder α] :
+theorem covBy_iff_sub_one_eq [Sub α] [One α] [PredSubOrder α] [NoMinOrder α] :
     x ⋖ y ↔ y - 1 = x := by
   rw [← pred_eq_sub_one]
   exact pred_eq_iff_covBy.symm
@@ -186,7 +162,7 @@ theorem sub_one_lt_iff [Sub α] [One α] [PredSubOrder α] [NoMinOrder α] : x -
 
 theorem lt_one_iff_nonpos [AddMonoidWithOne α] [ZeroLEOneClass α] [NeZero (1 : α)]
     [SuccAddOrder α] : x < 1 ↔ x ≤ 0 := by
-  rw [← succ_zero, lt_succ_iff_of_not_isMax not_isMax_zero]
+  rw [← lt_succ_iff_of_not_isMax not_isMax_zero, succ_zero]
 
 end LinearOrder
 
