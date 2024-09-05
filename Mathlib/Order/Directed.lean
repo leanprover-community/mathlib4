@@ -250,34 +250,6 @@ theorem isBot_iff_isMin [IsDirected α (· ≥ ·)] : IsBot a ↔ IsMin a :=
 theorem isTop_iff_isMax [IsDirected α (· ≤ ·)] : IsTop a ↔ IsMax a :=
   ⟨IsTop.isMax, IsMax.isTop⟩
 
-variable (β) [PartialOrder β]
-
-theorem exists_lt_of_directed_ge [IsDirected β (· ≥ ·)] [Nontrivial β] : ∃ a b : β, a < b := by
-  rcases exists_pair_ne β with ⟨a, b, hne⟩
-  rcases isBot_or_exists_lt a with (ha | ⟨c, hc⟩)
-  exacts [⟨a, b, (ha b).lt_of_ne hne⟩, ⟨_, _, hc⟩]
-
-theorem exists_lt_of_directed_le [IsDirected β (· ≤ ·)] [Nontrivial β] : ∃ a b : β, a < b :=
-  let ⟨a, b, h⟩ := exists_lt_of_directed_ge βᵒᵈ
-  ⟨b, a, h⟩
-
-variable {f : α → β} {s : Set α}
-
--- TODO: Generalise the following two lemmas to connected orders
-
-/-- If `f` is monotone and antitone on a directed order, then `f` is constant. -/
-lemma constant_of_monotone_antitone [IsDirected α (· ≤ ·)] (hf : Monotone f) (hf' : Antitone f)
-    (a b : α) : f a = f b := by
-  obtain ⟨c, hac, hbc⟩ := exists_ge_ge a b
-  exact le_antisymm ((hf hac).trans <| hf' hbc) ((hf hbc).trans <| hf' hac)
-
-/-- If `f` is monotone and antitone on a directed set `s`, then `f` is constant on `s`. -/
-lemma constant_of_monotoneOn_antitoneOn (hf : MonotoneOn f s) (hf' : AntitoneOn f s)
-    (hs : DirectedOn (· ≤ ·) s) : ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → f a = f b := by
-  rintro a ha b hb
-  obtain ⟨c, hc, hac, hbc⟩ := hs _ ha _ hb
-  exact le_antisymm ((hf ha hc hac).trans <| hf' hb hc hbc) ((hf hb hc hbc).trans <| hf' ha hc hac)
-
 end Preorder
 
 -- see Note [lower instance priority]
@@ -297,3 +269,61 @@ instance (priority := 100) OrderTop.to_isDirected_le [LE α] [OrderTop α] : IsD
 -- see Note [lower instance priority]
 instance (priority := 100) OrderBot.to_isDirected_ge [LE α] [OrderBot α] : IsDirected α (· ≥ ·) :=
   ⟨fun _ _ => ⟨⊥, bot_le _, bot_le _⟩⟩
+
+section PartialOrder
+
+variable [PartialOrder β]
+
+section Nontrivial
+
+variable [Nontrivial β]
+
+variable (β) in
+theorem exists_lt_of_directed_ge [IsDirected β (· ≥ ·)] :
+    ∃ a b : β, a < b := by
+  rcases exists_pair_ne β with ⟨a, b, hne⟩
+  rcases isBot_or_exists_lt a with (ha | ⟨c, hc⟩)
+  exacts [⟨a, b, (ha b).lt_of_ne hne⟩, ⟨_, _, hc⟩]
+
+variable (β) in
+theorem exists_lt_of_directed_le [IsDirected β (· ≤ ·)] :
+    ∃ a b : β, a < b :=
+  let ⟨a, b, h⟩ := exists_lt_of_directed_ge βᵒᵈ
+  ⟨b, a, h⟩
+
+protected theorem IsMin.not_isMax [IsDirected β (· ≥ ·)] {b : β} (hb : IsMin b) : ¬ IsMax b := by
+  intro hb'
+  obtain ⟨a, c, hac⟩ := exists_lt_of_directed_ge β
+  have := hb.isBot a
+  obtain rfl := (hb' <| this).antisymm this
+  exact hb'.not_lt hac
+
+protected theorem IsMin.not_isMax' [IsDirected β (· ≤ ·)] {b : β} (hb : IsMin b) : ¬ IsMax b :=
+  fun hb' ↦ hb'.toDual.not_isMax hb.toDual
+
+protected theorem IsMax.not_isMin [IsDirected β (· ≤ ·)] {b : β} (hb : IsMax b) : ¬ IsMin b :=
+  fun hb' ↦ hb.toDual.not_isMax hb'.toDual
+
+protected theorem IsMax.not_isMin' [IsDirected β (· ≥ ·)] {b : β} (hb : IsMax b) : ¬ IsMin b :=
+  fun hb' ↦ hb'.toDual.not_isMin hb.toDual
+
+end Nontrivial
+
+variable [Preorder α] {f : α → β} {s : Set α}
+
+-- TODO: Generalise the following two lemmas to connected orders
+
+/-- If `f` is monotone and antitone on a directed order, then `f` is constant. -/
+lemma constant_of_monotone_antitone [IsDirected α (· ≤ ·)] (hf : Monotone f) (hf' : Antitone f)
+    (a b : α) : f a = f b := by
+  obtain ⟨c, hac, hbc⟩ := exists_ge_ge a b
+  exact le_antisymm ((hf hac).trans <| hf' hbc) ((hf hbc).trans <| hf' hac)
+
+/-- If `f` is monotone and antitone on a directed set `s`, then `f` is constant on `s`. -/
+lemma constant_of_monotoneOn_antitoneOn (hf : MonotoneOn f s) (hf' : AntitoneOn f s)
+    (hs : DirectedOn (· ≤ ·) s) : ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → f a = f b := by
+  rintro a ha b hb
+  obtain ⟨c, hc, hac, hbc⟩ := hs _ ha _ hb
+  exact le_antisymm ((hf ha hc hac).trans <| hf' hb hc hbc) ((hf hb hc hbc).trans <| hf' ha hc hac)
+
+end PartialOrder
