@@ -278,13 +278,15 @@ section Nontrivial
 
 variable [Nontrivial β]
 
-theorem exists_lt_of_directed_ge (β) [PartialOrder β] [IsDirected β (· ≥ ·)] [Nontrivial β] :
+variable (β) in
+theorem exists_lt_of_directed_ge [IsDirected β (· ≥ ·)] :
     ∃ a b : β, a < b := by
   rcases exists_pair_ne β with ⟨a, b, hne⟩
   rcases isBot_or_exists_lt a with (ha | ⟨c, hc⟩)
   exacts [⟨a, b, (ha b).lt_of_ne hne⟩, ⟨_, _, hc⟩]
 
-theorem exists_lt_of_directed_le (β) [PartialOrder β] [IsDirected β (· ≤ ·)] [Nontrivial β] :
+variable (β) in
+theorem exists_lt_of_directed_le [IsDirected β (· ≤ ·)] :
     ∃ a b : β, a < b :=
   let ⟨a, b, h⟩ := exists_lt_of_directed_ge βᵒᵈ
   ⟨b, a, h⟩
