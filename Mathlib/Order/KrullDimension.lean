@@ -104,7 +104,7 @@ lemma length_le_height {p : LTSeries α} {x : α} (hlast : p.last ≤ x) :
     simp [p']
   · simp_all
 
-lemma length_le_height_last (p : LTSeries α) : p.length ≤ height p.last :=
+lemma length_le_height_last {p : LTSeries α} : p.length ≤ height p.last :=
   length_le_height le_rfl
 
 lemma height_mono : Monotone (α := α) height :=
