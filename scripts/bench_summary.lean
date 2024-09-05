@@ -30,7 +30,7 @@ structure Bench :=
   deriving FromJson, ToJson, Inhabited
 
 /-- `intDecs z exp prec` is a "generic" formatting of an integer `z`.
-It writes the number as `x.y * 10 ^ expr`, where `y` has `prec` digits and returns
+It writes the number as `x.y * 10 ^ exp`, where `y` has `prec` digits and returns
 * the sign of `z` as a string (in fact, just either `+` or `-`);
 * the integer `x`;
 * the natural number `y` (that has `prec` digits).
@@ -47,7 +47,7 @@ def formatDiff (z : Int) : String :=
   let (sgn, intDigs, decDigs) := intDecs z
   s!"{sgn}{intDigs}.{decDigs}⬝10⁹"
 
-/-- converts a `Float` into a formatted string of the form `±z.w%`. -/
+/-- Convert a `Float` into a formatted string of the form `±z.w%`. -/
 def formatPercent (reldiff : Float) : String :=
   -- shift by `2` twice: the first one, to get a `%`; the second, for 2 decimal digits of precision
   let reldiff := reldiff * 10 ^ 4
