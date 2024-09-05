@@ -8,7 +8,7 @@ import Mathlib.NumberTheory.Padics.RingHoms
 import Mathlib.Topology.MetricSpace.Ultra.Basic
 
 /-!
-# Padics totally bounded, compact, locally compact
+# Local compactness of the p-adic numbers
 
 In this file, we prove that `Z_[p]` is totally bounded and compact,
 and that `ℚ_[p]` is locally compact.
