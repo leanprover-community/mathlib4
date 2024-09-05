@@ -2213,19 +2213,14 @@ theorem List.simplexInsert_of_forall_le {b : ℕ} {l : List ℕ} (hb : ∀ x ∈
     ite_true]
 
 theorem one {a : ℕ} {l : List ℕ} (hl : l.Sorted (· ≤ ·)) (ha : ∀ x ∈ l, a < x) :
-    (simplexInsert_δ a <| l).1.simplexSort = l.map (· - 1) := by
+    (simplexInsert_δ a <| l).1 = l.map (· - 1) := by
   induction' l with b l hbl
-  · simp_all only [List.sorted_nil, List.head?_nil, List.simplexSort, List.map_nil]
+  · simp_all only [List.sorted_nil, List.not_mem_nil, false_implies, implies_true, simplexInsert_δ,
+    List.map_nil]
   · simp only [List.sorted_cons, List.mem_cons, forall_eq_or_imp, List.map_cons] at hl ha ⊢
     simp_all only [simplexInsert_δ, ite_true, List.simplexSort]
     simp only [implies_true, true_implies] at hbl
     rw [hbl]
-    rw [List.simplexInsert_of_forall_le]
-    intro x hx
-    simp_all only [List.mem_map, tsub_le_iff_right]
-    rcases hx with ⟨y, hy, hxy⟩
-    have := hl.1 y hy
-    omega
 
 theorem the_bay {m n : ℕ} {a : Fin (m + 2)} (f : Fin (m + 2) →o Fin (n + 1))
     (ha : (a : ℕ) < n + 1) (hf : Function.Surjective f) (hfa : Set.InjOn f (Set.Iic ⟨a + 1, sorry⟩)) : -- needs extra assumption
@@ -2340,6 +2335,22 @@ theorem toList_simplexSort {m n : SimplexCategory} (f : m ⟶ n) (hf : Epi f) :
   · exact toList_sorted f
   · exact toArrowAux_some_of_epi f hf
 
+theorem three {l : List ℕ} (a b : ℕ) (hl : (b :: l).Sorted (· ≤ ·)) (ha : b + 1 < a)
+    (x : ℕ) (hx : x ∈ (simplexInsert_δ (a - 1) l).1) : b ≤ x := by
+  induction' l with c l hcl generalizing a
+  · simp_all only [List.sorted_singleton, simplexInsert_δ, List.not_mem_nil]
+  · simp only [List.sorted_cons, List.mem_cons, forall_eq_or_imp, simplexInsert_δ] at hl hx
+    split_ifs at hx with h1 h2
+    · simp_all only [List.sorted_cons, implies_true, and_self, true_implies, List.mem_cons]
+      rcases hx with (h3 | h4)
+      · omega
+      · exact hcl a ha h4
+    · simp_all only [List.sorted_cons, implies_true, and_self, true_implies, not_lt, List.mem_cons]
+      rcases hx with (rfl | h4)
+      · exact hl.1.1
+      · exact hcl (a - 1) (by omega) h4
+    · simp_all
+
 theorem toListGen_δ_comp_epi {m k : ℕ} {n : SimplexCategory} {a : Fin (m + 2)} (f : mk (m + 1) ⟶ n)
     (F : Fin k ≃o Im (δ a ≫ f)) (hf : Epi f) :
     toListGen _ F = (simplexInsert_δ a <| toList f).1 := by
@@ -2399,8 +2410,15 @@ theorem toListGen_δ_comp_epi {m k : ℕ} {n : SimplexCategory} {a : Fin (m + 2)
             omega
         rw [toListGen_well_def (k := k) _ _ this F (monoEquivOfFin _ sorry)]
         erw [toListGen_σ_comp (monoEquivOfFin _ sorry) (monoEquivOfFin _ sorry)]
-        rw [hbl]
-        simp only
+        have : (b :: l).Sorted (· ≤ ·) := by rw [← x]; exact toList_sorted _
+        simp_all only [List.sorted_cons]
+        rw [hbl, one this.2, List.simplexInsert_of_forall_le]
+        simp_rw [List.mem_map]
+        rintro x ⟨y, hy, rfl⟩
+        have h' := this.1 y hy
+        omega
+        · intro x hx
+          exact lt_of_lt_of_le hab (this.1 x hx)
         · exact epi_of_epi (σ ⟨b, hb⟩) g
         · assumption
       · dsimp
@@ -2416,7 +2434,12 @@ theorem toListGen_δ_comp_epi {m k : ℕ} {n : SimplexCategory} {a : Fin (m + 2)
             omega
         rw [toListGen_well_def (k := k) _ _ this F (monoEquivOfFin _ sorry)]
         erw [toListGen_σ_comp (monoEquivOfFin _ sorry) (monoEquivOfFin _ sorry)]
-        rw [hbl]
+        rw [hbl, List.simplexInsert_of_forall_le]
+        · apply three
+          · dsimp
+            rw [← x]
+            exact toList_sorted _
+          · exact h
         · exact epi_of_epi (σ ⟨b, hb⟩) g
         · assumption
       · dsimp
@@ -2433,9 +2456,15 @@ theorem toListGen_δ_comp_epi {m k : ℕ} {n : SimplexCategory} {a : Fin (m + 2)
             simp_all only [add_lt_iff_neg_left, not_lt_zero', not_false_eq_true, lt_self_iff_false,
               Fin.succ_mk, Nat.succ_eq_add_one]
         rw [toListGen_well_def (k := k) _ _ this F (monoEquivOfFin _ sorry)]
-        rw [← hg, toList_simplexSort]
+        rw [← hg]
         exact toListGen_eq_of_epi g (epi_of_epi (σ ⟨b, hb⟩) g) (monoEquivOfFin _ sorry)
-        · exact epi_of_epi (σ ⟨b, hb⟩) g
+
+theorem simplexInsert_δ_2_subsingleton {a : ℕ} {l : List ℕ} :
+    (simplexInsert_δ a l).2 = [] ∨ ∃ b, (simplexInsert_δ a l).2 = [b] := by
+  induction' l with b l hbl generalizing a
+  · simp_all only [simplexInsert_δ, List.cons_ne_self, List.cons.injEq, and_true, exists_eq',
+    or_true]
+  · sorry
 
 theorem toListGen_comp_mono' {m n k : SimplexCategory} (f : m ⟶ n) (g : n ⟶ k) (hg : Mono g)
     {j : ℕ} (F : Fin j ≃o Im f) (G : Fin j ≃o Im (f ≫ g)) :
@@ -2451,9 +2480,10 @@ theorem toListGen_comp_mono' {m n k : SimplexCategory} (f : m ⟶ n) (g : n ⟶ 
   · infer_instance
   · apply mono_comp
 
+
 theorem swap_e {m n k : SimplexCategory} (f : m ⟶ n) (g : n ⟶ k) (hf : Mono f) (hg : Epi g)
     {j : ℕ} (F : Fin j ≃o Im (f ≫ g)) :
-    toListGen _ F = (simplexSwap (monos.order2 f) (toList g)).1.simplexSort := by
+    toListGen _ F = (simplexSwap (monos.order2 f) (toList g)).1 := by
   induction' x : (monos.order2 f).reverse with b l hbl generalizing n f k
   · have : m = n := sorry
     cases this
@@ -2489,7 +2519,7 @@ theorem swap_e {m n k : SimplexCategory} (f : m ⟶ n) (g : n ⟶ k) (hf : Mono 
       cases' k with k
       · simp_all only [List.reverse_append, List.reverse_cons, List.reverse_nil, List.nil_append,
         List.reverse_reverse, List.singleton_append]
-
+        sorry -- come back to
       rcases mono_really f this hf with ⟨α, hb, hαb, hl⟩
       have hmm := toListGen_δ_comp_epi (k := n) (a := ⟨b, hb⟩) g (monoEquivOfFin _ sorry) hg
 
