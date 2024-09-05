@@ -3,55 +3,100 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Lean.Elab.Command
 import Lean.Linter.Util
+import Mathlib.Util.AssertExists
 
 /-!
-The "DocModule" style linter checks that a file starts with
+#  The "header" linter
+
+The "header" style linter checks that a file starts with
 ```
-import*
-/-! Module docstring -/
-```
-It emits a warning if a file does not have a module doc-string right after its `import` statements.
+/-
+Copyright ...
+Apache ...
+Authors ...
 -/
 
-open Lean Elab
+import*
+module doc-string*
+rest
+```
+It emits a warning if the first non-`import` command is not a module doc-string.
+-/
+
+open Lean Elab Command
 
 namespace Mathlib.Linter
 
+/-- `onlyImportsModDocsAsserts stx` checks whether `stx` is the syntax for a module that
+only consists of
+* any number of `import` statements (possibly none) followed by
+* any number of doc-module strings (possibly none) followed by
+* any number of `assert_not_exists` commands (possibly none),
+
+and nothing else.
+-/
+def onlyImportsModDocsAsserts : Syntax → Bool
+  | .node _ ``Lean.Parser.Module.module #[_header, .node _ `null args] =>
+    let dropDocs := args.toList.dropWhile (·.isOfKind ``Lean.Parser.Command.moduleDoc)
+    let dropAssertNotExists := dropDocs.dropWhile (·.isOfKind ``commandAssert_not_exists_)
+    dropAssertNotExists.isEmpty
+  | _=> false
+
+/-- `parseUpToHere stx post` takes as input a `Syntax` `stx` and a `String` `post`.
+It parses the file containing `stx` up to and excluding `stx`, appending `post` at the end.
+
+The option of appending a final string to the text gives more control to avoid syntax errors,
+for instance in the presence of `#guard_msgs in` or `set_option ... in`.
+-/
+def parseUpToHere (stx : Syntax) (post : String := "") : CommandElabM Syntax := do
+  let fm ← getFileMap
+  let startPos := stx.getPos?.getD default
+  let upToHere : Substring:= { str := fm.source, startPos := ⟨0⟩, stopPos := startPos}
+  -- append a further string after the `upToHere` content
+  Parser.testParseModule (← getEnv) "linter.header" (upToHere.toString ++ post)
+
 /--
-The "DocModule" linter checks that a file starts with
+The "header" style linter checks that a file starts with
 ```
 import*
-/-! Module docstring -/
+/-! doc-module -/*
+assert_not_exists*
+[no more `assert_not_exists`]
 ```
-It emits a warning if a file does not have a module docstring string right after the `import`s.
+It emits a warning on each `assert_not_exists` that is not preceded by
+* possibly some `import` statements,
+* possibly some doc-module strings, and
+* possibly some `assert_not_exists` commands
+
+in this order.
 -/
-register_option linter.docModule : Bool := {
+register_option linter.style.header : Bool := {
   defValue := true
-  descr := "enable the docModule linter"
+  descr := "enable the header linter"
 }
 
-namespace Style.DocModule
+namespace Style.AssertNotExists
 
-@[inherit_doc Mathlib.Linter.linter.docModule]
-def docModuleLinter : Linter where run := withSetOptionIn fun stx ↦ do
-  unless Linter.getLinterValue linter.docModule (← getOptions) do
+/-- Gets the value of the `linter.header` option. -/
+def getLinterAssertNotExists (o : Options) : Bool :=
+  Linter.getLinterValue linter.style.header o
+
+@[inherit_doc Mathlib.Linter.linter.style.header]
+def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
+  unless getLinterAssertNotExists (← getOptions) do
     return
-  if (← get).messages.hasErrors then
+  if (← MonadState.get).messages.hasErrors then
     return
-  -- `test` files are not required to have a module doc-string.
-  if (← getMainModule).getRoot == `test then return
-  -- if we reached the end of the file, we reset to false the `undocumented` counter and
-  -- report nothing: thus, `import`-only files do not get flagged by the linter
-  if Parser.isTerminalCommand stx then
-    if !stx.isOfKind ``Lean.Parser.Command.moduleDoc then
-      Linter.logLint linter.docModule stx
-        m!"`Mathlib` files must contain a module doc-string before their first non-`import` \
-          command.\nPlease add the module doc-string before this command."
+  unless stx.isOfKind ``commandAssert_not_exists_ do return
+  let upToStx ← parseUpToHere stx "\nassert_not_exists XXX" <|> return Syntax.missing
+  if ! onlyImportsModDocsAsserts upToStx then
+    Linter.logLint linter.style.header stx
+      m!"`{stx}` appears too late: it can only be preceded by `import` statements \
+      doc-module strings and other `assert_not_exists` statements."
 
-initialize addLinter docModuleLinter
+initialize addLinter headerLinter
 
-end Style.DocModule
+end Style.AssertNotExists
 
 end Mathlib.Linter
