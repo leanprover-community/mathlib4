@@ -930,7 +930,6 @@ instance succAddOrder : SuccAddOrder Ordinal := ⟨fun _ => rfl⟩
 theorem add_one_eq_succ (o : Ordinal) : o + 1 = succ o :=
   rfl
 
-@[simp]
 theorem succ_zero : succ (0 : Ordinal) = 1 :=
   zero_add 1
 
