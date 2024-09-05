@@ -139,9 +139,28 @@ def benchOutput (jsonInput : String) : IO String := do
   return "\n".intercalate tot
 
 open Lean Elab Command in
-def addBenchSummaryComment (PR : Nat) (repo : String) (jsonFile : String := "benchOutput.json") :
+/-- `addBenchSummaryComment PR repo tempFile` adds a summary of bench results as a comment to a
+pull-request.  It takes as input
+* the number `PR` and the name `repo` as a `String` containing the relevant pull-request
+  (it reads and posts comments there)
+* the `String` `tempFile` of a temporary file where the command stores transient information.
+
+The code itself interfaces with the shell to retrieve and process json-data and eventually
+uses `benchOutput`.
+Here is a summary of the steps:
+* retrieve the last comment to the PR (using `gh pr view ...`),
+* check if it was posted by `leanprover-bot`,
+* try to retrieve the source and target commits from the url that the bot posts
+  and store them in `src` and `tgt`,
+* query the speed-center for the benchmarking data (using `curl url`),
+* format and filter various times the returned json-data,
+  saving intermediate steps into `tempFile` (using `jq` multiple times),
+* process the final string to produce a summary (using `benchOutput`),
+* finally post the resulting output (using `gh pr comment ...`).
+-/
+def addBenchSummaryComment (PR : Nat) (repo : String) (tempFile : String := "benchOutput.json") :
     CommandElabM Unit := do
-  let PR := s!"{PR}" --"12"
+  let PR := s!"{PR}"
   let jq := ".comments | last | select(.author.login==\"leanprover-bot\") | .body"
   let gh_pr_comments : IO.Process.SpawnArgs :=
     { cmd := "gh", args := #["pr", "view", PR, "--repo", repo, "--json", "comments", "--jq", jq] }
@@ -160,23 +179,23 @@ def addBenchSummaryComment (PR : Nat) (repo : String) (jsonFile : String := "ben
     { cmd := "curl"
       args := #[s!"http://speed.lean-fro.org/mathlib4/api/compare/{src}/to/{tgt}?all_values=true"] }
   let bench ← IO.Process.run curlSpeedCenter
-  IO.FS.writeFile jsonFile bench
+  IO.FS.writeFile tempFile bench
   let threshold := s!"{10 ^ 9}"
   let jq1 : IO.Process.SpawnArgs :=
     { cmd := "jq"
       args := #["-r", "--arg", "thr", threshold,
         ".differences | .[] | ($thr|tonumber) as $th |
         select(.dimension.metric == \"instructions\" and ((.diff >= $th) or (.diff <= -$th)))",
-        jsonFile] }
+        tempFile] }
   let firstFilter ← IO.Process.run jq1
-  IO.FS.writeFile jsonFile firstFilter
+  IO.FS.writeFile tempFile firstFilter
   let jq2 : IO.Process.SpawnArgs :=
     { cmd := "jq"
-      args := #["-c", "[{file: .dimension.benchmark, diff: .diff, reldiff: .reldiff}]", jsonFile] }
+      args := #["-c", "[{file: .dimension.benchmark, diff: .diff, reldiff: .reldiff}]", tempFile] }
   let secondFilter ← IO.Process.run jq2
-  IO.FS.writeFile jsonFile secondFilter
+  IO.FS.writeFile tempFile secondFilter
   let jq3 : IO.Process.SpawnArgs :=
-    { cmd := "jq", args := #["-n", "reduce inputs as $in (null; . + $in)", jsonFile] }
+    { cmd := "jq", args := #["-n", "reduce inputs as $in (null; . + $in)", tempFile] }
   let thirdFilter ← IO.Process.run jq3
   let report ← benchOutput thirdFilter
   IO.println report
