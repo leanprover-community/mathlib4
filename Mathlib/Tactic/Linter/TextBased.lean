@@ -328,20 +328,10 @@ def allLinters : Array TextbasedLinter := #[
     copyrightHeaderLinter, adaptationNoteLinter, broadImportsLinter
   ]
 
-/-- Controls what kind of output this programme produces. -/
-inductive OutputSetting : Type
-  /-- Print any style error to standard output (the default) -/
-  | print (style : ErrorFormat)
-  /-- Update the style exceptions file (and still print style errors to standard output).
-  This adds entries for any new exceptions, removes any entries which are no longer necessary,
-  and tries to not modify exception entries unless necessary.
-  To fully regenerate the exceptions file, delete `style-exceptions.txt` and run again in this mode.
-  -/
-  | update
-  deriving BEq
 
 /-- Read a file and apply all text-based linters.
-Return a list of all unexpected errors, and optionally automatically fixed lines.
+Return a list of all unexpected errors, and, if some errors could be fixed automatically,
+the collection of lines with all automatic fixes applied.
 `exceptions` are any pre-existing style exceptions for this file. -/
 def lintFile (path : FilePath) (exceptions : Array ErrorContext) :
     IO (Array ErrorContext × Option (Array String)) := do
@@ -380,68 +370,41 @@ def lintFile (path : FilePath) (exceptions : Array ErrorContext) :
 
 /-- Lint a collection of modules for style violations.
 Print formatted errors for all unexpected style violations to standard output;
-update the list of style exceptions if configured so.
+correct automatically fixable style errors if configured so.
 Return the number of files which had new style errors.
 `moduleNames` are all the modules to lint,
 `mode` specifies what kind of output this script should produce,
 `fix` configures whether fixable errors should be corrected in-place. -/
-def lintModules (moduleNames : Array String) (mode : OutputSetting) (fix : Bool) : IO UInt32 := do
-  -- Read the style exceptions file.
-  -- We also have a `nolints` file with manual exceptions for the linter.
-  let exceptionsFilePath : FilePath := "scripts" / "style-exceptions.txt"
-  let exceptions ← IO.FS.lines exceptionsFilePath
-  let mut styleExceptions := parseStyleExceptions exceptions
+def lintModules (moduleNames : Array String) (style : ErrorFormat) (fix : Bool) : IO UInt32 := do
+  -- Read the `nolints` file, with manual exceptions for the linter.
   let nolints ← IO.FS.lines ("scripts" / "nolints-style.txt")
-  styleExceptions := styleExceptions.append (parseStyleExceptions nolints)
+  let styleExceptions := parseStyleExceptions nolints
 
   let mut numberErrorFiles : UInt32 := 0
   let mut allUnexpectedErrors := #[]
   for module in moduleNames do
     -- Convert the module name to a file name, then lint that file.
     let path := (mkFilePath (module.split (· == '.'))).addExtension "lean"
-    let mut errors := #[]
-    if let OutputSetting.print _ := mode then
-      let (errors', changed) := ← lintFile path styleExceptions
-      if let some c := changed then
-        if fix then
-          let _ := ← IO.FS.writeFile path ("\n".intercalate c.toList)
-      errors := errors'
-    else
-      -- In "update" mode, we ignore the exceptions file (and only take `nolints` into account).
-      let (errors', _) := ← lintFile path (parseStyleExceptions nolints)
-      errors := errors'
+
+    let (errors, changed) := ← lintFile path styleExceptions
+    if let some c := changed then
+      if fix then
+        let _ := ← IO.FS.writeFile path ("\n".intercalate c.toList)
     if errors.size > 0 then
       allUnexpectedErrors := allUnexpectedErrors.append errors
       numberErrorFiles := numberErrorFiles + 1
-  match mode with
-  | OutputSetting.print style =>
-    -- Run the remaining python linters. It is easier to just run on all files.
-    -- If this poses an issue, I can either filter the output
-    -- or wait until lint-style.py is fully rewritten in Lean.
-    let args := if fix then #["--fix"] else #[]
-    let pythonOutput ← IO.Process.run { cmd := "./scripts/print-style-errors.sh", args := args }
-    if pythonOutput != "" then
-      numberErrorFiles := numberErrorFiles + 1
-      IO.print pythonOutput
-    formatErrors allUnexpectedErrors style
-    if allUnexpectedErrors.size > 0 && mode matches OutputSetting.print _ then
-      IO.println s!"error: found {allUnexpectedErrors.size} new style error(s)\n\
-        run `lake exe lint-style --update` to ignore all of them"
-  | OutputSetting.update =>
-    formatErrors allUnexpectedErrors ErrorFormat.humanReadable
-    -- Regenerate the style exceptions file, including the Python output.
-    IO.FS.writeFile exceptionsFilePath ""
-    let pythonOutput ← IO.Process.run { cmd := "./scripts/print-style-errors.sh" }
-    -- Combine style exception entries: for each new error, replace by a corresponding
-    -- previous exception if that is preferred.
-    let mut tweaked := allUnexpectedErrors.map fun err ↦
-      if let some existing := err.find?_comparable styleExceptions then
-        if let ComparisonResult.Comparable (true) := compare err existing then existing
-        else err
-      else err
-    let thisOutput := "\n".intercalate (tweaked.map
-        (fun err ↦ outputMessage err ErrorFormat.exceptionsFile)).toList
-    IO.FS.writeFile exceptionsFilePath s!"{pythonOutput}{thisOutput}\n"
+
+  -- Run the remaining python linters. It is easier to just run on all files.
+  -- If this poses an issue, I can either filter the output
+  -- or wait until lint-style.py is fully rewritten in Lean.
+  let args := if fix then #["--fix"] else #[]
+  let pythonOutput ← IO.Process.run { cmd := "./scripts/print-style-errors.sh", args := args }
+  if pythonOutput != "" then
+    numberErrorFiles := numberErrorFiles + 1
+    IO.print pythonOutput
+  formatErrors allUnexpectedErrors style
+  if allUnexpectedErrors.size > 0 then
+    IO.println s!"error: found {allUnexpectedErrors.size} new style error(s)"
   return numberErrorFiles
 
 end Mathlib.Linter.TextBased
