@@ -337,7 +337,7 @@ instance orderedCancelAddCommMonoid : OrderedCancelAddCommMonoid NatOrdinal :=
 instance addMonoidWithOne : AddMonoidWithOne NatOrdinal :=
   AddMonoidWithOne.unary
 
-@[simp]
+@[deprecated Order.succ_eq_add_one (since := "2024-09-04")]
 theorem add_one_eq_succ (a : NatOrdinal) : a + 1 = succ a :=
   (Order.succ_eq_add_one a).symm
 

@@ -932,19 +932,21 @@ theorem add_one_eq_succ (o : Ordinal) : o + 1 = succ o :=
 
 @[simp]
 theorem succ_zero : succ (0 : Ordinal) = 1 :=
-  Order.succ_zero
+  zero_add 1
 
-theorem succ_one : succ (1 : Ordinal) = 2 :=
-  Order.succ_one
+-- Porting note: Proof used to be rfl
+@[simp]
+theorem succ_one : succ (1 : Ordinal) = 2 := by congr; simp only [Nat.unaryCast, zero_add]
 
-protected theorem add_succ (o₁ o₂ : Ordinal) : o₁ + succ o₂ = succ (o₁ + o₂) :=
-  Order.add_succ o₁ o₂
+theorem add_succ (o₁ o₂ : Ordinal) : o₁ + succ o₂ = succ (o₁ + o₂) :=
+  (add_assoc _ _ _).symm
 
+@[deprecated Order.one_le_iff_pos (since := "2024-09-04")]
 protected theorem one_le_iff_pos {o : Ordinal} : 1 ≤ o ↔ 0 < o :=
   Order.one_le_iff_pos
 
 theorem one_le_iff_ne_zero {o : Ordinal} : 1 ≤ o ↔ o ≠ 0 := by
-  rw [Order.one_le_iff_pos, Ordinal.pos_iff_ne_zero]
+  rw [one_le_iff_pos, Ordinal.pos_iff_ne_zero]
 
 theorem succ_pos (o : Ordinal) : 0 < succ o :=
   bot_lt_succ o
@@ -963,9 +965,11 @@ theorem le_one_iff {a : Ordinal} : a ≤ 1 ↔ a = 0 ∨ a = 1 := by
 theorem card_succ (o : Ordinal) : card (succ o) = card o + 1 := by
   simp only [← add_one_eq_succ, card_add, card_one]
 
-@[deprecated Order.natCast_succ (since := "2024-04-17")]
 protected theorem natCast_succ (n : ℕ) : ↑n.succ = succ (n : Ordinal) :=
   rfl
+
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_succ := natCast_succ
 
 instance uniqueIioOne : Unique (Iio (1 : Ordinal)) where
   default := ⟨0, by simp⟩

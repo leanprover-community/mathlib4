@@ -71,7 +71,7 @@ instance uniquePowHalfSuccRightMoves (n) : Unique (powHalf (n + 1)).RightMoves :
 
 @[simp]
 theorem birthday_half : birthday (powHalf 1) = 2 := by
-  rw [birthday_def]; simp [Order.succ_one]
+  rw [birthday_def]; simp
 
 /-- For all natural numbers `n`, the pre-games `powHalf n` are numeric. -/
 theorem numeric_powHalf (n) : (powHalf n).Numeric := by
