@@ -56,11 +56,10 @@ jobs:
           run: |
             bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
 
-      - name: update nolints.json and style-exceptions.txt
+      - name: update nolints.json
         shell: bash
         run: |
           env LEAN_ABORT_ON_PANIC=1 lake exe runLinter --update Mathlib
-          lake exe lint-style --update
 
       - name: configure git setup
         run: |
@@ -73,7 +72,7 @@ jobs:
           # github using a different username.
           git config --unset http.https://github.com/.extraheader
 
-      - name: file a new PR to update nolints.json and style-exceptions.txt
+      - name: file a new PR to update nolints.json
         run: ./scripts/update_nolints_CI.sh
         env:
           DEPLOY_GITHUB_TOKEN: ${{ secrets.UPDATE_NOLINTS_TOKEN }}
