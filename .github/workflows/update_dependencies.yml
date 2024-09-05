@@ -23,10 +23,12 @@ jobs:
 
       - name: Get sha of branch
         id: sha
+        # the branch is protected so it should always exist, but we || exit 0 just in case it's missing
         run: |
-          echo "sha=$(git rev-parse update-dependencies-bot-use-only)" >> "$GITHUB_ENV"
+          echo "sha=$(git rev-parse update-dependencies-bot-use-only || exit 0)" >> "$GITHUB_ENV"
 
       - name: Get PR and labels
+        if: ${{ steps.sha.outputs.sha }}
         id: PR # all the steps below are skipped if 'ready-to-merge' is in the list of labels found here
         uses: 8BitJonny/gh-get-current-pr@3.0.0
         # TODO: this may not work properly if the same commit is pushed to multiple branches:
