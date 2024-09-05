@@ -85,16 +85,15 @@ noncomputable def coheight {α : Type*} [Preorder α] (a : α) : ℕ∞ := heigh
 
 end definitions
 
+/-!
+## Height
+-/
+
 section height
 
 variable {α β : Type*}
 
 variable [Preorder α] [Preorder β]
-
-
-/-!
-## Height
--/
 
 lemma height_orderDual (x : αᵒᵈ) : height x = coheight (α := α) x := rfl
 
@@ -458,11 +457,11 @@ lemma coheight_eq_coe_iff_maximal_le_coheight (a : α) (n : ℕ) :
 
 end height
 
-section krullDim
-
 /-!
 ## Krull dimension
 -/
+
+section krullDim
 
 variable {α β : Type*}
 
@@ -632,13 +631,13 @@ lemma coheight_bot_eq_krullDim [OrderBot α] : coheight (⊥ : α) = krullDim α
 
 end krullDim
 
-section calculations
-
-variable {α : Type*} [Preorder α]
-
 /-!
 ## Concrete calculations
 -/
+
+section calculations
+
+variable {α : Type*} [Preorder α]
 
 @[simp] lemma height_nat (n : ℕ) : height n = n := by
   induction n using Nat.strongRecOn with | ind n ih =>
