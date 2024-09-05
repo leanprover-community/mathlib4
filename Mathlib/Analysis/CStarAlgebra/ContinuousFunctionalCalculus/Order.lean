@@ -288,10 +288,11 @@ lemma CStarRing.inv_le_one_iff_one_le {a : Aˣ} (ha : 0 ≤ (a : A)) :
   simpa using CStarRing.inv_le_iff ha (b := 1) (by simp)
 
 lemma CStarRing.inv_le_one {a : Aˣ} (ha : 1 ≤ a) : (↑a⁻¹ : A) ≤ 1 :=
-  CStarRing.inv_le_one_iff_one_le_inv (zero_le_one.trans ha) |>.mpr ha
+  CStarRing.inv_le_one_iff_one_le (zero_le_one.trans ha) |>.mpr ha
 
 lemma CStarRing.le_one_of_one_le_inv {a : Aˣ} (ha : 1 ≤ (↑a⁻¹ : A)) : (a : A) ≤ 1 := by
   simpa using CStarRing.inv_le_one ha
+
 lemma CStarRing.rpow_neg_one_le_rpow_neg_one {a b : A} (ha : 0 ≤ a) (hab : a ≤ b) (hau : IsUnit a) :
     b ^ (-1 : ℝ) ≤ a ^ (-1 : ℝ) := by
   lift b to Aˣ using isUnit_of_le hau ha hab
