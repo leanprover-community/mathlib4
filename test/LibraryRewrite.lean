@@ -90,6 +90,8 @@ Pattern a = b
   Nat.succ_inj
 · ↑5 = ↑2
   Int.ofNat_inj
+· List.iota 5 = List.iota 2
+  List.iota_inj
 · ↑5 = ↑2
   Num.of_nat_inj
 · Int.negSucc 5 = Int.negSucc 2
