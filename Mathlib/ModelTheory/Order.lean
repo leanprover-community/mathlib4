@@ -242,8 +242,8 @@ section Preorder
 
 variable [Preorder M] [L.OrderedStructure M]
 
-instance model_preorder : M ⊨ L.preorderTheory := by
-  simp only [preorderTheory, Theory.model_insert_iff, Relations.realize_reflexive, relMap_leSymb,
+instance model_preorder : M ⊨ Language.order.preorderTheory := by
+  simp only [preorderTheory, Theory.model_insert_iff, Relations.realize_reflexive, relMap_apply₂,
     Theory.model_singleton_iff, Relations.realize_transitive]
   exact ⟨le_refl, fun _ _ _ => le_trans⟩
 
@@ -269,8 +269,7 @@ theorem realize_denselyOrdered [h : DenselyOrdered M] :
 
 end Preorder
 
-instance model_partialOrder [PartialOrder M] [L.OrderedStructure M] :
-    M ⊨ L.partialOrderTheory := by
+instance model_partialOrder [PartialOrder M] : M ⊨ Language.order.partialOrderTheory := by
   simp only [partialOrderTheory, Theory.model_insert_iff, Relations.realize_antisymmetric,
     relMap_leSymb, model_preorder, and_true]
   exact fun _ _ => le_antisymm
@@ -279,7 +278,7 @@ section LinearOrder
 
 variable [LinearOrder M] [L.OrderedStructure M]
 
-instance model_linearOrder : M ⊨ L.linearOrderTheory := by
+instance model_linearOrder : M ⊨ Language.order.linearOrderTheory := by
   simp only [linearOrderTheory, Theory.model_insert_iff, Relations.realize_total, relMap_leSymb,
     model_partialOrder, and_true]
   exact le_total
