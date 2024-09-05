@@ -129,15 +129,15 @@ lemma sup_dist_lower_bound : 1 ≤ (⨆ x ∈ Set.univ, ⨆ y ∈ Set.univ, d x 
   simp only [Set.mem_univ, ciSup_unique, ge_iff_le]
   have Q₀ : d tr fa ≤ F tr := by
       refine (Real.le_sSup_iff ?h ?h').mpr ?_
-      · exists 1; unfold upperBounds; simp; apply dist_bound
+      · use 1; unfold upperBounds; simp; apply dist_bound
       · exact Set.range_nonempty fun y ↦ d tr y
-      · intros; exists d tr fa; simp;tauto
+      · intros; use d tr fa; simp;tauto
   have Q₁: F tr ≤ sSup (Set.range F) := by
     apply (Real.le_sSup_iff _ _).mpr ?_
-    · exists 1; unfold upperBounds; simp; exact sup_dist_bound
-    · exists 1; exists tr; apply le_antisymm;
+    · use 1; unfold upperBounds; simp; exact sup_dist_bound
+    · use 1; use tr; apply le_antisymm;
       exact sup_dist_bound _; exact le_of_eq_of_le dist_tf Q₀
-    · intros; exists F tr; simp;tauto
+    · intros; use F tr; simp;tauto
   exact Preorder.le_trans _ _ _ Q₀ Q₁
 
 lemma sup_sup_dist_eq : (⨆ x ∈ Set.univ, ⨆ y ∈ Set.univ,
@@ -186,7 +186,6 @@ lemma toReal_sup_sup_eq_sup_toReal_sup' :
 
 lemma diameter_one : Metric.diam (Set.univ : Set (ℕ → Bool)) = 1 := by
     unfold Metric.diam
-    unfold EMetric.diam
     have h₁ : ⨆ x ∈ Set.univ, toReal_sup x
             = ⨆ x ∈ Set.univ, sup_toReal x := biSup_congr fun i _ ↦ toReal_sup_eq_sup_toReal₀ i
 
@@ -245,6 +244,22 @@ def tf := (λ n : ℕ ↦ ite (n=0) true (ite (n=1) false false))
 
 lemma edist_half {b : Bool} :
     ⨆ x ∈ {x : ℕ → Bool | x 0 = b}, ⨆ y ∈ {x | x 0 = b}, edist x y ≤ 1 / 2 := by
+  -- rw [iSup_le_iff]
+  -- intro i
+  -- rw [iSup_le_iff]
+  -- intro hi
+  -- simp only [Set.mem_setOf_eq, one_div, iSup_le_iff]
+  -- intro j hj
+  -- simp at hi
+  -- rw [edist_dist]
+  -- unfold
+  --   dist
+  --   PseudoMetricSpace.toDist
+  --   MetricSpace.toPseudoMetricSpace
+  --   myInstance
+  --   PiNat.metricSpaceOfDiscreteUniformity
+
+
   unfold
     edist
     PseudoEMetricSpace.toEDist
@@ -286,7 +301,7 @@ lemma one_or_other {S T : Set (ℕ → Bool)}
       use fa;tauto
     |inr hr =>
       apply hT;simp;use tr;constructor;
-      tauto
+      exact htr₁
       use fa;tauto
   tauto;tauto
 
@@ -356,15 +371,18 @@ theorem measure_univ_prototype (S T : Set (ℕ → Bool)) (h : Set.univ ⊆ S �
       have hss: S ⊆ {x | x 0 = false} ∨ S ⊆ { x | x 0 = true} := by
         cases h₀ with
         |inl hl =>
-          right;intro a ha;contrapose hS;simp;exists tr;constructor
-          tauto;exists a;aesop
+          right;intro a ha;contrapose hS;simp;use tr;constructor
+          tauto;use a;aesop
         |inr hr =>
           left
           intro a ha
           have : fa ∈ S := by rw [hf];contrapose hT;simp;aesop
-          contrapose hT;simp;exists tr;constructor;tauto
-          contrapose hS;simp;exists a;constructor;tauto;
-          exists fa;constructor;tauto;simp at hT;tauto
+          contrapose hT;simp
+          use tr
+          simp_all
+          contrapose hS
+          simp
+          simp_all;tauto
 
       have H : (S = {x | x 0 = false} ∧ T = {x | x 0 = true}) ∨
                 (T = {x | x 0 = false} ∧ S = {x | x 0 = true}) := by
@@ -375,7 +393,7 @@ theorem measure_univ_prototype (S T : Set (ℕ → Bool)) (h : Set.univ ⊆ S �
           exact four_sets_and_disjointness (by
             rw [Set.union_comm];tauto
           ) hS (by
-            intro t htT
+            intro t _
             contrapose hT
             simp
             use t
@@ -384,53 +402,23 @@ theorem measure_univ_prototype (S T : Set (ℕ → Bool)) (h : Set.univ ⊆ S �
             use fa;
             constructor
             cases h₁ with
-            |inl hl => specialize hr hl; tauto
-            |inr hr => tauto
+            |inl h => specialize hr h; tauto
+            |inr h => exact h
             simp at hT
             tauto
           )
       have Uf := @sup_edist_lower_bound'1
-        1 {x | x 0 = false} ft ff (Bool.true_eq_false_eq_False) (by
-          constructor;simp;rfl;simp;rfl
-        )
+        1 {x | x 0 = false} ft ff (Bool.true_eq_false_eq_False) (Set.mem_setOf_eq ▸ ⟨rfl,rfl⟩)
       have Ut := @sup_edist_lower_bound'1
-        1 {x | x 0 = true} tt tf (Ne.symm (Bool.ne_of_lt rfl)) (by
-          constructor;simp;rfl;simp;rfl
-        )
+        1 {x | x 0 = true} tt tf (Ne.symm (Bool.ne_of_lt rfl)) (Set.mem_setOf_eq ▸ ⟨rfl,rfl⟩)
+      have hf := (le_antisymm edist_half <| (pow_one ((1:ENNReal)/2)) ▸ Uf)
+      have ht := (le_antisymm edist_half <| (pow_one ((1:ENNReal)/2)) ▸ Ut)
       have hS₀ : EMetric.diam S = 1/2 := by
         cases H with
-        |inl hl =>
-          rw [hl.1]
-          unfold EMetric.diam
-          apply le_antisymm
-          · exact edist_half
-          · simp at Uf
-            simp
-            tauto
-        |inr hr =>
-          rw [hr.2]
-          unfold EMetric.diam
-          apply le_antisymm
-          · exact @edist_half true
-          · simp at Ut
-            simp
-            tauto
+        |inl hl => exact hl.1 ▸ hf
+        |inr hr => exact hr.2 ▸ ht
       have hT₀ : EMetric.diam T = 1/2 := by
         cases H with
-        |inl hl =>
-          rw [hl.2]
-          unfold EMetric.diam
-          apply le_antisymm
-          · apply edist_half
-          · simp at Ut
-            simp
-            tauto
-        |inr hr =>
-          rw [hr.1]
-          unfold EMetric.diam
-          apply le_antisymm
-          · exact @edist_half false
-          · simp at Uf
-            simp
-            tauto
+        |inl hl => exact hl.2 ▸ ht
+        |inr hr => exact hr.1 ▸ hf
       rw [hS₀, hT₀, ENNReal.add_halves]
