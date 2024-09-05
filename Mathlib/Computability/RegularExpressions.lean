@@ -215,8 +215,8 @@ theorem char_rmatch_iff (a : α) (x : List α) : rmatch (char a) x ↔ x = [a] :
     · simp [List.singleton_inj]; tauto
   · rw [rmatch, rmatch, deriv]
     split_ifs with h
-    · simp only [deriv_one, zero_rmatch, cons.injEq, and_false]
-    · simp only [deriv_zero, zero_rmatch, cons.injEq, and_false]
+    · simp only [deriv_one, zero_rmatch, cons.injEq, and_false, reduceCtorEq]
+    · simp only [deriv_zero, zero_rmatch, cons.injEq, and_false, reduceCtorEq]
 
 theorem add_rmatch_iff (P Q : RegularExpression α) (x : List α) :
     (P + Q).rmatch x ↔ P.rmatch x ∨ Q.rmatch x := by
@@ -294,7 +294,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
         · intro t' ht'
           cases ht' with
           | head ht' =>
-            simp only [ne_eq, not_false_iff, true_and, rmatch]
+            simp only [ne_eq, not_false_iff, true_and, rmatch, reduceCtorEq]
             exact ht
           | tail _ ht' => exact helem t' ht'
     · rintro ⟨S, hsum, helem⟩
