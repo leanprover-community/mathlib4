@@ -115,13 +115,13 @@ section Tuple
 
 universe u
 
-variable {n m : Type u} [Fintype m] --(T : n → (E →ₗ[𝕜] E))
-   -- (hT :(∀ (i : n), ((T i).IsSymmetric)))
-   -- (hC : (∀ (i j : n), (T i) ∘ₗ (T j) = (T j) ∘ₗ (T i)))
+variable {n m : Type u}
 
-open Classical
+--need docstrings and better theorem names
 
-theorem invariance_iInf [Fintype n] [Nonempty n] (T : n → (E →ₗ[𝕜] E))
+/--The indexed infimum of eigenspaces of a commuting family of linear operators is
+invariant under each operator-/
+theorem iInf_eigenspace_invariant_of_commute (T : n → (E →ₗ[𝕜] E))
     (hC : (∀ (i j : n), (T i) ∘ₗ (T j) = (T j) ∘ₗ (T i))) (i : n) :
     ∀ γ : {x // x ≠ i} → 𝕜, ∀ v ∈ (⨅ (j : {x // x ≠ i}),
     eigenspace ((Subtype.restrict (fun x ↦ x ≠ i) T) j) (γ j)), (T i) v ∈ (⨅ (j : {x // x ≠ i}),
@@ -173,6 +173,8 @@ theorem invariant_subspace_inf_eigenspace_eq_restrict {F : Submodule 𝕜 E} (S 
       obtain ⟨_, hy⟩ := h
       simp only [← hy.2, Submodule.coeSubtype, SetLike.coe_mem]
 
+open Classical
+
 theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot [Fintype n] [FiniteDimensional 𝕜 E]
     (T : n → (E →ₗ[𝕜] E)) (hT :(∀ (i : n), ((T i).IsSymmetric)))
     (hC : (∀ (i j : n), (T i) ∘ₗ (T j) = (T j) ∘ₗ (T i))) :
@@ -200,9 +202,9 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot [Fintype n] [FiniteDim
     eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j))))) = ⨆ (γ : {x // x ≠ i} → 𝕜),
     (⨅ (j : {x // x ≠ i}), eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j)) := by
       conv => lhs; rhs; ext γ; rhs; ext μ; rw [invariant_subspace_inf_eigenspace_eq_restrict (T i) μ
-        (invariance_iInf T hC i γ)]
+        (iInf_eigenspace_invariant_of_commute T hC i γ)]
       conv => lhs; rhs; ext γ; rw [invariant_subspace_eigenspace_exhaust (T i) (hT i)
-        (invariance_iInf T hC i γ)]
+        (iInf_eigenspace_invariant_of_commute T hC i γ)]
     rw [← E] at D
     rw [iSup_iInf_fun_index_split_single i (fun _ ↦ (fun μ ↦ (eigenspace (T _) μ )))]
     exact D
