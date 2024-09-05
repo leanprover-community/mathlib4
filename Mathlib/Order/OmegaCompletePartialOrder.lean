@@ -10,6 +10,7 @@ import Mathlib.Order.ScottContinuity
 import Mathlib.Order.Hom.Order
 import Mathlib.Order.Iterate
 import Mathlib.Order.Part
+import Mathlib.Order.ScottContinuity
 
 /-!
 # Omega Complete Partial Orders
@@ -78,7 +79,7 @@ instance [Inhabited α] : Inhabited (Chain α) :=
   ⟨⟨default, fun _ _ _ => le_rfl⟩⟩
 
 instance : Membership α (Chain α) :=
-  ⟨fun a (c : ℕ →o α) => ∃ i, a = c i⟩
+  ⟨fun (c : ℕ →o α) a => ∃ i, a = c i⟩
 
 variable (c c' : Chain α)
 variable (f : α →o β)
@@ -267,6 +268,7 @@ lemma ωScottContinuous.id : ωScottContinuous (id : α → α) := ScottContinuo
 lemma ωScottContinuous.map_ωSup (hf : ωScottContinuous f) (c : Chain α) :
     f (ωSup c) = ωSup (c.map ⟨f, hf.monotone⟩) := ωSup_eq_of_isLUB hf.isLUB
 
+/-- `ωScottContinuous f` asserts that `f` is both monotone and distributes over ωSup. -/
 lemma ωScottContinuous_iff_monotone_map_ωSup :
     ωScottContinuous f ↔ ∃ hf : Monotone f, ∀ c : Chain α, f (ωSup c) = ωSup (c.map ⟨f, hf⟩) := by
   refine ⟨fun hf ↦ ⟨hf.monotone, hf.map_ωSup⟩, ?_⟩
@@ -278,6 +280,15 @@ lemma ωScottContinuous_iff_monotone_map_ωSup :
 
 alias ⟨ωScottContinuous.monotone_map_ωSup, ωScottContinuous.of_monotone_map_ωSup⟩ :=
   ωScottContinuous_iff_monotone_map_ωSup
+
+/- A monotone function `f : α →o β` is ωScott continuous if and only if it distributes over ωSup. -/
+lemma ωScottContinuous_iff_map_ωSup_of_orderHom {f : α →o β} :
+    ωScottContinuous f ↔ ∀ c : Chain α, f (ωSup c) = ωSup (c.map f) := by
+  rw [ωScottContinuous_iff_monotone_map_ωSup]
+  exact exists_prop_of_true f.monotone'
+
+alias ⟨ωScottContinuous.map_ωSup_of_orderHom, ωScottContinuous.of_map_ωSup_of_orderHom⟩ :=
+  ωScottContinuous_iff_map_ωSup_of_orderHom
 
 lemma ωScottContinuous.comp (hg : ωScottContinuous g) (hf : ωScottContinuous f) :
     ωScottContinuous (g.comp f) :=
@@ -532,10 +543,12 @@ instance (priority := 100) [CompleteLattice α] : OmegaCompletePartialOrder α w
 
 variable [OmegaCompletePartialOrder α] [CompleteLattice β] {f g : α → β}
 
+-- TODO Prove this result for `ScottContinuousOn` and deduce this as a special case
+-- https://github.com/leanprover-community/mathlib4/pull/15412
 open Chain in
 lemma ωScottContinuous.prodMk (hf : ωScottContinuous f) (hg : ωScottContinuous g) :
     ωScottContinuous fun x => (f x, g x) := ScottContinuousOn.prodMk (fun a b hab => by
-    use pair a b hab; exact range_pair a b hab) hf hg
+  use pair a b hab; exact range_pair a b hab) hf hg
 
 lemma ωScottContinuous.iSup {f : ι → α → β} (hf : ∀ i, ωScottContinuous (f i)) :
     ωScottContinuous (⨆ i, f i) := by
@@ -608,6 +621,12 @@ namespace CompleteLattice
 
 variable [OmegaCompletePartialOrder α] [CompleteLinearOrder β] {f g : α → β}
 
+-- TODO Prove this result for `ScottContinuousOn` and deduce this as a special case
+-- Also consider if it holds in greater generality (e.g. finite sets)
+-- N.B. The Scott Topology coincides with the Upper Topology on a Complete Linear Order
+-- `Topology.IsScott.scott_eq_upper_of_completeLinearOrder`
+-- We have that the product topology coincides with the upper topology
+-- https://github.com/leanprover-community/mathlib4/pull/12133
 lemma ωScottContinuous.inf (hf : ωScottContinuous f) (hg : ωScottContinuous g) :
     ωScottContinuous (f ⊓ g) := by
   refine ωScottContinuous.of_monotone_map_ωSup
@@ -683,12 +702,13 @@ instance : PartialOrder (α →𝒄 β) :=
 namespace ContinuousHom
 
 protected lemma ωScottContinuous (f : α →𝒄 β) : ωScottContinuous f :=
-  ωScottContinuous.of_monotone_map_ωSup ⟨f.monotone, f.map_ωSup'⟩
+  ωScottContinuous.of_map_ωSup_of_orderHom f.map_ωSup'
 
 -- Not a `simp` lemma because in many cases projection is simpler than a generic coercion
 theorem toOrderHom_eq_coe (f : α →𝒄 β) : f.1 = f := rfl
 
 @[simp] theorem coe_mk (f : α →o β) (hf) : ⇑(mk f hf) = f := rfl
+
 @[simp] theorem coe_toOrderHom (f : α →𝒄 β) : ⇑f.1 = f := rfl
 
 /-- See Note [custom simps projection]. We specify this explicitly because we don't have a DFunLike

@@ -49,9 +49,7 @@ theorem IsOpen.inter (s t : Set α) : IsOpen α s → IsOpen α t → IsOpen α 
 theorem isOpen_sUnion (s : Set (Set α)) (hs : ∀ t ∈ s, IsOpen α t) : IsOpen α (⋃₀ s) := by
   simp only [IsOpen] at hs ⊢
   convert CompleteLattice.ωScottContinuous.sSup  hs
-  simp only [sSup_apply, setOf_bijective.surjective.exists, exists_prop, mem_preimage,
-    SetCoe.exists, iSup_Prop_eq, mem_setOf_eq, mem_sUnion]
-  rfl
+  aesop
 
 theorem IsOpen.isUpperSet {s : Set α} (hs : IsOpen α s) : IsUpperSet s := hs.monotone
 
@@ -106,7 +104,7 @@ theorem scottContinuous_of_continuous {α β} [OmegaCompletePartialOrder α]
     simpa only [mem_setOf_eq, le_refl, not_true, imp_false, not_not] using hf h
   refine ⟨h, fun c ↦ eq_of_forall_ge_iff fun z ↦ ?_⟩
   rcases (notBelow_isOpen z).preimage hf with hf''
-  let hf' := (ωScottContinuous_iff_monotone_map_ωSup.mp hf'').2
+  let hf' := hf''.monotone_map_ωSup.2
   specialize hf' c
   simp only [OrderHom.coe_mk, mem_preimage, notBelow, mem_setOf_eq] at hf'
   rw [← not_iff_not]
@@ -116,7 +114,8 @@ theorem scottContinuous_of_continuous {α β} [OmegaCompletePartialOrder α]
 
 theorem continuous_of_scottContinuous {α β} [OmegaCompletePartialOrder α]
     [OmegaCompletePartialOrder β] (f : Scott α → Scott β)
-    (hf : ωScottContinuous f) : _root_.Continuous f := by
+    (hf : ωScottContinuous f) : Continuous f := by
   rw [continuous_def]
   intro s hs
-  exact ωScottContinuous.comp hs hf
+  change ωScottContinuous (s ∘ f)
+  apply ωScottContinuous.comp hs hf
