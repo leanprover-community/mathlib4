@@ -82,7 +82,7 @@ export IsOrdered (leSymb)
 instance : IsOrdered Language.order :=
   ⟨.le⟩
 
-lemma order.relation_eq_leSymb : {R : Language.order.Relations 2} → R = leSymb
+lemma order.relation_eq_leSymb : (R : Language.order.Relations 2) → R = leSymb
   | .le => rfl
 
 section IsOrdered
@@ -197,7 +197,7 @@ variable [LE M]
 
 instance [Language.order.Structure M] [Language.order.OrderedStructure M]
     [(orderLHom L).IsExpansionOn M] : L.OrderedStructure M where
-  relMap_leSymb := fun x => by
+  relMap_leSymb x := by
     rw [← orderLHom_leSymb L, LHom.IsExpansionOn.map_onRelation, relMap_leSymb]
 
 variable [L.OrderedStructure M]
@@ -308,7 +308,7 @@ variable (L) [IsOrdered L] (M) [L.Structure M]
 
 /-- Any structure in an ordered language can be ordered correspondingly. -/
 def leOfStructure : LE M where
-  le := fun a b => Structure.RelMap (leSymb : L.Relations 2) ![a,b]
+  le a b := Structure.RelMap (leSymb : L.Relations 2) ![a,b]
 
 instance : @OrderedStructure L M _ (L.leOfStructure M) _ := by
   letI := L.leOfStructure M

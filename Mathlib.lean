@@ -346,6 +346,7 @@ import Mathlib.Algebra.Homology.DifferentialObject
 import Mathlib.Algebra.Homology.Embedding.Basic
 import Mathlib.Algebra.Homology.Embedding.Boundary
 import Mathlib.Algebra.Homology.Embedding.Extend
+import Mathlib.Algebra.Homology.Embedding.HomEquiv
 import Mathlib.Algebra.Homology.Embedding.IsSupported
 import Mathlib.Algebra.Homology.Embedding.Restriction
 import Mathlib.Algebra.Homology.Embedding.TruncGE
@@ -2738,6 +2739,7 @@ import Mathlib.Geometry.RingedSpace.SheafedSpace
 import Mathlib.Geometry.RingedSpace.Stalks
 import Mathlib.GroupTheory.Abelianization
 import Mathlib.GroupTheory.Archimedean
+import Mathlib.GroupTheory.ArchimedeanDensely
 import Mathlib.GroupTheory.ClassEquation
 import Mathlib.GroupTheory.Commensurable
 import Mathlib.GroupTheory.Commutator.Basic
@@ -4503,6 +4505,7 @@ import Mathlib.Topology.EMetricSpace.Defs
 import Mathlib.Topology.EMetricSpace.Diam
 import Mathlib.Topology.EMetricSpace.Lipschitz
 import Mathlib.Topology.EMetricSpace.Paracompact
+import Mathlib.Topology.EMetricSpace.Pi
 import Mathlib.Topology.ExtendFrom
 import Mathlib.Topology.ExtremallyDisconnected
 import Mathlib.Topology.FiberBundle.Basic
