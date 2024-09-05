@@ -428,6 +428,7 @@ lemma height_eq_zero_iff_isMin (a : α) :
     IsMin a ↔ height a = 0 := by
   simp [isMin_iff_forall_not_lt, height_eq_zero_iff]
 
+/-- The elements of coheight zero are the maximal elements. -/
 lemma coheight_eq_zero_iff_isMax (a : α) :
     IsMax a ↔ coheight a = 0 :=
   height_eq_zero_iff_isMin (α := αᵒᵈ) a
