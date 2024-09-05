@@ -318,7 +318,6 @@ def broadImportsLinter : TextbasedLinter := fun lines ↦ Id.run do
       lineNumber := lineNumber + 1
   return (errors, none)
 
-
 /-- Lint a collection of input strings if one of them contains trailing whitespace. -/
 def trailingWhitespaceLinter : TextbasedLinter := fun lines ↦ Id.run do
   let mut errors := Array.mkEmpty 0
@@ -327,7 +326,7 @@ def trailingWhitespaceLinter : TextbasedLinter := fun lines ↦ Id.run do
     let line := lines[idx]
     if line.back == ' ' then
       errors := errors.push (StyleError.trailingWhitespace, idx + 1)
-      fixedLines := fixedLines.set! idx (line.dropRightWhile (· == ' '))
+      fixedLines := fixedLines.set! idx line.trimRight
   return (errors, if errors.size > 0 then some fixedLines else none)
 
 
@@ -383,7 +382,6 @@ def lintFile (path : FilePath) (exceptions : Array ErrorContext) :
   errors := errors.append
     (allOutput.flatten.filter (fun e ↦ (e.find?_comparable exceptions).isNone))
   return (errors, if changes_made then some changed else none)
-
 
 /-- Lint a collection of modules for style violations.
 Print formatted errors for all unexpected style violations to standard output;
