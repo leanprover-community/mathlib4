@@ -530,20 +530,17 @@ variable [PartialOrder α] [SuccOrder α]
 open Classical in
 /-- A value can be built by building it on minimal elements, successors, and successor limits. -/
 @[elab_as_elim]
-noncomputable def isSuccLimitRecOn (b : α) : C b :=
-  if hb : IsMin b then hm b hb else
-    if hb' : IsSuccLimit b then hl b hb' else
-      have H := Classical.choose_spec <| not_isSuccPrelimit_iff.1 <|
-        (not_isSuccLimit_iff.1 hb').resolve_left hb
-      cast (congr_arg C H.2) (hs _ H.1)
+noncomputable def isSuccLimitRecOn : ∀ b, C b :=
+  isSuccPrelimitRecOn hs fun a ha ↦
+    if h : IsMin a then hm a h else hl a (ha.isSuccLimit_of_not_isMin h)
 
 @[simp]
-theorem isSuccLimitRecOn_isMin (hb : IsMin b) : isSuccLimitRecOn hm hs hl b = hm b hb :=
-  dif_pos hb
+theorem isSuccLimitRecOn_isMin (hb : IsMin b) : isSuccLimitRecOn hm hs hl b = hm b hb := by
+  rw [isSuccLimitRecOn, isSuccPrelimitRecOn_limit _ _ hb.isSuccPrelimit, dif_pos hb]
 
 @[simp]
 theorem isSuccLimitRecOn_limit (hb : IsSuccLimit b) : isSuccLimitRecOn hm hs hl b = hl b hb := by
-  rw [isSuccLimitRecOn, dif_neg hb.not_isMin, dif_pos hb]
+  rw [isSuccLimitRecOn, isSuccPrelimitRecOn_limit _ _ hb.isSuccPrelimit, dif_neg hb.not_isMin]
 
 end PartialOrder
 
@@ -552,23 +549,14 @@ section LinearOrder
 variable [LinearOrder α] [SuccOrder α]
   (hm : ∀ a, IsMin a → C a) (hs : ∀ a, ¬ IsMax a → C (succ a)) (hl : ∀ a, IsSuccLimit a → C a)
 
-theorem isSuccLimitRecOn_succ' [Nontrivial α] (hb : ¬ IsMax b) :
+theorem isSuccLimitRecOn_succ' (hb : ¬ IsMax b) :
     isSuccLimitRecOn hm hs hl (succ b) = hs b hb := by
-  have hbs := not_isMin_succ b
-  have hb' := not_isSuccLimit_succ_of_not_isMax hb
-  have H := Classical.choose_spec <| not_isSuccPrelimit_iff.1 <|
-    (not_isSuccLimit_iff.1 hb').resolve_left hbs
-  rw [isSuccLimitRecOn, dif_neg hbs, dif_neg hb', cast_eq_iff_heq]
-  congr
-  exacts [(succ_eq_succ_iff_of_not_isMax H.1 hb).1 H.2, proof_irrel_heq _ _]
+  rw [isSuccLimitRecOn, isSuccPrelimitRecOn_succ']
 
 @[simp]
 theorem isSuccLimitRecOn_succ [NoMaxOrder α] (b : α) :
-    isSuccLimitRecOn hm hs hl (succ b) = hs b (not_isMax b) := by
-  have : Nontrivial α := by
-    obtain ⟨c, hc⟩ := exists_gt b
-    exact _root_.nontrivial_of_lt b c hc
-  exact isSuccLimitRecOn_succ' hm hs hl _
+    isSuccLimitRecOn hm hs hl (succ b) = hs b (not_isMax b) :=
+  isSuccLimitRecOn_succ' hm hs hl _
 
 end LinearOrder
 
@@ -638,21 +626,17 @@ open Classical in
 /-- Recursion principle on a well-founded partial `SuccOrder`, separating out the case of a
 minimal element. -/
 @[elab_as_elim] noncomputable def limitRecOn : ∀ a, C a :=
-  wellFounded_lt.fix
-    fun b IH ↦ if hb : IsMin b then hm b hb else
-      if hb' : IsSuccLimit b then hl b hb' IH else
-      have H := Classical.choose_spec <| not_isSuccPrelimit_iff.1 <|
-        (not_isSuccLimit_iff.1 hb').resolve_left hb
-      cast (congr_arg C H.2) (hs _ H.1 <| IH _ <| H.2.subst <| lt_succ_of_not_isMax H.1)
+  prelimitRecOn hs fun a ha IH ↦
+    if h : IsMin a then hm a h else hl a (ha.isSuccLimit_of_not_isMin h) IH
 
 @[simp]
 theorem limitRecOn_isMin (hb : IsMin b) : limitRecOn hm hs hl b = hm b hb := by
-  rw [limitRecOn, WellFounded.fix_eq, dif_pos hb]
+  rw [limitRecOn, prelimitRecOn_limit _ _ hb.isSuccPrelimit, dif_pos hb]
 
 @[simp]
 theorem limitRecOn_limit (hb : IsSuccLimit b) :
     limitRecOn hm hs hl b = hl b hb fun x _ ↦ limitRecOn hm hs hl x := by
-  rw [limitRecOn, WellFounded.fix_eq, dif_neg hb.not_isMin, dif_pos hb]
+  rw [limitRecOn, prelimitRecOn_limit _ _ hb.isSuccPrelimit, dif_neg hb.not_isMin]; rfl
 
 end PartialOrder
 
@@ -661,24 +645,14 @@ section LinearOrder
 variable [LinearOrder α] [SuccOrder α] [WellFoundedLT α] (hm : ∀ a, IsMin a → C a)
   (hs : ∀ a, ¬ IsMax a → C a → C (Order.succ a)) (hl : ∀ a, IsSuccLimit a → (∀ b < a, C b) → C a)
 
-theorem limitRecOn_succ' [Nontrivial α] (hb : ¬ IsMax b) :
+theorem limitRecOn_succ' (hb : ¬ IsMax b) :
     limitRecOn hm hs hl (Order.succ b) = hs b hb (limitRecOn hm hs hl b) := by
-  have hbs := not_isMin_succ b
-  have hb' := not_isSuccLimit_succ_of_not_isMax hb
-  have H := Classical.choose_spec <| not_isSuccPrelimit_iff.1 <|
-    (not_isSuccLimit_iff.1 hb').resolve_left hbs
-  rw [limitRecOn, WellFounded.fix_eq, dif_neg hbs, dif_neg hb']
-  have {a c : α} {ha hc} {x : ∀ a, C a} (h : a = c) :
-    cast (congr_arg (C ∘ succ) h) (hs a ha (x a)) = hs c hc (x c) := by subst h; rfl
-  exact this <| (succ_eq_succ_iff_of_not_isMax H.1 hb).1 H.2
+  rw [limitRecOn, prelimitRecOn_succ']; rfl
 
 @[simp]
 theorem limitRecOn_succ [NoMaxOrder α] (b : α) :
-    limitRecOn hm hs hl (Order.succ b) = hs b (not_isMax b) (limitRecOn hm hs hl b) := by
-  have : Nontrivial α := by
-    obtain ⟨c, hc⟩ := exists_gt b
-    exact _root_.nontrivial_of_lt b c hc
-  exact limitRecOn_succ' hm hs hl _
+    limitRecOn hm hs hl (Order.succ b) = hs b (not_isMax b) (limitRecOn hm hs hl b) :=
+  limitRecOn_succ' hm hs hl _
 
 end LinearOrder
 
