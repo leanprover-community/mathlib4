@@ -91,6 +91,7 @@ structure Label where
   *except* for the `Tactic/Linter` modifications that should get the `t-linter` label.
   Most of the times, this field is empty. -/
   exclusions : Array System.FilePath
+  deriving BEq, Hashable
 
 namespace Label
 
@@ -108,11 +109,11 @@ def findLabel? (l : Label) (modifiedFile : String) : Option String :=
   else if (l.dirs.map fun d => d.toString.isPrefixOf modifiedFile).any (·) then
   some l.label else none
 
-/-- `addAllLabels gitDiffs ls` takes as input an array of string `gitDiffs` and an array of
+/-- `addAllLabels gitDiffs ls` takes as input an array of string `gitDiffs` and an `HashSet` of
 `Label`s `ls`.
 It returns the `HashMap` that assigns to each entry of `gitDiffs` the `.label` field from the
 appropriate `Label` in `ls`. -/
-def addAllLabels (gitDiffs : Array String) (ls : Array Label) : HashMap String String :=
+def addAllLabels (gitDiffs : Array String) (ls : Std.HashSet Label) : Std.HashMap String String :=
   Id.run do
   let mut tot := {}
   for l in ls do
@@ -123,12 +124,10 @@ def addAllLabels (gitDiffs : Array String) (ls : Array Label) : HashMap String S
 
 /-- Defines the `labelsExt` extension for adding an `Array` of `Label`s to the environment. -/
 initialize labelsExt :
-    PersistentEnvExtension Label Label (Array Label) ←
-  registerPersistentEnvExtension {
-    mkInitial := pure {}
-    addImportedFn := (pure <| .flatten ·)
-    addEntryFn := .push
-    exportEntriesFn := id
+    SimplePersistentEnvExtension Label (Std.HashSet Label) ←
+  registerSimplePersistentEnvExtension {
+    addImportedFn := (·.foldl Std.HashSet.insertMany {})
+    addEntryFn := .insert
   }
 
 /--
@@ -186,7 +185,7 @@ It displays all the labels that have already been declared.
 -/
 elab "check_labels" st:(ppSpace str)? : command => do
   let str := (st.getD default).getString
-  for l in labelsExt.getState (← getEnv) do
+  for l in (labelsExt.getState (← getEnv)).toArray.qsort (·.label < ·.label) do
     if str.isPrefixOf l.label then
       logInfo m!"label: {l.label}\ndirs: {l.dirs}\nexclusions: {l.exclusions}"
 
@@ -195,13 +194,13 @@ elab "check_labels" st:(ppSpace str)? : command => do
 It assumes that `gitDiffs` is a line-break-separated list of paths to files.
 It returns the pairings `Label.label → Array filenames` as a `HashMap`.
 -/
-def labelsToFiles (env : Environment) (gitDiffs : String) : HashMap String (Array String) :=
+def labelsToFiles (env : Environment) (gitDiffs : String) : Std.HashMap String (Array String) :=
   let labels := labelsExt.getState env
   let gitDiffs := (gitDiffs.splitOn "\n").toArray
   let hash := addAllLabels gitDiffs labels
-  let grouped := gitDiffs.groupByKey (hash.find? · |>.getD "")
+  let grouped := gitDiffs.groupByKey (hash.get? · |>.getD "")
   let matched := grouped.erase ""
-  let unmatched := ((grouped.find? "").getD #[]).filter (!·.isEmpty)
+  let unmatched := ((grouped.get? "").getD #[]).filter (!·.isEmpty)
   if unmatched.isEmpty then
       matched
     else
