@@ -1300,5 +1300,3 @@ theorem smul_def (a : A) (b : B) (m : M) : a ⊗ₜ[R] b • m = a • b • m :
   rfl
 
 end TensorProduct.Algebra
-
-#min_imports
