@@ -391,6 +391,20 @@ lemma strictMono [EmbeddingLike F M N] [PartialOrder M] [L.OrderedStructure M]
 
 end HomClass
 
+/-- This is not an instance because it would form a loop with
+  `FirstOrder.Language.order.instStrongHomClassOfOrderIsoClass`.
+  As both types are `Prop`s, it would only cause a slowdown.  -/
+lemma StrongHomClass.toOrderIsoClass
+    (L : Language) [L.IsOrdered] (M : Type*) [L.Structure M] [LE M] [L.OrderedStructure M]
+    (N : Type*) [L.Structure N] [LE N] [L.OrderedStructure N]
+    (F : Type*) [EquivLike F M N] [L.StrongHomClass F M N] :
+    OrderIsoClass F M N where
+  map_le_map_iff f a b := by
+    have h := StrongHomClass.map_rel f leSymb ![a,b]
+    simp only [relMap_leSymb, Fin.isValue, Function.comp_apply, Matrix.cons_val_zero,
+      Matrix.cons_val_one, Matrix.head_cons] at h
+    exact h
+
 end Language
 
 end FirstOrder
