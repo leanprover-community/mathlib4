@@ -121,9 +121,15 @@ lemma length_le_height {x : α} {p : LTSeries α} (hlast : p.last ≤ x) :
     simp [p']
   · simp_all
 
+/--
+The height of the last element in a series is larger or equal to the length of the series.
+-/
 lemma length_le_height_last {p : LTSeries α} : p.length ≤ height p.last :=
   length_le_height le_rfl
 
+/--
+The height of an element in a series is larger or equal to its index in the series.
+-/
 lemma index_le_height (p : LTSeries α) (i : Fin (p.length + 1)) : i ≤ height (p i) :=
   length_le_height_last (p := p.take i)
 
