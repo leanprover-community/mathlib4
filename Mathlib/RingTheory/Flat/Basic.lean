@@ -288,7 +288,7 @@ lemma lTensor_exact [Small.{v} R] [flat : Flat R M] ⦃N N' N'' : Type v⦄
         simpa [ι] using Subtype.val_injective)
       (h0 := map_zero _)
 
-  exact _root_.lTensor_exact _ (fun x => by simp [π]) Quotient.surjective_Quotient_mk''
+  exact _root_.lTensor_exact _ (fun x => by simp [π]) Quotient.surjective_mk
 
 variable (M) in
 lemma rTensor_exact [Small.{v} R] [flat : Flat R M] ⦃N N' N'' : Type v⦄
@@ -308,7 +308,7 @@ lemma rTensor_exact [Small.{v} R] [flat : Flat R M] ⦃N N' N'' : Type v⦄
         simpa [ι] using Subtype.val_injective)
       (h0 := map_zero _)
 
-  exact _root_.rTensor_exact _ (fun x => by simp [π]) Quotient.surjective_Quotient_mk''
+  exact _root_.rTensor_exact _ (fun x => by simp [π]) Quotient.surjective_mk
 
 /--
 M is flat if and only if `M ⊗ -` is a left exact functor.

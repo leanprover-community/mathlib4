@@ -810,16 +810,16 @@ theorem image_preimage_inl_union_image_preimage_inr (s : Set (α ⊕ β)) :
 
 @[simp]
 theorem range_quot_mk (r : α → α → Prop) : range (Quot.mk r) = univ :=
-  (surjective_quot_mk r).range_eq
+  Quot.surjective_mk.range_eq
 
 @[simp]
 theorem range_quot_lift {r : ι → ι → Prop} (hf : ∀ x y, r x y → f x = f y) :
     range (Quot.lift f hf) = range f :=
-  ext fun _ => (surjective_quot_mk _).exists
+  ext fun _ => Quot.surjective_mk.exists
 
 -- Porting note: the `Setoid α` instance is not being filled in
 @[simp]
-theorem range_quotient_mk [sa : Setoid α] : (range (α := Quotient sa) fun x : α => ⟦x⟧) = univ :=
+theorem range_quotient_mk {s : Setoid α} : range (Quotient.mk s) = univ :=
   range_quot_mk _
 
 @[simp]
@@ -831,7 +831,8 @@ theorem range_quotient_lift [s : Setoid ι] (hf) :
 theorem range_quotient_mk' {s : Setoid α} : range (Quotient.mk' : α → Quotient s) = univ :=
   range_quot_mk _
 
-@[simp] lemma Quotient.range_mk'' {sa : Setoid α} : range (Quotient.mk'' (s₁ := sa)) = univ :=
+@[deprecated range_quotient_mk (since := "2024-08-30")]
+lemma Quotient.range_mk'' {sa : Setoid α} : range (Quotient.mk'' (s₁ := sa)) = univ :=
   range_quotient_mk
 
 @[simp]

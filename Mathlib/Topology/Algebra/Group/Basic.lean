@@ -844,11 +844,11 @@ instance topologicalGroup_quotient [N.Normal] : TopologicalGroup (G ⧸ N) where
       apply IsOpenMap.to_quotientMap
       · exact (QuotientGroup.isOpenMap_coe N).prod (QuotientGroup.isOpenMap_coe N)
       · exact continuous_quot_mk.prod_map continuous_quot_mk
-      · exact (surjective_quot_mk _).prodMap (surjective_quot_mk _)
+      · exact Quot.surjective_mk.prodMap Quot.surjective_mk
     exact quot.continuous_iff.2 cont
   continuous_inv := by
     have quot := IsOpenMap.to_quotientMap
-      (QuotientGroup.isOpenMap_coe N) continuous_quot_mk (surjective_quot_mk _)
+      (QuotientGroup.isOpenMap_coe N) continuous_quot_mk Quot.surjective_mk
     rw [quot.continuous_iff]
     exact continuous_quot_mk.comp continuous_inv
 
