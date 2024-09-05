@@ -100,7 +100,7 @@ lemma toList_chain' (x : RelSeries r) : x.toList.Chain' r := by
 lemma toList_ne_nil (x : RelSeries r) : x.toList ≠ [] := fun m =>
   List.eq_nil_iff_forall_not_mem.mp m (x 0) <| (List.mem_ofFn _ _).mpr ⟨_, rfl⟩
 
-/-- Every nonempty list satisfying the chain condition gives a relation series-/
+/-- Every nonempty list satisfying the chain condition gives a relation series -/
 @[simps]
 def fromListChain' (x : List α) (x_ne_nil : x ≠ []) (hx : x.Chain' r) : RelSeries r where
   length := x.length - 1
@@ -169,7 +169,7 @@ lemma nonempty_of_infiniteDimensional [r.InfiniteDimensional] : Nonempty α :=
   ⟨RelSeries.withLength r 0 0⟩
 
 instance membership : Membership α (RelSeries r) :=
-  ⟨(· ∈ Set.range ·)⟩
+  ⟨Function.swap (· ∈ Set.range ·)⟩
 
 theorem mem_def : x ∈ s ↔ x ∈ Set.range s := Iff.rfl
 
@@ -734,6 +734,22 @@ noncomputable def comap (p : LTSeries β) (f : α → β)
   LTSeries α := mk p.length (fun i ↦ (surjective (p i)).choose)
     (fun i j h ↦ comap (by simpa only [(surjective _).choose_spec] using p.strictMono h))
 
+/-- The strict series `0 < … < n` in `ℕ`. -/
+def range (n : ℕ) : LTSeries ℕ where
+  length := n
+  toFun := fun i => i
+  step i := Nat.lt_add_one i
+
+@[simp] lemma length_range (n : ℕ) : (range n).length = n := rfl
+
+@[simp] lemma range_apply (n : ℕ) (i : Fin (n+1)) : (range n) i = i := rfl
+
+@[simp] lemma head_range (n : ℕ) : (range n).head = 0 := rfl
+
+@[simp] lemma last_range (n : ℕ) : (range n).last = n := rfl
+
+section Fintype
+
 variable [Fintype α]
 
 lemma length_lt_card (s : LTSeries α) : s.length < Fintype.card α := by
@@ -750,6 +766,8 @@ instance [DecidableRel ((· < ·) : α → α → Prop)] : Fintype (LTSeries α)
     obtain ⟨l, f, mf⟩ := s
     simp_rw [Finset.mem_map, Finset.mem_univ, true_and, Subtype.exists]
     use ⟨⟨l, bl⟩, f⟩, Fin.strictMono_iff_lt_succ.mpr mf; rfl
+
+end Fintype
 
 end LTSeries
 

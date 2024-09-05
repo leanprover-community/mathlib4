@@ -65,7 +65,7 @@ variable {α : Type u} {β : Type*} [t : TopologicalSpace α] {B : Set (Set α)}
   it suffices to take unions of the basis sets to get a topology (without taking
   finite intersections as well). -/
 structure IsTopologicalBasis (s : Set (Set α)) : Prop where
-  /-- For every point `x`, the set of `t ∈ s` such that `x ∈ t` is directed downwards.  -/
+  /-- For every point `x`, the set of `t ∈ s` such that `x ∈ t` is directed downwards. -/
   exists_subset_inter : ∀ t₁ ∈ s, ∀ t₂ ∈ s, ∀ x ∈ t₁ ∩ t₂, ∃ t₃ ∈ s, x ∈ t₃ ∧ t₃ ⊆ t₁ ∩ t₂
   /-- The sets from `s` cover the whole space. -/
   sUnion_eq : ⋃₀ s = univ
@@ -382,9 +382,9 @@ instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i,
       (htd i).exists_mem_open (huo i i.2).1 ⟨_, (huo i i.2).2⟩
     choose y hyt hyu using this
     lift y to ∀ i : I, t i using hyt
-    refine ⟨f ⟨I, y⟩, huU fun i (hi : i ∈ I) ↦ ?_, mem_range_self _⟩
+    refine ⟨f ⟨I, y⟩, huU fun i (hi : i ∈ I) ↦ ?_, mem_range_self ⟨I, y⟩⟩
     simp only [f, dif_pos hi]
-    exact hyu _
+    exact hyu ⟨i, _⟩
 
 instance [SeparableSpace α] {r : α → α → Prop} : SeparableSpace (Quot r) :=
   quotientMap_quot_mk.separableSpace
@@ -476,7 +476,7 @@ theorem IsSeparable.univ_pi {ι : Type*} [Countable ι] {X : ι → Type*} {s : 
     refine ⟨range g, countable_range g, fun f hf ↦ mem_closure_iff.2 fun o ho hfo ↦ ?_⟩
     rcases isOpen_pi_iff.1 ho f hfo with ⟨I, u, huo, hI⟩
     rsuffices ⟨f, hf⟩ : ∃ f : (i : I) → c i, g ⟨I, f⟩ ∈ Set.pi I u
-    · exact ⟨g ⟨I, f⟩, hI hf, mem_range_self _⟩
+    · exact ⟨g ⟨I, f⟩, hI hf, mem_range_self ⟨I, f⟩⟩
     suffices H : ∀ i ∈ I, (u i ∩ c i).Nonempty by
       choose f hfu hfc using H
       refine ⟨fun i ↦ ⟨f i i.2, hfc i i.2⟩, fun i (hi : i ∈ I) ↦ ?_⟩
@@ -802,9 +802,8 @@ instance {ι : Type*} {π : ι → Type*} [Countable ι] [∀ a, TopologicalSpac
 instance (priority := 100) SecondCountableTopology.to_separableSpace [SecondCountableTopology α] :
     SeparableSpace α := by
   choose p hp using fun s : countableBasis α => nonempty_of_mem_countableBasis s.2
-  exact
-    ⟨⟨range p, countable_range _,
-        (isBasis_countableBasis α).dense_iff.2 fun o ho _ => ⟨p ⟨o, ho⟩, hp _, mem_range_self _⟩⟩⟩
+  exact ⟨⟨range p, countable_range _, (isBasis_countableBasis α).dense_iff.2 fun o ho _ =>
+          ⟨p ⟨o, ho⟩, hp ⟨o, _⟩, mem_range_self _⟩⟩⟩
 
 /-- A countable open cover induces a second-countable topology if all open covers
 are themselves second countable. -/
