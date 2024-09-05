@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Prereqs
 
 /-! # The range of `cfcHom` is `elementalStarAlgebra`
 
@@ -16,22 +17,11 @@ We collect those theorems here also.
 
 + `CFC.induction_on`: Induction principle for terms of the form `cfcHom ha f`.
 
+## TODO
+
++ establish analogues for non-unital algebras
+
 -/
-
-section prereq
-
--- this doesn't work any better ... :-(
-@[elab_as_elim]
-lemma cfc_cases' {R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricSpace R]
-    [TopologicalSemiring R] [ContinuousStar R] [TopologicalSpace A] [Ring A]
-    [StarRing A] [Algebra R A] [ContinuousFunctionalCalculus R p] {P : A → Prop} {a x : A}
-    (hx : x ∈ Set.range (cfc (R := R) · a)) (h₀ : P 0)
-    (haf : (hf : ContinuousOn (Classical.choose hx) (spectrum R a)) → (ha : p a) →
-      P (cfcHom ha ⟨_, hf.restrict⟩)) :
-    P x :=
-  Classical.choose_spec hx ▸ cfc_cases P a _ h₀ haf
-
-end prereq
 
 section RCLike
 
@@ -63,8 +53,8 @@ variable [TopologicalRing A] [ContinuousStar A]
 variable (𝕜) in
 theorem cfcHom_range {a : A} (ha : p a) [CompactSpace (spectrum 𝕜 a)] :
     (cfcHom ha (R := 𝕜)).range = elementalStarAlgebra 𝕜 a := by
-  rw [StarAlgHom.range_eq_map_top, ← polynomialFunctions.starClosure_topologicalClosure, ←
-    StarSubalgebra.topologicalClosure_map _ _ (cfcHom_closedEmbedding ha (R := 𝕜)),
+  rw [StarAlgHom.range_eq_map_top, ← polynomialFunctions.starClosure_topologicalClosure,
+    ← StarSubalgebra.topologicalClosure_map _ _ (cfcHom_closedEmbedding ha (R := 𝕜)),
     polynomialFunctions.starClosure_eq_adjoin_X, StarAlgHom.map_adjoin]
   congr
   rw [Set.image_singleton, Polynomial.toContinuousMapOnAlgHom_apply,
@@ -88,8 +78,8 @@ theorem CFC.induction_on (P : A → Prop) {a : A} (ha : p a)
     simpa only [Set.forall_subset_range_iff, Set.forall_mem_image,
       (cfcHom_closedEmbedding ha).closure_image_eq] using closure
 
-open Topology in
-open UniformOnFun in
+-- Do we actually want this version?
+open Topology UniformOnFun in
 theorem CFC.induction_on' {P : A → Prop} {a x : A}
     [CompactSpace (spectrum 𝕜 a)] (hx : x ∈ Set.range (cfc (R := 𝕜) · a))
     (self : P a) (star_self : P (star a)) (algebraMap : ∀ r : 𝕜, P (algebraMap 𝕜 A r))
@@ -145,31 +135,30 @@ theorem CFC.induction_on' {P : A → Prop} {a x : A}
 
 variable [T2Space A]
 
-theorem commute_cfcHom {a b : A} (ha : p a) [CompactSpace (spectrum 𝕜 a)] (hb₁ : Commute a b)
-    (hb₂ : Commute (star a) b) (f : C(spectrum 𝕜 a, 𝕜)) :
-    Commute (cfcHom ha f) b := by
-  apply CFC.induction_on (P := fun x ↦ Commute x b) ha f hb₁ hb₂
-    (Algebra.commute_algebraMap_left · _) (fun _ _ ↦ ?_) (fun _ _ ↦ ?_) (fun s hs g hg ↦ ?_)
-  · simpa using Commute.add_left
-  · simpa using Commute.mul_left
-  · refine Set.EqOn.closure hs ?_ ?_ hg
-    all_goals fun_prop
-
-protected theorem IsSelfAdjoint.commute_cfcHom {a b : A} (ha : p a) [CompactSpace (spectrum 𝕜 a)]
-    (ha' : IsSelfAdjoint a) (hb : Commute a b) (f : C(spectrum 𝕜 a, 𝕜)) :
-    Commute (cfcHom ha f) b :=
-  commute_cfcHom ha hb (ha'.star_eq.symm ▸ hb) f
-
 theorem commute_cfc {a b : A} [CompactSpace (spectrum 𝕜 a)] (hb₁ : Commute a b)
     (hb₂ : Commute (star a) b) (f : 𝕜 → 𝕜) :
     Commute (cfc f a) b :=
-  cfc_cases (fun x ↦ Commute x b) a f (Commute.zero_left _)
-    fun hf ha ↦ commute_cfcHom ha hb₁ hb₂ ⟨_, hf.restrict⟩
+  cfc_cases (fun x ↦ Commute x b) a f (Commute.zero_left _) fun hf ha ↦ by
+    apply CFC.induction_on (P := fun x ↦ Commute x b) ha ⟨_, hf.restrict⟩ hb₁ hb₂
+      (Algebra.commute_algebraMap_left · _) (fun _ _ ↦ ?_) (fun _ _ ↦ ?_) (fun s hs g hg ↦ ?_)
+    · simpa using Commute.add_left
+    · simpa using Commute.mul_left
+    · refine Set.EqOn.closure hs ?_ ?_ hg
+      all_goals fun_prop
 
 protected theorem IsSelfAdjoint.commute_cfc {a b : A} [CompactSpace (spectrum 𝕜 a)]
-    (ha : IsSelfAdjoint a) (hb₁ : Commute a b) (f : 𝕜 → 𝕜) :
-    Commute (cfc f a) b :=
+    (ha : IsSelfAdjoint a) (hb₁ : Commute a b) (f : 𝕜 → 𝕜) : Commute (cfc f a) b :=
   commute_cfc hb₁ (ha.star_eq.symm ▸ hb₁) f
+
+-- Move this to `Mathlib.Algebra.Star.Basic`, not necessary for this PR
+theorem IsSelfAdjoint.commute_star_right {R : Type*} [Mul R] [StarMul R] {x : R}
+    (hx : IsSelfAdjoint x) (y : R) : Commute x (star y) ↔ Commute x y := by
+  simpa [hx.star_eq] using commute_star_star (x := x) (y := y)
+
+-- Move this to `Mathlib.Algebra.Star.Basic`, not necessary for this PR
+theorem IsSelfAdjoint.commute_star_left {R : Type*} [Mul R] [StarMul R] {x : R}
+    (hx : IsSelfAdjoint x) (y : R) : Commute (star y) x ↔ Commute y x := by
+  simpa [Commute.symm_iff (a := x)] using hx.commute_star_right y
 
 end RCLike
 
@@ -192,16 +181,101 @@ theorem cfcₙ_range {a : A} (ha : p a) :
     rw [cfcₙHom_eq_cfcₙ_extend 0]
     exact ⟨_, rfl⟩
 
---variable [TopologicalRing A] [ContinuousStar A]
+local notation "σₙ" => quasispectrum
 
---variable (𝕜) in
---theorem cfcₙHom_range {a : A} (ha : p a) [CompactSpace (quasispectrum 𝕜 a)] :
-    --NonUnitalStarAlgHom.range (cfcₙHom ha (R := 𝕜)) = elementalStarAlgebra 𝕜 a := by
-  --rw [StarAlgHom.range_eq_map_top, ← polynomialFunctions.starClosure_topologicalClosure, ←
-    --StarSubalgebra.topologicalClosure_map _ _ (cfcHom_closedEmbedding ha (R := 𝕜)),
-    --polynomialFunctions.starClosure_eq_adjoin_X, StarAlgHom.map_adjoin]
-  --congr
-  --rw [Set.image_singleton, Polynomial.toContinuousMapOnAlgHom_apply,
-    --Polynomial.toContinuousMapOn_X_eq_restrict_id, cfcHom_id ha]
+open ContinuousMapZero in
+@[simp]
+lemma cfcₙHom_id' {R A : Type*} {p : A → Prop} [CommSemiring R] [Nontrivial R] [StarRing R]
+    [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R] [NonUnitalRing A] [StarRing A]
+    [TopologicalSpace A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
+    [NonUnitalContinuousFunctionalCalculus R p] {a : A} (ha : p a) :
+    (cfcₙHom ha) (.id rfl : C(σₙ R a, R)₀) = a :=
+  cfcₙHom_id ha
+
+
+open ContinuousMapZero NonUnitalStarSubalgebra in
+theorem CFC.induction_on'' (P : A → Prop) {a : A} (ha : p a)
+    [CompactSpace (σₙ 𝕜 a)] (f : C(σₙ 𝕜 a, 𝕜)₀)
+    (self : P a) (star_self : P (star a))
+    (smul : ∀ r : 𝕜, ∀ g, P (cfcₙHom ha g) → P (cfcₙHom ha (R := 𝕜) (r • g)))
+    (add : ∀ g₁ g₂, P (cfcₙHom ha g₁) → P (cfcₙHom ha g₂) → P (cfcₙHom ha (R := 𝕜) (g₁ + g₂)))
+    (mul : ∀ g₁ g₂, P (cfcₙHom ha g₁) → P (cfcₙHom ha g₂) → P (cfcₙHom ha (R := 𝕜) (g₁ * g₂)))
+    (closure : ∀ s, (∀ g ∈ s, P (cfcₙHom ha g)) → ∀ g' ∈ closure s, P (cfcₙHom ha (R := 𝕜) g')) :
+    P (cfcₙHom ha f) := by
+  refine closure (NonUnitalStarAlgebra.adjoin 𝕜 {(ContinuousMapZero.id rfl : C(σₙ 𝕜 a, 𝕜)₀)})
+    (fun f hf ↦ ?_) f <| by simp [(ContinuousMapZero.adjoin_id_dense (s := σₙ 𝕜 a) rfl).closure_eq]
+  rw [SetLike.mem_coe, ← mem_toNonUnitalSubalgebra,
+    NonUnitalStarAlgebra.adjoin_toNonUnitalSubalgebra] at hf
+  induction hf using NonUnitalAlgebra.adjoin_induction' with
+  | mem g hg =>
+    simp only [Set.star_singleton, Set.union_singleton, Set.mem_insert_iff,
+      Set.mem_singleton_iff] at hg
+    obtain (rfl | rfl) := hg
+    all_goals simpa [map_star]
+  | add g₁ _ g₂ _ hg₁ hg₂ => exact add _ _ hg₁ hg₂
+  | zero => simpa using smul 0 (.id rfl) (by simpa)
+  | mul g₁ _ g₂ _ hg₁ hg₂ => exact mul _ _ hg₁ hg₂
+  | smul r g _ hg => exact smul r g hg
+
+variable [T2Space A] [TopologicalRing A]
+
+theorem commute_cfcₙ {a b : A} [CompactSpace (σₙ 𝕜 a)] (hb₁ : Commute a b)
+    (hb₂ : Commute (star a) b) (f : 𝕜 → 𝕜) :
+    Commute (cfcₙ f a) b :=
+  cfcₙ_cases (fun x ↦ Commute x b) a f (Commute.zero_left _) fun hf hf₀ ha ↦ by
+    apply CFC.induction_on'' (P := fun x ↦ Commute x b) ha ⟨⟨_, hf.restrict⟩, hf₀⟩ hb₁ hb₂
+      (fun _ _ ↦ ?_) (fun _ _ ↦ ?_) (fun _ _ ↦ ?_) (fun s hs g hg ↦ ?_)
+    · simpa using (Commute.smul_left · _)
+    · simpa using Commute.add_left
+    · simpa using Commute.mul_left
+    · refine Set.EqOn.closure hs ?_ ?_ hg
+      all_goals fun_prop
+
+protected theorem IsSelfAdjoint.commute_cfcₙ {a b : A} [CompactSpace (σₙ 𝕜 a)]
+    (ha : IsSelfAdjoint a) (hb₁ : Commute a b) (f : 𝕜 → 𝕜) : Commute (cfcₙ f a) b :=
+  commute_cfcₙ hb₁ (ha.star_eq.symm ▸ hb₁) f
+
+variable [StarModule 𝕜 A] [TopologicalRing A] [ContinuousStar A] [ContinuousConstSMul 𝕜 A]
+
+section foo₁
+
+variable {F R A B : Type*} [CommSemiring R] [StarRing R]
+variable [NonUnitalSemiring A] [StarRing A] [NonUnitalSemiring B] [StarRing B]
+variable [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A]
+variable [Module R B]
+variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [NonUnitalStarAlgHomClass F R A B]
+
+open NonUnitalStarSubalgebra in
+lemma NonUnitalStarAlgHom.range_eq_map_top (φ : F) :
+    NonUnitalStarAlgHom.range φ = map φ (⊤ : NonUnitalStarSubalgebra R A) :=
+  NonUnitalStarSubalgebra.ext fun x =>
+    ⟨by rintro ⟨a, ha⟩; exact ⟨a, by simp, ha⟩, by rintro ⟨a, -, ha⟩; exact ⟨a, ha⟩⟩
+
+end foo₁
+
+section foo₂
+
+theorem ContinuousMapZero.topologicalClosure_adjoin_id {𝕜 : Type*} [RCLike 𝕜] {s : Set 𝕜} [Zero s]
+    (h0 : (0 : s) = (0 : 𝕜)) [CompactSpace s] :
+    (NonUnitalStarAlgebra.adjoin 𝕜 {ContinuousMapZero.id h0}).topologicalClosure = ⊤ :=
+  SetLike.ext'_iff.mpr (ContinuousMapZero.adjoin_id_dense h0).closure_eq
+
+end foo₂
+
+
+open NonUnitalStarSubalgebra in
+-- it would be nice if this were about non-unital star subalgebras, but we don't have
+-- the topological closure of those yet.
+variable (𝕜) in
+theorem cfcₙHom_range {a : A} (ha : p a) [CompactSpace (σₙ 𝕜 a)] :
+    NonUnitalStarAlgHom.range (cfcₙHom ha (R := 𝕜)) =
+      (NonUnitalStarAlgebra.adjoin 𝕜 {a}).topologicalClosure := by
+  rw [NonUnitalStarAlgHom.range_eq_map_top, ← ContinuousMapZero.topologicalClosure_adjoin_id rfl,
+    ← topologicalClosure_map _ _ (cfcₙHom_closedEmbedding ha (R := 𝕜)),
+    NonUnitalStarAlgHom.map_adjoin]
+  congr!
+  simp [cfcₙHom_id' ha]
+
+open ContinuousMapZero
 
 end NonUnital
