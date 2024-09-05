@@ -23,9 +23,8 @@ jobs:
 
       - name: Get sha of branch
         id: sha
-        # the branch is protected so it should always exist, but we || exit 0 just in case it's missing
         run: |
-          echo "sha=$(git rev-parse update-dependencies-bot-use-only || exit 0)" >> "$GITHUB_ENV"
+          echo "sha=$(git rev-parse --verify update-dependencies-bot-use-only)" >> "$GITHUB_ENV"
 
       - name: Get PR and labels
         if: ${{ steps.sha.outputs.sha }}
