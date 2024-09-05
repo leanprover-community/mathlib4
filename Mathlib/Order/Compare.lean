@@ -110,14 +110,13 @@ theorem Compares.inj [Preorder α] {o₁} :
 theorem compares_iff_of_compares_impl [LinearOrder α] [Preorder β] {a b : α} {a' b' : β}
     (h : ∀ {o}, Compares o a b → Compares o a' b') (o) : Compares o a b ↔ Compares o a' b' := by
   refine ⟨h, fun ho => ?_⟩
-  cases' lt_trichotomy a b with hab hab
+  rcases lt_trichotomy a b with hab | hab | hab
   · have hab : Compares Ordering.lt a b := hab
     rwa [ho.inj (h hab)]
-  · cases' hab with hab hab
-    · have hab : Compares Ordering.eq a b := hab
-      rwa [ho.inj (h hab)]
-    · have hab : Compares Ordering.gt a b := hab
-      rwa [ho.inj (h hab)]
+  · have hab : Compares Ordering.eq a b := hab
+    rwa [ho.inj (h hab)]
+  · have hab : Compares Ordering.gt a b := hab
+    rwa [ho.inj (h hab)]
 
 theorem swap_orElse (o₁ o₂) : (orElse o₁ o₂).swap = orElse o₁.swap o₂.swap := by
   cases o₁ <;> rfl

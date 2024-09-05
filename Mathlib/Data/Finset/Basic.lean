@@ -105,8 +105,9 @@ In Lean, we use lattice notation to talk about things involving unions and inter
 
 ### Equivalences between finsets
 
-* The `Mathlib/Data/Equiv.lean` files describe a general type of equivalence, so look in there for
-  any lemmas. There is some API for rewriting sums and products from `s` to `t` given that `s ≃ t`.
+* The `Mathlib/Logic/Equiv/Defs.lean` files describe a general type of equivalence, so look in there
+  for any lemmas. There is some API for rewriting sums and products from `s` to `t` given that
+  `s ≃ t`.
   TODO: examples
 
 ## Tags
@@ -163,7 +164,7 @@ instance decidableEq [DecidableEq α] : DecidableEq (Finset α)
 
 
 instance : Membership α (Finset α) :=
-  ⟨fun a s => a ∈ s.1⟩
+  ⟨fun s a => a ∈ s.1⟩
 
 theorem mem_def {a : α} {s : Finset α} : a ∈ s ↔ a ∈ s.1 :=
   Iff.rfl
@@ -1037,7 +1038,7 @@ theorem insert_subset_insert (a : α) {s t : Finset α} (h : s ⊆ t) : insert a
   simp_rw [← coe_subset]; simp [-coe_subset, ha]
 
 theorem insert_inj (ha : a ∉ s) : insert a s = insert b s ↔ a = b :=
-  ⟨fun h => eq_of_not_mem_of_mem_insert (h.subst <| mem_insert_self _ _) ha, congr_arg (insert · s)⟩
+  ⟨fun h => eq_of_not_mem_of_mem_insert (h ▸ mem_insert_self _ _) ha, congr_arg (insert · s)⟩
 
 theorem insert_inj_on (s : Finset α) : Set.InjOn (fun a => insert a s) sᶜ := fun _ h _ _ =>
   (insert_inj h).1
@@ -1441,6 +1442,10 @@ theorem singleton_inter_of_not_mem {a : α} {s : Finset α} (H : a ∉ s) : {a} 
   eq_empty_of_forall_not_mem <| by
     simp only [mem_inter, mem_singleton]; rintro x ⟨rfl, h⟩; exact H h
 
+lemma singleton_inter {a : α} {s : Finset α} :
+    {a} ∩ s = if a ∈ s then {a} else ∅ := by
+  split_ifs with h <;> simp [h]
+
 @[simp]
 theorem inter_singleton_of_mem {a : α} {s : Finset α} (h : a ∈ s) : s ∩ {a} = {a} := by
   rw [inter_comm, singleton_inter_of_mem h]
@@ -1448,6 +1453,10 @@ theorem inter_singleton_of_mem {a : α} {s : Finset α} (h : a ∈ s) : s ∩ {a
 @[simp]
 theorem inter_singleton_of_not_mem {a : α} {s : Finset α} (h : a ∉ s) : s ∩ {a} = ∅ := by
   rw [inter_comm, singleton_inter_of_not_mem h]
+
+lemma inter_singleton {a : α} {s : Finset α} :
+    s ∩ {a} = if a ∈ s then {a} else ∅ := by
+  split_ifs with h <;> simp [h]
 
 @[mono, gcongr]
 theorem inter_subset_inter {x y s t : Finset α} (h : x ⊆ y) (h' : s ⊆ t) : x ∩ s ⊆ y ∩ t := by
@@ -2175,7 +2184,7 @@ def knownToBeFinsetNotSet (expectedType? : Option Expr) : TermElabM Bool :=
 `Finset ?α` or the expected type is not `Set ?α` and `s` has expected type `Finset ?α`.
 
 See also
-* `Init.Set` for the `Set` builder notation elaborator that this elaborator partly overrides.
+* `Data.Set.Defs` for the `Set` builder notation elaborator that this elaborator partly overrides.
 * `Data.Fintype.Basic` for the `Finset` builder notation elaborator handling syntax of the form
   `{x | p x}`, `{x : α | p x}`, `{x ∉ s | p x}`, `{x ≠ a | p x}`.
 * `Order.LocallyFinite.Basic` for the `Finset` builder notation elaborator handling syntax of the
@@ -3061,3 +3070,5 @@ def proveFinsetNonempty {u : Level} {α : Q(Type u)} (s : Q(Finset $α)) :
   Lean.getExprMVarAssignment? mvar
 
 end Mathlib.Meta
+
+set_option linter.style.longFile 3100

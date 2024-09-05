@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Finset.Image
 import Mathlib.Data.List.FinRange
-import Mathlib.Init.Data.Nat.Lemmas
 
 /-!
 # Finite types
@@ -162,7 +161,7 @@ open Lean Elab Term Meta Batteries.ExtendedBinder
   `Finset ?α`.
 
 See also
-* `Init.Set` for the `Set` builder notation elaborator that this elaborator partly overrides.
+* `Data.Set.Defs` for the `Set` builder notation elaborator that this elaborator partly overrides.
 * `Data.Finset.Basic` for the `Finset` builder notation elaborator partly overriding this one for
   syntax of the form `{x ∈ s | p x}`.
 * `Data.Fintype.Basic` for the `Finset` builder notation elaborator handling syntax of the form
@@ -569,7 +568,7 @@ def ofEquiv (α : Type*) [Fintype α] (f : α ≃ β) : Fintype β :=
 def ofSubsingleton (a : α) [Subsingleton α] : Fintype α :=
   ⟨{a}, fun _ => Finset.mem_singleton.2 (Subsingleton.elim _ _)⟩
 
--- In principle, this could be a `simp` theorem but it applies to any occurence of `univ` and
+-- In principle, this could be a `simp` theorem but it applies to any occurrence of `univ` and
 -- required unification of the (possibly very complex) `Fintype` instances.
 theorem univ_ofSubsingleton (a : α) [Subsingleton α] : @univ _ (ofSubsingleton a) = {a} :=
   rfl
@@ -593,7 +592,7 @@ namespace Set
 
 variable {s t : Set α}
 
-/-- Construct a finset enumerating a set `s`, given a `Fintype` instance.  -/
+/-- Construct a finset enumerating a set `s`, given a `Fintype` instance. -/
 def toFinset (s : Set α) [Fintype s] : Finset α :=
   (@Finset.univ s _).map <| Function.Embedding.subtype _
 

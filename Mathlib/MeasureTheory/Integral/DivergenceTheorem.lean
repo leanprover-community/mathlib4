@@ -236,7 +236,7 @@ theorem integral_divergence_of_hasFDerivWithinAt_off_countable_aux₂ (I : Box (
       exact max_le hk.le δpos.lt.le
     _ ≤ ε := by
       rw [Box.Icc_def, Real.volume_Icc_pi_toReal ((J k).face i).lower_le_upper,
-        ← le_div_iff (hvol_pos _)]
+        ← le_div_iff₀ (hvol_pos _)]
       gcongr
       exacts [hvol_pos _, fun _ _ ↦ sub_nonneg.2 (Box.lower_le_upper _ _),
         (hJ_sub' _ (J _).upper_mem_Icc).2 _, (hJ_sub' _ (J _).lower_mem_Icc).1 _]
@@ -350,7 +350,7 @@ theorem integral_divergence_of_hasFDerivWithinAt_off_countable_of_equiv {F : Typ
         simpa only [Set.mem_preimage, eL.apply_symm_apply, ← pi_univ_Icc,
           interior_pi_set (@finite_univ (Fin _) _), interior_Icc] using hx.1
       · rw [← he_vol.integrableOn_comp_preimage he_emb, hIcc]
-        simp [← hDF, (· ∘ ·), Hi]
+        simp [← hDF, Function.comp_def, Hi]
 
 end
 

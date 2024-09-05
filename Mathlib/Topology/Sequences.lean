@@ -158,7 +158,7 @@ theorem Inducing.frechetUrysohnSpace [FrechetUrysohnSpace Y] {f : X → Y} (hf :
   rcases hx with ⟨u, hus, hu⟩
   choose v hv hvu using hus
   refine ⟨v, hv, ?_⟩
-  simpa only [hf.tendsto_nhds_iff, (· ∘ ·), hvu]
+  simpa only [hf.tendsto_nhds_iff, Function.comp_def, hvu]
 
 /-- Subtype of a Fréchet-Urysohn space is a Fréchet-Urysohn space. -/
 instance Subtype.instFrechetUrysohnSpace [FrechetUrysohnSpace X] {p : X → Prop} :

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jannis Limperg
 -/
 import Mathlib.Data.List.OfFn
-import Mathlib.Data.List.Range
 import Mathlib.Data.List.Zip
 
 /-!
@@ -161,12 +160,12 @@ theorem mapIdx_append (K L : List α) (f : ℕ → α → β) :
 theorem mapIdx_eq_nil {f : ℕ → α → β} {l : List α} : List.mapIdx f l = [] ↔ l = [] := by
   rw [List.mapIdx_eq_enum_map, List.map_eq_nil, List.enum_eq_nil]
 
-set_option linter.deprecated false in
-@[simp, deprecated (since := "2023-02-11")]
-theorem nthLe_mapIdx (l : List α) (f : ℕ → α → β) (i : ℕ) (h : i < l.length)
+theorem get_mapIdx (l : List α) (f : ℕ → α → β) (i : ℕ) (h : i < l.length)
     (h' : i < (l.mapIdx f).length := h.trans_le (l.length_mapIdx f).ge) :
-    (l.mapIdx f).nthLe i h' = f i (l.nthLe i h) := by
+    (l.mapIdx f).get ⟨i, h'⟩ = f i (l.get ⟨i, h⟩) := by
   simp [mapIdx_eq_enum_map, enum_eq_zip_range]
+
+@[deprecated (since := "2024-08-19")] alias nthLe_mapIdx := get_mapIdx
 
 theorem mapIdx_eq_ofFn (l : List α) (f : ℕ → α → β) :
     l.mapIdx f = ofFn fun i : Fin l.length ↦ f (i : ℕ) (l.get i) := by
@@ -282,73 +281,6 @@ theorem findIdxs_eq_map_indexesValues (p : α → Prop) [DecidablePred p] (as : 
   simp (config := { unfoldPartialApp := true }) only [indexesValues_eq_filter_enum,
     map_filter_eq_foldr, findIdxs, uncurry, foldrIdx_eq_foldr_enum, decide_eq_true_eq, comp_apply,
     Bool.cond_decide]
-
-section FindIdx -- TODO: upstream to Batteries
-
-theorem findIdx_eq_length {p : α → Bool} {xs : List α} :
-    xs.findIdx p = xs.length ↔ ∀ x ∈ xs, ¬p x := by
-  induction xs with
-  | nil => simp_all
-  | cons x xs ih =>
-    rw [findIdx_cons, length_cons]
-    constructor <;> intro h
-    · have : ¬p x := by contrapose h; simp_all
-      simp_all
-    · simp_rw [h x (mem_cons_self x xs), cond_false, Nat.succ.injEq, ih]
-      exact fun y hy ↦ h y <| mem_cons.mpr (Or.inr hy)
-
-theorem findIdx_le_length (p : α → Bool) {xs : List α} : xs.findIdx p ≤ xs.length := by
-  by_cases e : ∃ x ∈ xs, p x
-  · exact (findIdx_lt_length_of_exists e).le
-  · push_neg at e; exact (findIdx_eq_length.mpr e).le
-
-theorem findIdx_lt_length {p : α → Bool} {xs : List α} :
-    xs.findIdx p < xs.length ↔ ∃ x ∈ xs, p x := by
-  rw [← not_iff_not, not_lt]
-  have := @le_antisymm_iff _ _ (xs.findIdx p) xs.length
-  simp only [findIdx_le_length, true_and] at this
-  rw [← this, findIdx_eq_length, not_exists]
-  simp only [Bool.not_eq_true, not_and]
-
-/-- `p` does not hold for elements with indices less than `xs.findIdx p`. -/
-theorem not_of_lt_findIdx {p : α → Bool} {xs : List α} {i : ℕ} (h : i < xs.findIdx p) :
-    ¬p (xs.get ⟨i, h.trans_le (findIdx_le_length p)⟩) := by
-  revert i
-  induction xs with
-  | nil => intro i h; rw [findIdx_nil] at h; omega
-  | cons x xs ih =>
-    intro i h
-    have ho := h
-    rw [findIdx_cons] at h
-    have npx : ¬p x := by by_contra y; rw [y, cond_true] at h; omega
-    simp_rw [npx, cond_false] at h
-    cases' i.eq_zero_or_pos with e e
-    · simpa only [e, Fin.zero_eta, get_cons_zero]
-    · have ipm := Nat.succ_pred_eq_of_pos e
-      have ilt := ho.trans_le (findIdx_le_length p)
-      rw [(Fin.mk_eq_mk (h' := ipm ▸ ilt)).mpr ipm.symm, get_cons_succ]
-      rw [← ipm, Nat.succ_lt_succ_iff] at h
-      exact ih h
-
-theorem le_findIdx_of_not {p : α → Bool} {xs : List α} {i : ℕ} (h : i < xs.length)
-    (h2 : ∀ j (hji : j < i), ¬p (xs.get ⟨j, hji.trans h⟩)) : i ≤ xs.findIdx p := by
-  by_contra! f
-  exact absurd (@findIdx_get _ p xs (f.trans h)) (h2 (xs.findIdx p) f)
-
-theorem lt_findIdx_of_not {p : α → Bool} {xs : List α} {i : ℕ} (h : i < xs.length)
-    (h2 : ∀ j (hji : j ≤ i), ¬p (xs.get ⟨j, hji.trans_lt h⟩)) : i < xs.findIdx p := by
-  by_contra! f
-  exact absurd (@findIdx_get _ p xs (f.trans_lt h)) (h2 (xs.findIdx p) f)
-
-theorem findIdx_eq {p : α → Bool} {xs : List α} {i : ℕ} (h : i < xs.length) :
-    xs.findIdx p = i ↔ p (xs.get ⟨i, h⟩) ∧ ∀ j (hji : j < i), ¬p (xs.get ⟨j, hji.trans h⟩) := by
-  refine ⟨fun f ↦ ⟨f ▸ (@findIdx_get _ p xs (f ▸ h)), fun _ hji ↦ not_of_lt_findIdx (f ▸ hji)⟩,
-    fun ⟨h1, h2⟩ ↦ ?_⟩
-  apply Nat.le_antisymm _ (le_findIdx_of_not h h2)
-  contrapose! h1
-  exact not_of_lt_findIdx h1
-
-end FindIdx
 
 section FoldlIdx
 
