@@ -78,21 +78,11 @@ end PadicInt
 namespace Padic
 open PadicInt
 
-/--The set of p-adic numbers `ℚ_[p]` is a locally compact topological space,
-where (p : ℕ) [Fact (Nat.Prime p)].-/
-theorem locally_compact_space :
-    LocallyCompactSpace ℚ_[p] := by
-  have ex : ∃ U ∈ nhds (0 : ℚ_[p]), IsCompact U := by
-    use ((↑) : ℤ_[p] → ℚ_[p])'' (Set.univ : Set ℤ_[p])
-    simp only [Set.image_univ, Subtype.range_coe_subtype]
-    constructor
-    · exact nhd_zero p
-    · refine isCompact_iff_compactSpace.mpr ?h.right.a
-      refine { isCompact_univ := ?h.right.a.isCompact_univ }
-      apply is_compact
-  rcases ex with ⟨U, hu1, hu2⟩
-  apply IsCompact.locallyCompactSpace_of_mem_nhds_of_addGroup
-  · convert hu2
-  · convert hu1
+/-- The field of p-adic numbers `ℚ_[p]` is a locally compact topological space. -/
+instance locallyCompact : LocallyCompactSpace ℚ_[p] := by
+  have : closedBall 0 1 ∈ 𝓝 (0 : ℚ_[p]) := closedBall_mem_nhds _ zero_lt_one
+  simp only [closedBall, dist_eq_norm_sub, sub_zero] at this
+  refine IsCompact.locallyCompactSpace_of_mem_nhds_of_addGroup ?_ this
+  simpa only [isCompact_iff_compactSpace] using PadicInt.compactSpace p
 
 end Padic
