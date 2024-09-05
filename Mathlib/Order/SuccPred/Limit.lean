@@ -552,8 +552,14 @@ section LinearOrder
 variable [LinearOrder α] [SuccOrder α]
   (hm : ∀ a, IsMin a → C a) (hs : ∀ a, ¬ IsMax a → C (succ a)) (hl : ∀ a, IsSuccLimit a → C a)
 
-theorem isSuccLimitRecOn_succ' (hb : ¬ IsMax b) : isSuccLimitRecOn hm hs hl (succ b) = hs b hb := by
+theorem isSuccLimitRecOn_succ' [Nontrivial α] (hb : ¬ IsMax b) :
+    isSuccLimitRecOn hm hs hl (succ b) = hs b hb := by
   rw [isSuccLimitRecOn, ]
+
+@[simp]
+theorem isSuccLimitRecOn_succ :
+    isSuccLimitRecOn hm hs hl (succ b) = hs b (not_isMax b) :=
+  isSuccLimitRecOn_succ' (not_isMax b)
 
 end LinearOrder
 
