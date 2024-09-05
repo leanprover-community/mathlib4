@@ -269,6 +269,7 @@ theorem to_iso [h' : Epi f.base] : IsIso f := by
     { toFun := Subtype.val
       invFun := fun x =>
         ⟨x, by rw [Set.range_iff_surjective.mpr ((TopCat.epi_iff_surjective _).mp h')]; trivial⟩
+      continuous_invFun := by continuity
       left_inv := fun ⟨_, _⟩ => rfl
       right_inv := fun _ => rfl }
   exact (TopCat.isoOfHomeo t).isIso_hom

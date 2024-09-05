@@ -123,7 +123,7 @@ variable {f g : C(α, β)}
 protected theorem continuous (f : C(α, β)) : Continuous f :=
   f.continuous_toFun
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_set_coe (s : Set C(α, β)) (f : s) : Continuous (f : α → β) :=
   f.1.continuous
 

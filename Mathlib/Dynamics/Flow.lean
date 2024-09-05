@@ -152,9 +152,6 @@ def reverse : Flow τ α where
   map_add' _ _ _ := by dsimp; rw [neg_add, map_add]
   map_zero' _ := by dsimp; rw [neg_zero, map_zero_apply]
 
--- Porting note: add @continuity to Flow.toFun so that these works:
--- Porting note: Homeomorphism.continuous_toFun  : Continuous toFun  := by continuity
--- Porting note: Homeomorphism.continuous_invFun : Continuous invFun := by continuity
 @[continuity]
 theorem continuous_toFun (t : τ) : Continuous (ϕ.toFun t) := by
   rw [← curry_uncurry ϕ.toFun]
@@ -165,6 +162,9 @@ theorem continuous_toFun (t : τ) : Continuous (ϕ.toFun t) := by
 def toHomeomorph (t : τ) : (α ≃ₜ α) where
   toFun := ϕ t
   invFun := ϕ (-t)
+  -- TODO: can the `dsimp only` be removed?
+  continuous_toFun := by dsimp only; fun_prop
+  continuous_invFun := by dsimp only; fun_prop
   left_inv x := by rw [← map_add, neg_add_cancel, map_zero_apply]
   right_inv x := by rw [← map_add, add_neg_cancel, map_zero_apply]
 
