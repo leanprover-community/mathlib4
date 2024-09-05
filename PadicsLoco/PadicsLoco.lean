@@ -29,6 +29,7 @@ and that `ℚ_[p]` is locally compact.
 Gouvêa, F. Q. (2020) p-adic Numbers An Introduction. 3rd edition.
   Cham, Springer International Publishing
 -/
+open Metric Topology
 
 variable (p : ℕ) [Fact (Nat.Prime p)]
 
