@@ -31,7 +31,7 @@ namespace Ring
 open MvPolynomial FreeCommRing
 
 /-- Given a finite set of monomials `monoms ι → Finset (κ →₀ ℕ)`, the
-`genericPolyMap monoms` is and indexed collection of elements of the `FreeCommRing`,
+`genericPolyMap monoms` is an indexed collection of elements of the `FreeCommRing`,
 that can be evaluated to any collection `p : ι → MvPolynomial κ R` of
 polynomials such that `∀ i, (p i).support ⊆ monoms i`. -/
 def genericPolyMap (monoms : ι → Finset (κ →₀ ℕ)) :
