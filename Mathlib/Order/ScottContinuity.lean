@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
 import Mathlib.Order.Bounds.Basic
+import Mathlib.Order.CompleteLattice
 
 /-!
 # Scott continuity
