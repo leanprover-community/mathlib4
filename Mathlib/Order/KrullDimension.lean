@@ -81,26 +81,37 @@ variable {α β : Type*}
 
 variable [Preorder α] [Preorder β]
 
-/--
-Alternative definition of height, with the supremum only ranging over those series
-that end at `a`.
--/
-lemma height_eq_iSup_last_eq (a : α) :
-    height a = ⨆ (p : LTSeries α) (_ : p.last = a), ↑(p.length) := by
-  apply le_antisymm _ (biSup_mono fun _ => le_of_eq)
-  apply iSup₂_le
+lemma height_le_iff {a : α} {n : ℕ∞} :
+    height a ≤ n ↔ ∀ (p : LTSeries α), p.last ≤ a → p.length ≤ n := by
+ rw [height, iSup₂_le_iff]
+
+lemma height_le {a : α} {n : ℕ∞} (h : ∀ (p : LTSeries α), p.last = a → p.length ≤ n) :
+    height a ≤ n := by
+  apply height_le_iff.mpr
   intro p hlast
   wlog hlenpos : p.length ≠ 0
   · simp_all
   -- We replace the last element in the series with `a`
-  apply le_iSup₂_of_le <|
-    p.eraseLast.snoc a (lt_of_lt_of_le (p.eraseLast_last_rel_last (by simp_all)) hlast)
-  · simp; norm_cast; omega
-  · simp
+  let p' := p.eraseLast.snoc a (lt_of_lt_of_le (p.eraseLast_last_rel_last (by simp_all)) hlast)
+  rw [show p.length = p'.length by simp [p']; omega]
+  apply h
+  simp [p']
 
-lemma height_le {x : α} {n : ℕ∞} :
-    (∀ (p : LTSeries α), p.last = x → p.length ≤ n) → height x ≤ n := by
-  simp [height_eq_iSup_last_eq, iSup_le_iff.mpr]
+lemma height_le_iff' {a : α} {n : ℕ∞} :
+    height a ≤ n ↔ ∀ (p : LTSeries α), p.last = a → p.length ≤ n := by
+ constructor
+ · rw [height_le_iff]
+   exact (fun h p hlast => h p (le_of_eq hlast))
+ · exact height_le
+
+/--
+Alternative definition of height, with the supremum ranging only over those series that end at `a`.
+-/
+lemma height_eq_iSup_last_eq (a : α) :
+    height a = ⨆ (p : LTSeries α) (_ : p.last = a), ↑(p.length) := by
+  apply eq_of_forall_ge_iff
+  intro n
+  rw [height_le_iff', iSup₂_le_iff]
 
 lemma length_le_height {p : LTSeries α} {x : α} (hlast : p.last ≤ x) :
     p.length ≤ height x := by
