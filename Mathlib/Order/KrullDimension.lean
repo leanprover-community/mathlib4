@@ -103,9 +103,8 @@ lemma length_le_height (x : α) (p : LTSeries α) (hlast : p.last ≤ x) :
       convert this
       norm_cast
       omega
-    apply le_iSup_of_le p'
-    apply le_iSup_of_le (by simp [p'])
-    exact le_refl _
+    refine le_iSup₂_of_le p' ?_ le_rfl
+    simp [p']
   · simp_all
 
 lemma length_le_height_last (p : LTSeries α) : p.length ≤ height p.last :=
