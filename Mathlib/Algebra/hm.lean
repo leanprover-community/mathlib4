@@ -87,35 +87,3 @@ instance : HasCompleteResolutions (Rep k G) := sorry
 noncomputable def tateCohomologyOne (A : Rep k G) (i : ℤ) : ModuleCat k :=
   ((completeResolution (Rep.trivial k G k)).complex.linearYonedaObj
     k A).homology i
-
-def tateCohomologyTwo (A : Rep k G) (i : ℤ) : ModuleCat k
-
-/-
-complex morphism for proj resn means that
-   d
-P₁ → P₀
-|    |π
-0 -> Z
-d ≫ π = 0
-and the quasiiso bit means that P₀/Im d ≅ Z
-
-I want
-
-X₁ ⟶ X₀ ⟶ X₋₁ ⟶ X₋₂
-     π|    |ε
-        Z
-
-what I need is just π epi, ε mono, π ≫ ε = d₀
-
-
-
-I mean we want π ≫ ε = d₀
-π is an epi, ε is a mono
-so indeed d₁ ≫ π = 0
-
-and ε satisfies ε ≫ d₋₁
-
-well π ≫ ε ≫ d₋₁ = 0
-
-if π is a morphism of complexes that just means
--/
