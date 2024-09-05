@@ -25,7 +25,7 @@ jobs:
           ./elan-init -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
-      - name: get cache for `Lean.Elab.Command`
+      - name: get cache for `Lean.Elab.Command` # although we fetch `HashCommandLinter` since cache is `Mathlib`-based
         run: |
           git checkout master
           git checkout -
@@ -33,7 +33,9 @@ jobs:
 
       - name: Auto-label script
         run: |
+          # append the "noisy" commands, so we can read off their values and not fail CI
           printf '\nproduce_labels! "git"\n\nproduce_labels "git"\n' >> Mathlib/Tactic/Autolabels/Labels.lean
+          # a first run to store the values in the CI logs -- useful for debugging
           lake build Mathlib.Tactic.Autolabels.Labels
           labels="$(lake build Mathlib.Tactic.Autolabels.Labels |
             sed -n 's=.*Applicable labels: *\(.*\)=\1=p')"

@@ -53,9 +53,10 @@ Look at the documentation for `add_label` for further shortcuts.
 ## Further commands
 
 The file also defines the commands `check_labels` and `produce_labels(!)? str`.
-These are mostly intended as "debugging commands", as they display what `Label`s are
-currently present in the environment and to test-run the automatic application of the labels
-to user-input/`git diff` output.
+They display what `Label`s are currently present in the environment and they test-run the automatic
+application of the labels to user-input/`git diff` output.
+These commands are mostly intended as "debugging commands", even though
+`produce_labels "git"` is used in the `autolabel` CI action.
 
 See the doc-strings of `check_labels` and `produce_labels` for more details.
 -/
