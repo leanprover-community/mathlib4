@@ -283,7 +283,7 @@ theorem principal_add_of_principal_mul {o : Ordinal} (ho : Principal (· * ·) o
 
 theorem principal_mul_isLimit {o : Ordinal.{u}} (ho₂ : 2 < o) (ho : Principal (· * ·) o) :
     o.IsLimit :=
-  principal_add_isLimit ((lt_succ 1).trans (by simpa using ho₁))
+  principal_add_isLimit ((lt_succ 1).trans (by simpa using ho₂))
     (principal_add_of_principal_mul ho (ne_of_gt ho₂))
 
 theorem principal_mul_iff_mul_left_eq {o : Ordinal} :
