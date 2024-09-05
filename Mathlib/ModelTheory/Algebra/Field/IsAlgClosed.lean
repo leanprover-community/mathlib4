@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 
-import Mathlib.ModelTheory.Algebra.Field.CharP
+import Mathlib.Data.Nat.PrimeFin
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 import Mathlib.FieldTheory.IsAlgClosed.Classification
+import Mathlib.ModelTheory.Algebra.Field.CharP
 import Mathlib.ModelTheory.Satisfiability
-import Mathlib.Data.Nat.PrimeFin
 
 /-!
 
@@ -20,10 +20,10 @@ as proving completeness of the theory and the Lefschetz Principle.
 ## Main definitions
 
 * `FirstOrder.Language.Theory.ACF p` : the theory of algebraically closed fields of characteristic
-`p` as a theory over the language of rings.
+  `p` as a theory over the language of rings.
 * `FirstOrder.Field.ACF_isComplete` : the theory of algebraically closed fields of characteristic
-`p` is complete whenever `p` is prime or zero.
-* `FirstOrder.Field.ACF0_realize_iff_infinite_ACF_prime_realize` : the Lefschetz principle.
+  `p` is complete whenever `p` is prime or zero.
+* `FirstOrder.Field.ACF_zero_realize_iff_infinite_ACF_prime_realize` : the Lefschetz principle.
 
 ## Implementation details
 
@@ -32,7 +32,7 @@ algebraically closed field `K` which does not have a `Language.ring.Structure` i
 you must introduce the local instance `compatibleRingOfRing K`. Theorems whose statement requires
 both a `Language.ring.Structure` instance and a `Field` instance will all be stated with the
 assumption `Field K`, `CharP K p`, `IsAlgClosed K` and `CompatibleRing K` and there are instances
-defined saying that these assumption imply `Theory.field.Model K` and `(Theory.ACF p).Model K`
+defined saying that these assumptions imply `Theory.field.Model K` and `(Theory.ACF p).Model K`
 
 ## References
 
@@ -80,7 +80,7 @@ theorem realize_genericMonicPolyHasRoot [Field K] [CompatibleRing K] (n : ℕ) :
 
 /-- The theory of algebraically closed fields of characteristic `p` as a theory over
 the language of rings -/
-def _root_.FirstOrder.Language.Theory.ACF (p : ℕ) : Theory Language.ring :=
+def _root_.FirstOrder.Language.Theory.ACF (p : ℕ) : Theory .ring :=
   Theory.fieldOfChar p ∪ genericMonicPolyHasRoot '' {n | 0 < n}
 
 instance [Language.ring.Structure K] (p : ℕ) [h : (Theory.ACF p).Model K] :
@@ -148,7 +148,7 @@ open Cardinal
 
 /-- The Theory `Theory.ACF p` is `κ`-categorical whenever `κ` is an uncountable cardinal.
 At the moment this is not as universe polymorphic as it could be,
-it currently requires `κ : Cardinal.{0}`, but it is true for any universe.    -/
+it currently requires `κ : Cardinal.{0}`, but it is true for any universe. -/
 theorem ACF_categorical {p : ℕ} (κ : Cardinal.{0}) (hκ : ℵ₀ < κ) :
     Categorical κ (Theory.ACF p) := by
   rintro ⟨M⟩ ⟨N⟩ hM hN
@@ -184,7 +184,7 @@ theorem ACF_isComplete {p : ℕ} (hp : p.Prime ∨ p = 0) :
     have := isAlgClosed_of_model_ACF p M
     infer_instance
 
-theorem finite_ACF_prime_not_realize_of_ACF0_realize
+theorem finite_ACF_prime_not_realize_of_ACF_zero_realize
     (φ : Language.ring.Sentence) (h : Theory.ACF 0 ⊨ᵇ φ) :
     Set.Finite { p : Nat.Primes | ¬ Theory.ACF p ⊨ᵇ φ } := by
   rw [Theory.models_iff_finset_models] at h
@@ -227,13 +227,25 @@ theorem finite_ACF_prime_not_realize_of_ACF0_realize
 /-- The **Lefschetz principle**. A first order sentence is modeled by the theory
 of algebraically closed fields of characteristic zero if and only if it is modeled by
 the theory of algebraically closed fields of characteristic `p` for infinitely many `p`. -/
-theorem ACF0_realize_iff_infinite_ACF_prime_realize {φ : Language.ring.Sentence} :
+theorem ACF_zero_realize_iff_infinite_ACF_prime_realize {φ : Language.ring.Sentence} :
     Theory.ACF 0 ⊨ᵇ φ ↔ Set.Infinite { p : Nat.Primes | Theory.ACF p ⊨ᵇ φ } := by
-  refine ⟨fun h => Set.infinite_of_finite_compl (finite_ACF_prime_not_realize_of_ACF0_realize φ h),
+  refine ⟨fun h => Set.infinite_of_finite_compl
+      (finite_ACF_prime_not_realize_of_ACF_zero_realize φ h),
     not_imp_not.1 ?_⟩
   simpa [(ACF_isComplete (Or.inr rfl)).models_not_iff,
       fun p : Nat.Primes => (ACF_isComplete (Or.inl p.2)).models_not_iff] using
-    finite_ACF_prime_not_realize_of_ACF0_realize φ.not
+    finite_ACF_prime_not_realize_of_ACF_zero_realize φ.not
+
+/-- Another statement of the **Lefschetz principle**. A first order sentence is modeled by the
+theory of algebraically closed fields of characteristic zero if and only if it is modeled by the
+theory of algebraically closed fields of characteristic `p` for all but finitely many primes `p`.
+-/
+theorem ACF_zero_realize_iff_finite_ACF_prime_not_realize {φ : Language.ring.Sentence} :
+    Theory.ACF 0 ⊨ᵇ φ ↔ Set.Finite { p : Nat.Primes | Theory.ACF p ⊨ᵇ φ }ᶜ :=
+  ⟨fun h => finite_ACF_prime_not_realize_of_ACF_zero_realize φ h,
+    fun h => ACF_zero_realize_iff_infinite_ACF_prime_realize.2
+      (Set.infinite_of_finite_compl h)⟩
+
 
 end Field
 
