@@ -191,7 +191,7 @@ variable [LE M]
 
 instance [Language.order.Structure M] [Language.order.OrderedStructure M]
     [(orderLHom L).IsExpansionOn M] : L.OrderedStructure M where
-  relMap_leSymb := fun x => by
+  relMap_leSymb x := by
     rw [← orderLHom_leSymb L, LHom.IsExpansionOn.map_onRelation, relMap_leSymb]
 
 variable [L.OrderedStructure M]
