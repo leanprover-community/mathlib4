@@ -67,6 +67,8 @@ open Mathlib.Tactic.Monoidal
 
 namespace Widget.StringDiagram
 
+initialize registerTraceClass `string_diagram
+
 /-! ## Objects in string diagrams -/
 
 /-- Nodes for 2-morphisms in a string diagram. -/
@@ -287,6 +289,7 @@ def fromExpr (e : Expr) : MonoidalM Html := do
   let e' := (← eval e).expr
   DiagramBuilderM.run do
     mkStringDiagram e'
+    trace[string_diagram] "Penrose substance: \n{(← get).sub}"
     match ← DiagramBuilderM.buildDiagram dsl sty with
     | some html => return html
     | none => return <span>No non-structural morphisms found.</span>
