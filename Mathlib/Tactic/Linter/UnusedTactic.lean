@@ -50,7 +50,7 @@ before and after and see if there is some change.
 Yet another linter copied from the `unreachableTactic` linter!
 -/
 
-open Lean Elab
+open Lean Elab Std
 
 namespace Mathlib.Linter
 
@@ -63,13 +63,13 @@ register_option linter.unusedTactic : Bool := {
 namespace UnusedTactic
 
 /-- The monad for collecting the ranges of the syntaxes that do not modify any goal. -/
-abbrev M := StateRefT (HashMap String.Range Syntax) IO
+abbrev M := StateRefT (Std.HashMap String.Range Syntax) IO
 
 /-- `Parser`s allowed to not change the tactic state.
 This can be increased dynamically, using `#allow_unused_tactic`.
 -/
-initialize allowedRef : IO.Ref (HashSet SyntaxNodeKind) ←
-  IO.mkRef <| HashSet.empty
+initialize allowedRef : IO.Ref (Std.HashSet SyntaxNodeKind) ←
+  IO.mkRef <| Std.HashSet.empty
     |>.insert `Mathlib.Tactic.Says.says
     |>.insert `Batteries.Tactic.«tacticOn_goal-_=>_»
     -- attempt to speed up, by ignoring more tactics
@@ -113,7 +113,7 @@ A list of blacklisted syntax kinds, which are expected to have subterms that con
 unevaluated tactics.
 -/
 initialize ignoreTacticKindsRef : IO.Ref NameHashSet ←
-  IO.mkRef <| HashSet.empty
+  IO.mkRef <| Std.HashSet.empty
     |>.insert `Mathlib.Tactic.Says.says
     |>.insert ``Parser.Term.binderTactic
     |>.insert ``Lean.Parser.Term.dynamicQuot

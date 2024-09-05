@@ -95,7 +95,7 @@ protected theorem le_iff_sub_nonneg (a b : ℚ) : a ≤ b ↔ 0 ≤ b - a :=
         decide_eq_false_iff_not, not_lt, ite_eq_left_iff, not_and, not_le, ← num_nonneg]
       split_ifs with h h'
       · rw [Rat.sub_def]
-        simp only [false_iff, not_le]
+        simp only [false_iff, not_le, reduceCtorEq]
         simp only [normalize_eq]
         apply Int.ediv_neg'
         · rw [sub_neg]
