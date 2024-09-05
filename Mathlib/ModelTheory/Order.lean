@@ -232,7 +232,7 @@ section Preorder
 variable [Preorder M]
 
 instance model_preorder : M ⊨ Language.order.preorderTheory := by
-  simp only [preorderTheory, Theory.model_insert_iff, Relations.realize_reflexive, relMap_apply₂,
+  simp only [preorderTheory, Theory.model_insert_iff, Relations.realize_reflexive, relMap_leSymb,
     Theory.model_singleton_iff, Relations.realize_transitive]
   exact ⟨le_refl, fun _ _ _ => le_trans⟩
 
