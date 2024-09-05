@@ -47,29 +47,16 @@ lemma isLocalMin_of_anti_mono.{u, v}
 /-- Obtain a "predictably-sided" neighborhood of `b` from two one-sided neighborhoods. -/
 theorem nhds_of_Ici_Iic.{u} {α : Type u} [TopologicalSpace α] [LinearOrder α] [OrderTopology α]
     [NoMinOrder α] [NoMaxOrder α] {b : α}
-    {a : Set α} (ha : a ∈ 𝓝[≤] b)
-    {c : Set α} (hc : c ∈ 𝓝[≥] b) : a ∩ Iic b ∪ c ∩ Ici b ∈ 𝓝 b := by
-  rw [mem_nhdsWithin_Iic_iff_exists_Ioc_subset] at ha
-  rw [mem_nhdsWithin_Ici_iff_exists_Ico_subset] at hc
-  rw [mem_nhds_iff]
-  obtain ⟨x,hx⟩ := ha
-  obtain ⟨y,hy⟩ := hc
-  use Ioo x y
-  constructor
-  · intro z hz
-    by_cases H : z ≤ b
-    · left
-      constructor
-      exact hx.2 <| ⟨hz.1, H⟩
-      exact H
-    · right
-      constructor
-      exact hy.2 <| ⟨(le_of_not_ge H), hz.2⟩
-      exact le_of_not_ge H
-  constructor
-  · exact isOpen_Ioo
-  · tauto
-
+    {L : Set α} (hL : L ∈ 𝓝[≤] b)
+    {R : Set α} (hR : R ∈ 𝓝[≥] b) : L ∩ Iic b ∪ R ∩ Ici b ∈ 𝓝 b :=
+  mem_nhds_iff.mpr (by
+  obtain ⟨l,hl⟩ := mem_nhdsWithin_Iic_iff_exists_Ioc_subset.mp hL
+  obtain ⟨r,hr⟩ := mem_nhdsWithin_Ici_iff_exists_Ico_subset.mp hR
+  use Ioo l r
+  exact ⟨ (fun x hx => (le_total x b).elim
+      (fun H => Or.inl ⟨hl.2 ⟨hx.1, H⟩, H⟩)
+      (fun H => Or.inr ⟨hr.2 ⟨H, hx.2⟩, H⟩)), ⟨isOpen_Ioo, hl.1, hr.1⟩⟩
+  )
 /-- If `f` is monotone to the left and antitone to the right, then it has a local maximum. -/
 lemma isLocalMax_of_mono_anti'.{u, v} {α : Type u} [TopologicalSpace α] [LinearOrder α]
     [OrderTopology α] [NoMinOrder α] [NoMaxOrder α] {β : Type v} [Preorder β] {b : α} {f : α → β}
