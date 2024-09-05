@@ -8,7 +8,67 @@ import Mathlib.Topology.Algebra.Order.Archimedean
 open Set Filter
 open scoped Pointwise Topology
 
+theorem AddSubgroup.dense_xor'_cyclic (s : AddSubgroup ℝ) :
+    Xor' (Dense (s : Set ℝ)) (∃ a, s = .zmultiples a) := by
+  refine s.dense_or_cyclic.imp (fun hd ↦ ⟨hd, ?_⟩) ?_
+  · rintro ⟨a, rfl⟩
+    exact not_denseRange_zsmul a hd
+  · rintro ⟨a, rfl⟩
+    rw [← zmultiples_eq_closure]
+    exact ⟨⟨a, rfl⟩, not_denseRange_zsmul a⟩
+
 namespace AddCircle
+
+theorem dense_xor_cyclic_addSubgroup {p : ℝ} (hp : p ≠ 0) {s : AddSubgroup (AddCircle p)} :
+    Xor' (Dense (s : Set (AddCircle p))) (∃ a, 0 < addOrderOf a ∧ s = .zmultiples a) := by
+  have : Dense (s : Set (AddCircle p)) ↔ Dense (s.comap (QuotientAddGroup.mk' _) : Set ℝ) :=
+    (QuotientAddGroup.dense_preimage_mk _).symm
+  if hd : Dense (s : Set (AddCircle p)) then
+    simp only [hd, xor_true, not_exists, not_and, (QuotientAddGroup.mk'_surjective _).forall]
+    rintro a ha rfl
+    replace hd : Dense (AddSubgroup.closure {a, p} : Set ℝ) := by
+      rwa [this, ← AddMonoidHom.map_zmultiples, AddSubgroup.comap_map_eq,
+        QuotientAddGroup.ker_mk', AddSubgroup.zmultiples_eq_closure,
+        AddSubgroup.zmultiples_eq_closure, ← AddSubgroup.closure_union, ← Set.insert_eq] at hd
+    obtain ⟨m, n, hn₀, h⟩ : ∃ m n : ℤ, n ≠ 0 ∧ m * (p / n) = a := by
+      simp_rw [addOrderOf_pos_iff, isOfFinAddOrder_iff_zsmul_eq_zero, QuotientAddGroup.coe_mk',
+        ← coe_zsmul, coe_eq_zero_iff, zsmul_eq_mul] at ha
+      rcases ha with ⟨n, hn₀, m, hm⟩
+      refine ⟨m, n, hn₀, ?_⟩
+      rwa [← mul_div_assoc, div_eq_iff (by positivity), mul_comm a]
+    have : AddSubgroup.closure {a, p} ≤ .zmultiples (p / n) := by
+      rw [AddSubgroup.closure_le]
+  else
+    simp only [hd, xor_false, id]
+    obtain ⟨a, ha⟩ : ∃ a, s.comap (QuotientAddGroup.mk' _) = .zmultiples a := by
+      simp only [AddSubgroup.zmultiples_eq_closure]
+      refine (s.comap _).dense_or_cyclic.resolve_left ?_
+      rwa [this] at hd
+    
+  -- rw [← QuotientAddGroup.dense_preimage_mk, ← QuotientAddGroup.coe_mk', ← AddSubgroup.coe_comap,
+  --   xor_iff_iff_not.1 (s.comap _).dense_xor'_cyclic, xor_not_left,
+  --   QuotientAddGroup.mk_surjective.exists]
+  -- simp_rw [addOrderOf_pos_iff, isOfFinAddOrder_iff_zsmul_eq_zero]
+  -- constructor
+  -- · rintro ⟨a, ha⟩
+  --   refine ⟨a, ?_, ?_⟩
+  --   · obtain ⟨m, rfl : m • a = p⟩ : p ∈ AddSubgroup.zmultiples a := by
+  --       simp [← ha, AddCircle.coe_period, zero_mem]
+  --     refine ⟨m, by simp_all, ?_⟩
+  --     rw [← coe_zsmul, coe_period]
+  --   · rw [← QuotientAddGroup.coe_mk', ← AddMonoidHom.map_zmultiples, ← ha,
+  --       AddSubgroup.map_comap_eq_self_of_surjective]
+  --     exact QuotientAddGroup.mk_surjective
+  -- · rintro ⟨a, ha, rfl⟩
+  --   suffices ∃ b, AddSubgroup.closure
+  --   obtain ⟨r, rfl⟩ : ∃ r : ℚ, r * p = a := by
+  --     simp_rw [← coe_zsmul, coe_eq_zero_iff] at ha
+  --     rcases ha with ⟨n, hn₀, m, hm⟩
+  --     rw [zsmul_eq_mul, zsmul_eq_mul, mul_comm _ a, ← div_eq_iff (by positivity),
+  --       mul_div_right_comm] at hm
+  --     use m / n
+  --     simp [hm]
+    
 
 theorem dense_addSubmonoid_of_accPt_zero {p : ℝ} {S : Type*} [SetLike S (AddCircle p)]
     [AddSubmonoidClass S (AddCircle p)] {s : S} (hp : p ≠ 0)
@@ -79,11 +139,11 @@ theorem dense_zmultiples_tfae (a p : ℝ) :
     have : AddSubgroup.closure {a, p} ≤ AddSubgroup.zmultiples r := by
       simp [pair_subset_iff, AddSubgroup.mem_zmultiples_iff, har, hpr]
     exact not_denseRange_zsmul r (h.mono this)
-  tfae_have 4 → 1
-  · intro h
-    have hp₀ : p ≠ 0 := by rintro rfl; simp at h
-    apply dense_addSubmonoid_of_accPt_zero hp₀
-    
+  -- tfae_have 4 → 1
+  -- · intro h
+  --   have hp₀ : p ≠ 0 := by rintro rfl; simp at h
+  --   apply dense_addSubmonoid_of_accPt_zero hp₀
+  --   rw [AddSubmonoid.coe_multiples]
     
     
 
