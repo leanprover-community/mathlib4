@@ -465,3 +465,9 @@ Issues:
 -/
 #guard_msgs in
 example : Con (fun x : α => f3 x) := by fun_prop (config:={maxTransitionDepth:=0})
+
+
+-- Test abbrev transparency
+abbrev my_id {α} (a : α) := a
+example : Con (fun x : α => my_id x) := by fun_prop
+example (f : α → β) (hf : Con (my_id f)) : Con f := by fun_prop
