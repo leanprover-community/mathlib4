@@ -97,7 +97,7 @@ theorem sum_ite_self_eq [DecidableEq α] {N : Type*} [AddCommMonoid N] (f : α �
     (f.sum fun x v => ite (a = x) v 0) = f a := by
   classical
     convert f.sum_ite_eq a fun _ => id
-    simp [ite_eq_right_iff.2 Eq.symm]
+    simp [(ite_eq_right_iff _ _ _).2 Eq.symm]
 
 -- Porting note: Added this thm to replace the simp in the previous one. Need to add [DecidableEq N]
 @[simp]
@@ -119,7 +119,7 @@ theorem sum_ite_self_eq' [DecidableEq α] {N : Type*} [AddCommMonoid N] (f : α 
     (f.sum fun x v => ite (x = a) v 0) = f a := by
   classical
     convert f.sum_ite_eq' a fun _ => id
-    simp [ite_eq_right_iff.2 Eq.symm]
+    simp [(ite_eq_right_iff _ _ _).2 Eq.symm]
 
 @[simp]
 theorem prod_pow [Fintype α] (f : α →₀ ℕ) (g : α → N) :
