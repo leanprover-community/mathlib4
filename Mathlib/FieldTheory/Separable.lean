@@ -37,13 +37,8 @@ section CommSemiring
 
 variable {R : Type u} [CommSemiring R] {S : Type v} [CommSemiring S]
 
-/-- A polynomial is separable iff it is coprime with its derivative.
-
-[Stacks: Definition 09H1, first part](https://stacks.math.columbia.edu/tag/09H1)
-
-This is a generalization of `09H1`, which only defined
-`separable` with respect to irreducible polynomials.
--/
+/-- A polynomial is separable iff it is coprime with its derivative. -/
+@[stacks 09H1 "first part"]
 def Separable (f : R[X]) : Prop :=
   IsCoprime f (derivative f)
 
@@ -521,10 +516,8 @@ variable {K} in
 /--
 An element `x` of an algebra `K` over a commutative ring `F` is said to be *separable*, if its
 minimal polynamial over `K` is separable. Note that the minimal polynomial of any element not
-integral over `F` is defined to be `0`, which is not a separable polynomial.
-
-[Stacks: Definition 09H1, second part](https://stacks.math.columbia.edu/tag/09H1)
--/
+integral over `F` is defined to be `0`, which is not a separable polynomial. -/
+@[stacks 09H1 "second part"]
 def IsSeparable (x : K) : Prop := Polynomial.Separable (minpoly F x)
 
 /-- Typeclass for separable field extension: `K` is a separable field extension of `F` iff
@@ -533,11 +526,8 @@ extension, because the minimal polynomial of a non-integral element is `0`, whic
 separable.
 
 We define this for general (commutative) rings and only assume `F` and `K` are fields if this
-is needed for a proof.
-
-[Stacks: Definition 09H1, third part](https://stacks.math.columbia.edu/tag/09H1)
--/
-@[mk_iff isSeparable_def] protected class Algebra.IsSeparable : Prop where
+is needed for a proof. -/
+@[mk_iff isSeparable_def, stacks 09H1 "third part"] protected class Algebra.IsSeparable : Prop where
   isSeparable' : ∀ x : K, IsSeparable F x
 
 variable {K}
@@ -597,10 +587,8 @@ instance (priority := 100) Algebra.IsSeparable.of_finite (F K : Type*) [Field F]
 section IsSeparableTower
 
 /-- If `R / K / A` is an extension tower, `x : R` is separable over `A`, then it's also separable
-over `K`.
-
-[Stacks: Lemma 09H2, first part](https://stacks.math.columbia.edu/tag/09H2)
--/
+over `K`. -/
+@[stacks 09H2 "first part"]
 theorem IsSeparable.of_isScalarTower {A : Type*} [CommRing A]
     (K : Type*) [Field K] [Algebra A K] {R : Type*} [CommRing R] [Algebra A R] [Algebra K R]
     [IsScalarTower A K R] {x : R} (h : IsSeparable A x) : IsSeparable K x :=
@@ -609,11 +597,7 @@ theorem IsSeparable.of_isScalarTower {A : Type*} [CommRing A]
 variable (F K E : Type*) [Field F] [Field K] [Field E] [Algebra F K] [Algebra F E] [Algebra K E]
   [IsScalarTower F K E]
 
-/-- If `E / K / F` is an extension tower, `E` is separable over `F`, then it's also separable
-over `K`.
-
-[Stacks: Lemma 09H2, second part](https://stacks.math.columbia.edu/tag/09H2)
--/
+@[stacks 09H2 "second part"]
 theorem Algebra.isSeparable_tower_top_of_isSeparable [Algebra.IsSeparable F E] :
     Algebra.IsSeparable K E :=
   ⟨fun x ↦ IsSeparable.of_isScalarTower _ (Algebra.IsSeparable.isSeparable F x)⟩

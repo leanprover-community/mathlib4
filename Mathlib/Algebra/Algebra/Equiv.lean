@@ -5,7 +5,6 @@ Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Hom
 import Mathlib.Algebra.Ring.Aut
-import Mathlib.Tactic.StacksAttribute
 
 /-!
 # Isomorphisms of `R`-algebras

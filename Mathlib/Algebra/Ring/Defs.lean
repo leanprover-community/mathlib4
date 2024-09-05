@@ -8,6 +8,7 @@ import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Tactic.Spread
 import Mathlib.Util.AssertExists
+import Mathlib.Tactic.StacksAttribute
 
 /-!
 # Semirings and rings
@@ -421,7 +422,6 @@ is cancellative on both sides. In other words, a nontrivial semiring `R` satisfy
 `∀ {a b c : R}, b ≠ 0 → a * b = c * b → a = c`.
 
 This is implemented as a mixin for `Semiring α`.
-To obtain an integral domain use `[CommRing α] [IsDomain α]`.
-
-[Stacks: 09FE](https://stacks.math.columbia.edu/tag/09FE)-/
+To obtain an integral domain use `[CommRing α] [IsDomain α]`. -/
+@[stacks 09FE]
 class IsDomain (α : Type u) [Semiring α] extends IsCancelMulZero α, Nontrivial α : Prop

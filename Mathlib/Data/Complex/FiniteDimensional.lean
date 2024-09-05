@@ -22,10 +22,7 @@ namespace Complex
 instance : FiniteDimensional ℝ ℂ :=
   of_fintype_basis basisOneI
 
-/-- `ℂ` is a finite extension of `ℝ` of degree 2, i.e `[ℂ : ℝ] = 2`
-[Stacks: Example 09G4](https://stacks.math.columbia.edu/tag/09G4)
--/
-@[simp]
+@[simp, stacks 09G4]
 theorem finrank_real_complex : finrank ℝ ℂ = 2 := by
   rw [finrank_eq_card_basis basisOneI, Fintype.card_fin]
 
@@ -65,9 +62,7 @@ lemma Real.rank_rat_real : Module.rank ℚ ℝ = continuum := by
   refine (Free.rank_eq_mk_of_infinite_lt ℚ ℝ ?_).trans mk_real
   simpa [mk_real] using aleph0_lt_continuum
 
-/-- `C` has an uncountable basis over `ℚ`.
-[Stacks: Exercise 09G0](https://stacks.math.columbia.edu/tag/09G0)
--/
+/-- `C` has an uncountable basis over `ℚ`. -/
 @[simp]
 lemma Complex.rank_rat_complex : Module.rank ℚ ℂ = continuum := by
   refine (Free.rank_eq_mk_of_infinite_lt ℚ ℂ ?_).trans mk_complex
