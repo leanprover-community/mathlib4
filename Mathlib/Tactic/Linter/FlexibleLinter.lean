@@ -21,6 +21,47 @@ then you should replace `simp [...]` by one of
 
 Otherwise, the linter will complain.
 
+Simplifying and appealing to a geometric intuition, you can imagine a (tactic) proof like a
+directed graph, where
+* each node is a local hypothesis or a goal in some metavariable and
+* two hypotheses/goals are connected by an arrow if there is a tactic that modifies the source
+  of the arrow into the target (this does not apply well to all tactics, but it does apply to
+  a large number of them).
+With this in mind, a tactic like `rw [lemma]` takes a *very specific* input and return a
+*very predictable* output.
+Such a tactic is "rigid". Any tactic is rigid, unless it is in `flexible` or `stoppers`.
+Conversely, a tactic like `simp` acts on a wide variety of inputs and returns an output that
+is possibly unpredictable: if later modifications adds a `simp`-lemma or some internals of
+`simp` changes, the output of `simp` may change as well.
+Such a tactic is `flexible`. Other examples are `split`, `abel`, `norm_cast`,...
+Let's go back to the graph picture above.
+* ✅️ [`rigid` --> `flexible`]
+  A sequence `rw [lemma]; simp` is unlikely to break, since `rw [lemma]` produces the same output
+  unless some *really major* change happens!
+* ❌️ [`flexible` --> `rigid`]
+  A sequence `simp; rw [lemma]` is instead more likely to break, since the goal after `simp` is
+  subject to change by even a small, likely, modification of the `simp` set.
+* ✅️ [`flexible` --> `flexible`]
+  A sequence `simp; linarith` is also quite stable, since if `linarith` was able to close the
+  goal with a "weaker" `simp`, it will likely still be able to close the goal with a `simp`
+  that takes one further step.
+* ✅️ [`flexible` --> `stopper`]
+  Finally, a sequence `simp; ring_nf` is stable and, moreover, the output of `ring_nf` is a
+  "normal form", which means that it is likely to produce an unchanged result, even if the initial
+  input is different from the proof in its initial form.
+  A stopper can be followed by a rigid tactic, "stopping" the spread of the flexible reach.
+
+What the linter does is keeping track of nodes that are connected by `flexible` tactics and
+makes sure that only `flexible` or `stoppers` follow them.
+Such nodes are `Stained`.
+Whenever it reaches a `stopper` edge, the target node is no longer `Stained` and it is
+available again to `rigid` tactics.
+
+Currently, the only tactics that "start" the bookkeeping are most forms of non-`only` `simp`s.
+These are encoded by the `flexible?` predicate.
+Future modifications of the linter may increase the scope of the `flexible?` predicate and
+forbid a wider range of combinations.
+
 ## TODO
 The example
 ```lean
@@ -77,21 +118,22 @@ section goals_heuristic
 namespace Lean.Elab.TacticInfo
 
 /-!
-###  Heuristics for determining active and inactive goals
+###  Heuristics for determining goals goals that a tactic modifies what they become
 
-The two definitions `activeGoalsBefore`, `activeGoalsAfter` extract a list of
-`MVarId`s attempting to determine which on which goals the tactic `t` is acting.
+The two definitions `goalsTargetedBy`, `goalsCreatedBy` extract a list of
+`MVarId`s attempting to determine on which goals the tactic `t` is acting and what are the
+resulting modified goals.
 This is mostly based on the heuristic that the tactic will "change" an `MVarId`.
 -/
 
-/-- `activeGoalsBefore t` are the `MVarId`s before the `TacticInfo` `t` that "disappear" after it.
+/-- `goalsTargetedBy t` are the `MVarId`s before the `TacticInfo` `t` that "disappear" after it.
 They should correspond to the goals in which the tactic `t` performs some action. -/
-def activeGoalsBefore (t : TacticInfo) : List MVarId :=
+def goalsTargetedBy (t : TacticInfo) : List MVarId :=
   t.goalsBefore.filter (·.name ∉ t.goalsAfter.map (·.name))
 
-/-- `activeGoalsAfter t` are the `MVarId`s after the `TacticInfo` `t` that were not present before.
+/-- `goalsCreatedBy t` are the `MVarId`s after the `TacticInfo` `t` that were not present before.
 They should correspond to the goals created or changed by the tactic `t`. -/
-def activeGoalsAfter (t : TacticInfo) : List MVarId :=
+def goalsCreatedBy (t : TacticInfo) : List MVarId :=
   t.goalsAfter.filter (·.name ∉ t.goalsBefore.map (·.name))
 
 end Lean.Elab.TacticInfo
@@ -118,7 +160,7 @@ def extractCtxAndGoals : InfoTree →
     let kargs := (args.map extractCtxAndGoals).foldl (· ++ ·) #[]
     if let .ofTacticInfo i := k then
       if take? i.stx && (i.stx.getRange? true).isSome then
-        #[(i.stx, i.mctxBefore, i.mctxAfter, i.activeGoalsBefore, i.activeGoalsAfter)] ++ kargs
+        #[(i.stx, i.mctxBefore, i.mctxAfter, i.goalsTargetedBy, i.goalsCreatedBy)] ++ kargs
       else kargs
     else kargs
   | .context _ t => extractCtxAndGoals t
@@ -207,9 +249,21 @@ def Stained.toFMVarId (mv : MVarId) (lctx: LocalContext) : Stained → Array (FV
 
 /-- `SyntaxNodeKind`s that are mostly "formatting": mostly they are ignored
 because we do not want the linter to spend time on them.
-The nodes that they contain will be visited by the linter anyway. -/
-def combinatorLike : Std.HashSet Name :=
-  { -- "continuators": these typically wrap other tactics inside them.
+The nodes that they contain will be visited by the linter anyway.
+The nodes that *follow* them, though, will *not* be visited by the linter.
+-/
+def stoppers : Std.HashSet Name :=
+  { -- "properly stopper tactics": the effect of these tactics is to return a normal form
+    -- (or possibly be finishing tactics -- the ultimate normal form!
+    -- finishing tactics could equally well be considered as `flexible`, but as there is
+    -- no possibility of a follower anyway, it does not make a big difference.)
+    ``Lean.Parser.Tactic.tacticSorry,
+    ``Lean.Parser.Tactic.tacticRepeat_,
+    ``Lean.Parser.Tactic.tacticStop_,
+    `Mathlib.Tactic.Abel.abelNF,
+    `Mathlib.Tactic.RingNF.ringNF,
+    -- "continuators": the *effect* of these tactics is similar the "properly stoppers" above,
+    -- though they typically wrap other tactics inside them.
     -- The linter ignores the wrapper, but does recurse into the enclosed tactics
     ``Lean.Parser.Tactic.tacticSeq1Indented,
     ``Lean.Parser.Tactic.tacticSeq,
@@ -221,21 +275,13 @@ def combinatorLike : Std.HashSet Name :=
     `Std.Tactic.«tacticOn_goal-_=>_»,
     ``Lean.Parser.Tactic.«tactic_<;>_»,
     ``cdotTk,
-    ``cdot,
-    -- "stopper tactics": their effect is analogous to "continuators", but they do not wrap
-    -- other tactics inside them.  Some are "finishing" tactics, so there really is nothing beyond
-    -- them in their branch of the InfoTree.
-    ``Lean.Parser.Tactic.tacticSorry,
-    ``Lean.Parser.Tactic.tacticRepeat_,
-    ``Lean.Parser.Tactic.tacticStop_,
-    `Mathlib.Tactic.Abel.abelNF,
-    `Mathlib.Tactic.RingNF.ringNF }
+    ``cdot }
 
 /-- `SyntaxNodeKind`s that are allowed to follow a flexible tactic:
   `simp`, `simp_all`, `simpa`, `dsimp`, `constructor`, `congr`, `done`, `rfl`, `omega`, `abel`,
   `ring`, `linarith`, `nlinarith`, `norm_cast`, `aesop`, `tauto`, `fun_prop`, `split`, `split_ifs`.
 -/
-def followers : Std.HashSet Name :=
+def flexible : Std.HashSet Name :=
   { ``Lean.Parser.Tactic.simp,
     ``Lean.Parser.Tactic.simpAll,
     ``Lean.Parser.Tactic.simpa,
@@ -339,7 +385,7 @@ def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
   let mut msgs : Array (Syntax × Syntax × Stained) := #[]
   for d in x do for (s, ctx0, ctx1, mvs0, mvs1) in d do
     let skind := s.getKind
-    if combinatorLike.contains skind then continue
+    if stoppers.contains skind then continue
     let shouldStain? := flexible? s && mvs1.length == mvs0.length
     for d in getStained! s do
       if shouldStain? then
@@ -352,7 +398,7 @@ def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
 
       else
         let stained_in_syntax := if usesGoal? skind then (toStained s).insert d else toStained s
-        if !followers.contains skind then
+        if !flexible.contains skind then
           for currMv0 in mvs0 do
             let lctx0 := ((ctx0.decls.find? currMv0).getD default).lctx
             let mut foundFvs : Std.HashSet (FVarId × MVarId):= {}
