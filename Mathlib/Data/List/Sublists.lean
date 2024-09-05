@@ -138,7 +138,7 @@ theorem sublists_append (l₁ l₂ : List α) :
   | nil => simp
   | cons a l₁ ih =>
     rw [foldr_cons, ih]
-    simp [List.bind, join_join, Function.comp]
+    simp [List.bind, join_join, Function.comp_def]
 
 theorem sublists_cons (a : α) (l : List α) :
     sublists (a :: l) = sublists l >>= (fun x => [x, a :: x]) :=
@@ -155,13 +155,13 @@ theorem sublists_concat (l : List α) (a : α) :
 theorem sublists_reverse (l : List α) : sublists (reverse l) = map reverse (sublists' l) := by
   induction' l with hd tl ih <;> [rfl;
     simp only [reverse_cons, sublists_append, sublists'_cons, map_append, ih, sublists_singleton,
-      map_eq_map, bind_eq_bind, map_map, bind_cons, append_nil, bind_nil, (· ∘ ·)]]
+      map_eq_map, bind_eq_bind, map_map, bind_cons, append_nil, bind_nil, Function.comp_def]]
 
 theorem sublists_eq_sublists' (l : List α) : sublists l = map reverse (sublists' (reverse l)) := by
   rw [← sublists_reverse, reverse_reverse]
 
 theorem sublists'_reverse (l : List α) : sublists' (reverse l) = map reverse (sublists l) := by
-  simp only [sublists_eq_sublists', map_map, map_id'' reverse_reverse, Function.comp]
+  simp only [sublists_eq_sublists', map_map, map_id'' reverse_reverse, Function.comp_def]
 
 theorem sublists'_eq_sublists (l : List α) : sublists' l = map reverse (sublists (reverse l)) := by
   rw [← sublists'_reverse, reverse_reverse]
