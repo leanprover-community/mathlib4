@@ -252,7 +252,7 @@ theorem init_iff [IsTrans β s] (f : r ≺i s) {a : α} {b : β} : s b (f a) ↔
 /-- A principal segment is the same as a non-surjective initial segment. -/
 noncomputable def _root_.InitialSeg.toPrincipalSeg [IsWellOrder β s] (f : r ≼i s)
     (hf : ¬ Surjective f) : r ≺i s :=
-  let H := f.eq_or_principal.resolve_left hf
+  letI H := f.eq_or_principal.resolve_left hf
   ⟨f, Classical.choose H, Classical.choose_spec H⟩
 
 @[simp]
