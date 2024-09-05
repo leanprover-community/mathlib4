@@ -94,7 +94,7 @@ protected theorem ContMDiffAt.mfderiv {x₀ : N} (f : N → M → M') (g : N →
           (range I) (extChartAt I (g x₀) (g ((extChartAt J x₀).symm x))))
       (range J) (extChartAt J x₀ x₀) := by
     rw [contMDiffAt_iff] at hf hg
-    simp_rw [Function.comp, uncurry, extChartAt_prod, PartialEquiv.prod_coe_symm,
+    simp_rw [Function.comp_def, uncurry, extChartAt_prod, PartialEquiv.prod_coe_symm,
       ModelWithCorners.range_prod] at hf ⊢
     refine ContDiffWithinAt.fderivWithin ?_ hg.2 I.unique_diff hmn (mem_range_self _) ?_
     · simp_rw [extChartAt_to_inv]; exact hf.2
@@ -108,7 +108,7 @@ protected theorem ContMDiffAt.mfderiv {x₀ : N} (f : N → M → M') (g : N →
           (extChartAt I (g x₀) (g x)))
       x₀ := by
     simp_rw [contMDiffAt_iff_source_of_mem_source (mem_chart_source G x₀),
-      contMDiffWithinAt_iff_contDiffWithinAt, Function.comp]
+      contMDiffWithinAt_iff_contDiffWithinAt, Function.comp_def]
     exact this
   have :
     ContMDiffAt J 𝓘(𝕜, E →L[𝕜] E') m

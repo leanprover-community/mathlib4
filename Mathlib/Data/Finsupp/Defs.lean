@@ -910,6 +910,20 @@ theorem support_add_eq [DecidableEq α] {g₁ g₂ : α →₀ M} (h : Disjoint 
 theorem single_add (a : α) (b₁ b₂ : M) : single a (b₁ + b₂) = single a b₁ + single a b₂ :=
   (zipWith_single_single _ _ _ _ _).symm
 
+theorem support_single_add {a : α} {b : M} {f : α →₀ M} (ha : a ∉ f.support) (hb : b ≠ 0) :
+    support (single a b + f) = cons a f.support ha := by
+  classical
+  have H := support_single_ne_zero a hb
+  rw [support_add_eq, H, cons_eq_insert, insert_eq]
+  rwa [H, disjoint_singleton_left]
+
+theorem support_add_single {a : α} {b : M} {f : α →₀ M} (ha : a ∉ f.support) (hb : b ≠ 0) :
+    support (f + single a b) = cons a f.support ha := by
+  classical
+  have H := support_single_ne_zero a hb
+  rw [support_add_eq, H, union_comm, cons_eq_insert, insert_eq]
+  rwa [H, disjoint_singleton_right]
+
 instance instAddZeroClass : AddZeroClass (α →₀ M) :=
   DFunLike.coe_injective.addZeroClass _ coe_zero coe_add
 

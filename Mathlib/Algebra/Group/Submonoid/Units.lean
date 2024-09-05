@@ -327,6 +327,6 @@ lemma val_mem_ofUnits_iff_mem (H : Subgroup Gˣ) (x : Gˣ) : (x : G) ∈ H.ofUni
 @[to_additive " The equivalence between the greatest subgroup of additive units
 contained within `T` and `T` itself. "]
 def unitsEquivSelf (H : Subgroup G) : H.units ≃* H :=
-  H.unitsEquivUnitsType.trans toUnits.symm
+  H.unitsEquivUnitsType.trans (toUnits (G := H)).symm
 
 end Subgroup
