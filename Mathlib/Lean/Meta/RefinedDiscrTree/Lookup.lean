@@ -147,10 +147,10 @@ private structure PartialMatch where
   trie : TrieIndex
   /-- Metavariable assignments for `.star` patterns in the discrimination tree.
     We use a `List Key`, in the reverse order. -/
-  treeStars : PHashMap Nat (List Key) := {}
+  treeStars : AssocList Nat (List Key) := {}
   /-- Metavariable assignments for `.star` patterns in the lookup expression.
     We use a `List Key`, in the reverse order. -/
-  queryStars : PHashMap Nat (List Key) := {}
+  queryStars : AssocList Nat (List Key) := {}
   deriving Inhabited
 
 

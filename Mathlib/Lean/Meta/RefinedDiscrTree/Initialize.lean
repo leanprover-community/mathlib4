@@ -38,9 +38,9 @@ private def modifyAt (d : PreDiscrTree α) (k : Key)
     (f : Array (LazyEntry α) → Array (LazyEntry α)) : PreDiscrTree α :=
   let { root, tries } := d
   match root.find? k with
-  | .none =>
+  | none =>
     { root := root.insert k tries.size, tries := tries.push (f #[]) }
-  | .some i =>
+  | some i =>
     { root, tries := tries.modify i f }
 
 /-- Add an entry to the pre-discrimination tree.-/
@@ -183,10 +183,6 @@ where
       toFlat data tree
   termination_by stop - start
 
-/-- Get the results of each task and merge using combining function -/
-private def combineGet [Append α] (z : α) (tasks : Array (Task α)) : α :=
-  tasks.foldl (fun x t => x ++ t.get) (init := z)
-
 private def getChildNgen : MetaM NameGenerator := do
   let ngen ← getNGen
   let (cngen, ngen) := ngen.mkChild
@@ -225,7 +221,7 @@ def createImportedDiscrTree (cctx : Core.Context) (ngen : NameGenerator) (env : 
           pure tasks
     termination_by env.header.moduleData.size - idx
   let tasks ← go ngen #[] 0 0 0
-  let r := combineGet {} tasks
+  let r : InitResults α := tasks.foldl (init := {}) (· ++ ·.get)
   r.errors.forM logImportFailure
   return r.tree.toLazy config
 
