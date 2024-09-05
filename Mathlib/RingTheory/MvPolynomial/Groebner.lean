@@ -341,9 +341,19 @@ theorem monomialOrderLCoeff_ne_zero_iff {m : MonomialOrder σ} {f : MvPolynomial
     exact Finset.sup_mem_of_nonempty hf
 
 @[simp]
-theorem coeff_monomialOrderDegree_eq_zero_iff {m : MonomialOrder σ} {f : MvPolynomial σ R} :
+theorem monomialOrderLCoeff_eq_zero_iff {m : MonomialOrder σ} {f : MvPolynomial σ R} :
     monomialOrderLCoeff m f = 0 ↔ f = 0 := by
   simp only [← not_iff_not, monomialOrderLCoeff_ne_zero_iff]
+
+@[simp]
+theorem coeff_monomialOrderDegree_ne_zero_iff {m : MonomialOrder σ} {f : MvPolynomial σ R} :
+    f.coeff (f.monomialOrderDegree m) ≠ 0 ↔ f ≠ 0 :=
+  monomialOrderLCoeff_ne_zero_iff
+
+@[simp]
+theorem coeff_monomialOrderDegree_eq_zero_iff {m : MonomialOrder σ} {f : MvPolynomial σ R} :
+    f.coeff (f.monomialOrderDegree m) = 0 ↔ f = 0 :=
+  monomialOrderLCoeff_eq_zero_iff
 
 theorem monomialOrderDegree_eq_zero_iff_totalDegree_eq_zero
     {m : MonomialOrder σ} {f : MvPolynomial σ R} :
@@ -355,10 +365,16 @@ theorem monomialOrderDegree_eq_zero_iff_totalDegree_eq_zero
   apply forall_congr'
   exact fun _ ↦ imp_congr (rfl.to_iff) (by simp [Finsupp.ext_iff])
 
+@[simp]
 theorem monomialOrderDegree_neg {f : MvPolynomial σ R} :
     (-f).monomialOrderDegree m = f.monomialOrderDegree m := by
   unfold monomialOrderDegree
   rw [support_neg]
+
+@[simp]
+theorem monomialOrderDegree_C (r : R) :
+    (C r).monomialOrderDegree m = 0 := by
+  rw [monomialOrderDegree_eq_zero_iff_totalDegree_eq_zero, totalDegree_C]
 
 theorem monomialOrderDegree_add_le {f g : MvPolynomial σ R} :
     m.toSyn ((f + g).monomialOrderDegree m) ≤ 
@@ -407,7 +423,7 @@ theorem monomialOrderDegree_add_of_ne {f g : MvPolynomial σ R}
   · rw [not_lt, le_iff_eq_or_lt, Classical.or_iff_not_imp_left, EmbeddingLike.apply_eq_iff_eq] at h'
     rw [add_comm, monomialOrderDegree_add_of_lt m (h' h), right_eq_sup]
     simp only [le_of_lt (h' h)]
-    
+
 theorem monomialOrderDegree_mul_le {f g : MvPolynomial σ R} :
     (f * g).monomialOrderDegree m ≼[m] f.monomialOrderDegree m + g.monomialOrderDegree m := by
   classical
@@ -430,8 +446,8 @@ theorem monomialOrderDegree_mul_le {f g : MvPolynomial σ R} :
     apply lt_of_le_of_lt _ hc
     simp only [map_add]
     exact add_le_add_right hd _
-    
-theorem monomialOrderLCoeff' {f g : MvPolynomial σ R} :
+
+theorem monomialOrderLCoeff_mul' {f g : MvPolynomial σ R} :
     (f * g).coeff (f.monomialOrderDegree m + g.monomialOrderDegree m) 
       = f.monomialOrderLCoeff m * g.monomialOrderLCoeff m := by
   classical
@@ -461,45 +477,175 @@ theorem monomialOrderLCoeff' {f g : MvPolynomial σ R} :
         exact lt_of_add_lt_add_right h'
   · simp
 
-theorem monomialOrderDegree_mul_eq [IsDomain R] {f g : MvPolynomial σ R} 
-    (hf : f ≠ 0) (hg : g ≠ 0) :
+theorem monomialOrderDegree_mul_of_isRegular_left {f g : MvPolynomial σ R} 
+    (hf : IsRegular (f.monomialOrderLCoeff m)) (hg : g ≠ 0) :
     (f * g).monomialOrderDegree m = f.monomialOrderDegree m + g.monomialOrderDegree m := by
   apply m.toSyn.injective
   apply le_antisymm (monomialOrderDegree_mul_le m)
   apply le_monomialOrderDegree 
-  rw [mem_support_iff, monomialOrderLCoeff']
-  simp [hf, hg]
+  rw [mem_support_iff, monomialOrderLCoeff_mul']
+  simp only [ne_eq, hf, IsRegular.left, IsLeftRegular.mul_left_eq_zero_iff,
+    monomialOrderLCoeff_eq_zero_iff]
+  exact hg
 
-theorem monomialOrderDegree_mul_eq' [IsDomain R] {f g : MvPolynomial σ R} (hfg : f * g ≠ 0) :
+theorem monomialOrderDegree_mul_of_isRegular_right {f g : MvPolynomial σ R} 
+    (hf : f ≠ 0) (hg : IsRegular (g.monomialOrderLCoeff m)) :
+    (f * g).monomialOrderDegree m = f.monomialOrderDegree m + g.monomialOrderDegree m := by
+  rw [mul_comm, monomialOrderDegree_mul_of_isRegular_left m hg hf, add_comm]
+
+theorem monomialOrderDegree_mul [IsDomain R] {f g : MvPolynomial σ R} 
+    (hf : f ≠ 0) (hg : g ≠ 0) :
     (f * g).monomialOrderDegree m = f.monomialOrderDegree m + g.monomialOrderDegree m := 
-  monomialOrderDegree_mul_eq _ (left_ne_zero_of_mul hfg) (right_ne_zero_of_mul hfg)
+  monomialOrderDegree_mul_of_isRegular_left m 
+    (isRegular_of_ne_zero (monomialOrderLCoeff_ne_zero_iff.mpr hf)) hg
+
+theorem monomialOrderDegree_mul' [IsDomain R] {f g : MvPolynomial σ R} (hfg : f * g ≠ 0) :
+    (f * g).monomialOrderDegree m = f.monomialOrderDegree m + g.monomialOrderDegree m := 
+  monomialOrderDegree_mul _ (left_ne_zero_of_mul hfg) (right_ne_zero_of_mul hfg)
 
 theorem monomialOrderLCoeff_mul [IsDomain R] {f g : MvPolynomial σ R} 
     (hf : f ≠ 0) (hg : g ≠ 0) :
     (f * g).monomialOrderLCoeff m = f.monomialOrderLCoeff m * g.monomialOrderLCoeff m := by
-  rw [monomialOrderLCoeff, monomialOrderDegree_mul_eq m hf hg, ← monomialOrderLCoeff']
+  rw [monomialOrderLCoeff, monomialOrderDegree_mul m hf hg, ← monomialOrderLCoeff_mul']
 
-noncomputable example (B : Set (MvPolynomial σ R)) : B →₀ MvPolynomial σ R := 0
+theorem monomialOrderDegree_smul_le {r : R} {f : MvPolynomial σ R} :
+    (r • f).monomialOrderDegree m ≼[m] f.monomialOrderDegree m := by
+  rw [smul_eq_C_mul]
+  apply le_of_le_of_eq (monomialOrderDegree_mul_le m)
+  simp
+   
+theorem monomialOrderDegree_smul {r : R} (hr : IsRegular r) {f : MvPolynomial σ R} :
+    (r • f).monomialOrderDegree m = f.monomialOrderDegree m := by
+  by_cases hf : f = 0
+  · simp [hf]
+  apply m.toSyn.injective
+  apply le_antisymm (monomialOrderDegree_smul_le m)
+  apply le_monomialOrderDegree
+  simp only [mem_support_iff, smul_eq_C_mul]
+  rw [← zero_add (monomialOrderDegree m f), ← monomialOrderDegree_C m r, monomialOrderLCoeff_mul']
+  simp [monomialOrderLCoeff, hr.left.mul_left_eq_zero_iff, hf]
 
--- Maybe the statement is incorrect
-theorem monomialOrderDiv [IsDomain R] (B : Set (MvPolynomial σ R)) 
+theorem monomialOrderDegree_sub_LTerm_le (f : MvPolynomial σ R) :
+    monomialOrderDegree m (f - monomial (f.monomialOrderDegree m) (f.monomialOrderLCoeff m)) 
+      ≼[m] f.monomialOrderDegree m := by
+  apply le_trans (monomialOrderDegree_sub_le m) 
+  simp only [sup_le_iff, le_refl, true_and]
+  apply monomialOrderDegree_monomial_le
+
+theorem monomialOrderDegree_sub_LTerm_lt {f : MvPolynomial σ R}
+    (hf : f.monomialOrderDegree m ≠ 0) : 
+    monomialOrderDegree m (f - monomial (f.monomialOrderDegree m) (f.monomialOrderLCoeff m)) 
+      ≺[m] f.monomialOrderDegree m := by
+  rw [lt_iff_le_and_ne]
+  refine ⟨monomialOrderDegree_sub_LTerm_le m f, ?_⟩
+  classical
+  intro hf'
+  simp only [EmbeddingLike.apply_eq_iff_eq] at hf'
+  have : (f - monomial (monomialOrderDegree m f) (monomialOrderLCoeff m f)) ≠ 0 := by
+    intro h
+    simp only [h, monomialOrderDegree_zero] at hf'
+    exact hf hf'.symm
+  rw [← coeff_monomialOrderDegree_ne_zero_iff (m := m), hf'] at this
+  apply this
+  simp [coeff_monomial, monomialOrderLCoeff]
+
+theorem monomialOrderDegree_red_lt {f b : MvPolynomial σ R} (hb : IsUnit (b.monomialOrderLCoeff m))
+    (hbf : b.monomialOrderDegree m ≤ f.monomialOrderDegree m)
+    (hf : f.monomialOrderDegree m ≠ 0) : 
+    monomialOrderDegree m 
+      (f - monomial (f.monomialOrderDegree m - b.monomialOrderDegree m) 
+              (hb.unit⁻¹ * f.monomialOrderLCoeff m) * b) 
+        ≺[m] f.monomialOrderDegree m := by
+  have H : monomialOrderDegree m f = 
+    monomialOrderDegree m 
+      ((monomial (monomialOrderDegree m f - monomialOrderDegree m b)) 
+        (hb.unit⁻¹ * monomialOrderLCoeff m f)) + 
+      monomialOrderDegree m b := by
+    classical
+    rw [monomialOrderDegree_monomial, if_neg]
+    · ext d
+      rw [tsub_add_cancel_of_le hbf]
+    · simp only [Units.mul_right_eq_zero, monomialOrderLCoeff_eq_zero_iff]
+      intro hf0
+      apply hf 
+      simp [hf0]
+  have H' : coeff (f.monomialOrderDegree m) 
+        (f - monomial (f.monomialOrderDegree m - b.monomialOrderDegree m) 
+              (hb.unit⁻¹ * f.monomialOrderLCoeff m) * b) = 0 := by
+    simp  [sub_eq_zero]
+    nth_rewrite 2 [H]
+    rw [monomialOrderLCoeff_mul' (m := m), monomialOrderLCoeff_monomial]
+    rw [mul_comm, ← mul_assoc]
+    simp only [IsUnit.mul_val_inv, one_mul]
+    rfl
+  rw [lt_iff_le_and_ne]
+  constructor
+  · classical
+    apply le_trans (monomialOrderDegree_sub_le m)
+    simp only [sup_le_iff, le_refl, true_and]
+    apply le_of_le_of_eq (monomialOrderDegree_mul_le m) 
+    rw [m.toSyn.injective.eq_iff]
+    exact H.symm
+  · intro K
+    simp only [EmbeddingLike.apply_eq_iff_eq] at K
+    nth_rewrite 1 [← K] at H'
+    change monomialOrderLCoeff m _ = 0 at H'
+    rw [monomialOrderLCoeff_eq_zero_iff] at H'
+    rw [H', monomialOrderDegree_zero] at K
+    exact hf K.symm
+    
+theorem eq_C_of_monomialOrderDegree_eq_zero {f : MvPolynomial σ R}
+    (hf : f.monomialOrderDegree m = 0) :
+    f = C (f.monomialOrderLCoeff m) := by 
+  ext d
+  simp only [monomialOrderLCoeff, hf]
+  classical
+  by_cases hd : d = 0
+  · simp [hd]
+  · rw [coeff_C, if_neg (Ne.symm hd)]
+    apply coeff_eq_zero_of_lt (m := m)
+    simp [hf, hd, pos_iff_ne_zero]
+
+theorem monomialOrderDiv [IsDomain R] [Finite σ] (B : Set (MvPolynomial σ R)) 
     (hB : ∀ b ∈ B, IsUnit (b.monomialOrderLCoeff m)) (f : MvPolynomial σ R) :
     ∃ (g : B →₀ (MvPolynomial σ R)) (r : MvPolynomial σ R), 
       f = Finsupp.linearCombination _ (fun (b : B) ↦ (b : MvPolynomial σ R)) g + r ∧ 
         (∀ b, (b * (g b)).monomialOrderDegree m ≼[m] f.monomialOrderDegree m) ∧
         (∀ c ∈ r.support, ∀ b ∈ B, ¬ (b.monomialOrderDegree m ≤ c)) := by
+  by_cases hB' : ∃ b ∈ B, b.monomialOrderDegree m = 0
+  · obtain ⟨b, hb, hb0⟩ := hB'
+    use Finsupp.single ⟨b, hb⟩ ((hB b hb).unit⁻¹ • f), 0
+    constructor
+    · simp only [linearCombination_single, smul_eq_mul, add_zero]
+      simp only [smul_mul_assoc, ← smul_eq_iff_eq_inv_smul, Units.smul_isUnit]
+      nth_rewrite 2 [eq_C_of_monomialOrderDegree_eq_zero _ hb0]
+      rw [mul_comm, smul_eq_C_mul]
+    constructor
+    · intro c
+      by_cases hc : c = ⟨b, hb⟩
+      · apply le_trans (monomialOrderDegree_mul_le m)
+        simp only [hc, hb0, single_eq_same, zero_add]
+        apply le_of_eq
+        simp only [EmbeddingLike.apply_eq_iff_eq]
+        apply monomialOrderDegree_smul m (Units.isRegular _)
+      · simp [single_eq_of_ne (Ne.symm hc)]
+    · simp
+  push_neg at hB'
   by_cases hf0 : f = 0
   · exact ⟨0, 0, by simp [hf0], fun _ ↦ by simp, by simp⟩
   by_cases hf : ∃ b ∈ B, b.monomialOrderDegree m ≤ f.monomialOrderDegree m
   · obtain ⟨b, hb, hf⟩ := hf
-    let f' := f -  monomial 
-      (f.monomialOrderDegree m - b.monomialOrderDegree m) 
-      ((f.coeff (f.monomialOrderDegree m)) * (hB b hb).unit⁻¹) * b
-    have : f'.monomialOrderDegree m ≺[m] f.monomialOrderDegree m := sorry
+    let f' := f - monomial (f.monomialOrderDegree m - b.monomialOrderDegree m) 
+              ((hB b hb).unit⁻¹ * f.monomialOrderLCoeff m) * b
+    have hf' : f'.monomialOrderDegree m ≺[m] f.monomialOrderDegree m := by
+      apply monomialOrderDegree_red_lt m (hB b hb) hf
+      intro hf0'
+      apply hB' b hb
+      simpa [hf0'] using hf
     obtain ⟨g', r', H'⟩ := monomialOrderDiv B hB f'
     use g' + Finsupp.single ⟨b, hb⟩ (monomial 
       (f.monomialOrderDegree m - b.monomialOrderDegree m) 
-      ((f.coeff (f.monomialOrderDegree m)) * (hB b hb).unit⁻¹))
+        ((hB b hb).unit⁻¹ * f.monomialOrderLCoeff m)) 
     use r'
     constructor
     · rw [map_add, add_assoc, add_comm _ r', ← add_assoc, ← H'.1]
@@ -511,9 +657,7 @@ theorem monomialOrderDiv [IsDomain R] (B : Set (MvPolynomial σ R))
       apply le_trans (monomialOrderDegree_add_le m)
       simp only [sup_le_iff]
       constructor
-      · apply le_trans (H'.2.1 _) (le_of_lt ?_)
-        -- the monomialOrderDegree of f' is strictly smaller than that of f
-        sorry
+      · exact le_trans (H'.2.1 _) (le_of_lt hf')
       · classical
         rw [single_apply]
         split_ifs with hc
@@ -521,12 +665,49 @@ theorem monomialOrderDiv [IsDomain R] (B : Set (MvPolynomial σ R))
           simp only [map_add]
           apply le_of_le_of_eq (add_le_add_left (monomialOrderDegree_monomial_le _) _)
           simp only [← hc]
+          rw [← map_add, m.toSyn.injective.eq_iff]
           rw [add_tsub_cancel_of_le]
-          sorry
+          exact hf
         · simp
     · exact H'.2.2
   · push_neg at hf
-    sorry
+    let f' := f - monomial (f.monomialOrderDegree m) (f.monomialOrderLCoeff m)
+    suffices ∃ (g' : B →₀ MvPolynomial σ R), ∃ r', 
+        (f' = (linearCombination (MvPolynomial σ R) fun b ↦ ↑b) g' + r') ∧
+        (∀ (b : B), monomialOrderDegree m ((b : MvPolynomial σ R) * (g' b)) ≼[m] 
+          monomialOrderDegree m f') ∧
+        (∀ c ∈ r'.support, ∀ b ∈ B, ¬monomialOrderDegree m b ≤ c) by
+      obtain ⟨g', r', H'⟩ := this
+      use g', r' +  monomial (f.monomialOrderDegree m) (f.monomialOrderLCoeff m)
+      constructor
+      · simp [← add_assoc, ← H'.1, f']
+      constructor
+      · exact fun b ↦ le_trans (H'.2.1 b) (monomialOrderDegree_sub_LTerm_le m f)
+      · intro c hc b hb
+        by_cases hc' : c ∈ r'.support
+        · exact H'.2.2 c hc' b hb 
+        · classical
+          have := MvPolynomial.support_add hc
+          rw [Finset.mem_union, Classical.or_iff_not_imp_left] at this
+          specialize this hc'
+          simp only [mem_support_iff, coeff_monomial, ne_eq, ite_eq_right_iff,
+            coeff_monomialOrderDegree_eq_zero_iff, Classical.not_imp] at this
+          rw [← this.1]
+          exact hf b hb
+    by_cases hf'0 : f' = 0
+    · exact ⟨0, 0, by simp [hf'0], fun _ ↦ by simp, by simp⟩
+    · exact monomialOrderDiv B hB f'
+termination_by WellFounded.wrap 
+  ((isWellFounded_iff m.syn fun x x_1 ↦ x < x_1).mp m.wf) (m.toSyn (f.monomialOrderDegree m))
+decreasing_by
+· exact hf'
+· apply monomialOrderDegree_sub_LTerm_lt
+  intro hf0
+  apply hf'0
+  simp only [f', sub_eq_zero]
+  nth_rewrite 1 [eq_C_of_monomialOrderDegree_eq_zero _ hf0, hf0]
+  simp 
     
+#printaxioms monomialOrderDiv   
 
 end MvPolynomial
