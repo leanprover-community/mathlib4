@@ -18,14 +18,10 @@ applications the underlying type is a monoid (multiplicative or additive), we do
 the definitions.
 -/
 
-
 universe u v
 
-open scoped Classical
 open Set Filter TopologicalSpace
-
-open scoped Classical
-open Topology Pointwise
+open scoped Topology Pointwise
 
 variable {ι α M N X : Type*} [TopologicalSpace X]
 
@@ -87,7 +83,7 @@ theorem ContinuousMul.induced {α : Type*} {β : Type*} {F : Type*} [FunLike F �
     @ContinuousMul α (tβ.induced f) _ := by
   let tα := tβ.induced f
   refine ⟨continuous_induced_rng.2 ?_⟩
-  simp only [Function.comp, map_mul]
+  simp only [Function.comp_def, map_mul]
   fun_prop
 
 @[to_additive (attr := continuity, fun_prop)]

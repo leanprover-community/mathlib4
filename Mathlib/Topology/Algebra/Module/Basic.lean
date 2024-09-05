@@ -44,8 +44,9 @@ theorem ContinuousSMul.of_nhds_zero [TopologicalRing R] [TopologicalAddGroup M]
     (hmulleft : ∀ m : M, Tendsto (fun a : R => a • m) (𝓝 0) (𝓝 0))
     (hmulright : ∀ a : R, Tendsto (fun m : M => a • m) (𝓝 0) (𝓝 0)) : ContinuousSMul R M where
   continuous_smul := by
+    rw [← nhds_prod_eq] at hmul
     refine continuous_of_continuousAt_zero₂ (AddMonoidHom.smul : R →+ M →+ M) ?_ ?_ ?_ <;>
-      simpa [ContinuousAt, nhds_prod_eq]
+      simpa [ContinuousAt]
 
 end
 
@@ -251,7 +252,7 @@ class ContinuousSemilinearMapClass (F : Type*) {R S : outParam Type*} [Semiring 
 
 /-- `ContinuousLinearMapClass F R M M₂` asserts `F` is a type of bundled continuous
 `R`-linear maps `M → M₂`.  This is an abbreviation for
-`ContinuousSemilinearMapClass F (RingHom.id R) M M₂`.  -/
+`ContinuousSemilinearMapClass F (RingHom.id R) M M₂`. -/
 abbrev ContinuousLinearMapClass (F : Type*) (R : outParam Type*) [Semiring R]
     (M : outParam Type*) [TopologicalSpace M] [AddCommMonoid M] (M₂ : outParam Type*)
     [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M] [Module R M₂] [FunLike F M M₂] :=
@@ -1637,8 +1638,6 @@ instance continuousSemilinearEquivClass :
 -- instance : CoeFun (M₁ ≃SL[σ₁₂] M₂) fun _ => M₁ → M₂ :=
 -- ⟨fun f => f⟩
 
--- Porting note: Syntactic tautology.
-
 theorem coe_apply (e : M₁ ≃SL[σ₁₂] M₂) (b : M₁) : (e : M₁ →SL[σ₁₂] M₂) b = e b :=
   rfl
 
@@ -1761,7 +1760,7 @@ theorem coe_refl : ↑(ContinuousLinearEquiv.refl R₁ M₁) = ContinuousLinearM
 theorem coe_refl' : ⇑(ContinuousLinearEquiv.refl R₁ M₁) = id :=
   rfl
 
-/-- The inverse of a continuous linear equivalence as a continuous linear equivalence-/
+/-- The inverse of a continuous linear equivalence as a continuous linear equivalence -/
 @[symm]
 protected def symm (e : M₁ ≃SL[σ₁₂] M₂) : M₂ ≃SL[σ₂₁] M₁ :=
   { e.toLinearEquiv.symm with
@@ -1902,9 +1901,7 @@ theorem self_comp_symm (e : M₁ ≃SL[σ₁₂] M₂) : (e : M₁ → M₂) ∘
   exact apply_symm_apply e x
 
 @[simp]
-theorem symm_symm (e : M₁ ≃SL[σ₁₂] M₂) : e.symm.symm = e := by
-  ext x
-  rfl
+theorem symm_symm (e : M₁ ≃SL[σ₁₂] M₂) : e.symm.symm = e := rfl
 
 @[simp]
 theorem refl_symm : (ContinuousLinearEquiv.refl R₁ M₁).symm = ContinuousLinearEquiv.refl R₁ M₁ :=
@@ -2234,8 +2231,6 @@ end ContinuousLinearEquiv
 
 namespace ContinuousLinearMap
 
-open scoped Classical
-
 variable {R : Type*} {M : Type*} {M₂ : Type*} [TopologicalSpace M] [TopologicalSpace M₂]
 
 section
@@ -2244,6 +2239,7 @@ variable [Semiring R]
 variable [AddCommMonoid M₂] [Module R M₂]
 variable [AddCommMonoid M] [Module R M]
 
+open Classical in
 /-- Introduce a function `inverse` from `M →L[R] M₂` to `M₂ →L[R] M`, which sends `f` to `f.symm` if
 `f` is a continuous linear equivalence and to `0` otherwise.  This definition is somewhat ad hoc,
 but one needs a fully (rather than partially) defined inverse function for some purposes, including
@@ -2393,3 +2389,5 @@ instance t3_quotient_of_isClosed [TopologicalAddGroup M] [IsClosed (S : Set M)] 
 end Submodule
 
 end Quotient
+
+set_option linter.style.longFile 2500
