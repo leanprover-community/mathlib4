@@ -101,13 +101,17 @@ end goals_heuristic
 namespace Mathlib.Linter.Flexible
 
 variable (take? : Syntax → Bool) in
--- also returns the preceding goals that change.  is there only one always?
 /-- `extractCtxAndGoals take? tree` takes as input a function `take? : Syntax → Bool` and
 an `InfoTree` and returns the array of pairs `(stx, mvars)`,
 where `stx` is a syntax node such that `take? stx` is `true` and
-`mvars` are the goals that have been "created" by the tactic in `stx`.
+`mvars` indicates the goal state:
+ * the context before `stx`
+ * the context after `stx`
+ * a list of metavariables closed by `stx`
+ * a list of metavariables created by `stx`
 
-A typical usage is to find the goals following a `simp` application. -/
+A typical usage is to find the goals following a `simp` application.
+-/
 partial
 def extractCtxAndGoals : InfoTree →
     Array (Syntax × MetavarContext × MetavarContext × List MVarId × List MVarId)
@@ -372,7 +376,7 @@ def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
       stains := new
 
   for (s, stainStx, d) in msgs do
-    Linter.logLint linter.flexible stainStx m!"'{stainStx}' stains '{d}'…"
+    Linter.logLint linter.flexible stainStx m!"'{stainStx}' is a flexible tactic modifying '{d}'…"
     logInfoAt s m!"… and '{s}' uses '{d}'!"
 
 initialize addLinter flexibleLinter
