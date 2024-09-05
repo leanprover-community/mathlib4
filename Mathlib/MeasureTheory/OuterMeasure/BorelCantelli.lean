@@ -10,7 +10,7 @@ import Mathlib.MeasureTheory.OuterMeasure.AE
 
 In this file we show one implication of the **Borel-Cantelli lemma**:
 if `s i` is a countable family of sets such that `∑' i, μ (s i)` is finite,
-then a.e. all points belong to finitely sets of the family.
+then a.e. all points belong to finitely many sets of the family.
 
 We prove several versions of this lemma:
 
@@ -70,7 +70,7 @@ theorem ae_finite_setOf_mem {s : ι → Set α} (h : ∑' i, μ (s i) ≠ ∞) :
   simp [mem_limsup_iff_frequently_mem, Filter.Frequently]
 
 /-- A version of the **Borel-Cantelli lemma**: if `pᵢ` is a sequence of predicates such that
-`∑ μ {x | pᵢ x}` is finite, then the measure of `x` such that `pᵢ x` holds frequently as `i → ∞` (or
+`∑' i, μ {x | pᵢ x}` is finite, then the measure of `x` such that `pᵢ x` holds frequently as `i → ∞` (or
 equivalently, `pᵢ x` holds for infinitely many `i`) is equal to zero. -/
 theorem measure_setOf_frequently_eq_zero {p : ℕ → α → Prop} (hp : ∑' i, μ { x | p i x } ≠ ∞) :
     μ { x | ∃ᶠ n in atTop, p n x } = 0 := by
@@ -78,7 +78,7 @@ theorem measure_setOf_frequently_eq_zero {p : ℕ → α → Prop} (hp : ∑' i,
     setOf_exists] using measure_limsup_atTop_eq_zero hp
 
 /-- A version of the **Borel-Cantelli lemma**: if `sᵢ` is a sequence of sets such that
-`∑ μ sᵢ` exists, then for almost all `x`, `x` does not belong to almost all `sᵢ`. -/
+`∑' i, μ sᵢ` is finite, then for almost all `x`, `x` does not belong to `sᵢ` for large `i`. -/
 theorem ae_eventually_not_mem {s : ℕ → Set α} (hs : (∑' i, μ (s i)) ≠ ∞) :
     ∀ᵐ x ∂μ, ∀ᶠ n in atTop, x ∉ s n :=
   measure_setOf_frequently_eq_zero hs
