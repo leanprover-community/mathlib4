@@ -86,7 +86,7 @@ def inclusion (x : X) : OpenNhds x ⥤ Opens X :=
 theorem inclusion_obj (x : X) (U) (p) : (inclusion x).obj ⟨U, p⟩ = U :=
   rfl
 
-theorem openEmbedding {x : X} (U : OpenNhds x) : OpenEmbedding U.1.inclusion :=
+theorem openEmbedding {x : X} (U : OpenNhds x) : OpenEmbedding U.1.inclusion' :=
   U.1.openEmbedding
 
 /-- The preimage functor from neighborhoods of `f x` to neighborhoods of `x`. -/
