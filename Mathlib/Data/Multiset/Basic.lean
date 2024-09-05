@@ -148,7 +148,7 @@ theorem cons_inj_right (a : α) : ∀ {s t : Multiset α}, a ::ₘ s = a ::ₘ t
 @[elab_as_elim]
 protected theorem induction {p : Multiset α → Prop} (empty : p 0)
     (cons : ∀ (a : α) (s : Multiset α), p s → p (a ::ₘ s)) : ∀ s, p s := by
-  rintro ⟨l⟩; induction' l with _ _ ih <;> [exact empty; exact cons _ _ ih]
+  rintro ⟨l⟩; induction l with | nil => exact empty | cons _ _ ih => exact cons _ _ ih
 
 @[elab_as_elim]
 protected theorem induction_on {p : Multiset α → Prop} (s : Multiset α) (empty : p 0)
@@ -2145,8 +2145,8 @@ theorem count_replicate_self (a : α) (n : ℕ) : count a (replicate n a) = n :=
 
 theorem count_replicate (a b : α) (n : ℕ) : count a (replicate n b) = if b = a then n else 0 := by
   convert List.count_replicate a b n
-  rw [← coe_count, coe_replicate]
-  simp
+  · rw [← coe_count, coe_replicate]
+  · simp
 
 @[simp]
 theorem count_erase_self (a : α) (s : Multiset α) : count a (erase s a) = count a s - 1 :=

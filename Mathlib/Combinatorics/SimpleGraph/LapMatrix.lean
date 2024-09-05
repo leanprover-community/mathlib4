@@ -113,9 +113,9 @@ theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_reachable (x : V →
   rw [lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj]
   refine ⟨?_, fun h i j hA ↦ h i j hA.reachable⟩
   intro h i j ⟨w⟩
-  induction' w with w i j _ hA _ h'
-  · rfl
-  · exact (h i j hA).trans h'
+  induction w with
+  | nil => rfl
+  | cons hA _ h' => exact (h _ _ hA).trans h'
 
 theorem lapMatrix_toLin'_apply_eq_zero_iff_forall_reachable (x : V → ℝ) :
     Matrix.toLin' (G.lapMatrix ℝ) x = 0 ↔ ∀ i j : V, G.Reachable i j → x i = x j := by

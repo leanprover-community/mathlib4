@@ -511,10 +511,14 @@ def Cont.then : Cont → Cont → Cont
   | Cont.fix f k => fun k' => Cont.fix f (k.then k')
 
 theorem Cont.then_eval {k k' : Cont} {v} : (k.then k').eval v = k.eval v >>= k'.eval := by
-  induction' k with _ _ _ _ _ _ _ _ _ k_ih _ _ k_ih generalizing v <;>
-    simp only [Cont.eval, Cont.then, bind_assoc, pure_bind, *]
-  · simp only [← k_ih]
-  · split_ifs <;> [rfl; simp only [← k_ih, bind_assoc]]
+  induction k generalizing v with
+  | halt => simp only [Cont.eval, Cont.then, pure_bind]
+  | cons₁ => simp only [Cont.eval, bind_assoc, *]
+  | cons₂ => simp only [Cont.eval, *]
+  | comp _ _ k_ih => simp only [Cont.eval, bind_assoc, ← k_ih]
+  | fix _ _ k_ih =>
+    simp only [Cont.eval, *]
+    split_ifs <;> [rfl; simp only [← k_ih, bind_assoc]]
 
 /-- The `then k` function is a "configuration homomorphism". Its operation on states is to append
 `k` to the continuation of a `Cfg.ret` state, and to run `k` on `v` if we are in the `Cfg.halt v`
@@ -1598,10 +1602,13 @@ def trStmts₁ : Λ' → Finset Λ'
   | Q@(Λ'.ret _) => {Q}
 
 theorem trStmts₁_trans {q q'} : q' ∈ trStmts₁ q → trStmts₁ q' ⊆ trStmts₁ q := by
-  induction' q with _ _ _ q q_ih _ _ q q_ih q q_ih _ _ q q_ih q q_ih q q_ih q₁ q₂ q₁_ih q₂_ih _ <;>
+  induction q with
+  | move _ _ _ q q_ih => _ | clear _ _ q q_ih => _ | copy q q_ih => _ | push _ _ q q_ih => _
+  | read q q_ih => _ | succ q q_ih => _ | pred q₁ q₂ q₁_ih q₂_ih => _ | ret => _
+  all_goals
     simp (config := { contextual := true }) only [trStmts₁, Finset.mem_insert, Finset.mem_union,
       or_imp, Finset.mem_singleton, Finset.Subset.refl, imp_true_iff, true_and_iff]
-  repeat exact fun h => Finset.Subset.trans (q_ih h) (Finset.subset_insert _ _)
+    repeat exact fun h => Finset.Subset.trans (q_ih h) (Finset.subset_insert _ _)
   · simp
     intro s h x h'
     simp only [Finset.mem_biUnion, Finset.mem_univ, true_and, Finset.mem_insert]
@@ -1792,8 +1799,10 @@ theorem ret_supports {S k} (H₁ : contSupp k ⊆ S) : TM2.SupportsStmt S (tr (�
 theorem trStmts₁_supports {S q} (H₁ : (q : Λ').Supports S) (HS₁ : trStmts₁ q ⊆ S) :
     Supports (trStmts₁ q) S := by
   have W := fun {q} => trStmts₁_self q
-  induction' q with _ _ _ q q_ih _ _ q q_ih q q_ih _ _ q q_ih q q_ih q q_ih q₁ q₂ q₁_ih q₂_ih _ <;>
-    simp [trStmts₁, -Finset.singleton_subset_iff] at HS₁ ⊢
+  induction q with
+  | move _ _ _ q q_ih => _ | clear _ _ q q_ih => _ | copy q q_ih => _ | push _ _ q q_ih => _
+  | read q q_ih => _ | succ q q_ih => _ | pred q₁ q₂ q₁_ih q₂_ih => _ | ret => _
+  all_goals simp [trStmts₁, -Finset.singleton_subset_iff] at HS₁ ⊢
   any_goals
     cases' Finset.insert_subset_iff.1 HS₁ with h₁ h₂
     first | have h₃ := h₂ W | try simp [Finset.subset_iff] at h₂
