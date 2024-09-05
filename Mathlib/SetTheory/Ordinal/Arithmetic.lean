@@ -255,6 +255,8 @@ theorem lift_isLimit (o : Ordinal.{v}) : IsLimit (lift.{u,v} o) ↔ IsLimit o :=
         rw [← lift_succ, lift_lt]
         exact H a' (lift_lt.1 h)⟩
 
+alias ⟨_, IsLimit.lift⟩ := lift_isLimit
+
 theorem IsLimit.pos {o : Ordinal} (h : IsLimit o) : 0 < o :=
   lt_of_le_of_ne (Ordinal.zero_le _) h.1.symm
 

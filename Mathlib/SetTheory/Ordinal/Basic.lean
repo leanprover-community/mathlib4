@@ -1268,6 +1268,11 @@ theorem lift_ord (c) : Ordinal.lift.{u,v} (ord c) = ord (lift.{u,v} c) := by
 
 theorem mk_ord_toType (c : Cardinal) : #c.ord.toType = c := by simp
 
+@[simp]
+theorem mk_ordinal_iio (o : Ordinal.{u}) : #(Iio o) = lift.{u + 1} o.card := by
+  rw [← lift_id #_, ← mk_toType, lift_mk_eq.{u + 1, u, u + 1}]
+  exact ⟨(enumIsoToType o).toEquiv⟩
+
 @[deprecated mk_ord_toType (since := "2024-08-26")]
 alias mk_ord_out := mk_ord_toType
 
