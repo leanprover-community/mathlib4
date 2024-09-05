@@ -728,8 +728,7 @@ section LinearOrder
 variable [LinearOrder α] [PredOrder α]
   (hm : ∀ a, IsMax a → C a) (hs : ∀ a, ¬ IsMin a → C (pred a)) (hl : ∀ a, IsPredLimit a → C a)
 
-theorem isPredLimitRecOn_pred' [Nontrivial α] (hb : ¬ IsMin b) :
-    isPredLimitRecOn hm hs hl (pred b) = hs b hb :=
+theorem isPredLimitRecOn_pred' (hb : ¬ IsMin b) : isPredLimitRecOn hm hs hl (pred b) = hs b hb :=
   isSuccLimitRecOn_succ' (α := αᵒᵈ) hm hs _ hb
 
 @[simp]
@@ -814,7 +813,7 @@ section LinearOrder
 variable [LinearOrder α] [PredOrder α] [WellFoundedGT α] (hm : ∀ a, IsMax a → C a)
   (hs : ∀ a, ¬ IsMin a → C a → C (Order.pred a)) (hl : ∀ a, IsPredLimit a → (∀ b > a, C b) → C a)
 
-theorem limitRecOn_pred' [Nontrivial α] (hb : ¬ IsMin b) :
+theorem limitRecOn_pred' (hb : ¬ IsMin b) :
     limitRecOn hm hs hl (Order.pred b) = hs b hb (limitRecOn hm hs hl b) :=
   SuccOrder.limitRecOn_succ' (α := αᵒᵈ) hm hs _ hb
 
