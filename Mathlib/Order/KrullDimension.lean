@@ -87,17 +87,16 @@ that end at `a`.
 -/
 lemma height_eq_iSup_last_eq (a : α) :
     height a = ⨆ (p : LTSeries α) (_ : p.last = a), ↑(p.length) := by
-  apply le_antisymm
-  · apply iSup₂_le
-    intro p hlast
-    -- The proof is a bit more elaborate since we have a Preorder, not a PartialOrder
-    wlog hlenpos :  p.length ≠ 0
-    · simp_all
-    let p' := p.eraseLast.snoc a ( lt_of_lt_of_le (p.eraseLast_last_rel_last hlenpos) hlast)
-    apply le_iSup₂_of_le p' (by simp [p']) (by simp [p']; norm_cast; omega)
-  · apply iSup₂_le
-    intro p hlast
-    apply le_iSup₂_of_le p (by simp [hlast]) (by simp)
+  apply le_antisymm _ (biSup_mono fun _ => le_of_eq)
+  apply iSup₂_le
+  intro p hlast
+  wlog hlenpos : p.length ≠ 0
+  · simp_all
+  -- We replace the last element in the series with `a`
+  apply le_iSup₂_of_le <|
+    p.eraseLast.snoc a (lt_of_lt_of_le (p.eraseLast_last_rel_last (by simp_all)) hlast)
+  · simp; norm_cast; omega
+  · simp
 
 lemma height_le {x : α} {n : ℕ∞} :
     (∀ (p : LTSeries α), p.last = x → p.length ≤ n) → height x ≤ n := by
