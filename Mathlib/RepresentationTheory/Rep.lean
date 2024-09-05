@@ -35,7 +35,7 @@ open CategoryTheory.Limits
 
 /-- The category of `k`-linear representations of a monoid `G`. -/
 abbrev Rep (k G : Type u) [Ring k] [Monoid G] :=
-  Action (ModuleCat.{u} k) (MonCat.of G)
+  Action (ModuleCat.{u} k) G
 
 instance (k G : Type u) [CommRing k] [Monoid G] : Linear k (Rep k G) := by infer_instance
 
@@ -80,9 +80,9 @@ theorem Action_ρ_eq_ρ {A : Rep k G} : Action.ρ A = A.ρ :=
   rfl
 
 /-- Allows us to apply lemmas about the underlying `ρ`, which would take an element `g : G` rather
-than `g : MonCat.of G` as an argument. -/
+than `g : G` as an argument. -/
 theorem of_ρ_apply {V : Type u} [AddCommGroup V] [Module k V] (ρ : Representation k G V)
-    (g : MonCat.of G) : (Rep.of ρ).ρ g = ρ (g : G) :=
+    (g : G) : (Rep.of ρ).ρ g = ρ (g : G) :=
   rfl
 
 @[simp]
@@ -145,27 +145,26 @@ variable (k G)
 
 /-- The monoidal functor sending a type `H` with a `G`-action to the induced `k`-linear
 `G`-representation on `k[H].` -/
-noncomputable def linearization : MonoidalFunctor (Action (Type u) (MonCat.of G)) (Rep k G) :=
-  (ModuleCat.monoidalFree k).mapAction (MonCat.of G)
-
+noncomputable def linearization : MonoidalFunctor (Action (Type u) G) (Rep k G) :=
+  (ModuleCat.monoidalFree k).mapAction G
 variable {k G}
 
 @[simp]
-theorem linearization_obj_ρ (X : Action (Type u) (MonCat.of G)) (g : G) (x : X.V →₀ k) :
+theorem linearization_obj_ρ (X : Action (Type u) G) (g : G) (x : X.V →₀ k) :
     ((linearization k G).obj X).ρ g x = Finsupp.lmapDomain k k (X.ρ g) x :=
   rfl
 
-theorem linearization_of (X : Action (Type u) (MonCat.of G)) (g : G) (x : X.V) :
+theorem linearization_of (X : Action (Type u) G) (g : G) (x : X.V) :
     ((linearization k G).obj X).ρ g (Finsupp.single x (1 : k))
       = Finsupp.single (X.ρ g x) (1 : k) := by
   rw [linearization_obj_ρ, Finsupp.lmapDomain_apply, Finsupp.mapDomain_single]
 
 -- Porting note (#11041): helps fixing `linearizationTrivialIso` since change in behaviour of `ext`.
-theorem linearization_single (X : Action (Type u) (MonCat.of G)) (g : G) (x : X.V) (r : k) :
+theorem linearization_single (X : Action (Type u) G) (g : G) (x : X.V) (r : k) :
     ((linearization k G).obj X).ρ g (Finsupp.single x r) = Finsupp.single (X.ρ g x) r := by
   rw [linearization_obj_ρ, Finsupp.lmapDomain_apply, Finsupp.mapDomain_single]
 
-variable {X Y : Action (Type u) (MonCat.of G)} (f : X ⟶ Y)
+variable {X Y : Action (Type u) G} (f : X ⟶ Y)
 
 @[simp]
 theorem linearization_map_hom : ((linearization k G).map f).hom = Finsupp.lmapDomain k k f.hom :=
@@ -176,12 +175,12 @@ theorem linearization_map_hom_single (x : X.V) (r : k) :
   Finsupp.mapDomain_single
 
 @[simp]
-theorem linearization_μ_hom (X Y : Action (Type u) (MonCat.of G)) :
+theorem linearization_μ_hom (X Y : Action (Type u) G) :
     ((linearization k G).μ X Y).hom = (finsuppTensorFinsupp' k X.V Y.V).toLinearMap :=
   rfl
 
 @[simp]
-theorem linearization_μ_inv_hom (X Y : Action (Type u) (MonCat.of G)) :
+theorem linearization_μ_inv_hom (X Y : Action (Type u) G) :
     (inv ((linearization k G).μ X Y)).hom = (finsuppTensorFinsupp' k X.V Y.V).symm.toLinearMap := by
 -- Porting note (#11039): broken proof was
 /- simp_rw [← Action.forget_map, Functor.map_inv, Action.forget_map, linearization_μ_hom]

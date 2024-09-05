@@ -23,7 +23,7 @@ universe u v w₁ w₂ t₁ t₂
 
 open CategoryTheory Limits
 
-variable {V : Type (u + 1)} [LargeCategory V] {G : MonCat.{u}}
+variable {V : Type (u + 1)} [LargeCategory V] {G : Type u} [Monoid G]
 
 namespace Action
 
@@ -298,7 +298,7 @@ instance functorCategoryEquivalence_linear :
 theorem smul_hom {X Y : Action V G} (r : R) (f : X ⟶ Y) : (r • f).hom = r • f.hom :=
   rfl
 
-variable {H : MonCat.{u}} (f : G ⟶ H)
+variable {H : Type u} [Monoid H] (f : G →* H)
 
 instance res_additive : (res V f).Additive where
 
@@ -321,7 +321,7 @@ end Action
 
 namespace CategoryTheory.Functor
 
-variable {W : Type (u + 1)} [LargeCategory W] (F : V ⥤ W) (G : MonCat.{u}) [Preadditive V]
+variable {W : Type (u + 1)} [LargeCategory W] (F : V ⥤ W) (G : Type u) [Monoid G] [Preadditive V]
   [Preadditive W]
 
 instance mapAction_preadditive [F.Additive] : (F.mapAction G).Additive where
