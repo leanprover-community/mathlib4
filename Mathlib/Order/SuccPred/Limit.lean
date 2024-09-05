@@ -71,7 +71,7 @@ def IsSuccLimit (a : α) : Prop :=
 protected theorem IsSuccLimit.not_isMin (h : IsSuccLimit a) : ¬ IsMin a := h.1
 protected theorem IsSuccLimit.isSuccPrelimit (h : IsSuccLimit a) : IsSuccPrelimit a := h.2
 
-theorem IsSuccLimit.def : IsSuccLimit a ↔ ¬ IsMin a ∧ IsSuccPrelimit a :=
+theorem IsSuccLimit_iff' : IsSuccLimit a ↔ ¬ IsMin a ∧ IsSuccPrelimit a :=
   Iff.rfl
 
 theorem IsSuccPrelimit.isSuccLimit_of_not_isMin (h : IsSuccPrelimit a) (ha : ¬ IsMin a) :
@@ -99,6 +99,10 @@ theorem isSuccPrelimit_bot [OrderBot α] : IsSuccPrelimit (⊥ : α) :=
 
 theorem not_isSuccLimit_bot [OrderBot α] : ¬ IsSuccLimit (⊥ : α) :=
   isMin_bot.not_isSuccLimit
+
+theorem IsSuccLimit.ne_bot [OrderBot α] (h : IsSuccLimit a) : a ≠ ⊥ := by
+  rintro rfl
+  exact not_isSuccLimit_bot h
 
 theorem not_isSuccLimit_iff : ¬ IsSuccLimit a ↔ IsMin a ∨ ¬ IsSuccPrelimit a := by
   rw [IsSuccLimit, not_and_or, not_not]
@@ -166,7 +170,12 @@ end Preorder
 
 section PartialOrder
 
-variable [PartialOrder α] [SuccOrder α] {a b : α} {C : α → Sort*}
+variable [PartialOrder α] {a b : α}
+
+theorem isSuccLimit_iff [OrderBot α] : IsSuccLimit a ↔ a ≠ ⊥ ∧ IsSuccPrelimit a := by
+  rw [IsSuccLimit_iff', isMin_iff_eq_bot]
+
+variable [SuccOrder α]
 
 theorem isSuccPrelimit_of_succ_ne (h : ∀ b, succ b ≠ a) : IsSuccPrelimit a := fun b hba =>
   h b (CovBy.succ_eq hba)
@@ -298,7 +307,7 @@ def IsPredLimit (a : α) : Prop :=
 protected theorem IsPredLimit.not_isMax (h : IsPredLimit a) : ¬ IsMax a := h.1
 protected theorem IsPredLimit.isPredPrelimit (h : IsPredLimit a) : IsPredPrelimit a := h.2
 
-theorem IsPredLimit.def : IsPredLimit a ↔ ¬ IsMax a ∧ IsPredPrelimit a :=
+theorem IsPredLimit_iff' : IsPredLimit a ↔ ¬ IsMax a ∧ IsPredPrelimit a :=
   Iff.rfl
 
 @[simp]
@@ -341,6 +350,9 @@ theorem isPredPrelimit_top [OrderTop α] : IsPredPrelimit (⊤ : α) :=
 
 theorem not_isPredLimit_top [OrderTop α] : ¬ IsPredLimit (⊤ : α) :=
   isMax_top.not_isPredLimit
+
+theorem IsPredLimit.ne_top [OrderTop α] (h : IsPredLimit a) : a ≠ ⊤ :=
+  h.dual.ne_bot
 
 theorem not_isPredLimit_iff : ¬ IsPredLimit a ↔ IsMax a ∨ ¬ IsPredPrelimit a := by
   rw [IsPredLimit, not_and_or, not_not]
@@ -402,7 +414,12 @@ end Preorder
 
 section PartialOrder
 
-variable [PartialOrder α] [PredOrder α] {a b : α} {C : α → Sort*}
+variable [PartialOrder α] {a b : α}
+
+theorem isPredLimit_iff [OrderTop α] : IsPredLimit a ↔ a ≠ ⊤ ∧ IsPredPrelimit a := by
+  rw [IsPredLimit_iff', isMax_iff_eq_top]
+
+variable [PredOrder α]
 
 theorem isPredPrelimit_of_pred_ne (h : ∀ b, pred b ≠ a) : IsPredPrelimit a := fun b hba =>
   h b (CovBy.pred_eq hba)
