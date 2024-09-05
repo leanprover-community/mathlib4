@@ -53,7 +53,7 @@ private def addLazyEntryToTrie (i : TrieIndex) (e : LazyEntry α) : TreeM α Uni
 replacing it with the evaluated value,
 and returning the new `values`, `stars` and `children`. -/
 def evalNode (trie : TrieIndex) :
-    TreeM α (Array α × HashMap Nat TrieIndex × HashMap Key TrieIndex) := do
+    TreeM α (Array α × Std.HashMap Nat TrieIndex × Std.HashMap Key TrieIndex) := do
   let .node values stars children pending := (← get).get! trie
   if pending.isEmpty then
     return (values, stars, children)
@@ -67,11 +67,11 @@ def evalNode (trie : TrieIndex) :
     | .inl xs =>
       for (key, entry) in xs do
         if let .star id := key then
-          match stars.find? id with
+          match stars[id]? with
           | none     => stars := stars.insert id (← newTrie entry)
           | some idx => addLazyEntryToTrie idx entry
         else
-          match children.find? key with
+          match children[key]? with
           | none     => children := children.insert key (← newTrie entry)
           | some idx => addLazyEntryToTrie idx entry
 
@@ -179,7 +179,7 @@ private partial def matchQueryStar (id : Nat) (trie : TrieIndex) (pMatch : Parti
 
 
 /-- Add to the stack all matches that result from a `.star _` in the discrimination tree. -/
-private partial def matchTreeStars (key : Key) (stars : HashMap Nat TrieIndex)
+private partial def matchTreeStars (key : Key) (stars : Std.HashMap Nat TrieIndex)
     (pMatch : PartialMatch) (todo : Array PartialMatch) : Array PartialMatch :=
   if stars.isEmpty then
     todo
@@ -205,10 +205,10 @@ where
       drop (key :: dropped) rest (n + key.arity)
 
 /-- Add to the stack the match with `key`. -/
-private def matchKey (key : Key) (children : HashMap Key TrieIndex) (pMatch : PartialMatch)
+private def matchKey (key : Key) (children : Std.HashMap Key TrieIndex) (pMatch : PartialMatch)
     (todo : Array PartialMatch) : Array PartialMatch :=
   if key matches .opaque then todo else
-  match children.find? key with
+  match children[key]? with
   | none      => todo
   | some trie => todo.push { pMatch with trie, score := pMatch.score + 1 }
 
@@ -239,8 +239,8 @@ private partial def getMatchLoop (todo : Array PartialMatch) (result : MatchResu
         getMatchLoop todo result unify
 
 /-- Return a matchResult, containing the results from the pattern `[.star 0]`. -/
-private def matchTreeRootStar (root : HashMap Key TrieIndex) : TreeM α (MatchResult α):= do
-  match root.find? (.star 0) with
+private def matchTreeRootStar (root : Std.HashMap Key TrieIndex) : TreeM α (MatchResult α):= do
+  match root[Key.star 0]? with
   | none => return {}
   | some trie =>
     let (values, _) ← evalNode trie

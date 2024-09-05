@@ -172,7 +172,7 @@ def getCandidates (e : Expr) : MetaM (Array (Array RewriteLemma)) := do
   let env ← getEnv
   return candidates.map <|
     Array.filter fun rw =>
-      let moduleIdx := env.const2ModIdx.find! rw.name
+      let moduleIdx := env.const2ModIdx[rw.name]!
       let moduleName := env.header.moduleNames[moduleIdx.toNat]!
       !excludedModules.any (·.isPrefixOf moduleName)
 

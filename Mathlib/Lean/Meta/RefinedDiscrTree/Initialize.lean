@@ -26,7 +26,7 @@ of elements using concurrent functions for generating entries.
 -/
 structure PreDiscrTree (α : Type) where
   /-- Maps keys to index in tries array. -/
-  root : HashMap Key Nat := {}
+  root : Std.HashMap Key Nat := {}
   /-- Lazy entries for root of trie. -/
   tries : Array (Array (LazyEntry α)) := #[]
   deriving Inhabited
@@ -37,7 +37,7 @@ namespace PreDiscrTree
 private def modifyAt (d : PreDiscrTree α) (k : Key)
     (f : Array (LazyEntry α) → Array (LazyEntry α)) : PreDiscrTree α :=
   let { root, tries } := d
-  match root.find? k with
+  match root[k]? with
   | none =>
     { root := root.insert k tries.size, tries := tries.push (f #[]) }
   | some i =>
@@ -166,7 +166,7 @@ private partial def loadImportedModule
 private def createImportInitResults (cctx : Core.Context) (ngen : NameGenerator)
     (env : Environment) (act : Name → ConstantInfo → MetaM (List (Key × LazyEntry α)))
     (capacity start stop : Nat) : BaseIO (InitResults α) := do
-  let tree := { root := mkHashMap capacity }
+  let tree := { root := .empty capacity }
   go start stop tree (← ImportData.new) (← IO.mkRef {}) (← IO.mkRef { env, ngen })
 where
   go (start stop : Nat) (tree : PreDiscrTree α)

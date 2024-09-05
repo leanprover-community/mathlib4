@@ -238,9 +238,9 @@ structure Trie (α : Type) where
     /-- Leaf values of the Trie. `values` is an `Array` of size at least 1. -/
     values : Array α
     /-- Following `Trie`s based on a `Key.star`. -/
-    stars : HashMap Nat TrieIndex
+    stars : Std.HashMap Nat TrieIndex
     /-- Following `Trie`s based on the `Key`. -/
-    children : HashMap Key TrieIndex
+    children : Std.HashMap Key TrieIndex
     /-- Lazy entries that still have to be evaluated. -/
     pending : Array (LazyEntry α)
 
@@ -254,7 +254,7 @@ open RefinedDiscrTree in
 /-- Discrimination tree. It is an index from expressions to values of type `α`. -/
 structure RefinedDiscrTree (α : Type) where
   /-- `Trie`s at the root based of the `Key`. -/
-  root : HashMap Key TrieIndex := {}
+  root : Std.HashMap Key TrieIndex := {}
   /-- Array of trie entries. Should be owned by this trie. -/
   tries : Array (Trie α) := #[]
   /-- Configuration for normalization. -/
