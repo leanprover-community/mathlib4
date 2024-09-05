@@ -214,10 +214,6 @@ theorem realize_noTopOrder_iff : M ⊨ L.noTopOrderSentence ↔ NoTopOrder M := 
   intro h a
   exact exists_not_le a
 
-@[simp]
-theorem realize_noTopOrder [h : NoTopOrder M] : M ⊨ L.noTopOrderSentence :=
-  realize_noTopOrder_iff.2 h
-
 theorem realize_noBotOrder_iff : M ⊨ L.noBotOrderSentence ↔ NoBotOrder M := by
   simp only [noBotOrderSentence, Sentence.Realize, Formula.Realize, BoundedFormula.realize_all,
     BoundedFormula.realize_ex, BoundedFormula.realize_not, Term.realize, Term.realize_le,
@@ -225,6 +221,12 @@ theorem realize_noBotOrder_iff : M ⊨ L.noBotOrderSentence ↔ NoBotOrder M := 
   refine ⟨fun h => ⟨fun a => h a⟩, ?_⟩
   intro h a
   exact exists_not_ge a
+
+variable (L)
+
+@[simp]
+theorem realize_noTopOrder [h : NoTopOrder M] : M ⊨ L.noTopOrderSentence :=
+  realize_noTopOrder_iff.2 h
 
 @[simp]
 theorem realize_noBotOrder [h : NoBotOrder M] : M ⊨ L.noBotOrderSentence :=
@@ -242,8 +244,8 @@ section Preorder
 
 variable [Preorder M] [L.OrderedStructure M]
 
-instance model_preorder : M ⊨ Language.order.preorderTheory := by
-  simp only [preorderTheory, Theory.model_insert_iff, Relations.realize_reflexive, relMap_apply₂,
+instance model_preorder : M ⊨ L.preorderTheory := by
+  simp only [preorderTheory, Theory.model_insert_iff, Relations.realize_reflexive, relMap_leSymb,
     Theory.model_singleton_iff, Relations.realize_transitive]
   exact ⟨le_refl, fun _ _ _ => le_trans⟩
 
@@ -269,18 +271,21 @@ theorem realize_denselyOrdered [h : DenselyOrdered M] :
 
 end Preorder
 
-instance model_partialOrder [PartialOrder M] : M ⊨ Language.order.partialOrderTheory := by
+instance model_partialOrder [PartialOrder M] [L.OrderedStructure M] :
+    M ⊨ L.partialOrderTheory := by
   simp only [partialOrderTheory, Theory.model_insert_iff, Relations.realize_antisymmetric,
-    relMap_leSymb, model_preorder, and_true]
+    relMap_leSymb, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons,
+    model_preorder, and_true]
   exact fun _ _ => le_antisymm
 
 section LinearOrder
 
 variable [LinearOrder M] [L.OrderedStructure M]
 
-instance model_linearOrder : M ⊨ Language.order.linearOrderTheory := by
+instance model_linearOrder : M ⊨ L.linearOrderTheory := by
   simp only [linearOrderTheory, Theory.model_insert_iff, Relations.realize_total, relMap_leSymb,
-    model_partialOrder, and_true]
+    Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons, model_partialOrder,
+    and_true]
   exact le_total
 
 instance model_dlo [DenselyOrdered M] [NoTopOrder M] [NoBotOrder M] :
