@@ -1329,6 +1329,12 @@ theorem prod_atTop_atTop_eq [Preorder α] [Preorder β] :
   · subsingleton
   simpa [atTop, prod_iInf_left, prod_iInf_right, iInf_prod] using iInf_comm
 
+instance instIsCountablyGeneratedAtTopProd [Preorder α] [IsCountablyGenerated (atTop : Filter α)]
+    [Preorder β] [IsCountablyGenerated (atTop : Filter β)] :
+    IsCountablyGenerated (atTop : Filter (α × β)) := by
+  rw [← prod_atTop_atTop_eq]
+  infer_instance
+
 lemma tendsto_finset_prod_atTop :
     Tendsto (fun (p : Finset ι × Finset ι') ↦ p.1 ×ˢ p.2) atTop atTop := by
   classical
@@ -1337,13 +1343,17 @@ lemma tendsto_finset_prod_atTop :
     simpa using Finset.product_subset_product hpq.1 hpq.2
   · intro b
     use (Finset.image Prod.fst b, Finset.image Prod.snd b)
-    rintro ⟨d1, d2⟩ hd
-    simp only [Finset.mem_product, Finset.mem_image, Prod.exists, exists_and_right, exists_eq_right]
-    exact ⟨⟨d2, hd⟩, ⟨d1, hd⟩⟩
+    exact Finset.subset_product
 
 theorem prod_atBot_atBot_eq [Preorder α] [Preorder β] :
     (atBot : Filter α) ×ˢ (atBot : Filter β) = (atBot : Filter (α × β)) :=
   @prod_atTop_atTop_eq αᵒᵈ βᵒᵈ _ _
+
+instance instIsCountablyGeneratedAtBotProd [Preorder α] [IsCountablyGenerated (atBot : Filter α)]
+    [Preorder β] [IsCountablyGenerated (atBot : Filter β)] :
+    IsCountablyGenerated (atBot : Filter (α × β)) := by
+  rw [← prod_atBot_atBot_eq]
+  infer_instance
 
 theorem prod_map_atTop_eq {α₁ α₂ β₁ β₂ : Type*} [Preorder β₁] [Preorder β₂]
     (u₁ : β₁ → α₁) (u₂ : β₂ → α₂) : map u₁ atTop ×ˢ map u₂ atTop = map (Prod.map u₁ u₂) atTop := by
