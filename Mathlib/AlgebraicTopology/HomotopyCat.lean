@@ -18,22 +18,34 @@ underlying reflexive quiver (equivalently its one truncation). The quotient impo
 hom relation on this free category, asserting that `f ≫ g = h` whenever `f`, `g`, and `h` are
 respectively the 2nd, 0th, and 1st faces of a 2-simplex.
 
+In this file, we in fact define a pair of functors:
 
--- /-- ER: We don't actually need this but it would be nice and potentially not too hard. -/
--- def hoFunctor.ofTwoTruncation.iso (V : SSet) :
---     SSet.hoFunctor₂Obj ((truncation 2).obj V) ≅ SSet.hoCat V := sorry
+(1) `SSet.hoFunctor' : SSet.{u} ⥤ Cat.{u, u}` implements the construction described above, while
 
--- /-- ER: We don't actually need this but it would be nice and potentially not too hard. -/
--- def hoFunctor.ofTwoTruncation.natIso :
---     truncation 2 ⋙ SSet.hoFunctor₂ ≅ SSet.hoFunctor' := sorry
+(2) `SSet.hoFunctor : SSet.{u} ⥤ Cat.{u, u} := SSet.truncation 2 ⋙ SSet.hoFunctor₂` is defined by
+first restricting from simplicial sets to 2-truncated simplicial sets (throwing away the data that
+is not used for the construction of the homotopy category) and then composing with an analogously
+defined `SSet.hoFunctor₂ : SSet.Truncated.{u} 2 ⥤ Cat.{u,u}` implemented relative to the syntax of
+the 2-truncated simplex category.
 
+It should be relatively straightforward to show that these constructions agree:
 
+def hoFunctor.ofTwoTruncation.iso (V : SSet) :
+    SSet.hoFunctor₂Obj ((truncation 2).obj V) ≅ SSet.hoCat V := sorry
+
+def hoFunctor.ofTwoTruncation.natIso :
+     truncation 2 ⋙ SSet.hoFunctor₂ ≅ SSet.hoFunctor' := sorry
+
+but we leave this for future work.
+
+The functor `SSet.hoFunctor` is shown to be left adjoint to the nerve by providing an analogous
+decomposition of the nerve functor and then composing a pair of adjunctions, which factor through
+the category of 2-truncated simplicial sets.
 -/
-
 
 namespace CategoryTheory
 open Category Limits Functor Opposite Simplicial
-universe v v₁ v₂ u u₁ u₂
+universe v u
 
 section
 
