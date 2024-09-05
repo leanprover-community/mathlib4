@@ -730,7 +730,7 @@ theorem union_pi_inter
   simp only [mem_pi, mem_union, mem_inter_iff]
   refine ⟨fun h ↦ ⟨fun i his₁ ↦ (h i (Or.inl his₁)).1, fun i his₂ ↦ (h i (Or.inr his₂)).2⟩,
     fun h i hi ↦ ?_⟩
-  cases' hi with hi hi
+  rcases hi with hi | hi
   · by_cases hi2 : i ∈ s₂
     · exact ⟨h.1 i hi, h.2 i hi2⟩
     · refine ⟨h.1 i hi, ?_⟩
@@ -802,6 +802,23 @@ theorem eval_image_univ_pi (ht : (pi univ t).Nonempty) :
     (fun f : ∀ i, α i => f i) '' pi univ t = t i :=
   eval_image_pi (mem_univ i) ht
 
+theorem dcomp_image_pi {f : ∀ i, α i → β i} (hf : ∀ i ∉ s, Surjective (f i)) (t : ∀ i, Set (α i)) :
+    (f _ ∘' ·) '' s.pi t = s.pi fun i ↦ f i '' t i := by
+  refine Subset.antisymm (image_subset_iff.2 fun a ha i hi ↦ mem_image_of_mem _ (ha _ hi)) ?_
+  intro b hb
+  have : ∀ i, ∃ a, f i a = b i ∧ (i ∈ s → a ∈ t i) := by
+    intro i
+    if hi : i ∈ s then
+      exact (hb i hi).imp fun a ⟨hat, hab⟩ ↦ ⟨hab, fun _ ↦ hat⟩
+    else
+      exact (hf i hi (b i)).imp fun a ha ↦ ⟨ha, (absurd · hi)⟩
+  choose a hab hat using this
+  exact ⟨a, hat, funext hab⟩
+
+theorem dcomp_image_univ_pi (f : ∀ i, α i → β i) (t : ∀ i, Set (α i)) :
+    (f _ ∘' ·) '' univ.pi t = univ.pi fun i ↦ f i '' t i :=
+  dcomp_image_pi (by simp) t
+
 theorem pi_subset_pi_iff : pi s t₁ ⊆ pi s t₂ ↔ (∀ i ∈ s, t₁ i ⊆ t₂ i) ∨ pi s t₁ = ∅ := by
   refine
     ⟨fun h => or_iff_not_imp_right.2 ?_, fun h => h.elim pi_mono fun h' => h'.symm ▸ empty_subset _⟩
@@ -837,7 +854,10 @@ theorem update_preimage_pi [DecidableEq ι] {f : ∀ i, α i} (hi : i ∈ s)
 theorem update_image [DecidableEq ι] (x : (i : ι) → β i) (i : ι) (s : Set (β i)) :
     update x i '' s = Set.univ.pi (update (fun j ↦ {x j}) i s) := by
   ext y
-  simp [update_eq_iff, and_left_comm (a := _ ∈ s), forall_update_iff, eq_comm (a := y _)]
+  simp only [mem_image, update_eq_iff, ne_eq, and_left_comm (a := _ ∈ s), exists_eq_left, mem_pi,
+    mem_univ, true_implies]
+  rw [forall_update_iff (p := fun x s => y x ∈ s)]
+  simp [eq_comm]
 
 theorem update_preimage_univ_pi [DecidableEq ι] {f : ∀ i, α i} (hf : ∀ j ≠ i, f j ∈ t j) :
     update f i ⁻¹' pi univ t = t i :=
