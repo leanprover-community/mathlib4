@@ -3,6 +3,7 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Gabin Kolly
 -/
+import Mathlib.Data.Fintype.Order
 import Mathlib.Order.Closure
 import Mathlib.ModelTheory.Semantics
 import Mathlib.ModelTheory.Encoding
@@ -288,7 +289,19 @@ theorem lift_card_closure_le :
   refine lift_card_closure_le_card_term.trans (Term.card_le.trans ?_)
   rw [mk_sum, lift_umax.{w, u}]
 
+lemma mem_closed_iff (s : Set M) :
+    s ∈ (closure L).closed ↔ ∀ {n}, ∀ f : L.Functions n, ClosedUnder f s := by
+  refine ⟨fun h n f => ?_, fun h => ?_⟩
+  · rw [← h]
+    exact Substructure.fun_mem _ _
+  · have h' : closure L s = ⟨s, h⟩ := closure_eq_of_le (refl _) subset_closure
+    exact congr_arg _ h'
+
 variable (L)
+
+@[simp]
+lemma mem_closed_of_isRelational [L.IsRelational] (s : Set M) : s ∈ (closure L).closed :=
+  (mem_closed_iff s).2 isEmptyElim
 
 theorem _root_.Set.Countable.substructure_closure
     [Countable (Σl, L.Functions l)] (h : s.Countable) : Countable.{w + 1} (closure L s) := by
@@ -341,13 +354,35 @@ theorem closure_univ : closure L (univ : Set M) = ⊤ :=
 theorem closure_union (s t : Set M) : closure L (s ∪ t) = closure L s ⊔ closure L t :=
   (Substructure.gi L M).gc.l_sup
 
-theorem closure_unionᵢ {ι} (s : ι → Set M) : closure L (⋃ i, s i) = ⨆ i, closure L (s i) :=
+theorem closure_iUnion {ι} (s : ι → Set M) : closure L (⋃ i, s i) = ⨆ i, closure L (s i) :=
   (Substructure.gi L M).gc.l_iSup
 
 instance small_bot : Small.{u} (⊥ : L.Substructure M) := by
   rw [← closure_empty]
   haveI : Small.{u} (∅ : Set M) := small_subsingleton _
   exact Substructure.small_closure
+
+theorem iSup_eq_closure {ι : Sort*} (S : ι → L.Substructure M) :
+    ⨆ i, S i = closure L (⋃ i, (S i : Set M)) := by simp_rw [closure_iUnion, closure_eq]
+
+-- This proof uses the fact that `Substructure.closure` is finitary.
+theorem mem_iSup_of_directed {ι : Type*} [hι : Nonempty ι] {S : ι → L.Substructure M}
+    (hS : Directed (· ≤ ·) S) {x : M} :
+    x ∈ ⨆ i, S i ↔ ∃ i, x ∈ S i := by
+  refine ⟨?_, fun ⟨i, hi⟩ ↦ le_iSup S i hi⟩
+  suffices x ∈ closure L (⋃ i, (S i : Set M)) → ∃ i, x ∈ S i by
+    simpa only [closure_iUnion, closure_eq (S _)] using this
+  refine fun hx ↦ closure_induction hx (fun _ ↦ mem_iUnion.1) (fun f v hC ↦ ?_)
+  simp_rw [Set.mem_setOf] at *
+  have ⟨i, hi⟩ := hS.finite_le (fun i ↦ Classical.choose (hC i))
+  refine ⟨i, (S i).fun_mem f v (fun j ↦ hi j (Classical.choose_spec (hC j)))⟩
+
+-- This proof uses the fact that `Substructure.closure` is finitary.
+theorem mem_sSup_of_directedOn {S : Set (L.Substructure M)} (Sne : S.Nonempty)
+    (hS : DirectedOn (· ≤ ·) S) {x : M} :
+    x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
+  haveI : Nonempty S := Sne.to_subtype
+  simp only [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val, Subtype.exists, exists_prop]
 
 /-!
 ### `comap` and `map`
@@ -437,7 +472,7 @@ theorem map_sup (S T : L.Substructure M) (f : M →[L] N) : (S ⊔ T).map f = S.
   (gc_map_comap f).l_sup
 
 theorem map_iSup {ι : Sort*} (f : M →[L] N) (s : ι → L.Substructure M) :
-    (iSup s).map f = ⨆ i, (s i).map f :=
+    (⨆ i, s i).map f = ⨆ i, (s i).map f :=
   (gc_map_comap f).l_iSup
 
 theorem comap_inf (S T : L.Substructure N) (f : M →[L] N) :
@@ -445,7 +480,7 @@ theorem comap_inf (S T : L.Substructure N) (f : M →[L] N) :
   (gc_map_comap f).u_inf
 
 theorem comap_iInf {ι : Sort*} (f : M →[L] N) (s : ι → L.Substructure N) :
-    (iInf s).comap f = ⨅ i, (s i).comap f :=
+    (⨅ i, s i).comap f = ⨅ i, (s i).comap f :=
   (gc_map_comap f).u_iInf
 
 @[simp]
@@ -458,7 +493,7 @@ theorem comap_top (f : M →[L] N) : (⊤ : L.Substructure N).comap f = ⊤ :=
 
 @[simp]
 theorem map_id (S : L.Substructure M) : S.map (Hom.id L M) = S :=
-  ext fun _ => ⟨fun ⟨_, h, rfl⟩ => h, fun h => ⟨_, h, rfl⟩⟩
+  SetLike.coe_injective <| Set.image_id _
 
 theorem map_closure (f : M →[L] N) (s : Set M) : (closure L s).map f = closure L (f '' s) :=
   Eq.symm <|
@@ -493,14 +528,14 @@ theorem comap_inf_map_of_injective (S T : L.Substructure M) : (S.map f ⊓ T.map
   (gciMapComap hf).u_inf_l _ _
 
 theorem comap_iInf_map_of_injective (S : ι → L.Substructure M) :
-    (⨅ i, (S i).map f).comap f = iInf S :=
+    (⨅ i, (S i).map f).comap f = ⨅ i, S i :=
   (gciMapComap hf).u_iInf_l _
 
 theorem comap_sup_map_of_injective (S T : L.Substructure M) : (S.map f ⊔ T.map f).comap f = S ⊔ T :=
   (gciMapComap hf).u_sup_l _ _
 
 theorem comap_iSup_map_of_injective (S : ι → L.Substructure M) :
-    (⨆ i, (S i).map f).comap f = iSup S :=
+    (⨆ i, (S i).map f).comap f = ⨆ i, S i :=
   (gciMapComap hf).u_iSup_l _
 
 theorem map_le_map_iff_of_injective {S T : L.Substructure M} : S.map f ≤ T.map f ↔ S ≤ T :=
@@ -536,7 +571,7 @@ theorem map_inf_comap_of_surjective (S T : L.Substructure N) :
   (giMapComap hf).l_inf_u _ _
 
 theorem map_iInf_comap_of_surjective (S : ι → L.Substructure N) :
-    (⨅ i, (S i).comap f).map f = iInf S :=
+    (⨅ i, (S i).comap f).map f = ⨅ i, S i :=
   (giMapComap hf).l_iInf_u _
 
 theorem map_sup_comap_of_surjective (S T : L.Substructure N) :
@@ -544,7 +579,7 @@ theorem map_sup_comap_of_surjective (S T : L.Substructure N) :
   (giMapComap hf).l_sup_u _ _
 
 theorem map_iSup_comap_of_surjective (S : ι → L.Substructure N) :
-    (⨆ i, (S i).comap f).map f = iSup S :=
+    (⨆ i, (S i).comap f).map f = ⨆ i, S i :=
   (giMapComap hf).l_iSup_u _
 
 theorem comap_le_comap_iff_of_surjective {S T : L.Substructure N} : S.comap f ≤ T.comap f ↔ S ≤ T :=
@@ -584,13 +619,13 @@ theorem coe_topEquiv :
 theorem realize_boundedFormula_top {α : Type*} {n : ℕ} {φ : L.BoundedFormula α n}
     {v : α → (⊤ : L.Substructure M)} {xs : Fin n → (⊤ : L.Substructure M)} :
     φ.Realize v xs ↔ φ.Realize (((↑) : _ → M) ∘ v) ((↑) ∘ xs) := by
-  rw [← Substructure.topEquiv.realize_boundedFormula φ]
+  rw [← StrongHomClass.realize_boundedFormula Substructure.topEquiv φ]
   simp
 
 @[simp]
 theorem realize_formula_top {α : Type*} {φ : L.Formula α} {v : α → (⊤ : L.Substructure M)} :
     φ.Realize v ↔ φ.Realize (((↑) : (⊤ : L.Substructure M) → M) ∘ v) := by
-  rw [← Substructure.topEquiv.realize_formula φ]
+  rw [← StrongHomClass.realize_formula Substructure.topEquiv φ]
   simp
 
 /-- A dependent version of `Substructure.closure_induction`. -/
@@ -841,7 +876,7 @@ theorem subtype_substructureEquivMap (f : M ↪[L] N) (s : L.Substructure M) :
   ext; rfl
 
 /-- The equivalence between the domain and the range of an embedding `f`. -/
-noncomputable def equivRange (f : M ↪[L] N) : M ≃[L] f.toHom.range where
+@[simps toEquiv_apply] noncomputable def equivRange (f : M ↪[L] N) : M ≃[L] f.toHom.range where
   toFun := codRestrict f.toHom.range f f.toHom.mem_range_self
   invFun n := Classical.choose n.2
   left_inv m :=

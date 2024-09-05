@@ -84,7 +84,7 @@ is a fundamental domain for the action of `G` on `α`. -/
 theorem mk' (h_meas : NullMeasurableSet s μ) (h_exists : ∀ x : α, ∃! g : G, g • x ∈ s) :
     IsFundamentalDomain G s μ where
   nullMeasurableSet := h_meas
-  ae_covers := eventually_of_forall fun x => (h_exists x).exists
+  ae_covers := Eventually.of_forall fun x => (h_exists x).exists
   aedisjoint a b hab := Disjoint.aedisjoint <| disjoint_left.2 fun x hxa hxb => by
     rw [mem_smul_set_iff_inv_smul_mem] at hxa hxb
     exact hab (inv_injective <| (h_exists x).unique hxa hxb)
@@ -346,7 +346,7 @@ protected theorem aEStronglyMeasurable_on_iff {β : Type*} [TopologicalSpace β]
       have he : MeasurableEmbedding (g⁻¹ • · : α → α) := measurableEmbedding_const_smul _
       rw [← image_smul, ← ((measurePreserving_smul g⁻¹ μ).restrict_image_emb he
         _).aestronglyMeasurable_comp_iff he]
-      simp only [(· ∘ ·), hf]
+      simp only [Function.comp_def, hf]
     _ ↔ AEStronglyMeasurable f (μ.restrict t) := by
       simp only [← aestronglyMeasurable_sum_measure_iff, ← hs.restrict_restrict,
         hs.sum_restrict_of_ac restrict_le_self.absolutelyContinuous]
@@ -540,7 +540,6 @@ theorem fundamentalInterior_union_fundamentalFrontier :
 theorem fundamentalFrontier_union_fundamentalInterior :
     fundamentalFrontier G s ∪ fundamentalInterior G s = s :=
   inter_union_diff _ _
--- Porting note: there is a typo in `to_additive` in mathlib3, so there is no additive version
 
 @[to_additive (attr := simp) MeasureTheory.sdiff_addFundamentalInterior]
 theorem sdiff_fundamentalInterior : s \ fundamentalInterior G s = fundamentalFrontier G s :=
