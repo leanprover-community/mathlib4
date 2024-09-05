@@ -137,11 +137,10 @@ lemma index_le_height (p : LTSeries α) (i : Fin (p.length + 1)) : i ≤ height 
 In a maximally long series, i.e one as long as the height of the last element, the height of each
 element is its index in the series.
 -/
-lemma height_eq_index_of_length_eq_last_height (p : LTSeries α) (h : p.length = height p.last) :
-    ∀ (i : Fin (p.length + 1)), height (p i) = i := by
-  suffices ∀ i, height (p i) ≤ i by
+lemma height_eq_index_of_length_eq_height_last (p : LTSeries α) (h : p.length = height p.last)
+    (i : Fin (p.length + 1)) :  height (p i) = i := by
+  suffices height (p i) ≤ i by
     apply_rules [le_antisymm, index_le_height]
-  intro i
   apply height_le
   intro p' hp'
   simp only [Nat.cast_le]
