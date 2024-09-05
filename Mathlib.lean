@@ -262,6 +262,7 @@ import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.PNatPowAssoc
 import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Group.Pi.Lemmas
+import Mathlib.Algebra.Group.Pointwise.Set
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Semiconj.Basic
 import Mathlib.Algebra.Group.Semiconj.Defs
@@ -314,6 +315,7 @@ import Mathlib.Algebra.GroupWithZero.NeZero
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.GroupWithZero.Opposite
 import Mathlib.Algebra.GroupWithZero.Pi
+import Mathlib.Algebra.GroupWithZero.Pointwise.Set
 import Mathlib.Algebra.GroupWithZero.Prod
 import Mathlib.Algebra.GroupWithZero.Semiconj
 import Mathlib.Algebra.GroupWithZero.ULift
@@ -752,6 +754,7 @@ import Mathlib.Algebra.Ring.NegOnePow
 import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Algebra.Ring.Parity
 import Mathlib.Algebra.Ring.Pi
+import Mathlib.Algebra.Ring.Pointwise.Set
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.Algebra.Ring.Rat
 import Mathlib.Algebra.Ring.Regular
@@ -1138,6 +1141,7 @@ import Mathlib.Analysis.InnerProductSpace.ProdL2
 import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Analysis.InnerProductSpace.Rayleigh
 import Mathlib.Analysis.InnerProductSpace.Spectrum
+import Mathlib.Analysis.InnerProductSpace.StarOrder
 import Mathlib.Analysis.InnerProductSpace.Symmetric
 import Mathlib.Analysis.InnerProductSpace.TwoDim
 import Mathlib.Analysis.InnerProductSpace.WeakOperatorTopology
@@ -1817,7 +1821,6 @@ import Mathlib.CategoryTheory.Sites.CoverPreserving
 import Mathlib.CategoryTheory.Sites.Coverage
 import Mathlib.CategoryTheory.Sites.CoversTop
 import Mathlib.CategoryTheory.Sites.DenseSubsite
-import Mathlib.CategoryTheory.Sites.Discrete
 import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
 import Mathlib.CategoryTheory.Sites.EpiMono
 import Mathlib.CategoryTheory.Sites.EqualizerSheafCondition
@@ -2512,7 +2515,6 @@ import Mathlib.Data.Set.Operations
 import Mathlib.Data.Set.Opposite
 import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Data.Set.Pairwise.Lattice
-import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.Data.Set.Pointwise.BigOperators
 import Mathlib.Data.Set.Pointwise.BoundedMul
 import Mathlib.Data.Set.Pointwise.Finite
@@ -3313,6 +3315,7 @@ import Mathlib.MeasureTheory.SetAlgebra
 import Mathlib.MeasureTheory.SetSemiring
 import Mathlib.ModelTheory.Algebra.Field.Basic
 import Mathlib.ModelTheory.Algebra.Field.CharP
+import Mathlib.ModelTheory.Algebra.Field.IsAlgClosed
 import Mathlib.ModelTheory.Algebra.Ring.Basic
 import Mathlib.ModelTheory.Algebra.Ring.FreeCommRing
 import Mathlib.ModelTheory.Basic
