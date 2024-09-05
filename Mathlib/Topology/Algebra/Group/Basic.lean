@@ -1221,11 +1221,8 @@ theorem IsClosed.mul_right_of_isCompact (ht : IsClosed t) (hs : IsCompact s) :
 theorem QuotientGroup.isClosedMap_coe {H : Subgroup G} (hH : IsCompact (H : Set G)) :
     IsClosedMap ((↑) : G → G ⧸ H) := by
   intro t ht
-  rw [← quotientMap_quotient_mk'.isClosed_preimage]
-  convert ht.mul_right_of_isCompact hH
-  refine (QuotientGroup.preimage_image_mk_eq_iUnion_image _ _).trans ?_
-  rw [iUnion_subtype, ← iUnion_mul_right_image]
-  rfl
+  rw [← (quotientMap_mk H).isClosed_preimage, preimage_image_mk_eq_mul]
+  exact ht.mul_right_of_isCompact hH
 
 @[to_additive]
 lemma subset_mul_closure_one {G} [MulOneClass G] [TopologicalSpace G] (s : Set G) :
