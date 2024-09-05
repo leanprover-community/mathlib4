@@ -3,10 +3,10 @@ Copyright (c) 2023 Alex J. Best. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best
 -/
-import Mathlib.Init
+import Batteries.Tactic.Exact
 import Lean.Elab.Tactic.Basic
 import Lean.Meta.Tactic.Simp.Rewrite
-import Batteries.Tactic.Exact
+import Mathlib.Init
 
 /-!
 ## Dischargers for `simp` to tactics
