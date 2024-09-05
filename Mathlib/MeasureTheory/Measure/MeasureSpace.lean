@@ -430,8 +430,8 @@ theorem _root_.Directed.measure_iUnion [Countable ι] {s : ι → Set α} (hd : 
   generalize ht : Function.extend e s ⊥ = t
   replace hd : Directed (· ⊆ ·) t := ht ▸ hd.extend_bot he
   suffices μ (⋃ n, t n) = ⨆ n, μ (t n) by
-    simp only [← ht, Function.apply_extend μ, ← iSup_eq_iUnion, iSup_extend_bot he, (· ∘ ·),
-      Pi.bot_apply, bot_eq_empty, measure_empty] at this
+    simp only [← ht, Function.apply_extend μ, ← iSup_eq_iUnion, iSup_extend_bot he,
+      Function.comp_def, Pi.bot_apply, bot_eq_empty, measure_empty] at this
     exact this.trans (iSup_extend_bot he _)
   clear! ι
   -- The `≥` inequality is trivial

@@ -807,13 +807,15 @@ variable [OrderedRing α] {l : Filter β} {f g : β → α}
 theorem Tendsto.atTop_mul_atBot (hf : Tendsto f l atTop) (hg : Tendsto g l atBot) :
     Tendsto (fun x => f x * g x) l atBot := by
   have := hf.atTop_mul_atTop <| tendsto_neg_atBot_atTop.comp hg
-  simpa only [(· ∘ ·), neg_mul_eq_mul_neg, neg_neg] using tendsto_neg_atTop_atBot.comp this
+  simpa only [Function.comp_def, neg_mul_eq_mul_neg, neg_neg] using
+    tendsto_neg_atTop_atBot.comp this
 
 theorem Tendsto.atBot_mul_atTop (hf : Tendsto f l atBot) (hg : Tendsto g l atTop) :
     Tendsto (fun x => f x * g x) l atBot := by
   have : Tendsto (fun x => -f x * g x) l atTop :=
     (tendsto_neg_atBot_atTop.comp hf).atTop_mul_atTop hg
-  simpa only [(· ∘ ·), neg_mul_eq_neg_mul, neg_neg] using tendsto_neg_atTop_atBot.comp this
+  simpa only [Function.comp_def, neg_mul_eq_neg_mul, neg_neg] using
+    tendsto_neg_atTop_atBot.comp this
 
 theorem Tendsto.atBot_mul_atBot (hf : Tendsto f l atBot) (hg : Tendsto g l atBot) :
     Tendsto (fun x => f x * g x) l atTop := by
@@ -1326,6 +1328,18 @@ theorem prod_atTop_atTop_eq [Preorder α] [Preorder β] :
   cases isEmpty_or_nonempty β
   · subsingleton
   simpa [atTop, prod_iInf_left, prod_iInf_right, iInf_prod] using iInf_comm
+
+lemma tendsto_finset_prod_atTop :
+    Tendsto (fun (p : Finset ι × Finset ι') ↦ p.1 ×ˢ p.2) atTop atTop := by
+  classical
+  apply Monotone.tendsto_atTop_atTop
+  · intro p q hpq
+    simpa using Finset.product_subset_product hpq.1 hpq.2
+  · intro b
+    use (Finset.image Prod.fst b, Finset.image Prod.snd b)
+    rintro ⟨d1, d2⟩ hd
+    simp only [Finset.mem_product, Finset.mem_image, Prod.exists, exists_and_right, exists_eq_right]
+    exact ⟨⟨d2, hd⟩, ⟨d1, hd⟩⟩
 
 theorem prod_atBot_atBot_eq [Preorder α] [Preorder β] :
     (atBot : Filter α) ×ˢ (atBot : Filter β) = (atBot : Filter (α × β)) :=

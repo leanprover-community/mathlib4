@@ -7,7 +7,7 @@ on:
 jobs:
   add_ready_to_merge_label:
     name: Add ready-to-merge label
-    if: (startsWith(github.event.review.body, 'bors r+') || contains(toJSON(github.event.review.body), '\r\nbors r+') || startsWith(github.event.review.body, 'bors merge') || contains(toJSON(github.event.review.body), '\r\nbors merge'))
+    if: (startsWith(github.event.review.body, 'bors r+') || contains(toJSON(github.event.review.body), '\nbors r+') || startsWith(github.event.review.body, 'bors merge') || contains(toJSON(github.event.review.body), '\nbors merge'))
     runs-on: ubuntu-latest
     steps:
       - uses: octokit/request-action@v2.x
@@ -74,7 +74,7 @@ jobs:
 
   add_delegated_label:
     name: Add delegated label
-    if: (startsWith(github.event.review.body, 'bors d') || contains(toJSON(github.event.review.body), '\r\nbors d'))
+    if: (startsWith(github.event.review.body, 'bors d') || contains(toJSON(github.event.review.body), '\nbors d'))
     runs-on: ubuntu-latest
     steps:
       - uses: octokit/request-action@v2.x
