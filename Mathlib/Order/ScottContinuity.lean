@@ -3,6 +3,7 @@ Copyright (c) 2022 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
+import Mathlib.Data.Set.Lattice
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.CompleteLattice
 
@@ -213,9 +214,6 @@ end Products
 section SemilatticeSup
 
 variable [Preorder α]
-
-lemma ScottContinuousOn.sup₂ [SemilatticeSup β] {D : Set (Set (β × β))} :
-section SemilatticeSup
 
 variable [Preorder α] [SemilatticeSup β]
 
