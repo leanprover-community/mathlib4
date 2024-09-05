@@ -19,8 +19,8 @@ In case that `α` is empty, then its Krull dimension is defined to be negative i
 length of all series `a₀ < a₁ < ... < aₙ` is unbounded, then its Krull dimension is defined to be
 positive infinity.
 
-For `a : α`, its height (in `ℕ∞`) is defined to be `sup {n | a₀ < a₁ < ... < aₙ = a}` while its
-coheight is defined to be `sup {n | a = a₀ < a₁ < ... < aₙ}` .
+For `a : α`, its height (in `ℕ∞`) is defined to be `sup {n | a₀ < a₁ < ... < aₙ ≤ a}` while its
+coheight is defined to be `sup {n | a ≤ a₀ < a₁ < ... < aₙ}` .
 
 ## Main results
 
@@ -68,10 +68,10 @@ noncomputable def krullDim (α : Type*) [Preorder α] : WithBot ℕ∞ :=
 
 /--
 The **height** of an element `a` in a preorder `α` is the supremum of the rightmost index of all
-relation series of `α` ordered by `<` and ending with `a`.
+relation series of `α` ordered by `<` and ending below or at `a`.
 -/
 noncomputable def height {α : Type*} [Preorder α] (a : α) : ℕ∞ :=
-  ⨆ (p : LTSeries α) (_ : p.last = a), p.length
+  ⨆ (p : LTSeries α) (_ : p.last ≤ a), p.length
 
 /--
 The **coheight** of an element `a` in a preorder `α` is the supremum of the rightmost index of all
@@ -100,26 +100,65 @@ lemma height_orderDual (x : αᵒᵈ) : height x = coheight (α := α) x := rfl
 lemma coheight_orderDual (x : αᵒᵈ) : coheight x = height (α := α) x := rfl
 
 lemma coheight_eq_iSup_head (a : α) :
-    coheight a = ⨆ (p : LTSeries α) (_ : p.head = a), (p.length : ℕ∞) := by
+    coheight a = ⨆ (p : LTSeries α) (_ : a ≤ p.head), (p.length : ℕ∞) := by
   apply Equiv.iSup_congr ⟨RelSeries.reverse, RelSeries.reverse, RelSeries.reverse_reverse,
     RelSeries.reverse_reverse⟩
-  simp
+  congr! 1
 
 lemma height_le_iff (x : α) (n : ℕ∞) :
-    height x ≤ n ↔ ∀ (p : LTSeries α), p.last = x → p.length ≤ n := by
+    height x ≤ n ↔ ∀ (p : LTSeries α), p.last ≤ x → p.length ≤ n := by
   simp [height, iSup_le_iff]
 
 lemma coheight_le_iff (x : α) (n : ℕ∞) :
-    coheight x ≤ n ↔ ∀ (p : LTSeries α), p.head = x → p.length ≤ n := by
+    coheight x ≤ n ↔ ∀ (p : LTSeries α), x ≤ p.head → p.length ≤ n := by
   simp [coheight_eq_iSup_head, iSup_le_iff]
 
+/--
+Alternative definition of height, with the supremum only ranging over those series
+that end at `a`.
+-/
+lemma height_eq_iSup_last_eq (a : α) :
+    height a = ⨆ (p : LTSeries α) (_ : p.last = a), ↑(p.length) := by
+  apply le_antisymm
+  · apply iSup₂_le
+    intro p hlast
+    -- The proof is a bit more elaborate since we have a Preorder, not a PartialOrder
+    wlog hlenpos :  p.length ≠ 0
+    · simp_all
+    let p' := p.eraseLast.snoc a ( lt_of_lt_of_le (p.eraseLast_last_rel_last hlenpos) hlast)
+    apply le_iSup₂_of_le p' (by simp [p']) (by simp [p']; norm_cast; omega)
+  · apply iSup₂_le
+    intro p hlast
+    apply le_iSup₂_of_le p (by simp [hlast]) (by simp)
+
+/--
+Alternative definition of coheight, with the supremum only ranging over those series
+that begin at `a`.
+-/
+lemma coheight_eq_iSup_head_eq  (a : α) :
+    coheight a = ⨆ (p : LTSeries α) (_ : p.head = a), ↑(p.length) := by
+  show height (α := αᵒᵈ) a = ⨆ (p : LTSeries α) (_ : p.head = a), ↑(p.length)
+  rw [height_eq_iSup_last_eq]
+  apply Equiv.iSup_congr ⟨RelSeries.reverse, RelSeries.reverse, RelSeries.reverse_reverse,
+    RelSeries.reverse_reverse⟩
+  congr! 1
+
+lemma height_le_iff_iSup_last_eq (x : α) (n : ℕ∞) :
+    height x ≤ n ↔ ∀ (p : LTSeries α), p.last = x → p.length ≤ n := by
+  simp [height_eq_iSup_last_eq, iSup_le_iff]
+
+lemma coheight_le_iff_iSup_head_eq (x : α) (n : ℕ∞) :
+    coheight x ≤ n ↔ ∀ (p : LTSeries α), p.head = x → p.length ≤ n := by
+  simp [coheight_eq_iSup_head_eq, iSup_le_iff]
+
+/-- Stronger version, guarantees equality -/
 lemma height_le (x : α) (n : ℕ∞) :
     (∀ (p : LTSeries α), p.last = x → p.length ≤ n) → height x ≤ n :=
-  (height_le_iff x n).mpr
+  (height_le_iff_iSup_last_eq x n).mpr
 
 lemma coheight_le (x : α) (n : ℕ∞) :
     (∀ (p : LTSeries α), p.head = x → p.length ≤ n) → coheight x ≤ n :=
-  (coheight_le_iff x n).mpr
+  (coheight_le_iff_iSup_head_eq x n).mpr
 
 lemma length_le_height (x : α) (p : LTSeries α) (hlast : p.last ≤ x) :
     p.length ≤ height x := by
@@ -135,9 +174,8 @@ lemma length_le_height (x : α) (p : LTSeries α) (hlast : p.last ≤ x) :
       convert this
       norm_cast
       omega
-    apply le_iSup_of_le p'
-    apply le_iSup_of_le (by simp [p'])
-    exact le_refl _
+    refine le_iSup₂_of_le p' ?_ le_rfl
+    simp [p']
   · simp_all
 
 lemma length_le_coheight (x : α) (p : LTSeries α) (hhead : x ≤ p.head) :
@@ -175,11 +213,8 @@ lemma coheight_eq_index_of_length_eq_head_coheight (p : LTSeries α)
   intro i
   simpa using height_eq_index_of_length_eq_last_height (α := αᵒᵈ) p.reverse (by simpa) i.rev
 
-lemma height_mono : Monotone (α := α) height := by
-  intro x y hxy
-  apply height_le
-  intros p hlast _
-  apply length_le_height y p (hlast ▸ hxy)
+lemma height_mono : Monotone (α := α) height :=
+  fun _ _ hab ↦ biSup_mono (fun _ hla => hla.trans hab)
 
 @[gcongr] protected lemma _root_.GCongr.height_le_height (a b : α) (hab : a ≤ b) :
     height a ≤ height b := height_mono hab
@@ -190,7 +225,7 @@ lemma coheight_mono : Antitone (α := α) coheight :=
 private lemma height_add_const (a : α) (n : ℕ∞) :
     height a + n = ⨆ (p : LTSeries α ) (_ : p.last = a), p.length + n := by
   have hne : Nonempty { p : LTSeries α // p.last = a } := ⟨RelSeries.singleton _ a, rfl⟩
-  rw [height, iSup_subtype', iSup_subtype']
+  rw [height_eq_iSup_last_eq, iSup_subtype', iSup_subtype']
   rw [Monotone.map_ciSup_of_continuousAt (f := (· + n))
     (continuousAt_id.add continuousAt_const) (monotone_id.add monotone_const)]
 
@@ -202,7 +237,7 @@ lemma height_strictMono (x y : α) (hxy : x < y) (hfin : height y < ⊤) :
   rw [height_add_const]
   apply iSup₂_le
   intro p hlast
-  apply le_iSup₂_of_le (p.snoc y (hlast ▸ hxy)) (by simp) (by simp)
+  apply le_iSup₂_of_le (p.snoc y (by simp [*])) (by simp) (by simp)
 
 lemma coheight_strictAntitone (x y : α) (hxy : y < x) (hfin : coheight y < ⊤) :
     coheight x < coheight y :=
@@ -210,7 +245,7 @@ lemma coheight_strictAntitone (x y : α) (hxy : y < x) (hfin : coheight y < ⊤)
 
 lemma height_le_height_of_strictmono (f : α → β) (hf : StrictMono f) (x : α) :
     height x ≤ height (f x) := by
-  unfold height
+  simp only [height_eq_iSup_last_eq]
   apply iSup₂_le
   intro p hlast
   apply le_iSup₂_of_le (p.map f hf) (by simp [hlast]) (by simp)
@@ -242,7 +277,7 @@ lemma exists_series_of_le_height (a : α) {n : ℕ} (h : n ≤ height a) :
   cases ha : height a with
   | top =>
     clear h
-    rw [height, iSup_subtype', ENat.iSup_coe_eq_top, bddAbove_def] at ha
+    rw [height_eq_iSup_last_eq, iSup_subtype', ENat.iSup_coe_eq_top, bddAbove_def] at ha
     push_neg at ha
     contrapose! ha
     use n
@@ -252,7 +287,7 @@ lemma exists_series_of_le_height (a : α) {n : ℕ} (h : n ≤ height a) :
     apply ha (p.drop ⟨m-n, by omega⟩) (by simp) (by simp; omega)
   | coe m =>
     rw [ha, Nat.cast_le] at h
-    rw [height, iSup_subtype'] at ha
+    rw [height_eq_iSup_last_eq, iSup_subtype'] at ha
     obtain ⟨⟨p,hlast⟩, hlen⟩ := exist_eq_iSup_of_iSup_eq_coe ha
     simp only [Nat.cast_inj] at hlen
     use p.drop ⟨m-n, by omega⟩
@@ -285,7 +320,7 @@ lemma height_eq_top_iff (x : α) :
     apply exists_series_of_le_height x (n := n)
     simp [h]
   · intro h
-    rw [height, iSup_subtype', ENat.iSup_coe_eq_top, bddAbove_def]
+    rw [height_eq_iSup_last_eq, iSup_subtype', ENat.iSup_coe_eq_top, bddAbove_def]
     push_neg
     intro n
     obtain ⟨p, hlast, hp⟩ := h (n+1)
@@ -570,7 +605,7 @@ The Krull dimension is the supremum of the element's heights.
 If `α` is `Nonempty`, then `krullDim_eq_iSup_height_of_nonempty`, with the coercion from
 `ℕ∞` to `WithBot ℕ∞` outside the supremum, can be more convenient.
 -/
-lemma krullDim_eq_iSup_height : krullDim α = ⨆ (a : α), (height a : WithBot ℕ∞) := by
+lemma krullDim_eq_iSup_height : krullDim α = ⨆ (a : α), ↑(height a) := by
   cases isEmpty_or_nonempty α with
   | inl h => rw [krullDim_eq_bot_of_isEmpty, ciSup_of_empty]
   | inr h => rw [krullDim_eq_iSup_height_of_nonempty, WithBot.coe_iSup (OrderTop.bddAbove _)]
