@@ -25,7 +25,7 @@ theorem tail_reverse_eq_reverse_dropLast (l : List α) :
   · simp only [← drop_one]
     rw [getElem?_eq_getElem (by simpa), getElem?_eq_getElem (by simpa),
       ← getElem_drop' _, getElem_reverse, getElem_reverse, getElem_dropLast]
-    simp [show l.length - 1 - (1 + i) = l.length - 1 - 1 - i by omega]
+    · simp [show l.length - 1 - (1 + i) = l.length - 1 - 1 - i by omega]
     all_goals ((try simp); omega)
   · rw [getElem?_eq_none, getElem?_eq_none]
     all_goals (simp; omega)
@@ -35,7 +35,7 @@ theorem getLast_tail (l : List α) (hl : l.tail ≠ []) :
   simp only [← drop_one, ne_eq, drop_eq_nil_iff_le,
     not_le, getLast_eq_getElem, length_drop] at hl |-
   rw [← getElem_drop']
-  simp [show 1 + (l.length - 1 - 1) = l.length - 1 by omega]
+  · simp [show 1 + (l.length - 1 - 1) = l.length - 1 by omega]
   omega
 
 lemma getElem_tail {i} (L : List α) (hi : i < L.tail.length) :
