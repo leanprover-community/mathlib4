@@ -7,7 +7,7 @@ on:
 jobs:
   Produce_bench_summary:
     name: Post bench summary
-    if: (github.event.issue.pull_request != 'null') && (startsWith(github.event.comment.body, 'Here are the [benchmark results]'))
+    if: github.event.issue.pull_request && (startsWith(github.event.comment.body, 'Here are the [benchmark results]'))
     runs-on: ubuntu-latest
     steps:
       - name: install elan

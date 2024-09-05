@@ -51,20 +51,25 @@ def formatDiff (z : Int) : String :=
 def formatPercent (reldiff : Float) : String :=
   -- shift by `2` twice: the first one, to get a `%`; the second, for 2 decimal digits of precision
   let reldiff := reldiff * 10 ^ 4
-  let (sgn : Int) := if reldiff < 0 then -1 else 1
-  let (sgnf : Float) := .ofInt sgn
-  let reldiff := sgnf * reldiff
+  let sgn : Int := if reldiff < 0 then -1 else 1
+  let reldiff := (.ofInt sgn) * reldiff
   let (sgn, intDigs, decDigs) := intDecs (sgn * reldiff.toUInt32.val) 0 2
   s!"({sgn}{intDigs}.{decDigs}%)"
 
-/-- info: #["(+0.0%)", "(+14.28%)", "(+0.20%)", "(-0.60%)"] -/
+/--
+info: [(+0.0%), (+14.28%), (+0.20%), (-0.60%)]
+---
+info: [+0.0⬝10⁹, +1.0⬝10⁹, +30.200⬝10⁹, -0.460⬝10⁹]
+-/
 #guard_msgs in
-#eval
+run_cmd
   let floats : Array Float := #[0, 1/7, 0.002, -0.006]
-  floats.map formatPercent
+  logInfo m!"{floats.map formatPercent}"
+  let ints : Array Int := #[0, 10^9, 302*10^8, -460000000]
+  logInfo m!"{ints.map formatDiff}"
 
 /--
-`formatFile file` converts a `String` into a formatted string of the form `` `file``,
+`formatFile file` converts a `String` into a formatted string of the form `` `file` ``,
 removing leading non-letters. It is expected that `~` is the only leading non-letter.
 -/
 def formatFile (file : String) : String :=
@@ -81,7 +86,7 @@ def summary (bc : Bench) : String :=
   "|".intercalate (""::middle ++ [""])
 
 /--
-`toTable bcs` formats an array of `Bench`es into an md-table whose columns are
+`toTable bcs` formats an array of `Bench`es into a markdown table whose columns are
 `File`, `Instructions` and `%`.
 A typical entry may look like ``|`Mathlib.Analysis.Seminorm`|+2.509⬝10⁹|(+1.41%)|``
 -/
