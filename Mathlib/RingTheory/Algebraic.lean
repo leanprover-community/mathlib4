@@ -263,16 +263,19 @@ variable [Algebra K L] [Algebra L A] [Algebra K A] [IsScalarTower K L A]
 variable (L)
 
 /-- If x is algebraic over K, then x is algebraic over L when L is an extension of K -/
+@[stacks 09GF "first part"]
 theorem IsAlgebraic.tower_top {x : A} (A_alg : IsAlgebraic K x) :
     IsAlgebraic L x :=
   A_alg.tower_top_of_injective (algebraMap K L).injective
 
 /-- If A is an algebraic algebra over K, then A is algebraic over L when L is an extension of K -/
+@[stacks 09GF "second part"]
 theorem Algebra.IsAlgebraic.tower_top [Algebra.IsAlgebraic K A] : Algebra.IsAlgebraic L A :=
   Algebra.IsAlgebraic.tower_top_of_injective (algebraMap K L).injective
 
 variable (K)
 
+@[stacks 09GG]
 theorem IsAlgebraic.of_finite (e : A) [FiniteDimensional K A] : IsAlgebraic K e :=
   (IsIntegral.of_finite K e).isAlgebraic
 
@@ -293,6 +296,7 @@ variable [Algebra K L] [Algebra L A] [Algebra K A] [IsScalarTower K L A]
 
 /-- If L is an algebraic field extension of K and A is an algebraic algebra over L,
 then A is algebraic over K. -/
+@[stacks 09GJ]
 protected theorem Algebra.IsAlgebraic.trans
     [L_alg : Algebra.IsAlgebraic K L] [A_alg : Algebra.IsAlgebraic L A] :
     Algebra.IsAlgebraic K A := by
@@ -450,6 +454,7 @@ theorem Subalgebra.inv_mem_of_algebraic {x : A} (hx : _root_.IsAlgebraic K (x : 
       exact A.zero_mem
 
 /-- In an algebraic extension L/K, an intermediate subalgebra is a field. -/
+@[stacks 0BID]
 theorem Subalgebra.isField_of_algebraic [Algebra.IsAlgebraic K L] : IsField A :=
   { show Nontrivial A by infer_instance, Subalgebra.toCommRing A with
     mul_inv_cancel := fun {a} ha =>

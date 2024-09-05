@@ -85,6 +85,7 @@ theorem cardinal_mk_le_mul : #{ x : A // IsAlgebraic R x } ≤ #R[X] * ℵ₀ :=
   rw [← lift_id #_, ← lift_id #R[X]]
   exact cardinal_mk_lift_le_mul R A
 
+@[stacks 09GK]
 theorem cardinal_mk_le_max : #{ x : A // IsAlgebraic R x } ≤ max #R ℵ₀ := by
   rw [← lift_id #_, ← lift_id #R]
   exact cardinal_mk_lift_le_max R A
