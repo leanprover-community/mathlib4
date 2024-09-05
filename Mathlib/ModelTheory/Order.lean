@@ -302,7 +302,7 @@ variable (L) [IsOrdered L] (M) [L.Structure M]
 
 /-- Any structure in an ordered language can be ordered correspondingly. -/
 def leOfStructure : LE M where
-  le := fun a b => Structure.RelMap (leSymb : L.Relations 2) ![a,b]
+  le a b := Structure.RelMap (leSymb : L.Relations 2) ![a,b]
 
 instance : @OrderedStructure L M _ (L.leOfStructure M) _ := by
   letI := L.leOfStructure M
