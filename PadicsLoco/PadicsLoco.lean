@@ -34,33 +34,15 @@ variable (p : ℕ) [Fact (Nat.Prime p)]
 
 namespace PadicInt
 
-/--The set of p-adic integers `ℤ_[p]` is totally bounded, where (p : ℕ) [Fact (Nat.Prime p)].-/
-theorem totally_bounded :
-    TotallyBounded (Set.univ : Set ℤ_[p]) := by
-  apply Metric.totallyBounded_iff.2
-  intros ε he
-  apply PadicInt.exists_pow_neg_lt p at he
-  rcases he with ⟨k , hk⟩
-  let t0 := Finset.range ((p ^ k) : ℕ)
-  let t : Set ℤ_[p] := ((↑) : ℕ → ℤ_[p])'' t0
-  use t
-  constructor
-  · exact Set.toFinite t
-  · intros z _
-    simp only [PadicInt, Set.mem_iUnion, Metric.mem_ball, exists_prop]
-    use ((↑) : ℕ → ℤ_[p]) (PadicInt.appr z k)
-    constructor
-    · refine (Set.mem_image Nat.cast ↑t0 ((z.appr k) : ℤ_[p])).mpr ?h.left.a
-      simp only [Finset.mem_coe, Nat.cast_inj]
-      refine exists_eq_right.mpr ?h.left.a.a
-      refine Finset.mem_range.mpr ?h.left.a.a.a
-      exact PadicInt.appr_lt z k
-    · have h1 : dist z ((z.appr k) : ℤ_[p]) ≤ (p ^ (- (k : ℤ ))) := by
-        have h3 : (z ) - ↑(z.appr k) ∈ Ideal.span {(p  : ℤ_[p]) ^ k} := PadicInt.appr_spec k z
-        have h4 : ‖(z) - ↑(z.appr k)‖  ≤ (p : ℝ) ^ (- k : ℤ) :=
-          (PadicInt.norm_le_pow_iff_mem_span_pow (z - ((z.appr k) : ℤ_[p])) k).mpr h3
-        exact h4
-      exact lt_of_le_of_lt h1 hk
+/-- The set of p-adic integers `ℤ_[p]` is totally bounded. -/
+theorem totallyBounded_univ : TotallyBounded (univ : Set ℤ_[p]) := by
+  refine Metric.totallyBounded_iff.mpr (fun ε hε ↦ ?_)
+  obtain ⟨k, hk⟩ := exists_pow_neg_lt p hε
+  refine ⟨Nat.cast '' Finset.range (p ^ k), Set.toFinite _, fun z _ ↦ ?_⟩
+  simp only [PadicInt, Set.mem_iUnion, Metric.mem_ball, exists_prop, Set.exists_mem_image]
+  refine ⟨z.appr k, ?_, ?_⟩
+  · simpa only [Finset.mem_coe, Finset.mem_range] using z.appr_lt k
+  · exact (((z - z.appr k).norm_le_pow_iff_mem_span_pow k).mpr (z.appr_spec k)).trans_lt hk
 
 /--The set of p-adic integers `ℤ_[p]` is a compact topological space,
 where (p : ℕ) [Fact (Nat.Prime p)].-/
