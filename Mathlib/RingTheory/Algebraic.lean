@@ -262,12 +262,16 @@ variable [Field K] [Field L] [Ring A]
 variable [Algebra K L] [Algebra L A] [Algebra K A] [IsScalarTower K L A]
 variable (L)
 
-/-- If x is algebraic over K, then x is algebraic over L when L is an extension of K -/
+/-- If x is algebraic over K, then x is algebraic over L when L is an extension of K 
+
+[Stacks: Lemma 09GF, part one](https://stacks.math.columbia.edu/tag/09GF)-/
 theorem IsAlgebraic.tower_top {x : A} (A_alg : IsAlgebraic K x) :
     IsAlgebraic L x :=
   A_alg.tower_top_of_injective (algebraMap K L).injective
 
-/-- If A is an algebraic algebra over K, then A is algebraic over L when L is an extension of K -/
+/-- If A is an algebraic algebra over K, then A is algebraic over L when L is an extension of K 
+
+[Stacks: Lemma 09GF, part two](https://stacks.math.columbia.edu/tag/09GF)-/
 theorem Algebra.IsAlgebraic.tower_top [Algebra.IsAlgebraic K A] : Algebra.IsAlgebraic L A :=
   Algebra.IsAlgebraic.tower_top_of_injective (algebraMap K L).injective
 
@@ -278,7 +282,9 @@ theorem IsAlgebraic.of_finite (e : A) [FiniteDimensional K A] : IsAlgebraic K e 
 
 variable (A)
 
-/-- A field extension is algebraic if it is finite. -/
+/-- A field extension is algebraic if it is finite. 
+
+[Stacks: Lemma 09GG](https://stacks.math.columbia.edu/tag/09GG)-/
 instance Algebra.IsAlgebraic.of_finite [FiniteDimensional K A] : Algebra.IsAlgebraic K A :=
   (IsIntegral.of_finite K A).isAlgebraic
 
@@ -292,7 +298,9 @@ variable [Field K] [Field L] [Ring A]
 variable [Algebra K L] [Algebra L A] [Algebra K A] [IsScalarTower K L A]
 
 /-- If L is an algebraic field extension of K and A is an algebraic algebra over L,
-then A is algebraic over K. -/
+then A is algebraic over K. 
+
+[Stacks: Lemma 09GJ](https://stacks.math.columbia.edu/tag/09GJ)-/
 protected theorem Algebra.IsAlgebraic.trans
     [L_alg : Algebra.IsAlgebraic K L] [A_alg : Algebra.IsAlgebraic L A] :
     Algebra.IsAlgebraic K A := by
@@ -449,7 +457,9 @@ theorem Subalgebra.inv_mem_of_algebraic {x : A} (hx : _root_.IsAlgebraic K (x : 
     · rw [x_eq, Subalgebra.coe_zero, inv_zero]
       exact A.zero_mem
 
-/-- In an algebraic extension L/K, an intermediate subalgebra is a field. -/
+/-- In an algebraic extension L/K, an intermediate subalgebra is a field. 
+
+[Stacks: Lemma 0BID](https://stacks.math.columbia.edu/tag/0BID)-/
 theorem Subalgebra.isField_of_algebraic [Algebra.IsAlgebraic K L] : IsField A :=
   { show Nontrivial A by infer_instance, Subalgebra.toCommRing A with
     mul_inv_cancel := fun {a} ha =>
