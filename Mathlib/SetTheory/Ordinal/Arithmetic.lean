@@ -1727,12 +1727,14 @@ theorem IsNormal.eq_iff_zero_and_succ {f g : Ordinal.{u} → Ordinal.{u}} (hf : 
     (hg : IsNormal g) : f = g ↔ f 0 = g 0 ∧ ∀ a, f a = g a → f (succ a) = g (succ a) :=
   ⟨fun h => by simp [h], fun ⟨h₁, h₂⟩ =>
     funext fun a => by
-      induction' a using limitRecOn with _ _ _ ho H
-      any_goals solve_by_elim
-      rw [← IsNormal.bsup_eq.{u, u} hf ho, ← IsNormal.bsup_eq.{u, u} hg ho]
-      congr
-      ext b hb
-      exact H b hb⟩
+      induction a using limitRecOn with
+      | H₁ => solve_by_elim
+      | H₂ => solve_by_elim
+      | H₃ _ ho H =>
+        rw [← IsNormal.bsup_eq.{u, u} hf ho, ← IsNormal.bsup_eq.{u, u} hg ho]
+        congr
+        ext b hb
+        exact H b hb⟩
 
 /-- A two-argument version of `Ordinal.blsub`.
 We don't develop a full API for this, since it's only used in a handful of existence results. -/
