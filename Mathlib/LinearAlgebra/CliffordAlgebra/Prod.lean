@@ -41,8 +41,9 @@ section map_mul_map
 variable {Q₁ Q₂ Qₙ}
 variable (f₁ : Q₁ →qᵢ Qₙ) (f₂ : Q₂ →qᵢ Qₙ) (hf : ∀ x y, Qₙ.IsOrtho (f₁ x) (f₂ y))
 variable (m₁ : CliffordAlgebra Q₁) (m₂ : CliffordAlgebra Q₂)
+include hf
 
-/-- If `m₁` and `m₂` are both homogenous,
+/-- If `m₁` and `m₂` are both homogeneous,
 and the quadratic spaces `Q₁` and `Q₂` map into
 orthogonal subspaces of `Qₙ` (for instance, when `Qₙ = Q₁.prod Q₂`),
 then the product of the embedding in `CliffordAlgebra Q` commutes up to a sign factor. -/
@@ -150,9 +151,9 @@ lemma toProd_one_tmul_ι (m₂ : M₂) : toProd Q₁ Q₂ (1 ᵍ⊗ₜ ι _ m₂
 
 lemma toProd_comp_ofProd : (toProd Q₁ Q₂).comp (ofProd Q₁ Q₂) = AlgHom.id _ _ := by
   ext m <;> dsimp
-  · rw [ofProd_ι_mk, map_add, toProd_one_tmul_ι, toProd_ι_tmul_one, ← Prod.zero_eq_mk,
+  · rw [ofProd_ι_mk, map_add, toProd_one_tmul_ι, toProd_ι_tmul_one, Prod.mk_zero_zero,
       LinearMap.map_zero, add_zero]
-  · rw [ofProd_ι_mk, map_add, toProd_one_tmul_ι, toProd_ι_tmul_one, ← Prod.zero_eq_mk,
+  · rw [ofProd_ι_mk, map_add, toProd_one_tmul_ι, toProd_ι_tmul_one, Prod.mk_zero_zero,
       LinearMap.map_zero, zero_add]
 
 lemma ofProd_comp_toProd : (ofProd Q₁ Q₂).comp (toProd Q₁ Q₂) = AlgHom.id _ _ := by

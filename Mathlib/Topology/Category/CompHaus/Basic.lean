@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Adam Topaz, Bhavik Mehta
+Authors: Adam Topaz, Bhavik Mehta, Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Monad.Limits
 import Mathlib.Topology.StoneCech
@@ -23,6 +23,11 @@ The fully faithful functor `CompHaus ⥤ TopCat` is denoted `compHausToTop`.
 equivalence of categories in `CompactumToCompHaus.isEquivalence`.
 See `Mathlib/Topology/Category/Compactum.lean` for a more detailed discussion where these
 definitions are introduced.
+
+## Implementation
+
+The category `CompHaus` is defined using the structure `CompHausLike`. See the file
+`CompHausLike.Basic` for more information.
 
 -/
 
@@ -219,6 +224,6 @@ theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Functi
 
 end CompHaus
 
-/-- Every `CompHausLike` admits a functor to `CompHaus`. -/
+/-- Every `CompHausLike` admits a functor to `CompHaus`. -/
 abbrev compHausLikeToCompHaus (P : TopCat → Prop) : CompHausLike P ⥤ CompHaus :=
   CompHausLike.toCompHausLike (by simp only [implies_true])

@@ -7,24 +7,27 @@ import Mathlib.ModelTheory.Basic
 
 /-!
 # Language Maps
+
 Maps between first-order languages in the style of the
 [Flypitch project](https://flypitch.github.io/), as well as several important maps between
 structures.
 
 ## Main Definitions
-* A `FirstOrder.Language.LHom`, denoted `L →ᴸ L'`, is a map between languages, sending the symbols
+
+- A `FirstOrder.Language.LHom`, denoted `L →ᴸ L'`, is a map between languages, sending the symbols
   of one to symbols of the same kind and arity in the other.
-* A `FirstOrder.Language.LEquiv`, denoted `L ≃ᴸ L'`, is an invertible language homomorphism.
-* `FirstOrder.Language.withConstants` is defined so that if `M` is an `L.Structure` and
+- A `FirstOrder.Language.LEquiv`, denoted `L ≃ᴸ L'`, is an invertible language homomorphism.
+- `FirstOrder.Language.withConstants` is defined so that if `M` is an `L.Structure` and
   `A : Set M`, `L.withConstants A`, denoted `L[[A]]`, is a language which adds constant symbols for
   elements of `A` to `L`.
 
 ## References
+
 For the Flypitch project:
 - [J. Han, F. van Doorn, *A formal proof of the independence of the continuum hypothesis*]
-[flypitch_cpp]
+  [flypitch_cpp]
 - [J. Han, F. van Doorn, *A formalization of forcing and the unprovability of
-the continuum hypothesis*][flypitch_itp]
+  the continuum hypothesis*][flypitch_itp]
 
 -/
 
@@ -44,8 +47,10 @@ variable (L : Language.{u, v}) (L' : Language.{u', v'}) {M : Type w} [L.Structur
 
 /-- A language homomorphism maps the symbols of one language to symbols of another. -/
 structure LHom where
-  onFunction : ∀ ⦃n⦄, L.Functions n → L'.Functions n
-  onRelation : ∀ ⦃n⦄, L.Relations n → L'.Relations n
+  onFunction : ∀ ⦃n⦄, L.Functions n → L'.Functions n := by
+    exact fun {n} => isEmptyElim
+  onRelation : ∀ ⦃n⦄, L.Relations n → L'.Relations n :=by
+    exact fun {n} => isEmptyElim
 
 @[inherit_doc FirstOrder.Language.LHom]
 infixl:10 " →ᴸ " => LHom
@@ -94,8 +99,7 @@ variable (L L')
 
 /-- The inclusion of an empty language into any other language. -/
 @[simps]
-protected def ofIsEmpty [L.IsAlgebraic] [L.IsRelational] : L →ᴸ L' :=
-  ⟨fun n => (IsRelational.empty_functions n).elim, fun n => (IsAlgebraic.empty_relations n).elim⟩
+protected def ofIsEmpty [L.IsAlgebraic] [L.IsRelational] : L →ᴸ L' where
 
 variable {L L'} {L'' : Language}
 
@@ -216,9 +220,12 @@ noncomputable def defaultExpansion (ϕ : L →ᴸ L')
 /-- A language homomorphism is an expansion on a structure if it commutes with the interpretation of
 all symbols on that structure. -/
 class IsExpansionOn (M : Type*) [L.Structure M] [L'.Structure M] : Prop where
-  map_onFunction : ∀ {n} (f : L.Functions n) (x : Fin n → M), funMap (ϕ.onFunction f) x = funMap f x
-  map_onRelation : ∀ {n} (R : L.Relations n) (x : Fin n → M),
-    RelMap (ϕ.onRelation R) x = RelMap R x
+  map_onFunction :
+    ∀ {n} (f : L.Functions n) (x : Fin n → M), funMap (ϕ.onFunction f) x = funMap f x := by
+      exact fun {n} => isEmptyElim
+  map_onRelation :
+    ∀ {n} (R : L.Relations n) (x : Fin n → M), RelMap (ϕ.onRelation R) x = RelMap R x := by
+      exact fun {n} => isEmptyElim
 
 @[simp]
 theorem map_onFunction {M : Type*} [L.Structure M] [L'.Structure M] [ϕ.IsExpansionOn M] {n}
@@ -234,9 +241,7 @@ instance id_isExpansionOn (M : Type*) [L.Structure M] : IsExpansionOn (LHom.id L
   ⟨fun _ _ => rfl, fun _ _ => rfl⟩
 
 instance ofIsEmpty_isExpansionOn (M : Type*) [L.Structure M] [L'.Structure M] [L.IsAlgebraic]
-    [L.IsRelational] : IsExpansionOn (LHom.ofIsEmpty L L') M :=
-  ⟨fun {n} => (IsRelational.empty_functions n).elim,
-   fun {n} => (IsAlgebraic.empty_relations n).elim⟩
+    [L.IsRelational] : IsExpansionOn (LHom.ofIsEmpty L L') M where
 
 instance sumElim_isExpansionOn {L'' : Language} (ψ : L'' →ᴸ L') (M : Type*) [L.Structure M]
     [L'.Structure M] [L''.Structure M] [ϕ.IsExpansionOn M] [ψ.IsExpansionOn M] :
@@ -401,7 +406,7 @@ theorem card_withConstants :
     L[[α]].card = Cardinal.lift.{w'} L.card + Cardinal.lift.{max u v} #α := by
   rw [withConstants, card_sum, card_constantsOn]
 
-/-- The language map adding constants.  -/
+/-- The language map adding constants. -/
 @[simps!] -- Porting note: add `!` to `simps`
 def lhomWithConstants : L →ᴸ L[[α]] :=
   LHom.sumInl
@@ -417,7 +422,7 @@ protected def con (a : α) : L[[α]].Constants :=
 
 variable {L} (α)
 
-/-- Adds constants to a language map.  -/
+/-- Adds constants to a language map. -/
 def LHom.addConstants {L' : Language} (φ : L →ᴸ L') : L[[α]] →ᴸ L'[[α]] :=
   φ.sumMap (LHom.id _)
 
@@ -426,7 +431,7 @@ instance paramsStructure (A : Set α) : (constantsOn A).Structure α :=
 
 variable (L)
 
-/-- The language map removing an empty constant set.  -/
+/-- The language map removing an empty constant set. -/
 @[simps]
 def LEquiv.addEmptyConstants [ie : IsEmpty α] : L ≃ᴸ L[[α]] where
   toLHom := lhomWithConstants L α
@@ -448,7 +453,7 @@ theorem withConstants_relMap_sum_inl [L[[α]].Structure M] [(lhomWithConstants L
     {n} {R : L.Relations n} {x : Fin n → M} : @RelMap (L[[α]]) M _ n (Sum.inl R) x = RelMap R x :=
   (lhomWithConstants L α).map_onRelation R x
 
-/-- The language map extending the constant set.  -/
+/-- The language map extending the constant set. -/
 def lhomWithConstantsMap (f : α → β) : L[[α]] →ᴸ L[[β]] :=
   LHom.sumMap (LHom.id L) (LHom.constantsOnMap f)
 

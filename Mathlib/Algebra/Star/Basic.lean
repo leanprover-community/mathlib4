@@ -111,7 +111,7 @@ theorem star_eq_iff_star_eq [InvolutiveStar R] {r s : R} : star r = s ↔ star s
 /-- Typeclass for a trivial star operation. This is mostly meant for `ℝ`.
 -/
 class TrivialStar (R : Type u) [Star R] : Prop where
-  /-- Condition that star is trivial-/
+  /-- Condition that star is trivial -/
   star_trivial : ∀ r : R, star r = r
 
 export TrivialStar (star_trivial)
@@ -221,7 +221,7 @@ theorem star_id_of_comm {R : Type*} [CommSemiring R] {x : R} : star x = x :=
 end
 
 /-- A `*`-additive monoid `R` is an additive monoid with an involutive `star` operation which
-preserves addition.  -/
+preserves addition. -/
 class StarAddMonoid (R : Type u) [AddMonoid R] extends InvolutiveStar R where
   /-- `star` commutes with addition -/
   star_add : ∀ r s : R, star (r + s) = star r + star s
@@ -261,16 +261,16 @@ theorem star_sub [AddGroup R] [StarAddMonoid R] (r s : R) : star (r - s) = star 
   (starAddEquiv : R ≃+ R).map_sub _ _
 
 @[simp]
-theorem star_nsmul [AddMonoid R] [StarAddMonoid R] (x : R) (n : ℕ) : star (n • x) = n • star x :=
+theorem star_nsmul [AddMonoid R] [StarAddMonoid R] (n : ℕ) (x : R) : star (n • x) = n • star x :=
   (starAddEquiv : R ≃+ R).toAddMonoidHom.map_nsmul _ _
 
 @[simp]
-theorem star_zsmul [AddGroup R] [StarAddMonoid R] (x : R) (n : ℤ) : star (n • x) = n • star x :=
+theorem star_zsmul [AddGroup R] [StarAddMonoid R] (n : ℤ) (x : R) : star (n • x) = n • star x :=
   (starAddEquiv : R ≃+ R).toAddMonoidHom.map_zsmul _ _
 
 /-- A `*`-ring `R` is a non-unital, non-associative (semi)ring with an involutive `star` operation
 which is additive which makes `R` with its multiplicative structure into a `*`-multiplication
-(i.e. `star (r * s) = star s * star r`).  -/
+(i.e. `star (r * s) = star s * star r`). -/
 class StarRing (R : Type u) [NonUnitalNonAssocSemiring R] extends StarMul R where
   /-- `star` commutes with addition -/
   star_add : ∀ r s : R, star (r + s) = star r + star s
@@ -415,13 +415,16 @@ attribute [simp] star_smul
 instance StarMul.toStarModule [CommMonoid R] [StarMul R] : StarModule R R :=
   ⟨star_mul'⟩
 
-instance StarAddMonoid.toStarModuleNat {α} [AddCommMonoid α] [StarAddMonoid α] : StarModule ℕ α :=
-  ⟨fun n a ↦ by rw [star_nsmul, star_trivial n]⟩
+instance StarAddMonoid.toStarModuleNat {α} [AddCommMonoid α] [StarAddMonoid α] :
+    StarModule ℕ α where star_smul := star_nsmul
+
+instance StarAddMonoid.toStarModuleInt {α} [AddCommGroup α] [StarAddMonoid α] : StarModule ℤ α where
+  star_smul := star_zsmul
 
 namespace RingHomInvPair
 
 /-- Instance needed to define star-linear maps over a commutative star ring
-(ex: conjugate-linear maps when R = ℂ).  -/
+(ex: conjugate-linear maps when R = ℂ). -/
 instance [CommSemiring R] [StarRing R] : RingHomInvPair (starRingEnd R) (starRingEnd R) :=
   ⟨RingHom.ext star_star, RingHom.ext star_star⟩
 

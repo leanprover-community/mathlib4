@@ -35,7 +35,7 @@ theorem volume_regionBetween_eq_integral [SigmaFinite μ] (f_int : IntegrableOn 
     (g_int : IntegrableOn g s μ) (hs : MeasurableSet s) (hfg : ∀ x ∈ s, f x ≤ g x) :
     μ.prod volume (regionBetween f g s) = ENNReal.ofReal (∫ y in s, (g - f) y ∂μ) :=
   volume_regionBetween_eq_integral' f_int g_int hs
-    ((ae_restrict_iff' hs).mpr (eventually_of_forall hfg))
+    ((ae_restrict_iff' hs).mpr (Eventually.of_forall hfg))
 
 end regionBetween
 
@@ -102,7 +102,7 @@ theorem integral_comp_abs {f : ℝ → ℝ} :
       rw [← Measure.map_neg_eq_self (volume : Measure ℝ)]
       let m : MeasurableEmbedding fun x : ℝ => -x := (Homeomorph.neg ℝ).measurableEmbedding
       rw [m.integrableOn_map_iff]
-      simp_rw [Function.comp, abs_neg, neg_preimage, preimage_neg_Iic, neg_zero]
+      simp_rw [Function.comp_def, abs_neg, neg_preimage, preimage_neg_Iic, neg_zero]
       exact integrableOn_Ici_iff_integrableOn_Ioi.mpr hf
     calc
       _ = (∫ x in Iic 0, f |x|) + ∫ x in Ioi 0, f |x| := by

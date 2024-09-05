@@ -5,8 +5,8 @@ Authors: Andreas Swerdlow, Kexing Ying
 -/
 import Mathlib.LinearAlgebra.BilinearMap
 import Mathlib.LinearAlgebra.BilinearForm.Basic
-import Mathlib.LinearAlgebra.Basis
 import Mathlib.Algebra.Algebra.Bilinear
+import Mathlib.LinearAlgebra.Basis.Defs
 
 /-!
 # Bilinear form and linear maps
@@ -347,8 +347,8 @@ theorem ext_basis (h : ∀ i j, B (b i) (b j) = F₂ (b i) (b j)) : B = F₂ :=
 /-- Write out `B x y` as a sum over `B (b i) (b j)` if `b` is a basis. -/
 theorem sum_repr_mul_repr_mul (x y : M) :
     ((b.repr x).sum fun i xi => (b.repr y).sum fun j yj => xi • yj • B (b i) (b j)) = B x y := by
-  conv_rhs => rw [← b.total_repr x, ← b.total_repr y]
-  simp_rw [Finsupp.total_apply, Finsupp.sum, sum_left, sum_right, smul_left, smul_right,
+  conv_rhs => rw [← b.linearCombination_repr x, ← b.linearCombination_repr y]
+  simp_rw [Finsupp.linearCombination_apply, Finsupp.sum, sum_left, sum_right, smul_left, smul_right,
     smul_eq_mul]
 
 end Basis

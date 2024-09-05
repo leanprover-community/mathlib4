@@ -49,7 +49,7 @@ instance : FloorRing ℚ :=
 
 protected theorem floor_def {q : ℚ} : ⌊q⌋ = q.num / q.den := Rat.floor_def' q
 
-theorem floor_int_div_nat_eq_div {n : ℤ} {d : ℕ} : ⌊(↑n : ℚ) / (↑d : ℚ)⌋ = n / (↑d : ℤ) := by
+theorem floor_int_div_nat_eq_div (n : ℤ) (d : ℕ) : ⌊(↑n : ℚ) / (↑d : ℚ)⌋ = n / (↑d : ℤ) := by
   rw [Rat.floor_def]
   obtain rfl | hd := @eq_zero_or_pos _ _ d
   · simp
@@ -77,6 +77,48 @@ theorem round_cast (x : ℚ) : round (x : α) = round x := by
 @[simp, norm_cast]
 theorem cast_fract (x : ℚ) : (↑(fract x) : α) = fract (x : α) := by
   simp only [fract, cast_sub, cast_intCast, floor_cast]
+
+section NormNum
+
+open Mathlib.Meta.NormNum Qq
+
+theorem isNat_intFloor {R} [LinearOrderedRing R] [FloorRing R] (r : R) (m : ℕ) :
+    IsNat r m → IsNat ⌊r⌋ m := by rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
+
+theorem isInt_intFloor {R} [LinearOrderedRing R] [FloorRing R] (r : R) (m : ℤ) :
+    IsInt r m → IsInt ⌊r⌋ m := by rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
+
+theorem isInt_intFloor_ofIsRat (r : α) (n : ℤ) (d : ℕ) :
+    IsRat r n d → IsInt ⌊r⌋ (n / d) := by
+  rintro ⟨inv, rfl⟩
+  constructor
+  simp only [invOf_eq_inv, ← div_eq_mul_inv, Int.cast_id]
+  rw [← floor_int_div_nat_eq_div n d, ← floor_cast (α := α), Rat.cast_div,
+    cast_intCast, cast_natCast]
+
+/-- `norm_num` extension for `Int.floor` -/
+@[norm_num ⌊_⌋]
+def evalIntFloor : NormNumExt where eval {u αZ} e := do
+  match u, αZ, e with
+  | 0, ~q(ℤ), ~q(@Int.floor $α $instR $instF $x) =>
+    match ← derive x with
+    | .isBool .. => failure
+    | .isNat sα nb pb => do
+      assertInstancesCommute
+      return .isNat q(inferInstance) _ q(isNat_intFloor $x _ $pb)
+    | .isNegNat sα nb pb => do
+      assertInstancesCommute
+      -- floor always keeps naturals negative, so we can shortcut `.isInt`
+      return .isNegNat q(inferInstance) _ q(isInt_intFloor _ _ $pb)
+    | .isRat dα q n d h => do
+      let _i ← synthInstanceQ q(LinearOrderedField $α)
+      assertInstancesCommute
+      have z : Q(ℤ) := mkRawIntLit ⌊q⌋
+      letI : $z =Q ⌊$n / $d⌋ := ⟨⟩
+      return .isInt q(inferInstance) z ⌊q⌋ q(isInt_intFloor_ofIsRat _ $n $d $h)
+  | _, _, _ => failure
+
+end NormNum
 
 end Rat
 

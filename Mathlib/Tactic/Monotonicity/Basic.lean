@@ -53,3 +53,7 @@ elab_rules : tactic
     transparency := .reducible
     exfalso := false }
   liftMetaTactic fun g => do processSyntax cfg false false [] [] #[mkIdent `mono] [g]
+
+end Monotonicity
+
+end Mathlib.Tactic

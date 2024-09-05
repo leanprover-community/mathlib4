@@ -218,7 +218,7 @@ instance instGroup : Group (VariableChange R) where
   mul := comp
   one_mul := id_comp
   mul_one := comp_id
-  mul_left_inv := comp_left_inv
+  inv_mul_cancel := comp_left_inv
   mul_assoc := comp_assoc
 
 end VariableChange
