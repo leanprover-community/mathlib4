@@ -66,7 +66,7 @@ structure Entries : Type where
 
 /-- Find a row where `Entry.expr` == `e`. -/
 def Entries.find? (es : Entries) (e : Expr) : Option Entry :=
-  es.s.find? e
+  es.s[e]?
 
 /-- Length of our entries. -/
 def Entries.size (es : Entries) : Nat :=

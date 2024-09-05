@@ -52,7 +52,7 @@ theorem mem_kIdeal_iff (x : MvPolynomial (Fin 3) (ZMod 2)) :
   have :
       kIdeal = Ideal.span ((monomial · (1 : ZMod 2)) '' Set.range (Finsupp.single · 2)) := by
     simp_rw [kIdeal, X, monomial_mul, one_mul, ← Finsupp.single_add, ← Set.range_comp,
-      Function.comp]
+      Function.comp_def]
   rw [this, mem_ideal_span_monomial_image]
   simp
 
