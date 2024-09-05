@@ -4503,6 +4503,7 @@ import Mathlib.Topology.EMetricSpace.Defs
 import Mathlib.Topology.EMetricSpace.Diam
 import Mathlib.Topology.EMetricSpace.Lipschitz
 import Mathlib.Topology.EMetricSpace.Paracompact
+import Mathlib.Topology.EMetricSpace.Pi
 import Mathlib.Topology.ExtendFrom
 import Mathlib.Topology.ExtremallyDisconnected
 import Mathlib.Topology.FiberBundle.Basic
