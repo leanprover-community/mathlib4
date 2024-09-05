@@ -287,12 +287,9 @@ instance [IsSolvable R L] : IsSolvable R (⊤ : LieSubalgebra R L) := by
 
 @[simp] lemma radical_eq_top_of_isSolvable [IsSolvable R L] :
     radical R L = ⊤ := by
-  #adaptation_note
-  /--
-  After lean4#5020, many instances for Lie algebras and manifolds are no longer found.
-  See https://leanprover.zulipchat.com/#narrow/stream/428973-nightly-testing/topic/.2316244.20adaptations.20for.20nightly-2024-08-28/near/466219124
-  -/
-  rw [eq_top_iff]; exact le_sSup <| LieAlgebra.instIsSolvableSubtypeMemLieSubalgebraTop R L
+  rw [eq_top_iff]
+  have h : IsSolvable R (⊤ : LieSubalgebra R L) := inferInstance
+  exact le_sSup h
 
 /-- Given a solvable Lie ideal `I` with derived series `I = D₀ ≥ D₁ ≥ ⋯ ≥ Dₖ = ⊥`, this is the
 natural number `k` (the number of inclusions).
@@ -337,6 +334,9 @@ noncomputable def derivedAbelianOfIdeal (I : LieIdeal R L) : LieIdeal R L :=
   match derivedLengthOfIdeal R L I with
   | 0 => ⊥
   | k + 1 => derivedSeriesOfIdeal R L k I
+
+instance : Unique {x // x ∈ (⊥ : LieIdeal R L)} :=
+  inferInstanceAs <| Unique {x // x ∈ (⊥ : Submodule R L)}
 
 theorem abelian_derivedAbelianOfIdeal (I : LieIdeal R L) :
     IsLieAbelian (derivedAbelianOfIdeal I) := by

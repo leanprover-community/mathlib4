@@ -219,13 +219,6 @@ instance [Subsingleton M] : IsEmpty (Weight R L M) :=
   ⟨fun h ↦ h.2 (Subsingleton.elim _ _)⟩
 
 instance [Nontrivial (genWeightSpace M (0 : L → R))] : Zero (Weight R L M) :=
-  #adaptation_note
-  /--
-  After lean4#5020, many instances for Lie algebras and manifolds are no longer found.
-  See https://leanprover.zulipchat.com/#narrow/stream/428973-nightly-testing/topic/.2316244.20adaptations.20for.20nightly-2024-08-28/near/466219124
-  -/
-  letI : Unique (⊥ : LieSubmodule R L M) := Submodule.uniqueBot
-  letI : Subsingleton (⊥ : LieSubmodule R L M) := Unique.instSubsingleton
   ⟨0, fun e ↦ not_nontrivial (⊥ : LieSubmodule R L M) (e ▸ ‹_›)⟩
 
 @[simp]
@@ -330,7 +323,9 @@ lemma isNilpotent_toEnd_sub_algebraMap [IsNoetherian R M] (χ : L → R) (x : L)
   obtain ⟨k, hk⟩ := exists_genWeightSpace_le_ker_of_isNoetherian M χ x
   use k
   ext ⟨m, hm⟩
-  simpa [this, LinearMap.pow_restrict _, LinearMap.restrict_apply] using hk hm
+  simp only [this, LinearMap.pow_restrict _, LinearMap.zero_apply, ZeroMemClass.coe_zero,
+    ZeroMemClass.coe_eq_zero]
+  exact ZeroMemClass.coe_eq_zero.mp (hk hm)
 
 /-- A (nilpotent) Lie algebra acts nilpotently on the zero weight space of a Noetherian Lie
 module. -/
@@ -590,12 +585,7 @@ private lemma isCompl_genWeightSpace_zero_posFittingComp_aux
   · suffices IsNilpotent R L M by simp [M₀, M₁, isCompl_top_bot]
     replace h : M₀ = ⊤ := by simpa [M₀, genWeightSpace]
     rw [← LieModule.isNilpotent_of_top_iff', ← h]
-    #adaptation_note
-    /--
-    After lean4#5020, many instances for Lie algebras and manifolds are no longer found.
-    See https://leanprover.zulipchat.com/#narrow/stream/428973-nightly-testing/topic/.2316244.20adaptations.20for.20nightly-2024-08-28/near/466219124
-    -/
-    exact LieModule.instIsNilpotentSubtypeMemSubmoduleGenWeightSpaceOfNatForallOfIsNoetherian M
+    infer_instance
   · set M₀ₓ := genWeightSpaceOf M (0 : R) x
     set M₁ₓ := posFittingCompOf R M x
     set M₀ₓ₀ := genWeightSpace M₀ₓ (0 : L → R)
