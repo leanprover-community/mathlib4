@@ -116,8 +116,6 @@ Pattern a = b
   Nat.modEq_zero_iff
 · ∀ (a : ℕ), a ∣ 5 ↔ a ∣ 2
   Nat.dvd_left_iff_eq
-· (2 ^ 5).testBit 2 = true
-  Nat.testBit_two_pow
 · ↑5 = ↑2
   Ordinal.natCast_inj
 · ↑5 = ↑2
@@ -270,7 +268,7 @@ Pattern ∑ i ∈ Finset.range n, f i
   Finset.sum_range_reflect
 
 Pattern ∑ x ∈ s, f x
-· Finset.fold (fun x x_1 => x + x_1) 0 (fun x => x + 1) (Finset.range n)
+· Finset.fold (fun x1 x2 => x1 + x2) 0 (fun x => x + 1) (Finset.range n)
   Finset.sum_eq_fold
 · ∑' (x : ℕ), (↑(Finset.range n)).indicator (fun x => x + 1) x
   sum_eq_tsum_indicator
