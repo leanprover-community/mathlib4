@@ -73,17 +73,24 @@ determinant of its Jacobian is strictly negative on that set.
 def OrientationReversing (f : H → H) (s : Set H) : Prop :=
   ∀ x ∈ s, (fderiv ℝ f x).det < 0
 
-lemma OrientationPreserving.DifferentiableAt [Nontrivial H] [FiniteDimensional ℝ H] {f : H → H}
-  {s : Set H} (h : OrientationPreserving f s) : ∀ x ∈ s, DifferentiableAt ℝ f x := by
-  unfold OrientationPreserving at h
-  contrapose! h
-  obtain ⟨x, hx, hd⟩ := h
-  use x, hx
-  rw [fderiv_zero_of_not_differentiableAt hd, ContinuousLinearMap.det]
-  simp [ne_of_gt FiniteDimensional.finrank_pos]
+lemma OrientationPreserving.DifferentiableAt [FiniteDimensional ℝ H] {f : H → H}
+    {s : Set H} (h : OrientationPreserving f s) : ∀ x ∈ s, DifferentiableAt ℝ f x := by
+  cases subsingleton_or_nontrivial H
+  · intro x hs
+    apply DifferentiableWithinAt.differentiableAt
+    apply Set.Subsingleton.differentiableOn
+    exact s.subsingleton_of_subsingleton
+    exact hs
+    exact mem_nhds_discrete.mpr hs
+  · unfold OrientationPreserving at h
+    contrapose! h
+    obtain ⟨x, hx, hd⟩ := h
+    use x, hx
+    rw [fderiv_zero_of_not_differentiableAt hd, ContinuousLinearMap.det]
+    simp [ne_of_gt FiniteDimensional.finrank_pos]
 
-lemma OrientationReversing.DifferentiableAt [Nontrivial H] [FiniteDimensional ℝ H] {f : H → H}
-  {s : Set H} (h : OrientationReversing f s) : ∀ x ∈ s, DifferentiableAt ℝ f x := by
+lemma OrientationReversing.DifferentiableAt [FiniteDimensional ℝ H] {f : H → H}
+    {s : Set H} (h : OrientationReversing f s) : ∀ x ∈ s, DifferentiableAt ℝ f x := by
   unfold OrientationReversing at h
   contrapose! h
   obtain ⟨x, hx, hd⟩ := h
@@ -95,7 +102,7 @@ lemma orientationPreserving_id (s : Set H) : OrientationPreserving id s := by
   intro
   simp [ContinuousLinearMap.det]
 
-lemma orientationPreserving_comp [Nontrivial H] [FiniteDimensional ℝ H] {f g : H → H} {u v : Set H}
+lemma orientationPreserving_comp [FiniteDimensional ℝ H] {f g : H → H} {u v : Set H}
     (hf : OrientationPreserving f u) (hg : OrientationPreserving g v) :
     OrientationPreserving (g ∘ f) (u ∩ f ⁻¹' v) := by
   intro x ⟨hxu, hxv⟩
@@ -104,7 +111,7 @@ lemma orientationPreserving_comp [Nontrivial H] [FiniteDimensional ℝ H] {f g :
   rw [(fderiv ℝ g (f x)).toLinearMap.det_comp (fderiv ℝ f x).toLinearMap]
   exact mul_pos (hg (f x) hxv) (hf x hxu)
 
-lemma orientationReversing_comp_orientationPreserving [Nontrivial H] [FiniteDimensional ℝ H]
+lemma orientationReversing_comp_orientationPreserving [FiniteDimensional ℝ H]
     {f g : H → H} {u v : Set H} (hf : OrientationPreserving f u) (hg : OrientationReversing g v) :
     OrientationReversing (g ∘ f) (u ∩ f ⁻¹' v) := by
   intro x ⟨hxu, hxv⟩
@@ -113,7 +120,7 @@ lemma orientationReversing_comp_orientationPreserving [Nontrivial H] [FiniteDime
   rw [(fderiv ℝ g (f x)).toLinearMap.det_comp (fderiv ℝ f x).toLinearMap]
   exact mul_neg_of_neg_of_pos (hg (f x) hxv) (hf x hxu)
 
-lemma orientationPreserving_comp_orientationReversing [Nontrivial H] [FiniteDimensional ℝ H]
+lemma orientationPreserving_comp_orientationReversing [FiniteDimensional ℝ H]
     {f g : H → H} {u v : Set H} (hf : OrientationReversing f u) (hg : OrientationPreserving g v) :
     OrientationReversing (g ∘ f) (u ∩ f ⁻¹' v) := by
   intro x ⟨hxu, hxv⟩
@@ -122,7 +129,7 @@ lemma orientationPreserving_comp_orientationReversing [Nontrivial H] [FiniteDime
   rw [(fderiv ℝ g (f x)).toLinearMap.det_comp (fderiv ℝ f x).toLinearMap]
   exact mul_neg_of_pos_of_neg (hg (f x) hxv) (hf x hxu)
 
-lemma orientationReversing_comp [Nontrivial H] [FiniteDimensional ℝ H] {f g : H → H} {u v : Set H}
+lemma orientationReversing_comp [FiniteDimensional ℝ H] {f g : H → H} {u v : Set H}
     (hf : OrientationReversing f u) (hg : OrientationReversing g v) :
     OrientationPreserving (g ∘ f) (u ∩ f ⁻¹' v) := by
   intro x ⟨hxu, hxv⟩
@@ -132,7 +139,7 @@ lemma orientationReversing_comp [Nontrivial H] [FiniteDimensional ℝ H] {f g : 
   exact mul_pos_of_neg_of_neg (hg (f x) hxv) (hf x hxu)
 
 /-- The pregroupoid of orientation-preserving maps. -/
-def orientationPreservingPregroupoid [Nontrivial H] [FiniteDimensional ℝ H] : Pregroupoid H where
+def orientationPreservingPregroupoid [FiniteDimensional ℝ H] : Pregroupoid H where
   property f s := OrientationPreserving f s
   comp hf hg _ _ _ _ hx := orientationPreserving_comp hf hg _ hx
   id_mem := orientationPreserving_id _
@@ -144,7 +151,7 @@ def orientationPreservingPregroupoid [Nontrivial H] [FiniteDimensional ℝ H] : 
     exact hf x hx
 
 /-- The groupoid of orientation-preserving maps. -/
-def orientationPreservingGroupoid [Nontrivial H] [FiniteDimensional ℝ H] : StructureGroupoid H :=
+def orientationPreservingGroupoid [FiniteDimensional ℝ H] : StructureGroupoid H :=
   orientationPreservingPregroupoid.groupoid
 
 end OrientationPreserving
@@ -152,12 +159,12 @@ end OrientationPreserving
 section OrientableManifold
 
 /-- Typeclass defining orientable manifolds. -/
-class OrientableManifold (H : Type*) [Nontrivial H] [NormedAddCommGroup H] [NormedSpace ℝ H]
+class OrientableManifold (H : Type*) [NormedAddCommGroup H] [NormedSpace ℝ H]
     [FiniteDimensional ℝ H] (M : Type*) [TopologicalSpace M] [ChartedSpace H M] extends
-  HasGroupoid M (@orientationPreservingGroupoid H _ _ _ _) : Prop
+  HasGroupoid M (@orientationPreservingGroupoid H _ _ _) : Prop
 
 /-- Typeclass defining orientable smooth manifolds. -/
-class OrientableSmoothManifold (H : Type*) [Nontrivial H] [NormedAddCommGroup H] [NormedSpace ℝ H]
+class OrientableSmoothManifold (H : Type*) [NormedAddCommGroup H] [NormedSpace ℝ H]
     [FiniteDimensional ℝ H] (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
     [OrientableManifold H M] (I : ModelWithCorners ℝ H M) [SmoothManifoldWithCorners I M] extends
   SmoothManifoldWithCorners I M ∧ OrientableManifold H M : Prop
