@@ -20,7 +20,7 @@ jobs:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
           const { owner, repo, number: issue_number  } = context.issue;
-          const commentLines = context.payload.comment.body.split('\r\n');
+          const commentLines = context.payload.comment.body.split(/\r?\n/);
 
           const awaitingAuthor = commentLines.includes('awaiting-author');
           const wip = commentLines.includes('WIP');
