@@ -21,13 +21,20 @@ jobs:
           fetch-depth: 0
           token: "${{ secrets.UPDATE_DEPENDENCIES_TOKEN }}"
 
+      - name: Get sha of branch
+        id: sha
+        run: |
+          echo "sha=$(git rev-parse --verify update-dependencies-bot-use-only)" >> "$GITHUB_ENV"
+
       - name: Get PR and labels
+        if: ${{ steps.sha.outputs.sha }}
         id: PR # all the steps below are skipped if 'ready-to-merge' is in the list of labels found here
         uses: 8BitJonny/gh-get-current-pr@3.0.0
         # TODO: this may not work properly if the same commit is pushed to multiple branches:
         # https://github.com/8BitJonny/gh-get-current-pr/issues/8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          sha: ${{ steps.sha.outputs.sha }}
           # Only return if PR is still open
           filterOutClosed: true
 
