@@ -189,7 +189,7 @@
   "Mathlib.Util.Tactic",
   "Mathlib.Util.WhatsNew",
   "Mathlib.Util.WithWeakNamespace",
-  "Qq"
+  "Qq",
   "Mathlib.Tactic.StacksAttribute"],
  "ignoreAll":
  ["Batteries.Tactic.Basic", "Mathlib.Mathport.Syntax", "Mathlib.Tactic.Linter"],
