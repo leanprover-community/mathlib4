@@ -241,6 +241,7 @@ example (f : α → β ->> γ) (hf : Con fun (x,y) => f x y) (y) : Con fun x => 
 example (f : α → β ->> γ) (hf : Con fun (x,y) => f x y) : Con fun x y => f x y := by fun_prop
 example (f : α → β ->> γ) (hf : Con fun (x,y) => f x y) (x) : Con fun y => f x y := by fun_prop
 example (f : α → α ->> (α → α)) (hf : Con fun (x,y,z) => f x y z) (x) : Con fun y => f x y := by fun_prop
+example (f : α → α ->> (α → α)) (y : α) (hf : Con fun (x,y,z) => f x y z) : Con fun x => f y x x := by fun_prop
 example (f : α → α ->> (α → α)) (hf : Con fun (x,y,z) => f x y z) : Con fun x y => f y x x := by fun_prop
 
 example (f : α → β ->> γ) (hf : Con ↿f) (y) : Con fun x => f x y := by fun_prop

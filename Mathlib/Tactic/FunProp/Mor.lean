@@ -120,6 +120,15 @@ where
         go f (as.push { coe := c, expr := x})
       else
         go (.app c f) (as.push { expr := x})
+    | .app (.proj n i f) x, as => do
+      let env ← getEnv
+      let .some info := getStructureInfo? env n | panic! "bug in Mor.withApp"
+      if let .some projFn := getProjFnForField? env n (info.fieldNames[i]!) then
+        if (← getCoeFnInfo? projFn).isSome then
+          let .app c f ← mkAppM projFn #[f] | panic! "bug in Mor.withApp"
+          return ← go f (as.push { coe := c, expr := x})
+
+      k f as.reverse
     | .app f a, as =>
       go f (as.push { expr := a })
     | f        , as => k f as.reverse
