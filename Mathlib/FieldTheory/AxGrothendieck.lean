@@ -153,7 +153,7 @@ theorem realize_genericPolyMapSurjOnOfInjOn
       S.InjOn f ↔ ∀ x y, x ∈ S → y ∈ S → f x = f y → x = y := by
     simp [Set.InjOn]; tauto
   simp only [Sentence.Realize, Formula.Realize, genericPolyMapSurjOnOfInjOn, Formula.relabel,
-    Function.comp, Sum.map, id_eq, Equiv.sumAssoc, Equiv.coe_fn_symm_mk, Sum.elim_inr,
+    Function.comp_def, Sum.map, id_eq, Equiv.sumAssoc, Equiv.coe_fn_symm_mk, Sum.elim_inr,
     realize_iAlls, realize_imp, realize_relabel, Fin.natAdd_zero, realize_subst, realize_iInf,
     Finset.mem_univ, realize_bdEqual, Term.realize_relabel, true_imp_iff,
     Equiv.forall_congr_left (Equiv.curry (Fin 2) ι K), Equiv.curry_symm_apply, Function.uncurry,
@@ -161,7 +161,7 @@ theorem realize_genericPolyMapSurjOnOfInjOn
     Set.MapsTo, Set.mem_def, injOnAlt, Function.funext_iff, Set.SurjOn, Set.image, setOf,
     Set.subset_def, Equiv.forall_congr_left (mvPolynomialSupportLEEquiv mons)]
   simp (config := { singlePass := true}) only [← Sum.elim_comp_inl_inr]
-  simp [Set.mem_def, Function.comp]
+  simp [Set.mem_def, Function.comp_def]
 
 theorem ACF_models_genericPolyMapSurjOnOfInjOn_of_prime [Fintype ι]
     {p : ℕ} (hp : p.Prime) (φ : ring.Formula (α ⊕ ι)) (mons : ι → Finset (ι →₀ ℕ)) :
@@ -183,7 +183,7 @@ theorem ACF_models_genericPolyMapSurjOnOfInjOn_of_prime_or_zero
     Theory.ACF p ⊨ᵇ genericPolyMapSurjOnOfInjOn φ mons := by
   rcases hp with hp | rfl
   · exact ACF_models_genericPolyMapSurjOnOfInjOn_of_prime hp φ mons
-  · rw [ACF0_realize_iff_infinite_ACF_prime_realize]
+  · rw [ACF_zero_realize_iff_infinite_ACF_prime_realize]
     convert Set.infinite_univ (α := Nat.Primes)
     rw [Set.eq_univ_iff_forall]
     intro ⟨p, hp⟩
