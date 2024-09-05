@@ -44,13 +44,10 @@ theorem totallyBounded_univ : TotallyBounded (univ : Set ℤ_[p]) := by
   · simpa only [Finset.mem_coe, Finset.mem_range] using z.appr_lt k
   · exact (((z - z.appr k).norm_le_pow_iff_mem_span_pow k).mpr (z.appr_spec k)).trans_lt hk
 
-/--The set of p-adic integers `ℤ_[p]` is a compact topological space,
-where (p : ℕ) [Fact (Nat.Prime p)].-/
-  theorem is_compact : IsCompact (Set.univ : Set ℤ_[p]) := by
-    apply isCompact_iff_totallyBounded_isComplete.2
-    constructor
-    · exact totally_bounded p
-    · exact complete_univ
+/-- The set of p-adic integers `ℤ_[p]` is a compact topological space. -/
+instance compactSpace : CompactSpace ℤ_[p] := by
+  rw [← isCompact_univ_iff, isCompact_iff_totallyBounded_isComplete]
+  exact ⟨totallyBounded p, complete_univ⟩
 
 open Metric
 
