@@ -65,6 +65,33 @@ def finiteQuotientSubgroups [CompactSpace G] (U K : Subgroup G) (hUopen : IsOpen
 
 end Profinite
 
+section
+
+variable (G : Type*) [Group G] [TopologicalSpace G] {X : Type*} [MulAction G X]
+  [TopologicalSpace X] [DiscreteTopology X] [ContinuousSMul G X]
+
+lemma stabilizer_isOpen (x : X) : IsOpen (MulAction.stabilizer G x : Set G) := by
+  let q (g : G) : G × X := (g, x)
+  have : Continuous q := by
+    continuity
+  let h (p : G × X) : X := p.1 • p.2
+  have : Continuous h := continuous_smul
+  let p (g : G) : X := g • x
+  have : p ⁻¹' {x} = MulAction.stabilizer G x := rfl
+  rw [← this]
+  apply IsOpen.preimage
+  show Continuous (h ∘ q)
+  apply Continuous.comp
+  assumption
+  assumption
+  exact isOpen_discrete {x}
+
+/-- The stabilizer of an element in a discrete topological space as an open subgroup. -/
+def MulAction.stabilizerₒ (x : X) : OpenSubgroup G :=
+  ⟨MulAction.stabilizer G x, stabilizer_isOpen G x⟩
+
+end
+
 namespace CategoryTheory
 
 namespace PreGaloisCategory
@@ -73,51 +100,33 @@ variable {C : Type u} [Category.{u} C] (F : C ⥤ FintypeCat.{u})
 
 open Limits Functor
 
-lemma stabilizer_open (X : C) (x : ((functorToAction F).obj X).V) :
-    IsOpen (MulAction.stabilizer (Aut F) x : Set (Aut F)) := by
-  let q (g : Aut F) : Aut F × F.obj X := (g, x)
-  have : Continuous q := by
-    continuity
-  let h (p : Aut F × F.obj X) : F.obj X := p.1.hom.app X p.2
-  have : Continuous h := continuous_smul
-  let p (g : Aut F) : F.obj X := g.hom.app X x
-  have : p ⁻¹' {x} = MulAction.stabilizer (Aut F) x := rfl
-  rw [←this]
-  apply IsOpen.preimage
-  show Continuous (h ∘ q)
-  apply Continuous.comp
-  assumption
-  assumption
-  trivial
-
 variable [GaloisCategory C] [FiberFunctor F]
 
 noncomputable instance (G : Type u) [Group G] [Finite G] :
-    PreservesColimitsOfShape (SingleObj G) (functorToAction F) := by
-  apply Action.preservesColimitsOfShapeOfPreserves
-  show PreservesColimitsOfShape (SingleObj G) F
-  infer_instance
+    PreservesColimitsOfShape (SingleObj G) (functorToAction F) :=
+  Action.preservesColimitsOfShapeOfPreserves _ <|
+    inferInstanceAs <| PreservesColimitsOfShape (SingleObj G) F
 
 section
 
 noncomputable instance fintypeQuotient (H : OpenSubgroup (Aut F)) :
-    Fintype (Aut F ⧸ (H : Subgroup (Aut F))) := by
+    Fintype (Aut F ⧸ (H : Subgroup (Aut F))) :=
   have : Finite (Aut F ⧸ H.toSubgroup) := finiteQuotientOfOpen H.toSubgroup H.isOpen'
-  apply Fintype.ofFinite
+  Fintype.ofFinite _
 
 instance (H : Subgroup (Aut F)) : MulAction (Aut F) (Aut F ⧸ H) := inferInstance
 
 end
 
-private lemma help0 (X : C) [IsGalois X] :
-    ∃ (U : OpenSubgroup (Aut F))
-      (_ : (functorToAction F).obj X ≅ Action.FintypeCat.ofMulAction (Aut F)
-        (FintypeCat.of <| Aut F ⧸ U.toSubgroup)),
-    Subgroup.Normal U.toSubgroup := by
+notation:10 G:10 " ⧸ₐ " H:10 => Action.FintypeCat.ofMulAction G (FintypeCat.of <| G ⧸ H)
+
+noncomputable instance (X : C) (x : F.obj X) : Fintype (Aut F ⧸ (MulAction.stabilizer (Aut F) x)) :=
+  fintypeQuotient F (MulAction.stabilizerₒ (Aut F) (X := F.obj X) x)
+
+noncomputable def fiberIsoQuotientStabilizer (X : C) [IsConnected X] (x : F.obj X) :
+    (functorToAction F).obj X ≅ Aut F ⧸ₐ MulAction.stabilizer (Aut F) x := by
   have hc : IsConnected ((functorToAction F).obj X) := PreservesIsConnected.preserves
-  have : Nonempty (F.obj X) := nonempty_fiber_of_isConnected F X
-  obtain ⟨x : ((functorToAction F).obj X).V⟩ := this
-  have : MulAction (Aut F) (F.obj X) := by
+  letI : MulAction (Aut F) (F.obj X) := by
     show MulAction (Aut F) ((functorToAction F).obj X).V
     infer_instance
   have : MulAction.IsPretransitive (Aut F) ((functorToAction F).obj X).V :=
@@ -133,8 +142,7 @@ private lemma help0 (X : C) [IsGalois X] :
     apply Equiv.setCongr
     exact (MulAction.orbit_eq_univ (Aut F) x).symm
     exact MulAction.orbitEquivQuotientStabilizer (Aut F) x
-  let U : OpenSubgroup (Aut F) := ⟨MulAction.stabilizer (Aut F) x, stabilizer_open F X x⟩
-  use U
+  let U : OpenSubgroup (Aut F) := MulAction.stabilizerₒ (Aut F) (X := F.obj X) x
   let inst : Fintype (Aut F ⧸ U.toSubgroup) := fintypeQuotient F U
   let u : Action.FintypeCat.ofMulAction (Aut F) (FintypeCat.of <| Aut F ⧸ U.toSubgroup) ≅
       (functorToAction F).obj X := by
@@ -146,10 +154,13 @@ private lemma help0 (X : C) [IsGalois X] :
     obtain ⟨τ, hτ⟩ := Quotient.exists_rep a
     rw [←hτ]
     rfl
-  use u.symm
+  exact u.symm
+
+lemma stabilizer_normal_of_isGalois (X : C) [IsGalois X] (x : F.obj X) :
+    Subgroup.Normal (MulAction.stabilizer (Aut F) x) := by
   constructor
   intro n ninstab g
-  simp
+  simp only [MulAction.mem_stabilizer_iff]
   show g • n • (g⁻¹ • x) = x
   have : MulAction.IsPretransitive (Aut X) (F.obj X) := inferInstance
   let inst : SMul (Aut X) ((functorToAction F).obj X).V :=
@@ -161,14 +172,12 @@ private lemma help0 (X : C) [IsGalois X] :
   obtain ⟨φ, h⟩ := this
   rw [← h]
   show g • n • _ = x
-  --show g • n • (F.map φ.hom x) = x
   show g • (((functorToAction F).map φ.hom).hom ≫ ((functorToAction F).obj X).ρ n) x = x
   rw [← ((functorToAction F).map φ.hom).comm]
   simp only [FintypeCat.comp_apply]
   show g • ((functorToAction F).map φ.hom).hom (n • x) = x
   have : ((functorToAction F).map φ.hom).hom = F.map φ.hom := rfl
   rw [this]
-  --show g • F.map φ.hom (n • x) = x
   rw [ninstab, h]
   show (g * g⁻¹) • x = x
   simp
@@ -180,14 +189,20 @@ lemma FintypeCat.jointly_surjective {J : Type} [SmallCategory J] [FinCategory J]
   let hs : IsColimit s := isColimitOfPreserves FintypeCat.incl.{u} h
   exact Types.jointly_surjective (F ⋙ FintypeCat.incl) hs x
 
-private lemma help1 (H : Subgroup (Aut F)) (h : IsOpen (H : Set (Aut F))) : ∃ (I : Set C)
-    (_ : Fintype I), (∀ X ∈ I, IsConnected X) ∧
-    ((σ : Aut F) → (∀ X : I, σ.hom.app X = 𝟙 (F.obj X)) → σ ∈ H) := by
+/--
+If `H` is an open subset of `Aut F` such that `1 ∈ H`, there exists a finite
+set `I` of connected objects of `C` such that every `σ : Aut F` that induces the identity
+on `F.obj X` for all `X ∈ I` is contained in `H`. In other words: The kernel
+of the evaluation map `Aut F →* ∏ X : I ↦ Aut (F.obj X)` is contained in `H`.
+-/
+lemma exists_set_ker_evaluation_subset_of_isOpen (H : Set (Aut F)) (hone : 1 ∈ H)
+    (h : IsOpen H) : ∃ (I : Set C) (_ : Fintype I), (∀ X ∈ I, IsConnected X) ∧
+    (∀ σ : Aut F, (∀ X : I, σ.hom.app X = 𝟙 (F.obj X)) → σ ∈ H) := by
   obtain ⟨U, hUopen, hU⟩ := isOpen_induced_iff.mp h
   have h1inU : 1 ∈ U := by
     show 1 ∈ autEmbedding F ⁻¹' U
     rw [hU]
-    exact Subgroup.one_mem H
+    exact hone
   obtain ⟨I, u, ho, ha⟩ := isOpen_pi_iff.mp hUopen 1 h1inU
   choose fι ff fc h4 h5 h6 using (fun X : I => has_decomp_connected_components X.val)
   let J : Set C := ⋃ X, Set.range (ff X)
@@ -235,18 +250,18 @@ private lemma help1 (H : Subgroup (Aut F)) (h : IsOpen (H : Set (Aut F))) : ∃ 
   rw [hU] at this
   exact this
 
-private lemma help2 (I : Set C) [Fintype I] (h : ∀ X ∈ I, IsConnected X) :
-    Nonempty (F.obj (∏ᶜ fun X : I ↦ X)) := by
-  let P : FintypeCat := ∏ᶜ fun X : I => F.obj X
-  have i1 : F.obj (∏ᶜ fun X : I => X) ≅ P := PreservesProduct.iso F _
-  let f (X : I) : Type u := F.obj X
+/-- If `X : ι → C` is a finite family of objects with non-empty fiber, then
+also `∏ᶜ X` has non-empty fiber. -/
+lemma nonempty_fiber_pi_of_nonempty_of_finite {ι : Type u} [Fintype ι] (X : ι → C)
+    (h : ∀ i, Nonempty (F.obj (X i))) : Nonempty (F.obj (∏ᶜ X)) := by
+  let P : FintypeCat := ∏ᶜ fun i : ι => F.obj (X i)
+  have i1 : F.obj (∏ᶜ X) ≅ P := PreservesProduct.iso F _
+  let f (i : ι) : Type u := F.obj (X i)
   have i2 : FintypeCat.incl.obj P ≅ ∏ᶜ f := PreservesProduct.iso FintypeCat.incl _
-  have (X : I) : Nonempty (F.obj X) := by
-    have : IsConnected (X : C) := h X.val X.property
-    exact nonempty_fiber_of_isConnected F (X : C)
-  have : Nonempty (∀ X : I, F.obj X) := inferInstance
+  have (i : ι) : Nonempty (F.obj (X i)) := h i
+  have : Nonempty (∀ i : ι, F.obj (X i)) := inferInstance
   obtain ⟨x⟩ := this
-  have i3 : ∏ᶜ f ≅ Shrink.{u, u} (∀ X : I, f X) := Types.Small.productIso f
+  have i3 : ∏ᶜ f ≅ Shrink.{u, u} (∀ i, f i) := Types.Small.productIso f
   let y : ∏ᶜ f := i3.inv ((equivShrink _) x)
   let y' : P := i2.inv y
   use i1.inv y'
@@ -349,19 +364,16 @@ def help43 {G : Type*} [Group G] (H N : Subgroup G) [Fintype (G ⧸ N)]
   rfl
 
 noncomputable def help44 (V U : OpenSubgroup (Aut F)) (h : Subgroup.Normal U.toSubgroup) (A : C)
-    (u : (functorToAction F).obj A ≅ Action.FintypeCat.ofMulAction
-      (Aut F) (FintypeCat.of <| Aut F ⧸ U.toSubgroup)) :
+    (u : (functorToAction F).obj A ≅ Aut F ⧸ₐ U.toSubgroup) :
     V.toSubgroup ⧸ Subgroup.subgroupOf U.toSubgroup V.toSubgroup →* End A := by
   let φ : V.toSubgroup ⧸ Subgroup.subgroupOf U.toSubgroup V.toSubgroup →*
-      End (Action.FintypeCat.ofMulAction (Aut F) (FintypeCat.of <| Aut F ⧸ U.toSubgroup)) :=
+      End (Aut F ⧸ₐ U.toSubgroup) :=
     help3 F V U h
   let ff : (functorToAction F).FullyFaithful := FullyFaithful.ofFullyFaithful (functorToAction F)
   let e1 : End A ≃* End ((functorToAction F).obj A) := ff.mulEquivEnd A
-  let e2 : End ((functorToAction F).obj A) ≃*
-      End (Action.FintypeCat.ofMulAction (Aut F) (FintypeCat.of <| Aut F ⧸ U.toSubgroup)) :=
+  let e2 : End ((functorToAction F).obj A) ≃* End (Aut F ⧸ₐ U.toSubgroup) :=
     Iso.conj u
-  let e : End A ≃* End (Action.FintypeCat.ofMulAction (Aut F)
-    (FintypeCat.of <| Aut F ⧸ U.toSubgroup)) := e1.trans e2
+  let e : End A ≃* End (Aut F ⧸ₐ U.toSubgroup) := e1.trans e2
   exact MonoidHom.comp e.symm.toMonoidHom φ
 
 lemma help441 (V U : OpenSubgroup (Aut F)) (h : Subgroup.Normal U.toSubgroup) (A : C)
@@ -509,15 +521,21 @@ noncomputable def help47 (V U : OpenSubgroup (Aut F)) (h : Subgroup.Normal U.toS
     rw [←hf (SingleObj.star M), h1]
     rfl
 
+/-- For every open subgroup `V` of `Aut F`, there exists an `X : C` such that
+`F.obj X ≅ Aut F ⧸ V` as `Aut F`-sets. -/
 lemma ess_surj_of_quotient_by_open (V : OpenSubgroup (Aut F)) :
     ∃ (X : C), Nonempty ((functorToAction F).obj X ≅
       Action.FintypeCat.ofMulAction (Aut F) (FintypeCat.of <| Aut F ⧸ V.toSubgroup)) := by
-  obtain ⟨I, hf, hc, hi⟩ := help1 F V.toSubgroup V.isOpen'
-  have : Fintype I := inferInstance
+  obtain ⟨I, hf, hc, hi⟩ := exists_set_ker_evaluation_subset_of_isOpen F V.toSubgroup (one_mem V)
+    V.isOpen'
   let Y : C := ∏ᶜ fun X : I => X
-  have hn : Nonempty (F.obj Y) := help2 F I hc
+  have hn : Nonempty (F.obj Y) := nonempty_fiber_pi_of_nonempty_of_finite F
+    (fun X : I ↦ X) (fun X ↦ letI := hc X X.property; nonempty_fiber_of_isConnected F X)
   obtain ⟨A, f, hgal⟩ := exists_hom_from_galois_of_fiber_nonempty F Y hn
-  obtain ⟨U, u, hUnormal⟩ := help0 F A
+  obtain ⟨a⟩ := nonempty_fiber_of_isConnected F A
+  let U : OpenSubgroup (Aut F) := MulAction.stabilizerₒ (Aut F) a
+  let u := fiberIsoQuotientStabilizer F A a
+  have hUnormal : U.toSubgroup.Normal := stabilizer_normal_of_isGalois F A a
   have h1 : ∀ σ ∈ U, σ.hom.app A = 𝟙 (F.obj A) := by
     intro σ σinU
     have hi : (Action.FintypeCat.ofMulAction (Aut F) (FintypeCat.of <| Aut F ⧸ U.toSubgroup)).ρ σ =
@@ -541,7 +559,6 @@ lemma ess_surj_of_quotient_by_open (V : OpenSubgroup (Aut F)) :
   have h2 : ∀ σ ∈ U, ∀ X : I, σ.hom.app X = 𝟙 (F.obj X) := by
     intro σ σinU ⟨X, hX⟩
     ext (x : F.obj X)
-    have hne : Nonempty (F.obj A) := nonempty_fiber_of_isConnected F A
     let p : A ⟶ X := f ≫ Pi.π (fun Z : I => (Z : C)) ⟨X, hX⟩
     have : IsConnected X := hc X hX
     have : Function.Surjective (F.map p) := surjective_of_nonempty_fiber_of_isConnected F p

@@ -141,7 +141,7 @@ instance (X : C) : ContinuousSMul (Aut (F.obj X)) (F.obj X) := by
   constructor
   fun_prop
 
-instance (X : C) : ContinuousSMul (Aut F) (F.obj X) := by
+instance continuousSMul_aut_fiber (X : C) : ContinuousSMul (Aut F) (F.obj X) := by
   constructor
   let g : Aut (F.obj X) × F.obj X → F.obj X := fun ⟨σ, x⟩ => σ.hom x
   let h' : Aut F → Aut (F.obj X) := fun σ => σ.app X
