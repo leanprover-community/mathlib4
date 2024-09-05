@@ -101,6 +101,14 @@ lemma toNatHom_apply (n : ℕ) : toNatHom n = toNat n := rfl
 theorem toNat_coe (n : ℕ) : toNat n = n :=
   rfl
 
+@[simp]
+theorem toNat_zero : toNat 0 = 0 :=
+  rfl
+
+@[simp]
+theorem toNat_one : toNat 1 = 1 :=
+  rfl
+
 -- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem toNat_ofNat (n : ℕ) [n.AtLeastTwo] : toNat (no_index (OfNat.ofNat n)) = n :=
