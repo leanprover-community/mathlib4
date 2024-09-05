@@ -23,28 +23,14 @@ namespace Mathlib.Linter
 The "DocModule" linter checks that a file starts with
 ```
 import*
-/-! doc-module -/
+/-! Module docstring -/
 ```
-It emits a warning if a file does not have a doc-module string right after the `import`s.
+It emits a warning if a file does not have a module docstring string right after the `import`s.
 -/
 register_option linter.docModule : Bool := {
   defValue := true
   descr := "enable the docModule linter"
 }
-
-/--
-`undocumented` is the main vehicle to transfer information across syntax parsed by the linter.
-It is initially set to `false` and it is reset to `false` at the end of the file.
-After parsing *any* command, the linter sets `undocumented` to `true`.
-This means that after any non-`import` command, `undocumented` is `true`.
-Thus, from the linter's perspective, `undocumented` is `false` only when it reads the first
-non-`import` command of each file.
-
-If `undocumented` is `false` at the start of the docModule linter parsing,
-the linter emits a warning, unless the parsed syntax is a module doc-string.
-then the linter emits a warning, unless the parsed syntax is a doc-module string.
--/
-initialize undocumented : IO.Ref Bool ← IO.mkRef false
 
 namespace Style.DocModule
 
@@ -55,22 +41,14 @@ def docModuleLinter : Linter where run := withSetOptionIn fun stx ↦ do
   if (← get).messages.hasErrors then
     return
   -- `test` files are not required to have a module doc-string.
-  if let `test::_ := (← getMainModule).components then return
-  let undoc? ← undocumented.get
-  -- `terminal?` is `true` iff `stx` is the end of the file, or
-  -- (unreachable by the linter) `import X`
-  let terminal? := Parser.isTerminalCommand stx
+  if (← getMainModule).getRoot == `test then return
   -- if we reached the end of the file, we reset to false the `undocumented` counter and
   -- report nothing: thus, `import`-only files do not get flagged by the linter
-  if terminal? then
-    undocumented.set false
-    return
-  unless ! undoc? do return
-  if !stx.isOfKind ``Lean.Parser.Command.moduleDoc then
-    Linter.logLint linter.docModule stx
-      m!"Add the doc-module string before this command\n\
-        `Mathlib` files must contain a doc-module string before their first non-`import` command."
-  undocumented.set true
+  if Parser.isTerminalCommand stx then
+    if !stx.isOfKind ``Lean.Parser.Command.moduleDoc then
+      Linter.logLint linter.docModule stx
+        m!"`Mathlib` files must contain a module doc-string before their first non-`import` \
+          command.\nPlease add the module doc-string before this command."
 
 initialize addLinter docModuleLinter
 
