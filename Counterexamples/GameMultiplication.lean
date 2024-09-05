@@ -55,7 +55,7 @@ theorem star_sq : star * star ≈ star := by
       case' hl => rw [mul_moveLeft_inl]
       case' hr => rw [mul_moveLeft_inr]
       all_goals rw [lf_iff_game_lf]; simpa using zero_lf_star
-    · refine lf_zero.2 ⟨default, ?_⟩
+    · refine lf_zero.2 ⟨toRightMovesMul (Sum.inl default), ?_⟩
       rintro (j | j) <;> -- Instance can't be inferred otherwise.
       exact isEmptyElim j
   constructor
