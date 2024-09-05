@@ -357,6 +357,9 @@ theorem closure_union (s t : Set M) : closure L (s ∪ t) = closure L s ⊔ clos
 theorem closure_iUnion {ι} (s : ι → Set M) : closure L (⋃ i, s i) = ⨆ i, closure L (s i) :=
   (Substructure.gi L M).gc.l_iSup
 
+theorem closure_insert (s : Set M) (m : M) : closure L (insert m s) = closure L {m} ⊔ closure L s :=
+  closure_union {m} s
+
 instance small_bot : Small.{u} (⊥ : L.Substructure M) := by
   rw [← closure_empty]
   haveI : Small.{u} (∅ : Set M) := small_subsingleton _

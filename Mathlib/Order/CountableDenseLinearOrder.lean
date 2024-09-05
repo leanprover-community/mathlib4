@@ -33,11 +33,13 @@ noncomputable section
 
 namespace Order
 
+variable {α β : Type*} [LinearOrder α] [LinearOrder β]
+
 /-- Suppose `α` is a nonempty dense linear order without endpoints, and
     suppose `lo`, `hi`, are finite subsets with all of `lo` strictly
     before `hi`. Then there is an element of `α` strictly between `lo`
     and `hi`. -/
-theorem exists_between_finsets {α : Type*} [LinearOrder α] [DenselyOrdered α] [NoMinOrder α]
+theorem exists_between_finsets [DenselyOrdered α] [NoMinOrder α]
     [NoMaxOrder α] [nonem : Nonempty α] (lo hi : Finset α) (lo_lt_hi : ∀ x ∈ lo, ∀ y ∈ hi, x < y) :
     ∃ m : α, (∀ x ∈ lo, x < m) ∧ ∀ y ∈ hi, m < y :=
   if nlo : lo.Nonempty then
@@ -61,7 +63,46 @@ theorem exists_between_finsets {α : Type*} [LinearOrder α] [DenselyOrdered α]
           nonem.elim
         fun m ↦ ⟨m, fun x hx ↦ (nlo ⟨x, hx⟩).elim, fun y hy ↦ (nhi ⟨y, hy⟩).elim⟩
 
-variable (α β : Type*) [LinearOrder α] [LinearOrder β]
+lemma exists_orderEmbedding_insert [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β]
+    [nonem : Nonempty β]  (S : Finset α) (f : S ↪o β) (a : α) :
+    ∃ (g : (insert a S : Finset α) ↪o β),
+      g ∘ (Set.inclusion ((S.subset_insert a) : ↑S ⊆ ↑(insert a S))) = f := by
+  let Slt := (S.attach.filter (fun (x : S) => x < a)).image f
+  let Sgt := (S.attach.filter (fun (x : S) => a < x)).image f
+  obtain ⟨n, hn, hn'⟩ := Order.exists_between_finsets Slt Sgt (fun x hx y hy => by
+    simp only [Finset.mem_image, Finset.mem_filter, Finset.mem_attach, true_and, Subtype.exists,
+      exists_and_left, Slt, Sgt] at hx hy
+    obtain ⟨_, hx, _, rfl⟩ := hx
+    obtain ⟨_, hy, _, rfl⟩ := hy
+    exact f.strictMono (hx.trans hy))
+  have hg : StrictMono (fun (x : (insert a S : Finset α)) =>
+      if hx : x.1 ∈ S
+      then f ⟨x.1, hx⟩
+      else n) := by
+    rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
+    by_cases hxS : x ∈ S
+    · by_cases hyS : y ∈ S
+      · simp only [hxS, hyS, ↓reduceDIte, OrderEmbedding.lt_iff_lt, Subtype.mk_lt_mk]
+        exact hxy
+      · obtain rfl := (Finset.eq_of_not_mem_of_mem_insert hy hyS)
+        simp only [hxS, hyS, ↓reduceDIte]
+        simp only [Finset.mem_image, Finset.mem_filter, Finset.mem_attach, true_and, Subtype.exists,
+          exists_and_left, forall_exists_index, and_imp, Slt] at hn
+        exact hn (f ⟨x, hxS⟩) x hxy hxS rfl
+    · obtain rfl := (Finset.eq_of_not_mem_of_mem_insert hx hxS)
+      by_cases hyS : y ∈ S
+      · simp only [hxS, hyS, ↓reduceDIte]
+        simp only [Finset.mem_image, Finset.mem_filter, Finset.mem_attach, true_and, Subtype.exists,
+          exists_and_left, forall_exists_index, and_imp, Sgt] at hn'
+        exact hn' (f ⟨y, hyS⟩) y hxy hyS rfl
+      · obtain rfl := (Finset.eq_of_not_mem_of_mem_insert hy hyS)
+        simp only [lt_self_iff_false] at hxy
+  use OrderEmbedding.ofStrictMono _ hg
+  ext x
+  simp only [OrderEmbedding.coe_ofStrictMono, Finset.insert_val, Function.comp_apply,
+    Set.coe_inclusion, Finset.coe_mem, ↓reduceDIte, Subtype.coe_eta]
+
+variable (α β)
 
 -- Porting note: Mathport warning: expanding binder collection (p q «expr ∈ » f)
 /-- The type of partial order isomorphisms between `α` and `β` defined on finite subsets.
