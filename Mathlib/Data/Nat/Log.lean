@@ -213,7 +213,6 @@ lemma log2_eq_log_two {n : ℕ} : Nat.log2 n = Nat.log 2 n := by
   intro m
   rw [Nat.le_log2 hn, ← Nat.pow_le_iff_le_log Nat.one_lt_two hn]
 
-
 /-! ### Ceil logarithm -/
 
 
