@@ -525,7 +525,6 @@ theorem get_cons {l : List α} {a : α} {n} (hl) :
   · contradiction
   rfl
 
-@[simp 1100]
 theorem modifyHead_modifyHead (l : List α) (f g : α → α) :
     (l.modifyHead f).modifyHead g = l.modifyHead (g ∘ f) := by cases l <;> simp
 
