@@ -178,9 +178,9 @@ class OrientableManifold (H : Type*) [NormedAddCommGroup H] [NormedSpace ℝ H]
   HasGroupoid M (@orientationPreservingGroupoid H _ _ _) : Prop
 
 /-- `0`-dimensional manifolds are always orientable. -/
-instance (H : Type*) [NormedAddCommGroup H] [NormedSpace ℝ H] [FiniteDimensional ℝ H] (M : Type*)
-    [TopologicalSpace M] [ChartedSpace H M] (h : Module.rank ℝ H = 0) :
-    OrientableManifold H M where
+lemma orientableManifold_of_zero_dim (H : Type*) [NormedAddCommGroup H] [NormedSpace ℝ H]
+    [FiniteDimensional ℝ H] (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
+    (h : Module.rank ℝ H = 0) : OrientableManifold H M where
   compatible := fun {_ _} _ _ ↦
     ⟨orientationPreserving_of_zero_dim _ _ h, orientationPreserving_of_zero_dim _ _ h⟩
 
