@@ -10,9 +10,9 @@ import Lean.Linter.Util
 The "DocModule" style linter checks that a file starts with
 ```
 import*
-/-! doc-module -/
+/-! Module docstring -/
 ```
-It emits a warning if a file does not have a doc-module string right after the `import`s.
+It emits a warning if a file does not have a module doc-string right after its `import` statements.
 -/
 
 open Lean Elab
@@ -39,7 +39,9 @@ After parsing *any* command, the linter sets `undocumented` to `true`.
 This means that after any non-`import` command, `undocumented` is `true`.
 Thus, from the linter's perspective, `undocumented` is `false` only when it reads the first
 non-`import` command of each file.
-If `undocumented` is `false` at the start of the linter parsing,
+
+If `undocumented` is `false` at the start of the docModule linter parsing,
+the linter emits a warning, unless the parsed syntax is a module doc-string.
 then the linter emits a warning, unless the parsed syntax is a doc-module string.
 -/
 initialize undocumented : IO.Ref Bool ← IO.mkRef false
@@ -52,7 +54,7 @@ def docModuleLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   if (← get).messages.hasErrors then
     return
-  -- `test` files are not required to have a doc-module string
+  -- `test` files are not required to have a module doc-string.
   if let `test::_ := (← getMainModule).components then return
   let undoc? ← undocumented.get
   -- `terminal?` is `true` iff `stx` is the end of the file, or
