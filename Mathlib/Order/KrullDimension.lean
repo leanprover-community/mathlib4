@@ -71,16 +71,15 @@ noncomputable def coheight {α : Type*} [Preorder α] (a : α) : ℕ∞ := heigh
 
 end definitions
 
+/-!
+## Height
+-/
+
 section height
 
 variable {α β : Type*}
 
 variable [Preorder α] [Preorder β]
-
-
-/-!
-## Height
--/
 
 lemma height_le {x : α} {n : ℕ∞} :
     height x ≤ n ↔ ∀ (p : LTSeries α), p.last ≤ x → p.length ≤ n := by
@@ -115,11 +114,11 @@ lemma height_mono : Monotone (α := α) height :=
 
 end height
 
-section krullDim
-
 /-!
 ## Krull dimension
 -/
+
+section krullDim
 
 variable {α β : Type*}
 
