@@ -722,9 +722,10 @@ theorem pow_subset_pow (hst : s ⊆ t) : ∀ n : ℕ, s ^ n ⊆ t ^ n
 theorem pow_subset_pow_of_one_mem (hs : (1 : α) ∈ s) (hn : m ≤ n) : s ^ m ⊆ s ^ n := by
   -- Porting note: `Nat.le_induction` didn't work as an induction principle in mathlib3, this was
   -- `refine Nat.le_induction ...`
-  induction' n, hn using Nat.le_induction with _ _ ih
-  · exact Subset.rfl
-  · dsimp only
+  induction n, hn using Nat.le_induction with
+  | base => exact Subset.rfl
+  | succ _ _ ih =>
+    dsimp only
     rw [pow_succ']
     exact ih.trans (subset_mul_right _ hs)
 
