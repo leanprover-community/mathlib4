@@ -38,58 +38,25 @@ lemma tendstouniformlyOn_iff_restrict {α β ι: Type*} [PseudoMetricSpace β]
   simp only [Metric.tendstoUniformlyOn_iff, gt_iff_lt, eventually_atTop, ge_iff_le, ←
     tendstoUniformlyOn_univ, Set.mem_univ, Set.restrict_apply, true_implies, Subtype.forall] at *
 
-lemma tendstouniformlyOn_iff_shift {α β : Type*} [PseudoMetricSpace β]
-    (f : ℕ → α → β) (g : α → β) (K : Set α) (d : ℕ) :
-      TendstoUniformlyOn f g atTop K ↔ TendstoUniformlyOn
-        (fun n => fun x => f (n + d) x) g atTop K := by
-  simp_rw [Metric.tendstoUniformlyOn_iff, gt_iff_lt, eventually_atTop, ge_iff_le] at *
-  apply forall₂_congr
-  intro ε _
-  constructor
-  · exact fun h ↦
-    Exists.casesOn h fun N hN ↦
-      Exists.intro (N - d) fun n hn x hx ↦
-        hN (n + d) (Eq.mp (congrArg (fun _a ↦ _a) (propext tsub_le_iff_right)) hn) x hx
-  · intro h
-    obtain ⟨N, hN⟩ := h
-    refine ⟨N + d, fun n hn x hx => ?_⟩
-    have : ∃ b' : ℕ, n = b' + d ∧ N ≤ b' := by
-      rw [@le_iff_exists_add] at hn
-      obtain ⟨c, hc⟩ := hn
-      use N + c
-      omega
-    obtain ⟨b', hb', hb''⟩ := this
-    rw [hb']
-    apply hN b' hb'' x hx
-
-lemma tendstoUniformlyOn_comp_exp {α : Type*} {f : ℕ → α → ℂ} {g : α → ℂ}
-    (K : Set α) (hf : TendstoUniformlyOn f g atTop K) (hg : ∃ T : ℝ, ∀ x : α, x ∈ K → (g x).re ≤ T):
+lemma tendstoUniformlyOn_comp_exp {α : Type*} {f : ℕ → α → ℂ} {g : α → ℂ} (K : Set α)
+    (hf : TendstoUniformlyOn f g atTop K) (hg : ∃ T : ℝ, ∀ x : α, x ∈ K → (g x).re ≤ T) :
         TendstoUniformlyOn (fun n => fun x => cexp (f n x)) (cexp ∘ g) atTop K := by
   obtain ⟨T, hT⟩ := hg
   have h2 :=  tendstouniformlyOn_le (fun n x => (f n x).re) (fun x => (g x).re) K T
     hf.re hT
   simp only [eventually_atTop, ge_iff_le] at h2
   obtain ⟨B, δ, hδ⟩ := h2
-  have w2 := tendstoUniformlyOn_univ.mpr <| UniformContinuousOn.comp_tendstoUniformly
-    {x : ℂ | x.re ≤ max B T} (fun a => K.restrict (f (a + δ))) (fun b => g b) ?_ ?_
+  have w2 := tendstoUniformlyOn_univ.mpr <| UniformContinuousOn.comp_tendstoUniformly_eventually
+    {x : ℂ | x.re ≤ max B T} (fun a => K.restrict (f (a))) (fun b => g b) ?_ (by aesop)
       (UniformlyContinuousOn.cexp (max B T)) (p := atTop) ?_
-  rw [tendstouniformlyOn_iff_restrict, ← tendstoUniformlyOn_univ, tendstouniformlyOn_iff_shift]
+  rw [tendstouniformlyOn_iff_restrict, ← tendstoUniformlyOn_univ]
   exact w2
-  · intro n k
-    simp only [le_add_iff_nonneg_left, zero_le, true_implies, le_max_iff, Set.mem_setOf_eq]
-    left
-    apply (hδ (n + δ) (Nat.le_add_left δ n) k k.2)
-  · intro x
-    simp only [le_max_iff, Set.mem_setOf_eq]
-    right
-    apply le_trans (hT x x.2) (by rfl)
-  · simp only [Metric.tendstoUniformlyOn_iff, gt_iff_lt, eventually_atTop, ge_iff_le, Set.coe_setOf,
-        Set.mem_setOf_eq, Metric.tendstoUniformly_iff, Subtype.forall] at *
-    intro ε hε
-    obtain ⟨N2, hN2⟩ := hf ε hε
-    refine ⟨(max N2 δ) - δ, fun n hn x hx => ?_ ⟩
-    rw [@Nat.sub_le_iff_le_add] at hn
-    apply hN2 (n + δ) (le_trans (Nat.le_max_left N2 δ) hn) x hx
+  simp only [Set.restrict_apply, le_max_iff, Set.mem_setOf_eq, Subtype.forall, eventually_atTop,
+    ge_iff_le]
+  refine ⟨δ, by aesop⟩
+  rw [tendstouniformlyOn_iff_restrict] at hf
+  exact hf
+
 
 lemma prod_tendstoUniformlyOn_tprod {α : Type*} {f : ℕ → α → ℂ} (K : Set α)
     (h : ∀ x : K, Summable fun n => log (f n x))
@@ -266,7 +233,6 @@ theorem summable_pow_shift {α : Type*} (x : α) [RCLike α] (p q k : ℕ) (hq :
   simp only [hq, Nat.cast_add, one_div, norm_inv, norm_pow, Complex.norm_eq_abs,
     RCLike.norm_natCast, summable_nat_pow_inv, iff_true] at *
   apply this
-
 
 theorem tendsto_euler_sin_prod' (x : ℂ) (h0 : x ≠ 0) :
     Tendsto (fun n : ℕ => ∏ i : ℕ in Finset.range n, (1 + -x ^ 2 / (↑i + 1) ^ 2)) atTop
@@ -556,9 +522,8 @@ theorem sin_pi_z_ne_zero (z : ℂ_ℤ) : Complex.sin (π * z) ≠ 0 :=
   by_contra h
   simp at h
   cases' h with h h
-  aesop
-  have := Real.pi_ne_zero
-  exact this h
+  · aesop
+  · exact Real.pi_ne_zero h
 
 theorem prod_diff_on' (n : ℕ) :
     DifferentiableOn ℂ (fun z : ℂ => ∏ j in Finset.range n, (1 + -z ^ 2 / (j + 1) ^ 2))
