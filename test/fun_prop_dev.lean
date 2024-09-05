@@ -495,7 +495,7 @@ structure Mor where
   hcon : Con (fun (x,y) => toFun x y)
 
 @[fun_prop]
-theorem Mor.toFun_Con (m : Mor) (f g : α → Int) (hf : Con f) (g : α → Int) (hg : Con g) : 
+theorem Mor.toFun_Con (m : Mor) (f g : α → Int) (hf : Con f) (g : α → Int) (hg : Con g) :
     Con (fun x => m.toFun (f x) (g x)) := by
   have := m.hcon
   fun_prop
