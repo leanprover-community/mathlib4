@@ -65,7 +65,9 @@ end RingCone
 
 variable {S R : Type*} [Ring R] [SetLike S R] (C : S)
 
-/-- Construct a partially ordered ring by designating a cone in a ring. -/
+/-- Construct a partially ordered ring by designating a cone in a ring.
+Warning: using this def as a constructor in an instance can lead to diamonds
+due to non-customisable field: `lt`. -/
 @[reducible] def OrderedRing.mkOfCone [RingConeClass S R] : OrderedRing R where
   __ := ‹Ring R›
   __ := OrderedAddCommGroup.mkOfCone C
