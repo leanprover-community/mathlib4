@@ -547,7 +547,7 @@ variable [OmegaCompletePartialOrder α] [CompleteLattice β] {f g : α → β}
 open Chain in
 lemma ωScottContinuous.prodMk (hf : ωScottContinuous f) (hg : ωScottContinuous g) :
     ωScottContinuous fun x => (f x, g x) := ScottContinuousOn.prodMk (fun a b hab => by
-    use pair a b hab; exact range_pair a b hab) hf hg
+  use pair a b hab; exact range_pair a b hab) hf hg
 
 lemma ωScottContinuous.iSup {f : ι → α → β} (hf : ∀ i, ωScottContinuous (f i)) :
     ωScottContinuous (⨆ i, f i) := by
