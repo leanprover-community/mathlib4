@@ -208,9 +208,9 @@ def toUnitMono (f : Part α →o Part α) : (Unit → Part α) →o Unit → Par
 
 theorem ωScottContinuous_toUnitMono (f : Part α → Part α) (hc : ωScottContinuous f) :
     ωScottContinuous (toUnitMono ⟨f,hc.monotone⟩) := .of_map_ωSup_of_orderHom fun _ => by
-    ext ⟨⟩ : 1
-    dsimp [OmegaCompletePartialOrder.ωSup]
-    erw [hc.map_ωSup, Chain.map_comp]; rfl
+  ext ⟨⟩ : 1
+  dsimp [OmegaCompletePartialOrder.ωSup]
+  erw [hc.map_ωSup, Chain.map_comp]; rfl
 
 set_option linter.deprecated false in
 @[deprecated ωScottContinuous_toUnitMono (since := "2024-08-26")]
