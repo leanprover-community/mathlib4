@@ -278,13 +278,13 @@ theorem finStronglyMeasurable_of_set_sigmaFinite [TopologicalSpace β] [Zero β]
     refine Set.indicator_of_not_mem ?_ _
     simp [hxt]
   refine ⟨fs, ?_, fun x => ?_⟩
-  · simp_rw [SimpleFunc.support_eq]
-    refine fun n => (measure_biUnion_finset_le _ _).trans_lt ?_
-    refine ENNReal.sum_lt_top_iff.mpr fun y hy => ?_
+  · simp_rw [SimpleFunc.support_eq, ← Finset.mem_coe]
+    classical
+    refine fun n => measure_biUnion_lt_top {y ∈ (fs n).range | y ≠ 0}.finite_toSet fun y hy => ?_
     rw [SimpleFunc.restrict_preimage_singleton _ ((hS_meas n).inter ht)]
     swap
     · letI : (y : β) → Decidable (y = 0) := fun y => Classical.propDecidable _
-      rw [Finset.mem_filter] at hy
+      rw [Finset.mem_coe, Finset.mem_filter] at hy
       exact hy.2
     refine (measure_mono Set.inter_subset_left).trans_lt ?_
     have h_lt_top := measure_spanningSets_lt_top (μ.restrict t) n
@@ -1107,6 +1107,9 @@ namespace AEStronglyMeasurable
 variable {m : MeasurableSpace α} {μ ν : Measure α} [TopologicalSpace β] [TopologicalSpace γ]
   {f g : α → β}
 
+lemma of_finite [DiscreteMeasurableSpace α] [Finite α] : AEStronglyMeasurable f μ :=
+  ⟨_, .of_finite _, ae_eq_rfl⟩
+
 section Mk
 
 /-- A `StronglyMeasurable` function such that `f =ᵐ[μ] hf.mk f`. See lemmas
@@ -1752,7 +1755,7 @@ theorem exists_set_sigmaFinite (hf : AEFinStronglyMeasurable f μ) :
   refine ⟨t, ht, ?_, htμ⟩
   refine EventuallyEq.trans (ae_restrict_of_ae hfg) ?_
   rw [EventuallyEq, ae_restrict_iff' ht.compl]
-  exact eventually_of_forall hgt_zero
+  exact Eventually.of_forall hgt_zero
 
 /-- A measurable set `t` such that `f =ᵐ[μ.restrict tᶜ] 0` and `sigma_finite (μ.restrict t)`. -/
 def sigmaFiniteSet (hf : AEFinStronglyMeasurable f μ) : Set α :=
@@ -1877,3 +1880,5 @@ theorem stronglyMeasurable_uncurry_of_continuous_of_stronglyMeasurable {α β ι
   exact ((t_sf n).measurable.comp measurable_fst).subtype_mk
 
 end MeasureTheory
+
+set_option linter.style.longFile 2000

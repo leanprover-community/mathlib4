@@ -138,7 +138,7 @@ theorem condexp_ae_eq_condexpL1 (hm : m ≤ m0) [hμm : SigmaFinite (μ.trim hm)
 
 theorem condexp_ae_eq_condexpL1CLM (hm : m ≤ m0) [SigmaFinite (μ.trim hm)] (hf : Integrable f μ) :
     μ[f|m] =ᵐ[μ] condexpL1CLM F' hm μ (hf.toL1 f) := by
-  refine (condexp_ae_eq_condexpL1 hm f).trans (eventually_of_forall fun x => ?_)
+  refine (condexp_ae_eq_condexpL1 hm f).trans (Eventually.of_forall fun x => ?_)
   rw [condexpL1_eq hf]
 
 theorem condexp_undef (hf : ¬Integrable f μ) : μ[f|m] = 0 := by
@@ -256,7 +256,7 @@ theorem condexp_bot_ae_eq (f : α → F') :
     μ[f|⊥] =ᵐ[μ] fun _ => (μ Set.univ).toReal⁻¹ • ∫ x, f x ∂μ := by
   rcases eq_zero_or_neZero μ with rfl | hμ
   · rw [ae_zero]; exact eventually_bot
-  · exact eventually_of_forall <| congr_fun (condexp_bot' f)
+  · exact Eventually.of_forall <| congr_fun (condexp_bot' f)
 
 theorem condexp_bot [IsProbabilityMeasure μ] (f : α → F') : μ[f|⊥] = fun _ => ∫ x, f x ∂μ := by
   refine (condexp_bot' f).trans ?_; rw [measure_univ, ENNReal.one_toReal, inv_one, one_smul]
@@ -385,6 +385,6 @@ theorem tendsto_condexp_unique (fs gs : ℕ → α → F') (f g : α → F')
   have hcond_gs : Tendsto (fun n => condexpL1 hm μ (gs n)) atTop (𝓝 (condexpL1 hm μ g)) :=
     tendsto_condexpL1_of_dominated_convergence hm _ (fun n => (hgs_int n).1) h_int_bound_gs
       hgs_bound hgs
-  exact tendsto_nhds_unique_of_eventuallyEq hcond_gs hcond_fs (eventually_of_forall hn_eq)
+  exact tendsto_nhds_unique_of_eventuallyEq hcond_gs hcond_fs (Eventually.of_forall hn_eq)
 
 end MeasureTheory

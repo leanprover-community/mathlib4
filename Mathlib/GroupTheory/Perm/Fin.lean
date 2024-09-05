@@ -92,9 +92,10 @@ theorem finRotate_succ_eq_decomposeFin {n : ℕ} :
 
 @[simp]
 theorem sign_finRotate (n : ℕ) : Perm.sign (finRotate (n + 1)) = (-1) ^ n := by
-  induction' n with n ih
-  · simp
-  · rw [finRotate_succ_eq_decomposeFin]
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [finRotate_succ_eq_decomposeFin]
     simp [ih, pow_succ]
 
 @[simp]

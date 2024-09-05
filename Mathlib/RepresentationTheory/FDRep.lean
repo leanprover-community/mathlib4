@@ -3,10 +3,11 @@ Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.RepresentationTheory.Rep
 import Mathlib.Algebra.Category.FGModuleCat.Limits
+import Mathlib.CategoryTheory.Monoidal.Rigid.Braided
 import Mathlib.CategoryTheory.Preadditive.Schur
 import Mathlib.RepresentationTheory.Basic
+import Mathlib.RepresentationTheory.Rep
 
 /-!
 # `FDRep k G` is the category of finite dimensional `k`-linear representations of `G`.
@@ -27,12 +28,10 @@ We verify that `FDRep k G` is a `k`-linear monoidal category, and rigid when `G`
 `FDRep k G` has all finite limits.
 
 ## TODO
-* `FDRep k G ≌ FullSubcategory (FiniteDimensional k)`
-* Upgrade the right rigid structure to a rigid structure
-  (this just needs to be done for `FGModuleCat`).
-* `FDRep k G` has all finite colimits.
-* `FDRep k G` is abelian.
-* `FDRep k G ≌ FGModuleCat (MonoidAlgebra k G)`.
+* `FdRep k G ≌ FullSubcategory (FiniteDimensional k)`
+* `FdRep k G` has all finite colimits.
+* `FdRep k G` is abelian.
+* `FdRep k G ≌ FGModuleCat (MonoidAlgebra k G)`.
 
 -/
 
@@ -119,7 +118,7 @@ open FiniteDimensional
 
 open scoped Classical
 
--- We need to provide this instance explicitely as otherwise `finrank_hom_simple_simple` gives a
+-- We need to provide this instance explicitly as otherwise `finrank_hom_simple_simple` gives a
 -- deterministic timeout.
 instance : HasKernels (FDRep k G) := by infer_instance
 
@@ -149,6 +148,8 @@ variable {k G : Type u} [Field k] [Group G]
 -- Verify that the right rigid structure is available when the monoid is a group.
 noncomputable instance : RightRigidCategory (FDRep k G) := by
   change RightRigidCategory (Action (FGModuleCat k) (Grp.of G)); infer_instance
+
+example : RigidCategory (FDRep k G) := by infer_instance
 
 end FDRep
 

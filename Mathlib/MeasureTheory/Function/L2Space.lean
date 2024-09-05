@@ -62,11 +62,11 @@ local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
 
 theorem Memℒp.const_inner (c : E) {f : α → E} (hf : Memℒp f p μ) : Memℒp (fun a => ⟪c, f a⟫) p μ :=
   hf.of_le_mul (AEStronglyMeasurable.inner aestronglyMeasurable_const hf.1)
-    (eventually_of_forall fun _ => norm_inner_le_norm _ _)
+    (Eventually.of_forall fun _ => norm_inner_le_norm _ _)
 
 theorem Memℒp.inner_const {f : α → E} (hf : Memℒp f p μ) (c : E) : Memℒp (fun a => ⟪f a, c⟫) p μ :=
-  hf.of_le_mul (AEStronglyMeasurable.inner hf.1 aestronglyMeasurable_const)
-    (eventually_of_forall fun x => by rw [mul_comm]; exact norm_inner_le_norm _ _)
+  hf.of_le_mul (c := ‖c‖) (AEStronglyMeasurable.inner hf.1 aestronglyMeasurable_const)
+    (Eventually.of_forall fun x => by rw [mul_comm]; exact norm_inner_le_norm _ _)
 
 variable {f : α → E}
 
@@ -148,7 +148,7 @@ theorem integral_inner_eq_sq_eLpNorm (f : α →₂[μ] E) :
   norm_cast
   rw [integral_eq_lintegral_of_nonneg_ae]
   rotate_left
-  · exact Filter.eventually_of_forall fun x => sq_nonneg _
+  · exact Filter.Eventually.of_forall fun x => sq_nonneg _
   · exact ((Lp.aestronglyMeasurable f).norm.aemeasurable.pow_const _).aestronglyMeasurable
   congr
   ext1 x
