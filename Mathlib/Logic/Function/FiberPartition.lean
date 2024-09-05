@@ -20,7 +20,7 @@ variable {X Y Z : Type*}
 namespace Function
 
 /-- The indexing set of the partition. -/
-def Fibers (f : Y → Z) : Type _ := Set.range (fun (x : Set.range f) ↦ f ⁻¹' {x.val})
+def Fiber (f : Y → Z) : Type _ := Set.range (fun (x : Set.range f) ↦ f ⁻¹' {x.val})
 
 namespace Fibers
 
