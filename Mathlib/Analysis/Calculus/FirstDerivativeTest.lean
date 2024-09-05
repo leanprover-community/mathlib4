@@ -77,7 +77,7 @@ First-Derivative Test from calculus.
   Suppose `a < b < c`, `f : ℝ → ℝ` is continuous at `b`,
   the derivative `f'` is nonnegative on `(a,b)`, and
   the derivative `f'` is nonpositive on `(b,c)`. Then `f` has a local maximum at `a`. -/
-lemma first_derivative_test_max {f : ℝ → ℝ} {a b c : ℝ} (g₀ : a < b) (g₁ : b < c)
+lemma first_derivative_test_Ioo_max {f : ℝ → ℝ} {a b c : ℝ} (g₀ : a < b) (g₁ : b < c)
     (h : ContinuousAt f b)
     (hd₀ : DifferentiableOn ℝ f (Set.Ioo a b))
     (hd₁ : DifferentiableOn ℝ f (Set.Ioo b c))
@@ -97,8 +97,23 @@ lemma first_derivative_test_max {f : ℝ → ℝ} {a b c : ℝ} (g₀ : a < b) (
     (antitoneOn_of_deriv_nonpos (convex_Ico b c)
     continuous_Ico (by simp_all) (by simp_all))
 
- /-- The First-Derivative Test from calculus, maxima version, expressed in terms of filters. -/
-lemma first_derivative_test_max' {f : ℝ → ℝ} {b : ℝ} (h : ContinuousAt f b)
+/-- The First-Derivative Test from calculus, minima version. -/
+lemma first_derivative_test_Ioo_min {f : ℝ → ℝ} {a b c : ℝ} (h : ContinuousAt f b)
+    (g₀ : a < b) (g₁ : b < c)
+    (hd₀ : DifferentiableOn ℝ f (Set.Ioo a b)) (hd₁ : DifferentiableOn ℝ f (Set.Ioo b c))
+    (h₀ : ∀ x ∈ Set.Ioo a b, deriv f x ≤ 0)
+    (h₁ : ∀ x ∈ Set.Ioo b c, 0 ≤ deriv f x) : IsLocalMin f b := by
+    have Q := @first_derivative_test_Ioo_max (-f) a b c g₀ g₁
+      (by simp_all) (DifferentiableOn.neg hd₀) (DifferentiableOn.neg hd₁)
+      (fun _ => deriv_neg_nonneg hd₀ h₀) (fun _ => deriv_neg_nonpos hd₁ h₁)
+    unfold IsLocalMax IsMaxFilter at Q
+    simp only [Pi.neg_apply, neg_le_neg_iff] at Q
+    exact Q
+
+
+ /-- The First-Derivative Test from calculus, maxima version,
+ expressed in terms of left and right filters. -/
+lemma first_derivative_test_max₀ {f : ℝ → ℝ} {b : ℝ} (h : ContinuousAt f b)
     (hd₀ : ∀ᶠ x in 𝓝[<] b, DifferentiableAt ℝ f x) (hd₁ : ∀ᶠ x in 𝓝[>] b, DifferentiableAt ℝ f x)
     (h₀  : ∀ᶠ x in 𝓝[<] b, 0 ≤ deriv f x) (h₁  : ∀ᶠ x in 𝓝[>] b, deriv f x ≤ 0) :
     IsLocalMax f b := by
@@ -123,16 +138,49 @@ lemma first_derivative_test_max' {f : ℝ → ℝ} {b : ℝ} (h : ContinuousAt f
       (fun x _ => DifferentiableAt.differentiableWithinAt (hu₁.2 (by simp_all)))
       (fun x _ => by apply hv₁.2;simp_all)
 
+/-- If a set `P` contains left and right neighborhoods of a point `x`
+then `P` contains a punctured neighborhood. -/
+lemma nhdsWithin_punctured_of_Iio_Ioi (P : Set ℝ)
+    (hl : P ∈ nhdsWithin 0 (Set.Iio 0)) (hr : P ∈ nhdsWithin 0 (Set.Ioi 0)) :
+    P ∈ nhdsWithin 0 {0}ᶜ := by
+  rw [mem_nhdsWithin]
+  rw [mem_nhdsWithin] at hl hr
+  obtain ⟨u,hu⟩ := hl
+  obtain ⟨v,hv⟩ := hr
+  use u ∩ v
+  simp_all only [Set.mem_inter_iff, and_self, true_and]
+  exact ⟨
+    IsOpen.inter (by tauto) (by tauto),
+    fun x hx => by
+      simp_all only [Set.mem_inter_iff]
+      exact  ((lt_or_gt_of_ne hx.2)).elim (fun _ => hu.2.2 (by tauto)) (fun _ => hv.2.2 (by tauto))
+  ⟩
 
-/-- The First-Derivative Test from calculus, minima version. -/
-lemma first_derivative_test_min {f : ℝ → ℝ} {a b c : ℝ} (h : ContinuousAt f b)
-    (g₀ : a < b) (g₁ : b < c)
-    (hd₀ : DifferentiableOn ℝ f (Set.Ioo a b)) (hd₁ : DifferentiableOn ℝ f (Set.Ioo b c))
-    (h₀ : ∀ x ∈ Set.Ioo a b, deriv f x ≤ 0)
-    (h₁ : ∀ x ∈ Set.Ioo b c, 0 ≤ deriv f x) : IsLocalMin f b := by
-    have Q := @first_derivative_test_max (-f) a b c g₀ g₁
-      (by simp_all) (DifferentiableOn.neg hd₀) (DifferentiableOn.neg hd₁)
-      (fun _ => deriv_neg_nonneg hd₀ h₀) (fun _ => deriv_neg_nonpos hd₁ h₁)
-    unfold IsLocalMax IsMaxFilter at Q
-    simp only [Pi.neg_apply, neg_le_neg_iff] at Q
-    exact Q
+/-- If a set `P` contains a punctured neighborhood of `x`
+then `P` contains a left neighborhoods of `x`. -/
+lemma nhdsWithin_Iio_of_punctured {b:ℝ} {P : Set ℝ} (h : P ∈ nhdsWithin b {b}ᶜ) :
+  P ∈ nhdsWithin b (Set.Iio b) := by
+  rw [mem_nhdsWithin] at *
+  obtain ⟨u,hu⟩ := h
+  use u
+  simp_all only [true_and]
+  intro x hx;apply hu.2.2;simp_all only [mem_inter_iff, mem_Iio, mem_compl_iff, mem_singleton_iff,
+    true_and];linarith;
+
+/-- If a set `P` contains a punctured neighborhood of `x`
+then `P` contains a right neighborhoods of `x`. -/
+lemma nhdsWithin_Ioi_of_punctured {b:ℝ} {P : Set ℝ} (h : P ∈ nhdsWithin b {b}ᶜ) :
+  P ∈ nhdsWithin b (Set.Ioi b) := by
+  rw [mem_nhdsWithin] at *
+  obtain ⟨u,hu⟩ := h
+  use u
+  simp_all only [true_and]
+  intro x hx;apply hu.2.2;simp_all;linarith
+
+/-- The First Derivative test, maximum version. -/
+theorem first_derivative_test_max {f : ℝ → ℝ} {b : ℝ} (h : ContinuousAt f b)
+    (hd : ∀ᶠ x in 𝓝[≠] b, DifferentiableAt ℝ f x)
+    (h₀  : ∀ᶠ x in 𝓝[<] b, 0 ≤ deriv f x) (h₁  : ∀ᶠ x in 𝓝[>] b, deriv f x ≤ 0) :
+    IsLocalMax f b :=
+  first_derivative_test_max₀ h
+    (nhdsWithin_Iio_of_punctured (by tauto)) (nhdsWithin_Ioi_of_punctured (by tauto)) h₀ h₁
