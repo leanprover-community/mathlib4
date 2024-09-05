@@ -107,6 +107,9 @@ theorem IsSuccLimit.ne_bot [OrderBot α] (h : IsSuccLimit a) : a ≠ ⊥ := by
 theorem not_isSuccLimit_iff : ¬ IsSuccLimit a ↔ IsMin a ∨ ¬ IsSuccPrelimit a := by
   rw [IsSuccLimit, not_and_or, not_not]
 
+theorem not_isSuccLimit_of_not_isSuccPrelimit (h : ¬ IsSuccPrelimit a) : ¬ IsSuccLimit a :=
+  not_isSuccLimit_iff.2 (Or.inr h)
+
 variable [SuccOrder α]
 
 protected theorem IsSuccPrelimit.isMax (h : IsSuccPrelimit (succ a)) : IsMax a := by
@@ -356,6 +359,9 @@ theorem IsPredLimit.ne_top [OrderTop α] (h : IsPredLimit a) : a ≠ ⊤ :=
 
 theorem not_isPredLimit_iff : ¬ IsPredLimit a ↔ IsMax a ∨ ¬ IsPredPrelimit a := by
   rw [IsPredLimit, not_and_or, not_not]
+
+theorem not_isPredLimit_of_not_isPredPrelimit (h : ¬ IsPredPrelimit a) : ¬ IsPredLimit a :=
+  not_isPredLimit_iff.2 (Or.inr h)
 
 variable [PredOrder α]
 

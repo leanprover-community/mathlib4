@@ -717,12 +717,6 @@ def IsLimit (c : Cardinal) : Prop :=
 theorem isSuccLimit_ne_zero {c : Cardinal} (h : IsSuccLimit c) : c ≠ 0 :=
   h.ne_bot
 
-theorem isSuccPrelimit_zero : IsSuccPrelimit (0 : Cardinal) :=
-  isSuccPrelimit_bot
-
-theorem isSuccLimit_iff {c : Cardinal} : IsSuccLimit c ↔ c ≠ 0 ∧ IsSuccPrelimit c :=
-  Order.isSuccLimit_iff
-
 set_option linter.deprecated false in
 @[deprecated isSuccLimit_ne_zero (since := "2024-09-05")]
 protected theorem IsLimit.ne_zero {c} (h : IsLimit c) : c ≠ 0 :=
@@ -732,6 +726,12 @@ set_option linter.deprecated false in
 @[deprecated IsSuccLimit.succ_lt (since := "2024-09-05")]
 theorem IsLimit.succ_lt {x c} (h : IsLimit c) : x < c → succ x < c :=
   IsSuccLimit.succ_lt h
+
+theorem isSuccPrelimit_zero : IsSuccPrelimit (0 : Cardinal) :=
+  isSuccPrelimit_bot
+
+theorem isSuccLimit_iff {c : Cardinal} : IsSuccLimit c ↔ c ≠ 0 ∧ IsSuccPrelimit c :=
+  Order.isSuccLimit_iff
 
 /-- The indexed sum of cardinals is the cardinality of the
   indexed disjoint union, i.e. sigma type. -/
