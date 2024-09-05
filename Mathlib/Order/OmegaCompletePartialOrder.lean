@@ -6,7 +6,6 @@ Authors: Simon Hudon, Ira Fesefeldt
 import Mathlib.Control.Monad.Basic
 import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.Order.Chain
-import Mathlib.Order.ScottContinuity
 import Mathlib.Order.Hom.Order
 import Mathlib.Order.Iterate
 import Mathlib.Order.Part
