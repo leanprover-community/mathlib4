@@ -46,28 +46,32 @@ instance hasQuotient : HasQuotient M (Submodule R M) :=
 
 namespace Quotient
 
+instance : QuotLike (M ⧸ p) M p.quotientRel where
+instance : QuotLike.HasQuotHint _ p (M ⧸ p) M p.quotientRel where
+
 /-- Map associating to an element of `M` the corresponding element of `M/p`,
 when `p` is a submodule of `M`. -/
+@[deprecated (since := "2024-09-05")]
 def mk {p : Submodule R M} : M → M ⧸ p :=
   Quotient.mk''
 
 /- porting note: here and throughout elaboration is sped up *tremendously* (in some cases even
-avoiding timeouts) by providing type ascriptions to `mk` (or `mk x`) and its variants. Lean 3
+avoiding timeouts) by providing type ascriptions to `mkQ` (or `mkQ x`) and its variants. Lean 3
 didn't need this help. -/
 theorem mk'_eq_mk' {p : Submodule R M} (x : M) :
-    @Quotient.mk' _ (quotientRel p) x = (mk : M → M ⧸ p) x :=
+    @Quotient.mk' _ (quotientRel p) x = (mkQ : M → M ⧸ p) x :=
   rfl
 
-theorem mk''_eq_mk {p : Submodule R M} (x : M) : (Quotient.mk'' x : M ⧸ p) = (mk : M → M ⧸ p) x :=
+theorem mk''_eq_mk {p : Submodule R M} (x : M) : (Quotient.mk'' x : M ⧸ p) = (mkQ : M → M ⧸ p) x :=
   rfl
 
-theorem quot_mk_eq_mk {p : Submodule R M} (x : M) : (Quot.mk _ x : M ⧸ p) = (mk : M → M ⧸ p) x :=
+theorem quot_mk_eq_mk {p : Submodule R M} (x : M) : (Quot.mk _ x : M ⧸ p) = (mkQ : M → M ⧸ p) x :=
   rfl
 
-protected theorem eq' {x y : M} : (mk x : M ⧸ p) = (mk : M → M ⧸ p) y ↔ -x + y ∈ p :=
+protected theorem eq' {x y : M} : ⟦x⟧_p = ⟦y⟧_p ↔ -x + y ∈ p :=
   QuotientAddGroup.eq
 
-protected theorem eq {x y : M} : (mk x : M ⧸ p) = (mk y : M ⧸ p) ↔ x - y ∈ p :=
+protected theorem eq {x y : M} : ⟦x⟧_p = ⟦y⟧_p ↔ x - y ∈ p :=
   (Submodule.Quotient.eq' p).trans (leftRel_apply.symm.trans p.quotientRel_r_def)
 
 instance : Zero (M ⧸ p) where
@@ -80,25 +84,25 @@ instance : Inhabited (M ⧸ p) :=
   ⟨0⟩
 
 @[simp]
-theorem mk_zero : mk 0 = (0 : M ⧸ p) :=
+theorem mk_zero : ⟦0 : M⟧_p = 0 :=
   rfl
 
 @[simp]
-theorem mk_eq_zero : (mk x : M ⧸ p) = 0 ↔ x ∈ p := by simpa using (Quotient.eq' p : mk x = 0 ↔ _)
+theorem mk_eq_zero : ⟦x⟧_p = 0 ↔ x ∈ p := by simpa using (Quotient.eq' p : ⟦x⟧ = 0 ↔ _)
 
 instance addCommGroup : AddCommGroup (M ⧸ p) :=
   QuotientAddGroup.Quotient.addCommGroup p.toAddSubgroup
 
 @[simp]
-theorem mk_add : (mk (x + y) : M ⧸ p) = (mk x : M ⧸ p) + (mk y : M ⧸ p) :=
+theorem mk_add : (mkQ (x + y) : M ⧸ p) = (mkQ x : M ⧸ p) + (mkQ y : M ⧸ p) :=
   rfl
 
 @[simp]
-theorem mk_neg : (mk (-x) : M ⧸ p) = -(mk x : M ⧸ p) :=
+theorem mk_neg : (mkQ (-x) : M ⧸ p) = -(mkQ x : M ⧸ p) :=
   rfl
 
 @[simp]
-theorem mk_sub : (mk (x - y) : M ⧸ p) = (mk x : M ⧸ p) - (mk y : M ⧸ p) :=
+theorem mk_sub : (mkQ (x - y) : M ⧸ p) = (mkQ x : M ⧸ p) - (mkQ y : M ⧸ p) :=
   rfl
 
 section SMul
@@ -116,20 +120,20 @@ instance instSMul : SMul R (M ⧸ P) :=
   Quotient.instSMul' P
 
 @[simp]
-theorem mk_smul (r : S) (x : M) : (mk (r • x) : M ⧸ p) = r • mk x :=
+theorem mk_smul (r : S) (x : M) : (mkQ (r • x) : M ⧸ p) = r • mkQ x :=
   rfl
 
 instance smulCommClass (T : Type*) [SMul T R] [SMul T M] [IsScalarTower T R M]
     [SMulCommClass S T M] : SMulCommClass S T (M ⧸ P) where
-  smul_comm _x _y := Quotient.ind' fun _z => congr_arg mk (smul_comm _ _ _)
+  smul_comm _x _y := Quotient.ind' fun _z => congr_arg mkQ (smul_comm _ _ _)
 
 instance isScalarTower (T : Type*) [SMul T R] [SMul T M] [IsScalarTower T R M] [SMul S T]
     [IsScalarTower S T M] : IsScalarTower S T (M ⧸ P) where
-  smul_assoc _x _y := Quotient.ind' fun _z => congr_arg mk (smul_assoc _ _ _)
+  smul_assoc _x _y := Quotient.ind' fun _z => congr_arg mkQ (smul_assoc _ _ _)
 
 instance isCentralScalar [SMul Sᵐᵒᵖ R] [SMul Sᵐᵒᵖ M] [IsScalarTower Sᵐᵒᵖ R M]
     [IsCentralScalar S M] : IsCentralScalar S (M ⧸ P) where
-  op_smul_eq_smul _x := Quotient.ind' fun _z => congr_arg mk <| op_smul_eq_smul _ _
+  op_smul_eq_smul _x := Quotient.ind' fun _z => congr_arg mkQ <| op_smul_eq_smul _ _
 
 end SMul
 

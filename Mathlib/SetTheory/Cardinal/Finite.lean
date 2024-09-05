@@ -31,7 +31,7 @@ namespace Nat
 /-- `Nat.card α` is the cardinality of `α` as a natural number.
   If `α` is infinite, `Nat.card α = 0`. -/
 protected def card (α : Type*) : ℕ :=
-  toNat (mk α)
+  toNat #α
 
 @[simp]
 theorem card_eq_fintype_card [Fintype α] : Nat.card α = Fintype.card α :=
@@ -230,7 +230,7 @@ namespace PartENat
 /-- `PartENat.card α` is the cardinality of `α` as an extended natural number.
   If `α` is infinite, `PartENat.card α = ⊤`. -/
 def card (α : Type*) : PartENat :=
-  toPartENat (mk α)
+  toPartENat #α
 
 @[simp]
 theorem card_eq_coe_fintype_card [Fintype α] : card α = Fintype.card α :=
