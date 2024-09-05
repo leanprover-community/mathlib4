@@ -228,6 +228,9 @@ end Pi
 /-- Two functions `f₁ f₂ : α → β` are equal on `s` if `f₁ x = f₂ x` for all `x ∈ s`. -/
 def EqOn (f₁ f₂ : α → β) (s : Set α) : Prop := ∀ ⦃x⦄, x ∈ s → f₁ x = f₂ x
 
+lemma EqOn_comm {f₁ f₂ : α → β} {s : Set α} : EqOn f₁ f₂ s ↔ EqOn f₂ f₁ s := by
+  simp only [EqOn, eq_comm]
+
 /-- `MapsTo f a b` means that the image of `a` is contained in `b`. -/
 def MapsTo (f : α → β) (s : Set α) (t : Set β) : Prop := ∀ ⦃x⦄, x ∈ s → f x ∈ t
 
