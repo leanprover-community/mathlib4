@@ -109,7 +109,7 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
             have := add_lt_add_right h j
             rw [H₄] at this
             exact lt_of_add_lt_add_left this
-        cases' max_lt with max_lt max_lt
+        rcases max_lt with max_lt | max_lt
         · -- in this case `max₁ < i`, then `xᵢ ∈ I`; for otherwise `i ∈ set₁` then `i ≤ max₁`.
           have not_mem : i ∉ set₁ := fun h =>
             lt_irrefl _ ((max'_lt_iff set₁ (nonempty x rid₁)).mp max_lt i h)
