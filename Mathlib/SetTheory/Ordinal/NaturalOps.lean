@@ -27,13 +27,13 @@ The natural addition of two ordinals corresponds to adding their Cantor normal f
 polynomials in `ω`. Likewise, their natural multiplication corresponds to multiplying the Cantor
 normal forms as polynomials.
 
-# Implementation notes
+## Implementation notes
 
 Given the rich algebraic structure of these two operations, we choose to create a type synonym
 `NatOrdinal`, where we provide the appropriate instances. However, to avoid casting back and forth
 between both types, we attempt to prove and state most results on `Ordinal`.
 
-# Todo
+## Todo
 
 - Prove the characterizations of natural addition and multiplication in terms of the Cantor normal
   form.
@@ -54,8 +54,9 @@ def NatOrdinal : Type _ :=
   Ordinal deriving Zero, Inhabited, One, WellFoundedRelation
 
 instance NatOrdinal.linearOrder : LinearOrder NatOrdinal := {Ordinal.linearOrder with}
-
 instance NatOrdinal.succOrder : SuccOrder NatOrdinal := {Ordinal.succOrder with}
+instance NatOrdinal.orderBot : OrderBot NatOrdinal := {Ordinal.orderBot with}
+instance NatOrdinal.noMaxOrder : NoMaxOrder NatOrdinal := {Ordinal.noMaxOrder with}
 
 /-- The identity function between `Ordinal` and `NatOrdinal`. -/
 @[match_pattern]
@@ -87,7 +88,14 @@ instance : WellFoundedLT NatOrdinal :=
   Ordinal.wellFoundedLT
 
 instance : IsWellOrder NatOrdinal (· < ·) :=
-  Ordinal.isWellOrder
+  { }
+
+instance : ConditionallyCompleteLinearOrderBot NatOrdinal :=
+  WellFoundedLT.conditionallyCompleteLinearOrderBot _
+
+@[simp]
+theorem bot_eq_zero : ⊥ = 0 :=
+  rfl
 
 @[simp]
 theorem toOrdinal_zero : toOrdinal 0 = 0 :=
@@ -162,7 +170,7 @@ theorem toNatOrdinal_max (a b : Ordinal) :
 
 @[simp]
 theorem toNatOrdinal_min (a b : Ordinal) :
-    toNatOrdinal (linearOrder.min a b) = linearOrder.min (toNatOrdinal a) (toNatOrdinal b) :=
+    toNatOrdinal (min a b) = min (toNatOrdinal a) (toNatOrdinal b) :=
   rfl
 
 /-! We place the definitions of `nadd` and `nmul` before actually developing their API, as this
