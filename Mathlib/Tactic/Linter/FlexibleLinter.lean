@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Lean.Elab.Command
-import Lean.Linter.Util
 import Batteries.Data.Array.Basic
 import Batteries.Lean.HashSet
 
@@ -149,8 +148,8 @@ The function is used to extract "location" information about `stx`: either expli
 Whether or not what this function extracts really is a location will be determined by the linter
 using data embedded in the `InfoTree`s. -/
 partial
-def toStained : Syntax → HashSet Stained
-  | .node _ _ arg => (arg.map toStained).foldl (·.merge ·) {}
+def toStained : Syntax → Std.HashSet Stained
+  | .node _ _ arg => (arg.map toStained).foldl (.union) {}
   | .ident _ _ val _ => {.name val}
   | .atom _ val => match val with
                   | "*" => {.wildcard}
@@ -165,11 +164,11 @@ Typically, we apply `getStained` to the output of `getLocs`.
 
 See `getStained!` for a similar function. -/
 partial
-def getStained (stx : Syntax) (all? : Syntax → Bool := fun _ ↦ false) : HashSet Stained :=
+def getStained (stx : Syntax) (all? : Syntax → Bool := fun _ ↦ false) : Std.HashSet Stained :=
   match stx with
     | stx@(.node _ ``Lean.Parser.Tactic.location loc) =>
-      if all? stx then {} else (loc.map toStained).foldl (·.merge ·) {}
-    | .node _ _ args => (args.map (getStained · all?)).foldl (·.merge ·) {}
+      if all? stx then {} else (loc.map toStained).foldl (·.union) {}
+    | .node _ _ args => (args.map (getStained · all?)).foldl (·.union) {}
     | _ => default
 
 /-- `getStained! stx` expects `stx` to be an argument of a node of `SyntaxNodeKind`
@@ -183,7 +182,7 @@ if `getStained stx = {}`, then `getStained' stx = {.goal}`.
 
 This means that tactics that do not have an explicit "`at`" in their syntax will be treated as
 acting on the main goal. -/
-def getStained! (stx : Syntax) (all? : Syntax → Bool := fun _ ↦ false) : HashSet Stained :=
+def getStained! (stx : Syntax) (all? : Syntax → Bool := fun _ ↦ false) : Std.HashSet Stained :=
   let out := getStained stx all?
   if out.size == 0 then {.goal} else out
 
@@ -205,7 +204,7 @@ def Stained.toFMVarId (mv : MVarId) (lctx: LocalContext) : Stained → Array (FV
 /-- `SyntaxNodeKind`s that are mostly "formatting": mostly they are ignored
 because we do not want the linter to spend time on them.
 The nodes that they contain will be visited by the linter anyway. -/
-def combinatorLike : HashSet Name :=
+def combinatorLike : Std.HashSet Name :=
   { -- "continuators": these typically wrap other tactics inside them.
     -- The linter ignores the wrapper, but does recurse into the enclosed tactics
     ``Lean.Parser.Tactic.tacticSeq1Indented,
@@ -232,7 +231,7 @@ def combinatorLike : HashSet Name :=
   `simp`, `simp_all`, `simpa`, `dsimp`, `constructor`, `congr`, `done`, `rfl`, `omega`, `abel`,
   `ring`, `linarith`, `nlinarith`, `norm_cast`, `aesop`, `tauto`, `fun_prop`, `split`, `split_ifs`.
 -/
-def followers : HashSet Name :=
+def followers : Std.HashSet Name :=
   { ``Lean.Parser.Tactic.simp,
     ``Lean.Parser.Tactic.simpAll,
     ``Lean.Parser.Tactic.simpa,
@@ -352,7 +351,7 @@ def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
         if !followers.contains skind then
           for currMv0 in mvs0 do
             let lctx0 := ((ctx0.decls.find? currMv0).getD default).lctx
-            let mut foundFvs : HashSet (FVarId × MVarId):= {}
+            let mut foundFvs : Std.HashSet (FVarId × MVarId):= {}
             for st in stained_in_syntax do
               for d in st.toFMVarId currMv0 lctx0 do
                 if !foundFvs.contains d then foundFvs := foundFvs.insert d
