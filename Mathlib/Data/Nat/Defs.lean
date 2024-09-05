@@ -155,8 +155,13 @@ lemma pred_eq_of_eq_succ (H : m = n.succ) : m.pred = n := by simp [H]
 @[simp] lemma pred_eq_succ_iff : n - 1 = m + 1 ↔ n = m + 2 := by
   cases n <;> constructor <;> rintro ⟨⟩ <;> rfl
 
+#adaptation_note
+/--
+After nightly-2024-09-06 we can remove both the `_root_` prefixes below.
+-/
 lemma forall_lt_succ : (∀ m < n + 1, p m) ↔ (∀ m < n, p m) ∧ p n := by
-  simp only [Nat.lt_succ_iff, Nat.le_iff_lt_or_eq, or_comm, forall_eq_or_imp, and_comm]
+  simp only [Nat.lt_succ_iff, Nat.le_iff_lt_or_eq, _root_.or_comm, forall_eq_or_imp,
+    _root_.and_comm]
 
 lemma exists_lt_succ : (∃ m < n + 1, p m) ↔ (∃ m < n, p m) ∨ p n := by
   rw [← not_iff_not]
@@ -298,11 +303,11 @@ lemma two_mul_ne_two_mul_add_one : 2 * n ≠ 2 * m + 1 :=
 
 -- TODO: Replace `Nat.mul_right_cancel_iff` with `Nat.mul_left_inj`
 protected lemma mul_left_inj (ha : a ≠ 0) : b * a = c * a ↔ b = c :=
-  Nat.mul_right_cancel_iff (Nat.pos_iff_ne_zero.2 ha) _ _
+  Nat.mul_right_cancel_iff (Nat.pos_iff_ne_zero.2 ha)
 
 -- TODO: Replace `Nat.mul_left_cancel_iff` with `Nat.mul_right_inj`
 protected lemma mul_right_inj (ha : a ≠ 0) : a * b = a * c ↔ b = c :=
-  Nat.mul_left_cancel_iff (Nat.pos_iff_ne_zero.2 ha) _ _
+  Nat.mul_left_cancel_iff (Nat.pos_iff_ne_zero.2 ha)
 
 protected lemma mul_ne_mul_left (ha : a ≠ 0) : b * a ≠ c * a ↔ b ≠ c :=
   not_congr (Nat.mul_left_inj ha)
