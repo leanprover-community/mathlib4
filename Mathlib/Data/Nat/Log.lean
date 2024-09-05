@@ -207,15 +207,11 @@ theorem add_pred_div_lt {b n : ℕ} (hb : 1 < b) (hn : 2 ≤ n) : (n + b - 1) / 
   exact Nat.add_le_mul hn hb
 
 lemma log2_eq_log_two {n : ℕ} : Nat.log2 n = Nat.log 2 n := by
-  induction n using Nat.strongRec with
-  | _ =>
-    rename_i n ih
-    unfold Nat.log2 Nat.log
-    by_cases h : n = 0
-    · simp [h]
-    · congr
-      simp only [ge_iff_le, lt_succ_self, and_true]
-      exact ih (n/2) (Nat.div_lt_self (Nat.pos_of_ne_zero h) (by simp))
+  rcases eq_or_ne n 0 with rfl | hn
+  · rw [log2_zero, log_zero_right]
+  apply eq_of_forall_le_iff
+  intro m
+  rw [Nat.le_log2 hn, ← Nat.pow_le_iff_le_log Nat.one_lt_two hn]
 
 
 /-! ### Ceil logarithm -/
