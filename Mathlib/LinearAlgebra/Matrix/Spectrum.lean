@@ -17,7 +17,7 @@ the spectral theorem for linear maps (`LinearMap.IsSymmetric.eigenvectorBasis_ap
 
 ## Tags
 
-spectral theorem, diagonalization theorem-/
+spectral theorem, diagonalization theorem -/
 
 namespace Matrix
 

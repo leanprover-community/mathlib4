@@ -77,7 +77,7 @@ theorem of_convergence_epsilon :
   exists N
   intro n n_ge_N
   let g := of v
-  cases' Decidable.em (g.TerminatedAt n) with terminatedAt_n not_terminatedAt_n
+  rcases Decidable.em (g.TerminatedAt n) with terminatedAt_n | not_terminatedAt_n
   · have : v = g.convs n := of_correctness_of_terminatedAt terminatedAt_n
     have : v - g.convs n = 0 := sub_eq_zero.mpr this
     rw [this]

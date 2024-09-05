@@ -84,7 +84,7 @@ variable {G : Type u} [Group G] {B : GroupFilterBasis G}
 
 @[to_additive]
 instance : Membership (Set G) (GroupFilterBasis G) :=
-  ⟨fun s f ↦ s ∈ f.sets⟩
+  ⟨fun f s ↦ s ∈ f.sets⟩
 
 @[to_additive]
 theorem one {U : Set G} : U ∈ B → (1 : G) ∈ U :=
@@ -149,10 +149,10 @@ theorem nhds_eq (B : GroupFilterBasis G) {x₀ : G} : @nhds G B.topology x₀ = 
     filter_upwards [image_mem_map (B.mem_filter_of_mem V_in)]
     rintro _ ⟨x, hx, rfl⟩
     calc
-      a • U ⊇ a • (V * V) := smul_set_mono hVU
-      _ ⊇ a • x • V := smul_set_mono <| smul_set_subset_smul hx
-      _ = (a * x) • V := smul_smul ..
-      _ ∈ (a * x) • B.filter := smul_set_mem_smul_filter <| B.mem_filter_of_mem V_in
+      (a * x) • V ∈ (a * x) • B.filter := smul_set_mem_smul_filter <| B.mem_filter_of_mem V_in
+      _ = a • x • V := smul_smul .. |>.symm
+      _ ⊆ a • (V * V) := smul_set_mono <| smul_set_subset_smul hx
+      _ ⊆ a • U := smul_set_mono hVU
 
 @[to_additive]
 theorem nhds_one_eq (B : GroupFilterBasis G) :
@@ -224,7 +224,7 @@ namespace RingFilterBasis
 variable {R : Type u} [Ring R] (B : RingFilterBasis R)
 
 instance : Membership (Set R) (RingFilterBasis R) :=
-  ⟨fun s B ↦ s ∈ B.sets⟩
+  ⟨fun B s ↦ s ∈ B.sets⟩
 
 theorem mul {U : Set R} (hU : U ∈ B) : ∃ V ∈ B, V * V ⊆ U :=
   mul' hU
@@ -284,7 +284,7 @@ variable {R M : Type*} [CommRing R] [TopologicalSpace R] [AddCommGroup M] [Modul
   (B : ModuleFilterBasis R M)
 
 instance GroupFilterBasis.hasMem : Membership (Set M) (ModuleFilterBasis R M) :=
-  ⟨fun s B ↦ s ∈ B.sets⟩
+  ⟨fun B s ↦ s ∈ B.sets⟩
 
 theorem smul {U : Set M} (hU : U ∈ B) : ∃ V ∈ 𝓝 (0 : R), ∃ W ∈ B, V • W ⊆ U :=
   B.smul' hU

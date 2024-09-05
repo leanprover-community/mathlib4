@@ -148,8 +148,8 @@ theorem Memℒp.memℒp_of_exponent_le {p q : ℝ≥0∞} [IsFiniteMeasure μ] {
   · rw [eLpNorm_eq_eLpNorm' hp0 hp_top]
     rw [hq_top, eLpNorm_exponent_top] at hfq_lt_top
     refine lt_of_le_of_lt (eLpNorm'_le_eLpNormEssSup_mul_rpow_measure_univ hp_pos) ?_
-    refine ENNReal.mul_lt_top hfq_lt_top.ne ?_
-    exact (ENNReal.rpow_lt_top_of_nonneg (by simp [hp_pos.le]) (measure_ne_top μ Set.univ)).ne
+    refine ENNReal.mul_lt_top hfq_lt_top ?_
+    exact ENNReal.rpow_lt_top_of_nonneg (by simp [hp_pos.le]) (measure_ne_top μ Set.univ)
   have hq0 : q ≠ 0 := by
     by_contra hq_eq_zero
     have hp_eq_zero : p = 0 := le_antisymm (by rwa [hq_eq_zero] at hpq) (zero_le _)
@@ -343,7 +343,7 @@ theorem Memℒp.smul {p q r : ℝ≥0∞} {f : α → E} {φ : α → 𝕜} (hf 
     (hpqr : 1 / p = 1 / q + 1 / r) : Memℒp (φ • f) p μ :=
   ⟨hφ.1.smul hf.1,
     (eLpNorm_smul_le_mul_eLpNorm hf.1 hφ.1 hpqr).trans_lt
-      (ENNReal.mul_lt_top hφ.eLpNorm_ne_top hf.eLpNorm_ne_top)⟩
+      (ENNReal.mul_lt_top hφ.eLpNorm_lt_top hf.eLpNorm_lt_top)⟩
 
 theorem Memℒp.smul_of_top_right {p : ℝ≥0∞} {f : α → E} {φ : α → 𝕜} (hf : Memℒp f p μ)
     (hφ : Memℒp φ ∞ μ) : Memℒp (φ • f) p μ := by
