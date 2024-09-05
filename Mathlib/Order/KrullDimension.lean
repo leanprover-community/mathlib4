@@ -77,19 +77,16 @@ variable {α β : Type*}
 
 variable [Preorder α] [Preorder β]
 
+
 /-!
 ## Height
 -/
 
-lemma height_le_iff (x : α) (n : ℕ∞) :
+lemma height_le {x : α} {n : ℕ∞} :
     height x ≤ n ↔ ∀ (p : LTSeries α), p.last ≤ x → p.length ≤ n := by
   simp [height, iSup_le_iff]
 
-lemma height_le (x : α) (n : ℕ∞) :
-    (∀ (p : LTSeries α), p.last ≤ x → p.length ≤ n) → height x ≤ n :=
-  (height_le_iff x n).mpr
-
-lemma length_le_height (x : α) (p : LTSeries α) (hlast : p.last ≤ x) :
+lemma length_le_height {p : LTSeries α} {x : α} (hlast : p.last ≤ x) :
     p.length ≤ height x := by
   by_cases hlen0 : p.length ≠ 0
   · let p' := p.eraseLast.snoc x (by
@@ -108,7 +105,7 @@ lemma length_le_height (x : α) (p : LTSeries α) (hlast : p.last ≤ x) :
   · simp_all
 
 lemma length_le_height_last (p : LTSeries α) : p.length ≤ height p.last :=
-  length_le_height _ p le_rfl
+  length_le_height le_rfl
 
 lemma height_mono : Monotone (α := α) height :=
   fun _ _ hab ↦ biSup_mono (fun _ hla => hla.trans hab)
@@ -198,7 +195,7 @@ lemma krullDim_eq_iSup_height : krullDim α = ⨆ (a : α), ↑(height a) := by
     · rw [krullDim_eq_iSup_length]
       simp only [WithBot.coe_le_coe, iSup_le_iff]
       intro x
-      exact height_le _ _ (fun p _ ↦ le_iSup_of_le p (le_refl _))
+      exact height_le.mpr fun p _ ↦ le_iSup_of_le p le_rfl
 
 end krullDim
 
