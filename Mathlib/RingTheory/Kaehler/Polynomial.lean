@@ -30,17 +30,20 @@ def KaehlerDifferential.mvPolynomialEquiv (σ : Type*) :
   invFun := Finsupp.linearCombination (α := σ) _ (fun x ↦ D _ _ (MvPolynomial.X x))
   right_inv := by
     intro x
-    induction' x using Finsupp.induction_linear with _ _ _ _ a b
-    · simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom]; rw [map_zero, map_zero]
-    · simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, map_add] at *; simp only [*]
-    · simp [LinearMap.map_smul, -map_smul]
+    induction x using Finsupp.induction_linear with
+    | h0 => simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom]; rw [map_zero, map_zero]
+    | hadd => simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, map_add] at *; simp only [*]
+    | hsingle a b => simp [LinearMap.map_smul, -map_smul]
   left_inv := by
     intro x
     obtain ⟨x, rfl⟩ := linearCombination_surjective _ _ x
-    induction' x using Finsupp.induction_linear with _ _ _ _ a b
-    · simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom]; rw [map_zero, map_zero, map_zero]
-    · simp only [map_add, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom] at *; simp only [*]
-    · simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, Finsupp.linearCombination_single,
+    induction x using Finsupp.induction_linear with
+    | h0 =>
+      simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom]
+      rw [map_zero, map_zero, map_zero]
+    | hadd => simp only [map_add, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom] at *; simp only [*]
+    | hsingle a b =>
+      simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, Finsupp.linearCombination_single,
         LinearMap.map_smul, Derivation.liftKaehlerDifferential_comp_D]
       congr 1
       induction a using MvPolynomial.induction_on
