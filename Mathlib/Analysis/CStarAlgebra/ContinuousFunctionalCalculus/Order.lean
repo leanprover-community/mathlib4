@@ -283,7 +283,7 @@ lemma CStarRing.one_le_inv_iff_le_one {a : Aˣ} (ha : 0 ≤ (a : A)) :
     1 ≤ (↑a⁻¹ : A) ↔ a ≤ 1 := by
   simpa using CStarRing.le_inv_iff (a := 1) (by simp) ha
 
-lemma CStarRing.inv_le_one_iff_one_le_inv {a : Aˣ} (ha : 0 ≤ (a : A)) :
+lemma CStarRing.inv_le_one_iff_one_le {a : Aˣ} (ha : 0 ≤ (a : A)) :
     (↑a⁻¹ : A) ≤ 1 ↔ 1 ≤ a := by
   simpa using CStarRing.inv_le_iff ha (b := 1) (by simp)
 
