@@ -81,11 +81,29 @@ variable {α β : Type*}
 
 variable [Preorder α] [Preorder β]
 
-lemma height_le {x : α} {n : ℕ∞} :
-    height x ≤ n ↔ ∀ (p : LTSeries α), p.last ≤ x → p.length ≤ n := by
-  simp [height, iSup_le_iff]
+/--
+Alternative definition of height, with the supremum only ranging over those series
+that end at `a`.
+-/
+lemma height_eq_iSup_last_eq (a : α) :
+    height a = ⨆ (p : LTSeries α) (_ : p.last = a), ↑(p.length) := by
+  apply le_antisymm
+  · apply iSup₂_le
+    intro p hlast
+    -- The proof is a bit more elaborate since we have a Preorder, not a PartialOrder
+    wlog hlenpos :  p.length ≠ 0
+    · simp_all
+    let p' := p.eraseLast.snoc a ( lt_of_lt_of_le (p.eraseLast_last_rel_last hlenpos) hlast)
+    apply le_iSup₂_of_le p' (by simp [p']) (by simp [p']; norm_cast; omega)
+  · apply iSup₂_le
+    intro p hlast
+    apply le_iSup₂_of_le p (by simp [hlast]) (by simp)
 
-lemma length_le_height {p : LTSeries α} {x : α} (hlast : p.last ≤ x) :
+lemma height_le {x : α} {n : ℕ∞} :
+    (∀ (p : LTSeries α), p.last = x → p.length ≤ n) → height x ≤ n := by
+  simp [height_eq_iSup_last_eq, iSup_le_iff.mpr]
+
+lemma length_le_height {x : α} {p : LTSeries α} (hlast : p.last ≤ x) :
     p.length ≤ height x := by
   by_cases hlen0 : p.length ≠ 0
   · let p' := p.eraseLast.snoc x (by
@@ -105,6 +123,22 @@ lemma length_le_height {p : LTSeries α} {x : α} (hlast : p.last ≤ x) :
 
 lemma length_le_height_last {p : LTSeries α} : p.length ≤ height p.last :=
   length_le_height le_rfl
+
+lemma index_le_height (p : LTSeries α) (i : Fin (p.length + 1)) : i ≤ height (p i) :=
+  length_le_height_last (p := p.take i)
+
+lemma height_eq_index_of_length_eq_last_height (p : LTSeries α) (h : p.length = height p.last) :
+    ∀ (i : Fin (p.length + 1)), i = height (p i) := by
+  suffices ∀ i, height (p i) ≤ i by
+    apply_rules [le_antisymm, index_le_height]
+  intro i
+  apply height_le
+  intro p' hp'
+  simp only [Nat.cast_le]
+  have hp'' := length_le_height_last (p := p'.smash (p.drop i) (by simpa))
+  simp [← h] at hp''; clear h
+  norm_cast at hp''
+  omega
 
 lemma height_mono : Monotone (α := α) height :=
   fun _ _ hab ↦ biSup_mono (fun _ hla => hla.trans hab)
@@ -194,7 +228,7 @@ lemma krullDim_eq_iSup_height : krullDim α = ⨆ (a : α), ↑(height a) := by
     · rw [krullDim_eq_iSup_length]
       simp only [WithBot.coe_le_coe, iSup_le_iff]
       intro x
-      exact height_le.mpr fun p _ ↦ le_iSup_of_le p le_rfl
+      exact height_le fun p _ ↦ le_iSup_of_le p le_rfl
 
 end krullDim
 
