@@ -115,23 +115,17 @@ instance : Theory.IsUniversal L.preorderTheory := ⟨by
 
 /-- The theory of partial orders. -/
 def partialOrderTheory : L.Theory :=
-  {leSymb.reflexive, leSymb.antisymmetric, leSymb.transitive}
+  insert leSymb.antisymmetric L.preorderTheory
 
-instance : Theory.IsUniversal L.partialOrderTheory := ⟨by
-  simp only [partialOrderTheory,
-    Set.mem_insert_iff, Set.mem_singleton_iff, forall_eq_or_imp, forall_eq]
-  exact ⟨leSymb.isUniversal_reflexive, leSymb.isUniversal_antisymmetric,
-    leSymb.isUniversal_transitive⟩⟩
+instance : Theory.IsUniversal L.partialOrderTheory :=
+  Theory.IsUniversal.insert leSymb.isUniversal_antisymmetric
 
 /-- The theory of linear orders. -/
 def linearOrderTheory : L.Theory :=
-  {leSymb.reflexive, leSymb.antisymmetric, leSymb.transitive, leSymb.total}
+  insert leSymb.total L.partialOrderTheory
 
-instance : Theory.IsUniversal L.linearOrderTheory := ⟨by
-  simp only [linearOrderTheory,
-    Set.mem_insert_iff, Set.mem_singleton_iff, forall_eq_or_imp, forall_eq]
-  exact ⟨leSymb.isUniversal_reflexive, leSymb.isUniversal_antisymmetric,
-    leSymb.isUniversal_transitive, leSymb.isUniversal_total⟩⟩
+instance : Theory.IsUniversal L.linearOrderTheory :=
+  Theory.IsUniversal.insert leSymb.isUniversal_total
 
 example [L.Structure M] [M ⊨ L.linearOrderTheory] (S : L.Substructure M) :
     S ⊨ L.linearOrderTheory := inferInstance
@@ -154,6 +148,14 @@ def denselyOrderedSentence : L.Sentence :=
 /-- The theory of dense linear orders without endpoints. -/
 def dlo : L.Theory :=
   L.linearOrderTheory ∪ {L.noTopOrderSentence, L.noBotOrderSentence, L.denselyOrderedSentence}
+
+variable [L.Structure M]
+
+instance [h : M ⊨ L.dlo] : M ⊨ L.linearOrderTheory := h.mono Set.subset_union_left
+
+instance [h : M ⊨ L.linearOrderTheory] : M ⊨ L.partialOrderTheory := h.mono (Set.subset_insert _ _)
+
+instance [h : M ⊨ L.partialOrderTheory] : M ⊨ L.preorderTheory := h.mono (Set.subset_insert _ _)
 
 end IsOrdered
 
@@ -230,9 +232,8 @@ section Preorder
 variable [Preorder M]
 
 instance model_preorder : M ⊨ Language.order.preorderTheory := by
-  simp only [preorderTheory, Theory.model_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
-    forall_eq_or_imp, Relations.realize_reflexive, relMap_leSymb, forall_eq,
-    Relations.realize_transitive]
+  simp only [preorderTheory, Theory.model_insert_iff, Relations.realize_reflexive, relMap_leSymb,
+    Theory.model_singleton_iff, Relations.realize_transitive]
   exact ⟨le_refl, fun _ _ _ => le_trans⟩
 
 @[simp]
@@ -258,27 +259,22 @@ theorem realize_denselyOrdered [h : DenselyOrdered M] :
 end Preorder
 
 instance model_partialOrder [PartialOrder M] : M ⊨ Language.order.partialOrderTheory := by
-  simp only [partialOrderTheory, Theory.model_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
-    forall_eq_or_imp, Relations.realize_reflexive, relMap_leSymb, Relations.realize_antisymmetric,
-    forall_eq, Relations.realize_transitive]
-  exact ⟨le_refl, fun _ _ => le_antisymm, fun _ _ _ => le_trans⟩
+  simp only [partialOrderTheory, Theory.model_insert_iff, Relations.realize_antisymmetric,
+    relMap_leSymb, model_preorder, and_true]
+  exact fun _ _ => le_antisymm
 
 section LinearOrder
 
 variable [LinearOrder M]
 
 instance model_linearOrder : M ⊨ Language.order.linearOrderTheory := by
-  simp only [linearOrderTheory, Theory.model_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
-    forall_eq_or_imp, Relations.realize_reflexive, relMap_leSymb, Relations.realize_antisymmetric,
-    Relations.realize_transitive, forall_eq, Relations.realize_total]
-  exact ⟨le_refl, fun _ _ => le_antisymm, fun _ _ _ => le_trans, le_total⟩
+  simp only [linearOrderTheory, Theory.model_insert_iff, Relations.realize_total, relMap_leSymb,
+    model_partialOrder, and_true]
+  exact le_total
 
 instance model_dlo [DenselyOrdered M] [NoTopOrder M] [NoBotOrder M] :
     M ⊨ Language.order.dlo := by
-  simp only [dlo, Set.union_insert, Set.union_singleton, Theory.model_iff, Set.mem_insert_iff,
-    forall_eq_or_imp, realize_noTopOrder, realize_noBotOrder, realize_denselyOrdered, true_and]
-  rw [← Theory.model_iff]
-  infer_instance
+  simp [dlo, model_linearOrder, Theory.model_insert_iff]
 
 end LinearOrder
 
