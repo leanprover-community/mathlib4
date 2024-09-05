@@ -595,17 +595,8 @@ theorem coe_srange (f : M →ₙ* N) : (f.srange : Set N) = Set.range f :=
 theorem mem_srange {f : M →ₙ* N} {y : N} : y ∈ f.srange ↔ ∃ x, f x = y :=
   Iff.rfl
 
-@[to_additive]
-private theorem srange_mk_aux_mul {f : M → N} (hf : ∀ (x y : M), f (x * y) = f x * f y)
-    {x y : N} (hx : x ∈ Set.range f) (hy : y ∈ Set.range f) :
-    x * y ∈ Set.range f := by
-  rw [Set.mem_range] at *
-  obtain ⟨x, rfl⟩ := hx
-  obtain ⟨y, rfl⟩ := hy
-  exact ⟨x * y, hf x y⟩
-
-@[to_additive (attr := simp)] theorem srange_mk (f : M → N) (hf) :
-    srange ⟨f, hf⟩ = ⟨Set.range f, srange_mk_aux_mul hf⟩ := rfl
+@[to_additive (attr := simp)]
+theorem srange_mk (f : M → N) (hf) : srange ⟨f, hf⟩ = ⟨Set.range f, (srange ⟨f, hf⟩).mul_mem⟩ := rfl
 
 @[to_additive]
 theorem srange_eq_map (f : M →ₙ* N) : f.srange = (⊤ : Subsemigroup M).map f :=
