@@ -1041,7 +1041,7 @@ theorem iIndepFun.indepFun_finset (S T : Finset ι) (hST : Disjoint S T)
   have h_meas_inter : ∀ i ∈ S ∪ T, MeasurableSet (sets_s' i ∩ sets_t' i) := by
     intros i hi_mem
     rw [Finset.mem_union] at hi_mem
-    rcases' hi_mem with hi_mem | hi_mem
+    rcases hi_mem with hi_mem | hi_mem
     · rw [h_sets_t'_univ hi_mem, Set.inter_univ]
       exact h_meas_s' i hi_mem
     · rw [h_sets_s'_univ hi_mem, Set.univ_inter]
