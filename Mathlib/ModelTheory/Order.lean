@@ -76,7 +76,7 @@ export IsOrdered (leSymb)
 instance : IsOrdered Language.order :=
   ⟨.le⟩
 
-lemma order.relation_eq_leSymb : {R : Language.order.Relations 2} → R = leSymb
+lemma order.relation_eq_leSymb : (R : Language.order.Relations 2) → R = leSymb
   | .le => rfl
 
 section IsOrdered
