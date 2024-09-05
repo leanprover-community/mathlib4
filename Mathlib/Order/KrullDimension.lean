@@ -17,8 +17,8 @@ In case that `α` is empty, then its Krull dimension is defined to be negative i
 length of all series `a₀ < a₁ < ... < aₙ` is unbounded, then its Krull dimension is defined to be
 positive infinity.
 
-For `a : α`, its height (in `ℕ∞`) is defined to be `sup {n | a₀ < a₁ < ... < aₙ = a}` while its
-coheight is defined to be `sup {n | a = a₀ < a₁ < ... < aₙ}` .
+For `a : α`, its height (in `ℕ∞`) is defined to be `sup {n | a₀ < a₁ < ... < aₙ ≤ a}` while its
+coheight is defined to be `sup {n | a ≤ a₀ < a₁ < ... < aₙ}` .
 
 ## Main results
 
@@ -55,10 +55,10 @@ noncomputable def krullDim (α : Type*) [Preorder α] : WithBot ℕ∞ :=
 
 /--
 The **height** of an element `a` in a preorder `α` is the supremum of the rightmost index of all
-relation series of `α` ordered by `<` and ending with `a`.
+relation series of `α` ordered by `<` and ending below or at `a`.
 -/
 noncomputable def height {α : Type*} [Preorder α] (a : α) : ℕ∞ :=
-  ⨆ (p : LTSeries α) (_ : p.last = a), p.length
+  ⨆ (p : LTSeries α) (_ : p.last ≤ a), p.length
 
 /--
 The **coheight** of an element `a` in a preorder `α` is the supremum of the rightmost index of all
@@ -82,11 +82,11 @@ variable [Preorder α] [Preorder β]
 -/
 
 lemma height_le_iff (x : α) (n : ℕ∞) :
-    height x ≤ n ↔ ∀ (p : LTSeries α), p.last = x → p.length ≤ n := by
+    height x ≤ n ↔ ∀ (p : LTSeries α), p.last ≤ x → p.length ≤ n := by
   simp [height, iSup_le_iff]
 
 lemma height_le (x : α) (n : ℕ∞) :
-    (∀ (p : LTSeries α), p.last = x → p.length ≤ n) → height x ≤ n :=
+    (∀ (p : LTSeries α), p.last ≤ x → p.length ≤ n) → height x ≤ n :=
   (height_le_iff x n).mpr
 
 lemma length_le_height (x : α) (p : LTSeries α) (hlast : p.last ≤ x) :
@@ -110,11 +110,8 @@ lemma length_le_height (x : α) (p : LTSeries α) (hlast : p.last ≤ x) :
 lemma length_le_height_last (p : LTSeries α) : p.length ≤ height p.last :=
   length_le_height _ p le_rfl
 
-lemma height_mono : Monotone (α := α) height := by
-  intro x y hxy
-  apply height_le
-  intros p hlast _
-  apply length_le_height y p (hlast ▸ hxy)
+lemma height_mono : Monotone (α := α) height :=
+  fun _ _ hab ↦ biSup_mono (fun _ hla => hla.trans hab)
 
 @[gcongr] protected lemma _root_.GCongr.height_le_height (a b : α) (hab : a ≤ b) :
     height a ≤ height b := height_mono hab
