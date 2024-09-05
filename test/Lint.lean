@@ -61,21 +61,21 @@ end add
 
 section cdotLinter
 
-set_option linter.cdot false
+set_option linter.style.cdot false
 
 set_option linter.globalAttributeIn false in
 /--
 warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
-note: this linter can be disabled with `set_option linter.cdot false`
+note: this linter can be disabled with `set_option linter.style.cdot false`
 ---
 warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
-note: this linter can be disabled with `set_option linter.cdot false`
+note: this linter can be disabled with `set_option linter.style.cdot false`
 ---
 warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
-note: this linter can be disabled with `set_option linter.cdot false`
+note: this linter can be disabled with `set_option linter.style.cdot false`
 -/
 #guard_msgs in
-set_option linter.cdot true in
+set_option linter.style.cdot true in
 attribute [instance] Int.add in
 instance : Inhabited Nat where
   default := by
@@ -83,24 +83,33 @@ instance : Inhabited Nat where
       · have : Nat → Nat → Nat := (· + .)
         . exact 0
 
+set_option linter.style.cdot false in
 /--
 warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
-note: this linter can be disabled with `set_option linter.cdot false`
+note: this linter can be disabled with `set_option linter.style.cdot false`
 -/
 #guard_msgs in
-set_option linter.cdot true in
+set_option linter.style.cdot true in
 example : Add Nat where add := (. + ·)
 
 /--
 warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
-note: this linter can be disabled with `set_option linter.cdot false`
+note: this linter can be disabled with `set_option linter.style.cdot false`
+-/
+#guard_msgs in
+set_option linter.style.cdot true in
+example : Add Nat where add := (. + ·)
+
+/--
+warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
+note: this linter can be disabled with `set_option linter.style.cdot false`
 ---
 warning: This central dot `·` is isolated; please merge it with the next line.
 ---
 warning: This central dot `·` is isolated; please merge it with the next line.
 -/
 #guard_msgs in
-set_option linter.cdot true in
+set_option linter.style.cdot true in
 example : Nat := by
   have : Nat := by
     ·
@@ -114,7 +123,7 @@ example : Nat := by
   exact 0
 
 #guard_msgs in
-set_option linter.cdot true in
+set_option linter.style.cdot true in
 example : True := by
   have : Nat := by
     -- This is how code should look: no error.
@@ -125,16 +134,16 @@ example : True := by
 end cdotLinter
 
 set_option linter.globalAttributeIn false in
-set_option linter.dollarSyntax false in
+set_option linter.style.dollarSyntax false in
 /--
 warning: Please use '<|' instead of '$' for the pipe operator.
-note: this linter can be disabled with `set_option linter.dollarSyntax false`
+note: this linter can be disabled with `set_option linter.style.dollarSyntax false`
 ---
 warning: Please use '<|' instead of '$' for the pipe operator.
-note: this linter can be disabled with `set_option linter.dollarSyntax false`
+note: this linter can be disabled with `set_option linter.style.dollarSyntax false`
 -/
 #guard_msgs in
-set_option linter.dollarSyntax true in
+set_option linter.style.dollarSyntax true in
 attribute [instance] Int.add in
 instance (f g : Nat → Nat) : Inhabited Nat where
   default := by
@@ -245,25 +254,25 @@ example : ℕ → ℕ := set_option linter.style.lambdaSyntax true in λ _ ↦ 0
 
 end lambdaSyntaxLinter
 
-set_option linter.longLine false
+set_option linter.style.longLine false
 /--
 warning: This line exceeds the 100 character limit, please shorten it!
-note: this linter can be disabled with `set_option linter.longLine false`
+note: this linter can be disabled with `set_option linter.style.longLine false`
 -/
 #guard_msgs in
-set_option linter.longLine true in
+set_option linter.style.longLine true in
 /-!                                                                                                -/
 
 #guard_msgs in
 -- Lines with more than 100 characters containing URLs are allowed.
-set_option linter.longLine true in
+set_option linter.style.longLine true in
 /-!  http                                                                                          -/
 
-set_option linter.longLine true
+set_option linter.style.longLine true
 -- The *argument* of `#guard_msgs` is *not* exempt from the linter.
 /--
 warning: This line exceeds the 100 character limit, please shorten it!
-note: this linter can be disabled with `set_option linter.longLine false`
+note: this linter can be disabled with `set_option linter.style.longLine false`
 -/
 #guard_msgs in                                                                            #guard true
 
@@ -302,7 +311,7 @@ set_option linter.style.longFile 1500
 warning: using 'exit' to interrupt Lean
 ---
 warning: The default value of the `longFile` linter is 1500.
-This file is 311 lines long which does not exceed the allowed bound.
+This file is 320 lines long which does not exceed the allowed bound.
 Please, remove the `set_option linter.style.longFile 1600`.
 -/
 #guard_msgs in
@@ -313,7 +322,7 @@ set_option linter.style.longFile 1600 in
 /--
 warning: using 'exit' to interrupt Lean
 ---
-warning: This file is 326 lines long, but the limit is 10.
+warning: This file is 335 lines long, but the limit is 10.
 
 You can extend the allowed length of the file using `set_option linter.style.longFile 1500`.
 You can completely disable this linter by setting the length limit to `0`.
@@ -329,7 +338,7 @@ set_option linter.style.longFile 10 in
 warning: using 'exit' to interrupt Lean
 ---
 warning: The default value of the `longFile` linter is 1500.
-This file is 341 lines long which does not exceed the allowed bound.
+This file is 350 lines long which does not exceed the allowed bound.
 Please, remove the `set_option linter.style.longFile 1700`.
 -/
 #guard_msgs in
