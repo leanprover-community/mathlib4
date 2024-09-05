@@ -144,9 +144,9 @@ def outcome : List Instruction → State → State
 @[simp]
 theorem outcome_append (p₁ p₂ : List Instruction) (η : State) :
     outcome (p₁ ++ p₂) η = outcome p₂ (outcome p₁ η) := by
-  revert η
-  induction' p₁ with _ _ p₁_ih <;> intros <;> simp
-  apply p₁_ih
+  induction p₁ generalizing η with
+  | nil => simp
+  | cons _ _ p₁_ih => simp [p₁_ih]
 
 end Target
 
