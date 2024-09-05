@@ -182,7 +182,7 @@ lemma krullDim_eq_of_orderIso (f : α ≃o β) : krullDim α = krullDim β :=
     iSup_le fun i ↦ le_sSup ⟨i.reverse, rfl⟩
 
 /--
-The Krull dimension is the supremum of the element's heights.
+The Krull dimension is the supremum of the elements' heights.
 -/
 lemma krullDim_eq_iSup_height : krullDim α = ⨆ (a : α), ↑(height a) := by
   cases isEmpty_or_nonempty α with
