@@ -19,6 +19,9 @@ We prove several versions of this lemma:
   in terms of `Filter.limsup` along `Filter.cofinite`;
 - `MeasureTheory.measure_limsup_atTop_eq_zero`:
   in terms of `Filter.limsup` along `(Filter.atTop : Filter ℕ)`.
+
+For the *second* Borel-Cantelli lemma (applying to independent sets in a probability space),
+see `ProbabilityTheory.measure_limsup_eq_one`.
 -/
 
 open Filter Set
