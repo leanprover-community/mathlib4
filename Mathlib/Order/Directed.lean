@@ -17,8 +17,6 @@ directed iff each pair of elements has a shared upper bound.
 * `DirectedOn r s`: Predicate stating that the set `s` is `r`-directed.
 * `IsDirected α r`: Prop-valued mixin stating that `α` is `r`-directed. Follows the style of the
   unbundled relation classes such as `IsTotal`.
-* `ScottContinuous`: Predicate stating that a function between preorders preserves `IsLUB` on
-  directed sets.
 
 ## TODO
 
