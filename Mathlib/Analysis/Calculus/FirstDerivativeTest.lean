@@ -159,7 +159,7 @@ lemma nhdsWithin_punctured_of_Iio_Ioi (P : Set ℝ)
 /-- If a set `P` contains a punctured neighborhood of `x`
 then `P` contains a left neighborhoods of `x`. -/
 lemma nhdsWithin_Iio_of_punctured {b:ℝ} {P : Set ℝ} (h : P ∈ nhdsWithin b {b}ᶜ) :
-  P ∈ nhdsWithin b (Set.Iio b) := by
+    P ∈ nhdsWithin b (Set.Iio b) := by
   rw [mem_nhdsWithin] at *
   obtain ⟨u,hu⟩ := h
   use u
@@ -170,7 +170,7 @@ lemma nhdsWithin_Iio_of_punctured {b:ℝ} {P : Set ℝ} (h : P ∈ nhdsWithin b 
 /-- If a set `P` contains a punctured neighborhood of `x`
 then `P` contains a right neighborhoods of `x`. -/
 lemma nhdsWithin_Ioi_of_punctured {b:ℝ} {P : Set ℝ} (h : P ∈ nhdsWithin b {b}ᶜ) :
-  P ∈ nhdsWithin b (Set.Ioi b) := by
+    P ∈ nhdsWithin b (Set.Ioi b) := by
   rw [mem_nhdsWithin] at *
   obtain ⟨u,hu⟩ := h
   use u
