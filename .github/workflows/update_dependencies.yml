@@ -24,7 +24,7 @@ jobs:
       - name: Get sha of branch
         id: sha
         run: |
-          echo "sha=$(git rev-parse --verify update-dependencies-bot-use-only)" >> "$GITHUB_ENV"
+          echo "sha=$(git rev-parse --verify origin/update-dependencies-bot-use-only)" >> "$GITHUB_OUTPUT"
 
       - name: Get PR and labels
         if: ${{ steps.sha.outputs.sha }}
