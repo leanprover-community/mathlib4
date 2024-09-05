@@ -16,6 +16,8 @@ Jacobian.
 
 - `OrientationPreserving` : a map between normed spaces is orientation-preserving on a given set
   if the determinant of its Jacobian is strictly positive on that set.
+- `OrientationReversing` : a map between normed spaces is orientation-reversing on a given set
+  if the determinant of its Jacobian is strictly negative on that set.
 - `orientationPreservingGroupoid` : the groupoid of partial homeos of `H` which are
   orientation-preserving.
 - `OrientableManifold`: a type class saying that the charted space `M`, modelled on the space `H`,
@@ -40,7 +42,7 @@ Jacobian.
 - On a given connected set, a diffeomorphism is either orientation preserving or orientation
   reversing.
 - A normed space (with the trivial model) is orientable.
-- The n-sphere is orientable.
+- The `n`-sphere is orientable.
 - Products of orientable manifolds are orientable.
 - Define orientations of a smooth manifold, and show that a manifold is orientable if and only if it
   admits an orientation.
@@ -73,6 +75,15 @@ determinant of its Jacobian is strictly negative on that set.
 def OrientationReversing (f : H → H) (s : Set H) : Prop :=
   ∀ x ∈ s, (fderiv ℝ f x).det < 0
 
+lemma orientationPreserving_of_zero_dim (f : H → H) (s : Set H) (h : Module.rank ℝ H = 0) :
+    OrientationPreserving f s :=
+  fun _ _ ↦
+  have det_eq_one : (fderiv ℝ f _).det = 1 := by
+    have b : Basis (Fin 0) ℝ H := Basis.ofEquivFun (finDimVectorspaceEquiv 0 h)
+    rw [ContinuousLinearMap.det, ← (fderiv ℝ f _).det_toMatrix b]
+    exact Matrix.det_fin_zero
+  det_eq_one ▸ Real.zero_lt_one
+
 lemma OrientationPreserving.DifferentiableAt [FiniteDimensional ℝ H] {f : H → H}
     {s : Set H} (h : OrientationPreserving f s) : ∀ x ∈ s, DifferentiableAt ℝ f x := by
   cases subsingleton_or_nontrivial H
@@ -89,7 +100,7 @@ lemma OrientationPreserving.DifferentiableAt [FiniteDimensional ℝ H] {f : H �
     rw [fderiv_zero_of_not_differentiableAt hd, ContinuousLinearMap.det]
     simp [ne_of_gt FiniteDimensional.finrank_pos]
 
-lemma OrientationReversing.DifferentiableAt [FiniteDimensional ℝ H] {f : H → H}
+lemma OrientationReversing.DifferentiableAt {f : H → H}
     {s : Set H} (h : OrientationReversing f s) : ∀ x ∈ s, DifferentiableAt ℝ f x := by
   unfold OrientationReversing at h
   contrapose! h
@@ -129,7 +140,7 @@ lemma orientationPreserving_comp_orientationReversing [FiniteDimensional ℝ H]
   rw [(fderiv ℝ g (f x)).toLinearMap.det_comp (fderiv ℝ f x).toLinearMap]
   exact mul_neg_of_pos_of_neg (hg (f x) hxv) (hf x hxu)
 
-lemma orientationReversing_comp [FiniteDimensional ℝ H] {f g : H → H} {u v : Set H}
+lemma orientationReversing_comp {f g : H → H} {u v : Set H}
     (hf : OrientationReversing f u) (hg : OrientationReversing g v) :
     OrientationPreserving (g ∘ f) (u ∩ f ⁻¹' v) := by
   intro x ⟨hxu, hxv⟩
@@ -158,10 +169,20 @@ end OrientationPreserving
 
 section OrientableManifold
 
+/-! ### Orientable manifolds -/
+
+
 /-- Typeclass defining orientable manifolds. -/
 class OrientableManifold (H : Type*) [NormedAddCommGroup H] [NormedSpace ℝ H]
     [FiniteDimensional ℝ H] (M : Type*) [TopologicalSpace M] [ChartedSpace H M] extends
   HasGroupoid M (@orientationPreservingGroupoid H _ _ _) : Prop
+
+/-- `0`-dimensional manifolds are always orientable. -/
+instance (H : Type*) [NormedAddCommGroup H] [NormedSpace ℝ H] [FiniteDimensional ℝ H] (M : Type*)
+    [TopologicalSpace M] [ChartedSpace H M] (h : Module.rank ℝ H = 0) :
+    OrientableManifold H M where
+  compatible := fun {_ _} _ _ ↦
+    ⟨orientationPreserving_of_zero_dim _ _ h, orientationPreserving_of_zero_dim _ _ h⟩
 
 /-- Typeclass defining orientable smooth manifolds. -/
 class OrientableSmoothManifold (H : Type*) [NormedAddCommGroup H] [NormedSpace ℝ H]
