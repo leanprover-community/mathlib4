@@ -136,22 +136,13 @@ lemma coheight_eq_iSup_head_eq  (a : α) :
     RelSeries.reverse_reverse⟩
   congr! 1
 
-lemma height_le_iff_iSup_last_eq (x : α) (n : ℕ∞) :
-    height x ≤ n ↔ ∀ (p : LTSeries α), p.last = x → p.length ≤ n := by
-  simp [height_eq_iSup_last_eq, iSup_le_iff]
-
-lemma coheight_le_iff_iSup_head_eq (x : α) (n : ℕ∞) :
-    coheight x ≤ n ↔ ∀ (p : LTSeries α), p.head = x → p.length ≤ n := by
-  simp [coheight_eq_iSup_head_eq, iSup_le_iff]
-
-/-- Stronger version, guarantees equality -/
 lemma height_le {x : α} {n : ℕ∞} :
-    (∀ (p : LTSeries α), p.last = x → p.length ≤ n) → height x ≤ n :=
-  (height_le_iff_iSup_last_eq x n).mpr
+    (∀ (p : LTSeries α), p.last = x → p.length ≤ n) → height x ≤ n := by
+  simp [height_eq_iSup_last_eq, iSup_le_iff.mpr]
 
 lemma coheight_le {x : α} {n : ℕ∞} :
-    (∀ (p : LTSeries α), p.head = x → p.length ≤ n) → coheight x ≤ n :=
-  (coheight_le_iff_iSup_head_eq x n).mpr
+    (∀ (p : LTSeries α), p.head = x → p.length ≤ n) → coheight x ≤ n := by
+  simp [coheight_eq_iSup_head_eq, iSup_le_iff.mpr]
 
 lemma length_le_height {x : α} {p : LTSeries α} (hlast : p.last ≤ x) :
     p.length ≤ height x := by
