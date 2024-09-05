@@ -5,6 +5,7 @@ Authors: Christopher Hoskin
 -/
 import Mathlib.Data.Set.Lattice
 import Mathlib.Order.Bounds.Basic
+import Mathlib.Order.Bounds.Lattice
 import Mathlib.Order.CompleteLattice
 
 /-!
@@ -215,9 +216,9 @@ section SemilatticeSup
 
 variable [Preorder α]
 
-variable [Preorder α] [SemilatticeSup β]
+variable [Preorder α]
 
-lemma ScottContinuousOn.sup₂ {D : Set (Set (β × β))} :
+lemma ScottContinuousOn.sup₂ [SemilatticeSup β] {D : Set (Set (β × β))} :
     ScottContinuousOn D fun (a, b) => (a ⊔ b : β) := by
   simp only
   intro d _ _ _ ⟨p₁, p₂⟩ hdp
