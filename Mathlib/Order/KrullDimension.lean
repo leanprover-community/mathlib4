@@ -103,7 +103,7 @@ lemma height_le {x : α} {n : ℕ∞} :
     (∀ (p : LTSeries α), p.last = x → p.length ≤ n) → height x ≤ n := by
   simp [height_eq_iSup_last_eq, iSup_le_iff.mpr]
 
-lemma length_le_height {x : α} {p : LTSeries α} (hlast : p.last ≤ x) :
+lemma length_le_height {p : LTSeries α} {x : α} (hlast : p.last ≤ x) :
     p.length ≤ height x := by
   by_cases hlen0 : p.length ≠ 0
   · let p' := p.eraseLast.snoc x (by
