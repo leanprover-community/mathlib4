@@ -472,3 +472,16 @@ example : Con (fun x : α => f3 x) := by fun_prop (config:={maxTransitionDepth:=
 abbrev my_id {α} (a : α) := a
 example : Con (fun x : α => my_id x) := by fun_prop
 example (f : α → β) (hf : Con (my_id f)) : Con f := by fun_prop
+
+
+
+-- Testing some issues with bundled morphisms of multiple arguments
+structure Mor where
+  toFun : Int → Int → Int
+  hcon : Con (fun (x,y) => toFun x y)
+
+@[fun_prop]
+theorem Mor.toFun_Con (m : Mor) (f g : α → Int) (hf : Con f) (g : α → Int) (hg : Con g) : 
+    Con (fun x => m.toFun (f x) (g x)) := by
+  have := m.hcon
+  fun_prop

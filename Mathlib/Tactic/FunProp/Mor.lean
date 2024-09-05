@@ -121,14 +121,13 @@ where
       else
         go (.app c f) (as.push { expr := x})
     | .app (.proj n i f) x, as => do
+      -- convert proj back to function application
       let env ← getEnv
-      let .some info := getStructureInfo? env n | panic! "bug in Mor.withApp"
-      if let .some projFn := getProjFnForField? env n (info.fieldNames[i]!) then
-        if (← getCoeFnInfo? projFn).isSome then
-          let .app c f ← mkAppM projFn #[f] | panic! "bug in Mor.withApp"
-          return ← go f (as.push { coe := c, expr := x})
+      let info := getStructureInfo? env n |>.get!
+      let projFn := getProjFnForField? env n (info.fieldNames[i]!) |>.get!
+      let .app c f ← mkAppM projFn #[f] | panic! "bug in Mor.withApp"
 
-      k f as.reverse
+      go (.app (.app c f) x) as
     | .app f a, as =>
       go f (as.push { expr := a })
     | f        , as => k f as.reverse
