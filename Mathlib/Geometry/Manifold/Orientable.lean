@@ -8,20 +8,50 @@ import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
 /-!
 # Orientable Manifolds
 
-This module defines orientable manifolds.
+This file defines orientable manifolds: a differentiable manifold is orientable if and only if it
+admits an orientable atlas, i.e. an atlas whose transition functions have a strictly positive
+Jacobian.
 
 ## Main Definitions
 
-- `OrientationPreserving` : a map is orientation-preserving on a given set if the determinant of
-  its Jacobian is strictly positive on that set.
+- `OrientationPreserving` : a map between normed spaces is orientation-preserving on a given set
+  if the determinant of its Jacobian is strictly positive on that set.
 - `orientationPreservingGroupoid` : the groupoid of partial homeos of `H` which are
   orientation-preserving.
 - `OrientableManifold`: a type class saying that the charted space `M`, modelled on the space `H`,
-  admis an orientation.
+  admits an orientation.
+
+## Main Results
+
+- `OrientationPreserving.DifferentiableAt` : an orientation preserving map is differentiable.
+- `OrientationReversing.DifferentiableAt` : an orientation reversing map is differentiable.
+- `orientationPreserving_comp` : a composition between two orientation preserving maps is
+  orientation preserving.
+- `orientationReversing_comp_orientationPreserving` : a composition between an orientation
+  reversing map and an orientation preserving map is orientation reversing.
+- `orientationPreserving_comp_orientationReversing` : a composition between an orientation
+  preserving map and an orientation reversing map is orientation reversing.
+- `orientationReversing_comp` : a composition between two orientation reversing maps is
+  orientation preserving.
 
 ## TODO
 
-- Define orientable `0`-manifolds.
+- Generalize this discussion to any non-trivially normed field.
+- On a given connected set, a diffeomorphism is either orientation preserving or orientation
+  reversing.
+- A normed space (with the trivial model) is orientable.
+- The n-sphere is orientable.
+- Products of orientable manifolds are orientable.
+- Define orientations of a smooth manifold, and show that a manifold is orientable if and only if it
+  admits an orientation.
+- Define orientation preserving and reserving maps between manifolds.
+
+## Implementation notes
+
+The current definitions work for differentiable manifolds. For topological manifolds, orientability
+can be defined using *local* orientations (which mathlib cannot state yet, as there is no e.g.
+singular homology). In the future, it would be nice to generalise these definitions to allow for
+topological manifolds also, and relate them to the current definition.
 
 -/
 
@@ -30,15 +60,15 @@ variable {H : Type*} [NormedAddCommGroup H] [NormedSpace ℝ H]
 section OrientationPreserving
 
 /--
-A map is orientation-preserving on a given set if it is differentiable and the determinant of its
-Jacobian is strictly positive on that set.
+A map between normed spaces is orientation-preserving on a given set if it is differentiable and the
+determinant of its Jacobian is strictly positive on that set.
 -/
 def OrientationPreserving (f : H → H) (s : Set H) : Prop :=
   ∀ x ∈ s, 0 < (fderiv ℝ f x).det
 
 /--
-A map is orientation-reversing on a given set if it is differentiable and the determinant of its
-Jacobian is strictly negative on that set.
+A map between normed spaces is orientation-reversing on a given set if it is differentiable and the
+determinant of its Jacobian is strictly negative on that set.
 -/
 def OrientationReversing (f : H → H) (s : Set H) : Prop :=
   ∀ x ∈ s, (fderiv ℝ f x).det < 0
@@ -74,7 +104,7 @@ lemma orientationPreserving_comp [Nontrivial H] [FiniteDimensional ℝ H] {f g :
   rw [(fderiv ℝ g (f x)).toLinearMap.det_comp (fderiv ℝ f x).toLinearMap]
   exact mul_pos (hg (f x) hxv) (hf x hxu)
 
-lemma orientationReversing_comp_OrientationPreserving [Nontrivial H] [FiniteDimensional ℝ H]
+lemma orientationReversing_comp_orientationPreserving [Nontrivial H] [FiniteDimensional ℝ H]
     {f g : H → H} {u v : Set H} (hf : OrientationPreserving f u) (hg : OrientationReversing g v) :
     OrientationReversing (g ∘ f) (u ∩ f ⁻¹' v) := by
   intro x ⟨hxu, hxv⟩
@@ -83,7 +113,7 @@ lemma orientationReversing_comp_OrientationPreserving [Nontrivial H] [FiniteDime
   rw [(fderiv ℝ g (f x)).toLinearMap.det_comp (fderiv ℝ f x).toLinearMap]
   exact mul_neg_of_neg_of_pos (hg (f x) hxv) (hf x hxu)
 
-lemma OrientationPreserving_comp_orientationReversing [Nontrivial H] [FiniteDimensional ℝ H]
+lemma orientationPreserving_comp_orientationReversing [Nontrivial H] [FiniteDimensional ℝ H]
     {f g : H → H} {u v : Set H} (hf : OrientationReversing f u) (hg : OrientationPreserving g v) :
     OrientationReversing (g ∘ f) (u ∩ f ⁻¹' v) := by
   intro x ⟨hxu, hxv⟩
