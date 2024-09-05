@@ -1,11 +1,12 @@
 import Mathlib.Util.AssertNoSorry
 import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Data.Quot
-import Mathlib.Data.Nat.Prime
+import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.Real.Basic
 
 set_option autoImplicit true
 
+set_option linter.style.setOption false
 -- Enable this option for tracing:
 -- set_option trace.Tactic.librarySearch true
 -- And this option to trace all candidate lemmas before application.
@@ -19,7 +20,7 @@ set_option pp.unicode.fun true
 
 noncomputable section
 
-/-- info: Try this: exact Nat.lt.base x -/
+/-- info: Try this: exact Nat.lt_add_one x -/
 #guard_msgs in
 example (x : Nat) : x ≠ x.succ := ne_of_lt (by apply?)
 
@@ -68,18 +69,18 @@ example (α : Prop) : α → α := by apply?
 
 /-- info: Try this: exact Nat.add_comm a b -/
 #guard_msgs in
-example (a b : ℕ) : a + b = b + a :=
-by apply?
+example (a b : ℕ) : a + b = b + a := by
+  apply?
 
 /-- info: Try this: exact Nat.mul_sub_left_distrib n m k -/
 #guard_msgs in
-example (n m k : ℕ) : n * (m - k) = n * m - n * k :=
-by apply?
+example (n m k : ℕ) : n * (m - k) = n * m - n * k := by
+  apply?
 
 /-- info: Try this: exact Eq.symm (Nat.mul_sub_left_distrib n m k) -/
 #guard_msgs in
-example (n m k : ℕ) : n * m - n * k = n * (m - k) :=
-by apply?
+example (n m k : ℕ) : n * m - n * k = n * (m - k) := by
+  apply?
 
 /- info: Try this: exact eq_comm -/
 #guard_msgs (drop info) in
@@ -103,8 +104,8 @@ example (a b : ℕ) (_ha : a > 0) (_hb : 0 < b) : 0 < a + b := by apply?
 
 /-- info: Try this: exact Nat.le_of_dvd w h -/
 #guard_msgs in
-example (a b : ℕ) (h : a ∣ b) (w : b > 0) : a ≤ b :=
-by apply?
+example (a b : ℕ) (h : a ∣ b) (w : b > 0) : a ≤ b := by
+  apply?
 
 /-- info: Try this: exact Nat.le_of_dvd w h -/
 #guard_msgs in
@@ -142,7 +143,8 @@ example (a : ℕ) (h : P a) : a < 0 := by apply?
 example (a b : ℕ) (h1 : a < b) (h2 : P a) : False := by apply?
 
 -- TODO this no longer works:
--- example (a b : ℕ) (h1 : a < b) : ¬ (P a) := by apply? -- says `exact lemma_with_false_in_head a b h1`
+-- example (a b : ℕ) (h1 : a < b) : ¬ (P a) := by
+--  apply? -- says `exact lemma_with_false_in_head a b h1`
 
 end synonym
 
@@ -191,13 +193,13 @@ example (P Q : List ℕ) (_h : ℕ) : List ℕ := by apply? using P, Q
 -- Check that we don't use sorryAx:
 -- (see https://github.com/leanprover-community/mathlib4/issues/226)
 
-theorem Bool_eq_iff {A B : Bool} : (A = B) = (A ↔ B) :=
-  by (cases A <;> cases B <;> simp)
+theorem Bool_eq_iff {A B : Bool} : (A = B) = (A ↔ B) := by
+  (cases A <;> cases B <;> simp)
 
 /-- info: Try this: exact Bool_eq_iff -/
 #guard_msgs in
-theorem Bool_eq_iff2 {A B : Bool} : (A = B) = (A ↔ B) :=
-  by apply? -- exact Bool_eq_iff
+theorem Bool_eq_iff2 {A B : Bool} : (A = B) = (A ↔ B) := by
+  apply? -- exact Bool_eq_iff
 
 assert_no_sorry Bool_eq_iff2
 
@@ -221,7 +223,8 @@ example (P Q : Prop) (h : P → Q) (h' : ¬Q) : ¬P := by
 -- -- Example from https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Exact.3F.20fails.20on.20le_antisymm/near/388993167
 -- set_option linter.unreachableTactic false in
 -- example {x y : ℝ} (hxy : x ≤ y) (hyx : y ≤ x) : x = y := by
---   -- This example non-deterministically picks between `le_antisymm hxy hyx` and `ge_antisymm hyx hxy`.
+--   -- This example non-deterministically picks between `le_antisymm hxy hyx` and
+--   -- `ge_antisymm hyx hxy`.
 --   first
 --   | exact? says exact le_antisymm hxy hyx
 --   | exact? says exact ge_antisymm hyx hxy

@@ -5,7 +5,6 @@ Authors: Michael Rothgang, Damiano Testa
 -/
 
 import Lean.Elab.Command
-import Lean.Linter.Util
 
 /-!
 # Linter for `attribute [...] in` declarations
@@ -43,7 +42,7 @@ attribute [ext] who in
 -- the `ext` attribute persists
 example {x y : Nat} : x = y := by ext
 ```
-Therefore, we lint against this patter on all instance.
+Therefore, we lint against this pattern on all instances.
 
 For *removing* attributes, the `in` works as expected.
 ```lean

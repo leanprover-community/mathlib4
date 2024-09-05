@@ -6,8 +6,6 @@ Authors: Johan Commelin, Damiano Testa, Kevin Buzzard
 import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Order.GroupWithZero.Canonical
 
-#align_import linear_order_with_pos_mul_pos_eq_zero from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
-
 /-!
 An example of a `LinearOrderedCommMonoidWithZero` in which the product of two positive
 elements vanishes.
@@ -28,13 +26,11 @@ inductive Foo
   | eps
   | one
   deriving DecidableEq
-#align counterexample.foo Counterexample.Foo
 
 namespace Foo
 
 instance inhabited : Inhabited Foo :=
   ⟨zero⟩
-#align counterexample.foo.inhabited Counterexample.Foo.inhabited
 
 instance : Zero Foo :=
   ⟨zero⟩
@@ -49,14 +45,11 @@ def aux1 : Foo → ℕ
   | 0 => 0
   | ε => 1
   | 1 => 2
-#align counterexample.foo.aux1 Counterexample.Foo.aux1
 
 /-- A tactic to prove facts by cases. -/
 macro (name := boom) "boom" : tactic => `(tactic| (repeat' rintro ⟨⟩) <;> decide)
-#align counterexample.foo.boom Counterexample.Foo.boom
 
 theorem aux1_inj : Function.Injective aux1 := by boom
-#align counterexample.foo.aux1_inj Counterexample.Foo.aux1_inj
 
 instance linearOrder : LinearOrder Foo :=
   LinearOrder.lift' aux1 aux1_inj
@@ -66,7 +59,6 @@ def mul : Foo → Foo → Foo
   | 1, x => x
   | x, 1 => x
   | _, _ => 0
-#align counterexample.foo.mul Counterexample.Foo.mul
 
 instance commMonoid : CommMonoid Foo where
   mul := mul
@@ -89,7 +81,6 @@ theorem not_mul_pos : ¬∀ {M : Type} [LinearOrderedCommMonoidWithZero M],
   intro h
   specialize h ε ε (by boom) (by boom)
   exact (lt_irrefl 0 (h.trans_le (by boom))).elim
-#align counterexample.foo.not_mul_pos Counterexample.Foo.not_mul_pos
 
 example : 0 < ε ∧ ε * ε = 0 := by boom
 

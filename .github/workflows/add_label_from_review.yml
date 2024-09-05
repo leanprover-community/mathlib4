@@ -7,7 +7,7 @@ on:
 jobs:
   add_ready_to_merge_label:
     name: Add ready-to-merge label
-    if: (startsWith(github.event.review.body, 'bors r+') || contains(toJSON(github.event.review.body), '\r\nbors r+') || startsWith(github.event.review.body, 'bors merge') || contains(toJSON(github.event.review.body), '\r\nbors merge'))
+    if: (startsWith(github.event.review.body, 'bors r+') || contains(toJSON(github.event.review.body), '\nbors r+') || startsWith(github.event.review.body, 'bors merge') || contains(toJSON(github.event.review.body), '\nbors merge'))
     runs-on: ubuntu-latest
     steps:
       - uses: octokit/request-action@v2.x
@@ -64,20 +64,17 @@ jobs:
 
       - if: (steps.parse_pr_head.outputs.head_user == 'leanprover-community') && (steps.parse_user.outputs.permission == 'admin')
         id: remove_labels
-        name: Remove "awaiting-review" and "awaiting-author"
+        name: Remove "awaiting-author"
         # we use curl rather than octokit/request-action so that the job won't fail
         # (and send an annoying email) if the labels don't exist
         run: |
-          curl --request DELETE \
-            --url https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels/awaiting-review \
-            --header 'authorization: Bearer ${{ secrets.TRIAGE_TOKEN }}'
           curl --request DELETE \
             --url https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels/awaiting-author \
             --header 'authorization: Bearer ${{ secrets.TRIAGE_TOKEN }}'
 
   add_delegated_label:
     name: Add delegated label
-    if: (startsWith(github.event.review.body, 'bors d') || contains(toJSON(github.event.review.body), '\r\nbors d'))
+    if: (startsWith(github.event.review.body, 'bors d') || contains(toJSON(github.event.review.body), '\nbors d'))
     runs-on: ubuntu-latest
     steps:
       - uses: octokit/request-action@v2.x
@@ -131,13 +128,3 @@ jobs:
           labels: '["delegated"]'
         env:
           GITHUB_TOKEN: ${{ secrets.TRIAGE_TOKEN }}
-
-      - if: (steps.parse_pr_head.outputs.head_user == 'leanprover-community') && (steps.parse_user.outputs.permission == 'admin')
-        id: remove_labels
-        name: Remove "awaiting-review"
-        # we use curl rather than octokit/request-action so that the job won't fail
-        # (and send an annoying email) if the labels don't exist
-        run: |
-          curl --request DELETE \
-            --url https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels/awaiting-review \
-            --header 'authorization: Bearer ${{ secrets.TRIAGE_TOKEN }}'

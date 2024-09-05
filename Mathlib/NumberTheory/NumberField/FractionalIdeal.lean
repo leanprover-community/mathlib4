@@ -103,7 +103,7 @@ open Module
 
 /-- The absolute value of the determinant of the base change from `integralBasis` to
 `basisOfFractionalIdeal I` is equal to the norm of `I`. -/
-theorem det_basisOfFractionalIdeal_eq_absNorm  (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ)
+theorem det_basisOfFractionalIdeal_eq_absNorm (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ)
     (e : (Free.ChooseBasisIndex ℤ (𝓞 K)) ≃ (Free.ChooseBasisIndex ℤ I)) :
     |(integralBasis K).det ((basisOfFractionalIdeal K I).reindex e.symm)| =
       FractionalIdeal.absNorm I.1 := by
@@ -114,3 +114,5 @@ theorem det_basisOfFractionalIdeal_eq_absNorm  (I : (FractionalIdeal (𝓞 K)⁰
   simpa using basisOfFractionalIdeal_apply K I _
 
 end Norm
+
+end NumberField

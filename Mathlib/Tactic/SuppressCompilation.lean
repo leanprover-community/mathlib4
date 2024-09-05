@@ -3,11 +3,12 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Mac Malone
 -/
+import Mathlib.Init
 import Lean.Elab.Declaration
 import Lean.Elab.Notation
 
 /-!
-# Supressing compilation to executable code in a file or in a section
+# Suppressing compilation to executable code in a file or in a section
 
 Currently, the compiler may spend a lot of time trying to produce executable code for complicated
 definitions. This is a waste of resources for definitions in area of mathematics that will never
