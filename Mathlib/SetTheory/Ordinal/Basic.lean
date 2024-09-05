@@ -946,7 +946,7 @@ protected theorem one_le_iff_pos {o : Ordinal} : 1 ≤ o ↔ 0 < o :=
   Order.one_le_iff_pos
 
 theorem one_le_iff_ne_zero {o : Ordinal} : 1 ≤ o ↔ o ≠ 0 := by
-  rw [one_le_iff_pos, Ordinal.pos_iff_ne_zero]
+  rw [Order.one_le_iff_pos, Ordinal.pos_iff_ne_zero]
 
 theorem succ_pos (o : Ordinal) : 0 < succ o :=
   bot_lt_succ o
