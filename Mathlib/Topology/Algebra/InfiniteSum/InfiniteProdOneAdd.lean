@@ -259,27 +259,27 @@ lemma euler_sin_tprod (x : ℂ_ℤ) :
     simpa using summable_pow_shift x.1 2 2 1
   · apply int_comp_not_zero2 x}
 
-
 variable {α β F : Type*} [NormedAddCommGroup F] [CompleteSpace F] {u : ℕ → ℝ}
 open Metric
 
-theorem tendstoUniformlyOn_tsum_eventually {f : ℕ → β → F} (hu : Summable u) {s : Set β}
-    (hfu : ∃ a, ∀ (b : Finset ℕ), a ⊆ b → ∀ x, x ∈ s → ∀ n, n ∉ b → ‖f n x‖ ≤ u n) :
-    TendstoUniformlyOn (fun t : Finset ℕ => fun x => ∑ n ∈ t, f n x)
+
+theorem tendstoUniformlyOn_tsum_eventually {ι : Type*} {f : ι → β → F} {u : ι → ℝ}
+  (hu : Summable u) {s : Set β}
+  (hfu : ∃ a, ∀ (b : Finset ι), a ⊆ b → ∀ x, x ∈ s → ∀ n, n ∉ b → ‖f n x‖ ≤ u n) :
+    TendstoUniformlyOn (fun t : Finset ι => fun x => ∑ n ∈ t, f n x)
       (fun x => ∑' n, f n x) atTop s := by
   refine tendstoUniformlyOn_iff.2 fun ε εpos => ?_
   have := (tendsto_order.1 (tendsto_tsum_compl_atTop_zero u)).2 _ εpos
-  simp at *
+  simp only [gt_iff_lt, eventually_atTop, ge_iff_le, Finset.le_eq_subset] at *
   obtain ⟨t, ht⟩ := this
   obtain ⟨N, hN⟩ := hfu
   use N ∪ t
   intro n hn x hx
-  have A : Summable fun n => ‖f n x‖ := by ---Summable.of_norm_bounded_eventually
-    apply Summable.add_compl (s := N)
-    exact Summable.of_finite
+  have A : Summable fun n => ‖f n x‖  := by
+    apply Summable.add_compl (s := N) Summable.of_finite
     apply Summable.of_nonneg_of_le (fun _ ↦ norm_nonneg _) _ (hu.subtype _)
-    simp
-    apply hN N (by simp) x hx
+    simp only [comp_apply, Subtype.forall, Set.mem_compl_iff, Finset.mem_coe]
+    apply hN N (by simp only [subset_refl]) x hx
   rw [dist_eq_norm, ← sum_add_tsum_subtype_compl A.of_norm (n), add_sub_cancel_left]
   have hN2 := hN (n) (by exact Finset.union_subset_left hn) x hx
   have ht2 := ht (n) (by exact Finset.union_subset_right hn)
@@ -293,28 +293,14 @@ theorem tendstoUniformlyOn_tsum_eventually {f : ℕ → β → F} (hu : Summable
     · apply (hu.subtype _)
   · apply (A.subtype _)
 
-
-/- theorem tendstoUniformlyOn_tsum_nat2 {f : ℕ → ℂ → ℂ} {u : ℕ → ℝ} (hu : Summable u) {s : Set ℂ}
-    (hfu : ∃ N : ℕ,  ∀ n : ℕ, N ≤ n → ∀ x, x ∈ s → ‖f n x‖ ≤ u n) :
-   TendstoUniformlyOn (fun N => fun x => ∑ n ∈ Finset.range N, f n x) (fun x => ∑' n, f n x) atTop
-      s:= by
-      intro v hv
-      apply tendsto_finset_range.eventually (tendstoUniformlyOn_tsum_eventually hu ?_ v hv)
-      obtain ⟨N, hN⟩ := hfu
-      use Finset.range N
-      intro b hb x hx n hn
-      apply hN n _ x hx
-      by_contra h
-      simp only [not_le] at h
-      rw [← @Finset.mem_range] at h
-      exact hn (hb h ) -/
-
-theorem tendstoUniformlyOn_tsum_nat2alph {α : Type*} {f : ℕ → α → ℂ} {u : ℕ → ℝ}
-    (hu : Summable u) {s : Set α} (hfu : ∃ N : ℕ,  ∀ n : ℕ, N ≤ n → ∀ x, x ∈ s → ‖f n x‖ ≤ u n) :
+theorem tendstoUniformlyOn_tsum_nat2alph {α F : Type*} [NormedAddCommGroup F] [CompleteSpace F]
+    {f : ℕ → α → F} {u : ℕ → ℝ} (hu : Summable u) {s : Set α}
+    (hfu : ∀ᶠ n in atTop, ∀ x, x ∈ s → ‖f n x‖ ≤ u n) :
       TendstoUniformlyOn (fun N => fun x => ∑ n ∈ Finset.range N, f n x)
         (fun x => ∑' n, f n x) atTop s:= by
   intro v hv
   apply tendsto_finset_range.eventually (tendstoUniformlyOn_tsum_eventually hu ?_ v hv)
+  simp only [eventually_atTop, ge_iff_le] at hfu
   obtain ⟨N, hN⟩ := hfu
   use Finset.range N
   intro b hb x hx n hn
@@ -323,45 +309,20 @@ theorem tendstoUniformlyOn_tsum_nat2alph {α : Type*} {f : ℕ → α → ℂ} {
   simp only [not_le] at h
   rw [← @Finset.mem_range] at h
   exact hn (hb h )
-
-theorem tendstoUniformlyOn_tsum_nat2alph_real {α : Type*} {f : ℕ → α → ℝ} {u : ℕ → ℝ}
-    (hu : Summable u) {s : Set α} (hfu : ∃ N : ℕ,  ∀ n : ℕ, N ≤ n → ∀ x, x ∈ s → ‖f n x‖ ≤ u n) :
-      TendstoUniformlyOn (fun N => fun x => ∑ n ∈ Finset.range N, f n x)
-          (fun x ↦ ∑' n, f n x) atTop s:= by
-  intro v hv
-  apply tendsto_finset_range.eventually (tendstoUniformlyOn_tsum_eventually hu ?_ v hv)
-  obtain ⟨N, hN⟩ := hfu
-  use Finset.range N
-  intro b hb x hx n hn
-  apply hN n _ x hx
-  by_contra h
-  simp only [not_le] at h
-  rw [← @Finset.mem_range] at h
-  exact hn (hb h )
-
 
 lemma tendstoUniformlyOn_tsum_log_one_add {α : Type*} (f : ℕ → α → ℂ) (K : Set α) (u : ℕ → ℝ)
     (hu : Summable u) (h : ∀ n x, x ∈ K → (‖(f n x)‖) ≤ u n) :
       TendstoUniformlyOn (fun n : ℕ => fun a : α => ∑ i in Finset.range n,
         (Complex.log (1 + f i a))) (fun a => ∑' i : ℕ, Complex.log (1 + f i a)) atTop K := by
-  --apply tendstoUniformlyOn_tsum_nat (u := u) hu
   apply tendstoUniformlyOn_tsum_nat2alph (hu.mul_left (3/2))
-  have := Summable.tendsto_atTop_zero hu
-  rw [Metric.tendsto_atTop] at this
-  obtain ⟨N, hN⟩ := this (1/2) (one_half_pos)
-  use N
-  intro n hn x hx
-  simp
-  have := (Complex.norm_log_one_add_half_le_self  (z :=(f n x)) ?_)
-  apply le_trans this
-  simp
-  apply h
-  apply hx
-  apply le_trans _ (hN n hn).le
-  simp at h
-  apply le_trans (h n x hx)
-  simp only [dist_zero_right, Real.norm_eq_abs]
-  exact le_norm_self (u n)
+  obtain ⟨N, hN⟩ :=  Metric.tendsto_atTop.mp (Summable.tendsto_atTop_zero hu) (1/2) (one_half_pos)
+  simp only [Complex.norm_eq_abs, eventually_atTop, ge_iff_le]
+  refine ⟨N, fun n hn x hx => ?_⟩
+  apply le_trans (Complex.norm_log_one_add_half_le_self  (z :=(f n x)) ?_)
+  · simp only [Complex.norm_eq_abs, Nat.ofNat_pos, div_pos_iff_of_pos_left, mul_le_mul_left]
+    apply h _ _ hx
+  · apply le_trans (le_trans (h n x hx) (by simpa using le_norm_self (u n))) (hN n hn).le
+
 
 
 lemma tendstoUniformlyOn_tsum_log_one_add_re {α : Type*} (f : ℕ → α → ℂ) (K : Set α) (u : ℕ → ℝ)
@@ -369,13 +330,13 @@ lemma tendstoUniformlyOn_tsum_log_one_add_re {α : Type*} (f : ℕ → α → �
    TendstoUniformlyOn (fun n : ℕ => fun a : α =>
   ∑ i in Finset.range n, Real.log (Complex.abs (1 + f i a)))
     (fun a => ∑' i : ℕ, Real.log (Complex.abs (1 + f i a))) atTop K := by
-  apply tendstoUniformlyOn_tsum_nat2alph_real (hu.mul_left (3/2))
+  apply tendstoUniformlyOn_tsum_nat2alph (hu.mul_left (3/2))
   have := Summable.tendsto_atTop_zero hu
   rw [Metric.tendsto_atTop] at this
   obtain ⟨N, hN⟩ := this (1/2) (one_half_pos)
+  simp only [Real.norm_eq_abs, eventually_atTop, ge_iff_le]
   use N
   intro n hn x hx
-  simp
   have := (Complex.norm_log_one_add_half_le_self (z := (f n x)) ?_)
   rw [← log_re]
   simp
