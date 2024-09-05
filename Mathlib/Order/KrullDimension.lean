@@ -191,7 +191,7 @@ lemma krullDim_eq_iSup_height : krullDim α = ⨆ (a : α), ↑(height a) := by
       intro p
       suffices p.length ≤ ⨆ (a : α), height a by
         exact (WithBot.unbot'_le_iff fun _ => this).mp this
-      apply le_iSup_of_le p.last (length_le_height_last p)
+      apply le_iSup_of_le p.last (length_le_height_last (p := p))
     · rw [krullDim_eq_iSup_length]
       simp only [WithBot.coe_le_coe, iSup_le_iff]
       intro x
