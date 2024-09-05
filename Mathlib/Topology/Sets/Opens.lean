@@ -104,7 +104,7 @@ theorem ext {U V : Opens α} (h : (U : Set α) = V) : U = V :=
 theorem coe_inj {U V : Opens α} : (U : Set α) = V ↔ U = V :=
   SetLike.ext'_iff.symm
 
-/-- A version of `Set.inclusion` not required definitional abuse -/
+/-- A version of `Set.inclusion` not requiring definitional abuse -/
 abbrev inclusion {U V : Opens α} (h : U ≤ V) : U → V := Set.inclusion h
 
 protected theorem isOpen (U : Opens α) : IsOpen (U : Set α) :=
