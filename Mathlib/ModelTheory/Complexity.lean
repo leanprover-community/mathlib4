@@ -423,7 +423,7 @@ end BoundedFormula
 /-- A theory is universal when it is comprised only of universal sentences - these theories apply
 also to substructures. -/
 class Theory.IsUniversal (T : L.Theory) : Prop where
-  isUniversal_of_mem : ∀ {φ}, φ ∈ T → φ.IsUniversal
+  isUniversal_of_mem : ∀ ⦃φ⦄, φ ∈ T → φ.IsUniversal
 
 lemma Theory.IsUniversal.models_of_embedding {T : L.Theory} [hT : T.IsUniversal]
     {N : Type*} [L.Structure N] [N ⊨ T] (f : M ↪[L] N) : M ⊨ T := by
@@ -435,6 +435,12 @@ lemma Theory.IsUniversal.models_of_embedding {T : L.Theory} [hT : T.IsUniversal]
 instance Substructure.models_of_isUniversal
     (S : L.Substructure M) (T : L.Theory) [T.IsUniversal] [M ⊨ T] : S ⊨ T :=
   Theory.IsUniversal.models_of_embedding (Substructure.subtype S)
+
+lemma Theory.IsUniversal.insert
+    {T : L.Theory} [hT : T.IsUniversal] {φ : L.Sentence} (hφ : φ.IsUniversal) :
+    (insert φ T).IsUniversal := ⟨by
+  simp only [Set.mem_insert_iff, forall_eq_or_imp, hφ, true_and]
+  exact hT.isUniversal_of_mem⟩
 
 namespace Relations
 
