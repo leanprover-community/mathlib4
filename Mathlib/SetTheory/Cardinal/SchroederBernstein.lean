@@ -37,65 +37,32 @@ section antisymm
 
 variable {α : Type u} {β : Type v}
 
-/-- **The Schröder-Bernstein Theorem**:
-Given injections `α → β` and `β → α`, we can get a bijection `α → β`. -/
-private theorem schroeder_bernstein' {f : α → β} {g : β → α} (hf : Function.Injective f)
-    (hg : Function.Injective g) :
-    ∃ h : α → β, Bijective h ∧ ∀ x : α, h x = f x ∨ x = g (h x) := by
-  classical
-  cases' isEmpty_or_nonempty β with hβ hβ
-  · have : IsEmpty α := Function.isEmpty f
-    exact ⟨_, ((Equiv.equivEmpty α).trans (Equiv.equivEmpty β).symm).bijective, this.elim⟩
+theorem schroeder_bernstein_set (f : α → β) (g : β → α) : ∃ s : Set α, (g '' (f '' s)ᶜ)ᶜ = s := by
   set F : Set α →o Set α :=
     { toFun := fun s => (g '' (f '' s)ᶜ)ᶜ
       monotone' := fun s t hst =>
         compl_subset_compl.mpr <| image_subset _ <| compl_subset_compl.mpr <| image_subset _ hst }
   -- Porting note: dot notation `F.lfp` doesn't work here
-  set s : Set α := OrderHom.lfp F
-  have hs : (g '' (f '' s)ᶜ)ᶜ = s := F.map_lfp
-  have hns : g '' (f '' s)ᶜ = sᶜ := compl_injective (by simp [hs])
-  set g' := invFun g
-  have g'g : LeftInverse g' g := leftInverse_invFun hg
-  have hg'ns : g' '' sᶜ = (f '' s)ᶜ := by rw [← hns, g'g.image_image]
-  set h : α → β := s.piecewise f g' with hdef
-  have : Surjective h := by rw [← range_iff_surjective, range_piecewise, hg'ns, union_compl_self]
-  have : Injective h := by
-    refine (injective_piecewise_iff _).2 ⟨hf.injOn, ?_, ?_⟩
-    · intro x hx y hy hxy
-      obtain ⟨x', _, rfl⟩ : x ∈ g '' (f '' s)ᶜ := by rwa [hns]
-      obtain ⟨y', _, rfl⟩ : y ∈ g '' (f '' s)ᶜ := by rwa [hns]
-      rw [g'g _, g'g _] at hxy
-      rw [hxy]
-    · intro x hx y hy hxy
-      obtain ⟨y', hy', rfl⟩ : y ∈ g '' (f '' s)ᶜ := by rwa [hns]
-      rw [g'g _] at hxy
-      exact hy' ⟨x, hx, hxy⟩
-  refine ⟨h, ⟨‹Injective h›, ‹Surjective h›⟩, fun x => ?_⟩
-  by_cases hx : x ∈ s
-  · apply Or.inl
-    exact piecewise_eq_of_mem _ _ _ hx
-  apply Or.inr
-  obtain ⟨y, -, rfl⟩ : x ∈ g '' (f '' s)ᶜ := by rwa [hns]
-  rw [hdef, piecewise_eq_of_not_mem _ _ _ hx, g'g]
-
-theorem schroeder_bernstein {f : α → β} {g : β → α} (hf : Function.Injective f)
-    (hg : Function.Injective g) : ∃ h : α → β, Bijective h := by
-  rcases schroeder_bernstein' hf hg with ⟨h, hh, -⟩
-  exact ⟨h, hh⟩
-
-noncomputable
-def localSchroederBernstein (f : α ↪ β) (g : β ↪ α) : α ≃ β := Equiv.ofBijective
-  (schroeder_bernstein' f.injective g.injective).choose
-  (schroeder_bernstein' f.injective g.injective).choose_spec.1
+  exact ⟨OrderHom.lfp F, F.map_lfp⟩
 
 /-- **The Schröder-Bernstein Theorem**: Given embeddings `α ↪ β` and `β ↪ α`, there exists an
 equivalence `α ≃ β`. -/
-theorem antisymm : (α ↪ β) → (β ↪ α) → Nonempty (α ≃ β)
-  | f, g => ⟨f.localSchroederBernstein g⟩
+theorem antisymm : (α ↪ β) → (β ↪ α) → Nonempty (α ≃ β) := fun f g => by
+  classical
+  rcases schroeder_bernstein_set f g with ⟨s, hs⟩
+  set t := f '' s
+  refine ⟨(Equiv.sumCompl s).symm.trans <| Equiv.trans
+    (Equiv.sumCongr (Equiv.Set.image _ _ f.injective) ?_) <| Equiv.sumCompl t⟩
+  convert (Equiv.Set.image _ tᶜ g.injective).symm
+  rw [← mem_def (s := s), ← hs, not_mem_compl_iff] --terrible
+  rfl
 
-theorem localSchroederBernstein_apply_eq_or (f : α ↪ β) (g : β ↪ α) (x : α) :
-    f.localSchroederBernstein g x = f x ∨ x = g (f.localSchroederBernstein g x) :=
-  (schroeder_bernstein' f.injective g.injective).choose_spec.2 _
+/-- **The Schröder-Bernstein Theorem**:
+Given injections `α → β` and `β → α`, we can get a bijection `α → β`. -/
+theorem schroeder_bernstein {f : α → β} {g : β → α} (hf : Function.Injective f)
+    (hg : Function.Injective g) : ∃ h : α → β, Bijective h := by
+  rcases Embedding.antisymm ⟨f, hf⟩ ⟨g, hg⟩ with ⟨h⟩
+  exact ⟨h, h.bijective⟩
 
 end antisymm
 
