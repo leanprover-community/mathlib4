@@ -81,8 +81,9 @@ theorem le_lfpApprox (f : α →o α) (x : α) (a : Ordinal) : x ≤ lfpApprox f
   apply le_sSup
   simp only [exists_prop, Set.union_singleton, Set.mem_insert_iff, Set.mem_setOf_eq, true_or]
 
-theorem lfpApprox_add_one {f : α →o α} {x : α} (h : x ≤ f x) (a : Ordinal) :
+theorem lfpApprox_succ {f : α →o α} {x : α} (h : x ≤ f x) (a : Ordinal) :
     lfpApprox f x (a + 1) = f (lfpApprox f x a) := by
+  rw [Ordinal.add_one_eq_succ]
   apply le_antisymm
   · conv => left; unfold lfpApprox
     apply sSup_le
@@ -114,7 +115,7 @@ theorem lfpApprox_eq_of_mem_fixedPoints {a b : Ordinal} {f : α →o α} {x : α
     by_cases haa : a' < a
     · rw [← lfpApprox_succ h_init]
       apply lfpApprox_monotone
-      rwa [succ_le_iff]
+      rwa [Ordinal.add_one_eq_succ, succ_le_iff]
     · rw [IH a' ha'b (le_of_not_lt haa), h]
   · exact lfpApprox_monotone f x h_ab
 
@@ -189,9 +190,9 @@ theorem gfpApprox_antitone (f : α →o α) (x : α) : Antitone (gfpApprox f x) 
 theorem gfpApprox_le (f : α →o α) (x : α) (a : Ordinal) : gfpApprox f x a ≤ x :=
   le_lfpApprox (OrderHom.dual f) x a
 
-theorem gfpApprox_add_one {f : α →o α} {x : α} (h : f x ≤ x) (a : Ordinal) :
+theorem gfpApprox_succ {f : α →o α} {x : α} (h : f x ≤ x) (a : Ordinal) :
     gfpApprox f x (a + 1) = f (gfpApprox f x a) :=
-  lfpApprox_add_one (f := OrderHom.dual f) h a
+  lfpApprox_succ (f := OrderHom.dual f) h a
 
 /-- The ordinal approximants of the least fixed point are stabilizing
   when reaching a fixed point of f -/
