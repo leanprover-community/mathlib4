@@ -353,13 +353,13 @@ theorem floor_logb_natCast {b : ℕ} {r : ℝ} (hr : 0 ≤ r) :
   obtain rfl | hr := hr.eq_or_lt
   · rw [logb_zero, Int.log_zero_right, Int.floor_zero]
   by_cases hb : 1 < b
-  have hb1' : 1 < (b : ℝ) := Nat.one_lt_cast.mpr hb
-  apply le_antisymm
-  · rw [← Int.zpow_le_iff_le_log hb hr, ← rpow_intCast b]
-    refine le_of_le_of_eq ?_ (rpow_logb (zero_lt_one.trans hb1') hb1'.ne' hr)
-    exact rpow_le_rpow_of_exponent_le hb1'.le (Int.floor_le _)
-  · rw [Int.le_floor, le_logb_iff_rpow_le hb1' hr, rpow_intCast]
-    exact Int.zpow_log_le_self hb hr
+  · have hb1' : 1 < (b : ℝ) := Nat.one_lt_cast.mpr hb
+    apply le_antisymm
+    · rw [← Int.zpow_le_iff_le_log hb hr, ← rpow_intCast b]
+      refine le_of_le_of_eq ?_ (rpow_logb (zero_lt_one.trans hb1') hb1'.ne' hr)
+      exact rpow_le_rpow_of_exponent_le hb1'.le (Int.floor_le _)
+    · rw [Int.le_floor, le_logb_iff_rpow_le hb1' hr, rpow_intCast]
+      exact Int.zpow_log_le_self hb hr
   · rw [@Nat.one_lt_iff_ne_zero_and_ne_one, ← @or_iff_not_and_not] at hb
     rcases hb
     simp_all only [CharP.cast_eq_zero, logb_zero_left, Int.floor_zero, Int.log_zero_base]
