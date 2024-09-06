@@ -137,49 +137,14 @@ def PartialHomeomorph.extend_subtype {U : Set M} (φ : PartialHomeomorph U H) (h
   map_target' x hx := ⟨φ.symm x, φ.map_target' hx, rfl⟩
   open_source := (hU.openEmbedding_subtype_val.open_iff_image_open).mp φ.open_source
   open_target := φ.open_target
-  -- TODO: missing lemma, want a stronger version of `continuous_sum_elim`;
-  -- perhaps use `continuous_sup_dom` to prove
   continuousOn_toFun := by
-    -- first ingredient towards generalising real_lemma...
-    --have hU : IsOpen U := (hU.openEmbedding_subtype_val.open_iff_image_open).mp φ.open_source
-
+    dsimp
     apply real_lemma hU φ.open_source φ.continuousOn_toFun
     apply Function.extend_comp Subtype.val_injective
-    -- -- mimicking the proof above
-    -- set F := Function.extend Subtype.val φ (Classical.arbitrary _)
-    -- dsimp
-    -- show ContinuousOn F (Subtype.val '' φ.source)
-    -- suffices h : ∀ x : (Subtype.val '' φ.source), ContinuousAt F x from
-    --   ContinuousAt.continuousOn (by convert h; exact Iff.symm Subtype.forall)
-    -- intro x
-    -- have h := (hU.openEmbedding_subtype_val.open_iff_image_open).mp φ.open_source
-    -- rw [← (h.openEmbedding_subtype_val).continuousAt_iff]
-    -- --rw [Function.extend_comp Subtype.val_injective]
-    -- let g : (Subtype.val '' φ.source) → H := (F ∘ Subtype.val)
-    -- show ContinuousAt g x
-    -- apply Continuous.continuousAt -- remains: g is continuous
-
-    -- dsimp
-    -- let myf := (φ.source).restrict φ.toFun
-    -- let h := φ.open_source
-    -- convert continuous_subtype_extension h (f := myf) ?hf--_(hf := φ.continuousOn_toFun)
-    -- · congr
-    --   --apply?
-    --   sorry
-    -- · sorry
-    /-#exit
+  continuousOn_invFun := by
     dsimp
-    -- TODO: why is the extension continuous? mathematically, there's not much to fuss about,
-    -- `source` is open, also within U, so we can locally argue with that...
-    -- in practice, this seems very annoying!
-    refine ContinuousAt.continuousOn ?hcont
-    rintro x ⟨x', hx', hx'eq⟩
-    have : ContinuousAt φ x' := sorry -- is x', not x
-    apply ContinuousAt.congr
-    · sorry -- apply this--(φ.continuousOn_toFun).continuousAt (x := x') ?_
-    sorry -- want to use toFun = φ on U...
-    sorry-/
-  continuousOn_invFun := sorry
+    sorry
+    -- similar issues to toFun, but specifics are different: another time
 
 /-- A partial homeomorphism `M → H` defines a partial homeomorphism `M ⊕ M' → H`. -/
 def foo (φ : PartialHomeomorph M H) : PartialHomeomorph (M ⊕ M') H where
