@@ -287,7 +287,8 @@ import Mathlib.Algebra.Group.Subsemigroup.Operations
 import Mathlib.Algebra.Group.Support
 import Mathlib.Algebra.Group.TypeTags
 import Mathlib.Algebra.Group.ULift
-import Mathlib.Algebra.Group.UniqueProds
+import Mathlib.Algebra.Group.UniqueProds.Basic
+import Mathlib.Algebra.Group.UniqueProds.VectorSpace
 import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Algebra.Group.Units.Hom
