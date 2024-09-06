@@ -3,6 +3,7 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
+import Mathlib.Data.Rat.Denumerable
 import Mathlib.Order.CountableDenseLinearOrder
 import Mathlib.ModelTheory.Complexity
 import Mathlib.ModelTheory.Fraisse
@@ -37,6 +38,11 @@ This file defines ordered first-order languages and structures, as well as their
 - Under `Language.order.orderedStructure` assumptions, any `OrderHomClass` has an instance of
   `L.HomClass M N`, while `M ↪o N` and any `OrderIsoClass` have an instance of
   `L.StrongHomClass M N`.
+- `FirstOrder.Language.isFraisseLimit_of_countable_nonempty_dlo` shows that any countable nonempty
+  model of the theory of linear orders is a Fraïssé limit of the class of finite models of the
+  theory of linear orders.
+- `FirstOrder.Language.isFraisse_finite_linear_order` shows that the class of finite models of the
+  theory of linear orders is Fraïssé.
 
 -/
 
@@ -71,6 +77,8 @@ lemma forall_relations {P : ∀ (n) (_ : Language.order.Relations n), Prop} :
 
 instance instSubsingleton : Subsingleton (Language.order.Relations n) :=
   ⟨by rintro ⟨⟩ ⟨⟩; rfl⟩
+
+instance : IsEmpty (Language.order.Relations 0) := ⟨fun x => by cases x⟩
 
 end order
 
@@ -409,21 +417,23 @@ lemma strictMono [EmbeddingLike F M N] [PartialOrder M] [L.OrderedStructure M]
 
 end HomClass
 
+/-- This is not an instance because it would form a loop with
+  `FirstOrder.Language.order.instStrongHomClassOfOrderIsoClass`.
+  As both types are `Prop`s, it would only cause a slowdown.  -/
+lemma StrongHomClass.toOrderIsoClass
+    (L : Language) [L.IsOrdered] (M : Type*) [L.Structure M] [LE M] [L.OrderedStructure M]
+    (N : Type*) [L.Structure N] [LE N] [L.OrderedStructure N]
+    (F : Type*) [EquivLike F M N] [L.StrongHomClass F M N] :
+    OrderIsoClass F M N where
+  map_le_map_iff f a b := by
+    have h := StrongHomClass.map_rel f leSymb ![a,b]
+    simp only [relMap_leSymb, Fin.isValue, Function.comp_apply, Matrix.cons_val_zero,
+      Matrix.cons_val_one, Matrix.head_cons] at h
+    exact h
+
 section Fraisse
 
 variable (M)
-
-lemma dlo_age [Language.order.Structure M] [Mdlo : M ⊨ Language.order.dlo] [Infinite M] :
-    Language.order.age M = {M : CategoryTheory.Bundled.{w'} Language.order.Structure |
-      Finite M ∧ M ⊨ Language.order.linearOrderTheory} := by
-  classical
-  rw [age]
-  ext N
-  refine ⟨fun ⟨hF, h⟩ => ⟨hF.finite, Theory.IsUniversal.models_of_embedding h.some⟩,
-    fun ⟨hF, h⟩ => ⟨FG.of_finite, ?_⟩⟩
-  letI := Language.order.linearOrderOfModels M
-  letI := Language.order.linearOrderOfModels N
-  exact ⟨StrongHomClass.toEmbedding (nonempty_orderEmbedding_of_finite_infinite N M).some⟩
 
 lemma dlo_isExtensionPair
     (M : Type w) [Language.order.Structure M] [M ⊨ Language.order.linearOrderTheory]
@@ -456,14 +466,59 @@ lemma dlo_isExtensionPair
   refine ((funext_iff.1 hg) ⟨x, ?_⟩).symm
   simp only [Set.Finite.coe_toFinset, SetLike.mem_coe, xS]
 
-lemma isFraisseLimit_of_countable_infinite_dlo (M : Type w)
-    [Language.order.Structure M] [Countable M] [Infinite M] [M ⊨ Language.order.dlo] :
+instance (M : Type w) [Language.order.Structure M] [M ⊨ Language.order.dlo] [Nonempty M] :
+    Infinite M := by
+  letI := orderStructure ℚ
+  obtain ⟨f, _⟩ := embedding_from_cg cg_of_countable default (dlo_isExtensionPair ℚ M)
+  exact Infinite.of_injective f f.injective
+
+lemma dlo_age [Language.order.Structure M] [Mdlo : M ⊨ Language.order.dlo] [Nonempty M] :
+    Language.order.age M = {M : CategoryTheory.Bundled.{w'} Language.order.Structure |
+      Finite M ∧ M ⊨ Language.order.linearOrderTheory} := by
+  classical
+  rw [age]
+  ext N
+  refine ⟨fun ⟨hF, h⟩ => ⟨hF.finite, Theory.IsUniversal.models_of_embedding h.some⟩,
+    fun ⟨hF, h⟩ => ⟨FG.of_finite, ?_⟩⟩
+  letI := Language.order.linearOrderOfModels M
+  letI := Language.order.linearOrderOfModels N
+  exact ⟨StrongHomClass.toEmbedding (nonempty_orderEmbedding_of_finite_infinite N M).some⟩
+
+/-- Any countable nonempty model of the theory of dense linear orders is a Fraïssé limit of the
+  class of finite models of the theory of linear orders.. -/
+lemma isFraisseLimit_of_countable_nonempty_dlo (M : Type w)
+    [Language.order.Structure M] [Countable M] [Nonempty M] [M ⊨ Language.order.dlo] :
     IsFraisseLimit {M : CategoryTheory.Bundled.{w} Language.order.Structure |
       Finite M ∧ M ⊨ Language.order.linearOrderTheory} M :=
   ⟨(isUltrahomogeneous_iff_IsExtensionPair cg_of_countable).2 (dlo_isExtensionPair M M), dlo_age M⟩
+
+/-- The class of finite models of the theory of linear orders is Fraïssé. -/
+theorem isFraisse_finite_linear_order :
+    IsFraisse {M : CategoryTheory.Bundled.{0} Language.order.Structure |
+      Finite M ∧ M ⊨ Language.order.linearOrderTheory} := by
+  letI : Language.order.Structure ℚ := orderStructure _
+  exact (isFraisseLimit_of_countable_nonempty_dlo ℚ).isFraisse
 
 end Fraisse
 
 end Language
 
 end FirstOrder
+
+namespace Order
+
+open FirstOrder FirstOrder.Language
+
+/-- A model-theoretic adaptation of the proof of `Order.iso_of_countable_dense`: two countable,
+  dense, nonempty linear orders without endpoints are order isomorphic. -/
+example (α β : Type w') [LinearOrder α] [LinearOrder β]
+    [Countable α] [DenselyOrdered α] [NoMinOrder α] [NoMaxOrder α]
+    [Nonempty α] [Countable β] [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonempty β] :
+    Nonempty (α ≃o β) := by
+  letI := orderStructure α
+  letI := orderStructure β
+  letI := StrongHomClass.toOrderIsoClass Language.order α β (α ≃[Language.order] β)
+  exact ⟨(IsFraisseLimit.nonempty_equiv (isFraisseLimit_of_countable_nonempty_dlo α)
+    (isFraisseLimit_of_countable_nonempty_dlo β)).some⟩
+
+end Order
