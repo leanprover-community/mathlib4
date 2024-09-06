@@ -61,7 +61,7 @@ section Preorder
 /--
 The Lawson topology is defined as the meet of `Topology.lower` and the `Topology.scott`.
 -/
-def lawson (α : Type*) [Preorder α] : TopologicalSpace α := lower α ⊓ scott α
+def lawson (α : Type*) [Preorder α] : TopologicalSpace α := lower α ⊓ scott α univ
 
 variable (α) [Preorder α] [TopologicalSpace α]
 
@@ -80,13 +80,13 @@ variable (α) [Preorder α] [TopologicalSpace α] [IsLawson α]
 
 /-- The complements of the upper closures of finite sets intersected with Scott open sets form
 a basis for the lawson topology. -/
-def lawsonBasis := { s : Set α | ∃ t : Set α, t.Finite ∧ ∃ u : Set α, IsOpen[scott α] u ∧
+def lawsonBasis := { s : Set α | ∃ t : Set α, t.Finite ∧ ∃ u : Set α, IsOpen[scott α univ] u ∧
       u \ upperClosure t = s }
 
 protected theorem isTopologicalBasis : TopologicalSpace.IsTopologicalBasis (lawsonBasis α) := by
   have lawsonBasis_image2 : lawsonBasis α =
       (image2 (fun x x_1 ↦ ⇑WithLower.toLower ⁻¹' x ∩ ⇑WithScott.toScott ⁻¹' x_1)
-        (IsLower.lowerBasis (WithLower α)) {U | IsOpen[scott α] U}) := by
+        (IsLower.lowerBasis (WithLower α)) {U | IsOpen[scott α univ] U}) := by
     rw [lawsonBasis, image2, IsLower.lowerBasis]
     simp_rw [diff_eq_compl_inter]
     aesop
@@ -98,7 +98,8 @@ protected theorem isTopologicalBasis : TopologicalSpace.IsTopologicalBasis (laws
   rw [lawson]
   apply (congrArg₂ Inf.inf _) _
   · letI _ := lower α; exact @IsLower.withLowerHomeomorph α ‹_› (lower α) ⟨rfl⟩ |>.inducing.induced
-  letI _ := scott α; exact @IsScott.withScottHomeomorph α _ (scott α) ⟨rfl⟩ |>.inducing.induced
+  letI _ := scott α univ
+  exact @IsScott.withScottHomeomorph α _ (scott α univ) ⟨rfl⟩ |>.inducing.induced
 
 end Preorder
 end IsLawson
@@ -162,7 +163,7 @@ section Preorder
 
 variable [Preorder α]
 
-lemma lawson_le_scott : lawson α ≤ scott α := inf_le_right
+lemma lawson_le_scott : lawson α ≤ scott α univ := inf_le_right
 
 lemma lawson_le_lower : lawson α ≤ lower α := inf_le_left
 

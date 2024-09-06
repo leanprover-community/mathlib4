@@ -238,11 +238,12 @@ variable [Preorder α]
 /-- The Scott topology.
 
 It is defined as the join of the topology of upper sets and the Scott-Hausdorff topology. -/
-def scott (α : Type*) [Preorder α] : TopologicalSpace α := upperSet α ⊔ scottHausdorff α univ
+def scott (α : Type*) (D : Set (Set α)) [Preorder α] : TopologicalSpace α :=
+  upperSet α ⊔ scottHausdorff α D
 
-lemma upperSet_le_scott : upperSet α ≤ scott α := le_sup_left
+lemma upperSet_le_scott : upperSet α ≤ scott α univ := le_sup_left
 
-lemma scottHausdorff_le_scott : scottHausdorff α univ ≤ scott α := le_sup_right
+lemma scottHausdorff_le_scott : scottHausdorff α univ ≤ scott α univ := le_sup_right
 
 variable (α) [TopologicalSpace α]
 
@@ -251,7 +252,7 @@ variable (α) [TopologicalSpace α]
 The Scott topology is defined as the join of the topology of upper sets and the Scott Hausdorff
 topology. -/
 class IsScott : Prop where
-  topology_eq_scott : ‹TopologicalSpace α› = scott α
+  topology_eq_scott : ‹TopologicalSpace α› = scott α univ
 
 end Preorder
 
@@ -259,7 +260,7 @@ namespace IsScott
 section Preorder
 variable (α) [Preorder α] [TopologicalSpace α] [IsScott α]
 
-lemma topology_eq : ‹_› = scott α := topology_eq_scott
+lemma topology_eq : ‹_› = scott α univ := topology_eq_scott
 
 variable {α} {s : Set α} {a : α}
 
@@ -367,13 +368,13 @@ lemma isOpen_iff_Iic_compl_or_univ [TopologicalSpace α] [Topology.IsScott α] (
 
 -- N.B. A number of conditions equivalent to `scott α = upper α` are given in Gierz _et al_,
 -- Chapter III, Exercise 3.23.
-lemma scott_eq_upper_of_completeLinearOrder : scott α = upper α := by
+lemma scott_eq_upper_of_completeLinearOrder : scott α univ = upper α := by
   letI := upper α
   ext U
   rw [@Topology.IsUpper.isTopologicalSpace_basis _ _ (upper α)
     ({ topology_eq_upperTopology := rfl }) U]
-  letI := scott α
-  rw [@isOpen_iff_Iic_compl_or_univ _ _ (scott α) ({ topology_eq_scott := rfl }) U]
+  letI := scott α univ
+  rw [@isOpen_iff_Iic_compl_or_univ _ _ (scott α univ) ({ topology_eq_scott := rfl }) U]
 
 end CompleteLinearOrder
 
@@ -414,7 +415,7 @@ instance [Inhabited α] : Inhabited (WithScott α) := ‹Inhabited α›
 variable [Preorder α]
 
 instance : Preorder (WithScott α) := ‹Preorder α›
-instance : TopologicalSpace (WithScott α) := scott α
+instance : TopologicalSpace (WithScott α) := scott α univ
 instance : IsScott (WithScott α) := ⟨rfl⟩
 
 lemma isOpen_iff_isUpperSet_and_scottHausdorff_open' {u : Set α} :
