@@ -176,13 +176,14 @@ theorem OrderTop.ext_top {α} {hA : PartialOrder α} (A : OrderTop α) {hB : Par
   apply top_unique
   exact @le_top _ _ A _
 
+without_instances
 /-- An order is an `OrderBot` if it has a least element.
 We state this using a data mixin, holding the value of `⊥` and the least element constraint. -/
 class OrderBot (α : Type u) [outParam (LE α)] extends Bot α where
   /-- `⊥` is the least element -/
   bot_le : ∀ a : α, ⊥ ≤ a
 
-instance OrderBot.instBot :
+@[instance] abbrev OrderBot.instBot :
     ∀ {α} {_ : LE α} [OrderBot α], Bot α :=
   @OrderBot.toBot
 
@@ -413,15 +414,16 @@ end SemilatticeInfBot
 /-! ### Bounded order -/
 
 
+without_instances
 /-- A bounded order describes an order `(≤)` with a top and bottom element,
   denoted `⊤` and `⊥` respectively. -/
 class BoundedOrder (α : Type u) [outParam (LE α)] extends OrderTop α, OrderBot α
 
-instance BoundedOrder.instOrderTop :
+@[instance] abbrev BoundedOrder.instOrderTop :
     ∀ {α} {_ : LE α} [BoundedOrder α], OrderTop α :=
   @BoundedOrder.toOrderTop
 
-instance BoundedOrder.instOrderBot :
+@[instance] abbrev BoundedOrder.instOrderBot :
     ∀ {α} {_ : LE α} [BoundedOrder α], OrderBot α :=
   @BoundedOrder.toOrderBot
 
