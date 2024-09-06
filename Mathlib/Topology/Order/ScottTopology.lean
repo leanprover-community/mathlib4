@@ -81,7 +81,7 @@ def DirSupInacc (s : Set α) : Prop :=
 @[simp] lemma dirSupInaccOn_univ : DirSupInaccOn univ s ↔ DirSupInacc s := by
   simp [DirSupInaccOn, DirSupInacc]
 
-@[simp] lemma DirSupInacc.DirSupInaccOn {D : Set (Set α)} :
+@[simp] lemma DirSupInacc.dirSupInaccOn {D : Set (Set α)} :
     DirSupInacc s → DirSupInaccOn D s := fun h _ _ d₂ d₃ _ hda => h d₂ d₃ hda
 
 /--
@@ -98,10 +98,10 @@ upper bound `a` and is a subset of `s` then `a` also lies in `s`.
 def DirSupClosed (s : Set α) : Prop :=
   ∀ ⦃d⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → d ⊆ s → a ∈ s
 
-@[simp] lemma DirSupClosedOn_univ : DirSupClosedOn univ s ↔ DirSupClosed s := by
+@[simp] lemma dirSupClosedOn_univ : DirSupClosedOn univ s ↔ DirSupClosed s := by
   simp [DirSupClosedOn, DirSupClosed]
 
-@[simp] lemma DirSupClosed.DirSupClosedOn {D : Set (Set α)} :
+@[simp] lemma DirSupClosed.dirSupClosedOn {D : Set (Set α)} :
     DirSupClosed s → DirSupClosedOn D s := fun h _ _ d₂ d₃ _ hda => h d₂ d₃ hda
 
 @[simp] lemma dirSupInaccOn_compl : DirSupInaccOn D sᶜ ↔ DirSupClosedOn D s := by
@@ -121,9 +121,10 @@ lemma DirSupClosed.inter (hs : DirSupClosed s) (ht : DirSupClosed t) : DirSupClo
   fun _d hd hd' _a ha hds ↦ ⟨hs hd hd' ha <| hds.trans inter_subset_left,
     ht hd hd' ha <| hds.trans inter_subset_right⟩
 
-lemma DirSupClosedOn.inter (hs : DirSupClosedOn D s) (ht : DirSupClosedOn D t) : DirSupClosedOn D (s ∩ t) :=
-  fun _d hd₁ hd hd' _a ha hds ↦ ⟨hs hd₁ hd hd' ha <| hds.trans <| inter_subset_left _ _,
-    ht hd₁ hd hd' ha <| hds.trans <| inter_subset_right _ _⟩
+lemma DirSupClosedOn.inter (hs : DirSupClosedOn D s) (ht : DirSupClosedOn D t) :
+    DirSupClosedOn D (s ∩ t) :=
+  fun _d hd₁ hd hd' _a ha hds ↦ ⟨hs hd₁ hd hd' ha <| hds.trans <| inter_subset_left,
+    ht hd₁ hd hd' ha <| hds.trans <| inter_subset_right⟩
 
 lemma DirSupInaccOn.union (hs : DirSupInaccOn D s) (ht : DirSupInaccOn D t) :
     DirSupInaccOn D (s ∪ t) := by
@@ -270,8 +271,8 @@ lemma isOpen_iff_isUpperSet_and_dirSupInacc : IsOpen s ↔ IsUpperSet s ∧ DirS
   exact ⟨b, hbd, Subset.trans inter_subset_left (h.Ici_subset hbu)⟩
 
 lemma isClosed_iff_isLowerSet_and_dirSupClosed : IsClosed s ↔ IsLowerSet s ∧ DirSupClosed s := by
-  rw [← isOpen_compl_iff, isOpen_iff_isUpperSet_and_dirSupInacc, isUpperSet_compl]
-  rw [dirSupInaccOn_compl]
+  rw [← isOpen_compl_iff, isOpen_iff_isUpperSet_and_dirSupInacc, isUpperSet_compl,
+    ← dirSupInaccOn_univ, dirSupInaccOn_compl, dirSupClosedOn_univ ]
 
 lemma isUpperSet_of_isOpen : IsOpen s → IsUpperSet s := fun h ↦
   (isOpen_iff_isUpperSet_and_scottHausdorff_open.mp h).left
@@ -289,7 +290,8 @@ lemma lowerClosure_subset_closure : ↑(lowerClosure s) ⊆ closure s := by
   · exact topology_eq α
 
 lemma isClosed_Iic : IsClosed (Iic a) :=
-  isClosed_iff_isLowerSet_and_dirSupClosed.2 ⟨isLowerSet_Iic _, dirSupClosedOn_Iic _⟩
+  isClosed_iff_isLowerSet_and_dirSupClosed.2 ⟨isLowerSet_Iic _,
+    by rw [← dirSupClosedOn_univ]; exact dirSupClosedOn_Iic _⟩
 
 /--
 The closure of a singleton `{a}` in the Scott topology is the right-closed left-infinite interval
@@ -352,8 +354,9 @@ lemma isOpen_iff_Iic_compl_or_univ [TopologicalSpace α] [Topology.IsScott α] (
       use sSup Uᶜ
       rw [compl_eq_comm, le_antisymm_iff]
       exact ⟨fun _ ha ↦ le_sSup ha, (isLowerSet_of_isClosed hU.isClosed_compl).Iic_subset
-        (dirSupClosed_iff_forall_sSup.mp (dirSupClosed_of_isClosed hU.isClosed_compl)
-        neUc (isChain_of_trichotomous Uᶜ).directedOn le_rfl)⟩
+        (dirSupClosedOn_iff_forall_sSup.mp (fun ⦃d⦄ a ↦ a)
+          (by apply dirSupClosed_of_isClosed hU.isClosed_compl)
+        neUc (isChain_of_trichotomous Uᶜ).directedOn (fun ⦃d⦄ a ↦ a))⟩
   · rintro (rfl | ⟨a, rfl⟩)
     · exact isOpen_univ
     · exact isClosed_Iic.isOpen_compl
