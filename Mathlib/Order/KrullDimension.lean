@@ -162,6 +162,36 @@ lemma height_mono : Monotone (α := α) height :=
 @[gcongr] protected lemma _root_.GCongr.height_le_height (a b : α) (hab : a ≤ b) :
     height a ≤ height b := height_mono hab
 
+private lemma height_add_const (a : α) (n : ℕ∞) :
+    height a + n = ⨆ (p : LTSeries α ) (_ : p.last = a), p.length + n := by
+  have hne : Nonempty { p : LTSeries α // p.last = a } := ⟨RelSeries.singleton _ a, rfl⟩
+  rw [height_eq_iSup_last_eq, iSup_subtype', iSup_subtype']
+  rw [Monotone.map_ciSup_of_continuousAt (f := (· + n))
+    (continuousAt_id.add continuousAt_const) (monotone_id.add monotone_const)]
+
+-- only true for finite height
+lemma height_strictMono (x y : α) (hxy : x < y) (hfin : height y < ⊤) :
+    height x < height y := by
+  have : height x ≠ ⊤ := ne_top_of_lt (lt_of_le_of_lt (height_mono (le_of_lt hxy)) hfin)
+  rw [← ENat.add_one_le_iff this]
+  rw [height_add_const]
+  apply iSup₂_le
+  intro p hlast
+  apply le_iSup₂_of_le (p.snoc y (by simp [*])) (by simp) (by simp)
+
+lemma height_le_height_of_strictmono (f : α → β) (hf : StrictMono f) (x : α) :
+    height x ≤ height (f x) := by
+  simp only [height_eq_iSup_last_eq]
+  apply iSup₂_le
+  intro p hlast
+  apply le_iSup₂_of_le (p.map f hf) (by simp [hlast]) (by simp)
+
+@[simp]
+lemma height_eq_of_orderIso (f : α ≃o β) (x : α) : height (f x) = height x := by
+  apply le_antisymm
+  · simpa using height_le_height_of_strictmono _ f.symm.strictMono (f x)
+  · exact height_le_height_of_strictmono _ f.strictMono x
+
 end height
 
 /-!
