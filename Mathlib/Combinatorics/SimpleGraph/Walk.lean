@@ -180,7 +180,6 @@ theorem adj_getVert_succ {u v} (w : G.Walk u v) {i : ℕ} (hi : i < w.length) :
     · simp [getVert, hxy]
     · exact ih (Nat.succ_lt_succ_iff.1 hi)
 
-@[simp]
 lemma getVert_cons_one {u v w} (q : G.Walk v w) (hadj : G.Adj u v) :
     (q.cons hadj).getVert 1 = v := by
   have : (q.cons hadj).getVert 1 = q.getVert 0 := rfl
@@ -903,15 +902,18 @@ lemma edge_firstDart (p : G.Walk v w) (hp : ¬ p.Nil) :
 variable {x y : V} -- TODO: rename to u, v, w instead?
 
 @[simp]
-lemma cons_tail_eq (p : G.Walk x y) (hp : ¬ p.Nil) :
-    cons (p.adj_getVert_one hp) p.tail = p := by
+lemma cons_tail_eq (p : G.Walk x y) (hp : G.Adj x (p.getVert 1)) :
+    cons hp p.tail = p := by
   cases p with
-  | nil => simp only [nil_nil, not_true_eq_false] at hp
+  | nil => simp at hp
   | cons h q =>
     simp only [getVert_cons_succ, tail_cons_eq, cons_copy, copy_rfl_rfl]
 
+lemma cons_tail_eq' (p : G.Walk x y) (hp : ¬ p.Nil) :
+    p = cons (p.adj_getVert_one hp) p.tail := (cons_tail_eq ..).symm
+
 @[simp]
-lemma conact_dropLast_eq (p : G.Walk x y) (hp : G.Adj p.penultimate y) :
+lemma concat_dropLast_eq (p : G.Walk x y) (hp : G.Adj p.penultimate y) :
     p.dropLast.concat hp = p := by
   induction p with
   | nil => simp at hp
@@ -920,13 +922,18 @@ lemma conact_dropLast_eq (p : G.Walk x y) (hp : G.Adj p.penultimate y) :
     | nil => rfl
     | _ => simp [hind]
 
+lemma conact_dropLast_eq' (p : G.Walk x y) (hp : ¬ p.Nil) :
+    p = p.dropLast.concat (p.adj_penultimate_of_not_nil hp) := (concat_dropLast_eq ..).symm
+
 @[simp] lemma cons_support_tail (p : G.Walk x y) (hp : ¬p.Nil) :
     x :: p.tail.support = p.support := by
-  rw [← support_cons, cons_tail_eq _ hp]
+  conv => rhs; rw [cons_tail_eq' p hp]
+  rfl
 
 @[simp] lemma length_tail_add_one {p : G.Walk x y} (hp : ¬ p.Nil) :
     p.tail.length + 1 = p.length := by
-  rw [← length_cons, cons_tail_eq _ hp]
+  conv => rhs; rw [cons_tail_eq' p hp]
+  rfl
 
 @[simp] lemma nil_copy {x' y' : V} {p : G.Walk x y} (hx : x = x') (hy : y = y') :
     (p.copy hx hy).Nil = p.Nil := by
