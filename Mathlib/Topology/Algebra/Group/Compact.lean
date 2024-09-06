@@ -40,13 +40,7 @@ section Quotient
 variable [Group G] [TopologicalSpace G] [TopologicalGroup G] {Γ : Subgroup G}
 
 @[to_additive]
-instance QuotientGroup.continuousSMul [LocallyCompactSpace G] : ContinuousSMul G (G ⧸ Γ) where
-  continuous_smul := by
-    let F : G × G ⧸ Γ → G ⧸ Γ := fun p => p.1 • p.2
-    change Continuous F
-    have H : Continuous (F ∘ fun p : G × G => (p.1, QuotientGroup.mk p.2)) := by
-      change Continuous fun p : G × G => QuotientGroup.mk (p.1 * p.2)
-      exact continuous_coinduced_rng.comp continuous_mul
-    exact QuotientMap.continuous_lift_prod_right quotientMap_quotient_mk' H
-
+instance QuotientGroup.continuousSMul : ContinuousSMul G (G ⧸ Γ) := 
+  MulAction.orbitRel.Quotient.instContinuousSMul
+      
 end Quotient
