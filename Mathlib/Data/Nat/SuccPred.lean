@@ -71,6 +71,7 @@ lemma forall_ne_zero_iff (P : ℕ → Prop) :
 
 /-! ### Covering relation -/
 
+
 @[deprecated Order.covBy_iff_add_one_eq (since := "2024-09-04")]
 protected theorem covBy_iff_succ_eq {m n : ℕ} : m ⋖ n ↔ m + 1 = n :=
   covBy_iff_add_one_eq
