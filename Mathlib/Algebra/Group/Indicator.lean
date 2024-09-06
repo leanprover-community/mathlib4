@@ -91,7 +91,7 @@ theorem mulIndicator_eq_self_of_superset (h1 : s.mulIndicator f = f) (h2 : s ⊆
 @[to_additive (attr := simp)]
 theorem mulIndicator_apply_eq_one : mulIndicator s f a = 1 ↔ a ∈ s → f a = 1 :=
   letI := Classical.dec (a ∈ s)
-  ite_eq_right_iff _ _ _
+  ite_eq_right_iff
 
 @[to_additive (attr := simp)]
 theorem mulIndicator_eq_one : (mulIndicator s f = fun x => 1) ↔ Disjoint (mulSupport f) s := by
