@@ -163,8 +163,8 @@
   "Mathlib.Tactic.Simps.Basic",
   "Mathlib.Tactic.Simps.NotationClass",
   "Mathlib.Tactic.SplitIfs",
-  "Mathlib.Tactic.Spread",,
-  "Mathlib.Tactic.StacksAttribute"
+  "Mathlib.Tactic.Spread",
+  "Mathlib.Tactic.StacksAttribute",
   "Mathlib.Tactic.Substs",
   "Mathlib.Tactic.SuppressCompilation",
   "Mathlib.Tactic.SwapVar",
