@@ -45,13 +45,13 @@ noncomputable def disk (n : ℤ) : TopCat.{u} :=
   TopCat.of <| ULift <| Metric.closedBall (0 : EuclideanSpace ℝ <| Fin <| Int.toNat n) 1
 
 /-- `𝕊 n` denotes the `n`-sphere. -/
-scoped notation "𝕊 "n => sphere n
+scoped prefix:arg "𝕊 " => sphere
 
 /-- `𝔻 n` denotes the `n`-disk. -/
-scoped notation "𝔻 "n => disk n
+scoped prefix:arg "𝔻 " => disk
 
 /-- The inclusion map from the `n`-sphere to the `(n+1)`-disk -/
-def sphereInclusion (n : ℤ) : (𝕊 n) ⟶ (𝔻 n + 1) where
+def sphereInclusion (n : ℤ) : 𝕊 n ⟶ 𝔻 (n + 1) where
   toFun := fun ⟨p, hp⟩ ↦ ⟨p, le_of_eq hp⟩
   continuous_toFun := ⟨fun t ⟨s, ⟨r, hro, hrs⟩, hst⟩ ↦ by
     rw [isOpen_induced_iff, ← hst, ← hrs]
