@@ -5,7 +5,8 @@ Authors: Damiano Testa
 -/
 import Mathlib.Data.DFinsupp.Basic
 import Mathlib.Data.Finset.Pointwise.Basic
-import Mathlib.LinearAlgebra.Basis.VectorSpace
+import Mathlib.Algebra.Group.ULift
+import Mathlib.Data.Finsupp.Defs
 
 /-!
 # Unique products and related notions
@@ -27,7 +28,7 @@ Here you can see several examples of Types that have `UniqueSums/Prods`
 ```lean
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.PNat.Basic
-import Mathlib.Algebra.Group.UniqueProds
+import Mathlib.Algebra.Group.UniqueProds.Basic
 
 example : UniqueSums ℕ   := inferInstance
 example : UniqueSums ℕ+  := inferInstance
@@ -44,6 +45,12 @@ about the grading type and then a generic statement of the form "look at the coe
 'unique product/sum'".
 The file `Algebra/MonoidAlgebra/NoZeroDivisors` contains several examples of this use.
 -/
+
+assert_not_exists Cardinal
+assert_not_exists Subsemiring
+assert_not_exists Algebra
+assert_not_exists Submodule
+assert_not_exists StarModule
 
 /-- Let `G` be a Type with multiplication, let `A B : Finset G` be finite subsets and
 let `a0 b0 : G` be two elements.  `UniqueMul A B a0 b0` asserts `a0 * b0` can be written in at
@@ -634,12 +641,6 @@ instance {ι} (G : ι → Type*) [∀ i, AddZeroClass (G i)] [∀ i, TwoUniqueSu
 instance {ι G} [AddZeroClass G] [TwoUniqueSums G] : TwoUniqueSums (ι →₀ G) :=
   TwoUniqueSums.of_injective_addHom
     Finsupp.coeFnAddHom.toAddHom DFunLike.coe_injective inferInstance
-
-/-- Any `ℚ`-vector space has `TwoUniqueSums`, because it is isomorphic to some
-  `(Basis.ofVectorSpaceIndex ℚ G) →₀ ℚ` by choosing a basis, and `ℚ` already has
-  `TwoUniqueSums` because it's ordered. -/
-instance [AddCommGroup G] [Module ℚ G] : TwoUniqueSums G :=
-  TwoUniqueSums.of_injective_addHom _ (Basis.ofVectorSpace ℚ G).repr.injective inferInstance
 
 /-- Any `FreeMonoid` has the `TwoUniqueProds` property. -/
 instance FreeMonoid.instTwoUniqueProds {κ : Type*} : TwoUniqueProds (FreeMonoid κ) :=
