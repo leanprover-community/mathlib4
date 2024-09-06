@@ -549,26 +549,30 @@ variable (L'' : Language)
 
 /-- If `L.Expands L'` and `L'.Expands L''`, then `L.Expands L''`, by composing the default
   inclusions. -/
+@[simps]
 def trans [L.Expands L'] [L'.Expands L''] : L.Expands L'' where
   toLHom := (L'.Inclusion L).comp (L''.Inclusion L')
   toLHom_injective := (L'.inclusion_injective L).comp (L''.inclusion_injective L')
 
 variable {L L' L''} [L.Expands L']
 
+@[simps]
 instance : L.Expands L where
   toLHom := (LEquiv.refl L).toLHom
   toLHom_injective := (LEquiv.refl L).toHom_injective
 
+@[simps]
 instance : (L.sum L'').Expands L' where
   toLHom := LHom.sumInl.comp (L'.Inclusion L)
   toLHom_injective := LHom.sumInl_injective.comp (L'.inclusion_injective L)
 
+@[simps]
 instance : (L''.sum L).Expands L' where
   toLHom := LHom.sumInr.comp (L'.Inclusion L)
   toLHom_injective := LHom.sumInr_injective.comp (L'.inclusion_injective L)
 
-@[simp]
-theorem inclusion_self : L.Inclusion L = LHom.id L := rfl
+
+
 
 end Expands
 
