@@ -361,9 +361,9 @@ theorem floor_logb_natCast {b : ℕ} {r : ℝ} (hr : 0 ≤ r) :
     · rw [Int.le_floor, le_logb_iff_rpow_le hb1' hr, rpow_intCast]
       exact Int.zpow_log_le_self hb hr
   · rw [Nat.one_lt_iff_ne_zero_and_ne_one, ← or_iff_not_and_not] at hb
-    rcases hb
-    simp_all only [CharP.cast_eq_zero, logb_zero_left, Int.floor_zero, Int.log_zero_base]
-    simp_all only [Nat.cast_one, logb_one_left, Int.floor_zero, Int.log_one_base]
+    cases hb
+    · simp_all only [CharP.cast_eq_zero, logb_zero_left, Int.floor_zero, Int.log_zero_base]
+    · simp_all only [Nat.cast_one, logb_one_left, Int.floor_zero, Int.log_one_base]
 
 @[deprecated (since := "2024-04-17")]
 alias floor_logb_nat_cast := floor_logb_natCast
