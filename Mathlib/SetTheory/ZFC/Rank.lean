@@ -93,7 +93,7 @@ theorem rank_powerset : rank (powerset x) = succ (rank x) := by
 
 /-- For the rank of `⋃₀ x`, we only have `rank (⋃₀ x) ≤ rank x ≤ rank (⋃₀ x) + 1`.
 
-This inequality is splitted into `rank_sUnion_le` and `le_succ_rank_sUnion`. -/
+This inequality is split into `rank_sUnion_le` and `le_succ_rank_sUnion`. -/
 theorem rank_sUnion_le : rank (⋃₀ x) ≤ rank x := by
   simp_rw [rank_le_iff, mem_sUnion]
   intro _ ⟨_, _, _⟩
@@ -173,7 +173,7 @@ theorem rank_powerset : rank (powerset x) = succ (rank x) :=
 
 /-- For the rank of `⋃₀ x`, we only have `rank (⋃₀ x) ≤ rank x ≤ rank (⋃₀ x) + 1`.
 
-This inequality is splitted into `rank_sUnion_le` and `le_succ_rank_sUnion`. -/
+This inequality is split into `rank_sUnion_le` and `le_succ_rank_sUnion`. -/
 theorem rank_sUnion_le : rank (⋃₀ x) ≤ rank x := by
   simp_rw [rank_le_iff, mem_sUnion]
   intro _ ⟨_, _, _⟩
