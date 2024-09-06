@@ -3,75 +3,38 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Galois.Topology
-import Mathlib.CategoryTheory.Galois.Basic
 import Mathlib.CategoryTheory.Galois.Full
+import Mathlib.CategoryTheory.Galois.Topology
 import Mathlib.Topology.Algebra.OpenSubgroup
-import Mathlib.CategoryTheory.Endomorphism
 
 /-!
 
 # Essential surjectivity of fiber functors
 
+Let `F : C ⥤ FintypeCat` be a fiber functor of a Galois category `C` and denote by
+`H` the induced functor `C ⥤ Action (Aut F) FintypeCat`.
+
+In this file we show that the essential image of `H` are the finite `Aut F`-sets where
+the `Aut F` action is continuous.
+
+## Main results
+
+- `exists_lift_of_quotient_openSubgroup`: If `U` is an open subgroup of `Aut F`, then
+  there exists an object `X` such that `F.obj X` is isomorphic to `Aut F ⧸ U` as
+  `Aut F`-sets.
+
+## Strategy
+
+We use the fact that the category of
+finite `Aut F`-sets with continuous action is a Galois category (TODO). In particular, every
+continuous, finite `Aut F`-set `Y` has a decomposition into connected components and each connected
+component is of the form `Aut F ⧸ U` for an open subgroup `U` (TODO). Since `H` preserves
+finite coproducts, it hence suffices to treat the case `Y = Aut F ⧸ U`.
+For the case `Y = Aut F ⧸ U` we closely follow the second part of Stacks Project Tag 0BN4.
+
 -/
 
-universe u₁ u₂ w u v₁
-
-section Profinite
-
-variable {G : Type*} [Group G]
-
-open Function Set
-
-lemma QuotientGroup.preimage_mk_singleton_mk (H : Subgroup G) (g : G) :
-    mk (s := H) ⁻¹' {mk g} = (g * ·) '' H := by
-  ext g'
-  simp only [mem_preimage, mem_singleton_iff, QuotientGroup.eq, image_mul_left, SetLike.mem_coe]
-  rw [← H.inv_mem_iff]
-  simp
-
-variable [TopologicalSpace G] [TopologicalGroup G]
-
-instance (X : Type*) [MulAction G X] [Fintype X] : MulAction G (FintypeCat.of X) :=
-  inferInstanceAs <| MulAction G X
-
-lemma closed_of_open (U : Subgroup G) (h : IsOpen (U : Set G)) : IsClosed (U : Set G) :=
-  OpenSubgroup.isClosed ⟨U, h⟩
-
-lemma Subgroup.discreteTopology (U : Subgroup G) (U_open : IsOpen (U : Set G)) :
-    DiscreteTopology (G ⧸ U) := by
-  apply singletons_open_iff_discrete.mp
-  rintro ⟨g⟩
-  erw [isOpen_mk, QuotientGroup.preimage_mk_singleton_mk]
-  exact Homeomorph.mulLeft g |>.isOpen_image|>.mpr U_open
-
-def finiteQuotientOfOpen [CompactSpace G] (U : Subgroup G) (h : IsOpen (U : Set G)) :
-    Finite (G ⧸ U) :=
-  have : CompactSpace (G ⧸ U) := Quotient.compactSpace
-  have : DiscreteTopology (G ⧸ U) := U.discreteTopology h
-  finite_of_compact_of_discrete
-
-def finiteQuotientSubgroups [CompactSpace G] (U K : Subgroup G) (hUopen : IsOpen (U : Set G))
-    (hKpoen : IsOpen (K : Set G)) : Finite (U ⧸ Subgroup.subgroupOf K U) := by
-  have : CompactSpace U := isCompact_iff_compactSpace.mp <| IsClosed.isCompact
-    <| closed_of_open U hUopen
-  apply finiteQuotientOfOpen (Subgroup.subgroupOf K U)
-  show IsOpen (((Subgroup.subtype U) ⁻¹' K) : Set U)
-  apply Continuous.isOpen_preimage
-  continuity
-  assumption
-
-end Profinite
-
-section
-
-variable (G : Type*) [Group G] [TopologicalSpace G] {X : Type*} [MulAction G X]
-  [TopologicalSpace X] [DiscreteTopology X] [ContinuousSMul G X]
-
-lemma stabilizer_isOpen (x : X) : IsOpen (MulAction.stabilizer G x : Set G) :=
-  IsOpen.preimage (f := fun g ↦ g • x) (by fun_prop) (isOpen_discrete {x})
-
-end
+universe u
 
 namespace CategoryTheory
 
@@ -83,23 +46,13 @@ open Limits Functor
 
 variable [GaloisCategory C] [FiberFunctor F]
 
-noncomputable instance (G : Type u) [Group G] [Finite G] :
-    PreservesColimitsOfShape (SingleObj G) (functorToAction F) :=
-  Action.preservesColimitsOfShapeOfPreserves _ <|
-    inferInstanceAs <| PreservesColimitsOfShape (SingleObj G) F
-
-section
-
-noncomputable instance fintypeQuotient (H : OpenSubgroup (Aut F)) :
+noncomputable local instance fintypeQuotient (H : OpenSubgroup (Aut F)) :
     Fintype (Aut F ⧸ (H : Subgroup (Aut F))) :=
-  have : Finite (Aut F ⧸ H.toSubgroup) := finiteQuotientOfOpen H.toSubgroup H.isOpen'
+  have : Finite (Aut F ⧸ H.toSubgroup) := H.toSubgroup.quotient_finite_of_isOpen H.isOpen'
   Fintype.ofFinite _
 
-end
-
-notation:10 G:10 " ⧸ₐ " H:10 => Action.FintypeCat.ofMulAction G (FintypeCat.of <| G ⧸ H)
-
-noncomputable instance (X : C) (x : F.obj X) : Fintype (Aut F ⧸ (MulAction.stabilizer (Aut F) x)) :=
+noncomputable local instance (X : C) (x : F.obj X) :
+    Fintype (Aut F ⧸ (MulAction.stabilizer (Aut F) x)) :=
   fintypeQuotient F ⟨MulAction.stabilizer (Aut F) x, stabilizer_isOpen (Aut F) x⟩
 
 /-- If `X` is connected and `x` is in the fiber of `X`, `F.obj X` is isomorphic
@@ -117,72 +70,22 @@ noncomputable def fiberIsoQuotientStabilizer (X : C) [IsConnected X] (x : F.obj 
 
 section
 
-variable {G : Type*} [Group G] (H N : Subgroup G) [Fintype (G ⧸ N)]
-
-def quotientToEndHom [hn : N.Normal] : H ⧸ Subgroup.subgroupOf N H →* End (G ⧸ₐ N) :=
-  let φ' : H →* End (G ⧸ₐ N) := {
-    toFun := fun ⟨v, _⟩ ↦ {
-      hom := Quotient.lift (fun σ ↦ ⟦σ * v⁻¹⟧) <| fun a b h ↦ Quotient.sound <| by
-        apply (QuotientGroup.leftRel_apply).mpr
-        simp only [mul_inv_rev, inv_inv]
-        convert_to v * (a⁻¹ * b) * v⁻¹ ∈ N
-        · group
-        · exact Subgroup.Normal.conj_mem hn _ (QuotientGroup.leftRel_apply.mp h) _
-      comm := fun (g : G) ↦ by
-        ext (x : G ⧸ N)
-        induction' x using Quotient.inductionOn with x
-        simp only [FintypeCat.comp_apply, Action.FintypeCat.ofMulAction_apply, Quotient.lift_mk]
-        letI : SMul G (G ⧸ N) := inferInstance
-        show Quotient.lift (fun σ ↦ ⟦σ * v⁻¹⟧) _ (⟦g • x⟧) = _
-        simp only [smul_eq_mul, Quotient.lift_mk]
-        show _ = ⟦g * _⟧
-        rw [mul_assoc]
-    }
-    map_one' := by
-      apply Action.hom_ext
-      ext (x : G ⧸ N)
-      induction' x using Quotient.inductionOn with x
-      simp
-    map_mul' := fun σ τ ↦ by
-      apply Action.hom_ext
-      ext (x : G ⧸ N)
-      induction' x using Quotient.inductionOn with x
-      show ⟦x * (σ * τ)⁻¹⟧ = ⟦x * τ⁻¹ * σ⁻¹⟧
-      rw [mul_inv_rev, mul_assoc, Subgroup.coe_mul]
-  }
-  QuotientGroup.lift (Subgroup.subgroupOf N H) φ' <| by
-  intro u uinU'
-  apply Action.hom_ext
-  ext (x : G ⧸ N)
-  induction' x using Quotient.inductionOn with μ
-  apply Quotient.sound
-  apply (QuotientGroup.leftRel_apply).mpr
-  simpa
-
-@[simp]
-lemma quotientToEndHom_mk [N.Normal] (x : H) (g : G) :
-    (quotientToEndHom H N ⟦x⟧).hom ⟦g⟧ = ⟦g * x⁻¹⟧ :=
-  rfl
-
-def quotientToQuotientOfLE [Fintype (G ⧸ H)] (h : N ≤ H) : (G ⧸ₐ N) ⟶ (G ⧸ₐ H) where
-  hom := Quotient.lift _ <| fun a b hab ↦ Quotient.sound <|
-    (QuotientGroup.leftRel_apply).mpr (h <| (QuotientGroup.leftRel_apply).mp hab)
-  comm g := by
-    ext (x : G ⧸ N)
-    induction' x using Quotient.inductionOn with μ
-    rfl
-
-@[simp]
-lemma quotientToQuotientOfLE_hom_mk [Fintype (G ⧸ H)] (h : N ≤ H) (x : G) :
-    (quotientToQuotientOfLE H N h).hom ⟦x⟧ = ⟦x⟧ :=
-  rfl
-
-end
-
-section
+open Action.FintypeCat
 
 variable {F} (V : OpenSubgroup (Aut F)) {U : OpenSubgroup (Aut F)}
   (h : Subgroup.Normal U.toSubgroup) {A : C} (u : (functorToAction F).obj A ≅ Aut F ⧸ₐ U.toSubgroup)
+
+/-
+
+### Strategy outline
+
+Let `A` be object of `C` with fiber `Aut F`-isomorphic to `Aut F ⧸ U` for an open normal
+subgroup `U`. Then for any open subgroup `V` of `Aut F`, `V ⧸ (U ⊓ V)` acts on `A`. This
+induces the diagram `quotientDiag`. Now assume `U ≤ V`. Then we can also postcompose
+the diagram `quotientDiag` with `F`. The goal of this section is to compute that the colimit
+of this composed diagram is `Aut F ⧸ V`. Finally, we obtain `F.obj (A ⧸ V) ≅ Aut F ⧸ V` as
+`Aut F`-sets.
+-/
 
 private noncomputable def quotientToEndObjectHom :
     V.toSubgroup ⧸ Subgroup.subgroupOf U.toSubgroup V.toSubgroup →* End A :=
@@ -197,11 +100,6 @@ private lemma functorToAction_map_quotientToEndObjectHom
       u.hom ≫ quotientToEndHom V.toSubgroup U.toSubgroup m ≫ u.inv := by
   simp [← cancel_epi u.inv, ← cancel_mono u.hom, ← Iso.conj_apply, quotientToEndObjectHom]
 
-/--
-If `A` is an object of `C` with fiber `Aut F`-isomorphic to `Aut F ⧸ U` for an open normal
-subgroup `U`, then for any open subgroup `V` of `Aut F`, `V ⧸ (U ⊓ V)` acts on `A`.
-This is the diagram induced by the action.
--/
 @[simps!]
 private noncomputable def quotientDiag : SingleObj (V.toSubgroup ⧸ Subgroup.subgroupOf U V) ⥤ C :=
   SingleObj.functor (quotientToEndObjectHom V h u)
@@ -276,9 +174,8 @@ end
 
 /-- For every open subgroup `V` of `Aut F`, there exists an `X : C` such that
 `F.obj X ≅ Aut F ⧸ V` as `Aut F`-sets. -/
-lemma ess_surj_of_quotient_by_open (V : OpenSubgroup (Aut F)) :
-    ∃ (X : C), Nonempty ((functorToAction F).obj X ≅
-      Action.FintypeCat.ofMulAction (Aut F) (FintypeCat.of <| Aut F ⧸ V.toSubgroup)) := by
+lemma exists_lift_of_quotient_openSubgroup (V : OpenSubgroup (Aut F)) :
+    ∃ (X : C), Nonempty ((functorToAction F).obj X ≅ Aut F ⧸ₐ V.toSubgroup) := by
   obtain ⟨I, hf, hc, hi⟩ := exists_set_ker_evaluation_subset_of_isOpen F (one_mem V) V.isOpen'
   haveI (X : I) : IsConnected X.val := hc X X.property
   haveI (X : I) : Nonempty (F.obj X.val) := nonempty_fiber_of_isConnected F X
@@ -306,7 +203,7 @@ lemma ess_surj_of_quotient_by_open (V : OpenSubgroup (Aut F)) :
     obtain ⟨a, rfl⟩ := surjective_of_nonempty_fiber_of_isConnected F p x
     simp only [FintypeCat.id_apply, FunctorToFintypeCat.naturality, h1 σ σinU]
   have hUinV : (U : Set (Aut F)) ≤ V := fun u uinU ↦ hi u (h2 u uinU)
-  have := finiteQuotientSubgroups V U V.isOpen' U.isOpen'
+  have := V.quotient_finite_of_isOpen' U V.isOpen' U.isOpen'
   exact ⟨colimit (quotientDiag V hUnormal u),
     ⟨preservesColimitIso (functorToAction F) (quotientDiag V hUnormal u) ≪≫
     colimit.isoColimitCocone ⟨coconeQuotientDiag hUnormal u hUinV,

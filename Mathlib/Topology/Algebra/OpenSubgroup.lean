@@ -269,6 +269,38 @@ theorem isOpen_of_one_mem_interior [ContinuousMul G] (H: Subgroup G)
     (h_1_int : (1 : G) ∈ interior (H : Set G)) : IsOpen (H : Set G) :=
   isOpen_of_mem_nhds H <| mem_interior_iff_mem_nhds.1 h_1_int
 
+@[to_additive]
+lemma isClosed_of_isOpen [ContinuousMul G] (U : Subgroup G) (h : IsOpen (U : Set G)) :
+    IsClosed (U : Set G) :=
+  OpenSubgroup.isClosed ⟨U, h⟩
+
+@[to_additive]
+lemma discreteTopology [ContinuousMul G] (U : Subgroup G) (h : IsOpen (U : Set G)) :
+    DiscreteTopology (G ⧸ U) := by
+  refine singletons_open_iff_discrete.mp (fun g ↦ ?_)
+  induction' g using Quotient.inductionOn with g
+  show IsOpen (QuotientGroup.mk ⁻¹' {QuotientGroup.mk g})
+  convert_to IsOpen ((g * ·) '' U)
+  · ext g'
+    simp only [Set.mem_preimage, Set.mem_singleton_iff, QuotientGroup.eq, Set.image_mul_left]
+    rw [← U.inv_mem_iff]
+    simp
+  · exact Homeomorph.mulLeft g |>.isOpen_image |>.mpr h
+
+lemma quotient_finite_of_isOpen [ContinuousMul G] [CompactSpace G] (U : Subgroup G)
+    (h : IsOpen (U : Set G)) : Finite (G ⧸ U) :=
+  have : CompactSpace (G ⧸ U) := Quotient.compactSpace
+  have : DiscreteTopology (G ⧸ U) := U.discreteTopology h
+  finite_of_compact_of_discrete
+
+lemma quotient_finite_of_isOpen' [TopologicalGroup G] [CompactSpace G] (U K : Subgroup G)
+    (hUopen : IsOpen (U : Set G)) (hKopen : IsOpen (K : Set G)) :
+    Finite (U ⧸ K.subgroupOf U) := by
+  have : CompactSpace U := isCompact_iff_compactSpace.mp <| IsClosed.isCompact <|
+    U.isClosed_of_isOpen hUopen
+  apply (K.subgroupOf U).quotient_finite_of_isOpen
+  exact Continuous.isOpen_preimage (continuous_iff_le_induced.mpr fun _ a ↦ a) _ hKopen
+
 end Subgroup
 
 namespace OpenSubgroup

@@ -76,6 +76,11 @@ noncomputable instance : PreservesFiniteProducts (functorToAction F) :=
   ⟨fun J _ ↦ Action.preservesLimitsOfShapeOfPreserves (functorToAction F)
     (inferInstanceAs <| PreservesLimitsOfShape (Discrete J) F)⟩
 
+noncomputable instance (G : Type u) [Group G] [Finite G] :
+    PreservesColimitsOfShape (SingleObj G) (functorToAction F) :=
+  Action.preservesColimitsOfShapeOfPreserves _ <|
+    inferInstanceAs <| PreservesColimitsOfShape (SingleObj G) F
+
 instance : PreservesIsConnected (functorToAction F) :=
   ⟨fun {X} _ ↦ FintypeCat.Action.isConnected_of_transitive (Aut F) (F.obj X)⟩
 
