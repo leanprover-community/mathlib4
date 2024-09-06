@@ -486,12 +486,9 @@ theorem monomial_one_right_eq_X_pow (n : ℕ) : monomial n (1 : R) = X ^ n := by
 theorem toFinsupp_X : X.toFinsupp = Finsupp.single 1 (1 : R) :=
   rfl
 
-theorem X_ne_C' (h : (1 : R) ≠ 0) (a : R) : X ≠ C a := by
+theorem X_ne_C [Nontrivial R] (a : R) : X ≠ C a := by
   intro he
-  simpa [h] using monomial_eq_monomial_iff.1 he
-
-theorem X_ne_C [Nontrivial R] (a : R) : X ≠ C a :=
-  X_ne_C' one_ne_zero a
+  simpa using monomial_eq_monomial_iff.1 he
 
 /-- `X` commutes with everything, even when the coefficients are noncommutative. -/
 theorem X_mul : X * p = p * X := by
