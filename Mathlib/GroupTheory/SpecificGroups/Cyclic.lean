@@ -109,7 +109,7 @@ theorem isCyclic_of_orderOf_eq_card [Fintype α] (x : α) (hx : orderOf x = Fint
   use x
   rw [← Set.range_iff_surjective, ← coe_zpowers]
   rw [← Fintype.card_congr (Equiv.Set.univ α), ← Fintype.card_zpowers] at hx
-  exact Set.eq_of_subset_of_card_le (Set.subset_univ _) (ge_of_eq hx)
+  convert Set.eq_of_subset_of_card_le (Set.subset_univ _) (ge_of_eq hx)
 @[deprecated (since := "2024-02-21")]
 alias isAddCyclic_of_orderOf_eq_card := isAddCyclic_of_addOrderOf_eq_card
 

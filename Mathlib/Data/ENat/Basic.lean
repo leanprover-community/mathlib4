@@ -24,21 +24,15 @@ and `Nat.cast` coercion. If you need to apply a lemma about `WithTop`, you may e
 and forth using `ENat.some_eq_coe`, or restate the lemma for `ENat`.
 -/
 
-/-- Extended natural numbers `ℕ∞ = WithTop ℕ`. -/
-def ENat : Type :=
-  WithTop ℕ
-deriving Zero,
+deriving instance Zero, CanonicallyOrderedCommSemiring, Nontrivial,
+  LinearOrder, Bot, CanonicallyLinearOrderedAddCommMonoid, Sub,
+  LinearOrderedAddCommMonoidWithTop, WellFoundedRelation
+  for ENat
   -- AddCommMonoidWithOne,
-  CanonicallyOrderedCommSemiring, Nontrivial,
-  LinearOrder, Bot, Top, CanonicallyLinearOrderedAddCommMonoid, Sub,
-  LinearOrderedAddCommMonoidWithTop, WellFoundedRelation, Inhabited
   -- OrderBot, OrderTop, OrderedSub, SuccOrder, WellFoundedLt, CharZero
 
 -- Porting Note: In `Data.Nat.ENatPart` proofs timed out when having
 -- the `deriving AddCommMonoidWithOne`, and it seems to work without.
-
-/-- Extended natural numbers `ℕ∞ = WithTop ℕ`. -/
-notation "ℕ∞" => ENat
 
 namespace ENat
 
@@ -107,6 +101,14 @@ lemma toNatHom_apply (n : ℕ) : toNatHom n = toNat n := rfl
 theorem toNat_coe (n : ℕ) : toNat n = n :=
   rfl
 
+@[simp]
+theorem toNat_zero : toNat 0 = 0 :=
+  rfl
+
+@[simp]
+theorem toNat_one : toNat 1 = 1 :=
+  rfl
+
 -- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem toNat_ofNat (n : ℕ) [n.AtLeastTwo] : toNat (no_index (OfNat.ofNat n)) = n :=
@@ -117,23 +119,6 @@ theorem toNat_top : toNat ⊤ = 0 :=
   rfl
 
 @[simp] theorem toNat_eq_zero : toNat n = 0 ↔ n = 0 ∨ n = ⊤ := WithTop.untop'_eq_self_iff
-
--- Porting note (#11445): new definition copied from `WithTop`
-/-- Recursor for `ENat` using the preferred forms `⊤` and `↑a`. -/
-@[elab_as_elim, induction_eliminator, cases_eliminator]
-def recTopCoe {C : ℕ∞ → Sort*} (top : C ⊤) (coe : ∀ a : ℕ, C a) : ∀ n : ℕ∞, C n
-  | none => top
-  | Option.some a => coe a
-
-@[simp]
-theorem recTopCoe_top {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) :
-    @recTopCoe C d f ⊤ = d :=
-  rfl
-
-@[simp]
-theorem recTopCoe_coe {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) (x : ℕ) :
-    @recTopCoe C d f ↑x = f x :=
-  rfl
 
 @[simp]
 theorem recTopCoe_zero {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) : @recTopCoe C d f 0 = f 0 :=
