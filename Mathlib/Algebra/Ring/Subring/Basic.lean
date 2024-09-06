@@ -669,8 +669,6 @@ instance instField : Field (center K) where
   qsmul := _
   qsmul_def := fun q x => rfl
 
-instance : Algebra (center K) K := Algebra.ofModule smul_mul_assoc mul_smul_comm
-
 @[simp]
 theorem center.coe_inv (a : center K) : ((a⁻¹ : center K) : K) = (a : K)⁻¹ :=
   rfl

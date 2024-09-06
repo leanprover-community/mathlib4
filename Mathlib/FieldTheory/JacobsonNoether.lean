@@ -7,6 +7,7 @@ Authors: **ALL YOUR NAMES** Filippo A. E. Nuccio
 import Mathlib.RingTheory.Algebraic
 import Mathlib.FieldTheory.Separable
 import Mathlib.Algebra.CharP.Subring
+import Mathlib.Algebra.CharP.LinearMaps
 
 -- *Filippo* This should probably not be here
 lemma conj_nonComm_Algebra {D : Type*} [DivisionRing D] (s : ℕ) (a d : D) (ha : a ≠ 0) :
@@ -21,6 +22,8 @@ open Classical
 variable {D : Type*} [DivisionRing D]
 
 local notation3 "k" => (Subring.center D)
+
+instance : Algebra (Subring.center D) D := Algebra.ofModule smul_mul_assoc mul_smul_comm
 
 private def f (a : D) : D →ₗ[k] D := {
   toFun := fun x ↦ a * x
@@ -214,12 +217,11 @@ theorem JacobsonNoether_charP (p : ℕ) [Fact p.Prime] [CharP D p]
   -/
   set d := c⁻¹ * a * (δ a) ^[n-1] b with hd_def
   have hc': c⁻¹ * a = a * c⁻¹ := by
-    calc
-      _ = c⁻¹ * a * (c * c⁻¹) := by simp only [mul_inv_cancel_of_invertible, mul_one]
-      _ = c⁻¹ * (a * c) * c⁻¹ := by simp_rw [mul_assoc]
-      _ = c⁻¹ * (c * a) * c⁻¹ := by rw [hc]
-      _ = (c⁻¹ * c) * a * c⁻¹ := by simp_rw [mul_assoc]
-      _ = _ := by simp only [inv_mul_cancel_of_invertible, one_mul]
+    apply_fun (c⁻¹ * · * c⁻¹) at hc
+    rw [← mul_assoc, inv_mul_cancel₀ hb.1, one_mul, mul_assoc, mul_assoc,
+      mul_inv_cancel₀ hb.1, mul_one] at hc
+    exact hc.symm
+
   have c_eq : a * (δ a) ^[n - 1] b - (δ a) ^[n - 1] b * a = c := by
     rw [hc_def, ← (LinearMap.pow_apply (δ a) (n - 1) b), ← Nat.sub_add_cancel hn,
       show (δ a ^ (n - 1 + 1)) b = (δ a) ((δ a ^ (n - 1)) b) by rw [important]]
@@ -235,8 +237,10 @@ theorem JacobsonNoether_charP (p : ℕ) [Fact p.Prime] [CharP D p]
     calc
       _ = a * (c⁻¹ * a * (δ a)^[n - 1] b) - (c⁻¹ * a * (δ a)^[n - 1] b) * a := by rw [hd_def]
       _ = a * (c⁻¹ * a * (δ a)^[n - 1] b) - a * c⁻¹ * (δ a)^[n - 1] b * a := by rw [hc']
-      _ = a * (c⁻¹ * a * (δ a)^[n - 1] b) - a * (c⁻¹ * (δ a)^[n - 1] b * a) := by simp_rw [mul_assoc]
-      _ = a * ((c⁻¹ * a * (δ a)^[n - 1] b) - (c⁻¹ * (δ a)^[n - 1] b * a)) := by rw [← mul_sub_left_distrib]
+      _ = a * (c⁻¹ * a * (δ a)^[n - 1] b) - a * (c⁻¹ * (δ a)^[n - 1] b * a) := by
+        simp_rw [mul_assoc]
+      _ = a * ((c⁻¹ * a * (δ a)^[n - 1] b) - (c⁻¹ * (δ a)^[n - 1] b * a)) := by
+        rw [← mul_sub_left_distrib]
       _ = _ := by simp only [eq1, mul_one]
   -- *Filippo* Find a better name!
   have tired : 1 + a⁻¹ * d * a = d := by
