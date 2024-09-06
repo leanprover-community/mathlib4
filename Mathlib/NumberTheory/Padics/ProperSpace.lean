@@ -10,7 +10,7 @@ import Mathlib.Topology.MetricSpace.Ultra.Basic
 /-!
 # Local compactness of the p-adic numbers
 
-In this file, we prove that `Z_[p]` is totally bounded and compact,
+In this file, we prove that `ℤ_[p]` is totally bounded and compact,
 and that `ℚ_[p]` is locally compact.
 
 ## Main results
@@ -50,34 +50,9 @@ instance compactSpace : CompactSpace ℤ_[p] := by
   rw [← isCompact_univ_iff, isCompact_iff_totallyBounded_isComplete]
   exact ⟨totallyBounded_univ p, complete_univ⟩
 
-open Metric
-
-lemma closed_ball_at_zero : (closedBall 0 1) = {x : ℚ_[p] | ‖x‖ ≤ 1} := by
-    refine Set.ext ?h
-    intros x
-    constructor
-    · simp only [mem_closedBall, dist_zero_right, Set.mem_setOf_eq, imp_self]
-    · simp only [Set.mem_setOf_eq, mem_closedBall, dist_zero_right, imp_self]
-
-lemma nhd_zero : {x | ‖x‖ ≤ 1} ∈ nhds (0 : ℚ_[p]) := by
-  have ob : IsOpen (closedBall (0 : ℚ_[p]) (1)) := by
-    have : (1 : ℝ)  ≠ 0 := Ne.symm (zero_ne_one' ℝ)
-    apply IsUltrametricDist.isOpen_closedBall (0 : ℚ_[p]) this
-  refine IsOpen.mem_nhds ?hs ?hx
-  · rw [← closed_ball_at_zero]
-    exact ob
-  · refine Set.singleton_subset_iff.mp ?h.left.hx.a
-    refine Set.subset_setOf.mpr ?h.left.hx.a.a
-    intros x hx
-    simp only [Multiset.mem_singleton, Set.mem_singleton_iff] at hx
-    rw [hx]
-    refine (Padic.norm_le_one_iff_val_nonneg 0).mpr ?h.left.hx.a.a.a
-    simp only [Padic.valuation_zero, le_refl]
-
 end PadicInt
 
 namespace Padic
-open PadicInt
 
 /-- The field of p-adic numbers `ℚ_[p]` is a locally compact topological space. -/
 instance locallyCompact : LocallyCompactSpace ℚ_[p] := by
