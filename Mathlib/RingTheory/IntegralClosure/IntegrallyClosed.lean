@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 import Mathlib.RingTheory.Localization.Integral
+import Mathlib.RingTheory.Localization.LocalizationLocalization
 
 /-!
 # Integrally closed rings
@@ -275,3 +276,53 @@ theorem isIntegrallyClosedOfFiniteExtension [IsDomain R] [FiniteDimensional K L]
   (integralClosure_eq_bot_iff L).mp integralClosure_idem
 
 end integralClosure
+
+/-- Any field is integral closed. -/
+instance Field.instIsIntegrallyClosed (K : Type*) [Field K] : IsIntegrallyClosed K :=
+  (isIntegrallyClosed_iff K).mpr fun {x} _ ↦ ⟨x ,rfl⟩
+
+open Localization in
+/-- An integral domain `R` is integral closed if `Rₘ` is integral closed
+for any maximal ideal `m` of `R`. -/
+theorem IsIntegrallyClosed.of_localization_maximal {R : Type*} [CommRing R] [IsDomain R]
+    (h : ∀ p : Ideal R, p ≠ ⊥ → [p.IsMaximal] → IsIntegrallyClosed (Localization.AtPrime p)) :
+    IsIntegrallyClosed R := by
+  by_cases hf : IsField R
+  · exact (IsField.toField hf).instIsIntegrallyClosed
+  apply (isIntegrallyClosed_iff (FractionRing R)).mpr
+  rintro ⟨x⟩ hx
+  let I : Ideal R := {
+    carrier := { a : R | ∃ y, mk (a * x.1) x.2 = (algebraMap R (FractionRing R)) y }
+    add_mem' := by
+      intro a b ⟨y, hy⟩ ⟨z, hz⟩
+      use y + z
+      rw [add_mul, ← add_mk_self (a * x.1) x.2 (b * x.1), hy, hz, map_add]
+    zero_mem' := ⟨0, by rw [zero_mul, FractionRing.mk_eq_div, map_zero, zero_div]⟩
+    smul_mem' := by
+      intro a b ⟨y, hy⟩
+      use a * y
+      rw [smul_eq_mul, mul_assoc, ← one_mul x.2, ← mk_mul a (b * x.1) 1 x.2, map_mul, hy]
+      rfl
+  }
+  have h1 : 1 ∈ I := by
+    apply (Ideal.eq_top_iff_one I).mp
+    by_contra hn
+    rcases I.exists_le_maximal hn with ⟨p, hpm, hpi⟩
+    have hic := h p (Ring.ne_bot_of_isMaximal_of_not_isField hpm hf)
+    have hxp : IsIntegral (Localization.AtPrime p) (mk x.1 x.2) := IsIntegral.tower_top hx
+    rcases (isIntegrallyClosed_iff (FractionRing R)).mp hic hxp with ⟨⟨y⟩, hy⟩
+    have hxy : mk x.1 x.2 = algebraMap (Localization.AtPrime p) (FractionRing R) (mk y.1 y.2) := by
+      rw [← hy]
+      rfl
+    have hy : mk y.2.1 1 = algebraMap (Localization.AtPrime p) (FractionRing R)
+      (algebraMap R (Localization.AtPrime p) y.2.1) := by
+        rw [mk_one_eq_algebraMap, ← IsScalarTower.algebraMap_apply]
+    have hyi : y.2.1 ∈ I := by
+      use y.1
+      rw [← one_mul x.2, ← mk_mul, hxy, hy, ← map_mul, mk_eq_mk'_apply, IsLocalization.mk'_spec',
+        IsScalarTower.algebraMap_apply R (Localization.AtPrime p) (FractionRing R) y.1]
+    exact y.2.2 (hpi hyi)
+  rcases h1 with ⟨y, hy⟩
+  use y
+  rw [← hy, one_mul]
+  rfl
