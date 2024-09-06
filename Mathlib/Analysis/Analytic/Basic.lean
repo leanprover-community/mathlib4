@@ -929,6 +929,95 @@ theorem HasFPowerSeriesWithinOnBall.tendstoLocallyUniformlyOn
       apply Filter.mem_of_superset this (EMetric.ball_subset_ball hr'.le)
   · simpa [Metric.emetric_ball_nnreal] using hf.tendstoUniformlyOn hr' u hu
 
+theorem HasFPowerSeriesWithinOnBall.tendsto_partialSum
+    (hf : HasFPowerSeriesWithinOnBall f p s x r) {y : E} (hy : y ∈ EMetric.ball (0 : E) r)
+    (h'y : x + y ∈ insert x s) :
+    Tendsto (fun n => p.partialSum n y) atTop (𝓝 (f (x + y))) :=
+  (hf.hasSum h'y hy).tendsto_sum_nat
+
+open Finset in
+/-- If a function admits a power series expansion within a ball, then the partial sums
+`p.partial_sum n z` converges to `f (x + y)` as `n → ∞` and `z → y`. Note that `x + z` doesn't need
+to belong to the set where the power series expansion holds. -/
+theorem HasFPowerSeriesWithinOnBall.tendsto_partialSum_prod {y : E}
+    (hf : HasFPowerSeriesWithinOnBall f p s x r) (hy : y ∈ EMetric.ball (0 : E) r)
+    (h'y : x + y ∈ insert x s) :
+    Tendsto (fun (z : ℕ × E) ↦ p.partialSum z.1 z.2) (atTop ×ˢ 𝓝 y) (𝓝 (f (x + y))) := by
+  have A : Tendsto (fun (z : ℕ × E) ↦ p.partialSum z.1 y) (atTop ×ˢ 𝓝 y) (𝓝 (f (x + y))) := by
+    apply (hf.tendsto_partialSum hy h'y).comp tendsto_fst
+  suffices Tendsto (fun (z : ℕ × E) ↦ p.partialSum z.1 z.2 - p.partialSum z.1 y)
+    (atTop ×ˢ 𝓝 y) (𝓝 0) by simpa using A.add this
+  apply Metric.tendsto_nhds.2 (fun ε εpos ↦ ?_)
+  obtain ⟨r', yr', r'r⟩ : ∃ (r' : ℝ≥0), ‖y‖₊ < r' ∧ r' < r := by
+    simp [edist_eq_coe_nnnorm] at hy
+    simpa using ENNReal.lt_iff_exists_nnreal_btwn.1 hy
+  have yr'_2 : ‖y‖ < r' := by simpa [← coe_nnnorm] using yr'
+  have : Summable fun n ↦ ‖p n‖ * ↑r' ^ n := p.summable_norm_mul_pow (r'r.trans_le hf.r_le)
+  obtain ⟨k, hk⟩ : ∃ k, ∑' (n : ℕ), ‖p (n + k)‖ * ↑r' ^ (n + k) < ε / 4 := by
+    have : Tendsto (fun k ↦ ∑' n, ‖p (n + k)‖ * ↑r' ^ (n + k)) atTop (𝓝 0) := by
+      apply _root_.tendsto_sum_nat_add (f := fun n ↦ ‖p n‖ * ↑r' ^ n)
+    exact ((tendsto_order.1 this).2 _ (by linarith)).exists
+  have A : ∀ᶠ (z : ℕ × E) in atTop ×ˢ 𝓝 y,
+      dist (p.partialSum k z.2) (p.partialSum k y) < ε / 4 := by
+    have : ContinuousAt (fun z ↦ p.partialSum k z) y := (p.partialSum_continuous k).continuousAt
+    exact tendsto_snd (Metric.tendsto_nhds.1 this.tendsto (ε / 4) (by linarith))
+  have B : ∀ᶠ (z : ℕ × E) in atTop ×ˢ 𝓝 y, ‖z.2‖₊ < r' := by
+    suffices ∀ᶠ (z : E) in 𝓝 y, ‖z‖₊ < r' from tendsto_snd this
+    have : Metric.ball 0 r' ∈ 𝓝 y := Metric.isOpen_ball.mem_nhds (by simpa using yr'_2)
+    filter_upwards [this] with a ha using by simpa [← coe_nnnorm] using ha
+  have C : ∀ᶠ (z : ℕ × E) in atTop ×ˢ 𝓝 y, k ≤ z.1 := tendsto_fst (Ici_mem_atTop _)
+  filter_upwards [A, B, C]
+  rintro ⟨n, z⟩ hz h'z hkn
+  dsimp at hz h'z hkn ⊢
+  simp only [dist_eq_norm, sub_zero] at hz ⊢
+  have I : ∀ (w : E), ‖w‖₊ < r' → ‖∑ i ∈ Ico k n, p i (fun _ ↦ w)‖ ≤ ε / 4 := sorry
+  calc
+  ‖p.partialSum n z - p.partialSum n y‖
+  _ = ‖∑ i ∈ range n, p i (fun _ ↦ z) - ∑ i ∈ range n, p i (fun _ ↦ y)‖ := rfl
+  _ = ‖(∑ i ∈ range k, p i (fun _ ↦ z) + ∑ i ∈ Ico k n, p i (fun _ ↦ z))
+        - (∑ i ∈ range k, p i (fun _ ↦ y) + ∑ i ∈ Ico k n, p i (fun _ ↦ y))‖ := by
+    simp [sum_range_add_sum_Ico _ hkn]
+  _ = ‖(p.partialSum k z - p.partialSum k y) + (∑ i ∈ Ico k n, p i (fun _ ↦ z))
+        + (- ∑ i ∈ Ico k n, p i (fun _ ↦ y))‖ := by
+    congr 1
+    simp only [FormalMultilinearSeries.partialSum]
+    abel
+  _ ≤ ‖p.partialSum k z - p.partialSum k y‖ + ‖∑ i ∈ Ico k n, p i (fun _ ↦ z)‖
+      + ‖- ∑ i ∈ Ico k n, p i (fun _ ↦ y)‖ := norm_add₃_le _ _ _
+  _ ≤ ε / 4 + ε / 4 + ε / 4 := by
+    gcongr
+    · exact I _ h'z
+    · simp only [norm_neg]; exact I _ yr'
+  _ < ε := by linarith
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#exit
+
 /-- If a function admits a power series expansion at `x`, then it is the locally uniform limit of
 the partial sums of this power series on the disk of convergence, i.e., `f (x + y)`
 is the locally uniform limit of `p.partialSum n y` there. -/
