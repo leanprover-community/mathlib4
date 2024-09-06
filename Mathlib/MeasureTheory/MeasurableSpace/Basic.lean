@@ -1109,7 +1109,7 @@ namespace MeasurableSpace
   rintro _ ⟨u, -, rfl⟩
   exact (show MeasurableSet s from GenerateMeasurable.basic _ <| mem_singleton s).mem trivial
 
-theorem measurableSet_singleton_iff {s t : Set α} :
+theorem measurableSet_generateFrom_singleton_iff {s t : Set α} :
     MeasurableSet[generateFrom {s}] t ↔ t = ∅ ∨ t = s ∨ t = sᶜ ∨ t = Set.univ := by
   simp_rw [generateFrom_singleton]
   change t ∈ {t | _} ↔ _
