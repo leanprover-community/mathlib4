@@ -30,6 +30,12 @@ This file defines ordered first-order languages and structures, as well as their
 
 - `PartialOrder`s model the theory of partial orders, `LinearOrder`s model the theory of
   linear orders, and dense linear orders without endpoints model `Language.dlo`.
+- Under `L.orderedStructure` assumptions, elements of any `L.HomClass M N` are monotone, and
+  strictly monotone if injective.
+- Under `Language.order.orderedStructure` assumptions, any `OrderHomClass` has an instance of
+  `L.HomClass M N`, while `M ↪o N` and any `OrderIsoClass` have an instance of
+  `L.StrongHomClass M N`.
+
 -/
 
 
@@ -340,6 +346,64 @@ def linearOrderOfModels [h : M ⊨ L.linearOrderTheory]
   decidableLE := inferInstance
 
 end structure_to_order
+
+namespace order
+
+variable [Language.order.Structure M] [LE M] [Language.order.OrderedStructure M]
+  {N : Type*} [Language.order.Structure N] [LE N] [Language.order.OrderedStructure N]
+  {F : Type*}
+
+instance [FunLike F M N] [OrderHomClass F M N] : Language.order.HomClass F M N :=
+  ⟨fun _ => isEmptyElim, by
+    simp only [forall_relations, relation_eq_leSymb, relMap_leSymb, Fin.isValue,
+      Function.comp_apply]
+    exact fun φ x => map_rel φ⟩
+
+-- If `OrderEmbeddingClass` or `RelEmbeddingClass` is defined, this should be generalized.
+instance : Language.order.StrongHomClass (M ↪o N) M N :=
+  ⟨fun _ => isEmptyElim,
+    by simp only [order.forall_relations, order.relation_eq_leSymb, relMap_leSymb, Fin.isValue,
+    Function.comp_apply, RelEmbedding.map_rel_iff, implies_true]⟩
+
+instance [EquivLike F M N] [OrderIsoClass F M N] : Language.order.StrongHomClass F M N :=
+  ⟨fun _ => isEmptyElim,
+    by simp only [order.forall_relations, order.relation_eq_leSymb, relMap_leSymb, Fin.isValue,
+      Function.comp_apply, map_le_map_iff, implies_true]⟩
+
+end order
+
+namespace HomClass
+
+variable [L.IsOrdered] [L.Structure M] {N : Type*} [L.Structure N]
+  {F : Type*} [FunLike F M N] [L.HomClass F M N]
+
+lemma monotone [Preorder M] [L.OrderedStructure M] [Preorder N] [L.OrderedStructure N] (f : F) :
+    Monotone f := fun a b => by
+  have h := HomClass.map_rel f leSymb ![a,b]
+  simp only [relMap_leSymb, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one,
+    Matrix.head_cons, Function.comp_apply] at h
+  exact h
+
+lemma strictMono [EmbeddingLike F M N] [PartialOrder M] [L.OrderedStructure M]
+    [PartialOrder N] [L.OrderedStructure N] (f : F) :
+    StrictMono f :=
+  (HomClass.monotone f).strictMono_of_injective (EmbeddingLike.injective f)
+
+end HomClass
+
+/-- This is not an instance because it would form a loop with
+  `FirstOrder.Language.order.instStrongHomClassOfOrderIsoClass`.
+  As both types are `Prop`s, it would only cause a slowdown.  -/
+lemma StrongHomClass.toOrderIsoClass
+    (L : Language) [L.IsOrdered] (M : Type*) [L.Structure M] [LE M] [L.OrderedStructure M]
+    (N : Type*) [L.Structure N] [LE N] [L.OrderedStructure N]
+    (F : Type*) [EquivLike F M N] [L.StrongHomClass F M N] :
+    OrderIsoClass F M N where
+  map_le_map_iff f a b := by
+    have h := StrongHomClass.map_rel f leSymb ![a,b]
+    simp only [relMap_leSymb, Fin.isValue, Function.comp_apply, Matrix.cons_val_zero,
+      Matrix.cons_val_one, Matrix.head_cons] at h
+    exact h
 
 end Language
 
