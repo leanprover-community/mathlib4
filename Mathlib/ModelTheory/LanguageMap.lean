@@ -533,6 +533,7 @@ variable (L L')
 
 /-- If `L.Expands L'`, then there is a privileged `LHom` from `L'` into `L`. -/
 class Expands where
+  /-- The privileged map `L' →ᴸ L`, preferably accessed as `L'.inclusion L`. -/
   toLHom : L' →ᴸ L
   toLHom_injective : toLHom.Injective
 
