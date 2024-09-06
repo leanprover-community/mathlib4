@@ -93,7 +93,7 @@ lemma nnrpow_add {a : A} {x y : ℝ≥0} (hx : 0 < x) (hy : 0 < y) :
   simp only [nnrpow_def]
   rw [← cfcₙ_mul _ _ a]
   congr! 2 with z
-  exact mod_cast z.rpow_add' (add_pos hx hy).ne'
+  exact mod_cast z.rpow_add' <| ne_of_gt (add_pos hx hy)
 
 @[simp]
 lemma nnrpow_zero {a : A} : a ^ (0 : ℝ≥0) = 0 := by
