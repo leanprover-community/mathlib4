@@ -101,7 +101,7 @@ lemma not_tendsto_diracProba_of_not_tendsto [CompletelyRegularSpace X] {x : X} (
              lintegral_dirac' _ (measurable_coe_nnreal_ennreal_iff.mpr f.continuous.measurable)]
   apply not_tendsto_iff_exists_frequently_nmem.mpr
   refine ⟨Ioi 0, Ioi_mem_nhds (by simp only [ENNReal.coe_one, zero_lt_one]),
-          hU.mp (eventually_of_forall ?_)⟩
+          hU.mp (Eventually.of_forall ?_)⟩
   intro x x_notin_U
   rw [f_vanishes_outside x
         (compl_subset_compl.mpr (show interior U ⊆ U from interior_subset) x_notin_U)]

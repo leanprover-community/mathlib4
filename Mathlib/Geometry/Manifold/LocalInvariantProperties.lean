@@ -42,13 +42,10 @@ coincide on `s`, then `LiftPropWithinAt P g' s x` holds. We can't call it
 in the one for `LiftPropWithinAt`.
 -/
 
-
 noncomputable section
 
-open scoped Classical
-open Manifold Topology
-
 open Set Filter TopologicalSpace
+open scoped Manifold Topology
 
 variable {H M H' M' X : Type*}
 variable [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M]
@@ -518,9 +515,9 @@ theorem liftProp_subtype_val {Q : (H → H) → Set H → H → Prop} (hG : Loca
 
 theorem liftProp_inclusion {Q : (H → H) → Set H → H → Prop} (hG : LocalInvariantProp G G Q)
     (hQ : ∀ y, Q id univ y) {U V : Opens M} (hUV : U ≤ V) :
-    LiftProp Q (Set.inclusion hUV : U → V) := by
+    LiftProp Q (Opens.inclusion hUV : U → V) := by
   intro x
-  show LiftPropAt Q (id ∘ inclusion hUV) x
+  show LiftPropAt Q (id ∘ Opens.inclusion hUV) x
   rw [← hG.liftPropAt_iff_comp_inclusion hUV]
   apply hG.liftProp_id hQ
 

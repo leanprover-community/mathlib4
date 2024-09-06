@@ -3,7 +3,7 @@ Copyright (c) 2023 Kim Liesinger. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Liesinger
 -/
-import Mathlib.Data.Set.Defs
+import Mathlib.Data.Set.Operations
 import Mathlib.Order.Heyting.Basic
 import Mathlib.Order.RelClasses
 import Mathlib.Order.Hom.Basic

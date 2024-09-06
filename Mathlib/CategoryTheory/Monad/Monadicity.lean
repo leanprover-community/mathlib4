@@ -14,7 +14,7 @@ import Mathlib.CategoryTheory.Monad.Limits
 We prove monadicity theorems which can establish a given functor is monadic. In particular, we
 show three versions of Beck's monadicity theorem, and the reflexive (crude) monadicity theorem:
 
-`G` is a monadic right adjoint if it has a right adjoint, and:
+`G` is a monadic right adjoint if it has a left adjoint, and:
 
 * `D` has, `G` preserves and reflects `G`-split coequalizers, see
   `CategoryTheory.Monad.monadicOfHasPreservesReflectsGSplitCoequalizers`
@@ -27,13 +27,13 @@ show three versions of Beck's monadicity theorem, and the reflexive (crude) mona
 * `D` has and `G` preserves reflexive coequalizers, and `G` reflects isomorphisms, see
   `CategoryTheory.Monad.monadicOfHasPreservesReflexiveCoequalizersOfReflectsIsomorphisms`
 
+This file has been adapted to `Mathlib.CategoryTheory.Monad.Comonadicity`.
+Please try to keep them in sync.
+
 ## Tags
 
 Beck, monadicity, descent
 
-## TODO
-
-Dualise to show comonadicity theorems.
 -/
 
 universe v₁ v₂ u₁ u₂
@@ -187,7 +187,7 @@ def counitCofork (B : D) :
   Cofork.ofπ (adj.counit.app B) (adj.counit_naturality _)
 
 variable {adj} in
-/-- The unit cofork is a colimit provided `G` preserves it.  -/
+/-- The unit cofork is a colimit provided `G` preserves it. -/
 def unitColimitOfPreservesCoequalizer (A : adj.toMonad.Algebra)
     [HasCoequalizer (F.map A.a) (adj.counit.app (F.obj A.A))]
     [PreservesColimit (parallelPair (F.map A.a) (adj.counit.app (F.obj A.A))) G] :
@@ -288,7 +288,7 @@ instance [ReflectsColimitOfIsSplitPair G] : ∀ (A : Algebra adj.toMonad),
   fun _ => ReflectsColimitOfIsSplitPair.out _ _
 
 /-- To show `G` is a monadic right adjoint, we can show it preserves and reflects `G`-split
-coequalizers, and `C` has them.
+coequalizers, and `D` has them.
 -/
 def monadicOfHasPreservesReflectsGSplitCoequalizers [HasCoequalizerOfIsSplitPair G]
     [PreservesColimitOfIsSplitPair G] [ReflectsColimitOfIsSplitPair G] :
@@ -334,9 +334,9 @@ instance [CreatesColimitOfIsSplitPair G] : ∀ (A : Algebra adj.toMonad),
   fun _ => CreatesColimitOfIsSplitPair.out _ _
 
 /--
-Beck's monadicity theorem. If `G` has a right adjoint and creates coequalizers of `G`-split pairs,
+Beck's monadicity theorem. If `G` has a left adjoint and creates coequalizers of `G`-split pairs,
 then it is monadic.
-This is the converse of `createsGSplitOfMonadic`.
+This is the converse of `createsGSplitCoequalizersOfMonadic`.
 -/
 def monadicOfCreatesGSplitCoequalizers [CreatesColimitOfIsSplitPair G] :
     MonadicRightAdjoint G := by
