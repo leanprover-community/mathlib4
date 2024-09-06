@@ -65,13 +65,10 @@ lemma continuous_subtype_extension' (hU : IsOpen U) (hf : Continuous f)
     {F : X → Y} (hg : Set.restrict U F = f) : ContinuousOn F U := by
   let F' := extend Subtype.val f F
   apply (continuous_subtype_extension hU hf).congr
-  show Set.EqOn F F' U -- should be obvious, let's do the details...
   intro x hx
-  suffices F x = f ⟨x, hx⟩ ∧ F' x = f ⟨x, hx⟩ from Eq.trans this.1 this.2.symm
-  constructor
-  · rw [← hg]
-    exact rfl
-  · sorry -- apply Injective.extend_apply, sth sth about extensions...
+  suffices F x = f ⟨x, hx⟩ ∧ F' x = f ⟨x, hx⟩ from this.1.trans this.2.symm
+  exact ⟨hg.symm ▸ rfl, Subtype.val_injective.extend_apply f F ⟨x, hx⟩⟩
+
 
 lemma real_lemma {V : Set X} (hV : IsOpen V) {U : Set V} (hU : IsOpen U)
     {f : V → Y} (hf : ContinuousOn f U)
