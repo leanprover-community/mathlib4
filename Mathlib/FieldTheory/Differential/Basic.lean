@@ -46,13 +46,13 @@ lemma logDeriv_div (h₁ : a ≠ 0) (h₂ : b ≠ 0) : logDeriv (a / b) = logDer
   ring
 
 lemma logDeriv_npow (a : ℕ) : logDeriv (b ^ a) = a * logDeriv b := by
-  by_cases h : b = 0
-  · cases a <;> simp [h]
   induction a with
   | zero => simp
   | succ a h2 =>
-  rw [Nat.cast_add, Nat.cast_one, add_mul, one_mul, ← h2, pow_succ, logDeriv_mul] <;>
-  simp [h]
+    obtain rfl | hb := eq_or_ne b 0
+    · simp
+    · rw [Nat.cast_add, Nat.cast_one, add_mul, one_mul, ← h2, pow_succ, logDeriv_mul] <;>
+      simp [hb]
 
 lemma logDeriv_eq_zero_iff : logDeriv a = 0 ↔ a′ = 0 :=
   ⟨fun h ↦ by simp only [logDeriv, div_eq_zero_iff] at h; rcases h with h|h <;> simp [h],
