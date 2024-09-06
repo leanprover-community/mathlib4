@@ -347,8 +347,8 @@ lemma partialEquivLimit_comp_inclusion {i : ι} :
 
 theorem le_partialEquivLimit (i : ι) : S i ≤ partialEquivLimit S :=
   ⟨le_iSup (f := fun i ↦ (S i).dom) _, by
-    #adaptation_note /-- After lean4#5020, `simp` can no longer apply this lemma here. -/
-    rw [partialEquivLimit_comp_inclusion]
+    #adaptation_note /-- After lean4#5020, these two `simp` calls cannot be combined. -/
+    simp only [partialEquivLimit_comp_inclusion]
     simp only [cod_partialEquivLimit, dom_partialEquivLimit, ← Embedding.comp_assoc,
       subtype_comp_inclusion]⟩
 
