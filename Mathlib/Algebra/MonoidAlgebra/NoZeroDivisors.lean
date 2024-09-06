@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Algebra.MonoidAlgebra.Basic
-import Mathlib.Algebra.Group.UniqueProds
+import Mathlib.Algebra.Group.UniqueProds.Basic
 
 /-!
 # Variations on non-zero divisors in `AddMonoidAlgebra`s

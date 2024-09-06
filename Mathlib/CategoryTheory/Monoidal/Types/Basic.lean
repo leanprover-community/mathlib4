@@ -101,6 +101,6 @@ of a type to the image of that type, tensored with the image of the nth cartesia
 noncomputable def MonoidalFunctor.mapPi {C : Type*} [Category C] [MonoidalCategory C]
     (F : MonoidalFunctor (Type _) C) (n : ℕ) (β : Type*) :
     F.obj (Fin (n + 1) → β) ≅ F.obj β ⊗ F.obj (Fin n → β) :=
-  Functor.mapIso _ (Equiv.piFinSucc n β).toIso ≪≫ (asIso (F.μ β (Fin n → β))).symm
+  Functor.mapIso _ (Fin.consEquiv _).symm.toIso ≪≫ (asIso (F.μ β (Fin n → β))).symm
 
 end CategoryTheory
