@@ -38,53 +38,65 @@ section Preorder
 
 variable [Preorder α]
 
-theorem succ_eq_add_one [Add α] [One α] [SuccAddOrder α] (x : α) : succ x = x + 1 :=
+section Add
+
+variable [Add α] [One α] [SuccAddOrder α]
+
+theorem succ_eq_add_one (x : α) : succ x = x + 1 :=
   SuccAddOrder.succ_eq_add_one x
 
-theorem pred_eq_sub_one [Sub α] [One α] [PredSubOrder α] (x : α) : pred x = x - 1 :=
-  PredSubOrder.pred_eq_sub_one x
-
-theorem add_one_le_of_lt [Add α] [One α] [SuccAddOrder α] (h : x < y) : x + 1 ≤ y := by
+theorem add_one_le_of_lt (h : x < y) : x + 1 ≤ y := by
   rw [← succ_eq_add_one]
   exact succ_le_of_lt h
 
-theorem le_sub_one_of_lt [Sub α] [One α] [PredSubOrder α] (h : x < y) : x ≤ y - 1 := by
-  rw [← pred_eq_sub_one]
-  exact le_pred_of_lt h
-
-theorem add_one_le_iff_of_not_isMax [Add α] [One α] [SuccAddOrder α] (hx : ¬ IsMax x) :
+theorem add_one_le_iff_of_not_isMax (hx : ¬ IsMax x) :
     x + 1 ≤ y ↔ x < y := by
   rw [← succ_eq_add_one, succ_le_iff_of_not_isMax hx]
 
-theorem le_sub_one_iff_of_not_isMin [Sub α] [One α] [PredSubOrder α] (hy : ¬ IsMin y) :
-    x ≤ y - 1 ↔ x < y := by
-  rw [← pred_eq_sub_one, le_pred_iff_of_not_isMin hy]
-
-theorem add_one_le_iff [Add α] [One α] [SuccAddOrder α] [NoMaxOrder α] : x + 1 ≤ y ↔ x < y :=
+theorem add_one_le_iff [NoMaxOrder α] : x + 1 ≤ y ↔ x < y :=
   add_one_le_iff_of_not_isMax (not_isMax x)
 
-theorem le_sub_one_iff [Sub α] [One α] [PredSubOrder α] [NoMinOrder α] : x ≤ y - 1 ↔ x < y :=
-  le_sub_one_iff_of_not_isMin (not_isMin y)
-
 @[simp]
-theorem wcovBy_add_one [Add α] [One α] [SuccAddOrder α] (x : α) : x ⩿ x + 1 := by
+theorem wcovBy_add_one (x : α) : x ⩿ x + 1 := by
   rw [← succ_eq_add_one]
   exact wcovBy_succ x
 
 @[simp]
-theorem sub_one_wcovBy [Sub α] [One α] [PredSubOrder α] (x : α) : x - 1 ⩿ x := by
+theorem covBy_add_one [NoMaxOrder α] (x : α) : x ⋖ x + 1 := by
+  rw [← succ_eq_add_one]
+  exact covBy_succ x
+
+end Add
+
+section Sub
+
+variable [Sub α] [One α] [PredSubOrder α]
+
+theorem pred_eq_sub_one (x : α) : pred x = x - 1 :=
+  PredSubOrder.pred_eq_sub_one x
+
+theorem le_sub_one_of_lt (h : x < y) : x ≤ y - 1 := by
+  rw [← pred_eq_sub_one]
+  exact le_pred_of_lt h
+
+theorem le_sub_one_iff_of_not_isMin (hy : ¬ IsMin y) :
+    x ≤ y - 1 ↔ x < y := by
+  rw [← pred_eq_sub_one, le_pred_iff_of_not_isMin hy]
+
+theorem le_sub_one_iff [NoMinOrder α] : x ≤ y - 1 ↔ x < y :=
+  le_sub_one_iff_of_not_isMin (not_isMin y)
+
+@[simp]
+theorem sub_one_wcovBy (x : α) : x - 1 ⩿ x := by
   rw [← pred_eq_sub_one]
   exact pred_wcovBy x
 
 @[simp]
-theorem covBy_add_one [Add α] [One α] [SuccAddOrder α] [NoMaxOrder α] (x : α) : x ⋖ x + 1 := by
-  rw [← succ_eq_add_one]
-  exact covBy_succ x
-
-@[simp]
-theorem sub_one_covBy [Sub α] [One α] [PredSubOrder α] [NoMinOrder α] (x : α) : x - 1 ⋖ x := by
+theorem sub_one_covBy [NoMinOrder α] (x : α) : x - 1 ⋖ x := by
   rw [← pred_eq_sub_one]
   exact pred_covBy x
+
+end Sub
 
 @[simp]
 theorem succ_zero [AddZeroClass α] [One α] [SuccAddOrder α] : succ (0 : α) = 1 := by
@@ -138,27 +150,39 @@ section LinearOrder
 
 variable [LinearOrder α]
 
-theorem le_of_lt_add_one [Add α] [One α] [SuccAddOrder α] (h : x < y + 1) : x ≤ y := by
+section Add
+
+variable [Add α] [One α] [SuccAddOrder α]
+
+theorem le_of_lt_add_one (h : x < y + 1) : x ≤ y := by
   rw [← succ_eq_add_one] at h
   exact le_of_lt_succ h
 
-theorem le_of_sub_one_lt [Sub α] [One α] [PredSubOrder α] (h : x - 1 < y) : x ≤ y := by
-  rw [← pred_eq_sub_one] at h
-  exact le_of_pred_lt h
-
-theorem lt_add_one_iff_of_not_isMax [Add α] [One α] [SuccAddOrder α] (hy : ¬ IsMax y) :
+theorem lt_add_one_iff_of_not_isMax (hy : ¬ IsMax y) :
     x < y + 1 ↔ x ≤ y := by
   rw [← succ_eq_add_one, lt_succ_iff_of_not_isMax hy]
 
-theorem sub_one_lt_iff_of_not_isMin [Sub α] [One α] [PredSubOrder α] (hx : ¬ IsMin x) :
+theorem lt_add_one_iff [NoMaxOrder α] : x < y + 1 ↔ x ≤ y :=
+  lt_add_one_iff_of_not_isMax (not_isMax y)
+
+end Add
+
+section Sub
+
+variable [Sub α] [One α] [PredSubOrder α]
+
+theorem le_of_sub_one_lt (h : x - 1 < y) : x ≤ y := by
+  rw [← pred_eq_sub_one] at h
+  exact le_of_pred_lt h
+
+theorem sub_one_lt_iff_of_not_isMin (hx : ¬ IsMin x) :
     x - 1 < y ↔ x ≤ y := by
   rw [← pred_eq_sub_one, pred_lt_iff_of_not_isMin hx]
 
-theorem lt_add_one_iff [Add α] [One α] [SuccAddOrder α] [NoMaxOrder α] : x < y + 1 ↔ x ≤ y :=
-  lt_add_one_iff_of_not_isMax (not_isMax y)
-
-theorem sub_one_lt_iff [Sub α] [One α] [PredSubOrder α] [NoMinOrder α] : x - 1 < y ↔ x ≤ y :=
+theorem sub_one_lt_iff [NoMinOrder α] : x - 1 < y ↔ x ≤ y :=
   sub_one_lt_iff_of_not_isMin (not_isMin x)
+
+end Sub
 
 theorem lt_one_iff_nonpos [AddMonoidWithOne α] [ZeroLEOneClass α] [NeZero (1 : α)]
     [SuccAddOrder α] : x < 1 ↔ x ≤ 0 := by
