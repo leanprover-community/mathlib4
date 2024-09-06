@@ -1,6 +1,7 @@
 import Mathlib.RingTheory.MvPolynomial.Homogeneous
 import Mathlib.Data.Finsupp.Lex
 import Mathlib.Data.List.TFAE
+import Mathlib.Data.Nat.Nth
 
 /-! # Groebner bases 
 
@@ -143,6 +144,75 @@ theorem isDickson_tfae (α : Type*) [PartialOrder α] : List.TFAE [
   · exact isDickson_of_minimal_ne_and_finite
   tfae_finish
 
+/-
+lemma _root_.Set.Infinite.exists_extraction
+  {S : Set ℕ} (hS : S.Infinite) : ∃ n : ℕ → ℕ, StrictMono n ∧ Set.range n = S := by
+  use Nat.nth (fun x ↦ x ∈ S), Nat.nth_strictMono hS, Nat.range_nth_of_infinite hS
+  -/
+
+theorem isDickson_iff_exists_monotone (α : Type*) [PartialOrder α] :
+    isDickson α ↔ ∀ (a : ℕ → α), ∃ (n : ℕ → ℕ), StrictMono n ∧ Monotone (a ∘ n) := by
+  constructor
+  · intro H a
+    have H' : ∀ (S : Set ℕ) (_ : S.Infinite), ∃ s ∈ S, ∃ T, 
+        T.Infinite ∧ T ⊆ S ∧ (∀ t ∈ T, s < t ∧ a s ≤ a t):= by
+      intro S hS
+      obtain ⟨B, hB, hBf⟩ := H (a '' S)
+      let f (b) := {n ∈ S | b ≤ a n}
+      have : ⋃ b ∈ B, f b = S := by 
+        ext n
+        constructor
+        · simp only [Set.mem_iUnion, exists_prop, forall_exists_index, and_imp]
+          intro b _ hn
+          exact hn.1
+        · intro hnS
+          obtain ⟨b, hb, hb_le⟩:= hB.2 (a n) (Set.mem_image_of_mem a hnS)
+          exact Set.mem_biUnion hb ⟨hnS, hb_le⟩
+      have : ∃ b ∈ B, (f b).Infinite := by
+        by_contra h
+        push_neg at h
+        simp only [Set.not_infinite] at h
+        apply hS
+        rw [← this]
+        exact Set.Finite.biUnion' hBf h
+      obtain ⟨b, hbB, hb⟩ := this
+      obtain ⟨q, hqS, hqb⟩ := (Set.mem_image _ _ _).mpr (hB.1 hbB)
+      use q, hqS, {n | n ∈ S ∧ b ≤ a n ∧ q < n}
+      refine ⟨?_, Set.sep_subset S _, fun x ht ↦ ⟨ht.2.2, hqb ▸ ht.2.1⟩⟩
+      -- this set is infinite
+      simp_rw [← and_assoc]
+      change ({n | n ∈ S ∧ b ≤ a n} ∩ {n | q < n}).Infinite
+      rw [← Set.diff_compl]
+      apply Set.Infinite.diff hb
+      rw [Set.compl_setOf]
+      simp_rw [not_lt]
+      exact Set.finite_le_nat q
+    obtain ⟨s0, _, S0, hS0⟩ := H' Set.univ Set.infinite_univ
+    let v : ℕ → {(s, S) : ℕ × Set ℕ | S.Infinite ∧ ∀ x ∈ S, s < x ∧ a s ≤ a x} := 
+      Nat.rec (⟨(s0, S0), ⟨hS0.1, hS0.2.2⟩⟩) (fun _ sS ↦ by 
+        let t := (H' sS.val.2 sS.prop.1).choose
+        let T := (H' sS.val.2 sS.prop.1).choose_spec.2.choose
+        let hT : T.Infinite ∧ T ⊆ sS.val.2 ∧ ∀ x ∈ T, t < x ∧ a t ≤ a x := 
+          (H' sS.val.2 sS.prop.1).choose_spec.2.choose_spec
+        exact ⟨(t, T), ⟨hT.1, hT.2.2⟩⟩)
+    let n (k) := (v k).val.1
+    let S (k) := (v k).val.2
+    have hS (k) : (S k).Infinite := (v k).prop.1
+    have hn (k) : ∀ x ∈ S k, n k < x ∧ a (n k) ≤ a x := (v k).prop.2
+    have hn_mem_S (k) : n k.succ ∈ S k := (H' (S k) (hS k)).choose_spec.1 
+    use n
+    constructor
+    · apply strictMono_nat_of_lt_succ
+      exact fun k ↦ (hn k (n (k + 1)) (hn_mem_S k)).1
+    · apply monotone_nat_of_le_succ
+      exact fun k ↦ (hn k (n (k + 1)) (hn_mem_S k)).2
+  · intro H
+    simp only [List.TFAE.out (isDickson_tfae _) 0 1]
+    intro a
+    obtain ⟨n, hn, han⟩ := H a
+    exact ⟨n 0, n 1, hn Nat.one_pos, han (Nat.zero_le 1)⟩
+
+/-
 theorem wellFounded_iff_not_exists {α : Type*} (r : α → α → Prop) :
     WellFounded r ↔ ¬ ∃ (a : ℕ → α), ∀ n, r (a (n + 1)) (a n) := by
   constructor
@@ -162,35 +232,99 @@ theorem wellFounded_iff_not_exists {α : Type*} (r : α → α → Prop) :
     intro n 
     exact hu (n + 1)
   · intro H
-    have : ∀ a (_ : ¬ Acc r a), ∃ b, r b a ∧ ¬ Acc r b := fun a ha ↦ by
-      revert ha
-      rw [not_imp_comm]
-      intro H'
-      push_neg at H'
-      exact Acc.intro a H'
     apply WellFounded.intro
     intro a
     by_contra ha
     apply H
     let u : ℕ → {x | ¬ Acc r x} := 
-      Nat.rec ⟨a, ha⟩ (fun _ x ↦ ⟨(this x.val x.prop).choose, (this x.val x.prop).choose_spec.2⟩)
+      Nat.rec ⟨a, ha⟩ (fun _ x ↦ ⟨(RelEmbedding.exists_not_acc_lt_of_not_acc x.prop).choose,
+        (RelEmbedding.exists_not_acc_lt_of_not_acc x.prop).choose_spec.1⟩)
     use fun n ↦ (u n).val
     intro n
-    exact (this (u n).val (u n).prop).choose_spec.1
+    exact (RelEmbedding.exists_not_acc_lt_of_not_acc (u n).prop).choose_spec.2
+-/
 
-    
+theorem WellFoundedLT.isDickson {α : Type*} [LinearOrder α] [WellFoundedLT α] : 
+    isDickson α := fun S ↦ by
+  by_cases hS : S.Nonempty
+  · obtain ⟨a, haS, ha⟩ := WellFounded.has_min wellFounded_lt S hS
+    use {a}
+    constructor
+    · unfold Set.isBasis
+      constructor
+      simp [haS]
+      intro x hx 
+      use a
+      simp_rw [not_lt] at ha
+      simp [ha x hx]
+    · exact Finite.of_fintype _
+  · use ∅
+    constructor
+    unfold Set.isBasis
+    constructor
+    · exact Set.empty_subset S
+    · simp only [Set.not_nonempty_iff_eq_empty] at hS
+      simp [hS]
+    exact Finite.of_fintype _
+
 theorem isDickson.wf {α : Type*} [PartialOrder α] (H : isDickson α) : WellFoundedLT α := by
   unfold WellFoundedLT
   apply IsWellFounded.mk
-  rw [wellFounded_iff_not_exists]
+  rw [RelEmbedding.wellFounded_iff_no_descending_seq]
+  apply IsEmpty.mk
   rintro ⟨a, ha⟩
   have := List.TFAE.out (isDickson_tfae α) 0 1
   rw [this] at H
   obtain ⟨i, j, hij, H⟩ := H a
-  exact ne_of_lt (lt_of_le_of_lt H (strictAnti_nat_of_succ_lt ha hij)) rfl
+  exact ne_of_lt (lt_of_le_of_lt H (ha.mpr hij)) rfl
   
-theorem Finsupp.isDickson (σ : Type*) [Finite σ] : isDickson (σ →₀ ℕ) := sorry
+theorem Finsupp.isDickson_equiv {α β : Type*} (e : α ≃ β) (hα : isDickson (α →₀ ℕ)) :
+    isDickson (β →₀ ℕ) := by
+  apply Equiv.isDickson_of_monotone (equivCongrLeft e) _ hα
+  exact fun a b h d ↦ by simp [h (e.symm d)]
 
+theorem isDickson_prod {α β : Type*} [PartialOrder α] [PartialOrder β]
+    (hα : isDickson α) (hβ : isDickson β) : 
+    isDickson (α × β) := by
+  simp only [List.TFAE.out (isDickson_tfae _) 0 1] 
+  intro a
+  simp only [isDickson_iff_exists_monotone] at hα hβ
+  obtain ⟨m, hm, ha1⟩ := hα (fun k ↦ (a k).1)
+  obtain ⟨n, hn, ha2⟩ := hβ (fun k ↦ (a (m k)).2)
+  use m (n 0), m (n 1)
+  constructor
+  exact hm (hn zero_lt_one)
+  simp only [Prod.le_def]
+  constructor
+  · apply ha1 
+    exact hn.monotone zero_le_one
+  · apply ha2 zero_le_one
+
+theorem Nat.isDickson : isDickson ℕ := WellFoundedLT.isDickson
+
+theorem Fin.isDickson_nat (n : ℕ) : isDickson (Fin n → ℕ) := by
+  induction n with
+  | zero => exact fun S ↦ ⟨S,⟨⟨subset_rfl, fun x hx ↦ ⟨x, hx, le_rfl⟩⟩, Subtype.finite⟩⟩
+  | succ n h => 
+      apply Equiv.isDickson_of_monotone (Fin.snocEquiv (fun _ ↦ ℕ))
+      · intro a b h i
+        rw [Prod.le_def] at h
+        simp only [snocEquiv_apply]
+        rcases i.eq_castSucc_or_eq_last with (hi | hi)
+        · obtain ⟨j, rfl⟩ := hi
+          simp only [snoc_castSucc, ge_iff_le, h.2 j]
+        · simp only [hi, snoc_last, h.1]
+      · exact isDickson_prod Nat.isDickson h
+
+theorem Finsupp.isDickson_nat (n : ℕ) : isDickson (Fin n →₀ ℕ) := by
+  let e : (Fin n → ℕ) ≃ (Fin n →₀ ℕ) := equivFunOnFinite.symm
+  apply Equiv.isDickson_of_monotone e (fun x y h i ↦ by exact h i) (Fin.isDickson_nat n)
+
+theorem Finsupp.isDickson (σ : Type*) [Finite σ] : isDickson (σ →₀ ℕ) := by
+  obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin σ
+  exact Finsupp.isDickson_equiv e.symm (Finsupp.isDickson_nat n)
+
+  
 end Dickson
 
 namespace Finsupp
@@ -606,7 +740,7 @@ theorem eq_C_of_monomialOrderDegree_eq_zero {f : MvPolynomial σ R}
     apply coeff_eq_zero_of_lt (m := m)
     simp [hf, hd, pos_iff_ne_zero]
 
-theorem monomialOrderDiv [IsDomain R] [Finite σ] (B : Set (MvPolynomial σ R)) 
+theorem monomialOrderDiv [Finite σ] (B : Set (MvPolynomial σ R)) 
     (hB : ∀ b ∈ B, IsUnit (b.monomialOrderLCoeff m)) (f : MvPolynomial σ R) :
     ∃ (g : B →₀ (MvPolynomial σ R)) (r : MvPolynomial σ R), 
       f = Finsupp.linearCombination _ (fun (b : B) ↦ (b : MvPolynomial σ R)) g + r ∧ 
