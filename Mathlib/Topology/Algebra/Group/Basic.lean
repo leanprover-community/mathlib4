@@ -863,7 +863,7 @@ theorem isOpenMap_coe [ContinuousMul G] (N : Subgroup G) : IsOpenMap ((↑) : G 
   isOpenMap_quotient_mk'_mul
 
 @[to_additive]
-instance instContinuousSMul [ContinuousMul G] {N : Subgroup G} : ContinuousSMul G (G ⧸ N) := 
+instance instContinuousSMul [ContinuousMul G] {N : Subgroup G} : ContinuousSMul G (G ⧸ N) :=
   MulAction.orbitRel.Quotient.instContinuousSMul
 
 variable [TopologicalGroup G] (N : Subgroup G)
