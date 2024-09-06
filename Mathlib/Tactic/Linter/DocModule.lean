@@ -33,12 +33,12 @@ namespace Mathlib.Linter
 only consists of any number of `import` statements (possibly none) followed by
 either a module doc-string (and then anything else) or nothing else.
 -/
-def onlyImportsModDocs : Syntax → Bool
+def onlyImportsModDocs : Syntax → Option Bool
   | .node _ ``Lean.Parser.Module.module #[_header, .node _ `null args] =>
-    let args := args.toList.dropWhile (·.isOfKind ``Lean.Parser.Command.section)
-    let first := args.getD 0 (Lean.mkNode ``Lean.Parser.Command.moduleDoc #[])
-    first.isOfKind ``Lean.Parser.Command.moduleDoc
-  | _=> false
+    let args := args
+    let first := args.get? 0
+    first.map (·.isOfKind ``Lean.Parser.Command.moduleDoc)
+  | _=> some false
 
 /-- `afterImports stx` checks whether `stx` is the syntax for a module, discards the
 `import` statements and returns the first command after the `import`s, or `.missing` if
@@ -165,6 +165,8 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let endOfImports := upToStx.getTailPos?
     firstCommand.set endOfImports
   if upToStx != .missing then
+    if (onlyImportsModDocs upToStx).isNone then return
+    --if onlyImportsModDocs upToStx then return
     firstPos := upToStx.getTailPos?
     unless stx.getPos?.getD 0 ≤ firstPos.getD 0 + offset do
       return
@@ -188,7 +190,7 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
           m!"In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter \
             (see e.g. mathlib4#13779). Please consider carefully if this import is useful and \
             make sure to benchmark it. If this is fine, feel free to allow this linter."
-    if ! onlyImportsModDocs upToStx then
+    if let some false := onlyImportsModDocs upToStx then
       Linter.logLint linter.style.header stx
         m!"`{stx}` appears too late: it can only be preceded by `import` statements \
         doc-module strings and other `assert_not_exists` statements."
