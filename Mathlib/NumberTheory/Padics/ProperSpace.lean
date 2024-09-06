@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jou Glasheen, Kevin Buzzard
 -/
 
+import Mathlib.Analysis.Normed.Module.FiniteDimension
 import Mathlib.NumberTheory.Padics.RingHoms
-import Mathlib.Topology.MetricSpace.Ultra.Basic
 
 /-!
 # Local compactness of the p-adic numbers
