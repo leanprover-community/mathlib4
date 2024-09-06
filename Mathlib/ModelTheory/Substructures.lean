@@ -299,14 +299,17 @@ lemma mem_closed_iff (s : Set M) :
 
 variable (L)
 
-@[simp]
 lemma mem_closed_of_isRelational [L.IsRelational] (s : Set M) : s ∈ (closure L).closed :=
   (mem_closed_iff s).2 isEmptyElim
 
 @[simp]
+lemma closure_eq_of_isRelational [L.IsRelational] (s : Set M) : closure L s = s :=
+  LowerAdjoint.closure_eq_self_of_mem_closed _ (mem_closed_of_isRelational L s)
+
+@[simp]
 lemma mem_closure_iff_of_isRelational [L.IsRelational] (s : Set M) (m : M) :
-    m ∈ (closure L) s ↔ m ∈ s := by
-  rw [← SetLike.mem_coe, ((closure L).mem_closed_iff s).1 (mem_closed_of_isRelational L s)]
+    m ∈ closure L s ↔ m ∈ s := by
+  rw [← SetLike.mem_coe, closure_eq_of_isRelational]
 
 theorem _root_.Set.Countable.substructure_closure
     [Countable (Σl, L.Functions l)] (h : s.Countable) : Countable.{w + 1} (closure L s) := by
