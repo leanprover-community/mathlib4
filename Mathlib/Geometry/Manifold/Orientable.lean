@@ -41,7 +41,6 @@ Jacobian.
 - Generalize this discussion to any non-trivially normed field.
 - On a given connected set, a diffeomorphism is either orientation preserving or orientation
   reversing.
-- A normed space (with the trivial model) is orientable.
 - The `n`-sphere is orientable.
 - Products of orientable manifolds are orientable.
 - Define orientations of a smooth manifold, and show that a manifold is orientable if and only if it
@@ -171,3 +170,8 @@ class OrientableSmoothManifold (H : Type*) [NormedAddCommGroup H] [NormedSpace �
   HasGroupoid M ((contDiffGroupoid ⊤ I) ⊓ orientationPreservingGroupoid) : Prop
 
 end OrientableManifold
+
+/-- A finite-dimensional normed space is an orientable smooth manifold. -/
+instance {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+    {I : ModelWithCorners ℝ E E} : OrientableSmoothManifold E (I := I) :=
+  { hasGroupoid_model_space _ _ with }
