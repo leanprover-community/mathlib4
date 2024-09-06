@@ -16,6 +16,8 @@ variable {C : Type*} [Category C] [MonoidalCategory C] [BraidedCategory C] {X Y 
 
 namespace CategoryTheory.BraidedCategory
 
+attribute [local simp] MonoidalCoherence.hom MonoidalCoherence.iso
+
 /-- coevaluation_evaluation' field of `ExactPairing Y X` in a braided category -/
 private theorem coevaluation_evaluation_braided' [inst : ExactPairing X Y] :
     X ◁ (η_ X Y ≫ (β_ Y X).inv) ≫ (α_ X Y X).inv ≫ ((β_ X Y).hom ≫ ε_ X Y) ▷ X
@@ -29,9 +31,8 @@ private theorem coevaluation_evaluation_braided' [inst : ExactPairing X Y] :
     _ = 𝟙 X ⊗≫ X ◁ η_ X Y ⊗≫ (𝟙 (X ⊗ X ⊗ Y) ⊗≫ (β_ X X).hom ▷ Y ⊗≫ X ◁ (β_ X Y).hom
           ⊗≫ (β_ Y X).inv ▷ X ⊗≫ Y ◁ (β_ X X).inv ⊗≫ 𝟙 ((Y ⊗ X) ⊗ X)) ⊗≫ ε_ X Y ▷ X ⊗≫ 𝟙 X := by
       congr 3
-      simp only [monoidalComp, MonoidalCoherence.assoc'_hom, MonoidalCoherence.whiskerRight_hom,
-        MonoidalCoherence.refl_hom, whiskerRight_tensor, id_whiskerRight, id_comp, Iso.inv_hom_id,
-        MonoidalCoherence.assoc_hom, comp_id]
+      simp only [monoidalComp, MonoidalCoherence.hom, MonoidalCoherence.iso, whiskerRightIso_refl,
+        Iso.refl_trans, Iso.symm_hom, Iso.trans_refl, comp_id, id_comp]
       rw [← IsIso.eq_inv_comp]
       repeat rw [← assoc]
       iterate 5 rw [← IsIso.comp_inv_eq]
