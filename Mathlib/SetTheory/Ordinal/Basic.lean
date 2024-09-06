@@ -272,15 +272,10 @@ protected theorem one_ne_zero : (1 : Ordinal) ≠ 0 :=
 instance nontrivial : Nontrivial Ordinal.{u} :=
   ⟨⟨1, 0, Ordinal.one_ne_zero⟩⟩
 
---@[simp] -- Porting note: not in simp nf, added aux lemma below
+@[simp]
 theorem type_preimage {α β : Type u} (r : α → α → Prop) [IsWellOrder α r] (f : β ≃ α) :
     type (f ⁻¹'o r) = type r :=
   (RelIso.preimage f r).ordinal_type_eq
-
-@[simp, nolint simpNF] -- `simpNF` incorrectly complains the LHS doesn't simplify.
-theorem type_preimage_aux {α β : Type u} (r : α → α → Prop) [IsWellOrder α r] (f : β ≃ α) :
-    @type _ (fun x y => r (f x) (f y)) (inferInstanceAs (IsWellOrder β (↑f ⁻¹'o r))) = type r := by
-  convert (RelIso.preimage f r).ordinal_type_eq
 
 @[elab_as_elim]
 theorem inductionOn {C : Ordinal → Prop} (o : Ordinal)
@@ -531,8 +526,7 @@ def card : Ordinal → Cardinal :=
 theorem card_type (r : α → α → Prop) [IsWellOrder α r] : card (type r) = #α :=
   rfl
 
--- Porting note: nolint, simpNF linter falsely claims the lemma never applies
-@[simp, nolint simpNF]
+@[simp]
 theorem card_typein {r : α → α → Prop} [IsWellOrder α r] (x : α) :
     #{ y // r y x } = (typein r x).card :=
   rfl
@@ -558,18 +552,10 @@ def lift (o : Ordinal.{v}) : Ordinal.{max v u} :=
     Quot.sound
       ⟨(RelIso.preimage Equiv.ulift r).trans <| f.trans (RelIso.preimage Equiv.ulift s).symm⟩
 
--- Porting note: Needed to add universe hints ULift.down.{v,u} below
--- @[simp] -- Porting note: Not in simpnf, added aux lemma below
+@[simp]
 theorem type_uLift (r : α → α → Prop) [IsWellOrder α r] :
-    type (ULift.down.{v,u} ⁻¹'o r) = lift.{v} (type r) := by
+    type (ULift.down ⁻¹'o r) = lift.{v} (type r) := by
   simp (config := { unfoldPartialApp := true })
-  rfl
-
--- Porting note: simpNF linter falsely claims that this never applies
-@[simp, nolint simpNF]
-theorem type_uLift_aux (r : α → α → Prop) [IsWellOrder α r] :
-    @type.{max v u} _ (fun x y => r (ULift.down.{v,u} x) (ULift.down.{v,u} y))
-      (inferInstanceAs (IsWellOrder (ULift α) (ULift.down ⁻¹'o r))) = lift.{v} (type r) :=
   rfl
 
 theorem _root_.RelIso.ordinal_lift_type_eq {α : Type u} {β : Type v} {r : α → α → Prop}
@@ -589,20 +575,23 @@ theorem type_lift_preimage_aux {α : Type u} {β : Type v} (r : α → α → Pr
       (inferInstanceAs (IsWellOrder β (f ⁻¹'o r)))) = lift.{v} (type r) :=
   (RelIso.preimage f r).ordinal_lift_type_eq
 
-/-- `lift.{max u v, u}` equals `lift.{v, u}`. -/
--- @[simp] -- Porting note: simp lemma never applies, tested
+/-- `lift.{max u v, u}` equals `lift.{v, u}`.
+
+Unfortunately, the simp lemma doesn't seem to work. -/
 theorem lift_umax : lift.{max u v, u} = lift.{v, u} :=
   funext fun a =>
     inductionOn a fun _ r _ =>
       Quotient.sound ⟨(RelIso.preimage Equiv.ulift r).trans (RelIso.preimage Equiv.ulift r).symm⟩
 
-/-- `lift.{max v u, u}` equals `lift.{v, u}`. -/
--- @[simp] -- Porting note: simp lemma never applies, tested
+/-- `lift.{max v u, u}` equals `lift.{v, u}`.
+
+Unfortunately, the simp lemma doesn't seem to work. -/
 theorem lift_umax' : lift.{max v u, u} = lift.{v, u} :=
   lift_umax
 
-/-- An ordinal lifted to a lower or equal universe equals itself. -/
--- @[simp] -- Porting note: simp lemma never applies, tested
+/-- An ordinal lifted to a lower or equal universe equals itself.
+
+Unfortunately, the simp lemma doesn't work. -/
 theorem lift_id' (a : Ordinal) : lift a = a :=
   inductionOn a fun _ r _ => Quotient.sound ⟨RelIso.preimage Equiv.ulift r⟩
 
@@ -999,13 +988,12 @@ alias typein_one_out := typein_one_toType
 
 @[simp]
 theorem typein_le_typein (r : α → α → Prop) [IsWellOrder α r] {x y : α} :
-    typein r x ≤ typein r y ↔ ¬r y x := by rw [← not_lt, typein_lt_typein]
+    typein r x ≤ typein r y ↔ ¬r y x := by
+  rw [← not_lt, typein_lt_typein]
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem typein_le_typein' (o : Ordinal) {x y : o.toType} :
     typein (α := o.toType) (· < ·) x ≤ typein (α := o.toType) (· < ·) y ↔ x ≤ y := by
-  rw [typein_le_typein]
-  exact not_lt
+  simp
 
 theorem enum_le_enum (r : α → α → Prop) [IsWellOrder α r] {o₁ o₂ : {o // o < type r}} :
     ¬r (enum r o₁) (enum r o₂) ↔ o₂ ≤ o₁ := by
