@@ -132,26 +132,23 @@ lemma orientationReversing_comp {f g : H → H} {u v : Set H}
 
 lemma abstract2a {f : unitInterval → ℝ} (hf : Continuous f) (hf' : ∀ t, f t ≠ 0)
     {x : unitInterval} (hx : f x > 0) : ∀ t, f t > 0 := by
-  by_contra h
-  push_neg at h
-  have : f 1 < 0 := by
-    apply lt_of_le_of_ne --hx (hf' 1)
-    sorry; sorry
-    -- -- intermediate value theorem!
-    -- -- xxx: better to extend these to all of ℝ, with a junk value; a fight for another day!
-    -- have aux : IsPreconnected unitInterval := sorry--let pr := hs.isPreconnected
-    -- let ivt := aux.intermediate_value₂ (a := 0) (b := 1) (g := fun _ → 0) --(hg := continuousOn_const)--hx₀ hx
-    -- let ivt' := ivt (g := fun _ ↦ 0)
-    -- have : ConditionallyCompleteLinearOrder ↑unitInterval := sorry
-    -- haveI : OrderTopology ↑unitInterval := sorry
-    -- let ivt := intermediate_value_Icc (f := g)
-
-    -- use the intermediate value theorem
-
-  sorry
+  by_contra! h
+  obtain ⟨t, ht⟩ := h
+  obtain ⟨x, _, hx⟩ := isPreconnected_univ.intermediate_value₂
+    (a := t) (b := x) (by tauto) (by tauto)
+    (hf.continuousOn (s := Set.univ)) (continuous_const (y := 0).continuousOn (s := Set.univ))
+    ht hx.le
+  exact (hf' x) hx
 
 lemma abstract2b {f : unitInterval → ℝ} (hf : Continuous f) (hf' : ∀ t, f t ≠ 0)
-    {x : unitInterval} (hx : f x < 0) : ∀ t, f t < 0 := sorry
+    {x : unitInterval} (hx : f x < 0) : ∀ t, f t < 0 := by
+  by_contra! h
+  obtain ⟨t, ht⟩ := h
+  obtain ⟨x, _, hx⟩ := isPreconnected_univ.intermediate_value₂
+    (a := x) (b := t) (by tauto) (by tauto)
+    (hf.continuousOn (s := Set.univ)) (continuous_const (y := 0).continuousOn (s := Set.univ))
+    hx.le ht
+  exact (hf' x) hx
 
 -- Not quite what I want below, but a similar sketch.
 lemma abstract1 {f : unitInterval → ℝ} (hf : Continuous f) (hf' : ∀ t, f t ≠ 0) :
@@ -198,8 +195,7 @@ lemma foo (f : H ≃L[ℝ] H) {s : Set H} (hs : IsConnected s) (hs' : IsPathConn
     rw [← Path.target γ]
     exact abstract2a hg hg' h₀ 1
   · have h' : (fderiv ℝ (⇑f) x₀).det < 0 := by
-      by_contra h'
-      push_neg at h'
+      by_contra! h'
       exact h (lt_of_le_of_ne h' (h₁ x₀).symm)
     right
     intro x hx
