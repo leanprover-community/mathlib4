@@ -125,17 +125,18 @@ noncomputable def refl (hdim : finrank ℝ E = n) : SingularNManifold M n where
 variable (M) in
 /-- The canonical singular `n`-manifold associated to the empty set (seen as an `n`-dimensional
 manifold, i.e. modelled on an `n`-dimensional space). -/
-def empty [Fact (finrank ℝ E = n)] (M : Type*) [IsEmpty M] : SingularNManifold X n where
-  -- TODO: need to ask for previous data with M, etc!
+def empty [h: Fact (finrank ℝ E = n)] (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
+    {I : ModelWithCorners ℝ E H} [SmoothManifoldWithCorners I M] [IsEmpty M] :
+  SingularNManifold X n where
   M := M
   E := E
   H := H
   model := I
+  dimension := h.out
   f := fun x ↦ (IsEmpty.false x).elim
   hf := by
-    sorry -- tODO!
-    --rw [continuous_iff_continuousAt]
-    --exact fun x ↦ (IsEmpty.false x).elim
+    rw [continuous_iff_continuousAt]
+    exact fun x ↦ (IsEmpty.false x).elim
 
 /-- An `n`-dimensional manifold induces a singular `n`-manifold on the one-point space. -/
 def trivial [h: Fact (finrank ℝ E = n)] : SingularNManifold PUnit n where
@@ -150,14 +151,17 @@ def trivial [h: Fact (finrank ℝ E = n)] : SingularNManifold PUnit n where
 is a singular `n+m`-manifold. -/
 -- FUTURE: prove that this observation inducess a commutative ring structure
 -- on the unoriented bordism group `Ω_n^O = Ω_n^O(pt)`.
-def prod {m n : ℕ} [h : Fact (finrank ℝ E = m)] [k : Fact (finrank ℝ E' = n)] :
-    SingularNManifoldOld PUnit (m + n) (M × M') (I.prod I') where
+def prod {m n : ℕ} (s : SingularNManifold PUnit n) (t : SingularNManifold PUnit m) :
+    SingularNManifold PUnit (n + m) where
+  M := s.M × t.M
+  model := s.model.prod t.model
   f := fun _ ↦ PUnit.unit
   hf := continuous_const
-  hdim := Fact.mk (by rw [finrank_prod, h.out, k.out])
+  dimension := by rw [finrank_prod, s.dimension, t.dimension]
 
 end SingularNManifold
 
+#exit
 -- Let M, M' and W be smooth manifolds.
 variable {E E' E'' E''' H H' H'' H''' : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup E'] [NormedSpace ℝ E'] [NormedAddCommGroup E'']  [NormedSpace ℝ E'']
@@ -189,13 +193,6 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   [BoundarylessManifold I M] [CompactSpace M] [FiniteDimensional ℝ E]
   [BoundarylessManifold I' M'] [CompactSpace M'] [FiniteDimensional ℝ E']
 
-/-- A map of topological spaces induces a corresponding map of singular n-manifolds. -/
--- This is part of proving functoriality of the bordism groups.
-noncomputable def map [Fact (finrank ℝ E = n)] (s : SingularNManifoldOld X n M I)
-    {φ : X → Y} (hφ : Continuous φ) : SingularNManifoldOld Y n M I where
-  f := φ ∘ s.f
-  hf := hφ.comp s.hf
-
 
 /-- If `(M', f)` is a singular `n`-manifold on `X` and `M'` another `n`-dimensional smooth manifold,
 a smooth map `φ : M → M'` induces a singular `n`-manifold structure on `M`. -/
@@ -210,29 +207,5 @@ lemma comap_f [Fact (finrank ℝ E = n)]
     (s : SingularNManifoldOld X n M' I') {φ : M → M'} (hφ : Smooth I I' φ) :
     (s.comap hφ).f = s.f ∘ φ :=
   rfl
-
-variable (M) in
-/-- The canonical singular `n`-manifold associated to the empty set (seen as an `n`-dimensional
-manifold, i.e. modelled on an `n`-dimensional space). -/
-def empty [Fact (finrank ℝ E = n)] [IsEmpty M] : SingularNManifoldOld X n M I where
-  f := fun x ↦ (IsEmpty.false x).elim
-  hf := by
-    rw [continuous_iff_continuousAt]
-    exact fun x ↦ (IsEmpty.false x).elim
-
-/-- An `n`-dimensional manifold induces a singular `n`-manifold on the one-point space. -/
-def trivial [Fact (finrank ℝ E = n)] : SingularNManifoldOld PUnit n M I where
-  f := fun _ ↦ PUnit.unit
-  hf := continuous_const
-
-/-- The product of a singular `n`- and a `m`-manifold into a one-point space
-is a singular `n+m`-manifold. -/
--- FUTURE: prove that this observation inducess a commutative ring structure
--- on the unoriented bordism group `Ω_n^O = Ω_n^O(pt)`.
-def prod {m n : ℕ} [h : Fact (finrank ℝ E = m)] [k : Fact (finrank ℝ E' = n)] :
-    SingularNManifoldOld PUnit (m + n) (M × M') (I.prod I') where
-  f := fun _ ↦ PUnit.unit
-  hf := continuous_const
-  hdim := Fact.mk (by rw [finrank_prod, h.out, k.out])
 
 end SingularNManifoldOld
