@@ -84,29 +84,26 @@ lemma orientationPreserving_of_zero_dim (f : H → H) (s : Set H) (h : Module.ra
     exact Matrix.det_fin_zero
   det_eq_one ▸ Real.zero_lt_one
 
-lemma OrientationPreserving.DifferentiableAt [FiniteDimensional ℝ H] {f : H → H}
-    {s : Set H} (h : OrientationPreserving f s) : ∀ x ∈ s, DifferentiableAt ℝ f x := by
+lemma OrientationPreserving.DifferentiableAt [FiniteDimensional ℝ H] {f : H → H} {s : Set H}
+    (h : OrientationPreserving f s) {x : H} (hs : x ∈ s) : DifferentiableAt ℝ f x := by
   cases subsingleton_or_nontrivial H
-  · intro x hs
-    apply DifferentiableWithinAt.differentiableAt
+  · apply DifferentiableWithinAt.differentiableAt
     apply Set.Subsingleton.differentiableOn
     exact s.subsingleton_of_subsingleton
     exact hs
     exact mem_nhds_discrete.mpr hs
   · unfold OrientationPreserving at h
     contrapose! h
-    obtain ⟨x, hx, hd⟩ := h
-    use x, hx
-    rw [fderiv_zero_of_not_differentiableAt hd, ContinuousLinearMap.det]
+    use x, hs
+    rw [fderiv_zero_of_not_differentiableAt h, ContinuousLinearMap.det]
     simp [ne_of_gt FiniteDimensional.finrank_pos]
 
-lemma OrientationReversing.DifferentiableAt {f : H → H}
-    {s : Set H} (h : OrientationReversing f s) : ∀ x ∈ s, DifferentiableAt ℝ f x := by
+lemma OrientationReversing.DifferentiableAt {f : H → H} {s : Set H} (h : OrientationReversing f s)
+    {x : H} (hs : x ∈ s) : DifferentiableAt ℝ f x := by
   unfold OrientationReversing at h
   contrapose! h
-  obtain ⟨x, hx, hd⟩ := h
-  use x, hx
-  rw [fderiv_zero_of_not_differentiableAt hd, ContinuousLinearMap.det]
+  use x, hs
+  rw [fderiv_zero_of_not_differentiableAt h, ContinuousLinearMap.det]
   simp [ne_of_gt FiniteDimensional.finrank_pos]
 
 lemma orientationPreserving_id (s : Set H) : OrientationPreserving id s := by
@@ -117,7 +114,7 @@ lemma orientationPreserving_comp [FiniteDimensional ℝ H] {f g : H → H} {u v 
     (hf : OrientationPreserving f u) (hg : OrientationPreserving g v) :
     OrientationPreserving (g ∘ f) (u ∩ f ⁻¹' v) := by
   intro x ⟨hxu, hxv⟩
-  rw [fderiv.comp x (hg.DifferentiableAt (f x) hxv) (hf.DifferentiableAt x hxu)]
+  rw [fderiv.comp x (hg.DifferentiableAt hxv) (hf.DifferentiableAt hxu)]
   unfold ContinuousLinearMap.det ContinuousLinearMap.comp
   rw [(fderiv ℝ g (f x)).toLinearMap.det_comp (fderiv ℝ f x).toLinearMap]
   exact mul_pos (hg (f x) hxv) (hf x hxu)
@@ -126,7 +123,7 @@ lemma orientationReversing_comp_orientationPreserving [FiniteDimensional ℝ H]
     {f g : H → H} {u v : Set H} (hf : OrientationPreserving f u) (hg : OrientationReversing g v) :
     OrientationReversing (g ∘ f) (u ∩ f ⁻¹' v) := by
   intro x ⟨hxu, hxv⟩
-  rw [fderiv.comp x (hg.DifferentiableAt (f x) hxv) (hf.DifferentiableAt x hxu)]
+  rw [fderiv.comp x (hg.DifferentiableAt hxv) (hf.DifferentiableAt hxu)]
   unfold ContinuousLinearMap.det ContinuousLinearMap.comp
   rw [(fderiv ℝ g (f x)).toLinearMap.det_comp (fderiv ℝ f x).toLinearMap]
   exact mul_neg_of_neg_of_pos (hg (f x) hxv) (hf x hxu)
@@ -135,7 +132,7 @@ lemma orientationPreserving_comp_orientationReversing [FiniteDimensional ℝ H]
     {f g : H → H} {u v : Set H} (hf : OrientationReversing f u) (hg : OrientationPreserving g v) :
     OrientationReversing (g ∘ f) (u ∩ f ⁻¹' v) := by
   intro x ⟨hxu, hxv⟩
-  rw [fderiv.comp x (hg.DifferentiableAt (f x) hxv) (hf.DifferentiableAt x hxu)]
+  rw [fderiv.comp x (hg.DifferentiableAt hxv) (hf.DifferentiableAt hxu)]
   unfold ContinuousLinearMap.det ContinuousLinearMap.comp
   rw [(fderiv ℝ g (f x)).toLinearMap.det_comp (fderiv ℝ f x).toLinearMap]
   exact mul_neg_of_pos_of_neg (hg (f x) hxv) (hf x hxu)
@@ -144,7 +141,7 @@ lemma orientationReversing_comp {f g : H → H} {u v : Set H}
     (hf : OrientationReversing f u) (hg : OrientationReversing g v) :
     OrientationPreserving (g ∘ f) (u ∩ f ⁻¹' v) := by
   intro x ⟨hxu, hxv⟩
-  rw [fderiv.comp x (hg.DifferentiableAt (f x) hxv) (hf.DifferentiableAt x hxu)]
+  rw [fderiv.comp x (hg.DifferentiableAt hxv) (hf.DifferentiableAt hxu)]
   unfold ContinuousLinearMap.det ContinuousLinearMap.comp
   rw [(fderiv ℝ g (f x)).toLinearMap.det_comp (fderiv ℝ f x).toLinearMap]
   exact mul_pos_of_neg_of_neg (hg (f x) hxv) (hf x hxu)
