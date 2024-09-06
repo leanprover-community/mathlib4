@@ -234,6 +234,7 @@ example (f : α → β ->> γ) (hf : Con fun (x,y) => f x y) (y) : Con fun x => 
 example (f : α → β ->> γ) (hf : Con fun (x,y) => f x y) : Con fun x y => f x y := by fun_prop
 example (f : α → β ->> γ) (hf : Con fun (x,y) => f x y) (x) : Con fun y => f x y := by fun_prop
 example (f : α → α ->> (α → α)) (hf : Con fun (x,y,z) => f x y z) (x) : Con fun y => f x y := by fun_prop
+example (f : α → α ->> (α → α)) (y : α) (hf : Con fun (x,y,z) => f x y z) : Con fun x => f y x x := by fun_prop
 example (f : α → α ->> (α → α)) (hf : Con fun (x,y,z) => f x y z) : Con fun x y => f y x x := by fun_prop
 
 example (f : α → β ->> γ) (hf : Con ↿f) (y) : Con fun x => f x y := by fun_prop
@@ -475,9 +476,26 @@ theorem Dif_Con [Add 𝕜] (f : α → β) (hf : Dif 𝕜 f) : Con f := silentSo
 
 def f4 (a : α) := a
 
-example (hf : Dif Nat (f4 : α → α)) : Con (f4 : α → α) := by fun_prop (disch:=trace_state; aesop)
+example (hf : Dif Nat (f4 : α → α)) : Con (f4 : α → α) := by fun_prop (disch:=aesop)
 
 @[fun_prop]
 theorem f4_dif : Dif Nat (f4 : α → α) := silentSorry
 
 example (hf : Dif Nat (f4 : α → α)) : Con (f4 : α → α) := by fun_prop (disch:=aesop)
+
+
+-- Test abbrev transparency
+abbrev my_id {α} (a : α) := a
+example : Con (fun x : α => my_id x) := by fun_prop
+example (f : α → β) (hf : Con (my_id f)) : Con f := by fun_prop
+
+-- Testing some issues with bundled morphisms of multiple arguments
+structure Mor where
+  toFun : Int → Int → Int
+  hcon : Con (fun (x,y) => toFun x y)
+
+@[fun_prop]
+theorem Mor.toFun_Con (m : Mor) (f g : α → Int) (hf : Con f) (g : α → Int) (hg : Con g) :
+    Con (fun x => m.toFun (f x) (g x)) := by
+  have := m.hcon
+  fun_prop
