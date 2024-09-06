@@ -68,7 +68,7 @@ theorem degree_list_sum_le (l : List S[X]) : degree l.sum ≤ (l.map natDegree).
     rw [← List.foldr_max_of_ne_nil]
     · congr
     contrapose! h
-    rw [List.map_eq_nil] at h
+    rw [List.map_eq_nil_iff] at h
     simp [h]
 
 theorem natDegree_list_prod_le (l : List S[X]) : natDegree l.prod ≤ (l.map natDegree).sum := by
