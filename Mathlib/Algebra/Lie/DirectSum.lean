@@ -173,7 +173,8 @@ def lieAlgebraComponent (j : ι) : (⨁ i, L i) →ₗ⁅R⁆ L j :=
     toFun := component R ι L j
     map_lie' := fun {x y} => by simp [component, lapply] }
 
-@[ext]
+-- Note(kmill): `ext` cannot generate an iff theorem here since `x` and `y` do not determine `R`.
+@[ext (iff := false)]
 theorem lieAlgebra_ext {x y : ⨁ i, L i}
     (h : ∀ i, lieAlgebraComponent R ι L i x = lieAlgebraComponent R ι L i y) : x = y :=
   DFinsupp.ext h
@@ -228,10 +229,20 @@ variable {L : Type w} [LieRing L] [LieAlgebra R L] (I : ι → LieIdeal R L)
 [this Zulip thread](https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/
 Typeclass.20resolution.20under.20binders/near/245151099). -/
 instance lieRingOfIdeals : LieRing (⨁ i, I i) :=
+  #adaptation_note
+  /--
+  After lean4#5020, many instances for Lie algebras and manifolds are no longer found.
+  See https://leanprover.zulipchat.com/#narrow/stream/428973-nightly-testing/topic/.2316244.20adaptations.20for.20nightly-2024-08-28/near/466219124
+  -/
+  letI : (i : ι) → LieRing (I i) := fun _ => LieIdeal.lieRing ..
   DirectSum.lieRing fun i => ↥(I i)
 
 /-- See `DirectSum.lieRingOfIdeals` comment. -/
 instance lieAlgebraOfIdeals : LieAlgebra R (⨁ i, I i) :=
+  #adaptation_note /-- After lean4#5020, many instances for Lie algebras and manifolds are no
+  longer found. -/
+  letI : (i : ι) → LieAlgebra R (I i) := fun _ => LieIdeal.lieAlgebra ..
+  letI : (i : ι) → LieRing (I i) := fun _ => LieIdeal.lieRing ..
   DirectSum.lieAlgebra fun i => ↥(I i)
 
 end Ideals

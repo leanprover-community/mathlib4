@@ -205,17 +205,17 @@ theorem exists_FP_of_finite_cover {M} [Semigroup M] [Nonempty M] (s : Set (Set M
 
 @[to_additive FS_iter_tail_sub_FS]
 theorem FP_drop_subset_FP {M} [Semigroup M] (a : Stream' M) (n : ℕ) : FP (a.drop n) ⊆ FP a := by
-  induction' n with n ih
-  · rfl
-  rw [Nat.add_comm, ← Stream'.drop_drop]
-  exact _root_.trans (FP.tail _) ih
+  induction n with
+  | zero => rfl
+  | succ n ih =>
+    rw [Nat.add_comm, ← Stream'.drop_drop]
+    exact _root_.trans (FP.tail _) ih
 
 @[to_additive]
 theorem FP.singleton {M} [Semigroup M] (a : Stream' M) (i : ℕ) : a.get i ∈ FP a := by
-  induction' i with i ih generalizing a
-  · apply FP.head
-  · apply FP.tail
-    apply ih
+  induction i generalizing a with
+  | zero => exact FP.head _
+  | succ i ih => exact FP.tail _ _ (ih _)
 
 @[to_additive]
 theorem FP.mul_two {M} [Semigroup M] (a : Stream' M) (i j : ℕ) (ij : i < j) :

@@ -3,10 +3,10 @@ Copyright (c) 2020 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
 -/
-import Mathlib.RingTheory.PrincipalIdealDomain
-import Mathlib.RingTheory.Valuation.PrimeMultiplicity
 import Mathlib.RingTheory.AdicCompletion.Basic
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+import Mathlib.RingTheory.Valuation.PrimeMultiplicity
+import Mathlib.RingTheory.Valuation.ValuationRing
 
 /-!
 # Discrete valuation rings
@@ -38,9 +38,6 @@ We do not hence define `Uniformizer` at all, because we can use `Irreducible` in
 
 discrete valuation ring
 -/
-
-
-open scoped Classical
 
 universe u
 
@@ -151,9 +148,10 @@ def HasUnitMulPowIrreducibleFactorization [CommRing R] : Prop :=
 
 namespace HasUnitMulPowIrreducibleFactorization
 
-variable {R} [CommRing R] (hR : HasUnitMulPowIrreducibleFactorization R)
+variable {R} [CommRing R]
 
-theorem unique_irreducible ⦃p q : R⦄ (hp : Irreducible p) (hq : Irreducible q) :
+theorem unique_irreducible (hR : HasUnitMulPowIrreducibleFactorization R)
+    ⦃p q : R⦄ (hp : Irreducible p) (hq : Irreducible q) :
     Associated p q := by
   rcases hR with ⟨ϖ, hϖ, hR⟩
   suffices ∀ {p : R} (_ : Irreducible p), Associated p ϖ by
@@ -181,7 +179,8 @@ variable [IsDomain R]
 /-- An integral domain in which there is an irreducible element `p`
 such that every nonzero element is associated to a power of `p` is a unique factorization domain.
 See `DiscreteValuationRing.ofHasUnitMulPowIrreducibleFactorization`. -/
-theorem toUniqueFactorizationMonoid : UniqueFactorizationMonoid R :=
+theorem toUniqueFactorizationMonoid (hR : HasUnitMulPowIrreducibleFactorization R) :
+    UniqueFactorizationMonoid R :=
   let p := Classical.choose hR
   let spec := Classical.choose_spec hR
   UniqueFactorizationMonoid.of_exists_prime_factors fun x hx => by
@@ -235,6 +234,7 @@ theorem aux_pid_of_ufd_of_unique_irreducible (R : Type u) [CommRing R] [IsDomain
     [UniqueFactorizationMonoid R] (h₁ : ∃ p : R, Irreducible p)
     (h₂ : ∀ ⦃p q : R⦄, Irreducible p → Irreducible q → Associated p q) :
     IsPrincipalIdealRing R := by
+  classical
   constructor
   intro I
   by_cases I0 : I = ⊥
@@ -369,6 +369,7 @@ theorem unit_mul_pow_congr_unit {ϖ : R} (hirr : Irreducible ϖ) (u v : Rˣ) (m 
 -/
 open multiplicity
 
+open Classical in
 /-- The `PartENat`-valued additive valuation on a DVR. -/
 noncomputable def addVal (R : Type u) [CommRing R] [IsDomain R] [DiscreteValuationRing R] :
     AddValuation R PartENat :=
@@ -376,6 +377,7 @@ noncomputable def addVal (R : Type u) [CommRing R] [IsDomain R] [DiscreteValuati
 
 theorem addVal_def (r : R) (u : Rˣ) {ϖ : R} (hϖ : Irreducible ϖ) (n : ℕ) (hr : r = u * ϖ ^ n) :
     addVal R r = n := by
+  classical
   rw [addVal, addValuation_apply, hr, eq_of_associated_left
       (associated_of_irreducible R hϖ (Classical.choose_spec (exists_prime R)).irreducible),
     eq_of_associated_right (Associated.symm ⟨u, mul_comm _ _⟩),
@@ -423,6 +425,7 @@ theorem addVal_eq_top_iff {a : R} : addVal R a = ⊤ ↔ a = 0 := by
     exact addVal_zero
 
 theorem addVal_le_iff_dvd {a b : R} : addVal R a ≤ addVal R b ↔ a ∣ b := by
+  classical
   have hp := Classical.choose_spec (exists_prime R)
   constructor <;> intro h
   · by_cases ha0 : a = 0
@@ -449,3 +452,31 @@ instance (R : Type*) [CommRing R] [IsDomain R] [DiscreteValuationRing R] :
     rwa [← addVal_eq_top_iff, PartENat.eq_top_iff_forall_le]
 
 end DiscreteValuationRing
+
+
+section
+
+variable (A : Type u) [CommRing A] [IsDomain A] [DiscreteValuationRing A]
+
+/-- A DVR is a valuation ring. -/
+instance (priority := 100) of_discreteValuationRing : ValuationRing A := by
+  constructor
+  intro a b
+  by_cases ha : a = 0; · use 0; right; simp [ha]
+  by_cases hb : b = 0; · use 0; left; simp [hb]
+  obtain ⟨ϖ, hϖ⟩ := DiscreteValuationRing.exists_irreducible A
+  obtain ⟨m, u, rfl⟩ := DiscreteValuationRing.eq_unit_mul_pow_irreducible ha hϖ
+  obtain ⟨n, v, rfl⟩ := DiscreteValuationRing.eq_unit_mul_pow_irreducible hb hϖ
+  rcases le_total m n with h | h
+  · use (u⁻¹ * v : Aˣ) * ϖ ^ (n - m); left
+    simp_rw [mul_comm (u : A), Units.val_mul, ← mul_assoc, mul_assoc _ (u : A)]
+    simp only [Units.mul_inv, mul_one, mul_comm _ (v : A), mul_assoc, ← pow_add]
+    congr 2
+    exact Nat.add_sub_of_le h
+  · use (v⁻¹ * u : Aˣ) * ϖ ^ (m - n); right
+    simp_rw [mul_comm (v : A), Units.val_mul, ← mul_assoc, mul_assoc _ (v : A)]
+    simp only [Units.mul_inv, mul_one, mul_comm _ (u : A), mul_assoc, ← pow_add]
+    congr 2
+    exact Nat.add_sub_of_le h
+
+end

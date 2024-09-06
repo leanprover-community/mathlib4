@@ -5,7 +5,7 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Eric Wieser, 
   Yaël Dillies
 -/
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Data.Finset.Pointwise
+import Mathlib.Data.Finset.Pointwise.Basic
 import Mathlib.Data.Fin.Tuple.NatAntidiagonal
 
 /-!
@@ -75,7 +75,7 @@ where
           (fun ab => (aux d ab.2).1.map {
               toFun := Fin.cons (ab.1)
               inj' := Fin.cons_right_injective _ })
-          (fun i _hi j _hj hij => Finset.disjoint_left.2 fun t hti htj => hij $ by
+          (fun i _hi j _hj hij => Finset.disjoint_left.2 fun t hti htj => hij <| by
             simp_rw [Finset.mem_map, Embedding.coeFn_mk] at hti htj
             obtain ⟨ai, hai, hij'⟩ := hti
             obtain ⟨aj, haj, rfl⟩ := htj
@@ -106,7 +106,7 @@ choice.
 
 /-- The finset of functions `ι → μ` with support contained in `s` and sum `n`. -/
 def piAntidiag (s : Finset ι) (n : μ) : Finset (ι → μ) := by
-  refine (Fintype.truncEquivFinOfCardEq $ Fintype.card_coe s).lift
+  refine (Fintype.truncEquivFinOfCardEq <| Fintype.card_coe s).lift
     (fun e ↦ (finAntidiagonal s.card n).map ⟨fun f i ↦ if hi : i ∈ s then f (e ⟨i, hi⟩) else 0, ?_⟩)
     fun e₁ e₂ ↦ ?_
   · rintro f g hfg
@@ -114,7 +114,7 @@ def piAntidiag (s : Finset ι) (n : μ) : Finset (ι → μ) := by
     simpa using congr_fun hfg (e.symm i)
   · ext f
     simp only [mem_map, mem_finAntidiagonal]
-    refine Equiv.exists_congr ((e₁.symm.trans e₂).arrowCongr $ .refl _) fun g ↦ ?_
+    refine Equiv.exists_congr ((e₁.symm.trans e₂).arrowCongr <| .refl _) fun g ↦ ?_
     have := Fintype.sum_equiv (e₂.symm.trans e₁) _ g fun _ ↦ rfl
     aesop
 
@@ -162,9 +162,9 @@ lemma pairwiseDisjoint_piAntidiag_map_addRightEmbedding (hi : i ∉ s) (n : μ) 
   simp only [ne_eq, antidiagonal_congr' hab hcd, disjoint_left, mem_map, mem_piAntidiag,
     addRightEmbedding_apply, not_exists, not_and, and_imp, forall_exists_index]
   rintro hfg _ f rfl - rfl g rfl - hgf
-  exact hfg $ by simpa [sum_add_distrib, hi] using congr_arg (∑ j ∈ s, · j) hgf.symm
+  exact hfg <| by simpa [sum_add_distrib, hi] using congr_arg (∑ j ∈ s, · j) hgf.symm
 
-lemma piAntidiag_cons (hi : i ∉ s)  (n : μ) :
+lemma piAntidiag_cons (hi : i ∉ s) (n : μ) :
     piAntidiag (cons i s hi) n = (antidiagonal n).disjiUnion (fun p : μ × μ ↦
       (piAntidiag s p.snd).map (addRightEmbedding fun t ↦ if t = i then p.fst else 0))
         (pairwiseDisjoint_piAntidiag_map_addRightEmbedding hi _) := by
@@ -233,9 +233,7 @@ lemma map_nsmul_piAntidiag (s : Finset ι) (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
 lemma nsmul_piAntidiag_univ [Fintype ι] (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
     @SMul.smul _ _ Finset.smulFinset n (piAntidiag univ m) =
       (piAntidiag univ (n * m)).filter fun f : ι → ℕ ↦ ∀ i, n ∣ f i := by
-  have := nsmul_piAntidiag (univ : Finset ι) m hn
-  simp at this
-  convert this
+  simpa using nsmul_piAntidiag (univ : Finset ι) m hn
 
 lemma map_nsmul_piAntidiag_univ [Fintype ι] (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
     (piAntidiag (univ : Finset ι) m).map

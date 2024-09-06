@@ -284,9 +284,9 @@ variable (α)
 -- See note [reducible non-instances]
 -- Since this is reducible, we make sure to go via
 -- `SMul.comp.smul` to prevent typeclass inference unfolding too far
-@[to_additive (attr := reducible)
+@[to_additive
 "An additive action of `M` on `α` and a function `N → M` induces an additive action of `N` on `α`."]
-def comp (g : N → M) : SMul N α where smul := SMul.comp.smul g
+abbrev comp (g : N → M) : SMul N α where smul := SMul.comp.smul g
 
 variable {α}
 
@@ -354,6 +354,24 @@ lemma smul_smul_smul_comm [SMul α β] [SMul α γ] [SMul β δ] [SMul α δ] [S
     [IsScalarTower α β δ] [IsScalarTower α γ δ] [SMulCommClass β γ δ] (a : α) (b : β) (c : γ)
     (d : δ) : (a • b) • c • d = (a • c) • b • d := by rw [smul_assoc, smul_assoc, smul_comm b]
 
+/-- Note that the `IsScalarTower α β β` and `SMulCommClass α β β` typeclass arguments are usually
+satisfied by `Algebra α β`. -/
+@[to_additive]
+lemma smul_mul_smul_comm [Mul α] [Mul β] [SMul α β] [IsScalarTower α β β]
+    [IsScalarTower α α β] [SMulCommClass α β β] (a : α) (b : β) (c : α) (d : β) :
+    (a • b) * (c • d) = (a * c) • (b * d) := by
+  have : SMulCommClass β α β := .symm ..; exact smul_smul_smul_comm a b c d
+
+@[to_additive (attr := deprecated (since := "2024-08-29"))]
+alias smul_mul_smul := smul_mul_smul_comm
+
+/-- Note that the `IsScalarTower α β β` and `SMulCommClass α β β` typeclass arguments are usually
+satisfied by `Algebra α β`. -/
+@[to_additive]
+lemma mul_smul_mul_comm [Mul α] [Mul β] [SMul α β] [IsScalarTower α β β]
+    [IsScalarTower α α β] [SMulCommClass α β β] (a b : α) (c d : β) :
+    (a * b) • (c * d) = (a • c) * (b • d) := smul_smul_smul_comm a b c d
+
 variable [SMul M α]
 
 @[to_additive]
@@ -391,9 +409,9 @@ variable {M}
 
 /-- Pullback a multiplicative action along an injective map respecting `•`.
 See note [reducible non-instances]. -/
-@[to_additive (attr := reducible)
+@[to_additive
     "Pullback an additive action along an injective map respecting `+ᵥ`."]
-protected def Function.Injective.mulAction [SMul M β] (f : β → α) (hf : Injective f)
+protected abbrev Function.Injective.mulAction [SMul M β] (f : β → α) (hf : Injective f)
     (smul : ∀ (c : M) (x), f (c • x) = c • f x) : MulAction M β where
   smul := (· • ·)
   one_smul x := hf <| (smul _ _).trans <| one_smul _ (f x)
@@ -401,9 +419,9 @@ protected def Function.Injective.mulAction [SMul M β] (f : β → α) (hf : Inj
 
 /-- Pushforward a multiplicative action along a surjective map respecting `•`.
 See note [reducible non-instances]. -/
-@[to_additive (attr := reducible)
+@[to_additive
     "Pushforward an additive action along a surjective map respecting `+ᵥ`."]
-protected def Function.Surjective.mulAction [SMul M β] (f : α → β) (hf : Surjective f)
+protected abbrev Function.Surjective.mulAction [SMul M β] (f : α → β) (hf : Surjective f)
     (smul : ∀ (c : M) (x), f (c • x) = c • f x) : MulAction M β where
   smul := (· • ·)
   one_smul := by simp [hf.forall, ← smul]
@@ -413,9 +431,9 @@ protected def Function.Surjective.mulAction [SMul M β] (f : α → β) (hf : Su
 
 See also `Function.Surjective.distribMulActionLeft` and `Function.Surjective.moduleLeft`.
 -/
-@[to_additive (attr := reducible)
+@[to_additive
 "Push forward the action of `R` on `M` along a compatible surjective map `f : R →+ S`."]
-def Function.Surjective.mulActionLeft {R S M : Type*} [Monoid R] [MulAction R M] [Monoid S]
+abbrev Function.Surjective.mulActionLeft {R S M : Type*} [Monoid R] [MulAction R M] [Monoid S]
     [SMul S M] (f : R →* S) (hf : Surjective f) (hsmul : ∀ (c) (x : M), f c • x = c • x) :
     MulAction S M where
   smul := (· • ·)
@@ -444,19 +462,12 @@ instance IsScalarTower.left : IsScalarTower M M α where
 
 variable {M}
 
-/-- Note that the `IsScalarTower M α α` and `SMulCommClass M α α` typeclass arguments are
-usually satisfied by `Algebra M α`. -/
-@[to_additive] -- Porting note: nolint to_additive_doc
-lemma smul_mul_smul [Mul α] (r s : M) (x y : α) [IsScalarTower M α α] [SMulCommClass M α α] :
-    r • x * s • y = (r * s) • (x * y) := by
-  rw [smul_mul_assoc, mul_smul_comm, ← smul_assoc, smul_eq_mul]
-
 section Monoid
 variable [Monoid N] [MulAction M N] [IsScalarTower M N N] [SMulCommClass M N N]
 
 lemma smul_pow (r : M) (x : N) : ∀ n, (r • x) ^ n = r ^ n • x ^ n
   | 0 => by simp
-  | n + 1 => by rw [pow_succ', smul_pow _ _ n, smul_mul_smul, ← pow_succ', ← pow_succ']
+  | n + 1 => by rw [pow_succ', smul_pow _ _ n, smul_mul_smul_comm, ← pow_succ', ← pow_succ']
 
 end Monoid
 
@@ -464,10 +475,10 @@ section Group
 variable [Group G] [MulAction G α] {g : G} {a b : α}
 
 @[to_additive (attr := simp)]
-lemma inv_smul_smul (g : G) (a : α) : g⁻¹ • g • a = a := by rw [smul_smul, mul_left_inv, one_smul]
+lemma inv_smul_smul (g : G) (a : α) : g⁻¹ • g • a = a := by rw [smul_smul, inv_mul_cancel, one_smul]
 
 @[to_additive (attr := simp)]
-lemma smul_inv_smul (g : G) (a : α) : g • g⁻¹ • a = a := by rw [smul_smul, mul_right_inv, one_smul]
+lemma smul_inv_smul (g : G) (a : α) : g • g⁻¹ • a = a := by rw [smul_smul, mul_inv_cancel, one_smul]
 
 @[to_additive] lemma inv_smul_eq_iff : g⁻¹ • a = b ↔ a = g • b :=
   ⟨fun h ↦ by rw [← h, smul_inv_smul], fun h ↦ by rw [h, inv_smul_smul]⟩
@@ -489,7 +500,7 @@ end Mul
 variable [Group H] [MulAction G H] [SMulCommClass G H H] [IsScalarTower G H H]
 
 lemma smul_inv (g : G) (a : H) : (g • a)⁻¹ = g⁻¹ • a⁻¹ :=
-  inv_eq_of_mul_eq_one_right $ by rw [smul_mul_smul, mul_right_inv, mul_right_inv, one_smul]
+  inv_eq_of_mul_eq_one_right <| by rw [smul_mul_smul_comm, mul_inv_cancel, mul_inv_cancel, one_smul]
 
 lemma smul_zpow (g : G) (a : H) (n : ℤ) : (g • a) ^ n = g ^ n • a ^ n := by
   cases n <;> simp [smul_pow, smul_inv]
@@ -523,8 +534,8 @@ variable (α)
 a multiplicative action of `N` on `α`.
 
 See note [reducible non-instances]. -/
-@[to_additive (attr := reducible)]
-def compHom [Monoid N] (g : N →* M) : MulAction N α where
+@[to_additive]
+abbrev compHom [Monoid N] (g : N →* M) : MulAction N α where
   smul := SMul.comp.smul g
   -- Porting note: was `by simp [g.map_one, MulAction.one_smul]`
   one_smul _ := by simpa [(· • ·)] using MulAction.one_smul ..
@@ -620,7 +631,7 @@ def monoidHomEquivMulActionIsScalarTower (M N) [Monoid M] [Monoid N] :
   toFun f := ⟨MulAction.compHom N f, SMul.comp.isScalarTower _⟩
   invFun := fun ⟨_, _⟩ ↦ MonoidHom.smulOneHom
   left_inv f := MonoidHom.ext fun m ↦ mul_one (f m)
-  right_inv := fun ⟨_, _⟩ ↦ Subtype.ext <| MulAction.ext _ _ <| funext₂ <| smul_one_smul N
+  right_inv := fun ⟨_, _⟩ ↦ Subtype.ext <| MulAction.ext <| funext₂ <| smul_one_smul N
 
 end CompatibleScalar
 

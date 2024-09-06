@@ -9,7 +9,6 @@ import Mathlib.Analysis.InnerProductSpace.EuclideanDist
 import Mathlib.MeasureTheory.Function.ContinuousMapDense
 import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.MeasureTheory.Integral.SetIntegral
-import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
 import Mathlib.Topology.EMetricSpace.Paracompact
 import Mathlib.MeasureTheory.Measure.Haar.Unique
 
@@ -56,8 +55,6 @@ section InnerProductSpace
 variable [NormedAddCommGroup V] [MeasurableSpace V] [BorelSpace V] [InnerProductSpace ℝ V]
   [FiniteDimensional ℝ V]
 
-variable [CompleteSpace E]
-
 local notation3 "i" => fun (w : V) => (1 / (2 * ‖w‖ ^ 2) : ℝ) • w
 
 /-- Shifting `f` by `(1 / (2 * ‖w‖ ^ 2)) • w` negates the integral in the Riemann-Lebesgue lemma. -/
@@ -71,7 +68,7 @@ theorem fourierIntegral_half_period_translate {w : V} (hw : w ≠ 0) :
     (fun v : V => 𝐞 (-⟪v, w⟫) • f (v + i w)) =
       fun v : V => (fun x : V => -(𝐞 (-⟪x, w⟫) • f x)) (v + i w) := by
     ext1 v
-    simp_rw [inner_add_left, hiw, Submonoid.smul_def, Real.fourierChar_apply, neg_add, mul_add,
+    simp_rw [inner_add_left, hiw, Circle.smul_def, Real.fourierChar_apply, neg_add, mul_add,
       ofReal_add, add_mul, exp_add]
     have : 2 * π * -(1 / 2) = -π := by field_simp; ring
     rw [this, ofReal_neg, neg_mul, exp_neg, exp_pi_mul_I, inv_neg, inv_one, mul_neg_one, neg_smul,
@@ -144,7 +141,7 @@ theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support 
       (hf1.integrable_of_hasCompactSupport hf2),
     norm_smul, this, inv_mul_eq_div, div_lt_iff' two_pos]
   refine lt_of_le_of_lt (norm_integral_le_integral_norm _) ?_
-  simp_rw [norm_circle_smul]
+  simp_rw [Circle.norm_smul]
   --* Show integral can be taken over A only.
   have int_A : ∫ v : V, ‖f v - f (v + i w)‖ = ∫ v in A, ‖f v - f (v + i w)‖ := by
     refine (setIntegral_eq_integral_of_forall_compl_eq_zero fun v hv => ?_).symm
@@ -205,7 +202,7 @@ theorem tendsto_integral_exp_inner_smul_cocompact :
             (tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support hg_cont
               hg_supp))
           _ (div_pos hε two_pos)).mp
-      (eventually_of_forall fun w hI => ?_)
+      (Eventually.of_forall fun w hI => ?_)
   rw [dist_eq_norm] at hI ⊢
   have : ‖(∫ v, 𝐞 (-⟪v, w⟫) • f v) - ∫ v, 𝐞 (-⟪v, w⟫) • g v‖ ≤ ε / 2 := by
     refine le_trans ?_ hfg
@@ -251,7 +248,6 @@ section NoInnerProduct
 
 variable (f) [AddCommGroup V] [TopologicalSpace V] [TopologicalAddGroup V] [T2Space V]
   [MeasurableSpace V] [BorelSpace V] [Module ℝ V] [ContinuousSMul ℝ V] [FiniteDimensional ℝ V]
-  [CompleteSpace E]
 
 /-- Riemann-Lebesgue lemma for functions on a finite-dimensional real vector space, formulated via
 dual space. -/
@@ -265,41 +261,11 @@ theorem tendsto_integral_exp_smul_cocompact (μ : Measure V) [μ.IsAddHaarMeasur
   borelize V'
   -- various equivs derived from A
   let Aₘ : MeasurableEquiv V V' := A.toHomeomorph.toMeasurableEquiv
-  -- isomorphism between duals derived from A -- need to do continuity as a separate step in order
-  -- to apply `LinearMap.continuous_of_finiteDimensional`.
-  let Adualₗ : (V →L[ℝ] ℝ) ≃ₗ[ℝ] V' →L[ℝ] ℝ :=
-    { toFun := fun t => t.comp A.symm.toContinuousLinearMap
-      invFun := fun t => t.comp A.toContinuousLinearMap
-      map_add' := by
-        intro t s
-        ext1 v
-        simp only [ContinuousLinearMap.coe_comp', Function.comp_apply,
-          ContinuousLinearMap.add_apply]
-      map_smul' := by
-        intro x f
-        ext1 v
-        simp only [RingHom.id_apply, ContinuousLinearMap.coe_comp', Function.comp_apply,
-          ContinuousLinearMap.smul_apply]
-      left_inv := by
-        intro w
-        ext1 v
-        simp only [ContinuousLinearMap.coe_comp',
-          ContinuousLinearEquiv.coe_coe, Function.comp_apply,
-          ContinuousLinearEquiv.symm_apply_apply]
-      right_inv := by
-        intro w
-        ext1 v
-        simp only [ContinuousLinearMap.coe_comp',
-          ContinuousLinearEquiv.coe_coe, Function.comp_apply,
-          ContinuousLinearEquiv.apply_symm_apply] }
-  let Adual : (V →L[ℝ] ℝ) ≃L[ℝ] V' →L[ℝ] ℝ :=
-    { Adualₗ with
-      continuous_toFun := Adualₗ.toLinearMap.continuous_of_finiteDimensional
-      continuous_invFun := Adualₗ.symm.toLinearMap.continuous_of_finiteDimensional }
-  have : (μ.map Aₘ).IsAddHaarMeasure := Measure.MapContinuousLinearEquiv.isAddHaarMeasure _ A
-  convert
-    (tendsto_integral_exp_smul_cocompact_of_inner_product (f ∘ A.symm) (μ.map Aₘ)).comp
-      Adual.toHomeomorph.toCocompactMap.cocompact_tendsto' with w
+  -- isomorphism between duals derived from A
+  let Adual : (V →L[ℝ] ℝ) ≃L[ℝ] V' →L[ℝ] ℝ := A.arrowCongrSL (.refl _ _)
+  have : (μ.map Aₘ).IsAddHaarMeasure := A.isAddHaarMeasure_map _
+  convert (tendsto_integral_exp_smul_cocompact_of_inner_product (f ∘ A.symm) (μ.map Aₘ)).comp
+    Adual.toHomeomorph.toCocompactMap.cocompact_tendsto' with w
   rw [Function.comp_apply, integral_map_equiv]
   congr 1 with v : 1
   congr

@@ -89,15 +89,22 @@ theorem zero_mem_of_symmetric (K : ConvexBody V) (h_symm : ∀ x ∈ K, - x ∈ 
 
 section ContinuousAdd
 
+instance : Zero (ConvexBody V) where
+  zero := ⟨0, convex_singleton 0, isCompact_singleton, Set.singleton_nonempty 0⟩
+
+@[simp] -- Porting note: add norm_cast; we leave it out for now to reproduce mathlib3 behavior.
+theorem coe_zero : (↑(0 : ConvexBody V) : Set V) = 0 :=
+  rfl
+
+instance : Inhabited (ConvexBody V) :=
+  ⟨0⟩
+
 variable [ContinuousAdd V]
 
 instance : Add (ConvexBody V) where
   add K L :=
     ⟨K + L, K.convex.add L.convex, K.isCompact.add L.isCompact,
       K.nonempty.add L.nonempty⟩
-
-instance : Zero (ConvexBody V) where
-  zero := ⟨0, convex_singleton 0, isCompact_singleton, Set.singleton_nonempty 0⟩
 
 instance : SMul ℕ (ConvexBody V) where
   smul := nsmulRec
@@ -113,13 +120,6 @@ instance : AddMonoid (ConvexBody V) :=
 @[simp] -- Porting note: add norm_cast; we leave it out for now to reproduce mathlib3 behavior.
 theorem coe_add (K L : ConvexBody V) : (↑(K + L) : Set V) = (K : Set V) + L :=
   rfl
-
-@[simp] -- Porting note: add norm_cast; we leave it out for now to reproduce mathlib3 behavior.
-theorem coe_zero : (↑(0 : ConvexBody V) : Set V) = 0 :=
-  rfl
-
-instance : Inhabited (ConvexBody V) :=
-  ⟨0⟩
 
 instance : AddCommMonoid (ConvexBody V) :=
   SetLike.coe_injective.addCommMonoid (↑) rfl (fun _ _ ↦ rfl) fun _ _ ↦ coe_nsmul _ _
@@ -153,14 +153,14 @@ instance : Module ℝ≥0 (ConvexBody V) where
 theorem smul_le_of_le (K : ConvexBody V) (h_zero : 0 ∈ K) {a b : ℝ≥0} (h : a ≤ b) :
     a • K ≤ b • K := by
   rw [← SetLike.coe_subset_coe, coe_smul', coe_smul']
-  by_cases ha : a = 0
-  · rw [ha, Set.zero_smul_set K.nonempty, Set.zero_subset]
+  obtain rfl | ha := eq_zero_or_pos a
+  · rw [Set.zero_smul_set K.nonempty, Set.zero_subset]
     exact Set.mem_smul_set.mpr ⟨0, h_zero, smul_zero _⟩
   · intro x hx
     obtain ⟨y, hy, rfl⟩ := Set.mem_smul_set.mp hx
-    rw [← Set.mem_inv_smul_set_iff₀ ha, smul_smul]
-    exact Convex.mem_smul_of_zero_mem K.convex h_zero hy
-      (by rwa [← NNReal.mul_le_iff_le_inv ha, mul_one] : 1 ≤ a⁻¹ * b)
+    rw [← Set.mem_inv_smul_set_iff₀ ha.ne', smul_smul]
+    refine Convex.mem_smul_of_zero_mem K.convex h_zero hy (?_ : 1 ≤ a⁻¹ * b)
+    rwa [le_inv_mul_iff₀ ha, mul_one]
 
 end TVS
 

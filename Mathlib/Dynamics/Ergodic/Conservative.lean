@@ -38,11 +38,7 @@ conservative dynamical system, Poincare recurrence theorem
 
 noncomputable section
 
-open scoped Classical
-open Set Filter MeasureTheory Finset Function TopologicalSpace
-
-open scoped Classical
-open Topology
+open Set Filter MeasureTheory Finset Function TopologicalSpace Topology
 
 variable {ι : Type*} {α : Type*} [MeasurableSpace α] {f : α → α} {s : Set α} {μ : Measure α}
 
@@ -151,7 +147,7 @@ theorem measure_inter_frequently_image_mem_eq (hf : Conservative f μ) (hs : Nul
 
 /-- Poincaré recurrence theorem: if `f` is a conservative dynamical system and `s` is a measurable
 set, then for `μ`-a.e. `x`, if the orbit of `x` visits `s` at least once, then it visits `s`
-infinitely many times.  -/
+infinitely many times. -/
 theorem ae_forall_image_mem_imp_frequently_image_mem (hf : Conservative f μ)
     (hs : NullMeasurableSet s μ) : ∀ᵐ x ∂μ, ∀ k, f^[k] x ∈ s → ∃ᶠ n in atTop, f^[n] x ∈ s := by
   refine ae_all_iff.2 fun k => ?_

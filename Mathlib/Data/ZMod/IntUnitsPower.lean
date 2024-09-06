@@ -107,6 +107,6 @@ lemma uzpow_neg (s : ℤˣ) (x : R) : s ^ (-x) = (s ^ x)⁻¹ :=
 
 @[norm_cast] lemma uzpow_intCast (u : ℤˣ) (z : ℤ) : u ^ (z : R) = u ^ z := by
   change Additive.toMul ((z : R) • Additive.ofMul u) = _
-  rw [Int.cast_smul_eq_nsmul, toMul_zsmul, toMul_ofMul]
+  rw [Int.cast_smul_eq_zsmul, toMul_zsmul, toMul_ofMul]
 
 end CommRing

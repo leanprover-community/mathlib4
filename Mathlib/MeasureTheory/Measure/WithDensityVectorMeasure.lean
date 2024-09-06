@@ -24,7 +24,7 @@ the Radon-Nikodym theorem for signed measures.
 
 noncomputable section
 
-open scoped Classical MeasureTheory NNReal ENNReal
+open scoped MeasureTheory NNReal ENNReal
 
 variable {α β : Type*} {m : MeasurableSpace α}
 
@@ -33,8 +33,9 @@ namespace MeasureTheory
 open TopologicalSpace
 
 variable {μ ν : Measure α}
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
+open Classical in
 /-- Given a measure `μ` and an integrable function `f`, `μ.withDensityᵥ f` is
 the vector measure which maps the set `s` to `∫ₛ f ∂μ`. -/
 def Measure.withDensityᵥ {m : MeasurableSpace α} (μ : Measure α) (f : α → E) : VectorMeasure α E :=
@@ -142,7 +143,7 @@ theorem Measure.withDensityᵥ_absolutelyContinuous (μ : Measure α) (f : α �
     exact VectorMeasure.AbsolutelyContinuous.zero _
 
 /-- Having the same density implies the underlying functions are equal almost everywhere. -/
-theorem Integrable.ae_eq_of_withDensityᵥ_eq {f g : α → E} (hf : Integrable f μ)
+theorem Integrable.ae_eq_of_withDensityᵥ_eq [CompleteSpace E] {f g : α → E} (hf : Integrable f μ)
     (hg : Integrable g μ) (hfg : μ.withDensityᵥ f = μ.withDensityᵥ g) : f =ᵐ[μ] g := by
   refine hf.ae_eq_of_forall_setIntegral_eq f g hg fun i hi _ => ?_
   rw [← withDensityᵥ_apply hf hi, hfg, withDensityᵥ_apply hg hi]
@@ -156,7 +157,8 @@ theorem WithDensityᵥEq.congr_ae {f g : α → E} (h : f =ᵐ[μ] g) :
   · have hg : ¬Integrable g μ := by intro hg; exact hf (hg.congr h.symm)
     rw [withDensityᵥ, withDensityᵥ, dif_neg hf, dif_neg hg]
 
-theorem Integrable.withDensityᵥ_eq_iff {f g : α → E} (hf : Integrable f μ) (hg : Integrable g μ) :
+theorem Integrable.withDensityᵥ_eq_iff [CompleteSpace E]
+    {f g : α → E} (hf : Integrable f μ) (hg : Integrable g μ) :
     μ.withDensityᵥ f = μ.withDensityᵥ g ↔ f =ᵐ[μ] g :=
   ⟨fun hfg => hf.ae_eq_of_withDensityᵥ_eq hg hfg, fun h => WithDensityᵥEq.congr_ae h⟩
 

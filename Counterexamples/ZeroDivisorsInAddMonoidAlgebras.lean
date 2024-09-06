@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Algebra.GeomSum
-import Mathlib.Algebra.Group.UniqueProds
+import Mathlib.Algebra.Group.UniqueProds.Basic
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Data.Finsupp.Lex
 import Mathlib.Data.ZMod.Basic
@@ -233,7 +233,8 @@ example {α} [Ring α] [Nontrivial α] : ∃ f g : AddMonoidAlgebra α F, f ≠ 
   zero_divisors_of_periodic (1 : F) le_rfl (by simp [two_smul]) z01.ne'
 
 example {α} [Zero α] :
-    2 • (Finsupp.single 0 1 : α →₀ F) = Finsupp.single 0 1 ∧ (Finsupp.single 0 1 : α →₀ F) ≠ 0 :=
+    2 • (Finsupp.single 0 1 : α →₀ F) = (Finsupp.single 0 1 : α →₀ F)
+      ∧ (Finsupp.single 0 1 : α →₀ F) ≠ 0 :=
   ⟨smul_single _ _ _, by simp [Ne, Finsupp.single_eq_zero, z01.ne]⟩
 
 end F
