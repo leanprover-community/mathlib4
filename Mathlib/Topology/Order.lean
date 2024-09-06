@@ -740,6 +740,15 @@ theorem map_nhds_induced_of_surjective [T : TopologicalSpace α] {f : β → α}
     (a : β) : map f (@nhds β (TopologicalSpace.induced f T) a) = 𝓝 (f a) := by
   rw [nhds_induced, map_comap_of_surjective hf]
 
+theorem continuous_nhdsAdjoint_dom [TopologicalSpace β] {f : α → β} {a : α} {l : Filter α} :
+    Continuous[nhdsAdjoint a l, _] f ↔ Tendsto f l (𝓝 (f a)) := by
+  simp_rw [continuous_iff_le_induced, gc_nhds _ _, nhds_induced, tendsto_iff_comap]
+
+theorem coinduced_nhdsAdjoint (f : α → β) (a : α) (l : Filter α) :
+    coinduced f (nhdsAdjoint a l) = nhdsAdjoint (f a) (map f l) :=
+  eq_of_forall_ge_iff fun _ ↦ by
+    rw [gc_nhds, ← continuous_iff_coinduced_le, continuous_nhdsAdjoint_dom, Tendsto]
+
 end Constructions
 
 section Induced

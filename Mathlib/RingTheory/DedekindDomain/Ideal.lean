@@ -108,7 +108,7 @@ theorem right_inverse_eq (I J : FractionalIdeal R₁⁰ K) (h : I * J = 1) : J =
   apply (le_div_iff_of_nonzero hI).mpr _
   intro y hy x hx
   rw [mul_comm]
-  exact mul_mem_mul hx hy
+  exact mul_mem_mul hy hx
 
 theorem mul_inv_cancel_iff {I : FractionalIdeal R₁⁰ K} : I * I⁻¹ = 1 ↔ ∃ J, I * J = 1 :=
   ⟨fun h => ⟨I⁻¹, h⟩, fun ⟨J, hJ⟩ => by rwa [← right_inverse_eq K I J hJ]⟩
@@ -609,7 +609,7 @@ theorem Ideal.dvdNotUnit_iff_lt {I J : Ideal A} : DvdNotUnit I J ↔ J < I :=
       (mt Ideal.dvd_iff_le.mp (not_le_of_lt h))⟩
 
 instance : WfDvdMonoid (Ideal A) where
-  wellFounded_dvdNotUnit := by
+  wf := by
     have : WellFoundedGT (Ideal A) := inferInstance
     convert this.wf
     ext
