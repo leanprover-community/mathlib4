@@ -434,7 +434,8 @@ def getLocalTheorems (funPropDecl : FunPropDecl) (funOrigin : Origin)
       let .some (decl,f) ← getFunProp? b | return none
       unless decl.funPropName = funPropDecl.funPropName do return none
 
-      let .data fData ← getFunctionData? f (← unfoldNamePred) {zeta := false} | return none
+      let .data fData ← getFunctionData? f (← unfoldNamePred) {zeta := false, zetaDelta := false}
+        | return none
       unless (fData.getFnOrigin == funOrigin) do return none
 
       unless isOrderedSubsetOf mainArgs fData.mainArgs do return none
@@ -654,7 +655,7 @@ mutual
         let e' := e.setArg funPropDecl.funArgId b
         funProp (← mkLambdaFVars xs e')
 
-    match ← getFunctionData? f (← unfoldNamePred) {zeta := false} with
+    match ← getFunctionData? f (← unfoldNamePred) {zeta := false, zetaDelta := false} with
     | .letE f =>
       trace[Debug.Meta.Tactic.fun_prop] "let case on {← ppExpr f}"
       let e := e.setArg funPropDecl.funArgId f -- update e with reduced f
