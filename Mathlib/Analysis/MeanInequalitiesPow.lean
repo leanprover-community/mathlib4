@@ -141,7 +141,7 @@ theorem rpow_add_le_mul_rpow_add_rpow (z₁ z₂ : ℝ≥0) {p : ℝ} (hp : 1 �
   · simp only [one_div, inv_mul_cancel_left₀, Ne, mul_eq_zero, two_ne_zero, one_ne_zero,
       not_false_iff]
   · have A : p - 1 ≠ 0 := ne_of_gt (sub_pos.2 h'p)
-    simp only [mul_rpow, rpow_sub' _ A, div_eq_inv_mul, rpow_one, mul_one]
+    simp only [mul_rpow, rpow_sub' A, div_eq_inv_mul, rpow_one, mul_one]
     ring
 
 /-- Weighted generalized mean inequality, version for sums over finite sets, with `ℝ≥0`-valued
