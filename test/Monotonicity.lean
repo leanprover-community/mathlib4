@@ -64,7 +64,7 @@ example {x y z : ℕ} : true := by
   trivial
 
 example {x y z : ℕ} : true := by
-  suffices _this : x + y ≤ z + y; trivial
+  suffices _this : x + y ≤ z + y by trivial
   mono
   guard_target = x ≤ z
   exact test_sorry
@@ -280,7 +280,7 @@ example {x y z w : ℕ} : true := by
 -- : (m + x + n) * z + k ≤ z * (y + n + m) + k :=
 -- begin
 --   ac_mono* : m + x + n ≤ y + n + m,
---   transitivity; [ skip , apply h₁ ],
+--   transitivity; [skip , apply h₁],
 --   apply le_of_eq,
 --   ac_refl,
 -- end

@@ -1,9 +1,8 @@
+import Lean.Elab.Tactic.ElabTerm
+import Lean.Elab.Tactic.Rfl
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Meta.Basic
 import Mathlib.Tactic.Relation.Rfl
-import Mathlib.Tactic.Relation.Symm
-import Std.Tactic.GuardExpr
-import Std.Tactic.GuardMsgs
 
 /-! # Tests for mathlib extensions to `Lean.Expr` and `Lean.Meta` -/
 
@@ -12,6 +11,7 @@ namespace Tests
 open Lean Meta
 
 private axiom test_sorry : ∀ {α}, α
+set_option linter.style.setOption false in
 set_option pp.unicode.fun true
 
 def eTrue := Expr.const ``True []
@@ -59,6 +59,8 @@ elab "test_forallNot_of_notExists" t:term : tactic => do
   let (ety', e') ← Expr.forallNot_of_notExists ety' e
   unless ← isDefEq ety' (← inferType e') do throwError "bad proof"
   logInfo m!"{ety'}"
+
+set_option linter.unusedTactic false
 
 /-- info: ∀ (x : Nat), ¬0 < x -/
 #guard_msgs in
@@ -119,33 +121,5 @@ info: some (`LE.le, Lean.Expr.const `Nat.zero [],
 Lean.Expr.app (Lean.Expr.const `Nat.succ []) (Lean.Expr.const `Nat.zero []))
 -/
 #guard_msgs in #eval do Expr.relSidesIfRefl? (← mkRel ``LE.le eNatZero eNatOne)
-
-/-! ### `Lean.Expr.relSidesIfSymm?` -/
-
-/--
-info: some (`Eq, Lean.Expr.const `Nat.zero [],
-Lean.Expr.app (Lean.Expr.const `Nat.succ []) (Lean.Expr.const `Nat.zero []))
--/
-#guard_msgs in #eval do Expr.relSidesIfSymm? (← mkRel ``Eq eNatZero eNatOne)
-
-/-- info: some (`Iff, Lean.Expr.const `True [], Lean.Expr.const `False []) -/
-#guard_msgs in #eval do Expr.relSidesIfSymm? (← mkRel ``Iff eTrue eFalse)
-
-/-- info: some (`HEq, Lean.Expr.const `True [], Lean.Expr.const `False []) -/
-#guard_msgs in #eval do Expr.relSidesIfSymm? (← mkRel ``HEq eTrue eFalse)
-
-/-- info: none -/
-#guard_msgs in #eval do Expr.relSidesIfSymm? (← mkRel ``LT.lt eNatZero eNatOne)
-
-def eq2 (a b : Nat) : Prop := a = b
-
-@[symm] theorem eq2_symm (a b : Nat) (h : eq2 a b) : eq2 b a := h.symm
-
-/--
-info: some (`Tests.eq2,
- Lean.Expr.const `Nat.zero [],
- Lean.Expr.app (Lean.Expr.const `Nat.succ []) (Lean.Expr.const `Nat.zero []))
--/
-#guard_msgs in #eval do Expr.relSidesIfSymm? (← mkRel ``eq2 eNatZero eNatOne)
 
 end Tests

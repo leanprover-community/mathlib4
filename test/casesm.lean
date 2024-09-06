@@ -1,8 +1,8 @@
 import Mathlib.Tactic.CasesM
-import Std.Tactic.GuardExpr
 
 set_option autoImplicit true
 
+set_option linter.unusedTactic false in
 example (h : a ∧ b ∨ c ∧ d) (h2 : e ∧ f) : True := by
   casesm* _∨_, _∧_
   · clear ‹a› ‹b› ‹e› ‹f›; (fail_if_success clear ‹c›); trivial
@@ -83,6 +83,7 @@ example : True ∧ True ∧ True := by
 section AuxDecl
 variable {p q r : Prop}
 variable (h : p ∧ q ∨ p ∧ r)
+include h
 
 -- Make sure that we don't try to work on auxiliary declarations.
 -- In this case, there will be an auxiliary recursive declaration for

@@ -1,6 +1,6 @@
 import Mathlib.Tactic.Change
-import Std.Tactic.GuardExpr
 
+set_option linter.style.setOption false
 set_option pp.unicode.fun true
 set_option autoImplicit true
 
