@@ -54,8 +54,9 @@ end PadicInt
 
 namespace Padic
 
-/-- The field of p-adic numbers `ℚ_[p]` is a locally compact topological space. -/
-instance locallyCompact : LocallyCompactSpace ℚ_[p] := by
+/-- The field of p-adic numbers `ℚ_[p]` is a proper metric space. -/
+instance : ProperSpace ℚ_[p] := by
+  suffices LocallyCompactSpace ℚ_[p] from .of_locallyCompactSpace ℚ_[p]
   have : closedBall 0 1 ∈ 𝓝 (0 : ℚ_[p]) := closedBall_mem_nhds _ zero_lt_one
   simp only [closedBall, dist_eq_norm_sub, sub_zero] at this
   refine IsCompact.locallyCompactSpace_of_mem_nhds_of_addGroup ?_ this
