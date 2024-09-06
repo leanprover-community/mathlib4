@@ -4,17 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
 import Mathlib.Data.Complex.Exponential
-import Mathlib.Analysis.Complex.IntegerCompl
-import Mathlib.Analysis.Complex.LocallyUniformLimit
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.EulerSineProd
+import Mathlib.Analysis.Complex.ReImTopology
 import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
 import Mathlib.Analysis.SpecialFunctions.Log.Summable
 import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Analysis.NormedSpace.FunctionSeries
-import Mathlib.Analysis.PSeries
-import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
-import Mathlib.Order.Filter.ZeroAndBoundedAtFilter
-import Mathlib.NumberTheory.ModularForms.EisensteinSeries.UniformConvergence
+import Mathlib.Data.Complex.Exponential
 
 /-!
 # Products of one plus a complex number
@@ -26,7 +21,7 @@ sequence `f n x` or complex numbers.
 
 open Filter Function Complex Real
 
-open scoped Interval Topology BigOperators Nat Classical UpperHalfPlane Complex
+open scoped Interval Topology BigOperators Nat Classical Complex
 
 variable {α β F ι: Type*} [NormedAddCommGroup F] [CompleteSpace F] {u : ℕ → ℝ}
 
