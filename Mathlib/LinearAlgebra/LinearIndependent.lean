@@ -254,7 +254,7 @@ theorem LinearIndependent.map (hv : LinearIndependent R v) {f : M →ₗ[R] M'}
       LinearMap.ker_comp, hf_inj]
   exact fun _ => rfl
 
-/-- If `v` is an injective family of vectors such that `f ∘ v` is linearly independent, then `v`
+/-- If `v` is an injective family of vectors such that `f ∘ v` is linearly independent, then `v`
     spans a submodule disjoint from the kernel of `f` -/
 theorem Submodule.range_ker_disjoint {f : M →ₗ[R] M'}
     (hv : LinearIndependent R (f ∘ v)) :
@@ -1030,7 +1030,7 @@ theorem eq_of_linearIndependent_of_span_subtype [Nontrivial R] {s t : Set M}
     ⟨fun x => ⟨x.1, h x.2⟩, fun a b hab => Subtype.coe_injective (Subtype.mk.inj hab)⟩
   have h_surj : Surjective f := by
     apply surjective_of_linearIndependent_of_span hs f _
-    convert hst <;> simp [f, comp]
+    convert hst <;> simp [f, comp_def]
   show s = t
   apply Subset.antisymm _ h
   intro x hx
@@ -1280,7 +1280,7 @@ theorem linearIndependent_insert' {ι} {s : Set ι} {a : ι} {f : ι → V} (has
     linearIndependent_option]
   -- Porting note: `simp [(· ∘ ·), range_comp f]` → `simp [(· ∘ ·)]; erw [range_comp f ..]; simp`
   -- https://github.com/leanprover-community/mathlib4/issues/5164
-  simp only [(· ∘ ·)]
+  simp only [Function.comp_def]
   erw [range_comp f ((↑) : s → ι)]
   simp
 

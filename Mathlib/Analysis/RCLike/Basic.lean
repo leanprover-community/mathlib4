@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
 import Mathlib.Algebra.Algebra.Field
-import Mathlib.Algebra.Star.Order
+import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Analysis.CStarAlgebra.Basic
 import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 import Mathlib.Data.Real.Sqrt
@@ -230,7 +230,7 @@ theorem norm_ofReal (r : ℝ) : ‖(r : K)‖ = |r| :=
 /-! ### Characteristic zero -/
 
 -- see Note [lower instance priority]
-/-- ℝ and ℂ are both of characteristic zero.  -/
+/-- ℝ and ℂ are both of characteristic zero. -/
 instance (priority := 100) charZero_rclike : CharZero K :=
   (RingHom.charZero_iff (algebraMap ℝ K).injective).1 inferInstance
 
@@ -832,7 +832,7 @@ theorem toOrderedSMul : OrderedSMul ℝ K :=
 
 scoped[ComplexOrder] attribute [instance] RCLike.toOrderedSMul
 
-/-- A star algebra over `K` has a scalar multiplication that respects the order.  -/
+/-- A star algebra over `K` has a scalar multiplication that respects the order. -/
 lemma _root_.StarModule.instOrderedSMul {A : Type*} [NonUnitalRing A] [StarRing A] [PartialOrder A]
     [StarOrderedRing A] [Module K A] [StarModule K A] [IsScalarTower K A A] [SMulCommClass K A A] :
     OrderedSMul K A where

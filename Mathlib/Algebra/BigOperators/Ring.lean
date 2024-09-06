@@ -239,7 +239,7 @@ lemma prod_sub_ordered [LinearOrder ι] (s : Finset ι) (f g : ι → α) :
   simp
 
 /-- `∏ i, (1 - f i) = 1 - ∑ i, f i * (∏ j < i, 1 - f j)`. This formula is useful in construction of
-a partition of unity from a collection of “bump” functions.  -/
+a partition of unity from a collection of “bump” functions. -/
 theorem prod_one_sub_ordered [LinearOrder ι] (s : Finset ι) (f : ι → α) :
     ∏ i ∈ s, (1 - f i) = 1 - ∑ i ∈ s, f i * ∏ j ∈ s.filter (· < i), (1 - f j) := by
   rw [prod_sub_ordered]
