@@ -1,13 +1,37 @@
 /-
 Copyright (c) 2024 **ALL YOUR NAMES**, Filippo A. E. Nuccio. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: **ALL YOUR NAMES** Filippo A. E. Nuccio
+Authors: **ALL YOUR NAMES** Wanyi He, Filippo A. E. Nuccio
 -/
-
 import Mathlib.RingTheory.Algebraic
 import Mathlib.FieldTheory.Separable
 import Mathlib.Algebra.CharP.Subring
 import Mathlib.Algebra.CharP.LinearMaps
+
+/-!
+# The Jacobson-Noether theorem
+
+This file contains a proof of the Jacobson-Noether theorem and some auxiliary lemma.
+Here we discuss different cases of characteristics of
+the noncommutative division algebra `D` with the center `k`.
+
+## Main Results
+
+- `Jacobson_Noether` : Let `D` be a noncommutative division algebra with the center `k`.
+  If `D` is algebraic over `k`,
+  then there exists an element of `D \ k` which is separable over `k`.
+
+## Notations
+
+- `D` is a noncommutative division algebra
+- `k` is the center of `D`
+
+## Implementation Notes
+
+## Reference
+
+-/
+
 
 -- *Filippo* This should probably not be here
 lemma conj_nonComm_Algebra {D : Type*} [DivisionRing D] (s : ℕ) (a d : D) (ha : a ≠ 0) :
@@ -16,8 +40,6 @@ lemma conj_nonComm_Algebra {D : Type*} [DivisionRing D] (s : ℕ) (a d : D) (ha 
   exact (Units.conj_pow' u d s).symm
 
 namespace JacobsonNoether
-
-open Classical
 
 variable {D : Type*} [DivisionRing D]
 
@@ -28,9 +50,7 @@ instance : Algebra (Subring.center D) D := Algebra.ofModule smul_mul_assoc mul_s
 private def f (a : D) : D →ₗ[k] D := {
   toFun := fun x ↦ a * x
   map_add' := fun x y ↦ LeftDistribClass.left_distrib a x y
-  map_smul' := by
-    intro m x
-    simp only [Algebra.mul_smul_comm, RingHom.id_apply]
+  map_smul' := fun m x => by simp only [mul_smul_comm, RingHom.id_apply]
 }
 
 @[simp]
@@ -39,9 +59,7 @@ private lemma f_def (a x : D) : f a x = a * x := rfl
 private def g (a : D) : D →ₗ[k] D := {
   toFun := fun x ↦ x * a
   map_add' := fun x y ↦ RightDistribClass.right_distrib x y a
-  map_smul' := by
-    intro m x
-    simp only [Algebra.smul_mul_assoc, RingHom.id_apply]
+  map_smul' := fun m x => by simp only [smul_mul_assoc, RingHom.id_apply]
 }
 
 @[simp]
@@ -49,12 +67,8 @@ private lemma g_def (a x : D) : g a x = x * a := rfl
 
 private def δ (a : D) : D →ₗ[k] D := {
   toFun := f a - g a
-  map_add' := by
-    intro x y
-    rw [Pi.sub_apply, map_add, map_add, add_sub_add_comm]; rfl
-  map_smul' := by
-    intro m x
-    simp only [Pi.sub_apply, map_smul, RingHom.id_apply, smul_sub]
+  map_add' := fun x y => by simp only [Pi.sub_apply, map_add, map_add, add_sub_add_comm]
+  map_smul' := fun m x => by simp only [Pi.sub_apply, map_smul, RingHom.id_apply, smul_sub]
 }
 
 @[simp]
@@ -66,8 +80,7 @@ private lemma δ_def' (a : D) : δ a = f a - g a := rfl
 -- *Filippo* Change name
 private lemma comm_fg (a : D) : Commute (f a) (g a) := by
   rw [commute_iff_eq, LinearMap.mk.injEq, AddHom.mk.injEq]
-  funext x
-  dsimp [f, g]; exact (mul_assoc a x a).symm
+  exact funext fun x ↦ (mul_assoc a x a).symm
 
 private lemma f_pow (a : D) (n : ℕ) : ∀ x : D, ((f a) ^ n).1 x = (a ^ n) * x := by
   intro x
@@ -76,7 +89,8 @@ private lemma f_pow (a : D) (n : ℕ) : ∀ x : D, ((f a) ^ n).1 x = (a ^ n) * x
   · simp only [Function.iterate_zero, id_eq, pow_zero, one_mul]
   · simp only [Function.iterate_succ', Function.comp_apply, *]
     rename_i n h
-    rw [pow_succ', mul_assoc]; rfl
+    rw [pow_succ', mul_assoc]
+    rfl
 
 private lemma g_pow (a : D) (n : ℕ) : ∀ x : D, ((g a) ^ n).1 x = x * (a ^ n) := by
   intro x
@@ -110,19 +124,12 @@ lemma exists_pow_mem_center_ofInseparable (p : ℕ) [Fact p.Prime] [CharP D p] (
 
 lemma exists_pow_mem_center_ofInseparable' (p : ℕ) [Fact p.Prime] [CharP D p] {a : D}
     (ha : a ∉ k) (hinsep : ∀ x : D, IsSeparable k x → x ∈ k) : ∃ n ≥ 1, a ^ (p ^ n) ∈ k := by
-  obtain ⟨n, g, hg, geqf⟩ := @Polynomial.exists_separable_of_irreducible k _ p _ (minpoly k a)
-    (minpoly.irreducible (Algebra.IsIntegral.isIntegral a)) ((NeZero.ne' p).symm)
-  by_cases nzero : n = 0
-  · rw [nzero, pow_zero, Polynomial.expand_one] at geqf
-    rw [geqf] at hg
-    tauto
-  use n
-  have h1 : (Polynomial.aeval a) ((Polynomial.expand k (p ^ n)) g) = 0 := by
-    rw [congrArg (⇑(Polynomial.aeval a)) geqf, minpoly.aeval k a]
-  simp only [Polynomial.expand_aeval] at h1
-  constructor
-  · exact Nat.one_le_iff_ne_zero.mpr nzero
-  exact hinsep (a ^ p ^ n) (Polynomial.Separable.of_dvd hg (minpoly.dvd_iff.mpr h1))
+  obtain ⟨n, hn⟩ := exists_pow_mem_center_ofInseparable p a hinsep
+  refine ⟨n, ⟨?_, hn⟩⟩
+  apply Nat.one_le_iff_ne_zero.mpr
+  intro nzero
+  simp only [nzero, pow_zero, pow_one] at hn
+  exact ha hn
 
 -- Not private but better name
 lemma any_pow_gt_eq_zero (p : ℕ) [Fact p.Prime] [CharP D p]
@@ -140,6 +147,8 @@ lemma any_pow_gt_eq_zero (p : ℕ) [Fact p.Prime] [CharP D p]
     suffices h : a ^ (p ^ m) ∈ k from (Subring.mem_center_iff.1 h x).symm
     exact hm.2
   rw [((Nat.sub_eq_iff_eq_add hn).1 rfl), pow_add, inter, mul_zero]
+
+open Classical
 
 /-- Jacobson-Noether theorem in the `CharP D 0` case -/
 theorem JacobsonNoether_charZero [CharP D 0] (h : k ≠ (⊤ : Subring D)) :
