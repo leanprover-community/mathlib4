@@ -95,8 +95,8 @@ variable {X : Type*} {𝕜 : Type*} {A : Type*} {p : A → Prop} [RCLike 𝕜]
   [NonUnitalContinuousFunctionalCalculus 𝕜 p]
 
 lemma cfcₙL_integral (a : A) (f : X → C(quasispectrum 𝕜 a, 𝕜)₀) (hf₁ : Integrable f μ)
-      (ha : p a := by cfc_tac) :
-      ∫ x, cfcₙL (a := a) ha (f x) ∂μ = cfcₙL (a := a) ha (∫ x, f x ∂μ) := by
+    (ha : p a := by cfc_tac) :
+    ∫ x, cfcₙL (a := a) ha (f x) ∂μ = cfcₙL (a := a) ha (∫ x, f x ∂μ) := by
   rw [ContinuousLinearMap.integral_comp_comm _ hf₁]
 
 lemma cfcₙHom_integral (a : A) (f : X → C(quasispectrum 𝕜 a, 𝕜)₀) (hf₁ : Integrable f μ)

@@ -5,7 +5,6 @@ Authors: Michael Rothgang
 -/
 
 import Lean.Elab.Command
-import Lean.Linter.Util
 
 /-!
 # The `oldObtain` linter, against stream-of-conciousness `obtain`
