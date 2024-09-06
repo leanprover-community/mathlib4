@@ -81,3 +81,5 @@ elab_rules : tactic
   let goal ← getMainGoal
   let l ← runAndFailIfNoProgress goal (evalTactic tacs)
   replaceMainGoal l
+
+end Mathlib.Tactic

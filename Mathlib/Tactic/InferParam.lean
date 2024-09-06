@@ -32,3 +32,5 @@ elab (name := inferOptParam) "infer_param" : tactic => do
       evalTactic tacticSyntax
   else throwError
     "`infer_param` only solves goals of the form `optParam _ _` or `autoParam _ _`, not {tgt}"
+
+end Mathlib.Tactic

@@ -17,6 +17,7 @@ open scoped NNReal
 -- Tests that work with `bound`, but not `positivity`, `gcongr`, or `norm_num`
 section bound_only
 variable {a b c x y : ℝ} {z : ℂ} {n : ℕ}
+
 example (h : x < y) : y - x > 0 := by bound
 example (h : x < y) : Real.exp (y - x) > 1 := by bound
 example (h : x < y) (y0 : 0 < y) : x / y < 1 := by bound
@@ -42,16 +43,17 @@ section guess_tests
 variable {a b c : ℝ} {n m : ℕ}
 example (h : a ≤ b) : a ≤ max b c := by bound
 example (h : a ≤ c) : a ≤ max b c := by bound
-example (h : a < b) : a < max b c := by bound
-example (h : a < c) : a < max b c := by bound
 example (h : a ≤ c) : min a b ≤ c := by bound
 example (h : b ≤ c) : min a b ≤ c := by bound
+example (h : a < b) : a < max b c := by bound
+example (h : a < c) : a < max b c := by bound
 example (h : a < c) : min a b < c := by bound
 example (h : b < c) : min a b < c := by bound
 example (a1 : 1 ≤ a) (h : m ≤ n) : a^m ≤ a^n := by bound
 example (a0 : 0 ≤ a) (a1 : a ≤ 1) (h : n ≤ m) : a^m ≤ a^n := by bound
 example (a1 : 1 ≤ a) (h : b ≤ c) : a^b ≤ a^c := by bound
 example (a0 : 0 < a) (a1 : a ≤ 1) (h : c ≤ b) : a^b ≤ a^c := by bound
+
 end guess_tests
 
 section positive_tests
@@ -108,6 +110,7 @@ example (h : x > 0) : x ≥ 0 := by bound
 example (hc : c ≥ 0) (h : a ≤ b) : a / c ≤ b / c := by bound
 example (ha : a ≥ 0) (hc : c > 0) (h : b ≥ c) : a / b ≤ a / c := by bound
 example (x y : ℝ) (x0 : 0 < x) (h : x ≤ y) : x.log ≤ y.log := by bound
+
 end bound_tests
 
 /-- This broke without appropriate `g.withContext` use in an older implementation of `bound`.

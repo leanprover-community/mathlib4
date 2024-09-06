@@ -322,7 +322,7 @@ namespace LipschitzWith
 
 /-- If `f` is a Lipschitz continuous map, then `dimH (f '' s) ≤ dimH s`. -/
 theorem dimH_image_le (h : LipschitzWith K f) (s : Set X) : dimH (f '' s) ≤ dimH s :=
-  (h.lipschitzOnWith s).dimH_image_le
+  h.lipschitzOnWith.dimH_image_le
 
 /-- If `f` is a Lipschitz continuous map, then the Hausdorff dimension of its range is at most the
 Hausdorff dimension of its domain. -/

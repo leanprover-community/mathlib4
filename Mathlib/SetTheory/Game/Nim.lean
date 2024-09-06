@@ -24,7 +24,7 @@ However, this definition does not work for us because it would make the type of 
 `Ordinal.{u} → SetTheory.PGame.{u + 1}`, which would make it impossible for us to state the
 Sprague-Grundy theorem, since that requires the type of `nim` to be
 `Ordinal.{u} → SetTheory.PGame.{u}`. For this reason, we
-instead use `o.out.α` for the possible moves. You can use `to_left_moves_nim` and
+instead use `o.toType` for the possible moves. You can use `to_left_moves_nim` and
 `to_right_moves_nim` to convert an ordinal less than `o` into a left or right move of `nim o`, and
 vice versa.
 -/
@@ -37,62 +37,54 @@ universe u
 namespace SetTheory
 
 open scoped PGame
+open Ordinal
 
 namespace PGame
 
--- Uses `noncomputable!` to avoid `rec_fn_macro only allowed in meta definitions` VM error
 /-- The definition of single-heap nim, which can be viewed as a pile of stones where each player can
   take a positive number of stones from it on their turn. -/
-noncomputable def nim : Ordinal.{u} → PGame.{u}
-  | o₁ =>
-    let f o₂ :=
-      have _ : Ordinal.typein o₁.out.r o₂ < o₁ := Ordinal.typein_lt_self o₂
-      nim (Ordinal.typein o₁.out.r o₂)
-    ⟨o₁.out.α, o₁.out.α, f, f⟩
-termination_by o => o
+noncomputable def nim (o : Ordinal.{u}) : PGame.{u} :=
+  ⟨o.toType, o.toType,
+    fun x => nim ((enumIsoToType o).symm x).val,
+    fun x => nim ((enumIsoToType o).symm x).val⟩
+termination_by o
+decreasing_by all_goals exact ((enumIsoToType o).symm x).prop
 
-open Ordinal
+theorem nim_def (o : Ordinal) : nim o =
+    ⟨o.toType, o.toType,
+      fun x => nim ((enumIsoToType o).symm x).val,
+      fun x => nim ((enumIsoToType o).symm x).val⟩ := by
+  rw [nim]
 
-theorem nim_def (o : Ordinal) :
-    have : IsWellOrder (Quotient.out o).α (· < ·) := inferInstance
-    nim o =
-      PGame.mk o.out.α o.out.α (fun o₂ => nim (Ordinal.typein (· < ·) o₂)) fun o₂ =>
-        nim (Ordinal.typein (· < ·) o₂) := by
-  rw [nim]; rfl
-
-theorem leftMoves_nim (o : Ordinal) : (nim o).LeftMoves = o.out.α := by rw [nim_def]; rfl
-
-theorem rightMoves_nim (o : Ordinal) : (nim o).RightMoves = o.out.α := by rw [nim_def]; rfl
+theorem leftMoves_nim (o : Ordinal) : (nim o).LeftMoves = o.toType := by rw [nim_def]; rfl
+theorem rightMoves_nim (o : Ordinal) : (nim o).RightMoves = o.toType := by rw [nim_def]; rfl
 
 theorem moveLeft_nim_hEq (o : Ordinal) :
-    have : IsWellOrder (Quotient.out o).α (· < ·) := inferInstance
-    HEq (nim o).moveLeft fun i : o.out.α => nim (typein (· < ·) i) := by rw [nim_def]; rfl
+    HEq (nim o).moveLeft fun i : o.toType => nim ((enumIsoToType o).symm i) := by rw [nim_def]; rfl
 
 theorem moveRight_nim_hEq (o : Ordinal) :
-    have : IsWellOrder (Quotient.out o).α (· < ·) := inferInstance
-    HEq (nim o).moveRight fun i : o.out.α => nim (typein (· < ·) i) := by rw [nim_def]; rfl
+    HEq (nim o).moveRight fun i : o.toType => nim ((enumIsoToType o).symm i) := by rw [nim_def]; rfl
 
-/-- Turns an ordinal less than `o` into a left move for `nim o` and viceversa. -/
+/-- Turns an ordinal less than `o` into a left move for `nim o` and vice versa. -/
 noncomputable def toLeftMovesNim {o : Ordinal} : Set.Iio o ≃ (nim o).LeftMoves :=
-  (enumIsoOut o).toEquiv.trans (Equiv.cast (leftMoves_nim o).symm)
+  (enumIsoToType o).toEquiv.trans (Equiv.cast (leftMoves_nim o).symm)
 
-/-- Turns an ordinal less than `o` into a right move for `nim o` and viceversa. -/
+/-- Turns an ordinal less than `o` into a right move for `nim o` and vice versa. -/
 noncomputable def toRightMovesNim {o : Ordinal} : Set.Iio o ≃ (nim o).RightMoves :=
-  (enumIsoOut o).toEquiv.trans (Equiv.cast (rightMoves_nim o).symm)
+  (enumIsoToType o).toEquiv.trans (Equiv.cast (rightMoves_nim o).symm)
 
 @[simp]
 theorem toLeftMovesNim_symm_lt {o : Ordinal} (i : (nim o).LeftMoves) :
-    ↑(toLeftMovesNim.symm i) < o :=
+    toLeftMovesNim.symm i < o :=
   (toLeftMovesNim.symm i).prop
 
 @[simp]
 theorem toRightMovesNim_symm_lt {o : Ordinal} (i : (nim o).RightMoves) :
-    ↑(toRightMovesNim.symm i) < o :=
+    toRightMovesNim.symm i < o :=
   (toRightMovesNim.symm i).prop
 
 @[simp]
-theorem moveLeft_nim' {o : Ordinal.{u}} (i) :
-    (nim o).moveLeft i = nim (toLeftMovesNim.symm i).val :=
+theorem moveLeft_nim' {o : Ordinal} (i) : (nim o).moveLeft i = nim (toLeftMovesNim.symm i).val :=
   (congr_heq (moveLeft_nim_hEq o).symm (cast_heq _ i)).symm
 
 theorem moveLeft_nim {o : Ordinal} (i) : (nim o).moveLeft (toLeftMovesNim i) = nim i := by simp
@@ -117,11 +109,11 @@ def rightMovesNimRecOn {o : Ordinal} {P : (nim o).RightMoves → Sort*} (i : (ni
 
 instance isEmpty_nim_zero_leftMoves : IsEmpty (nim 0).LeftMoves := by
   rw [nim_def]
-  exact Ordinal.isEmpty_out_zero
+  exact isEmpty_toType_zero
 
 instance isEmpty_nim_zero_rightMoves : IsEmpty (nim 0).RightMoves := by
   rw [nim_def]
-  exact Ordinal.isEmpty_out_zero
+  exact isEmpty_toType_zero
 
 /-- `nim 0` has exactly the same moves as `0`. -/
 def nimZeroRelabelling : nim 0 ≡r 0 :=
@@ -165,7 +157,7 @@ def nimOneRelabelling : nim 1 ≡r star := by
   rw [nim_def]
   refine ⟨?_, ?_, fun i => ?_, fun j => ?_⟩
   any_goals dsimp; apply Equiv.equivOfUnique
-  all_goals simpa using nimZeroRelabelling
+  all_goals simpa [enumIsoToType] using nimZeroRelabelling
 
 theorem nim_one_equiv : nim 1 ≈ star :=
   nimOneRelabelling.equiv
@@ -190,9 +182,9 @@ instance nim_impartial (o : Ordinal) : Impartial (nim o) := by
   refine ⟨equiv_rfl, fun i => ?_, fun i => ?_⟩ <;> simpa using IH _ (typein_lt_self _)
 
 theorem nim_fuzzy_zero_of_ne_zero {o : Ordinal} (ho : o ≠ 0) : nim o ‖ 0 := by
-  rw [Impartial.fuzzy_zero_iff_lf, nim_def, lf_zero_le]
-  rw [← Ordinal.pos_iff_ne_zero] at ho
-  exact ⟨(Ordinal.principalSegOut ho).top, by simp⟩
+  rw [Impartial.fuzzy_zero_iff_lf, lf_zero_le]
+  use toRightMovesNim ⟨0, Ordinal.pos_iff_ne_zero.2 ho⟩
+  simp
 
 @[simp]
 theorem nim_add_equiv_zero_iff (o₁ o₂ : Ordinal) : (nim o₁ + nim o₂ ≈ 0) ↔ o₁ = o₂ := by
@@ -200,12 +192,9 @@ theorem nim_add_equiv_zero_iff (o₁ o₂ : Ordinal) : (nim o₁ + nim o₂ ≈ 
   · refine not_imp_not.1 fun hne : _ ≠ _ => (Impartial.not_equiv_zero_iff (nim o₁ + nim o₂)).2 ?_
     wlog h : o₁ < o₂
     · exact (fuzzy_congr_left add_comm_equiv).1 (this _ _ hne.symm (hne.lt_or_lt.resolve_left h))
-    rw [Impartial.fuzzy_zero_iff_gf, zero_lf_le, nim_def o₂]
-    refine ⟨toLeftMovesAdd (Sum.inr ?_), ?_⟩
-    · exact (Ordinal.principalSegOut h).top
-    · -- Porting note: squeezed simp
-      simpa only [Ordinal.typein_top, Ordinal.type_lt, PGame.add_moveLeft_inr, PGame.moveLeft_mk]
-        using (Impartial.add_self (nim o₁)).2
+    rw [Impartial.fuzzy_zero_iff_gf, zero_lf_le]
+    use toLeftMovesAdd (Sum.inr <| toLeftMovesNim ⟨_, h⟩)
+    · simpa using (Impartial.add_self (nim o₁)).2
   · rintro rfl
     exact Impartial.add_self (nim o₁)
 
@@ -251,12 +240,11 @@ theorem equiv_nim_grundyValue : ∀ (G : PGame.{u}) [G.Impartial], G ≈ nim (gr
       intro i₂
       have h' :
         ∃ i : G.LeftMoves,
-          grundyValue (G.moveLeft i) = Ordinal.typein (Quotient.out (grundyValue G)).r i₂ := by
+          grundyValue (G.moveLeft i) = Ordinal.typein (α := toType (grundyValue G)) (· < ·) i₂ := by
         revert i₂
         rw [grundyValue_eq_mex_left]
         intro i₂
-        have hnotin : _ ∉ _ := fun hin =>
-          (le_not_le_of_lt (Ordinal.typein_lt_self i₂)).2 (csInf_le' hin)
+        have hnotin : _ ∉ _ := fun hin => not_le_of_lt (Ordinal.typein_lt_self i₂) (csInf_le' hin)
         simpa using hnotin
       cases' h' with i hi
       use toLeftMovesAdd (Sum.inl i)

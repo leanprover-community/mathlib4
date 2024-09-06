@@ -343,9 +343,10 @@ theorem Gamma_zero : Gamma 0 = 0 := by
 
 /-- At `-n` for `n ∈ ℕ`, the Gamma function is undefined; by convention we assign it the value 0. -/
 theorem Gamma_neg_nat_eq_zero (n : ℕ) : Gamma (-n) = 0 := by
-  induction' n with n IH
-  · rw [Nat.cast_zero, neg_zero, Gamma_zero]
-  · have A : -(n.succ : ℂ) ≠ 0 := by
+  induction n with
+  | zero => rw [Nat.cast_zero, neg_zero, Gamma_zero]
+  | succ n IH =>
+    have A : -(n.succ : ℂ) ≠ 0 := by
       rw [neg_ne_zero, Nat.cast_ne_zero]
       apply Nat.succ_ne_zero
     have : -(n : ℂ) = -↑n.succ + 1 := by simp
@@ -460,7 +461,7 @@ end GammaHasDeriv
 theorem tendsto_self_mul_Gamma_nhds_zero : Tendsto (fun z : ℂ => z * Gamma z) (𝓝[≠] 0) (𝓝 1) := by
   rw [show 𝓝 (1 : ℂ) = 𝓝 (Gamma (0 + 1)) by simp only [zero_add, Complex.Gamma_one]]
   convert (Tendsto.mono_left _ nhdsWithin_le_nhds).congr'
-    (eventuallyEq_of_mem self_mem_nhdsWithin Complex.Gamma_add_one)
+    (eventuallyEq_of_mem self_mem_nhdsWithin Complex.Gamma_add_one) using 1
   refine ContinuousAt.comp (g := Gamma) ?_ (continuous_id.add continuous_const).continuousAt
   refine (Complex.differentiableAt_Gamma _ fun m => ?_).continuousAt
   rw [zero_add, ← ofReal_natCast, ← ofReal_neg, ← ofReal_one, Ne, ofReal_inj]
@@ -581,11 +582,13 @@ theorem Gamma_ne_zero {s : ℝ} (hs : ∀ m : ℕ, s ≠ -m) : Gamma s ≠ 0 := 
     rw [neg_lt, Nat.cast_add, Nat.cast_one]
     exact Nat.lt_floor_add_one _
   intro n
-  induction' n with _ n_ih generalizing s
-  · intro hs
+  induction n generalizing s with
+  | zero =>
+    intro hs
     refine (Gamma_pos_of_pos ?_).ne'
     rwa [Nat.cast_zero, neg_zero] at hs
-  · intro hs'
+  | succ _ n_ih =>
+    intro hs'
     have : Gamma (s + 1) ≠ 0 := by
       apply n_ih
       · intro m

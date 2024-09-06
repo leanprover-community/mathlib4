@@ -81,18 +81,19 @@ theorem le_sum_condensed (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m)
 theorem sum_schlomilch_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n)
     (hu : Monotone u) (n : ℕ) :
     (∑ k ∈ range n, (u (k + 1) - u k) • f (u (k + 1))) ≤ ∑ k ∈ Ico (u 0 + 1) (u n + 1), f k := by
-  induction' n with n ihn
-  · simp
-  suffices (u (n + 1) - u n) • f (u (n + 1)) ≤ ∑ k ∈ Ico (u n + 1) (u (n + 1) + 1), f k by
-    rw [sum_range_succ, ← sum_Ico_consecutive]
-    exacts [add_le_add ihn this,
-      (add_le_add_right (hu n.zero_le) _ : u 0 + 1 ≤ u n + 1),
-      add_le_add_right (hu n.le_succ) _]
-  have : ∀ k ∈ Ico (u n + 1) (u (n + 1) + 1), f (u (n + 1)) ≤ f k := fun k hk =>
-    hf (Nat.lt_of_le_of_lt (Nat.succ_le_of_lt (h_pos n)) <| (Nat.lt_succ_of_le le_rfl).trans_le
-      (mem_Ico.mp hk).1) (Nat.le_of_lt_succ <| (mem_Ico.mp hk).2)
-  convert sum_le_sum this
-  simp [pow_succ, mul_two]
+  induction n with
+  | zero => simp
+  | succ n ihn =>
+    suffices (u (n + 1) - u n) • f (u (n + 1)) ≤ ∑ k ∈ Ico (u n + 1) (u (n + 1) + 1), f k by
+      rw [sum_range_succ, ← sum_Ico_consecutive]
+      exacts [add_le_add ihn this,
+        (add_le_add_right (hu n.zero_le) _ : u 0 + 1 ≤ u n + 1),
+        add_le_add_right (hu n.le_succ) _]
+    have : ∀ k ∈ Ico (u n + 1) (u (n + 1) + 1), f (u (n + 1)) ≤ f k := fun k hk =>
+      hf (Nat.lt_of_le_of_lt (Nat.succ_le_of_lt (h_pos n)) <| (Nat.lt_succ_of_le le_rfl).trans_le
+        (mem_Ico.mp hk).1) (Nat.le_of_lt_succ <| (mem_Ico.mp hk).2)
+    convert sum_le_sum this
+    simp [pow_succ, mul_two]
 
 theorem sum_condensed_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
     (∑ k ∈ range n, 2 ^ k • f (2 ^ (k + 1))) ≤ ∑ k ∈ Ico 2 (2 ^ n + 1), f k := by
@@ -197,7 +198,7 @@ theorem summable_schlomilch_iff {C : ℕ} {u : ℕ → ℕ} {f : ℕ → ℝ≥0
     simpa [add_eq_top, mul_ne_top, mul_eq_top, hC_nonzero] using eq_top_mono hC h
   · replace hf : ∀ m n, 0 < m → m ≤ n → (f n : ℝ≥0∞) ≤ f m := fun m n hm hmn =>
       ENNReal.coe_le_coe.2 (hf hm hmn)
-    have : ∑ k ∈ range (u 0), (f k : ℝ≥0∞) ≠ ∞ := (sum_lt_top fun a _ => coe_ne_top).ne
+    have : ∑ k ∈ range (u 0), (f k : ℝ≥0∞) ≠ ∞ := sum_ne_top.2 fun a _ => coe_ne_top
     simpa [h, add_eq_top, this] using le_tsum_schlomilch hf h_pos hu_strict
 
 open ENNReal in

@@ -150,7 +150,7 @@ theorem matPolyEquiv_symm_map_eval (M : (Matrix n n R)[X]) (r : R) :
     DFunLike.congr_fun this M
   ext : 1
   · ext M : 1
-    simp [Function.comp]
+    simp [Function.comp_def]
   · simp [smul_eq_diagonal_mul]
 
 theorem matPolyEquiv_eval_eq_map (M : Matrix n n R[X]) (r : R) :
@@ -298,7 +298,6 @@ end Ideal
 
 section reverse
 
-open Polynomial
 open LaurentPolynomial hiding C
 
 /-- The reverse of the characteristic polynomial of a matrix.
