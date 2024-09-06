@@ -124,7 +124,6 @@ lemma aux_u_lem (Z : Set ℂ_ℤ) (hZ : IsCompact Z) : ∃ u : ℕ → ℝ, Summ
     gcongr
     apply le_trans (hs _ _ (by aesop) (rfl)) (le_abs_self s)
 
-
 theorem tendstoUniformlyOn_compact_euler_sin_prod (Z : Set ℂ_ℤ) (hZ : IsCompact Z) :
     TendstoUniformlyOn
       (fun n : ℕ => fun z : ℂ_ℤ => ∏ j in Finset.range n, (1 + -z.1 ^ 2 / (j + 1) ^ 2))
@@ -243,7 +242,6 @@ theorem tendsto_logDeriv_euler_cot_sub (x : ℂ_ℤ) :
   simp_rw [← logDeriv_sin_div x, ← logDeriv_of_prod x]
   simpa using tendsto_logDeriv_euler_sin_div x
 
-
 lemma half_le (a : ℝ) (ha : a < 1/2) : 1 / 2 ≤ |a - 1| := by
   rw [← neg_lt_neg_iff] at ha
   have hb := (Real.add_lt_add_iff_left 1).mpr ha
@@ -256,7 +254,6 @@ lemma half_le (a : ℝ) (ha : a < 1/2) : 1 / 2 ≤ |a - 1| := by
     linarith
   rw [this]
   apply hb.le
-
 
 theorem lhs_summable (z : ℂ_ℤ) :
     Summable fun n : ℕ => 1 / ((z : ℂ) - (n + 1)) + 1 / (z + (n + 1)) := by
