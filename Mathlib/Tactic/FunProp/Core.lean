@@ -131,7 +131,7 @@ def tryTheoremWithHint? (e : Expr) (thmOrigin : Origin)
         for (id,v) in hint do
           xs[id]!.mvarId!.assignIfDefeq v
       catch _ =>
-        trace[Meta.Tactic.fun_trans]
+        trace[Debug.Meta.Tactic.fun_prop]
           "failed to use hint {i} `{← ppExpr x} when applying theorem {← ppOrigin thmOrigin}"
 
     tryTheoremCore xs thmProof type e thmOrigin funProp

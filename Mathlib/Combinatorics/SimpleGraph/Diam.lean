@@ -185,8 +185,7 @@ lemma diam_bot : (⊥ : SimpleGraph α).diam = 0 := by
 
 @[simp]
 lemma diam_top [Nontrivial α] : (⊤ : SimpleGraph α).diam = 1 := by
-  rw [diam, ediam_top]
-  rfl
+  rw [diam, ediam_top, ENat.toNat_one]
 
 @[simp]
 lemma diam_eq_zero : G.diam = 0 ↔ G.ediam = ⊤ ∨ Subsingleton α := by
