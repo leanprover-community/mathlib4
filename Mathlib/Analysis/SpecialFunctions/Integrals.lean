@@ -33,7 +33,7 @@ integrate, integration, integrable, integrability
 -/
 
 
-open Real Nat Set Finset
+open Real Set Finset
 
 open scoped Real Interval
 
@@ -580,8 +580,9 @@ theorem integral_mul_rpow_one_add_sq {t : ℝ} (ht : t ≠ -1) :
 
 end RpowCpow
 
-/-! ### Integral of `sin x ^ n` -/
+open Nat
 
+/-! ### Integral of `sin x ^ n` -/
 
 theorem integral_sin_pow_aux :
     (∫ x in a..b, sin x ^ (n + 2)) =
