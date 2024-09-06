@@ -367,6 +367,8 @@ theorem mul_smul_mul_eq_smul_mul_smul (x y : R) : (x * y) • (M * N) = (x • M
     erw [smul_mul_smul_comm x m y n]
     exact smul_mem_pointwise_smul _ _ _ (mul_mem_mul hm hn)
 
+--set_option pp.explicit true in
+set_option trace.Meta.synthInstance true in
 /-- Sub-R-modules of an R-algebra form an idempotent semiring. -/
 instance idemSemiring : IdemSemiring (Submodule R A) :=
   { toAddSubmonoid_injective.semigroup _ fun m n : Submodule R A => mul_toAddSubmonoid m n,
@@ -379,8 +381,7 @@ instance idemSemiring : IdemSemiring (Submodule R A) :=
     mul_zero := mul_bot
     left_distrib := mul_sup
     right_distrib := sup_mul,
-    -- Porting note: removed `(by infer_instance : OrderBot (Submodule R A))`
-    bot_le := fun _ => bot_le }
+    bot_le := fun _ => @bot_le _ _ (by infer_instance : OrderBot (Submodule R A)) _ }
 
 variable (M)
 

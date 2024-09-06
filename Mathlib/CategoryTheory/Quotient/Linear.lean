@@ -98,12 +98,14 @@ def linear (hr : ∀ (a : R) ⦃X Y : C⦄ (f₁ f₂ : X ⟶ Y) (_ : r f₁ f�
         obtain ⟨g, rfl⟩ := (functor r).map_surjective g
         rw [Linear.smul_eq, ← Functor.map_comp, ← Functor.map_comp,
           Linear.smul_eq, Linear.smul_comp]
+        all_goals exact hr
       comp_smul := by
         rintro ⟨X⟩ ⟨Y⟩ ⟨Z⟩ f a g
         obtain ⟨f, rfl⟩ := (functor r).map_surjective f
         obtain ⟨g, rfl⟩ := (functor r).map_surjective g
         rw [Linear.smul_eq, ← Functor.map_comp, ← Functor.map_comp,
-          Linear.smul_eq, Linear.comp_smul] }
+          Linear.smul_eq, Linear.comp_smul]
+        all_goals exact hr }
 
 instance linear_functor
     (hr : ∀ (a : R) ⦃X Y : C⦄ (f₁ f₂ : X ⟶ Y) (_ : r f₁ f₂), r (a • f₁) (a • f₂))
