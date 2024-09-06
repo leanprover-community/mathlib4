@@ -74,7 +74,7 @@ lemma autEmbedding_range :
     rw [← h]
     exact σ.hom.naturality
   · intro h
-    use NatIso.ofComponents (fun X => (a X))
+    use NatIso.ofComponents (fun X => a X)
     rfl
 
 /-- The image of `Aut F` in `∀ X, Aut (F.obj X)` is closed. -/
