@@ -6,7 +6,7 @@ Authors: Bjørn Kjos-Hanssen, Patrick Massot
 
 import Mathlib.Topology.Order.OrderClosed
 import Mathlib.Topology.Order.LocalExtr
-import Mathlib.Topology.Order.Basic
+
 /-!
 # Local maxima from monotonicity and antitonicityOrder-closed topologies
 
