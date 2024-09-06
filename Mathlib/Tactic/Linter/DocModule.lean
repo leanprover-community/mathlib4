@@ -6,7 +6,6 @@ Authors: Damiano Testa
 import Lean.Linter.Util
 import Batteries.Data.String.Matcher
 import Mathlib.Util.AssertExists
-import Mathlib.adomaniLeanUtils.inspect_syntax
 
 /-!
 #  The "header" linter
@@ -81,10 +80,14 @@ def isCorrectAuthorsLine (line : String) : Bool :=
   line.startsWith "Authors: " && (!line.containsSubstr "  ")
     && (!line.containsSubstr " and ") && (!line.endsWith ".")
 
+/-- `toSyntax s pattern` converts the two input strings into a `Syntax`, assuming that `pattern`
+is a substring of `s`:
+the syntax is an atom with value `pattern` whose the range is the range of `pattern` in `s`. -/
 def toSyntax (s pattern : String) : Syntax :=
   let substr := (s.findSubstr? pattern.toSubstring).getD default
   mkAtomFrom (.ofRange ⟨substr.startPos, substr.stopPos⟩) pattern
 
+/-- The main function to validate the copyright string. -/
 def copyrightHeaderLinter (copyright : String) : Array (Syntax × MessageData) := Id.run do
   -- filter out everything after the first isolated `-/`
   let pieces := copyright.splitOn "\n-/"
@@ -128,33 +131,6 @@ def copyrightHeaderLinter (copyright : String) : Array (Syntax × MessageData) :
     msgs := msgs.push (toSyntax copyright "-/", m!"Copyright too short!")
   return msgs
 
-
-run_cmd
-  let cop := "\
-/-
-Copyright (c) 2024 Damiano Testa. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Damiano Testa, H,
-K
--/
-/- -/
--/
--/
--/
-
-c
-"
-  for (stx, m) in copyrightHeaderLinter cop do
-    logInfoAt stx
-      m!"* '{stx}':\n{m}\n"
-
-def styleHeader (s : Syntax) : Array (Syntax × MessageData) :=
-  let _copyright := match s.getHeadInfo with
-    | .original lead .. => lead.toString
-    | _ => default
-  let _imports := getImportIds s
-  let _firstCommand := afterImports s
-  #[]
 /--
 The "header" style linter checks that a file starts with
 ```
@@ -168,8 +144,10 @@ register_option linter.style.header : Bool := {
   descr := "enable the header style linter"
 }
 
+/-- An `IO.Ref` used to keep track of the starting position of the first non-`import`
+command in a file -/
 initialize firstCommand : IO.Ref (Option String.Pos) ← IO.mkRef none
-#check mkAtom
+
 namespace Style.AssertNotExists
 
 @[inherit_doc Mathlib.Linter.linter.style.header]
@@ -178,18 +156,14 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   if (← get).messages.hasErrors then
     return
-  --unless stx.isOfKind ``commandAssert_not_exists_ do return
-  --dbg_trace "Starting position of syntax: {stx.getPos?}"
   let mut firstPos ← firstCommand.get
   let mut upToStx : Syntax := .missing
-  --dbg_trace "Current value of ref: {firstPos}"
   let offset : String.Pos := ⟨3⟩
   if firstPos.isNone then
     upToStx ← parseUpToHere stx <|> pure Syntax.missing
     let endOfImports := upToStx.getTailPos?
     firstCommand.set endOfImports
   if upToStx != .missing then
-    --dbg_trace "trailingSize: {upToStx.getTrailingSize}"
     firstPos := upToStx.getTailPos?
     unless stx.getPos?.getD 0 ≤ firstPos.getD 0 + offset do
       return
@@ -198,13 +172,7 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
       | _ => default
     for (stx, m) in copyrightHeaderLinter copyright do
       Linter.logLint linter.style.header stx m!"* '{stx.getAtomVal}':\n{m}\n"
-
-
     let imports := getImportIds upToStx
-
-
-    --logInfo m!"copyright: {copyright}"
-    --logInfo m!"imports: {imports}"
     for i in imports do
       match i.getId with
       | `Mathlib.Data.Nat.Notation =>
@@ -219,17 +187,11 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
           m!"In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter \
             (see e.g. mathlib4#13779). Please consider carefully if this import is useful and \
             make sure to benchmark it. If this is fine, feel free to allow this linter."
-    --Meta.inspect (upToStx)
-    --Meta.inspect (upToStx.getHead?.getD default)
-
-    --dbg_trace "New value of ref: {upToStx.getTailPos?}"
-      --firstCommand.set stx.getPos?
     if ! onlyImportsModDocs upToStx then
       Linter.logLint linter.style.header stx
         m!"`{stx}` appears too late: it can only be preceded by `import` statements \
         doc-module strings and other `assert_not_exists` statements."
     else return
---  else
 
 
 initialize addLinter headerLinter
