@@ -7,6 +7,7 @@ import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.Topology.Algebra.Monoid
 import Mathlib.Topology.Algebra.Constructions
+import Mathlib.Topology.Maps.OpenQuotient
 import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.GroupTheory.QuotientGroup.Basic
 
@@ -854,34 +855,34 @@ instance instTopologicalSpace (N : Subgroup G) : TopologicalSpace (G ⧸ N) :=
 theorem quotientMap_mk (N : Subgroup G) : QuotientMap (mk : G → G ⧸ N) :=
   quotientMap_quot_mk
 
-variable [TopologicalGroup G] (N : Subgroup G)
+@[to_additive]
+theorem continuous_mk {N : Subgroup G} : Continuous (mk : G → G ⧸ N) :=
+  continuous_quot_mk
+
+section ContinuousMul
+
+variable [ContinuousMul G] {N : Subgroup G}
 
 @[to_additive]
-theorem isOpenMap_coe : IsOpenMap ((↑) : G → G ⧸ N) :=
-  isOpenMap_quotient_mk'_mul
+theorem isOpenMap_coe : IsOpenMap ((↑) : G → G ⧸ N) := isOpenMap_quotient_mk'_mul
 
 @[to_additive]
-instance instTopologicalGroup [N.Normal] : TopologicalGroup (G ⧸ N) where
-  continuous_mul := by
-    have cont : Continuous (((↑) : G → G ⧸ N) ∘ fun p : G × G ↦ p.fst * p.snd) :=
-      continuous_quot_mk.comp continuous_mul
-    have quot : QuotientMap fun p : G × G ↦ ((p.1 : G ⧸ N), (p.2 : G ⧸ N)) := by
-      apply IsOpenMap.to_quotientMap
-      · exact (QuotientGroup.isOpenMap_coe N).prod (QuotientGroup.isOpenMap_coe N)
-      · exact continuous_quot_mk.prod_map continuous_quot_mk
-      · exact (surjective_quot_mk _).prodMap (surjective_quot_mk _)
-    exact quot.continuous_iff.2 cont
-  continuous_inv := continuous_inv.quotient_map' _
+theorem isOpenQuotientMap_mk : IsOpenQuotientMap (mk : G → G ⧸ N) :=
+  MulAction.isOpenQuotientMap_quotientMk
 
-@[to_additive (attr := deprecated (since := "2024-08-05"))]
-theorem _root_.topologicalGroup_quotient [N.Normal] : TopologicalGroup (G ⧸ N) :=
-  instTopologicalGroup N
+@[to_additive]
+instance instContinuousSMul : ContinuousSMul G (G ⧸ N) where
+  continuous_smul := by
+    rw [← (IsOpenQuotientMap.id.prodMap isOpenQuotientMap_mk).continuous_comp_iff]
+    exact continuous_mk.comp continuous_mul
+
+variable (N)
 
 /-- Neighborhoods in the quotient are precisely the map of neighborhoods in the prequotient. -/
 @[to_additive
   "Neighborhoods in the quotient are precisely the map of neighborhoods in the prequotient."]
 theorem nhds_eq (x : G) : 𝓝 (x : G ⧸ N) = Filter.map (↑) (𝓝 x) :=
-  le_antisymm ((QuotientGroup.isOpenMap_coe N).nhds_le x) continuous_quot_mk.continuousAt
+  (isOpenQuotientMap_mk.map_nhds_eq _).symm
 
 @[to_additive]
 instance instFirstCountableTopology [FirstCountableTopology G] :
@@ -892,6 +893,21 @@ instance instFirstCountableTopology [FirstCountableTopology G] :
 theorem nhds_one_isCountablyGenerated [FirstCountableTopology G] [N.Normal] :
     (𝓝 (1 : G ⧸ N)).IsCountablyGenerated :=
   inferInstance
+
+end ContinuousMul
+
+variable [TopologicalGroup G] (N : Subgroup G)
+
+@[to_additive]
+instance instTopologicalGroup [N.Normal] : TopologicalGroup (G ⧸ N) where
+  continuous_mul := by
+    rw [← (isOpenQuotientMap_mk.prodMap isOpenQuotientMap_mk).continuous_comp_iff]
+    exact continuous_mk.comp continuous_mul
+  continuous_inv := continuous_inv.quotient_map' _
+
+@[to_additive (attr := deprecated (since := "2024-08-05"))]
+theorem _root_.topologicalGroup_quotient [N.Normal] : TopologicalGroup (G ⧸ N) :=
+  instTopologicalGroup N
 
 end QuotientGroup
 
