@@ -199,16 +199,8 @@ lemma zero [Zero Y] : HolderWith C r (0 : X → Y) := .const
 lemma isEmpty (hX : IsEmpty X) : HolderWith C r f := fun x => False.elim <| hX.elim x
 
 lemma mono {C' : ℝ≥0} (hf : HolderWith C r f) (h : C ≤ C') :
-    HolderWith C' r f := fun x₁ x₂ => (hf x₁ x₂).trans (by
-  by_cases hC : C = 0
-  · simp only [hC, ENNReal.coe_zero, zero_mul, zero_le]
-  by_cases hx : edist x₁ x₂ ^ (r : ℝ) = ∞
-  · rw [hx, ENNReal.mul_top (coe_ne_zero.2 <| ne_of_gt <| lt_of_lt_of_le (by positivity) h)]
-    exact le_top
-  by_cases hx' : edist x₁ x₂ ^ (r : ℝ) = 0
-  · rw [hx', mul_zero]
-    exact zero_le _
-  exact (ENNReal.mul_le_mul_right hx' hx).2 <| coe_le_coe.2 h)
+    HolderWith C' r f :=
+  fun x₁ x₂ ↦ (hf x₁ x₂).trans (mul_right_mono (coe_le_coe.2 h))
 
 end HolderWith
 
