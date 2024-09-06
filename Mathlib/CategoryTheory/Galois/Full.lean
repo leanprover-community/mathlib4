@@ -90,7 +90,7 @@ of `F.obj X`, on which `Aut F` acts transitively (i.e. which is connected in the
 of finite `Aut F`-sets). Then there exists a connected sub-object `Z` of `X` and an isomorphism
 `Y ≅ F.obj X` as `Aut F`-sets such that the obvious triangle commutes.
 
-For a version without the connectedness assumption, see `lift_subobjects`.
+For a version without the connectedness assumption, see `exists_Lift_of_mono`.
 -/
 lemma exists_lift_of_mono_of_isConnected (X : C) (Y : Action FintypeCat.{u} (MonCat.of (Aut F)))
     (i : Y ⟶ (functorToAction F).obj X) [Mono i] [IsConnected Y] : ∃ (Z : C) (f : Z ⟶ X)
@@ -128,15 +128,13 @@ lemma exists_lift_of_mono (X : C) (Y : Action FintypeCat.{u} (MonCat.of (Aut F))
   let u' : ∐ f ≅ ∐ fun i => (functorToAction F).obj (gZ i) := Sigma.mapIso gu
   have heq : (functorToAction F).map (Sigma.desc gf) = (t.symm ≪≫ u' ≪≫ is2.symm).inv ≫ i := by
     simp only [Iso.trans_inv, Iso.symm_inv, Category.assoc]
-    apply (cancel_epi is2.inv).mp
-    simp only [Iso.inv_hom_id_assoc]
+    rw [← Iso.inv_comp_eq]
     refine Sigma.hom_ext _ _ (fun j ↦ ?_)
     suffices (functorToAction F).map (gf j) = (gu j).inv ≫ i' j by
       simpa [is2, u']
     simp only [h, Iso.inv_hom_id_assoc]
-  refine ⟨∐ gZ, Sigma.desc gf, t.symm ≪≫ u' ≪≫ is2.symm, ?_, ?_⟩
+  refine ⟨∐ gZ, Sigma.desc gf, t.symm ≪≫ u' ≪≫ is2.symm, ?_, by simp [heq]⟩
   · exact mono_of_mono_map (functorToAction F) (heq ▸ mono_comp _ _)
-  · simp [heq]
 
 /-- The by a fiber functor `F : C ⥤ FintypeCat` induced functor `functorToAction F` to
 finite `Aut F`-sets is full. -/
@@ -146,12 +144,10 @@ instance functorToAction_full : Functor.Full (functorToAction F) where
       prod.lift (𝟙 _) f
     let i : (functorToAction F).obj X ⟶ (functorToAction F).obj (X ⨯ Y) :=
       u ≫ (PreservesLimitPair.iso (functorToAction F) X Y).inv
-    have : Mono u := by
-      refine ConcreteCategory.mono_of_injective _ (fun q₁ q₂ (hq : u.hom q₁ = u.hom q₂) ↦ ?_)
-      have hp1 : (u ≫ prod.fst).hom q₁ = (u ≫ prod.fst).hom q₂ := by
-        simp [hq, FintypeCat.comp_apply, Action.comp_hom]
-      rwa [prod.lift_fst] at hp1
-    have : Mono i := mono_comp u _
+    have : Mono i := by
+      have : Mono (u ≫ prod.fst) := prod.lift_fst (𝟙 _) f ▸ inferInstance
+      have : Mono u := mono_of_mono u prod.fst
+      apply mono_comp u _
     obtain ⟨Z, g, v, _, hvgi⟩ := exists_lift_of_mono F (Limits.prod X Y)
       ((functorToAction F).obj X) i
     let ψ : Z ⟶ X := g ≫ prod.fst
