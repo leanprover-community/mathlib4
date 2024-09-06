@@ -175,22 +175,4 @@ noncomputable def isoQuotientStabilizerOfIsConnected (X : Action FintypeCat (Mon
 
 end FintypeCat
 
-section Cont
-
-variable (G : Type u) [Group G] [TopologicalSpace G] [TopologicalGroup G]
-
-instance : TopologicalSpace (MonCat.of G) := inferInstanceAs <| TopologicalSpace G
-
-instance : PreGaloisCategory (ContAction FinTopCat (MonCat.of G)) := sorry
-
-instance : HasForget₂ (ContAction FinTopCat (MonCat.of G)) FintypeCat :=
-  HasForget₂.trans _ FinTopCat _
-
-instance : FiberFunctor (forget₂ (ContAction FinTopCat (MonCat.of G)) FintypeCat) := sorry
-
-instance : GaloisCategory (ContAction FinTopCat (MonCat.of G)) where
-  hasFiberFunctor := ⟨forget₂ (ContAction FinTopCat (MonCat.of G)) FintypeCat, ⟨inferInstance⟩⟩
-
-end Cont
-
 end CategoryTheory
