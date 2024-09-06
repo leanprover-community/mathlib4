@@ -20,7 +20,7 @@ sequence `f n x` or complex numbers.
 
 open Filter Function Complex Real
 
-open scoped Interval Topology BigOperators Nat Classical UpperHalfPlane Complex
+open scoped Interval Topology BigOperators Nat Classical Complex
 
 variable {α β F ι: Type*} [NormedAddCommGroup F] [CompleteSpace F] {u : ℕ → ℝ}
 
