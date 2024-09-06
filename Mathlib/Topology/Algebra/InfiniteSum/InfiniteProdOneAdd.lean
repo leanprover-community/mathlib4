@@ -3,12 +3,12 @@ Copyright (c) 2024 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Data.Complex.Exponential
-import Mathlib.Analysis.Complex.LocallyUniformLimit
+import Mathlib.Analysis.Complex.ReImTopology
 import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
 import Mathlib.Analysis.SpecialFunctions.Log.Summable
 import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Analysis.NormedSpace.FunctionSeries
+import Mathlib.Data.Complex.Exponential
 
 /-!
 # Products of one plus a complex number
