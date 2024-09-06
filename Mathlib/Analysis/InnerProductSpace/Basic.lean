@@ -1547,7 +1547,7 @@ variable {𝕜}
 
 namespace ContinuousLinearMap
 
-variable {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
+variable {E' : Type*} [SeminormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
 
 -- Note: odd and expensive build behavior is explicitly turned off using `noncomputable`
 /-- Given `f : E →L[𝕜] E'`, construct the continuous sesquilinear form `fun x y ↦ ⟪x, A y⟫`, given
@@ -1571,6 +1571,26 @@ theorem toSesqForm_apply_norm_le {f : E →L[𝕜] E'} {v : E'} : ‖toSesqForm 
 
 
 end ContinuousLinearMap
+
+variable (𝕜)
+
+/-- `innerSL` is an isometry. Note that the associated `LinearIsometry` is defined in
+`InnerProductSpace.Dual` as `toDualMap`. -/
+@[simp]
+theorem innerSL_apply_norm (x : E) : ‖innerSL 𝕜 x‖ = ‖x‖ := by
+  refine
+    le_antisymm ((innerSL 𝕜 x).opNorm_le_bound (norm_nonneg _) fun y => norm_inner_le_norm _ _) ?_
+  rcases eq_or_ne ‖x‖ 0 with (h1 | h2)
+  · rw [h1]
+    exact ContinuousLinearMap.opNorm_nonneg ((innerSL 𝕜) x)
+  · apply le_of_mul_le_mul_right _ (lt_of_le_of_ne (norm_nonneg _) (id (Ne.symm h2)))
+    calc
+      ‖x‖ * ‖x‖ = ‖(⟪x, x⟫ : 𝕜)‖ := by
+        rw [← sq, inner_self_eq_norm_sq_to_K, norm_pow, norm_ofReal, abs_norm]
+      _ ≤ ‖innerSL 𝕜 x‖ * ‖x‖ := (innerSL 𝕜 x).le_opNorm _
+
+lemma norm_innerSL_le : ‖innerSL 𝕜 (E := E)‖ ≤ 1 :=
+  ContinuousLinearMap.opNorm_le_bound _ zero_le_one (by simp)
 
 end Norm_Seminormed
 
@@ -1812,27 +1832,6 @@ theorem inner_sum_smul_sum_smul_of_sum_eq_zero {ι₁ : Type*} {s₁ : Finset ι
     Finset.sum_add_distrib, ← Finset.mul_sum, ← Finset.sum_mul, h₁, h₂, zero_mul,
     mul_zero, Finset.sum_const_zero, zero_add, zero_sub, Finset.mul_sum, neg_div,
     Finset.sum_div, mul_div_assoc, mul_assoc]
-
-variable (𝕜)
-
-/-- `innerSL` is an isometry. Note that the associated `LinearIsometry` is defined in
-`InnerProductSpace.Dual` as `toDualMap`. -/
-@[simp]
-theorem innerSL_apply_norm (x : E) : ‖innerSL 𝕜 x‖ = ‖x‖ := by
-  refine
-    le_antisymm ((innerSL 𝕜 x).opNorm_le_bound (norm_nonneg _) fun y => norm_inner_le_norm _ _) ?_
-  rcases eq_or_ne x 0 with (rfl | h)
-  · simp
-  · refine (mul_le_mul_right (norm_pos_iff.2 h)).mp ?_
-    calc
-      ‖x‖ * ‖x‖ = ‖(⟪x, x⟫ : 𝕜)‖ := by
-        rw [← sq, inner_self_eq_norm_sq_to_K, norm_pow, norm_ofReal, abs_norm]
-      _ ≤ ‖innerSL 𝕜 x‖ * ‖x‖ := (innerSL 𝕜 x).le_opNorm _
-
-lemma norm_innerSL_le : ‖innerSL 𝕜 (E := E)‖ ≤ 1 :=
-  ContinuousLinearMap.opNorm_le_bound _ zero_le_one (by simp)
-
-variable {𝕜}
 
 /-- When an inner product space `E` over `𝕜` is considered as a real normed space, its inner
 product satisfies `IsBoundedBilinearMap`.
