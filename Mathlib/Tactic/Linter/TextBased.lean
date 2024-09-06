@@ -224,8 +224,8 @@ def formatErrors (errors : Array ErrorContext) (style : ErrorFormat) : IO Unit :
     IO.println (outputMessage e style)
 
 /-- Core logic of a text based linter: given a collection of lines,
-return an array of all style errors with line numbers and, optionally,
-the collection of lines changed to fix the linter errors automatically.
+return an array of all style errors with line numbers. If possible,
+also return the collection of all lines, changed as needed to fix the linter errors.
 (Such automatic fixes are only possible for some kinds of `StyleError`s.)
 -/
 abbrev TextbasedLinter := Array String → Array (StyleError × ℕ) × (Option (Array String))
@@ -347,7 +347,7 @@ def allLinters : Array TextbasedLinter := #[
 
 /-- Read a file and apply all text-based linters.
 Return a list of all unexpected errors, and, if some errors could be fixed automatically,
-the collection of lines with all automatic fixes applied.
+the collection of all lines with every automatic fix applied.
 `exceptions` are any pre-existing style exceptions for this file. -/
 def lintFile (path : FilePath) (exceptions : Array ErrorContext) :
     IO (Array ErrorContext × Option (Array String)) := do
