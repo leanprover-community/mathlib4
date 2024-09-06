@@ -49,8 +49,7 @@ theorem add_one_le_of_lt (h : x < y) : x + 1 ≤ y := by
   rw [← succ_eq_add_one]
   exact succ_le_of_lt h
 
-theorem add_one_le_iff_of_not_isMax (hx : ¬ IsMax x) :
-    x + 1 ≤ y ↔ x < y := by
+theorem add_one_le_iff_of_not_isMax (hx : ¬ IsMax x) : x + 1 ≤ y ↔ x < y := by
   rw [← succ_eq_add_one, succ_le_iff_of_not_isMax hx]
 
 theorem add_one_le_iff [NoMaxOrder α] : x + 1 ≤ y ↔ x < y :=
@@ -79,8 +78,7 @@ theorem le_sub_one_of_lt (h : x < y) : x ≤ y - 1 := by
   rw [← pred_eq_sub_one]
   exact le_pred_of_lt h
 
-theorem le_sub_one_iff_of_not_isMin (hy : ¬ IsMin y) :
-    x ≤ y - 1 ↔ x < y := by
+theorem le_sub_one_iff_of_not_isMin (hy : ¬ IsMin y) : x ≤ y - 1 ↔ x < y := by
   rw [← pred_eq_sub_one, le_pred_iff_of_not_isMin hy]
 
 theorem le_sub_one_iff [NoMinOrder α] : x ≤ y - 1 ↔ x < y :=
@@ -158,8 +156,7 @@ theorem le_of_lt_add_one (h : x < y + 1) : x ≤ y := by
   rw [← succ_eq_add_one] at h
   exact le_of_lt_succ h
 
-theorem lt_add_one_iff_of_not_isMax (hy : ¬ IsMax y) :
-    x < y + 1 ↔ x ≤ y := by
+theorem lt_add_one_iff_of_not_isMax (hy : ¬ IsMax y) : x < y + 1 ↔ x ≤ y := by
   rw [← succ_eq_add_one, lt_succ_iff_of_not_isMax hy]
 
 theorem lt_add_one_iff [NoMaxOrder α] : x < y + 1 ↔ x ≤ y :=
@@ -175,8 +172,7 @@ theorem le_of_sub_one_lt (h : x - 1 < y) : x ≤ y := by
   rw [← pred_eq_sub_one] at h
   exact le_of_pred_lt h
 
-theorem sub_one_lt_iff_of_not_isMin (hx : ¬ IsMin x) :
-    x - 1 < y ↔ x ≤ y := by
+theorem sub_one_lt_iff_of_not_isMin (hx : ¬ IsMin x) : x - 1 < y ↔ x ≤ y := by
   rw [← pred_eq_sub_one, pred_lt_iff_of_not_isMin hx]
 
 theorem sub_one_lt_iff [NoMinOrder α] : x - 1 < y ↔ x ≤ y :=
