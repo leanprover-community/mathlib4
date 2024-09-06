@@ -160,10 +160,8 @@ def orientationPreservingGroupoid [FiniteDimensional ℝ H] : StructureGroupoid 
 
 end OrientationPreserving
 
-section OrientableManifold
-
 /-! ### Orientable manifolds -/
-
+section OrientableManifold
 
 /-- Typeclass defining orientable manifolds. -/
 class OrientableManifold (H : Type*) [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -174,7 +172,7 @@ class OrientableManifold (H : Type*) [NormedAddCommGroup H] [NormedSpace ℝ H]
 lemma orientableManifold_of_zero_dim (H : Type*) [NormedAddCommGroup H] [NormedSpace ℝ H]
     [FiniteDimensional ℝ H] (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
     (h : FiniteDimensional.finrank ℝ H = 0) : OrientableManifold H M where
-  compatible := fun {_ _} _ _ ↦
+  compatible := fun _ _ ↦
     ⟨orientationPreserving_of_zero_dim _ _ h, orientationPreserving_of_zero_dim _ _ h⟩
 
 /-- Typeclass defining orientable smooth manifolds. -/
