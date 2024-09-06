@@ -28,7 +28,7 @@ protected def op (H : Subgroup G) : Subgroup Gᵐᵒᵖ where
   mul_mem' ha hb := H.mul_mem hb ha
   inv_mem' := H.inv_mem
 
-/- We reclare this instance to get keys
+/- We redeclare this instance to get keys
 `SMul (@Subtype (MulOpposite _) (@Membership.mem (MulOpposite _)
   (Subgroup (MulOpposite _) _) _ (@Subgroup.op _ _ _))) _`
 compared to the keys for `Submonoid.smul`
