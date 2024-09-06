@@ -166,8 +166,8 @@ lemma orientableManifold_of_zero_dim (H : Type*) [NormedAddCommGroup H] [NormedS
 
 /-- Typeclass defining orientable smooth manifolds. -/
 class OrientableSmoothManifold (H : Type*) [NormedAddCommGroup H] [NormedSpace ℝ H]
-    [FiniteDimensional ℝ H] (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
-    [OrientableManifold H M] (I : ModelWithCorners ℝ H M) [SmoothManifoldWithCorners I M] extends
-  SmoothManifoldWithCorners I M ∧ OrientableManifold H M : Prop
+    [FiniteDimensional ℝ H] {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (M : Type*)
+    [TopologicalSpace M] [ChartedSpace H M] (I : ModelWithCorners ℝ E H) extends
+  HasGroupoid M ((contDiffGroupoid ⊤ I) ⊓ orientationPreservingGroupoid) : Prop
 
 end OrientableManifold
