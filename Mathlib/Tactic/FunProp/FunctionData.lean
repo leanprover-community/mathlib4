@@ -121,9 +121,9 @@ def getFunctionData? (f : Expr)
     (unfoldPred : Name → Bool := fun _ => false) (cfg : WhnfCoreConfig := {}) :
     MetaM MaybeFunctionData := do
 
-  let unfold := fun e : Expr =>
+  let unfold := fun e : Expr => do
     if let .some n := e.getAppFn'.constName? then
-      pure (unfoldPred n)
+      pure ((unfoldPred n) || (← isReducible n))
     else
       pure false
 
