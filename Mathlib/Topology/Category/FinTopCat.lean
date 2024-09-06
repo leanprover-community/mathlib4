@@ -41,6 +41,9 @@ instance : Category FinTopCat :=
 instance : ConcreteCategory FinTopCat :=
   InducedCategory.concreteCategory _
 
+instance instFunLike (X Y : FinTopCat) : FunLike (X ⟶ Y) X Y :=
+  inferInstanceAs <| FunLike C(X, Y) X Y
+
 instance (X : FinTopCat) : TopologicalSpace ((forget FinTopCat).obj X) :=
   inferInstanceAs <| TopologicalSpace X
 

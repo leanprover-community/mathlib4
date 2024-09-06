@@ -8,6 +8,8 @@ import Mathlib.CategoryTheory.FintypeCat
 import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.GroupTheory.QuotientGroup.Basic
 import Mathlib.RepresentationTheory.Action.Basic
+import Mathlib.Topology.Category.FinTopCat
+import Mathlib.Topology.Algebra.MulAction
 
 /-!
 # Constructors for `Action V G` for some concrete categories
@@ -156,6 +158,27 @@ lemma quotientToQuotientOfLE_hom_mk [Fintype (G ⧸ H)] (h : N ≤ H) (x : G) :
 end
 
 end FintypeCat
+
+namespace FinTopCat
+
+/-- Bundles a finite topological space `H` with a multiplicative action of `G` as an `Action`. -/
+def ofMulAction (G : Type u) [TopologicalSpace G] (H : FinTopCat.{u}) [Monoid G] [MulAction G H]
+    (h : ∀ g : G, Continuous (fun x : H ↦ g • x)) :
+    Action FinTopCat (MonCat.of G) where
+  V := H
+  ρ := {
+    toFun := fun g : G ↦ ⟨fun x : H ↦ g • x, h g⟩
+    map_one' := ContinuousMap.ext (one_smul _)
+    map_mul' := fun g h : G ↦ ContinuousMap.ext (mul_smul g h)
+  }
+
+--@[simp]
+--theorem ofMulAction_apply {G : Type u} [TopologicalSpace G] {H : FinTopCat.{u}} [Monoid G] [MulAction G H]
+--    (h : ∀ g : G, Continuous (fun x : H ↦ g • x))
+--    (g : G) (x : H) : ((ofMulAction G H h).ρ g : H → H) x = (g • x : H) :=
+--  rfl
+
+end FinTopCat
 
 section ToMulAction
 
