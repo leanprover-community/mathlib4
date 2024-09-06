@@ -304,7 +304,7 @@ theorem apply_add_of_supDegree_le (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
     have := covariantClass_le_of_lt B B (· + ·)
     exact (add_lt_add_of_lt_of_le (((Finset.le_sup ha).trans hp).lt_of_ne <| hD.ne_iff.2 hne)
       <| (Finset.le_sup ha').trans hq).ne he
-  · refine fun h => Finset.sum_eq_zero (fun a _ => (ite_eq_right_iff _ _ _).mpr <| fun _ => ?_)
+  · refine fun h => Finset.sum_eq_zero (fun a _ => ite_eq_right_iff.mpr <| fun _ => ?_)
     rw [Finsupp.not_mem_support_iff.mp h, zero_mul]
 
 end SupDegree
