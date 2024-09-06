@@ -40,7 +40,7 @@ attribute [instance] BddDistLat.isBoundedOrder
 def of (α : Type*) [DistribLattice α] [BoundedOrder α] : BddDistLat :=
   -- Porting note: was `⟨⟨α⟩⟩`
   -- see https://github.com/leanprover-community/mathlib4/issues/4998
-  ⟨{α := α}⟩
+  ⟨⟨α, _⟩⟩
 
 @[simp]
 theorem coe_of (α : Type*) [DistribLattice α] [BoundedOrder α] : ↥(of α) = α :=

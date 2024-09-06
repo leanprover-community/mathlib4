@@ -41,7 +41,7 @@ attribute [instance] BddLat.isBoundedOrder
 /-- Construct a bundled `BddLat` from `Lattice` + `BoundedOrder`. -/
 def of (α : Type*) [Lattice α] [BoundedOrder α] : BddLat :=
   -- Porting note: was `⟨⟨α⟩⟩`, see https://github.com/leanprover-community/mathlib4/issues/4998
-  ⟨{α := α}⟩
+  ⟨⟨α, _⟩⟩
 
 @[simp]
 theorem coe_of (α : Type*) [Lattice α] [BoundedOrder α] : ↥(of α) = α :=
