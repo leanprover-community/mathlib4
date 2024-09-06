@@ -570,7 +570,7 @@ class IsSimpleOrder (α : Type*) [outParam (LE α)] [outParam (BoundedOrder α)]
   /-- Every element is either `⊥` or `⊤` -/
   eq_bot_or_eq_top : ∀ a : α, a = ⊥ ∨ a = ⊤
 
-instance IsSimpleOrder.instNontrivial :
+@[instance] abbrev IsSimpleOrder.instNontrivial :
     ∀ {α} {_ : LE α} {_ : BoundedOrder α} [IsSimpleOrder α], Nontrivial α :=
   @IsSimpleOrder.toNontrivial
 

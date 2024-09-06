@@ -616,11 +616,11 @@ class ConnectedSpace (α : Type u) [outParam (TopologicalSpace α)] extends
   /-- A connected space is nonempty. -/
   toNonempty : Nonempty α
 
-instance ConnectedSpace.instPreconnectedSpace :
+@[instance] abbrev ConnectedSpace.instPreconnectedSpace :
     ∀ {α} {_ : TopologicalSpace α} [ConnectedSpace α], PreconnectedSpace α :=
   @ConnectedSpace.toPreconnectedSpace
 
-instance (priority := 50) ConnectedSpace.instNonempty :
+@[instance 50] abbrev ConnectedSpace.instNonempty :
     ∀ {α} {_ : TopologicalSpace α} [ConnectedSpace α], Nonempty α :=
   @ConnectedSpace.toNonempty
 

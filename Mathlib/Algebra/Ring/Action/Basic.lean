@@ -41,7 +41,7 @@ class MulSemiringAction (M : Type u) (R : Type v) [outParam (Monoid M)] [outPara
   /-- Scalar multiplication distributes across multiplication -/
   smul_mul : ∀ (g : M) (x y : R), g • (x * y) = g • x * g • y
 
-instance MulSemiringAction.instDistribMulAction :
+@[instance] abbrev MulSemiringAction.instDistribMulAction :
     ∀ {M R} {_ : Monoid M} {_ : Semiring R} [MulSemiringAction M R], DistribMulAction M R :=
   @MulSemiringAction.toDistribMulAction
 

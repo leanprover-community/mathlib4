@@ -51,15 +51,15 @@ class AddTorsor (G : outParam Type*) (P : Type*) [outParam (AddGroup G)] extends
   /-- Torsor addition and subtraction with the same element cancels out. -/
   vadd_vsub' : ∀ (g : G) (p : P), g +ᵥ p -ᵥ p = g
 
-instance AddTorsor.instAddAction :
+@[instance] abbrev AddTorsor.instAddAction :
     ∀ {G P} {_ : AddGroup G} [AddTorsor G P], AddAction G P :=
   @AddTorsor.toAddAction
 
-instance AddTorsor.instVSub :
+@[instance] abbrev AddTorsor.instVSub :
     ∀ {G P} {_ : AddGroup G} [AddTorsor G P], VSub G P :=
   @AddTorsor.toVSub
 
-instance (priority := 100) AddTorsor.instNonempty :
+@[instance 100] abbrev AddTorsor.instNonempty :
     ∀ {G P} {_ : AddGroup G} [AddTorsor G P], Nonempty P :=
   @AddTorsor.nonempty
 

@@ -76,11 +76,11 @@ See <https://stacks.math.columbia.edu/tag/002S>
 class IsConnected (J : Type u₁) [outParam (Category.{v₁} J)] extends IsPreconnected J : Prop where
   [is_nonempty : Nonempty J]
 
-instance IsConnected.instIsPreconnected :
+@[instance] abbrev IsConnected.instIsPreconnected :
     ∀ {J} {_ : Category.{v₁} J} [IsConnected J], IsPreconnected J :=
   @IsConnected.toIsPreconnected
 
-instance (priority := 100) LocalRing.instNonempty :
+@[instance 100] abbrev LocalRing.instNonempty :
     ∀ {J} {_ : Category.{v₁} J} [IsConnected J], Nonempty J :=
   @IsConnected.is_nonempty
 

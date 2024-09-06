@@ -104,7 +104,7 @@ class Algebra (R : Type u) (A : Type v) [outParam (CommSemiring R)] [outParam (S
   commutes' : ∀ r x, toRingHom r * x = x * toRingHom r
   smul_def' : ∀ r x, r • x = toRingHom r * x
 
-instance Algebra.instSMul :
+@[instance] abbrev Algebra.instSMul :
     ∀ {R A} {_ : CommSemiring R} {_ : Semiring A} [Algebra R A], SMul R A :=
   @Algebra.toSMul
 

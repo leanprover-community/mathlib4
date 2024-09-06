@@ -150,11 +150,11 @@ class IrreducibleSpace (X : Type*) [outParam (TopologicalSpace X)] extends
     PreirreducibleSpace X : Prop where
   toNonempty : Nonempty X
 
-instance IrreducibleSpace.instPreirreducibleSpace :
+@[instance] abbrev IrreducibleSpace.instPreirreducibleSpace :
     ∀ {X} {_ : TopologicalSpace X} [IrreducibleSpace X], PreirreducibleSpace X :=
   @IrreducibleSpace.toPreirreducibleSpace
 
-instance (priority := 50) IrreducibleSpace.instNonempty :
+@[instance 50] abbrev IrreducibleSpace.instNonempty :
     ∀ {X} {_ : TopologicalSpace X} [IrreducibleSpace X], Nonempty X :=
   @IrreducibleSpace.toNonempty
 

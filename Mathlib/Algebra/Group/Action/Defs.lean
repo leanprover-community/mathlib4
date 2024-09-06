@@ -101,8 +101,8 @@ class MulAction (α : Type*) (β : Type*) [outParam (Monoid α)] extends SMul α
   /-- Associativity of `•` and `*` -/
   mul_smul : ∀ (x y : α) (b : β), (x * y) • b = x • y • b
 
-@[to_additive]
-instance MulAction.instSMul :
+@[to_additive (attr := instance)]
+abbrev MulAction.instSMul :
     ∀ {α β} {_ : Monoid α} [MulAction α β], SMul α β :=
   @MulAction.toSMul
 

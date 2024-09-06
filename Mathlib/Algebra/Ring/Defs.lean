@@ -426,10 +426,10 @@ This is implemented as a mixin for `Semiring α`.
 To obtain an integral domain use `[CommRing α] [IsDomain α]`. -/
 class IsDomain (α : Type u) [outParam (Semiring α)] extends IsCancelMulZero α, Nontrivial α : Prop
 
-instance IsDomain.instIsCancelMulZero :
+@[instance] abbrev IsDomain.instIsCancelMulZero :
     ∀ {α} {_ : Semiring α} [IsDomain α], IsCancelMulZero α :=
   @IsDomain.toIsCancelMulZero
 
-instance IsDomain.instNontrivial :
+@[instance] abbrev IsDomain.instNontrivial :
     ∀ {α} {_ : Semiring α} [IsDomain α], Nontrivial α :=
   @IsDomain.toNontrivial

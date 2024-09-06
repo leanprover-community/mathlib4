@@ -62,7 +62,7 @@ class Module (R : Type u) (M : Type v) [outParam (Semiring R)] [outParam (AddCom
   /-- Scalar multiplication by zero gives zero. -/
   protected zero_smul : ∀ x : M, (0 : R) • x = 0
 
-instance Module.instDistribMulAction :
+@[instance] abbrev Module.instDistribMulAction :
     ∀ {R M} {_ : Semiring R} {_ : AddCommMonoid M} [Module R M], DistribMulAction R M :=
   @Module.toDistribMulAction
 

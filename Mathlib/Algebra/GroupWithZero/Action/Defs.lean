@@ -93,7 +93,7 @@ class SMulZeroClass (M A : Type*) [outParam (Zero A)] extends SMul M A where
   /-- Multiplying `0` by a scalar gives `0` -/
   smul_zero : ∀ a : M, a • (0 : A) = 0
 
-instance SMulZeroClass.instSMul :
+@[instance] abbrev SMulZeroClass.instSMul :
     ∀ {M A} {_ : Zero A} [SMulZeroClass M A], SMul M A :=
   @SMulZeroClass.toSMul
 
@@ -166,7 +166,7 @@ class DistribSMul (M A : Type*) [outParam (AddZeroClass A)] extends SMulZeroClas
   /-- Scalar multiplication distributes across addition -/
   smul_add : ∀ (a : M) (x y : A), a • (x + y) = a • x + a • y
 
-instance DistribSMul.instSMulZeroClass :
+@[instance] abbrev DistribSMul.instSMulZeroClass :
     ∀ {M A} {_ : AddZeroClass A} [DistribSMul M A], SMulZeroClass M A :=
   @DistribSMul.toSMulZeroClass
 
@@ -238,7 +238,7 @@ class DistribMulAction (M A : Type*) [outParam (Monoid M)] [outParam (AddMonoid 
   /-- Scalar multiplication distributes across addition -/
   smul_add : ∀ (a : M) (x y : A), a • (x + y) = a • x + a • y
 
-instance DistribMulAction.instMulAction :
+@[instance] abbrev DistribMulAction.instMulAction :
     ∀ {M A} {_ : Monoid M} {_ : AddMonoid A} [DistribMulAction M A], MulAction M A :=
   @DistribMulAction.toMulAction
 
@@ -346,7 +346,7 @@ class MulDistribMulAction (M : Type*) (A : Type*) [outParam (Monoid M)] [outPara
   /-- Multiplying `1` by a scalar gives `1` -/
   smul_one : ∀ r : M, r • (1 : A) = 1
 
-instance MulDistribMulAction.instMulAction :
+@[instance] abbrev MulDistribMulAction.instMulAction :
     ∀ {M A} {_ : Monoid M} {_ : Monoid A} [MulDistribMulAction M A], MulAction M A :=
   @MulDistribMulAction.toMulAction
 

@@ -31,6 +31,6 @@ class LocalRing (R : Type*) [outParam (Semiring R)] extends Nontrivial R : Prop 
     word, for every `a : R`, either `a` is a unit or `1 - a` is a unit. -/
   isUnit_or_isUnit_of_add_one {a b : R} (h : a + b = 1) : IsUnit a ∨ IsUnit b
 
-instance LocalRing.instNontrivial :
+@[instance] abbrev LocalRing.instNontrivial :
     ∀ {R} {_ : Semiring R} [LocalRing R], Nontrivial R :=
   @LocalRing.toNontrivial

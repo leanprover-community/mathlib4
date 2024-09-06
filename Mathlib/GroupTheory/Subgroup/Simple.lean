@@ -45,8 +45,8 @@ attribute [to_additive] IsSimpleGroup
 
 variable {G} {A}
 
-@[to_additive]
-instance IsSimpleGroup.instNontrivial :
+@[to_additive (attr := instance)]
+abbrev IsSimpleGroup.instNontrivial :
     ∀ {G} {_ : Group G} [IsSimpleGroup G], Nontrivial G :=
   @IsSimpleGroup.toNontrivial
 

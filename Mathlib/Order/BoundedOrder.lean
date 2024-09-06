@@ -45,7 +45,7 @@ class OrderTop (α : Type u) [outParam (LE α)] extends Top α where
   /-- `⊤` is the greatest element -/
   le_top : ∀ a : α, a ≤ ⊤
 
-instance OrderTop.instTop :
+@[instance] abbrev OrderTop.instTop :
     ∀ {α} {_ : LE α} [OrderTop α], Top α :=
   @OrderTop.toTop
 
