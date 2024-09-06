@@ -130,6 +130,53 @@ lemma orientationReversing_comp {f g : H → H} {u v : Set H}
   rw [fderiv.comp x (hg.differentiableAt hxv) (hf.differentiableAt hxu)]
   simpa [ContinuousLinearMap.det] using mul_pos_of_neg_of_neg (hg (f x) hxv) (hf x hxu)
 
+/-- A linear isomorphism on a connected set is
+either orientation-preserving or orientation-reversing. -/
+lemma foo (f : H ≃L[ℝ] H) {s : Set H} (hs : IsConnected s) (hs' : IsPathConnected s) :
+    OrientationPreserving f s ∨ OrientationReversing f s := by
+  -- At each point, its determinant is non-zero, as it is a diffeomorphism.
+  have (x : H) : (fderiv ℝ (⇑f) x).det ≠ 0 := sorry
+  -- Choose some point x₀ ∈ s ⊆ H.
+  --inhabit H -- by_cases empty_or_inhabited, or something
+  --let x₀ := inhabited_h.default
+  let x₀ : s := sorry
+  obtain ⟨x₀, hx₀⟩ := x₀
+  set detx₀ := (fderiv ℝ (⇑f) x₀).det
+  by_cases h: 0 < detx₀
+  · left
+    intro x hx
+    -- Choose a path `γ` connecting x and x₀.
+    obtain ⟨γ, hγ⟩ := hs'.joinedIn x₀ hx₀ x hx
+    -- Consider the function `t ↦ det (fderiv f γ(t))`.
+    let g := fun t ↦ (fderiv ℝ f (γ t)).det
+    have hneq (t) : g t ≠ 0 := by apply this
+    have : 0 < g 0 := by simp only [Path.source, g, h]
+    rw [← Path.target γ]
+    show 0 < g 1
+    by_contra h'
+    push_neg at h'
+    have : g 1 < 0 := lt_of_le_of_ne h' (hneq 1)
+    -- intermediate value theorem!
+    -- xxx: better to extend these to all of ℝ, with a junk value; a fight for another day!
+    have aux : IsPreconnected unitInterval := sorry--let pr := hs.isPreconnected
+    let ivt := aux.intermediate_value₂ (a := 0) (b := 1) (g := fun _ → 0) --(hg := continuousOn_const)--hx₀ hx
+    let ivt' := ivt (g := fun _ ↦ 0)
+    have : ConditionallyCompleteLinearOrder ↑unitInterval := sorry
+    haveI : OrderTopology ↑unitInterval := sorry
+    let ivt := intermediate_value_Icc (f := g)
+
+    --have : (fderiv ℝ f )
+    -- use path-connectedness and continuity of the determinant, and the intermediate value theorem
+    sorry
+  · have : detx₀ < 0 := by
+      by_contra h'
+      push_neg at h'
+      exact h (lt_of_le_of_ne h' (this x₀).symm)
+    right
+    intro x hx
+    sorry -- use an analogous argument as above
+
+
 /-- The pregroupoid of orientation-preserving maps. -/
 def orientationPreservingPregroupoid [FiniteDimensional ℝ H] : Pregroupoid H where
   property f s := OrientationPreserving f s
