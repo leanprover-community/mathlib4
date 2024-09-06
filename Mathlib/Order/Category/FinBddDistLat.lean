@@ -41,14 +41,14 @@ attribute [instance] FinBddDistLat.isFintype
 def of (α : Type*) [DistribLattice α] [BoundedOrder α] [Fintype α] : FinBddDistLat :=
   -- Porting note: was `⟨⟨⟨α⟩⟩⟩`
   -- see https://github.com/leanprover-community/mathlib4/issues/4998
-  ⟨⟨{α := α}⟩⟩
+  ⟨⟨⟨α, _⟩⟩⟩
 
 /-- Construct a bundled `FinBddDistLat` from a `Nonempty` `BoundedOrder` `DistribLattice`. -/
 def of' (α : Type*) [DistribLattice α] [Fintype α] [Nonempty α] : FinBddDistLat :=
   haveI := Fintype.toBoundedOrder α
   -- Porting note: was `⟨⟨⟨α⟩⟩⟩`
   -- see https://github.com/leanprover-community/mathlib4/issues/4998
-  ⟨⟨{α := α}⟩⟩
+  ⟨⟨⟨α, _⟩⟩⟩
 
 instance : Inhabited FinBddDistLat :=
   ⟨of PUnit⟩

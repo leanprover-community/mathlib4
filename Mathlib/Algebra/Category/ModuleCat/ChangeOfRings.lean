@@ -474,6 +474,7 @@ def HomEquiv.fromRestriction {X : ModuleCat R} {Y : ModuleCat S}
       dsimp
       rw [mul_smul]
 
+set_option maxHeartbeats 400000 in
 /-- Given `R`-module X and `S`-module Y, any `g : Y ⟶ (coextendScalars f).obj X`
 corresponds to `(restrictScalars f).obj Y ⟶ X` by `y ↦ g y 1`
 -/
@@ -492,6 +493,7 @@ def HomEquiv.toRestriction {X Y} (g : Y ⟶ (coextendScalars f).obj X) :
     simp
 
 -- Porting note: add to address timeout in unit'
+set_option maxHeartbeats 400000 in
 /-- Auxiliary definition for `unit'` -/
 def app' (Y : ModuleCat S) : Y →ₗ[S] (restrictScalars f ⋙ coextendScalars f).obj Y :=
   { toFun := fun y : Y =>
@@ -536,6 +538,7 @@ protected def unit' : 𝟭 (ModuleCat S) ⟶ restrictScalars f ⋙ coextendScala
       change s • (g y) = g (s • y)
       rw [map_smul]
 
+set_option maxHeartbeats 800000 in
 /-- The natural transformation from the composition of coextension and restriction of scalars to
 identity functor.
 -/
@@ -544,10 +547,12 @@ protected def counit' : coextendScalars f ⋙ restrictScalars f ⟶ 𝟭 (Module
   app X :=
     { toFun := fun g => g.toFun (1 : S)
       map_add' := fun x1 x2 => by
-        dsimp
+        dsimp only [Functor.id_obj, Functor.comp_obj, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom]
         rw [LinearMap.add_apply]
       map_smul' := fun r (g : (restrictScalars f).obj ((coextendScalars f).obj X)) => by
-        dsimp
+        dsimp only [Functor.id_obj, Functor.comp_obj, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom,
+          LinearMap.add_apply, id_eq, eq_mpr_eq_cast, cast_eq, restrictScalars.smul_def,
+          AddHom.coe_mk, RingHom.id_apply]
         rw [← LinearMap.coe_toAddHom, ← AddHom.toFun_eq_coe]
         rw [CoextendScalars.smul_apply (s := f r) (g := g) (s' := 1), one_mul, ← LinearMap.map_smul]
         rw [← LinearMap.coe_toAddHom, ← AddHom.toFun_eq_coe]
@@ -618,7 +623,7 @@ def HomEquiv.toRestrictScalars {X Y} (g : (extendScalars f).obj X ⟶ Y) :
   map_smul' r x := by
     letI : Module R S := Module.compHom S f
     letI : Module R Y := Module.compHom Y f
-    dsimp
+    dsimp only
     erw [RestrictScalars.smul_def, ← LinearMap.map_smul, tmul_smul]
     congr
 
@@ -674,6 +679,7 @@ def HomEquiv.fromExtendScalars {X Y} (g : X ⟶ (restrictScalars f).obj Y) :
       rw [mul_smul]
     | add _ _ ih1 ih2 => rw [smul_add, map_add, ih1, ih2, map_add, smul_add]
 
+set_option maxHeartbeats 800000 in
 /-- Given `R`-module X and `S`-module Y, `S`-linear linear maps `(extendScalars f).obj X ⟶ Y`
 bijectively correspond to `R`-linear maps `X ⟶ (restrictScalars f).obj Y`.
 -/
@@ -792,6 +798,7 @@ def counit : restrictScalars.{max v u₂,u₁,u₂} f ⋙ extendScalars f ⟶ �
     | add _ _ ih₁ ih₂ => rw [map_add, map_add]; congr 1
 end ExtendRestrictScalarsAdj
 
+set_option maxHeartbeats 400000 in
 /-- Given commutative rings `R, S` and a ring hom `f : R →+* S`, the extension and restriction of
 scalars by `f` are adjoint to each other.
 -/

@@ -53,7 +53,7 @@ instance mulActionWithZero' {g : I → Type*} [∀ i, MonoidWithZero (g i)] [∀
 
 variable (I f)
 
-instance module (α) {r : Semiring α} {m : ∀ i, AddCommMonoid <| f i} [∀ i, Module α <| f i] :
+instance module (α) [r : Semiring α] [m : ∀ i, AddCommMonoid <| f i] [∀ i, Module α <| f i] :
     @Module α (∀ i : I, f i) r (@Pi.addCommMonoid I f m) :=
   { Pi.distribMulAction _ with
     add_smul := fun _ _ _ => funext fun _ => add_smul _ _ _
