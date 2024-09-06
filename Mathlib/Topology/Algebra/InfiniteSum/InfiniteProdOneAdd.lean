@@ -4,17 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
 import Mathlib.Data.Complex.Exponential
-import Mathlib.Analysis.Complex.IntegerCompl
 import Mathlib.Analysis.Complex.LocallyUniformLimit
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.EulerSineProd
 import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
 import Mathlib.Analysis.SpecialFunctions.Log.Summable
 import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Analysis.NormedSpace.FunctionSeries
-import Mathlib.Analysis.PSeries
-import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
-import Mathlib.Order.Filter.ZeroAndBoundedAtFilter
-import Mathlib.NumberTheory.ModularForms.EisensteinSeries.UniformConvergence
 
 /-!
 # Products of one plus a complex number

@@ -524,32 +524,3 @@ lemma multipliable_int_iff_multipliable_nat_and_neg {f : ℤ → G} :
 end UniformGroup
 
 end Int
-
-section pnat
-
-theorem pnat_summable_iff_summable_add_one {α : Type*} [TopologicalSpace α] [AddCommMonoid α]
-    {f : ℕ → α} : (Summable fun x : ℕ+ => f x) ↔ Summable fun x : ℕ => f (x + 1) := by
-  rw [← Equiv.summable_iff _root_.Equiv.pnatEquivNat]
-  constructor
-  repeat {refine fun hf => by apply Summable.congr hf (by refine fun b => by simp)}
-
-theorem tsum_pnat_eq_tsum_add_one {α : Type*} [TopologicalSpace α] [AddCommMonoid α] [T2Space α]
-    (f : ℕ → α) : ∑' n : ℕ+, f n = ∑' n, f (n + 1) := by
-  by_cases hf2 : Summable fun n : ℕ+ => f n
-  · have hpos : HasSum (fun n : ℕ => f (n + 1)) (∑' n : ℕ+, f n) := by
-      rw [← _root_.Equiv.pnatEquivNat.hasSum_iff]
-      simp_rw [Equiv.pnatEquivNat] at *
-      simp only [Equiv.coe_fn_mk] at *
-      have hf3 : Summable ((fun n : ℕ => f (n + 1)) ∘ PNat.natPred) := by
-        apply Summable.congr hf2 (by refine fun b => by simp)
-      rw [Summable.hasSum_iff hf3]
-      congr
-      funext
-      simp only [comp_apply, PNat.natPred_add_one]
-    apply symm
-    · apply hpos.tsum_eq
-  · rw [tsum_eq_zero_of_not_summable hf2]
-    rw [pnat_summable_iff_summable_add_one] at hf2
-    rw [tsum_eq_zero_of_not_summable hf2]
-
-end pnat
