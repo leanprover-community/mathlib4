@@ -36,7 +36,7 @@ variable (p : ℕ) [Fact (Nat.Prime p)]
 namespace PadicInt
 
 /-- The set of p-adic integers `ℤ_[p]` is totally bounded. -/
-theorem totallyBounded_univ : TotallyBounded (univ : Set ℤ_[p]) := by
+theorem totallyBounded_univ : TotallyBounded (Set.univ : Set ℤ_[p]) := by
   refine Metric.totallyBounded_iff.mpr (fun ε hε ↦ ?_)
   obtain ⟨k, hk⟩ := exists_pow_neg_lt p hε
   refine ⟨Nat.cast '' Finset.range (p ^ k), Set.toFinite _, fun z _ ↦ ?_⟩
