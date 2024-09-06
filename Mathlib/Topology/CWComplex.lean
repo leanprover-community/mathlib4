@@ -112,7 +112,7 @@ structure RelativeCWComplex where
 /-- A CW-complex is a relative CW-complex whose `sk 0` (i.e., `(-1)`-skeleton) is empty. -/
 structure CWComplex extends RelativeCWComplex.{u} where
   /-- `sk 0` (i.e., the `(-1)`-skeleton) is empty. -/
-  sk_zero_empty : sk 0 = TopCat.of (ULift Empty)
+  sk_zero_empty : IsEmpty (sk 0)
 
 namespace RelativeCWComplex
 
