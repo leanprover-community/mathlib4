@@ -784,14 +784,14 @@ protected theorem IsStrongLimit.isSuccPrelimit {c} (H : IsStrongLimit c) : IsSuc
 alias IsStrongLimit.isSuccLimit := IsStrongLimit.isSuccPrelimit
 
 theorem IsStrongLimit.isLimit {c} (H : IsStrongLimit c) : IsLimit c :=
-  ⟨H.ne_zero, H.isSuccLimit⟩
+  ⟨H.ne_zero, H.isSuccPrelimit⟩
 
-theorem isStrongLimit_beth {o : Ordinal} (H : IsSuccLimit o) : IsStrongLimit (beth o) := by
+theorem isStrongLimit_beth {o : Ordinal} (H : IsSuccPrelimit o) : IsStrongLimit (beth o) := by
   rcases eq_or_ne o 0 with (rfl | h)
   · rw [beth_zero]
     exact isStrongLimit_aleph0
   · refine ⟨beth_ne_zero o, fun a ha => ?_⟩
-    rw [beth_limit ⟨h, isSuccLimit_iff_succ_lt.1 H⟩] at ha
+    rw [beth_limit ⟨h, isSuccPrelimit_iff_succ_lt.1 H⟩] at ha
     rcases exists_lt_of_lt_ciSup' ha with ⟨⟨i, hi⟩, ha⟩
     have := power_le_power_left two_ne_zero ha.le
     rw [← beth_succ] at this
