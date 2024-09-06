@@ -37,18 +37,16 @@ private lemma abs_in : ⟨1, absRat⟩ ∈ exampleFiniteValuedCSP := rfl
 private def exampleFiniteValuedInstance : exampleFiniteValuedCSP.Instance (Fin 2) :=
   {ValuedCSP.unaryTerm abs_in 0, ValuedCSP.unaryTerm abs_in 1}
 
-#adaptation_note
-/--
-This example stopped working on nightly-2024-09-05.
--/
--- example : exampleFiniteValuedInstance.IsOptimumSolution ![(0 : ℚ), (0 : ℚ)] := by
---   intro s
---   convert_to 0 ≤ exampleFiniteValuedInstance.evalSolution s
---   rw [ValuedCSP.Instance.evalSolution, exampleFiniteValuedInstance]
---   convert_to 0 ≤ |s 0| + |s 1|
---   · simp [ValuedCSP.unaryTerm, ValuedCSP.Term.evalSolution, Function.OfArity.uncurry]
---     rfl
---   positivity
+example : exampleFiniteValuedInstance.IsOptimumSolution ![(0 : ℚ), (0 : ℚ)] := by
+  intro s
+  convert_to 0 ≤ exampleFiniteValuedInstance.evalSolution s
+  · simp [exampleFiniteValuedInstance, ValuedCSP.Instance.evalSolution]
+    exact Rat.zero_add 0
+  rw [ValuedCSP.Instance.evalSolution, exampleFiniteValuedInstance]
+  convert_to 0 ≤ |s 0| + |s 1|
+  · simp [ValuedCSP.unaryTerm, ValuedCSP.Term.evalSolution, Function.OfArity.uncurry]
+    rfl
+  positivity
 
 -- ## Example: B ≠ A ≠ C ≠ D ≠ B ≠ C with three available labels (i.e., 3-coloring of K₄⁻)
 
