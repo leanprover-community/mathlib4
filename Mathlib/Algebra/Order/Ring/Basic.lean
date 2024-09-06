@@ -43,9 +43,10 @@ theorem zero_pow_le_one : ∀ n : ℕ, (0 : R) ^ n ≤ 1
 
 theorem pow_add_pow_le (hx : 0 ≤ x) (hy : 0 ≤ y) (hn : n ≠ 0) : x ^ n + y ^ n ≤ (x + y) ^ n := by
   rcases Nat.exists_eq_add_one_of_ne_zero hn with ⟨k, rfl⟩
-  induction' k with k ih
-  · simp only [zero_add, pow_one, le_refl]
-  · let n := k.succ
+  induction k with
+  | zero => simp only [zero_add, pow_one, le_refl]
+  | succ k ih =>
+    let n := k.succ
     have h1 := add_nonneg (mul_nonneg hx (pow_nonneg hy n)) (mul_nonneg hy (pow_nonneg hx n))
     have h2 := add_nonneg hx hy
     calc
@@ -120,6 +121,14 @@ lemma Bound.pow_le_pow_right_of_le_one_or_one_le (h : 1 ≤ a ∧ n ≤ m ∨ 0 
   · exact pow_le_pow_of_le_one a0 a1 mn
 
 end OrderedSemiring
+
+-- See note [reducible non instances]
+/-- Turn an ordered domain into a strict ordered ring. -/
+abbrev OrderedRing.toStrictOrderedRing (α : Type*)
+    [OrderedRing α] [NoZeroDivisors α] [Nontrivial α] : StrictOrderedRing α where
+  __ := ‹OrderedRing α›
+  __ := ‹NoZeroDivisors α›
+  mul_pos a b ap bp := (mul_nonneg ap.le bp.le).lt_of_ne' (mul_ne_zero ap.ne' bp.ne')
 
 section StrictOrderedSemiring
 
@@ -269,12 +278,12 @@ lemma add_pow_le (ha : 0 ≤ a) (hb : 0 ≤ b) : ∀ n, (a + b) ^ n ≤ 2 ^ (n -
     rw [pow_succ]
     calc
       _ ≤ 2 ^ n * (a ^ (n + 1) + b ^ (n + 1)) * (a + b) :=
-          mul_le_mul_of_nonneg_right (add_pow_le ha hb (n + 1)) $ add_nonneg ha hb
+          mul_le_mul_of_nonneg_right (add_pow_le ha hb (n + 1)) <| add_nonneg ha hb
       _ = 2 ^ n * (a ^ (n + 2) + b ^ (n + 2) + (a ^ (n + 1) * b + b ^ (n + 1) * a)) := by
           rw [mul_assoc, mul_add, add_mul, add_mul, ← pow_succ, ← pow_succ, add_comm _ (b ^ _),
             add_add_add_comm, add_comm (_ * a)]
       _ ≤ 2 ^ n * (a ^ (n + 2) + b ^ (n + 2) + (a ^ (n + 1) * a + b ^ (n + 1) * b)) :=
-          mul_le_mul_of_nonneg_left (add_le_add_left ?_ _) $ pow_nonneg (zero_le_two (α := R)) _
+          mul_le_mul_of_nonneg_left (add_le_add_left ?_ _) <| pow_nonneg (zero_le_two (α := R)) _
       _ = _ := by simp only [← pow_succ, ← two_mul, ← mul_assoc]; rfl
     · obtain hab | hba := le_total a b
       · exact mul_add_mul_le_mul_add_mul (pow_le_pow_left ha hab _) hab
@@ -289,7 +298,7 @@ protected lemma Even.add_pow_le (hn : Even n) :
     _ = 2 ^ n * (a ^ 2 + b ^ 2) ^ n := by -- TODO: Should be `Nat.cast_commute`
         rw [Commute.mul_pow]; simp [Commute, SemiconjBy, two_mul, mul_two]
     _ ≤ 2 ^ n * (2 ^ (n - 1) * ((a ^ 2) ^ n + (b ^ 2) ^ n)) := mul_le_mul_of_nonneg_left
-          (add_pow_le (sq_nonneg _) (sq_nonneg _) _) $ pow_nonneg (zero_le_two (α := R)) _
+          (add_pow_le (sq_nonneg _) (sq_nonneg _) _) <| pow_nonneg (zero_le_two (α := R)) _
     _ = _ := by
       simp only [← mul_assoc, ← pow_add, ← pow_mul]
       cases n

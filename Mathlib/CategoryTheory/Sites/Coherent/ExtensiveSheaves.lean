@@ -62,7 +62,7 @@ instance {α : Type} [Finite α] (Z : α → C) : (ofArrows Z (fun i ↦ Sigma.�
 /-- Every Yoneda-presheaf is a sheaf for the extensive topology. -/
 theorem extensiveTopology.isSheaf_yoneda_obj (W : C) : Presieve.IsSheaf (extensiveTopology C)
     (yoneda.obj W) := by
-  erw [isSheaf_coverage]
+  rw [extensiveTopology, isSheaf_coverage]
   intro X R ⟨Y, α, Z, π, hR, hi⟩
   have : IsIso (Sigma.desc (Cofan.inj (Cofan.mk X π))) := hi
   have : R.Extensive := ⟨Y, α, Z, π, hR, ⟨Cofan.isColimitOfIsIsoSigmaDesc (Cofan.mk X π)⟩⟩
@@ -75,19 +75,19 @@ theorem extensiveTopology.subcanonical : Sheaf.Subcanonical (extensiveTopology C
 variable [FinitaryExtensive C]
 
 /--
-A presheaf of sets on a category which is `FinitaryExtensive` is a sheaf iff it preserves finite
+A presheaf of sets on a category which is `FinitaryExtensive` is a sheaf iff it preserves finite
 products.
 -/
 theorem Presieve.isSheaf_iff_preservesFiniteProducts (F : Cᵒᵖ ⥤ Type w) :
     Presieve.IsSheaf (extensiveTopology C) F ↔
     Nonempty (PreservesFiniteProducts F) := by
   refine ⟨fun hF ↦ ⟨⟨fun α _ ↦ ⟨fun {K} ↦ ?_⟩⟩⟩, fun hF ↦ ?_⟩
-  · erw [Presieve.isSheaf_coverage] at hF
+  · rw [extensiveTopology, isSheaf_coverage] at hF
     let Z : α → C := fun i ↦ unop (K.obj ⟨i⟩)
-    have : (Presieve.ofArrows Z (Cofan.mk (∐ Z) (Sigma.ι Z)).inj).hasPullbacks :=
-      (inferInstance : (Presieve.ofArrows Z (Sigma.ι Z)).hasPullbacks)
+    have : (ofArrows Z (Cofan.mk (∐ Z) (Sigma.ι Z)).inj).hasPullbacks :=
+      inferInstanceAs (ofArrows Z (Sigma.ι Z)).hasPullbacks
     have : ∀ (i : α), Mono (Cofan.inj (Cofan.mk (∐ Z) (Sigma.ι Z)) i) :=
-      (inferInstance : ∀ (i : α), Mono (Sigma.ι Z i))
+      inferInstanceAs <| ∀ (i : α), Mono (Sigma.ι Z i)
     let i : K ≅ Discrete.functor (fun i ↦ op (Z i)) := Discrete.natIsoFunctor
     let _ : PreservesLimit (Discrete.functor (fun i ↦ op (Z i))) F :=
         Presieve.preservesProductOfIsSheafFor F ?_ initialIsInitial _ (coproductIsCoproduct Z)
@@ -104,14 +104,14 @@ theorem Presieve.isSheaf_iff_preservesFiniteProducts (F : Cᵒᵖ ⥤ Type w) :
       ext
       simp
   · let _ := hF.some
-    erw [Presieve.isSheaf_coverage]
+    rw [extensiveTopology, Presieve.isSheaf_coverage]
     intro X R ⟨Y, α, Z, π, hR, hi⟩
     have : IsIso (Sigma.desc (Cofan.inj (Cofan.mk X π))) := hi
     have : R.Extensive := ⟨Y, α, Z, π, hR, ⟨Cofan.isColimitOfIsIsoSigmaDesc (Cofan.mk X π)⟩⟩
     exact isSheafFor_extensive_of_preservesFiniteProducts R F
 
 /--
-A presheaf on a category which is `FinitaryExtensive` is a sheaf iff it preserves finite products.
+A presheaf on a category which is `FinitaryExtensive` is a sheaf iff it preserves finite products.
 -/
 theorem Presheaf.isSheaf_iff_preservesFiniteProducts (F : Cᵒᵖ ⥤ D) :
     IsSheaf (extensiveTopology C) F ↔ Nonempty (PreservesFiniteProducts F) := by

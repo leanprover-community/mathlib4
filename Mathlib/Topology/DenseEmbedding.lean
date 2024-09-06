@@ -165,7 +165,7 @@ theorem extend_unique_at [T2Space γ] {b : β} {f : α → γ} {g : β → γ} (
 
 theorem extend_unique [T2Space γ] {f : α → γ} {g : β → γ} (di : DenseInducing i)
     (hf : ∀ x, g (i x) = f x) (hg : Continuous g) : di.extend f = g :=
-  funext fun _ => extend_unique_at di (eventually_of_forall hf) hg.continuousAt
+  funext fun _ => extend_unique_at di (Eventually.of_forall hf) hg.continuousAt
 
 theorem continuousAt_extend [T3Space γ] {b : β} {f : α → γ} (di : DenseInducing i)
     (hf : ∀ᶠ x in 𝓝 b, ∃ c, Tendsto f (comap i <| 𝓝 x) (𝓝 c)) : ContinuousAt (di.extend f) b := by
@@ -253,7 +253,7 @@ protected theorem subtype (de : DenseEmbedding e) (p : α → Prop) :
     induced :=
       (induced_iff_nhds_eq _).2 fun ⟨x, hx⟩ => by
         simp [subtypeEmb, nhds_subtype_eq_comap, de.toInducing.nhds_eq_comap, comap_comap,
-          (· ∘ ·)] }
+          Function.comp_def] }
 
 theorem dense_image (de : DenseEmbedding e) {s : Set α} : Dense (e '' s) ↔ Dense s :=
   de.toDenseInducing.dense_image

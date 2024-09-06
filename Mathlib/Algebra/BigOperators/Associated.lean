@@ -68,7 +68,7 @@ theorem exists_associated_mem_of_dvd_prod [CancelCommMonoidWithZero α] {p : α}
     {s : Multiset α} : (∀ r ∈ s, Prime r) → p ∣ s.prod → ∃ q ∈ s, p ~ᵤ q :=
   Multiset.induction_on s (by simp [mt isUnit_iff_dvd_one.2 hp.not_unit]) fun a s ih hs hps => by
     rw [Multiset.prod_cons] at hps
-    cases' hp.dvd_or_dvd hps with h h
+    rcases hp.dvd_or_dvd hps with h | h
     · have hap := hs a (Multiset.mem_cons.2 (Or.inl rfl))
       exact ⟨a, Multiset.mem_cons_self a _, hp.associated_of_dvd hap h⟩
     · rcases ih (fun r hr => hs _ (Multiset.mem_cons.2 (Or.inr hr))) h with ⟨q, hq₁, hq₂⟩
@@ -77,9 +77,10 @@ theorem exists_associated_mem_of_dvd_prod [CancelCommMonoidWithZero α] {p : α}
 theorem Multiset.prod_primes_dvd [CancelCommMonoidWithZero α]
     [∀ a : α, DecidablePred (Associated a)] {s : Multiset α} (n : α) (h : ∀ a ∈ s, Prime a)
     (div : ∀ a ∈ s, a ∣ n) (uniq : ∀ a, s.countP (Associated a) ≤ 1) : s.prod ∣ n := by
-  induction' s using Multiset.induction_on with a s induct n primes divs generalizing n
-  · simp only [Multiset.prod_zero, one_dvd]
-  · rw [Multiset.prod_cons]
+  induction s using Multiset.induction_on generalizing n with
+  | empty => simp only [Multiset.prod_zero, one_dvd]
+  | cons a s induct =>
+    rw [Multiset.prod_cons]
     obtain ⟨k, rfl⟩ : a ∣ n := div a (Multiset.mem_cons_self a s)
     apply mul_dvd_mul_left a
     refine induct _ (fun a ha => h a (Multiset.mem_cons_of_mem ha)) (fun b b_in_s => ?_)

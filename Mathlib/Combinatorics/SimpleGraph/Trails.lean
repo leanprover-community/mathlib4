@@ -126,7 +126,7 @@ theorem IsEulerian.even_degree_iff {x u v : V} {p : G.Walk u v} (ht : p.IsEuleri
   rw [← Multiset.coe_countP, Multiset.countP_eq_card_filter, ← card_incidenceFinset_eq_degree]
   change Multiset.card _ = _
   congr 1
-  convert_to _ = (ht.isTrail.edgesFinset.filter (Membership.mem x)).val
+  convert_to _ = (ht.isTrail.edgesFinset.filter (x ∈ ·)).val
   have : Fintype G.edgeSet := fintypeEdgeSet ht
   rw [ht.edgesFinset_eq, G.incidenceFinset_eq_filter x]
 
@@ -135,7 +135,7 @@ theorem IsEulerian.card_filter_odd_degree [Fintype V] [DecidableRel G.Adj] {u v 
     (h : s = (Finset.univ : Finset V).filter fun v => Odd (G.degree v)) :
     s.card = 0 ∨ s.card = 2 := by
   subst s
-  simp only [Nat.odd_iff_not_even, Finset.card_eq_zero]
+  simp only [← Nat.not_even_iff_odd, Finset.card_eq_zero]
   simp only [ht.even_degree_iff, Ne, not_forall, not_and, Classical.not_not, exists_prop]
   obtain rfl | hn := eq_or_ne u v
   · left

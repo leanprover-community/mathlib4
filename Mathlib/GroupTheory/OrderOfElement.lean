@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Julian Kuelshammer
 import Mathlib.Algebra.CharP.Defs
 import Mathlib.GroupTheory.Index
 import Mathlib.Order.Interval.Set.Infinite
+import Mathlib.Algebra.Group.Subgroup.Finite
 
 /-!
 # Order of an element
@@ -744,7 +745,7 @@ end Finite
 variable [Fintype G] {x : G}
 
 @[to_additive]
-lemma orderOf_eq_card_powers : orderOf x = Fintype.card (powers x : Set G) :=
+lemma orderOf_eq_card_powers : orderOf x = Fintype.card (powers x : Submonoid G) :=
   (Fintype.card_fin (orderOf x)).symm.trans <|
     Fintype.card_eq.2 ⟨finEquivPowers x <| isOfFinOrder_of_finite _⟩
 
@@ -820,6 +821,7 @@ variable [Fintype G] {x : G} {n : ℕ}
 /-- See also `Nat.card_addSubgroupZPowers`. -/
 @[to_additive "See also `Nat.card_subgroup`."]
 theorem Fintype.card_zpowers : Fintype.card (zpowers x) = orderOf x :=
+  letI : Fintype (zpowers x) := (Subgroup.zpowers x).instFintypeSubtypeMemOfDecidablePred
   (Fintype.card_eq.2 ⟨finEquivZPowers x <| isOfFinOrder_of_finite _⟩).symm.trans <|
     Fintype.card_fin (orderOf x)
 
@@ -901,12 +903,12 @@ theorem zpow_mod_card (a : G) (n : ℤ) : a ^ (n % Fintype.card G : ℤ) = a ^ n
 
 @[to_additive (attr := simp) mod_natCard_nsmul]
 lemma pow_mod_natCard {G} [Group G] (a : G) (n : ℕ) : a ^ (n % Nat.card G) = a ^ n := by
-  rw [eq_comm, ← pow_mod_orderOf, ← Nat.mod_mod_of_dvd n $ orderOf_dvd_natCard _, pow_mod_orderOf]
+  rw [eq_comm, ← pow_mod_orderOf, ← Nat.mod_mod_of_dvd n <| orderOf_dvd_natCard _, pow_mod_orderOf]
 
 @[to_additive (attr := simp) mod_natCard_zsmul]
 lemma zpow_mod_natCard {G} [Group G] (a : G) (n : ℤ) : a ^ (n % Nat.card G : ℤ) = a ^ n := by
-  rw [eq_comm, ← zpow_mod_orderOf,
-    ← Int.emod_emod_of_dvd n $ Int.natCast_dvd_natCast.2 $ orderOf_dvd_natCard _, zpow_mod_orderOf]
+  rw [eq_comm, ← zpow_mod_orderOf, ← Int.emod_emod_of_dvd n <|
+    Int.natCast_dvd_natCast.2 <| orderOf_dvd_natCard _, zpow_mod_orderOf]
 
 /-- If `gcd(|G|,n)=1` then the `n`th power map is a bijection -/
 @[to_additive (attr := simps) "If `gcd(|G|,n)=1` then the smul by `n` is a bijection"]
@@ -947,7 +949,9 @@ theorem inf_eq_bot_of_coprime {G : Type*} [Group G] {H K : Subgroup G}
 /- TODO: Generalise to `Submonoid.powers`. -/
 @[to_additive]
 theorem image_range_orderOf [DecidableEq G] :
+    letI : Fintype (zpowers x) := (Subgroup.zpowers x).instFintypeSubtypeMemOfDecidablePred
     Finset.image (fun i => x ^ i) (Finset.range (orderOf x)) = (zpowers x : Set G).toFinset := by
+  letI : Fintype (zpowers x) := (Subgroup.zpowers x).instFintypeSubtypeMemOfDecidablePred
   ext x
   rw [Set.mem_toFinset, SetLike.mem_coe, mem_zpowers_iff_mem_range_orderOf]
 
@@ -1113,7 +1117,7 @@ lemma charP_of_prime_pow_injective (R) [Ring R] [Fintype R] (p n : ℕ) [hp : Fa
   obtain ⟨c, hc⟩ := CharP.exists R
   have hcpn : c ∣ p ^ n := by rw [← CharP.cast_eq_zero_iff R c, ← hn, Nat.cast_card_eq_zero]
   obtain ⟨i, hi, rfl⟩ : ∃ i ≤ n, c = p ^ i := by rwa [Nat.dvd_prime_pow hp.1] at hcpn
-  obtain rfl : i = n := hR i hi $ by rw [← Nat.cast_pow, CharP.cast_eq_zero]
+  obtain rfl : i = n := hR i hi <| by rw [← Nat.cast_pow, CharP.cast_eq_zero]
   assumption
 
 namespace SemiconjBy
