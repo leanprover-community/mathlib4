@@ -340,14 +340,11 @@ instance (x y : PSet) : Inhabited (insert x y).Type :=
   inferInstanceAs (Inhabited <| Option y.Type)
 
 /-- The n-th von Neumann ordinal -/
-@[deprecated "this will be moved into the ZFC/Ordinal file" (since := "2024-08-18")]
 def ofNat : ℕ → PSet
   | 0 => ∅
   | n + 1 => insert (ofNat n) (ofNat n)
 
-set_option linter.deprecated false in
 /-- The von Neumann ordinal ω -/
-@[deprecated "this will be moved into the ZFC/Ordinal file" (since := "2024-08-18")]
 def omega : PSet :=
   ⟨ULift ℕ, fun n => ofNat n.down⟩
 
@@ -770,19 +767,13 @@ theorem singleton_nonempty (u : ZFSet) : ZFSet.Nonempty {u} :=
 theorem mem_pair {x y z : ZFSet.{u}} : x ∈ ({y, z} : ZFSet) ↔ x = y ∨ x = z := by
   simp
 
-set_option linter.deprecated false in
 /-- `omega` is the first infinite von Neumann ordinal -/
-@[deprecated "this will be moved into the ZFC/Ordinal file" (since := "2024-08-18")]
 def omega : ZFSet :=
   mk PSet.omega
 
-set_option linter.deprecated false in
-@[simp, deprecated "this will be moved into the ZFC/Ordinal file" (since := "2024-08-18")]
 theorem omega_zero : ∅ ∈ omega :=
   ⟨⟨0⟩, Equiv.rfl⟩
 
-set_option linter.deprecated false in
-@[simp, deprecated "this will be moved into the ZFC/Ordinal file" (since := "2024-08-18")]
 theorem omega_succ {n} : n ∈ omega.{u} → insert n n ∈ omega.{u} :=
   Quotient.inductionOn n fun x ⟨⟨n⟩, h⟩ =>
     ⟨⟨n + 1⟩,
