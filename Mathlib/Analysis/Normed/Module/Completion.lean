@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Analysis.Normed.Group.Completion
 import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
 import Mathlib.Topology.Algebra.UniformRing
+import Mathlib.Topology.Algebra.UniformField
 
 /-!
 # Normed space structure on the completion of a normed space
@@ -99,6 +100,13 @@ instance [SeminormedCommRing A] [NormedAlgebra 𝕜 A] [UniformContinuousConstSM
       · intro x
         simp only [← coe_smul, norm_coe]
         exact norm_smul_le r x }
+
+instance [NormedField A] [CompletableTopField A] :
+    NormedField (UniformSpace.Completion A) where
+  dist_eq x y := by
+    refine induction_on₂ x y ?_ (by simp [← coe_sub, dist_eq_norm])
+    exact isClosed_eq (uniformContinuous_extension₂ _).continuous (by fun_prop)
+  norm_mul' x y := induction_on₂ x y (isClosed_eq (by fun_prop) (by fun_prop)) (by simp [← coe_mul])
 
 end Algebra
 

@@ -40,15 +40,15 @@ theorem impartial_mk {G : PGame} (he : G ≈ -G)
     (hl : ∀ i, Impartial (G.moveLeft i)) (hr : ∀ j, Impartial (G.moveRight j)) : G.Impartial :=
   impartial_def.2 ⟨he, hl, hr⟩
 
-namespace Impartial
-
-theorem zero : Impartial 0 := by
+theorem impartial_zero : Impartial 0 := by
   rw [impartial_def]
   simp
 
-theorem star : Impartial star := by
+theorem impartial_star : Impartial star := by
   rw [impartial_def]
   simpa using Impartial.zero
+
+namespace Impartial
 
 theorem neg_equiv_self {G : PGame} (h : G.Impartial) : G ≈ -G :=
   (impartial_def.1 h).1
@@ -69,7 +69,7 @@ theorem congr {G H : PGame} (r : G ≡r H) (h : G.Impartial) : H.Impartial :=
     (Equiv.trans r.symm.equiv <| Equiv.trans h.neg_equiv_self <| neg_equiv_neg_iff.2 r.equiv)
       (fun i => congr (r.moveLeftSymm i) (h.moveLeft _))
       (fun j => congr (r.moveRightSymm j) (h.moveRight _))
-termination_by (G, H)
+termination_by G
 
 theorem add {G H : PGame} (hG : G.Impartial) (hH : H.Impartial) : (G + H).Impartial := by
   rw [impartial_def]
@@ -126,20 +126,19 @@ theorem not_fuzzy_zero_iff (h : G.Impartial) : ¬ G ‖ 0 ↔ G ≈ 0 :=
 theorem add_self (h : G.Impartial) : G + G ≈ 0 :=
   Equiv.trans (add_congr_left (neg_equiv_self h)) (neg_add_cancel_equiv G)
 
+@[simp]
 theorem mk'_add_self (h : G.Impartial) : (⟦G⟧ : Game) + ⟦G⟧ = 0 :=
-  Quot.sound (add_self h)
+  game_eq h.add_self
+
+/-- This lemma doesn't require `G` to be impartial. -/
+theorem equiv_iff_add_equiv_zero (hG : G.Impartial) (H : PGame) : (G ≈ H) ↔ (G + H ≈ 0) := by
+  rw [equiv_iff_game_eq, ← add_right_cancel_iff (a := ⟦H⟧), mk'_add_self, ← quot_add,
+    equiv_iff_game_eq, quot_zero]
 
 /-- This lemma doesn't require `H` to be impartial. -/
-theorem equiv_iff_add_equiv_zero (H : PGame) (hG : G.Impartial) : H ≈ G ↔ H + G ≈ 0 := by
-  rw [equiv_iff_game_eq, ← @add_right_cancel_iff _ _ _ ⟦G⟧, mk'_add_self hG, ← quot_add,
-    equiv_iff_game_eq]
-  rfl
-
-/-- This lemma doesn't require `H` to be impartial. -/
-theorem equiv_iff_add_equiv_zero' (hG : G.Impartial) (H : PGame) : G ≈ H ↔ G + H ≈ 0 := by
-  rw [equiv_iff_game_eq, ← @add_left_cancel_iff _ _ _ ⟦G⟧, mk'_add_self hG, ← quot_add,
-    equiv_iff_game_eq]
-  exact ⟨Eq.symm, Eq.symm⟩
+theorem equiv_iff_add_equiv_zero' (hG : G.Impartial) (H : PGame) : (G ≈ H) ↔ (G + H ≈ 0) := by
+  rw [equiv_iff_game_eq, ← add_left_cancel_iff, mk'_add_self, ← quot_add, equiv_iff_game_eq,
+    Eq.comm, quot_zero]
 
 theorem le_zero_iff (hG : G.Impartial) : G ≤ 0 ↔ 0 ≤ G := by
   rw [← zero_le_neg_iff, le_congr_right (neg_equiv_self hG)]
