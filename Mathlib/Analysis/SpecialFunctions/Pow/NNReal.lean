@@ -509,7 +509,7 @@ theorem zero_rpow_mul_self (y : ℝ) : (0 : ℝ≥0∞) ^ y * (0 : ℝ≥0∞) ^
   exacts [zero_mul _, one_mul _, top_mul_top]
 
 @[norm_cast]
-theorem coe_rpow_of_ne_zero {x : ℝ≥0} (h : x ≠ 0) (y : ℝ) : ↑(x ^ y) = (x : ℝ≥0∞) ^ y := by
+theorem coe_rpow_of_ne_zero {x : ℝ≥0} (h : x ≠ 0) (y : ℝ) : (↑(x ^ y) : ℝ≥0∞) = x ^ y := by
   rw [← ENNReal.some_eq_coe]
   dsimp only [(· ^ ·), Pow.pow, rpow]
   simp [h]
