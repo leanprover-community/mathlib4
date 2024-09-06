@@ -67,6 +67,9 @@ theorem small_map {α : Type*} {β : Type*} [hβ : Small.{w} β] (e : α ≃ β)
   let ⟨_, ⟨f⟩⟩ := hβ.equiv_small
   Small.mk' (e.trans f)
 
+instance small_ulift (α : Type u) [Small.{v} α] : Small.{v} (ULift.{w} α) :=
+  small_map Equiv.ulift
+
 theorem small_lift (α : Type u) [hα : Small.{v} α] : Small.{max v w} α :=
   let ⟨⟨_, ⟨f⟩⟩⟩ := hα
   Small.mk' <| f.trans (Equiv.ulift.{w}).symm
@@ -80,16 +83,13 @@ lemma small_max (α : Type v) : Small.{max w v} α :=
   inferInstance
 
 lemma small_zero (α : Type) : Small.{w} α :=
-  small_max α
+  inferInstance
 
-instance (priority := 100) small_succ (α : Type v) : Small.{v + 1} α :=
-  small_max.{v + 1} α
-
-instance small_ulift (α : Type u) [Small.{v} α] : Small.{v} (ULift.{w} α) :=
-  small_map Equiv.ulift
+lemma small_succ (α : Type v) : Small.{v + 1} α :=
+  inferInstance
 
 theorem small_type : Small.{max (u + 1) v} (Type u) :=
-  small_max.{max (u + 1) v} _
+  inferInstance
 
 section
 
