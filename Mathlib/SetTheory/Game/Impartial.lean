@@ -64,17 +64,18 @@ theorem moveRight {G : PGame} (h : G.Impartial) (j : G.RightMoves) :
     (G.moveRight j).Impartial :=
   (impartial_def.1 h).2.2 j
 
-theorem congr {G H : PGame} (r : G ≡r H) (h : G.Impartial) : H.Impartial :=
+theorem congr {G H : PGame} (e : G ≡r H) (h : G.Impartial) : H.Impartial :=
   impartial_mk
-    (Equiv.trans r.symm.equiv <| Equiv.trans h.neg_equiv_self <| neg_equiv_neg_iff.2 r.equiv)
-      (fun i => congr (r.moveLeftSymm i) (h.moveLeft _))
-      (fun j => congr (r.moveRightSymm j) (h.moveRight _))
+    (Equiv.trans e.symm.equiv <| Equiv.trans h.neg_equiv_self <| neg_equiv_neg_iff.2 e.equiv)
+      (fun i => congr (e.moveLeftSymm i) (h.moveLeft _))
+      (fun j => congr (e.moveRightSymm j) (h.moveRight _))
 termination_by G
 
 theorem add {G H : PGame} (hG : G.Impartial) (hH : H.Impartial) : (G + H).Impartial := by
   rw [impartial_def]
-  refine ⟨Equiv.trans (add_congr (neg_equiv_self hG) (neg_equiv_self hH))
-      (Equiv.symm (negAddRelabelling _ _).equiv), fun k => ?_, fun k => ?_⟩
+  refine ⟨Equiv.trans (add_congr hG.neg_equiv_self hH.neg_equiv_self)
+      (Equiv.symm (negAddRelabelling _ _).equiv), ?_, ?_⟩ <;>
+  intro k
   apply leftMoves_add_cases k
   on_goal 3 => apply rightMoves_add_cases k
   all_goals
@@ -102,7 +103,7 @@ variable {G H : PGame}
 theorem nonpos (hG : G.Impartial) : ¬ 0 < G := by
   intro hl
   have hg := neg_lt_neg_iff.2 hl
-  rw [neg_zero, lt_congr_left (Equiv.symm (neg_equiv_self hG))] at hg
+  rw [neg_zero, lt_congr_left (Equiv.symm hG.neg_equiv_self)] at hg
   exact hl.asymm hg
 
 theorem nonneg (hG : G.Impartial) : ¬ G < 0 := by
@@ -124,7 +125,7 @@ theorem not_fuzzy_zero_iff (h : G.Impartial) : ¬ G ‖ 0 ↔ G ≈ 0 :=
   ⟨(equiv_or_fuzzy_zero h).resolve_right, Equiv.not_fuzzy⟩
 
 theorem add_self (h : G.Impartial) : G + G ≈ 0 :=
-  Equiv.trans (add_congr_left (neg_equiv_self h)) (neg_add_cancel_equiv G)
+  Equiv.trans (add_congr_left h.neg_equiv_self) (neg_add_cancel_equiv G)
 
 theorem mk'_add_self (h : G.Impartial) : (⟦G⟧ : Game) + ⟦G⟧ = 0 :=
   game_eq h.add_self
