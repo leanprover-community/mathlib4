@@ -53,7 +53,7 @@ lemma tendstoUniformlyOn_comp_exp {α : Type*} {f : ℕ → α → ℂ} {g : α 
     (hf : TendstoUniformlyOn f g atTop K) (hg : ∃ T : ℝ, ∀ x : α, x ∈ K → (g x).re ≤ T) :
     TendstoUniformlyOn (fun n => fun x => cexp (f n x)) (cexp ∘ g) atTop K := by
   obtain ⟨T, hT⟩ := hg
-  have h2 :=  tendstouniformlyOn_of_bounded (fun n x => (f n x).re) (fun x => (g x).re) K T
+  have h2 := tendstouniformlyOn_of_bounded (fun n x => (f n x).re) (fun x => (g x).re) K T
     hf.re hT
   simp only [eventually_atTop, ge_iff_le] at h2
   obtain ⟨B, δ, hδ⟩ := h2
@@ -111,7 +111,7 @@ lemma prod_tendstoUniformlyOn_tprod' {α : Type*} [TopologicalSpace α] {f : ℕ
       · intro z hz
         simp only [ne_eq, map_eq_zero]
         apply hfn ⟨z, hz⟩ c
-    have := IsCompact.bddAbove_image  hK H
+    have := IsCompact.bddAbove_image hK H
     rw [@bddAbove_def] at this
     simp only [Set.mem_image, Subtype.exists, not_exists, exists_and_right, forall_exists_index,
       and_imp, Subtype.forall] at *

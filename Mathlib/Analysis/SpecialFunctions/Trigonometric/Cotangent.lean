@@ -12,7 +12,7 @@ import Mathlib.Topology.Algebra.InfiniteSum.InfiniteProdOneAdd
 This file contains lemmas about the cotangent function, including useful series expansions.
 
 The main result is the Mittag-Leffler expansion of the cotangent function, which says that
-`π * cot (π * z) = 1 / z +  ∑' n : ℕ+, (1 / (z - n) + 1 / (z + n))`.
+`π * cot (π * z) = 1 / z + ∑' n : ℕ+, (1 / (z - n) + 1 / (z + n))`.
 -/
 
 open Real Complex BigOperators Filter
@@ -105,7 +105,7 @@ theorem aux_diff_lem (n : ℕ) :
             (((i : ℂ) + 1) ^ 2))
 
 lemma aux_u_lem (Z : Set ℂ_ℤ) (hZ : IsCompact Z) : ∃ u : ℕ → ℝ, Summable u ∧
-    ∀ (j : ℕ) z, z ∈ Z → (‖-z.1 ^ 2 / (j + 1) ^ 2‖) ≤ u j  := by
+    ∀ (j : ℕ) z, z ∈ Z → (‖-z.1 ^ 2 / (j + 1) ^ 2‖) ≤ u j := by
   have hf : ContinuousOn (fun x : ℂ_ℤ => Complex.abs (-x.1 ^ 2)) Z := by
     apply ContinuousOn.comp
     let g := fun x : ℂ_ℤ => -x.1 ^ 2
@@ -152,7 +152,7 @@ theorem sin_pi_z_ne_zero (z : ℂ_ℤ) : Complex.sin (π * z) ≠ 0 := by
 
 theorem tendsto_logDeriv_euler_sin_div (x : ℂ_ℤ) :
     Tendsto (fun n : ℕ =>
-      logDeriv (fun z =>  ∏ j in Finset.range n, (1 + -(z : ℂ) ^ 2 / (j + 1) ^ 2)) x)
+      logDeriv (fun z => ∏ j in Finset.range n, (1 + -(z : ℂ) ^ 2 / (j + 1) ^ 2)) x)
         atTop (𝓝 <| logDeriv (fun t => (Complex.sin (π * t) / (π * t))) x) := by
   apply logDeriv_tendsto
       (fun n : ℕ => fun z => ∏ j in Finset.range n, (1 + -z ^ 2 / (j + 1) ^ 2))
@@ -173,7 +173,7 @@ theorem tendsto_logDeriv_euler_sin_div (x : ℂ_ℤ) :
     refine ⟨sin_pi_z_ne_zero x , Real.pi_ne_zero , ℂ_ℤ_not_zero x⟩
 
 theorem logDeriv_sin_div (z : ℂ_ℤ) :
-    logDeriv (fun t => (Complex.sin (π * t) / (π * t))) z =  π * cot (π * z) - 1 / z := by
+    logDeriv (fun t => (Complex.sin (π * t) / (π * t))) z = π * cot (π * z) - 1 / z := by
   have : (fun t => (Complex.sin (π * t)/ (π * t))) = fun z =>
     (Complex.sin ∘ fun t => π * t) z / (π * z) := by
     ext1
@@ -198,7 +198,7 @@ theorem aux_logDeriv_factor_eq (x : ℂ_ℤ) (i : ℕ) :
   set i2 := ((x : ℂ) - (i+1))⁻¹
   set i3 := ((i + 1 : ℂ)^2)⁻¹
   set i4 := (1 + -x^2 * i3)⁻¹
-  have h1  : ((x : ℂ) + (i + 1)) * i1 = 1 := by
+  have h1 : ((x : ℂ) + (i + 1)) * i1 = 1 := by
     refine Complex.mul_inv_cancel ?h
     simpa using ℂ_ℤ_add_ne_zero x (i + 1)
   have h2 : ((x : ℂ) - (i + 1)) * i2 = 1 := by
@@ -225,7 +225,7 @@ theorem aux_logDeriv_factor_eq (x : ℂ_ℤ) (i : ℕ) :
         h1
 
 lemma logDeriv_of_prod (x : ℂ_ℤ) (n : ℕ) :
-    logDeriv (fun (z : ℂ) =>  ∏ j in Finset.range n, (1 + -z ^ 2 / (j + 1) ^ 2)) x =
+    logDeriv (fun (z : ℂ) => ∏ j in Finset.range n, (1 + -z ^ 2 / (j + 1) ^ 2)) x =
      ∑ j in Finset.range n, (1 / ((x : ℂ) - (j + 1)) + 1 / (x + (j + 1))) := by
     rw [logDeriv_prod]
     congr
@@ -238,13 +238,13 @@ lemma logDeriv_of_prod (x : ℂ_ℤ) (n : ℕ) :
         DifferentiableAt.div_const]
 
 theorem tendsto_logDeriv_euler_cot_sub (x : ℂ_ℤ) :
-    Tendsto (fun n : ℕ =>  ∑ j in Finset.range n, (1 / ((x : ℂ) - (j + 1)) + 1 / (x + (j + 1))))
+    Tendsto (fun n : ℕ => ∑ j in Finset.range n, (1 / ((x : ℂ) - (j + 1)) + 1 / (x + (j + 1))))
       atTop (𝓝 <| π * cot (π * x)- 1 / x) := by
-  simp_rw [←  logDeriv_sin_div x, ← logDeriv_of_prod x]
+  simp_rw [← logDeriv_sin_div x, ← logDeriv_of_prod x]
   simpa using tendsto_logDeriv_euler_sin_div x
 
 
-lemma half_le (a : ℝ) (ha : a < 1/2) : 1 / 2 ≤  |a - 1| := by
+lemma half_le (a : ℝ) (ha : a < 1/2) : 1 / 2 ≤ |a - 1| := by
   rw [← neg_lt_neg_iff] at ha
   have hb := (Real.add_lt_add_iff_left 1).mpr ha
   rw [abs_sub_comm]
@@ -318,7 +318,7 @@ theorem cot_series_rep' (z : ℂ_ℤ) : π * Complex.cot (π * z) - 1 / z =
     (tendsto_logDeriv_euler_cot_sub z)
 
 theorem cot_series_rep (z : ℍ) :
-    π * Complex.cot (π * z)  =  1 / z + ∑' n : ℕ+, (1 / ((z : ℂ) - n) + 1 / (z + n)) := by
+    π * Complex.cot (π * z) = 1 / z + ∑' n : ℕ+, (1 / ((z : ℂ) - n) + 1 / (z + n)) := by
   have := tsum_pnat_eq_tsum_add_one fun n => 1 / ((z : ℂ) - n) + 1 / (z + n)
   have h1 := cot_series_rep' z
   simp only [one_div, Nat.cast_add, Nat.cast_one] at *
