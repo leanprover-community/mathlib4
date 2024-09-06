@@ -101,7 +101,7 @@ lemma height_le_iff' {a : α} {n : ℕ∞} :
     height a ≤ n ↔ ∀ ⦃p : LTSeries α⦄, p.last = a → p.length ≤ n := by
  constructor
  · rw [height_le_iff]
-   exact (fun h p hlast => h p (le_of_eq hlast))
+   exact fun h p hlast => h (le_of_eq hlast)
  · exact height_le
 
 /--
