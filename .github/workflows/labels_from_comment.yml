@@ -10,7 +10,7 @@ on:
 
 jobs:
   update-label:
-    if: github.event.issue.pull_request != null && (contains(github.event.comment.body, 'awaiting-author') || contains(github.event.comment.body, 'WIP'))
+    if: github.event.issue.pull_request && (contains(github.event.comment.body, 'awaiting-author') || contains(github.event.comment.body, 'WIP'))
     runs-on: ubuntu-latest
 
     steps:
@@ -20,7 +20,7 @@ jobs:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
           const { owner, repo, number: issue_number  } = context.issue;
-          const commentLines = context.payload.comment.body.split('\r\n');
+          const commentLines = context.payload.comment.body.split(/\r?\n/);
 
           const awaitingAuthor = commentLines.includes('awaiting-author');
           const wip = commentLines.includes('WIP');
