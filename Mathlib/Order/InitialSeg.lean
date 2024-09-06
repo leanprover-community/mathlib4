@@ -358,7 +358,7 @@ noncomputable def subrelIso (f : r ≺i s) : @RelIso {b // s b f.top} α (Subrel
     map_rel_iff' := f.map_rel_iff }
 
 @[simp]
-theorem apply_subrelIso (f : r ≺i s) (b : {b | s b f.top}) : f (f.subrelIso b) = b :=
+theorem apply_subrelIso (f : r ≺i s) (b : {b // s b f.top}) : f (f.subrelIso b) = b :=
   Equiv.apply_ofInjective_symm f.injective _
 
 @[simp]
@@ -450,7 +450,7 @@ namespace RelEmbedding
 /-- The function in `collapse`. -/
 private noncomputable def collapseF [IsWellOrder β s] (f : r ↪r s) : Π a, { b // ¬s (f a) b } :=
   (RelEmbedding.isWellFounded f).fix fun a IH =>
-    have H : f a ∈ { b | ∀ a h, s (IH a h).1 b } :=
+    haveI H : f a ∈ { b | ∀ a h, s (IH a h).1 b } :=
       fun b h => trans_le_lt (IH b h).2 (f.map_rel_iff.2 h)
     ⟨_, IsWellFounded.wf.not_lt_min _ ⟨_, H⟩ H⟩
 
