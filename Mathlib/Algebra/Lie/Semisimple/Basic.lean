@@ -163,7 +163,6 @@ lemma isSimple_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : IsSimple R I where
         LieSubmodule.mem_mk_iff', Submodule.mem_map, LieSubmodule.mem_coeSubmodule, Subtype.exists,
         LieSubmodule.mem_bot, ZeroMemClass.coe_eq_zero, forall_exists_index, and_imp, J'] at this
       exact fun _ ↦ this (↑x) x.property hx rfl
-      -- simpa [J'] using @this x.1
     -- We need to show that `J = ⊥`.
     -- Since `J` is an ideal of `L`, and `I` is an atom,
     -- it suffices to show that `J < I`.
