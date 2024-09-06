@@ -661,7 +661,7 @@ theorem head_darts_fst {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (hp : p.da
   · simp
 
 @[simp]
-theorem darts_getLast_snd {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (hp : p.darts ≠ []) :
+theorem getLast_darts_snd {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (hp : p.darts ≠ []) :
     (p.darts.getLast hp).snd = b := by
   rw [← List.getLast_map (f := fun x : G.Dart ↦ x.snd)]
   simp_rw [p.map_snd_darts, List.getLast_tail]
