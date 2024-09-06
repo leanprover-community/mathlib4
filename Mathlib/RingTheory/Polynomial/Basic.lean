@@ -266,6 +266,7 @@ def coeffs (p : R[X]) : Finset R :=
 
 @[deprecated (since := "2024-05-17")] noncomputable alias frange := coeffs
 
+@[simp]
 theorem coeffs_zero : coeffs (0 : R[X]) = ∅ :=
   rfl
 
@@ -289,6 +290,10 @@ theorem coeff_mem_coeffs (p : R[X]) (n : ℕ) (h : p.coeff n ≠ 0) : p.coeff n 
   exact ⟨n, h, rfl⟩
 
 @[deprecated (since := "2024-05-17")] alias coeff_mem_frange := coeff_mem_coeffs
+
+theorem coeffs_monomial (n : ℕ) {c : R} (hc : c ≠ 0) : (monomial n c).coeffs = {c} := by
+  rw [coeffs, support_monomial n hc]
+  simp
 
 theorem geom_sum_X_comp_X_add_one_eq_sum (n : ℕ) :
     (∑ i ∈ range n, (X : R[X]) ^ i).comp (X + 1) =
