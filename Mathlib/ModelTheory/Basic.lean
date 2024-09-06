@@ -58,57 +58,7 @@ structure Language where
   /-- For every arity, a `Type*` of relations of that arity -/
   Relations : ℕ → Type v
 
-/-- Used to define `FirstOrder.Language₂`. -/
---@[simp]
-def Sequence₂ (a₀ a₁ a₂ : Type u) : ℕ → Type u
-  | 0 => a₀
-  | 1 => a₁
-  | 2 => a₂
-  | _ => PEmpty
-
-namespace Sequence₂
-
-variable (a₀ a₁ a₂ : Type u)
-
-instance inhabited₀ [h : Inhabited a₀] : Inhabited (Sequence₂ a₀ a₁ a₂ 0) :=
-  h
-
-instance inhabited₁ [h : Inhabited a₁] : Inhabited (Sequence₂ a₀ a₁ a₂ 1) :=
-  h
-
-instance inhabited₂ [h : Inhabited a₂] : Inhabited (Sequence₂ a₀ a₁ a₂ 2) :=
-  h
-
-instance {n : ℕ} : IsEmpty (Sequence₂ a₀ a₁ a₂ (n + 3)) := inferInstanceAs (IsEmpty PEmpty)
-
-instance [DecidableEq a₀] [DecidableEq a₁] [DecidableEq a₂] {n : ℕ} :
-    DecidableEq (Sequence₂ a₀ a₁ a₂ n) :=
-  match n with
-  | 0 | 1 | 2 => ‹_›
-  | _ + 3 => inferInstance
-
-@[simp]
-theorem lift_mk {i : ℕ} :
-    Cardinal.lift.{v,u} #(Sequence₂ a₀ a₁ a₂ i)
-      = #(Sequence₂ (ULift.{v,u} a₀) (ULift.{v,u} a₁) (ULift.{v,u} a₂) i) := by
-  rcases i with (_ | _ | _ | i) <;>
-    simp only [Sequence₂, mk_uLift, Nat.succ_ne_zero, IsEmpty.forall_iff, Nat.succ.injEq,
-      add_eq_zero, OfNat.ofNat_ne_zero, and_false, one_ne_zero, mk_eq_zero, lift_zero]
-
-@[simp]
-theorem sum_card : Cardinal.sum (fun i => #(Sequence₂ a₀ a₁ a₂ i)) = #a₀ + #a₁ + #a₂ := by
-  rw [sum_nat_eq_add_sum_succ, sum_nat_eq_add_sum_succ, sum_nat_eq_add_sum_succ]
-  simp [add_assoc, Sequence₂]
-
-end Sequence₂
-
 namespace Language
-
-/-- A constructor for languages with only constants, unary and binary functions, and
-unary and binary relations. -/
-@[simps]
-protected def mk₂ (c f₁ f₂ : Type u) (r₁ r₂ : Type v) : Language :=
-  ⟨Sequence₂ c f₁ f₂, Sequence₂ PEmpty r₁ r₂⟩
 
 variable (L : Language.{u, v})
 
@@ -116,7 +66,7 @@ variable (L : Language.{u, v})
 abbrev IsRelational : Prop := ∀ n, IsEmpty (L.Functions n)
 
 /-- A language is algebraic when it has no relation symbols. -/
-abbrev IsAlgebraic := ∀ n, IsEmpty (L.Relations n)
+abbrev IsAlgebraic : Prop := ∀ n, IsEmpty (L.Relations n)
 
 /-- The empty language has no symbols. -/
 protected def empty : Language :=
@@ -135,11 +85,6 @@ protected def sum (L' : Language.{u', v'}) : Language :=
 -- @[nolint has_nonempty_instance]
 protected def Constants :=
   L.Functions 0
-
-@[simp]
-theorem constants_mk₂ (c f₁ f₂ : Type u) (r₁ r₂ : Type v) :
-    (Language.mk₂ c f₁ f₂ r₁ r₂).Constants = c :=
-  rfl
 
 /-- The type of symbols in a given language. -/
 -- Porting note(#5171): this linter isn't ported yet.
@@ -164,29 +109,6 @@ instance isRelational_sum [L.IsRelational] [L'.IsRelational] : IsRelational (L.s
 
 instance isAlgebraic_sum [L.IsAlgebraic] [L'.IsAlgebraic] : IsAlgebraic (L.sum L') :=
   fun _ => instIsEmptySum
-
-instance isRelational_mk₂ {c f₁ f₂ : Type u} {r₁ r₂ : Type v} [h0 : IsEmpty c] [h1 : IsEmpty f₁]
-    [h2 : IsEmpty f₂] : IsRelational (Language.mk₂ c f₁ f₂ r₁ r₂) :=
-  fun n =>
-    Nat.casesOn n h0 fun n => Nat.casesOn n h1 fun n => Nat.casesOn n h2 fun _ =>
-      inferInstanceAs (IsEmpty PEmpty)
-
-instance isAlgebraic_mk₂ {c f₁ f₂ : Type u} {r₁ r₂ : Type v} [h1 : IsEmpty r₁] [h2 : IsEmpty r₂] :
-    IsAlgebraic (Language.mk₂ c f₁ f₂ r₁ r₂) :=
-  fun n =>
-    Nat.casesOn n (inferInstanceAs (IsEmpty PEmpty)) fun n =>
-      Nat.casesOn n h1 fun n => Nat.casesOn n h2 fun _ => inferInstanceAs (IsEmpty PEmpty)
-
-instance subsingleton_mk₂_functions {c f₁ f₂ : Type u} {r₁ r₂ : Type v} [h0 : Subsingleton c]
-    [h1 : Subsingleton f₁] [h2 : Subsingleton f₂] {n : ℕ} :
-    Subsingleton ((Language.mk₂ c f₁ f₂ r₁ r₂).Functions n) :=
-  Nat.casesOn n h0 fun n =>
-    Nat.casesOn n h1 fun n => Nat.casesOn n h2 fun _ => ⟨fun x => PEmpty.elim x⟩
-
-instance subsingleton_mk₂_relations {c f₁ f₂ : Type u} {r₁ r₂ : Type v} [h1 : Subsingleton r₁]
-    [h2 : Subsingleton r₂] {n : ℕ} : Subsingleton ((Language.mk₂ c f₁ f₂ r₁ r₂).Relations n) :=
-  Nat.casesOn n ⟨fun x => PEmpty.elim x⟩ fun n =>
-    Nat.casesOn n h1 fun n => Nat.casesOn n h2 fun _ => ⟨fun x => PEmpty.elim x⟩
 
 @[simp]
 theorem empty_card : Language.empty.card = 0 := by simp [card_eq_card_functions_add_card_relations]
@@ -216,13 +138,6 @@ theorem card_sum :
   simp only [card_eq_card_functions_add_card_relations, card_functions_sum, card_relations_sum,
     sum_add_distrib', lift_add, lift_sum, lift_lift]
   simp only [add_assoc, add_comm (Cardinal.sum fun i => (#(L'.Functions i)).lift)]
-
-@[simp]
-theorem card_mk₂ (c f₁ f₂ : Type u) (r₁ r₂ : Type v) :
-    (Language.mk₂ c f₁ f₂ r₁ r₂).card =
-      Cardinal.lift.{v} #c + Cardinal.lift.{v} #f₁ + Cardinal.lift.{v} #f₂ +
-          Cardinal.lift.{u} #r₁ + Cardinal.lift.{u} #r₂ := by
-  simp [card_eq_card_functions_add_card_relations, add_assoc]
 
 /-- Passes a `DecidableEq` instance on a type of function symbols through the  `Language`
 constructor. Despite the fact that this is proven by `inferInstance`, it is still needed -
@@ -329,61 +244,6 @@ theorem funMap_eq_coe_constants {c : L.Constants} {x : Fin 0 → M} : funMap c x
   be a global instance, because `L` becomes a metavariable. -/
 theorem nonempty_of_nonempty_constants [h : Nonempty L.Constants] : Nonempty M :=
   h.map (↑)
-
-/-- The function map for `FirstOrder.Language.Structure₂`. -/
-def funMap₂ {c f₁ f₂ : Type u} {r₁ r₂ : Type v} (c' : c → M) (f₁' : f₁ → M → M)
-    (f₂' : f₂ → M → M → M) : ∀ {n}, (Language.mk₂ c f₁ f₂ r₁ r₂).Functions n → (Fin n → M) → M
-  | 0, f, _ => c' f
-  | 1, f, x => f₁' f (x 0)
-  | 2, f, x => f₂' f (x 0) (x 1)
-  | _ + 3, f, _ => PEmpty.elim f
-
-/-- The relation map for `FirstOrder.Language.Structure₂`. -/
-def RelMap₂ {c f₁ f₂ : Type u} {r₁ r₂ : Type v} (r₁' : r₁ → Set M) (r₂' : r₂ → M → M → Prop) :
-    ∀ {n}, (Language.mk₂ c f₁ f₂ r₁ r₂).Relations n → (Fin n → M) → Prop
-  | 0, r, _ => PEmpty.elim r
-  | 1, r, x => x 0 ∈ r₁' r
-  | 2, r, x => r₂' r (x 0) (x 1)
-  | _ + 3, r, _ => PEmpty.elim r
-
-/-- A structure constructor to match `FirstOrder.Language₂`. -/
-protected def Structure.mk₂ {c f₁ f₂ : Type u} {r₁ r₂ : Type v} (c' : c → M) (f₁' : f₁ → M → M)
-    (f₂' : f₂ → M → M → M) (r₁' : r₁ → Set M) (r₂' : r₂ → M → M → Prop) :
-    (Language.mk₂ c f₁ f₂ r₁ r₂).Structure M :=
-  ⟨funMap₂ c' f₁' f₂', RelMap₂ r₁' r₂'⟩
-
-namespace Structure
-
-variable {c f₁ f₂ : Type u} {r₁ r₂ : Type v}
-variable {c' : c → M} {f₁' : f₁ → M → M} {f₂' : f₂ → M → M → M}
-variable {r₁' : r₁ → Set M} {r₂' : r₂ → M → M → Prop}
-
-@[simp]
-theorem funMap_apply₀ (c₀ : c) {x : Fin 0 → M} :
-    @Structure.funMap _ M (Structure.mk₂ c' f₁' f₂' r₁' r₂') 0 c₀ x = c' c₀ :=
-  rfl
-
-@[simp]
-theorem funMap_apply₁ (f : f₁) (x : M) :
-    @Structure.funMap _ M (Structure.mk₂ c' f₁' f₂' r₁' r₂') 1 f ![x] = f₁' f x :=
-  rfl
-
-@[simp]
-theorem funMap_apply₂ (f : f₂) (x y : M) :
-    @Structure.funMap _ M (Structure.mk₂ c' f₁' f₂' r₁' r₂') 2 f ![x, y] = f₂' f x y :=
-  rfl
-
-@[simp]
-theorem relMap_apply₁ (r : r₁) (x : M) :
-    @Structure.RelMap _ M (Structure.mk₂ c' f₁' f₂' r₁' r₂') 1 r ![x] = (x ∈ r₁' r) :=
-  rfl
-
-@[simp]
-theorem relMap_apply₂ (r : r₂) (x y : M) :
-    @Structure.RelMap _ M (Structure.mk₂ c' f₁' f₂' r₁' r₂') 2 r ![x, y] = r₂' r x y :=
-  rfl
-
-end Structure
 
 /-- `HomClass L F M N` states that `F` is a type of `L`-homomorphisms. You should extend this
   typeclass when you extend `FirstOrder.Language.Hom`. -/
