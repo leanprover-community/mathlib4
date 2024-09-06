@@ -8,10 +8,10 @@ import Mathlib.Analysis.Normed.Module.FiniteDimension
 import Mathlib.NumberTheory.Padics.RingHoms
 
 /-!
-# Local compactness of the p-adic numbers
+# Properness of the p-adic numbers
 
 In this file, we prove that `ℤ_[p]` is totally bounded and compact,
-and that `ℚ_[p]` is locally compact.
+and that `ℚ_[p]` is proper.
 
 ## Main results
 
