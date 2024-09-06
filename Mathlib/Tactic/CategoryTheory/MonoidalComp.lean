@@ -50,7 +50,7 @@ class MonoidalCoherence (X Y : C) where
   iso : X ≅ Y
 
 @[inherit_doc MonoidalCoherence.iso]
-abbrev MonoidalCoherence.hom {X Y : C} [MonoidalCoherence X Y] : X ⟶ Y :=
+def MonoidalCoherence.hom {X Y : C} [MonoidalCoherence X Y] : X ⟶ Y :=
   MonoidalCoherence.iso.hom
 
 /-- Notation for identities up to unitors and associators. -/
