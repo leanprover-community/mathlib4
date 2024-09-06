@@ -61,8 +61,7 @@ protected theorem IsTransitive.sUnion (h : x.IsTransitive) :
   exact mem_sUnion_of_mem hz (h.mem_trans hw' hw)
 
 theorem IsTransitive.sUnion' (H : ∀ y ∈ x, IsTransitive y) :
-    (⋃₀ x : ZFSet).IsTransitive := by
-  intro y hy z hz
+    (⋃₀ x : ZFSet).IsTransitive := fun y hy z hz => by
   rcases mem_sUnion.1 hy with ⟨w, hw, hw'⟩
   exact mem_sUnion_of_mem ((H w hw).mem_trans hz hw') hw
 
