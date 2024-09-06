@@ -314,15 +314,15 @@ def symm (φ : UnorientedCobordism s t bd) : UnorientedCobordism t s bd where
   hW' := φ.hW'
   F := φ.F
   hF := φ.hF
-  φ := Diffeomorph.trans φ.φ (Diffeomorph.swap M I M')
+  φ := Diffeomorph.trans φ.φ (Diffeomorph.sumComm M I M')
   hFf := by
-    calc φ.F ∘ Subtype.val ∘ ⇑(φ.φ.trans (Diffeomorph.swap M I M')).symm ∘ Sum.inl
-      _ = φ.F ∘ Subtype.val ∘ φ.φ.symm ∘ (Diffeomorph.swap M' I M) ∘ Sum.inl := by congr
+    calc φ.F ∘ Subtype.val ∘ ⇑(φ.φ.trans (Diffeomorph.sumComm M I M')).symm ∘ Sum.inl
+      _ = φ.F ∘ Subtype.val ∘ φ.φ.symm ∘ (Diffeomorph.sumComm M' I M) ∘ Sum.inl := by congr
       _ = φ.F ∘ Subtype.val ∘ φ.φ.symm ∘ Sum.inr := by congr
       _ = t.f := φ.hFg
   hFg := by
-      calc φ.F ∘ Subtype.val ∘ ⇑(φ.φ.trans (Diffeomorph.swap M I M')).symm ∘ Sum.inr
-      _ = φ.F ∘ Subtype.val ∘ φ.φ.symm ∘ (Diffeomorph.swap M' I M) ∘ Sum.inr := by congr
+      calc φ.F ∘ Subtype.val ∘ ⇑(φ.φ.trans (Diffeomorph.sumComm M I M')).symm ∘ Sum.inr
+      _ = φ.F ∘ Subtype.val ∘ φ.φ.symm ∘ (Diffeomorph.sumComm M' I M) ∘ Sum.inr := by congr
       _ = φ.F ∘ Subtype.val ∘ φ.φ.symm ∘ Sum.inl := by congr
       _ = s.f := φ.hFf
 

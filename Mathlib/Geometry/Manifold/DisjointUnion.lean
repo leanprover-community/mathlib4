@@ -330,17 +330,18 @@ lemma Diffeomorph.sum_map_inr [Nonempty H'] {n : ℕ∞} (φ : Diffeomorph I J M
 lemma ContMDiff.swap : ContMDiff I I ∞ (@Sum.swap M M') := ContMDiff.sum_elim inr inl
 
 variable (I M M') in -- TODO: argument order is weird!
-def Diffeomorph.swap : Diffeomorph I I (M ⊕ M') (M' ⊕ M) ∞ where
+def Diffeomorph.sumComm : Diffeomorph I I (M ⊕ M') (M' ⊕ M) ∞ where
   toEquiv := Equiv.sumComm M M'
   contMDiff_toFun := ContMDiff.swap
   contMDiff_invFun := ContMDiff.swap
 
-theorem Diffeomorph.coe_swap : (Diffeomorph.swap M I M' : (M ⊕ M') → (M' ⊕ M)) = Sum.swap := rfl
+theorem Diffeomorph.coe_sumComm : (Diffeomorph.sumComm M I M' : (M ⊕ M') → (M' ⊕ M)) = Sum.swap := rfl
 
-theorem Diffeomorph.swap_symm : (Diffeomorph.swap M I M').symm = Diffeomorph.swap M' I M := rfl
+@[simp]
+theorem Diffeomorph.sumComm_symm : (Diffeomorph.sumComm M I M').symm = Diffeomorph.sumComm M' I M := rfl
 
 variable (I M M') in
-def Diffeomorph.associativity [Nonempty H] [Nonempty H'] :
+def Diffeomorph.sumAssoc [Nonempty H] [Nonempty H'] :
     Diffeomorph I I (M ⊕ (M' ⊕ M'')) ((M ⊕ M') ⊕ M'') ∞ where
   toEquiv := (Equiv.sumAssoc M M' M'').symm
   contMDiff_toFun := by
@@ -359,12 +360,12 @@ def Diffeomorph.sumEmpty [IsEmpty M'] : Diffeomorph I I (M ⊕ M') M ∞ where
   contMDiff_invFun := ContMDiff.inl
 
 variable (M M' I) in
-lemma Diffeomorph.swap_inl : (Diffeomorph.swap M I M') ∘ Sum.inl = Sum.inr := by
+lemma Diffeomorph.sumComm_inl : (Diffeomorph.sumComm M I M') ∘ Sum.inl = Sum.inr := by
   ext
   exact Sum.swap_inl
 
 variable (M M' I) in
-lemma Diffeomorph.swap_inr : (Diffeomorph.swap M I M') ∘ Sum.inr = Sum.inl := by
+lemma Diffeomorph.sumComm_inr : (Diffeomorph.sumComm M I M') ∘ Sum.inr = Sum.inl := by
   ext
   exact Sum.swap_inr
 
