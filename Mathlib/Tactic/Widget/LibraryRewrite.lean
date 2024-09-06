@@ -91,6 +91,7 @@ def addRewriteEntry (name : Name) (cinfo : ConstantInfo) :
   let .const head _ := cinfo.type.getForallBody.getAppFn | return []
   unless head == ``Eq || head == ``Iff do
     return []
+  setMCtx {}
   let (_,_,eqn) ← forallMetaTelescope cinfo.type
   let cont lhs rhs := do
     let badMatch e :=

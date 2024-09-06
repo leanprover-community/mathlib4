@@ -101,12 +101,11 @@ private def addConstToPreDiscrTree
     BaseIO (PreDiscrTree α) := do
   if constInfo.isUnsafe then return tree
   if LazyDiscrTree.blacklistInsertion env name then return tree
-  /- We need to reset the metavariable context in `mstate` every time. -/
-  mstate.modify fun s => { cache := s.cache }
-  let ctx : Meta.Context := { config := { transparency := .reducible } }
-  /- There seems to be no reason to reset `cstate`. -/
+  /- For efficiency, we leave it up to the implementation of `act` to reset the states if needed -/
+  -- mstate.modify fun s => { cache := s.cache }
   -- cstate.modify fun s => { env := s.env, cache := s.cache, ngen := s.ngen }
-  match ← (((act name constInfo) ctx mstate) cctx cstate).toBaseIO with
+  let mctx := { config := { transparency := .reducible } }
+  match ← (((act name constInfo) mctx mstate) cctx cstate).toBaseIO with
   | .ok a =>
     return a.foldl (fun t (key, entry) => t.push key entry) tree
   | .error e =>
@@ -206,16 +205,16 @@ def createImportedDiscrTree (cctx : Core.Context) (ngen : NameGenerator) (env : 
         let cnt := cnt + mdata.constants.size
         if cnt > constantsPerTask then
           let (childNGen, ngen) := ngen.mkChild
-          let t ← (pure (← createImportInitResults
-            cctx childNGen env act capacityPerTask start (idx+1)) : BaseIO _).asTask
+          let t ← (createImportInitResults
+            cctx childNGen env act capacityPerTask start (idx+1)).asTask
           go ngen (tasks.push t) (idx+1) 0 (idx+1)
         else
           go ngen tasks start cnt (idx+1)
       else
         if start < numModules then
           let (childNGen, _) := ngen.mkChild
-          let t ← (pure (← createImportInitResults
-            cctx childNGen env act capacityPerTask start numModules) : BaseIO _).asTask
+          let t ← (createImportInitResults
+            cctx childNGen env act capacityPerTask start numModules).asTask
           pure (tasks.push t)
         else
           pure tasks
