@@ -44,20 +44,21 @@ theorem pred_eq_pred : Order.pred = pred :=
 theorem pos_iff_one_le {a : ℤ} : 0 < a ↔ 1 ≤ a :=
   Order.succ_le_iff.symm
 
+@[deprecated Order.succ_iterate (since := "2024-09-04")]
 protected theorem succ_iterate (a : ℤ) : ∀ n, succ^[n] a = a + n :=
   Order.succ_iterate a
 
+@[deprecated Order.pred_iterate (since := "2024-09-04")]
 protected theorem pred_iterate (a : ℤ) : ∀ n, pred^[n] a = a - n :=
   Order.pred_iterate a
 
 instance : IsSuccArchimedean ℤ :=
   ⟨fun {a b} h =>
-    ⟨(b - a).toNat, by
-      rw [succ_eq_succ, Int.succ_iterate, toNat_sub_of_le h, ← add_sub_assoc, add_sub_cancel_left]⟩⟩
+    ⟨(b - a).toNat, by rw [succ_iterate, toNat_sub_of_le h, ← add_sub_assoc, add_sub_cancel_left]⟩⟩
 
 instance : IsPredArchimedean ℤ :=
   ⟨fun {a b} h =>
-    ⟨(b - a).toNat, by rw [pred_eq_pred, Int.pred_iterate, toNat_sub_of_le h, sub_sub_cancel]⟩⟩
+    ⟨(b - a).toNat, by rw [pred_iterate, toNat_sub_of_le h, sub_sub_cancel]⟩⟩
 
 /-! ### Covering relation -/
 
