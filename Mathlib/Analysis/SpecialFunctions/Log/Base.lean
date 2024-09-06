@@ -380,10 +380,10 @@ theorem ceil_logb_natCast {b : ℕ} {r : ℝ} (hr : 0 ≤ r) :
     · rw [← Int.le_zpow_iff_clog_le hb hr, ← rpow_intCast b]
       refine (rpow_logb (zero_lt_one.trans hb1') hb1'.ne' hr).symm.trans_le ?_
       exact rpow_le_rpow_of_exponent_le hb1'.le (Int.le_ceil _)
-  · rw [@Nat.one_lt_iff_ne_zero_and_ne_one, ← @or_iff_not_and_not] at hb
-    rcases hb
-    simp_all only [CharP.cast_eq_zero, logb_zero_left, Int.ceil_zero, Int.clog_zero_left]
-    simp_all only [Nat.cast_one, logb_one_left, Int.ceil_zero, Int.clog_one_left]
+  · rw [Nat.one_lt_iff_ne_zero_and_ne_one, ← or_iff_not_and_not] at hb
+    cases hb
+    · simp_all only [CharP.cast_eq_zero, logb_zero_left, Int.ceil_zero, Int.clog_zero_left]
+    · simp_all only [Nat.cast_one, logb_one_left, Int.ceil_zero, Int.clog_one_left]
 
 @[deprecated (since := "2024-04-17")]
 alias ceil_logb_nat_cast := ceil_logb_natCast
