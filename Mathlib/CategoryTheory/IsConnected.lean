@@ -7,6 +7,7 @@ import Mathlib.Data.List.Chain
 import Mathlib.CategoryTheory.PUnit
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.Category.ULift
+import Mathlib.Util.WithoutInstances
 
 /-!
 # Connected category
@@ -60,6 +61,7 @@ class IsPreconnected (J : Type u₁) [Category.{v₁} J] : Prop where
 
 attribute [inherit_doc IsPreconnected] IsPreconnected.iso_constant
 
+without_instances
 /-- We define a connected category as a _nonempty_ category for which every
 functor to a discrete category is constant.
 
@@ -71,10 +73,16 @@ This allows us to show that the functor X ⨯ - preserves connected limits.
 
 See <https://stacks.math.columbia.edu/tag/002S>
 -/
-class IsConnected (J : Type u₁) [Category.{v₁} J] extends IsPreconnected J : Prop where
+class IsConnected (J : Type u₁) [outParam (Category.{v₁} J)] extends IsPreconnected J : Prop where
   [is_nonempty : Nonempty J]
 
-attribute [instance 100] IsConnected.is_nonempty
+instance IsConnected.instIsPreconnected :
+    ∀ {J} {_ : Category.{v₁} J} [IsConnected J], IsPreconnected J :=
+  @IsConnected.toIsPreconnected
+
+instance (priority := 100) LocalRing.instNonempty :
+    ∀ {J} {_ : Category.{v₁} J} [IsConnected J], Nonempty J :=
+  @IsConnected.is_nonempty
 
 variable {J : Type u₁} [Category.{v₁} J]
 variable {K : Type u₂} [Category.{v₂} K]

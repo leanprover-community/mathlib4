@@ -6,6 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Order.Lattice
 import Mathlib.Order.ULift
 import Mathlib.Tactic.PushNeg
+import Mathlib.Util.WithoutInstances
 
 /-!
 # ⊤ and ⊥, bounded lattices and variants
@@ -37,11 +38,16 @@ variable {α : Type u} {β : Type v} {γ δ : Type*}
 
 /-! ### Top, bottom element -/
 
+without_instances
 /-- An order is an `OrderTop` if it has a greatest element.
 We state this using a data mixin, holding the value of `⊤` and the greatest element constraint. -/
-class OrderTop (α : Type u) [LE α] extends Top α where
+class OrderTop (α : Type u) [outParam (LE α)] extends Top α where
   /-- `⊤` is the greatest element -/
   le_top : ∀ a : α, a ≤ ⊤
+
+instance OrderTop.instTop :
+    ∀ {α} {_ : LE α} [OrderTop α], Top α :=
+  @OrderTop.toTop
 
 section OrderTop
 
@@ -172,9 +178,13 @@ theorem OrderTop.ext_top {α} {hA : PartialOrder α} (A : OrderTop α) {hB : Par
 
 /-- An order is an `OrderBot` if it has a least element.
 We state this using a data mixin, holding the value of `⊥` and the least element constraint. -/
-class OrderBot (α : Type u) [LE α] extends Bot α where
+class OrderBot (α : Type u) [outParam (LE α)] extends Bot α where
   /-- `⊥` is the least element -/
   bot_le : ∀ a : α, ⊥ ≤ a
+
+instance OrderBot.instBot :
+    ∀ {α} {_ : LE α} [OrderBot α], Bot α :=
+  @OrderBot.toBot
 
 section OrderBot
 
@@ -405,7 +415,15 @@ end SemilatticeInfBot
 
 /-- A bounded order describes an order `(≤)` with a top and bottom element,
   denoted `⊤` and `⊥` respectively. -/
-class BoundedOrder (α : Type u) [LE α] extends OrderTop α, OrderBot α
+class BoundedOrder (α : Type u) [outParam (LE α)] extends OrderTop α, OrderBot α
+
+instance BoundedOrder.instOrderTop :
+    ∀ {α} {_ : LE α} [BoundedOrder α], OrderTop α :=
+  @BoundedOrder.toOrderTop
+
+instance BoundedOrder.instOrderBot :
+    ∀ {α} {_ : LE α} [BoundedOrder α], OrderBot α :=
+  @BoundedOrder.toOrderBot
 
 instance OrderDual.instBoundedOrder (α : Type u) [LE α] [BoundedOrder α] : BoundedOrder αᵒᵈ where
   __ := inferInstanceAs (OrderTop αᵒᵈ)

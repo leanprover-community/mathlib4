@@ -609,12 +609,20 @@ class PreconnectedSpace (α : Type u) [TopologicalSpace α] : Prop where
 
 export PreconnectedSpace (isPreconnected_univ)
 
+without_instances
 /-- A connected space is a nonempty one where there is no non-trivial open partition. -/
-class ConnectedSpace (α : Type u) [TopologicalSpace α] extends PreconnectedSpace α : Prop where
+class ConnectedSpace (α : Type u) [outParam (TopologicalSpace α)] extends
+    PreconnectedSpace α : Prop where
   /-- A connected space is nonempty. -/
   toNonempty : Nonempty α
 
-attribute [instance 50] ConnectedSpace.toNonempty  -- see Note [lower instance priority]
+instance ConnectedSpace.instPreconnectedSpace :
+    ∀ {α} {_ : TopologicalSpace α} [ConnectedSpace α], PreconnectedSpace α :=
+  @ConnectedSpace.toPreconnectedSpace
+
+instance (priority := 50) ConnectedSpace.instNonempty :
+    ∀ {α} {_ : TopologicalSpace α} [ConnectedSpace α], Nonempty α :=
+  @ConnectedSpace.toNonempty
 
 -- see Note [lower instance priority]
 theorem isConnected_univ [ConnectedSpace α] : IsConnected (univ : Set α) :=

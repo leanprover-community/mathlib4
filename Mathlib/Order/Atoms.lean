@@ -563,10 +563,16 @@ end CompleteAtomicBooleanAlgebra
 
 end Atomistic
 
+without_instances
 /-- An order is simple iff it has exactly two elements, `⊥` and `⊤`. -/
-class IsSimpleOrder (α : Type*) [LE α] [BoundedOrder α] extends Nontrivial α : Prop where
+class IsSimpleOrder (α : Type*) [outParam (LE α)] [outParam (BoundedOrder α)] extends
+    Nontrivial α : Prop where
   /-- Every element is either `⊥` or `⊤` -/
   eq_bot_or_eq_top : ∀ a : α, a = ⊥ ∨ a = ⊤
+
+instance IsSimpleOrder.instNontrivial :
+    ∀ {α} {_ : LE α} {_ : BoundedOrder α} [IsSimpleOrder α], Nontrivial α :=
+  @IsSimpleOrder.toNontrivial
 
 export IsSimpleOrder (eq_bot_or_eq_top)
 

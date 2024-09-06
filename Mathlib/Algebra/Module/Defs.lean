@@ -48,18 +48,23 @@ universe u v
 
 variable {α R k S M M₂ M₃ ι : Type*}
 
+without_instances
 /-- A module is a generalization of vector spaces to a scalar semiring.
   It consists of a scalar semiring `R` and an additive monoid of "vectors" `M`,
   connected by a "scalar multiplication" operation `r • x : M`
   (where `r : R` and `x : M`) with some natural associativity and
   distributivity axioms similar to those on a ring. -/
 @[ext]
-class Module (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] extends
+class Module (R : Type u) (M : Type v) [outParam (Semiring R)] [outParam (AddCommMonoid M)] extends
   DistribMulAction R M where
   /-- Scalar multiplication distributes over addition from the right. -/
   protected add_smul : ∀ (r s : R) (x : M), (r + s) • x = r • x + s • x
   /-- Scalar multiplication by zero gives zero. -/
   protected zero_smul : ∀ x : M, (0 : R) • x = 0
+
+instance Module.instDistribMulAction :
+    ∀ {R M} {_ : Semiring R} {_ : AddCommMonoid M} [Module R M], DistribMulAction R M :=
+  @Module.toDistribMulAction
 
 section AddCommMonoid
 
@@ -67,7 +72,8 @@ variable [Semiring R] [AddCommMonoid M] [Module R M] (r s : R) (x y : M)
 
 -- see Note [lower instance priority]
 /-- A module over a semiring automatically inherits a `MulActionWithZero` structure. -/
-instance (priority := 100) Module.toMulActionWithZero : MulActionWithZero R M :=
+instance (priority := 100) Module.toMulActionWithZero
+    {_ : Semiring R} {_ : AddCommMonoid M} [Module R M] : MulActionWithZero R M :=
   { (inferInstance : MulAction R M) with
     smul_zero := smul_zero
     zero_smul := Module.zero_smul }

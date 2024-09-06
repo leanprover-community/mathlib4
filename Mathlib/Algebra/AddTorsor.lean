@@ -37,12 +37,13 @@ multiplicative group actions).
 
 -/
 
+without_instances
 /-- An `AddTorsor G P` gives a structure to the nonempty type `P`,
 acted on by an `AddGroup G` with a transitive and free action given
 by the `+ᵥ` operation and a corresponding subtraction given by the
 `-ᵥ` operation. In the case of a vector space, it is an affine
 space. -/
-class AddTorsor (G : outParam Type*) (P : Type*) [AddGroup G] extends AddAction G P,
+class AddTorsor (G : outParam Type*) (P : Type*) [outParam (AddGroup G)] extends AddAction G P,
   VSub G P where
   [nonempty : Nonempty P]
   /-- Torsor subtraction and addition with the same element cancels out. -/
@@ -50,8 +51,17 @@ class AddTorsor (G : outParam Type*) (P : Type*) [AddGroup G] extends AddAction 
   /-- Torsor addition and subtraction with the same element cancels out. -/
   vadd_vsub' : ∀ (g : G) (p : P), g +ᵥ p -ᵥ p = g
 
- -- Porting note(#12096): removed `nolint instance_priority`; lint not ported yet
-attribute [instance 100] AddTorsor.nonempty
+instance AddTorsor.instAddAction :
+    ∀ {G P} {_ : AddGroup G} [AddTorsor G P], AddAction G P :=
+  @AddTorsor.toAddAction
+
+instance AddTorsor.instVSub :
+    ∀ {G P} {_ : AddGroup G} [AddTorsor G P], VSub G P :=
+  @AddTorsor.toVSub
+
+instance (priority := 100) AddTorsor.instNonempty :
+    ∀ {G P} {_ : AddGroup G} [AddTorsor G P], Nonempty P :=
+  @AddTorsor.nonempty
 
 -- Porting note(#12094): removed nolint; dangerous_instance linter not ported yet
 --attribute [nolint dangerous_instance] AddTorsor.toVSub

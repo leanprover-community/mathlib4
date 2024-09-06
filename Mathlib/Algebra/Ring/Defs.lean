@@ -8,6 +8,7 @@ import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Tactic.Spread
 import Mathlib.Util.AssertExists
+import Mathlib.Util.WithoutInstances
 
 /-!
 # Semirings and rings
@@ -415,6 +416,7 @@ instance (priority := 100) CommRing.toAddCommGroupWithOne [s : CommRing α] :
     AddCommGroupWithOne α :=
   { s with }
 
+without_instances
 /-- A domain is a nontrivial semiring such that multiplication by a non zero element
 is cancellative on both sides. In other words, a nontrivial semiring `R` satisfying
 `∀ {a b c : R}, a ≠ 0 → a * b = a * c → b = c` and
@@ -422,4 +424,12 @@ is cancellative on both sides. In other words, a nontrivial semiring `R` satisfy
 
 This is implemented as a mixin for `Semiring α`.
 To obtain an integral domain use `[CommRing α] [IsDomain α]`. -/
-class IsDomain (α : Type u) [Semiring α] extends IsCancelMulZero α, Nontrivial α : Prop
+class IsDomain (α : Type u) [outParam (Semiring α)] extends IsCancelMulZero α, Nontrivial α : Prop
+
+instance IsDomain.instIsCancelMulZero :
+    ∀ {α} {_ : Semiring α} [IsDomain α], IsCancelMulZero α :=
+  @IsDomain.toIsCancelMulZero
+
+instance IsDomain.instNontrivial :
+    ∀ {α} {_ : Semiring α} [IsDomain α], Nontrivial α :=
+  @IsDomain.toNontrivial

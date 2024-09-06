@@ -29,19 +29,26 @@ section
 
 variable (G) (A)
 
+without_instances
 /-- A `Group` is simple when it has exactly two normal `Subgroup`s. -/
-class IsSimpleGroup extends Nontrivial G : Prop where
+class IsSimpleGroup (G : Type*) [outParam (Group G)] extends Nontrivial G : Prop where
   /-- Any normal subgroup is either `⊥` or `⊤` -/
   eq_bot_or_eq_top_of_normal : ∀ H : Subgroup G, H.Normal → H = ⊥ ∨ H = ⊤
 
+without_instances
 /-- An `AddGroup` is simple when it has exactly two normal `AddSubgroup`s. -/
-class IsSimpleAddGroup extends Nontrivial A : Prop where
+class IsSimpleAddGroup (A : Type*) [outParam (AddGroup A)] extends Nontrivial A : Prop where
   /-- Any normal additive subgroup is either `⊥` or `⊤` -/
   eq_bot_or_eq_top_of_normal : ∀ H : AddSubgroup A, H.Normal → H = ⊥ ∨ H = ⊤
 
 attribute [to_additive] IsSimpleGroup
 
 variable {G} {A}
+
+@[to_additive]
+instance IsSimpleGroup.instNontrivial :
+    ∀ {G} {_ : Group G} [IsSimpleGroup G], Nontrivial G :=
+  @IsSimpleGroup.toNontrivial
 
 @[to_additive]
 theorem Subgroup.Normal.eq_bot_or_eq_top [IsSimpleGroup G] {H : Subgroup G} (Hn : H.Normal) :

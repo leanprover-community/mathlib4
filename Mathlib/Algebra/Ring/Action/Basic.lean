@@ -30,15 +30,20 @@ assert_not_exists Prod.fst_mul
 
 universe u v
 
+without_instances
 /-- Typeclass for multiplicative actions by monoids on semirings.
 
 This combines `DistribMulAction` with `MulDistribMulAction`. -/
-class MulSemiringAction (M : Type u) (R : Type v) [Monoid M] [Semiring R] extends
-  DistribMulAction M R where
+class MulSemiringAction (M : Type u) (R : Type v) [outParam (Monoid M)] [outParam (Semiring R)]
+    extends DistribMulAction M R where
   /-- Multipliying `1` by a scalar gives `1` -/
   smul_one : ∀ g : M, (g • (1 : R) : R) = 1
   /-- Scalar multiplication distributes across multiplication -/
   smul_mul : ∀ (g : M) (x y : R), g • (x * y) = g • x * g • y
+
+instance MulSemiringAction.instDistribMulAction :
+    ∀ {M R} {_ : Monoid M} {_ : Semiring R} [MulSemiringAction M R], DistribMulAction M R :=
+  @MulSemiringAction.toDistribMulAction
 
 section Semiring
 
@@ -46,7 +51,8 @@ variable (M N G : Type*) [Monoid M] [Monoid N] [Group G]
 variable (A R S F : Type v) [AddMonoid A] [Semiring R] [CommSemiring S]
 
 -- note we could not use `extends` since these typeclasses are made with `old_structure_cmd`
-instance (priority := 100) MulSemiringAction.toMulDistribMulAction [h : MulSemiringAction M R] :
+instance (priority := 100) MulSemiringAction.toMulDistribMulAction
+    {_ : Monoid M} {_ : Semiring R} [h : MulSemiringAction M R] :
     MulDistribMulAction M R :=
   { h with }
 

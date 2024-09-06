@@ -5,6 +5,7 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.Ring.Defs
+import Mathlib.Util.WithoutInstances
 
 /-!
 
@@ -20,10 +21,16 @@ Define local rings as commutative rings having a unique maximal ideal.
   `LocalRing.of_unique_max_ideal` and `LocalRing.maximal_ideal_unique`.
 
 -/
+
+without_instances
 /-- A semiring is local if it is nontrivial and `a` or `b` is a unit whenever `a + b = 1`.
 Note that `LocalRing` is a predicate. -/
-class LocalRing (R : Type*) [Semiring R] extends Nontrivial R : Prop where
+class LocalRing (R : Type*) [outParam (Semiring R)] extends Nontrivial R : Prop where
   of_is_unit_or_is_unit_of_add_one ::
   /-- in a local ring `R`, if `a + b = 1`, then either `a` is a unit or `b` is a unit. In another
     word, for every `a : R`, either `a` is a unit or `1 - a` is a unit. -/
   isUnit_or_isUnit_of_add_one {a b : R} (h : a + b = 1) : IsUnit a ∨ IsUnit b
+
+instance LocalRing.instNontrivial :
+    ∀ {R} {_ : Semiring R} [LocalRing R], Nontrivial R :=
+  @LocalRing.toNontrivial

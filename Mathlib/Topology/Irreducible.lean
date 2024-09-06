@@ -143,13 +143,20 @@ class PreirreducibleSpace (X : Type*) [TopologicalSpace X] : Prop where
   /-- In a preirreducible space, `Set.univ` is a preirreducible set. -/
   isPreirreducible_univ : IsPreirreducible (univ : Set X)
 
+without_instances
 /-- An irreducible space is one that is nonempty
 and where there is no non-trivial pair of disjoint opens. -/
-class IrreducibleSpace (X : Type*) [TopologicalSpace X] extends PreirreducibleSpace X : Prop where
+class IrreducibleSpace (X : Type*) [outParam (TopologicalSpace X)] extends
+    PreirreducibleSpace X : Prop where
   toNonempty : Nonempty X
 
--- see Note [lower instance priority]
-attribute [instance 50] IrreducibleSpace.toNonempty
+instance IrreducibleSpace.instPreirreducibleSpace :
+    ∀ {X} {_ : TopologicalSpace X} [IrreducibleSpace X], PreirreducibleSpace X :=
+  @IrreducibleSpace.toPreirreducibleSpace
+
+instance (priority := 50) IrreducibleSpace.instNonempty :
+    ∀ {X} {_ : TopologicalSpace X} [IrreducibleSpace X], Nonempty X :=
+  @IrreducibleSpace.toNonempty
 
 theorem IrreducibleSpace.isIrreducible_univ (X : Type*) [TopologicalSpace X] [IrreducibleSpace X] :
     IsIrreducible (univ : Set X) :=

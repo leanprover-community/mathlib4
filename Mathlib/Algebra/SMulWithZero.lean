@@ -42,12 +42,17 @@ section Zero
 
 variable (R M)
 
+without_instances
 /-- `SMulWithZero` is a class consisting of a Type `R` with `0 ∈ R` and a scalar multiplication
 of `R` on a Type `M` with `0`, such that the equality `r • m = 0` holds if at least one among `r`
 or `m` equals `0`. -/
-class SMulWithZero [Zero R] [Zero M] extends SMulZeroClass R M where
+class SMulWithZero [outParam (Zero R)] [outParam (Zero M)] extends SMulZeroClass R M where
   /-- Scalar multiplication by the scalar `0` is `0`. -/
   zero_smul : ∀ m : M, (0 : R) • m = 0
+
+instance SMulWithZero.instSMulZeroClass :
+    ∀ {R M} {_ : Zero R} {_ : Zero M} [SMulWithZero R M], SMulZeroClass R M :=
+  @SMulWithZero.toSMulZeroClass
 
 instance MulZeroClass.toSMulWithZero [MulZeroClass R] : SMulWithZero R R where
   smul := (· * ·)
@@ -116,18 +121,25 @@ section MonoidWithZero
 variable [MonoidWithZero R] [MonoidWithZero R'] [Zero M]
 variable (R M)
 
+without_instances
 /-- An action of a monoid with zero `R` on a Type `M`, also with `0`, extends `MulAction` and
 is compatible with `0` (both in `R` and in `M`), with `1 ∈ R`, and with associativity of
 multiplication on the monoid `M`. -/
-class MulActionWithZero extends MulAction R M where
+class MulActionWithZero [outParam (MonoidWithZero R)] [outParam (Zero M)] extends
+    MulAction R M where
   -- these fields are copied from `SMulWithZero`, as `extends` behaves poorly
   /-- Scalar multiplication by any element send `0` to `0`. -/
   smul_zero : ∀ r : R, r • (0 : M) = 0
   /-- Scalar multiplication by the scalar `0` is `0`. -/
   zero_smul : ∀ m : M, (0 : R) • m = 0
 
+instance MulActionWithZero.instMulAction :
+    ∀ {R M} {_ : MonoidWithZero R} {_ : Zero M} [MulActionWithZero R M], MulAction R M :=
+  @MulActionWithZero.toMulAction
+
 -- see Note [lower instance priority]
-instance (priority := 100) MulActionWithZero.toSMulWithZero [m : MulActionWithZero R M] :
+instance (priority := 100) MulActionWithZero.toSMulWithZero
+    {_ : MonoidWithZero R} {_ : Zero M} [m : MulActionWithZero R M] :
     SMulWithZero R M :=
   { m with }
 

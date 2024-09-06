@@ -87,10 +87,15 @@ lemma Commute.smul_left_iff₀ [Mul β] [SMulCommClass α β β] [IsScalarTower 
 
 end GroupWithZero
 
+without_instances
 /-- Typeclass for scalar multiplication that preserves `0` on the right. -/
-class SMulZeroClass (M A : Type*) [Zero A] extends SMul M A where
+class SMulZeroClass (M A : Type*) [outParam (Zero A)] extends SMul M A where
   /-- Multiplying `0` by a scalar gives `0` -/
   smul_zero : ∀ a : M, a • (0 : A) = 0
+
+instance SMulZeroClass.instSMul :
+    ∀ {M A} {_ : Zero A} [SMulZeroClass M A], SMul M A :=
+  @SMulZeroClass.toSMul
 
 section smul_zero
 
@@ -151,14 +156,19 @@ def SMulZeroClass.toZeroHom (x : M) :
 
 end smul_zero
 
+without_instances
 /-- Typeclass for scalar multiplication that preserves `0` and `+` on the right.
 
 This is exactly `DistribMulAction` without the `MulAction` part.
 -/
 @[ext]
-class DistribSMul (M A : Type*) [AddZeroClass A] extends SMulZeroClass M A where
+class DistribSMul (M A : Type*) [outParam (AddZeroClass A)] extends SMulZeroClass M A where
   /-- Scalar multiplication distributes across addition -/
   smul_add : ∀ (a : M) (x y : A), a • (x + y) = a • x + a • y
+
+instance DistribSMul.instSMulZeroClass :
+    ∀ {M A} {_ : AddZeroClass A} [DistribSMul M A], SMulZeroClass M A :=
+  @DistribSMul.toSMulZeroClass
 
 section DistribSMul
 
@@ -218,20 +228,27 @@ def DistribSMul.toAddMonoidHom (x : M) : A →+ A :=
 
 end DistribSMul
 
+without_instances
 /-- Typeclass for multiplicative actions on additive structures. This generalizes group modules. -/
 @[ext]
-class DistribMulAction (M A : Type*) [Monoid M] [AddMonoid A] extends MulAction M A where
+class DistribMulAction (M A : Type*) [outParam (Monoid M)] [outParam (AddMonoid A)] extends
+    MulAction M A where
   /-- Multiplying `0` by a scalar gives `0` -/
   smul_zero : ∀ a : M, a • (0 : A) = 0
   /-- Scalar multiplication distributes across addition -/
   smul_add : ∀ (a : M) (x y : A), a • (x + y) = a • x + a • y
+
+instance DistribMulAction.instMulAction :
+    ∀ {M A} {_ : Monoid M} {_ : AddMonoid A} [DistribMulAction M A], MulAction M A :=
+  @DistribMulAction.toMulAction
 
 section
 
 variable [Monoid M] [AddMonoid A] [DistribMulAction M A]
 
 -- See note [lower instance priority]
-instance (priority := 100) DistribMulAction.toDistribSMul : DistribSMul M A :=
+instance (priority := 100) DistribMulAction.toDistribSMul
+    {_ : Monoid M} {_ : AddMonoid A} [DistribMulAction M A] : DistribSMul M A :=
   { ‹DistribMulAction M A› with }
 
 -- Porting note: this probably is no longer relevant.
@@ -318,15 +335,20 @@ theorem smul_sub (r : M) (x y : A) : r • (x - y) = r • x - r • y := by
 
 end
 
+without_instances
 /-- Typeclass for multiplicative actions on multiplicative structures. This generalizes
 conjugation actions. -/
 @[ext]
-class MulDistribMulAction (M : Type*) (A : Type*) [Monoid M] [Monoid A] extends
-  MulAction M A where
+class MulDistribMulAction (M : Type*) (A : Type*) [outParam (Monoid M)] [outParam (Monoid A)]
+    extends MulAction M A where
   /-- Distributivity of `•` across `*` -/
   smul_mul : ∀ (r : M) (x y : A), r • (x * y) = r • x * r • y
   /-- Multiplying `1` by a scalar gives `1` -/
   smul_one : ∀ r : M, r • (1 : A) = 1
+
+instance MulDistribMulAction.instMulAction :
+    ∀ {M A} {_ : Monoid M} {_ : Monoid A} [MulDistribMulAction M A], MulAction M A :=
+  @MulDistribMulAction.toMulAction
 
 export MulDistribMulAction (smul_one)
 

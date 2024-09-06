@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Group.TypeTags
 import Mathlib.Algebra.Opposites
 import Mathlib.Logic.Embedding.Basic
+import Mathlib.Util.WithoutInstances
 
 /-!
 # Definitions of group actions
@@ -83,20 +84,27 @@ lemma smul_eq_mul (α : Type*) [Mul α] {a a' : α} : a • a' = a * a' := rfl
 instance RightCancelMonoid.faithfulSMul [RightCancelMonoid α] : FaithfulSMul α α :=
   ⟨fun h ↦ mul_right_cancel (h 1)⟩
 
+without_instances
 /-- Type class for additive monoid actions. -/
-class AddAction (G : Type*) (P : Type*) [AddMonoid G] extends VAdd G P where
+class AddAction (G : Type*) (P : Type*) [outParam (AddMonoid G)] extends VAdd G P where
   /-- Zero is a neutral element for `+ᵥ` -/
   protected zero_vadd : ∀ p : P, (0 : G) +ᵥ p = p
   /-- Associativity of `+` and `+ᵥ` -/
   add_vadd : ∀ (g₁ g₂ : G) (p : P), g₁ + g₂ +ᵥ p = g₁ +ᵥ (g₂ +ᵥ p)
 
+without_instances
 /-- Typeclass for multiplicative actions by monoids. This generalizes group actions. -/
 @[to_additive (attr := ext)]
-class MulAction (α : Type*) (β : Type*) [Monoid α] extends SMul α β where
+class MulAction (α : Type*) (β : Type*) [outParam (Monoid α)] extends SMul α β where
   /-- One is the neutral element for `•` -/
   protected one_smul : ∀ b : β, (1 : α) • b = b
   /-- Associativity of `•` and `*` -/
   mul_smul : ∀ (x y : α) (b : β), (x * y) • b = x • y • b
+
+@[to_additive]
+instance MulAction.instSMul :
+    ∀ {α β} {_ : Monoid α} [MulAction α β], SMul α β :=
+  @MulAction.toSMul
 
 /-!
 ### (Pre)transitive action
