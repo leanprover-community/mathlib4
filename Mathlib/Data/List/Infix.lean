@@ -160,7 +160,11 @@ This can be removed after nightly-2024-09-07.
 -/
 attribute [-simp] map_tail
 
-@[simp]
+#adaptation_note
+/--
+`nolint simpNF` should be removed after nightly-2024-09-07.
+-/
+@[simp, nolint simpNF]
 theorem inits_append : ∀ s t : List α, inits (s ++ t) = s.inits ++ t.inits.tail.map fun l => s ++ l
   | [], [] => by simp
   | [], a :: t => by simp

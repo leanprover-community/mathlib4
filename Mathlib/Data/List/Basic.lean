@@ -945,7 +945,11 @@ theorem infix_bind_of_mem {a : α} {as : List α} (h : a ∈ as) (f : α → Lis
 theorem map_eq_map {α β} (f : α → β) (l : List α) : f <$> l = map f l :=
   rfl
 
-@[simp]
+#adaptation_note
+/--
+`nolint simpNF` should be removed after nightly-2024-09-07.
+-/
+@[simp, nolint simpNF]
 theorem map_tail (f : α → β) (l) : map f (tail l) = tail (map f l) := by cases l <;> rfl
 
 /-- A single `List.map` of a composition of functions is equal to
