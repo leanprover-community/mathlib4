@@ -910,10 +910,10 @@ private theorem succ_le_iff' {a b : Ordinal} : a + 1 ≤ b ↔ a < b :=
 instance noMaxOrder : NoMaxOrder Ordinal :=
   ⟨fun _ => ⟨_, succ_le_iff'.1 le_rfl⟩⟩
 
-instance succOrder : SuccOrder Ordinal.{u} :=
+instance instSuccOrder : SuccOrder Ordinal.{u} :=
   SuccOrder.ofSuccLeIff (fun o => o + 1) succ_le_iff'
 
-instance succAddOrder : SuccAddOrder Ordinal := ⟨fun _ => rfl⟩
+instance instSuccAddOrder : SuccAddOrder Ordinal := ⟨fun _ => rfl⟩
 
 @[simp]
 theorem add_one_eq_succ (o : Ordinal) : o + 1 = succ o :=
