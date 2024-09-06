@@ -12,11 +12,9 @@ We define
 * `Key`, the discrimination tree key
 * `LazyEntry`, the partial, lazy computation of a sequence of `Key`s
 * `Trie`, a node of the discrimination tree, which is indexed with `Key`s
-  and stores an array of pending `LazyEntrie`s
-* `RefinedDiscrTree`, the driscrimination tree.
+  and stores an array of pending `LazyEntry`s
+* `RefinedDiscrTree`, the driscrimination tree itself.
 -/
-
-open Lean Meta
 
 namespace Lean.Meta.RefinedDiscrTree
 
@@ -46,10 +44,15 @@ inductive Key where
   | proj : (typeName : Name) → (idx nargs : Nat) → Key
   deriving Inhabited, BEq, Repr
 
+/-
+At the root, `.const` is the most common key, and it is very uncommon
+to get the same contant name with a different arity.
+So for performance, we just use `hash name` to hash `.const name _`.
+-/
 private nonrec def Key.hash : Key → UInt64
   | .star id             => mixHash 7883 $ hash id
   | .opaque              => 342
-  | .const name nargs    => mixHash (hash name) (hash nargs)
+  | .const name _        => hash name
   | .fvar fvarId nargs   => mixHash 8765 $ mixHash (hash fvarId) (hash nargs)
   | .bvar idx nargs      => mixHash 4323 $ mixHash (hash idx) (hash nargs)
   | .lit v               => mixHash 1879 $ hash v
@@ -258,10 +261,35 @@ structure RefinedDiscrTree (α : Type) where
   /-- Array of trie entries. Should be owned by this trie. -/
   tries : Array (Trie α) := #[]
   /-- Configuration for normalization. -/
-  config : Lean.Meta.WhnfCoreConfig := {}
+  config : WhnfCoreConfig := {}
 
 namespace RefinedDiscrTree
 
 variable {α : Type}
 
 instance : Inhabited (RefinedDiscrTree α) := ⟨{}⟩
+
+private partial def format [ToFormat α] (tree : RefinedDiscrTree α) : Format :=
+  let lines := tree.root.fold (init := #[]) fun lines key trie =>
+    lines.push (Format.nest 2 f! "{key} =>{Format.line}{go trie}")
+  if lines.size = 0 then
+    f! "<empty discrimination tree>"
+  else
+    lines.foldl (init := "Discrimination tree flowchart:") (· ++ Format.line ++ ·)
+where
+  go (trie : TrieIndex) : Format :=
+    let { values, stars, children, pending } := tree.tries[trie]!
+    let lines := if pending.isEmpty then #[] else
+      #[f! "pending entries: {pending.map (·.val)}"]
+    let lines := if values.isEmpty then lines else
+      lines.push f! "entries: {values}"
+    let lines := stars.fold (init := lines) fun lines key trie =>
+      lines.push (Format.nest 2 f! "*{key} =>{Format.line}{go trie}")
+    let lines := children.fold (init := lines) fun lines key trie =>
+      lines.push (Format.nest 2 f! "{key} =>{Format.line}{go trie}")
+    if h : lines.size = 0 then
+      f! "<empty node>"
+    else
+      lines.foldl (init := lines[0]) (· ++ Format.line ++ ·) (start := 1)
+
+instance [ToFormat α] : ToFormat (RefinedDiscrTree α) := ⟨format⟩

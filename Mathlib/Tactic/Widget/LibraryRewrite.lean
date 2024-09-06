@@ -165,8 +165,16 @@ By setting the `librarySearch.excludedModules` option, all lemmas from certain m
 can be excluded.
 Exclude lemmas from modules
 in the `librarySearch.excludedModules` option. -/
-def getCandidates (e : Expr) : MetaM (Array (Array RewriteLemma)) := do
+def getImportCandidates (e : Expr) : MetaM (Array (Array RewriteLemma)) := do
   let matchResult ← RefinedDiscrTree.findImportMatches importedRewriteLemmasExt addRewriteEntry
+    /-
+    5000 constants seems to be approximately the right number of tasks
+    Too many means the tasks are too long.
+    Too few means less cache can be reused and more time is spent on combining different results.
+
+    With 5000 constants per task, we set the `HashMap` capacity to 256,
+    which is the largest capacity it gets to reach.
+    -/
     (constantsPerTask := 5000) (capacityPerTask := 256) e
   let candidates := matchResult.elts.reverse.concatMap id
   let excludedModules := getLibrarySearchExcludedModules (← getOptions)
@@ -179,7 +187,7 @@ def getCandidates (e : Expr) : MetaM (Array (Array RewriteLemma)) := do
 
 /-- Get all potential rewrite lemmas from the current file. Exclude lemmas from modules
 in the `librarySearch.excludedModules` option. -/
-def getLocalCandidates (e : Expr) : MetaM (Array (Array RewriteLemma)) := do
+def getModuleCandidates (e : Expr) : MetaM (Array (Array RewriteLemma)) := do
   let moduleTreeRef ← RefinedDiscrTree.createModuleTreeRef addRewriteEntry
   let matchResult ← RefinedDiscrTree.findModuleMatches moduleTreeRef e
   return matchResult.elts.reverse.concatMap id
@@ -261,11 +269,11 @@ def checkAndSortRewriteLemmas (e : Expr) (rewrites : Array RewriteLemma) :
 /-- Return all applicable library rewrites of `e`.
 Note that the result may contain duplicate rewrites. These can be removed with `filterRewrites`. -/
 def getImportRewrites (e : Expr) : MetaM (Array (Array (Rewrite × Name))) := do
-  (← getCandidates e).mapM (checkAndSortRewriteLemmas e)
+  (← getImportCandidates e).mapM (checkAndSortRewriteLemmas e)
 
 /-- Same as `getImportRewrites`, but for lemmas from the current file. -/
 def getModuleRewrites (e : Expr) : MetaM (Array (Array (Rewrite × Name))) := do
-  (← getLocalCandidates e).mapM (checkAndSortRewriteLemmas e)
+  (← getModuleCandidates e).mapM (checkAndSortRewriteLemmas e)
 
 /-! ### Rewriting by hypotheses -/
 
