@@ -105,7 +105,7 @@ theorem aux_diff_lem (n : ℕ) :
             (((i : ℂ) + 1) ^ 2))
 
 lemma aux_u_lem (Z : Set ℂ_ℤ) (hZ : IsCompact Z) : ∃ u : ℕ → ℝ, Summable u ∧
-  ∀ (j : ℕ) z, z ∈ Z → (‖-z.1 ^ 2 / (j + 1) ^ 2‖) ≤ u j  := by
+    ∀ (j : ℕ) z, z ∈ Z → (‖-z.1 ^ 2 / (j + 1) ^ 2‖) ≤ u j  := by
   have hf : ContinuousOn (fun x : ℂ_ℤ => Complex.abs (-x.1 ^ 2)) Z := by
     apply ContinuousOn.comp
     let g := fun x : ℂ_ℤ => -x.1 ^ 2
@@ -321,7 +321,7 @@ theorem cot_series_rep (z : ℍ) :
     π * Complex.cot (π * z)  =  1 / z + ∑' n : ℕ+, (1 / ((z : ℂ) - n) + 1 / (z + n)) := by
   have := tsum_pnat_eq_tsum_add_one fun n => 1 / ((z : ℂ) - n) + 1 / (z + n)
   have h1 := cot_series_rep' z
-  simp [one_div, Nat.cast_add, algebraMap.coe_one] at *
+  simp only [one_div, Nat.cast_add, Nat.cast_one] at *
   rw [this, ← h1]
   ring
 
