@@ -337,7 +337,7 @@ theorem topLTTop {r : α → α → Prop} {s : β → β → Prop} {t : γ → �
 /-- Build a principal segment embedding from a principal segment defined by a given `a : α`. -/
 -- The explicit typing is required in order for `simp` to work properly.
 def ofElement {α : Type*} (r : α → α → Prop) (a : α) :
-    @PrincipalSeg (Subtype fun b => r b a) α (Subrel r _) r :=
+    @PrincipalSeg {b // r b a} α (Subrel r _) r :=
   ⟨Subrel.relEmbedding _ _, a, fun _ => ⟨fun h => ⟨⟨_, h⟩, rfl⟩, fun ⟨⟨_, h⟩, rfl⟩ => h⟩⟩
 
 @[simp]
@@ -351,8 +351,7 @@ theorem ofElement_top {α : Type*} (r : α → α → Prop) (a : α) : (ofElemen
 /-- For any principal segment `r ≺i s`, there is a `Subrel` of `s` order isomorphic to `r`. -/
 -- The explicit typing is required in order for `simp` to work properly.
 @[simps! symm_apply]
-noncomputable def subrelIso (f : r ≺i s) :
-    @RelIso (Subtype fun b => s b f.top) α (Subrel s _) r :=
+noncomputable def subrelIso (f : r ≺i s) : @RelIso {b // s b f.top} α (Subrel s _) r :=
   RelIso.symm
   { toEquiv := ((Equiv.ofInjective f f.injective).trans (Equiv.setCongr
       (funext fun _ ↦ propext f.down.symm))),

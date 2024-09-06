@@ -474,7 +474,7 @@ the elements of `α`. -/
 -- The explicit typing is required in order for `simp` to work properly.
 @[simps! symm_apply_coe]
 def enum (r : α → α → Prop) [IsWellOrder α r] :
-    @RelIso (Subtype fun o => o < type r) α (Subrel (· < · ) _) r :=
+    @RelIso {o // o < type r} α (Subrel (· < · ) _) r :=
   (typein.principalSeg r).subrelIso
 
 @[simp]
@@ -489,6 +489,7 @@ theorem enum_type {α β} {r : α → α → Prop} {s : β → β → Prop} [IsW
 @[simp]
 theorem enum_typein (r : α → α → Prop) [IsWellOrder α r] (a : α) :
     enum r ⟨typein r a, typein_lt_type r a⟩ = a :=
+  have : IsWellOrder {b // r b a} _ := Subrel.instIsWellOrderElem r _
   enum_type (PrincipalSeg.ofElement r a)
 
 theorem enum_lt_enum {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : {o // o < type r}} :
