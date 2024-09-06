@@ -10,7 +10,7 @@ import Mathlib.Algebra.CharP.Subring
 
 -- *Filippo* This should probably not be here
 lemma conj_nonComm_Algebra {D : Type*} [DivisionRing D] (s : ℕ) (a d : D) (ha : a ≠ 0) :
-  a⁻¹ * d ^ s * a = (a⁻¹ * d * a) ^ s := by
+    a⁻¹ * d ^ s * a = (a⁻¹ * d * a) ^ s := by
   let u : Dˣ := ⟨a, a⁻¹, mul_inv_cancel₀ ha, inv_mul_cancel₀ ha⟩
   exact (Units.conj_pow' u d s).symm
 
