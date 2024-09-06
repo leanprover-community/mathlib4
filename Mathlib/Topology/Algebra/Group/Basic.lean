@@ -1610,7 +1610,7 @@ instance [LocallyCompactSpace G] (N : Subgroup G) : LocallyCompactSpace (G ⧸ N
   obtain ⟨y, rfl⟩ : ∃ y, π y = x := Quot.exists_rep x
   have : π ⁻¹' n ∈ 𝓝 y := preimage_nhds_coinduced hn
   rcases local_compact_nhds this with ⟨s, s_mem, hs, s_comp⟩
-  exact ⟨π '' s, (QuotientGroup.isOpenMap_coe N).image_mem_nhds s_mem, mapsTo'.mp hs,
+  exact ⟨π '' s, QuotientGroup.isOpenMap_coe.image_mem_nhds s_mem, mapsTo'.mp hs,
     s_comp.image C⟩
 
 end
