@@ -49,7 +49,7 @@ inductive Key where
 private nonrec def Key.hash : Key → UInt64
   | .star id             => mixHash 7883 $ hash id
   | .opaque              => 342
-  | .const name nargs    => mixHash 5237 $ mixHash (hash name) (hash nargs)
+  | .const name nargs    => mixHash (hash name) (hash nargs)
   | .fvar fvarId nargs   => mixHash 8765 $ mixHash (hash fvarId) (hash nargs)
   | .bvar idx nargs      => mixHash 4323 $ mixHash (hash idx) (hash nargs)
   | .lit v               => mixHash 1879 $ hash v
