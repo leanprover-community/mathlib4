@@ -95,7 +95,7 @@ variable [Algebra.IsAlgebraic (Subring.center D) D]
 -- *Filippo* Change name
 -- This *should not* be private
 lemma exists_pow_mem_center_ofInseparable (p : ℕ) [Fact p.Prime] [CharP D p] (a : D)
-   (hinsep : ∀ x : D, IsSeparable k x → x ∈ k) : ∃ n, a ^ (p ^ n) ∈ k := by
+    (hinsep : ∀ x : D, IsSeparable k x → x ∈ k) : ∃ n, a ^ (p ^ n) ∈ k := by
   obtain ⟨n, g, hg, geqf⟩ := @Polynomial.exists_separable_of_irreducible k _ p _ (minpoly k a)
     (minpoly.irreducible (Algebra.IsIntegral.isIntegral a)) ((NeZero.ne' p).symm)
   have h1 : (Polynomial.aeval a) ((Polynomial.expand k (p ^ n)) g) = 0 := by
