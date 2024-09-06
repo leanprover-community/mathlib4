@@ -842,6 +842,4 @@ decreasing_by
   nth_rewrite 1 [eq_C_of_monomialOrderDegree_eq_zero _ hf0, hf0]
   simp 
     
-#printaxioms monomialOrderDiv   
-
 end MvPolynomial
