@@ -326,7 +326,7 @@ def cycleFactorsAux [DecidableEq α] [Fintype α] (l : List α) (f : Perm α)
             (h fun h : f y = y => by
               rw [mul_apply, h, Ne, inv_eq_iff_eq, cycleOf_apply] at hy
               split_ifs at hy <;> tauto))
-      ⟨cycleOf f x::m, by simp [List.prod_cons, hm.1],
+      ⟨cycleOf f x :: m, by simp [List.prod_cons, hm.1],
         fun g hg ↦ ((List.mem_cons).1 hg).elim (fun hg => hg ▸ isCycle_cycleOf _ hx) (hm.2.1 g),
         List.pairwise_cons.2
           ⟨fun g hg y =>
