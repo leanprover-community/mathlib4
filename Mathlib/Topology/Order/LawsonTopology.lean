@@ -166,7 +166,7 @@ lemma lawson_le_scott : lawson α ≤ scott α := inf_le_right
 
 lemma lawson_le_lower : lawson α ≤ lower α := inf_le_left
 
-lemma scottHausdorff_le_lawson : scottHausdorff α  ≤ lawson α :=
+lemma scottHausdorff_le_lawson : scottHausdorff α univ ≤ lawson α :=
   le_inf scottHausdorff_le_lower scottHausdorff_le_scott
 
 lemma lawsonClosed_of_scottClosed (s : Set α) (h : IsClosed (WithScott.ofScott ⁻¹' s)) :
@@ -188,7 +188,7 @@ lemma isLawson_le_isScott : L ≤ S := by
   rw [@IsScott.topology_eq α _ S _, @IsLawson.topology_eq_lawson α _ L _]
   exact inf_le_right
 
-lemma scottHausdorff_le_isLawson : scottHausdorff α ≤ L := by
+lemma scottHausdorff_le_isLawson : scottHausdorff α univ ≤ L := by
   rw [@IsLawson.topology_eq_lawson α _ L _]
   exact scottHausdorff_le_lawson
 
