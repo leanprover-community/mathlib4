@@ -11,7 +11,8 @@ import Mathlib.Tactic.FieldSimp
 /-!
 # Differential Fields
 
-This file defines the logarithmic derivative `logDeriv` and proves properties of it.
+This file defines the logarithmic derivative `Differential.logDeriv` and proves properties of it.
+This is defined algebraiclly, compared to `logDeriv` which is analytical.
 -/
 
 namespace Differential
@@ -35,20 +36,21 @@ lemma logDeriv_one : logDeriv (1 : R) = 0 := by
   unfold logDeriv
   simp
 
-lemma logDeriv_mul (h₁ : a ≠ 0) (h₂ : b ≠ 0) : logDeriv (a * b) = logDeriv a + logDeriv b := by
+lemma logDeriv_mul (ha : a ≠ 0) (hb : b ≠ 0) : logDeriv (a * b) = logDeriv a + logDeriv b := by
   unfold logDeriv
   field_simp
   ring
 
-lemma logDeriv_div (h₁ : a ≠ 0) (h₂ : b ≠ 0) : logDeriv (a / b) = logDeriv a - logDeriv b := by
+lemma logDeriv_div (ha : a ≠ 0) (hb : b ≠ 0) : logDeriv (a / b) = logDeriv a - logDeriv b := by
   unfold logDeriv
   field_simp [Derivation.leibniz_div]
   ring
 
-lemma logDeriv_npow (a : ℕ) : logDeriv (b ^ a) = a * logDeriv b := by
-  induction a with
+@[simp]
+lemma logDeriv_pow (n : ℕ) : logDeriv (b ^ n) = n * logDeriv b := by
+  induction n with
   | zero => simp
-  | succ a h2 =>
+  | succ n h2 =>
     obtain rfl | hb := eq_or_ne b 0
     · simp
     · rw [Nat.cast_add, Nat.cast_one, add_mul, one_mul, ← h2, pow_succ, logDeriv_mul] <;>
