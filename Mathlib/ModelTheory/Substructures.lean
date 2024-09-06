@@ -305,7 +305,7 @@ lemma mem_closed_of_isRelational [L.IsRelational] (s : Set M) : s ∈ (closure L
 
 @[simp]
 lemma mem_closure_iff_of_isRelational [L.IsRelational] (s : Set M) (m : M) :
-    m ∈ (closure L) s ↔ m ∈ s := by
+    m ∈ closure L s ↔ m ∈ s := by
   rw [← SetLike.mem_coe, ((closure L).mem_closed_iff s).1 (mem_closed_of_isRelational L s)]
 
 theorem _root_.Set.Countable.substructure_closure
