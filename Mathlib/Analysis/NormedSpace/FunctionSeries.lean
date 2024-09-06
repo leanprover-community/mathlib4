@@ -5,7 +5,6 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Normed.Group.InfiniteSum
 import Mathlib.Topology.Instances.ENNReal
-import Mathlib.Data.Finset.Basic
 
 /-!
 # Continuity of series of functions
