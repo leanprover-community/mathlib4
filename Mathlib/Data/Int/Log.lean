@@ -123,8 +123,8 @@ theorem log_one_right (b : ℕ) : log b (1 : R) = 0 := by
   rw [log_of_one_le_right _ le_rfl, Nat.floor_one, Nat.log_one_right, Int.ofNat_zero]
 
 @[simp]
-theorem log_zero_base (r : R) : log 0 r = 0 := by simp only [log, Nat.log_zero_left, Nat.cast_zero,
-    Nat.clog_zero_left, neg_zero, ite_self]
+theorem log_zero_base (r : R) : log 0 r = 0 := by
+  simp only [log, Nat.log_zero_left, Nat.cast_zero, Nat.clog_zero_left, neg_zero, ite_self]
 
 @[simp]
 theorem log_one_base (r : R) : log 1 r = 0 := by
