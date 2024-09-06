@@ -65,13 +65,15 @@ theorem mem_sieves_iff_hasEffectiveEpi (S : Sieve X) :
     ∃ (Y : C) (π : Y ⟶ X), EffectiveEpi π ∧ (S.arrows π) := by
   constructor
   · intro h
-    induction' h with Y T hS Y Y R S _ _ a b
-    · rcases hS with ⟨Y', π, h'⟩
+    induction h with
+    | of Y T hS =>
+      rcases hS with ⟨Y', π, h'⟩
       refine ⟨Y', π, h'.2, ?_⟩
       rcases h' with ⟨rfl, _⟩
       exact ⟨Y', 𝟙 Y', π, Presieve.ofArrows.mk (), (by simp)⟩
-    · exact ⟨Y, (𝟙 Y), inferInstance, by simp only [Sieve.top_apply, forall_const]⟩
-    · rcases a with ⟨Y₁, π, ⟨h₁,h₂⟩⟩
+    | top Y => exact ⟨Y, (𝟙 Y), inferInstance, by simp only [Sieve.top_apply, forall_const]⟩
+    | transitive Y R S _ _ a b =>
+      rcases a with ⟨Y₁, π, ⟨h₁,h₂⟩⟩
       choose Y' π' _ H using b h₂
       exact ⟨Y', π' ≫ π, inferInstance, (by simpa using H)⟩
   · exact regularTopology.mem_sieves_of_hasEffectiveEpi S

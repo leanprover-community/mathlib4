@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.MeasureTheory.Measure.NullMeasurable
 import Mathlib.MeasureTheory.MeasurableSpace.Embedding
+import Mathlib.MeasureTheory.OuterMeasure.BorelCantelli
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
 
 /-!
@@ -429,7 +430,7 @@ theorem measure_iUnion_eq_iSup [Countable ι] {s : ι → Set α} (hd : Directed
   replace hd : Directed (· ⊆ ·) t := ht ▸ hd.extend_bot Encodable.encode_injective
   suffices μ (⋃ n, t n) = ⨆ n, μ (t n) by
     simp only [← ht, Function.apply_extend μ, ← iSup_eq_iUnion,
-      iSup_extend_bot Encodable.encode_injective, (· ∘ ·), Pi.bot_apply, bot_eq_empty,
+      iSup_extend_bot Encodable.encode_injective, Function.comp_def, Pi.bot_apply, bot_eq_empty,
       measure_empty] at this
     exact this.trans (iSup_extend_bot Encodable.encode_injective _)
   clear! ι
@@ -587,66 +588,6 @@ theorem tendsto_measure_biInter_gt {ι : Type*} [LinearOrder ι] [TopologicalSpa
   obtain ⟨n, hn⟩ : ∃ n, μ (s (u n)) < L := ((tendsto_order.1 A).2 _ hL).exists
   have : Ioc a (u n) ∈ 𝓝[>] a := Ioc_mem_nhdsWithin_Ioi ⟨le_rfl, u_pos n⟩
   filter_upwards [this] with r hr using lt_of_le_of_lt (measure_mono (hm _ _ hr.1 hr.2)) hn
-
-/-- One direction of the **Borel-Cantelli lemma** (sometimes called the "*first* Borel-Cantelli
-lemma"): if (sᵢ) is a sequence of sets such that `∑ μ sᵢ` is finite, then the limit superior of the
-`sᵢ` is a null set.
-
-Note: for the *second* Borel-Cantelli lemma (applying to independent sets in a probability space),
-see `ProbabilityTheory.measure_limsup_eq_one`. -/
-theorem measure_limsup_eq_zero {s : ℕ → Set α} (hs : (∑' i, μ (s i)) ≠ ∞) :
-    μ (limsup s atTop) = 0 := by
-  -- First we replace the sequence `sₙ` with a sequence of measurable sets `tₙ ⊇ sₙ` of the same
-  -- measure.
-  set t : ℕ → Set α := fun n => toMeasurable μ (s n)
-  have ht : (∑' i, μ (t i)) ≠ ∞ := by simpa only [t, measure_toMeasurable] using hs
-  suffices μ (limsup t atTop) = 0 by
-    have A : s ≤ t := fun n => subset_toMeasurable μ (s n)
-    -- TODO default args fail
-    exact measure_mono_null (limsup_le_limsup (Eventually.of_forall (Pi.le_def.mp A))) this
-  -- Next we unfold `limsup` for sets and replace equality with an inequality
-  simp only [limsup_eq_iInf_iSup_of_nat', Set.iInf_eq_iInter, Set.iSup_eq_iUnion, ←
-    nonpos_iff_eq_zero]
-  -- Finally, we estimate `μ (⋃ i, t (i + n))` by `∑ i', μ (t (i + n))`
-  refine
-    le_of_tendsto_of_tendsto'
-      (tendsto_measure_iInter
-        (fun i => .iUnion fun b => (measurableSet_toMeasurable _ _).nullMeasurableSet) ?_
-        ⟨0, ne_top_of_le_ne_top ht (measure_iUnion_le t)⟩)
-      (ENNReal.tendsto_sum_nat_add (μ ∘ t) ht) fun n => measure_iUnion_le _
-  intro n m hnm x
-  simp only [Set.mem_iUnion]
-  exact fun ⟨i, hi⟩ => ⟨i + (m - n), by simpa only [add_assoc, tsub_add_cancel_of_le hnm] using hi⟩
-
-theorem measure_liminf_eq_zero {s : ℕ → Set α} (h : (∑' i, μ (s i)) ≠ ∞) :
-    μ (liminf s atTop) = 0 := by
-  rw [← le_zero_iff]
-  have : liminf s atTop ≤ limsup s atTop := liminf_le_limsup
-  exact (μ.mono this).trans (by simp [measure_limsup_eq_zero h])
-
--- Need to specify `α := Set α` below because of diamond; see #19041
-theorem limsup_ae_eq_of_forall_ae_eq (s : ℕ → Set α) {t : Set α}
-    (h : ∀ n, s n =ᵐ[μ] t) : limsup (α := Set α) s atTop =ᵐ[μ] t := by
-  simp_rw [ae_eq_set] at h ⊢
-  constructor
-  · rw [atTop.limsup_sdiff s t]
-    apply measure_limsup_eq_zero
-    simp [h]
-  · rw [atTop.sdiff_limsup s t]
-    apply measure_liminf_eq_zero
-    simp [h]
-
--- Need to specify `α := Set α` above because of diamond; see #19041
-theorem liminf_ae_eq_of_forall_ae_eq (s : ℕ → Set α) {t : Set α}
-    (h : ∀ n, s n =ᵐ[μ] t) : liminf (α := Set α) s atTop =ᵐ[μ] t := by
-  simp_rw [ae_eq_set] at h ⊢
-  constructor
-  · rw [atTop.liminf_sdiff s t]
-    apply measure_liminf_eq_zero
-    simp [h]
-  · rw [atTop.sdiff_liminf s t]
-    apply measure_limsup_eq_zero
-    simp [h]
 
 theorem measure_if {x : β} {t : Set β} {s : Set α} [Decidable (x ∈ t)] :
     μ (if x ∈ t then s else ∅) = indicator t (fun _ => μ s) x := by split_ifs with h <;> simp [h]
@@ -2028,3 +1969,5 @@ theorem quasiMeasurePreserving_symm (μ : Measure α) (e : α ≃ᵐ β) :
 end MeasurableEquiv
 
 end
+
+set_option linter.style.longFile 2000

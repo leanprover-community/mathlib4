@@ -340,7 +340,7 @@ theorem restrict_top_presheaf (X : PresheafedSpace C) :
     (X.restrict (Opens.openEmbedding ⊤)).presheaf =
       (Opens.inclusionTopIso X.carrier).inv _* X.presheaf := by
   dsimp
-  rw [Opens.inclusion_top_functor X.carrier]
+  rw [Opens.inclusion'_top_functor X.carrier]
   rfl
 
 theorem ofRestrict_top_c (X : PresheafedSpace C) :
