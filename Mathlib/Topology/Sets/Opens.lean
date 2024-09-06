@@ -118,14 +118,18 @@ def Simps.coe (U : Opens α) : Set α := U
 initialize_simps_projections Opens (carrier → coe)
 
 /-- The interior of a set, as an element of `Opens`. -/
-nonrec def interior (s : Set α) : Opens α :=
+@[simps]
+protected def interior (s : Set α) : Opens α :=
   ⟨interior s, isOpen_interior⟩
 
-theorem gc : GaloisConnection ((↑) : Opens α → Set α) interior := fun U _ =>
+@[simp]
+theorem mem_interior {s : Set α} {x : α} : x ∈ Opens.interior s ↔ x ∈ _root_.interior s := .rfl
+
+theorem gc : GaloisConnection ((↑) : Opens α → Set α) Opens.interior := fun U _ =>
   ⟨fun h => interior_maximal h U.isOpen, fun h => le_trans h interior_subset⟩
 
 /-- The galois coinsertion between sets and opens. -/
-def gi : GaloisCoinsertion (↑) (@interior α _) where
+def gi : GaloisCoinsertion (↑) (@Opens.interior α _) where
   choice s hs := ⟨s, interior_eq_iff_isOpen.mp <| le_antisymm interior_subset hs⟩
   gc := gc
   u_l_le _ := interior_subset
@@ -349,6 +353,9 @@ theorem comap_mono (f : C(α, β)) {s t : Opens β} (h : s ≤ t) : comap f s �
 @[simp]
 theorem coe_comap (f : C(α, β)) (U : Opens β) : ↑(comap f U) = f ⁻¹' U :=
   rfl
+
+@[simp]
+theorem mem_comap {f : C(α, β)} {U : Opens β} {x : α} : x ∈ comap f U ↔ f x ∈ U := .rfl
 
 protected theorem comap_comp (g : C(β, γ)) (f : C(α, β)) :
     comap (g.comp f) = (comap f).comp (comap g) :=
