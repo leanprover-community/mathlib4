@@ -34,7 +34,7 @@ Complex measure
 
 noncomputable section
 
-open scoped Classical MeasureTheory ENNReal NNReal
+open scoped MeasureTheory ENNReal NNReal
 
 variable {α β : Type*} {m : MeasurableSpace α}
 
@@ -54,7 +54,7 @@ def re : ComplexMeasure α →ₗ[ℝ] SignedMeasure α :=
 def im : ComplexMeasure α →ₗ[ℝ] SignedMeasure α :=
   mapRangeₗ Complex.imCLM Complex.continuous_im
 
-/-- Given `s` and `t` signed measures, `s + it` is a complex measure-/
+/-- Given `s` and `t` signed measures, `s + it` is a complex measure -/
 @[simps!]
 def _root_.MeasureTheory.SignedMeasure.toComplexMeasure (s t : SignedMeasure α) :
     ComplexMeasure α where

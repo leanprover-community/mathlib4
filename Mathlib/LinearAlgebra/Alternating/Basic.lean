@@ -6,6 +6,7 @@ Authors: Eric Wieser, Zhangir Azerbayev
 import Mathlib.GroupTheory.Perm.Sign
 import Mathlib.Data.Fintype.Perm
 import Mathlib.LinearAlgebra.Multilinear.Basis
+import Mathlib.LinearAlgebra.LinearIndependent
 
 /-!
 # Alternating Maps
@@ -124,9 +125,6 @@ theorem coe_inj {f g : M [⋀^ι]→ₗ[R] N} : (f : (ι → M) → N) = g ↔ f
 @[ext]
 theorem ext {f f' : M [⋀^ι]→ₗ[R] N} (H : ∀ x, f x = f' x) : f = f' :=
   DFunLike.ext _ _ H
-
-theorem ext_iff {f g : M [⋀^ι]→ₗ[R] N} : f = g ↔ ∀ x, f x = g x :=
-  ⟨fun h _ => h ▸ rfl, fun h => ext h⟩
 
 attribute [coe] AlternatingMap.toMultilinearMap
 
@@ -505,7 +503,8 @@ theorem compLinearMap_id (f : M [⋀^ι]→ₗ[R] N) : f.compLinearMap LinearMap
 /-- Composing with a surjective linear map is injective. -/
 theorem compLinearMap_injective (f : M₂ →ₗ[R] M) (hf : Function.Surjective f) :
     Function.Injective fun g : M [⋀^ι]→ₗ[R] N => g.compLinearMap f := fun g₁ g₂ h =>
-  ext fun x => by simpa [Function.surjInv_eq hf] using ext_iff.mp h (Function.surjInv hf ∘ x)
+  ext fun x => by
+    simpa [Function.surjInv_eq hf] using AlternatingMap.ext_iff.mp h (Function.surjInv hf ∘ x)
 
 theorem compLinearMap_inj (f : M₂ →ₗ[R] M) (hf : Function.Surjective f)
     (g₁ g₂ : M [⋀^ι]→ₗ[R] N) : g₁.compLinearMap f = g₂.compLinearMap f ↔ g₁ = g₂ :=
@@ -657,10 +656,10 @@ def domDomCongrEquiv (σ : ι ≃ ι') : M [⋀^ι]→ₗ[R] N ≃+ M [⋀^ι']�
   invFun := domDomCongr σ.symm
   left_inv f := by
     ext
-    simp [Function.comp]
+    simp [Function.comp_def]
   right_inv m := by
     ext
-    simp [Function.comp]
+    simp [Function.comp_def]
   map_add' := domDomCongr_add σ
 
 section DomDomLcongr
@@ -672,8 +671,8 @@ variable (S : Type*) [Semiring S] [Module S N] [SMulCommClass R S N]
 def domDomCongrₗ (σ : ι ≃ ι') : M [⋀^ι]→ₗ[R] N ≃ₗ[S] M [⋀^ι']→ₗ[R] N where
   toFun := domDomCongr σ
   invFun := domDomCongr σ.symm
-  left_inv f := by ext; simp [Function.comp]
-  right_inv m := by ext; simp [Function.comp]
+  left_inv f := by ext; simp [Function.comp_def]
+  right_inv m := by ext; simp [Function.comp_def]
   map_add' := domDomCongr_add σ
   map_smul' := domDomCongr_smul σ
 

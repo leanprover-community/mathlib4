@@ -44,7 +44,7 @@ open scoped RealInnerProductSpace
 
 namespace OrthonormalBasis
 
-variable {ι : Type*} [Fintype ι] [DecidableEq ι] [ne : Nonempty ι] (e f : OrthonormalBasis ι ℝ E)
+variable {ι : Type*} [Fintype ι] [DecidableEq ι] (e f : OrthonormalBasis ι ℝ E)
   (x : Orientation ℝ E ι)
 
 /-- The change-of-basis matrix between two orthonormal bases with the same orientation has
@@ -89,6 +89,8 @@ theorem det_eq_neg_det_of_opposite_orientation (h : e.toBasis.orientation ≠ f.
   -- Porting note: added `neg_one_smul` with explicit type
   simp [e.det_to_matrix_orthonormalBasis_of_opposite_orientation f h,
     neg_one_smul ℝ (M := E [⋀^ι]→ₗ[ℝ] ℝ)]
+
+variable [Nonempty ι]
 
 section AdjustToOrientation
 

@@ -3,8 +3,8 @@ Copyright (c) 2018 Andreas Swerdlow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andreas Swerdlow
 -/
-import Mathlib.LinearAlgebra.Basis
 import Mathlib.LinearAlgebra.BilinearMap
+import Mathlib.LinearAlgebra.Basis.Basic
 
 /-!
 # Sesquilinear maps
@@ -112,7 +112,7 @@ theorem ortho_smul_right {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] V} {x y}
   · rw [map_smulₛₗ, H, smul_zero]
   · rw [map_smulₛₗ, smul_eq_zero] at H
     cases' H with H H
-    · simp at H
+    · simp only [map_eq_zero] at H
       exfalso
       exact ha H
     · exact H
@@ -149,18 +149,20 @@ def IsRefl (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M) : Prop :=
 
 namespace IsRefl
 
+section
 variable (H : B.IsRefl)
+include H
 
 theorem eq_zero : ∀ {x y}, B x y = 0 → B y x = 0 := fun {x y} ↦ H x y
 
 theorem ortho_comm {x y} : IsOrtho B x y ↔ IsOrtho B y x :=
   ⟨eq_zero H, eq_zero H⟩
 
-theorem domRestrict (H : B.IsRefl) (p : Submodule R₁ M₁) : (B.domRestrict₁₂ p p).IsRefl :=
+theorem domRestrict (p : Submodule R₁ M₁) : (B.domRestrict₁₂ p p).IsRefl :=
   fun _ _ ↦ by
   simp_rw [domRestrict₁₂_apply]
   exact H _ _
-
+end
 @[simp]
 theorem flip_isRefl_iff : B.flip.IsRefl ↔ B.IsRefl :=
   ⟨fun h x y H ↦ h y x ((B.flip_apply _ _).trans H), fun h x y ↦ h y x⟩
@@ -239,6 +241,7 @@ def IsAlt (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M) : Prop :=
   ∀ x, B x x = 0
 
 variable (H : B.IsAlt)
+include H
 
 theorem IsAlt.self_eq_zero (x : M₁) : B x x = 0 :=
   H x
@@ -259,20 +262,18 @@ namespace IsAlt
 variable [CommSemiring R] [AddCommGroup M] [Module R M] [CommSemiring R₁] [AddCommMonoid M₁]
   [Module R₁ M₁] {I₁ : R₁ →+* R} {I₂ : R₁ →+* R} {I : R₁ →+* R} {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M}
 
-variable (H : B.IsAlt)
-
-theorem neg (x y : M₁) : -B x y = B y x := by
+theorem neg (H : B.IsAlt) (x y : M₁) : -B x y = B y x := by
   have H1 : B (y + x) (y + x) = 0 := self_eq_zero H (y + x)
   simp? [map_add, self_eq_zero H] at H1 says
     simp only [map_add, add_apply, self_eq_zero H, zero_add, add_zero] at H1
   rw [add_eq_zero_iff_neg_eq] at H1
   exact H1
 
-theorem isRefl : B.IsRefl := by
+theorem isRefl (H : B.IsAlt) : B.IsRefl := by
   intro x y h
   rw [← neg H, h, neg_zero]
 
-theorem ortho_comm {x y} : IsOrtho B x y ↔ IsOrtho B y x :=
+theorem ortho_comm (H : B.IsAlt) {x y} : IsOrtho B x y ↔ IsOrtho B y x :=
   H.isRefl.ortho_comm
 
 end IsAlt
@@ -459,7 +460,7 @@ end AddCommGroup
 
 end AdjointPair
 
-/-! ### Self-adjoint pairs-/
+/-! ### Self-adjoint pairs -/
 
 
 section SelfadjointPair
@@ -703,7 +704,7 @@ theorem IsOrthoᵢ.not_isOrtho_basis_self_of_separatingLeft [Nontrivial R]
   intro ho
   refine v.ne_zero i (hB (v i) fun m ↦ ?_)
   obtain ⟨vi, rfl⟩ := v.repr.symm.surjective m
-  rw [Basis.repr_symm_apply, Finsupp.total_apply, Finsupp.sum, map_sum]
+  rw [Basis.repr_symm_apply, Finsupp.linearCombination_apply, Finsupp.sum, map_sum]
   apply Finset.sum_eq_zero
   rintro j -
   rw [map_smulₛₗ]
@@ -732,7 +733,8 @@ theorem IsOrthoᵢ.separatingLeft_of_not_isOrtho_basis_self [NoZeroSMulDivisors 
   ext i
   rw [Finsupp.zero_apply]
   specialize hB (v i)
-  simp_rw [Basis.repr_symm_apply, Finsupp.total_apply, Finsupp.sum, map_sum₂, map_smulₛₗ₂] at hB
+  simp_rw [Basis.repr_symm_apply, Finsupp.linearCombination_apply, Finsupp.sum, map_sum₂,
+           map_smulₛₗ₂] at hB
   rw [Finset.sum_eq_single i] at hB
   · exact (smul_eq_zero.mp hB).elim _root_.id (h i).elim
   · intro j _hj hij

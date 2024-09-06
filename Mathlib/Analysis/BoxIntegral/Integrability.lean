@@ -21,8 +21,7 @@ We deduce that the same is true for the Riemann integral for continuous function
 integral, McShane integral, Bochner integral
 -/
 
-
-open scoped Classical NNReal ENNReal Topology
+open scoped NNReal ENNReal Topology
 
 universe u v
 
@@ -63,6 +62,7 @@ theorem hasIntegralIndicatorConst (l : IntegrationParams) (hl : l.bRiemann = fal
       nhds_basis_closedBall.mem_iff.1 (hFc.isOpen_compl.mem_nhds fun hx' => hx.2 (hFs hx').1)
     exact ⟨⟨r, hr₀⟩, hr⟩
   choose! rs' hrs'F using this
+  classical
   set r : (ι → ℝ) → Ioi (0 : ℝ) := s.piecewise rs rs'
   refine ⟨fun _ => r, fun c => l.rCond_of_bRiemann_eq_false hl, fun c π hπ hπp => ?_⟩; rw [mul_comm]
   /- Then the union of boxes `J ∈ π` such that `π.tag ∈ s` includes `F` and is included by `U`,
@@ -152,7 +152,7 @@ theorem HasIntegral.of_aeEq_zero {l : IntegrationParams} {I : Box ι} {f : (ι �
   exact (mul_le_mul_left' this.le _).trans ENNReal.mul_div_le
 
 /-- If `f` has integral `y` on a box `I` with respect to a locally finite measure `μ` and `g` is
-a.e. equal to `f` on `I`, then `g` has the same integral on `I`.  -/
+a.e. equal to `f` on `I`, then `g` has the same integral on `I`. -/
 theorem HasIntegral.congr_ae {l : IntegrationParams} {I : Box ι} {y : E} {f g : (ι → ℝ) → E}
     {μ : Measure (ι → ℝ)} [IsLocallyFiniteMeasure μ]
     (hf : HasIntegral.{u, v, v} I l f μ.toBoxAdditive.toSMul y) (hfg : f =ᵐ[μ.restrict I] g)
@@ -191,7 +191,7 @@ end SimpleFunc
 open TopologicalSpace
 
 /-- If `f : ℝⁿ → E` is Bochner integrable w.r.t. a locally finite measure `μ` on a rectangular box
-`I`, then it is McShane integrable on `I` with the same integral.  -/
+`I`, then it is McShane integrable on `I` with the same integral. -/
 theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {μ : Measure (ι → ℝ)}
     [IsLocallyFiniteMeasure μ] {I : Box ι} (hf : IntegrableOn f I μ) (l : IntegrationParams)
     (hl : l.bRiemann = false) :
@@ -294,7 +294,7 @@ theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {
       integral_finset_biUnion π.boxes (fun J _ => J.measurableSet_coe) π.pairwiseDisjoint (hfgi _)]
     refine dist_sum_sum_le_of_le _ fun J hJ => ?_
     rw [dist_eq_norm, ← integral_sub (hfi _ J hJ) (hgi J hJ)]
-    refine norm_integral_le_of_norm_le (hfgi _ J hJ) (eventually_of_forall fun x => ?_)
+    refine norm_integral_le_of_norm_le (hfgi _ J hJ) (Eventually.of_forall fun x => ?_)
     exact hfg_mono x (hNx (π.tag J))
 
 /-- If `f : ℝⁿ → E` is continuous on a rectangular box `I`, then it is Box integrable on `I`

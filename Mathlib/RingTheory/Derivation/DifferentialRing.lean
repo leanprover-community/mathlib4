@@ -12,11 +12,9 @@ This file defines derivations from a commutative ring to itself as a typeclass, 
 use the x′ notation for the derivative of x.
 -/
 
-/--
-A derivation from a ring to itself, as a typeclass.
--/
+/-- A derivation from a ring to itself, as a typeclass. -/
 class Differential (R : Type*) [CommRing R] where
-  /-- The `Derivation` assosiated with the ring. -/
+  /-- The `Derivation` associated with the ring. -/
   deriv : Derivation ℤ R R
 
 @[inherit_doc]
@@ -72,21 +70,19 @@ instance (A : Type*) [CommRing A] [Differential A] : DifferentialAlgebra A A whe
 instance (A : Type*) [CommRing A] [Differential A] : Differential.ContainConstants A A where
   mem_range_of_deriv_eq_zero {x} _ := ⟨x, rfl⟩
 
-/--
-Transfer a `Differential` instance accross a `RingEquiv`.
--/
+/-- Transfer a `Differential` instance across a `RingEquiv`. -/
 @[reducible]
-def Differential.equiv {R R2 : Type*} [CommRing R] [CommRing R2] [Differential R2]
-    (h : R ≃+* R2) : Differential R :=
+def Differential.equiv {R R₂ : Type*} [CommRing R] [CommRing R₂] [Differential R₂]
+    (h : R ≃+* R₂) : Differential R :=
   ⟨Derivation.mk' (h.symm.toAddMonoidHom.toIntLinearMap ∘ₗ
     Differential.deriv.toLinearMap ∘ₗ h.toAddMonoidHom.toIntLinearMap) (by simp)⟩
 
 /--
-Transfer a `DifferentialAlgebra` instance accross a `AlgEquiv`.
+Transfer a `DifferentialAlgebra` instance across a `AlgEquiv`.
 -/
 lemma DifferentialAlgebra.equiv {A : Type*} [CommRing A] [Differential A]
-    {R R2 : Type*} [CommRing R] [CommRing R2] [Differential R2] [Algebra A R]
-    [Algebra A R2] [DifferentialAlgebra A R2] (h : R ≃ₐ[A] R2) :
+    {R R₂ : Type*} [CommRing R] [CommRing R₂] [Differential R₂] [Algebra A R]
+    [Algebra A R₂] [DifferentialAlgebra A R₂] (h : R ≃ₐ[A] R₂) :
     letI := Differential.equiv h.toRingEquiv
     DifferentialAlgebra A R :=
   letI := Differential.equiv h.toRingEquiv

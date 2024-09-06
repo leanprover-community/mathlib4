@@ -5,6 +5,7 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Even
 import Mathlib.Algebra.Group.Units
+import Mathlib.Data.Nat.Sqrt
 
 /-!
 # The natural numbers form a monoid
@@ -96,7 +97,7 @@ lemma not_even_iff : ¬ Even n ↔ n % 2 = 1 := by rw [even_iff, mod_two_ne_zero
 @[simp] lemma not_even_one : ¬Even 1 := by simp [even_iff]
 
 @[parity_simps] lemma even_add : Even (m + n) ↔ (Even m ↔ Even n) := by
-  cases' mod_two_eq_zero_or_one m with h₁ h₁ <;> cases' mod_two_eq_zero_or_one n with h₂ h₂ <;>
+  rcases mod_two_eq_zero_or_one m with h₁ | h₁ <;> rcases mod_two_eq_zero_or_one n with h₂ | h₂ <;>
     simp [even_iff, h₁, h₂, Nat.add_mod]
 
 @[parity_simps] lemma even_add_one : Even (n + 1) ↔ ¬Even n := by simp [even_add]
@@ -117,13 +118,13 @@ lemma two_not_dvd_two_mul_sub_one : ∀ {n}, 0 < n → ¬2 ∣ 2 * n - 1
   by_cases h : Even n <;> simp [h]
 
 @[parity_simps] lemma even_mul : Even (m * n) ↔ Even m ∨ Even n := by
-  cases' mod_two_eq_zero_or_one m with h₁ h₁ <;> cases' mod_two_eq_zero_or_one n with h₂ h₂ <;>
+  rcases mod_two_eq_zero_or_one m with h₁ | h₁ <;> rcases mod_two_eq_zero_or_one n with h₂ | h₂ <;>
     simp [even_iff, h₁, h₂, Nat.mul_mod]
 
 /-- If `m` and `n` are natural numbers, then the natural number `m^n` is even
 if and only if `m` is even and `n` is positive. -/
 @[parity_simps] lemma even_pow : Even (m ^ n) ↔ Even m ∧ n ≠ 0 := by
-  induction' n with n ih <;> simp (config := { contextual := true }) [*, pow_succ', even_mul]
+  induction n <;> simp (config := { contextual := true }) [*, pow_succ', even_mul]
 
 lemma even_pow' (h : n ≠ 0) : Even (m ^ n) ↔ Even m := even_pow.trans <| and_iff_left h
 

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Algebra.Unitization
-import Mathlib.Analysis.NormedSpace.ProdLp
+import Mathlib.Analysis.Normed.Lp.ProdLp
 
 /-! # Unitization equipped with the $L^1$ norm
 
@@ -24,7 +24,7 @@ non-unital Banach algebra is compact, which can be established by passing to the
 -/
 
 variable (𝕜 A : Type*) [NormedField 𝕜] [NonUnitalNormedRing A]
-variable [NormedSpace 𝕜 A] [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A]
+variable [NormedSpace 𝕜 A]
 
 namespace WithLp
 
@@ -78,6 +78,8 @@ lemma unitization_isometry_inr :
   AddMonoidHomClass.isometry_of_norm
     ((WithLp.linearEquiv 1 𝕜 (Unitization 𝕜 A)).symm.comp <| Unitization.inrHom 𝕜 A)
     unitization_norm_inr
+
+variable [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A]
 
 instance instUnitizationRing : Ring (WithLp 1 (Unitization 𝕜 A)) :=
   inferInstanceAs (Ring (Unitization 𝕜 A))

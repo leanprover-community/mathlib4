@@ -123,7 +123,7 @@ instance : Category (Bimod A B) where
 -- Porting note: added because `Hom.ext` is not triggered automatically
 @[ext]
 lemma hom_ext {M N : Bimod A B} (f g : M ⟶ N) (h : f.hom = g.hom) : f = g :=
-  Hom.ext _ _ h
+  Hom.ext h
 
 @[simp]
 theorem id_hom' (M : Bimod A B) : (𝟙 M : Hom M M).hom = 𝟙 M.X :=

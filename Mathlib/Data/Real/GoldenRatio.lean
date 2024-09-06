@@ -189,7 +189,7 @@ theorem Real.coe_fib_eq' :
     · simp
     · simp only [goldenRatio, goldenConj]
       ring_nf
-      rw [mul_inv_cancel]; norm_num
+      rw [mul_inv_cancel₀]; norm_num
   · exact fib_isSol_fibRec
   · -- Porting note: Rewrote this proof
     suffices LinearRecurrence.IsSolution fibRec
@@ -211,7 +211,7 @@ theorem fib_golden_conj_exp (n : ℕ) : Nat.fib (n + 1) - φ * Nat.fib n = ψ ^ 
   rw [mul_div, div_sub_div_same, mul_sub, ← pow_succ']
   ring_nf
   have nz : sqrt 5 ≠ 0 := by norm_num
-  rw [← (mul_inv_cancel nz).symm, one_mul]
+  rw [← (mul_inv_cancel₀ nz).symm, one_mul]
 
 /-- Relationship between the Fibonacci Sequence, Golden Ratio and its exponents --/
 theorem fib_golden_exp' (n : ℕ) : φ * Nat.fib (n + 1) + Nat.fib n = φ ^ (n + 1) := by

@@ -35,10 +35,7 @@ and finally quotienting by the reducibility relation.
 
 -/
 
-
-open Set Classical Function
-
-attribute [local instance] propDecidable
+open Set Function
 
 namespace CategoryTheory
 
@@ -83,10 +80,11 @@ theorem congr_reverse {X Y : Paths <| Quiver.Symmetrify V} (p q : X ⟶ Y) :
     Quiver.Path.reverse_comp, Quiver.reverse_reverse, Quiver.Path.reverse_toPath,
     Quiver.Path.comp_assoc] using this
 
+open Relation in
 theorem congr_comp_reverse {X Y : Paths <| Quiver.Symmetrify V} (p : X ⟶ Y) :
     Quot.mk (@Quotient.CompClosure _ _ redStep _ _) (p ≫ p.reverse) =
       Quot.mk (@Quotient.CompClosure _ _ redStep _ _) (𝟙 X) := by
-  apply Quot.EqvGen_sound
+  apply Quot.eqvGen_sound
   induction' p with a b q f ih
   · apply EqvGen.refl
   · simp only [Quiver.Path.reverse]

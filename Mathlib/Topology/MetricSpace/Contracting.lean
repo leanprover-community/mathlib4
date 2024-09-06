@@ -28,8 +28,6 @@ of convergence, and some properties of the map sending a contracting map to its 
 contracting map, fixed point, Banach fixed point theorem
 -/
 
-
-open scoped Classical
 open NNReal Topology ENNReal Filter Function
 
 variable {α : Type*}
@@ -40,7 +38,7 @@ def ContractingWith [EMetricSpace α] (K : ℝ≥0) (f : α → α) :=
 
 namespace ContractingWith
 
-variable [EMetricSpace α] [cs : CompleteSpace α] {K : ℝ≥0} {f : α → α}
+variable [EMetricSpace α] {K : ℝ≥0} {f : α → α}
 
 open EMetric Set
 
@@ -79,6 +77,9 @@ restriction of `f` to `s` is `ContractingWith K` as well. -/
 theorem restrict (hf : ContractingWith K f) {s : Set α} (hs : MapsTo f s s) :
     ContractingWith K (hs.restrict f s s) :=
   ⟨hf.1, fun x y ↦ hf.2 x y⟩
+
+section
+variable [CompleteSpace α]
 
 /-- Banach fixed-point theorem, contraction mapping theorem, `EMetricSpace` version.
 A contracting map on a complete metric space has a fixed point.
@@ -129,7 +130,7 @@ theorem edist_efixedPoint_le (hf : ContractingWith K f) {x : α} (hx : edist x (
 theorem edist_efixedPoint_lt_top (hf : ContractingWith K f) {x : α} (hx : edist x (f x) ≠ ∞) :
     edist x (efixedPoint f hf x hx) < ∞ :=
   (hf.edist_efixedPoint_le hx).trans_lt
-    (ENNReal.mul_lt_top hx <| ENNReal.inv_ne_top.2 hf.one_sub_K_ne_zero)
+    (ENNReal.mul_ne_top hx <| ENNReal.inv_ne_top.2 hf.one_sub_K_ne_zero).lt_top
 
 theorem efixedPoint_eq_of_edist_lt_top (hf : ContractingWith K f) {x : α} (hx : edist x (f x) ≠ ∞)
     {y : α} (hy : edist y (f y) ≠ ∞) (h : edist x y ≠ ∞) :
@@ -142,6 +143,8 @@ theorem efixedPoint_eq_of_edist_lt_top (hf : ContractingWith K f) {x : α} (hx :
     exact hf.edist_efixedPoint_lt_top hx
   trans y
   exacts [lt_top_iff_ne_top.2 h, hf.edist_efixedPoint_lt_top hy]
+
+end
 
 /-- Banach fixed-point theorem for maps contracting on a complete subset. -/
 theorem exists_fixedPoint' {s : Set α} (hsc : IsComplete s) (hsf : MapsTo f s s)
@@ -202,7 +205,7 @@ theorem edist_efixedPoint_lt_top' {s : Set α} (hsc : IsComplete s) (hsf : MapsT
     (hf : ContractingWith K <| hsf.restrict f s s) {x : α} (hxs : x ∈ s) (hx : edist x (f x) ≠ ∞) :
     edist x (efixedPoint' f hsc hsf hf x hxs hx) < ∞ :=
   (hf.edist_efixedPoint_le' hsc hsf hxs hx).trans_lt
-    (ENNReal.mul_lt_top hx <| ENNReal.inv_ne_top.2 hf.one_sub_K_ne_zero)
+    (ENNReal.mul_ne_top hx <| ENNReal.inv_ne_top.2 hf.one_sub_K_ne_zero).lt_top
 
 /-- If a globally contracting map `f` has two complete forward-invariant sets `s`, `t`,
 and `x ∈ s` is at a finite distance from `y ∈ t`, then the `efixedPoint'` constructed by `x`
@@ -230,17 +233,21 @@ end ContractingWith
 
 namespace ContractingWith
 
-variable [MetricSpace α] {K : ℝ≥0} {f : α → α} (hf : ContractingWith K f)
+variable [MetricSpace α] {K : ℝ≥0} {f : α → α}
 
 theorem one_sub_K_pos (hf : ContractingWith K f) : (0 : ℝ) < 1 - K :=
   sub_pos.2 hf.1
+
+section
+variable (hf : ContractingWith K f)
+include hf
 
 theorem dist_le_mul (x y : α) : dist (f x) (f y) ≤ K * dist x y :=
   hf.toLipschitzWith.dist_le_mul x y
 
 theorem dist_inequality (x y) : dist x y ≤ (dist x (f x) + dist y (f y)) / (1 - K) :=
   suffices dist x y ≤ dist x (f x) + dist y (f y) + K * dist x y by
-    rwa [le_div_iff hf.one_sub_K_pos, mul_comm, _root_.sub_mul, one_mul, sub_le_iff_le_add]
+    rwa [le_div_iff₀ hf.one_sub_K_pos, mul_comm, _root_.sub_mul, one_mul, sub_le_iff_le_add]
   calc
     dist x y ≤ dist x (f x) + dist y (f y) + dist (f x) (f y) := dist_triangle4_right _ _ _ _
     _ ≤ dist x (f x) + dist y (f y) + K * dist x y := add_le_add_left (hf.dist_le_mul _ _) _
@@ -300,6 +307,10 @@ theorem tendsto_iterate_fixedPoint (x) :
 theorem fixedPoint_lipschitz_in_map {g : α → α} (hg : ContractingWith K g) {C}
     (hfg : ∀ z, dist (f z) (g z) ≤ C) : dist (fixedPoint f hf) (fixedPoint g hg) ≤ C / (1 - K) :=
   hf.dist_fixedPoint_fixedPoint_of_dist_le' g hf.fixedPoint_isFixedPt hg.fixedPoint_isFixedPt hfg
+
+end
+
+variable [Nonempty α] [CompleteSpace α]
 
 /-- If a map `f` has a contracting iterate `f^[n]`, then the fixed point of `f^[n]` is also a fixed
 point of `f`. -/
