@@ -123,7 +123,7 @@ theorem MeasurableSet.residualEq_isOpen [MeasurableSpace α] [BorelSpace α] (h 
   apply h.induction_on_open (fun s hs => ⟨s, hs, EventuallyEq.rfl⟩)
   · rintro s - ⟨u, uo, su⟩
     refine ⟨(closure u)ᶜ, isClosed_closure.isOpen_compl,
-      EventuallyEq.compl (su.trans $ EventuallyLE.antisymm subset_closure.eventuallyLE ?_)⟩
+      EventuallyEq.compl (su.trans <| EventuallyLE.antisymm subset_closure.eventuallyLE ?_)⟩
     have : (coborder u) ∈ residual _ :=
       residual_of_dense_open uo.isLocallyClosed.isOpen_coborder dense_coborder
     rw [coborder_eq_union_closure_compl] at this
