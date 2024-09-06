@@ -497,6 +497,7 @@ structure Mor where
 theorem Mor.toFun_Con (m : Mor) (f g : α → Int) (hf : Con f) (g : α → Int) (hg : Con g) :
     Con (fun x => m.toFun (f x) (g x)) := by
   have := m.hcon
+  fun_prop
 
 -- Test improved beta reduction of the head function when we interleave lambdas and lets
 example [Add α] (a : α) : Con (fun x0 : α =>
