@@ -21,6 +21,9 @@ and its dual.
 * `isLocalMin_of_anti_mono` : the dual statement for minima.
 
 * `isLocalMax_of_mono_anti'` : a version of `isLocalMax_of_mono_anti` for filters.
+
+* `isLocalMin_of_anti_mono'` : a version of `isLocalMax_of_mono_anti'` for minima.
+
 -/
 
 open Set Topology Filter
@@ -43,8 +46,9 @@ lemma isLocalMin_of_anti_mono.{u, v}
     (h₀ : AntitoneOn f (Ioc a b)) (h₁ : MonotoneOn f (Ico b c)) : IsLocalMin f b :=
   mem_of_superset (Ioo_mem_nhds g₀ g₁) (fun x hx => by rcases le_total x b  <;> aesop)
 
-
-theorem mem_nhds_of_mem_nhdsWithin_cover.{u} {α : Type u} [TopologicalSpace α] {b : α}
+/-- If `L` and `R` are neighborhoods of `b` within sets whose union is `Set.univ`, then
+`L ∪ R` is a neighborhood of `b`. -/
+theorem union_mem_nhds_of_mem_nhdsWithin.{u} {α : Type u} [TopologicalSpace α] {b : α}
     {I₁ I₂ : Set α} (h : ∀ x, x ∈ I₁ ∪ I₂)
     {L : Set α} (hL : L ∈ nhdsWithin b I₁)
     {R : Set α} (hR : R ∈ nhdsWithin b I₂) : L ∪ R ∈ nhds b := by
@@ -57,7 +61,7 @@ theorem mem_nhds_of_mem_nhdsWithin_cover.{u} {α : Type u} [TopologicalSpace α]
 theorem nhds_of_Ici_Iic.{u} {α : Type u} [TopologicalSpace α] [LinearOrder α] {b : α}
     {L : Set α} (hL : L ∈ 𝓝[≤] b)
     {R : Set α} (hR : R ∈ 𝓝[≥] b) : L ∩ Iic b ∪ R ∩ Ici b ∈ 𝓝 b :=
-  mem_nhds_of_mem_nhdsWithin_cover (fun x => le_total x b)
+  union_mem_nhds_of_mem_nhdsWithin (fun x => le_total x b)
     (inter_mem hL self_mem_nhdsWithin) (inter_mem hR self_mem_nhdsWithin)
 
 /-- If `f` is monotone to the left and antitone to the right, then it has a local maximum. -/
