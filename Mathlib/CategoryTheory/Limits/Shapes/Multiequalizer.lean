@@ -752,8 +752,6 @@ theorem ιPi_π (a) : ιPi I ≫ Pi.π I.left a = ι I a := by
   rw [ιPi, Category.assoc, ← Iso.eq_inv_comp, isoEqualizer]
   simp
 
-instance : Mono (ιPi I) := mono_comp _ _
-
 end Multiequalizer
 
 namespace Multicoequalizer
@@ -832,8 +830,6 @@ theorem ι_sigmaπ (b) : Sigma.ι I.right b ≫ sigmaπ I = π I b := by
     MultispanIndex.ofSigmaCoforkFunctor_obj, colimit.isoColimitCocone_ι_hom,
     Multicofork.ofSigmaCofork_pt, colimit.cocone_x, Multicofork.π_eq_app_right]
   rfl
-
-instance : Epi (sigmaπ I) := epi_comp _ _
 
 end Multicoequalizer
 
