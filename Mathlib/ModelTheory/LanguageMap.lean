@@ -571,8 +571,10 @@ instance : (L''.sum L).Expands L' where
   toLHom := LHom.sumInr.comp (L'.Inclusion L)
   toLHom_injective := LHom.sumInr_injective.comp (L'.inclusion_injective L)
 
-
-
+@[simps]
+instance {α : Type*} : L[[α]].Expands L where
+  toLHom := L.lhomWithConstants α
+  toLHom_injective := L.lhomWithConstants_injective α
 
 end Expands
 
