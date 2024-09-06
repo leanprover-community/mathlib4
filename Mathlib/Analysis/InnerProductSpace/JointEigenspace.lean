@@ -102,7 +102,7 @@ theorem iSup_iSup_eigenspace_inf_eigenspace_eq_top (hA : A.IsSymmetric) (hB : B.
 /-- Given a commuting pair of symmetric linear operators on a finite dimensional inner product
 space, the space decomposes as an internal direct sum of simultaneous eigenspaces of these
 operators. -/
-theorem directSum_isInteral_of_commute (hA : A.IsSymmetric) (hB : B.IsSymmetric)
+theorem directSum_isInternal_of_commute (hA : A.IsSymmetric) (hB : B.IsSymmetric)
     (hAB : A ∘ₗ B = B ∘ₗ A) :
     DirectSum.IsInternal (fun (i : 𝕜 × 𝕜) ↦ (eigenspace A i.2 ⊓ eigenspace B i.1)):= by
   apply (orthogonalFamily_eigenspace_inf_eigenspace hA hB).isInternal_iff.mpr
@@ -130,18 +130,9 @@ theorem iInf_eigenspace_invariant_of_commute (T : n → (E →ₗ[𝕜] E))
   simp only [Submodule.mem_iInf] at *
   exact fun i_1 ↦ eigenspace_invariant_of_commute (hC (↑i_1) i) (γ i_1) v (hv i_1)
 
-theorem iSup_iInf_fun_index_split_single {α β γ : Type*} [DecidableEq α] [CompleteLattice γ]
-    (i : α) (s : α → β → γ) : (⨆ f : α → β, ⨅ x, s x (f x)) =
-      ⨆ f' : {y // y ≠ i} → β, ⨆ y : β, s i y ⊓ ⨅ x' : {y // y ≠ i}, (s x' (f' x')) := by
-  rw [← (Equiv.funSplitAt i β).symm.iSup_comp, iSup_prod, iSup_comm]
-  congr!  with f' y
-  rw [iInf_split_single _ i, iInf_subtype]
-  congr! with x hx
-  · simp
-  · simp [dif_neg hx]
-
-
-theorem invariant_subspace_eigenspace_exhaust [FiniteDimensional 𝕜 E] {F : Submodule 𝕜 E}
+/--Simultaneous eigenspaces of a symmetric linear operator on a finite dimensional inner product
+   space restricted to an invariant subspace exhaust that subspace-/
+theorem iSup_simultaneous_eigenspaces_eq_top [FiniteDimensional 𝕜 E] {F : Submodule 𝕜 E}
     (S : E →ₗ[𝕜] E) (hS: IsSymmetric S) (hInv : ∀ v ∈ F, S v ∈ F) : ⨆ μ, Submodule.map F.subtype
     (eigenspace (S.restrict hInv) μ)  = F := by
  conv_lhs => rw [← Submodule.map_iSup]
@@ -151,7 +142,8 @@ theorem invariant_subspace_eigenspace_exhaust [FiniteDimensional 𝕜 E] {F : Su
  apply Submodule.orthogonal_eq_bot_iff.mp (H.orthogonalComplement_iSup_eigenspaces_eq_bot)
 
 /--Must replace the following with use of `orthogonalFamily_eigenspace_inf_eigenspace` or something
-else above-/
+else above, meaning we don't need the full power of this result for any invariant subspace so it
+is probably too specialized for the library. This can probably be inlined. -/
 theorem invariant_subspace_inf_eigenspace_eq_restrict {F : Submodule 𝕜 E} (S : E →ₗ[𝕜] E)
     (μ : 𝕜) (hInv : ∀ v ∈ F, S v ∈ F) : (eigenspace S μ) ⊓ F =
     Submodule.map (Submodule.subtype F)
@@ -204,7 +196,7 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot [Fintype n] [FiniteDim
     (⨅ (j : {x // x ≠ i}), eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j)) := by
       conv => lhs; rhs; ext γ; rhs; ext μ; rw [invariant_subspace_inf_eigenspace_eq_restrict (T i) μ
         (iInf_eigenspace_invariant_of_commute T hC i γ)]
-      conv => lhs; rhs; ext γ; rw [invariant_subspace_eigenspace_exhaust (T i) (hT i)
+      conv => lhs; rhs; ext γ; rw [iSup_simultaneous_eigenspaces_eq_top (T i) (hT i)
         (iInf_eigenspace_invariant_of_commute T hC i γ)]
     have H1 : ∀ (i : m), ∀ (s : m → 𝕜 → Submodule 𝕜 E), (⨆ f : m → 𝕜, ⨅ x, s x (f x)) =
         ⨆ f' : {y // y ≠ i} → 𝕜, ⨆ y : 𝕜, s i y ⊓ ⨅ x' : {y // y ≠ i}, (s x' (f' x')) := by
