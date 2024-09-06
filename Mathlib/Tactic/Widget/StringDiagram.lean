@@ -96,13 +96,13 @@ def Node.e : Node → Expr
 /-- The domain of the 2-morphism associated with a node as a list
 (the first component is the node itself). -/
 def Node.srcList : Node → List (Node × Atom₁)
-  | Node.atom n => (n.atom.src).toList.map (fun f ↦ (.atom n, f))
+  | Node.atom n => n.atom.src.toList.map (fun f ↦ (.atom n, f))
   | Node.id n => [(.id n, n.id)]
 
 /-- The codomain of the 2-morphism associated with a node as a list
 (the first component is the node itself). -/
 def Node.tarList : Node → List (Node × Atom₁)
-  | Node.atom n => (n.atom.tgt).toList.map (fun f ↦ (.atom n, f))
+  | Node.atom n => n.atom.tgt.toList.map (fun f ↦ (.atom n, f))
   | Node.id n => [(.id n, n.id)]
 
 /-- The vertical position of a node in a string diagram. -/
@@ -296,23 +296,28 @@ open scoped Jsx in
 def stringM? (e : Expr) : MetaM (Option Html) := do
   let e ← instantiateMVars e
   let k ← BicategoryLike.mkKind e
-  let (nodes, strands) ← match k with
-    | .monoidal =>
-      let ctx ← mkContext (ρ := Monoidal.Context) e
-      CoherenceM.run ctx do
+  logInfo m!"{k.name}"
+  let x : Option (List (List Node) × List (List Strand)) ← (match k with
+    | .monoidal => do
+      let .some ctx ← mkContext? (ρ := Monoidal.Context) e | return .none
+      CoherenceM.run (ctx := ctx) do
         let e' := (← BicategoryLike.eval k.name (← MkMor₂.ofExpr e)).expr
-        return (← e'.nodes, ← e'.strands)
-    | .bicategory =>
-      let ctx ← mkContext (ρ := Bicategory.Context) e
-      CoherenceM.run ctx do
+        return .some (← e'.nodes, ← e'.strands)
+    | .bicategory => do
+      let .some ctx ← mkContext? (ρ := Bicategory.Context) e | return .none
+      CoherenceM.run (ctx := ctx) do
         let e' := (← BicategoryLike.eval k.name (← MkMor₂.ofExpr e)).expr
-        return (← e'.nodes, ← e'.strands)
-    | .none => return .none
-  DiagramBuilderM.run do
-    mkStringDiagram nodes strands
-    match ← DiagramBuilderM.buildDiagram dsl sty with
-    | some html => return html
-    | none => return <span>No non-structural morphisms found.</span>
+        return .some (← e'.nodes, ← e'.strands)
+    | .none => return .none)
+  logInfo m!"{x.isSome}"
+  match x with
+  | .none => return none
+  | .some (nodes, strands) => do
+    DiagramBuilderM.run do
+      mkStringDiagram nodes strands
+      match ← DiagramBuilderM.buildDiagram dsl sty with
+      | some html => return html
+      | none => return <span>No non-structural morphisms found.</span>
 
 open scoped Jsx in
 /-- Help function for displaying two string diagrams in an equality. -/
