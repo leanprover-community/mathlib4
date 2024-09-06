@@ -155,7 +155,7 @@ theorem JacobsonNoether_charZero [CharP D 0] (h : k ≠ (⊤ : Subring D)) :
 
 /-- Jacobson-Noether theorem in the `CharP D p` case -/
 theorem JacobsonNoether_charP (p : ℕ) [Fact p.Prime] [CharP D p]
-  (h : k ≠ (⊤ : Subring D)) : ∃ x : D, x ∉ k ∧ IsSeparable k x := by
+    (h : k ≠ (⊤ : Subring D)) : ∃ x : D, x ∉ k ∧ IsSeparable k x := by
   by_contra! insep
   have hinsep : ∀ x : D, IsSeparable k x → x ∈ k :=
     fun x h ↦ Classical.byContradiction fun hx ↦ insep x hx h
