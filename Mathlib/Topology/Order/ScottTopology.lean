@@ -416,6 +416,10 @@ instance : IsScott (WithScott α) := ⟨rfl⟩
 lemma isOpen_iff_isUpperSet_and_scottHausdorff_open' {u : Set α} :
     IsOpen (WithScott.ofScott ⁻¹' u) ↔ IsUpperSet u ∧ (scottHausdorff α).IsOpen u := Iff.rfl
 
+lemma ωScottContinuous.const [Preorder β] {x : β} : ScottContinuous (Function.const α x) := by
+  rw [Topology.IsScott.scottContinuous_iff_continuous (α := WithScott α) (β := WithScott β)]
+  exact continuous_of_const fun x_1 ↦ congrFun rfl
+
 end WithScott
 end Scott
 
