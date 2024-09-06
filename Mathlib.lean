@@ -3459,6 +3459,7 @@ import Mathlib.NumberTheory.Padics.PadicNorm
 import Mathlib.NumberTheory.Padics.PadicNumbers
 import Mathlib.NumberTheory.Padics.PadicVal.Basic
 import Mathlib.NumberTheory.Padics.PadicVal.Defs
+import Mathlib.NumberTheory.Padics.ProperSpace
 import Mathlib.NumberTheory.Padics.RingHoms
 import Mathlib.NumberTheory.Pell
 import Mathlib.NumberTheory.PellMatiyasevic
