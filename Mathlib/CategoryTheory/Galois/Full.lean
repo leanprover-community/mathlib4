@@ -3,8 +3,7 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Galois.Examples
-import Mathlib.CategoryTheory.Galois.Prorepresentability
+import Mathlib.CategoryTheory.Galois.Action
 
 /-!
 
@@ -41,48 +40,7 @@ namespace PreGaloisCategory
 
 open Limits Functor
 
-variable {C : Type u} [Category.{u} C] (F : C ⥤ FintypeCat.{u})
-
-/-- Any (fiber) functor `F : C ⥤ FintypeCat` naturally factors via
-the forgetful functor from `Action FintypeCat (MonCat.of (Aut F))` to `FintypeCat`. -/
-def functorToAction : C ⥤ Action FintypeCat.{u} (MonCat.of (Aut F)) where
-  obj X := Action.FintypeCat.ofMulAction (Aut F) (F.obj X)
-  map f := {
-    hom := F.map f
-    comm := fun g ↦ symm <| g.hom.naturality f
-  }
-
-lemma functorToAction_comp_forget₂_eq : functorToAction F ⋙ forget₂ _ FintypeCat = F := rfl
-
-variable [GaloisCategory C] [FiberFunctor F]
-
-instance : Functor.Faithful (functorToAction F) :=
-  have : Functor.Faithful (functorToAction F ⋙ forget₂ _ FintypeCat) :=
-    inferInstanceAs <| Functor.Faithful F
-  Functor.Faithful.of_comp (functorToAction F) (forget₂ _ FintypeCat)
-
-instance : PreservesMonomorphisms (functorToAction F) :=
-  have : PreservesMonomorphisms (functorToAction F ⋙ forget₂ _ FintypeCat) :=
-    inferInstanceAs <| PreservesMonomorphisms F
-  preservesMonomorphisms_of_preserves_of_reflects (functorToAction F) (forget₂ _ FintypeCat)
-
-instance : ReflectsMonomorphisms (functorToAction F) := reflectsMonomorphisms_of_faithful _
-
-instance : Functor.ReflectsIsomorphisms (functorToAction F) where
-  reflects f _ :=
-    have : IsIso (F.map f) := (forget₂ _ FintypeCat).map_isIso ((functorToAction F).map f)
-    isIso_of_reflects_iso f F
-
-noncomputable instance : PreservesFiniteCoproducts (functorToAction F) :=
-  ⟨fun J _ ↦ Action.preservesColimitsOfShapeOfPreserves (functorToAction F)
-    (inferInstanceAs <| PreservesColimitsOfShape (Discrete J) F)⟩
-
-noncomputable instance : PreservesFiniteProducts (functorToAction F) :=
-  ⟨fun J _ ↦ Action.preservesLimitsOfShapeOfPreserves (functorToAction F)
-    (inferInstanceAs <| PreservesLimitsOfShape (Discrete J) F)⟩
-
-instance : PreservesIsConnected (functorToAction F) :=
-  ⟨fun {X} _ ↦ FintypeCat.Action.isConnected_of_transitive (Aut F) (F.obj X)⟩
+variable {C : Type u} [Category.{u} C] (F : C ⥤ FintypeCat.{u}) [GaloisCategory C] [FiberFunctor F]
 
 /--
 Let `X` be an object of a Galois category with fiber functor `F` and `Y` a sub-`Aut F`-set

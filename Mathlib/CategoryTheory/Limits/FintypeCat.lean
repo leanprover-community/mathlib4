@@ -60,6 +60,14 @@ noncomputable instance inclusionPreservesFiniteLimits :
 noncomputable instance : PreservesFiniteLimits (forget FintypeCat) :=
   FintypeCat.inclusionPreservesFiniteLimits
 
+instance nonempty_pi_of_nonempty {ι : Type*} [Finite ι] (X : ι → FintypeCat.{u})
+    [∀ i, Nonempty (X i)] : Nonempty (∏ᶜ X : FintypeCat.{u}) :=
+  letI : Fintype ι := Fintype.ofFinite _
+  let e : ι ≃ Fin (Fintype.card ι) := Fintype.equivFin ι
+  let p : (FintypeCat.of (∀ i, X (e.symm i))) ⟶ ∏ᶜ X :=
+    Limits.Pi.lift (fun i p ↦ e.symm_apply_apply i ▸ p (e i))
+  Nonempty.elim inferInstance (fun x : ∀ i, X (e.symm i) ↦ ⟨p x⟩)
+
 /-- Any functor from a finite category to Types that only involves finite objects,
 has a finite colimit. -/
 noncomputable instance finiteColimitOfFiniteDiagram {J : Type} [SmallCategory J] [FinCategory J]
@@ -92,5 +100,11 @@ noncomputable instance inclusionPreservesFiniteColimits :
 /- Help typeclass inference to infer preservation of finite colimits for the forgtful functor. -/
 noncomputable instance : PreservesFiniteColimits (forget FintypeCat) :=
   FintypeCat.inclusionPreservesFiniteColimits
+
+lemma jointly_surjective {J : Type*} [Category J] [FinCategory J]
+    (F : J ⥤ FintypeCat.{u}) (t : Cocone F) (h : IsColimit t) (x : t.pt) :
+    ∃ j y, t.ι.app j y = x :=
+  let hs := isColimitOfPreserves FintypeCat.incl.{u} h
+  Types.jointly_surjective (F ⋙ FintypeCat.incl) hs x
 
 end CategoryTheory.Limits.FintypeCat

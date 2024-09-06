@@ -191,3 +191,15 @@ lemma isSkeleton : IsSkeletonOf FintypeCat Skeleton Skeleton.incl where
 
 
 end FintypeCat
+
+namespace FunctorToFintypeCat
+
+universe u v w
+
+variable {C : Type u} [Category.{v} C] (F G : C ⥤ FintypeCat.{w}) {X Y : C}
+
+lemma naturality (σ : F ⟶ G) (f : X ⟶ Y) (x : F.obj X) :
+    σ.app Y (F.map f x) = G.map f (σ.app X x) :=
+  congr_fun (σ.naturality f) x
+
+end FunctorToFintypeCat

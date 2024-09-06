@@ -19,8 +19,6 @@ universe u₁ u₂ w u v₁
 
 section Profinite
 
---open TopologicalSpace
-
 variable {G : Type*} [Group G]
 
 open Function Set
@@ -70,25 +68,8 @@ section
 variable (G : Type*) [Group G] [TopologicalSpace G] {X : Type*} [MulAction G X]
   [TopologicalSpace X] [DiscreteTopology X] [ContinuousSMul G X]
 
-lemma stabilizer_isOpen (x : X) : IsOpen (MulAction.stabilizer G x : Set G) := by
-  let q (g : G) : G × X := (g, x)
-  have : Continuous q := by
-    continuity
-  let h (p : G × X) : X := p.1 • p.2
-  have : Continuous h := continuous_smul
-  let p (g : G) : X := g • x
-  have : p ⁻¹' {x} = MulAction.stabilizer G x := rfl
-  rw [← this]
-  apply IsOpen.preimage
-  show Continuous (h ∘ q)
-  apply Continuous.comp
-  assumption
-  assumption
-  exact isOpen_discrete {x}
-
-/-- The stabilizer of an element in a discrete topological space as an open subgroup. -/
-def MulAction.stabilizerₒ (x : X) : OpenSubgroup G :=
-  ⟨MulAction.stabilizer G x, stabilizer_isOpen G x⟩
+lemma stabilizer_isOpen (x : X) : IsOpen (MulAction.stabilizer G x : Set G) :=
+  IsOpen.preimage (f := fun g ↦ g • x) (by fun_prop) (isOpen_discrete {x})
 
 end
 
@@ -114,479 +95,222 @@ noncomputable instance fintypeQuotient (H : OpenSubgroup (Aut F)) :
   have : Finite (Aut F ⧸ H.toSubgroup) := finiteQuotientOfOpen H.toSubgroup H.isOpen'
   Fintype.ofFinite _
 
-instance (H : Subgroup (Aut F)) : MulAction (Aut F) (Aut F ⧸ H) := inferInstance
-
 end
 
 notation:10 G:10 " ⧸ₐ " H:10 => Action.FintypeCat.ofMulAction G (FintypeCat.of <| G ⧸ H)
 
 noncomputable instance (X : C) (x : F.obj X) : Fintype (Aut F ⧸ (MulAction.stabilizer (Aut F) x)) :=
-  fintypeQuotient F (MulAction.stabilizerₒ (Aut F) (X := F.obj X) x)
+  fintypeQuotient F ⟨MulAction.stabilizer (Aut F) x, stabilizer_isOpen (Aut F) x⟩
 
+/-- If `X` is connected and `x` is in the fiber of `X`, `F.obj X` is isomorphic
+to the quotient of `Aut F` by the stabilizer of `x` as `Aut F`-sets. -/
 noncomputable def fiberIsoQuotientStabilizer (X : C) [IsConnected X] (x : F.obj X) :
-    (functorToAction F).obj X ≅ Aut F ⧸ₐ MulAction.stabilizer (Aut F) x := by
-  have hc : IsConnected ((functorToAction F).obj X) := PreservesIsConnected.preserves
-  letI : MulAction (Aut F) (F.obj X) := by
-    show MulAction (Aut F) ((functorToAction F).obj X).V
-    infer_instance
-  have : MulAction.IsPretransitive (Aut F) ((functorToAction F).obj X).V :=
-    FintypeCat.Action.pretransitive_of_isConnected (Aut F) ((functorToAction F).obj X)
-  have : MulAction.orbit (Aut F) x ≃ Aut F ⧸ MulAction.stabilizer (Aut F) x :=
-    MulAction.orbitEquivQuotientStabilizer (Aut F) x
-  have : MulAction.orbit (Aut F) x = Set.univ := MulAction.orbit_eq_univ (Aut F) x
-  have : MulAction.orbit (Aut F) x ≃ Set.univ := Equiv.setCongr this
-  let e : ((functorToAction F).obj X).V ≃ Aut F ⧸ MulAction.stabilizer (Aut F) x := by
-    trans
-    exact (Equiv.Set.univ ↑(F.obj X)).symm
-    trans
-    apply Equiv.setCongr
-    exact (MulAction.orbit_eq_univ (Aut F) x).symm
-    exact MulAction.orbitEquivQuotientStabilizer (Aut F) x
-  let U : OpenSubgroup (Aut F) := MulAction.stabilizerₒ (Aut F) (X := F.obj X) x
-  let inst : Fintype (Aut F ⧸ U.toSubgroup) := fintypeQuotient F U
-  let u : Action.FintypeCat.ofMulAction (Aut F) (FintypeCat.of <| Aut F ⧸ U.toSubgroup) ≅
-      (functorToAction F).obj X := by
-    apply Action.mkIso
-    swap
-    exact (FintypeCat.equivEquivIso e.symm)
-    intro (σ : Aut F)
+    (functorToAction F).obj X ≅ Aut F ⧸ₐ MulAction.stabilizer (Aut F) x :=
+  let e : ((functorToAction F).obj X).V ≃ Aut F ⧸ MulAction.stabilizer (Aut F) x :=
+    (Equiv.Set.univ (F.obj X)).symm.trans <|
+      (Equiv.setCongr ((MulAction.orbit_eq_univ (Aut F) x).symm)).trans <|
+      MulAction.orbitEquivQuotientStabilizer (Aut F) x
+  Iso.symm <| Action.mkIso (FintypeCat.equivEquivIso e.symm) <| fun σ ↦ by
     ext (a : Aut F ⧸ MulAction.stabilizer (Aut F) x)
-    obtain ⟨τ, hτ⟩ := Quotient.exists_rep a
-    rw [←hτ]
+    obtain ⟨τ, rfl⟩ := Quotient.exists_rep a
     rfl
-  exact u.symm
 
-lemma stabilizer_normal_of_isGalois (X : C) [IsGalois X] (x : F.obj X) :
-    Subgroup.Normal (MulAction.stabilizer (Aut F) x) := by
-  constructor
-  intro n ninstab g
-  simp only [MulAction.mem_stabilizer_iff]
-  show g • n • (g⁻¹ • x) = x
-  have : MulAction.IsPretransitive (Aut X) (F.obj X) := inferInstance
-  let inst : SMul (Aut X) ((functorToAction F).obj X).V :=
-    inferInstanceAs <| SMul (Aut X) (F.obj X)
-  have : MulAction.IsPretransitive (Aut X) ((functorToAction F).obj X).V :=
-    isPretransitive_of_isGalois F X
-  have : ∃ (φ : Aut X), F.map φ.hom x = g⁻¹ • x :=
-    MulAction.IsPretransitive.exists_smul_eq x (g⁻¹ • x)
-  obtain ⟨φ, h⟩ := this
-  rw [← h]
-  show g • n • _ = x
-  show g • (((functorToAction F).map φ.hom).hom ≫ ((functorToAction F).obj X).ρ n) x = x
-  rw [← ((functorToAction F).map φ.hom).comm]
-  simp only [FintypeCat.comp_apply]
-  show g • ((functorToAction F).map φ.hom).hom (n • x) = x
-  have : ((functorToAction F).map φ.hom).hom = F.map φ.hom := rfl
-  rw [this]
-  rw [ninstab, h]
-  show (g * g⁻¹) • x = x
-  simp
+section
 
-lemma FintypeCat.jointly_surjective {J : Type} [SmallCategory J] [FinCategory J]
-    (F : J ⥤ FintypeCat.{u}) (t : Cocone F) (h : IsColimit t) (x : t.pt) :
-    ∃ j y, t.ι.app j y = x := by
-  let s : Cocone (F ⋙ FintypeCat.incl) := FintypeCat.incl.mapCocone t
-  let hs : IsColimit s := isColimitOfPreserves FintypeCat.incl.{u} h
-  exact Types.jointly_surjective (F ⋙ FintypeCat.incl) hs x
+variable {G : Type*} [Group G] (H N : Subgroup G) [Fintype (G ⧸ N)]
 
-/--
-If `H` is an open subset of `Aut F` such that `1 ∈ H`, there exists a finite
-set `I` of connected objects of `C` such that every `σ : Aut F` that induces the identity
-on `F.obj X` for all `X ∈ I` is contained in `H`. In other words: The kernel
-of the evaluation map `Aut F →* ∏ X : I ↦ Aut (F.obj X)` is contained in `H`.
--/
-lemma exists_set_ker_evaluation_subset_of_isOpen (H : Set (Aut F)) (hone : 1 ∈ H)
-    (h : IsOpen H) : ∃ (I : Set C) (_ : Fintype I), (∀ X ∈ I, IsConnected X) ∧
-    (∀ σ : Aut F, (∀ X : I, σ.hom.app X = 𝟙 (F.obj X)) → σ ∈ H) := by
-  obtain ⟨U, hUopen, hU⟩ := isOpen_induced_iff.mp h
-  have h1inU : 1 ∈ U := by
-    show 1 ∈ autEmbedding F ⁻¹' U
-    rw [hU]
-    exact hone
-  obtain ⟨I, u, ho, ha⟩ := isOpen_pi_iff.mp hUopen 1 h1inU
-  choose fι ff fc h4 h5 h6 using (fun X : I => has_decomp_connected_components X.val)
-  let J : Set C := ⋃ X, Set.range (ff X)
-  use J
-  use Fintype.ofFinite J
-  constructor
-  intro X ⟨A, ⟨Y, hY⟩, hA2⟩
-  have : X ∈ Set.range (ff Y) := by simpa [hY]
-  obtain ⟨i, hi⟩ := this
-  rw [← hi]
-  exact h5 Y i
-  intro σ h
-  have (X : I) : σ.hom.app X = 𝟙 (F.obj X) := by
-    --have is : ∐ ff X ≅ X := h3 X
-    let t : ColimitCocone (Discrete.functor (ff X)) := ⟨Cofan.mk X (fc X), h4 X⟩
-    let s : Cocone (Discrete.functor (ff X) ⋙ F) := F.mapCocone t.cocone
-    have : Fintype (fι X) := Fintype.ofFinite _
-    let hs : IsColimit s := isColimitOfPreserves F t.isColimit
-    --rw [h6]
-    ext (x : F.obj t.cocone.pt)
-    obtain ⟨⟨j⟩, a, ha : F.map (t.cocone.ι.app ⟨j⟩) a = x⟩ :=
-      FintypeCat.jointly_surjective (Discrete.functor (ff X) ⋙ F) s hs x
-    show σ.hom.app X x = x
-    rw [← ha]
-    show (F.map (t.cocone.ι.app ⟨j⟩) ≫ σ.hom.app X) a = F.map (t.cocone.ι.app ⟨j⟩) a
-    erw [σ.hom.naturality]
-    simp
-    have : σ.hom.app ((ff X) j) = 𝟙 (F.obj ((ff X) j)) := by
-      have : (ff X) j ∈ J := by aesop
-      exact h ⟨(ff X) j, this⟩
-    rw [this]
-    rfl
-  have (X : I) : autEmbedding F σ X = 1 := by
-    apply Iso.ext
-    exact this X
-  have (X : I) : autEmbedding F σ X ∈ u X := by
-    rw [this X]
-    exact (ho X.val X.property).right
-  have : autEmbedding F σ ∈ Set.pi I u := by
-    intro X XinI
-    exact this ⟨X, XinI⟩
-  have : σ ∈ autEmbedding F ⁻¹' U := by
-    apply ha
-    exact this
-  rw [hU] at this
-  exact this
-
-/-- If `X : ι → C` is a finite family of objects with non-empty fiber, then
-also `∏ᶜ X` has non-empty fiber. -/
-lemma nonempty_fiber_pi_of_nonempty_of_finite {ι : Type u} [Fintype ι] (X : ι → C)
-    (h : ∀ i, Nonempty (F.obj (X i))) : Nonempty (F.obj (∏ᶜ X)) := by
-  let P : FintypeCat := ∏ᶜ fun i : ι => F.obj (X i)
-  have i1 : F.obj (∏ᶜ X) ≅ P := PreservesProduct.iso F _
-  let f (i : ι) : Type u := F.obj (X i)
-  have i2 : FintypeCat.incl.obj P ≅ ∏ᶜ f := PreservesProduct.iso FintypeCat.incl _
-  have (i : ι) : Nonempty (F.obj (X i)) := h i
-  have : Nonempty (∀ i : ι, F.obj (X i)) := inferInstance
-  obtain ⟨x⟩ := this
-  have i3 : ∏ᶜ f ≅ Shrink.{u, u} (∀ i, f i) := Types.Small.productIso f
-  let y : ∏ᶜ f := i3.inv ((equivShrink _) x)
-  let y' : P := i2.inv y
-  use i1.inv y'
-
-variable (H N : OpenSubgroup (Aut F)) [Subgroup.Normal N.toSubgroup]
-
-private noncomputable def help3 (H N : OpenSubgroup (Aut F)) (hn : Subgroup.Normal N.toSubgroup) :
-    H.toSubgroup ⧸ Subgroup.subgroupOf N H →*
-      End (Action.FintypeCat.ofMulAction (Aut F) (FintypeCat.of <| Aut F ⧸ N.toSubgroup)) := by
-  let φ' : H →* End (Action.FintypeCat.ofMulAction (Aut F)
-      (FintypeCat.of <| Aut F ⧸ N.toSubgroup)) := by
-    refine ⟨⟨?_, ?_⟩, ?_⟩
-    intro ⟨v, _⟩
-    show Action.FintypeCat.ofMulAction (Aut F) (FintypeCat.of <| Aut F ⧸ N.toSubgroup) ⟶
-      Action.FintypeCat.ofMulAction (Aut F) (FintypeCat.of <| Aut F ⧸ N.toSubgroup)
-    let fh : (Action.FintypeCat.ofMulAction (Aut F) (FintypeCat.of <| Aut F ⧸ N.toSubgroup)).V
-        ⟶ (Action.FintypeCat.ofMulAction (Aut F) (FintypeCat.of <| Aut F ⧸ N.toSubgroup)).V := by
-      show Aut F ⧸ N.toSubgroup → Aut F ⧸ N.toSubgroup
-      apply Quotient.lift
-      swap
-      intro σ
-      exact ⟦σ * v⁻¹⟧
-      intro σ τ hst
-      apply Quotient.sound
-      apply (QuotientGroup.leftRel_apply).mpr
+def quotientToEndHom [hn : N.Normal] : H ⧸ Subgroup.subgroupOf N H →* End (G ⧸ₐ N) :=
+  let φ' : H →* End (G ⧸ₐ N) := {
+    toFun := fun ⟨v, _⟩ ↦ {
+      hom := Quotient.lift (fun σ ↦ ⟦σ * v⁻¹⟧) <| fun a b h ↦ Quotient.sound <| by
+        apply (QuotientGroup.leftRel_apply).mpr
+        simp only [mul_inv_rev, inv_inv]
+        convert_to v * (a⁻¹ * b) * v⁻¹ ∈ N
+        · group
+        · exact Subgroup.Normal.conj_mem hn _ (QuotientGroup.leftRel_apply.mp h) _
+      comm := fun (g : G) ↦ by
+        ext (x : G ⧸ N)
+        induction' x using Quotient.inductionOn with x
+        simp only [FintypeCat.comp_apply, Action.FintypeCat.ofMulAction_apply, Quotient.lift_mk]
+        letI : SMul G (G ⧸ N) := inferInstance
+        show Quotient.lift (fun σ ↦ ⟦σ * v⁻¹⟧) _ (⟦g • x⟧) = _
+        simp only [smul_eq_mul, Quotient.lift_mk]
+        show _ = ⟦g * _⟧
+        rw [mul_assoc]
+    }
+    map_one' := by
+      apply Action.hom_ext
+      ext (x : G ⧸ N)
+      induction' x using Quotient.inductionOn with x
       simp
-      show v * (σ⁻¹ * τ) * v⁻¹ ∈ N
-      apply Subgroup.Normal.conj_mem hn
-      exact QuotientGroup.leftRel_apply.mp hst
-    constructor
-    swap
-    exact fh
-    intro (σ : Aut F)
-    ext (x : Aut F ⧸ N.toSubgroup)
-    obtain ⟨τ, hτ⟩ := Quotient.exists_rep x
-    rw [←hτ]
-    rfl
-    apply Action.hom_ext
-    ext (x : Aut F ⧸ N.toSubgroup)
-    obtain ⟨τ, hτ⟩ := Quotient.exists_rep x
-    rw [←hτ]
-    rfl
-    intro σ τ
-    apply Action.hom_ext
-    ext (x : Aut F ⧸ N.toSubgroup)
-    obtain ⟨μ, hμ⟩ := Quotient.exists_rep x
-    rw [←hμ]
-    show ⟦μ * (σ * τ)⁻¹⟧ = ⟦μ * τ⁻¹ * σ⁻¹⟧
-    group
-    rfl
-  apply QuotientGroup.lift (Subgroup.subgroupOf N.toSubgroup H.toSubgroup) φ'
+    map_mul' := fun σ τ ↦ by
+      apply Action.hom_ext
+      ext (x : G ⧸ N)
+      induction' x using Quotient.inductionOn with x
+      show ⟦x * (σ * τ)⁻¹⟧ = ⟦x * τ⁻¹ * σ⁻¹⟧
+      rw [mul_inv_rev, mul_assoc, Subgroup.coe_mul]
+  }
+  QuotientGroup.lift (Subgroup.subgroupOf N H) φ' <| by
   intro u uinU'
-  show φ' u = 1
   apply Action.hom_ext
-  ext (x : Aut F ⧸ N.toSubgroup)
-  obtain ⟨μ, hμ⟩ := Quotient.exists_rep x
-  rw [←hμ]
-  show ⟦μ * u⁻¹⟧ = ⟦μ⟧
+  ext (x : G ⧸ N)
+  induction' x using Quotient.inductionOn with μ
   apply Quotient.sound
   apply (QuotientGroup.leftRel_apply).mpr
   simpa
 
---private def help411 {G M : Type*} [Group G] [Group M]
---    (J : SingleObj M ⥤ Action FintypeCat (MonCat.of G)) :
---    Action FintypeCat (MonCat.of G) where
---  V := (J.obj (SingleObj.star M)).V ⧸ M
-
---private def help41 {G M : Type*} [Group G] [Group M]
---    (J : SingleObj M ⥤ Action FintypeCat (MonCat.of G)) :
---    Cocone J where
---  pt := J.obj (SingleObj.star M) ⧸ M
---  ι := {
---    app := fun _ => 𝟙 (J.obj _)
---    --naturality := 
---  }
-
---private def help42 {G M : Type*} [Group G] [Group M] (H N : Subgroup G) (h : Subgroup.Normal N)
---  (J : SingleObj M ⥤ Action FintypeCat (MonCat.of G))
-
---private lemma help4 {G M : Type*} [Group G] [Group M] [Finite M]
---    (J : SingleObj M ⥤ Action FintypeCat (MonCat.of G)) :
---  colimit J ≅ Action.ofMulAction' G (G ⧸ H) := sorry
-
-def help43 {G : Type*} [Group G] (H N : Subgroup G) [Fintype (G ⧸ N)]
-    [Fintype (G ⧸ H)] (h : N ≤ H) :
-    Action.FintypeCat.ofMulAction G (FintypeCat.of <| G ⧸ N) ⟶
-      Action.FintypeCat.ofMulAction G (FintypeCat.of <| G ⧸ H) := by
-  constructor
-  swap
-  apply Quotient.lift
-  intro a b hab
-  apply Quotient.sound
-  apply (QuotientGroup.leftRel_apply).mpr
-  apply h
-  exact (QuotientGroup.leftRel_apply).mp hab
-  intro (g : G)
-  ext (x : G ⧸ N)
-  obtain ⟨μ, hμ⟩ := Quotient.exists_rep x
-  rw [←hμ]
+@[simp]
+lemma quotientToEndHom_mk [N.Normal] (x : H) (g : G) :
+    (quotientToEndHom H N ⟦x⟧).hom ⟦g⟧ = ⟦g * x⁻¹⟧ :=
   rfl
 
-noncomputable def help44 (V U : OpenSubgroup (Aut F)) (h : Subgroup.Normal U.toSubgroup) (A : C)
-    (u : (functorToAction F).obj A ≅ Aut F ⧸ₐ U.toSubgroup) :
-    V.toSubgroup ⧸ Subgroup.subgroupOf U.toSubgroup V.toSubgroup →* End A := by
-  let φ : V.toSubgroup ⧸ Subgroup.subgroupOf U.toSubgroup V.toSubgroup →*
-      End (Aut F ⧸ₐ U.toSubgroup) :=
-    help3 F V U h
-  let ff : (functorToAction F).FullyFaithful := FullyFaithful.ofFullyFaithful (functorToAction F)
-  let e1 : End A ≃* End ((functorToAction F).obj A) := ff.mulEquivEnd A
-  let e2 : End ((functorToAction F).obj A) ≃* End (Aut F ⧸ₐ U.toSubgroup) :=
-    Iso.conj u
-  let e : End A ≃* End (Aut F ⧸ₐ U.toSubgroup) := e1.trans e2
-  exact MonoidHom.comp e.symm.toMonoidHom φ
+def quotientToQuotientOfLE [Fintype (G ⧸ H)] (h : N ≤ H) : (G ⧸ₐ N) ⟶ (G ⧸ₐ H) where
+  hom := Quotient.lift _ <| fun a b hab ↦ Quotient.sound <|
+    (QuotientGroup.leftRel_apply).mpr (h <| (QuotientGroup.leftRel_apply).mp hab)
+  comm g := by
+    ext (x : G ⧸ N)
+    induction' x using Quotient.inductionOn with μ
+    rfl
 
-lemma help441 (V U : OpenSubgroup (Aut F)) (h : Subgroup.Normal U.toSubgroup) (A : C)
-    (u : (functorToAction F).obj A ≅
-      Action.FintypeCat.ofMulAction (Aut F) (FintypeCat.of <| Aut F ⧸ U.toSubgroup))
+@[simp]
+lemma quotientToQuotientOfLE_hom_mk [Fintype (G ⧸ H)] (h : N ≤ H) (x : G) :
+    (quotientToQuotientOfLE H N h).hom ⟦x⟧ = ⟦x⟧ :=
+  rfl
+
+end
+
+section
+
+variable {F} (V : OpenSubgroup (Aut F)) {U : OpenSubgroup (Aut F)}
+  (h : Subgroup.Normal U.toSubgroup) {A : C} (u : (functorToAction F).obj A ≅ Aut F ⧸ₐ U.toSubgroup)
+
+private noncomputable def quotientToEndObjectHom :
+    V.toSubgroup ⧸ Subgroup.subgroupOf U.toSubgroup V.toSubgroup →* End A :=
+  let ff : (functorToAction F).FullyFaithful := FullyFaithful.ofFullyFaithful (functorToAction F)
+  let e : End A ≃* End (Aut F ⧸ₐ U.toSubgroup) := (ff.mulEquivEnd A).trans (Iso.conj u)
+  e.symm.toMonoidHom.comp (quotientToEndHom V.toSubgroup U.toSubgroup)
+
+private lemma functorToAction_map_quotientToEndObjectHom
     (m : SingleObj.star (V ⧸ Subgroup.subgroupOf U.toSubgroup V.toSubgroup) ⟶
       SingleObj.star (V ⧸ Subgroup.subgroupOf U.toSubgroup V.toSubgroup)) :
-    (functorToAction F).map (help44 F V U h A u m) = u.hom ≫ help3 F V U h m ≫ u.inv := by
-  apply (cancel_epi (u.inv)).mp
-  apply (cancel_mono (u.hom)).mp
-  simp [←Iso.conj_apply, MulEquiv.apply_symm_apply, help44]
+    (functorToAction F).map (quotientToEndObjectHom V h u m) =
+      u.hom ≫ quotientToEndHom V.toSubgroup U.toSubgroup m ≫ u.inv := by
+  simp [← cancel_epi u.inv, ← cancel_mono u.hom, ← Iso.conj_apply, quotientToEndObjectHom]
 
-noncomputable def help45 (V U : OpenSubgroup (Aut F)) (h : Subgroup.Normal U.toSubgroup) (A : C)
-    (u : (functorToAction F).obj A ≅
-      Action.FintypeCat.ofMulAction (Aut F) (FintypeCat.of <| Aut F ⧸ U.toSubgroup)) :
-    SingleObj (V.toSubgroup ⧸ Subgroup.subgroupOf U.toSubgroup V.toSubgroup) ⥤ C :=
-  SingleObj.functor (help44 F V U h A u)
+/--
+If `A` is an object of `C` with fiber `Aut F`-isomorphic to `Aut F ⧸ U` for an open normal
+subgroup `U`, then for any open subgroup `V` of `Aut F`, `V ⧸ (U ⊓ V)` acts on `A`.
+This is the diagram induced by the action.
+-/
+@[simps!]
+private noncomputable def quotientDiag : SingleObj (V.toSubgroup ⧸ Subgroup.subgroupOf U V) ⥤ C :=
+  SingleObj.functor (quotientToEndObjectHom V h u)
 
-noncomputable def help46 (V U : OpenSubgroup (Aut F)) (h : Subgroup.Normal U.toSubgroup) (A : C)
-    (hUinV : U ≤ V)
-    (u : (functorToAction F).obj A ≅
-      Action.FintypeCat.ofMulAction (Aut F) (FintypeCat.of <| Aut F ⧸ U.toSubgroup)) :
-    Cocone (help45 F V U h A u ⋙ functorToAction F) where
-  pt := Action.FintypeCat.ofMulAction (Aut F) (FintypeCat.of <| Aut F ⧸ V.toSubgroup)
-  ι := by
-    apply SingleObj.natTrans
-    swap
-    show (functorToAction F).obj A ⟶ Action.FintypeCat.ofMulAction (Aut F)
-      (FintypeCat.of <| Aut F ⧸ V.toSubgroup)
-    exact (u.hom ≫ help43 V.toSubgroup U.toSubgroup hUinV)
+variable {V} (hUinV : U ≤ V)
+
+@[simps]
+private noncomputable def coconeQuotientDiag :
+    Cocone (quotientDiag V h u ⋙ functorToAction F) where
+  pt := Aut F ⧸ₐ V.toSubgroup
+  ι := SingleObj.natTrans (u.hom ≫ quotientToQuotientOfLE V.toSubgroup U.toSubgroup hUinV) <| by
     intro (m : V ⧸ Subgroup.subgroupOf U V)
-    show (functorToAction F).map (help44 F V U h A u m) ≫ u.hom ≫
-      help43 V.toSubgroup U.toSubgroup hUinV = u.hom ≫ help43 V.toSubgroup U.toSubgroup hUinV
-    apply (cancel_epi (u.inv)).mp
-    rw [Iso.inv_hom_id_assoc]
+    simp only [const_obj_obj, Functor.comp_map, const_obj_map, Category.comp_id]
+    rw [← cancel_epi (u.inv), Iso.inv_hom_id_assoc]
     apply Action.hom_ext
     ext (x : Aut F ⧸ U.toSubgroup)
-    obtain ⟨μ, hμ⟩ := Quotient.exists_rep x
-    rw [←hμ]
-    let φ : V.toSubgroup ⧸ Subgroup.subgroupOf U.toSubgroup V.toSubgroup →*
-        End (Action.FintypeCat.ofMulAction (Aut F) (FintypeCat.of <| Aut F ⧸ U.toSubgroup)) :=
-      help3 F V U h
-    have : u.inv ≫ (functorToAction F).map (help44 F V U h A u m) ≫ u.hom = φ m := by
-      simp [← Iso.conj_apply, MulEquiv.apply_symm_apply, help44]
-    show Action.Hom.hom ((u.inv ≫ (functorToAction F).map (help44 F V U h A u m) ≫ u.hom) ≫
-      help43 V.toSubgroup U.toSubgroup hUinV) ⟦μ⟧
-      = ⟦μ⟧
-    rw [this]
-    show ((φ m).hom ≫ (help43 V.toSubgroup U.toSubgroup hUinV).hom) ⟦μ⟧ = ⟦μ⟧
-    obtain ⟨σ, hσ⟩ := Quotient.exists_rep m
-    rw [←hσ]
-    show ⟦μ * σ⁻¹⟧ = ⟦μ⟧
+    induction' m, x using Quotient.inductionOn₂ with σ μ
+    suffices h : ⟦μ * σ⁻¹⟧ = ⟦μ⟧ by
+      simp only [quotientToQuotientOfLE_hom_mk, quotientDiag_map,
+        functorToAction_map_quotientToEndObjectHom V _ u]
+      simpa
     apply Quotient.sound
     apply (QuotientGroup.leftRel_apply).mpr
-    simp only [InvMemClass.coe_inv, mul_inv_rev, _root_.inv_inv, inv_mul_cancel_right,
-      SetLike.coe_mem]
+    simp
 
-noncomputable def help461 (V U : OpenSubgroup (Aut F)) (h : Subgroup.Normal U.toSubgroup) (A : C)
-    (hUinV : U ≤ V)
-    (u : (functorToAction F).obj A ≅
-      Action.FintypeCat.ofMulAction (Aut F) (FintypeCat.of <| Aut F ⧸ U.toSubgroup)) :
-    (s : Cocone (help45 F V U h A u ⋙ functorToAction F)) →
-      (help46 F V U h A hUinV u).pt ⟶ s.pt := by
-  let M := V.toSubgroup ⧸ Subgroup.subgroupOf U V
-  let J : SingleObj M ⥤ C := help45 F V U h A u
-  let J' : SingleObj M ⥤ Action FintypeCat (MonCat.of (Aut F)) := J ⋙ functorToAction F
-  let φ : M →* End (Action.FintypeCat.ofMulAction (Aut F)
-      (FintypeCat.of <| Aut F ⧸ U.toSubgroup)) :=
-    help3 F V U h
-  intro s
-  constructor
-  swap
-  show Aut F ⧸ V.toSubgroup ⟶ s.pt.V
-  apply Quotient.lift
-  swap
-  intro (σ : Aut F)
-  let f : (functorToAction F).obj A ⟶ s.pt := s.ι.app (SingleObj.star M)
-  exact (u.inv ≫ f).hom ⟦σ⟧
-  intro σ τ hst
-  have : σ⁻¹ * τ ∈ V := (QuotientGroup.leftRel_apply).mp hst
-  let m : (SingleObj.star M ⟶ SingleObj.star M) := ⟦⟨σ⁻¹ * τ, this⟩⟧
-  have h1 : J'.map m ≫ s.ι.app (SingleObj.star M) = s.ι.app (SingleObj.star M) :=
-    s.ι.naturality m
-  have h2 : (J'.map m).hom (u.inv.hom ⟦τ⟧) = u.inv.hom ⟦σ⟧ := by
-    erw [(help441 F V U h A u m : J'.map m = u.hom ≫ φ m ≫ u.inv)]
-    show Action.Hom.hom (u.inv ≫ u.hom ≫ φ m ≫ u.inv) ⟦τ⟧ = Action.Hom.hom u.inv ⟦σ⟧
-    simp only [Iso.inv_hom_id_assoc, Action.comp_hom, FintypeCat.comp_apply]
-    apply congrArg
-    show ⟦τ * (σ⁻¹ * τ)⁻¹⟧ = ⟦σ⟧
-    simp only [mul_inv_rev, _root_.inv_inv, mul_inv_cancel_left]
-  have h3 : (u.inv ≫ s.ι.app (SingleObj.star M)).hom ⟦σ⟧
-      = (u.inv ≫ J'.map m ≫ s.ι.app (SingleObj.star M)).hom ⟦τ⟧ := by
-    show (u.inv ≫ s.ι.app (SingleObj.star M)).hom ⟦σ⟧
-      = (s.ι.app (SingleObj.star M)).hom ((J'.map m).hom (u.inv.hom ⟦τ⟧))
-    rw [h2]
+@[simps]
+private noncomputable def coconeQuotientDiagDesc
+    (s : Cocone (quotientDiag V h u ⋙ functorToAction F)) :
+      (coconeQuotientDiag h u hUinV).pt ⟶ s.pt where
+  hom := Quotient.lift (fun σ ↦ (u.inv ≫ s.ι.app (SingleObj.star _)).hom ⟦σ⟧) <| fun σ τ hst ↦ by
+    let J' := quotientDiag V h u ⋙ functorToAction F
+    let m : End (SingleObj.star (V.toSubgroup ⧸ Subgroup.subgroupOf U V)) :=
+      ⟦⟨σ⁻¹ * τ, (QuotientGroup.leftRel_apply).mp hst⟩⟧
+    have h1 : J'.map m ≫ s.ι.app (SingleObj.star _) = s.ι.app (SingleObj.star _) := s.ι.naturality m
+    conv_rhs => rw [← h1]
+    have h2 : (J'.map m).hom (u.inv.hom ⟦τ⟧) = u.inv.hom ⟦σ⟧ := by
+      simp only [comp_obj, quotientDiag_obj, Functor.comp_map, quotientDiag_map, J',
+        functorToAction_map_quotientToEndObjectHom V h u m]
+      show (u.inv ≫ u.hom ≫ _ ≫ u.inv).hom ⟦τ⟧ = u.inv.hom ⟦σ⟧
+      simp [m]
+    simp only [← h2, const_obj_obj, Action.comp_hom, FintypeCat.comp_apply]
+  comm g := by
+    ext (x : Aut F ⧸ V.toSubgroup)
+    induction' x using Quotient.inductionOn with σ
+    simp only [const_obj_obj]
+    show (((Aut F ⧸ₐ U.toSubgroup).ρ g ≫ u.inv.hom) ≫ (s.ι.app (SingleObj.star _)).hom) ⟦σ⟧ =
+      ((s.ι.app (SingleObj.star _)).hom ≫ s.pt.ρ g) (u.inv.hom ⟦σ⟧)
+    have : ((functorToAction F).obj A).ρ g ≫ (s.ι.app (SingleObj.star _)).hom =
+        (s.ι.app (SingleObj.star _)).hom ≫ s.pt.ρ g :=
+      (s.ι.app (SingleObj.star _)).comm g
+    rw [← this, u.inv.comm g]
     rfl
-  rw [h1] at h3
-  exact h3
-  intro (g : Aut F)
-  ext (x : Aut F ⧸ V.toSubgroup)
-  obtain ⟨σ, hσ⟩ := Quotient.exists_rep x
-  rw [←hσ]
-  simp only [MonoidHom.coe_comp, MulEquiv.coe_toMonoidHom, Function.comp_apply,
-    MulEquiv.symm_trans_apply, id_eq, Action.comp_hom, FintypeCat.comp_apply,
-    InvMemClass.coe_inv, eq_mpr_eq_cast]
-  have : ((functorToAction F).obj A).ρ g ≫ (s.ι.app (SingleObj.star M)).hom
-    = (s.ι.app (SingleObj.star M)).hom ≫ s.pt.ρ g := (s.ι.app (SingleObj.star M)).comm g
-  show (((Action.FintypeCat.ofMulAction (Aut F)
-    (FintypeCat.of <| Aut F ⧸ U.toSubgroup)).ρ g ≫ u.inv.hom) ≫
-      (s.ι.app (SingleObj.star M)).hom) ⟦σ⟧ =
-    ((s.ι.app (SingleObj.star M)).hom ≫ s.pt.ρ g) (u.inv.hom ⟦σ⟧)
-  rw [←this, u.inv.comm g]
-  rfl
 
-noncomputable def help47 (V U : OpenSubgroup (Aut F)) (h : Subgroup.Normal U.toSubgroup) (A : C)
-    (hUinV : U ≤ V)
-    (u : (functorToAction F).obj A ≅
-        Action.FintypeCat.ofMulAction (Aut F) (FintypeCat.of <| Aut F ⧸ U.toSubgroup)) :
-    IsColimit (help46 F V U h A hUinV u) where
-  desc := help461 F V U h A hUinV u
+/-- The constructed cocone `coconeQuotientDiag` on the diagram `quotientDiag` is colimiting. -/
+private noncomputable def coconeQuotientDiagIsColimit :
+    IsColimit (coconeQuotientDiag h u hUinV) where
+  desc := coconeQuotientDiagDesc h u hUinV
   fac s j := by
     apply (cancel_epi u.inv).mp
     apply Action.hom_ext
     ext (x : Aut F ⧸ U.toSubgroup)
-    obtain ⟨σ, hσ⟩ := Quotient.exists_rep x
-    rw [←hσ]
-    show Action.Hom.hom (help461 F V U h A hUinV u s)
-      (Action.Hom.hom (u.inv ≫ u.hom ≫ help43 V.toSubgroup U.toSubgroup hUinV) ⟦σ⟧) =
-      Action.Hom.hom (s.ι.app j) (Action.Hom.hom u.inv ⟦σ⟧)
-    simp only [Iso.inv_hom_id_assoc, comp_obj, const_obj_obj]
+    induction' x using Quotient.inductionOn with σ
+    simp
     rfl
-  uniq s := by
-    let M := V ⧸ Subgroup.subgroupOf U V
-    intro f hf
+  uniq s f hf := by
     apply Action.hom_ext
     ext (x : Aut F ⧸ V.toSubgroup)
-    obtain ⟨σ, hσ⟩ := Quotient.exists_rep x
-    rw [←hσ]
-    let y : F.obj A := u.inv.hom ⟦σ⟧
-    have h1 : ⟦σ⟧ = ((help46 F V U h A hUinV u).ι.app (SingleObj.star M)).hom y := by
-      show ⟦σ⟧ = (u.inv ≫ u.hom ≫ help43 V.toSubgroup U.toSubgroup hUinV).hom ⟦σ⟧
-      simp only [Iso.inv_hom_id_assoc]
-      rfl
-    show Action.Hom.hom f ⟦σ⟧ = (s.ι.app (SingleObj.star M)).hom y
-    rw [←hf (SingleObj.star M), h1]
-    rfl
+    induction' x using Quotient.inductionOn with σ
+    simp [← hf (SingleObj.star _)]
+
+end
 
 /-- For every open subgroup `V` of `Aut F`, there exists an `X : C` such that
 `F.obj X ≅ Aut F ⧸ V` as `Aut F`-sets. -/
 lemma ess_surj_of_quotient_by_open (V : OpenSubgroup (Aut F)) :
     ∃ (X : C), Nonempty ((functorToAction F).obj X ≅
       Action.FintypeCat.ofMulAction (Aut F) (FintypeCat.of <| Aut F ⧸ V.toSubgroup)) := by
-  obtain ⟨I, hf, hc, hi⟩ := exists_set_ker_evaluation_subset_of_isOpen F V.toSubgroup (one_mem V)
-    V.isOpen'
-  let Y : C := ∏ᶜ fun X : I => X
-  have hn : Nonempty (F.obj Y) := nonempty_fiber_pi_of_nonempty_of_finite F
-    (fun X : I ↦ X) (fun X ↦ letI := hc X X.property; nonempty_fiber_of_isConnected F X)
-  obtain ⟨A, f, hgal⟩ := exists_hom_from_galois_of_fiber_nonempty F Y hn
+  obtain ⟨I, hf, hc, hi⟩ := exists_set_ker_evaluation_subset_of_isOpen F (one_mem V) V.isOpen'
+  haveI (X : I) : IsConnected X.val := hc X X.property
+  haveI (X : I) : Nonempty (F.obj X.val) := nonempty_fiber_of_isConnected F X
+  have hn : Nonempty (F.obj <| (∏ᶜ fun X : I => X)) := nonempty_fiber_pi_of_nonempty_of_finite F _
+  obtain ⟨A, f, hgal⟩ := exists_hom_from_galois_of_fiber_nonempty F (∏ᶜ fun X : I => X) hn
   obtain ⟨a⟩ := nonempty_fiber_of_isConnected F A
-  let U : OpenSubgroup (Aut F) := MulAction.stabilizerₒ (Aut F) a
+  let U : OpenSubgroup (Aut F) := ⟨MulAction.stabilizer (Aut F) a, stabilizer_isOpen (Aut F) a⟩
   let u := fiberIsoQuotientStabilizer F A a
   have hUnormal : U.toSubgroup.Normal := stabilizer_normal_of_isGalois F A a
-  have h1 : ∀ σ ∈ U, σ.hom.app A = 𝟙 (F.obj A) := by
-    intro σ σinU
-    have hi : (Action.FintypeCat.ofMulAction (Aut F) (FintypeCat.of <| Aut F ⧸ U.toSubgroup)).ρ σ =
-        𝟙 (Aut F ⧸ U.toSubgroup) := by
-      apply FintypeCat.hom_ext
-      intro (x : Aut F ⧸ U.toSubgroup)
-      obtain ⟨τ, hτ⟩ := Quotient.exists_rep x
-      rw [←hτ]
+  have h1 (σ : Aut F) (σinU : σ ∈ U) : σ.hom.app A = 𝟙 (F.obj A) := by
+    have hi : (Aut F ⧸ₐ MulAction.stabilizer (Aut F) a).ρ σ = 𝟙 _ := by
+      refine FintypeCat.hom_ext _ _ (fun x ↦ ?_)
+      induction' x using Quotient.inductionOn with τ
       show ⟦σ * τ⟧ = ⟦τ⟧
       apply Quotient.sound
       apply (QuotientGroup.leftRel_apply).mpr
       simp only [mul_inv_rev]
-      apply Subgroup.Normal.conj_mem hUnormal
-      exact Subgroup.inv_mem U.toSubgroup σinU
-    have : Mono u.hom.hom := by
-      show Mono ((forget₂ _ FintypeCat).map u.hom)
-      infer_instance
-    apply (cancel_mono u.hom.hom).mp
-    erw [u.hom.comm σ, hi]
-    rfl
-  have h2 : ∀ σ ∈ U, ∀ X : I, σ.hom.app X = 𝟙 (F.obj X) := by
-    intro σ σinU ⟨X, hX⟩
+      exact Subgroup.Normal.conj_mem hUnormal _ (Subgroup.inv_mem U.toSubgroup σinU) _
+    simp [← cancel_mono u.hom.hom, show σ.hom.app A ≫ u.hom.hom = _ from u.hom.comm σ, hi]
+  have h2 (σ : Aut F) (σinU : σ ∈ U) : ∀ X : I, σ.hom.app X = 𝟙 (F.obj X) := by
+    intro ⟨X, hX⟩
     ext (x : F.obj X)
     let p : A ⟶ X := f ≫ Pi.π (fun Z : I => (Z : C)) ⟨X, hX⟩
     have : IsConnected X := hc X hX
-    have : Function.Surjective (F.map p) := surjective_of_nonempty_fiber_of_isConnected F p
-    obtain ⟨a, ha⟩ := this x
-    simp only [FintypeCat.id_apply, ←ha]
-    show (F.map p ≫ σ.hom.app X) a = F.map p a
-    rw [σ.hom.naturality, h1 σ σinU]
-    rfl
-  have hUinV : (U : Set (Aut F)) ≤ V := by
-    intro u uinU
-    exact hi u (h2 u uinU)
-  let U' : Subgroup V := Subgroup.subgroupOf U.toSubgroup V
-  have hU'normal : Subgroup.Normal U' := Subgroup.Normal.subgroupOf hUnormal V
-  let M := V ⧸ U'
-  have : Finite M := finiteQuotientSubgroups V U V.isOpen' U.isOpen'
-  let J : SingleObj M ⥤ C := help45 F V U hUnormal A u
-  let i1 : (functorToAction F).obj (colimit J) ≅
-    colimit (J ⋙ functorToAction F) := preservesColimitIso (functorToAction F) J
-  let c : Cocone (J ⋙ functorToAction F) := help46 F V U hUnormal A hUinV u
-  let ci : IsColimit c := help47 F V U hUnormal A hUinV u
-  let i2 : colimit (J ⋙ functorToAction F) ≅
-      Action.FintypeCat.ofMulAction (Aut F) (FintypeCat.of <| Aut F ⧸ V.toSubgroup) :=
-    colimit.isoColimitCocone ⟨c, ci⟩
-  let i3 : (functorToAction F).obj (colimit J) ≅
-    Action.FintypeCat.ofMulAction (Aut F) (FintypeCat.of <| Aut F ⧸ V.toSubgroup) := i1 ≪≫ i2
-  let X : C := colimit J
-  use X
-  exact ⟨i3⟩
+    obtain ⟨a, rfl⟩ := surjective_of_nonempty_fiber_of_isConnected F p x
+    simp only [FintypeCat.id_apply, FunctorToFintypeCat.naturality, h1 σ σinU]
+  have hUinV : (U : Set (Aut F)) ≤ V := fun u uinU ↦ hi u (h2 u uinU)
+  have := finiteQuotientSubgroups V U V.isOpen' U.isOpen'
+  exact ⟨colimit (quotientDiag V hUnormal u),
+    ⟨preservesColimitIso (functorToAction F) (quotientDiag V hUnormal u) ≪≫
+    colimit.isoColimitCocone ⟨coconeQuotientDiag hUnormal u hUinV,
+    coconeQuotientDiagIsColimit hUnormal u hUinV⟩⟩⟩
 
 end PreGaloisCategory
 

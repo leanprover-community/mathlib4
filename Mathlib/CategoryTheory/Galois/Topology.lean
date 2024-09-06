@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Mathlib.CategoryTheory.Endomorphism
-import Mathlib.CategoryTheory.FintypeCat
+import Mathlib.CategoryTheory.Limits.FintypeCat
 import Mathlib.Topology.Algebra.Group.Basic
-import Mathlib.CategoryTheory.Galois.Basic
+import Mathlib.CategoryTheory.Galois.Decomposition
 
 /-!
 
@@ -141,19 +141,44 @@ instance (X : C) : ContinuousSMul (Aut (F.obj X)) (F.obj X) := by
   constructor
   fun_prop
 
-instance continuousSMul_aut_fiber (X : C) : ContinuousSMul (Aut F) (F.obj X) := by
-  constructor
-  let g : Aut (F.obj X) × F.obj X → F.obj X := fun ⟨σ, x⟩ => σ.hom x
-  let h' : Aut F → Aut (F.obj X) := fun σ => σ.app X
-  let h : Aut F × F.obj X → Aut (F.obj X) × F.obj X :=
-    fun ⟨σ, x⟩ => ⟨h' σ, x⟩
-  have : Continuous g := continuous_smul
-  show Continuous (g ∘ h)
-  apply Continuous.comp
-  trivial
-  refine Continuous.prod_map ?_ continuous_id
-  show Continuous ((fun p => p X) ∘ autEmbedding F)
-  apply Continuous.comp (continuous_apply X) (continuous_induced_dom)
+instance continuousSMul_aut_fiber (X : C) : ContinuousSMul (Aut F) (F.obj X) where
+  continuous_smul := by
+    let g : Aut (F.obj X) × F.obj X → F.obj X := fun ⟨σ, x⟩ ↦ σ.hom x
+    let h (q : Aut F × F.obj X) : Aut (F.obj X) × F.obj X :=
+      ⟨((fun p ↦ p X) ∘ autEmbedding F) q.1, q.2⟩
+    show Continuous (g ∘ h)
+    fun_prop
+
+variable [GaloisCategory C] [FiberFunctor F]
+
+/--
+If `H` is an open subset of `Aut F` such that `1 ∈ H`, there exists a finite
+set `I` of connected objects of `C` such that every `σ : Aut F` that induces the identity
+on `F.obj X` for all `X ∈ I` is contained in `H`. In other words: The kernel
+of the evaluation map `Aut F →* ∏ X : I ↦ Aut (F.obj X)` is contained in `H`.
+-/
+lemma exists_set_ker_evaluation_subset_of_isOpen {H : Set (Aut F)} (hone : 1 ∈ H)
+    (h : IsOpen H) : ∃ (I : Set C) (_ : Fintype I), (∀ X ∈ I, IsConnected X) ∧
+    (∀ σ : Aut F, (∀ X : I, σ.hom.app X = 𝟙 (F.obj X)) → σ ∈ H) := by
+  obtain ⟨U, hUopen, rfl⟩ := isOpen_induced_iff.mp h
+  obtain ⟨I, u, ho, ha⟩ := isOpen_pi_iff.mp hUopen 1 hone
+  choose fι ff fc h4 h5 h6 using (fun X : I => has_decomp_connected_components X.val)
+  refine ⟨⋃ X, Set.range (ff X), Fintype.ofFinite _, ?_, ?_⟩
+  · rintro X ⟨A, ⟨Y, rfl⟩, hA2⟩
+    obtain ⟨i, rfl⟩ := hA2
+    exact h5 Y i
+  · refine fun σ h ↦ ha (fun X XinI ↦ ?_)
+    suffices h : autEmbedding F σ X = 1 by
+      rw [h]
+      exact (ho X XinI).right
+    have h : σ.hom.app X = 𝟙 (F.obj X) := by
+      have : Fintype (fι ⟨X, XinI⟩) := Fintype.ofFinite _
+      ext x
+      obtain ⟨⟨j⟩, a, ha : F.map _ a = x⟩ := Limits.FintypeCat.jointly_surjective
+        (Discrete.functor (ff ⟨X, XinI⟩) ⋙ F) _ (Limits.isColimitOfPreserves F (h4 ⟨X, XinI⟩)) x
+      rw [FintypeCat.id_apply, ← ha, FunctorToFintypeCat.naturality]
+      simp [h ⟨(ff _) j, ⟨Set.range (ff ⟨X, XinI⟩), ⟨⟨_, rfl⟩, ⟨j, rfl⟩⟩⟩⟩]
+    exact Iso.ext h
 
 end PreGaloisCategory
 
