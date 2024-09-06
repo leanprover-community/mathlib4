@@ -97,10 +97,6 @@ theorem sub_one_covBy [NoMinOrder α] (x : α) : x - 1 ⋖ x := by
 end Sub
 
 @[simp]
-theorem succ_zero [AddZeroClass α] [One α] [SuccAddOrder α] : succ (0 : α) = 1 := by
-  rw [succ_eq_add_one, zero_add]
-
-@[simp]
 theorem succ_iterate [AddMonoidWithOne α] [SuccAddOrder α] (x : α) (n : ℕ) :
     succ^[n] x = x + n := by
   induction n with
@@ -130,7 +126,7 @@ theorem not_isMax_zero [Zero α] [One α] [ZeroLEOneClass α] [NeZero (1 : α)] 
 
 theorem one_le_iff_pos [AddMonoidWithOne α] [ZeroLEOneClass α] [NeZero (1 : α)]
     [SuccAddOrder α] : 1 ≤ x ↔ 0 < x := by
-  rw [← succ_le_iff_of_not_isMax not_isMax_zero, succ_zero]
+  rw [← succ_le_iff_of_not_isMax not_isMax_zero, succ_eq_add_one, zero_add]
 
 theorem covBy_iff_add_one_eq [Add α] [One α] [SuccAddOrder α] [NoMaxOrder α] :
     x ⋖ y ↔ x + 1 = y := by
@@ -182,7 +178,7 @@ end Sub
 
 theorem lt_one_iff_nonpos [AddMonoidWithOne α] [ZeroLEOneClass α] [NeZero (1 : α)]
     [SuccAddOrder α] : x < 1 ↔ x ≤ 0 := by
-  rw [← lt_succ_iff_of_not_isMax not_isMax_zero, succ_zero]
+  rw [← lt_succ_iff_of_not_isMax not_isMax_zero, succ_eq_add_one, zero_add]
 
 end LinearOrder
 
