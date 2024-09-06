@@ -183,7 +183,7 @@ lemma lawsonOpen_iff_scottOpen_of_isUpperSet {s : Set α} (h : IsUpperSet s) :
     ⟨h, (scottHausdorff_le_lawson s) hs⟩, lawson_le_scott _⟩
 
 variable (L : TopologicalSpace α) (S : TopologicalSpace α)
-variable [@IsLawson α _ L] [@IsScott α _ S]
+variable [@IsLawson α _ L] [@IsScott α _ S univ]
 
 lemma isLawson_le_isScott : L ≤ S := by
   rw [@IsScott.topology_eq α _ S _, @IsLawson.topology_eq_lawson α _ L _]

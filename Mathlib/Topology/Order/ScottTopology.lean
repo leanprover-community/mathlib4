@@ -251,14 +251,14 @@ variable (α) [TopologicalSpace α]
 
 The Scott topology is defined as the join of the topology of upper sets and the Scott Hausdorff
 topology. -/
-class IsScott : Prop where
-  topology_eq_scott : ‹TopologicalSpace α› = scott α univ
+class IsScott (D : Set (Set α)) : Prop where
+  topology_eq_scott : ‹TopologicalSpace α› = scott α D
 
 end Preorder
 
 namespace IsScott
 section Preorder
-variable (α) [Preorder α] [TopologicalSpace α] [IsScott α]
+variable (α) [Preorder α] [TopologicalSpace α] [IsScott α univ]
 
 lemma topology_eq : ‹_› = scott α univ := topology_eq_scott
 
@@ -307,7 +307,7 @@ The closure of a singleton `{a}` in the Scott topology is the right-closed left-
     rw [← LowerSet.coe_Iic, ← lowerClosure_singleton]
     apply lowerClosure_subset_closure
 
-variable [Preorder β] [TopologicalSpace β] [IsScott β] {f : α → β}
+variable [Preorder β] [TopologicalSpace β] [IsScott β univ] {f : α → β}
 
 lemma monotone_of_continuous (hf : Continuous f) : Monotone f := fun _ b hab ↦ by
   by_contra h
@@ -333,7 +333,7 @@ lemma monotone_of_continuous (hf : Continuous f) : Monotone f := fun _ b hab ↦
 end Preorder
 
 section PartialOrder
-variable [PartialOrder α] [TopologicalSpace α] [IsScott α]
+variable [PartialOrder α] [TopologicalSpace α] [IsScott α univ]
 
 /--
 The Scott topology on a partial order is T₀.
@@ -349,7 +349,7 @@ section CompleteLinearOrder
 
 variable [CompleteLinearOrder α]
 
-lemma isOpen_iff_Iic_compl_or_univ [TopologicalSpace α] [Topology.IsScott α] (U : Set α) :
+lemma isOpen_iff_Iic_compl_or_univ [TopologicalSpace α] [Topology.IsScott α univ] (U : Set α) :
     IsOpen U ↔ U = univ ∨ ∃ a, (Iic a)ᶜ = U := by
   constructor
   · intro hU
@@ -416,7 +416,7 @@ variable [Preorder α]
 
 instance : Preorder (WithScott α) := ‹Preorder α›
 instance : TopologicalSpace (WithScott α) := scott α univ
-instance : IsScott (WithScott α) := ⟨rfl⟩
+instance : IsScott (WithScott α) univ := ⟨rfl⟩
 
 lemma isOpen_iff_isUpperSet_and_scottHausdorff_open' {u : Set α} :
     IsOpen (WithScott.ofScott ⁻¹' u) ↔ IsUpperSet u ∧ (scottHausdorff α univ).IsOpen u := Iff.rfl
@@ -438,10 +438,11 @@ variable [TopologicalSpace α]
 
 /-- If `α` is equipped with the Scott topology, then it is homeomorphic to `WithScott α`.
 -/
-def IsScott.withScottHomeomorph [IsScott α] : WithScott α ≃ₜ α :=
+def IsScott.withScottHomeomorph [IsScott α univ] : WithScott α ≃ₜ α :=
   WithScott.ofScott.toHomeomorphOfInducing ⟨by erw [IsScott.topology_eq α, induced_id]; rfl⟩
 
-lemma IsScott.scottHausdorff_le [IsScott α] : scottHausdorff α univ ≤ ‹TopologicalSpace α› := by
+lemma IsScott.scottHausdorff_le [IsScott α univ] :
+    scottHausdorff α univ ≤ ‹TopologicalSpace α› := by
   rw [IsScott.topology_eq α, scott]; exact le_sup_right
 
 lemma IsLower.scottHausdorff_le [IsLower α] : scottHausdorff α univ ≤ ‹TopologicalSpace α› :=
