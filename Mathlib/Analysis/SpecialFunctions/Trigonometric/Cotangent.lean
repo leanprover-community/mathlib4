@@ -9,7 +9,6 @@ import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
 # Cotangent
 
 This file contains lemmas about the cotangent function, including useful series expansions.
-
 -/
 
 open Real Complex BigOperators Filter
