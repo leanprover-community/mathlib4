@@ -87,7 +87,7 @@ lemma g_pow (a : D) (n : ℕ) : ∀ x : D, ((g a) ^ n).1 x = x * (a ^ n) := by
 
 -- *Filippo* : Please change the name!
 lemma important (x y : D) (n : ℕ) :
-  δ x (((δ x) ^ n) y) = ((δ x) ^ (n + 1)) y := by
+    δ x (((δ x) ^ n) y) = ((δ x) ^ (n + 1)) y := by
   simp only [LinearMap.pow_apply, δ_def, f_def, g_def, Function.iterate_succ_apply']
 
 variable [Algebra.IsAlgebraic (Subring.center D) D]
