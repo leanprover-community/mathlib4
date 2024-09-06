@@ -1880,3 +1880,5 @@ theorem stronglyMeasurable_uncurry_of_continuous_of_stronglyMeasurable {α β ι
   exact ((t_sf n).measurable.comp measurable_fst).subtype_mk
 
 end MeasureTheory
+
+set_option linter.style.longFile 2000
