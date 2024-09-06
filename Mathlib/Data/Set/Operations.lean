@@ -122,6 +122,12 @@ theorem mem_image (f : α → β) (s : Set α) (y : β) : y ∈ f '' s ↔ ∃ x
 theorem mem_image_of_mem (f : α → β) {x : α} {a : Set α} (h : x ∈ a) : f x ∈ f '' a :=
   ⟨_, h, rfl⟩
 
+theorem mem_image_iff_mem_of_injective {f : α → β} (s : Set α) (a : α) (hf : f.Injective) :
+    f a ∈ f '' s ↔ a ∈ s := by
+  refine ⟨fun ha => ?_, fun ha => mem_image_of_mem f ha⟩
+  obtain ⟨y, hy, hy'⟩ := (mem_image _ _ _).mp ha
+  rwa [←hf hy']
+
 /-- Restriction of `f` to `s` factors through `s.imageFactorization f : s → f '' s`. -/
 def imageFactorization (f : α → β) (s : Set α) : s → f '' s := fun p =>
   ⟨f p.1, mem_image_of_mem f p.2⟩
