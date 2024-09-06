@@ -2332,41 +2332,12 @@ theorem map_count_True_eq_filter_card (s : Multiset α) (p : α → Prop) [Decid
   simp [Multiset.erase_singleton, Multiset.count_singleton]
   split <;> simp_all
 
-theorem singleton_add_sub_of_cons_add [DecidableEq α] {a a0: α} {M X : Multiset α}
-    (H : a ::ₘ M = X + {a0}) : M = X + {a0} - {a} := by
-  by_cases hyp : a = a0
-  · rw [hyp, add_comm] at H
-    simp_all [Multiset.singleton_add]
-  · have a0_a: a0 ≠ a := by rw [eq_comm] at hyp; exact hyp
-    ext b
-    simp [Multiset.count_cons, Multiset.count_singleton, Multiset.count_add]
-    have H : Multiset.count b (a ::ₘ M) = Multiset.count b (X + {a0}) := by simp_all only
-    [Multiset.count_add]
-    by_cases ba : b = a
-    · rw [ba] at *
-      have : (a ::ₘ M).count a = M.count a + 1 := by simp
-      simp_all
-    by_cases ba0 : b = a0
-    · have : (a ::ₘ M).count a0 = X.count a0 + 1 := by
-        subst_eqs
-        rw [add_comm, Multiset.singleton_add] at H
-        simp_all
-      have : M.count a0 = Multiset.count a0 (a ::ₘ M) := by
-        have : a0 ≠ a := by simp_all
-        rw [Multiset.count_cons_of_ne this M]
-      simp_all
-    · have : M.count b = (a ::ₘ M).count b := by
-        have : b ≠ a := by simp_all
-        rw [Multiset.count_cons_of_ne this M]
-      rw [this]
-      simp_all
-
 theorem mem_sub [DecidableEq α] {a : α} {s t : Multiset α} : a ∈ s - t ↔
     t.count a < s.count a := by
   rw [← count_pos, count_sub, Nat.sub_pos_iff_lt]
 
-theorem inter_add_sub_of_eq [DecidableEq α] {M N P Q : Multiset α} (h : M + N = P + Q) :
-    N = (N ∩ Q) + (P - M) := by
+theorem inter_add_sub_of_add_eq_add [DecidableEq α] {M N P Q : Multiset α} (h : M + N = P + Q) :
+    (N ∩ Q) + (P - M) = N := by
   ext x
   rw [Multiset.count_add, Multiset.count_inter, Multiset.count_sub]
   have h0 : M.count x + N.count x = P.count x + Q.count x := by
