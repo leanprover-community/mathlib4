@@ -20,8 +20,10 @@ Jacobian.
   if the determinant of its Jacobian is strictly negative on that set.
 - `orientationPreservingGroupoid` : the groupoid of partial homeos of `H` which are
   orientation-preserving.
-- `OrientableManifold`: a type class saying that the charted space `M`, modelled on the space `H`,
-  admits an orientation.
+- `OrientableManifold` : a type class saying that the charted space `M`, modelled on the space
+  `H`, admits an orientation.
+- `OrientableSmoothManifold` : a type class representing a manifold that is both orientable
+  and smooth.
 
 ## Main Results
 
@@ -183,8 +185,8 @@ lemma orientableManifold_of_zero_dim (H : Type*) [NormedAddCommGroup H] [NormedS
 
 /-- Typeclass defining orientable smooth manifolds. -/
 class OrientableSmoothManifold (H : Type*) [NormedAddCommGroup H] [NormedSpace ℝ H]
-    [FiniteDimensional ℝ H] (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
-    [OrientableManifold H M] (I : ModelWithCorners ℝ H M) [SmoothManifoldWithCorners I M] extends
-  SmoothManifoldWithCorners I M ∧ OrientableManifold H M : Prop
+    [FiniteDimensional ℝ H] {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (M : Type*)
+    [TopologicalSpace M] [ChartedSpace H M] (I : ModelWithCorners ℝ E H) extends
+  HasGroupoid M ((contDiffGroupoid ⊤ I) ⊓ orientationPreservingGroupoid) : Prop
 
 end OrientableManifold
