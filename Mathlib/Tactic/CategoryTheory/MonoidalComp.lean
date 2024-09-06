@@ -91,55 +91,45 @@ namespace MonoidalCoherence
 
 variable [MonoidalCategory C]
 
-@[simps! iso iso_hom iso_inv]
+@[simps]
 instance refl (X : C) : MonoidalCoherence X X := ⟨Iso.refl _⟩
 
-@[simps! iso iso_hom iso_inv]
 instance whiskerLeft (X Y Z : C) [MonoidalCoherence Y Z] :
     MonoidalCoherence (X ⊗ Y) (X ⊗ Z) :=
   ⟨whiskerLeftIso X MonoidalCoherence.iso⟩
 
-@[simps! iso iso_hom iso_inv]
 instance whiskerRight (X Y Z : C) [MonoidalCoherence X Y] :
     MonoidalCoherence (X ⊗ Z) (Y ⊗ Z) :=
   ⟨whiskerRightIso MonoidalCoherence.iso Z⟩
 
-@[simps! iso iso_hom iso_inv]
 instance tensor_right (X Y : C) [MonoidalCoherence (𝟙_ C) Y] :
     MonoidalCoherence X (X ⊗ Y) :=
   ⟨(ρ_ X).symm ≪≫ (whiskerLeftIso X MonoidalCoherence.iso)⟩
 
-@[simps! iso iso_hom iso_inv]
 instance tensor_right' (X Y : C) [MonoidalCoherence Y (𝟙_ C)] :
     MonoidalCoherence (X ⊗ Y) X :=
   ⟨whiskerLeftIso X MonoidalCoherence.iso ≪≫ (ρ_ X)⟩
 
-@[simps! iso iso_hom iso_inv]
 instance left (X Y : C) [MonoidalCoherence X Y] :
     MonoidalCoherence (𝟙_ C ⊗ X) Y :=
   ⟨λ_ X ≪≫ MonoidalCoherence.iso⟩
 
-@[simps! iso iso_hom iso_inv]
 instance left' (X Y : C) [MonoidalCoherence X Y] :
     MonoidalCoherence X (𝟙_ C ⊗ Y) :=
   ⟨MonoidalCoherence.iso ≪≫ (λ_ Y).symm⟩
 
-@[simps! iso iso_hom iso_inv]
 instance right (X Y : C) [MonoidalCoherence X Y] :
     MonoidalCoherence (X ⊗ 𝟙_ C) Y :=
   ⟨ρ_ X ≪≫ MonoidalCoherence.iso⟩
 
-@[simps! iso iso_hom iso_inv]
 instance right' (X Y : C) [MonoidalCoherence X Y] :
     MonoidalCoherence X (Y ⊗ 𝟙_ C) :=
   ⟨MonoidalCoherence.iso ≪≫ (ρ_ Y).symm⟩
 
-@[simps! iso iso_hom iso_inv]
 instance assoc (X Y Z W : C) [MonoidalCoherence (X ⊗ (Y ⊗ Z)) W] :
     MonoidalCoherence ((X ⊗ Y) ⊗ Z) W :=
   ⟨α_ X Y Z ≪≫ MonoidalCoherence.iso⟩
 
-@[simps! iso iso_hom iso_inv]
 instance assoc' (W X Y Z : C) [MonoidalCoherence W (X ⊗ (Y ⊗ Z))] :
     MonoidalCoherence W ((X ⊗ Y) ⊗ Z) :=
   ⟨MonoidalCoherence.iso ≪≫ (α_ X Y Z).symm⟩
@@ -148,6 +138,6 @@ end MonoidalCoherence
 
 @[simp] lemma monoidalComp_refl {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     f ⊗≫ g = f ≫ g := by
-  simp [monoidalComp]
+  simp [monoidalComp, MonoidalCoherence.hom]
 
 end CategoryTheory
