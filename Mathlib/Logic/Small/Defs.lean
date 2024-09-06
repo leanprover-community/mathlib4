@@ -71,14 +71,19 @@ theorem small_lift (α : Type u) [hα : Small.{v} α] : Small.{max v w} α :=
   let ⟨⟨_, ⟨f⟩⟩⟩ := hα
   Small.mk' <| f.trans (Equiv.ulift.{w}).symm
 
-/- This was an instance but useless due to https://github.com/leanprover/lean4/issues/2297. -/
+/- Once https://github.com/leanprover/lean4/issues/2297 is fixed, this should be deprecated
+in favor of `small_max`. -/
+instance (priority := 50) small_of_lift (α : Type v) [Small.{u} (ULift.{u} α)] : Small.{u} α :=
+  small_map Equiv.ulift.symm
+
 lemma small_max (α : Type v) : Small.{max w v} α :=
-  small_lift.{v, w} α
+  inferInstance
 
-instance small_zero (α : Type) : Small.{w} α := small_max α
+lemma small_zero (α : Type) : Small.{w} α :=
+  small_max α
 
-instance (priority := 100) small_succ (α : Type v) : Small.{v+1} α :=
-  small_lift.{v, v+1} α
+instance (priority := 100) small_succ (α : Type v) : Small.{v + 1} α :=
+  small_max.{v + 1} α
 
 instance small_ulift (α : Type u) [Small.{v} α] : Small.{v} (ULift.{w} α) :=
   small_map Equiv.ulift
