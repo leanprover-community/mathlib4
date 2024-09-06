@@ -306,7 +306,7 @@ theorem lovasz_form (hir : i ≤ r) (hrk : r ≤ k) (hkn : k ≤ n)
   set 𝒞 : Finset (Finset (Fin n)) := powersetCard r range'k
   have Ccard : 𝒞.card = k.choose r := by rw [card_powersetCard, card_attachFin, card_range]
   have : (𝒞 : Set (Finset (Fin n))).Sized r := Set.sized_powersetCard _ _
-  suffices this : (∂^[i] 𝒞).card = k.choose  (r - i) by
+  suffices this : (∂^[i] 𝒞).card = k.choose (r - i) by
     rw [← this]
     apply iterated_kk h₁ _ _
     rwa [Ccard]
