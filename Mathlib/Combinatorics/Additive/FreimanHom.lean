@@ -220,8 +220,7 @@ lemma isMulFreimanIso_one_iff : IsMulFreimanIso 1 A B f ↔ BijOn f A B :=
 @[to_additive (attr := simp)]
 lemma isMulFreimanHom_empty : IsMulFreimanHom n (∅ : Set α) B f where
   mapsTo := mapsTo_empty f B
-  map_prod_eq_map_prod s t hs ht := by
-    simp [eq_zero_of_forall_not_mem hs, eq_zero_of_forall_not_mem ht]
+  map_prod_eq_map_prod s t := by aesop (add simp eq_zero_of_forall_not_mem)
 
 @[to_additive (attr := simp)]
 lemma isMulFreimanIso_empty : IsMulFreimanIso n (∅ : Set α) (∅ : Set β) f where
@@ -240,28 +239,21 @@ lemma isMulFreimanIso_empty : IsMulFreimanIso n (∅ : Set α) (∅ : Set β) f 
 theorem List.length_eq_succ {α : Type*} {n} {l : List α} :
     l.length = n + 1 ↔ ∃ h t, h :: t = l ∧ t.length = n := by cases l <;> aesop
 
-lemma coe_cons {α : Type*} {h : α} {t : List α} :
-    (h :: t : Multiset α) = h ::ₘ t := by simp only [cons_coe]
-
 theorem card_eq_succ {α : Type*} {s : Multiset α} :
     card s = n + 1 ↔ ∃ a t, a ::ₘ t = s ∧ card t = n := by
-  constructor
-  case mp =>
-    induction s using Quot.inductionOn
-    case h s =>
+  refine ⟨?_, by aesop⟩
+  induction s using Quot.inductionOn with
+  | h s =>
       simp only [quot_mk_to_coe'', coe_card, List.length_eq_succ, forall_exists_index, and_imp]
       rintro a s rfl rfl
       exact ⟨a, s, rfl, rfl⟩
-  case mpr =>
-    rintro ⟨_, _, rfl, rfl⟩
-    simp
 
 @[to_additive] lemma MulHomClass.isMulFreimanHom [FunLike F α β] [MulHomClass F α β] (f : F)
     (hfAB : MapsTo f A B) : IsMulFreimanHom n A B f :=
   match n with
   | 0 => by simpa
-  | n + 1 => IsMulFreimanHom.mk hfAB fun s t hsA htA hs ht h =>
-      by rw [← map_multiset_prod_ne_zero _ (by aesop), h, map_multiset_prod_ne_zero _ (by aesop)]
+  | n + 1 => IsMulFreimanHom.mk hfAB fun s t hsA htA hs ht h => by
+      rw [← map_multiset_prod_ne_zero _ (by aesop), h, map_multiset_prod_ne_zero _ (by aesop)]
 
 @[to_additive] lemma MulEquivClass.isMulFreimanIso [EquivLike F α β] [MulEquivClass F α β] (f : F)
     (hfAB : BijOn f A B) : IsMulFreimanIso n A B f where
