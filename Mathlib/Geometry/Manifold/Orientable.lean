@@ -75,14 +75,10 @@ determinant of its Jacobian is strictly negative on that set.
 def OrientationReversing (f : H → H) (s : Set H) : Prop :=
   ∀ x ∈ s, (fderiv ℝ f x).det < 0
 
-lemma orientationPreserving_of_zero_dim (f : H → H) (s : Set H) (h : Module.rank ℝ H = 0) :
-    OrientationPreserving f s :=
-  fun _ _ ↦
-  have det_eq_one : (fderiv ℝ f _).det = 1 := by
-    have b : Basis (Fin 0) ℝ H := Basis.ofEquivFun (finDimVectorspaceEquiv 0 h)
-    rw [ContinuousLinearMap.det, ← (fderiv ℝ f _).det_toMatrix b]
-    exact Matrix.det_fin_zero
-  det_eq_one ▸ Real.zero_lt_one
+lemma orientationPreserving_of_zero_dim (f : H → H) (s : Set H)
+    (h : FiniteDimensional.finrank ℝ H = 0) : OrientationPreserving f s := by
+  intro _ _
+  simp [LinearMap.det_eq_one_of_finrank_eq_zero h]
 
 lemma OrientationPreserving.differentiableAt [FiniteDimensional ℝ H] {f : H → H} {s : Set H}
     (h : OrientationPreserving f s) {x : H} (hs : x ∈ s) : DifferentiableAt ℝ f x := by
@@ -177,7 +173,7 @@ class OrientableManifold (H : Type*) [NormedAddCommGroup H] [NormedSpace ℝ H]
 /-- `0`-dimensional manifolds are always orientable. -/
 lemma orientableManifold_of_zero_dim (H : Type*) [NormedAddCommGroup H] [NormedSpace ℝ H]
     [FiniteDimensional ℝ H] (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
-    (h : Module.rank ℝ H = 0) : OrientableManifold H M where
+    (h : FiniteDimensional.finrank ℝ H = 0) : OrientableManifold H M where
   compatible := fun {_ _} _ _ ↦
     ⟨orientationPreserving_of_zero_dim _ _ h, orientationPreserving_of_zero_dim _ _ h⟩
 
