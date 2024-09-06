@@ -1092,6 +1092,7 @@ import Mathlib.Analysis.Convex.Strong
 import Mathlib.Analysis.Convex.Topology
 import Mathlib.Analysis.Convex.Uniform
 import Mathlib.Analysis.Convolution
+import Mathlib.Analysis.CstarAlgebra.Basic
 import Mathlib.Analysis.CstarAlgebra.ContinuousFunctionalCalculus.Basic
 import Mathlib.Analysis.CstarAlgebra.ContinuousFunctionalCalculus.Instances
 import Mathlib.Analysis.CstarAlgebra.ContinuousFunctionalCalculus.Integral
