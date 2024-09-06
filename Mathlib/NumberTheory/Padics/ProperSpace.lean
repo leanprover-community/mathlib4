@@ -15,10 +15,9 @@ and that `ℚ_[p]` is locally compact.
 
 ## Main results
 
-- `PadicInt.totally_bounded` : The set of p-adic integers `ℤ_[p]` is totally bounded.
-- `PadicInt.is_compact` : The set of p-adic integers `ℤ_[p]` is a compact topological space.
-- `Padic.locally_compact_space` : The set of p-adic numbers ℚ_[p] is a locally compact topological
-                                  space.
+- `PadicInt.totallyBounded_univ` : The set of p-adic integers `ℤ_[p]` is totally bounded.
+- `PadicInt.compactSpace` : The set of p-adic integers `ℤ_[p]` is a compact topological space.
+- `Padic.instProperSpace` : The field of p-adic numbers `ℚ_[p]` is a proper metric space.
 
 ## Notation
 
