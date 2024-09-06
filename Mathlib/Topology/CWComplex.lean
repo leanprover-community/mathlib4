@@ -107,7 +107,7 @@ structure RelativeCWComplex where
   sk : ℕ → TopCat.{u}
   /-- Each `sk (n+1)` (i.e., the `n`-skeleton) is obtained from `sk n` (i.e., the
   `(n-1)`-skeleton) by attaching `n`-disks. -/
-  attach_cells : (n : ℕ) → RelativeCWComplex.AttachCells (sk n) (sk (n + 1)) (n - 1)
+  attach_cells (n : ℕ) : RelativeCWComplex.AttachCells (sk n) (sk (n + 1)) (n - 1)
 
 /-- A CW-complex is a relative CW-complex whose `sk 0` (i.e., `(-1)`-skeleton) is empty. -/
 structure CWComplex extends RelativeCWComplex.{u} where
