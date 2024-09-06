@@ -69,38 +69,32 @@ lemma exists_orderEmbedding_insert [DenselyOrdered β] [NoMinOrder β] [NoMaxOrd
       g ∘ (Set.inclusion ((S.subset_insert a) : ↑S ⊆ ↑(insert a S))) = f := by
   let Slt := (S.attach.filter (fun (x : S) => x < a)).image f
   let Sgt := (S.attach.filter (fun (x : S) => a < x)).image f
-  obtain ⟨n, hn, hn'⟩ := Order.exists_between_finsets Slt Sgt (fun x hx y hy => by
+  obtain ⟨b, hb, hb'⟩ := Order.exists_between_finsets Slt Sgt (fun x hx y hy => by
     simp only [Finset.mem_image, Finset.mem_filter, Finset.mem_attach, true_and, Subtype.exists,
       exists_and_left, Slt, Sgt] at hx hy
     obtain ⟨_, hx, _, rfl⟩ := hx
     obtain ⟨_, hy, _, rfl⟩ := hy
     exact f.strictMono (hx.trans hy))
-  have hg : StrictMono (fun (x : (insert a S : Finset α)) =>
-      if hx : x.1 ∈ S
-      then f ⟨x.1, hx⟩
-      else n) := by
-    rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
-    by_cases hxS : x ∈ S
-    · by_cases hyS : y ∈ S
-      · simp only [hxS, hyS, ↓reduceDIte, OrderEmbedding.lt_iff_lt, Subtype.mk_lt_mk]
-        exact hxy
-      · obtain rfl := (Finset.eq_of_not_mem_of_mem_insert hy hyS)
+  refine ⟨OrderEmbedding.ofStrictMono
+    (fun (x : (insert a S : Finset α)) => if hx : x.1 ∈ S then f ⟨x.1, hx⟩ else b) ?_, ?_⟩
+  · rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
+    if hxS : x ∈ S
+    then if hyS : y ∈ S
+      then simpa only [hxS, hyS, ↓reduceDIte, OrderEmbedding.lt_iff_lt, Subtype.mk_lt_mk]
+      else
+        obtain rfl := Finset.eq_of_not_mem_of_mem_insert hy hyS
         simp only [hxS, hyS, ↓reduceDIte]
-        simp only [Finset.mem_image, Finset.mem_filter, Finset.mem_attach, true_and, Subtype.exists,
-          exists_and_left, forall_exists_index, and_imp, Slt] at hn
-        exact hn (f ⟨x, hxS⟩) x hxy hxS rfl
-    · obtain rfl := (Finset.eq_of_not_mem_of_mem_insert hx hxS)
-      by_cases hyS : y ∈ S
-      · simp only [hxS, hyS, ↓reduceDIte]
-        simp only [Finset.mem_image, Finset.mem_filter, Finset.mem_attach, true_and, Subtype.exists,
-          exists_and_left, forall_exists_index, and_imp, Sgt] at hn'
-        exact hn' (f ⟨y, hyS⟩) y hxy hyS rfl
-      · obtain rfl := (Finset.eq_of_not_mem_of_mem_insert hy hyS)
-        simp only [lt_self_iff_false] at hxy
-  use OrderEmbedding.ofStrictMono _ hg
-  ext x
-  simp only [OrderEmbedding.coe_ofStrictMono, Finset.insert_val, Function.comp_apply,
-    Set.coe_inclusion, Finset.coe_mem, ↓reduceDIte, Subtype.coe_eta]
+        exact hb _ (Finset.mem_image_of_mem _ (Finset.mem_filter.2 ⟨Finset.mem_attach _ _, hxy⟩))
+    else
+      obtain rfl := Finset.eq_of_not_mem_of_mem_insert hx hxS
+      if hyS : y ∈ S
+      then
+        simp only [hxS, hyS, ↓reduceDIte]
+        exact hb' _ (Finset.mem_image_of_mem _ (Finset.mem_filter.2 ⟨Finset.mem_attach _ _, hxy⟩))
+      else simp only [Finset.eq_of_not_mem_of_mem_insert hy hyS, lt_self_iff_false] at hxy
+  · ext x
+    simp only [Finset.coe_sort_coe, OrderEmbedding.coe_ofStrictMono, Finset.insert_val,
+      Function.comp_apply, Finset.coe_mem, ↓reduceDIte, Subtype.coe_eta]
 
 variable (α β)
 

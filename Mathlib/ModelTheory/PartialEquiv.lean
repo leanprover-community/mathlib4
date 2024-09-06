@@ -425,24 +425,21 @@ theorem IsExtensionPair_iff_exists_embedding_closure_singleton_sup :
     ∀ (S : L.Substructure M) (_ : S.FG) (f : S ↪[L] N) (m : M),
       ∃ g : (closure L {m} ⊔ S : L.Substructure M) ↪[L] N, f =
         g.comp (Substructure.inclusion le_sup_right) := by
-  constructor
-  · intro h S S_FG f m
-    obtain ⟨⟨f', hf'⟩, mf', ff'1, ff'2⟩ := h ⟨⟨S, _, f.equivRange⟩, S_FG⟩ m
+  refine ⟨fun h S S_FG f m => ?_, fun h ⟨f, f_FG⟩ m => ?_⟩
+  · obtain ⟨⟨f', hf'⟩, mf', ff'1, ff'2⟩ := h ⟨⟨S, _, f.equivRange⟩, S_FG⟩ m
     refine ⟨f'.toEmbedding.comp (Substructure.inclusion ?_), ?_⟩
     · simp only [sup_le_iff, ff'1, closure_le, singleton_subset_iff, SetLike.mem_coe, mf',
         and_self]
     · ext ⟨x, hx⟩
-      simp only [Embedding.subtype_equivRange] at ff'2
+      rw [Embedding.subtype_equivRange] at ff'2
       simp only [← ff'2, Embedding.comp_apply, Substructure.coe_inclusion, inclusion_mk,
         Equiv.coe_toEmbedding, coeSubtype, PartialEquiv.toEmbedding_apply]
-  · intro h ⟨f, f_FG⟩ m
-    let S := closure L {m} ⊔ f.dom
-    have dom_le_S : f.dom ≤ S := le_sup_right
-    let ⟨f', eq_f'⟩ := h f.dom f_FG f.toEmbedding m
+  · obtain ⟨f', eq_f'⟩ := h f.dom f_FG f.toEmbedding m
+    refine ⟨⟨⟨closure L {m} ⊔ f.dom, f'.toHom.range, f'.equivRange⟩,
+      (fg_closure_singleton _).sup f_FG⟩,
+      subset_closure.trans (le_sup_left : (closure L) {m} ≤ _) (mem_singleton m),
+      ⟨le_sup_right, Embedding.ext (fun _ => ?_)⟩⟩
     rw [PartialEquiv.toEmbedding] at eq_f'
-    refine ⟨⟨⟨S, f'.toHom.range, f'.equivRange⟩, (fg_closure_singleton _).sup f_FG⟩,
-      subset_closure.trans (le_sup_left : _ ≤ S) (mem_singleton m), ⟨dom_le_S, ?_⟩⟩
-    ext
     simp only [Embedding.comp_apply, Substructure.coe_inclusion, Equiv.coe_toEmbedding, coeSubtype,
       Embedding.equivRange_apply, eq_f']
 
