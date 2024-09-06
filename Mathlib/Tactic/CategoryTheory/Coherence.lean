@@ -110,7 +110,7 @@ def exception' (msg : MessageData) : TacticM Unit := do
     throwError msg
 
 /-- Sending morphisms in `FreeMonoidalCategory C` to those in `C`. -/
-def mkProjectMapExprAux {X Y : FreeMonoidalCategory C} (f : X ⟶ Y) :=
+def mkProjectMapExprAux [MonoidalCategory C] {X Y : FreeMonoidalCategory C} (f : X ⟶ Y) :=
   FreeMonoidalCategory.projectMap id _ _ f
 
 /-- Same as `LiftHom.lift`, but the `LiftHom f` instance is explicit. -/
