@@ -89,13 +89,13 @@ termination_by (G, H)
 theorem neg {G : PGame} (h : G.Impartial) : (-G).Impartial := by
   apply impartial_mk
   · rw [neg_neg]
-    exact Equiv.symm (neg_equiv_self h)
+    exact Equiv.symm h.neg_equiv_self
   · intro i
     rw [moveLeft_neg']
-    apply neg (h.moveRight _)
+    exact neg (h.moveRight _)
   · intro i
     rw [moveRight_neg']
-    apply neg (h.moveLeft _)
+    exact neg (h.moveLeft _)
 termination_by G
 
 variable {G H : PGame}
@@ -113,9 +113,9 @@ theorem nonneg (hG : G.Impartial) : ¬ G < 0 := by
 /-- In an impartial game, either the first player always wins, or the second player always wins. -/
 theorem equiv_or_fuzzy_zero (hG : G.Impartial) : G ≈ 0 ∨ G ‖ 0 := by
   rcases lt_or_equiv_or_gt_or_fuzzy G 0 with (h | h | h | h)
-  · exact (nonneg hG h).elim
+  · exact (hG.nonneg h).elim
   · exact Or.inl h
-  · exact (nonpos hG h).elim
+  · exact (hG.nonpos h).elim
   · exact Or.inr h
 
 theorem not_equiv_zero_iff (h : G.Impartial) : ¬ G ≈ 0 ↔ G ‖ 0 :=

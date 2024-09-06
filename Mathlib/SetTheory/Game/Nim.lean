@@ -147,11 +147,9 @@ theorem toRightMovesNim_one_symm (i) :
     (@toRightMovesNim 1).symm i = ⟨0, Set.mem_Iio.mpr zero_lt_one⟩ := by
   simp [eq_iff_true_of_subsingleton]
 
-theorem nim_one_moveLeft (x) : (nim 1).moveLeft x = nim 0 := by
-  simp
+theorem nim_one_moveLeft (x) : (nim 1).moveLeft x = nim 0 := by simp
 
-theorem nim_one_moveRight (x) : (nim 1).moveRight x = nim 0 := by
-  simp
+theorem nim_one_moveRight (x) : (nim 1).moveRight x = nim 0 := by simp
 
 /-- `nim 1` has exactly the same moves as `star`. -/
 def nimOneRelabelling : nim 1 ≡r star := by
@@ -177,38 +175,38 @@ theorem neg_nim (o : Ordinal) : -nim o = nim o := by
   induction' o using Ordinal.induction with o IH
   rw [nim_def]; dsimp; congr <;> funext i <;> exact IH _ (Ordinal.typein_lt_self i)
 
-theorem nim_impartial (o : Ordinal) : Impartial (nim o) := by
+theorem impartial_nim (o : Ordinal) : Impartial (nim o) := by
   induction' o using Ordinal.induction with o IH
   rw [impartial_def, neg_nim]
   refine ⟨equiv_rfl, fun i => ?_, fun i => ?_⟩ <;> simpa using IH _ (typein_lt_self _)
 
 theorem nim_fuzzy_zero_of_ne_zero {o : Ordinal} (ho : o ≠ 0) : nim o ‖ 0 := by
-  rw [(nim_impartial o).fuzzy_zero_iff_lf, lf_zero_le]
+  rw [(impartial_nim o).fuzzy_zero_iff_lf, lf_zero_le]
   use toRightMovesNim ⟨0, Ordinal.pos_iff_ne_zero.2 ho⟩
   simp
 
-theorem nim_add_impartial (o₁ o₂ : Ordinal) : (nim o₁ + nim o₂).Impartial :=
-  (nim_impartial o₁).add (nim_impartial o₂)
+theorem impartial_nim_add (o₁ o₂ : Ordinal) : (nim o₁ + nim o₂).Impartial :=
+  (impartial_nim o₁).add (impartial_nim o₂)
 
 @[simp]
 theorem nim_add_equiv_zero_iff (o₁ o₂ : Ordinal) : (nim o₁ + nim o₂ ≈ 0) ↔ o₁ = o₂ := by
   constructor
-  · refine not_imp_not.1 fun hne : _ ≠ _ => (nim_add_impartial o₁ o₂).not_equiv_zero_iff.2 ?_
+  · refine not_imp_not.1 fun hne : _ ≠ _ => (impartial_nim_add o₁ o₂).not_equiv_zero_iff.2 ?_
     wlog h : o₁ < o₂
     · exact (fuzzy_congr_left add_comm_equiv).1 (this _ _ hne.symm (hne.lt_or_lt.resolve_left h))
-    rw [(nim_add_impartial o₁ o₂).fuzzy_zero_iff_gf, zero_lf_le]
+    rw [(impartial_nim_add o₁ o₂).fuzzy_zero_iff_gf, zero_lf_le]
     use toLeftMovesAdd (Sum.inr <| toLeftMovesNim ⟨_, h⟩)
-    · simpa using ((nim_impartial o₁).add_self).2
+    · simpa using ((impartial_nim o₁).add_self).2
   · rintro rfl
-    exact (nim_impartial o₁).add_self
+    exact (impartial_nim o₁).add_self
 
 @[simp]
 theorem nim_add_fuzzy_zero_iff {o₁ o₂ : Ordinal} : nim o₁ + nim o₂ ‖ 0 ↔ o₁ ≠ o₂ := by
-  rw [iff_not_comm, (nim_add_impartial o₁ o₂).not_fuzzy_zero_iff, nim_add_equiv_zero_iff]
+  rw [iff_not_comm, (impartial_nim_add o₁ o₂).not_fuzzy_zero_iff, nim_add_equiv_zero_iff]
 
 @[simp]
 theorem nim_equiv_iff_eq {o₁ o₂ : Ordinal} : nim o₁ ≈ nim o₂ ↔ o₁ = o₂ := by
-  rw [(nim_impartial o₂).equiv_iff_add_equiv_zero, nim_add_equiv_zero_iff]
+  rw [(impartial_nim o₂).equiv_iff_add_equiv_zero, nim_add_equiv_zero_iff]
 
 /-- The Grundy value of an impartial game, the ordinal which corresponds to the game of nim that the
 game is equivalent to. -/
@@ -223,8 +221,8 @@ theorem grundyValue_eq_mex_left (G : PGame) :
 /-- The **Sprague-Grundy theorem** which states that every impartial game is equivalent to a game of
 nim, namely the game of nim corresponding to the game's Grundy value. -/
 theorem equiv_nim_grundyValue {G : PGame.{u}} (hG : G.Impartial) : G ≈ nim (grundyValue G) := by
-  rw [(nim_impartial _).equiv_iff_add_equiv_zero,
-    ← (hG.add (nim_impartial _)).forall_leftMoves_fuzzy_iff_equiv_zero]
+  rw [(impartial_nim _).equiv_iff_add_equiv_zero,
+    ← (hG.add (impartial_nim _)).forall_leftMoves_fuzzy_iff_equiv_zero]
   intro i
   apply leftMoves_add_cases i
   · intro i₁
@@ -239,7 +237,7 @@ theorem equiv_nim_grundyValue {G : PGame.{u}} (hG : G.Impartial) : G ≈ nim (gr
     exact (h i₁).irrefl
   · intro i₂
     rw [add_moveLeft_inr,
-      ← (hG.add ((nim_impartial _).moveLeft _)).exists_left_move_equiv_iff_fuzzy_zero]
+      ← (hG.add ((impartial_nim _).moveLeft _)).exists_left_move_equiv_iff_fuzzy_zero]
     revert i₂
     rw [nim_def]
     intro i₂
@@ -255,7 +253,7 @@ theorem equiv_nim_grundyValue {G : PGame.{u}} (hG : G.Impartial) : G ≈ nim (gr
     use toLeftMovesAdd (Sum.inl i)
     rw [add_moveLeft_inl, moveLeft_mk]
     apply Equiv.trans (add_congr_left (equiv_nim_grundyValue (hG.moveLeft i)))
-    simpa only [hi] using (nim_impartial (grundyValue (G.moveLeft i))).add_self
+    simpa only [hi] using (impartial_nim (grundyValue (G.moveLeft i))).add_self
 termination_by G
 
 theorem grundyValue_eq_iff_equiv_nim {G : PGame} (hG : G.Impartial) {o : Ordinal} :
@@ -267,7 +265,7 @@ alias ⟨_, grundyValue_eq⟩ := grundyValue_eq_iff_equiv_nim
 
 @[simp]
 theorem nim_grundyValue (o : Ordinal.{u}) : grundyValue (nim o) = o :=
-  (grundyValue_eq_iff_equiv_nim (nim_impartial o)).2 PGame.equiv_rfl
+  (grundyValue_eq_iff_equiv_nim (impartial_nim o)).2 PGame.equiv_rfl
 
 theorem grundyValue_eq_iff_equiv {G H : PGame} (hG : G.Impartial) (hH : H.Impartial) :
     grundyValue G = grundyValue H ↔ G ≈ H :=
@@ -340,11 +338,11 @@ theorem grundyValue_nim_add_nim (n m : ℕ) :
       simpa [hm _ h] using this
 
 theorem nim_add_nim_equiv {n m : ℕ} : nim n + nim m ≈ nim (n ^^^ m) := by
-  rw [← grundyValue_eq_iff_equiv_nim (nim_add_impartial n m), grundyValue_nim_add_nim]
+  rw [← grundyValue_eq_iff_equiv_nim (impartial_nim_add n m), grundyValue_nim_add_nim]
 
 theorem grundyValue_add {G H : PGame} (hG : G.Impartial) (hH : H.Impartial) {n m : ℕ}
     (hn : grundyValue G = n) (hm : grundyValue H = m) : grundyValue (G + H) = n ^^^ m := by
-  rw [← nim_grundyValue (n ^^^ m), grundyValue_eq_iff_equiv (hG.add hH) (nim_impartial _)]
+  rw [← nim_grundyValue (n ^^^ m), grundyValue_eq_iff_equiv (hG.add hH) (impartial_nim _)]
   refine Equiv.trans ?_ nim_add_nim_equiv
   convert add_congr (equiv_nim_grundyValue hG) (equiv_nim_grundyValue hH) <;> simp only [hn, hm]
 
