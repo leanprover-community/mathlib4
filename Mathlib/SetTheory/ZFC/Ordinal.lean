@@ -98,8 +98,8 @@ alias ⟨IsTransitive.subset_powerset, _⟩ := isTransitive_iff_subset_powerset
 /-- A set `x` is a von Neumann ordinal when it's a transitive set, that's transitive under `∈`. We
 will prove that this further implies that `x` is well-ordered under `∈`.
 
-The transitivity condition is written in an even weaker form, where `a ∈ b` and `b ∈ c` imply
-`a ∈ c` when only `c ∈ x` and not `a ∈ x` or `b ∈ x` are known a priori. -/
+The transitivity condition `a ∈ b → b ∈ c → a ∈ c` can be written without assuming `a ∈ x` and
+`b ∈ x`, and `isOrdinal_iff_isTrans` shows it is equivalent to the usual one. -/
 def IsOrdinal (x : ZFSet) : Prop :=
   x.IsTransitive ∧ ∀ a b c : ZFSet, a ∈ b → b ∈ c → c ∈ x → a ∈ c
 
@@ -130,7 +130,7 @@ theorem isOrdinal_iff_isTrans :
   rintro ⟨h₁, ⟨h₂⟩⟩
   use h₁
   intro y z w hyz hzw hwx
-  let hzx := h₁.mem_trans hzw hwx
+  have hzx := h₁.mem_trans hzw hwx
   exact h₂ ⟨y, h₁.mem_trans hyz hzx⟩ ⟨z, hzx⟩ ⟨w, hwx⟩ hyz hzw
 
 end ZFSet
