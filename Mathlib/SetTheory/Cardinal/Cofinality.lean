@@ -777,8 +777,11 @@ theorem isStrongLimit_aleph0 : IsStrongLimit ℵ₀ :=
     rcases lt_aleph0.1 hx with ⟨n, rfl⟩
     exact mod_cast nat_lt_aleph0 (2 ^ n)⟩
 
-protected theorem IsStrongLimit.isSuccLimit {c} (H : IsStrongLimit c) : IsSuccLimit c :=
-  isSuccLimit_of_succ_lt fun x h => (succ_le_of_lt <| cantor x).trans_lt (H.two_power_lt h)
+protected theorem IsStrongLimit.isSuccPrelimit {c} (H : IsStrongLimit c) : IsSuccPrelimit c :=
+  isSuccPrelimit_of_succ_lt fun x h => (succ_le_of_lt <| cantor x).trans_lt (H.two_power_lt h)
+
+@[deprecated IsStrongLimit.isSuccPrelimit (since := "2024-09-05")]
+alias IsStrongLimit.isSuccLimit := IsStrongLimit.isSuccPrelimit
 
 theorem IsStrongLimit.isLimit {c} (H : IsStrongLimit c) : IsLimit c :=
   ⟨H.ne_zero, H.isSuccLimit⟩
