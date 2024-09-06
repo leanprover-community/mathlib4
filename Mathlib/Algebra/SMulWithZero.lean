@@ -50,7 +50,7 @@ class SMulWithZero [outParam (Zero R)] [outParam (Zero M)] extends SMulZeroClass
   /-- Scalar multiplication by the scalar `0` is `0`. -/
   zero_smul : ∀ m : M, (0 : R) • m = 0
 
-instance SMulWithZero.instSMulZeroClass :
+@[instance] abbrev SMulWithZero.instSMulZeroClass :
     ∀ {R M} {_ : Zero R} {_ : Zero M} [SMulWithZero R M], SMulZeroClass R M :=
   @SMulWithZero.toSMulZeroClass
 
@@ -133,7 +133,7 @@ class MulActionWithZero [outParam (MonoidWithZero R)] [outParam (Zero M)] extend
   /-- Scalar multiplication by the scalar `0` is `0`. -/
   zero_smul : ∀ m : M, (0 : R) • m = 0
 
-instance MulActionWithZero.instMulAction :
+@[instance] abbrev MulActionWithZero.instMulAction :
     ∀ {R M} {_ : MonoidWithZero R} {_ : Zero M} [MulActionWithZero R M], MulAction R M :=
   @MulActionWithZero.toMulAction
 
