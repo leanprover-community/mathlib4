@@ -317,7 +317,7 @@ theorem cot_series_rep' (z : ℂ_ℤ) : π * Complex.cot (π * z) - 1 / z =
   apply (Summable.hasSum_iff_tendsto_nat (lhs_summable z)).mpr
     (tendsto_logDeriv_euler_cot_sub z)
 
-theorem cot_series_rep (z : ℍ) :
+theorem cot_series_rep (z : ℂ_ℤ) :
     π * Complex.cot (π * z) = 1 / z + ∑' n : ℕ+, (1 / ((z : ℂ) - n) + 1 / (z + n)) := by
   have := tsum_pnat_eq_tsum_add_one fun n => 1 / ((z : ℂ) - n) + 1 / (z + n)
   have h1 := cot_series_rep' z
