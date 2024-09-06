@@ -79,17 +79,10 @@ in favor of `small_max`. -/
 instance (priority := 50) small_of_lift (α : Type v) [Small.{u} (ULift.{u} α)] : Small.{u} α :=
   small_map Equiv.ulift.symm
 
-lemma small_max (α : Type v) : Small.{max w v} α :=
-  inferInstance
-
-lemma small_zero (α : Type) : Small.{w} α :=
-  inferInstance
-
-lemma small_succ (α : Type v) : Small.{v + 1} α :=
-  inferInstance
-
-theorem small_type : Small.{max (u + 1) v} (Type u) :=
-  inferInstance
+lemma small_max (α : Type v) : Small.{max w v} α := inferInstance
+lemma small_zero (α : Type) : Small.{w} α := inferInstance
+lemma small_succ (α : Type v) : Small.{v + 1} α := inferInstance
+lemma small_type : Small.{max (u + 1) v} (Type u) := inferInstance
 
 section
 
