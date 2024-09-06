@@ -78,7 +78,7 @@ The **coheight** of an element `a` in a preorder `α` is the supremum of the rig
 relation series of `α` ordered by `<` and beginning with `a`.
 
 The definition of `coheight` is via the `height` in the dual order, in order to easily transfer
-theorems between `height` and `coheight`. See `coheight_eq_iSup_head` for the definition with a
+theorems between `height` and `coheight`. See `coheight_eq` for the definition with a
 series ordered by `<` and beginning with `a`.
 -/
 noncomputable def coheight {α : Type*} [Preorder α] (a : α) : ℕ∞ := height (α := αᵒᵈ) a
@@ -99,15 +99,49 @@ lemma height_orderDual (x : αᵒᵈ) : height x = coheight (α := α) x := rfl
 
 lemma coheight_orderDual (x : αᵒᵈ) : coheight x = height (α := α) x := rfl
 
-lemma coheight_eq_iSup_head (a : α) :
+/--
+The **coheight** of an element `a` in a preorder `α` is the supremum of the rightmost index of all
+relation series of `α` ordered by `<` and beginning with `a`.
+
+This is not the definition of `coheight`. The definition of `coheight` is via the `height` in the
+dual order, in order to easily transfer theorems between `height` and `coheight`.
+-/
+lemma coheight_eq (a : α) :
     coheight a = ⨆ (p : LTSeries α) (_ : a ≤ p.head), (p.length : ℕ∞) := by
   apply Equiv.iSup_congr ⟨RelSeries.reverse, RelSeries.reverse, RelSeries.reverse_reverse,
     RelSeries.reverse_reverse⟩
   congr! 1
 
+lemma height_le_iff {a : α} {n : ℕ∞} :
+    height a ≤ n ↔ ∀ ⦃p : LTSeries α⦄, p.last ≤ a → p.length ≤ n := by
+ rw [height, iSup₂_le_iff]
+
+lemma coheight_le_iff {a : α} {n : ℕ∞} :
+    coheight a ≤ n ↔ ∀ ⦃p : LTSeries α⦄, a ≤ p.head → p.length ≤ n := by
+ rw [coheight_eq, iSup₂_le_iff]
+
+lemma height_le {a : α} {n : ℕ∞} (h : ∀ (p : LTSeries α), p.last = a → p.length ≤ n) :
+    height a ≤ n := by
+  apply height_le_iff.mpr
+  intro p hlast
+  wlog hlenpos : p.length ≠ 0
+  · simp_all
+  -- We replace the last element in the series with `a`
+  let p' := p.eraseLast.snoc a (lt_of_lt_of_le (p.eraseLast_last_rel_last (by simp_all)) hlast)
+  rw [show p.length = p'.length by simp [p']; omega]
+  apply h
+  simp [p']
+
+lemma height_le_iff' {a : α} {n : ℕ∞} :
+    height a ≤ n ↔ ∀ ⦃p : LTSeries α⦄, p.last = a → p.length ≤ n := by
+ constructor
+ · rw [height_le_iff]
+   exact fun h p hlast => h (le_of_eq hlast)
+ · exact height_le
+
+
 /--
-Alternative definition of height, with the supremum only ranging over those series
-that end at `a`.
+Alternative definition of height, with the supremum ranging only over those series that end at `a`.
 -/
 lemma height_eq_iSup_last_eq (a : α) :
     height a = ⨆ (p : LTSeries α) (_ : p.last = a), ↑(p.length) := by
@@ -129,19 +163,18 @@ that begin at `a`.
 -/
 lemma coheight_eq_iSup_head_eq  (a : α) :
     coheight a = ⨆ (p : LTSeries α) (_ : p.head = a), ↑(p.length) := by
-  show height (α := αᵒᵈ) a = ⨆ (p : LTSeries α) (_ : p.head = a), ↑(p.length)
-  rw [height_eq_iSup_last_eq]
+  rw [← height_orderDual, height_eq_iSup_last_eq]
   apply Equiv.iSup_congr ⟨RelSeries.reverse, RelSeries.reverse, RelSeries.reverse_reverse,
     RelSeries.reverse_reverse⟩
-  congr! 1
+  simp
 
-lemma height_le {x : α} {n : ℕ∞} :
-    (∀ (p : LTSeries α), p.last = x → p.length ≤ n) → height x ≤ n := by
-  simp [height_eq_iSup_last_eq, iSup_le_iff.mpr]
+lemma coheight_le_iff' {a : α} {n : ℕ∞} :
+    coheight a ≤ n ↔ ∀ ⦃p : LTSeries α⦄, p.head = a → p.length ≤ n := by
+  rw [coheight_eq_iSup_head_eq, iSup₂_le_iff]
 
-lemma coheight_le {x : α} {n : ℕ∞} :
-    (∀ (p : LTSeries α), p.head = x → p.length ≤ n) → coheight x ≤ n := by
-  simp [coheight_eq_iSup_head_eq, iSup_le_iff.mpr]
+lemma coheight_le {a : α} {n : ℕ∞} (h : ∀ (p : LTSeries α), p.head = a → p.length ≤ n) :
+    coheight a ≤ n :=
+  coheight_le_iff'.mpr h
 
 lemma length_le_height {p : LTSeries α} {x : α} (hlast : p.last ≤ x) :
     p.length ≤ height x := by
@@ -193,7 +226,7 @@ lemma index_le_coheight (p : LTSeries α) (i : Fin (p.length + 1)) : i.rev ≤ c
 In a maximally long series, i.e one as long as the height of the last element, the height of each
 element is its index in the series.
 -/
-lemma height_eq_index_of_length_eq_height_last (p : LTSeries α) (h : p.length = height p.last)
+lemma height_eq_index_of_length_eq_height_last {p : LTSeries α} (h : p.length = height p.last)
     (i : Fin (p.length + 1)) : height (p i) = i := by
   refine le_antisymm (height_le ?_) (index_le_height p i)
   intro p' hp'
@@ -206,9 +239,9 @@ lemma height_eq_index_of_length_eq_height_last (p : LTSeries α) (h : p.length =
 In a maximally long series, i.e one as long as the coheight of the first element, the coheight of
 each element is its reverse index in the series.
 -/
-lemma coheight_eq_index_of_length_eq_head_coheight (p : LTSeries α) (h : p.length = coheight p.head)
+lemma coheight_eq_index_of_length_eq_head_coheight {p : LTSeries α} (h : p.length = coheight p.head)
     (i : Fin (p.length + 1)) : coheight (p i) = i.rev := by
-  simpa using height_eq_index_of_length_eq_height_last (α := αᵒᵈ) p.reverse (by simpa) i.rev
+  simpa using height_eq_index_of_length_eq_height_last (α := αᵒᵈ) (p := p.reverse) (by simpa) i.rev
 
 lemma height_mono : Monotone (α := α) height :=
   fun _ _ hab ↦ biSup_mono (fun _ hla => hla.trans hab)
@@ -392,7 +425,7 @@ lemma coe_lt_height_iff (x : α) (n : ℕ) (hfin : height x < ⊤):
     · rw [← hp]
       apply LTSeries.strictMono
       simp [Fin.last]; omega
-    · exact height_eq_index_of_length_eq_height_last p (by simp [hlen, hp, hx]) ⟨n, by omega⟩
+    · exact height_eq_index_of_length_eq_height_last (by simp [hlen, hp, hx]) ⟨n, by omega⟩
   · intro ⟨y, hyx, hy⟩
     exact hy ▸ height_strictMono y x hyx hfin
 
