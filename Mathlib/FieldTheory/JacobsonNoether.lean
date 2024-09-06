@@ -17,7 +17,7 @@ lemma conj_nonComm_Algebra {D : Type*} [DivisionRing D] (s : ℕ) (a d : D) (ha 
 
 namespace JacobsonNoether
 
-open Classical
+open Classical Polynomial
 
 variable {D : Type*} [DivisionRing D]
 
@@ -100,29 +100,19 @@ variable [Algebra.IsAlgebraic (Subring.center D) D]
 -- This *should not* be private
 lemma exists_pow_mem_center_ofInseparable (p : ℕ) [Fact p.Prime] [CharP D p] (a : D)
     (hinsep : ∀ x : D, IsSeparable k x → x ∈ k) : ∃ n, a ^ (p ^ n) ∈ k := by
-  obtain ⟨n, g, hg, geqf⟩ := @Polynomial.exists_separable_of_irreducible k _ p _ (minpoly k a)
+  obtain ⟨n, g, hg, geqf⟩ := @exists_separable_of_irreducible k _ p _ (minpoly k a)
     (minpoly.irreducible (Algebra.IsIntegral.isIntegral a)) ((NeZero.ne' p).symm)
-  have h1 : (Polynomial.aeval a) ((Polynomial.expand k (p ^ n)) g) = 0 := by
-    rw [congrArg (⇑(Polynomial.aeval a)) geqf, minpoly.aeval k a]
-  simp only [Polynomial.expand_aeval] at h1
-  use n
-  apply hinsep (a ^ p ^ n) (Polynomial.Separable.of_dvd hg (minpoly.dvd_iff.mpr h1))
+  have h1 : (aeval (a ^ p ^ n)) g = 0 := by
+    rw [← expand_aeval, congrArg (⇑(aeval a)) geqf, minpoly.aeval k a]
+  refine ⟨n, hinsep (a ^ p ^ n) (Separable.of_dvd hg (minpoly.dvd_iff.2 h1))⟩
 
 lemma exists_pow_mem_center_ofInseparable' (p : ℕ) [Fact p.Prime] [CharP D p] {a : D}
     (ha : a ∉ k) (hinsep : ∀ x : D, IsSeparable k x → x ∈ k) : ∃ n ≥ 1, a ^ (p ^ n) ∈ k := by
-  obtain ⟨n, g, hg, geqf⟩ := @Polynomial.exists_separable_of_irreducible k _ p _ (minpoly k a)
-    (minpoly.irreducible (Algebra.IsIntegral.isIntegral a)) ((NeZero.ne' p).symm)
+  obtain ⟨n, hn⟩ := exists_pow_mem_center_ofInseparable p a hinsep
   by_cases nzero : n = 0
-  · rw [nzero, pow_zero, Polynomial.expand_one] at geqf
-    rw [geqf] at hg
-    tauto
-  use n
-  have h1 : (Polynomial.aeval a) ((Polynomial.expand k (p ^ n)) g) = 0 := by
-    rw [congrArg (⇑(Polynomial.aeval a)) geqf, minpoly.aeval k a]
-  simp only [Polynomial.expand_aeval] at h1
-  constructor
-  · exact Nat.one_le_iff_ne_zero.mpr nzero
-  exact hinsep (a ^ p ^ n) (Polynomial.Separable.of_dvd hg (minpoly.dvd_iff.mpr h1))
+  · rw [nzero, pow_zero, pow_one] at hn
+    absurd ha hn; trivial
+  · refine ⟨n, ⟨by omega, hn⟩⟩
 
 -- Not private but better name
 lemma any_pow_gt_eq_zero (p : ℕ) [Fact p.Prime] [CharP D p]
