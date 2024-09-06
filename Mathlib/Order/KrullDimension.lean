@@ -139,7 +139,6 @@ lemma height_le_iff' {a : α} {n : ℕ∞} :
    exact fun h p hlast => h (le_of_eq hlast)
  · exact height_le
 
-
 /--
 Alternative definition of height, with the supremum ranging only over those series that end at `a`.
 -/
