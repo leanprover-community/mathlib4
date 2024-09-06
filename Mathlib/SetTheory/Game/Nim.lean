@@ -275,14 +275,14 @@ theorem grundyValue_eq_iff_equiv {G H : PGame} (hG : G.Impartial) (hH : H.Impart
 
 @[simp]
 theorem grundyValue_zero : grundyValue 0 = 0 :=
-  grundyValue_eq Impartial.zero (Equiv.symm nim_zero_equiv)
+  grundyValue_eq impartial_zero (Equiv.symm nim_zero_equiv)
 
 theorem grundyValue_iff_equiv_zero {G : PGame} (h : G.Impartial) : grundyValue G = 0 ↔ G ≈ 0 := by
-  rw [← grundyValue_eq_iff_equiv h Impartial.zero, grundyValue_zero]
+  rw [← grundyValue_eq_iff_equiv h impartial_zero, grundyValue_zero]
 
 @[simp]
 theorem grundyValue_star : grundyValue star = 1 :=
-  grundyValue_eq Impartial.star (Equiv.symm nim_one_equiv)
+  grundyValue_eq impartial_star (Equiv.symm nim_one_equiv)
 
 @[simp]
 theorem grundyValue_neg {G : PGame} (h : G.Impartial) : grundyValue (-G) = grundyValue G := by

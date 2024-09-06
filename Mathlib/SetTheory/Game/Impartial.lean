@@ -46,7 +46,7 @@ theorem impartial_zero : Impartial 0 := by
 
 theorem impartial_star : Impartial star := by
   rw [impartial_def]
-  simpa using Impartial.zero
+  simpa using impartial_zero
 
 namespace Impartial
 
@@ -97,7 +97,7 @@ theorem neg {G : PGame} (h : G.Impartial) : (-G).Impartial := by
     apply neg (h.moveLeft _)
 termination_by G
 
-variable {G : PGame}
+variable {G H : PGame}
 
 theorem nonpos (hG : G.Impartial) : ¬ 0 < G := by
   intro hl
@@ -126,25 +126,24 @@ theorem not_fuzzy_zero_iff (h : G.Impartial) : ¬ G ‖ 0 ↔ G ≈ 0 :=
 theorem add_self (h : G.Impartial) : G + G ≈ 0 :=
   Equiv.trans (add_congr_left (neg_equiv_self h)) (neg_add_cancel_equiv G)
 
-@[simp]
 theorem mk'_add_self (h : G.Impartial) : (⟦G⟧ : Game) + ⟦G⟧ = 0 :=
   game_eq h.add_self
 
 /-- This lemma doesn't require `G` to be impartial. -/
-theorem equiv_iff_add_equiv_zero (hG : G.Impartial) (H : PGame) : (G ≈ H) ↔ (G + H ≈ 0) := by
-  rw [equiv_iff_game_eq, ← add_right_cancel_iff (a := ⟦H⟧), mk'_add_self, ← quot_add,
+theorem equiv_iff_add_equiv_zero (G : PGame) (h : H.Impartial) : (G ≈ H) ↔ (G + H ≈ 0) := by
+  rw [equiv_iff_game_eq, ← add_right_cancel_iff (a := ⟦H⟧), h.mk'_add_self, ← quot_add,
     equiv_iff_game_eq, quot_zero]
 
 /-- This lemma doesn't require `H` to be impartial. -/
-theorem equiv_iff_add_equiv_zero' (hG : G.Impartial) (H : PGame) : (G ≈ H) ↔ (G + H ≈ 0) := by
-  rw [equiv_iff_game_eq, ← add_left_cancel_iff, mk'_add_self, ← quot_add, equiv_iff_game_eq,
+theorem equiv_iff_add_equiv_zero' (h : G.Impartial) (H : PGame) : (G ≈ H) ↔ (G + H ≈ 0) := by
+  rw [equiv_iff_game_eq, ← add_left_cancel_iff, h.mk'_add_self, ← quot_add, equiv_iff_game_eq,
     Eq.comm, quot_zero]
 
 theorem le_zero_iff (hG : G.Impartial) : G ≤ 0 ↔ 0 ≤ G := by
-  rw [← zero_le_neg_iff, le_congr_right (neg_equiv_self hG)]
+  rw [← zero_le_neg_iff, le_congr_right hG.neg_equiv_self]
 
 theorem lf_zero_iff (hG : G.Impartial) : G ⧏ 0 ↔ 0 ⧏ G := by
-  rw [← zero_lf_neg_iff, lf_congr_right (neg_equiv_self hG)]
+  rw [← zero_lf_neg_iff, lf_congr_right hG.neg_equiv_self]
 
 theorem equiv_zero_iff_le (hG : G.Impartial) : G ≈ 0 ↔ G ≤ 0 :=
   ⟨And.left, fun h => ⟨h, (le_zero_iff hG).1 h⟩⟩
