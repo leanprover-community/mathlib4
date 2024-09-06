@@ -56,6 +56,8 @@ topological manifolds also, and relate them to the current definition.
 
 -/
 
+open scoped Manifold
+
 variable {H : Type*} [NormedAddCommGroup H] [NormedSpace ℝ H]
 
 section OrientationPreserving
@@ -166,10 +168,9 @@ either orientation-preserving or orientation-reversing. -/
 lemma foo (f : H ≃L[ℝ] H) {s : Set H} (hs : IsConnected s) (hs' : IsPathConnected s) :
     OrientationPreserving f s ∨ OrientationReversing f s := by
   -- At each point, its determinant is non-zero, as it is a diffeomorphism.
+  -- The most general proof proceeds via local diffeomorphism,
+  -- and deducing the linear isomorphisms are diffeomorphisms are local diffeomorphisms...
   have h₁ (x : H) : (fderiv ℝ (⇑f) x).det ≠ 0 := sorry
-  -- TODO missing: fderiv ℝ f x is continuous in x!
-  let F := fun x ↦ fderiv ℝ f x
-  have : Continuous F := sorry
   by_cases hyp: Nonempty s
   swap
   · left
@@ -186,22 +187,22 @@ lemma foo (f : H ≃L[ℝ] H) {s : Set H} (hs : IsConnected s) (hs' : IsPathConn
     -- and consider the function `g: t ↦ det (fderiv f γ(t))`.
     obtain ⟨γ, hγ⟩ := hs'.joinedIn x₀ hx₀ x hx
     let g := fun t ↦ (fderiv ℝ f (γ t)).det
-    have hg : Continuous g := by
-      dsimp [g]
-      sorry -- TODO: need a statement like "det is continuous", with the right topology there...
-      -- then this should be easy... continuity
-    have hg' : ∀ (t : ↑unitInterval), g t ≠ 0 := by simp [h₁]
-    have h₀ : 0 < g 0 := by simp only [g, Path.source, h]
+    have aux : Continuous fun t ↦ (fderiv ℝ f (γ t)) :=
+      Continuous.comp (f.contDiff.continuous_fderiv (OrderTop.le_top 1)) γ.continuous
+    have hg : Continuous g := (ContinuousLinearMap.continuous_det (𝕜 := ℝ) (E := H)).comp aux
     rw [← Path.target γ]
-    exact abstract2a hg hg' h₀ 1
-  · have h' : (fderiv ℝ (⇑f) x₀).det < 0 := by
-      by_contra! h'
-      exact h (lt_of_le_of_ne h' (h₁ x₀).symm)
-    right
+    exact abstract2a hg (by simp [h₁]) (x := 0) (by simp only [g, Path.source, h]) 1
+  · right
     intro x hx
     obtain ⟨γ, hγ⟩ := hs'.joinedIn x₀ hx₀ x hx
     let g := fun t ↦ (fderiv ℝ f (γ t)).det
-    have hg : Continuous g := sorry -- TODO; proof will be the same as above
+    have aux : Continuous fun t ↦ (fderiv ℝ f (γ t)) :=
+      Continuous.comp (f.contDiff.continuous_fderiv (OrderTop.le_top 1)) γ.continuous
+    have hg : Continuous g := (ContinuousLinearMap.continuous_det (𝕜 := ℝ) (E := H)).comp aux
+
+    have h' : (fderiv ℝ (⇑f) x₀).det < 0 := by
+      by_contra! h'
+      exact h (lt_of_le_of_ne h' (h₁ x₀).symm)
     have h₀ : g 0 < 0 := by simp only [g, Path.source, h']
     rw [← Path.target γ]
     exact abstract2b hg (by simp [h₁]) h₀ 1
