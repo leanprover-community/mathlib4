@@ -4738,3 +4738,4 @@ import Mathlib.Util.Tactic
 import Mathlib.Util.TermBeta
 import Mathlib.Util.WhatsNew
 import Mathlib.Util.WithWeakNamespace
+import Mathlib.Util.WithoutInstances
