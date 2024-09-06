@@ -52,7 +52,7 @@ theorem rpow_eq_zero_iff {x : ℝ≥0} {y : ℝ} : x ^ y = 0 ↔ x = 0 ∧ y ≠
   rw [← NNReal.coe_inj, coe_rpow, ← NNReal.coe_eq_zero]
   exact Real.rpow_eq_zero_iff_of_nonneg x.2
 
-lemma rpow_eq_zero {x : ℝ≥0} (hy : y ≠ 0) : x ^ y = 0 ↔ x = 0 := by simp [hy]
+lemma rpow_eq_zero (hy : y ≠ 0) : x ^ y = 0 ↔ x = 0 := by simp [hy]
 
 @[simp]
 theorem zero_rpow {x : ℝ} (h : x ≠ 0) : (0 : ℝ≥0) ^ x = 0 :=
@@ -81,7 +81,7 @@ theorem one_rpow (x : ℝ) : (1 : ℝ≥0) ^ x = 1 :=
 theorem rpow_add {x : ℝ≥0} (hx : x ≠ 0) (y z : ℝ) : x ^ (y + z) = x ^ y * x ^ z :=
   NNReal.eq <| Real.rpow_add (pos_iff_ne_zero.2 hx) _ _
 
-theorem rpow_add' {y z : ℝ} (h : y + z ≠ 0) (x : ℝ≥0) : x ^ (y + z) = x ^ y * x ^ z :=
+theorem rpow_add' (h : y + z ≠ 0) (x : ℝ≥0) : x ^ (y + z) = x ^ y * x ^ z :=
   NNReal.eq <| Real.rpow_add' x.2 h
 
 lemma rpow_add_intCast (hx : x ≠ 0) (y : ℝ) (n : ℤ) : x ^ (y + n) = x ^ y * x ^ n := by
@@ -148,7 +148,7 @@ theorem rpow_neg_one (x : ℝ≥0) : x ^ (-1 : ℝ) = x⁻¹ := by simp [rpow_ne
 theorem rpow_sub {x : ℝ≥0} (hx : x ≠ 0) (y z : ℝ) : x ^ (y - z) = x ^ y / x ^ z :=
   NNReal.eq <| Real.rpow_sub (pos_iff_ne_zero.2 hx) y z
 
-theorem rpow_sub' {y z : ℝ} (h : y - z ≠ 0) (x : ℝ≥0) : x ^ (y - z) = x ^ y / x ^ z :=
+theorem rpow_sub' (h : y - z ≠ 0) (x : ℝ≥0) : x ^ (y - z) = x ^ y / x ^ z :=
   NNReal.eq <| Real.rpow_sub' x.2 h
 
 lemma rpow_sub_one' (h : y - 1 ≠ 0) (x : ℝ≥0) : x ^ (y - 1) = x ^ y / x := by
