@@ -5,7 +5,7 @@ Authors: **ALL YOUR NAMES**
 -/
 
 import Mathlib.Algebra.Ring.Subring.Basic
-import Mathlib.RingTheory.Algebraic
+import Mathlib.Algebra.CharP.Algebra
 
 variable {D : Type*} [DivisionRing D]
 
