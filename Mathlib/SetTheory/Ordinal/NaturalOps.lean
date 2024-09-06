@@ -54,7 +54,7 @@ def NatOrdinal : Type _ :=
   Ordinal deriving Zero, Inhabited, One, WellFoundedRelation
 
 instance NatOrdinal.linearOrder : LinearOrder NatOrdinal := {Ordinal.linearOrder with}
-instance NatOrdinal.succOrder : SuccOrder NatOrdinal := {Ordinal.succOrder with}
+instance NatOrdinal.instSuccOrder : SuccOrder NatOrdinal := {Ordinal.instSuccOrder with}
 instance NatOrdinal.orderBot : OrderBot NatOrdinal := {Ordinal.orderBot with}
 instance NatOrdinal.noMaxOrder : NoMaxOrder NatOrdinal := {Ordinal.noMaxOrder with}
 
