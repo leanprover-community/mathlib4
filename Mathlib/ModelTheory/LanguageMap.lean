@@ -567,6 +567,9 @@ instance : (L''.sum L).Expands L' where
   toLHom := LHom.sumInr.comp (L'.Inclusion L)
   toLHom_injective := LHom.sumInr_injective.comp (L'.inclusion_injective L)
 
+@[simp]
+theorem inclusion_self : L.Inclusion L = LHom.id L := rfl
+
 end Expands
 
 end Language

@@ -91,18 +91,10 @@ def Term.lt (t₁ t₂ : L.Term (α ⊕ (Fin n))) : L.BoundedFormula α n :=
 
 variable (L)
 
-/-- The language homomorphism sending the unique symbol `≤` of `Language.order` to `≤` in an ordered
- language. -/
-abbrev orderLHom : Language.order →ᴸ L := Language.order.Inclusion L
-
 @[simp]
-theorem orderLHom_leSymb :
-    (orderLHom L).onRelation leSymb = (leSymb : L.Relations 2) :=
+theorem inclusion_leSymb :
+    (Language.order.Inclusion L).onRelation leSymb = (leSymb : L.Relations 2) :=
   rfl
-
-@[simp]
-theorem orderLHom_order : orderLHom Language.order = LHom.id Language.order :=
-  LHom.funext (Subsingleton.elim _ _) (Subsingleton.elim _ _)
 
 /-- The theory of preorders. -/
 def preorderTheory : L.Theory :=
@@ -184,14 +176,14 @@ section LE
 variable [LE M]
 
 instance [Language.order.Structure M] [Language.order.OrderedStructure M]
-    [(orderLHom L).IsExpansionOn M] : L.OrderedStructure M where
+    [(Language.order.Inclusion L).IsExpansionOn M] : L.OrderedStructure M where
   relMap_leSymb x := by
-    rw [← orderLHom_leSymb L, LHom.IsExpansionOn.map_onRelation, relMap_leSymb]
+    rw [← inclusion_leSymb L, LHom.IsExpansionOn.map_onRelation, relMap_leSymb]
 
 variable [L.OrderedStructure M]
 
 instance [Language.order.Structure M] [Language.order.OrderedStructure M] :
-    LHom.IsExpansionOn (orderLHom L) M where
+    LHom.IsExpansionOn (Language.order.Inclusion L) M where
   map_onRelation := by simp [order.relation_eq_leSymb]
 
 @[simp]
@@ -231,7 +223,7 @@ end LE
 @[simp]
 theorem orderedStructure_iff
     [LE M] [Language.order.Structure M] [Language.order.OrderedStructure M] :
-    L.OrderedStructure M ↔ LHom.IsExpansionOn (orderLHom L) M :=
+    L.OrderedStructure M ↔ LHom.IsExpansionOn (Language.order.Inclusion L) M :=
   ⟨fun _ => inferInstance, fun _ => inferInstance⟩
 
 section Preorder
