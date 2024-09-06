@@ -501,6 +501,7 @@ import Mathlib.Algebra.Module.ULift
 import Mathlib.Algebra.Module.Zlattice.Basic
 import Mathlib.Algebra.Module.Zlattice.Covolume
 import Mathlib.Algebra.MonoidAlgebra.Basic
+import Mathlib.Algebra.MonoidAlgebra.Defs
 import Mathlib.Algebra.MonoidAlgebra.Degree
 import Mathlib.Algebra.MonoidAlgebra.Division
 import Mathlib.Algebra.MonoidAlgebra.Grading
