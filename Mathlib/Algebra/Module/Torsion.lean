@@ -7,6 +7,7 @@ import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.GroupTheory.Torsion
 import Mathlib.RingTheory.Coprime.Ideal
 import Mathlib.Data.ZMod.Module
+import Mathlib.Algebra.DirectSum.Module
 
 /-!
 # Torsion submodules
