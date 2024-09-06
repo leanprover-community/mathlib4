@@ -411,7 +411,7 @@ instance inhabited_FGEquiv_of_IsEmpty_Constants_and_Relations
 @[simps]
 def FGEquiv.symm (f : L.FGEquiv M N) : L.FGEquiv N M := ⟨f.1.symm, f.1.dom_fg_iff_cod_fg.1 f.2⟩
 
-lemma IsExtensionPair_iff_cod : L.IsExtensionPair M N ↔
+lemma isExtensionPair_iff_cod : L.IsExtensionPair M N ↔
     ∀ (f : L.FGEquiv N M) (m : M), ∃ g, m ∈ g.1.cod ∧ f ≤ g := by
   refine Iff.intro ?_ ?_ <;>
   · intro h f m
@@ -420,7 +420,7 @@ lemma IsExtensionPair_iff_cod : L.IsExtensionPair M N ↔
 
 /-- An alternate characterization of an extension pair is that every finitely generated partial
 isomorphism can be extended to include any particular element of the domain. -/
-theorem IsExtensionPair_iff_exists_embedding_closure_singleton_sup :
+theorem isExtensionPair_iff_exists_embedding_closure_singleton_sup :
     L.IsExtensionPair M N ↔
     ∀ (S : L.Substructure M) (_ : S.FG) (f : S ↪[L] N) (m : M),
       ∃ g : (closure L {m} ⊔ S : L.Substructure M) ↪[L] N, f =
@@ -445,7 +445,7 @@ theorem IsExtensionPair_iff_exists_embedding_closure_singleton_sup :
 
 namespace IsExtensionPair
 
-protected alias ⟨cod, _⟩ := IsExtensionPair_iff_cod
+protected alias ⟨cod, _⟩ := isExtensionPair_iff_cod
 
 /-- The cofinal set of finite equivalences with a given element in their domain. -/
 def definedAtLeft

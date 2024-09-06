@@ -250,11 +250,11 @@ theorem realize_noTopOrder [h : NoTopOrder M] : M ⊨ L.noTopOrderSentence :=
 theorem realize_noBotOrder [h : NoBotOrder M] : M ⊨ L.noBotOrderSentence :=
   realize_noBotOrder_iff.2 h
 
-theorem noTopOrder_of_dlo [h: M ⊨ L.dlo] : NoTopOrder M :=
+theorem noTopOrder_of_dlo [M ⊨ L.dlo] : NoTopOrder M :=
   realize_noTopOrder_iff.1 (L.dlo.realize_sentence_of_mem (by
     simp only [dlo, Set.union_insert, Set.union_singleton, Set.mem_insert_iff, true_or]))
 
-theorem noBotOrder_of_dlo [h: M ⊨ L.dlo] : NoBotOrder M :=
+theorem noBotOrder_of_dlo [M ⊨ L.dlo] : NoBotOrder M :=
   realize_noBotOrder_iff.1 (L.dlo.realize_sentence_of_mem (by
     simp only [dlo, Set.union_insert, Set.union_singleton, Set.mem_insert_iff, true_or, or_true]))
 
@@ -440,7 +440,7 @@ lemma dlo_isExtensionPair
     (N : Type w') [Language.order.Structure N] [N ⊨ Language.order.dlo] [Nonempty N] :
     Language.order.IsExtensionPair M N := by
   classical
-  rw [IsExtensionPair_iff_exists_embedding_closure_singleton_sup]
+  rw [isExtensionPair_iff_exists_embedding_closure_singleton_sup]
   intro S S_fg f m
   letI := Language.order.linearOrderOfModels M
   letI := Language.order.linearOrderOfModels N
