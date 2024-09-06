@@ -311,33 +311,18 @@ theorem lhs_summable (z : ℂ_ℤ) :
     norm_cast
     exact Nat.zero_lt_succ (b + B)
 
-
 theorem cot_series_rep' (z : ℂ_ℤ) : π * Complex.cot (π * z) - 1 / z =
     ∑' n : ℕ, (1 / ((z : ℂ) - (n + 1)) + 1 / (z + (n + 1))) := by
   rw [HasSum.tsum_eq]
   apply (Summable.hasSum_iff_tendsto_nat (lhs_summable z)).mpr
     (tendsto_logDeriv_euler_cot_sub z)
 
-/- theorem nat_pos_tsum2' [TopologicalSpace α] [AddCommMonoid α]  (f : ℕ → α) :
-    (Summable fun x : ℕ+ => f x) ↔ Summable fun x : ℕ => f (x + 1) :=
-  by
-  rw [← Equiv.summable_iff _root_.Equiv.pnatEquivNat]
-  constructor
-  intro hf
-  apply Summable.congr hf
-  intro b
-  simp
-  intro hf
-  apply Summable.congr hf
-  intro b
-  simp -/
-
-
-/- theorem cot_series_rep (z : ℍ) :
-    ↑π * Complex.cot (↑π * z) - 1 / z = ∑' n : ℕ+, (1 / ((z : ℂ) - n) + 1 / (z + n)) :=
-  by
-  have := tsum_pnat' fun n => 1 / ((z: ℂ) - n) + 1 / (z + n)
+theorem cot_series_rep (z : ℍ) :
+    π * Complex.cot (π * z)  =  1 / z + ∑' n : ℕ+, (1 / ((z : ℂ) - n) + 1 / (z + n)) := by
+  have := tsum_pnat_eq_tsum_add_one fun n => 1 / ((z : ℂ) - n) + 1 / (z + n)
   have h1 := cot_series_rep' z
   simp [one_div, Nat.cast_add, algebraMap.coe_one] at *
-  rw [this]
-  apply h1 -/
+  rw [this, ← h1]
+  ring
+
+end MittagLeffler
