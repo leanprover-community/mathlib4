@@ -82,7 +82,7 @@ variable {α β : Type*}
 variable [Preorder α] [Preorder β]
 
 lemma height_le_iff {a : α} {n : ℕ∞} :
-    height a ≤ n ↔ ∀ (p : LTSeries α), p.last ≤ a → p.length ≤ n := by
+    height a ≤ n ↔ ∀ ⦃p : LTSeries α⦄, p.last ≤ a → p.length ≤ n := by
  rw [height, iSup₂_le_iff]
 
 lemma height_le {a : α} {n : ℕ∞} (h : ∀ (p : LTSeries α), p.last = a → p.length ≤ n) :
@@ -98,7 +98,7 @@ lemma height_le {a : α} {n : ℕ∞} (h : ∀ (p : LTSeries α), p.last = a →
   simp [p']
 
 lemma height_le_iff' {a : α} {n : ℕ∞} :
-    height a ≤ n ↔ ∀ (p : LTSeries α), p.last = a → p.length ≤ n := by
+    height a ≤ n ↔ ∀ ⦃p : LTSeries α⦄, p.last = a → p.length ≤ n := by
  constructor
  · rw [height_le_iff]
    exact (fun h p hlast => h p (le_of_eq hlast))
