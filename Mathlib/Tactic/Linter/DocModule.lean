@@ -49,6 +49,7 @@ def afterImports : Syntax → Syntax
     args.getD 0 default
   | _=> .missing
 
+/-- returns the array of `import` identifiers. -/
 partial
 def getImportIds (s : Syntax) : Array Syntax :=
   let rest : Array Syntax := (s.getArgs.map getImportIds).flatten
