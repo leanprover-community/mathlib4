@@ -41,68 +41,6 @@ open scoped Manifold
 
 variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
--- Facts about the disjoint union of types and topological spaces: move to more basic files
--- and/or replace with what mathlib already has.
-section Basic
-
-variable {α β γ : Type*}
-
--- To what extent do these results exist abstractly?
-def Sum.swapEquiv : α ⊕ β ≃ β ⊕ α where
-  toFun := Sum.swap
-  invFun := Sum.swap
-  left_inv := Sum.swap_leftInverse
-  right_inv := Sum.swap_leftInverse
-
-lemma Continuous.swap : Continuous (@Sum.swap X Y) :=
-  Continuous.sum_elim continuous_inr continuous_inl
-
-def Homeomorph.swap : X ⊕ Y ≃ₜ Y ⊕ X where
-  toEquiv := Sum.swapEquiv
-  continuous_toFun := Continuous.swap
-  continuous_invFun := Continuous.swap
-
-def Sum.assocLeft : α ⊕ (β ⊕ γ) → (α ⊕ β) ⊕ γ :=
-  Sum.elim (fun x ↦ Sum.inl (Sum.inl x)) (Sum.map Sum.inr id)
-
-def Sum.assocRight : (α ⊕ β) ⊕ γ → α ⊕ (β ⊕ γ) :=
-  Sum.elim (Sum.map id Sum.inl) (fun x ↦ Sum.inr (Sum.inr x))
-
-def Equiv.swapAssociativity : α ⊕ (β ⊕ γ) ≃ (α ⊕ β) ⊕ γ where
-  toFun := Sum.assocLeft
-  invFun := Sum.assocRight
-  left_inv x := by aesop
-  right_inv x := by aesop
-
--- FUTURE: can fun_prop be powered up to solve these automatically? also for differentiability?
-def Homeomorph.associativity : X ⊕ (Y ⊕ Z) ≃ₜ (X ⊕ Y) ⊕ Z where
-  toEquiv := Equiv.swapAssociativity
-  continuous_toFun := by
-    apply Continuous.sum_elim (by fun_prop)
-    exact Continuous.sum_map continuous_inr continuous_id
-  continuous_invFun := by
-    apply Continuous.sum_elim (by fun_prop)
-    exact Continuous.comp continuous_inr continuous_inr
-
-def Equiv.sum_empty {α β : Type*} [IsEmpty β] : α ⊕ β ≃ α where
-  toFun := Sum.elim (@id α) fun x ↦ (IsEmpty.false x).elim
-  invFun := Sum.inl
-  left_inv x := by
-    by_cases h : Sum.isLeft x
-    · rw [Sum.eq_left_getLeft_of_isLeft h]
-      dsimp only [Sum.elim_inl, id_eq]
-    · have h' : Sum.isRight x := Sum.not_isLeft.mp h
-      exact (IsEmpty.false (Sum.getRight x h')).elim
-  right_inv x := by aesop
-
-def Homeomorph.sum_empty [IsEmpty Y] :
-  X ⊕ Y ≃ₜ X where
-  toEquiv := Equiv.sum_empty
-  continuous_toFun := Continuous.sum_elim continuous_id (continuous_of_const fun _ ↦ congrFun rfl)
-  continuous_invFun := continuous_inl
-
-end Basic
-
 -- Results about extending a continuous function on a subtype.
 -- Perhaps these exist already, but if so, I cannot find them...
 section extensions
@@ -431,7 +369,7 @@ lemma ContMDiff.swap : ContMDiff I I ∞ (@Sum.swap M M') := ContMDiff.sum_elim 
 
 variable (I M M') in -- TODO: argument order is weird!
 def Diffeomorph.swap : Diffeomorph I I (M ⊕ M') (M' ⊕ M) ∞ where
-  toEquiv := Sum.swapEquiv
+  toEquiv := Equiv.sumComm M M'
   contMDiff_toFun := ContMDiff.swap
   contMDiff_invFun := ContMDiff.swap
 
@@ -442,7 +380,7 @@ theorem Diffeomorph.swap_symm : (Diffeomorph.swap M I M').symm = Diffeomorph.swa
 variable (I M M') in
 def Diffeomorph.associativity [Nonempty H] [Nonempty H'] :
     Diffeomorph I I (M ⊕ (M' ⊕ M'')) ((M ⊕ M') ⊕ M'') ∞ where
-  toEquiv := Equiv.swapAssociativity
+  toEquiv := (Equiv.sumAssoc M M' M'').symm
   contMDiff_toFun := by
     apply ContMDiff.sum_elim
     · exact ContMDiff.comp ContMDiff.inl ContMDiff.inl -- xxx: can I power up fun_prop to do this?
@@ -453,8 +391,8 @@ def Diffeomorph.associativity [Nonempty H] [Nonempty H'] :
     · exact ContMDiff.comp ContMDiff.inr ContMDiff.inr
 
 variable (M) in
-def Diffeomorph.sum_empty [IsEmpty M'] : Diffeomorph I I (M ⊕ M') M ∞ where
-  toEquiv := Equiv.sum_empty
+def Diffeomorph.sumEmpty [IsEmpty M'] : Diffeomorph I I (M ⊕ M') M ∞ where
+  toEquiv := Equiv.sumEmpty M M'
   contMDiff_toFun := ContMDiff.sum_elim contMDiff_id (contMDiff_of_const (fun _ ↦ congrFun rfl))
   contMDiff_invFun := ContMDiff.inl
 
