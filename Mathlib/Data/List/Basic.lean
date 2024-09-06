@@ -355,20 +355,9 @@ lemma getLast_filter {p : α → Bool} :
 
 /-! ### getLast? -/
 
--- This is a duplicate of `getLast?_eq_none_iff`.
--- We should remove one of them.
-theorem getLast?_eq_none : ∀ {l : List α}, getLast? l = none ↔ l = []
-  | [] => by simp
-  | [a] => by simp
-  | a :: b :: l => by simp [@getLast?_eq_none (b :: l)]
+@[deprecated (since := "2024-09-06")] alias getLast?_eq_none := getLast?_eq_none_iff
 
 @[deprecated (since := "2024-06-20")] alias getLast?_isNone := getLast?_eq_none
-
-@[simp]
-theorem getLast?_isSome : ∀ {l : List α}, l.getLast?.isSome ↔ l ≠ []
-  | [] => by simp
-  | [a] => by simp
-  | a :: b :: l => by simp [@getLast?_isSome (b :: l)]
 
 theorem mem_getLast?_eq_getLast : ∀ {l : List α} {x : α}, x ∈ l.getLast? → ∃ h, x = getLast l h
   | [], x, hx => False.elim <| by simp at hx
