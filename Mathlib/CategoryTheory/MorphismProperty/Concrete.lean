@@ -35,20 +35,16 @@ attribute [local instance] ConcreteCategory.instFunLike ConcreteCategory.hasCoeT
 
 /-- Injectiveness (in a concrete category) as a `MorphismProperty` -/
 protected def injective : MorphismProperty C := fun _ _ f => Injective f
-#align category_theory.morphism_property.injective CategoryTheory.MorphismProperty.injective
 
 /-- Surjectiveness (in a concrete category) as a `MorphismProperty` -/
 protected def surjective : MorphismProperty C := fun _ _ f => Surjective f
-#align category_theory.morphism_property.surjective CategoryTheory.MorphismProperty.surjective
 
 /-- Bijectiveness (in a concrete category) as a `MorphismProperty` -/
 protected def bijective : MorphismProperty C := fun _ _ f => Bijective f
-#align category_theory.morphism_property.bijective CategoryTheory.MorphismProperty.bijective
 
 theorem bijective_eq_sup :
     MorphismProperty.bijective C = MorphismProperty.injective C ⊓ MorphismProperty.surjective C :=
   rfl
-#align category_theory.morphism_property.bijective_eq_sup CategoryTheory.MorphismProperty.bijective_eq_sup
 
 instance : (MorphismProperty.injective C).IsMultiplicative where
   id_mem X := by
@@ -83,17 +79,14 @@ instance : (MorphismProperty.bijective C).IsMultiplicative where
 instance injective_respectsIso : (MorphismProperty.injective C).RespectsIso :=
   respectsIso_of_isStableUnderComposition
     (fun _ _ f (_ : IsIso f) => ((forget C).mapIso (asIso f)).toEquiv.injective)
-#align category_theory.morphism_property.injective_respects_iso CategoryTheory.MorphismProperty.injective_respectsIso
 
 instance surjective_respectsIso : (MorphismProperty.surjective C).RespectsIso :=
   respectsIso_of_isStableUnderComposition
     (fun _ _ f (_ : IsIso f) => ((forget C).mapIso (asIso f)).toEquiv.surjective)
-#align category_theory.morphism_property.surjective_respects_iso CategoryTheory.MorphismProperty.surjective_respectsIso
 
 instance bijective_respectsIso : (MorphismProperty.bijective C).RespectsIso :=
   respectsIso_of_isStableUnderComposition
     (fun _ _ f (_ : IsIso f) => ((forget C).mapIso (asIso f)).toEquiv.bijective)
-#align category_theory.morphism_property.bijective_respects_iso CategoryTheory.MorphismProperty.bijective_respectsIso
 
 end MorphismProperty
 

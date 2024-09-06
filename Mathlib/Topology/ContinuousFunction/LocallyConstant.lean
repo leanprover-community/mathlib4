@@ -7,8 +7,6 @@ import Mathlib.Topology.LocallyConstant.Algebra
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Topology.ContinuousFunction.Algebra
 
-#align_import topology.continuous_function.locally_constant from "leanprover-community/mathlib"@"f0339374016bccf700da0b2e0129d107c4346521"
-
 /-!
 # The algebra morphism from locally constant functions to continuous functions.
 
@@ -31,8 +29,6 @@ def toContinuousMapMonoidHom [Monoid Y] [ContinuousMul Y] : LocallyConstant X Y 
   map_mul' x y := by
     ext
     simp
-#align locally_constant.to_continuous_map_monoid_hom LocallyConstant.toContinuousMapMonoidHom
-#align locally_constant.to_continuous_map_add_monoid_hom LocallyConstant.toContinuousMapAddMonoidHom
 
 /-- The inclusion of locally-constant functions into continuous functions as a linear map. -/
 @[simps]
@@ -45,7 +41,6 @@ def toContinuousMapLinearMap (R : Type*) [Semiring R] [AddCommMonoid Y] [Module 
   map_smul' x y := by
     ext
     simp
-#align locally_constant.to_continuous_map_linear_map LocallyConstant.toContinuousMapLinearMap
 
 /-- The inclusion of locally-constant functions into continuous functions as an algebra map. -/
 @[simps]
@@ -67,6 +62,5 @@ def toContinuousMapAlgHom (R : Type*) [CommSemiring R] [Semiring Y] [Algebra R Y
   commutes' r := by
     ext x
     simp [Algebra.smul_def]
-#align locally_constant.to_continuous_map_alg_hom LocallyConstant.toContinuousMapAlgHom
 
 end LocallyConstant

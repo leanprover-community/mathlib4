@@ -46,3 +46,5 @@ elab "swap_var " swapRules:(colGt swapRule),+ : tactic => do
       return lctx.setUserName fvarId₁ n₂ |>.setUserName fvarId₂ n₁
   let mdecl := { mdecl with lctx := lctx }
   modifyMCtx fun mctx ↦ { mctx with decls := mctx.decls.insert mvarId mdecl }
+
+end Mathlib.Tactic

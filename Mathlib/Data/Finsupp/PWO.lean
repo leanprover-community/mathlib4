@@ -6,8 +6,6 @@ Authors: Alex J. Best
 import Mathlib.Data.Finsupp.Order
 import Mathlib.Order.WellFoundedSet
 
-#align_import data.finsupp.pwo from "leanprover-community/mathlib"@"59694bd07f0a39c5beccba34bd9f413a160782bf"
-
 /-!
 # Partial well ordering on finsupps
 
@@ -34,4 +32,3 @@ theorem Finsupp.isPWO {α σ : Type*} [Zero α] [LinearOrder α] [IsWellOrder α
     (S : Set (σ →₀ α)) : S.IsPWO :=
   Finsupp.equivFunOnFinite.symm_image_image S ▸
     Set.PartiallyWellOrderedOn.image_of_monotone_on (Pi.isPWO _) fun _a _b _ha _hb => id
-#align finsupp.is_pwo Finsupp.isPWO
