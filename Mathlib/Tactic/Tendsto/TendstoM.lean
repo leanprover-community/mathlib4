@@ -12,6 +12,7 @@ structure TendstoConfig where
 
 inductive TendstoException
 | signOracleException
+| trimmingException
 
 abbrev TendstoM := ExceptT TendstoException <| ReaderM TendstoConfig
 

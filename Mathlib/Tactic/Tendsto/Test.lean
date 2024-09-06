@@ -1,91 +1,93 @@
 import Mathlib.Data.Real.Basic
+-- import Mathlib.Data.ENat.Basic
 import Mathlib.Data.Complex.Exponential
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Analysis.Asymptotics.Asymptotics
+import Mathlib.Tactic
+
+import Mathlib.Data.Seq.Computation
 
 
-import Qq
-----------------------------------------------------------------
-open Lean Qq
+-- #eval Fib 30
 
-inductive MyException where
-| SignOracleException
+unsafe def Fib_impl (n : ℕ) : ℕ := Id.run do
+  let mut prev := 1
+  let mut prev_prev := 1
+  for _ in [2:n+1] do
+    let new := prev_prev + prev
+    prev_prev := prev
+    prev := new
+  return prev
 
-abbrev MyM := Except MyException
+@[implemented_by Fib_impl]
+def Fib : ℕ → ℕ
+| 0 => 1
+| 1 => 1
+| m + 2 => Fib m + Fib (m + 1)
 
-inductive SignOracleResult (x : Q(ℝ)) where
-| neg (proof : Expr)
-| pos (proof : Expr)
-| zero (proof : Expr)
-
-def SignOracle : Type := (x : Q(ℝ)) → MyM (SignOracleResult x)
--------------------------------------------------------------------
+theorem kek (n : ℕ) : Fib n + Fib (n + 1) = Fib (n + 2) := by
+  conv => rhs; unfold Fib
 
 
-inductive MS : ℕ → Type where
-| const (c : ℝ) : MS 0
-| nil {n : ℕ} : MS n
-| cons {n : ℕ} : MS n → ℝ → MS (n + 1) → MS (n + 1)
+def Fib' (n : ℕ) : Thunk ℕ := match n with
+| 0 => ⟨fun _ ↦ 1⟩
+| 1 => ⟨fun _ ↦ 1⟩
+| m + 2 => ⟨fun _ ↦ (Fib' m).get + (Fib' (m + 1)).get⟩
 
--- MS 0 = ℝ
--- MS n + 1 = List (MS n × ℝ)
+-- #eval (Fib' 50).get
 
-noncomputable def MS.eval {n : ℕ} (basis : Mathlib.Vector (ℝ → ℝ) n) (x : ℝ) (F : MS n) : ℝ :=
-  match F with
-  | .const c => c
-  | .nil => 0
-  | .cons coef deg tail => (basis.head x)^deg * (coef.eval basis.tail x) + (tail.eval basis x)
 
-def ex_1 : MS 0 := .const 1
-def ex_x : MS 1 := .cons ex_1 1 .nil
-def ex_x_1 : MS 1 := .cons ex_1 0 ex_x -- x + 1
-def ex : MS 2 := .cons ex_x_1 1 .nil -- (x + 1) * e^x
+#check Sum
+#check Sigma.mk
 
-example : ex_x_1.eval ⟨[id], rfl⟩ 3 = 4 := by
-  simp [ex_x_1, MS.eval, Mathlib.Vector.head]
-  ring_nf
+universe u in
+def MyStream (α : Type u) : Type u :=
+  (Σ (i : ℕ), (Fin i → α)) ⊕ (ℕ → α)
 
-example : ex.eval ⟨[Real.exp, id], rfl⟩ 3 = 4 * Real.exp 3 := by
-  simp [ex_x_1, MS.eval, Mathlib.Vector.head, Mathlib.Vector.tail]
-  ring_nf
+def MyStream.ofList {α : Type} (li : List α) : MyStream α :=
+  Sum.inl ⟨li.length, fun i ↦ li[i]⟩
 
-noncomputable def MS.add {n : ℕ} (F G : MS n) : MS n :=
-  match F, G with
-  | .nil, G => G
-  | F, .nil => F
-  | .const c₁, .const c₂ => .const (c₁ + c₂)
-  | .cons F_coef F_deg F_tail, .cons G_coef G_deg G_tail =>
-    if F_deg < G_deg then
-      .cons F_coef F_deg (MS.add F_tail (.cons G_coef G_deg G_tail))
-    else if G_deg < F_deg then
-      .cons G_coef G_deg (MS.add (.cons F_coef F_deg F_tail) G_tail)
-    else
-      .cons (MS.add F_coef G_coef) F_deg (MS.add F_tail G_tail)
 
-example : (MS.add ex_x ex_x_1).eval ⟨[id], rfl⟩ 3 = 7 := by
-  simp [ex_x, ex_x_1, MS.eval, MS.add]
-  norm_num
-  simp [ex_1, ex_x, ex_x_1, MS.eval, MS.add, Mathlib.Vector.head, Mathlib.Vector.tail]
-  norm_num
 
-noncomputable instance {n : ℕ} : Add (MS n) where
-  add := MS.add
+inductive PreMS where
+| const : ℝ → PreMS
+| nil : PreMS
+| cons (deg : ℝ) (coef : PreMS) (tl : Thunk PreMS) : PreMS
 
-def MS.neg {n : ℕ} (F : MS n) : MS n :=
-  match F with
-  | .const c => .const (-c)
-  | .nil => .nil
-  | .cons coef deg tail => .cons coef.neg deg tail.neg
+def Stream'' (α : Type) := {x : Stream' (Option α) // ∀ n, (x n).isNone → (x (n + 1)).isNone}
 
-instance {n : ℕ} : Neg (MS n) where
-  neg := MS.neg
+universe u in
+def Kek (α : Sort u) := ℕ → α
 
-def MS.ofReal {n : ℕ} (c : ℝ) : MS n :=
-  match n with
-  | 0 => .const c
-  | _ + 1 => .cons (MS.ofReal c) 0 .nil
 
-example : (MS.ofReal 4 : MS 5).eval ⟨[id, id, id, id, id], rfl⟩ 111 = 4 := by
-  simp [MS.ofReal, MS.eval]
+mutual
+  inductive PreMS' where
+  | const : ℝ → PreMS'
+  | list (li : ℕ → Option (ℝ × PreMS'WF)) : PreMS'
 
-instance {n : ℕ} : Coe ℝ (MS n) where
-  coe c := MS.ofReal c
+  inductive PreMS'WF : Type where
+  | mk (ms : PreMS') (h_wf : PreMS'_wf ms) : PreMS'WF
+
+  inductive PreMS'_wf : PreMS' → Type where
+  | const (c : ℝ) : PreMS'_wf (PreMS.const c)
+  | list (li : ℕ → Option (ℝ × PreMS'WF)) (h_li : ∀ n, li n = none → li (n + 1) = none) : PreMS'_wf (PreMS.list li)
+
+end
+
+#check PreMS'
+
+universe u
+
+-- axiom MyType : Type 1
+
+-- #check MyType
+-- #check (MyType × MyType)
+
+inductive MyType where
+| constr : (ℕ → MyType) → MyType
+
+
+inductive MyType' where
+| constr : Kek MyType' → MyType'
+
+#check Stream'

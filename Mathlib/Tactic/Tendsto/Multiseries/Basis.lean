@@ -1,4 +1,8 @@
-import Mathlib.Tactic.Tendsto.Multiseries.Basic
+import Mathlib.Tactic.Tendsto.Multiseries.BasicNew
+import Mathlib.Data.Real.Basic
+import Mathlib.Data.Complex.Exponential
+import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
+import Mathlib.Analysis.Asymptotics.Asymptotics
 import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 
 open Asymptotics Filter
@@ -134,32 +138,32 @@ lemma MS.compare_self {f : ℝ → ℝ} {e1 e2 : ℝ} (h1 : Tendsto f atTop atTo
     absurd h2
     exact (Real.rpow_pos_of_pos h1 _).ne.symm
 
-theorem PreMS.isApproximation_coef_isLittleO_head {c : PreMS} {C basis_hd : ℝ → ℝ} {basis_tl : Basis}
-    {deg : ℝ} (h_deg : 0 < deg) (h_approx : c.isApproximation C basis_tl) (h_basis : MS.wellOrderedBasis (basis_hd :: basis_tl)) :
-    C =o[atTop] fun x ↦ (basis_hd x)^deg := by
-  cases h_approx with
-  | const c _ hC =>
-    apply EventuallyEq.trans_isLittleO hC
-    apply isLittleO_const_left.mpr
-    right
-    apply Tendsto.comp tendsto_norm_atTop_atTop
-    apply Tendsto.comp (tendsto_rpow_atTop h_deg)
-    simpa [MS.wellOrderedBasis] using h_basis
-  | nil _ _ hC =>
-    apply EventuallyEq.trans_isLittleO hC
-    apply isLittleO_const_left.mpr
-    left
-    rfl
-  | cons coef_deg coef_coef coef_tl _ CC basis_tl_hd basis_tl_tl h_coef_coef h_coef_tl h_coef_comp =>
-    apply Asymptotics.IsLittleO.trans <| h_coef_comp (coef_deg + 1) (by linarith)
-    apply MS.basis_compare
-    · apply MS.basis_head_eventually_pos
-      unfold MS.wellOrderedBasis at h_basis
-      exact h_basis.right.left
-    · apply MS.basis_tendsto_top h_basis
-      simp only [List.mem_cons, true_or]
-    · simp [MS.wellOrderedBasis] at h_basis
-      exact h_basis.right.right
-    · exact h_deg
+-- theorem PreMS.isApproximation_coef_isLittleO_head {c : PreMS} {C basis_hd : ℝ → ℝ} {basis_tl : Basis}
+--     {deg : ℝ} (h_deg : 0 < deg) (h_approx : c.isApproximation C basis_tl) (h_basis : MS.wellOrderedBasis (basis_hd :: basis_tl)) :
+--     C =o[atTop] fun x ↦ (basis_hd x)^deg := by
+--   cases h_approx with
+--   | const c _ hC =>
+--     apply EventuallyEq.trans_isLittleO hC
+--     apply isLittleO_const_left.mpr
+--     right
+--     apply Tendsto.comp tendsto_norm_atTop_atTop
+--     apply Tendsto.comp (tendsto_rpow_atTop h_deg)
+--     simpa [MS.wellOrderedBasis] using h_basis
+--   | nil _ _ hC =>
+--     apply EventuallyEq.trans_isLittleO hC
+--     apply isLittleO_const_left.mpr
+--     left
+--     rfl
+--   | cons coef_deg coef_coef coef_tl _ CC basis_tl_hd basis_tl_tl h_coef_coef h_coef_tl h_coef_comp =>
+--     apply Asymptotics.IsLittleO.trans <| h_coef_comp (coef_deg + 1) (by linarith)
+--     apply MS.basis_compare
+--     · apply MS.basis_head_eventually_pos
+--       unfold MS.wellOrderedBasis at h_basis
+--       exact h_basis.right.left
+--     · apply MS.basis_tendsto_top h_basis
+--       simp only [List.mem_cons, true_or]
+--     · simp [MS.wellOrderedBasis] at h_basis
+--       exact h_basis.right.right
+--     · exact h_deg
 
 end TendstoTactic
