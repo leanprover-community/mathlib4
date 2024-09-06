@@ -177,6 +177,13 @@ private partial def matchQueryStar (id : Nat) (trie : TrieIndex) (pMatch : Parti
       let queryStars := pMatch.queryStars.insert id skipped
       return todo.push { pMatch with trie, queryStars }
 
+/-- Return every value that is indexed in the tree. -/
+private def matchEverything (tree : RefinedDiscrTree α) : TreeM α (MatchResult α) := do
+  let pMatches ← tree.root.foldM (init := #[]) fun todo key trie =>
+    matchQueryStar 0 trie { keys := [], score := 0, trie := 0 } todo key.arity [key]
+  pMatches.foldlM (init := {}) fun result pMatch => do
+    let (values, _) ← evalNode pMatch.trie
+    return result.push (score := 0) values
 
 /-- Add to the stack all matches that result from a `.star _` in the discrimination tree. -/
 private partial def matchTreeStars (key : Key) (stars : Std.HashMap Nat TrieIndex)
@@ -255,7 +262,10 @@ def getMatch (d : RefinedDiscrTree α) (e : Expr) (unify matchRootStar : Bool) :
     let pMatch : PartialMatch := { keys, score := 0, trie := default }
     if key matches .star _ then
       if unify then
-        return {} -- we don't want to evaluate the whole tree, as this is too expensive.
+        if matchRootStar then
+          matchEverything d
+        else
+          return {} -- we don't want to evaluate the whole tree, as this is too expensive.
       else
         matchTreeRootStar d.root
     else
