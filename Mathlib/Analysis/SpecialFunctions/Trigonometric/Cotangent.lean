@@ -10,8 +10,6 @@ import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
 
 This file contains lemmas about the cotangent function, including useful series expansions.
 
-The main result is the Mittag-Leffler expansion of the cotangent function, which says that
-`π * cot (π * z) = 1 / z + ∑' n : ℕ+, (1 / (z - n) + 1 / (z + n))`.
 -/
 
 open Real Complex BigOperators Filter
