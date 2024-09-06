@@ -4,6 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
 import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
+import Mathlib.Analysis.Complex.IntegerCompl
+import Mathlib.Analysis.Complex.LocallyUniformLimit
+import Mathlib.Analysis.PSeries
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.EulerSineProd
 import Mathlib.Topology.Algebra.InfiniteSum.InfiniteProdOneAdd
 
 /-!
