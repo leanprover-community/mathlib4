@@ -73,10 +73,8 @@ theorem star'_mul_star_lf : star' * star ⧏ star := by
   simp [star']
 
 /-- Pre-game multiplication cannot be lifted to games. -/
-theorem mul_not_lift : ∃ x₁ x₂ y : PGame, x₁ ≈ x₂ ∧ ¬ x₁ * y ≈ x₂ * y := by
-  use star', star, star, star'_equiv_star
-  intro h
-  exact (PGame.Equiv.trans h star_sq).ge.not_gf star'_mul_star_lf
+theorem mul_not_lift : ∃ x₁ x₂ y : PGame, x₁ ≈ x₂ ∧ ¬ x₁ * y ≈ x₂ * y :=
+  ⟨_, _, _, ⟨star'_equiv_star, fun h ↦ (PGame.Equiv.trans h star_sq).ge.not_gf star'_mul_star_lf⟩⟩
 
 end PGame
 
