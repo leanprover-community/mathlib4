@@ -25,8 +25,8 @@ Jacobian.
 
 ## Main Results
 
-- `OrientationPreserving.DifferentiableAt` : an orientation preserving map is differentiable.
-- `OrientationReversing.DifferentiableAt` : an orientation reversing map is differentiable.
+- `OrientationPreserving.differentiableAt` : an orientation preserving map is differentiable.
+- `OrientationReversing.differentiableAt` : an orientation reversing map is differentiable.
 - `orientationPreserving_comp` : a composition between two orientation preserving maps is
   orientation preserving.
 - `orientationReversing_comp_orientationPreserving` : a composition between an orientation
@@ -84,7 +84,7 @@ lemma orientationPreserving_of_zero_dim (f : H → H) (s : Set H) (h : Module.ra
     exact Matrix.det_fin_zero
   det_eq_one ▸ Real.zero_lt_one
 
-lemma OrientationPreserving.DifferentiableAt [FiniteDimensional ℝ H] {f : H → H} {s : Set H}
+lemma OrientationPreserving.differentiableAt [FiniteDimensional ℝ H] {f : H → H} {s : Set H}
     (h : OrientationPreserving f s) {x : H} (hs : x ∈ s) : DifferentiableAt ℝ f x := by
   cases subsingleton_or_nontrivial H
   · apply DifferentiableWithinAt.differentiableAt
@@ -98,7 +98,7 @@ lemma OrientationPreserving.DifferentiableAt [FiniteDimensional ℝ H] {f : H �
     rw [fderiv_zero_of_not_differentiableAt h, ContinuousLinearMap.det]
     simp [ne_of_gt FiniteDimensional.finrank_pos]
 
-lemma OrientationReversing.DifferentiableAt {f : H → H} {s : Set H} (h : OrientationReversing f s)
+lemma OrientationReversing.differentiableAt {f : H → H} {s : Set H} (h : OrientationReversing f s)
     {x : H} (hs : x ∈ s) : DifferentiableAt ℝ f x := by
   unfold OrientationReversing at h
   contrapose! h
@@ -114,7 +114,7 @@ lemma orientationPreserving_comp [FiniteDimensional ℝ H] {f g : H → H} {u v 
     (hf : OrientationPreserving f u) (hg : OrientationPreserving g v) :
     OrientationPreserving (g ∘ f) (u ∩ f ⁻¹' v) := by
   intro x ⟨hxu, hxv⟩
-  rw [fderiv.comp x (hg.DifferentiableAt hxv) (hf.DifferentiableAt hxu)]
+  rw [fderiv.comp x (hg.differentiableAt hxv) (hf.differentiableAt hxu)]
   unfold ContinuousLinearMap.det ContinuousLinearMap.comp
   rw [(fderiv ℝ g (f x)).toLinearMap.det_comp (fderiv ℝ f x).toLinearMap]
   exact mul_pos (hg (f x) hxv) (hf x hxu)
@@ -123,7 +123,7 @@ lemma orientationReversing_comp_orientationPreserving [FiniteDimensional ℝ H]
     {f g : H → H} {u v : Set H} (hf : OrientationPreserving f u) (hg : OrientationReversing g v) :
     OrientationReversing (g ∘ f) (u ∩ f ⁻¹' v) := by
   intro x ⟨hxu, hxv⟩
-  rw [fderiv.comp x (hg.DifferentiableAt hxv) (hf.DifferentiableAt hxu)]
+  rw [fderiv.comp x (hg.differentiableAt hxv) (hf.differentiableAt hxu)]
   unfold ContinuousLinearMap.det ContinuousLinearMap.comp
   rw [(fderiv ℝ g (f x)).toLinearMap.det_comp (fderiv ℝ f x).toLinearMap]
   exact mul_neg_of_neg_of_pos (hg (f x) hxv) (hf x hxu)
@@ -132,7 +132,7 @@ lemma orientationPreserving_comp_orientationReversing [FiniteDimensional ℝ H]
     {f g : H → H} {u v : Set H} (hf : OrientationReversing f u) (hg : OrientationPreserving g v) :
     OrientationReversing (g ∘ f) (u ∩ f ⁻¹' v) := by
   intro x ⟨hxu, hxv⟩
-  rw [fderiv.comp x (hg.DifferentiableAt hxv) (hf.DifferentiableAt hxu)]
+  rw [fderiv.comp x (hg.differentiableAt hxv) (hf.differentiableAt hxu)]
   unfold ContinuousLinearMap.det ContinuousLinearMap.comp
   rw [(fderiv ℝ g (f x)).toLinearMap.det_comp (fderiv ℝ f x).toLinearMap]
   exact mul_neg_of_pos_of_neg (hg (f x) hxv) (hf x hxu)
@@ -141,7 +141,7 @@ lemma orientationReversing_comp {f g : H → H} {u v : Set H}
     (hf : OrientationReversing f u) (hg : OrientationReversing g v) :
     OrientationPreserving (g ∘ f) (u ∩ f ⁻¹' v) := by
   intro x ⟨hxu, hxv⟩
-  rw [fderiv.comp x (hg.DifferentiableAt hxv) (hf.DifferentiableAt hxu)]
+  rw [fderiv.comp x (hg.differentiableAt hxv) (hf.differentiableAt hxu)]
   unfold ContinuousLinearMap.det ContinuousLinearMap.comp
   rw [(fderiv ℝ g (f x)).toLinearMap.det_comp (fderiv ℝ f x).toLinearMap]
   exact mul_pos_of_neg_of_neg (hg (f x) hxv) (hf x hxu)
