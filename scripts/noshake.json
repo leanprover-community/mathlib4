@@ -163,7 +163,8 @@
   "Mathlib.Tactic.Simps.Basic",
   "Mathlib.Tactic.Simps.NotationClass",
   "Mathlib.Tactic.SplitIfs",
-  "Mathlib.Tactic.Spread",
+  "Mathlib.Tactic.Spread",,
+  "Mathlib.Tactic.StacksAttribute"
   "Mathlib.Tactic.Substs",
   "Mathlib.Tactic.SuppressCompilation",
   "Mathlib.Tactic.SwapVar",
@@ -189,8 +190,7 @@
   "Mathlib.Util.Tactic",
   "Mathlib.Util.WhatsNew",
   "Mathlib.Util.WithWeakNamespace",
-  "Qq",
-  "Mathlib.Tactic.StacksAttribute"],
+  "Qq"],
  "ignoreAll":
  ["Batteries.Tactic.Basic", "Mathlib.Mathport.Syntax", "Mathlib.Tactic.Linter"],
  "ignore":
