@@ -140,6 +140,7 @@ theorem iSup_iInf_fun_index_split_single {α β γ : Type*} [DecidableEq α] [Co
   · simp
   · simp [dif_neg hx]
 
+
 theorem invariant_subspace_eigenspace_exhaust [FiniteDimensional 𝕜 E] {F : Submodule 𝕜 E}
     (S : E →ₗ[𝕜] E) (hS: IsSymmetric S) (hInv : ∀ v ∈ F, S v ∈ F) : ⨆ μ, Submodule.map F.subtype
     (eigenspace (S.restrict hInv) μ)  = F := by
@@ -198,15 +199,24 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot [Fintype n] [FiniteDim
       (by simp only [not_true_eq_false, not_false_eq_true])) (Subtype.restrict (fun x ↦ x ≠ i) T)
         (fun (i_1 : {x // x ≠ i}) ↦ hT ↑i_1) (fun (i_1 j : { x // x ≠ i }) ↦ hC ↑i_1 ↑j)
     simp only [Submodule.orthogonal_eq_bot_iff] at *
-    have E : (⨆ (γ : {x // x ≠ i} → 𝕜), (⨆ μ : 𝕜, (eigenspace (T i) μ ⊓ (⨅ (j : {x // x ≠ i}),
+    have G : (⨆ (γ : {x // x ≠ i} → 𝕜), (⨆ μ : 𝕜, (eigenspace (T i) μ ⊓ (⨅ (j : {x // x ≠ i}),
     eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j))))) = ⨆ (γ : {x // x ≠ i} → 𝕜),
     (⨅ (j : {x // x ≠ i}), eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j)) := by
       conv => lhs; rhs; ext γ; rhs; ext μ; rw [invariant_subspace_inf_eigenspace_eq_restrict (T i) μ
         (iInf_eigenspace_invariant_of_commute T hC i γ)]
       conv => lhs; rhs; ext γ; rw [invariant_subspace_eigenspace_exhaust (T i) (hT i)
         (iInf_eigenspace_invariant_of_commute T hC i γ)]
-    rw [← E] at D
-    rw [iSup_iInf_fun_index_split_single i (fun _ ↦ (fun μ ↦ (eigenspace (T _) μ )))]
+    have H1 : ∀ (i : m), ∀ (s : m → 𝕜 → Submodule 𝕜 E), (⨆ f : m → 𝕜, ⨅ x, s x (f x)) =
+        ⨆ f' : {y // y ≠ i} → 𝕜, ⨆ y : 𝕜, s i y ⊓ ⨅ x' : {y // y ≠ i}, (s x' (f' x')) := by
+      intro i s
+      rw [← (Equiv.funSplitAt i 𝕜).symm.iSup_comp, iSup_prod, iSup_comm]
+      congr! with f' y
+      rw [iInf_split_single _ i, iInf_subtype]
+      congr! with x hx
+      · simp
+      · simp [dif_neg hx]
+    rw [← G] at D
+    rw [H1 i (fun _ ↦ (fun μ ↦ (eigenspace (T _) μ )))]
     exact D
 
 theorem orthogonalFamily_iInf_eigenspaces (T : n → (E →ₗ[𝕜] E))
