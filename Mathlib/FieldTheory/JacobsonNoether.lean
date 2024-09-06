@@ -51,7 +51,7 @@ private def δ (a : D) : D →ₗ[k] D := {
   toFun := f a - g a
   map_add' := by
     intro x y
-    simp only [Pi.sub_apply, map_add, add_sub_add_comm]
+    rw [Pi.sub_apply, map_add, map_add, add_sub_add_comm]; rfl
   map_smul' := by
     intro m x
     simp only [Pi.sub_apply, map_smul, RingHom.id_apply, smul_sub]
@@ -60,16 +60,16 @@ private def δ (a : D) : D →ₗ[k] D := {
 @[simp]
 private lemma δ_def (a x : D) : δ a x = f a x - g a x := rfl
 
+@[simp]
+private lemma δ_def' (a : D) : δ a = f a - g a := rfl
+
 -- *Filippo* Change name
 private lemma comm_fg (a : D) : Commute (f a) (g a) := by
   rw [commute_iff_eq, LinearMap.mk.injEq, AddHom.mk.injEq]
   funext x
-  dsimp [f, g]; exact Eq.symm (mul_assoc a x a)
+  dsimp [f, g]; exact (mul_assoc a x a).symm
 
--- *Filippo* Change name
-private lemma aux1 (a : D) : δ a = f a - g a := rfl
-
-lemma f_pow (a : D) (n : ℕ) : ∀ x : D, ((f a) ^ n).1 x = (a ^ n) * x := by
+private lemma f_pow (a : D) (n : ℕ) : ∀ x : D, ((f a) ^ n).1 x = (a ^ n) * x := by
   intro x
   rw [LinearMap.coe_toAddHom, LinearMap.pow_apply]
   induction n
@@ -78,7 +78,7 @@ lemma f_pow (a : D) (n : ℕ) : ∀ x : D, ((f a) ^ n).1 x = (a ^ n) * x := by
     rename_i n h
     rw [pow_succ', mul_assoc]; rfl
 
-lemma g_pow (a : D) (n : ℕ) : ∀ x : D, ((g a) ^ n).1 x = x * (a ^ n) := by
+private lemma g_pow (a : D) (n : ℕ) : ∀ x : D, ((g a) ^ n).1 x = x * (a ^ n) := by
   intro x
   rw [LinearMap.coe_toAddHom, LinearMap.pow_apply]
   induction n
@@ -89,7 +89,8 @@ lemma g_pow (a : D) (n : ℕ) : ∀ x : D, ((g a) ^ n).1 x = x * (a ^ n) := by
     rw [pow_add, pow_one, mul_assoc]
 
 -- *Filippo* : Please change the name!
-lemma important (x y : D) (n : ℕ) :
+-- *Yu* : This might be better?
+private lemma δ_iterate_succ (x y : D) (n : ℕ) :
     δ x (((δ x) ^ n) y) = ((δ x) ^ (n + 1)) y := by
   simp only [LinearMap.pow_apply, δ_def, f_def, g_def, Function.iterate_succ_apply']
 
@@ -124,29 +125,21 @@ lemma exists_pow_mem_center_ofInseparable' (p : ℕ) [Fact p.Prime] [CharP D p] 
   exact hinsep (a ^ p ^ n) (Polynomial.Separable.of_dvd hg (minpoly.dvd_iff.mpr h1))
 
 -- Not private but better name
-lemma final_aux (p : ℕ) [Fact p.Prime] [CharP D p]
+lemma any_pow_gt_eq_zero (p : ℕ) [Fact p.Prime] [CharP D p]
     {a : D} (ha : a ∉ k) (hinsep : ∀ x : D, IsSeparable k x → x ∈ k):
   ∃ m ≥ 1, ∀ n ≥ (p ^ m), (δ a) ^ n = 0 := by
   obtain ⟨m, hm⟩ := exists_pow_mem_center_ofInseparable' p ha hinsep
-  use m
-  constructor
-  · exact hm.1
-  · intro n hn
-    have inter1 : (δ a) ^ (p ^ m) = (f a) ^ (p ^ m) - (g a) ^ (p ^ m) :=
-      sub_pow_char_pow_of_commute (D →ₗ[k] D) (f a) (g a) (comm_fg a)
-    have inter2 : ∀ x : D, ((δ a) ^ (p ^ m)).1 x = 0 := by
-      intro x
-      rw [congrArg LinearMap.toAddHom inter1]
-      show ((f a) ^ (p ^ m)).1 x - ((g a) ^ (p ^ m)).1 x = 0
-      rw [f_pow, g_pow]
-      apply sub_eq_zero_of_eq
-      suffices h : a ^ (p ^ m) ∈ k by
-        rw [Subring.mem_center_iff] at h; exact (h x).symm
-      exact hm.2
-    have inter3 : (δ a) ^ (p ^ m) = 0 := LinearMap.ext_iff.mpr inter2
-    have boring : n = (n - (p ^ m)) + p ^ m := (Nat.sub_eq_iff_eq_add hn).mp rfl
-    rw [boring, pow_add, inter3, mul_zero]
-
+  refine ⟨m, ⟨hm.1, ?_⟩⟩
+  intro n hn
+  have inter : (δ a) ^ (p ^ m) = 0 := by
+    refine LinearMap.ext_iff.2 ?_
+    intro x
+    rw [δ_def' a, sub_pow_char_pow_of_commute (D →ₗ[k] D) (f a) (g a) (comm_fg a) (p := p) (n := m)]
+    show ((f a) ^ (p ^ m)).1 x - ((g a) ^ (p ^ m)).1 x = 0
+    rw [f_pow, g_pow, sub_eq_zero_of_eq]
+    suffices h : a ^ (p ^ m) ∈ k from (Subring.mem_center_iff.1 h x).symm
+    exact hm.2
+  rw [((Nat.sub_eq_iff_eq_add hn).1 rfl), pow_add, inter, mul_zero]
 
 /-- Jacobson-Noether theorem in the `CharP D 0` case -/
 theorem JacobsonNoether_charZero [CharP D 0] (h : k ≠ (⊤ : Subring D)) :
@@ -154,7 +147,6 @@ theorem JacobsonNoether_charZero [CharP D 0] (h : k ≠ (⊤ : Subring D)) :
   let _ : CharZero k := (CharP.charP_zero_iff_charZero k).mp (by infer_instance)
   obtain ⟨a, ha⟩ := not_forall.mp <| mt (Subring.eq_top_iff' k).mpr h
   exact ⟨a, ⟨ha, (minpoly.irreducible (Algebra.IsIntegral.isIntegral a)).separable⟩⟩
-
 
 /-- Jacobson-Noether theorem in the `CharP D p` case -/
 theorem JacobsonNoether_charP (p : ℕ) [Fact p.Prime] [CharP D p]
@@ -173,7 +165,7 @@ theorem JacobsonNoether_charP (p : ℕ) [Fact p.Prime] [CharP D p]
     simpa only [ne_eq, sub_eq_zero] using Ne.symm ha.choose_spec
   -- We find a maximum natural number `n` such that `(δ a) ^ n b ≠ 0`.
   obtain ⟨n, hn, hb⟩ : ∃ n > 0, ((δ a) ^ n) b ≠ 0 ∧ ((δ a) ^ (n + 1)) b = 0 := by
-    obtain ⟨m, -, hm2⟩ := final_aux p ha hinsep
+    obtain ⟨m, -, hm2⟩ := any_pow_gt_eq_zero p ha hinsep
     have exist : ∃ n > 0, ((δ a) ^ (n + 1)) b = 0 := by
       refine ⟨ p ^ m, ⟨pow_pos (Nat.Prime.pos (@Fact.out _ _)) m, ?_ ⟩ ⟩
       simp only [hm2 (p^ m + 1) (by linarith), LinearMap.zero_apply]
@@ -199,22 +191,14 @@ theorem JacobsonNoether_charP (p : ℕ) [Fact p.Prime] [CharP D p]
   -- We define `c` to be the value that we proved above to be non-zero.
   set c := ((δ a) ^ n) b with hc_def
   letI : Invertible c := ⟨c⁻¹, inv_mul_cancel₀ (hb.1), mul_inv_cancel₀ (hb.1)⟩
-  -- have important : δ a (((δ a) ^ n) b) = ((δ a) ^ (n + 1)) b := by
-  --   simp only [LinearMap.pow_apply, δ_def, f_def, g_def,
-  --     Function.iterate_succ_apply']
   have hc : c * a = a * c := by
     rw [← show (f a) c = a * c by rfl, ← show (g a) c = c * a by rfl, ← zero_add (g a c)]
     apply add_eq_of_eq_add_neg
-    have temp := important a b n
+    have temp := δ_iterate_succ a b n
     simp only [δ_def, f_def, g_def] at temp
     simp only [temp, f_def, g_def, ← sub_eq_add_neg]
     exact hb.2.symm
   -- We now make some computation to obtain the *absurd* equation `final_eq`, contradiction.
-  /-
-  **The "Ring Tactic" must be use on a CommRing, there is no efficient Tactic if on none CommRing**
-  **And the progress is a piece of SHIT**
-  **I use so many "rw" Tactic similar to the beginning learning of Lean**
-  -/
   set d := c⁻¹ * a * (δ a) ^[n-1] b with hd_def
   have hc': c⁻¹ * a = a * c⁻¹ := by
     apply_fun (c⁻¹ * · * c⁻¹) at hc
@@ -224,30 +208,24 @@ theorem JacobsonNoether_charP (p : ℕ) [Fact p.Prime] [CharP D p]
 
   have c_eq : a * (δ a) ^[n - 1] b - (δ a) ^[n - 1] b * a = c := by
     rw [hc_def, ← (LinearMap.pow_apply (δ a) (n - 1) b), ← Nat.sub_add_cancel hn,
-      show (δ a ^ (n - 1 + 1)) b = (δ a) ((δ a ^ (n - 1)) b) by rw [important]]
+      show (δ a ^ (n - 1 + 1)) b = (δ a) ((δ a ^ (n - 1)) b) by rw [δ_iterate_succ]]
     simp only [add_tsub_cancel_right, δ_def, f_def, g_def]
   have eq1 : c⁻¹ * a * (δ a)^[n - 1] b - c⁻¹ * (δ a)^[n - 1] b * a = 1 := by
     calc
-      _ = c⁻¹ * (a * (δ a)^[n - 1] b) - c⁻¹ * ((δ a)^[n - 1] b * a) := by simp_rw [mul_assoc]
-      _ = c⁻¹ * (a * (δ a)^[n - 1] b - (δ a)^[n - 1] b * a) := (mul_sub_left_distrib c⁻¹ _ _).symm
-      _ = c⁻¹ * c := by rw [c_eq]
+      _ = c⁻¹ * c := by
+        simp_rw [mul_assoc, (mul_sub_left_distrib c⁻¹ _ _).symm, c_eq]
       _ = _ := by simp only [inv_mul_cancel_of_invertible]
 
   have deq : a * d - d * a = a := by
     calc
-      _ = a * (c⁻¹ * a * (δ a)^[n - 1] b) - (c⁻¹ * a * (δ a)^[n - 1] b) * a := by rw [hd_def]
-      _ = a * (c⁻¹ * a * (δ a)^[n - 1] b) - a * c⁻¹ * (δ a)^[n - 1] b * a := by rw [hc']
-      _ = a * (c⁻¹ * a * (δ a)^[n - 1] b) - a * (c⁻¹ * (δ a)^[n - 1] b * a) := by
-        simp_rw [mul_assoc]
       _ = a * ((c⁻¹ * a * (δ a)^[n - 1] b) - (c⁻¹ * (δ a)^[n - 1] b * a)) := by
-        rw [← mul_sub_left_distrib]
+        simp_rw [hd_def, hc', mul_assoc, ← mul_sub_left_distrib]
       _ = _ := by simp only [eq1, mul_one]
   -- *Filippo* Find a better name!
   have tired : 1 + a⁻¹ * d * a = d := by
     calc
-      _ = (a⁻¹ * a) + a⁻¹ * d * a := by simp only [add_left_inj, inv_mul_cancel₀ ha₀]
-      _ = a⁻¹ * a + a⁻¹ * (d * a) := by simp only [add_right_inj, mul_assoc]
-      _ = a⁻¹ * (a * d - d * a + d * a) := by rw [left_distrib, deq]
+      _ = a⁻¹ * (a * d - d * a + d * a) := by
+        simp only [mul_assoc, deq, left_distrib, inv_mul_cancel₀ ha₀]
       _ = (a⁻¹ * a) * d := by rw [sub_add_cancel, mul_assoc]
       _ = _ := by simp only [inv_mul_cancel₀ ha₀, one_mul]
   -- The natural `r` below is such that `d ^ (p ^ r) ∈ k`.
@@ -257,17 +235,11 @@ theorem JacobsonNoether_charP (p : ℕ) [Fact p.Prime] [CharP D p]
     calc
       _ = (1 + a⁻¹ * d * a) ^ (p ^ r) := by rw [tired]
       _ = 1 ^ (p ^ r) + (a⁻¹ * d * a) ^ (p ^ r) := by
-        rw [add_pow_char_pow_of_commute]
-        exact Commute.one_left _
+        simp only [Commute.one_left, Commute.mul_right, add_pow_char_pow_of_commute, one_pow]
       _ = 1 + a⁻¹ * d ^ (p ^ r) * a := by
-        simpa only [one_pow, add_right_inj] using(conj_nonComm_Algebra (p^r) a d ha₀).symm
+        simpa only [one_pow, add_right_inj] using (conj_nonComm_Algebra (p ^ r) a d ha₀).symm
       _ = _ := by
-        simp only [add_right_inj]
-        calc
-          _ = a⁻¹ * (d ^ p ^ r * a) := by simp_rw [mul_assoc]
-          _ = a⁻¹ * (a * d ^ p ^ r) := by rw [hr.comm]
-          _ = (a⁻¹ * a) * d ^ p ^ r := by simp_rw [mul_assoc]
-          _ = _ := by simp only [inv_mul_cancel₀ ha₀, one_mul]
+        rw [add_right_inj, mul_assoc, hr.comm, ← mul_assoc, inv_mul_cancel₀ ha₀, one_mul]
   simp only [self_eq_add_left, one_ne_zero] at final_eq
 
 variable (D) in
