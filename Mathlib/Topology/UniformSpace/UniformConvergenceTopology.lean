@@ -1152,8 +1152,8 @@ theorem UniformContinuousOn.comp_tendstoUniformly_eventually (s : Set β) (F : �
     rw [eventuallyEq_iff_exists_mem]
     refine ⟨s', hs', fun y hy => by aesop⟩
   have h' : TendstoUniformly F' f p := by
-    rwa [tendstoUniformly_iff_eventually F F' f hF] at h
-  apply (tendstoUniformly_iff_eventually (fun i x ↦ g (F i x)) (fun i x ↦ g (F' i x)) _ _).mpr
+    rwa [tendstoUniformly_congr hF] at h
+  apply (tendstoUniformly_congr _).mpr
     (UniformContinuousOn.comp_tendstoUniformly s F' f (by aesop) hf hg h')
   rw [eventuallyEq_iff_exists_mem]
   refine ⟨s', hs', fun i hi => by aesop⟩

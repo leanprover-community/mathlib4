@@ -196,7 +196,7 @@ theorem TendstoUniformlyOn.congr {F' : ι → α → β} (hf : TendstoUniformlyO
   simp only [Set.EqOn] at hff'
   simp only [mem_prod_principal, hff', mem_setOf_eq]
 
-lemma tendstoUniformly_iff_eventually (F F' : ι → α → β) (f : α → β) (hF : F =ᶠ[p] F') :
+lemma tendstoUniformly_congr {F F' : ι → α → β} {f : α → β} (hF : F =ᶠ[p] F') :
     TendstoUniformly F f p ↔ TendstoUniformly F' f p := by
   simp_rw [← tendstoUniformlyOn_univ] at *
   have HF := EventuallyEq.exists_mem hF
