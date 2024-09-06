@@ -119,7 +119,7 @@ def copyrightHeaderLinter (copyright : String) : Array (Syntax × MessageData) :
         (toSyntax copyright (copyrightAuthor.takeRight 20), m!"First copyright line is malformed")
     -- validate authors
     let authorsLine := "\n".intercalate authorsLines.dropLast
-    dbg_trace authorsLine
+    --dbg_trace authorsLine
     if !isCorrectAuthorsLine authorsLine then
       msgs := msgs.push (toSyntax copyright authorsLine,
           "Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'")
