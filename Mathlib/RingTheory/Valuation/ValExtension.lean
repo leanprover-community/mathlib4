@@ -55,7 +55,7 @@ The class `IsValExtension R A` states that the valuation of `A` is an extension 
 on `R`. More precisely, the valuation on `R` is equivlent to the comap of the valuation on `A`.
 -/
 class IsValExtension : Prop where
-  /-- The valuation on `R` is equivlent to the comap of the valuation on `A` -/
+  /-- The valuation on `R` is equivalent to the comap of the valuation on `A` -/
   val_isEquiv_comap : vR.IsEquiv <| vA.comap (algebraMap R A)
 
 namespace IsValExtension
