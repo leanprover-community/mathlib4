@@ -287,7 +287,7 @@ theorem red_iff_irreducible {x1 b1 x2 b2} (h : (x1, b1) ≠ (x2, b2)) :
   generalize eq : [(x1, not b1), (x2, b2)] = L'
   intro L h'
   cases h'
-  simp only [List.cons_eq_append, List.cons.injEq, Prod.mk.injEq, and_false, List.nil_eq_append,
+  simp only [List.cons_eq_append_iff, List.cons.injEq, Prod.mk.injEq, and_false, List.nil_eq_append,
     exists_const, or_self, or_false, List.cons_ne_nil] at eq
   rcases eq with ⟨rfl, ⟨rfl, rfl⟩, ⟨rfl, rfl⟩, rfl⟩
   simp at h

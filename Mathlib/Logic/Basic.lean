@@ -898,10 +898,10 @@ theorem ite_ne_right_iff : ite P a b ≠ b ↔ P ∧ a ≠ b :=
   dite_ne_right_iff.trans <| by rw [exists_prop]
 
 protected theorem Ne.dite_eq_left_iff (h : ∀ h, a ≠ B h) : dite P (fun _ ↦ a) B = a ↔ P :=
-  (dite_eq_left_iff _).trans ⟨fun H ↦ of_not_not fun h' ↦ h h' (H h').symm, fun h H ↦ (H h).elim⟩
+  dite_eq_left_iff.trans ⟨fun H ↦ of_not_not fun h' ↦ h h' (H h').symm, fun h H ↦ (H h).elim⟩
 
 protected theorem Ne.dite_eq_right_iff (h : ∀ h, A h ≠ b) : (dite P A fun _ ↦ b) = b ↔ ¬P :=
-  (dite_eq_right_iff _).trans ⟨fun H h' ↦ h h' (H h'), fun h' H ↦ (h' H).elim⟩
+  dite_eq_right_iff.trans ⟨fun H h' ↦ h h' (H h'), fun h' H ↦ (h' H).elim⟩
 
 protected theorem Ne.ite_eq_left_iff (h : a ≠ b) : ite P a b = a ↔ P :=
   Ne.dite_eq_left_iff fun _ ↦ h
@@ -998,7 +998,7 @@ theorem not_beq_of_ne {α : Type*} [BEq α] [LawfulBEq α] {a b : α} (ne : a �
   fun h => ne (eq_of_beq h)
 
 theorem beq_eq_decide {α : Type*} [BEq α] [LawfulBEq α] {a b : α} : (a == b) = decide (a = b) := by
-  rw [← beq_iff_eq a b]
+  rw [← beq_iff_eq (a := a) (b := b)]
   cases a == b <;> simp
 
 @[simp] lemma beq_eq_beq {α β : Type*} [BEq α] [LawfulBEq α] [BEq β] [LawfulBEq β] {a₁ a₂ : α}

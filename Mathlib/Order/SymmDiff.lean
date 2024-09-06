@@ -82,7 +82,7 @@ theorem symmDiff_eq_Xor' (p q : Prop) : p ∆ q = Xor' p q :=
 
 @[simp]
 theorem bihimp_iff_iff {p q : Prop} : p ⇔ q ↔ (p ↔ q) :=
-  (iff_iff_implies_and_implies _ _).symm.trans Iff.comm
+  iff_iff_implies_and_implies.symm.trans Iff.comm
 
 @[simp]
 theorem Bool.symmDiff_eq_xor : ∀ p q : Bool, p ∆ q = xor p q := by decide

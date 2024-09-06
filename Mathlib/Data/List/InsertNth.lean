@@ -83,13 +83,17 @@ theorem insertNth_comm (a b : α) :
     simp only [insertNth_succ_cons, cons.injEq, true_and]
     exact insertNth_comm a b i j l (Nat.le_of_succ_le_succ h₀) (Nat.le_of_succ_le_succ h₁)
 
+#adaptation_note
+/--
+After nightly-2024-09-06 we can remove the `_root_` prefixes below.
+-/
 theorem mem_insertNth {a b : α} :
     ∀ {n : ℕ} {l : List α} (_ : n ≤ l.length), a ∈ l.insertNth n b ↔ a = b ∨ a ∈ l
   | 0, as, _ => by simp
   | n + 1, [], h => (Nat.not_succ_le_zero _ h).elim
   | n + 1, a' :: as, h => by
     rw [List.insertNth_succ_cons, mem_cons, mem_insertNth (Nat.le_of_succ_le_succ h),
-      ← or_assoc, @or_comm (a = a'), or_assoc, mem_cons]
+      ← _root_.or_assoc, @or_comm (a = a'), _root_.or_assoc, mem_cons]
 
 theorem insertNth_of_length_lt (l : List α) (x : α) (n : ℕ) (h : l.length < n) :
     insertNth n x l = l := by

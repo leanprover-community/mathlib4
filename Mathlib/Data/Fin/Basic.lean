@@ -711,7 +711,7 @@ theorem castSucc_ne_zero_of_lt {p i : Fin n} (h : p < i) : castSucc i ≠ 0 := b
     exact ((zero_le _).trans_lt h).ne'
 
 theorem succ_ne_last_iff (a : Fin (n + 1)) : succ a ≠ last (n + 1) ↔ a ≠ last n :=
-  not_iff_not.mpr <| succ_eq_last_succ a
+  not_iff_not.mpr <| succ_eq_last_succ
 
 theorem succ_ne_last_of_lt {p i : Fin n} (h : i < p) : succ i ≠ last n := by
   cases n
@@ -774,7 +774,7 @@ theorem le_pred_iff {j : Fin n} {i : Fin (n + 1)} (hi : i ≠ 0) : j ≤ pred i 
   rw [← succ_le_succ_iff, succ_pred]
 
 theorem castSucc_pred_eq_pred_castSucc {a : Fin (n + 1)} (ha : a ≠ 0)
-    (ha' := a.castSucc_ne_zero_iff.mpr ha) :
+    (ha' := castSucc_ne_zero_iff.mpr ha) :
     (a.pred ha).castSucc = (castSucc a).pred ha' := rfl
 
 theorem castSucc_pred_add_one_eq {a : Fin (n + 1)} (ha : a ≠ 0) :
