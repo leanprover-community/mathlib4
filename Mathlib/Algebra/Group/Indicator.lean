@@ -76,7 +76,7 @@ theorem mulIndicator_eq_one_or_self (s : Set α) (f : α → M) (a : α) :
 @[to_additive (attr := simp)]
 theorem mulIndicator_apply_eq_self : s.mulIndicator f a = f a ↔ a ∉ s → f a = 1 :=
   letI := Classical.dec (a ∈ s)
-  (ite_eq_left_iff _ _ _).trans (by rw [@eq_comm _ (f a)])
+  (ite_eq_left_iff _ _).trans (by rw [@eq_comm _ (f a)])
 
 @[to_additive (attr := simp)]
 theorem mulIndicator_eq_self : s.mulIndicator f = f ↔ mulSupport f ⊆ s := by

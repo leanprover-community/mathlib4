@@ -51,7 +51,7 @@ theorem mem_dfinsupp_iff : f ∈ s.dfinsupp t ↔ f.support ⊆ s ∧ ∀ i ∈ 
   · refine fun h => ⟨fun i _ => f i, mem_pi.2 h.2, ?_⟩
     ext i
     dsimp
-    exact (ite_eq_left_iff _ _ _).2 fun hi => (not_mem_support_iff.1 fun H => hi <| h.1 H).symm
+    exact (ite_eq_left_iff _ _).2 fun hi => (not_mem_support_iff.1 fun H => hi <| h.1 H).symm
 
 /-- When `t` is supported on `s`, `f ∈ s.dfinsupp t` precisely means that `f` is pointwise in `t`.
 -/

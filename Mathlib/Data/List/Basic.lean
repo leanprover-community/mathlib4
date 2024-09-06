@@ -198,10 +198,6 @@ theorem map_subset_iff {l₁ l₂ : List α} (f : α → β) (h : Injective f) :
 theorem append_eq_has_append {L₁ L₂ : List α} : List.append L₁ L₂ = L₁ ++ L₂ :=
   rfl
 
-@[deprecated (since := "2024-03-24")] alias append_eq_cons_iff := append_eq_cons
-
-@[deprecated (since := "2024-03-24")] alias cons_eq_append_iff := cons_eq_append
-
 @[deprecated (since := "2024-01-18")] alias append_left_cancel := append_cancel_left
 
 @[deprecated (since := "2024-01-18")] alias append_right_cancel := append_cancel_right
@@ -228,10 +224,10 @@ theorem replicate_subset_singleton (n) (a : α) : replicate n a ⊆ [a] := fun _
   mem_singleton.2 (eq_of_mem_replicate h)
 
 theorem subset_singleton_iff {a : α} {L : List α} : L ⊆ [a] ↔ ∃ n, L = replicate n a := by
-  simp only [eq_replicate, subset_def, mem_singleton, exists_eq_left']
+  simp only [eq_replicate_iff, subset_def, mem_singleton, exists_eq_left']
 
 theorem replicate_right_injective {n : ℕ} (hn : n ≠ 0) : Injective (@replicate α n) :=
-  fun _ _ h => (eq_replicate.1 h).2 _ <| mem_replicate.2 ⟨hn, rfl⟩
+  fun _ _ h => (eq_replicate_iff.1 h).2 _ <| mem_replicate.2 ⟨hn, rfl⟩
 
 theorem replicate_right_inj {a b : α} {n : ℕ} (hn : n ≠ 0) :
     replicate n a = replicate n b ↔ a = b :=
@@ -1198,7 +1194,7 @@ lemma append_cons_inj_of_not_mem {x₁ x₂ z₁ z₂ : List α} {a₁ a₂ : α
     (notin_x : a₂ ∉ x₁) (notin_z : a₂ ∉ z₁) :
     x₁ ++ a₁ :: z₁ = x₂ ++ a₂ :: z₂ ↔ x₁ = x₂ ∧ a₁ = a₂ ∧ z₁ = z₂ := by
   constructor
-  · simp only [append_eq_append_iff, cons_eq_append, cons_eq_cons]
+  · simp only [append_eq_append_iff, cons_eq_append_iff, cons_eq_cons]
     rintro (⟨c, rfl, ⟨rfl, rfl, rfl⟩ | ⟨d, rfl, rfl⟩⟩ |
       ⟨c, rfl, ⟨rfl, rfl, rfl⟩ | ⟨d, rfl, rfl⟩⟩) <;> simp_all
   · rintro ⟨rfl, rfl, rfl⟩
@@ -1783,8 +1779,12 @@ lemma filter_attach (l : List α) (p : α → Bool) :
     simp_rw [map_map, comp_def, Subtype.map, id, ← Function.comp_apply (g := Subtype.val),
       ← filter_map, attach_map_subtype_val]
 
+#adaptation_note
+/--
+After nightly-2024-09-06 we can remove the `_root_` prefix below.
+-/
 lemma filter_comm (q) (l : List α) : filter p (filter q l) = filter q (filter p l) := by
-  simp [and_comm]
+  simp [_root_.and_comm]
 
 @[simp]
 theorem filter_true (l : List α) :
@@ -2238,13 +2238,18 @@ theorem getElem_attach (L : List α) (i : Nat) (h : i < L.attach.length) :
 theorem get_attach (L : List α) (i) :
     (L.attach.get i).1 = L.get ⟨i, length_attach L ▸ i.2⟩ := by simp
 
+#adaptation_note
+/--
+After nightly-2024-09-06 we can remove the `_root_` prefix below.
+-/
 @[simp 1100]
 theorem mem_map_swap (x : α) (y : β) (xs : List (α × β)) :
     (y, x) ∈ map Prod.swap xs ↔ (x, y) ∈ xs := by
   induction' xs with x xs xs_ih
   · simp only [not_mem_nil, map_nil]
   · cases' x with a b
-    simp only [mem_cons, Prod.mk.inj_iff, map, Prod.swap_prod_mk, Prod.exists, xs_ih, and_comm]
+    simp only [mem_cons, Prod.mk.inj_iff, map, Prod.swap_prod_mk, Prod.exists, xs_ih,
+      _root_.and_comm]
 
 theorem dropSlice_eq (xs : List α) (n m : ℕ) : dropSlice n m xs = xs.take n ++ xs.drop (n + m) := by
   induction n generalizing xs
