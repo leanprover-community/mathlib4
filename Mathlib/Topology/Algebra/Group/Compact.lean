@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 import Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Sets.Compacts
-import Mathlib.Order.Filter.Archimedean
 
 /-!
 # Additional results on topological groups
@@ -35,12 +35,18 @@ theorem mapClusterPt_atTop_zpow_iff_pow {G : Type*} [Group G] [TopologicalSpace 
     MapClusterPt x atTop (y ^ · : ℤ → G) ↔ MapClusterPt x atTop (y ^ · : ℕ → G) := by
   simp_rw [MapClusterPt, ← Nat.map_cast_int_atTop, map_map, comp_def, zpow_natCast]
 
-#find_home mapClusterPt_atTop_zpow_iff_pow
+section Quotient
 
-variable [CompactSpace G]
+variable [Group G] [TopologicalSpace G] [TopologicalGroup G] {Γ : Subgroup G}
 
--- theorem 
+@[to_additive]
+instance QuotientGroup.continuousSMul [LocallyCompactSpace G] : ContinuousSMul G (G ⧸ Γ) where
+  continuous_smul := by
+    let F : G × G ⧸ Γ → G ⧸ Γ := fun p => p.1 • p.2
+    change Continuous F
+    have H : Continuous (F ∘ fun p : G × G => (p.1, QuotientGroup.mk p.2)) := by
+      change Continuous fun p : G × G => QuotientGroup.mk (p.1 * p.2)
+      exact continuous_coinduced_rng.comp continuous_mul
+    exact QuotientMap.continuous_lift_prod_right quotientMap_quotient_mk' H
 
-theorem mapClusterPt_inv_atTop_pow (x : G) : MapClusterPt x⁻¹ atTop (x ^ · : ℕ → G) := by
-  rcases exists_clusterPt_of_compactSpace (map (x ^ · : ℕ → G) atTop) with ⟨a, ha⟩
-  
+end Quotient

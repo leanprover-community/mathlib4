@@ -219,25 +219,6 @@ instance Subgroup.continuousSMul {S : Subgroup M} : ContinuousSMul S X :=
 end Group
 
 @[to_additive]
-instance MulAction.orbitRel.Quotient.instContinuousSMul {G : Type*}
-    [Group G] [MulAction G X] [ContinuousConstSMul G X] [SMul M X]
-    [SMulCommClass G M X] [TopologicalSpace M] [ContinuousSMul M X] :
-    letI : SMul M (MulAction.orbitRel.Quotient G X) := -- TODO: add an instance
-      ⟨fun n ↦ Quotient.map' (n • ·) <| by
-        rintro x y ⟨m, rfl⟩;
-        use m
-        apply smul_comm ⟩
-    ContinuousSMul M (MulAction.orbitRel.Quotient G X) := by
-  refine @ContinuousSMul.mk M (MulAction.orbitRel.Quotient G X) ?_ _ _ ?_
-  have : QuotientMap (Prod.map id Quotient.mk'' : M × X → M × MulAction.orbitRel.Quotient G X) := by
-    apply IsOpenMap.to_quotientMap
-    · exact .prod .id isOpenMap_quotient_mk'_mul
-    · exact .prod_map continuous_id continuous_quot_mk
-    · exact .prodMap Function.surjective_id (surjective_quot_mk _)
-  rw [this.continuous_iff]
-  exact continuous_quot_mk.comp continuous_smul
-
-@[to_additive]
 instance Prod.continuousSMul [SMul M X] [SMul M Y] [ContinuousSMul M X] [ContinuousSMul M Y] :
     ContinuousSMul M (X × Y) :=
   ⟨(continuous_fst.smul (continuous_fst.comp continuous_snd)).prod_mk

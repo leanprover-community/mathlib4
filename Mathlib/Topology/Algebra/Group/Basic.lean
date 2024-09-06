@@ -854,19 +854,11 @@ instance instTopologicalSpace (N : Subgroup G) : TopologicalSpace (G ⧸ N) :=
 theorem quotientMap_mk (N : Subgroup G) : QuotientMap (mk : G → G ⧸ N) :=
   quotientMap_quot_mk
 
-@[to_additive (attr := fun_prop)]
-theorem continuous_mk {N : Subgroup G} : Continuous (mk : G → G ⧸ N) :=
-  continuous_quot_mk
-
-@[to_additive]
-theorem isOpenMap_coe [ContinuousMul G] (N : Subgroup G) : IsOpenMap ((↑) : G → G ⧸ N) :=
-  isOpenMap_quotient_mk'_mul
-
-@[to_additive]
-instance instContinuousSMul [ContinuousMul G] {N : Subgroup G} : ContinuousSMul G (G ⧸ N) :=
-  MulAction.orbitRel.Quotient.instContinuousSMul
-
 variable [TopologicalGroup G] (N : Subgroup G)
+
+@[to_additive]
+theorem isOpenMap_coe : IsOpenMap ((↑) : G → G ⧸ N) :=
+  isOpenMap_quotient_mk'_mul
 
 @[to_additive]
 instance instTopologicalGroup [N.Normal] : TopologicalGroup (G ⧸ N) where
