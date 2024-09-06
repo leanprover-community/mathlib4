@@ -155,10 +155,10 @@ instance isIso_hom_mk {M N : Action V G} (f : M.V ⟶ N.V) [IsIso f] (w) :
     @IsIso _ _ M N (Hom.mk f w) :=
   (mkIso (asIso f) w).isIso_hom
 
-instance {M N : Action V G} (f : M ≅ N) [IsIso f.hom] : IsIso f.hom.hom where
+instance {M N : Action V G} (f : M ≅ N) : IsIso f.hom.hom where
   out := ⟨f.inv.hom, by simp⟩
 
-instance {M N : Action V G} (f : M ≅ N) [IsIso f.hom] : IsIso f.inv.hom where
+instance {M N : Action V G} (f : M ≅ N) : IsIso f.inv.hom where
   out := ⟨f.hom.hom, by simp⟩
 
 namespace FunctorCategoryEquivalence
