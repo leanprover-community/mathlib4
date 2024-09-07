@@ -38,15 +38,6 @@ def onlyImportsModDocs : Syntax → Option Bool
     first.map (·.isOfKind ``Lean.Parser.Command.moduleDoc)
   | _=> some false
 
-/-- `afterImports stx` checks whether `stx` is the syntax for a module, discards the
-`import` statements and returns the first command after the `import`s, or `.missing` if
-no such command exists.
--/
-def afterImports : Syntax → Syntax
-  | .node _ ``Lean.Parser.Module.module #[_header, .node _ `null args] =>
-    args.getD 0 default
-  | _=> .missing
-
 /-- returns the array of `import` identifiers. -/
 partial
 def getImportIds (s : Syntax) : Array Syntax :=
@@ -70,23 +61,42 @@ def parseUpToHere (stx : Syntax) (post : String := "") (included : Bool := true)
   -- append a further string after the `upToHere` content
   Parser.testParseModule (← getEnv) "linter.style.header" (upToHere.toString ++ post)
 
--- from the textbased
-/-- Return if `line` looks like a correct authors line in a copyright header. -/
-def isCorrectAuthorsLine (line : String) : Bool :=
-  -- We cannot reasonably validate the author names, so we look only for a few common mistakes:
-  -- the file starting wrong, double spaces, using ' and ' between names,
-  -- and ending the line with a period.
-  line.startsWith "Authors: " &&
-    ((line.replace "\n  " " ").splitOn "  ").length == 1 &&
-    (line.splitOn " and ").length == 1 &&
-    (!line.endsWith ".")
-
 /-- `toSyntax s pattern` converts the two input strings into a `Syntax`, assuming that `pattern`
 is a substring of `s`:
 the syntax is an atom with value `pattern` whose the range is the range of `pattern` in `s`. -/
-def toSyntax (s pattern : String) : Syntax :=
-  let firstSubstring := ((s.splitOn pattern).getD 1 "").toSubstring
-  mkAtomFrom (.ofRange ⟨firstSubstring.startPos, firstSubstring.stopPos⟩) pattern
+def toSyntax (s pattern : String) (offset : String.Pos := 0) : Syntax :=
+  --let firstSubstring := ((s.splitOn pattern).getD (1 + offset) "").toSubstring
+  let beg := ((s.splitOn pattern).getD 0 "").endPos + offset
+  let fin := (((s.splitOn pattern).getD 0 "") ++ pattern).endPos + offset
+  mkAtomFrom (.ofRange ⟨beg, fin⟩) pattern
+
+-- adapted from the textbased
+/-- Return if `line` looks like a correct authors line in a copyright header. -/
+def authorsLineCorrections (line : String) (offset : String.Pos) : Array (Syntax × MessageData) :=
+  Id.run do
+  -- We cannot reasonably validate the author names, so we look only for a few common mistakes:
+  -- the file starting wrong, double spaces, using ' and ' between names,
+  -- and ending the line with a period.
+  let mut stxs := #[]
+  if !line.startsWith "Authors: " then
+    dbg_trace line
+    dbg_trace line.splitOn (line.take "Authors: ".length)
+    stxs := stxs.push
+      (toSyntax line (line.take "Authors: ".length) offset,
+       m!"The authors line should begin with 'Authors: '")
+  else dbg_trace "Authors ok"
+  if ((line.replace "\n  " " ").splitOn "  ").length != 1 then
+    stxs := stxs.push (toSyntax line "  " offset, m!"Double spaces are not allowed.")
+  else dbg_trace "no double spaces"
+  if (line.splitOn " and ").length != 1 then
+    stxs := stxs.push (toSyntax line " and " offset, m!"Please, do not use 'and', use ',' instead.")
+  else dbg_trace "no ' and '"
+  if line.endsWith "." then
+    stxs := stxs.push
+      (toSyntax line "." offset,
+       m!"Please, do not end the authors' line with a period.")
+  else dbg_trace "no final '.'"
+  return stxs
 
 /-- The main function to validate the copyright string. -/
 def copyrightHeaderLinter (copyright : String) : Array (Syntax × MessageData) := Id.run do
@@ -98,8 +108,7 @@ def copyrightHeaderLinter (copyright : String) : Array (Syntax × MessageData) :
   let mut msgs := #[]
   if (pieces.getD 1 "\n").take 1 != "\n" then
     msgs := msgs.push (toSyntax copyright "-/", m!"{stdTxt "-/"}")
-  let lines := copyright.splitOn "\n" --.trimRight
-  --dbg_trace lines
+  let lines := copyright.splitOn "\n"
   let closeComment := lines.getLastD ""
   match lines with
   | openComment :: copyrightAuthor :: license :: authorsLines =>
@@ -113,17 +122,17 @@ def copyrightHeaderLinter (copyright : String) : Array (Syntax × MessageData) :
     -- validate copyright author
     if !copyrightAuthor.startsWith "Copyright (c) 20" then
       msgs := msgs.push
-        (toSyntax copyright (copyrightAuthor.take 14), m!"First copyright line is malformed")
+        (toSyntax copyright (copyrightAuthor.take 14),
+         m!"Copyright line should start with 'Copyright (c) YYYY'")
     if !copyrightAuthor.endsWith ". All rights reserved." then
       msgs := msgs.push
-        (toSyntax copyright (copyrightAuthor.takeRight 20), m!"First copyright line is malformed")
+        (toSyntax copyright (copyrightAuthor.takeRight 20),
+         m!"Copyright line should end with '. All rights reserved.'")
     -- validate authors
     let authorsLine := "\n".intercalate authorsLines.dropLast
-    --dbg_trace authorsLine
-    if !isCorrectAuthorsLine authorsLine then
-      msgs := msgs.push (toSyntax copyright authorsLine,
-          "Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'")
-    -- validate license
+    let authorsStart := (("\n".intercalate [openComment, copyrightAuthor, license, ""])).endPos
+    for corr in authorsLineCorrections authorsLine authorsStart do
+      msgs := msgs.push corr
     let expectedLicense := "Released under Apache 2.0 license as described in the file LICENSE."
     if license != expectedLicense then
       msgs := msgs.push (toSyntax copyright license,
@@ -157,6 +166,8 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   if (← get).messages.hasErrors then
     return
+  -- instead of silencing this linter, we should probably silence the text-based one
+  if (← getMainModule) == `Archive.Sensitivity then return
   let mut firstPos ← firstCommand.get
   let mut upToStx : Syntax := .missing
   let offset : String.Pos := ⟨3⟩
@@ -166,7 +177,6 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     firstCommand.set endOfImports
   if upToStx != .missing then
     if (onlyImportsModDocs upToStx).isNone then return
-    --if onlyImportsModDocs upToStx then return
     firstPos := upToStx.getTailPos?
     unless stx.getPos?.getD 0 ≤ firstPos.getD 0 + offset do
       return
@@ -192,7 +202,6 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
         m!"`{stx}` appears too late: it can only be preceded by `import` statements \
           doc-module strings and other `assert_not_exists` statements."
     else return
-
 
 initialize addLinter headerLinter
 
