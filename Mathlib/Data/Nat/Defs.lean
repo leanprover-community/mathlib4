@@ -831,12 +831,12 @@ def twoStepInduction {P : ℕ → Sort*} (zero : P 0) (one : P 1)
   | 1 => one
   | _ + 2 => more _ (twoStepInduction zero one more _) (twoStepInduction zero one more _)
 
-@[elab_as_elim, deprecated (since := "2024-09-04")]
+@[elab_as_elim, deprecated strongRecOn (since := "2024-09-04")]
 protected theorem strong_induction_on {p : ℕ → Prop} (n : ℕ)
     (h : ∀ n, (∀ m, m < n → p m) → p n) : p n :=
   Nat.strongRecOn n h
 
-@[deprecated (since := "2024-09-04")]
+@[deprecated caseStrongRecOn (since := "2024-09-04")]
 protected theorem case_strong_induction_on {p : ℕ → Prop} (a : ℕ) (hz : p 0)
     (hi : ∀ n, (∀ m, m ≤ n → p m) → p (n + 1)) : p a :=
   Nat.caseStrongRecOn a hz hi

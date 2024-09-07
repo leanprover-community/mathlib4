@@ -20,7 +20,7 @@ This defines the cardinality of a `Finset` and provides induction principles for
 * `Finset.strongInductionOn`
 * `Finset.strongDownwardInduction`
 * `Finset.strongDownwardInductionOn`
-* `Finset.caseStrongInductionOn`
+* `Finset.case_strong_induction_on`
 * `Finset.Nonempty.strong_induction`
 -/
 
@@ -760,7 +760,7 @@ theorem strongInductionOn_eq {p : Finset α → Sort*} (s : Finset α)
   rw [strongInduction]
 
 @[elab_as_elim]
-theorem caseStrongInductionOn [DecidableEq α] {p : Finset α → Prop} (s : Finset α) (h₀ : p ∅)
+theorem case_strong_induction_on [DecidableEq α] {p : Finset α → Prop} (s : Finset α) (h₀ : p ∅)
     (h₁ : ∀ a s, a ∉ s → (∀ t ⊆ s, p t) → p (insert a s)) : p s :=
   Finset.strongInductionOn s fun s =>
     Finset.induction_on s (fun _ => h₀) fun a s n _ ih =>
