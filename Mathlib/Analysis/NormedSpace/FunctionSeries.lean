@@ -81,8 +81,7 @@ partial sums. Version relative to a set, with index set `ℕ`. -/
 theorem tendstoUniformlyOn_tsum_nat_eventually {α F : Type*} [NormedAddCommGroup F]
     [CompleteSpace F] {f : ℕ → α → F} {u : ℕ → ℝ} (hu : Summable u) {s : Set α}
     (hfu : ∀ᶠ n in atTop, ∀ x, x ∈ s → ‖f n x‖ ≤ u n) :
-    TendstoUniformlyOn (fun N => fun x => ∑ n ∈ Finset.range N, f n x)
-    (fun x => ∑' n, f n x) atTop s:= by
+    TendstoUniformlyOn (fun N x => ∑ n ∈ Finset.range N, f n x) (fun x => ∑' n, f n x) atTop s := by
   intro v hv
   apply tendsto_finset_range.eventually (tendstoUniformlyOn_tsum_eventually hu ?_ v hv)
   simp only [eventually_atTop, ge_iff_le] at hfu
