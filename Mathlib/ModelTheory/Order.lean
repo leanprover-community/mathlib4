@@ -72,7 +72,7 @@ instance instSubsingleton : Subsingleton (Language.order.Relations n) :=
 end order
 
 /-- The symbol representing `≤` in a language extending `Language.order`. -/
-def leSymb [L.Expands Language.order] := (Language.order.Inclusion L).onRelation .le
+def leSymb [L.Expands Language.order] := (Language.order.inclusion L).onRelation .le
 
 lemma order.relation_eq_leSymb : (R : Language.order.Relations 2) → R = leSymb
   | .le => rfl
@@ -93,7 +93,7 @@ variable (L)
 
 @[simp]
 theorem inclusion_leSymb :
-    (Language.order.Inclusion L).onRelation leSymb = (leSymb : L.Relations 2) :=
+    (Language.order.inclusion L).onRelation leSymb = (leSymb : L.Relations 2) :=
   rfl
 
 /-- The theory of preorders. -/
@@ -176,14 +176,14 @@ section LE
 variable [LE M]
 
 instance [Language.order.Structure M] [Language.order.OrderedStructure M]
-    [(Language.order.Inclusion L).IsExpansionOn M] : L.OrderedStructure M where
+    [(Language.order.inclusion L).IsExpansionOn M] : L.OrderedStructure M where
   relMap_leSymb x := by
     rw [← inclusion_leSymb L, LHom.IsExpansionOn.map_onRelation, relMap_leSymb]
 
 variable [L.OrderedStructure M]
 
 instance [Language.order.Structure M] [Language.order.OrderedStructure M] :
-    LHom.IsExpansionOn (Language.order.Inclusion L) M where
+    LHom.IsExpansionOn (Language.order.inclusion L) M where
   map_onRelation := by simp [order.relation_eq_leSymb]
 
 @[simp]
@@ -223,7 +223,7 @@ end LE
 @[simp]
 theorem orderedStructure_iff
     [LE M] [Language.order.Structure M] [Language.order.OrderedStructure M] :
-    L.OrderedStructure M ↔ LHom.IsExpansionOn (Language.order.Inclusion L) M :=
+    L.OrderedStructure M ↔ LHom.IsExpansionOn (Language.order.inclusion L) M :=
   ⟨fun _ => inferInstance, fun _ => inferInstance⟩
 
 section Preorder
