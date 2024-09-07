@@ -94,7 +94,8 @@ lemma basisQuotient_repr {ι} [Fintype ι] (b : Basis ι R S) (x) (i) :
   apply (basisQuotient b).repr.symm.injective
   simp only [Finsupp.linearEquivFunOnFinite_symm_coe, LinearEquiv.symm_apply_apply,
     Basis.repr_symm_apply]
-  rw [Finsupp.total_eq_fintype_total_apply _ (R ⧸ p), Fintype.total_apply]
+  rw [Finsupp.linearCombination_eq_fintype_linearCombination_apply _ (R ⧸ p),
+    Fintype.linearCombination_apply]
   simp only [Function.comp_apply, basisQuotient_apply,
     Ideal.Quotient.mk_smul_mk_quotient_map_quotient, ← Algebra.smul_def]
   rw [← map_sum, Basis.sum_repr b x]
