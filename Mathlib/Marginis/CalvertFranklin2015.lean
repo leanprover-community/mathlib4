@@ -5,7 +5,8 @@ import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.RingTheory.Regular.RegularSequence
 
-/- This concerns the second sentence in the Introduction in the paper
+/-!
+This concerns the second sentence in the Introduction in the paper
 Genericity and UD–random reals by WESLEY CALVERT, JOHANNA N.Y. FRANKLIN.
 We define uniform distribution and prove that the constant 0 sequence is not uniformly distributed.
 -/

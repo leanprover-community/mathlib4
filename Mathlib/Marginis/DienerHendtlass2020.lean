@@ -7,7 +7,7 @@ import Mathlib.Topology.MetricSpace.PiNat
 import Mathlib.MeasureTheory.Measure.Hausdorff
 import Mathlib.Topology.MetricSpace.Pseudo.Defs
 
-/--
+/-!
 
 In the paper 'Differentiating Convex Functions Constructively'
 by Hannes Diener and Matthew Hendtlass, the increase in
@@ -52,22 +52,22 @@ lemma Neighbors {x y z : ℝ} (f : ℝ → ℝ) (Con : ConvexOn ℝ (Set.Icc (0 
     y = y * 1 := by simp
     _  = y * ((z - x) / (z - x)) := by rw [hzx_on_zx]
     _  = t * x + ((y - x) / (z - x)) * z := by ring_nf
-    _  = t * x + (1 - t) * z := by rw [←r1]
+    _  = t * x + (1 - t) * z := by rw [← r1]
 
-  rw [←hyt] at Conf
+  rw [← hyt] at Conf
   have hzmy : z - y = t * (z - x) := by
     rw [div_mul_eq_mul_div (z - y) (z - x) (z - x),
-      mul_div_assoc (z - y) (z - x) (z - x), ←hzx_on_zx]
+      mul_div_assoc (z - y) (z - x) (z - x), ← hzx_on_zx]
     simp
   have hymx : y - x = (1 - t) * (z - x) := by
     rw [r1, div_mul_eq_mul_div (y - x) (z - x) (z - x),
-      mul_div_assoc (y - x) (z - x) (z - x), ←hzx_on_zx]
+      mul_div_assoc (y - x) (z - x) (z - x), ← hzx_on_zx]
     simp
   rw [hzmy, hymx, div_mul_eq_div_div, div_mul_eq_div_div]
   apply (div_le_div_right hzx).mpr
 
   apply (div_le_iff' htugh).mpr
-  rw [←mul_div_assoc]
+  rw [← mul_div_assoc]
 
 
   apply (le_div_iff' h0_lt_t).mpr

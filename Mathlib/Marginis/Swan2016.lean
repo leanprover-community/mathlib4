@@ -4,7 +4,7 @@ import Mathlib.Data.Finite.Defs
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Set.Finite
 
-/-
+/-!
 On page 2 of the paper
 `An Algebraic Weak Factorisation System on 01-Substitution Sets: A Constructive Proof`
 by ANDREW SWAN, JLA 2016,
