@@ -226,7 +226,7 @@ variable [NonUnitalNormedRing A] [CompleteSpace A] [StarRing A] [CStarRing A]
 variable [NormedSpace ℂ A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A] [StarModule ℂ A]
 variable [NonUnitalNormedRing B] [CompleteSpace B] [StarRing B] [CStarRing B]
 variable [NormedSpace ℂ B] [IsScalarTower ℂ B B] [SMulCommClass ℂ B B] [StarModule ℂ B]
-variable [FunLike F A B] [NonUnitalAlgHomClass F ℂ A B] [NonUnitalStarAlgHomClass F ℂ A B]
+variable [FunLike F A B] [NonUnitalAlgHomClass F ℂ A B] [StarHomClass F A B]
 
 open Unitization
 
@@ -267,7 +267,7 @@ variable {F A B : Type*} [NormedRing A] [NormedSpace ℂ A] [SMulCommClass ℂ A
 variable [IsScalarTower ℂ A A] [CompleteSpace A] [StarRing A] [CStarRing A] [StarModule ℂ A]
 variable [NormedRing B] [NormedSpace ℂ B] [SMulCommClass ℂ B B] [IsScalarTower ℂ B B]
 variable [CompleteSpace B] [StarRing B] [CStarRing B] [StarModule ℂ B] [EquivLike F A B]
-variable [NonUnitalAlgEquivClass F ℂ A B] [StarAlgEquivClass F ℂ A B]
+variable [NonUnitalAlgEquivClass F ℂ A B] [StarHomClass F A B]
 
 lemma nnnorm_map (φ : F) (a : A) : ‖φ a‖₊ = ‖a‖₊ :=
   le_antisymm (NonUnitalStarAlgHom.nnnorm_apply_le φ a) <| by
@@ -292,7 +292,7 @@ open scoped ComplexStarModule
 variable {F A : Type*} [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [StarRing A]
   [CStarRing A] [StarModule ℂ A] [FunLike F A ℂ] [hF : AlgHomClass F ℂ A ℂ]
 
-/-- This instance is provided instead of `StarAlgHomClass` to avoid type class inference loops.
+/-- This instance is provided instead of `StarHomClass` to avoid type class inference loops.
 See note [lower instance priority] -/
 noncomputable instance (priority := 100) Complex.instStarHomClass : StarHomClass F A ℂ where
   map_star φ a := by
@@ -309,13 +309,13 @@ noncomputable instance (priority := 100) Complex.instStarHomClass : StarHomClass
 
 /-- This is not an instance to avoid type class inference loops. See
 `WeakDual.Complex.instStarHomClass`. -/
-lemma _root_.AlgHomClass.instStarAlgHomClass : StarAlgHomClass F ℂ A ℂ :=
+lemma _root_.AlgHomClass.instStarHomClass : StarHomClass F A ℂ :=
   { WeakDual.Complex.instStarHomClass, hF with }
 
 namespace CharacterSpace
 
-noncomputable instance instStarAlgHomClass : StarAlgHomClass (characterSpace ℂ A) ℂ A ℂ :=
-  { AlgHomClass.instStarAlgHomClass with }
+noncomputable instance instStarHomClass : StarHomClass (characterSpace ℂ A) A ℂ :=
+  { AlgHomClass.instStarHomClass with }
 
 end CharacterSpace
 
