@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Weber
 -/
 
-import Mathlib.Order.SuccPred.Basic
+import Mathlib.Order.SuccPred.Archimedean
 import Mathlib.Data.Nat.Find
 import Mathlib.Order.Atoms
 import Mathlib.Data.SetLike.Basic
@@ -22,27 +22,6 @@ dangling chains.
 variable {α : Type*} [PartialOrder α] [PredOrder α] [IsPredArchimedean α]
 
 namespace IsPredArchimedean
-
-lemma le_total_of_le {r v₁ v₂ : α} (h₁ : v₁ ≤ r) (h₂ : v₂ ≤ r) : v₁ ≤ v₂ ∨ v₂ ≤ v₁ := by
-  obtain ⟨n, rfl⟩ := h₁.exists_pred_iterate
-  obtain ⟨m, rfl⟩ := h₂.exists_pred_iterate
-  clear h₁ h₂
-  wlog h : n ≤ m
-  · rw [Or.comm]
-    apply this
-    omega
-  right
-  obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le h
-  rw [Nat.add_comm, Function.iterate_add, Function.comp_apply]
-  apply Order.pred_iterate_le
-
-lemma lt_or_le_of_le {r v₁ v₂ : α} (h₁ : v₁ ≤ r) (h₂ : v₂ ≤ r) :
-    v₁ < v₂ ∨ v₂ ≤ v₁ := by
-  rw [Classical.or_iff_not_imp_right]
-  intro nh
-  rcases le_total_of_le h₁ h₂ with h | h
-  · apply lt_of_le_of_ne h (ne_of_not_le nh).symm
-  · contradiction
 
 variable [OrderBot α]
 
@@ -118,7 +97,8 @@ The type of rooted trees.
 structure RootedTree where
   /-- The type representing the elements in the tree. -/
   α : Type*
-  /-- The type should be a `SemilatticeInf`, where `inf` is the least common ancestor in the tree. -/
+  /-- The type should be a `SemilatticeInf`,
+    where `inf` is the least common ancestor in the tree. -/
   [order : SemilatticeInf α]
   /-- The type should have a bottom, the root. -/
   [bot : OrderBot α]
@@ -174,8 +154,7 @@ The coersion from a `SubRootedTree` to a `RootedTree`.
 -/
 @[coe, reducible]
 noncomputable def coeTree {t : RootedTree} (r : SubRootedTree t) : RootedTree where
-  α := r
-  pred := inferInstanceAs (PredOrder (Set.Ici r.root))
+  α := Set.Ici r.root
 
 noncomputable instance (t : RootedTree) : CoeOut (SubRootedTree t) RootedTree :=
   ⟨coeTree⟩
@@ -214,10 +193,10 @@ lemma subtrees_inf_eq_bot_iff {t₁ t₂ : SubRootedTree t}
     rw [mem_iff] at h₁ h₂
     contrapose! h
     rw [← bot_lt_iff_ne_bot] at h
-    rcases IsPredArchimedean.lt_or_le_of_le (by simp : v₁ ⊓ v₂ ≤ v₁) h₁ with oh | oh
+    rcases lt_or_le_of_le (by simp : v₁ ⊓ v₂ ≤ v₁) h₁ with oh | oh
     · simp_all [RootedTree.subtrees, IsAtom.lt_iff]
     rw [le_inf_iff] at oh
-    have := IsPredArchimedean.le_total_of_le oh.2 h₂
+    have := le_total_of_le oh.2 h₂
     simp only [ht₂.le_iff_eq ht₁.1, ht₁.le_iff_eq ht₂.1, eq_comm, or_self] at this
     ext
     exact this

@@ -277,6 +277,8 @@ lemma SuccOrder.forall_ne_bot_iff
 
 section OrdConnected
 
+variable [PartialOrder α]
+
 instance Set.OrdConnected.isPredArchimedean [PredOrder α] [IsPredArchimedean α]
     (s : Set α) [s.OrdConnected] : IsPredArchimedean s where
   exists_pred_iterate_of_le := @fun ⟨b, hb⟩ ⟨c, hc⟩ hbc ↦ by classical
