@@ -107,14 +107,17 @@ def mkLiftMap₂LiftExprAux {a b : FreeBicategory B} {f g : a ⟶ b} (η : f ⟶
 abbrev LiftHom₂.lift' {f g : a ⟶ b} [LiftHom f] [LiftHom g] (η : f ⟶ g) (inst : LiftHom₂ η) :=
   inst.lift
 
+set_option quotPrecheck false in
 /-- Auxiliary definition for `bicategorical_coherence`. -/
-def mkLiftMap₂LiftExpr (e : Expr) : MetaM Expr := do
-  let inst ← synthInstance (← mkAppM ``LiftHom₂ #[e])
-  let f ← mkAppM ``LiftHom₂.lift' #[e, inst]
-  mkAppM ``mkLiftMap₂LiftExprAux #[f]
+-- We could construct this expression directly without using `elabTerm`,
+-- but it would require preparing many implicit arguments by hand.
+def mkLiftMap₂LiftExpr (e : Expr) : TermElabM Expr := do
+  Term.elabTerm
+    (← ``((FreeBicategory.lift (Prefunctor.id _)).map₂ (LiftHom₂.lift $(← Term.exprToSyntax e))))
+    none
 
 /-- Coherence tactic for bicategories. -/
-def bicategory_coherence (g : MVarId) : MetaM Unit := g.withContext do
+def bicategory_coherence (g : MVarId) : TermElabM Unit := g.withContext do
   withOptions (fun opts => synthInstance.maxSize.set opts
     (max 256 (synthInstance.maxSize.get opts))) do
   let (ty, _) ← dsimp (← g.getType)
