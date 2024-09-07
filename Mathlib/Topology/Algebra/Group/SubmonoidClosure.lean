@@ -6,7 +6,14 @@ Authors: Yury Kudryashov
 import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
+# Topological closure of the submonoid closure
 
+In this file we prove several versions of the following statement:
+if `G` is a compact topological group and `s : Set G`,
+then the topological closures of `Submonoid.closure s` and `Subgroup.closure s` are equal.
+
+The proof is based on the following observation, see `mapClusterPt_self_zpow_atTop_pow`:
+each `x^m`, `m : ℤ` is a limit point (`MapClusterPt`) of the sequence `x^n`, `n : ℕ`, as `n → ∞`.
 -/
 
 open Filter Function Set
