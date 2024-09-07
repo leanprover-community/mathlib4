@@ -3,7 +3,7 @@ Copyright (c) 2024 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.Tactic.CategoryTheory.Monoidal.DataTypes
+import Mathlib.Tactic.CategoryTheory.Coherence
 
 /-!
 # Normalization of morphisms in monoidal categories
@@ -57,7 +57,27 @@ namespace Mathlib.Tactic.Monoidal
 
 open Lean Meta Elab
 open CategoryTheory
-open BicategoryLike
+open Mathlib.Tactic.Coherence
+
+/-- The context for evaluating expressions. -/
+structure Context where
+  /-- The expression for the underlying category. -/
+  C : Expr
+
+/-- Populate a `context` object for evaluating `e`. -/
+def mkContext? (e : Expr) : MetaM (Option Context) := do
+  match (← inferType e).getAppFnArgs with
+  | (``Quiver.Hom, #[_, _, f, _]) =>
+    let C ← inferType f
+    return some ⟨C⟩
+  | _ => return none
+
+/-- The monad for the normalization of 2-morphisms. -/
+abbrev MonoidalM := ReaderT Context MetaM
+
+/-- Run a computation in the `M` monad. -/
+abbrev MonoidalM.run {α : Type} (c : Context) (m : MonoidalM α) : MetaM α :=
+  ReaderT.run m c
 
 /-- Expressions for atomic 1-morphisms. -/
 structure Atom₁ : Type where
@@ -320,23 +340,19 @@ def WhiskerLeftExpr.atom : WhiskerLeftExpr → Atom
 
 /-- Construct a `Structural` expression from a Lean expression for a structural 2-morphism. -/
 partial def structural? (e : Expr) : MetaM Structural := do
-  match (← whnfR e) with
-  | .proj ``Iso 0 η => match η.getAppFnArgs with
-    | (``MonoidalCoherence.iso, #[_, _, f, g, inst]) =>
-      return .monoidalCoherence (← toMor₁ f) (← toMor₁ g) inst
-    | _ => throwError "not a structural 2-morphism"
-  | .app .. => match (← whnfR e).getAppFnArgs with
-    | (``CategoryStruct.comp, #[_, _, _, _, _, α, β]) =>
-      return .comp (← structural? α) (← structural? β)
-    | (``CategoryStruct.id, #[_, _, f]) => return .id (← toMor₁ f)
-    | (``MonoidalCategoryStruct.whiskerLeft, #[_, _, _, f, _, _, η]) =>
-      return .whiskerLeft (← toMor₁ f) (← structural? η)
-    | (``MonoidalCategoryStruct.whiskerRight, #[_, _, _, _, _, η, f]) =>
-      return .whiskerRight (← structural? η) (← toMor₁ f)
-    | _ => match ← structuralAtom? e with
-      | some η => return .atom η
-      | none => throwError "not a structural 2-morphism"
-  | _ => throwError "not a structural 2-morphism"
+  match (← whnfR e).getAppFnArgs with
+  | (``CategoryStruct.comp, #[_, _, _, α, β]) =>
+    return .comp (← structural? α) (← structural? β)
+  | (``CategoryStruct.id, #[_, f]) => return .id (← toMor₁ f)
+  | (``MonoidalCategoryStruct.whiskerLeft, #[f, η]) =>
+    return .whiskerLeft (← toMor₁ f) (← structural? η)
+  | (``MonoidalCategoryStruct.whiskerRight, #[η, f]) =>
+    return .whiskerRight (← structural? η) (← toMor₁ f)
+  | (``MonoidalCoherence.hom, #[_, _, f, g, inst]) =>
+    return .monoidalCoherence (← toMor₁ f) (← toMor₁ g) inst
+  | _ => match ← structuralAtom? e with
+    | some η => return .atom η
+    | none => throwError "not a structural 2-morphism"
 
 /-- Construct a `NormalExpr` expression from a `WhiskerLeftExpr` expression. -/
 def NormalExpr.of (η : WhiskerLeftExpr) : MetaM NormalExpr := do
@@ -540,7 +556,6 @@ structure Result where
   expr : NormalExpr
   /-- The proof that the normalized expression is equal to the original expression. -/
   proof : Expr
-  deriving Inhabited
 
 /-- Evaluate the expression `η ≫ θ` into a normalized form. -/
 partial def evalComp : NormalExpr → NormalExpr → MonoidalM Result
@@ -653,7 +668,7 @@ def NormalExpr.toList : NormalExpr → List WhiskerLeftExpr
 
 end Mathlib.Tactic.Monoidal
 
-open Mathlib.Tactic Monoidal BicategoryLike
+open Mathlib.Tactic.Monoidal
 
 /-- `normalize% η` is the normalization of the 2-morphism `η`.
 1. The normalized 2-morphism is of the form `α₀ ≫ η₀ ≫ α₁ ≫ η₁ ≫ ... αₘ ≫ ηₘ ≫ αₘ₊₁` where
@@ -665,7 +680,7 @@ elab "normalize% " t:term:51 : term => do
   let e ← Lean.Elab.Term.elabTerm t none
   let some ctx ← mkContext? e
     | throwError "not a morphism"
-  CoherenceM.run (ctx := ctx) do (← eval e).expr.e
+  MonoidalM.run ctx do (← eval e).expr.e
 
 theorem mk_eq {α : Type _} (a b a' b' : α) (ha : a = a') (hb : b = b') (h : a' = b') : a = b := by
   simp [h, ha, hb]
@@ -677,7 +692,7 @@ def mkEq (e : Expr) : MetaM Expr := do
     | throwError "monoidal_nf requires an equality goal"
   let some ctx ← mkContext? e₁
     | throwError "the lhs and rhs must be morphisms"
-  CoherenceM.run (ctx := ctx) do
+  MonoidalM.run ctx do
     let ⟨e₁', p₁⟩ ← eval e₁
     let ⟨e₂', p₂⟩ ← eval e₂
     mkAppM ``mk_eq #[e₁, e₂, ← e₁'.e, ← e₂'.e, p₁, p₂]
