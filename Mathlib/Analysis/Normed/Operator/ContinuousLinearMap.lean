@@ -3,8 +3,9 @@ Copyright (c) 2019 Jan-David Salchow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 -/
-import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Analysis.Normed.Group.Uniform
 import Mathlib.Analysis.Normed.MulAction
+import Mathlib.Topology.Algebra.Module.Basic
 
 /-! # Constructions of continuous linear maps between (semi-)normed spaces
 

@@ -529,7 +529,7 @@ decreasing_by
 private theorem fastJacobiSymAux.eq_jacobiSym {a b : ℕ} {flip : Bool} {ha0 : a > 0}
     (hb2 : b % 2 = 1) (hb1 : b > 1) :
     fastJacobiSymAux a b flip ha0 = if flip then -J(a | b) else J(a | b) := by
-  induction' a using Nat.strongInductionOn with a IH generalizing b flip
+  induction' a using Nat.strongRecOn with a IH generalizing b flip
   unfold fastJacobiSymAux
   split <;> rename_i ha4
   · rw [IH (a / 4) (a.div_lt_self ha0 (by decide)) hb2 hb1]
@@ -569,7 +569,7 @@ private def fastJacobiSym (a : ℤ) (b : ℕ) : ℤ :=
 
 @[csimp] private theorem fastJacobiSym.eq : jacobiSym = fastJacobiSym := by
   ext a b
-  induction' b using Nat.strongInductionOn with b IH
+  induction' b using Nat.strongRecOn with b IH
   unfold fastJacobiSym
   split_ifs with hb0 hb2 ha2 hb1 hab
   · rw [hb0, zero_right]
