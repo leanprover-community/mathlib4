@@ -692,4 +692,22 @@ instance [Nontrivial α] : Nontrivial (Sym2 α) :=
 unsafe instance [Repr α] : Repr (Sym2 α) where
   reprPrec s _ := f!"s({repr s.unquot.1}, {repr s.unquot.2})"
 
+def pmap {P : α → Prop} (f : ∀ a, P a → β) (s : Sym2 α):
+  (∀ a ∈ s, P a) → Sym2 β :=
+  let g : (p : α × α) → (∀ a ∈ Sym2.mk p, P a) → Sym2 β :=
+    fun p H => s(f p.1 (H p.1 <| mem_mk_left _ _), f p.2 (H p.2 <| mem_mk_right _ _))
+  Quot.recOn (motive := fun (x : Sym2 α) => (∀ a ∈ x, P a) → Sym2 β)
+    s g fun p q hpq => funext fun Hq => by
+    rw [rel_iff'] at hpq
+    have Hp : ∀ a ∈ Sym2.mk p, P a := fun a hmem =>
+      Hq a ((Sym2.mk_eq_mk_iff.2 hpq) ▸ hmem : a ∈ Sym2.mk q)
+    refine (by rintro s₂ rfl _; rfl : ∀ {s₂ e H}, @Eq.ndrec (Sym2 α) (Sym2.mk p)
+      (fun s => (∀ a ∈ s, P a) → Sym2 β) _ s₂ e H = _).trans (Quot.sound (?_) : g p Hp = g q Hq)
+    rw [rel_iff', Prod.mk.injEq, Prod.swap_prod_mk]
+    apply hpq.imp <;> rintro rfl <;> simp
+
+def attachWith (s : Sym2 α) (P : α → Prop) (f : ∀ a ∈ s, P a) :
+  Sym2 {a // P a} :=
+  pmap Subtype.mk s f
+
 end Sym2
