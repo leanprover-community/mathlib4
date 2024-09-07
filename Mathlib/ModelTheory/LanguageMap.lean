@@ -539,9 +539,9 @@ class Expands where
 
 /-- Note that the variables of `L.inclusion L'` are reversed from the corresponding instance
   `L'.Expands L`. -/
-abbrev inclusion [L'.Expands L] : L →ᴸ L' := Expands.toLHom
+abbrev Inclusion [L'.Expands L] : L →ᴸ L' := Expands.toLHom
 
-lemma inclusion_injective [L'.Expands L] : (L.inclusion L').Injective := Expands.toLHom_injective
+lemma inclusion_injective [L'.Expands L] : (L.Inclusion L').Injective := Expands.toLHom_injective
 
 namespace Expands
 
@@ -550,7 +550,7 @@ variable (L'' : Language)
 /-- If `L.Expands L'` and `L'.Expands L''`, then `L.Expands L''`, by composing the default
   inclusions. -/
 def trans [L.Expands L'] [L'.Expands L''] : L.Expands L'' where
-  toLHom := (L'.inclusion L).comp (L''.inclusion L')
+  toLHom := (L'.Inclusion L).comp (L''.Inclusion L')
   toLHom_injective := (L'.inclusion_injective L).comp (L''.inclusion_injective L')
 
 variable {L L' L''} [L.Expands L']
@@ -561,11 +561,11 @@ instance : L.Expands L where
   toLHom_injective := (LEquiv.refl L).toHom_injective
 
 instance : (L.sum L'').Expands L' where
-  toLHom := LHom.sumInl.comp (L'.inclusion L)
+  toLHom := LHom.sumInl.comp (L'.Inclusion L)
   toLHom_injective := LHom.sumInl_injective.comp (L'.inclusion_injective L)
 
 instance : (L''.sum L).Expands L' where
-  toLHom := LHom.sumInr.comp (L'.inclusion L)
+  toLHom := LHom.sumInr.comp (L'.Inclusion L)
   toLHom_injective := LHom.sumInr_injective.comp (L'.inclusion_injective L)
 
 instance {α : Type*} : L[[α]].Expands L where
