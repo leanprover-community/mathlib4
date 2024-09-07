@@ -483,7 +483,7 @@ theorem monomialOrderDiv [Finite σ] (B : Set (MvPolynomial σ R))
       simp [reduce]
     constructor
     · rintro c
-      simp
+      simp only [Finsupp.coe_add, Pi.add_apply]
       rw [mul_add]
       apply le_trans degree_add_le
       simp only [sup_le_iff]
@@ -806,8 +806,8 @@ open Preorder
 
 variable {α : Type*} [Preorder α]
 
-theorem Equiv.isDickson_of_monotone {β : Type*} [Preorder β] (f : α ≃ β) (hf : Monotone f)
-  (H : isDickson α) :
+theorem Equiv.isDickson_of_monotone {β : Type*} [Preorder β] 
+    (f : α ≃ β) (hf : Monotone f) (H : isDickson α) :
   isDickson β := fun S ↦ by
   obtain ⟨B, hB, hB'⟩ := H (S.preimage f)
   use f '' B
