@@ -389,6 +389,24 @@ theorem countable_self_fgequiv_of_countable [Countable M] :
 instance inhabited_self_FGEquiv : Inhabited (L.FGEquiv M M) :=
   ⟨⟨⟨⊥, ⊥, Equiv.refl L (⊥ : L.Substructure M)⟩, fg_bot⟩⟩
 
+instance inhabited_FGEquiv_of_IsEmpty_Constants_and_Relations
+    [IsEmpty L.Constants] [IsEmpty (L.Relations 0)] [L.Structure N] :
+    Inhabited (L.FGEquiv M N) :=
+  ⟨⟨⟨⊥, ⊥, {
+      toFun := isEmptyElim
+      invFun := isEmptyElim
+      left_inv := isEmptyElim
+      right_inv := isEmptyElim
+      map_fun' := fun {n} f x => by
+        cases n
+        · exact isEmptyElim f
+        · exact isEmptyElim (x 0)
+      map_rel' := fun {n} r x => by
+        cases n
+        · exact isEmptyElim r
+        · exact isEmptyElim (x 0)
+    }⟩, fg_bot⟩⟩
+
 /-- Maps to the symmetric finitely-generated partial equivalence. -/
 @[simps]
 def FGEquiv.symm (f : L.FGEquiv M N) : L.FGEquiv N M := ⟨f.1.symm, f.1.dom_fg_iff_cod_fg.1 f.2⟩
