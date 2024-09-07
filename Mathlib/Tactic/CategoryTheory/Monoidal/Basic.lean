@@ -13,14 +13,14 @@ open CategoryTheory Mathlib.Tactic.BicategoryLike
 namespace Mathlib.Tactic.Monoidal
 
 def monoidalNf (mvarId : MVarId) : MetaM (List MVarId) := do
-  BicategoryLike.normalForm `monoidal Monoidal.Context' mvarId
+  BicategoryLike.normalForm `monoidal Monoidal'.Context mvarId
 
 /-- Normalize the both sides of an equality. -/
 elab "monoidal_nf" : tactic => withMainContext do
   replaceMainGoal (← monoidalNf (← getMainGoal))
 
 def monoidal (mvarId : MVarId) : MetaM (List MVarId) :=
-  BicategoryLike.main Monoidal.Context' `monoidal mvarId
+  BicategoryLike.main Monoidal'.Context `monoidal mvarId
 
 elab "monoidal" : tactic => withMainContext do
   replaceMainGoal <| ← monoidal <| ← getMainGoal
