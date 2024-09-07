@@ -33,7 +33,7 @@ variable {f : I → Type v}
 variable (x y : ∀ i, f i) (i : I)
 variable (I f)
 
-instance algebra {r : CommSemiring R} [s : ∀ i, Semiring (f i)] [∀ i, Algebra R (f i)] :
+instance algebra [r : CommSemiring R] [s : ∀ i, Semiring (f i)] [∀ i, Algebra R (f i)] :
     Algebra R (∀ i : I, f i) :=
   { (Pi.ringHom fun i => algebraMap R (f i) : R →+* ∀ i : I, f i) with
     commutes' := fun a f => by ext; simp [Algebra.commutes]

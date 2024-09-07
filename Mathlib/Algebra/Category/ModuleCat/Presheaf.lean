@@ -506,6 +506,7 @@ When `X` is initial, we have `Module (R.obj X) (M.obj c)` for any `c : Cᵒᵖ`.
 
 -/
 
+set_option maxHeartbeats 400000 in
 /--
 Implementation of the functor `PresheafOfModules R ⥤ Cᵒᵖ ⥤ ModuleCat (R.obj X)`
 when `X` is initial.

@@ -394,9 +394,6 @@ section rightComm
 
 /-- A tensor product analogue of `mul_right_comm`. -/
 def rightComm : (M ⊗[A] P) ⊗[R] Q ≃ₗ[A] (M ⊗[R] Q) ⊗[A] P :=
-  haveI : IsScalarTower R A (M →ₗ[A] P →ₗ[A] (M ⊗[A] P) ⊗[R] Q) := LinearMap.instIsScalarTower
-  haveI : LinearMap.CompatibleSMul (M ⊗[A] P →ₗ[A] (M ⊗[A] P) ⊗[R] Q)
-    (M →ₗ[A] P →ₗ[A] (M ⊗[A] P) ⊗[R] Q) R A := LinearMap.IsScalarTower.compatibleSMul
   LinearEquiv.ofLinear
     (lift <| TensorProduct.lift <| LinearMap.flip <|
       lcurry R A A M Q ((M ⊗[R] Q) ⊗[A] P) ∘ₗ (mk A A (M ⊗[R] Q) P).flip)
