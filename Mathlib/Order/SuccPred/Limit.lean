@@ -80,9 +80,6 @@ def IsSuccLimit (a : α) : Prop :=
 protected theorem IsSuccLimit.not_isMin (h : IsSuccLimit a) : ¬ IsMin a := h.1
 protected theorem IsSuccLimit.isSuccPrelimit (h : IsSuccLimit a) : IsSuccPrelimit a := h.2
 
-theorem IsSuccLimit_iff' : IsSuccLimit a ↔ ¬ IsMin a ∧ IsSuccPrelimit a :=
-  Iff.rfl
-
 theorem IsSuccPrelimit.isSuccLimit_of_not_isMin (h : IsSuccPrelimit a) (ha : ¬ IsMin a) :
     IsSuccLimit a :=
   ⟨ha, h⟩
@@ -149,12 +146,10 @@ theorem IsSuccLimit.succ_ne (h : IsSuccLimit a) (b : α) : succ b ≠ a :=
   h.isSuccPrelimit.succ_ne b
 
 @[simp]
-theorem not_isSuccPrelimit_succ (a : α) : ¬ IsSuccPrelimit (succ a) :=
-  fun h => h.succ_ne _ rfl
+theorem not_isSuccPrelimit_succ (a : α) : ¬IsSuccPrelimit (succ a) := fun h => h.succ_ne _ rfl
 
 @[simp]
-theorem not_isSuccLimit_succ (a : α) : ¬ IsSuccLimit (succ a) :=
-  fun h => h.succ_ne _ rfl
+theorem not_isSuccLimit_succ (a : α) : ¬IsSuccLimit (succ a) := fun h => h.succ_ne _ rfl
 
 end NoMaxOrder
 
@@ -194,7 +189,7 @@ section PartialOrder
 variable [PartialOrder α] {a b : α}
 
 theorem isSuccLimit_iff [OrderBot α] : IsSuccLimit a ↔ a ≠ ⊥ ∧ IsSuccPrelimit a := by
-  rw [IsSuccLimit_iff', isMin_iff_eq_bot]
+  rw [IsSuccLimit, isMin_iff_eq_bot]
 
 variable [SuccOrder α]
 
@@ -328,8 +323,8 @@ alias isPredLimit_of_dense := isPredPrelimit_of_dense
 
 @[simp]
 theorem isSuccPrelimit_toDual_iff : IsSuccPrelimit (toDual a) ↔ IsPredPrelimit a := by
-  simp [IsSuccPrelimit, IsPredPrelimit]
-
+  rw [IsSuccPrelimit, IsPredPrelimit]
+#exit
 @[simp]
 theorem isPredPrelimit_toDual_iff : IsPredPrelimit (toDual a) ↔ IsSuccPrelimit a := by
   simp [IsSuccPrelimit, IsPredPrelimit]
@@ -359,13 +354,11 @@ def IsPredLimit (a : α) : Prop :=
 protected theorem IsPredLimit.not_isMax (h : IsPredLimit a) : ¬ IsMax a := h.1
 protected theorem IsPredLimit.isPredPrelimit (h : IsPredLimit a) : IsPredPrelimit a := h.2
 
-theorem IsPredLimit_iff' : IsPredLimit a ↔ ¬ IsMax a ∧ IsPredPrelimit a :=
-  Iff.rfl
-
 @[simp]
 theorem isSuccLimit_toDual_iff : IsSuccLimit (toDual a) ↔ IsPredLimit a := by
   simp [IsSuccLimit, IsPredLimit]
 
+#exit
 @[simp]
 theorem isPredLimit_toDual_iff : IsPredLimit (toDual a) ↔ IsSuccLimit a := by
   simp [IsSuccLimit, IsPredLimit]
@@ -439,12 +432,10 @@ theorem IsPredLimit.pred_ne (h : IsPredLimit a) (b : α) : pred b ≠ a :=
   h.isPredPrelimit.pred_ne b
 
 @[simp]
-theorem not_isPredPrelimit_pred (a : α) : ¬ IsPredPrelimit (pred a) :=
-  fun h => h.pred_ne _ rfl
+theorem not_isPredPrelimit_pred (a : α) : ¬ IsPredPrelimit (pred a) := fun h => h.pred_ne _ rfl
 
 @[simp]
-theorem not_isPredLimit_pred (a : α) : ¬ IsPredLimit (pred a) :=
-  fun h => h.pred_ne _ rfl
+theorem not_isPredLimit_pred (a : α) : ¬ IsPredLimit (pred a) := fun h => h.pred_ne _ rfl
 
 end NoMinOrder
 
@@ -480,7 +471,7 @@ section PartialOrder
 variable [PartialOrder α] {a b : α}
 
 theorem isPredLimit_iff [OrderTop α] : IsPredLimit a ↔ a ≠ ⊤ ∧ IsPredPrelimit a := by
-  rw [IsPredLimit_iff', isMax_iff_eq_top]
+  rw [IsPredLimit, isMax_iff_eq_top]
 
 variable [PredOrder α]
 
