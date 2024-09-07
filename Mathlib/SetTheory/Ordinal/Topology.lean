@@ -243,7 +243,7 @@ theorem IsAcc.subset {o : Ordinal} {S T : Set Ordinal} (h : S ⊆ T) (ho : o.IsA
     o.IsAcc T := ⟨ho.1, fun p plto ↦ (ho.2 p plto).casesOn fun s hs ↦ ⟨s, h hs.1, hs.2⟩⟩
 
 theorem IsAcc.isLimit {o : Ordinal} {U : Set Ordinal} (h : o.IsAcc U) : IsLimit o := by
-  refine' isLimit_of_not_succ_of_ne_zero (fun ⟨x, hx⟩ ↦ _) h.1
+  refine isLimit_of_not_succ_of_ne_zero (fun ⟨x, hx⟩ ↦ ?_) h.1
   rcases h.2 x (lt_of_lt_of_le (lt_succ x) hx.symm.le) with ⟨p, hp⟩
   exact (hx.symm ▸ (succ_le_iff.mpr hp.2.1)).not_lt hp.2.2
 
