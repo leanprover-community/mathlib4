@@ -286,8 +286,8 @@ theorem algebraMap_injective [CommRing R] [Ring A] [Nontrivial A] [Algebra R A]
 
 @[simp]
 lemma algebraMap_eq_zero_iff [CommRing R] [Ring A] [Nontrivial A] [Algebra R A]
-    [NoZeroSMulDivisors R A] (v : R) : algebraMap R A v = 0 ↔ v = 0 :=
-  (algebraMap_injective R A).eq_iff' <| map_zero _
+    [NoZeroSMulDivisors R A] {r : R} : algebraMap R A r = 0 ↔ r = 0 :=
+  map_eq_zero_iff _ <| algebraMap_injective R A
 
 theorem _root_.NeZero.of_noZeroSMulDivisors (n : ℕ) [CommRing R] [NeZero (n : R)] [Ring A]
     [Nontrivial A] [Algebra R A] [NoZeroSMulDivisors R A] : NeZero (n : A) :=
