@@ -109,7 +109,6 @@ instance : Epi (Abelian.factorThruImage f) :=
   _ fun R (g : I ⟶ R) (hpg : p ≫ g = 0) => by
   -- Since C is abelian, u := ker g ≫ i is the kernel of some morphism h.
   let u := kernel.ι g ≫ i
-  haveI : Mono u := mono_comp _ _
   haveI hu := normalMonoOfMono u
   let h := hu.g
   -- By hypothesis, p factors through the kernel of g via some t.
@@ -146,7 +145,6 @@ instance : Mono (Abelian.factorThruCoimage f) :=
   NormalEpiCategory.mono_of_cancel_zero _ fun R (g : R ⟶ I) (hgi : g ≫ i = 0) => by
     -- Since C is abelian, u := p ≫ coker g is the cokernel of some morphism h.
     let u := p ≫ cokernel.π g
-    haveI : Epi u := epi_comp _ _
     haveI hu := normalEpiOfEpi u
     let h := hu.g
     -- By hypothesis, i factors through the cokernel of g via some t.

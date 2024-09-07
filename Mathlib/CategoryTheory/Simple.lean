@@ -56,7 +56,6 @@ theorem isIso_of_mono_of_nonzero {X Y : C} [Simple Y] {f : X ⟶ Y} [Mono f] (w 
 
 theorem Simple.of_iso {X Y : C} [Simple Y] (i : X ≅ Y) : Simple X :=
   { mono_isIso_iff_nonzero := fun f m => by
-      haveI : Mono (f ≫ i.hom) := mono_comp _ _
       constructor
       · intro h w
         have j : IsIso (f ≫ i.hom) := by infer_instance
