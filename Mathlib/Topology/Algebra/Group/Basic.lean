@@ -305,6 +305,10 @@ lemma Homeomorph.coe_inv {G : Type*} [TopologicalSpace G] [InvolutiveInv G] [Con
     ⇑(Homeomorph.inv G) = Inv.inv := rfl
 
 @[to_additive]
+theorem nhds_inv (a : G) : 𝓝 a⁻¹ = (𝓝 a)⁻¹ :=
+  ((Homeomorph.inv G).map_nhds_eq a).symm
+
+@[to_additive]
 theorem isOpenMap_inv : IsOpenMap (Inv.inv : G → G) :=
   (Homeomorph.inv _).isOpenMap
 
@@ -859,6 +863,16 @@ variable [TopologicalGroup G] (N : Subgroup G)
 @[to_additive]
 theorem isOpenMap_coe : IsOpenMap ((↑) : G → G ⧸ N) :=
   isOpenMap_quotient_mk'_mul
+
+@[to_additive (attr := simp)]
+theorem dense_preimage_mk {s : Set (G ⧸ N)} : Dense ((↑) ⁻¹' s : Set G) ↔ Dense s :=
+  letI := leftRel N -- `Dense.quotient` assumes `[Setoid G]`
+  ⟨fun h ↦ h.quotient.mono <| image_preimage_subset _ _, fun h ↦ h.preimage <| isOpenMap_coe _⟩
+
+@[to_additive]
+theorem dense_image_mk {s : Set G} :
+    Dense (mk '' s : Set (G ⧸ N)) ↔ Dense (s * (N : Set G)) := by
+  rw [← dense_preimage_mk, preimage_image_mk_eq_mul]
 
 @[to_additive]
 instance instTopologicalGroup [N.Normal] : TopologicalGroup (G ⧸ N) where
