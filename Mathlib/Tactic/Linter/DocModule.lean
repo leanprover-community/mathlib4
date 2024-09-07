@@ -194,8 +194,8 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
             make sure to benchmark it. If this is fine, feel free to allow this linter."
     if let some false := onlyImportsModDocs upToStx then
       Linter.logLint linter.style.header stx
-        m!"`{stx}` appears too late: it can only be preceded by `import` statements \
-          doc-module strings and other `assert_not_exists` statements."
+        m!"The module doc-string for a file should be the first command after the imports.\n\
+         Please, add a module doc-string before `{stx}`."
     else return
 
 initialize addLinter headerLinter
