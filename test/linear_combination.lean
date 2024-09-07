@@ -122,6 +122,51 @@ example (x y z w : ℚ) (hzw : z = w) : x * z + 2 * y * z = x * w + 2 * y * w :=
 
 example (x y : ℤ) (h : x = 0) : y ^ 2 * x = 0 := by linear_combination y ^ 2 * h
 
+/-! ### Tests in semirings -/
+
+example (a _b : ℕ) (h1 : a = 3) : a = 3 := by
+  linear_combination h1
+
+example {a b : ℕ} (h1 : a = b + 4) (h2 : b = 2) : a = 6 := by
+  linear_combination h1 + h2
+
+example {a : ℕ} (h : a = 3) : 3 = a := by linear_combination -h
+
+example {a b : ℕ} (h1 : 3 * a = b + 5) (h2 : 2 * a = b + 3) : a = 2 := by
+  linear_combination h1 - h2
+
+/- Note: currently negation/subtraction is handled differently in "constants" than in "proofs", so
+in particular negation/subtraction does not "distribute". The following four tests record the
+current behaviour, without taking a stance on whether this should be considered a feature or a bug.
+-/
+
+example {a : ℕ}  (h : a = 3) : a ^ 2 + 3 = 4 * a := by
+  linear_combination a * h - h
+
+/--
+error: ring failed, ring expressions not equal
+a b : ℕ
+h : a = 3
+⊢ 3 + a ^ 2 + (a - 1) * 3 = a * 4 + a * (a - 1)
+-/
+#guard_msgs in
+example {a b : ℕ}  (h : a = 3) : a ^ 2 + 3 = 4 * a := by
+  linear_combination (a - 1) * h
+
+example {a b c : ℕ} (h1 : c = 1) (h2 : a - b = 4) : (a - b) * c = 4 := by
+  linear_combination (a - b) * h1 + h2
+
+/--
+error: ring failed, ring expressions not equal
+a b c : ℕ
+h1 : c = 1
+h2 : a - b = 4
+⊢ 4 + (a - b) * c + c * b + a = 4 + (a - b) + c * a + b
+-/
+#guard_msgs in
+example {a b c : ℕ} (h1 : c = 1) (h2 : a - b = 4) : (a - b) * c = 4 := by
+  linear_combination a * h1 - b * h1 + h2
+
 /-! ### Cases that explicitly use a config -/
 
 example (x y : ℚ) (h1 : 3 * x + 2 * y = 10) (h2 : 2 * x + 5 * y = 3) : -11 * y + 1 = 11 + 1 := by
@@ -210,13 +255,6 @@ but is expected to have type
 #guard_msgs in
 example (x y : ℤ) (h1 : x * y + 2 * x = 1) (h2 : x = y) : x * y + 2 * x = 1 := by
   linear_combination h1 + (0 : ℝ) * h2
-
--- This fails because the linear_combination tactic requires the equations
---   and coefficients to use a type that fulfills the add_group condition,
---   and ℕ does not.
-example (a _b : ℕ) (h1 : a = 3) : a = 3 := by
-  fail_if_success linear_combination h1
-  exact h1
 
 example (a b : ℤ) (x y : ℝ) (hab : a = b) (hxy : x = y) : 2 * x = 2 * y := by
   fail_if_success linear_combination 2 * hab

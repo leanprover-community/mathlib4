@@ -219,6 +219,13 @@ instance [Subsingleton M] : IsEmpty (Weight R L M) :=
   ⟨fun h ↦ h.2 (Subsingleton.elim _ _)⟩
 
 instance [Nontrivial (genWeightSpace M (0 : L → R))] : Zero (Weight R L M) :=
+  #adaptation_note
+  /--
+  After lean4#5020, many instances for Lie algebras and manifolds are no longer found.
+  See https://leanprover.zulipchat.com/#narrow/stream/428973-nightly-testing/topic/.2316244.20adaptations.20for.20nightly-2024-08-28/near/466219124
+  -/
+  letI : Unique (⊥ : LieSubmodule R L M) := Submodule.uniqueBot
+  letI : Subsingleton (⊥ : LieSubmodule R L M) := Unique.instSubsingleton
   ⟨0, fun e ↦ not_nontrivial (⊥ : LieSubmodule R L M) (e ▸ ‹_›)⟩
 
 @[simp]
@@ -407,10 +414,11 @@ lemma mem_posFittingCompOf (x : L) (m : M) :
     obtain ⟨n, rfl⟩ := (mem_posFittingCompOf R x m).mp hm k
     exact this n k
   intro m l
-  induction' l with l ih
-  · simp
-  simp only [lowerCentralSeries_succ, pow_succ', LinearMap.mul_apply]
-  exact LieSubmodule.lie_mem_lie (LieSubmodule.mem_top x) ih
+  induction l with
+  | zero => simp
+  | succ l ih =>
+    simp only [lowerCentralSeries_succ, pow_succ', LinearMap.mul_apply]
+    exact LieSubmodule.lie_mem_lie (LieSubmodule.mem_top x) ih
 
 @[simp] lemma posFittingCompOf_eq_bot_of_isNilpotent
     [IsNilpotent R L M] (x : L) :
@@ -582,7 +590,12 @@ private lemma isCompl_genWeightSpace_zero_posFittingComp_aux
   · suffices IsNilpotent R L M by simp [M₀, M₁, isCompl_top_bot]
     replace h : M₀ = ⊤ := by simpa [M₀, genWeightSpace]
     rw [← LieModule.isNilpotent_of_top_iff', ← h]
-    infer_instance
+    #adaptation_note
+    /--
+    After lean4#5020, many instances for Lie algebras and manifolds are no longer found.
+    See https://leanprover.zulipchat.com/#narrow/stream/428973-nightly-testing/topic/.2316244.20adaptations.20for.20nightly-2024-08-28/near/466219124
+    -/
+    exact LieModule.instIsNilpotentSubtypeMemSubmoduleGenWeightSpaceOfNatForallOfIsNoetherian M
   · set M₀ₓ := genWeightSpaceOf M (0 : R) x
     set M₁ₓ := posFittingCompOf R M x
     set M₀ₓ₀ := genWeightSpace M₀ₓ (0 : L → R)
@@ -612,7 +625,7 @@ lemma isCompl_genWeightSpace_zero_posFittingComp :
     let e := LieModuleEquiv.ofTop R L M
     rw [← map_genWeightSpace_eq e, ← map_posFittingComp_eq e]
     exact (LieSubmodule.orderIsoMapComap e).isCompl_iff.mp this
-  refine (LieSubmodule.wellFounded_of_isArtinian R L M).induction (C := P) _ fun N hN ↦ ?_
+  refine (LieSubmodule.wellFoundedLT_of_isArtinian R L M).induction (C := P) _ fun N hN ↦ ?_
   refine isCompl_genWeightSpace_zero_posFittingComp_aux R L N fun N' hN' ↦ ?_
   suffices IsCompl (genWeightSpace (N'.map N.incl) 0) (posFittingComp R L (N'.map N.incl)) by
     let e := LieSubmodule.equivMapOfInjective N' N.injective_incl
@@ -650,8 +663,10 @@ lemma independent_genWeightSpace [NoZeroSMulDivisors R M] :
     simpa only [CompleteLattice.independent_iff_supIndep_of_injOn (injOn_genWeightSpace R L M),
       Finset.supIndep_iff_disjoint_erase] using fun s χ _ ↦ this _ _ (s.not_mem_erase χ)
   intro χ₁ s
-  induction' s using Finset.induction_on with χ₂ s _ ih
-  · simp
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert _n ih =>
+  rename_i χ₂ s
   intro hχ₁₂
   obtain ⟨hχ₁₂ : χ₁ ≠ χ₂, hχ₁ : χ₁ ∉ s⟩ := by rwa [Finset.mem_insert, not_or] at hχ₁₂
   specialize ih hχ₁
@@ -697,12 +712,12 @@ lemma independent_genWeightSpaceOf [NoZeroSMulDivisors R M] (x : L) :
 lemma finite_genWeightSpaceOf_ne_bot [NoZeroSMulDivisors R M] [IsNoetherian R M] (x : L) :
     {χ : R | genWeightSpaceOf M χ x ≠ ⊥}.Finite :=
   CompleteLattice.WellFounded.finite_ne_bot_of_independent
-    (LieSubmodule.wellFounded_of_noetherian R L M) (independent_genWeightSpaceOf R L M x)
+    IsWellFounded.wf (independent_genWeightSpaceOf R L M x)
 
 lemma finite_genWeightSpace_ne_bot [NoZeroSMulDivisors R M] [IsNoetherian R M] :
     {χ : L → R | genWeightSpace M χ ≠ ⊥}.Finite :=
   CompleteLattice.WellFounded.finite_ne_bot_of_independent
-    (LieSubmodule.wellFounded_of_noetherian R L M) (independent_genWeightSpace R L M)
+    IsWellFounded.wf (independent_genWeightSpace R L M)
 
 instance Weight.instFinite [NoZeroSMulDivisors R M] [IsNoetherian R M] :
     Finite (Weight R L M) := by
@@ -767,7 +782,8 @@ instance (N : LieSubmodule K L M) [IsTriangularizable K L M] : IsTriangularizabl
 See also `LieModule.iSup_genWeightSpace_eq_top'`. -/
 lemma iSup_genWeightSpace_eq_top [IsTriangularizable K L M] :
     ⨆ χ : L → K, genWeightSpace M χ = ⊤ := by
-  induction' h_dim : finrank K M using Nat.strong_induction_on with n ih generalizing M
+  generalize h_dim : finrank K M = n
+  induction n using Nat.strongRecOn generalizing M with | ind n ih => ?_
   obtain h' | ⟨y : L, hy : ¬ ∃ φ, genWeightSpaceOf M φ y = ⊤⟩ :=
     forall_or_exists_not (fun (x : L) ↦ ∃ (φ : K), genWeightSpaceOf M φ x = ⊤)
   · choose χ hχ using h'

@@ -25,7 +25,7 @@ because it is easier to use an equivalence in applications.
 ## TODO
 
 Some results in this file can be generalized to the case when `X` is a preconnected space. However,
-if `X` is empty, then any index `i` will work, so there is no 1-to-1 corespondence.
+if `X` is empty, then any index `i` will work, so there is no 1-to-1 correspondence.
 
 ## Keywords
 
