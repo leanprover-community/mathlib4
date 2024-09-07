@@ -810,7 +810,7 @@ open Preorder
 
 variable {α : Type*} [Preorder α]
 
-theorem Equiv.isDickson_of_monotone {β : Type*} [Preorder β] 
+theorem Equiv.isDickson_of_monotone {β : Type*} [Preorder β]
     (f : α ≃ β) (hf : Monotone f) (H : isDickson α) :
   isDickson β := fun S ↦ by
   obtain ⟨B, hB, hB'⟩ := H (S.preimage f)
