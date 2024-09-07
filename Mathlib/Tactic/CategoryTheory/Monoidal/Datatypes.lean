@@ -59,7 +59,7 @@ structure Context' where
   instMonoidal? : Option Q(MonoidalCategory.{level₂, level₁} $C)
 
 /-- Populate a `context` object for evaluating `e`. -/
-def mkContext? (e : Expr) : MetaM (Option Context') := do
+def mkContext'? (e : Expr) : MetaM (Option Context') := do
   let e ← instantiateMVars e
   let ⟨.succ level₂, type, _⟩ ← inferTypeQ e | return none
   let type ← instantiateMVars type
@@ -72,7 +72,7 @@ def mkContext? (e : Expr) : MetaM (Option Context') := do
   | _ => return none
 
 instance : BicategoryLike.Context Monoidal.Context' where
-  mkContext? := Monoidal.mkContext?
+  mkContext? := Monoidal.mkContext'?
 
 /-- The monad for the normalization of 2-morphisms. -/
 abbrev MonoidalM := CoherenceM Context'
