@@ -79,23 +79,17 @@ def authorsLineCorrections (line : String) (offset : String.Pos) : Array (Syntax
   -- and ending the line with a period.
   let mut stxs := #[]
   if !line.startsWith "Authors: " then
-    dbg_trace line
-    dbg_trace line.splitOn (line.take "Authors: ".length)
     stxs := stxs.push
       (toSyntax line (line.take "Authors: ".length) offset,
        m!"The authors line should begin with 'Authors: '")
-  else dbg_trace "Authors ok"
   if ((line.replace "\n  " " ").splitOn "  ").length != 1 then
     stxs := stxs.push (toSyntax line "  " offset, m!"Double spaces are not allowed.")
-  else dbg_trace "no double spaces"
   if (line.splitOn " and ").length != 1 then
     stxs := stxs.push (toSyntax line " and " offset, m!"Please, do not use 'and', use ',' instead.")
-  else dbg_trace "no ' and '"
   if line.endsWith "." then
     stxs := stxs.push
       (toSyntax line "." offset,
        m!"Please, do not end the authors' line with a period.")
-  else dbg_trace "no final '.'"
   return stxs
 
 /-- The main function to validate the copyright string. -/
