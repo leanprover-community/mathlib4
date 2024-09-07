@@ -823,11 +823,20 @@ theorem AnalyticWithinAt.comp {g : F → G} {f : E → F} {x : E} {t : Set F} {s
   let ⟨_p, hp⟩ := hf
   exact (hq.comp hp h).analyticWithinAt
 
+/-- Version of `AnalyticWithinAt.comp` where point equality is a separate hypothesis. -/
+theorem AnalyticWithinAt.comp_of_eq {g : F → G} {f : E → F} {y : F} {x : E} {t : Set F} {s : Set E}
+    (hg : AnalyticWithinAt 𝕜 g t y) (hf : AnalyticWithinAt 𝕜 f s x) (h : Set.MapsTo f s t)
+    (hy : f x = y) :
+    AnalyticWithinAt 𝕜 (g ∘ f) s x := by
+  rw [← hy] at hg
+  exact hg.comp hf h
+
 /-- If two functions `g` and `f` are analytic respectively at `f x` and `x`, then `g ∘ f` is
 analytic at `x`. -/
 theorem AnalyticAt.comp {g : F → G} {f : E → F} {x : E} (hg : AnalyticAt 𝕜 g (f x))
     (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (g ∘ f) x := by
-  rw [analyticWithinAt_univ]
+  rw [← analyticWithinAt_univ] at hg hf ⊢
+  apply hg.comp hf (by simp)
 
 /-- Version of `AnalyticAt.comp` where point equality is a separate hypothesis. -/
 theorem AnalyticAt.comp_of_eq {g : F → G} {f : E → F} {y : F} {x : E} (hg : AnalyticAt 𝕜 g y)
