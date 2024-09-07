@@ -9,7 +9,7 @@ import Mathlib.Tactic.CategoryTheory.Monoidal.Datatypes
 open Lean Meta Elab Qq
 open CategoryTheory Mathlib.Tactic.BicategoryLike MonoidalCategory
 
-namespace Mathlib.Tactic.Monoidal
+namespace Mathlib.Tactic.Monoidal'
 
 open MonoidalCategory
 
@@ -225,7 +225,7 @@ end
 
 open Mor₂Iso
 
-instance : MkEvalComp MonoidalM' where
+instance : MkEvalComp MonoidalM where
   mkEvalCompNilNil α β := do
     let ctx ← read
     let _cat := ctx.instCat
@@ -277,7 +277,7 @@ instance : MkEvalComp MonoidalM' where
     have e_ι : Q($ηs ≫ $θ = $ι) := e_ι
     return q(evalComp_cons $α $η $e_ι)
 
-instance : MkEvalWhiskerLeft MonoidalM' where
+instance : MkEvalWhiskerLeft MonoidalM where
   mkEvalWhiskerLeftNil f α := do
     let ctx ← read
     let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
@@ -339,7 +339,7 @@ instance : MkEvalWhiskerLeft MonoidalM' where
     have e_η₂ : Q((λ_ _).hom ≫ $η₁ = $η₂) := e_η₂
     return q(evalWhiskerLeft_id $e_η₁ $e_η₂)
 
-instance : MkEvalWhiskerRight MonoidalM' where
+instance : MkEvalWhiskerRight MonoidalM where
   mkEvalWhiskerRightAuxOf η h := do
     let ctx ← read
     let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
@@ -514,7 +514,7 @@ instance : MkEvalWhiskerRight MonoidalM' where
     have e_η₂ : Q((ρ_ _).hom ≫ $η₁ = $η₂) := e_η₂
     return q(evalWhiskerRight_id $e_η₁ $e_η₂)
 
-instance : MkEvalHorizontalComp MonoidalM' where
+instance : MkEvalHorizontalComp MonoidalM where
   mkEvalHorizontalCompAuxOf η θ := do
     let ctx ← read
     let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
@@ -707,7 +707,7 @@ instance : MkEvalHorizontalComp MonoidalM' where
     have e_ηθ₂ : Q(($α ⊗ $β).hom ≫ $ηθ₁ = $ηθ₂) := e_ηθ₂
     return q(evalHorizontalComp_cons_cons $e_ηθ $e_ηθs $e_ηθ₁ $e_ηθ₂)
 
-instance : MkEval MonoidalM' where
+instance : MkEval MonoidalM where
   mkEvalComp η θ η' θ' ι e_η e_θ e_ηθ := do
     let ctx ← read
     let _cat := ctx.instCat
@@ -824,7 +824,7 @@ instance : MkEval MonoidalM' where
     have e_ηαθ : Q($η' ≫ $αθ = $ηαθ) := e_ηαθ
     return q(eval_monoidalComp $e_η $e_θ $e_αθ $e_ηαθ)
 
-instance : MonadNormalExpr MonoidalM' where
+instance : MonadNormalExpr MonoidalM where
   whiskerRightM η h := do
     return .whisker (← MonadMor₂.whiskerRightM η.e (.of h)) η h
   hConsM η θ := do
@@ -836,7 +836,7 @@ instance : MonadNormalExpr MonoidalM' where
   consM α η ηs := do
     return .cons (← MonadMor₂.comp₂M (← MonadMor₂.homM α) (← MonadMor₂.comp₂M η.e ηs.e)) α η ηs
 
-instance : MkMor₂ MonoidalM' where
+instance : MkMor₂ MonoidalM where
   ofExpr := Mor₂OfExpr
 
-end Mathlib.Tactic.Monoidal
+end Mathlib.Tactic.Monoidal'
