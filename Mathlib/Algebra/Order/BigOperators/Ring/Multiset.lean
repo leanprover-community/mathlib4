@@ -41,15 +41,15 @@ lemma prod_pos {R : Type*} [CommMonoidWithZero R] [PartialOrder R] [ZeroLEOneCla
   · rw [prod_cons]
     exact mul_pos (ih _ <| mem_cons_self _ _) (hs fun a ha ↦ ih _ <| mem_cons_of_mem ha)
 
-theorem prod_map_le_prod_map₀ {ι α : Type*} [CommMonoidWithZero α] [PartialOrder α]
-    [ZeroLEOneClass α] [PosMulMono α] {s : Multiset ι} (f : ι → α) (g : ι → α)
+theorem prod_map_le_prod_map₀ {ι R : Type*} [CommMonoidWithZero R] [PartialOrder R]
+    [ZeroLEOneClass R] [PosMulMono R] {s : Multiset ι} (f : ι → R) (g : ι → R)
     (h0 : ∀ i ∈ s, 0 ≤ f i) (h : ∀ i ∈ s, f i ≤ g i) :
     (map f s).prod ≤ (map g s).prod := by
   induction s using Multiset.induction with
   | empty => simp
   | cons a s hind =>
     simp only [map_cons, prod_cons]
-    have := posMulMono_iff_mulPosMono.1 ‹PosMulMono α›
+    have := posMulMono_iff_mulPosMono.1 ‹PosMulMono R›
     apply mul_le_mul
     · apply h
       simp
@@ -67,15 +67,15 @@ theorem prod_map_le_prod_map₀ {ι α : Type*} [CommMonoidWithZero α] [Partial
       simp [ha]
     apply (h0 _ _).trans (h _ _) <;> simp
 
-theorem prod_map_lt_prod_map {ι α : Type*} [CommMonoidWithZero α] [PartialOrder α]
-    [ZeroLEOneClass α] [MulPosStrictMono α] [NeZero (1 : α)] {s : Multiset ι} (hs : s ≠ 0)
-    (f : ι → α) (g : ι → α) (h0 : ∀ i ∈ s, 0 < f i) (h : ∀ i ∈ s, f i < g i) :
+theorem prod_map_lt_prod_map {ι R : Type*} [CommMonoidWithZero R] [PartialOrder R]
+    [ZeroLEOneClass R] [MulPosStrictMono R] [NeZero (1 : R)] {s : Multiset ι} (hs : s ≠ 0)
+    (f : ι → R) (g : ι → R) (h0 : ∀ i ∈ s, 0 < f i) (h : ∀ i ∈ s, f i < g i) :
     (map f s).prod < (map g s).prod := by
   induction s using Multiset.induction with
   | empty => contradiction
   | cons a s =>
     simp only [map_cons, prod_cons]
-    have := posMulStrictMono_iff_mulPosStrictMono.2 ‹MulPosStrictMono α›
+    have := posMulStrictMono_iff_mulPosStrictMono.2 ‹MulPosStrictMono R›
     apply mul_lt_mul
     · apply h
       simp
