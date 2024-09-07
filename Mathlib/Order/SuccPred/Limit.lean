@@ -19,9 +19,6 @@ maximal elements from being predecessor limits. As such, we also provide `Order.
 
 ## TODO
 
-For some applications, it's desirable to exclude the case where an element is minimal. A future PR
-will introduce `IsSuccLimit` for this usage.
-
 The plan is to eventually replace `Ordinal.IsLimit` and `Cardinal.IsLimit` with the common
 predicate `Order.IsSuccLimit`.
 -/
@@ -323,8 +320,8 @@ alias isPredLimit_of_dense := isPredPrelimit_of_dense
 
 @[simp]
 theorem isSuccPrelimit_toDual_iff : IsSuccPrelimit (toDual a) ↔ IsPredPrelimit a := by
-  rw [IsSuccPrelimit, IsPredPrelimit]
-#exit
+  simp [IsSuccPrelimit, IsPredPrelimit]
+
 @[simp]
 theorem isPredPrelimit_toDual_iff : IsPredPrelimit (toDual a) ↔ IsSuccPrelimit a := by
   simp [IsSuccPrelimit, IsPredPrelimit]
