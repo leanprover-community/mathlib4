@@ -115,8 +115,7 @@ theorem tendstoUniformly_tsum_nat {f : ℕ → β → F} {u : ℕ → ℝ} (hu :
 partial sums. Version with general index set. -/
 theorem tendstoUniformly_tsum_eventually {ι : Type*} {f : ι → β → F} {u : ι → ℝ}
     (hu : Summable u) (hfu : ∃ a, ∀ (b : Finset ι), a ⊆ b → ∀ x n, n ∉ b → ‖f n x‖ ≤ u n) :
-    TendstoUniformly (fun t : Finset ι => fun x => ∑ n ∈ t, f n x)
-    (fun x => ∑' n, f n x) atTop := by
+    TendstoUniformly (fun t x => ∑ n ∈ t, f n x) (fun x => ∑' n, f n x) atTop := by
   rw [← tendstoUniformlyOn_univ]
   apply tendstoUniformlyOn_tsum_eventually hu
   simpa using hfu
