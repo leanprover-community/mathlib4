@@ -73,7 +73,7 @@ lemma findAtom_eq_bot_iff {r : α} :
   mpr h := by simp [h]
 
 @[simp]
-lemma findAtom_is_atom (r : α) (hr : r ≠ ⊥) :
+lemma isAtom_findAtom (r : α) (hr : r ≠ ⊥) :
     IsAtom (findAtom r) := by
   constructor
   · simp [hr]
@@ -85,9 +85,9 @@ end DecidableEq
 
 instance instIsAtomic : IsAtomic α where
   eq_bot_or_exists_atom_le b := by classical
-    rw [Classical.or_iff_not_imp_left]
+    rw [or_iff_not_imp_left]
     intro hb
-    use findAtom b, findAtom_is_atom b hb, findAtom_le b
+    use findAtom b, isAtom_findAtom b hb, findAtom_le b
 
 end IsPredArchimedean
 
@@ -150,7 +150,7 @@ lemma mem_iff {t : RootedTree} {r : SubRootedTree t} {v : t} :
     v ∈ r ↔ r.root ≤ v := Iff.rfl
 
 /--
-The coersion from a `SubRootedTree` to a `RootedTree`.
+The coercion from a `SubRootedTree` to a `RootedTree`.
 -/
 @[coe, reducible]
 noncomputable def coeTree {t : RootedTree} (r : SubRootedTree t) : RootedTree where
@@ -196,16 +196,13 @@ lemma subtrees_inf_eq_bot_iff {t₁ t₂ : SubRootedTree t}
     rcases lt_or_le_of_le (by simp : v₁ ⊓ v₂ ≤ v₁) h₁ with oh | oh
     · simp_all [RootedTree.subtrees, IsAtom.lt_iff]
     rw [le_inf_iff] at oh
-    have := le_total_of_le oh.2 h₂
-    simp only [ht₂.le_iff_eq ht₁.1, ht₁.le_iff_eq ht₂.1, eq_comm, or_self] at this
     ext
-    exact this
+    simpa only [ht₂.le_iff_eq ht₁.1, ht₁.le_iff_eq ht₂.1, eq_comm, or_self] using
+      le_total_of_le oh.2 h₂
 
--- An alternative spelling is the contrapositive, `v ∈ t₁ → v ∈ t₂ → t₁ = t₂`. Which is better?
-lemma subtrees_disjoint {t₁ t₂ : SubRootedTree t}
-    (ht₁ : t₁ ∈ t.subtrees) (ht₂ : t₂ ∈ t.subtrees) (h : t₁ ≠ t₂) :
-    Disjoint (t₁ : Set t) (t₂ : Set t) := by
-  rw [Set.disjoint_left]
+lemma subtrees_disjoint : t.subtrees.PairwiseDisjoint ((↑) : _ → Set t) := by
+  intro t₁ ht₁ t₂ ht₂ h
+  rw [Function.onFun_apply, Set.disjoint_left]
   intro a ha hb
   rw [← subtrees_inf_eq_bot_iff ht₁ ht₂ a a ha hb] at h
   simp only [le_refl, inf_of_le_left] at h
@@ -226,4 +223,4 @@ lemma RootedTree.mem_subtreeOf [DecidableEq t] {r : t} :
 
 lemma RootedTree.subtreeOf_mem_subtrees [DecidableEq t] {r : t} (hr : r ≠ ⊥) :
     t.subtreeOf r ∈ t.subtrees := by
-  simp [RootedTree.subtrees, RootedTree.subtreeOf, IsPredArchimedean.findAtom_is_atom r hr]
+  simp [RootedTree.subtrees, RootedTree.subtreeOf, IsPredArchimedean.isAtom_findAtom r hr]
