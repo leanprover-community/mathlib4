@@ -14,19 +14,17 @@ import Mathlib.Logic.Equiv.TransferInstance
 
 Reference : [Becker-Weispfenning1993] -/
 
+/-- Monomial orders : equivalence of `σ →₀ ℕ` with a well ordered type -/
 structure MonomialOrder (σ : Type*) where
+  /-- The synonym type -/
   syn : Type*
+  /-- syn is a linear ordered cancel add comm monoid -/
   locacm : LinearOrderedCancelAddCommMonoid syn
+  /-- the add equivalence from `σ →₀ ℕ` to `syn` -/
   toSyn : (σ →₀ ℕ) ≃+ syn
+  /-- toSyn is monotone -/
   toSyn_monotone : Monotone toSyn
-  wf : WellFoundedLT syn
-
-structure MonomialOrder' (σ : Type*) where
-  syn : Type*
-  locacm : LinearOrderedCancelAddCommMonoid syn
-  toSyn : (σ →₀ ℕ) →+ syn
-  toSyn_injective : Function.Injective toSyn
-  toSyn_monotone : Monotone toSyn
+  /-- `syn` is a well ordering -/
   wf : WellFoundedLT syn
 
 instance (σ : Type*) (m : MonomialOrder σ) : LinearOrderedCancelAddCommMonoid m.syn := m.locacm
@@ -81,9 +79,11 @@ open MvPolynomial
 
 variable {σ : Type*} (m : MonomialOrder σ)
 
+/-- Given a monomial order, notation for the corresponding strict order relation on `σ →₀ ℕ` -/
 scoped
 notation:25 c "≺[" m:25 "]" d:25 => (MonomialOrder.toSyn m c < MonomialOrder.toSyn m d)
 
+/-- Given a monomial order, notation for the corresponding order relation on `σ →₀ ℕ` -/
 scoped
 notation:25 c "≼[" m:25 "]" d:25 => (MonomialOrder.toSyn m c ≤ MonomialOrder.toSyn m d)
 
@@ -164,7 +164,6 @@ theorem _root_.Finset.sup_mem_of_nonempty {α β : Type*} {f : α → β}  [Line
       · rw [sup_eq_left.mpr ha]
         apply Set.mem_image_of_mem _ (Set.mem_insert a ↑s)
 
-@[simp]
 theorem lCoeff_ne_zero_iff {f : MvPolynomial σ R} :
     m.lCoeff f ≠ 0 ↔ f ≠ 0 := by
   constructor
@@ -185,7 +184,6 @@ theorem lCoeff_eq_zero_iff {f : MvPolynomial σ R} :
     lCoeff m f = 0 ↔ f = 0 := by
   simp only [← not_iff_not, lCoeff_ne_zero_iff]
 
-@[simp]
 theorem coeff_degree_ne_zero_iff {f : MvPolynomial σ R} :
     f.coeff (m.degree f) ≠ 0 ↔ f ≠ 0 :=
   m.lCoeff_ne_zero_iff
@@ -440,8 +438,8 @@ theorem eq_C_of_degree_eq_zero {f : MvPolynomial σ R} (hf : m.degree f = 0) :
     rw [hf, map_zero, lt_iff_le_and_ne, ne_eq, eq_comm, AddEquivClass.map_eq_zero_iff]
     exact ⟨bot_le, hd⟩
 
-theorem monomialOrderDiv [Finite σ] (B : Set (MvPolynomial σ R))
-    (hB : ∀ b ∈ B, IsUnit (m.lCoeff b)) (f : MvPolynomial σ R) :
+theorem monomialOrderDiv (B : Set (MvPolynomial σ R)) (hB : ∀ b ∈ B, IsUnit (m.lCoeff b))
+    (f : MvPolynomial σ R) :
     ∃ (g : B →₀ (MvPolynomial σ R)) (r : MvPolynomial σ R),
       f = Finsupp.linearCombination _ (fun (b : B) ↦ (b : MvPolynomial σ R)) g + r ∧
         (∀ (b : B), m.degree ((b : MvPolynomial σ R) * (g b)) ≼[m] m.degree f) ∧
@@ -551,8 +549,7 @@ section Lex
 
 open Finsupp
 -- The linear order on `Finsupp`s obtained by the lexicographic ordering. -/
-noncomputable instance {α N : Type*} [LinearOrder α] [WellFoundedGT α]
-    [OrderedCancelAddCommMonoid N] :
+noncomputable instance {α N : Type*} [LinearOrder α] [OrderedCancelAddCommMonoid N] :
     OrderedCancelAddCommMonoid (Lex (α →₀ N)) where
   le_of_add_le_add_left a b c h := by simpa only [add_le_add_iff_left] using h
   add_le_add_left a b h c := by simpa only [add_le_add_iff_left] using h
@@ -574,6 +571,7 @@ theorem toLex_monotone {σ : Type*} [LinearOrder σ] :
   simp only [AddEquiv.refl_symm, le_add_iff_nonneg_right, ge_iff_le]
   apply bot_le
 
+/-- The lexicographic order on `σ →₀ ℕ`, as a `MonomialOrder` -/
 noncomputable def MonomialOrder.lex (σ : Type*) [LinearOrder σ] [WellFoundedGT σ] :
     MonomialOrder σ where
   syn := Lex (σ →₀ ℕ)
@@ -584,6 +582,7 @@ noncomputable def MonomialOrder.lex (σ : Type*) [LinearOrder σ] [WellFoundedGT
   wf := Lex.wellFoundedLT
   toSyn_monotone := Finsupp.toLex_monotone
 
+/-- The reverse lexicographic order on `σ →₀ ℕ`, as a `MonomialOrder` -/
 noncomputable def MonomialOrder.revlex (σ : Type*) [LinearOrder σ] [WellFoundedLT σ] :
     MonomialOrder σ := MonomialOrder.lex σᵒᵈ
 
@@ -764,7 +763,7 @@ instance DegLex.wellFoundedLT [WellFoundedGT α] :
     WellFoundedLT (DegLex (α →₀ ℕ)) :=
   ⟨DegLex.wellFounded wellFounded_gt wellFounded_lt fun n ↦ (zero_le n).not_lt⟩
 
-/-- The RevLex order on monomials -/
+/-- The deg-lexicographic order on `σ →₀ ℕ`, as a `MonomialOrder` -/
 noncomputable def MonomialOrder.degLex (σ : Type*) [LinearOrder σ] [WellFoundedGT σ] :
     MonomialOrder σ where
   syn := DegLex (σ →₀ ℕ)
@@ -786,7 +785,7 @@ theorem MonomialOrder.degLex_lt_iff {σ : Type*} [LinearOrder σ] [WellFoundedGT
       ↔ toDegLex a < toDegLex b :=
   Iff.rfl
 
-/-- The degRevLex order on monomials -/
+/-- The deg-reverse lexicographic order on `σ →₀ ℕ`, as a `MonomialOrder` -/
 noncomputable def MonomialOrder.degRevLex (σ : Type*) [LinearOrder σ] [WellFoundedLT σ] :
     MonomialOrder σ :=
   MonomialOrder.degLex σᵒᵈ
@@ -896,8 +895,7 @@ theorem isDickson_of_minimal_ne_and_finite
   have hBS : B ⊆ S := Set.sep_subset S (Minimal fun x ↦ x ∈ S)
   use B
   by_cases hS : S.Nonempty
-  · have := H S hS
-    refine ⟨⟨hBS, ?_⟩, (H S hS).2⟩
+  · refine ⟨⟨hBS, ?_⟩, (H S hS).2⟩
     intro a ha
     let S' := {x ∈ S | x ≤ a}
     have := H S' ⟨a, by simp [S', ha]⟩
@@ -905,8 +903,6 @@ theorem isDickson_of_minimal_ne_and_finite
     refine ⟨b, ?_, hb.2⟩
     simp only [B]
     refine ⟨hb.1, ?_⟩
-    -- apply hb'.mono  ?_ (Set.mem_of_mem_inter_left hb)
-    unfold Minimal
     refine ⟨Set.mem_of_mem_inter_left hb, ?_⟩
     intro y hy hyb
     exact hb'.2 ⟨hy, le_trans hyb hb.2⟩ hyb
