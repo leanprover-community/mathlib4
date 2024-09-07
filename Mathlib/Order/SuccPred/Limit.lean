@@ -13,7 +13,7 @@ We define the predicate `Order.IsSuccPrelimit` for "successor pre-limits", value
 any others. They are so named since they can't be the successors of anything smaller. We define
 `Order.IsPredPrelimit` analogously, and prove basic results.
 
-For many applications, it is desirable to exclude minimal elements from being successor limits, or
+For some applications, it is desirable to exclude minimal elements from being successor limits, or
 maximal elements from being predecessor limits. As such, we also provide `Order.IsSuccLimit` and
 `Order.IsPredLimit`, which exclude these cases.
 
@@ -213,14 +213,14 @@ theorem not_isSuccPrelimit_iff : ¬ IsSuccPrelimit a ↔ ∃ b, ¬ IsMax b ∧ s
 /-- See `not_isSuccPrelimit_iff` for a version that states that `a` is a successor of a value other
 than itself. -/
 theorem mem_range_succ_of_not_isSuccPrelimit (h : ¬ IsSuccPrelimit a) :
-    a ∈ range (@succ α _ _) := by
+    a ∈ range (succ : α → α) := by
   obtain ⟨b, hb⟩ := not_isSuccPrelimit_iff.1 h
   exact ⟨b, hb.2⟩
 
 @[deprecated mem_range_succ_of_not_isSuccPrelimit (since := "2024-09-05")]
 alias mem_range_succ_of_not_isSuccLimit := mem_range_succ_of_not_isSuccPrelimit
 
-theorem mem_range_succ_or_isSuccPrelimit (a) : a ∈ range (@succ α _ _) ∨ IsSuccPrelimit a :=
+theorem mem_range_succ_or_isSuccPrelimit (a) : a ∈ range (succ : α → α) ∨ IsSuccPrelimit a :=
   or_iff_not_imp_right.2 <| mem_range_succ_of_not_isSuccPrelimit
 
 @[deprecated mem_range_succ_or_isSuccPrelimit (since := "2024-09-05")]
@@ -265,7 +265,7 @@ theorem isSuccPrelimit_iff_succ_ne : IsSuccPrelimit a ↔ ∀ b, succ b ≠ a :=
 @[deprecated isSuccPrelimit_iff_succ_ne (since := "2024-09-05")]
 alias isSuccLimit_iff_succ_ne := isSuccPrelimit_iff_succ_ne
 
-theorem not_isSuccPrelimit_iff' : ¬ IsSuccPrelimit a ↔ a ∈ range (@succ α _ _) := by
+theorem not_isSuccPrelimit_iff' : ¬ IsSuccPrelimit a ↔ a ∈ range (succ : α → α) := by
   simp_rw [isSuccPrelimit_iff_succ_ne, not_forall, not_ne_iff, mem_range]
 
 @[deprecated not_isSuccPrelimit_iff' (since := "2024-09-05")]
@@ -310,7 +310,7 @@ variable [LT α] {a : α}
 It's so named because in a predecessor order, a predecessor pre-limit can't be the predecessor of
 anything smaller.
 
-For many applications, it's desirable to exclude maximal elements from this definition. For that,
+For some applications, it's desirable to exclude maximal elements from this definition. For that,
 see `IsPredLimit`. -/
 def IsPredPrelimit (a : α) : Prop :=
   ∀ b, ¬ a ⋖ b
@@ -336,10 +336,10 @@ theorem isPredPrelimit_toDual_iff : IsPredPrelimit (toDual a) ↔ IsSuccPrelimit
 
 alias ⟨_, IsPredPrelimit.dual⟩ := isSuccPrelimit_toDual_iff
 alias ⟨_, IsSuccPrelimit.dual⟩ := isPredPrelimit_toDual_iff
-@[deprecated IsPredPrelimit.dual (since := "2024-09-03")]
-alias ⟨_, isPredlimit.dual⟩ := isSuccPrelimit_toDual_iff
-@[deprecated IsSuccPrelimit.dual (since := "2024-09-03")]
-alias ⟨_, isSucclimit.dual⟩ := isPredPrelimit_toDual_iff
+@[deprecated IsPredPrelimit.dual (since := "2024-09-05")]
+alias isPredLimit.dual := IsPredPrelimit.dual
+@[deprecated IsSuccPrelimit.dual (since := "2024-09-05")]
+alias isSuccLimit.dual := IsSuccPrelimit.dual
 
 end LT
 
@@ -352,7 +352,7 @@ variable [Preorder α] {a : α}
 It's so named because in a predecessor order, a predecessor limit can't be the predecessor of
 anything larger.
 
-This previously allowed the element to be maximal. This usage is now coverd by `IsPredPreLimit`. -/
+This previously allowed the element to be maximal. This usage is now covered by `IsPredPreLimit`. -/
 def IsPredLimit (a : α) : Prop :=
   ¬ IsMax a ∧ IsPredPrelimit a
 
@@ -465,11 +465,11 @@ theorem isPredPrelimit_iff_of_noMin : IsPredPrelimit a ↔ IsMax a :=
 @[deprecated isPredPrelimit_iff_of_noMin (since := "2024-09-05")]
 alias isPredLimit_iff_of_noMin := isPredPrelimit_iff_of_noMin
 
+theorem not_isPredPrelimit_of_noMin [NoMaxOrder α] : ¬ IsPredPrelimit a := by simp
+
 @[simp]
 theorem not_isPredLimit_of_noMin : ¬ IsPredLimit a :=
   fun h ↦ h.not_isMax h.isPredPrelimit.isMax_of_noMin
-
-theorem not_isPredPrelimit_of_noMin [NoMaxOrder α] : ¬ IsPredPrelimit a := by simp
 
 end IsPredArchimedean
 
@@ -497,14 +497,14 @@ theorem not_isPredPrelimit_iff : ¬ IsPredPrelimit a ↔ ∃ b, ¬ IsMin b ∧ p
 /-- See `not_isPredPrelimit_iff` for a version that states that `a` is a successor of a value other
 than itself. -/
 theorem mem_range_pred_of_not_isPredPrelimit (h : ¬ IsPredPrelimit a) :
-    a ∈ range (@pred α _ _) := by
+    a ∈ range (pred : α → α) := by
   obtain ⟨b, hb⟩ := not_isPredPrelimit_iff.1 h
   exact ⟨b, hb.2⟩
 
 @[deprecated mem_range_pred_of_not_isPredPrelimit (since := "2024-09-05")]
 alias mem_range_pred_of_not_isPredLimit := mem_range_pred_of_not_isPredPrelimit
 
-theorem mem_range_pred_or_isPredPrelimit (a) : a ∈ range (@pred α _ _) ∨ IsPredPrelimit a :=
+theorem mem_range_pred_or_isPredPrelimit (a) : a ∈ range (pred : α → α) ∨ IsPredPrelimit a :=
   or_iff_not_imp_right.2 <| mem_range_pred_of_not_isPredPrelimit
 
 @[deprecated mem_range_pred_or_isPredPrelimit (since := "2024-09-05")]
@@ -541,7 +541,7 @@ variable [NoMinOrder α]
 theorem isPredPrelimit_iff_pred_ne : IsPredPrelimit a ↔ ∀ b, pred b ≠ a :=
   ⟨IsPredPrelimit.pred_ne, isPredPrelimit_of_pred_ne⟩
 
-theorem not_isPredPrelimit_iff' : ¬ IsPredPrelimit a ↔ a ∈ range (@pred α _ _) := by
+theorem not_isPredPrelimit_iff' : ¬ IsPredPrelimit a ↔ a ∈ range (pred : α → α) := by
   simp_rw [isPredPrelimit_iff_pred_ne, not_forall, not_ne_iff, mem_range]
 
 end NoMinOrder

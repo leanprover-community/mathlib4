@@ -711,12 +711,9 @@ theorem add_one_le_succ (c : Cardinal.{u}) : c + 1 ≤ succ c := by
 /-- A cardinal is a limit if it is not zero or a successor cardinal. Note that `ℵ₀` is a limit
   cardinal by this definition, but `0` isn't.
 
-  Use `IsSuccPrelimit` if you want to include the `c = 0` case. -/
+TODO: deprecate this in favor of `Order.IsSuccLimit`. -/
 def IsLimit (c : Cardinal) : Prop :=
   c ≠ 0 ∧ IsSuccPrelimit c
-
-theorem isSuccLimit_ne_zero {c : Cardinal} (h : IsSuccLimit c) : c ≠ 0 :=
-  h.ne_bot
 
 protected theorem IsLimit.ne_zero {c} (h : IsLimit c) : c ≠ 0 :=
   h.1
@@ -885,14 +882,13 @@ lemma exists_eq_of_iSup_eq_of_not_isSuccPrelimit
 @[deprecated exists_eq_of_iSup_eq_of_not_isSuccPrelimit (since := "2024-09-05")]
 alias exists_eq_of_iSup_eq_of_not_isSuccLimit := exists_eq_of_iSup_eq_of_not_isSuccPrelimit
 
-lemma exists_eq_of_iSup_eq_of_not_isSuccLimit
+lemma exists_eq_of_iSup_eq_of_not_isLimit
     {ι : Type u} [hι : Nonempty ι] (f : ι → Cardinal.{v}) (hf : BddAbove (range f))
-    (ω : Cardinal.{v}) (hω : ¬ IsSuccLimit ω)
+    (ω : Cardinal.{v}) (hω : ¬ ω.Limit)
     (h : ⨆ i : ι, f i = ω) : ∃ i, f i = ω := by
   refine (not_and_or.mp hω).elim (fun e ↦ ⟨hι.some, ?_⟩)
     (Cardinal.exists_eq_of_iSup_eq_of_not_isSuccPrelimit.{u, v} f ω · h)
-  rw [not_not, isMin_iff_eq_bot, bot_eq_zero] at e
-  subst e
+  cases not_not.mp e
   rw [← le_zero_iff] at h ⊢
   exact (le_ciSup hf _).trans h
 
@@ -1354,14 +1350,14 @@ lemma not_isLimit_natCast : (n : ℕ) → ¬ IsLimit (n : Cardinal.{u})
   | 0, e => e.1 rfl
   | Nat.succ n, e => Order.not_isSuccPrelimit_succ _ (nat_succ n ▸ e.2)
 
-theorem _root_.Order.IsSuccLimit.aleph0_le {c : Cardinal} (h : IsSuccLimit c) : ℵ₀ ≤ c := by
+theorem IsLimit.aleph0_le {c : Cardinal} (h : IsLimit c) : ℵ₀ ≤ c := by
   by_contra! h'
   rcases lt_aleph0.1 h' with ⟨n, rfl⟩
   exact not_isSuccLimit_natCast n h
 
 lemma exists_eq_natCast_of_iSup_eq {ι : Type u} [Nonempty ι] (f : ι → Cardinal.{v})
     (hf : BddAbove (range f)) (n : ℕ) (h : ⨆ i, f i = n) : ∃ i, f i = n :=
-  exists_eq_of_iSup_eq_of_not_isSuccLimit.{u, v} f hf _ (not_isSuccLimit_natCast n) h
+  exists_eq_of_iSup_eq_of_not_isLimit.{u, v} f hf _ (not_isLimit_natCast n) h
 
 @[simp]
 theorem range_natCast : range ((↑) : ℕ → Cardinal) = Iio ℵ₀ :=
