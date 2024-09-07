@@ -126,10 +126,12 @@ lemma lt_or_le_of_ge [SuccOrder α] [IsSuccArchimedean α] {r v₁ v₂ : α} (h
   · contradiction
 
 /--
-This isn't an instance due to a diamond with the `decidable` instances in `LinearOrder`.
+This isn't an instance due to a loop with `LinearOrder`.
 -/
-noncomputable def IsSuccArchimedean.linearOrder [SuccOrder α] [IsSuccArchimedean α]
-    [IsDirected α (· ≥ ·)] : LinearOrder α where
+-- See note [reducible non instances]
+abbrev IsSuccArchimedean.linearOrder [SuccOrder α] [IsSuccArchimedean α]
+     [DecidableEq α] [@DecidableRel α (· ≤ ·)] [@DecidableRel α (· < ·)] [IsDirected α (· ≥ ·)] :
+     LinearOrder α where
   le_total a b :=
     have ⟨c, ha, hb⟩ := directed_of (· ≥ ·) a b
     le_total_of_ge ha hb
@@ -144,12 +146,14 @@ lemma lt_or_le_of_le [PredOrder α] [IsPredArchimedean α] {r v₁ v₂ : α} (h
   · contradiction
 
 /--
-This isn't an instance due to a diamond with the `decidable` instances in `LinearOrder`.
+This isn't an instance due to a loop with `LinearOrder`.
 -/
-noncomputable def IsPredArchimedean.linearOrder [PredOrder α] [IsPredArchimedean α]
-    [IsDirected α (· ≤ ·)] : LinearOrder α :=
-      letI : LinearOrder αᵒᵈ := IsSuccArchimedean.linearOrder
-      inferInstanceAs (LinearOrder αᵒᵈᵒᵈ)
+-- See note [reducible non instances]
+abbrev IsPredArchimedean.linearOrder [PredOrder α] [IsPredArchimedean α]
+     [DecidableEq α] [@DecidableRel α (· ≤ ·)] [@DecidableRel α (· < ·)] [IsDirected α (· ≤ ·)] :
+     LinearOrder α :=
+  letI : LinearOrder αᵒᵈ := IsSuccArchimedean.linearOrder
+  inferInstanceAs (LinearOrder αᵒᵈᵒᵈ)
 
 end PartialOrder
 
