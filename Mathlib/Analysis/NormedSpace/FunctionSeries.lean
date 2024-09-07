@@ -66,8 +66,8 @@ theorem tendstoUniformlyOn_tsum_eventually {ι : Type*} {f : ι → β → F} {u
     simp only [comp_apply, Subtype.forall, Set.mem_compl_iff, Finset.mem_coe]
     apply hN N (by simp only [subset_refl]) x hx
   rw [dist_eq_norm, ← sum_add_tsum_subtype_compl A.of_norm (n), add_sub_cancel_left]
-  have hN2 := hN (n) (by exact Finset.union_subset_left hn) x hx
-  have ht2 := ht (n) (by exact Finset.union_subset_right hn)
+  have hN2 := hN n (Finset.union_subset_left hn) x hx
+  have ht2 := ht n (Finset.union_subset_right hn)
   apply lt_of_le_of_lt _ ht2
   apply (norm_tsum_le_tsum_norm ?_).trans
   · apply tsum_le_tsum
