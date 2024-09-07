@@ -286,7 +286,7 @@ def fixInduction {C : α → Sort*} {f : α →. β ⊕ α} {b : β} {a : α} (h
   have h₂ := (Part.mem_assert_iff.1 h).snd
   generalize_proofs at h₂
   clear h
-  induction' ‹Acc _ _› with a ha IH
+  induction ‹Acc _ _› with | intro a ha IH => _
   have h : b ∈ f.fix a := Part.mem_assert_iff.2 ⟨⟨a, ha⟩, h₂⟩
   exact H a h fun a' fa' => IH a' fa' (Part.mem_assert_iff.1 (fix_fwd h fa')).snd
 

@@ -34,10 +34,12 @@ local infixl:50 " ~ᵤ " => Associated
 condition on divisibility and to the ascending chain condition on
 principal ideals in an integral domain.
   -/
-class WfDvdMonoid (α : Type*) [CommMonoidWithZero α] : Prop where
-  wellFounded_dvdNotUnit : WellFounded (@DvdNotUnit α _)
+abbrev WfDvdMonoid (α : Type*) [CommMonoidWithZero α] : Prop :=
+  IsWellFounded α DvdNotUnit
 
-export WfDvdMonoid (wellFounded_dvdNotUnit)
+theorem wellFounded_dvdNotUnit {α : Type*} [CommMonoidWithZero α] [h : WfDvdMonoid α] :
+    WellFounded (DvdNotUnit (α := α)) :=
+  h.wf
 
 -- see Note [lower instance priority]
 instance (priority := 100) IsNoetherianRing.wfDvdMonoid [CommRing α] [IsDomain α]
@@ -61,6 +63,10 @@ variable [WfDvdMonoid α]
 instance wfDvdMonoid_associates : WfDvdMonoid (Associates α) :=
   ⟨(mk_surjective.wellFounded_iff mk_dvdNotUnit_mk_iff.symm).1 wellFounded_dvdNotUnit⟩
 
+theorem wellFoundedLT_associates : WellFoundedLT (Associates α) :=
+  ⟨Subrelation.wf dvdNotUnit_of_lt wellFounded_dvdNotUnit⟩
+
+@[deprecated wellFoundedLT_associates (since := "2024-09-02")]
 theorem wellFounded_associates : WellFounded ((· < ·) : Associates α → Associates α → Prop) :=
   Subrelation.wf dvdNotUnit_of_lt wellFounded_dvdNotUnit
 
@@ -124,6 +130,15 @@ theorem isRelPrime_of_no_irreducible_factors {x y : α} (nonzero : ¬(x = 0 ∧ 
 
 end WfDvdMonoid
 
+theorem WfDvdMonoid.of_wellFoundedLT_associates [CancelCommMonoidWithZero α]
+    (h : WellFoundedLT (Associates α)) : WfDvdMonoid α :=
+  WfDvdMonoid.of_wfDvdMonoid_associates
+    ⟨by
+      convert h.wf
+      ext
+      exact Associates.dvdNotUnit_iff_lt⟩
+
+@[deprecated WfDvdMonoid.of_wellFoundedLT_associates (since := "2024-09-02")]
 theorem WfDvdMonoid.of_wellFounded_associates [CancelCommMonoidWithZero α]
     (h : WellFounded ((· < ·) : Associates α → Associates α → Prop)) : WfDvdMonoid α :=
   WfDvdMonoid.of_wfDvdMonoid_associates
@@ -133,8 +148,8 @@ theorem WfDvdMonoid.of_wellFounded_associates [CancelCommMonoidWithZero α]
       exact Associates.dvdNotUnit_iff_lt⟩
 
 theorem WfDvdMonoid.iff_wellFounded_associates [CancelCommMonoidWithZero α] :
-    WfDvdMonoid α ↔ WellFounded ((· < ·) : Associates α → Associates α → Prop) :=
-  ⟨by apply WfDvdMonoid.wellFounded_associates, WfDvdMonoid.of_wellFounded_associates⟩
+    WfDvdMonoid α ↔ WellFoundedLT (Associates α) :=
+  ⟨by apply WfDvdMonoid.wellFoundedLT_associates, WfDvdMonoid.of_wellFoundedLT_associates⟩
 
 theorem WfDvdMonoid.max_power_factor' [CommMonoidWithZero α] [WfDvdMonoid α] {a₀ x : α}
     (h : a₀ ≠ 0) (hx : ¬IsUnit x) : ∃ (n : ℕ) (a : α), ¬x ∣ a ∧ a₀ = x ^ n * a := by
@@ -176,8 +191,8 @@ To define a UFD using the definition in terms of multisets
 of prime factors, use the definition `of_exists_prime_factors`
 
 -/
-class UniqueFactorizationMonoid (α : Type*) [CancelCommMonoidWithZero α] extends WfDvdMonoid α :
-  Prop where
+class UniqueFactorizationMonoid (α : Type*) [CancelCommMonoidWithZero α] extends
+    IsWellFounded α DvdNotUnit : Prop where
   protected irreducible_iff_prime : ∀ {a : α}, Irreducible a ↔ Prime a
 
 /-- Can't be an instance because it would cause a loop `ufm → WfDvdMonoid → ufm → ...`. -/
@@ -1935,7 +1950,7 @@ theorem Ideal.IsPrime.exists_mem_prime_of_ne_bot {R : Type*} [CommSemiring R] [I
 namespace Nat
 
 instance instWfDvdMonoid : WfDvdMonoid ℕ where
-  wellFounded_dvdNotUnit := by
+  wf := by
     refine RelHomClass.wellFounded
       (⟨fun x : ℕ => if x = 0 then (⊤ : ℕ∞) else x, ?_⟩ : DvdNotUnit →r (· < ·)) wellFounded_lt
     intro a b h
