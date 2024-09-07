@@ -142,7 +142,7 @@ class GeneralizedCoheytingAlgebra (α : Type*) extends Lattice α, OrderBot α, 
 /-- A Heyting algebra is a bounded lattice with an additional binary operation `⇨` called Heyting
 implication such that `a ⇨` is right adjoint to `a ⊓`. -/
 class HeytingAlgebra (α : Type*) extends GeneralizedHeytingAlgebra α, OrderBot α, HasCompl α where
-  /-- `a ⇨` is right adjoint to `a ⊓` -/
+  /-- `aᶜ` is defined as `a ⇨ ⊥` -/
   himp_bot (a : α) : a ⇨ ⊥ = aᶜ
 
 /-- A co-Heyting algebra is a bounded lattice with an additional binary difference operation `\`
