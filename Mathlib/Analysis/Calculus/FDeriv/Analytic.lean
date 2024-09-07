@@ -463,7 +463,7 @@ private theorem factorial_smul' {n : ℕ} : ∀ {F : Type max u v} [NormedAddCom
     [NormedSpace 𝕜 F] [CompleteSpace F] {p : FormalMultilinearSeries 𝕜 E F}
     {f : E → F}, HasFPowerSeriesOnBall f p x r →
     n ! • p n (fun _ ↦ y) = iteratedFDeriv 𝕜 n f x (fun _ ↦ y) := by
-  induction' n with n ih <;> intro F _ _ _ p f h
+  induction n with | zero => _ | succ n ih => _ <;> intro F _ _ _ p f h
   · rw [factorial_zero, one_smul, h.iteratedFDeriv_zero_apply_diag]
   · rw [factorial_succ, mul_comm, mul_smul, ← derivSeries_apply_diag, ← smul_apply,
       ih h.fderiv, iteratedFDeriv_succ_apply_right]

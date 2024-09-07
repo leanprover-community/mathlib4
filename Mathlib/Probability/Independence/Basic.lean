@@ -262,15 +262,15 @@ theorem IndepSets.symm {s₁ s₂ : Set (Set Ω)} (h : IndepSets s₁ s₂ μ) :
 @[symm]
 theorem Indep.symm (h : Indep m₁ m₂ μ) : Indep m₂ m₁ μ := IndepSets.symm h
 
-theorem indep_bot_right [IsProbabilityMeasure μ] : Indep m' ⊥ μ :=
+theorem indep_bot_right [IsZeroOrProbabilityMeasure μ] : Indep m' ⊥ μ :=
   Kernel.indep_bot_right m'
 
-theorem indep_bot_left [IsProbabilityMeasure μ] : Indep ⊥ m' μ := (indep_bot_right m').symm
+theorem indep_bot_left [IsZeroOrProbabilityMeasure μ] : Indep ⊥ m' μ := (indep_bot_right m').symm
 
-theorem indepSet_empty_right [IsProbabilityMeasure μ] (s : Set Ω) : IndepSet s ∅ μ :=
+theorem indepSet_empty_right [IsZeroOrProbabilityMeasure μ] (s : Set Ω) : IndepSet s ∅ μ :=
   Kernel.indepSet_empty_right s
 
-theorem indepSet_empty_left [IsProbabilityMeasure μ] (s : Set Ω) : IndepSet ∅ s μ :=
+theorem indepSet_empty_left [IsZeroOrProbabilityMeasure μ] (s : Set Ω) : IndepSet ∅ s μ :=
   Kernel.indepSet_empty_left s
 
 theorem indepSets_of_indepSets_of_le_left {s₁ s₂ s₃ : Set (Set Ω)}
@@ -385,14 +385,14 @@ variable {m : ι → MeasurableSpace Ω} {m1 m2 _mΩ : MeasurableSpace Ω} {μ :
 
 /-! ### Independence of generating π-systems implies independence of measurable space structures -/
 
-theorem IndepSets.indep [IsProbabilityMeasure μ]
+theorem IndepSets.indep [IsZeroOrProbabilityMeasure μ]
     {p1 p2 : Set (Set Ω)} (h1 : m1 ≤ _mΩ) (h2 : m2 ≤ _mΩ) (hp1 : IsPiSystem p1)
     (hp2 : IsPiSystem p2) (hpm1 : m1 = generateFrom p1) (hpm2 : m2 = generateFrom p2)
     (hyp : IndepSets p1 p2 μ) :
     Indep m1 m2 μ :=
   Kernel.IndepSets.indep h1 h2 hp1 hp2 hpm1 hpm2 hyp
 
-theorem IndepSets.indep' [IsProbabilityMeasure μ]
+theorem IndepSets.indep' [IsZeroOrProbabilityMeasure μ]
     {p1 p2 : Set (Set Ω)} (hp1m : ∀ s ∈ p1, MeasurableSet s) (hp2m : ∀ s ∈ p2, MeasurableSet s)
     (hp1 : IsPiSystem p1) (hp2 : IsPiSystem p2) (hyp : IndepSets p1 p2 μ) :
     Indep (generateFrom p1) (generateFrom p2) μ :=
@@ -414,7 +414,7 @@ theorem indep_iSup_of_disjoint
   Kernel.indep_iSup_of_disjoint h_le h_indep hST
 
 theorem indep_iSup_of_directed_le
-    [IsProbabilityMeasure μ] (h_indep : ∀ i, Indep (m i) m1 μ)
+    [IsZeroOrProbabilityMeasure μ] (h_indep : ∀ i, Indep (m i) m1 μ)
     (h_le : ∀ i, m i ≤ _mΩ) (h_le' : m1 ≤ _mΩ) (hm : Directed (· ≤ ·) m) :
     Indep (⨆ i, m i) m1 μ :=
   Kernel.indep_iSup_of_directed_le h_indep h_le h_le' hm
@@ -435,12 +435,12 @@ theorem iIndepSet.indep_generateFrom_le_nat {s : ℕ → Set Ω}
     Indep (generateFrom {s (n + 1)}) (generateFrom { t | ∃ k ≤ n, s k = t }) μ :=
   Kernel.iIndepSet.indep_generateFrom_le_nat hsm hs n
 
-theorem indep_iSup_of_monotone [SemilatticeSup ι] [IsProbabilityMeasure μ]
+theorem indep_iSup_of_monotone [SemilatticeSup ι] [IsZeroOrProbabilityMeasure μ]
     (h_indep : ∀ i, Indep (m i) m1 μ) (h_le : ∀ i, m i ≤ _mΩ) (h_le' : m1 ≤ _mΩ) (hm : Monotone m) :
     Indep (⨆ i, m i) m1 μ :=
   Kernel.indep_iSup_of_monotone h_indep h_le h_le' hm
 
-theorem indep_iSup_of_antitone [SemilatticeInf ι] [IsProbabilityMeasure μ]
+theorem indep_iSup_of_antitone [SemilatticeInf ι] [IsZeroOrProbabilityMeasure μ]
     (h_indep : ∀ i, Indep (m i) m1 μ) (h_le : ∀ i, m i ≤ _mΩ) (h_le' : m1 ≤ _mΩ) (hm : Antitone m) :
     Indep (⨆ i, m i) m1 μ :=
   Kernel.indep_iSup_of_antitone h_indep h_le h_le' hm
@@ -473,12 +473,12 @@ variable {m₁ m₂ _mΩ : MeasurableSpace Ω} {μ : Measure Ω} {s t : Set Ω} 
 
 theorem indepSet_iff_indepSets_singleton (hs_meas : MeasurableSet s)
     (ht_meas : MeasurableSet t) (μ : Measure Ω := by volume_tac)
-    [IsProbabilityMeasure μ] : IndepSet s t μ ↔ IndepSets {s} {t} μ :=
+    [IsZeroOrProbabilityMeasure μ] : IndepSet s t μ ↔ IndepSets {s} {t} μ :=
   Kernel.indepSet_iff_indepSets_singleton hs_meas ht_meas _ _
 
 theorem indepSet_iff_measure_inter_eq_mul (hs_meas : MeasurableSet s)
     (ht_meas : MeasurableSet t) (μ : Measure Ω := by volume_tac)
-    [IsProbabilityMeasure μ] : IndepSet s t μ ↔ μ (s ∩ t) = μ s * μ t :=
+    [IsZeroOrProbabilityMeasure μ] : IndepSet s t μ ↔ μ (s ∩ t) = μ s * μ t :=
   (indepSet_iff_indepSets_singleton hs_meas ht_meas μ).trans indepSets_singleton_iff
 
 lemma IndepSet.measure_inter_eq_mul {μ : Measure Ω} (h : IndepSet s t μ) :
@@ -487,7 +487,7 @@ lemma IndepSet.measure_inter_eq_mul {μ : Measure Ω} (h : IndepSet s t μ) :
 
 theorem IndepSets.indepSet_of_mem (hs : s ∈ S) (ht : t ∈ T)
     (hs_meas : MeasurableSet s) (ht_meas : MeasurableSet t)
-    (μ : Measure Ω := by volume_tac) [IsProbabilityMeasure μ]
+    (μ : Measure Ω := by volume_tac) [IsZeroOrProbabilityMeasure μ]
     (h_indep : IndepSets S T μ) :
     IndepSet s t μ :=
   Kernel.IndepSets.indepSet_of_mem _ _ hs ht hs_meas ht_meas _ _ h_indep
@@ -562,7 +562,7 @@ theorem iIndepFun_iff_measure_inter_preimage_eq_mul {ι : Type*} {β : ι → Ty
 alias ⟨iIndepFun.measure_inter_preimage_eq_mul, _⟩ := iIndepFun_iff_measure_inter_preimage_eq_mul
 
 theorem indepFun_iff_indepSet_preimage {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
-    [IsProbabilityMeasure μ] (hf : Measurable f) (hg : Measurable g) :
+    [IsZeroOrProbabilityMeasure μ] (hf : Measurable f) (hg : Measurable g) :
     IndepFun f g μ ↔
       ∀ s t, MeasurableSet s → MeasurableSet t → IndepSet (f ⁻¹' s) (g ⁻¹' t) μ := by
   simp only [IndepFun, IndepSet, Kernel.indepFun_iff_indepSet_preimage hf hg, ae_dirac_eq,

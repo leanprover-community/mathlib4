@@ -103,8 +103,7 @@ theorem reflectsMonomorphisms_of_preserves_of_reflects (F : C ⥤ D) (G : D ⥤ 
 theorem preservesMonomorphisms.of_iso {F G : C ⥤ D} [PreservesMonomorphisms F] (α : F ≅ G) :
     PreservesMonomorphisms G :=
   { preserves := fun {X} {Y} f h => by
-      haveI : Mono (F.map f ≫ (α.app Y).hom) := mono_comp _ _
-      convert (mono_comp _ _ : Mono ((α.app X).inv ≫ F.map f ≫ (α.app Y).hom))
+      suffices G.map f = (α.app X).inv ≫ F.map f ≫ (α.app Y).hom from this ▸ mono_comp _ _
       rw [Iso.eq_inv_comp, Iso.app_hom, Iso.app_hom, NatTrans.naturality] }
 
 theorem preservesMonomorphisms.iso_iff {F G : C ⥤ D} (α : F ≅ G) :
@@ -114,8 +113,7 @@ theorem preservesMonomorphisms.iso_iff {F G : C ⥤ D} (α : F ≅ G) :
 theorem preservesEpimorphisms.of_iso {F G : C ⥤ D} [PreservesEpimorphisms F] (α : F ≅ G) :
     PreservesEpimorphisms G :=
   { preserves := fun {X} {Y} f h => by
-      haveI : Epi (F.map f ≫ (α.app Y).hom) := epi_comp _ _
-      convert (epi_comp _ _ : Epi ((α.app X).inv ≫ F.map f ≫ (α.app Y).hom))
+      suffices G.map f = (α.app X).inv ≫ F.map f ≫ (α.app Y).hom from this ▸ epi_comp _ _
       rw [Iso.eq_inv_comp, Iso.app_hom, Iso.app_hom, NatTrans.naturality] }
 
 theorem preservesEpimorphisms.iso_iff {F G : C ⥤ D} (α : F ≅ G) :
@@ -126,8 +124,7 @@ theorem reflectsMonomorphisms.of_iso {F G : C ⥤ D} [ReflectsMonomorphisms F] (
     ReflectsMonomorphisms G :=
   { reflects := fun {X} {Y} f h => by
       apply F.mono_of_mono_map
-      haveI : Mono (G.map f ≫ (α.app Y).inv) := mono_comp _ _
-      convert (mono_comp _ _ : Mono ((α.app X).hom ≫ G.map f ≫ (α.app Y).inv))
+      suffices F.map f = (α.app X).hom ≫ G.map f ≫ (α.app Y).inv from this ▸ mono_comp _ _
       rw [← Category.assoc, Iso.eq_comp_inv, Iso.app_hom, Iso.app_hom, NatTrans.naturality] }
 
 theorem reflectsMonomorphisms.iso_iff {F G : C ⥤ D} (α : F ≅ G) :
@@ -138,8 +135,7 @@ theorem reflectsEpimorphisms.of_iso {F G : C ⥤ D} [ReflectsEpimorphisms F] (α
     ReflectsEpimorphisms G :=
   { reflects := fun {X} {Y} f h => by
       apply F.epi_of_epi_map
-      haveI : Epi (G.map f ≫ (α.app Y).inv) := epi_comp _ _
-      convert (epi_comp _ _ : Epi ((α.app X).hom ≫ G.map f ≫ (α.app Y).inv))
+      suffices F.map f = (α.app X).hom ≫ G.map f ≫ (α.app Y).inv from this ▸ epi_comp _ _
       rw [← Category.assoc, Iso.eq_comp_inv, Iso.app_hom, Iso.app_hom, NatTrans.naturality] }
 
 theorem reflectsEpimorphisms.iso_iff {F G : C ⥤ D} (α : F ≅ G) :

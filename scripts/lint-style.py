@@ -26,8 +26,6 @@ The linters in this script are gradually being rewritten in Lean.
 Do not add new linters here; please write them in Lean instead.
 
 To run all style linters, run `lake exe lint-style`.
-To update the list of allowed/ignored style exceptions, use
-    $ lake exe lint-style --update
 """
 
 # TODO: This is adapted from the linter for mathlib3. It should be rewritten in Lean.
@@ -41,7 +39,6 @@ ERR_MOD = 2 # module docstring
 ERR_IBY = 11 # isolated by
 ERR_IWH = 22 # isolated where
 ERR_SEM = 13 # the substring " ;"
-ERR_WIN = 14 # Windows line endings "\r\n"
 ERR_TWS = 15 # trailing whitespace
 ERR_CLN = 16 # line starts with a colon
 ERR_IND = 17 # second line not correctly indented
@@ -49,29 +46,8 @@ ERR_ARR = 18 # space after "←"
 ERR_NSP = 20 # non-terminal simp
 
 exceptions = []
-
-SCRIPTS_DIR = Path(__file__).parent.resolve()
-ROOT_DIR = SCRIPTS_DIR.parent
-
-
-with SCRIPTS_DIR.joinpath("style-exceptions.txt").open(encoding="utf-8") as f:
-    for exline in f:
-        filename, _, _, _, _, errno, *extra = exline.split()
-        path = ROOT_DIR / filename
-        map = {
-            "ERR_MOD": ERR_MOD, "ERR_IBY": ERR_IBY, "ERR_IWH": ERR_IWH, "ERR_SEM": ERR_SEM,
-            "ERR_WIN": ERR_WIN, "ERR_TWS": ERR_TWS, "ERR_CLN": ERR_CLN,
-            "ERR_IND": ERR_IND, "ERR_ARR": ERR_ARR, "ERR_NSP": ERR_NSP,
-        }
-        if errno in map:
-            exceptions += [(map[errno], path, None)]
-        elif errno in ["ERR_COP", "ERR_ADN", "ERR_DOT"]:
-            pass # maintained by the Lean style linter now
-        else:
-            print(f"Error: unexpected errno in style-exceptions.txt: {errno}")
-            sys.exit(1)
-
 new_exceptions = False
+
 
 def annotate_comments(enumerate_lines):
     """
@@ -135,9 +111,6 @@ def line_endings_check(lines, path):
     errors = []
     newlines = []
     for line_nr, line in lines:
-        if "\r\n" in line:
-            errors += [(ERR_WIN, line_nr, path)]
-            line = line.replace("\r\n", "\n")
         if line.endswith(" \n"):
             errors += [(ERR_TWS, line_nr, path)]
             line = line.rstrip() + "\n"
@@ -292,18 +265,10 @@ def left_arrow_check(lines, path):
     return errors, newlines
 
 def output_message(path, line_nr, code, msg):
-    if len(exceptions) == 0:
-        # we are generating a new exceptions file
-        # filename first, then line so that we can call "sort" on the output
-        print(f"{path} : line {line_nr} : {code} : {msg}")
-    else:
-        if code.startswith("ERR"):
-            msg_type = "error"
-        if code.startswith("WRN"):
-            msg_type = "warning"
-        # We are outputting for github. We duplicate path, line_nr and code,
-        # so that they are also visible in the plaintext output.
-        print(f"::{msg_type} file={path},line={line_nr},code={code}::{path}:{line_nr} {code}: {msg}")
+    # We are outputting for github. We duplicate path, line_nr and code,
+    # so that they are also visible in the plaintext output.
+    print(f"::error file={path},line={line_nr},code={code}::{path}:{line_nr} {code}: {msg}")
+
 
 def format_errors(errors):
     global new_exceptions
@@ -319,8 +284,6 @@ def format_errors(errors):
             output_message(path, line_nr, "ERR_IWH", "Line is an isolated where")
         if errno == ERR_SEM:
             output_message(path, line_nr, "ERR_SEM", "Line contains a space before a semicolon")
-        if errno == ERR_WIN:
-            output_message(path, line_nr, "ERR_WIN", "Windows line endings (\\r\\n) detected")
         if errno == ERR_TWS:
             output_message(path, line_nr, "ERR_TWS", "Trailing whitespace detected on line")
         if errno == ERR_CLN:
