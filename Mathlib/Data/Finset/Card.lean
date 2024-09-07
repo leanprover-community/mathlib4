@@ -766,8 +766,6 @@ theorem case_strong_induction_on [DecidableEq α] {p : Finset α → Prop} (s : 
     Finset.induction_on s (fun _ => h₀) fun a s n _ ih =>
       (h₁ a s n) fun t ss => ih _ (lt_of_le_of_lt ss (ssubset_insert n) : t < _)
 
-@[deprecated (since := "2024-09-04")] alias case_strong_induction_on := caseStrongInductionOn
-
 /-- Suppose that, given objects defined on all nonempty strict subsets of any nontrivial finset `s`,
 one knows how to define an object on `s`. Then one can inductively define an object on all finsets,
 starting from singletons and iterating.
