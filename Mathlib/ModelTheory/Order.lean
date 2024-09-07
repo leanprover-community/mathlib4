@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
 import Mathlib.Data.Rat.Denumerable
-import Mathlib.Order.CountableDenseLinearOrder
 import Mathlib.ModelTheory.Complexity
 import Mathlib.ModelTheory.Fraisse
+import Mathlib.Order.CountableDenseLinearOrder
 
 /-!
 # Ordered First-Ordered Structures
@@ -240,7 +240,7 @@ theorem realize_noBotOrder_iff : M ⊨ L.noBotOrderSentence ↔ NoBotOrder M := 
   intro h a
   exact exists_not_ge a
 
-variable (L) (M)
+variable (L M)
 
 @[simp]
 theorem realize_noTopOrder [h : NoTopOrder M] : M ⊨ L.noTopOrderSentence :=
@@ -485,7 +485,7 @@ lemma dlo_age [Language.order.Structure M] [Mdlo : M ⊨ Language.order.dlo] [No
   exact ⟨StrongHomClass.toEmbedding (nonempty_orderEmbedding_of_finite_infinite N M).some⟩
 
 /-- Any countable nonempty model of the theory of dense linear orders is a Fraïssé limit of the
-  class of finite models of the theory of linear orders.. -/
+class of finite models of the theory of linear orders. -/
 lemma isFraisseLimit_of_countable_nonempty_dlo (M : Type w)
     [Language.order.Structure M] [Countable M] [Nonempty M] [M ⊨ Language.order.dlo] :
     IsFraisseLimit {M : CategoryTheory.Bundled.{w} Language.order.Structure |
