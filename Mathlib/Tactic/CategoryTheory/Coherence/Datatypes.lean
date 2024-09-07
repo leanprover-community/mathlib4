@@ -17,7 +17,6 @@ to write tactics that can be applied to both monoidal categories and bicategorie
 - `Mor₂`: 2-morphisms type
 - `AtomIso`: atomic non-structural 2-isomorphisms type
 - `Mor₂Iso`: 2-isomorphisms type
-- `NormalizedHom`: normalized 1-morphisms type
 
 A term of these datatypes wraps the corresponding `Expr` term, which can be extracted by
 e.g. `η.e` for `η : Mor₂`.
