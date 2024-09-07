@@ -18,8 +18,8 @@ bordism classes are the equivalence classes of singular n-manifolds w.r.t. the (
 
 ## Main definitions
 
-- **SingularNManifold**: a singular `n`-manifold on a topological space `X`, for `n ∈ ℕ`,
-is a pair `(M,f)` of a closed `n`-dimensional manifold `M` together with a continuous map `M → X`.
+- **SingularNManifold**: a singular `n`-manifold on a topological space `X`, for `n ∈ ℕ`, is a pair
+`(M,f)` of a closed `n`-dimensional smooth manifold `M` together with a continuous map `M → X`.
 - `SingularNManifold.map`: a map `X → Y` of topological spaces induces a map between the spaces
 of singular n-manifolds
 - `SingularNManifold.comap`: if `(N,f)` is a singular n-manifold on `X` and `φ: M → N` is smooth,
@@ -48,20 +48,36 @@ open FiniteDimensional Set
 
 noncomputable section
 
+/-- A **singular `n`-manifold** on a topological space `X`, for `n ∈ ℕ`, is a pair `(M,f)`
+of a closed `n`-dimensional smooth manifold `M` together with a continuous map `M → X`. -/
 structure SingularNManifold (X : Type*) [TopologicalSpace X] (n : ℕ) where
+  /-- The normed space on which the manifold `M` is modeled. -/
   E : Type*
+  /-- `E` is normed (additive) abelian group -/
   [normedAddCommGroup : NormedAddCommGroup E]
+  /-- `E` is a real normed space -/
   [normedSpace: NormedSpace ℝ E]
+  /-- The smooth manifold `M` of a singular `n`-manifold `(M,f)` -/
   M : Type*
+  /-- The smooth manifold `M` is a topological space -/
   [topSpaceM : TopologicalSpace M]
+  /-- The topological space on which the manifold `M` is modeled -/
   H : Type*
+  /-- `H` is a topological space -/
   [topSpaceH : TopologicalSpace H]
+  /-- The smooth manifold `M` is a charted space over `H` -/
   [chartedSpace : ChartedSpace H M]
+  /-- The model with corners for the manifold `M` -/
   model : ModelWithCorners ℝ E H
+  /-- `M` is a smooth manifold with corners -/
   [smoothMfd : SmoothManifoldWithCorners model M]
+  /-- `M` is compact -/
   [compactSpace : CompactSpace M]
+  /-- `M` is boundaryless -/
   [boundaryless: BoundarylessManifold model M]
+  /-- `M` is finite-dimensional, as its model space `E` is -/
   [findim: FiniteDimensional ℝ E]
+  /-- `M` is `n`-dimensional, as its model space `E` is -/
   [dimension : finrank ℝ E = n]
   /-- The underlying map `M → X` of a singular `n`-manifold `(M,f)` on `X` -/
   f : M → X
@@ -86,8 +102,6 @@ instance {n : ℕ} {s : SingularNManifold X n} : CompactSpace s.M := s.compactSp
 instance {n : ℕ} {s : SingularNManifold X n} : BoundarylessManifold s.model s.M := s.boundaryless
 
 instance {n : ℕ} {s : SingularNManifold X n} : FiniteDimensional ℝ s.E := s.findim
-
-instance {n : ℕ} {s : SingularNManifold X n} : finrank ℝ s.E = n := s.dimension
 
 namespace SingularNManifold
 
