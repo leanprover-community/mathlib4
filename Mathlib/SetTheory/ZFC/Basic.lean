@@ -251,7 +251,7 @@ theorem mem_wf : @WellFounded PSet (· ∈ ·) :=
   ⟨fun x => mem_wf_aux <| Equiv.refl x⟩
 
 instance : IsWellFounded PSet (· ∈ ·) :=
-  ⟨mem_wf⟩ 
+  ⟨mem_wf⟩
 
 instance : WellFoundedRelation PSet :=
   ⟨_, mem_wf⟩
