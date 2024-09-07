@@ -1190,6 +1190,12 @@ instance OrderDual.denselyOrdered (α : Type*) [LT α] [h : DenselyOrdered α] :
 theorem denselyOrdered_orderDual [LT α] : DenselyOrdered αᵒᵈ ↔ DenselyOrdered α :=
   ⟨by convert @OrderDual.denselyOrdered αᵒᵈ _, @OrderDual.denselyOrdered α _⟩
 
+/-- Any ordered subsingleton is densely ordered. Not an instance to avoid a heavy subsingleton
+typeclass search. -/
+lemma Subsingleton.instDenselyOrdered {X : Type*} [Subsingleton X] [Preorder X] :
+    DenselyOrdered X :=
+  ⟨fun _ _ h ↦ (not_lt_of_subsingleton h).elim⟩
+
 instance [Preorder α] [Preorder β] [DenselyOrdered α] [DenselyOrdered β] : DenselyOrdered (α × β) :=
   ⟨fun a b ↦ by
     simp_rw [Prod.lt_iff]
