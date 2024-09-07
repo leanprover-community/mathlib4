@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Measure.AEMeasurable
+import Mathlib.Order.Filter.EventuallyConst
 
 /-!
 # Measure preserving maps
@@ -126,12 +127,24 @@ theorem measure_preimage_equiv {f : α ≃ᵐ β} (hf : MeasurePreserving f μa 
     μa (f ⁻¹' s) = μb s :=
   measure_preimage_emb hf f.measurableEmbedding s
 
-protected theorem iterate {f : α → α} (hf : MeasurePreserving f μa μa) :
-    ∀ n, MeasurePreserving f^[n] μa μa
-  | 0 => MeasurePreserving.id μa
-  | n + 1 => (MeasurePreserving.iterate hf n).comp hf
+theorem aeconst_comp [MeasurableSingletonClass γ] {f : α → β} (hf : MeasurePreserving f μa μb)
+    {g : β → γ} (hg : NullMeasurable g μb) :
+    Filter.EventuallyConst (g ∘ f) (ae μa) ↔ Filter.EventuallyConst g (ae μb) :=
+  exists_congr fun s ↦ and_congr_left fun hs ↦ by
+    simp only [Filter.mem_map, mem_ae_iff, ← hf.measure_preimage (hg hs.measurableSet).compl,
+      preimage_comp, preimage_compl]
+
+theorem aeconst_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
+    (hs : NullMeasurableSet s μb) :
+    Filter.EventuallyConst (f ⁻¹' s) (ae μa) ↔ Filter.EventuallyConst s (ae μb) :=
+  aeconst_comp hf hs.mem
 
 variable {μ : Measure α} {f : α → α} {s : Set α}
+
+protected theorem iterate (hf : MeasurePreserving f μ μ) :
+    ∀ n, MeasurePreserving f^[n] μ μ
+  | 0 => .id μ
+  | n + 1 => (MeasurePreserving.iterate hf n).comp hf
 
 open scoped symmDiff in
 lemma measure_symmDiff_preimage_iterate_le
