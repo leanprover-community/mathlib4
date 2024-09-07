@@ -10,7 +10,7 @@ import Mathlib.Tactic.Linarith
 /-!
 # IMO 2021 Q1
 
-Let `n≥100` be an integer. Ivan writes the numbers `n, n+1, ..., 2*n` each on different cards.
+Let `n ≥ 100` be an integer. Ivan writes the numbers `n, n+1, ..., 2*n` each on different cards.
 He then shuffles these `n+1` cards, and divides them into two piles. Prove that at least one
 of the piles contains two cards such that the sum of their numbers is a perfect square.
 
@@ -98,6 +98,10 @@ lemma exists_finset_3_le_card_with_pairs_summing_to_squares {n : ℕ} (hn : 100 
   · simp only [Finset.mem_insert, Finset.mem_singleton]
     rintro d (rfl | rfl | rfl) <;> constructor <;> linarith only [hna, hab, hbc, hcn]
 
+end Imo2021Q1
+
+open Imo2021Q1
+
 theorem imo2021_q1 :
     ∀ n : ℕ, 100 ≤ n → ∀ A ⊆ Finset.Icc n (2 * n),
     (∃ a ∈ A, ∃ b ∈ A, a ≠ b ∧ IsSquare (a + b)) ∨
@@ -124,5 +128,3 @@ theorem imo2021_q1 :
   -- Now we split into the two cases C ⊆ [n, 2n] \ A and C ⊆ A, which can be dealt with identically.
   cases' hCA with hCA hCA <;> [right; left] <;>
     exact ⟨a, (hCA ha).2, b, (hCA hb).2, hab, h₁ a (hCA ha).1 b (hCA hb).1 hab⟩
-
-end Imo2021Q1
