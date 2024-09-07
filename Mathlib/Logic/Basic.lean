@@ -958,6 +958,9 @@ variable [Decidable Q]
 theorem ite_and : ite (P ∧ Q) a b = ite P (ite Q a b) b := by
   by_cases hp : P <;> by_cases hq : Q <;> simp [hp, hq]
 
+theorem ite_or : ite (P ∨ Q) a b = ite P a (ite Q a b) := by
+  by_cases hp : P <;> by_cases hq : Q <;> simp [hp, hq]
+
 theorem dite_dite_comm {B : Q → α} {C : ¬P → ¬Q → α} (h : P → ¬Q) :
     (if p : P then A p else if q : Q then B q else C p q) =
      if q : Q then B q else if p : P then A p else C p q :=
