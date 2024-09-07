@@ -210,9 +210,8 @@ theorem embDomain_succ_smul_powers (hx : 0 < x.orderTop) :
     rw [Set.mem_range, not_exists]
     exact Nat.succ_ne_zero
   · refine Eq.trans (embDomain_image _ ⟨Nat.succ, Nat.succ_injective⟩) ?_
-    simp only [smul_apply, powers_toFun, Algebra.mul_smul_comm, coe_sub, coe_ofFinsupp,
-      Pi.sub_apply, ne_eq, not_false_eq_true, Finsupp.single_eq_of_ne, sub_zero, pow_succ',
-      of_symm_smul_of_eq_mul]
+    rw [smul_apply, powers_toFun, coe_sub, coe_powers, Pi.sub_apply, coe_ofFinsupp, pow_succ',
+      Finsupp.single_eq_of_ne (Nat.zero_ne_add_one n), sub_zero, of_symm_smul_of_eq_mul]
 
 theorem one_sub_self_mul_hsum_powers (hx : 0 < x.orderTop) : (1 - x) * (powers hx).hsum = 1 := by
   rw [← hsum_smul, sub_smul 1 x (powers hx), one_smul, hsum_sub, ←

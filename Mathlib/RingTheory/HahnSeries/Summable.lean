@@ -475,7 +475,7 @@ theorem pi_PWO_iUnion_support {σ : Type*} (s : Finset σ) {R} [CommSemiring R] 
 
 open Classical in
 /-- delete this? -/
-theorem cosupp_subset_iunion_cosupp_left [AddCommMonoid V] [Module R V] (s : SummableFamily Γ R α)
+theorem cosupp_subset_iunion_cosupp_left [AddCommMonoid V] (s : SummableFamily Γ R α)
     (t : SummableFamily Γ' V β) (g : Γ') {gh : Γ × Γ'}
     (hgh : gh ∈ VAddAntidiagonal s.isPWO_iUnion_support t.isPWO_iUnion_support g) :
     Set.Finite.toFinset (s.finite_co_support (gh.1)) ⊆
