@@ -72,8 +72,7 @@ theorem tendstoUniformlyOn_tsum_eventually {ι : Type*} {f : ι → β → F} {u
   apply (norm_tsum_le_tsum_norm ?_).trans
   · apply tsum_le_tsum
     · intro i
-      apply hN2
-      apply i.2
+      exact hN2 _ i.2
     · apply (A.subtype _)
     · apply (hu.subtype _)
   · apply (A.subtype _)
