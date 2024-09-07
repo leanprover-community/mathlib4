@@ -72,7 +72,7 @@ def toSyntax (s pattern : String) (offset : String.Pos := 0) : Syntax :=
 
 -- adapted from the textbased
 /-- Return if `line` looks like a correct authors line in a copyright header. -/
-def authorsLineCorrections (line : String) (offset : String.Pos) : Array (Syntax × MessageData) :=
+def authorsLineCorrections (line : String) (offset : String.Pos) : Array (Syntax × String) :=
   Id.run do
   -- We cannot reasonably validate the author names, so we look only for a few common mistakes:
   -- the file starting wrong, double spaces, using ' and ' between names,
@@ -81,19 +81,19 @@ def authorsLineCorrections (line : String) (offset : String.Pos) : Array (Syntax
   if !line.startsWith "Authors: " then
     stxs := stxs.push
       (toSyntax line (line.take "Authors: ".length) offset,
-       m!"The authors line should begin with 'Authors: '")
+       s!"The authors line should begin with 'Authors: '")
   if ((line.replace "\n  " " ").splitOn "  ").length != 1 then
-    stxs := stxs.push (toSyntax line "  " offset, m!"Double spaces are not allowed.")
+    stxs := stxs.push (toSyntax line "  " offset, s!"Double spaces are not allowed.")
   if (line.splitOn " and ").length != 1 then
-    stxs := stxs.push (toSyntax line " and " offset, m!"Please, do not use 'and', use ',' instead.")
+    stxs := stxs.push (toSyntax line " and " offset, s!"Please, do not use 'and', use ',' instead.")
   if line.endsWith "." then
     stxs := stxs.push
       (toSyntax line "." offset,
-       m!"Please, do not end the authors' line with a period.")
+       s!"Please, do not end the authors' line with a period.")
   return stxs
 
 /-- The main function to validate the copyright string. -/
-def copyrightHeaderLinter (copyright : String) : Array (Syntax × MessageData) := Id.run do
+def copyrightHeaderLinter (copyright : String) : Array (Syntax × String) := Id.run do
   -- filter out everything after the first isolated `-/`
   let pieces := copyright.splitOn "\n-/"
   let copyright := (pieces.getD 0 "") ++ "\n-/"
@@ -101,7 +101,7 @@ def copyrightHeaderLinter (copyright : String) : Array (Syntax × MessageData) :
     s!"Malformed or missing copyright header: `{s}` should be alone on its own line."
   let mut msgs := #[]
   if (pieces.getD 1 "\n").take 1 != "\n" then
-    msgs := msgs.push (toSyntax copyright "-/", m!"{stdTxt "-/"}")
+    msgs := msgs.push (toSyntax copyright "-/", s!"{stdTxt "-/"}")
   let lines := copyright.splitOn "\n"
   let closeComment := lines.getLastD ""
   match lines with
@@ -110,18 +110,18 @@ def copyrightHeaderLinter (copyright : String) : Array (Syntax × MessageData) :
     match openComment, closeComment with
     | "/-", "-/" => msgs := msgs
     | "/-", _    =>
-      msgs := msgs.push (toSyntax copyright closeComment, m!"{stdTxt "-/"}")
+      msgs := msgs.push (toSyntax copyright closeComment, s!"{stdTxt "-/"}")
     | _, _       =>
-      msgs := msgs.push (toSyntax copyright openComment, m!"{stdTxt ("/".push '-')}")
+      msgs := msgs.push (toSyntax copyright openComment, s!"{stdTxt ("/".push '-')}")
     -- validate copyright author
     if !copyrightAuthor.startsWith "Copyright (c) 20" then
       msgs := msgs.push
         (toSyntax copyright (copyrightAuthor.take 14),
-         m!"Copyright line should start with 'Copyright (c) YYYY'")
+         s!"Copyright line should start with 'Copyright (c) YYYY'")
     if !copyrightAuthor.endsWith ". All rights reserved." then
       msgs := msgs.push
         (toSyntax copyright (copyrightAuthor.takeRight 20),
-         m!"Copyright line should end with '. All rights reserved.'")
+         s!"Copyright line should end with '. All rights reserved.'")
     -- validate authors
     let authorsLine := "\n".intercalate authorsLines.dropLast
     let authorsStart := (("\n".intercalate [openComment, copyrightAuthor, license, ""])).endPos
@@ -130,9 +130,9 @@ def copyrightHeaderLinter (copyright : String) : Array (Syntax × MessageData) :
     let expectedLicense := "Released under Apache 2.0 license as described in the file LICENSE."
     if license != expectedLicense then
       msgs := msgs.push (toSyntax copyright license,
-        m!"Second copyright line should be \"{expectedLicense}\"")
+        s!"Second copyright line should be \"{expectedLicense}\"")
   | _ =>
-    msgs := msgs.push (toSyntax copyright "-/", m!"Copyright too short!")
+    msgs := msgs.push (toSyntax copyright "-/", s!"Copyright too short!")
   return msgs
 
 /--
