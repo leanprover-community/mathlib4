@@ -6,7 +6,10 @@ Authors: Johannes Hölzl, Yury Kudryashov, Paul Lezeau
 import Mathlib.Order.Bounds.Basic
 
 /-!
-### Images of upper/lower bounds under monotone functions
+
+# Images of upper/lower bounds under monotone functions
+
+In this file we prove various results about the behaviour of bounds under monotone/antitone maps.
 -/
 
 open Function Set
@@ -468,6 +471,7 @@ theorem isGLB_prod {s : Set (α × β)} (p : α × β) :
   @isLUB_prod αᵒᵈ βᵒᵈ _ _ _ _
 
 end Prod
+
 
 section Pi
 
