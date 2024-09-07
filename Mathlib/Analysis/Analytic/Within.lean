@@ -37,8 +37,6 @@ variable {E F G H : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAd
 ### Basic properties
 -/
 
-
-
 lemma HasFPowerSeriesWithinOnBall.of_le {f : E → F} {p : FormalMultilinearSeries 𝕜 E F}
     {s : Set E} {x : E} {r r' : ℝ≥0∞}
     (h : HasFPowerSeriesWithinOnBall f p s x r) (h' : r' ≤ r) (h'' : 0 < r') :
@@ -91,15 +89,6 @@ lemma analyticWithinAt_of_singleton_mem {f : E → F} {s : Set E} {x : E} (h : {
       simp only [this]
       apply (hasFPowerSeriesOnBall_const (e := 0)).hasSum
       simp only [Metric.emetric_ball_top, mem_univ] }⟩
-
-/-- Analyticity implies analyticity within any `s` -/
-lemma AnalyticAt.analyticWithinAt {f : E → F} {s : Set E} {x : E} (h : AnalyticAt 𝕜 f x) :
-    AnalyticWithinAt 𝕜 f s x := by
-  rcases h with ⟨p, r, hp⟩
-  exact ⟨p, r,
-    { r_le := hp.r_le
-      r_pos := hp.r_pos
-      hasSum := fun {y} _ yr ↦ hp.hasSum yr }⟩
 
 /-- Analyticity on `s` implies analyticity within `s` -/
 lemma AnalyticOn.analyticWithinOn {f : E → F} {s : Set E} (h : AnalyticOn 𝕜 f s) :
@@ -272,24 +261,6 @@ lemma AnalyticWithinOn.congr {f g : E → F} {s : Set E}
 ### Monotonicity w.r.t. the set we're analytic within
 -/
 
-lemma HasFPowerSeriesWithinOnBall.mono {f : E → F} {p : FormalMultilinearSeries 𝕜 E F}
-    {s t : Set E} {x : E} {r : ℝ≥0∞} (h : HasFPowerSeriesWithinOnBall f p t x r)
-    (hs : s ⊆ t) : HasFPowerSeriesWithinOnBall f p s x r where
-  r_le := h.r_le
-  r_pos := h.r_pos
-  hasSum ys yb := h.hasSum (insert_subset_insert hs ys) yb
-
-lemma HasFPowerSeriesWithinAt.mono {f : E → F} {p : FormalMultilinearSeries 𝕜 E F}
-    {s t : Set E} {x : E} (h : HasFPowerSeriesWithinAt f p t x)
-    (hs : s ⊆ t) : HasFPowerSeriesWithinAt f p s x := by
-  rcases h with ⟨r, hr⟩
-  exact ⟨r, hr.mono hs⟩
-
-lemma AnalyticWithinAt.mono {f : E → F} {s t : Set E} {x : E} (h : AnalyticWithinAt 𝕜 f t x)
-    (hs : s ⊆ t) : AnalyticWithinAt 𝕜 f s x := by
-  rcases h with ⟨p, hp⟩
-  exact ⟨p, hp.mono hs⟩
-
 theorem AnalyticWithinAt.mono_of_mem {f : E → F} {s t : Set E} {x : E}
     (h : AnalyticWithinAt 𝕜 f s x) (hst : s ∈ 𝓝[t] x) : AnalyticWithinAt 𝕜 f t x := by
   rcases h with ⟨p, r, hr⟩
@@ -333,20 +304,7 @@ Currently we require `CompleteSpace`s to use equivalence to local extensions, bu
 essential.
 -/
 
-lemma AnalyticWithinAt.comp [CompleteSpace F] [CompleteSpace G] {f : F → G} {g : E → F} {s : Set F}
-    {t : Set E} {x : E} (hf : AnalyticWithinAt 𝕜 f s (g x)) (hg : AnalyticWithinAt 𝕜 g t x)
-    (h : MapsTo g t s) : AnalyticWithinAt 𝕜 (f ∘ g) t x := by
-  rcases analyticWithinAt_iff_exists_analyticAt.1 hf with ⟨f', ef, hf'⟩
-  rcases analyticWithinAt_iff_exists_analyticAt.1 hg with ⟨g', eg, hg'⟩
-  refine analyticWithinAt_iff_exists_analyticAt.mpr ⟨f' ∘ g', ?_, ?_⟩
-  · have : MapsTo g (insert x t) (insert (g x) s) := h.insert x
-    have gt := hg.continuousWithinAt_insert.tendsto_nhdsWithin this
-    filter_upwards [eg, gt.eventually ef]
-    intro y gy fgy
-    simp only [Function.comp_apply, fgy, ← gy]
-  · exact hf'.comp_of_eq hg' (mem_of_mem_nhdsWithin (by simp) eg).symm
-
-lemma AnalyticWithinOn.comp [CompleteSpace F] [CompleteSpace G] {f : F → G} {g : E → F} {s : Set F}
+lemma AnalyticWithinOn.comp {f : F → G} {g : E → F} {s : Set F}
     {t : Set E} (hf : AnalyticWithinOn 𝕜 f s) (hg : AnalyticWithinOn 𝕜 g t) (h : MapsTo g t s) :
     AnalyticWithinOn 𝕜 (f ∘ g) t :=
   fun x m ↦ (hf _ (h m)).comp (hg x m) h
