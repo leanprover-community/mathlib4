@@ -322,8 +322,7 @@ def broadImportsLinter : TextbasedLinter := fun lines ↦ Id.run do
 def trailingWhitespaceLinter : TextbasedLinter := fun lines ↦ Id.run do
   let mut errors := Array.mkEmpty 0
   let mut fixedLines := lines
-  for h : idx in [:lines.size] do
-    let line := lines[idx]
+  for (line, idx) in lines.zipWithIndex do
     if line.back == ' ' then
       errors := errors.push (StyleError.trailingWhitespace, idx + 1)
       fixedLines := fixedLines.set! idx line.trimRight
