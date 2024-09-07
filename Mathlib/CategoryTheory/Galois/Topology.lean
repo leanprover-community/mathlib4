@@ -110,12 +110,6 @@ lemma autEmbedding_closedEmbedding : ClosedEmbedding (autEmbedding F) where
   inj := autEmbedding_injective F
   isClosed_range := autEmbedding_range_isClosed F
 
-instance (X Y : C) : Finite (F.obj X ⟶ F.obj Y) :=
-  inferInstanceAs <| Finite (F.obj X → F.obj Y)
-
-instance (X : C) : Finite (Aut (F.obj X)) :=
-  Finite.of_injective _ (fun _ _ h ↦ Iso.ext h)
-
 instance : CompactSpace (Aut F) := ClosedEmbedding.compactSpace (autEmbedding_closedEmbedding F)
 
 instance : T2Space (Aut F) :=
