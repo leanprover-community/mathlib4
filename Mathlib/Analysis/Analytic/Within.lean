@@ -37,13 +37,7 @@ variable {E F G H : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAd
 ### Basic properties
 -/
 
-@[simp] lemma analyticWithinAt_univ {f : E → F} {x : E} :
-    AnalyticWithinAt 𝕜 f univ x ↔ AnalyticAt 𝕜 f x := by
-  simp only [AnalyticWithinAt, hasFPowerSeriesWithinAt_univ, AnalyticAt]
 
-lemma analyticWithinOn_univ {f : E → F} :
-    AnalyticWithinOn 𝕜 f univ ↔ AnalyticOn 𝕜 f univ := by
-  simp only [AnalyticWithinOn, analyticWithinAt_univ, AnalyticOn]
 
 lemma HasFPowerSeriesWithinOnBall.of_le {f : E → F} {p : FormalMultilinearSeries 𝕜 E F}
     {s : Set E} {x : E} {r r' : ℝ≥0∞}

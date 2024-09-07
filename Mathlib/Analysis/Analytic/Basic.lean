@@ -618,6 +618,10 @@ theorem AnalyticOn.sub (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g s) :
     AnalyticWithinAt 𝕜 f univ x ↔ AnalyticAt 𝕜 f x := by
   simp [AnalyticWithinAt, AnalyticAt]
 
+@[simp] lemma analyticWithinOn_univ {f : E → F} :
+    AnalyticWithinOn 𝕜 f univ ↔ AnalyticOn 𝕜 f univ := by
+  simp only [AnalyticWithinOn, analyticWithinAt_univ, AnalyticOn]
+
 lemma HasFPowerSeriesWithinOnBall.mono (hf : HasFPowerSeriesWithinOnBall f p s x r) (h : t ⊆ s) :
     HasFPowerSeriesWithinOnBall f p t x r where
   r_le := hf.r_le
