@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 import Mathlib.Topology.Maps.Basic
 import Mathlib.Topology.NhdsSet
+import Mathlib.Order.Filter.Curry
 
 /-!
 # Constructions of new topological spaces from old ones
@@ -513,6 +514,22 @@ theorem Filter.HasBasis.prod_nhds' {ιX ιY : Type*} {pX : ιX → Prop} {pY : �
     (hy : (𝓝 p.2).HasBasis pY sy) :
     (𝓝 p).HasBasis (fun i : ιX × ιY => pX i.1 ∧ pY i.2) fun i => sx i.1 ×ˢ sy i.2 :=
   hx.prod_nhds hy
+
+theorem MapClusterPt.curry_prodMap {α β : Type*}
+    {f : α → X} {g : β → Y} {la : Filter α} {lb : Filter β} {x : X} {y : Y}
+    (hf : MapClusterPt x la f) (hg : MapClusterPt y lb g) :
+    MapClusterPt (x, y) (la.curry lb) (.map f g) := by
+  rw [mapClusterPt_iff] at hf hg
+  rw [((𝓝 x).basis_sets.prod_nhds (𝓝 y).basis_sets).mapClusterPt_iff_frequently]
+  rintro ⟨s, t⟩ ⟨hs, ht⟩
+  rw [frequently_curry_iff]
+  exact (hf s hs).mono fun x hx ↦ (hg t ht).mono fun y hy ↦ ⟨hx, hy⟩
+
+theorem MapClusterPt.prodMap {α β : Type*}
+    {f : α → X} {g : β → Y} {la : Filter α} {lb : Filter β} {x : X} {y : Y}
+    (hf : MapClusterPt x la f) (hg : MapClusterPt y lb g) :
+    MapClusterPt (x, y) (la ×ˢ lb) (.map f g) :=
+  (hf.curry_prodMap hg).mono <| map_mono curry_le_prod
 
 theorem mem_nhds_prod_iff' {x : X} {y : Y} {s : Set (X × Y)} :
     s ∈ 𝓝 (x, y) ↔ ∃ u v, IsOpen u ∧ x ∈ u ∧ IsOpen v ∧ y ∈ v ∧ u ×ˢ v ⊆ s :=
