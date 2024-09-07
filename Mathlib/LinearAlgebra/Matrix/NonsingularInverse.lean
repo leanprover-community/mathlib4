@@ -487,7 +487,7 @@ section Woodbury
 
 variable [Fintype m] [DecidableEq m]
 variable (A: Matrix n n α) (U : Matrix n m α) (C : Matrix m m α) (V : Matrix m n α)
-variable [Invertible A] [Invertible C][Invertible (C⁻¹ + V * A⁻¹* U)]
+variable [Invertible A] [Invertible C] [Invertible (C⁻¹ + V * A⁻¹* U)]
 
 lemma add_mul_mul_inv_mul_eq_one: (A+U*C*V)*(A⁻¹-A⁻¹*U*(C⁻¹+V*A⁻¹*U)⁻¹*V*A⁻¹) = 1 := by
   calc
@@ -498,7 +498,7 @@ lemma add_mul_mul_inv_mul_eq_one: (A+U*C*V)*(A⁻¹-A⁻¹*U*(C⁻¹+V*A⁻¹*U)
         rw [Matrix.mul_inv_of_invertible, Matrix.one_mul]
         abel
       _ = 1+U*C*V*A⁻¹-(U+U*C*V*A⁻¹*U)*(C⁻¹+V*A⁻¹*U)⁻¹*V*A⁻¹ := by
-        rw [sub_right_inj, Matrix.add_mul,Matrix.add_mul,Matrix.add_mul]
+        rw [sub_right_inj, Matrix.add_mul, Matrix.add_mul, Matrix.add_mul]
       _ = 1+U*C*V*A⁻¹-U*C*(C⁻¹+V*A⁻¹*U)*(C⁻¹+V*A⁻¹*U)⁻¹*V*A⁻¹ := by
         congr
         simp only [Matrix.mul_add, Matrix.mul_inv_cancel_right_of_invertible, ← Matrix.mul_assoc]
