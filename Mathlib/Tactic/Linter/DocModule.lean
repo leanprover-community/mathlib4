@@ -78,7 +78,7 @@ def isCorrectAuthorsLine (line : String) : Bool :=
   -- We cannot reasonably validate the author names, so we look only for a few common mistakes:
   -- the file starting wrong, double spaces, using ' and ' between names,
   -- and ending the line with a period.
-  line.startsWith "Authors: " && (!line.containsSubstr "  ")
+  line.startsWith "Authors: " && (!(line.replace "\n  " " ").containsSubstr "  ")
     && (!line.containsSubstr " and ") && (!line.endsWith ".")
 
 /-- `toSyntax s pattern` converts the two input strings into a `Syntax`, assuming that `pattern`
