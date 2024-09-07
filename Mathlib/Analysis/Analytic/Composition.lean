@@ -680,8 +680,9 @@ end FormalMultilinearSeries
 
 open FormalMultilinearSeries
 
-/-- If two functions `g` and `f` have power series `q` and `p` respectively at `f x` and `x`, then
-`g ∘ f` admits the power series `q.comp p` at `x`. -/
+/-- If two functions `g` and `f` have power series `q` and `p` respectively at `f x` and `x`, within
+two sets `s` and `t` such that `f` maps `s` to `t`, then `g ∘ f` admits the power
+series `q.comp p` at `x` within `s`. -/
 theorem HasFPowerSeriesWithinAt.comp {g : F → G} {f : E → F} {q : FormalMultilinearSeries 𝕜 F G}
     {p : FormalMultilinearSeries 𝕜 E F} {x : E} {t : Set F} {s : Set E}
     (hg : HasFPowerSeriesWithinAt g q t (f x)) (hf : HasFPowerSeriesWithinAt f p s x)
@@ -732,11 +733,11 @@ theorem HasFPowerSeriesWithinAt.comp {g : F → G} {f : E → F} {q : FormalMult
     To show that it converges to `g (f (x + y))`, pointwise convergence would not be enough,
     but we have uniform convergence to save the day. -/
   -- First step: the partial sum of `p` converges to `f (x + y)`.
-  have A : Tendsto (fun n => ∑ a ∈ Finset.Ico 1 n, p a fun _b => y)
-      atTop (𝓝 (f (x + y) - f x)) := by
-    have L :
-      ∀ᶠ n in atTop, (∑ a ∈ Finset.range n, p a fun _b => y) - f x
-        = ∑ a ∈ Finset.Ico 1 n, p a fun _b => y := by
+  have A : Tendsto (fun n ↦ (n, ∑ a ∈ Finset.Ico 1 n, p a fun _ ↦ y))
+      atTop (atTop ×ˢ 𝓝 (f (x + y) - f x)) := by
+    apply Tendsto.prod_mk tendsto_id
+    have L : ∀ᶠ n in atTop, (∑ a ∈ Finset.range n, p a fun _b ↦ y) - f x
+        = ∑ a ∈ Finset.Ico 1 n, p a fun _b ↦ y := by
       rw [eventually_atTop]
       refine ⟨1, fun n hn => ?_⟩
       symm
@@ -748,20 +749,16 @@ theorem HasFPowerSeriesWithinAt.comp {g : F → G} {f : E → F} {q : FormalMult
       (Hf.hasSum h'y y_mem).tendsto_sum_nat.sub tendsto_const_nhds
     exact Tendsto.congr' L this
   -- Second step: the composition of the partial sums of `q` and `p` converges to `g (f (x + y))`.
-  have B :
-    Tendsto (fun n => q.partialSum n (∑ a ∈ Finset.Ico 1 n, p a fun _b => y)) atTop
+  have B : Tendsto (fun n => q.partialSum n (∑ a ∈ Finset.Ico 1 n, p a fun _b ↦ y)) atTop
       (𝓝 (g (f (x + y)))) := by
-    -- we use the fact that the partial sums of `q` converge locally uniformly to `g`, and that
-    -- composition passes to the limit under locally uniform convergence.
-    have B₁ : ContinuousAt (fun z : F => g (f x + z)) (f (x + y) - f x) := by
-      refine ContinuousAt.comp ?_ (continuous_const.add continuous_id).continuousAt
-      simp only [add_sub_cancel, _root_.id]
-      exact Hg.continuousOn.continuousAt (IsOpen.mem_nhds EMetric.isOpen_ball fy_mem)
-    have B₂ : f (x + y) - f x ∈ EMetric.ball (0 : F) rg := by
-      simpa [edist_eq_coe_nnnorm, edist_eq_coe_nnnorm_sub] using fy_mem
-    rw [← EMetric.isOpen_ball.nhdsWithin_eq B₂] at A
-    convert Hg.tendstoLocallyUniformlyOn.tendsto_comp B₁.continuousWithinAt B₂ A
-    simp only [add_sub_cancel]
+    -- we use the fact that the partial sums of `q` converge to `g (f (x + y))`, uniformly on a
+    -- neighborhood of `f (x + y)`.
+    have : Tendsto (fun (z : ℕ × F) ↦ q.partialSum z.1 z.2)
+        (atTop ×ˢ 𝓝 (f (x + y) - f x)) (𝓝 (g (f x + (f (x + y) - f x)))) := by
+      apply Hg.tendsto_partialSum_prod (y := f (x + y) - f x)
+      · simpa [edist_eq_coe_nnnorm_sub] using fy_mem.2
+      · simpa using fy_mem.1
+    simpa using this.comp A
   -- Third step: the sum over all compositions in `compPartialSumTarget 0 n n` converges to
   -- `g (f (x + y))`. As this sum is exactly the composition of the partial sum, this is a direct
   -- consequence of the second step
@@ -808,13 +805,29 @@ theorem HasFPowerSeriesWithinAt.comp {g : F → G} {f : E → F} {q : FormalMult
   rw [Function.comp_apply]
   exact E
 
+/-- If two functions `g` and `f` have power series `q` and `p` respectively at `f x` and `x`,
+then `g ∘ f` admits the power  series `q.comp p` at `x` within `s`. -/
+theorem HasFPowerSeriesAt.comp {g : F → G} {f : E → F} {q : FormalMultilinearSeries 𝕜 F G}
+    {p : FormalMultilinearSeries 𝕜 E F} {x : E}
+    (hg : HasFPowerSeriesAt g q (f x)) (hf : HasFPowerSeriesAt f p x) :
+    HasFPowerSeriesAt (g ∘ f) (q.comp p) x := by
+  rw [← hasFPowerSeriesWithinAt_univ] at hf hg ⊢
+  apply hg.comp hf (by simp)
+
+/-- If two functions `g` and `f` are analytic respectively at `f x` and `x`, within
+two sets `s` and `t` such that `f` maps `s` to `t`, then `g ∘ f` is analytic at `x` within `s`. -/
+theorem AnalyticWithinAt.comp {g : F → G} {f : E → F} {x : E} {t : Set F} {s : Set E}
+    (hg : AnalyticWithinAt 𝕜 g t (f x)) (hf : AnalyticWithinAt 𝕜 f s x) (h : Set.MapsTo f s t) :
+    AnalyticWithinAt 𝕜 (g ∘ f) s x := by
+  let ⟨_q, hq⟩ := hg
+  let ⟨_p, hp⟩ := hf
+  exact (hq.comp hp h).analyticWithinAt
+
 /-- If two functions `g` and `f` are analytic respectively at `f x` and `x`, then `g ∘ f` is
 analytic at `x`. -/
 theorem AnalyticAt.comp {g : F → G} {f : E → F} {x : E} (hg : AnalyticAt 𝕜 g (f x))
-    (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (g ∘ f) x :=
-  let ⟨_q, hq⟩ := hg
-  let ⟨_p, hp⟩ := hf
-  (hq.comp hp).analyticAt
+    (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (g ∘ f) x := by
+  rw [analyticWithinAt_univ]
 
 /-- Version of `AnalyticAt.comp` where point equality is a separate hypothesis. -/
 theorem AnalyticAt.comp_of_eq {g : F → G} {f : E → F} {y : F} {x : E} (hg : AnalyticAt 𝕜 g y)
