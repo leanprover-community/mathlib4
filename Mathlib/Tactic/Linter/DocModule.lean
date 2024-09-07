@@ -178,9 +178,6 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let imports := getImportIds upToStx
     for i in imports do
       match i.getId with
-      | `Mathlib.Data.Nat.Notation =>
-        Linter.logLint linter.style.header i
-          m!"Files in mathlib cannot import the whole tactic folder."
       | `Mathlib.Tactic =>
         Linter.logLint linter.style.header i
           m!"Files in mathlib cannot import the whole tactic folder."
@@ -193,7 +190,7 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     if let some false := onlyImportsModDocs upToStx then
       Linter.logLint linter.style.header stx
         m!"`{stx}` appears too late: it can only be preceded by `import` statements \
-        doc-module strings and other `assert_not_exists` statements."
+          doc-module strings and other `assert_not_exists` statements."
     else return
 
 
