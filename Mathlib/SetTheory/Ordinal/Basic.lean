@@ -378,9 +378,8 @@ instance NeZero.one : NeZero (1 : Ordinal) :=
 `α.toType` into `β.toType`. -/
 def initialSegToType {α β : Ordinal} (h : α ≤ β) :
     @InitialSeg α.toType β.toType (· < ·) (· < ·) := by
-  change α.out.r ≼i β.out.r
-  rw [← Quotient.out_eq α, ← Quotient.out_eq β] at h; revert h
-  cases Quotient.out α; cases Quotient.out β; exact Classical.choice
+  apply Classical.choice (type_le_iff.1 _)
+  rwa [type_lt, type_lt]
 
 @[deprecated initialSegToType (since := "2024-08-26")]
 noncomputable alias initialSegOut := initialSegToType
@@ -389,9 +388,8 @@ noncomputable alias initialSegOut := initialSegToType
 of `α.toType` into `β.toType`. -/
 def principalSegToType {α β : Ordinal} (h : α < β) :
     @PrincipalSeg α.toType β.toType (· < ·) (· < ·) := by
-  change α.out.r ≺i β.out.r
-  rw [← Quotient.out_eq α, ← Quotient.out_eq β] at h; revert h
-  cases Quotient.out α; cases Quotient.out β; exact Classical.choice
+  apply Classical.choice (type_lt_iff.1 _)
+  rwa [type_lt, type_lt]
 
 @[deprecated principalSegToType (since := "2024-08-26")]
 noncomputable alias principalSegOut := principalSegToType
@@ -404,25 +402,23 @@ theorem typein_lt_self {o : Ordinal} (i : o.toType) : typein (α := o.toType) (�
   apply typein_lt_type
 
 @[simp]
-theorem typein_top {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r] [IsWellOrder β s]
-    (f : r ≺i s) : typein s f.top = type r :=
-  Eq.symm <|
-    Quot.sound
-      ⟨RelIso.ofSurjective (RelEmbedding.codRestrict _ f f.lt_top) fun ⟨a, h⟩ => by
-          rcases f.down.1 h with ⟨b, rfl⟩; exact ⟨b, rfl⟩⟩
+theorem typein_top {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder β s] (f : r ≺i s) :
+    typein s f.top = @type α r f.toRelEmbedding.isWellOrder := by
+  refine (Quot.sound <| ⟨RelIso.ofSurjective (f.toRelEmbedding.codRestrict _ f.lt_top) ?_⟩).symm
+  rintro ⟨a, h⟩
+  obtain ⟨b, rfl⟩ := f.down.1 h
+  exact ⟨b, rfl⟩
 
 @[simp]
-theorem typein_apply {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r] [IsWellOrder β s]
-    (f : r ≼i s) (a : α) : Ordinal.typein s (f a) = Ordinal.typein r a :=
-  Eq.symm <|
-    Quotient.sound
-      ⟨RelIso.ofSurjective
-        (RelEmbedding.codRestrict _ ((Subrel.relEmbedding _ _).trans f) fun ⟨x, h⟩ => by
-          rw [RelEmbedding.trans_apply]; exact f.toRelEmbedding.map_rel_iff.2 h)
-          fun ⟨y, h⟩ => by
-            rcases f.init h with ⟨a, rfl⟩
-            exact ⟨⟨a, f.toRelEmbedding.map_rel_iff.1 h⟩,
-              Subtype.eq <| RelEmbedding.trans_apply _ _ _⟩⟩
+theorem typein_apply {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder β s] (f : r ≼i s)
+    (a : α) : typein s (f a) = @typein α r f.toRelEmbedding.isWellOrder a := by
+  refine (Quot.sound <| ⟨RelIso.ofSurjective
+    (((Subrel.relEmbedding _ _).trans f).codRestrict _ ?_) ?_⟩).symm <;>
+  rintro ⟨x, h⟩
+  · rw [RelEmbedding.trans_apply]
+    exact f.toRelEmbedding.map_rel_iff.2 h
+  · obtain ⟨a, rfl⟩ := f.init h
+    exact ⟨⟨a, f.toRelEmbedding.map_rel_iff.1 h⟩, Subtype.eq <| RelEmbedding.trans_apply _ _ _⟩
 
 @[simp]
 theorem typein_lt_typein (r : α → α → Prop) [IsWellOrder α r] {a b : α} :
@@ -469,8 +465,7 @@ That is, `enum` maps an initial segment of the ordinals, those less than the ord
 the elements of `α`. -/
 -- The explicit typing is required in order for `simp` to work properly.
 @[simps! symm_apply_coe]
-def enum (r : α → α → Prop) [IsWellOrder α r] :
-    @RelIso (Subtype fun o => o < type r) α (Subrel (· < · ) _) r :=
+def enum (r : α → α → Prop) [IsWellOrder α r] : @RelIso {o // o < type r} α (Subrel (· < · ) _) r :=
   (typein.principalSeg r).subrelIso
 
 @[simp]
