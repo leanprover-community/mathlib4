@@ -41,6 +41,15 @@ protected theorem hasFPowerSeriesAt (f : E →L[𝕜] F) (x : E) :
 protected theorem analyticAt (f : E →L[𝕜] F) (x : E) : AnalyticAt 𝕜 f x :=
   (f.hasFPowerSeriesAt x).analyticAt
 
+protected theorem analyticOn (f : E →L[𝕜] F) (s : Set E) : AnalyticOn 𝕜 f s :=
+  fun x _ ↦ f.analyticAt x
+
+protected theorem analyticWithinAt (f : E →L[𝕜] F) (s : Set E) (x : E) : AnalyticWithinAt 𝕜 f s x :=
+  (f.analyticAt x).analyticWithinAt
+
+protected theorem analyticWithinOn (f : E →L[𝕜] F) (s : Set E) : AnalyticWithinOn 𝕜 f s :=
+  fun x _ ↦ f.analyticWithinAt _ x
+
 /-- Reinterpret a bilinear map `f : E →L[𝕜] F →L[𝕜] G` as a multilinear map
 `(E × F) [×2]→L[𝕜] G`. This multilinear map is the second term in the formal
 multilinear series expansion of `uncurry f`. It is given by
@@ -135,3 +144,41 @@ theorem analyticOn_fst {s : Set (E × F)} : AnalyticOn 𝕜 (fun p : E × F ↦ 
 /-- `snd` is entire -/
 theorem analyticOn_snd {s : Set (E × F)} : AnalyticOn 𝕜 (fun p : E × F ↦ p.snd) s :=
   fun _ _ ↦ analyticAt_snd _
+
+variable {𝕜}
+
+namespace ContinuousLinearEquiv
+
+variable (f : E ≃L[𝕜] F) (s : Set E) (x : E)
+
+protected theorem analyticAt : AnalyticAt 𝕜 f x :=
+  ((f : E →L[𝕜] F).hasFPowerSeriesAt x).analyticAt
+
+protected theorem analyticOn : AnalyticOn 𝕜 f s :=
+  fun x _ ↦ f.analyticAt x
+
+protected theorem analyticWithinAt (f : E →L[𝕜] F) (s : Set E) (x : E) : AnalyticWithinAt 𝕜 f s x :=
+  (f.analyticAt x).analyticWithinAt
+
+protected theorem analyticWithinOn (f : E →L[𝕜] F) (s : Set E) : AnalyticWithinOn 𝕜 f s :=
+  fun x _ ↦ f.analyticWithinAt _ x
+
+end ContinuousLinearEquiv
+
+namespace LinearIsometryEquiv
+
+variable (f : E ≃ₗᵢ[𝕜] F) (s : Set E) (x : E)
+
+protected theorem analyticAt : AnalyticAt 𝕜 f x :=
+  ((f : E →L[𝕜] F).hasFPowerSeriesAt x).analyticAt
+
+protected theorem analyticOn : AnalyticOn 𝕜 f s :=
+  fun x _ ↦ f.analyticAt x
+
+protected theorem analyticWithinAt (f : E →L[𝕜] F) (s : Set E) (x : E) : AnalyticWithinAt 𝕜 f s x :=
+  (f.analyticAt x).analyticWithinAt
+
+protected theorem analyticWithinOn (f : E →L[𝕜] F) (s : Set E) : AnalyticWithinOn 𝕜 f s :=
+  fun x _ ↦ f.analyticWithinAt _ x
+
+end LinearIsometryEquiv

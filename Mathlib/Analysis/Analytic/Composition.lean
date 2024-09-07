@@ -844,6 +844,18 @@ theorem AnalyticAt.comp_of_eq {g : F → G} {f : E → F} {y : F} {x : E} (hg : 
   rw [← hy] at hg
   exact hg.comp hf
 
+theorem AnalyticAt.comp_analyticWithinAt {g : F → G} {f : E → F} {x : E} {s : Set E}
+    (hg : AnalyticAt 𝕜 g (f x)) (hf : AnalyticWithinAt 𝕜 f s x) :
+    AnalyticWithinAt 𝕜 (g ∘ f) s x := by
+  rw [← analyticWithinAt_univ] at hg
+  exact hg.comp hf (Set.mapsTo_univ _ _)
+
+theorem AnalyticAt.comp_analyticWithinAt_of_eq {g : F → G} {f : E → F} {x : E} {y : F} {s : Set E}
+    (hg : AnalyticAt 𝕜 g y) (hf : AnalyticWithinAt 𝕜 f s x) (h : f x = y) :
+    AnalyticWithinAt 𝕜 (g ∘ f) s x := by
+  rw [← h] at hg
+  exact hg.comp_analyticWithinAt hf
+
 /-- If two functions `g` and `f` are analytic respectively on `s.image f` and `s`, then `g ∘ f` is
 analytic on `s`. -/
 theorem AnalyticOn.comp' {s : Set E} {g : F → G} {f : E → F} (hg : AnalyticOn 𝕜 g (s.image f))

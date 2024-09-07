@@ -157,13 +157,14 @@ lemma AnalyticOn.hasFTaylorSeriesUpToOn [CompleteSpace F] (n : ℕ∞) (h : Anal
 lemma AnalyticWithinAt.exists_hasFTaylorSeriesUpToOn [CompleteSpace F]
     (n : ℕ∞) (h : AnalyticWithinAt 𝕜 f s x) :
     ∃ u ∈ 𝓝[insert x s] x, ∃ (p : E → FormalMultilinearSeries 𝕜 E F),
-    HasFTaylorSeriesUpToOn n f p u := by
+    HasFTaylorSeriesUpToOn n f p u ∧ ∀ i, AnalyticWithinOn 𝕜 (fun x ↦ p x i) u := by
   rcases h.exists_analyticAt with ⟨g, -, fg, hg⟩
   rcases hg.exists_mem_nhds_analyticOn with ⟨v, vx, hv⟩
-  refine ⟨insert x s ∩ v, inter_mem_nhdsWithin _ vx, ftaylorSeries 𝕜 g, ?_⟩
-  suffices HasFTaylorSeriesUpToOn n g (ftaylorSeries 𝕜 g) (insert x s ∩ v) from
-    this.congr (fun y hy ↦ fg hy.1)
-  exact AnalyticOn.hasFTaylorSeriesUpToOn _ (hv.mono Set.inter_subset_right)
+  refine ⟨insert x s ∩ v, inter_mem_nhdsWithin _ vx, ftaylorSeries 𝕜 g, ?_, fun i ↦ ?_⟩
+  · suffices HasFTaylorSeriesUpToOn n g (ftaylorSeries 𝕜 g) (insert x s ∩ v) from
+      this.congr (fun y hy ↦ fg hy.1)
+    exact AnalyticOn.hasFTaylorSeriesUpToOn _ (hv.mono Set.inter_subset_right)
+  · exact (hv.iteratedFDeriv i).analyticWithinOn.mono Set.inter_subset_right
 
 end fderiv
 

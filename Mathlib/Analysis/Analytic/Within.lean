@@ -140,6 +140,27 @@ lemma analyticWithinOn_of_locally_analyticWithinOn {f : E → F} {s : Set E}
       apply rs
       simp only [Metric.mem_ball, dist_self_add_left, ym.1] }⟩
 
+
+/-!
+### Congruence
+-/
+
+lemma AnalyticWithinAt.congr_of_eventuallyEq {f g : E → F} {s : Set E} {x : E}
+    (hf : AnalyticWithinAt 𝕜 f s x) (hs : g =ᶠ[𝓝[s] x] f) (hx : g x = f x) :
+    AnalyticWithinAt 𝕜 g s x := by
+  rcases hf with ⟨p, hp⟩
+  exact ⟨p, hp.congr hs hx⟩
+
+lemma AnalyticWithinAt.congr {f g : E → F} {s : Set E} {x : E}
+    (hf : AnalyticWithinAt 𝕜 f s x) (hs : EqOn g f s) (hx : g x = f x) :
+    AnalyticWithinAt 𝕜 g s x :=
+  hf.congr_of_eventuallyEq hs.eventuallyEq_nhdsWithin hx
+
+lemma AnalyticWithinOn.congr {f g : E → F} {s : Set E}
+    (hf : AnalyticWithinOn 𝕜 f s) (hs : EqOn g f s) :
+    AnalyticWithinOn 𝕜 g s :=
+  fun x m ↦ (hf x m).congr hs (hs m)
+
 /-!
 ### Equivalence to analyticity of a local extension
 
@@ -237,25 +258,17 @@ lemma analyticWithinAt_iff_exists_analyticAt' [CompleteSpace F] {f : E → F} {s
 
 alias ⟨AnalyticWithinAt.exists_analyticAt, _⟩ := analyticWithinAt_iff_exists_analyticAt'
 
-/-!
-### Congruence
--/
-
-lemma AnalyticWithinAt.congr_of_eventuallyEq {f g : E → F} {s : Set E} {x : E}
-    (hf : AnalyticWithinAt 𝕜 f s x) (hs : g =ᶠ[𝓝[s] x] f) (hx : g x = f x) :
-    AnalyticWithinAt 𝕜 g s x := by
-  rcases hf with ⟨p, hp⟩
-  exact ⟨p, hp.congr hs hx⟩
-
-lemma AnalyticWithinAt.congr {f g : E → F} {s : Set E} {x : E}
-    (hf : AnalyticWithinAt 𝕜 f s x) (hs : EqOn g f s) (hx : g x = f x) :
-    AnalyticWithinAt 𝕜 g s x :=
-  hf.congr_of_eventuallyEq hs.eventuallyEq_nhdsWithin hx
-
-lemma AnalyticWithinOn.congr {f g : E → F} {s : Set E}
-    (hf : AnalyticWithinOn 𝕜 f s) (hs : EqOn g f s) :
-    AnalyticWithinOn 𝕜 g s :=
-  fun x m ↦ (hf x m).congr hs (hs m)
+lemma AnalyticWithinAt.exists_mem_nhdsWithin_analyticWithinOn
+    [CompleteSpace F] {f : E → F} {s : Set E} {x : E} (h : AnalyticWithinAt 𝕜 f s x) :
+    ∃ u ∈ 𝓝[insert x s] x, AnalyticWithinOn 𝕜 f u := by
+  obtain ⟨g, -, h'g, hg⟩ : ∃ g, f x = g x ∧ EqOn f g (insert x s) ∧ AnalyticAt 𝕜 g x :=
+    h.exists_analyticAt
+  let u := insert x s ∩ {y | AnalyticAt 𝕜 g y}
+  refine ⟨u, ?_, ?_⟩
+  · exact inter_mem_nhdsWithin _ ((isOpen_analyticAt 𝕜 g).mem_nhds hg)
+  · intro y hy
+    have : AnalyticWithinAt 𝕜 g u y := hy.2.analyticWithinAt
+    exact this.congr (h'g.mono (inter_subset_left)) (h'g (inter_subset_left hy))
 
 /-!
 ### Monotonicity w.r.t. the set we're analytic within

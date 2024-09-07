@@ -208,23 +208,23 @@ def ContDiffWithinAt (n : WithTop ℕ∞) (f : E → F) (s : Set E) (x : E) : Pr
 
 variable {𝕜}
 
+lemma ContDiffWithinAt.analyticWithinAt (h : ContDiffWithinAt 𝕜 ω f s x) :
+    AnalyticWithinAt 𝕜 f s x := by
+  rcases h 0 with ⟨u, hu, p, hp, h'p⟩
+  have xu : x ∈ u := mem_of_mem_nhdsWithin (mem_insert x s) hu
+  simp only [nonpos_iff_eq_zero, forall_eq] at h'p
+  have : AnalyticWithinAt 𝕜 (fun x ↦ (continuousMultilinearCurryFin0 𝕜 E F) (p x 0)) (s ∩ u) x :=
+    (LinearIsometryEquiv.analyticAt _ _ ).comp_analyticWithinAt ((h'p x xu).mono inter_subset_right)
+  have : AnalyticWithinAt 𝕜 f (s ∩ u) x :=
+    this.congr (fun y hy ↦ (hp.zero_eq _ hy.2).symm) (hp.zero_eq _ xu).symm
+  apply this.mono_of_mem
+  exact inter_mem self_mem_nhdsWithin (nhdsWithin_mono x (by simp) hu)
+
 theorem contDiffWithinAt_omega_iff_analyticWithinAt [CompleteSpace F] :
     ContDiffWithinAt 𝕜 ω f s x ↔ AnalyticWithinAt 𝕜 f s x := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rcases h 0 with ⟨u, hu, p, hp, h'p⟩
-    have xu : x ∈ u := mem_of_mem_nhdsWithin (mem_insert x s) hu
-    simp only [nonpos_iff_eq_zero, forall_eq] at h'p
-    have A : AnalyticWithinAt 𝕜 (fun x ↦ p x 0) (s ∩ u) x := (h'p x xu).mono inter_subset_right
-    have B : AnalyticWithinAt 𝕜 (fun x ↦ (p x 0).uncurry0) (s ∩ u) x := by
-      apply AnalyticWithinAt.comp
-
-
-
-
-
-#exit
-
-continuousMultilinearCurryFin0
+  refine ⟨fun h ↦ h.analyticWithinAt, fun h m ↦ ?_⟩
+  obtain ⟨u, hu, p, hp, h'p⟩ := h.exists_hasFTaylorSeriesUpToOn ⊤
+  exact ⟨u, hu, p, hp.of_le le_top, fun i _ ↦ h'p i⟩
 
 theorem contDiffWithinAt_nat {n : ℕ} :
     ContDiffWithinAt 𝕜 n f s x ↔ ∃ u ∈ 𝓝[insert x s] x,
@@ -245,14 +245,8 @@ theorem ContDiffWithinAt.of_le (h : ContDiffWithinAt 𝕜 n f s x) (hmn : m ≤ 
     | (m : ℕ∞) => exact fun k hk ↦ h k (le_trans hk (by exact_mod_cast hmn))
 
 theorem AnalyticWithinAt.contDiffWithinAt [CompleteSpace F] (h : AnalyticWithinAt 𝕜 f s x) :
-    ContDiffWithinAt 𝕜 n f s x := by
-  suffices ContDiffWithinAt 𝕜 ω f s x from this.of_le le_top
-  intro m
-
-
-
-#exit
-
+    ContDiffWithinAt 𝕜 n f s x :=
+  (contDiffWithinAt_omega_iff_analyticWithinAt.2 h).of_le le_top
 
 theorem contDiffWithinAt_iff_forall_nat_le {n : ℕ∞} :
     ContDiffWithinAt 𝕜 n f s x ↔ ∀ m : ℕ, ↑m ≤ n → ContDiffWithinAt 𝕜 m f s x :=
@@ -273,12 +267,16 @@ theorem ContDiffWithinAt.continuousWithinAt (h : ContDiffWithinAt 𝕜 n f s x) 
 theorem ContDiffWithinAt.congr_of_eventuallyEq (h : ContDiffWithinAt 𝕜 n f s x)
     (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) : ContDiffWithinAt 𝕜 n f₁ s x := by
   match n with
-  | ω => exact ⟨h.1, AnalyticWithinAt.congr_of_eventuallyEq h.2 h₁ hx⟩
+  | ω =>
+    intro m
+    obtain ⟨u, hu, p, H, H'⟩ := h m
+    exact ⟨{ x ∈ u | f₁ x = f x }, Filter.inter_mem hu (mem_nhdsWithin_insert.2 ⟨hx, h₁⟩), p,
+      (H.mono (sep_subset _ _)).congr fun _ ↦ And.right, fun i hi ↦ (H' i hi).mono (sep_subset _ _)⟩
   | (n : ℕ∞) =>
     intro m hm
     let ⟨u, hu, p, H⟩ := h m hm
     exact ⟨{ x ∈ u | f₁ x = f x }, Filter.inter_mem hu (mem_nhdsWithin_insert.2 ⟨hx, h₁⟩), p,
-      (H.mono (sep_subset _ _)).congr fun _ => And.right⟩
+      (H.mono (sep_subset _ _)).congr fun _ ↦ And.right⟩
 
 theorem ContDiffWithinAt.congr_of_eventuallyEq_insert (h : ContDiffWithinAt 𝕜 n f s x)
     (h₁ : f₁ =ᶠ[𝓝[insert x s] x] f) : ContDiffWithinAt 𝕜 n f₁ s x :=
@@ -305,7 +303,10 @@ theorem ContDiffWithinAt.congr' (h : ContDiffWithinAt 𝕜 n f s x) (h₁ : ∀ 
 theorem ContDiffWithinAt.mono_of_mem (h : ContDiffWithinAt 𝕜 n f s x) {t : Set E}
     (hst : s ∈ 𝓝[t] x) : ContDiffWithinAt 𝕜 n f t x := by
   match n with
-  | ω => exact ⟨h.1, AnalyticWithinAt.mono_of_mem h.2 hst⟩
+  | ω =>
+    intro m
+    obtain ⟨u, hu, p, H, H'⟩ := h m
+    exact ⟨u, nhdsWithin_le_of_mem (insert_mem_nhdsWithin_insert hst) hu, p, H, H'⟩
   | (n : ℕ∞) =>
     intro m hm
     rcases h m hm with ⟨u, hu, p, H⟩
@@ -867,7 +868,8 @@ might not be unique) we do not need to localize the definition in space or time.
 -/
 def ContDiff (n : WithTop ℕ∞) (f : E → F) : Prop :=
   match n with
-  | ω => CompleteSpace F ∧ AnalyticOn 𝕜 f univ
+  | ω => ∃ p : E → FormalMultilinearSeries 𝕜 E F, HasFTaylorSeriesUpTo ⊤ f p
+      ∧ ∀ i, AnalyticOn 𝕜 (fun x ↦ p x i) univ
   | (n : ℕ∞) => ∃ p : E → FormalMultilinearSeries 𝕜 E F, HasFTaylorSeriesUpTo n f p
 
 variable {𝕜}

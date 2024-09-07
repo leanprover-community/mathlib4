@@ -1689,3 +1689,5 @@ theorem hasFPowerSeriesAt_iff' :
   simp_rw [add_sub_cancel_left]
 
 end
+
+set_option linter.style.longFile 1800
