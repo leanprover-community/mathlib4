@@ -218,23 +218,19 @@ TODO: deprecate this in favor of `Order.IsSuccLimit`. -/
 def IsLimit (o : Ordinal) : Prop :=
   o ≠ 0 ∧ ∀ a < o, succ a < o
 
-theorem isSuccLimit_ne_zero {o : Ordinal} (h : IsSuccLimit o) : o ≠ 0 :=
-  h.ne_bot
-
-theorem isSuccPrelimit_zero : IsSuccPrelimit (0 : Ordinal) :=
-  isSuccPrelimit_bot
-
-theorem isSuccLimit_iff {o : Ordinal} : IsSuccLimit o ↔ o ≠ 0 ∧ IsSuccPrelimit o :=
-  Order.isSuccLimit_iff
-
 theorem IsLimit.isSuccPrelimit {o} (h : IsLimit o) : IsSuccPrelimit o :=
   isSuccPrelimit_iff_succ_lt.mpr h.2
 
-theorem IsLimit.isSuccLimit {o} (h : IsLimit o) : IsSuccLimit o :=
-  isSuccLimit_iff.2 ⟨h.1, h.isSuccPrelimit⟩
+@[deprecated IsLimit.isSuccPrelimit (since := "2024-09-05")]
+alias IsLimit.isSuccLimit := IsLimit.isSuccPrelimit
 
 theorem IsLimit.succ_lt {o a : Ordinal} (h : IsLimit o) : a < o → succ a < o :=
   h.2 a
+
+theorem isSuccPrelimit_zero : IsSuccPrelimit (0 : Ordinal) := isSuccPrelimit_bot
+
+@[deprecated isSuccPrelimit_zero (since := "2024-09-05")]
+alias isSuccLimit_zero := isSuccPrelimit_zero
 
 theorem not_zero_isLimit : ¬IsLimit 0
   | ⟨h, _⟩ => h rfl
@@ -290,8 +286,8 @@ theorem zero_or_succ_or_limit (o : Ordinal) : o = 0 ∨ (∃ a, o = succ a) ∨ 
 @[elab_as_elim]
 def limitRecOn {C : Ordinal → Sort*} (o : Ordinal) (H₁ : C 0) (H₂ : ∀ o, C o → C (succ o))
     (H₃ : ∀ o, IsLimit o → (∀ o' < o, C o') → C o) : C o :=
-  SuccOrder.prelimitRecOn (fun o _ ↦ H₂ o) (fun o hl ↦
-    if h : o = 0 then fun _ ↦ h ▸ H₁ else H₃ o ⟨h, fun _ ↦ hl.succ_lt⟩) o
+  SuccOrder.prelimitRecOn o (fun o _ ↦ H₂ o) fun o hl ↦
+    if h : o = 0 then fun _ ↦ h ▸ H₁ else H₃ o ⟨h, fun _ ↦ hl.succ_lt⟩
 
 @[simp]
 theorem limitRecOn_zero {C} (H₁ H₂ H₃) : @limitRecOn C 0 H₁ H₂ H₃ = H₁ := by
@@ -300,7 +296,7 @@ theorem limitRecOn_zero {C} (H₁ H₂ H₃) : @limitRecOn C 0 H₁ H₂ H₃ = 
 @[simp]
 theorem limitRecOn_succ {C} (o H₁ H₂ H₃) :
     @limitRecOn C (succ o) H₁ H₂ H₃ = H₂ o (@limitRecOn C o H₁ H₂ H₃) := by
-  rw [limitRecOn, limitRecOn, SuccOrder.prelimitRecOn_succ _ _]
+  rw [limitRecOn, limitRecOn, SuccOrder.prelimitRecOn_succ _ _ (not_isMax _)]
 
 @[simp]
 theorem limitRecOn_limit {C} (o H₁ H₂ H₃ h) :

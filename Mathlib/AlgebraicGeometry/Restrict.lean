@@ -69,7 +69,7 @@ lemma ι_appLE (V W e) :
     U.ι.appLE V W e =
       X.presheaf.map (homOfLE (x := U.ι ''ᵁ W) (Set.image_subset_iff.mpr ‹_›)).op := by
   simp only [Hom.appLE, ι_app, Functor.op_obj, Opens.carrier_eq_coe, toScheme_presheaf_map,
-    Quiver.Hom.unop_op, Hom.opensFunctor_map_homOfLE, Opens.coe_inclusion, ← Functor.map_comp]
+    Quiver.Hom.unop_op, Hom.opensFunctor_map_homOfLE, Opens.coe_inclusion', ← Functor.map_comp]
   rfl
 
 @[simp]
@@ -89,7 +89,7 @@ lemma ι_image_top : U.ι ''ᵁ ⊤ = U :=
 
 @[simp]
 lemma ι_preimage_self : U.ι ⁻¹ᵁ U = ⊤ :=
-  Opens.inclusion_map_eq_top _
+  Opens.inclusion'_map_eq_top _
 
 instance ι_appLE_isIso :
     IsIso (U.ι.appLE U ⊤ U.ι_preimage_self.ge) := by
@@ -234,7 +234,7 @@ theorem Scheme.restrictFunctor_map_base {U V : X.Opens} (i : U ⟶ V) :
 theorem Scheme.restrictFunctor_map_app_aux {U V : X.Opens} (i : U ⟶ V) (W : Opens V) :
     U.ι ''ᵁ ((X.restrictFunctor.map i).1 ⁻¹ᵁ W) ≤ V.ι ''ᵁ W := by
   simp only [← SetLike.coe_subset_coe, IsOpenMap.functor_obj_coe, Set.image_subset_iff,
-    Scheme.restrictFunctor_map_base, Opens.map_coe, Opens.inclusion_apply]
+    Scheme.restrictFunctor_map_base, Opens.map_coe, Opens.inclusion'_apply]
   rintro _ h
   exact ⟨_, h, rfl⟩
 
@@ -466,7 +466,7 @@ def morphismRestrictRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (V :
   refine Arrow.isoMk' _ _ (Scheme.restrictRestrict _ _ _ ≪≫ Scheme.restrictIsoOfEq _ ?_)
     (Scheme.restrictRestrict _ _ _) ?_
   · ext x
-    simp only [IsOpenMap.functor_obj_coe, Opens.coe_inclusion,
+    simp only [IsOpenMap.functor_obj_coe, Opens.coe_inclusion',
       Opens.map_coe, Set.mem_image, Set.mem_preimage, SetLike.mem_coe, morphismRestrict_val_base]
     constructor
     · rintro ⟨⟨a, h₁⟩, h₂, rfl⟩
@@ -488,7 +488,7 @@ def morphismRestrictRestrictBasicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Op
   refine morphismRestrictRestrict _ _ _ ≪≫ morphismRestrictEq _ ?_
   have e := Scheme.preimage_basicOpen U.ι r
   rw [Scheme.Opens.ι_app] at e
-  rw [← U.toScheme.basicOpen_res_eq _ (eqToHom U.inclusion_map_eq_top).op]
+  rw [← U.toScheme.basicOpen_res_eq _ (eqToHom U.inclusion'_map_eq_top).op]
   erw [← comp_apply]
   erw [← Y.presheaf.map_comp]
   rw [eqToHom_op, eqToHom_op, eqToHom_map, eqToHom_trans]

@@ -19,6 +19,9 @@ maximal elements from being predecessor limits. As such, we also provide `Order.
 
 ## TODO
 
+For some applications, it's desirable to exclude the case where an element is minimal. A future PR
+will introduce `IsSuccLimit` for this usage.
+
 The plan is to eventually replace `Ordinal.IsLimit` and `Cardinal.IsLimit` with the common
 predicate `Order.IsSuccLimit`.
 -/
@@ -42,16 +45,22 @@ variable [LT α]
 It's so named because in a successor order, a successor pre-limit can't be the successor of anything
 smaller.
 
-For many applications, it's desirable to exclude minimal elements from this definition. For that,
-see `IsSuccLimit`. -/
+For some applications, it's desirable to exclude the case where an element is minimal. A future PR
+will introduce `IsSuccLimit` for this usage. -/
 def IsSuccPrelimit (a : α) : Prop :=
-  ∀ b, ¬ b ⋖ a
+  ∀ b, ¬b ⋖ a
 
-theorem not_isSuccPrelimit_iff_exists_covBy (a : α) : ¬ IsSuccPrelimit a ↔ ∃ b, b ⋖ a := by
+theorem not_isSuccPrelimit_iff_exists_covBy (a : α) : ¬IsSuccPrelimit a ↔ ∃ b, b ⋖ a := by
   simp [IsSuccPrelimit]
+
+@[deprecated not_isSuccPrelimit_iff_exists_covBy (since := "2024-09-05")]
+alias not_isSuccLimit_iff_exists_covBy := not_isSuccPrelimit_iff_exists_covBy
 
 @[simp]
 theorem isSuccPrelimit_of_dense [DenselyOrdered α] (a : α) : IsSuccPrelimit a := fun _ => not_covBy
+
+@[deprecated isSuccPrelimit_of_dense (since := "2024-09-05")]
+alias isSuccLimit_of_dense := isSuccPrelimit_of_dense
 
 end LT
 
@@ -94,6 +103,9 @@ protected theorem _root_.IsMin.not_isSuccLimit (h : IsMin a) : ¬ IsSuccLimit a 
 protected theorem _root_.IsMin.isSuccPrelimit : IsMin a → IsSuccPrelimit a := fun h _ hab =>
   not_isMin_of_lt hab.lt h
 
+@[deprecated _root_.IsMin.isSuccPrelimit (since := "2024-09-05")]
+alias _root_.IsMin.isSuccLimit := _root_.IsMin.isSuccPrelimit
+
 theorem isSuccPrelimit_bot [OrderBot α] : IsSuccPrelimit (⊥ : α) :=
   isMin_bot.isSuccPrelimit
 
@@ -104,11 +116,11 @@ theorem IsSuccLimit.ne_bot [OrderBot α] (h : IsSuccLimit a) : a ≠ ⊥ := by
   rintro rfl
   exact not_isSuccLimit_bot h
 
+@[deprecated isSuccPrelimit_bot (since := "2024-09-05")]
+alias isSuccLimit_bot := isSuccPrelimit_bot
+
 theorem not_isSuccLimit_iff : ¬ IsSuccLimit a ↔ IsMin a ∨ ¬ IsSuccPrelimit a := by
   rw [IsSuccLimit, not_and_or, not_not]
-
-theorem not_isSuccLimit_of_not_isSuccPrelimit (h : ¬ IsSuccPrelimit a) : ¬ IsSuccLimit a :=
-  not_isSuccLimit_iff.2 (Or.inr h)
 
 variable [SuccOrder α]
 
@@ -119,13 +131,11 @@ protected theorem IsSuccPrelimit.isMax (h : IsSuccPrelimit (succ a)) : IsMax a :
 protected theorem IsSuccLimit.isMax (h : IsSuccLimit (succ a)) : IsMax a :=
   h.isSuccPrelimit.isMax
 
-theorem not_isSuccPrelimit_succ_of_not_isMax (ha : ¬ IsMax a) : ¬ IsSuccPrelimit (succ a) := by
-  contrapose! ha
-  exact ha.isMax
+theorem not_isSuccPrelimit_succ_of_not_isMax (ha : ¬ IsMax a) : ¬ IsSuccPrelimit (succ a) :=
+  mt IsSuccPrelimit.isMax ha
 
-theorem not_isSuccLimit_succ_of_not_isMax (ha : ¬ IsMax a) : ¬ IsSuccLimit (succ a) := by
-  contrapose! ha
-  exact ha.isMax
+theorem not_isSuccLimit_succ_of_not_isMax (ha : ¬ IsMax a) : ¬ IsSuccLimit (succ a) :=
+  mt IsSuccLimit.isMax ha
 
 section NoMaxOrder
 
@@ -139,10 +149,12 @@ theorem IsSuccLimit.succ_ne (h : IsSuccLimit a) (b : α) : succ b ≠ a :=
   h.isSuccPrelimit.succ_ne b
 
 @[simp]
-theorem not_isSuccPrelimit_succ (a : α) : ¬ IsSuccPrelimit (succ a) := fun h => h.succ_ne _ rfl
+theorem not_isSuccPrelimit_succ (a : α) : ¬ IsSuccPrelimit (succ a) :=
+  fun h => h.succ_ne _ rfl
 
 @[simp]
-theorem not_isSuccLimit_succ (a : α) : ¬ IsSuccLimit (succ a) := fun h => h.succ_ne _ rfl
+theorem not_isSuccLimit_succ (a : α) : ¬ IsSuccLimit (succ a) :=
+  fun h => h.succ_ne _ rfl
 
 end NoMaxOrder
 
@@ -157,13 +169,19 @@ theorem IsSuccPrelimit.isMin_of_noMax (h : IsSuccPrelimit a) : IsMin a := by
   · rw [iterate_succ_apply'] at h
     exact (not_isSuccPrelimit_succ _ h).elim
 
-@[simp]
-theorem not_isSuccLimit_of_noMax : ¬ IsSuccLimit a :=
-  fun h ↦ h.not_isMin h.isSuccPrelimit.isMin_of_noMax
+@[deprecated IsSuccPrelimit.isMin_of_noMax (since := "2024-09-05")]
+alias IsSuccLimit.isMin_of_noMax := IsSuccPrelimit.isMin_of_noMax
 
 @[simp]
 theorem isSuccPrelimit_iff_of_noMax : IsSuccPrelimit a ↔ IsMin a :=
   ⟨IsSuccPrelimit.isMin_of_noMax, IsMin.isSuccPrelimit⟩
+
+@[deprecated isSuccPrelimit_iff_of_noMax (since := "2024-09-05")]
+alias isSuccLimit_iff_of_noMax := isSuccPrelimit_iff_of_noMax
+
+@[simp]
+theorem not_isSuccLimit_of_noMax : ¬ IsSuccLimit a :=
+  fun h ↦ h.not_isMin h.isSuccPrelimit.isMin_of_noMax
 
 theorem not_isSuccPrelimit_of_noMax [NoMinOrder α] : ¬ IsSuccPrelimit a := by simp
 
@@ -183,6 +201,9 @@ variable [SuccOrder α]
 theorem isSuccPrelimit_of_succ_ne (h : ∀ b, succ b ≠ a) : IsSuccPrelimit a := fun b hba =>
   h b (CovBy.succ_eq hba)
 
+@[deprecated isSuccPrelimit_of_succ_ne (since := "2024-09-05")]
+alias isSuccLimit_of_succ_ne := isSuccPrelimit_of_succ_ne
+
 theorem not_isSuccPrelimit_iff : ¬ IsSuccPrelimit a ↔ ∃ b, ¬ IsMax b ∧ succ b = a := by
   rw [not_isSuccPrelimit_iff_exists_covBy]
   refine exists_congr fun b => ⟨fun hba => ⟨hba.lt.not_isMax, (CovBy.succ_eq hba)⟩, ?_⟩
@@ -196,11 +217,20 @@ theorem mem_range_succ_of_not_isSuccPrelimit (h : ¬ IsSuccPrelimit a) :
   obtain ⟨b, hb⟩ := not_isSuccPrelimit_iff.1 h
   exact ⟨b, hb.2⟩
 
+@[deprecated mem_range_succ_of_not_isSuccPrelimit (since := "2024-09-05")]
+alias mem_range_succ_of_not_isSuccLimit := mem_range_succ_of_not_isSuccPrelimit
+
 theorem mem_range_succ_or_isSuccPrelimit (a) : a ∈ range (@succ α _ _) ∨ IsSuccPrelimit a :=
   or_iff_not_imp_right.2 <| mem_range_succ_of_not_isSuccPrelimit
 
+@[deprecated mem_range_succ_or_isSuccPrelimit (since := "2024-09-05")]
+alias mem_range_succ_or_isSuccLimit := mem_range_succ_or_isSuccPrelimit
+
 theorem isSuccPrelimit_of_succ_lt (H : ∀ a < b, succ a < b) : IsSuccPrelimit b := fun a hab =>
   (H a hab.lt).ne (CovBy.succ_eq hab)
+
+@[deprecated isSuccPrelimit_of_succ_lt (since := "2024-09-05")]
+alias isSuccLimit_of_succ_lt := isSuccPrelimit_of_succ_lt
 
 theorem IsSuccPrelimit.succ_lt (hb : IsSuccPrelimit b) (ha : a < b) : succ a < b := by
   by_cases h : IsMax a
@@ -222,6 +252,9 @@ theorem IsSuccLimit.succ_lt_iff (hb : IsSuccLimit b) : succ a < b ↔ a < b :=
 theorem isSuccPrelimit_iff_succ_lt : IsSuccPrelimit b ↔ ∀ a < b, succ a < b :=
   ⟨fun hb _ => hb.succ_lt, isSuccPrelimit_of_succ_lt⟩
 
+@[deprecated isSuccPrelimit_iff_succ_lt (since := "2024-09-05")]
+alias isSuccLimit_iff_succ_lt := isSuccPrelimit_iff_succ_lt
+
 section NoMaxOrder
 
 variable [NoMaxOrder α]
@@ -229,8 +262,14 @@ variable [NoMaxOrder α]
 theorem isSuccPrelimit_iff_succ_ne : IsSuccPrelimit a ↔ ∀ b, succ b ≠ a :=
   ⟨IsSuccPrelimit.succ_ne, isSuccPrelimit_of_succ_ne⟩
 
+@[deprecated isSuccPrelimit_iff_succ_ne (since := "2024-09-05")]
+alias isSuccLimit_iff_succ_ne := isSuccPrelimit_iff_succ_ne
+
 theorem not_isSuccPrelimit_iff' : ¬ IsSuccPrelimit a ↔ a ∈ range (@succ α _ _) := by
   simp_rw [isSuccPrelimit_iff_succ_ne, not_forall, not_ne_iff, mem_range]
+
+@[deprecated not_isSuccPrelimit_iff' (since := "2024-09-05")]
+alias not_isSuccLimit_iff' := not_isSuccPrelimit_iff'
 
 end NoMaxOrder
 
@@ -276,10 +315,16 @@ see `IsPredLimit`. -/
 def IsPredPrelimit (a : α) : Prop :=
   ∀ b, ¬ a ⋖ b
 
-theorem not_isPredPrelimit_iff_exists_covBy (a : α) : ¬ IsPredPrelimit a ↔ ∃ b, a ⋖ b := by
+theorem not_isPredPrelimit_iff_exists_covBy (a : α) : ¬IsPredPrelimit a ↔ ∃ b, a ⋖ b := by
   simp [IsPredPrelimit]
 
+@[deprecated not_isPredPrelimit_iff_exists_covBy (since := "2024-09-05")]
+alias not_isPredLimit_iff_exists_covBy := not_isPredPrelimit_iff_exists_covBy
+
 theorem isPredPrelimit_of_dense [DenselyOrdered α] (a : α) : IsPredPrelimit a := fun _ => not_covBy
+
+@[deprecated isPredPrelimit_of_dense (since := "2024-09-05")]
+alias isPredLimit_of_dense := isPredPrelimit_of_dense
 
 @[simp]
 theorem isSuccPrelimit_toDual_iff : IsSuccPrelimit (toDual a) ↔ IsPredPrelimit a := by
@@ -291,6 +336,10 @@ theorem isPredPrelimit_toDual_iff : IsPredPrelimit (toDual a) ↔ IsSuccPrelimit
 
 alias ⟨_, IsPredPrelimit.dual⟩ := isSuccPrelimit_toDual_iff
 alias ⟨_, IsSuccPrelimit.dual⟩ := isPredPrelimit_toDual_iff
+@[deprecated IsPredPrelimit.dual (since := "2024-09-03")]
+alias ⟨_, isPredlimit.dual⟩ := isSuccPrelimit_toDual_iff
+@[deprecated IsSuccPrelimit.dual (since := "2024-09-03")]
+alias ⟨_, isSucclimit.dual⟩ := isPredPrelimit_toDual_iff
 
 end LT
 
@@ -323,10 +372,6 @@ theorem isPredLimit_toDual_iff : IsPredLimit (toDual a) ↔ IsSuccLimit a := by
 
 alias ⟨_, IsPredLimit.dual⟩ := isSuccLimit_toDual_iff
 alias ⟨_, IsSuccLimit.dual⟩ := isPredLimit_toDual_iff
-@[deprecated IsPredLimit.dual (since := "2024-09-03")]
-alias ⟨_, isPredLimit.dual⟩ := isSuccLimit_toDual_iff
-@[deprecated IsSuccLimit.dual (since := "2024-09-03")]
-alias ⟨_, isSuccLimit.dual⟩ := isPredLimit_toDual_iff
 
 theorem IsPredPrelimit.isPredLimit_of_not_isMax (h : IsPredPrelimit a) (ha : ¬ IsMax a) :
     IsPredLimit a :=
@@ -348,8 +393,14 @@ protected theorem _root_.IsMax.not_isPredLimit (h : IsMax a) : ¬ IsPredLimit a 
 protected theorem _root_.IsMax.isPredPrelimit : IsMax a → IsPredPrelimit a := fun h _ hab =>
   not_isMax_of_lt hab.lt h
 
+@[deprecated _root_.IsMax.isPredPrelimit (since := "2024-09-05")]
+alias _root_.IsMax.isPredLimit := _root_.IsMax.isPredPrelimit
+
 theorem isPredPrelimit_top [OrderTop α] : IsPredPrelimit (⊤ : α) :=
   isMax_top.isPredPrelimit
+
+@[deprecated isPredPrelimit_top (since := "2024-09-05")]
+alias isPredLimit_top := isPredPrelimit_top
 
 theorem not_isPredLimit_top [OrderTop α] : ¬ IsPredLimit (⊤ : α) :=
   isMax_top.not_isPredLimit
@@ -371,13 +422,11 @@ protected theorem IsPredPrelimit.isMin (h : IsPredPrelimit (pred a)) : IsMin a :
 protected theorem IsPredLimit.isMin (h : IsPredLimit (pred a)) : IsMin a :=
   h.dual.isMax
 
-theorem not_isPredPrelimit_pred_of_not_isMin (ha : ¬ IsMin a) : ¬ IsPredPrelimit (pred a) := by
-  contrapose! ha
-  exact ha.isMin
+theorem not_isPredPrelimit_pred_of_not_isMin (ha : ¬ IsMin a) : ¬ IsPredPrelimit (pred a) :=
+  mt IsPredPrelimit.isMin ha
 
-theorem not_isPredLimit_pred_of_not_isMin (ha : ¬ IsMin a) : ¬ IsPredLimit (pred a) := by
-  contrapose! ha
-  exact ha.isMin
+theorem not_isPredLimit_pred_of_not_isMin (ha : ¬ IsMin a) : ¬ IsPredLimit (pred a) :=
+  mt IsPredLimit.isMin ha
 
 section NoMinOrder
 
@@ -390,10 +439,12 @@ theorem IsPredLimit.pred_ne (h : IsPredLimit a) (b : α) : pred b ≠ a :=
   h.isPredPrelimit.pred_ne b
 
 @[simp]
-theorem not_isPredPrelimit_pred (a : α) : ¬ IsPredPrelimit (pred a) := fun h => h.pred_ne _ rfl
+theorem not_isPredPrelimit_pred (a : α) : ¬ IsPredPrelimit (pred a) :=
+  fun h => h.pred_ne _ rfl
 
 @[simp]
-theorem not_isPredLimit_pred (a : α) : ¬ IsPredLimit (pred a) := fun h => h.pred_ne _ rfl
+theorem not_isPredLimit_pred (a : α) : ¬ IsPredLimit (pred a) :=
+  fun h => h.pred_ne _ rfl
 
 end NoMinOrder
 
@@ -404,13 +455,19 @@ variable [IsPredArchimedean α] [NoMinOrder α]
 theorem IsPredPrelimit.isMax_of_noMin (h : IsPredPrelimit a) : IsMax a :=
   h.dual.isMin_of_noMax
 
-@[simp]
-theorem not_isPredLimit_of_noMin : ¬ IsPredLimit a :=
-  fun h ↦ h.not_isMax h.isPredPrelimit.isMax_of_noMin
+@[deprecated IsPredPrelimit.isMax_of_noMin (since := "2024-09-05")]
+alias IsPredLimit.isMax_of_noMin := IsPredPrelimit.isMax_of_noMin
 
 @[simp]
 theorem isPredPrelimit_iff_of_noMin : IsPredPrelimit a ↔ IsMax a :=
   ⟨IsPredPrelimit.isMax_of_noMin, IsMax.isPredPrelimit⟩
+
+@[deprecated isPredPrelimit_iff_of_noMin (since := "2024-09-05")]
+alias isPredLimit_iff_of_noMin := isPredPrelimit_iff_of_noMin
+
+@[simp]
+theorem not_isPredLimit_of_noMin : ¬ IsPredLimit a :=
+  fun h ↦ h.not_isMax h.isPredPrelimit.isMax_of_noMin
 
 theorem not_isPredPrelimit_of_noMin [NoMaxOrder α] : ¬ IsPredPrelimit a := by simp
 
@@ -430,6 +487,9 @@ variable [PredOrder α]
 theorem isPredPrelimit_of_pred_ne (h : ∀ b, pred b ≠ a) : IsPredPrelimit a := fun b hba =>
   h b (CovBy.pred_eq hba)
 
+@[deprecated isPredPrelimit_of_pred_ne (since := "2024-09-05")]
+alias isPredLimit_of_pred_ne := isPredPrelimit_of_pred_ne
+
 theorem not_isPredPrelimit_iff : ¬ IsPredPrelimit a ↔ ∃ b, ¬ IsMin b ∧ pred b = a := by
   rw [← isSuccPrelimit_toDual_iff]
   exact not_isSuccPrelimit_iff
@@ -441,11 +501,20 @@ theorem mem_range_pred_of_not_isPredPrelimit (h : ¬ IsPredPrelimit a) :
   obtain ⟨b, hb⟩ := not_isPredPrelimit_iff.1 h
   exact ⟨b, hb.2⟩
 
+@[deprecated mem_range_pred_of_not_isPredPrelimit (since := "2024-09-05")]
+alias mem_range_pred_of_not_isPredLimit := mem_range_pred_of_not_isPredPrelimit
+
 theorem mem_range_pred_or_isPredPrelimit (a) : a ∈ range (@pred α _ _) ∨ IsPredPrelimit a :=
   or_iff_not_imp_right.2 <| mem_range_pred_of_not_isPredPrelimit
 
+@[deprecated mem_range_pred_or_isPredPrelimit (since := "2024-09-05")]
+alias mem_range_pred_or_isPredLimit := mem_range_pred_or_isPredPrelimit
+
 theorem isPredPrelimit_of_pred_lt (H : ∀ b > a, a < pred b) : IsPredPrelimit a := fun a hab =>
   (H a hab.lt).ne (CovBy.pred_eq hab).symm
+
+@[deprecated isPredPrelimit_of_pred_lt (since := "2024-09-05")]
+alias isPredLimit_of_pred_lt := isPredPrelimit_of_pred_lt
 
 theorem IsPredPrelimit.lt_pred (ha : IsPredPrelimit a) (hb : a < b) : a < pred b :=
   ha.dual.succ_lt hb
@@ -461,6 +530,9 @@ theorem IsPredLimit.lt_pred_iff (ha : IsPredLimit a) : a < pred b ↔ a < b :=
 
 theorem isPredPrelimit_iff_lt_pred : IsPredPrelimit a ↔ ∀ b > a, a < pred b :=
   ⟨fun hb _ => hb.lt_pred, isPredPrelimit_of_pred_lt⟩
+
+@[deprecated isPredPrelimit_iff_lt_pred (since := "2024-09-05")]
+alias isPredLimit_iff_lt_pred := isPredPrelimit_iff_lt_pred
 
 section NoMinOrder
 
@@ -480,6 +552,9 @@ variable [IsPredArchimedean α]
 
 protected theorem IsPredPrelimit.isMax (h : IsPredPrelimit a) : IsMax a :=
   h.dual.isMin
+
+@[deprecated IsPredPrelimit.isMax (since := "2024-09-05")]
+alias IsPredLimit.isMax := IsPredPrelimit.isMax
 
 @[simp]
 theorem isPredPrelimit_iff : IsPredPrelimit a ↔ IsMax a :=
