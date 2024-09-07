@@ -609,7 +609,7 @@ theorem Ideal.dvdNotUnit_iff_lt {I J : Ideal A} : DvdNotUnit I J ↔ J < I :=
       (mt Ideal.dvd_iff_le.mp (not_le_of_lt h))⟩
 
 instance : WfDvdMonoid (Ideal A) where
-  wellFounded_dvdNotUnit := by
+  wf := by
     have : WellFoundedGT (Ideal A) := inferInstance
     convert this.wf
     ext
