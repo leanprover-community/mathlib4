@@ -131,7 +131,7 @@ theorem iInf_eigenspace_invariant_of_commute (T : n → (E →ₗ[𝕜] E))
   exact fun i_1 ↦ eigenspace_invariant_of_commute (hC (↑i_1) i) (γ i_1) v (hv i_1)
 
 /--Simultaneous eigenspaces of a symmetric linear operator on a finite dimensional inner product
-   space restricted to an invariant subspace exhaust that subspace-/
+space restricted to an invariant subspace exhaust that subspace-/
 theorem iSup_simultaneous_eigenspaces_eq_top [FiniteDimensional 𝕜 E] {F : Submodule 𝕜 E}
     (S : E →ₗ[𝕜] E) (hS: IsSymmetric S) (hInv : ∀ v ∈ F, S v ∈ F) : ⨆ μ, Submodule.map F.subtype
     (eigenspace (S.restrict hInv) μ)  = F := by
@@ -141,9 +141,8 @@ theorem iSup_simultaneous_eigenspaces_eq_top [FiniteDimensional 𝕜 E] {F : Sub
  have H : IsSymmetric (S.restrict hInv) := fun x y ↦ hS (F.subtype x) ↑y
  apply Submodule.orthogonal_eq_bot_iff.mp (H.orthogonalComplement_iSup_eigenspaces_eq_bot)
 
-/--Must replace the following with use of `orthogonalFamily_eigenspace_inf_eigenspace` or something
-else above, meaning we don't need the full power of this result for any invariant subspace so it
-is probably too specialized for the library. This can probably be inlined. -/
+/--Given an invariant subspace for an operator, its intersection with an eigenspace is
+the eigenspace of the restriction the operator to the invariant subspace. -/
 theorem invariant_subspace_inf_eigenspace_eq_restrict {F : Submodule 𝕜 E} (S : E →ₗ[𝕜] E)
     (μ : 𝕜) (hInv : ∀ v ∈ F, S v ∈ F) : (eigenspace S μ) ⊓ F =
     Submodule.map (Submodule.subtype F)
@@ -223,8 +222,8 @@ theorem orthogonalFamily_iInf_eigenspaces (T : n → (E →ₗ[𝕜] E))
   · exact (Submodule.mem_iInf <| fun _ ↦ eigenspace (T _) (f _)).mp Ef.2 _
   · exact (Submodule.mem_iInf <| fun _ ↦ eigenspace (T _) (g _)).mp Eg.2 _
 
-/-- Given a finite commuting family of symmetric linear operators, the Hilbert space on which they
-act decomposes as an internal direct sum of simultaneous eigenspaces. -/
+/-- Given a finite commuting family of symmetric linear operators, the inner product space on which
+they act decomposes as an internal direct sum of simultaneous eigenspaces. -/
 theorem DirectSum.IsInternal_of_simultaneous_eigenspaces_of_commuting_symmetric_tuple [Fintype n]
     [FiniteDimensional 𝕜 E] (T : n → (E →ₗ[𝕜] E)) (hT :(∀ (i : n), ((T i).IsSymmetric)))
     (hC : (∀ (i j : n), (T i) ∘ₗ (T j) = (T j) ∘ₗ (T i))) :
