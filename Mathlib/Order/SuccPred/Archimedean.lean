@@ -274,3 +274,37 @@ lemma SuccOrder.forall_ne_bot_iff
   rw [← Nat.succ_pred_eq_of_pos hj]
   simp only [Function.iterate_succ', Function.comp_apply]
   apply h
+
+section OrdConnected
+
+instance Set.OrdConnected.isPredArchimedean [PredOrder α] [IsPredArchimedean α]
+    (s : Set α) [s.OrdConnected] : IsPredArchimedean s where
+  exists_pred_iterate_of_le := @fun ⟨b, hb⟩ ⟨c, hc⟩ hbc ↦ by classical
+    simp only [Subtype.mk_le_mk] at hbc
+    obtain ⟨n, hn⟩ := hbc.exists_pred_iterate
+    use n
+    induction n generalizing c with
+    | zero => simp_all
+    | succ n hi =>
+      simp_all only [Function.iterate_succ, Function.comp_apply]
+      change Order.pred^[n] (dite ..) = _
+      split_ifs with h
+      · dsimp only at h ⊢
+        apply hi _ _ _ hn
+        · rw [← hn]
+          apply Order.pred_iterate_le
+      · have : Order.pred (⟨c, hc⟩ : s) = ⟨c, hc⟩ := by
+          change dite .. = _
+          simp [h]
+        rw [Function.iterate_fixed]
+        · simp only [Order.pred_eq_iff_isMin] at this
+          apply (this.eq_of_le _).symm
+          exact hbc
+        · exact this
+
+instance Set.OrdConnected.isSuccArchimedean [SuccOrder α] [IsSuccArchimedean α]
+    (s : Set α) [s.OrdConnected] : IsSuccArchimedean s :=
+  letI : IsPredArchimedean sᵒᵈ := inferInstanceAs (IsPredArchimedean (OrderDual.ofDual ⁻¹' s))
+  inferInstanceAs (IsSuccArchimedean sᵒᵈᵒᵈ)
+
+end OrdConnected
