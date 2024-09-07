@@ -10,7 +10,6 @@ import Mathlib.Logic.Equiv.TransferInstance
 
 Reference : [Becker-Weispfenning1993] -/
 
-
 structure MonomialOrder (σ : Type*) where
   syn : Type*
   locacm : LinearOrderedCancelAddCommMonoid syn
@@ -358,33 +357,39 @@ theorem degree_smul {r : R} (hr : IsRegular r) {f : MvPolynomial σ R} :
   rw [← zero_add (degree m f), ← degree_C r, lCoeff_mul']
   simp [lCoeff, hr.left.mul_left_eq_zero_iff, hf]
 
+/-- Delete the leading term in a multivariate polynomial (for some monomial order) -/
+noncomputable def subLTerm (f : MvPolynomial σ R) : MvPolynomial σ R :=
+  f - monomial (m.degree f) (m.lCoeff f)
+ 
 theorem degree_sub_LTerm_le (f : MvPolynomial σ R) :
-    degree m (f - monomial (m.degree f) (m.lCoeff f)) ≼[m] m.degree f := by
+    m.degree (m.subLTerm f) ≼[m] m.degree f := by
   apply le_trans degree_sub_le
   simp only [sup_le_iff, le_refl, true_and]
   apply degree_monomial_le
 
-theorem degree_sub_LTerm_lt {f : MvPolynomial σ R}
-    (hf : m.degree f ≠ 0) : 
-    degree m (f - monomial (m.degree f) (m.lCoeff f)) 
-      ≺[m] m.degree f := by
+theorem degree_sub_LTerm_lt {f : MvPolynomial σ R} (hf : m.degree f ≠ 0) : 
+    m.degree (m.subLTerm f) ≺[m] m.degree f := by
   rw [lt_iff_le_and_ne]
   refine ⟨degree_sub_LTerm_le f, ?_⟩
   classical
   intro hf'
   simp only [EmbeddingLike.apply_eq_iff_eq] at hf'
-  have : (f - monomial (degree m f) (lCoeff m f)) ≠ 0 := by
+  have : m.subLTerm f ≠ 0 := by 
     intro h
     simp only [h, degree_zero] at hf'
     exact hf hf'.symm
   rw [← coeff_degree_ne_zero_iff (m := m), hf'] at this
   apply this
-  simp [coeff_monomial, lCoeff]
+  simp [subLTerm, coeff_monomial, lCoeff]
 
-theorem degree_red_lt {f b : MvPolynomial σ R} (hb : IsUnit (m.lCoeff b))
+/-- Reduce a polynomial modulo a polynomial with unit leading term (for some monomial order) -/
+noncomputable def reduce {b : MvPolynomial σ R} (hb : IsUnit (m.lCoeff b)) (f : MvPolynomial σ R) :
+    MvPolynomial σ R :=
+ f - monomial (m.degree f - m.degree b) (hb.unit⁻¹ * m.lCoeff f) * b
+ 
+theorem degree_reduce_lt {f b : MvPolynomial σ R} (hb : IsUnit (m.lCoeff b))
     (hbf : m.degree b ≤ m.degree f) (hf : m.degree f ≠ 0) : 
-    m.degree (f - monomial (m.degree f - m.degree b) (hb.unit⁻¹ * m.lCoeff f) * b) 
-        ≺[m] m.degree f := by
+    m.degree (m.reduce hb f) ≺[m] m.degree f := by
   have H : m.degree f = 
     m.degree ((monomial (m.degree f - m.degree b)) (hb.unit⁻¹ * m.lCoeff f)) + 
       m.degree b := by
@@ -396,9 +401,8 @@ theorem degree_red_lt {f b : MvPolynomial σ R} (hb : IsUnit (m.lCoeff b))
       intro hf0
       apply hf 
       simp [hf0]
-  have H' : coeff (m.degree f) 
-        (f - monomial (m.degree f - m.degree b) (hb.unit⁻¹ * m.lCoeff f) * b) = 0 := by
-    simp only [coeff_sub, sub_eq_zero]
+  have H' : coeff (m.degree f) (m.reduce hb f) = 0 := by 
+    simp only [reduce, coeff_sub, sub_eq_zero]
     nth_rewrite 2 [H]
     rw [lCoeff_mul' (m := m), lCoeff_monomial]
     rw [mul_comm, ← mul_assoc]
@@ -465,18 +469,18 @@ theorem monomialOrderDiv [Finite σ] (B : Set (MvPolynomial σ R))
     exact bot_le
   by_cases hf : ∃ b ∈ B, m.degree b ≤ m.degree f
   · obtain ⟨b, hb, hf⟩ := hf
-    let f' := f - monomial (m.degree f - m.degree b) ((hB b hb).unit⁻¹ * m.lCoeff f) * b
-    have hf' : m.degree f' ≺[m] m.degree f := by
-      apply degree_red_lt (hB b hb) hf
+    have deg_reduce : m.degree (m.reduce (hB b hb) f) ≺[m] m.degree f := by
+      apply degree_reduce_lt (hB b hb) hf
       intro hf0'
       apply hB' b hb
       simpa [hf0'] using hf
-    obtain ⟨g', r', H'⟩ := monomialOrderDiv B hB f'
-    use g' + Finsupp.single ⟨b, hb⟩ (monomial (m.degree f - m.degree b) ((hB b hb).unit⁻¹ * m.lCoeff f)) 
+    obtain ⟨g', r', H'⟩ := monomialOrderDiv B hB (m.reduce (hB b hb) f)
+    use g' + 
+      Finsupp.single ⟨b, hb⟩ (monomial (m.degree f - m.degree b) ((hB b hb).unit⁻¹ * m.lCoeff f)) 
     use r'
     constructor
     · rw [map_add, add_assoc, add_comm _ r', ← add_assoc, ← H'.1]
-      simp [f']
+      simp [reduce]
     constructor
     · rintro c
       simp
@@ -484,7 +488,7 @@ theorem monomialOrderDiv [Finite σ] (B : Set (MvPolynomial σ R))
       apply le_trans degree_add_le
       simp only [sup_le_iff]
       constructor
-      · exact le_trans (H'.2.1 _) (le_of_lt hf')
+      · exact le_trans (H'.2.1 _) (le_of_lt deg_reduce)
       · classical
         rw [Finsupp.single_apply]
         split_ifs with hc
@@ -499,15 +503,14 @@ theorem monomialOrderDiv [Finite σ] (B : Set (MvPolynomial σ R))
           exact bot_le
     · exact H'.2.2
   · push_neg at hf
-    let f' := f - monomial (m.degree f) (m.lCoeff f)
     suffices ∃ (g' : B →₀ MvPolynomial σ R), ∃ r', 
-        (f' = (Finsupp.linearCombination (MvPolynomial σ R) fun b ↦ ↑b) g' + r') ∧
-        (∀ (b : B), m.degree ((b : MvPolynomial σ R) * (g' b)) ≼[m] m.degree f') ∧
+        (m.subLTerm f = (Finsupp.linearCombination (MvPolynomial σ R) fun b ↦ ↑b) g' + r') ∧
+        (∀ (b : B), m.degree ((b : MvPolynomial σ R) * (g' b)) ≼[m] m.degree (m.subLTerm f)) ∧
         (∀ c ∈ r'.support, ∀ b ∈ B, ¬ m.degree b ≤ c) by
       obtain ⟨g', r', H'⟩ := this
       use g', r' +  monomial (m.degree f) (m.lCoeff f)
       constructor
-      · simp [← add_assoc, ← H'.1, f']
+      · simp [← add_assoc, ← H'.1, subLTerm]
       constructor
       · exact fun b ↦ le_trans (H'.2.1 b) (degree_sub_LTerm_le f)
       · intro c hc b hb
@@ -521,27 +524,26 @@ theorem monomialOrderDiv [Finite σ] (B : Set (MvPolynomial σ R))
             coeff_degree_eq_zero_iff, Classical.not_imp] at this
           rw [← this.1]
           exact hf b hb
-    by_cases hf'0 : f' = 0
+    by_cases hf'0 : m.subLTerm f = 0
     · refine ⟨0, 0, by simp [hf'0], ?_, by simp⟩
       intro b
       simp only [Finsupp.coe_zero, Pi.zero_apply, mul_zero, degree_zero, map_zero]
       exact bot_le
-    · exact monomialOrderDiv B hB f'
+    · apply monomialOrderDiv B hB 
 termination_by WellFounded.wrap 
   ((isWellFounded_iff m.syn fun x x_1 ↦ x < x_1).mp m.wf) (m.toSyn (m.degree f))
 decreasing_by
-· exact hf'
+· exact deg_reduce
 · apply degree_sub_LTerm_lt
   intro hf0
   apply hf'0
-  simp only [f', sub_eq_zero]
+  simp only [subLTerm, sub_eq_zero]
   nth_rewrite 1 [eq_C_of_degree_eq_zero hf0, hf0]
   simp 
    
 end MonomialOrder
 
 section Lex
-
 
 open Finsupp
 -- The linear order on `Finsupp`s obtained by the lexicographic ordering. -/
@@ -561,40 +563,22 @@ theorem _root_.Finsupp.lex_le_iff {α N : Type*} [LinearOrder α] [LinearOrder N
     a ≤ b ↔ a = b ∨ ∃ i, (∀ j, j< i → ofLex a j = ofLex b j) ∧ ofLex a i < ofLex b i := by
     rw [le_iff_eq_or_lt, Finsupp.lex_lt_iff]
 
-/-
-/-- The linear order on `Finsupp`s obtained by the lexicographic ordering. -/
-noncomputable instance {α N : Type*} [LinearOrder α] [WellFoundedGT α]
-    [LinearOrderedCancelAddCommMonoid N] : 
-    LinearOrderedCancelAddCommMonoid (Lex (α →₀ N)) := 
-  inferInstance
-
-noncomputable instance {α M : Type*} [LinearOrder α] [WellFoundedGT α]
-    [LinearOrderedCancelAddCommMonoid M] :
-    LinearOrderedCancelAddCommMonoid (Lex (α →₀ M)) := inferInstance
--/
-
-/-
-/-- The linear order on `Finsupp`s obtained by the homogeneous lexicographic ordering. -/
-noncomputable instance {M : Type*} [LinearOrderedCancelAddCommMonoid M] :
-    LinearOrderedCancelAddCommMonoid (DegLex (α →₀ M)) where
-  toOrderedCancelAddCommMonoid := inferInstance
-  le_total := DegLex.linearOrder.le_total
-  decidableLE := DegLex.linearOrder.decidableLE
-  min_def := DegLex.linearOrder.min_def
-  max_def := DegLex.linearOrder.max_def
-  compare_eq_compareOfLessAndEq := DegLex.linearOrder.compare_eq_compareOfLessAndEq
--/
+theorem toLex_monotone {σ : Type*} [LinearOrder σ] :
+    Monotone (toLex (α := σ →₀ ℕ)) := by
+  intro a b h
+  rw [← (add_tsub_cancel_of_le h), toLex_add]
+  simp only [AddEquiv.refl_symm, le_add_iff_nonneg_right, ge_iff_le]
+  apply bot_le
 
 noncomputable def MonomialOrder.lex (σ : Type*) [LinearOrder σ] [WellFoundedGT σ] :
     MonomialOrder σ where
   syn := Lex (σ →₀ ℕ)
   locacm := Lex.linearOrderedCancelAddCommMonoid
-  toSyn := AddEquiv.refl _ -- (AddEquiv.refl (Lex (σ →₀ ℕ))).symm
+  toSyn := {
+    toEquiv := toLex
+    map_add' := toLex_add } -- AddEquiv.refl _ -- (AddEquiv.refl (Lex (σ →₀ ℕ))).symm
   wf := Lex.wellFoundedLT
-  toSyn_monotone a b h := by
-    rw [← (add_tsub_cancel_of_le h), map_add]
-    simp only [AddEquiv.refl_symm, le_add_iff_nonneg_right, ge_iff_le]
-    apply bot_le
+  toSyn_monotone := Finsupp.toLex_monotone
 
 noncomputable def MonomialOrder.revlex (σ : Type*) [LinearOrder σ] [WellFoundedLT σ] :
     MonomialOrder σ := MonomialOrder.lex σᵒᵈ 
@@ -658,7 +642,7 @@ protected def DegLex (r : α → α → Prop) (s : ℕ → ℕ → Prop) :
     (α →₀ ℕ) → (α →₀ ℕ) → Prop :=
   (Prod.Lex s (Finsupp.Lex r s)) on (fun x ↦ (x.degree, x))
 
-theorem lexHom_def {r : α → α → Prop} {s : ℕ → ℕ → Prop} {a b : α →₀ ℕ} :
+theorem degLex_def {r : α → α → Prop} {s : ℕ → ℕ → Prop} {a b : α →₀ ℕ} :
     Finsupp.DegLex r s a b ↔
       Prod.Lex s (Finsupp.Lex r s) (a.degree, a) (b.degree, b) :=
   Iff.rfl
@@ -724,6 +708,10 @@ theorem DegLex.le_iff {x y : DegLex (α →₀ ℕ)} :
     · simp [k]
     · simp only [h, k, false_or]
 
+theorem _root_.Finsupp.degree_add {α : Type*} (a b : α →₀ ℕ) :
+    (a + b).degree = a.degree + b.degree := 
+  sum_add_index' (h := fun _ ↦ id) (congrFun rfl) fun _ _ ↦ congrFun rfl
+
 noncomputable instance : OrderedCancelAddCommMonoid (DegLex (α →₀ ℕ)) where
   toAddCommMonoid := ofDegLex.addCommMonoid
   toPartialOrder := DegLex.partialOrder
@@ -772,15 +760,34 @@ instance DegLex.wellFoundedLT [WellFoundedGT α] :
     WellFoundedLT (DegLex (α →₀ ℕ)) :=
   ⟨DegLex.wellFounded wellFounded_gt wellFounded_lt fun n ↦ (zero_le n).not_lt⟩
 
-
-noncomputable def MonomialOrder.deglex (σ : Type*) [LinearOrder σ] [WellFoundedGT σ] :
+/-- The RevLex order on monomials -/
+noncomputable def MonomialOrder.degLex (σ : Type*) [LinearOrder σ] [WellFoundedGT σ] :
     MonomialOrder σ where
   syn := DegLex (σ →₀ ℕ)
   locacm := inferInstance
-  toSyn := (AddEquiv.refl (DegLex (σ →₀ ℕ))).symm
+  toSyn := { toEquiv := toDegLex, map_add' := toDegLex_add }
   wf := DegLex.wellFoundedLT
-  toSyn_monotone := sorry
+  toSyn_monotone a b h := by
+    change toDegLex a ≤ toDegLex b
+    simp only [DegLex.le_iff, ofDegLex_toDegLex]
+    by_cases ha : a.degree < b.degree
+    · exact Or.inl ha
+    · refine Or.inr ⟨le_antisymm ?_ (not_lt.mp ha), toLex_monotone h⟩
+      rw [← add_tsub_cancel_of_le h, degree_add]
+      exact Nat.le_add_right a.degree (b - a).degree
 
+theorem MonomialOrder.degLex_lt_iff {σ : Type*} [LinearOrder σ] [WellFoundedGT σ] 
+    {a b : σ →₀ ℕ} : 
+    (MonomialOrder.degLex σ).toSyn a < (MonomialOrder.degLex σ).toSyn b 
+      ↔ toDegLex a < toDegLex b :=
+  Iff.rfl
+
+/-- The degRevLex order on monomials -/
+noncomputable def MonomialOrder.degRevLex (σ : Type*) [LinearOrder σ] [WellFoundedLT σ] :
+    MonomialOrder σ :=
+  MonomialOrder.degLex σᵒᵈ
+
+end Finsupp
 
 end degLex
 
@@ -1100,5 +1107,4 @@ theorem Finsupp.isDickson (σ : Type*) [Finite σ] : isDickson (σ →₀ ℕ) :
   obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin σ
   exact Finsupp.isDickson_equiv e.symm (Finsupp.isDickson_nat n)
 
-  
 end Dickson
