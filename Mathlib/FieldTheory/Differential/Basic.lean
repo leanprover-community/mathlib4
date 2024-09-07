@@ -50,7 +50,7 @@ lemma logDeriv_pow (n : ℕ) (a : R) : logDeriv (a ^ n) = n * logDeriv a := by
   induction n with
   | zero => simp
   | succ n h2 =>
-    obtain rfl | hb := eq_or_ne b 0
+    obtain rfl | hb := eq_or_ne a 0
     · simp
     · rw [Nat.cast_add, Nat.cast_one, add_mul, one_mul, ← h2, pow_succ, logDeriv_mul] <;>
       simp [hb]
