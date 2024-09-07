@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+# Make this script robust against unintentional errors.
+# See e.g. http://redsymbol.net/articles/unofficial-bash-strict-mode/ for explanation.
+set -euo pipefail
+IFS=$'\n\t'
+
 # `./scripts/technical-debt-metrics.sh` returns a tally of some technical debts in current Mathlib,
 # reporting also the change with respect to the same counts in
 # Mathlib from last week.
