@@ -284,6 +284,12 @@ theorem algebraMap_injective [CommRing R] [Ring A] [Nontrivial A] [Algebra R A]
     [NoZeroSMulDivisors R A] : Function.Injective (algebraMap R A) := by
   simpa only [algebraMap_eq_smul_one'] using smul_left_injective R one_ne_zero
 
+@[simp]
+lemma algebraMap_eq_zero_iff [CommRing R] [Ring A] [Nontrivial A] [Algebra R A]
+    [NoZeroSMulDivisors R A] (v : R) : algebraMap R A v = 0 ↔ v = 0 := by
+  convert (algebraMap_injective R A).eq_iff
+  simp
+
 theorem _root_.NeZero.of_noZeroSMulDivisors (n : ℕ) [CommRing R] [NeZero (n : R)] [Ring A]
     [Nontrivial A] [Algebra R A] [NoZeroSMulDivisors R A] : NeZero (n : A) :=
   NeZero.nat_of_injective <| NoZeroSMulDivisors.algebraMap_injective R A
