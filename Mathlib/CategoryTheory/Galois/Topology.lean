@@ -3,7 +3,7 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Endomorphism
+import Mathlib.CategoryTheory.Comma.Arrow
 import Mathlib.CategoryTheory.FintypeCat
 import Mathlib.Topology.Algebra.Group.Basic
 
@@ -66,44 +66,19 @@ instance : TopologicalSpace (Aut F) :=
 automorphisms. -/
 lemma autEmbedding_range :
     Set.range (autEmbedding F) =
-      { a | ∀ (X Y : C) (f : X ⟶ Y), F.map f ≫ (a Y).hom = (a X).hom ≫ F.map f } := by
+      ⋂ (f : Arrow C), { a | F.map f.hom ≫ (a f.right).hom = (a f.left).hom ≫ F.map f.hom } := by
   ext a
-  simp only [Set.mem_range, Set.mem_setOf_eq]
-  constructor
-  · intro ⟨σ, h⟩
-    rw [← h]
-    exact σ.hom.naturality
-  · intro h
-    use NatIso.ofComponents (fun X => a X)
+  simp only [Set.mem_range, id_obj, Set.mem_iInter, Set.mem_setOf_eq]
+  refine ⟨fun ⟨σ, h⟩ i ↦ h.symm ▸ σ.hom.naturality i.hom, fun h ↦ ?_⟩
+  · use NatIso.ofComponents (fun X => a X) (fun {X Y} f ↦ h ⟨X, Y, f⟩)
     rfl
 
 /-- The image of `Aut F` in `∀ X, Aut (F.obj X)` is closed. -/
 lemma autEmbedding_range_isClosed : IsClosed (Set.range (autEmbedding F)) := by
-  rw [autEmbedding_range, ← isOpen_compl_iff, isOpen_iff_forall_mem_open]
-  intro a h
-  simp only [Set.mem_compl_iff, Set.mem_setOf_eq, not_forall] at h
-  obtain ⟨X, Y, f, (h : (a Y).hom ∘ F.map f ≠ F.map f ∘ (a X).hom)⟩ := h
-  rw [Function.ne_iff] at h
-  obtain ⟨x, hx⟩ := h
-  let sx (A : C) : Set (Aut (F.obj A)) :=
-    { γ | ∀ (h : X ⟶ A), γ.hom (F.map h x) = (a A).hom (F.map h x) }
-  let sy (A : C) : Set (Aut (F.obj A)) :=
-    { γ | ∀ (h : Y ⟶ A), γ.hom (F.map h (F.map f x)) = (a A).hom (F.map h (F.map f x)) }
-  have hx : IsOpen (Set.pi {X} sx) := isOpen_set_pi (Set.toFinite {X}) (fun _ _ ↦ trivial)
-  have hy : IsOpen (Set.pi {Y} sy) := isOpen_set_pi (Set.toFinite {Y}) (fun _ _ ↦ trivial)
-  use Set.pi {X} sx ∩ Set.pi {Y} sy
-  refine ⟨?_, IsOpen.inter hx hy, ?_⟩
-  · intro γ hγ
-    simp only [Set.singleton_pi] at hγ
-    simp only [Set.mem_compl_iff, Set.mem_setOf_eq, not_forall]
-    use X, Y, f
-    rw [← ne_eq, Function.ne_iff]
-    use x
-    simp only [FintypeCat.comp_apply]
-    have hty : (γ Y).hom (F.map f x) = (a Y).hom (F.map f x) := by simpa using hγ.2 (𝟙 Y)
-    have htx : (γ X).hom x = (a X).hom x := by simpa using hγ.1 (𝟙 X)
-    rwa [htx, hty]
-  · simp [sx, sy]
+  rw [autEmbedding_range]
+  refine isClosed_iInter (fun f ↦ isClosed_eq (X := F.obj f.left → F.obj f.right) ?_ ?_)
+  · fun_prop
+  · fun_prop
 
 lemma autEmbedding_closedEmbedding : ClosedEmbedding (autEmbedding F) where
   induced := rfl
