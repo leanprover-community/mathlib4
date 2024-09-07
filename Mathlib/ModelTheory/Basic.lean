@@ -83,7 +83,7 @@ protected def sum (L' : Language.{u', v'}) : Language :=
 /-- The type of constants in a given language. -/
 -- Porting note(#5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
-protected def Constants :=
+protected abbrev Constants :=
   L.Functions 0
 
 /-- The type of symbols in a given language. -/
