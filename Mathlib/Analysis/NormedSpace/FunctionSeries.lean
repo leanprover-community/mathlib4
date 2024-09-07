@@ -5,7 +5,6 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Normed.Group.InfiniteSum
 import Mathlib.Topology.Instances.ENNReal
-import Mathlib.Data.Finset.Basic
 
 /-!
 # Continuity of series of functions
@@ -74,9 +73,9 @@ theorem tendstoUniformlyOn_tsum_eventually {ι : Type*} {f : ι → β → F} {u
     · intro i
       apply hN2
       apply i.2
-    · apply (A.subtype _)
-    · apply (hu.subtype _)
-  · apply (A.subtype _)
+    · exact (A.subtype _)
+    · exact (hu.subtype _)
+  · exact (A.subtype _)
 
 /-- An infinite sum of functions with eventually summable sup norm is the uniform limit of its
 partial sums. Version relative to a set, with index set `ℕ`. -/
@@ -94,8 +93,8 @@ theorem tendstoUniformlyOn_tsum_nat_eventually {α F : Type*} [NormedAddCommGrou
   apply hN n _ x hx
   by_contra h
   simp only [not_le] at h
-  rw [← @Finset.mem_range] at h
-  exact hn (hb h )
+  rw [← Finset.mem_range] at h
+  exact hn (hb h)
 
 /-- An infinite sum of functions with summable sup norm is the uniform limit of its partial sums.
 Version with general index set. -/
