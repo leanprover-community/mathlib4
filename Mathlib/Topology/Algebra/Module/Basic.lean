@@ -2369,7 +2369,7 @@ theorem isOpenMap_mkQ [TopologicalAddGroup M] : IsOpenMap S.mkQ :=
   QuotientAddGroup.isOpenMap_coe S.toAddSubgroup
 
 instance topologicalAddGroup_quotient [TopologicalAddGroup M] : TopologicalAddGroup (M ⧸ S) :=
-  _root_.topologicalAddGroup_quotient S.toAddSubgroup
+  inferInstanceAs <| TopologicalAddGroup (M ⧸ S.toAddSubgroup)
 
 instance continuousSMul_quotient [TopologicalSpace R] [TopologicalAddGroup M] [ContinuousSMul R M] :
     ContinuousSMul R (M ⧸ S) := by
