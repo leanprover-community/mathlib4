@@ -165,12 +165,6 @@ class MonadCoherehnceHom (m : Type → Type) where
   /-- Unfold a coherence isomorphism. -/
   unfoldM (α : CoherenceHom) : m Mor₂Iso
 
--- namespace CoherenceHom
-
--- export MonadCoherehnceHom (unfoldM)
-
--- end CoherenceHom
-
 /-- The underlying lean expression of a 2-isomorphism. -/
 def StructuralAtom.e : StructuralAtom → Expr
   | .associator e .. => e
@@ -448,6 +442,7 @@ inductive WhiskerRight : Type
   | whisker (e : Mor₂) (η : WhiskerRight) (f : Atom₁) : WhiskerRight
   deriving Inhabited
 
+/-- The underlying `Mor₂` term of a `WhiskerRight` term. -/
 def WhiskerRight.e : WhiskerRight → Mor₂
   | .of η => .of η
   | .whisker e .. => e
@@ -459,6 +454,7 @@ inductive HorizontalComp : Type
     HorizontalComp
   deriving Inhabited
 
+/-- The underlying `Mor₂` term of a `HorizontalComp` term. -/
 def HorizontalComp.e : HorizontalComp → Mor₂
   | .of η => η.e
   | .cons e .. => e
@@ -471,12 +467,12 @@ inductive WhiskerLeft : Type
   | whisker (e : Mor₂) (f : Atom₁) (η : WhiskerLeft) : WhiskerLeft
   deriving Inhabited
 
+/-- The underlying `Mor₂` term of a `WhiskerLeft` term. -/
 def WhiskerLeft.e : WhiskerLeft → Mor₂
   | .of η => η.e
   | .whisker e .. => e
 
-abbrev Structural := Mor₂Iso
-
+/-- Whether a given 2-isomorphism is structural or not. -/
 def Mor₂Iso.isStructural (α : Mor₂Iso) : Bool :=
   match α with
   | .structuralAtom _ => true
@@ -488,6 +484,10 @@ def Mor₂Iso.isStructural (α : Mor₂Iso) : Bool :=
   | .coherenceComp _ _ _ _ _ _ η θ => η.isStructural && θ.isStructural
   | .of _ => false
 
+/-- Expressions for structural isomorphisms. We do not impose the condition `isStructural` since
+it is not needed to write the tactic. -/
+abbrev Structural := Mor₂Iso
+
 /-- Normalized expressions for 2-morphisms. -/
 inductive NormalExpr : Type
   /-- Construct the expression for a structural 2-morphism. -/
@@ -496,21 +496,31 @@ inductive NormalExpr : Type
   | cons (e : Mor₂) (α : Structural) (η : WhiskerLeft) (ηs : NormalExpr) : NormalExpr
   deriving Inhabited
 
+/-- The underlying `Mor₂` term of a `NormalExpr` term. -/
 def NormalExpr.e : NormalExpr → Mor₂
   | .nil e .. => e
   | .cons e .. => e
 
+/-- A monad equipped with the ability to construct `WhiskerRight` terms. -/
 class MonadWhiskerRight (m : Type → Type) where
+  /-- The expression for the right whiskering `η ▷ f`. -/
   whiskerRightM (η : WhiskerRight) (f : Atom₁) : m WhiskerRight
 
+/-- A monad equipped with the ability to construct `HorizontalComp` terms. -/
 class MonadHorizontalComp (m : Type → Type) extends MonadWhiskerRight m where
+  /-- The expression for the horizontal composition `η ◫ ηs`. -/
   hConsM (η : WhiskerRight) (ηs : HorizontalComp) : m HorizontalComp
 
+/-- A monad equipped with the ability to construct `WhiskerLeft` terms. -/
 class MonadWhiskerLeft (m : Type → Type) extends MonadHorizontalComp m where
+  /-- The expression for the left whiskering `f ▷ η`. -/
   whiskerLeftM (f : Atom₁) (η : WhiskerLeft) : m WhiskerLeft
 
+/-- A monad equipped with the ability to construct `NormalExpr` terms. -/
 class MonadNormalExpr (m : Type → Type) extends MonadWhiskerLeft m where
+  /-- The expression for the structural 2-morphism `α`. -/
   nilM (α : Structural) : m NormalExpr
+  /-- The expression for the normalized 2-morphism `α ≫ η ≫ ηs`. -/
   consM (headStructural : Structural) (η : WhiskerLeft) (ηs : NormalExpr) : m NormalExpr
 
 /-- The domain of a 2-morphism. -/
@@ -553,7 +563,7 @@ def NormalExpr.tgtM [MonadMor₁ m] : NormalExpr → m Mor₁
   | NormalExpr.nil _ η => η.tgtM
   | NormalExpr.cons _ _ _ ηs => ηs.tgtM
 
-section
+namespace NormalExpr
 
 variable [MonadMor₂Iso m] [MonadNormalExpr m]
 
@@ -562,39 +572,40 @@ def NormalExpr.idM (f : Mor₁) : m NormalExpr := do
   MonadNormalExpr.nilM <| .structuralAtom <| ← MonadMor₂Iso.id₂M f
 
 /-- The associator as a term of `normalExpr`. -/
-def NormalExpr.associatorM (f g h : Mor₁) : m NormalExpr := do
+def associatorM (f g h : Mor₁) : m NormalExpr := do
   MonadNormalExpr.nilM <| .structuralAtom <| ← MonadMor₂Iso.associatorM f g h
 
 /-- The inverse of the associator as a term of `normalExpr`. -/
-def NormalExpr.associatorInvM (f g h : Mor₁) : m NormalExpr := do
-  MonadNormalExpr.nilM <| ← MonadMor₂Iso.symmM <| .structuralAtom <| ← MonadMor₂Iso.associatorM f g h
+def associatorInvM (f g h : Mor₁) : m NormalExpr := do
+  MonadNormalExpr.nilM <| ← MonadMor₂Iso.symmM <|
+    .structuralAtom <| ← MonadMor₂Iso.associatorM f g h
 
 /-- The left unitor as a term of `normalExpr`. -/
-def NormalExpr.leftUnitorM (f : Mor₁) : m NormalExpr := do
+def leftUnitorM (f : Mor₁) : m NormalExpr := do
   MonadNormalExpr.nilM <| .structuralAtom <| ← MonadMor₂Iso.leftUnitorM f
 
 /-- The inverse of the left unitor as a term of `normalExpr`. -/
-def NormalExpr.leftUnitorInvM (f : Mor₁) : m NormalExpr := do
+def leftUnitorInvM (f : Mor₁) : m NormalExpr := do
   MonadNormalExpr.nilM <| ← MonadMor₂Iso.symmM <| .structuralAtom <| ← MonadMor₂Iso.leftUnitorM f
 
 /-- The right unitor as a term of `normalExpr`. -/
-def NormalExpr.rightUnitorM (f : Mor₁) : m NormalExpr := do
+def rightUnitorM (f : Mor₁) : m NormalExpr := do
   MonadNormalExpr.nilM <| .structuralAtom <| ← MonadMor₂Iso.rightUnitorM f
 
 /-- The inverse of the right unitor as a term of `normalExpr`. -/
-def NormalExpr.rightUnitorInvM (f : Mor₁) : m NormalExpr := do
+def rightUnitorInvM (f : Mor₁) : m NormalExpr := do
   MonadNormalExpr.nilM <| ← MonadMor₂Iso.symmM <| .structuralAtom <| ← MonadMor₂Iso.rightUnitorM f
 
 /-- Construct a `NormalExpr` expression from a `WhiskerLeft` expression. -/
-def NormalExpr.ofM [MonadMor₁ m] (η : WhiskerLeft) : m NormalExpr := do
+def ofM [MonadMor₁ m] (η : WhiskerLeft) : m NormalExpr := do
   MonadNormalExpr.consM ((.structuralAtom <| ← MonadMor₂Iso.id₂M (← η.srcM))) η
     (← MonadNormalExpr.nilM ((.structuralAtom <| ← MonadMor₂Iso.id₂M (← η.tgtM))))
 
 /-- Construct a `NormalExpr` expression from a Lean expression for an atomic 2-morphism. -/
-def NormalExpr.ofAtomM [MonadMor₁ m] (η : Atom) : m NormalExpr :=
+def ofAtomM [MonadMor₁ m] (η : Atom) : m NormalExpr :=
   NormalExpr.ofM <| .of <| .of <| .of η
 
-end
+end NormalExpr
 
 /-- Convert a `NormalExpr` expression into a list of `WhiskerLeft` expressions. -/
 def NormalExpr.toList : NormalExpr → List WhiskerLeft
