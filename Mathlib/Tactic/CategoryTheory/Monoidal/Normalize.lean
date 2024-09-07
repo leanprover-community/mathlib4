@@ -439,48 +439,6 @@ instance : MkEvalWhiskerRight MonoidalM where
     have e_η₄ : Q((α_ _ _ _).hom ≫ $η₃ = $η₄) := e_η₄
     have e_η₅ : Q((whiskerRightIso $α $k).hom ≫ $η₄ = $η₅) := e_η₅
     return q(evalWhiskerRight_cons_whisker $e_η₁ $e_η₂ $e_ηs₁ $e_ηs₂ $e_η₃ $e_η₄ $e_η₅)
-/-
-  mkEvalWhiskerRightComp g h η η₁ η₂ η₃ η₄ e_η₁ e_η₂ e_η₃ e_η₄ := do
-    let ctx ← read
-    let _bicat := ctx.instBicategory
-    let f ← η.srcM
-    let f' ← η.tgtM
-    have a : Q($ctx.B) := f.src.e
-    have b : Q($ctx.B) := f.tgt.e
-    have c : Q($ctx.B) := g.tgt.e
-    have d : Q($ctx.B) := h.tgt.e
-    have f : Q($a ⟶ $b) := f.e
-    have f' : Q($a ⟶ $b) := f'.e
-    have g : Q($b ⟶ $c) := g.e
-    have h : Q($c ⟶ $d) := h.e
-    have η : Q($f ⟶ $f') := η.e.e
-    have η₁ : Q($f ≫ $g ⟶ $f' ≫ $g) := η₁.e.e
-    have η₂ : Q(($f ≫ $g) ≫ $h ⟶ ($f' ≫ $g) ≫ $h) := η₂.e.e
-    have η₃ : Q(($f ≫ $g) ≫ $h ⟶ $f' ≫ ($g ≫ $h)) := η₃.e.e
-    have η₄ : Q($f ≫ ($g ≫ $h) ⟶ $f' ≫ ($g ≫ $h)) := η₄.e.e
-    have e_η₁ : Q($η ▷ $g = $η₁) := e_η₁
-    have e_η₂ : Q($η₁ ▷ $h = $η₂) := e_η₂
-    have e_η₃ : Q($η₂ ≫ (α_ _ _ _).hom = $η₃) := e_η₃
-    have e_η₄ : Q((α_ _ _ _).inv ≫ $η₃ = $η₄) := e_η₄
-    return q(evalWhiskerRight_comp $e_η₁ $e_η₂ $e_η₃ $e_η₄)
-  mkEvalWhiskerRightId η η₁ η₂ e_η₁ e_η₂ := do
-    let ctx ← read
-    let _bicat := ctx.instBicategory
-    let f ← η.srcM
-    let g ← η.tgtM
-    have a : Q($ctx.B) := f.src.e
-    have b : Q($ctx.B) := f.tgt.e
-    have f : Q($a ⟶ $b) := f.e
-    have g : Q($a ⟶ $b) := g.e
-    have η : Q($f ⟶ $g) := η.e.e
-    have η₁ : Q($f ⟶ $g ≫ 𝟙 $b) := η₁.e.e
-    have η₂ : Q($f ≫ 𝟙 $b ⟶ $g ≫ 𝟙 $b) := η₂.e.e
-    have e_η₁ : Q($η ≫ (ρ_ _).inv = $η₁) := e_η₁
-    have e_η₂ : Q((ρ_ _).hom ≫ $η₁ = $η₂) := e_η₂
-    return q(evalWhiskerRight_id $e_η₁ $e_η₂)
-
--/
-
   mkEvalWhiskerRightComp g h η η₁ η₂ η₃ η₄ e_η₁ e_η₂ e_η₃ e_η₄ := do
     let ctx ← read
     let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
@@ -726,23 +684,6 @@ instance : MkEval MonoidalM where
     have e_θ : Q($θ = $θ') := e_θ
     have e_ηθ : Q($η' ≫ $θ' = $ι) := e_ηθ
     return q(eval_comp $e_η $e_θ $e_ηθ)
---     theorem eval_whiskerLeft {f g h : C}
---     {η η' : g ⟶ h} {θ : f ⊗ g ⟶ f ⊗ h}
---     (e_η : η = η') (e_θ : f ◁ η' = θ) :
---     f ◁ η = θ := by
---   simp [e_η, e_θ]
-
--- theorem eval_whiskerRight {f g h : C}
---     {η η' : f ⟶ g} {θ : f ⊗ h ⟶ g ⊗ h}
---     (e_η : η = η') (e_θ : η' ▷ h = θ) :
---     η ▷ h = θ := by
---   simp [e_η, e_θ]
-
--- theorem eval_tensorHom {f g h i : C}
---     {η η' : f ⟶ g} {θ θ' : h ⟶ i} {ι : f ⊗ h ⟶ g ⊗ i}
---     (e_η : η = η') (e_θ : θ = θ') (e_ι : η' ⊗ θ' = ι) :
---     η ⊗ θ = ι := by
---   simp [e_η, e_θ, e_ι]
   mkEvalWhiskerLeft f η η' θ e_η e_θ := do
     let ctx ← read
     let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
