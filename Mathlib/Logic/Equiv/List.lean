@@ -117,7 +117,7 @@ def encodableOfList [DecidableEq α] (l : List α) (H : ∀ x, x ∈ l) : Encoda
 /-- A finite type is encodable. Because the encoding is not unique, we wrap it in `Trunc` to
 preserve computability. -/
 def _root_.Fintype.truncEncodable (α : Type*) [DecidableEq α] [Fintype α] : Trunc (Encodable α) :=
-  @Quot.recOnSubsingleton' _ _ (fun s : Multiset α => (∀ x : α, x ∈ s) → Trunc (Encodable α)) _
+  @Quot.recOnSubsingleton _ _ (fun s : Multiset α => (∀ x : α, x ∈ s) → Trunc (Encodable α)) _
     Finset.univ.1 (fun l H => Trunc.mk <| encodableOfList l H) Finset.mem_univ
 
 /-- A noncomputable way to arbitrarily choose an ordering on a finite type.
@@ -289,7 +289,7 @@ instance multiset : Denumerable (Multiset α) :=
         raise_lower (List.sorted_cons.2 ⟨fun n _ => Nat.zero_le n, (s.map encode).sort_sorted _⟩)
       simp [-Multiset.map_coe, this],
      fun n => by
-      simp [-Multiset.map_coe, List.mergeSort_eq_self _ (raise_sorted _ _), lower_raise]⟩
+      simp [-Multiset.map_coe, List.mergeSort'_eq_self _ (raise_sorted _ _), lower_raise]⟩
 
 end Multiset
 
@@ -344,7 +344,7 @@ instance finset : Denumerable (Finset α) :=
           raise_lower' (fun n _ => Nat.zero_le n) (Finset.sort_sorted_lt _)],
       fun n => by
       simp [-Multiset.map_coe, Finset.map, raise'Finset, Finset.sort,
-        List.mergeSort_eq_self (· ≤ ·) ((raise'_sorted _ _).imp (@le_of_lt _ _)), lower_raise']⟩
+        List.mergeSort'_eq_self (· ≤ ·) ((raise'_sorted _ _).imp (@le_of_lt _ _)), lower_raise']⟩
 
 end Finset
 

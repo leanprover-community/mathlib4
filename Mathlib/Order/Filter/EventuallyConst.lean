@@ -133,7 +133,7 @@ variable [One β] {s : Set α} {c : β}
 @[to_additive]
 lemma of_mulIndicator_const (h : EventuallyConst (s.mulIndicator fun _ ↦ c) l) (hc : c ≠ 1) :
     EventuallyConst s l := by
-  simpa [(· ∘ ·), hc, imp_false] using h.comp (· = c)
+  simpa [Function.comp_def, hc, imp_false] using h.comp (· = c)
 
 @[to_additive]
 theorem mulIndicator_const (h : EventuallyConst s l) (c : β) :

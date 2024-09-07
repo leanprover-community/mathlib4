@@ -40,18 +40,9 @@ def Types.binaryProductAdjunction (X : Type v₁) :
 instance (X : Type v₁) : (Types.binaryProductFunctor.obj X).IsLeftAdjoint :=
   ⟨_, ⟨Types.binaryProductAdjunction X⟩⟩
 
--- Porting note: this instance should be moved to a higher file.
-instance : HasFiniteProducts (Type v₁) :=
-  hasFiniteProducts_of_hasProducts.{v₁} _
-
 instance : CartesianClosed (Type v₁) := CartesianClosed.mk _
   (fun X => Exponentiable.mk _ _
     ((Types.binaryProductAdjunction X).ofNatIsoLeft (Types.binaryProductIsoProd.app X)))
-
--- Porting note: in mathlib3, the assertion was for `(C ⥤ Type u₁)`, but then Lean4 was
--- confused with universes. It makes no harm to relax the universe assumptions here.
-instance {C : Type u₁} [Category.{v₁} C] : HasFiniteProducts (C ⥤ Type u₂) :=
-  hasFiniteProducts_of_hasProducts _
 
 instance {C : Type v₁} [SmallCategory C] : CartesianClosed (C ⥤ Type v₁) :=
   CartesianClosed.mk _
@@ -59,6 +50,31 @@ instance {C : Type v₁} [SmallCategory C] : CartesianClosed (C ⥤ Type v₁) :
       letI := FunctorCategory.prodPreservesColimits F
       have := Presheaf.isLeftAdjoint_of_preservesColimits (prod.functor.obj F)
       exact Exponentiable.mk _ _ (Adjunction.ofIsLeftAdjoint (prod.functor.obj F)))
+
+-- TODO: once we have `MonoidalClosed` instances for functor categories into general monoidal
+-- closed categories, replace this with that, as it will be a more explicit construction.
+/-- This is not a good instance because of the universe levels. Below is the instance where the
+target category is `Type (max u₁ v₁)`. -/
+def cartesianClosedFunctorToTypes {C : Type u₁} [Category.{v₁} C] :
+    CartesianClosed (C ⥤ Type (max u₁ v₁ u₂)) :=
+  let e : (ULiftHom.{max u₁ v₁ u₂} (ULift.{max u₁ v₁ u₂} C)) ⥤ Type (max u₁ v₁ u₂) ≌
+      C ⥤ Type (max u₁ v₁ u₂) :=
+      Functor.asEquivalence ((whiskeringLeft _ _ _).obj
+        (ULift.equivalence.trans ULiftHom.equiv).functor)
+  cartesianClosedOfEquiv e
+
+-- TODO: once we have `MonoidalClosed` instances for functor categories into general monoidal
+-- closed categories, replace this with that, as it will be a more explicit construction.
+instance {C : Type u₁} [Category.{v₁} C] : CartesianClosed (C ⥤ Type (max u₁ v₁)) :=
+  cartesianClosedFunctorToTypes
+
+-- TODO: once we have `MonoidalClosed` instances for functor categories into general monoidal
+-- closed categories, replace this with that, as it will be a more explicit construction.
+instance {C : Type u₁} [Category.{v₁} C] [EssentiallySmall.{v₁} C] :
+    CartesianClosed (C ⥤ Type v₁) :=
+  let e : (SmallModel C) ⥤ Type v₁ ≌ C ⥤ Type v₁ :=
+    Functor.asEquivalence ((whiskeringLeft _ _ _).obj (equivSmallModel _).functor)
+  cartesianClosedOfEquiv e
 
 end CartesianClosed
 
