@@ -355,7 +355,6 @@ protected theorem IsPredLimit.isPredPrelimit (h : IsPredLimit a) : IsPredPrelimi
 theorem isSuccLimit_toDual_iff : IsSuccLimit (toDual a) ↔ IsPredLimit a := by
   simp [IsSuccLimit, IsPredLimit]
 
-#exit
 @[simp]
 theorem isPredLimit_toDual_iff : IsPredLimit (toDual a) ↔ IsSuccLimit a := by
   simp [IsSuccLimit, IsPredLimit]
