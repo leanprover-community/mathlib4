@@ -50,8 +50,7 @@ partial sums. Version relative to a set, with general index set. -/
 theorem tendstoUniformlyOn_tsum_eventually {ι : Type*} {f : ι → β → F} {u : ι → ℝ}
     (hu : Summable u) {s : Set β}
     (hfu : ∃ a : Finset ι, ∀ᵉ (b ⊇ a) (x ∈ s) (n ∉ b), ‖f n x‖ ≤ u n) :
-    TendstoUniformlyOn (fun t : Finset ι => fun x => ∑ n ∈ t, f n x)
-    (fun x => ∑' n, f n x) atTop s := by
+    TendstoUniformlyOn (fun t x => ∑ n ∈ t, f n x) (fun x => ∑' n, f n x) atTop s := by
   classical
   refine tendstoUniformlyOn_iff.2 fun ε εpos => ?_
   have := (tendsto_order.1 (tendsto_tsum_compl_atTop_zero u)).2 _ εpos
