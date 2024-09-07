@@ -49,6 +49,7 @@ instance instFunLike : FunLike (PerfectPairing R M N) M (N →ₗ[R] R) where
   coe f := f.toLin
   coe_injective' x y h := by cases x; cases y; simpa using h
 
+@[simp]
 lemma toLin_apply (p : PerfectPairing R M N) {x : M} : p.toLin x = p x := by
   rfl
 
