@@ -99,14 +99,6 @@ def exception' (msg : MessageData) : TacticM Unit := do
     -- There might not be any goals
     throwError msg
 
-/-- Sending 2-morphisms in `FreeBicategory B` to those in `B`. -/
-def mkLiftMap₂LiftExprAux {a b : FreeBicategory B} {f g : a ⟶ b} (η : f ⟶ g) :=
-  (FreeBicategory.lift (Prefunctor.id _)).map₂ η
-
-/-- Same as `LiftHom₂.lift`, but the `LiftHom₂ η` instance is explicit. -/
-abbrev LiftHom₂.lift' {f g : a ⟶ b} [LiftHom f] [LiftHom g] (η : f ⟶ g) (inst : LiftHom₂ η) :=
-  inst.lift
-
 set_option quotPrecheck false in
 /-- Auxiliary definition for `bicategorical_coherence`. -/
 -- We could construct this expression directly without using `elabTerm`,
