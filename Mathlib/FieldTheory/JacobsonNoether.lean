@@ -41,8 +41,6 @@ lemma conj_nonComm_Algebra {D : Type*} [DivisionRing D] (s : ℕ) (a d : D) (ha 
 
 namespace JacobsonNoether
 
-open Classical Polynomial
-
 variable {D : Type*} [DivisionRing D]
 
 local notation3 "k" => (Subring.center D)
@@ -112,6 +110,8 @@ private lemma δ_iterate_succ (x y : D) (n : ℕ) :
 
 variable [Algebra.IsAlgebraic (Subring.center D) D]
 
+open Polynomial Classical
+
 -- *Filippo* Change name
 -- This *should not* be private
 lemma exists_pow_mem_center_ofInseparable (p : ℕ) [Fact p.Prime] [CharP D p] (a : D)
@@ -179,9 +179,7 @@ theorem JacobsonNoether_charP (p : ℕ) [Fact p.Prime] [CharP D p]
     set t := (Nat.find exist - 1 : ℕ) with ht
     by_cases choice : 0 < t
     · have := @Nat.find_min (H := exist) _ t ?_
-      · rw [not_and, ht, Nat.sub_add_cancel] at this
-        · exact this choice
-        · exact le_trans choice (Nat.sub_le (Nat.find exist) 1)
+      · exact (@Nat.sub_add_cancel (Nat.find exist) 1 (by omega) ▸ ht ▸ not_and.1 this) choice
       · exact Nat.sub_one_lt <| ne_of_gt (Nat.find_spec exist).1
     · rw [not_lt, Nat.le_zero] at choice
       have := Nat.eq_add_of_sub_eq (Nat.find_spec exist).1 ht.symm
@@ -223,9 +221,8 @@ theorem JacobsonNoether_charP (p : ℕ) [Fact p.Prime] [CharP D p]
   have tired : 1 + a⁻¹ * d * a = d := by
     calc
       _ = a⁻¹ * (a * d - d * a + d * a) := by
-        simp only [mul_assoc, deq, left_distrib, inv_mul_cancel₀ ha₀]
-      _ = (a⁻¹ * a) * d := by rw [sub_add_cancel, mul_assoc]
-      _ = _ := by simp only [inv_mul_cancel₀ ha₀, one_mul]
+        rw [mul_assoc, deq, left_distrib, inv_mul_cancel₀ ha₀]
+      _ = _ := by rw [sub_add_cancel, ← mul_assoc, inv_mul_cancel₀ ha₀, one_mul]
   -- The natural `r` below is such that `d ^ (p ^ r) ∈ k`.
   obtain ⟨r, hr⟩ := (exists_pow_mem_center_ofInseparable p d hinsep)
 
