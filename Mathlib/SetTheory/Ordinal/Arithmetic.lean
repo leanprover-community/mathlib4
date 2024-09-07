@@ -2255,9 +2255,11 @@ theorem sup_mul_nat (o : Ordinal) : (sup fun n : ℕ => o * n) = o * ω := by
 
 end Ordinal
 
-variable {α : Type u} {r : α → α → Prop} {a b : α}
+variable {α : Type u} {a b : α}
 
 namespace Acc
+
+variable {r : α → α → Prop}
 
 /-- The rank of an element `a` accessible under a relation `r` is defined inductively as the
 smallest ordinal greater than the ranks of all elements below it (i.e. elements `b` such that
@@ -2279,9 +2281,9 @@ theorem rank_lt_of_rel (hb : Acc r b) (h : r a b) : (hb.inv h).rank < hb.rank :=
 
 end Acc
 
-namespace WellFounded
+namespace IsWellFounded
 
-variable (hwf : WellFounded r)
+variable (r : α → α → Prop) [hwf : IsWellFounded α r]
 
 /-- The rank of an element `a` under a well-founded relation `r` is defined inductively as the
 smallest ordinal greater than the ranks of all elements below it (i.e. elements `b` such that
@@ -2294,12 +2296,45 @@ theorem rank_eq :
   rw [rank, Acc.rank_eq]
   rfl
 
+variable {r} in
 theorem rank_lt_of_rel (h : r a b) : hwf.rank a < hwf.rank b :=
   Acc.rank_lt_of_rel _ h
 
+end IsWellFounded
+
+theorem WellFoundedLT.rank_strictMono [Preorder α] [WellFoundedLT α] :
+    StrictMono (IsWellFounded.rank (α := α) (· < ·)) :=
+  fun _ _ => IsWellFounded.rank_lt_of_rel
+
+theorem WellFoundedGT.rank_strictAnti [Preorder α] [WellFoundedGT α] :
+    StrictAnti (IsWellFounded.rank (α := α) (· > ·)) :=
+  fun _ _ a => IsWellFounded.rank_lt_of_rel a
+
+namespace WellFounded
+
+set_option linter.deprecated false
+
+variable {r : α → α → Prop} (hwf : WellFounded r)
+
+@[deprecated IsWellFounded.rank (since := "2024-09-07")]
+noncomputable def rank (a : α) : Ordinal.{u} :=
+  (hwf.apply a).rank
+
+@[deprecated IsWellFounded.rank_eq (since := "2024-09-07")]
+theorem rank_eq :
+    hwf.rank a = Ordinal.sup.{u, u} fun b : { b // r b a } => Order.succ <| hwf.rank b := by
+  rw [rank, Acc.rank_eq]
+  rfl
+
+@[deprecated IsWellFounded.rank_lt_of_rel (since := "2024-09-07")]
+theorem rank_lt_of_rel (h : r a b) : hwf.rank a < hwf.rank b :=
+  Acc.rank_lt_of_rel _ h
+
+@[deprecated WellFoundedLT.rank_strictMono (since := "2024-09-07")]
 theorem rank_strictMono [Preorder α] [WellFoundedLT α] :
     StrictMono (rank <| @wellFounded_lt α _ _) := fun _ _ => rank_lt_of_rel _
 
+@[deprecated WellFoundedGT.rank_strictAnti (since := "2024-09-07")]
 theorem rank_strictAnti [Preorder α] [WellFoundedGT α] :
     StrictAnti (rank <| @wellFounded_gt α _ _) := fun _ _ => rank_lt_of_rel wellFounded_gt
 

@@ -250,14 +250,11 @@ private theorem mem_wf_aux : ∀ {x y : PSet.{u}}, Equiv x y → Acc (· ∈ ·)
 theorem mem_wf : @WellFounded PSet (· ∈ ·) :=
   ⟨fun x => mem_wf_aux <| Equiv.refl x⟩
 
+instance : IsWellFounded PSet (· ∈ ·) :=
+  ⟨mem_wf⟩ 
+
 instance : WellFoundedRelation PSet :=
   ⟨_, mem_wf⟩
-
-instance : IsAsymm PSet (· ∈ ·) :=
-  mem_wf.isAsymm
-
-instance : IsIrrefl PSet (· ∈ ·) :=
-  mem_wf.isIrrefl
 
 theorem mem_asymm {x y : PSet} : x ∈ y → y ∉ x :=
   asymm (r := (· ∈ ·))
@@ -1006,6 +1003,9 @@ theorem mem_wf : @WellFounded ZFSet (· ∈ ·) :=
   (wellFounded_lift₂_iff (H := fun a b c d hx hy =>
     propext ((@Mem.congr_left a c hx).trans (@Mem.congr_right b d hy _)))).mpr PSet.mem_wf
 
+instance : IsWellFounded ZFSet (· ∈ ·) :=
+  ⟨mem_wf⟩
+
 /-- Induction on the `∈` relation. -/
 @[elab_as_elim]
 theorem inductionOn {p : ZFSet → Prop} (x) (h : ∀ x, (∀ y ∈ x, p y) → p x) : p x :=
@@ -1013,13 +1013,6 @@ theorem inductionOn {p : ZFSet → Prop} (x) (h : ∀ x, (∀ y ∈ x, p y) → 
 
 instance : WellFoundedRelation ZFSet :=
   ⟨_, mem_wf⟩
-
-instance : IsAsymm ZFSet (· ∈ ·) :=
-  mem_wf.isAsymm
-
--- Porting note: this can't be inferred automatically for some reason.
-instance : IsIrrefl ZFSet (· ∈ ·) :=
-  mem_wf.isIrrefl
 
 theorem mem_asymm {x y : ZFSet} : x ∈ y → y ∉ x :=
   asymm (r := (· ∈ ·))
@@ -1304,15 +1297,11 @@ theorem mem_wf : @WellFounded Class.{u} (· ∈ ·) :=
     rintro B ⟨x, rfl, _⟩
     exact H x⟩
 
+instance : IsWellFounded Class (· ∈ ·) :=
+  ⟨mem_wf⟩
+
 instance : WellFoundedRelation Class :=
   ⟨_, mem_wf⟩
-
-instance : IsAsymm Class (· ∈ ·) :=
-  mem_wf.isAsymm
-
--- Porting note: this can't be inferred automatically for some reason.
-instance : IsIrrefl Class (· ∈ ·) :=
-  mem_wf.isIrrefl
 
 theorem mem_asymm {x y : Class} : x ∈ y → y ∉ x :=
   asymm (r := (· ∈ ·))

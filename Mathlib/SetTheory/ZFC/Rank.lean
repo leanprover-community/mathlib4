@@ -10,7 +10,7 @@ import Mathlib.SetTheory.ZFC.Basic
 # Ordinal ranks of PSet and ZFSet
 
 In this file, we define the ordinal ranks of `PSet` and `ZFSet`. These ranks are the same as
-`WellFounded.rank` over `∈`, but are defined in a way that the universe levels of ranks are the
+`IsWellFounded.rank` over `∈`, but are defined in a way that the universe levels of ranks are the
 same as the indexing types.
 
 ## Definitions
@@ -109,10 +109,10 @@ theorem le_succ_rank_sUnion : rank x ≤ succ (rank (⋃₀ x)) := by
   rw [mem_sUnion]
   exists z
 
-/-- `PSet.rank` is equal to the `WellFounded.rank` over `∈`. -/
-theorem rank_eq_wfRank : lift.{u + 1, u} (rank x) = mem_wf.rank x := by
+/-- `PSet.rank` is equal to the `IsWellFounded.rank` over `∈`. -/
+theorem rank_eq_wfRank : lift.{u + 1, u} (rank x) = IsWellFounded.rank (α := PSet) (· ∈ ·) x := by
   induction' x using mem_wf.induction with x ih
-  rw [mem_wf.rank_eq]
+  rw [IsWellFounded.rank_eq]
   simp_rw [← fun y : { y // y ∈ x } => ih y y.2]
   apply (le_of_forall_lt _).antisymm (Ordinal.sup_le _) <;> intro h
   · rw [lt_lift_iff]
@@ -195,10 +195,10 @@ theorem rank_range {α : Type u} {f : α → ZFSet.{max u v}} :
   · simpa [rank_le_iff] using lt_lsub _
   · simp [rank_lt_of_mem]
 
-/-- `ZFSet.rank` is equal to the `WellFounded.rank` over `∈`. -/
-theorem rank_eq_wfRank : lift.{u + 1, u} (rank x) = mem_wf.rank x := by
+/-- `ZFSet.rank` is equal to the `IsWellFounded.rank` over `∈`. -/
+theorem rank_eq_wfRank : lift.{u + 1, u} (rank x) = IsWellFounded.rank (α := ZFSet) (· ∈ ·) x := by
   induction' x using inductionOn with x ih
-  rw [mem_wf.rank_eq]
+  rw [IsWellFounded.rank_eq]
   simp_rw [← fun y : { y // y ∈ x } => ih y y.2]
   apply (le_of_forall_lt _).antisymm (Ordinal.sup_le _) <;> intro h
   · rw [lt_lift_iff]
