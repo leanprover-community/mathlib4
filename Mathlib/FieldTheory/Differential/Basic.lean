@@ -28,8 +28,7 @@ def logDeriv : R := a′ / a
 
 @[simp]
 lemma logDeriv_zero : logDeriv (0 : R) = 0 := by
-  unfold logDeriv
-  simp
+  simp [logDeriv]
 
 @[simp]
 lemma logDeriv_one : logDeriv (1 : R) = 0 := by
@@ -47,7 +46,7 @@ lemma logDeriv_div (ha : a ≠ 0) (hb : b ≠ 0) : logDeriv (a / b) = logDeriv a
   ring
 
 @[simp]
-lemma logDeriv_pow (n : ℕ) : logDeriv (b ^ n) = n * logDeriv b := by
+lemma logDeriv_pow (n : ℕ) (a : R) : logDeriv (a ^ n) = n * logDeriv a := by
   induction n with
   | zero => simp
   | succ n h2 =>
@@ -56,7 +55,7 @@ lemma logDeriv_pow (n : ℕ) : logDeriv (b ^ n) = n * logDeriv b := by
     · rw [Nat.cast_add, Nat.cast_one, add_mul, one_mul, ← h2, pow_succ, logDeriv_mul] <;>
       simp [hb]
 
-lemma logDeriv_eq_zero_iff : logDeriv a = 0 ↔ a′ = 0 :=
+lemma logDeriv_eq_zero : logDeriv a = 0 ↔ a′ = 0 :=
   ⟨fun h ↦ by simp only [logDeriv, div_eq_zero_iff] at h; rcases h with h|h <;> simp [h],
   fun h ↦ by unfold logDeriv at *; simp [h]⟩
 
