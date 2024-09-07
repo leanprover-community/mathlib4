@@ -986,9 +986,9 @@ theorem mapClusterPt_comp {φ : α → β} {u : β → X} :
 theorem Filter.Tendsto.mapClusterPt [NeBot F] (h : Tendsto u F (𝓝 x)) : MapClusterPt x F u :=
   .of_le_nhds h
 
-theorem MapClusterPt.of_comp {φ : β → α} {p : Filter β} [NeBot p]
-    (h : Tendsto φ p F) (H : MapClusterPt x p (u ∘ φ)) : MapClusterPt x F u :=
-  H.neBot.mono <| inf_le_inf_left _ <| map_mono h
+theorem MapClusterPt.of_comp {φ : β → α} {p : Filter β} (h : Tendsto φ p F)
+    (H : MapClusterPt x p (u ∘ φ)) : MapClusterPt x F u :=
+  H.clusterPt.mono <| map_mono h
 
 @[deprecated MapClusterPt.of_comp (since := "2024-09-07")]
 theorem mapClusterPt_of_comp {φ : β → α} {p : Filter β} [NeBot p]
