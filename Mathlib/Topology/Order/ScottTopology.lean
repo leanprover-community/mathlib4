@@ -242,13 +242,13 @@ lemma upperSet_le_scott : upperSet α ≤ scott α univ := le_sup_left
 
 lemma scottHausdorff_le_scott : scottHausdorff α univ ≤ scott α univ := le_sup_right
 
-variable (α) [TopologicalSpace α]
+variable (α) [TopologicalSpace α] (D)
 
 /-- Predicate for an ordered topological space to be equipped with its Scott topology.
 
 The Scott topology is defined as the join of the topology of upper sets and the Scott Hausdorff
 topology. -/
-class IsScott (D : Set (Set α)) : Prop where
+class IsScott : Prop where
   topology_eq_scott : ‹TopologicalSpace α› = scott α D
 
 end Preorder
