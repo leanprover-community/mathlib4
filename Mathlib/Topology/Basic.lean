@@ -965,7 +965,7 @@ theorem MapClusterPt.tendsto_comp [TopologicalSpace Y] {f : X → Y} {y : Y}
   hu.tendsto_comp' (hf.mono_left inf_le_left)
 
 theorem MapClusterPt.continuousAt_comp [TopologicalSpace Y] {f : X → Y} (hf : ContinuousAt f x)
-    (hu : MapClusterPt x F u) : (f x) F (f ∘ u) :=
+    (hu : MapClusterPt x F u) : MapClusterPt (f x) F (f ∘ u) :=
   hu.tendsto_comp hf
 
 theorem Filter.HasBasis.mapClusterPt_iff_frequently {ι : Sort*} {p : ι → Prop} {s : ι → Set X}
