@@ -406,46 +406,6 @@ class MonadMor₂ (m : Type → Type) where
   /-- The expression for the coherence composition `η ⊗≫ θ := η ≫ α ≫ θ`. -/
   coherenceCompM (α : CoherenceHom) (η θ : Mor₂) : m Mor₂
 
--- namespace Mor₂
-
--- export MonadMor₂
---   (homM atomHomM invM atomInvM id₂M comp₂M whiskerLeftM whiskerRightM
---    horizontalCompM coherenceCompM)
-
--- end Mor₂
-
-/-- Type of normalized 1-morphisms `((... ≫ h) ≫ g) ≫ f`. -/
-inductive NormalizedHom : Type
-  /-- The identity 1-morphism `𝟙 a`. -/
-  | nil (e : Mor₁) (a : Obj) : NormalizedHom
-  /-- The `cons` composes an atomic 1-morphism at the end of a normalized 1-morphism. -/
-  | cons (e : Mor₁) : NormalizedHom → Atom₁ → NormalizedHom
-  deriving Inhabited
-
-/-- The underlying expression of a normalized 1-morphism. -/
-def NormalizedHom.e : NormalizedHom → Mor₁
-  | NormalizedHom.nil e _ => e
-  | NormalizedHom.cons e _ _  => e
-
-/-- The domain of a normalized 1-morphism. -/
-def NormalizedHom.src : NormalizedHom → Obj
-  | NormalizedHom.nil _ a => a
-  | NormalizedHom.cons _ p _ => p.src
-
-/-- The codomain of a normalized 1-morphism. -/
-def NormalizedHom.tgt : NormalizedHom → Obj
-  | NormalizedHom.nil _ a => a
-  | NormalizedHom.cons _ _  f => f.tgt
-
-/-- Construct the `NormalizedHom.nil` term in `m`. -/
-def normalizedHom.nilM [MonadMor₁ m] (a : Obj) : m NormalizedHom := do
-  return NormalizedHom.nil (← id₁M a) a
-
-/-- Construct a `NormalizedHom.cons` term in `m`. -/
-def NormalizedHom.consM [MonadMor₁ m] (p : NormalizedHom) (f : Atom₁) :
-    m NormalizedHom := do
-  return NormalizedHom.cons (← comp₁M p.e (.of f)) p f
-
 /-- `Context ρ` provides the context for manipulating 2-morphisms in a monoidal category or
 bicategory. In particular, we will store `MonoidalCategory` or `Bicategory` instance in a context,
 and use this through a reader monad when we construct the lean expressions for 2-morphisms. -/
