@@ -15,11 +15,13 @@ imports developing either positive compacts or the compact open topology.
 
 -/
 
-open Filter Function
-open scoped Topology
+universe u v w x
 
-universe u
-variable {G : Type u} [TopologicalSpace G] [Group G] [TopologicalGroup G]
+variable {α : Type u} {β : Type v} {G : Type w} {H : Type x}
+
+section
+
+variable [TopologicalSpace G] [Group G] [TopologicalGroup G]
 
 /-- Every topological group in which there exists a compact set with nonempty interior
 is locally compact. -/
@@ -31,9 +33,7 @@ theorem TopologicalSpace.PositiveCompacts.locallyCompactSpace_of_group
   let ⟨_x, hx⟩ := K.interior_nonempty
   K.isCompact.locallyCompactSpace_of_mem_nhds_of_group (mem_interior_iff_mem_nhds.1 hx)
 
-theorem mapClusterPt_atTop_zpow_iff_pow {G : Type*} [Group G] [TopologicalSpace G] {x y : G} :
-    MapClusterPt x atTop (y ^ · : ℤ → G) ↔ MapClusterPt x atTop (y ^ · : ℕ → G) := by
-  simp_rw [MapClusterPt, ← Nat.map_cast_int_atTop, map_map, comp_def, zpow_natCast]
+end
 
 section Quotient
 
