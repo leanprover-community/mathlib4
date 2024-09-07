@@ -153,8 +153,9 @@ inductive StructuralAtom : Type
 
 /-- Construct a `StructuralAtom` expression from a Lean expression. -/
 def structuralAtom? (e : Expr) : MetaM (Option StructuralAtom) := do
-  match e.getAppFnArgs with
-  | (``Iso.hom, #[_, _, _, _, η]) =>
+  match ← whnfR e with
+  -- whnfR version of `Iso.hom η`
+  | .proj ``Iso 0 η =>
     match (← whnfR η).getAppFnArgs with
     | (``MonoidalCategoryStruct.associator, #[_, _, _, f, g, h]) =>
       return some <| .associator (← toMor₁ f) (← toMor₁ g) (← toMor₁ h)
@@ -162,8 +163,11 @@ def structuralAtom? (e : Expr) : MetaM (Option StructuralAtom) := do
       return some <| .leftUnitor (← toMor₁ f)
     | (``MonoidalCategoryStruct.rightUnitor, #[_, _, _, f]) =>
       return some <| .rightUnitor (← toMor₁ f)
+    | (``MonoidalCoherence.iso, #[_, _, f, g, inst]) =>
+      return some <| .monoidalCoherence (← toMor₁ f) (← toMor₁ g) inst
     | _ => return none
-  | (``Iso.inv, #[_, _, _, _, η]) =>
+  -- whnfR version of `Iso.inv η`
+  | .proj ``Iso 1 η =>
     match (← whnfR η).getAppFnArgs with
     | (``MonoidalCategoryStruct.associator, #[_, _, _, f, g, h]) =>
       return some <| .associatorInv (← toMor₁ f) (← toMor₁ g) (← toMor₁ h)
@@ -521,6 +525,8 @@ def StructuralAtom.e : StructuralAtom → MonoidalM Expr
     mkAppM ``Iso.hom #[← mkAppM ``MonoidalCategoryStruct.rightUnitor #[← f.e]]
   | .rightUnitorInv f => do
     mkAppM ``Iso.inv #[← mkAppM ``MonoidalCategoryStruct.rightUnitor #[← f.e]]
+  | .monoidalCoherence _ _ e => do
+    mkAppM ``Iso.hom #[← mkAppOptM ``MonoidalCoherence.iso #[none, none, none, none, e]]
 
 /-- Extract a Lean expression from a `Structural` expression. -/
 partial def Structural.e : Structural → MonoidalM Expr
