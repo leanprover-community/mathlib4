@@ -12,7 +12,6 @@ import Mathlib.LinearAlgebra.Dual
 import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Data.Real.Sqrt
 
-set_option linter.style.header false
 /-!
 # Huang's sensitivity theorem
 
