@@ -895,6 +895,11 @@ theorem Filter.HasBasis.clusterPt_iff {ιX ιF} {pX : ιX → Prop} {sX : ιX �
     ClusterPt x F ↔ ∀ ⦃i⦄, pX i → ∀ ⦃j⦄, pF j → (sX i ∩ sF j).Nonempty :=
   hX.inf_basis_neBot_iff hF
 
+theorem Filter.HasBasis.clusterPt_iff_frequently {ι} {p : ι → Prop} {s : ι → Set X} {F : Filter X}
+    (hx : (𝓝 x).HasBasis p s) : ClusterPt x F ↔ ∀ i, p i → ∃ᶠ x in F, x ∈ s i := by
+  simp only [hx.clusterPt_iff F.basis_sets, Filter.frequently_iff, inter_comm (s _),
+    Set.Nonempty, id, mem_inter_iff]
+
 theorem clusterPt_iff {F : Filter X} :
     ClusterPt x F ↔ ∀ ⦃U : Set X⦄, U ∈ 𝓝 x → ∀ ⦃V⦄, V ∈ F → (U ∩ V).Nonempty :=
   inf_neBot_iff
@@ -942,6 +947,11 @@ theorem clusterPt_iff_ultrafilter {f : Filter X} : ClusterPt x f ↔
 
 theorem mapClusterPt_def {ι : Type*} (x : X) (F : Filter ι) (u : ι → X) :
     MapClusterPt x F u ↔ ClusterPt x (map u F) := Iff.rfl
+
+theorem Filter.HasBasis.mapClusterPt_iff_frequently {α : Type*} {F : Filter α} {ι : Sort*}
+    {p : ι → Prop} {s : ι → Set X} {x : X} (hx : (𝓝 x).HasBasis p s) {u : α → X} :
+    MapClusterPt x F u ↔ ∀ i, p i → ∃ᶠ a in F, u a ∈ s i := by
+  simp_rw [MapClusterPt, hx.clusterPt_iff_frequently, frequently_map]
 
 theorem mapClusterPt_iff {ι : Type*} (x : X) (F : Filter ι) (u : ι → X) :
     MapClusterPt x F u ↔ ∀ s ∈ 𝓝 x, ∃ᶠ a in F, u a ∈ s := by
