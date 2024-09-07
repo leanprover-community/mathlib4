@@ -61,12 +61,12 @@ Scott topology, preorder
 
 open Set
 
-variable {α β : Type*}
+variable {α β : Type*} {D : Set (Set α)}
 
 /-! ### Prerequisite order properties -/
 
 section Preorder
-variable [Preorder α] {s t : Set α} {D : Set (Set α)}
+variable [Preorder α] {s t : Set α}
 
 /-- A set `s` is said to be inaccessible by directed joins if, when the least upper bound of a
 directed set `d` lies in `s` then `d` has non-empty intersection with `s`. -/
@@ -81,7 +81,7 @@ def DirSupInacc (s : Set α) : Prop :=
 @[simp] lemma dirSupInaccOn_univ : DirSupInaccOn univ s ↔ DirSupInacc s := by
   simp [DirSupInaccOn, DirSupInacc]
 
-@[simp] lemma DirSupInacc.dirSupInaccOn {D : Set (Set α)} :
+@[simp] lemma DirSupInacc.dirSupInaccOn :
     DirSupInacc s → DirSupInaccOn D s := fun h _ _ d₂ d₃ _ hda => h d₂ d₃ hda
 
 /--
@@ -101,7 +101,7 @@ def DirSupClosed (s : Set α) : Prop :=
 @[simp] lemma dirSupClosedOn_univ : DirSupClosedOn univ s ↔ DirSupClosed s := by
   simp [DirSupClosedOn, DirSupClosed]
 
-@[simp] lemma DirSupClosed.dirSupClosedOn {D : Set (Set α)} :
+@[simp] lemma DirSupClosed.dirSupClosedOn :
     DirSupClosed s → DirSupClosedOn D s := fun h _ _ d₂ d₃ _ hda => h d₂ d₃ hda
 
 @[simp] lemma dirSupInaccOn_compl : DirSupInaccOn D sᶜ ↔ DirSupClosedOn D s := by
@@ -142,7 +142,7 @@ lemma dirSupClosedOn_Iic (a : α) : DirSupClosedOn D (Iic a) :=
 end Preorder
 
 section CompleteLattice
-variable [CompleteLattice α] {s t : Set α} {D : Set (Set α)}
+variable [CompleteLattice α] {s t : Set α}
 
 lemma dirSupInaccOn_iff_forall_sSup :
     DirSupInaccOn D s ↔ ∀ ⦃d⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d → sSup d ∈ s →
@@ -169,10 +169,7 @@ A set `u` is open in the Scott-Hausdorff topology iff when the least upper bound
 def scottHausdorff (α : Type*) (D : Set (Set α)) [Preorder α] : TopologicalSpace α where
   IsOpen u := ∀ ⦃d⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a : α⦄, IsLUB d a →
     a ∈ u → ∃ b ∈ d, Ici b ∩ d ⊆ u
---  IsOpen u := ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a : α⦄, IsLUB d a →
---    a ∈ u → ∃ b ∈ d, Ici b ∩ d ⊆ u
   isOpen_univ := fun d _ ⟨b, hb⟩ _ _ _ _ ↦ ⟨b, hb, (Ici b ∩ d).subset_univ⟩
-  --isOpen_univ := fun d ⟨b, hb⟩ _ _ _ _ ↦ ⟨b, hb, (Ici b ∩ d).subset_univ⟩
   isOpen_inter s t hs ht d hd₀ hd₁ hd₂ a hd₃ ha := by
     obtain ⟨b₁, hb₁d, hb₁ds⟩ := hs hd₀ hd₁ hd₂ hd₃ ha.1
     obtain ⟨b₂, hb₂d, hb₂dt⟩ := ht hd₀ hd₁ hd₂ hd₃ ha.2
