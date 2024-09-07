@@ -112,7 +112,7 @@ Formally, the point is that the hypothesis `hc` depends only on the range of the
 @[ext]
 protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
     {P₁ P₂ : RootPairing ι R M N}
-    (he : P₁.toLin = P₂.toLin)
+    (he : P₁.toPerfectPairing = P₂.toPerfectPairing)
     (hr : P₁.root = P₂.root)
     (hc : range P₁.coroot = range P₂.coroot) :
     P₁ = P₂ := by
@@ -209,11 +209,11 @@ its roots. -/
 @[ext]
 protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
     {P₁ P₂ : RootSystem ι R M N}
-    (he : P₁.toLin = P₂.toLin)
+    (he : P₁.toPerfectPairing = P₂.toPerfectPairing)
     (hr : P₁.root = P₂.root) :
     P₁ = P₂ := by
-  suffices ∀ P₁ P₂ : RootSystem ι R M N, P₁.toLin = P₂.toLin → P₁.root = P₂.root →
-      range P₁.coroot ⊆ range P₂.coroot by
+  suffices ∀ P₁ P₂ : RootSystem ι R M N, P₁.toPerfectPairing = P₂.toPerfectPairing →
+      P₁.root = P₂.root → range P₁.coroot ⊆ range P₂.coroot by
     have h₁ := this P₁ P₂ he hr
     have h₂ := this P₂ P₁ he.symm hr.symm
     cases' P₁ with P₁
