@@ -102,7 +102,7 @@ theorem exists_omega_seq_succ_prop (opos : 0 < o) {P : Ordinal → Ordinal → P
     ∧ r < f ⟨0, omega_pos⟩ := by
   have oLim : o.IsLimit := ⟨opos.ne.symm, fun a alto ↦ (hP ⟨a, alto⟩).casesOn fun r hr ↦
     lt_of_le_of_lt (succ_le_of_lt hr.1) r.2⟩
-  let H₂ : (p : Iio ω) → (Iio o) → (Iio o) := λ _ fp ↦ choose (hP fp)
+  let H₂ : (p : Iio ω) → (Iio o) → (Iio o) := fun _ fp ↦ choose (hP fp)
   let H₃ : (w : Iio ω) → IsLimit w → ((o' : Iio ω) → o' < w → (Iio o)) → (Iio o) :=
     fun w _ _ ↦ ⟨0, oLim.pos⟩
   let f : Iio ω → Iio o := @boundedLimitRec' (α := Iio o) ω omega_isLimit
@@ -135,7 +135,7 @@ theorem exists_omega_seq_succ_prop_pos (onelto : 1 < o) {P : Ordinal → Ordinal
     simp_all only [false_or, P']
   rcases exists_omega_seq_succ_prop (zero_lt_one.trans onelto) hP' r with ⟨f, hf⟩
   use f
-  refine' ⟨fun i ↦ _, hf.2⟩
+  refine ⟨fun i ↦ ?_, hf.2⟩
   have := hf.1 i
   have rltf0 := hf.2.2
   by_cases hi' : i.1 = 0
@@ -170,7 +170,7 @@ The intersection of less than `o.cof` clubs in `o` is a club in `o`.
 -/
 theorem IsClub.sInter (hCof : ℵ₀ < o.cof) (hS : ∀ C ∈ S, IsClub C o) (hSemp : S.Nonempty)
     (Scard : #S < Cardinal.lift.{u + 1, u} o.cof) : IsClub (⋂₀ S) o := by
-  refine' ⟨IsClosed.sInter (fun C CmemS ↦ (hS C CmemS).1), _⟩
+  refine ⟨IsClosed.sInter (fun C CmemS ↦ (hS C CmemS).1), ?_⟩
   use (aleph0_le_cof.mp hCof.le).pos.ne.symm
   intro q qlto
   have oLim : IsLimit o := aleph0_le_cof.mp hCof.le
@@ -208,3 +208,4 @@ theorem isClub_iInter [Nonempty ι] (hCof : ℵ₀ < o.cof) (hf : ∀ i, IsClub 
   unfold iInter iInf; rw [this]
 
 end ClubIntersection
+end Ordinal

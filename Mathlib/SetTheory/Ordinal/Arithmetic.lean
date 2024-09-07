@@ -2337,9 +2337,11 @@ def relIso_nat_omega : ℕ ≃o Iio ω where
 
 theorem relIso_nat_omega.symm_eq {o : Ordinal} (h : o < ω) :
     ↑(relIso_nat_omega.symm ⟨o, h⟩) = o := by
-  dsimp [relIso_nat_omega, OrderIso.symm]
-  generalize_proofs pf
-  exact (Classical.choose_spec pf).symm
+  rcases lt_omega.mp h with ⟨n, hn⟩
+  have := relIso_nat_omega.symm_apply_apply n
+  rw [((SetCoe.ext hn).symm : relIso_nat_omega n = ⟨o, h⟩)] at this
+  rw [this]
+  exact hn.symm
 
 end Ordinal
 
