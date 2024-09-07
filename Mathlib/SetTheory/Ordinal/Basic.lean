@@ -175,11 +175,6 @@ instance inhabited : Inhabited Ordinal :=
 instance one : One Ordinal :=
   ⟨type <| @EmptyRelation PUnit⟩
 
-/-- The order type of an element inside a well order. For the embedding as a principal segment, see
-`typein.principalSeg`. -/
-def typein (r : α → α → Prop) [IsWellOrder α r] (a : α) : Ordinal :=
-  type (Subrel r { b | r b a })
-
 @[simp]
 theorem type_def' (w : WellOrder) : ⟦w⟧ = type w.r := by
   cases w
@@ -394,6 +389,23 @@ def principalSegToType {α β : Ordinal} (h : α < β) :
 @[deprecated principalSegToType (since := "2024-08-26")]
 noncomputable alias principalSegOut := principalSegToType
 
+/-! ### Enumerating elements in a well-order with ordinals. -/
+
+
+/-- The order type of an element inside a well order. -/
+def typein (r : α → α → Prop) [IsWellOrder α r] : @PrincipalSeg α Ordinal r (· < ·) := by
+  let f := fun a ↦ type (Subrel r { b | r b a })
+  refine ⟨RelEmbedding.ofMonotone f ?_, type r, ?_⟩
+  · intro a b h
+    apply ((PrincipalSeg.ofElement r a).codRestrict _ _ _).ordinal_type_lt
+    · rintro ⟨c, hc⟩
+      simp
+      change r (PrincipalSeg.ofElement _ _ _) b
+      rw [PrincipalSeg.ofElement_apply]
+
+
+#exit
+
 theorem typein_lt_type (r : α → α → Prop) [IsWellOrder α r] (a : α) : typein r a < type r :=
   ⟨PrincipalSeg.ofElement _ _⟩
 
@@ -455,8 +467,6 @@ def typein.principalSeg {α : Type u} (r : α → α → Prop) [IsWellOrder α r
 theorem typein.principalSeg_coe (r : α → α → Prop) [IsWellOrder α r] :
     (typein.principalSeg r : α → Ordinal) = typein r :=
   rfl
-
-/-! ### Enumerating elements in a well-order with ordinals. -/
 
 /-- A well order `r` is order-isomorphic to the set of ordinals smaller than `type r`.
 `enum r ⟨o, h⟩` is the `o`-th element of `α` ordered by `r`.

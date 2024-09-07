@@ -340,11 +340,12 @@ theorem topLTTop {r : α → α → Prop} {s : β → β → Prop} {t : γ → �
   apply PrincipalSeg.lt_top
 
 /-- Any element of a well order yields a principal segment -/
-def ofElement {α : Type*} (r : α → α → Prop) (a : α) : Subrel r { b | r b a } ≺i r :=
+def ofElement {α : Type*} (r : α → α → Prop) (a : α) :
+    @PrincipalSeg {b // r b a} _ (Subrel r _) r :=
   ⟨Subrel.relEmbedding _ _, a, fun _ => ⟨fun h => ⟨⟨_, h⟩, rfl⟩, fun ⟨⟨_, h⟩, rfl⟩ => h⟩⟩
 
 -- This lemma was always bad, but the linter only noticed after lean4#2644
-@[simp, nolint simpNF]
+@[simp]
 theorem ofElement_apply {α : Type*} (r : α → α → Prop) (a : α) (b) : ofElement r a b = b.1 :=
   rfl
 
