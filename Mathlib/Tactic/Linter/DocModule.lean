@@ -161,7 +161,8 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   if (← get).messages.hasErrors then
     return
   -- instead of silencing this linter, we should probably silence the text-based one
-  if (← getMainModule) == `Archive.Sensitivity then return
+  let mod ← getMainModule
+  if mod == `Archive.Sensitivity || (mod.getRoot == `test && mod != `test.DocModule) then return
   let mut firstPos ← firstCommand.get
   let mut upToStx : Syntax := .missing
   let offset : String.Pos := ⟨3⟩
