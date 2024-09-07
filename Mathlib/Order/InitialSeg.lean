@@ -64,12 +64,22 @@ instance : FunLike (r ≼i s) α β where
 instance : EmbeddingLike (r ≼i s) α β where
   injective' f := f.inj'
 
-@[ext] lemma ext {f g : r ≼i s} (h : ∀ x, f x = g x) : f = g :=
+@[ext]
+lemma ext {f g : r ≼i s} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
 
 @[simp]
 theorem coe_coe_fn (f : r ≼i s) : ((f : r ↪r s) : α → β) = f :=
   rfl
+
+theorem toRelEmbedding_injective : Injective (@InitialSeg.toRelEmbedding α β r s) := by
+  intro f g h
+  ext x
+  exact RelEmbedding.ext_iff.1 h x
+
+@[simp]
+theorem toRelEmbedding_inj {f g : r ≼i s} : f.toRelEmbedding = g.toRelEmbedding ↔ f = g :=
+  toRelEmbedding_injective.eq_iff
 
 /-- The property characterizing initial segment embeddings. -/
 theorem init (f : r ≼i s) {a : α} {b : β} : s b (f a) → b ∈ Set.range f :=
@@ -231,6 +241,28 @@ theorem lt_top (f : r ≺i s) (a : α) : s (f a) f.top :=
 theorem init [IsTrans β s] (f : r ≺i s) {a : α} {b : β} (h : s b (f a)) : b ∈ Set.range f :=
   f.down.1 <| _root_.trans h <| f.lt_top _
 
+lemma ext' {f g : r ≺i s} (h : ∀ x, f x = g x) (ht : f.top = g.top) : f = g := by
+  cases f
+  cases g
+  simpa using ⟨RelEmbedding.ext h, ht⟩
+
+@[ext]
+lemma ext [IsIrrefl β s] [IsTrichotomous β s] {f g : r ≺i s} (h : ∀ x, f x = g x) : f = g := by
+  apply ext' h (extensional_of_trichotomous_of_irrefl s _)
+  intro x
+  rw [f.down, g.down, RelEmbedding.ext h]
+
+theorem toRelEmbedding_injective [IsIrrefl β s] [IsTrichotomous β s] :
+    Injective (@PrincipalSeg.toRelEmbedding α β r s) := by
+  intro f g h
+  ext x
+  rw [h]
+
+@[simp]
+theorem toRelEmbedding_inj [IsIrrefl β s] [IsTrichotomous β s] {f g : r ≺i s} :
+    f.toRelEmbedding = g.toRelEmbedding ↔ f = g :=
+  toRelEmbedding_injective.eq_iff
+
 /-- A principal segment embedding is in particular an initial segment embedding. -/
 instance hasCoeInitialSeg [IsTrans β s] : Coe (r ≺i s) (r ≼i s) :=
   ⟨fun f => ⟨f.toRelEmbedding, fun _ _ => f.init⟩⟩
@@ -315,16 +347,9 @@ theorem equivLT_top (f : r ≃r s) (g : s ≺i t) : (equivLT f g).top = g.top :=
 instance [IsWellOrder β s] : Subsingleton (r ≺i s) := by
   constructor
   intro f g
-  have ef : (f : α → β) = g := by
-    show ((f : r ≼i s) : α → β) = (g : r ≼i s)
-    rw [@Subsingleton.elim _ _ (f : r ≼i s) g]
-  have et : f.top = g.top := by
-    refine extensional_of_trichotomous_of_irrefl s fun x => ?_
-    simp only [PrincipalSeg.down, ef]
-  cases f
-  cases g
-  have := RelEmbedding.coe_fn_injective ef
-  congr
+  ext x
+  show ((f : r ≼i s) : α → β) x = (g : r ≼i s) x
+  rw [Subsingleton.elim (f : r ≼i s) g]
 
 theorem top_eq [IsWellOrder γ t] (e : r ≃r s) (f : r ≺i t) (g : s ≺i t) : f.top = g.top := by
   rw [Subsingleton.elim f (PrincipalSeg.equivLT e g)]; rfl
