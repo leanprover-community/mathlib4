@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nir Paz
 -/
 import Mathlib.SetTheory.Cardinal.Cofinality
+import Mathlib.SetTheory.Ordinal.Topology
 
 /-!
 # Club and stationary sets
@@ -24,51 +25,20 @@ This file sets up the basic theory of clubs (closed and unbounded sets) and stat
 
 noncomputable section
 
-open Classical Cardinal Set Order
+open Classical Cardinal Set Order Filter
 
 universe u v
 
 namespace Ordinal
 
-/-- A positive ordinal is an accumulation point of a set of ordinals if there
-are elements in the set arbitrarily close to the ordinal from below. -/
-def IsAcc (o : Ordinal) (S : Set Ordinal) : Prop :=
-  o ≠ 0 ∧ ∀ p < o, ∃ s ∈ S, p < s ∧ s < o
-
-/-- A set of ordinals is closed in an ordinal if it contains all of
-its accumulation points below the ordinal. -/
-def IsClosed (S : Set Ordinal) (o : Ordinal) : Prop :=
-  ∀ p < o, IsAcc p S → p ∈ S
-
 /-- A set of ordinals is a club in an ordinal if it is closed and unbounded in it. -/
 def IsClub (S : Set Ordinal) (o : Ordinal) : Prop :=
   IsClosed S o ∧ IsAcc o S
-
-theorem IsAcc.subset {o : Ordinal} {S T : Set Ordinal} (h : S ⊆ T) (ho : o.IsAcc S) :
-    o.IsAcc T := ⟨ho.1, fun p plto ↦ (ho.2 p plto).casesOn fun s hs ↦ ⟨s, h hs.1, hs.2⟩⟩
-
-theorem IsAcc.isLimit {o : Ordinal} {U : Set Ordinal} (h : o.IsAcc U) : IsLimit o := by
-  refine' isLimit_of_not_succ_of_ne_zero (fun ⟨x, hx⟩ ↦ _) h.1
-  rcases h.2 x (lt_of_lt_of_le (lt_succ x) hx.symm.le) with ⟨p, hp⟩
-  exact (hx.symm ▸ (succ_le_iff.mpr hp.2.1)).not_lt hp.2.2
-
-theorem IsAcc.inter_Ioo_nonempty {o : Ordinal} {U : Set Ordinal} (hU : o.IsAcc U)
-    {p : Ordinal} (hp : p < o) : (U ∩ Ioo p o).Nonempty := by
-  rcases hU.2 p hp with ⟨q, hq⟩
-  exact ⟨q, hq.1, hq.2.1, hq.2.2⟩
 
 section ClubIntersection
 
 variable {o : Ordinal.{u}} {S : Set (Set Ordinal)}
 variable {ι : Type u} {f : ι → Set Ordinal}
-
-theorem IsClosed.sInter (h : ∀ C ∈ S, IsClosed C o) : IsClosed (⋂₀ S) o :=
-  fun p plto pAcc C CmemS ↦ (h C CmemS) p plto (pAcc.subset (sInter_subset_of_mem CmemS))
-
-theorem IsClosed.iInter (h : ∀ i, IsClosed (f i) o) : IsClosed (⋂ i, f i) o := by
-  have := IsClosed.sInter (fun C (⟨i, fieqC⟩ : C ∈ range f) ↦ fieqC ▸ (h i))
-  change IsClosed (⋂₀ (range f)) o at this
-  rwa [sInter_range] at this
 
 /-- Given less than `o.cof` unbounded sets in `o` and some `q < o`, there is a `q < p < o`
   such that `Ioo q p` contains an element of every unbounded set. -/
