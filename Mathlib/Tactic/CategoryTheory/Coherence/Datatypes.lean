@@ -165,12 +165,6 @@ class MonadCoherehnceHom (m : Type → Type) where
   /-- Unfold a coherence isomorphism. -/
   unfoldM (α : CoherenceHom) : m Mor₂Iso
 
--- namespace CoherenceHom
-
--- export MonadCoherehnceHom (unfoldM)
-
--- end CoherenceHom
-
 /-- The underlying lean expression of a 2-isomorphism. -/
 def StructuralAtom.e : StructuralAtom → Expr
   | .associator e .. => e
