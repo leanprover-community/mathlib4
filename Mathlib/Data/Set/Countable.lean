@@ -101,8 +101,8 @@ lemma range_enumerateCountable_of_mem {s : Set α} (h : s.Countable) {default : 
 lemma enumerateCountable_mem {s : Set α} (h : s.Countable) {default : α} (h_mem : default ∈ s)
     (n : ℕ) :
     enumerateCountable h default n ∈ s := by
-  conv_rhs => rw [← range_enumerateCountable_of_mem h h_mem]
-  exact mem_range_self n
+  convert mem_range_self n
+  exact (range_enumerateCountable_of_mem h h_mem).symm
 
 end Enumerate
 
@@ -257,6 +257,10 @@ theorem countable_setOf_finite_subset {s : Set α} (hs : s.Countable) :
   lift t to Finset s using ht.of_finite_image Subtype.val_injective.injOn
   exact mem_range_self _
 
+/-- The set of finite sets in a countable type is countable. -/
+theorem Countable.setOf_finite [Countable α] : {s : Set α | s.Finite}.Countable := by
+  simpa using countable_setOf_finite_subset countable_univ
+
 theorem countable_univ_pi {π : α → Type*} [Finite α] {s : ∀ a, Set (π a)}
     (hs : ∀ a, (s a).Countable) : (pi univ s).Countable :=
   have := fun a ↦ (hs a).to_subtype; .of_equiv _ (Equiv.Set.univPi s).symm
@@ -287,9 +291,9 @@ theorem countable_setOf_nonempty_of_disjoint {f : β → Set α}
   have A : Injective F := by
     rintro ⟨t, ht⟩ ⟨t', ht'⟩ htt'
     have A : (f t ∩ f t').Nonempty := by
-      refine ⟨F ⟨t, ht⟩, hF _, ?_⟩
+      refine ⟨F ⟨t, ht⟩, hF ⟨t, _⟩, ?_⟩
       rw [htt']
-      exact hF _
+      exact hF ⟨t', _⟩
     simp only [Subtype.mk.injEq]
     by_contra H
     exact not_disjoint_iff_nonempty_inter.2 A (hf H)
