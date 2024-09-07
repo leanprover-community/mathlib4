@@ -192,7 +192,7 @@ scoped[NaturalOps] infixl:65 " ♯ " => Ordinal.nadd
 open NaturalOps
 
 /-- Natural multiplication on ordinals `a ⨳ b`, also known as the Hessenberg product, is recursively
-defined as the least ordinal such that `a ⨳ b + a' ⨳ b'` is greater than `a' ⨳ b + a ⨳ b'` for all
+defined as the least ordinal such that `a ⨳ b ♯ a' ⨳ b'` is greater than `a' ⨳ b ♯ a ⨳ b'` for all
 `a' < a` and `b < b'`. In contrast to normal ordinal multiplication, it is commutative and
 distributive (over natural addition).
 
