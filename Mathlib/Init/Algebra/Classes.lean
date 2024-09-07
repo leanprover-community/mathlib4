@@ -181,6 +181,18 @@ variable {α : Sort u} {r : α → α → Prop}
 
 local infixl:50 " ≺ " => r
 
+theorem trans_lt_le [IsStrictTotalOrder α r] {a b c : α} (hab : a ≺ b) (hcb : ¬ c ≺ b) : a ≺ c := by
+  rcases @trichotomous α r _ b c with (lt | rfl | gt)
+  · exact _root_.trans hab lt
+  · exact hab
+  · exact (hcb gt).elim
+
+theorem trans_le_lt [IsStrictTotalOrder α r] {a b c : α} (hab : ¬ b ≺ a) (hcb : b ≺ c) : a ≺ c := by
+  rcases @trichotomous α r _ a b with (lt | rfl | gt)
+  · exact _root_.trans lt hcb
+  · exact hcb
+  · exact (hab gt).elim
+
 @[deprecated (since := "2024-07-30")]
 theorem incomp_trans [IsIncompTrans α r] {a b c : α} :
     ¬a ≺ b ∧ ¬b ≺ a → ¬b ≺ c ∧ ¬c ≺ b → ¬a ≺ c ∧ ¬c ≺ a :=
