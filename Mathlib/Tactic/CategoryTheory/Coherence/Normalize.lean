@@ -23,8 +23,11 @@ variable {m : Type → Type} [Monad m]
 
 /-- Evaluate the expression `α ≫ β`. -/
 class MkEvalComp (m : Type → Type) where
+  /-- Evaluate `α ≫ β` -/
   mkEvalCompNilNil (α β : Structural) : m Expr
+  /-- Evaluate `α ≫ (β ≫ η ≫ ηs)` -/
   mkEvalCompNilCons (α β : Structural) (η : WhiskerLeft) (ηs : NormalExpr) : m Expr
+  /-- Evaluate `(α ≫ η ≫ ηs) ≫ θ` -/
   mkEvalCompCons (α : Structural) (η : WhiskerLeft) (ηs θ ι : NormalExpr) (e_η : Expr) : m Expr
 
 /-- Evaluatte the expression `f ◁ η`. -/
@@ -40,6 +43,7 @@ class MkEvalWhiskerLeft (m : Type → Type) where
   /-- Evaluate `𝟙 _ ◁ η` -/
   mkEvalWhiskerLeftId (η η₁ η₂ : NormalExpr) (e_η₁ e_η₂ : Expr) : m Expr
 
+/-- Evaluate the expression `η ▷ f`. -/
 class MkEvalWhiskerRight (m : Type → Type) where
   /-- Evaluate `η ▷ f` -/
   mkEvalWhiskerRightAuxOf (η : WhiskerRight) (f : Atom₁) : m Expr
@@ -48,39 +52,58 @@ class MkEvalWhiskerRight (m : Type → Type) where
     (ηs' η₁ η₂ η₃ : NormalExpr) (e_ηs' e_η₁ e_η₂ e_η₃ : Expr) : m Expr
   /-- Evaluate `α ▷ f` -/
   mkEvalWhiskerRightNil (α : Structural) (f : Mor₁) : m Expr
+  /-- Evaluate ` (α ≫ η ≫ ηs) ▷ j` -/
   mkEvalWhiskerRightConsOfOf (f : Atom₁) (α : Structural) (η : HorizontalComp)
     (ηs ηs₁ η₁ η₂ η₃ : NormalExpr)
     (e_ηs₁ e_η₁ e_η₂ e_η₃ : Expr) : m Expr
   /-- Evaluate `(α ≫ (f ◁ η) ≫ ηs) ▷ g` -/
   mkEvalWhiskerRightConsWhisker (f : Atom₁) (g : Mor₁) (α : Structural) (η : WhiskerLeft)
     (ηs η₁ η₂ ηs₁ ηs₂ η₃ η₄ η₅ : NormalExpr) (e_η₁ e_η₂ e_ηs₁ e_ηs₂ e_η₃ e_η₄ e_η₅ : Expr) : m Expr
+  /-- Evaluate `η ▷ (g ⊗ h)` -/
   mkEvalWhiskerRightComp (g h : Mor₁)
     (η η₁ η₂ η₃ η₄ : NormalExpr) (e_η₁ e_η₂ e_η₃ e_η₄ : Expr) : m Expr
+  /-- Evaluate `η ▷ 𝟙 _` -/
   mkEvalWhiskerRightId (η η₁ η₂ : NormalExpr) (e_η₁ e_η₂ : Expr) : m Expr
 
+/-- Evaluate the expression `η ◫ θ`. -/
 class MkEvalHorizontalComp (m : Type → Type) where
+  /-- Evaluate `η ◫ θ` -/
   mkEvalHorizontalCompAuxOf (η : WhiskerRight) (θ : HorizontalComp) : m Expr
+  /-- Evaluate `(η ◫ ηs) ◫ θ` -/
   mkEvalHorizontalCompAuxCons (η : WhiskerRight) (ηs θ : HorizontalComp)
     (ηθ η₁ ηθ₁ ηθ₂ : NormalExpr) (e_ηθ e_η₁ e_ηθ₁ e_ηθ₂ : Expr) : m Expr
+  /-- Evaluate `(f ◁ η) ◫ θ` -/
   mkEvalHorizontalCompAux'Whisker (f : Atom₁) (η θ : WhiskerLeft)
     (ηθ ηθ₁ ηθ₂ ηθ₃ : NormalExpr) (e_ηθ e_ηθ₁ e_ηθ₂ e_ηθ₃ : Expr) : m Expr
+  /-- Evaluate `η ◫ (f ◁ θ)` -/
   mkEvalHorizontalCompAux'OfWhisker (f : Atom₁) (η : HorizontalComp) (θ : WhiskerLeft)
     (η₁ ηθ ηθ₁ ηθ₂ : NormalExpr) (e_ηθ e_η₁ e_ηθ₁ e_ηθ₂ : Expr) : m Expr
+  /-- Evaluate `α ◫ β` -/
   mkEvalHorizontalCompNilNil (α β : Structural) : m Expr
+  /-- Evaluate `α ◫ (β ≫ η ≫ ηs)` -/
   mkEvalHorizontalCompNilCons (α β : Structural) (η : WhiskerLeft)
     (ηs η₁ ηs₁ η₂ η₃ : NormalExpr) (e_η₁ e_ηs₁ e_η₂ e_η₃ : Expr) : m Expr
+  /-- Evaluate `(α ≫ η ≫ ηs) ◫ β` -/
   mkEvalHorizontalCompConsNil (α β : Structural) (η : WhiskerLeft) (ηs : NormalExpr)
     (η₁ ηs₁ η₂ η₃ : NormalExpr) (e_η₁ e_ηs₁ e_η₂ e_η₃ : Expr) : m Expr
+  /-- Evaluate `(α ≫ η ≫ ηs) ◫ (β ≫ θ ≫ θs)` -/
   mkEvalHorizontalCompConsCons (α β : Structural) (η θ : WhiskerLeft)
     (ηs θs ηθ ηθs ηθ₁ ηθ₂ : NormalExpr) (e_ηθ e_ηθs e_ηθ₁ e_ηθ₂ : Expr) : m Expr
 
+/-- Evaluate the expression of a 2-morphism into a normalized form. -/
 class MkEval (m : Type → Type) extends
     MkEvalComp m, MkEvalWhiskerLeft m, MkEvalWhiskerRight m, MkEvalHorizontalComp m where
+  /-- Evaluate the expression `η ≫ θ` into a normalized form. -/
   mkEvalComp (η θ : Mor₂) (η' θ' ηθ : NormalExpr) (e_η e_θ e_ηθ : Expr) : m Expr
+  /-- Evaluate the expression `f ◁ η` into a normalized form. -/
   mkEvalWhiskerLeft (f : Mor₁) (η : Mor₂) (η' θ : NormalExpr) (e_η e_θ : Expr) : m Expr
+  /-- Evaluate the expression `η ▷ f` into a normalized form. -/
   mkEvalWhiskerRight (η : Mor₂) (h : Mor₁) (η' θ : NormalExpr) (e_η e_θ : Expr) : m Expr
+  /-- Evaluate the expression `η ◫ θ` into a normalized form. -/
   mkEvalHorizontalComp (η θ : Mor₂) (η' θ' ι : NormalExpr) (e_η e_θ e_ι : Expr) : m Expr
+  /-- Evaluate the atomic 2-morphism `η` into a normalized form. -/
   mkEvalOf (η : Atom) : m Expr
+  /-- Evaluate the expression `η ⊗≫ θ := η ≫ α ≫ θ` into a normalized form. -/
   mkEvalMonoidalComp (η θ : Mor₂) (α : Structural) (η' θ' αθ ηαθ : NormalExpr)
     (e_η e_θ e_αθ e_ηαθ : Expr) : m Expr
 
@@ -89,13 +112,13 @@ variable [MonadMor₂Iso (CoherenceM ρ)] [MonadNormalExpr (CoherenceM ρ)] [MkE
 
 open MkEvalComp MonadMor₂Iso MonadNormalExpr
 
-def evalCompNil (α : Structural) :
-    NormalExpr → CoherenceM ρ Eval.Result
+/-- Evaluate the expression `α ≫ η` into a normalized form. -/
+def evalCompNil (α : Structural) : NormalExpr → CoherenceM ρ Eval.Result
   | .nil _ β => do return ⟨← nilM (← comp₂M α β), ← mkEvalCompNilNil α β⟩
   | .cons _ β η ηs => do return ⟨← consM (← comp₂M α β) η ηs, ← mkEvalCompNilCons α β η ηs⟩
 
 /-- Evaluate the expression `η ≫ θ` into a normalized form. -/
-def evalComp : NormalExpr → NormalExpr →  CoherenceM ρ Eval.Result
+def evalComp : NormalExpr → NormalExpr → CoherenceM ρ Eval.Result
   | .nil _ α, η => do evalCompNil α η
   | .cons _ α η ηs, θ => do
     let ⟨ι, e_ι⟩ ← evalComp ηs θ
@@ -106,8 +129,7 @@ open MkEvalWhiskerLeft
 variable [MonadMor₁ (CoherenceM ρ)] [MonadMor₂Iso (CoherenceM ρ)]
 
 /-- Evaluate the expression `f ◁ η` into a normalized form. -/
-def evalWhiskerLeft :
-    Mor₁ → NormalExpr → CoherenceM ρ Eval.Result
+def evalWhiskerLeft : Mor₁ → NormalExpr → CoherenceM ρ Eval.Result
   | f, .nil _ α => do
     return ⟨← nilM (← whiskerLeftM f α), ← mkEvalWhiskerLeftNil f α⟩
   | .of f, .cons _ α η ηs => do
@@ -131,8 +153,6 @@ def evalWhiskerLeft :
     return ⟨η'', ← mkEvalWhiskerLeftId η η' η'' e_η' e_η''⟩
 
 open MkEvalWhiskerRight MkEvalHorizontalComp
-open MonadMor₂Iso Mor₂Iso
-
 
 mutual
 
@@ -251,6 +271,7 @@ variable {ρ : Type} [Context ρ]
     [MonadMor₂ (CoherenceM ρ)]
     [MkMor₂ (CoherenceM ρ)]
 
+/-- Trace the proof of the normalization. -/
 def traceProof (nm : Name) (result : Expr) : CoherenceM ρ Unit := do
   withTraceNode nm (fun _ => return m!"{checkEmoji} {← inferType result}") do
     if ← isTracingEnabledFor nm then addTrace nm m!"proof: {result}"
