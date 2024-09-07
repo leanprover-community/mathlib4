@@ -884,7 +884,7 @@ alias exists_eq_of_iSup_eq_of_not_isSuccLimit := exists_eq_of_iSup_eq_of_not_isS
 
 lemma exists_eq_of_iSup_eq_of_not_isLimit
     {ι : Type u} [hι : Nonempty ι] (f : ι → Cardinal.{v}) (hf : BddAbove (range f))
-    (ω : Cardinal.{v}) (hω : ¬ ω.Limit)
+    (ω : Cardinal.{v}) (hω : ¬ ω.IsLimit)
     (h : ⨆ i : ι, f i = ω) : ∃ i, f i = ω := by
   refine (not_and_or.mp hω).elim (fun e ↦ ⟨hι.some, ?_⟩)
     (Cardinal.exists_eq_of_iSup_eq_of_not_isSuccPrelimit.{u, v} f ω · h)
@@ -1353,7 +1353,7 @@ lemma not_isLimit_natCast : (n : ℕ) → ¬ IsLimit (n : Cardinal.{u})
 theorem IsLimit.aleph0_le {c : Cardinal} (h : IsLimit c) : ℵ₀ ≤ c := by
   by_contra! h'
   rcases lt_aleph0.1 h' with ⟨n, rfl⟩
-  exact not_isSuccLimit_natCast n h
+  exact not_isLimit_natCast n h
 
 lemma exists_eq_natCast_of_iSup_eq {ι : Type u} [Nonempty ι] (f : ι → Cardinal.{v})
     (hf : BddAbove (range f)) (n : ℕ) (h : ⨆ i, f i = n) : ∃ i, f i = n :=
