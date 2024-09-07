@@ -117,8 +117,6 @@ universe u
 
 variable {n m : Type u}
 
---need docstrings and better theorem names
-
 /--The indexed infimum of eigenspaces of a commuting family of linear operators is
 invariant under each operator-/
 theorem iInf_eigenspace_invariant_of_commute (T : n → (E →ₗ[𝕜] E))
@@ -167,6 +165,8 @@ theorem invariant_subspace_inf_eigenspace_eq_restrict {F : Submodule 𝕜 E} (S 
 
 open Classical
 
+/--The orthocomplement of the indexed supremum of joint eigenspaces of a finite commuting tuple of
+symmetric operators is trivial. -/
 theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot [Fintype n] [FiniteDimensional 𝕜 E]
     (T : n → (E →ₗ[𝕜] E)) (hT :(∀ (i : n), ((T i).IsSymmetric)))
     (hC : (∀ (i j : n), (T i) ∘ₗ (T j) = (T j) ∘ₗ (T i))) :
@@ -210,6 +210,8 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot [Fintype n] [FiniteDim
     rw [H1 i (fun _ ↦ (fun μ ↦ (eigenspace (T _) μ )))]
     exact D
 
+/--Given a finite commuting family of symmetric linear operators, the family of joint eigenspaces
+is an orthogonal family. -/
 theorem orthogonalFamily_iInf_eigenspaces (T : n → (E →ₗ[𝕜] E))
     (hT :(∀ (i : n), ((T i).IsSymmetric))) : OrthogonalFamily 𝕜 (fun (γ : n → 𝕜) =>
     (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))
