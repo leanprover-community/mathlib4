@@ -1,47 +1,16 @@
+/-
+Copyright (c) 2024 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov
+-/
 import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
+
 -/
 
 open Filter Function Set
 open scoped Topology
-
-theorem Filter.Tendsto.comp_mapClusterPt' {α X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    {f : X → Y} {g : α → X} {l : Filter α} {x : X} {y : Y}
-    (hf : Tendsto f (𝓝 x ⊓ map g l) (𝓝 y)) (hg : MapClusterPt x l g) : MapClusterPt y l (f ∘ g) :=
-  (tendsto_inf.2 ⟨hf, tendsto_map.mono_left inf_le_right⟩).neBot (hx := hg)
-
-theorem Filter.Tendsto.comp_mapClusterPt {α X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    {f : X → Y} {g : α → X} {l : Filter α} {x : X} {y : Y}
-    (hf : Tendsto f (𝓝 x) (𝓝 y)) (hg : MapClusterPt x l g) : MapClusterPt y l (f ∘ g) :=
-  (hf.mono_left inf_le_left).comp_mapClusterPt' hg
-
-theorem ContinuousAt.comp_mapClusterPt {α X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    {f : X → Y} {g : α → X} {l : Filter α} {x : X}
-    (hf : ContinuousAt f x) (hg : MapClusterPt x l g) : MapClusterPt (f x) l (f ∘ g) :=
-  Tendsto.comp_mapClusterPt hf hg
-
-theorem ContinuousAt.comp_mapClusterPt_of_eq
-    {α X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    {f : X → Y} {g : α → X} {l : Filter α} {x : X} {y : Y}
-    (hf : ContinuousAt f x) (hy : f x = y) (hg : MapClusterPt x l g) : MapClusterPt y l (f ∘ g) :=
-  hy ▸ hf.comp_mapClusterPt hg
-
-theorem MapClusterPt.curry_prodMap {α β X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    {f : α → X} {g : β → Y} {la : Filter α} {lb : Filter β} {x : X} {y : Y}
-    (hf : MapClusterPt x la f) (hg : MapClusterPt y lb g) :
-    MapClusterPt (x, y) (la.curry lb) (.map f g) := by
-  rw [mapClusterPt_iff] at hf hg
-  rw [((𝓝 x).basis_sets.prod_nhds (𝓝 y).basis_sets).mapClusterPt_iff_frequently]
-  rintro ⟨s, t⟩ ⟨hs, ht⟩
-  rw [frequently_curry_iff]
-  exact (hf s hs).mono fun x hx ↦ (hg t ht).mono fun y hy ↦ ⟨hx, hy⟩
-
-theorem MapClusterPt.prodMap {α β X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    {f : α → X} {g : β → Y} {la : Filter α} {lb : Filter β} {x : X} {y : Y}
-    (hf : MapClusterPt x la f) (hg : MapClusterPt y lb g) :
-    MapClusterPt (x, y) (la ×ˢ lb) (.map f g) :=
-  (hf.curry_prodMap hg).mono <| map_mono curry_le_prod
 
 variable {G : Type*}
 
@@ -62,7 +31,7 @@ theorem mapClusterPt_self_zpow_atTop_pow (x : G) (m : ℤ) :
     have : ContinuousAt (fun yz ↦ x ^ m * yz.2 / yz.1) (y, y) := by fun_prop
     simpa only [comp_def, ← zpow_sub, ← zpow_add, div_eq_mul_inv, Prod.map, mul_inv_cancel_right]
       using this.comp_mapClusterPt (hy.curry_prodMap hy)
-  suffices Tendsto ↿(fun a b ↦ m + b - a) (atTop.curry atTop) atTop from H.mono (map_mono this)
+  suffices Tendsto ↿(fun a b ↦ m + b - a) (atTop.curry atTop) atTop from H.of_comp this
   refine Tendsto.curry <| .of_forall fun a ↦ ?_
   simp only [sub_eq_add_neg] -- TODO: add `Tendsto.atTop_sub_const` etc
   exact tendsto_atTop_add_const_right _ _ (tendsto_atTop_add_const_left atTop m tendsto_id)
@@ -110,6 +79,11 @@ theorem closure_range_zpow_eq_pow (x : G) :
     closure (range (x ^ · : ℤ → G)) = closure (range (x ^ · : ℕ → G)) := by
   ext y
   exact (mapClusterPt_atTop_pow_tfae y x).out 3 2
+
+@[to_additive]
+theorem denseRange_zpow_iff_pow {x : G} :
+    DenseRange (x ^ · : ℤ → G) ↔ DenseRange (x ^ · : ℕ → G) := by
+  simp only [DenseRange, dense_iff_closure_eq, closure_range_zpow_eq_pow]
 
 @[to_additive]
 theorem topologicalClosure_subgroupClosure_toSubmonoid (s : Set G) :
