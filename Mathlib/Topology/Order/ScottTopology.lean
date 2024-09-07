@@ -179,32 +179,32 @@ def scottHausdorff (α : Type*) (D : Set (Set α)) [Preorder α] : TopologicalSp
     obtain ⟨b, hbd, hbds₀⟩ := h s₀ hs₀s hd₀ hd₁ hd₂ hd₃ has₀
     exact ⟨b, hbd, Set.subset_sUnion_of_subset s s₀ hbds₀ hs₀s⟩
 
-variable (α) [TopologicalSpace α]
+variable (α) [TopologicalSpace α] (D)
 
 /-- Predicate for an ordered topological space to be equipped with its Scott-Hausdorff topology.
 
 A set `u` is open in the Scott-Hausdorff topology iff when the least upper bound of a directed set
 `d` lies in `u` then there is a tail of `d` which is a subset of `u`. -/
 class IsScottHausdorff : Prop where
-  topology_eq_scottHausdorff : ‹TopologicalSpace α› = scottHausdorff α univ
+  topology_eq_scottHausdorff : ‹TopologicalSpace α› = scottHausdorff α D
 
-instance : @IsScottHausdorff α _ (scottHausdorff α univ) :=
-  @IsScottHausdorff.mk _ _ (scottHausdorff α univ) rfl
+instance : @IsScottHausdorff α D _ (scottHausdorff α D) :=
+  @IsScottHausdorff.mk _ _ _ (scottHausdorff α D) rfl
 
 namespace IsScottHausdorff
-variable [IsScottHausdorff α] {s : Set α}
+variable [IsScottHausdorff α D] {s : Set α}
 
-lemma topology_eq : ‹_› = scottHausdorff α univ := topology_eq_scottHausdorff
+lemma topology_eq : ‹_› = scottHausdorff α D := topology_eq_scottHausdorff
 
-variable {α}
+variable {α} {D}
 
 lemma isOpen_iff :
-    IsOpen s ↔ ∀ ⦃d : Set α⦄, d ∈ univ → d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a : α⦄, IsLUB d a →
-      a ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s := by erw [topology_eq_scottHausdorff (α := α)]; rfl
+    IsOpen s ↔ ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a : α⦄, IsLUB d a →
+      a ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s := by erw [topology_eq_scottHausdorff (α := α) (D := D)]; rfl
 
-lemma dirSupInacc_of_isOpen (h : IsOpen s) : DirSupInaccOn univ s :=
+lemma dirSupInacc_of_isOpen (h : IsOpen s) : DirSupInaccOn D s :=
   fun d hd₀ hd₁ hd₂ a hda hd₃ ↦ by
-    obtain ⟨b, hbd, hb⟩ := isOpen_iff.1 h hd₀ hd₁ hd₂ hda hd₃; exact ⟨b, hbd, hb ⟨le_rfl, hbd⟩⟩
+    obtain ⟨b, hbd, hb⟩ := isOpen_iff.mp h hd₀ hd₁ hd₂ hda hd₃; exact ⟨b, hbd, hb ⟨le_rfl, hbd⟩⟩
 
 variable (h : IsClosed s)
 
@@ -214,10 +214,10 @@ end ScottHausdorff
 section ScottHausdorff
 namespace IsScottHausdorff
 
-variable {s : Set α} [Preorder α] {t : TopologicalSpace α} [IsScottHausdorff α]
+variable {s : Set α} [Preorder α] {t : TopologicalSpace α} [IsScottHausdorff α univ]
 
 lemma isOpen_of_isLowerSet (h : IsLowerSet s) : IsOpen s :=
-  isOpen_iff.2 fun _d _ ⟨b, hb⟩ _ _ hda ha ↦
+  (isOpen_iff (D := univ)).mpr fun _d _ ⟨b, hb⟩ _ _ hda ha ↦
     ⟨b, hb, fun _ hc ↦ h (mem_upperBounds.1 hda.1 _ hc.2) ha⟩
 
 lemma isClosed_of_isUpperSet (h : IsUpperSet s) : IsClosed s :=
@@ -267,7 +267,7 @@ lemma isOpen_iff_isUpperSet_and_scottHausdorff_open :
 lemma isOpen_iff_isUpperSet_and_dirSupInacc : IsOpen s ↔ IsUpperSet s ∧ DirSupInaccOn univ s := by
   rw [isOpen_iff_isUpperSet_and_scottHausdorff_open]
   refine and_congr_right fun h ↦
-    ⟨@IsScottHausdorff.dirSupInacc_of_isOpen _ _ (scottHausdorff α univ) _ _,
+    ⟨@IsScottHausdorff.dirSupInacc_of_isOpen _ _ _ (scottHausdorff α univ) _ _,
       fun h' d d₀ d₁ d₂ _ d₃ ha ↦ ?_⟩
   obtain ⟨b, hbd, hbu⟩ := h' d₀ d₁ d₂ d₃ ha
   exact ⟨b, hbd, Subset.trans inter_subset_left (h.Ici_subset hbu)⟩
