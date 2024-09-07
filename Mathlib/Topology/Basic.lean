@@ -956,17 +956,17 @@ theorem MapClusterPt.mono {G : Filter α} (h : MapClusterPt x F u) (hle : F ≤ 
     MapClusterPt x G u :=
   h.clusterPt.mono (map_mono hle)
 
-theorem Filter.Tendsto.comp_mapClusterPt' [TopologicalSpace Y] {f : X → Y} {y : Y}
+theorem MapClusterPt.tendsto_comp' [TopologicalSpace Y] {f : X → Y} {y : Y}
     (hf : Tendsto f (𝓝 x ⊓ map u F) (𝓝 y)) (hu : MapClusterPt x F u) : MapClusterPt y F (f ∘ u) :=
   (tendsto_inf.2 ⟨hf, tendsto_map.mono_left inf_le_right⟩).neBot (hx := hu)
 
-theorem Filter.Tendsto.comp_mapClusterPt [TopologicalSpace Y] {f : X → Y} {y : Y}
+theorem MapClusterPt.tendsto_comp [TopologicalSpace Y] {f : X → Y} {y : Y}
     (hf : Tendsto f (𝓝 x) (𝓝 y)) (hu : MapClusterPt x F u) : MapClusterPt y F (f ∘ u) :=
-  (hf.mono_left inf_le_left).comp_mapClusterPt' hu
+  hu.tendsto_comp' (hf.mono_left inf_le_left)
 
-theorem ContinuousAt.comp_mapClusterPt [TopologicalSpace Y] {f : X → Y} (hf : ContinuousAt f x)
-    (hu : MapClusterPt x F u) : MapClusterPt (f x) F (f ∘ u) :=
-  Tendsto.comp_mapClusterPt hf hu
+theorem MapClusterPt.continuousAt_comp [TopologicalSpace Y] {f : X → Y} (hf : ContinuousAt f x)
+    (hu : MapClusterPt x F u) : (f x) F (f ∘ u) :=
+  hu.tendsto_comp hf
 
 theorem Filter.HasBasis.mapClusterPt_iff_frequently {ι : Sort*} {p : ι → Prop} {s : ι → Set X}
     (hx : (𝓝 x).HasBasis p s) : MapClusterPt x F u ↔ ∀ i, p i → ∃ᶠ a in F, u a ∈ s i := by
