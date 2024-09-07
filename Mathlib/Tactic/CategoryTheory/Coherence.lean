@@ -109,20 +109,28 @@ def exception' (msg : MessageData) : TacticM Unit := do
     -- There might not be any goals
     throwError msg
 
+/-- Sending morphisms in `FreeMonoidalCategory C` to those in `C`. -/
+def mkProjectMapExprAux [MonoidalCategory C] {X Y : FreeMonoidalCategory C} (f : X ⟶ Y) :=
+  FreeMonoidalCategory.projectMap id _ _ f
+
+/-- Same as `LiftHom.lift`, but the `LiftHom f` instance is explicit. -/
+abbrev LiftHom.lift' {X Y : C} [LiftObj X] [LiftObj Y] (f : X ⟶ Y) (inst : LiftHom f) :=
+  inst.lift
+
 /-- Auxiliary definition for `monoidal_coherence`. -/
--- We could construct this expression directly without using `elabTerm`,
--- but it would require preparing many implicit arguments by hand.
-def mkProjectMapExpr (e : Expr) : TermElabM Expr := do
-  Term.elabTerm
-    (← ``(FreeMonoidalCategory.projectMap _root_.id _ _ (LiftHom.lift $(← Term.exprToSyntax e))))
-    none
+def mkProjectMapExpr (e : Expr) : MetaM Expr := do
+  let inst ← synthInstance (← mkAppM ``LiftHom #[e])
+  let f ← mkAppM ``LiftHom.lift' #[e, inst]
+  mkAppM ``mkProjectMapExprAux #[f]
 
 /-- Coherence tactic for monoidal categories. -/
-def monoidal_coherence (g : MVarId) : TermElabM Unit := g.withContext do
+def monoidal_coherence (g : MVarId) : MetaM Unit := g.withContext do
   withOptions (fun opts => synthInstance.maxSize.set opts
     (max 512 (synthInstance.maxSize.get opts))) do
-  -- TODO: is this `dsimp only` step necessary? It doesn't appear to be in the tests below.
-  let (ty, _) ← dsimp (← g.getType) (← Simp.Context.ofNames [] true)
+  let thms := [``MonoidalCoherence.iso, ``Iso.trans, ``Iso.symm, ``Iso.refl,
+    ``MonoidalCategory.whiskerRightIso, ``MonoidalCategory.whiskerLeftIso].foldl
+    (·.addDeclToUnfoldCore ·) {}
+  let (ty, _) ← dsimp (← g.getType) { simpTheorems := #[thms] }
   let some (_, lhs, rhs) := (← whnfR ty).eq? | exception g "Not an equation of morphisms."
   let projectMap_lhs ← mkProjectMapExpr lhs
   let projectMap_rhs ← mkProjectMapExpr rhs
@@ -184,7 +192,7 @@ elab (name := liftable_prefixes) "liftable_prefixes" : tactic => do
     (max 256 (synthInstance.maxSize.get opts))) do
   evalTactic (← `(tactic|
     (simp (config := {failIfUnchanged := false}) only
-      [monoidalComp, Category.assoc, MonoidalCoherence.hom,
+      [monoidalComp, Category.assoc, BicategoricalCoherence.hom
       MonoidalCoherence.iso, Iso.trans, Iso.symm, Iso.refl,
       MonoidalCategory.whiskerRightIso, MonoidalCategory.whiskerLeftIso]) <;>
     (apply (cancel_epi (𝟙 _)).1 <;> try infer_instance) <;>
@@ -286,9 +294,7 @@ syntax (name := coherence) "coherence" : tactic
 elab_rules : tactic
 | `(tactic| coherence) => do
   evalTactic (← `(tactic|
-    (simp (config := {failIfUnchanged := false}) only [bicategoricalComp,
-      BicategoricalCoherence.hom,
-      monoidalComp]);
+    (simp (config := {failIfUnchanged := false}) only [bicategoricalComp, monoidalComp]);
     whisker_simps (config := {failIfUnchanged := false});
     monoidal_simps (config := {failIfUnchanged := false})))
   coherence_loop
