@@ -9,12 +9,9 @@ import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Order.CompleteLattice
 import Mathlib.LinearAlgebra.Eigenspace.Basic
 
-/-! # Joint eigenspaces of a commuting pair of symmetric operators
+/-! # Joint eigenspaces of a commuting finite tuple of symmetric operators
 
-NEED TO UPDATE ALL OF THIS FOR TUPLES!!!
-ALSO RENAMING RESULTS BELOW IN ACCORDANCE WITH PAIR CHANGES, AND DOCSTRINGS.
-
-This file collects various decomposition results for joint eigenspaces of a commuting pair
+This file collects various decomposition results for joint eigenspaces of a commuting finite tuples
 of symmetric operators on a finite-dimensional inner product space.
 
 # Main Result
@@ -23,6 +20,9 @@ of symmetric operators on a finite-dimensional inner product space.
    if `{A B : E →ₗ[𝕜] E}`, then `IsSymmetric A`, `IsSymmetric B` and `A ∘ₗ B = B ∘ₗ A` imply that
    `E` decomposes as an internal direct sum of the pairwise orthogonal spaces
    `eigenspace B μ ⊓ eigenspace A ν`
+* `DirectSum.IsInternal_of_simultaneous_eigenspaces_of_commuting_symmetric_tuple` establishes the
+   analogous result to `LinearMap.IsSymmetric.directSum_isInternal_of_commute` for finite commuting
+   tuples of symmetric operators.
 
 ## TODO
 
@@ -31,7 +31,7 @@ and a proof obligation that the basis vectors are eigenvectors.
 
 ## Tags
 
-self-adjoint operator, simultaneous eigenspaces, joint eigenspaces
+self-adjoint operator, symmetric operator, simultaneous eigenspaces, joint eigenspaces
 
 -/
 
