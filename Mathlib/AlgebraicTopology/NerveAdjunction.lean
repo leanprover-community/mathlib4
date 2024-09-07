@@ -63,7 +63,7 @@ def nerve₂Adj.counit.component (C : Cat.{u, u}) :
       Quiv.adj, Quiv.id_eq_id]
     change OneTruncation.ofNerve.map (ev02₂ φ) =
       OneTruncation.ofNerve.map (ev01₂ φ) ≫ OneTruncation.ofNerve.map (ev12₂ φ)
-    simp [OneTruncation.ofNerve.map]
+    simp only [OneTruncation.ofNerve.map, eqToHom_refl, comp_id, id_comp]
     exact φ.map_comp (X := (0 : Fin 3)) (Y := 1) (Z := 2)
       (homOfLE (by decide)) (homOfLE (by decide))
 
@@ -78,18 +78,14 @@ theorem nerve₂Adj.counit.naturality' ⦃C D : Cat.{u, u}⦄ (F : C ⟶ D) :
       nerve₂Adj.counit.component C ⋙ F := by
   apply SSet.hoFunctor₂Obj.lift_unique'
   have := SSet.hoFunctor₂_naturality (nerveFunctor₂.map F)
-  conv =>
-    lhs; rw [← Functor.assoc]; lhs; apply this.symm
+  conv => lhs; rw [← Functor.assoc]; lhs; apply this.symm
   simp only [Cat.freeRefl_obj_α, ReflQuiv.of_val, comp_obj, Functor.comp_map]
   rw [← Functor.assoc _ _ F]
   conv => rhs; lhs; exact (nerve₂Adj.counit.component_eq C)
-  conv =>
-    rhs
-    exact ((whiskerRight forgetToReflQuiv.natIso.hom Cat.freeRefl ≫
-      ReflQuiv.adj.counit).naturality F).symm
-  simp only [component, Cat.freeRefl_obj_α, ReflQuiv.of_val, NatTrans.comp_app, comp_obj,
-    ReflQuiv.forget_obj, id_obj, whiskerRight_app, Cat.comp_eq_comp, Functor.comp_map,
-    Functor.assoc, hoFunctor₂Obj.quotientFunctor, Cat.freeRefl_obj_α, ReflQuiv.of_val]
+  conv => rhs; exact ((whiskerRight forgetToReflQuiv.natIso.hom Cat.freeRefl ≫
+    ReflQuiv.adj.counit).naturality F).symm
+  simp only [component, Cat.comp_eq_comp, Functor.comp_map, Functor.assoc,
+    hoFunctor₂Obj.quotientFunctor]
   rw [Quotient.lift_spec]
 
 def nerve₂Adj.counit : nerveFunctor₂ ⋙ SSet.hoFunctor₂.{u} ⟶ (𝟭 Cat) where
@@ -140,15 +136,12 @@ instance (C : Cat) : Mono (nerve₂.seagull C) where
     simp at eq1 eq2
     generalize f x = fx at *
     generalize g x = gx at *
-    clear eq x f g
     fapply ComposableArrows.ext₂
     · exact congrArg (·.obj 0) <| eq1
     · exact congrArg (·.obj 1) <| eq1
     · exact congrArg (·.obj 1) <| eq2
-    · have := congr_arg_heq (·.hom) <| eq1
-      refine (conj_eqToHom_iff_heq' _ _ _ _).2 this
-    · have := congr_arg_heq (·.hom) <| eq2
-      refine (conj_eqToHom_iff_heq' _ _ _ _).2 this
+    · exact (conj_eqToHom_iff_heq' _ _ _ _).2 (congr_arg_heq (·.hom) <| eq1)
+    · exact (conj_eqToHom_iff_heq' _ _ _ _).2 (congr_arg_heq (·.hom) <| eq2)
 
 @[simps!] def toNerve₂.mk {X : SSet.Truncated.{u} 2} {C : Cat}
     (F : SSet.oneTruncation₂.obj X ⟶ ReflQuiv.of C)
