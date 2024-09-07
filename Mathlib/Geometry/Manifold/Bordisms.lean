@@ -48,21 +48,22 @@ open FiniteDimensional Set
 
 noncomputable section
 
+universe u in
 /-- A **singular `n`-manifold** on a topological space `X`, for `n ∈ ℕ`, is a pair `(M,f)`
 of a closed `n`-dimensional smooth manifold `M` together with a continuous map `M → X`. -/
 structure SingularNManifold (X : Type*) [TopologicalSpace X] (n : ℕ) where
   /-- The normed space on which the manifold `M` is modeled. -/
-  E : Type*
+  E : Type u
   /-- `E` is normed (additive) abelian group -/
   [normedAddCommGroup : NormedAddCommGroup E]
   /-- `E` is a real normed space -/
   [normedSpace: NormedSpace ℝ E]
   /-- The smooth manifold `M` of a singular `n`-manifold `(M,f)` -/
-  M : Type*
+  M : Type u
   /-- The smooth manifold `M` is a topological space -/
   [topSpaceM : TopologicalSpace M]
   /-- The topological space on which the manifold `M` is modeled -/
-  H : Type*
+  H : Type u
   /-- `H` is a topological space -/
   [topSpaceH : TopologicalSpace H]
   /-- The smooth manifold `M` is a charted space over `H` -/
@@ -128,14 +129,15 @@ lemma map_comp (s : SingularNManifold X n)
   rfl
 
 -- Let M, M' and W be smooth manifolds.
-variable {E E' E'' E''' H H' H'' H''' : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+universe u
+variable {E E' E'' E''' H H' H'' H''' : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup E'] [NormedSpace ℝ E'] [NormedAddCommGroup E'']  [NormedSpace ℝ E'']
   [NormedAddCommGroup E'''] [NormedSpace ℝ E''']
   [TopologicalSpace H] [TopologicalSpace H'] [TopologicalSpace H''] [TopologicalSpace H''']
 
-variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+variable {M : Type u} [TopologicalSpace M] [ChartedSpace H M]
   {I : ModelWithCorners ℝ E H} [SmoothManifoldWithCorners I M]
-  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+  {M' : Type u} [TopologicalSpace M'] [ChartedSpace H' M']
   {I' : ModelWithCorners ℝ E' H'} [SmoothManifoldWithCorners I' M'] {n : ℕ}
   [BoundarylessManifold I M] [CompactSpace M] [FiniteDimensional ℝ E]
   [BoundarylessManifold I' M'] [CompactSpace M'] [FiniteDimensional ℝ E']
@@ -171,7 +173,7 @@ lemma comap_f [Fact (finrank ℝ E = n)]
 variable (M) in
 /-- The canonical singular `n`-manifold associated to the empty set (seen as an `n`-dimensional
 manifold, i.e. modelled on an `n`-dimensional space). -/
-def empty [h: Fact (finrank ℝ E = n)] (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
+def empty [h: Fact (finrank ℝ E = n)] (M : Type u) [TopologicalSpace M] [ChartedSpace H M]
     {I : ModelWithCorners ℝ E H} [SmoothManifoldWithCorners I M] [IsEmpty M] :
   SingularNManifold X n where
   M := M
