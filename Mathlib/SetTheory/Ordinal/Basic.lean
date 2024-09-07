@@ -533,11 +533,9 @@ instance : ConditionallyCompleteLinearOrderBot Ordinal :=
 @[simp]
 theorem typein_apply {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder β s] (f : r ≼i s)
     (a : α) : typein s (f a) = @typein α r f.toRelEmbedding.isWellOrder a := by
-  rw [← f.leLT_apply (typein s) a]
-  apply congr_fun _ a
-  simp
-  subsingleton
-
+  have := f.toRelEmbedding.isWellOrder
+  rw [← f.leLT_apply (typein s) a, Subsingleton.elim (f.leLT (typein s)) (typein r)]
+  
 /-- Reformulation of well founded induction on ordinals as a lemma that works with the
 `induction` tactic, as in `induction i using Ordinal.induction with | h i IH => ?_`. -/
 theorem induction {p : Ordinal.{u} → Prop} (i : Ordinal.{u}) (h : ∀ j, (∀ k, k < j → p k) → p j) :
