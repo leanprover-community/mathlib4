@@ -64,7 +64,7 @@ theorem tendstoUniformlyOn_tsum_eventually {ι : Type*} {f : ι → β → F} {u
     apply Summable.add_compl (s := N) Summable.of_finite
     apply Summable.of_nonneg_of_le (fun _ ↦ norm_nonneg _) _ (hu.subtype _)
     simp only [comp_apply, Subtype.forall, Set.mem_compl_iff, Finset.mem_coe]
-    apply hN N (by simp only [subset_refl]) x hx
+    exact hN N subset_rfl x hx
   rw [dist_eq_norm, ← sum_add_tsum_subtype_compl A.of_norm (n), add_sub_cancel_left]
   have hN2 := hN n (Finset.union_subset_left hn) x hx
   have ht2 := ht n (Finset.union_subset_right hn)
