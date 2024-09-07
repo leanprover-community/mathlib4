@@ -75,7 +75,7 @@ lemma le_total_of_ge {r v₁ v₂ : α} (h₁ : r ≤ v₁) (h₂ : r ≤ v₂) 
   wlog h : n ≤ m
   · rw [Or.comm]
     apply this
-    omega
+    exact Nat.le_of_not_ge h
   left
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le h
   rw [Nat.add_comm, Function.iterate_add, Function.comp_apply]
