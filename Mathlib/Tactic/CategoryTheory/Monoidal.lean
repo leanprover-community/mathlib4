@@ -154,8 +154,9 @@ inductive StructuralAtom : Type
 
 /-- Construct a `StructuralAtom` expression from a Lean expression. -/
 def structuralAtom? (e : Expr) : MetaM (Option StructuralAtom) := do
-  match e.getAppFnArgs with
-  | (``Iso.hom, #[_, _, _, _, η]) =>
+  match ← whnfR e with
+  -- whnfR version of `Iso.hom η`
+  | .proj ``Iso 0 η =>
     match (← whnfR η).getAppFnArgs with
     | (``MonoidalCategoryStruct.associator, #[_, _, _, f, g, h]) =>
       return some <| .associator (← toMor₁ f) (← toMor₁ g) (← toMor₁ h)
@@ -163,8 +164,11 @@ def structuralAtom? (e : Expr) : MetaM (Option StructuralAtom) := do
       return some <| .leftUnitor (← toMor₁ f)
     | (``MonoidalCategoryStruct.rightUnitor, #[_, _, _, f]) =>
       return some <| .rightUnitor (← toMor₁ f)
+    | (``MonoidalCoherence.iso, #[_, _, f, g, inst]) =>
+      return some <| .monoidalCoherence (← toMor₁ f) (← toMor₁ g) inst
     | _ => return none
-  | (``Iso.inv, #[_, _, _, _, η]) =>
+  -- whnfR version of `Iso.inv η`
+  | .proj ``Iso 1 η =>
     match (← whnfR η).getAppFnArgs with
     | (``MonoidalCategoryStruct.associator, #[_, _, _, f, g, h]) =>
       return some <| .associatorInv (← toMor₁ f) (← toMor₁ g) (← toMor₁ h)
@@ -173,11 +177,7 @@ def structuralAtom? (e : Expr) : MetaM (Option StructuralAtom) := do
     | (``MonoidalCategoryStruct.rightUnitor, #[_, _, _, f]) =>
       return some <| .rightUnitorInv (← toMor₁ f)
     | _ => return none
-  | _ =>
-    match (← whnfR e).getAppFnArgs with
-    | (``MonoidalCoherence.hom, #[_, _, f, g, inst]) =>
-      return some <| .monoidalCoherence (← toMor₁ f) (← toMor₁ g) inst
-    | _ => return none
+  | _ => return none
 
 /-- Expressions for atomic non-structural 2-morphisms. -/
 structure Atom where
@@ -501,7 +501,7 @@ def StructuralAtom.e : StructuralAtom → MonoidalM Expr
   | .rightUnitorInv f => do
     mkAppM ``Iso.inv #[← mkAppM ``MonoidalCategoryStruct.rightUnitor #[← f.e]]
   | .monoidalCoherence _ _ e => do
-    mkAppOptM ``MonoidalCoherence.hom #[none, none, none, none, e]
+    mkAppM ``Iso.hom #[← mkAppOptM ``MonoidalCoherence.iso #[none, none, none, none, e]]
 
 /-- Extract a Lean expression from a `Structural` expression. -/
 partial def Structural.e : Structural → MonoidalM Expr
