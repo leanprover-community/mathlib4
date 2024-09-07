@@ -539,7 +539,7 @@ class Expands where
 
 /-- Note that the variables of `L.inclusion L'` are reversed from the corresponding instance
   `L'.Expands L`. -/
-abbrev inclusion [L'.Expands L] : L →ᴸ L' := Expands.toLHom
+protected abbrev inclusion [L'.Expands L] : L →ᴸ L' := Expands.toLHom
 
 lemma inclusion_injective [L'.Expands L] : (L.inclusion L').Injective := Expands.toLHom_injective
 
