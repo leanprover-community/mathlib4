@@ -6,6 +6,7 @@ Authors: Robert Y. Lewis
 import Mathlib.Tactic.Linarith.Lemmas
 import Mathlib.Tactic.Ring.Basic
 import Mathlib.Util.SynthesizeUsing
+import Batteries.Data.HashMap.Basic
 
 /-!
 # Datatypes for `linarith`
@@ -368,3 +369,5 @@ def mkSingleCompZeroOf (c : Nat) (h : Expr) : MetaM (Ineq × Expr) := do
     let ex ← synthesizeUsingTactic' cpos (← `(tactic| norm_num))
     let e' ← mkAppM iq.toConstMulName #[h, ex]
     return (iq, e')
+
+end Linarith
