@@ -207,7 +207,7 @@ theorem Function.Bijective.cauchySeq_comp_iff {f : ℕ → ℕ} (hf : Bijective 
     CauchySeq (u ∘ f) ↔ CauchySeq u := by
   refine ⟨fun H => ?_, fun H => H.comp_injective hf.injective⟩
   lift f to ℕ ≃ ℕ using hf
-  simpa only [(· ∘ ·), f.apply_symm_apply] using H.comp_injective f.symm.injective
+  simpa only [Function.comp_def, f.apply_symm_apply] using H.comp_injective f.symm.injective
 
 theorem CauchySeq.subseq_subseq_mem {V : ℕ → Set (α × α)} (hV : ∀ n, V n ∈ 𝓤 α) {u : ℕ → α}
     (hu : CauchySeq u) {f g : ℕ → ℕ} (hf : Tendsto f atTop atTop) (hg : Tendsto g atTop atTop) :
@@ -562,7 +562,7 @@ theorem TotallyBounded.image [UniformSpace β] {f : α → β} {s : Set α} (hs 
     simp only [mem_image, iUnion_exists, biUnion_and', iUnion_iUnion_eq_right, image_subset_iff,
       preimage_iUnion, preimage_setOf_eq]
     simp? [subset_def] at hct says
-      simp only [mem_setOf_eq, subset_def, mem_iUnion, exists_prop] at hct
+      simp only [mem_setOf_eq, subset_def, mem_iUnion, exists_prop', nonempty_prop] at hct
     intro x hx
     simpa using hct x hx⟩
 
