@@ -2316,6 +2316,9 @@ set_option linter.deprecated false
 
 variable {r : α → α → Prop} (hwf : WellFounded r)
 
+/-- The rank of an element `a` under a well-founded relation `r` is defined inductively as the
+smallest ordinal greater than the ranks of all elements below it (i.e. elements `b` such that
+`r b a`). -/
 @[deprecated IsWellFounded.rank (since := "2024-09-07")]
 noncomputable def rank (a : α) : Ordinal.{u} :=
   (hwf.apply a).rank
