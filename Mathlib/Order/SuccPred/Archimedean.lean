@@ -125,6 +125,16 @@ lemma lt_or_le_of_ge [SuccOrder α] [IsSuccArchimedean α] {r v₁ v₂ : α} (h
   · apply lt_of_le_of_ne h (ne_of_not_le nh).symm
   · contradiction
 
+/--
+This isn't an instance due to a diamond with the `decidable` instances in `LinearOrder`.
+-/
+noncomputable def IsSuccArchimedean.linearOrder [SuccOrder α] [IsSuccArchimedean α]
+    [IsDirected α (· ≥ ·)] : LinearOrder α where
+  le_total a b :=
+    have ⟨c, ha, hb⟩ := directed_of (· ≥ ·) a b
+    le_total_of_ge ha hb
+  decidableLE := Classical.decRel _
+
 lemma lt_or_le_of_le [PredOrder α] [IsPredArchimedean α] {r v₁ v₂ : α} (h₁ : v₁ ≤ r) (h₂ : v₂ ≤ r) :
     v₁ < v₂ ∨ v₂ ≤ v₁ := by
   rw [Classical.or_iff_not_imp_right]
@@ -132,6 +142,14 @@ lemma lt_or_le_of_le [PredOrder α] [IsPredArchimedean α] {r v₁ v₂ : α} (h
   rcases le_total_of_le h₁ h₂ with h | h
   · apply lt_of_le_of_ne h (ne_of_not_le nh).symm
   · contradiction
+
+/--
+This isn't an instance due to a diamond with the `decidable` instances in `LinearOrder`.
+-/
+noncomputable def IsPredArchimedean.linearOrder [PredOrder α] [IsPredArchimedean α]
+    [IsDirected α (· ≤ ·)] : LinearOrder α :=
+      letI : LinearOrder αᵒᵈ := IsSuccArchimedean.linearOrder
+      inferInstanceAs (LinearOrder αᵒᵈᵒᵈ)
 
 end PartialOrder
 
