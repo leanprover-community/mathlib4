@@ -86,8 +86,6 @@ def List.splitEvenOdd {α : Type u} : List α → List α × List α
     let (as, bs) := List.splitEvenOdd xs
     (a::as, b::bs)
 
-#eval List.splitEvenOdd [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-
 def main (ρ : Type) [Context ρ]
     [MonadMor₁ (CoherenceM ρ)]
     [MonadMor₂Iso (CoherenceM ρ)]
