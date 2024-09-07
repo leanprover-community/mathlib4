@@ -15,9 +15,7 @@ import Mathlib.Tactic.CategoryTheory.Monoidal.Datatypes
 open Lean Meta Elab Qq
 open CategoryTheory Mathlib.Tactic.BicategoryLike MonoidalCategory
 
-namespace Mathlib.Tactic
-
-namespace Monoidal
+namespace Mathlib.Tactic.Monoidal'
 
 section
 
@@ -91,7 +89,7 @@ theorem naturality_inv {p f g pf : C} {η : f ≅ g}
   apply Iso.ext
   simp
 
-instance : MonadNormalizeNaturality MonoidalM' where
+instance : MonadNormalizeNaturality MonoidalM where
   mkNaturalityAssociator p pf pfg pfgh f g h η_f η_g η_h := do
     let ctx ← read
     let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
@@ -233,7 +231,7 @@ theorem mk_eq_of_naturality {f g f' : C} {η θ : f ⟶ g} {η' θ' : f ≅ g}
 
 end
 
-instance : MkEqOfNaturality MonoidalM' where
+instance : MkEqOfNaturality MonoidalM where
   mkEqOfNaturality η θ ηIso θIso η_f η_g Hη Hθ := do
     let ctx ← read
     let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
@@ -268,10 +266,10 @@ example {C : Type} [Category C] [MonoidalCategory C] :
 ```
 -/
 def pureCoherence (mvarId : MVarId) : MetaM (List MVarId) :=
-  BicategoryLike.pureCoherence Monoidal.Context' `monoidal mvarId
+  BicategoryLike.pureCoherence Monoidal'.Context `monoidal mvarId
 
 @[inherit_doc pureCoherence]
 elab "monoidal_coherence" : tactic => withMainContext do
-  replaceMainGoal <| ← Monoidal.pureCoherence <| ← getMainGoal
+  replaceMainGoal <| ← Monoidal'.pureCoherence <| ← getMainGoal
 
-end Mathlib.Tactic.Monoidal
+end Mathlib.Tactic.Monoidal'
