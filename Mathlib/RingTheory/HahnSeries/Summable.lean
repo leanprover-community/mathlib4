@@ -3,14 +3,13 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Scott Carnahan
 -/
-import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.RingTheory.HahnSeries.Multiplication
 
 /-!
 # Summable families of Hahn Series
 We introduce a notion of formal summability for families of Hahn series, and define a formal sum
-function. This theory is applied to characterize invertible Hahn series whose coefficients are in a
-commutative domain.
+function.  We show that this formal sum is compatible with pointwise multiplication and scalar
+scalar multiplication on a pair of summable families.
 
 ## Main Definitions
   * A `HahnSeries.SummableFamily` is a family of Hahn series such that the union of the supports
@@ -20,29 +19,19 @@ commutative domain.
   summable families whose sums do not converge topologically.
   * The formal sum, `HahnSeries.SummableFamily.hsum` can be bundled as a `LinearMap` via
   `HahnSeries.SummableFamily.lsum`.
+  * `FamilySMul` and `FamilyMul` are the pointwise scalar multiplication and multiplication
+  operations on a pair of summable families.
 
 ## Main results
-  * If `R` is a commutative domain, and `Γ` is a linearly ordered additive commutative group, then
-  a Hahn series is a unit if and only if its leading term is a unit in `R`.
+  * `FamilySMul` and `FamilyMul` are compatible with `hsum`.  That is, the product of sums is equal
+  to the sum of pointwise products.
 
 ## TODO
-  * Remove unnecessary domain hypotheses.
-  * More general summable families, e.g., define the evaluation homomorphism from a power series
-  ring taking `X` to a positive order element.
-  * Generalize `SMul` to Hahn modules.
-
-## Main results
-
-  * `isUnit_of_isUnit_leadingCoeff` : A Hahn Series with invertible leading coefficient is
-    invertible.
-  * `isUnit_iff` : If the coefficient ring is a domain, then any invertible Hahn series has
-    invertible leading coefficient.
-  * A HahnSeries module structure on summable families.
+  * `SummableFamily` for suitable `Pi`-families of summable families.
 
 ## References
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
 -/
-
 
 open Finset Function
 
@@ -54,21 +43,15 @@ variable {Γ Γ' R V α β : Type*}
 
 namespace HahnSeries
 
-section
-
-variable (Γ) (R) [PartialOrder Γ] [AddCommMonoid R]
-
 /-- A family of Hahn series whose formal coefficient-wise sum is a Hahn series.  For each
 coefficient of the sum to be well-defined, we require that only finitely many series are nonzero at
 any given coefficient.  For the formal sum to be a Hahn series, we require that the union of the
 supports of the constituent series is partially well-ordered. -/
-structure SummableFamily (α : Type*) where
+structure SummableFamily (Γ) (R) [PartialOrder Γ] [AddCommMonoid R] (α : Type*) where
   /-- A parametrized family of Hahn series. -/
   toFun : α → HahnSeries Γ R
   isPWO_iUnion_support' : Set.IsPWO (⋃ a : α, (toFun a).support)
   finite_co_support' : ∀ g : Γ, { a | (toFun a).coeff g ≠ 0 }.Finite
-
-end
 
 namespace SummableFamily
 
@@ -286,7 +269,7 @@ theorem smul_support_finite (s : SummableFamily Γ R α)
 
 variable [VAdd Γ Γ'] [IsOrderedCancelVAdd Γ Γ']
 
-theorem isPWO_iUnion_support_prod {s : α → HahnSeries Γ R} {t : β → HahnSeries Γ' V}
+theorem isPWO_iUnion_support_prod_smul {s : α → HahnSeries Γ R} {t : β → HahnSeries Γ' V}
     (hs : (⋃ a, (s a).support).IsPWO) (ht : (⋃ b, (t b).support).IsPWO) :
     (⋃ (a : α × β), ((fun a ↦ (HahnModule.of R).symm
       ((s a.1) • (HahnModule.of R) (t a.2))) a).support).IsPWO := by
@@ -306,7 +289,8 @@ theorem isPWO_iUnion_support_prod {s : α → HahnSeries Γ R} {t : β → HahnS
   exact fun a b => Set.vadd_subset_vadd (Set.subset_iUnion_of_subset a fun x y ↦ y)
     (Set.subset_iUnion_of_subset b fun x y ↦ y)
 
-theorem finite_co_support_prod (s : SummableFamily Γ R α) (t : SummableFamily Γ' V β) (g : Γ') :
+theorem finite_co_support_prod_smul (s : SummableFamily Γ R α)
+    (t : SummableFamily Γ' V β) (g : Γ') :
     Finite {(a : α × β) | ((fun (a : α × β) ↦ (HahnModule.of R).symm (s a.1 • (HahnModule.of R)
       (t a.2))) a).coeff g ≠ 0} := by
   apply ((VAddAntidiagonal s.isPWO_iUnion_support t.isPWO_iUnion_support g).finite_toSet.biUnion'
@@ -327,8 +311,9 @@ theorem finite_co_support_prod (s : SummableFamily Γ R α) (t : SummableFamily 
 def FamilySMul (s : SummableFamily Γ R α) (t : SummableFamily Γ' V β) :
     (SummableFamily Γ' V (α × β)) where
   toFun a := (HahnModule.of R).symm (s (a.1) • ((HahnModule.of R) (t (a.2))))
-  isPWO_iUnion_support' := isPWO_iUnion_support_prod s.isPWO_iUnion_support t.isPWO_iUnion_support
-  finite_co_support' g := finite_co_support_prod s t g
+  isPWO_iUnion_support' :=
+    isPWO_iUnion_support_prod_smul s.isPWO_iUnion_support t.isPWO_iUnion_support
+  finite_co_support' g := finite_co_support_prod_smul s t g
 
 theorem sum_vAddAntidiagonal_eq (s : SummableFamily Γ R α) (t : SummableFamily Γ' V β) (g : Γ')
     (a : α × β) :
@@ -402,9 +387,9 @@ end SMul
 section Semiring
 
 variable {Γ' : Type*} [OrderedCancelAddCommMonoid Γ] [PartialOrder Γ'] [AddAction Γ Γ']
-  [IsOrderedCancelVAdd Γ Γ'] [Semiring R] [AddCommMonoid V] [Module R V] {α : Type*}
+  [IsOrderedCancelVAdd Γ Γ'] [Semiring R] {α : Type*}
 
-instance : Module (HahnSeries Γ R) (SummableFamily Γ' V α) where
+instance [AddCommMonoid V] [Module R V] : Module (HahnSeries Γ R) (SummableFamily Γ' V α) where
   smul := (· • ·)
   smul_zero _ := ext fun _ => by simp
   zero_smul _ := ext fun _ => by simp
@@ -429,17 +414,24 @@ theorem hsum_sub {R : Type*} [Ring R] {s t : SummableFamily Γ R α} :
     (s - t).hsum = s.hsum - t.hsum := by
   rw [← lsum_apply, LinearMap.map_sub, lsum_apply, lsum_apply]
 
-/-- Pointwise multiplication of summable families. -/
+theorem isPWO_iUnion_support_prod_mul {s : α → HahnSeries Γ R} {t : β → HahnSeries Γ R}
+    (hs : (⋃ a, (s a).support).IsPWO) (ht : (⋃ b, (t b).support).IsPWO) :
+    (⋃ (a : α × β), ((fun a ↦ ((s a.1) * (t a.2))) a).support).IsPWO :=
+  isPWO_iUnion_support_prod_smul hs ht
+
+theorem finite_co_support_prod_mul (s : SummableFamily Γ R α)
+    (t : SummableFamily Γ R β) (g : Γ) :
+    Finite {(a : α × β) | ((fun (a : α × β) ↦ (s a.1 * t a.2)) a).coeff g ≠ 0} :=
+  finite_co_support_prod_smul s t g
+
+/-- A summable family given by pointwise multiplication of a pair of summable families. -/
 @[simps]
 def FamilyMul {β : Type*} (s : SummableFamily Γ R α) (t : SummableFamily Γ R β) :
     (SummableFamily Γ R (α × β)) where
   toFun a := s (a.1) * t (a.2)
-  isPWO_iUnion_support' := by
-    simp_rw [← smul_eq_mul]
-    exact (FamilySMul s t).isPWO_iUnion_support'
-  finite_co_support' g := by
-    simp_rw [← smul_eq_mul]
-    exact (FamilySMul s t).finite_co_support' g
+  isPWO_iUnion_support' :=
+    isPWO_iUnion_support_prod_mul s.isPWO_iUnion_support t.isPWO_iUnion_support
+  finite_co_support' g := finite_co_support_prod_mul s t g
 
 theorem familymul_eq_familysmul {β : Type*} (s : SummableFamily Γ R α) (t : SummableFamily Γ R β) :
     FamilyMul s t = FamilySMul s t :=
@@ -455,6 +447,126 @@ theorem hsum_family_mul {β : Type*} (s : SummableFamily Γ R α) (t : SummableF
     (FamilyMul s t).hsum = s.hsum * t.hsum := by
   rw [← smul_eq_mul, familymul_eq_familysmul]
   exact hsum_family_smul s t
+
+open Classical in
+theorem pi_PWO_iUnion_support {σ : Type*} (s : Finset σ) {R} [CommSemiring R] (α : σ → Type*)
+    {t : Π i : σ, (α i) → HahnSeries Γ R}
+    (ht : ∀ i : σ, (⋃ a : α i, ((t i) a).support).IsPWO) :
+    (⋃ a : (i : σ) → i ∈ s → α i,
+      (∏ i ∈ s, if h : i ∈ s then (t i) (a i h) else 1).support).IsPWO := by
+  induction s using cons_induction with
+  | empty =>
+    simp only [prod_empty]
+    have h : ⋃ (_ : (i : σ) → i ∈ (∅ : Finset σ) → α i) , support (1 : HahnSeries Γ R) ⊆ {0} := by
+      simp
+    exact Set.Subsingleton.isPWO <| Set.subsingleton_of_subset_singleton h
+  | cons a s' has hp =>
+    refine (isPWO_iUnion_support_prod_mul (ht a) hp).mono ?_
+    intro g hg
+    simp_all only [dite_true, mem_cons, not_false_eq_true, prod_cons, or_false,
+      or_true, Set.mem_iUnion, mem_support, ne_eq, Prod.exists]
+    obtain ⟨f, hf⟩ := hg
+    use f a (mem_cons_self a s'), fun i hi => f i (mem_cons_of_mem hi)
+    have hor : ∏ i ∈ s', (if h : i = a ∨ i ∈ s' then t i (f i (mem_cons.mpr h)) else 1) =
+        ∏ i ∈ s', if h : i ∈ s' then t i (f i (mem_cons_of_mem h)) else 1 := by
+      refine prod_congr rfl fun x hx => ?_
+      simp_all only [dite_true, or_true]
+    exact hor ▸ hf
+
+open Classical in
+/-- delete this? -/
+theorem cosupp_subset_iunion_cosupp_left [AddCommMonoid V] [Module R V] (s : SummableFamily Γ R α)
+    (t : SummableFamily Γ' V β) (g : Γ') {gh : Γ × Γ'}
+    (hgh : gh ∈ VAddAntidiagonal s.isPWO_iUnion_support t.isPWO_iUnion_support g) :
+    Set.Finite.toFinset (s.finite_co_support (gh.1)) ⊆
+    (VAddAntidiagonal s.isPWO_iUnion_support t.isPWO_iUnion_support g).biUnion
+      fun (g' : Γ × Γ') => Set.Finite.toFinset (s.finite_co_support (g'.1)) := by
+  intro a ha
+  simp_all only [mem_vaddAntidiagonal, Set.mem_iUnion, mem_support, ne_eq, Set.Finite.mem_toFinset,
+    Function.mem_support, mem_biUnion, Prod.exists, exists_and_right, exists_and_left]
+  exact Exists.intro gh.1 ⟨⟨hgh.1, Exists.intro gh.2 hgh.2⟩, ha⟩
+
+open Classical in
+theorem pi_finite_co_support {σ : Type*} (s : Finset σ) {R} [CommSemiring R] (α : σ → Type*) (g : Γ)
+    {t : Π i : σ, (α i) → HahnSeries Γ R} (htp : ∀ i : σ, (⋃ a : α i, ((t i) a).support).IsPWO)
+    (htfc : ∀ i : σ, ∀ h : Γ, {a : α i | ((t i) a).coeff h ≠ 0}.Finite) :
+    {a : (i : σ) → i ∈ s → α i |
+      ((fun a ↦ ∏ i ∈ s, if h : i ∈ s then (t i) (a i h) else 1) a).coeff g ≠ 0}.Finite := by
+  induction s using cons_induction generalizing g with
+  | empty => exact Set.Subsingleton.finite fun x _ y _ =>
+    (funext₂ fun j hj => False.elim ((List.mem_nil_iff j).mp hj))
+  | cons a s' has hp =>
+    simp_all only [ne_eq, dite_true, not_false_eq_true, or_false, or_true]
+    simp only [prod_cons, mem_cons, true_or, ↓reduceDIte, mul_coeff]
+    have hor : ∀ b : (i : σ) → i ∈ (cons a s' has) → α i,
+        ∏ i ∈ s', (if h : i ∈ cons a s' has then t i (b i h) else 1) =
+        ∏ i ∈ s', if h : i ∈ s' then t i (b i (mem_cons_of_mem h)) else 1 :=
+      fun b => prod_congr rfl fun x hx => (by simp [*])
+    apply ((addAntidiagonal (htp a) (pi_PWO_iUnion_support s' α htp) g).finite_toSet.biUnion'
+      _).subset _
+    · exact fun ij _ => {b : (i : σ) → i ∈ (cons a s' has) → α i |
+        (t a (b a (mem_cons_self a s'))).coeff ij.1 *
+        (∏ i ∈ s', if h : i ∈ (cons a s' has) then (t i) (b i h) else 1).coeff ij.2 ≠ 0}
+    · intro gh hgh
+      simp_rw [hor _, ne_eq]
+      refine Set.Finite.of_finite_image (f := fun (b : (i : σ) → i ∈ cons a s' has → α i) =>
+        (b a (mem_cons_self a s'), fun (i : σ) (hi : i ∈ s') => b i (mem_cons_of_mem hi)))
+        ((Set.Finite.prod (htfc a gh.1) (hp gh.2)).subset ?_) ?_
+      · intro x hx
+        simp_all only [Set.mem_image, Set.mem_prod, Set.mem_setOf_eq]
+        obtain ⟨y, hy⟩ := hx
+        constructor
+        · have h : x.1 = y a (mem_cons_self a s') := by rw [← hy.2]
+          exact left_ne_zero_of_mul (h ▸ hy.1)
+        · have h : x.2 = fun i hi ↦ y i (mem_cons_of_mem hi) := by rw [← hy.2]
+          simp_rw [h]
+          exact right_ne_zero_of_mul hy.1
+      · refine Injective.injOn ?_
+        intro x y hxy
+        simp_all only [dite_true, cons_eq_insert, mem_insert, or_true, mem_coe, mem_addAntidiagonal,
+          Set.mem_iUnion, mem_support, ne_eq, Prod.mk.injEq]
+        ext i hi
+        by_cases hhi : i = a
+        · exact hhi ▸ hxy.1
+        · exact congrFun (congrFun hxy.2 i) (Or.resolve_left (mem_cons.mp hi) hhi)
+    · intro x hx
+      simp only [Set.mem_setOf_eq] at hx
+      have hhx := exists_ne_zero_of_sum_ne_zero hx
+      simp only [mem_coe, mem_addAntidiagonal, Set.mem_iUnion, mem_support, ne_eq,
+        mem_cons, Set.mem_setOf_eq, exists_prop, Prod.exists]
+      use hhx.choose.1, hhx.choose.2
+      refine ⟨?h.left, hhx.choose_spec.2⟩
+      constructor
+      · use x a (mem_cons_self a s')
+        exact left_ne_zero_of_mul hhx.choose_spec.2
+      · constructor
+        · use fun i hi => x i (mem_cons_of_mem hi)
+          have h := right_ne_zero_of_mul hhx.choose_spec.2
+          have hor' :
+              ∏ x_1 ∈ s', (if h : x_1 = a ∨ x_1 ∈ s' then t x_1 (x x_1 (mem_cons.mpr h)) else 1) =
+              ∏ x_1 ∈ s', (if h : x_1 ∈ s' then t x_1 (x x_1 (mem_cons_of_mem h)) else 1) :=
+            prod_congr rfl fun i hi => (by simp [hi])
+          simp_rw [hor'] at h
+          convert h
+        · exact (mem_addAntidiagonal.mp hhx.choose_spec.1).2.2
+
+open Classical in
+/-- A summable family made from pointwise multiplication along a finite collection of summable
+families. -/
+def PiFamily {σ : Type*} (s : Finset σ) {R} [CommSemiring R] (α : σ → Type*)
+    (t : Π i : σ, SummableFamily Γ R (α i)) : (SummableFamily Γ R (Π i ∈ s, α i)) where
+  toFun a := Finset.prod s fun i => if h : i ∈ s then (t i) (a i h) else 1
+  isPWO_iUnion_support' := pi_PWO_iUnion_support s α fun i => (t i).isPWO_iUnion_support
+  finite_co_support' g :=
+    pi_finite_co_support s α g (fun i => (t i).isPWO_iUnion_support)
+      (fun i g' => (t i).finite_co_support g')
+
+/-!
+theorem hsum_pi_family {σ : Type*} (s : Finset σ) {R} [CommSemiring R] (α : σ → Type*)
+    (t : Π i : σ, SummableFamily Γ R (α i)) :
+    (PiFamily s α t).hsum = ∏ i ∈ s, (t i).hsum := by
+  sorry
+-/
 
 end Semiring
 
@@ -545,174 +657,6 @@ theorem hsum_embDomain : (s.embDomain f).hsum = s.hsum := by
 
 end EmbDomain
 
--- make the following into a new file? Also, implement MVpow substitution for positive order.
-
-section powers
-
-theorem support_pow_subset_closure [OrderedCancelAddCommMonoid Γ] [Semiring R] (x : HahnSeries Γ R)
-    (n : ℕ) : support (x ^ n) ⊆ AddSubmonoid.closure (support x) := by
-  induction n with
-  | zero =>
-    intro g hn
-    rw [pow_zero] at hn
-    rw [eq_of_mem_support_single hn, SetLike.mem_coe]
-    exact AddSubmonoid.zero_mem _
-  | succ n ih =>
-    intro g hn
-    obtain ⟨i, hi, j, hj, rfl⟩ := support_mul_subset_add_support hn
-    exact SetLike.mem_coe.2 (AddSubmonoid.add_mem _ (ih hi) (AddSubmonoid.subset_closure hj))
-
-theorem isPWO_iUnion_support_powers [LinearOrderedCancelAddCommMonoid Γ] [Semiring R]
-    (x : HahnSeries Γ R) (hx : 0 ≤ x.order) :
-    (⋃ n : ℕ, (x ^ n).support).IsPWO :=
-  (x.isPWO_support'.addSubmonoid_closure
-    fun _ hg => le_trans hx (order_le_of_coeff_ne_zero (Function.mem_support.mp hg))).mono
-    (Set.iUnion_subset fun n => support_pow_subset_closure x n)
-
-variable [LinearOrderedCancelAddCommMonoid Γ] [CommRing R]
-
-theorem co_support_zero (g : Γ) : {a | ¬((0 : HahnSeries Γ R) ^ a).coeff g = 0} ⊆ {0} := by
-  simp_all only [Set.subset_singleton_iff, Set.mem_setOf_eq]
-  intro n hn
-  by_contra h'
-  simp_all only [ne_eq, not_false_eq_true, zero_pow, zero_coeff, not_true_eq_false]
-
-variable {x : HahnSeries Γ R}
-
-theorem pow_finite_co_support (hx : 0 < x.orderTop) (g : Γ) :
-    Set.Finite {a | ((fun n ↦ x ^ n) a).coeff g ≠ 0} := by
-  have hpwo : Set.IsPWO (⋃ n, support (x ^ n)) :=
-    isPWO_iUnion_support_powers x (zero_le_orderTop_iff.mp <| le_of_lt hx)
-  by_cases hox : x = 0
-  · exact hox ▸ Set.Finite.subset (Set.finite_singleton 0) (co_support_zero g)
-  by_cases hg : g ∈ ⋃ n : ℕ, { g | (x ^ n).coeff g ≠ 0 }
-  swap; · exact Set.finite_empty.subset fun n hn => hg (Set.mem_iUnion.2 ⟨n, hn⟩)
-  apply hpwo.isWF.induction hg
-  intro y ys hy
-  refine
-    ((((addAntidiagonal x.isPWO_support hpwo y).finite_toSet.biUnion fun ij hij =>
-                  hy ij.snd ?_ ?_).image
-              Nat.succ).union
-          (Set.finite_singleton 0)).subset
-      ?_
-  · exact (mem_addAntidiagonal.1 (mem_coe.1 hij)).2.1
-  · obtain ⟨hi, _, rfl⟩ := mem_addAntidiagonal.1 (mem_coe.1 hij)
-    exact lt_add_of_pos_left ij.2 <| lt_of_lt_of_le ((zero_lt_orderTop_iff hox).mp hx) <|
-      order_le_of_coeff_ne_zero <| Function.mem_support.mp hi
-  · rintro (_ | n) hn
-    · exact Set.mem_union_right _ (Set.mem_singleton 0)
-    · obtain ⟨i, hi, j, hj, rfl⟩ := support_mul_subset_add_support hn
-      refine Set.mem_union_left _ ⟨n, Set.mem_iUnion.2 ⟨⟨j, i⟩, Set.mem_iUnion.2 ⟨?_, hi⟩⟩, rfl⟩
-      simp only [mem_coe, mem_addAntidiagonal, mem_support, ne_eq, Set.mem_iUnion]
-      exact ⟨hj, ⟨n, hi⟩, add_comm j i⟩
-
-/-- Powers of an element of positive orderTop form a summable family. -/
-@[simps]
-def powers (hx : 0 < x.orderTop) : SummableFamily Γ R ℕ where
-  toFun n := x ^ n
-  isPWO_iUnion_support' := isPWO_iUnion_support_powers x (zero_le_orderTop_iff.mp <| le_of_lt hx)
-  finite_co_support' g := by simp [pow_finite_co_support hx g]
-
-@[simp]
-theorem coe_powers (hx : 0 < x.orderTop) : ⇑(powers hx) = HPow.hPow x :=
-  rfl
-
-theorem embDomain_succ_smul_powers (hx : 0 < x.orderTop) :
-    (x • powers hx).embDomain ⟨Nat.succ, Nat.succ_injective⟩ =
-      powers hx - ofFinsupp (Finsupp.single 0 1) := by
-  apply SummableFamily.ext
-  rintro (_ | n)
-  · rw [embDomain_notin_range, sub_apply, powers_toFun, pow_zero, coe_ofFinsupp,
-      Finsupp.single_eq_same, sub_self]
-    rw [Set.mem_range, not_exists]
-    exact Nat.succ_ne_zero
-  · refine Eq.trans (embDomain_image _ ⟨Nat.succ, Nat.succ_injective⟩) ?_
-    simp only [smul_apply, powers_toFun, Algebra.mul_smul_comm, coe_sub, coe_ofFinsupp,
-      Pi.sub_apply, ne_eq, not_false_eq_true, Finsupp.single_eq_of_ne, sub_zero, pow_succ',
-      of_symm_smul_of_eq_mul]
-
-theorem one_sub_self_mul_hsum_powers (hx : 0 < x.orderTop) : (1 - x) * (powers hx).hsum = 1 := by
-  rw [← hsum_smul, sub_smul 1 x (powers hx), one_smul, hsum_sub, ←
-    hsum_embDomain (x • powers hx) ⟨Nat.succ, Nat.succ_injective⟩, embDomain_succ_smul_powers]
-  simp only [hsum_sub, hsum_ofFinsupp, id_eq, Finsupp.sum_single_index, sub_sub_cancel]
-
-end powers
-
 end SummableFamily
-
-section Inversion
-
-variable [LinearOrderedAddCommGroup Γ]
-
-section CommRing
-
-variable [CommRing R]
-
-theorem one_minus_single_mul (x y : HahnSeries Γ R) (r : R) (hr : r * x.leadingCoeff = 1)
-    (hxy : x = y + x.leadingTerm) : 1 - single (-order x) r * x = -(single (-x.order) r * y) := by
-  nth_rw 2 [hxy]
-  rw [mul_add, leadingTerm_eq, single_mul_single, ← leadingCoeff_eq, hr, neg_add_cancel,
-    sub_add_eq_sub_sub_swap, sub_eq_neg_self, sub_eq_zero_of_eq]
-  exact rfl
-
-theorem unit_aux (x : HahnSeries Γ R) {r : R} (hr : r * x.leadingCoeff = 1) :
-    0 < (1 - single (-x.order) r * x).orderTop := by
-  let y := (x - x.leadingTerm)
-  by_cases hy : y = 0
-  · have hrx : (single (-order x)) r * x = 1 := by
-      nth_rw 2 [eq_of_sub_eq_zero hy]
-      simp only [leadingTerm_eq, single_mul_single, neg_add_cancel, hr, ← leadingCoeff_eq]
-      exact rfl
-    simp only [hrx, sub_self, orderTop_zero, WithTop.zero_lt_top]
-  have hr' : ∀ (s : R), r * s = 0 → s = 0 :=
-    fun s hs => by rw [← one_mul s, ← hr, mul_right_comm, hs, zero_mul]
-  have hy' : 0 < (single (-x.order) r * y).order := by
-    rw [(order_mul_single_of_nonzero_divisor hr' hy), lt_neg_add_iff_lt]
-    exact order_lt_add_single_support_order (sub_add_cancel x x.leadingTerm).symm hy
-  simp only [one_minus_single_mul x y r hr (sub_add_cancel x x.leadingTerm).symm, orderTop_neg]
-  exact zero_lt_orderTop_of_order hy'
-
-theorem isUnit_of_isUnit_leadingCoeff {x : HahnSeries Γ R} (hx : IsUnit x.leadingCoeff) :
-    IsUnit x := by
-  let ⟨⟨u, i, ui, iu⟩, h⟩ := hx
-  rw [Units.val_mk] at h
-  rw [h] at iu
-  have h' := SummableFamily.one_sub_self_mul_hsum_powers (unit_aux x iu)
-  rw [sub_sub_cancel] at h'
-  exact isUnit_of_mul_isUnit_right (isUnit_of_mul_eq_one _ _ h')
-
-theorem isUnit_iff [IsDomain R] {x : HahnSeries Γ R} :
-    IsUnit x ↔ IsUnit (x.leadingCoeff) := by
-  refine { mp := ?mp, mpr := isUnit_of_isUnit_leadingCoeff }
-  rintro ⟨⟨u, i, ui, iu⟩, rfl⟩
-  refine
-    isUnit_of_mul_eq_one (u.leadingCoeff) (i.leadingCoeff)
-      ((mul_coeff_order_add_order u i).symm.trans ?_)
-  rw [ui, one_coeff, if_pos]
-  rw [← order_mul (left_ne_zero_of_mul_eq_one ui) (right_ne_zero_of_mul_eq_one ui), ui, order_one]
-
-end CommRing
-
-open Classical in
-instance instField [Field R] : Field (HahnSeries Γ R) where
-  __ : IsDomain (HahnSeries Γ R) := inferInstance
-  inv x :=
-    if x0 : x = 0 then 0
-    else
-      (single (-x.order)) (x.leadingCoeff)⁻¹ *
-        (SummableFamily.powers (unit_aux x (inv_mul_cancel₀ (leadingCoeff_ne_iff.mpr x0)))).hsum
-  inv_zero := dif_pos rfl
-  mul_inv_cancel x x0 := (congr rfl (dif_neg x0)).trans <| by
-    have h :=
-      SummableFamily.one_sub_self_mul_hsum_powers
-        (unit_aux x (inv_mul_cancel₀ (leadingCoeff_ne_iff.mpr x0)))
-    rw [sub_sub_cancel] at h
-    rw [← mul_assoc, mul_comm x, h]
-  nnqsmul := _
-  nnqsmul_def := fun q a => rfl
-  qsmul := _
-  qsmul_def := fun q a => rfl
-
-end Inversion
 
 end HahnSeries

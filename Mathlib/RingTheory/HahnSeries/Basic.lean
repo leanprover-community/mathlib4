@@ -220,8 +220,7 @@ theorem orderTop_of_ne {x : HahnSeries Γ R} (hx : x ≠ 0) :
 theorem ne_zero_iff_orderTop {x : HahnSeries Γ R} : x ≠ 0 ↔ orderTop x ≠ ⊤ := by
   constructor
   · exact fun hx => Eq.mpr (congrArg (fun h ↦ h ≠ ⊤) (orderTop_of_ne hx)) WithTop.coe_ne_top
-  · contrapose!
-    simp_all only [orderTop_zero, implies_true]
+  · exact fun hx => mt (fun h => h ▸ orderTop_zero) hx
 
 theorem orderTop_eq_top_iff {x : HahnSeries Γ R} : orderTop x = ⊤ ↔ x = 0 := by
   constructor
@@ -381,6 +380,9 @@ theorem order_zero : order (0 : HahnSeries Γ R) = 0 :=
 theorem order_of_ne {x : HahnSeries Γ R} (hx : x ≠ 0) :
     order x = x.isWF_support.min (support_nonempty_iff.2 hx) :=
   dif_neg hx
+
+theorem ne_zero_of_order_ne {x : HahnSeries Γ R} (hx : x.order ≠ 0) : x ≠ 0 :=
+  mt (fun h => h ▸ order_zero) hx
 
 theorem order_eq_orderTop_of_ne {x : HahnSeries Γ R} (hx : x ≠ 0) : order x = orderTop x := by
   rw [order_of_ne hx, orderTop_of_ne hx]
