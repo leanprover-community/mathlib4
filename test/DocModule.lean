@@ -11,12 +11,12 @@ import Mathlib.Tactic.Linter.DocModule
 -/
 
 /--
-A convenience function that replaces `/-` with `→` and `-/` with `←`.
-Without this replacement, using `#guard_msgs` for a message that contains these strings is a
-major headache!
+A convenience function that replaces `/` with `|`.
+This converts `/-` and `-/` into `|-` and `-|` that no longer interfere with the ending of the
+`#guard_msgs` doc-string.
 -/
 def replaceMultilineComments (s : String) : String :=
-  (s.replace "/-" "→").replace "-/" "←"
+  s.replace "/" "|"
 
 open Lean Elab Command in
 /--
@@ -47,9 +47,9 @@ Name LastName,
 "
 
 /--
-info: Text: ` →`
+info: Text: ` |-`
 Range: (0, 3)
-Message: 'Malformed or missing copyright header: `→` should be alone on its own line.'
+Message: 'Malformed or missing copyright header: `|-` should be alone on its own line.'
 -/
 #guard_msgs in
 #check_copyright
@@ -61,9 +61,9 @@ Authors: Name LastName
 "
 
 /--
-info: Text: `←`
+info: Text: `-|`
 Range: (149, 151)
-Message: 'Malformed or missing copyright header: `←` should be alone on its own line.'
+Message: 'Malformed or missing copyright header: `-|` should be alone on its own line.'
 -/
 #guard_msgs in
 #check_copyright
