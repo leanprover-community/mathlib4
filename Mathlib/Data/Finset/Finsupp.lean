@@ -51,7 +51,7 @@ theorem mem_finsupp_iff {t : ι → Finset α} :
     exact indicator_of_mem hi _
   · refine fun h => ⟨fun i _ => f i, mem_pi.2 h.2, ?_⟩
     ext i
-    exact (ite_eq_left_iff _ _).2 fun hi => (not_mem_support_iff.1 fun H => hi <| h.1 H).symm
+    exact ite_eq_left_iff.2 fun hi => (not_mem_support_iff.1 fun H => hi <| h.1 H).symm
 
 /-- When `t` is supported on `s`, `f ∈ s.finsupp t` precisely means that `f` is pointwise in `t`. -/
 @[simp]

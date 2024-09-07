@@ -355,20 +355,9 @@ lemma getLast_filter {p : α → Bool} :
 
 /-! ### getLast? -/
 
--- This is a duplicate of `getLast?_eq_none_iff`.
--- We should remove one of them.
-theorem getLast?_eq_none : ∀ {l : List α}, getLast? l = none ↔ l = []
-  | [] => by simp
-  | [a] => by simp
-  | a :: b :: l => by simp [@getLast?_eq_none (b :: l)]
+@[deprecated (since := "2024-09-06")] alias getLast?_eq_none := getLast?_eq_none_iff
 
 @[deprecated (since := "2024-06-20")] alias getLast?_isNone := getLast?_eq_none
-
-@[simp]
-theorem getLast?_isSome : ∀ {l : List α}, l.getLast?.isSome ↔ l ≠ []
-  | [] => by simp
-  | [a] => by simp
-  | a :: b :: l => by simp [@getLast?_isSome (b :: l)]
 
 theorem mem_getLast?_eq_getLast : ∀ {l : List α} {x : α}, x ∈ l.getLast? → ∃ h, x = getLast l h
   | [], x, hx => False.elim <| by simp at hx
@@ -956,7 +945,11 @@ theorem infix_bind_of_mem {a : α} {as : List α} (h : a ∈ as) (f : α → Lis
 theorem map_eq_map {α β} (f : α → β) (l : List α) : f <$> l = map f l :=
   rfl
 
-@[simp]
+#adaptation_note
+/--
+`nolint simpNF` should be removed after nightly-2024-09-07.
+-/
+@[simp, nolint simpNF]
 theorem map_tail (f : α → β) (l) : map f (tail l) = tail (map f l) := by cases l <;> rfl
 
 /-- A single `List.map` of a composition of functions is equal to
