@@ -77,7 +77,6 @@ def isCorrectAuthorsLine (line : String) : Bool :=
   -- the file starting wrong, double spaces, using ' and ' between names,
   -- and ending the line with a period.
   line.startsWith "Authors: " &&
-    dbg_trace ((line.replace "\n  " " ").splitOn "  ").length
     ((line.replace "\n  " " ").splitOn "  ").length == 1 &&
     (line.splitOn " and ").length == 1 &&
     (!line.endsWith ".")
