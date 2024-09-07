@@ -299,9 +299,17 @@ lemma mem_closed_iff (s : Set M) :
 
 variable (L)
 
-@[simp]
 lemma mem_closed_of_isRelational [L.IsRelational] (s : Set M) : s ∈ (closure L).closed :=
   (mem_closed_iff s).2 isEmptyElim
+
+@[simp]
+lemma closure_eq_of_isRelational [L.IsRelational] (s : Set M) : closure L s = s :=
+  LowerAdjoint.closure_eq_self_of_mem_closed _ (mem_closed_of_isRelational L s)
+
+@[simp]
+lemma mem_closure_iff_of_isRelational [L.IsRelational] (s : Set M) (m : M) :
+    m ∈ closure L s ↔ m ∈ s := by
+  rw [← SetLike.mem_coe, ((closure L).mem_closed_iff s).1 (mem_closed_of_isRelational L s)]
 
 theorem _root_.Set.Countable.substructure_closure
     [Countable (Σl, L.Functions l)] (h : s.Countable) : Countable.{w + 1} (closure L s) := by
@@ -357,6 +365,9 @@ theorem closure_union (s t : Set M) : closure L (s ∪ t) = closure L s ⊔ clos
 theorem closure_iUnion {ι} (s : ι → Set M) : closure L (⋃ i, s i) = ⨆ i, closure L (s i) :=
   (Substructure.gi L M).gc.l_iSup
 
+theorem closure_insert (s : Set M) (m : M) : closure L (insert m s) = closure L {m} ⊔ closure L s :=
+  closure_union {m} s
+
 instance small_bot : Small.{u} (⊥ : L.Substructure M) := by
   rw [← closure_empty]
   haveI : Small.{u} (∅ : Set M) := small_subsingleton _
@@ -383,6 +394,22 @@ theorem mem_sSup_of_directedOn {S : Set (L.Substructure M)} (Sne : S.Nonempty)
     x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
   haveI : Nonempty S := Sne.to_subtype
   simp only [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val, Subtype.exists, exists_prop]
+
+variable (L) (M)
+
+instance [IsEmpty L.Constants] : IsEmpty (⊥ : L.Substructure M) := by
+  refine (isEmpty_subtype _).2 (fun x => ?_)
+  have h : (∅ : Set M) ∈ (closure L).closed := by
+    rw [mem_closed_iff]
+    intro n f
+    cases n
+    · exact isEmptyElim f
+    · intro x hx
+      simp only [mem_empty_iff_false, forall_const] at hx
+  rw [← closure_empty, ← SetLike.mem_coe, h]
+  exact Set.not_mem_empty _
+
+variable {L} {M}
 
 /-!
 ### `comap` and `map`
