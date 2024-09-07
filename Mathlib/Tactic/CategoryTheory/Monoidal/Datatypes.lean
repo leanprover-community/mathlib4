@@ -15,9 +15,7 @@ import Mathlib.Tactic.CategoryTheory.MonoidalComp
 open Lean Meta Elab Qq
 open CategoryTheory Mathlib.Tactic.BicategoryLike MonoidalCategory
 
-namespace Mathlib.Tactic
-
-namespace Monoidal'
+namespace Mathlib.Tactic.Monoidal'
 
 /-- The domain of a morphism. -/
 def srcExpr (η : Expr) : MetaM Expr := do
