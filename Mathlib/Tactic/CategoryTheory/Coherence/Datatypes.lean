@@ -295,7 +295,7 @@ structure Atom where
 /-- `Mor₂` expressions defined below will have the `isoLift? : Option IsoLift` field.
 For `η : Mor₂` such that `η.isoLift? = .some isoLift`, we have the following data:
 - `isoLift.e`: an expression for a 2-isomorphism `η'`, given as a `Mor₂Iso` term,
-- `isoLift.eq`: a lean expression for the proof that application of `η'.hom = η`.
+- `isoLift.eq`: a lean expression for the proof that `η'.hom = η`.
 -/
 structure IsoLift where
   /-- The expression for the 2-isomorphism. -/
