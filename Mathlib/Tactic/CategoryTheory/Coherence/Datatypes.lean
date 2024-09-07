@@ -568,7 +568,7 @@ namespace NormalExpr
 variable [MonadMor₂Iso m] [MonadNormalExpr m]
 
 /-- The identity 2-morphism as a term of `normalExpr`. -/
-def NormalExpr.idM (f : Mor₁) : m NormalExpr := do
+def idM (f : Mor₁) : m NormalExpr := do
   MonadNormalExpr.nilM <| .structuralAtom <| ← MonadMor₂Iso.id₂M f
 
 /-- The associator as a term of `normalExpr`. -/
