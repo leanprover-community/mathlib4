@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.EffectiveEpi.RegularEpi
-import Mathlib.CategoryTheory.EffectiveEpi.Comp
 import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 /-!
 
