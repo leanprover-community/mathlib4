@@ -301,10 +301,10 @@ theorem lor_assoc (n m k : ℕ) : (n ||| m) ||| k = n ||| (m ||| k) := by bitwis
 
 -- These lemmas match `mul_inv_cancel_right` and `mul_inv_cancel_left`.
 theorem xor_cancel_right (n m : ℕ) : (m ^^^ n) ^^^ n = m := by
-  rw [Nat.xor_assoc, xor_self, xor_zero]
+  rw [Nat.xor_assoc, Nat.xor_self, xor_zero]
 
 theorem xor_cancel_left (n m : ℕ) : n ^^^ (n ^^^ m) = m := by
-  rw [← Nat.xor_assoc, xor_self, zero_xor]
+  rw [← Nat.xor_assoc, Nat.xor_self, zero_xor]
 
 theorem xor_right_injective {n : ℕ} : Function.Injective (HXor.hXor n : ℕ → ℕ) := fun m m' h => by
   rw [← xor_cancel_left n m, ← xor_cancel_left n m', h]
@@ -323,7 +323,7 @@ theorem xor_left_inj {n m m' : ℕ} : m ^^^ n = m' ^^^ n ↔ m = m' :=
 
 @[simp]
 theorem xor_eq_zero {n m : ℕ} : n ^^^ m = 0 ↔ n = m := by
-  rw [← xor_self n, xor_right_inj, eq_comm]
+  rw [← Nat.xor_self n, xor_right_inj, eq_comm]
 
 theorem xor_ne_zero {n m : ℕ} : n ^^^ m ≠ 0 ↔ n ≠ m :=
   xor_eq_zero.not
@@ -342,7 +342,7 @@ theorem xor_trichotomy {a b c : ℕ} (h : a ≠ b ^^^ c) :
     conv_rhs =>
       right
       rw [← Nat.xor_comm]
-    rw [← Nat.xor_assoc, ← Nat.xor_assoc, xor_self, zero_xor, Nat.xor_comm]
+    rw [← Nat.xor_assoc, ← Nat.xor_assoc, Nat.xor_self, zero_xor, Nat.xor_comm]
   have hbc : b ^^^ c = a ^^^ v := by simp [hv, ← Nat.xor_assoc]
   -- If `i` is the position of the most significant bit of `v`, then at least one of `a`, `b`, `c`
   -- has a one bit at position `i`.
