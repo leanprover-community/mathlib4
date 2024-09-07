@@ -6,7 +6,7 @@ import Mathlib.Data.Nat.Nth
 import Mathlib.Data.Finsupp.Lex
 import Mathlib.Logic.Equiv.TransferInstance
 
-/-! # Groebner bases 
+/-! # Groebner bases
 
 Reference : [Becker-Weispfenning1993] -/
 
@@ -33,8 +33,8 @@ variable {σ : Type*} (m : MonomialOrder σ)
 
 namespace MonomialOrder
 
-lemma le_add_right (a b : σ →₀ ℕ) : 
-    m.toSyn a ≤ m.toSyn a + m.toSyn b := by 
+lemma le_add_right (a b : σ →₀ ℕ) :
+    m.toSyn a ≤ m.toSyn a + m.toSyn b := by
   rw [← map_add]
   exact m.toSyn_monotone le_self_add
 
@@ -47,15 +47,15 @@ lemma MonomialOrder.toSyn_monotone : Monotone (m.toSyn) := by
     rw [add_tsub_cancel_of_le (h s)]
   rw [this]
   apply le_add_right -/
-  
+
 instance orderBot : OrderBot (m.syn) where
   bot := 0
-  bot_le a := by 
+  bot_le a := by
     have := m.le_add_right 0 (m.toSyn.symm a)
     simp [map_add, zero_add] at this
     exact this
 
-@[simp] 
+@[simp]
 theorem bot_eq_zero : (⊥ : m.syn) = 0 := rfl
 
 theorem eq_zero_iff {a : m.syn} : a = 0 ↔ a ≤ 0 := eq_bot_iff
@@ -63,7 +63,7 @@ theorem eq_zero_iff {a : m.syn} : a = 0 ↔ a ≤ 0 := eq_bot_iff
 lemma toSyn_strictMono : StrictMono (m.toSyn) := by
   apply m.toSyn_monotone.strictMono_of_injective m.toSyn.injective
 
-/- 
+/-
 theorem MonomialOrder.isDickson {σ : Type*} [Finite σ] (m : MonomialOrder σ) :
     Preorder.isDickson m.syn  :=
   m.toSyn.isDickson_of_monotone m.toSyn_monotone (Finsupp.isDickson σ)
@@ -73,9 +73,9 @@ theorem MonomialOrder.wf {σ : Type*} [Finite σ] (m : MonomialOrder σ) :
   isDickson.wf (isDickson m)
 -/
 
-open MvPolynomial 
+open MvPolynomial
 
-variable {σ : Type*} (m : MonomialOrder σ) 
+variable {σ : Type*} (m : MonomialOrder σ)
 
 scoped
 notation:25 c "≺[" m:25 "]" d:25 => (MonomialOrder.toSyn m c < MonomialOrder.toSyn m d)
@@ -143,14 +143,14 @@ theorem coeff_eq_zero_of_lt {f : MvPolynomial σ R} {d : σ →₀ ℕ} (hd : m.
   apply hd (m.le_degree (mem_support_iff.mpr hf))
 
 theorem _root_.Finset.sup_mem_of_nonempty {α β : Type*} {f : α → β}  [LinearOrder β] [OrderBot β]
-    {s : Finset α} (hs : s.Nonempty) : 
-    s.sup f ∈ f '' s := by 
+    {s : Finset α} (hs : s.Nonempty) :
+    s.sup f ∈ f '' s := by
   classical
   induction s using Finset.induction with
   | empty => exfalso; simp only [Finset.not_nonempty_empty] at hs
-  | @insert a s _ h => 
+  | @insert a s _ h =>
     rw [Finset.sup_insert (b := a) (s := s) (f := f)]
-    by_cases hs : s = ∅ 
+    by_cases hs : s = ∅
     · simp [hs]
     · rw [← ne_eq, ← Finset.nonempty_iff_ne_empty] at hs
       simp only [Finset.coe_insert]
@@ -169,8 +169,8 @@ theorem lCoeff_ne_zero_iff {f : MvPolynomial σ R} :
     rw [hf, lCoeff_zero]
   · intro hf
     rw [← support_nonempty] at hf
-    rw [lCoeff, ← mem_support_iff, degree] 
-    suffices f.support.sup m.toSyn ∈ m.toSyn '' f.support by 
+    rw [lCoeff, ← mem_support_iff, degree]
+    suffices f.support.sup m.toSyn ∈ m.toSyn '' f.support by
       obtain ⟨d, hd, hd'⟩ := this
       rw [← hd', AddEquiv.symm_apply_apply]
       exact hd
@@ -192,7 +192,7 @@ theorem coeff_degree_eq_zero_iff {f : MvPolynomial σ R} :
   m.lCoeff_eq_zero_iff
 
 theorem degree_eq_zero_iff_totalDegree_eq_zero {f : MvPolynomial σ R} :
-    m.degree f = 0 ↔ f.totalDegree = 0 := by 
+    m.degree f = 0 ↔ f.totalDegree = 0 := by
   rw [← m.toSyn.injective.eq_iff]
   rw [map_zero, ← m.bot_eq_zero, eq_bot_iff, m.bot_eq_zero, ← m.toSyn.map_zero]
   rw [degree_le_iff]
@@ -238,7 +238,7 @@ theorem degree_sub_le {f g : MvPolynomial σ R} :
 theorem degree_add_of_lt {f g : MvPolynomial σ R} (h : m.degree g ≺[m] m.degree f) :
     m.degree (f + g) = m.degree f := by
   apply m.toSyn.injective
-  apply le_antisymm 
+  apply le_antisymm
   · apply le_trans degree_add_le
     simp only [sup_le_iff, le_refl, true_and, le_of_lt h]
   · apply le_degree
@@ -262,7 +262,7 @@ theorem degree_mul_le {f g : MvPolynomial σ R} :
     m.degree (f * g) ≼[m] m.degree f + m.degree g := by
   classical
   rw [degree_le_iff]
-  intro c 
+  intro c
   rw [← not_lt, mem_support_iff, not_imp_not]
   intro hc
   rw [coeff_mul]
@@ -300,42 +300,42 @@ theorem lCoeff_mul' {f g : MvPolynomial σ R} :
       intro h'; apply hf
       simp only [le_iff_eq_or_lt] at h'
       cases h' with
-      | inl h' => 
+      | inl h' =>
         simp only [← map_add, EmbeddingLike.apply_eq_iff_eq, add_left_inj] at h'
         exfalso
         apply h
         simp only [h', Prod.mk.injEq, true_and]
         simpa [h'] using hcd
-      | inr h' => 
+      | inr h' =>
         exact lt_of_add_lt_add_right h'
   · simp
 
-theorem degree_mul_of_isRegular_left {f g : MvPolynomial σ R} 
+theorem degree_mul_of_isRegular_left {f g : MvPolynomial σ R}
     (hf : IsRegular (m.lCoeff f)) (hg : g ≠ 0) :
     m.degree (f * g) = m.degree f + m.degree g := by
   apply m.toSyn.injective
   apply le_antisymm degree_mul_le
-  apply le_degree 
+  apply le_degree
   rw [mem_support_iff, lCoeff_mul']
   simp only [ne_eq, hf, IsRegular.left, IsLeftRegular.mul_left_eq_zero_iff,
     lCoeff_eq_zero_iff]
   exact hg
 
-theorem degree_mul_of_isRegular_right {f g : MvPolynomial σ R} 
+theorem degree_mul_of_isRegular_right {f g : MvPolynomial σ R}
     (hf : f ≠ 0) (hg : IsRegular (m.lCoeff g)) :
     m.degree (f * g) = m.degree f + m.degree g := by
   rw [mul_comm, m.degree_mul_of_isRegular_left hg hf, add_comm]
 
-theorem degree_mul [IsDomain R] {f g : MvPolynomial σ R} 
+theorem degree_mul [IsDomain R] {f g : MvPolynomial σ R}
     (hf : f ≠ 0) (hg : g ≠ 0) :
-    m.degree (f * g) = m.degree f + m.degree g := 
+    m.degree (f * g) = m.degree f + m.degree g :=
   degree_mul_of_isRegular_left (isRegular_of_ne_zero (lCoeff_ne_zero_iff.mpr hf)) hg
 
 theorem degree_mul' [IsDomain R] {f g : MvPolynomial σ R} (hfg : f * g ≠ 0) :
-    m.degree (f * g) = m.degree f + m.degree g := 
+    m.degree (f * g) = m.degree f + m.degree g :=
   degree_mul (left_ne_zero_of_mul hfg) (right_ne_zero_of_mul hfg)
 
-theorem lCoeff_mul [IsDomain R] {f g : MvPolynomial σ R} 
+theorem lCoeff_mul [IsDomain R] {f g : MvPolynomial σ R}
     (hf : f ≠ 0) (hg : g ≠ 0) :
     m.lCoeff (f * g) = m.lCoeff f * m.lCoeff g := by
   rw [lCoeff, degree_mul hf hg, ← lCoeff_mul']
@@ -345,7 +345,7 @@ theorem degree_smul_le {r : R} {f : MvPolynomial σ R} :
   rw [smul_eq_C_mul]
   apply le_of_le_of_eq degree_mul_le
   simp
-   
+
 theorem degree_smul {r : R} (hr : IsRegular r) {f : MvPolynomial σ R} :
     m.degree (r • f) = m.degree f := by
   by_cases hf : f = 0
@@ -360,21 +360,21 @@ theorem degree_smul {r : R} (hr : IsRegular r) {f : MvPolynomial σ R} :
 /-- Delete the leading term in a multivariate polynomial (for some monomial order) -/
 noncomputable def subLTerm (f : MvPolynomial σ R) : MvPolynomial σ R :=
   f - monomial (m.degree f) (m.lCoeff f)
- 
+
 theorem degree_sub_LTerm_le (f : MvPolynomial σ R) :
     m.degree (m.subLTerm f) ≼[m] m.degree f := by
   apply le_trans degree_sub_le
   simp only [sup_le_iff, le_refl, true_and]
   apply degree_monomial_le
 
-theorem degree_sub_LTerm_lt {f : MvPolynomial σ R} (hf : m.degree f ≠ 0) : 
+theorem degree_sub_LTerm_lt {f : MvPolynomial σ R} (hf : m.degree f ≠ 0) :
     m.degree (m.subLTerm f) ≺[m] m.degree f := by
   rw [lt_iff_le_and_ne]
   refine ⟨degree_sub_LTerm_le f, ?_⟩
   classical
   intro hf'
   simp only [EmbeddingLike.apply_eq_iff_eq] at hf'
-  have : m.subLTerm f ≠ 0 := by 
+  have : m.subLTerm f ≠ 0 := by
     intro h
     simp only [h, degree_zero] at hf'
     exact hf hf'.symm
@@ -386,12 +386,12 @@ theorem degree_sub_LTerm_lt {f : MvPolynomial σ R} (hf : m.degree f ≠ 0) :
 noncomputable def reduce {b : MvPolynomial σ R} (hb : IsUnit (m.lCoeff b)) (f : MvPolynomial σ R) :
     MvPolynomial σ R :=
  f - monomial (m.degree f - m.degree b) (hb.unit⁻¹ * m.lCoeff f) * b
- 
+
 theorem degree_reduce_lt {f b : MvPolynomial σ R} (hb : IsUnit (m.lCoeff b))
-    (hbf : m.degree b ≤ m.degree f) (hf : m.degree f ≠ 0) : 
+    (hbf : m.degree b ≤ m.degree f) (hf : m.degree f ≠ 0) :
     m.degree (m.reduce hb f) ≺[m] m.degree f := by
-  have H : m.degree f = 
-    m.degree ((monomial (m.degree f - m.degree b)) (hb.unit⁻¹ * m.lCoeff f)) + 
+  have H : m.degree f =
+    m.degree ((monomial (m.degree f - m.degree b)) (hb.unit⁻¹ * m.lCoeff f)) +
       m.degree b := by
     classical
     rw [degree_monomial, if_neg]
@@ -399,9 +399,9 @@ theorem degree_reduce_lt {f b : MvPolynomial σ R} (hb : IsUnit (m.lCoeff b))
       rw [tsub_add_cancel_of_le hbf]
     · simp only [Units.mul_right_eq_zero, lCoeff_eq_zero_iff]
       intro hf0
-      apply hf 
+      apply hf
       simp [hf0]
-  have H' : coeff (m.degree f) (m.reduce hb f) = 0 := by 
+  have H' : coeff (m.degree f) (m.reduce hb f) = 0 := by
     simp only [reduce, coeff_sub, sub_eq_zero]
     nth_rewrite 2 [H]
     rw [lCoeff_mul' (m := m), lCoeff_monomial]
@@ -423,9 +423,9 @@ theorem degree_reduce_lt {f b : MvPolynomial σ R} (hb : IsUnit (m.lCoeff b))
     rw [lCoeff_eq_zero_iff] at H'
     rw [H', degree_zero] at K
     exact hf K.symm
-    
+
 theorem eq_C_of_degree_eq_zero {f : MvPolynomial σ R} (hf : m.degree f = 0) :
-    f = C (m.lCoeff f) := by 
+    f = C (m.lCoeff f) := by
   ext d
   simp only [lCoeff, hf]
   classical
@@ -433,13 +433,13 @@ theorem eq_C_of_degree_eq_zero {f : MvPolynomial σ R} (hf : m.degree f = 0) :
   · simp [hd]
   · rw [coeff_C, if_neg (Ne.symm hd)]
     apply coeff_eq_zero_of_lt (m := m)
-    rw [hf, map_zero, lt_iff_le_and_ne, ne_eq, eq_comm, AddEquivClass.map_eq_zero_iff] 
+    rw [hf, map_zero, lt_iff_le_and_ne, ne_eq, eq_comm, AddEquivClass.map_eq_zero_iff]
     exact ⟨bot_le, hd⟩
 
-theorem monomialOrderDiv [Finite σ] (B : Set (MvPolynomial σ R)) 
+theorem monomialOrderDiv [Finite σ] (B : Set (MvPolynomial σ R))
     (hB : ∀ b ∈ B, IsUnit (m.lCoeff b)) (f : MvPolynomial σ R) :
-    ∃ (g : B →₀ (MvPolynomial σ R)) (r : MvPolynomial σ R), 
-      f = Finsupp.linearCombination _ (fun (b : B) ↦ (b : MvPolynomial σ R)) g + r ∧ 
+    ∃ (g : B →₀ (MvPolynomial σ R)) (r : MvPolynomial σ R),
+      f = Finsupp.linearCombination _ (fun (b : B) ↦ (b : MvPolynomial σ R)) g + r ∧
         (∀ (b : B), m.degree ((b : MvPolynomial σ R) * (g b)) ≼[m] m.degree f) ∧
         (∀ c ∈ r.support, ∀ b ∈ B, ¬ (m.degree b ≤ c)) := by
   by_cases hB' : ∃ b ∈ B, m.degree b = 0
@@ -475,8 +475,8 @@ theorem monomialOrderDiv [Finite σ] (B : Set (MvPolynomial σ R))
       apply hB' b hb
       simpa [hf0'] using hf
     obtain ⟨g', r', H'⟩ := monomialOrderDiv B hB (m.reduce (hB b hb) f)
-    use g' + 
-      Finsupp.single ⟨b, hb⟩ (monomial (m.degree f - m.degree b) ((hB b hb).unit⁻¹ * m.lCoeff f)) 
+    use g' +
+      Finsupp.single ⟨b, hb⟩ (monomial (m.degree f - m.degree b) ((hB b hb).unit⁻¹ * m.lCoeff f))
     use r'
     constructor
     · rw [map_add, add_assoc, add_comm _ r', ← add_assoc, ← H'.1]
@@ -503,7 +503,7 @@ theorem monomialOrderDiv [Finite σ] (B : Set (MvPolynomial σ R))
           exact bot_le
     · exact H'.2.2
   · push_neg at hf
-    suffices ∃ (g' : B →₀ MvPolynomial σ R), ∃ r', 
+    suffices ∃ (g' : B →₀ MvPolynomial σ R), ∃ r',
         (m.subLTerm f = (Finsupp.linearCombination (MvPolynomial σ R) fun b ↦ ↑b) g' + r') ∧
         (∀ (b : B), m.degree ((b : MvPolynomial σ R) * (g' b)) ≼[m] m.degree (m.subLTerm f)) ∧
         (∀ c ∈ r'.support, ∀ b ∈ B, ¬ m.degree b ≤ c) by
@@ -515,7 +515,7 @@ theorem monomialOrderDiv [Finite σ] (B : Set (MvPolynomial σ R))
       · exact fun b ↦ le_trans (H'.2.1 b) (degree_sub_LTerm_le f)
       · intro c hc b hb
         by_cases hc' : c ∈ r'.support
-        · exact H'.2.2 c hc' b hb 
+        · exact H'.2.2 c hc' b hb
         · classical
           have := MvPolynomial.support_add hc
           rw [Finset.mem_union, Classical.or_iff_not_imp_left] at this
@@ -529,8 +529,8 @@ theorem monomialOrderDiv [Finite σ] (B : Set (MvPolynomial σ R))
       intro b
       simp only [Finsupp.coe_zero, Pi.zero_apply, mul_zero, degree_zero, map_zero]
       exact bot_le
-    · apply monomialOrderDiv B hB 
-termination_by WellFounded.wrap 
+    · apply monomialOrderDiv B hB
+termination_by WellFounded.wrap
   ((isWellFounded_iff m.syn fun x x_1 ↦ x < x_1).mp m.wf) (m.toSyn (m.degree f))
 decreasing_by
 · exact deg_reduce
@@ -539,8 +539,8 @@ decreasing_by
   apply hf'0
   simp only [subLTerm, sub_eq_zero]
   nth_rewrite 1 [eq_C_of_degree_eq_zero hf0, hf0]
-  simp 
-   
+  simp
+
 end MonomialOrder
 
 section Lex
@@ -549,13 +549,13 @@ open Finsupp
 -- The linear order on `Finsupp`s obtained by the lexicographic ordering. -/
 noncomputable instance {α N : Type*} [LinearOrder α] [WellFoundedGT α]
     [OrderedCancelAddCommMonoid N] :
-    OrderedCancelAddCommMonoid (Lex (α →₀ N)) where 
+    OrderedCancelAddCommMonoid (Lex (α →₀ N)) where
   le_of_add_le_add_left a b c h := by simpa only [add_le_add_iff_left] using h
   add_le_add_left a b h c := by simpa only [add_le_add_iff_left] using h
 
 theorem _root_.Finsupp.lex_lt_iff {α N : Type*} [LinearOrder α] [LinearOrder N] [Zero N]
     {a b : Lex (α →₀ N)} :
-    a < b ↔ ∃ i, (∀ j, j< i → ofLex a j = ofLex b j) ∧ ofLex a i < ofLex b i := 
+    a < b ↔ ∃ i, (∀ j, j< i → ofLex a j = ofLex b j) ∧ ofLex a i < ofLex b i :=
     Finsupp.lex_def
 
 theorem _root_.Finsupp.lex_le_iff {α N : Type*} [LinearOrder α] [LinearOrder N] [Zero N]
@@ -581,7 +581,7 @@ noncomputable def MonomialOrder.lex (σ : Type*) [LinearOrder σ] [WellFoundedGT
   toSyn_monotone := Finsupp.toLex_monotone
 
 noncomputable def MonomialOrder.revlex (σ : Type*) [LinearOrder σ] [WellFoundedLT σ] :
-    MonomialOrder σ := MonomialOrder.lex σᵒᵈ 
+    MonomialOrder σ := MonomialOrder.lex σᵒᵈ
 
 end Lex
 
@@ -709,7 +709,7 @@ theorem DegLex.le_iff {x y : DegLex (α →₀ ℕ)} :
     · simp only [h, k, false_or]
 
 theorem _root_.Finsupp.degree_add {α : Type*} (a b : α →₀ ℕ) :
-    (a + b).degree = a.degree + b.degree := 
+    (a + b).degree = a.degree + b.degree :=
   sum_add_index' (h := fun _ ↦ id) (congrFun rfl) fun _ _ ↦ congrFun rfl
 
 noncomputable instance : OrderedCancelAddCommMonoid (DegLex (α →₀ ℕ)) where
@@ -776,9 +776,9 @@ noncomputable def MonomialOrder.degLex (σ : Type*) [LinearOrder σ] [WellFounde
       rw [← add_tsub_cancel_of_le h, degree_add]
       exact Nat.le_add_right a.degree (b - a).degree
 
-theorem MonomialOrder.degLex_lt_iff {σ : Type*} [LinearOrder σ] [WellFoundedGT σ] 
-    {a b : σ →₀ ℕ} : 
-    (MonomialOrder.degLex σ).toSyn a < (MonomialOrder.degLex σ).toSyn b 
+theorem MonomialOrder.degLex_lt_iff {σ : Type*} [LinearOrder σ] [WellFoundedGT σ]
+    {a b : σ →₀ ℕ} :
+    (MonomialOrder.degLex σ).toSyn a < (MonomialOrder.degLex σ).toSyn b
       ↔ toDegLex a < toDegLex b :=
   Iff.rfl
 
@@ -839,7 +839,7 @@ theorem exists_lt_and_le_of_isDickson (H : isDickson α) (a : ℕ → α) :
     exact hB.1 hb
 
 -- TODO : Generalize to `PreOrder α`
--- This means that the conclusion should take place 
+-- This means that the conclusion should take place
 -- in the quotient partial order associated with the preorder.
 theorem minimal_ne_and_finite_of {α : Type*} [PartialOrder α]
     (H : ∀ a : ℕ → α, ∃ i j, i < j ∧ a i ≤ a j) (S : Set α) (hSne : S.Nonempty) :
@@ -883,7 +883,7 @@ theorem minimal_ne_and_finite_of {α : Type*} [PartialOrder α]
 -- Unless the equivalence classes for the preorder are finite,
 -- the assumption is often meaningless
 -- TODO : Generalize to `PartialOrder α`
-theorem isDickson_of_minimal_ne_and_finite 
+theorem isDickson_of_minimal_ne_and_finite
     (H : ∀ (S : Set α) (_ : S.Nonempty), { x ∈ S | Minimal (fun x ↦ x ∈ S) x}.Nonempty
         ∧ {x ∈ S | Minimal (fun x ↦ x ∈ S) x}.Finite) :
     isDickson α := by
@@ -909,7 +909,7 @@ theorem isDickson_of_minimal_ne_and_finite
   · rw [Set.not_nonempty_iff_eq_empty] at hS
     have hB : B = ∅ := Set.subset_eq_empty hBS hS
     constructor
-    exact ⟨hBS, by simp [hS]⟩ 
+    exact ⟨hBS, by simp [hS]⟩
     simp [hB, Finite.of_fintype]
 
 -- TODO : Generalize to `Preorder α`
@@ -937,12 +937,12 @@ theorem isDickson_iff_exists_monotone (α : Type*) [PartialOrder α] :
     isDickson α ↔ ∀ (a : ℕ → α), ∃ (n : ℕ → ℕ), StrictMono n ∧ Monotone (a ∘ n) := by
   constructor
   · intro H a
-    have H' : ∀ (S : Set ℕ) (_ : S.Infinite), ∃ s ∈ S, ∃ T, 
+    have H' : ∀ (S : Set ℕ) (_ : S.Infinite), ∃ s ∈ S, ∃ T,
         T.Infinite ∧ T ⊆ S ∧ (∀ t ∈ T, s < t ∧ a s ≤ a t):= by
       intro S hS
       obtain ⟨B, hB, hBf⟩ := H (a '' S)
       let f (b) := {n ∈ S | b ≤ a n}
-      have : ⋃ b ∈ B, f b = S := by 
+      have : ⋃ b ∈ B, f b = S := by
         ext n
         constructor
         · simp only [Set.mem_iUnion, exists_prop, forall_exists_index, and_imp]
@@ -971,18 +971,18 @@ theorem isDickson_iff_exists_monotone (α : Type*) [PartialOrder α] :
       simp_rw [not_lt]
       exact Set.finite_le_nat q
     obtain ⟨s0, _, S0, hS0⟩ := H' Set.univ Set.infinite_univ
-    let v : ℕ → {(s, S) : ℕ × Set ℕ | S.Infinite ∧ ∀ x ∈ S, s < x ∧ a s ≤ a x} := 
-      Nat.rec (⟨(s0, S0), ⟨hS0.1, hS0.2.2⟩⟩) (fun _ sS ↦ by 
+    let v : ℕ → {(s, S) : ℕ × Set ℕ | S.Infinite ∧ ∀ x ∈ S, s < x ∧ a s ≤ a x} :=
+      Nat.rec (⟨(s0, S0), ⟨hS0.1, hS0.2.2⟩⟩) (fun _ sS ↦ by
         let t := (H' sS.val.2 sS.prop.1).choose
         let T := (H' sS.val.2 sS.prop.1).choose_spec.2.choose
-        let hT : T.Infinite ∧ T ⊆ sS.val.2 ∧ ∀ x ∈ T, t < x ∧ a t ≤ a x := 
+        let hT : T.Infinite ∧ T ⊆ sS.val.2 ∧ ∀ x ∈ T, t < x ∧ a t ≤ a x :=
           (H' sS.val.2 sS.prop.1).choose_spec.2.choose_spec
         exact ⟨(t, T), ⟨hT.1, hT.2.2⟩⟩)
     let n (k) := (v k).val.1
     let S (k) := (v k).val.2
     have hS (k) : (S k).Infinite := (v k).prop.1
     have hn (k) : ∀ x ∈ S k, n k < x ∧ a (n k) ≤ a x := (v k).prop.2
-    have hn_mem_S (k) : n k.succ ∈ S k := (H' (S k) (hS k)).choose_spec.1 
+    have hn_mem_S (k) : n k.succ ∈ S k := (H' (S k) (hS k)).choose_spec.1
     use n
     constructor
     · apply strictMono_nat_of_lt_succ
@@ -999,27 +999,27 @@ theorem isDickson_iff_exists_monotone (α : Type*) [PartialOrder α] :
 theorem wellFounded_iff_not_exists {α : Type*} (r : α → α → Prop) :
     WellFounded r ↔ ¬ ∃ (a : ℕ → α), ∀ n, r (a (n + 1)) (a n) := by
   constructor
-  · intro H 
+  · intro H
     suffices ∀ a, ¬ ∃ (u : ℕ → α), u 0 = a ∧ ∀ n, r (u (n + 1)) (u n) by
       intro Ha
       obtain ⟨u, hu⟩ := Ha
       exact this (u 0) ⟨u, rfl, hu⟩
     intro  a
     induction a using WellFounded.induction H with
-    | _ a Ha => 
+    | _ a Ha =>
     rintro ⟨u, hua, hu⟩
     apply Ha (u 1)
     simp only [← hua, hu 0]
     use fun n ↦ u (n + 1)
     simp only [zero_add, true_and]
-    intro n 
+    intro n
     exact hu (n + 1)
   · intro H
     apply WellFounded.intro
     intro a
     by_contra ha
     apply H
-    let u : ℕ → {x | ¬ Acc r x} := 
+    let u : ℕ → {x | ¬ Acc r x} :=
       Nat.rec ⟨a, ha⟩ (fun _ x ↦ ⟨(RelEmbedding.exists_not_acc_lt_of_not_acc x.prop).choose,
         (RelEmbedding.exists_not_acc_lt_of_not_acc x.prop).choose_spec.1⟩)
     use fun n ↦ (u n).val
@@ -1027,7 +1027,7 @@ theorem wellFounded_iff_not_exists {α : Type*} (r : α → α → Prop) :
     exact (RelEmbedding.exists_not_acc_lt_of_not_acc (u n).prop).choose_spec.2
 -/
 
-theorem WellFoundedLT.isDickson {α : Type*} [LinearOrder α] [WellFoundedLT α] : 
+theorem WellFoundedLT.isDickson {α : Type*} [LinearOrder α] [WellFoundedLT α] :
     isDickson α := fun S ↦ by
   by_cases hS : S.Nonempty
   · obtain ⟨a, haS, ha⟩ := WellFounded.has_min wellFounded_lt S hS
@@ -1036,7 +1036,7 @@ theorem WellFoundedLT.isDickson {α : Type*} [LinearOrder α] [WellFoundedLT α]
     · unfold Set.isBasis
       constructor
       simp [haS]
-      intro x hx 
+      intro x hx
       use a
       simp_rw [not_lt] at ha
       simp [ha x hx]
@@ -1060,16 +1060,16 @@ theorem isDickson.wf {α : Type*} [PartialOrder α] (H : isDickson α) : WellFou
   rw [this] at H
   obtain ⟨i, j, hij, H⟩ := H a
   exact ne_of_lt (lt_of_le_of_lt H (ha.mpr hij)) rfl
-  
+
 theorem Finsupp.isDickson_equiv {α β : Type*} (e : α ≃ β) (hα : isDickson (α →₀ ℕ)) :
     isDickson (β →₀ ℕ) := by
   apply Equiv.isDickson_of_monotone (equivCongrLeft e) _ hα
   exact fun a b h d ↦ by simp [h (e.symm d)]
 
 theorem isDickson_prod {α β : Type*} [PartialOrder α] [PartialOrder β]
-    (hα : isDickson α) (hβ : isDickson β) : 
+    (hα : isDickson α) (hβ : isDickson β) :
     isDickson (α × β) := by
-  simp only [List.TFAE.out (isDickson_tfae _) 0 1] 
+  simp only [List.TFAE.out (isDickson_tfae _) 0 1]
   intro a
   simp only [isDickson_iff_exists_monotone] at hα hβ
   obtain ⟨m, hm, ha1⟩ := hα (fun k ↦ (a k).1)
@@ -1079,7 +1079,7 @@ theorem isDickson_prod {α β : Type*} [PartialOrder α] [PartialOrder β]
   exact hm (hn zero_lt_one)
   simp only [Prod.le_def]
   constructor
-  · apply ha1 
+  · apply ha1
     exact hn.monotone zero_le_one
   · apply ha2 zero_le_one
 
@@ -1088,7 +1088,7 @@ theorem Nat.isDickson : isDickson ℕ := WellFoundedLT.isDickson
 theorem Fin.isDickson_nat (n : ℕ) : isDickson (Fin n → ℕ) := by
   induction n with
   | zero => exact fun S ↦ ⟨S,⟨⟨subset_rfl, fun x hx ↦ ⟨x, hx, le_rfl⟩⟩, Subtype.finite⟩⟩
-  | succ n h => 
+  | succ n h =>
       apply Equiv.isDickson_of_monotone (Fin.snocEquiv (fun _ ↦ ℕ))
       · intro a b h i
         rw [Prod.le_def] at h
