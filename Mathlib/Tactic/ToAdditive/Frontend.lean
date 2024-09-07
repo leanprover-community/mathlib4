@@ -818,9 +818,10 @@ partial def transformDeclAux
   if isProtected (← getEnv) src then
     setEnv <| addProtected (← getEnv) tgt
   if let some matcherInfo ← getMatcherInfo? src then
-    -- Use
-    --   Match.addMatcherInfo tgt matcherInfo
-    -- once on lean 4.13.
+    /-
+    Use `Match.addMatcherInfo tgt matcherInfo`
+    once https://github.com/leanprover/lean4/pull/5068 is in
+    -/
     modifyEnv fun env => Match.Extension.addMatcherInfo env tgt matcherInfo
 
 /-- Copy the instance attribute in a `to_additive`
@@ -1223,7 +1224,7 @@ partial def copyMetaData (cfg : Config) (src tgt : Name) : CoreM (Array Name) :=
     definitions. If we don't do that, the equation lemma for `src` might be generated later
     when doing a `rw`, but it won't be generated for `tgt`. -/
     additivizeLemmas #[src, tgt] "equation lemmas" fun nm ↦
-      (·.getD #[]) <$> MetaM.run' (getEqnsFor? nm true)
+      (·.getD #[]) <$> MetaM.run' (getEqnsFor? nm)
   MetaM.run' <| Elab.Term.TermElabM.run' <|
     applyAttributes cfg.ref cfg.attrs `to_additive src tgt
 

@@ -260,9 +260,17 @@ instance (X : C) : Mono (𝟙 X) :=
 theorem cancel_epi (f : X ⟶ Y) [Epi f] {g h : Y ⟶ Z} : f ≫ g = f ≫ h ↔ g = h :=
   ⟨fun p => Epi.left_cancellation g h p, congr_arg _⟩
 
+theorem cancel_epi_assoc_iff (f : X ⟶ Y) [Epi f] {g h : Y ⟶ Z} {W : C} {k l : Z ⟶ W} :
+    (f ≫ g) ≫ k = (f ≫ h) ≫ l ↔ g ≫ k = h ≫ l :=
+  ⟨fun p => (cancel_epi f).1 <| by simpa using p, fun p => by simp only [Category.assoc, p]⟩
+
 theorem cancel_mono (f : X ⟶ Y) [Mono f] {g h : Z ⟶ X} : g ≫ f = h ≫ f ↔ g = h :=
   -- Porting note: in Lean 3 we could just write `congr_arg _` here.
   ⟨fun p => Mono.right_cancellation g h p, congr_arg (fun k => k ≫ f)⟩
+
+theorem cancel_mono_assoc_iff (f : X ⟶ Y) [Mono f] {g h : Z ⟶ X} {W : C} {k l : W ⟶ Z} :
+    k ≫ (g ≫ f) = l ≫ (h ≫ f) ↔ k ≫ g = l ≫ h :=
+  ⟨fun p => (cancel_mono f).1 <| by simpa using p, fun p => by simp only [← Category.assoc, p]⟩
 
 theorem cancel_epi_id (f : X ⟶ Y) [Epi f] {h : Y ⟶ Y} : f ≫ h = f ↔ h = 𝟙 Y := by
   convert cancel_epi f
@@ -272,40 +280,21 @@ theorem cancel_mono_id (f : X ⟶ Y) [Mono f] {g : X ⟶ X} : g ≫ f = f ↔ g 
   convert cancel_mono f
   simp
 
-theorem epi_comp {X Y Z : C} (f : X ⟶ Y) [Epi f] (g : Y ⟶ Z) [Epi g] : Epi (f ≫ g) := by
-  constructor
-  intro Z a b w
-  apply (cancel_epi g).1
-  apply (cancel_epi f).1
-  simpa using w
+instance epi_comp {X Y Z : C} (f : X ⟶ Y) [Epi f] (g : Y ⟶ Z) [Epi g] : Epi (f ≫ g) :=
+  ⟨fun _ _ w => (cancel_epi g).1 <| (cancel_epi_assoc_iff f).1 w⟩
 
-theorem mono_comp {X Y Z : C} (f : X ⟶ Y) [Mono f] (g : Y ⟶ Z) [Mono g] : Mono (f ≫ g) := by
-  constructor
-  intro Z a b w
-  apply (cancel_mono f).1
-  apply (cancel_mono g).1
-  simpa using w
+instance mono_comp {X Y Z : C} (f : X ⟶ Y) [Mono f] (g : Y ⟶ Z) [Mono g] : Mono (f ≫ g) :=
+  ⟨fun _ _ w => (cancel_mono f).1 <| (cancel_mono_assoc_iff g).1 w⟩
 
-theorem mono_of_mono {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [Mono (f ≫ g)] : Mono f := by
-  constructor
-  intro Z a b w
-  replace w := congr_arg (fun k => k ≫ g) w
-  dsimp at w
-  rw [Category.assoc, Category.assoc] at w
-  exact (cancel_mono _).1 w
+theorem mono_of_mono {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [Mono (f ≫ g)] : Mono f :=
+  ⟨fun _ _ w => (cancel_mono (f ≫ g)).1 <| by simp only [← Category.assoc, w]⟩
 
 theorem mono_of_mono_fac {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {h : X ⟶ Z} [Mono h]
     (w : f ≫ g = h) : Mono f := by
-  subst h
-  exact mono_of_mono f g
+  subst h; exact mono_of_mono f g
 
-theorem epi_of_epi {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [Epi (f ≫ g)] : Epi g := by
-  constructor
-  intro Z a b w
-  replace w := congr_arg (fun k => f ≫ k) w
-  dsimp at w
-  rw [← Category.assoc, ← Category.assoc] at w
-  exact (cancel_epi _).1 w
+theorem epi_of_epi {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [Epi (f ≫ g)] : Epi g :=
+  ⟨fun _ _ w => (cancel_epi (f ≫ g)).1 <| by simp only [Category.assoc, w]⟩
 
 theorem epi_of_epi_fac {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {h : X ⟶ Z} [Epi h]
     (w : f ≫ g = h) : Epi g := by

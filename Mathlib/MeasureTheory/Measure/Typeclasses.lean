@@ -1104,13 +1104,11 @@ instance SMul.sigmaFinite {μ : Measure α} [SigmaFinite μ] (c : ℝ≥0) :
 instance [SigmaFinite (μ.restrict s)] [SigmaFinite (μ.restrict t)] :
     SigmaFinite (μ.restrict (s ∪ t)) := sigmaFinite_of_le _ (restrict_union_le _ _)
 
-instance [h : SigmaFinite (μ.restrict s)] : SigmaFinite (μ.restrict (s ∩ t)) := by
-  convert sigmaFinite_of_le _ (restrict_mono_ae (ae_of_all _ Set.inter_subset_left))
-  exact h
+instance [SigmaFinite (μ.restrict s)] : SigmaFinite (μ.restrict (s ∩ t)) :=
+  sigmaFinite_of_le (μ.restrict s) (restrict_mono_ae (ae_of_all _ Set.inter_subset_left))
 
-instance [h : SigmaFinite (μ.restrict t)] : SigmaFinite (μ.restrict (s ∩ t)) := by
-  convert sigmaFinite_of_le _ (restrict_mono_ae (ae_of_all _ Set.inter_subset_right))
-  exact h
+instance [SigmaFinite (μ.restrict t)] : SigmaFinite (μ.restrict (s ∩ t)) :=
+  sigmaFinite_of_le (μ.restrict t) (restrict_mono_ae (ae_of_all _ Set.inter_subset_right))
 
 theorem SigmaFinite.of_map (μ : Measure α) {f : α → β} (hf : AEMeasurable f μ)
     (h : SigmaFinite (μ.map f)) : SigmaFinite μ :=
