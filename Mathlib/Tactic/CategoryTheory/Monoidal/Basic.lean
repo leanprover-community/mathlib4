@@ -12,16 +12,28 @@ open CategoryTheory Mathlib.Tactic.BicategoryLike
 
 namespace Mathlib.Tactic.Monoidal
 
-def monoidalNf (mvarId : MVarId) : MetaM (List MVarId) := do
-  BicategoryLike.normalForm `monoidal Monoidal'.Context mvarId
-
 /-- Normalize the both sides of an equality. -/
+def monoidalNf (mvarId : MVarId) : MetaM (List MVarId) := do
+  BicategoryLike.normalForm Monoidal'.Context `monoidal mvarId
+
+@[inherit_doc monoidalNf]
 elab "monoidal_nf" : tactic => withMainContext do
   replaceMainGoal (← monoidalNf (← getMainGoal))
 
+/--
+Use the coherence theorem for monoidal categories to solve equations in a monoidal equation,
+where the two sides only differ by replacing strings of monoidal structural morphisms
+(that is, associators, unitors, and identities)
+with different strings of structural morphisms with the same source and target.
+
+That is, `coherence` can handle goals of the form
+`a ≫ f ≫ b ≫ g ≫ c = a' ≫ f ≫ b' ≫ g ≫ c'`
+where `a = a'`, `b = b'`, and `c = c'` can be proved using `monoidal_coherence`.
+-/
 def monoidal (mvarId : MVarId) : MetaM (List MVarId) :=
   BicategoryLike.main Monoidal'.Context `monoidal mvarId
 
+@[inherit_doc monoidal]
 elab "monoidal" : tactic => withMainContext do
   replaceMainGoal <| ← monoidal <| ← getMainGoal
 
