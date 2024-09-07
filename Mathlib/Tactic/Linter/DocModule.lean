@@ -3,9 +3,7 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Lean.Linter.Util
-import Batteries.Data.String.Matcher
-import Mathlib.Util.AssertExists
+import Lean.Elab.Command
 
 /-!
 #  The "header" linter
@@ -78,15 +76,18 @@ def isCorrectAuthorsLine (line : String) : Bool :=
   -- We cannot reasonably validate the author names, so we look only for a few common mistakes:
   -- the file starting wrong, double spaces, using ' and ' between names,
   -- and ending the line with a period.
-  line.startsWith "Authors: " && (!(line.replace "\n  " " ").containsSubstr "  ")
-    && (!line.containsSubstr " and ") && (!line.endsWith ".")
+  line.startsWith "Authors: " &&
+    dbg_trace ((line.replace "\n  " " ").splitOn "  ").length
+    ((line.replace "\n  " " ").splitOn "  ").length == 1 &&
+    (line.splitOn " and ").length == 1 &&
+    (!line.endsWith ".")
 
 /-- `toSyntax s pattern` converts the two input strings into a `Syntax`, assuming that `pattern`
 is a substring of `s`:
 the syntax is an atom with value `pattern` whose the range is the range of `pattern` in `s`. -/
 def toSyntax (s pattern : String) : Syntax :=
-  let substr := (s.findSubstr? pattern.toSubstring).getD default
-  mkAtomFrom (.ofRange ⟨substr.startPos, substr.stopPos⟩) pattern
+  let firstSubstring := ((s.splitOn pattern).getD 1 "").toSubstring
+  mkAtomFrom (.ofRange ⟨firstSubstring.startPos, firstSubstring.stopPos⟩) pattern
 
 /-- The main function to validate the copyright string. -/
 def copyrightHeaderLinter (copyright : String) : Array (Syntax × MessageData) := Id.run do
