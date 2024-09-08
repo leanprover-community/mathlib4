@@ -167,7 +167,7 @@ register_option linter.style.header : Bool := {
 command in a file -/
 initialize firstCommand : IO.Ref (Option String.Pos) ← IO.mkRef none
 
-namespace Style.AssertNotExists
+namespace Style.header
 
 @[inherit_doc Mathlib.Linter.linter.style.header]
 def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
@@ -205,6 +205,6 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
 
 initialize addLinter headerLinter
 
-end Style.AssertNotExists
+end Style.header
 
 end Mathlib.Linter
