@@ -464,10 +464,10 @@ open Subgroup
 variable {G : Type*} {H : Type*} [Group G] [Group H]
 
 /-- A group is commutative if the quotient by the center is cyclic.
-  Also see `commGroup_of_cycle_center_quotient` for the `CommGroup` instance. -/
+  Also see `commGroup_of_cyclic_center_quotient` for the `CommGroup` instance. -/
 @[to_additive commutative_of_add_cyclic_center_quotient
       "A group is commutative if the quotient by the center is cyclic.
-      Also see `addCommGroup_of_cycle_center_quotient` for the `AddCommGroup` instance."]
+      Also see `addCommGroup_of_cyclic_center_quotient` for the `AddCommGroup` instance."]
 theorem commutative_of_cyclic_center_quotient [IsCyclic H] (f : G →* H) (hf : f.ker ≤ center G)
     (a b : G) : a * b = b * a :=
   let ⟨⟨x, y, (hxy : f y = x)⟩, (hx : ∀ a : f.range, a ∈ zpowers _)⟩ :=
@@ -490,13 +490,13 @@ theorem commutative_of_cyclic_center_quotient [IsCyclic H] (f : G →* H) (hf : 
 #align commutative_of_add_cyclic_center_quotient commutative_of_add_cyclic_center_quotient
 
 /-- A group is commutative if the quotient by the center is cyclic. -/
-@[to_additive commutativeOfAddCycleCenterQuotient
+@[to_additive commutativeOfAddCyclicCenterQuotient
       "A group is commutative if the quotient by the center is cyclic."]
-def commGroupOfCycleCenterQuotient [IsCyclic H] (f : G →* H) (hf : f.ker ≤ center G) :
+def commGroupOfCyclicCenterQuotient [IsCyclic H] (f : G →* H) (hf : f.ker ≤ center G) :
     CommGroup G :=
   { show Group G by infer_instance with mul_comm := commutative_of_cyclic_center_quotient f hf }
-#align comm_group_of_cycle_center_quotient commGroupOfCycleCenterQuotient
-#align commutative_of_add_cycle_center_quotient commutativeOfAddCycleCenterQuotient
+#align comm_group_of_cyclic_center_quotient commGroupOfCyclicCenterQuotient
+#align commutative_of_add_cyclic_center_quotient commutativeOfAddCyclicCenterQuotient
 
 end QuotientCenter
 
