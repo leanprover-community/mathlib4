@@ -268,7 +268,7 @@ theorem fourierIntegral_fderiv [MeasurableSpace V] [BorelSpace V] [FiniteDimensi
   · congr with x
     simp only [A, neg_mul, neg_smul, neg_neg]
   · have : Integrable (fun x ↦ (-(2 * ↑π * I * ↑((L y) w)) • ((g x : ℂ) • f x))) μ :=
-      ((fourierIntegral_convergent_iff' _ _).2 hf).smul _
+      ((fourierIntegral_convergent_iff' _ _).2 hf).smul (-(2 * π * I * L y w))
     convert this using 2 with x
     simp only [A, neg_mul, neg_smul, smul_smul]
   · exact (fourierIntegral_convergent_iff' _ _).2 (hf'.apply_continuousLinearMap _)

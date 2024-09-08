@@ -92,6 +92,8 @@ class SMulZeroClass (M A : Type*) [Zero A] extends SMul M A where
   /-- Multiplying `0` by a scalar gives `0` -/
   smul_zero : ∀ a : M, a • (0 : A) = 0
 
+attribute [instance 100] SMulZeroClass.toSMul
+
 section smul_zero
 
 variable [Zero A] [SMulZeroClass M A]

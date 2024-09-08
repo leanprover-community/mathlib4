@@ -189,7 +189,7 @@ theorem contMDiff_finsum_smul {g : ι → M → F}
     (hg : ∀ (i), ∀ x ∈ tsupport (f i), ContMDiffAt I 𝓘(ℝ, F) n (g i) x) :
     ContMDiff I 𝓘(ℝ, F) n fun x => ∑ᶠ i, f i x • g i x :=
   (contMDiff_finsum fun i => f.contMDiff_smul (hg i)) <|
-    f.locallyFinite.subset fun _ => support_smul_subset_left _ _
+    f.locallyFinite.subset fun _ => support_smul_subset_left (f _) _
 
 /-- If `f` is a smooth partition of unity on a set `s : Set M` and `g : ι → M → F` is a family of
 functions such that `g i` is smooth at every point of the topological support of `f i`, then the sum

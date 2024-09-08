@@ -98,6 +98,8 @@ class MulAction (α : Type*) (β : Type*) [Monoid α] extends SMul α β where
   /-- Associativity of `•` and `*` -/
   mul_smul : ∀ (x y : α) (b : β), (x * y) • b = x • y • b
 
+attribute [instance 100] MulAction.toSMul
+
 /-!
 ### (Pre)transitive action
 
