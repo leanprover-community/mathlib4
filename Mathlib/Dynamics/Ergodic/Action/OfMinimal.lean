@@ -14,7 +14,7 @@ import Mathlib.MeasureTheory.Measure.Haar.Unique
 -/
 
 open MeasureTheory Filter Set Function
-open scoped Pointwise
+open scoped Pointwise Topology
 
 variable {X : Type*} [TopologicalSpace X] [R1Space X] [MeasurableSpace X] [BorelSpace X]
 
@@ -101,6 +101,46 @@ theorem ergodic_mul_left_of_denseRange_zpow {G : Type*} [Group G]
     (μ : Measure G) [IsFiniteMeasure μ] [μ.InnerRegular] [μ.IsMulLeftInvariant] :
     Ergodic (g * ·) μ :=
   ergodic_smul_of_denseRange_zpow hg μ
+
+@[to_additive]
+theorem DenseRange.zpow_of_ergodic_mul_left {G : Type*} [Group G] [TopologicalSpace G]
+    [TopologicalGroup G] [MeasurableSpace G] [OpensMeasurableSpace G]
+    {μ : Measure G} [μ.IsOpenPosMeasure] [μ.IsMulLeftInvariant] {g : G} (hg : Ergodic (g * ·) μ) :
+    DenseRange (g ^ · : ℤ → G) := by
+  intro a
+  by_contra h
+  obtain ⟨V, hV₁, hVo, hV⟩ :
+      ∃ V : Set G, 1 ∈ V ∧ IsOpen V ∧ ∀ x ∈ V, ∀ y ∈ V, ∀ m : ℤ, g ^ m ≠ a * x / y := by
+    rw [← mem_compl_iff, ← interior_compl, mem_interior_iff_mem_nhds] at h
+    have : Tendsto (fun (x, y) ↦ a * x / y) (𝓝 1) (𝓝 a) :=
+      Continuous.tendsto' (by fun_prop) _ _ (by simp)
+    rw [nhds_prod_eq] at this
+    simpa [(nhds_basis_opens (1 : G)).prod_self.mem_iff, prod_subset_iff, and_assoc] using this h
+  set s := ⋃ m : ℤ, g ^ m • V
+  have hso : IsOpen s := isOpen_iUnion fun m ↦ hVo.smul _
+  have hsne : s.Nonempty := ⟨1, mem_iUnion.2 ⟨0, by simpa⟩⟩
+  have hd : Disjoint s (a • V) := by
+    simp_rw [s, disjoint_iUnion_left, disjoint_left]
+    rintro m _ ⟨x, hx, rfl⟩ ⟨y, hy, hxy⟩
+    apply hV y hy x hx m
+    simp_all
+  have hgs : (g * ·) ⁻¹' s = s := by
+    simp only [s, preimage_iUnion, ← smul_eq_mul, preimage_smul]
+    refine iUnion_congr_of_surjective _ (add_left_surjective (-1)) fun m ↦ ?_
+    simp [zpow_add, mul_smul]
+  cases hg.measure_self_or_compl_eq_zero hso.measurableSet hgs with
+  | inl h => exact hso.measure_ne_zero _ hsne h
+  | inr h =>
+    refine (hVo.smul a).measure_ne_zero μ (.image _ ⟨1, hV₁⟩) (measure_mono_null ?_ h)
+    rwa [disjoint_right] at hd
+
+@[to_additive]
+theorem ergodic_mul_left_iff_denseRange_zpow {G : Type*} [Group G]
+    [TopologicalSpace G] [TopologicalGroup G] [SecondCountableTopology G]
+    [MeasurableSpace G] [BorelSpace G]
+    {g : G} (μ : Measure G) [IsFiniteMeasure μ] [μ.InnerRegular] [μ.IsMulLeftInvariant]
+    [μ.IsOpenPosMeasure] : Ergodic (g * ·) μ ↔ DenseRange (g ^ · : ℤ → G) :=
+  ⟨.zpow_of_ergodic_mul_left, (ergodic_mul_left_of_denseRange_zpow · μ)⟩
 
 @[to_additive]
 theorem MonoidHom.preErgodic_of_dense_iUnion_preimage_one {G : Type*} [Group G] [TopologicalSpace G]

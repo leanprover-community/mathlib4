@@ -69,28 +69,29 @@ theorem denseRange_zsmul_coe_iff {a p : ℝ} :
     AddSubgroup.comap_map_eq, QuotientAddGroup.ker_mk', AddSubgroup.zmultiples_eq_closure,
     AddSubgroup.zmultiples_eq_closure, ← AddSubgroup.closure_union, insert_eq]
 
-theorem denseRange_zsmul_iff' {p : ℝ} {a : AddCircle p} (hp : p ≠ 0) :
-    DenseRange (· • a : ℤ → AddCircle p) ↔ addOrderOf a = 0 := by
-  rcases QuotientAddGroup.mk_surjective a with ⟨a, rfl⟩
-  rw [denseRange_zsmul_coe_iff, addOrderOf_eq_zero_iff, isOfFinAddOrder_iff_nsmul_eq_zero]
+theorem addOrderOf_coe_eq_zero {a p : ℝ} [Fact (0 < p)] :
+    addOrderOf (a : AddCircle p) = 0 ↔ Irrational (a / p) := by
+  have : 0 < p := Fact.out
+  rw [addOrderOf_eq_zero_iff, isOfFinAddOrder_iff_nsmul_eq_zero]
   simp only [← coe_nsmul, coe_eq_zero_iff, not_exists, not_and, zsmul_eq_mul, nsmul_eq_mul]
   constructor
-  · intro hi n hn m h
-    rw [mul_comm _ a, ← div_eq_div_iff] at h <;> try positivity
-    exact hi.ne_rat (m / n) (mod_cast h.symm)
   · rintro h ⟨r, hr⟩
     refine h r.den r.den_pos r.num ?_
     rw [mul_comm _ a, ← div_eq_div_iff, ← Rat.cast_def, hr] <;> try positivity
+  · intro hi n hn m h
+    rw [mul_comm _ a, ← div_eq_div_iff] at h <;> try positivity
+    exact hi.ne_rat (m / n) (mod_cast h.symm)
 
-theorem denseRange_zsmul_iff {p : ℝ} [hp : Fact (0 < p)] {a : AddCircle p} :
-    DenseRange (· • a : ℤ → AddCircle p) ↔ addOrderOf a = 0 :=
-  denseRange_zsmul_iff' hp.out.ne'
+theorem denseRange_zsmul_iff {p : ℝ} [Fact (0 < p)] {a : AddCircle p} :
+    DenseRange (· • a : ℤ → AddCircle p) ↔ addOrderOf a = 0 := by
+  rcases QuotientAddGroup.mk_surjective a with ⟨a, rfl⟩
+  rw [addOrderOf_coe_eq_zero, denseRange_zsmul_coe_iff]
 
-theorem dense_addSubgroup_iff_ne_zmultiples' {p : ℝ} (hp : p ≠ 0) {s : AddSubgroup (AddCircle p)} :
+theorem dense_addSubgroup_iff_ne_zmultiples {p : ℝ} [Fact (0 < p)] {s : AddSubgroup (AddCircle p)} :
     Dense (s : Set (AddCircle p)) ↔ ∀ a, addOrderOf a ≠ 0 → s ≠ .zmultiples a := by
   constructor
   · rintro hd a ha rfl
-    rw [AddSubgroup.coe_zmultiples, ← DenseRange, denseRange_zsmul_iff' hp] at hd
+    rw [AddSubgroup.coe_zmultiples, ← DenseRange, denseRange_zsmul_iff] at hd
     exact ha hd
   · intro h
     contrapose! h
@@ -102,10 +103,6 @@ theorem dense_addSubgroup_iff_ne_zmultiples' {p : ℝ} (hp : p ≠ 0) {s : AddSu
       rw [← QuotientAddGroup.coe_mk', ← AddMonoidHom.map_zmultiples, ← ha,
         AddSubgroup.map_comap_eq_self_of_surjective]
       exact surjective_quot_mk _
-    exact ⟨a, (denseRange_zsmul_iff' hp).not.mp h, rfl⟩
-    
-theorem dense_addSubgroup_iff_ne_zmultiples {p : ℝ} [Fact (0 < p)] {s : AddSubgroup (AddCircle p)} :
-    Dense (s : Set (AddCircle p)) ↔ ∀ a, addOrderOf a ≠ 0 → s ≠ .zmultiples a :=
-  dense_addSubgroup_iff_ne_zmultiples' (Fact.out : 0 < p).ne'
+    exact ⟨a, denseRange_zsmul_iff.not.mp h, rfl⟩
 
 end AddCircle
