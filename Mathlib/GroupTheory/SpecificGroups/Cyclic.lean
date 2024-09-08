@@ -495,8 +495,6 @@ theorem commutative_of_cyclic_center_quotient [IsCyclic H] (f : G →* H) (hf : 
 def commGroupOfCyclicCenterQuotient [IsCyclic H] (f : G →* H) (hf : f.ker ≤ center G) :
     CommGroup G :=
   { show Group G by infer_instance with mul_comm := commutative_of_cyclic_center_quotient f hf }
-#align comm_group_of_cyclic_center_quotient commGroupOfCyclicCenterQuotient
-#align commutative_of_add_cyclic_center_quotient commutativeOfAddCyclicCenterQuotient
 
 end QuotientCenter
 
