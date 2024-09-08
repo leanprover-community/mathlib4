@@ -110,7 +110,7 @@ theorem invOf_mul_cancel_left' [Monoid α] (a b : α) {_ : Invertible a} : ⅟ a
   rw [← mul_assoc, invOf_mul_self, one_mul]
 example {G} [Group G] (a b : G) : a⁻¹ * (a * b) = b := inv_mul_cancel_left a b
 
-theorem invOf_mul_cancel_left [Monoid α] (a b : α) {_ : Invertible a} : ⅟ a * (a * b) = b :=
+theorem invOf_mul_cancel_left [Monoid α] (a b : α) [Invertible a] : ⅟ a * (a * b) = b :=
   invOf_mul_cancel_left' _ _
 
 @[deprecated (since := "2024-09-07")] alias invOf_mul_self_assoc' := invOf_mul_cancel_left'
