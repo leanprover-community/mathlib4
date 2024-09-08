@@ -5,7 +5,10 @@ Authors: Bjørn Kjos-Hanssen
 -/
 
 import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.RingTheory.Regular.RegularSequence
+import Mathlib.Tactic.Linarith.Frontend
+import Mathlib.Data.Nat.ModEq
+import Mathlib.Data.Nat.Prime.Basic
+import Mathlib.Data.PNat.Basic
 
 /-!
 We prove a special case of Dickson's Conjecture as stated in
@@ -111,7 +114,7 @@ theorem dickson_case {ℓ : ℕ} {a : Fin ℓ → ℕ} {b : Fin ℓ → ℕ+}
 
 /-- Dickson's conjecture holds when `b∣a`. -/
 lemma dickson_dvd {ℓ : ℕ} {a : Fin ℓ → ℕ} {b : Fin ℓ → ℕ+} (ha : ∀ i, (b i).1 ∣ a i) :
-  dickson_conjecture_holds_for ℓ a b :=
+    dickson_conjecture_holds_for ℓ a b :=
   dickson_case (λ i ↦ (em (b i =1)).elim (fun H => .inr H)
   (fun H => .inl <| gcd_gt_of_dvd (ha i) <| lt_of_le_of_ne (b i).2 <|by
     contrapose H;simp_all;symm at H;exact PNat.coe_eq_one_iff.mp H))

@@ -9,8 +9,7 @@ import Mathlib.Data.Real.Basic
 import Mathlib.Logic.Basic
 import Mathlib.Algebra.Group.Basic
 
-import Mathlib.Topology.MetricSpace.PiNat
-import Mathlib.MeasureTheory.Measure.Hausdorff
+import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.Topology.MetricSpace.Pseudo.Defs
 import Mathlib.Analysis.Convex.Deriv
 
