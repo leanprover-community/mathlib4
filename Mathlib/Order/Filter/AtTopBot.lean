@@ -3,17 +3,15 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Algebra.Order.Group.MinMax
 import Mathlib.Algebra.Order.Ring.Basic
+import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Finset.Preimage
-import Mathlib.Order.Interval.Set.Disjoint
-import Mathlib.Order.Interval.Set.OrderIso
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.Filter.Bases
-import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Order.Interval.Set.Disjoint
 
 /-!
 # `Filter.atTop` and `Filter.atBot` filters on preorders, monoids and groups.
@@ -1679,25 +1677,6 @@ theorem tendsto_atBot_of_monotone_of_subseq [Preorder ι] [Preorder α] {u : ι 
     Tendsto u atBot atBot :=
   tendsto_atBot_of_monotone_of_filter h (tendsto_map' H)
 
-/-- Let `f` and `g` be two maps to the same commutative monoid. This lemma gives a sufficient
-condition for comparison of the filter `atTop.map (fun s ↦ ∏ b ∈ s, f b)` with
-`atTop.map (fun s ↦ ∏ b ∈ s, g b)`. This is useful to compare the set of limit points of
-`Π b in s, f b` as `s → atTop` with the similar set for `g`. -/
-@[to_additive "Let `f` and `g` be two maps to the same commutative additive monoid. This lemma gives
-a sufficient condition for comparison of the filter `atTop.map (fun s ↦ ∑ b ∈ s, f b)` with
-`atTop.map (fun s ↦ ∑ b ∈ s, g b)`. This is useful to compare the set of limit points of
-`∑ b ∈ s, f b` as `s → atTop` with the similar set for `g`."]
-theorem map_atTop_finset_prod_le_of_prod_eq [CommMonoid α] {f : β → α} {g : γ → α}
-    (h_eq : ∀ u : Finset γ,
-      ∃ v : Finset β, ∀ v', v ⊆ v' → ∃ u', u ⊆ u' ∧ ∏ x ∈ u', g x = ∏ b ∈ v', f b) :
-    (atTop.map fun s : Finset β => ∏ b ∈ s, f b) ≤
-      atTop.map fun s : Finset γ => ∏ x ∈ s, g x := by
-  classical
-    refine ((atTop_basis.map _).le_basis_iff (atTop_basis.map _)).2 fun b _ => ?_
-    let ⟨v, hv⟩ := h_eq b
-    refine ⟨v, trivial, ?_⟩
-    simpa [image_subset_iff] using hv
-
 theorem HasAntitoneBasis.eventually_subset [Preorder ι] {l : Filter α} {s : ι → Set α}
     (hl : l.HasAntitoneBasis s) {t : Set α} (ht : t ∈ l) : ∀ᶠ i in atTop, s i ⊆ t :=
   let ⟨i, _, hi⟩ := hl.1.mem_iff.1 ht
@@ -1872,37 +1851,5 @@ theorem Antitone.piecewise_eventually_eq_iInter {β : α → Type*} [Preorder ι
   convert ← (compl_anti.comp hs).piecewise_eventually_eq_iUnion g f a using 3
   · convert congr_fun (Set.piecewise_compl (s _) g f) a
   · simp only [(· ∘ ·), ← compl_iInter, Set.piecewise_compl]
-
-/-- Let `g : γ → β` be an injective function and `f : β → α` be a function from the codomain of `g`
-to a commutative monoid. Suppose that `f x = 1` outside of the range of `g`. Then the filters
-`atTop.map (fun s ↦ ∏ i ∈ s, f (g i))` and `atTop.map (fun s ↦ ∏ i ∈ s, f i)` coincide.
-
-The additive version of this lemma is used to prove the equality `∑' x, f (g x) = ∑' y, f y` under
-the same assumptions. -/
-@[to_additive]
-theorem Function.Injective.map_atTop_finset_prod_eq [CommMonoid α] {g : γ → β}
-    (hg : Function.Injective g) {f : β → α} (hf : ∀ x, x ∉ Set.range g → f x = 1) :
-    map (fun s => ∏ i ∈ s, f (g i)) atTop = map (fun s => ∏ i ∈ s, f i) atTop := by
-  haveI := Classical.decEq β
-  apply le_antisymm <;> refine map_atTop_finset_prod_le_of_prod_eq fun s => ?_
-  · refine ⟨s.preimage g hg.injOn, fun t ht => ?_⟩
-    refine ⟨t.image g ∪ s, Finset.subset_union_right, ?_⟩
-    rw [← Finset.prod_image hg.injOn]
-    refine (prod_subset subset_union_left ?_).symm
-    simp only [Finset.mem_union, Finset.mem_image]
-    refine fun y hy hyt => hf y (mt ?_ hyt)
-    rintro ⟨x, rfl⟩
-    exact ⟨x, ht (Finset.mem_preimage.2 <| hy.resolve_left hyt), rfl⟩
-  · refine ⟨s.image g, fun t ht => ?_⟩
-    simp only [← prod_preimage _ _ hg.injOn _ fun x _ => hf x]
-    exact ⟨_, (image_subset_iff_subset_preimage _).1 ht, rfl⟩
-
-/-- Let `g : γ → β` be an injective function and `f : β → α` be a function from the codomain of `g`
-to an additive commutative monoid. Suppose that `f x = 0` outside of the range of `g`. Then the
-filters `atTop.map (fun s ↦ ∑ i ∈ s, f (g i))` and `atTop.map (fun s ↦ ∑ i ∈ s, f i)` coincide.
-
-This lemma is used to prove the equality `∑' x, f (g x) = ∑' y, f y` under
-the same assumptions. -/
-add_decl_doc Function.Injective.map_atTop_finset_sum_eq
 
 set_option linter.style.longFile 2000
