@@ -10,22 +10,10 @@ import Mathlib.Algebra.Module.Defs
 import Mathlib.Data.Set.Pairwise.Basic
 
 /-!
-# Pointwise operations of sets
+# Pointwise action on sets
 
-This file defines pointwise algebraic operations on sets.
-
-## Main declarations
-
-For sets `s` and `t` and scalar `a`:
-* `s • t`: Scalar multiplication, set of all `x • y` where `x ∈ s` and `y ∈ t`.
-* `s +ᵥ t`: Scalar addition, set of all `x +ᵥ y` where `x ∈ s` and `y ∈ t`.
-* `s -ᵥ t`: Scalar subtraction, set of all `x -ᵥ y` where `x ∈ s` and `y ∈ t`.
-* `a • s`: Scaling, set of all `a • x` where `x ∈ s`.
-* `a +ᵥ s`: Translation, set of all `a +ᵥ x` where `x ∈ s`.
-
-For `α` a semigroup/monoid, `Set α` is a semigroup/monoid.
-
-Appropriate definitions and results are also transported to the additive theory via `to_additive`.
+This file proves that several kinds of actions of a type `α` on another type `β` transfer to actions
+of `α`/`Set α` on `Set β`.
 
 ## Implementation notes
 
