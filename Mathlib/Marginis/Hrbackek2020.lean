@@ -12,17 +12,17 @@ import Mathlib.Data.PNat.Basic
 
 /-!
 We prove a special case of Dickson's Conjecture as stated in
-`On factoring of unlimited integers` by KAREL HRBACEK:
-the case where:
-* `gcd(a,b)>1` or `b=1`
+`On factoring of unlimited integers` by KAREL HRBACEK.
 
 n = gcd(a,b) > 1 implies n | f(k) = a+bk for all k,
 violating the main hypothesis of Dickson's conjecture.
 
-See `dickson_strong`.
+### Main results
 
-Dickson's Conjecture is trivial for ℓ = 0
-and we do not need Hrbacek's assumption that ℓ ≥ 1.
+* `dickson_case`: the case where `gcd(a,b)>1` or `b=1`.
+
+Dickson's Conjecture is trivial for `ℓ = 0`
+and we do not need Hrbacek's assumption that `ℓ ≥ 1`.
  -/
 
 open Finset
@@ -94,7 +94,7 @@ theorem dickson_case {ℓ : ℕ} {a : Fin ℓ → ℕ} {b : Fin ℓ → ℕ+}
   by_cases h : ∀ i, b i = 1
   · obtain ⟨p,hp⟩ := Nat.exists_infinite_primes (a i + n₀)
     rw [h i]
-    simp only [ge_iff_le, one_mul, PNat.val_ofNat, one_mul]
+    simp only [ge_iff_le, PNat.val_ofNat, one_mul]
     exact ⟨p - a i, Nat.le_sub_of_add_le (by linarith),
       (Nat.add_sub_of_le (by show a i ≤ p; linarith)).symm ▸ hp.2⟩
   · simp at h

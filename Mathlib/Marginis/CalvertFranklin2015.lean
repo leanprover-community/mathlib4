@@ -7,9 +7,8 @@ import Mathlib.Data.Real.Basic
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Order.Interval.Set.Basic
-import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.RingTheory.Regular.RegularSequence
-
+import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Algebra.CharP.Defs
 /-!
 This concerns the second sentence in the Introduction in the paper
 Genericity and UD–random reals by WESLEY CALVERT, JOHANNA N.Y. FRANKLIN.
