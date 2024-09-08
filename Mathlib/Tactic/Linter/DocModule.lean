@@ -135,6 +135,21 @@ def copyrightHeaderLinter (copyright : String) : Array (Syntax × String) := Id.
     msgs := msgs.push (toSyntax copyright "-/", s!"Copyright too short!")
   return msgs
 
+/-- checks the `Syntax` `imps` for broad imports. -/
+def broadImportsCheck (imps : Syntax)  : Array (Syntax × String) := Id.run do
+  let imports := getImportIds imps
+  let mut msgs := #[]
+  for i in imports do
+    match i.getId with
+    | `Mathlib.Tactic =>
+      msgs := msgs.push (i, s!"Files in mathlib cannot import the whole tactic folder.")
+    | modName =>
+      if modName.getRoot == `Lake then
+      msgs := msgs.push (i,
+        s!"In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter \
+          (see e.g. mathlib4#13779). Please consider carefully if this import is useful and \
+          make sure to benchmark it. If this is fine, feel free to allow this linter.")
+  return msgs
 /--
 The "header" style linter checks that a file starts with
 ```
@@ -180,18 +195,8 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
       | _ => default
     for (stx, m) in copyrightHeaderLinter copyright do
       Linter.logLint linter.style.header stx m!"* '{stx.getAtomVal}':\n{m}\n"
-    let imports := getImportIds upToStx
-    for i in imports do
-      match i.getId with
-      | `Mathlib.Tactic =>
-        Linter.logLint linter.style.header i
-          m!"Files in mathlib cannot import the whole tactic folder."
-      | modName =>
-        if modName.getRoot == `Lake then
-        Linter.logLint linter.style.header i
-          m!"In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter \
-            (see e.g. mathlib4#13779). Please consider carefully if this import is useful and \
-            make sure to benchmark it. If this is fine, feel free to allow this linter."
+    for (imp, msg) in broadImportsCheck upToStx do
+      Linter.logLint linter.style.header imp msg
     if let some false := onlyImportsModDocs upToStx then
       Linter.logLint linter.style.header stx
         m!"The module doc-string for a file should be the first command after the imports.\n\
