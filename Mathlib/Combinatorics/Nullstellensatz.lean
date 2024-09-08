@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 import Mathlib.RingTheory.Nullstellensatz
+import Mathlib.RingTheory.MvPolynomial.Groebner
 import Mathlib.RingTheory.MvPolynomial.Homogeneous
 import Mathlib.Algebra.MvPolynomial.Equiv
 import Mathlib.Data.Set.Card
@@ -14,349 +15,11 @@ import Mathlib.Data.Finsupp.Lex
 
 open Finsupp
 
-theorem Finsupp.degree_add {α N : Type*} [AddCommMonoid N] (a b : α →₀ N) :
+/- theorem Finsupp.degree_add {α N : Type*} [AddCommMonoid N] (a b : α →₀ N) :
     (a + b).degree = a.degree + b.degree := by
   change (a + b).sum (fun _ e ↦ e) = a.sum (fun _ e ↦ e) + b.sum fun _ e ↦ e
   exact sum_add_index' (congrFun rfl) fun _ b₁ ↦ congrFun rfl
-
-section LexHom
-/-! ### Lexicographic order with degree -/
-
-variable {α : Type*}
-
-/-- A type synonym to equip a type with its lexicographic order sorted by degrees. -/
-def LexHom (α : Type*) :=
-  α
-
-/-- `toLexHom` is the identity function to the `LexHom` of a type.  -/
-@[match_pattern]
-def toLexHom : α ≃ LexHom α :=
-  Equiv.refl _
-
-/-- `ofLexHom` is the identity function from the `LexHom` of a type.  -/
-@[match_pattern]
-def ofLexHom : LexHom α ≃ α :=
-  Equiv.refl _
-
-@[simp]
-theorem toLexHom_symm_eq : (@toLexHom α).symm = ofLexHom :=
-  rfl
-
-@[simp]
-theorem ofLexHom_symm_eq : (@ofLexHom α).symm = toLexHom :=
-  rfl
-
-@[simp]
-theorem toLexHom_ofLexHom (a : LexHom α) : toLexHom (ofLexHom a) = a :=
-  rfl
-
-@[simp]
-theorem ofLexHom_toLexHom (a : α) : ofLexHom (toLexHom a) = a :=
-  rfl
-
--- Porting note:
--- removed @[simp] since this already follows by `simp only [EmbeddingLike.apply_eq_iff_eq]`
-theorem toLexHom_inj {a b : α} : toLexHom a = toLexHom b ↔ a = b :=
-  Iff.rfl
-
--- Porting note:
--- removed @[simp] since this already follows by `simp only [EmbeddingLike.apply_eq_iff_eq]`
-theorem ofLexHom_inj {a b : LexHom α} : ofLexHom a = ofLexHom b ↔ a = b :=
-  Iff.rfl
-
-/-- A recursor for `LexHom`. Use as `induction x`. -/
-@[elab_as_elim, induction_eliminator, cases_eliminator]
-protected def LexHom.rec {β : LexHom α → Sort*} (h : ∀ a, β (toLexHom a)) :
-    ∀ a, β a := fun a => h (ofLexHom a)
-
-@[simp] lemma LexHom.forall {p : LexHom α → Prop} : (∀ a, p a) ↔ ∀ a, p (toLexHom a) := Iff.rfl
-@[simp] lemma LexHom.exists {p : LexHom α → Prop} : (∃ a, p a) ↔ ∃ a, p (toLexHom a) := Iff.rfl
-
-namespace Finsupp
-
-variable {M N : Type*} [AddCommMonoid M] [CanonicallyOrderedAddCommMonoid N]
-
-/-- `Finsupp.LexHom r s` is the homogeneous lexicographic order on `α →₀ M`,
-where `α` is ordered by `r` and `M` is ordered by `s`.
-
-The type synonym `LexHom (α →₀ M)` has an order given by `Finsupp.LexHom (· < ·) (· < ·)`. -/
-protected def LexHom (r : α → α → Prop) (s : M → M → Prop) :
-    (α →₀ M) → (α →₀ M) → Prop :=
-  (Prod.Lex s (Finsupp.Lex r s)) on (fun x ↦ (x.degree, x))
-
-theorem lexHom_def {r : α → α → Prop} {s : M → M → Prop} {a b : α →₀ M} :
-    Finsupp.LexHom r s a b ↔
-      Prod.Lex s (Finsupp.Lex r s) (a.degree, a) (b.degree, b) :=
-  Iff.rfl
-
-theorem LexHom.wellFounded
-    {r : α → α → Prop} [IsTrichotomous α r] (hr : WellFounded (Function.swap r))
-    {s : M → M → Prop} (hs : WellFounded s) (hs0 : ∀ ⦃n⦄, ¬ s n 0) :
-    WellFounded (Finsupp.LexHom r s) := by
-  have wft := WellFounded.prod_lex hs (Finsupp.Lex.wellFounded' hs0 hs hr)
-  rw [← Set.wellFoundedOn_univ] at wft
-  unfold Finsupp.LexHom
-  rw [← Set.wellFoundedOn_range]
-  exact Set.WellFoundedOn.mono wft (le_refl _) (fun _ _ ↦ trivial)
-
-instance [LT α] [LT M] : LT (LexHom (α →₀ M)) :=
-  ⟨fun f g ↦ Finsupp.LexHom (· < ·) (· < ·) (ofLexHom f) (ofLexHom g)⟩
-
-theorem LexHom.lt_def [LT α] [LT M] {a b : LexHom (α →₀ M)} :
-    a < b ↔ (toLex ((ofLexHom a).degree, toLex (ofLexHom a))) <
-        (toLex ((ofLexHom b).degree, toLex (ofLexHom b))) :=
-  Iff.rfl
-
-theorem LexHom.lt_iff [LT α] [LT M] {a b : LexHom (α →₀ M)} :
-    a < b ↔ (ofLexHom a).degree < (ofLexHom b).degree ∨
-    (((ofLexHom a).degree = (ofLexHom b).degree) ∧ toLex (ofLexHom a) < toLex (ofLexHom b)) := by
-  simp only [Finsupp.LexHom.lt_def, Prod.Lex.lt_iff]
-
-noncomputable instance : AddCommMonoid (LexHom (α →₀ M)) := ofLexHom.addCommMonoid
-
-theorem toLexHom_add (a b : α →₀ M) : toLexHom (a + b) = toLexHom a + toLexHom b := rfl
-
-theorem ofLexHom_add (a b : LexHom (α →₀ M)) : ofLexHom (a + b) = ofLexHom a + ofLexHom b := rfl
-
-variable [LinearOrder α]
-
-instance LexHom.isStrictOrder [PartialOrder M] :
-    IsStrictOrder (LexHom (α →₀ M)) (· < ·) :=
-  { irrefl := fun a ↦ by simp [LexHom.lt_def]
-    trans := by
-      intro a b c hab hbc
-      simp only [LexHom.lt_iff] at hab hbc ⊢
-      rcases hab with (hab | hab)
-      · rcases hbc with (hbc | hbc)
-        · left; exact lt_trans hab hbc
-        · left; exact lt_of_lt_of_eq hab hbc.1
-      · rcases hbc with (hbc | hbc)
-        · left; exact lt_of_eq_of_lt hab.1 hbc
-        · right; exact ⟨Eq.trans hab.1 hbc.1, lt_trans hab.2 hbc.2⟩ }
-
-/-- The partial order on `Finsupp`s obtained by the homogeneous lexicographic ordering.
-See `Finsupp.LexHom.linearOrder` for a proof that this partial order is in fact linear. -/
-instance LexHom.partialOrder [PartialOrder M] : PartialOrder (LexHom (α →₀ M)) :=
-  PartialOrder.lift
-    (fun (f : LexHom (α →₀ M)) ↦ toLex ((ofLexHom f).degree, toLex (ofLexHom f)))
-    (fun f g ↦ by simp)
-
-theorem LexHom.le_iff [PartialOrder M] {x y : LexHom (α →₀ M)} :
-    x ≤ y ↔ (ofLexHom x).degree < (ofLexHom y).degree ∨
-      (ofLexHom x).degree = (ofLexHom y).degree ∧ toLex (ofLexHom x) ≤ toLex (ofLexHom y) := by
-  simp only [le_iff_eq_or_lt, LexHom.lt_iff, EmbeddingLike.apply_eq_iff_eq]
-  by_cases h : x = y
-  · simp [h]
-  · by_cases k : (ofLexHom x).degree < (ofLexHom y).degree
-    · simp [k]
-    · simp only [h, k, false_or]
-
-noncomputable instance {M : Type*} [OrderedCancelAddCommMonoid M] :
-    OrderedCancelAddCommMonoid (LexHom (α →₀ M)) where
-  toAddCommMonoid := ofLexHom.addCommMonoid
-  toPartialOrder := LexHom.partialOrder
-  le_of_add_le_add_left a b c h := by
-    rw [LexHom.le_iff] at h ⊢
-    simpa only [ofLexHom_add, degree_add, add_lt_add_iff_left, add_right_inj, toLex_add,
-      add_le_add_iff_left] using h
-  add_le_add_left a b h c := by
-    rw [LexHom.le_iff] at h ⊢
-    simpa [ofLexHom_add, degree_add] using h
-
-/-- The linear order on `Finsupp`s obtained by the homogeneous lexicographic ordering. -/
-instance LexHom.linearOrder [LinearOrder M] : LinearOrder (LexHom (α →₀ M)) :=
-  LinearOrder.lift'
-    (fun (f : LexHom (α →₀ M)) ↦ toLex ((ofLexHom f).degree, toLex (ofLexHom f)))
-    (fun f g ↦ by simp)
-
-/-- The linear order on `Finsupp`s obtained by the homogeneous lexicographic ordering. -/
-noncomputable instance {M : Type*} [LinearOrderedCancelAddCommMonoid M] :
-    LinearOrderedCancelAddCommMonoid (LexHom (α →₀ M)) where
-  toOrderedCancelAddCommMonoid := inferInstance
-  le_total := LexHom.linearOrder.le_total
-  decidableLE := LexHom.linearOrder.decidableLE
-  min_def := LexHom.linearOrder.min_def
-  max_def := LexHom.linearOrder.max_def
-  compare_eq_compareOfLessAndEq := LexHom.linearOrder.compare_eq_compareOfLessAndEq
-
-theorem LexHom.monotone_degree [LinearOrder M] :
-    Monotone (fun (x : LexHom (α →₀ M)) ↦ (ofLexHom x).degree) := by
-  intro x y
-  rw [LexHom.le_iff]
-  rintro (h | h)
-  · apply le_of_lt h
-  · apply le_of_eq h.1
-
-instance LexHom.orderBot : OrderBot (LexHom (α →₀ N)) where
-  bot := toLexHom (0 : α →₀ N)
-  bot_le x := by
-    simp only [LexHom.le_iff, ofLexHom_toLexHom, toLex_zero, degree_zero]
-    rcases eq_zero_or_pos (ofLexHom x).degree with (h | h)
-    · simp only [h, lt_self_iff_false, true_and, false_or, ge_iff_le]
-      exact bot_le
-    · simp [h]
-
-instance LexHom.wellFoundedLT [WellFoundedGT α] [WellFoundedLT N] :
-    WellFoundedLT (LexHom (α →₀ N)) :=
-  ⟨LexHom.wellFounded wellFounded_gt wellFounded_lt fun n ↦ (zero_le n).not_lt⟩
-
-end Finsupp
-
-end LexHom
-
-section LexHomDegree
-
-namespace MvPolynomial
-
-variable {σ : Type*} [LinearOrder σ] {R : Type*} [CommSemiring R]
-
-/-- the homogeneous lexicographic order of a multivariate polynomial -/
-def lexHomDegree (f : MvPolynomial σ R) := f.support.sup toLexHom
-
-theorem lexHom_induction [WellFoundedGT σ] {motive : MvPolynomial σ R → Prop}
-    (hrec : ∀ (f : MvPolynomial σ R)
-      (_ : ∀ (g : MvPolynomial σ R) (_ : g.lexHomDegree < f.lexHomDegree), motive g), motive f)
-    (f : MvPolynomial σ R) :
-    motive f := by
-  suffices ∀ d, ∀ f : MvPolynomial σ R, f.lexHomDegree = d → motive f by
-    apply this f.lexHomDegree f rfl
-  intro d
-  induction d using WellFoundedLT.induction with
-  | _ d hrecd =>
-  intro f hf
-  apply hrec
-  intro g
-  rw [hf]
-  exact fun hg ↦ hrecd _ hg g rfl
-
-@[simp]
-theorem lexHomDegree_zero : lexHomDegree (0 : MvPolynomial σ R) = ⊥ := rfl
-
-theorem lexHomDegree_le_iff {f : MvPolynomial σ R} {d : σ →₀ ℕ} :
-    f.lexHomDegree ≤ toLexHom d ↔ ∀ c ∈ f.support, toLexHom c ≤ toLexHom d := by
-  simp only [lexHomDegree, Finset.sup_le_iff]
-
-theorem le_lexHomDegree {f : MvPolynomial σ R} {d : σ →₀ ℕ} (hd : d ∈ f.support) :
-    toLexHom d ≤ f.lexHomDegree := by
-  simp only [lexHomDegree]
-  exact Finset.le_sup hd
-
-theorem coeff_eq_zero_of_lt {f : MvPolynomial σ R} {d : σ →₀ ℕ} (hd : f.lexHomDegree < toLexHom d) :
-    f.coeff d = 0 := by
-  rw [← not_mem_support_iff]
-  exact fun h ↦ not_le.mpr hd (le_lexHomDegree h)
-
-theorem eq_lexHomDegree_iff {f : MvPolynomial σ R} {d : σ →₀ ℕ} (hf : f ≠ 0) :
-    f.lexHomDegree = toLexHom d ↔ d ∈ f.support ∧ (∀ c ∈ f.support, toLexHom c ≤ toLexHom d) := by
-  obtain ⟨D, hD, hD'⟩ := Finset.exists_max_image _ toLexHom (support_nonempty.mpr hf)
-  have hdD : f.lexHomDegree = toLexHom D := le_antisymm (Finset.sup_le hD') (Finset.le_sup hD)
-  rw [le_antisymm_iff, lexHomDegree_le_iff, and_comm, and_congr_left_iff]
-  intro H
-  refine ⟨?_, le_lexHomDegree⟩
-  intro h
-  convert hD
-  rw [← toLexHom_inj]
-  apply le_antisymm (hdD.symm ▸ h) (H _ hD)
-
-theorem lexHomDegree_spec {f : MvPolynomial σ R} (hf : f ≠ 0) :
-    ofLexHom f.lexHomDegree ∈ f.support ∧ (∀ c ∈ f.support, toLexHom c ≤ f.lexHomDegree) :=
-  (eq_lexHomDegree_iff (d := f.lexHomDegree) hf).1 rfl
-
-theorem lexHomDegree_degree {f : MvPolynomial σ R} :
-    (ofLexHom f.lexHomDegree).degree = f.totalDegree := by
-  by_cases hf : f = 0
-  · simp only [hf, support_zero, Finset.sup_empty, totalDegree_zero]
-    exact Finsupp.degree_zero
-  · have := lexHomDegree_spec hf
-    apply le_antisymm (le_totalDegree this.1)
-    · rw [totalDegree, Finset.sup_le_iff]
-      intro c hc
-      exact Finsupp.LexHom.monotone_degree (this.2 c hc)
-
-theorem lexHomDegree_eq_bot_iff {f : MvPolynomial σ R} :
-    f.lexHomDegree = ⊥ ↔ f.totalDegree = 0 := by
-  rw [← lexHomDegree_degree, ← ofLexHom_inj]
-  exact Iff.symm (Finsupp.degree_eq_zero_iff _)
-
-theorem lexHomDegree_add {f g : MvPolynomial σ R} :
-    (f + g).lexHomDegree ≤ f.lexHomDegree ⊔ g.lexHomDegree := by
-  rw [← toLexHom_ofLexHom (f.lexHomDegree ⊔ g.lexHomDegree)]
-  rw [lexHomDegree_le_iff]
-  intro c hc
-  simp only [toLexHom_ofLexHom, le_sup_iff]
-  by_cases hc' : c ∈ f.support
-  · left
-    exact le_lexHomDegree hc'
-  · right
-    apply le_lexHomDegree
-    simp only [mem_support_iff, coeff_add, ne_eq, not_not] at hc hc' ⊢
-    simpa [hc', zero_add] using hc
-
-theorem lexHomDegree_mul {f g : MvPolynomial σ R} :
-    (f * g).lexHomDegree ≤ f.lexHomDegree + g.lexHomDegree := by
-  rw [← toLexHom_ofLexHom (f.lexHomDegree + g.lexHomDegree), lexHomDegree_le_iff]
-  simp only [toLexHom_ofLexHom]
-  intro c hc
-  rw [mem_support_iff] at hc
-  rw [← not_lt]
-  intro hc'
-  apply hc
-  rw [coeff_mul, Finset.sum_eq_zero]
-  rintro ⟨u, v⟩ h
-  by_cases hu : f.lexHomDegree < toLexHom u
-  · convert zero_mul _
-    exact coeff_eq_zero_of_lt hu
-  · convert mul_zero _
-    apply coeff_eq_zero_of_lt
-    simp only [Finset.mem_antidiagonal] at h
-    simp only [← h, toLexHom_add] at hc'
-    dsimp only
-    simp only [not_lt] at hu
-    apply lt_of_add_lt_add_left (a := f.lexHomDegree)
-    apply lt_of_lt_of_le hc'
-    exact add_le_add_right hu (toLexHom v)
-
-theorem lexHomDegree_leadingCoeff {f g : MvPolynomial σ R} :
-    (f * g).coeff (ofLexHom (f.lexHomDegree + g.lexHomDegree)) =
-      f.coeff (ofLexHom f.lexHomDegree) * g.coeff (ofLexHom g.lexHomDegree) := by
-  rw [coeff_mul]
-  convert Finset.sum_eq_single (ofLexHom f.lexHomDegree, ofLexHom g.lexHomDegree) _ _
-  · rintro ⟨d, e⟩ h h'
-    simp only [Finset.mem_antidiagonal] at h
-    rw [← ofLexHom_toLexHom (d + e), ofLexHom_inj, toLexHom_add] at h
-    by_cases k : toLexHom d ≤ f.lexHomDegree
-    · convert mul_zero _
-      apply coeff_eq_zero_of_lt
-      dsimp only
-      apply lt_of_add_lt_add_left (a := f.lexHomDegree)
-      rw [← h, lt_iff_le_and_ne]
-      constructor
-      · exact add_le_add_right k (toLexHom e)
-      · intro k'
-        simp only [h, add_right_inj] at k'
-        simp only [k', add_left_inj] at h
-        simp [← h, k'] at h'
-    · convert zero_mul _
-      apply coeff_eq_zero_of_lt
-      dsimp only
-      rw [not_le] at k
-      exact k
-  · simp [Finset.mem_antidiagonal, ofLexHom_add]
-
-theorem lexHomDegree_mul_eq {f g : MvPolynomial σ R} (hf : f ≠ 0) (hg : g ≠ 0) [IsDomain R] :
-    (f * g).lexHomDegree = f.lexHomDegree + g.lexHomDegree := by
-  apply le_antisymm lexHomDegree_mul
-  rw [← toLexHom_ofLexHom (f.lexHomDegree + g.lexHomDegree)]
-  apply le_lexHomDegree
-  rw [mem_support_iff]
-  rw [lexHomDegree_leadingCoeff]
-  simp only [ne_eq, mul_eq_zero, not_or]
-  simp only [← ne_eq, ← mem_support_iff]
-  exact ⟨(lexHomDegree_spec hf).1, (lexHomDegree_spec hg).1⟩
-
-end MvPolynomial
-
-end LexHomDegree
+-/
 
 variable {R : Type*} [CommRing R]
 
@@ -380,7 +43,6 @@ namespace MvPolynomial
 
 open Finsupp
 
--- This should be generalized to any type than `Fin n` (possibly finite)
 theorem eq_zero_of_eval_zero_at_prod_nat {n : ℕ} [IsDomain R]
     (P : MvPolynomial (Fin n) R) (S : Fin n → Set R)
     (Hdeg : ∀ i, P.weightedTotalDegree (Finsupp.single i 1) < (S i).ncard)
@@ -496,13 +158,6 @@ theorem eq_zero_of_eval_zero_at_prod {σ : Type*} [Finite σ] [IsDomain R]
     simp only [Equiv.symm_apply_apply]
 
 variable {σ : Type*} [Fintype σ]
--- [LinearOrder σ] [WellFoundedGT σ]
-
-/-
-letI : LinearOrder σ := LinearOrder.swap σ WellOrderingRel.isWellOrder.linearOrder
-letI : WellFoundedGT σ := by
-      change IsWellFounded σ fun x y ↦ WellOrderingRel x y
-      exact IsWellOrder.toIsWellFounded -/
 
 lemma prod_totalDegree_le {ι : Type*} (i : ι) (s : Finset R) :
     (s.prod (fun r ↦ X i - C r)).totalDegree ≤ s.card := by
@@ -618,475 +273,103 @@ lemma prod_totalDegree [Nontrivial R] {ι : Type*} (i : ι) (s : Finset R) :
   rw [mem_support_iff, prod_leadCoeff]
   exact one_ne_zero
 
-theorem euclDivd [LinearOrder σ] (S : σ → Finset R) (Sne : ∀ i, (S i).Nonempty)
-    (f : MvPolynomial σ R) :
-    ∃ (h : σ → MvPolynomial σ R) (r : MvPolynomial σ R),
-      f = Finset.univ.sum (fun i => (h i) * (S i).prod (fun (s : R) ↦ (X i - C s))) + r ∧
-      (∀ i, (h i * (S i).prod (fun (s : R) ↦ (X i - C s))).totalDegree ≤ f.totalDegree) ∧
-      (∀ i, r.weightedTotalDegree (Finsupp.single i 1) < (S i).card) := by
-  by_cases hD0 : f.lexHomDegree = ⊥
-  · use fun _ ↦ 0, f
-    rw [lexHomDegree_eq_bot_iff] at hD0
-    simp only [zero_mul, Finset.sum_const_zero, zero_add, totalDegree_zero, zero_le, implies_true,
-      true_and]
-    · intro i
-      apply lt_of_le_of_lt (b := f.totalDegree)
-      · rw [← weightedTotalDegree_one]
-        apply weightedTotalDegree_mono
-        intro j
-        simp only [Pi.one_apply, single_apply]
-        split_ifs <;> simp
-      · simp only [hD0, Finset.card_pos, Sne i]
-  -- Now, f is not constant, hence nonzero
-  have hf_ne_zero : f ≠ 0 := fun hf ↦ hD0 (by simp [hf])
-  let d := ofLexHom f.lexHomDegree
-  have hd : f.lexHomDegree = toLexHom d := by
-    simp only [d, toLexHom_ofLexHom]
-  let f' := f - monomial d (f.coeff d)
-  have hf : f = f' + monomial d (f.coeff d) := by
-    simp only [f', sub_add_cancel]
-  have hf' : f'.support = f.support.erase d := by
-    ext c
-    simp [f']
-    split_ifs with h
-    · simp [h]
-    · simp [sub_zero, Ne.symm h]
-  haveI hf'D : f'.lexHomDegree < f.lexHomDegree := by
-    rw [hd]
-    unfold lexHomDegree
-    rw [Finset.sup_lt_iff]
-    · intro c hc
-      simp only [hf', Finset.mem_erase] at hc
-      rw [lt_iff_le_and_ne, ← hd]
-      exact ⟨le_lexHomDegree hc.2, fun h ↦ hc.1 (toLexHom.injective h)⟩
-    · exact Ne.bot_lt' fun a ↦ hD0 a.symm
-  obtain ⟨h', r', Hf', Hh', Hr'⟩ := euclDivd S Sne f' -- hf'D
-  by_cases H : ∀ i, d i < (S i).card
-  · -- First case, the monomial `d` is small, we just add it to the remainder
-    use h', r' + monomial d (f.coeff d)
-    constructor
-    · nth_rewrite 1 [hf]
-      rw [Hf', add_assoc]
-    constructor
-    · intro i
-      apply le_trans (Hh' i)
-      simp only [totalDegree]
-      apply Finset.sup_mono
-      simp only [hf']
-      exact Finset.erase_subset d f.support
-    · intro i
-      apply lt_of_le_of_lt (weightedTotalDegree_add _)
-      simp only [sup_lt_iff]
-      refine ⟨Hr' i, ?_⟩
-      apply lt_of_eq_of_lt _ (H i)
-      classical
-      rw [weightedTotalDegree_monomial, if_neg, weight_single_one_apply]
-      rw [← ne_eq, ← mem_support_iff]
-      exact (lexHomDegree_spec hf_ne_zero).1
-  · -- Second case, the monomial isn't small, we have to perform a division
-    -- and argue by induction
-    push_neg at H
-    obtain ⟨i, hi⟩ := H
-    let d' := d - single i (S i).card
-    have hd' : d' + single i (S i).card = d := by
-      ext j
-      simp only [coe_add, coe_tsub, Pi.add_apply, Pi.sub_apply, d']
-      apply Nat.sub_add_cancel
-      simp only [single_apply]
-      split_ifs with h
-      · exact le_of_le_of_eq hi (congrArg d h)
-      · exact zero_le (d j)
-    -- write `monomial d (f.coeff d) = `monomial d' (f.coeff d) * _ + f''`
-    -- where `f''` is smaller
-    let f'' := monomial d (f.coeff d) - monomial d' (f.coeff d) * (S i).prod (fun s ↦ X i - C s)
-    have hf'' : monomial d (f.coeff d)
-      = monomial d' (f.coeff d) * (S i).prod (fun s ↦ X i - C s) + f'' := by
-      simp only [f'', add_sub_cancel]
-    have hf''_degree : f''.totalDegree < f.totalDegree := by
-      rw [← f.lexHomDegree_degree]
-      simp only [totalDegree]
-      rw [Finset.sup_lt_iff]
-      · intro b hb
-        change b.degree < d.degree
-        suffices ∃ e < (S i).card, b = d' + single i e by
-          obtain ⟨e, he, hb⟩ := this
-          simp only [hb, ← hd', degree_add, degree_apply_single]
-          exact Nat.add_lt_add_left he d'.degree
-        simp only [mem_support_iff, f'', coeff_sub] at hb
-        rw [coeff_monomial] at hb
-        by_cases h : d = b
-        · rw [if_pos h, ← h] at hb
-          nth_rewrite 2 [← hd'] at hb
-          rw [coeff_monomial_mul] at hb
-          exfalso
-          apply hb
-          rw [prod_leadCoeff, mul_one, sub_self]
-        · rw [if_neg h, zero_sub, ne_eq, neg_eq_zero] at hb
-          rw [coeff_mul] at hb
-          by_cases h' : d' ≤ b
-          · rw [Finset.sum_eq_single (d', b-d')] at hb
-            · simp only [coeff_monomial, ↓reduceIte] at hb
-              replace hb := right_ne_zero_of_mul hb
-              rw [← mem_support_iff] at hb
-              obtain ⟨e, he, he'⟩ := prod_support_le _ _ _ hb
-              use e
-              suffices b = d' + single i e by
-                refine ⟨?_, this⟩
-                apply lt_of_le_of_ne he
-                intro he
-                apply h
-                rw [this, ← hd', he]
-              rw [← he']
-              ext j
-              simp [Nat.add_sub_of_le (h' j)]
-            · rintro ⟨u, v⟩ huv
-              by_cases h : u = d'
-              · intro k
-                exfalso
-                apply k
-                simp only [Prod.mk.injEq]
-                refine ⟨h, ?_⟩
-                simp only [Finset.mem_antidiagonal] at huv
-                rw [← huv, h, add_tsub_cancel_left]
-              · intro _
-                rw [coeff_monomial, if_neg (Ne.symm h), zero_mul]
-            · intro k
-              exfalso
-              apply k
-              simp only [Finset.mem_antidiagonal]
-              ext i
-              simp only [coe_add, coe_tsub, Pi.add_apply, Pi.sub_apply]
-              exact Nat.add_sub_of_le (h' i)
-          · exfalso
-            apply hb
-            rw [Finset.sum_eq_zero]
-            rintro ⟨u, v⟩ huv
-            simp only [Finset.mem_antidiagonal] at huv
-            simp only [coeff_monomial]
-            split_ifs with hu
-            · exfalso
-              apply h'
-              rw [hu, ← huv]
-              exact le_self_add
-            · rw [zero_mul]
-      · change _ < d.degree
-        rw [← hd', degree_add, degree_apply_single]
-        apply lt_of_lt_of_le (b := (S i).card)
-        simp only [bot_eq_zero', Finset.card_pos, Sne i]
-        exact Nat.le_add_left (S i).card d'.degree
-    haveI hf''2 : f''.lexHomDegree < f.lexHomDegree := by -- hf''2
-      rw [LexHom.lt_iff]
-      left
-      simp only [lexHomDegree_degree]
-      exact hf''_degree
-    obtain ⟨h'', r'', Hf'', Hh'', Hr''⟩ := euclDivd S Sne f'' -- hf''2
-    use h' + h'' + single i (monomial d' (f.coeff d)), r' + r''
-    constructor
-    · nth_rewrite 1 [hf, Hf', hf'', Hf'']
-      simp only [← add_assoc]
-      apply congr_arg₂ _ _ rfl
-      simp only [add_assoc]
-      rw [add_comm r']
-      simp only [← add_assoc]
-      apply congr_arg₂ _ _ rfl
-      suffices monomial d' (f.coeff d) * (S i).prod (fun s ↦ X i - C s) = Finset.univ.sum
-        (fun j ↦ (single i (monomial d' (f.coeff d)) j) * (S j).prod (fun s ↦ X j - C s)) by
-        rw [this]
-        rw [← Finset.sum_add_distrib, ← Finset.sum_add_distrib]
-        apply Finset.sum_congr rfl
-        intro j _
-        simp only [← add_mul]
-        apply congr_arg₂ _ _ rfl
-        simp only [Pi.add_apply, add_assoc]
-        apply congr_arg₂ _ rfl
-        apply add_comm
-      rw [Finset.sum_eq_single i, single_eq_same]
-      · intro j _ hj
-        rw [single_eq_of_ne hj.symm, zero_mul]
-      · intro h
-        exfalso
-        exact h (Finset.mem_univ i)
-    constructor
-    · intro j
-      simp only [Pi.add_apply, add_mul]
-      apply le_trans (totalDegree_add _ _)
-      simp only [max_le_iff]
-      constructor
-      apply le_trans (totalDegree_add _ _)
-      simp only [max_le_iff]
-      constructor
-      · apply le_trans (Hh' j)
-        simp only [totalDegree, hf']
-        exact Finset.sup_mono (Finset.erase_subset d f.support)
-      · exact le_trans (Hh'' j) (le_of_lt hf''_degree)
-      · simp only [single_apply]
-        split_ifs with h
-        · apply le_trans (totalDegree_mul _ _)
-          apply le_of_le_of_eq (add_le_add (totalDegree_monomial_le _ _) (prod_totalDegree_le _ _))
-          rw [← lexHomDegree_degree]
-          change d'.degree + (S j).card = d.degree
-          rw [← hd', ← h, degree_add, degree_apply_single]
-        · simp
-    · intro i
-      apply lt_of_le_of_lt (weightedTotalDegree_add _)
-      simp only [sup_lt_iff]
-      exact ⟨Hr' i, Hr'' i⟩
-termination_by LexHom.wellFoundedLT.wf.wrap f.lexHomDegree
-decreasing_by
-· change f'.lexHomDegree < f.lexHomDegree
-  rw [hd]
-  unfold lexHomDegree
-  rw [Finset.sup_lt_iff]
-  · intro c hc
-    simp only [hf', Finset.mem_erase] at hc
-    rw [lt_iff_le_and_ne, ← hd]
-    exact ⟨le_lexHomDegree hc.2, fun h ↦ hc.1 (toLexHom.injective h)⟩
-  · exact Ne.bot_lt' fun a ↦ hD0 a.symm
-· change f''.lexHomDegree < f.lexHomDegree
-  rw [LexHom.lt_iff]
-  left
-  simp only [lexHomDegree_degree]
-  exact hf''_degree
+open MonomialOrder
 
-/- -- OLD VERSION
-theorem euclDivd (S : σ → Finset R) (Sne : ∀ i, (S i).Nonempty)
-    (f : MvPolynomial σ R) :
-    ∃ (h : σ → MvPolynomial σ R) (r : MvPolynomial σ R),
-      f = Finset.univ.sum (fun i => (h i) * (S i).prod (fun (s : R) ↦ (X i - C s))) + r ∧
-      (∀ i, (h i * (S i).prod (fun (s : R) ↦ (X i - C s))).totalDegree ≤ f.totalDegree) ∧
-      (∀ i, r.weightedTotalDegree (Finsupp.single i 1) < (S i).card) := by
-  letI : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
-  -- letI : WellFoundedGT σ := Finite.to_wellFoundedGT
-  induction f using lexHom_induction with
-  | _ f hrec =>
-  by_cases hD0 : f.lexHomDegree = ⊥
-  · use fun _ ↦ 0, f
-    rw [lexHomDegree_eq_bot_iff] at hD0
-    simp only [zero_mul, Finset.sum_const_zero, zero_add, totalDegree_zero, zero_le, implies_true,
-      true_and]
-    · intro i
-      apply lt_of_le_of_lt (b := f.totalDegree)
-      · rw [← weightedTotalDegree_one]
-        apply weightedTotalDegree_mono
-        intro j
-        simp only [Pi.one_apply, single_apply]
-        split_ifs <;> simp
-      · simp only [hD0, Finset.card_pos, Sne i]
-  -- Now, f is not constant, hence nonzero
-  have hf_ne_zero : f ≠ 0 := fun hf ↦ hD0 (by simp [hf])
-  let d := ofLexHom f.lexHomDegree
-  have hd : f.lexHomDegree = toLexHom d := by
-    simp only [d, toLexHom_ofLexHom]
-  let f' := f - monomial d (f.coeff d)
-  have hf : f = f' + monomial d (f.coeff d) := by
-    simp only [f', sub_add_cancel]
-  have hf' : f'.support = f.support.erase d := by
-    ext c
-    simp [f']
-    split_ifs with h
-    · simp [h]
-    · simp [sub_zero, Ne.symm h]
-  have hf'D : f'.lexHomDegree < toLexHom d := by
-    unfold lexHomDegree
-    rw [Finset.sup_lt_iff]
-    · intro c hc
-      simp only [hf', Finset.mem_erase] at hc
-      rw [lt_iff_le_and_ne, ← hd]
-      exact ⟨le_lexHomDegree hc.2, fun h ↦ hc.1 (toLexHom.injective h)⟩
-    · exact Ne.bot_lt' fun a ↦ hD0 a.symm
-  obtain ⟨h', r', Hf', Hh', Hr'⟩ := hrec f' hf'D
-  by_cases H : ∀ i, d i < (S i).card
-  · -- First case, the monomial `d` is small, we just add it to the remainder
-    use h', r' + monomial d (f.coeff d)
-    constructor
-    · nth_rewrite 1 [hf]
-      rw [Hf', add_assoc]
-    constructor
-    · intro i
-      apply le_trans (Hh' i)
-      simp only [totalDegree]
-      apply Finset.sup_mono
-      simp only [hf']
-      exact Finset.erase_subset d f.support
-    · intro i
-      apply lt_of_le_of_lt (weightedTotalDegree_add _)
-      simp only [sup_lt_iff]
-      refine ⟨Hr' i, ?_⟩
-      apply lt_of_eq_of_lt _ (H i)
-      classical
-      rw [weightedTotalDegree_monomial, if_neg, weight_single_one_apply]
-      rw [← ne_eq, ← mem_support_iff]
-      exact (lexHomDegree_spec hf_ne_zero).1
-  · -- Second case, the monomial isn't small, we have to perform a division
-    -- and argue by induction
-    push_neg at H
-    obtain ⟨i, hi⟩ := H
-    let d' := d - single i (S i).card
-    have hd' : d' + single i (S i).card = d := by
-      ext j
-      simp only [coe_add, coe_tsub, Pi.add_apply, Pi.sub_apply, d']
-      apply Nat.sub_add_cancel
-      simp only [single_apply]
-      split_ifs with h
-      · exact le_of_le_of_eq hi (congrArg d h)
-      · exact zero_le (d j)
-    -- write `monomial d (f.coeff d) = `monomial d' (f.coeff d) * _ + f''`
-    -- where `f''` is smaller
-    let f'' := monomial d (f.coeff d) - monomial d' (f.coeff d) * (S i).prod (fun s ↦ X i - C s)
-    have hf'' : monomial d (f.coeff d)
-      = monomial d' (f.coeff d) * (S i).prod (fun s ↦ X i - C s) + f'' := by
-      simp only [f'', add_sub_cancel]
-    have hf''_degree : f''.totalDegree < f.totalDegree := by
-      rw [← f.lexHomDegree_degree]
-      simp only [totalDegree]
-      rw [Finset.sup_lt_iff]
-      · intro b hb
-        change b.degree < d.degree
-        suffices ∃ e < (S i).card, b = d' + single i e by
-          obtain ⟨e, he, hb⟩ := this
-          simp only [hb, ← hd', degree_add, degree_apply_single]
-          exact Nat.add_lt_add_left he d'.degree
-        simp only [mem_support_iff, f'', coeff_sub] at hb
-        rw [coeff_monomial] at hb
-        by_cases h : d = b
-        · rw [if_pos h, ← h] at hb
-          nth_rewrite 2 [← hd'] at hb
-          rw [coeff_monomial_mul] at hb
-          exfalso
-          apply hb
-          rw [prod_leadCoeff, mul_one, sub_self]
-        · rw [if_neg h, zero_sub, ne_eq, neg_eq_zero] at hb
-          rw [coeff_mul] at hb
-          by_cases h' : d' ≤ b
-          · rw [Finset.sum_eq_single (d', b-d')] at hb
-            · simp only [coeff_monomial, ↓reduceIte] at hb
-              replace hb := right_ne_zero_of_mul hb
-              rw [← mem_support_iff] at hb
-              obtain ⟨e, he, he'⟩ := prod_support_le _ _ _ hb
-              use e
-              suffices b = d' + single i e by
-                refine ⟨?_, this⟩
-                apply lt_of_le_of_ne he
-                intro he
-                apply h
-                rw [this, ← hd', he]
-              rw [← he']
-              ext j
-              simp [Nat.add_sub_of_le (h' j)]
-            · rintro ⟨u, v⟩ huv
-              by_cases h : u = d'
-              · intro k
-                exfalso
-                apply k
-                simp only [Prod.mk.injEq]
-                refine ⟨h, ?_⟩
-                simp only [Finset.mem_antidiagonal] at huv
-                rw [← huv, h, add_tsub_cancel_left]
-              · intro _
-                rw [coeff_monomial, if_neg (Ne.symm h), zero_mul]
-            · intro k
-              exfalso
-              apply k
-              simp only [Finset.mem_antidiagonal]
-              ext i
-              simp only [coe_add, coe_tsub, Pi.add_apply, Pi.sub_apply]
-              exact Nat.add_sub_of_le (h' i)
-          · exfalso
-            apply hb
-            rw [Finset.sum_eq_zero]
-            rintro ⟨u, v⟩ huv
-            simp only [Finset.mem_antidiagonal] at huv
-            simp only [coeff_monomial]
-            split_ifs with hu
-            · exfalso
-              apply h'
-              rw [hu, ← huv]
-              exact le_self_add
-            · rw [zero_mul]
-      · change _ < d.degree
-        rw [← hd', degree_add, degree_apply_single]
-        apply lt_of_lt_of_le (b := (S i).card)
-        simp only [bot_eq_zero', Finset.card_pos, Sne i]
-        exact Nat.le_add_left (S i).card d'.degree
-    have hf''2 : f''.lexHomDegree < f.lexHomDegree := by
-      rw [LexHom.lt_iff]
-      left
-      simp only [lexHomDegree_degree]
-      exact hf''_degree
-    obtain ⟨h'', r'', Hf'', Hh'', Hr''⟩ := hrec f'' hf''2
-    use h' + h'' + single i (monomial d' (f.coeff d)), r' + r''
-    constructor
-    · nth_rewrite 1 [hf, Hf', hf'', Hf'']
-      simp only [← add_assoc]
-      apply congr_arg₂ _ _ rfl
-      simp only [add_assoc]
-      rw [add_comm r']
-      simp only [← add_assoc]
-      apply congr_arg₂ _ _ rfl
-      suffices monomial d' (f.coeff d) * (S i).prod (fun s ↦ X i - C s) = Finset.univ.sum
-        (fun j ↦ (single i (monomial d' (f.coeff d)) j) * (S j).prod (fun s ↦ X j - C s)) by
-        rw [this]
-        rw [← Finset.sum_add_distrib, ← Finset.sum_add_distrib]
-        apply Finset.sum_congr rfl
-        intro j _
-        simp only [← add_mul]
-        apply congr_arg₂ _ _ rfl
-        simp only [Pi.add_apply, add_assoc]
-        apply congr_arg₂ _ rfl
-        apply add_comm
-      rw [Finset.sum_eq_single i, single_eq_same]
-      · intro j _ hj
-        rw [single_eq_of_ne hj.symm, zero_mul]
-      · intro h
-        exfalso
-        exact h (Finset.mem_univ i)
-    constructor
-    · intro j
-      simp only [Pi.add_apply, add_mul]
-      apply le_trans (totalDegree_add _ _)
-      simp only [max_le_iff]
-      constructor
-      apply le_trans (totalDegree_add _ _)
-      simp only [max_le_iff]
-      constructor
-      · apply le_trans (Hh' j)
-        simp only [totalDegree, hf']
-        exact Finset.sup_mono (Finset.erase_subset d f.support)
-      · exact le_trans (Hh'' j) (le_of_lt hf''_degree)
-      · simp only [single_apply]
-        split_ifs with h
-        · apply le_trans (totalDegree_mul _ _)
-          apply le_of_le_of_eq (add_le_add (totalDegree_monomial_le _ _) (prod_totalDegree_le _ _))
-          rw [← lexHomDegree_degree]
-          change d'.degree + (S j).card = d.degree
-          rw [← hd', ← h, degree_add, degree_apply_single]
-        · simp
-    · intro i
-      apply lt_of_le_of_lt (weightedTotalDegree_add _)
-      simp only [sup_lt_iff]
-      exact ⟨Hr' i, Hr'' i⟩
--/
+lemma _root_.MonomialOrder.degree_binomial [Nontrivial R]
+    {ι : Type*} (m : MonomialOrder ι) (i : ι) (r : R) :
+    m.degree (X i - C r) = single i 1 := by
+  rw [degree_sub_of_lt, degree_X]
+  simp only [degree_C, map_zero, degree_X]
+  rw [← bot_eq_zero, bot_lt_iff_ne_bot, bot_eq_zero, ← map_zero m.toSyn]
+  simp
+
+lemma _root_.MonomialOrder.lCoeff_binomial {ι : Type*} (m : MonomialOrder ι) (i : ι) (r : R) :
+    m.lCoeff (X i - C r) = 1 := by
+  classical
+  by_cases H : Nontrivial R
+  simp only [lCoeff, m.degree_binomial i r]
+  simp only [coeff_sub, coeff_single_X, true_and, if_true, coeff_C, sub_eq_self]
+  rw [if_neg]
+  intro h
+  apply zero_ne_one (α := ℕ)
+  simp only [Finsupp.ext_iff, coe_zero, Pi.zero_apply] at h
+  rw [h i, single_eq_same]
+  · by_contra H'
+    exact H (nontrivial_of_ne _ _ H')
+
+theorem _root_.MonomialOrder.prod_degree [Nontrivial R]
+    {ι : Type*} (m : MonomialOrder ι) (i : ι) (s : Finset R) : 
+    m.degree (s.prod (fun r ↦ X i - C r)) = single i s.card := by
+  classical
+  have H : ∀ r ∈ s, m.degree (X i - C r) = single i 1 := by
+    intro r _
+    rw [degree_sub_of_lt, degree_X]
+    simp only [degree_C, map_zero, degree_X]
+    rw [← bot_eq_zero, bot_lt_iff_ne_bot, bot_eq_zero, ← map_zero m.toSyn]
+    simp
+  rw [MonomialOrder.degree_prod_of_regular]
+  rw [Finset.sum_congr rfl H]
+  simp only [Finset.sum_const, smul_single, smul_eq_mul, mul_one]
+  · intro r hr
+    convert isRegular_one
+    simp only [lCoeff, H r hr]
+    simp only [coeff_sub, coeff_single_X, true_and, if_true, coeff_C, sub_eq_self]
+    rw [if_neg]
+    intro h
+    apply zero_ne_one (α := ℕ)
+    simp only [Finsupp.ext_iff, coe_zero, Pi.zero_apply] at h
+    rw [h i, single_eq_same]
 
 theorem Alon1 [IsDomain R] (S : σ → Finset R) (Sne : ∀ i, (S i).Nonempty)
     (f : MvPolynomial σ R) (Heval : ∀ (x : σ → R), (∀ i, x i ∈ S i) → eval x f = 0) :
-    ∃ (h : σ → MvPolynomial σ R)
-      (_ : ∀ i, (h i * (S i).prod (fun s ↦ X i - C s)).totalDegree ≤ f.totalDegree),
-    f = Finset.univ.sum (fun i ↦ (h i) * (S i).prod (fun (s : R) ↦ (X i - C s))) := by
+    ∃ (h : σ →₀ MvPolynomial σ R)
+      (_ : ∀ i, ((S i).prod (fun s ↦ X i - C s) * (h i)).totalDegree ≤ f.totalDegree),
+    f = linearCombination (MvPolynomial σ R) (fun i ↦ (S i).prod (fun r ↦ X i - C r)) h := by 
   letI : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
---  haveI wfr : WellFoundedRelation (MvPolynomial σ R) := {
---    rel := Function.onFun (· < ·) fun f ↦ f.lexHomDegree
---    wf := WellFounded.onFun wellFounded_lt }
-  obtain ⟨h, r, hf, hh, hr⟩ := euclDivd S Sne f
-  use h, hh
-  simp only [hf, add_right_eq_self]
+  let P (i) :  MvPolynomial σ R := (S i).prod (fun r ↦ X i - C r)
+  have degP (i) : (degLex σ).degree (P i) = single i (S i).card := by 
+    simp only [P]
+    rw [degree_prod_of_regular]
+    · simp_rw [degree_binomial]
+      simp
+    · intro r _
+      rw [lCoeff_binomial]
+      apply isRegular_one
+  have lCoeffP (i) : IsUnit ((degLex σ).lCoeff (P i)) := by
+    convert isUnit_one
+    simp only [P]
+    rw [lCoeff_prod_of_regular ?_]
+    · apply Finset.prod_eq_one
+      intro r _
+      apply (degLex σ).lCoeff_binomial
+    · intro r _
+      convert isRegular_one
+      apply lCoeff_binomial
+  obtain ⟨h, r, hf, hh, hr⟩ := (degLex σ).monomialOrderDiv P lCoeffP f
+  use h
+  suffices r = 0 by
+    rw [this, add_zero] at hf
+    exact ⟨fun i ↦ degLex_totalDegree_monotone (hh i), hf⟩
   apply eq_zero_of_eval_zero_at_prod r (fun i ↦ S i)
   · intro i
-    apply lt_of_lt_of_eq (hr i)
-    simp only [Set.ncard_coe_Finset]
+    simp only [weightedTotalDegree, Set.ncard_coe_Finset]
+    rw [Finset.sup_lt_iff (by simp [Sne i])]
+    intro c hc
+    rw [← not_le, weight_single_one_apply]
+    intro h'
+    apply hr c hc i
+    intro j
+    rw [degP, single_apply]
+    split_ifs with hj
+    · rw [← hj]
+      exact h'
+    · exact zero_le _
   · intro x hx
     rw [Iff.symm sub_eq_iff_eq_add'] at hf
-    rw [← hf, map_sub, Heval x hx, zero_sub]
-    rw [map_sum, Finset.sum_eq_zero, neg_zero]
+    rw [← hf, map_sub, Heval x hx, zero_sub, neg_eq_zero]
+    simp only [linearCombination, coe_lsum, LinearMap.coe_smulRight, LinearMap.id_coe, id_eq,
+      smul_eq_mul]
+    rw [Finsupp.sum, eval_sum, Finset.sum_eq_zero]
     intro i _
     rw [map_mul]
     convert mul_zero _
@@ -1106,13 +389,15 @@ theorem Alon2 [IsDomain R]
   obtain ⟨h, hh, hf⟩ := Alon1 S
     (fun i ↦ by rw [← Finset.card_pos]; exact lt_of_le_of_lt (zero_le _) (htS i))
     f Heval
-  rw [hf, coeff_sum]
+  rw [hf] 
+  simp only [linearCombination, coe_lsum, sum, LinearMap.coe_smulRight, LinearMap.id_coe, id_eq,
+    smul_eq_mul, coeff_sum]
   apply Finset.sum_eq_zero
   intro i _
   set g := h i * ((S i).prod fun r ↦ X i - C r) with hg
   by_contra ht
   have : g.totalDegree = f.totalDegree := by
-    apply le_antisymm  (by exact hh i)
+    apply le_antisymm (by simp only [g, mul_comm, hh i])
     rw [ht']
     apply le_totalDegree
     rwa [mem_support_iff]
