@@ -196,7 +196,7 @@ lemma const {y : Y} :
 
 lemma zero [Zero Y] : HolderWith C r (0 : X → Y) := .const
 
-lemma isEmpty (hX : IsEmpty X) : HolderWith C r f := fun x => False.elim <| hX.elim x
+lemma of_isEmpty [IsEmpty X] : HolderWith C r f := isEmptyElim
 
 lemma mono {C' : ℝ≥0} (hf : HolderWith C r f) (h : C ≤ C') :
     HolderWith C' r f :=
@@ -242,7 +242,7 @@ section Metric
 variable [PseudoMetricSpace X] [MetricSpace Y] {C r : ℝ≥0} {f : X → Y}
 
 @[simp]
-lemma holderWith_eq_zero_iff : HolderWith 0 r f ↔ ∀ x₁ x₂, f x₁ = f x₂ := by
+lemma holderWith_zero_iff : HolderWith 0 r f ↔ ∀ x₁ x₂, f x₁ = f x₂ := by
   refine ⟨fun h x₁ x₂ => ?_, fun h x₁ x₂ => h x₁ x₂ ▸ ?_⟩
   · specialize h x₁ x₂
     simp [ENNReal.coe_zero, zero_mul, nonpos_iff_eq_zero, edist_eq_zero] at h
