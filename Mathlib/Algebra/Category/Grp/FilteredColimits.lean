@@ -94,7 +94,7 @@ noncomputable instance colimitGroup : Group (G.{v, u} F) :=
   { colimitInv.{v, u} F, (G.{v, u} F).str with
     inv_mul_cancel := fun x => by
       refine Quot.inductionOn x ?_; clear x; intro x
-      cases' x with j x
+      obtain ⟨j, x⟩ := x
       erw [colimit_inv_mk_eq,
         colimit_mul_mk_eq (F ⋙ forget₂ Grp MonCat.{max v u}) ⟨j, _⟩ ⟨j, _⟩ j (𝟙 j) (𝟙 j),
         colimit_one_eq (F ⋙ forget₂ Grp MonCat.{max v u}) j]

@@ -48,7 +48,7 @@ lemma rank_eq_zero_iff :
     rw [← Cardinal.one_le_iff_ne_zero]
     have : LinearIndependent R (fun _ : Unit ↦ x) :=
       linearIndependent_iff.mpr (fun l hl ↦ Finsupp.unique_ext <| not_not.mp fun H ↦
-        hx _ H ((Finsupp.total_unique _ _ _).symm.trans hl))
+        hx _ H ((Finsupp.linearCombination_unique _ _ _).symm.trans hl))
     simpa using this.cardinal_lift_le_rank
   · intro h
     rw [← le_zero_iff, Module.rank_def]
@@ -381,7 +381,7 @@ theorem FiniteDimensional.nontrivial_of_finrank_pos (h : 0 < finrank R M) : Nont
 natural number. -/
 theorem FiniteDimensional.nontrivial_of_finrank_eq_succ {n : ℕ}
     (hn : finrank R M = n.succ) : Nontrivial M :=
-  nontrivial_of_finrank_pos (by rw [hn]; exact n.succ_pos)
+  nontrivial_of_finrank_pos (R := R) (by rw [hn]; exact n.succ_pos)
 
 end
 

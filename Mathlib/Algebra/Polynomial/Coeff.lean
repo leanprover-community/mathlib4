@@ -119,6 +119,11 @@ theorem coeff_mul (p q : R[X]) (n : ℕ) :
 @[simp]
 theorem mul_coeff_zero (p q : R[X]) : coeff (p * q) 0 = coeff p 0 * coeff q 0 := by simp [coeff_mul]
 
+theorem mul_coeff_one (p q : R[X]) :
+    coeff (p * q) 1 = coeff p 0 * coeff q 1 + coeff p 1 * coeff q 0 := by
+  rw [coeff_mul, Nat.antidiagonal_eq_map]
+  simp [sum_range_succ]
+
 /-- `constantCoeff p` returns the constant term of the polynomial `p`,
   defined as `coeff p 0`. This is a ring homomorphism. -/
 @[simps]

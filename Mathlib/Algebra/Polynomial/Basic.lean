@@ -49,8 +49,6 @@ equivalence is also registered as a ring equiv in `Polynomial.toFinsuppIso`. The
 in general not be used once the basic API for polynomials is constructed.
 -/
 
-
-
 noncomputable section
 
 /-- `Polynomial R` is the type of univariate polynomials over `R`.
@@ -65,8 +63,6 @@ structure Polynomial (R : Type*) [Semiring R] where ofFinsupp ::
 open AddMonoidAlgebra
 open Finsupp hiding single
 open Function hiding Commute
-
-open Polynomial
 
 namespace Polynomial
 
@@ -402,9 +398,9 @@ theorem monomial_mul_monomial (n m : ℕ) (r s : R) :
 
 @[simp]
 theorem monomial_pow (n : ℕ) (r : R) (k : ℕ) : monomial n r ^ k = monomial (n * k) (r ^ k) := by
-  induction' k with k ih
-  · simp [pow_zero, monomial_zero_one]
-  · simp [pow_succ, ih, monomial_mul_monomial, mul_add, add_comm]
+  induction k with
+  | zero => simp [pow_zero, monomial_zero_one]
+  | succ k ih => simp [pow_succ, ih, monomial_mul_monomial, mul_add, add_comm]
 
 theorem smul_monomial {S} [SMulZeroClass S R] (a : S) (n : ℕ) (b : R) :
     a • monomial n b = monomial n (a • b) :=
@@ -539,9 +535,9 @@ theorem monomial_mul_X (n : ℕ) (r : R) : monomial n r * X = monomial (n + 1) r
 @[simp]
 theorem monomial_mul_X_pow (n : ℕ) (r : R) (k : ℕ) :
     monomial n r * X ^ k = monomial (n + k) r := by
-  induction' k with k ih
-  · simp
-  · simp [ih, pow_succ, ← mul_assoc, add_assoc]
+  induction k with
+  | zero => simp
+  | succ k ih => simp [ih, pow_succ, ← mul_assoc, add_assoc]
 
 @[simp]
 theorem X_mul_monomial (n : ℕ) (r : R) : X * monomial n r = monomial (n + 1) r := by
@@ -934,7 +930,7 @@ section Update
 
 /-- Replace the coefficient of a `p : R[X]` at a given degree `n : ℕ`
 by a given value `a : R`. If `a = 0`, this is equal to `p.erase n`
-If `p.natDegree < n` and `a ≠ 0`, this increases the degree to `n`.  -/
+If `p.natDegree < n` and `a ≠ 0`, this increases the degree to `n`. -/
 def update (p : R[X]) (n : ℕ) (a : R) : R[X] :=
   Polynomial.ofFinsupp (p.toFinsupp.update n a)
 
