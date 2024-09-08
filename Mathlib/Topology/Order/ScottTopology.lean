@@ -304,7 +304,7 @@ lemma isClosed_Iic {D : Set (Set α)} [IsScott α D] : IsClosed (Iic a) :=
 The closure of a singleton `{a}` in the Scott topology is the right-closed left-infinite interval
 `(-∞,a]`.
 -/
-@[simp] lemma closure_singleton {D : Set (Set α)} [IsScott α D] : closure {a} = Iic a := le_antisymm
+lemma closure_singleton {D : Set (Set α)} [IsScott α D] : closure {a} = Iic a := le_antisymm
   (closure_minimal (by rw [singleton_subset_iff, mem_Iic]) (isClosed_Iic (D := D))) <| by
     rw [← LowerSet.coe_Iic, ← lowerClosure_singleton]
     apply lowerClosure_subset_closure (D := D)
