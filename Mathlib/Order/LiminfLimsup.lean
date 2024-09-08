@@ -3,6 +3,7 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Johannes Hölzl, Rémy Degenne
 -/
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Order.Filter.Cofinite
 import Mathlib.Order.Hom.CompleteLattice
 
