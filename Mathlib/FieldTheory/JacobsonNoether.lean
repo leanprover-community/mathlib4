@@ -1,7 +1,8 @@
 /-
-Copyright (c) 2024 Wanyi He, Filippo A. E. Nuccio, Huanyu Zheng. All rights reserved.
+Copyright (c) 2024 Filippo A. E. Nuccio, Huanyu Zheng, Wanyi He, Sihan Wu, Yi Yuan.
+All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Wanyi He, Filippo A. E. Nuccio, Huanyu Zheng
+Authors: Filippo A. E. Nuccio, Huanyu Zheng, Sihan Wu, Wanyi He, Yi Yuan
 -/
 import Mathlib.RingTheory.Algebraic
 import Mathlib.FieldTheory.Separable
@@ -29,7 +30,7 @@ the noncommutative division algebra `D` with the center `k`.
 ## Implementation Notes
 
 ## Reference
-
+* <https://ysharifi.wordpress.com/2011/09/30/the-jacobson-noether-theorem/>
 -/
 
 
@@ -77,8 +78,7 @@ private lemma δ_def (a x : D) : δ a x = f a x - g a x := rfl
 @[simp]
 private lemma δ_def' (a : D) : δ a = f a - g a := rfl
 
--- *Filippo* Change name
-private lemma comm_fg (a : D) : Commute (f a) (g a) := by
+private lemma fg_comm (a : D) : Commute (f a) (g a) := by
   rw [commute_iff_eq, LinearMap.mk.injEq, AddHom.mk.injEq]
   exact funext fun x ↦ (mul_assoc a x a).symm
 
@@ -98,8 +98,6 @@ private lemma g_pow (a : D) (n : ℕ) : ∀ x : D, ((g a) ^ n).1 x = x * (a ^ n)
   | succ _ _ => simp only [Subring.center_toSubsemiring, g, LinearMap.coe_mk, AddHom.coe_mk,
       Function.iterate_succ', mul_right_iterate, Function.comp_apply, pow_succ, ← mul_assoc]
 
--- *Filippo* : Please change the name!
--- *Yu* : This might be better?
 private lemma δ_iterate_succ (x y : D) (n : ℕ) :
     δ x (((δ x) ^ n) y) = ((δ x) ^ (n + 1)) y := by
   simp only [LinearMap.pow_apply, δ_def, f_def, g_def, Function.iterate_succ_apply']
@@ -125,8 +123,7 @@ lemma exists_pow_mem_center_ofInseparable' (p : ℕ) [Fact p.Prime] [CharP D p] 
     exact False.elim <| ha hn
   · refine ⟨n, ⟨by omega, hn⟩⟩
 
--- Not private but better name
-lemma any_pow_gt_eq_zero (p : ℕ) [Fact p.Prime] [CharP D p]
+lemma exist_pow_eq_zero_of_le (p : ℕ) [Fact p.Prime] [CharP D p]
     {a : D} (ha : a ∉ k) (hinsep : ∀ x : D, IsSeparable k x → x ∈ k):
   ∃ m ≥ 1, ∀ n ≥ (p ^ m), (δ a) ^ n = 0 := by
   obtain ⟨m, hm⟩ := exists_pow_mem_center_ofInseparable' p ha hinsep
@@ -135,7 +132,7 @@ lemma any_pow_gt_eq_zero (p : ℕ) [Fact p.Prime] [CharP D p]
   have inter : (δ a) ^ (p ^ m) = 0 := by
     refine LinearMap.ext_iff.2 ?_
     intro x
-    rw [δ_def' a, sub_pow_char_pow_of_commute (D →ₗ[k] D) (f a) (g a) (comm_fg a) (p := p) (n := m)]
+    rw [δ_def' a, sub_pow_char_pow_of_commute (D →ₗ[k] D) (f a) (g a) (fg_comm a) (p := p) (n := m)]
     show ((f a) ^ (p ^ m)).1 x - ((g a) ^ (p ^ m)).1 x = 0
     rw [f_pow, g_pow, sub_eq_zero_of_eq]
     suffices h : a ^ (p ^ m) ∈ k from (Subring.mem_center_iff.1 h x).symm
@@ -166,7 +163,7 @@ theorem JacobsonNoether_charP (p : ℕ) [Fact p.Prime] [CharP D p]
     simpa only [ne_eq, sub_eq_zero] using Ne.symm ha.choose_spec
   -- We find a maximum natural number `n` such that `(δ a) ^ n b ≠ 0`.
   obtain ⟨n, hn, hb⟩ : ∃ n > 0, ((δ a) ^ n) b ≠ 0 ∧ ((δ a) ^ (n + 1)) b = 0 := by
-    obtain ⟨m, -, hm2⟩ := any_pow_gt_eq_zero p ha hinsep
+    obtain ⟨m, -, hm2⟩ := exist_pow_eq_zero_of_le p ha hinsep
     have exist : ∃ n > 0, ((δ a) ^ (n + 1)) b = 0 := by
       refine ⟨p ^ m, ⟨pow_pos (Nat.Prime.pos (@Fact.out _ _)) m, ?_ ⟩⟩
       simp only [hm2 (p^ m + 1) (by linarith), LinearMap.zero_apply]

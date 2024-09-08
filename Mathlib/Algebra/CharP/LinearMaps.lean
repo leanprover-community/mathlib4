@@ -3,7 +3,6 @@ Copyright (c) 2024 Wanyi He. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wanyi He
 -/
-
 import Mathlib.Algebra.Ring.Subring.Basic
 import Mathlib.Algebra.CharP.Algebra
 
@@ -11,7 +10,7 @@ variable {D : Type*} [DivisionRing D]
 
 local notation "k" => (Subring.center D)
 
-instance {p : ℕ} [CharP D p] : CharP (D →ₗ[k] D) p := by
+instance {p : ℕ} [CharP D p] : CharP (D →ₗ[k] D) p :=
   let f : D →+* (D →ₗ[k] D) := {
       toFun := fun a => {
         toFun := fun x => a * x
@@ -25,11 +24,9 @@ instance {p : ℕ} [CharP D p] : CharP (D →ₗ[k] D) p := by
     }
   have inj : Function.Injective f := by
     intros x y h
-    have eq : ∀ x : D, (f x) 1 = x := by
-      intro x
-      have : f x = fun a : D => x * a := by rfl
-      rw [this]
-      simp only [mul_one]
+    have eq : ∀ x : D, (f x) 1 = x := fun x => by
+      simp only [Subring.center_toSubsemiring, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
+        LinearMap.coe_mk, AddHom.coe_mk, mul_one, f]
     rw [← eq x, ← eq y]
     exact congrFun (congrArg DFunLike.coe h) 1
-  apply charP_of_injective_ringHom inj
+  charP_of_injective_ringHom inj p
