@@ -378,7 +378,7 @@ theorem Sized.rotateR_size {l x r} (hl : Sized l) :
   rw [← size_dual, dual_rotateR, hl.dual.rotateL_size, size_dual, size_dual, add_comm (size l)]
 
 theorem Sized.balance' {l x r} (hl : @Sized α l) (hr : Sized r) : Sized (balance' l x r) := by
-  unfold balance'; split_ifs
+  unfold Ordnode.balance'; split_ifs
   · exact hl.node' hr
   · exact hl.rotateL hr
   · exact hl.rotateR hr
