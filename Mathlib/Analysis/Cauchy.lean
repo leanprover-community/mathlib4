@@ -14,7 +14,7 @@ import Mathlib.Data.Complex.Abs
 # Cauchy's bound on polynomial roots.
 -/
 
-variable {K : Type*} [NormedField K]
+variable {K : Type*} [NormedDivisionRing K]
 
 open Polynomial Finset
 
