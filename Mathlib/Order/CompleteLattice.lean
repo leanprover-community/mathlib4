@@ -870,6 +870,9 @@ theorem iSup_eq_bot : iSup s = ⊥ ↔ ∀ i, s i = ⊥ :=
 theorem iInf_eq_top : iInf s = ⊤ ↔ ∀ i, s i = ⊤ :=
   sInf_eq_top.trans forall_mem_range
 
+@[simp] lemma bot_lt_iSup : ⊥ < ⨆ i, s i ↔ ∃ i, ⊥ < s i := by simp [bot_lt_iff_ne_bot]
+@[simp] lemma iInf_lt_top : ⨅ i, s i < ⊤ ↔ ∃ i, s i < ⊤ := by simp [lt_top_iff_ne_top]
+
 theorem iSup₂_eq_bot {f : ∀ i, κ i → α} : ⨆ (i) (j), f i j = ⊥ ↔ ∀ i j, f i j = ⊥ := by
   simp
 
@@ -1597,7 +1600,7 @@ theorem snd_iInf [InfSet α] [InfSet β] (f : ι → α × β) : (iInf f).snd = 
   congr_arg sInf (range_comp _ _).symm
 
 theorem swap_iInf [InfSet α] [InfSet β] (f : ι → α × β) : (iInf f).swap = ⨅ i, (f i).swap := by
-  simp_rw [iInf, swap_sInf, ← range_comp, Function.comp]  -- Porting note: need to unfold `∘`
+  simp_rw [iInf, swap_sInf, ← range_comp, comp_def]  -- Porting note: need to unfold `∘`
 
 theorem iInf_mk [InfSet α] [InfSet β] (f : ι → α) (g : ι → β) :
     ⨅ i, (f i, g i) = (⨅ i, f i, ⨅ i, g i) :=
@@ -1610,7 +1613,7 @@ theorem snd_iSup [SupSet α] [SupSet β] (f : ι → α × β) : (iSup f).snd = 
   congr_arg sSup (range_comp _ _).symm
 
 theorem swap_iSup [SupSet α] [SupSet β] (f : ι → α × β) : (iSup f).swap = ⨆ i, (f i).swap := by
-  simp_rw [iSup, swap_sSup, ← range_comp, Function.comp]  -- Porting note: need to unfold `∘`
+  simp_rw [iSup, swap_sSup, ← range_comp, comp_def]  -- Porting note: need to unfold `∘`
 
 theorem iSup_mk [SupSet α] [SupSet β] (f : ι → α) (g : ι → β) :
     ⨆ i, (f i, g i) = (⨆ i, f i, ⨆ i, g i) :=
