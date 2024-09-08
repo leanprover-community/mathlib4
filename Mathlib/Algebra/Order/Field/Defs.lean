@@ -5,7 +5,6 @@ Authors: Robert Y. Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
 -/
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Field.Defs
-import Mathlib.Util.CountHeartbeats
 
 /-!
 # Linear ordered (semi)fields
