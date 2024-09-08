@@ -24,7 +24,7 @@ the present file is about their interaction.
   addition, for example `Units`.
 * `(NonUnital)(NonAssoc)(Semi)Ring`: Typeclasses for possibly non-unital or non-associative
   rings and semirings. Some combinations are not defined yet because they haven't found use.
-  For Lie Rings, there is a type synonim `CommutatorRing` defined in
+  For Lie Rings, there is a type synonym `CommutatorRing` defined in
   `Mathlib/Algebra/Algebra/NonUnitalHom.lean` turning the bracket into a multiplication so that the
   instance `instNonUnitalNonAssocSemiringCommutatorRing` can be defined.
 
