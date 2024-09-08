@@ -32,7 +32,7 @@ lemma norm_map (φ : F) (hφ : Function.Injective φ) (a : A) : ‖φ a‖ = ‖
   that `φ` is a unital star algebra monomorphism and that `A` and `B` are unital C⋆-algebras. -/
   suffices ∀ {ψ : Unitization ℂ A →⋆ₐ[ℂ] Unitization ℂ B} (_ : Function.Injective ψ)
       (a : Unitization ℂ A), ‖ψ a‖ = ‖a‖ by
-    simpa [norm_inr] using this (starLift_injective (φ := (φ : A →⋆ₙₐ[ℂ] B)) hφ) a
+    simpa [norm_inr] using this (starMap_injective (φ := (φ : A →⋆ₙₐ[ℂ] B)) hφ) a
   intro ψ hψ a
   -- to show `‖ψ a‖ = ‖a‖`, by the C⋆-property it suffices to show `‖ψ (star a * a‖ = ‖star a * a‖`.
   rw [← sq_eq_sq (by positivity) (by positivity)]
