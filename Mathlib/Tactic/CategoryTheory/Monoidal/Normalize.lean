@@ -4,12 +4,20 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
 import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
-import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
+import Mathlib.Tactic.CategoryTheory.Monoidal.Datatypes
+
+/-!
+# Normalization of morphisms in monoidal categories
+
+This file provides the implementation of the normalization given in
+`Mathlib.Tactic.CategoryTheory.Coherence.Normalize`. See this file for more details.
+
+-/
 
 open Lean Meta Elab Qq
 open CategoryTheory Mathlib.Tactic.BicategoryLike MonoidalCategory
 
-namespace Mathlib.Tactic.Monoidal
+namespace Mathlib.Tactic.Monoidal'
 
 open MonoidalCategory
 
@@ -439,48 +447,6 @@ instance : MkEvalWhiskerRight MonoidalM where
     have e_η₄ : Q((α_ _ _ _).hom ≫ $η₃ = $η₄) := e_η₄
     have e_η₅ : Q((whiskerRightIso $α $k).hom ≫ $η₄ = $η₅) := e_η₅
     return q(evalWhiskerRight_cons_whisker $e_η₁ $e_η₂ $e_ηs₁ $e_ηs₂ $e_η₃ $e_η₄ $e_η₅)
-/-
-  mkEvalWhiskerRightComp g h η η₁ η₂ η₃ η₄ e_η₁ e_η₂ e_η₃ e_η₄ := do
-    let ctx ← read
-    let _bicat := ctx.instBicategory
-    let f ← η.srcM
-    let f' ← η.tgtM
-    have a : Q($ctx.B) := f.src.e
-    have b : Q($ctx.B) := f.tgt.e
-    have c : Q($ctx.B) := g.tgt.e
-    have d : Q($ctx.B) := h.tgt.e
-    have f : Q($a ⟶ $b) := f.e
-    have f' : Q($a ⟶ $b) := f'.e
-    have g : Q($b ⟶ $c) := g.e
-    have h : Q($c ⟶ $d) := h.e
-    have η : Q($f ⟶ $f') := η.e.e
-    have η₁ : Q($f ≫ $g ⟶ $f' ≫ $g) := η₁.e.e
-    have η₂ : Q(($f ≫ $g) ≫ $h ⟶ ($f' ≫ $g) ≫ $h) := η₂.e.e
-    have η₃ : Q(($f ≫ $g) ≫ $h ⟶ $f' ≫ ($g ≫ $h)) := η₃.e.e
-    have η₄ : Q($f ≫ ($g ≫ $h) ⟶ $f' ≫ ($g ≫ $h)) := η₄.e.e
-    have e_η₁ : Q($η ▷ $g = $η₁) := e_η₁
-    have e_η₂ : Q($η₁ ▷ $h = $η₂) := e_η₂
-    have e_η₃ : Q($η₂ ≫ (α_ _ _ _).hom = $η₃) := e_η₃
-    have e_η₄ : Q((α_ _ _ _).inv ≫ $η₃ = $η₄) := e_η₄
-    return q(evalWhiskerRight_comp $e_η₁ $e_η₂ $e_η₃ $e_η₄)
-  mkEvalWhiskerRightId η η₁ η₂ e_η₁ e_η₂ := do
-    let ctx ← read
-    let _bicat := ctx.instBicategory
-    let f ← η.srcM
-    let g ← η.tgtM
-    have a : Q($ctx.B) := f.src.e
-    have b : Q($ctx.B) := f.tgt.e
-    have f : Q($a ⟶ $b) := f.e
-    have g : Q($a ⟶ $b) := g.e
-    have η : Q($f ⟶ $g) := η.e.e
-    have η₁ : Q($f ⟶ $g ≫ 𝟙 $b) := η₁.e.e
-    have η₂ : Q($f ≫ 𝟙 $b ⟶ $g ≫ 𝟙 $b) := η₂.e.e
-    have e_η₁ : Q($η ≫ (ρ_ _).inv = $η₁) := e_η₁
-    have e_η₂ : Q((ρ_ _).hom ≫ $η₁ = $η₂) := e_η₂
-    return q(evalWhiskerRight_id $e_η₁ $e_η₂)
-
--/
-
   mkEvalWhiskerRightComp g h η η₁ η₂ η₃ η₄ e_η₁ e_η₂ e_η₃ e_η₄ := do
     let ctx ← read
     let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
@@ -726,23 +692,6 @@ instance : MkEval MonoidalM where
     have e_θ : Q($θ = $θ') := e_θ
     have e_ηθ : Q($η' ≫ $θ' = $ι) := e_ηθ
     return q(eval_comp $e_η $e_θ $e_ηθ)
---     theorem eval_whiskerLeft {f g h : C}
---     {η η' : g ⟶ h} {θ : f ⊗ g ⟶ f ⊗ h}
---     (e_η : η = η') (e_θ : f ◁ η' = θ) :
---     f ◁ η = θ := by
---   simp [e_η, e_θ]
-
--- theorem eval_whiskerRight {f g h : C}
---     {η η' : f ⟶ g} {θ : f ⊗ h ⟶ g ⊗ h}
---     (e_η : η = η') (e_θ : η' ▷ h = θ) :
---     η ▷ h = θ := by
---   simp [e_η, e_θ]
-
--- theorem eval_tensorHom {f g h i : C}
---     {η η' : f ⟶ g} {θ θ' : h ⟶ i} {ι : f ⊗ h ⟶ g ⊗ i}
---     (e_η : η = η') (e_θ : θ = θ') (e_ι : η' ⊗ θ' = ι) :
---     η ⊗ θ = ι := by
---   simp [e_η, e_θ, e_ι]
   mkEvalWhiskerLeft f η η' θ e_η e_θ := do
     let ctx ← read
     let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
@@ -826,31 +775,17 @@ instance : MkEval MonoidalM where
 
 instance : MonadNormalExpr MonoidalM where
   whiskerRightM η h := do
-    return .whisker (← Mor₂.whiskerRightM η.e (.of h)) η h
+    return .whisker (← MonadMor₂.whiskerRightM η.e (.of h)) η h
   hConsM η θ := do
-    return .cons (← Mor₂.horizontalCompM η.e θ.e) η θ
+    return .cons (← MonadMor₂.horizontalCompM η.e θ.e) η θ
   whiskerLeftM f η := do
-    return .whisker (← Mor₂.whiskerLeftM (.of f) η.e) f η
+    return .whisker (← MonadMor₂.whiskerLeftM (.of f) η.e) f η
   nilM α := do
-    return .nil (← Mor₂.homM α) α
+    return .nil (← MonadMor₂.homM α) α
   consM α η ηs := do
-    return .cons (← Mor₂.comp₂M (← Mor₂.homM α) (← Mor₂.comp₂M η.e ηs.e)) α η ηs
+    return .cons (← MonadMor₂.comp₂M (← MonadMor₂.homM α) (← MonadMor₂.comp₂M η.e ηs.e)) α η ηs
 
 instance : MkMor₂ MonoidalM where
   ofExpr := Mor₂OfExpr
 
-def monoidalNf (mvarId : MVarId) : MetaM (List MVarId) := do
-  BicategoryLike.normalForm `monoidal Monoidal.Context mvarId
-
-open Lean Elab Tactic
-/-- Normalize the both sides of an equality. -/
-elab "monoidal_nf" : tactic => withMainContext do
-  replaceMainGoal (← monoidalNf (← getMainGoal))
-
-def monoidal (mvarId : MVarId) : MetaM (List MVarId) :=
-  BicategoryLike.main Monoidal.Context (mkAppM ``mk_eq_of_normalized_eq) `monoidal mvarId
-
-elab "monoidal" : tactic => withMainContext do
-  replaceMainGoal <| ← monoidal <| ← getMainGoal
-
-end Mathlib.Tactic.Monoidal
+end Mathlib.Tactic.Monoidal'

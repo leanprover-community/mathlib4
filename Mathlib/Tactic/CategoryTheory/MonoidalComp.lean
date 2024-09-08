@@ -48,29 +48,21 @@ Used by the `⊗≫` monoidal composition operator, and the `coherence` tactic.
 class MonoidalCoherence (X Y : C) where
   /-- A monoidal structural isomorphism between two objects. -/
   iso : X ≅ Y
-  -- [isIso : IsIso hom]
-
-@[inherit_doc MonoidalCoherence.iso]
-abbrev MonoidalCoherence.hom {X Y : C} [MonoidalCoherence X Y] : X ⟶ Y :=
-  MonoidalCoherence.iso.hom
 
 /-- Notation for identities up to unitors and associators. -/
 scoped[CategoryTheory.MonoidalCategory] notation " ⊗𝟙 " =>
-  MonoidalCoherence.hom -- type as \ot 𝟙
-
--- attribute [instance] MonoidalCoherence.isIso
+  MonoidalCoherence.iso -- type as \ot 𝟙
 
 noncomputable section
 
 /-- Construct an isomorphism between two objects in a monoidal category
 out of unitors and associators. -/
--- def monoidalIso (X Y : C) [MonoidalCoherence X Y] : X ≅ Y := asIso ⊗𝟙
 abbrev monoidalIso (X Y : C) [MonoidalCoherence X Y] : X ≅ Y := MonoidalCoherence.iso
 
 /-- Compose two morphisms in a monoidal category,
 inserting unitors and associators between as necessary. -/
 def monoidalComp {W X Y Z : C} [MonoidalCoherence X Y] (f : W ⟶ X) (g : Y ⟶ Z) : W ⟶ Z :=
-  f ≫ ⊗𝟙 ≫ g
+  f ≫ ⊗𝟙.hom ≫ g
 
 @[inherit_doc monoidalComp]
 scoped[CategoryTheory.MonoidalCategory] infixr:80 " ⊗≫ " =>
@@ -79,7 +71,7 @@ scoped[CategoryTheory.MonoidalCategory] infixr:80 " ⊗≫ " =>
 /-- Compose two isomorphisms in a monoidal category,
 inserting unitors and associators between as necessary. -/
 def monoidalIsoComp {W X Y Z : C} [MonoidalCoherence X Y] (f : W ≅ X) (g : Y ≅ Z) : W ≅ Z :=
-  f ≪≫ MonoidalCoherence.iso ≪≫ g
+  f ≪≫ ⊗𝟙 ≪≫ g
 
 @[inherit_doc monoidalIsoComp]
 scoped[CategoryTheory.MonoidalCategory] infixr:80 " ≪⊗≫ " =>
@@ -138,6 +130,6 @@ end MonoidalCoherence
 
 @[simp] lemma monoidalComp_refl {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     f ⊗≫ g = f ≫ g := by
-  simp [monoidalComp, MonoidalCoherence.hom]
+  simp [monoidalComp, MonoidalCoherence.iso]
 
 end CategoryTheory

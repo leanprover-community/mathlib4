@@ -249,7 +249,7 @@ section TendstoInMeasureOf
 variable [NormedAddCommGroup E] {p : ℝ≥0∞}
 variable {f : ι → α → E} {g : α → E}
 
-/-- This lemma is superceded by `MeasureTheory.tendstoInMeasure_of_tendsto_eLpNorm` where we
+/-- This lemma is superseded by `MeasureTheory.tendstoInMeasure_of_tendsto_eLpNorm` where we
 allow `p = ∞` and only require `AEStronglyMeasurable`. -/
 theorem tendstoInMeasure_of_tendsto_eLpNorm_of_stronglyMeasurable (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) (hf : ∀ n, StronglyMeasurable (f n)) (hg : StronglyMeasurable g)
@@ -278,7 +278,7 @@ theorem tendstoInMeasure_of_tendsto_eLpNorm_of_stronglyMeasurable (hp_ne_zero : 
 alias tendstoInMeasure_of_tendsto_snorm_of_stronglyMeasurable :=
   tendstoInMeasure_of_tendsto_eLpNorm_of_stronglyMeasurable
 
-/-- This lemma is superceded by `MeasureTheory.tendstoInMeasure_of_tendsto_eLpNorm` where we
+/-- This lemma is superseded by `MeasureTheory.tendstoInMeasure_of_tendsto_eLpNorm` where we
 allow `p = ∞`. -/
 theorem tendstoInMeasure_of_tendsto_eLpNorm_of_ne_top (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
     (hf : ∀ n, AEStronglyMeasurable (f n) μ) (hg : AEStronglyMeasurable g μ) {l : Filter ι}

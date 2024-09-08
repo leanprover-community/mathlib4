@@ -5,12 +5,32 @@ Authors: Yuma Mizuno
 -/
 import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
 
+/-!
+# Coherence tactic
+
+This file provides a meta framework for the coherence tactic, which solves goals of the form
+`η = θ`, where `η` and `θ` are 2-morphism in a bicategory or morphisms in a monoidal category
+made up only of associators, unitors, and identities.
+
+The function defined here is a meta reimplementation of the formalized coherence theorems provided
+in the following files:
+- Mathlib.CategoryTheory.Monoidal.Free.Coherence
+- Mathlib.CategoryTheory.Bicategory.Coherence
+See these files for a mathematical explanation of the proof of the coherence theorem.
+
+The actual tactics that users will use are given in
+- `Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence`
+- `Mathlib.Tactic.CategoryTheory.Bicategory.PureCoherence` (TODO)
+
+-/
+
 open Lean Meta
 
 namespace Mathlib.Tactic
 
 namespace BicategoryLike
 
+/-- The result of normalizing a 1-morphism. -/
 structure Normalize.Result where
   /-- The normalized 1-morphism. -/
   normalizedHom : NormalizedHom
@@ -20,10 +40,10 @@ structure Normalize.Result where
 
 open Mor₂Iso MonadMor₂Iso
 
-variable {ρ : Type} [Context ρ]
+variable {ρ : Type} [Context ρ] [MonadMor₁ (CoherenceM ρ)] [MonadMor₂Iso (CoherenceM ρ)]
 
 /-- Meta version of `CategoryTheory.FreeBicategory.normalizeIso`. -/
-def normalize [MonadMor₁ (CoherenceM ρ)] [MonadStructuralAtom (CoherenceM ρ)] [MonadMor₂Iso (CoherenceM ρ)] (p : NormalizedHom) (f : Mor₁) :
+def normalize  (p : NormalizedHom) (f : Mor₁) :
     CoherenceM ρ Normalize.Result := do
   match f with
   | .id _ _ =>
@@ -43,34 +63,38 @@ def normalize [MonadMor₁ (CoherenceM ρ)] [MonadStructuralAtom (CoherenceM ρ)
 
 /-- Lemmas to prove the meta version of `CategoryTheory.FreeBicategory.normalize_naturality`. -/
 class MonadNormalizeNaturality (m : Type → Type) where
+  /-- The naturality for the associator. -/
   mkNaturalityAssociator (p pf pfg pfgh : NormalizedHom) (f g h : Mor₁)
     (η_f η_g η_h : Mor₂Iso) : m Expr
+  /-- The naturality for the left unitor. -/
   mkNaturalityLeftUnitor (p pf : NormalizedHom) (f : Mor₁) (η_f : Mor₂Iso) : m Expr
+  /-- The naturality for the right unitor. -/
   mkNaturalityRightUnitor (p pf : NormalizedHom) (f : Mor₁) (η_f : Mor₂Iso) : m Expr
+  /-- The naturality for the identity. -/
   mkNaturalityId (p pf : NormalizedHom) (f : Mor₁) (η_f : Mor₂Iso) : m Expr
+  /-- The naturality for the composition. -/
   mkNaturalityComp (p pf : NormalizedHom) (f g h : Mor₁) (η θ η_f η_g η_h : Mor₂Iso)
     (ih_η ih_θ : Expr) : m Expr
+  /-- The naturality for the left whiskering. -/
   mkNaturalityWhiskerLeft (p pf pfg : NormalizedHom) (f g h : Mor₁)
     (η η_f η_fg η_fh : Mor₂Iso) (ih_η : Expr) : m Expr
+  /-- The naturality for the right whiskering. -/
   mkNaturalityWhiskerRight (p pf pfh : NormalizedHom) (f g h : Mor₁) (η η_f η_g η_fh : Mor₂Iso)
     (ih_η : Expr) : m Expr
+  /-- The naturality for the horizontal composition. -/
   mkNaturalityHorizontalComp (p pf₁ pf₁f₂ : NormalizedHom) (f₁ g₁ f₂ g₂ : Mor₁)
     (η θ η_f₁ η_g₁ η_f₂ η_g₂ : Mor₂Iso) (ih_η ih_θ : Expr) : m Expr
+  /-- The naturality for the inverse. -/
   mkNaturalityInv (p pf : NormalizedHom) (f g : Mor₁) (η η_f η_g : Mor₂Iso) (ih_η : Expr) : m Expr
-
 
 open MonadNormalizeNaturality
 
+variable [MonadCoherehnceHom (CoherenceM ρ)] [MonadNormalizeNaturality (CoherenceM ρ)]
+
 /-- Meta version of `CategoryTheory.FreeBicategory.normalize_naturality`. -/
-partial def naturality {ρ : Type} [Context ρ]
-    [MonadMor₁ (CoherenceM ρ)]
-    [MonadStructuralAtom (CoherenceM ρ)]
-    [MonadMor₂Iso (CoherenceM ρ)]
-    [MonadCoherehnceHom (CoherenceM ρ)]
-    [MonadNormalizeNaturality (CoherenceM ρ)]
-    (nm : Name) (p : NormalizedHom) (η : Mor₂Iso) : CoherenceM ρ Expr := do
+partial def naturality (nm : Name) (p : NormalizedHom) (η : Mor₂Iso) : CoherenceM ρ Expr := do
   let result ← match η with
-  | .of _ => throwError m!"could not find a structural isomorphism {η.e}"
+  | .of _ => throwError m!"could not find a structural isomorphism, but {η.e}"
   | .coherenceComp _ _ _ _ _ α η θ => withTraceNode nm (fun _ => return m!"monoidalComp") do
     let α ← MonadCoherehnceHom.unfoldM α
     let αθ ← comp₂M α θ
@@ -130,15 +154,20 @@ partial def naturality {ρ : Type} [Context ρ]
     if ← isTracingEnabledFor nm then addTrace nm m!"proof: {result}"
   return result
 
-def pureCoherence (nm : Name) (ρ : Type) [Context ρ]
-    [MonadMor₁ (CoherenceM ρ)]
-    [MonadStructuralAtom (CoherenceM ρ)]
-    [MonadMor₂Iso (CoherenceM ρ)]
-    [MkMor₂ (CoherenceM ρ)]
-    [MonadCoherehnceHom (CoherenceM ρ)]
-    [MonadNormalizeNaturality (CoherenceM ρ)]
-    (mkEqOfNormalizedEq : Array Expr → MetaM Expr)
-    (mvarId : MVarId) : MetaM (List MVarId) :=
+/-- Prove the equality between structural isomorphisms using the naturality of `normalize`. -/
+class MkEqOfNaturality (m : Type → Type) where
+  /-- Auxiliary function for `pureCoherence`. -/
+  mkEqOfNaturality (η θ : Expr) (η' θ' : IsoLift) (η_f η_g : Mor₂Iso) (Hη Hθ : Expr) : m Expr
+
+export MkEqOfNaturality (mkEqOfNaturality)
+
+/-- Close the goal of the form `η = θ`, where `η` and `θ` are 2-isomorphisms made up only of
+associators, unitors, and identities. -/
+def pureCoherence (ρ : Type) [Context ρ] [MkMor₂ (CoherenceM ρ)]
+    [MonadMor₁ (CoherenceM ρ)] [MonadMor₂Iso (CoherenceM ρ)]
+    [MonadCoherehnceHom (CoherenceM ρ)] [MonadNormalizeNaturality (CoherenceM ρ)]
+    [MkEqOfNaturality (CoherenceM ρ)]
+    (nm : Name) (mvarId : MVarId) : MetaM (List MVarId) :=
   mvarId.withContext do
     withTraceNode nm (fun ex => match ex with
       | .ok _ => return m!"{checkEmoji} coherence equality: {← mvarId.getType}"
@@ -149,21 +178,20 @@ def pureCoherence (nm : Name) (ρ : Type) [Context ρ]
       let ctx : ρ ← mkContext η
       CoherenceM.run (ctx := ctx) do
         let .some ηIso := (← MkMor₂.ofExpr η).isoLift? |
-          throwError "could not find a structural isomorphism {η}"
+          throwError "could not find a structural isomorphism, but {η}"
         let .some θIso := (← MkMor₂.ofExpr θ).isoLift? |
-          throwError "could not find a structural isomorphism {θ}"
-        let f ← ηIso.iso.srcM
-        let g ← ηIso.iso.tgtM
+          throwError "could not find a structural isomorphism, but {θ}"
+        let f ← ηIso.e.srcM
+        let g ← ηIso.e.tgtM
         let a := f.src
         let nil ← normalizedHom.nilM a
         let ⟨_, η_f⟩ ← normalize nil f
         let ⟨_, η_g⟩ ← normalize nil g
-        let Hη' ← withTraceNode nm (fun ex => do return m!"{exceptEmoji ex} LHS") do
-          naturality nm nil ηIso.iso
-        let Hθ' ← withTraceNode nm (fun ex => do return m!"{exceptEmoji ex} RHS") do
-          naturality nm nil θIso.iso
-        let H ← mkEqOfNormalizedEq #[η, θ, ηIso.iso.e, θIso.iso.e, η_f.e, η_g.e,
-          ηIso.eq, θIso.eq, Hη', Hθ']
+        let Hη ← withTraceNode nm (fun ex => do return m!"{exceptEmoji ex} LHS") do
+          naturality nm nil ηIso.e
+        let Hθ ← withTraceNode nm (fun ex => do return m!"{exceptEmoji ex} RHS") do
+          naturality nm nil θIso.e
+        let H ← mkEqOfNaturality η θ ηIso θIso η_f η_g Hη Hθ
         mvarId.apply H
 
 end Mathlib.Tactic.BicategoryLike

@@ -113,12 +113,12 @@ lemma evaluation_coevaluation :
   evaluation_coevaluation'
 
 lemma coevaluation_evaluation'' :
-    Y ◁ η_ X Y ⊗≫ ε_ X Y ▷ Y = ⊗𝟙 := by
-  convert coevaluation_evaluation X Y <;> coherence
+    Y ◁ η_ X Y ⊗≫ ε_ X Y ▷ Y = ⊗𝟙.hom := by
+  convert coevaluation_evaluation X Y <;> simp [monoidalComp, MonoidalCoherence.iso]
 
 lemma evaluation_coevaluation'' :
-    η_ X Y ▷ X ⊗≫ X ◁ ε_ X Y = ⊗𝟙 := by
-  convert evaluation_coevaluation X Y <;> coherence
+    η_ X Y ▷ X ⊗≫ X ◁ ε_ X Y = ⊗𝟙.hom := by
+  convert evaluation_coevaluation X Y <;> simp [monoidalComp, MonoidalCoherence.iso]
 
 end ExactPairing
 
