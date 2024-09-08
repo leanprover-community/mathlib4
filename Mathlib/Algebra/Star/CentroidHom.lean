@@ -3,11 +3,10 @@ Copyright (c) 2024 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-
 import Mathlib.Algebra.Ring.CentroidHom
 import Mathlib.Algebra.Star.StarRingHom
 import Mathlib.Algebra.Star.Subsemiring
-import Mathlib.Algebra.Star.Basic
+
 
 /-!
 # Centroid homomorphisms on Star Rings

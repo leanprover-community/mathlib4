@@ -10,8 +10,8 @@ import Mathlib.Algebra.Module.Submodule.Ker
 import Mathlib.Algebra.Module.Submodule.RestrictScalars
 import Mathlib.Algebra.Module.ULift
 import Mathlib.Algebra.Ring.Subring.Basic
-import Mathlib.Data.Nat.Cast.Order.Basic
 import Mathlib.Data.Int.CharZero
+import Mathlib.Data.Nat.Cast.Order.Basic
 
 /-!
 # Further basic results about `Algebra`.

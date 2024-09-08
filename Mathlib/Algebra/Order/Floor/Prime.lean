@@ -3,9 +3,9 @@ Copyright (c) 2022 Yuyang Zhao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuyang Zhao
 -/
-
 import Mathlib.Algebra.Order.Floor
 import Mathlib.Data.Nat.Prime.Basic
+
 
 /-!
 # Existence of a sufficiently large prime for which `a * c ^ p / (p - 1)! < 1`

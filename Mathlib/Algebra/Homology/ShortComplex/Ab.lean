@@ -3,10 +3,10 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 import Mathlib.Algebra.Category.Grp.Abelian
 import Mathlib.Algebra.Category.Grp.Kernels
 import Mathlib.Algebra.Exact
+import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 
 /-!
 # Homology and exactness of short complexes of abelian groups

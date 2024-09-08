@@ -5,7 +5,6 @@ Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Homology.Linear
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
-import Mathlib.Tactic.Abel
 
 /-!
 # Chain homotopies

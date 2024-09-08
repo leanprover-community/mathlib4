@@ -5,8 +5,8 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Interval.Finset
+import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.Tactic.Linarith
 
 /-!
 # Results about big operators over intervals

@@ -5,7 +5,6 @@ Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Lie.Free
 import Mathlib.Algebra.Lie.Quotient
-import Mathlib.Data.Matrix.Notation
 
 /-!
 # Lie algebras from Cartan matrices

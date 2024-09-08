@@ -5,7 +5,6 @@ Authors: Scott Carnahan
 -/
 import Mathlib.Algebra.Group.Action.Prod
 import Mathlib.Algebra.Ring.Int
-import Mathlib.Data.Nat.Cast.Basic
 
 /-!
 # Typeclasses for power-associative structures

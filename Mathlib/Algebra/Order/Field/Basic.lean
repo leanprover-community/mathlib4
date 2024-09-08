@@ -7,7 +7,6 @@ import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Order.Bounds.OrderIso
-import Mathlib.Tactic.Bound.Attribute
 import Mathlib.Tactic.Positivity.Core
 
 /-!

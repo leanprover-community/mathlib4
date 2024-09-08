@@ -5,7 +5,6 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.GroupWithZero.Synonym
 import Mathlib.Algebra.SMulWithZero
-import Mathlib.Tactic.Common
 
 /-!
 # Actions by and on order synonyms

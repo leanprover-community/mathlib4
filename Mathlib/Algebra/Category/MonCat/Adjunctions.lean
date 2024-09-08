@@ -5,8 +5,8 @@ Authors: Julian Kuelshammer
 -/
 import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.Algebra.Category.Semigrp.Basic
-import Mathlib.Algebra.Group.WithOne.Basic
 import Mathlib.Algebra.FreeMonoid.Basic
+import Mathlib.Algebra.Group.WithOne.Basic
 
 /-!
 # Adjunctions regarding the category of monoids

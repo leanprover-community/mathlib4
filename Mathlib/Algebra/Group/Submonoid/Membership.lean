@@ -10,8 +10,6 @@ import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Ring.Int
 import Mathlib.Data.Finset.NoncommProd
-import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.Util.AssertExists
 
 /-!
 # Submonoids: membership criteria

@@ -3,9 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Data.Set.UnionLift
+
 
 /-!
 # Subalgebras and directed Unions of sets

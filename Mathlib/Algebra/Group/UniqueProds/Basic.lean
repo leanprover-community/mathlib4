@@ -3,9 +3,9 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+import Mathlib.Algebra.Group.ULift
 import Mathlib.Data.DFinsupp.Basic
 import Mathlib.Data.Finset.Pointwise.Basic
-import Mathlib.Algebra.Group.ULift
 import Mathlib.Data.Finsupp.Defs
 
 /-!
@@ -26,9 +26,6 @@ However, the order is just a convenience and is not part of the `UniqueProds/Sum
 Here you can see several examples of Types that have `UniqueSums/Prods`
 (`inferInstance` uses `Covariant.to_uniqueProds_left` and `Covariant.to_uniqueSums_left`).
 ```lean
-import Mathlib.Data.Real.Basic
-import Mathlib.Data.PNat.Basic
-import Mathlib.Algebra.Group.UniqueProds.Basic
 
 example : UniqueSums ℕ   := inferInstance
 example : UniqueSums ℕ+  := inferInstance

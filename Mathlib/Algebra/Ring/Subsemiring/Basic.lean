@@ -3,12 +3,8 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Ring.Action.Subobjects
-import Mathlib.Algebra.Ring.Equiv
-import Mathlib.Algebra.Ring.Prod
-import Mathlib.Data.Set.Finite
 import Mathlib.GroupTheory.Submonoid.Centralizer
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 

@@ -5,7 +5,6 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.DirectSum.Algebra
 import Mathlib.Algebra.MonoidAlgebra.Basic
-import Mathlib.Data.Finsupp.ToDFinsupp
 
 /-!
 # Conversion between `AddMonoidAlgebra` and homogeneous `DirectSum`

@@ -8,7 +8,6 @@ import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Hom.Basic
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Algebra.Regular.Basic
-import Mathlib.Tactic.Bound.Attribute
 
 /-!
 # Absolute values

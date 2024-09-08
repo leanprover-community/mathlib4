@@ -4,11 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson
 -/
 import Mathlib.Algebra.Field.Opposite
-import Mathlib.Algebra.Group.Subgroup.ZPowers
-import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.Algebra.Ring.NegOnePow
 import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.GroupTheory.Coset.Card
+import Mathlib.Algebra.Ring.NegOnePow
 
 /-!
 # Periodicity

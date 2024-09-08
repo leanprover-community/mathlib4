@@ -5,7 +5,6 @@ Authors: Jujian Zhang
 -/
 import Mathlib.Algebra.Category.Grp.EquivalenceGroupAddGroup
 import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
-import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 import Mathlib.GroupTheory.QuotientGroup.Basic
 
 /-!

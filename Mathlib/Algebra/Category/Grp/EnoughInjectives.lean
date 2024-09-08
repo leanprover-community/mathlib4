@@ -3,10 +3,9 @@ Copyright (c) 2023 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Junyan Xu
 -/
-
-import Mathlib.Algebra.Module.CharacterModule
-import Mathlib.Algebra.Category.Grp.EquivalenceGroupAddGroup
 import Mathlib.Algebra.Category.Grp.EpiMono
+import Mathlib.Algebra.Module.CharacterModule
+
 
 /-!
 

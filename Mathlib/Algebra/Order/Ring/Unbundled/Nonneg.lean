@@ -5,12 +5,9 @@ Authors: Floris van Doorn
 -/
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
-import Mathlib.Algebra.Order.ZeroLEOne
-import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.Data.Nat.Cast.Order.Basic
 import Mathlib.Order.CompleteLatticeIntervals
-import Mathlib.Order.LatticeIntervals
 
 /-!
 # The type of nonnegative elements

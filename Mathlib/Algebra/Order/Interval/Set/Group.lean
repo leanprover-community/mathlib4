@@ -7,8 +7,8 @@ import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Data.Int.Cast.Lemmas
-import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Logic.Pairwise
+import Mathlib.Order.Interval.Set.Basic
 
 /-! ### Lemmas about arithmetic operations and intervals. -/
 

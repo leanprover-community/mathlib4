@@ -3,11 +3,10 @@ Copyright (c) 2022 Pierre-Alexandre Bazin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pierre-Alexandre Bazin, Scott Morrison
 -/
-import Mathlib.CategoryTheory.Simple
-import Mathlib.Algebra.Category.ModuleCat.Subobject
 import Mathlib.Algebra.Category.ModuleCat.Algebra
+import Mathlib.Algebra.Category.ModuleCat.Subobject
+import Mathlib.CategoryTheory.Simple
 import Mathlib.RingTheory.SimpleModule
-import Mathlib.LinearAlgebra.FiniteDimensional
 
 /-!
 # Simple objects in the category of `R`-modules
