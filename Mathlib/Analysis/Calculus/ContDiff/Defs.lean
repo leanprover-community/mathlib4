@@ -380,7 +380,7 @@ theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt {n : ℕ} :
       convert @self_mem_nhdsWithin _ _ x u
       have : x ∈ insert x s := by simp
       exact insert_eq_of_mem (mem_of_mem_nhdsWithin this hu)
-    · rw [hasFTaylorSeriesUpToOn_succ_iff_right] at Hp
+    · rw [hasFTaylorSeriesUpToOn_succ_nat_iff_right] at Hp
       exact Hp.2.2.of_le hm
   · rintro ⟨u, hu, f', f'_eq_deriv, Hf'⟩
     rw [contDiffWithinAt_nat]
@@ -389,7 +389,7 @@ theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt {n : ℕ} :
     · apply Filter.inter_mem _ hu
       apply nhdsWithin_le_of_mem hu
       exact nhdsWithin_mono _ (subset_insert x u) hv
-    · rw [hasFTaylorSeriesUpToOn_succ_iff_right]
+    · rw [hasFTaylorSeriesUpToOn_succ_nat_iff_right]
       refine ⟨fun y _ => rfl, fun y hy => ?_, ?_⟩
       · change
           HasFDerivWithinAt (fun z => (continuousMultilinearCurryFin0 𝕜 E F).symm (f z))
@@ -434,13 +434,12 @@ theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt' {n : ℕ} :
     rintro ⟨u, hu, hus, f', huf', hf'⟩
     exact ⟨u, hu, f', fun y hy => (huf' y hy).insert'.mono hus, hf'.insert.mono hus⟩
 
-
-/-- A function is `C^(n + 1)` on a domain iff locally, it has a derivative which is `C^n`. -/
+/-- A function is `C^ω` on a domain iff locally, it is analytic with a derivative which is `C^ω`. -/
 theorem glouk :
     ContDiffWithinAt 𝕜 ω f s x ↔
       (AnalyticWithinAt 𝕜 f s x ∧
-      ∃ u ∈ 𝓝[insert x s] x, ∃ f' : E → E →L[𝕜] F,
-      (∀ x ∈ u, HasFDerivWithinAt f (f' x) u x) ∧ ContDiffWithinAt 𝕜 ω f' u x) := by
+        ∃ u ∈ 𝓝[insert x s] x, ∃ f' : E → E →L[𝕜] F,
+         (∀ x ∈ u, HasFDerivWithinAt f (f' x) u x) ∧ ContDiffWithinAt 𝕜 ω f' u x) := by
   constructor
   · intro h
     refine ⟨h.analyticWithinAt, ?_⟩
@@ -452,18 +451,24 @@ theorem glouk :
     · convert @self_mem_nhdsWithin _ _ x u
       have : x ∈ insert x s := by simp
       exact insert_eq_of_mem (mem_of_mem_nhdsWithin this hu)
-    ·
-      rw [hasFTaylorSeriesUpToOn_succ_iff_right] at Hp
-      exact Hp.2.2.of_le hm
-  · rintro ⟨u, hu, f', f'_eq_deriv, Hf'⟩
-    rw [contDiffWithinAt_nat]
-    rcases Hf' n le_rfl with ⟨v, hv, p', Hp'⟩
-    refine ⟨v ∩ u, ?_, fun x => (p' x).unshift (f x), ?_⟩
+    · rw [hasFTaylorSeriesUpToOn_top_iff_right] at Hp
+      exact Hp.2.2
+    · intro i
+      change AnalyticWithinOn 𝕜
+        (fun x ↦ (continuousMultilinearCurryRightEquiv' 𝕜 i E F).symm (p x (i + 1))) u
+      exact (LinearIsometryEquiv.analyticOn _ _).comp_analyticWithinOn
+        (hp (i + 1)) (Set.mapsTo_univ _ _)
+
+
+
+  · rintro ⟨hf, u, hu, f', f'_eq_deriv, Hf'⟩
+    rcases Hf' with ⟨v, hv, p', Hp', hp'⟩
+    refine ⟨v ∩ u, ?_, fun x => (p' x).unshift (f x), ?_, ?_⟩
     · apply Filter.inter_mem _ hu
       apply nhdsWithin_le_of_mem hu
       exact nhdsWithin_mono _ (subset_insert x u) hv
-    · rw [hasFTaylorSeriesUpToOn_succ_iff_right]
-      refine ⟨fun y _ => rfl, fun y hy => ?_, ?_⟩
+    · rw [hasFTaylorSeriesUpToOn_top_iff_right]
+      refine ⟨fun y _ => rfl, fun y hy ↦ ?_, ?_⟩
       · change
           HasFDerivWithinAt (fun z => (continuousMultilinearCurryFin0 𝕜 E F).symm (f z))
             (FormalMultilinearSeries.unshift (p' y) (f y) 1).curryLeft (v ∩ u) y
@@ -485,6 +490,15 @@ theorem glouk :
           change p' x k (init (@snoc k (fun _ : Fin k.succ => E) v y))
             (@snoc k (fun _ : Fin k.succ => E) v y (last k)) = p' x k v y
           rw [snoc_last, init_snoc]
+    · intro i
+      match i with
+      | 0 =>
+
+      | (i + 1) =>
+        simp only [FormalMultilinearSeries.unshift, Nat.succ_eq_add_one]
+        apply AnalyticWithinOn.mono ?_ inter_subset_left
+        apply AnalyticOn.comp_analyticWithinOn ?_ (hp' i) (Set.mapsTo_univ _ _)
+        exact LinearIsometryEquiv.analyticOn _ _
 
 #exit
 

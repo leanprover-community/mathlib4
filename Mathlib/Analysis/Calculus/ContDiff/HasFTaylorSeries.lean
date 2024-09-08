@@ -253,8 +253,27 @@ theorem hasFTaylorSeriesUpToOn_succ_nat_iff_right {n : ℕ} :
         rw [Nat.cast_le] at hm ⊢
         exact Nat.lt_succ_iff.mp hm
 
+
+/-- `p` is a Taylor series of `f` up to `⊤` if and only if `p.shift` is a Taylor series up to `⊤`
+for `p 1`, which is a derivative of `f`. -/
+theorem hasFTaylorSeriesUpToOn_top_iff_right :
+    HasFTaylorSeriesUpToOn ⊤ f p s ↔
+      (∀ x ∈ s, (p x 0).uncurry0 = f x) ∧
+        (∀ x ∈ s, HasFDerivWithinAt (fun y => p y 0) (p x 1).curryLeft s x) ∧
+          HasFTaylorSeriesUpToOn ⊤ (fun x => continuousMultilinearCurryFin1 𝕜 E F (p x 1))
+            (fun x => (p x).shift) s := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [hasFTaylorSeriesUpToOn_top_iff_add 1] at h
+    rw [hasFTaylorSeriesUpToOn_top_iff]
+    exact ⟨(hasFTaylorSeriesUpToOn_succ_nat_iff_right.1 (h 1)).1,
+      (hasFTaylorSeriesUpToOn_succ_nat_iff_right.1 (h 1)).2.1,
+      fun n ↦ (hasFTaylorSeriesUpToOn_succ_nat_iff_right.1 (h n)).2.2⟩
+  · apply (hasFTaylorSeriesUpToOn_top_iff_add 1).2 (fun n ↦ ?_)
+    rw [hasFTaylorSeriesUpToOn_succ_nat_iff_right]
+    exact ⟨h.1, h.2.1, (h.2.2).of_le (m := n) le_top⟩
+
 /-- `p` is a Taylor series of `f` up to `n+1` if and only if `p.shift` is a Taylor series up to `n`
-for `p 1`, which is a derivative of `f`. Version for `n : ℕ`. -/
+for `p 1`, which is a derivative of `f`. Version for `n : ℕ∞`. -/
 theorem hasFTaylorSeriesUpToOn_succ_iff_right {n : ℕ∞} :
     HasFTaylorSeriesUpToOn (n + 1) f p s ↔
       (∀ x ∈ s, (p x 0).uncurry0 = f x) ∧
@@ -262,17 +281,7 @@ theorem hasFTaylorSeriesUpToOn_succ_iff_right {n : ℕ∞} :
           HasFTaylorSeriesUpToOn n (fun x => continuousMultilinearCurryFin1 𝕜 E F (p x 1))
             (fun x => (p x).shift) s := by
   match n with
-  | ⊤ =>
-    simp only [top_add]
-    refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-    · rw [hasFTaylorSeriesUpToOn_top_iff_add 1] at h
-      rw [hasFTaylorSeriesUpToOn_top_iff]
-      exact ⟨(hasFTaylorSeriesUpToOn_succ_nat_iff_right.1 (h 1)).1,
-        (hasFTaylorSeriesUpToOn_succ_nat_iff_right.1 (h 1)).2.1,
-        fun n ↦ (hasFTaylorSeriesUpToOn_succ_nat_iff_right.1 (h n)).2.2⟩
-    · apply (hasFTaylorSeriesUpToOn_top_iff_add 1).2 (fun n ↦ ?_)
-      rw [hasFTaylorSeriesUpToOn_succ_nat_iff_right]
-      exact ⟨h.1, h.2.1, (h.2.2).of_le (m := n) le_top⟩
+  | ⊤ => exact hasFTaylorSeriesUpToOn_top_iff_right
   | (n : ℕ) => exact hasFTaylorSeriesUpToOn_succ_nat_iff_right
 
 /-! ### Functions with a Taylor series on the whole space -/
