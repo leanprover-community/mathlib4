@@ -3,9 +3,10 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Ring.Subring.Basic
 import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Data.Rat.Cast.Defs
+import Mathlib.Algebra.Field.Basic
+import Mathlib.Algebra.Order.Ring.Unbundled.Rat
+import Mathlib.Algebra.Ring.Subring.Basic
 
 /-!
 # Subfields
