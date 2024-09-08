@@ -38,7 +38,7 @@ def onlyImportsModDocs : Syntax → Option Bool
     first.map (·.isOfKind ``Lean.Parser.Command.moduleDoc)
   | _=> some false
 
-/-- returns the array of `import` identifiers. -/
+/-- Returns the array of all `import` identifiers in `s`. -/
 partial
 def getImportIds (s : Syntax) : Array Syntax :=
   let rest : Array Syntax := (s.getArgs.map getImportIds).flatten
