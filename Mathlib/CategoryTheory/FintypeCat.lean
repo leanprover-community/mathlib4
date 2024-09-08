@@ -189,6 +189,83 @@ lemma isSkeleton : IsSkeletonOf FintypeCat Skeleton Skeleton.incl where
   skel := Skeleton.is_skeletal
   eqv := by infer_instance
 
+section
+
+universe v
+
+@[simps]
+def uliftFunctor : FintypeCat.{u} ⥤ FintypeCat.{max u v} where
+  obj X := FintypeCat.of (ULift.{v, u} X)
+  map {X Y} f x := ULift.up (f x.down)
+
+instance : uliftFunctor.Faithful where
+  map_injective {_ _} f g h := funext fun x ↦
+    congr_arg ULift.down (congr_fun h (ULift.up x) : ULift.up (f x) = ULift.up (g x))
+
+instance : uliftFunctor.Full where
+  map_surjective f := ⟨fun x ↦ (f (ULift.up x)).down, rfl⟩
+
+instance : uliftFunctor.{u, v}.EssSurj where
+  mem_essImage X :=
+    let e₁ : X ≃ Fin (Fintype.card X) := Fintype.equivFin X
+    ⟨FintypeCat.of <| ULift.{u} (Fin (Fintype.card X)),
+      ⟨FintypeCat.equivEquivIso (Equiv.ulift.trans (Equiv.ulift.trans e₁.symm))⟩⟩
+
+instance : uliftFunctor.IsEquivalence where
+
+noncomputable def switchUniverse' : FintypeCat.{u} ⥤ FintypeCat.{v} :=
+  uliftFunctor.{0, u}.inv ⋙ uliftFunctor.{0, v}
+
+instance : switchUniverse'.{u, v}.IsEquivalence :=
+  Functor.isEquivalence_trans _ _
+
+noncomputable def switchUniverse : FintypeCat.{u} ⥤ FintypeCat.{v} where
+  obj X := FintypeCat.of <| ULift.{v} (Fin (Fintype.card X))
+  map {X Y} f x := ULift.up <| (Fintype.equivFin Y) (f ((Fintype.equivFin X).symm x.down))
+  map_comp {X Y Z} f g := by ext; simp
+
+noncomputable def switchUniverseEquiv (X : FintypeCat.{u}) :
+    switchUniverse.{u, v}.obj X ≃ X :=
+  Equiv.ulift.trans (Fintype.equivFin X).symm
+
+lemma switchUniverseEquiv_naturality {X Y : FintypeCat.{u}} (f : X ⟶ Y)
+    (x : switchUniverse.{u, v}.obj X) :
+    f (X.switchUniverseEquiv x) = Y.switchUniverseEquiv (switchUniverse.map f x) := by
+  simp only [switchUniverse, switchUniverseEquiv, Equiv.trans_apply]
+  erw [Equiv.ulift_apply]
+  erw [Equiv.ulift_apply]
+  simp
+
+lemma switchUniverseEquiv_naturality' {X Y : FintypeCat.{u}} (f : X ⟶ Y)
+    (x : X) :
+    switchUniverse.map f (X.switchUniverseEquiv.symm x) = Y.switchUniverseEquiv.symm (f x) := by
+  rw [← Equiv.apply_eq_iff_eq_symm_apply, ← switchUniverseEquiv_naturality f,
+    Equiv.apply_symm_apply]
+
+noncomputable def switchUniverseEquivalence : FintypeCat.{u} ≌ FintypeCat.{v} :=
+  CategoryTheory.Equivalence.mk
+    switchUniverse
+    switchUniverse
+    (NatIso.ofComponents (fun X ↦ equivEquivIso.toFun <|
+        X.switchUniverseEquiv.symm.trans (switchUniverse.obj X).switchUniverseEquiv.symm) <| by
+      intro X Y f
+      ext x
+      simp only [Functor.comp_obj, Functor.id_obj, Functor.id_map, Equiv.toFun_as_coe, comp_apply,
+        equivEquivIso_apply_hom, Equiv.trans_apply, Functor.comp_map]
+      rw [switchUniverseEquiv_naturality']
+      rw [switchUniverseEquiv_naturality'])
+    (NatIso.ofComponents (fun X ↦ equivEquivIso.toFun <|
+        (switchUniverse.obj X).switchUniverseEquiv.trans X.switchUniverseEquiv) <| by
+      intro X Y f
+      ext x
+      simp
+      rw [switchUniverseEquiv_naturality f]
+      rw [← switchUniverseEquiv_naturality])
+
+instance : switchUniverse.IsEquivalence :=
+  switchUniverseEquivalence.isEquivalence_functor
+
+end
 
 end FintypeCat
 

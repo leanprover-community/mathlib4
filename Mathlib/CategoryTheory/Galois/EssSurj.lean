@@ -6,6 +6,8 @@ Authors: Christian Merten
 import Mathlib.CategoryTheory.Galois.Full
 import Mathlib.CategoryTheory.Galois.Topology
 import Mathlib.Topology.Algebra.OpenSubgroup
+import Mathlib.Topology.Category.FinTopCat
+import Mathlib.RepresentationTheory.Action.Continuous
 
 /-!
 
@@ -35,19 +37,144 @@ For the case `Y = Aut F ⧸ U` we closely follow the second part of Stacks Proje
 
 -/
 
-universe u
+universe u v
 
 namespace CategoryTheory
 
+open Functor
+
+class Functor.PreservesForget₂ {V W : Type*}
+    [Category V] [ConcreteCategory V] [Category W] [ConcreteCategory W]
+    (F : V ⥤ W) (D : Type*) [Category D] [ConcreteCategory D]
+    [HasForget₂ V D] [HasForget₂ W D] : Prop where
+  comp_forget₂ : F ⋙ forget₂ W D = forget₂ V D := by aesop_cat
+
+def Functor.mapContAction {V W : Type (u + 1)} [LargeCategory V]
+    [ConcreteCategory V] [LargeCategory W] [ConcreteCategory W]
+    [HasForget₂ V TopCat] [HasForget₂ W TopCat] (F : Functor V W)
+    [F.PreservesForget₂ TopCat]
+    (G : MonCat) [TopologicalSpace G] :
+    ContAction V G ⥤ ContAction W G :=
+  FullSubcategory.lift _ (fullSubcategoryInclusion _ ⋙ F.mapAction G) <| fun X ↦ by
+  simp only [comp_obj, fullSubcategoryInclusion.obj]
+  constructor
+  let q : G × (F ⋙ forget₂ _ TopCat).obj X.obj.V →
+      (F ⋙ forget₂ _ TopCat).obj X.obj.V := fun ⟨g, x⟩ ↦
+    (F ⋙ forget₂ _ TopCat).map (X.obj.ρ g) x
+  show Continuous q
+  simp only [q]
+  rw [PreservesForget₂.comp_forget₂]
+  exact X.property.1
+
 namespace PreGaloisCategory
 
-variable {C : Type u} [Category.{u} C] {F : C ⥤ FintypeCat.{u}}
+variable {C : Type u} [Category.{v} C] {F : C ⥤ FintypeCat.{u}}
 
 open Limits Functor
 
+/-- Given an object of `FintypeCat`, we make an object of `FinTopCat` by equipping
+it with the discrete topology. -/
+private def mkDiscrete (X : FintypeCat) : TopCat :=
+  ⟨X, ⊥⟩
+
+/-- We may consider a finite type as a topological space by endowing it with the discrete
+topology. -/
+instance : HasForget₂ FintypeCat TopCat where
+  forget₂ := {
+    obj := fun X ↦ mkDiscrete X
+    map := fun {X Y} f ↦ ⟨f, ⟨fun _ ↦ id⟩⟩
+  }
+
+instance : TopologicalSpace (MonCat.of (Aut F)) :=
+  inferInstanceAs <| TopologicalSpace (Aut F)
+
+---
+
+/-- An object of `FinTopCat` is discrete if its topology is discrete. -/
+abbrev FinTopCat.IsDiscrete (X : FinTopCat) : Prop :=
+  DiscreteTopology X
+
+/-- The category of discrete finite topological spaces. -/
+abbrev DiscreteFinTopCat := FullSubcategory FinTopCat.IsDiscrete
+
+instance : HasForget₂ DiscreteFinTopCat TopCat where
+  forget₂ := fullSubcategoryInclusion _ ⋙ forget₂ FinTopCat TopCat
+
+def fintypeToDiscreteFinTopCat : FintypeCat ⥤ DiscreteFinTopCat where
+  obj X := ⟨⟨X, ⊥⟩, ⟨rfl⟩⟩
+  map f := ⟨f, ⟨fun _ ↦ id⟩⟩
+
+instance : (fullSubcategoryInclusion FinTopCat.IsDiscrete).PreservesForget₂ TopCat where
+
+instance (G : MonCat) [TopologicalSpace G] :
+    HasForget₂ (ContAction DiscreteFinTopCat G) (Action FintypeCat G) where
+  forget₂ := (fullSubcategoryInclusion FinTopCat.IsDiscrete).mapContAction _ ⋙
+      fullSubcategoryInclusion _ ⋙ (forget₂ FinTopCat FintypeCat).mapAction _
+
+variable (F)
+
+/-- The action of `Aut F` on `F.obj X` is continuous for every `X : C`, hence
+`functorToAction F` factors via the inclusion of the full subcategory of finite,
+discrete `Aut F`-sets. -/
+def functorToContAction : C ⥤ ContAction FintypeCat (MonCat.of (Aut F)) :=
+  FullSubcategory.lift _ (functorToAction F) <| fun X ↦ continuousSMul_aut_fiber F X
+
+lemma functorToContAction_comp_inclusion_eq :
+    functorToContAction F ⋙ fullSubcategoryInclusion _ = functorToAction F :=
+  rfl
+
+def functorToContAction' : C ⥤ ContAction DiscreteFinTopCat (MonCat.of (Aut F)) :=
+  let G : C ⥤ Action DiscreteFinTopCat (MonCat.of (Aut F)) :=
+    functorToAction F ⋙ fintypeToDiscreteFinTopCat.mapAction _
+  FullSubcategory.lift _ G <| fun X ↦ continuousSMul_aut_fiber F X
+
+lemma functorToContAction'_comp_inclusion_eq :
+    functorToContAction' F ⋙ forget₂ _ _  = functorToAction F :=
+  rfl
+
+instance {V W : Type (u + 1)} [LargeCategory V] [ConcreteCategory V] [LargeCategory W]
+    [ConcreteCategory W] [HasForget₂ V W]
+    (G : MonCat.{u}) :
+    HasForget₂ (Action V G) (Action W G) where
+  forget₂ := (forget₂ V W).mapAction G
+  forget_comp := by
+    show forget₂ (Action V G) V ⋙ forget₂ V W ⋙ forget W = _
+    rw [HasForget₂.forget_comp]
+    rfl
+
+instance (G : MonCat.{u}) [TopologicalSpace G] :
+    HasForget₂ (DiscreteContAction FinTopCat G) (Action FintypeCat G) :=
+  letI := HasForget₂.trans (ContAction FinTopCat G)
+    (Action FinTopCat G)
+    (Action FintypeCat G)
+  HasForget₂.trans _ (ContAction FinTopCat G) _
+
+def functorToContAction'' : C ⥤ DiscreteContAction FinTopCat (MonCat.of (Aut F)) :=
+  let G : FintypeCat.{u} ⥤ FinTopCat :=
+    { obj := fun X ↦ ⟨X, ⊥⟩, map := fun f ↦ ⟨f, ⟨fun _ ↦ id⟩⟩ }
+  FullSubcategory.lift _
+    (FullSubcategory.lift _ (functorToAction F ⋙ G.mapAction _) <| fun X ↦
+      continuousSMul_aut_fiber F X)
+    (fun X ↦ ⟨rfl⟩)
+
+lemma functorToContAction''_comp_inclusion_eq :
+    functorToContAction'' F ⋙ forget₂ _ _ = functorToAction F :=
+  rfl
+
 variable [GaloisCategory C] [FiberFunctor F]
 
-variable {G : Type*} [Group G] [TopologicalSpace G] [TopologicalGroup G] [CompactSpace G]
+instance : (functorToContAction F).Faithful :=
+  Functor.Faithful.of_comp_eq (functorToContAction_comp_inclusion_eq F)
+
+instance : (functorToContAction F).Full :=
+  haveI : (functorToContAction F ⋙ fullSubcategoryInclusion _).Full :=
+    inferInstanceAs <| (functorToAction F).Full
+  haveI := CategoryTheory.FullSubcategory.faithful
+    (Action.IsContinuous (V := FintypeCat) (G := MonCat.of (Aut F)))
+  Functor.Full.of_comp_faithful (functorToContAction F)
+    (fullSubcategoryInclusion _)
+
+variable {F} {G : Type*} [Group G] [TopologicalSpace G] [TopologicalGroup G] [CompactSpace G]
 
 private noncomputable local instance fintypeQuotient (H : OpenSubgroup (G)) :
     Fintype (G ⧸ (H : Subgroup (G))) :=
@@ -254,6 +381,22 @@ theorem exists_lift_of_continuous (X : Action FintypeCat (MonCat.of (Aut F)))
   choose g gu using (fun i ↦ exists_lift_of_quotient_openSubgroup (f i))
   exact ⟨∐ g, ⟨PreservesCoproduct.iso (functorToAction F) g ≪≫
     Sigma.mapIso (fun i ↦ (gu i).some) ≪≫ u⟩⟩
+
+/-- The by `F` induced functor `C ⥤ ContAction FintypeCat (MonCat.of (Aut F))`
+is essentially surjective. -/
+instance : (functorToContAction F).EssSurj where
+  mem_essImage Y := by
+    let Y' : Action FintypeCat (MonCat.of (Aut F)) :=
+      (fullSubcategoryInclusion _).obj Y
+    letI : TopologicalSpace Y'.V := ⊥
+    haveI : DiscreteTopology Y'.V := ⟨rfl⟩
+    haveI : ContinuousSMul (Aut F) Y'.V := Y.property
+    obtain ⟨A, ⟨u⟩⟩ := exists_lift_of_continuous Y'
+    exact ⟨A, ⟨(fullSubcategoryInclusion _).preimageIso u⟩⟩
+
+/-- The by `F` induced functor `C ⥤ ContAction FintypeCat (MonCat.of (Aut F))`
+is an equivalence. -/
+instance isequiv : (functorToContAction F).IsEquivalence where
 
 end PreGaloisCategory
 

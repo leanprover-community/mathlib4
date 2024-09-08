@@ -408,6 +408,43 @@ instance FiberFunctor.isPretransitive_of_isConnected (X : C) [IsConnected X] :
   show (F.map f ≫ σ.hom.app X) a = F.map f b
   rw [σ.hom.naturality, FintypeCat.comp_apply, hσ]
 
+section
+
+variable (F : C ⥤ FintypeCat.{w}) [FiberFunctor F]
+
+instance (X : C) [IsConnected X] : MulAction.IsPretransitive (Aut F) (F.obj X) where
+  exists_smul_eq := by
+    intro x y
+    let E : FintypeCat.{w} ⥤ FintypeCat.{u₂} := FintypeCat.switchUniverse.{w, u₂}
+    let F' : C ⥤ FintypeCat.{u₂} := F ⋙ E
+    letI : FiberFunctor F' := FiberFunctor.compRight E
+    have : MulAction.IsPretransitive (Aut F') (F'.obj X) := inferInstance
+    let x' : F'.obj X := (F.obj X).switchUniverseEquiv.symm x
+    let y' : F'.obj X := (F.obj X).switchUniverseEquiv.symm y
+    obtain ⟨g', (hg' : g'.hom.app X x' = y')⟩ := MulAction.exists_smul_eq (Aut F') x' y'
+    let e (Y : C) : F'.obj Y ≃ F.obj Y := (F.obj Y).switchUniverseEquiv
+    let gapp (Y : C) : F.obj Y ≅ F.obj Y := FintypeCat.equivEquivIso <|
+        (e Y).symm.trans <| (FintypeCat.equivEquivIso.symm (g'.app Y)).trans (e Y)
+    let g : F ≅ F := NatIso.ofComponents gapp <| by
+      intro X Y f
+      ext x
+      simp only [FintypeCat.comp_apply, FintypeCat.equivEquivIso_apply_hom,
+        Equiv.trans_apply, FintypeCat.equivEquivIso_symm_apply_apply, Iso.app_hom, gapp, e]
+      erw [FintypeCat.switchUniverseEquiv_naturality (F.map f)]
+      congr
+      show _ = F'.map f _
+      rw [← FunctorToFintypeCat.naturality]
+      simp only [comp_obj, Functor.comp_map, F', E]
+      erw [FintypeCat.switchUniverseEquiv_naturality' (F.map f)]
+    use g
+    show (gapp X).hom x = y
+    simp [gapp]
+    show (e X) (g'.hom.app X x') = y
+    rw [hg']
+    simp only [comp_obj, Equiv.apply_symm_apply, F', E, x', y']
+
+end
+
 end PreGaloisCategory
 
 end CategoryTheory
