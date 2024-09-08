@@ -376,6 +376,7 @@ instance : AddCommGroupWithOne ℍ[R,c₁,c₂] where
   intCast_negSucc n := by
     change coe _ = -coe _
     rw [Int.cast_negSucc, coe_neg]
+  add_comm := add_comm
 
 @[simp, norm_cast]
 theorem natCast_re (n : ℕ) : (n : ℍ[R,c₁,c₂]).re = n :=

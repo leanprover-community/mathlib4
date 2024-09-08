@@ -90,7 +90,6 @@ class SeminormedGroup (E : Type*) extends Norm E, Group E, PseudoMetricSpace E w
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x / y‖ := by aesop
 
-no_instances
 /-- A normed group is an additive group endowed with a norm for which `dist x y = ‖x - y‖` defines a
 metric space structure. -/
 class NormedAddGroup (E : Type*) extends Norm E, AddGroup E, MetricSpace E where
@@ -98,9 +97,6 @@ class NormedAddGroup (E : Type*) extends Norm E, AddGroup E, MetricSpace E where
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x - y‖ := by aesop
 
-attribute [instance] NormedAddGroup.toMetricSpace
-
-no_instances
 /-- A normed group is a group endowed with a norm for which `dist x y = ‖x / y‖` defines a metric
 space structure. -/
 @[to_additive]
@@ -109,9 +105,6 @@ class NormedGroup (E : Type*) extends Norm E, Group E, MetricSpace E where
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x / y‖ := by aesop
 
-attribute [instance] NormedGroup.toMetricSpace
-
-no_instances
 /-- A seminormed group is an additive group endowed with a norm for which `dist x y = ‖x - y‖`
 defines a pseudometric space structure. -/
 class SeminormedAddCommGroup (E : Type*) extends Norm E, AddCommGroup E,
@@ -120,9 +113,6 @@ class SeminormedAddCommGroup (E : Type*) extends Norm E, AddCommGroup E,
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x - y‖ := by aesop
 
-attribute [instance] SeminormedAddCommGroup.toAddCommGroup
-
-no_instances
 /-- A seminormed group is a group endowed with a norm for which `dist x y = ‖x / y‖`
 defines a pseudometric space structure. -/
 @[to_additive]
@@ -131,9 +121,6 @@ class SeminormedCommGroup (E : Type*) extends Norm E, CommGroup E, PseudoMetricS
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x / y‖ := by aesop
 
-attribute [instance] SeminormedCommGroup.toCommGroup
-
-no_instances
 /-- A normed group is an additive group endowed with a norm for which `dist x y = ‖x - y‖` defines a
 metric space structure. -/
 class NormedAddCommGroup (E : Type*) extends Norm E, AddCommGroup E, MetricSpace E where
@@ -141,7 +128,6 @@ class NormedAddCommGroup (E : Type*) extends Norm E, AddCommGroup E, MetricSpace
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x - y‖ := by aesop
 
-no_instances
 /-- A normed group is a group endowed with a norm for which `dist x y = ‖x / y‖` defines a metric
 space structure. -/
 @[to_additive]

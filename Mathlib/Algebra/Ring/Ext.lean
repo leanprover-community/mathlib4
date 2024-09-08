@@ -218,13 +218,11 @@ TODO consider relocating these lemmas. -/
     AddMonoidWithOne.ext h_add h_one
   have : inst₁.toNatCast = inst₂.toNatCast := congrArg (·.toNatCast) this
   have h_group : inst₁.toAddGroup = inst₂.toAddGroup := by ext : 1; exact h_add
-  -- Extract equality of necessary substructures from h_group
-  injection h_group with h_group; injection h_group
   have : inst₁.toIntCast.intCast = inst₂.toIntCast.intCast := by
     funext n; cases n with
     | ofNat n   => rewrite [Int.ofNat_eq_coe, inst₁.intCast_ofNat, inst₂.intCast_ofNat]; congr
     | negSucc n => rewrite [inst₁.intCast_negSucc, inst₂.intCast_negSucc]; congr
-  rcases inst₁ with @⟨⟨⟩⟩; rcases inst₂ with @⟨⟨⟩⟩
+  rcases inst₁ with @⟨_, _, ⟨⟩, _, _, ⟨⟩⟩; rcases inst₂ with @⟨_, _, ⟨⟩, _, _, ⟨⟩⟩
   congr
 
 @[ext] theorem AddCommGroupWithOne.ext ⦃inst₁ inst₂ : AddCommGroupWithOne R⦄
@@ -235,7 +233,6 @@ TODO consider relocating these lemmas. -/
     AddCommGroup.ext h_add
   have : inst₁.toAddGroupWithOne = inst₂.toAddGroupWithOne :=
     AddGroupWithOne.ext h_add h_one
-  injection this with _ h_addMonoidWithOne; injection h_addMonoidWithOne
   cases inst₁; cases inst₂
   congr
 
@@ -249,11 +246,10 @@ namespace NonAssocRing
     ext : 1 <;> assumption
   have h₂ : inst₁.toNonAssocSemiring = inst₂.toNonAssocSemiring := by
     ext : 1 <;> assumption
-  -- Mathematically non-trivial fact: `intCast` is determined by the rest.
   have h₃ : inst₁.toAddCommGroupWithOne = inst₂.toAddCommGroupWithOne :=
     AddCommGroupWithOne.ext h_add (congrArg (·.toOne.one) h₂)
   cases inst₁; cases inst₂
-  congr <;> solve| injection h₁ | injection h₂ | injection h₃
+  congr <;> (injection h₃ with h₃; injection h₃)
 
 theorem toNonAssocSemiring_injective :
     Function.Injective (@toNonAssocSemiring R) := by
