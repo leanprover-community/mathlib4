@@ -207,45 +207,56 @@ lemma foo (f : H ≃L[ℝ] H) {s : Set H} (hs : IsConnected s) (hs' : IsPathConn
     rw [← Path.target γ]
     exact abstract2b hg (by simp [h₁]) h₀ 1
 
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] {H : Type*}
+  [TopologicalSpace H] (I : ModelWithCorners ℝ E H) {M : Type*} [TopologicalSpace M]
 
+open Set
 /-- The pregroupoid of orientation-preserving maps. -/
-def orientationPreservingPregroupoid [FiniteDimensional ℝ H] : Pregroupoid H where
-  property f s := OrientationPreserving f s
-  comp hf hg _ _ _ _ hx := orientationPreserving_comp hf hg _ hx
-  id_mem := orientationPreserving_id _
-  locality {f u} _ h x hxu :=
-    have ⟨v, _, hxv, h⟩ := h x hxu
-    h x <| Set.mem_inter hxu hxv
+def orientationPreservingPregroupoid [FiniteDimensional ℝ E] : Pregroupoid H where
+  property f s := OrientationPreserving (I ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ interior (range I))
+
+--AnalyticOn 𝕜 (I ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ interior (range I))
+  --∧ (I.symm ⁻¹' s ∩ interior (range I)).image (I ∘ f ∘ I.symm) ⊆ interior (range I)
+
+  comp hf hg _ _ _ _ hx := sorry --orientationPreserving_comp hf hg _ hx
+  id_mem := sorry --orientationPreserving_id _
+  locality {f u} _ h x hxu := sorry
+    -- have ⟨v, _, hxv, h⟩ := h x hxu
+    -- h x <| Set.mem_inter hxu hxv
   congr {f g u} hu fg hf x hx := by
-    rw [(Filter.eventuallyEq_of_mem (hu.mem_nhds hx) fg).fderiv_eq]
-    exact hf x hx
+    sorry --rw [(Filter.eventuallyEq_of_mem (hu.mem_nhds hx) fg).fderiv_eq]
+    --exact hf x hx
 
 /-- The groupoid of orientation-preserving maps. -/
-def orientationPreservingGroupoid [FiniteDimensional ℝ H] : StructureGroupoid H :=
-  orientationPreservingPregroupoid.groupoid
+def orientationPreservingGroupoid [FiniteDimensional ℝ E] : StructureGroupoid H :=
+  (orientationPreservingPregroupoid I).groupoid
 
 end OrientationPreserving
 
 /-! ### Orientable manifolds -/
 section OrientableManifold
 
-/-- Typeclass defining orientable manifolds. -/
-class OrientableManifold (H : Type*) [NormedAddCommGroup H] [NormedSpace ℝ H]
-    [FiniteDimensional ℝ H] (M : Type*) [TopologicalSpace M] [ChartedSpace H M] extends
-  HasGroupoid M (@orientationPreservingGroupoid H _ _ _) : Prop
+/-- Typeclass defining orientable manifolds: a finite-dimensional (topological) manifold
+is orientable if and only if it admits an orientable atlas. -/
+class OrientableManifold {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    [TopologicalSpace H] (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
+    (I : ModelWithCorners ℝ E H) [FiniteDimensional ℝ E] extends
+  HasGroupoid M (orientationPreservingGroupoid I) : Prop
 
 /-- `0`-dimensional manifolds are always orientable. -/
-lemma orientableManifold_of_zero_dim (H : Type*) [NormedAddCommGroup H] [NormedSpace ℝ H]
-    [FiniteDimensional ℝ H] (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
-    (h : FiniteDimensional.finrank ℝ H = 0) : OrientableManifold H M where
+lemma orientableManifold_of_zero_dim {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    [TopologicalSpace H] (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
+    (I : ModelWithCorners ℝ E H) [FiniteDimensional ℝ E] (h : FiniteDimensional.finrank ℝ E = 0) :
+    OrientableManifold M I where
   compatible := fun _ _ ↦
     ⟨orientationPreserving_of_zero_dim _ _ h, orientationPreserving_of_zero_dim _ _ h⟩
 
-/-- Typeclass defining orientable smooth manifolds. -/
-class OrientableSmoothManifold (H : Type*) [NormedAddCommGroup H] [NormedSpace ℝ H]
-    [FiniteDimensional ℝ H] {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (M : Type*)
-    [TopologicalSpace M] [ChartedSpace H M] (I : ModelWithCorners ℝ E H) extends
-  HasGroupoid M ((contDiffGroupoid ⊤ I) ⊓ orientationPreservingGroupoid) : Prop
+/-- Typeclass defining orientable smooth manifolds: a smooth manifold is orientable
+if and only if it admits an atlas which is both smooth and orientable -/
+class OrientableSmoothManifold {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    [TopologicalSpace H] (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
+    (I : ModelWithCorners ℝ E H) [FiniteDimensional ℝ E] extends
+  HasGroupoid M ((contDiffGroupoid ⊤ I) ⊓ orientationPreservingGroupoid I) : Prop
 
 end OrientableManifold
 
