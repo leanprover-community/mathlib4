@@ -158,6 +158,7 @@ attribute [instance] DivisionRing.toRing
 attribute [instance] DivisionRing.toNontrivial
 attribute [instance] DivisionRing.toNNRatCast
 attribute [instance] DivisionRing.toRatCast
+attribute [nolint docBlame] DivisionRing.toDivInvMonoid
 
 -- see Note [lower instance priority]
 instance (priority := 100) DivisionRing.toDivisionSemiring [DivisionRing α] : DivisionSemiring α :=

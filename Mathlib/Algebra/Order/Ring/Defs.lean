@@ -166,6 +166,7 @@ addition is strictly monotone and multiplication by a positive number is strictl
 class StrictOrderedCommSemiring (α : Type u) extends StrictOrderedSemiring α, CommSemiring α
 
 attribute [instance] StrictOrderedCommSemiring.toStrictOrderedSemiring
+attribute [nolint docBlame] StrictOrderedCommSemiring.toCommSemiring
 
 no_instances
 /-- A `StrictOrderedRing` is a ring with a partial order such that addition is strictly monotone
@@ -176,12 +177,15 @@ class StrictOrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α, N
   /-- The product of two positive elements is positive. -/
   protected mul_pos : ∀ a b : α, 0 < a → 0 < b → 0 < a * b
 
+attribute [nolint docBlame] StrictOrderedRing.toOrderedAddCommGroup
+
 no_instances
 /-- A `StrictOrderedCommRing` is a commutative ring with a partial order such that addition is
 strictly monotone and multiplication by a positive number is strictly monotone. -/
 class StrictOrderedCommRing (α : Type*) extends StrictOrderedRing α, CommRing α
 
 attribute [instance] StrictOrderedCommRing.toStrictOrderedRing
+attribute [nolint docBlame] StrictOrderedCommRing.toCommRing
 
 /- It's not entirely clear we should assume `Nontrivial` at this point; it would be reasonable to
 explore changing this, but be warned that the instances involving `Domain` may cause typeclass
