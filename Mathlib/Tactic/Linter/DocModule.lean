@@ -126,13 +126,15 @@ def copyrightHeaderLinter (copyright : String) : Array (Syntax × String) := Id.
     | _, _       =>
       msgs := msgs.push (toSyntax copyright openComment, s!"{stdTxt ("/".push '-')}")
     -- validate copyright author
-    if !copyrightAuthor.startsWith "Copyright (c) 20" then
+    let copStart := "Copyright (c) 20"
+    let copStop := ". All rights reserved."
+    if !copyrightAuthor.startsWith copStart then
       msgs := msgs.push
-        (toSyntax copyright (copyrightAuthor.take 14),
+        (toSyntax copyright (copyrightAuthor.take copStart.length),
          s!"Copyright line should start with 'Copyright (c) YYYY'")
-    if !copyrightAuthor.endsWith ". All rights reserved." then
+    if !copyrightAuthor.endsWith copStop then
       msgs := msgs.push
-        (toSyntax copyright (copyrightAuthor.takeRight 20),
+        (toSyntax copyright (copyrightAuthor.takeRight copStop.length),
          s!"Copyright line should end with '. All rights reserved.'")
     -- validate authors
     let authorsLine := "\n".intercalate authorsLines.dropLast
