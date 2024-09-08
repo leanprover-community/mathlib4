@@ -123,6 +123,12 @@ theorem pow_count [DecidableEq α] (a : α) : a ^ s.count a = (s.filter (Eq a)).
   rw [filter_eq, prod_replicate]
 
 @[to_additive]
+theorem prod_hom_ne_zero {s : Multiset α} (hs : s ≠ 0) {F : Type*} [FunLike F α β]
+    [MulHomClass F α β] (f : F) :
+    (s.map f).prod = f s.prod := by
+  induction s using Quot.inductionOn; aesop (add simp List.prod_hom_nonempty)
+
+@[to_additive]
 theorem prod_hom (s : Multiset α) {F : Type*} [FunLike F α β]
     [MonoidHomClass F α β] (f : F) :
     (s.map f).prod = f s.prod :=
@@ -134,6 +140,12 @@ theorem prod_hom' (s : Multiset ι) {F : Type*} [FunLike F α β]
     (g : ι → α) : (s.map fun i => f <| g i).prod = f (s.map g).prod := by
   convert (s.map g).prod_hom f
   exact (map_map _ _ _).symm
+
+@[to_additive]
+theorem prod_hom₂_ne_zero [CommMonoid γ] {s : Multiset ι} (hs : s ≠ 0) (f : α → β → γ)
+    (hf : ∀ a b c d, f (a * b) (c * d) = f a c * f b d) (f₁ : ι → α) (f₂ : ι → β) :
+    (s.map fun i => f (f₁ i) (f₂ i)).prod = f (s.map f₁).prod (s.map f₂).prod := by
+  induction s using Quotient.inductionOn; aesop (add simp List.prod_hom₂_nonempty)
 
 @[to_additive]
 theorem prod_hom₂ [CommMonoid γ] (s : Multiset ι) (f : α → β → γ)
@@ -195,8 +207,17 @@ lemma _root_.map_multiset_prod [FunLike F α β] [MonoidHomClass F α β] (f : F
     f s.prod = (s.map f).prod := (s.prod_hom f).symm
 
 @[to_additive]
+lemma _root_.map_multiset_ne_zero_prod [FunLike F α β] [MulHomClass F α β] (f : F)
+    {s : Multiset α} (hs : s ≠ 0):
+    f s.prod = (s.map f).prod := (s.prod_hom_ne_zero hs f).symm
+
+@[to_additive]
 protected lemma _root_.MonoidHom.map_multiset_prod (f : α →* β) (s : Multiset α) :
     f s.prod = (s.map f).prod := (s.prod_hom f).symm
+
+@[to_additive]
+protected lemma _root_.MulHom.map_multiset_ne_zero_prod (f : α →ₙ* β) (s : Multiset α)
+    (hs : s ≠ 0) : f s.prod = (s.map f).prod := (s.prod_hom_ne_zero hs f).symm
 
 lemma dvd_prod : a ∈ s → a ∣ s.prod :=
   Quotient.inductionOn s (fun l a h ↦ by simpa using List.dvd_prod h) a
