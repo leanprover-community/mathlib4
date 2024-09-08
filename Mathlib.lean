@@ -6,6 +6,7 @@ import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.Algebra.BigOperators
 import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.Algebra.Algebra.Defs
+import Mathlib.Algebra.Algebra.End
 import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Algebra.Field
 import Mathlib.Algebra.Algebra.Hom
@@ -477,6 +478,7 @@ import Mathlib.Algebra.Module.Injective
 import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Algebra.Module.LinearMap.Defs
 import Mathlib.Algebra.Module.LinearMap.End
+import Mathlib.Algebra.Module.LinearMap.Ker
 import Mathlib.Algebra.Module.LinearMap.Polynomial
 import Mathlib.Algebra.Module.LinearMap.Prod
 import Mathlib.Algebra.Module.LinearMap.Rat
