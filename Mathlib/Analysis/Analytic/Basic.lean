@@ -638,7 +638,7 @@ lemma HasFPowerSeriesWithinAt.mono (hf : HasFPowerSeriesWithinAt f p s x) (h : t
   obtain ⟨r, hp⟩ := hf
   exact ⟨r, hp.mono h⟩
 
-lemma hasFPowerSeriesAt.hasFPowerSeriesWithinAt (hf : HasFPowerSeriesAt f p x) :
+lemma HasFPowerSeriesAt.hasFPowerSeriesWithinAt (hf : HasFPowerSeriesAt f p x) :
     HasFPowerSeriesWithinAt f p s x := by
   rw [← hasFPowerSeriesWithinAt_univ] at hf
   apply hf.mono (subset_univ _)
