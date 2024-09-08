@@ -47,11 +47,21 @@ def getImportIds (s : Syntax) : Array Syntax :=
   else
     rest
 
-/-- `parseUpToHere stx post` takes as input a `Syntax` `stx` and a `String` `post`.
+/--
+`parseUpToHere stx post` takes as input a `Syntax` `stx` and a `String` `post`.
 It parses the file containing `stx` up to and excluding `stx`, appending `post` at the end.
 
 The option of appending a final string to the text gives more control to avoid syntax errors,
 for instance in the presence of `#guard_msgs in` or `set_option ... in`.
+
+Note that this parsing will *not* be successful on every file.  However, if the linter is
+parsing the file linearly, it will only need to parse
+* the imports (that are always parseable) and
+* the first non-import command that is supposed to be a module doc-string (so again always
+  parseable).
+
+In conclusion, either the parsing is successful, and the linter can continue with its analysis,
+or the parsing is not successful and the linter will flag a missing module doc-string!
 -/
 def parseUpToHere (stx : Syntax) (post : String := "") (included : Bool := true) :
     CommandElabM Syntax := do
