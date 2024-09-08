@@ -3541,6 +3541,7 @@ import Mathlib.Order.Extension.Linear
 import Mathlib.Order.Extension.Well
 import Mathlib.Order.Filter.Archimedean
 import Mathlib.Order.Filter.AtTopBot
+import Mathlib.Order.Filter.AtTopBot.BigOperators
 import Mathlib.Order.Filter.Bases
 import Mathlib.Order.Filter.Basic
 import Mathlib.Order.Filter.CardinalInter
