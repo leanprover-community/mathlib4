@@ -3,11 +3,11 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Star.Order
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Monoid.Submonoid
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Algebra.Order.Ring.Int
+import Mathlib.Algebra.Order.Star.Basic
 
 /-!
 # Star ordered ring structure on `ℤ`
@@ -31,6 +31,6 @@ lemma addSubmonoid_closure_range_mul_self : closure (range fun x : ℤ ↦ x * x
   simpa only [sq] using addSubmonoid_closure_range_pow even_two
 
 instance instStarOrderedRing : StarOrderedRing ℤ where
-  le_iff a b := by simp [le_iff_exists_nonneg_add a b]
+  le_iff a b := by simp [eq_comm, le_iff_exists_nonneg_add (a := a)]
 
 end Int
