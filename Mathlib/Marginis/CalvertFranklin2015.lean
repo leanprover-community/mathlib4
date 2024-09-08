@@ -18,11 +18,13 @@ We define uniform distribution and prove that the constant 0 sequence is not uni
 
 open Finset
 
+/-- A sequence of reals in the unit interval being uniformly distributed. -/
 def uniformly_distributed (x : ℕ → Set.Ico (0:ℝ) 1) :=
   ∀ a b ε : ℝ, 0 ≤ a → a < b → b ≤ 1 → ε > 0 → ∃ n₀ : ℕ, ∀ n : ℕ, n ≥ n₀ →
     abs (card (filter (λ i : Fin n ↦ a < x i ∧ x i < b) univ) - (b - a) * n) < n * ε
 
-example : ¬ uniformly_distributed (λ _ ↦ ⟨0,by simp⟩) := by
+/-- An example of a sequence that is not uniformly distributed: the 0 sequence. -/
+lemma not_uniformly_distributed : ¬ uniformly_distributed (λ _ ↦ ⟨0,by simp⟩) := by
   unfold uniformly_distributed
   push_neg
   use 1/2, 1, 1/2

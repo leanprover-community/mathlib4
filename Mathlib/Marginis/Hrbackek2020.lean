@@ -22,28 +22,78 @@ Dickson's Conjecture is trivial for ℓ = 0
 and we do not need Hrbacek's assumption that ℓ ≥ 1.
  -/
 
-#eval Nat.gcd 0 5
-
 open Finset
-def prod_f {ℓ : ℕ} (a b : Fin ℓ → ℕ) : ℕ → ℕ :=
-  λ k ↦ Finset.prod univ (λ i : Fin ℓ ↦ a i + b i * k)
 
+/-
+## Arithmetical preliminaries
+-/
 
-theorem dickson_strong {ℓ : ℕ} {a b: Fin ℓ → ℕ} (ha : ∀ i, Nat.gcd (a i) (b i) > 1 ∨ b i = 1)
-    (hc : ¬ (∃ n, n > 1 ∧ ∀ k, n ∣ (prod_f a b k))) (i : Fin ℓ) (n₀:ℕ) :
-    ∃ n ≥ n₀, (a i + b i * n).Prime := by
-  by_cases h : ∀ i, b i = 1
-  · rw [h i]
-    simp only [ge_iff_le, one_mul]
-    obtain ⟨p,hp⟩ := Nat.exists_infinite_primes (a i + n₀)
-    exists (p - a i)
+/-- If `b ∣ a`, `b > 1` then `(a, b) > 1`. -/
+lemma gcd_gt_of_dvd {a b : ℕ} (ha : b ∣ a) (h_b : 1 < b): 1 < Nat.gcd a b := by
+  have hb : 1 ≤ b := Nat.one_le_of_lt h_b
+  unfold Nat.gcd
+  by_cases Ha : a = 0
+  · rw [if_pos Ha]
+    exact h_b
+  rw [if_neg Ha]
+  obtain ⟨k,hk⟩ := ha
+  have hbk: b ∣ b.gcd (b * k) := by
+    refine Nat.dvd_gcd_iff.mpr ?_
     constructor
-    · suffices a i + n₀ ≤ a i + (p - a i) by
-        refine Nat.le_sub_of_add_le ?h
-        linarith
-      calc _ ≤ p := hp.1
-           _ ≤ _ := le_add_tsub
-    · exact (Nat.add_sub_of_le (by show a i ≤ p; linarith)).symm ▸ hp.2
+    · simp
+    · exact Nat.dvd_mul_right b k
+  rw [hk]
+  by_cases Hab : a = b
+  · subst Hab
+    have : k = 1 := (Nat.mul_right_eq_self_iff hb).mp hk.symm
+    subst this
+    simp only [mul_one, Nat.mod_self, Nat.gcd_zero_left]
+    exact h_b
+  · have hk1: 1 < k := Nat.one_lt_iff_ne_zero_and_ne_one.mpr
+      ⟨fun hc => Ha  <| mul_zero b ▸ hc ▸ hk, fun hc => Hab <| mul_one  b ▸ hc ▸ hk⟩
+    have : b % (b * k) = b :=
+      Nat.mod_eq_of_lt <| (Nat.lt_mul_iff_one_lt_right (hb)).mpr hk1
+    rw [this]
+    exact Nat.one_lt_iff_ne_zero_and_ne_one.mpr ⟨
+      Nat.gcd_ne_zero_left (fun hc => by
+        rw [hc, nonpos_iff_eq_zero] at hb
+        exact one_ne_zero hb
+      ), fun hc => by
+      have : b ∣ 1 :=
+        (Nat.ModEq.dvd_iff (congrFun (congrArg HMod.hMod hc) (b.gcd (b * k))) hbk).mp hbk
+      rw [Nat.dvd_one] at this
+      subst this
+      simp only [lt_self_iff_false] at h_b⟩
+
+
+
+
+/-
+## Proven cases of Dickson's Conjecture
+-/
+
+
+/-- The statement that Dickson's Conjecture holds for `ℓ, a, b`. -/
+def dickson_conjecture_holds_for (ℓ : ℕ) (a : Fin ℓ → ℕ) (b : Fin ℓ → ℕ+) : Prop :=
+    ¬ (∃ n, n > 1 ∧ ∀ k, n ∣ ∏ i, (a i + b i * k)) → ∀ (i : Fin ℓ) (n₀:ℕ),
+    ∃ n ≥ n₀, (a i + b i * n).Prime
+
+/-- A conjecture from
+  L E Dickson, A new extension of Dirichlet’s theorem on prime numbers,
+  Messenger of Mathematics 33 (1904), 155 – 161.-/
+def DicksonConjecture : Prop := ∀ ℓ a b, dickson_conjecture_holds_for ℓ a b
+
+/-- Some trivial cases of Dickson's Conjecture. -/
+theorem dickson_case {ℓ : ℕ} {a : Fin ℓ → ℕ} {b : Fin ℓ → ℕ+}
+    (ha : ∀ i, Nat.gcd (a i) (b i) > 1 ∨ b i = 1) :
+    dickson_conjecture_holds_for ℓ a b := by
+  intro hc i n₀
+  by_cases h : ∀ i, b i = 1
+  · obtain ⟨p,hp⟩ := Nat.exists_infinite_primes (a i + n₀)
+    rw [h i]
+    simp only [ge_iff_le, one_mul, PNat.val_ofNat, one_mul]
+    exact ⟨p - a i, Nat.le_sub_of_add_le (by linarith),
+      (Nat.add_sub_of_le (by show a i ≤ p; linarith)).symm ▸ hp.2⟩
   · simp at h
     obtain ⟨i,hi⟩ := h
     exfalso
@@ -59,66 +109,14 @@ theorem dickson_strong {ℓ : ℕ} {a b: Fin ℓ → ℕ} (ha : ∀ i, Nat.gcd (
           <| Nat.dvd_trans (Nat.gcd_dvd_right (a i) (b i))
             <| Nat.dvd_mul_right (b i) k) h₀
 
-theorem dickson_gcd {ℓ : ℕ} {a b: Fin ℓ → ℕ} (ha : ∀ i, Nat.gcd (a i) (b i) > 1)
-    (hc : ¬ (∃ n, n > 1 ∧ ∀ k, n ∣ (prod_f a b k))) (i : Fin ℓ) (n₀:ℕ) :
-    ∃ n ≥ n₀, (a i + b i * n).Prime :=
-  dickson_strong (fun i => .inl <| ha i) hc i n₀
+/-- Dickson's conjecture holds when `b∣a`. -/
+lemma dickson_dvd {ℓ : ℕ} {a : Fin ℓ → ℕ} {b : Fin ℓ → ℕ+} (ha : ∀ i, (b i).1 ∣ a i) :
+  dickson_conjecture_holds_for ℓ a b :=
+  dickson_case (λ i ↦ (em (b i =1)).elim (fun H => .inr H)
+  (fun H => .inl <| gcd_gt_of_dvd (ha i) <| lt_of_le_of_ne (b i).2 <|by
+    contrapose H;simp_all;symm at H;exact PNat.coe_eq_one_iff.mp H))
 
-
-lemma gcd_gt_of_dvd {a b : ℕ} (ha : b ∣ a) (h_b : b > 1): Nat.gcd a b > 1 := by
-  have hb : b ≥ 1 := Nat.one_le_of_lt h_b
-  unfold Nat.gcd
-  by_cases Ha : a = 0
-  · rw [if_pos Ha]
-    tauto
-  rw [if_neg Ha]
-  obtain ⟨k,hk⟩ := ha
-  have hbk: b ∣ b.gcd (b * k) := by
-    refine Nat.dvd_gcd_iff.mpr ?_
-    constructor
-    · simp
-    · exact Nat.dvd_mul_right b k
-  rw [hk]
-  by_cases Hab : a = b
-  · rw [Hab] at hk
-    have : k = 1 := (Nat.mul_right_eq_self_iff hb).mp (id (Eq.symm hk))
-    subst this;simp;tauto
-  · have hk₀: k ≠ 0 := fun hc => Ha  <| mul_zero b ▸ hc ▸ hk
-    have hk₁: k ≠ 1 := fun hc => Hab <| mul_one  b ▸ hc ▸ hk
-    have hk1: k > 1 := Nat.one_lt_iff_ne_zero_and_ne_one.mpr  ⟨hk₀, hk₁⟩
-    have : b % (b * k) = b :=
-      Nat.mod_eq_of_lt <| (Nat.lt_mul_iff_one_lt_right (hb)).mpr hk1
-    rw [this]
-    have g₀ : (b).gcd (b * k) ≠ 0 := by
-      refine Nat.gcd_ne_zero_left ?_
-      intro hc
-      rw [hc] at hb
-      simp only [ge_iff_le, nonpos_iff_eq_zero, one_ne_zero] at hb
-    have g₁ : b.gcd (b * k) ≠ 1 := by
-      intro hc
-      have : b ∣ 1 :=
-        (Nat.ModEq.dvd_iff (congrFun (congrArg HMod.hMod hc) (b.gcd (b * k))) hbk).mp hbk
-      simp at this
-      rw [this] at h_b
-      simp only [gt_iff_lt,lt_self_iff_false] at h_b
-    exact Nat.one_lt_iff_ne_zero_and_ne_one.mpr ⟨g₀, g₁⟩
-
-
-lemma gcd_gt_or_eq_one_of_dvd {a b : ℕ} (ha : b ∣ a) (hb : b ≥ 1):
-    Nat.gcd a b > 1 ∨ b = 1 := by
-  by_cases H : b = 1
-  tauto
-  left
-  have hbi: b > 1 := Nat.lt_of_le_of_ne (hb) fun a ↦ H (id (Eq.symm a))
-  exact gcd_gt_of_dvd ha hbi
-
-
-lemma dickson_dvd {ℓ : ℕ} {a b: Fin ℓ → ℕ} (hb : ∀ i, b i ≥ 1) (ha : ∀ i, b i ∣ a i)
-    (hc : ¬ (∃ n, n > 1 ∧ ∀ k, n ∣ (prod_f a b k))) (i : Fin ℓ) (n₀:ℕ) :
-    ∃ n ≥ n₀, (a i + b i * n).Prime :=
-  dickson_strong (λ i ↦ gcd_gt_or_eq_one_of_dvd (ha i) (hb i)) hc i n₀
-
-theorem dickson_linear {ℓ : ℕ} {a b: Fin ℓ → ℕ} {hb : ∀ i, b i ≥ 1} (ha : ∀ i, a i = 0)
-    (hc : ¬ (∃ n, n > 1 ∧ ∀ k, n ∣ (prod_f a b k))) (i : Fin ℓ) (n₀:ℕ) :
-    ∃ n ≥ n₀, (a i + b i * n).Prime :=
-  dickson_dvd hb (fun i => (ha i) ▸ Nat.dvd_zero (b i)) hc i n₀
+/-- Dickson's conjecture holds when `a=0`. -/
+theorem dickson_linear {ℓ : ℕ} {a : Fin ℓ → ℕ} {b : Fin ℓ → ℕ+} (ha : ∀ i, a i = 0) :
+    dickson_conjecture_holds_for ℓ a b :=
+  dickson_dvd <| fun i => by rw [ha i];exact Nat.dvd_zero (b i)
