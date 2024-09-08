@@ -1150,6 +1150,30 @@ theorem deleteVerts_inter_verts_set_right_eq :
 
 end DeleteVerts
 
+/-! ### Of function -/
+
+
+/-- Given a function, construct the Subgraph where each element is connected
+  to its value under the function --/
+@[simps]
+def ofFunction {u : Set V} (f : V → V) (h : ∀ v ∈ u, G.Adj v (f v)) : Subgraph G where
+  verts := u ∪ f '' u
+  Adj v w := v ∈ u ∧ f v = w ∨ w ∈ u ∧ f w = v
+  adj_sub := by
+    intro v w' hvw'
+    cases' hvw' with hv hw'
+    · rw [← hv.2]
+      exact h v hv.1
+    · rw [← hw'.2]
+      exact (h w' hw'.1).symm
+  edge_vert := by
+    intro v w hvw'
+    cases' hvw' with hv hw'
+    · left; exact hv.1
+    · right; rw [← hw'.2]
+      exact Set.mem_image_of_mem f hw'.1
+
+
 end Subgraph
 
 end SimpleGraph
