@@ -153,7 +153,6 @@ lemma Subgroup.isLeast_of_closure_iff_eq_mabs {a b : G} :
       rw [← Left.one_le_inv_iff, ← zpow_neg]
       exact one_le_zpow ha (by simp [hk])
 
-
 /-- If an element of a linearly ordered archimedean additive group is the least positive element,
 then the whole group is isomorphic (and order-isomorphic) to the integers. -/
 noncomputable def LinearOrderedAddCommGroup.int_orderAddMonoidIso_of_isLeast_pos {G : Type*}
