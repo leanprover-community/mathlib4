@@ -136,12 +136,11 @@ def copyrightHeaderLinter (copyright : String) : Array (Syntax × String) := Id.
   return msgs
 
 /-- checks the `Syntax` `imps` for broad imports. -/
-def broadImportsCheck (imps : Syntax)  : Array (Syntax × String) := Id.run do
-  let imports := getImportIds imps
+def broadImportsCheck (imports : Array Syntax)  : Array (Syntax × String) := Id.run do
   let mut msgs := #[]
   for i in imports do
     match i.getId with
-    | `Mathlib.Tactic =>
+    | `Mathlib.Tactic | `Mathlib.Tactic.Linter.DocModule =>
       msgs := msgs.push (i, s!"Files in mathlib cannot import the whole tactic folder.")
     | modName =>
       if modName.getRoot == `Lake then
@@ -150,6 +149,7 @@ def broadImportsCheck (imps : Syntax)  : Array (Syntax × String) := Id.run do
           (see e.g. mathlib4#13779). Please consider carefully if this import is useful and \
           make sure to benchmark it. If this is fine, feel free to allow this linter.")
   return msgs
+
 /--
 The "header" style linter checks that a file starts with
 ```
@@ -163,9 +163,9 @@ register_option linter.style.header : Bool := {
   descr := "enable the header style linter"
 }
 
-/-- An `IO.Ref` used to keep track of the starting position of the first non-`import`
-command in a file -/
-initialize firstCommand : IO.Ref (Option String.Pos) ← IO.mkRef none
+/-- An `IO.Ref` used to keep track of the initial segment of the file, from the end of the last
+`import` command, until the first non-`import` command. -/
+initialize fileToFirstCommand : IO.Ref Substring ← IO.mkRef default
 
 namespace Style.header
 
@@ -175,28 +175,43 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   if (← get).messages.hasErrors then
     return
-  let mod ← getMainModule
   -- instead of silencing this linter on Sensitivity, we should probably silence the text-based one
-  if #[`Archive.Sensitivity, `Mathlib.Init].contains mod then return
-  let mut firstPos ← firstCommand.get
+  if #[`Archive.Sensitivity, `Mathlib.Init].contains (← getMainModule) then
+    return
+  let mut fileStart ← fileToFirstCommand.get
   let mut upToStx : Syntax := .missing
+  let mut importIds : Array Syntax := #[]
   let offset : String.Pos := ⟨3⟩
-  if firstPos.isNone then
+  let fm ← getFileMap
+  if Parser.isTerminalCommand stx then
+    let currStart : Substring :=
+      {str := fm.source, startPos := fileStart.startPos, stopPos := fileStart.stopPos}
+    if fileStart != currStart then
+      logWarningAt (.ofRange ⟨fileStart.startPos + ⟨1⟩, fileStart.stopPos⟩)
+        m!"Header information is outdated, please restart the file to get up to date information."
+  let stxRg := stx.getRange?.getD default
+  if fileStart.isEmpty ||
+    stx.getPos?.getD 0 ≤ fileStart.stopPos - (stxRg.stop - stxRg.start) + offset then
     upToStx ← parseUpToHere stx <|> pure Syntax.missing
-    let endOfImports := upToStx.getTailPos?
-    firstCommand.set endOfImports
+    importIds := getImportIds upToStx
+    fileStart := { str      := fm.source
+                   startPos := importIds.back.getTailPos?.getD 0
+                   stopPos  := stx.getTailPos?.getD 0 }
+    fileToFirstCommand.set fileStart
   if upToStx != .missing then
     if (onlyImportsModDocs upToStx).isNone then return
-    firstPos := upToStx.getTailPos?
-    unless stx.getPos?.getD 0 ≤ firstPos.getD 0 + offset do
+    unless stx.getPos?.getD 0 ≤ fileStart.stopPos - (stxRg.stop - stxRg.start) + offset do
       return
     let copyright := match upToStx.getHeadInfo with
       | .original lead .. => lead.toString
-      | _ => default
+      | _ => ""
+    -- copyright report
     for (stx, m) in copyrightHeaderLinter copyright do
       Linter.logLint linter.style.header stx m!"* '{stx.getAtomVal}':\n{m}\n"
-    for (imp, msg) in broadImportsCheck upToStx do
+    -- imports report
+    for (imp, msg) in broadImportsCheck importIds do
       Linter.logLint linter.style.header imp msg
+    -- doc-module report
     if let some false := onlyImportsModDocs upToStx then
       Linter.logLint linter.style.header stx
         m!"The module doc-string for a file should be the first command after the imports.\n\
