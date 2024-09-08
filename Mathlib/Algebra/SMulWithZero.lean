@@ -196,7 +196,7 @@ theorem smul_inv₀ [SMulCommClass α β β] [IsScalarTower α β β] (c : α) (
   obtain rfl | hx := eq_or_ne x 0
   · simp only [inv_zero, smul_zero]
   · refine inv_eq_of_mul_eq_one_left ?_
-    rw [smul_mul_smul, inv_mul_cancel₀ hc, inv_mul_cancel₀ hx, one_smul]
+    rw [smul_mul_smul_comm, inv_mul_cancel₀ hc, inv_mul_cancel₀ hx, one_smul]
 
 end GroupWithZero
 

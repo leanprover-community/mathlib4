@@ -106,10 +106,10 @@ theorem Basis.le_span'' {ι : Type*} [Fintype ι] (b : Basis ι R M) {w : Set M}
   -- We construct a surjective linear map `(w → R) →ₗ[R] (ι → R)`,
   -- by expressing a linear combination in `w` as a linear combination in `ι`.
   fapply card_le_of_surjective' R
-  · exact b.repr.toLinearMap.comp (Finsupp.total w M R (↑))
+  · exact b.repr.toLinearMap.comp (Finsupp.linearCombination R (↑))
   · apply Surjective.comp (g := b.repr.toLinearMap)
     · apply LinearEquiv.surjective
-    rw [← LinearMap.range_eq_top, Finsupp.range_total]
+    rw [← LinearMap.range_eq_top, Finsupp.range_linearCombination]
     simpa using s
 
 /--
@@ -162,7 +162,7 @@ section StrongRankCondition
 
 variable [StrongRankCondition R]
 
-open Submodule
+open Submodule Finsupp
 
 -- An auxiliary lemma for `linearIndependent_le_span'`,
 -- with the additional assumption that the linearly independent family is finite.
@@ -174,11 +174,12 @@ theorem linearIndependent_le_span_aux' {ι : Type*} [Fintype ι] (v : ι → M)
   -- and expressing that (using the axiom of choice) as a linear combination over `w`.
   -- We can do this linearly by constructing the map on a basis.
   fapply card_le_of_injective' R
-  · apply Finsupp.total
+  · apply Finsupp.linearCombination
     exact fun i => Span.repr R w ⟨v i, s (mem_range_self i)⟩
   · intro f g h
-    apply_fun Finsupp.total w M R (↑) at h
-    simp only [Finsupp.total_total, Submodule.coe_mk, Span.finsupp_total_repr] at h
+    apply_fun linearCombination R ((↑) : w → M) at h
+    simp only [linearCombination_linearCombination, Submodule.coe_mk,
+               Span.finsupp_linearCombination_repr] at h
     rw [← sub_eq_zero, ← LinearMap.map_sub] at h
     exact sub_eq_zero.mp (linearIndependent_iff.mp i _ h)
 
