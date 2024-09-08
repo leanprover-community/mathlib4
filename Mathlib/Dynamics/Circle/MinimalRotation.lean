@@ -1,150 +1,111 @@
+/-
+Copyright (c) 2024 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov
+-/
+import Mathlib.Data.Real.Irrational
 import Mathlib.Topology.Instances.AddCircle
-import Mathlib.Topology.Instances.Irrational
-import Mathlib.Topology.Algebra.Order.Archimedean
 
 /-!
+# Irrational rotation is minimal
+
+In this file we prove that the multiples of an irrational element of an `AddCircle` are dense.
 -/
 
 open Set Filter
 open scoped Pointwise Topology
 
-theorem AddSubgroup.dense_xor'_cyclic (s : AddSubgroup ℝ) :
-    Xor' (Dense (s : Set ℝ)) (∃ a, s = .zmultiples a) := by
-  refine s.dense_or_cyclic.imp (fun hd ↦ ⟨hd, ?_⟩) ?_
-  · rintro ⟨a, rfl⟩
+section
+
+variable {G : Type*} [LinearOrderedAddCommGroup G] [DenselyOrdered G] [Archimedean G] [Nontrivial G]
+    [TopologicalSpace G] [OrderTopology G]
+
+theorem AddSubgroup.dense_xor'_cyclic (s : AddSubgroup G) :
+    Xor' (Dense (s : Set G)) (∃ a, s = .zmultiples a) := by
+  if hd : Dense (s : Set G) then
+    simp only [hd, xor_true]
+    rintro ⟨a, rfl⟩
     exact not_denseRange_zsmul a hd
-  · rintro ⟨a, rfl⟩
-    rw [← zmultiples_eq_closure]
-    exact ⟨⟨a, rfl⟩, not_denseRange_zsmul a⟩
+  else
+    simp only [hd, xor_false, id, zmultiples_eq_closure]
+    exact s.dense_or_cyclic.resolve_left hd
+
+theorem AddSubgroup.dense_iff_ne_zmultiples {s : AddSubgroup G} :
+    Dense (s : Set G) ↔ ∀ a, s ≠ .zmultiples a := by
+  simp [xor_iff_iff_not.1 s.dense_xor'_cyclic]
+
+end
+
+theorem dense_addSubgroupClosure_pair_iff {a b : ℝ} :
+    Dense (AddSubgroup.closure {a, b} : Set ℝ) ↔ Irrational (a / b) := by
+  rcases eq_or_ne b 0 with rfl | hb
+  · simp only [insert_eq, AddSubgroup.closure_union, ← AddSubgroup.zmultiples_eq_closure,
+      AddSubgroup.zmultiples_zero_eq_bot, sup_bot_eq, div_zero, not_irrational_zero, iff_false]
+    exact not_denseRange_zsmul a
+  constructor
+  · rintro hd ⟨r, hr⟩
+    refine not_denseRange_zsmul (b / r.den) <| hd.mono ?_
+    rw [← AddSubgroup.coe_zmultiples, SetLike.coe_subset_coe, AddSubgroup.closure_le,
+      AddSubgroup.coe_zmultiples, pair_subset_iff]
+    refine ⟨⟨r.num, ?_⟩, r.den, ?_⟩
+    · field_simp [mul_div_left_comm _ b, ← Rat.cast_def, hr]
+    · field_simp
+  · intro h
+    contrapose! h
+    rcases (AddSubgroup.dense_or_cyclic _).resolve_left h with ⟨c, hc⟩
+    have : {a, b} ⊆ range (· • c : ℤ → ℝ) := by
+      rw [← AddSubgroup.coe_zmultiples, AddSubgroup.zmultiples_eq_closure, ← hc]
+      apply AddSubgroup.subset_closure
+    rcases pair_subset_iff.1 this with ⟨⟨m, rfl⟩, n, rfl⟩
+    simp_all [mul_div_mul_right]
 
 namespace AddCircle
 
-theorem dense_xor_cyclic_addSubgroup {p : ℝ} (hp : p ≠ 0) {s : AddSubgroup (AddCircle p)} :
-    Xor' (Dense (s : Set (AddCircle p))) (∃ a, 0 < addOrderOf a ∧ s = .zmultiples a) := by
-  have : Dense (s : Set (AddCircle p)) ↔ Dense (s.comap (QuotientAddGroup.mk' _) : Set ℝ) :=
-    (QuotientAddGroup.dense_preimage_mk _).symm
-  if hd : Dense (s : Set (AddCircle p)) then
-    simp only [hd, xor_true, not_exists, not_and, (QuotientAddGroup.mk'_surjective _).forall]
-    rintro a ha rfl
-    replace hd : Dense (AddSubgroup.closure {a, p} : Set ℝ) := by
-      rwa [this, ← AddMonoidHom.map_zmultiples, AddSubgroup.comap_map_eq,
-        QuotientAddGroup.ker_mk', AddSubgroup.zmultiples_eq_closure,
-        AddSubgroup.zmultiples_eq_closure, ← AddSubgroup.closure_union, ← Set.insert_eq] at hd
-    obtain ⟨m, n, hn₀, h⟩ : ∃ m n : ℤ, n ≠ 0 ∧ m * (p / n) = a := by
-      simp_rw [addOrderOf_pos_iff, isOfFinAddOrder_iff_zsmul_eq_zero, QuotientAddGroup.coe_mk',
-        ← coe_zsmul, coe_eq_zero_iff, zsmul_eq_mul] at ha
-      rcases ha with ⟨n, hn₀, m, hm⟩
-      refine ⟨m, n, hn₀, ?_⟩
-      rwa [← mul_div_assoc, div_eq_iff (by positivity), mul_comm a]
-    have : AddSubgroup.closure {a, p} ≤ .zmultiples (p / n) := by
-      rw [AddSubgroup.closure_le]
-  else
-    simp only [hd, xor_false, id]
-    obtain ⟨a, ha⟩ : ∃ a, s.comap (QuotientAddGroup.mk' _) = .zmultiples a := by
-      simp only [AddSubgroup.zmultiples_eq_closure]
-      refine (s.comap _).dense_or_cyclic.resolve_left ?_
-      rwa [this] at hd
-    
-  -- rw [← QuotientAddGroup.dense_preimage_mk, ← QuotientAddGroup.coe_mk', ← AddSubgroup.coe_comap,
-  --   xor_iff_iff_not.1 (s.comap _).dense_xor'_cyclic, xor_not_left,
-  --   QuotientAddGroup.mk_surjective.exists]
-  -- simp_rw [addOrderOf_pos_iff, isOfFinAddOrder_iff_zsmul_eq_zero]
-  -- constructor
-  -- · rintro ⟨a, ha⟩
-  --   refine ⟨a, ?_, ?_⟩
-  --   · obtain ⟨m, rfl : m • a = p⟩ : p ∈ AddSubgroup.zmultiples a := by
-  --       simp [← ha, AddCircle.coe_period, zero_mem]
-  --     refine ⟨m, by simp_all, ?_⟩
-  --     rw [← coe_zsmul, coe_period]
-  --   · rw [← QuotientAddGroup.coe_mk', ← AddMonoidHom.map_zmultiples, ← ha,
-  --       AddSubgroup.map_comap_eq_self_of_surjective]
-  --     exact QuotientAddGroup.mk_surjective
-  -- · rintro ⟨a, ha, rfl⟩
-  --   suffices ∃ b, AddSubgroup.closure
-  --   obtain ⟨r, rfl⟩ : ∃ r : ℚ, r * p = a := by
-  --     simp_rw [← coe_zsmul, coe_eq_zero_iff] at ha
-  --     rcases ha with ⟨n, hn₀, m, hm⟩
-  --     rw [zsmul_eq_mul, zsmul_eq_mul, mul_comm _ a, ← div_eq_iff (by positivity),
-  --       mul_div_right_comm] at hm
-  --     use m / n
-  --     simp [hm]
-    
+theorem denseRange_zsmul_coe_iff {a p : ℝ} :
+    DenseRange (· • a : ℤ → AddCircle p) ↔ Irrational (a / p) := by
+  rw [← dense_addSubgroupClosure_pair_iff, DenseRange,
+    ← QuotientAddGroup.dense_preimage_mk, ← QuotientAddGroup.coe_mk',
+    ← AddSubgroup.coe_zmultiples, ← AddSubgroup.coe_comap, ← AddMonoidHom.map_zmultiples,
+    AddSubgroup.comap_map_eq, QuotientAddGroup.ker_mk', AddSubgroup.zmultiples_eq_closure,
+    AddSubgroup.zmultiples_eq_closure, ← AddSubgroup.closure_union, insert_eq]
 
-theorem dense_addSubmonoid_of_accPt_zero {p : ℝ} {S : Type*} [SetLike S (AddCircle p)]
-    [AddSubmonoidClass S (AddCircle p)] {s : S} (hp : p ≠ 0)
-    (h : AccPt (0 : AddCircle p) (𝓟 s)) : Dense (s : Set (AddCircle p)) := by
-  rw [← QuotientAddGroup.dense_preimage_mk, dense_iff_exists_between]
-  intro a b hlt
-  obtain ⟨x, hx₀, hxs, hx⟩ : ∃ x ≠ (0 : ℝ), ↑x ∈ s ∧ |x| < b - a := by
-    set t : Set (AddCircle p) := QuotientAddGroup.mk '' Ioo (a - b) (b - a)
-    have ht : t ∈ 𝓝 0 :=
-      (QuotientAddGroup.isOpenMap_coe _ _ isOpen_Ioo).mem_nhds ⟨0, by simp [hlt], rfl⟩
-    rcases (accPt_iff_nhds ..).1 h t ht with ⟨_, ⟨⟨x, hx, rfl⟩, hxs⟩, hx₀⟩
-    refine ⟨x, ne_of_apply_ne QuotientAddGroup.mk hx₀, hxs, ?_⟩
-    rwa [abs_lt, neg_sub]
-  obtain ⟨c, hc, n, hna, hnb⟩ :
-      ∃ c ∈ AddSubgroup.zmultiples p, ∃ n : ℕ, n • x ∈ Ioo (a + c) (b + c) := by
-    clear! s
-    wlog hltx : 0 < x generalizing a b x
-    · obtain ⟨c, hc, n, hn⟩ :=
-        this (-b) (-a) (by gcongr) (-x) (neg_ne_zero.2 hx₀) (by rw [abs_neg]; linarith)
-          (neg_pos.2 <| hx₀.lt_or_lt.resolve_right hltx)
-      refine ⟨-c, neg_mem hc, n, ?_⟩
-      simpa [add_comm, and_comm] using hn
-    obtain ⟨c, hc, hc₀⟩ : ∃ c ∈ AddSubgroup.zmultiples p, 0 ≤ a + c := by
-      rcases Archimedean.arch (-a) (abs_pos.2 hp) with ⟨n, hn⟩
-      refine ⟨n • |p|, nsmul_mem (abs_mem_iff.2 <| AddSubgroup.mem_zmultiples _) _, ?_⟩
-      linarith
-    use c, hc
-    obtain ⟨n, hna, hn⟩ : ∃ n : ℤ, n • x ∈ Ioc (a + c) (a + c + x) := by
-      simpa only [zero_add] using (existsUnique_add_zsmul_mem_Ioc hltx 0 (a + c)).exists
-    have hn₀ : 0 ≤ n := by
-      contrapose! hna
-      exact (smul_nonpos_of_nonpos_of_nonneg hna.le hltx.le).trans hc₀
-    lift n to ℕ using hn₀
-    refine ⟨n, mod_cast hna, mod_cast (hn.trans_lt ?_)⟩
-    rw [abs_of_pos hltx] at hx
-    linarith
-  refine ⟨n • x - c, ?_, by linarith, by linarith⟩
-  simp only [mem_preimage, QuotientAddGroup.mk_sub, QuotientAddGroup.mk_nsmul,
-    (QuotientAddGroup.eq_zero_iff _).2 hc, sub_zero]
-  exact nsmul_mem hxs _
+theorem denseRange_zsmul_iff' {p : ℝ} {a : AddCircle p} (hp : p ≠ 0) :
+    DenseRange (· • a : ℤ → AddCircle p) ↔ addOrderOf a = 0 := by
+  rcases QuotientAddGroup.mk_surjective a with ⟨a, rfl⟩
+  rw [denseRange_zsmul_coe_iff, addOrderOf_eq_zero_iff, isOfFinAddOrder_iff_nsmul_eq_zero]
+  simp only [← coe_nsmul, coe_eq_zero_iff, not_exists, not_and, zsmul_eq_mul, nsmul_eq_mul]
+  constructor
+  · intro hi n hn m h
+    rw [mul_comm _ a, ← div_eq_div_iff] at h <;> try positivity
+    exact hi.ne_rat (m / n) (mod_cast h.symm)
+  · rintro h ⟨r, hr⟩
+    refine h r.den r.den_pos r.num ?_
+    rw [mul_comm _ a, ← div_eq_div_iff, ← Rat.cast_def, hr] <;> try positivity
 
-theorem dense_zmultiples_tfae (a p : ℝ) :
-    List.TFAE [
-      Dense (AddSubmonoid.multiples (a : AddCircle p) : Set (AddCircle p)),
-      Dense (AddSubgroup.zmultiples (a : AddCircle p) : Set (AddCircle p)),
-      Dense (AddSubgroup.closure {a, p} : Set ℝ),
-      Irrational (a / p)
-    ] := by
-  tfae_have 1 → 2
-  · refine fun h ↦ h.mono <| range_subset_iff.2 fun k ↦ ?_
-    exact ⟨k, mod_cast rfl⟩
-  tfae_have 2 ↔ 3
-  · rw [← QuotientAddGroup.coe_mk', ← AddMonoidHom.map_zmultiples, AddSubgroup.coe_map,
-      QuotientAddGroup.coe_mk', QuotientAddGroup.dense_image_mk,
-      insert_eq, AddSubgroup.closure_union, AddSubgroup.zmultiples_eq_closure,
-      AddSubgroup.zmultiples_eq_closure, AddSubgroup.add_normal]
-  tfae_have 3 → 4
-  · rintro h ⟨q, hq⟩
-    obtain ⟨r, har, hpr⟩ : ∃ r, a ∈ AddSubgroup.zmultiples r ∧ p ∈ AddSubgroup.zmultiples r := by
-      rcases eq_or_ne p 0 with rfl | hp
-      · use a
-        simp [zero_mem]
-      · refine ⟨p / q.den, ⟨q.num, ?_⟩, q.den, ?_⟩
-        · rw [← Rat.num_div_den q, Rat.cast_div] at hq
-          field_simp [mul_comm] at *
-          exact hq
-        · field_simp
-    have : AddSubgroup.closure {a, p} ≤ AddSubgroup.zmultiples r := by
-      simp [pair_subset_iff, AddSubgroup.mem_zmultiples_iff, har, hpr]
-    exact not_denseRange_zsmul r (h.mono this)
-  -- tfae_have 4 → 1
-  -- · intro h
-  --   have hp₀ : p ≠ 0 := by rintro rfl; simp at h
-  --   apply dense_addSubmonoid_of_accPt_zero hp₀
-  --   rw [AddSubmonoid.coe_multiples]
+theorem denseRange_zsmul_iff {p : ℝ} [hp : Fact (0 < p)] {a : AddCircle p} :
+    DenseRange (· • a : ℤ → AddCircle p) ↔ addOrderOf a = 0 :=
+  denseRange_zsmul_iff' hp.out.ne'
+
+theorem dense_addSubgroup_iff_ne_zmultiples' {p : ℝ} (hp : p ≠ 0) {s : AddSubgroup (AddCircle p)} :
+    Dense (s : Set (AddCircle p)) ↔ ∀ a, addOrderOf a ≠ 0 → s ≠ .zmultiples a := by
+  constructor
+  · rintro hd a ha rfl
+    rw [AddSubgroup.coe_zmultiples, ← DenseRange, denseRange_zsmul_iff' hp] at hd
+    exact ha hd
+  · intro h
+    contrapose! h
+    obtain ⟨a, rfl⟩ : ∃ a, s = .zmultiples a := by
+      rw [← QuotientAddGroup.dense_preimage_mk, ← QuotientAddGroup.coe_mk',
+        ← AddSubgroup.coe_comap, xor_iff_not_iff'.1 (AddSubgroup.dense_xor'_cyclic _)] at h
+      rcases h with ⟨a, ha⟩
+      use a
+      rw [← QuotientAddGroup.coe_mk', ← AddMonoidHom.map_zmultiples, ← ha,
+        AddSubgroup.map_comap_eq_self_of_surjective]
+      exact surjective_quot_mk _
+    exact ⟨a, (denseRange_zsmul_iff' hp).not.mp h, rfl⟩
     
-    
+theorem dense_addSubgroup_iff_ne_zmultiples {p : ℝ} [Fact (0 < p)] {s : AddSubgroup (AddCircle p)} :
+    Dense (s : Set (AddCircle p)) ↔ ∀ a, addOrderOf a ≠ 0 → s ≠ .zmultiples a :=
+  dense_addSubgroup_iff_ne_zmultiples' (Fact.out : 0 < p).ne'
 
 end AddCircle
