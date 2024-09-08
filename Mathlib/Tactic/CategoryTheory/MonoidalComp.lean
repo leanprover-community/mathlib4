@@ -53,8 +53,6 @@ class MonoidalCoherence (X Y : C) where
 scoped[CategoryTheory.MonoidalCategory] notation " ⊗𝟙 " =>
   MonoidalCoherence.iso -- type as \ot 𝟙
 
-noncomputable section
-
 /-- Construct an isomorphism between two objects in a monoidal category
 out of unitors and associators. -/
 abbrev monoidalIso (X Y : C) [MonoidalCoherence X Y] : X ≅ Y := MonoidalCoherence.iso
@@ -76,8 +74,6 @@ def monoidalIsoComp {W X Y Z : C} [MonoidalCoherence X Y] (f : W ≅ X) (g : Y �
 @[inherit_doc monoidalIsoComp]
 scoped[CategoryTheory.MonoidalCategory] infixr:80 " ≪⊗≫ " =>
   monoidalIsoComp -- type as \ll \ot \gg
-
-end
 
 namespace MonoidalCoherence
 
