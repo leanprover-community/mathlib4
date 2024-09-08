@@ -231,6 +231,11 @@ def orientationPreservingPregroupoid [FiniteDimensional ℝ E] : Pregroupoid H w
 def orientationPreservingGroupoid [FiniteDimensional ℝ E] : StructureGroupoid H :=
   (orientationPreservingPregroupoid I).groupoid
 
+/-- The groupoid of orientation-preserving `n` times continuously differentiable maps -/
+def contDiffOrientationPreservingGroupoid (n : ℕ∞) (I : ModelWithCorners ℝ E H)
+    [FiniteDimensional ℝ E] : StructureGroupoid H :=
+  (orientationPreservingGroupoid I) ⊓ (contDiffGroupoid n I)
+
 end OrientationPreserving
 
 /-! ### Orientable manifolds -/
@@ -256,7 +261,7 @@ if and only if it admits an atlas which is both smooth and orientable -/
 class OrientableSmoothManifold {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [TopologicalSpace H] (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
     (I : ModelWithCorners ℝ E H) [FiniteDimensional ℝ E] extends
-  HasGroupoid M ((contDiffGroupoid ⊤ I) ⊓ orientationPreservingGroupoid I) : Prop
+  HasGroupoid M (contDiffOrientationPreservingGroupoid ⊤ I) : Prop
 
 end OrientableManifold
 
