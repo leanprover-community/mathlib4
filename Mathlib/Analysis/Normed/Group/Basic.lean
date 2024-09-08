@@ -1413,29 +1413,29 @@ lemma Multiset.iSup_norm_mem_map_of_ne_zero {s : Multiset M} (hs : s ≠ 0) :
 /-- A finset achieves its maximum under a norm for some element. -/
 lemma Finset.Nonempty.iSup_nnnorm_mem_image {s : Finset ι} (hs : s.Nonempty) (f : ι → M) :
     ⨆ x ∈ s, ‖f x‖₊ ∈ s.image (‖f ·‖₊) := by
-  convert (s.1.map f).iSup_nnnorm_mem_map_of_ne_zero ?_
-  · have : Nonempty ι := nonempty_of_exists hs
-    have : Set.Nonempty (s : Set ι) := hs
-    have keyl (i : M) : ⨆ (_ : i ∈ Multiset.map f s.val), ‖i‖₊ = ⨆ (_ : i ∈ f '' s), ‖i‖₊ := by
-      simp
-    rw [iSup_congr keyl, ciSup_image this]
-    · simp
-    · simpa [bddAbove_def] using (s.image _).finite_toSet.bddAbove
-    · simp
-  · simpa [Finset.nonempty_iff_ne_empty] using hs
+  have : Nonempty ι := nonempty_of_exists hs
+  have := (s.1.map f).iSup_nnnorm_mem_map_of_ne_zero
+    (by simpa [Finset.nonempty_iff_ne_empty] using hs)
+  have keyl (i : M) : ⨆ (_ : i ∈ Multiset.map f s.val), ‖i‖₊ = ⨆ (_ : i ∈ f '' s), ‖i‖₊ := by
+    simp
+  rw [iSup_congr keyl, ciSup_image] at this
+  · simpa using this
+  · simpa using hs
+  · simpa [bddAbove_def] using (s.image _).finite_toSet.bddAbove
+  · simp
 
 /-- A finset achieves its maximum under a norm for some element. -/
 lemma Finset.Nonempty.iSup_norm_mem_image {s : Finset ι} (hs : s.Nonempty) (f : ι → M) :
     ⨆ x ∈ s, ‖f x‖ ∈ s.image (‖f ·‖) := by
-  convert (s.1.map f).iSup_norm_mem_map_of_ne_zero ?_
-  · have : Nonempty ι := nonempty_of_exists hs
-    have : Set.Nonempty (s : Set ι) := hs
-    have keyl (i : M) : ⨆ (_ : i ∈ Multiset.map f s.val), ‖i‖ = ⨆ (_ : i ∈ f '' s), ‖i‖ := by
-      simp
-    rw [iSup_congr keyl, ciSup_image this]
-    · simp
-    · simpa [bddAbove_def] using (s.image _).finite_toSet.bddAbove
-    · simpa using Real.iSup_nonneg (by simp)
-  · simpa [Finset.nonempty_iff_ne_empty] using hs
+  have : Nonempty ι := nonempty_of_exists hs
+  have := (s.1.map f).iSup_norm_mem_map_of_ne_zero
+    (by simpa [Finset.nonempty_iff_ne_empty] using hs)
+  have keyl (i : M) : ⨆ (_ : i ∈ Multiset.map f s.val), ‖i‖ = ⨆ (_ : i ∈ f '' s), ‖i‖ := by
+    simp
+  rw [iSup_congr keyl, ciSup_image] at this
+  · simpa using this
+  · simpa using hs
+  · simpa [bddAbove_def] using (s.image _).finite_toSet.bddAbove
+  · simp [Real.iSup_nonneg _]
 
 end ListMultisetFinset
