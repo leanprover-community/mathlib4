@@ -92,7 +92,19 @@ def authorsLineCorrections (line : String) (offset : String.Pos) : Array (Syntax
        s!"Please, do not end the authors' line with a period.")
   return stxs
 
-/-- The main function to validate the copyright string. -/
+/-- The main function to validate the copyright string.
+The input is the copyright string, the output is an array of `Syntax × String` encoding:
+* the `Syntax` factors are atoms whose ranges are "best guesses" for where the changes should
+  take place and the embedded string is the current text that the linter flagged;
+* the `String` factor is the linter message.
+
+The linter checks that
+* the first and last line of the copyright are a `("/-", "-/")` pair, each on its own line;
+* the first line is `begins with `Copyright (c) 20` and ends with `. All rights reserved.`;
+* the second line is `Released under Apache 2.0 license as described in the file LICENSE.`;
+* the remainder of the string begins with `Authors: `, does not end with `.` and
+  contains no ` and ` nor a double space, except possibly after a line break.
+-/
 def copyrightHeaderLinter (copyright : String) : Array (Syntax × String) := Id.run do
   -- filter out everything after the first isolated `-/`
   let pieces := copyright.splitOn "\n-/"
