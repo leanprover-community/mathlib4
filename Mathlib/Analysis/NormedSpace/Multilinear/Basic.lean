@@ -657,17 +657,6 @@ def restrictScalarsₗᵢ : ContinuousMultilinearMap 𝕜 E G →ₗᵢ[𝕜'] C
   map_smul' _ _ := rfl
   norm_map' _ := rfl
 
-/-- `ContinuousMultilinearMap.restrictScalars` as a `ContinuousLinearMap`. -/
-def restrictScalarsLinear : ContinuousMultilinearMap 𝕜 E G →L[𝕜'] ContinuousMultilinearMap 𝕜' E G :=
-  (restrictScalarsₗᵢ 𝕜').toContinuousLinearMap
-
-variable {𝕜'}
-
-theorem continuous_restrictScalars :
-    Continuous
-      (restrictScalars 𝕜' : ContinuousMultilinearMap 𝕜 E G → ContinuousMultilinearMap 𝕜' E G) :=
-  (restrictScalarsLinear 𝕜').continuous
-
 end RestrictScalars
 
 /-- The difference `f m₁ - f m₂` is controlled in terms of `‖f‖` and `‖m₁ - m₂‖`, precise version.
