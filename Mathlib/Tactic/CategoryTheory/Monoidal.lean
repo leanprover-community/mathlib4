@@ -613,7 +613,7 @@ partial def eval (e : Expr) : MonoidalM Result := do
   if let .some α ← structuralAtom? e then
     return ⟨.nil <| .atom α, ← mkEqRefl (← α.e)⟩
   else
-    match e.getAppFnArgs with
+    match (← whnfR e).getAppFnArgs with
     | (``CategoryStruct.id, #[_, _, f]) =>
       return ⟨.nil (.id (← toMor₁ f)), ← mkEqRefl (← mkAppM ``CategoryStruct.id #[f])⟩
     | (``CategoryStruct.comp, #[_, _, _, _, _, η, θ]) =>
