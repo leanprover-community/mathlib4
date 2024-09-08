@@ -68,8 +68,7 @@ theorem norm_lt_cauchyBound_add_one_of_isRoot (p : K[X]) (hp : p ≠ 0) (a : K) 
           field_simp
         _ ≤ cauchyBound p * ((‖a‖ ^ p.natDegree - 1) / (‖a‖ - 1)) * (‖a‖ - 1)
             / ‖a‖ ^ p.natDegree + 1 := by gcongr; linarith
-        _ = cauchyBound p * (‖a‖ ^ p.natDegree - 1)
-            / ‖a‖ ^ p.natDegree + 1 := by
+        _ = cauchyBound p * (‖a‖ ^ p.natDegree - 1) / ‖a‖ ^ p.natDegree + 1 := by
           congr 2
           have : ‖a‖ - 1 ≠ 0 := by linarith
           field_simp
