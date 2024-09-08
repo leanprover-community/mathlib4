@@ -201,8 +201,8 @@ better, is `C^∞` at `0` within `univ`.
 -/
 def ContDiffWithinAt (n : WithTop ℕ∞) (f : E → F) (s : Set E) (x : E) : Prop :=
   match n with
-  | ω => ∀ m : ℕ, ∃ u ∈ 𝓝[insert x s] x, ∃ p : E → FormalMultilinearSeries 𝕜 E F,
-      HasFTaylorSeriesUpToOn m f p u ∧ ∀ i ≤ m, AnalyticWithinOn 𝕜 (fun x ↦ p x i) u
+  | ω => ∃ u ∈ 𝓝[insert x s] x, ∃ p : E → FormalMultilinearSeries 𝕜 E F,
+      HasFTaylorSeriesUpToOn ⊤ f p u ∧ ∀ i, AnalyticWithinOn 𝕜 (fun x ↦ p x i) u
   | (n : ℕ∞) => ∀ m : ℕ, (m : ℕ∞) ≤ n → ∃ u ∈ 𝓝[insert x s] x,
       ∃ p : E → FormalMultilinearSeries 𝕜 E F, HasFTaylorSeriesUpToOn m f p u
 
@@ -210,9 +210,9 @@ variable {𝕜}
 
 lemma ContDiffWithinAt.analyticWithinAt (h : ContDiffWithinAt 𝕜 ω f s x) :
     AnalyticWithinAt 𝕜 f s x := by
-  rcases h 0 with ⟨u, hu, p, hp, h'p⟩
+  rcases h with ⟨u, hu, p, hp, h'p⟩
   have xu : x ∈ u := mem_of_mem_nhdsWithin (mem_insert x s) hu
-  simp only [nonpos_iff_eq_zero, forall_eq] at h'p
+  specialize h'p 0
   have : AnalyticWithinAt 𝕜 (fun x ↦ (continuousMultilinearCurryFin0 𝕜 E F) (p x 0)) (s ∩ u) x :=
     (LinearIsometryEquiv.analyticAt _ _ ).comp_analyticWithinAt ((h'p x xu).mono inter_subset_right)
   have : AnalyticWithinAt 𝕜 f (s ∩ u) x :=
@@ -222,9 +222,9 @@ lemma ContDiffWithinAt.analyticWithinAt (h : ContDiffWithinAt 𝕜 ω f s x) :
 
 theorem contDiffWithinAt_omega_iff_analyticWithinAt [CompleteSpace F] :
     ContDiffWithinAt 𝕜 ω f s x ↔ AnalyticWithinAt 𝕜 f s x := by
-  refine ⟨fun h ↦ h.analyticWithinAt, fun h m ↦ ?_⟩
+  refine ⟨fun h ↦ h.analyticWithinAt, fun h ↦ ?_⟩
   obtain ⟨u, hu, p, hp, h'p⟩ := h.exists_hasFTaylorSeriesUpToOn ⊤
-  exact ⟨u, hu, p, hp.of_le le_top, fun i _ ↦ h'p i⟩
+  exact ⟨u, hu, p, hp.of_le le_top, h'p⟩
 
 theorem contDiffWithinAt_nat {n : ℕ} :
     ContDiffWithinAt 𝕜 n f s x ↔ ∃ u ∈ 𝓝[insert x s] x,
@@ -237,9 +237,9 @@ theorem ContDiffWithinAt.of_le (h : ContDiffWithinAt 𝕜 n f s x) (hmn : m ≤ 
   | ω => match m with
     | ω => exact h
     | (m : ℕ∞) =>
-      intro k _hk
-      rcases h k with ⟨u, hu, p, hp⟩
-      refine ⟨u, hu, p, hp.1⟩
+      intro k _
+      rcases h with ⟨u, hu, p, hp⟩
+      exact ⟨u, hu, p, hp.1.of_le le_top⟩
   | (n : ℕ∞) => match m with
     | ω => simp at hmn
     | (m : ℕ∞) => exact fun k hk ↦ h k (le_trans hk (by exact_mod_cast hmn))
@@ -268,10 +268,9 @@ theorem ContDiffWithinAt.congr_of_eventuallyEq (h : ContDiffWithinAt 𝕜 n f s 
     (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) : ContDiffWithinAt 𝕜 n f₁ s x := by
   match n with
   | ω =>
-    intro m
-    obtain ⟨u, hu, p, H, H'⟩ := h m
-    exact ⟨{ x ∈ u | f₁ x = f x }, Filter.inter_mem hu (mem_nhdsWithin_insert.2 ⟨hx, h₁⟩), p,
-      (H.mono (sep_subset _ _)).congr fun _ ↦ And.right, fun i hi ↦ (H' i hi).mono (sep_subset _ _)⟩
+    obtain ⟨u, hu, p, H, H'⟩ := h
+    exact ⟨{x ∈ u | f₁ x = f x}, Filter.inter_mem hu (mem_nhdsWithin_insert.2 ⟨hx, h₁⟩), p,
+      (H.mono (sep_subset _ _)).congr fun _ ↦ And.right, fun i ↦ (H' i).mono (sep_subset _ _)⟩
   | (n : ℕ∞) =>
     intro m hm
     let ⟨u, hu, p, H⟩ := h m hm
@@ -304,8 +303,7 @@ theorem ContDiffWithinAt.mono_of_mem (h : ContDiffWithinAt 𝕜 n f s x) {t : Se
     (hst : s ∈ 𝓝[t] x) : ContDiffWithinAt 𝕜 n f t x := by
   match n with
   | ω =>
-    intro m
-    obtain ⟨u, hu, p, H, H'⟩ := h m
+    obtain ⟨u, hu, p, H, H'⟩ := h
     exact ⟨u, nhdsWithin_le_of_mem (insert_mem_nhdsWithin_insert hst) hu, p, H, H'⟩
   | (n : ℕ∞) =>
     intro m hm
@@ -435,6 +433,60 @@ theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt' {n : ℕ} :
       insert_eq_of_mem (mem_insert _ _)]
     rintro ⟨u, hu, hus, f', huf', hf'⟩
     exact ⟨u, hu, f', fun y hy => (huf' y hy).insert'.mono hus, hf'.insert.mono hus⟩
+
+
+/-- A function is `C^(n + 1)` on a domain iff locally, it has a derivative which is `C^n`. -/
+theorem glouk :
+    ContDiffWithinAt 𝕜 ω f s x ↔
+      (AnalyticWithinAt 𝕜 f s x ∧
+      ∃ u ∈ 𝓝[insert x s] x, ∃ f' : E → E →L[𝕜] F,
+      (∀ x ∈ u, HasFDerivWithinAt f (f' x) u x) ∧ ContDiffWithinAt 𝕜 ω f' u x) := by
+  constructor
+  · intro h
+    refine ⟨h.analyticWithinAt, ?_⟩
+    obtain ⟨u, hu, p, Hp, hp⟩ := h
+    refine
+      ⟨u, hu, fun y => (continuousMultilinearCurryFin1 𝕜 E F) (p y 1),
+        fun y hy ↦ Hp.hasFDerivWithinAt le_top hy, ?_⟩
+    refine ⟨u, ?_, fun y : E => (p y).shift, ?_, ?_⟩
+    · convert @self_mem_nhdsWithin _ _ x u
+      have : x ∈ insert x s := by simp
+      exact insert_eq_of_mem (mem_of_mem_nhdsWithin this hu)
+    ·
+      rw [hasFTaylorSeriesUpToOn_succ_iff_right] at Hp
+      exact Hp.2.2.of_le hm
+  · rintro ⟨u, hu, f', f'_eq_deriv, Hf'⟩
+    rw [contDiffWithinAt_nat]
+    rcases Hf' n le_rfl with ⟨v, hv, p', Hp'⟩
+    refine ⟨v ∩ u, ?_, fun x => (p' x).unshift (f x), ?_⟩
+    · apply Filter.inter_mem _ hu
+      apply nhdsWithin_le_of_mem hu
+      exact nhdsWithin_mono _ (subset_insert x u) hv
+    · rw [hasFTaylorSeriesUpToOn_succ_iff_right]
+      refine ⟨fun y _ => rfl, fun y hy => ?_, ?_⟩
+      · change
+          HasFDerivWithinAt (fun z => (continuousMultilinearCurryFin0 𝕜 E F).symm (f z))
+            (FormalMultilinearSeries.unshift (p' y) (f y) 1).curryLeft (v ∩ u) y
+        -- Porting note: needed `erw` here.
+        -- https://github.com/leanprover-community/mathlib4/issues/5164
+        erw [LinearIsometryEquiv.comp_hasFDerivWithinAt_iff']
+        convert (f'_eq_deriv y hy.2).mono inter_subset_right
+        rw [← Hp'.zero_eq y hy.1]
+        ext z
+        change ((p' y 0) (init (@cons 0 (fun _ => E) z 0))) (@cons 0 (fun _ => E) z 0 (last 0)) =
+          ((p' y 0) 0) z
+        congr
+        norm_num [eq_iff_true_of_subsingleton]
+      · convert (Hp'.mono inter_subset_left).congr fun x hx => Hp'.zero_eq x hx.1 using 1
+        · ext x y
+          change p' x 0 (init (@snoc 0 (fun _ : Fin 1 => E) 0 y)) y = p' x 0 0 y
+          rw [init_snoc]
+        · ext x k v y
+          change p' x k (init (@snoc k (fun _ : Fin k.succ => E) v y))
+            (@snoc k (fun _ : Fin k.succ => E) v y (last k)) = p' x k v y
+          rw [snoc_last, init_snoc]
+
+#exit
 
 /-! ### Smooth functions within a set -/
 
@@ -713,6 +765,27 @@ theorem contDiffOn_succ_iff_fderivWithin {n : ℕ} (hs : UniqueDiffOn 𝕜 s) :
   have A : fderivWithin 𝕜 f (s ∩ o) y = f' y :=
     ((hff' y (ho hy)).mono ho).fderivWithin (hs.inter o_open y hy)
   rwa [fderivWithin_inter (o_open.mem_nhds hy.2)] at A
+
+/-- A function is `C^(n + 1)` on a domain with unique derivatives if and only if it is
+differentiable there, and its derivative (expressed with `fderivWithin`) is `C^n`. -/
+theorem contDiffOn_omega_iff_fderivWithin {n : ℕ} (hs : UniqueDiffOn 𝕜 s) :
+    ContDiffOn 𝕜 ω f s ↔
+      AnalyticWithinOn 𝕜 f s ∧ ContDiffOn 𝕜 ω (fun y => fderivWithin 𝕜 f s y) s := by
+  refine ⟨fun H => ?_, fun h => contDiffOn_succ_of_fderivWithin h.1 h.2⟩
+  refine ⟨H.differentiableOn (WithTop.coe_le_coe.2 (by simp)), fun x hx => ?_⟩
+  rcases contDiffWithinAt_succ_iff_hasFDerivWithinAt.1 (H x hx) with ⟨u, hu, f', hff', hf'⟩
+  rcases mem_nhdsWithin.1 hu with ⟨o, o_open, xo, ho⟩
+  rw [inter_comm, insert_eq_of_mem hx] at ho
+  have := hf'.mono ho
+  rw [contDiffWithinAt_inter' (mem_nhdsWithin_of_mem_nhds (IsOpen.mem_nhds o_open xo))] at this
+  apply this.congr_of_eventually_eq' _ hx
+  have : o ∩ s ∈ 𝓝[s] x := mem_nhdsWithin.2 ⟨o, o_open, xo, Subset.refl _⟩
+  rw [inter_comm] at this
+  refine Filter.eventuallyEq_of_mem this fun y hy => ?_
+  have A : fderivWithin 𝕜 f (s ∩ o) y = f' y :=
+    ((hff' y (ho hy)).mono ho).fderivWithin (hs.inter o_open y hy)
+  rwa [fderivWithin_inter (o_open.mem_nhds hy.2)] at A
+
 
 theorem contDiffOn_succ_iff_hasFDerivWithin {n : ℕ} (hs : UniqueDiffOn 𝕜 s) :
     ContDiffOn 𝕜 (n + 1 : ℕ) f s ↔
