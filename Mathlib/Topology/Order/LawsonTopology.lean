@@ -179,14 +179,14 @@ lemma lawsonClosed_of_lowerClosed (s : Set α) (h : IsClosed (WithLower.ofLower 
 /-- An upper set is Lawson open if and only if it is Scott open -/
 lemma lawsonOpen_iff_scottOpen_of_isUpperSet {s : Set α} (h : IsUpperSet s) :
     IsOpen (WithLawson.ofLawson ⁻¹' s) ↔ IsOpen (WithScott.ofScott ⁻¹' s) :=
-  ⟨fun hs => IsScott.isOpen_iff_isUpperSet_and_scottHausdorff_open.mpr
+  ⟨fun hs => (IsScott.isOpen_iff_isUpperSet_and_scottHausdorff_open (D := univ)).mpr
     ⟨h, (scottHausdorff_le_lawson s) hs⟩, lawson_le_scott _⟩
 
 variable (L : TopologicalSpace α) (S : TopologicalSpace α)
 variable [@IsLawson α _ L] [@IsScott α univ _ S]
 
 lemma isLawson_le_isScott : L ≤ S := by
-  rw [@IsScott.topology_eq α _ S _, @IsLawson.topology_eq_lawson α _ L _]
+  rw [@IsScott.topology_eq α univ _ S _, @IsLawson.topology_eq_lawson α _ L _]
   exact inf_le_right
 
 lemma scottHausdorff_le_isLawson : scottHausdorff α univ ≤ L := by
@@ -196,7 +196,7 @@ lemma scottHausdorff_le_isLawson : scottHausdorff α univ ≤ L := by
 /-- An upper set is Lawson open if and only if it is Scott open -/
 lemma lawsonOpen_iff_scottOpen_of_isUpperSet' (s : Set α) (h : IsUpperSet s) :
     IsOpen[L] s ↔ IsOpen[S] s := by
-  rw [@IsLawson.topology_eq_lawson α _ L _, @IsScott.topology_eq α _ S _]
+  rw [@IsLawson.topology_eq_lawson α _ L _, @IsScott.topology_eq α univ _ S _]
   exact lawsonOpen_iff_scottOpen_of_isUpperSet h
 
 lemma lawsonClosed_iff_scottClosed_of_isLowerSet (s : Set α) (h : IsLowerSet s) :
@@ -209,7 +209,7 @@ include S in
 lemma lawsonClosed_iff_dirSupClosed_of_isLowerSet (s : Set α) (h : IsLowerSet s) :
     IsClosed[L] s ↔ DirSupClosed s := by
   rw [lawsonClosed_iff_scottClosed_of_isLowerSet L S _ h,
-    @IsScott.isClosed_iff_isLowerSet_and_dirSupClosed]
+    @IsScott.isClosed_iff_isLowerSet_and_dirSupClosed (D := univ)]
   aesop
 
 end Preorder
@@ -228,7 +228,7 @@ lemma singleton_isClosed (a : α) : IsClosed ({a} : Set α) := by
     (lawsonClosed_of_lowerClosed _ (IsLower.isClosed_upperClosure (finite_singleton a)))
   rw [lowerClosure_singleton, LowerSet.coe_Iic, ← WithLawson.isClosed_preimage_ofLawson]
   apply lawsonClosed_of_scottClosed
-  exact IsScott.isClosed_Iic
+  exact IsScott.isClosed_Iic (D := univ)
 
 -- see Note [lower instance priority]
 /-- The Lawson topology on a partial order is T₀. -/
