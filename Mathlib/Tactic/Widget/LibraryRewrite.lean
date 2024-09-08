@@ -38,7 +38,7 @@ When a rewrite lemma introduces new goals, these are shown after a `⊢`.
 
 namespace Mathlib.Tactic.LibraryRewrite
 
-open Lean Meta
+open Lean Meta RefinedDiscrTree
 
 /-- The structure for rewrite lemmas stored in the `RefinedDiscrTree`. -/
 structure RewriteLemma where
@@ -85,7 +85,7 @@ where
 
 /-- Try adding the lemma to the `RefinedDiscrTree`. -/
 def addRewriteEntry (name : Name) (cinfo : ConstantInfo) :
-    MetaM (List (RefinedDiscrTree.Key × RefinedDiscrTree.LazyEntry RewriteLemma)) := do
+    MetaM (List (Key × LazyEntry RewriteLemma)) := do
   if name matches .str _ "injEq" | .str _ "sizeOf_spec" then
     return []
   let .const head _ := cinfo.type.getForallBody.getAppFn | return []
@@ -102,13 +102,13 @@ def addRewriteEntry (name : Name) (cinfo : ConstantInfo) :
       if badMatch rhs then
         return []
       else
-        RefinedDiscrTree.initializeLazyEntry rhs { name, symm := true } {}
+        initializeLazyEntry rhs { name, symm := true } {}
     else
-      let result ← RefinedDiscrTree.initializeLazyEntry lhs { name, symm := false } {}
+      let result ← initializeLazyEntry lhs { name, symm := false } {}
       if badMatch rhs || isMVarSwap lhs rhs then
         return result
       else
-        return result ++ (← RefinedDiscrTree.initializeLazyEntry rhs { name, symm := true } {})
+        return result ++ (← initializeLazyEntry rhs { name, symm := true } {})
   match eqn.eq? with
   | some (_, lhs, rhs) => cont lhs rhs
   | none => match eqn.iff? with
@@ -116,12 +116,12 @@ def addRewriteEntry (name : Name) (cinfo : ConstantInfo) :
     | none => return []
 /-- Try adding the local hypothesis to the `RefinedDiscrTree`. -/
 def addLocalRewriteEntry (decl : LocalDecl) :
-    MetaM (List (RefinedDiscrTree.Key × RefinedDiscrTree.LazyEntry (FVarId × Bool))) :=
+    MetaM (List (Key × LazyEntry (FVarId × Bool))) :=
   withReducible do
   let (_,_,eqn) ← forallMetaTelescope decl.type
   let cont lhs rhs := do
-    let result ← RefinedDiscrTree.initializeLazyEntry lhs (decl.fvarId, false) {}
-    return result ++ (← RefinedDiscrTree.initializeLazyEntry rhs (decl.fvarId, true) {})
+    let result ← initializeLazyEntry lhs (decl.fvarId, false) {}
+    return result ++ (← initializeLazyEntry rhs (decl.fvarId, true) {})
   match ← matchEq? eqn with
   | some (_, lhs, rhs) => cont lhs rhs
   | none => match eqn.iff? with
@@ -166,7 +166,7 @@ can be excluded.
 Exclude lemmas from modules
 in the `librarySearch.excludedModules` option. -/
 def getImportCandidates (e : Expr) : MetaM (Array (Array RewriteLemma)) := do
-  let matchResult ← RefinedDiscrTree.findImportMatches importedRewriteLemmasExt addRewriteEntry
+  let matchResult ← findImportMatches importedRewriteLemmasExt addRewriteEntry
     /-
     5000 constants seems to be approximately the right number of tasks
     Too many means the tasks are too long.
@@ -188,8 +188,8 @@ def getImportCandidates (e : Expr) : MetaM (Array (Array RewriteLemma)) := do
 /-- Get all potential rewrite lemmas from the current file. Exclude lemmas from modules
 in the `librarySearch.excludedModules` option. -/
 def getModuleCandidates (e : Expr) : MetaM (Array (Array RewriteLemma)) := do
-  let moduleTreeRef ← RefinedDiscrTree.createModuleTreeRef addRewriteEntry
-  let matchResult ← RefinedDiscrTree.findModuleMatches moduleTreeRef e
+  let moduleTreeRef ← createModuleTreeRef addRewriteEntry
+  let matchResult ← findModuleMatches moduleTreeRef e
   return matchResult.elts.reverse.concatMap id
 
 
@@ -279,14 +279,11 @@ def getModuleRewrites (e : Expr) : MetaM (Array (Array (Rewrite × Name))) := do
 
 /-- Construct the `RefinedDiscrTree` of all local hypotheses. -/
 def getHypotheses (except : Option FVarId) : MetaM (RefinedDiscrTree (FVarId × Bool)) := do
-  let mut tree : RefinedDiscrTree.PreDiscrTree (FVarId × Bool) := {}
-  let mut x := #[]
+  let mut tree : PreDiscrTree (FVarId × Bool) := {}
   for decl in ← getLCtx do
     if !decl.isImplementationDetail && except.all (· != decl.fvarId) then
       for (key, entry) in ← addLocalRewriteEntry decl do
         tree := tree.push key entry
-        x := x.push (key :: (← entry.toList {}))
-  -- throwError "{x}"
   return tree.toLazy
 
 /-- Return all applicable hypothesis rewrites of `e`. Similar to `getImportRewrites`. -/

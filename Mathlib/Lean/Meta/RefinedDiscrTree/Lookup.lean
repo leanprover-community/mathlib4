@@ -274,3 +274,5 @@ def getMatch (d : RefinedDiscrTree α) (e : Expr) (unify matchRootStar : Bool) :
         getMatchLoop todo (← matchTreeRootStar d.root) unify
       else
         getMatchLoop todo {} unify
+
+end Lean.Meta.RefinedDiscrTree

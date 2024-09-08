@@ -3,6 +3,7 @@ Copyright (c) 2024 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
+import Mathlib.Init
 import Lean.Meta.WHNF
 
 /-!
@@ -50,16 +51,16 @@ to get the same contant name with a different arity.
 So for performance, we just use `hash name` to hash `.const name _`.
 -/
 private nonrec def Key.hash : Key → UInt64
-  | .star id             => mixHash 7883 $ hash id
+  | .star id             => mixHash 7883 <| hash id
   | .opaque              => 342
   | .const name _        => hash name
-  | .fvar fvarId nargs   => mixHash 8765 $ mixHash (hash fvarId) (hash nargs)
-  | .bvar idx nargs      => mixHash 4323 $ mixHash (hash idx) (hash nargs)
-  | .lit v               => mixHash 1879 $ hash v
+  | .fvar fvarId nargs   => mixHash 8765 <| mixHash (hash fvarId) (hash nargs)
+  | .bvar idx nargs      => mixHash 4323 <| mixHash (hash idx) (hash nargs)
+  | .lit v               => mixHash 1879 <| hash v
   | .sort                => 2411
   | .lam                 => 4742
   | .«forall»            => 9752
-  | .proj name idx nargs => mixHash (hash nargs) $ mixHash (hash name) (hash idx)
+  | .proj name idx nargs => mixHash (hash nargs) <| mixHash (hash name) (hash idx)
 
 instance : Hashable Key := ⟨Key.hash⟩
 
@@ -113,8 +114,8 @@ instance : ToFormat Key := ⟨Key.format⟩
 Converts an entry (i.e., `List Key`) to the discrimination tree into
 `MessageData` that is more user-friendly.
 -/
-partial def keysAsPattern (keys : List Key) : CoreM MessageData := do
-  let (msg, keys) ← go (paren := false) |>.run keys
+partial def keysAsPattern (keys : Array Key) : CoreM MessageData := do
+  let (msg, keys) ← go (paren := false) |>.run keys.toList
   if !keys.isEmpty then
     throwError "illegal discrimination tree entry: {keys.map Key.format}"
   return msg
@@ -293,3 +294,5 @@ where
       lines.foldl (init := lines[0]) (· ++ Format.line ++ ·) (start := 1)
 
 instance [ToFormat α] : ToFormat (RefinedDiscrTree α) := ⟨format⟩
+
+end Lean.Meta.RefinedDiscrTree

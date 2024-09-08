@@ -439,15 +439,15 @@ private def evalLazyEntry' (entry : LazyEntry α) (config : WhnfCoreConfig) :
 
 /-- Return all encodings of `e` as a `Array Key`.
 This is used for inserting `e` into a `RefinedDiscrTree`. -/
-partial def encodeExpr (e : Expr) (config : WhnfCoreConfig) : MetaM (Array (List Key)) :=
+partial def encodeExpr (e : Expr) (config : WhnfCoreConfig) : MetaM (Array (Array Key)) :=
   withReducible do
     let entries ← initializeLazyEntry e () config
-    let entries := entries.map fun (key, entry) => ([key], entry)
+    let entries := entries.map fun (key, entry) => (#[key], entry)
     go entries.toArray #[]
 where
   /-- The main loop for `encodeExpr`. -/
-  go (todo : Array (List Key × LazyEntry Unit)) (result : Array (List Key)) :
-      MetaM (Array (List Key)) := do
+  go (todo : Array (Array Key × LazyEntry Unit)) (result : Array (Array Key)) :
+      MetaM (Array (Array Key)) := do
     if todo.isEmpty then
       return result
     else
@@ -455,11 +455,15 @@ where
       let todo := todo.pop
       match ← evalLazyEntry entry config with
       | .inl xs =>
-        let todo := xs.foldl (init := todo) fun todo (key, entry) =>
-          todo.push (key :: keys, entry)
-        go todo result
+        -- This variation on `List.fold` ensures that `keys` isn't copied unnecessarily.
+        let rec fold xs todo :=
+          match xs with
+          | [] => todo
+          | (key, entry) :: [] => todo.push (keys.push key, entry)
+          | (key, entry) :: xs => fold xs (todo.push (keys.push key, entry))
+        go (fold xs todo) result
       | .inr () =>
-        go todo (result.push keys.reverse)
+        go todo (result.push keys)
 
 /-- Evaluate all of the keys from a `LazyEntry α`. -/
 def LazyEntry.toList (entry : LazyEntry α) (config : WhnfCoreConfig) : MetaM (List Key) := do
@@ -475,3 +479,5 @@ This is used for looking up `e` in a `RefinedDiscrTree`. -/
 def encodeExpr' (e : Expr) (config : WhnfCoreConfig) : MetaM (Key × List Key) := withReducible do
   let (key, entry) ← initializeLazyEntry' e () config
   return (key, ← entry.toList config)
+
+end Lean.Meta.RefinedDiscrTree

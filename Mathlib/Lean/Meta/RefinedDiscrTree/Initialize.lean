@@ -262,6 +262,8 @@ Creates reference for lazy discriminator tree that only contains this module's d
 -/
 def createModuleTreeRef (act : Name → ConstantInfo → MetaM (List (Key × LazyEntry α))) :
     MetaM (ModuleDiscrTreeRef α) := do
-  profileitM Exception "build module discriminator tree" (←getOptions) $ do
+  profileitM Exception "build module discriminator tree" (← getOptions) do
     let t ← createModuleDiscrTree act
     pure { ref := ← IO.mkRef t }
+
+end Lean.Meta.RefinedDiscrTree

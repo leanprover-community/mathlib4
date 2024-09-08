@@ -118,7 +118,7 @@ def findImportMatches
   setNGen ngen
   let dummy : IO.Ref (Option (RefinedDiscrTree α)) ← IO.mkRef none
   let ref := @EnvExtension.getState _ ⟨dummy⟩ ext (← getEnv)
-  let importTree ← (← ref.get).getDM $ do
+  let importTree ← (← ref.get).getDM do
     profileitM Exception  "lazy discriminator import initialization" (← getOptions) <|
       createImportedDiscrTree
         (treeCtx cctx) cNGen (← getEnv) addEntry constantsPerTask capacityPerTask config
@@ -133,7 +133,7 @@ Returns candidates from this module in this module that match the expression.
 this module's definitions.
 -/
 def findModuleMatches (moduleRef : ModuleDiscrTreeRef α) (ty : Expr) : MetaM (MatchResult α) := do
-  profileitM Exception  "lazy discriminator local search" (← getOptions) $ do
+  profileitM Exception  "lazy discriminator local search" (← getOptions) do
     let discrTree ← moduleRef.ref.get
     let (localCandidates, localTree) ← getMatch discrTree ty false false
     moduleRef.ref.set localTree
@@ -184,3 +184,5 @@ def findMatches (ext : EnvExtension (IO.Ref (Option (RefinedDiscrTree α))))
     (config : WhnfCoreConfig := {}) : MetaM (MatchResult α × MatchResult α) := do
   let moduleTreeRef ← createModuleTreeRef addEntry
   findMatchesExt moduleTreeRef ext addEntry ty constantsPerTask capacityPerTask config
+
+end Lean.Meta.RefinedDiscrTree
