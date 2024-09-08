@@ -42,7 +42,7 @@ lemma norm_map (φ : F) (hφ : Function.Injective φ) (a : A) : ‖φ a‖ = ‖
   suffices ∀ a, IsSelfAdjoint a → spectrum ℝ (ψ a) = spectrum ℝ a from
     have ha : IsSelfAdjoint (star a * a) := .star_mul_self a
     calc ‖ψ (star a * a)‖ = (spectralRadius ℝ (ψ (star a * a))).toReal :=
-        ha.starHom_apply ψ |>.toReal_spectralRadius_eq_norm.symm
+        ha.map ψ |>.toReal_spectralRadius_eq_norm.symm
       _ = (spectralRadius ℝ (star a * a)).toReal := by simp only [spectralRadius, this _ ha]
       _ = ‖star a * a‖ := ha.toReal_spectralRadius_eq_norm
   /- so suppose that `a` is selfadjoint. The inclusion `specturm ℝ (ψ a) ⊆ spectrum ℝ a` is
