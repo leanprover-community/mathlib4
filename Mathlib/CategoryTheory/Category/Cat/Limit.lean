@@ -158,7 +158,8 @@ instance : PreservesLimits Cat.objects.{v, v} where
           (Limits.IsLimit.ofIsoLimit (limit.isLimit (F ⋙ Cat.objects))
             (Cones.ext (by rfl) (by aesop_cat))) }
 
-/-- The category of small categories has all small colimits as a reflective subcategory of the category of simplicial sets, which has all small colimits.-/
+/-- The category of small categories has all small colimits as a reflective subcategory of the
+category of simplicial sets, which has all small colimits.-/
 
 instance : HasColimits Cat.{v, v} :=
   hasColimits_of_reflective nerveFunctor
