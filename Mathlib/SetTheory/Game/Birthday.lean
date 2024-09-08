@@ -292,7 +292,7 @@ theorem small_of_bounded_birthday (o : Ordinal) : Small.{u} {x : Game.{u} // bir
       suffices {x | x.birthday = a} ⊆ Set.range f from small_subset this
       intro x hx
       obtain ⟨y, hy, hy'⟩ := birthday_eq_pGame_birthday x
-      let g : S → Prop × Prop := fun z ↦ (∃ i, ⟦y.moveLeft i⟧ = z.1, ∃ j, ⟦y.moveRight j⟧ = z.1)
+      let g := fun z : S ↦ (∃ i, ⟦y.moveLeft i⟧ = z.1, ∃ j, ⟦y.moveRight j⟧ = z.1)
       use g
       rw [← hy]
       apply PGame.game_eq <| PGame.equiv_of_exists _ _ _ _ <;>
@@ -308,13 +308,15 @@ theorem small_of_bounded_birthday (o : Ordinal) : Small.{u} {x : Game.{u} // bir
           refine ⟨_, le_of_eq hx, ?_⟩
           rw [← hy']
           exact (birthday_le_pGame_birthday _).trans_lt (PGame.birthday_moveLeft_lt i)
-        · simpa using Quotient.mk_out _
+        · rw [PGame.moveLeft_mk, Equiv.symm_apply_apply]
+          exact Quotient.mk_out _
       · refine ⟨(equivShrink {y // (g y).2}) ⟨⟨⟦y.moveRight i⟧, ?_⟩, i, rfl⟩, ?_⟩
         · suffices ∃ b ≤ a, birthday ⟦y.moveRight i⟧ < b from by simpa [S] using this
           refine ⟨_, le_of_eq hx, ?_⟩
           rw [← hy']
           exact (birthday_le_pGame_birthday _).trans_lt (PGame.birthday_moveRight_lt i)
-        · simpa using Quotient.mk_out _
+        · rw [PGame.moveRight_mk, Equiv.symm_apply_apply]
+          exact Quotient.mk_out _
   · convert H
     change birthday _ < o ↔ ∃ a, _
     simpa using lt_limit ho
