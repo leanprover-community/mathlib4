@@ -37,7 +37,7 @@ It logs details of what the linter would report if the `cop` is "malformed".
 -/
 elab "#check_copyright " cop:str : command => do
   let cop := cop.getString
-  for (s, m) in Mathlib.Linter.copyrightHeaderLinter cop do
+  for (s, m) in Mathlib.Linter.copyrightHeaderChecks cop do
     match s.getRange? with
       | none => logWarning "Should have range"
       | some rg =>
@@ -86,8 +86,8 @@ Authors: Name LastName
 -/"
 
 /--
-info: Text: `Cpyright (c) 2`
-Range: (3, 17)
+info: Text: `Cpyright (c) 202`
+Range: (3, 19)
 Message: 'Copyright line should start with 'Copyright (c) YYYY''
 -/
 #guard_msgs in
@@ -100,8 +100,8 @@ Authors: Name LastName
 "
 
 /--
-info: Text: ` All rights reserve.`
-Range: (36, 56)
+info: Text: `a. All rights reserve.`
+Range: (34, 56)
 Message: 'Copyright line should end with '. All rights reserved.''
 -/
 #guard_msgs in
