@@ -26,21 +26,25 @@ Used by the `⊗≫` bicategorical composition operator, and the `coherence` tac
 -/
 class BicategoricalCoherence (f g : a ⟶ b) where
   /-- The chosen structural isomorphism between to 1-morphisms. -/
-  hom : f ⟶ g
-  [isIso : IsIso hom]
+  iso : f ≅ g
+  -- [isIso : IsIso hom]
+
+@[inherit_doc BicategoricalCoherence.iso]
+abbrev BicategoricalCoherence.hom {f g : a ⟶ b} [BicategoricalCoherence f g] : f ⟶ g :=
+  BicategoricalCoherence.iso.hom
 
 /-- Notation for identities up to unitors and associators. -/
 scoped[CategoryTheory.Bicategory] notation " ⊗𝟙 " =>
   BicategoricalCoherence.hom -- type as \ot 𝟙
 
-attribute [instance] BicategoricalCoherence.isIso
+-- attribute [instance] BicategoricalCoherence.isIso
 
 noncomputable section
 
 /-- Construct an isomorphism between two objects in a bicategorical category
 out of unitors and associators. -/
-def bicategoricalIso (f g : a ⟶ b) [BicategoricalCoherence f g] : f ≅ g :=
-  asIso ⊗𝟙
+abbrev bicategoricalIso (f g : a ⟶ b) [BicategoricalCoherence f g] : f ≅ g :=
+  BicategoricalCoherence.iso
 
 /-- Compose two morphisms in a bicategorical category,
 inserting unitors and associators between as necessary. -/
@@ -56,7 +60,7 @@ scoped[CategoryTheory.Bicategory] infixr:80 " ⊗≫ " => bicategoricalComp
 inserting unitors and associators between as necessary. -/
 def bicategoricalIsoComp {f g h i : a ⟶ b} [BicategoricalCoherence g h]
     (η : f ≅ g) (θ : h ≅ i) : f ≅ i :=
-  η ≪≫ asIso ⊗𝟙 ≪≫ θ
+  η ≪≫ BicategoricalCoherence.iso ≪≫ θ
 
 @[inherit_doc bicategoricalIsoComp]
 scoped[CategoryTheory.Bicategory] infixr:80 " ≪⊗≫ " =>
@@ -66,65 +70,65 @@ namespace BicategoricalCoherence
 
 @[simps]
 instance refl (f : a ⟶ b) : BicategoricalCoherence f f :=
-  ⟨𝟙 _⟩
+  ⟨Iso.refl _⟩
 
 @[simps]
 instance whiskerLeft (f : a ⟶ b) (g h : b ⟶ c)
     [BicategoricalCoherence g h] : BicategoricalCoherence (f ≫ g) (f ≫ h) :=
-  ⟨f ◁ ⊗𝟙⟩
+  ⟨whiskerLeftIso f BicategoricalCoherence.iso⟩
 
 @[simps]
 instance whiskerRight (f g : a ⟶ b) (h : b ⟶ c)
     [BicategoricalCoherence f g] : BicategoricalCoherence (f ≫ h) (g ≫ h) :=
-  ⟨⊗𝟙 ▷ h⟩
+  ⟨whiskerRightIso BicategoricalCoherence.iso h⟩
 
 @[simps]
 instance tensorRight (f : a ⟶ b) (g : b ⟶ b)
     [BicategoricalCoherence (𝟙 b) g] : BicategoricalCoherence f (f ≫ g) :=
-  ⟨(ρ_ f).inv ≫ f ◁ ⊗𝟙⟩
+  ⟨(ρ_ f).symm ≪≫ (whiskerLeftIso f BicategoricalCoherence.iso)⟩
 
 @[simps]
 instance tensorRight' (f : a ⟶ b) (g : b ⟶ b)
     [BicategoricalCoherence g (𝟙 b)] : BicategoricalCoherence (f ≫ g) f :=
-  ⟨f ◁ ⊗𝟙 ≫ (ρ_ f).hom⟩
+  ⟨whiskerLeftIso f BicategoricalCoherence.iso ≪≫ (ρ_ f)⟩
 
 @[simps]
 instance left (f g : a ⟶ b) [BicategoricalCoherence f g] :
     BicategoricalCoherence (𝟙 a ≫ f) g :=
-  ⟨(λ_ f).hom ≫ ⊗𝟙⟩
+  ⟨λ_ f ≪≫ BicategoricalCoherence.iso⟩
 
 @[simps]
 instance left' (f g : a ⟶ b) [BicategoricalCoherence f g] :
     BicategoricalCoherence f (𝟙 a ≫ g) :=
-  ⟨⊗𝟙 ≫ (λ_ g).inv⟩
+  ⟨BicategoricalCoherence.iso ≪≫ (λ_ g).symm⟩
 
 @[simps]
 instance right (f g : a ⟶ b) [BicategoricalCoherence f g] :
     BicategoricalCoherence (f ≫ 𝟙 b) g :=
-  ⟨(ρ_ f).hom ≫ ⊗𝟙⟩
+  ⟨ρ_ f ≪≫ BicategoricalCoherence.iso⟩
 
 @[simps]
 instance right' (f g : a ⟶ b) [BicategoricalCoherence f g] :
     BicategoricalCoherence f (g ≫ 𝟙 b) :=
-  ⟨⊗𝟙 ≫ (ρ_ g).inv⟩
+  ⟨BicategoricalCoherence.iso ≪≫ (ρ_ g).symm⟩
 
 @[simps]
 instance assoc (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : a ⟶ d)
     [BicategoricalCoherence (f ≫ g ≫ h) i] :
     BicategoricalCoherence ((f ≫ g) ≫ h) i :=
-  ⟨(α_ f g h).hom ≫ ⊗𝟙⟩
+  ⟨α_ f g h ≪≫ BicategoricalCoherence.iso⟩
 
 @[simps]
 instance assoc' (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : a ⟶ d)
     [BicategoricalCoherence i (f ≫ g ≫ h)] :
     BicategoricalCoherence i ((f ≫ g) ≫ h) :=
-  ⟨⊗𝟙 ≫ (α_ f g h).inv⟩
+  ⟨BicategoricalCoherence.iso ≪≫ (α_ f g h).symm⟩
 
 end BicategoricalCoherence
 
 @[simp]
 theorem bicategoricalComp_refl {f g h : a ⟶ b} (η : f ⟶ g) (θ : g ⟶ h) : η ⊗≫ θ = η ≫ θ := by
-  dsimp [bicategoricalComp]; simp
+  dsimp [bicategoricalComp, BicategoricalCoherence.hom]; simp
 
 example {f' : a ⟶ d} {f : a ⟶ b} {g : b ⟶ c} {h : c ⟶ d} {h' : a ⟶ d} (η : f' ⟶ f ≫ g ≫ h)
     (θ : (f ≫ g) ≫ h ⟶ h') : f' ⟶ h' :=

@@ -6,7 +6,7 @@ Authors: Scott Morrison
 import Mathlib.CategoryTheory.Monoidal.Discrete
 import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
 import Mathlib.CategoryTheory.Monoidal.Opposite
-import Mathlib.Tactic.CategoryTheory.Coherence
+import Mathlib.Tactic.CategoryTheory.CoherenceNew
 import Mathlib.CategoryTheory.CommSq
 
 /-!
@@ -574,23 +574,19 @@ theorem tensor_right_unitality (X₁ X₂ : C) :
     rightUnitor_inv_braiding]
   simp [tensorHom_id, id_tensorHom, tensorHom_def]
 
+@[reassoc]
 theorem tensor_associativity (X₁ X₂ Y₁ Y₂ Z₁ Z₂ : C) :
     (tensor_μ C (X₁, X₂) (Y₁, Y₂) ▷ (Z₁ ⊗ Z₂)) ≫
         tensor_μ C (X₁ ⊗ Y₁, X₂ ⊗ Y₂) (Z₁, Z₂) ≫ ((α_ X₁ Y₁ Z₁).hom ⊗ (α_ X₂ Y₂ Z₂).hom) =
       (α_ (X₁ ⊗ X₂) (Y₁ ⊗ Y₂) (Z₁ ⊗ Z₂)).hom ≫
         ((X₁ ⊗ X₂) ◁ tensor_μ C (Y₁, Y₂) (Z₁, Z₂)) ≫ tensor_μ C (X₁, X₂) (Y₁ ⊗ Z₁, Y₂ ⊗ Z₂) := by
-  dsimp only [tensor_obj, prodMonoidal_tensorObj, tensor_μ]
-  simp only [whiskerRight_tensor, comp_whiskerRight, whisker_assoc, assoc, Iso.inv_hom_id_assoc,
-    tensor_whiskerLeft, braiding_tensor_left, MonoidalCategory.whiskerLeft_comp,
-    braiding_tensor_right]
+  dsimp only [tensor_μ]
+  simp only [braiding_tensor_left, braiding_tensor_right]
   calc
     _ = 𝟙 _ ⊗≫
       X₁ ◁ ((β_ X₂ Y₁).hom ▷ (Y₂ ⊗ Z₁) ≫ (Y₁ ⊗ X₂) ◁ (β_ Y₂ Z₁).hom) ▷ Z₂ ⊗≫
         X₁ ◁ Y₁ ◁ (β_ X₂ Z₁).hom ▷ Y₂ ▷ Z₂ ⊗≫ 𝟙 _ := by coherence
     _ = _ := by rw [← whisker_exchange]; coherence
-
--- We got a timeout if `reassoc` was at the declaration, so we put it here instead.
-attribute [reassoc] tensor_associativity
 
 /-- The tensor product functor from `C × C` to `C` as a monoidal functor. -/
 @[simps!]
@@ -623,7 +619,6 @@ theorem leftUnitor_monoidal (X₁ X₂ : C) :
     coherence
   rw [this]; clear this
   rw [← braiding_leftUnitor]
-  dsimp only [tensor_obj, prodMonoidal_tensorObj]
   coherence
 
 @[reassoc]
@@ -638,7 +633,6 @@ theorem rightUnitor_monoidal (X₁ X₂ : C) :
     coherence
   rw [this]; clear this
   rw [← braiding_rightUnitor]
-  dsimp only [tensor_obj, prodMonoidal_tensorObj]
   coherence
 
 theorem associator_monoidal (X₁ X₂ X₃ Y₁ Y₂ Y₃ : C) :
@@ -650,8 +644,13 @@ theorem associator_monoidal (X₁ X₂ X₃ Y₁ Y₂ Y₃ : C) :
   calc
     _ = 𝟙 _ ⊗≫ X₁ ◁ X₂ ◁ (β_ X₃ Y₁).hom ▷ Y₂ ▷ Y₃ ⊗≫
       X₁ ◁ ((X₂ ⊗ Y₁) ◁ (β_ X₃ Y₂).hom ≫
-        (β_ X₂ Y₁).hom ▷ (Y₂ ⊗ X₃)) ▷ Y₃ ⊗≫ 𝟙 _ := by simp; coherence
-    _ = _ := by rw [whisker_exchange]; simp; coherence
+        (β_ X₂ Y₁).hom ▷ (Y₂ ⊗ X₃)) ▷ Y₃ ⊗≫ 𝟙 _ := by
+      simp only [braiding_tensor_right]
+      coherence
+    _ = _ := by
+      rw [whisker_exchange]
+      simp only [braiding_tensor_left]
+      coherence
 
 -- We got a timeout if `reassoc` was at the declaration, so we put it here instead.
 attribute [reassoc] associator_monoidal
