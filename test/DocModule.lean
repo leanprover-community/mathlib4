@@ -5,18 +5,19 @@ Authors: Damiano Testa
 -/
 
 import Mathlib.Tactic.Linter.DocModule
-import /- -/ Mathlib.Tactic -- the `TextBased` linter may not flag this `broadImport`
+import /- -/ Mathlib.Tactic -- the `TextBased` linter does not flag this `broadImport`
 
 /--
 warning: Files in mathlib cannot import the whole tactic folder.
 note: this linter can be disabled with `set_option linter.style.header false`
 ---
 warning: The module doc-string for a file should be the first command after the imports.
-Please, add a module doc-string before `/-!# Tests for the `docModule` linter
--/
-`.
+Please, add a module doc-string before `set_option linter.style.header true`.
+note: this linter can be disabled with `set_option linter.style.header false`
 -/
 #guard_msgs in
+set_option linter.style.header true
+
 /-!
 # Tests for the `docModule` linter
 -/
