@@ -349,10 +349,11 @@ theorem map_pi {ι : Type*} [Finite ι] {ι' : Type w} (x : ι → R) (hi : ∀ 
 
 end Pi
 
-/-- A ring is made up of a disjoint union of cosets of an image. -/
+open scoped Pointwise in
+/-- A ring is made up of a disjoint union of cosets of an ideal. -/
 lemma univ_eq_iUnion_image_add {R : Type*} [Ring R] (I : Ideal R) :
-    (Set.univ (α := R)) = ⋃ x : R ⧸ I, (x.out' + ·) '' I :=
-  QuotientAddGroup.univ_eq_iUnion_image_add I.toAddSubgroup
+    (Set.univ (α := R)) = ⋃ x : R ⧸ I, x.out' +ᵥ (I : Set R) :=
+  QuotientAddGroup.univ_eq_iUnion_vadd I.toAddSubgroup
 
 lemma _root_.Finite.of_finite_quot_finite_ideal {R : Type*} [Ring R] {I : Ideal R}
     [hI : Finite I] [h : Finite (R ⧸ I)] : Finite R :=

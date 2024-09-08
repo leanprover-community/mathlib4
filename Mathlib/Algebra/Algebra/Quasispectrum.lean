@@ -259,6 +259,30 @@ instance quasispectrum.instZero [Nontrivial R] (a : A) : Zero (quasispectrum R a
 
 variable {R}
 
+/-- A version of `NonUnitalAlgHom.quasispectrum_apply_subset` which allows for `quasispectrum R`,
+where `R` is a *semi*ring, but `φ` must still function over a scalar ring `S`. In this case, we
+need `S` to be explicit. The primary use case is, for instance, `R := ℝ≥0` and `S := ℝ` or
+`S := ℂ`. -/
+lemma NonUnitalAlgHom.quasispectrum_apply_subset' {F R : Type*} (S : Type*) {A B : Type*}
+    [CommSemiring R] [CommRing S] [NonUnitalRing A] [NonUnitalRing B] [Module R S]
+    [Module S A] [Module R A] [Module S B] [Module R B] [IsScalarTower R S A] [IsScalarTower R S B]
+    [FunLike F A B] [NonUnitalAlgHomClass F S A B] (φ : F) (a : A) :
+    quasispectrum R (φ a) ⊆ quasispectrum R a := by
+  refine Set.compl_subset_compl.mp fun x ↦ ?_
+  simp only [quasispectrum, Set.mem_compl_iff, Set.mem_setOf_eq, not_forall, not_not,
+    forall_exists_index]
+  refine fun hx this ↦ ⟨hx, ?_⟩
+  rw [Units.smul_def, ← smul_one_smul S] at this ⊢
+  simpa [- smul_assoc] using this.map φ
+
+/-- If `φ` is non-unital algebra homomorphism over a scalar ring `R`, then
+`quasispectrum R (φ a) ⊆ quasispectrum R a`. -/
+lemma NonUnitalAlgHom.quasispectrum_apply_subset {F R A B : Type*}
+    [CommRing R] [NonUnitalRing A] [NonUnitalRing B] [Module R A] [Module R B]
+    [FunLike F A B] [NonUnitalAlgHomClass F R A B] (φ : F) (a : A) :
+    quasispectrum R (φ a) ⊆ quasispectrum R a :=
+  NonUnitalAlgHom.quasispectrum_apply_subset' R φ a
+
 @[simp]
 lemma quasispectrum.coe_zero [Nontrivial R] (a : A) : (0 : quasispectrum R a) = (0 : R) := rfl
 
