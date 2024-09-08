@@ -3,7 +3,12 @@ Copyright (c) 2024 Daniel Weber. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weber
 -/
-import Mathlib.Analysis.Complex.Polynomial.Basic
+import Mathlib.Algebra.EuclideanDomain.Basic
+import Mathlib.Algebra.EuclideanDomain.Field
+import Mathlib.Algebra.GeomSum
+import Mathlib.Algebra.Polynomial.Degree.Lemmas
+import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Data.Complex.Abs
 
 /-!
 # Cauchy's bound on polynomial roots.
