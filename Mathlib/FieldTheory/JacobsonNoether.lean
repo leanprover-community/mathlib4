@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2024 **ALL YOUR NAMES**Wanyi He, Filippo A. E. Nuccio, Huanyu Zheng. All rights reserved.
+Copyright (c) 2024 Wanyi He, Filippo A. E. Nuccio, Huanyu Zheng. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: **ALL YOUR NAMES** Wanyi He, Filippo A. E. Nuccio, Huanyu Zheng
+Authors: Wanyi He, Filippo A. E. Nuccio, Huanyu Zheng
 -/
 import Mathlib.RingTheory.Algebraic
 import Mathlib.FieldTheory.Separable
@@ -33,7 +33,7 @@ the noncommutative division algebra `D` with the center `k`.
 -/
 
 
--- *Filippo* This should probably not be here
+/-- a⁻¹ * d ^ s * a = (a⁻¹ * d * a) ^ s when a is not zero -/
 lemma conj_nonComm_Algebra {D : Type*} [DivisionRing D] (s : ℕ) (a d : D) (ha : a ≠ 0) :
     a⁻¹ * d ^ s * a = (a⁻¹ * d * a) ^ s := by
   let u : Dˣ := ⟨a, a⁻¹, mul_inv_cancel₀ ha, inv_mul_cancel₀ ha⟩
@@ -85,22 +85,18 @@ private lemma comm_fg (a : D) : Commute (f a) (g a) := by
 private lemma f_pow (a : D) (n : ℕ) : ∀ x : D, ((f a) ^ n).1 x = (a ^ n) * x := by
   intro x
   rw [LinearMap.coe_toAddHom, LinearMap.pow_apply]
-  induction n
-  · simp only [Function.iterate_zero, id_eq, pow_zero, one_mul]
-  · simp only [Function.iterate_succ', Function.comp_apply, *]
-    rename_i n h
-    rw [pow_succ', mul_assoc]
-    rfl
+  induction n with
+  | zero => simp only [Function.iterate_zero, id_eq, pow_zero, one_mul]
+  | succ _ _ => simp only [Subring.center_toSubsemiring, f, LinearMap.coe_mk, AddHom.coe_mk,
+      Function.iterate_succ', mul_left_iterate, Function.comp_apply, pow_succ', mul_assoc]
 
 private lemma g_pow (a : D) (n : ℕ) : ∀ x : D, ((g a) ^ n).1 x = x * (a ^ n) := by
   intro x
   rw [LinearMap.coe_toAddHom, LinearMap.pow_apply]
-  induction n
-  · simp only [Function.iterate_zero, id_eq, pow_zero, mul_one]
-  · simp only [Function.iterate_succ', Function.comp_apply, *]
-    rename_i n h
-    show (x * a ^ n) * a = x * a ^ (n + 1)
-    rw [pow_add, pow_one, mul_assoc]
+  induction n with
+  | zero => simp only [Function.iterate_zero, id_eq, pow_zero, mul_one]
+  | succ _ _ => simp only [Subring.center_toSubsemiring, g, LinearMap.coe_mk, AddHom.coe_mk,
+      Function.iterate_succ', mul_right_iterate, Function.comp_apply, pow_succ, ← mul_assoc]
 
 -- *Filippo* : Please change the name!
 -- *Yu* : This might be better?
@@ -112,8 +108,7 @@ variable [Algebra.IsAlgebraic (Subring.center D) D]
 
 open Polynomial Classical
 
--- *Filippo* Change name
--- This *should not* be private
+/-- Any inseparable extension is an extension by some p^n th -root -/
 lemma exists_pow_mem_center_ofInseparable (p : ℕ) [Fact p.Prime] [CharP D p] (a : D)
     (hinsep : ∀ x : D, IsSeparable k x → x ∈ k) : ∃ n, a ^ (p ^ n) ∈ k := by
   obtain ⟨n, g, hg, geqf⟩ := @exists_separable_of_irreducible k _ p _ (minpoly k a)
@@ -127,7 +122,7 @@ lemma exists_pow_mem_center_ofInseparable' (p : ℕ) [Fact p.Prime] [CharP D p] 
   obtain ⟨n, hn⟩ := exists_pow_mem_center_ofInseparable p a hinsep
   by_cases nzero : n = 0
   · rw [nzero, pow_zero, pow_one] at hn
-    absurd ha hn; trivial
+    exact False.elim <| ha hn
   · refine ⟨n, ⟨by omega, hn⟩⟩
 
 -- Not private but better name
@@ -217,27 +212,18 @@ theorem JacobsonNoether_charP (p : ℕ) [Fact p.Prime] [CharP D p]
       _ = a * ((c⁻¹ * a * (δ a) ^[n - 1] b) - (c⁻¹ * (δ a) ^[n - 1] b * a)) := by
         simp_rw [hd_def, hc', mul_assoc, ← mul_sub_left_distrib]
       _ = _ := by simp only [eq1, mul_one]
-  -- *Filippo* Find a better name!
-  have tired : 1 + a⁻¹ * d * a = d := by
-    calc
-      _ = a⁻¹ * (a * d - d * a + d * a) := by
-        rw [mul_assoc, deq, left_distrib, inv_mul_cancel₀ ha₀]
-      _ = _ := by rw [sub_add_cancel, ← mul_assoc, inv_mul_cancel₀ ha₀, one_mul]
-  -- The natural `r` below is such that `d ^ (p ^ r) ∈ k`.
+  apply_fun (a⁻¹ * · ) at deq
+  rw [mul_sub, ← mul_assoc, inv_mul_cancel₀ ha₀, one_mul, ← mul_assoc, sub_eq_iff_eq_add] at deq
   obtain ⟨r, hr⟩ := (exists_pow_mem_center_ofInseparable p d hinsep)
-
-  have final_eq : d ^ (p ^ r) = 1 + d ^ (p ^ r) := by
-    calc
-      _ = (1 + a⁻¹ * d * a) ^ (p ^ r) := by rw [tired]
-      _ = 1 ^ (p ^ r) + (a⁻¹ * d * a) ^ (p ^ r) := by
-        simp only [Commute.one_left, Commute.mul_right, add_pow_char_pow_of_commute, one_pow]
-      _ = 1 + a⁻¹ * d ^ (p ^ r) * a := by
-        simpa only [one_pow, add_right_inj] using (conj_nonComm_Algebra (p ^ r) a d ha₀).symm
-      _ = _ := by
-        rw [add_right_inj, mul_assoc, hr.comm, ← mul_assoc, inv_mul_cancel₀ ha₀, one_mul]
-  simp only [self_eq_add_left, one_ne_zero] at final_eq
+  apply_fun fun x => x ^ (p ^ r) at deq
+  rw [add_pow_char_pow_of_commute D 1 _ (Commute.one_left _) , one_pow,
+    ← conj_nonComm_Algebra (ha := ha₀), ← hr.comm, mul_assoc, inv_mul_cancel₀ ha₀, mul_one,
+    self_eq_add_left] at deq
+  exact one_ne_zero deq
 
 variable (D) in
+/-- For a non-commutative finite dimensional division algebra D (with base ring being its center),
+  there exist a separable element xover its center-/
 theorem Jacobson_Noether (H : k ≠ (⊤ : Subring D)) :
     ∃ x : D, x ∉ k ∧ IsSeparable k x := by
   obtain ⟨p, hp⟩ := CharP.exists D
