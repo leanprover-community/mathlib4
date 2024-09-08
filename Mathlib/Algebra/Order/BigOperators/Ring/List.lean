@@ -14,14 +14,10 @@ This file contains the results concerning the interaction of list big operators 
 
 variable {R : Type*}
 
-namespace List
-
 /-- A variant of `List.prod_pos` for `CanonicallyOrderedCommSemiring`. -/
-@[simp] lemma _root_.CanonicallyOrderedCommSemiring.list_prod_pos
+@[simp] lemma CanonicallyOrderedCommSemiring.list_prod_pos
     {α : Type*} [CanonicallyOrderedCommSemiring α] [Nontrivial α] :
     ∀ {l : List α}, 0 < l.prod ↔ (∀ x ∈ l, (0 : α) < x)
   | [] => by simp
-  | (x :: xs) => by simp_rw [prod_cons, forall_mem_cons, CanonicallyOrderedCommSemiring.mul_pos,
-    list_prod_pos]
-
-end List
+  | (x :: xs) => by simp_rw [List.prod_cons, List.forall_mem_cons,
+      CanonicallyOrderedCommSemiring.mul_pos, list_prod_pos]

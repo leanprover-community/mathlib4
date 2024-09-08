@@ -20,5 +20,3 @@ lemma CanonicallyOrderedCommSemiring.multiset_prod_pos {R : Type*}
   rcases m with ⟨l⟩
   rw [Multiset.quot_mk_to_coe'', Multiset.prod_coe]
   exact CanonicallyOrderedCommSemiring.list_prod_pos
-
-end Multiset
