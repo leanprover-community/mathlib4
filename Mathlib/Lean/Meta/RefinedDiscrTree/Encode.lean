@@ -210,7 +210,7 @@ private def etaPossibilities (e : Expr) (lambdas : List FVarId)
     (k : Expr → List FVarId → ReaderT Context MetaM (List α)) : ReaderT Context MetaM (List α) :=
   return (← k e lambdas) ++ (← match e, lambdas with
   | .app f a, fvarId :: lambdas =>
-    if isStarWithArg (.fvar fvarId) a && !(f.getAppFn.isMVar || f.containsFVar fvarId) then
+    if isStarWithArg (.fvar fvarId) a && !f.getAppFn.isMVar then
       etaPossibilities f lambdas k
     else
       return []
@@ -224,7 +224,7 @@ private def cacheEtaPossibilities (e original : Expr) (lambdas : List FVarId)
     ReaderT Context MetaM (List (Key × LazyEntry α)) := do
   match e, lambdas with
   | .app f a, fvarId :: _ =>
-    if isStarWithArg (.fvar fvarId) a && !(f.getAppFn.isMVar || f.containsFVar fvarId) then
+    if isStarWithArg (.fvar fvarId) a && !f.getAppFn.isMVar then
       match entry.cache.find? original with
       | some keys => return [ifCached keys]
       | none =>
@@ -455,8 +455,8 @@ where
       let todo := todo.pop
       match ← evalLazyEntry entry config with
       | .inl xs =>
-        -- This variation on `List.fold` ensures that `keys` isn't copied unnecessarily.
-        let rec fold xs todo :=
+        let rec /-- This variation on `List.fold` ensures that `keys` isn't copied unnecessarily. -/
+          fold xs todo :=
           match xs with
           | [] => todo
           | (key, entry) :: [] => todo.push (keys.push key, entry)

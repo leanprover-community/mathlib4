@@ -247,7 +247,7 @@ But defining it as a structure that can have all at the same time turns out to b
 -/
 structure Trie (α : Type) where
   node ::
-    /-- Leaf values of the Trie. `values` is an `Array` of size at least 1. -/
+    /-- Return values, at a leaf -/
     values : Array α
     /-- Following `Trie`s based on a `Key.star`. -/
     stars : Std.HashMap Nat TrieIndex
