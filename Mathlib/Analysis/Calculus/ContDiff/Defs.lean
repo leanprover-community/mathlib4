@@ -674,7 +674,7 @@ protected theorem ContDiffOn.ftaylorSeriesWithin {n : ℕ∞}
     simp only [ftaylorSeriesWithin, ContinuousMultilinearMap.uncurry0_apply,
       iteratedFDerivWithin_zero_apply]
   · intro m hm x hx
-    rcases (h x hx) m.succ (ENat.add_one_le_of_lt hm) with ⟨u, hu, p, Hp⟩
+    rcases (h x hx) m.succ (Order.add_one_le_of_lt hm) with ⟨u, hu, p, Hp⟩
     rw [insert_eq_of_mem hx] at hu
     rcases mem_nhdsWithin.1 hu with ⟨o, o_open, xo, ho⟩
     rw [inter_comm] at ho
@@ -746,7 +746,7 @@ theorem ContDiffOn.differentiableOn_iteratedFDerivWithin {m : ℕ} (h : ContDiff
 theorem ContDiffWithinAt.differentiableWithinAt_iteratedFDerivWithin {m : ℕ}
     (h : ContDiffWithinAt 𝕜 n f s x) (hmn : (m : ℕ∞) < n) (hs : UniqueDiffOn 𝕜 (insert x s)) :
     DifferentiableWithinAt 𝕜 (iteratedFDerivWithin 𝕜 m f s) s x := by
-  rcases h.contDiffOn' (ENat.add_one_nat_le_withTop_of_lt hmn) with ⟨u, uo, xu, hu⟩
+  rcases h.contDiffOn' (Order.add_one_le_of_lt hmn) with ⟨u, uo, xu, hu⟩
   set t := insert x s ∩ u
   have A : t =ᶠ[𝓝[≠] x] s := by
     simp only [set_eventuallyEq_iff_inf_principal, ← nhdsWithin_inter']

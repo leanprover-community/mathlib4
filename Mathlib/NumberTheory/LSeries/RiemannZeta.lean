@@ -158,7 +158,7 @@ def RiemannHypothesis : Prop :=
   ∀ (s : ℂ) (_ : riemannZeta s = 0) (_ : ¬∃ n : ℕ, s = -2 * (n + 1)) (_ : s ≠ 1), s.re = 1 / 2
 
 /-!
-## Relating the Mellin transform to the Dirichlet series
+## Relating the Mellin transform to the Dirichlet series
 -/
 
 theorem completedZeta_eq_tsum_of_one_lt_re {s : ℂ} (hs : 1 < re s) :

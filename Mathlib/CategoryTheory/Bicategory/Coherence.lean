@@ -204,11 +204,11 @@ def normalizeUnitIso (a b : FreeBicategory B) :
 def normalizeEquiv (a b : B) : Hom a b ≌ Discrete (Path.{v + 1} a b) :=
   Equivalence.mk ((normalize _).mapFunctor a b) (inclusionPath a b) (normalizeUnitIso a b)
     (Discrete.natIso fun f => eqToIso (by
-      induction' f with f
-      induction' f with _ _ _ _ ih
-      -- Porting note: `tidy` closes the goal in mathlib3 but `aesop` doesn't here.
-      · rfl
-      · ext1
+      obtain ⟨f⟩ := f
+      induction f with
+      | nil => rfl
+      | cons _ _ ih =>
+        ext1 -- Porting note: `tidy` closes the goal in mathlib3 but `aesop` doesn't here.
         injection ih with ih
         conv_rhs => rw [← ih]
         rfl))
