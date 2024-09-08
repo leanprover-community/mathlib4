@@ -88,28 +88,13 @@ def ofCompactSupport (g : α → γ) (hg₁ : Continuous g) (hg₂ : HasCompactS
   toFun := g
   continuous_toFun := hg₁
   map_bounded' := by
-    by_cases hs : (tsupport g).Nonempty
+    obtain (hs | hs) := (tsupport g).eq_empty_or_nonempty
+    · exact ⟨0, by simp [tsupport_eq_empty_iff.mp hs]⟩
     · obtain ⟨z, _, hmax⟩ := hg₂.exists_isMaxOn hs <| hg₁.norm.continuousOn
-      have : ∀ (x : α), ‖g x‖ ≤ ‖g z‖ := by
-        intro x
-        by_cases hx : x ∈ tsupport g
-        · exact isMaxOn_iff.mp hmax x hx
-        · rw [image_eq_zero_of_nmem_tsupport hx]
-          simp only [norm_zero, norm_nonneg]
-      use 2 * ‖g z‖
-      intro x y
-      rw [dist_eq_norm]
-      apply le_trans (norm_sub_le _ _)
-      calc ‖g x‖ + ‖g y‖ ≤ ‖g z‖ + ‖g y‖ := by exact add_le_add_right (this x) ‖g y‖
-      _ ≤ ‖g z‖ + ‖g z‖ := by exact (add_le_add_iff_left ‖g z‖).mpr (this y)
-      _ = 2 * ‖g z‖ := by exact Eq.symm (two_mul ‖g z‖)
-    · push_neg at hs
-      use 0
-      intro x y
-      rw [dist_eq_norm]
-      simp only [norm_le_zero_iff]
-      rw [tsupport_eq_empty_iff.mp hs]
-      simp only [Pi.zero_apply, sub_self]
+      refine ⟨2 * ‖g z‖, dist_le_two_norm' fun x ↦ ?_⟩
+      by_cases hx : x ∈ tsupport g
+      · exact isMaxOn_iff.mp hmax x hx
+      · simp [image_eq_zero_of_nmem_tsupport hx]
 
 lemma ofCompactSupport_mem (g : α → γ) (hg₁ : Continuous g) (hg₂ : HasCompactSupport g) :
     ofCompactSupport g hg₁ hg₂ ∈ C_cb(α, γ) := mem_compactlySupported.mpr hg₂
