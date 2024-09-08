@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.LinearAlgebra.Basis.Cardinality
 import Mathlib.Algebra.FreeAlgebra
+import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.FinsuppVectorSpace
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
