@@ -214,15 +214,29 @@ open Set
 /-- The pregroupoid of orientation-preserving maps. -/
 def orientationPreservingPregroupoid [FiniteDimensional ℝ E] : Pregroupoid H where
   property f s := OrientationPreserving (I ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ interior (range I))
-
---AnalyticOn 𝕜 (I ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ interior (range I))
-  --∧ (I.symm ⁻¹' s ∩ interior (range I)).image (I ∘ f ∘ I.symm) ⊆ interior (range I)
-
-  comp hf hg _ _ _ _ hx := sorry --orientationPreserving_comp hf hg _ hx
-  id_mem := sorry --orientationPreserving_id _
-  locality {f u} _ h x hxu := sorry
-    -- have ⟨v, _, hxv, h⟩ := h x hxu
-    -- h x <| Set.mem_inter hxu hxv
+  -- XXX: should this condition be added?
+  -- ∧ (I.symm ⁻¹' s ∩ interior (range I)).image (I ∘ f ∘ I.symm) ⊆ interior (range I)
+  comp {f} {g} U V hf hg hU hV hUV x hx := by
+    have hx' : x ∈ I.symm ⁻¹' U ∩ interior (range I) ∩
+        I ∘ f ∘ I.symm ⁻¹' (I.symm ⁻¹' V ∩ interior (range I)) := by
+      obtain ⟨hx1, hx2⟩ := hx
+      constructor
+      · exact ⟨mem_of_mem_inter_left hx1, hx2⟩
+      · refine ⟨by simp_all, ?_⟩
+        sorry -- XXX: does this require the xxx condition above?
+    convert orientationPreserving_comp hf hg x hx'
+    simp [Function.comp]
+  id_mem := by
+    dsimp
+    rw [univ_inter]
+    have aux := I.rightInvOn
+    -- by aux, I ∘ I.symm agree with id on range I,
+    -- so it suffices to show id is or-pres there (that's a congr lemma!)
+    convert orientationPreserving_id _
+    sorry
+  locality {f u} _ h x hxu := by
+    have ⟨v, _, hxv, h⟩ := h (I.symm x) hxu.1
+    exact h _ ⟨Set.mem_inter hxu.1 hxv, hxu.2⟩
   congr {f g u} hu fg hf x hx := by
     sorry --rw [(Filter.eventuallyEq_of_mem (hu.mem_nhds hx) fg).fderiv_eq]
     --exact hf x hx
