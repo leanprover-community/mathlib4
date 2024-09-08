@@ -988,9 +988,9 @@ theorem HasFPowerSeriesOnBall.image_sub_sub_deriv_le
   rw [← hasFPowerSeriesWithinOnBall_univ] at hf
   simpa only [mem_univ, insert_eq_of_mem, univ_inter] using hf.image_sub_sub_deriv_le hr
 
-/-- If `f` has formal power series `∑ n, pₙ` at `x`, then
-`f y - f z - p 1 (fun _ ↦ y - z) = O(‖(y, z) - (x, x)‖ * ‖y - z‖)` as `(y, z) → (x, x)`.
-In particular, `f` is strictly differentiable at `x`. -/
+/-- If `f` has formal power series `∑ n, pₙ` at `x` within a set `s`, then
+`f y - f z - p 1 (fun _ ↦ y - z) = O(‖(y, z) - (x, x)‖ * ‖y - z‖)` as `(y, z) → (x, x)`
+within `s × s`. -/
 theorem HasFPowerSeriesWithinAt.isBigO_image_sub_norm_mul_norm_sub
     (hf : HasFPowerSeriesWithinAt f p s x) :
     (fun y : E × E => f y.1 - f y.2 - p 1 fun _ => y.1 - y.2)

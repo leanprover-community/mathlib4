@@ -46,6 +46,20 @@ theorem HasFPowerSeriesAt.hasFDerivAt (h : HasFPowerSeriesAt f p x) :
     HasFDerivAt f (continuousMultilinearCurryFin1 𝕜 E F (p 1)) x :=
   h.hasStrictFDerivAt.hasFDerivAt
 
+theorem HasFPowerSeriesWithinAt.hasFDerivWithinAt (h : HasFPowerSeriesWithinAt f p s x) :
+    HasFDerivWithinAt f (continuousMultilinearCurryFin1 𝕜 E F (p 1)) s x := by
+
+
+#exit
+
+
+@[fun_prop]
+protected theorem HasStrictFDerivAt.hasFDerivAt (hf : HasStrictFDerivAt f f' x) :
+    HasFDerivAt f f' x := by
+  rw [HasFDerivAt, hasFDerivAtFilter_iff_isLittleO, isLittleO_iff]
+  exact fun c hc => tendsto_id.prod_mk_nhds tendsto_const_nhds (isLittleO_iff.1 hf hc)
+
+
 theorem HasFPowerSeriesAt.differentiableAt (h : HasFPowerSeriesAt f p x) : DifferentiableAt 𝕜 f x :=
   h.hasFDerivAt.differentiableAt
 
