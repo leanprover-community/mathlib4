@@ -46,18 +46,11 @@ lemma exist_norm_eq [c : Nonempty α] {f : α →ᵇ γ} (h : f ∈ C_cb(α, γ)
 
 theorem norm_lt_iff_of_compactlySupported {f : α →ᵇ γ} (h : f ∈ C_cb(α, γ)) {M : ℝ}
     (M0 : 0 < M) : ‖f‖ < M ↔ ∀ (x : α), ‖f x‖ < M := by
-  constructor
-  · intro hn x
-    exact lt_of_le_of_lt (norm_coe_le_norm f x) hn
-  · by_cases he : Nonempty α
-    · intro ha
-      obtain ⟨x, hx⟩ := exist_norm_eq h
-      rw [← hx]
-      exact ha x
-    · rw [not_nonempty_iff] at he
-      intro _
-      rw [norm_eq_zero_of_empty]
-      exact M0
+  refine ⟨fun hn x ↦ lt_of_le_of_lt (norm_coe_le_norm f x) hn, ?_⟩
+  · obtain (he | he) := isEmpty_or_nonempty α
+    · simpa
+    · obtain ⟨x, hx⟩ := exist_norm_eq h
+      exact fun h ↦ hx ▸ h x
 
 theorem norm_lt_iff_of_nonempty_compactlySupported [c : Nonempty α] {f : α →ᵇ γ}
     (h : f ∈ C_cb(α, γ)) {M : ℝ} : ‖f‖ < M ↔ ∀ (x : α), ‖f x‖ < M := by
