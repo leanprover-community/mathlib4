@@ -1152,7 +1152,6 @@ end DeleteVerts
 
 /-! ### Of function -/
 
-
 /-- Given a function, construct the Subgraph where each element is connected
   to its value under the function --/
 @[simps]
@@ -1172,7 +1171,6 @@ def ofFunction {u : Set V} (f : V → V) (h : ∀ v ∈ u, G.Adj v (f v)) : Subg
     · left; exact hv.1
     · right; rw [← hw'.2]
       exact Set.mem_image_of_mem f hw'.1
-
 
 end Subgraph
 
