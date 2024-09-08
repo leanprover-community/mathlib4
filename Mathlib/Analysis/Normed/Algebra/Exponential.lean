@@ -66,6 +66,8 @@ We put nearly all the statements in this file in the `NormedSpace` namespace,
 to avoid collisions with the `Real` or `Complex` namespaces.
 
 As of 2023-11-16 due to bad instances in Mathlib
+```
+import Mathlib
 
 open Real
 
