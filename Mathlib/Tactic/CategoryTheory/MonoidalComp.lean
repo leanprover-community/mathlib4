@@ -53,8 +53,6 @@ class MonoidalCoherence (X Y : C) where
 scoped[CategoryTheory.MonoidalCategory] notation " ⊗𝟙 " =>
   MonoidalCoherence.iso -- type as \ot 𝟙
 
-noncomputable section
-
 /-- Construct an isomorphism between two objects in a monoidal category
 out of unitors and associators. -/
 abbrev monoidalIso (X Y : C) [MonoidalCoherence X Y] : X ≅ Y := MonoidalCoherence.iso
@@ -77,8 +75,6 @@ def monoidalIsoComp {W X Y Z : C} [MonoidalCoherence X Y] (f : W ≅ X) (g : Y �
 scoped[CategoryTheory.MonoidalCategory] infixr:80 " ≪⊗≫ " =>
   monoidalIsoComp -- type as \ll \ot \gg
 
-end
-
 namespace MonoidalCoherence
 
 variable [MonoidalCategory C]
@@ -89,52 +85,52 @@ instance refl (X : C) : MonoidalCoherence X X := ⟨Iso.refl _⟩
 @[simps]
 instance whiskerLeft (X Y Z : C) [MonoidalCoherence Y Z] :
     MonoidalCoherence (X ⊗ Y) (X ⊗ Z) :=
-  ⟨whiskerLeftIso X MonoidalCoherence.iso⟩
+  ⟨whiskerLeftIso X ⊗𝟙⟩
 
 @[simps]
 instance whiskerRight (X Y Z : C) [MonoidalCoherence X Y] :
     MonoidalCoherence (X ⊗ Z) (Y ⊗ Z) :=
-  ⟨whiskerRightIso MonoidalCoherence.iso Z⟩
+  ⟨whiskerRightIso ⊗𝟙 Z⟩
 
 @[simps]
 instance tensor_right (X Y : C) [MonoidalCoherence (𝟙_ C) Y] :
     MonoidalCoherence X (X ⊗ Y) :=
-  ⟨(ρ_ X).symm ≪≫ (whiskerLeftIso X MonoidalCoherence.iso)⟩
+  ⟨(ρ_ X).symm ≪≫ (whiskerLeftIso X ⊗𝟙)⟩
 
 @[simps]
 instance tensor_right' (X Y : C) [MonoidalCoherence Y (𝟙_ C)] :
     MonoidalCoherence (X ⊗ Y) X :=
-  ⟨whiskerLeftIso X MonoidalCoherence.iso ≪≫ (ρ_ X)⟩
+  ⟨whiskerLeftIso X ⊗𝟙 ≪≫ (ρ_ X)⟩
 
 @[simps]
 instance left (X Y : C) [MonoidalCoherence X Y] :
     MonoidalCoherence (𝟙_ C ⊗ X) Y :=
-  ⟨λ_ X ≪≫ MonoidalCoherence.iso⟩
+  ⟨λ_ X ≪≫ ⊗𝟙⟩
 
 @[simps]
 instance left' (X Y : C) [MonoidalCoherence X Y] :
     MonoidalCoherence X (𝟙_ C ⊗ Y) :=
-  ⟨MonoidalCoherence.iso ≪≫ (λ_ Y).symm⟩
+  ⟨⊗𝟙 ≪≫ (λ_ Y).symm⟩
 
 @[simps]
 instance right (X Y : C) [MonoidalCoherence X Y] :
     MonoidalCoherence (X ⊗ 𝟙_ C) Y :=
-  ⟨ρ_ X ≪≫ MonoidalCoherence.iso⟩
+  ⟨ρ_ X ≪≫ ⊗𝟙⟩
 
 @[simps]
 instance right' (X Y : C) [MonoidalCoherence X Y] :
     MonoidalCoherence X (Y ⊗ 𝟙_ C) :=
-  ⟨MonoidalCoherence.iso ≪≫ (ρ_ Y).symm⟩
+  ⟨⊗𝟙 ≪≫ (ρ_ Y).symm⟩
 
 @[simps]
 instance assoc (X Y Z W : C) [MonoidalCoherence (X ⊗ (Y ⊗ Z)) W] :
     MonoidalCoherence ((X ⊗ Y) ⊗ Z) W :=
-  ⟨α_ X Y Z ≪≫ MonoidalCoherence.iso⟩
+  ⟨α_ X Y Z ≪≫ ⊗𝟙⟩
 
 @[simps]
 instance assoc' (W X Y Z : C) [MonoidalCoherence W (X ⊗ (Y ⊗ Z))] :
     MonoidalCoherence W ((X ⊗ Y) ⊗ Z) :=
-  ⟨MonoidalCoherence.iso ≪≫ (α_ X Y Z).symm⟩
+  ⟨⊗𝟙 ≪≫ (α_ X Y Z).symm⟩
 
 end MonoidalCoherence
 
