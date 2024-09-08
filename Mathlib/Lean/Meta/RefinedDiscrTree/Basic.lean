@@ -236,7 +236,15 @@ instance [ToFormat α] : ToFormat (LazyEntry α) := ⟨LazyEntry.format⟩
 /-- Index of a `Trie α` in the `Array (Trie α)` of a `RefinedDiscrTree`. -/
 abbrev TrieIndex := Nat
 
-/-- Discrimination tree trie. See `RefinedDiscrTree`. -/
+/--
+Discrimination tree trie. See `RefinedDiscrTree`.
+
+A `Trie` will normally have exactly one of the following
+- nonempty `values`
+- nonempty`stars` or `children`
+- nonempty `pending`
+But defining it as a structure that can have all at the same time turns out to be easier.
+-/
 structure Trie (α : Type) where
   node ::
     /-- Leaf values of the Trie. `values` is an `Array` of size at least 1. -/
@@ -255,7 +263,12 @@ end RefinedDiscrTree
 
 open RefinedDiscrTree in
 
-/-- Discrimination tree. It is an index from expressions to values of type `α`. -/
+/--
+Discrimination tree. It is an index from expressions to values of type `α`.
+
+We store all of the nodes in one `Array` (`tries`), instead of using a 'normal' inductive type.
+This is so that we can modify the tree globally, which is useful when doing lookups.
+-/
 structure RefinedDiscrTree (α : Type) where
   /-- `Trie`s at the root based of the `Key`. -/
   root : Std.HashMap Key TrieIndex := {}

@@ -6,7 +6,8 @@ Authors: Tomáš Skřivan
 import Mathlib.Tactic.FunProp.Decl
 import Mathlib.Tactic.FunProp.Types
 import Mathlib.Tactic.FunProp.FunctionData
-import Mathlib.Tactic.FunProp.RefinedDiscrTree
+import Mathlib.Lean.Meta.RefinedDiscrTree.StrictInsert
+import Mathlib.Lean.Meta.RefinedDiscrTree.Encode
 import Batteries.Data.RBMap.Alter
 
 /-!
@@ -217,7 +218,7 @@ structure GeneralTheorem where
   /-- theorem name -/
   thmName     : Name
   /-- discrimination tree keys used to index this theorem -/
-  keys        : List RefinedDiscrTree.DTExpr
+  keys        : Array (Array RefinedDiscrTree.Key)
   /-- priority -/
   priority    : Nat  := eval_prio default
   deriving Inhabited, BEq
@@ -229,7 +230,7 @@ def GeneralTheorem.getProof (thm : GeneralTheorem) : MetaM Expr := do
 /-- -/
 structure GeneralTheorems where
   /-- -/
-  theorems     : RefinedDiscrTree GeneralTheorem := {}
+  theorems     : RefinedDiscrTree GeneralTheorem := { config := { iota := false, zeta := false } }
   deriving Inhabited
 
 /-- -/
@@ -241,7 +242,7 @@ initialize transitionTheoremsExt : GeneralTheoremsExt ←
     name     := by exact decl_name%
     initial  := {}
     addEntry := fun d e =>
-      {d with theorems := e.keys.foldl (RefinedDiscrTree.insertDTExpr · · e) d.theorems}
+      {d with theorems := e.keys.foldl (RefinedDiscrTree.insert · · e) d.theorems}
   }
 
 /-- -/
@@ -250,7 +251,7 @@ initialize morTheoremsExt : GeneralTheoremsExt ←
     name     := by exact decl_name%
     initial  := {}
     addEntry := fun d e =>
-      {d with theorems := e.keys.foldl (RefinedDiscrTree.insertDTExpr · · e) d.theorems}
+      {d with theorems := e.keys.foldl (RefinedDiscrTree.insert · · e) d.theorems}
   }
 
 
@@ -338,7 +339,7 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
       }
     | .fvar .. =>
       let (_,_,b') ← forallMetaTelescope info.type
-      let keys := ← RefinedDiscrTree.mkDTExprs b' {} false
+      let keys := ← RefinedDiscrTree.encodeExpr b' {}
       let thm : GeneralTheorem := {
         funPropName := funPropName
         thmName := declName
