@@ -42,7 +42,7 @@ lemma uniformContinuous_toContinuousMultilinearMap :
 
 theorem uniformContinuous_coe_fun [ContinuousSMul 𝕜 E] :
     UniformContinuous (DFunLike.coe : (E [⋀^ι]→L[𝕜] F) → (ι → E) → F) :=
-  ContinuousMultilinearMap.uniformContinuous_coe_fun.comp 
+  ContinuousMultilinearMap.uniformContinuous_coe_fun.comp
     uniformContinuous_toContinuousMultilinearMap
 
 theorem uniformContinuous_eval_const [ContinuousSMul 𝕜 E] (x : ι → E) :
