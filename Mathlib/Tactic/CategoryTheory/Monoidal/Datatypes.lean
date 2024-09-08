@@ -64,14 +64,17 @@ structure Context where
 /-- Populate a `context` object for evaluating `e`. -/
 def mkContext? (e : Expr) : MetaM (Option Context) := do
   let e ← instantiateMVars e
-  let ⟨.succ level₂, type, _⟩ ← inferTypeQ e | return none
-  let type ← instantiateMVars type
+  let type ← instantiateMVars <| ← inferType e
   match (← whnfR type).getAppFnArgs with
   | (``Quiver.Hom, #[_, _, f, _]) =>
-    let ⟨.succ level₁, C, _⟩ ← inferTypeQ f | return none
-    let .some instCat ← trySynthInstanceQ q(Category.{level₂} $C) | return none
-    let instMonoidal : Option Q(MonoidalCategory $C) ← synthInstance? q(MonoidalCategory $C)
-    return some ⟨level₂, level₁, C, instCat, instMonoidal⟩
+    let C ← instantiateMVars <| ← inferType f
+    let .succ level₁ ← getLevel C | return none
+    let .succ level₂ ← getLevel type | return none
+    let .some instCat ← synthInstance?
+      (mkAppN (.const ``Category [level₂, level₁]) #[C]) | return none
+    let instMonoidal? ← synthInstance?
+      (mkAppN (.const ``MonoidalCategory [level₂, level₁]) #[C, instCat])
+    return some ⟨level₂, level₁, C, instCat, instMonoidal?⟩
   | _ => return none
 
 instance : BicategoryLike.Context Monoidal'.Context where
@@ -156,7 +159,7 @@ instance : MonadMor₂Iso MonoidalM where
     return .rightUnitor q(ρ_ $f_e) f
   id₂M f := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let _cat := ctx.instCat
     have f_e : Q($ctx.C) := f.e
     return .id q(Iso.refl $f_e) f
   coherenceHomM f g inst := do
