@@ -70,13 +70,9 @@ theorem compactlySupported_eq_top [CompactSpace α] : C_cb(α, γ) = ⊤ :=
 
 theorem compactlySupported_eq_top_iff [Nontrivial γ] :
     C_cb(α, γ) = ⊤ ↔ IsCompact (Set.univ : Set α) := by
-  refine ⟨fun h ↦ ?_, compactlySupported_eq_top_of_isCompact⟩
-  obtain ⟨x, hx⟩ := exists_ne (0 : γ)
-  let f : α →ᵇ γ := const α x
-  have hf : f ∈ C_cb(α, γ) := by rw [h]; trivial -- missing `TwoSidedIdeal.mem_top` simp lemma
-  convert (mem_compactlySupported.mp hf).isCompact
-  rw [eq_comm, Set.eq_univ_iff_forall]
-  exact fun _ ↦ subset_tsupport _ <| by simpa [f]
+  simpa [tsupport, Function.support_const hx]
+    -- missing `TwoSidedIdeal.mem_top` simp lemma
+    using (mem_compactlySupported (f := const α x).mp (by rw [h]; trivial)).isCompact
 
 lemma hasCompactSupport_mul_of_continuous_compactlySupported (f : α →ᵇ γ) (hf : f ∈ C_cb(α, γ))
     (g : α → γ) : HasCompactSupport ((g * f : α → γ)) := HasCompactSupport.mul_left
