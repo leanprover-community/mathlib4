@@ -377,7 +377,7 @@ end Zspan
 
 section Zlattice
 
-open Submodule FiniteDimensional
+open Submodule FiniteDimensional Zspan
 
 -- TODO: generalize this class to other rings than `ℤ`
 /-- `L : Submodule ℤ E` where `E` is a vector space over a normed field `K` is a `ℤ`-lattice if
@@ -391,14 +391,6 @@ theorem _root_.Zspan.isZlattice {E ι : Type*} [NormedAddCommGroup E] [NormedSpa
     [Finite ι] (b : Basis ι ℝ E) :
     IsZlattice ℝ (span ℤ (Set.range b)) where
   span_top := Zspan.span_top b
-
-theorem IsZlattice.finite_isBounded_inter (K : Type*) [NormedField K] {E : Type*}
-    [NormedAddCommGroup E] [NormedSpace K E] [ProperSpace E] {s : Set E}
-    (hs : Bornology.IsBounded s) (L : Submodule ℤ E) [DiscreteTopology L] [IsZlattice K L] :
-    ((s : Set E) ∩ L).Finite := by
-  change ((s : Set E) ∩ L.toAddSubgroup).Finite
-  have : DiscreteTopology L.toAddSubgroup := (inferInstance : DiscreteTopology L)
-  exact Metric.finite_isBounded_inter_isClosed hs inferInstance
 
 variable (K : Type*) [NormedLinearOrderedField K] [HasSolidNorm K] [FloorRing K]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E] [FiniteDimensional K E]
@@ -419,17 +411,20 @@ theorem Zlattice.FG [hs : IsZlattice K L] : L.FG := by
       exact span_mono (by simp only [Subtype.range_coe_subtype, Set.setOf_mem_eq, subset_rfl]))
     rw [show span ℤ s = span ℤ (Set.range b) by simp [b, Basis.coe_mk, Subtype.range_coe_subtype]]
     have : Fintype s := h_lind.setFinite.fintype
-    refine Set.Finite.of_finite_image (f := ((↑) : _ →  E) ∘ Zspan.quotientEquiv b) ?_
-      (Function.Injective.injOn (Subtype.coe_injective.comp (Zspan.quotientEquiv b).injective))
-    refine Set.Finite.subset
-      (IsZlattice.finite_isBounded_inter K (Zspan.fundamentalDomain_isBounded b) L) ?_
+    refine Set.Finite.of_finite_image (f := ((↑) : _ →  E) ∘ quotientEquiv b) ?_
+      (Function.Injective.injOn (Subtype.coe_injective.comp (quotientEquiv b).injective))
+    have : ((fundamentalDomain b) ∩ L).Finite := by
+      change ((fundamentalDomain b) ∩ L.toAddSubgroup).Finite
+      have : DiscreteTopology L.toAddSubgroup := (inferInstance : DiscreteTopology L)
+      exact Metric.finite_isBounded_inter_isClosed (fundamentalDomain_isBounded b) inferInstance
+    refine Set.Finite.subset this ?_
     rintro _ ⟨_, ⟨⟨x, ⟨h_mem, rfl⟩⟩, rfl⟩⟩
-    rw [Function.comp_apply, mkQ_apply, Zspan.quotientEquiv_apply_mk, Zspan.fractRestrict_apply]
+    rw [Function.comp_apply, mkQ_apply, quotientEquiv_apply_mk, fractRestrict_apply]
     refine ⟨?_, ?_⟩
-    · exact Zspan.fract_mem_fundamentalDomain b x
-    · rw [Zspan.fract, SetLike.mem_coe, sub_eq_add_neg]
+    · exact fract_mem_fundamentalDomain b x
+    · rw [fract, SetLike.mem_coe, sub_eq_add_neg]
       refine Submodule.add_mem _ h_mem
-        (neg_mem (Set.mem_of_subset_of_mem ?_ (Subtype.mem (Zspan.floor b x))))
+        (neg_mem (Set.mem_of_subset_of_mem ?_ (Subtype.mem (floor b x))))
       rw [SetLike.coe_subset_coe, Basis.coe_mk, Subtype.range_coe_subtype, Set.setOf_mem_eq]
       exact span_le.mpr h_incl
   · -- `span ℤ s` is finitely generated because `s` is finite
@@ -529,23 +524,25 @@ theorem Zlattice.rank [hs : IsZlattice K L] : finrank ℤ L = finrank K E := by
     -- But that follows from the fact that there exist `n, m : ℕ`, `n ≠ m`
     -- such that `(n - m) • v ∈ span ℤ e` which is true since `n ↦ Zspan.fract e (n • v)`
     -- takes value into the finite set `fundamentalDomain e ∩ L`
-    have h_mapsto : Set.MapsTo (fun n : ℤ => Zspan.fract e (n • v)) Set.univ
+    have h_mapsto : Set.MapsTo (fun n : ℤ => fract e (n • v)) Set.univ
         (Metric.closedBall 0 (∑ i, ‖e i‖) ∩ (L : Set E)) := by
       rw [Set.mapsTo_inter, Set.mapsTo_univ_iff, Set.mapsTo_univ_iff]
-      refine ⟨fun _ ↦ mem_closedBall_zero_iff.mpr (Zspan.norm_fract_le e _), fun _ => ?_⟩
+      refine ⟨fun _ ↦ mem_closedBall_zero_iff.mpr (norm_fract_le e _), fun _ => ?_⟩
       · rw [← h_spanL]
         refine sub_mem ?_ ?_
         · exact zsmul_mem (subset_span (Set.diff_subset hv)) _
         · exact span_mono (by simp [e, ht_inc]) (coe_mem _)
-    have h_finite : Set.Finite (Metric.closedBall 0 (∑ i, ‖e i‖) ∩ (L : Set E)) :=
-      IsZlattice.finite_isBounded_inter K Metric.isBounded_closedBall L
+    have h_finite : Set.Finite (Metric.closedBall 0 (∑ i, ‖e i‖) ∩ (L : Set E)) := by
+      change ((_ : Set E) ∩ L.toAddSubgroup).Finite
+      have : DiscreteTopology L.toAddSubgroup := (inferInstance : DiscreteTopology L)
+      exact Metric.finite_isBounded_inter_isClosed  Metric.isBounded_closedBall inferInstance
     obtain ⟨n, -, m, -, h_neq, h_eq⟩ := Set.Infinite.exists_ne_map_eq_of_mapsTo
       Set.infinite_univ h_mapsto h_finite
     have h_nz : (-n + m : ℚ) ≠ 0 := by
       rwa [Ne, add_eq_zero_iff_eq_neg.not, neg_inj, Rat.coe_int_inj, ← Ne]
     apply (smul_mem_iff _ h_nz).mp
     refine span_subset_span ℤ ℚ _ ?_
-    rwa [add_smul, neg_smul, SetLike.mem_coe, ← Zspan.fract_eq_fract, Int.cast_smul_eq_zsmul ℚ,
+    rwa [add_smul, neg_smul, SetLike.mem_coe, ← fract_eq_fract, Int.cast_smul_eq_zsmul ℚ,
       Int.cast_smul_eq_zsmul ℚ]
   · -- To prove that `finrank K E ≤ finrank ℤ L`, we use the fact `b` generates `E` over `K`
     -- and thus `finrank K E ≤ card b = finrank ℤ L`
@@ -593,7 +590,7 @@ open MeasureTheory in
 theorem Zlattice.isAddFundamentalDomain {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] {L : Submodule ℤ E} [DiscreteTopology L] [IsZlattice ℝ L] [Finite ι]
     (b : Basis ι ℤ L) [MeasurableSpace E] [OpensMeasurableSpace E] (μ : Measure E) :
-    IsAddFundamentalDomain L (Zspan.fundamentalDomain (b.ofZlatticeBasis ℝ)) μ := by
+    IsAddFundamentalDomain L (fundamentalDomain (b.ofZlatticeBasis ℝ)) μ := by
   convert Zspan.isAddFundamentalDomain (b.ofZlatticeBasis ℝ) μ
   all_goals exact (b.ofZlatticeBasis_span ℝ).symm
 
