@@ -1,3 +1,9 @@
+/-
+Copyright (c) 2024 Bjørn Kjos-Hanssen. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Bjørn Kjos-Hanssen
+-/
+
 import Mathlib.Analysis.Convex.Function
 import Mathlib.Data.Real.Basic
 import Mathlib.Logic.Basic

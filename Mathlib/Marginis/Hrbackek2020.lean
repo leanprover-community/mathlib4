@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2024 Bjørn Kjos-Hanssen. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Bjørn Kjos-Hanssen
+-/
 
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.RingTheory.Regular.RegularSequence
@@ -36,35 +41,23 @@ theorem dickson_strong {ℓ : ℕ} {a b: Fin ℓ → ℕ} (ha : ∀ i, Nat.gcd (
     · suffices a i + n₀ ≤ a i + (p - a i) by
         refine Nat.le_sub_of_add_le ?h
         linarith
-
-      calc
-      a i + n₀ ≤ p := hp.1
-      _ ≤ _ := le_add_tsub
-    have : a i + (p - a i) = p := by
-      apply Nat.add_sub_of_le
-      linarith
-    rw [this]
-    exact hp.2
+      calc _ ≤ p := hp.1
+           _ ≤ _ := le_add_tsub
+    · exact (Nat.add_sub_of_le (by show a i ≤ p; linarith)).symm ▸ hp.2
   · simp at h
-    obtain ⟨i,_⟩ := h
+    obtain ⟨i,hi⟩ := h
     exfalso
     apply hc
     exists Nat.gcd (a i) (b i)
     constructor
-    · have := ha i
-      tauto
+    · exact (ha i).elim id <| hi.elim
     · intro k
       let h₀ := prod_dvd_prod_of_subset {i} univ
         (λ j : Fin ℓ ↦ a j + b j * k) (subset_univ {i})
       rw [prod_singleton] at h₀
-      unfold prod_f
-      have h₁ : b i ∣ b i * k := Nat.dvd_mul_right (b i) k
-      have h₂: (a i).gcd (b i) ∣ a i := Nat.gcd_dvd_left (a i) (b i)
-      have h₃: (a i).gcd (b i) ∣ b i := Nat.gcd_dvd_right (a i) (b i)
-      have h₄: (a i).gcd (b i) ∣ a i + b i * k := by
-        refine (Nat.dvd_add_iff_right h₂).mp ?_
-        exact Nat.dvd_trans h₃ h₁
-      exact Nat.dvd_trans h₄ h₀
+      exact Nat.dvd_trans ((Nat.dvd_add_iff_right <| Nat.gcd_dvd_left (a i) (b i)).mp
+          <| Nat.dvd_trans (Nat.gcd_dvd_right (a i) (b i))
+            <| Nat.dvd_mul_right (b i) k) h₀
 
 theorem dickson_gcd {ℓ : ℕ} {a b: Fin ℓ → ℕ} (ha : ∀ i, Nat.gcd (a i) (b i) > 1)
     (hc : ¬ (∃ n, n > 1 ∧ ∀ k, n ∣ (prod_f a b k))) (i : Fin ℓ) (n₀:ℕ) :
