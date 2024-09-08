@@ -282,8 +282,8 @@ theorem vertical_strip (hfd : DiffContOnCl ℂ f (re ⁻¹' Ioo a b))
     have : Tendsto (· * -I) (comap (|re ·|) atTop ⊓ 𝓟 (im ⁻¹' Ioo a b))
         (comap (|im ·|) atTop ⊓ 𝓟 (re ⁻¹' Ioo a b)) := by
       refine (tendsto_comap_iff.2 ?_).inf H.tendsto
-      simpa [(· ∘ ·)] using tendsto_comap
-    simpa [(· ∘ ·)] using hO.comp_tendsto this
+      simpa [Function.comp_def] using tendsto_comap
+    simpa [Function.comp_def] using hO.comp_tendsto this
   all_goals simpa
 
 /-- **Phragmen-Lindelöf principle** in a strip `U = {z : ℂ | a < re z < b}`.
@@ -453,7 +453,7 @@ theorem quadrant_II (hd : DiffContOnCl ℂ f (Iio 0 ×ℂ Ioi 0))
   rcases hB with ⟨c, hc, B, hO⟩
   refine quadrant_I (hd.comp (differentiable_id.mul_const _).diffContOnCl H) ⟨c, hc, B, ?_⟩ him
     (fun x hx => ?_) hz_im hz_re
-  · simpa only [(· ∘ ·), map_mul, abs_I, mul_one]
+  · simpa only [Function.comp_def, map_mul, abs_I, mul_one]
       using hO.comp_tendsto ((tendsto_mul_right_cobounded I_ne_zero).inf H.tendsto)
   · rw [comp_apply, mul_assoc, I_mul_I, mul_neg_one, ← ofReal_neg]
     exact hre _ (neg_nonpos.2 hx)
@@ -518,7 +518,7 @@ theorem quadrant_III (hd : DiffContOnCl ℂ f (Iio 0 ×ℂ Iio 0))
       hz_re hz_im
   · rcases hB with ⟨c, hc, B, hO⟩
     refine ⟨c, hc, B, ?_⟩
-    simpa only [(· ∘ ·), Complex.abs.map_neg]
+    simpa only [Function.comp_def, Complex.abs.map_neg]
       using hO.comp_tendsto (tendsto_neg_cobounded.inf H.tendsto)
   · rw [comp_apply, ← ofReal_neg]
     exact hre (-x) (neg_nonpos.2 hx)
@@ -582,7 +582,7 @@ theorem quadrant_IV (hd : DiffContOnCl ℂ f (Ioi 0 ×ℂ Iio 0))
     (hd.comp differentiable_neg.diffContOnCl H) ?_ (fun x hx => ?_) (fun x hx => ?_) hz_re hz_im
   · rcases hB with ⟨c, hc, B, hO⟩
     refine ⟨c, hc, B, ?_⟩
-    simpa only [(· ∘ ·), Complex.abs.map_neg]
+    simpa only [Function.comp_def, Complex.abs.map_neg]
       using hO.comp_tendsto (tendsto_neg_cobounded.inf H.tendsto)
   · rw [comp_apply, ← ofReal_neg]
     exact hre (-x) (neg_nonneg.2 hx)

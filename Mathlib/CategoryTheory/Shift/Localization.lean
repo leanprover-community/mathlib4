@@ -90,7 +90,7 @@ noncomputable def Functor.CommShift.localized :
 
 attribute [irreducible] HasShift.localized Functor.CommShift.localized
 
-/-- The localized category `W.Localization` is endowed with the induced shift.  -/
+/-- The localized category `W.Localization` is endowed with the induced shift. -/
 noncomputable instance HasShift.localization :
     HasShift W.Localization A :=
   HasShift.localized W.Q W A
@@ -104,7 +104,7 @@ attribute [irreducible] HasShift.localization MorphismProperty.commShift_Q
 
 variable [W.HasLocalization]
 
-/-- The localized category `W.Localization'` is endowed with the induced shift.  -/
+/-- The localized category `W.Localization'` is endowed with the induced shift. -/
 noncomputable instance HasShift.localization' :
     HasShift W.Localization' A :=
   HasShift.localized W.Q' W A
@@ -165,7 +165,7 @@ end commShiftOfLocalization
 
 /-- In the context of localization of categories, if a functor
 is induced by a functor which commutes with the shift, then
-this functor commutes with the shift.  -/
+this functor commutes with the shift. -/
 noncomputable def commShiftOfLocalization : F'.CommShift A where
   iso := commShiftOfLocalization.iso L W F F'
   zero := by
