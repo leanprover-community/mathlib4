@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2024 Daniel Weber. All rights reserved.
+Copyright (c) 2021 Stuart Presnell. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Daniel Weber
+Authors: Stuart Presnell, Daniel Weber
 -/
 import Mathlib.Algebra.Order.BigOperators.GroupWithZero.List
 import Mathlib.Algebra.BigOperators.Group.Multiset
