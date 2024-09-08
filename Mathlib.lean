@@ -1968,6 +1968,7 @@ import Mathlib.Combinatorics.SimpleGraph.Hasse
 import Mathlib.Combinatorics.SimpleGraph.IncMatrix
 import Mathlib.Combinatorics.SimpleGraph.Init
 import Mathlib.Combinatorics.SimpleGraph.LapMatrix
+import Mathlib.Combinatorics.SimpleGraph.LineGraph
 import Mathlib.Combinatorics.SimpleGraph.Maps
 import Mathlib.Combinatorics.SimpleGraph.Matching
 import Mathlib.Combinatorics.SimpleGraph.Metric
@@ -3654,6 +3655,7 @@ import Mathlib.Order.ScottContinuity
 import Mathlib.Order.SemiconjSup
 import Mathlib.Order.SetNotation
 import Mathlib.Order.Sublattice
+import Mathlib.Order.SuccPred.Archimedean
 import Mathlib.Order.SuccPred.Basic
 import Mathlib.Order.SuccPred.CompleteLinearOrder
 import Mathlib.Order.SuccPred.IntervalSucc
