@@ -16,6 +16,8 @@ import Mathlib.Tactic.ApplyFun
 import Mathlib.Algebra.PUnitInstances.Algebra
 import Mathlib.Algebra.Module.LinearMap.Ker
 import Mathlib.Algebra.Algebra.End
+import Mathlib.Algebra.Algebra.Subring
+import Mathlib.Algebra.Algebra.BigOperators
 
 /-!
 # Further basic results about `Algebra`.
