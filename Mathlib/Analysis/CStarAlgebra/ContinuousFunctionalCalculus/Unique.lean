@@ -440,14 +440,13 @@ variable {F R S A B : Type*} {p : A → Prop} {q : B → Prop}
 include S in
 /-- Non-unital star algebra homomorphisms commute with the non-unital continuous functional
 calculus. -/
-lemma NonUnitalStarAlgHomClass.cfcₙ_comm (φ : F) (f : R → R) (a : A)
+lemma NonUnitalStarAlgHomClass.map_cfcₙ (φ : F) (f : R → R) (a : A)
     [CompactSpace (quasispectrum R a)] (hf : ContinuousOn f (quasispectrum R a) := by cfc_cont_tac)
     (hf₀ : f 0 = 0 := by cfc_zero_tac) (hφ : Continuous φ := by fun_prop) (ha : p a := by cfc_tac)
     (hφa : q (φ a) := by cfc_tac) : φ (cfcₙ f a) = cfcₙ f (φ a) := by
   let ψ : A →⋆ₙₐ[R] B := (φ : A →⋆ₙₐ[S] B).restrictScalars R
   have : Continuous ψ := hφ
   have h_spec := NonUnitalAlgHom.quasispectrum_apply_subset' (R := R) S φ a
-
   have hψa : q (ψ a) := hφa
   let ι : C(quasispectrum R (ψ a), quasispectrum R a)₀ :=
     ⟨⟨Set.inclusion h_spec, continuous_id.subtype_map h_spec⟩, rfl⟩
@@ -468,11 +467,11 @@ lemma NonUnitalStarAlgHomClass.cfcₙ_comm (φ : F) (f : R → R) (a : A)
 
 /-- Non-unital star algebra homomorphisms commute with the non-unital continuous functional
 calculus.  This version is specialized to `A →⋆ₙₐ[S] B` to allow for dot notation. -/
-lemma NonUnitalStarAlgHom.cfcₙ_comm (φ : A →⋆ₙₐ[S] B) (f : R → R) (a : A)
+lemma NonUnitalStarAlgHom.map_cfcₙ (φ : A →⋆ₙₐ[S] B) (f : R → R) (a : A)
     [CompactSpace (quasispectrum R a)] (hf : ContinuousOn f (quasispectrum R a) := by cfc_cont_tac)
     (hf₀ : f 0 = 0 := by cfc_zero_tac) (hφ : Continuous φ := by fun_prop) (ha : p a := by cfc_tac)
     (hφa : q (φ a) := by cfc_tac) : φ (cfcₙ f a) = cfcₙ f (φ a) :=
-  NonUnitalStarAlgHomClass.cfcₙ_comm φ f a
+  NonUnitalStarAlgHomClass.map_cfcₙ φ f a
 
 end NonUnitalStarAlgHom
 
@@ -489,7 +488,7 @@ variable {F R S A B : Type*} {p : A → Prop} {q : B → Prop}
 
 include S in
 /-- Star algebra homomorphisms commute with the continuous functional calculus. -/
-lemma StarAlgHomClass.cfc_comm (φ : F) (f : R → R) (a : A)
+lemma StarAlgHomClass.map_cfc (φ : F) (f : R → R) (a : A)
     [CompactSpace (spectrum R a)] (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
     (hφ : Continuous φ := by fun_prop) (ha : p a := by cfc_tac) (hφa : q (φ a) := by cfc_tac) :
     φ (cfc f a) = cfc f (φ a) := by
@@ -514,10 +513,10 @@ lemma StarAlgHomClass.cfc_comm (φ : F) (f : R → R) (a : A)
 
 /-- Star algebra homomorphisms commute with the continuous functional calculus.
 This version is specialized to `A →⋆ₐ[S] B` to allow for dot notation. -/
-lemma StarAlgHom.cfc_comm (φ : A →⋆ₐ[S] B) (f : R → R) (a : A) [CompactSpace (spectrum R a)]
+lemma StarAlgHom.map_cfc (φ : A →⋆ₐ[S] B) (f : R → R) (a : A) [CompactSpace (spectrum R a)]
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) (hφ : Continuous φ := by fun_prop)
     (ha : p a := by cfc_tac) (hφa : q (φ a) := by cfc_tac) :
     φ (cfc f a) = cfc f (φ a) :=
-  StarAlgHomClass.cfc_comm φ f a
+  StarAlgHomClass.map_cfc φ f a
 
 end StarAlgHom
