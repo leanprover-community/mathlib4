@@ -3539,11 +3539,12 @@ import Mathlib.Order.Disjointed
 import Mathlib.Order.Estimator
 import Mathlib.Order.Extension.Linear
 import Mathlib.Order.Extension.Well
-import Mathlib.Order.Filter.Archimedean
 import Mathlib.Order.Filter.AtTopBot
+import Mathlib.Order.Filter.AtTopBot.Archimedean
 import Mathlib.Order.Filter.AtTopBot.BigOperators
 import Mathlib.Order.Filter.AtTopBot.Field
 import Mathlib.Order.Filter.AtTopBot.Group
+import Mathlib.Order.Filter.AtTopBot.ModEq
 import Mathlib.Order.Filter.AtTopBot.Monoid
 import Mathlib.Order.Filter.AtTopBot.Ring
 import Mathlib.Order.Filter.Bases
@@ -3565,7 +3566,6 @@ import Mathlib.Order.Filter.Interval
 import Mathlib.Order.Filter.Ker
 import Mathlib.Order.Filter.Lift
 import Mathlib.Order.Filter.ListTraverse
-import Mathlib.Order.Filter.ModEq
 import Mathlib.Order.Filter.NAry
 import Mathlib.Order.Filter.Partial
 import Mathlib.Order.Filter.Pi

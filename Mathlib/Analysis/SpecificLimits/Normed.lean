@@ -11,7 +11,7 @@ import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Data.List.TFAE
 import Mathlib.Data.Nat.Choose.Bounds
-import Mathlib.Order.Filter.ModEq
+import Mathlib.Order.Filter.AtTopBot.ModEq
 import Mathlib.RingTheory.Polynomial.Pochhammer
 import Mathlib.Tactic.NoncommRing
 
