@@ -2,9 +2,9 @@
 Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-Some proofs and docs came from mathlib3 `src/algebra/commute.lean` (c) Neil Strickland
 -/
+-- Some proofs and docs came from mathlib3 `src/algebra/commute.lean` (c) Neil Strickland
+
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Init.Logic
 
