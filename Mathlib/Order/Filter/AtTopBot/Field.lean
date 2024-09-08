@@ -1,5 +1,5 @@
 import Mathlib.Algebra.Order.Field.Defs
-import Mathlib.Order.Filter.AtTopBot
+import Mathlib.Order.Filter.AtTopBot.Ring
 
 namespace Filter
 

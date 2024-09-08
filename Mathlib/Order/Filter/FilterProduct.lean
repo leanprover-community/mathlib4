@@ -5,6 +5,7 @@ Authors: Abhimanyu Pallavi Sudhir, Yury Kudryashov
 -/
 import Mathlib.Order.Filter.Ultrafilter
 import Mathlib.Order.Filter.Ring
+import Mathlib.Algebra.Order.Field.Defs
 
 /-!
 # Ultraproducts
