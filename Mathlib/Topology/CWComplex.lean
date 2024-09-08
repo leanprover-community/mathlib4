@@ -5,7 +5,6 @@ Authors: Jiazhen Xia, Elliot Dean Young
 -/
 
 import Mathlib.Topology.Category.TopCat.Limits.Basic
-import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.CategoryTheory.Functor.OfSequence
 
 /-!
@@ -28,27 +27,11 @@ The definition of CW-complexes follows David Wärn's suggestion at
 https://leanprover.zulipchat.com/#narrow/stream/217875-Is-there-code-for-X.3F/topic/Do.20we.20have.20CW.20complexes.3F/near/231769080
 -/
 
-open CategoryTheory
+open CategoryTheory TopCat
 
 universe u
 
 namespace RelativeCWComplex
-
-/-- The `n`-sphere is the set of points in ℝⁿ⁺¹ whose norm equals `1`,
-endowed with the subspace topology. -/
-noncomputable def sphere (n : ℤ) : TopCat.{u} :=
-  TopCat.of <| ULift <| Metric.sphere (0 : EuclideanSpace ℝ <| Fin <| Int.toNat <| n + 1) 1
-
-/-- The `n`-disk is the set of points in ℝⁿ whose norm is at most `1`,
-endowed with the subspace topology. -/
-noncomputable def disk (n : ℤ) : TopCat.{u} :=
-  TopCat.of <| ULift <| Metric.closedBall (0 : EuclideanSpace ℝ <| Fin <| Int.toNat n) 1
-
-/-- `𝕊 n` denotes the `n`-sphere. -/
-scoped prefix:arg "𝕊 " => sphere
-
-/-- `𝔻 n` denotes the `n`-disk. -/
-scoped prefix:arg "𝔻 " => disk
 
 /-- The inclusion map from the `n`-sphere to the `(n+1)`-disk -/
 def sphereInclusion (n : ℤ) : 𝕊 n ⟶ 𝔻 (n + 1) where
