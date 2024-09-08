@@ -4731,6 +4731,7 @@ import Mathlib.Util.GetAllModules
 import Mathlib.Util.IncludeStr
 import Mathlib.Util.LongNames
 import Mathlib.Util.MemoFix
+import Mathlib.Util.NoInstances
 import Mathlib.Util.Notation3
 import Mathlib.Util.Qq
 import Mathlib.Util.SleepHeartbeats
