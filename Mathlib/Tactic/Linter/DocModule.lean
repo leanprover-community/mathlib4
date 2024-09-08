@@ -82,7 +82,7 @@ def toSyntax (s pattern : String) (offset : String.Pos := 0) : Syntax :=
 
 -- adapted from the textbased
 /-- Return if `line` looks like a correct authors line in a copyright header. -/
-def authorsLineCorrections (line : String) (offset : String.Pos) : Array (Syntax × String) :=
+def authorsLineChecks (line : String) (offset : String.Pos) : Array (Syntax × String) :=
   Id.run do
   -- We cannot reasonably validate the author names, so we look only for a few common mistakes:
   -- the file starting wrong, double spaces, using ' and ' between names,
@@ -115,7 +115,7 @@ The linter checks that
 * the remainder of the string begins with `Authors: `, does not end with `.` and
   contains no ` and ` nor a double space, except possibly after a line break.
 -/
-def copyrightHeaderLinter (copyright : String) : Array (Syntax × String) := Id.run do
+def copyrightHeaderChecks (copyright : String) : Array (Syntax × String) := Id.run do
   -- filter out everything after the first isolated `-/`
   let pieces := copyright.splitOn "\n-/"
   let copyright := (pieces.getD 0 "") ++ "\n-/"
@@ -149,7 +149,7 @@ def copyrightHeaderLinter (copyright : String) : Array (Syntax × String) := Id.
     -- validate authors
     let authorsLine := "\n".intercalate authorsLines.dropLast
     let authorsStart := (("\n".intercalate [openComment, copyrightAuthor, license, ""])).endPos
-    for corr in authorsLineCorrections authorsLine authorsStart do
+    for corr in authorsLineChecks authorsLine authorsStart do
       msgs := msgs.push corr
     let expectedLicense := "Released under Apache 2.0 license as described in the file LICENSE."
     if license != expectedLicense then
@@ -164,7 +164,7 @@ def broadImportsCheck (imports : Array Syntax)  : Array (Syntax × String) := Id
   let mut msgs := #[]
   for i in imports do
     match i.getId with
-    | `Mathlib.Tactic | `Mathlib.Tactic.Linter.DocModule =>
+    | `Mathlib.Tactic =>
       msgs := msgs.push (i, s!"Files in mathlib cannot import the whole tactic folder.")
     | modName =>
       if modName.getRoot == `Lake then
@@ -230,7 +230,7 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
       | .original lead .. => lead.toString
       | _ => ""
     -- copyright report
-    for (stx, m) in copyrightHeaderLinter copyright do
+    for (stx, m) in copyrightHeaderChecks copyright do
       Linter.logLint linter.style.header stx m!"* '{stx.getAtomVal}':\n{m}\n"
     -- imports report
     for (imp, msg) in broadImportsCheck importIds do
