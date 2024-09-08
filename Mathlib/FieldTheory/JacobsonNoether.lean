@@ -1,8 +1,8 @@
 /-
-Copyright (c) 2024 Filippo A. E. Nuccio, Huanyu Zheng, Wanyi He, Sihan Wu, Yi Yuan.
+Copyright (c) 2024 Filippo A. E. Nuccio, Huanyu Zheng, Wanyi He, Sihan Wu, Weichen Jiao, Yi Yuan.
 All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Filippo A. E. Nuccio, Huanyu Zheng, Sihan Wu, Wanyi He, Yi Yuan
+Authors: Filippo A. E. Nuccio, Huanyu Zheng, Sihan Wu, Wanyi He, Weichen Jiao, Yi Yuan
 -/
 import Mathlib.RingTheory.Algebraic
 import Mathlib.FieldTheory.Separable
@@ -183,12 +183,9 @@ theorem JacobsonNoether_charP (p : ℕ) [Fact p.Prime] [CharP D p]
   set c := ((δ a) ^ n) b with hc_def
   letI : Invertible c := ⟨c⁻¹, inv_mul_cancel₀ (hb.1), mul_inv_cancel₀ (hb.1)⟩
   have hc : c * a = a * c := by
-    rw [← show (f a) c = a * c by rfl, ← show (g a) c = c * a by rfl, ← zero_add (g a c)]
+    rw [← f_def a c, ← g_def a c, ← zero_add (g a c)]
     apply add_eq_of_eq_add_neg
-    have temp := δ_iterate_succ a b n
-    simp only [δ_def, f_def, g_def] at temp
-    simp only [temp, f_def, g_def, ← sub_eq_add_neg]
-    exact hb.2.symm
+    rw[← sub_eq_add_neg, ← δ_def, hc_def, δ_iterate_succ a b n, hb.2]
   -- We now make some computation to obtain the *absurd* equation `final_eq`, contradiction.
   set d := c⁻¹ * a * (δ a) ^[n-1] b with hd_def
   have hc': c⁻¹ * a = a * c⁻¹ := by
