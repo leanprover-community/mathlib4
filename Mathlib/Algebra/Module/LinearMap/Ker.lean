@@ -22,4 +22,3 @@ theorem LinearMap.ker_restrictScalars (f : M →ₗ[S] N) :
   rfl
 
 end Module
-#min_imports
