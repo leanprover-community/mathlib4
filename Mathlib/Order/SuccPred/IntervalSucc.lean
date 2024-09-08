@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Data.Set.Lattice
-import Mathlib.Order.SuccPred.Basic
+import Mathlib.Order.SuccPred.Archimedean
 
 /-!
 # Intervals `Ixx (f x) (f (Order.succ x))`

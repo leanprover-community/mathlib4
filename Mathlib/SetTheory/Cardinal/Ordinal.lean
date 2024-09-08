@@ -66,10 +66,11 @@ theorem ord_isLimit {c} (co : ℵ₀ ≤ c) : (ord c).IsLimit := by
     · rw [ord_aleph0]
       exact omega_isLimit
 
-theorem noMaxOrder {c} (h : ℵ₀ ≤ c) : NoMaxOrder c.ord.out.α :=
-  Ordinal.out_no_max_of_succ_lt (ord_isLimit h).2
+theorem noMaxOrder {c} (h : ℵ₀ ≤ c) : NoMaxOrder c.ord.toType :=
+  toType_noMax_of_succ_lt (ord_isLimit h).2
 
 /-! ### Aleph cardinals -/
+
 section aleph
 
 /-- The `aleph'` index function, which gives the ordinal index of a cardinal.
@@ -271,15 +272,15 @@ theorem aleph_toNat (o : Ordinal) : toNat (aleph o) = 0 :=
 theorem aleph_toPartENat (o : Ordinal) : toPartENat (aleph o) = ⊤ :=
   toPartENat_apply_of_aleph0_le <| aleph0_le_aleph o
 
-instance nonempty_out_aleph (o : Ordinal) : Nonempty (aleph o).ord.out.α := by
-  rw [out_nonempty_iff_ne_zero, ← ord_zero]
+instance nonempty_toType_aleph (o : Ordinal) : Nonempty (aleph o).ord.toType := by
+  rw [toType_nonempty_iff_ne_zero, ← ord_zero]
   exact fun h => (ord_injective h).not_gt (aleph_pos o)
 
 theorem ord_aleph_isLimit (o : Ordinal) : (aleph o).ord.IsLimit :=
   ord_isLimit <| aleph0_le_aleph _
 
-instance (o : Ordinal) : NoMaxOrder (aleph o).ord.out.α :=
-  out_no_max_of_succ_lt (ord_aleph_isLimit o).2
+instance (o : Ordinal) : NoMaxOrder (aleph o).ord.toType :=
+  toType_noMax_of_succ_lt (ord_aleph_isLimit o).2
 
 theorem exists_aleph {c : Cardinal} : ℵ₀ ≤ c ↔ ∃ o, c = aleph o :=
   ⟨fun h =>
@@ -1444,9 +1445,9 @@ lemma mk_iUnion_Ordinal_le_of_le {β : Type*} {o : Ordinal} {c : Cardinal}
     (ho : o.card ≤ c) (hc : ℵ₀ ≤ c) (A : Ordinal → Set β)
     (hA : ∀ j < o, #(A j) ≤ c) :
     #(⋃ j < o, A j) ≤ c := by
-  simp_rw [← mem_Iio, biUnion_eq_iUnion, iUnion, iSup, ← o.enumIsoOut.symm.surjective.range_comp]
+  simp_rw [← mem_Iio, biUnion_eq_iUnion, iUnion, iSup, ← o.enumIsoToType.symm.surjective.range_comp]
   apply ((mk_iUnion_le _).trans _).trans_eq (mul_eq_self hc)
-  rw [mk_ordinal_out]
+  rw [mk_toType]
   exact mul_le_mul' ho <| ciSup_le' <| (hA _ <| typein_lt_self ·)
 
 end Cardinal
