@@ -144,7 +144,7 @@ import*
 It emits a warning if the first command after the last import is not a module doc-string.
 -/
 register_option linter.style.header : Bool := {
-  defValue := true
+  defValue := false
   descr := "enable the header style linter"
 }
 
