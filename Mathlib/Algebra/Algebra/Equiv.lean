@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Hom
+import Mathlib.Algebra.Module.LinearMap.End
 import Mathlib.Algebra.Ring.Aut
 
 /-!

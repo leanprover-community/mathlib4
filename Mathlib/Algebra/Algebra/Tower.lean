@@ -3,6 +3,7 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Anne Baanen
 -/
+import Mathlib.Algebra.Algebra.End
 import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.LinearAlgebra.Span
 

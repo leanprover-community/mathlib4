@@ -5,19 +5,13 @@ Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.CharZero.Lemmas
-import Mathlib.Algebra.Module.Equiv.Basic
-import Mathlib.Algebra.Module.Submodule.Ker
-import Mathlib.Algebra.Module.Submodule.RestrictScalars
+import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Module.ULift
-import Mathlib.Algebra.Ring.Subring.Basic
-import Mathlib.Data.Nat.Cast.Order.Basic
-import Mathlib.Data.Int.CharZero
-import Mathlib.Tactic.ApplyFun
 import Mathlib.Algebra.PUnitInstances.Algebra
-import Mathlib.Algebra.Module.LinearMap.Ker
-import Mathlib.Algebra.Algebra.End
-import Mathlib.Algebra.Algebra.Subring
-import Mathlib.Algebra.Algebra.BigOperators
+import Mathlib.Algebra.PUnitInstances.Module
+import Mathlib.Data.Int.CharZero
+import Mathlib.Data.Nat.Cast.Order.Basic
+import Mathlib.Tactic.ApplyFun
 
 /-!
 # Further basic results about `Algebra`.
@@ -25,7 +19,7 @@ import Mathlib.Algebra.Algebra.BigOperators
 This file could usefully be split further.
 -/
 
--- assert_not_exists Fintype.card
+assert_not_exists Fintype
 
 universe u v w u₁ v₁
 
