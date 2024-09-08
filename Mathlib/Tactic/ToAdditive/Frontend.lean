@@ -13,8 +13,9 @@ import Mathlib.Lean.Name
 import Lean.Elab.Tactic.Ext
 import Lean.Meta.Tactic.Symm
 import Lean.Meta.Tactic.Rfl
+import Lean.Meta.Match.MatcherInfo
 import Batteries.Lean.NameMapAttribute
-import Batteries.Tactic.Lint -- useful to lint this file and for for DiscrTree.elements
+import Batteries.Tactic.Lint -- useful to lint this file and for DiscrTree.elements
 import Mathlib.Tactic.Relation.Trans -- just to copy the attribute
 import Mathlib.Tactic.Eqns -- just to copy the attribute
 import Mathlib.Tactic.Simps.Basic
@@ -816,6 +817,12 @@ partial def transformDeclAux
     selectionRange := ← getDeclarationRange cfg.ref }
   if isProtected (← getEnv) src then
     setEnv <| addProtected (← getEnv) tgt
+  if let some matcherInfo ← getMatcherInfo? src then
+    /-
+    Use `Match.addMatcherInfo tgt matcherInfo`
+    once https://github.com/leanprover/lean4/pull/5068 is in
+    -/
+    modifyEnv fun env => Match.Extension.addMatcherInfo env tgt matcherInfo
 
 /-- Copy the instance attribute in a `to_additive`
 
@@ -958,6 +965,7 @@ def nameDict : String → List String
   | "zpowers"     => ["zmultiples"]
   | "powers"      => ["multiples"]
   | "multipliable"=> ["summable"]
+  | "gpfree"      => ["apfree"]
   | x             => [x]
 
 /--
@@ -1042,8 +1050,6 @@ def fixAbbreviation : List String → List String
                                       => "function" :: "_" :: "commute" :: fixAbbreviation s
   | "zero" :: "Le" :: "Part" :: s         => "posPart" :: fixAbbreviation s
   | "le" :: "Zero" :: "Part" :: s         => "negPart" :: fixAbbreviation s
-  | "three" :: "GPFree" :: s         => "three" :: "APFree" :: fixAbbreviation s
-  | "Three" :: "GPFree" :: s         => "Three" :: "APFree" :: fixAbbreviation s
   | "Division" :: "Add" :: "Monoid" :: s => "SubtractionMonoid" :: fixAbbreviation s
   | "division" :: "Add" :: "Monoid" :: s => "subtractionMonoid" :: fixAbbreviation s
   | "Sub" :: "Neg" :: "Zero" :: "Add" :: "Monoid" :: s => "SubNegZeroMonoid" :: fixAbbreviation s
@@ -1217,7 +1223,7 @@ partial def copyMetaData (cfg : Config) (src tgt : Name) : CoreM (Array Name) :=
     definitions. If we don't do that, the equation lemma for `src` might be generated later
     when doing a `rw`, but it won't be generated for `tgt`. -/
     additivizeLemmas #[src, tgt] "equation lemmas" fun nm ↦
-      (·.getD #[]) <$> MetaM.run' (getEqnsFor? nm true)
+      (·.getD #[]) <$> MetaM.run' (getEqnsFor? nm)
   MetaM.run' <| Elab.Term.TermElabM.run' <|
     applyAttributes cfg.ref cfg.attrs `to_additive src tgt
 
@@ -1500,3 +1506,5 @@ initialize registerBuiltinAttribute {
   }
 
 end ToAdditive
+
+set_option linter.style.longFile 1700

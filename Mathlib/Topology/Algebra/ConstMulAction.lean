@@ -504,7 +504,7 @@ alias set_smul_mem_nhds_smul_iff := smul_mem_nhds_smul_iff₀
 
 alias ⟨_, smul_mem_nhds_smul₀⟩ := smul_mem_nhds_smul_iff₀
 
-@[deprecated  smul_mem_nhds_smul₀ (since := "2024-08-06")]
+@[deprecated smul_mem_nhds_smul₀ (since := "2024-08-06")]
 theorem set_smul_mem_nhds_smul {c : G₀} {s : Set α} {x : α} (hs : s ∈ 𝓝 x) (hc : c ≠ 0) :
     c • s ∈ 𝓝 (c • x : α) :=
   smul_mem_nhds_smul₀ hc hs

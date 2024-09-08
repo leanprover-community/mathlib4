@@ -127,6 +127,10 @@ lemma cfcₙHom_closedEmbedding :
     ClosedEmbedding <| (cfcₙHom ha : C(σₙ R a, R)₀ →⋆ₙₐ[R] A) :=
   (NonUnitalContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.1
 
+@[fun_prop]
+lemma cfcₙHom_continuous : Continuous (cfcₙHom ha : C(σₙ R a, R)₀ →⋆ₙₐ[R] A) :=
+  cfcₙHom_closedEmbedding ha |>.continuous
+
 lemma cfcₙHom_id :
     cfcₙHom ha ⟨(ContinuousMap.id R).restrict <| σₙ R a, rfl⟩ = a :=
   (NonUnitalContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.2.1
@@ -170,6 +174,17 @@ theorem cfcₙHom_comp [UniqueNonUnitalContinuousFunctionalCalculus R A] (f : C(
 
 end cfcₙHom
 
+section cfcₙL
+
+/-- `cfcₙHom` bundled as a continuous linear map. -/
+@[simps apply]
+noncomputable def cfcₙL {a : A} (ha : p a) : C(σₙ R a, R)₀ →L[R] A :=
+  { cfcₙHom ha with
+    toFun := cfcₙHom ha
+    map_smul' := map_smul _
+    cont := (cfcₙHom_closedEmbedding ha).continuous }
+
+end cfcₙL
 
 section CFCn
 
@@ -458,6 +473,7 @@ lemma CFC.quasispectrum_zero_eq : σₙ R (0 : A) = {0} := by
     simpa [CFC.quasispectrum_zero_eq]
   · exact cfcₙ_apply_of_not_map_zero _ hf0
 
+@[simp]
 instance IsStarNormal.cfcₙ_map (f : R → R) (a : A) : IsStarNormal (cfcₙ f a) where
   star_comm_self := by
     refine cfcₙ_cases (fun x ↦ Commute (star x) x) _ _ (Commute.zero_right _) fun _ _ _ ↦ ?_
@@ -465,6 +481,19 @@ instance IsStarNormal.cfcₙ_map (f : R → R) (a : A) : IsStarNormal (cfcₙ f 
     rw [← cfcₙ_apply f a, ← cfcₙ_star, ← cfcₙ_mul .., ← cfcₙ_mul ..]
     congr! 2
     exact mul_comm _ _
+
+-- The following two lemmas are just `cfcₙ_predicate`, but specific enough for the `@[simp]` tag.
+@[simp]
+protected lemma IsSelfAdjoint.cfcₙ
+    [NonUnitalContinuousFunctionalCalculus R (IsSelfAdjoint : A → Prop)] {f : R → R} {a : A} :
+    IsSelfAdjoint (cfcₙ f a) :=
+  cfcₙ_predicate _ _
+
+@[simp]
+lemma cfcₙ_nonneg_of_predicate [PartialOrder A]
+    [NonUnitalContinuousFunctionalCalculus R (fun (a : A) => 0 ≤ a)] {f : R → R} {a : A} :
+    0 ≤ cfcₙ f a :=
+  cfcₙ_predicate _ _
 
 end CFCn
 
@@ -662,10 +691,6 @@ lemma closedEmbedding_cfcₙHom_of_cfcHom {a : A} (ha : p a) :
     ClosedEmbedding (cfcₙHom_of_cfcHom R ha) := by
   let f : C(spectrum R a, σₙ R a) :=
     ⟨_, continuous_inclusion <| spectrum_subset_quasispectrum R a⟩
-  have h_cpct' : CompactSpace (σₙ R a) := by
-    specialize h_cpct a
-    simp_rw [← isCompact_iff_compactSpace, quasispectrum_eq_spectrum_union_zero] at h_cpct ⊢
-    exact h_cpct.union isCompact_singleton
   refine (cfcHom_closedEmbedding ha).comp <|
     (UniformInducing.uniformEmbedding ⟨?_⟩).toClosedEmbedding
   have := uniformSpace_eq_inf_precomp_of_cover (β := R) f (0 : C(Unit, σₙ R a))

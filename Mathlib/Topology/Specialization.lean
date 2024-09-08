@@ -26,7 +26,7 @@ variable {α β γ : Type*}
 /-- `toEquiv` is the "identity" function to the `Specialization` of a type. -/
 @[match_pattern] def toEquiv : α ≃ Specialization α := Equiv.refl _
 
-/-- `ofEquiv` is the identity function from the `Specialization` of a type.  -/
+/-- `ofEquiv` is the identity function from the `Specialization` of a type. -/
 @[match_pattern] def ofEquiv : Specialization α ≃ α := Equiv.refl _
 
 @[simp] lemma toEquiv_symm : (@toEquiv α).symm = ofEquiv := rfl
