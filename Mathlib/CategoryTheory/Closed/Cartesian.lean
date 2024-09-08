@@ -335,8 +335,9 @@ This actually shows a slightly stronger version: any morphism to an initial obje
 exponentiable object is an isomorphism.
 -/
 theorem strict_initial {I : C} (t : IsInitial I) (f : A ⟶ I) : IsIso f := by
-  haveI : Mono (prod.lift (𝟙 A) f ≫ (zeroMul t).hom) := mono_comp _ _
-  rw [zeroMul_hom, prod.lift_snd] at this
+  haveI : Mono f := by
+    rw [← prod.lift_snd (𝟙 A) f, ← zeroMul_hom t]
+    exact mono_comp _ _
   haveI : IsSplitEpi f := IsSplitEpi.mk' ⟨t.to _, t.hom_ext _ _⟩
   apply isIso_of_mono_of_isSplitEpi
 
