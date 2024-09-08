@@ -1,4 +1,4 @@
-import Mathlib.Order.Filter.AtTopBot
+import Mathlib.Order.Filter.AtTopBot.Group
 import Mathlib.Algebra.Order.Ring.Basic
 
 variable {α β : Type*}
