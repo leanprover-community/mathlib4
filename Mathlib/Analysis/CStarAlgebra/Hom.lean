@@ -12,7 +12,7 @@ Here we collect properties of C⋆-algebra homomorphisms.
 
 ## Main declarations
 
-+ `NonUnitalStarAlgHom.norm_apply_eq`: A non-unital star algebra monomorphism of complex C⋆-algebras
++ `NonUnitalStarAlgHom.norm_map`: A non-unital star algebra monomorphism of complex C⋆-algebras
   is isometric.
 -/
 
