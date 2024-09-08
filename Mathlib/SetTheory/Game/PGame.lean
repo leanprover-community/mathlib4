@@ -822,12 +822,32 @@ theorem equiv_congr_right {x₁ x₂ : PGame} : (x₁ ≈ x₂) ↔ ∀ y₁, (x
   ⟨fun h _ => ⟨fun h' => Equiv.trans (Equiv.symm h) h', fun h' => Equiv.trans h h'⟩,
    fun h => (h x₂).2 <| equiv_rfl⟩
 
+theorem equiv_of_exists {x y : PGame}
+    (hl₁ : ∀ i, ∃ j, x.moveLeft i ≈ y.moveLeft j) (hr₁ : ∀ i, ∃ j, x.moveRight i ≈ y.moveRight j)
+    (hl₂ : ∀ j, ∃ i, x.moveLeft i ≈ y.moveLeft j) (hr₂ : ∀ j, ∃ i, x.moveRight i ≈ y.moveRight j) :
+    x ≈ y := by
+  constructor <;> refine le_def.2 ⟨?_, ?_⟩ <;> intro i
+  · obtain ⟨j, hj⟩ := hl₁ i
+    exact Or.inl ⟨j, Equiv.le hj⟩
+  · obtain ⟨j, hj⟩ := hr₂ i
+    exact Or.inr ⟨j, Equiv.le hj⟩
+  · obtain ⟨j, hj⟩ := hl₂ i
+    exact Or.inl ⟨j, Equiv.ge hj⟩
+  · obtain ⟨j, hj⟩ := hr₁ i
+    exact Or.inr ⟨j, Equiv.ge hj⟩
+
 theorem equiv_of_mk_equiv {x y : PGame} (L : x.LeftMoves ≃ y.LeftMoves)
     (R : x.RightMoves ≃ y.RightMoves) (hl : ∀ i, x.moveLeft i ≈ y.moveLeft (L i))
     (hr : ∀ j, x.moveRight j ≈ y.moveRight (R j)) : x ≈ y := by
-  constructor <;> rw [le_def]
-  · exact ⟨fun i => Or.inl ⟨_, (hl i).1⟩, fun j => Or.inr ⟨_, by simpa using (hr (R.symm j)).1⟩⟩
-  · exact ⟨fun i => Or.inl ⟨_, by simpa using (hl (L.symm i)).2⟩, fun j => Or.inr ⟨_, (hr j).2⟩⟩
+  apply equiv_of_exists <;> intro i
+  · exact ⟨_, hl i⟩
+  · exact ⟨_, hr i⟩
+  · use L.symm i
+    convert hl (L.symm i)
+    rw [L.apply_symm_apply i]
+  · use R.symm i
+    convert hr (R.symm i)
+    rw [R.apply_symm_apply i]
 
 /-- The fuzzy, confused, or incomparable relation on pre-games.
 

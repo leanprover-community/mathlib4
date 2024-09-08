@@ -12,6 +12,9 @@ import Mathlib.Logic.Small.Basic
 
 universe u v w
 
+theorem small_empty (α : Type v) : Small.{u} (∅ : Set α) :=
+  inferInstance
+
 theorem small_subset {α : Type v} {s t : Set α} (hts : t ⊆ s) [Small.{u} s] : Small.{u} t :=
   let f : t → s := fun x => ⟨x, hts x.prop⟩
   @small_of_injective _ _ _ f fun _ _ hxy => Subtype.ext (Subtype.mk.inj hxy)
