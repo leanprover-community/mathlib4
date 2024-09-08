@@ -218,7 +218,7 @@ theorem sq_one' {a : ℤ} {b : ℕ} (h : a.gcd b = 1) : J(a ^ 2 | b) = 1 := by r
 /-- The symbol `J(a | b)` depends only on `a` mod `b`. -/
 theorem mod_left (a : ℤ) (b : ℕ) : J(a | b) = J(a % b | b) :=
   congr_arg List.prod <|
-    List.pmap_congr _
+    List.pmap_congr_left _
       (by
         -- Porting note: Lean does not synthesize the instance [Fact (Nat.Prime p)] automatically
         -- (it is needed for `legendreSym.mod` on line 227). Thus, we name the hypothesis
@@ -313,7 +313,7 @@ theorem value_at (a : ℤ) {R : Type*} [CommSemiring R] (χ : R →* ℤ)
   conv_rhs => rw [← prod_primeFactorsList hb.pos.ne', cast_list_prod, map_list_prod χ]
   rw [jacobiSym, List.map_map, ← List.pmap_eq_map Nat.Prime _ _
     fun _ => prime_of_mem_primeFactorsList]
-  congr 1; apply List.pmap_congr
+  congr 1; apply List.pmap_congr_left
   exact fun p h pp _ => hp p pp (hb.ne_two_of_dvd_nat <| dvd_of_mem_primeFactorsList h)
 
 /-- If `b` is odd, then `J(-1 | b)` is given by `χ₄ b`. -/
