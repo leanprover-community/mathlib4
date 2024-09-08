@@ -10,6 +10,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Yoneda
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Tactic.FinCases
+import Mathlib.AlgebraicTopology.SimplexCategory
 
 /-!
 # Simplicial sets
@@ -350,7 +351,7 @@ lemma Truncated.hom_ext {n : ℕ} {X Y : Truncated n} {f g : X ⟶ Y} (w : ∀ n
 
 /-- The truncation functor on simplicial sets. -/
 def truncation (n : ℕ) : SSet ⥤ SSet.Truncated n :=
-  SimplicialObject.truncation n
+  (whiskeringLeft _ _ _).obj (SimplexCategory.Δ.ι n).op
 
 instance {n} : Inhabited (SSet.Truncated n) :=
   ⟨(truncation n).obj <| Δ[0]⟩

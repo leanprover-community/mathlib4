@@ -593,6 +593,8 @@ theorem Hom.ext {n} {a b : Truncated n} (f g : a ⟶ b) :
 
 end Truncated
 
+abbrev Δ (k : ℕ) := SimplexCategory.Truncated k
+
 /-- An abbreviation for the truncated inclusion because skAdj and coskAdj in SimplicialSet
 break without it..-/
 abbrev Δ.ι (k) : SimplexCategory.Truncated k ⥤ SimplexCategory :=

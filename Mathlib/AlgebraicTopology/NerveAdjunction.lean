@@ -35,9 +35,9 @@ private def ev0₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : OneTruncation₂ V 
 private def ev1₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : OneTruncation₂ V := V.map ι1₂.op φ
 private def ev2₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : OneTruncation₂ V := V.map ι2₂.op φ
 
+private def δ0₂ : [1]₂ ⟶ [2]₂ := δ₂ (n := 1) 0
 private def δ1₂ : [1]₂ ⟶ [2]₂ := δ₂ (n := 1) 1
 private def δ2₂ : [1]₂ ⟶ [2]₂ := δ₂ (n := 1) 2
-private def δ0₂ : [1]₂ ⟶ [2]₂ := δ₂ (n := 1) 0
 
 private def ev02₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : ev0₂ φ ⟶ ev2₂ φ :=
   ⟨V.map δ1₂.op φ, opstuff V rfl, opstuff V rfl⟩
@@ -264,13 +264,14 @@ instance (C : Cat) : Mono (nerve₂.seagull C) where
                 refine congr_fun (?_ : X.map _ ≫ X.map _ = _) x
                 rw [← map_comp]; rfl
               · clear fac const01 const10 const02 OK
-                dsimp only [nerveFunctor₂, truncation, comp_obj, nerveFunctor_obj,
+                dsimp only [nerveFunctor₂, SSet.truncation, comp_obj, nerveFunctor_obj,
                   whiskeringLeft_obj_obj, Functor.comp_map, nerve_map,
                   ComposableArrows.whiskerLeft_map, ComposableArrows.precomp_map]
                 show _ = _ ≫ ComposableArrows.Precomp.map _ _ ⟨1, _⟩ ⟨2, _⟩ _ ≫ _
                 rw [ComposableArrows.Precomp.map]; dsimp
                 apply (conj_eqToHom_iff_heq' ..).2
-                dsimp [δ0₂, δ0, δ₂, OneTruncation₂.src, ev1₂]
+                dsimp only [Fin.isValue, OneTruncation₂.src, Nat.reduceAdd, δ₂, ev1₂,
+                  homOfLE_leOfHom]
                 have : ∀ {A B A' B' : OneTruncation₂ X} (x₁ : A ⟶ B) (x₂ : A' ⟶ B'),
                     A = A' → B = B' → x₁.1 = x₂.1 → HEq (F.map x₁) (F.map x₂) := by
                     rintro _ _ _ _ ⟨⟩ ⟨⟩ rfl rfl ⟨⟩; rfl
@@ -294,13 +295,13 @@ instance (C : Cat) : Mono (nerve₂.seagull C) where
                 refine congr_fun (?_ : X.map _ ≫ X.map _ = _) x
                 rw [← map_comp]; rfl
               · clear fac const01 const10 const02 OK
-                dsimp only [nerveFunctor₂, truncation, comp_obj, nerveFunctor_obj,
+                dsimp only [nerveFunctor₂, SSet.truncation, comp_obj, nerveFunctor_obj,
                   whiskeringLeft_obj_obj, Functor.comp_map, nerve_map,
                   ComposableArrows.whiskerLeft_map, ComposableArrows.precomp_map]
                 show _ = _ ≫ ComposableArrows.Precomp.map _ _ ⟨0, _⟩ ⟨2, _⟩ _ ≫ _
                 rw [ComposableArrows.Precomp.map]; dsimp
                 apply (conj_eqToHom_iff_heq' ..).2
-                dsimp [δ0₂, δ0, δ₂, OneTruncation₂.src, ev1₂]
+                dsimp only [Fin.isValue, OneTruncation₂.src, Nat.reduceAdd, δ₂, ev1₂]
                 have : ∀ {A B A' B' : OneTruncation₂ X} (x₁ : A ⟶ B) (x₂ : A' ⟶ B'),
                     A = A' → B = B' → x₁.1 = x₂.1 → HEq (F.map x₁) (F.map x₂) := by
                     rintro _ _ _ _ ⟨⟩ ⟨⟩ rfl rfl ⟨⟩; rfl
@@ -325,13 +326,13 @@ instance (C : Cat) : Mono (nerve₂.seagull C) where
                 refine congr_fun (?_ : X.map _ ≫ X.map _ = _) x
                 rw [← map_comp]; rfl
               · clear fac const01 const10 const02 OK
-                dsimp only [nerveFunctor₂, truncation, comp_obj, nerveFunctor_obj,
+                dsimp only [nerveFunctor₂, SSet.truncation, comp_obj, nerveFunctor_obj,
                   whiskeringLeft_obj_obj, Functor.comp_map, nerve_map,
                   ComposableArrows.whiskerLeft_map, ComposableArrows.precomp_map]
                 show _ = _ ≫ ComposableArrows.Precomp.map _ _ ⟨0, _⟩ ⟨1, _⟩ _ ≫ _
                 rw [ComposableArrows.Precomp.map]; dsimp
                 apply (conj_eqToHom_iff_heq' ..).2
-                dsimp [δ0₂, δ0, δ₂, OneTruncation₂.src, ev1₂]
+                dsimp only [Fin.isValue, OneTruncation₂.src, Nat.reduceAdd, δ₂, ev1₂]
                 have : ∀ {A B A' B' : OneTruncation₂ X} (x₁ : A ⟶ B) (x₂ : A' ⟶ B'),
                     A = A' → B = B' → x₁.1 = x₂.1 → HEq (F.map x₁) (F.map x₂) := by
                     rintro _ _ _ _ ⟨⟩ ⟨⟩ rfl rfl ⟨⟩; rfl
