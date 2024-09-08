@@ -6,6 +6,14 @@ Authors: Yuma Mizuno
 import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
 import Mathlib.Tactic.CategoryTheory.Monoidal.Datatypes
 
+/-!
+# Normalization of morphisms in monoidal categories
+
+This file provides the implementation of the normalization given in
+`Mathlib.Tactic.CategoryTheory.Coherence.Normalize`. See this file for more details.
+
+-/
+
 open Lean Meta Elab Qq
 open CategoryTheory Mathlib.Tactic.BicategoryLike MonoidalCategory
 
