@@ -141,19 +141,62 @@ open Set
 
 /-- The pregroupoid of orientation-preserving maps. -/
 def orientationPreservingPregroupoid [FiniteDimensional ℝ E] : Pregroupoid H where
-  property f s := OrientationPreserving (I ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ interior (range I))
-
---AnalyticOn 𝕜 (I ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ interior (range I))
-  --∧ (I.symm ⁻¹' s ∩ interior (range I)).image (I ∘ f ∘ I.symm) ⊆ interior (range I)
-
-  comp hf hg _ _ _ _ hx := sorry --orientationPreserving_comp hf hg _ hx
-  id_mem := sorry --orientationPreserving_id _
-  locality {f u} _ h x hxu := sorry
-    -- have ⟨v, _, hxv, h⟩ := h x hxu
-    -- h x <| Set.mem_inter hxu hxv
-  congr {f g u} hu fg hf x hx := by
-    sorry --rw [(Filter.eventuallyEq_of_mem (hu.mem_nhds hx) fg).fderiv_eq]
-    --exact hf x hx
+  property f s :=
+    OrientationPreserving (I ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ interior (range I))
+    -- This second condition basically says "on `s`, "f" maps the interior of `M`
+    -- to the interior of `M`: this can be proven superfluous in many contexts,
+    -- but such a proof is currently out of reach for mathlib.
+    -- Hence, we add this condition.
+    ∧ (I.symm ⁻¹' s ∩ interior (range I)).image (I ∘ f ∘ I.symm) ⊆ interior (range I)
+  comp {f g} U V hf hg hU hV hUV := by
+    dsimp at *
+    constructor
+    · intro x hx
+      have hx' : x ∈ I.symm ⁻¹' U ∩ interior (range I) ∩
+          I ∘ f ∘ I.symm ⁻¹' (I.symm ⁻¹' V ∩ interior (range I)) := by
+        obtain ⟨hx1, hx2⟩ := hx
+        constructor
+        · exact ⟨mem_of_mem_inter_left hx1, hx2⟩
+        · refine ⟨by simp_all, ?_⟩
+          simp_all only [Function.comp_apply, image_subset_iff, mem_inter_iff, mem_preimage]
+          apply hf.2
+          simp_all only [mem_inter_iff, mem_preimage, and_self]
+      convert orientationPreserving_comp hf.1 hg.1 x hx'
+      simp [Function.comp]
+    · -- need to use hf.2 and hg.2
+      sorry
+  id_mem := by
+    dsimp
+    constructor
+    · rw [univ_inter]
+      have aux := I.rightInvOn
+      -- by aux, I ∘ I.symm agree with id on range I,
+      -- so it suffices to show id is or-pres there (that's a congr lemma!)
+      convert orientationPreserving_id _
+      sorry
+    · -- similar logic as above; TODO clean up this argument and use something similar above
+      rw [univ_inter]
+      intro x hx
+      obtain ⟨x', hx', hx''⟩ := hx
+      have : x' = x := by
+        rw [← hx'']
+        symm
+        apply I.right_inv (interior_subset hx')
+      rw [← this]
+      exact hx'
+  locality {f u} _ h := by
+    constructor
+    · intro x hxu
+      have ⟨v, _, hxv, h⟩ := h (I.symm x) hxu.1
+      exact h.1 _ ⟨Set.mem_inter hxu.1 hxv, hxu.2⟩
+    · sorry -- need to use h.2
+  congr {f g u} hu fg hf := by
+    constructor
+    · intro x hx
+      sorry -- old proof was:
+      -- rw [(Filter.eventuallyEq_of_mem (hu.mem_nhds hx) fg).fderiv_eq]
+      --exact hf x hx
+    · sorry
 
 /-- The groupoid of orientation-preserving maps. -/
 def orientationPreservingGroupoid [FiniteDimensional ℝ E] : StructureGroupoid H :=
@@ -182,8 +225,8 @@ lemma orientableManifold_of_zero_dim {E H : Type*} [NormedAddCommGroup E] [Norme
     [TopologicalSpace H] (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
     (I : ModelWithCorners ℝ E H) [FiniteDimensional ℝ E] (h : FiniteDimensional.finrank ℝ E = 0) :
     OrientableManifold M I where
-  compatible := fun _ _ ↦
-    ⟨orientationPreserving_of_zero_dim _ _ h, orientationPreserving_of_zero_dim _ _ h⟩
+  compatible := sorry /- fun _ _ _ ↦
+    ⟨orientationPreserving_of_zero_dim _ _ h, orientationPreserving_of_zero_dim _ _ h⟩ -/
 
 /-- Typeclass defining orientable smooth manifolds: a smooth manifold is orientable
 if and only if it admits an atlas which is both smooth and orientable -/
