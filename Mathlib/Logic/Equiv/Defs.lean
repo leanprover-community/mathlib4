@@ -611,7 +611,7 @@ theorem sigmaCongrRight_symm {α} {β₁ β₂ : α → Type*} (F : ∀ a, β₁
 theorem sigmaCongrRight_refl {α} {β : α → Type*} :
     (sigmaCongrRight fun a => Equiv.refl (β a)) = Equiv.refl (Σ a, β a) := rfl
 
-/-- A `PSigma` with `Prop` fibers is equivalent to the subtype.  -/
+/-- A `PSigma` with `Prop` fibers is equivalent to the subtype. -/
 def psigmaEquivSubtype {α : Type v} (P : α → Prop) : (Σ' i, P i) ≃ Subtype P where
   toFun x := ⟨x.1, x.2⟩
   invFun x := ⟨x.1, x.2⟩

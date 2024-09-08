@@ -10,7 +10,7 @@ open Lake DSL
 require "leanprover-community" / "batteries" @ git "main"
 require "leanprover-community" / "Qq" @ git "master"
 require "leanprover-community" / "aesop" @ git "master"
-require "leanprover-community" / "proofwidgets" @ git "v0.0.41"
+require "leanprover-community" / "proofwidgets" @ git "v0.0.42"
 require "leanprover-community" / "importGraph" @ git "main"
 
 /-!
@@ -24,14 +24,15 @@ require "leanprover-community" / "importGraph" @ git "main"
 -/
 abbrev mathlibOnlyLinters : Array LeanOption := #[
   ⟨`linter.hashCommand, true⟩,
-  ⟨`linter.missingEnd, true⟩,
-  ⟨`linter.cdot, true⟩,
-  ⟨`linter.dollarSyntax, true⟩,
-  ⟨`linter.style.lambdaSyntax, true⟩,
-  ⟨`linter.longLine, true⟩,
   ⟨`linter.oldObtain, true,⟩,
   ⟨`linter.refine, true⟩,
-  ⟨`linter.setOption, true⟩
+  ⟨`linter.style.cdot, true⟩,
+  ⟨`linter.style.dollarSyntax, true⟩,
+  ⟨`linter.style.lambdaSyntax, true⟩,
+  ⟨`linter.style.longLine, true⟩,
+  ⟨`linter.style.longFile, .ofNat 1500⟩,
+  ⟨`linter.style.missingEnd, true⟩,
+  ⟨`linter.style.setOption, true⟩
 ]
 
 /-- These options are passed as `leanOptions` to building mathlib, as well as the
