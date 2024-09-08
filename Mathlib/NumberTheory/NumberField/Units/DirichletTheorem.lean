@@ -418,17 +418,14 @@ set_option maxSynthPendingDepth 2 -- Note this is active for the remainder of th
 /-- The linear equivalence between `(𝓞 K)ˣ ⧸ (torsion K)` as an additive `ℤ`-module and
 `unitLattice` . -/
 def logEmbeddingEquiv :
-    Additive ((𝓞 K)ˣ ⧸ (torsion K)) ≃ₗ[ℤ] (unitLattice K) := by
-  refine LinearEquiv.ofBijective
-    (AddMonoidHom.codRestrict (logEmbeddingQuot K) (unitLattice K) ?_).toIntLinearMap ⟨?_, ?_⟩
-  · refine Quotient.ind fun x ↦ logEmbeddingQuot_apply K _ ▸ Submodule.mem_map_of_mem trivial
-  · intro _ _
-    rw [AddMonoidHom.coe_toIntLinearMap, AddMonoidHom.codRestrict_apply,
-      AddMonoidHom.codRestrict_apply, Subtype.mk.injEq]
-    apply logEmbeddingQuot_injective K
-  · intro ⟨a, ⟨b, _, ha⟩⟩
-    refine ⟨⟦b⟧, ?_⟩
-    simpa using ha
+    Additive ((𝓞 K)ˣ ⧸ (torsion K)) ≃ₗ[ℤ] (unitLattice K) :=
+  LinearEquiv.ofBijective ((logEmbeddingQuot K).codRestrict (unitLattice K)
+    (Quotient.ind fun x ↦ logEmbeddingQuot_apply K _ ▸
+      Submodule.mem_map_of_mem trivial)).toIntLinearMap
+    ⟨fun _ _ ↦ by
+      rw [AddMonoidHom.coe_toIntLinearMap, AddMonoidHom.codRestrict_apply,
+        AddMonoidHom.codRestrict_apply, Subtype.mk.injEq]
+      apply logEmbeddingQuot_injective K, fun ⟨a, ⟨b, _, ha⟩⟩ ↦ ⟨⟦b⟧, by simpa using ha⟩⟩
 
 @[simp]
 theorem logEmbeddingEquiv_apply (x : (𝓞 K)ˣ) :
