@@ -749,6 +749,19 @@ theorem starLift_symm_apply_apply (φ : Unitization R A →⋆ₐ[R] C) (a : A) 
     Unitization.starLift.symm φ a = φ a :=
   rfl
 
+/-- If `φ : A →⋆ₙₐ[R] C` is injective, the natural lift to `Unitization R A →⋆ₐ[R] Unitization R C`
+is also injective. -/
+lemma starLift_injective {R A C : Type*} [CommRing R] [StarRing R] [NonUnitalRing A]
+    [StarRing A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A] [NonUnitalRing C]
+    [Module R C] [IsScalarTower R C C] [SMulCommClass R C C] [StarRing C] [StarModule R C]
+    {φ : A →⋆ₙₐ[R] C} (hφ : Function.Injective φ) :
+    Function.Injective (starLift <| (inrNonUnitalStarAlgHom R C).comp φ) :=
+  injective_iff_map_eq_zero _ |>.mpr fun a h ↦ by
+  ext
+  · simpa [algebraMap_eq_inl] using congr(fst $(h))
+  · exact map_eq_zero_iff _ hφ |>.mp <| by
+      simpa [algebraMap_eq_inl] using congr(snd $(h))
+
 end StarAlgHom
 
 section StarNormal
