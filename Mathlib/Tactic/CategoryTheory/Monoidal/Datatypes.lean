@@ -156,7 +156,7 @@ instance : MonadMor₂Iso MonoidalM' where
     return .rightUnitor q(ρ_ $f_e) f
   id₂M f := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let _cat := ctx.instCat
     have f_e : Q($ctx.C) := f.e
     return .id q(Iso.refl $f_e) f
   coherenceHomM f g inst := do
