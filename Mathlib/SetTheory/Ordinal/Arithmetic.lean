@@ -216,12 +216,19 @@ theorem lift_pred (o : Ordinal.{v}) : lift.{u} (pred o) = pred (lift.{u} o) := b
 def IsLimit (o : Ordinal) : Prop :=
   o ≠ 0 ∧ ∀ a < o, succ a < o
 
-theorem IsLimit.isSuccLimit {o} (h : IsLimit o) : IsSuccLimit o := isSuccLimit_iff_succ_lt.mpr h.2
+theorem IsLimit.isSuccPrelimit {o} (h : IsLimit o) : IsSuccPrelimit o :=
+  isSuccPrelimit_iff_succ_lt.mpr h.2
+
+@[deprecated IsLimit.isSuccPrelimit (since := "2024-09-05")]
+alias IsLimit.isSuccLimit := IsLimit.isSuccPrelimit
 
 theorem IsLimit.succ_lt {o a : Ordinal} (h : IsLimit o) : a < o → succ a < o :=
   h.2 a
 
-theorem isSuccLimit_zero : IsSuccLimit (0 : Ordinal) := isSuccLimit_bot
+theorem isSuccPrelimit_zero : IsSuccPrelimit (0 : Ordinal) := isSuccPrelimit_bot
+
+@[deprecated isSuccPrelimit_zero (since := "2024-09-05")]
+alias isSuccLimit_zero := isSuccPrelimit_zero
 
 theorem not_zero_isLimit : ¬IsLimit 0
   | ⟨h, _⟩ => h rfl
@@ -277,22 +284,22 @@ theorem zero_or_succ_or_limit (o : Ordinal) : o = 0 ∨ (∃ a, o = succ a) ∨ 
 @[elab_as_elim]
 def limitRecOn {C : Ordinal → Sort*} (o : Ordinal) (H₁ : C 0) (H₂ : ∀ o, C o → C (succ o))
     (H₃ : ∀ o, IsLimit o → (∀ o' < o, C o') → C o) : C o :=
-  SuccOrder.limitRecOn o (fun o _ ↦ H₂ o) fun o hl ↦
+  SuccOrder.prelimitRecOn o (fun o _ ↦ H₂ o) fun o hl ↦
     if h : o = 0 then fun _ ↦ h ▸ H₁ else H₃ o ⟨h, fun _ ↦ hl.succ_lt⟩
 
 @[simp]
 theorem limitRecOn_zero {C} (H₁ H₂ H₃) : @limitRecOn C 0 H₁ H₂ H₃ = H₁ := by
-  rw [limitRecOn, SuccOrder.limitRecOn_limit _ _ isSuccLimit_zero, dif_pos rfl]
+  rw [limitRecOn, SuccOrder.prelimitRecOn_limit _ _ isSuccPrelimit_zero, dif_pos rfl]
 
 @[simp]
 theorem limitRecOn_succ {C} (o H₁ H₂ H₃) :
     @limitRecOn C (succ o) H₁ H₂ H₃ = H₂ o (@limitRecOn C o H₁ H₂ H₃) := by
-  simp_rw [limitRecOn, SuccOrder.limitRecOn_succ _ _ (not_isMax _)]
+  rw [limitRecOn, limitRecOn, SuccOrder.prelimitRecOn_succ _ _ (not_isMax _)]
 
 @[simp]
 theorem limitRecOn_limit {C} (o H₁ H₂ H₃ h) :
     @limitRecOn C o H₁ H₂ H₃ = H₃ o h fun x _h => @limitRecOn C x H₁ H₂ H₃ := by
-  simp_rw [limitRecOn, SuccOrder.limitRecOn_limit _ _ h.isSuccLimit, dif_neg h.1]
+  simp_rw [limitRecOn, SuccOrder.prelimitRecOn_limit _ _ h.isSuccPrelimit, dif_neg h.1]
 
 instance orderTopToTypeSucc (o : Ordinal) : OrderTop (succ o).toType :=
   @OrderTop.mk _ _ (Top.mk _) le_enum_succ
@@ -613,8 +620,8 @@ instance leftDistribClass : LeftDistribClass Ordinal.{u} :=
       Quotient.sound
         ⟨⟨sumProdDistrib _ _ _, by
           rintro ⟨a₁ | a₁, a₂⟩ ⟨b₁ | b₁, b₂⟩ <;>
-            simp only [Prod.lex_def, Sum.lex_inl_inl, Sum.Lex.sep, Sum.lex_inr_inl,
-              Sum.lex_inr_inr, sumProdDistrib_apply_left, sumProdDistrib_apply_right] <;>
+            simp only [Prod.lex_def, Sum.lex_inl_inl, Sum.Lex.sep, Sum.lex_inr_inl, Sum.lex_inr_inr,
+              sumProdDistrib_apply_left, sumProdDistrib_apply_right, reduceCtorEq] <;>
             -- Porting note: `Sum.inr.inj_iff` is required.
             simp only [Sum.inl.inj_iff, Sum.inr.inj_iff,
               true_or_iff, false_and_iff, false_or_iff]⟩⟩⟩
@@ -755,7 +762,7 @@ theorem div_nonempty {a b : Ordinal} (h : b ≠ 0) : { o | a < b * succ o }.None
 
 /-- `a / b` is the unique ordinal `o` satisfying `a = b * o + o'` with `o' < b`. -/
 instance div : Div Ordinal :=
-  ⟨fun a b => if _h : b = 0 then 0 else sInf { o | a < b * succ o }⟩
+  ⟨fun a b => if b = 0 then 0 else sInf { o | a < b * succ o }⟩
 
 @[simp]
 theorem div_zero (a : Ordinal) : a / 0 = 0 :=
@@ -821,6 +828,26 @@ theorem div_eq_zero_of_lt {a b : Ordinal} (h : a < b) : a / b = 0 := by
 @[simp]
 theorem mul_div_cancel (a) {b : Ordinal} (b0 : b ≠ 0) : b * a / b = a := by
   simpa only [add_zero, zero_div] using mul_add_div a b0 0
+
+theorem mul_add_div_mul {a c : Ordinal} (hc : c < a) (b d : Ordinal) :
+    (a * b + c) / (a * d) = b / d := by
+  have ha : a ≠ 0 := ((Ordinal.zero_le c).trans_lt hc).ne'
+  obtain rfl | hd := eq_or_ne d 0
+  · rw [mul_zero, div_zero, div_zero]
+  · have H := mul_ne_zero ha hd
+    apply le_antisymm
+    · rw [← lt_succ_iff, div_lt H, mul_assoc]
+      · apply (add_lt_add_left hc _).trans_le
+        rw [← mul_succ]
+        apply mul_le_mul_left'
+        rw [succ_le_iff]
+        exact lt_mul_succ_div b hd
+    · rw [le_div H, mul_assoc]
+      exact (mul_le_mul_left' (mul_div_le b d) a).trans (le_add_right _ c)
+
+theorem mul_div_mul_cancel {a : Ordinal} (ha : a ≠ 0) (b c) : a * b / (a * c) = b / c := by
+  convert mul_add_div_mul (Ordinal.pos_iff_ne_zero.2 ha) b c using 1
+  rw [add_zero]
 
 @[simp]
 theorem div_one (a : Ordinal) : a / 1 = a := by
@@ -933,6 +960,18 @@ theorem mul_add_mod_self (x y z : Ordinal) : (x * y + z) % x = z % x := by
 @[simp]
 theorem mul_mod (x y : Ordinal) : x * y % x = 0 := by
   simpa using mul_add_mod_self x y 0
+
+theorem mul_add_mod_mul {w x : Ordinal} (hw : w < x) (y z : Ordinal) :
+    (x * y + w) % (x * z) = x * (y % z) + w := by
+  rw [mod_def, mul_add_div_mul hw]
+  apply sub_eq_of_add_eq
+  rw [← add_assoc, mul_assoc, ← mul_add, div_add_mod]
+
+theorem mul_mod_mul (x y z : Ordinal) : (x * y) % (x * z) = x * (y % z) := by
+  obtain rfl | hx := Ordinal.eq_zero_or_pos x
+  · simp
+  · convert mul_add_mod_mul hx y z using 1 <;>
+    rw [add_zero]
 
 theorem mod_mod_of_dvd (a : Ordinal) {b c : Ordinal} (h : c ∣ b) : a % b % c = a % c := by
   nth_rw 2 [← div_add_mod a b]
@@ -1695,12 +1734,14 @@ theorem IsNormal.eq_iff_zero_and_succ {f g : Ordinal.{u} → Ordinal.{u}} (hf : 
     (hg : IsNormal g) : f = g ↔ f 0 = g 0 ∧ ∀ a, f a = g a → f (succ a) = g (succ a) :=
   ⟨fun h => by simp [h], fun ⟨h₁, h₂⟩ =>
     funext fun a => by
-      induction' a using limitRecOn with _ _ _ ho H
-      any_goals solve_by_elim
-      rw [← IsNormal.bsup_eq.{u, u} hf ho, ← IsNormal.bsup_eq.{u, u} hg ho]
-      congr
-      ext b hb
-      exact H b hb⟩
+      induction a using limitRecOn with
+      | H₁ => solve_by_elim
+      | H₂ => solve_by_elim
+      | H₃ _ ho H =>
+        rw [← IsNormal.bsup_eq.{u, u} hf ho, ← IsNormal.bsup_eq.{u, u} hg ho]
+        congr
+        ext b hb
+        exact H b hb⟩
 
 /-- A two-argument version of `Ordinal.blsub`.
 We don't develop a full API for this, since it's only used in a handful of existence results. -/
