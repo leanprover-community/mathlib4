@@ -8,6 +8,20 @@ import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
 /-!
 # Coherence tactic
 
+This file provides a meta framework for the coherence tactic, which solves goals of the form
+`η = θ`, where `η` and `θ` are 2-morphism in a bicategory or morphisms in a monoidal category
+made up only of associators, unitors, and identities.
+
+The function defined here is a meta reimplementation of the formalized coherence theorems provided
+in the following files:
+- Mathlib.CategoryTheory.Monoidal.Free.Coherence
+- Mathlib.CategoryTheory.Bicategory.Coherence
+See these files for a mathematical explanation of the proof of the coherence theorem.
+
+The actual tactics that users will use are given in
+- `Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence`
+- `Mathlib.Tactic.CategoryTheory.Bicategory.PureCoherence` (TODO)
+
 -/
 
 open Lean Meta
