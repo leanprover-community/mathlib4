@@ -618,7 +618,8 @@ lemma prod_totalDegree [Nontrivial R] {ι : Type*} (i : ι) (s : Finset R) :
   rw [mem_support_iff, prod_leadCoeff]
   exact one_ne_zero
 
-theorem euclDivd [LinearOrder σ] (S : σ → Finset R) (Sne : ∀ i, (S i).Nonempty) (f : MvPolynomial σ R) :
+theorem euclDivd [LinearOrder σ] (S : σ → Finset R) (Sne : ∀ i, (S i).Nonempty)
+    (f : MvPolynomial σ R) :
     ∃ (h : σ → MvPolynomial σ R) (r : MvPolynomial σ R),
       f = Finset.univ.sum (fun i => (h i) * (S i).prod (fun (s : R) ↦ (X i - C s))) + r ∧
       (∀ i, (h i * (S i).prod (fun (s : R) ↦ (X i - C s))).totalDegree ≤ f.totalDegree) ∧
