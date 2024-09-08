@@ -65,7 +65,7 @@ lemma norm_map (φ : F) (hφ : Function.Injective φ) (a : A) : ‖φ a‖ = ‖
       _ = 1 := h_eqOn_x <| Set.mem_singleton x
   /- Finally, `ψ (f a) = f (ψ a) = 0`, where the last equality follows since `f = 0` on
   `spectrum ℝ (ψ a)`. -/
-  calc ψ (cfc f a) = cfc f (ψ a) := ψ.cfc_comm f a
+  calc ψ (cfc f a) = cfc f (ψ a) := ψ.map_cfc f a
     _ = cfc (0 : ℝ → ℝ) (ψ a) := cfc_congr h_eqOn
     _ = 0 := by simp
 
