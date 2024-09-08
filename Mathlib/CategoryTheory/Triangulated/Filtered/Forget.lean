@@ -568,11 +568,37 @@ lemma power_of_alpha_plus_one (X : C) (n : ℕ) :
 
 lemma adj_left_shift (X Y : C) (p q : ℤ) (hpq : p + 1 ≤ q) [IsLE X p] [IsGE Y q] :
     Function.Bijective (fun (f : (@shiftFunctor C _ _ _ Shift₂ 1).obj X ⟶ Y) ↦ α.app X ≫ f) := by
+  set s₁ := fun (f : (@shiftFunctor C _ _ _ Shift₂ 1).obj X ⟶ Y) ↦ α.app X ≫ f
+  set s₂ := fun (f : (@shiftFunctor C _ _ _ Shift₂ 1).obj
+      ((@shiftFunctor C _ _ _ Shift₂ (-p)).obj X) ⟶ (@shiftFunctor C _ _ _ Shift₂ (-p)).obj Y) ↦
+      α.app _ ≫ f
   set e : ((@shiftFunctor C _ _ _ Shift₂ 1).obj X ⟶ Y) → ((@shiftFunctor C _ _ _ Shift₂ 1).obj
       ((@shiftFunctor C _ _ _ Shift₂ (-p)).obj X) ⟶ (@shiftFunctor C _ _ _ Shift₂ (-p)).obj Y) :=
     Function.comp (CategoryStruct.comp (@shiftComm C _ _ _ Shift₂ _ _ _).hom)
     (@shiftFunctor C _ _ _ Shift₂ (-p)).map
-  
+  have he : Function.Bijective e := by
+    apply Function.Bijective.comp
+    · have heq : CategoryStruct.comp (@shiftComm C _ _ _ Shift₂ X (-p) 1).hom =
+          (Iso.homFromEquiv (Z := (@shiftFunctor C _ _ _ Shift₂ (-p)).obj Y)
+          (@shiftComm C _ _ _ Shift₂ X (-p) 1).symm).toFun := by
+        ext f
+        simp only [Iso.app_hom, shiftComm_symm, Equiv.toFun_as_coe, Iso.homFromEquiv_apply,
+          Iso.app_inv]
+        conv_rhs => rw [← shiftFunctorComm_symm, Iso.symm_inv]
+      rw [heq]
+      exact Equiv.bijective _
+    · exact ⟨Functor.Faithful.map_injective, Functor.Full.map_surjective⟩
+  set e' : (X ⟶ Y) → (((@shiftFunctor C _ _ _ Shift₂ (-p)).obj X) ⟶ (@shiftFunctor C _ _ _ Shift₂
+      (-p)).obj Y) := (@shiftFunctor C _ _ _ Shift₂ (-p)).map
+  have he' : Function.Bijective e' := ⟨Functor.Faithful.map_injective, Functor.Full.map_surjective⟩
+  have hcomm : e' ∘ s₁ = s₂ ∘ e := by
+    ext f
+    simp only [Functor.id_obj, Function.comp_apply, Functor.map_comp, Iso.app_hom, e', s₁, s₂, e]
+    rw [← assoc, α_vs_second_shift (-p) X]
+  rw [← Function.Bijective.of_comp_iff' he', hcomm]
+  refine Function.Bijective.comp (hP.adj_left ?_ ?_) he
+  · exact hP.GE_shift (p + 1) _ _ (by linarith) _ (GE_antitone hpq _ (mem_of_isGE Y q))
+  · exact hP.LE_shift p _ _ (by linarith) _ (mem_of_isLE _ _)
 
 lemma adj_left_extended (n : ℕ) : ∀ (X Y : C) (m : ℤ) [IsLE X m] [IsGE Y (m + n)],
     Function.Bijective

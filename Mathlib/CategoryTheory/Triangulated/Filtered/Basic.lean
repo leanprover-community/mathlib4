@@ -164,6 +164,11 @@ variable {C}
 variable [∀ p : ℤ × ℤ, Functor.Additive (CategoryTheory.shiftFunctor C p)]
   [hC : Pretriangulated C] [hP : FilteredTriangulated C]
 
+lemma α_vs_second_shift (n : ℤ) (X : C) :
+    (@shiftFunctor C _ _ _ Shift₂ n).map (α.app X) = α.app ((@shiftFunctor C _ _ _ Shift₂ n).obj X)
+    ≫ (@shiftFunctorComm C _ _ _ Shift₂ n 1).hom.app X := by
+  have := (@shiftFunctorAdd' C _ _ _ Shift₂ (n - 1) 1 n (by linarith)).hom.naturality (α.app X)
+
 lemma exists_triangle (A : C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
     ∃ (X Y : C) (_ : (GE n₁).P X) (_ : (LE n₀).P Y) (f : X ⟶ A) (g : A ⟶ Y)
       (h : Y ⟶ X⟦(1 : ℤ)⟧), Triangle.mk f g h ∈ distTriang C := by
