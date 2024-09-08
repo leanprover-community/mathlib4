@@ -72,6 +72,7 @@ Do not use this directly (instances of `DivisionRing` are allowed to override th
 better definitional properties). Instead, use the coercion. -/
 def Rat.castRec [NatCast K] [IntCast K] [Div K] (q : ℚ) : K := q.num / q.den
 
+no_instances
 /-- A `DivisionSemiring` is a `Semiring` with multiplicative inverses for nonzero elements.
 
 An instance of `DivisionSemiring K` includes maps `nnratCast : ℚ≥0 → K` and `nnqsmul : ℚ≥0 → K → K`.
@@ -99,6 +100,11 @@ class DivisionSemiring (α : Type*) extends Semiring α, GroupWithZero α, NNRat
   Do not use this lemma directly. Use `NNRat.smul_def` instead. -/
   protected nnqsmul_def (q : ℚ≥0) (a : α) : nnqsmul q a = NNRat.cast q * a := by intros; rfl
 
+attribute [instance] DivisionSemiring.toSemiring
+attribute [instance] DivisionSemiring.toGroupWithZero
+attribute [instance] DivisionSemiring.toNNRatCast
+
+no_instances
 /-- A `DivisionRing` is a `Ring` with multiplicative inverses for nonzero elements.
 
 An instance of `DivisionRing K` includes maps `ratCast : ℚ → K` and `qsmul : ℚ → K → K`.
@@ -148,10 +154,16 @@ class DivisionRing (α : Type*)
   Do not use this lemma directly. Use `Rat.cast_def` instead. -/
   protected qsmul_def (a : ℚ) (x : α) : qsmul a x = Rat.cast a * x := by intros; rfl
 
+attribute [instance] DivisionRing.toRing
+attribute [instance] DivisionRing.toNontrivial
+attribute [instance] DivisionRing.toNNRatCast
+attribute [instance] DivisionRing.toRatCast
+
 -- see Note [lower instance priority]
 instance (priority := 100) DivisionRing.toDivisionSemiring [DivisionRing α] : DivisionSemiring α :=
   { ‹DivisionRing α› with }
 
+no_instances
 /-- A `Semifield` is a `CommSemiring` with multiplicative inverses for nonzero elements.
 
 An instance of `Semifield K` includes maps `nnratCast : ℚ≥0 → K` and `nnqsmul : ℚ≥0 → K → K`.
@@ -163,6 +175,11 @@ If the semifield has positive characteristic `p`, our division by zero conventio
 `nnratCast (1 / p) = 1 / 0 = 0`. -/
 class Semifield (α : Type*) extends CommSemiring α, DivisionSemiring α, CommGroupWithZero α
 
+attribute [instance] Semifield.toDivisionSemiring
+attribute [instance] Semifield.toCommSemiring
+attribute [instance] Semifield.toCommGroupWithZero
+
+no_instances
 /-- A `Field` is a `CommRing` with multiplicative inverses for nonzero elements.
 
 An instance of `Field K` includes maps `ratCast : ℚ → K` and `qsmul : ℚ → K → K`.
@@ -173,6 +190,9 @@ See also note [forgetful inheritance].
 If the field has positive characteristic `p`, our division by zero convention forces
 `ratCast (1 / p) = 1 / 0 = 0`. -/
 class Field (K : Type u) extends CommRing K, DivisionRing K
+
+attribute [instance] Field.toCommRing
+attribute [instance] Field.toDivisionRing
 
 -- see Note [lower instance priority]
 instance (priority := 100) Field.toSemifield [Field α] : Semifield α := { ‹Field α› with }

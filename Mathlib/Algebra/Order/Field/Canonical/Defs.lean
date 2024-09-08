@@ -14,10 +14,14 @@ import Mathlib.Algebra.Order.GroupWithZero.Canonical
 
 variable {α : Type*}
 
+no_instances
 /-- A canonically linear ordered field is a linear ordered field in which `a ≤ b` iff there exists
 `c` with `b = a + c`. -/
 class CanonicallyLinearOrderedSemifield (α : Type*) extends CanonicallyOrderedCommSemiring α,
   LinearOrderedSemifield α
+
+attribute [instance] CanonicallyLinearOrderedSemifield.toCanonicallyOrderedCommSemiring
+attribute [instance] CanonicallyLinearOrderedSemifield.toLinearOrderedSemifield
 
 -- See note [lower instance priority]
 instance (priority := 100) CanonicallyLinearOrderedSemifield.toLinearOrderedCommGroupWithZero

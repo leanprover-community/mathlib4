@@ -253,6 +253,8 @@ class AddSemigroup (G : Type u) extends Add G where
   /-- Addition is associative -/
   protected add_assoc : ∀ a b c : G, a + b + c = a + (b + c)
 
+attribute [instance 50] AddSemigroup.toAdd
+
 attribute [to_additive] Semigroup
 
 section Semigroup
@@ -395,6 +397,8 @@ class AddZeroClass (M : Type u) extends Zero M, Add M where
   /-- Zero is a right neutral element for addition -/
   protected add_zero : ∀ a : M, a + 0 = a
 
+attribute [instance 150] AddZeroClass.toAdd
+
 attribute [to_additive] MulOneClass
 
 @[to_additive (attr := ext)]
@@ -519,7 +523,7 @@ the `npow` field when defining multiplicative objects.
 
 
 /-- An `AddMonoid` is an `AddSemigroup` with an element `0` such that `0 + a = a + 0 = a`. -/
-class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
+class AddMonoid (M : Type u) extends AddZeroClass M, AddSemigroup M where
   /-- Multiplication by a natural number.
   Set this to `nsmulRec` unless `Module` diamonds are possible. -/
   protected nsmul : ℕ → M → M
@@ -528,12 +532,9 @@ class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
   /-- Multiplication by `(n + 1 : ℕ)` behaves as expected. -/
   protected nsmul_succ : ∀ (n : ℕ) (x), nsmul (n + 1) x = nsmul n x + x := by intros; rfl
 
-attribute [instance 150] AddSemigroup.toAdd
-attribute [instance 50] AddZeroClass.toAdd
-
 /-- A `Monoid` is a `Semigroup` with an element `1` such that `1 * a = a * 1 = a`. -/
 @[to_additive]
-class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
+class Monoid (M : Type u) extends MulOneClass M, Semigroup M where
   /-- Raising to the power of a natural number. -/
   protected npow : ℕ → M → M := npowRec
   /-- Raising to the power `(0 : ℕ)` gives `1`. -/
@@ -542,7 +543,7 @@ class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
   protected npow_succ : ∀ (n : ℕ) (x), npow (n + 1) x = npow n x * x := by intros; rfl
 
 -- Bug #660
-attribute [to_additive existing] Monoid.toMulOneClass
+attribute [to_additive existing] Monoid.toSemigroup
 
 @[default_instance high] instance Monoid.toNatPow {M : Type*} [Monoid M] : Pow M ℕ :=
   ⟨fun x n ↦ Monoid.npow n x⟩
@@ -633,17 +634,17 @@ section LeftCancelMonoid
 /-- An additive monoid in which addition is left-cancellative.
 Main examples are `ℕ` and groups. This is the right typeclass for many sum lemmas, as having a zero
 is useful to define the sum over the empty set, so `AddLeftCancelSemigroup` is not enough. -/
-class AddLeftCancelMonoid (M : Type u) extends AddLeftCancelSemigroup M, AddMonoid M
+class AddLeftCancelMonoid (M : Type u) extends AddMonoid M, AddLeftCancelSemigroup M
 
 attribute [instance 75] AddLeftCancelMonoid.toAddMonoid -- See note [lower cancel priority]
 
 /-- A monoid in which multiplication is left-cancellative. -/
 @[to_additive]
-class LeftCancelMonoid (M : Type u) extends LeftCancelSemigroup M, Monoid M
+class LeftCancelMonoid (M : Type u) extends Monoid M, LeftCancelSemigroup M
 
 attribute [instance 75] LeftCancelMonoid.toMonoid -- See note [lower cancel priority]
 
-attribute [to_additive existing] LeftCancelMonoid.toMonoid
+attribute [to_additive existing] LeftCancelMonoid.toLeftCancelSemigroup
 
 end LeftCancelMonoid
 
@@ -652,17 +653,17 @@ section RightCancelMonoid
 /-- An additive monoid in which addition is right-cancellative.
 Main examples are `ℕ` and groups. This is the right typeclass for many sum lemmas, as having a zero
 is useful to define the sum over the empty set, so `AddRightCancelSemigroup` is not enough. -/
-class AddRightCancelMonoid (M : Type u) extends AddRightCancelSemigroup M, AddMonoid M
+class AddRightCancelMonoid (M : Type u) extends AddMonoid M, AddRightCancelSemigroup M
 
 attribute [instance 75] AddRightCancelMonoid.toAddMonoid -- See note [lower cancel priority]
 
 /-- A monoid in which multiplication is right-cancellative. -/
 @[to_additive]
-class RightCancelMonoid (M : Type u) extends RightCancelSemigroup M, Monoid M
+class RightCancelMonoid (M : Type u) extends Monoid M, RightCancelSemigroup M
 
 attribute [instance 75] RightCancelMonoid.toMonoid -- See note [lower cancel priority]
 
-attribute [to_additive existing] RightCancelMonoid.toMonoid
+attribute [to_additive existing] RightCancelMonoid.toRightCancelSemigroup
 
 end RightCancelMonoid
 
@@ -680,17 +681,17 @@ class CancelMonoid (M : Type u) extends LeftCancelMonoid M, RightCancelMonoid M
 attribute [to_additive existing] CancelMonoid.toRightCancelMonoid
 
 /-- Commutative version of `AddCancelMonoid`. -/
-class AddCancelCommMonoid (M : Type u) extends AddLeftCancelMonoid M, AddCommMonoid M
+class AddCancelCommMonoid (M : Type u) extends AddCommMonoid M, AddLeftCancelMonoid M
 
 attribute [instance 75] AddCancelCommMonoid.toAddCommMonoid -- See note [lower cancel priority]
 
 /-- Commutative version of `CancelMonoid`. -/
 @[to_additive]
-class CancelCommMonoid (M : Type u) extends LeftCancelMonoid M, CommMonoid M
+class CancelCommMonoid (M : Type u) extends CommMonoid M, LeftCancelMonoid M
 
 attribute [instance 75] CancelCommMonoid.toCommMonoid -- See note [lower cancel priority]
 
-attribute [to_additive existing] CancelCommMonoid.toCommMonoid
+attribute [to_additive existing] CancelCommMonoid.toLeftCancelMonoid
 
 -- see Note [lower instance priority]
 @[to_additive]

@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Nontrivial.Defs
 import Mathlib.Tactic.SplitIfs
+import Mathlib.Util.NoInstances
 
 /-!
 # Typeclasses for groups with an adjoined zero element
@@ -84,16 +85,30 @@ class NoZeroDivisors (M₀ : Type*) [Mul M₀] [Zero M₀] : Prop where
   eq_zero_or_eq_zero_of_mul_eq_zero : ∀ {a b : M₀}, a * b = 0 → a = 0 ∨ b = 0
 
 export NoZeroDivisors (eq_zero_or_eq_zero_of_mul_eq_zero)
+
+no_instances
 /-- A type `S₀` is a "semigroup with zero” if it is a semigroup with zero element, and `0` is left
 and right absorbing. -/
 class SemigroupWithZero (S₀ : Type u) extends Semigroup S₀, MulZeroClass S₀
 
+attribute [instance] SemigroupWithZero.toSemigroup
+attribute [instance] SemigroupWithZero.toMulZeroClass
+
+no_instances
 /-- A typeclass for non-associative monoids with zero elements. -/
 class MulZeroOneClass (M₀ : Type u) extends MulOneClass M₀, MulZeroClass M₀
 
+attribute [instance] MulZeroOneClass.toMulOneClass
+attribute [instance] MulZeroOneClass.toMulZeroClass
+
+no_instances
 /-- A type `M₀` is a “monoid with zero” if it is a monoid with zero element, and `0` is left
 and right absorbing. -/
 class MonoidWithZero (M₀ : Type u) extends Monoid M₀, MulZeroOneClass M₀, SemigroupWithZero M₀
+
+attribute [instance] MonoidWithZero.toMonoid
+attribute [instance] MonoidWithZero.toMulZeroOneClass
+attribute [instance] MonoidWithZero.toSemigroupWithZero
 
 /-- A type `M` is a `CancelMonoidWithZero` if it is a monoid with zero element, `0` is left
 and right absorbing, and left/right multiplication by a non-zero element is injective. -/
@@ -101,7 +116,7 @@ class CancelMonoidWithZero (M₀ : Type*) extends MonoidWithZero M₀, IsCancelM
 
 /-- A type `M` is a commutative “monoid with zero” if it is a commutative monoid with zero
 element, and `0` is left and right absorbing. -/
-class CommMonoidWithZero (M₀ : Type*) extends CommMonoid M₀, MonoidWithZero M₀
+class CommMonoidWithZero (M₀ : Type*) extends MonoidWithZero M₀, CommMonoid M₀
 
 section CancelMonoidWithZero
 
@@ -174,17 +189,22 @@ variable [CommMonoidWithZero M₀] [Div M₀] [MulDivCancelClass M₀] {a b : M�
 
 end MulDivCancelClass
 
+no_instances
 /-- A type `G₀` is a “group with zero” if it is a monoid with zero element (distinct from `1`)
 such that every nonzero element is invertible.
 The type is required to come with an “inverse” function, and the inverse of `0` must be `0`.
 
 Examples include division rings and the ordered monoids that are the
 target of valuations in general valuation theory. -/
-class GroupWithZero (G₀ : Type u) extends MonoidWithZero G₀, DivInvMonoid G₀, Nontrivial G₀ where
+class GroupWithZero (G₀ : Type u) extends DivInvMonoid G₀, MonoidWithZero G₀, Nontrivial G₀ where
   /-- The inverse of `0` in a group with zero is `0`. -/
   inv_zero : (0 : G₀)⁻¹ = 0
   /-- Every nonzero element of a group with zero is invertible. -/
   protected mul_inv_cancel (a : G₀) : a ≠ 0 → a * a⁻¹ = 1
+
+attribute [instance] GroupWithZero.toDivInvMonoid
+attribute [instance] GroupWithZero.toMonoidWithZero
+attribute [instance] GroupWithZero.toNontrivial
 
 export GroupWithZero (inv_zero)
 attribute [simp] inv_zero
@@ -204,7 +224,7 @@ end GroupWithZero
 if it is a commutative monoid with zero element (distinct from `1`)
 such that every nonzero element is invertible.
 The type is required to come with an “inverse” function, and the inverse of `0` must be `0`. -/
-class CommGroupWithZero (G₀ : Type*) extends CommMonoidWithZero G₀, GroupWithZero G₀
+class CommGroupWithZero (G₀ : Type*) extends GroupWithZero G₀, CommMonoidWithZero G₀
 
 section
 variable [CancelMonoidWithZero M₀] {x : M₀}
