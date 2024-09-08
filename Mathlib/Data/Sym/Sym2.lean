@@ -692,6 +692,11 @@ instance [Nontrivial α] : Nontrivial (Sym2 α) :=
 unsafe instance [Repr α] : Repr (Sym2 α) where
   reprPrec s _ := f!"s({repr s.unquot.1}, {repr s.unquot.2})"
 
+/--
+Partial map. If `f : Π a, p a → β` is a partial function defined on `a : α` satisfying `p`,
+then `pmap f s h` is essentially the same as `map f s` but is defined only when all members of `s`
+satisfy `p`, using the proof to apply `f`.
+-/
 def pmap {P : α → Prop} (f : ∀ a, P a → β) (s : Sym2 α):
   (∀ a ∈ s, P a) → Sym2 β :=
   let g : (p : α × α) → (∀ a ∈ Sym2.mk p, P a) → Sym2 β :=
@@ -706,6 +711,10 @@ def pmap {P : α → Prop} (f : ∀ a, P a → β) (s : Sym2 α):
     rw [rel_iff', Prod.mk.injEq, Prod.swap_prod_mk]
     apply hpq.imp <;> rintro rfl <;> simp
 
+/--
+"Attach" a proof `P a` that holds for all the elements of `s` to produce a new Sym2 object
+  with the same elements but in the type `{x // P x}`.
+-/
 def attachWith (s : Sym2 α) (P : α → Prop) (f : ∀ a ∈ s, P a) :
   Sym2 {a // P a} :=
   pmap Subtype.mk s f
