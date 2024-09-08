@@ -8,7 +8,6 @@ import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Tactic.Linarith.Frontend
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Nat.Prime.Basic
-import Mathlib.Data.PNat.Basic
 
 /-!
 We prove a special case of Dickson's Conjecture as stated in
@@ -91,10 +90,10 @@ theorem dickson_case {ℓ : ℕ} {a : Fin ℓ → ℕ} {b : Fin ℓ → ℕ+}
     (ha : ∀ i, Nat.gcd (a i) (b i) > 1 ∨ b i = 1) :
     dickson_conjecture_holds_for ℓ a b := by
   intro hc i n₀
-  by_cases h : ∀ i, b i = 1
+  by_cases h : ∀ i, PNat.val (b i) = 1
   · obtain ⟨p,hp⟩ := Nat.exists_infinite_primes (a i + n₀)
     rw [h i]
-    simp only [ge_iff_le, PNat.val_ofNat, one_mul]
+    simp only [ge_iff_le, one_mul]
     exact ⟨p - a i, Nat.le_sub_of_add_le (by linarith),
       (Nat.add_sub_of_le (by show a i ≤ p; linarith)).symm ▸ hp.2⟩
   · simp at h
