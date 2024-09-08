@@ -638,6 +638,7 @@ theorem algebraMap_injective : Function.Injective (algebraMap K[X] (RatFunc K)) 
   rw [← ofFractionRing_comp_algebraMap]
   exact ofFractionRing_injective.comp (IsFractionRing.injective _ _)
 
+@[deprecated "Use NoZeroSMulDivisors.algebraMap_eq_zero_iff instead." (since := "2024-09-08")]
 theorem algebraMap_eq_zero_iff {x : K[X]} : algebraMap K[X] (RatFunc K) x = 0 ↔ x = 0 :=
   ⟨(injective_iff_map_eq_zero _).mp (algebraMap_injective K) _, fun hx => by
     rw [hx, RingHom.map_zero]⟩
