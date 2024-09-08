@@ -52,7 +52,8 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {D : Type uD} [NormedAddC
   [NormedSpace 𝕜 D] {E : Type uE} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {F : Type uF}
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type uG} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
   {X : Type*} [NormedAddCommGroup X] [NormedSpace 𝕜 X] {s s₁ t u : Set E} {f f₁ : E → F}
-  {g : F → G} {x x₀ : E} {c : F} {b : E × F → G} {m n : ℕ∞} {p : E → FormalMultilinearSeries 𝕜 E F}
+  {g : F → G} {x x₀ : E} {c : F} {b : E × F → G} {m n : WithTop ℕ∞}
+  {p : E → FormalMultilinearSeries 𝕜 E F}
 
 /-! ### Constants -/
 
@@ -72,17 +73,15 @@ theorem iteratedFDeriv_zero_fun {n : ℕ} : (iteratedFDeriv 𝕜 n fun _ : E ↦
   funext fun x ↦ by simpa [← iteratedFDerivWithin_univ] using
     iteratedFDerivWithin_zero_fun uniqueDiffOn_univ (mem_univ x)
 
-theorem contDiff_zero_fun : ContDiff 𝕜 n fun _ : E => (0 : F) :=
-  contDiff_of_differentiable_iteratedFDeriv fun m _ => by
-    rw [iteratedFDeriv_zero_fun]
-    exact differentiable_const (0 : E[×m]→L[𝕜] F)
+theorem contDiff_zero_fun : ContDiff 𝕜 n fun _ : E => (0 : F) := by
+  apply contDiff_of_analyticOn_iteratedFDeriv (fun m ↦ ?_)
+  rw [iteratedFDeriv_zero_fun]
+  exact analyticOn_const
 
 /-- Constants are `C^∞`.
 -/
 theorem contDiff_const {c : F} : ContDiff 𝕜 n fun _ : E => c := by
-  suffices h : ContDiff 𝕜 ω fun _ : E => c from h.of_le le_top
-  rw [contDiff_top_iff_fderiv]
-  refine ⟨differentiable_const c, ?_⟩
+  apply contDiff_of_analyticOn_of_fderiv analyticOn_const
   rw [fderiv_const]
   exact contDiff_zero_fun
 
@@ -141,11 +140,10 @@ theorem iteratedFDeriv_const_of_ne {n : ℕ} (hn : n ≠ 0) (c : F) :
 /-- Unbundled bounded linear functions are `C^∞`.
 -/
 theorem IsBoundedLinearMap.contDiff (hf : IsBoundedLinearMap 𝕜 f) : ContDiff 𝕜 n f := by
-  suffices h : ContDiff 𝕜 ∞ f from h.of_le le_top
-  rw [contDiff_top_iff_fderiv]
-  refine ⟨hf.differentiable, ?_⟩
-  simp_rw [hf.fderiv]
-  exact contDiff_const
+  apply contDiff_of_analyticOn_of_fderiv
+  · exact ContinuousLinearMap.analyticOn hf.toContinuousLinearMap univ
+  · simp_rw [hf.fderiv]
+    exact contDiff_const
 
 theorem ContinuousLinearMap.contDiff (f : E →L[𝕜] F) : ContDiff 𝕜 n f :=
   f.isBoundedLinearMap.contDiff
@@ -176,15 +174,14 @@ theorem contDiffOn_id {s} : ContDiffOn 𝕜 n (id : E → E) s :=
 /-- Bilinear functions are `C^∞`.
 -/
 theorem IsBoundedBilinearMap.contDiff (hb : IsBoundedBilinearMap 𝕜 b) : ContDiff 𝕜 n b := by
-  suffices h : ContDiff 𝕜 ∞ b from h.of_le le_top
-  rw [contDiff_top_iff_fderiv]
-  refine ⟨hb.differentiable, ?_⟩
-  simp only [hb.fderiv]
-  exact hb.isBoundedLinearMap_deriv.contDiff
+  apply contDiff_of_analyticOn_of_fderiv
+  · exact hb.toContinuousLinearMap.analyticOn_bilinear _
+  · simp only [hb.fderiv]
+    exact hb.isBoundedLinearMap_deriv.contDiff
 
 /-- If `f` admits a Taylor series `p` in a set `s`, and `g` is linear, then `g ∘ f` admits a Taylor
 series whose `k`-th term is given by `g ∘ (p k)`. -/
-theorem HasFTaylorSeriesUpToOn.continuousLinearMap_comp (g : F →L[𝕜] G)
+theorem HasFTaylorSeriesUpToOn.continuousLinearMap_comp {n : ℕ∞} (g : F →L[𝕜] G)
     (hf : HasFTaylorSeriesUpToOn n f p s) :
     HasFTaylorSeriesUpToOn n (g ∘ f) (fun x k => g.compContinuousMultilinearMap (p x k)) s where
   zero_eq x hx := congr_arg g (hf.zero_eq x hx)
@@ -196,9 +193,20 @@ theorem HasFTaylorSeriesUpToOn.continuousLinearMap_comp (g : F →L[𝕜] G)
 /-- Composition by continuous linear maps on the left preserves `C^n` functions in a domain
 at a point. -/
 theorem ContDiffWithinAt.continuousLinearMap_comp (g : F →L[𝕜] G)
-    (hf : ContDiffWithinAt 𝕜 n f s x) : ContDiffWithinAt 𝕜 n (g ∘ f) s x := fun m hm ↦ by
-  rcases hf m hm with ⟨u, hu, p, hp⟩
-  exact ⟨u, hu, _, hp.continuousLinearMap_comp g⟩
+    (hf : ContDiffWithinAt 𝕜 n f s x) : ContDiffWithinAt 𝕜 n (g ∘ f) s x := by
+  match n with
+  | ω =>
+    obtain ⟨u, hu, p, hp, h'p⟩ := hf
+    refine ⟨u, hu, _, hp.continuousLinearMap_comp g, fun i ↦ ?_⟩
+    change AnalyticWithinOn 𝕜
+      (fun x ↦ (ContinuousLinearMap.compContinuousMultilinearMapL 𝕜
+      (fun _ : Fin i ↦ E) F G g) (p x i)) u
+    apply AnalyticOn.comp_analyticWithinOn _ (h'p i) (Set.mapsTo_univ _ _)
+    exact ContinuousLinearMap.analyticOn _ _
+  | (n : ℕ∞) =>
+    intro m hm
+    rcases hf m hm with ⟨u, hu, p, hp⟩
+    exact ⟨u, hu, _, hp.continuousLinearMap_comp g⟩
 
 /-- Composition by continuous linear maps on the left preserves `C^n` functions in a domain
 at a point. -/
@@ -223,6 +231,8 @@ theorem ContinuousLinearMap.iteratedFDerivWithin_comp_left {f : E → F} (g : F 
       g.compContinuousMultilinearMap (iteratedFDerivWithin 𝕜 i f s x) :=
   (((hf.ftaylorSeriesWithin hs).continuousLinearMap_comp g).eq_iteratedFDerivWithin_of_uniqueDiffOn
     hi hs hx).symm
+
+#exit
 
 /-- The iterated derivative of the composition with a linear map on the left is
 obtained by applying the linear map to the iterated derivative. -/

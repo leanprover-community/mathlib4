@@ -753,6 +753,29 @@ theorem contDiffOn_of_differentiableOn {n : ℕ∞}
   contDiffOn_of_continuousOn_differentiableOn (fun m hm => (h m hm).continuousOn) fun m hm =>
     h m (le_of_lt hm)
 
+theorem contDiffOn_of_analyticWithinOn_iteratedFDerivWithin
+    (h : ∀ m, AnalyticWithinOn 𝕜 (iteratedFDerivWithin 𝕜 m f s) s) :
+    ContDiffOn 𝕜 n f s := by
+  suffices ContDiffOn 𝕜 ω f s from this.of_le le_top
+  intro x hx
+  refine ⟨insert x s, self_mem_nhdsWithin, ftaylorSeriesWithin 𝕜 f s, ?_, ?_⟩
+  · rw [insert_eq_of_mem hx]
+    constructor
+    · intro y _
+      simp only [ftaylorSeriesWithin, ContinuousMultilinearMap.uncurry0_apply,
+        iteratedFDerivWithin_zero_apply]
+    · intro k _ y hy
+      exact ((h k).differentiableOn y hy).hasFDerivWithinAt
+    · intro k _
+      exact (h k).continuousOn
+  · rw [insert_eq_of_mem hx]
+    exact h
+
+theorem contDiffOn_omega_iff_analyticWithinOn_iteratedFDerivWithin (hs : UniqueDiffOn 𝕜 s) :
+    ContDiffOn 𝕜 ω f s ↔ ∀ m, AnalyticWithinOn 𝕜 (iteratedFDerivWithin 𝕜 m f s) s :=
+  ⟨fun h m ↦ h.analyticWithinOn_iteratedFDerivWithin hs m,
+  fun h ↦ contDiffOn_of_analyticWithinOn_iteratedFDerivWithin h⟩
+
 theorem ContDiffOn.continuousOn_iteratedFDerivWithin {m : ℕ} (h : ContDiffOn 𝕜 n f s)
     (hmn : (m : ℕ∞) ≤ n) (hs : UniqueDiffOn 𝕜 s) : ContinuousOn (iteratedFDerivWithin 𝕜 m f s) s :=
   ((h.of_le hmn).ftaylorSeriesWithin hs).cont m le_rfl
@@ -798,8 +821,9 @@ theorem contDiffOn_succ_of_fderivWithin {n : ℕ} (hf : DifferentiableOn 𝕜 f 
   exact
     ⟨s, self_mem_nhdsWithin, fderivWithin 𝕜 f s, fun y hy => (hf y hy).hasFDerivWithinAt, h x hx⟩
 
-theorem contDiffOn_omega_of_fderivWithin (hf : AnalyticWithinOn 𝕜 f s)
-    (h : ContDiffOn 𝕜 ω (fun y ↦ fderivWithin 𝕜 f s y) s) : ContDiffOn 𝕜 ω f s := by
+theorem contDiffOn_of_analyticWithinOn_of_fderivWithin (hf : AnalyticWithinOn 𝕜 f s)
+    (h : ContDiffOn 𝕜 ω (fun y ↦ fderivWithin 𝕜 f s y) s) : ContDiffOn 𝕜 n f s := by
+  suffices ContDiffOn 𝕜 ω f s from this.of_le le_top
   intro x hx
   rw [contDiffWithinAt_omega_iff_hasFDerivWithinAt, insert_eq_of_mem hx]
   exact ⟨s, self_mem_nhdsWithin, hf, fderivWithin 𝕜 f s,
@@ -831,7 +855,7 @@ condition is not needed when the space is complete, see `AnalyticWithinOn.contDi
 theorem contDiffOn_omega_iff_fderivWithin (hs : UniqueDiffOn 𝕜 s) :
     ContDiffOn 𝕜 ω f s ↔
       AnalyticWithinOn 𝕜 f s ∧ ContDiffOn 𝕜 ω (fun y => fderivWithin 𝕜 f s y) s := by
-  refine ⟨fun H => ?_, fun h => contDiffOn_omega_of_fderivWithin h.1 h.2⟩
+  refine ⟨fun H => ?_, fun h => contDiffOn_of_analyticWithinOn_of_fderivWithin h.1 h.2⟩
   refine ⟨H.analyticWithinOn, fun x hx => ?_⟩
   rcases contDiffWithinAt_omega_iff_hasFDerivWithinAt.1 (H x hx) with ⟨u, hu, -, f', hff', hf'⟩
   rcases mem_nhdsWithin.1 hu with ⟨o, o_open, xo, ho⟩
@@ -1105,6 +1129,13 @@ theorem contDiff_one_iff_hasFDerivAt : ContDiff 𝕜 1 f ↔
     ∃ f' : E → E →L[𝕜] F, Continuous f' ∧ ∀ x, HasFDerivAt f (f' x) x := by
   convert contDiff_succ_iff_hasFDerivAt using 4; simp
 
+theorem contDiff_of_analyticOn_of_fderiv (hf : AnalyticOn 𝕜 f univ)
+    (h : ContDiff 𝕜 ω (fun y ↦ fderiv 𝕜 f y)) : ContDiff 𝕜 n f := by
+  rw [← contDiffOn_univ] at h ⊢
+  apply contDiffOn_of_analyticWithinOn_of_fderivWithin
+  · simpa using hf
+  · simpa [fderivWithin_univ] using h
+
 /-! ### Iterated derivative -/
 
 
@@ -1123,6 +1154,16 @@ theorem contDiff_iff_continuous_differentiable {n : ℕ∞} :
         ∀ m : ℕ, (m : ℕ∞) < n → Differentiable 𝕜 fun x => iteratedFDeriv 𝕜 m f x := by
   simp [contDiffOn_univ.symm, continuous_iff_continuousOn_univ, differentiableOn_univ.symm,
     iteratedFDerivWithin_univ, contDiffOn_iff_continuousOn_differentiableOn uniqueDiffOn_univ]
+
+theorem contDiff_omega_iff_analyticOn_iteratedFDeriv :
+    ContDiff 𝕜 ω f ↔ ∀ m, AnalyticOn 𝕜 (iteratedFDeriv 𝕜 m f) univ := by
+  simp_rw [← contDiffOn_univ, ← analyticWithinOn_univ,
+    contDiffOn_omega_iff_analyticWithinOn_iteratedFDerivWithin uniqueDiffOn_univ,
+    iteratedFDerivWithin_univ]
+
+theorem contDiff_of_analyticOn_iteratedFDeriv
+    (h : ∀ m, AnalyticOn 𝕜 (iteratedFDeriv 𝕜 m f) univ) : ContDiff 𝕜 n f :=
+  (contDiff_omega_iff_analyticOn_iteratedFDeriv.2 h).of_le le_top
 
 /-- If `f` is `C^n` then its `m`-times iterated derivative is continuous for `m ≤ n`. -/
 theorem ContDiff.continuous_iteratedFDeriv {m : ℕ} (hm : (m : ℕ∞) ≤ n) (hf : ContDiff 𝕜 n f) :
