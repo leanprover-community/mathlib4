@@ -7,7 +7,7 @@ import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
 import Mathlib.Tactic.CategoryTheory.MonoidalComp
 
 /-!
-# # Expressions for monoidal categories
+# Expressions for monoidal categories
 
 This file converts lean expressions representing morphisms in monoidal categories into `Mor₂Iso`
 or `Mor` terms. The converted expressions are used in the coherence tactics and the string diagram
