@@ -151,7 +151,7 @@ theorem exists_leftInverse_of_injective (f : V →ₗ[MonoidAlgebra k G] W)
   have := IsScalarTower.of_compHom k A W
   have := IsScalarTower.of_compHom k A V
   obtain ⟨φ, hφ⟩ := (f.restrictScalars k).exists_leftInverse_of_injective <| by
-    simp only [hf, Submodule.restrictScalars_bot, LinearMap.ker_restrictScalars]
+    rw [LinearMap.ker_restrictScalars, hf, Submodule.restrictScalars_bot]
   refine ⟨φ.equivariantProjection G, DFunLike.ext _ _ ?_⟩
   exact φ.equivariantProjection_condition G _ <| DFunLike.congr_fun hφ
 
