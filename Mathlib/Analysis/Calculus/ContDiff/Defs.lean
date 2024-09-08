@@ -208,6 +208,23 @@ def ContDiffWithinAt (n : WithTop ℕ∞) (f : E → F) (s : Set E) (x : E) : Pr
 
 variable {𝕜}
 
+lemma ContDiffWithinAt.exists_mem_nhdsWithin_analyticWithinOn (h : ContDiffWithinAt 𝕜 ω f s x) :
+    ∃ u ∈ 𝓝[insert x s] x, AnalyticWithinOn 𝕜 f s := by
+  rcases h with ⟨u, hu, p, hp, h'p⟩
+  have xu : x ∈ u := mem_of_mem_nhdsWithin (mem_insert x s) hu
+  specialize h'p 0
+  refine ⟨insert x s ∩ u, inter_mem self_mem_nhdsWithin hu, ?_⟩
+  have : AnalyticWithinOn 𝕜 (fun x ↦ (continuousMultilinearCurryFin0 𝕜 E F) (p x 0)) (s ∩ u) x :=
+    (LinearIsometryEquiv.analyticOn _ _ ).comp_analyticWithinOn ((h'p x xu).mono inter_subset_right)
+      (Set.mapsTo_univ)
+  have : AnalyticWithinAt 𝕜 f (s ∩ u) x :=
+    this.congr (fun y hy ↦ (hp.zero_eq _ hy.2).symm) (hp.zero_eq _ xu).symm
+  apply this.mono_of_mem
+  exact inter_mem self_mem_nhdsWithin (nhdsWithin_mono x (by simp) hu)
+
+
+#exit
+
 lemma ContDiffWithinAt.analyticWithinAt (h : ContDiffWithinAt 𝕜 ω f s x) :
     AnalyticWithinAt 𝕜 f s x := by
   rcases h with ⟨u, hu, p, hp, h'p⟩
@@ -437,16 +454,15 @@ theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt' {n : ℕ} :
 /-- A function is `C^ω` on a domain iff locally, it is analytic with a derivative which is `C^ω`. -/
 theorem glouk :
     ContDiffWithinAt 𝕜 ω f s x ↔
-      (AnalyticWithinAt 𝕜 f s x ∧
-        ∃ u ∈ 𝓝[insert x s] x, ∃ f' : E → E →L[𝕜] F,
-         (∀ x ∈ u, HasFDerivWithinAt f (f' x) u x) ∧ ContDiffWithinAt 𝕜 ω f' u x) := by
+      ∃ u ∈ 𝓝[insert x s] x, AnalyticWithinOn 𝕜 f u ∧ ∃ f' : E → E →L[𝕜] F,
+        (∀ x ∈ u, HasFDerivWithinAt f (f' x) u x) ∧ ContDiffWithinAt 𝕜 ω f' u x := by
   constructor
   · intro h
-    refine ⟨h.analyticWithinAt, ?_⟩
     obtain ⟨u, hu, p, Hp, hp⟩ := h
     refine
-      ⟨u, hu, fun y => (continuousMultilinearCurryFin1 𝕜 E F) (p y 1),
+      ⟨u, hu, ?_, fun y => (continuousMultilinearCurryFin1 𝕜 E F) (p y 1),
         fun y hy ↦ Hp.hasFDerivWithinAt le_top hy, ?_⟩
+    ·
     refine ⟨u, ?_, fun y : E => (p y).shift, ?_, ?_⟩
     · convert @self_mem_nhdsWithin _ _ x u
       have : x ∈ insert x s := by simp
@@ -458,11 +474,9 @@ theorem glouk :
         (fun x ↦ (continuousMultilinearCurryRightEquiv' 𝕜 i E F).symm (p x (i + 1))) u
       exact (LinearIsometryEquiv.analyticOn _ _).comp_analyticWithinOn
         (hp (i + 1)) (Set.mapsTo_univ _ _)
-
-
-
   · rintro ⟨hf, u, hu, f', f'_eq_deriv, Hf'⟩
     rcases Hf' with ⟨v, hv, p', Hp', hp'⟩
+    rcases hf with ⟨v', hv'⟩
     refine ⟨v ∩ u, ?_, fun x => (p' x).unshift (f x), ?_, ?_⟩
     · apply Filter.inter_mem _ hu
       apply nhdsWithin_le_of_mem hu
