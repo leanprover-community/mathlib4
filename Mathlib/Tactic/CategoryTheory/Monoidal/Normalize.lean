@@ -742,7 +742,7 @@ instance : MkEval MonoidalM where
     return q(eval_tensorHom $e_η $e_θ $e_ι)
   mkEvalOf η := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let _cat := ctx.instCat
     let f := η.src
     let g := η.tgt
     have f : Q($ctx.C) := f.e
@@ -751,7 +751,7 @@ instance : MkEval MonoidalM where
     return q(eval_of $η)
   mkEvalMonoidalComp η θ α η' θ' αθ ηαθ e_η e_θ e_αθ e_ηαθ := do
     let ctx ← read
-    let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
+    let _cat := ctx.instCat
     let f ← η'.srcM
     let g ← η'.tgtM
     let h ← α.tgtM
