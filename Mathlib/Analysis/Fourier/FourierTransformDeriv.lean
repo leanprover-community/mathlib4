@@ -632,7 +632,11 @@ lemma pow_mul_norm_iteratedFDeriv_fourierIntegral_le [FiniteDimensional ℝ V]
     linarith [one_le_pi_div_two]
   _ = ‖fourierPowSMulRight (-L.flip)
         (iteratedFDeriv ℝ k (fourierIntegral 𝐞 μ L.toLinearMap₂ f)) w n (fun _ ↦ v)‖ := by
-    simp [norm_smul, _root_.abs_of_nonneg pi_nonneg]
+    simp [
+      norm_smul ((-(2 * ↑π * I)) ^ n)
+        ((-(L v) w) ^ n • iteratedFDeriv ℝ k (fourierIntegral 𝐞 μ L.toLinearMap₂ f) w),
+      norm_smul ((-(L v) w) ^ n) (iteratedFDeriv ℝ k (fourierIntegral 𝐞 μ L.toLinearMap₂ f) w),
+      _root_.abs_of_nonneg pi_nonneg]
   _ ≤ ‖fourierPowSMulRight (-L.flip)
         (iteratedFDeriv ℝ k (fourierIntegral 𝐞 μ L.toLinearMap₂ f)) w n‖ * ∏ _ : Fin n, ‖v‖ :=
     le_opNorm _ _
