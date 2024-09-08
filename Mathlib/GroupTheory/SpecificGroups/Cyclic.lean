@@ -490,7 +490,7 @@ theorem commutative_of_cyclic_center_quotient [IsCyclic H] (f : G →* H) (hf : 
 #align commutative_of_add_cyclic_center_quotient commutative_of_add_cyclic_center_quotient
 
 /-- A group is commutative if the quotient by the center is cyclic. -/
-@[to_additive commutativeOfAddCyclicCenterQuotient
+@[to_additive addCommGroupOfAddCyclicCenterQuotient
       "A group is commutative if the quotient by the center is cyclic."]
 def commGroupOfCyclicCenterQuotient [IsCyclic H] (f : G →* H) (hf : f.ker ≤ center G) :
     CommGroup G :=
