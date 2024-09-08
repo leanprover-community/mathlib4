@@ -6,14 +6,14 @@ Authors: Yoh Tanimoto
 import Mathlib.Topology.ContinuousFunction.Bounded
 import Mathlib.RingTheory.TwoSidedIdeal.Lattice
 
-open Set BoundedContinuousFunction
-
 /-!
 # Compactly supported bounded continuous functions
 
 The two-sided ideal of compactly supported bounded continuous functions taking values in a metric
 space, with the uniform distance.
 -/
+
+open Set BoundedContinuousFunction
 
 section CompactlySupported
 
@@ -70,9 +70,10 @@ theorem compactlySupported_eq_top [CompactSpace α] : C_cb(α, γ) = ⊤ :=
 
 theorem compactlySupported_eq_top_iff [Nontrivial γ] :
     C_cb(α, γ) = ⊤ ↔ IsCompact (Set.univ : Set α) := by
+  refine ⟨fun h ↦ ?_, compactlySupported_eq_top_of_isCompact⟩
+  obtain ⟨x, hx⟩ := exists_ne (0 : γ)
   simpa [tsupport, Function.support_const hx]
-    -- missing `TwoSidedIdeal.mem_top` simp lemma
-    using (mem_compactlySupported (f := const α x).mp (by rw [h]; trivial)).isCompact
+    using (mem_compactlySupported (f := const α x).mp (by simp [h])).isCompact
 
 lemma hasCompactSupport_mul_of_continuous_compactlySupported (f : α →ᵇ γ) (hf : f ∈ C_cb(α, γ))
     (g : α → γ) : HasCompactSupport ((g * f : α → γ)) := HasCompactSupport.mul_left
