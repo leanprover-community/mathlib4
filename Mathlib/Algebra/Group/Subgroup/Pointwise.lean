@@ -115,8 +115,7 @@ theorem closure_inv (s : Set G) : closure s⁻¹ = closure s := by
 
 @[to_additive (attr := simp)]
 lemma closure_singleton_inv (x : G) : closure {x⁻¹} = closure {x} := by
-  rw [← closure_inv]
-  simp
+  rw [← Set.inv_singleton, closure_inv]
 
 /-- An induction principle for closure membership. If `p` holds for `1` and all elements of
 `k` and their inverse, and is preserved under multiplication, then `p` holds for all elements of
