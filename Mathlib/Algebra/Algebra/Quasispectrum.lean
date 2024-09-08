@@ -261,7 +261,7 @@ variable {R}
 
 /-- A version of `NonUnitalAlgHom.quasispectrum_apply_subset` which allows for `quasispectrum R`,
 where `R` is a *semi*ring, but `φ` must still function over a scalar ring `S`. In this case, we
-need `S` to be explivit. The primary use case is, for instance, `R := ℝ≥0` and `S := ℝ` or
+need `S` to be explicit. The primary use case is, for instance, `R := ℝ≥0` and `S := ℝ` or
 `S := ℂ`. -/
 lemma NonUnitalAlgHom.quasispectrum_apply_subset' {F R : Type*} (S : Type*) {A B : Type*}
     [CommSemiring R] [CommRing S] [NonUnitalRing A] [NonUnitalRing B] [Module R S]
