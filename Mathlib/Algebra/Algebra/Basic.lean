@@ -6,10 +6,10 @@ Authors: Kenny Lau, Yury Kudryashov
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.Module.Equiv.Basic
--- import Mathlib.Algebra.Module.Submodule.Ker
--- import Mathlib.Algebra.Module.Submodule.RestrictScalars
+import Mathlib.Algebra.Module.Submodule.Ker
+import Mathlib.Algebra.Module.Submodule.RestrictScalars
 import Mathlib.Algebra.Module.ULift
--- import Mathlib.Algebra.Ring.Subring.Basic
+import Mathlib.Algebra.Ring.Subring.Basic
 import Mathlib.Data.Nat.Cast.Order.Basic
 import Mathlib.Data.Int.CharZero
 import Mathlib.Tactic.ApplyFun
@@ -69,52 +69,6 @@ theorem _root_.ULift.down_algebraMap (r : R) : (algebraMap R (ULift A) r).down =
   rfl
 
 end ULift
-
-/-- Algebra over a subsemiring. This builds upon `Subsemiring.module`. -/
-instance ofSubsemiring (S : Subsemiring R) : Algebra S A where
-  toRingHom := (algebraMap R A).comp S.subtype
-  smul := (· • ·)
-  commutes' r x := Algebra.commutes (r : R) x
-  smul_def' r x := Algebra.smul_def (r : R) x
-
-theorem algebraMap_ofSubsemiring (S : Subsemiring R) :
-    (algebraMap S R : S →+* R) = Subsemiring.subtype S :=
-  rfl
-
-theorem coe_algebraMap_ofSubsemiring (S : Subsemiring R) : (algebraMap S R : S → R) = Subtype.val :=
-  rfl
-
-theorem algebraMap_ofSubsemiring_apply (S : Subsemiring R) (x : S) : algebraMap S R x = x :=
-  rfl
-
-/-- Algebra over a subring. This builds upon `Subring.module`. -/
-instance ofSubring {R A : Type*} [CommRing R] [Ring A] [Algebra R A] (S : Subring R) :
-    Algebra S A where -- Porting note: don't use `toSubsemiring` because of a timeout
-  toRingHom := (algebraMap R A).comp S.subtype
-  smul := (· • ·)
-  commutes' r x := Algebra.commutes (r : R) x
-  smul_def' r x := Algebra.smul_def (r : R) x
-
-theorem algebraMap_ofSubring {R : Type*} [CommRing R] (S : Subring R) :
-    (algebraMap S R : S →+* R) = Subring.subtype S :=
-  rfl
-
-theorem coe_algebraMap_ofSubring {R : Type*} [CommRing R] (S : Subring R) :
-    (algebraMap S R : S → R) = Subtype.val :=
-  rfl
-
-theorem algebraMap_ofSubring_apply {R : Type*} [CommRing R] (S : Subring R) (x : S) :
-    algebraMap S R x = x :=
-  rfl
-
-/-- Explicit characterization of the submonoid map in the case of an algebra.
-`S` is made explicit to help with type inference -/
-def algebraMapSubmonoid (S : Type*) [Semiring S] [Algebra R S] (M : Submonoid R) : Submonoid S :=
-  M.map (algebraMap R S)
-
-theorem mem_algebraMapSubmonoid_of_mem {S : Type*} [Semiring S] [Algebra R S] {M : Submonoid R}
-    (x : M) : algebraMap R S x ∈ algebraMapSubmonoid S M :=
-  Set.mem_image_of_mem (algebraMap R S) x.2
 
 end Semiring
 
@@ -526,21 +480,3 @@ lemma LinearEquiv.extendScalarsOfSurjective_symm (f : M ≃ₗ[R] N) :
     (f.extendScalarsOfSurjective h).symm = f.symm.extendScalarsOfSurjective h := rfl
 
 end surjective
-
-namespace algebraMap
-
-section CommSemiringCommSemiring
-
-variable {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] {ι : Type*} {s : Finset ι}
-
-@[norm_cast]
-theorem coe_prod (a : ι → R) : (↑(∏ i ∈ s, a i : R) : A) = ∏ i ∈ s, (↑(a i) : A) :=
-  map_prod (algebraMap R A) a s
-
-@[norm_cast]
-theorem coe_sum (a : ι → R) : ↑(∑ i ∈ s, a i) = ∑ i ∈ s, (↑(a i) : A) :=
-  map_sum (algebraMap R A) a s
-
-end CommSemiringCommSemiring
-
-end algebraMap

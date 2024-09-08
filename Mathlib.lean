@@ -3,6 +3,7 @@ import Mathlib.Algebra.AddConstMap.Basic
 import Mathlib.Algebra.AddConstMap.Equiv
 import Mathlib.Algebra.AddTorsor
 import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.BigOperators
 import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Algebra.Equiv
@@ -30,6 +31,7 @@ import Mathlib.Algebra.Algebra.Subalgebra.Prod
 import Mathlib.Algebra.Algebra.Subalgebra.Rank
 import Mathlib.Algebra.Algebra.Subalgebra.Tower
 import Mathlib.Algebra.Algebra.Subalgebra.Unitization
+import Mathlib.Algebra.Algebra.Subring
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.Algebra.Unitization
 import Mathlib.Algebra.AlgebraicCard
