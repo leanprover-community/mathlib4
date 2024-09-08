@@ -760,6 +760,12 @@ variable [NonUnitalSemiring B] [StarRing B] [Module R B] [SMulCommClass R B B] [
 variable [NonUnitalSemiring C] [StarRing C] [Module R C] [SMulCommClass R C C] [IsScalarTower R C C]
 variable [StarModule R B] [StarModule R C]
 
+/-- The functorial map on morphisms between the category of non-unital C⋆-algebras with non-unital
+star homomorphisms and unital C⋆-algebras with unital star homomorphisms.
+
+This sends `φ : A →⋆ₙₐ[R] B` to a map `Unitization R A →⋆ₐ[R] Unitization R B` given by the formula
+`(r, a) ↦ (r, φ a)` (or perhaps more precisely,
+`algebraMap R _ r + ↑a ↦ algebraMap R _ r + ↑(φ a)`). -/
 @[simps!]
 def starMap (φ : A →⋆ₙₐ[R] B) : Unitization R A →⋆ₐ[R] Unitization R B :=
   Unitization.starLift <| (Unitization.inrNonUnitalStarAlgHom R B).comp φ
