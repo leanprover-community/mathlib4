@@ -28,13 +28,13 @@ variable [FunLike F A B] [NonUnitalAlgHomClass F ℂ A B] [NonUnitalStarAlgHomCl
 open CStarAlgebra Unitization in
 /-- A non-unital star algebra monomorphism of complex C⋆-algebras is isometric. -/
 lemma norm_map (φ : F) (hφ : Function.Injective φ) (a : A) : ‖φ a‖ = ‖a‖ := by
-  /- by passing to the unitization is functorial, and it is an isometric embedding, we may assume
+  /- Since passing to the unitization is functorial, and it is an isometric embedding, we may assume
   that `φ` is a unital star algebra monomorphism and that `A` and `B` are unital C⋆-algebras. -/
   suffices ∀ {ψ : Unitization ℂ A →⋆ₐ[ℂ] Unitization ℂ B} (_ : Function.Injective ψ)
       (a : Unitization ℂ A), ‖ψ a‖ = ‖a‖ by
     simpa [norm_inr] using this (starMap_injective (φ := (φ : A →⋆ₙₐ[ℂ] B)) hφ) a
   intro ψ hψ a
-  -- to show `‖ψ a‖ = ‖a‖`, by the C⋆-property it suffices to show `‖ψ (star a * a‖ = ‖star a * a‖`.
+  -- to show `‖ψ a‖ = ‖a‖`, by the C⋆-property it suffices to show `‖ψ (star a * a)‖ = ‖star a * a‖`.
   rw [← sq_eq_sq (by positivity) (by positivity)]
   simp only [sq, ← CStarRing.norm_star_mul_self, ← map_star, ← map_mul]
   /- since `star a * a` is selfadjoint, it suffices to show that it has the same `ℝ`-spectrum as
@@ -45,7 +45,7 @@ lemma norm_map (φ : F) (hφ : Function.Injective φ) (a : A) : ‖φ a‖ = ‖
         ha.map ψ |>.toReal_spectralRadius_eq_norm.symm
       _ = (spectralRadius ℝ (star a * a)).toReal := by simp only [spectralRadius, this _ ha]
       _ = ‖star a * a‖ := ha.toReal_spectralRadius_eq_norm
-  /- so suppose that `a` is selfadjoint. The inclusion `specturm ℝ (ψ a) ⊆ spectrum ℝ a` is
+  /- so suppose that `a` is selfadjoint. The inclusion `spectrum ℝ (ψ a) ⊆ spectrum ℝ a` is
   immediate because `ψ` is a homomorphism. -/
   intro a ha
   have h_spec := AlgHom.spectrum_apply_subset (ψ.restrictScalars ℝ) a
