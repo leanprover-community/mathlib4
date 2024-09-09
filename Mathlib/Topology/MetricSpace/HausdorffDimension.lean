@@ -262,7 +262,7 @@ theorem HolderOnWith.dimH_image_le (h : HolderOnWith C r f s) (hr : 0 < r) :
   borelize X Y
   refine dimH_le fun d hd => ?_
   have := h.hausdorffMeasure_image_le hr d.coe_nonneg
-  rw [hd, ENNReal.coe_rpow_of_nonneg _ d.coe_nonneg, top_le_iff] at this
+  rw [hd, ← ENNReal.coe_rpow_of_nonneg _ d.coe_nonneg, top_le_iff] at this
   have Hrd : μH[(r * d : ℝ≥0)] s = ⊤ := by
     contrapose this
     exact ENNReal.mul_ne_top ENNReal.coe_ne_top this

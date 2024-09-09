@@ -1,4 +1,5 @@
 import Mathlib.Tactic.CategoryTheory.Monoidal
+import Mathlib.Tactic.CategoryTheory.Coherence
 
 open CategoryTheory
 open scoped MonoidalCategory
@@ -31,14 +32,21 @@ example (f : U ⟶ V ⊗ (W ⊗ X)) (g : (V ⊗ W) ⊗ X ⟶ Y) :
     f ⊗≫ g = f ≫ 𝟙 _ ≫ (α_ _ _ _).inv ≫ g := by
   monoidal_nf
   repeat' apply congrArg₂ (· ≫ ·) ?_ <| congrArg₂ (· ≫ ·) rfl ?_
-  all_goals simp
+  all_goals pure_coherence
 
 example : (X ⊗ Y) ◁ f = (α_ _ _ _).hom ≫ X ◁ Y ◁ f ≫ (α_ _ _ _).inv := by
   monoidal_nf
   repeat' apply congrArg₂ (· ≫ ·) ?_ <| congrArg₂ (· ≫ ·) rfl ?_
-  all_goals simp
+  all_goals pure_coherence
 
 example : f ≫ g = f ≫ g := by
   monoidal_nf
   repeat' apply congrArg₂ (· ≫ ·) ?_ <| congrArg₂ (· ≫ ·) rfl ?_
-  all_goals simp
+  all_goals pure_coherence
+
+example {V₁ V₂ V₃ : C} (R : ∀ V₁ V₂ : C, V₁ ⊗ V₂ ⟶ V₂ ⊗ V₁) :
+    R V₁ V₂ ▷ V₃ ⊗≫ V₂ ◁ R V₁ V₃ =
+      R V₁ V₂ ▷ V₃ ≫ (α_ _ _ _).hom ⊗≫ 𝟙 _ ≫ V₂ ◁ R V₁ V₃ := by
+  monoidal_nf
+  repeat' apply congrArg₂ (· ≫ ·) ?_ <| congrArg₂ (· ≫ ·) rfl ?_
+  all_goals pure_coherence

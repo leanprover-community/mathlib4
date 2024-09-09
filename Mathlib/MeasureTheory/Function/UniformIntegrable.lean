@@ -220,7 +220,7 @@ theorem Memℒp.integral_indicator_norm_ge_le (hf : Memℒp f 1 μ) (hmeas : Str
   simp only [coe_nnnorm, ENNReal.ofReal_eq_coe_nnreal (norm_nonneg _)]
   rfl
 
-/-- This lemma is superceded by `MeasureTheory.Memℒp.integral_indicator_norm_ge_nonneg_le`
+/-- This lemma is superseded by `MeasureTheory.Memℒp.integral_indicator_norm_ge_nonneg_le`
 which does not require measurability. -/
 theorem Memℒp.integral_indicator_norm_ge_nonneg_le_of_meas (hf : Memℒp f 1 μ)
     (hmeas : StronglyMeasurable f) {ε : ℝ} (hε : 0 < ε) :
@@ -288,7 +288,7 @@ theorem Memℒp.eLpNorm_indicator_norm_ge_le (hf : Memℒp f p μ) (hmeas : Stro
     ENNReal.ofReal_rpow_of_pos hε]
   convert hM
   rename_i x
-  rw [ENNReal.coe_rpow_of_nonneg _ ENNReal.toReal_nonneg, nnnorm_indicator_eq_indicator_nnnorm,
+  rw [← ENNReal.coe_rpow_of_nonneg _ ENNReal.toReal_nonneg, nnnorm_indicator_eq_indicator_nnnorm,
     nnnorm_indicator_eq_indicator_nnnorm]
   have hiff : M ^ (1 / p.toReal) ≤ ‖f x‖₊ ↔ M ≤ ‖‖f x‖ ^ p.toReal‖₊ := by
     rw [coe_nnnorm, coe_nnnorm, Real.norm_rpow_of_nonneg (norm_nonneg _), norm_norm,
@@ -393,7 +393,7 @@ theorem Memℒp.eLpNorm_indicator_le' (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) (h
 @[deprecated (since := "2024-07-27")]
 alias Memℒp.snorm_indicator_le' := Memℒp.eLpNorm_indicator_le'
 
-/-- This lemma is superceded by `MeasureTheory.Memℒp.eLpNorm_indicator_le` which does not require
+/-- This lemma is superseded by `MeasureTheory.Memℒp.eLpNorm_indicator_le` which does not require
 measurability on `f`. -/
 theorem Memℒp.eLpNorm_indicator_le_of_meas (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) (hf : Memℒp f p μ)
     (hmeas : StronglyMeasurable f) {ε : ℝ} (hε : 0 < ε) :
@@ -641,7 +641,7 @@ theorem tendstoInMeasure_iff_tendsto_Lp_finite [IsFiniteMeasure μ] (hp : 1 ≤ 
         (fun n => (hf n).aestronglyMeasurable) hg.aestronglyMeasurable h,
       unifIntegrable_of_tendsto_Lp hp hp' hf hg h⟩⟩
 
-/-- This lemma is superceded by `unifIntegrable_of` which do not require `C` to be positive. -/
+/-- This lemma is superseded by `unifIntegrable_of` which do not require `C` to be positive. -/
 theorem unifIntegrable_of' (hp : 1 ≤ p) (hp' : p ≠ ∞) {f : ι → α → β}
     (hf : ∀ i, StronglyMeasurable (f i))
     (h : ∀ ε : ℝ, 0 < ε → ∃ C : ℝ≥0, 0 < C ∧
@@ -790,7 +790,7 @@ theorem uniformIntegrable_const {g : α → β} (hp : 1 ≤ p) (hp_ne_top : p �
   ⟨fun _ => hg.1, unifIntegrable_const hp hp_ne_top hg,
     ⟨(eLpNorm g p μ).toNNReal, fun _ => le_of_eq (ENNReal.coe_toNNReal hg.2.ne).symm⟩⟩
 
-/-- This lemma is superceded by `uniformIntegrable_of` which only requires
+/-- This lemma is superseded by `uniformIntegrable_of` which only requires
 `AEStronglyMeasurable`. -/
 theorem uniformIntegrable_of' [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ ∞)
     (hf : ∀ i, StronglyMeasurable (f i))
@@ -851,7 +851,7 @@ theorem uniformIntegrable_of [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ �
   · rw [Set.indicator_of_not_mem hfx, Set.indicator_of_not_mem]
     rwa [Set.mem_setOf, hx] at hfx
 
-/-- This lemma is superceded by `UniformIntegrable.spec` which does not require measurability. -/
+/-- This lemma is superseded by `UniformIntegrable.spec` which does not require measurability. -/
 theorem UniformIntegrable.spec' (hp : p ≠ 0) (hp' : p ≠ ∞) (hf : ∀ i, StronglyMeasurable (f i))
     (hfu : UniformIntegrable f p μ) {ε : ℝ} (hε : 0 < ε) :
     ∃ C : ℝ≥0, ∀ i, eLpNorm ({ x | C ≤ ‖f i x‖₊ }.indicator (f i)) p μ ≤ ENNReal.ofReal ε := by
@@ -876,7 +876,7 @@ theorem UniformIntegrable.spec' (hp : p ≠ 0) (hp' : p ≠ ∞) (hf : ∀ i, St
           rwa [nnnorm_indicator_eq_indicator_nnnorm, Set.indicator_of_mem hx]
         _ ≤ eLpNorm (f (ℐ C)) p μ := eLpNorm_indicator_le _
     specialize this (2 * max M 1 * δ⁻¹ ^ (1 / p.toReal))
-    rw [ENNReal.coe_rpow_of_nonneg _ (one_div_nonneg.2 ENNReal.toReal_nonneg), ← ENNReal.coe_smul,
+    rw [← ENNReal.coe_rpow_of_nonneg _ (one_div_nonneg.2 ENNReal.toReal_nonneg), ← ENNReal.coe_smul,
       smul_eq_mul, mul_assoc, NNReal.inv_rpow,
       inv_mul_cancel₀ (NNReal.rpow_pos (NNReal.coe_pos.1 hδpos)).ne.symm, mul_one, ENNReal.coe_mul,
       ← NNReal.inv_rpow] at this

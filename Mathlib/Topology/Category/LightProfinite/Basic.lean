@@ -19,6 +19,12 @@ written as a sequential limit (in `Profinite`) of finite sets.
 
 We define an equivalence of categories `LightProfinite ≌ LightDiagram` and prove that these are
 essentially small categories.
+
+## Implementation
+
+The category `LightProfinite` is defined using the structure `CompHausLike`. See the file
+`CompHausLike.Basic` for more information.
+
 -/
 
 /- The basic API for `LightProfinite` is largely copied from the API of `Profinite`;

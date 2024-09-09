@@ -97,7 +97,7 @@ theorem volume_iUnion_setOf_liouvilleWith :
       _ = _ := by
         have : 1 - r ≠ 0 := by linarith
         rw [ENNReal.coe_inj]
-        simp [add_mul, div_eq_mul_inv, NNReal.rpow_neg, NNReal.rpow_sub' _ this, mul_add,
+        simp [add_mul, div_eq_mul_inv, NNReal.rpow_neg, NNReal.rpow_sub' this, mul_add,
           mul_left_comm]
   refine ne_top_of_le_ne_top (ENNReal.tsum_coe_ne_top_iff_summable.2 ?_) (ENNReal.tsum_le_tsum this)
   refine (Summable.add ?_ ?_).mul_left _ <;> simp only [NNReal.summable_rpow] <;> linarith
