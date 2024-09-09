@@ -1559,3 +1559,5 @@ theorem integral_deriv_comp_mul_deriv {f f' g g' : ℝ → ℝ}
 end Mul
 
 end intervalIntegral
+
+set_option linter.style.longFile 1700

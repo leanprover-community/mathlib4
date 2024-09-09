@@ -8,13 +8,19 @@ import Batteries.Data.MLList.Basic
 
 /-!
 # Reading from handles, files, and processes as lazy lists.
+
+## Deprecation
+
+This material has been moved out of Mathlib to https://github.com/semorrison/lean-monadic-list.
 -/
 
 open System IO.FS
+set_option linter.deprecated false
 
 namespace MLList
 
 /-- Read lines of text from a handle, as a lazy list in `IO`. -/
+@[deprecated "See deprecation note in module documentation." (since := "2024-08-22")]
 def linesFromHandle (h : Handle) : MLList IO String :=
   MLList.iterate (do
     let line ← h.getLine
@@ -31,6 +37,7 @@ def linesFromHandle (h : Handle) : MLList IO String :=
   |>.takeWhile (·.isSome) |>.map (fun o => o.getD "")
 
 /-- Read lines of text from a file, as a lazy list in `IO`. -/
+@[deprecated "See deprecation note in module documentation." (since := "2024-08-22")]
 def lines (f : FilePath) : MLList IO String := .squash fun _ => do
   return linesFromHandle (← Handle.mk f Mode.read)
 
@@ -39,6 +46,7 @@ open IO.Process in
 Run a command with given input on `stdio`,
 returning `stdout` as a lazy list in `IO`.
 -/
+@[deprecated "See deprecation note in module documentation." (since := "2024-08-22")]
 def runCmd (cmd : String) (args : Array String) (input : String := "") : MLList IO String := do
   let child ← spawn
     { cmd := cmd, args := args, stdin := .piped, stdout := .piped, stderr := .piped }

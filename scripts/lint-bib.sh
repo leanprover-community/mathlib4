@@ -4,8 +4,8 @@
 # See e.g. http://redsymbol.net/articles/unofficial-bash-strict-mode/ for explanation.
 set -euo pipefail
 IFS=$'\n\t'
-set -x
 
+set -x
 # https://leanprover-community.github.io/contribute/doc.html#citing-other-works
 cp docs/references.bib docs/references.bib.old
 bibtool --preserve.key.case=on --preserve.keys=on --pass.comments=on --print.use.tab=off -s \

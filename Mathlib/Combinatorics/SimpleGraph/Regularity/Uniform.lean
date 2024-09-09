@@ -329,7 +329,7 @@ lemma IsEquipartition.card_biUnion_offDiag_le (hε : 0 < ε) (hP : P.IsEquiparti
   obtain rfl | hA : A = ⊥ ∨ _ := A.eq_empty_or_nonempty
   · simp [Subsingleton.elim P ⊥]
   apply hP.card_biUnion_offDiag_le'.trans
-  rw [div_le_iff (Nat.cast_pos.2 (P.parts_nonempty hA.ne_empty).card_pos)]
+  rw [div_le_iff₀ (Nat.cast_pos.2 (P.parts_nonempty hA.ne_empty).card_pos)]
   have : (A.card : 𝕜) + P.parts.card ≤ 2 * A.card := by
     rw [two_mul]; exact add_le_add_left (Nat.cast_le.2 P.card_parts_le_card) _
   refine (mul_le_mul_of_nonneg_left this <| by positivity).trans ?_
@@ -337,7 +337,7 @@ lemma IsEquipartition.card_biUnion_offDiag_le (hε : 0 < ε) (hP : P.IsEquiparti
     rw [mul_left_comm, ← sq]
     convert mul_le_mul_of_nonneg_left this (mul_nonneg zero_le_two <| sq_nonneg (A.card : 𝕜))
       using 1 <;> ring
-  rwa [← div_le_iff', one_div_div]
+  rwa [← div_le_iff₀', one_div_div]
   positivity
 
 lemma IsEquipartition.sum_nonUniforms_lt' (hA : A.Nonempty) (hε : 0 < ε) (hP : P.IsEquipartition)

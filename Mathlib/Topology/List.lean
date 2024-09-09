@@ -86,7 +86,7 @@ theorem tendsto_cons_iff {β : Type*} {f : List α → β} {b : Filter β} {a : 
   have : 𝓝 (a::l) = (𝓝 a ×ˢ 𝓝 l).map fun p : α × List α => p.1::p.2 := by
     simp only [nhds_cons, Filter.prod_eq, (Filter.map_def _ _).symm,
       (Filter.seq_eq_filter_seq _ _).symm]
-    simp [-Filter.map_def, (· ∘ ·), functor_norm]
+    simp [-Filter.map_def, Function.comp_def, functor_norm]
   rw [this, Filter.tendsto_map'_iff]; rfl
 
 theorem continuous_cons : Continuous fun x : α × List α => (x.1::x.2 : List α) :=
@@ -124,7 +124,7 @@ theorem tendsto_insertNth' {a : α} :
     have : 𝓝 a ×ˢ 𝓝 (a'::l) =
         (𝓝 a ×ˢ (𝓝 a' ×ˢ 𝓝 l)).map fun p : α × α × List α => (p.1, p.2.1::p.2.2) := by
       simp only [nhds_cons, Filter.prod_eq, ← Filter.map_def, ← Filter.seq_eq_filter_seq]
-      simp [-Filter.map_def, (· ∘ ·), functor_norm]
+      simp [-Filter.map_def, Function.comp_def, functor_norm]
     rw [this, tendsto_map'_iff]
     exact
       (tendsto_fst.comp tendsto_snd).cons

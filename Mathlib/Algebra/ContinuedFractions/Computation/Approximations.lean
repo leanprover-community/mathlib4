@@ -111,7 +111,7 @@ theorem succ_nth_stream_b_le_nth_stream_fr_inv {ifp_n ifp_succ_n : IntFractPair 
     (succ_nth_stream_eq : IntFractPair.stream v (n + 1) = some ifp_succ_n) :
     (ifp_succ_n.b : K) ≤ ifp_n.fr⁻¹ := by
   suffices (⌊ifp_n.fr⁻¹⌋ : K) ≤ ifp_n.fr⁻¹ by
-    cases' ifp_n with _ ifp_n_fr
+    obtain ⟨_, ifp_n_fr⟩ := ifp_n
     have : ifp_n_fr ≠ 0 := by
       intro h
       simp [h, IntFractPair.stream, nth_stream_eq] at succ_nth_stream_eq
@@ -264,9 +264,9 @@ theorem zero_le_of_contsAux_b : 0 ≤ ((of v).contsAux n).b := by
   induction n with
   | zero => rfl
   | succ n IH =>
-    cases' Decidable.em <| g.TerminatedAt (n - 1) with terminated not_terminated
+    rcases Decidable.em <| g.TerminatedAt (n - 1) with terminated | not_terminated
     · -- terminating case
-      cases' n with n
+      rcases n with - | n
       · simp [zero_le_one]
       · have : g.contsAux (n + 2) = g.contsAux (n + 1) :=
           contsAux_stable_step_of_terminated terminated
@@ -299,7 +299,7 @@ theorem le_of_succ_get?_den {b : K}
 /-- Shows that the sequence of denominators is monotone, that is `Bₙ ≤ Bₙ₊₁`. -/
 theorem of_den_mono : (of v).dens n ≤ (of v).dens (n + 1) := by
   let g := of v
-  cases' Decidable.em <| g.partDens.TerminatedAt n with terminated not_terminated
+  rcases Decidable.em <| g.partDens.TerminatedAt n with terminated | not_terminated
   · have : g.partDens.get? n = none := by rwa [Stream'.Seq.TerminatedAt] at terminated
     have : g.TerminatedAt n :=
       terminatedAt_iff_partDen_none.2 (by rwa [Stream'.Seq.TerminatedAt] at terminated)
@@ -361,7 +361,7 @@ theorem sub_convs_eq {ifp : IntFractPair K}
       rwa [g_finite_correctness]
     -- To continue, we need use the determinant equality. So let's derive the needed hypothesis.
     have n_eq_zero_or_not_terminatedAt_pred_n : n = 0 ∨ ¬g.TerminatedAt (n - 1) := by
-      cases' n with n'
+      rcases n with - | n'
       · simp
       · have : IntFractPair.stream v (n' + 1) ≠ none := by simp [stream_nth_eq]
         have : ¬g.TerminatedAt n' :=
@@ -373,13 +373,13 @@ theorem sub_convs_eq {ifp : IntFractPair K}
     -- however, for this, we first have to derive quite a few tedious inequalities.
     have pB_ineq : (fib n : K) ≤ pB :=
       haveI : n ≤ 1 ∨ ¬g.TerminatedAt (n - 2) := by
-        cases' n_eq_zero_or_not_terminatedAt_pred_n with n_eq_zero not_terminatedAt_pred_n
+        rcases n_eq_zero_or_not_terminatedAt_pred_n with n_eq_zero | not_terminatedAt_pred_n
         · simp [n_eq_zero]
         · exact Or.inr <| mt (terminated_stable (n - 1).pred_le) not_terminatedAt_pred_n
       fib_le_of_contsAux_b this
     have B_ineq : (fib (n + 1) : K) ≤ B :=
       haveI : n + 1 ≤ 1 ∨ ¬g.TerminatedAt (n + 1 - 2) := by
-        cases' n_eq_zero_or_not_terminatedAt_pred_n with n_eq_zero not_terminatedAt_pred_n
+        rcases n_eq_zero_or_not_terminatedAt_pred_n with n_eq_zero | not_terminatedAt_pred_n
         · simp [n_eq_zero, le_refl]
         · exact Or.inr not_terminatedAt_pred_n
       fib_le_of_contsAux_b this

@@ -504,8 +504,9 @@ theorem nodal_eq_mul_nodal_erase [DecidableEq ι] {i : ι} (hi : i ∈ s) :
     nodal s v = (X - C (v i)) * nodal (s.erase i) v := by
     simp_rw [nodal, Finset.mul_prod_erase _ (fun x => X - C (v x)) hi]
 
-theorem X_sub_C_dvd_nodal (v : ι → R) {i : ι} (hi : i ∈ s) : X - C (v i) ∣ nodal s v :=
-  ⟨_, by classical exact nodal_eq_mul_nodal_erase hi⟩
+theorem X_sub_C_dvd_nodal (v : ι → R) {i : ι} (hi : i ∈ s) : X - C (v i) ∣ nodal s v := by
+  classical
+  exact ⟨nodal (s.erase i) v, nodal_eq_mul_nodal_erase hi⟩
 
 theorem nodal_insert_eq_nodal [DecidableEq ι] {i : ι} (hi : i ∉ s) :
     nodal (insert i s) v = (X - C (v i)) * nodal s v := by

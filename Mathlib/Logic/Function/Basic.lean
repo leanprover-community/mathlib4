@@ -3,9 +3,10 @@ Copyright (c) 2016 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Logic.Nonempty
+import Mathlib.Init.Algebra.Classes
 import Mathlib.Data.Set.Defs
 import Mathlib.Logic.Basic
+import Mathlib.Logic.Nonempty
 import Batteries.Tactic.Init
 
 /-!
@@ -762,6 +763,10 @@ theorem comp_self : f ∘ f = id :=
   funext h
 
 protected theorem leftInverse : LeftInverse f f := h
+
+theorem leftInverse_iff {g : α → α} :
+    g.LeftInverse f ↔ g = f :=
+  ⟨fun hg ↦ funext fun x ↦ by rw [← h x, hg, h], fun he ↦ he ▸ h.leftInverse⟩
 
 protected theorem rightInverse : RightInverse f f := h
 

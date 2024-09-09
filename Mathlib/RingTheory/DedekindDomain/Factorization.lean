@@ -406,7 +406,7 @@ theorem count_neg_zpow (n : ℤ) (I : FractionalIdeal R⁰ K) :
       ← zpow_add₀ hI, neg_add_cancel, zpow_zero]
     exact count_one K v
 
-theorem count_inv  (I : FractionalIdeal R⁰ K) :
+theorem count_inv (I : FractionalIdeal R⁰ K) :
     count K v (I⁻¹) = - count K v I := by
   rw [← zpow_neg_one, count_neg_zpow K v (1 : ℤ) I, zpow_one]
 

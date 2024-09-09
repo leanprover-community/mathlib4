@@ -41,7 +41,7 @@ groups here are not necessarily finite dimensional.
 A priori, a Lie group here is a manifold with corners.
 
 The definition of Lie group cannot require `I : ModelWithCorners 𝕜 E E` with the same space as the
-model space and as the model vector space, as one might hope, beause in the product situation,
+model space and as the model vector space, as one might hope, because in the product situation,
 the model space is `ModelProd E E'` and the model vector space is `E × E'`, which are not the same,
 so the definition does not apply. Hence the definition should be more general, allowing
 `I : ModelWithCorners 𝕜 E H`.
