@@ -43,3 +43,5 @@ elab "reduceProj% " t:term : term <= expectedType => do
   let t ← Lean.Core.transform t (post := fun e ↦ do
     return .continue (← Expr.reduceProjStruct? e))
   pure t
+
+end Mathlib.Util.Term.Basic
