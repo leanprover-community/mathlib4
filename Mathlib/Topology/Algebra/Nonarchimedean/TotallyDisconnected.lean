@@ -63,10 +63,6 @@ open TopologicalSpace
 
 variable (G : Type*) [TopologicalSpace G] [Group G]
 
--- #synth TotallyDisconnectedSpace G -- can't synth
-
--- building the components of `¬ IsPreconnected U`:
-
 @[to_additive]
 lemma subset_coset_comp (y : G) (U : Set G) (V : OpenSubgroup G) :
     U ⊆  (y • (V : Set G)) ∪
@@ -76,10 +72,10 @@ lemma subset_coset_comp (y : G) (U : Set G) (V : OpenSubgroup G) :
 @[to_additive]
 lemma mem_subgroup_coset (x y : G) (hxy : y ≠ x) (V : OpenSubgroup G) :
     y ∈ (y • (V : Set G)) := by
-  have omem : 1 ∈ (V : Set G) := one_mem V
   change (y = x) → False at hxy
   rw [← inv_mul_eq_one] at hxy
-  simp only [Set.mem_smul_set_iff_inv_smul_mem, smul_eq_mul, inv_mul_cancel, SetLike.mem_coe, omem]
+  simp only [Set.mem_smul_set_iff_inv_smul_mem, smul_eq_mul, inv_mul_cancel, SetLike.mem_coe,
+    one_mem V]
 
 @[to_additive]
 lemma non_empty_intersection_compl_coset (x y : G) (U : Set G) (hx : x ∈ U)
