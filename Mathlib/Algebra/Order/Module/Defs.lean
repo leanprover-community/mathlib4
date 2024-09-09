@@ -3,9 +3,9 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Order.Field.Defs
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled
-import Mathlib.Algebra.Order.Module.Synonym
+import Mathlib.Algebra.Order.GroupWithZero.Action.Synonym
 import Mathlib.Tactic.Positivity.Core
 
 /-!
@@ -1163,7 +1163,7 @@ end NoZeroSMulDivisors
 
 open Lean.Meta Qq
 
-/-- Positivity extension for HSMul, i.e. (_ • _).  -/
+/-- Positivity extension for HSMul, i.e. (_ • _). -/
 @[positivity HSMul.hSMul _ _]
 def evalHSMul : PositivityExt where eval {_u α} zα pα (e : Q($α)) := do
   let .app (.app (.app (.app (.app (.app

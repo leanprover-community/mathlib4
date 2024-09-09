@@ -1092,11 +1092,11 @@ theorem liminf_sdiff [NeBot f] (a : α) : liminf u f \ a = liminf (fun b => u b 
 
 theorem sdiff_limsup [NeBot f] (a : α) : a \ limsup u f = liminf (fun b => a \ u b) f := by
   rw [← compl_inj_iff]
-  simp only [sdiff_eq, liminf_compl, (· ∘ ·), compl_inf, compl_compl, sup_limsup]
+  simp only [sdiff_eq, liminf_compl, comp_def, compl_inf, compl_compl, sup_limsup]
 
 theorem sdiff_liminf (a : α) : a \ liminf u f = limsup (fun b => a \ u b) f := by
   rw [← compl_inj_iff]
-  simp only [sdiff_eq, limsup_compl, (· ∘ ·), compl_inf, compl_compl, sup_liminf]
+  simp only [sdiff_eq, limsup_compl, comp_def, compl_inf, compl_compl, sup_liminf]
 
 end CompleteBooleanAlgebra
 
@@ -1707,3 +1707,5 @@ lemma Antitone.isCoboundedUnder_ge_of_isCobounded {f : R → S} (f_decr : Antito
   Monotone.isCoboundedUnder_le_of_isCobounded (S := Sᵒᵈ) f_decr cobdd
 
 end frequently_bounded
+
+set_option linter.style.longFile 1800

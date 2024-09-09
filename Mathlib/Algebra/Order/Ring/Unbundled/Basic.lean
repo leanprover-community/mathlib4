@@ -199,7 +199,7 @@ theorem mul_le_mul_of_nonpos_of_nonpos' [ExistsAddOfLE α] [PosMulMono α] [MulP
     (hca : c ≤ a) (hdb : d ≤ b) (ha : a ≤ 0) (hd : d ≤ 0) : a * b ≤ c * d :=
   (mul_le_mul_of_nonpos_left hdb ha).trans <| mul_le_mul_of_nonpos_right hca hd
 
-/-- Variant of `mul_le_of_le_one_left` for `b` non-positive instead of non-negative.  -/
+/-- Variant of `mul_le_of_le_one_left` for `b` non-positive instead of non-negative. -/
 theorem le_mul_of_le_one_left [ExistsAddOfLE α] [MulPosMono α]
     [CovariantClass α α (swap (· + ·)) (· ≤ ·)] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
     (hb : b ≤ 0) (h : a ≤ 1) : b ≤ a * b := by
@@ -275,16 +275,6 @@ theorem Antitone.mul [ExistsAddOfLE α] [PosMulMono α] [MulPosMono α]
     Monotone (f * g) := fun _ _ h => mul_le_mul_of_nonpos_of_nonpos (hf h) (hg h) (hf₀ _) (hg₀ _)
 
 end Monotone
-
-lemma le_iff_exists_nonneg_add
-    [ExistsAddOfLE α] [ContravariantClass α α (· + ·) (· ≤ ·)] [CovariantClass α α (· + ·) (· ≤ ·)]
-    (a b : α) : a ≤ b ↔ ∃ c ≥ 0, b = a + c := by
-  refine ⟨fun h ↦ ?_, ?_⟩
-  · obtain ⟨c, rfl⟩ := exists_add_of_le h
-    exact ⟨c, nonneg_of_le_add_right h, rfl⟩
-  · rintro ⟨c, hc, rfl⟩
-    exact le_add_of_nonneg_right hc
-
 end OrderedSemiring
 
 section OrderedCommRing
@@ -387,9 +377,9 @@ lemma mul_add_mul_le_mul_add_mul [ExistsAddOfLE α] [MulPosMono α]
     [CovariantClass α α (· + ·) (· ≤ ·)] [ContravariantClass α α (· + ·) (· ≤ ·)]
     (hab : a ≤ b) (hcd : c ≤ d) : a * d + b * c ≤ a * c + b * d := by
   obtain ⟨b, rfl⟩ := exists_add_of_le hab
-  obtain ⟨d, rfl⟩ := exists_add_of_le hcd
+  obtain ⟨d, hd, rfl⟩ := exists_nonneg_add_of_le hcd
   rw [mul_add, add_right_comm, mul_add, ← add_assoc]
-  exact add_le_add_left (mul_le_mul_of_nonneg_right hab <| (le_add_iff_nonneg_right _).1 hcd) _
+  exact add_le_add_left (mul_le_mul_of_nonneg_right hab hd) _
 
 /-- Binary **rearrangement inequality**. -/
 lemma mul_add_mul_le_mul_add_mul' [ExistsAddOfLE α] [MulPosMono α]
@@ -404,9 +394,9 @@ lemma mul_add_mul_lt_mul_add_mul [ExistsAddOfLE α] [MulPosStrictMono α]
     [CovariantClass α α (· + ·) (· < ·)]
     (hab : a < b) (hcd : c < d) : a * d + b * c < a * c + b * d := by
   obtain ⟨b, rfl⟩ := exists_add_of_le hab.le
-  obtain ⟨d, rfl⟩ := exists_add_of_le hcd.le
+  obtain ⟨d, hd, rfl⟩ := exists_pos_add_of_lt' hcd
   rw [mul_add, add_right_comm, mul_add, ← add_assoc]
-  exact add_lt_add_left (mul_lt_mul_of_pos_right hab <| (lt_add_iff_pos_right _).1 hcd) _
+  exact add_lt_add_left (mul_lt_mul_of_pos_right hab hd) _
 
 /-- Binary **rearrangement inequality**. -/
 lemma mul_add_mul_lt_mul_add_mul' [ExistsAddOfLE α] [MulPosStrictMono α]
@@ -680,7 +670,7 @@ theorem mul_self_pos [ExistsAddOfLE α] [PosMulStrictMono α] [MulPosStrictMono 
     rw [mul_zero] at h
     exact h.false
   · intro h
-    cases' h.lt_or_lt with h h
+    rcases h.lt_or_lt with h | h
     exacts [mul_pos_of_neg_of_neg h h, mul_pos h h]
 
 theorem nonneg_of_mul_nonpos_left [ExistsAddOfLE α] [MulPosStrictMono α]

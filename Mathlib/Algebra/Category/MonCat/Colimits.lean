@@ -212,14 +212,17 @@ def colimitIsColimit : IsColimit (colimitCocone F) where
   desc s := descMorphism F s
   uniq s m w := by
     ext x
-    induction' x using Quot.inductionOn with x
-    induction' x with j x x y hx hy
-    · change _ = s.ι.app j _
+    induction x using Quot.inductionOn with | h x => ?_
+    induction x with
+    | of j =>
+      change _ = s.ι.app j _
       rw [← w j]
       rfl
-    · rw [quot_one, map_one]
+    | one =>
+      rw [quot_one, map_one]
       rfl
-    · rw [quot_mul, map_mul, hx, hy]
+    | mul x y hx hy =>
+      rw [quot_mul, map_mul, hx, hy]
       dsimp [descMorphism, DFunLike.coe, descFun]
       simp only [← quot_mul, descFunLift]
 

@@ -263,7 +263,7 @@ variable (R : Type*) {S A B : Type*} [Monoid R] [Monoid S] [Star A] [Star B]
     [IsScalarTower R S A] [IsScalarTower R S B]
 
 /-- If a monoid `R` acts on another monoid `S`, then a non-unital star algebra homomorphism
-over `S` can be viewed as a non-unital star algebra homomorphism over `R`.  -/
+over `S` can be viewed as a non-unital star algebra homomorphism over `R`. -/
 def restrictScalars (f : A →⋆ₙₐ[S] B) : A →⋆ₙₐ[R] B :=
   { (f : A →ₙₐ[S] B).restrictScalars R with
     map_star' := map_star f }
