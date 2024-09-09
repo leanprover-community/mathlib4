@@ -20,7 +20,7 @@ when `R` is a division ring and `A` is nontrivial.
 
 A motivation for choosing the more flexible `Valuation.Equiv` rather than strict equality here is
 to allow for possible normalization. As an example, consider a finite extension `K` of `ℚ_[p]`,
-which is a discretly valued field. We may choose the valuation on `K` from:
+which is a discretely valued field. We may choose the valuation on `K` to be either:
 
 1. the valuation where the uniformizer is mapped to one (more precisely, `-1` in `ℤₘ₀`) or
 
