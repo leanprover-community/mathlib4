@@ -3,7 +3,7 @@ Copyright (c) 2022 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.Algebra.Module.Zlattice.Basic
+import Mathlib.Algebra.Module.ZLattice.Basic
 import Mathlib.NumberTheory.NumberField.Embeddings
 import Mathlib.NumberTheory.NumberField.FractionalIdeal
 
@@ -403,7 +403,7 @@ noncomputable section stdBasis
 
 open scoped Classical
 
-open Complex MeasureTheory MeasureTheory.Measure Zspan Matrix ComplexConjugate
+open Complex MeasureTheory MeasureTheory.Measure ZSpan Matrix ComplexConjugate
 
 variable [NumberField K]
 
