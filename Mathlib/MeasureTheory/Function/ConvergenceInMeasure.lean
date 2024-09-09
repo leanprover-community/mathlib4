@@ -34,7 +34,7 @@ convergence in measure and other notions of convergence.
   which converges in measure to `g`, then `f` has a subsequence which convergence almost
   everywhere to `g`.
 * `MeasureTheory.exists_seq_tendstoInMeasure_atTop_iff`: for a sequence of functions `f`,
-convergence in Measure is equivalent to the fact that every subsequence has another subsequence
+convergence in measure is equivalent to the fact that every subsequence has another subsequence
 that converges almost surely.
 * `MeasureTheory.tendstoInMeasure_of_tendsto_eLpNorm`: convergence in Lp implies convergence
   in measure.
@@ -62,15 +62,10 @@ theorem tendstoInMeasure_iff_norm [SeminormedAddCommGroup E] {l : Filter ι} {f 
       ∀ ε, 0 < ε → Tendsto (fun i => μ { x | ε ≤ ‖f i x - g x‖ }) l (𝓝 0) := by
   simp_rw [TendstoInMeasure, dist_eq_norm]
 
-/-- This notion is helpful for finite measures since we don't have to deal with the
-possibility that some set measures to ∞ -/
-def TendstoInMeasure' [Dist E] {_ : MeasurableSpace α} (μ : Measure α) (f : ι → α → E)
-    (l : Filter ι) (g : α → E) : Prop :=
-  ∀ ε, 0 < ε → Tendsto (ENNReal.toNNReal ∘ (fun i => (μ { x | ε ≤ dist (f i x) (g x) }))) l (𝓝 0)
-
 theorem TendstoInMeasure_of_FiniteMeasure [Dist E] {_ : MeasurableSpace α} {μ : Measure α}
     [hfin: MeasureTheory.IsFiniteMeasure μ] {f : ι → α → E} {l : Filter ι} {g : α → E} :
-    TendstoInMeasure μ f l g ↔ TendstoInMeasure' μ f l g := by
+    TendstoInMeasure μ f l g ↔ ∀ ε, 0 < ε → Tendsto (ENNReal.toNNReal ∘ (fun i =>
+    (μ { x | ε ≤ dist (f i x) (g x) }))) l (𝓝 0) := by
   have hfin : ∀ ε, ∀ i, μ { x | ε ≤ dist (f i x) (g x) } ≠ ⊤ := by
     exact fun ε i ↦ (measure_ne_top μ {x | ε ≤ dist (f i x) (g x)})
   constructor
@@ -335,7 +330,7 @@ lemma subseq_of_notTendsto {f : ℕ → NNReal} (h : ¬Tendsto f atTop (𝓝 (0 
 
 /- TendstoInMeasure is equivalent to a proof  that every subsequence has another subsequence
 which converges almost surely. -/
-theorem exists_seq_tendstoInMeasure_atTop_iff     (hfin : MeasureTheory.IsFiniteMeasure μ)
+theorem exists_seq_tendstoInMeasure_atTop_iff (hfin : MeasureTheory.IsFiniteMeasure μ)
     {f : ℕ → α → E} (hf : ∀ (n : ℕ), AEStronglyMeasurable (f n) μ) {g : α → E} :
     (TendstoInMeasure μ f atTop g) ↔
     ∀ (ns : ℕ → ℕ) (_ : StrictMono ns), ∃ (ns' : ℕ → ℕ) (_ : StrictMono ns'), ∀ᵐ (ω : α) ∂μ,
