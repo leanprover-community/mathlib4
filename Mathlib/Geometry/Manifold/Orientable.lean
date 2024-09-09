@@ -149,14 +149,13 @@ def orientationPreservingPregroupoid [FiniteDimensional ℝ E] : Pregroupoid H w
     -- Hence, we add this condition.
     ∧ (I.symm ⁻¹' s ∩ interior (range I)).image (I ∘ f ∘ I.symm) ⊆ interior (range I)
   comp {f g} U V hf hg hU hV hUV := by
-    refine ⟨fun x ⟨hx₁, hx₂⟩ ↦ ?_, fun y hy ↦ ?_⟩
+    refine ⟨fun x ⟨hx₁, hx₂⟩ ↦ ?_, fun y ⟨x, hx, _⟩ ↦ ?_⟩
     · have hx' : x ∈ I.symm ⁻¹' U ∩ interior (range I) ∩
           I ∘ f ∘ I.symm ⁻¹' (I.symm ⁻¹' V ∩ interior (range I)) :=
         ⟨⟨mem_of_mem_inter_left hx₁, hx₂⟩, by simp_all, by aesop⟩
       convert orientationPreserving_comp hf.1 hg.1 x hx'
       simp [Function.comp]
-    · obtain ⟨x, hx, _⟩ := hy
-      have : x ∈ I.symm ⁻¹' U ∩ interior (range I) :=
+    · have : x ∈ I.symm ⁻¹' U ∩ interior (range I) :=
         ⟨mem_of_mem_inter_left (mem_of_mem_inter_left hx), mem_of_mem_inter_right hx⟩
       have : I (f (I.symm x)) ∈ I.symm ⁻¹' V ∩ interior (range I) :=
         ⟨by simp_all, hf.2 <| mem_image_of_mem (↑I ∘ f ∘ ↑I.symm) this⟩
@@ -169,19 +168,16 @@ def orientationPreservingPregroupoid [FiniteDimensional ℝ E] : Pregroupoid H w
       have h_fderiv : ∀ x ∈ interior (range I), fderiv ℝ (I ∘ I.symm) x = fderiv ℝ id x := by
         intro x hx
         apply Filter.EventuallyEq.fderiv_eq
-        apply Filter.eventually_of_mem (mem_interior_iff_mem_nhds.mp hx)
-        simp_all
+        exact Filter.eventually_of_mem (mem_interior_iff_mem_nhds.mp hx) (by simp)
       intro x hx
       rw [h_fderiv x hx]
-      exact orientationPreserving_id (interior (range I)) x hx
+      exact orientationPreserving_id _ x hx
     · rw [univ_inter]
-      intro x hx
-      obtain ⟨x', hx', hx''⟩ := hx
-      have : x' = x := by
+      rintro x ⟨x', hx', hx''⟩
+      have : x = x' := by
         rw [← hx'']
-        symm
         apply I.right_inv (interior_subset hx')
-      rw [← this]
+      rw [this]
       exact hx'
   locality {f u} _ h := by
     constructor
