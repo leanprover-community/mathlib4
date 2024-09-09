@@ -203,7 +203,6 @@ lemma ineq₃ {x : ℕ → ℝ} {N : ℕ } (hN : 1 < N) (x_pos : ∀ i, x i > (0
     apply Real.geom_mean_le_arith_mean2_weighted
       (by norm_num) (by norm_num) (by norm_num) (sq_nonneg _) (by norm_num)
   _ ≤ 1 + (∑ n : Fin N, x (n  + 1))^2 := by field_simp
-  
 lemma Ico_sdiff_zero_eq_Ico {N : ℕ} : Ico 0 N \ {0} = Ico 1 N := by
   rw [sdiff_singleton_eq_erase, Ico_erase_left, Nat.Ico_succ_left]
 
