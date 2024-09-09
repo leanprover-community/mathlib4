@@ -48,6 +48,7 @@ universe u v
 
 variable {α R k S M M₂ M₃ ι : Type*}
 
+no_instances
 /-- A module is a generalization of vector spaces to a scalar semiring.
   It consists of a scalar semiring `R` and an additive monoid of "vectors" `M`,
   connected by a "scalar multiplication" operation `r • x : M`
@@ -61,16 +62,22 @@ class Module (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] extends
   /-- Scalar multiplication by zero gives zero. -/
   protected zero_smul : ∀ x : M, (0 : R) • x = 0
 
+run_meta
+  Lean.Meta.addInstanceWithSynthOrder ``Module.toDistribMulAction .global 1000 #[4, 2, 3]
+
 section AddCommMonoid
 
 variable [Semiring R] [AddCommMonoid M] [Module R M] (r s : R) (x y : M)
 
 -- see Note [lower instance priority]
 /-- A module over a semiring automatically inherits a `MulActionWithZero` structure. -/
-instance (priority := 100) Module.toMulActionWithZero : MulActionWithZero R M :=
+def Module.toMulActionWithZero : MulActionWithZero R M :=
   { (inferInstance : MulAction R M) with
     smul_zero := smul_zero
     zero_smul := Module.zero_smul }
+
+run_meta
+  Lean.Meta.addInstanceWithSynthOrder ``Module.toMulActionWithZero .global 100 #[4, 2, 3]
 
 instance AddCommGroup.toNatModule : Module ℕ M where
   one_smul := one_nsmul
