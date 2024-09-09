@@ -1327,8 +1327,7 @@ theorem pmap_eq_map (p : α → Prop) (f : α → β) (s : Multiset α) :
 
 theorem pmap_congr {p q : α → Prop} {f : ∀ a, p a → β} {g : ∀ a, q a → β} (s : Multiset α) :
     ∀ {H₁ H₂}, (∀ a ∈ s, ∀ (h₁ h₂), f a h₁ = g a h₂) → pmap f s H₁ = pmap g s H₂ :=
-  @(Quot.inductionOn s (fun l _H₁ _H₂ h => congr_arg _ <| List.pmap_congr l h))
-
+  @(Quot.inductionOn s (fun l _H₁ _H₂ h => congr_arg _ <| List.pmap_congr_left l h))
 
 theorem map_pmap {p : α → Prop} (g : β → γ) (f : ∀ a, p a → β) (s) :
     ∀ H, map g (pmap f s H) = pmap (fun a h => g (f a h)) s H :=
@@ -1373,7 +1372,7 @@ theorem attach_cons (a : α) (m : Multiset α) :
   Quotient.inductionOn m fun l =>
     congr_arg _ <|
       congr_arg (List.cons _) <| by
-        rw [List.map_pmap]; exact List.pmap_congr _ fun _ _ _ _ => Subtype.eq rfl
+        rw [List.map_pmap]; exact List.pmap_congr_left _ fun _ _ _ _ => Subtype.eq rfl
 
 section DecidablePiExists
 
