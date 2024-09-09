@@ -37,14 +37,13 @@ open Real BigOperators Finset RealInnerProductSpace Matrix
 namespace Imo1982Q3
 
 
-lemma sum_Fin_eq_sum_Ico {x : ℕ → ℝ} : ∀ N, ∑ n : Fin N, x n = ∑ n ∈ Ico 0 N, x n := by
-  intro N
+lemma sum_Fin_eq_sum_Ico {x : ℕ → ℝ} {N : ℕ} : ∑ n : Fin N, x n = ∑ n ∈ Ico 0 N, x n := by
   rw [Fin.sum_univ_eq_sum_range, Nat.Ico_zero_eq_range]
 
 /-
 Specialization of Cauchy-Schwarz inequality with the sequences x n / √(y n) and √(y n)
 -/
-lemma Sedrakyan's_lemma {n : ℕ}{x y: EuclideanSpace ℝ (Fin n)}
+lemma Sedrakyan's_lemma {n : ℕ} {x y: EuclideanSpace ℝ (Fin n)}
     (hN : 0 < n) (xi_pos : ∀ i, 0 < x i) (yi_pos : ∀ i, 0 < y i) :
   (∑ n : Fin n, x n)^2 / (∑ n : Fin n, y n) ≤ (∑ n : Fin n, ((x n)^2 / (y n))) := by
   let nonneg : ∀ f : Fin n → ℝ, (∀ i, 0 < f i) → ∀ i, 0 ≤ f i :=
@@ -94,165 +93,151 @@ lemma Sedrakyan's_lemma {n : ℕ}{x y: EuclideanSpace ℝ (Fin n)}
   convert_to ⟪sqrt_y, x_div_sqrt_y⟫_ℝ ≤  ‖sqrt_y‖ * ‖x_div_sqrt_y‖ using 2
   apply real_inner_le_norm
 
-lemma ineq₁ {x : ℕ → ℝ} (hx : ∀ i , x (i + 1) ≤ x i) :
-    ∀ N > 1, x N ≤ (∑ n : Fin (N - 1), x (n + 1)) / (N - 1) := by
-    intro N hN
-    have h : ∀ m n : ℕ, n ≤ m → x m ≤ x n := by
-      intro m n mlen
-      induction' m, mlen using Nat.le_induction with k _nlek xk_le_xn
-      · exact le_refl (x n)
-      · calc
-        x (k + 1) ≤ x k := hx k
-        _         ≤ x n := xk_le_xn
-    rw [le_div_iff₀ (by aesop)]
-    calc
-    x N * (↑N - 1) = ((N - 1) : ℕ) * x N := by
-      rw [mul_comm, Nat.cast_sub, Nat.cast_one]; linarith
-    _ = ↑(range (N - 1)).card * x N := by rw [card_range]
-    _ = ∑ _ ∈ range (N - 1), x N := by
-      simp only [univ_eq_attach, sum_const, card_attach, Nat.card_Ioc, nsmul_eq_mul]
-    _ ≤ ∑ n ∈ range (N - 1), x (n + 1) := by
-      apply Finset.sum_le_sum
-      intro i hi
-      rw [mem_range, Nat.lt_sub_iff_add_lt (a := i) (b := 1) (c := N)] at hi
-      apply h
-      apply le_of_lt hi
-    _ = ∑ n : Fin (N - 1), x (↑n + 1) := by rw [sum_range]
+lemma ineq₁ {x : ℕ → ℝ} {N : ℕ} (hN : 1 < N) (hx : ∀ i , x (i + 1) ≤ x i) :
+  x N ≤ (∑ n : Fin (N - 1), x (n + 1)) / (N - 1) := by
+  have h : ∀ m n : ℕ, n ≤ m → x m ≤ x n := by
+    intro m n mlen
+    induction' m, mlen using Nat.le_induction with k _nlek xk_le_xn
+    · exact le_refl (x n)
+    · calc
+      x (k + 1) ≤ x k := hx k
+      _         ≤ x n := xk_le_xn
+  rw [le_div_iff₀ (by aesop)]
+  calc
+  x N * (↑N - 1) = ((N - 1) : ℕ) * x N := by
+    rw [mul_comm, Nat.cast_sub, Nat.cast_one]; linarith
+  _ = ↑(range (N - 1)).card * x N := by rw [card_range]
+  _ = ∑ _ ∈ range (N - 1), x N := by
+    simp only [univ_eq_attach, sum_const, card_attach, Nat.card_Ioc, nsmul_eq_mul]
+  _ ≤ ∑ n ∈ range (N - 1), x (n + 1) := by
+    apply Finset.sum_le_sum
+    intro i hi
+    rw [mem_range, Nat.lt_sub_iff_add_lt (a := i) (b := 1) (c := N)] at hi
+    apply h
+    apply le_of_lt hi
+  _ = ∑ n : Fin (N - 1), x (↑n + 1) := by rw [sum_range]
 
-lemma ineq₂ {x : ℕ → ℝ} (hx : ∀ i , x (i + 1) ≤ x i) (x_pos : ∀ i, x i > (0 : ℝ)) :
-    ∀ N > 1, (N - 1) / N * (1 / ∑ n : Fin (N - 1), x (n + 1)) ≤ 1 / (∑ n : Fin N, x (n + 1)) := by
-    intro N hN
-    have ne_zero : N - 1 ≠ 0 := by
-      intro h
-      rw [Nat.sub_eq_iff_eq_add (le_of_lt hN), zero_add] at h
-      rw [h] at hN; apply lt_irrefl _ hN
-    have ne_zero' : (N : ℝ) - 1 ≠ 0 :=  by
-      rw [ne_eq]; intro h
-      rw [sub_eq_iff_eq_add, zero_add] at h
-      rw [@Nat.cast_eq_one] at h
-      rw [h] at hN; apply lt_irrefl _ hN
-    have sum_range_pos : 0 < ∑ i ∈ range (N - 1), x (i + 1) := by
-      apply Finset.sum_pos
-      intro i _hi
-      apply x_pos _
-      simp [ne_zero]
-    have mul_sum_pos : 0 < ∑ i ∈ range (N - 1), x (i + 1) * ↑N / (↑N - 1) := by
-      apply Finset.sum_pos
-      intro i _hi
-      apply div_pos
-      apply mul_pos
-      apply x_pos
-      simp only [Nat.cast_pos]
-      linarith
-      rw [lt_sub_iff_add_lt, zero_add, Nat.one_lt_cast]
-      apply hN
-      rw [@nonempty_range_iff]
-      exact ne_zero
-    have sum_fin_pos : 0 < ∑ n : Fin N, x (↑n + 1) := by
-      apply Finset.sum_pos; intro i _hi
-      apply x_pos (i +1)
-      rw [@univ_nonempty_iff, ← @Fin.pos_iff_nonempty]
-      linarith
-    convert_to
-      (N - 1) / N * (1 / ∑ n in range (N - 1), x (n + 1)) ≤ 1 / (∑ n : Fin N, x (n + 1)) using 3
-    rw [sum_range]
-    convert_to 1 / (N * (∑ n in range (N - 1), x (n + 1)) / (N - 1)) ≤ 1 / (∑ n : Fin N, x (n + 1))
-    field_simp
-    convert_to 1 / ∑ i ∈ range (N - 1), x (i + 1) * ↑N / (↑N - 1) ≤ 1 / (∑ n : Fin N, x (n + 1))
-    rw [mul_comm, sum_mul, sum_div]
-    rw [div_le_div_iff (mul_sum_pos) (sum_fin_pos), one_mul, one_mul, ]
-    calc ∑ n : Fin N, x (↑n + 1) = ∑ n in range N, x (n + 1) := by rw [sum_range]
-    _ = ∑ n in range (N - 1 + 1), x (n + 1) := by
-      rw [Nat.sub_one_add_one_eq_of_pos (by linarith [hN])]
-    _ = ∑ n in range (N - 1), x (n + 1) + x N := by
-      rw [sum_range_succ, Nat.sub_one_add_one_eq_of_pos (by linarith [hN])]
-    _ ≤ ∑ n in range (N - 1), x (n + 1) + (∑ n ∈ range (N - 1), x (n + 1)) / (↑N - 1) := by
-      apply add_le_add_left; rw [@sum_range]; apply ineq₁ hx N hN;
-    _ = ∑ n in range (N - 1), x (n + 1) + (∑ n ∈ range (N - 1), x (n + 1) / (↑N - 1)) :=  by
-      rw [sum_div]
-    _ = ∑ n in range (N - 1), (x (n + 1) + x (n + 1) / (↑N - 1)) := by rw [Finset.sum_add_distrib]
-    _ = ∑ n in range (N - 1),  N * x (n + 1) / (↑N - 1) := by
-      apply Finset.sum_congr (by rfl)
-      intro n _hn
-      nth_rewrite 1 [
-        ← one_mul (x (n + 1)),
-        ← div_self (a := (N - 1 : ℝ)) (ne_zero'),
-        mul_comm,
-        mul_div,
-        div_add_div_same
-        ]
-      nth_rewrite 2 [← mul_one (x (n + 1))]
-      rw [← mul_add, mul_comm]
-      simp only [sub_add_cancel]
-    _ = ∑ i ∈ range (N - 1), x (i + 1) * ↑N / (↑N - 1) := by
-      apply Finset.sum_congr (by rfl); intro n _hn; rw [mul_comm]
-
-
-lemma ineq₃ {x : ℕ → ℝ} (x_pos : ∀ i, x i > (0 : ℝ)) :
-    ∀ N > 1, 2 * (∑ n : Fin N, x (n + 1)) ≤ 1 + (∑ n : Fin N, x (n + 1))^2 := by
-    intro N hN
-    have sum_fin_pos : 0 < ∑ n : Fin N, x (↑n + 1) := by
-      apply Finset.sum_pos
-      intro i _hi
-      apply x_pos (i +1)
-      rw [@univ_nonempty_iff, ← @Fin.pos_iff_nonempty]
-      linarith
-    calc
-    2 * (∑ n : Fin N, x (n + 1)) = 2 * (1^(1/2 : ℝ) * ((∑ n : Fin N, x (n  + 1))^2)^(1/2 : ℝ)) := by
-      rw [one_rpow, one_mul, ← Real.sqrt_eq_rpow, sqrt_sq _]
-      apply le_of_lt sum_fin_pos
-    _ ≤ 2 * ((1/2 : ℝ) * 1 + (1/2 : ℝ) * (∑ n : Fin N, x (n  + 1))^2) := by
-      rw [mul_le_mul_left (by norm_num)]
-      apply Real.geom_mean_le_arith_mean2_weighted
-        (by norm_num) (by norm_num) (by norm_num) (sq_nonneg _) (by norm_num)
-    _ ≤ 1 + (∑ n : Fin N, x (n  + 1))^2 := by field_simp
-
-lemma Ico_sdiff_zero_eq_Ico : ∀ N, Ico 0 N \ {0} = Ico 1 N := by
-    intro N
-    ext x
-    constructor
-    · intro hx
-      rw [mem_sdiff, not_mem_singleton, mem_Ico] at hx
-      obtain ⟨⟨_zero_le, x_lt_N⟩, x_ne_zero⟩ := hx
-      rw [mem_Ico]
-      exact ⟨Nat.one_le_iff_ne_zero.mpr x_ne_zero, x_lt_N⟩
-    · intro hx
-      rw [mem_Ico] at hx
-      obtain ⟨one_le_x, x_lt_N⟩ := hx
-      rw [mem_sdiff, not_mem_singleton, mem_Ico]
-      exact ⟨⟨le_trans zero_le_one one_le_x, x_lt_N⟩, Nat.one_le_iff_ne_zero.mp one_le_x⟩
-
-lemma eq₀ {x : ℕ → ℝ} (hx₀ : x 0 = (1 : ℝ)) :
-    ∀ N > 1, (∑ n : Fin N, (x n))^2
-      = 1 + 2 * (∑ n : Fin (N - 1), x (n + 1)) + (∑ n : Fin (N - 1), x (n + 1))^2 := by
-    intro N hN
-    have zero_lt_N : 0  < N := by linarith
-    have two_le_N : 2 ≤ N := by linarith
-    have : ∀ N, 2 ≤ N → ∑ n : Fin (N - 1), x (↑n + 1) = (∑ n ∈ Ico 1 N, x n) := by
-      intro N hN
-      let f : ℕ → ℝ := (fun n => x (n + 1))
-      induction' N, hN using Nat.le_induction with d two_le_d hd
-      case base => simp
-      case succ =>
-        have one_le_d : 1 ≤ d := by exact Nat.one_le_of_lt two_le_d
-        rw [
-          ← sum_range (n := d + 1 - 1) (f := f),
-          Nat.sub_add_comm (one_le_d),
-          sum_range_succ, sum_range, hd, sum_Ico_succ_top one_le_d]
-        simp only [add_right_inj, f]
-        congr
-        rw [
-          ← Nat.sub_add_comm one_le_d,
-          Nat.add_sub_assoc (le_refl _),
-          tsub_eq_zero_of_le (le_refl _),
-          add_zero
-        ]
-    rw [
-      sum_Fin_eq_sum_Ico, Finset.sum_eq_sum_diff_singleton_add (i := 0) (by simp [zero_lt_N]),
-      Ico_sdiff_zero_eq_Ico, pow_two, hx₀
+lemma ineq₂ {x : ℕ → ℝ} {N : ℕ}
+  (hN : 1 < N) (hx : ∀ i , x (i + 1) ≤ x i) (x_pos : ∀ i, x i > (0 : ℝ)) :
+  (N - 1) / N * (1 / ∑ n : Fin (N - 1), x (n + 1)) ≤ 1 / (∑ n : Fin N, x (n + 1)) := by
+  have ne_zero : N - 1 ≠ 0 := by
+    intro h
+    rw [Nat.sub_eq_iff_eq_add (le_of_lt hN), zero_add] at h
+    rw [h] at hN; apply lt_irrefl _ hN
+  have ne_zero' : (N : ℝ) - 1 ≠ 0 :=  by
+    rw [ne_eq]; intro h
+    rw [sub_eq_iff_eq_add, zero_add] at h
+    rw [@Nat.cast_eq_one] at h
+    rw [h] at hN; apply lt_irrefl _ hN
+  have sum_range_pos : 0 < ∑ i ∈ range (N - 1), x (i + 1) := by
+    apply Finset.sum_pos
+    intro i _hi
+    apply x_pos _
+    simp [ne_zero]
+  have mul_sum_pos : 0 < ∑ i ∈ range (N - 1), x (i + 1) * ↑N / (↑N - 1) := by
+    apply Finset.sum_pos
+    intro i _hi
+    apply div_pos
+    apply mul_pos
+    apply x_pos
+    simp only [Nat.cast_pos]
+    linarith
+    rw [lt_sub_iff_add_lt, zero_add, Nat.one_lt_cast]
+    apply hN
+    rw [@nonempty_range_iff]
+    exact ne_zero
+  have sum_fin_pos : 0 < ∑ n : Fin N, x (↑n + 1) := by
+    apply Finset.sum_pos; intro i _hi
+    apply x_pos (i +1)
+    rw [@univ_nonempty_iff, ← @Fin.pos_iff_nonempty]
+    linarith
+  convert_to
+    (N - 1) / N * (1 / ∑ n in range (N - 1), x (n + 1)) ≤ 1 / (∑ n : Fin N, x (n + 1)) using 3
+  rw [sum_range]
+  convert_to 1 / (N * (∑ n in range (N - 1), x (n + 1)) / (N - 1)) ≤ 1 / (∑ n : Fin N, x (n + 1))
+  field_simp
+  convert_to 1 / ∑ i ∈ range (N - 1), x (i + 1) * ↑N / (↑N - 1) ≤ 1 / (∑ n : Fin N, x (n + 1))
+  rw [mul_comm, sum_mul, sum_div]
+  rw [div_le_div_iff (mul_sum_pos) (sum_fin_pos), one_mul, one_mul, ]
+  calc ∑ n : Fin N, x (↑n + 1) = ∑ n in range N, x (n + 1) := by rw [sum_range]
+  _ = ∑ n in range (N - 1 + 1), x (n + 1) := by
+    rw [Nat.sub_one_add_one_eq_of_pos (by linarith [hN])]
+  _ = ∑ n in range (N - 1), x (n + 1) + x N := by
+    rw [sum_range_succ, Nat.sub_one_add_one_eq_of_pos (by linarith [hN])]
+  _ ≤ ∑ n in range (N - 1), x (n + 1) + (∑ n ∈ range (N - 1), x (n + 1)) / (↑N - 1) := by
+    apply add_le_add_left; rw [@sum_range]; apply ineq₁ hN hx;
+  _ = ∑ n in range (N - 1), x (n + 1) + (∑ n ∈ range (N - 1), x (n + 1) / (↑N - 1)) :=  by
+    rw [sum_div]
+  _ = ∑ n in range (N - 1), (x (n + 1) + x (n + 1) / (↑N - 1)) := by rw [Finset.sum_add_distrib]
+  _ = ∑ n in range (N - 1),  N * x (n + 1) / (↑N - 1) := by
+    apply Finset.sum_congr (by rfl)
+    intro n _hn
+    nth_rewrite 1 [
+      ← one_mul (x (n + 1)),
+      ← div_self (a := (N - 1 : ℝ)) (ne_zero'),
+      mul_comm,
+      mul_div,
+      div_add_div_same
       ]
-    ring_nf
-    rw [this _ two_le_N]; ring
+    nth_rewrite 2 [← mul_one (x (n + 1))]
+    rw [← mul_add, mul_comm]
+    simp only [sub_add_cancel]
+  _ = ∑ i ∈ range (N - 1), x (i + 1) * ↑N / (↑N - 1) := by
+    apply Finset.sum_congr (by rfl); intro n _hn; rw [mul_comm]
+
+
+lemma ineq₃ {x : ℕ → ℝ} {N : ℕ } (hN : 1 < N) (x_pos : ∀ i, x i > (0 : ℝ)) :
+  2 * (∑ n : Fin N, x (n + 1)) ≤ 1 + (∑ n : Fin N, x (n + 1))^2 := by
+  have sum_fin_pos : 0 < ∑ n : Fin N, x (↑n + 1) := by
+    apply Finset.sum_pos
+    intro i _hi
+    apply x_pos (i +1)
+    rw [@univ_nonempty_iff, ← @Fin.pos_iff_nonempty]
+    linarith
+  calc
+  2 * (∑ n : Fin N, x (n + 1)) = 2 * (1^(1/2 : ℝ) * ((∑ n : Fin N, x (n  + 1))^2)^(1/2 : ℝ)) := by
+    rw [one_rpow, one_mul, ← Real.sqrt_eq_rpow, sqrt_sq _]
+    apply le_of_lt sum_fin_pos
+  _ ≤ 2 * ((1/2 : ℝ) * 1 + (1/2 : ℝ) * (∑ n : Fin N, x (n  + 1))^2) := by
+    rw [mul_le_mul_left (by norm_num)]
+    apply Real.geom_mean_le_arith_mean2_weighted
+      (by norm_num) (by norm_num) (by norm_num) (sq_nonneg _) (by norm_num)
+  _ ≤ 1 + (∑ n : Fin N, x (n  + 1))^2 := by field_simp
+  
+lemma Ico_sdiff_zero_eq_Ico {N : ℕ} : Ico 0 N \ {0} = Ico 1 N := by
+  rw [sdiff_singleton_eq_erase, Ico_erase_left, Nat.Ico_succ_left]
+
+
+lemma eq₀ {x : ℕ → ℝ} {N : ℕ} (hN : 1 < N) (hx₀ : x 0 = (1 : ℝ)) :
+  (∑ n : Fin N, (x n))^2
+    = 1 + 2 * (∑ n : Fin (N - 1), x (n + 1)) + (∑ n : Fin (N - 1), x (n + 1))^2 := by
+  have zero_lt_N : 0  < N := by linarith
+  have two_le_N : 2 ≤ N := by linarith
+  have : ∀ N, 2 ≤ N → ∑ n : Fin (N - 1), x (↑n + 1) = (∑ n ∈ Ico 1 N, x n) := by
+    intro N hN
+    let f : ℕ → ℝ := (fun n => x (n + 1))
+    induction' N, hN using Nat.le_induction with d two_le_d hd
+    case base => simp
+    case succ =>
+      have one_le_d : 1 ≤ d := by exact Nat.one_le_of_lt two_le_d
+      rw [
+        ← sum_range (n := d + 1 - 1) (f := f),
+        Nat.sub_add_comm (one_le_d),
+        sum_range_succ, sum_range, hd, sum_Ico_succ_top one_le_d]
+      simp only [add_right_inj, f]
+      congr
+      rw [
+        ← Nat.sub_add_comm one_le_d,
+        Nat.add_sub_assoc (le_refl _),
+        tsub_eq_zero_of_le (le_refl _),
+        add_zero
+      ]
+  rw [
+    sum_Fin_eq_sum_Ico, Finset.sum_eq_sum_diff_singleton_add (i := 0) (by simp [zero_lt_N]),
+    Ico_sdiff_zero_eq_Ico, pow_two, hx₀
+    ]
+  ring_nf
+  rw [this _ two_le_N]; ring
 
 
 theorem Imo1982Q3_part_a {x : ℕ → ℝ} (x_pos : ∀ i, x i > (0 : ℝ)) (hx₀ : x 0 = (1 : ℝ))
@@ -299,14 +284,14 @@ theorem Imo1982Q3_part_a {x : ℕ → ℝ} (x_pos : ∀ i, x i > (0 : ℝ)) (hx�
     apply mul_nonneg (by norm_num)
     apply (lt_iff_le_and_ne.mp (sum_xi_pos' _ one_lt_N)).left
     apply add_le_add_right
-    apply ineq₃ x_pos
-    rw [gt_iff_lt, Nat.lt_sub_iff_add_lt', one_add_one_eq_two]
+    apply ineq₃ _ x_pos
+    rw [Nat.lt_sub_iff_add_lt, one_add_one_eq_two]
     apply two_lt_N
     apply sum_xi_pos' _ one_lt_N
     apply le_refl
   _ = ((∑ n : Fin N, (x n))^2 / (∑ n : Fin (N - 1), x (n + 1))) * ((N - 1) / (N)) := by
     rw [
-      eq₀ hx₀ N (by apply one_lt_N),
+      eq₀ one_lt_N hx₀,
       add_assoc,
       add_comm ((∑ n : Fin (N - 1), x (↑n + 1)) ^ 2),
       ← add_assoc
@@ -317,7 +302,7 @@ theorem Imo1982Q3_part_a {x : ℕ → ℝ} (x_pos : ∀ i, x i > (0 : ℝ)) (hx�
   _ ≤ ((∑ n : Fin N, (x n))^2 / (∑ n : Fin N, x (n + 1))) := by
     nth_rewrite 2 [← mul_one (((∑ n : Fin N, x ↑n) ^ 2))]
     rw [← mul_div _ 1, mul_assoc, mul_le_mul_left]
-    apply ineq₂ hx x_pos _ one_lt_N
+    apply ineq₂ one_lt_N hx x_pos
     apply sq_pos_of_pos (sum_xi_pos _ zero_lt_N)
   _ ≤ ∑ n : Fin N, (x ↑n) ^ 2 / x (↑n + 1) := by
     apply sedrakayan's_lemma
