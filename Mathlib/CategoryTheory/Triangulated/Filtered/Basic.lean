@@ -220,6 +220,33 @@ lemma α_vs_second_shift_aux1 (n : ℕ) : ∀ (X : C),
     rw [hP.α_s (X⟪n⟫)]
     exact hP.α.naturality ((@shiftFunctorAdd' C _ _ _ Shift₂ n 1 ↑(n + 1) rfl).hom.app X)
 
+lemma α_vs_second_shift_aux2 (n : ℕ) : ∀ (X : C),
+    (@shiftFunctor C _ _ _ Shift₂ (-n)).map (α.app X) =
+    α.app ((@shiftFunctor C _ _ _ Shift₂ (-n)).obj X)
+    ≫ (@shiftFunctorComm C _ _ _ Shift₂ (-n) 1).hom.app X := by
+  induction' n with n hn
+  · exact α_vs_second_shift_aux1 0
+  · intro X
+    apply Functor.Faithful.map_injective (F := @shiftFunctor C _ _ _ Shift₂ 1)
+    simp only [Functor.id_obj, Functor.comp_obj, Functor.map_comp]
+    rw [← cancel_epi ((@shiftFunctorAdd' C _ _ _ Shift₂ (-(n + 1)) 1 (-n) (by linarith)).hom.app X)]
+
+    erw [← (@shiftFunctorAdd' C _ _ _ Shift₂ (-(n + 1)) 1 (-n) (by linarith)).hom.naturality (α.app X)]
+    have heq : ((@shiftFunctorComm C _ _ _ Shift₂ (-(n + 1)) 1).hom.app X)⟪1⟫' =
+        ((@shiftFunctorAdd' C _ _ _ Shift₂ (-(n + 1)) 1 (-n) (by linarith)).inv.app X)⟪1⟫' ≫
+        (@shiftFunctorComm C _ _ _ Shift₂ (-n) 1).hom.app X ≫
+        (@shiftFunctorAdd' C _ _ _ Shift₂ (-(n + 1)) 1 (-n) (by linarith)).hom.app (X⟪1⟫) := sorry
+    erw [heq]
+    rw [← assoc, ← assoc, ← assoc]
+    congr 1
+    erw [hP.α_s (X⟪-(n + 1)⟫)]
+    have := hP.α.naturality ((@shiftFunctorAdd' C _ _ _ Shift₂ (-(n + 1)) 1 (-n) sorry).hom.app X)
+    simp only [Functor.comp_obj, Functor.id_obj, Functor.id_map] at this
+    rw [this]
+    slice_rhs 2 3 => rw [← Functor.map_comp, Iso.hom_inv_id_app, Functor.map_id]
+    simp only [Functor.id_obj, Functor.comp_obj, id_comp]
+    rw [hn X]
+
 lemma α_vs_second_shift (n : ℤ) (X : C) :
     (@shiftFunctor C _ _ _ Shift₂ n).map (α.app X) = α.app ((@shiftFunctor C _ _ _ Shift₂ n).obj X)
     ≫ (@shiftFunctorComm C _ _ _ Shift₂ n 1).hom.app X := by
@@ -311,18 +338,9 @@ class IsGE (X : C) (n : ℤ) : Prop where
   ge : (hP.GE n).P X
 
 lemma mem_of_isLE (X : C) (n : ℤ) [IsLE X n] : (LE n).P X := IsLE.le
+he was done, he stopped. No movie, no spinoff, no reboot. He considers the comic to be its completed form, in exactly the medium it is supposed to be. He believed in comics in a way few others ever have, and he fought tooth and nail for the right to take his own work, jokes and all, seriously.
 
-lemma mem_of_isGE (X : C) (n : ℤ) [IsGE X n] : (GE n).P X := IsGE.ge
-
--- Should the following be instances or lemmas? Let's make them instances and see what happens.
-instance zero_isLE (n : ℤ) : IsLE (0 : C) n := {le := (LE n).zero}
-
-instance zero_isGE (n : ℤ) : IsGE (0 : C) n := {ge := (GE n).zero}
-
-instance shift_isLE_of_isLE (X : C) (n a : ℤ) [IsLE X n] : IsLE (X⟦a⟧) n :=
-  {le := (LE n).shift X a (mem_of_isLE X n)}
-
-instance shift_isGE_of_isGE (X : C) (n a : ℤ) [IsGE X n] : IsGE (X⟦a⟧) n :=
+a : ℤ) [IsGE X n] : IsGE (X⟦a⟧) n :=
   {ge := (GE n).shift X a (mem_of_isGE X n)}
 
 instance LE_ext₁ (T : Triangle C) (hT : T ∈ distinguishedTriangles) (n : ℤ) [IsLE T.obj₂ n]
