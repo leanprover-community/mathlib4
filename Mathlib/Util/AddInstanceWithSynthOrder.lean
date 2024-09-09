@@ -3,7 +3,6 @@ Copyright (c) 2024 Yuyang Zhao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuyang Zhao
 -/
-import Lean.Elab.Command
 import Lean.Meta.Instances
 
 /-!
@@ -18,6 +17,7 @@ private def mkInstanceKey (e : Expr) : MetaM (Array InstanceKey) := do
     let (_, _, type) ← forallMetaTelescopeReducing type
     DiscrTree.mkPath type tcDtConfig
 
+/-- Add instance with specified synthesization order. -/
 def addInstanceWithSynthOrder (declName : Name) (attrKind : AttributeKind) (prio : Nat)
     (synthOrder : Array Nat) : MetaM Unit := do
   let c ← mkConstWithLevelParams declName
