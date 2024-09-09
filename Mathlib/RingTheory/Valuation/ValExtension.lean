@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiedong Jiang, Bichang Lei
 -/
 import Mathlib.RingTheory.Valuation.Integers
-import Mathlib.RingTheory.Ideal.LocalRing
+import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Extension of Valuation
