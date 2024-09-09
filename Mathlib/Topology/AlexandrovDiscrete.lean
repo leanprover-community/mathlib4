@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Data.Set.Image
 import Mathlib.Topology.Bases
+import Mathlib.Topology.Exterior
 import Mathlib.Topology.Inseparable
 import Mathlib.Topology.Compactness.Compact
 
@@ -20,8 +21,6 @@ minimal neighborhood, which we call the *exterior* of the set.
 ## Main declarations
 
 * `AlexandrovDiscrete`: Prop-valued typeclass for a topological space to be Alexandrov-discrete
-* `exterior`: Intersection of all neighborhoods of a set. When the space is Alexandrov-discrete,
-  this is the minimal neighborhood of the set.
 
 ## Notes
 
@@ -118,43 +117,6 @@ end AlexandrovDiscrete
 
 variable {s t : Set α} {a x y : α}
 
-/-- The *exterior* of a set is the intersection of all its neighborhoods. In an Alexandrov-discrete
-space, this is the smallest neighborhood of the set.
-
-Note that this construction is unnamed in the literature. We choose the name in analogy to
-`interior`. -/
-def exterior (s : Set α) : Set α := (𝓝ˢ s).ker
-
-lemma exterior_singleton_eq_ker_nhds (a : α) : exterior {a} = (𝓝 a).ker := by simp [exterior]
-
-lemma exterior_def (s : Set α) : exterior s = ⋂₀ {t : Set α | IsOpen t ∧ s ⊆ t} :=
-  (hasBasis_nhdsSet _).ker.trans sInter_eq_biInter.symm
-
-lemma mem_exterior : a ∈ exterior s ↔ ∀ U, IsOpen U → s ⊆ U → a ∈ U := by simp [exterior_def]
-
-lemma subset_exterior_iff : s ⊆ exterior t ↔ ∀ U, IsOpen U → t ⊆ U → s ⊆ U := by
-  simp [exterior_def]
-
-lemma subset_exterior : s ⊆ exterior s := subset_exterior_iff.2 fun _ _ ↦ id
-
-lemma exterior_minimal (h₁ : s ⊆ t) (h₂ : IsOpen t) : exterior s ⊆ t := by
-  rw [exterior_def]; exact sInter_subset_of_mem ⟨h₂, h₁⟩
-
-lemma IsOpen.exterior_eq (h : IsOpen s) : exterior s = s :=
-  (exterior_minimal Subset.rfl h).antisymm subset_exterior
-
-lemma IsOpen.exterior_subset_iff (ht : IsOpen t) : exterior s ⊆ t ↔ s ⊆ t :=
-  ⟨subset_exterior.trans, fun h ↦ exterior_minimal h ht⟩
-
-@[mono] lemma exterior_mono : Monotone (exterior : Set α → Set α) :=
-  fun _s _t h ↦ ker_mono <| nhdsSet_mono h
-
-@[simp] lemma exterior_empty : exterior (∅ : Set α) = ∅ := isOpen_empty.exterior_eq
-@[simp] lemma exterior_univ : exterior (univ : Set α) = univ := isOpen_univ.exterior_eq
-
-@[simp] lemma exterior_eq_empty : exterior s = ∅ ↔ s = ∅ :=
-  ⟨eq_bot_mono subset_exterior, by rintro rfl; exact exterior_empty⟩
-
 lemma Inducing.alexandrovDiscrete [AlexandrovDiscrete α] {f : β → α} (h : Inducing f) :
     AlexandrovDiscrete β where
   isOpen_sInter S hS := by
@@ -162,9 +124,6 @@ lemma Inducing.alexandrovDiscrete [AlexandrovDiscrete α] {f : β → α} (h : I
     choose U hU htU using hS
     refine ⟨_, isOpen_iInter₂ hU, ?_⟩
     simp_rw [preimage_iInter, htU, sInter_eq_biInter]
-
-lemma IsOpen.exterior_subset (ht : IsOpen t) : exterior s ⊆ t ↔ s ⊆ t :=
-  ⟨subset_exterior.trans, fun h ↦ exterior_minimal h ht⟩
 
 lemma Set.Finite.isCompact_exterior (hs : s.Finite) : IsCompact (exterior s) := by
   classical
@@ -237,9 +196,6 @@ lemma gc_exterior_interior : GaloisConnection (exterior : Set α → Set α) int
   simp_rw [le_def, ← exterior_subset_iff_mem_nhdsSet]
   exact fun h u ↦ h.trans
 
-lemma specializes_iff_exterior_subset : x ⤳ y ↔ exterior {x} ⊆ exterior {y} := by
-  simp [Specializes]
-
 lemma isOpen_iff_forall_specializes : IsOpen s ↔ ∀ x y, x ⤳ y → y ∈ s → x ∈ s := by
   refine ⟨fun hs x y hxy ↦ hxy.mem_open hs, fun hs ↦ ?_⟩
   simp_rw [specializes_iff_exterior_subset] at hs
@@ -252,7 +208,6 @@ lemma alexandrovDiscrete_coinduced {β : Type*} {f : α → β} :
     @AlexandrovDiscrete β (coinduced f ‹_›) :=
   @AlexandrovDiscrete.mk β (coinduced f ‹_›) fun S hS ↦ by
     rw [isOpen_coinduced, preimage_sInter]; exact isOpen_iInter₂ hS
-
 
 instance AlexandrovDiscrete.toFirstCountable : FirstCountableTopology α where
   nhds_generated_countable a := ⟨{exterior {a}}, countable_singleton _, by simp⟩
