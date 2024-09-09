@@ -121,9 +121,8 @@ variable [TopologicalGroup G]
 lemma is_open_compl_coset' (y : G)
     (V : OpenSubgroup G) :
     IsOpen  (y • (V : Set G))ᶜ := by
-  refine isOpen_compl_iff.mpr ?_
-  refine IsClosed.smul ?hs y
-  exact OpenSubgroup.isClosed V
+  simp only [isOpen_compl_iff]
+  refine IsClosed.smul (OpenSubgroup.isClosed V) y
 
 variable [NonarchimedeanGroup G] [T2Space G]
 
