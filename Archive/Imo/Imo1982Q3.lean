@@ -118,7 +118,7 @@ lemma ineq₁ {x : ℕ → ℝ} {N : ℕ} (hN : 1 < N) (hx : ∀ i , x (i + 1) �
   _ = ∑ n : Fin (N - 1), x (↑n + 1) := by rw [sum_range]
 
 lemma ineq₂ {x : ℕ → ℝ} {N : ℕ}
-  (hN : 1 < N) (hx : ∀ i , x (i + 1) ≤ x i) (x_pos : ∀ i, x i > (0 : ℝ)) :
+    (hN : 1 < N) (hx : ∀ i , x (i + 1) ≤ x i) (x_pos : ∀ i, x i > (0 : ℝ)) :
   (N - 1) / N * (1 / ∑ n : Fin (N - 1), x (n + 1)) ≤ 1 / (∑ n : Fin N, x (n + 1)) := by
   have ne_zero : N - 1 ≠ 0 := by
     intro h
