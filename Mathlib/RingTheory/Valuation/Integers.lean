@@ -193,9 +193,7 @@ lemma not_denselyOrdered_of_isPrincipalIdealRing [IsPrincipalIdealRing O] (hv : 
     ⟨v 1, Set.mem_range_self _⟩ hx'
   simp only [Set.mem_range] at hzv
   obtain ⟨z, rfl⟩ := hzv
-  have := hx.right
-  rw [mem_upperBounds] at this
-  refine (this _ ?_).not_lt hz
+  refine (hx.right ?_).not_lt hz
   simp only [Set.mem_inter_iff, Set.mem_Iio, Set.mem_range, Function.comp_apply, and_imp,
     forall_exists_index] at this
   specialize this (v z) (by simpa using hz')
