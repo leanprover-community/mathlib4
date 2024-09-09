@@ -45,6 +45,10 @@ where
     | [] => [[[x]]]
     | y :: ys => ((x :: y) :: ys) :: (next x ys).map (y :: ·)
 
+-- TODO: can we get a better order?
+-- #eval sublistPartitions.next 1 [[2]]
+-- #eval [1, 2, 3].reverse.sublistPartitions
+
 /-- Every element of an element of a sublist partition of `l` is a sublist of `l` -/
 theorem Sublist.of_mem_mem_sublistPartitions {pi : List α} {p : List (List α)} {l : List α}
     (hpi : pi ∈ p) (hp : p ∈ l.sublistPartitions) :
@@ -92,9 +96,10 @@ theorem mem_sublistPartitions_iff {l : List α} {p : List (List α)} :
   | cons x l ih =>
     simp only [sublistPartitions, mem_bind, ih]
     sorry
--- where
---   mem_next_iff {a : α} {p q : List (List α)} :
---     p ∈ sublistPartitions.next a q ↔ (∀ pi ∈ p, pi ≠ [] ∧ pi <+ l) ∧  p.join ~ x :: q.join
+where
+  mem_next_iff {a : α} {p q : List (List α)} :
+    p ∈ sublistPartitions.next a q ↔ (∀ pi ∈ p, pi ≠ [] ∧ pi <+ l) ∧ p.join ~ a :: q.join :=
+  sorry
 
 /-- If a list has no duplicates, then nor do any elements of its partitions. -/
 theorem Nodup.of_mem_sublistPartitions {l : List α} (h : l.Nodup) {p : List (List α)}
