@@ -6,7 +6,6 @@ Authors: Chris Hughes
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Data.Set.UnionLift
 
-
 /-!
 # Subalgebras and directed Unions of sets
 
