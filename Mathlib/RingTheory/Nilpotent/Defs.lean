@@ -122,6 +122,9 @@ lemma isNilpotent_of_pos_nilpotencyClass (hx : 0 < nilpotencyClass x) :
 lemma pow_nilpotencyClass (hx : IsNilpotent x) : x ^ (nilpotencyClass x) = 0 :=
   Nat.sInf_mem hx
 
+lemma nilpotencyClass_le {k : ℕ} (hk : x ^ k = 0) : nilpotencyClass x ≤ k :=
+  Nat.sInf_le hk
+
 end ZeroPow
 
 section MonoidWithZero

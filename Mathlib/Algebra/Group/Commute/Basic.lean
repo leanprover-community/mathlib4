@@ -61,6 +61,12 @@ lemma inv_right_iff : Commute a b⁻¹ ↔ Commute a b := SemiconjBy.inv_right_i
 
 @[to_additive] alias ⟨_, inv_right⟩ := inv_right_iff
 
+@[to_additive (attr := simp)]
+lemma inv_right_self : Commute a a⁻¹ := inv_right <| Commute.refl a
+
+@[to_additive (attr := simp)]
+lemma inv_self_self : Commute a⁻¹ a := inv_left <| Commute.refl a
+
 @[to_additive]
 protected lemma inv_mul_cancel (h : Commute a b) : a⁻¹ * b * a = b := by
   rw [h.inv_left.eq, inv_mul_cancel_right]
