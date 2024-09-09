@@ -431,3 +431,13 @@ instance instLinearOrderedCommGroupWithZero [LinearOrderedCommGroup α] :
   __ := commGroupWithZero
 
 end WithZero
+
+instance Units.instLinearOrderedCommGroup [LinearOrderedCommGroup α] :
+    LinearOrderedCommGroup αˣ where
+  __ := Units.instLinearOrder
+  mul_le_mul_left _ _ := mul_le_mul_left'
+
+instance Units.instLinearOrderedCommGroup_of_linearOrderedCommGroupWithZero
+    [LinearOrderedCommGroupWithZero α] : LinearOrderedCommGroup αˣ where
+  __ := Units.instLinearOrder
+  mul_le_mul_left _ _ := mul_le_mul_left'
