@@ -42,11 +42,8 @@ namespace Pi
 
 variable {α β : Type*} [Preorder α] [Preorder β]
 
-lemma monotone_zero [Zero β] : Monotone (0 : α → β) := monotone_const
-lemma antitone_zero [Zero β] : Antitone (0 : α → β) := antitone_const
-
-lemma monotone_one [One β] : Monotone (1 : α → β) := monotone_const
-lemma antitone_one [One β] : Antitone (1 : α → β) := antitone_const
+@[to_additive] lemma one_mono [One β] : Monotone (1 : α → β) := monotone_const
+@[to_additive] lemma one_anti [One β] : Antitone (1 : α → β) := antitone_const
 
 end Pi
 
