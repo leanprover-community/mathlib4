@@ -1202,3 +1202,32 @@ instance [hα : Nonempty α] : IsEmpty (SuccOrder (WithBot α)) :=
 end Succ
 
 end WithBot
+
+namespace OrderIsoClass
+
+variable {X Y F : Type*} [EquivLike F X Y] [Preorder X] [Preorder Y] [OrderIsoClass F X Y]
+
+/-- `SuccOrder` transfers across equivalences between orders. -/
+@[reducible] protected def SuccOrder [SuccOrder X] (f : F) : SuccOrder Y where
+  succ y := f (Order.succ (EquivLike.inv f y))
+  le_succ y := by
+    obtain ⟨x, rfl⟩ := EquivLike.surjective f y
+    simpa using (map_le_map_iff f).mpr (Order.le_succ x)
+  max_of_succ_le {y} hy := by
+    obtain ⟨x, rfl⟩ := EquivLike.surjective f y
+    simp only [EquivLike.inv_apply_apply, map_le_map_iff] at hy
+    have := Order.max_of_succ_le hy
+    exact (OrderIso.isMax_apply (f : X ≃o Y)).mpr this
+  succ_le_of_lt {a b} h := by
+    obtain ⟨x, rfl⟩ := EquivLike.surjective f b
+    simp only [map_le_map_iff]
+    refine Order.succ_le_of_lt ?_
+    simp [← map_lt_map_iff, h]
+
+/-- `PredOrder` transfers across equivalences between orders. -/
+@[reducible] protected def PredOrder [PredOrder X] (f : F) : PredOrder Y := by
+  let _ := OrderIsoClass.SuccOrder (X := Xᵒᵈ) (Y := Yᵒᵈ) f
+  let e : PredOrder Yᵒᵈᵒᵈ := by infer_instance
+  exact e
+
+end OrderIsoClass

@@ -218,3 +218,37 @@ lemma SuccOrder.forall_ne_bot_iff
   rw [← Nat.succ_pred_eq_of_pos hj]
   simp only [Function.iterate_succ', Function.comp_apply]
   apply h
+
+namespace OrderIsoClass
+
+variable {X Y F : Type*} [EquivLike F X Y] [PartialOrder X] [PartialOrder Y] [OrderIsoClass F X Y]
+
+/-- `IsSuccArchimedean` transfers across equivalences between `SuccOrder`s. -/
+protected theorem IsSuccArchimedean [SuccOrder X] [SuccOrder Y] [IsSuccArchimedean X] (f : F) :
+    IsSuccArchimedean Y where
+  exists_succ_iterate_of_le {a b} h := by
+    have : ∀ x, Order.succ (f x) = f (Order.succ x) := by
+      have ho : (Order.succ : Y → Y) = (OrderIsoClass.SuccOrder f).succ := by
+        simp only [(Order.instSubsingletonSuccOrder (α := Y)).elim]
+        rfl
+      have : ∀ y, (OrderIsoClass.SuccOrder f).succ y = f (Order.succ (EquivLike.inv f y)) :=
+        fun _ ↦ rfl
+      simp [ho, this]
+    obtain ⟨x, rfl⟩ := EquivLike.surjective f a
+    obtain ⟨y, rfl⟩ := EquivLike.surjective f b
+    obtain ⟨n, rfl⟩ := exists_succ_iterate_of_le ((map_le_map_iff f).mp h)
+    clear h
+    refine ⟨n, ?_⟩
+    induction n with
+    | zero => simp
+    | succ n IH => rw [Function.iterate_succ', Function.comp_apply, IH, Function.iterate_succ',
+                       Function.comp_apply, this]
+
+/-- `IsPredArchimedean` transfers across equivalences between `PredOrder`s. -/
+protected theorem IsPredArchimedean [PredOrder X] [PredOrder Y] [IsPredArchimedean X] (f : F) :
+    IsPredArchimedean Y := by
+  let _ := OrderIsoClass.IsSuccArchimedean (X := Xᵒᵈ) (Y := Yᵒᵈ) f
+  let e : IsPredArchimedean Yᵒᵈᵒᵈ := by infer_instance
+  exact e
+
+end OrderIsoClass
