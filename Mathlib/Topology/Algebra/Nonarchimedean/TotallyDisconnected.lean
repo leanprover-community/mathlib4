@@ -165,9 +165,8 @@ theorem non_singleton_set_disconnected
     apply Disjoint.mono vb (fun ⦃a⦄ a ↦ a)
     refine Disjoint.symm ?_
     convert dab
-  obtain ⟨u , v, ou, ov, Uuv, Uu, Uv, emptyUuv⟩
-      : ∃ u v : Set G, (IsOpen u) ∧ (IsOpen v) ∧ (U ⊆ u ∪ v) ∧ ((U ∩ u).Nonempty) ∧
-      ((U ∩ v).Nonempty) ∧ (¬(U ∩ (u ∩ v)).Nonempty) := by
+  obtain ⟨u , v, ou, ov, Uuv, Uu, Uv, emptyUuv⟩ : ∃ u v : Set G, (IsOpen u) ∧ (IsOpen v) ∧
+      (U ⊆ u ∪ v) ∧ ((U ∩ u).Nonempty) ∧ ((U ∩ v).Nonempty) ∧ (¬(U ∩ (u ∩ v)).Nonempty) := by
     use (y • (V : Set G)) , (y • (V : Set G))ᶜ
     refine ⟨is_open_coset G y V, is_open_compl_coset' G y V, subset_coset_comp G y U V,
         non_empty_intersection_coset G x y U hy hxy V,
@@ -190,5 +189,3 @@ instance totally_disconnected_space : TotallyDisconnectedSpace G := by
         hneq isConnected_connectedComponent
 
 end NonarchimedeanGroup
-
-#lint -- lint works! :)
