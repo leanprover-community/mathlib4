@@ -27,7 +27,7 @@ point of view are in the `ZLattice` namespace.
 ## Main results
 
 * `ZSpan.isAddFundamentalDomain`: for a ℤ-lattice `Submodule.span ℤ (Set.range b)`, proves that
-the set defined by `Zspan.fundamentalDomain` is a fundamental domain.
+the set defined by `ZSpan.fundamentalDomain` is a fundamental domain.
 * `ZLattice.module_free`: a `ℤ`-submodule of `E` that is discrete and spans `E` over `K` is a free
 `ℤ`-module
 * `ZLattice.rank`: a `ℤ`-submodule of `E` that is discrete and spans `E` over `K` is free
