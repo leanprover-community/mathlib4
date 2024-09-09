@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bjørn Kjos-Hanssen
 -/
 
-import Mathlib.Init.Set
 import Mathlib.Data.Finite.Defs
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Set.Finite
@@ -20,7 +19,7 @@ We show that Perm(𝔸) is closed under composition and contains the identity.
 
 /-- The set of all finite permutations of A, i.e.,
 the set of permutations π such that π a = a for all but finitely many a. -/
-def FinPerm (A : Type) : Set (A → A) := λ f ↦ Function.Bijective f ∧ Finite ({a | f a ≠ a})
+def FinPerm (A : Type) : Set (A → A) := fun f => Function.Bijective f ∧ Finite ({a | f a ≠ a})
 
 /-- Perm(A) is closed under composition. -/
 theorem FinPerm_comp {A : Type} (f g : FinPerm A) : (f.1 ∘ g.1) ∈ FinPerm A :=
@@ -28,7 +27,7 @@ theorem FinPerm_comp {A : Type} (f g : FinPerm A) : (f.1 ∘ g.1) ∈ FinPerm A 
     have hf := f.2.2
     have hg := g.2.2
     have hf' : Finite ({a | f.1 (g.1 a) ≠ g.1 a}) := by
-      let G : {a | f.1 (g.1 a) ≠ g.1 a} → {a | f.1 a ≠ a} := λ a ↦ ⟨g.1 a, a.2⟩
+      let G : {a | f.1 (g.1 a) ≠ g.1 a} → {a | f.1 a ≠ a} := fun a => ⟨g.1 a, a.2⟩
       exact Finite.of_injective G
         (fun _ _ h => SetCoe.ext <| g.2.1.1 <| congrArg Subtype.val h)
     have h₀: { a | (f.1 ∘ g.1) a ≠ a}

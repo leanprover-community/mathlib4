@@ -105,7 +105,7 @@ theorem dickson_case {ℓ : ℕ} {a : Fin ℓ → ℕ} {b : Fin ℓ → ℕ+}
     · exact (ha i).elim id <| hi.elim
     · intro k
       let h₀ := prod_dvd_prod_of_subset {i} univ
-        (λ j : Fin ℓ ↦ a j + b j * k) (subset_univ {i})
+        (fun j : Fin ℓ ↦ a j + b j * k) (subset_univ {i})
       rw [prod_singleton] at h₀
       exact Nat.dvd_trans ((Nat.dvd_add_iff_right <| Nat.gcd_dvd_left (a i) (b i)).mp
           <| Nat.dvd_trans (Nat.gcd_dvd_right (a i) (b i))
@@ -114,7 +114,7 @@ theorem dickson_case {ℓ : ℕ} {a : Fin ℓ → ℕ} {b : Fin ℓ → ℕ+}
 /-- Dickson's conjecture holds when `b∣a`. -/
 lemma dickson_dvd {ℓ : ℕ} {a : Fin ℓ → ℕ} {b : Fin ℓ → ℕ+} (ha : ∀ i, (b i).1 ∣ a i) :
     dickson_conjecture_holds_for ℓ a b :=
-  dickson_case (λ i ↦ (em (b i =1)).elim (fun H => .inr H)
+  dickson_case (fun i ↦ (em (b i =1)).elim (fun H => .inr H)
   (fun H => .inl <| gcd_gt_of_dvd (ha i) <| lt_of_le_of_ne (b i).2 <|by
     contrapose H;simp_all;symm at H;exact PNat.coe_eq_one_iff.mp H))
 
