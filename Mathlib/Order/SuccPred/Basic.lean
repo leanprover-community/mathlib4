@@ -1216,8 +1216,7 @@ variable {X Y F : Type*} [EquivLike F X Y] [Preorder X] [Preorder Y] [OrderIsoCl
   max_of_succ_le {y} hy := by
     obtain ⟨x, rfl⟩ := EquivLike.surjective f y
     simp only [EquivLike.inv_apply_apply, map_le_map_iff] at hy
-    have := Order.max_of_succ_le hy
-    exact (OrderIso.isMax_apply (f : X ≃o Y)).mpr this
+    exact (OrderIso.isMax_apply (f : X ≃o Y)).mpr (Order.max_of_succ_le hy)
   succ_le_of_lt {a b} h := by
     obtain ⟨x, rfl⟩ := EquivLike.surjective f b
     simp only [map_le_map_iff]
