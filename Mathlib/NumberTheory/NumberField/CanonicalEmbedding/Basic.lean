@@ -40,8 +40,6 @@ variable (K : Type*) [Field K]
 
 namespace NumberField.canonicalEmbedding
 
---open NumberField
-
 /-- The canonical embedding of a number field `K` of degree `n` into `ℂ^n`. -/
 def _root_.NumberField.canonicalEmbedding : K →+* ((K →+* ℂ) → ℂ) := Pi.ringHom fun φ => φ
 

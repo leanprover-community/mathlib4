@@ -152,8 +152,8 @@ open Classical in
 a scalar, see `smul_mem_of_mem`--, that is also a fundamental domain for the action of `(𝓞 K)ˣ` up
 to roots of unity, see `exists_unitSMul_mem` and `torsion_unitSMul_mem_of_mem`. -/
 def fundamentalCone : Set (E K) :=
-  logMap⁻¹' (Zspan.fundamentalDomain
-    ((Module.Free.chooseBasis ℤ (unitLattice K)).ofZlatticeBasis ℝ _)) \
+  logMap⁻¹' (ZSpan.fundamentalDomain
+    ((Module.Free.chooseBasis ℤ (unitLattice K)).ofZLatticeBasis ℝ _)) \
       {x | mixedEmbedding.norm x = 0}
 
 namespace fundamentalCone
@@ -186,11 +186,11 @@ theorem smul_mem_iff_mem {x : E K} {c : ℝ} (hc : c ≠ 0) :
 theorem exists_unitSMul_mem {x : E K} (hx : mixedEmbedding.norm x ≠ 0) :
     ∃ u : (𝓞 K)ˣ, u • x ∈ fundamentalCone K := by
   classical
-  let B := (Module.Free.chooseBasis ℤ (unitLattice K)).ofZlatticeBasis ℝ
-  rsuffices ⟨⟨_, ⟨u, _, rfl⟩⟩, hu⟩ : ∃ e : unitLattice K, e + logMap x ∈ Zspan.fundamentalDomain B
+  let B := (Module.Free.chooseBasis ℤ (unitLattice K)).ofZLatticeBasis ℝ
+  rsuffices ⟨⟨_, ⟨u, _, rfl⟩⟩, hu⟩ : ∃ e : unitLattice K, e + logMap x ∈ ZSpan.fundamentalDomain B
   · exact ⟨u, by rwa [Set.mem_preimage, logMap_unitSMul u hx], by simp [hx]⟩
-  · obtain ⟨⟨e, h₁⟩, h₂, -⟩ := Zspan.exist_unique_vadd_mem_fundamentalDomain B (logMap x)
-    exact ⟨⟨e, by rwa [← Basis.ofZlatticeBasis_span ℝ (unitLattice K)]⟩, h₂⟩
+  · obtain ⟨⟨e, h₁⟩, h₂, -⟩ := ZSpan.exist_unique_vadd_mem_fundamentalDomain B (logMap x)
+    exact ⟨⟨e, by rwa [← Basis.ofZLatticeBasis_span ℝ (unitLattice K)]⟩, h₂⟩
 
 theorem torsion_unitSMul_mem_of_mem {x : E K} (hx : x ∈ fundamentalCone K) {ζ : (𝓞 K)ˣ}
     (hζ : ζ ∈ torsion K) :
@@ -207,11 +207,11 @@ theorem unitSMul_mem_iff_mem_torsion {x : E K} (hx : x ∈ fundamentalCone K) (u
   classical
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rw [← logEmbedding_eq_zero_iff]
-    let B := (Module.Free.chooseBasis ℤ (unitLattice K)).ofZlatticeBasis ℝ
+    let B := (Module.Free.chooseBasis ℤ (unitLattice K)).ofZLatticeBasis ℝ
     refine (Subtype.mk_eq_mk (h := ?_) (h' := ?_)).mp <|
-      ExistsUnique.unique (Zspan.exist_unique_vadd_mem_fundamentalDomain B (logMap x)) ?_ ?_
+      ExistsUnique.unique (ZSpan.exist_unique_vadd_mem_fundamentalDomain B (logMap x)) ?_ ?_
     · change logEmbedding K u ∈ (Submodule.span ℤ (Set.range B)).toAddSubgroup
-      rw [Basis.ofZlatticeBasis_span ℝ (unitLattice K)]
+      rw [Basis.ofZLatticeBasis_span ℝ (unitLattice K)]
       exact ⟨u, trivial, rfl⟩
     · exact Submodule.zero_mem _
     · rw [AddSubmonoid.mk_vadd, vadd_eq_add, ← logMap_unitSMul _ hx.2]
@@ -223,3 +223,5 @@ theorem unitSMul_mem_iff_mem_torsion {x : E K} (hx : x ∈ fundamentalCone K) (u
 end fundamentalCone
 
 end
+
+end NumberField.mixedEmbedding
