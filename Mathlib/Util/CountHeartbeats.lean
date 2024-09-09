@@ -66,7 +66,7 @@ elab "count_heartbeats " tac:tacticSeq : tactic => do
   logInfo s!"{← runTacForHeartbeats tac (revert := false)}"
 
 /-- Count the heartbeats used by a tactic, e.g.: `count_heartbeats simp`. -/
-elab "count_heartbeats_over " n:num ppSpace tac:tacticSeq : tactic => do
+elab "count_heartbeats_over " n:num ppSpace tac:tacticSeq : tactic => focus do
   let hb ← runTacForHeartbeats tac (revert := false)
   if n.getNat ≤ hb then
     dbg_trace s!"{hb}"
