@@ -54,7 +54,7 @@ def NatOrdinal : Type _ :=
   Ordinal deriving Zero, Inhabited, One, WellFoundedRelation
 
 instance NatOrdinal.linearOrder : LinearOrder NatOrdinal := {Ordinal.linearOrder with}
-instance NatOrdinal.succOrder : SuccOrder NatOrdinal := {Ordinal.succOrder with}
+instance NatOrdinal.instSuccOrder : SuccOrder NatOrdinal := {Ordinal.instSuccOrder with}
 instance NatOrdinal.orderBot : OrderBot NatOrdinal := {Ordinal.orderBot with}
 instance NatOrdinal.noMaxOrder : NoMaxOrder NatOrdinal := {Ordinal.noMaxOrder with}
 
@@ -316,8 +316,8 @@ namespace NatOrdinal
 
 open Ordinal NaturalOps
 
-instance : Add NatOrdinal :=
-  ⟨nadd⟩
+instance : Add NatOrdinal := ⟨nadd⟩
+instance : SuccAddOrder NatOrdinal := ⟨fun x => (nadd_one x).symm⟩
 
 instance add_covariantClass_lt : CovariantClass NatOrdinal.{u} NatOrdinal.{u} (· + ·) (· < ·) :=
   ⟨fun a _ _ h => nadd_lt_nadd_left h a⟩
@@ -346,9 +346,9 @@ instance orderedCancelAddCommMonoid : OrderedCancelAddCommMonoid NatOrdinal :=
 instance addMonoidWithOne : AddMonoidWithOne NatOrdinal :=
   AddMonoidWithOne.unary
 
-@[simp]
-theorem add_one_eq_succ : ∀ a : NatOrdinal, a + 1 = succ a :=
-  nadd_one
+@[deprecated Order.succ_eq_add_one (since := "2024-09-04")]
+theorem add_one_eq_succ (a : NatOrdinal) : a + 1 = succ a :=
+  (Order.succ_eq_add_one a).symm
 
 @[simp]
 theorem toOrdinal_cast_nat (n : ℕ) : toOrdinal n = n := by

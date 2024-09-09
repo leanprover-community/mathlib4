@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn
 -/
+import Mathlib.Algebra.Order.SuccPred
 import Mathlib.Data.Sum.Order
 import Mathlib.Order.InitialSeg
 import Mathlib.SetTheory.Cardinal.Basic
@@ -909,8 +910,10 @@ private theorem succ_le_iff' {a b : Ordinal} : a + 1 ≤ b ↔ a < b :=
 instance noMaxOrder : NoMaxOrder Ordinal :=
   ⟨fun _ => ⟨_, succ_le_iff'.1 le_rfl⟩⟩
 
-instance succOrder : SuccOrder Ordinal.{u} :=
+instance instSuccOrder : SuccOrder Ordinal.{u} :=
   SuccOrder.ofSuccLeIff (fun o => o + 1) succ_le_iff'
+
+instance instSuccAddOrder : SuccAddOrder Ordinal := ⟨fun _ => rfl⟩
 
 @[simp]
 theorem add_one_eq_succ (o : Ordinal) : o + 1 = succ o :=
@@ -927,10 +930,12 @@ theorem succ_one : succ (1 : Ordinal) = 2 := by congr; simp only [Nat.unaryCast,
 theorem add_succ (o₁ o₂ : Ordinal) : o₁ + succ o₂ = succ (o₁ + o₂) :=
   (add_assoc _ _ _).symm
 
-theorem one_le_iff_pos {o : Ordinal} : 1 ≤ o ↔ 0 < o := by rw [← succ_zero, succ_le_iff]
+@[deprecated Order.one_le_iff_pos (since := "2024-09-04")]
+protected theorem one_le_iff_pos {o : Ordinal} : 1 ≤ o ↔ 0 < o :=
+  Order.one_le_iff_pos
 
 theorem one_le_iff_ne_zero {o : Ordinal} : 1 ≤ o ↔ o ≠ 0 := by
-  rw [one_le_iff_pos, Ordinal.pos_iff_ne_zero]
+  rw [Order.one_le_iff_pos, Ordinal.pos_iff_ne_zero]
 
 theorem succ_pos (o : Ordinal) : 0 < succ o :=
   bot_lt_succ o
