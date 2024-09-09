@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Bjørn Kjos-Hanssen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bjørn Kjos-Hanssen, Clark Eggerman
+Authors: Bjørn Kjos-Hanssen
 -/
 import Mathlib.Data.Nat.Prime.Defs
 
@@ -18,7 +18,7 @@ Lars Brünjes and Christian Serpé, JLA 2007.
 /- The equation 2 = 0 mod p -/
 def φ (p:ℕ) := 2 % p = 0 % p
 
-/- The equation holds mod p for some primes p, but not for all primes p -/
+/-- The equation holds mod p for some primes p, but not for all primes p -/
 theorem proof_of_concept : ¬ ∀ p q : ℕ, Nat.Prime p → Nat.Prime q → (φ p ↔ φ q) := by
   intro hcontra
   have : φ 2 → φ 3 := (hcontra 2 3 Nat.prime_two Nat.prime_three).mp
@@ -27,14 +27,34 @@ theorem proof_of_concept : ¬ ∀ p q : ℕ, Nat.Prime p → Nat.Prime q → (φ
   exact this h3
 
 
-/- Now we consider the existence of a square root of two.
-We show it exists for p=2 but not for p=3.
--/
-def isSqrtMod (p x:ℕ) := (x*x) % p = 2 % p
+/-- `x` is a square root mod `p`. -/
+def isSqrt2Mod (p x:ℕ) := (x*x) % p = 2 % p
 
-theorem sqrt_mod2 : ∃ x :ℕ, isSqrtMod 2 x  := by exists 0
+/-- There is a √2 mod 2, namely 0. -/
+theorem sqrt_mod2 : ∃ x :ℕ, isSqrt2Mod 2 x  := by exists 0
 
-theorem sqrt_mod3 : ¬ ∃ x :ℕ, isSqrtMod 3 x  := by
+/-- There is no √2 mod 4. -/
+theorem sqrt_mod4 : ¬ ∃ x :ℕ, isSqrt2Mod 4 x  := by
+  push_neg
+  unfold isSqrt2Mod
+  intro x
+  have : (x * x) % 4 = ((x % 4) * (x % 4)) % 4 := Nat.mul_mod x x 4
+  rw [this]
+  have : x % 4 < 4 := Nat.mod_lt x <| Nat.zero_lt_succ 3
+  have : x % 4 < 3 ∨ x % 4 = 3 := Nat.lt_succ_iff_lt_or_eq.mp this
+  cases this with
+  | inl h =>
+    have : x % 4 < 2 ∨ x % 4 = 2 := Nat.lt_succ_iff_lt_or_eq.mp h
+    cases this with
+    | inl h =>
+      have : x % 4 = 0 ∨ x % 4 = 1 := Nat.le_one_iff_eq_zero_or_eq_one.mp (Nat.le_of_lt_succ h)
+      cases this <;> simp_all
+    | inr h =>rw [h];simp
+  | inr h => rw [h];simp
+
+
+/-- There is no √2 mod 3. -/
+theorem sqrt_mod3 : ¬ ∃ x :ℕ, isSqrt2Mod 3 x  := by
   intro hcontra
   rcases hcontra with ⟨x,hx⟩
   have : x % 3 < 3 := Nat.mod_lt x (Nat.succ_pos 2)
