@@ -667,6 +667,16 @@ theorem contDiffOn_succ_iff_hasFDerivWithinAt {n : ℕ} :
     have : x ∈ u := mem_of_mem_nhdsWithin (mem_insert _ _) u_nhbd
     exact ⟨u, u_nhbd, f', hu, hf' x this⟩
 
+/-- A function is `C^(n + 1)` on a domain iff locally, it has a derivative which is `C^n`. -/
+theorem contDiffOnOmegaAux_succ_iff_hasFDerivWithinAt {n : ℕ} :
+    ContDiffOnOmegaAux 𝕜 (n + 1 : ℕ) f s ↔
+      ∀ x ∈ s, ∃ u ∈ 𝓝[insert x s] x, AnalyticOn 𝕜 f u ∧ ∃ f' : E → E →L[𝕜] F,
+        (∀ x ∈ u, HasFDerivWithinAt f (f' x) u x) ∧ ContDiffOnOmegaAux 𝕜 n f' u := by
+
+
+sorry
+
+
 /- A function is `C^ω` on a domain iff locally, it is analytic with a derivative which is `C^ω`. -/
 /-theorem contDiffOn_omega_iff_hasFDerivWithinAt :
     ContDiffOn 𝕜 ω f s ↔
