@@ -785,6 +785,7 @@ instance : DistribLattice (Filter α) :=
           x.sets_of_superset hs inter_subset_right, ht₂, rfl⟩ }
 
 /-- The dual version does not hold! `Filter α` is not a `CompleteDistribLattice`. -/
+-- See note [reducible non-instances]
 abbrev coframeMinimalAxioms : Coframe.MinimalAxioms (Filter α) :=
   { Filter.instCompleteLatticeFilter with
     iInf_sup_le_sup_sInf := fun f s t ⟨h₁, h₂⟩ => by
