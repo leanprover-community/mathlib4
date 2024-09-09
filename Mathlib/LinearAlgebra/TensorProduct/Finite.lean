@@ -151,7 +151,7 @@ variable (R M)
 
 /-- If `ι` is finite then `piTensorFiniteRid R M κ ι` is the natural isomorphism
 `(κ → M) ⊗[R] (ι → R) ≃ₗ[R] κ × ι → M`. -/
-noncomputable def piTensorFiniteRid (κ ι : Type*) [Finite ι] [DecidableEq ι]:
+noncomputable def piTensorFiniteRid (κ ι : Type*) [Finite ι] [DecidableEq ι] :
     (κ → M) ⊗[R] (ι → R) ≃ₗ[R] κ × ι → M :=
   (finiteScalarRight R (κ → M) ι :
     (κ → M) ⊗[R] (ι → R) ≃ₗ[R] (ι → κ → M)) ≪≫ₗ
