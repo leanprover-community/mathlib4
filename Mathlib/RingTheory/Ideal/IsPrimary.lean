@@ -30,7 +30,7 @@ theorem IsPrime.isPrimary {I : Ideal R} (hi : IsPrime I) : IsPrimary I :=
 theorem isPrime_radical {I : Ideal R} (hi : IsPrimary I) : IsPrime (radical I) :=
   ⟨mt radical_eq_top.1 hi.1,
    fun {x y} ⟨m, hxy⟩ => by
-    rw [mul_pow] at hxy; cases' hi.2 hxy with h h
+    rw [mul_pow] at hxy; rcases hi.2 hxy with h | h
     · exact Or.inl ⟨m, h⟩
     · exact Or.inr (mem_radical_of_pow_mem h)⟩
 
@@ -39,8 +39,8 @@ theorem isPrimary_inf {I J : Ideal R} (hi : IsPrimary I) (hj : IsPrimary J)
   ⟨ne_of_lt <| lt_of_le_of_lt inf_le_left (lt_top_iff_ne_top.2 hi.1),
    fun {x y} ⟨hxyi, hxyj⟩ => by
     rw [radical_inf, hij, inf_idem]
-    cases' hi.2 hxyi with hxi hyi
-    · cases' hj.2 hxyj with hxj hyj
+    rcases hi.2 hxyi with hxi | hyi
+    · rcases hj.2 hxyj with hxj | hyj
       · exact Or.inl ⟨hxi, hxj⟩
       · exact Or.inr hyj
     · rw [hij] at hyi

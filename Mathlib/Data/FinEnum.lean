@@ -116,13 +116,13 @@ theorem Finset.mem_enum [DecidableEq α] (s : Finset α) (xs : List α) :
   · simp [Finset.eq_empty_iff_forall_not_mem]
   · constructor
     · rintro ⟨a, h, h'⟩ x hx
-      cases' h' with _ h' a b
+      rcases h' with _ | h'
       · right
         apply h
         subst a
         exact hx
       · simp only [h', mem_union, mem_singleton] at hx ⊢
-        cases' hx with hx hx'
+        rcases hx with hx | hx'
         · exact Or.inl hx
         · exact Or.inr (h _ hx')
     · intro h

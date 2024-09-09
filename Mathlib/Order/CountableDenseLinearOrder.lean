@@ -105,7 +105,7 @@ theorem exists_across [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonem
   use b
   rintro ⟨p1, p2⟩ hp
   have : p1 ≠ a := fun he ↦ h ⟨p2, he ▸ hp⟩
-  cases' lt_or_gt_of_ne this with hl hr
+  rcases lt_or_gt_of_ne this with hl | hr
   · have : p1 < a ∧ p2 < b :=
       ⟨hl, hb.1 _ (Finset.mem_image.mpr ⟨(p1, p2), Finset.mem_filter.mpr ⟨hp, hl⟩, rfl⟩)⟩
     rw [← cmp_eq_lt_iff, ← cmp_eq_lt_iff] at this

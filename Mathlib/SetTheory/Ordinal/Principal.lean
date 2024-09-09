@@ -138,7 +138,7 @@ theorem principal_add_isLimit {o : Ordinal} (ho₁ : 1 < o) (ho : Principal (· 
 theorem principal_add_iff_add_left_eq_self {o : Ordinal} :
     Principal (· + ·) o ↔ ∀ a < o, a + o = o := by
   refine ⟨fun ho a hao => ?_, fun h a b hao hbo => ?_⟩
-  · cases' lt_or_le 1 o with ho₁ ho₁
+  · rcases lt_or_le 1 o with ho₁ | ho₁
     · exact op_eq_self_of_principal hao (add_isNormal a) ho (principal_add_isLimit ho₁ ho)
     · rcases le_one_iff.1 ho₁ with (rfl | rfl)
       · exact (Ordinal.not_lt_zero a hao).elim
@@ -272,7 +272,7 @@ theorem principal_mul_of_le_two {o : Ordinal} (ho : o ≤ 2) : Principal (· * �
 
 theorem principal_add_of_principal_mul {o : Ordinal} (ho : Principal (· * ·) o) (ho₂ : o ≠ 2) :
     Principal (· + ·) o := by
-  cases' lt_or_gt_of_ne ho₂ with ho₁ ho₂
+  rcases lt_or_gt_of_ne ho₂ with ho₁ | ho₂
   · replace ho₁ : o < succ 1 := by simpa using ho₁
     rw [lt_succ_iff] at ho₁
     exact principal_add_of_le_one ho₁
@@ -289,7 +289,7 @@ theorem principal_mul_isLimit {o : Ordinal.{u}} (ho₂ : 2 < o) (ho : Principal 
 theorem principal_mul_iff_mul_left_eq {o : Ordinal} :
     Principal (· * ·) o ↔ ∀ a, 0 < a → a < o → a * o = o := by
   refine ⟨fun h a ha₀ hao => ?_, fun h a b hao hbo => ?_⟩
-  · cases' le_or_gt o 2 with ho ho
+  · rcases le_or_gt o 2 with ho | ho
     · convert one_mul o
       apply le_antisymm
       · have : a < succ 1 := hao.trans_le (by simpa using ho)

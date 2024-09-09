@@ -396,7 +396,7 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
         _ = dg y := (dgb rfl).symm
     · exact ((sub_le_self_iff _).2 (dgmem _).1).trans_lt hlt
   rcases hb.exists_between hyb with ⟨_, ⟨xu, rfl⟩, hyxu, _⟩
-  cases' lt_or_le c (g y) with hc hc
+  rcases lt_or_le c (g y) with hc | hc
   · rcases em (a ∈ range f) with (⟨x, rfl⟩ | _)
     · refine ⟨x, xu, ?_, hyxu.le⟩
       calc

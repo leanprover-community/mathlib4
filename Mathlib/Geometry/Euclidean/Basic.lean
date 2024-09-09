@@ -179,7 +179,7 @@ theorem eq_of_dist_eq_of_dist_eq_of_mem_of_finrank_eq_two {s : AffineSubspace �
   rw [← hp₁c₁, dist_smul_vadd_eq_dist _ _ hp'] at hpc₁ hp₂
   simp only [one_ne_zero, false_or_iff] at hp₂
   rw [hp₂.symm] at hpc₁
-  cases' hpc₁ with hpc₁ hpc₁ <;> simp [hpc₁]
+  rcases hpc₁ with hpc₁ | hpc₁ <;> simp [hpc₁]
 
 /-- Distances `r₁` `r₂` of `p` from two different points `c₁` `c₂` determine at
 most two points `p₁` `p₂` in two-dimensional space (two circles intersect in at

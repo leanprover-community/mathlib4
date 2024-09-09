@@ -151,7 +151,7 @@ instance (priority := 100) [LocallyFiniteOrder ι] : IsSuccArchimedean ι where
   exists_succ_iterate_of_le := by
     intro i j hij
     rw [le_iff_lt_or_eq] at hij
-    cases' hij with hij hij
+    rcases hij with hij | hij
     swap
     · refine ⟨0, ?_⟩
       simpa only [Function.iterate_zero, id] using hij
@@ -355,7 +355,7 @@ noncomputable def orderIsoRangeToZOfLinearSuccPredArch [hι : Nonempty ι] :
   map_rel_iff' := by intro i j; exact toZ_le_iff i j
 
 instance (priority := 100) countable_of_linear_succ_pred_arch : Countable ι := by
-  cases' isEmpty_or_nonempty ι with _ hι
+  rcases isEmpty_or_nonempty ι with _ | hι
   · infer_instance
   · exact Countable.of_equiv _ orderIsoRangeToZOfLinearSuccPredArch.symm.toEquiv
 

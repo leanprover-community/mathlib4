@@ -72,7 +72,7 @@ theorem modByMonic_eq_of_dvd_sub (hq : q.Monic) {p₁ p₂ : R[X]} (h : q ∣ p�
 
 theorem add_modByMonic (p₁ p₂ : R[X]) : (p₁ + p₂) %ₘ q = p₁ %ₘ q + p₂ %ₘ q := by
   by_cases hq : q.Monic
-  · cases' subsingleton_or_nontrivial R with hR hR
+  · rcases subsingleton_or_nontrivial R with hR | hR
     · simp only [eq_iff_true_of_subsingleton]
     · exact
       (div_modByMonic_unique (p₁ /ₘ q + p₂ /ₘ q) _ hq
@@ -85,7 +85,7 @@ theorem add_modByMonic (p₁ p₂ : R[X]) : (p₁ + p₂) %ₘ q = p₁ %ₘ q +
 
 theorem smul_modByMonic (c : R) (p : R[X]) : c • p %ₘ q = c • (p %ₘ q) := by
   by_cases hq : q.Monic
-  · cases' subsingleton_or_nontrivial R with hR hR
+  · rcases subsingleton_or_nontrivial R with hR | hR
     · simp only [eq_iff_true_of_subsingleton]
     · exact
       (div_modByMonic_unique (c • (p /ₘ q)) (c • (p %ₘ q)) hq
@@ -589,7 +589,7 @@ theorem leadingCoeff_divByMonic_of_monic {R : Type u} [CommRing R] {p q : R[X]} 
 theorem leadingCoeff_divByMonic_X_sub_C (p : R[X]) (hp : degree p ≠ 0) (a : R) :
     leadingCoeff (p /ₘ (X - C a)) = leadingCoeff p := by
   nontriviality
-  cases' hp.lt_or_lt with hd hd
+  rcases hp.lt_or_lt with hd | hd
   · rw [degree_eq_bot.mp <| Nat.WithBot.lt_zero_iff.mp hd, zero_divByMonic]
   refine leadingCoeff_divByMonic_of_monic (monic_X_sub_C a) ?_
   rwa [degree_X_sub_C, Nat.WithBot.one_le_iff_zero_lt]
@@ -684,7 +684,7 @@ theorem comp_eq_zero_iff : p.comp q = 0 ↔ p = 0 ∨ p.eval (q.coeff 0) = 0 ∧
     have key : p.natDegree = 0 ∨ q.natDegree = 0 := by
       rw [← mul_eq_zero, ← natDegree_comp, h, natDegree_zero]
     replace key := Or.imp eq_C_of_natDegree_eq_zero eq_C_of_natDegree_eq_zero key
-    cases' key with key key
+    rcases key with key | key
     · rw [key, C_comp] at h
       exact Or.inl (key.trans h)
     · rw [key, comp_C, C_eq_zero] at h

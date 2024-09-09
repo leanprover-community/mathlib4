@@ -95,7 +95,7 @@ variable [IsTotal α (· ≤ ·)]
 namespace AddLECancellable
 
 protected theorem mul_tsub (h : AddLECancellable (a * c)) : a * (b - c) = a * b - a * c := by
-  cases' total_of (· ≤ ·) b c with hbc hcb
+  rcases total_of (· ≤ ·) b c with hbc | hcb
   · rw [tsub_eq_zero_iff_le.2 hbc, mul_zero, tsub_eq_zero_iff_le.2 (mul_le_mul_left' hbc a)]
   · apply h.eq_tsub_of_add_eq
     rw [← mul_add, tsub_add_cancel_of_le hcb]

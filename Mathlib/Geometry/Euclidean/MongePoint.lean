@@ -480,7 +480,7 @@ theorem eq_orthocenter_of_forall_mem_altitude {t : Triangle ℝ P} {i₁ i₂ : 
       clear h₁ h₂
       -- Porting note (#11043): was `decide!`
       fin_cases i₁ <;> fin_cases i₂ <;> fin_cases i₃ <;> fin_cases i <;> simp at h₁₂ h₁₃ h₂₃ hi ⊢
-    cases' hi₁₂ with hi₁₂ hi₁₂
+    rcases hi₁₂ with hi₁₂ | hi₁₂
     · exact hi₁₂ ▸ h₂
     · exact hi₁₂ ▸ h₁
   exact eq_mongePoint_of_forall_mem_mongePlane ha

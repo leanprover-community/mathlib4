@@ -190,7 +190,7 @@ theorem cons_subperm_of_mem {a : α} {l₁ l₂ : List α} (d₁ : Nodup l₁) (
   | slnil => cases h₂
   | @cons r₁ r₂ b s' ih =>
     simp? at h₂ says simp only [mem_cons] at h₂
-    cases' h₂ with e m
+    rcases h₂ with e | m
     · subst b
       exact ⟨a :: r₁, p.cons a, s'.cons₂ _⟩
     · rcases ih d₁ h₁ m p with ⟨t, p', s'⟩
@@ -373,7 +373,7 @@ theorem perm_of_mem_permutationsAux :
   · exact (IH1 _ m).trans perm_middle
   · have p : l₁ ++ l₂ ~ is := by
       simp only [mem_cons] at m
-      cases' m with e m
+      rcases m with e | m
       · simp [e]
       exact is.append_nil ▸ IH2 _ m
     exact ((perm_middle.trans (p.cons _)).append_right _).trans (perm_append_comm.cons _)

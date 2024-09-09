@@ -105,7 +105,7 @@ theorem isConj_of {σ τ : alternatingGroup α} (hc : IsConj (σ : Perm α) (τ 
   obtain ⟨τ, hτ⟩ := τ
   obtain ⟨π, hπ⟩ := isConj_iff.1 hc
   rw [Subtype.coe_mk, Subtype.coe_mk] at hπ
-  cases' Int.units_eq_one_or (Perm.sign π) with h h
+  rcases Int.units_eq_one_or (Perm.sign π) with h | h
   · rw [isConj_iff]
     refine ⟨⟨π, mem_alternatingGroup.mp h⟩, Subtype.val_injective ?_⟩
     simpa only [Subtype.val, Subgroup.coe_mul, coe_inv, coe_mk] using hπ

@@ -123,7 +123,7 @@ theorem CNF_snd_lt {b o : Ordinal.{u}} (hb : 1 < b) {x : Ordinal × Ordinal} :
   · simp only [CNF_zero, not_mem_nil, IsEmpty.forall_iff]
   · rw [CNF_ne_zero ho]
     intro h
-    cases' (mem_cons.mp h) with h h
+    rcases (mem_cons.mp h) with h | h
     · rw [h]; simpa only using div_opow_log_lt o hb
     · exact IH h
 
@@ -133,7 +133,7 @@ theorem CNF_sorted (b o : Ordinal) : ((CNF b o).map Prod.fst).Sorted (· > ·) :
   · simp only [gt_iff_lt, CNF_zero, map_nil, sorted_nil]
   · rcases le_or_lt b 1 with hb | hb
     · simp only [CNF_of_le_one hb ho, gt_iff_lt, map_cons, map, sorted_singleton]
-    · cases' lt_or_le o b with hob hbo
+    · rcases lt_or_le o b with hob | hbo
       · simp only [CNF_of_lt ho hob, gt_iff_lt, map_cons, map, sorted_singleton]
       · rw [CNF_ne_zero ho, map_cons, sorted_cons]
         refine ⟨fun a H ↦ ?_, IH⟩

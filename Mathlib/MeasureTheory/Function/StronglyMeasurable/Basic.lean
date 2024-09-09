@@ -244,7 +244,7 @@ theorem norm_approxBounded_le {β} {f : α → β} [SeminormedAddCommGroup β] [
 
 theorem _root_.stronglyMeasurable_bot_iff [Nonempty β] [T2Space β] :
     StronglyMeasurable[⊥] f ↔ ∃ c, f = fun _ => c := by
-  cases' isEmpty_or_nonempty α with hα hα
+  rcases isEmpty_or_nonempty α with hα | hα
   · simp only [@Subsingleton.stronglyMeasurable' _ _ ⊥ _ _ f,
       eq_iff_true_of_subsingleton, exists_const]
   refine ⟨fun hf => ?_, fun hf_eq => ?_⟩

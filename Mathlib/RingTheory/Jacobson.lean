@@ -227,7 +227,7 @@ theorem isJacobson_localization [H : IsJacobson R] : IsJacobson S := by
       · exact J.mul_mem_left x h
       · exact J.mul_mem_right y ((mem_sInf.1 hx) ⟨hJ.left, ⟨hJ.right, h⟩⟩)
     rw [hP] at hxy
-    cases' hP'.mem_or_mem hxy with hxy hxy
+    rcases hP'.mem_or_mem hxy with hxy | hxy
     · exact hxy
     · exact (hPM.le_bot ⟨Submonoid.mem_powers _, hxy⟩).elim
   refine le_trans ?_ this
@@ -311,7 +311,7 @@ theorem isIntegral_isLocalization_polynomial_quotient
     ((algebraMap (R[X] ⧸ P) Sₘ) p') ?_
   · rintro x ⟨p, hp, rfl⟩
     simp only [Set.mem_insert_iff] at hp
-    cases' hp with hy hy
+    rcases hp with hy | hy
     · rw [hy]
       refine φ.isIntegralElem_localization_at_leadingCoeff ((Quotient.mk P) X)
         (pX.map (Quotient.mk P')) ?_ M ?_

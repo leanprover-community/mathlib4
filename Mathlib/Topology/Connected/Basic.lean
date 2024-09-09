@@ -665,7 +665,7 @@ theorem preconnectedSpace_iff_connectedComponent :
   · intro h x
     exact eq_univ_of_univ_subset <| isPreconnected_univ.subset_connectedComponent (mem_univ x)
   · intro h
-    cases' isEmpty_or_nonempty α with hα hα
+    rcases isEmpty_or_nonempty α with hα | hα
     · exact ⟨by rw [univ_eq_empty_iff.mpr hα]; exact isPreconnected_empty⟩
     · exact ⟨by rw [← h (Classical.choice hα)]; exact isPreconnected_connectedComponent⟩
 

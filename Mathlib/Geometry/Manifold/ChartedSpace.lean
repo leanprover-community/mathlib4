@@ -278,7 +278,7 @@ def idGroupoid (H : Type u) [TopologicalSpace H] : StructureGroupoid H where
       have : e ≫ₕ e' ∈ { e : PartialHomeomorph H H | e.source = ∅ } := eq_bot_iff.2 this
       exact (mem_union _ _ _).2 (Or.inr this)
   symm' e he := by
-    cases' (mem_union _ _ _).1 he with E E
+    rcases (mem_union _ _ _).1 he with E | E
     · simp [mem_singleton_iff.mp E]
     · right
       simpa only [e.toPartialEquiv.image_source_eq_target.symm, mfld_simps] using E
@@ -326,7 +326,7 @@ instance instStructureGroupoidOrderBot : OrderBot (StructureGroupoid H) where
     intro u f hf
     have hf : f ∈ {PartialHomeomorph.refl H} ∪ { e : PartialHomeomorph H H | e.source = ∅ } := hf
     simp only [singleton_union, mem_setOf_eq, mem_insert_iff] at hf
-    cases' hf with hf hf
+    rcases hf with hf | hf
     · rw [hf]
       apply u.id_mem
     · apply u.locality

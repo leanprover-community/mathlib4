@@ -169,7 +169,7 @@ theorem eq_zero_iff_not_coprime {a : ℤ} {b : ℕ} [NeZero b] : J(a | b) = 0 �
 
 /-- The symbol `J(a | b)` is nonzero when `a` and `b` are coprime. -/
 protected theorem ne_zero {a : ℤ} {b : ℕ} (h : a.gcd b = 1) : J(a | b) ≠ 0 := by
-  cases' eq_zero_or_neZero b with hb
+  rcases eq_zero_or_neZero b with hb | _
   · rw [hb, zero_right]
     exact one_ne_zero
   · contrapose! h; exact eq_zero_iff_not_coprime.1 h
@@ -200,13 +200,13 @@ theorem pow_left (a : ℤ) (e b : ℕ) : J(a ^ e | b) = J(a | b) ^ e :=
 theorem pow_right (a : ℤ) (b e : ℕ) : J(a | b ^ e) = J(a | b) ^ e := by
   induction' e with e ih
   · rw [Nat.pow_zero, _root_.pow_zero, one_right]
-  · cases' eq_zero_or_neZero b with hb
+  · rcases eq_zero_or_neZero b with hb | _
     · rw [hb, zero_pow e.succ_ne_zero, zero_right, one_pow]
     · rw [_root_.pow_succ, _root_.pow_succ, mul_right, ih]
 
 /-- The square of `J(a | b)` is `1` when `a` and `b` are coprime. -/
 theorem sq_one {a : ℤ} {b : ℕ} (h : a.gcd b = 1) : J(a | b) ^ 2 = 1 := by
-  cases' eq_one_or_neg_one h with h₁ h₁ <;> rw [h₁] <;> rfl
+  rcases eq_one_or_neg_one h with h₁ | h₁ <;> rw [h₁] <;> rfl
 
 /-- The symbol `J(a^2 | b)` is `1` when `a` and `b` are coprime. -/
 theorem sq_one' {a : ℤ} {b : ℕ} (h : a.gcd b = 1) : J(a ^ 2 | b) = 1 := by rw [pow_left, sq_one h]
@@ -367,7 +367,7 @@ namespace qrSign
 theorem neg_one_pow {m n : ℕ} (hm : Odd m) (hn : Odd n) :
     qrSign m n = (-1) ^ (m / 2 * (n / 2)) := by
   rw [qrSign, pow_mul, ← χ₄_eq_neg_one_pow (odd_iff.mp hm)]
-  cases' odd_mod_four_iff.mp (odd_iff.mp hm) with h h
+  rcases odd_mod_four_iff.mp (odd_iff.mp hm) with h | h
   · rw [χ₄_nat_one_mod_four h, jacobiSym.one_left, one_pow]
   · rw [χ₄_nat_three_mod_four h, ← χ₄_eq_neg_one_pow (odd_iff.mp hn), jacobiSym.at_neg_one hn]
 
@@ -484,7 +484,7 @@ theorem mod_right' (a : ℕ) {b : ℕ} (hb : Odd b) : J(a | b) = J(a | b % (4 * 
 
 /-- The Jacobi symbol `J(a | b)` depends only on `b` mod `4*a`. -/
 theorem mod_right (a : ℤ) {b : ℕ} (hb : Odd b) : J(a | b) = J(a | b % (4 * a.natAbs)) := by
-  cases' Int.natAbs_eq a with ha ha <;> nth_rw 2 [ha] <;> nth_rw 1 [ha]
+  rcases Int.natAbs_eq a with ha | ha <;> nth_rw 2 [ha] <;> nth_rw 1 [ha]
   · exact mod_right' a.natAbs hb
   · have hb' : Odd (b % (4 * a.natAbs)) := hb.mod_even (Even.mul_right (by decide) _)
     rw [jacobiSym.neg _ hb, jacobiSym.neg _ hb', mod_right' _ hb, χ₄_nat_mod_four,

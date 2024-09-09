@@ -207,14 +207,14 @@ theorem coe_real_preimage_closedBall_inter_eq {x ε : ℝ} (s : Set ℝ)
     rintro y ⟨⟨hy₁, hy₂⟩, hy₀⟩
     obtain ⟨hy₃, hy₄⟩ := hs hy₀
     rcases lt_trichotomy 0 p with (hp | (rfl : 0 = p) | hp)
-    · cases' Int.cast_le_neg_one_or_one_le_cast_of_ne_zero ℝ hz with hz' hz'
+    · rcases Int.cast_le_neg_one_or_one_le_cast_of_ne_zero ℝ hz with hz' | hz'
       · have : ↑z * p ≤ -p := by nlinarith
         linarith [abs_eq_self.mpr hp.le]
       · have : p ≤ ↑z * p := by nlinarith
         linarith [abs_eq_self.mpr hp.le]
     · simp only [mul_zero, add_zero, abs_zero, zero_div] at hy₁ hy₂ hε
       linarith
-    · cases' Int.cast_le_neg_one_or_one_le_cast_of_ne_zero ℝ hz with hz' hz'
+    · rcases Int.cast_le_neg_one_or_one_le_cast_of_ne_zero ℝ hz with hz' | hz'
       · have : -p ≤ ↑z * p := by nlinarith
         linarith [abs_eq_neg_self.mpr hp.le]
       · have : ↑z * p ≤ p := by nlinarith

@@ -872,7 +872,7 @@ include hcard in
 theorem lift_word_prod_nontrivial_of_not_empty {i j} (w : NeWord H i j) :
     lift f w.prod ≠ 1 := by
   classical
-    cases' hcard with hcard hcard
+    rcases hcard with hcard | hcard
     · obtain ⟨i, h1, h2⟩ := Cardinal.three_le hcard i j
       exact lift_word_prod_nontrivial_of_other_i f X hXnonempty hXdisj hpp w h1 h2
     · cases' hcard with k hcard
@@ -1032,7 +1032,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
     clear hne1
     simp only [X']
     -- Positive and negative powers separately
-    cases' (lt_or_gt_of_ne hnne0).symm with hlt hgt
+    rcases (lt_or_gt_of_ne hnne0).symm with hlt | hgt
     · have h1n : 1 ≤ n := hlt
       calc
         a i ^ n • X' j ⊆ a i ^ n • (Y i)ᶜ :=

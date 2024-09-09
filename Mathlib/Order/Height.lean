@@ -316,7 +316,7 @@ theorem chainHeight_union_eq (s t : Set α) (H : ∀ a ∈ s, ∀ b ∈ t, a < b
   refine ⟨l ++ l', ⟨Chain'.append hl.1 hl'.1 fun x hx y hy ↦ ?_, fun i hi ↦ ?_⟩, by simp⟩
   · exact H x (hl.2 _ <| mem_of_mem_getLast? hx) y (hl'.2 _ <| mem_of_mem_head? hy)
   · rw [mem_append] at hi
-    cases' hi with hi hi
+    rcases hi with hi | hi
     exacts [Or.inl (hl.2 _ hi), Or.inr (hl'.2 _ hi)]
 
 theorem wellFoundedGT_of_chainHeight_ne_top (s : Set α) (hs : s.chainHeight ≠ ⊤) :

@@ -764,7 +764,7 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
     simp only [Finset.mem_val]
     constructor
     · intro h
-      cases' h with n h
+      rcases h with n | h
       · rw [add_comm] at this
         contradiction
       · cases' h with w h; cases' h with h₁ h₂

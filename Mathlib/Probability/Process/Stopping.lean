@@ -177,7 +177,7 @@ theorem IsStoppingTime.measurableSet_lt_of_isLUB (hτ : IsStoppingTime f τ) (i 
 theorem IsStoppingTime.measurableSet_lt (hτ : IsStoppingTime f τ) (i : ι) :
     MeasurableSet[f i] {ω | τ ω < i} := by
   obtain ⟨i', hi'_lub⟩ : ∃ i', IsLUB (Set.Iio i) i' := exists_lub_Iio i
-  cases' lub_Iio_eq_self_or_Iio_eq_Iic i hi'_lub with hi'_eq_i h_Iio_eq_Iic
+  rcases lub_Iio_eq_self_or_Iio_eq_Iic i hi'_lub with hi'_eq_i | h_Iio_eq_Iic
   · rw [← hi'_eq_i] at hi'_lub ⊢
     exact hτ.measurableSet_lt_of_isLUB i' hi'_lub
   · have h_lt_eq_preimage : {ω : Ω | τ ω < i} = τ ⁻¹' Set.Iio i := rfl
@@ -574,7 +574,7 @@ theorem measurableSet_inter_le [TopologicalSpace ι] [SecondCountableTopology ι
       intro
       constructor <;> intro h
       · exact Or.inl h
-      · cases' h with h h
+      · rcases h with h | h
         · exact h
         · exact hτi.trans h
     simp only [hτi, false_or_iff, and_false_iff, false_and_iff, iff_false_iff, not_and, not_le,

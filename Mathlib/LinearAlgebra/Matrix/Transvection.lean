@@ -571,7 +571,7 @@ theorem exists_isTwoBlockDiagonal_list_transvec_mul_mul_list_transvec
   push_neg at hM
   simp only [not_and_or, IsTwoBlockDiagonal, toBlocks₁₂, toBlocks₂₁, ← Matrix.ext_iff] at H
   have : ∃ i : Fin r, M (inl i) (inr unit) ≠ 0 ∨ M (inr unit) (inl i) ≠ 0 := by
-    cases' H with H H
+    rcases H with H | H
     · contrapose! H
       rintro i ⟨⟩
       exact (H i).1

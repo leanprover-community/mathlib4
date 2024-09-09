@@ -264,7 +264,7 @@ protected theorem mul_inv_rev (φ ψ : MvPowerSeries σ k) :
   · rw [inv_eq_zero.mpr h]
     simp only [map_mul, mul_eq_zero] at h
     -- we don't have `NoZeroDivisors (MvPowerSeries σ k)` yet,
-    cases' h with h h <;> simp [inv_eq_zero.mpr h]
+    rcases h with h | h <;> simp [inv_eq_zero.mpr h]
   · rw [MvPowerSeries.inv_eq_iff_mul_eq_one h]
     simp only [not_or, map_mul, mul_eq_zero] at h
     rw [← mul_assoc, mul_assoc _⁻¹, MvPowerSeries.inv_mul_cancel _ h.left, mul_one,

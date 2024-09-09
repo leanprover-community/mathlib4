@@ -195,7 +195,7 @@ theorem denom_ne_zero (g : GL(2, ℝ)⁺) (z : ℍ) : denom g z ≠ 0 := by
   have hz := z.prop
   simp only [GeneralLinearGroup.val_det_apply] at DET
   have H1 : (↑ₘg 1 0 : ℝ) = 0 ∨ z.im = 0 := by simpa [num, denom] using congr_arg Complex.im H
-  cases' H1 with H1
+  rcases H1 with H1 | _
   · simp only [H1, Complex.ofReal_zero, denom, zero_mul, zero_add,
       Complex.ofReal_eq_zero] at H
     rw [Matrix.det_fin_two (↑ₘg : Matrix (Fin 2) (Fin 2) ℝ)] at DET

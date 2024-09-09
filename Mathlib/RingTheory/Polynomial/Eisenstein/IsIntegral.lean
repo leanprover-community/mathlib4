@@ -250,7 +250,7 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
     simpa using hQ
   by_cases hQzero : Q = 0
   · simp only [hQzero, Algebra.smul_def, zero_eq_mul, aeval_zero] at hQ
-    cases' hQ with H H₁
+    rcases hQ with H | H₁
     · have : Function.Injective (algebraMap R L) := by
         rw [algebraMap_eq R K L]
         exact (algebraMap K L).injective.comp (IsFractionRing.injective R K)

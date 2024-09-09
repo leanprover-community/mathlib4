@@ -310,7 +310,7 @@ theorem det_adjustToOrientation [Nonempty ι] (e : Basis ι R M)
 @[simp]
 theorem abs_det_adjustToOrientation [Nonempty ι] (e : Basis ι R M)
     (x : Orientation R M ι) (v : ι → M) : |(e.adjustToOrientation x).det v| = |e.det v| := by
-  cases' e.det_adjustToOrientation x with h h <;> simp [h]
+  rcases e.det_adjustToOrientation x with h | h <;> simp [h]
 
 end Basis
 

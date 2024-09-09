@@ -1082,7 +1082,7 @@ theorem continuousWithinAt_iff_lower_upperSemicontinuousWithinAt {f : α → γ}
     by_cases Hu : ∃ u, f x < u
     · rcases exists_Ico_subset_of_mem_nhds hv Hu with ⟨u, fxu, hu⟩
       filter_upwards [h₁ l lfx, h₂ u fxu] with a lfa fau
-      cases' le_or_gt (f a) (f x) with h h
+      rcases le_or_gt (f a) (f x) with h | h
       · exact hl ⟨lfa, h⟩
       · exact hu ⟨le_of_lt h, fau⟩
     · simp only [not_exists, not_lt] at Hu

@@ -101,7 +101,7 @@ theorem image_le_of_liminf_slope_right_lt_deriv_boundary' {f f' : ℝ → ℝ} {
     exact A.preimage_isClosed_of_isClosed isClosed_Icc OrderClosedTopology.isClosed_le'
   apply this.Icc_subset_of_forall_exists_gt ha
   rintro x ⟨hxB : f x ≤ B x, xab⟩ y hy
-  cases' hxB.lt_or_eq with hxB hxB
+  rcases hxB.lt_or_eq with hxB | hxB
   · -- If `f x < B x`, then all we need is continuity of both sides
     refine nonempty_of_mem (inter_mem ?_ (Ioc_mem_nhdsWithin_Ioi ⟨le_rfl, hy⟩))
     have : ∀ᶠ x in 𝓝[Icc a b] x, f x < B x :=
@@ -909,7 +909,7 @@ theorem Convex.mul_sub_le_image_sub_of_le_deriv {D : Set ℝ} (hD : Convex ℝ D
     (hf'_ge : ∀ x ∈ interior D, C ≤ deriv f x) :
     ∀ᵉ (x ∈ D) (y ∈ D), x ≤ y → C * (y - x) ≤ f y - f x := by
   intro x hx y hy hxy
-  cases' eq_or_lt_of_le hxy with hxy' hxy'
+  rcases eq_or_lt_of_le hxy with hxy' | hxy'
   · rw [hxy', sub_self, sub_self, mul_zero]
   have hxyD : Icc x y ⊆ D := hD.ordConnected.out hx hy
   have hxyD' : Ioo x y ⊆ interior D :=

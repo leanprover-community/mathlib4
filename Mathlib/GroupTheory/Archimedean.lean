@@ -74,7 +74,7 @@ theorem AddSubgroup.exists_isLeast_pos {H : AddSubgroup G} (hbot : H ≠ ⊥) {a
     not_le] at hxmin
   rcases hxmin x ⟨hxH, (nsmul_nonneg h₀.le _).trans_lt hnx⟩ with ⟨y, ⟨hyH, hy₀⟩, hxy⟩
   rcases hex y hy₀ with ⟨m, hm⟩
-  cases' lt_or_le m n with hmn hnm
+  rcases lt_or_le m n with hmn | hnm
   · exact hmin m hmn ⟨y, hyH, hm⟩
   · refine disjoint_left.1 hd (sub_mem hxH hyH) ⟨sub_pos.2 hxy, sub_lt_iff_lt_add'.2 ?_⟩
     calc x ≤ (n + 1) • a := hxn

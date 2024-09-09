@@ -507,7 +507,7 @@ lemma iSup_genEigenspace_inf_le_add
   refine Finset.sum_eq_zero fun ⟨i, j⟩ hij ↦ ?_
   suffices (((f₁ - μ₁ • 1) ^ i) * ((f₂ - μ₂ • 1) ^ j)) m = 0 by
     rw [LinearMap.smul_apply, this, smul_zero]
-  cases' Nat.le_or_le_of_add_eq_add_pred (Finset.mem_antidiagonal.mp hij) with hi hj
+  rcases Nat.le_or_le_of_add_eq_add_pred (Finset.mem_antidiagonal.mp hij) with hi | hj
   · rw [(h.pow_pow i j).eq, LinearMap.mul_apply, LinearMap.pow_map_zero_of_le hi hk₁,
       LinearMap.map_zero]
   · rw [LinearMap.mul_apply, LinearMap.pow_map_zero_of_le hj hk₂, LinearMap.map_zero]

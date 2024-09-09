@@ -258,7 +258,7 @@ theorem ListBlank.exists_cons {Γ} [Inhabited Γ] (l : ListBlank Γ) :
 def ListBlank.nth {Γ} [Inhabited Γ] (l : ListBlank Γ) (n : ℕ) : Γ := by
   apply l.liftOn (fun l ↦ List.getI l n)
   rintro l _ ⟨i, rfl⟩
-  cases' lt_or_le n _ with h h
+  rcases lt_or_le n _ with h | h
   · rw [List.getI_append _ _ _ h]
   rw [List.getI_eq_default _ h]
   rcases le_or_lt _ n with h₂ | h₂
@@ -294,7 +294,7 @@ theorem ListBlank.ext {Γ} [i : Inhabited Γ] {L₁ L₂ : ListBlank Γ} :
   refine List.ext_get ?_ fun i h h₂ ↦ Eq.symm ?_
   · simp only [Nat.add_sub_cancel' h, List.length_append, List.length_replicate]
   simp only [ListBlank.nth_mk] at H
-  cases' lt_or_le i l₁.length with h' h'
+  rcases lt_or_le i l₁.length with h' | h'
   · simp only [List.get_append _ h', List.get?_eq_get h, List.get?_eq_get h',
       ← List.getI_eq_get _ h, ← List.getI_eq_get _ h', H]
   · simp only [List.get_append_right' h', List.get_replicate, List.get?_eq_get h,
@@ -2328,7 +2328,7 @@ theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : Stmt₂₁} {v : σ} {S 
           simp only [List.length_singleton, h, List.length_reverse, List.length_map, Nat.sub_self,
             Fin.zero_eta, List.get_cons_zero, le_refl, List.length_append, Nat.lt_succ_self]
       rw [← proj_map_nth, hL, ListBlank.nth_mk]
-      cases' lt_or_gt_of_ne h with h h
+      rcases lt_or_gt_of_ne h with h | h
       · rw [List.getI_append]
         simpa only [List.length_map, List.length_reverse] using h
       · rw [gt_iff_lt] at h
@@ -2370,7 +2370,7 @@ theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : Stmt₂₁} {v : σ} {S 
           · rfl
           rw [h, List.length_reverse, List.length_map]
         rw [← proj_map_nth, hL, ListBlank.nth_mk, e, List.map, List.reverse_cons]
-        cases' lt_or_gt_of_ne h with h h
+        rcases lt_or_gt_of_ne h with h | h
         · rw [List.getI_append]
           simpa only [List.length_map, List.length_reverse] using h
         · rw [gt_iff_lt] at h

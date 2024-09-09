@@ -306,9 +306,9 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
     obtain ⟨p, hp⟩ := h
     rw [hE₁ p]
     cases hp
-    · cases' hA p with _ h; · contradiction
+    · rcases hA p with _ | h; · contradiction
       simp only [h, union_ae_eq_univ_of_ae_eq_univ_left]
-    · cases' hB p with _ h; · contradiction
+    · rcases hB p with _ | h; · contradiction
       simp only [h, union_ae_eq_univ_of_ae_eq_univ_left, union_ae_eq_univ_of_ae_eq_univ_right]
 
 /-- A general version of **Dirichlet's approximation theorem**.

@@ -452,7 +452,7 @@ private theorem aux₂ : 0 < u - ⌊ξ⌋ * v ∧ u - ⌊ξ⌋ * v < v := by
   refine ⟨lt_of_le_of_ne' hu₀ fun hf => ?_, lt_of_le_of_ne hu₁ fun hf => ?_⟩ <;>
     · rw [hf] at huv_cop
       simp only [isCoprime_zero_left, isCoprime_self, isUnit_iff] at huv_cop
-      cases' huv_cop with huv_cop huv_cop <;> linarith only [hv, huv_cop]
+      rcases huv_cop with huv_cop | huv_cop <;> linarith only [hv, huv_cop]
 
 -- The key step: the relevant inequality persists in the inductive step.
 private theorem aux₃ :

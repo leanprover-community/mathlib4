@@ -343,7 +343,7 @@ theorem WfDvdMonoid.of_exists_prime_factors : WfDvdMonoid α :=
           rw [con, Multiset.prod_zero]
         · intro x hadd
           rw [Multiset.mem_add] at hadd
-          cases' hadd with h h <;> apply (Classical.choose_spec (pf _ _)).1 _ h <;> assumption
+          rcases hadd with h | h <;> apply (Classical.choose_spec (pf _ _)).1 _ h <;> assumption
         · rw [Multiset.prod_add]
           trans a * c
           · apply Associated.mul_mul <;> apply (Classical.choose_spec (pf _ _)).2 <;> assumption
@@ -653,7 +653,7 @@ theorem normalizedFactors_zero : normalizedFactors (0 : α) = 0 := by
 
 @[simp]
 theorem normalizedFactors_one : normalizedFactors (1 : α) = 0 := by
-  cases' subsingleton_or_nontrivial α with h h
+  rcases subsingleton_or_nontrivial α with h | h
   · dsimp [normalizedFactors, factors]
     simp [Subsingleton.elim (1 : α) 0]
   · rw [← Multiset.rel_zero_right]
@@ -902,7 +902,7 @@ theorem exists_reduced_factors :
     · obtain ⟨a', b', c', coprime, rfl, rfl⟩ := ih_a a_ne_zero b
       refine ⟨p * a', b', c', ?_, mul_left_comm _ _ _, rfl⟩
       intro q q_dvd_pa' q_dvd_b'
-      cases' p_prime.left_dvd_or_dvd_right_of_dvd_mul q_dvd_pa' with p_dvd_q q_dvd_a'
+      rcases p_prime.left_dvd_or_dvd_right_of_dvd_mul q_dvd_pa' with p_dvd_q | q_dvd_a'
       · have : p ∣ c' * b' := dvd_mul_of_dvd_right (p_dvd_q.trans q_dvd_b') _
         contradiction
       exact coprime q_dvd_a' q_dvd_b'
@@ -1679,7 +1679,7 @@ theorem count_mul_of_coprime {a : Associates α} {b : Associates α}
     count p a.factors = 0 ∨ count p a.factors = count p (a * b).factors := by
   by_cases ha : a = 0
   · simp [ha]
-  cases' count_of_coprime ha hb hab hp with hz hb0; · tauto
+  rcases count_of_coprime ha hb hab hp with hz | hb0; · tauto
   apply Or.intro_right
   rw [count_mul ha hb hp, hb0, add_zero]
 
@@ -1691,7 +1691,7 @@ theorem count_mul_of_coprime' {a b : Associates α} {p : Associates α}
   by_cases hb : b = 0
   · simp [hb]
   rw [count_mul ha hb hp]
-  cases' count_of_coprime ha hb hab hp with ha0 hb0
+  rcases count_of_coprime ha hb hab hp with ha0 | hb0
   · apply Or.intro_right
     rw [ha0, zero_add]
   · apply Or.intro_left
@@ -1702,7 +1702,7 @@ theorem dvd_count_of_dvd_count_mul {a b : Associates α} (hb : b ≠ 0)
     (habk : k ∣ count p (a * b).factors) : k ∣ count p a.factors := by
   by_cases ha : a = 0
   · simpa [*] using habk
-  cases' count_of_coprime ha hb hab hp with hz h
+  rcases count_of_coprime ha hb hab hp with hz | h
   · rw [hz]
     exact dvd_zero k
   · rw [count_mul ha hb hp, h] at habk
@@ -1766,7 +1766,7 @@ theorem count_factors_eq_find_of_dvd_pow {a p : Associates α}
     symm
     exact eq_pow_count_factors_of_dvd_pow hp h
   · have hph := pow_ne_zero (@Nat.find (fun n => a ∣ p ^ n) _ ⟨n, h⟩) hp.ne_zero
-    cases' subsingleton_or_nontrivial α with hα hα
+    rcases subsingleton_or_nontrivial α with hα | hα
     · simp [eq_iff_true_of_subsingleton] at hph
     convert count_le_count_of_le hph hp (@Nat.find_spec (fun n => a ∣ p ^ n) _ ⟨n, h⟩)
     rw [count_pow hp.ne_zero hp, count_self hp, mul_one]

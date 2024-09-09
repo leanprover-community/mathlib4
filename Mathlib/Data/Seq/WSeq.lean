@@ -821,7 +821,7 @@ theorem eq_or_mem_iff_mem {s : WSeq α} {a a' s'} :
     have h_a_eq_a' : a = a' ↔ some (some a) = some (some a') := by simp
     rw [h_a_eq_a']
     refine ⟨Stream'.eq_or_mem_of_mem_cons, fun o => ?_⟩
-    · cases' o with e m
+    · rcases o with e | m
       · rw [e]
         apply Stream'.mem_cons
       · exact Stream'.mem_cons_of_mem _ m
@@ -871,7 +871,7 @@ theorem get?_mem {s : WSeq α} {a n} : some a ∈ get? s n → a ∈ s := by
 theorem exists_get?_of_mem {s : WSeq α} {a} (h : a ∈ s) : ∃ n, some a ∈ get? s n := by
   apply mem_rec_on h
   · intro a' s' h
-    cases' h with h h
+    rcases h with h | h
     · exists 0
       simp only [get?, drop, head_cons]
       rw [h]
@@ -1268,9 +1268,9 @@ theorem exists_of_mem_join {a : α} : ∀ {S : WSeq (WSeq α)}, a ∈ join S →
       simp at this; cases this
     substs b' ss
     simp? at m ⊢ says simp only [cons_append, mem_cons_iff] at m ⊢
-    cases' o with e IH
+    rcases o with e | IH
     · simp [e]
-    cases' m with e m
+    rcases m with e | m
     · simp [e]
     exact Or.imp_left Or.inr (IH _ _ rfl m)
   · induction' s using WSeq.recOn with b' s s <;>
@@ -1280,7 +1280,7 @@ theorem exists_of_mem_join {a : α} : ∀ {S : WSeq (WSeq α)}, a ∈ join S →
     · apply Or.inr
       -- Porting note: `exists_eq_or_imp` should be excluded.
       simp [-exists_eq_or_imp] at m ⊢
-      cases' IH s S rfl m with as ex
+      rcases IH s S rfl m with as | ex
       · exact ⟨s, Or.inl rfl, as⟩
       · rcases ex with ⟨s', sS, as⟩
         exact ⟨s', Or.inr sS, as⟩
