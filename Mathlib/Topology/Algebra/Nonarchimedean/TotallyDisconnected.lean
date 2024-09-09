@@ -118,10 +118,6 @@ lemma intersection_of_intersection_of_complements_empty (y : G)  (U : Set G)
 variable [TopologicalGroup G]
 
 @[to_additive]
-lemma is_open_coset (y : G) (V : OpenSubgroup G)  :
-    IsOpen (y • (V : Set G)) := IsOpen.smul (OpenSubgroup.isOpen V) y
-
-@[to_additive]
 lemma is_open_compl_coset' (y : G)
     (V : OpenSubgroup G) :
     IsOpen  (y • (V : Set G))ᶜ := by
@@ -150,7 +146,8 @@ theorem non_singleton_set_disconnected
   obtain ⟨u , v, ou, ov, Uuv, Uu, Uv, emptyUuv⟩ : ∃ u v : Set G, (IsOpen u) ∧ (IsOpen v) ∧
       (U ⊆ u ∪ v) ∧ ((U ∩ u).Nonempty) ∧ ((U ∩ v).Nonempty) ∧ (¬(U ∩ (u ∩ v)).Nonempty) := by
     use (y • (V : Set G)) , (y • (V : Set G))ᶜ
-    refine ⟨is_open_coset G y V, is_open_compl_coset' G y V, subset_coset_comp G y U V,
+    refine ⟨(IsOpen.smul (OpenSubgroup.isOpen V) y), is_open_compl_coset' G y V,
+        subset_coset_comp G y U V,
         non_empty_intersection_coset G x y U hy hxy V,
         non_empty_intersection_compl_coset G x y U hx A ha V dav.symm,
         intersection_of_intersection_of_complements_empty G y U V⟩
