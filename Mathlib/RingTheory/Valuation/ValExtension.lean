@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiedong Jiang, Bichang Lei
 -/
 import Mathlib.RingTheory.Valuation.Integers
-import Mathlib.RingTheory.LocalRing.Basic
+import Mathlib.RingTheory.LocalRing.RingHom.Basic
+import Mathlib.RingTheory.LocalRing.RingHom.Defs
 
 /-!
 # Extension of Valuation
@@ -96,7 +97,7 @@ section integer
 variable {K : Type*} [Field K] [Algebra K A] {ΓR ΓA ΓK: Type*}
     [LinearOrderedCommGroupWithZero ΓR] [LinearOrderedCommGroupWithZero ΓK]
     [LinearOrderedCommGroupWithZero ΓA] {vR : Valuation R ΓR} {vK : Valuation K ΓK}
-    {vA : Valuation A ΓA} [IsValExtension vR vA] [IsValExtension vK vA]
+    {vA : Valuation A ΓA} [IsValExtension vR vA]
 
 /--
 When `K` is a field, if the preimage of the valuation integers of `A` equals to the valuation
@@ -138,7 +139,7 @@ instance instNoZeroSMulDivisorsInteger [NoZeroSMulDivisors R A] :
   have : (x : R) • (y : A) = 0 := by simpa [Subtype.ext_iff, Algebra.smul_def] using e
   simpa only [Subtype.ext_iff, smul_eq_zero] using this
 
-theorem algebraMap_injective [Nontrivial A] :
+theorem algebraMap_injective [IsValExtension vK vA] [Nontrivial A] :
     Function.Injective (algebraMap vK.integer vA.integer) := by
   intro x y h
   simp only [Subtype.ext_iff, val_algebraMap] at h
