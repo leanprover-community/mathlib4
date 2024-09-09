@@ -465,6 +465,10 @@ def basisModTorsion : Basis (Fin (rank K)) ℤ (Additive ((𝓞 K)ˣ ⧸ (torsio
   Basis.reindex (Module.Free.chooseBasis ℤ _) (Fintype.equivOfCardEq <| by
     rw [← FiniteDimensional.finrank_eq_card_chooseBasisIndex, rank_modTorsion, Fintype.card_fin])
 
+/-- The basis of the `unitLattice` obtained by mapping `basisModTorsion` via `logEmbedding`. -/
+def basisUnitLattice : Basis (Fin (rank K)) ℤ (unitLattice K) :=
+  Basis.map (basisModTorsion K) (logEmbeddingEquiv K)
+
 /-- A fundamental system of units of `K`. The units of `fundSystem` are arbitrary lifts of the
 units in `basisModTorsion`. -/
 def fundSystem : Fin (rank K) → (𝓞 K)ˣ :=
@@ -476,6 +480,11 @@ theorem fundSystem_mk (i : Fin (rank K)) :
   rw [fundSystem, Equiv.apply_eq_iff_eq_symm_apply, @Quotient.mk_eq_iff_out,
     Quotient.out', Quotient.out_equiv_out]
   rfl
+
+theorem logEmbedding_fundSystem (i : Fin (rank K)) :
+     logEmbedding K (fundSystem K i) = basisUnitLattice K i := by
+   rw [basisUnitLattice, Basis.map_apply, ← fundSystem_mk, ← logEmbeddingEquiv_apply]
+   rfl
 
 /-- The exponents that appear in the unique decomposition of a unit as the product of
 a root of unity and powers of the units of the fundamental system `fundSystem` (see
