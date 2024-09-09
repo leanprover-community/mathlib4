@@ -3,14 +3,8 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.FiniteType
-import Mathlib.RingTheory.Localization.AtPrime
-import Mathlib.RingTheory.Localization.Away.Basic
-import Mathlib.RingTheory.Localization.Integer
 import Mathlib.RingTheory.Localization.Submodule
-import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.RingTheory.RingHomProperties
-import Mathlib.Data.Set.Subsingleton
 import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 
 /-!
