@@ -4,11 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Scott Morrison
 -/
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
-import Mathlib.Algebra.Category.Ring.Colimits
-import Mathlib.Algebra.Category.Ring.Limits
 import Mathlib.Topology.Sheaves.LocalPredicate
-import Mathlib.RingTheory.Localization.AtPrime
-import Mathlib.Algebra.Ring.Subring.Basic
 
 /-!
 # The structure sheaf on `PrimeSpectrum R`.
