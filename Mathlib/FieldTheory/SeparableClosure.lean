@@ -171,7 +171,7 @@ theorem separableClosure.normalClosure_eq_self :
     normalClosure F (separableClosure F E) E = separableClosure F E :=
   le_antisymm (normalClosure_le_iff.2 fun i ↦
     haveI : Algebra.IsSeparable F i.fieldRange :=
-      (AlgEquiv.Algrebra.isSeparable (AlgEquiv.ofInjectiveField i))
+      (AlgEquiv.Algebra.isSeparable (AlgEquiv.ofInjectiveField i))
     le_separableClosure F E _) (le_normalClosure _)
 
 /-- If `E` is normal over `F`, then the separable closure of `F` in `E` is Galois (i.e.

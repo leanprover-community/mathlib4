@@ -570,10 +570,10 @@ theorem AlgEquiv.Algebra.isSeparable [Algebra.IsSeparable F K] : Algebra.IsSepar
   ⟨fun _ ↦ e.symm.isSeparable_iff.mp (Algebra.IsSeparable.isSeparable _ _)⟩
 
 @[deprecated (since := "2024-08-06")]
-alias AlgEquiv.isSeparable := AlgEquiv.Algrebra.isSeparable
+alias AlgEquiv.isSeparable := AlgEquiv.Algebra.isSeparable
 
 theorem AlgEquiv.Algebra.isSeparable_iff : Algebra.IsSeparable F K ↔ Algebra.IsSeparable F E :=
-  ⟨fun _ ↦ AlgEquiv.Algrebra.isSeparable e, fun _ ↦ AlgEquiv.Algrebra.isSeparable e.symm⟩
+  ⟨fun _ ↦ AlgEquiv.Algebra.isSeparable e, fun _ ↦ AlgEquiv.Algebra.isSeparable e.symm⟩
 
 variable (F K) in
 instance Algebra.IsSeparable.isAlgebraic [Nontrivial F] [Algebra.IsSeparable F K] :
