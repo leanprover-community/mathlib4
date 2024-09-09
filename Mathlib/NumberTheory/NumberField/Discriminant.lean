@@ -66,7 +66,7 @@ theorem discr_eq_discr_of_algEquiv {L : Type*} [Field L] [NumberField L] (f : K 
     Basis.map_apply]
   rfl
 
-open MeasureTheory MeasureTheory.Measure Zspan NumberField.mixedEmbedding
+open MeasureTheory MeasureTheory.Measure ZSpan NumberField.mixedEmbedding
   NumberField.InfinitePlace ENNReal NNReal Complex
 
 theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis :

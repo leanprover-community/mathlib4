@@ -19,11 +19,7 @@ open CategoryTheory Mathlib.Tactic.BicategoryLike MonoidalCategory
 
 namespace Mathlib.Tactic.Monoidal'
 
-open MonoidalCategory
-
 section
-
-open MonoidalCategory
 
 universe v u
 
