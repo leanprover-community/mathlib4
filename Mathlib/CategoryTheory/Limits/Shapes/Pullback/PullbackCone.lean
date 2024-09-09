@@ -23,7 +23,7 @@ t.pt ---t.snd---> Y
   v               v
   X -----f------> Z
 ```
-The type `PullbackCone f g` is implemented as an abbrevation for `Cone (cospan f g)`, so general
+The type `PullbackCone f g` is implemented as an abbreviation for `Cone (cospan f g)`, so general
 results about cones are also available for `PullbackCone f g`.
 
 * `PushoutCone f g`: Given morphisms `f : X ⟶ Y` and `g : X ⟶ Z`, a term `t : PushoutCone f g`

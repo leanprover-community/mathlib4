@@ -302,8 +302,8 @@ theorem stdBasis_eq_stdBasisMatrix (i : m) (j : n) [DecidableEq m] [DecidableEq 
   -- Porting note: `simp` fails to apply `Pi.basis_apply`
   ext a b
   by_cases hi : i = a <;> by_cases hj : j = b
-  · simp [stdBasis, hi, hj, Basis.coe_reindex, comp_apply, Equiv.sigmaEquivProd_symm_apply,
-      StdBasisMatrix.apply_same]
+  · simp only [stdBasis, hi, hj, Basis.coe_reindex, comp_apply, Equiv.sigmaEquivProd_symm_apply,
+    StdBasisMatrix.apply_same]
     erw [Pi.basis_apply]
     simp
   · simp only [stdBasis, hi, Basis.coe_reindex, comp_apply, Equiv.sigmaEquivProd_symm_apply,

@@ -142,11 +142,11 @@ def toLinearEquiv (A : unitaryGroup n α) : (n → α) ≃ₗ[α] n → α :=
     left_inv := fun x =>
       calc
         (toLin' A⁻¹).comp (toLin' A) x = (toLin' (A⁻¹ * A)) x := by rw [← toLin'_mul]
-        _ = x := by rw [mul_left_inv, toLin'_one, id_apply]
+        _ = x := by rw [inv_mul_cancel, toLin'_one, id_apply]
     right_inv := fun x =>
       calc
         (toLin' A).comp (toLin' A⁻¹) x = toLin' (A * A⁻¹) x := by rw [← toLin'_mul]
-        _ = x := by rw [mul_right_inv, toLin'_one, id_apply] }
+        _ = x := by rw [mul_inv_cancel, toLin'_one, id_apply] }
 
 /-- `Matrix.unitaryGroup.toGL` is the map from the unitary group to the general linear group -/
 def toGL (A : unitaryGroup n α) : GeneralLinearGroup α (n → α) :=

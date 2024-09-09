@@ -77,14 +77,11 @@ noncomputable def swap : TwoP ⥤ TwoP where
 
 /-- The equivalence between `TwoP` and itself induced by `Prod.swap` both ways. -/
 @[simps!]
-noncomputable def swapEquiv : TwoP ≌ TwoP :=
-  CategoryTheory.Equivalence.mk swap swap
-    (NatIso.ofComponents fun X =>
-      { hom := ⟨id, rfl, rfl⟩
-        inv := ⟨id, rfl, rfl⟩ })
-    (NatIso.ofComponents fun X =>
-      { hom := ⟨id, rfl, rfl⟩
-        inv := ⟨id, rfl, rfl⟩ })
+noncomputable def swapEquiv : TwoP ≌ TwoP where
+  functor := swap
+  inverse := swap
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
 
 @[simp]
 theorem swapEquiv_symm : swapEquiv.symm = swapEquiv :=

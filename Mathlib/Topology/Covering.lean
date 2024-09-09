@@ -141,6 +141,7 @@ theorem mk (F : X → Type*) [∀ x, TopologicalSpace (F x)] [∀ x, DiscreteTop
 
 variable {f}
 variable (hf : IsCoveringMap f)
+include hf
 
 protected theorem continuous : Continuous f :=
   continuous_iff_continuousOn_univ.mpr hf.isCoveringMapOn.continuousOn

@@ -81,7 +81,7 @@ To implement this in Lean, we define several auxiliary definitions.
   where
   `restrictNonposSeq s i 0 = someExistsOneDivLT s (i \ ∅)` and
   `restrictNonposSeq s i (n + 1) = someExistsOneDivLT s (i \ ⋃ k ≤ n, restrictNonposSeq k)`.
-  This definition represents the sequence $(A_n)$ in the proof as described above.
+  This definition represents the sequence $(A_n)$ in the proof as described above.
 
 With these definitions, we are able consider the case where the sequence terminates separately,
 allowing us to prove `exists_subset_restrict_nonpos`.
@@ -372,7 +372,7 @@ theorem exists_compl_positive_negative (s : SignedMeasure α) :
   have hA₂ : s ≤[A] 0 := restrict_le_restrict_iUnion _ _ hB₁ hB₂
   have hA₃ : s A = sInf s.measureOfNegatives := by
     apply le_antisymm
-    · refine le_of_tendsto_of_tendsto tendsto_const_nhds hf₂ (eventually_of_forall fun n => ?_)
+    · refine le_of_tendsto_of_tendsto tendsto_const_nhds hf₂ (Eventually.of_forall fun n => ?_)
       rw [← (hB n).2, hA, ← Set.diff_union_of_subset (Set.subset_iUnion _ n),
         of_union Set.disjoint_sdiff_left _ (hB₁ n)]
       · refine add_le_of_nonpos_left ?_

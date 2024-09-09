@@ -93,7 +93,7 @@ The binary operation is regarded as a left action of the type on itself.
 class Shelf (α : Type u) where
   /-- The action of the `Shelf` over `α`-/
   act : α → α → α
-  /-- A verification that `act` is self-distributive-/
+  /-- A verification that `act` is self-distributive -/
   self_distrib : ∀ {x y z : α}, act x (act y z) = act (act x y) (act x z)
 
 /--
@@ -111,7 +111,7 @@ This is also the notion of rack and quandle homomorphisms.
 structure ShelfHom (S₁ : Type*) (S₂ : Type*) [Shelf S₁] [Shelf S₂] where
   /-- The function under the Shelf Homomorphism -/
   toFun : S₁ → S₂
-  /-- The homomorphism property of a Shelf Homomorphism-/
+  /-- The homomorphism property of a Shelf Homomorphism -/
   map_act' : ∀ {x y : S₁}, toFun (Shelf.act x y) = Shelf.act (toFun x) (toFun y)
 
 /-- A *rack* is an automorphic set (a set with an action on itself by
@@ -129,13 +129,13 @@ class Rack (α : Type u) extends Shelf α where
   /-- Proof of right inverse -/
   right_inv : ∀ x, Function.RightInverse (invAct x) (act x)
 
-/-- Action of a Shelf-/
+/-- Action of a Shelf -/
 scoped[Quandles] infixr:65 " ◃ " => Shelf.act
 
-/-- Inverse Action of a Rack-/
+/-- Inverse Action of a Rack -/
 scoped[Quandles] infixr:65 " ◃⁻¹ " => Rack.invAct
 
-/-- Shelf Homomorphism-/
+/-- Shelf Homomorphism -/
 scoped[Quandles] infixr:25 " →◃ " => ShelfHom
 
 open Quandles
@@ -372,7 +372,7 @@ theorem fix_inv {x : Q} : x ◃⁻¹ x = x := by
 instance oppositeQuandle : Quandle Qᵐᵒᵖ where
   fix := by
     intro x
-    induction' x
+    induction x
     simp
 
 /-- The conjugation quandle of a group.  Each element of the group acts by
@@ -549,7 +549,7 @@ inductive PreEnvelGroupRel' (R : Type u) [Rack R] : PreEnvelGroup R → PreEnvel
   | assoc (a b c : PreEnvelGroup R) : PreEnvelGroupRel' R (mul (mul a b) c) (mul a (mul b c))
   | one_mul (a : PreEnvelGroup R) : PreEnvelGroupRel' R (mul unit a) a
   | mul_one (a : PreEnvelGroup R) : PreEnvelGroupRel' R (mul a unit) a
-  | mul_left_inv (a : PreEnvelGroup R) : PreEnvelGroupRel' R (mul (inv a) a) unit
+  | inv_mul_cancel (a : PreEnvelGroup R) : PreEnvelGroupRel' R (mul (inv a) a) unit
   | act_incl (x y : R) :
     PreEnvelGroupRel' R (mul (mul (incl x) (incl y)) (inv (incl x))) (incl (x ◃ y))
 
@@ -611,8 +611,8 @@ instance (R : Type*) [Rack R] : DivInvMonoid (EnvelGroup R) where
   mul_one a := Quotient.inductionOn a fun a => Quotient.sound (PreEnvelGroupRel'.mul_one a).rel
 
 instance (R : Type*) [Rack R] : Group (EnvelGroup R) :=
-  { mul_left_inv := fun a =>
-      Quotient.inductionOn a fun a => Quotient.sound (PreEnvelGroupRel'.mul_left_inv a).rel }
+  { inv_mul_cancel := fun a =>
+      Quotient.inductionOn a fun a => Quotient.sound (PreEnvelGroupRel'.inv_mul_cancel a).rel }
 
 instance EnvelGroup.inhabited (R : Type*) [Rack R] : Inhabited (EnvelGroup R) :=
   ⟨1⟩
@@ -652,7 +652,7 @@ theorem well_def {R : Type*} [Rack R] {G : Type*} [Group G] (f : R →◃ Quandl
   | _, _, assoc a b c => by apply mul_assoc
   | _, _, PreEnvelGroupRel'.one_mul a => by simp [toEnvelGroup.mapAux]
   | _, _, PreEnvelGroupRel'.mul_one a => by simp [toEnvelGroup.mapAux]
-  | _, _, PreEnvelGroupRel'.mul_left_inv a => by simp [toEnvelGroup.mapAux]
+  | _, _, PreEnvelGroupRel'.inv_mul_cancel a => by simp [toEnvelGroup.mapAux]
   | _, _, act_incl x y => by simp [toEnvelGroup.mapAux]
 
 end toEnvelGroup.mapAux
@@ -679,16 +679,18 @@ def toEnvelGroup.map {R : Type*} [Rack R] {G : Type*} [Group G] :
   right_inv F :=
     MonoidHom.ext fun x =>
       Quotient.inductionOn x fun x => by
-        induction' x with _ x y ih_x ih_y x ih_x
-        · exact F.map_one.symm
-        · rfl
-        · have hm : ⟦x.mul y⟧ = @Mul.mul (EnvelGroup R) _ ⟦x⟧ ⟦y⟧ := rfl
+        induction x with
+        | unit => exact F.map_one.symm
+        | incl => rfl
+        | mul x y ih_x ih_y =>
+          have hm : ⟦x.mul y⟧ = @Mul.mul (EnvelGroup R) _ ⟦x⟧ ⟦y⟧ := rfl
           simp only [MonoidHom.coe_mk, OneHom.coe_mk, Quotient.lift_mk]
           suffices ∀ x y, F (Mul.mul x y) = F (x) * F (y) by
             simp_all only [MonoidHom.coe_mk, OneHom.coe_mk, Quotient.lift_mk, hm]
             rw [← ih_x, ← ih_y, mapAux]
           exact F.map_mul
-        · have hm : ⟦x.inv⟧ = @Inv.inv (EnvelGroup R) _ ⟦x⟧ := rfl
+        | inv x ih_x =>
+          have hm : ⟦x.inv⟧ = @Inv.inv (EnvelGroup R) _ ⟦x⟧ := rfl
           rw [hm, F.map_inv, MonoidHom.map_inv, ih_x]
 
 /-- Given a homomorphism from a rack to a group, it factors through the enveloping group.

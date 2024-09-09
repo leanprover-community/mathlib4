@@ -39,6 +39,6 @@ instance instOrderedCancelCommMonoid [OrderedCancelCommMonoid β] :
 instance instCanonicallyOrderedCommMonoid [CanonicallyOrderedCommMonoid β] :
     CanonicallyOrderedCommMonoid (Germ l β) where
   __ := instExistsMulOfLE
-  le_self_mul x y := inductionOn₂ x y fun _ _ ↦ eventually_of_forall fun _ ↦ le_self_mul
+  le_self_mul x y := inductionOn₂ x y fun _ _ ↦ Eventually.of_forall fun _ ↦ le_self_mul
 
 end Filter.Germ

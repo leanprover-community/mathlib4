@@ -293,7 +293,7 @@ theorem sum_range_pow (n p : ℕ) :
     apply sum_congr rfl
     intros m h
     simp only [f, exp_pow_eq_rescale_exp, rescale, one_div, coeff_mk, RingHom.coe_mk, coeff_exp,
-      RingHom.id_apply, cast_mul, algebraMap_rat_rat]
+      RingHom.id_apply, cast_mul, Algebra.id.map_eq_id]
     -- manipulate factorials and binomial coefficients
     simp? at h says simp only [succ_eq_add_one, mem_range] at h
     rw [choose_eq_factorial_div_factorial h.le, eq_comm, div_eq_iff (hne q.succ), succ_eq_add_one,
