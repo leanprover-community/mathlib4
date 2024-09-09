@@ -79,9 +79,7 @@ lemma mem_subgroup_coset (x y : G) (hxy : y ≠ x) (V : OpenSubgroup G) :
   have omem : 1 ∈ (V : Set G) := one_mem V
   change (y = x) → False at hxy
   rw [← inv_mul_eq_one] at hxy
-  refine Set.mem_smul_set_iff_inv_smul_mem.mpr ?h.a
-  simp only [smul_eq_mul, inv_mul_cancel, SetLike.mem_coe]
-  exact omem
+  simp only [Set.mem_smul_set_iff_inv_smul_mem, smul_eq_mul, inv_mul_cancel, SetLike.mem_coe, omem]
 
 @[to_additive]
 lemma non_empty_intersection_compl_coset (x y : G) (U : Set G) (hx : x ∈ U)
