@@ -94,7 +94,7 @@ lemma Sedrakyan's_lemma {n : ℕ} {x y: EuclideanSpace ℝ (Fin n)}
   apply real_inner_le_norm
 
 lemma ineq₁ {x : ℕ → ℝ} {N : ℕ} (hN : 1 < N) (hx : ∀ i , x (i + 1) ≤ x i) :
-  x N ≤ (∑ n : Fin (N - 1), x (n + 1)) / (N - 1) := by
+    x N ≤ (∑ n : Fin (N - 1), x (n + 1)) / (N - 1) := by
   have h : ∀ m n : ℕ, n ≤ m → x m ≤ x n := by
     intro m n mlen
     induction' m, mlen using Nat.le_induction with k _nlek xk_le_xn
