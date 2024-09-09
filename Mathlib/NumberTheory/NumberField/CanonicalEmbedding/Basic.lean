@@ -329,13 +329,17 @@ theorem normAtPlace_apply (w : InfinitePlace K) (x : K) :
     RingHom.prod_apply, Pi.ringHom_apply, norm_embedding_of_isReal, norm_embedding_eq, dite_eq_ite,
     ite_id]
 
-theorem normAtPlace_eq_zero {x : mixedSpace K} :
+theorem forall_normAtPlace_eq_zero_iff {x : mixedSpace K} :
     (∀ w, normAtPlace w x = 0) ↔ x = 0 := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · ext w
     · exact norm_eq_zero'.mp (normAtPlace_apply_isReal w.prop _ ▸ h w.1)
     · exact norm_eq_zero'.mp (normAtPlace_apply_isComplex w.prop _ ▸ h w.1)
   · simp_rw [h, map_zero, implies_true]
+
+theorem exists_normAtPlace_ne_zero_iff {x : mixedSpace K} :
+    (∃ w, normAtPlace w x ≠ 0) ↔ x ≠ 0 := by
+  rw [ne_eq, ← forall_normAtPlace_eq_zero_iff, not_forall]
 
 variable [NumberField K]
 
@@ -384,6 +388,11 @@ protected theorem norm_ne_zero_iff {x : mixedSpace K} :
     mixedEmbedding.norm x ≠ 0 ↔ ∀ w, normAtPlace w x ≠ 0 := by
   rw [← not_iff_not]
   simp_rw [ne_eq, mixedEmbedding.norm_eq_zero_iff, not_not, not_forall, not_not]
+
+theorem norm_eq_of_normAtPlace_eq {x y : mixedSpace K}
+    (h : ∀ w, normAtPlace w x = normAtPlace w y) :
+    mixedEmbedding.norm x = mixedEmbedding.norm y := by
+  simp_rw [mixedEmbedding.norm_apply, h]
 
 theorem norm_smul (c : ℝ) (x : mixedSpace K) :
     mixedEmbedding.norm (c • x) = |c| ^ finrank ℚ K * (mixedEmbedding.norm x) := by
