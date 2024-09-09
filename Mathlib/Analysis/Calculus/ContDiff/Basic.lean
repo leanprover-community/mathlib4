@@ -196,12 +196,13 @@ theorem ContDiffWithinAt.continuousLinearMap_comp (g : F →L[𝕜] G)
     (hf : ContDiffWithinAt 𝕜 n f s x) : ContDiffWithinAt 𝕜 n (g ∘ f) s x := by
   match n with
   | ω =>
-    obtain ⟨u, hu, p, hp, h'p⟩ := hf
-    refine ⟨u, hu, _, hp.continuousLinearMap_comp g, fun i ↦ ?_⟩
+    intro m
+    obtain ⟨u, hu, p, hp, h'p⟩ := hf m
+    refine ⟨u, hu, _, hp.continuousLinearMap_comp g, fun i hi ↦ ?_⟩
     change AnalyticWithinOn 𝕜
       (fun x ↦ (ContinuousLinearMap.compContinuousMultilinearMapL 𝕜
       (fun _ : Fin i ↦ E) F G g) (p x i)) u
-    apply AnalyticOn.comp_analyticWithinOn _ (h'p i) (Set.mapsTo_univ _ _)
+    apply AnalyticOn.comp_analyticWithinOn _ (h'p i hi) (Set.mapsTo_univ _ _)
     exact ContinuousLinearMap.analyticOn _ _
   | (n : ℕ∞) =>
     intro m hm
@@ -360,16 +361,17 @@ theorem ContDiffWithinAt.comp_continuousLinearMap {x : G} (g : G →L[𝕜] E)
     (hf : ContDiffWithinAt 𝕜 n f s (g x)) : ContDiffWithinAt 𝕜 n (f ∘ g) (g ⁻¹' s) x := by
   match n with
   | ω =>
-    obtain ⟨u, hu, p, hp, h'p⟩ := hf
+    intro m
+    obtain ⟨u, hu, p, hp, h'p⟩ := hf m
     refine ⟨g ⁻¹' u, ?_, _, hp.compContinuousLinearMap g, ?_⟩
     · refine g.continuous.continuousWithinAt.tendsto_nhdsWithin ?_ hu
       exact (mapsTo_singleton.2 <| mem_singleton _).union_union (mapsTo_preimage _ _)
-    · intro i
+    · intro i hi
       change AnalyticWithinOn 𝕜 (fun x ↦
         ContinuousMultilinearMap.compContinuousLinearMapL (fun _ ↦ g) (p (g x) i)) (⇑g ⁻¹' u)
       apply AnalyticWithinOn.comp _ _ (Set.mapsTo_univ _ _)
       · exact ContinuousLinearEquiv.analyticWithinOn _ _
-      · exact (h'p i).comp (g.analyticWithinOn _) (mapsTo_preimage _ _)
+      · exact (h'p i hi).comp (g.analyticWithinOn _) (mapsTo_preimage _ _)
   | (n : ℕ∞) =>
     intro m hm
     rcases hf m hm with ⟨u, hu, p, hp⟩
@@ -498,15 +500,16 @@ theorem ContDiffWithinAt.prod {s : Set E} {f : E → F} {g : E → G} (hf : Cont
     (hg : ContDiffWithinAt 𝕜 n g s x) : ContDiffWithinAt 𝕜 n (fun x : E => (f x, g x)) s x := by
   match n with
   | ω =>
-    obtain ⟨u, hu, p, hp, h'p⟩ := hf
-    obtain ⟨v, hv, q, hq, h'q⟩ := hg
+    intro m
+    obtain ⟨u, hu, p, hp, h'p⟩ := hf m
+    obtain ⟨v, hv, q, hq, h'q⟩ := hg m
     refine ⟨u ∩ v, Filter.inter_mem hu hv, _,
-      (hp.mono inter_subset_left).prod (hq.mono inter_subset_right), fun i ↦ ?_⟩
+      (hp.mono inter_subset_left).prod (hq.mono inter_subset_right), fun i hi ↦ ?_⟩
     change AnalyticWithinOn 𝕜 (fun x ↦ ContinuousMultilinearMap.prodL _ _ _ _ (p x i, q x i))
       (u ∩ v)
     apply AnalyticOn.comp_analyticWithinOn (LinearIsometryEquiv.analyticOn _ _) _
       (Set.mapsTo_univ _ _)
-    exact ((h'p i).mono inter_subset_left).prod ((h'q i).mono inter_subset_right)
+    exact ((h'p i hi).mono inter_subset_left).prod ((h'q i hi).mono inter_subset_right)
   | (n : ℕ∞) =>
     intro m hm
     rcases hf m hm with ⟨u, hu, p, hp⟩
@@ -603,6 +606,62 @@ private theorem ContDiffOn.comp_same_univ {Eu : Type u} [NormedAddCommGroup Eu] 
       exact IH D C (subset_univ _)
   · rw [contDiffOn_top] at hf hg ⊢
     exact fun n => Itop n (hg n) (hf n) st
+
+/-- Auxiliary lemma proving that the composition of `C^n` functions on domains is `C^n` when all
+spaces live in the same universe. Use instead `ContDiffOn.comp` which removes the universe
+assumption (but is deduced from this one). -/
+private theorem ContDiffOn.comp_same_univ_glouglou {Eu : Type u} [NormedAddCommGroup Eu] [NormedSpace 𝕜 Eu]
+    {Fu : Type u} [NormedAddCommGroup Fu] [NormedSpace 𝕜 Fu] {Gu : Type u} [NormedAddCommGroup Gu]
+    [NormedSpace 𝕜 Gu] {s : Set Eu} {t : Set Fu} {g : Fu → Gu} {f : Eu → Fu} {n : ℕ}
+    (hg : ContDiffOnOmegaAux 𝕜 n g t) (hf : ContDiffOnOmegaAux 𝕜 n f s) (st : s ⊆ f ⁻¹' t) :
+    ContDiffOnOmegaAux 𝕜 n (g ∘ f) s := by
+  induction n generalizing Eu Fu Gu with
+  | zero =>
+
+
+  | succ n IH =>
+
+
+
+
+#exit
+
+  · rw [WithTop.coe_zero, contDiffOn_zero] at hf hg ⊢
+    exact ContinuousOn.comp hg hf st
+  · change ContDiffOn 𝕜 (n + 1 : ℕ) _ _ at hf hg ⊢
+    rw [contDiffOn_succ_iff_hasFDerivWithinAt] at hg ⊢
+    intro x hx
+    rcases (contDiffOn_succ_iff_hasFDerivWithinAt.1 hf) x hx with ⟨u, hu, f', hf', f'_diff⟩
+    rcases hg (f x) (st hx) with ⟨v, hv, g', hg', g'_diff⟩
+    rw [insert_eq_of_mem hx] at hu ⊢
+    have xu : x ∈ u := mem_of_mem_nhdsWithin hx hu
+    let w := s ∩ (u ∩ f ⁻¹' v)
+    have wv : w ⊆ f ⁻¹' v := fun y hy => hy.2.2
+    have wu : w ⊆ u := fun y hy => hy.2.1
+    have ws : w ⊆ s := fun y hy => hy.1
+    refine ⟨w, ?_, fun y => (g' (f y)).comp (f' y), ?_, ?_⟩
+    · show w ∈ 𝓝[s] x
+      apply Filter.inter_mem self_mem_nhdsWithin
+      apply Filter.inter_mem hu
+      apply ContinuousWithinAt.preimage_mem_nhdsWithin'
+      · rw [← continuousWithinAt_inter' hu]
+        exact (hf' x xu).differentiableWithinAt.continuousWithinAt.mono inter_subset_right
+      · apply nhdsWithin_mono _ _ hv
+        exact Subset.trans (image_subset_iff.mpr st) (subset_insert (f x) t)
+    · show ∀ y ∈ w, HasFDerivWithinAt (g ∘ f) ((g' (f y)).comp (f' y)) w y
+      rintro y ⟨-, yu, yv⟩
+      exact (hg' (f y) yv).comp y ((hf' y yu).mono wu) wv
+    · show ContDiffOn 𝕜 n (fun y => (g' (f y)).comp (f' y)) w
+      have A : ContDiffOn 𝕜 n (fun y => g' (f y)) w :=
+        IH g'_diff ((hf.of_le (by simp)).mono ws) wv
+      have B : ContDiffOn 𝕜 n f' w := f'_diff.mono wu
+      have C : ContDiffOn 𝕜 n (fun y => (g' (f y), f' y)) w := A.prod B
+      have D : ContDiffOn 𝕜 n (fun p : (Fu →L[𝕜] Gu) × (Eu →L[𝕜] Fu) => p.1.comp p.2) univ :=
+        isBoundedBilinearMap_comp.contDiff.contDiffOn
+      exact IH D C (subset_univ _)
+  · rw [contDiffOn_top] at hf hg ⊢
+    exact fun n => Itop n (hg n) (hf n) st
+
 
 #exit
 
