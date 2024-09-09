@@ -37,7 +37,7 @@ namespace Submonoid
 noncomputable instance [Monoid M] : Group (IsUnit.submonoid M) :=
   { inferInstanceAs (Monoid (IsUnit.submonoid M)) with
     inv := fun x ↦ ⟨x.prop.unit⁻¹.val, x.prop.unit⁻¹.isUnit⟩
-    mul_left_inv := fun x ↦
+    inv_mul_cancel := fun x ↦
       Subtype.ext ((Units.val_mul x.prop.unit⁻¹ _).trans x.prop.unit.inv_val) }
 
 @[to_additive]
@@ -191,11 +191,11 @@ theorem leftInv_eq_inv : S.leftInv = S⁻¹ :=
   Submonoid.ext fun _ ↦
     ⟨fun h ↦ Submonoid.mem_inv.mpr ((inv_eq_of_mul_eq_one_right h.choose_spec).symm ▸
       h.choose.prop),
-      fun h ↦ ⟨⟨_, h⟩, mul_right_inv _⟩⟩
+      fun h ↦ ⟨⟨_, h⟩, mul_inv_cancel _⟩⟩
 
 @[to_additive (attr := simp)]
 theorem fromLeftInv_eq_inv (x : S.leftInv) : (S.fromLeftInv x : M) = (x : M)⁻¹ := by
-  rw [← mul_right_inj (x : M), mul_right_inv, mul_fromLeftInv]
+  rw [← mul_right_inj (x : M), mul_inv_cancel, mul_fromLeftInv]
 
 end Group
 
@@ -205,7 +205,7 @@ variable [CommGroup M] (S : Submonoid M) (hS : S ≤ IsUnit.submonoid M)
 
 @[to_additive (attr := simp)]
 theorem leftInvEquiv_symm_eq_inv (x : S) : ((S.leftInvEquiv hS).symm x : M) = (x : M)⁻¹ := by
-  rw [← mul_right_inj (x : M), mul_right_inv, mul_leftInvEquiv_symm]
+  rw [← mul_right_inj (x : M), mul_inv_cancel, mul_leftInvEquiv_symm]
 
 end CommGroup
 

@@ -55,7 +55,7 @@ theorem coe_inv_le : (↑r⁻¹ : ℝ≥0∞) ≤ (↑r)⁻¹ :=
 
 @[simp, norm_cast]
 theorem coe_inv (hr : r ≠ 0) : (↑r⁻¹ : ℝ≥0∞) = (↑r)⁻¹ :=
-  coe_inv_le.antisymm <| sInf_le <| mem_setOf.2 <| by rw [← coe_mul, mul_inv_cancel hr, coe_one]
+  coe_inv_le.antisymm <| sInf_le <| mem_setOf.2 <| by rw [← coe_mul, mul_inv_cancel₀ hr, coe_one]
 
 @[norm_cast]
 theorem coe_inv_two : ((2⁻¹ : ℝ≥0) : ℝ≥0∞) = 2⁻¹ := by rw [coe_inv _root_.two_ne_zero, coe_two]
@@ -86,7 +86,7 @@ protected theorem inv_pow : ∀ {a : ℝ≥0∞} {n : ℕ}, (a ^ n)⁻¹ = a⁻�
 protected theorem mul_inv_cancel (h0 : a ≠ 0) (ht : a ≠ ∞) : a * a⁻¹ = 1 := by
   lift a to ℝ≥0 using ht
   norm_cast at h0; norm_cast
-  exact mul_inv_cancel h0
+  exact mul_inv_cancel₀ h0
 
 protected theorem inv_mul_cancel (h0 : a ≠ 0) (ht : a ≠ ∞) : a⁻¹ * a = 1 :=
   mul_comm a a⁻¹ ▸ ENNReal.mul_inv_cancel h0 ht
@@ -96,6 +96,15 @@ protected theorem div_mul_cancel (h0 : a ≠ 0) (hI : a ≠ ∞) : b / a * a = b
 
 protected theorem mul_div_cancel' (h0 : a ≠ 0) (hI : a ≠ ∞) : a * (b / a) = b := by
   rw [mul_comm, ENNReal.div_mul_cancel h0 hI]
+
+protected theorem mul_eq_left (ha : a ≠ 0) (h'a : a ≠ ∞) : a * b = a ↔ b = 1 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by rw [h, mul_one]⟩
+  have : a * b * a⁻¹ = a * a⁻¹ := by rw [h]
+  rwa [mul_assoc, mul_comm b, ← mul_assoc, ENNReal.mul_inv_cancel ha h'a, one_mul] at this
+
+protected theorem mul_eq_right (ha : a ≠ 0) (h'a : a ≠ ∞) : b * a = a ↔ b = 1 := by
+  rw [mul_comm]
+  exact ENNReal.mul_eq_left ha h'a
 
 -- Porting note: `simp only [div_eq_mul_inv, mul_comm, mul_assoc]` doesn't work in the following two
 protected theorem mul_comm_div : a / b * c = a * (c / b) := by
@@ -119,7 +128,7 @@ theorem inv_lt_top {x : ℝ≥0∞} : x⁻¹ < ∞ ↔ 0 < x := by
   simp only [lt_top_iff_ne_top, inv_ne_top, pos_iff_ne_zero]
 
 theorem div_lt_top {x y : ℝ≥0∞} (h1 : x ≠ ∞) (h2 : y ≠ 0) : x / y < ∞ :=
-  mul_lt_top h1 (inv_ne_top.mpr h2)
+  mul_lt_top h1.lt_top (inv_ne_top.mpr h2).lt_top
 
 @[simp]
 protected theorem inv_eq_zero : a⁻¹ = 0 ↔ a = ∞ :=
@@ -458,7 +467,7 @@ def orderIsoIicCoe (a : ℝ≥0) : Iic (a : ℝ≥0∞) ≃o Iic a :=
   OrderIso.symm
     { toFun := fun x => ⟨x, coe_le_coe.2 x.2⟩
       invFun := fun x => ⟨ENNReal.toNNReal x, coe_le_coe.1 <| coe_toNNReal_le_self.trans x.2⟩
-      left_inv := fun x => Subtype.ext <| toNNReal_coe
+      left_inv := fun x => Subtype.ext <| toNNReal_coe _
       right_inv := fun x => Subtype.ext <| coe_toNNReal (ne_top_of_le_ne_top coe_ne_top x.2)
       map_rel_iff' := fun {_ _} => by
         simp only [Equiv.coe_fn_mk, Subtype.mk_le_mk, coe_le_coe, Subtype.coe_le_coe] }

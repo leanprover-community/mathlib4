@@ -65,6 +65,7 @@ namespace IsReflection
 
 variable {cs}
 variable {t : W} (ht : cs.IsReflection t)
+include ht
 
 theorem pow_two : t ^ 2 = 1 := by
   rcases ht with ⟨w, i, rfl⟩
@@ -138,6 +139,7 @@ namespace IsReflection
 
 variable {cs}
 variable {t : W} (ht : cs.IsReflection t)
+include ht
 
 theorem isRightInversion_mul_left_iff {w : W} :
     cs.IsRightInversion (w * t) t ↔ ¬cs.IsRightInversion w t := by
@@ -298,13 +300,11 @@ theorem rightInvSeq_drop (ω : List B) (j : ℕ) :
 
 theorem leftInvSeq_take (ω : List B) (j : ℕ) :
     lis (ω.take j) = (lis ω).take j := by
-  obtain le | ge := Nat.le_or_ge j ω.length
-  · simp only [leftInvSeq_eq_reverse_rightInvSeq_reverse]
-    rw [List.take_reverse (by simpa)]
-    nth_rw 1 [← List.reverse_reverse ω]
-    rw [List.take_reverse (by simpa)]
-    simp [rightInvSeq_drop]
-  · rw [take_of_length_le ge, take_of_length_le (by simpa)]
+  simp only [leftInvSeq_eq_reverse_rightInvSeq_reverse]
+  rw [List.take_reverse]
+  nth_rw 1 [← List.reverse_reverse ω]
+  rw [List.take_reverse]
+  simp [rightInvSeq_drop]
 
 theorem isReflection_of_mem_rightInvSeq (ω : List B) {t : W} (ht : t ∈ ris ω) :
     cs.IsReflection t := by
@@ -375,7 +375,7 @@ theorem prod_rightInvSeq (ω : List B) : prod (ris ω) = (π ω)⁻¹ := by
   · simp [rightInvSeq, ih, wordProd_cons]
 
 theorem prod_leftInvSeq (ω : List B) : prod (lis ω) = (π ω)⁻¹ := by
-  simp [leftInvSeq_eq_reverse_rightInvSeq_reverse, prod_reverse_noncomm]
+  simp only [leftInvSeq_eq_reverse_rightInvSeq_reverse, prod_reverse_noncomm, inv_inj]
   have : List.map (fun x ↦ x⁻¹) (ris ω.reverse) = ris ω.reverse := calc
     List.map (fun x ↦ x⁻¹) (ris ω.reverse)
     _ = List.map id (ris ω.reverse)             := by

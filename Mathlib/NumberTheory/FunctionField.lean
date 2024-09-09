@@ -213,7 +213,7 @@ theorem inftyValuation.polynomial {p : Fq[X]} (hp : p ≠ 0) :
     inftyValuationDef Fq (algebraMap Fq[X] (RatFunc Fq) p) =
       Multiplicative.ofAdd (p.natDegree : ℤ) := by
   have hp' : algebraMap Fq[X] (RatFunc Fq) p ≠ 0 := by
-    rw [Ne, RatFunc.algebraMap_eq_zero_iff]; exact hp
+    rw [Ne, NoZeroSMulDivisors.algebraMap_eq_zero_iff]; exact hp
   rw [inftyValuationDef, if_neg hp', RatFunc.intDegree_polynomial]
 
 /-- The valued field `Fq(t)` with the valuation at infinity. -/

@@ -86,9 +86,7 @@ def symm (c : ComplexShape ι) : ComplexShape ι where
   prev_eq w w' := c.next_eq w w'
 
 @[simp]
-theorem symm_symm (c : ComplexShape ι) : c.symm.symm = c := by
-  ext
-  simp
+theorem symm_symm (c : ComplexShape ι) : c.symm.symm = c := rfl
 
 theorem symm_bijective :
     Function.Bijective (ComplexShape.symm : ComplexShape ι → ComplexShape ι) :=

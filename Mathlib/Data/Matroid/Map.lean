@@ -501,7 +501,7 @@ end map
 section mapSetEquiv
 
 /-- Map `M : Matroid α` to a `Matroid β` with ground set `E` using an equivalence `M.E ≃ E`.
-Defined using `Matroid.ofExistsMatroid` for better defeq.  -/
+Defined using `Matroid.ofExistsMatroid` for better defeq. -/
 def mapSetEquiv (M : Matroid α) {E : Set β} (e : M.E ≃ E) : Matroid β :=
   Matroid.ofExistsMatroid E (fun I ↦ (M.Indep ↑(e.symm '' (E ↓∩ I)) ∧ I ⊆ E))
   ⟨M.mapSetEmbedding (e.toEmbedding.trans <| Function.Embedding.subtype _), by

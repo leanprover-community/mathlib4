@@ -73,9 +73,9 @@ nonrec theorem exists_gcf_pair_rat_eq_of_nth_contsAux :
         use Pair.mk ⌊v⌋ 1
         simp [g]
       -- 2 ≤ n
-      · cases' IH (n + 1) <| lt_add_one (n + 1) with pred_conts pred_conts_eq
+      · obtain ⟨pred_conts, pred_conts_eq⟩ := IH (n + 1) <| lt_add_one (n + 1)
         -- invoke the IH
-        cases' s_ppred_nth_eq : g.s.get? n with gp_n
+        rcases s_ppred_nth_eq : g.s.get? n with gp_n | gp_n
         -- option.none
         · use pred_conts
           have : g.contsAux (n + 2) = g.contsAux (n + 1) :=
@@ -83,8 +83,8 @@ nonrec theorem exists_gcf_pair_rat_eq_of_nth_contsAux :
           simp only [this, pred_conts_eq]
         -- option.some
         · -- invoke the IH a second time
-          cases' IH n <| lt_of_le_of_lt n.le_succ <| lt_add_one <| n + 1 with ppred_conts
-            ppred_conts_eq
+          obtain ⟨ppred_conts, ppred_conts_eq⟩ :=
+            IH n <| lt_of_le_of_lt n.le_succ <| lt_add_one <| n + 1
           obtain ⟨a_eq_one, z, b_eq_z⟩ : gp_n.a = 1 ∧ ∃ z : ℤ, gp_n.b = (z : K) :=
             of_partNum_eq_one_and_exists_int_partDen_eq s_ppred_nth_eq
           -- finally, unfold the recurrence to obtain the required rational value.
@@ -171,8 +171,8 @@ theorem coe_stream_nth_rat_eq (v_eq_q : v = (↑q : K)) (n : ℕ) :
     cases stream_q_nth_eq : IntFractPair.stream q n with
     | none => simp [IntFractPair.stream, IH.symm, v_eq_q, stream_q_nth_eq]
     | some ifp_n =>
-      cases' ifp_n with b fr
-      cases' Decidable.em (fr = 0) with fr_zero fr_ne_zero
+      obtain ⟨b, fr⟩ := ifp_n
+      rcases Decidable.em (fr = 0) with fr_zero | fr_ne_zero
       · simp [IntFractPair.stream, IH.symm, v_eq_q, stream_q_nth_eq, fr_zero]
       · replace IH : some (IntFractPair.mk b (fr : K)) = IntFractPair.stream (↑q) n := by
           rwa [stream_q_nth_eq] at IH
@@ -210,7 +210,7 @@ theorem coe_of_s_rat_eq (v_eq_q : v = (↑q : K)) :
 /-- Given `(v : K), (q : ℚ), and v = q`, we have that `of q = of v` -/
 theorem coe_of_rat_eq (v_eq_q : v = (↑q : K)) :
     (⟨(of q).h, (of q).s.map (Pair.map (↑))⟩ : GenContFract K) = of v := by
-  cases' gcf_v_eq : of v with h s; subst v
+  rcases gcf_v_eq : of v with ⟨h, s⟩; subst v
   -- Porting note: made coercion target explicit
   obtain rfl : ↑⌊(q : K)⌋ = h := by injection gcf_v_eq
   -- Porting note: was
@@ -220,7 +220,7 @@ theorem coe_of_rat_eq (v_eq_q : v = (↑q : K)) :
 
 theorem of_terminates_iff_of_rat_terminates {v : K} {q : ℚ} (v_eq_q : v = (q : K)) :
     (of v).Terminates ↔ (of q).Terminates := by
-  constructor <;> intro h <;> cases' h with n h <;> use n <;>
+  constructor <;> intro h <;> obtain ⟨n, h⟩ := h <;> use n <;>
     simp only [Stream'.Seq.TerminatedAt, (coe_of_s_get?_rat_eq v_eq_q n).symm] at h ⊢ <;>
     cases h' : (of q).s.get? n <;>
     simp only [h'] at h <;> -- Porting note: added
@@ -267,7 +267,7 @@ theorem stream_succ_nth_fr_num_lt_nth_fr_num_rat {ifp_n ifp_succ_n : IntFractPai
   have : ifp_n = ifp_n' := by injection Eq.trans stream_nth_eq.symm stream_nth_eq'
   cases this
   rw [← IntFractPair.of_eq_ifp_succ_n]
-  cases' nth_stream_fr_nonneg_lt_one stream_nth_eq with zero_le_ifp_n_fract ifp_n_fract_lt_one
+  obtain ⟨zero_le_ifp_n_fract, _⟩ := nth_stream_fr_nonneg_lt_one stream_nth_eq
   have : 0 < ifp_n.fr := lt_of_le_of_ne zero_le_ifp_n_fract <| ifp_n_fract_ne_zero.symm
   exact of_inv_fr_num_lt_num_of_pos this
 
@@ -292,7 +292,7 @@ theorem stream_nth_fr_num_le_fr_num_sub_n_rat :
 
 theorem exists_nth_stream_eq_none_of_rat (q : ℚ) : ∃ n : ℕ, IntFractPair.stream q n = none := by
   let fract_q_num := (Int.fract q).num; let n := fract_q_num.natAbs + 1
-  cases' stream_nth_eq : IntFractPair.stream q n with ifp
+  rcases stream_nth_eq : IntFractPair.stream q n with ifp | ifp
   · use n, stream_nth_eq
   · -- arrive at a contradiction since the numerator decreased num + 1 times but every fractional
     -- value is nonnegative.

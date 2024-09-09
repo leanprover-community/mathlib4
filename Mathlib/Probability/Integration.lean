@@ -143,7 +143,7 @@ theorem IndepFun.integrable_mul {β : Type*} [MeasurableSpace β] {X Y : Ω → 
     lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun' hnX hnY hXY''
   refine ⟨hX.1.mul hY.1, ?_⟩
   simp_rw [HasFiniteIntegral, Pi.mul_apply, nnnorm_mul, ENNReal.coe_mul, hmul]
-  exact ENNReal.mul_lt_top hX.2.ne hY.2.ne
+  exact ENNReal.mul_lt_top hX.2 hY.2
 
 /-- If the product of two independent real-valued random variables is integrable and
 the second one is not almost everywhere zero, then the first one is integrable. -/
