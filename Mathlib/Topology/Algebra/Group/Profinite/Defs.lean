@@ -33,13 +33,16 @@ open CategoryTheory Topology
 /--Defining the structure of profinite group-/
 @[pp_with_univ]
 structure ProfiniteGrp where
+  /--the underlying set is profinite-/
   toProfinite : Profinite
+  /--it is also a topological group with the topology given-/
   [isGroup : Group toProfinite]
   [isTopologicalGroup : TopologicalGroup toProfinite]
 
 /--Defining the structure of finite group-/
 @[pp_with_univ]
 structure FiniteGrp where
+  /--A group that is finite-/
   toGrp : Grp
   [isFinite : Finite toGrp]
 
