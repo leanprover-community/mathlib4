@@ -1059,32 +1059,6 @@ theorem mem_sSup_of_directedOn {K : Set (Subgroup G)} (Kne : K.Nonempty) (hK : D
   simp only [sSup_eq_iSup', mem_iSup_of_directed hK.directed_val, SetCoe.exists, Subtype.coe_mk,
     exists_prop]
 
--- non-pointwise lemma versions
-@[to_additive]
-lemma image_inv_coe : (·⁻¹) '' K = (K : Set G) := by
-  ext
-  simp [inv_eq_iff_eq_inv]
-
-@[to_additive]
-lemma preimage_inv_coe : (·⁻¹) ⁻¹' K = (K : Set G) := by
-  ext
-  simp
-
-@[to_additive]
-lemma closure_image_inv : closure ((·⁻¹) '' k) = closure k := by
-  ext
-  simp [mem_closure, preimage_inv_coe]
-
-@[to_additive]
-lemma closure_preimage_inv : closure ((·⁻¹) ⁻¹' k) = closure k := by
-  rw [← closure_image_inv]
-  simp only [inv_surjective, image_preimage_eq]
-
-@[to_additive (attr := simp)]
-lemma closure_singleton_inv (x : G) : closure ({x⁻¹}) = closure {x} := by
-  rw [← closure_image_inv]
-  simp
-
 variable {N : Type*} [Group N] {P : Type*} [Group P]
 
 /-- The preimage of a subgroup along a monoid homomorphism is a subgroup. -/
