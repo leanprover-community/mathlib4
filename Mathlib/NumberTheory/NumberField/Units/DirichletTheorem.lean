@@ -482,7 +482,7 @@ theorem fundSystem_mk (i : Fin (rank K)) :
   rfl
 
 theorem logEmbedding_fundSystem (i : Fin (rank K)) :
-     logEmbedding K (fundSystem K i) = basisUnitLattice K i := by
+    logEmbedding K (fundSystem K i) = basisUnitLattice K i := by
    rw [basisUnitLattice, Basis.map_apply, ← fundSystem_mk, ← logEmbeddingEquiv_apply]
    rfl
 
