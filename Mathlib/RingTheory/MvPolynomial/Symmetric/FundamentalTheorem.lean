@@ -234,18 +234,12 @@ lemma supDegree_esymmAlgHomMonomial (hr : r ≠ 0) (t : Fin n →₀ ℕ) (hnm :
     · exact monic_esymm this
     · exact (monic_esymm this).pow toLex_add toLex.injective
     · rwa [Ne, ← leadingCoeff_eq_zero toLex.injective, leadingCoeff_esymmAlgHomMonomial _ hnm]
-#check Pi.zero_apply
-
-lemma _root_.Monotone.zero {α β} [Preorder α] [Preorder β] [Zero β] : Monotone (0 : α → β) := by
-  simp [Monotone]
-lemma _root_.Antitone.zero {α β} [Preorder α] [Preorder β] [Zero β] : Antitone (0 : α → β) := by
-  simp [Antitone]
 
 lemma IsSymmetric.antitone_supDegree [LinearOrder σ] {p : MvPolynomial σ R} (hp : p.IsSymmetric) :
     Antitone ↑(ofLex <| p.supDegree toLex) := by
   obtain rfl | h0 := eq_or_ne p 0
   · rw [supDegree_zero, Finsupp.bot_eq_zero]
-    exact .zero
+    exact Pi.monotone_zero
   rw [Antitone]
   by_contra! h
   obtain ⟨i, j, hle, hlt⟩ := h
