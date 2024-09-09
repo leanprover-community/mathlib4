@@ -22,7 +22,7 @@ properties about separable polynomials here.
 * `IsSeparable K x`: an element `x` is separable over `K` iff the minimal polynomial of `x`
 over `K` is separable.
 * `Algebra.IsSeparable K L`: `L` is separable over `K` iff every element in `L` is separable
-over `K`
+over `K`.
 
 -/
 
