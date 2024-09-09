@@ -599,6 +599,19 @@ theorem range_bddAbove_mul {u v : ℕ → ℝ} (hu : BddAbove (Set.range u)) (hu
     forall_apply_eq_imp_iff] at hbu hbv ⊢
   exact fun n ↦ mul_le_mul (hbu n) (hbv n) (hv0 n) (le_trans (hu0 n) (hbu n))
 
+/-- If `u v : ℕ → ℝ` are nonnegative and bounded above, then `u * v` is bounded above. -/
+theorem image_bddAbove_mul {u v : ℕ → ℝ} (hu : BddAbove (u '' Set.univ)) (hu0 : 0 ≤ u)
+    (hv : BddAbove (v '' Set.univ)) (hv0 : 0 ≤ v) : BddAbove ((u * v) '' Set.univ) := by
+  obtain ⟨bu, hbu⟩ := hu
+  obtain ⟨bv, hbv⟩ := hv
+  use bu * bv
+  simp only [mem_upperBounds, Set.mem_range, Pi.mul_apply, forall_exists_index,
+    forall_apply_eq_imp_iff] at hbu hbv ⊢
+  intro x ⟨n, hn, hnx⟩
+  simp only [← hnx]
+  exact mul_le_mul (hbu (u n) (Set.mem_image_of_mem u hn)) (hbv (v n) (Set.mem_image_of_mem v hn))
+    (hv0 n) (le_trans (hu0 n) (hbu (u n) (Set.mem_image_of_mem u hn)))
+
 /-- If `a` belongs to the interval `[0, b]`, then so does `b - a`. -/
 theorem sub_mem_Icc {a b : ℝ} (h : a ∈ Set.Icc (0 : ℝ) b) : b - a ∈ Set.Icc (0 : ℝ) b := by
   rw [Set.mem_Icc] at h ⊢

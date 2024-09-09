@@ -191,7 +191,7 @@ theorem smoothingSeminorm'_isLimit_ne_zero (hf1 : f 1 ≤ 1) {x : R} (hx : f x �
         have hL0' : 0 < L + ε / 2 := add_pos_of_nonneg_of_pos hL0 (half_pos hε)
         rw [heq, ← tsub_le_iff_left]
         nth_rw 3 [← mul_one (L + ε / 2)]
-        rw [mul_assoc, ← mul_sub, mul_comm, ← le_div_iff hL0', div_div]
+        rw [mul_assoc, ← mul_sub, mul_comm, ← le_div_iff₀ hL0', div_div]
         exact hm2 n (le_trans (le_max_right (m1 : ℕ) m2) hn)
       have h4 : 0 < f (x ^ (n % ↑m1)) ^ (1 / (n : ℝ)) := rpow_pos_of_pos hxn' _
       have h5 : 0 < (L + ε / 2) * (L + ε / 2) ^ (-(↑(n % ↑m1) / (n : ℝ))) :=
@@ -311,6 +311,13 @@ private theorem f_bddAbove (hf1 : f 1 ≤ 1) {s : ℕ → ℕ} (hs : ∀ n : ℕ
     conv_rhs => rw [← rpow_one (f x)]
     rw [rpow_le_rpow_left_iff (not_le.mp hx)]
     exact div_le_one_of_le (cast_le.mpr (hs (ψ n))) (cast_nonneg _)
+
+private theorem f_bddAbove' (hf1 : f 1 ≤ 1) {s : ℕ → ℕ} (hs : ∀ n : ℕ, s n ≤ n) (x : R)
+    (ψ : ℕ → ℕ) : BddAbove ((fun n : ℕ => f (x ^ s (ψ n)) ^ (1 / (ψ n : ℝ))) '' Set.univ) := by
+  rw [Set.image_eq_range]
+  convert f_bddAbove f hf1 hs x ψ
+  ext
+  simp only [one_div, Set.mem_range, Subtype.exists, Set.mem_univ, exists_const]
 
 private theorem f_nonempty {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, s n ≤ n) {x y : R} (_hn : ∀ n : ℕ,
       ∃ (m : ℕ) (_hm : m ∈ Finset.range (n + 1)),
@@ -474,9 +481,9 @@ theorem smoothingSeminorm_isNonarchimedean (hf1 : f 1 ≤ 1) (hna : IsNonarchime
   apply le_trans _ h_mul
   have hex : ∃ n : PNat, f (x ^ mu (ψ n)) ^ (1 / (ψ n : ℝ)) * f (y ^ nu (ψ n)) ^ (1 / (ψ n : ℝ)) <
       smoothingSeminorm' f x ^ a * smoothingSeminorm' f y ^ b + ε :=
-    ENNReal.exists_lt_of_limsup_le (range_bddAbove_mul (f_bddAbove f hf1 hmu_le _ _)
-        (fun n => rpow_nonneg (apply_nonneg _ _) _) (f_bddAbove f hf1 hnu_le _ _)
-        fun n => rpow_nonneg (apply_nonneg _ _) _).isBoundedUnder hxy hε
+    ENNReal.exists_lt_of_limsup_le ((image_bddAbove_mul (f_bddAbove' f hf1 hmu_le x ψ)
+      (fun n => rpow_nonneg (apply_nonneg _ _) _) (f_bddAbove' f hf1 hnu_le y ψ)
+      fun n => rpow_nonneg (apply_nonneg _ _) _).isBoundedUnder Filter.univ_mem ) hxy hε
   obtain ⟨N, hN⟩ := hex
   apply le_trans (ciInf_le (smoothingSeminormSeq_bddBelow f _)
     ⟨ψ N, lt_of_le_of_lt (_root_.zero_le (ψ 0)) (hψ_mono.lt_iff_lt.mpr N.pos)⟩)
