@@ -126,6 +126,20 @@ lemma non_empty_intersection_compl_coset (x y : G) (U : Set G) (hx : x ∈ U)
   -- have ne : (V : Opens G) ∩ A = ∅ → False := by
   -- exact Disjoint.subset_compl_right (Disjoint.symm dva) quot con
 
+open TopologicalSpace in
+@[to_additive]
+lemma non_empty_intersection_compl_coset' (x y : G) (U : Set G) (hx : x ∈ U)
+    (A : Opens G) (quot : (y⁻¹ * x) ∈ A ) (V : OpenSubgroup G) (dva : Disjoint (V : Set G) A) :
+    (U ∩ ((y • (V : Set G))ᶜ)).Nonempty := by
+  simp_rw [Set.inter_nonempty, Set.mem_compl_iff]
+  use x, hx
+  intro con
+  rw [mem_leftCoset_iff y] at con
+  have mem : (y⁻¹ * x) ∈ (V : Set G) ∩ A := Set.mem_inter con quot
+  have subempty : (V : Set G) ∩ A = ∅ := Disjoint.inter_eq dva
+  rw [subempty] at mem
+  simp at mem
+
 /-theorem Set.disjoint_iff {α : Type u} {s : Set α} {t : Set α} :
 Disjoint s t ↔ s ∩ t ⊆ ∅-/
 
@@ -144,7 +158,7 @@ theorem non_singleton_set_disconnected
     (x y : G) (U : Set G)
     (hx : x ∈ U) (hy :  y ∈ U) (hxy : y ≠ x) : ¬ IsConnected U := by
   have exv : ∃ (A B : Opens G),
-    (y⁻¹ * x) ∈ A  ∧ 1 ∈ B ∧ Disjoint A B ∧
+    (y⁻¹ * x) ∈ A  ∧ 1 ∈ B ∧ Disjoint (A : Set G) B ∧
     ∃ V : OpenSubgroup G, (V : Set G) ⊆ B   := by
       have ht : y⁻¹ * x ≠ 1 := by
         by_contra! con
@@ -169,13 +183,16 @@ theorem non_singleton_set_disconnected
   rcases exv with ⟨A , B, ha, hb , dab, V, vb⟩
   have dva : Disjoint (V : Opens G) A   := by
     exact Disjoint.mono vb (fun ⦃a⦄ a ↦ a) (id (Disjoint.symm dab))
+  have dva' : Disjoint (V : Set G) A := by
+    apply Disjoint.mono vb (fun ⦃a⦄ a ↦ a)
+    sorry
   obtain ⟨u , v, ou, ov, Uuv, Uu, Uv, emptyUuv⟩
       : ∃ u v : Set G, (IsOpen u) ∧ (IsOpen v) ∧ (U ⊆ u ∪ v) ∧ ((U ∩ u).Nonempty) ∧
       ((U ∩ v).Nonempty) ∧ (¬(U ∩ (u ∩ v)).Nonempty) := by
     use (y • (V : Set G)) , (y • (V : Set G))ᶜ
     refine ⟨is_open_coset G y V, is_open_compl_coset' G y V, subset_coset_comp G y U V,
         non_empty_intersection_coset G x y U hy hxy V,
-        non_empty_intersection_compl_coset G x y U hx A ha V dva,
+        non_empty_intersection_compl_coset' G x y U hx A ha V dva',
         intersection_of_intersection_of_complements_empty G y U V⟩
   rintro ⟨_, h2⟩
   exact emptyUuv <| ((((h2 u v ou) ov) Uuv) Uu) Uv
