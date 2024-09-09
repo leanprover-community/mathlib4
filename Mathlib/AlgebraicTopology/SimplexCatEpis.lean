@@ -2480,7 +2480,7 @@ theorem toListGen_comp_mono' {m n k : SimplexCategory} (f : m ⟶ n) (g : n ⟶ 
   · infer_instance
   · apply mono_comp
 
-
+#exit
 theorem swap_e {m n k : SimplexCategory} (f : m ⟶ n) (g : n ⟶ k) (hf : Mono f) (hg : Epi g)
     {j : ℕ} (F : Fin j ≃o Im (f ≫ g)) :
     toListGen _ F = (simplexSwap (monos.order2 f) (toList g)).1 := by
