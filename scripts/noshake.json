@@ -376,6 +376,8 @@
   ["Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback",
    "Mathlib.CategoryTheory.Limits.Shapes.Pullbacks"],
   "Mathlib.CategoryTheory.Limits.IsLimit": ["Batteries.Tactic.Congr"],
+  "Mathlib.CategoryTheory.Bicategory.Adjunction":
+  ["Mathlib.Tactic.CategoryTheory.Bicategory.Basic"],
   "Mathlib.Analysis.Normed.Operator.LinearIsometry":
   ["Mathlib.Algebra.Star.Basic"],
   "Mathlib.Analysis.InnerProductSpace.Basic":
