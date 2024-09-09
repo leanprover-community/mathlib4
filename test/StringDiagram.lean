@@ -3,9 +3,9 @@ import ProofWidgets.Component.Panel.SelectionPanel
 
 /-! ## Example use of string diagram widgets -/
 
-section MonoidalCategory
-
 open ProofWidgets Mathlib.Tactic.Widget
+
+section MonoidalCategory
 
 open CategoryTheory
 open scoped MonoidalCategory
@@ -446,3 +446,45 @@ info: [string_diagram] Penrose substance:
 #string_diagram yangBaxterLhs
 
 end MonoidalCategory
+
+section Bicategory
+
+open CategoryTheory
+
+set_option trace.string_diagram true
+
+/--
+info: [string_diagram] Penrose substance:
+    Left(E_0_0_0, E_0_1_1)
+    Left(E_1_0_0, E_1_1_1)
+    Left(E_2_0_0, E_2_1_1)
+    Left(E_3_0_0, E_3_1_1)
+    Above(E_0_0_0, E_1_0_0)
+    Above(E_1_0_0, E_2_0_0)
+    Above(E_2_0_0, E_3_0_0)
+    Mor1 f_0_0 := MakeString (E_0_0_0, E_1_0_0)
+    Mor1 f_0_2 := MakeString (E_0_1_1, E_1_1_1)
+    Mor1 f_1_0 := MakeString (E_1_0_0, E_2_0_0)
+    Mor1 f_1_2 := MakeString (E_1_1_1, E_2_1_1)
+    Mor1 f_2_0 := MakeString (E_2_0_0, E_3_0_0)
+    Mor1 f_2_2 := MakeString (E_2_1_1, E_3_1_1)
+
+[string_diagram] Penrose substance:
+    Left(E_0_0_0, E_0_1_1)
+    Left(E_1_0_0, E_1_1_1)
+    Left(E_2_0_0, E_2_1_1)
+    Left(E_3_0_0, E_3_1_1)
+    Above(E_0_0_0, E_1_0_0)
+    Above(E_1_0_0, E_2_0_0)
+    Above(E_2_0_0, E_3_0_0)
+    Mor1 f_0_0 := MakeString (E_0_0_0, E_1_0_0)
+    Mor1 f_0_2 := MakeString (E_0_1_1, E_1_1_1)
+    Mor1 f_1_0 := MakeString (E_1_0_0, E_2_0_0)
+    Mor1 f_1_2 := MakeString (E_1_1_1, E_2_1_1)
+    Mor1 f_2_0 := MakeString (E_2_0_0, E_3_0_0)
+    Mor1 f_2_2 := MakeString (E_2_1_1, E_3_1_1)
+-/
+#guard_msgs (whitespace := lax) in
+#string_diagram Bicategory.whisker_exchange
+
+end Bicategory

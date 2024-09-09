@@ -7,6 +7,7 @@ import ProofWidgets.Component.PenroseDiagram
 import ProofWidgets.Component.Panel.Basic
 import ProofWidgets.Presentation.Expr
 import ProofWidgets.Component.HtmlDisplay
+import Mathlib.Tactic.CategoryTheory.Bicategory.Normalize
 import Mathlib.Tactic.CategoryTheory.Monoidal.Normalize
 
 /-!
@@ -292,14 +293,47 @@ def dsl :=
 def sty :=
   include_str ".."/".."/".."/"widget"/"src"/"penrose"/"monoidal.sty"
 
+inductive Kind where
+  | monoidal : Kind
+  | bicategory : Kind
+  | none : Kind
+
+def Kind.name : Kind → Name
+  | Kind.monoidal => `monoidal
+  | Kind.bicategory => `bicategory
+  | Kind.none => default
+
+def mkKind (e : Expr) : MetaM Kind := do
+  let e ← instantiateMVars e
+  let e ← (match (← whnfR e).eq? with
+    | some (_, lhs, _) => return lhs
+    | none => return e)
+  let ctx? ← BicategoryLike.mkContext? (ρ := Bicategory.Context) e
+  match ctx? with
+  | .some _ => return .bicategory
+  | .none =>
+    let ctx? ← BicategoryLike.mkContext? (ρ := Monoidal'.Context) e
+    match ctx? with
+    | .some _ => return .monoidal
+    | .none => return .none
+
 open scoped Jsx in
 /-- Given a 2-morphism, return a string diagram. Otherwise `none`. -/
 def stringM? (e : Expr) : MetaM (Option Html) := do
-  -- TODO: bicategory case
-  let .some ctx ← BicategoryLike.mkContext? (ρ := Monoidal'.Context) e | return .none
-  let x : Option (List (List Node) × List (List Strand)) ← CoherenceM.run (ctx := ctx) do
-    let e' := (← BicategoryLike.eval `monoidal (← MkMor₂.ofExpr e)).expr
-    return .some (← e'.nodes, ← e'.strands)
+  let e ← instantiateMVars e
+  let k ← mkKind e
+  let x : Option (List (List Node) × List (List Strand)) ← (match k with
+    | .monoidal => do
+      let .some ctx ← BicategoryLike.mkContext? (ρ := Monoidal'.Context) e | return .none
+      CoherenceM.run (ctx := ctx) do
+        let e' := (← BicategoryLike.eval k.name (← MkMor₂.ofExpr e)).expr
+        return .some (← e'.nodes, ← e'.strands)
+    | .bicategory => do
+      let .some ctx ← BicategoryLike.mkContext? (ρ := Bicategory.Context) e | return .none
+      CoherenceM.run (ctx := ctx) do
+        let e' := (← BicategoryLike.eval k.name (← MkMor₂.ofExpr e)).expr
+        return .some (← e'.nodes, ← e'.strands)
+    | .none => return .none)
   match x with
   | .none => return none
   | .some (nodes, strands) => do
