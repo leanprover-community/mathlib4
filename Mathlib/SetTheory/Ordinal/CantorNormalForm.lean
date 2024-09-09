@@ -123,7 +123,7 @@ theorem CNF_snd_lt {b o : Ordinal.{u}} (hb : 1 < b) {x : Ordinal × Ordinal} :
   · simp only [CNF_zero, not_mem_nil, IsEmpty.forall_iff]
   · rw [CNF_ne_zero ho]
     intro h
-    cases' (mem_cons.mp h) with h h
+    rcases (mem_cons.mp h) with h | h
     · rw [h]; simpa only using div_opow_log_lt o hb
     · exact IH h
 

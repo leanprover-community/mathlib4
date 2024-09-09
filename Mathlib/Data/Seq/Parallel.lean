@@ -121,7 +121,7 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
     let ⟨n, h⟩ := h
     this n [] S c (Or.inr h) T
   intro n; induction' n with n IH <;> intro l S c o T
-  · cases' o with a a
+  · rcases o with a | a
     · exact terminates_parallel.aux a T
     have H : Seq.destruct S = some (some c, Seq.tail S) := by simp [Seq.destruct, (· <$> ·), ← a]
     induction' h : parallel.aux2 l with a l'
@@ -139,7 +139,7 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
       refine @Computation.think_terminates _ _ ?_
       apply terminates_parallel.aux _ T
       simp
-  · cases' o with a a
+  · rcases o with a | a
     · exact terminates_parallel.aux a T
     induction' h : parallel.aux2 l with a l'
     · have C : corec parallel.aux1 (l, S) = pure a := by

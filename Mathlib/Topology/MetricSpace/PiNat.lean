@@ -201,7 +201,7 @@ theorem res_eq_res {x y : ℕ → α} {n : ℕ} :
   · intro m hm
     rw [Nat.lt_succ_iff_lt_or_eq] at hm
     simp only [res_succ, cons.injEq] at h
-    cases' hm with hm hm
+    rcases hm with hm | hm
     · exact ih h.2 hm
     rw [hm]
     exact h.1
@@ -620,7 +620,7 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
         -- common part to `x` and `y` -- then `f x = f y`.
         by_cases H : longestPrefix x s < firstDiff x y ∨ longestPrefix y s < firstDiff x y
         · have : cylinder x (longestPrefix x s) = cylinder y (longestPrefix y s) := by
-            cases' H with H H
+            rcases H with H | H
             · exact cylinder_longestPrefix_eq_of_longestPrefix_lt_firstDiff hs hne H xs ys
             · symm
               rw [firstDiff_comm] at H

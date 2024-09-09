@@ -124,7 +124,7 @@ theorem trans (C : Type w) [CommRing C] [Algebra A C] [Algebra B C] [IsScalarTow
     [hS : IsCyclotomicExtension S A B] [hT : IsCyclotomicExtension T B C]
     (h : Function.Injective (algebraMap B C)) : IsCyclotomicExtension (S ∪ T) A C := by
   refine ⟨fun hn => ?_, fun x => ?_⟩
-  · cases' hn with hn hn
+  · rcases hn with hn | hn
     · obtain ⟨b, hb⟩ := ((isCyclotomicExtension_iff _ _ _).1 hS).1 hn
       refine ⟨algebraMap B C b, ?_⟩
       exact hb.map_of_injective h

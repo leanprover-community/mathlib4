@@ -749,7 +749,7 @@ theorem linearIndependent_sum {v : ι ⊕ ι' → M} :
     refine hlr _ (sum_mem fun i _ => ?_) _ (neg_mem <| sum_mem fun i _ => ?_) this
     · exact smul_mem _ _ (subset_span ⟨Sum.inl i, mem_range_self _, rfl⟩)
     · exact smul_mem _ _ (subset_span ⟨Sum.inr i, mem_range_self _, rfl⟩)
-  cases' i with i i
+  rcases i with i | i
   · exact hl _ _ A i (Finset.mem_preimage.2 hi)
   · rw [this, neg_eq_zero] at A
     exact hr _ _ A i (Finset.mem_preimage.2 hi)

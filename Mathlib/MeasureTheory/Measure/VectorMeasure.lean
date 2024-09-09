@@ -1054,7 +1054,7 @@ theorem add_left [T2Space N] [ContinuousAdd M] (h₁ : v₁ ⟂ᵥ w) (h₂ : v�
         · exact Or.inl ⟨hxu', hx⟩
         rcases ht hx with (hxu | hxv)
         exacts [False.elim (hxu' hxu), Or.inr ⟨⟨hxv, hxu'⟩, hx⟩]
-      · cases' hx with hx hx <;> exact hx.2
+      · rcases hx with hx | hx <;> exact hx.2
 
 theorem add_right [T2Space M] [ContinuousAdd N] (h₁ : v ⟂ᵥ w₁) (h₂ : v ⟂ᵥ w₂) : v ⟂ᵥ w₁ + w₂ :=
   (add_left h₁.symm h₂.symm).symm

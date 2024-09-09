@@ -166,7 +166,7 @@ theorem bernoulli'PowerSeries_mul_exp_sub_one :
 theorem bernoulli'_odd_eq_zero {n : ℕ} (h_odd : Odd n) (hlt : 1 < n) : bernoulli' n = 0 := by
   let B := mk fun n => bernoulli' n / (n ! : ℚ)
   suffices (B - evalNegHom B) * (exp ℚ - 1) = X * (exp ℚ - 1) by
-    cases' mul_eq_mul_right_iff.mp this with h h <;>
+    rcases mul_eq_mul_right_iff.mp this with h | h <;>
       simp only [PowerSeries.ext_iff, evalNegHom, coeff_X] at h
     · apply eq_zero_of_neg_eq
       specialize h n
@@ -196,7 +196,7 @@ theorem bernoulli_one : bernoulli 1 = -1 / 2 := by norm_num [bernoulli]
 theorem bernoulli_eq_bernoulli'_of_ne_one {n : ℕ} (hn : n ≠ 1) : bernoulli n = bernoulli' n := by
   by_cases h0 : n = 0; · simp [h0]
   rw [bernoulli, neg_one_pow_eq_pow_mod_two]
-  cases' mod_two_eq_zero_or_one n with h h
+  rcases mod_two_eq_zero_or_one n with h | h
   · simp [h]
   · simp [bernoulli'_odd_eq_zero (odd_iff.mpr h) (one_lt_iff_ne_zero_and_ne_one.mpr ⟨h0, hn⟩)]
 

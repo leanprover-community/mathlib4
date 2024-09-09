@@ -151,7 +151,7 @@ instance (priority := 100) [LocallyFiniteOrder ι] : IsSuccArchimedean ι where
   exists_succ_iterate_of_le := by
     intro i j hij
     rw [le_iff_lt_or_eq] at hij
-    cases' hij with hij hij
+    rcases hij with hij | hij
     swap
     · refine ⟨0, ?_⟩
       simpa only [Function.iterate_zero, id] using hij

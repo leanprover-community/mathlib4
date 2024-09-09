@@ -359,7 +359,7 @@ theorem unit_mul_pow_congr_unit {ϖ : R} (hirr : Irreducible ϖ) (u v : Rˣ) (m 
   obtain rfl : m = n := unit_mul_pow_congr_pow hirr hirr u v m n h
   rw [← sub_eq_zero] at h
   rw [← sub_mul, mul_eq_zero] at h
-  cases' h with h h
+  rcases h with h | h
   · rw [sub_eq_zero] at h
     exact mod_cast h
   · apply (hirr.ne_zero (pow_eq_zero h)).elim

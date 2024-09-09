@@ -621,7 +621,7 @@ protected theorem mul_pos {f g : CauSeq α abs} : Pos f → Pos g → Pos (f * g
       mul_le_mul h₁ h₂ (le_of_lt G0) (le_trans (le_of_lt F0) h₁)⟩
 
 theorem trichotomy (f : CauSeq α abs) : Pos f ∨ LimZero f ∨ Pos (-f) := by
-  cases' Classical.em (LimZero f) with h h <;> simp [*]
+  rcases Classical.em (LimZero f) with h | h <;> simp [*]
   rcases abv_pos_of_not_limZero h with ⟨K, K0, hK⟩
   rcases exists_forall_ge_and hK (f.cauchy₃ K0) with ⟨i, hi⟩
   refine (le_total 0 (f i)).imp ?_ ?_ <;>
@@ -845,8 +845,8 @@ protected theorem inf_le_right {a b : CauSeq α abs} : a ⊓ b ≤ b :=
   le_of_exists ⟨0, fun _ _ => inf_le_right⟩
 
 protected theorem sup_le {a b c : CauSeq α abs} (ha : a ≤ c) (hb : b ≤ c) : a ⊔ b ≤ c := by
-  cases' ha with ha ha
-  · cases' hb with hb hb
+  rcases ha with ha | ha
+  · rcases hb with hb | hb
     · exact Or.inl (CauSeq.sup_lt ha hb)
     · replace ha := le_of_le_of_eq ha.le (Setoid.symm hb)
       refine le_of_le_of_eq (Or.inr ?_) hb
@@ -856,8 +856,8 @@ protected theorem sup_le {a b c : CauSeq α abs} (ha : a ≤ c) (hb : b ≤ c) :
     exact CauSeq.sup_eq_left hb
 
 protected theorem le_inf {a b c : CauSeq α abs} (hb : a ≤ b) (hc : a ≤ c) : a ≤ b ⊓ c := by
-  cases' hb with hb hb
-  · cases' hc with hc hc
+  rcases hb with hb | hb
+  · rcases hc with hc | hc
     · exact Or.inl (CauSeq.lt_inf hb hc)
     · replace hb := le_of_eq_of_le (Setoid.symm hc) hb.le
       refine le_of_eq_of_le hc (Or.inr ?_)

@@ -192,7 +192,7 @@ theorem analyticSet_iff_exists_polishSpace_range {s : Set α} :
   constructor
   · intro h
     rw [AnalyticSet] at h
-    cases' h with h h
+    rcases h with h | h
     · refine ⟨Empty, inferInstance, inferInstance, Empty.elim, continuous_bot, ?_⟩
       rw [h]
       exact range_eq_empty _

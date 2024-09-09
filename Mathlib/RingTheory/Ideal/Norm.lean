@@ -526,11 +526,11 @@ theorem spanNorm_mul_of_bot_or_top [IsDomain R] [IsDomain S] [Module.Free R S] [
     (eq_bot_or_top : ∀ I : Ideal R, I = ⊥ ∨ I = ⊤) (I J : Ideal S) :
     spanNorm R (I * J) = spanNorm R I * spanNorm R J := by
   refine le_antisymm ?_ (spanNorm_mul_spanNorm_le R _ _)
-  cases' eq_bot_or_top (spanNorm R I) with hI hI
+  rcases eq_bot_or_top (spanNorm R I) with hI | hI
   · rw [hI, spanNorm_eq_bot_iff.mp hI, bot_mul, spanNorm_bot]
     exact bot_le
   rw [hI, Ideal.top_mul]
-  cases' eq_bot_or_top (spanNorm R J) with hJ hJ
+  rcases eq_bot_or_top (spanNorm R J) with hJ | hJ
   · rw [hJ, spanNorm_eq_bot_iff.mp hJ, mul_bot, spanNorm_bot]
   rw [hJ]
   exact le_top

@@ -1114,7 +1114,7 @@ theorem pair_injective : Function.Injective2 pair := fun x x' y y' H => by
   have ae := ZFSet.ext_iff.1 H
   simp only [pair, mem_pair] at ae
   obtain rfl : x = x' := by
-    cases' (ae {x}).1 (by simp) with h h
+    rcases (ae {x}).1 (by simp) with h | h
     · exact singleton_injective h
     · have m : x' ∈ ({x} : ZFSet) := by simp [h]
       rw [mem_singleton.mp m]

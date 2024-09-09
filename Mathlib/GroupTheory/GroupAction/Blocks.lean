@@ -236,7 +236,7 @@ theorem IsBlock.image {H Y : Type*} [Group H] [MulAction H Y]
   obtain ⟨g, rfl⟩ := hφ h
   obtain ⟨g', rfl⟩ := hφ h'
   simp only [← image_smul_setₛₗ X Y φ j]
-  cases' IsBlock.def.mp hB g g' with h h
+  rcases IsBlock.def.mp hB g g' with h | h
   · left; rw [h]
   · right; exact Set.disjoint_image_of_injective hj h
 
@@ -268,8 +268,8 @@ theorem IsBlock.inter {B₁ B₂ : Set X} (h₁ : IsBlock G B₁) (h₂ : IsBloc
   rw [IsBlock.def_one]
   intro g
   rw [Set.smul_set_inter]
-  cases' h₁.smul_eq_or_disjoint g with h₁ h₁
-  · cases' h₂.smul_eq_or_disjoint g with h₂ h₂
+  rcases h₁.smul_eq_or_disjoint g with h₁ | h₁
+  · rcases h₂.smul_eq_or_disjoint g with h₂ | h₂
     · left; rw [h₁, h₂]
     right
     apply Disjoint.inter_left'; apply Disjoint.inter_right'

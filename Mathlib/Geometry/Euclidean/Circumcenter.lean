@@ -109,7 +109,7 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
     · intro p1 hp1
       rw [Sphere.mem_coe, mem_sphere, ← mul_self_inj_of_nonneg dist_nonneg (Real.sqrt_nonneg _),
         Real.mul_self_sqrt (add_nonneg (mul_self_nonneg _) (mul_self_nonneg _))]
-      cases' hp1 with hp1 hp1
+      rcases hp1 with hp1 | hp1
       · rw [hp1]
         rw [hpo,
           dist_sq_smul_orthogonal_vadd_smul_orthogonal_vadd (orthogonalProjection_mem p) hcc _ _
@@ -871,7 +871,7 @@ theorem eq_or_eq_reflection_of_dist_eq {n : ℕ} {s : Simplex ℝ P n} {p p₁ p
       simpa only [Ne, vsub_eq_zero_iff_eq, inner_self_eq_zero] using hp
     rw [mul_left_inj' hz, mul_self_eq_mul_self_iff] at hd₁
     rw [hp₁, hp₂]
-    cases' hd₁ with hd₁ hd₁
+    rcases hd₁ with hd₁ | hd₁
     · left
       rw [hd₁]
     · right

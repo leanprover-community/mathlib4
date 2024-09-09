@@ -560,7 +560,7 @@ theorem degree_add_le_of_le {a b : WithBot ℕ} (hp : degree p ≤ a) (hq : degr
   (p.degree_add_le q).trans <| max_le_max ‹_› ‹_›
 
 theorem natDegree_add_le (p q : R[X]) : natDegree (p + q) ≤ max (natDegree p) (natDegree q) := by
-  cases' le_max_iff.1 (degree_add_le p q) with h h <;> simp [natDegree_le_natDegree h]
+  rcases le_max_iff.1 (degree_add_le p q) with h | h <;> simp [natDegree_le_natDegree h]
 
 theorem natDegree_add_le_of_degree_le {p q : R[X]} {n : ℕ} (hp : natDegree p ≤ n)
     (hq : natDegree q ≤ n) : natDegree (p + q) ≤ n :=
@@ -835,7 +835,7 @@ theorem coeff_mul_degree_add_degree (p q : R[X]) :
               (lt_of_le_of_lt degree_le_natDegree (WithBot.coe_lt_coe.2 H)),
             zero_mul]
         · rw [not_lt_iff_eq_or_lt] at H
-          cases' H with H H
+          rcases H with H | H
           · subst H
             rw [add_left_cancel_iff] at h₁
             dsimp at h₁

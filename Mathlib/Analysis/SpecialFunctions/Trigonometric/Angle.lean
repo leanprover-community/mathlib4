@@ -227,7 +227,7 @@ theorem sin_eq_iff_coe_eq_or_add_eq_pi {θ ψ : ℝ} :
   constructor
   · intro Hsin
     rw [← cos_pi_div_two_sub, ← cos_pi_div_two_sub] at Hsin
-    cases' cos_eq_iff_coe_eq_or_eq_neg.mp Hsin with h h
+    rcases cos_eq_iff_coe_eq_or_eq_neg.mp Hsin with h | h
     · left
       rw [coe_sub, coe_sub] at h
       exact sub_right_inj.1 h

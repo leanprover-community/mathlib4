@@ -181,7 +181,7 @@ theorem tendsto_const_mul_zpow_atTop_nhds_iff {n : ℤ} {c d : 𝕜} (hc : c ≠
     | negSucc n =>
       have hn := Int.negSucc_lt_zero n
       exact Or.inr ⟨hn, tendsto_nhds_unique h (tendsto_const_mul_zpow_atTop_zero hn)⟩
-  · cases' h with h h
+  · rcases h with h | h
     · simp only [h.left, h.right, zpow_zero, mul_one]
       exact tendsto_const_nhds
     · exact h.2.symm ▸ tendsto_const_mul_zpow_atTop_zero h.1

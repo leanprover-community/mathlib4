@@ -406,7 +406,7 @@ theorem sInf_isPrime_of_isChain {s : Set (Ideal α)} (hs : s.Nonempty) (hs' : Is
       push_neg at hx
       obtain ⟨I, hI, hI'⟩ := hx
       intro J hJ
-      cases' hs'.total hI hJ with h h
+      rcases hs'.total hI hJ with h | h
       · exact h (((H I hI).mem_or_mem (e hI)).resolve_left hI')
       · exact ((H J hJ).mem_or_mem (e hJ)).resolve_left fun x => hI' <| h x⟩
 
