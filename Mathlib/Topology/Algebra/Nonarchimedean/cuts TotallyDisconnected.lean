@@ -185,3 +185,12 @@ theorem non_singleton_set_disconnected'
 
 -- have dva : Disjoint (V : Opens G) A   := by sorry
    -- exact Disjoint.mono vb (fun ⦃a⦄ a ↦ a) (id (Disjoint.symm dab))
+
+/-should be elsewhere
+lemma _root_.mem_unique_to_singleton {X : Type*} {U : Set X} {x : X} (hx : x ∈ U)
+    (h : ∀ y : X, y ∈ U → y = x) : U = {x} := by
+  ext
+  constructor <;> simp_all-/
+
+/-theorem Set.disjoint_iff {α : Type u} {s : Set α} {t : Set α} :
+Disjoint s t ↔ s ∩ t ⊆ ∅-/

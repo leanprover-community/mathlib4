@@ -31,24 +31,50 @@ Prop 2.3.9. of Gouvêa, F. Q. (2020) p-adic Numbers An Introduction. 3rd edition
   Cham, Springer International Publishing.
 -/
 
-namespace NonarchimedeanGroup
+namespace Set
+
+lemma mem_unique_to_singleton {X : Type*} {U : Set X} {x : X} (hx : x ∈ U)
+    (h : ∀ y : X, y ∈ U → y = x) : U = {x} := by
+  ext
+  constructor <;> simp_all
+
+end Set
+
+namespace NonarchimedeanGroup.auxiliary
 open scoped Pointwise
 open TopologicalSpace
 
-variable (G : Type*) [TopologicalSpace G] [Group G] [TopologicalGroup G]
-  [NonarchimedeanGroup G] [T2Space G]
-
--- #synth TotallyDisconnectedSpace G -- can't synth
-
+variable (G : Type*) [TopologicalSpace G] [Group G] [NonarchimedeanGroup G] [T2Space G]
 
 @[to_additive]
-lemma open_subgroup_separating'
+lemma open_subgroup_separating' -- not using  [TopologicalGroup G]
     (t : G) (ht : t ≠ 1) : ∃ (A : Opens G) (V : OpenSubgroup G),
     t ∈ A ∧ 1 ∈ V ∧ Disjoint (A : Set G) V := by
   rcases (t2_separation ht) with ⟨A, B, opena, openb, diff, one, disj⟩
   obtain ⟨V, hV⟩ := NonarchimedeanGroup.is_nonarchimedean B (IsOpen.mem_nhds openb one)
   exact ⟨⟨A, opena⟩, V, diff, one_mem V,
     fun _ ↦ by apply Set.disjoint_of_subset_right hV disj⟩
+
+end NonarchimedeanGroup.auxiliary
+
+namespace Coset
+open scoped Pointwise
+open TopologicalSpace
+
+variable (G : Type*) [TopologicalSpace G] [Group G] [TopologicalGroup G]
+  [NonarchimedeanGroup G] [T2Space G]
+
+end Coset
+
+
+namespace NonarchimedeanGroup
+open scoped Pointwise
+open TopologicalSpace
+
+
+variable (G : Type*) [TopologicalSpace G] [Group G]
+
+-- #synth TotallyDisconnectedSpace G -- can't synth
 
 open scoped Pointwise
 variable (x y U : Type*) (x y : G) (U : Set G)
@@ -57,25 +83,15 @@ variable (x y U : Type*) (x y : G) (U : Set G)
 -- building the components of `¬ IsPreconnected U`:
 
 @[to_additive]
-lemma is_open_coset (y : G) (V : OpenSubgroup G)  :
-    IsOpen (y • (V : Set G)) := IsOpen.smul (OpenSubgroup.isOpen V) y
-
-@[to_additive]
-lemma is_open_compl_coset' (y : G)
-    (V : OpenSubgroup G) :
-    IsOpen  (y • (V : Set G))ᶜ := by
-  refine isOpen_compl_iff.mpr ?_
-  refine IsClosed.smul ?hs y
-  exact OpenSubgroup.isClosed V
-
-@[to_additive]
 lemma subset_coset_comp (y : G) (U : Set G) (V : OpenSubgroup G) :
+-- not using [TopologicalGroup G] [NonarchimedeanGroup G] [T2Space G]
     U ⊆  (y • (V : Set G)) ∪
       (y • (V : Set G))ᶜ := by
   simp only [Set.union_compl_self, Set.subset_univ]
 
 @[to_additive]
 lemma mem_subgroup_coset (x y : G) (hxy : y ≠ x) (V : OpenSubgroup G) :
+-- not using [TopologicalGroup G] [NonarchimedeanGroup G] [T2Space G]
     y ∈ (y • (V : Set G)) := by
   have omem : 1 ∈ (V : Set G) := one_mem V
   change (y = x) → False at hxy
@@ -83,6 +99,29 @@ lemma mem_subgroup_coset (x y : G) (hxy : y ≠ x) (V : OpenSubgroup G) :
   refine Set.mem_smul_set_iff_inv_smul_mem.mpr ?h.a
   simp only [smul_eq_mul, inv_mul_cancel, SetLike.mem_coe]
   exact omem
+
+@[to_additive]
+lemma non_empty_intersection_compl_coset (x y : G) (U : Set G) (hx : x ∈ U)
+-- not using [TopologicalGroup G] [NonarchimedeanGroup G] [T2Space G]
+    (A : Opens G) (quot : (y⁻¹ * x) ∈ A ) (V : OpenSubgroup G) (dva : Disjoint (V : Set G) A) :
+    (U ∩ ((y • (V : Set G))ᶜ)).Nonempty := by
+  simp_rw [Set.inter_nonempty, Set.mem_compl_iff]
+  use x, hx
+  intro con
+  rw [mem_leftCoset_iff y] at con
+  have mem : (y⁻¹ * x) ∈ (V : Set G) ∩ A := Set.mem_inter con quot
+  have subempty : (V : Set G) ∩ A = ∅ := Disjoint.inter_eq dva
+  rw [subempty] at mem
+  simp at mem
+
+@[to_additive]
+lemma intersection_of_intersection_of_complements_empty (y : G)  (U : Set G)
+-- not using [TopologicalGroup G] [NonarchimedeanGroup G] [T2Space G]
+    (V : OpenSubgroup G) : ¬ (U ∩ ((y • (V : Set G)) ∩
+    (y • (V : Set G))ᶜ)).Nonempty := by
+  refine Set.not_nonempty_iff_eq_empty.mpr ?_
+  simp only [Set.inter_compl_self, Set.inter_empty]
+
 
 @[to_additive]
   lemma non_empty_intersection_coset (x y : G) (U : Set G) (hy :  y ∈ U) (hxy : y ≠ x)
@@ -95,28 +134,21 @@ lemma mem_subgroup_coset (x y : G) (hxy : y ≠ x) (V : OpenSubgroup G) :
   · exact hy
   · exact mem_subgroup_coset G x y hxy V
 
-@[to_additive]
-lemma non_empty_intersection_compl_coset (x y : G) (U : Set G) (hx : x ∈ U)
-    (A : Opens G) (quot : (y⁻¹ * x) ∈ A ) (V : OpenSubgroup G) (dva : Disjoint (V : Set G) A) :
-    (U ∩ ((y • (V : Set G))ᶜ)).Nonempty := by
-  simp_rw [Set.inter_nonempty, Set.mem_compl_iff]
-  use x, hx
-  intro con
-  rw [mem_leftCoset_iff y] at con
-  have mem : (y⁻¹ * x) ∈ (V : Set G) ∩ A := Set.mem_inter con quot
-  have subempty : (V : Set G) ∩ A = ∅ := Disjoint.inter_eq dva
-  rw [subempty] at mem
-  simp at mem
-
-/-theorem Set.disjoint_iff {α : Type u} {s : Set α} {t : Set α} :
-Disjoint s t ↔ s ∩ t ⊆ ∅-/
+variable [TopologicalGroup G]
 
 @[to_additive]
-lemma intersection_of_intersection_of_complements_empty (y : G)  (U : Set G)
-    (V : OpenSubgroup G) : ¬ (U ∩ ((y • (V : Set G)) ∩
-    (y • (V : Set G))ᶜ)).Nonempty := by
-  refine Set.not_nonempty_iff_eq_empty.mpr ?_
-  simp only [Set.inter_compl_self, Set.inter_empty]
+lemma is_open_coset (y : G) (V : OpenSubgroup G)  : -- not using [NonarchimedeanGroup G] [T2Space G]
+    IsOpen (y • (V : Set G)) := IsOpen.smul (OpenSubgroup.isOpen V) y
+
+@[to_additive]
+lemma is_open_compl_coset' (y : G) -- not using [NonarchimedeanGroup G] [T2Space G]
+    (V : OpenSubgroup G) :
+    IsOpen  (y • (V : Set G))ᶜ := by
+  refine isOpen_compl_iff.mpr ?_
+  refine IsClosed.smul ?hs y
+  exact OpenSubgroup.isClosed V
+
+variable [NonarchimedeanGroup G] [T2Space G]
 
 @[to_additive]
 theorem non_singleton_set_disconnected
@@ -135,7 +167,7 @@ theorem non_singleton_set_disconnected
         exact hxy (id (Eq.symm this))
       have : ∃ (A : Opens G) (V : OpenSubgroup G), y⁻¹ * x ∈ A ∧ 1 ∈ V ∧
           Disjoint (A : Set G) V := by
-        exact open_subgroup_separating' G (y⁻¹ * x) ht
+        exact NonarchimedeanGroup.auxiliary.open_subgroup_separating' G (y⁻¹ * x) ht
       rcases this with ⟨A , V, ha, hv, dav⟩
       use A , V
       constructor
@@ -163,11 +195,7 @@ theorem non_singleton_set_disconnected
   rintro ⟨_, h2⟩
   exact emptyUuv <| ((((h2 u v ou) ov) Uuv) Uu) Uv
 
--- should be elsewhere
-lemma _root_.mem_unique_to_singleton {X : Type*} {U : Set X} {x : X} (hx : x ∈ U)
-    (h : ∀ y : X, y ∈ U → y = x) : U = {x} := by
-  ext
-  constructor <;> simp_all
+
 
 /-- Instance of a nonarchimedean group as a totally disconnected topological space
 (TotallyDisconnectedSpace). (The nonarchimedean group is not necessarily abelian.)-/
@@ -178,7 +206,7 @@ instance totally_disconnected_space : TotallyDisconnectedSpace G := by
       by_contra con
       obtain ⟨y, hyu, hneq⟩ : ∃ y : G, (y ∈ connectedComponent x) ∧ (y ≠ x) := by
         by_contra! con2
-        exact con <| mem_unique_to_singleton mem_connectedComponent con2
+        exact con <| Set.mem_unique_to_singleton mem_connectedComponent con2
       exact non_singleton_set_disconnected G x y (connectedComponent x) mem_connectedComponent hyu
         hneq isConnected_connectedComponent
 
