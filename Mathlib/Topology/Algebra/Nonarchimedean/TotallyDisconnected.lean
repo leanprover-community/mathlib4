@@ -131,7 +131,7 @@ variable [NonarchimedeanGroup G] [T2Space G]
 theorem non_singleton_set_disconnected
     (x y : G) (U : Set G)
     (hx : x ∈ U) (hy :  y ∈ U) (hxy : y ≠ x) : ¬ IsConnected U := by
-  have : ∃ (A : Opens G) (V : OpenSubgroup G), y⁻¹ * x ∈ A ∧ 1 ∈ V ∧
+  obtain ⟨A , V, ha, _ , dav⟩ : ∃ (A : Opens G) (V : OpenSubgroup G), y⁻¹ * x ∈ A ∧ 1 ∈ V ∧
           Disjoint (A : Set G) V := by
     have ht : y⁻¹ * x ≠ 1 := by
         by_contra! con
@@ -142,12 +142,11 @@ theorem non_singleton_set_disconnected
           exact con
         exact hxy (id (Eq.symm this))
     exact NonarchimedeanGroup.auxiliary.open_subgroup_separating' G (y⁻¹ * x) ht
-  rcases this with ⟨A , V, ha, _ , dav⟩
   obtain ⟨u , v, ou, ov, Uuv, Uu, Uv, emptyUuv⟩ : ∃ u v : Set G, (IsOpen u) ∧ (IsOpen v) ∧
       (U ⊆ u ∪ v) ∧ ((U ∩ u).Nonempty) ∧ ((U ∩ v).Nonempty) ∧ (¬(U ∩ (u ∩ v)).Nonempty) := by
     use (y • (V : Set G)) , (y • (V : Set G))ᶜ
     refine ⟨(IsOpen.smul (OpenSubgroup.isOpen V) y), is_open_compl_coset' G y V,
-        subset_coset_comp G y U V,
+        subset_coset_comp G y U V ,
         non_empty_intersection_coset G x y U hy hxy V,
         non_empty_intersection_compl_coset G x y U hx A ha V dav.symm,
         intersection_of_intersection_of_complements_empty G y U V⟩
