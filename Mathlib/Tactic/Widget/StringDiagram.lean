@@ -452,5 +452,3 @@ def elabStringDiagramCmd : CommandElab := fun
   | stx => throwError "Unexpected syntax {stx}."
 
 end Mathlib.Tactic.Widget
-
-#lint
