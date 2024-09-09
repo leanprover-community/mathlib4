@@ -512,10 +512,10 @@ def add_mul_mul_inv: Invertible (A + U*C*V) := by
 
 /-- **Woodbury Identity** -/
 theorem add_mul_mul_inv_eq_sub[Invertible (A + U*C*V)]:
-  ⅟(A + U*C*V) = ⅟A - ⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A := by
-    rw [@invOf_eq_nonsing_inv]
-    apply inv_eq_right_inv
-    apply add_mul_mul_invOf_mul_eq_one
+    ⅟(A + U*C*V) = ⅟A - ⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A := by
+      rw [@invOf_eq_nonsing_inv]
+      apply inv_eq_right_inv
+      apply add_mul_mul_invOf_mul_eq_one
 
 
 end Woodbury
