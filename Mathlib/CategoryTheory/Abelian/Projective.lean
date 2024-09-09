@@ -38,7 +38,6 @@ noncomputable instance preservesFiniteColimitsPreadditiveCoyonedaObjOfProjective
     (P : C) [hP : Projective P] :
     PreservesFiniteColimits (preadditiveCoyonedaObj (op P)) := by
   apply Functor.preservesFiniteColimitsOfPreservesHomology
-#align category_theory.preserves_finite_colimits_preadditive_coyoneda_obj_of_projective CategoryTheory.preservesFiniteColimitsPreadditiveCoyonedaObjOfProjective
 
 /-- An object is projective if its preadditive Co-Yoneda functor preserves finite colimits. -/
 theorem projective_of_preservesFiniteColimits_preadditiveCoyonedaObj (P : C)
@@ -47,6 +46,5 @@ theorem projective_of_preservesFiniteColimits_preadditiveCoyonedaObj (P : C)
   dsimp
   have := Functor.preservesHomologyOfExact (preadditiveCoyonedaObj (op P))
   infer_instance
-#align category_theory.projective_of_preserves_finite_colimits_preadditive_coyoneda_obj CategoryTheory.projective_of_preservesFiniteColimits_preadditiveCoyonedaObj
 
 end CategoryTheory

@@ -10,13 +10,11 @@ import Mathlib.CategoryTheory.Abelian.Opposite
 import Mathlib.CategoryTheory.Abelian.ProjectiveResolution
 import Mathlib.CategoryTheory.Linear.Yoneda
 
-#align_import category_theory.abelian.ext from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
-
 /-!
 # Ext
 
 We define `Ext R C n : Cᵒᵖ ⥤ C ⥤ Module R` for any `R`-linear abelian category `C`
-by (left) deriving in the first argument of the bifunctor `(X, Y) ↦ Module.of R (unop X ⟶ Y)`.
+by (left) deriving in the first argument of the bifunctor `(X, Y) ↦ ModuleCat.of R (unop X ⟶ Y)`.
 
 ## Implementation
 
@@ -34,7 +32,8 @@ open CategoryTheory Limits
 variable (R : Type*) [Ring R] (C : Type*) [Category C] [Abelian C] [Linear R C]
   [EnoughProjectives C]
 
-/-- `Ext R C n` is defined by deriving in the first argument of `(X, Y) ↦ Module.of R (unop X ⟶ Y)`
+/-- `Ext R C n` is defined by deriving in
+the first argument of `(X, Y) ↦ ModuleCat.of R (unop X ⟶ Y)`
 (which is the second argument of `linearYoneda`).
 -/
 
@@ -56,8 +55,6 @@ def Ext (n : ℕ) : Cᵒᵖ ⥤ C ⥤ ModuleCat R :=
       -- This should be investigated further.
       map := fun f =>
         NatTrans.leftOp (NatTrans.leftDerived (NatTrans.rightOp ((linearYoneda R C).map f)) n) }
-set_option linter.uppercaseLean3 false in
-#align Ext Ext
 
 open ZeroObject
 

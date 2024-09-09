@@ -7,8 +7,6 @@ import Mathlib.Topology.Algebra.UniformGroup
 import Mathlib.Topology.UniformSpace.Pi
 import Mathlib.Data.Matrix.Basic
 
-#align_import topology.uniform_space.matrix from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
-
 /-!
 # Uniform space structure on matrices
 -/
@@ -32,13 +30,11 @@ theorem uniformity :
   erw [Pi.uniformity]
   simp_rw [Pi.uniformity, Filter.comap_iInf, Filter.comap_comap]
   rfl
-#align matrix.uniformity Matrix.uniformity
 
 theorem uniformContinuous {β : Type*} [UniformSpace β] {f : β → Matrix m n 𝕜} :
     UniformContinuous f ↔ ∀ i j, UniformContinuous fun x => f x i j := by
   simp only [UniformContinuous, Matrix.uniformity, Filter.tendsto_iInf, Filter.tendsto_comap_iff]
   apply Iff.intro <;> intro a <;> apply a
-#align matrix.uniform_continuous Matrix.uniformContinuous
 
 instance [CompleteSpace 𝕜] : CompleteSpace (Matrix m n 𝕜) :=
   (by infer_instance : CompleteSpace (m → n → 𝕜))

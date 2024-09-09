@@ -8,8 +8,6 @@ import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 import Mathlib.Algebra.Homology.SingleHomology
 import Mathlib.CategoryTheory.Preadditive.Injective
 
-#align_import category_theory.preadditive.injective_resolution from "leanprover-community/mathlib"@"14b69e9f3c16630440a2cbd46f1ddad0d561dee7"
-
 /-!
 # Injective resolutions
 
@@ -53,8 +51,6 @@ structure InjectiveResolution (Z : C) where
   ι : (single₀ C).obj Z ⟶ cocomplex
   /-- the morphism from the single cochain complex with `Z` in degree `0` is a quasi-isomorphism -/
   quasiIso : QuasiIso ι := by infer_instance
-set_option linter.uppercaseLean3 false in
-#align category_theory.InjectiveResolution CategoryTheory.InjectiveResolution
 
 open InjectiveResolution in
 attribute [instance] injective hasHomology InjectiveResolution.quasiIso
@@ -62,7 +58,6 @@ attribute [instance] injective hasHomology InjectiveResolution.quasiIso
 /-- An object admits an injective resolution. -/
 class HasInjectiveResolution (Z : C) : Prop where
   out : Nonempty (InjectiveResolution Z)
-#align category_theory.has_injective_resolution CategoryTheory.HasInjectiveResolution
 
 attribute [inherit_doc HasInjectiveResolution] HasInjectiveResolution.out
 
@@ -74,7 +69,6 @@ variable (C)
 `[EnoughInjectives C]` and `[Abelian C]`. -/
 class HasInjectiveResolutions : Prop where
   out : ∀ Z : C, HasInjectiveResolution Z
-#align category_theory.has_injective_resolutions CategoryTheory.HasInjectiveResolutions
 
 attribute [instance 100] HasInjectiveResolutions.out
 
@@ -97,23 +91,17 @@ lemma exact_succ (n : ℕ) :
 @[simp]
 theorem ι_f_succ (n : ℕ) : I.ι.f (n + 1) = 0 :=
   (isZero_single_obj_X _ _ _ _ (by simp)).eq_of_src _ _
-set_option linter.uppercaseLean3 false in
-#align category_theory.InjectiveResolution.ι_f_succ CategoryTheory.InjectiveResolution.ι_f_succ
 
 -- Porting note (#10618): removed @[simp] simp can prove this
 @[reassoc]
 theorem ι_f_zero_comp_complex_d :
     I.ι.f 0 ≫ I.cocomplex.d 0 1 = 0 := by
   simp
-set_option linter.uppercaseLean3 false in
-#align category_theory.InjectiveResolution.ι_f_zero_comp_complex_d CategoryTheory.InjectiveResolution.ι_f_zero_comp_complex_d
 
 -- Porting note (#10618): removed @[simp] simp can prove this
 theorem complex_d_comp (n : ℕ) :
     I.cocomplex.d n (n + 1) ≫ I.cocomplex.d (n + 1) (n + 2) = 0 := by
   simp
-set_option linter.uppercaseLean3 false in
-#align category_theory.InjectiveResolution.complex_d_comp CategoryTheory.InjectiveResolution.complex_d_comp
 
 /-- The (limit) kernel fork given by the composition
 `Z ⟶ I.cocomplex.X 0 ⟶ I.cocomplex.X 1` when `I : InjectiveResolution Z`. -/
@@ -149,8 +137,6 @@ def self [Injective Z] : InjectiveResolution Z where
     · apply IsZero.injective
       apply HomologicalComplex.isZero_single_obj_X
       simp
-set_option linter.uppercaseLean3 false in
-#align category_theory.InjectiveResolution.self CategoryTheory.InjectiveResolution.self
 
 end InjectiveResolution
 

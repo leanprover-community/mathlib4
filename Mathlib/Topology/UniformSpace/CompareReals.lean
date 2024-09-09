@@ -8,8 +8,6 @@ import Mathlib.Topology.Instances.Real
 import Mathlib.Topology.Instances.Rat
 import Mathlib.Topology.UniformSpace.Completion
 
-#align_import topology.uniform_space.compare_reals from "leanprover-community/mathlib"@"e1a7bdeb4fd826b7e71d130d34988f0a2d26a177"
-
 /-!
 # Comparison of Cauchy reals and Bourbaki reals
 
@@ -63,7 +61,6 @@ theorem Rat.uniformSpace_eq :
   rw [(AbsoluteValue.hasBasis_uniformity _).mem_iff, Metric.uniformity_basis_dist_rat.mem_iff]
   simp only [Rat.dist_eq, AbsoluteValue.abs_apply, ← Rat.cast_sub, ← Rat.cast_abs, Rat.cast_lt,
     abs_sub_comm]
-#align rat.uniform_space_eq Rat.uniformSpace_eq
 
 /-- Cauchy reals packaged as a completion of ℚ using the absolute value route. -/
 def rationalCauSeqPkg : @AbstractCompletion ℚ <| (@AbsoluteValue.abs ℚ _).uniformSpace :=
@@ -77,7 +74,6 @@ def rationalCauSeqPkg : @AbstractCompletion ℚ <| (@AbsoluteValue.abs ℚ _).un
       rw [Rat.uniformSpace_eq]
       exact Rat.uniformEmbedding_coe_real.toUniformInducing)
     (dense := Rat.denseEmbedding_coe_real.dense)
-#align rational_cau_seq_pkg rationalCauSeqPkg
 
 namespace CompareReals
 
@@ -87,8 +83,6 @@ but they are not definitionaly equal, so it would confuse the type class system 
 also human readers). -/
 def Q :=
   ℚ deriving CommRing, Inhabited
-set_option linter.uppercaseLean3 false in
-#align compare_reals.Q CompareReals.Q
 
 instance uniformSpace : UniformSpace Q :=
   (@AbsoluteValue.abs ℚ _).uniformSpace
@@ -96,30 +90,22 @@ instance uniformSpace : UniformSpace Q :=
 /-- Real numbers constructed as in Bourbaki. -/
 def Bourbakiℝ : Type :=
   Completion Q deriving Inhabited
-set_option linter.uppercaseLean3 false in
-#align compare_reals.Bourbakiℝ CompareReals.Bourbakiℝ
 
 instance Bourbaki.uniformSpace : UniformSpace Bourbakiℝ :=
   Completion.uniformSpace Q
-#align compare_reals.bourbaki.uniform_space CompareReals.Bourbaki.uniformSpace
 
 /-- Bourbaki reals packaged as a completion of Q using the general theory. -/
 def bourbakiPkg : AbstractCompletion Q :=
   Completion.cPkg
-set_option linter.uppercaseLean3 false in
-#align compare_reals.Bourbaki_pkg CompareReals.bourbakiPkg
 
 /-- The uniform bijection between Bourbaki and Cauchy reals. -/
 noncomputable def compareEquiv : Bourbakiℝ ≃ᵤ ℝ :=
   bourbakiPkg.compareEquiv rationalCauSeqPkg
-#align compare_reals.compare_equiv CompareReals.compareEquiv
 
 theorem compare_uc : UniformContinuous compareEquiv :=
   bourbakiPkg.uniformContinuous_compareEquiv rationalCauSeqPkg
-#align compare_reals.compare_uc CompareReals.compare_uc
 
 theorem compare_uc_symm : UniformContinuous compareEquiv.symm :=
   bourbakiPkg.uniformContinuous_compareEquiv_symm rationalCauSeqPkg
-#align compare_reals.compare_uc_symm CompareReals.compare_uc_symm
 
 end CompareReals

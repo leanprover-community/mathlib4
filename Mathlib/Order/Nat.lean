@@ -22,7 +22,6 @@ namespace Nat
 instance instOrderBot : OrderBot ℕ where
   bot := 0
   bot_le := zero_le
-#align nat.order_bot Nat.instOrderBot
 
 /-! ### Miscellaneous lemmas -/
 

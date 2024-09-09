@@ -5,8 +5,6 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Topology.UniformSpace.UniformEmbedding
 
-#align_import topology.uniform_space.complete_separated from "leanprover-community/mathlib"@"b363547b3113d350d053abdf2884e9850a56b205"
-
 /-!
 # Theory of complete separated uniform spaces.
 
@@ -28,7 +26,6 @@ theorem IsComplete.isClosed [UniformSpace α] [T0Space α] {s : Set α} (h : IsC
     have : Cauchy f := cauchy_nhds.mono' ha inf_le_left
     rcases h f this inf_le_right with ⟨y, ys, fy⟩
     rwa [(tendsto_nhds_unique' ha inf_le_left fy : a = y)]
-#align is_complete.is_closed IsComplete.isClosed
 
 theorem UniformEmbedding.toClosedEmbedding [UniformSpace α] [UniformSpace β] [CompleteSpace α]
     [T0Space β] {f : α → β} (hf : UniformEmbedding f) :
@@ -45,6 +42,5 @@ variable {γ : Type*} [UniformSpace γ] [CompleteSpace γ] [T0Space γ]
 theorem continuous_extend_of_cauchy {e : α → β} {f : α → γ} (de : DenseInducing e)
     (h : ∀ b : β, Cauchy (map f (comap e <| 𝓝 b))) : Continuous (de.extend f) :=
   de.continuous_extend fun b => CompleteSpace.complete (h b)
-#align dense_inducing.continuous_extend_of_cauchy DenseInducing.continuous_extend_of_cauchy
 
 end DenseInducing

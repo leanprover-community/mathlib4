@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2023 Anne Baanen, Sam v. Gool, Leo Mayer, Brendan S. Murphy. All rights reserved.
+Copyright (c) 2023 Anne Baanen, Sam van Gool, Leo Mayer, Brendan Murphy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anne Baanen, Sam v. Gool, Leo Mayer, Brendan S. Murphy
+Authors: Anne Baanen, Sam van Gool, Leo Mayer, Brendan Murphy
 -/
 import Mathlib.Topology.Category.Locale
 

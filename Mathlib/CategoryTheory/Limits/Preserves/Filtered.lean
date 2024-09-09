@@ -6,8 +6,6 @@ Authors: Scott Morrison, Justus Springer
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Filtered.Basic
 
-#align_import category_theory.limits.preserves.filtered from "leanprover-community/mathlib"@"c43486ecf2a5a17479a32ce09e4818924145e90e"
-
 /-!
 # Preservation of filtered colimits and cofiltered limits.
 Typically forgetful functors from algebraic categories preserve filtered colimits
@@ -39,19 +37,16 @@ A functor is said to preserve filtered colimits, if it preserves all colimits of
 class PreservesFilteredColimits (F : C ⥤ D) : Type max u₁ u₂ (v + 1) where
   preserves_filtered_colimits :
     ∀ (J : Type v) [SmallCategory J] [IsFiltered J], PreservesColimitsOfShape J F
-#align category_theory.limits.preserves_filtered_colimits CategoryTheory.Limits.PreservesFilteredColimits
 
 attribute [instance 100] PreservesFilteredColimits.preserves_filtered_colimits
 
 instance (priority := 100) PreservesColimits.preservesFilteredColimits (F : C ⥤ D)
     [PreservesColimits F] : PreservesFilteredColimits F where
   preserves_filtered_colimits _ := inferInstance
-#align category_theory.limits.preserves_colimits.preserves_filtered_colimits CategoryTheory.Limits.PreservesColimits.preservesFilteredColimits
 
 instance compPreservesFilteredColimits (F : C ⥤ D) (G : D ⥤ E) [PreservesFilteredColimits F]
     [PreservesFilteredColimits G] : PreservesFilteredColimits (F ⋙ G) where
   preserves_filtered_colimits _ := inferInstance
-#align category_theory.limits.comp_preserves_filtered_colimits CategoryTheory.Limits.compPreservesFilteredColimits
 
 /-- A functor is said to preserve cofiltered limits, if it preserves all limits of shape `J`, where
 `J` is a cofiltered category.
@@ -59,18 +54,15 @@ instance compPreservesFilteredColimits (F : C ⥤ D) (G : D ⥤ E) [PreservesFil
 class PreservesCofilteredLimits (F : C ⥤ D) : Type max u₁ u₂ (v + 1) where
   preserves_cofiltered_limits :
     ∀ (J : Type v) [SmallCategory J] [IsCofiltered J], PreservesLimitsOfShape J F
-#align category_theory.limits.preserves_cofiltered_limits CategoryTheory.Limits.PreservesCofilteredLimits
 
 attribute [instance 100] PreservesCofilteredLimits.preserves_cofiltered_limits
 
 instance (priority := 100) PreservesLimits.preservesCofilteredLimits (F : C ⥤ D)
     [PreservesLimits F] : PreservesCofilteredLimits F where
   preserves_cofiltered_limits _ := inferInstance
-#align category_theory.limits.preserves_limits.preserves_cofiltered_limits CategoryTheory.Limits.PreservesLimits.preservesCofilteredLimits
 
 instance compPreservesCofilteredLimits (F : C ⥤ D) (G : D ⥤ E) [PreservesCofilteredLimits F]
     [PreservesCofilteredLimits G] : PreservesCofilteredLimits (F ⋙ G) where
   preserves_cofiltered_limits _ := inferInstance
-#align category_theory.limits.comp_preserves_cofiltered_limits CategoryTheory.Limits.compPreservesCofilteredLimits
 
 end CategoryTheory.Limits

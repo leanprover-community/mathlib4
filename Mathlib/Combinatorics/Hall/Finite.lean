@@ -6,8 +6,6 @@ Authors: Alena Gusakov, Bhavik Mehta, Kyle Miller
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Set.Finite
 
-#align_import combinatorics.hall.finite from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
-
 /-!
 # Hall's Marriage Theorem for finite index types
 
@@ -68,7 +66,6 @@ theorem hall_cond_of_erase {x : ι} (a : α)
   · rw [nonempty_iff_ne_empty, not_not] at he
     subst s'
     simp
-#align hall_marriage_theorem.hall_cond_of_erase HallMarriageTheorem.hall_cond_of_erase
 
 /-- First case of the inductive step: assuming that
 `∀ (s : Finset ι), s.Nonempty → s ≠ univ → s.card < (s.biUnion t).card`
@@ -119,8 +116,6 @@ theorem hall_hard_inductive_step_A {n : ℕ} (hn : Fintype.card ι = n + 1)
     · specialize hfr ⟨z, hz⟩
       rw [mem_erase] at hfr
       exact hfr.2
-set_option linter.uppercaseLean3 false in
-#align hall_marriage_theorem.hall_hard_inductive_step_A HallMarriageTheorem.hall_hard_inductive_step_A
 
 theorem hall_cond_of_restrict {ι : Type u} {t : ι → Finset α} {s : Finset ι}
     (ht : ∀ s : Finset ι, s.card ≤ (s.biUnion t).card) (s' : Finset (s : Set ι)) :
@@ -131,7 +126,6 @@ theorem hall_cond_of_restrict {ι : Type u} {t : ι → Finset α} {s : Finset �
     apply congr_arg
     ext y
     simp
-#align hall_marriage_theorem.hall_cond_of_restrict HallMarriageTheorem.hall_cond_of_restrict
 
 theorem hall_cond_of_compl {ι : Type u} {t : ι → Finset α} {s : Finset ι}
     (hus : s.card = (s.biUnion t).card) (ht : ∀ s : Finset ι, s.card ≤ (s.biUnion t).card)
@@ -156,7 +150,6 @@ theorem hall_cond_of_compl {ι : Type u} {t : ι → Finset α} {s : Finset ι}
     · use x', hx', rat, hs
   · apply biUnion_subset_biUnion_of_subset_left
     apply subset_union_left
-#align hall_marriage_theorem.hall_cond_of_compl HallMarriageTheorem.hall_cond_of_compl
 
 /-- Second case of the inductive step: assuming that
 `∃ (s : Finset ι), s ≠ univ → s.card = (s.biUnion t).card`
@@ -213,8 +206,6 @@ theorem hall_hard_inductive_step_B {n : ℕ} (hn : Fintype.card ι = n + 1)
     split_ifs with h
     · exact hsf' ⟨x, h⟩
     · exact sdiff_subset (hsf'' ⟨x, h⟩)
-set_option linter.uppercaseLean3 false in
-#align hall_marriage_theorem.hall_hard_inductive_step_B HallMarriageTheorem.hall_hard_inductive_step_B
 
 end Fintype
 
@@ -241,7 +232,6 @@ theorem hall_hard_inductive (ht : ∀ s : Finset ι, s.card ≤ (s.biUnion t).ca
       rcases h with ⟨s, sne, snu, sle⟩
       exact hall_hard_inductive_step_B hn ht (@fun ι' => ih' ι')
         s sne snu (Nat.le_antisymm (ht _) sle)
-#align hall_marriage_theorem.hall_hard_inductive HallMarriageTheorem.hall_hard_inductive
 
 end HallMarriageTheorem
 
@@ -266,4 +256,3 @@ theorem Finset.all_card_le_biUnion_card_iff_existsInjective' {ι α : Type*} [Fi
     rw [mem_image, mem_biUnion]
     rintro ⟨x, hx, rfl⟩
     exact ⟨x, hx, hf₂ x⟩
-#align finset.all_card_le_bUnion_card_iff_exists_injective' Finset.all_card_le_biUnion_card_iff_existsInjective'

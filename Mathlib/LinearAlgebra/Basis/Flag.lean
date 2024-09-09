@@ -3,7 +3,7 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Patrick Massot
 -/
-import Mathlib.LinearAlgebra.Basis
+import Mathlib.LinearAlgebra.Basis.Cardinality
 import Mathlib.LinearAlgebra.Dual
 import Mathlib.Data.Fin.FlagRange
 
@@ -114,3 +114,5 @@ theorem isMaxChain_range_flag (b : Basis (Fin n) K V) : IsMaxChain (· ≤ ·) (
   b.toFlag.maxChain
 
 end DivisionRing
+
+end Basis

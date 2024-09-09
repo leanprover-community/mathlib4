@@ -5,8 +5,6 @@ Authors: Scott Morrison, Joël Riou
 -/
 import Mathlib.Algebra.Homology.Homotopy
 
-#align_import algebra.homology.quasi_iso from "leanprover-community/mathlib"@"956af7c76589f444f2e1313911bad16366ea476d"
-
 /-!
 # Quasi-isomorphisms
 

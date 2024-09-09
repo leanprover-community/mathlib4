@@ -182,3 +182,5 @@ instance _root_.CategoryTheory.categoryWithHomology_of_abelian :
   hasHomology S := HasHomology.mk' (HomologyData.ofAbelian S)
 
 end ShortComplex
+
+end CategoryTheory
