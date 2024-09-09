@@ -11,11 +11,11 @@ import Mathlib.Data.List.Basic
 Proves various lemmas about `List.insertNth`.
 -/
 
+assert_not_exists Set.range
+
 open Function
 
 open Nat hiding one_pos
-
-assert_not_exists Set.range
 
 namespace List
 
@@ -139,12 +139,6 @@ theorem get_insertNth_of_lt (l : List α) (x : α) (n k : ℕ) (hn : k < n) (hk 
     (insertNth n x l).get ⟨k, hk'⟩ = l.get ⟨k, hk⟩ := by
   simp_all [getElem_insertNth_of_lt]
 
-set_option linter.deprecated false in
-@[deprecated get_insertNth_of_lt (since := "2023-01-05")]
-theorem nthLe_insertNth_of_lt : ∀ (l : List α) (x : α) (n k : ℕ), k < n → ∀ (hk : k < l.length)
-    (hk' : k < (insertNth n x l).length := hk.trans_le (length_le_length_insertNth _ _ _)),
-    (insertNth n x l).nthLe k hk' = l.nthLe k hk := @get_insertNth_of_lt _
-
 @[simp]
 theorem getElem_insertNth_self (l : List α) (x : α) (n : ℕ) (hn : n ≤ l.length)
     (hn' : n < (insertNth n x l).length := (by rwa [length_insertNth _ _ hn, Nat.lt_succ_iff])) :
@@ -163,12 +157,6 @@ theorem get_insertNth_self (l : List α) (x : α) (n : ℕ) (hn : n ≤ l.length
     (insertNth n x l).get ⟨n, hn'⟩ = x := by
   simp [hn, hn']
 
-set_option linter.deprecated false in
-@[simp, deprecated get_insertNth_self (since := "2023-01-05")]
-theorem nthLe_insertNth_self (l : List α) (x : α) (n : ℕ) (hn : n ≤ l.length)
-    (hn' : n < (insertNth n x l).length := (by rwa [length_insertNth _ _ hn, Nat.lt_succ_iff])) :
-    (insertNth n x l).nthLe n hn' = x := get_insertNth_self _ _ _ hn
-
 theorem getElem_insertNth_add_succ (l : List α) (x : α) (n k : ℕ) (hk' : n + k < l.length)
     (hk : n + k + 1 < (insertNth n x l).length := (by
       rwa [length_insertNth _ _ (by omega), Nat.succ_lt_succ_iff])) :
@@ -184,14 +172,6 @@ theorem get_insertNth_add_succ (l : List α) (x : α) (n k : ℕ) (hk' : n + k <
       rwa [length_insertNth _ _ (by omega), Nat.succ_lt_succ_iff])) :
     (insertNth n x l).get ⟨n + k + 1, hk⟩ = get l ⟨n + k, hk'⟩ := by
   simp [getElem_insertNth_add_succ, hk, hk']
-
-set_option linter.deprecated false in
-@[deprecated get_insertNth_add_succ (since := "2023-01-05")]
-theorem nthLe_insertNth_add_succ : ∀ (l : List α) (x : α) (n k : ℕ) (hk' : n + k < l.length)
-    (hk : n + k + 1 < (insertNth n x l).length := (by
-      rwa [length_insertNth _ _ (by omega), Nat.succ_lt_succ_iff])),
-    (insertNth n x l).nthLe (n + k + 1) hk = nthLe l (n + k) hk' :=
-  @get_insertNth_add_succ _
 
 set_option linter.unnecessarySimpa false in
 theorem insertNth_injective (n : ℕ) (x : α) : Function.Injective (insertNth n x) := by

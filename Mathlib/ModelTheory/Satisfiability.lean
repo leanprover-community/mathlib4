@@ -571,15 +571,16 @@ theorem Categorical.isComplete (h : κ.Categorical T) (h1 : ℵ₀ ≤ κ)
     obtain ⟨TF⟩ := h (MNT.toModel T) (MNF.toModel T) hNT hNF
     exact
       ((MNT.realize_sentence φ).trans
-        ((TF.realize_sentence φ).trans (MNF.realize_sentence φ).symm)).1 hMT⟩
+        ((StrongHomClass.realize_sentence TF φ).trans (MNF.realize_sentence φ).symm)).1 hMT⟩
 
 theorem empty_theory_categorical (T : Language.empty.Theory) : κ.Categorical T := fun M N hM hN =>
   by rw [empty.nonempty_equiv_iff, hM, hN]
 
 theorem empty_infinite_Theory_isComplete : Language.empty.infiniteTheory.IsComplete :=
   (empty_theory_categorical.{0} ℵ₀ _).isComplete ℵ₀ _ le_rfl (by simp)
-    ⟨Theory.Model.bundled ((model_infiniteTheory_iff Language.empty).2
-      (inferInstanceAs (Infinite ℕ)))⟩ fun M =>
-    (model_infiniteTheory_iff Language.empty).1 M.is_model
+    ⟨by
+      haveI : Language.empty.Structure ℕ := emptyStructure
+      exact ((model_infiniteTheory_iff Language.empty).2 (inferInstanceAs (Infinite ℕ))).bundled⟩
+    fun M => (model_infiniteTheory_iff Language.empty).1 M.is_model
 
 end Cardinal

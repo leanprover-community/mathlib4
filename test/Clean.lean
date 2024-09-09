@@ -51,3 +51,5 @@ example : True := by
   guard_hyp z :ₛ Nat := let_fun x := 1; x + x
 
   trivial
+
+end Tests

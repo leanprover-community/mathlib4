@@ -56,6 +56,9 @@ variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddComm
   {f'' : E →L[ℝ] E →L[ℝ] F} (hf : ∀ x ∈ interior s, HasFDerivAt f (f' x) x) {x : E} (xs : x ∈ s)
   (hx : HasFDerivWithinAt f' f'' (interior s) x)
 
+section
+include s_conv hf xs hx
+
 /-- Assume that `f` is differentiable inside a convex set `s`, and that its derivative `f'` is
 differentiable at a point `x`. Then, given two vectors `v` and `w` pointing inside `s`, one can
 Taylor-expand to order two the function `f` on the segment `[x + h v, x + h (v + w)]`, giving a
@@ -164,7 +167,7 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
   convert I using 1
   · congr 1
     simp only [g, Nat.one_ne_zero, add_zero, one_mul, zero_div, zero_mul, sub_zero,
-      zero_smul, Ne, not_false_iff, zero_pow]
+      zero_smul, Ne, not_false_iff, zero_pow, reduceCtorEq]
     abel
   · simp only [Real.norm_eq_abs, abs_mul, add_nonneg (norm_nonneg v) (norm_nonneg w), abs_of_nonneg,
       hpos.le, mul_assoc, norm_nonneg, abs_pow]
@@ -249,6 +252,8 @@ theorem Convex.second_derivative_within_at_symmetric_of_mem_interior {v w : E}
       field_simp [LT.lt.ne' hpos, SMul.smul]
   simpa only [sub_eq_zero] using isLittleO_const_const_iff.1 B
 
+end
+
 /-- If a function is differentiable inside a convex set with nonempty interior, and has a second
 derivative at a point of this convex set, then this second derivative is symmetric. -/
 theorem Convex.second_derivative_within_at_symmetric {s : Set E} (s_conv : Convex ℝ s)
@@ -314,4 +319,4 @@ theorem second_derivative_symmetric_of_eventually {f : E → F} {f' : E → E �
 derivative is symmetric. -/
 theorem second_derivative_symmetric {f : E → F} {f' : E → E →L[ℝ] F} {f'' : E →L[ℝ] E →L[ℝ] F}
     (hf : ∀ y, HasFDerivAt f (f' y) y) (hx : HasFDerivAt f' f'' x) (v w : E) : f'' v w = f'' w v :=
-  second_derivative_symmetric_of_eventually (Filter.eventually_of_forall hf) hx v w
+  second_derivative_symmetric_of_eventually (Filter.Eventually.of_forall hf) hx v w

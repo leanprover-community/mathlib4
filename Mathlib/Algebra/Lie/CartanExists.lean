@@ -164,6 +164,13 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
   --   viewed as endomorphism of `E`. Note that `χ` is polynomial in its argument `r`.
   -- Similarly: `ψ r` is the characteristic polynomial of `⁅r • u + x, _⁆`
   --   viewed as endomorphism of `Q`. Note that `ψ` is polynomial in its argument `r`.
+  #adaptation_note
+  /--
+  After lean4#5020, many instances for Lie algebras and manifolds are no longer found.
+  See https://leanprover.zulipchat.com/#narrow/stream/428973-nightly-testing/topic/.2316244.20adaptations.20for.20nightly-2024-08-28/near/466219124
+  -/
+  letI := E.instLieRingModuleSubtypeMemSubmodule
+  letI : LieModule K U E := LieSubmodule.instLieModule E
   let χ : Polynomial (K[X]) := lieCharpoly K E x' u
   let ψ : Polynomial (K[X]) := lieCharpoly K Q x' u
   -- It suffices to show that `χ` is the monomial `X ^ r`.
@@ -320,7 +327,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     rw [← hn]
     clear hn
     induction n with
-    | zero => simp only [Nat.zero_eq, pow_zero, LinearMap.one_apply]
+    | zero => simp only [pow_zero, LinearMap.one_apply]
     | succ n ih => rw [pow_succ', pow_succ', LinearMap.mul_apply, ih]; rfl
   classical
   -- Now let `n` be the smallest power such that `⁅v, _⁆ ^ n` kills `z'`.

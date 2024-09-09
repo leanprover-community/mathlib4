@@ -222,7 +222,7 @@ theorem absNorm_apply (I : Ideal S) : absNorm I = cardQuot I := rfl
 theorem absNorm_bot : absNorm (⊥ : Ideal S) = 0 := by rw [← Ideal.zero_eq_bot, _root_.map_zero]
 
 @[simp]
-theorem absNorm_top : absNorm (⊤ : Ideal S) = 1 := by rw [← Ideal.one_eq_top, _root_.map_one]
+theorem absNorm_top : absNorm (⊤ : Ideal S) = 1 := by rw [← Ideal.one_eq_top, map_one]
 
 @[simp]
 theorem absNorm_eq_one_iff {I : Ideal S} : absNorm I = 1 ↔ I = ⊤ := by
@@ -593,7 +593,7 @@ theorem spanNorm_eq (I : Ideal S) : spanNorm R I = relNorm R I := rfl
 
 @[simp]
 theorem relNorm_bot : relNorm R (⊥ : Ideal S) = ⊥ := by
-  simpa only [zero_eq_bot] using _root_.map_zero (relNorm R : Ideal S →*₀ _)
+  simpa only [zero_eq_bot] using map_zero (relNorm R : Ideal S →*₀ _)
 
 @[simp]
 theorem relNorm_top : relNorm R (⊤ : Ideal S) = ⊤ := by

@@ -797,12 +797,12 @@ theorem lift_id (x) : f.lift f.map_units x = x :=
 /-- Given Localization maps `f : M →* N` for a Submonoid `S ⊆ M` and
 `k : M →* Q` for a Submonoid `T ⊆ M`, such that `S ≤ T`, and we have
 `l : M →* A`, the composition of the induced map `f.lift` for `k` with
-the induced map `k.lift` for `l` is equal to the  induced map `f.lift` for `l`. -/
+the induced map `k.lift` for `l` is equal to the induced map `f.lift` for `l`. -/
 @[to_additive
     "Given Localization maps `f : M →+ N` for a Submonoid `S ⊆ M` and
 `k : M →+ Q` for a Submonoid `T ⊆ M`, such that `S ≤ T`, and we have
 `l : M →+ A`, the composition of the induced map `f.lift` for `k` with
-the induced map `k.lift` for `l` is equal to the  induced map `f.lift` for `l`"]
+the induced map `k.lift` for `l` is equal to the induced map `f.lift` for `l`"]
 theorem lift_comp_lift {T : Submonoid M} (hST : S ≤ T) {Q : Type*} [CommMonoid Q]
     (k : LocalizationMap T Q) {A : Type*} [CommMonoid A] {l : M →* A}
     (hl : ∀ w : T, IsUnit (l w)) :

@@ -124,6 +124,8 @@ structure ClosedEmbedding (f : X → Y) extends Embedding f : Prop where
 
 /-- A function between topological spaces is a quotient map if it is surjective,
   and for all `s : Set Y`, `s` is open iff its preimage is an open set. -/
-def QuotientMap {X : Type*} {Y : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
-    (f : X → Y) : Prop :=
-  Function.Surjective f ∧ tY = tX.coinduced f
+@[mk_iff quotientMap_iff']
+structure QuotientMap {X : Type*} {Y : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
+    (f : X → Y) : Prop where
+  surjective : Function.Surjective f
+  eq_coinduced : tY = tX.coinduced f

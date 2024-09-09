@@ -132,7 +132,7 @@ def boundedIntegrableFunctionsIntegralCLM [MeasurableSpace α] (μ : Measure α)
       intro f
       rw [mul_comm]
       apply norm_integral_le_of_norm_le_const
-      apply Filter.eventually_of_forall
+      apply Filter.Eventually.of_forall
       intro x
       exact BoundedContinuousFunction.norm_coe_le_norm f.1 x)
 
@@ -269,7 +269,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
     refine ⟨t, fun u => ?_⟩
     calc
       f (↑u \ ↑s) ≤ S := le_ciSup B _
-      _ ≤ 2 * f (↑t \ ↑s) := (div_le_iff' two_pos).1 ht.le
+      _ ≤ 2 * f (↑t \ ↑s) := (div_le_iff₀' two_pos).1 ht.le
   choose! F hF using this
   -- iterate the above construction, by adding at each step a set with measure close to maximal in
   -- the complement of already chosen points. This is the set `s n` at step `n`.
@@ -283,7 +283,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
   have ε_pos : 0 < ε := ht
   have I1 : ∀ n, ε / 2 ≤ f (↑(s (n + 1)) \ ↑(s n)) := by
     intro n
-    rw [div_le_iff' (show (0 : ℝ) < 2 by norm_num), hε]
+    rw [div_le_iff₀' (show (0 : ℝ) < 2 by norm_num), hε]
     convert hF (s n) u using 2
     · dsimp
       ext x
@@ -293,11 +293,12 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
       simp only [s, Function.iterate_succ', Subtype.coe_mk, union_diff_left, Function.comp]
   have I2 : ∀ n : ℕ, (n : ℝ) * (ε / 2) ≤ f ↑(s n) := by
     intro n
-    induction' n with n IH
-    · simp only [s, BoundedAdditiveMeasure.empty, id, Nat.cast_zero, zero_mul,
-        Function.iterate_zero, Subtype.coe_mk, Nat.zero_eq]
-      rfl
-    · have : (s (n + 1)).1 = (s (n + 1)).1 \ (s n).1 ∪ (s n).1 := by
+    induction n with
+    | zero =>
+      simp only [s, BoundedAdditiveMeasure.empty, id, Nat.cast_zero, zero_mul,
+        Function.iterate_zero, Subtype.coe_mk, le_rfl]
+    | succ n IH =>
+      have : (s (n + 1)).1 = (s (n + 1)).1 \ (s n).1 ∪ (s n).1 := by
         simpa only [s, Function.iterate_succ', union_diff_self]
           using (diff_union_of_subset subset_union_left).symm
       rw [this, f.additive]
@@ -307,7 +308,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
         _ ≤ f (↑(s (n + 1 : ℕ)) \ ↑(s n)) + f ↑(s n) := add_le_add (I1 n) IH
   rcases exists_nat_gt (f.C / (ε / 2)) with ⟨n, hn⟩
   have : (n : ℝ) ≤ f.C / (ε / 2) := by
-    rw [le_div_iff (half_pos ε_pos)]; exact (I2 n).trans (f.le_bound _)
+    rw [le_div_iff₀ (half_pos ε_pos)]; exact (I2 n).trans (f.le_bound _)
   exact lt_irrefl _ (this.trans_lt hn)
 
 theorem exists_discrete_support (f : BoundedAdditiveMeasure α) :
@@ -432,7 +433,7 @@ theorem toFunctions_toMeasure [MeasurableSpace α] (μ : Measure α) [IsFiniteMe
     have : Integrable (fun _ => (1 : ℝ)) μ := integrable_const (1 : ℝ)
     apply
       this.mono' (Measurable.indicator (@measurable_const _ _ _ _ (1 : ℝ)) hs).aestronglyMeasurable
-    apply Filter.eventually_of_forall
+    apply Filter.Eventually.of_forall
     exact norm_indicator_le_one _
 
 theorem toFunctions_toMeasure_continuousPart [MeasurableSpace α] [MeasurableSingletonClass α]

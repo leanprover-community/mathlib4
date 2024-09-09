@@ -561,14 +561,16 @@ variable (S R A : Type*) [CommSemiring S] [CommSemiring R] [NonUnitalSemiring A]
 instance instAlgebra : Algebra S (Unitization R A) :=
   { (Unitization.inlRingHom R A).comp (algebraMap S R) with
     commutes' := fun s x => by
-      induction' x with r a
-      show inl (algebraMap S R s) * _ = _ * inl (algebraMap S R s)
-      rw [mul_add, add_mul, inl_mul_inl, inl_mul_inl, inl_mul_inr, inr_mul_inl, mul_comm]
+      induction x with
+      | inl_add_inr =>
+        show inl (algebraMap S R s) * _ = _ * inl (algebraMap S R s)
+        rw [mul_add, add_mul, inl_mul_inl, inl_mul_inl, inl_mul_inr, inr_mul_inl, mul_comm]
     smul_def' := fun s x => by
-      induction' x with r a
-      show _ = inl (algebraMap S R s) * _
-      rw [mul_add, smul_add,Algebra.algebraMap_eq_smul_one, inl_mul_inl, inl_mul_inr, smul_one_mul,
-        inl_smul, inr_smul, smul_one_smul] }
+      induction x with
+      | inl_add_inr =>
+        show _ = inl (algebraMap S R s) * _
+        rw [mul_add, smul_add,Algebra.algebraMap_eq_smul_one, inl_mul_inl, inl_mul_inr,
+          smul_one_mul, inl_smul, inr_smul, smul_one_smul] }
 
 theorem algebraMap_eq_inl_comp : ⇑(algebraMap S (Unitization R A)) = inl ∘ algebraMap S R :=
   rfl
@@ -668,20 +670,24 @@ def _root_.NonUnitalAlgHom.toAlgHom (φ : A →ₙₐ[R] C) : Unitization R A �
   toFun := fun x => algebraMap R C x.fst + φ x.snd
   map_one' := by simp only [fst_one, map_one, snd_one, φ.map_zero, add_zero]
   map_mul' := fun x y => by
-    induction' x with x_r x_a
-    induction' y with y_r y_a
-    simp only [fst_mul, fst_add, fst_inl, fst_inr, snd_mul, snd_add, snd_inl, snd_inr, add_zero,
-      map_mul, zero_add, map_add, map_smul φ]
-    rw [add_mul, mul_add, mul_add]
-    rw [← Algebra.commutes _ (φ x_a)]
-    simp only [Algebra.algebraMap_eq_smul_one, smul_one_mul, add_assoc]
+    induction x with
+    | inl_add_inr x_r x_a =>
+      induction y with
+      | inl_add_inr =>
+        simp only [fst_mul, fst_add, fst_inl, fst_inr, snd_mul, snd_add, snd_inl, snd_inr, add_zero,
+          map_mul, zero_add, map_add, map_smul φ]
+        rw [add_mul, mul_add, mul_add]
+        rw [← Algebra.commutes _ (φ x_a)]
+        simp only [Algebra.algebraMap_eq_smul_one, smul_one_mul, add_assoc]
   map_zero' := by simp only [fst_zero, map_zero, snd_zero, φ.map_zero, add_zero]
   map_add' := fun x y => by
-    induction' x with x_r x_a
-    induction' y with y_r y_a
-    simp only [fst_add, fst_inl, fst_inr, add_zero, map_add, snd_add, snd_inl, snd_inr,
-      zero_add, φ.map_add]
-    rw [add_add_add_comm]
+    induction x with
+    | inl_add_inr =>
+      induction y with
+      | inl_add_inr =>
+        simp only [fst_add, fst_inl, fst_inr, add_zero, map_add, snd_add, snd_inl, snd_inr,
+          zero_add, φ.map_add]
+        rw [add_add_add_comm]
   commutes' := fun r => by
     simp only [algebraMap_eq_inl, fst_inl, snd_inl, φ.map_zero, add_zero]
 

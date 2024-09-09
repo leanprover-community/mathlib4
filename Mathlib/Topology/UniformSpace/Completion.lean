@@ -40,14 +40,12 @@ This formalization is mostly based on
 From a slightly different perspective in order to reuse material in `Topology.UniformSpace.Basic`.
 -/
 
-
 noncomputable section
 
 open Filter Set
 
 universe u v w x
 
-open scoped Classical
 open Uniformity Topology Filter
 
 /-- Space of Cauchy filters
@@ -82,7 +80,7 @@ private theorem symm_gen : map Prod.swap ((𝓤 α).lift' gen) ≤ (𝓤 α).lif
         { p : CauchyFilter α × CauchyFilter α | s ∈ (p.2.val ×ˢ p.1.val : Filter (α × α)) }
   have h₁ : map Prod.swap ((𝓤 α).lift' gen) = (𝓤 α).lift' f := by
     delta gen
-    simp [map_lift'_eq, monotone_setOf, Filter.monotone_mem, Function.comp,
+    simp [map_lift'_eq, monotone_setOf, Filter.monotone_mem, Function.comp_def,
       image_swap_eq_preimage_swap]
   have h₂ : (𝓤 α).lift' f ≤ (𝓤 α).lift' gen :=
     uniformity_lift_le_swap
@@ -222,6 +220,7 @@ instance [h : Nonempty α] : Nonempty (CauchyFilter α) :=
 
 section Extend
 
+open Classical in
 /-- Extend a uniformly continuous function `α → β` to a function `CauchyFilter α → β`.
 Outputs junk when `f` is not uniformly continuous. -/
 def extend (f : α → β) : CauchyFilter α → β :=

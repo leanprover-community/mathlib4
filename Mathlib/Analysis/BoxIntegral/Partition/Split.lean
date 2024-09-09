@@ -35,12 +35,9 @@ is available as `BoxIntegral.Prepartition.compl`.
 rectangular box, partition, hyperplane
 -/
 
-
 noncomputable section
 
 open scoped Classical
-open Filter
-
 open Function Set Filter
 
 namespace BoxIntegral
@@ -247,7 +244,7 @@ theorem inf_splitMany {I : Box ι} (π : Prepartition I) (s : Finset (ι × ℝ)
 /-- Let `s : Finset (ι × ℝ)` be a set of hyperplanes `{x : ι → ℝ | x i = r}` in `ι → ℝ` encoded as
 pairs `(i, r)`. Suppose that this set contains all faces of a box `J`. The hyperplanes of `s` split
 a box `I` into subboxes. Let `Js` be one of them. If `J` and `Js` have nonempty intersection, then
-`Js` is a subbox of `J`.  -/
+`Js` is a subbox of `J`. -/
 theorem not_disjoint_imp_le_of_subset_of_mem_splitMany {I J Js : Box ι} {s : Finset (ι × ℝ)}
     (H : ∀ i, {(i, J.lower i), (i, J.upper i)} ⊆ s) (HJs : Js ∈ splitMany I s)
     (Hn : ¬Disjoint (J : WithBot (Box ι)) Js) : Js ≤ J := by

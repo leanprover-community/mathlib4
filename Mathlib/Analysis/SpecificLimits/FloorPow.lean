@@ -160,7 +160,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
     simp_rw [div_eq_inv_mul]
     calc
       d < (n : ℝ)⁻¹ * n * (l - ε * (1 + l)) := by
-        rw [inv_mul_cancel, one_mul]
+        rw [inv_mul_cancel₀, one_mul]
         · linarith only [hε]
         · exact Nat.cast_ne_zero.2 (ne_of_gt npos)
       _ = (n : ℝ)⁻¹ * (n * l - ε * (1 + l) * n) := by ring
@@ -212,7 +212,7 @@ theorem tendsto_div_of_monotone_of_tendsto_div_floor_pow (u : ℕ → ℝ) (l : 
     field_simp [(zero_lt_one.trans (cone k)).ne', (H n).ne']
     ring
   filter_upwards [(tendsto_order.1 B).2 a hk] with n hn
-  exact (div_le_iff (H n)).1 hn.le
+  exact (div_le_iff₀ (H n)).1 hn.le
 
 /-- The sum of `1/(c^i)^2` above a threshold `j` is comparable to `1/j^2`, up to a multiplicative
 constant. -/
@@ -226,7 +226,7 @@ theorem sum_div_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c : ℝ} (hc 
     · exact sub_pos.2 (pow_lt_one (inv_nonneg.2 cpos.le) (inv_lt_one hc) two_ne_zero)
     have : c ^ 3 = c ^ 2 * c := by ring
     simp only [mul_sub, this, mul_one, inv_pow, sub_le_sub_iff_left]
-    rw [mul_assoc, mul_comm c, ← mul_assoc, mul_inv_cancel (sq_pos_of_pos cpos).ne', one_mul]
+    rw [mul_assoc, mul_comm c, ← mul_assoc, mul_inv_cancel₀ (sq_pos_of_pos cpos).ne', one_mul]
     simpa using pow_le_pow_right hc.le one_le_two
   have C : c⁻¹ ^ 2 < 1 := pow_lt_one (inv_nonneg.2 cpos.le) (inv_lt_one hc) two_ne_zero
   calc
@@ -296,7 +296,7 @@ theorem sum_div_nat_floor_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c :
       · exact sq_pos_of_pos (pow_pos cpos _)
       rw [one_mul, ← mul_pow]
       gcongr
-      rw [← div_eq_inv_mul, le_div_iff A, mul_comm]
+      rw [← div_eq_inv_mul, le_div_iff₀ A, mul_comm]
       exact mul_pow_le_nat_floor_pow hc i
     _ ≤ (1 - c⁻¹)⁻¹ ^ 2 * (c ^ 3 * (c - 1)⁻¹) / j ^ 2 := by
       rw [← mul_sum, ← mul_div_assoc']
