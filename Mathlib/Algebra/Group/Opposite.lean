@@ -123,8 +123,8 @@ instance instMulOneClass [MulOneClass α] : MulOneClass αᵐᵒᵖ where
 
 @[to_additive]
 instance instMonoid [Monoid α] : Monoid αᵐᵒᵖ where
-  toSemigroup := instSemigroup
-  __ := instMulOneClass
+  toMulOneClass := instMulOneClass
+  __ := instSemigroup
   npow n a := op <| a.unop ^ n
   npow_zero _ := unop_injective <| pow_zero _
   npow_succ _ _ := unop_injective <| pow_succ' _ _

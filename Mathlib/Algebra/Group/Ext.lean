@@ -44,8 +44,8 @@ theorem Monoid.ext {M : Type u} ⦃m₁ m₂ : Monoid M⦄
   have : m₁.npow = m₂.npow := by
     ext n x
     exact @MonoidHom.map_pow M M m₁ m₂ f x n
-  rcases m₁ with @⟨@⟨⟨_⟩⟩, ⟨_⟩⟩
-  rcases m₂ with @⟨@⟨⟨_⟩⟩, ⟨_⟩⟩
+  rcases m₁
+  rcases m₂
   congr
 
 @[to_additive]
@@ -62,8 +62,11 @@ theorem CommMonoid.ext {M : Type*} ⦃m₁ m₂ : CommMonoid M⦄
 @[to_additive]
 theorem LeftCancelMonoid.toMonoid_injective {M : Type u} :
     Function.Injective (@LeftCancelMonoid.toMonoid M) := by
-  rintro @⟨@⟨⟩⟩ @⟨@⟨⟩⟩ h
-  congr <;> injection h
+  rintro @⟨@⟨@⟨⟩⟩⟩ @⟨@⟨@⟨⟩⟩⟩ h
+  congr
+  · injection h with h; injection h
+  · injection h with h; injection h
+  · injection h
 
 @[to_additive (attr := ext)]
 theorem LeftCancelMonoid.ext {M : Type u} ⦃m₁ m₂ : LeftCancelMonoid M⦄
@@ -74,8 +77,11 @@ theorem LeftCancelMonoid.ext {M : Type u} ⦃m₁ m₂ : LeftCancelMonoid M⦄
 @[to_additive]
 theorem RightCancelMonoid.toMonoid_injective {M : Type u} :
     Function.Injective (@RightCancelMonoid.toMonoid M) := by
-  rintro @⟨@⟨⟩⟩ @⟨@⟨⟩⟩ h
-  congr <;> injection h
+  rintro @⟨@⟨@⟨⟩⟩⟩ @⟨@⟨@⟨⟩⟩⟩ h
+  congr
+  · injection h with h; injection h
+  · injection h with h; injection h
+  · injection h
 
 @[to_additive (attr := ext)]
 theorem RightCancelMonoid.ext {M : Type u} ⦃m₁ m₂ : RightCancelMonoid M⦄
@@ -98,10 +104,11 @@ theorem CancelMonoid.ext {M : Type*} ⦃m₁ m₂ : CancelMonoid M⦄
 @[to_additive]
 theorem CancelCommMonoid.toCommMonoid_injective {M : Type u} :
     Function.Injective (@CancelCommMonoid.toCommMonoid M) := by
-  rintro @⟨@⟨@⟨⟩⟩⟩ @⟨@⟨@⟨⟩⟩⟩ h
-  congr <;> {
-    injection h with h'
-    injection h' }
+  rintro @⟨@⟨@⟨@⟨⟩⟩⟩⟩ @⟨@⟨@⟨@⟨⟩⟩⟩⟩ h
+  congr
+  · injection h with h; injection h with h; injection h
+  · injection h with h; injection h with h; injection h
+  · injection h with h; injection h
 
 @[to_additive (attr := ext)]
 theorem CancelCommMonoid.ext {M : Type*} ⦃m₁ m₂ : CancelCommMonoid M⦄
