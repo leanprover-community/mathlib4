@@ -540,6 +540,7 @@ theorem leadingBlackPawn_of_conservativeMove_of_whiteToMove
 def pawnsBlocked (p : Position) (x : Fin 8) : Prop :=
   ∃ y, leadingWhitePawn p x = some y ∧ leadingBlackPawn p x = some (y + 1)
 
+/-- You shall not pass! -/
 theorem leadingWhitePawn_of_conservativeMove_of_pawnsBlocked
     {p₁ p₂ : Position} (h₁ : validMove p₁ p₂) (h₂ : conservativeMove p₁ p₂) (x : Fin 8)
     (w : pawnsBlocked p₁ x) :
