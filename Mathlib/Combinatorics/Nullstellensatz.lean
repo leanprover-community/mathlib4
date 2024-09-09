@@ -15,12 +15,6 @@ import Mathlib.Data.Finsupp.Lex
 
 open Finsupp
 
-/- theorem Finsupp.degree_add {α N : Type*} [AddCommMonoid N] (a b : α →₀ N) :
-    (a + b).degree = a.degree + b.degree := by
-  change (a + b).sum (fun _ e ↦ e) = a.sum (fun _ e ↦ e) + b.sum fun _ e ↦ e
-  exact sum_add_index' (congrFun rfl) fun _ b₁ ↦ congrFun rfl
--/
-
 variable {R : Type*} [CommRing R]
 
 theorem _root_.Polynomial.eq_zero_of_eval_zero [IsDomain R] (P : Polynomial R) (S : Set R)
@@ -94,7 +88,6 @@ theorem eq_zero_of_eval_zero_at_prod_nat {n : ℕ} [IsDomain R]
         induction i using Fin.inductionOn with
         | zero => simp only [Fin.cons_zero, hy]
         | succ i _ => simp only [Fin.cons_succ]; apply hx
-
     ext m d
     simp only [Polynomial.coeff_zero, coeff_zero]
     suffices Q.coeff m = 0 by
@@ -157,122 +150,6 @@ theorem eq_zero_of_eval_zero_at_prod {σ : Type*} [Finite σ] [IsDomain R]
     convert hx (e s)
     simp only [Equiv.symm_apply_apply]
 
-variable {σ : Type*} [Fintype σ]
-
-lemma prod_totalDegree_le {ι : Type*} (i : ι) (s : Finset R) :
-    (s.prod (fun r ↦ X i - C r)).totalDegree ≤ s.card := by
-  apply le_trans (totalDegree_finset_prod s (fun r ↦ X i - C r))
-  refine le_trans (s.sum_le_card_nsmul (fun r ↦ (X i - C r).totalDegree) 1 ?_) ?_
-  · intro r _
-    simp only
-    apply le_trans (totalDegree_sub_C_le _ _)
-    by_cases H : Nontrivial R
-    · rw [totalDegree_X]
-    · apply le_of_eq_of_le _ zero_le_one
-      rw [totalDegree_eq_zero_iff]
-      intro m hm
-      exfalso
-      apply H
-      simp only [mem_support_iff] at hm
-      exact nontrivial_of_ne (coeff m (X i)) 0 hm
-  · simp only [smul_eq_mul, mul_one, le_refl]
-
-lemma support_monomial_mul {ι : Type*} (f : MvPolynomial ι R) (d : ι →₀ ℕ)  :
-    (monomial d 1 * f).support = f.support.map (addLeftEmbedding d) := by
-  ext m
-  simp only [mem_support_iff, ne_eq, Finset.mem_map, addLeftEmbedding_apply]
-  rw [not_iff_comm]
-  push_neg
-  simp_rw [not_imp_not]
-  classical
-  constructor
-  · intro H
-    rw [coeff_mul]
-    let n : (ι →₀ ℕ) × (ι →₀ ℕ) := ⟨d, m - d⟩
-    by_cases hn : n ∈ Finset.antidiagonal m
-    · rw [Finset.sum_eq_single (d, m - d)]
-      simp only [coeff_monomial, if_pos, one_mul]
-      apply H
-      simpa only [Finset.mem_antidiagonal] using hn
-      · rintro ⟨u, v⟩ h h'
-        rw [coeff_monomial, if_neg, zero_mul]
-        intro k
-        apply h'
-        simp only [Finset.mem_antidiagonal] at h
-        simp [k, ← h]
-      · intro h
-        simp only [coeff_monomial, ↓reduceIte, one_mul]
-        exfalso
-        exact h hn
-    · rw [Finset.sum_eq_zero]
-      rintro ⟨u, v⟩ h
-      simp only [Finset.mem_antidiagonal] at h
-      simp only [coeff_monomial, ite_mul, one_mul, zero_mul, ite_eq_right_iff]
-      intro h'
-      apply H
-      rw [h', h]
-  · intro H e he
-    rwa [← he, coeff_monomial_mul, one_mul] at H
-
-lemma prod_support_le {ι : Type*} (i : ι) (s : Finset R) (m : ι →₀ ℕ)
-    (hm : m ∈ (s.prod (fun r ↦ X i - C r)).support) :
-    ∃ e ≤ s.card, m = single i e := by
-  classical
-  induction s using Finset.induction_on generalizing m with
-  | empty =>
-    simp only [Finset.prod_empty, mem_support_iff, ne_eq] at hm
-    use 0
-    simp only [Finset.card_empty, le_refl, single_zero, true_and]
-    by_contra h'
-    apply hm
-    rw [MvPolynomial.coeff_one, if_neg (Ne.symm h')]
-  | @insert a s has h =>
-    simp only [mem_support_iff, ne_eq] at hm
-    simp only [Finset.prod_insert has, sub_mul, coeff_sub, coeff_C_mul] at hm
-    by_cases hm' : m ∈ (s.prod fun r ↦ X i - C r).support
-    · obtain ⟨e, he, he'⟩ := h m hm'
-      refine ⟨e, ?_, he'⟩
-      apply le_trans he
-      rw [← Finset.cons_eq_insert _ _ has, Finset.card_cons]
-      exact Nat.le_add_right s.card 1
-    · simp only [not_mem_support_iff] at hm'
-      rw [hm', mul_zero, sub_zero, ← ne_eq, ← mem_support_iff] at hm
-      simp only [support_X_mul, Finset.mem_map, addLeftEmbedding_apply] at hm
-      obtain ⟨n, hn, hm⟩ := hm
-      obtain ⟨p, hp, hq⟩ := h n hn
-      use p + 1
-      constructor
-      · rw [← Finset.cons_eq_insert _ _ has, Finset.card_cons]
-        exact Nat.add_le_add_right hp 1
-      · rw [← hm, hq, add_comm, single_add]
-
-lemma prod_leadCoeff {ι : Type*} (i : ι) (s : Finset R) :
-    (s.prod (fun r ↦ X i - C r)).coeff (single i s.card) = 1 := by
-  classical
-  induction s using Finset.induction_on with
-  | empty => simp
-  | @insert a s has hrec =>
-    rw [Finset.prod_insert has, sub_mul, coeff_sub, coeff_C_mul]
-    rw [← Finset.cons_eq_insert _ _ has, Finset.card_cons, single_add, add_comm]
-    rw [coeff_X_mul, hrec]
-    simp only [sub_eq_self]
-    convert mul_zero _
-    rw [← not_mem_support_iff]
-    intro h
-    have h' := prod_support_le i s _ h
-    obtain ⟨e, he, he'⟩ := h'
-    rw [← single_add, (Finsupp.single_injective _).eq_iff] at he'
-    rw [← he'] at he
-    simp at he
-
-lemma prod_totalDegree [Nontrivial R] {ι : Type*} (i : ι) (s : Finset R) :
-    (s.prod (fun r ↦ X i - C r)).totalDegree = s.card := by
-  apply le_antisymm (prod_totalDegree_le i s)
-  apply le_of_eq_of_le _ (le_totalDegree (s := single i s.card) ?_)
-  simp only [sum_single_index]
-  rw [mem_support_iff, prod_leadCoeff]
-  exact one_ne_zero
-
 open MonomialOrder
 
 lemma _root_.MonomialOrder.degree_binomial [Nontrivial R]
@@ -320,32 +197,77 @@ theorem _root_.MonomialOrder.prod_degree [Nontrivial R]
     simp only [Finsupp.ext_iff, coe_zero, Pi.zero_apply] at h
     rw [h i, single_eq_same]
 
+variable {σ : Type*}
+
+/-- The polynomial in `X i` that vanishes at all elements of `S`. -/
+private noncomputable def Alon.P (S : Finset R) (i : σ) : MvPolynomial σ R :=
+  S.prod (fun r ↦ X i - C r)
+
+private theorem Alon.degP [Nontrivial R] (m : MonomialOrder σ) (S : Finset R) (i : σ) :
+    m.degree (Alon.P S i) = single i S.card := by
+  simp only [P]
+  rw [degree_prod_of_regular]
+  · simp [Finset.sum_congr rfl (fun r _ ↦ m.degree_binomial i r)]
+  · intro r _
+    simp only [lCoeff_binomial, isRegular_one]
+
+private theorem Alon.lCoeffP [Nontrivial R] (m : MonomialOrder σ) (S : Finset R) (i : σ) :
+    m.lCoeff (P S i) = 1 := by
+  simp only [P]
+  rw [lCoeff_prod_of_regular ?_]
+  · apply Finset.prod_eq_one
+    intro r _
+    apply m.lCoeff_binomial
+  · intro r _
+    convert isRegular_one
+    apply lCoeff_binomial
+
+private lemma prod_support_le {ι : Type*} (i : ι) (s : Finset R) (m : ι →₀ ℕ)
+    (hm : m ∈ (Alon.P s i).support) :
+    ∃ e ≤ s.card, m = single i e := by
+  classical
+  have hP : Alon.P s i = MvPolynomial.rename (fun (_ : Unit) ↦ i) (Alon.P s ()) := by
+    simp [Alon.P, map_prod]
+  rw [hP, support_rename_of_injective (Function.injective_of_subsingleton _)] at hm
+  simp only [Finset.mem_image, mem_support_iff, ne_eq] at hm
+  obtain ⟨e, he, hm⟩ := hm
+  have hm' : m = single i (e ()) := by
+    rw [← hm]
+    ext j
+    by_cases hj : j = i
+    · rw [hj, mapDomain_apply (Function.injective_of_subsingleton _), single_eq_same]
+    · rw [mapDomain_notin_range, single_eq_of_ne (Ne.symm hj)]
+      simp [Set.range_const, Set.mem_singleton_iff, hj]
+  refine ⟨e (), ?_, hm'⟩
+  by_cases hR : Nontrivial R
+  letI : LinearOrder Unit := WellOrderingRel.isWellOrder.linearOrder
+  letI : WellFoundedGT Unit := Finite.to_wellFoundedGT
+  have : single () (e ()) ≼[lex Unit] single () s.card := by
+    rw [← Alon.degP]
+    apply MonomialOrder.le_degree
+    rw [mem_support_iff]
+    convert he
+    ext
+    rw [single_eq_same]
+  change toLex (single () (e ())) ≤ toLex _ at this
+  simp [lex_le_iff] at this
+  rcases this with (h | h)
+  · exact le_of_eq h
+  · exact le_of_lt h.2
+  -- ¬(Nontrivial R)
+  · exfalso
+    exact hR (nontrivial_of_ne _ _ he)
+
+variable [Fintype σ]
+
 theorem Alon1 [IsDomain R] (S : σ → Finset R) (Sne : ∀ i, (S i).Nonempty)
     (f : MvPolynomial σ R) (Heval : ∀ (x : σ → R), (∀ i, x i ∈ S i) → eval x f = 0) :
     ∃ (h : σ →₀ MvPolynomial σ R)
       (_ : ∀ i, ((S i).prod (fun s ↦ X i - C s) * (h i)).totalDegree ≤ f.totalDegree),
     f = linearCombination (MvPolynomial σ R) (fun i ↦ (S i).prod (fun r ↦ X i - C r)) h := by
   letI : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
-  let P (i) :  MvPolynomial σ R := (S i).prod (fun r ↦ X i - C r)
-  have degP (i) : (degLex σ).degree (P i) = single i (S i).card := by
-    simp only [P]
-    rw [degree_prod_of_regular]
-    · simp_rw [degree_binomial]
-      simp
-    · intro r _
-      rw [lCoeff_binomial]
-      apply isRegular_one
-  have lCoeffP (i) : IsUnit ((degLex σ).lCoeff (P i)) := by
-    convert isUnit_one
-    simp only [P]
-    rw [lCoeff_prod_of_regular ?_]
-    · apply Finset.prod_eq_one
-      intro r _
-      apply (degLex σ).lCoeff_binomial
-    · intro r _
-      convert isRegular_one
-      apply lCoeff_binomial
-  obtain ⟨h, r, hf, hh, hr⟩ := (degLex σ).monomialOrderDiv P lCoeffP f
+  obtain ⟨h, r, hf, hh, hr⟩ := (degLex σ).monomialOrderDiv (fun i ↦ Alon.P (S i) i)
+      (fun i ↦ by rw [Alon.lCoeffP]; exact isUnit_one) f
   use h
   suffices r = 0 by
     rw [this, add_zero] at hf
@@ -359,7 +281,7 @@ theorem Alon1 [IsDomain R] (S : σ → Finset R) (Sne : ∀ i, (S i).Nonempty)
     intro h'
     apply hr c hc i
     intro j
-    rw [degP, single_apply]
+    rw [Alon.degP, single_apply]
     split_ifs with hj
     · rw [← hj]
       exact h'
@@ -373,7 +295,7 @@ theorem Alon1 [IsDomain R] (S : σ → Finset R) (Sne : ∀ i, (S i).Nonempty)
     intro i _
     rw [map_mul]
     convert mul_zero _
-    rw [map_prod]
+    rw [Alon.P, map_prod]
     apply Finset.prod_eq_zero (hx i)
     simp only [map_sub, eval_X, eval_C, sub_self]
 
@@ -382,6 +304,7 @@ theorem Alon2 [IsDomain R]
     (t : σ →₀ ℕ) (ht : f.coeff t ≠ 0) (ht' : f.totalDegree = t.degree)
     (S : σ → Finset R) (htS : ∀ i, t i < (S i).card) :
     ∃ (s : σ → R) (_ : ∀ i, s i ∈ S i), eval s f ≠ 0 := by
+  letI : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
   classical
   by_contra Heval
   apply ht
@@ -389,12 +312,14 @@ theorem Alon2 [IsDomain R]
   obtain ⟨h, hh, hf⟩ := Alon1 S
     (fun i ↦ by rw [← Finset.card_pos]; exact lt_of_le_of_lt (zero_le _) (htS i))
     f Heval
+  change f = linearCombination (MvPolynomial σ R) (fun i ↦ Alon.P (S i) i) h at hf
+  change ∀ i, (Alon.P (S i) i * h i).totalDegree ≤ _ at hh
   rw [hf]
   simp only [linearCombination, coe_lsum, sum, LinearMap.coe_smulRight, LinearMap.id_coe, id_eq,
     smul_eq_mul, coeff_sum]
   apply Finset.sum_eq_zero
   intro i _
-  set g := h i * ((S i).prod fun r ↦ X i - C r) with hg
+  set g := h i * Alon.P (S i) i with hg
   by_contra ht
   have : g.totalDegree = f.totalDegree := by
     apply le_antisymm (by simp only [g, mul_comm, hh i])
@@ -418,7 +343,8 @@ theorem Alon2 [IsDomain R]
   apply coeff_eq_zero_of_totalDegree_lt
   change (h i).totalDegree < p.degree
   apply lt_of_add_lt_add_right (a := (S i).card)
-  rw [hg, totalDegree_mul_eq, prod_totalDegree] at this
+  rw [hg, ← degLex_degree_degree, degree_mul_of_isRegular_right, Alon.degP, degree_add,
+    degLex_degree_degree, degree_apply_single] at this
   · rw [this, ht', ← hpq, degree_add, add_lt_add_iff_left, ← not_le]
     intro hq'
     apply hp p
@@ -429,6 +355,7 @@ theorem Alon2 [IsDomain R]
     apply le_of_le_of_eq hq'
     simp only [hq, degree_apply_single i e]
   · intro H; apply ht; simp [hg, H]
-  · intro H; apply ht; simp [hg, H]
+  · rw [Alon.lCoeffP]
+    apply isRegular_one
 
 end MvPolynomial
