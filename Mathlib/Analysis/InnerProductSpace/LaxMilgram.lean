@@ -44,7 +44,7 @@ namespace IsCoercive
 variable {V : Type u} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [CompleteSpace V]
 variable {B : V →L[ℝ] V →L[ℝ] ℝ}
 
-local postfix:1024 "♯" => @continuousLinearMapOfBilin ℝ V _ _ _ _
+local postfix:1024 "♯" => continuousLinearMapOfBilin (𝕜 := ℝ)
 
 theorem bounded_below (coercive : IsCoercive B) : ∃ C, 0 < C ∧ ∀ v, C * ‖v‖ ≤ ‖B♯ v‖ := by
   rcases coercive with ⟨C, C_ge_0, coercivity⟩

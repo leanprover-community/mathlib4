@@ -218,14 +218,14 @@ theorem hasFDerivAt_fourierIntegral
     (fourierIntegral_convergent_iff continuous_fourierChar
       (by apply L.continuous₂ : Continuous (fun p : V × W ↦ L.toLinearMap₂ p.1 p.2)) w').2 hf
   have h1 : ∀ᶠ w' in 𝓝 w, AEStronglyMeasurable (F w') μ :=
-    eventually_of_forall (fun w' ↦ (h0 w').aestronglyMeasurable)
+    Eventually.of_forall (fun w' ↦ (h0 w').aestronglyMeasurable)
   have h3 : AEStronglyMeasurable (F' w) μ := by
     refine .smul ?_ hf.1.fourierSMulRight
     refine (continuous_fourierChar.comp ?_).aestronglyMeasurable
     exact (L.continuous₂.comp (Continuous.Prod.mk_left w)).neg
   have h4 : (∀ᵐ v ∂μ, ∀ (w' : W), w' ∈ Metric.ball w 1 → ‖F' w' v‖ ≤ B v) := by
     filter_upwards with v w' _
-    rw [norm_circle_smul _ (fourierSMulRight L f v)]
+    rw [Circle.norm_smul _ (fourierSMulRight L f v)]
     exact norm_fourierSMulRight_le L f v
   have h5 : Integrable B μ := by simpa only [← mul_assoc] using hf'.const_mul (2 * π * ‖L‖)
   have h6 : ∀ᵐ v ∂μ, ∀ w', w' ∈ Metric.ball w 1 → HasFDerivAt (fun x ↦ F x v) (F' w' v) w' :=
@@ -456,7 +456,7 @@ lemma hasFTaylorSeriesUpTo_fourierIntegral {N : ℕ∞}
     have I₁ : Integrable (fun v ↦ fourierPowSMulRight L f v n) μ :=
       integrable_fourierPowSMulRight L (hf n hn.le) h'f
     have I₂ : Integrable (fun v ↦ ‖v‖ * ‖fourierPowSMulRight L f v n‖) μ := by
-      apply ((hf (n+1) (ENat.add_one_le_of_lt hn)).const_mul ((2 * π * ‖L‖) ^ n)).mono'
+      apply ((hf (n+1) (Order.add_one_le_of_lt hn)).const_mul ((2 * π * ‖L‖) ^ n)).mono'
         (continuous_norm.aestronglyMeasurable.mul (h'f.fourierPowSMulRight L n).norm)
       filter_upwards with v
       simp only [Pi.mul_apply, norm_mul, norm_norm]
@@ -466,7 +466,7 @@ lemma hasFTaylorSeriesUpTo_fourierIntegral {N : ℕ∞}
           gcongr; apply norm_fourierPowSMulRight_le
       _ = (2 * π * ‖L‖) ^ n * (‖v‖ ^ (n + 1) * ‖f v‖) := by rw [pow_succ]; ring
     have I₃ : Integrable (fun v ↦ fourierPowSMulRight L f v (n + 1)) μ :=
-      integrable_fourierPowSMulRight L (hf (n + 1) (ENat.add_one_le_of_lt hn)) h'f
+      integrable_fourierPowSMulRight L (hf (n + 1) (Order.add_one_le_of_lt hn)) h'f
     have I₄ : Integrable
         (fun v ↦ fourierSMulRight L (fun v ↦ fourierPowSMulRight L f v n) v) μ := by
       apply (I₂.const_mul ((2 * π * ‖L‖))).mono' (h'f.fourierPowSMulRight L n).fourierSMulRight
@@ -522,7 +522,7 @@ theorem fourierIntegral_iteratedFDeriv [FiniteDimensional ℝ V]
   induction n with
   | zero =>
     ext w m
-    simp only [iteratedFDeriv_zero_apply, Nat.zero_eq, fourierPowSMulRight_apply, pow_zero,
+    simp only [iteratedFDeriv_zero_apply, fourierPowSMulRight_apply, pow_zero,
       Finset.univ_eq_empty, ContinuousLinearMap.neg_apply, ContinuousLinearMap.flip_apply,
       Finset.prod_empty, one_smul, fourierIntegral_continuousMultilinearMap_apply' ((h'f 0 bot_le))]
   | succ n ih =>

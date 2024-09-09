@@ -50,7 +50,7 @@ Its disadvantage is that the statement `X ⊆ M.closure X` is only true provided
 
 Choice (2) has the reverse property: we would have `X ⊆ M.closure X` for all `X`,
 but the condition `M.closure X ⊆ M.E` requires `X ⊆ M.E` to hold.
-It has a couple of other advantages too: is is actually the closure function of a matroid on `α`
+It has a couple of other advantages too: it is actually the closure function of a matroid on `α`
 with ground set `univ` (specifically, the direct sum of `M` and a free matroid on `M.Eᶜ`),
 and because of this, it is an example of a `ClosureOperator` on `α`, which in turn gives access
 to nice existing API for both `ClosureOperator` and `GaloisInsertion`.

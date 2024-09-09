@@ -3,7 +3,7 @@ Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.CategoryTheory.EqToHom
+import Mathlib.CategoryTheory.Equivalence
 
 /-!
 # Binary disjoint unions of categories
@@ -31,7 +31,7 @@ section
 
 variable (C : Type u₁) [Category.{v₁} C] (D : Type u₁) [Category.{v₁} D]
 
-/- Porting note: `aesop_cat` not firing on `assoc` where autotac in Lean 3 did-/
+/- Porting note: `aesop_cat` not firing on `assoc` where autotac in Lean 3 did -/
 
 /-- `sum C D` gives the direct sum of two categories.
 -/
@@ -129,10 +129,12 @@ theorem swap_map_inr {X Y : D} {f : inr X ⟶ inr Y} : (swap C D).map f = f :=
 namespace Swap
 
 /-- `swap` gives an equivalence between `C ⊕ D` and `D ⊕ C`. -/
-def equivalence : C ⊕ D ≌ D ⊕ C :=
-  Equivalence.mk (swap C D) (swap D C)
-    (NatIso.ofComponents (fun X => eqToIso (by cases X <;> rfl)))
-    (NatIso.ofComponents (fun X => eqToIso (by cases X <;> rfl)))
+@[simps functor inverse]
+def equivalence : C ⊕ D ≌ D ⊕ C where
+  functor := swap C D
+  inverse := swap D C
+  unitIso := NatIso.ofComponents (by rintro (_|_) <;> exact Iso.refl _)
+  counitIso := NatIso.ofComponents (by rintro (_|_) <;> exact Iso.refl _)
 
 instance isEquivalence : (swap C D).IsEquivalence :=
   (by infer_instance : (equivalence C D).functor.IsEquivalence)

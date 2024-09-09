@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Kenny Lau, Scott Morrison, Alex Keizer
 -/
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.List.Range
+import Batteries.Data.List.Perm
 
 /-!
 # Lists of elements of `Fin n`
@@ -29,7 +30,7 @@ theorem finRange_succ_eq_map (n : ℕ) : finRange n.succ = 0 :: (finRange n).map
   apply map_injective_iff.mpr Fin.val_injective
   rw [map_cons, map_coe_finRange, range_succ_eq_map, Fin.val_zero, ← map_coe_finRange, map_map,
     map_map]
-  simp only [Function.comp, Fin.val_succ]
+  simp only [Function.comp_def, Fin.val_succ]
 
 theorem finRange_succ (n : ℕ) :
     finRange n.succ = (finRange n |>.map Fin.castSucc |>.concat (.last _)) := by

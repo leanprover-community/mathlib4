@@ -3,7 +3,7 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Set.Defs
+import Mathlib.Data.Set.Operations
 import Mathlib.Order.Lattice
 
 /-!
@@ -249,7 +249,7 @@ end PartialOrder
 variable [LinearOrder ι]
 
 /- Porting note: Due to a bug in `alias`, many of the below lemmas have dot notation removed in the
-proof-/
+proof -/
 
 protected theorem Monotone.monovary (hf : Monotone f) (hg : Monotone g) : Monovary f g :=
   fun _ _ hij => hf (hg.reflect_lt hij).le

@@ -365,7 +365,5 @@ theorem multichoose_eq : ∀ n k : ℕ, multichoose n k = (n + k - 1).choose k
     erw [multichoose_succ_succ, Nat.add_comm, Nat.succ_add_sub_one, ← Nat.add_assoc,
       Nat.choose_succ_succ]
     simp [multichoose_eq n (k+1), multichoose_eq (n+1) k]
-  termination_by a b => a + b
-  decreasing_by all_goals assumption
 
 end Nat

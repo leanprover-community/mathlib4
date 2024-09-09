@@ -340,7 +340,7 @@ lemma mem_iSup_iff_exists_finsupp (p : ι → Submodule R N) (x : N) :
   refine ⟨fun ⟨f, hf⟩ ↦ ⟨⟨f.support, fun i ↦ (f i : N), by simp⟩, by simp, hf⟩, ?_⟩
   rintro ⟨f, hf, rfl⟩
   refine ⟨DFinsupp.mk f.support fun i ↦ ⟨f i, hf i⟩, Finset.sum_congr ?_ fun i hi ↦ ?_⟩
-  · ext; simp
+  · ext; simp [mk_eq_zero]
   · simp [Finsupp.mem_support_iff.mp hi]
 
 theorem mem_iSup_finset_iff_exists_sum {s : Finset ι} (p : ι → Submodule R N) (a : N) :
@@ -422,14 +422,15 @@ theorem independent_of_dfinsupp_sumAddHom_injective (p : ι → AddSubmonoid N)
   rw [← independent_map_orderIso_iff (AddSubmonoid.toNatSubmodule : AddSubmonoid N ≃o _)]
   exact independent_of_dfinsupp_lsum_injective _ h
 
-/-- Combining `DFinsupp.lsum` with `LinearMap.toSpanSingleton` is the same as `Finsupp.total` -/
+/-- Combining `DFinsupp.lsum` with `LinearMap.toSpanSingleton` is the same as
+`Finsupp.linearCombination` -/
 theorem lsum_comp_mapRange_toSpanSingleton [∀ m : R, Decidable (m ≠ 0)] (p : ι → Submodule R N)
     {v : ι → N} (hv : ∀ i : ι, v i ∈ p i) :
     (lsum ℕ (M := fun i ↦ ↥(p i)) fun i => (p i).subtype : _ →ₗ[R] _).comp
         ((mapRange.linearMap fun i => LinearMap.toSpanSingleton R (↥(p i)) ⟨v i, hv i⟩ :
               _ →ₗ[R] _).comp
           (finsuppLequivDFinsupp R : (ι →₀ R) ≃ₗ[R] _).toLinearMap) =
-      Finsupp.total ι N R v := by
+      Finsupp.linearCombination R v := by
   ext
   simp
 

@@ -93,7 +93,7 @@ variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
 
 @[to_additive (attr := simp) abs_nonneg] lemma one_le_mabs (a : α) : 1 ≤ |a|ₘ := by
   apply pow_two_semiclosed _
-  rw [mabs, pow_two, mul_sup,  sup_mul, ← pow_two, mul_left_inv, sup_comm, ← sup_assoc]
+  rw [mabs, pow_two, mul_sup,  sup_mul, ← pow_two, inv_mul_cancel, sup_comm, ← sup_assoc]
   apply le_sup_right
 
 @[to_additive (attr := simp)] lemma mabs_mabs (a : α) : |(|a|ₘ)|ₘ = |a|ₘ :=
@@ -224,7 +224,7 @@ variable [CovariantClass α α (· * ·) (· ≤ ·)] {a b c : α}
   · simp [mabs_of_le_one h]
 
 @[to_additive add_abs_nonneg] lemma one_le_mul_mabs (a : α) : 1 ≤ a * |a|ₘ := by
-  rw [← mul_right_inv a]; exact mul_le_mul_left' (inv_le_mabs a) _
+  rw [← mul_inv_cancel a]; exact mul_le_mul_left' (inv_le_mabs a) _
 
 @[to_additive] lemma inv_mabs_le_inv (a : α) : |a|ₘ⁻¹ ≤ a⁻¹ := by simpa using inv_mabs_le a⁻¹
 

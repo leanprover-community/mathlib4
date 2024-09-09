@@ -483,7 +483,7 @@ section NumberField
 variable [NumberField K]
 
 /-- The infinite part of the product formula : for `x ∈ K`, we have `Π_w ‖x‖_w = |norm(x)|` where
-`‖·‖_w` is the normalized absolute value for `w`.  -/
+`‖·‖_w` is the normalized absolute value for `w`. -/
 theorem prod_eq_abs_norm (x : K) :
     ∏ w : InfinitePlace K, w x ^ mult w = abs (Algebra.norm ℚ x) := by
   convert (congr_arg Complex.abs (@Algebra.norm_eq_prod_embeddings ℚ _ _ _ _ ℂ _ _ _ _ _ x)).symm
@@ -1021,11 +1021,11 @@ variable {K}
 
 lemma IsUnramifiedAtInfinitePlaces_of_odd_card_aut [IsGalois k K] [FiniteDimensional k K]
     (h : Odd (Fintype.card <| K ≃ₐ[k] K)) : IsUnramifiedAtInfinitePlaces k K :=
-  ⟨fun _ ↦ not_not.mp (Nat.odd_iff_not_even.mp h ∘ InfinitePlace.even_card_aut_of_not_isUnramified)⟩
+  ⟨fun _ ↦ not_not.mp (Nat.not_even_iff_odd.2 h ∘ InfinitePlace.even_card_aut_of_not_isUnramified)⟩
 
 lemma IsUnramifiedAtInfinitePlaces_of_odd_finrank [IsGalois k K]
     (h : Odd (FiniteDimensional.finrank k K)) : IsUnramifiedAtInfinitePlaces k K :=
-  ⟨fun _ ↦ not_not.mp (Nat.odd_iff_not_even.mp h ∘ InfinitePlace.even_finrank_of_not_isUnramified)⟩
+  ⟨fun _ ↦ not_not.mp (Nat.not_even_iff_odd.2 h ∘ InfinitePlace.even_finrank_of_not_isUnramified)⟩
 
 variable (k K)
 

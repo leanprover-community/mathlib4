@@ -9,7 +9,6 @@ import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Set.Finite
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Data.Setoid.Basic
-import Mathlib.GroupTheory.GroupAction.Group
 
 /-!
 # Basic properties of group actions
@@ -329,6 +328,10 @@ theorem smul_mem_orbit_smul (g h : G) (a : α) : g • a ∈ orbit G (h • a) :
   simp only [orbit_smul, mem_orbit]
 
 @[to_additive]
+instance instMulAction (H : Subgroup G) : MulAction H α :=
+  inferInstanceAs (MulAction H.toSubmonoid α)
+
+@[to_additive]
 lemma orbit_subgroup_subset (H : Subgroup G) (a : α) : orbit H a ⊆ orbit G a :=
   orbit_submonoid_subset H.toSubmonoid a
 
@@ -346,11 +349,10 @@ lemma mem_subgroup_orbit_iff {H : Subgroup G} {x : α} {a b : orbit G x} :
     a ∈ MulAction.orbit H b ↔ (a : α) ∈ MulAction.orbit H (b : α) := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rcases h with ⟨g, rfl⟩
-    simp_rw [Submonoid.smul_def, Subgroup.coe_toSubmonoid, orbit.coe_smul, ← Submonoid.smul_def]
     exact MulAction.mem_orbit _ g
   · rcases h with ⟨g, h⟩
-    simp_rw [Submonoid.smul_def, Subgroup.coe_toSubmonoid, ← orbit.coe_smul,
-             ← Submonoid.smul_def, ← Subtype.ext_iff] at h
+    dsimp at h
+    erw [← orbit.coe_smul, ← Subtype.ext_iff] at h
     subst h
     exact MulAction.mem_orbit _ g
 
@@ -564,12 +566,11 @@ lemma orbitRel.Quotient.mem_subgroup_orbit_iff {H : Subgroup G} {x : orbitRel.Qu
     {a b : x.orbit} : (a : α) ∈ MulAction.orbit H (b : α) ↔ a ∈ MulAction.orbit H b := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rcases h with ⟨g, h⟩
-    simp_rw [Submonoid.smul_def, Subgroup.coe_toSubmonoid, ← orbit.coe_smul,
-      ← Submonoid.smul_def, ← Subtype.ext_iff] at h
+    dsimp at h
+    erw [← orbit.coe_smul, ← Subtype.ext_iff] at h
     subst h
     exact MulAction.mem_orbit _ g
   · rcases h with ⟨g, rfl⟩
-    simp_rw [Submonoid.smul_def, Subgroup.coe_toSubmonoid, orbit.coe_smul, ← Submonoid.smul_def]
     exact MulAction.mem_orbit _ g
 
 @[to_additive]
@@ -697,8 +698,8 @@ lemma stabilizer_mul_eq_right [Group α] [SMulCommClass G α α] (a b : α) :
 theorem stabilizer_smul_eq_stabilizer_map_conj (g : G) (a : α) :
     stabilizer G (g • a) = (stabilizer G a).map (MulAut.conj g).toMonoidHom := by
   ext h
-  rw [mem_stabilizer_iff, ← smul_left_cancel_iff g⁻¹, smul_smul, smul_smul, smul_smul, mul_left_inv,
-    one_smul, ← mem_stabilizer_iff, Subgroup.mem_map_equiv, MulAut.conj_symm_apply]
+  rw [mem_stabilizer_iff, ← smul_left_cancel_iff g⁻¹, smul_smul, smul_smul, smul_smul,
+    inv_mul_cancel, one_smul, ← mem_stabilizer_iff, Subgroup.mem_map_equiv, MulAut.conj_symm_apply]
 
 /-- A bijection between the stabilizers of two elements in the same orbit. -/
 noncomputable def stabilizerEquivStabilizerOfOrbitRel {a b : α} (h : (orbitRel G α).Rel a b) :
@@ -721,7 +722,7 @@ theorem stabilizer_vadd_eq_stabilizer_map_conj (g : G) (a : α) :
     stabilizer G (g +ᵥ a) = (stabilizer G a).map (AddAut.conj g).toAddMonoidHom := by
   ext h
   rw [mem_stabilizer_iff, ← vadd_left_cancel_iff (-g), vadd_vadd, vadd_vadd, vadd_vadd,
-    add_left_neg, zero_vadd, ← mem_stabilizer_iff, AddSubgroup.mem_map_equiv,
+    neg_add_cancel, zero_vadd, ← mem_stabilizer_iff, AddSubgroup.mem_map_equiv,
     AddAut.conj_symm_apply]
 
 /-- A bijection between the stabilizers of two elements in the same orbit. -/
@@ -771,6 +772,7 @@ theorem le_stabilizer_iff_smul_le (s : Set α) (H : Subgroup G) :
 theorem mem_stabilizer_of_finite_iff_smul_le (s : Set α) (hs : s.Finite) (g : G) :
     g ∈ stabilizer G s ↔ g • s ⊆ s := by
   haveI : Fintype s := Set.Finite.fintype hs
+  haveI : Finite (g • s : Set α) := Finite.Set.finite_image ..
   haveI : Fintype (g • s : Set α) := Fintype.ofFinite _
   rw [mem_stabilizer_iff]
   constructor

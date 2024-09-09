@@ -54,7 +54,7 @@ section
 
 open Real in
 set_option synthInstance.maxHeartbeats 10000 in
-example : expMapCircle (2 * π) = 1 := by simp
+example : Circle.exp (2 * π) = 1 := by simp
 
 end
 
@@ -63,7 +63,7 @@ section
 -- Initial issue: https://github.com/leanprover-community/mathlib4/issues/12230
 
 open Complex in
-set_option synthInstance.maxHeartbeats 3000 in
+set_option synthInstance.maxHeartbeats 3200 in
 example (x : ℝ) : abs (cos x + sin x * I) = 1 := by simp
 
 end
