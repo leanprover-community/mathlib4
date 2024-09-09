@@ -51,7 +51,7 @@ def heavyRflLinter : Linter where run := withSetOptionIn fun stx ↦ do
 --  withScope (fun sc => {sc with currNamespace := `X ++ sc.currNamespace}) do
   --logInfo repl
   let s ← get
-  elabCommand repl <|> (do dbg_trace "could not parse {declName}"; return)
+  elabCommand repl
   set s
 
 initialize addLinter heavyRflLinter
