@@ -6,7 +6,6 @@ Authors: Jujian Zhang, Johan Commelin
 import Mathlib.RingTheory.GradedAlgebra.HomogeneousIdeal
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Topology.Sets.Opens
-import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Projective spectrum of a graded ring
