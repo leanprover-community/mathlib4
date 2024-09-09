@@ -261,6 +261,7 @@ lemma _root_.nnnorm_finsum_le_iSup_nnnorm (f : ι → M) :
       refine (eq_or_ne _ _).imp_right (fun hi ↦ ⟨i, mt ?_ hi, rfl⟩)
       simp (config := {contextual := true})
     · refine (Set.finite_range_iSup_mem (h.subset ?_) _).bddAbove
+      change {x | x ∈ h.toFinset.val} ⊆ _
       intro _ ha -- needed becaues `(Function.support f).Finite` doesn't simplify as expected
       simpa using ha
   · simp
