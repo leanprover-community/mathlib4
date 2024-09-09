@@ -33,7 +33,8 @@ def heavyRflLinter : Linter where run := withSetOptionIn fun stx ↦ do
   if (stx.find? (·.isOfKind `to_additive)).isSome then return
   if (stx.find? (·.isOfKind ``Lean.Parser.Term.namedArgument)).isSome then return
   let hbStx := Syntax.mkNumLit s!"{hbBd}"
-  let declId := (stx.find? (·.isOfKind ``Lean.Parser.Command.declId)).getD .missing
+  let declId :=
+    (stx.find? (·.isOfKind ``Lean.Parser.Command.declId)).getD (mkNode `null #[mkIdent `ohHi])
   let declName    := declId[0].getId
   let newDeclName := declName ++ `_hb
   let newId       := mkIdentFrom declId[0] newDeclName
