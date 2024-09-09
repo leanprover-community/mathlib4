@@ -25,7 +25,7 @@ universe u v
 
 open CategoryTheory Limits
 
-variable (V : Type (u + 1)) [LargeCategory V]
+variable (V : Type u) [Category.{v} V]
 
 -- Note: this is _not_ a categorical action of `G` on `V`.
 /-- An `Action V G` represents a bundled action of
@@ -34,7 +34,7 @@ the monoid `G` on an object of some category `V`.
 As an example, when `V = ModuleCat R`, this is an `R`-linear representation of `G`,
 while when `V = Type` this is a `G`-action.
 -/
-structure Action (G : MonCat.{u}) where
+structure Action (G : MonCat.{v}) where
   V : V
   ρ : G ⟶ MonCat.of (End V)
 
@@ -43,11 +43,11 @@ namespace Action
 variable {V}
 
 @[simp 1100]
-theorem ρ_one {G : MonCat.{u}} (A : Action V G) : A.ρ 1 = 𝟙 A.V := by rw [MonoidHom.map_one]; rfl
+theorem ρ_one {G : MonCat.{v}} (A : Action V G) : A.ρ 1 = 𝟙 A.V := by rw [MonoidHom.map_one]; rfl
 
 /-- When a group acts, we can lift the action to the group of automorphisms. -/
 @[simps]
-def ρAut {G : Grp.{u}} (A : Action V (MonCat.of G)) : G ⟶ Grp.of (Aut A.V) where
+def ρAut {G : Grp.{v}} (A : Action V (MonCat.of G)) : G ⟶ Grp.of (Aut A.V) where
   toFun g :=
     { hom := A.ρ g
       inv := A.ρ (g⁻¹ : G)
@@ -59,11 +59,11 @@ def ρAut {G : Grp.{u}} (A : Action V (MonCat.of G)) : G ⟶ Grp.of (Aut A.V) wh
 -- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
 attribute [nolint simpNF] Action.ρAut_apply_inv Action.ρAut_apply_hom
 
-variable (G : MonCat.{u})
+variable (G : MonCat.{v})
 
 section
 
-instance inhabited' : Inhabited (Action (Type u) G) :=
+instance inhabited' : Inhabited (Action (Type v) G) :=
   ⟨⟨PUnit, 1⟩⟩
 
 /-- The trivial representation of a group. -/
@@ -323,12 +323,12 @@ end Action
 
 namespace CategoryTheory.Functor
 
-variable {V} {W : Type (u + 1)} [LargeCategory W]
+variable {V} {W : Type u} [Category.{v} W]
 
 /-- A functor between categories induces a functor between
 the categories of `G`-actions within those categories. -/
 @[simps]
-def mapAction (F : V ⥤ W) (G : MonCat.{u}) : Action V G ⥤ Action W G where
+def mapAction (F : V ⥤ W) (G : MonCat.{v}) : Action V G ⥤ Action W G where
   obj M :=
     { V := F.obj M.V
       ρ :=

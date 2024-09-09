@@ -37,7 +37,7 @@ For the case `Y = Aut F ⧸ U` we closely follow the second part of Stacks Proje
 
 -/
 
-universe u v
+universe u v w
 
 namespace CategoryTheory
 
