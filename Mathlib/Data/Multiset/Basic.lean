@@ -2039,7 +2039,7 @@ lemma filter_attach (s : Multiset α) (p : α → Prop) [DecidablePred p] :
 variable {p}
 
 theorem countP_pos {s} : 0 < countP p s ↔ ∃ a ∈ s, p a :=
-  Quot.inductionOn s fun _l => by simpa using List.countP_pos (p := (p ·))
+  Quot.inductionOn s fun _l => by simp
 
 theorem countP_eq_zero {s} : countP p s = 0 ↔ ∀ a ∈ s, ¬p a :=
   Quot.inductionOn s fun _l => by simp [List.countP_eq_zero]

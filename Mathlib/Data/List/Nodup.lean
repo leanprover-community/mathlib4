@@ -144,14 +144,14 @@ theorem nodup_iff_count_le_one [DecidableEq α] {l : List α} : Nodup l ↔ ∀ 
 
 theorem nodup_iff_count_eq_one [DecidableEq α] : Nodup l ↔ ∀ a ∈ l, count a l = 1 :=
   nodup_iff_count_le_one.trans <| forall_congr' fun _ =>
-    ⟨fun H h => H.antisymm (count_pos_iff_mem.mpr h),
+    ⟨fun H h => H.antisymm (count_pos_iff.mpr h),
      fun H => if h : _ then (H h).le else (count_eq_zero.mpr h).trans_le (Nat.zero_le 1)⟩
 
 
 @[simp]
 theorem count_eq_one_of_mem [DecidableEq α] {a : α} {l : List α} (d : Nodup l) (h : a ∈ l) :
     count a l = 1 :=
-  _root_.le_antisymm (nodup_iff_count_le_one.1 d a) (Nat.succ_le_of_lt (count_pos_iff_mem.2 h))
+  _root_.le_antisymm (nodup_iff_count_le_one.1 d a) (Nat.succ_le_of_lt (count_pos_iff.2 h))
 
 theorem count_eq_of_nodup [DecidableEq α] {a : α} {l : List α} (d : Nodup l) :
     count a l = if a ∈ l then 1 else 0 := by
