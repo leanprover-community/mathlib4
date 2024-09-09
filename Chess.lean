@@ -3,6 +3,19 @@ import Mathlib
 def Fin.range (n : Nat) : List (Fin n) :=
   (List.range n).attach.map fun ⟨i, h⟩ => ⟨i, by simpa using h⟩
 
+@[simp] theorem Fin.range_zero : Fin.range 0 = [] := by
+  simp [Fin.range]
+
+@[simp] theorem Fin.length_range (n : Nat) : (Fin.range n).length = n := by
+  simp [Fin.range, List.length_map, List.length_range]
+
+@[simp] theorem Fin.getElem_range (n : Nat) (i : Nat) (h : i < (Fin.range n).length) : (Fin.range n)[i] = ⟨i, by simpa using h⟩ := by
+  simp [Fin.range, List.getElem_map, List.getElem_range]
+
+@[simp] theorem Fin.mem_range (n : Nat) (i : Fin n) : i ∈ Fin.range n := by
+  simp only [range, List.mem_map, List.mem_attach, true_and, Subtype.exists, List.mem_range]
+  refine ⟨i, by simp, rfl⟩
+
 def toFin? (x : Int) : Option (Fin 8) :=
   if 0 ≤ x then if h : x.toNat < 8 then some ⟨x.toNat, h⟩ else none else none
 
@@ -21,13 +34,32 @@ def toFin? (x : Int) : Option (Fin 8) :=
   · simp only [reduceCtorEq, false_iff]
     omega
 
-@[simp] theorem List.map_set {α β : Type} (f : α → β) (l : List α) (i : Nat) (a : α) :
+namespace List
+
+@[simp] theorem mem_ite_nil_left {x : α} [Decidable p] {l : List α} : (x ∈ if p then [] else l) ↔ ¬ p ∧ x ∈ l := by
+  split <;> simp_all
+
+@[simp] theorem mem_ite_nil_right {x : α} [Decidable p] {l : List α} : (x ∈ if p then l else []) ↔ p ∧ x ∈ l := by
+  split <;> simp_all
+
+-- Replace unprimed:
+@[simp] theorem filter_filter' (q) : ∀ l, filter p (filter q l) = filter (fun a => p a && q a) l
+  | [] => rfl
+  | a :: l => by by_cases hp : p a <;> by_cases hq : q a <;> simp [hp, hq, filter_filter _ l]
+
+-- Replace unprimed:
+theorem countP_filter' (l : List α) :
+    countP p (filter q l) = countP (fun a => p a && q a) l := by
+  simp only [countP_eq_length_filter, filter_filter']
+
+
+@[simp] theorem map_set {α β : Type} (f : α → β) (l : List α) (i : Nat) (a : α) :
     (l.set i a).map f = (l.map f).set i (f a) := by
   cases l with
   | nil => simp
   | cons x l => cases i <;> simp
 
-theorem List.boole_getElem_le_countP (p : α → Bool) (l : List α) (i : Nat) (h : i < l.length) :
+theorem boole_getElem_le_countP (p : α → Bool) (l : List α) (i : Nat) (h : i < l.length) :
     (if p l[i] then 1 else 0) ≤ l.countP p := by
   induction l generalizing i with
   | nil => simp at h
@@ -40,7 +72,7 @@ theorem List.boole_getElem_le_countP (p : α → Bool) (l : List α) (i : Nat) (
       specialize ih _ h
       omega
 
-theorem List.countP_set (p : α → Bool) (l : List α) (i : Nat) (a : α) (h : i < l.length) :
+theorem countP_set (p : α → Bool) (l : List α) (i : Nat) (a : α) (h : i < l.length) :
     (l.set i a).countP p = l.countP p - (if p l[i] then 1 else 0) + (if p a then 1 else 0) := by
   induction l generalizing i with
   | nil => simp at h
@@ -52,6 +84,8 @@ theorem List.countP_set (p : α → Bool) (l : List α) (i : Nat) (a : α) (h : 
       simp [countP_cons, ih _ h]
       have : (if p l[i] = true then 1 else 0) ≤ l.countP p := boole_getElem_le_countP p l i h
       omega
+
+end List
 
 @[simp] theorem boole_pos_iff [Decidable p] : (0 < if p then 1 else 0) ↔ p := by
   split <;> simp_all
@@ -90,26 +124,28 @@ theorem List.apply_getElem_le_sum_map_nat (f : α → Nat) (l : List α) (i : Na
       simp_all
       omega
 
-@[simp] theorem Array.getElem_data (a : Array α) (i : Nat) (h : i < a.size) : a.data[i] = a[i] := rfl
+namespace Array
 
-@[simp] theorem Array.getElem_mk (data : List α) (i : Nat) (h : i < data.length) : (Array.mk data)[i] = data[i] := rfl
+@[simp] theorem getElem_data (a : Array α) (i : Nat) (h : i < a.size) : a.data[i] = a[i] := rfl
 
-@[simp] theorem Array.map_mk (f : α → β) (data : List α) :
+@[simp] theorem getElem_mk (data : List α) (i : Nat) (h : i < data.length) : (Array.mk data)[i] = data[i] := rfl
+
+@[simp] theorem map_mk (f : α → β) (data : List α) :
     Array.map f (Array.mk data) = Array.mk (List.map f data) := by
   ext <;> simp
 
-@[simp] theorem Array.map_set (f : α → β) (xs : Array α) (i : Fin xs.size) (a : α) :
+@[simp] theorem map_set (f : α → β) (xs : Array α) (i : Fin xs.size) (a : α) :
     (xs.set i a).map f = (xs.map f).set (Fin.cast (by simp) i) (f a) := by
   simp [Array.set]
 
-def Array.countP (p : α → Bool) (xs : Array α) : Nat :=
+def countP (p : α → Bool) (xs : Array α) : Nat :=
   xs.toList.countP p
 
-theorem Array.countP_set (p : α → Bool) (l : Array α) (i : Fin l.size) (a : α) :
+theorem countP_set (p : α → Bool) (l : Array α) (i : Fin l.size) (a : α) :
     (l.set i a).countP p = l.countP p - (if p l[i] then 1 else 0) + (if p a then 1 else 0) := by
   simp [countP, List.countP_set]
 
-theorem Array.exists_mem_data {as : Array α} {p : α → Prop} :
+theorem exists_mem_data {as : Array α} {p : α → Prop} :
     (∃ x ∈ as.data, p x) ↔ ∃ (i : Nat) (h : i < as.size), p as[i] := by
   constructor
   · rintro ⟨x, m, w⟩
@@ -118,29 +154,31 @@ theorem Array.exists_mem_data {as : Array α} {p : α → Prop} :
   · rintro ⟨i, h, w⟩
     exact ⟨as[i], getElem_mem_data as h, w⟩
 
-@[simp] theorem Array.countP_pos_iff (p : α → Bool) (l : Array α) :
+@[simp] theorem countP_pos_iff (p : α → Bool) (l : Array α) :
     0 < l.countP p ↔ ∃ (i : Nat) (h : i < l.size), p l[i] := by
   simp [countP, exists_mem_data]
 
-@[simp] theorem Array.one_le_countP_iff (p : α → Bool) (l : Array α) : 1 ≤ l.countP p ↔ ∃ (i : Nat) (h : i < l.size), p l[i] :=
+@[simp] theorem one_le_countP_iff (p : α → Bool) (l : Array α) : 1 ≤ l.countP p ↔ ∃ (i : Nat) (h : i < l.size), p l[i] :=
   countP_pos_iff p l
 
-def Array.sum [Zero α] [Add α] (xs : Array α) : α :=
+def sum [Zero α] [Add α] (xs : Array α) : α :=
   xs.toList.sum
 
-@[simp] theorem Array.sum_set (v : Array Nat) (i : Fin v.size) (a : Nat) :
+@[simp] theorem sum_set (v : Array Nat) (i : Fin v.size) (a : Nat) :
     (v.set i a).sum = v.sum - v[i] + a := by
   simp [sum]
 
-theorem Array.getElem_le_sum_nat (l : Array Nat) (i : Nat) (h : i < l.size) : l[i] ≤ l.sum := by
+theorem getElem_le_sum_nat (l : Array Nat) (i : Nat) (h : i < l.size) : l[i] ≤ l.sum := by
   simp [sum]
   apply List.getElem_le_sum_nat
 
-theorem Array.apply_getElem_le_sum_map_nat (f : α → Nat) (l : Array α) (i : Nat) (h : i < l.size) : f l[i] ≤ (l.map f).sum := by
+theorem apply_getElem_le_sum_map_nat (f : α → Nat) (l : Array α) (i : Nat) (h : i < l.size) : f l[i] ≤ (l.map f).sum := by
   have := (l.map f).getElem_le_sum_nat i (by simpa using h)
   simpa using this
 
-structure Vec (n : Nat) (α : Type) where
+end Array
+
+structure Vec (n : Nat) (α : Type _) where
   data : Array α
   size : data.size = n
 
@@ -170,7 +208,11 @@ def set (v : Vec n α) (i : Fin n) (a : α) : Vec n α :=
 @[simp] theorem data_set (v : Vec n α) (i : Fin n) (a : α) : (v.set i a).data = v.data.set (Fin.cast v.2.symm i) a := rfl
 
 @[simp] theorem set_mk {data : Array α} {size : data.size = n} :
-    (mk data size).set i a  = mk (data.set (Fin.cast size.symm i) a) (by simp [size]) := rfl
+    (mk data size).set i a = mk (data.set (Fin.cast size.symm i) a) (by simp [size]) := rfl
+
+@[simp] theorem getElem_set (v : Vec n α) (i : Fin n) (a : α) (j : Nat) (h : j < n) : (v.set i a)[j] = if i = j then a else v[j] := by
+  cases v
+  simp [Array.getElem_set, Fin.ext_iff]  -- Annoying that we need to use `ext_iff` here.
 
 def map (f : α → β) (v : Vec n α) : Vec n β :=
   ⟨v.1.map f, by simp [v.2]⟩
@@ -237,16 +279,18 @@ deriving Repr
 -- #check Vec.map
 -- #check Vec.countP
 
-def Position.occupied (pos : Position) (x : Int) (y : Int) : Bool :=
+namespace Position
+
+def occupied (pos : Position) (x : Int) (y : Int) : Bool :=
   match toFin? x, toFin? y with
   | some x, some y => pos.board[x][y].isSome
   | _, _ => false
 
-@[simp] theorem Position.isSome_getElem_getElem_board (pos : Position) (x : Fin 8) (y : Fin 8) :
+@[simp] theorem isSome_getElem_getElem_board (pos : Position) (x : Fin 8) (y : Fin 8) :
     pos.board[(x : Nat)][(y : Nat)].isSome = pos.occupied x y := by
   simp [occupied]
 
-def Position.friendly (pos : Position) (x : Int) (y : Int) : Bool :=
+def friendly (pos : Position) (x : Int) (y : Int) : Bool :=
   match toFin? x, toFin? y with
   | some x, some y =>
     match pos.board[x][y], pos.whiteToMove with
@@ -255,8 +299,14 @@ def Position.friendly (pos : Position) (x : Int) (y : Int) : Bool :=
     | _, _ => false
   | _, _ => false
 
-def Position.countPieces (pos : Position) : Nat :=
+def countPieces (pos : Position) : Nat :=
   (pos.board.map (fun file => file.countP Option.isSome)).sum
+
+theorem countPieces_eq (pos : Position) :
+    pos.countPieces = ((Fin.range 8).map fun (x : Fin 8) => (Fin.range 8).countP fun (y : Fin 8) => pos.occupied x y).sum := by
+  sorry
+
+end Position
 
 def rookDirs : List (Int × Int) := [(1, 0), (-1, 0), (0, 1), (0, -1)]
 def bishopDirs : List (Int × Int) := [(1, 1), (-1, -1), (1, -1), (-1, 1)]
@@ -409,13 +459,39 @@ theorem countPieces_set (p : Position) (x y : Fin 8) (piece : Piece) :
     · simp
       refine ⟨y.1, y.2, by simpa using h⟩
 
+theorem occupied_erase (p : Position) (x y : Fin 8) :
+    (p.erase x y).occupied x' y' = if x' = x ∧ y' = y then false else p.occupied x' y' := by
+  simp only [erase, occupied]
+  split
+  · rename_i x'' y'' hx hy
+    simp only [toFin?_eq_some_iff] at hx hy
+    subst hx hy
+    simp only [Fin.getElem_fin, Vec.getElem_set]
+    split <;> rename_i h₁
+    · simp only [Vec.getElem_set]
+      split <;> rename_i h₂
+      · simp_all
+      · simp_all [Ne.symm h₂]
+    · simp_all [Ne.symm h₁]
+  · simp_all
+
 theorem countPieces_erase (p : Position) (x y : Fin 8) :
     (p.erase x y).countPieces = if p.occupied x y then p.countPieces - 1 else p.countPieces := by
   sorry
-
-theorem occupied_erase (p : Position) (x y : Fin 8) :
-    (p.erase x y).occupied x' y' = if x' = x ∧ y' = y then false else p.occupied x' y' := by
-  sorry
+  -- rw [countPieces_eq]
+  -- simp only [occupied_erase]
+  -- simp
+  -- conv =>
+  --   lhs
+  --   congr
+  --   congr
+  --   ext x'
+  --   congr
+  --   ext y'
+  --   rw [Bool.and_comm]
+  -- simp only [← List.countP_filter']
+  -- simp
+  -- sorry
 
 theorem occupied_of_activePiece? {p : Position} {x y : Fin 8} {piece : Piece} :
     p.activePiece? x y = some piece → p.occupied x y := by
@@ -424,11 +500,17 @@ theorem occupied_of_activePiece? {p : Position} {x y : Fin 8} {piece : Piece} :
 
 theorem countPieces_pos_of_occupied {p : Position} {x y : Fin 8} (h : p.occupied x y) :
     0 < p.countPieces := by
-  sorry
+  rw [countPieces_eq]
+  calc
+    0 < 1 := Nat.zero_lt_one
+    1 ≤ _ := ?_
+    _ ≤ _ := List.apply_getElem_le_sum_map_nat _ _ x (by simp)
+  simp only [Fin.getElem_range, Fin.eta, List.one_le_countP_iff, Fin.mem_range, true_and]
+  refine ⟨y, by simpa using h⟩
 
-theorem countPieces_pos_of_activePiece? {p : Position} {x y : Fin 8} {piece : Piece} :
-    p.activePiece? x y = some piece → 0 < p.countPieces := by
-  sorry
+theorem countPieces_pos_of_activePiece? {p : Position} {x y : Fin 8} {piece : Piece}
+    (h : p.activePiece? x y = some piece) : 0 < p.countPieces :=
+  countPieces_pos_of_occupied (occupied_of_activePiece? h)
 
 theorem countPieces_move (p : Position) {x y x' y' : Fin 8} (piece : Piece) (w : (x', y') ≠ (x, y)) (h : p.occupied x y) :
     (p.move piece x y x' y').countPieces = if p.occupied x' y' then p.countPieces - 1 else p.countPieces := by
@@ -486,6 +568,24 @@ theorem countPieces_le_of_validMove {p₁ p₂ : Position} (h : p₁.validMove p
   have := countPieces_of_validMove p₁ p₂ h
   omega
 
+/-- If a pawn moves without taking, it does not change file. -/
+theorem pawn_file_of_conservativeMove (h : p₁.activePiece? x y = some Piece.pawn)
+    (m : (x', y') ∈ p₁.pieceMoves Piece.pawn ↑x ↑y) (h₂ : conservativeMove p₁ (p₁.move Piece.pawn x y x' y')) :
+    x' = x := by
+  simp [pieceMoves, pawnMoves] at m
+  split at m <;> rename_i player
+  · obtain ⟨⟨a, b, h⟩, -⟩ := m
+    split at h
+    · simp at h
+    · simp at h
+      obtain ⟨h|h|h|h, hx, hx⟩ := h
+      · omega
+      · omega
+      · sorry
+      · sorry
+
+  · sorry
+
 def leadingWhitePawn (p : Position) (x : Fin 8) : Option (Fin 8) :=
   (Fin.range 8).reverse |>.find? (fun y => p.board[x][y] = some (true, .pawn))
 
@@ -493,15 +593,16 @@ theorem leadingWhitePawn_of_conservativeMove {p₁ p₂ : Position} (h₁ : vali
     match leadingWhitePawn p₁ z with
     | none => leadingWhitePawn p₂ z = none
     | some y => leadingWhitePawn p₂ z = some y ∨ y < 7 ∧ leadingWhitePawn p₂ z = some (y + 1) := by
-  simp [validMove, moves] at h₁
+  simp only [validMove, moves, List.mem_bind, Option.mem_toList, Option.mem_def, List.mem_map,
+    Prod.exists] at h₁
   obtain ⟨x, -, y, -, piece, h, x', y', m, rfl⟩ := h₁
   split <;> rename_i w
   · simp [leadingWhitePawn] at w ⊢
     by_cases r : piece = .pawn
     · subst r
-      have : x' = x := sorry
+      have : x' = x := pawn_file_of_conservativeMove h m h₂
       subst x'
-      rintro w -
+      rintro w
       rw [getElem_getElem_board_move]
       split
       · simp
