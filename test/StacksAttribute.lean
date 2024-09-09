@@ -12,7 +12,7 @@ theorem tagged : True := .intro
 end X
 
 #guard_msgs in
-@[stacks 0BR2, stacks 0X12]
+@[stacks 0BR2, keredon 0X12]
 example : True := .intro
 
 @[stacks 0BR2, stacks 0X14 "I can also have a comment"]
@@ -38,7 +38,7 @@ True
 
 section errors
 
-open Lean Parser Mathlib.Stacks
+open Lean Parser Mathlib.StacksTag
 
 def captureException (env : Environment) (s : ParserFn) (input : String) : Except String Syntax :=
   let ictx := mkInputContext input "<input>"
