@@ -3,7 +3,6 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Init
 import Lean.Util.Heartbeats
 import Lean.Meta.Tactic.TryThis
 
@@ -66,11 +65,17 @@ def logVariation {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptions 
 elab "count_heartbeats " tac:tacticSeq : tactic => do
   logInfo s!"{← runTacForHeartbeats tac (revert := false)}"
 
+/-- Count the heartbeats used by a tactic, e.g.: `count_heartbeats simp`. -/
+elab "count_heartbeats_over " n:num ppSpace tac:tacticSeq : tactic => do
+  let hb ← runTacForHeartbeats tac (revert := false)
+  if n.getNat ≤ hb then
+    dbg_trace s!"{hb}"
+
 /--
 `count_heartbeats! in tac` runs a tactic 10 times, counting the heartbeats used, and logs the range
 and standard deviation. The tactic `count_heartbeats! n in tac` runs it `n` times instead.
 -/
-elab "count_heartbeats! " n:(num)? "in" ppLine tac:tacticSeq : tactic => do
+elab "count_heartbeats! " n:(num)? " in" ppLine tac:tacticSeq : tactic => do
   let n := match n with
            | some j => j.getNat
            | none => 10
