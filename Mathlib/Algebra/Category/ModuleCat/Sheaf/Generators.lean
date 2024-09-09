@@ -7,7 +7,6 @@ import Mathlib.Algebra.Category.ModuleCat.Sheaf.Free
 import Mathlib.Algebra.Category.ModuleCat.Sheaf.PushforwardContinuous
 import Mathlib.CategoryTheory.Sites.CoversTop
 
-
 /-!
 # Generating sections of sheaves of modules
 

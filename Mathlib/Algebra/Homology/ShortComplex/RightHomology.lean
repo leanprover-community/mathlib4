@@ -6,7 +6,6 @@ Authors: Joël Riou
 import Mathlib.Algebra.Homology.ShortComplex.LeftHomology
 import Mathlib.CategoryTheory.Limits.Opposites
 
-
 /-!
 # Right Homology of short complexes
 

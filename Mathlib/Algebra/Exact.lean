@@ -6,7 +6,6 @@ Authors: Antoine Chambert-Loir
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.LinearAlgebra.Quotient
 
-
 /-! # Exactness of a pair
 
 * For two maps `f : M → N` and `g : N → P`, with `Zero P`,

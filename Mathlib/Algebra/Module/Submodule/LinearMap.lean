@@ -5,8 +5,6 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Module.LinearMap.End
 import Mathlib.Algebra.Module.Submodule.Basic
-
-
 /-!
 
 # Linear maps involving submodules of a module

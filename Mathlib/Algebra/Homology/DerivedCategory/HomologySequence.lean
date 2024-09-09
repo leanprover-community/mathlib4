@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.DerivedCategory.Basic
 
-
 /-!
 # The homology sequence
 

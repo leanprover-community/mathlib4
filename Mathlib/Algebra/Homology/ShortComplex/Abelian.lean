@@ -6,7 +6,6 @@ Authors: Joël Riou
 import Mathlib.Algebra.Homology.ShortComplex.Homology
 import Mathlib.CategoryTheory.Abelian.Basic
 
-
 /-!
 # Abelian categories have homology
 

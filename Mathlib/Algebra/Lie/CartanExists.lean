@@ -6,7 +6,6 @@ Authors: Johan Commelin
 import Mathlib.Algebra.Lie.CartanSubalgebra
 import Mathlib.Algebra.Lie.Rank
 
-
 /-!
 # Existence of Cartan subalgebras
 

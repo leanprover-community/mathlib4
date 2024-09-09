@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.ShortComplex.Homology
 
-
 /-!
 # Quasi-isomorphisms of short complexes
 

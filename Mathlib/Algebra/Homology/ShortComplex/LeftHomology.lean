@@ -5,8 +5,6 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.ShortComplex.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
-
-
 /-!
 # Left Homology of short complexes
 

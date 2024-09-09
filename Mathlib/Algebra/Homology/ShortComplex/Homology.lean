@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.ShortComplex.RightHomology
 
-
 /-!
 # Homology of short complexes
 
