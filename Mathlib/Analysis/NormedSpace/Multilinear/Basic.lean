@@ -657,17 +657,6 @@ def restrictScalarsₗᵢ : ContinuousMultilinearMap 𝕜 E G →ₗᵢ[𝕜'] C
   map_smul' _ _ := rfl
   norm_map' _ := rfl
 
-/-- `ContinuousMultilinearMap.restrictScalars` as a `ContinuousLinearMap`. -/
-def restrictScalarsLinear : ContinuousMultilinearMap 𝕜 E G →L[𝕜'] ContinuousMultilinearMap 𝕜' E G :=
-  (restrictScalarsₗᵢ 𝕜').toContinuousLinearMap
-
-variable {𝕜'}
-
-theorem continuous_restrictScalars :
-    Continuous
-      (restrictScalars 𝕜' : ContinuousMultilinearMap 𝕜 E G → ContinuousMultilinearMap 𝕜' E G) :=
-  (restrictScalarsLinear 𝕜').continuous
-
 end RestrictScalars
 
 /-- The difference `f m₁ - f m₂` is controlled in terms of `‖f‖` and `‖m₁ - m₂‖`, precise version.
@@ -759,7 +748,7 @@ theorem norm_mkPiAlgebraFin_succ_le : ‖ContinuousMultilinearMap.mkPiAlgebraFin
   simp only [ContinuousMultilinearMap.mkPiAlgebraFin_apply, one_mul, List.ofFn_eq_map,
     Fin.prod_univ_def, Multiset.map_coe, Multiset.prod_coe]
   refine (List.norm_prod_le' ?_).trans_eq ?_
-  · rw [Ne, List.map_eq_nil, List.finRange_eq_nil]
+  · rw [Ne, List.map_eq_nil_iff, List.finRange_eq_nil]
     exact Nat.succ_ne_zero _
   rw [List.map_map, Function.comp_def]
 

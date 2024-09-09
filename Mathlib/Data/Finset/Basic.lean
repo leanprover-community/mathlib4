@@ -125,7 +125,7 @@ assert_not_exists CompleteLattice
 
 assert_not_exists OrderedCommMonoid
 
-open Multiset Subtype Nat Function
+open Multiset Subtype Function
 
 universe u
 
@@ -2510,6 +2510,8 @@ end Filter
 
 
 section Range
+
+open Nat
 
 variable {n m l : ℕ}
 

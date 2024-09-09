@@ -16,7 +16,7 @@ predicate.
 
 universe u v
 
-open Nat Function
+open Function
 
 variable {α : Type u} {β : Type v} {l l₁ l₂ : List α} {r : α → α → Prop} {a b : α}
 
@@ -102,13 +102,17 @@ theorem nodup_iff_get?_ne_get? {l : List α} :
     l.Nodup ↔ ∀ i j : ℕ, i < j → j < l.length → l.get? i ≠ l.get? j := by
   simp [nodup_iff_getElem?_ne_getElem?]
 
+#adaptation_note
+/--
+After nightly-2024-09-06 we can remove the `_root_` prefix below.
+-/
 theorem Nodup.ne_singleton_iff {l : List α} (h : Nodup l) (x : α) :
     l ≠ [x] ↔ l = [] ∨ ∃ y ∈ l, y ≠ x := by
   induction' l with hd tl hl
   · simp
   · specialize hl h.of_cons
     by_cases hx : tl = [x]
-    · simpa [hx, and_comm, and_or_left] using h
+    · simpa [hx, _root_.and_comm, and_or_left] using h
     · rw [← Ne, hl] at hx
       rcases hx with (rfl | ⟨y, hy, hx⟩)
       · simp
@@ -174,9 +178,13 @@ theorem Nodup.append (d₁ : Nodup l₁) (d₂ : Nodup l₂) (dj : Disjoint l₁
 theorem nodup_append_comm {l₁ l₂ : List α} : Nodup (l₁ ++ l₂) ↔ Nodup (l₂ ++ l₁) := by
   simp only [nodup_append, and_left_comm, disjoint_comm]
 
+#adaptation_note
+/--
+After nightly-2024-09-06 we can remove the `_root_` prefix below.
+-/
 theorem nodup_middle {a : α} {l₁ l₂ : List α} :
     Nodup (l₁ ++ a :: l₂) ↔ Nodup (a :: (l₁ ++ l₂)) := by
-  simp only [nodup_append, not_or, and_left_comm, and_assoc, nodup_cons, mem_append,
+  simp only [nodup_append, not_or, and_left_comm, _root_.and_assoc, nodup_cons, mem_append,
     disjoint_cons_right]
 
 theorem Nodup.of_map (f : α → β) {l : List α} : Nodup (map f l) → Nodup l :=
@@ -244,7 +252,7 @@ theorem Nodup.erase_getElem [DecidableEq α] {l : List α} (hl : l.Nodup)
       · simp [IH hl.2]
       · rw [beq_iff_eq]
         simp only [getElem_cons_succ]
-        simp only [length_cons, succ_eq_add_one, Nat.add_lt_add_iff_right] at h
+        simp only [length_cons, Nat.succ_eq_add_one, Nat.add_lt_add_iff_right] at h
         exact mt (· ▸ l.getElem_mem i h) hl.1
 
 theorem Nodup.erase_get [DecidableEq α] {l : List α} (hl : l.Nodup) (i : Fin l.length) :
@@ -259,11 +267,15 @@ theorem nodup_join {L : List (List α)} :
     Nodup (join L) ↔ (∀ l ∈ L, Nodup l) ∧ Pairwise Disjoint L := by
   simp only [Nodup, pairwise_join, disjoint_left.symm, forall_mem_ne]
 
+#adaptation_note
+/--
+After nightly-2024-09-06 we can remove the `_root_` prefix below.
+-/
 theorem nodup_bind {l₁ : List α} {f : α → List β} :
     Nodup (l₁.bind f) ↔
       (∀ x ∈ l₁, Nodup (f x)) ∧ Pairwise (fun a b : α => Disjoint (f a) (f b)) l₁ := by
-  simp only [List.bind, nodup_join, pairwise_map, and_comm, and_left_comm, mem_map, exists_imp,
-      and_imp]
+  simp only [List.bind, nodup_join, pairwise_map, _root_.and_comm, and_left_comm, mem_map,
+    exists_imp, and_imp]
   rw [show (∀ (l : List β) (x : α), f x = l → x ∈ l₁ → Nodup l) ↔ ∀ x : α, x ∈ l₁ → Nodup (f x)
       from forall_swap.trans <| forall_congr' fun _ => forall_eq']
 

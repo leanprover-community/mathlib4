@@ -158,7 +158,7 @@ theorem mapIdx_append (K L : List α) (f : ℕ → α → β) :
 
 @[simp]
 theorem mapIdx_eq_nil {f : ℕ → α → β} {l : List α} : List.mapIdx f l = [] ↔ l = [] := by
-  rw [List.mapIdx_eq_enum_map, List.map_eq_nil, List.enum_eq_nil]
+  rw [List.mapIdx_eq_enum_map, List.map_eq_nil_iff, List.enum_eq_nil]
 
 theorem get_mapIdx (l : List α) (f : ℕ → α → β) (i : ℕ) (h : i < l.length)
     (h' : i < (l.mapIdx f).length := h.trans_le (l.length_mapIdx f).ge) :

@@ -470,6 +470,10 @@ theorem corec_def {X} (f : X → F X) (x₀ : X) : M.corec f x₀ = M.mk (F.map 
     dsimp only [PFunctor.map]
     congr
 
+#adaptation_note
+/--
+After nightly-2024-09-06 we can remove the `_root_` prefix below.
+-/
 theorem ext_aux [Inhabited (M F)] [DecidableEq F.A] {n : ℕ} (x y z : M F) (hx : Agree' n z x)
     (hy : Agree' n z y) (hrec : ∀ ps : Path F, n = ps.length → iselect ps x = iselect ps y) :
     x.approx (n + 1) = y.approx (n + 1) := by
@@ -480,7 +484,7 @@ theorem ext_aux [Inhabited (M F)] [DecidableEq F.A] {n : ℕ} (x y z : M F) (hx 
     simp only [iselect_nil] at hrec
     subst hrec
     simp only [approx_mk, true_and_iff, eq_self_iff_true, heq_iff_eq, zero_eq, CofixA.intro.injEq,
-                heq_eq_eq, eq_iff_true_of_subsingleton, and_self]
+                heq_eq_eq, eq_iff_true_of_subsingleton, _root_.and_self]
   · cases hx
     cases hy
     induction x using PFunctor.M.casesOn'

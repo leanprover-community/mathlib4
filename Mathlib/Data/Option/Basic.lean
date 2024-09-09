@@ -144,21 +144,8 @@ theorem map_bind {α β γ} (f : β → γ) (x : Option α) (g : α → Option �
 theorem map_bind' (f : β → γ) (x : Option α) (g : α → Option β) :
     Option.map f (x.bind g) = x.bind fun a ↦ Option.map f (g a) := by cases x <;> simp
 
-theorem map_pbind (f : β → γ) (x : Option α) (g : ∀ a, a ∈ x → Option β) :
-    Option.map f (x.pbind g) = x.pbind fun a H ↦ Option.map f (g a H) := by
-  cases x <;> simp only [pbind, map_none']
-
 theorem pbind_map (f : α → β) (x : Option α) (g : ∀ b : β, b ∈ x.map f → Option γ) :
     pbind (Option.map f x) g = x.pbind fun a h ↦ g (f a) (mem_map_of_mem _ h) := by cases x <;> rfl
-
-@[simp]
-theorem pmap_none (f : ∀ a : α, p a → β) {H} : pmap f (@none α) H = none :=
-  rfl
-
-@[simp]
-theorem pmap_some (f : ∀ a : α, p a → β) {x : α} (h : p x) :
-    pmap f (some x) = fun _ ↦ some (f x h) :=
-  rfl
 
 theorem mem_pmem {a : α} (h : ∀ a ∈ x, p a) (ha : a ∈ x) : f a (h a ha) ∈ pmap f x h := by
   rw [mem_def] at ha ⊢
@@ -207,24 +194,6 @@ theorem pbind_eq_some {f : ∀ a : α, a ∈ x → Option β} {y : β} :
     rintro ⟨z, H, hz⟩
     simp only [mem_def, Option.some_inj] at H
     simpa [H] using hz
-
--- Porting note: Can't simp tag this anymore because `pmap` simplifies
--- @[simp]
-theorem pmap_eq_none_iff {h} : pmap f x h = none ↔ x = none := by cases x <;> simp
-
--- Porting note: Can't simp tag this anymore because `pmap` simplifies
--- @[simp]
-theorem pmap_eq_some_iff {hf} {y : β} :
-    pmap f x hf = some y ↔ ∃ (a : α) (H : x = some a), f a (hf a H) = y := by
-  rcases x with (_|x)
-  · simp only [not_mem_none, exists_false, pmap, not_false_iff, exists_prop_of_false, reduceCtorEq]
-  · constructor
-    · intro h
-      simp only [pmap, Option.some_inj] at h
-      exact ⟨x, rfl, h⟩
-    · rintro ⟨a, H, rfl⟩
-      simp only [mem_def, Option.some_inj] at H
-      simp only [H, pmap]
 
 -- Porting note: Can't simp tag this anymore because `join` and `pmap` simplify
 -- @[simp]

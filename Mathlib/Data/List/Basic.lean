@@ -198,10 +198,6 @@ theorem map_subset_iff {l₁ l₂ : List α} (f : α → β) (h : Injective f) :
 theorem append_eq_has_append {L₁ L₂ : List α} : List.append L₁ L₂ = L₁ ++ L₂ :=
   rfl
 
-@[deprecated (since := "2024-03-24")] alias append_eq_cons_iff := append_eq_cons
-
-@[deprecated (since := "2024-03-24")] alias cons_eq_append_iff := cons_eq_append
-
 @[deprecated (since := "2024-01-18")] alias append_left_cancel := append_cancel_left
 
 @[deprecated (since := "2024-01-18")] alias append_right_cancel := append_cancel_right
@@ -228,10 +224,10 @@ theorem replicate_subset_singleton (n) (a : α) : replicate n a ⊆ [a] := fun _
   mem_singleton.2 (eq_of_mem_replicate h)
 
 theorem subset_singleton_iff {a : α} {L : List α} : L ⊆ [a] ↔ ∃ n, L = replicate n a := by
-  simp only [eq_replicate, subset_def, mem_singleton, exists_eq_left']
+  simp only [eq_replicate_iff, subset_def, mem_singleton, exists_eq_left']
 
 theorem replicate_right_injective {n : ℕ} (hn : n ≠ 0) : Injective (@replicate α n) :=
-  fun _ _ h => (eq_replicate.1 h).2 _ <| mem_replicate.2 ⟨hn, rfl⟩
+  fun _ _ h => (eq_replicate_iff.1 h).2 _ <| mem_replicate.2 ⟨hn, rfl⟩
 
 theorem replicate_right_inj {a b : α} {n : ℕ} (hn : n ≠ 0) :
     replicate n a = replicate n b ↔ a = b :=
@@ -359,20 +355,9 @@ lemma getLast_filter {p : α → Bool} :
 
 /-! ### getLast? -/
 
--- This is a duplicate of `getLast?_eq_none_iff`.
--- We should remove one of them.
-theorem getLast?_eq_none : ∀ {l : List α}, getLast? l = none ↔ l = []
-  | [] => by simp
-  | [a] => by simp
-  | a :: b :: l => by simp [@getLast?_eq_none (b :: l)]
+@[deprecated (since := "2024-09-06")] alias getLast?_eq_none := getLast?_eq_none_iff
 
 @[deprecated (since := "2024-06-20")] alias getLast?_isNone := getLast?_eq_none
-
-@[simp]
-theorem getLast?_isSome : ∀ {l : List α}, l.getLast?.isSome ↔ l ≠ []
-  | [] => by simp
-  | [a] => by simp
-  | a :: b :: l => by simp [@getLast?_isSome (b :: l)]
 
 theorem mem_getLast?_eq_getLast : ∀ {l : List α} {x : α}, x ∈ l.getLast? → ∃ h, x = getLast l h
   | [], x, hx => False.elim <| by simp at hx
@@ -393,10 +378,6 @@ theorem getLast?_eq_getLast_of_ne_nil : ∀ {l : List α} (h : l ≠ []), l.getL
 theorem mem_getLast?_cons {x y : α} : ∀ {l : List α}, x ∈ l.getLast? → x ∈ (y :: l).getLast?
   | [], _ => by contradiction
   | _ :: _, h => h
-
-theorem mem_of_mem_getLast? {l : List α} {a : α} (ha : a ∈ l.getLast?) : a ∈ l :=
-  let ⟨_, h₂⟩ := mem_getLast?_eq_getLast ha
-  h₂.symm ▸ getLast_mem _
 
 theorem dropLast_append_getLast? : ∀ {l : List α}, ∀ a ∈ l.getLast?, dropLast l ++ [a] = l
   | [], a, ha => (Option.not_mem_none a ha).elim
@@ -440,6 +421,10 @@ theorem head!_nil [Inhabited α] : ([] : List α).head! = default := rfl
 @[simp] theorem head_cons_tail (x : List α) (h : x ≠ []) : x.head h :: x.tail = x := by
   cases x <;> simp at h ⊢
 
+theorem head_eq_getElem_zero {l : List α} (hl : l ≠ []) :
+    l.head hl = l[0]'(length_pos.2 hl) :=
+  (getElem_zero _).symm
+
 theorem head!_eq_head? [Inhabited α] (l : List α) : head! l = (head? l).iget := by cases l <;> rfl
 
 theorem surjective_head! [Inhabited α] : Surjective (@head! α _) := fun x => ⟨[x], rfl⟩
@@ -456,9 +441,6 @@ theorem eq_cons_of_mem_head? {x : α} : ∀ {l : List α}, x ∈ l.head? → l =
   | a :: l, h => by
     simp only [head?, Option.mem_def, Option.some_inj] at h
     exact h ▸ rfl
-
-theorem mem_of_mem_head? {x : α} {l : List α} (h : x ∈ l.head?) : x ∈ l :=
-  (eq_cons_of_mem_head? h).symm ▸ mem_cons_self _ _
 
 @[simp] theorem head!_cons [Inhabited α] (a : α) (l : List α) : head! (a :: l) = a := rfl
 
@@ -504,24 +486,22 @@ theorem head!_mem_self [Inhabited α] {l : List α} (h : l ≠ nil) : l.head! �
 
 theorem get_eq_get? (l : List α) (i : Fin l.length) :
     l.get i = (l.get? i).get (by simp [getElem?_eq_getElem]) := by
-  simp [getElem_eq_iff]
+  simp
+
+theorem getElem_cons {l : List α} {a : α} {n : ℕ} (h : n < (a :: l).length) :
+    (a :: l)[n] = if hn : n = 0 then a else l[n - 1]'(by rw [length_cons] at h; omega) := by
+  cases n <;> simp
 
 theorem get_tail (l : List α) (i) (h : i < l.tail.length)
     (h' : i + 1 < l.length := (by simp only [length_tail] at h; omega)) :
     l.tail.get ⟨i, h⟩ = l.get ⟨i + 1, h'⟩ := by
   cases l <;> [cases h; rfl]
 
+@[deprecated (since := "2024-08-22")]
 theorem get_cons {l : List α} {a : α} {n} (hl) :
     (a :: l).get ⟨n, hl⟩ = if hn : n = 0 then a else
-      l.get ⟨n - 1, by contrapose! hl; rw [length_cons]; omega⟩ := by
-  split_ifs with h
-  · simp [h]
-  cases l
-  · rw [length_singleton, Nat.lt_succ_iff] at hl
-    omega
-  cases n
-  · contradiction
-  rfl
+      l.get ⟨n - 1, by contrapose! hl; rw [length_cons]; omega⟩ :=
+  getElem_cons hl
 
 theorem modifyHead_modifyHead (l : List α) (f g : α → α) :
     (l.modifyHead f).modifyHead g = l.modifyHead (g ∘ f) := by cases l <;> simp
@@ -911,18 +891,6 @@ theorem modifyNth_eq_set (f : α → α) :
   | n + 1, b :: l =>
     (congr_arg (cons b) (modifyNth_eq_set f n l)).trans <| by cases h : l[n]? <;> simp [h]
 
-theorem length_modifyNthTail (f : List α → List α) (H : ∀ l, length (f l) = length l) :
-    ∀ n l, length (modifyNthTail f n l) = length l
-  | 0, _ => H _
-  | _ + 1, [] => rfl
-  | _ + 1, _ :: _ => @congr_arg _ _ _ _ (· + 1) (length_modifyNthTail _ H _ _)
-
--- Porting note: Duplicate of `modify_get?_length`
--- (but with a substantially better name?)
--- @[simp]
-theorem length_modifyNth (f : α → α) : ∀ n l, length (modifyNth f n l) = length l :=
-  modify_get?_length f
-
 @[simp]
 theorem getElem_set_of_ne {l : List α} {i j : ℕ} (h : i ≠ j) (a : α)
     (hj : j < (l.set i a).length) :
@@ -959,9 +927,6 @@ theorem infix_bind_of_mem {a : α} {as : List α} (h : a ∈ as) (f : α → Lis
 @[simp]
 theorem map_eq_map {α β} (f : α → β) (l : List α) : f <$> l = map f l :=
   rfl
-
-@[simp]
-theorem map_tail (f : α → β) (l) : map f (tail l) = tail (map f l) := by cases l <;> rfl
 
 /-- A single `List.map` of a composition of functions is equal to
 composing a `List.map` with another `List.map`, fully applied.
@@ -1198,7 +1163,7 @@ lemma append_cons_inj_of_not_mem {x₁ x₂ z₁ z₂ : List α} {a₁ a₂ : α
     (notin_x : a₂ ∉ x₁) (notin_z : a₂ ∉ z₁) :
     x₁ ++ a₁ :: z₁ = x₂ ++ a₂ :: z₂ ↔ x₁ = x₂ ∧ a₁ = a₂ ∧ z₁ = z₂ := by
   constructor
-  · simp only [append_eq_append_iff, cons_eq_append, cons_eq_cons]
+  · simp only [append_eq_append_iff, cons_eq_append_iff, cons_eq_cons]
     rintro (⟨c, rfl, ⟨rfl, rfl, rfl⟩ | ⟨d, rfl, rfl⟩⟩ |
       ⟨c, rfl, ⟨rfl, rfl, rfl⟩ | ⟨d, rfl, rfl⟩⟩) <;> simp_all
   · rintro ⟨rfl, rfl, rfl⟩
@@ -1253,24 +1218,30 @@ theorem get?_succ_scanl {i : ℕ} : (scanl f b l).get? (i + 1) =
     · simp
     · simp only [hl, get?]
 
-theorem get_succ_scanl {i : ℕ} {h : i + 1 < (scanl f b l).length} :
-    (scanl f b l).get ⟨i + 1, h⟩ =
-      f ((scanl f b l).get ⟨i, Nat.lt_of_succ_lt h⟩)
-        (l.get ⟨i, Nat.lt_of_succ_lt_succ (lt_of_lt_of_le h (le_of_eq (length_scanl b l)))⟩) := by
+theorem getElem_succ_scanl {i : ℕ} (h : i + 1 < (scanl f b l).length) :
+    (scanl f b l)[i + 1] =
+      f ((scanl f b l)[i]'(Nat.lt_of_succ_lt h))
+        (l[i]'(Nat.lt_of_succ_lt_succ (h.trans_eq (length_scanl b l)))) := by
   induction i generalizing b l with
   | zero =>
     cases l
     · simp only [length, zero_eq, lt_self_iff_false] at h
     · simp
   | succ i hi =>
-    cases l with
-    | nil =>
-      simp only [length] at h
+    cases l
+    · simp only [length] at h
       exact absurd h (by omega)
-    | cons head tail =>
-      simp_rw [get_of_eq scanl_cons, get_eq_getElem]; rw [getElem_append_right']
-      · simp_rw [length_singleton, Nat.add_one_sub_one]; exact hi
-      · rw [length_singleton]; omega
+    · simp_rw [scanl_cons]
+      rw [getElem_append_right']
+      · simp only [length, Nat.zero_add 1, succ_add_sub_one, hi]; rfl
+      · simp only [length_singleton]; omega
+
+@[deprecated getElem_succ_scanl (since := "2024-08-22")]
+theorem get_succ_scanl {i : ℕ} {h : i + 1 < (scanl f b l).length} :
+    (scanl f b l).get ⟨i + 1, h⟩ =
+      f ((scanl f b l).get ⟨i, Nat.lt_of_succ_lt h⟩)
+        (l.get ⟨i, Nat.lt_of_succ_lt_succ (lt_of_lt_of_le h (le_of_eq (length_scanl b l)))⟩) :=
+  getElem_succ_scanl h
 
 end Scanl
 
@@ -1783,8 +1754,12 @@ lemma filter_attach (l : List α) (p : α → Bool) :
     simp_rw [map_map, comp_def, Subtype.map, id, ← Function.comp_apply (g := Subtype.val),
       ← filter_map, attach_map_subtype_val]
 
+#adaptation_note
+/--
+After nightly-2024-09-06 we can remove the `_root_` prefix below.
+-/
 lemma filter_comm (q) (l : List α) : filter p (filter q l) = filter q (filter p l) := by
-  simp [and_comm]
+  simp [_root_.and_comm]
 
 @[simp]
 theorem filter_true (l : List α) :
@@ -1816,8 +1791,7 @@ theorem dropWhile_get_zero_not (l : List α) (hl : 0 < (l.dropWhile p).length) :
       simp_all only [dropWhile_cons_of_pos]
     · simp [hp]
 
-@[deprecated (since := "2024-08-19")] alias nthLe_tail := get_tail
-@[deprecated (since := "2024-08-19")] alias nthLe_cons := get_cons
+@[deprecated (since := "2024-08-19")] alias nthLe_cons := getElem_cons
 @[deprecated (since := "2024-08-19")] alias dropWhile_nthLe_zero_not := dropWhile_get_zero_not
 
 variable {p} {l : List α}
@@ -2227,24 +2201,21 @@ end Forall
 
 /-! ### Miscellaneous lemmas -/
 
-@[simp]
-theorem getElem_attach (L : List α) (i : Nat) (h : i < L.attach.length) :
-    L.attach[i].1 = L[i]'(length_attach L ▸ h) :=
-  calc
-    L.attach[i].1 = (L.attach.map Subtype.val)[i]'(by simpa using h) := by
-      rw [getElem_map]
-    _ = L[i]'_ := by congr 2; simp
-
 theorem get_attach (L : List α) (i) :
     (L.attach.get i).1 = L.get ⟨i, length_attach L ▸ i.2⟩ := by simp
 
+#adaptation_note
+/--
+After nightly-2024-09-06 we can remove the `_root_` prefix below.
+-/
 @[simp 1100]
 theorem mem_map_swap (x : α) (y : β) (xs : List (α × β)) :
     (y, x) ∈ map Prod.swap xs ↔ (x, y) ∈ xs := by
   induction' xs with x xs xs_ih
   · simp only [not_mem_nil, map_nil]
   · cases' x with a b
-    simp only [mem_cons, Prod.mk.inj_iff, map, Prod.swap_prod_mk, Prod.exists, xs_ih, and_comm]
+    simp only [mem_cons, Prod.mk.inj_iff, map, Prod.swap_prod_mk, Prod.exists, xs_ih,
+      _root_.and_comm]
 
 theorem dropSlice_eq (xs : List α) (n m : ℕ) : dropSlice n m xs = xs.take n ++ xs.drop (n + m) := by
   induction n generalizing xs

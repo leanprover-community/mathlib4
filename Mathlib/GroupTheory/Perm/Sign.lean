@@ -417,7 +417,7 @@ theorem sign_trans_trans_symm [DecidableEq β] [Fintype β] (f : Perm β) (e : �
 theorem sign_prod_list_swap {l : List (Perm α)} (hl : ∀ g ∈ l, IsSwap g) :
     sign l.prod = (-1) ^ l.length := by
   have h₁ : l.map sign = List.replicate l.length (-1) :=
-    List.eq_replicate.2
+    List.eq_replicate_iff.2
       ⟨by simp, fun u hu =>
         let ⟨g, hg⟩ := List.mem_map.1 hu
         hg.2 ▸ (hl _ hg.1).sign_eq⟩

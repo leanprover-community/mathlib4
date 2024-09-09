@@ -186,12 +186,12 @@ theorem snd_eq_iff : ∀ {p : α × β} {x : β}, p.2 = x ↔ p = (p.1, x)
 
 variable {r : α → α → Prop} {s : β → β → Prop} {x y : α × β}
 
-lemma lex_iff : Prod.Lex r s x y ↔ r x.1 y.1 ∨ x.1 = y.1 ∧ s x.2 y.2 := lex_def _ _
+lemma lex_iff : Prod.Lex r s x y ↔ r x.1 y.1 ∨ x.1 = y.1 ∧ s x.2 y.2 := lex_def
 
 instance Lex.decidable [DecidableEq α]
     (r : α → α → Prop) (s : β → β → Prop) [DecidableRel r] [DecidableRel s] :
     DecidableRel (Prod.Lex r s) :=
-  fun _ _ ↦ decidable_of_decidable_of_iff (lex_def r s).symm
+  fun _ _ ↦ decidable_of_decidable_of_iff lex_def.symm
 
 @[refl]
 theorem Lex.refl_left (r : α → α → Prop) (s : β → β → Prop) [IsRefl α r] : ∀ x, Prod.Lex r s x x

@@ -250,13 +250,17 @@ theorem sum_antidiagonal_card_esymm_psum_eq_zero :
   simp [← sum_filter_add_sum_filter_not (antidiagonal k) (fun a ↦ a.fst < k), ← mul_esymm_eq_sum,
     mul_add, ← mul_assoc, ← pow_add, mul_comm ↑k (esymm σ R k)]
 
+#adaptation_note
+/--
+After nightly-2024-09-06 we can remove the `_root_` prefix below.
+-/
 /-- A version of Newton's identities which may be more useful in the case that we know the values of
 the elementary symmetric polynomials and would like to calculate the values of the power sums. -/
 theorem psum_eq_mul_esymm_sub_sum (k : ℕ) (h : 0 < k) : psum σ R k =
     (-1) ^ (k + 1) * k * esymm σ R k -
     ∑ a ∈ (antidiagonal k).filter (fun a ↦ a.fst ∈ Set.Ioo 0 k),
     (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd := by
-  simp only [Set.Ioo, Set.mem_setOf_eq, and_comm]
+  simp only [Set.Ioo, Set.mem_setOf_eq, _root_.and_comm]
   have hesymm := mul_esymm_eq_sum σ R k
   rw [← (sum_filter_add_sum_filter_not ((antidiagonal k).filter (fun a ↦ a.fst < k))
     (fun a ↦ 0 < a.fst) (fun a ↦ (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd))] at hesymm

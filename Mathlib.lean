@@ -541,6 +541,8 @@ import Mathlib.Algebra.Order.Archimedean.Hom
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.BigOperators.Group.List
 import Mathlib.Algebra.Order.BigOperators.Group.Multiset
+import Mathlib.Algebra.Order.BigOperators.GroupWithZero.List
+import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.BigOperators.Ring.List
 import Mathlib.Algebra.Order.BigOperators.Ring.Multiset
@@ -665,6 +667,7 @@ import Mathlib.Algebra.Order.Sub.Prod
 import Mathlib.Algebra.Order.Sub.Unbundled.Basic
 import Mathlib.Algebra.Order.Sub.Unbundled.Hom
 import Mathlib.Algebra.Order.Sub.WithTop
+import Mathlib.Algebra.Order.SuccPred
 import Mathlib.Algebra.Order.Sum
 import Mathlib.Algebra.Order.ToIntervalMod
 import Mathlib.Algebra.Order.UpperLower
@@ -1968,6 +1971,7 @@ import Mathlib.Combinatorics.SimpleGraph.Hasse
 import Mathlib.Combinatorics.SimpleGraph.IncMatrix
 import Mathlib.Combinatorics.SimpleGraph.Init
 import Mathlib.Combinatorics.SimpleGraph.LapMatrix
+import Mathlib.Combinatorics.SimpleGraph.LineGraph
 import Mathlib.Combinatorics.SimpleGraph.Maps
 import Mathlib.Combinatorics.SimpleGraph.Matching
 import Mathlib.Combinatorics.SimpleGraph.Metric
@@ -3459,6 +3463,7 @@ import Mathlib.NumberTheory.Padics.PadicNorm
 import Mathlib.NumberTheory.Padics.PadicNumbers
 import Mathlib.NumberTheory.Padics.PadicVal.Basic
 import Mathlib.NumberTheory.Padics.PadicVal.Defs
+import Mathlib.NumberTheory.Padics.ProperSpace
 import Mathlib.NumberTheory.Padics.RingHoms
 import Mathlib.NumberTheory.Pell
 import Mathlib.NumberTheory.PellMatiyasevic
@@ -3653,6 +3658,7 @@ import Mathlib.Order.ScottContinuity
 import Mathlib.Order.SemiconjSup
 import Mathlib.Order.SetNotation
 import Mathlib.Order.Sublattice
+import Mathlib.Order.SuccPred.Archimedean
 import Mathlib.Order.SuccPred.Basic
 import Mathlib.Order.SuccPred.CompleteLinearOrder
 import Mathlib.Order.SuccPred.IntervalSucc
@@ -4349,6 +4355,7 @@ import Mathlib.Topology.Algebra.InfiniteSum.Real
 import Mathlib.Topology.Algebra.InfiniteSum.Ring
 import Mathlib.Topology.Algebra.Localization
 import Mathlib.Topology.Algebra.Module.Alternating.Basic
+import Mathlib.Topology.Algebra.Module.Alternating.Topology
 import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.Topology.Algebra.Module.Cardinality
 import Mathlib.Topology.Algebra.Module.CharacterSpace
@@ -4400,6 +4407,7 @@ import Mathlib.Topology.Algebra.Valued.NormedValued
 import Mathlib.Topology.Algebra.Valued.ValuationTopology
 import Mathlib.Topology.Algebra.Valued.ValuedField
 import Mathlib.Topology.Algebra.WithZeroTopology
+import Mathlib.Topology.Baire.BaireMeasurable
 import Mathlib.Topology.Baire.CompleteMetrizable
 import Mathlib.Topology.Baire.Lemmas
 import Mathlib.Topology.Baire.LocallyCompactRegular

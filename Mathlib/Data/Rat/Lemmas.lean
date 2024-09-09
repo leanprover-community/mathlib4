@@ -247,9 +247,9 @@ theorem inv_intCast_num (a : ℤ) : (a : ℚ)⁻¹.num = Int.sign a := by
   rcases lt_trichotomy a 0 with lt | rfl | gt
   · obtain ⟨a, rfl⟩ : ∃ b, -b = a := ⟨-a, a.neg_neg⟩
     simp at lt
-    simp [Rat.inv_neg, inv_intCast_num_of_pos lt, (Int.sign_eq_one_iff_pos _).mpr lt]
-  · rfl
-  · simp [inv_intCast_num_of_pos gt, (Int.sign_eq_one_iff_pos _).mpr gt]
+    simp [Rat.inv_neg, inv_intCast_num_of_pos lt, Int.sign_eq_one_iff_pos.mpr lt]
+  · simp
+  · simp [inv_intCast_num_of_pos gt, Int.sign_eq_one_iff_pos.mpr gt]
 
 @[simp]
 theorem inv_natCast_num (a : ℕ) : (a : ℚ)⁻¹.num = Int.sign a :=
@@ -268,7 +268,7 @@ theorem inv_intCast_den (a : ℤ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a.
     rw [if_neg (by omega)]
     simp only [Int.cast_neg, Rat.inv_neg, neg_den, inv_intCast_den_of_pos lt, Int.natAbs_neg]
     exact Int.eq_natAbs_of_zero_le (by omega)
-  · rfl
+  · simp
   · rw [if_neg (by omega)]
     simp only [inv_intCast_den_of_pos gt]
     exact Int.eq_natAbs_of_zero_le (by omega)
