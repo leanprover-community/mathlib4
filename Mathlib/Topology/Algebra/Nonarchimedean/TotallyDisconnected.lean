@@ -9,14 +9,10 @@ import Mathlib.Topology.Algebra.Nonarchimedean.Basic
 /-!
 # Total Disconnectedness of Nonarchimedean Groups
 
-In this file we introduce an instance of a nonarchimedean group as a totally disconnected
-topological space. (The nonarchimedean group is not necessarily abelian.)
+In this file, we prove that a nonarchimedean group is a totally disconnected topological space.
 
 ## Main results
 
-- `NonarchimedeanGroup.non_singleton_set_disconnected` : In a nonarchimedean group, any subset which
-                                                         contains two distinct points is
-                                                         disconnected.
 - `NonarchimedeanGroup.instTotallyDisconnectedSpace`: A nonarchimedean group is a
                                                       totally disconnected topological space.
 
@@ -41,7 +37,6 @@ lemma mem_unique_to_singleton {X : Type*} {U : Set X} {x : X} (hx : x ∈ U)
 end Set
 
 namespace NonarchimedeanGroup.auxiliary
-open scoped Pointwise
 open TopologicalSpace
 
 variable (G : Type*) [TopologicalSpace G] [Group G] [NonarchimedeanGroup G] [T2Space G]
@@ -58,17 +53,9 @@ lemma open_subgroup_separating
 end NonarchimedeanGroup.auxiliary
 
 namespace NonarchimedeanGroup
-open scoped Pointwise
-open TopologicalSpace
+open NonarchimedeanGroup.auxiliary Pointwise TopologicalSpace
 
 variable (G : Type*) [TopologicalSpace G] [Group G]
-
-@[to_additive]
-lemma mem_subgroup_coset (x y : G) (hxy : y ≠ x) (V : OpenSubgroup G) :
-    y ∈ (y • (V : Set G)) := by
-  rw [ne_eq, ← inv_mul_eq_one] at hxy
-  simp only [Set.mem_smul_set_iff_inv_smul_mem, smul_eq_mul, inv_mul_cancel, SetLike.mem_coe,
-    one_mem V]
 
 @[to_additive]
 lemma non_empty_intersection_compl_coset (x y : G) (U : Set G) (hx : x ∈ U)
@@ -84,11 +71,13 @@ lemma non_empty_intersection_compl_coset (x y : G) (U : Set G) (hx : x ∈ U)
   simp at mem
 
 @[to_additive]
-  lemma non_empty_intersection_coset (x y : G) (U : Set G) (hy :  y ∈ U) (hxy : y ≠ x)
+  lemma non_empty_intersection_coset (y : G) (U : Set G) (hy :  y ∈ U)
     (V : OpenSubgroup G) : (U ∩ (y • (V : Set G))).Nonempty := by
   simp only [Set.inter_nonempty]
   use y
-  refine ⟨hy, mem_subgroup_coset G x y hxy V⟩
+  refine ⟨hy, ?_⟩
+  simp only [Set.mem_smul_set_iff_inv_smul_mem, smul_eq_mul, inv_mul_cancel, SetLike.mem_coe,
+    one_mem V]
 
 variable [TopologicalGroup G] [NonarchimedeanGroup G] [T2Space G]
 
@@ -102,22 +91,21 @@ theorem non_singleton_set_disconnected (x y : G) (U : Set G)
         rw [← inv_mul_cancel y] at con
         apply mul_left_cancel at con
         exact hxy (id (Eq.symm con))
-    exact NonarchimedeanGroup.auxiliary.open_subgroup_separating G (y⁻¹ * x) ht
+    exact open_subgroup_separating G (y⁻¹ * x) ht
   obtain ⟨u , v, ou, ov, Uuv, Uu, Uv, emptyUuv⟩ : ∃ u v : Set G, (IsOpen u) ∧ (IsOpen v) ∧
       (U ⊆ u ∪ v) ∧ ((U ∩ u).Nonempty) ∧ ((U ∩ v).Nonempty) ∧ (¬(U ∩ (u ∩ v)).Nonempty) := by
     use (y • (V : Set G)) , (y • (V : Set G))ᶜ
     simp_rw [(IsOpen.smul (OpenSubgroup.isOpen V) y), isOpen_compl_iff,
         IsClosed.smul (OpenSubgroup.isClosed V) y,
         Set.union_compl_self, Set.subset_univ,
-        non_empty_intersection_coset G x y U hy hxy V,
+        non_empty_intersection_coset G y U hy V,
         non_empty_intersection_compl_coset G x y U hx A ha V dav.symm,
         Set.inter_compl_self, Set.inter_empty, Set.not_nonempty_empty, not_false_eq_true,
         and_self]
   rintro ⟨_, h2⟩
   exact emptyUuv <| ((((h2 u v ou) ov) Uuv) Uu) Uv
 
-/-- Instance of a nonarchimedean group as a totally disconnected topological space
-(TotallyDisconnectedSpace). (The nonarchimedean group is not necessarily abelian.)-/
+/-- A nonarchimedean group is a totally disconnected topological space. -/
 @[to_additive]
 instance : TotallyDisconnectedSpace G := by
       rw [totallyDisconnectedSpace_iff_connectedComponent_singleton]
