@@ -3,15 +3,13 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Data.Finset.NAry
-import Mathlib.Data.Finset.Preimage
-import Mathlib.Data.Set.Pointwise.Finite
-import Mathlib.Data.Set.Pointwise.SMul
-import Mathlib.Data.Set.Pointwise.ListOfFn
-import Mathlib.Data.ULift
 import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Ring.Pointwise.Set
+import Mathlib.Data.Finset.NAry
+import Mathlib.Data.Set.Pointwise.Finite
+import Mathlib.Data.Set.Pointwise.ListOfFn
 
 /-!
 # Pointwise operations of finsets
@@ -772,10 +770,9 @@ scoped[Pointwise] attribute [instance] Finset.monoid Finset.addMonoid
 @[to_additive]
 theorem pow_mem_pow (ha : a ∈ s) : ∀ n : ℕ, a ^ n ∈ s ^ n
   | 0 => by
-    rw [pow_zero]
-    exact one_mem_one
+    simp only [pow_zero, mem_one]
   | n + 1 => by
-    rw [pow_succ]
+    simp only [pow_succ]
     exact mul_mem_mul (pow_mem_pow ha n) ha
 
 @[to_additive]
@@ -1420,7 +1417,7 @@ instance smulCommClass [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
 @[to_additive vaddAssocClass]
 instance isScalarTower [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower α β (Finset γ) :=
-  ⟨fun a b s => by simp only [← image_smul, image_image, smul_assoc, Function.comp]⟩
+  ⟨fun a b s => by simp only [← image_smul, image_image, smul_assoc, Function.comp_def]⟩
 
 variable [DecidableEq β]
 
@@ -1828,7 +1825,7 @@ variable [Monoid α] [AddGroup β] [DistribMulAction α β] [DecidableEq β] (a 
 
 @[simp]
 theorem smul_finset_neg : a • -t = -(a • t) := by
-  simp only [← image_smul, ← image_neg, Function.comp, image_image, smul_neg]
+  simp only [← image_smul, ← image_neg, Function.comp_def, image_image, smul_neg]
 
 @[simp]
 protected theorem smul_neg : s • -t = -(s • t) := by
@@ -1844,7 +1841,7 @@ variable [Ring α] [AddCommGroup β] [Module α β] [DecidableEq β] {s : Finset
 
 @[simp]
 theorem neg_smul_finset : -a • t = -(a • t) := by
-  simp only [← image_smul, ← image_neg, image_image, neg_smul, Function.comp]
+  simp only [← image_smul, ← image_neg, image_image, neg_smul, Function.comp_def]
 
 @[simp]
 protected theorem neg_smul [DecidableEq α] : -s • t = -(s • t) := by
@@ -1912,6 +1909,10 @@ open Pointwise
 namespace Set
 
 section One
+
+-- Redeclaring an instance for better keys
+@[to_additive]
+instance instFintypeOne [One α] : Fintype (1 : Set α) := Set.fintypeSingleton _
 
 variable [One α]
 
@@ -1995,3 +1996,5 @@ instance Nat.decidablePred_mem_vadd_set {s : Set ℕ} [DecidablePred (· ∈ s)]
     DecidablePred (· ∈ a +ᵥ s) :=
   fun n ↦ decidable_of_iff' (a ≤ n ∧ n - a ∈ s) <| by
     simp only [Set.mem_vadd_set, vadd_eq_add]; aesop
+
+set_option linter.style.longFile 2100

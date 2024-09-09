@@ -215,13 +215,11 @@ lemma QuasispectrumRestricts.isSelfAdjoint (a : A) (ha : QuasispectrumRestricts 
     [IsStarNormal a] : IsSelfAdjoint a :=
   isSelfAdjoint_iff_isStarNormal_and_quasispectrumRestricts.mpr ⟨‹_›, ha⟩
 
-instance IsSelfAdjoint.instNonUnitalContinuousFunctionalCalculus
-    [∀ x : A, CompactSpace (σₙ ℂ x)] :
+instance IsSelfAdjoint.instNonUnitalContinuousFunctionalCalculus :
     NonUnitalContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop) :=
   QuasispectrumRestricts.cfc (q := IsStarNormal) (p := IsSelfAdjoint) Complex.reCLM
     Complex.isometry_ofReal.uniformEmbedding (.zero _)
     (fun _ ↦ isSelfAdjoint_iff_isStarNormal_and_quasispectrumRestricts)
-    (fun _ _ ↦ inferInstance)
 
 end SelfAdjointNonUnital
 
@@ -263,12 +261,16 @@ lemma SpectrumRestricts.isSelfAdjoint (a : A) (ha : SpectrumRestricts a Complex.
     [IsStarNormal a] : IsSelfAdjoint a :=
   isSelfAdjoint_iff_isStarNormal_and_spectrumRestricts.mpr ⟨‹_›, ha⟩
 
-instance IsSelfAdjoint.instContinuousFunctionalCalculus [∀ x : A, CompactSpace (spectrum ℂ x)] :
+instance IsSelfAdjoint.instContinuousFunctionalCalculus :
     ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop) :=
   SpectrumRestricts.cfc (q := IsStarNormal) (p := IsSelfAdjoint) Complex.reCLM
     Complex.isometry_ofReal.uniformEmbedding (.zero _)
     (fun _ ↦ isSelfAdjoint_iff_isStarNormal_and_spectrumRestricts)
-    (fun _ _ ↦ inferInstance)
+
+lemma IsSelfAdjoint.spectrum_nonempty {A : Type*} [Ring A] [StarRing A]
+    [TopologicalSpace A] [Algebra ℝ A] [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
+    [Nontrivial A] {a : A} (ha : IsSelfAdjoint a) : (σ ℝ a).Nonempty :=
+  CFC.spectrum_nonempty ℝ a ha
 
 end SelfAdjointUnital
 
@@ -308,12 +310,17 @@ lemma nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts {a : A} :
   simpa [sq, hx.star_eq] using star_mul_self_nonneg x
 
 open NNReal in
-instance Nonneg.instNonUnitalContinuousFunctionalCalculus [∀ a : A, CompactSpace (σₙ ℝ a)] :
+instance Nonneg.instNonUnitalContinuousFunctionalCalculus :
     NonUnitalContinuousFunctionalCalculus ℝ≥0 (fun x : A ↦ 0 ≤ x) :=
   QuasispectrumRestricts.cfc (q := IsSelfAdjoint) ContinuousMap.realToNNReal
     uniformEmbedding_subtype_val le_rfl
     (fun _ ↦ nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts)
-    (fun _ _ ↦ inferInstance)
+
+open NNReal in
+lemma NNReal.spectrum_nonempty {A : Type*} [Ring A] [StarRing A] [PartialOrder A]
+    [TopologicalSpace A] [Algebra ℝ≥0 A] [ContinuousFunctionalCalculus ℝ≥0 (fun x : A ↦ 0 ≤ x)]
+    [Nontrivial A] {a : A} (ha : 0 ≤ a) : (spectrum ℝ≥0 a).Nonempty :=
+  CFC.spectrum_nonempty ℝ≥0 a ha
 
 end Nonneg
 
@@ -349,11 +356,10 @@ lemma nonneg_iff_isSelfAdjoint_and_spectrumRestricts {a : A} :
   simpa [sq, hx.star_eq] using star_mul_self_nonneg x
 
 open NNReal in
-instance Nonneg.instContinuousFunctionalCalculus [∀ a : A, CompactSpace (spectrum ℝ a)] :
+instance Nonneg.instContinuousFunctionalCalculus :
     ContinuousFunctionalCalculus ℝ≥0 (fun x : A ↦ 0 ≤ x) :=
   SpectrumRestricts.cfc (q := IsSelfAdjoint) ContinuousMap.realToNNReal
     uniformEmbedding_subtype_val le_rfl (fun _ ↦ nonneg_iff_isSelfAdjoint_and_spectrumRestricts)
-    (fun _ _ ↦ inferInstance)
 
 end Nonneg
 
@@ -595,24 +601,41 @@ section RealEqComplex
 
 variable {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [Algebra ℂ A]
   [ContinuousFunctionalCalculus ℂ (IsStarNormal : A → Prop)]
-  [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
   [UniqueContinuousFunctionalCalculus ℝ A]
-  [UniqueContinuousFunctionalCalculus ℂ A]
 
 lemma cfcHom_real_eq_restrict {a : A} (ha : IsSelfAdjoint a) :
     cfcHom ha = ha.spectrumRestricts.starAlgHom (cfcHom ha.isStarNormal) (f := Complex.reCLM) :=
-  have := UniqueContinuousFunctionalCalculus.compactSpace_spectrum a (R := ℂ)
   ha.spectrumRestricts.cfcHom_eq_restrict Complex.isometry_ofReal.uniformEmbedding
     ha ha.isStarNormal
 
 lemma cfc_real_eq_complex {a : A} (f : ℝ → ℝ) (ha : IsSelfAdjoint a := by cfc_tac)  :
     cfc f a = cfc (fun x ↦ f x.re : ℂ → ℂ) a := by
-  have := UniqueContinuousFunctionalCalculus.compactSpace_spectrum a (R := ℂ)
   replace ha : IsSelfAdjoint a := ha -- hack to avoid issues caused by autoParam
   exact ha.spectrumRestricts.cfc_eq_restrict (f := Complex.reCLM)
     Complex.isometry_ofReal.uniformEmbedding ha ha.isStarNormal f
 
 end RealEqComplex
+
+section RealEqComplexNonUnital
+
+variable {A : Type*} [TopologicalSpace A] [NonUnitalRing A] [StarRing A] [Module ℂ A]
+  [IsScalarTower ℂ A A] [SMulCommClass ℂ A A]
+  [NonUnitalContinuousFunctionalCalculus ℂ (IsStarNormal : A → Prop)]
+  [UniqueNonUnitalContinuousFunctionalCalculus ℝ A]
+
+lemma cfcₙHom_real_eq_restrict {a : A} (ha : IsSelfAdjoint a) :
+    cfcₙHom ha = (ha.quasispectrumRestricts.2).nonUnitalStarAlgHom (cfcₙHom ha.isStarNormal)
+      (f := Complex.reCLM) :=
+  ha.quasispectrumRestricts.2.cfcₙHom_eq_restrict Complex.isometry_ofReal.uniformEmbedding
+    ha ha.isStarNormal
+
+lemma cfcₙ_real_eq_complex {a : A} (f : ℝ → ℝ) (ha : IsSelfAdjoint a := by cfc_tac)  :
+    cfcₙ f a = cfcₙ (fun x ↦ f x.re : ℂ → ℂ) a := by
+  replace ha : IsSelfAdjoint a := ha -- hack to avoid issues caused by autoParam
+  exact ha.quasispectrumRestricts.2.cfcₙ_eq_restrict (f := Complex.reCLM)
+    Complex.isometry_ofReal.uniformEmbedding ha ha.isStarNormal f
+
+end RealEqComplexNonUnital
 
 section NNRealEqReal
 
@@ -627,16 +650,39 @@ variable {A : Type*} [TopologicalSpace A] [Ring A] [PartialOrder A] [StarRing A]
 lemma cfcHom_nnreal_eq_restrict {a : A} (ha : 0 ≤ a) :
     cfcHom ha = (SpectrumRestricts.nnreal_of_nonneg ha).starAlgHom
       (cfcHom (IsSelfAdjoint.of_nonneg ha)) := by
-  have := UniqueContinuousFunctionalCalculus.compactSpace_spectrum a (R := ℝ)
   apply (SpectrumRestricts.nnreal_of_nonneg ha).cfcHom_eq_restrict uniformEmbedding_subtype_val
 
 lemma cfc_nnreal_eq_real {a : A} (f : ℝ≥0 → ℝ≥0) (ha : 0 ≤ a := by cfc_tac)  :
     cfc f a = cfc (fun x ↦ f x.toNNReal : ℝ → ℝ) a := by
-  have := UniqueContinuousFunctionalCalculus.compactSpace_spectrum a (R := ℝ)
   replace ha : 0 ≤ a := ha -- hack to avoid issues caused by autoParam
   apply (SpectrumRestricts.nnreal_of_nonneg ha).cfc_eq_restrict
     uniformEmbedding_subtype_val ha (.of_nonneg ha)
 
 end NNRealEqReal
+
+section NNRealEqRealNonUnital
+
+open NNReal
+
+variable {A : Type*} [TopologicalSpace A] [NonUnitalRing A] [PartialOrder A] [StarRing A]
+  [StarOrderedRing A] [Module ℝ A] [TopologicalRing A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A]
+  [NonUnitalContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
+  [NonUnitalContinuousFunctionalCalculus ℝ≥0 ((0 : A) ≤ ·)]
+  [UniqueNonUnitalContinuousFunctionalCalculus ℝ A]
+  [NonnegSpectrumClass ℝ A]
+
+lemma cfcₙHom_nnreal_eq_restrict {a : A} (ha : 0 ≤ a) :
+    cfcₙHom ha = (QuasispectrumRestricts.nnreal_of_nonneg ha).nonUnitalStarAlgHom
+      (cfcₙHom (IsSelfAdjoint.of_nonneg ha)) := by
+  apply (QuasispectrumRestricts.nnreal_of_nonneg ha).cfcₙHom_eq_restrict
+    uniformEmbedding_subtype_val
+
+lemma cfcₙ_nnreal_eq_real {a : A} (f : ℝ≥0 → ℝ≥0) (ha : 0 ≤ a := by cfc_tac)  :
+    cfcₙ f a = cfcₙ (fun x ↦ f x.toNNReal : ℝ → ℝ) a := by
+  replace ha : 0 ≤ a := ha -- hack to avoid issues caused by autoParam
+  apply (QuasispectrumRestricts.nnreal_of_nonneg ha).cfcₙ_eq_restrict
+    uniformEmbedding_subtype_val ha (.of_nonneg ha)
+
+end NNRealEqRealNonUnital
 
 end

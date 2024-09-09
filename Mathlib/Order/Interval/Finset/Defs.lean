@@ -884,7 +884,7 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
         rw [← some_eq_coe, some_mem_insertNone, mem_Ici]
     | (a : α), (b : α), ⊤ => by
         simp only [Embedding.some, mem_map, mem_Icc, and_false, exists_const, some, le_top,
-          top_le_iff]
+          top_le_iff, reduceCtorEq]
     | (a : α), (b : α), (x : α) => by
         simp only [le_eq_subset, Embedding.some, mem_map, mem_Icc, Embedding.coeFn_mk, coe_le_coe]
         -- This used to be in the above `simp` before leanprover/lean4#2644
