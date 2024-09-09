@@ -267,7 +267,7 @@ def unitsWithZeroEquiv : (WithZero α)ˣ ≃* α where
   map_mul' _ _ := coe_inj.mp <| by simp only [Units.val_mul, coe_unzero, coe_mul]
 
 /-- Any group with zero is isomorphic to adjoining `0` to the units of itself. -/
-def withZeroUnitsEquiv (G : Type*) [GroupWithZero G]
+def withZeroUnitsEquiv {G : Type*} [GroupWithZero G]
     [DecidablePred (fun a : G ↦ a = 0)] :
     WithZero Gˣ ≃* G where
   toFun := WithZero.recZeroCoe 0 Units.val
