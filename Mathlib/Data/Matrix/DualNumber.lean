@@ -6,8 +6,6 @@ Authors: Eric Wieser
 import Mathlib.Algebra.DualNumber
 import Mathlib.Data.Matrix.Basic
 
-#align_import data.matrix.dual_number from "leanprover-community/mathlib"@"eb0cb4511aaef0da2462207b67358a0e1fe1e2ee"
-
 /-!
 # Matrices of dual numbers are isomorphic to dual numbers over matrices
 
@@ -41,4 +39,3 @@ def Matrix.dualNumberEquiv : Matrix n n (DualNumber R) ≃ₐ[R] DualNumber (Mat
       Algebra.id.map_eq_self, algebraMap_eq_inl, ← diagonal_map (inl_zero R), map_apply, fst_inl,
       snd_inl]
     rfl
-#align matrix.dual_number_equiv Matrix.dualNumberEquiv

@@ -6,8 +6,6 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Topology.Metrizable.Uniformity
 
-#align_import topology.metric_space.baire from "leanprover-community/mathlib"@"b9e46fe101fc897fb2e7edaf0bf1f09ea49eb81a"
-
 /-!
 # First Baire theorem
 
@@ -88,7 +86,7 @@ instance (priority := 100) BaireSpace.of_pseudoEMetricSpace_completeSpace : Bair
     have I :=
       calc
         closedBall (c (n + 1)) (r (n + 1)) ⊆ closedBall (c n) (r n) :=
-          Subset.trans (incl n) (inter_subset_left _ _)
+          Subset.trans (incl n) inter_subset_left
         _ ⊆ closedBall (c n) (B n) := closedBall_subset_closedBall (rB n)
     exact I A
   have : CauchySeq c := cauchySeq_of_edist_le_geometric_two _ ENNReal.one_ne_top cdist
@@ -102,7 +100,7 @@ instance (priority := 100) BaireSpace.of_pseudoEMetricSpace_completeSpace : Bair
     intro n
     refine Nat.le_induction ?_ fun m _ h => ?_
     · exact Subset.refl _
-    · exact Subset.trans (incl m) (Subset.trans (inter_subset_left _ _) h)
+    · exact Subset.trans (incl m) (Subset.trans inter_subset_left h)
   have yball : ∀ n, y ∈ closedBall (c n) (r n) := by
     intro n
     refine isClosed_ball.mem_of_tendsto ylim ?_
@@ -112,8 +110,7 @@ instance (priority := 100) BaireSpace.of_pseudoEMetricSpace_completeSpace : Bair
   · show ∀ n, y ∈ f n
     intro n
     have : closedBall (c (n + 1)) (r (n + 1)) ⊆ f n :=
-      Subset.trans (incl n) (inter_subset_right _ _)
+      Subset.trans (incl n) inter_subset_right
     exact this (yball (n + 1))
   show edist y x ≤ ε
   exact le_trans (yball 0) (min_le_left _ _)
-#align baire_category_theorem_emetric_complete BaireSpace.of_pseudoEMetricSpace_completeSpace

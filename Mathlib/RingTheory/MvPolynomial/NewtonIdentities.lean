@@ -52,18 +52,11 @@ open Finset Nat
 
 namespace NewtonIdentities
 
-variable (σ : Type*) [Fintype σ] [DecidableEq σ] (R : Type*) [CommRing R]
+variable (σ : Type*) (R : Type*) [CommRing R]
 
-private def pairs (k : ℕ) : Finset (Finset σ × σ) :=
-  univ.filter (fun t ↦ card t.fst ≤ k ∧ (card t.fst = k → t.snd ∈ t.fst))
+section DecidableEq
 
-@[simp]
-private lemma mem_pairs (k : ℕ) (t : Finset σ × σ) :
-    t ∈ pairs σ k ↔ card t.fst ≤ k ∧ (card t.fst = k → t.snd ∈ t.fst) := by
-  simp [pairs]
-
-private def weight (k : ℕ) (t : Finset σ × σ) : MvPolynomial σ R :=
-  (-1) ^ card t.fst * ((∏ a ∈ t.fst, X a) * X t.snd ^ (k - card t.fst))
+variable [DecidableEq σ]
 
 private def pairMap (t : Finset σ × σ) : Finset σ × σ :=
   if h : t.snd ∈ t.fst then (t.fst.erase t.snd, t.snd) else (t.fst.cons t.snd h, t.snd)
@@ -81,6 +74,29 @@ private lemma pairMap_of_snd_nmem_fst {t : Finset σ × σ} (h : t.snd ∉ t.fst
     pairMap σ t = (t.fst.cons t.snd h, t.snd) := by
   simp [pairMap, h]
 
+@[simp]
+private theorem pairMap_involutive : (pairMap σ).Involutive := by
+  intro t
+  rw [pairMap, pairMap]
+  split_ifs with h1 h2 h3
+  · simp at h2
+  · simp [insert_erase h1]
+  · simp_all
+  · simp at h3
+
+variable [Fintype σ]
+
+private def pairs (k : ℕ) : Finset (Finset σ × σ) :=
+  univ.filter (fun t ↦ card t.fst ≤ k ∧ (card t.fst = k → t.snd ∈ t.fst))
+
+@[simp]
+private lemma mem_pairs (k : ℕ) (t : Finset σ × σ) :
+    t ∈ pairs σ k ↔ card t.fst ≤ k ∧ (card t.fst = k → t.snd ∈ t.fst) := by
+  simp [pairs]
+
+private def weight (k : ℕ) (t : Finset σ × σ) : MvPolynomial σ R :=
+  (-1) ^ card t.fst * ((∏ a ∈ t.fst, X a) * X t.snd ^ (k - card t.fst))
+
 private theorem pairMap_mem_pairs {k : ℕ} (t : Finset σ × σ) (h : t ∈ pairs σ k) :
     pairMap σ t ∈ pairs σ k := by
   rw [mem_pairs] at h ⊢
@@ -97,16 +113,6 @@ private theorem pairMap_mem_pairs {k : ℕ} (t : Finset σ × σ) (h : t ∈ pai
     simp only [h1] at h
     simp only [card_cons, mem_cons, true_or, implies_true, and_true]
     exact (le_iff_eq_or_lt.mp h.left).resolve_left h.right
-
-@[simp]
-private theorem pairMap_involutive : (pairMap σ).Involutive := by
-  intro t
-  rw [pairMap, pairMap]
-  split_ifs with h1 h2 h3
-  · simp at h2
-  · simp [insert_erase h1]
-  · simp_all
-  · simp at h3
 
 private theorem weight_add_weight_pairMap {k : ℕ} (t : Finset σ × σ) (h : t ∈ pairs σ k) :
     weight σ R k t + weight σ R k (pairMap σ t) = 0 := by
@@ -185,11 +191,15 @@ private theorem disjUnion_filter_pairs_eq_pairs (k : ℕ) :
   have hacard := le_iff_lt_or_eq.mp ha.2.1
   tauto
 
+end DecidableEq
+
+variable [Fintype σ]
+
 private theorem esymm_summand_to_weight (k : ℕ) (A : Finset σ) (h : A ∈ powersetCard k univ) :
     ∑ j ∈ A, weight σ R k (A, j) = k * (-1) ^ k * (∏ i ∈ A, X i : MvPolynomial σ R) := by
   simp [weight, mem_powersetCard_univ.mp h, mul_assoc]
 
-private theorem esymm_to_weight (k : ℕ) : k * esymm σ R k =
+private theorem esymm_to_weight [DecidableEq σ] (k : ℕ) : k * esymm σ R k =
     (-1) ^ k * ∑ t ∈ filter (fun t ↦ card t.fst = k) (pairs σ k), weight σ R k t := by
   rw [esymm, sum_filter_pairs_eq_sum_powersetCard_sum σ R k (fun t ↦ weight σ R k t),
     sum_congr rfl (esymm_summand_to_weight σ R k), mul_comm (k : MvPolynomial σ R) ((-1) ^ k),
@@ -198,14 +208,14 @@ private theorem esymm_to_weight (k : ℕ) : k * esymm σ R k =
 private theorem esymm_mul_psum_summand_to_weight (k : ℕ) (a : ℕ × ℕ) (ha : a ∈ antidiagonal k) :
     ∑ A ∈ powersetCard a.fst univ, ∑ j, weight σ R k (A, j) =
     (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd := by
-  simp only [esymm, psum_def, weight, ← mul_assoc, mul_sum]
+  simp only [esymm, psum, weight, ← mul_assoc, mul_sum]
   rw [sum_comm]
   refine sum_congr rfl fun x _ ↦ ?_
   rw [sum_mul]
   refine sum_congr rfl fun s hs ↦ ?_
   rw [mem_powersetCard_univ.mp hs, ← mem_antidiagonal.mp ha, add_sub_self_left]
 
-private theorem esymm_mul_psum_to_weight (k : ℕ) :
+private theorem esymm_mul_psum_to_weight [DecidableEq σ] (k : ℕ) :
     ∑ a ∈ (antidiagonal k).filter (fun a ↦ a.fst < k),
     (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd =
     ∑ t ∈ filter (fun t ↦ card t.fst < k) (pairs σ k), weight σ R k t := by

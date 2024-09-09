@@ -5,7 +5,7 @@ Authors: Simon Hudon
 -/
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Order.Sub.Canonical
+import Mathlib.Algebra.Order.Sub.Unbundled.Basic
 import Mathlib.Data.Set.Lattice
 import Mathlib.Tactic.Monotonicity.Attr
 

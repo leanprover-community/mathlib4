@@ -95,7 +95,8 @@ end
 -- example [Nonempty ι] [Zero α] {a : α} (ha : a ≠ 0) : const ι a ≠ 0 := by positivity
 -- example [Zero α] [PartialOrder α] {a : α} (ha : 0 < a) : 0 ≤ const ι a := by positivity
 -- example [Zero α] [PartialOrder α] {a : α} (ha : 0 ≤ a) : 0 ≤ const ι a := by positivity
--- example [Nonempty ι] [Zero α] [PartialOrder α] {a : α} (ha : 0 < a) : 0 < const ι a := by positivity
+-- example [Nonempty ι] [Zero α] [PartialOrder α] {a : α} (ha : 0 < a) : 0 < const ι a := by
+--  positivity
 
 section ite
 variable {p : Prop} [Decidable p] {a b : ℤ}
@@ -260,8 +261,8 @@ example {a : ℝ} (ha : 0 ≤ a) : 0 < Real.sqrt (a + 3) := by positivity
 
 example {a b : ℤ} (ha : 3 < a) : 0 ≤ min a (b ^ 2) := by positivity
 
--- -- test that the tactic can ignore arithmetic operations whose associated extension tactic requires
--- -- more typeclass assumptions than are available
+-- -- test that the tactic can ignore arithmetic operations whose associated extension tactic
+-- -- requires more typeclass assumptions than are available
 -- example {R : Type _} [Zero R] [Div R] [LinearOrder R] {a b c : R} (h1 : 0 < a) (h2 : 0 < b)
 --   (h3 : 0 < c) :
 --   0 < max (a / b) c :=
@@ -319,7 +320,7 @@ example [MetricSpace α] {s : Set α} : 0 ≤ Metric.diam s := by positivity
 /- ### Canonical orders -/
 
 example {a : ℕ} : 0 ≤ a := by positivity
--- example {a : ℚ≥0} : 0 ≤ a := by positivity
+example {a : ℚ≥0} : 0 ≤ a := by positivity
 example {a : ℝ≥0} : 0 ≤ a := by positivity
 example {a : ℝ≥0∞} : 0 ≤ a := by positivity
 
@@ -335,6 +336,9 @@ example {a : ℤ} (ha : 0 < a) : (0 : ℚ) < a := by positivity
 example {a : ℚ} (ha : a ≠ 0) : (a : ℝ) ≠ 0 := by positivity
 example {a : ℚ} (ha : 0 ≤ a) : (0 : ℝ) ≤ a := by positivity
 example {a : ℚ} (ha : 0 < a) : (0 : ℝ) < a := by positivity
+example {a : ℚ≥0} (ha : a ≠ 0) : (a : ℝ≥0) ≠ 0 := by positivity
+example {a : ℚ≥0} : (0 : ℝ≥0) ≤ a := by positivity
+example {a : ℚ≥0} (ha : 0 < a) : (0 : ℝ≥0) < a := by positivity
 example {r : ℝ≥0} : (0 : ℝ) ≤ r := by positivity
 example {r : ℝ≥0} (hr : 0 < r) : (0 : ℝ) < r := by positivity
 -- example {r : ℝ≥0} (hr : 0 < r) : (0 : ℝ≥0∞) < r := by positivity

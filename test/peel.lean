@@ -85,6 +85,7 @@ example (x y : ℝ) (h : ∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, x + n = y + ε) :
   guard_target =ₐ x - ε = y - n
   linarith
 
+set_option linter.unusedTactic false in
 example (x y : ℝ) (h : ∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, x + n = y + ε) :
     ∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, x - ε = y - n := by
   peel h

@@ -34,7 +34,8 @@ def tryToCompileAllInductives : TermElabM Unit := do
       withCurrHeartbeats <| Mathlib.Util.compileInductive iv
       success := success + 1
     catch | e => logError m!"[{iv.name}] {e.toMessageData}"
-  modifyThe Core.State fun s => { s with messages.msgs := s.messages.msgs.filter (·.severity != .warning) }
+  modifyThe Core.State fun s =>
+    { s with messages.unreported := s.messages.unreported.filter (·.severity != .warning) }
   modifyThe Core.State fun s => { s with messages := s.messages.errorsToWarnings }
   logInfo m!"{success} / {ivs.length}"
 
