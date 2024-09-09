@@ -3,14 +3,7 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Scott Morrison, Ainsley Pahljina
 -/
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.Algebra.Ring.Nat
-import Mathlib.Data.ZMod.Basic
-import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.RingTheory.Fintype
-import Mathlib.Tactic.IntervalCases
-import Mathlib.Tactic.Zify
 
 /-!
 # The Lucas-Lehmer test for Mersenne primes.
