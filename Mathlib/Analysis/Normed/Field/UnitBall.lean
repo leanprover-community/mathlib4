@@ -3,7 +3,7 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Heather Macbeth
 -/
-import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Analysis.Normed.Field.Lemmas
 import Mathlib.Analysis.Normed.Group.BallSphere
 
 /-!
@@ -95,6 +95,7 @@ theorem coe_pow_unitClosedBall [SeminormedRing 𝕜] [NormOneClass 𝕜] (x : cl
   rfl
 
 /-- Unit sphere in a normed division ring as a bundled `Submonoid`. -/
+@[simps]
 def Submonoid.unitSphere (𝕜 : Type*) [NormedDivisionRing 𝕜] : Submonoid 𝕜 where
   carrier := sphere (0 : 𝕜) 1
   mul_mem' hx hy := by

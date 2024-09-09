@@ -127,7 +127,7 @@ lemma isAffine_of_isAffineOpen_basicOpen (s : Set Γ(X, ⊤))
     exact hs₂ _ i.2
   · simp only [Functor.comp_obj, Functor.rightOp_obj, Scheme.Γ_obj, Scheme.Spec_obj, id_eq,
       eq_mpr_eq_cast, Functor.id_obj, Opens.map_top, morphismRestrict_app]
-    apply (config := { allowSynthFailures := true }) IsIso.comp_isIso
+    refine IsIso.comp_isIso' ?_ inferInstance
     convert isIso_ΓSpec_adjunction_unit_app_basicOpen i.1 using 0
     refine congr(IsIso ((ΓSpec.adjunction.unit.app X).app $(?_)))
     rw [Opens.openEmbedding_obj_top]

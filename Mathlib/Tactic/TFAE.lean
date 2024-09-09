@@ -101,7 +101,7 @@ where
 variable (hyps : Array (ℕ × ℕ × Expr)) (atoms : Array Q(Prop))
 
 /-- Uses depth-first search to find a path from `P` to `P'`. -/
-partial def dfs (i j : ℕ) (P P' : Q(Prop)) (hP : Q($P)) : StateT (HashSet ℕ) MetaM Q($P') := do
+partial def dfs (i j : ℕ) (P P' : Q(Prop)) (hP : Q($P)) : StateT (Std.HashSet ℕ) MetaM Q($P') := do
   if i == j then
     return hP
   modify (·.insert i)
@@ -236,3 +236,7 @@ elab_rules : tactic
           let q2 ← AtomM.addAtom ty.bindingBody!
           hyps := hyps.push (q1, q2, hyp)
       proveTFAE hyps (← get).atoms is tfaeListQ
+
+end TFAE
+
+end Mathlib.Tactic

@@ -206,4 +206,8 @@ theorem equiv_image_eq_iff_subset (e : α ≃ α) (hs : s.Finite) : e '' s = s �
 
 end Finite
 
+theorem eq_top_of_card_le_of_finite [Finite α] {s : Set α} (h : Nat.card α ≤ Nat.card s) : s = ⊤ :=
+  Set.Finite.eq_of_subset_of_card_le univ.toFinite (subset_univ s) <|
+    Nat.card_congr (Equiv.Set.univ α) ▸ h
+
 end Set

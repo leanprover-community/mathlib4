@@ -83,7 +83,7 @@ class AddMonoidWithOne (R : Type*) extends NatCast R, AddMonoid R, One R where
   /-- The canonical map `ℕ → R` is a homomorphism. -/
   natCast_succ : ∀ n, natCast (n + 1) = natCast n + 1 := by intros; rfl
 
-/-- An `AddCommMonoidWithOne` is an `AddMonoidWithOne` satisfying `a + b = b + a`.  -/
+/-- An `AddCommMonoidWithOne` is an `AddMonoidWithOne` satisfying `a + b = b + a`. -/
 class AddCommMonoidWithOne (R : Type*) extends AddMonoidWithOne R, AddCommMonoid R
 
 library_note "coercion into rings"
@@ -149,8 +149,7 @@ protected def binCast [Zero R] [One R] [Add R] : ℕ → R
 @[simp]
 theorem binCast_eq [AddMonoidWithOne R] (n : ℕ) :
     (Nat.binCast n : R) = ((n : ℕ) : R) := by
-  apply Nat.strongInductionOn n
-  intros k hk
+  induction n using Nat.strongRecOn with | ind k hk => ?_
   cases k with
   | zero => rw [Nat.binCast, Nat.cast_zero]
   | succ k =>

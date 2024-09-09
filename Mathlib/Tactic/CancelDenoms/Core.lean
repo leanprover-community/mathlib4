@@ -10,7 +10,6 @@ import Mathlib.Logic.Basic
 import Mathlib.Tactic.NormNum.Core
 import Mathlib.Util.SynthesizeUsing
 import Mathlib.Util.Qq
-import Mathlib.Algebra.Order.Field.Unbundled.Basic
 
 /-!
 # A tactic for canceling numeric denominators
@@ -70,14 +69,14 @@ theorem cancel_factors_lt {α} [LinearOrderedField α] {a b ad bd a' b' gcd : α
     (a < b) = (1 / gcd * (bd * a') < 1 / gcd * (ad * b')) := by
   rw [mul_lt_mul_left, ← ha, ← hb, ← mul_assoc, ← mul_assoc, mul_comm bd, mul_lt_mul_left]
   · exact mul_pos had hbd
-  · exact one_div_pos (α := α) |>.2 hgcd
+  · exact one_div_pos.2 hgcd
 
 theorem cancel_factors_le {α} [LinearOrderedField α] {a b ad bd a' b' gcd : α}
     (ha : ad * a = a') (hb : bd * b = b') (had : 0 < ad) (hbd : 0 < bd) (hgcd : 0 < gcd) :
     (a ≤ b) = (1 / gcd * (bd * a') ≤ 1 / gcd * (ad * b')) := by
   rw [mul_le_mul_left, ← ha, ← hb, ← mul_assoc, ← mul_assoc, mul_comm bd, mul_le_mul_left]
   · exact mul_pos had hbd
-  · exact one_div_pos (α := α) |>.2 hgcd
+  · exact one_div_pos.2 hgcd
 
 theorem cancel_factors_eq {α} [Field α] {a b ad bd a' b' gcd : α} (ha : ad * a = a')
     (hb : bd * b = b') (had : ad ≠ 0) (hbd : bd ≠ 0) (hgcd : gcd ≠ 0) :
@@ -147,7 +146,7 @@ def synthesizeUsingNormNum (type : Q(Prop)) : MetaM Q($type) := do
   catch e =>
     throwError "Could not prove {type} using norm_num. {e.toMessageData}"
 
-/-- `CancelResult mα e v'` provies a value for `v * e` where the denominators have been cancelled.
+/-- `CancelResult mα e v'` provides a value for `v * e` where the denominators have been cancelled.
 -/
 structure CancelResult {u : Level} {α : Q(Type u)} (mα : Q(Mul $α)) (e : Q($α)) (v : Q($α)) where
   /-- An expression with denominators cancelled. -/

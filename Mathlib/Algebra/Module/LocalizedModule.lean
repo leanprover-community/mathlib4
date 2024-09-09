@@ -208,7 +208,7 @@ instance {M : Type*} [AddCommGroup M] [Module R M] : Neg (LocalizedModule S M) w
 
 instance {M : Type*} [AddCommGroup M] [Module R M] : AddCommGroup (LocalizedModule S M) :=
   { show AddCommMonoid (LocalizedModule S M) by infer_instance with
-    add_left_neg := by
+    neg_add_cancel := by
       rintro ⟨m, s⟩
       change
         (liftOn (mk m s) (fun x => mk (-x.1) x.2) fun ⟨m1, s1⟩ ⟨m2, s2⟩ ⟨u, hu⟩ => by
@@ -884,9 +884,11 @@ noncomputable def linearEquiv [IsLocalizedModule S g] : M' ≃ₗ[R] M'' :=
 
 variable {S}
 
+include f in
 theorem smul_injective (s : S) : Function.Injective fun m : M' => s • m :=
   ((Module.End_isUnit_iff _).mp (IsLocalizedModule.map_units f s)).injective
 
+include f in
 theorem smul_inj (s : S) (m₁ m₂ : M') : s • m₁ = s • m₂ ↔ m₁ = m₂ :=
   (smul_injective f s).eq_iff
 

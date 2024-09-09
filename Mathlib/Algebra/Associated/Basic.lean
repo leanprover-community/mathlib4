@@ -28,6 +28,8 @@ Then we show that the quotient type `Associates` is a monoid
 and prove basic properties of this quotient.
 -/
 
+assert_not_exists OrderedCommMonoid
+assert_not_exists Multiset
 
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
@@ -43,6 +45,7 @@ def Prime (p : α) : Prop :=
 namespace Prime
 
 variable {p : α} (hp : Prime p)
+include hp
 
 theorem ne_zero : p ≠ 0 :=
   hp.1
@@ -55,19 +58,19 @@ theorem not_dvd_one : ¬p ∣ 1 :=
 
 theorem ne_one : p ≠ 1 := fun h => hp.2.1 (h.symm ▸ isUnit_one)
 
-theorem dvd_or_dvd (hp : Prime p) {a b : α} (h : p ∣ a * b) : p ∣ a ∨ p ∣ b :=
+theorem dvd_or_dvd {a b : α} (h : p ∣ a * b) : p ∣ a ∨ p ∣ b :=
   hp.2.2 a b h
 
 theorem dvd_mul {a b : α} : p ∣ a * b ↔ p ∣ a ∨ p ∣ b :=
   ⟨hp.dvd_or_dvd, (Or.elim · (dvd_mul_of_dvd_left · _) (dvd_mul_of_dvd_right · _))⟩
 
-theorem isPrimal (hp : Prime p) : IsPrimal p := fun _a _b dvd ↦ (hp.dvd_or_dvd dvd).elim
+theorem isPrimal : IsPrimal p := fun _a _b dvd ↦ (hp.dvd_or_dvd dvd).elim
   (fun h ↦ ⟨p, 1, h, one_dvd _, (mul_one p).symm⟩) fun h ↦ ⟨1, p, one_dvd _, h, (one_mul p).symm⟩
 
 theorem not_dvd_mul {a b : α} (ha : ¬ p ∣ a) (hb : ¬ p ∣ b) : ¬ p ∣ a * b :=
   hp.dvd_mul.not.mpr <| not_or.mpr ⟨ha, hb⟩
 
-theorem dvd_of_dvd_pow (hp : Prime p) {a : α} {n : ℕ} (h : p ∣ a ^ n) : p ∣ a := by
+theorem dvd_of_dvd_pow {a : α} {n : ℕ} (h : p ∣ a ^ n) : p ∣ a := by
   induction n with
   | zero =>
     rw [pow_zero] at h
@@ -76,7 +79,7 @@ theorem dvd_of_dvd_pow (hp : Prime p) {a : α} {n : ℕ} (h : p ∣ a ^ n) : p �
     contradiction
   | succ n ih =>
     rw [pow_succ'] at h
-    cases' dvd_or_dvd hp h with dvd_a dvd_pow
+    rcases dvd_or_dvd hp h with dvd_a | dvd_pow
     · assumption
     · exact ih dvd_pow
 
@@ -143,7 +146,7 @@ theorem Prime.pow_dvd_of_dvd_mul_right [CancelCommMonoidWithZero α] {p a b : α
 theorem Prime.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd [CancelCommMonoidWithZero α] {p a b : α}
     {n : ℕ} (hp : Prime p) (hpow : p ^ n.succ ∣ a ^ n.succ * b ^ n) (hb : ¬p ^ 2 ∣ b) : p ∣ a := by
   -- Suppose `p ∣ b`, write `b = p * x` and `hy : a ^ n.succ * b ^ n = p ^ n.succ * y`.
-  cases' hp.dvd_or_dvd ((dvd_pow_self p (Nat.succ_ne_zero n)).trans hpow) with H hbdiv
+  rcases hp.dvd_or_dvd ((dvd_pow_self p (Nat.succ_ne_zero n)).trans hpow) with H | hbdiv
   · exact hp.dvd_of_dvd_pow H
   obtain ⟨x, rfl⟩ := hp.dvd_of_dvd_pow hbdiv
   obtain ⟨y, hy⟩ := hpow
@@ -162,13 +165,13 @@ theorem prime_pow_succ_dvd_mul {α : Type*} [CancelCommMonoidWithZero α] {p x y
     {i : ℕ} (hxy : p ^ (i + 1) ∣ x * y) : p ^ (i + 1) ∣ x ∨ p ∣ y := by
   rw [or_iff_not_imp_right]
   intro hy
-  induction' i with i ih generalizing x
-  · rw [pow_one] at hxy ⊢
-    exact (h.dvd_or_dvd hxy).resolve_right hy
-  rw [pow_succ'] at hxy ⊢
-  obtain ⟨x', rfl⟩ := (h.dvd_or_dvd (dvd_of_mul_right_dvd hxy)).resolve_right hy
-  rw [mul_assoc] at hxy
-  exact mul_dvd_mul_left p (ih ((mul_dvd_mul_iff_left h.ne_zero).mp hxy))
+  induction i generalizing x with
+  | zero => rw [pow_one] at hxy ⊢; exact (h.dvd_or_dvd hxy).resolve_right hy
+  | succ i ih =>
+    rw [pow_succ'] at hxy ⊢
+    obtain ⟨x', rfl⟩ := (h.dvd_or_dvd (dvd_of_mul_right_dvd hxy)).resolve_right hy
+    rw [mul_assoc] at hxy
+    exact mul_dvd_mul_left p (ih ((mul_dvd_mul_iff_left h.ne_zero).mp hxy))
 
 /-- `Irreducible p` states that `p` is non-unit and only factors into units.
 
@@ -584,7 +587,7 @@ lemma prime_pow_iff [CancelCommMonoidWithZero α] {p : α} {n : ℕ} :
     Prime (p ^ n) ↔ Prime p ∧ n = 1 := by
   refine ⟨fun hp ↦ ?_, fun ⟨hp, hn⟩ ↦ by simpa [hn]⟩
   suffices n = 1 by aesop
-  cases' n with n
+  rcases n with - | n
   · simp at hp
   · rw [Nat.succ.injEq]
     rw [pow_succ', prime_mul_iff] at hp
@@ -848,8 +851,8 @@ instance uniqueUnits : Unique (Associates α)ˣ where
   uniq := by
     rintro ⟨a, b, hab, hba⟩
     revert hab hba
-    exact Quotient.inductionOn₂ a b $ fun a b hab hba ↦ Units.ext $ Quotient.sound $
-      associated_one_of_associated_mul_one $ Quotient.exact hab
+    exact Quotient.inductionOn₂ a b <| fun a b hab hba ↦ Units.ext <| Quotient.sound <|
+      associated_one_of_associated_mul_one <| Quotient.exact hab
 
 @[deprecated (since := "2024-07-22")] alias mul_eq_one_iff := mul_eq_one
 @[deprecated (since := "2024-07-22")] protected alias units_eq_one := Subsingleton.elim
@@ -1103,7 +1106,7 @@ section CancelCommMonoidWithZero
 
 theorem isUnit_of_associated_mul [CancelCommMonoidWithZero α] {p b : α} (h : Associated (p * b) p)
     (hp : p ≠ 0) : IsUnit b := by
-  cases' h with a ha
+  obtain ⟨a, ha⟩ := h
   refine isUnit_of_mul_eq_one b a ((mul_right_inj' hp).mp ?_)
   rwa [← mul_assoc, mul_one]
 
@@ -1144,6 +1147,3 @@ theorem dvd_prime_pow [CancelCommMonoidWithZero α] {p q : α} (hp : Prime p) (n
       exact ⟨i, hi.trans n.le_succ, hq⟩
 
 end CancelCommMonoidWithZero
-
-assert_not_exists OrderedCommMonoid
-assert_not_exists Multiset
