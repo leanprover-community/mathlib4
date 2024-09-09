@@ -132,6 +132,16 @@ noncomputable def domainUniqueUpToIso {a' : 𝒳} (φ' : a' ⟶ b) [IsCartesian 
     apply IsCartesian.ext p (p.map φ) φ
     simp only [assoc, fac, id_comp]
 
+instance domainUniqueUpToIso_inv_isHomLift {a' : 𝒳} (φ' : a' ⟶ b) [IsCartesian p f φ'] :
+    IsHomLift p (𝟙 R) (domainUniqueUpToIso p f φ φ').hom := by
+  simpa using IsCartesian.map_isHomLift p f φ φ'
+
+instance domainUniqueUpToIso_inv_isHomLift {a' : 𝒳} (φ' : a' ⟶ b) [IsCartesian p f φ'] :
+    IsHomLift p (𝟙 R) (domainUniqueUpToIso p f φ φ').inv := by
+  simpa using IsCartesian.map_isHomLift p f φ φ'
+
+end IsCartesian
+
 /-- Precomposing a cartesian morphism with an isomorphism lifting the identity is cartesian. -/
 instance of_iso_comp {a' : 𝒳} (φ' : a' ≅ a) [IsHomLift p (𝟙 R) φ'.hom] :
     IsCartesian p f (φ'.hom ≫ φ) where
