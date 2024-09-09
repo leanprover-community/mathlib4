@@ -205,6 +205,18 @@ theorem LieSubalgebra.toEnd_mk (K : LieSubalgebra R L) {x : L} (hx : x ∈ K) :
     LieModule.toEnd R K M ⟨x, hx⟩ = LieModule.toEnd R L M x :=
   rfl
 
+include R in
+@[simp]
+theorem lie_sum {α : Type*} (x : L) (f : α → M) (s : Finset α) :
+    ⁅x, ∑ k in s, f k⁆ = ∑ k in s, ⁅x, f k⁆ :=
+  map_sum (LieModule.toEnd R L M x) f s
+
+include R in
+@[simp]
+theorem sum_lie {α : Type*} (m : M) (f : α → L) (s : Finset α) :
+    ⁅∑ k in s, f k, m⁆ = ∑ k in s, ⁅f k, m⁆ :=
+  LinearMap.map_sum₂ (LieModule.toEnd R L M).toLinearMap s f m
+
 section
 
 open LieAlgebra LieModule

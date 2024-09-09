@@ -120,24 +120,6 @@ theorem ext_of_lieSpan_eq_top (s : Set L) (hs : LieSubalgebra.lieSpan R L s = �
     (h : Set.EqOn D1 D2 s) : D1 = D2 :=
   ext fun _ => eqOn_lieSpan h <| hs.symm ▸ trivial
 
-section for_elsewhere
-
-open Finset
-
-variable {M : Type*} [CommMonoid M]
-
-@[to_additive]
-theorem prod_Ico_eq_add_sub
-    (f : ℕ → M) (a b c : ℕ) : (∏ x ∈ Ico a b, f x) = ∏ x ∈ Ico (a + c) (b + c), f (x - c) := by
-  simp only [← map_add_right_Ico, prod_map, addRightEmbedding_apply, add_tsub_cancel_right]
-
-@[to_additive]
-theorem prod_range_eq_add_Ico (f : ℕ → M) {n : ℕ} (hn : 0 < n) :
-    ∏ x ∈ Finset.range n, f x = f 0 * ∏ x ∈ Ico 1 n, f x := by
-  rw [Finset.range_eq_Ico, Finset.prod_eq_prod_Ico_succ_bot hn]
-
-end for_elsewhere
-
 theorem pow_leibniz (D : LieDerivation R L L) (n : ℕ) (a b : L) :
     D.toLinearMap^[n] ⁅a, b⁆ = ∑ i in Finset.range (n + 1),
       Nat.choose n i • ⁅D.toLinearMap^[i] a, D.toLinearMap^[n - i] b⁆ := by
@@ -154,7 +136,7 @@ theorem pow_leibniz (D : LieDerivation R L L) (n : ℕ) (a b : L) :
             n.choose (x - 1) • ⁅(⇑D)^[(x - 1) + 1] a, (⇑D)^[n - (x - 1)] b⁆) +
           ⁅(⇑D)^[n.succ] a, b⁆ := by
       rw [Finset.range_eq_Ico]
-      nth_rw 2 [sum_Ico_eq_add_sub (c := 1), Finset.sum_Ico_succ_top (by norm_num)]
+      nth_rw 2 [Finset.sum_Ico_eq_add_sub (c := 1), Finset.sum_Ico_succ_top (by norm_num)]
       rw [← add_assoc, Finset.sum_eq_sum_Ico_succ_bot (Nat.zero_lt_succ n)]
       nth_rw 2 [add_assoc]
       simp [Finset.sum_add_distrib]
@@ -167,7 +149,7 @@ theorem pow_leibniz (D : LieDerivation R L L) (n : ℕ) (a b : L) :
       rw [Nat.sub_one_add_one (Nat.not_eq_zero_of_lt hk₁), Nat.sub_add_comm (Nat.le_of_lt_succ hk₂),
         tsub_tsub_assoc (Nat.le_of_lt_succ hk₂) hk₁, ← add_smul]
       nth_rw 1 [add_comm, Nat.choose_succ _ _ hk₁]
-    _ = _ := by simp [Finset.sum_range_succ, sum_range_eq_add_Ico _ (Nat.zero_lt_succ n)]
+    _ = _ := by simp [Finset.sum_range_succ, Finset.sum_range_eq_add_Ico _ (Nat.zero_lt_succ n)]
 
 instance instZero : Zero (LieDerivation R L M) where
   zero :=
