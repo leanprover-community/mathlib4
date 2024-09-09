@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
 import Mathlib.Algebra.Order.Monoid.TypeTags
-import Mathlib.Order.SuccPred.Basic
+import Mathlib.Order.SuccPred.Archimedean
 
 /-!
 # Successor and predecessor on type tags
