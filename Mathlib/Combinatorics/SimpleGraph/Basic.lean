@@ -816,7 +816,7 @@ theorem deleteEdges_deleteEdges (s s' : Set (Sym2 V)) :
 lemma deleteEdges_le (s : Set (Sym2 V)) : G.deleteEdges s ≤ G := sdiff_le
 
 lemma deleteEdges_anti (h : s₁ ⊆ s₂) : G.deleteEdges s₂ ≤ G.deleteEdges s₁ :=
-  sdiff_le_sdiff_left $ fromEdgeSet_mono h
+  sdiff_le_sdiff_left <| fromEdgeSet_mono h
 
 lemma deleteEdges_mono (h : G ≤ H) : G.deleteEdges s ≤ H.deleteEdges s := sdiff_le_sdiff_right h
 

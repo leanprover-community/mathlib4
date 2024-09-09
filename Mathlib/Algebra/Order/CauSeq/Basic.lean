@@ -116,7 +116,7 @@ lemma bounded (hf : IsCauSeq abv f) : ∃ r, ∀ i, abv (f i) < r := by
   refine ⟨R i + 1, fun j ↦ ?_⟩
   obtain hji | hij := le_total j i
   · exact (this i _ hji).trans_lt (lt_add_one _)
-  · simpa using (abv_add abv _ _).trans_lt $ add_lt_add_of_le_of_lt (this i _ le_rfl) (h _ hij)
+  · simpa using (abv_add abv _ _).trans_lt <| add_lt_add_of_le_of_lt (this i _ le_rfl) (h _ hij)
 
 lemma bounded' (hf : IsCauSeq abv f) (x : α) : ∃ r > x, ∀ i, abv (f i) < r :=
   let ⟨r, h⟩ := hf.bounded
@@ -518,7 +518,7 @@ theorem smul_equiv_smul {G : Type*} [SMul G β] [IsScalarTower G β β] {f1 f2 :
 
 theorem pow_equiv_pow {f1 f2 : CauSeq β abv} (hf : f1 ≈ f2) (n : ℕ) : f1 ^ n ≈ f2 ^ n := by
   induction n with
-  | zero => simp only [Nat.zero_eq, pow_zero, Setoid.refl]
+  | zero => simp only [pow_zero, Setoid.refl]
   | succ n ih => simpa only [pow_succ'] using mul_equiv_mul hf ih
 
 end Ring

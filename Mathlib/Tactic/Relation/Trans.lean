@@ -218,3 +218,5 @@ set_option hygiene false in
 macro_rules
   | `(tactic| transitivity) => `(tactic| trans)
   | `(tactic| transitivity $e) => `(tactic| trans $e)
+
+end Mathlib.Tactic

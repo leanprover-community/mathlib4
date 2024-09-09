@@ -140,7 +140,7 @@ theorem continuous_val : Continuous ((↑) : Mˣ → M) :=
 @[to_additive]
 protected theorem continuous_iff {f : X → Mˣ} :
     Continuous f ↔ Continuous (val ∘ f) ∧ Continuous (fun x => ↑(f x)⁻¹ : X → M) := by
-  simp only [inducing_embedProduct.continuous_iff, embedProduct_apply, (· ∘ ·),
+  simp only [inducing_embedProduct.continuous_iff, embedProduct_apply, Function.comp_def,
     continuous_prod_mk, opHomeomorph.symm.inducing.continuous_iff, opHomeomorph_symm_apply,
     unop_op]
 

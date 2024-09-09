@@ -6,6 +6,7 @@ Authors: Heather Macbeth
 import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
 import Mathlib.Analysis.NormedSpace.RCLike
 import Mathlib.Analysis.LocallyConvex.Polar
+import Mathlib.Data.Set.Finite
 
 /-!
 # The topological dual of a normed space
@@ -28,9 +29,13 @@ theory for `SeminormedAddCommGroup` and we specialize to `NormedAddCommGroup` wh
 * `polar 𝕜 s` is the subset of `Dual 𝕜 E` consisting of those functionals `x'` for which
   `‖x' z‖ ≤ 1` for every `z ∈ s`.
 
+## References
+
+* [Conway, John B., A course in functional analysis][conway1990]
+
 ## Tags
 
-dual
+dual, polar
 -/
 
 
@@ -224,6 +229,23 @@ theorem polar_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [
   refine ContinuousLinearMap.opNorm_le_of_ball hr (inv_nonneg.mpr hr.le) fun z _ => ?_
   simpa only [one_div] using LinearMap.bound_of_ball_bound' hr 1 x'.toLinearMap h z
 
+theorem polar_ball {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] {r : ℝ}
+    (hr : 0 < r) : polar 𝕜 (ball (0 : E) r) = closedBall (0 : Dual 𝕜 E) r⁻¹ := by
+  apply le_antisymm
+  · intro x hx
+    rw [mem_closedBall_zero_iff]
+    apply le_of_forall_le_of_dense
+    intro a ha
+    rw [← mem_closedBall_zero_iff, ← (mul_div_cancel_left₀ a (Ne.symm (ne_of_lt hr)))]
+    rw [← RCLike.norm_of_nonneg (K := 𝕜) (le_trans zero_le_one
+      (le_of_lt ((inv_pos_lt_iff_one_lt_mul' hr).mp ha)))]
+    apply polar_ball_subset_closedBall_div _ hr hx
+    rw [RCLike.norm_of_nonneg (K := 𝕜) (le_trans zero_le_one
+      (le_of_lt ((inv_pos_lt_iff_one_lt_mul' hr).mp ha)))]
+    exact (inv_pos_lt_iff_one_lt_mul' hr).mp ha
+  · rw [← polar_closedBall hr]
+    exact LinearMap.polar_antitone _ ball_subset_closedBall
+
 /-- Given a neighborhood `s` of the origin in a normed space `E`, the dual norms
 of all elements of the polar `polar 𝕜 s` are bounded by a constant. -/
 theorem isBounded_polar_of_mem_nhds_zero {s : Set E} (s_nhd : s ∈ 𝓝 (0 : E)) :
@@ -233,6 +255,20 @@ theorem isBounded_polar_of_mem_nhds_zero {s : Set E} (s_nhd : s ∈ 𝓝 (0 : E)
   exact isBounded_closedBall.subset
     (((dualPairing 𝕜 E).flip.polar_antitone r_ball).trans <|
       polar_ball_subset_closedBall_div ha r_pos)
+
+@[simp]
+theorem polar_singleton {a : E} : polar 𝕜 {a} = { x | ‖x a‖ ≤ 1 } := by
+  simp only [polar, LinearMap.polar_singleton, LinearMap.flip_apply, dualPairing_apply]
+
+theorem mem_polar_singleton {a : E} (y : Dual 𝕜 E) : y ∈ polar 𝕜 {a} ↔ ‖y a‖ ≤ 1 := by
+  simp only [polar_singleton, mem_setOf_eq]
+
+theorem sInter_polar_eq_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    {r : ℝ} (hr : 0 < r) :
+    ⋂₀ (polar 𝕜 '' { F | F.Finite ∧ F ⊆ closedBall (0 : E) r⁻¹ }) = closedBall 0 r := by
+  conv_rhs => rw [← inv_inv r]
+  rw [← polar_closedBall (inv_pos_of_pos hr), polar,
+    (dualPairing 𝕜 E).flip.sInter_polar_finite_subset_eq_polar (closedBall (0 : E) r⁻¹)]
 
 end PolarSets
 

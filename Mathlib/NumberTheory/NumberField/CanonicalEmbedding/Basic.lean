@@ -3,7 +3,7 @@ Copyright (c) 2022 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.Algebra.Module.Zlattice.Basic
+import Mathlib.Algebra.Module.ZLattice.Basic
 import Mathlib.NumberTheory.NumberField.Embeddings
 import Mathlib.NumberTheory.NumberField.FractionalIdeal
 
@@ -278,7 +278,7 @@ def normAtPlace (w : InfinitePlace K) : (E K) →*₀ ℝ where
   map_one' := by simp
   map_mul' x y := by split_ifs <;> simp
 
-theorem normAtPlace_nonneg  (w : InfinitePlace K) (x : E K) :
+theorem normAtPlace_nonneg (w : InfinitePlace K) (x : E K) :
     0 ≤ normAtPlace w x := by
   rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
   split_ifs <;> exact norm_nonneg _
@@ -403,7 +403,7 @@ noncomputable section stdBasis
 
 open scoped Classical
 
-open Complex MeasureTheory MeasureTheory.Measure Zspan Matrix ComplexConjugate
+open Complex MeasureTheory MeasureTheory.Measure ZSpan Matrix ComplexConjugate
 
 variable [NumberField K]
 

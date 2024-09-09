@@ -13,7 +13,7 @@ import Mathlib.Data.Nat.Pairing
 # Gödel's Beta Function Lemma
 
 This file proves Gödel's Beta Function Lemma, used to prove the First Incompleteness Theorem. It
-permits  quantification over finite sequences of natural numbers in formal theories of arithmetic.
+permits quantification over finite sequences of natural numbers in formal theories of arithmetic.
 This Beta Function has no connection with the unrelated Beta Function defined in analysis. Note
 that `Nat.beta` and `Nat.unbeta` provide similar functionality to `Encodable.encodeList` and
 `Encodable.decodeList`. We define these separately, because it is easier to prove that `Nat.beta`
@@ -46,7 +46,7 @@ lemma coprime_mul_succ {n m a} (h : n ≤ m) (ha : m - n ∣ a) : Coprime (n * a
   Nat.coprime_of_dvd fun p pp hn hm => by
     have : p ∣ (m - n) * a := by
       simpa [Nat.succ_sub_succ, ← Nat.mul_sub_right_distrib] using
-        Nat.dvd_sub (Nat.succ_le_succ $ Nat.mul_le_mul_right a h) hm hn
+        Nat.dvd_sub (Nat.succ_le_succ <| Nat.mul_le_mul_right a h) hm hn
     have : p ∣ a := by
       rcases (Nat.Prime.dvd_mul pp).mp this with (hp | hp)
       · exact Nat.dvd_trans hp ha
@@ -62,7 +62,7 @@ private def coprimes (a : Fin m → ℕ) : Fin m → ℕ := fun i => (i + 1) * (
 
 lemma coprimes_lt (a : Fin m → ℕ) (i) : a i < coprimes a i := by
   have h₁ : a i < supOfSeq a :=
-    Nat.lt_add_one_iff.mpr (le_max_of_le_right $ Finset.le_sup (by simp))
+    Nat.lt_add_one_iff.mpr (le_max_of_le_right <| Finset.le_sup (by simp))
   have h₂ : supOfSeq a ≤ (i + 1) * (supOfSeq a)! + 1 :=
     le_trans (self_le_factorial _) (le_trans (Nat.le_mul_of_pos_left (supOfSeq a)! (succ_pos i))
       (le_add_right _ _))
@@ -75,7 +75,7 @@ private lemma pairwise_coprime_coprimes (a : Fin m → ℕ) : Pairwise (Coprime 
   unfold Function.onFun coprimes
   have hja : j < supOfSeq a := lt_of_lt_of_le j.prop (le_step (le_max_left _ _))
   exact coprime_mul_succ
-    (Nat.succ_le_succ $ le_of_lt ltij)
+    (Nat.succ_le_succ <| le_of_lt ltij)
     (Nat.dvd_factorial
       (by simp [Nat.succ_sub_succ, ltij])
       (by simpa only [Nat.succ_sub_succ] using le_of_lt (lt_of_le_of_lt (sub_le j i) hja)))

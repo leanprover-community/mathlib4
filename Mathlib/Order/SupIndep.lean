@@ -138,7 +138,7 @@ theorem supIndep_pair [DecidableEq ι] {i j : ι} (hij : i ≠ j) :
 
 theorem supIndep_univ_bool (f : Bool → α) :
     (Finset.univ : Finset Bool).SupIndep f ↔ Disjoint (f false) (f true) :=
-  haveI : true ≠ false := by simp only [Ne, not_false_iff]
+  haveI : true ≠ false := by simp only [Ne, not_false_iff, reduceCtorEq]
   (supIndep_pair this).trans disjoint_comm
 
 @[simp]

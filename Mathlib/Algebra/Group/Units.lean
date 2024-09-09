@@ -464,6 +464,72 @@ theorem val_div_eq_divp (u₁ u₂ : αˣ) : ↑(u₁ / u₂) = ↑u₁ /ₚ u�
 
 end Monoid
 
+namespace LeftCancelMonoid
+
+variable [LeftCancelMonoid α] [Subsingleton αˣ] {a b : α}
+
+@[to_additive]
+protected theorem eq_one_of_mul_right (h : a * b = 1) : a = 1 :=
+  congr_arg Units.inv <| Subsingleton.elim (Units.mk _ _ (by
+    rw [← mul_left_cancel_iff (a := a), ← mul_assoc, h, one_mul, mul_one]) h) 1
+
+@[to_additive]
+protected theorem eq_one_of_mul_left (h : a * b = 1) : b = 1 := by
+  rwa [LeftCancelMonoid.eq_one_of_mul_right h, one_mul] at h
+
+@[to_additive (attr := simp)]
+protected theorem mul_eq_one : a * b = 1 ↔ a = 1 ∧ b = 1 :=
+  ⟨fun h => ⟨LeftCancelMonoid.eq_one_of_mul_right h, LeftCancelMonoid.eq_one_of_mul_left h⟩, by
+    rintro ⟨rfl, rfl⟩
+    exact mul_one _⟩
+
+@[to_additive]
+protected theorem mul_ne_one : a * b ≠ 1 ↔ a ≠ 1 ∨ b ≠ 1 := by rw [not_iff_comm]; simp
+
+end LeftCancelMonoid
+
+namespace RightCancelMonoid
+
+variable [RightCancelMonoid α] [Subsingleton αˣ] {a b : α}
+
+@[to_additive]
+protected theorem eq_one_of_mul_right (h : a * b = 1) : a = 1 :=
+  congr_arg Units.inv <| Subsingleton.elim (Units.mk _ _ (by
+    rw [← mul_right_cancel_iff (a := b), mul_assoc, h, one_mul, mul_one]) h) 1
+
+@[to_additive]
+protected theorem eq_one_of_mul_left (h : a * b = 1) : b = 1 := by
+  rwa [RightCancelMonoid.eq_one_of_mul_right h, one_mul] at h
+
+@[to_additive (attr := simp)]
+protected theorem mul_eq_one : a * b = 1 ↔ a = 1 ∧ b = 1 :=
+  ⟨fun h => ⟨RightCancelMonoid.eq_one_of_mul_right h, RightCancelMonoid.eq_one_of_mul_left h⟩, by
+    rintro ⟨rfl, rfl⟩
+    exact mul_one _⟩
+
+@[to_additive]
+protected theorem mul_ne_one : a * b ≠ 1 ↔ a ≠ 1 ∨ b ≠ 1 := by rw [not_iff_comm]; simp
+
+end RightCancelMonoid
+
+section CancelMonoid
+
+variable [CancelMonoid α] [Subsingleton αˣ] {a b : α}
+
+@[to_additive]
+theorem eq_one_of_mul_right' (h : a * b = 1) : a = 1 := LeftCancelMonoid.eq_one_of_mul_right h
+
+@[to_additive]
+theorem eq_one_of_mul_left' (h : a * b = 1) : b = 1 := LeftCancelMonoid.eq_one_of_mul_left h
+
+@[to_additive]
+theorem mul_eq_one' : a * b = 1 ↔ a = 1 ∧ b = 1 := LeftCancelMonoid.mul_eq_one
+
+@[to_additive]
+theorem mul_ne_one' : a * b ≠ 1 ↔ a ≠ 1 ∨ b ≠ 1 := LeftCancelMonoid.mul_ne_one
+
+end CancelMonoid
+
 section CommMonoid
 
 variable [CommMonoid α]
@@ -497,6 +563,8 @@ theorem mul_eq_one : a * b = 1 ↔ a = 1 ∧ b = 1 :=
   ⟨fun h => ⟨eq_one_of_mul_right h, eq_one_of_mul_left h⟩, by
     rintro ⟨rfl, rfl⟩
     exact mul_one _⟩
+
+@[to_additive] theorem mul_ne_one : a * b ≠ 1 ↔ a ≠ 1 ∨ b ≠ 1 := by rw [not_iff_comm]; simp
 
 end CommMonoid
 
