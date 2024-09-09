@@ -90,6 +90,9 @@ theorem one_eq_mk [One M] [One N] : (1 : M × N) = (1, 1) :=
   rfl
 
 @[to_additive (attr := simp)]
+theorem mk_one_one [One M] [One N] : ((1 : M), (1 : N)) = 1 := rfl
+
+@[to_additive (attr := simp)]
 theorem mk_eq_one [One M] [One N] {x : M} {y : N} : (x, y) = 1 ↔ x = 1 ∧ y = 1 :=
   mk.inj_iff
 

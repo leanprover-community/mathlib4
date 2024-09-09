@@ -106,6 +106,9 @@ instance locallyDiscreteBicategory.strict : Strict (LocallyDiscrete C) where
   comp_id f := Discrete.ext (Category.comp_id _)
   assoc f g h := Discrete.ext (Category.assoc _ _ _)
 
+attribute [local simp]
+  Strict.leftUnitor_eqToIso Strict.rightUnitor_eqToIso Strict.associator_eqToIso
+
 variable {I : Type u₁} [Category.{v₁} I] {B : Type u₂} [Bicategory.{w₂, v₂} B] [Strict B]
 
 /--

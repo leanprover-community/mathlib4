@@ -136,7 +136,7 @@ theorem EuclideanSpace.sphere_zero_eq {n : Type*} [Fintype n] (r : ℝ) (hr : 0 
   ext x
   have : (0 : ℝ) ≤ ∑ i, x i ^ 2 := Finset.sum_nonneg fun _ _ => sq_nonneg _
   simp_rw [mem_setOf, mem_sphere_zero_iff_norm, norm_eq, norm_eq_abs, sq_abs,
-    Real.sqrt_eq_iff_sq_eq this hr, eq_comm]
+    Real.sqrt_eq_iff_eq_sq this hr]
 
 section
 

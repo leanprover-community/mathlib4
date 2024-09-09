@@ -24,7 +24,7 @@ lemma left_triangle {X Y : C} (η : 𝟙_ _ ⟶ X ⊗ Y) (ε : Y ⊗ X ⟶ 𝟙_
       /- Place the cursor here and shift-click the 2-morphisms in the tactic state. -/
       exact w.elim
 
-/- Instead of writing `with_panel_widgets` everywhere, you can also use this command.  -/
+/- Instead of writing `with_panel_widgets` everywhere, you can also use this command. -/
 show_panel_widgets [local StringDiagram, local SelectionPanel]
 
 lemma yang_baxter {V₁ V₂ V₃ : C} (R : ∀ V₁ V₂ : C, V₁ ⊗ V₂ ⟶ V₂ ⊗ V₁) (w : False) :

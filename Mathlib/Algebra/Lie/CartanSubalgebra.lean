@@ -59,9 +59,9 @@ theorem normalizer_eq_self_of_isCartanSubalgebra (H : LieSubalgebra R L) [H.IsCa
 @[simp]
 theorem ucs_eq_self_of_isCartanSubalgebra (H : LieSubalgebra R L) [H.IsCartanSubalgebra] (k : ℕ) :
     H.toLieSubmodule.ucs k = H.toLieSubmodule := by
-  induction' k with k ih
-  · simp
-  · simp [ih]
+  induction k with
+  | zero => simp
+  | succ k ih => simp [ih]
 
 theorem isCartanSubalgebra_iff_isUcsLimit : H.IsCartanSubalgebra ↔ H.toLieSubmodule.IsUcsLimit := by
   constructor

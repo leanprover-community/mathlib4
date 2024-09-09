@@ -3,17 +3,16 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Jujian Zhang
 -/
-import Mathlib.RingTheory.Noetherian
-import Mathlib.Algebra.DirectSum.Module
 import Mathlib.Algebra.DirectSum.Finsupp
-import Mathlib.Algebra.Module.Projective
-import Mathlib.Algebra.Module.Injective
+import Mathlib.Algebra.DirectSum.Module
+import Mathlib.Algebra.Exact
 import Mathlib.Algebra.Module.CharacterModule
+import Mathlib.Algebra.Module.Injective
+import Mathlib.Algebra.Module.Projective
 import Mathlib.LinearAlgebra.DirectSum.TensorProduct
 import Mathlib.LinearAlgebra.FreeModule.Basic
-import Mathlib.Algebra.Module.Projective
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-import Mathlib.Algebra.Exact
+import Mathlib.RingTheory.Noetherian
 
 /-!
 # Flat modules
@@ -73,6 +72,10 @@ the canonical map `I ⊗ M →ₗ M` is injective. -/
     Function.Injective (TensorProduct.lift ((lsmul R M).comp I.subtype))
 
 namespace Flat
+
+variable {R} in
+instance instSubalgebraToSubmodule {S : Type v} [Ring S] [Algebra R S]
+    (A : Subalgebra R S) [Flat R A] : Flat R (Subalgebra.toSubmodule A) := ‹Flat R A›
 
 instance self (R : Type u) [CommRing R] : Flat R R :=
   ⟨by
