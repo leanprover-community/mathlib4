@@ -94,3 +94,39 @@ noncomputable def NonUnitalStarSubalgebra.nonUnitalCommCStarAlgebra {S A : Type*
   toCompleteSpace := h_closed.completeSpace_coe
   norm_mul_self_le x := CStarRing.norm_star_mul_self (x := (x : A)) |>.symm.le
   mul_comm _ _ := Subtype.ext <| mul_comm _ _
+
+noncomputable instance : CommCStarAlgebra ℂ where
+  mul_comm := mul_comm
+
+section Pi
+
+variable {ι : Type*} {A : ι → Type*} [Fintype ι]
+
+instance [(i : ι) → NonUnitalCStarAlgebra (A i)] : NonUnitalCStarAlgebra (Π i, A i) where
+
+instance [(i : ι) → NonUnitalCommCStarAlgebra (A i)] : NonUnitalCommCStarAlgebra (Π i, A i) where
+  mul_comm := mul_comm
+
+noncomputable instance [(i : ι) → CStarAlgebra (A i)] : CStarAlgebra (Π i, A i) where
+
+noncomputable instance [(i : ι) → CommCStarAlgebra (A i)] : CommCStarAlgebra (Π i, A i) where
+  mul_comm := mul_comm
+
+end Pi
+
+section Prod
+
+variable {A B : Type*}
+
+instance [NonUnitalCStarAlgebra A] [NonUnitalCStarAlgebra B] : NonUnitalCStarAlgebra (A × B) where
+
+instance [NonUnitalCommCStarAlgebra A] [NonUnitalCommCStarAlgebra B] :
+    NonUnitalCommCStarAlgebra (A × B) where
+  mul_comm := mul_comm
+
+noncomputable instance [CStarAlgebra A] [CStarAlgebra B] : CStarAlgebra (A × B) where
+
+noncomputable instance [CommCStarAlgebra A] [CommCStarAlgebra B] : CommCStarAlgebra (A × B) where
+  mul_comm := mul_comm
+
+end Prod

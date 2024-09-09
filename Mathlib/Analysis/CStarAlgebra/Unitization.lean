@@ -3,7 +3,7 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.CStarAlgebra.Basic
+import Mathlib.Analysis.CStarAlgebra.Classes
 import Mathlib.Analysis.Normed.Algebra.Unitization
 /-! # The minimal unitization of a C⋆-algebra
 
@@ -170,5 +170,12 @@ instance Unitization.instCStarRing : CStarRing (Unitization 𝕜 E) where
     · rw [sq, sq, sup_eq_right.mpr h, sup_eq_right.mpr (mul_self_le_mul_self (norm_nonneg _) h)]
     · replace h := (not_le.mp h).le
       rw [sq, sq, sup_eq_left.mpr h, sup_eq_left.mpr (mul_self_le_mul_self (norm_nonneg _) h)]
+
+noncomputable instance Unitization.instCStarAlgebra {A : Type*} [CStarAlgebra A] :
+    CStarAlgebra (Unitization ℂ A) where
+
+noncomputable instance Unitization.instCommCStarAlgebra {A : Type*} [CommCStarAlgebra A] :
+    CommCStarAlgebra (Unitization ℂ A) where
+  mul_comm := mul_comm
 
 end CStarProperty
