@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bjørn Kjos-Hanssen, Janani Lakshmanan, Kawika O'Connor, Clark Eggerman
 -/
 
-import Mathlib.NumberTheory.Basic
+import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Data.ZMod.Defs
 
 /-!
 
