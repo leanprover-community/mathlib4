@@ -253,7 +253,7 @@ open IntermediateField
 
 variable (L) in
 class IsKrasner : Prop where
-  krasner' : ∀ {x y : L}, (minpoly K x).Separable → IsIntegral K y →
+  krasner' : ∀ {x y : L}, IsSeparable K x → IsIntegral K y →
     (∀ x' : L, IsConjRoot K x x' →  x ≠ x' → vL.v (x - y) < vL.v (x - x')) →
       x ∈ K⟮y⟯
 -- `As an application of IsKrasner, prove that C_p is algebraically closed,`
