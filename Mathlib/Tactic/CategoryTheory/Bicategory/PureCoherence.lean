@@ -30,6 +30,7 @@ variable {B : Type u} [Bicategory.{w, v} B] {a b c d e : B}
 local infixr:81 " ◁ " => Bicategory.whiskerLeftIso
 local infixl:81 " ▷ " => Bicategory.whiskerRightIso
 
+/-- The composition of the normalizing isomorphisms `η_f : p ≫ f ≅ pf` and `η_g : pf ≫ g ≅ pfg`. -/
 abbrev normalizeIsoComp {p : a ⟶ b} {f : b ⟶ c} {g : c ⟶ d} {pf : a ⟶ c} {pfg : a ⟶ d}
     (η_f : p ≫ f ≅ pf) (η_g : pf ≫ g ≅ pfg) :=
   (α_ _ _ _).symm ≪≫ whiskerRightIso η_f g ≪≫ η_g

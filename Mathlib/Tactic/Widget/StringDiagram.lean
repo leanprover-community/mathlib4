@@ -293,16 +293,19 @@ def dsl :=
 def sty :=
   include_str ".."/".."/".."/"widget"/"src"/"penrose"/"monoidal.sty"
 
+/-- The kind of the context. -/
 inductive Kind where
   | monoidal : Kind
   | bicategory : Kind
   | none : Kind
 
+/-- The name of the context. -/
 def Kind.name : Kind → Name
   | Kind.monoidal => `monoidal
   | Kind.bicategory => `bicategory
   | Kind.none => default
 
+/-- Given an expression, return the kind of the context. -/
 def mkKind (e : Expr) : MetaM Kind := do
   let e ← instantiateMVars e
   let e ← (match (← whnfR e).eq? with
@@ -449,3 +452,5 @@ def elabStringDiagramCmd : CommandElab := fun
   | stx => throwError "Unexpected syntax {stx}."
 
 end Mathlib.Tactic.Widget
+
+#lint

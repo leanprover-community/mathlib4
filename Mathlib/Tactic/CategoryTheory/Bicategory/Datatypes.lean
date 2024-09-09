@@ -452,6 +452,7 @@ partial def mor₁OfExpr (e : Expr) : BicategoryM Mor₁ := do
 instance : MkMor₁ BicategoryM where
   ofExpr := mor₁OfExpr
 
+/-- Construct a `Mor₂Iso` term from a Lean expression. -/
 partial def Mor₂IsoOfExpr (e : Expr) : BicategoryM Mor₂Iso := do
   match (← whnfR e).getAppFnArgs with
   | (``Bicategory.associator, #[_, _, _, _, _, _, f, g, h]) =>
@@ -479,6 +480,7 @@ partial def Mor₂IsoOfExpr (e : Expr) : BicategoryM Mor₂Iso := do
     return .of ⟨e, ← MkMor₁.ofExpr (← srcExprOfIso e), ← MkMor₁.ofExpr (← tgtExprOfIso e)⟩
 
 open MonadMor₂ in
+/-- Construct a `Mor₂` term from a Lean expression. -/
 partial def Mor₂OfExpr (e : Expr) : BicategoryM Mor₂ := do
   match ← whnfR e with
   -- whnfR version of `Iso.hom η`
@@ -505,6 +507,5 @@ instance : BicategoryLike.MkMor₂ BicategoryM where
 
 instance : MonadCoherehnceHom BicategoryM where
   unfoldM α := Mor₂IsoOfExpr α.unfold
-
 
 end Mathlib.Tactic.Bicategory

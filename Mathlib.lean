@@ -4099,6 +4099,10 @@ import Mathlib.Tactic.CancelDenoms.Core
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.CasesM
 import Mathlib.Tactic.CategoryTheory.BicategoricalComp
+import Mathlib.Tactic.CategoryTheory.Bicategory.Basic
+import Mathlib.Tactic.CategoryTheory.Bicategory.Datatypes
+import Mathlib.Tactic.CategoryTheory.Bicategory.Normalize
+import Mathlib.Tactic.CategoryTheory.Bicategory.PureCoherence
 import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
 import Mathlib.Tactic.CategoryTheory.Coherence
 import Mathlib.Tactic.CategoryTheory.Coherence.Basic

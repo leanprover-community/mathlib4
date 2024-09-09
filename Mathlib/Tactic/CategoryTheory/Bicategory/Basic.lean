@@ -12,11 +12,11 @@ open CategoryTheory Mathlib.Tactic.BicategoryLike
 
 namespace Mathlib.Tactic.Bicategory
 
+/-- Normalize the both sides of an equality. -/
 def bicategoryNf (mvarId : MVarId) : MetaM (List MVarId) := do
   BicategoryLike.normalForm Bicategory.Context `bicategory mvarId
 
-open Lean Elab Tactic
-/-- Normalize the both sides of an equality. -/
+@[inherit_doc bicategoryNf]
 elab "bicategory_nf" : tactic => withMainContext do
   replaceMainGoal (← bicategoryNf (← getMainGoal))
 
@@ -33,6 +33,7 @@ where `a = a'`, `b = b'`, and `c = c'` can be proved using `bicategory_coherence
 def bicategory (mvarId : MVarId) : MetaM (List MVarId) :=
   BicategoryLike.main  Bicategory.Context `bicategory mvarId
 
+@[inherit_doc bicategory]
 elab "bicategory" : tactic => withMainContext do
   replaceMainGoal <| ← bicategory <| ← getMainGoal
 
