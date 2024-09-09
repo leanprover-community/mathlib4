@@ -38,6 +38,15 @@ theorem Set.preimage_one {α β : Type*} [One β] (s : Set β) [Decidable ((1 : 
     (1 : α → β) ⁻¹' s = if (1 : β) ∈ s then Set.univ else ∅ :=
   Set.preimage_const 1 s
 
+namespace Pi
+
+variable {α β : Type*} [Preorder α] [Preorder β]
+
+@[to_additive] lemma one_mono [One β] : Monotone (1 : α → β) := monotone_const
+@[to_additive] lemma one_anti [One β] : Antitone (1 : α → β) := antitone_const
+
+end Pi
+
 namespace MulHom
 
 @[to_additive]
@@ -408,18 +417,6 @@ theorem mulSingle_mono : Monotone (Pi.mulSingle i : f i → ∀ i, f i) :=
 @[to_additive]
 theorem mulSingle_strictMono : StrictMono (Pi.mulSingle i : f i → ∀ i, f i) :=
   Function.update_strictMono
-
-lemma monotone_zero {α β} [Preorder α] [Preorder β] [Zero β] : Monotone (0 : α → β) :=
-  monotone_const
-
-lemma antitone_zero {α β} [Preorder α] [Preorder β] [Zero β] : Antitone (0 : α → β) :=
-  antitone_const
-
-lemma monotone_one {α β} [Preorder α] [Preorder β] [One β] : Monotone (1 : α → β) :=
-  monotone_const
-
-lemma antitone_one {α β} [Preorder α] [Preorder β] [One β] : Antitone (1 : α → β) :=
-  antitone_const
 
 end Pi
 
