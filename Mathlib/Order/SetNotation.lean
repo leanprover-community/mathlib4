@@ -3,11 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Yury Kudryashov
 -/
-<<<<<<< HEAD
-import Mathlib.Data.Set.Operations
-=======
 import Mathlib.Data.Set.Defs
->>>>>>> d3a8d467b7 (chore: final cleanup of Mathport (#15630))
 import Mathlib.Util.Notation3
 
 /-!
