@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies
+Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.CharP.Defs
@@ -18,18 +18,28 @@ An `n`-Freiman homomorphism from `A` to `B` is a function `f : α → β` such t
 `f x₁ * ... * f xₙ = f y₁ * ... * f yₙ` for all `x₁, ..., xₙ, y₁, ..., yₙ ∈ A` such that
 `x₁ * ... * xₙ = y₁ * ... * yₙ`. In particular, any `MulHom` is a Freiman homomorphism.
 
+Note a `0`- or `1`-Freiman homomorphism is simply a map, thus a `2`-Freiman homomorphism is the
+first interesting case (and the most common). As `n` increases further, the property of being
+an `n`-Freiman homomorphism between abelian groups becomes increasingly stronger.
+
 An `n`-Freiman isomorphism from `A` to `B` is a function `f : α → β` bijective between `A` and `B`
 such that `f x₁ * ... * f xₙ = f y₁ * ... * f yₙ ↔ x₁ * ... * xₙ = y₁ * ... * yₙ` for all
 `x₁, ..., xₙ, y₁, ..., yₙ ∈ A`. In particular, any `MulEquiv` is a Freiman isomorphism.
 
 They are of interest in additive combinatorics.
 
-## Main declaration
+## Main declarations
 
 * `IsMulFreimanHom`: Predicate for a function to be a multiplicative Freiman homomorphism.
 * `IsAddFreimanHom`: Predicate for a function to be an additive Freiman homomorphism.
 * `IsMulFreimanIso`: Predicate for a function to be a multiplicative Freiman isomorphism.
 * `IsAddFreimanIso`: Predicate for a function to be an additive Freiman isomorphism.
+
+## Main results
+
+* `isMulFreimanHom_two`: Characterisation of `2`-Freiman homomorphisms.
+* `IsMulFreimanHom.mono`: If `m ≤ n` and `f` is an `n`-Freiman homomorphism, then it is also an
+  `m`-Freiman homomorphism.
 
 ## Implementation notes
 
@@ -102,6 +112,20 @@ lemma IsMulFreimanIso.isMulFreimanHom (hf : IsMulFreimanIso n A B f) : IsMulFrei
   mapsTo := hf.bijOn.mapsTo
   map_prod_eq_map_prod _s _t hsA htA hs ht := (hf.map_prod_eq_map_prod hsA htA hs ht).2
 
+lemma IsMulFreimanHom.congr (hf₁ : IsMulFreimanHom n A B f₁) (h : EqOn f₁ f₂ A) :
+    IsMulFreimanHom n A B f₂ where
+  mapsTo := hf₁.mapsTo.congr h
+  map_prod_eq_map_prod s t hsA htA hs ht h' := by
+    rw [map_congr rfl fun x hx => (h (hsA hx)).symm, map_congr rfl fun x hx => (h (htA hx)).symm,
+      hf₁.map_prod_eq_map_prod hsA htA hs ht h']
+
+lemma IsMulFreimanIso.congr (hf₁ : IsMulFreimanIso n A B f₁) (h : EqOn f₁ f₂ A) :
+    IsMulFreimanIso n A B f₂ where
+  bijOn := hf₁.bijOn.congr h
+  map_prod_eq_map_prod s t hsA htA hs ht := by
+    rw [map_congr rfl fun x hx => h.symm (hsA hx), map_congr rfl fun x hx => h.symm (htA hx),
+      hf₁.map_prod_eq_map_prod hsA htA hs ht]
+
 @[to_additive]
 lemma IsMulFreimanHom.mul_eq_mul (hf : IsMulFreimanHom 2 A B f) {a b c d : α}
     (ha : a ∈ A) (hb : b ∈ A) (hc : c ∈ A) (hd : d ∈ A) (h : a * b = c * d) :
@@ -116,13 +140,21 @@ lemma IsMulFreimanIso.mul_eq_mul (hf : IsMulFreimanIso 2 A B f) {a b c d : α}
   simp_rw [← prod_pair]
   refine hf.map_prod_eq_map_prod ?_ ?_ (card_pair _ _) (card_pair _ _) <;> simp [ha, hb, hc, hd]
 
-/-- Characterisation of `2`-Freiman homs. -/
-@[to_additive "Characterisation of `2`-Freiman homs."]
+/-- Characterisation of `2`-Freiman homomorphisms. -/
+@[to_additive "Characterisation of `2`-Freiman homomorphisms."]
 lemma isMulFreimanHom_two :
     IsMulFreimanHom 2 A B f ↔ MapsTo f A B ∧ ∀ a ∈ A, ∀ b ∈ A, ∀ c ∈ A, ∀ d ∈ A,
       a * b = c * d → f a * f b = f c * f d where
   mp hf := ⟨hf.mapsTo, fun a ha b hb c hc d hd ↦ hf.mul_eq_mul ha hb hc hd⟩
-  mpr hf := ⟨hf.1, by aesop (add simp [Multiset.card_eq_two])⟩
+  mpr hf := ⟨hf.1, by aesop (add simp card_eq_two)⟩
+
+/-- Characterisation of `2`-Freiman homs. -/
+@[to_additive "Characterisation of `2`-Freiman isomorphisms."]
+lemma isMulFreimanIso_two :
+    IsMulFreimanIso 2 A B f ↔ BijOn f A B ∧ ∀ a ∈ A, ∀ b ∈ A, ∀ c ∈ A, ∀ d ∈ A,
+      f a * f b = f c * f d ↔ a * b = c * d where
+  mp hf := ⟨hf.bijOn, fun a ha b hb c hc d hd => hf.mul_eq_mul ha hb hc hd⟩
+  mpr hf := ⟨hf.1, by aesop (add simp card_eq_two)⟩
 
 @[to_additive] lemma isMulFreimanHom_id (hA : A₁ ⊆ A₂) : IsMulFreimanHom n A₁ A₂ id where
   mapsTo := hA
@@ -170,6 +202,27 @@ lemma isMulFreimanHom_two :
 lemma isMulFreimanHom_const {b : β} (hb : b ∈ B) : IsMulFreimanHom n A B fun _ ↦ b where
   mapsTo _ _ := hb
   map_prod_eq_map_prod s t _ _ hs ht _ := by simp only [map_const', hs, prod_replicate, ht]
+
+@[to_additive (attr := simp)]
+lemma isMulFreimanHom_zero_iff : IsMulFreimanHom 0 A B f ↔ MapsTo f A B :=
+  ⟨fun h => h.mapsTo, fun h => ⟨h, by aesop⟩⟩
+
+@[to_additive (attr := simp)]
+lemma isMulFreimanIso_zero_iff : IsMulFreimanIso 0 A B f ↔ BijOn f A B :=
+  ⟨fun h => h.bijOn, fun h => ⟨h, by aesop⟩⟩
+
+@[to_additive (attr := simp) isAddFreimanHom_one_iff]
+lemma isMulFreimanHom_one_iff : IsMulFreimanHom 1 A B f ↔ MapsTo f A B :=
+  ⟨fun h => h.mapsTo, fun h => ⟨h, by aesop (add simp card_eq_one)⟩⟩
+
+@[to_additive (attr := simp) isAddFreimanIso_one_iff]
+lemma isMulFreimanIso_one_iff : IsMulFreimanIso 1 A B f ↔ BijOn f A B :=
+  ⟨fun h => h.bijOn, fun h => ⟨h, by aesop (add simp [card_eq_one, BijOn])⟩⟩
+
+@[to_additive (attr := simp)]
+lemma isMulFreimanHom_empty : IsMulFreimanHom n (∅ : Set α) B f where
+  mapsTo := mapsTo_empty f B
+  map_prod_eq_map_prod s t := by aesop (add simp eq_zero_of_forall_not_mem)
 
 @[to_additive (attr := simp)]
 lemma isMulFreimanIso_empty : IsMulFreimanIso n (∅ : Set α) (∅ : Set β) f where

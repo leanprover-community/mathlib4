@@ -537,6 +537,7 @@ import Mathlib.Algebra.Order.Antidiag.Pi
 import Mathlib.Algebra.Order.Antidiag.Prod
 import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Algebra.Order.Archimedean.Hom
+import Mathlib.Algebra.Order.Archimedean.Submonoid
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.BigOperators.Group.List
 import Mathlib.Algebra.Order.BigOperators.Group.Multiset
@@ -3662,6 +3663,7 @@ import Mathlib.Order.SuccPred.IntervalSucc
 import Mathlib.Order.SuccPred.Limit
 import Mathlib.Order.SuccPred.LinearLocallyFinite
 import Mathlib.Order.SuccPred.Relation
+import Mathlib.Order.SuccPred.TypeTags
 import Mathlib.Order.SupClosed
 import Mathlib.Order.SupIndep
 import Mathlib.Order.SymmDiff
@@ -4007,6 +4009,7 @@ import Mathlib.RingTheory.Unramified.Basic
 import Mathlib.RingTheory.Unramified.Derivations
 import Mathlib.RingTheory.Unramified.Finite
 import Mathlib.RingTheory.Valuation.AlgebraInstances
+import Mathlib.RingTheory.Valuation.Archimedean
 import Mathlib.RingTheory.Valuation.Basic
 import Mathlib.RingTheory.Valuation.ExtendToLocalization
 import Mathlib.RingTheory.Valuation.Integers
@@ -4353,6 +4356,7 @@ import Mathlib.Topology.Algebra.InfiniteSum.Real
 import Mathlib.Topology.Algebra.InfiniteSum.Ring
 import Mathlib.Topology.Algebra.Localization
 import Mathlib.Topology.Algebra.Module.Alternating.Basic
+import Mathlib.Topology.Algebra.Module.Alternating.Topology
 import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.Topology.Algebra.Module.Cardinality
 import Mathlib.Topology.Algebra.Module.CharacterSpace

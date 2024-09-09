@@ -522,6 +522,11 @@ protected def withTopMap (f : α →o β) : WithTop α →o WithTop β :=
 
 end OrderHom
 
+-- See note [lower instance priority]
+instance (priority := 100) OrderHomClass.toOrderHomClassOrderDual [LE α] [LE β]
+    [FunLike F α β] [OrderHomClass F α β] : OrderHomClass F αᵒᵈ βᵒᵈ where
+  map_rel f := map_rel f
+
 /-- Embeddings of partial orders that preserve `<` also preserve `≤`. -/
 def RelEmbedding.orderEmbeddingOfLTEmbedding [PartialOrder α] [PartialOrder β]
     (f : ((· < ·) : α → α → Prop) ↪r ((· < ·) : β → β → Prop)) : α ↪o β :=
@@ -1271,6 +1276,11 @@ theorem OrderIso.complementedLattice_iff (f : α ≃o β) :
 end BoundedOrder
 
 end LatticeIsos
+
+-- See note [lower instance priority]
+instance (priority := 100) OrderIsoClass.toOrderIsoClassOrderDual [LE α] [LE β]
+    [EquivLike F α β] [OrderIsoClass F α β] : OrderIsoClass F αᵒᵈ βᵒᵈ where
+  map_le_map_iff f := map_le_map_iff f
 
 section DenselyOrdered
 
