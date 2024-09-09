@@ -298,7 +298,7 @@ lemma _root_.MonomialOrder.lCoeff_binomial {ι : Type*} (m : MonomialOrder ι) (
     exact H (nontrivial_of_ne _ _ H')
 
 theorem _root_.MonomialOrder.prod_degree [Nontrivial R]
-    {ι : Type*} (m : MonomialOrder ι) (i : ι) (s : Finset R) : 
+    {ι : Type*} (m : MonomialOrder ι) (i : ι) (s : Finset R) :
     m.degree (s.prod (fun r ↦ X i - C r)) = single i s.card := by
   classical
   have H : ∀ r ∈ s, m.degree (X i - C r) = single i 1 := by
@@ -324,10 +324,10 @@ theorem Alon1 [IsDomain R] (S : σ → Finset R) (Sne : ∀ i, (S i).Nonempty)
     (f : MvPolynomial σ R) (Heval : ∀ (x : σ → R), (∀ i, x i ∈ S i) → eval x f = 0) :
     ∃ (h : σ →₀ MvPolynomial σ R)
       (_ : ∀ i, ((S i).prod (fun s ↦ X i - C s) * (h i)).totalDegree ≤ f.totalDegree),
-    f = linearCombination (MvPolynomial σ R) (fun i ↦ (S i).prod (fun r ↦ X i - C r)) h := by 
+    f = linearCombination (MvPolynomial σ R) (fun i ↦ (S i).prod (fun r ↦ X i - C r)) h := by
   letI : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
   let P (i) :  MvPolynomial σ R := (S i).prod (fun r ↦ X i - C r)
-  have degP (i) : (degLex σ).degree (P i) = single i (S i).card := by 
+  have degP (i) : (degLex σ).degree (P i) = single i (S i).card := by
     simp only [P]
     rw [degree_prod_of_regular]
     · simp_rw [degree_binomial]
@@ -389,7 +389,7 @@ theorem Alon2 [IsDomain R]
   obtain ⟨h, hh, hf⟩ := Alon1 S
     (fun i ↦ by rw [← Finset.card_pos]; exact lt_of_le_of_lt (zero_le _) (htS i))
     f Heval
-  rw [hf] 
+  rw [hf]
   simp only [linearCombination, coe_lsum, sum, LinearMap.coe_smulRight, LinearMap.id_coe, id_eq,
     smul_eq_mul, coeff_sum]
   apply Finset.sum_eq_zero
