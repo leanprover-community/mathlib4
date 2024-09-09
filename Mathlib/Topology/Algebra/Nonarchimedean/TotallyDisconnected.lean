@@ -47,7 +47,7 @@ open TopologicalSpace
 variable (G : Type*) [TopologicalSpace G] [Group G] [NonarchimedeanGroup G] [T2Space G]
 
 @[to_additive]
-lemma open_subgroup_separating' -- not using  [TopologicalGroup G]
+lemma open_subgroup_separating'
     (t : G) (ht : t ≠ 1) : ∃ (A : Opens G) (V : OpenSubgroup G),
     t ∈ A ∧ 1 ∈ V ∧ Disjoint (A : Set G) V := by
   rcases (t2_separation ht) with ⟨A, B, opena, openb, diff, one, disj⟩
