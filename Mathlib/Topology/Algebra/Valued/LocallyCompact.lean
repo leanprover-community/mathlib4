@@ -3,6 +3,7 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
+import Mathlib.RingTheory.DiscreteValuationRing.Basic
 import Mathlib.RingTheory.Ideal.IsPrincipalPowQuotient
 import Mathlib.Topology.Algebra.Valued.NormedValued
 import Mathlib.Topology.Algebra.Valued.ValuedField
@@ -66,7 +67,7 @@ lemma isUnit_iff_norm_eq_one {u : 𝒪[K]} : IsUnit u ↔ ‖u‖ = 1 := by
       · simpa [← NNReal.coe_le_coe] using h.ge
       · simp [hu]
     · ext
-      simp only [Submonoid.coe_mul, Subsemiring.coe_toSubmonoid, Subring.coe_toSubsemiring,
+      simp only [Subring.coe_mul, Subsemiring.coe_toSubmonoid, Subring.coe_toSubsemiring,
         OneMemClass.coe_one]
       rw [mul_inv_eq_one₀ (by exact_mod_cast hu)]
 
@@ -115,7 +116,7 @@ lemma _root_.Irreducible.maximalIdeal_pow_eq_closedBall_pow [DiscreteValuationRi
         ← Valued.maximalIdeal]
     constructor
     · rintro ⟨z, hz, rfl⟩
-      simp only [Submonoid.coe_mul, Subsemiring.coe_toSubmonoid, Subring.coe_toSubsemiring,
+      simp only [Subring.coe_mul, Subsemiring.coe_toSubmonoid, Subring.coe_toSubsemiring,
         norm_mul]
       refine mul_le_mul_of_nonneg_right ?_ (_root_.norm_nonneg _)
       simpa [← SetLike.mem_coe, IH, Metric.mem_closedBall, dist_eq_norm] using hz
@@ -124,7 +125,7 @@ lemma _root_.Irreducible.maximalIdeal_pow_eq_closedBall_pow [DiscreteValuationRi
       · refine ⟨0, ?_⟩
         simp
       obtain ⟨k, u, rfl⟩ := DiscreteValuationRing.eq_unit_mul_pow_irreducible hx' h
-      simp only [Submonoid.coe_mul, Subsemiring.coe_toSubmonoid, Subring.coe_toSubsemiring,
+      simp only [Subring.coe_mul, Subsemiring.coe_toSubmonoid, Subring.coe_toSubsemiring,
         SubmonoidClass.coe_pow, norm_mul, norm_coe_unit, norm_pow, one_mul, ← pow_succ] at hx
       have : n + 1 ≤ k := by
         contrapose! hx
@@ -192,7 +193,7 @@ lemma totallyBounded_iff_finite_residueField [DiscreteValuationRing 𝒪[K]] :
     simp only [Ideal.univ_eq_iUnion_image_add (𝓂[K] ^ n), hp.maximalIdeal_pow_eq_closedBall_pow,
       AddSubgroupClass.coe_norm, Set.image_add_left, preimage_add_closedBall, sub_neg_eq_add,
       zero_add, Set.image_univ, Set.mem_range, Set.iUnion_exists, Set.iUnion_iUnion_eq',
-      Set.iUnion_subset_iff]
+      Set.iUnion_subset_iff, Metric.vadd_closedBall, vadd_eq_add, add_zero]
     intro
     exact (Metric.closedBall_subset_ball hn).trans (Set.subset_iUnion_of_subset _ le_rfl)
 
