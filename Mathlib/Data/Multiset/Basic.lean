@@ -2332,8 +2332,8 @@ theorem map_count_True_eq_filter_card (s : Multiset α) (p : α → Prop) [Decid
   simp [Multiset.erase_singleton, Multiset.count_singleton]
   split <;> simp_all
 
-theorem mem_sub [DecidableEq α] {a : α} {s t : Multiset α} : a ∈ s - t ↔
-    t.count a < s.count a := by
+theorem mem_sub [DecidableEq α] {a : α} {s t : Multiset α} :
+    a ∈ s - t ↔ t.count a < s.count a := by
   rw [← count_pos, count_sub, Nat.sub_pos_iff_lt]
 
 theorem inter_add_sub_of_add_eq_add [DecidableEq α] {M N P Q : Multiset α} (h : M + N = P + Q) :
