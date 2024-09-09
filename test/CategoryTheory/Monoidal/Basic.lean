@@ -9,10 +9,10 @@ variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
 variable {X Y Z W : C} (f : X ⟶ Y) (g : Y ⟶ Z)
 
 example (f : U ⟶ V ⊗ (W ⊗ X)) (g : (V ⊗ W) ⊗ X ⟶ Y) :
-    f ⊗≫ g = f ≫ 𝟙 _ ≫ (α_ _ _ _).inv ≫ g := by
+    f ⊗≫ g = f ≫ (α_ _ _ _).inv ≫ g := by
   monoidal
 
-example : (X ⊗ Y) ◁ f = (α_ _ _ _).hom ≫ X ◁ Y ◁ f ≫ (α_ _ _ _).inv := by
+example (f : Z ⟶ W) : (X ⊗ Y) ◁ f = (α_ _ _ _).hom ≫ X ◁ Y ◁ f ≫ (α_ _ _ _).inv := by
   monoidal
 
 example : f ≫ g = f ≫ g := by
