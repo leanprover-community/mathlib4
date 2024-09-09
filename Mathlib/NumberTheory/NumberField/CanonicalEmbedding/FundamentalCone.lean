@@ -48,7 +48,7 @@ instance : MulAction (𝓞 K)ˣ (mixedSpace K) where
 instance : SMulZeroClass (𝓞 K)ˣ (mixedSpace K) where
   smul_zero := fun _ ↦ by simp_rw [unitSMul_smul, mul_zero]
 
-theorem unitSMul_eq_zero [NumberField K] (u : (𝓞 K)ˣ) (x : mixedSpace K) :
+theorem unitSMul_eq_zero (u : (𝓞 K)ˣ) (x : mixedSpace K) :
     u • x = 0 ↔ x = 0 := by
   refine ⟨fun h ↦ ?_, fun h ↦ by rw [h, smul_zero]⟩
   contrapose! h
@@ -225,12 +225,10 @@ theorem unitSMul_mem_iff_mem_torsion {x : mixedSpace K} (hx : x ∈ fundamentalC
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rw [← logEmbedding_eq_zero_iff]
     let B := (basisUnitLattice K).ofZLatticeBasis ℝ
-    refine (Subtype.mk_eq_mk (h := ?_) (h' := ?_)).mp <|
+    refine (Subtype.mk_eq_mk (h := ?_) (h' := Submodule.zero_mem _)).mp <|
       (ZSpan.exist_unique_vadd_mem_fundamentalDomain B (logMap x)).unique ?_ ?_
-    · change logEmbedding K u ∈ (Submodule.span ℤ (Set.range B)).toAddSubgroup
-      rw [Basis.ofZLatticeBasis_span ℝ (unitLattice K)]
+    · rw [Basis.ofZLatticeBasis_span ℝ (unitLattice K)]
       exact ⟨u, trivial, rfl⟩
-    · exact Submodule.zero_mem _
     · rw [AddSubmonoid.mk_vadd, vadd_eq_add, ← logMap_unitSMul _ hx.2]
       exact h.1
     · rw [AddSubmonoid.mk_vadd, vadd_eq_add, zero_add]
