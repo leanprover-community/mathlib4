@@ -5,7 +5,7 @@ Authors: Yakov Pechersky
 -/
 import Mathlib.Algebra.Order.Monoid.Submonoid
 import Mathlib.Data.Int.SuccPred
-import Mathlib.GroupTheory.Archimedean
+import Mathlib.GroupTheory.ArchimedeanDensely
 import Mathlib.Order.SuccPred.TypeTags
 import Mathlib.RingTheory.Valuation.Integers
 
@@ -13,13 +13,6 @@ import Mathlib.RingTheory.Valuation.Integers
 # Ring of integers under a given valuation in an multiplicatively archimedean codomain
 
 -/
-
-instance Submonoid.instMulArchimedean {M : Type*} [OrderedCommMonoid M] [MulArchimedean M]
-    (S : Submonoid M) : MulArchimedean S := by
-  constructor
-  rintro x _
-  simp only [← Subtype.coe_lt_coe, OneMemClass.coe_one, SubmonoidClass.mk_pow, Subtype.mk_le_mk]
-  exact MulArchimedean.arch x.val
 
 namespace Valuation.Integers
 
