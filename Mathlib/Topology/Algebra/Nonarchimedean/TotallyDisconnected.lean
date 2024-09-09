@@ -65,10 +65,6 @@ variable (G : Type*) [TopologicalSpace G] [Group G]
 
 -- #synth TotallyDisconnectedSpace G -- can't synth
 
-open scoped Pointwise
-variable (x y U : Type*) (x y : G) (U : Set G)
-(hx : x ∈ U) (hy :  y ∈ U) (V : OpenSubgroup G)
-
 -- building the components of `¬ IsPreconnected U`:
 
 @[to_additive]
