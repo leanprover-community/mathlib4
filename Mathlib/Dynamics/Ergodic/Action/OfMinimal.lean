@@ -105,7 +105,7 @@ theorem ergodic_mul_left_of_denseRange_zpow {G : Type*} [Group G]
 @[to_additive]
 theorem DenseRange.zpow_of_ergodic_mul_left {G : Type*} [Group G] [TopologicalSpace G]
     [TopologicalGroup G] [MeasurableSpace G] [OpensMeasurableSpace G]
-    {μ : Measure G} [μ.IsOpenPosMeasure] [μ.IsMulLeftInvariant] {g : G} (hg : Ergodic (g * ·) μ) :
+    {μ : Measure G} [μ.IsOpenPosMeasure] {g : G} (hg : Ergodic (g * ·) μ) :
     DenseRange (g ^ · : ℤ → G) := by
   intro a
   by_contra h
