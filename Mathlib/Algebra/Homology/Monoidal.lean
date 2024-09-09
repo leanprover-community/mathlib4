@@ -76,10 +76,14 @@ noncomputable abbrev associator (K₁ K₂ K₃ : HomologicalComplex C c)
   mapBifunctorAssociator (curriedAssociatorNatIso C) K₁ K₂ K₃ c c c
 
 variable (C c) in
+/-- The unit of the tensor product of homological complexes. -/
+noncomputable abbrev tensorUnit : HomologicalComplex C c := (single C c 0).obj (𝟙_ C)
+
+variable (C c) in
 /-- As a graded object, the single complex `(single C c 0).obj (𝟙_ C)` identifies
 to the unit `(GradedObject.single₀ I).obj (𝟙_ C)` of the tensor product of graded objects. -/
 noncomputable def tensorUnitIso :
-    (GradedObject.single₀ I).obj (𝟙_ C) ≅ (forget C c).obj ((single C c 0).obj (𝟙_ C)) :=
+    (GradedObject.single₀ I).obj (𝟙_ C) ≅ (forget C c).obj (tensorUnit C c) :=
   GradedObject.isoMk _ _ (fun i ↦
     if hi : i = 0 then
       (GradedObject.singleObjApplyIsoOfEq (0 : I) (𝟙_ C) i hi).trans
@@ -113,7 +117,7 @@ variable (K : HomologicalComplex C c) [DecidableEq I]
 
 @[simp]
 lemma unit_tensor_d₁ (i₁ i₂ j : I) :
-    mapBifunctor.d₁ ((single C c 0).obj (𝟙_ C)) K (curriedTensor C) c i₁ i₂ j = 0 := by
+    mapBifunctor.d₁ (tensorUnit C c) K (curriedTensor C) c i₁ i₂ j = 0 := by
   by_cases h₁ : c.Rel i₁ (c.next i₁)
   · by_cases h₂ : ComplexShape.π c c c (c.next i₁, i₂) = j
     · rw [mapBifunctor.d₁_eq _ _ _ _ h₁ _ _ h₂, single_obj_d, Functor.map_zero,
@@ -123,7 +127,7 @@ lemma unit_tensor_d₁ (i₁ i₂ j : I) :
 
 @[simp]
 lemma tensor_unit_d₂ (i₁ i₂ j : I) :
-    mapBifunctor.d₂ K ((single C c 0).obj (𝟙_ C)) (curriedTensor C) c i₁ i₂ j = 0 := by
+    mapBifunctor.d₂ K (tensorUnit C c) (curriedTensor C) c i₁ i₂ j = 0 := by
   by_cases h₁ : c.Rel i₂ (c.next i₂)
   · by_cases h₂ : ComplexShape.π c c c (i₁, c.next i₂) = j
     · rw [mapBifunctor.d₂_eq _ _ _ _ _ h₁ _ h₂, single_obj_d, Functor.map_zero,
@@ -145,13 +149,13 @@ variable (K : HomologicalComplex C c) [DecidableEq I]
 
 /-- Auxiliary definition for `leftUnitor`. -/
 noncomputable def leftUnitor' :
-    (forget C c).obj (tensorObj ((single C c 0).obj (𝟙_ C)) K) ≅ K.X :=
+    (forget C c).obj (tensorObj (tensorUnit C c) K) ≅ K.X :=
   ((curriedTensor _).mapIso (tensorUnitIso C c).symm).app K.X ≪≫
     MonoidalCategoryStruct.leftUnitor (C := GradedObject I C) K.X
 
 lemma leftUnitor'_inv (i : I) :
     (leftUnitor' K).inv i = (λ_ (K.X i)).inv ≫ ((singleObjXSelf c 0 (𝟙_ C)).inv ▷ (K.X i)) ≫
-      ιTensorObj ((single C c 0).obj (𝟙_ C)) K 0 i i (zero_add i) := by
+      ιTensorObj (tensorUnit C c) K 0 i i (zero_add i) := by
   dsimp [leftUnitor']
   erw [GradedObject.Monoidal.leftUnitor_inv_apply]
   rw [assoc, assoc, Iso.cancel_iso_inv_left]
@@ -166,7 +170,7 @@ lemma leftUnitor'_inv (i : I) :
 
 @[reassoc]
 lemma leftUnitor'_inv_comm (i j : I) :
-    (leftUnitor' K).inv i ≫ (tensorObj ((single C c 0).obj (𝟙_ C)) K).d i j =
+    (leftUnitor' K).inv i ≫ (tensorObj (tensorUnit C c) K).d i j =
       K.d i j ≫ (leftUnitor' K).inv j := by
   by_cases hij : c.Rel i j
   · simp only [leftUnitor'_inv, assoc, mapBifunctor.d_eq,
@@ -180,19 +184,19 @@ lemma leftUnitor'_inv_comm (i j : I) :
 
 /-- The left unitor for the tensor product of homological complexes. -/
 noncomputable def leftUnitor :
-    tensorObj ((single C c 0).obj (𝟙_ C)) K ≅ K :=
+    tensorObj (tensorUnit C c) K ≅ K :=
   Iso.symm (Hom.isoOfComponents (fun i ↦ (GradedObject.eval i).mapIso (leftUnitor' K).symm)
     (fun _ _ _ ↦ leftUnitor'_inv_comm _ _ _))
 
 /-- Auxiliary definition for `rightUnitor`. -/
 noncomputable def rightUnitor' :
-    (forget C c).obj (tensorObj K ((single C c 0).obj (𝟙_ C))) ≅ K.X :=
+    (forget C c).obj (tensorObj K (tensorUnit C c)) ≅ K.X :=
   ((curriedTensor (GradedObject I C)).obj K.X).mapIso (tensorUnitIso C c).symm ≪≫
     MonoidalCategoryStruct.rightUnitor (C := GradedObject I C) K.X
 
 lemma rightUnitor'_inv (i : I) :
     (rightUnitor' K).inv i = (ρ_ (K.X i)).inv ≫ ((K.X i) ◁ (singleObjXSelf c 0 (𝟙_ C)).inv) ≫
-      ιTensorObj K ((single C c 0).obj (𝟙_ C)) i 0 i (add_zero i) := by
+      ιTensorObj K (tensorUnit C c) i 0 i (add_zero i) := by
   dsimp [rightUnitor']
   erw [GradedObject.Monoidal.rightUnitor_inv_apply]
   rw [assoc, assoc, Iso.cancel_iso_inv_left]
@@ -206,7 +210,7 @@ lemma rightUnitor'_inv (i : I) :
   rfl
 
 lemma rightUnitor'_inv_comm (i j : I) :
-    (rightUnitor' K).inv i ≫ (tensorObj K ((single C c 0).obj (𝟙_ C))).d i j =
+    (rightUnitor' K).inv i ≫ (tensorObj K (tensorUnit C c)).d i j =
       K.d i j ≫ (rightUnitor' K).inv j := by
   by_cases hij : c.Rel i j
   · simp only [rightUnitor'_inv, assoc, mapBifunctor.d_eq,
@@ -220,7 +224,7 @@ lemma rightUnitor'_inv_comm (i j : I) :
 
 /-- The right unitor for the tensor product of homological complexes. -/
 noncomputable def rightUnitor :
-    tensorObj K ((single C c 0).obj (𝟙_ C)) ≅ K :=
+    tensorObj K (tensorUnit C c) ≅ K :=
   Iso.symm (Hom.isoOfComponents (fun i ↦ (GradedObject.eval i).mapIso (rightUnitor' K).symm)
     (fun _ _ _ ↦ rightUnitor'_inv_comm _ _ _))
 
@@ -235,7 +239,7 @@ noncomputable instance monoidalCategoryStruct :
   whiskerLeft _ _ _ g := tensorHom (𝟙 _) g
   whiskerRight f _ := tensorHom f (𝟙 _)
   tensorHom f g := tensorHom f g
-  tensorUnit := (single C c 0).obj (𝟙_ C)
+  tensorUnit := tensorUnit C c
   associator K₁ K₂ K₃ := associator K₁ K₂ K₃
   leftUnitor K := leftUnitor K
   rightUnitor K := rightUnitor K
