@@ -68,7 +68,7 @@ def ofHom {X Y : Type u} [Group X] [Finite X] [Group Y] [Finite Y] (f : X →* Y
   Grp.ofHom f
 
 lemma ofHom_apply {X Y : Type u} [Group X] [Finite X] [Group Y] [Finite Y] (f : X →* Y) (x : X) :
-  ofHom f x = f x :=
+    ofHom f x = f x :=
   rfl
 
 end FiniteGrp
