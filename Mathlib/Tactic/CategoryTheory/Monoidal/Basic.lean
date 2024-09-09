@@ -10,7 +10,7 @@ import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
 open Lean Meta Elab Tactic
 open CategoryTheory Mathlib.Tactic.BicategoryLike
 
-namespace Mathlib.Tactic.Monoidal
+namespace Mathlib.Tactic.Monoidal'
 
 /-- Normalize the both sides of an equality. -/
 def monoidalNf (mvarId : MVarId) : MetaM (List MVarId) := do
@@ -26,7 +26,7 @@ where the two sides only differ by replacing strings of monoidal structural morp
 (that is, associators, unitors, and identities)
 with different strings of structural morphisms with the same source and target.
 
-That is, `coherence` can handle goals of the form
+That is, `monoidal` can handle goals of the form
 `a ≫ f ≫ b ≫ g ≫ c = a' ≫ f ≫ b' ≫ g ≫ c'`
 where `a = a'`, `b = b'`, and `c = c'` can be proved using `monoidal_coherence`.
 -/
@@ -37,4 +37,4 @@ def monoidal (mvarId : MVarId) : MetaM (List MVarId) :=
 elab "monoidal" : tactic => withMainContext do
   replaceMainGoal <| ← monoidal <| ← getMainGoal
 
-end Mathlib.Tactic.Monoidal
+end Mathlib.Tactic.Monoidal'
