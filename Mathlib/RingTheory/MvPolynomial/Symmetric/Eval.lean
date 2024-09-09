@@ -67,20 +67,20 @@ noncomputable
 def aevalMultiset (m : Multiset S) :
     symmetricSubalgebra σ R →ₐ[R] S :=
   (aeval (fun i : Fin (Fintype.card σ) ↦ m.esymm (i + 1))).comp
-    (equiv_symmetricSubalgebra (σ := σ) R rfl).symm
+    (esymmAlgEquiv (σ := σ) R rfl).symm
 
 variable {σ R}
 
 lemma aevalMultiset_apply (m : Multiset S) (p : symmetricSubalgebra σ R) :
     aevalMultiset σ R m p =
-      aeval (fun i : Fin _ ↦ m.esymm (i + 1)) ((equiv_symmetricSubalgebra R rfl).symm p) := rfl
+      aeval (fun i : Fin _ ↦ m.esymm (i + 1)) ((esymmAlgEquiv R rfl).symm p) := rfl
 
 theorem aevalMultiset_map (f : σ → S) (p : symmetricSubalgebra σ R) :
     aevalMultiset σ R (Finset.univ.val.map f) p = aeval f (p : MvPolynomial σ R) := by
   rw [aevalMultiset_apply]
   conv_rhs =>
-    rw [← AlgEquiv.apply_symm_apply (equiv_symmetricSubalgebra R rfl) p]
-  simp_rw [equiv_symmetricSubalgebra_symm_apply, equiv_symmetricSubalgebra_apply, esymmAlgHom_apply,
+    rw [← AlgEquiv.apply_symm_apply (esymmAlgEquiv R rfl) p]
+  simp_rw [esymmAlgEquiv_symm_apply, esymmAlgEquiv_apply, esymmAlgHom_apply,
     ← aeval_esymm_eq_multiset_esymm σ R, ← comp_aeval, AlgHom.coe_comp, Function.comp_apply]
 
 theorem aevalMultiset_map' (f : τ → S) (p : symmetricSubalgebra σ R)
@@ -109,14 +109,14 @@ noncomputable
 def scaleAEvalRoots (q : S[X]) :
     symmetricSubalgebra σ R →ₐ[R] S :=
   (aeval (fun i : Fin (Fintype.card σ) ↦ q.leadingCoeff ^ (i : ℕ) * (-1) ^ (i + 1 : ℕ) *
-    q.coeff (q.natDegree - (i + 1)))).comp (equiv_symmetricSubalgebra (σ := σ) R rfl).symm
+    q.coeff (q.natDegree - (i + 1)))).comp (esymmAlgEquiv (σ := σ) R rfl).symm
 
 variable {σ R}
 
 lemma scaleAEvalRoots_apply (q : S[X]) (p : symmetricSubalgebra σ R) :
     scaleAEvalRoots σ R q p =
       aeval (fun i : Fin _ ↦ q.leadingCoeff ^ (i : ℕ) * (-1) ^ (↑i + 1 : ℕ) *
-        q.coeff (q.natDegree - (i + 1))) ((equiv_symmetricSubalgebra R rfl).symm p) :=
+        q.coeff (q.natDegree - (i + 1))) ((esymmAlgEquiv R rfl).symm p) :=
   rfl
 
 lemma scaleAEvalRoots_eq_aevalMultiset (q : S[X]) (p : symmetricSubalgebra σ R)
@@ -127,7 +127,7 @@ lemma scaleAEvalRoots_eq_aevalMultiset (q : S[X]) (p : symmetricSubalgebra σ R)
   rw [scaleAEvalRoots_apply]
   trans aeval (fun i : Fin _ ↦ algebraMap S A (q.leadingCoeff ^ (i + 1 : ℕ)) *
     (q.map (algebraMap S A)).roots.esymm (↑i + 1))
-      ((equiv_symmetricSubalgebra R rfl).symm p)
+      ((esymmAlgEquiv R rfl).symm p)
   · simp_rw [← aeval_algebraMap_apply, Function.comp_def, map_mul, ← Polynomial.coeff_map]
     congr
     funext i
