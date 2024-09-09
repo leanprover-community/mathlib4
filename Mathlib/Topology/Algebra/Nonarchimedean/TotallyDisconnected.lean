@@ -14,11 +14,11 @@ topological space. (The nonarchimedean group is not necessarily abelian.)
 
 ## Main results
 
-- `NonarchimedeanGroup.non_singleton_set_disconnected` : in a nonarchimedean group, any subset which
+- `NonarchimedeanGroup.non_singleton_set_disconnected` : In a nonarchimedean group, any subset which
                                                          contains two distinct points is
                                                          disconnected.
-- `NonarchimedeanGroup.totally_disconnected_space`: instance of a nonarchimedean group as a totally
-                                                    disconnected topological space.
+- `NonarchimedeanGroup.instTotallyDisconnectedSpace`: A nonarchimedean group is a
+                                                      totally disconnected topological space.
 
 
 ## Notation
@@ -176,7 +176,7 @@ theorem non_singleton_set_disconnected
 /-- Instance of a nonarchimedean group as a totally disconnected topological space
 (TotallyDisconnectedSpace). (The nonarchimedean group is not necessarily abelian.)-/
 @[to_additive]
-instance totally_disconnected_space : TotallyDisconnectedSpace G := by
+instance : TotallyDisconnectedSpace G := by
       rw [totallyDisconnectedSpace_iff_connectedComponent_singleton]
       intro x
       by_contra con
