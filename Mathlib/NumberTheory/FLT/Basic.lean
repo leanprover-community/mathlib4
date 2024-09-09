@@ -6,13 +6,7 @@ Authors: Kevin Buzzard, Yaël Dillies
 import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.Algebra.GCDMonoid.Finset
 import Mathlib.Algebra.GCDMonoid.Nat
-import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Data.Rat.Defs
 import Mathlib.RingTheory.PrincipalIdealDomain
-import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.TFAE
 
 /-!
 # Statement of Fermat's Last Theorem

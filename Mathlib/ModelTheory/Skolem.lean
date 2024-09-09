@@ -82,11 +82,11 @@ theorem skolem₁_reduct_isElementary (S : (L.sum L.skolem₁).Substructure M) :
   apply (LHom.sumInl.substructureReduct S).isElementary_of_exists
   intro n φ x a h
   let φ' : (L.sum L.skolem₁).Functions n := LHom.sumInr.onFunction φ
-  exact
-    ⟨⟨funMap φ' ((↑) ∘ x), S.fun_mem (LHom.sumInr.onFunction φ) ((↑) ∘ x) (by
-      exact fun i => (x i).2)⟩,
-      by exact Classical.epsilon_spec (p := fun a => BoundedFormula.Realize φ default
-          (Fin.snoc (Subtype.val ∘ x) a)) ⟨a, h⟩⟩
+  use ⟨funMap φ' ((↑) ∘ x), ?_⟩
+  · exact Classical.epsilon_spec (p := fun a => BoundedFormula.Realize φ default
+          (Fin.snoc (Subtype.val ∘ x) a)) ⟨a, h⟩
+  · exact S.fun_mem (LHom.sumInr.onFunction φ) ((↑) ∘ x) (by
+      exact fun i => (x i).2)
 
 /-- Any `L.sum L.skolem₁`-substructure is an elementary `L`-substructure. -/
 noncomputable def elementarySkolem₁Reduct (S : (L.sum L.skolem₁).Substructure M) :

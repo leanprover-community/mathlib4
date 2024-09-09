@@ -430,7 +430,7 @@ theorem upperCrossingTime_lt_of_le_upcrossingsBefore (hN : 0 < N) (hab : a < b)
 theorem upperCrossingTime_eq_of_upcrossingsBefore_lt (hab : a < b)
     (hn : upcrossingsBefore a b f N ω < n) : upperCrossingTime a b f N n ω = N := by
   refine le_antisymm upperCrossingTime_le (not_lt.1 ?_)
-  convert not_mem_of_csSup_lt hn (upperCrossingTime_lt_bddAbove hab)
+  convert not_mem_of_csSup_lt hn (upperCrossingTime_lt_bddAbove hab) using 1
 
 theorem upcrossingsBefore_le (f : ℕ → Ω → ℝ) (ω : Ω) (hab : a < b) :
     upcrossingsBefore a b f N ω ≤ N := by

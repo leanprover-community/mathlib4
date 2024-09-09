@@ -380,11 +380,11 @@ theorem strong_law_aux1 {c : ℝ} (c_one : 1 < c) {ε : ℝ} (εpos : 0 < ε) : 
     ε * ⌊c ^ n⌋₊ := by
   /- Let `S n = ∑ i ∈ range n, Y i` where `Y i = truncation (X i) i`. We should show that
     `|S k - 𝔼[S k]| / k ≤ ε` along the sequence of powers of `c`. For this, we apply Borel-Cantelli:
-    it suffices to show that the converse probabilites are summable. From Chebyshev inequality, this
-    will follow from a variance control `∑' Var[S (c^i)] / (c^i)^2 < ∞`. This is checked in `I2`
-    using pairwise independence to expand the variance of the sum as the sum of the variances,
+    it suffices to show that the converse probabilities are summable. From Chebyshev inequality,
+    this will follow from a variance control `∑' Var[S (c^i)] / (c^i)^2 < ∞`. This is checked in
+    `I2` using pairwise independence to expand the variance of the sum as the sum of the variances,
     and then a straightforward but tedious computation (essentially boiling down to the fact that
-    the sum of `1/(c ^ i)^2` beyong a threshold `j` is comparable to `1/j^2`).
+    the sum of `1/(c ^ i)^2` beyond a threshold `j` is comparable to `1/j^2`).
     Note that we have written `c^i` in the above proof sketch, but rigorously one should put integer
     parts everywhere, making things more painful. We write `u i = ⌊c^i⌋₊` for brevity. -/
   have c_pos : 0 < c := zero_lt_one.trans c_one
