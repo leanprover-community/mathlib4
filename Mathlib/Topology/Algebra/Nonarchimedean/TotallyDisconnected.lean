@@ -206,4 +206,4 @@ instance totally_disconnected_space : TotallyDisconnectedSpace G := by
 
 end NonarchimedeanGroup
 
---#lint fails
+#lint -- lint works! :)
