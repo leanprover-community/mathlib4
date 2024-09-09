@@ -132,9 +132,8 @@ theorem tendsto_bdd_div_atTop_nhds_zero_nat (f : ℕ → ℝ) (b : ℝ)
 theorem tendsto_mod_div_atTop_nhds_zero_nat {m : ℕ} (hm : 0 < m) :
     Tendsto (fun n : ℕ => ((n % m : ℕ) : ℝ) / (n : ℝ)) atTop (𝓝 0) := by
   apply tendsto_bdd_div_atTop_nhds_zero_nat (fun n : ℕ => ((n % m : ℕ) : ℝ)) 0
-    (eventually_of_forall (fun _ ↦ cast_nonneg _)) m
-  apply eventually_of_forall
-  intro n
+    (Eventually.of_forall (fun _ ↦ cast_nonneg _)) m
+  apply Eventually.of_forall (fun n ↦ ?_)
   simp only [cast_le, le_of_lt (mod_lt n hm)]
 
 /-- If `u` tends to `∞` as `n` tends to `∞`, then for `n` big enough

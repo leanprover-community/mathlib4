@@ -1263,7 +1263,7 @@ theorem liminf_le_iff {α β} [ConditionallyCompleteLinearOrder β] {f : Filter 
 theorem limsup_nonneg_of_nonneg {α β} [Zero α] [ConditionallyCompleteLinearOrder α]
     {f : Filter β} [f.NeBot] {u : β → α} (hfu : IsBoundedUnder LE.le f u) (h : 0 ≤ u) :
     0 ≤ limsup u f :=
-  le_limsup_of_frequently_le (frequently_of_forall h) hfu
+  le_limsup_of_frequently_le (Frequently.of_forall h) hfu
 
 variable [ConditionallyCompleteLinearOrder α] {f : Filter α} {b : α}
 

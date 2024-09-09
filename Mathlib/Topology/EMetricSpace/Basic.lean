@@ -303,6 +303,6 @@ theorem eventually_le_of_bddAbove' {u : ℕ → ℝ≥0} (hu : BddAbove (Set.ran
     {a : ℝ≥0 | ∀ᶠ n : ℕ in atTop, u n ≤ a}.Nonempty := by
   obtain ⟨B, hB⟩ := hu
   simp only [mem_upperBounds, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff] at hB
-  exact ⟨B, Set.mem_setOf_eq.mpr (eventually_of_forall hB)⟩
+  exact ⟨B, Set.mem_setOf_eq.mpr (Eventually.of_forall hB)⟩
 
 end NNReal
