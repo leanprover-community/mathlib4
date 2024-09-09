@@ -297,9 +297,9 @@ theorem exists_lt_lowerSemicontinuous_integral_gt_nnreal [SigmaFinite μ] (f : �
         _ < ENNReal.toReal (∫⁻ a : α, f a ∂μ) + ε := add_lt_add_left hδε _
         _ = (∫⁻ a : α, ENNReal.ofReal ↑(f a) ∂μ).toReal + ε := by simp
 
-    · apply Filter.eventually_of_forall fun x => _; simp
+    · apply Filter.Eventually.of_forall fun x => _; simp
     · exact fmeas.coe_nnreal_real.aestronglyMeasurable
-    · apply Filter.eventually_of_forall fun x => _; simp
+    · apply Filter.Eventually.of_forall fun x => _; simp
     · apply gcont.measurable.ennreal_toReal.aemeasurable.aestronglyMeasurable
 
 /-! ### Upper semicontinuous lower bound for nonnegative functions -/
@@ -421,16 +421,16 @@ theorem exists_upperSemicontinuous_le_integral_le (f : α → ℝ≥0)
   refine ⟨g, gf, gcont, ?_, ?_⟩
   · refine
       Integrable.mono fint gcont.measurable.coe_nnreal_real.aemeasurable.aestronglyMeasurable ?_
-    exact Filter.eventually_of_forall fun x => by simp [gf x]
+    exact Filter.Eventually.of_forall fun x => by simp [gf x]
   · rw [integral_eq_lintegral_of_nonneg_ae, integral_eq_lintegral_of_nonneg_ae]
     · rw [sub_le_iff_le_add]
       convert ENNReal.toReal_mono _ gint
       · simp
       · rw [ENNReal.toReal_add Ig.ne ENNReal.coe_ne_top]; simp
       · simpa using Ig.ne
-    · apply Filter.eventually_of_forall; simp
+    · apply Filter.Eventually.of_forall; simp
     · exact gcont.measurable.coe_nnreal_real.aemeasurable.aestronglyMeasurable
-    · apply Filter.eventually_of_forall; simp
+    · apply Filter.Eventually.of_forall; simp
     · exact fint.aestronglyMeasurable
 
 /-! ### Vitali-Carathéodory theorem -/

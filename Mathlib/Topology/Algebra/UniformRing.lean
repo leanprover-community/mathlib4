@@ -33,12 +33,6 @@ the main constructions deal with continuous ring morphisms.
 TODO: Generalise the results here from the concrete `Completion` to any `AbstractCompletion`.
 -/
 
-
-open scoped Classical
-open Set Filter TopologicalSpace AddCommGroup
-
-open scoped Classical
-
 noncomputable section
 
 universe u

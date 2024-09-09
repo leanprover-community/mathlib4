@@ -34,7 +34,7 @@ and shows how that polynomial interacts with `MvPolynomial.bind₁`.
 -/
 
 
-variable {p : ℕ} [hp : Fact p.Prime] (n : ℕ) {R : Type*} [CommRing R]
+variable {p : ℕ} (n : ℕ) {R : Type*} [CommRing R]
 
 -- type as `\bbW`
 local notation "𝕎" => WittVector p
@@ -79,6 +79,8 @@ instance select_isPoly {P : ℕ → Prop} : IsPoly p fun _ _ x => select P x := 
   funext i
   apply coeff_select
 
+variable [hp : Fact p.Prime]
+
 theorem select_add_select_not : ∀ x : 𝕎 R, select P x + select (fun i => ¬P i) x = x := by
   -- Porting note: TC search was insufficient to find this instance, even though all required
   -- instances exist. See zulip: [https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/WittVector.20saga/near/370073526]
@@ -99,7 +101,7 @@ theorem select_add_select_not : ∀ x : 𝕎 R, select P x + select (fun i => ¬
   refine fun m _ => mul_eq_mul_left_iff.mpr (Or.inl ?_)
   rw [ite_pow, zero_pow (pow_ne_zero _ hp.out.ne_zero)]
   by_cases Pm : P m
-  · rw [if_pos Pm, if_neg $ not_not_intro Pm, zero_pow Fin.size_pos'.ne', add_zero]
+  · rw [if_pos Pm, if_neg <| not_not_intro Pm, zero_pow Fin.size_pos'.ne', add_zero]
   · rwa [if_neg Pm, if_pos, zero_add]
 
 theorem coeff_add_of_disjoint (x y : 𝕎 R) (h : ∀ n, x.coeff n = 0 ∨ y.coeff n = 0) :
@@ -126,6 +128,8 @@ theorem coeff_add_of_disjoint (x y : 𝕎 R) (h : ∀ n, x.coeff n = 0 ∨ y.coe
       · rw [h n |>.resolve_right y0, zero_add]
 
 end Select
+
+variable [Fact p.Prime]
 
 /-- `WittVector.init n x` is the Witt vector of which the first `n` coefficients are those from `x`
 and all other coefficients are `0`.
@@ -186,6 +190,9 @@ theorem init_init (x : 𝕎 R) (n : ℕ) : init n (init n x) = init n x := by
   simp only [WittVector.init, WittVector.select, WittVector.coeff_mk]
   by_cases hi : i < n <;> simp [hi]
 
+section
+variable [Fact p.Prime]
+
 theorem init_add (x y : 𝕎 R) (n : ℕ) : init n (x + y) = init n (init n x + init n y) := by
   init_ring using wittAdd_vars
 
@@ -207,6 +214,7 @@ theorem init_zsmul (m : ℤ) (x : 𝕎 R) (n : ℕ) : init n (m • x) = init n 
 theorem init_pow (m : ℕ) (x : 𝕎 R) (n : ℕ) : init n (x ^ m) = init n (init n x ^ m) := by
   init_ring using fun p [Fact (Nat.Prime p)] n => wittPow_vars p m n
 
+end
 section
 
 variable (p)

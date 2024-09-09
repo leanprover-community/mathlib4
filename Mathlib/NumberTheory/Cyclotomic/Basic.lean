@@ -3,7 +3,6 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.Init.Core
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 import Mathlib.NumberTheory.NumberField.Basic
 import Mathlib.FieldTheory.Galois
@@ -415,7 +414,7 @@ theorem splits_X_pow_sub_one [H : IsCyclotomicExtension S K L] (hS : n ∈ S) :
   obtain ⟨z, hz⟩ := ((isCyclotomicExtension_iff _ _ _).1 H).1 hS
   exact X_pow_sub_one_splits hz
 
-/-- A cyclotomic extension splits `cyclotomic n K` if `n ∈ S` and `ne_zero (n : K)`. -/
+/-- A cyclotomic extension splits `cyclotomic n K` if `n ∈ S`. -/
 theorem splits_cyclotomic [IsCyclotomicExtension S K L] (hS : n ∈ S) :
     Splits (algebraMap K L) (cyclotomic n K) := by
   refine splits_of_splits_of_dvd _ (X_pow_sub_C_ne_zero n.pos _) (splits_X_pow_sub_one K L hS) ?_
@@ -451,6 +450,7 @@ def algEquiv (L' : Type*) [Field L'] [Algebra K L'] [IsCyclotomicExtension {n} K
 
 scoped[Cyclotomic] attribute [instance] IsCyclotomicExtension.isSplittingField_X_pow_sub_one
 
+include n in
 theorem isGalois : IsGalois K L :=
   letI := isSplittingField_X_pow_sub_one n K L
   IsGalois.of_separable_splitting_field (X_pow_sub_one_separable_iff.2
@@ -521,7 +521,7 @@ end CyclotomicField
 
 section IsDomain
 
-variable [Algebra A K] [IsFractionRing A K]
+variable [Algebra A K]
 
 section CyclotomicRing
 
@@ -532,7 +532,7 @@ instance CyclotomicField.algebraBase : Algebra A (CyclotomicField n K) :=
   SplittingField.algebra' (cyclotomic n K)
 
 /-- Ensure there are no diamonds when `A = ℤ` but there are `reducible_and_instances` #10906 -/
-example : algebraInt (CyclotomicField n ℚ) = CyclotomicField.algebraBase _ _ _ := rfl
+example : Ring.toIntAlgebra (CyclotomicField n ℚ) = CyclotomicField.algebraBase _ _ _ := rfl
 
 instance CyclotomicField.algebra' {R : Type*} [CommRing R] [Algebra R K] :
     Algebra R (CyclotomicField n K) :=
@@ -541,7 +541,8 @@ instance CyclotomicField.algebra' {R : Type*} [CommRing R] [Algebra R K] :
 instance {R : Type*} [CommRing R] [Algebra R K] : IsScalarTower R K (CyclotomicField n K) :=
   SplittingField.isScalarTower _
 
-instance CyclotomicField.noZeroSMulDivisors : NoZeroSMulDivisors A (CyclotomicField n K) := by
+instance CyclotomicField.noZeroSMulDivisors [IsFractionRing A K] :
+    NoZeroSMulDivisors A (CyclotomicField n K) := by
   refine NoZeroSMulDivisors.of_algebraMap_injective ?_
   rw [IsScalarTower.algebraMap_eq A K (CyclotomicField n K)]
   exact
@@ -576,12 +577,14 @@ instance algebraBase : Algebra A (CyclotomicRing n A K) :=
 
 -- Ensure that there is no diamonds with ℤ.
 -- but there is at `reducible_and_instances` #10906
-example {n : ℕ+} : CyclotomicRing.algebraBase n ℤ ℚ = algebraInt _ := rfl
+example {n : ℕ+} : CyclotomicRing.algebraBase n ℤ ℚ = Ring.toIntAlgebra _ := rfl
 
-instance : NoZeroSMulDivisors A (CyclotomicRing n A K) :=
+instance [IsFractionRing A K] :
+    NoZeroSMulDivisors A (CyclotomicRing n A K) :=
   (adjoin A _).noZeroSMulDivisors_bot
 
-theorem algebraBase_injective : Function.Injective <| algebraMap A (CyclotomicRing n A K) :=
+theorem algebraBase_injective [IsFractionRing A K] :
+    Function.Injective <| algebraMap A (CyclotomicRing n A K) :=
   NoZeroSMulDivisors.algebraMap_injective _ _
 
 instance : Algebra (CyclotomicRing n A K) (CyclotomicField n K) :=
@@ -597,7 +600,7 @@ instance : NoZeroSMulDivisors (CyclotomicRing n A K) (CyclotomicField n K) :=
 instance : IsScalarTower A (CyclotomicRing n A K) (CyclotomicField n K) :=
   IsScalarTower.subalgebra' _ _ _ _
 
-instance isCyclotomicExtension [NeZero ((n : ℕ) : A)] :
+instance isCyclotomicExtension [IsFractionRing A K] [NeZero ((n : ℕ) : A)] :
     IsCyclotomicExtension {n} A (CyclotomicRing n A K) where
   exists_prim_root := @fun a han => by
     rw [mem_singleton_iff] at han
@@ -620,7 +623,7 @@ instance isCyclotomicExtension [NeZero ((n : ℕ) : A)] :
     · exact Subalgebra.add_mem _ hy hz
     · exact Subalgebra.mul_mem _ hy hz
 
-instance [IsDomain A] [NeZero ((n : ℕ) : A)] :
+instance [IsFractionRing A K] [IsDomain A] [NeZero ((n : ℕ) : A)] :
     IsFractionRing (CyclotomicRing n A K) (CyclotomicField n K) where
   map_units' := fun ⟨x, hx⟩ => by
     rw [isUnit_iff_ne_zero]

@@ -18,7 +18,7 @@ This file defines instances for `MulActionWithZero` and related structures on `�
 * `Algebra.GroupWithZero.Action.Units`
 -/
 
-assert_not_exists MonoidWithZero
+assert_not_exists Ring
 
 variable {M N α β : Type*}
 

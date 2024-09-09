@@ -11,13 +11,9 @@ import Qq
 -- Tools for analysing imports, like `#find_home`, `#minimize_imports`, ...
 import ImportGraph.Imports
 
--- Currently we don't need to import all of ProofWidgets,
--- but without this, if you don't run `lake build ProofWidgets` then `make test` will fail.
--- Hopefully `lake` will be able to handle tests later.
-import ProofWidgets
-
 -- Import common Batteries tactics and commands
 import Batteries.Tactic.Where
+import Batteries.Tactic.Basic
 
 -- Import Mathlib-specific linters.
 import Mathlib.Tactic.Linter.Lint

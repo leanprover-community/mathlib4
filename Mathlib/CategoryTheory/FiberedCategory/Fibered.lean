@@ -14,8 +14,8 @@ This file defines what it means for a functor `p : 𝒳 ⥤ 𝒮` to be (pre)fib
 
 ## Main definitions
 
-- `IsPreFibered p` expresses that `p` gives `𝒳` the structure of a prefibered category over `𝒮`,
-as in SGA VI.6.1
+- `IsPreFibered p` expresses `𝒳` is fibered over `𝒮` via a functor `p : 𝒳 ⥤ 𝒮`, as in SGA VI.6.1.
+This means that any morphism in the base `𝒮` can be lifted to a cartesian morphism in `𝒳`.
 
 - `IsFibered p` expresses `𝒳` is fibered over `𝒮` via a functor `p : 𝒳 ⥤ 𝒮`, as in SGA VI.6.1.
 This means that it is prefibered, and that the composition of any two cartesian morphisms is
@@ -29,9 +29,10 @@ a fibered category this way.
 
 ## Implementation
 
-The constructor of `IsPreFibered` is called `has_pullbacks'`. The reason for the prime is that when
-wanting to apply this condition, it is recommended to instead use the lemma `has_pullbacks`
-(without the prime), which is more applicable with respect to non-definitional equalities.
+The constructor of `IsPreFibered` is called `exists_isCartesian'`. The reason for the prime is that
+when wanting to apply this condition, it is recommended to instead use the lemma
+`exists_isCartesian` (without the prime), which is more applicable with respect to non-definitional
+equalities.
 
 ## References
 * [A. Grothendieck, M. Raynaud, *SGA 1*](https://arxiv.org/abs/math/0206203)
@@ -50,11 +51,11 @@ variable {𝒮 : Type u₁} {𝒳 : Type u₂} [Category.{v₁} 𝒮] [Category.
 
 See SGA 1 VI.6.1. -/
 class Functor.IsPreFibered (p : 𝒳 ⥤ 𝒮) : Prop where
-  has_pullbacks' {a : 𝒳} {R : 𝒮} (f : R ⟶ p.obj a) : ∃ (b : 𝒳) (φ : b ⟶ a), IsCartesian p f φ
+  exists_isCartesian' {a : 𝒳} {R : 𝒮} (f : R ⟶ p.obj a) : ∃ (b : 𝒳) (φ : b ⟶ a), IsCartesian p f φ
 
-protected lemma IsPreFibered.has_pullbacks {p : 𝒳 ⥤ 𝒮} [p.IsPreFibered] {a : 𝒳} {R S : 𝒮}
+protected lemma IsPreFibered.exists_isCartesian (p : 𝒳 ⥤ 𝒮) [p.IsPreFibered] {a : 𝒳} {R S : 𝒮}
     (ha : p.obj a = S) (f : R ⟶ S) : ∃ (b : 𝒳) (φ : b ⟶ a), IsCartesian p f φ := by
-  subst ha; exact IsPreFibered.has_pullbacks' f
+  subst ha; exact IsPreFibered.exists_isCartesian' f
 
 /-- Definition of a fibered category.
 
@@ -71,22 +72,21 @@ namespace IsPreFibered
 
 open IsCartesian
 
-
 variable {p : 𝒳 ⥤ 𝒮} [IsPreFibered p] {R S : 𝒮} {a : 𝒳} (ha : p.obj a = S) (f : R ⟶ S)
 
 /-- Given a fibered category `p : 𝒳 ⥤ 𝒫`, a morphism `f : R ⟶ S` and an object `a` lying over `S`,
 then `pullbackObj` is the domain of some choice of a cartesian morphism lying over `f` with
 codomain `a`. -/
 noncomputable def pullbackObj : 𝒳 :=
-  Classical.choose (IsPreFibered.has_pullbacks ha f)
+  Classical.choose (IsPreFibered.exists_isCartesian p ha f)
 
 /-- Given a fibered category `p : 𝒳 ⥤ 𝒫`, a morphism `f : R ⟶ S` and an object `a` lying over `S`,
 then `pullbackMap` is a choice of a cartesian morphism lying over `f` with codomain `a`. -/
-noncomputable def pullbackMap  : pullbackObj ha f ⟶ a :=
-  Classical.choose (Classical.choose_spec (IsPreFibered.has_pullbacks ha f))
+noncomputable def pullbackMap : pullbackObj ha f ⟶ a :=
+  Classical.choose (Classical.choose_spec (IsPreFibered.exists_isCartesian p ha f))
 
 instance pullbackMap.IsCartesian : IsCartesian p f (pullbackMap ha f) :=
-  Classical.choose_spec (Classical.choose_spec (IsPreFibered.has_pullbacks ha f))
+  Classical.choose_spec (Classical.choose_spec (IsPreFibered.exists_isCartesian p ha f))
 
 lemma pullbackObj_proj : p.obj (pullbackObj ha f) = R :=
   domain_eq p f (pullbackMap ha f)
@@ -149,7 +149,7 @@ lemma isStronglyCartesian_of_has_pullbacks' (p : 𝒳 ⥤ 𝒮) (h : ∀ (a : �
 
 lemma of_has_pullbacks' {p : 𝒳 ⥤ 𝒮} (h : ∀ (a : 𝒳) (R : 𝒮) (f : R ⟶ p.obj a),
     ∃ (b : 𝒳) (φ : b ⟶ a), IsStronglyCartesian p f φ) : IsFibered p where
-  has_pullbacks' := by
+  exists_isCartesian' := by
     intro a R f
     obtain ⟨b, φ, hφ⟩ := h a R f
     refine ⟨b, φ, inferInstance⟩

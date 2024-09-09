@@ -43,10 +43,9 @@ This result proves Weierstrass' theorem that polynomials are dense in `C([0,1], 
 although we defer an abstract statement of this until later.
 -/
 
-
 noncomputable section
 
-open scoped Classical BoundedContinuousFunction unitInterval
+open scoped BoundedContinuousFunction unitInterval
 
 /-- The Bernstein polynomials, as continuous functions on `[0,1]`.
 -/
@@ -93,7 +92,7 @@ def z {n : ℕ} (k : Fin (n + 1)) : I :=
     · norm_num
     · have h₁ : 0 < (n.succ : ℝ) := mod_cast Nat.succ_pos _
       have h₂ : ↑k ≤ n.succ := mod_cast Fin.le_last k
-      rw [Set.mem_Icc, le_div_iff h₁, div_le_iff h₁]
+      rw [Set.mem_Icc, le_div_iff₀ h₁, div_le_iff₀ h₁]
       norm_cast
       simp [h₂]⟩
 

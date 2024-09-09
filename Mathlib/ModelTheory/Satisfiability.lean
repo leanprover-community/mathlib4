@@ -9,34 +9,37 @@ import Mathlib.ModelTheory.Skolem
 
 /-!
 # First-Order Satisfiability
+
 This file deals with the satisfiability of first-order theories, as well as equivalence over them.
 
 ## Main Definitions
-* `FirstOrder.Language.Theory.IsSatisfiable`: `T.IsSatisfiable` indicates that `T` has a nonempty
-model.
-* `FirstOrder.Language.Theory.IsFinitelySatisfiable`: `T.IsFinitelySatisfiable` indicates that
-every finite subset of `T` is satisfiable.
-* `FirstOrder.Language.Theory.IsComplete`: `T.IsComplete` indicates that `T` is satisfiable and
-models each sentence or its negation.
-* `FirstOrder.Language.Theory.SemanticallyEquivalent`: `T.SemanticallyEquivalent φ ψ` indicates
-that `φ` and `ψ` are equivalent formulas or sentences in models of `T`.
-* `Cardinal.Categorical`: A theory is `κ`-categorical if all models of size `κ` are isomorphic.
+
+- `FirstOrder.Language.Theory.IsSatisfiable`: `T.IsSatisfiable` indicates that `T` has a nonempty
+  model.
+- `FirstOrder.Language.Theory.IsFinitelySatisfiable`: `T.IsFinitelySatisfiable` indicates that
+  every finite subset of `T` is satisfiable.
+- `FirstOrder.Language.Theory.IsComplete`: `T.IsComplete` indicates that `T` is satisfiable and
+  models each sentence or its negation.
+- `FirstOrder.Language.Theory.SemanticallyEquivalent`: `T.SemanticallyEquivalent φ ψ` indicates
+  that `φ` and `ψ` are equivalent formulas or sentences in models of `T`.
+- `Cardinal.Categorical`: A theory is `κ`-categorical if all models of size `κ` are isomorphic.
 
 ## Main Results
-* The Compactness Theorem, `FirstOrder.Language.Theory.isSatisfiable_iff_isFinitelySatisfiable`,
-shows that a theory is satisfiable iff it is finitely satisfiable.
-* `FirstOrder.Language.completeTheory.isComplete`: The complete theory of a structure is
-complete.
-* `FirstOrder.Language.Theory.exists_large_model_of_infinite_model` shows that any theory with an
-infinite model has arbitrarily large models.
-* `FirstOrder.Language.Theory.exists_elementaryEmbedding_card_eq`: The Upward Löwenheim–Skolem
-Theorem: If `κ` is a cardinal greater than the cardinalities of `L` and an infinite `L`-structure
-`M`, then `M` has an elementary extension of cardinality `κ`.
+
+- The Compactness Theorem, `FirstOrder.Language.Theory.isSatisfiable_iff_isFinitelySatisfiable`,
+  shows that a theory is satisfiable iff it is finitely satisfiable.
+- `FirstOrder.Language.completeTheory.isComplete`: The complete theory of a structure is
+  complete.
+- `FirstOrder.Language.Theory.exists_large_model_of_infinite_model` shows that any theory with an
+  infinite model has arbitrarily large models.
+- `FirstOrder.Language.Theory.exists_elementaryEmbedding_card_eq`: The Upward Löwenheim–Skolem
+  Theorem: If `κ` is a cardinal greater than the cardinalities of `L` and an infinite `L`-structure
+  `M`, then `M` has an elementary extension of cardinality `κ`.
 
 ## Implementation Details
-* Satisfiability of an `L.Theory` `T` is defined in the minimal universe containing all the symbols
-of `L`. By Löwenheim-Skolem, this is equivalent to satisfiability in any universe.
 
+- Satisfiability of an `L.Theory` `T` is defined in the minimal universe containing all the symbols
+  of `L`. By Löwenheim-Skolem, this is equivalent to satisfiability in any universe.
 -/
 
 
@@ -568,15 +571,16 @@ theorem Categorical.isComplete (h : κ.Categorical T) (h1 : ℵ₀ ≤ κ)
     obtain ⟨TF⟩ := h (MNT.toModel T) (MNF.toModel T) hNT hNF
     exact
       ((MNT.realize_sentence φ).trans
-        ((TF.realize_sentence φ).trans (MNF.realize_sentence φ).symm)).1 hMT⟩
+        ((StrongHomClass.realize_sentence TF φ).trans (MNF.realize_sentence φ).symm)).1 hMT⟩
 
 theorem empty_theory_categorical (T : Language.empty.Theory) : κ.Categorical T := fun M N hM hN =>
   by rw [empty.nonempty_equiv_iff, hM, hN]
 
 theorem empty_infinite_Theory_isComplete : Language.empty.infiniteTheory.IsComplete :=
   (empty_theory_categorical.{0} ℵ₀ _).isComplete ℵ₀ _ le_rfl (by simp)
-    ⟨Theory.Model.bundled ((model_infiniteTheory_iff Language.empty).2
-      (inferInstanceAs (Infinite ℕ)))⟩ fun M =>
-    (model_infiniteTheory_iff Language.empty).1 M.is_model
+    ⟨by
+      haveI : Language.empty.Structure ℕ := emptyStructure
+      exact ((model_infiniteTheory_iff Language.empty).2 (inferInstanceAs (Infinite ℕ))).bundled⟩
+    fun M => (model_infiniteTheory_iff Language.empty).1 M.is_model
 
 end Cardinal

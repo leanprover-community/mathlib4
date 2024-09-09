@@ -231,7 +231,7 @@ def augment (C : CochainComplex V ℕ) {X : V} (f : X ⟶ C.X 0) (w : f ≫ C.d 
     cases k
     · exact w
     · rw [C.shape, comp_zero]
-      simp only [Nat.zero_eq, ComplexShape.up_Rel, zero_add]
+      simp only [ComplexShape.up_Rel, zero_add]
       exact (Nat.one_lt_succ_succ _).ne
 
 @[simp]

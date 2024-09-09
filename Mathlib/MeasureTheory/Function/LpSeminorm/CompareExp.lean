@@ -53,7 +53,7 @@ theorem eLpNorm'_le_eLpNormEssSup_mul_rpow_measure_univ {q : ℝ} (hq_pos : 0 < 
     have h_nnnorm_le_eLpNorm_ess_sup := coe_nnnorm_ae_le_eLpNormEssSup f μ
     exact h_nnnorm_le_eLpNorm_ess_sup.mono fun x hx => by gcongr
   rw [eLpNorm', ← ENNReal.rpow_one (eLpNormEssSup f μ)]
-  nth_rw 2 [← mul_inv_cancel (ne_of_lt hq_pos).symm]
+  nth_rw 2 [← mul_inv_cancel₀ (ne_of_lt hq_pos).symm]
   rw [ENNReal.rpow_mul, one_div, ← ENNReal.mul_rpow_of_nonneg _ _ (by simp [hq_pos.le] : 0 ≤ q⁻¹)]
   gcongr
   rwa [lintegral_const] at h_le
@@ -148,8 +148,8 @@ theorem Memℒp.memℒp_of_exponent_le {p q : ℝ≥0∞} [IsFiniteMeasure μ] {
   · rw [eLpNorm_eq_eLpNorm' hp0 hp_top]
     rw [hq_top, eLpNorm_exponent_top] at hfq_lt_top
     refine lt_of_le_of_lt (eLpNorm'_le_eLpNormEssSup_mul_rpow_measure_univ hp_pos) ?_
-    refine ENNReal.mul_lt_top hfq_lt_top.ne ?_
-    exact (ENNReal.rpow_lt_top_of_nonneg (by simp [hp_pos.le]) (measure_ne_top μ Set.univ)).ne
+    refine ENNReal.mul_lt_top hfq_lt_top ?_
+    exact ENNReal.rpow_lt_top_of_nonneg (by simp [hp_pos.le]) (measure_ne_top μ Set.univ)
   have hq0 : q ≠ 0 := by
     by_contra hq_eq_zero
     have hp_eq_zero : p = 0 := le_antisymm (by rwa [hq_eq_zero] at hpq) (zero_le _)
@@ -204,7 +204,7 @@ theorem eLpNorm_le_eLpNorm_top_mul_eLpNorm (p : ℝ≥0∞) (f : α → E) {g : 
       swap
       · rw [one_div_nonneg]
         exact ENNReal.toReal_nonneg
-      rw [← ENNReal.rpow_mul, one_div, mul_inv_cancel, ENNReal.rpow_one]
+      rw [← ENNReal.rpow_mul, one_div, mul_inv_cancel₀, ENNReal.rpow_one]
       rw [Ne, ENNReal.toReal_eq_zero_iff, not_or]
       exact ⟨hp_zero, hp_top⟩
 
@@ -306,7 +306,7 @@ variable {𝕜 α E F : Type*} {m : MeasurableSpace α} {μ : Measure α} [Norme
 theorem eLpNorm_smul_le_eLpNorm_top_mul_eLpNorm (p : ℝ≥0∞) (hf : AEStronglyMeasurable f μ)
     (φ : α → 𝕜) : eLpNorm (φ • f) p μ ≤ eLpNorm φ ∞ μ * eLpNorm f p μ :=
   (eLpNorm_le_eLpNorm_top_mul_eLpNorm p φ hf (· • ·)
-    (eventually_of_forall fun _ => nnnorm_smul_le _ _) : _)
+    (Eventually.of_forall fun _ => nnnorm_smul_le _ _) : _)
 
 @[deprecated (since := "2024-07-27")]
 alias snorm_smul_le_snorm_top_mul_snorm := eLpNorm_smul_le_eLpNorm_top_mul_eLpNorm
@@ -314,7 +314,7 @@ alias snorm_smul_le_snorm_top_mul_snorm := eLpNorm_smul_le_eLpNorm_top_mul_eLpNo
 theorem eLpNorm_smul_le_eLpNorm_mul_eLpNorm_top (p : ℝ≥0∞) (f : α → E) {φ : α → 𝕜}
     (hφ : AEStronglyMeasurable φ μ) : eLpNorm (φ • f) p μ ≤ eLpNorm φ p μ * eLpNorm f ∞ μ :=
   (eLpNorm_le_eLpNorm_mul_eLpNorm_top p hφ f (· • ·)
-    (eventually_of_forall fun _ => nnnorm_smul_le _ _) : _)
+    (Eventually.of_forall fun _ => nnnorm_smul_le _ _) : _)
 
 @[deprecated (since := "2024-07-27")]
 alias snorm_smul_le_snorm_mul_snorm_top := eLpNorm_smul_le_eLpNorm_mul_eLpNorm_top
@@ -322,7 +322,7 @@ alias snorm_smul_le_snorm_mul_snorm_top := eLpNorm_smul_le_eLpNorm_mul_eLpNorm_t
 theorem eLpNorm'_smul_le_mul_eLpNorm' {p q r : ℝ} {f : α → E} (hf : AEStronglyMeasurable f μ)
     {φ : α → 𝕜} (hφ : AEStronglyMeasurable φ μ) (hp0_lt : 0 < p) (hpq : p < q)
     (hpqr : 1 / p = 1 / q + 1 / r) : eLpNorm' (φ • f) p μ ≤ eLpNorm' φ q μ * eLpNorm' f r μ :=
-  eLpNorm'_le_eLpNorm'_mul_eLpNorm' hφ hf (· • ·) (eventually_of_forall fun _ => nnnorm_smul_le _ _)
+  eLpNorm'_le_eLpNorm'_mul_eLpNorm' hφ hf (· • ·) (Eventually.of_forall fun _ => nnnorm_smul_le _ _)
     hp0_lt hpq hpqr
 
 @[deprecated (since := "2024-07-27")]
@@ -333,7 +333,7 @@ theorem eLpNorm_smul_le_mul_eLpNorm {p q r : ℝ≥0∞} {f : α → E} (hf : AE
     {φ : α → 𝕜} (hφ : AEStronglyMeasurable φ μ) (hpqr : 1 / p = 1 / q + 1 / r) :
     eLpNorm (φ • f) p μ ≤ eLpNorm φ q μ * eLpNorm f r μ :=
   (eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm hφ hf (· • ·)
-      (eventually_of_forall fun _ => nnnorm_smul_le _ _) hpqr :
+      (Eventually.of_forall fun _ => nnnorm_smul_le _ _) hpqr :
     _)
 
 @[deprecated (since := "2024-07-27")]
@@ -343,7 +343,7 @@ theorem Memℒp.smul {p q r : ℝ≥0∞} {f : α → E} {φ : α → 𝕜} (hf 
     (hpqr : 1 / p = 1 / q + 1 / r) : Memℒp (φ • f) p μ :=
   ⟨hφ.1.smul hf.1,
     (eLpNorm_smul_le_mul_eLpNorm hf.1 hφ.1 hpqr).trans_lt
-      (ENNReal.mul_lt_top hφ.eLpNorm_ne_top hf.eLpNorm_ne_top)⟩
+      (ENNReal.mul_lt_top hφ.eLpNorm_lt_top hf.eLpNorm_lt_top)⟩
 
 theorem Memℒp.smul_of_top_right {p : ℝ≥0∞} {f : α → E} {φ : α → 𝕜} (hf : Memℒp f p μ)
     (hφ : Memℒp φ ∞ μ) : Memℒp (φ • f) p μ := by

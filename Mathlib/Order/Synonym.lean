@@ -44,11 +44,11 @@ namespace OrderDual
 instance [h : Nontrivial α] : Nontrivial αᵒᵈ :=
   h
 
-/-- `toDual` is the identity function to the `OrderDual` of a linear order.  -/
+/-- `toDual` is the identity function to the `OrderDual` of a linear order. -/
 def toDual : α ≃ αᵒᵈ :=
   Equiv.refl _
 
-/-- `ofDual` is the identity function from the `OrderDual` of a linear order.  -/
+/-- `ofDual` is the identity function from the `OrderDual` of a linear order. -/
 def ofDual : αᵒᵈ ≃ α :=
   Equiv.refl _
 
@@ -134,12 +134,12 @@ end OrderDual
 def Lex (α : Type*) :=
   α
 
-/-- `toLex` is the identity function to the `Lex` of a type.  -/
+/-- `toLex` is the identity function to the `Lex` of a type. -/
 @[match_pattern]
 def toLex : α ≃ Lex α :=
   Equiv.refl _
 
-/-- `ofLex` is the identity function from the `Lex` of a type.  -/
+/-- `ofLex` is the identity function from the `Lex` of a type. -/
 @[match_pattern]
 def ofLex : Lex α ≃ α :=
   Equiv.refl _
