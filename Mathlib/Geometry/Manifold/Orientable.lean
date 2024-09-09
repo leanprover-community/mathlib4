@@ -186,7 +186,10 @@ def orientationPreservingPregroupoid [FiniteDimensional ℝ E] : Pregroupoid H w
     · intro x hxu
       have ⟨v, _, hxv, h⟩ := h (I.symm x) hxu.1
       exact h.1 _ ⟨Set.mem_inter hxu.1 hxv, hxu.2⟩
-    · sorry -- need to use h.2
+    · rintro _y ⟨x, ⟨aux, hxint⟩, hx⟩
+      rw [← hx]
+      have ⟨v, _, hxv, ⟨_, hint⟩⟩ := h (I.symm x) aux
+      exact hint (mem_image_of_mem (↑I ∘ f ∘ ↑I.symm) ⟨⟨aux, hxv⟩, hxint⟩)
   congr {f g u} hu fg hf := by
     constructor
     · intro x hx
