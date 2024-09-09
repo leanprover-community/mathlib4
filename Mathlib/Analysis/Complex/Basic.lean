@@ -92,6 +92,8 @@ instance (priority := 900) _root_.NormedAlgebra.complexToReal {A : Type*} [Semin
     [NormedAlgebra ℂ A] : NormedAlgebra ℝ A :=
   NormedAlgebra.restrictScalars ℝ ℂ A
 
+@[simp] lemma nnnorm_I : ‖I‖₊ = 1 := by simp [nnnorm]
+
 theorem dist_eq (z w : ℂ) : dist z w = abs (z - w) :=
   rfl
 

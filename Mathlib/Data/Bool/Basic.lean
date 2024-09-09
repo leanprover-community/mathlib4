@@ -120,21 +120,6 @@ alias of_decide_iff := decide_eq_true_iff
 
 theorem dichotomy (b : Bool) : b = false ∨ b = true := by cases b <;> simp
 
-theorem forall_bool' {p : Bool → Prop} (b : Bool) : (∀ x, p x) ↔ p b ∧ p !b :=
-  ⟨fun h ↦ ⟨h _, h _⟩, fun ⟨h₁, h₂⟩ x ↦ by cases b <;> cases x <;> assumption⟩
-
-@[simp]
-theorem forall_bool {p : Bool → Prop} : (∀ b, p b) ↔ p false ∧ p true :=
-  forall_bool' false
-
-theorem exists_bool' {p : Bool → Prop} (b : Bool) : (∃ x, p x) ↔ p b ∨ p !b :=
-  ⟨fun ⟨x, hx⟩ ↦ by cases x <;> cases b <;> first | exact .inl ‹_› | exact .inr ‹_›,
-    fun h ↦ by cases h <;> exact ⟨_, ‹_›⟩⟩
-
-@[simp]
-theorem exists_bool {p : Bool → Prop} : (∃ b, p b) ↔ p false ∨ p true :=
-  exists_bool' false
-
 theorem not_ne_id : not ≠ id := fun h ↦ false_ne_true <| congrFun h true
 
 @[deprecated (since := "2024-06-07")] alias eq_true_of_ne_false := eq_true_of_ne_false

@@ -1069,7 +1069,7 @@ theorem nhds_eq_comap_inf_principal {x} (hx : x ∈ e.source) :
   lift x to e.source using hx
   rw [← e.open_source.nhdsWithin_eq x.2, ← map_nhds_subtype_val, ← map_comap_setCoe_val,
     e.toHomeomorphSourceTarget.nhds_eq_comap, nhds_subtype_eq_comap]
-  simp only [(· ∘ ·), toHomeomorphSourceTarget_apply_coe, comap_comap]
+  simp only [Function.comp_def, toHomeomorphSourceTarget_apply_coe, comap_comap]
 
 /-- If a partial homeomorphism has source and target equal to univ, then it induces a homeomorphism
 between the whole spaces, expressed in this definition. -/
