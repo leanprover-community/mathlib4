@@ -136,8 +136,7 @@ theorem StrongEpi.of_arrow_iso {A B A' B' : C} {f : A ⟶ B} {g : A' ⟶ B'}
     (e : Arrow.mk f ≅ Arrow.mk g) [h : StrongEpi f] : StrongEpi g :=
   { epi := by
       rw [Arrow.iso_w' e]
-      haveI := epi_comp f e.hom.right
-      apply epi_comp
+      infer_instance
     llp := fun {X Y} z => by
       intro
       apply HasLiftingProperty.of_arrow_iso_left e z }
@@ -146,8 +145,7 @@ theorem StrongMono.of_arrow_iso {A B A' B' : C} {f : A ⟶ B} {g : A' ⟶ B'}
     (e : Arrow.mk f ≅ Arrow.mk g) [h : StrongMono f] : StrongMono g :=
   { mono := by
       rw [Arrow.iso_w' e]
-      haveI := mono_comp f e.hom.right
-      apply mono_comp
+      infer_instance
     rlp := fun {X Y} z => by
       intro
       apply HasLiftingProperty.of_arrow_iso_right z e }
