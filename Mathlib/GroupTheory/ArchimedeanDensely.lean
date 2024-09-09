@@ -220,9 +220,9 @@ lemma LinearOrderedCommGroupWithZero.discrete_or_denselyOrdered (G : Type*)
   refine (LinearOrderedCommGroup.discrete_or_denselyOrdered Gˣ).imp ?_ ?_
   · intro ⟨f⟩
     refine ⟨OrderMonoidIso.trans
-      ⟨(WithZero.unitsWithZeroEquivGroupWithZero G).symm, ?_⟩ ⟨f.withZeroCongr, ?_⟩⟩
+      ⟨(WithZero.unitsWithZeroMulEquivGroupWithZero G).symm, ?_⟩ ⟨f.withZeroCongr, ?_⟩⟩
     · intro
-      simp only [WithZero.unitsWithZeroEquivGroupWithZero, MulEquiv.symm_mk,
+      simp only [WithZero.unitsWithZeroMulEquivGroupWithZero, MulEquiv.symm_mk,
         MulEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe, MulEquiv.coe_mk,
         Equiv.coe_fn_symm_mk ]
       split_ifs <;>
