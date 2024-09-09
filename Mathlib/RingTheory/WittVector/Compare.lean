@@ -71,16 +71,17 @@ def zmodEquivTrunc : ZMod (p ^ n) ≃+* TruncatedWittVector p n (ZMod p) :=
   ZMod.ringEquiv (TruncatedWittVector p n (ZMod p)) (card_zmod _ _)
 
 theorem zmodEquivTrunc_apply {x : ZMod (p ^ n)} :
-    zmodEquivTrunc p n x = ZMod.castHom (by rfl) (TruncatedWittVector p n (ZMod p)) x :=
+    zmodEquivTrunc p n x =
+      ZMod.castHom (m := p ^ n) (by rfl) (TruncatedWittVector p n (ZMod p)) x :=
   rfl
 
 /-- The following diagram commutes:
 ```text
-          zmod (p^n) ----------------------------> zmod (p^m)
+          ZMod (p^n) ----------------------------> ZMod (p^m)
             |                                        |
             |                                        |
             v                                        v
-TruncatedWittVector p n (zmod p) ----> TruncatedWittVector p m (zmod p)
+TruncatedWittVector p n (ZMod p) ----> TruncatedWittVector p m (ZMod p)
 ```
 Here the vertical arrows are `TruncatedWittVector.zmodEquivTrunc`,
 the horizontal arrow at the top is `ZMod.castHom`,
@@ -104,11 +105,11 @@ theorem commutes_symm' {m : ℕ} (hm : n ≤ m) (x : TruncatedWittVector p m (ZM
 
 /-- The following diagram commutes:
 ```text
-TruncatedWittVector p n (zmod p) ----> TruncatedWittVector p m (zmod p)
+TruncatedWittVector p n (ZMod p) ----> TruncatedWittVector p m (ZMod p)
             |                                        |
             |                                        |
             v                                        v
-          zmod (p^n) ----------------------------> zmod (p^m)
+          ZMod (p^n) ----------------------------> ZMod (p^m)
 ```
 Here the vertical arrows are `(TruncatedWittVector.zmodEquivTrunc p _).symm`,
 the horizontal arrow at the top is `ZMod.castHom`,

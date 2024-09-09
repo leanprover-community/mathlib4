@@ -19,7 +19,7 @@ category of abelian groups.
   with generators `x : X`.
 * `Grp.free`: constructs the functor associating to a type `X` the free group with
   generators `x : X`.
-* `abelianize`: constructs the functor which associates to a group `G` its abelianization `Gᵃᵇ`.
+* `Grp.abelianize`: constructs the functor which associates to a group `G` its abelianization `Gᵃᵇ`.
 
 ## Main statements
 
@@ -27,7 +27,7 @@ category of abelian groups.
   of the forgetful functor from abelian groups to types.
 * `Grp.adj`: proves that `Grp.free` is the left adjoint of the forgetful functor
   from groups to types.
-* `abelianizeAdj`: proves that `abelianize` is left adjoint to the forgetful functor from
+* `abelianizeAdj`: proves that `Grp.abelianize` is left adjoint to the forgetful functor from
   abelian groups to groups.
 -/
 
@@ -76,6 +76,9 @@ instance : free.{u}.IsLeftAdjoint :=
   ⟨_, ⟨adj⟩⟩
 
 instance : (forget AddCommGrp.{u}).IsRightAdjoint :=
+  ⟨_, ⟨adj⟩⟩
+
+instance : AddCommGrp.free.{u}.IsLeftAdjoint :=
   ⟨_, ⟨adj⟩⟩
 
 /-- As an example, we now give a high-powered proof that

@@ -27,10 +27,7 @@ the circumcenter.
 
 -/
 
-
 noncomputable section
-
-open scoped Classical
 
 open RealInnerProductSpace
 
@@ -118,7 +115,10 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
           dist_sq_smul_orthogonal_vadd_smul_orthogonal_vadd (orthogonalProjection_mem p) hcc _ _
             (vsub_orthogonalProjection_mem_direction_orthogonal s p),
           ← dist_eq_norm_vsub V p, dist_comm _ cc]
-        field_simp [ycc₂, hy0]
+        -- TODO(#15486): used to be `field_simp`, but was really slow
+        -- replaced by `simp only ...` to speed up. Reinstate `field_simp` once it is faster.
+        simp (disch := field_simp_discharge) only [div_div, sub_div', one_mul, mul_div_assoc',
+          div_mul_eq_mul_div, add_div', eq_div_iff, div_eq_iff, ycc₂]
         ring
       · rw [dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq _ (hps hp1),
           orthogonalProjection_vadd_smul_vsub_orthogonalProjection _ _ hcc, Subtype.coe_mk,
@@ -202,6 +202,7 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonemp
         rw [hi default, hdist]
     · have i := hne.some
       let ι2 := { x // x ≠ i }
+      classical
       have hc : Fintype.card ι2 = m + 1 := by
         rw [Fintype.card_of_subtype (Finset.univ.filter fun x => x ≠ i)]
         · rw [Finset.filter_not]
@@ -426,7 +427,7 @@ theorem dist_circumcenter_sq_eq_sq_sub_circumradius {n : ℕ} {r : ℝ} (s : Sim
 
 /-- If there exists a distance that a point has from all vertices of a
 simplex, the orthogonal projection of that point onto the subspace
-spanned by that simplex is its circumcenter.  -/
+spanned by that simplex is its circumcenter. -/
 theorem orthogonalProjection_eq_circumcenter_of_exists_dist_eq {n : ℕ} (s : Simplex ℝ P n) {p : P}
     (hr : ∃ r, ∀ i, dist (s.points i) p = r) :
     ↑(s.orthogonalProjectionSpan p) = s.circumcenter := by
@@ -444,7 +445,7 @@ theorem orthogonalProjection_eq_circumcenter_of_exists_dist_eq {n : ℕ} (s : Si
 
 /-- If a point has the same distance from all vertices of a simplex,
 the orthogonal projection of that point onto the subspace spanned by
-that simplex is its circumcenter.  -/
+that simplex is its circumcenter. -/
 theorem orthogonalProjection_eq_circumcenter_of_dist_eq {n : ℕ} (s : Simplex ℝ P n) {p : P} {r : ℝ}
     (hr : ∀ i, dist (s.points i) p = r) : ↑(s.orthogonalProjectionSpan p) = s.circumcenter :=
   s.orthogonalProjection_eq_circumcenter_of_exists_dist_eq ⟨r, hr⟩
@@ -495,6 +496,7 @@ def pointIndexEmbedding (n : ℕ) : Fin (n + 1) ↪ PointsWithCircumcenterIndex 
 theorem sum_pointsWithCircumcenter {α : Type*} [AddCommMonoid α] {n : ℕ}
     (f : PointsWithCircumcenterIndex n → α) :
     ∑ i, f i = (∑ i : Fin (n + 1), f (pointIndex i)) + f circumcenterIndex := by
+  classical
   have h : univ = insert circumcenterIndex (univ.map (pointIndexEmbedding n)) := by
     ext x
     refine ⟨fun h => ?_, fun _ => mem_univ _⟩
@@ -536,6 +538,7 @@ def pointWeightsWithCircumcenter {n : ℕ} (i : Fin (n + 1)) : PointsWithCircumc
 @[simp]
 theorem sum_pointWeightsWithCircumcenter {n : ℕ} (i : Fin (n + 1)) :
     ∑ j, pointWeightsWithCircumcenter i j = 1 := by
+  classical
   convert sum_ite_eq' univ (pointIndex i) (Function.const _ (1 : ℝ)) with j
   · cases j <;> simp [pointWeightsWithCircumcenter]
   · simp
@@ -596,6 +599,7 @@ def circumcenterWeightsWithCircumcenter (n : ℕ) : PointsWithCircumcenterIndex 
 @[simp]
 theorem sum_circumcenterWeightsWithCircumcenter (n : ℕ) :
     ∑ i, circumcenterWeightsWithCircumcenter n i = 1 := by
+  classical
   convert sum_ite_eq' univ circumcenterIndex (Function.const _ (1 : ℝ)) with j
   · cases j <;> simp [circumcenterWeightsWithCircumcenter]
   · simp
@@ -793,7 +797,7 @@ theorem exists_circumsphere_eq_of_cospherical_subset {s : AffineSubspace ℝ P} 
     ∃ c : Sphere P, ∀ sx : Simplex ℝ P n, Set.range sx.points ⊆ ps → sx.circumsphere = c := by
   obtain ⟨r, hr⟩ := exists_circumradius_eq_of_cospherical_subset h hd hc
   obtain ⟨c, hc⟩ := exists_circumcenter_eq_of_cospherical_subset h hd hc
-  exact ⟨⟨c, r⟩, fun sx hsx => Sphere.ext _ _ (hc sx hsx) (hr sx hsx)⟩
+  exact ⟨⟨c, r⟩, fun sx hsx => Sphere.ext (hc sx hsx) (hr sx hsx)⟩
 
 /-- Two n-simplices among cospherical points in an n-dimensional
 subspace have the same circumsphere. -/

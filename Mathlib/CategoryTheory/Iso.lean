@@ -100,7 +100,7 @@ theorem symm_mk {X Y : C} (hom : X ⟶ Y) (inv : Y ⟶ X) (hom_inv_id) (inv_hom_
   rfl
 
 @[simp]
-theorem symm_symm_eq {X Y : C} (α : X ≅ Y) : α.symm.symm = α := by cases α; rfl
+theorem symm_symm_eq {X Y : C} (α : X ≅ Y) : α.symm.symm = α := rfl
 
 @[simp]
 theorem symm_eq_iff {X Y : C} {α β : X ≅ Y} : α.symm = β.symm ↔ α = β :=
@@ -343,6 +343,12 @@ Without the lower priority, typeclass inference cannot deduce `IsIso f.hom`
 because `f.hom` is defeq to `(fun x ↦ x) ≫ f.hom`, triggering a loop. -/
 instance (priority := 900) comp_isIso [IsIso f] [IsIso h] : IsIso (f ≫ h) :=
   (asIso f ≪≫ asIso h).isIso_hom
+
+/--
+The composition of isomorphisms is an isomorphism. Here the arguments of type `IsIso` are
+explicit, to make this easier to use with the `refine` tactic, for instance.
+-/
+lemma comp_isIso' (_ : IsIso f) (_ : IsIso h) : IsIso (f ≫ h) := inferInstance
 
 @[simp]
 theorem inv_id : inv (𝟙 X) = 𝟙 X := by

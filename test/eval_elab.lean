@@ -12,7 +12,7 @@ section from_zulip
 /--
 error: failed to synthesize
   Lean.ToExpr (Finset (Finset ℕ))
-use `set_option diagnostics true` to get diagnostic information
+Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
 #guard_msgs in
 #check eval% Finset.powerset ({1, 2, 3} : Finset ℕ)

@@ -265,7 +265,7 @@ theorem is_left_invariant_index {K : Set G} (hK : IsCompact K) (g : G) {V : Set 
 @[to_additive add_prehaar_le_addIndex]
 theorem prehaar_le_index (K₀ : PositiveCompacts G) {U : Set G} (K : Compacts G)
     (hU : (interior U).Nonempty) : prehaar (K₀ : Set G) U K ≤ index (K : Set G) K₀ := by
-  unfold prehaar; rw [div_le_iff] <;> norm_cast
+  unfold prehaar; rw [div_le_iff₀] <;> norm_cast
   · apply le_index_mul K₀ K hU
   · exact index_pos K₀ hU
 
@@ -576,9 +576,9 @@ instance isHaarMeasure_haarMeasure (K₀ : PositiveCompacts G) : IsHaarMeasure (
   · simp only [haarMeasure_self, ne_eq, ENNReal.one_ne_top, not_false_eq_true]
 
 /-- `haar` is some choice of a Haar measure, on a locally compact group. -/
-@[to_additive (attr := reducible)
+@[to_additive
 "`addHaar` is some choice of a Haar measure, on a locally compact additive group."]
-noncomputable def haar [LocallyCompactSpace G] : Measure G :=
+noncomputable abbrev haar [LocallyCompactSpace G] : Measure G :=
   haarMeasure <| Classical.arbitrary _
 
 /-! Steinhaus theorem: if `E` has positive measure, then `E / E` contains a neighborhood of zero.

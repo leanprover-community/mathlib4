@@ -126,7 +126,6 @@ abbrev LinearMapClass (F : Type*) (R : outParam Type*) (M M₂ : Type*)
     [FunLike F M M₂] :=
   SemilinearMapClass F (RingHom.id R) M M₂
 
-@[simp high]
 protected lemma LinearMapClass.map_smul {R M M₂ : outParam Type*} [Semiring R] [AddCommMonoid M]
     [AddCommMonoid M₂] [Module R M] [Module R M₂]
     {F : Type*} [FunLike F M M₂] [LinearMapClass F R M M₂] (f : F) (r : R) (x : M) :
@@ -322,12 +321,9 @@ protected theorem congr_arg {x x' : M} : x = x' → f x = f x' :=
 protected theorem congr_fun (h : f = g) (x : M) : f x = g x :=
   DFunLike.congr_fun h x
 
-protected theorem ext_iff : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
-
 @[simp]
 theorem mk_coe (f : M →ₛₗ[σ] M₃) (h) : (LinearMap.mk f h : M →ₛₗ[σ] M₃) = f :=
-  ext fun _ ↦ rfl
+  rfl
 
 variable (fₗ gₗ f g)
 
@@ -359,7 +355,7 @@ variable (M M₂)
 
 /-- A typeclass for `SMul` structures which can be moved through a `LinearMap`.
 This typeclass is generated automatically from an `IsScalarTower` instance, but exists so that
-we can also add an instance for `AddCommGroup.intModule`, allowing `z •` to be moved even if
+we can also add an instance for `AddCommGroup.toIntModule`, allowing `z •` to be moved even if
 `S` does not support negation.
 -/
 class CompatibleSMul (R S : Type*) [Semiring S] [SMul R M] [Module S M] [SMul R M₂]
@@ -456,9 +452,6 @@ theorem toAddMonoidHom_injective :
 theorem ext_ring {f g : R →ₛₗ[σ] M₃} (h : f 1 = g 1) : f = g :=
   ext fun x ↦ by rw [← mul_one x, ← smul_eq_mul, f.map_smulₛₗ, g.map_smulₛₗ, h]
 
-theorem ext_ring_iff {σ : R →+* R} {f g : R →ₛₗ[σ] M} : f = g ↔ f 1 = g 1 :=
-  ⟨fun h ↦ h ▸ rfl, ext_ring⟩
-
 @[ext high]
 theorem ext_ring_op {σ : Rᵐᵒᵖ →+* S} {f g : R →ₛₗ[σ] M₃} (h : f (1 : R) = g (1 : R)) :
     f = g :=
@@ -510,11 +503,11 @@ theorem coe_comp : (f.comp g : M₁ → M₃) = f ∘ g :=
 
 @[simp]
 theorem comp_id : f.comp id = f :=
-  LinearMap.ext fun _ ↦ rfl
+  rfl
 
 @[simp]
 theorem id_comp : id.comp f = f :=
-  LinearMap.ext fun _ ↦ rfl
+  rfl
 
 theorem comp_assoc
     {R₄ M₄ : Type*} [Semiring R₄] [AddCommMonoid M₄] [Module R₄ M₄]
@@ -888,7 +881,7 @@ def toAddMonoidHom' : (M →ₛₗ[σ₁₂] M₂) →+ M →+ M₂ where
   map_zero' := by ext; rfl
   map_add' := by intros; ext; rfl
 
-/-- If `M` is the zero module, then  the identity map of `M` is the zero map. -/
+/-- If `M` is the zero module, then the identity map of `M` is the zero map. -/
 @[simp]
 theorem identityMapOfZeroModuleIsZero [Subsingleton M] : id (R := R₁) (M := M) = 0 :=
   Subsingleton.eq_zero id

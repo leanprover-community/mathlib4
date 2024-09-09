@@ -43,12 +43,12 @@ end SheafOfModules
 namespace PresheafOfModules
 
 variable {R R' : Cᵒᵖ ⥤ RingCat.{u}} (α : R ⟶ R')
-  {M₁ M₂ : PresheafOfModules.{v} R'} (hM₂ : Presheaf.IsSheaf J M₂.presheaf)
-  [Presheaf.IsLocallySurjective J α]
+  {M₁ M₂ : PresheafOfModules.{v} R'}
 
 /-- The functor `PresheafOfModules.restrictScalars α` induces bijection on
 morphisms if `α` is locally surjective and the target presheaf is a sheaf. -/
-noncomputable def restrictHomEquivOfIsLocallySurjective :
+noncomputable def restrictHomEquivOfIsLocallySurjective
+    (hM₂ : Presheaf.IsSheaf J M₂.presheaf) [Presheaf.IsLocallySurjective J α] :
     (M₁ ⟶ M₂) ≃ ((restrictScalars α).obj M₁ ⟶ (restrictScalars α).obj M₂) where
   toFun f := (restrictScalars α).map f
   invFun g :=

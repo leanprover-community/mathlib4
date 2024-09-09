@@ -255,7 +255,7 @@ theorem hausdorffDist_optimal {X : Type u} [MetricSpace X] [CompactSpace X] [Non
       rcases exists_mem_of_nonempty X with ⟨xX, _⟩
       have : ∃ y ∈ range Ψ, dist (Φ xX) y < diam (univ : Set X) + 1 + diam (univ : Set Y) := by
         rw [Ψrange]
-        have : Φ xX ∈ ↑p := Φrange.subst (mem_range_self _)
+        have : Φ xX ∈ (p : Set _) := Φrange ▸ (mem_range_self _)
         exact
           exists_dist_lt_of_hausdorffDist_lt this bound
             (hausdorffEdist_ne_top_of_nonempty_of_bounded p.nonempty q.nonempty
@@ -315,7 +315,7 @@ theorem hausdorffDist_optimal {X : Type u} [MetricSpace X] [CompactSpace X] [Non
     refine le_trans this (le_of_forall_le_of_dense fun r hr => ?_)
     have I1 : ∀ x : X, (⨅ y, Fb (inl x, inr y)) ≤ r := by
       intro x
-      have : f (inl x) ∈ ↑p := Φrange.subst (mem_range_self _)
+      have : f (inl x) ∈ (p : Set _) := Φrange ▸ (mem_range_self _)
       rcases exists_dist_lt_of_hausdorffDist_lt this hr
           (hausdorffEdist_ne_top_of_nonempty_of_bounded p.nonempty q.nonempty p.isCompact.isBounded
             q.isCompact.isBounded) with
@@ -331,7 +331,7 @@ theorem hausdorffDist_optimal {X : Type u} [MetricSpace X] [CompactSpace X] [Non
 
     have I2 : ∀ y : Y, (⨅ x, Fb (inl x, inr y)) ≤ r := by
       intro y
-      have : f (inr y) ∈ ↑q := Ψrange.subst (mem_range_self _)
+      have : f (inr y) ∈ (q : Set _) := Ψrange ▸ (mem_range_self _)
       rcases exists_dist_lt_of_hausdorffDist_lt' this hr
           (hausdorffEdist_ne_top_of_nonempty_of_bounded p.nonempty q.nonempty p.isCompact.isBounded
             q.isCompact.isBounded) with
@@ -639,7 +639,7 @@ instance : SecondCountableTopology GHSpace := by
   choose N e _ using this
   -- cardinality of the nice finite subset `s p` of `p.rep`, called `N p`
   let N := fun p : GHSpace => N p (s p) (hs p).1
-  -- equiv from `s p`, a nice finite subset of `p.rep`, to `fin (N p)`, called `E p`
+  -- equiv from `s p`, a nice finite subset of `p.rep`, to `Fin (N p)`, called `E p`
   let E := fun p : GHSpace => e p (s p) (hs p).1
   -- A function `F` associating to `p : GHSpace` the data of all distances between points
   -- in the `ε`-dense set `s p`.
@@ -650,8 +650,8 @@ instance : SecondCountableTopology GHSpace := by
     `p` and `q` with `F p = F q` are at distance `≤ δ`.
     For this, we construct a map `Φ` from `s p ⊆ p.rep` (representing `p`)
     to `q.rep` (representing `q`) which is almost an isometry on `s p`, and
-    with image `s q`. For this, we compose the identification of `s p` with `fin (N p)`
-    and the inverse of the identification of `s q` with `fin (N q)`. Together with
+    with image `s q`. For this, we compose the identification of `s p` with `Fin (N p)`
+    and the inverse of the identification of `s q` with `Fin (N q)`. Together with
     the fact that `N p = N q`, this constructs `Ψ` between `s p` and `s q`, and then
     composing with the canonical inclusion we get `Φ`. -/
   have Npq : N p = N q := (Sigma.mk.inj_iff.1 hpq).1
@@ -694,12 +694,12 @@ instance : SecondCountableTopology GHSpace := by
       intro x y
       -- have : dist (Φ x) (Φ y) = dist (Ψ x) (Ψ y) := rfl
       rw [show dist (Φ x) (Φ y) = dist (Ψ x) (Ψ y) from rfl]
-      -- introduce `i`, that codes both `x` and `Φ x` in `fin (N p) = fin (N q)`
+      -- introduce `i`, that codes both `x` and `Φ x` in `Fin (N p) = Fin (N q)`
       let i : ℕ := E p x
       have hip : i < N p := ((E p) x).2
       have hiq : i < N q := by rwa [Npq] at hip
       have i' : i = (E q) (Ψ x) := by simp only [Ψ, Equiv.apply_symm_apply, Fin.coe_cast]
-      -- introduce `j`, that codes both `y` and `Φ y` in `fin (N p) = fin (N q)`
+      -- introduce `j`, that codes both `y` and `Φ y` in `Fin (N p) = Fin (N q)`
       let j : ℕ := E p y
       have hjp : j < N p := ((E p) y).2
       have hjq : j < N q := by rwa [Npq] at hjp
@@ -743,7 +743,7 @@ instance : SecondCountableTopology GHSpace := by
           _ ≤ 1 := le_of_lt (abs_sub_lt_one_of_floor_eq_floor this)
       calc
         |dist x y - dist (Ψ x) (Ψ y)| = ε * ε⁻¹ * |dist x y - dist (Ψ x) (Ψ y)| := by
-          rw [mul_inv_cancel (ne_of_gt εpos), one_mul]
+          rw [mul_inv_cancel₀ (ne_of_gt εpos), one_mul]
         _ = ε * (|ε⁻¹| * |dist x y - dist (Ψ x) (Ψ y)|) := by
           rw [abs_of_nonneg (le_of_lt (inv_pos.2 εpos)), mul_assoc]
         _ ≤ ε * 1 := mul_le_mul_of_nonneg_left I (le_of_lt εpos)
@@ -846,12 +846,12 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
       intro x y
       have : dist (Φ x) (Φ y) = dist (Ψ x) (Ψ y) := rfl
       rw [this]
-      -- introduce `i`, that codes both `x` and `Φ x` in `fin (N p) = fin (N q)`
+      -- introduce `i`, that codes both `x` and `Φ x` in `Fin (N p) = Fin (N q)`
       let i : ℕ := E p x
       have hip : i < N p := ((E p) x).2
       have hiq : i < N q := by rwa [Npq] at hip
       have i' : i = (E q) (Ψ x) := by simp only [Ψ, Equiv.apply_symm_apply, Fin.coe_cast]
-      -- introduce `j`, that codes both `y` and `Φ y` in `fin (N p) = fin (N q)`
+      -- introduce `j`, that codes both `y` and `Φ y` in `Fin (N p) = Fin (N q)`
       let j : ℕ := E p y
       have hjp : j < N p := ((E p) y).2
       have hjq : j < N q := by rwa [Npq] at hjp
@@ -914,7 +914,7 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
           _ ≤ 1 := le_of_lt (abs_sub_lt_one_of_floor_eq_floor this)
       calc
         |dist x y - dist (Ψ x) (Ψ y)| = ε * ε⁻¹ * |dist x y - dist (Ψ x) (Ψ y)| := by
-          rw [mul_inv_cancel (ne_of_gt εpos), one_mul]
+          rw [mul_inv_cancel₀ (ne_of_gt εpos), one_mul]
         _ = ε * (|ε⁻¹| * |dist x y - dist (Ψ x) (Ψ y)|) := by
           rw [abs_of_nonneg (le_of_lt (inv_pos.2 εpos)), mul_assoc]
         _ ≤ ε * 1 := mul_le_mul_of_nonneg_left I (le_of_lt εpos)
@@ -940,7 +940,7 @@ limit of the `Y n`, and finally let `Z` be the completion of `Z0`.
 The images `X2 n` of `X n` in `Z` are at Hausdorff distance `< 1/2^n` by construction, hence they
 form a Cauchy sequence for the Hausdorff distance. By completeness (of `Z`, and therefore of its
 set of nonempty compact subsets), they converge to a limit `L`. This is the nonempty
-compact metric space we are looking for.  -/
+compact metric space we are looking for. -/
 variable (X : ℕ → Type) [∀ n, MetricSpace (X n)] [∀ n, CompactSpace (X n)] [∀ n, Nonempty (X n)]
 
 /-- Auxiliary structure used to glue metric spaces below, recording an isometric embedding

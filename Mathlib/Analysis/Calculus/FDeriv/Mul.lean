@@ -550,7 +550,7 @@ variable {ι : Type*} {𝔸 𝔸' : Type*} [NormedRing 𝔸] [NormedCommRing �
 theorem hasStrictFDerivAt_list_prod' [Fintype ι] {l : List ι} {x : ι → 𝔸} :
     HasStrictFDerivAt (𝕜 := 𝕜) (fun x ↦ (l.map x).prod)
       (∑ i : Fin l.length, ((l.take i).map x).prod •
-        smulRight (proj (l.get i)) ((l.drop (.succ i)).map x).prod) x := by
+        smulRight (proj l[i]) ((l.drop (.succ i)).map x).prod) x := by
   induction l with
   | nil => simp [hasStrictFDerivAt_const]
   | cons a l IH =>
@@ -570,7 +570,7 @@ theorem hasStrictFDerivAt_list_prod_finRange' {n : ℕ} {x : Fin n → 𝔸} :
 theorem hasStrictFDerivAt_list_prod_attach' [DecidableEq ι] {l : List ι} {x : {i // i ∈ l} → 𝔸} :
     HasStrictFDerivAt (𝕜 := 𝕜) (fun x ↦ (l.attach.map x).prod)
       (∑ i : Fin l.length, ((l.attach.take i).map x).prod •
-        smulRight (proj (l.attach.get (i.cast l.length_attach.symm)))
+        smulRight (proj l.attach[i.cast l.length_attach.symm])
           ((l.attach.drop (.succ i)).map x).prod) x :=
   hasStrictFDerivAt_list_prod'.congr_fderiv <| Eq.symm <|
     Finset.sum_equiv (finCongr l.length_attach.symm) (by simp) (by simp)
@@ -579,7 +579,7 @@ theorem hasStrictFDerivAt_list_prod_attach' [DecidableEq ι] {l : List ι} {x : 
 theorem hasFDerivAt_list_prod' [Fintype ι] {l : List ι} {x : ι → 𝔸'} :
     HasFDerivAt (𝕜 := 𝕜) (fun x ↦ (l.map x).prod)
       (∑ i : Fin l.length, ((l.take i).map x).prod •
-        smulRight (proj (l.get i)) ((l.drop (.succ i)).map x).prod) x :=
+        smulRight (proj l[i]) ((l.drop (.succ i)).map x).prod) x :=
   hasStrictFDerivAt_list_prod'.hasFDerivAt
 
 @[fun_prop]
@@ -593,7 +593,7 @@ theorem hasFDerivAt_list_prod_finRange' {n : ℕ} {x : Fin n → 𝔸} :
 theorem hasFDerivAt_list_prod_attach' [DecidableEq ι] {l : List ι} {x : {i // i ∈ l} → 𝔸} :
     HasFDerivAt (𝕜 := 𝕜) (fun x ↦ (l.attach.map x).prod)
       (∑ i : Fin l.length, ((l.attach.take i).map x).prod •
-        smulRight (proj (l.attach.get (i.cast l.length_attach.symm)))
+        smulRight (proj l.attach[i.cast l.length_attach.symm])
           ((l.attach.drop (.succ i)).map x).prod) x :=
   hasStrictFDerivAt_list_prod_attach'.hasFDerivAt
 
@@ -606,11 +606,11 @@ For `NormedCommRing 𝔸'`, can rewrite as `Multiset` using `Multiset.prod_coe`.
 theorem hasStrictFDerivAt_list_prod [DecidableEq ι] [Fintype ι] {l : List ι} {x : ι → 𝔸'} :
     HasStrictFDerivAt (𝕜 := 𝕜) (fun x ↦ (l.map x).prod)
       (l.map fun i ↦ ((l.erase i).map x).prod • proj i).sum x := by
-  refine .congr_fderiv hasStrictFDerivAt_list_prod' ?_
+  refine hasStrictFDerivAt_list_prod'.congr_fderiv ?_
   conv_rhs => arg 1; arg 2; rw [← List.finRange_map_get l]
   simp only [List.map_map, ← List.sum_toFinset _ (List.nodup_finRange _), List.toFinset_finRange,
-    Function.comp_def, ((List.erase_get _).map _).prod_eq, List.eraseIdx_eq_take_drop_succ,
-    List.map_append, List.prod_append]
+    Function.comp_def, ((List.erase_getElem _).map _).prod_eq, List.eraseIdx_eq_take_drop_succ,
+    List.map_append, List.prod_append, List.get_eq_getElem, Fin.getElem_fin, Nat.succ_eq_add_one]
   exact Finset.sum_congr rfl fun i _ ↦ by
     ext; simp only [smul_apply, smulRight_apply, smul_eq_mul]; ring
 
@@ -642,12 +642,12 @@ theorem HasStrictFDerivAt.list_prod' {l : List ι} {x : E}
     (h : ∀ i ∈ l, HasStrictFDerivAt (f i ·) (f' i) x) :
     HasStrictFDerivAt (fun x ↦ (l.map (f · x)).prod)
       (∑ i : Fin l.length, ((l.take i).map (f · x)).prod •
-        smulRight (f' (l.get i)) ((l.drop (.succ i)).map (f · x)).prod) x := by
+        smulRight (f' l[i]) ((l.drop (.succ i)).map (f · x)).prod) x := by
   simp only [← List.finRange_map_get l, List.map_map]
   refine .congr_fderiv (hasStrictFDerivAt_list_prod_finRange'.comp x
-    (hasStrictFDerivAt_pi.mpr fun i ↦ h (l.get i) (l.get_mem i i.isLt))) ?_
+    (hasStrictFDerivAt_pi.mpr fun i ↦ h l[i] (l.getElem_mem ..))) ?_
   ext m
-  simp [← Function.comp_def (f · x) (l.get ·), ← List.map_map, List.map_take, List.map_drop]
+  simp [← List.map_map]
 
 /--
 Unlike `HasFDerivAt.finset_prod`, supports non-commutative multiply and duplicate elements.
@@ -657,39 +657,37 @@ theorem HasFDerivAt.list_prod' {l : List ι} {x : E}
     (h : ∀ i ∈ l, HasFDerivAt (f i ·) (f' i) x) :
     HasFDerivAt (fun x ↦ (l.map (f · x)).prod)
       (∑ i : Fin l.length, ((l.take i).map (f · x)).prod •
-        smulRight (f' (l.get i)) ((l.drop (.succ i)).map (f · x)).prod) x := by
+        smulRight (f' l[i]) ((l.drop (.succ i)).map (f · x)).prod) x := by
   simp only [← List.finRange_map_get l, List.map_map]
   refine .congr_fderiv (hasFDerivAt_list_prod_finRange'.comp x
-    (hasFDerivAt_pi.mpr fun i ↦ h (l.get i) (l.get_mem i i.isLt))) ?_
+    (hasFDerivAt_pi.mpr fun i ↦ h l[i] (l.getElem_mem i i.isLt))) ?_
   ext m
-  simp [← Function.comp_def (f · x) (l.get ·), ← List.map_map, List.map_take, List.map_drop]
+  simp [← List.map_map]
 
 @[fun_prop]
 theorem HasFDerivWithinAt.list_prod' {l : List ι} {x : E}
     (h : ∀ i ∈ l, HasFDerivWithinAt (f i ·) (f' i) s x) :
     HasFDerivWithinAt (fun x ↦ (l.map (f · x)).prod)
       (∑ i : Fin l.length, ((l.take i).map (f · x)).prod •
-        smulRight (f' (l.get i)) ((l.drop (.succ i)).map (f · x)).prod) s x := by
+        smulRight (f' l[i]) ((l.drop (.succ i)).map (f · x)).prod) s x := by
   simp only [← List.finRange_map_get l, List.map_map]
   refine .congr_fderiv (hasFDerivAt_list_prod_finRange'.comp_hasFDerivWithinAt x
-    (hasFDerivWithinAt_pi.mpr fun i ↦ h (l.get i) (l.get_mem i i.isLt))) ?_
+    (hasFDerivWithinAt_pi.mpr fun i ↦ h l[i] (l.get_mem i i.isLt))) ?_
   ext m
-  simp [← Function.comp_def (f · x) (l.get ·), ← List.map_map, List.map_take, List.map_drop]
+  simp [← List.map_map]
 
 theorem fderiv_list_prod' {l : List ι} {x : E}
     (h : ∀ i ∈ l, DifferentiableAt 𝕜 (f i ·) x) :
     fderiv 𝕜 (fun x ↦ (l.map (f · x)).prod) x =
       ∑ i : Fin l.length, ((l.take i).map (f · x)).prod •
-        smulRight (fderiv 𝕜 (fun x ↦ f (l.get i) x) x)
-          ((l.drop (.succ i)).map (f · x)).prod :=
+        smulRight (fderiv 𝕜 (fun x ↦ f l[i] x) x) ((l.drop (.succ i)).map (f · x)).prod :=
   (HasFDerivAt.list_prod' fun i hi ↦ (h i hi).hasFDerivAt).fderiv
 
 theorem fderivWithin_list_prod' {l : List ι} {x : E}
     (hxs : UniqueDiffWithinAt 𝕜 s x) (h : ∀ i ∈ l, DifferentiableWithinAt 𝕜 (f i ·) s x) :
     fderivWithin 𝕜 (fun x ↦ (l.map (f · x)).prod) s x =
       ∑ i : Fin l.length, ((l.take i).map (f · x)).prod •
-        smulRight (fderivWithin 𝕜 (fun x ↦ f (l.get i) x) s x)
-          ((l.drop (.succ i)).map (f · x)).prod :=
+        smulRight (fderivWithin 𝕜 (fun x ↦ f l[i] x) s x) ((l.drop (.succ i)).map (f · x)).prod :=
   (HasFDerivWithinAt.list_prod' fun i hi ↦ (h i hi).hasFDerivWithinAt).fderivWithin hxs
 
 @[fun_prop]

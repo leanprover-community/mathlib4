@@ -119,13 +119,9 @@ variable (K)
 
 theorem trace_eq_trace_adjoin [FiniteDimensional K L] (x : L) :
     Algebra.trace K L x = finrank K⟮x⟯ L • trace K K⟮x⟯ (AdjoinSimple.gen K x) := by
-  -- Porting note: `conv` was
-  -- `conv in x => rw [← IntermediateField.AdjoinSimple.algebraMap_gen K x]`
-  -- and it was after the first `rw`.
-  conv =>
-    lhs
-    rw [← IntermediateField.AdjoinSimple.algebraMap_gen K x]
-  rw [← trace_trace (S := K⟮x⟯), trace_algebraMap, LinearMap.map_smul_of_tower]
+  rw [← trace_trace (S := K⟮x⟯)]
+  conv in x => rw [← IntermediateField.AdjoinSimple.algebraMap_gen K x]
+  rw [trace_algebraMap, LinearMap.map_smul_of_tower]
 
 variable {K}
 
@@ -247,12 +243,9 @@ theorem trace_eq_sum_embeddings [FiniteDimensional K L] [Algebra.IsSeparable K L
   have hx := Algebra.IsSeparable.isIntegral K x
   let pb := adjoin.powerBasis hx
   rw [trace_eq_trace_adjoin K x, Algebra.smul_def, RingHom.map_mul, ← adjoin.powerBasis_gen hx,
-    trace_eq_sum_embeddings_gen E pb (IsAlgClosed.splits_codomain _)]
-  -- Porting note: the following `convert` was `exact`, with `← algebra.smul_def, algebra_map_smul`
-  -- in the previous `rw`.
-  · convert (sum_embeddings_eq_finrank_mul L E pb).symm
-    ext
-    simp
+    trace_eq_sum_embeddings_gen E pb (IsAlgClosed.splits_codomain _), ← Algebra.smul_def,
+    algebraMap_smul]
+  · exact (sum_embeddings_eq_finrank_mul L E pb).symm
   · haveI := Algebra.isSeparable_tower_bot_of_isSeparable K K⟮x⟯ L
     exact Algebra.IsSeparable.isSeparable K _
 
@@ -261,10 +254,8 @@ theorem trace_eq_sum_automorphisms (x : L) [FiniteDimensional K L] [IsGalois K L
   apply NoZeroSMulDivisors.algebraMap_injective L (AlgebraicClosure L)
   rw [_root_.map_sum (algebraMap L (AlgebraicClosure L))]
   rw [← Fintype.sum_equiv (Normal.algHomEquivAut K (AlgebraicClosure L) L)]
-  · rw [← trace_eq_sum_embeddings (AlgebraicClosure L)]
-    · simp only [algebraMap_eq_smul_one]
-      -- Porting note: `smul_one_smul` was in the `simp only`.
-      apply smul_one_smul
+  · rw [← trace_eq_sum_embeddings (AlgebraicClosure L) (x := x)]
+    simp only [algebraMap_eq_smul_one, smul_one_smul]
   · intro σ
     simp only [Normal.algHomEquivAut, AlgHom.restrictNormal', Equiv.coe_fn_mk,
       AlgEquiv.coe_ofBijective, AlgHom.restrictNormal_commutes, id.map_eq_id, RingHom.id_apply]

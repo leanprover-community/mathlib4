@@ -7,7 +7,7 @@ import Mathlib.Algebra.Module.MinimalAxioms
 import Mathlib.Topology.ContinuousFunction.Algebra
 import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
-import Mathlib.Analysis.CstarAlgebra.Basic
+import Mathlib.Analysis.CStarAlgebra.Basic
 import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 import Mathlib.Topology.Bornology.BoundedOperation
 
@@ -19,10 +19,8 @@ the uniform distance.
 
 -/
 
-
 noncomputable section
 
-open scoped Classical
 open Topology Bornology NNReal uniformity UniformConvergence
 
 open Set Filter Metric Function
@@ -230,12 +228,12 @@ theorem tendsto_iff_tendstoUniformly {ι : Type*} {F : ι → α →ᵇ β} {f :
     (fun h =>
       tendstoUniformly_iff.2 fun ε ε0 =>
         (Metric.tendsto_nhds.mp h ε ε0).mp
-          (eventually_of_forall fun n hn x =>
+          (Eventually.of_forall fun n hn x =>
             lt_of_le_of_lt (dist_coe_le_dist x) (dist_comm (F n) f ▸ hn)))
     fun h =>
     Metric.tendsto_nhds.mpr fun _ ε_pos =>
       (h _ (dist_mem_uniformity <| half_pos ε_pos)).mp
-        (eventually_of_forall fun n hn =>
+        (Eventually.of_forall fun n hn =>
           lt_of_le_of_lt
             ((dist_le (half_pos ε_pos).le).mpr fun x => dist_comm (f x) (F n x) ▸ le_of_lt (hn x))
             (half_lt_self ε_pos))
@@ -309,7 +307,7 @@ instance instCompleteSpace [CompleteSpace β] : CompleteSpace (α →ᵇ β) :=
         refine ((tendsto_order.1 b_lim).2 ε ε0).mono fun n hn x => ?_
         rw [dist_comm]
         exact lt_of_le_of_lt (fF_bdd x n) hn
-      exact this.continuous (eventually_of_forall fun N => (f N).continuous)
+      exact this.continuous (Eventually.of_forall fun N => (f N).continuous)
     · -- Check that `F` is bounded
       rcases (f 0).bounded with ⟨C, hC⟩
       refine ⟨C + (b 0 + b 0), fun x y => ?_⟩
@@ -491,6 +489,7 @@ theorem arzela_ascoli₁ [CompactSpace β] (A : Set (α →ᵇ β)) (closed : Is
   -- `F : β → β`, `hF : ∀ (y : β), F y ∈ tβ ∧ dist y (F y) < ε₂`
   /- Associate to every function a discrete approximation, mapping each point in `tα`
     to a point in `tβ` close to its true image by the function. -/
+  classical
   refine ⟨tα → tβ, by infer_instance, fun f a => ⟨F (f.1 a), (hF (f.1 a)).1⟩, ?_⟩
   rintro ⟨f, hf⟩ ⟨g, hg⟩ f_eq_g
   -- If two functions have the same approximation, then they are within distance `ε`
@@ -1367,7 +1366,7 @@ instance instStarModule : StarModule 𝕜 (α →ᵇ β) where
 
 end NormedAddCommGroup
 
-section CstarRing
+section CStarRing
 
 variable [TopologicalSpace α]
 variable [NonUnitalNormedRing β] [StarRing β]
@@ -1376,16 +1375,16 @@ instance instStarRing [NormedStarGroup β] : StarRing (α →ᵇ β) where
   __ := instStarAddMonoid
   star_mul f g := ext fun x ↦ star_mul (f x) (g x)
 
-variable [CstarRing β]
+variable [CStarRing β]
 
-instance instCstarRing : CstarRing (α →ᵇ β) where
+instance instCStarRing : CStarRing (α →ᵇ β) where
   norm_mul_self_le f := by
     rw [← sq, ← Real.le_sqrt (norm_nonneg _) (norm_nonneg _), norm_le (Real.sqrt_nonneg _)]
     intro x
-    rw [Real.le_sqrt (norm_nonneg _) (norm_nonneg _), sq, ← CstarRing.norm_star_mul_self]
+    rw [Real.le_sqrt (norm_nonneg _) (norm_nonneg _), sq, ← CStarRing.norm_star_mul_self]
     exact norm_coe_le_norm (star f * f) x
 
-end CstarRing
+end CStarRing
 
 section NormedLatticeOrderedGroup
 
@@ -1514,3 +1513,5 @@ lemma norm_sub_nonneg (f : α →ᵇ ℝ) :
 end
 
 end BoundedContinuousFunction
+
+set_option linter.style.longFile 1700

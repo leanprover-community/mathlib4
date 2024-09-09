@@ -35,7 +35,6 @@ This file defines `Polynomial.hermite n`, the `n`th probabilists' Hermite polyno
 
 -/
 
-
 noncomputable section
 
 open Polynomial
@@ -53,9 +52,9 @@ theorem hermite_succ (n : ℕ) : hermite (n + 1) = X * hermite n - derivative (h
   rw [hermite]
 
 theorem hermite_eq_iterate (n : ℕ) : hermite n = (fun p => X * p - derivative p)^[n] 1 := by
-  induction' n with n ih
-  · rfl
-  · rw [Function.iterate_succ_apply', ← ih, hermite_succ]
+  induction n with
+  | zero => rfl
+  | succ n ih => rw [Function.iterate_succ_apply', ← ih, hermite_succ]
 
 @[simp]
 theorem hermite_zero : hermite 0 = C 1 :=
@@ -83,17 +82,18 @@ theorem coeff_hermite_succ_succ (n k : ℕ) : coeff (hermite (n + 1)) (k + 1) =
 theorem coeff_hermite_of_lt {n k : ℕ} (hnk : n < k) : coeff (hermite n) k = 0 := by
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_lt hnk
   clear hnk
-  induction' n with n ih generalizing k
-  · apply coeff_C
-  · have : n + k + 1 + 2 = n + (k + 2) + 1 := by ring
-    rw [coeff_hermite_succ_succ, add_right_comm, this, ih k, ih (k + 2),
-      mul_zero, sub_zero]
+  induction n generalizing k with
+  | zero => exact coeff_C
+  | succ n ih =>
+    have : n + k + 1 + 2 = n + (k + 2) + 1 := by ring
+    rw [coeff_hermite_succ_succ, add_right_comm, this, ih k, ih (k + 2), mul_zero, sub_zero]
 
 @[simp]
 theorem coeff_hermite_self (n : ℕ) : coeff (hermite n) n = 1 := by
-  induction' n with n ih
-  · apply coeff_C
-  · rw [coeff_hermite_succ_succ, ih, coeff_hermite_of_lt, mul_zero, sub_zero]
+  induction n with
+  | zero => exact coeff_C
+  | succ n ih =>
+    rw [coeff_hermite_succ_succ, ih, coeff_hermite_of_lt, mul_zero, sub_zero]
     simp
 
 @[simp]
@@ -116,13 +116,17 @@ theorem hermite_monic (n : ℕ) : (hermite n).Monic :=
   leadingCoeff_hermite n
 
 theorem coeff_hermite_of_odd_add {n k : ℕ} (hnk : Odd (n + k)) : coeff (hermite n) k = 0 := by
-  induction' n with n ih generalizing k
-  · rw [zero_add k] at hnk
+  induction n generalizing k with
+  | zero =>
+    rw [zero_add k] at hnk
     exact coeff_hermite_of_lt hnk.pos
-  · cases' k with k
-    · rw [Nat.succ_add_eq_add_succ] at hnk
+  | succ n ih =>
+    cases k with
+    | zero =>
+      rw [Nat.succ_add_eq_add_succ] at hnk
       rw [coeff_hermite_succ_zero, ih hnk, neg_zero]
-    · rw [coeff_hermite_succ_succ, ih, ih, mul_zero, sub_zero]
+    | succ k =>
+      rw [coeff_hermite_succ_succ, ih, ih, mul_zero, sub_zero]
       · rwa [Nat.succ_add_eq_add_succ] at hnk
       · rw [(by rw [Nat.succ_add, Nat.add_succ] : n.succ + k.succ = n + k + 2)] at hnk
         exact (Nat.odd_add.mp hnk).mpr even_two
@@ -193,7 +197,7 @@ theorem coeff_hermite (n k : ℕ) :
       if Even (n + k) then (-1 : ℤ) ^ ((n - k) / 2) * (n - k - 1)‼ * Nat.choose n k else 0 := by
   split_ifs with h
   · exact coeff_hermite_of_even_add h
-  · exact coeff_hermite_of_odd_add (Nat.odd_iff_not_even.mpr h)
+  · exact coeff_hermite_of_odd_add (Nat.not_even_iff_odd.1 h)
 
 end CoeffExplicit
 

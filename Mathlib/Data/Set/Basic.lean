@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
 import Mathlib.Algebra.Group.ZeroOne
-import Mathlib.Data.Set.Defs
+import Mathlib.Data.Set.Operations
 import Mathlib.Order.Basic
 import Mathlib.Order.SymmDiff
 import Mathlib.Tactic.Tauto
@@ -187,9 +187,6 @@ variable {α : Type u} {β : Type v} {γ : Type w} {ι : Sort x} {a b : α} {s s
 instance : Inhabited (Set α) :=
   ⟨∅⟩
 
-protected theorem ext_iff {s t : Set α} : s = t ↔ ∀ x, x ∈ s ↔ x ∈ t :=
-  ⟨fun h x => by rw [h], ext⟩
-
 @[trans]
 theorem mem_of_mem_of_subset {x : α} {s t : Set α} (hx : x ∈ s) (h : s ⊆ t) : x ∈ t :=
   h hx
@@ -201,6 +198,11 @@ theorem forall_in_swap {p : α → β → Prop} : (∀ a ∈ s, ∀ (b), p a b) 
 
 theorem mem_setOf {a : α} {p : α → Prop} : a ∈ { x | p x } ↔ p a :=
   Iff.rfl
+
+/-- This lemma is intended for use with `rw` where a membership predicate is needed,
+hence the explicit argument and the equality in the reverse direction from normal.
+See also `Set.mem_setOf_eq` for the reverse direction applied to an argument. -/
+theorem eq_mem_setOf (p : α → Prop) : p = (· ∈ {a | p a}) := rfl
 
 /-- If `h : a ∈ {x | p x}` then `h.out : p x`. These are definitionally equal, but this can
 nevertheless be useful for various reasons, e.g. to apply further projection notation or in an
@@ -432,6 +434,11 @@ theorem Nonempty.to_type : s.Nonempty → Nonempty α := fun ⟨x, _⟩ => ⟨x�
 
 instance univ.nonempty [Nonempty α] : Nonempty (↥(Set.univ : Set α)) :=
   Set.univ_nonempty.to_subtype
+
+-- Redeclare for refined keys
+-- `Nonempty (@Subtype _ (@Membership.mem _ (Set _) _ (@Top.top (Set _) _)))`
+instance instNonemptyTop [Nonempty α] : Nonempty (⊤ : Set α) :=
+  inferInstanceAs (Nonempty (univ : Set α))
 
 theorem nonempty_of_nonempty_subtype [Nonempty (↥s)] : s.Nonempty :=
   nonempty_subtype.mp ‹_›
@@ -960,7 +967,7 @@ theorem insert_union_distrib (a : α) (s t : Set α) : insert a (s ∪ t) = inse
   ext fun _ => or_or_distrib_left
 
 theorem insert_inj (ha : a ∉ s) : insert a s = insert b s ↔ a = b :=
-  ⟨fun h => eq_of_not_mem_of_mem_insert (h.subst <| mem_insert a s) ha,
+  ⟨fun h => eq_of_not_mem_of_mem_insert (h ▸ mem_insert a s) ha,
     congr_arg (fun x => insert x s)⟩
 
 -- useful in proofs by induction
@@ -1426,8 +1433,9 @@ theorem not_mem_of_mem_diff {s t : Set α} {x : α} (h : x ∈ s \ t) : x ∉ t 
 
 theorem diff_eq_compl_inter {s t : Set α} : s \ t = tᶜ ∩ s := by rw [diff_eq, inter_comm]
 
-theorem nonempty_diff {s t : Set α} : (s \ t).Nonempty ↔ ¬s ⊆ t :=
+theorem diff_nonempty {s t : Set α} : (s \ t).Nonempty ↔ ¬s ⊆ t :=
   inter_compl_nonempty_iff
+@[deprecated (since := "2024-08-27")] alias nonempty_diff := diff_nonempty
 
 theorem diff_subset {s t : Set α} : s \ t ⊆ s := show s \ t ≤ s from sdiff_le
 
@@ -1970,9 +1978,8 @@ section Inclusion
 variable {α : Type*} {s t u : Set α}
 
 /-- `inclusion` is the "identity" function between two subsets `s` and `t`, where `s ⊆ t` -/
-def inclusion (h : s ⊆ t) : s → t := fun x : s => (⟨x, h x.2⟩ : t)
+abbrev inclusion (h : s ⊆ t) : s → t := fun x : s => (⟨x, h x.2⟩ : t)
 
-@[simp]
 theorem inclusion_self (x : s) : inclusion Subset.rfl x = x := by
   cases x
   rfl
@@ -2009,7 +2016,6 @@ theorem val_comp_inclusion (h : s ⊆ t) : Subtype.val ∘ inclusion h = Subtype
 theorem inclusion_injective (h : s ⊆ t) : Injective (inclusion h)
   | ⟨_, _⟩, ⟨_, _⟩ => Subtype.ext_iff_val.2 ∘ Subtype.ext_iff_val.1
 
-@[simp]
 theorem inclusion_inj (h : s ⊆ t) {x y : s} : inclusion h x = inclusion h y ↔ x = y :=
   (inclusion_injective h).eq_iff
 
@@ -2019,11 +2025,9 @@ theorem eq_of_inclusion_surjective {s t : Set α} {h : s ⊆ t}
   obtain ⟨y, hy⟩ := h_surj ⟨x, hx⟩
   exact mem_of_eq_of_mem (congr_arg Subtype.val hy).symm y.prop
 
-@[simp]
 theorem inclusion_le_inclusion [Preorder α] {s t : Set α} (h : s ⊆ t) {x y : s} :
     inclusion h x ≤ inclusion h y ↔ x ≤ y := Iff.rfl
 
-@[simp]
 theorem inclusion_lt_inclusion [Preorder α] {s t : Set α} (h : s ⊆ t) {x y : s} :
     inclusion h x < inclusion h y ↔ x < y := Iff.rfl
 
@@ -2169,3 +2173,5 @@ end Disjoint
 
 @[simp] theorem Prop.compl_singleton (p : Prop) : ({p}ᶜ : Set Prop) = {¬p} :=
   ext fun q ↦ by simpa [@Iff.comm q] using not_iff
+
+set_option linter.style.longFile 2300

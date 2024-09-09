@@ -80,9 +80,9 @@ instance (priority := 900) instAlgebra' {R A M} [CommSemiring R] [AddCommGroup M
 
 -- verify there are no diamonds
 -- but doesn't work at `reducible_and_instances` #10906
-example : (algebraNat : Algebra ℕ (CliffordAlgebra Q)) = instAlgebra' _ := rfl
+example : (Semiring.toNatAlgebra : Algebra ℕ (CliffordAlgebra Q)) = instAlgebra' _ := rfl
 -- but doesn't work at `reducible_and_instances` #10906
-example : (algebraInt _ : Algebra ℤ (CliffordAlgebra Q)) = instAlgebra' _ := rfl
+example : (Ring.toIntAlgebra _ : Algebra ℤ (CliffordAlgebra Q)) = instAlgebra' _ := rfl
 
 -- shortcut instance, as the other instance is slow
 instance instAlgebra : Algebra R (CliffordAlgebra Q) := instAlgebra' _
@@ -185,7 +185,7 @@ theorem hom_ext {A : Type*} [Semiring A] [Algebra R A] {f g : CliffordAlgebra Q 
 
 -- This proof closely follows `TensorAlgebra.induction`
 /-- If `C` holds for the `algebraMap` of `r : R` into `CliffordAlgebra Q`, the `ι` of `x : M`,
-and is preserved under addition and muliplication, then it holds for all of `CliffordAlgebra Q`.
+and is preserved under addition and multiplication, then it holds for all of `CliffordAlgebra Q`.
 
 See also the stronger `CliffordAlgebra.left_induction` and `CliffordAlgebra.right_induction`.
 -/

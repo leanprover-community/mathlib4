@@ -16,9 +16,7 @@ See also `LinearAlgebra/Matrix/Trace.lean` for the trace of a matrix.
 ## Tags
 
 linear_map, trace, diagonal
-
 -/
-
 
 noncomputable section
 
@@ -26,11 +24,8 @@ universe u v w
 
 namespace LinearMap
 
-open Matrix
-
-open FiniteDimensional
-
-open TensorProduct
+open scoped Matrix
+open FiniteDimensional TensorProduct
 
 section
 
@@ -64,16 +59,16 @@ theorem traceAux_eq : traceAux R b = traceAux R c :=
         rw [LinearMap.toMatrix_comp _ b, LinearMap.toMatrix_comp _ c]
       _ = Matrix.trace (LinearMap.toMatrix c c f) := by rw [LinearMap.comp_id, LinearMap.comp_id]
 
-open scoped Classical
-
 variable (M)
 
+open Classical in
 /-- Trace of an endomorphism independent of basis. -/
 def trace : (M →ₗ[R] M) →ₗ[R] R :=
   if H : ∃ s : Finset M, Nonempty (Basis s R M) then traceAux R H.choose_spec.some else 0
 
 variable {M}
 
+open Classical in
 /-- Auxiliary lemma for `trace_eq_matrix_trace`. -/
 theorem trace_eq_matrix_trace_of_finset {s : Finset M} (b : Basis s R M) (f : M →ₗ[R] M) :
     trace R M f = Matrix.trace (LinearMap.toMatrix b b f) := by
@@ -84,15 +79,17 @@ theorem trace_eq_matrix_trace_of_finset {s : Finset M} (b : Basis s R M) (f : M 
 
 theorem trace_eq_matrix_trace (f : M →ₗ[R] M) :
     trace R M f = Matrix.trace (LinearMap.toMatrix b b f) := by
+  classical
   rw [trace_eq_matrix_trace_of_finset R b.reindexFinsetRange, ← traceAux_def, ← traceAux_def,
     traceAux_eq R b b.reindexFinsetRange]
 
-theorem trace_mul_comm (f g : M →ₗ[R] M) : trace R M (f * g) = trace R M (g * f) :=
-  if H : ∃ s : Finset M, Nonempty (Basis s R M) then by
-    let ⟨s, ⟨b⟩⟩ := H
+theorem trace_mul_comm (f g : M →ₗ[R] M) : trace R M (f * g) = trace R M (g * f) := by
+  classical
+  by_cases H : ∃ s : Finset M, Nonempty (Basis s R M)
+  · let ⟨s, ⟨b⟩⟩ := H
     simp_rw [trace_eq_matrix_trace R b, LinearMap.toMatrix_mul]
     apply Matrix.trace_mul_comm
-  else by rw [trace, dif_neg H, LinearMap.zero_apply, LinearMap.zero_apply]
+  · rw [trace, dif_neg H, LinearMap.zero_apply, LinearMap.zero_apply]
 
 lemma trace_mul_cycle (f g h : M →ₗ[R] M) :
     trace R M (f * g * h) = trace R M (h * f * g) := by
@@ -145,9 +142,9 @@ theorem trace_eq_contract_of_basis' [Fintype ι] [DecidableEq ι] (b : Basis ι 
     LinearMap.trace R M = contractLeft R M ∘ₗ (dualTensorHomEquivOfBasis b).symm.toLinearMap := by
   simp [LinearEquiv.eq_comp_toLinearMap_symm, trace_eq_contract_of_basis b]
 
+section
 variable (R M)
 variable [Module.Free R M] [Module.Finite R M] [Module.Free R N] [Module.Finite R N]
-  [Module.Free R P] [Module.Finite R P]
 
 /-- When `M` is finite free, the trace of a linear map correspond to the contraction pairing under
 the isomorphism `End(M) ≃ M* ⊗ M`-/
@@ -257,10 +254,16 @@ theorem trace_comp_comm' (f : M →ₗ[R] N) (g : N →ₗ[R] M) :
   simp only [llcomp_apply', compr₂_apply, flip_apply] at h
   exact h
 
+end
+
+variable {N P}
+
+variable [Module.Free R N] [Module.Finite R N] [Module.Free R P] [Module.Finite R P] in
 lemma trace_comp_cycle (f : M →ₗ[R] N) (g : N →ₗ[R] P) (h : P →ₗ[R] M) :
     trace R P (g ∘ₗ f ∘ₗ h) = trace R N (f ∘ₗ h ∘ₗ g) := by
   rw [trace_comp_comm', comp_assoc]
 
+variable [Module.Free R M] [Module.Finite R M] [Module.Free R P] [Module.Finite R P] in
 lemma trace_comp_cycle' (f : M →ₗ[R] N) (g : N →ₗ[R] P) (h : P →ₗ[R] M) :
     trace R P ((g ∘ₗ f) ∘ₗ h) = trace R M ((h ∘ₗ g) ∘ₗ f) := by
   rw [trace_comp_comm', ← comp_assoc]
@@ -286,6 +289,7 @@ theorem IsProj.trace {p : Submodule R M} {f : M →ₗ[R] M} (h : IsProj p f) [M
     trace R M f = (finrank R p : R) := by
   rw [h.eq_conj_prodMap, trace_conj', trace_prodMap', trace_id, map_zero, add_zero]
 
+variable [Module.Free R M] [Module.Finite R M] in
 lemma isNilpotent_trace_of_isNilpotent {f : M →ₗ[R] M} (hf : IsNilpotent f) :
     IsNilpotent (trace R M f) := by
   let b : Basis _ R M := Module.Free.chooseBasis R M
@@ -293,6 +297,7 @@ lemma isNilpotent_trace_of_isNilpotent {f : M →ₗ[R] M} (hf : IsNilpotent f) 
   apply Matrix.isNilpotent_trace_of_isNilpotent
   simpa
 
+variable [Module.Free R M] [Module.Finite R M] in
 lemma trace_comp_eq_mul_of_commute_of_isNilpotent [IsReduced R] {f g : Module.End R M}
     (μ : R) (h_comm : Commute f g) (hg : IsNilpotent (g - algebraMap R _ μ)) :
     trace R M (f ∘ₗ g) = μ * trace R M f := by

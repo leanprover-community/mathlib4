@@ -41,9 +41,10 @@ theorem X_pow_dvd_iff {f : R[X]} {n : ℕ} : X ^ n ∣ f ↔ ∀ d < n, f.coeff 
   ⟨fun ⟨g, hgf⟩ d hd => by
     simp only [hgf, coeff_X_pow_mul', ite_eq_right_iff, not_le_of_lt hd, IsEmpty.forall_iff],
     fun hd => by
-    induction' n with n hn
-    · simp [pow_zero, one_dvd]
-    · obtain ⟨g, hgf⟩ := hn fun d : ℕ => fun H : d < n => hd _ (Nat.lt_succ_of_lt H)
+    induction n with
+    | zero => simp [pow_zero, one_dvd]
+    | succ n hn =>
+      obtain ⟨g, hgf⟩ := hn fun d : ℕ => fun H : d < n => hd _ (Nat.lt_succ_of_lt H)
       have := coeff_X_pow_mul g n 0
       rw [zero_add, ← hgf, hd n (Nat.lt_succ_self n)] at this
       obtain ⟨k, hgk⟩ := Polynomial.X_dvd_iff.mpr this.symm
@@ -166,7 +167,7 @@ theorem zero_modByMonic (p : R[X]) : 0 %ₘ p = 0 := by
   unfold modByMonic divModByMonicAux
   dsimp
   by_cases hp : Monic p
-  · rw [dif_pos hp, if_neg (mt And.right (not_not_intro rfl))]
+  · rw [dif_pos hp, if_neg (mt And.right (not_not_intro rfl)), Prod.snd_zero]
   · rw [dif_neg hp]
 
 @[simp]
@@ -175,7 +176,7 @@ theorem zero_divByMonic (p : R[X]) : 0 /ₘ p = 0 := by
   unfold divByMonic divModByMonicAux
   dsimp
   by_cases hp : Monic p
-  · rw [dif_pos hp, if_neg (mt And.right (not_not_intro rfl))]
+  · rw [dif_pos hp, if_neg (mt And.right (not_not_intro rfl)), Prod.fst_zero]
   · rw [dif_neg hp]
 
 @[simp]
@@ -503,7 +504,7 @@ theorem rootMultiplicity_eq_multiplicity [DecidableEq R] [@DecidableRel R[X] (·
     (p : R[X]) (a : R) :
     rootMultiplicity a p =
       if h0 : p = 0 then 0 else (multiplicity (X - C a) p).get (multiplicity_X_sub_C_finite a h0) :=
-  by simp [multiplicity, rootMultiplicity, Part.Dom]; congr; funext; congr
+  by simp only [rootMultiplicity, multiplicity, PartENat.find_get]; congr; funext; congr
 
 @[simp]
 theorem rootMultiplicity_zero {x : R} : rootMultiplicity x 0 = 0 :=

@@ -76,7 +76,7 @@ instance category : Category (BialgebraCat.{v} R) where
 @[ext]
 lemma hom_ext {X Y : BialgebraCat.{v} R} (f g : X ⟶ Y) (h : f.toBialgHom = g.toBialgHom) :
     f = g :=
-  Hom.ext _ _ h
+  Hom.ext h
 
 /-- Typecheck a `BialgHom` as a morphism in `BialgebraCat R`. -/
 abbrev ofHom {X Y : Type v} [Ring X] [Ring Y]
@@ -145,8 +145,8 @@ variable [Bialgebra R X] [Bialgebra R Y] [Bialgebra R Z]
 def toBialgebraCatIso (e : X ≃ₐc[R] Y) : BialgebraCat.of R X ≅ BialgebraCat.of R Y where
   hom := BialgebraCat.ofHom e
   inv := BialgebraCat.ofHom e.symm
-  hom_inv_id := Hom.ext _ _ <| DFunLike.ext _ _ e.left_inv
-  inv_hom_id := Hom.ext _ _ <| DFunLike.ext _ _ e.right_inv
+  hom_inv_id := Hom.ext <| DFunLike.ext _ _ e.left_inv
+  inv_hom_id := Hom.ext <| DFunLike.ext _ _ e.right_inv
 
 @[simp] theorem toBialgebraCatIso_refl : toBialgebraCatIso (BialgEquiv.refl R X) = .refl _ :=
   rfl

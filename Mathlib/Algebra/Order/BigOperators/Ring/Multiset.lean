@@ -41,8 +41,9 @@ theorem prod_pos (h : ∀ a ∈ s, (0 : R) < a) : 0 < s.prod := by
 end StrictOrderedCommSemiring
 
 @[simp]
-lemma _root_.CanonicallyOrderedCommSemiring.multiset_prod_pos [CanonicallyOrderedCommSemiring R]
-    [Nontrivial R] {m : Multiset R} : 0 < m.prod ↔ ∀ x ∈ m, 0 < x := by
+lemma CanonicallyOrderedCommSemiring.multiset_prod_pos {R : Type*}
+    [CanonicallyOrderedCommSemiring R] [Nontrivial R] {m : Multiset R} :
+    0 < m.prod ↔ ∀ x ∈ m, 0 < x := by
   rcases m with ⟨l⟩
   rw [Multiset.quot_mk_to_coe'', Multiset.prod_coe]
   exact CanonicallyOrderedCommSemiring.list_prod_pos
