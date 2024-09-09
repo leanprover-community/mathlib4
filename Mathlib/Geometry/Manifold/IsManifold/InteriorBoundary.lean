@@ -207,12 +207,12 @@ lemma interior_prod :
     rw [← interior_prod_eq, ← range_prodMap, modelWithCorners_prod_coe]
   constructor <;> intro hp
   · rw [ModelWithCorners.mem_interior, IsInteriorPoint, ← aux] at hp
-    exact hp
+    exact hp -- TODO
   · rw [ModelWithCorners.mem_interior]
     rw [IsInteriorPoint, ← aux, mem_prod]
     obtain h := Set.mem_prod.mp hp
     rw [ModelWithCorners.interior] at h
-    exact h
+    exact h -- TODO
 
 /-- The boundary of `M × N` is `∂M × N ∪ (M × ∂N)`. -/
 lemma boundary_prod :
@@ -222,7 +222,7 @@ lemma boundary_prod :
     _ = ((I.interior M) ×ˢ (J.interior N))ᶜ := by rw [interior_prod]
     _ = (I.interior M)ᶜ ×ˢ univ ∪ univ ×ˢ (J.interior N)ᶜ := by rw [compl_prod_eq_union]
   rw [h, I.compl_interior, J.compl_interior, union_comm]
-  rfl
+  rfl -- TODO
 
 /-- If `M` is boundaryless, `∂(M×N) = M × ∂N`. -/
 lemma boundary_of_boundaryless_left [BoundarylessManifold I M] :
