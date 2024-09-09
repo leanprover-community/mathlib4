@@ -312,11 +312,13 @@ theorem fg_induction (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
     (h₂ : ∀ M₁ M₂, P M₁ → P M₂ → P (M₁ ⊔ M₂)) (N : Submodule R M) (hN : N.FG) : P N := by
   classical
     obtain ⟨s, rfl⟩ := hN
-    induction s using Finset.induction
-    · rw [Finset.coe_empty, Submodule.span_empty, ← Submodule.span_zero_singleton]
-      apply h₁
-    · rw [Finset.coe_insert, Submodule.span_insert]
-      apply h₂ <;> apply_assumption
+    induction s using Finset.induction with
+    | empty =>
+      rw [Finset.coe_empty, Submodule.span_empty, ← Submodule.span_zero_singleton]
+      exact h₁ _
+    | insert _ ih =>
+      rw [Finset.coe_insert, Submodule.span_insert]
+      exact h₂ _ _ (h₁ _) ih
 
 /-- The kernel of the composition of two linear maps is finitely generated if both kernels are and
 the first morphism is surjective. -/
