@@ -84,14 +84,12 @@ variable (x y U : Type*) (x y : G) (U : Set G)
 
 @[to_additive]
 lemma subset_coset_comp (y : G) (U : Set G) (V : OpenSubgroup G) :
--- not using [TopologicalGroup G] [NonarchimedeanGroup G] [T2Space G]
     U ⊆  (y • (V : Set G)) ∪
       (y • (V : Set G))ᶜ := by
   simp only [Set.union_compl_self, Set.subset_univ]
 
 @[to_additive]
 lemma mem_subgroup_coset (x y : G) (hxy : y ≠ x) (V : OpenSubgroup G) :
--- not using [TopologicalGroup G] [NonarchimedeanGroup G] [T2Space G]
     y ∈ (y • (V : Set G)) := by
   have omem : 1 ∈ (V : Set G) := one_mem V
   change (y = x) → False at hxy
@@ -102,7 +100,6 @@ lemma mem_subgroup_coset (x y : G) (hxy : y ≠ x) (V : OpenSubgroup G) :
 
 @[to_additive]
 lemma non_empty_intersection_compl_coset (x y : G) (U : Set G) (hx : x ∈ U)
--- not using [TopologicalGroup G] [NonarchimedeanGroup G] [T2Space G]
     (A : Opens G) (quot : (y⁻¹ * x) ∈ A ) (V : OpenSubgroup G) (dva : Disjoint (V : Set G) A) :
     (U ∩ ((y • (V : Set G))ᶜ)).Nonempty := by
   simp_rw [Set.inter_nonempty, Set.mem_compl_iff]
@@ -116,7 +113,6 @@ lemma non_empty_intersection_compl_coset (x y : G) (U : Set G) (hx : x ∈ U)
 
 @[to_additive]
 lemma intersection_of_intersection_of_complements_empty (y : G)  (U : Set G)
--- not using [TopologicalGroup G] [NonarchimedeanGroup G] [T2Space G]
     (V : OpenSubgroup G) : ¬ (U ∩ ((y • (V : Set G)) ∩
     (y • (V : Set G))ᶜ)).Nonempty := by
   refine Set.not_nonempty_iff_eq_empty.mpr ?_
@@ -137,11 +133,11 @@ lemma intersection_of_intersection_of_complements_empty (y : G)  (U : Set G)
 variable [TopologicalGroup G]
 
 @[to_additive]
-lemma is_open_coset (y : G) (V : OpenSubgroup G)  : -- not using [NonarchimedeanGroup G] [T2Space G]
+lemma is_open_coset (y : G) (V : OpenSubgroup G)  :
     IsOpen (y • (V : Set G)) := IsOpen.smul (OpenSubgroup.isOpen V) y
 
 @[to_additive]
-lemma is_open_compl_coset' (y : G) -- not using [NonarchimedeanGroup G] [T2Space G]
+lemma is_open_compl_coset' (y : G)
     (V : OpenSubgroup G) :
     IsOpen  (y • (V : Set G))ᶜ := by
   refine isOpen_compl_iff.mpr ?_
@@ -194,8 +190,6 @@ theorem non_singleton_set_disconnected
         intersection_of_intersection_of_complements_empty G y U V⟩
   rintro ⟨_, h2⟩
   exact emptyUuv <| ((((h2 u v ou) ov) Uuv) Uu) Uv
-
-
 
 /-- Instance of a nonarchimedean group as a totally disconnected topological space
 (TotallyDisconnectedSpace). (The nonarchimedean group is not necessarily abelian.)-/
