@@ -229,10 +229,8 @@ theorem ContinuousLinearMap.iteratedFDerivWithin_comp_left {f : E → F} (g : F 
     (hf : ContDiffOn 𝕜 n f s) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) {i : ℕ} (hi : (i : ℕ∞) ≤ n) :
     iteratedFDerivWithin 𝕜 i (g ∘ f) s x =
       g.compContinuousMultilinearMap (iteratedFDerivWithin 𝕜 i f s x) :=
-  (((hf.ftaylorSeriesWithin hs).continuousLinearMap_comp g).eq_iteratedFDerivWithin_of_uniqueDiffOn
-    hi hs hx).symm
-
-#exit
+  ((((hf.of_le hi).ftaylorSeriesWithin hs).continuousLinearMap_comp
+    g).eq_iteratedFDerivWithin_of_uniqueDiffOn le_rfl hs hx).symm
 
 /-- The iterated derivative of the composition with a linear map on the left is
 obtained by applying the linear map to the iterated derivative. -/
@@ -333,8 +331,8 @@ theorem ContinuousLinearEquiv.comp_contDiff_iff (e : F ≃L[𝕜] G) :
 
 /-- If `f` admits a Taylor series `p` in a set `s`, and `g` is linear, then `f ∘ g` admits a Taylor
 series in `g ⁻¹' s`, whose `k`-th term is given by `p k (g v₁, ..., g vₖ)` . -/
-theorem HasFTaylorSeriesUpToOn.compContinuousLinearMap (hf : HasFTaylorSeriesUpToOn n f p s)
-    (g : G →L[𝕜] E) :
+theorem HasFTaylorSeriesUpToOn.compContinuousLinearMap {n : ℕ∞}
+    (hf : HasFTaylorSeriesUpToOn n f p s) (g : G →L[𝕜] E) :
     HasFTaylorSeriesUpToOn n (f ∘ g) (fun x k => (p (g x) k).compContinuousLinearMap fun _ => g)
       (g ⁻¹' s) := by
   let A : ∀ m : ℕ, (E[×m]→L[𝕜] F) → G[×m]→L[𝕜] F := fun m h => h.compContinuousLinearMap fun _ => g
@@ -360,11 +358,24 @@ theorem HasFTaylorSeriesUpToOn.compContinuousLinearMap (hf : HasFTaylorSeriesUpT
 a domain. -/
 theorem ContDiffWithinAt.comp_continuousLinearMap {x : G} (g : G →L[𝕜] E)
     (hf : ContDiffWithinAt 𝕜 n f s (g x)) : ContDiffWithinAt 𝕜 n (f ∘ g) (g ⁻¹' s) x := by
-  intro m hm
-  rcases hf m hm with ⟨u, hu, p, hp⟩
-  refine ⟨g ⁻¹' u, ?_, _, hp.compContinuousLinearMap g⟩
-  refine g.continuous.continuousWithinAt.tendsto_nhdsWithin ?_ hu
-  exact (mapsTo_singleton.2 <| mem_singleton _).union_union (mapsTo_preimage _ _)
+  match n with
+  | ω =>
+    obtain ⟨u, hu, p, hp, h'p⟩ := hf
+    refine ⟨g ⁻¹' u, ?_, _, hp.compContinuousLinearMap g, ?_⟩
+    · refine g.continuous.continuousWithinAt.tendsto_nhdsWithin ?_ hu
+      exact (mapsTo_singleton.2 <| mem_singleton _).union_union (mapsTo_preimage _ _)
+    · intro i
+      change AnalyticWithinOn 𝕜 (fun x ↦
+        ContinuousMultilinearMap.compContinuousLinearMapL (fun _ ↦ g) (p (g x) i)) (⇑g ⁻¹' u)
+      apply AnalyticWithinOn.comp _ _ (Set.mapsTo_univ _ _)
+      · exact ContinuousLinearEquiv.analyticWithinOn _ _
+      · exact (h'p i).comp (g.analyticWithinOn _) (mapsTo_preimage _ _)
+  | (n : ℕ∞) =>
+    intro m hm
+    rcases hf m hm with ⟨u, hu, p, hp⟩
+    refine ⟨g ⁻¹' u, ?_, _, hp.compContinuousLinearMap g⟩
+    refine g.continuous.continuousWithinAt.tendsto_nhdsWithin ?_ hu
+    exact (mapsTo_singleton.2 <| mem_singleton _).union_union (mapsTo_preimage _ _)
 
 /-- Composition by continuous linear maps on the right preserves `C^n` functions on domains. -/
 theorem ContDiffOn.comp_continuousLinearMap (hf : ContDiffOn 𝕜 n f s) (g : G →L[𝕜] E) :
@@ -382,8 +393,8 @@ theorem ContinuousLinearMap.iteratedFDerivWithin_comp_right {f : E → F} (g : G
     (hx : g x ∈ s) {i : ℕ} (hi : (i : ℕ∞) ≤ n) :
     iteratedFDerivWithin 𝕜 i (f ∘ g) (g ⁻¹' s) x =
       (iteratedFDerivWithin 𝕜 i f s (g x)).compContinuousLinearMap fun _ => g :=
-  (((hf.ftaylorSeriesWithin hs).compContinuousLinearMap g).eq_iteratedFDerivWithin_of_uniqueDiffOn
-    hi h's hx).symm
+  ((((hf.of_le hi).ftaylorSeriesWithin hs).compContinuousLinearMap
+    g).eq_iteratedFDerivWithin_of_uniqueDiffOn le_rfl h's hx).symm
 
 /-- The iterated derivative within a set of the composition with a linear equiv on the right is
 obtained by composing the iterated derivative with the linear equiv. -/
@@ -470,7 +481,7 @@ theorem ContinuousLinearEquiv.contDiff_comp_iff (e : G ≃L[𝕜] E) :
 
 /-- If two functions `f` and `g` admit Taylor series `p` and `q` in a set `s`, then the cartesian
 product of `f` and `g` admits the cartesian product of `p` and `q` as a Taylor series. -/
-theorem HasFTaylorSeriesUpToOn.prod (hf : HasFTaylorSeriesUpToOn n f p s) {g : E → G}
+theorem HasFTaylorSeriesUpToOn.prod {n : ℕ∞} (hf : HasFTaylorSeriesUpToOn n f p s) {g : E → G}
     {q : E → FormalMultilinearSeries 𝕜 E G} (hg : HasFTaylorSeriesUpToOn n g q s) :
     HasFTaylorSeriesUpToOn n (fun y => (f y, g y)) (fun y k => (p y k).prod (q y k)) s := by
   set L := fun m => ContinuousMultilinearMap.prodL 𝕜 (fun _ : Fin m => E) F G
@@ -485,12 +496,24 @@ theorem HasFTaylorSeriesUpToOn.prod (hf : HasFTaylorSeriesUpToOn n f p s) {g : E
 /-- The cartesian product of `C^n` functions at a point in a domain is `C^n`. -/
 theorem ContDiffWithinAt.prod {s : Set E} {f : E → F} {g : E → G} (hf : ContDiffWithinAt 𝕜 n f s x)
     (hg : ContDiffWithinAt 𝕜 n g s x) : ContDiffWithinAt 𝕜 n (fun x : E => (f x, g x)) s x := by
-  intro m hm
-  rcases hf m hm with ⟨u, hu, p, hp⟩
-  rcases hg m hm with ⟨v, hv, q, hq⟩
-  exact
-    ⟨u ∩ v, Filter.inter_mem hu hv, _,
-      (hp.mono inter_subset_left).prod (hq.mono inter_subset_right)⟩
+  match n with
+  | ω =>
+    obtain ⟨u, hu, p, hp, h'p⟩ := hf
+    obtain ⟨v, hv, q, hq, h'q⟩ := hg
+    refine ⟨u ∩ v, Filter.inter_mem hu hv, _,
+      (hp.mono inter_subset_left).prod (hq.mono inter_subset_right), fun i ↦ ?_⟩
+    change AnalyticWithinOn 𝕜 (fun x ↦ ContinuousMultilinearMap.prodL _ _ _ _ (p x i, q x i))
+      (u ∩ v)
+    apply AnalyticOn.comp_analyticWithinOn (LinearIsometryEquiv.analyticOn _ _) _
+      (Set.mapsTo_univ _ _)
+    exact ((h'p i).mono inter_subset_left).prod ((h'q i).mono inter_subset_right)
+  | (n : ℕ∞) =>
+    intro m hm
+    rcases hf m hm with ⟨u, hu, p, hp⟩
+    rcases hg m hm with ⟨v, hv, q, hq⟩
+    exact
+      ⟨u ∩ v, Filter.inter_mem hu hv, _,
+        (hp.mono inter_subset_left).prod (hq.mono inter_subset_right)⟩
 
 /-- The cartesian product of `C^n` functions on domains is `C^n`. -/
 theorem ContDiffOn.prod {s : Set E} {f : E → F} {g : E → G} (hf : ContDiffOn 𝕜 n f s)
@@ -541,13 +564,14 @@ spaces live in the same universe. Use instead `ContDiffOn.comp` which removes th
 assumption (but is deduced from this one). -/
 private theorem ContDiffOn.comp_same_univ {Eu : Type u} [NormedAddCommGroup Eu] [NormedSpace 𝕜 Eu]
     {Fu : Type u} [NormedAddCommGroup Fu] [NormedSpace 𝕜 Fu] {Gu : Type u} [NormedAddCommGroup Gu]
-    [NormedSpace 𝕜 Gu] {s : Set Eu} {t : Set Fu} {g : Fu → Gu} {f : Eu → Fu}
+    [NormedSpace 𝕜 Gu] {s : Set Eu} {t : Set Fu} {g : Fu → Gu} {f : Eu → Fu} {n : ℕ∞}
     (hg : ContDiffOn 𝕜 n g t) (hf : ContDiffOn 𝕜 n f s) (st : s ⊆ f ⁻¹' t) :
     ContDiffOn 𝕜 n (g ∘ f) s := by
   induction' n using ENat.nat_induction with n IH Itop generalizing Eu Fu Gu
-  · rw [contDiffOn_zero] at hf hg ⊢
+  · rw [WithTop.coe_zero, contDiffOn_zero] at hf hg ⊢
     exact ContinuousOn.comp hg hf st
-  · rw [contDiffOn_succ_iff_hasFDerivWithinAt] at hg ⊢
+  · change ContDiffOn 𝕜 (n + 1 : ℕ) _ _ at hf hg ⊢
+    rw [contDiffOn_succ_iff_hasFDerivWithinAt] at hg ⊢
     intro x hx
     rcases (contDiffOn_succ_iff_hasFDerivWithinAt.1 hf) x hx with ⟨u, hu, f', hf', f'_diff⟩
     rcases hg (f x) (st hx) with ⟨v, hv, g', hg', g'_diff⟩
@@ -571,7 +595,7 @@ private theorem ContDiffOn.comp_same_univ {Eu : Type u} [NormedAddCommGroup Eu] 
       exact (hg' (f y) yv).comp y ((hf' y yu).mono wu) wv
     · show ContDiffOn 𝕜 n (fun y => (g' (f y)).comp (f' y)) w
       have A : ContDiffOn 𝕜 n (fun y => g' (f y)) w :=
-        IH g'_diff ((hf.of_le (WithTop.coe_le_coe.2 (Nat.le_succ n))).mono ws) wv
+        IH g'_diff ((hf.of_le (by simp)).mono ws) wv
       have B : ContDiffOn 𝕜 n f' w := f'_diff.mono wu
       have C : ContDiffOn 𝕜 n (fun y => (g' (f y), f' y)) w := A.prod B
       have D : ContDiffOn 𝕜 n (fun p : (Fu →L[𝕜] Gu) × (Eu →L[𝕜] Fu) => p.1.comp p.2) univ :=
@@ -579,6 +603,8 @@ private theorem ContDiffOn.comp_same_univ {Eu : Type u} [NormedAddCommGroup Eu] 
       exact IH D C (subset_univ _)
   · rw [contDiffOn_top] at hf hg ⊢
     exact fun n => Itop n (hg n) (hf n) st
+
+#exit
 
 /-- The composition of `C^n` functions on domains is `C^n`. -/
 theorem ContDiffOn.comp {s : Set E} {t : Set F} {g : F → G} {f : E → F} (hg : ContDiffOn 𝕜 n g t)
