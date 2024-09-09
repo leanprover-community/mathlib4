@@ -111,7 +111,8 @@ lemma orientationPreserving_comp [FiniteDimensional ℝ H] {f g : H → H} {u v 
     OrientationPreserving (g ∘ f) (u ∩ f ⁻¹' v) := by
   intro x ⟨hxu, hxv⟩
   rw [fderiv.comp x (hg.differentiableAt hxv) (hf.differentiableAt hxu)]
-  simpa [ContinuousLinearMap.det] using mul_pos (hg (f x) hxv) (hf x hxu)
+  simpa only [ContinuousLinearMap.det, ContinuousLinearMap.coe_comp, LinearMap.det_comp]
+    using mul_pos (hg (f x) hxv) (hf x hxu)
 
 lemma orientationReversing_comp_orientationPreserving [FiniteDimensional ℝ H]
     {f g : H → H} {u v : Set H} (hf : OrientationPreserving f u) (hg : OrientationReversing g v) :
@@ -132,7 +133,8 @@ lemma orientationReversing_comp {f g : H → H} {u v : Set H}
     OrientationPreserving (g ∘ f) (u ∩ f ⁻¹' v) := by
   intro x ⟨hxu, hxv⟩
   rw [fderiv.comp x (hg.differentiableAt hxv) (hf.differentiableAt hxu)]
-  simpa [ContinuousLinearMap.det] using mul_pos_of_neg_of_neg (hg (f x) hxv) (hf x hxu)
+  simpa only [ContinuousLinearMap.det, ContinuousLinearMap.coe_comp, LinearMap.det_comp]
+    using mul_pos_of_neg_of_neg (hg (f x) hxv) (hf x hxu)
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] {H : Type*}
   [TopologicalSpace H] (I : ModelWithCorners ℝ E H) {M : Type*} [TopologicalSpace M]
