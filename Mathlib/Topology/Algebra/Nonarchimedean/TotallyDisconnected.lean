@@ -107,10 +107,8 @@ lemma intersection_of_intersection_of_complements_empty (y : G)  (U : Set G)
 @[to_additive]
   lemma non_empty_intersection_coset (x y : G) (U : Set G) (hy :  y ∈ U) (hxy : y ≠ x)
     (V : OpenSubgroup G) : (U ∩ (y • (V : Set G))).Nonempty := by
-  refine Set.inter_nonempty.mpr ?_
+  simp only [Set.inter_nonempty]
   use y
-  refine (Set.mem_inter_iff y U (y • ↑V)).mp ?h.a
-  refine (Set.mem_inter_iff y U (y • ↑V)).mpr ?h.a.a
   constructor
   · exact hy
   · exact mem_subgroup_coset G x y hxy V
