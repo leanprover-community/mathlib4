@@ -34,6 +34,26 @@ def toFin? (x : Int) : Option (Fin 8) :=
   · simp only [reduceCtorEq, false_iff]
     omega
 
+namespace Option
+
+@[simp] theorem mem_ite_none_left {x : α} [Decidable p] {l : Option α} : (x ∈ if p then none else l) ↔ ¬ p ∧ x ∈ l := by
+  split <;> simp_all
+
+@[simp] theorem mem_ite_none_right {x : α} [Decidable p] {l : Option α} : (x ∈ if p then l else none) ↔ p ∧ x ∈ l := by
+  split <;> simp_all
+
+end Option
+
+namespace Array
+
+@[simp] theorem mem_ite_empty_left {x : α} [Decidable p] {l : Array α} : (x ∈ if p then #[] else l) ↔ ¬ p ∧ x ∈ l := by
+  split <;> simp_all
+
+@[simp] theorem mem_ite_empty_right {x : α} [Decidable p] {l : Array α} : (x ∈ if p then l else #[]) ↔ p ∧ x ∈ l := by
+  split <;> simp_all
+
+end Array
+
 namespace List
 
 @[simp] theorem mem_ite_nil_left {x : α} [Decidable p] {l : List α} : (x ∈ if p then [] else l) ↔ ¬ p ∧ x ∈ l := by
