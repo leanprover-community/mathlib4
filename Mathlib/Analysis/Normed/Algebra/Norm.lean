@@ -120,8 +120,8 @@ instance (K : Type*) [NormedField K] : Inhabited (MulAlgebraNorm K K) :=
 
 /-- `MulAlgebraNormClass F R S` states that `F` is a type of multiplicative `R`-algebra norms on
 the ring `S`. You should extend this class when you extend `MulAlgebraNorm`. -/
-class MulAlgebraNormClass (F : Type _) (R : outParam <| Type _) [SeminormedCommRing R]
-    (S : outParam <| Type _) [Ring S] [Algebra R S] [FunLike F S ℝ] extends MulRingNormClass F S ℝ,
+class MulAlgebraNormClass (F : Type*) (R : outParam <| Type*) [SeminormedCommRing R]
+    (S : outParam <| Type*) [Ring S] [Algebra R S] [FunLike F S ℝ] extends MulRingNormClass F S ℝ,
     SeminormClass F R S : Prop
 
 namespace MulAlgebraNorm
@@ -166,7 +166,7 @@ end MulAlgebraNorm
 
 namespace MulRingNorm
 
-variable {R : Type _} [NonAssocRing R]
+variable {R : Type*} [NonAssocRing R]
 
 /-- The ring norm underlying a multiplicative ring norm. -/
 def toRingNorm (f : MulRingNorm R) : RingNorm R where
@@ -178,7 +178,7 @@ def toRingNorm (f : MulRingNorm R) : RingNorm R where
   eq_zero_of_map_eq_zero' := f.eq_zero_of_map_eq_zero'
 
 /-- A multiplicative ring norm is power-multiplicative. -/
-theorem isPowMul {A : Type _} [Ring A] (f : MulRingNorm A) : IsPowMul f := fun x n hn => by
+theorem isPowMul {A : Type*} [Ring A] (f : MulRingNorm A) : IsPowMul f := fun x n hn => by
   cases n
   · exfalso; linarith
   · rw [map_pow]

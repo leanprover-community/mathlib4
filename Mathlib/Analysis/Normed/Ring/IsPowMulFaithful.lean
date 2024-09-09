@@ -33,19 +33,6 @@ norm, equivalent, power-multiplicative
 open Filter Real
 open scoped Topology
 
-/-- A homomorphism `f` between semi_normed_rings is bounded if there exists a positive
-  constant `C` such that for all `x` in `α`, `norm (f x) ≤ C * norm x`. -/
-def RingHom.IsBounded {α : Type _} [SeminormedRing α] {β : Type _} [SeminormedRing β]
-    (f : α →+* β) : Prop :=
-  ∃ C : ℝ, 0 < C ∧ ∀ x : α, norm (f x) ≤ C * norm x
-
-/-- A ring homomorphism `f : α →+* β` is bounded with respect to the functions `nα : α → ℝ` and
-  `nβ : β → ℝ` if there exists a positive constant `C` such that for all `x` in `α`,
-  `nβ (f x) ≤ C * nα x`. -/
-def RingHom.IsBoundedWrt {α : Type _} [Ring α] {β : Type _} [Ring β] (nα : α → ℝ) (nβ : β → ℝ)
-    (f : α →+* β) : Prop :=
-  ∃ C : ℝ, 0 < C ∧ ∀ x : α, nβ (f x) ≤ C * nα x
-
 /-- If `f : α →+* β` is bounded with respect to a ring seminorm `nα` on `α` and a
   power-multiplicative function `nβ : β → ℝ`, then `∀ x : α, nβ (f x) ≤ nα x`. -/
 theorem contraction_of_isPowMul_of_boundedWrt {F : Type*} {α : outParam (Type*)} [Ring α]
@@ -62,7 +49,7 @@ theorem contraction_of_isPowMul_of_boundedWrt {F : Type*} {α : outParam (Type*)
   intro n hn
   have h : (C ^ (1 / n : ℝ)) ^ n = C := by
     have hn0 : (n : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (ne_of_gt hn)
-    rw [← rpow_natCast, ← rpow_mul (le_of_lt hC0), one_div, inv_mul_cancel hn0, rpow_one]
+    rw [← rpow_natCast, ← rpow_mul (le_of_lt hC0), one_div, inv_mul_cancel₀ hn0, rpow_one]
   apply le_of_pow_le_pow_left (ne_of_gt hn)
     (mul_nonneg (rpow_nonneg (le_of_lt hC0) _) (apply_nonneg _ _))
   · rw [mul_pow, h, ← hβ _ hn, ← RingHom.map_pow]
@@ -91,12 +78,14 @@ theorem eq_seminorms {F : Type*} {α : outParam (Type*)} [Ring α] [FunLike F α
   exact le_antisymm (contraction_of_isPowMul_of_boundedWrt g hfpm hge x)
     (contraction_of_isPowMul_of_boundedWrt f hgpm hle x)
 
-variable {R S : Type _} [NormedCommRing R] [CommRing S] [Algebra R S]
+variable {R S : Type*} [NormedCommRing R] [CommRing S] [Algebra R S]
 
 /-- The restriction of a power-multiplicative function to a subalgebra is power-multiplicative. -/
 theorem IsPowMul.restriction (A : Subalgebra R S) {f : S → ℝ} (hf_pm : IsPowMul f) :
     IsPowMul fun x : A => f x.val := fun x n hn => by
   simpa [SubsemiringClass.coe_pow] using hf_pm (↑x) hn
+
+#find_home IsPowMul.restriction
 
 /-- If `R` is a normed commutative ring and `f₁` and `f₂` are two power-multiplicative `R`-algebra
   norms on `S`, then if `f₁` and `f₂` are equivalent on every  subring `R[y]` for `y : S`, it
