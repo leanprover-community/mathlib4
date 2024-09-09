@@ -220,6 +220,19 @@ theorem tendsto_atBot_pure [PartialOrder α] [OrderBot α] (f : α → β) :
     Tendsto f atBot (pure <| f ⊥) :=
   @tendsto_atTop_pure αᵒᵈ _ _ _ _
 
+theorem atTop_eq_generate_Ici [Preorder α] : atTop = generate (range (Ici (α := α))) := by
+  simp only [generate_eq_biInf, atTop, iInf_range]
+
+theorem Frequently.forall_exists_of_atTop [Preorder α] {p : α → Prop}
+    (h : ∃ᶠ x in atTop, p x) (a : α) : ∃ b ≥ a, p b := by
+  rw [Filter.Frequently] at h
+  contrapose! h
+  exact (eventually_ge_atTop a).mono h
+
+theorem Frequently.forall_exists_of_atBot [Preorder α] {p : α → Prop}
+    (h : ∃ᶠ x in atBot, p x) (a : α) : ∃ b ≤ a, p b :=
+  Frequently.forall_exists_of_atTop (α := αᵒᵈ) h _
+
 section IsDirected
 variable [Preorder α] [IsDirected α (· ≤ ·)] {p : α → Prop}
 
@@ -228,11 +241,6 @@ theorem hasAntitoneBasis_atTop [Nonempty α] : (@atTop α _).HasAntitoneBasis Ic
 
 theorem atTop_basis [Nonempty α] : (@atTop α _).HasBasis (fun _ => True) Ici :=
   hasAntitoneBasis_atTop.1
-
-theorem atTop_eq_generate_Ici : atTop = generate (range (Ici (α := α))) := by
-  rcases isEmpty_or_nonempty α with hα|hα
-  · simp only [eq_iff_true_of_subsingleton]
-  · simp [(atTop_basis (α := α)).eq_generate, range]
 
 lemma atTop_basis_Ioi [Nonempty α] [NoMaxOrder α] : (@atTop α _).HasBasis (fun _ => True) Ioi :=
   atTop_basis.to_hasBasis (fun a ha => ⟨a, ha, Ioi_subset_Ici_self⟩) fun a ha =>
@@ -245,7 +253,7 @@ lemma atTop_basis_Ioi' [NoMaxOrder α] (a : α) : atTop.HasBasis (a < ·) Ioi :=
   obtain ⟨d, hcd⟩ := exists_gt c
   exact ⟨d, hac.trans_lt hcd, Ioi_subset_Ioi (hbc.trans hcd.le)⟩
 
-theorem atTop_basis' (a : α) : (@atTop α _).HasBasis (fun x => a ≤ x) Ici := by
+theorem atTop_basis' (a : α) : atTop.HasBasis (a ≤ ·) Ici := by
   have : Nonempty α := ⟨a⟩
   refine atTop_basis.to_hasBasis (fun b _ ↦ ?_) fun b _ ↦ ⟨b, trivial, Subset.rfl⟩
   obtain ⟨c, hac, hbc⟩ := exists_ge_ge a b
@@ -265,7 +273,6 @@ theorem frequently_atTop : (∃ᶠ x in atTop, p x) ↔ ∀ a, ∃ b ≥ a, p b 
   atTop_basis.frequently_iff.trans <| by simp
 
 alias ⟨Eventually.exists_forall_of_atTop, _⟩ := eventually_atTop
-alias ⟨Frequently.forall_exists_of_atTop, _⟩ := frequently_atTop
 
 lemma exists_eventually_atTop {r : α → β → Prop} :
     (∃ b, ∀ᶠ a in atTop, r a b) ↔ ∀ᶠ a₀ in atTop, ∃ b, ∀ a ≥ a₀, r a b := by
@@ -310,13 +317,10 @@ lemma atBot_basis : (@atBot α _).HasBasis (fun _ => True) Iic := atTop_basis (�
 theorem frequently_atBot : (∃ᶠ x in atBot, p x) ↔ ∀ a, ∃ b ≤ a, p b := frequently_atTop (α := αᵒᵈ)
 
 alias ⟨Eventually.exists_forall_of_atBot, _⟩ := eventually_atBot
-alias ⟨Frequently.forall_exists_of_atBot, _⟩ := frequently_atBot
 
 lemma exists_eventually_atBot {r : α → β → Prop} :
-    (∃ b, ∀ᶠ a in atBot, r a b) ↔ ∀ᶠ a₀ in atBot, ∃ b, ∀ a ≤ a₀, r a b := by
-  simp_rw [eventually_atBot, ← exists_swap (α := α)]
-  exact exists_congr fun a ↦ .symm <| forall_le_iff <| Antitone.exists fun _ _ _ hb H n hn ↦
-    H n (hn.trans hb)
+    (∃ b, ∀ᶠ a in atBot, r a b) ↔ ∀ᶠ a₀ in atBot, ∃ b, ∀ a ≤ a₀, r a b :=
+  exists_eventually_atTop (α := αᵒᵈ)
 
 theorem map_atBot_eq {f : α → β} : atBot.map f = ⨅ a, 𝓟 (f '' { a' | a' ≤ a }) :=
   map_atTop_eq (α := αᵒᵈ)

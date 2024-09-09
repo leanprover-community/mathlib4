@@ -141,7 +141,7 @@ theorem rpow_add_le_mul_rpow_add_rpow (z₁ z₂ : ℝ≥0) {p : ℝ} (hp : 1 �
   · simp only [one_div, inv_mul_cancel_left₀, Ne, mul_eq_zero, two_ne_zero, one_ne_zero,
       not_false_iff]
   · have A : p - 1 ≠ 0 := ne_of_gt (sub_pos.2 h'p)
-    simp only [mul_rpow, rpow_sub' _ A, div_eq_inv_mul, rpow_one, mul_one]
+    simp only [mul_rpow, rpow_sub' A, div_eq_inv_mul, rpow_one, mul_one]
     ring
 
 /-- Weighted generalized mean inequality, version for sums over finite sets, with `ℝ≥0`-valued
@@ -241,7 +241,7 @@ theorem rpow_arith_mean_le_arith_mean_rpow (w z : ι → ℝ≥0∞) (hw' : ∑ 
       specialize h_top i hi
       rwa [Ne, ← h_top_iff_rpow_top i hi]
     -- put the `.toNNReal` inside the sums.
-    simp_rw [toNNReal_sum h_top_rpow, ← toNNReal_rpow, toNNReal_sum h_top, toNNReal_mul, ←
+    simp_rw [toNNReal_sum h_top_rpow, toNNReal_rpow, toNNReal_sum h_top, toNNReal_mul,
       toNNReal_rpow]
     -- use corresponding nnreal result
     refine
@@ -282,7 +282,7 @@ theorem add_rpow_le_rpow_add {p : ℝ} (a b : ℝ≥0∞) (hp1 : 1 ≤ p) : a ^ 
   obtain ⟨ha_top, hb_top⟩ := add_ne_top.mp h_top
   lift a to ℝ≥0 using ha_top
   lift b to ℝ≥0 using hb_top
-  simpa [← ENNReal.coe_rpow_of_nonneg _ hp_pos.le] using
+  simpa [ENNReal.coe_rpow_of_nonneg _ hp_pos.le] using
     ENNReal.coe_le_coe.2 (NNReal.add_rpow_le_rpow_add a b hp1)
 
 theorem rpow_add_rpow_le_add {p : ℝ} (a b : ℝ≥0∞) (hp1 : 1 ≤ p) :

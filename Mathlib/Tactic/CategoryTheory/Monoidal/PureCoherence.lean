@@ -23,8 +23,6 @@ namespace Mathlib.Tactic.Monoidal'
 
 section
 
-open MonoidalCategory
-
 universe v u
 
 variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
@@ -242,7 +240,7 @@ instance : MkEqOfNaturality MonoidalM where
     let η' := ηIso.e
     let θ' := θIso.e
     let f ← η'.srcM
-    let g ← θ'.tgtM
+    let g ← η'.tgtM
     let f' ← η_f.tgtM
     have f : Q($ctx.C) := f.e
     have g : Q($ctx.C) := g.e
