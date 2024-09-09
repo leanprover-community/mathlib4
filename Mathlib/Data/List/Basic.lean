@@ -379,10 +379,6 @@ theorem mem_getLast?_cons {x y : α} : ∀ {l : List α}, x ∈ l.getLast? → x
   | [], _ => by contradiction
   | _ :: _, h => h
 
-theorem mem_of_mem_getLast? {l : List α} {a : α} (ha : a ∈ l.getLast?) : a ∈ l :=
-  let ⟨_, h₂⟩ := mem_getLast?_eq_getLast ha
-  h₂.symm ▸ getLast_mem _
-
 theorem dropLast_append_getLast? : ∀ {l : List α}, ∀ a ∈ l.getLast?, dropLast l ++ [a] = l
   | [], a, ha => (Option.not_mem_none a ha).elim
   | [a], _, rfl => rfl
@@ -445,9 +441,6 @@ theorem eq_cons_of_mem_head? {x : α} : ∀ {l : List α}, x ∈ l.head? → l =
   | a :: l, h => by
     simp only [head?, Option.mem_def, Option.some_inj] at h
     exact h ▸ rfl
-
-theorem mem_of_mem_head? {x : α} {l : List α} (h : x ∈ l.head?) : x ∈ l :=
-  (eq_cons_of_mem_head? h).symm ▸ mem_cons_self _ _
 
 @[simp] theorem head!_cons [Inhabited α] (a : α) (l : List α) : head! (a :: l) = a := rfl
 
@@ -946,13 +939,6 @@ theorem infix_bind_of_mem {a : α} {as : List α} (h : a ∈ as) (f : α → Lis
 @[simp]
 theorem map_eq_map {α β} (f : α → β) (l : List α) : f <$> l = map f l :=
   rfl
-
-#adaptation_note
-/--
-`nolint simpNF` should be removed after nightly-2024-09-07.
--/
-@[simp, nolint simpNF]
-theorem map_tail (f : α → β) (l) : map f (tail l) = tail (map f l) := by cases l <;> rfl
 
 /-- A single `List.map` of a composition of functions is equal to
 composing a `List.map` with another `List.map`, fully applied.
@@ -2226,14 +2212,6 @@ instance (p : α → Prop) [DecidablePred p] : DecidablePred (Forall p) := fun _
 end Forall
 
 /-! ### Miscellaneous lemmas -/
-
-@[simp]
-theorem getElem_attach (L : List α) (i : Nat) (h : i < L.attach.length) :
-    L.attach[i].1 = L[i]'(length_attach L ▸ h) :=
-  calc
-    L.attach[i].1 = (L.attach.map Subtype.val)[i]'(by simpa using h) := by
-      rw [getElem_map]
-    _ = L[i]'_ := by congr 2; simp
 
 theorem get_attach (L : List α) (i) :
     (L.attach.get i).1 = L.get ⟨i, length_attach L ▸ i.2⟩ := by simp
