@@ -1,5 +1,4 @@
 import Mathlib.Tactic.Says
-import Mathlib.Tactic.RunCmd
 import Aesop
 
 set_option autoImplicit true
@@ -50,12 +49,15 @@ set_option says.verify true in
 /--
 error: Tactic `simp?` produced `simp only [List.length_append]`,
 but was expecting it to produce `simp only []`!
+
+You can reproduce this error locally using `set_option says.verify true`.
 -/
 #guard_msgs in
 example (x y : List α) : (x ++ y).length = x.length + y.length := by
   simp? says simp only []
 
 set_option linter.unreachableTactic false
+set_option linter.unusedTactic false in
 -- Now we check that `says` does not consume following tactics unless they are indented.
 /--
 error: Tactic `simp` did not produce any messages.

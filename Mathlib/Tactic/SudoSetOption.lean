@@ -3,8 +3,8 @@ Copyright (c) 2021 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 -/
-
-import Lean
+import Mathlib.Init
+import Lean.Elab.ElabRules
 
 /-!
 # Defines the `sudo set_option` command.
@@ -12,21 +12,19 @@ import Lean
 Allows setting undeclared options.
 -/
 
-set_option autoImplicit true
-
 open Lean Elab
 
-private def setOption [Monad m] [MonadError m]
+private def setOption {m : Type → Type} [Monad m] [MonadError m]
     (name val : Syntax) (opts : Options) : m Options := do
   let val ← match val with
-    | Syntax.ident _ _ `true _  => pure $ DataValue.ofBool true
-    | Syntax.ident _ _ `false _ => pure $ DataValue.ofBool false
+    | Syntax.ident _ _ `true _  => pure <| DataValue.ofBool true
+    | Syntax.ident _ _ `false _ => pure <| DataValue.ofBool false
     | _ => match val.isNatLit? with
-      | some num => pure $ DataValue.ofNat num
+      | some num => pure <| DataValue.ofNat num
       | none => match val.isStrLit? with
-        | some str => pure $ DataValue.ofString str
+        | some str => pure <| DataValue.ofString str
         | none => throwError "unsupported option value {val}"
-  pure $ opts.insert name.getId val
+  pure <| opts.insert name.getId val
 
 open Elab.Command in
 /--

@@ -3,8 +3,6 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Lean
-import Mathlib.Mathport.Rename
 import Mathlib.Tactic.PPWithUniv
 
 /-! # `ToLevel` class
@@ -16,8 +14,6 @@ instances. This ensures that you are using the universe polymorphic `ToExpr` ins
 override the ones from Lean 4 core.
 
 -/
-
-set_option autoImplicit true
 
 namespace Lean
 
@@ -31,11 +27,11 @@ class ToLevel.{u} where
   univ : Type u := Sort u
 export ToLevel (toLevel)
 attribute [pp_with_univ] toLevel
-#align reflected_univ Lean.ToLevel
-#align reflected_univ.lvl Lean.ToLevel.toLevel
 
 instance : ToLevel.{0} where
   toLevel := .zero
+
+universe u v
 
 instance [ToLevel.{u}] : ToLevel.{u+1} where
   toLevel := .succ toLevel.{u}

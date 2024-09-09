@@ -16,3 +16,13 @@ instance : Foo α where
 example : Foo α := {
   __ := instSomething -- include fields from `instSomething`
 }
+
+structure A (α : Type) where
+  default : α
+  x : α
+
+axiom mkDefault (α : Type) : Inhabited α
+
+noncomputable example (α : Type) : A α where
+  __ := mkDefault α
+  x := default

@@ -3,7 +3,8 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Evgenia Karunus, Kyle Miller
 -/
-import Lean
+import Lean.Elab.Command
+import Lean.PrettyPrinter
 import Mathlib.Tactic.Explode.Datatypes
 import Mathlib.Tactic.Explode.Pretty
 
@@ -18,21 +19,6 @@ set_option linter.unusedVariables false
 open Lean
 
 namespace Mathlib.Explode
-
-/-- Pretty print a const expression using `delabConst` and generate terminfo.
-This function avoids inserting `@` if the constant is for a function whose first
-argument is implicit, which is what the default `toMessageData` for `Expr` does.
-Panics if `e` is not a constant. -/
-def ppConst (e : Expr) : MessageData :=
-  if not e.isConst then
-    panic! "not a constant"
-  else
-    .ofPPFormat { pp := fun
-      | some ctx => ctx.runMetaM <| withOptions (pp.tagAppFns.set · true) <|
-          -- The pp.tagAppFns option causes the `delabConst` function to annotate
-          -- the constant with terminfo, which is necessary for seeing the type on mouse hover.
-          PrettyPrinter.ppExprWithInfos (delab := PrettyPrinter.Delaborator.delabConst) e
-      | none     => return f!"{e}" }
 
 variable (select : Expr → MetaM Bool) (includeAllDeps : Bool) in
 /-- Core `explode` algorithm.
@@ -116,7 +102,7 @@ partial def explodeCore (e : Expr) (depth : Nat) (entries : Entries) (start : Bo
       { type     := ← addMessageContext <| ← Meta.inferType e
         depth    := depth
         status   := Status.reg
-        thm      := ← addMessageContext <| if fn.isConst then ppConst fn else "∀E"
+        thm      := ← addMessageContext <| if fn.isConst then MessageData.ofConst fn else "∀E"
         deps     := deps
         useAsDep := true }
     return (entry, entries)
@@ -129,7 +115,7 @@ partial def explodeCore (e : Expr) (depth : Nat) (entries : Entries) (start : Bo
       let entries := valEntry?.map (entries.addSynonym var) |>.getD entries
       explodeCore (body.instantiate1 var) depth entries
   | _ => do
-    -- Right now all of these are caught by this case case:
+    -- Right now all of these are caught by this case:
     --   Expr.lit, Expr.forallE, Expr.const, Expr.sort, Expr.mvar, Expr.fvar, Expr.bvar
     --   (Note: Expr.mdata is stripped by cleanupAnnotations)
     -- Might be good to handle them individually.
@@ -271,11 +257,11 @@ have global scope anyway so detailed tracking is not necessary.)
 elab "#explode " stx:term : command => withoutModifyingEnv <| Command.runTermElabM fun _ => do
   let (heading, e) ← try
     -- Adapted from `#check` implementation
-    let theoremName : Name ← resolveGlobalConstNoOverloadWithInfo stx
+    let theoremName : Name ← realizeGlobalConstNoOverloadWithInfo stx
     addCompletionInfo <| .id stx theoremName (danglingDot := false) {} none
     let decl ← getConstInfo theoremName
     let c : Expr := .const theoremName (decl.levelParams.map mkLevelParam)
-    pure (m!"{ppConst c} : {decl.type}", decl.value!)
+    pure (m!"{MessageData.ofConst c} : {decl.type}", decl.value!)
   catch _ =>
     let e ← Term.elabTerm stx none
     Term.synthesizeSyntheticMVarsNoPostponing
@@ -285,3 +271,7 @@ elab "#explode " stx:term : command => withoutModifyingEnv <| Command.runTermEla
     let entries ← explode e
     let fitchTable : MessageData ← entriesToMessageData entries
     logInfo <|← addMessageContext m!"{heading}\n\n{fitchTable}\n"
+
+end Explode
+
+end Mathlib

@@ -3,9 +3,8 @@ Copyright (c) 2021 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 -/
+import Mathlib.Init
 import Lean
-import Std.Util.TermUnsafe
-import Std.Tactic.OpenPrivate
 
 /-!
 Defines a command wrapper that prints the changes the command makes to the
@@ -107,7 +106,7 @@ def whatsNew (old new : Environment) : CoreM MessageData := do
 
   if diffs.isEmpty then return "no new constants"
 
-  pure $ MessageData.joinSep diffs.toList "\n\n"
+  pure <| MessageData.joinSep diffs.toList "\n\n"
 
 /-- `whatsnew in $command` executes the command and then prints the
 declarations that were added to the environment. -/
@@ -118,3 +117,5 @@ elab "whatsnew " "in" ppLine cmd:command : command => do
   finally
     let newEnv ← getEnv
     logInfo (← liftCoreM <| whatsNew oldEnv newEnv)
+
+end Mathlib.WhatsNew

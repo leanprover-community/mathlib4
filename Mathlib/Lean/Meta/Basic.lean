@@ -3,6 +3,8 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
+import Mathlib.Init
+import Lean.Meta.AppBuilder
 import Lean.Meta.Basic
 
 /-!
@@ -11,12 +13,10 @@ import Lean.Meta.Basic
 Likely these already exist somewhere. Pointers welcome.
 -/
 
-set_option autoImplicit true
-
 /--
 Restore the metavariable context after execution.
 -/
-def Lean.Meta.preservingMCtx (x : MetaM α) : MetaM α := do
+def Lean.Meta.preservingMCtx {α : Type} (x : MetaM α) : MetaM α := do
   let mctx ← getMCtx
   try x finally setMCtx mctx
 
@@ -52,3 +52,19 @@ def Lean.Meta.forallMetaTelescopeReducingUntilDefEq
     bis := bis ++ bs
     out := tp
   return (mvs, bis, out)
+
+/-- `pureIsDefEq e₁ e₂` is short for `withNewMCtxDepth <| isDefEq e₁ e₂`.
+Determines whether two expressions are definitionally equal to each other
+when metavariables are not assignable. -/
+@[inline]
+def Lean.Meta.pureIsDefEq (e₁ e₂ : Expr) : MetaM Bool :=
+  withNewMCtxDepth <| isDefEq e₁ e₂
+
+/-- `mkRel n lhs rhs` is `mkAppM n #[lhs, rhs]`, but with optimizations for `Eq` and `Iff`. -/
+def Lean.Meta.mkRel (n : Name) (lhs rhs : Expr) : MetaM Expr :=
+  if n == ``Eq then
+    mkEq lhs rhs
+  else if n == ``Iff then
+    return mkApp2 (.const ``Iff []) lhs rhs
+  else
+    mkAppM n #[lhs, rhs]
