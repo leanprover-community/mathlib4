@@ -64,12 +64,6 @@ open TopologicalSpace
 variable (G : Type*) [TopologicalSpace G] [Group G]
 
 @[to_additive]
-lemma subset_coset_comp (y : G) (U : Set G) (V : OpenSubgroup G) :
-    U ⊆  (y • (V : Set G)) ∪
-      (y • (V : Set G))ᶜ := by
-  simp only [Set.union_compl_self, Set.subset_univ]
-
-@[to_additive]
 lemma mem_subgroup_coset (x y : G) (hxy : y ≠ x) (V : OpenSubgroup G) :
     y ∈ (y • (V : Set G)) := by
   rw [ne_eq, ← inv_mul_eq_one] at hxy
@@ -88,12 +82,6 @@ lemma non_empty_intersection_compl_coset (x y : G) (U : Set G) (hx : x ∈ U)
   have subempty : (V : Set G) ∩ A = ∅ := Disjoint.inter_eq dva
   rw [subempty] at mem
   simp at mem
-
-/-@[to_additive]
-lemma intersection_of_intersection_of_complements_empty (y : G)  (U : Set G)
-    (V : OpenSubgroup G) : ¬ (U ∩ ((y • (V : Set G)) ∩
-    (y • (V : Set G))ᶜ)).Nonempty := by
-  simp only [Set.inter_compl_self, Set.inter_empty, Set.not_nonempty_empty, not_false_eq_true]-/
 
 @[to_additive]
   lemma non_empty_intersection_coset (x y : G) (U : Set G) (hy :  y ∈ U) (hxy : y ≠ x)
@@ -127,7 +115,7 @@ theorem non_singleton_set_disconnected (x y : G) (U : Set G)
       (U ⊆ u ∪ v) ∧ ((U ∩ u).Nonempty) ∧ ((U ∩ v).Nonempty) ∧ (¬(U ∩ (u ∩ v)).Nonempty) := by
     use (y • (V : Set G)) , (y • (V : Set G))ᶜ
     simp_rw [(IsOpen.smul (OpenSubgroup.isOpen V) y), is_open_compl_coset' G y V,
-        subset_coset_comp G y U V ,
+        Set.union_compl_self, Set.subset_univ,
         non_empty_intersection_coset G x y U hy hxy V,
         non_empty_intersection_compl_coset G x y U hx A ha V dav.symm,
         Set.inter_compl_self, Set.inter_empty, Set.not_nonempty_empty, not_false_eq_true,
