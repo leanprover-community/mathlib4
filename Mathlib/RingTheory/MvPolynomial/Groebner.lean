@@ -202,13 +202,13 @@ theorem coeff_degree_eq_zero_iff {f : MvPolynomial σ R} :
     f.coeff (m.degree f) = 0 ↔ f = 0 :=
   m.lCoeff_eq_zero_iff
 
-theorem lCoeff_of_not_nontrivial (hR : ¬ (Nontrivial R)) (f : MvPolynomial σ R) : 
+theorem lCoeff_of_not_nontrivial (hR : ¬ (Nontrivial R)) (f : MvPolynomial σ R) :
     m.lCoeff f = 0 := by
   by_contra H
   apply hR
   exact nontrivial_of_ne (m.lCoeff f) 0 H
-  
-theorem degree_of_not_nontrivial (hR : ¬ (Nontrivial R)) (f : MvPolynomial σ R) : 
+
+theorem degree_of_not_nontrivial (hR : ¬ (Nontrivial R)) (f : MvPolynomial σ R) :
     m.degree f = 0 := by
   convert m.degree_zero
   rw [← m.lCoeff_eq_zero_iff]
@@ -276,7 +276,7 @@ theorem degree_sub_of_lt {f g : MvPolynomial σ R} (h : m.degree g ≺[m] m.degr
     m.degree (f - g) = m.degree f := by
   rw [sub_eq_add_neg, degree_add_of_lt ?_]
   simp only [degree_neg, h]
-  
+
 theorem degree_add_of_ne {f g : MvPolynomial σ R}
     (h : m.degree f ≠ m.degree g) :
     m.toSyn (m.degree (f + g)) = m.toSyn (m.degree f) ⊔ m.toSyn (m.degree g) := by
@@ -342,7 +342,7 @@ theorem lCoeff_mulAux {f g : MvPolynomial σ R} {a b : σ →₀ ℕ}
   · simp
 
 theorem lCoeff_mul' {f g : MvPolynomial σ R} :
-    (f * g).coeff (m.degree f + m.degree g) = m.lCoeff f * m.lCoeff g := 
+    (f * g).coeff (m.degree f + m.degree g) = m.lCoeff f * m.lCoeff g :=
   lCoeff_mulAux (le_of_eq rfl) (le_of_eq rfl)
 
 theorem degree_mul_of_isRegular_left {f g : MvPolynomial σ R}
@@ -396,10 +396,10 @@ theorem degree_prod_le {ι : Type*} {P : ι → MvPolynomial σ R} {s : Finset �
     m.degree (s.prod P) ≼[m] s.sum (fun i ↦ m.degree (P i)) := by
   classical
   induction s using Finset.induction_on with
-  | empty => 
+  | empty =>
     simp only [Finset.prod_empty, Finset.sum_empty]
     rw [← C_1, m.degree_C, map_zero]
-  | @insert a s has hrec => 
+  | @insert a s has hrec =>
     rw [Finset.prod_insert has, Finset.sum_insert has]
     apply le_trans degree_mul_le
     simp only [map_add, add_le_add_iff_left, hrec]
@@ -409,7 +409,7 @@ theorem lCoeff_prod' {ι : Type*} (P : ι → MvPolynomial σ R) (s : Finset ι)
   classical
   induction s using Finset.induction_on with
   | empty => simp
-  | @insert a s has hrec => 
+  | @insert a s has hrec =>
     simp only [Finset.prod_insert has, Finset.sum_insert has]
     rw [lCoeff_mulAux (le_of_eq rfl) degree_prod_le]
     exact congr_arg₂ _ rfl hrec
@@ -428,7 +428,7 @@ theorem degree_prod_of_regular {ι : Type*}
   · -- case : Trivial R
     simp [degree_of_not_nontrivial hR]
 
-theorem degree_prod [IsDomain R] {ι : Type*} {P : ι → MvPolynomial σ R} {s : Finset ι} 
+theorem degree_prod [IsDomain R] {ι : Type*} {P : ι → MvPolynomial σ R} {s : Finset ι}
     (H : ∀ i ∈ s, P i ≠ 0) :
     m.degree (s.prod P) = s.sum (fun i ↦ m.degree (P i)) := by
   apply degree_prod_of_regular
@@ -599,9 +599,9 @@ theorem monomialOrderDiv {ι : Type*} (b : ι → MvPolynomial σ R) (hb : ∀ i
       · simp [← add_assoc, ← H'.1, subLTerm]
       constructor
       · exact fun b ↦ le_trans (H'.2.1 b) (degree_sub_LTerm_le f)
-      · intro c hc i 
+      · intro c hc i
         by_cases hc' : c ∈ r'.support
-        · exact H'.2.2 c hc' i 
+        · exact H'.2.2 c hc' i
         · convert hf i
           classical
           have := MvPolynomial.support_add hc
@@ -969,7 +969,7 @@ theorem degLex_lt_iff {σ : Type*} [LinearOrder σ] [WellFoundedGT σ] {a b : σ
     a ≺[degLex σ] b ↔ toDegLex a < toDegLex b :=
   Iff.rfl
 
-theorem _root_.MvPolynomial.degLex_degree_degree [LinearOrder σ] [WellFoundedGT σ] 
+theorem _root_.MvPolynomial.degLex_degree_degree [LinearOrder σ] [WellFoundedGT σ]
     {R : Type*} [CommRing R] {f : MvPolynomial σ R} :
     ((MonomialOrder.degLex σ).degree f).degree = f.totalDegree := by
   by_cases hf : f = 0
@@ -986,7 +986,7 @@ theorem _root_.MvPolynomial.degLex_degree_degree [LinearOrder σ] [WellFoundedGT
     exact DegLex.monotone_degree ((degLex σ).le_degree hb)
 
 theorem _root_.MvPolynomial.degLex_totalDegree_monotone [LinearOrder σ] [WellFoundedGT σ]
-    {R : Type*} [CommRing R] {f g : MvPolynomial σ R} 
+    {R : Type*} [CommRing R] {f g : MvPolynomial σ R}
     (h : ((degLex σ).degree f) ≼[degLex σ] ((degLex σ).degree g)) :
     f.totalDegree ≤ g.totalDegree := by
   simp only [← MvPolynomial.degLex_degree_degree]
