@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bjørn Kjos-Hanssen, Janani Lakshmanan, Kawika O'Connor, Clark Eggerman
 -/
 
-import Mathlib.Tactic.Ring.RingNF
 import Mathlib.Data.ZMod.Defs
 
 /-!
@@ -60,8 +59,9 @@ lemma one_not_neg_one_fin (k:ℕ) : (1 : Fin (k+3)) ≠ -1 := by
   intro h
   have : (1: Fin (k+3)) + 1 = -1 + 1 := by nth_rewrite 1 [h];simp
   have : (2: Fin (k+3)) = 0 := by
-    ring_nf at this
-    tauto
+    have hr: (2 : Fin (k+3)) = 1 + 1 := rfl
+    rw [hr,this]
+    simp
   revert this
   exact ne_of_beq_false rfl
 
