@@ -234,7 +234,7 @@ theorem commMap_canonical_eq_mixed (x : K) :
   exact ⟨rfl, rfl⟩
 
 /-- This is a technical result to ensure that the image of the `ℂ`-basis of `ℂ^n` defined in
-`canonicalEmbedding.latticeBasis` is a `ℝ`-basis of `ℝ^r₁ × ℂ^r₂`,
+`canonicalEmbedding.latticeBasis` is a `ℝ`-basis of the mixed space `ℝ^r₁ × ℂ^r₂`,
 see `mixedEmbedding.latticeBasis`. -/
 theorem disjoint_span_commMap_ker [NumberField K] :
     Disjoint (Submodule.span ℝ (Set.range (canonicalEmbedding.latticeBasis K)))
