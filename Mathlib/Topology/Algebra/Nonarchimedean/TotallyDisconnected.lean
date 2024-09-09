@@ -161,10 +161,8 @@ theorem non_singleton_set_disconnected
           · use V
             exact fun ⦃a⦄ a ↦ a
   rcases exv with ⟨A , B, ha, _ , dab, V, vb⟩
-  have dva' : Disjoint (V : Set G) A := by
-    apply Disjoint.mono vb (fun ⦃a⦄ a ↦ a)
-    refine Disjoint.symm ?_
-    convert dab
+  have dva' : Disjoint (V : Set G) A :=
+    Set.disjoint_of_subset vb (fun ⦃a⦄ a ↦ a) (id (Disjoint.symm dab))
   obtain ⟨u , v, ou, ov, Uuv, Uu, Uv, emptyUuv⟩ : ∃ u v : Set G, (IsOpen u) ∧ (IsOpen v) ∧
       (U ⊆ u ∪ v) ∧ ((U ∩ u).Nonempty) ∧ ((U ∩ v).Nonempty) ∧ (¬(U ∩ (u ∩ v)).Nonempty) := by
     use (y • (V : Set G)) , (y • (V : Set G))ᶜ
