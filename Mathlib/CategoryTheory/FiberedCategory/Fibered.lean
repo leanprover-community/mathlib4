@@ -142,9 +142,8 @@ lemma isStronglyCartesian_of_has_pullbacks' (p : 𝒳 ⥤ 𝒮) (h : ∀ (a : �
   -- It remains to check that it is unique. This follows from the universal property of `ψ`.
   intro π ⟨hπ, hπ_comp⟩
   rw [← Iso.comp_inv_eq]
-  dsimp only [domainUniqueUpToIso_inv, Φ]
   apply IsStronglyCartesian.map_uniq p (p.map φ) ψ rfl φ'
-  simp [hπ_comp]
+  simp [hπ_comp, Φ]
 
 
 lemma of_has_pullbacks' {p : 𝒳 ⥤ 𝒮} (h : ∀ (a : 𝒳) (R : 𝒮) (f : R ⟶ p.obj a),
