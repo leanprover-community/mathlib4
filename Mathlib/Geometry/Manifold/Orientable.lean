@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Rida Hamadani. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Rida Hamadani
+Authors: Rida Hamadani, Michael Rothgang
 -/
 import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
 
@@ -38,13 +38,14 @@ Jacobian.
 - `orientationReversing_comp` : a composition between two orientation reversing maps is
   orientation preserving.
 - `orientableManifold_of_zero_dim` : `0`-dimensional manifolds are always orientable.
+- A finite-dimensional normed space is orientable (w.r.t. the trivial model).
 
 ## TODO
 
 - Generalize this discussion to other fields, for example over `ℚ`.
 - On a given connected set, a diffeomorphism is either orientation preserving or orientation
   reversing.
-- A normed space (with the trivial model) is orientable.
+- A real interval `Icc x y` is orientableA normed space (with the trivial model) is orientable.
 - The `n`-sphere is orientable.
 - Products of orientable manifolds are orientable.
 - Define orientations of a smooth manifold, and show that a manifold is orientable if and only if it
@@ -234,5 +235,10 @@ class OrientableSmoothManifold {E H : Type*} [NormedAddCommGroup E] [NormedSpace
     [TopologicalSpace H] (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
     (I : ModelWithCorners ℝ E H) [FiniteDimensional ℝ E] extends
   HasGroupoid M (contDiffOrientationPreservingGroupoid ⊤ I) : Prop
+
+/-- A finite-dimensional normed space is an orientable smooth manifold. -/
+instance {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+    {I : ModelWithCorners ℝ E E} : OrientableSmoothManifold E (I := I) :=
+  { hasGroupoid_model_space _ _ with }
 
 end OrientableManifold
