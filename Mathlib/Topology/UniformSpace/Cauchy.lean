@@ -263,7 +263,7 @@ theorem Filter.Tendsto.subseq_mem_entourage {V : ℕ → Set (α × α)} (hV : �
 theorem tendsto_nhds_of_cauchySeq_of_subseq [Preorder β] {u : β → α} (hu : CauchySeq u)
     {ι : Type*} {f : ι → β} {p : Filter ι} [NeBot p] (hf : Tendsto f p atTop) {a : α}
     (ha : Tendsto (u ∘ f) p (𝓝 a)) : Tendsto u atTop (𝓝 a) :=
-  le_nhds_of_cauchy_adhp hu (mapClusterPt_of_comp hf ha)
+  le_nhds_of_cauchy_adhp hu (ha.mapClusterPt.of_comp hf)
 
 /-- Any shift of a Cauchy sequence is also a Cauchy sequence. -/
 theorem cauchySeq_shift {u : ℕ → α} (k : ℕ) : CauchySeq (fun n ↦ u (n + k)) ↔ CauchySeq u := by
