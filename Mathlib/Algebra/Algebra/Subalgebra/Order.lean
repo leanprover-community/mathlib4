@@ -7,7 +7,6 @@ import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Ring.Subring.Order
 import Mathlib.Algebra.Ring.Subsemiring.Order
 
-
 /-!
 # Order instances on subalgebras
 -/
