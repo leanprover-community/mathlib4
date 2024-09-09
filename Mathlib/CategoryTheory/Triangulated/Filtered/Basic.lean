@@ -164,10 +164,35 @@ variable {C}
 variable [∀ p : ℤ × ℤ, Functor.Additive (CategoryTheory.shiftFunctor C p)]
   [hC : Pretriangulated C] [hP : FilteredTriangulated C]
 
+lemma α_vs_second_shift_aux1 (n : ℕ) : ∀ (X : C),
+    (@shiftFunctor C _ _ _ Shift₂ n).map (α.app X) = α.app ((@shiftFunctor C _ _ _ Shift₂ n).obj X)
+    ≫ (@shiftFunctorComm C _ _ _ Shift₂ n 1).hom.app X := by
+  induction' n with n hn
+  · intro X
+    simp only [Int.Nat.cast_ofNat_Int, Functor.id_obj, Functor.comp_obj]
+    sorry --rw [shiftFunctorComm_zero_hom_app]
+  · intro X
+    have heq : (@shiftFunctorComm C _ _ _ Shift₂ ↑(n + 1) 1).hom.app X =
+        ((@shiftFunctorAdd' C _ _ _ Shift₂ n 1 ↑(n + 1) rfl).hom.app X)⟪1⟫'
+        ≫ ((@shiftFunctorComm C _ _ _ Shift₂ n 1).hom.app X)⟪1⟫'
+        ≫ (@shiftFunctorAdd' C _ _ _ Shift₂ n 1 ↑(n + 1) rfl).inv.app (X⟪1⟫):= sorry
+    rw [heq]
+    have := (@shiftFunctorAdd' C _ _ _ Shift₂ n 1 (n + 1) rfl).hom.naturality (α.app X)
+    rw [← cancel_mono ((@shiftFunctorAdd' C _ _ _ Shift₂ n 1 ↑(n + 1) rfl).hom.app (X⟪1⟫))]
+    rw [assoc, assoc, assoc, Iso.inv_hom_id_app]; erw [comp_id, this]
+    simp only [Functor.id_obj, Functor.comp_obj, Functor.comp_map]
+    rw [hn X]
+    simp only [Functor.id_obj, Functor.comp_obj, Functor.map_comp]
+    rw [← assoc, ← assoc]
+    congr 1
+    rw [hP.α_s (X⟪n⟫)]
+    exact hP.α.naturality ((@shiftFunctorAdd' C _ _ _ Shift₂ n 1 ↑(n + 1) rfl).hom.app X)
+
 lemma α_vs_second_shift (n : ℤ) (X : C) :
     (@shiftFunctor C _ _ _ Shift₂ n).map (α.app X) = α.app ((@shiftFunctor C _ _ _ Shift₂ n).obj X)
     ≫ (@shiftFunctorComm C _ _ _ Shift₂ n 1).hom.app X := by
   have := (@shiftFunctorAdd' C _ _ _ Shift₂ (n - 1) 1 n (by linarith)).hom.naturality (α.app X)
+  sorry
 
 lemma exists_triangle (A : C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
     ∃ (X Y : C) (_ : (GE n₁).P X) (_ : (LE n₀).P Y) (f : X ⟶ A) (g : A ⟶ Y)
