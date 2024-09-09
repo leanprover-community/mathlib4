@@ -913,18 +913,6 @@ theorem modifyNth_eq_set (f : α → α) :
   | n + 1, b :: l =>
     (congr_arg (cons b) (modifyNth_eq_set f n l)).trans <| by cases h : l[n]? <;> simp [h]
 
-theorem length_modifyNthTail (f : List α → List α) (H : ∀ l, length (f l) = length l) :
-    ∀ n l, length (modifyNthTail f n l) = length l
-  | 0, _ => H _
-  | _ + 1, [] => rfl
-  | _ + 1, _ :: _ => @congr_arg _ _ _ _ (· + 1) (length_modifyNthTail _ H _ _)
-
--- Porting note: Duplicate of `modify_get?_length`
--- (but with a substantially better name?)
--- @[simp]
-theorem length_modifyNth (f : α → α) : ∀ n l, length (modifyNth f n l) = length l :=
-  modify_get?_length f
-
 @[simp]
 theorem getElem_set_of_ne {l : List α} {i j : ℕ} (h : i ≠ j) (a : α)
     (hj : j < (l.set i a).length) :
