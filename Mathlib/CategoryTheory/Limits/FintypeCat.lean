@@ -8,6 +8,8 @@ import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.CategoryTheory.Limits.Creates
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
+import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.Data.Finite.Basic
 
 /-!
@@ -23,33 +25,36 @@ universe u
 
 namespace CategoryTheory.Limits.FintypeCat
 
-instance {J : Type} [SmallCategory J] (K : J ⥤ FintypeCat.{u}) (j : J) :
+instance {J : Type*} [SmallCategory J] (K : J ⥤ FintypeCat.{u}) (j : J) :
     Finite ((K ⋙ FintypeCat.incl.{u}).obj j) := by
   simp only [comp_obj, FintypeCat.incl_obj]
   infer_instance
 
 /-- Any functor from a finite category to Types that only involves finite objects,
 has a finite limit. -/
-noncomputable instance finiteLimitOfFiniteDiagram {J : Type} [SmallCategory J] [FinCategory J]
+noncomputable instance finiteLimitOfFiniteDiagram {J : Type*} [SmallCategory J] [FinCategory J]
     (K : J ⥤ Type*) [∀ j, Finite (K.obj j)] : Fintype (limit K) := by
   have : Fintype (sections K) := Fintype.ofFinite (sections K)
   exact Fintype.ofEquiv (sections K) (Types.limitEquivSections K).symm
 
-noncomputable instance inclusionCreatesFiniteLimits {J : Type} [SmallCategory J] [FinCategory J] :
+noncomputable instance inclusionCreatesFiniteLimits {J : Type*} [SmallCategory J] [FinCategory J] :
     CreatesLimitsOfShape J FintypeCat.incl.{u} where
   CreatesLimit {K} := createsLimitOfFullyFaithfulOfIso
     (FintypeCat.of <| limit <| K ⋙ FintypeCat.incl) (Iso.refl _)
 
 /- Help typeclass inference to infer creation of finite limits for the forgtful functor. -/
-noncomputable instance {J : Type} [SmallCategory J] [FinCategory J] :
+noncomputable instance {J : Type*} [SmallCategory J] [FinCategory J] :
     CreatesLimitsOfShape J (forget FintypeCat) :=
   FintypeCat.inclusionCreatesFiniteLimits
 
-instance {J : Type} [SmallCategory J] [FinCategory J] : HasLimitsOfShape J FintypeCat.{u} where
+instance {J : Type*} [Category J] [FinCategory J] : HasLimitsOfShape J FintypeCat.{u} where
   has_limit F := hasLimit_of_created F FintypeCat.incl
 
 instance hasFiniteLimits : HasFiniteLimits FintypeCat.{u} where
   out _ := inferInstance
+
+noncomputable instance {J : Type*} [Category J] [FinCategory J] :
+    PreservesLimitsOfShape J FintypeCat.incl.{u} where
 
 noncomputable instance inclusionPreservesFiniteLimits :
     PreservesFiniteLimits FintypeCat.incl.{u} where
@@ -60,13 +65,33 @@ noncomputable instance inclusionPreservesFiniteLimits :
 noncomputable instance : PreservesFiniteLimits (forget FintypeCat) :=
   FintypeCat.inclusionPreservesFiniteLimits
 
+/-- The categorical product of a finite family in `FintypeCat` is equivalent to the product
+as types. -/
+noncomputable def productEquiv {ι : Type*} [Finite ι] (X : ι → FintypeCat.{u}) :
+    (∏ᶜ X : FintypeCat) ≃ ∀ i, X i :=
+  letI : Fintype ι := Fintype.ofFinite _
+  haveI : Small.{u} ι :=
+    ⟨ULift (Fin (Fintype.card ι)), ⟨(Fintype.equivFin ι).trans Equiv.ulift.symm⟩⟩
+  let is₁ : FintypeCat.incl.obj (∏ᶜ fun i ↦ X i) ≅ (∏ᶜ fun i ↦ X i : Type u) :=
+    PreservesProduct.iso FintypeCat.incl (fun i ↦ X i)
+  let is₂ : (∏ᶜ fun i ↦ X i : Type u) ≅ Shrink.{u} (∀ i, X i) :=
+    Types.Small.productIso (fun i ↦ X i)
+  let e : (∀ i, X i) ≃ Shrink.{u} (∀ i, X i) := equivShrink _
+  (equivEquivIso.symm is₁).trans ((equivEquivIso.symm is₂).trans e.symm)
+
+@[simp]
+lemma productEquiv_apply {ι : Type*} [Finite ι] (X : ι → FintypeCat.{u})
+    (x : (∏ᶜ X : FintypeCat)) (i : ι) : productEquiv X x i = Pi.π X i x := by
+  simpa [productEquiv] using (elementwise_of% piComparison_comp_π FintypeCat.incl X i) x
+
+@[simp]
+lemma productEquiv_symm_comp_π_apply {ι : Type*} [Finite ι] (X : ι → FintypeCat.{u})
+    (x : ∀ i, X i) (i : ι) : Pi.π X i ((productEquiv X).symm x) = x i := by
+  rw [← productEquiv_apply, Equiv.apply_symm_apply]
+
 instance nonempty_pi_of_nonempty {ι : Type*} [Finite ι] (X : ι → FintypeCat.{u})
     [∀ i, Nonempty (X i)] : Nonempty (∏ᶜ X : FintypeCat.{u}) :=
-  letI : Fintype ι := Fintype.ofFinite _
-  let e : ι ≃ Fin (Fintype.card ι) := Fintype.equivFin ι
-  let p : (FintypeCat.of (∀ i, X (e.symm i))) ⟶ ∏ᶜ X :=
-    Limits.Pi.lift (fun i p ↦ e.symm_apply_apply i ▸ p (e i))
-  Nonempty.elim inferInstance (fun x : ∀ i, X (e.symm i) ↦ ⟨p x⟩)
+  (Equiv.nonempty_congr <| productEquiv X).mpr inferInstance
 
 /-- Any functor from a finite category to Types that only involves finite objects,
 has a finite colimit. -/
