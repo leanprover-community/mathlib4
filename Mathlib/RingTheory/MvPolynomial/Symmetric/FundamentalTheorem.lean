@@ -330,6 +330,7 @@ lemma esymmAlgHom_surjective (hn : Fintype.card σ ≤ n) :
   exact (AlgEquiv.surjective _).comp (esymmAlgHom_fin_surjective R hn)
 
 /-- If the cardinality of `σ` is `n`, then `esymmAlgHom σ R n` is an isomorphism. -/
+@[simps! apply]
 noncomputable def esymmAlgEquiv (hn : Fintype.card σ = n) :
     MvPolynomial (Fin n) R ≃ₐ[R] symmetricSubalgebra σ R :=
   AlgEquiv.ofBijective (esymmAlgHom σ R n)
