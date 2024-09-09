@@ -90,15 +90,7 @@ lemma non_empty_intersection_compl_coset (x y : G) (U : Set G) (hx : x ∈ U)
   use y
   refine ⟨hy, mem_subgroup_coset G x y hxy V⟩
 
-variable [TopologicalGroup G]
-
-/-@[to_additive]
-lemma is_open_compl_coset' (y : G)
-    (V : OpenSubgroup G) :
-    IsOpen  (y • (V : Set G))ᶜ := by
-  simp only [isOpen_compl_iff, IsClosed.smul (OpenSubgroup.isClosed V) y]-/
-
-variable [NonarchimedeanGroup G] [T2Space G]
+variable [TopologicalGroup G] [NonarchimedeanGroup G] [T2Space G]
 
 @[to_additive]
 theorem non_singleton_set_disconnected (x y : G) (U : Set G)
@@ -121,12 +113,6 @@ theorem non_singleton_set_disconnected (x y : G) (U : Set G)
         non_empty_intersection_compl_coset G x y U hx A ha V dav.symm,
         Set.inter_compl_self, Set.inter_empty, Set.not_nonempty_empty, not_false_eq_true,
         and_self]
-
-    /-refine ⟨(IsOpen.smul (OpenSubgroup.isOpen V) y), is_open_compl_coset' G y V,
-        subset_coset_comp G y U V ,
-        non_empty_intersection_coset G x y U hy hxy V,
-        non_empty_intersection_compl_coset G x y U hx A ha V dav.symm,
-        intersection_of_intersection_of_complements_empty G y U V⟩-/
   rintro ⟨_, h2⟩
   exact emptyUuv <| ((((h2 u v ou) ov) Uuv) Uu) Uv
 
