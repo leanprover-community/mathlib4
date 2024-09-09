@@ -66,12 +66,21 @@ variable {R : Type*}
 
 namespace LaurentSeries
 
+section
+
+/--
+`R⸨X⸩` is notation for `LaurentSeries R`,
+-/
+scoped notation:9000 R "⸨X⸩" => LaurentSeries R
+
+end
+
 section HasseDeriv
 
 /-- The Hasse derivative of Laurent series, as a linear map. -/
 @[simps]
 def hasseDeriv (R : Type*) {V : Type*} [AddCommGroup V] [Semiring R] [Module R V] (k : ℕ) :
-    LaurentSeries V →ₗ[R] LaurentSeries V where
+    V⸨X⸩ →ₗ[R] V⸨X⸩ where
   toFun f := HahnSeries.ofSuppBddBelow (fun (n : ℤ) => (Ring.choose (n + k) k) • f.coeff (n + k))
     (forallLTEqZero_supp_BddBelow _ (f.order - k : ℤ)
     (fun _ h_lt ↦ by rw [coeff_eq_zero_of_lt_order <| lt_sub_iff_add_lt.mp h_lt, smul_zero]))
@@ -84,7 +93,7 @@ def hasseDeriv (R : Type*) {V : Type*} [AddCommGroup V] [Semiring R] [Module R V
 
 variable [Semiring R] {V : Type*} [AddCommGroup V] [Module R V]
 
-theorem hasseDeriv_coeff (k : ℕ) (f : LaurentSeries V) (n : ℤ) :
+theorem hasseDeriv_coeff (k : ℕ) (f : V⸨X⸩) (n : ℤ) :
     (hasseDeriv R k f).coeff n = Ring.choose (n + k) k • f.coeff (n + k) :=
   rfl
 
@@ -94,37 +103,37 @@ section Semiring
 
 variable [Semiring R]
 
-instance : Coe (PowerSeries R) (LaurentSeries R) :=
+instance : Coe (PowerSeries R) R⸨X⸩ :=
   ⟨HahnSeries.ofPowerSeries ℤ R⟩
 
 /- Porting note: now a syntactic tautology and not needed elsewhere
 theorem coe_powerSeries (x : PowerSeries R) :
-    (x : LaurentSeries R) = HahnSeries.ofPowerSeries ℤ R x :=
+    (x : R⸨X⸩) = HahnSeries.ofPowerSeries ℤ R x :=
   rfl -/
 
 @[simp]
 theorem coeff_coe_powerSeries (x : PowerSeries R) (n : ℕ) :
-    HahnSeries.coeff (x : LaurentSeries R) n = PowerSeries.coeff R n x := by
+    HahnSeries.coeff (x : R⸨X⸩) n = PowerSeries.coeff R n x := by
   rw [ofPowerSeries_apply_coeff]
 
 /-- This is a power series that can be multiplied by an integer power of `X` to give our
   Laurent series. If the Laurent series is nonzero, `powerSeriesPart` has a nonzero
   constant term. -/
-def powerSeriesPart (x : LaurentSeries R) : PowerSeries R :=
+def powerSeriesPart (x : R⸨X⸩) : PowerSeries R :=
   PowerSeries.mk fun n => x.coeff (x.order + n)
 
 @[simp]
-theorem powerSeriesPart_coeff (x : LaurentSeries R) (n : ℕ) :
+theorem powerSeriesPart_coeff (x : R⸨X⸩) (n : ℕ) :
     PowerSeries.coeff R n x.powerSeriesPart = x.coeff (x.order + n) :=
   PowerSeries.coeff_mk _ _
 
 @[simp]
-theorem powerSeriesPart_zero : powerSeriesPart (0 : LaurentSeries R) = 0 := by
+theorem powerSeriesPart_zero : powerSeriesPart (0 : R⸨X⸩) = 0 := by
   ext
   simp [(PowerSeries.coeff _ _).map_zero] -- Note: this doesn't get picked up any more
 
 @[simp]
-theorem powerSeriesPart_eq_zero (x : LaurentSeries R) : x.powerSeriesPart = 0 ↔ x = 0 := by
+theorem powerSeriesPart_eq_zero (x : R⸨X⸩) : x.powerSeriesPart = 0 ↔ x = 0 := by
   constructor
   · contrapose!
     simp only [ne_eq]
@@ -136,8 +145,8 @@ theorem powerSeriesPart_eq_zero (x : LaurentSeries R) : x.powerSeriesPart = 0 �
     simp
 
 @[simp]
-theorem single_order_mul_powerSeriesPart (x : LaurentSeries R) :
-    (single x.order 1 : LaurentSeries R) * x.powerSeriesPart = x := by
+theorem single_order_mul_powerSeriesPart (x : R⸨X⸩) :
+    (single x.order 1 : R⸨X⸩) * x.powerSeriesPart = x := by
   ext n
   rw [← sub_add_cancel n x.order, single_mul_coeff_add, sub_add_cancel, one_mul]
   by_cases h : x.order ≤ n
@@ -153,25 +162,25 @@ theorem single_order_mul_powerSeriesPart (x : LaurentSeries R) :
       rw [← sub_nonneg, ← hm]
       simp only [Nat.cast_nonneg]
 
-theorem ofPowerSeries_powerSeriesPart (x : LaurentSeries R) :
+theorem ofPowerSeries_powerSeriesPart (x : R⸨X⸩) :
     ofPowerSeries ℤ R x.powerSeriesPart = single (-x.order) 1 * x := by
   refine Eq.trans ?_ (congr rfl x.single_order_mul_powerSeriesPart)
   rw [← mul_assoc, single_mul_single, neg_add_cancel, mul_one, ← C_apply, C_one, one_mul]
 
 end Semiring
 
-instance [CommSemiring R] : Algebra (PowerSeries R) (LaurentSeries R) :=
+instance [CommSemiring R] : Algebra (PowerSeries R) (R⸨X⸩) :=
   (HahnSeries.ofPowerSeries ℤ R).toAlgebra
 
 @[simp]
 theorem coe_algebraMap [CommSemiring R] :
-    ⇑(algebraMap (PowerSeries R) (LaurentSeries R)) = HahnSeries.ofPowerSeries ℤ R :=
+    ⇑(algebraMap (PowerSeries R) R⸨X⸩) = HahnSeries.ofPowerSeries ℤ R :=
   rfl
 
 /-- The localization map from power series to Laurent series. -/
 @[simps (config := { rhsMd := .all, simpRhs := true })]
 instance of_powerSeries_localization [CommRing R] :
-    IsLocalization (Submonoid.powers (PowerSeries.X : PowerSeries R)) (LaurentSeries R) where
+    IsLocalization (Submonoid.powers (PowerSeries.X : PowerSeries R)) R⸨X⸩ where
   map_units' := by
     rintro ⟨_, n, rfl⟩
     refine ⟨⟨single (n : ℤ) 1, single (-n : ℤ) 1, ?_, ?_⟩, ?_⟩
@@ -195,7 +204,7 @@ instance of_powerSeries_localization [CommRing R] :
     rintro rfl
     exact ⟨1, rfl⟩
 
-instance {K : Type*} [Field K] : IsFractionRing (PowerSeries K) (LaurentSeries K) :=
+instance {K : Type*} [Field K] : IsFractionRing (PowerSeries K) K⸨X⸩ :=
   IsLocalization.of_le (Submonoid.powers (PowerSeries.X : PowerSeries K)) _
     (powers_le_nonZeroDivisors_of_noZeroDivisors PowerSeries.X_ne_zero) fun _ hf =>
     isUnit_of_mem_nonZeroDivisors <| map_mem_nonZeroDivisors _ HahnSeries.ofPowerSeries_injective hf
@@ -209,31 +218,31 @@ open LaurentSeries
 variable {R' : Type*} [Semiring R] [Ring R'] (f g : PowerSeries R) (f' g' : PowerSeries R')
 
 @[norm_cast] -- Porting note (#10618): simp can prove this
-theorem coe_zero : ((0 : PowerSeries R) : LaurentSeries R) = 0 :=
+theorem coe_zero : ((0 : PowerSeries R) : R⸨X⸩) = 0 :=
   (ofPowerSeries ℤ R).map_zero
 
 @[norm_cast] -- Porting note (#10618): simp can prove this
-theorem coe_one : ((1 : PowerSeries R) : LaurentSeries R) = 1 :=
+theorem coe_one : ((1 : PowerSeries R) : R⸨X⸩) = 1 :=
   (ofPowerSeries ℤ R).map_one
 
 @[norm_cast] -- Porting note (#10618): simp can prove this
-theorem coe_add : ((f + g : PowerSeries R) : LaurentSeries R) = f + g :=
+theorem coe_add : ((f + g : PowerSeries R) : R⸨X⸩) = f + g :=
   (ofPowerSeries ℤ R).map_add _ _
 
 @[norm_cast]
-theorem coe_sub : ((f' - g' : PowerSeries R') : LaurentSeries R') = f' - g' :=
+theorem coe_sub : ((f' - g' : PowerSeries R') : R'⸨X⸩) = f' - g' :=
   (ofPowerSeries ℤ R').map_sub _ _
 
 @[norm_cast]
-theorem coe_neg : ((-f' : PowerSeries R') : LaurentSeries R') = -f' :=
+theorem coe_neg : ((-f' : PowerSeries R') : R'⸨X⸩) = -f' :=
   (ofPowerSeries ℤ R').map_neg _
 
 @[norm_cast] -- Porting note (#10618): simp can prove this
-theorem coe_mul : ((f * g : PowerSeries R) : LaurentSeries R) = f * g :=
+theorem coe_mul : ((f * g : PowerSeries R) : R⸨X⸩) = f * g :=
   (ofPowerSeries ℤ R).map_mul _ _
 
 theorem coeff_coe (i : ℤ) :
-    ((f : PowerSeries R) : LaurentSeries R).coeff i =
+    ((f : PowerSeries R) : R⸨X⸩).coeff i =
       if i < 0 then 0 else PowerSeries.coeff R i.natAbs f := by
   cases i
   · rw [Int.ofNat_eq_coe, coeff_coe_powerSeries, if_neg (Int.natCast_nonneg _).not_lt,
@@ -245,23 +254,23 @@ theorem coeff_coe (i : ℤ) :
 
 -- Porting note (#10618): simp can prove this
 -- Porting note: removed norm_cast attribute
-theorem coe_C (r : R) : ((C R r : PowerSeries R) : LaurentSeries R) = HahnSeries.C r :=
+theorem coe_C (r : R) : ((C R r : PowerSeries R) : R⸨X⸩) = HahnSeries.C r :=
   ofPowerSeries_C _
 
 -- @[simp] -- Porting note (#10618): simp can prove this
-theorem coe_X : ((X : PowerSeries R) : LaurentSeries R) = single 1 1 :=
+theorem coe_X : ((X : PowerSeries R) : R⸨X⸩) = single 1 1 :=
   ofPowerSeries_X
 
 @[simp, norm_cast]
 theorem coe_smul {S : Type*} [Semiring S] [Module R S] (r : R) (x : PowerSeries S) :
-    ((r • x : PowerSeries S) : LaurentSeries S) = r • (ofPowerSeries ℤ S x) := by
+    ((r • x : PowerSeries S) : S⸨X⸩) = r • (ofPowerSeries ℤ S x) := by
   ext
   simp [coeff_coe, coeff_smul, smul_ite]
 
 -- Porting note: RingHom.map_bit0 and RingHom.map_bit1 no longer exist
 
 @[norm_cast]
-theorem coe_pow (n : ℕ) : ((f ^ n : PowerSeries R) : LaurentSeries R) = (ofPowerSeries ℤ R f) ^ n :=
+theorem coe_pow (n : ℕ) : ((f ^ n : PowerSeries R) : R⸨X⸩) = (ofPowerSeries ℤ R f) ^ n :=
   (ofPowerSeries ℤ R).map_pow _ _
 
 end PowerSeries
@@ -475,18 +484,18 @@ namespace LaurentSeries
 
 open IsDedekindDomain.HeightOneSpectrum PowerSeries RatFunc
 
-instance : Valued (LaurentSeries K) ℤₘ₀ := Valued.mk' (PowerSeries.idealX K).valuation
+instance : Valued K⸨X⸩ ℤₘ₀ := Valued.mk' (PowerSeries.idealX K).valuation
 
 theorem valuation_X_pow (s : ℕ) :
-    Valued.v (((X : K⟦X⟧) : LaurentSeries K) ^ s) = Multiplicative.ofAdd (-(s : ℤ)) := by
+    Valued.v (((X : K⟦X⟧) : K⸨X⸩) ^ s) = Multiplicative.ofAdd (-(s : ℤ)) := by
   erw [map_pow, ← one_mul (s : ℤ), ← neg_mul (1 : ℤ) s, Int.ofAdd_mul,
     WithZero.coe_zpow, ofAdd_neg, WithZero.coe_inv, zpow_natCast, valuation_of_algebraMap,
     intValuation_toFun, intValuation_X, ofAdd_neg, WithZero.coe_inv, inv_pow]
 
 theorem valuation_single_zpow (s : ℤ) :
-    Valued.v (HahnSeries.single s (1 : K) : LaurentSeries K) =
+    Valued.v (HahnSeries.single s (1 : K) : K⸨X⸩) =
       Multiplicative.ofAdd (-(s : ℤ)) := by
-  have : Valued.v (1 : LaurentSeries K) = (1 : ℤₘ₀) := Valued.v.map_one
+  have : Valued.v (1 : K⸨X⸩) = (1 : ℤₘ₀) := Valued.v.map_one
   rw [← single_zero_one, ← add_neg_cancel s, ← mul_one 1, ← single_mul_single, map_mul,
     mul_eq_one_iff_eq_inv₀] at this
   · rw [this]
@@ -499,18 +508,18 @@ theorem valuation_single_zpow (s : ℤ) :
 
 /- The coefficients of a power series vanish in degree strictly less than its valuation. -/
 theorem coeff_zero_of_lt_intValuation {n d : ℕ} {f : K⟦X⟧}
-    (H : Valued.v (f : LaurentSeries K) ≤ Multiplicative.ofAdd (-d : ℤ)) :
+    (H : Valued.v (f : K⸨X⸩) ≤ Multiplicative.ofAdd (-d : ℤ)) :
     n < d → coeff K n f = 0 := by
   intro hnd
   apply (PowerSeries.X_pow_dvd_iff).mp _ n hnd
   erw [← span_singleton_dvd_span_singleton_iff_dvd, ← Ideal.span_singleton_pow,
     ← (intValuation_le_pow_iff_dvd (PowerSeries.idealX K) f d), ← intValuation_apply,
-    ← valuation_of_algebraMap (R := K⟦X⟧) (K := (LaurentSeries K))]
+    ← valuation_of_algebraMap (R := K⟦X⟧) (K := K⸨X⸩)]
   exact H
 
 /- The valuation of a power series is the order of the first non-zero coefficient. -/
 theorem intValuation_le_iff_coeff_lt_eq_zero {d : ℕ} (f : K⟦X⟧) :
-    Valued.v (f : LaurentSeries K) ≤ Multiplicative.ofAdd (-d : ℤ) ↔
+    Valued.v (f : K⸨X⸩) ≤ Multiplicative.ofAdd (-d : ℤ) ↔
       ∀ n : ℕ, n < d → coeff K n f = 0 := by
   have : PowerSeries.X ^ d ∣ f ↔ ∀ n : ℕ, n < d → (PowerSeries.coeff K n) f = 0 :=
     ⟨PowerSeries.X_pow_dvd_iff.mp, PowerSeries.X_pow_dvd_iff.mpr⟩
@@ -519,7 +528,7 @@ theorem intValuation_le_iff_coeff_lt_eq_zero {d : ℕ} (f : K⟦X⟧) :
   apply intValuation_le_pow_iff_dvd
 
 /- The coefficients of a Laurent series vanish in degree strictly less than its valuation. -/
-theorem coeff_zero_of_lt_valuation {n D : ℤ} {f : LaurentSeries K}
+theorem coeff_zero_of_lt_valuation {n D : ℤ} {f : K⸨X⸩}
     (H : Valued.v f ≤ Multiplicative.ofAdd (-D)) : n < D → f.coeff n = 0 := by
   intro hnd
   by_cases h_n_ord : n < f.order
@@ -547,7 +556,7 @@ theorem coeff_zero_of_lt_valuation {n D : ℤ} {f : LaurentSeries K}
       mul_le_mul_left (by simp only [ne_eq, WithZero.coe_ne_zero, not_false_iff, zero_lt_iff])]
 
 /- The valuation of a Laurent series is the order of the first non-zero coefficient. -/
-theorem valuation_le_iff_coeff_lt_eq_zero {D : ℤ} {f : LaurentSeries K} :
+theorem valuation_le_iff_coeff_lt_eq_zero {D : ℤ} {f : K⸨X⸩} :
     Valued.v f ≤ ↑(Multiplicative.ofAdd (-D : ℤ)) ↔ ∀ n : ℤ, n < D → f.coeff n = 0 := by
   refine ⟨fun hnD n hn => coeff_zero_of_lt_valuation K hnD hn, fun h_val_f => ?_⟩
   let F := powerSeriesPart f
@@ -589,7 +598,7 @@ theorem valuation_le_iff_coeff_lt_eq_zero {D : ℤ} {f : LaurentSeries K} :
 
 /- Two Laurent series whose difference has small valuation have the same coefficients for
 small enough indices. -/
-theorem eq_coeff_of_valuation_sub_lt {d n : ℤ} {f g : LaurentSeries K}
+theorem eq_coeff_of_valuation_sub_lt {d n : ℤ} {f g : K⸨X⸩}
     (H : Valued.v (g - f) ≤ ↑(Multiplicative.ofAdd (-d))) : n < d → g.coeff n = f.coeff n := by
   by_cases triv : g = f
   · exact fun _ => by rw [triv]
@@ -599,7 +608,7 @@ theorem eq_coeff_of_valuation_sub_lt {d n : ℤ} {f g : LaurentSeries K}
     apply coeff_zero_of_lt_valuation K H hn
 
 /- Every Laurent series of valuation less than `(1 : ℤₘ₀)` comes from a power series. -/
-theorem val_le_one_iff_eq_coe (f : LaurentSeries K) : Valued.v f ≤ (1 : ℤₘ₀) ↔
+theorem val_le_one_iff_eq_coe (f : K⸨X⸩) : Valued.v f ≤ (1 : ℤₘ₀) ↔
     ∃ F : PowerSeries K, F = f := by
   rw [← WithZero.coe_one, ← ofAdd_zero, ← neg_zero, valuation_le_iff_coeff_lt_eq_zero]
   refine ⟨fun h => ⟨PowerSeries.mk fun n => f.coeff n, ?_⟩, ?_⟩
@@ -630,23 +639,23 @@ variable {K : Type*} [Field K]
 /- Sending a Laurent series to its `d`-th coefficient is uniformly continuous (independently of the
  uniformity with which `K` is endowed). -/
 theorem uniformContinuous_coeff {uK : UniformSpace K} (d : ℤ) :
-    UniformContinuous fun f : LaurentSeries K ↦ f.coeff d := by
+    UniformContinuous fun f : K⸨X⸩ ↦ f.coeff d := by
   refine uniformContinuous_iff_eventually.mpr fun S hS ↦ eventually_iff_exists_mem.mpr ?_
   let γ : ℤₘ₀ˣ := Units.mk0 (↑(Multiplicative.ofAdd (-(d + 1)))) WithZero.coe_ne_zero
   use {P | Valued.v (P.snd - P.fst) < ↑γ}
-  refine ⟨(Valued.hasBasis_uniformity (LaurentSeries K) ℤₘ₀).mem_of_mem (by tauto), fun P hP ↦ ?_⟩
+  refine ⟨(Valued.hasBasis_uniformity K⸨X⸩ ℤₘ₀).mem_of_mem (by tauto), fun P hP ↦ ?_⟩
   rw [eq_coeff_of_valuation_sub_lt K (le_of_lt hP) (lt_add_one _)]
   exact mem_uniformity_of_eq hS rfl
 
 /-- Since extracting coefficients is uniformly continuous, every Cauchy filter in
 `laurentSeries K` gives rise to a Cauchy filter in `K` for every `d : ℤ`, and such Cauchy filter
 in `K` converges to a principal filter -/
-def Cauchy.coeff {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) : ℤ → K :=
+def Cauchy.coeff {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) : ℤ → K :=
   let _ : UniformSpace K := ⊥
   fun d ↦ UniformSpace.DiscreteUnif.cauchyConst rfl <| hℱ.map (uniformContinuous_coeff d)
 
-theorem Cauchy.coeff_tendsto {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) (D : ℤ) :
-    Tendsto (fun f : LaurentSeries K ↦ f.coeff D) ℱ (𝓟 {coeff hℱ D}) :=
+theorem Cauchy.coeff_tendsto {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) (D : ℤ) :
+    Tendsto (fun f : K⸨X⸩ ↦ f.coeff D) ℱ (𝓟 {coeff hℱ D}) :=
   let _ : UniformSpace K := ⊥
   le_of_eq <| UniformSpace.DiscreteUnif.eq_const_of_cauchy (by rfl)
     (hℱ.map (uniformContinuous_coeff D)) ▸ (principal_singleton _).symm
@@ -660,16 +669,16 @@ beyond the special case `Γ = ℤ`, that corresponds to Laurent Series: neverthe
 does not generalise, as it relies on the study of the `X`-adic valuation attached to the height-one
 prime `X`, and this is peculiar to the one-variable setting. In the future we should prove this
 result in full generality and deduce the case `Γ = ℤ` from that one.-/
-lemma Cauchy.exists_lb_eventual_support {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) :
-    ∃ N, ∀ᶠ f : LaurentSeries K in ℱ, ∀ n < N, f.coeff n = (0 : K) := by
-  let entourage : Set (LaurentSeries K × LaurentSeries K) :=
-    {P : LaurentSeries K × LaurentSeries K |
+lemma Cauchy.exists_lb_eventual_support {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) :
+    ∃ N, ∀ᶠ f : K⸨X⸩ in ℱ, ∀ n < N, f.coeff n = (0 : K) := by
+  let entourage : Set (K⸨X⸩ × K⸨X⸩) :=
+    {P : K⸨X⸩ × K⸨X⸩ |
       Valued.v (P.snd - P.fst) < ((Multiplicative.ofAdd 0 : Multiplicative ℤ) : ℤₘ₀)}
   let ζ := Units.mk0 (G₀ := ℤₘ₀) _ (WithZero.coe_ne_zero (a := (Multiplicative.ofAdd 0)))
   obtain ⟨S, ⟨hS, ⟨T, ⟨hT, H⟩⟩⟩⟩ := mem_prod_iff.mp <| Filter.le_def.mp hℱ.2 entourage
-    <| (Valued.hasBasis_uniformity (LaurentSeries K) ℤₘ₀).mem_of_mem (i := ζ) (by tauto)
+    <| (Valued.hasBasis_uniformity K⸨X⸩ ℤₘ₀).mem_of_mem (i := ζ) (by tauto)
   obtain ⟨f, hf⟩ := forall_mem_nonempty_iff_neBot.mpr hℱ.1 (S ∩ T) (inter_mem_iff.mpr ⟨hS, hT⟩)
-  obtain ⟨N, hN⟩ :  ∃ N : ℤ, ∀ g : LaurentSeries K,
+  obtain ⟨N, hN⟩ :  ∃ N : ℤ, ∀ g : K⸨X⸩,
     Valued.v (g - f) ≤ ↑(Multiplicative.ofAdd (0 : ℤ)) → ∀ n < N, g.coeff n = 0 := by
     by_cases hf : f = 0
     · refine ⟨0, fun x hg ↦ ?_⟩
@@ -689,7 +698,7 @@ lemma Cauchy.exists_lb_eventual_support {ℱ : Filter (LaurentSeries K)} (hℱ :
   exact hN g (le_of_lt h_prod)
 
 /- The support of `Cauchy.coeff` has a lower bound. -/
-theorem Cauchy.exists_lb_support {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) :
+theorem Cauchy.exists_lb_support {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) :
     ∃ N, ∀ n, n < N → coeff hℱ n = 0 := by
   let _ : UniformSpace K := ⊥
   obtain ⟨N, hN⟩ := exists_lb_eventual_support hℱ
@@ -699,36 +708,36 @@ theorem Cauchy.exists_lb_support {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy
   apply Filter.mem_of_superset hN (fun _ ha ↦ ha _ hn)
 
 /- The support of `Cauchy.coeff` is bounded below -/
-theorem Cauchy.coeff_support_bddBelow {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) :
+theorem Cauchy.coeff_support_bddBelow {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) :
     BddBelow (coeff hℱ).support := by
   refine ⟨(exists_lb_support hℱ).choose, fun d hd ↦ ?_⟩
   by_contra hNd
   exact hd ((exists_lb_support hℱ).choose_spec d (not_le.mp hNd))
 
-/-- To any Cauchy filter ℱ of `LaurentSeries K`, we can attach a laurent series that is the limit
+/-- To any Cauchy filter ℱ of `K⸨X⸩`, we can attach a laurent series that is the limit
 of the filter. Its `d`-th coefficient is defined as the limit of `Cauchy.coeff hℱ d`, which is
 again Cauchy but valued in the discrete space `K`. That sufficiently negative coefficients vanish
 follows from `Cauchy.coeff_support_bddBelow` -/
-def Cauchy.limit {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) : LaurentSeries K :=
+def Cauchy.limit {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) : K⸨X⸩ :=
   HahnSeries.mk (coeff hℱ) <| Set.IsWF.isPWO (coeff_support_bddBelow _).wellFoundedOn_lt
 
 /- The following lemma shows that for every `d` smaller than the minimum between the integers
 produced in `Cauchy.exists_lb_eventual_support` and `Cauchy.exists_lb_support`, for almost all
 series in `ℱ` the `d`th coefficient coincides with the `d`th coefficient of `Cauchy.coeff hℱ`. -/
-theorem Cauchy.exists_lb_coeff_ne {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) :
-    ∃ N, ∀ᶠ f : LaurentSeries K in ℱ, ∀ d < N, coeff hℱ d = f.coeff d := by
+theorem Cauchy.exists_lb_coeff_ne {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) :
+    ∃ N, ∀ᶠ f : K⸨X⸩ in ℱ, ∀ d < N, coeff hℱ d = f.coeff d := by
   obtain ⟨⟨N₁, hN₁⟩, ⟨N₂, hN₂⟩⟩ := exists_lb_eventual_support hℱ, exists_lb_support hℱ
   refine ⟨min N₁ N₂, ℱ.3 hN₁ fun _ hf d hd ↦ ?_⟩
   rw [hf d (lt_of_lt_of_le hd (min_le_left _ _)), hN₂ d (lt_of_lt_of_le hd (min_le_right _ _))]
 
 /- Given a Cauchy filter `ℱ` in the Laurent Series and a bound `D`, for almost all series in the
 filter the coefficients below `D` coincide with `Caucy.coeff hℱ`-/
-theorem Cauchy.coeff_eventually_equal {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) {D : ℤ} :
-    ∀ᶠ f : LaurentSeries K in ℱ, ∀ d, d < D → coeff hℱ d = f.coeff d := by
+theorem Cauchy.coeff_eventually_equal {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) {D : ℤ} :
+    ∀ᶠ f : K⸨X⸩ in ℱ, ∀ d, d < D → coeff hℱ d = f.coeff d := by
   -- `φ` sends `d` to the set of Laurent Series having `d`th coefficient equal to `ℱ.coeff`.
-  let φ : ℤ → Set (LaurentSeries K) := fun d ↦ {f | coeff hℱ d = f.coeff d}
+  let φ : ℤ → Set K⸨X⸩ := fun d ↦ {f | coeff hℱ d = f.coeff d}
   have intersec₁ :
-    (⋂ n ∈ Set.Iio D, φ n) ⊆ {x : LaurentSeries K | ∀ d : ℤ, d < D → coeff hℱ d = x.coeff d} := by
+    (⋂ n ∈ Set.Iio D, φ n) ⊆ {x : K⸨X⸩ | ∀ d : ℤ, d < D → coeff hℱ d = x.coeff d} := by
     intro _ hf
     simpa only [Set.mem_iInter] using hf
   -- The goal is now to show that the intersection of all `φ d` (for `d < D`) is in `ℱ`.
@@ -761,10 +770,10 @@ theorem Cauchy.coeff_eventually_equal {ℱ : Filter (LaurentSeries K)} (hℱ : C
 open scoped Topology
 
 /- The main result showing that the Cauchy filter tends to the `Cauchy.limit`-/
-theorem Cauchy.eventually_mem_nhds {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ)
-    {U : Set (LaurentSeries K)} (hU : U ∈ 𝓝 (Cauchy.limit hℱ)) : ∀ᶠ f in ℱ, f ∈ U := by
+theorem Cauchy.eventually_mem_nhds {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ)
+    {U : Set K⸨X⸩} (hU : U ∈ 𝓝 (Cauchy.limit hℱ)) : ∀ᶠ f in ℱ, f ∈ U := by
   obtain ⟨γ, hU₁⟩ := Valued.mem_nhds.mp hU
-  suffices ∀ᶠ f in ℱ, f ∈ {y : LaurentSeries K | Valued.v (y - limit hℱ) < ↑γ} by
+  suffices ∀ᶠ f in ℱ, f ∈ {y : K⸨X⸩ | Valued.v (y - limit hℱ) < ↑γ} by
     apply this.mono fun _ hf ↦ hU₁ hf
   set D := -(Multiplicative.toAdd (WithZero.unzero γ.ne_zero) - 1) with hD₀
   have hD : ((Multiplicative.ofAdd (-D) : Multiplicative ℤ) : ℤₘ₀) < γ := by
@@ -778,7 +787,7 @@ theorem Cauchy.eventually_mem_nhds {ℱ : Filter (LaurentSeries K)} (hℱ : Cauc
   rw [HahnSeries.sub_coeff, sub_eq_zero, hf n hn |>.symm]; rfl
 
 /- Laurent Series with coefficients in a field are complete w.r.t. the `X`-adic valuation -/
-instance instLaurentSeriesComplete : CompleteSpace (LaurentSeries K) :=
+instance instLaurentSeriesComplete : CompleteSpace K⸨X⸩ :=
   ⟨fun hℱ ↦ ⟨Cauchy.limit hℱ, fun _ hS ↦ Cauchy.eventually_mem_nhds hℱ hS⟩⟩
 
 end Complete
