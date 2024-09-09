@@ -18,9 +18,7 @@ widgets.
 open Lean Meta Elab Qq
 open CategoryTheory Mathlib.Tactic.BicategoryLike MonoidalCategory
 
-namespace Mathlib.Tactic
-
-namespace Monoidal'
+namespace Mathlib.Tactic.Monoidal'
 
 /-- The domain of a morphism. -/
 def srcExpr (η : Expr) : MetaM Expr := do
@@ -136,8 +134,6 @@ theorem structuralIsoOfExpr_horizontalComp {f₁ g₁ f₂ g₂ : C}
 end
 
 open MonadMor₁
-
-open MonoidalCategory
 
 instance : MonadMor₂Iso MonoidalM where
   associatorM f g h := do
