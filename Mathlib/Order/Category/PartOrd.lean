@@ -5,8 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.Order.Antisymmetrization
 import Mathlib.Order.Category.Preord
-
-#align_import order.category.PartOrd from "leanprover-community/mathlib"@"e8ac6315bcfcbaf2d19a046719c3b553206dac75"
+import Mathlib.CategoryTheory.Adjunction.Basic
 
 /-!
 # Category of partial orders
@@ -22,8 +21,6 @@ universe u
 /-- The category of partially ordered types. -/
 def PartOrd :=
   Bundled PartialOrder
-set_option linter.uppercaseLean3 false in
-#align PartOrd PartOrd
 
 namespace PartOrd
 
@@ -42,14 +39,10 @@ instance : CoeSort PartOrd Type* :=
 /-- Construct a bundled PartOrd from the underlying type and typeclass. -/
 def of (α : Type*) [PartialOrder α] : PartOrd :=
   Bundled.of α
-set_option linter.uppercaseLean3 false in
-#align PartOrd.of PartOrd.of
 
 @[simp]
 theorem coe_of (α : Type*) [PartialOrder α] : ↥(of α) = α :=
   rfl
-set_option linter.uppercaseLean3 false in
-#align PartOrd.coe_of PartOrd.coe_of
 
 instance : Inhabited PartOrd :=
   ⟨of PUnit⟩
@@ -59,8 +52,6 @@ instance (α : PartOrd) : PartialOrder α :=
 
 instance hasForgetToPreord : HasForget₂ PartOrd Preord :=
   BundledHom.forget₂ _ _
-set_option linter.uppercaseLean3 false in
-#align PartOrd.has_forget_to_Preord PartOrd.hasForgetToPreord
 
 /-- Constructs an equivalence between partial orders from an order isomorphism between them. -/
 @[simps]
@@ -73,16 +64,12 @@ def Iso.mk {α β : PartOrd.{u}} (e : α ≃o β) : α ≅ β where
   inv_hom_id := by
     ext x
     exact e.apply_symm_apply x
-set_option linter.uppercaseLean3 false in
-#align PartOrd.iso.mk PartOrd.Iso.mk
 
 /-- `OrderDual` as a functor. -/
 @[simps]
 def dual : PartOrd ⥤ PartOrd where
   obj X := of Xᵒᵈ
   map := OrderHom.dual
-set_option linter.uppercaseLean3 false in
-#align PartOrd.dual PartOrd.dual
 
 /-- The equivalence between `PartOrd` and itself induced by `OrderDual` both ways. -/
 @[simps functor inverse]
@@ -91,8 +78,6 @@ def dualEquiv : PartOrd ≌ PartOrd where
   inverse := dual
   unitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
   counitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
-set_option linter.uppercaseLean3 false in
-#align PartOrd.dual_equiv PartOrd.dualEquiv
 
 end PartOrd
 
@@ -100,8 +85,6 @@ theorem partOrd_dual_comp_forget_to_preord :
     PartOrd.dual ⋙ forget₂ PartOrd Preord =
       forget₂ PartOrd Preord ⋙ Preord.dual :=
   rfl
-set_option linter.uppercaseLean3 false in
-#align PartOrd_dual_comp_forget_to_Preord partOrd_dual_comp_forget_to_preord
 
 /-- `Antisymmetrization` as a functor. It is the free functor. -/
 def preordToPartOrd : Preord.{u} ⥤ PartOrd where
@@ -113,8 +96,6 @@ def preordToPartOrd : Preord.{u} ⥤ PartOrd where
   map_comp f g := by
     ext x
     exact Quotient.inductionOn' x fun x => OrderHom.antisymmetrization_apply_mk _ _
-set_option linter.uppercaseLean3 false in
-#align Preord_to_PartOrd preordToPartOrd
 
 /-- `preordToPartOrd` is left adjoint to the forgetful functor, meaning it is the free
 functor from `Preord` to `PartOrd`. -/
@@ -133,8 +114,6 @@ def preordToPartOrdForgetAdjunction :
       homEquiv_naturality_left_symm := fun _ _ =>
         OrderHom.ext _ _ <| funext fun x => Quotient.inductionOn' x fun _ => rfl
       homEquiv_naturality_right := fun _ _ => OrderHom.ext _ _ <| funext fun _ => rfl }
-set_option linter.uppercaseLean3 false in
-#align Preord_to_PartOrd_forget_adjunction preordToPartOrdForgetAdjunction
 
 -- The `simpNF` linter would complain as `Functor.comp_obj`, `Preord.dual_obj` both apply to LHS
 -- of `preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd_hom_app_coe`
@@ -144,8 +123,6 @@ def preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd :
     preordToPartOrd.{u} ⋙ PartOrd.dual ≅ Preord.dual ⋙ preordToPartOrd :=
   NatIso.ofComponents (fun _ => PartOrd.Iso.mk <| OrderIso.dualAntisymmetrization _)
     (fun _ => OrderHom.ext _ _ <| funext fun x => Quotient.inductionOn' x fun _ => rfl)
-set_option linter.uppercaseLean3 false in
-#align Preord_to_PartOrd_comp_to_dual_iso_to_dual_comp_Preord_to_PartOrd preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd
 
 -- This lemma was always bad, but the linter only noticed after lean4#2644
 attribute [nolint simpNF] preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd_inv_app_coe
