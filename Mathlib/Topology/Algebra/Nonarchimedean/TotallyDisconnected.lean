@@ -101,9 +101,7 @@ lemma intersection_of_intersection_of_complements_empty (y : G)  (U : Set G)
     (V : OpenSubgroup G) : (U ∩ (y • (V : Set G))).Nonempty := by
   simp only [Set.inter_nonempty]
   use y
-  constructor
-  · exact hy
-  · exact mem_subgroup_coset G x y hxy V
+  refine ⟨hy, mem_subgroup_coset G x y hxy V⟩
 
 variable [TopologicalGroup G]
 
