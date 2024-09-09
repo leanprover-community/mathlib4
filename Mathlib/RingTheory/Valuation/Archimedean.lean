@@ -3,6 +3,7 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
+import Mathlib.Algebra.Order.Archimedean.Submonoid
 import Mathlib.Algebra.Order.Monoid.Submonoid
 import Mathlib.Data.Int.SuccPred
 import Mathlib.GroupTheory.ArchimedeanDensely
@@ -82,13 +83,13 @@ lemma isPrincipalIdealRing_iff_not_denselyOrdered [MulArchimedean Γ₀] (hv : I
   · simp only [Function.comp_apply, Submodule.bot_coe, Set.image_singleton, _root_.map_zero]
     exact ⟨0, by simp⟩
   let e' : (MonoidHom.mrange v)ˣ ≃o Multiplicative ℤ := ⟨
-    (MulEquiv.unzeroCongr ((WithZero.unitsWithZeroEquivGroupWithZero _).trans e)).toEquiv, by
+    (MulEquiv.unzeroCongr ((WithZero.unitsWithZeroMulEquivGroupWithZero _).trans e)).toEquiv, by
     intros
-    simp only [MulEquiv.unzeroCongr, WithZero.unitsWithZeroEquivGroupWithZero, MulEquiv.trans_apply,
-      MulEquiv.coe_mk, Equiv.coe_fn_mk, WithZero.recZeroCoe_coe, OrderMonoidIso.coe_mulEquiv,
-      MulEquiv.symm_trans_apply, MulEquiv.symm_mk, Equiv.coe_fn_symm_mk, map_eq_zero,
-      WithZero.coe_ne_zero, ↓reduceDIte, WithZero.unzero_coe, MulEquiv.toEquiv_eq_coe,
-      Equiv.toFun_as_coe, EquivLike.coe_coe, ← Units.val_le_val, Units.val_mk0]
+    simp only [MulEquiv.unzeroCongr, WithZero.unitsWithZeroMulEquivGroupWithZero,
+      MulEquiv.trans_apply, MulEquiv.coe_mk, Equiv.coe_fn_mk, WithZero.recZeroCoe_coe,
+      OrderMonoidIso.coe_mulEquiv, MulEquiv.symm_trans_apply, MulEquiv.symm_mk, Units.val_mk0,
+      Equiv.coe_fn_symm_mk, map_eq_zero, WithZero.coe_ne_zero, ↓reduceDIte, WithZero.unzero_coe,
+      MulEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe, ← Units.val_le_val]
     rw [← map_le_map_iff e, ← WithZero.coe_le_coe, WithZero.coe_unzero, WithZero.coe_unzero]⟩
   let _ : SuccOrder (MonoidHom.mrange v)ˣ := SuccOrder.of_orderIso e'.symm
   have : IsSuccArchimedean (MonoidHom.mrange v)ˣ := IsSuccArchimedean.of_orderIso e'.symm

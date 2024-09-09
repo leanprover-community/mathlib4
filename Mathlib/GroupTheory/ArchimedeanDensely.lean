@@ -275,9 +275,9 @@ lemma LinearOrderedCommGroupWithZero.discrete_or_denselyOrdered (G : Type*)
   refine (LinearOrderedCommGroup.discrete_or_denselyOrdered Gˣ).imp_left ?_
   intro ⟨f⟩
   refine ⟨OrderMonoidIso.trans
-    ⟨(WithZero.unitsWithZeroEquivGroupWithZero G).symm, ?_⟩ ⟨f.withZeroCongr, ?_⟩⟩
+    ⟨(WithZero.unitsWithZeroMulEquivGroupWithZero G).symm, ?_⟩ ⟨f.withZeroCongr, ?_⟩⟩
   · intro
-    simp only [WithZero.unitsWithZeroEquivGroupWithZero, MulEquiv.symm_mk,
+    simp only [WithZero.unitsWithZeroMulEquivGroupWithZero, MulEquiv.symm_mk,
       MulEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe, MulEquiv.coe_mk,
       Equiv.coe_fn_symm_mk ]
     split_ifs <;>
@@ -295,16 +295,16 @@ lemma LinearOrderedCommGroupWithZero.discrete_iff_not_denselyOrdered (G : Type*)
   rw [← denselyOrdered_units_iff,
       ← LinearOrderedCommGroup.discrete_iff_not_denselyOrdered]
   refine Nonempty.congr ?_ ?_ <;> intro f
-  · refine ⟨MulEquiv.unzeroCongr ((unitsWithZeroEquivGroupWithZero _).trans f), ?_⟩
+  · refine ⟨MulEquiv.unzeroCongr ((unitsWithZeroMulEquivGroupWithZero _).trans f), ?_⟩
     intros
-    simp only [MulEquiv.unzeroCongr, unitsWithZeroEquivGroupWithZero, MulEquiv.trans_apply,
+    simp only [MulEquiv.unzeroCongr, unitsWithZeroMulEquivGroupWithZero, MulEquiv.trans_apply,
       MulEquiv.coe_mk, Equiv.coe_fn_mk, recZeroCoe_coe, OrderMonoidIso.coe_mulEquiv,
       MulEquiv.symm_trans_apply, MulEquiv.symm_mk, Equiv.coe_fn_symm_mk, map_eq_zero, coe_ne_zero,
       ↓reduceDIte, unzero_coe, MulEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe]
     rw [← Units.val_le_val, ← map_le_map_iff f, ← coe_le_coe, coe_unzero, coe_unzero]
-  · refine ⟨(unitsWithZeroEquivGroupWithZero _).symm.trans (MulEquiv.withZeroCongr f), ?_⟩
+  · refine ⟨(unitsWithZeroMulEquivGroupWithZero _).symm.trans (MulEquiv.withZeroCongr f), ?_⟩
     intros
-    simp only [unitsWithZeroEquivGroupWithZero, MulEquiv.symm_mk, MulEquiv.withZeroCongr,
+    simp only [unitsWithZeroMulEquivGroupWithZero, MulEquiv.symm_mk, MulEquiv.withZeroCongr,
       MulEquiv.toMonoidHom_eq_coe, MulEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
       MulEquiv.trans_apply, MulEquiv.coe_mk, Equiv.coe_fn_symm_mk, Equiv.coe_fn_mk]
     split_ifs <;>
