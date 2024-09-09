@@ -158,7 +158,7 @@ noncomputable instance : Algebra R (ResidueField S) :=
 instance : IsScalarTower R (ResidueField R) (ResidueField S) :=
   IsScalarTower.of_algebraMap_eq (congrFun rfl)
 
-lemma finiteDimensional_of_noetherian [IsNoetherian R S] :
+instance finiteDimensional_of_noetherian [IsNoetherian R S] :
     FiniteDimensional (ResidueField R) (ResidueField S) := by
   apply IsNoetherian.iff_fg.mp <|
     isNoetherian_of_tower R (S := ResidueField R) (M := ResidueField S) _
