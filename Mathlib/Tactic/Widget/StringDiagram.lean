@@ -54,7 +54,6 @@ namespace Mathlib.Tactic
 
 open Lean Meta Elab
 open CategoryTheory
-open Mathlib.Tactic.Coherence
 
 open Mathlib.Tactic.Monoidal
 
@@ -183,10 +182,8 @@ def NormalExpr.nodes (e : NormalExpr) : MetaM (List (List Node)) := do
   | NormalExpr.cons _ η _ => return (← topNodes η) :: (← e.nodesAux 1)
 
 /-- `pairs [a, b, c, d]` is `[(a, b), (b, c), (c, d)]`. -/
-def pairs {α : Type} : List α → List (α × α)
-  | [] => []
-  | [_] => []
-  | (x :: y :: ys) => (x, y) :: pairs (y :: ys)
+def pairs {α : Type} : List α → List (α × α) :=
+  fun l => l.zip (l.drop 1)
 
 /-- The list of strands associated with a 2-morphism. -/
 def NormalExpr.strands (e : NormalExpr) : MetaM (List (List Strand)) := do
