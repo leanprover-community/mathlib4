@@ -137,8 +137,6 @@ end
 
 open MonadMor₁
 
-open MonoidalCategory
-
 instance : MonadMor₂Iso MonoidalM' where
   associatorM f g h := do
     let ctx ← read
