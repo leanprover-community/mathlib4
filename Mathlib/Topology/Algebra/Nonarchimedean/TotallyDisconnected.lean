@@ -72,7 +72,7 @@ lemma subset_coset_comp (y : G) (U : Set G) (V : OpenSubgroup G) :
 @[to_additive]
 lemma mem_subgroup_coset (x y : G) (hxy : y ≠ x) (V : OpenSubgroup G) :
     y ∈ (y • (V : Set G)) := by
-  change (y = x) → False at hxy
+  simp only [ne_eq] at hxy
   rw [← inv_mul_eq_one] at hxy
   simp only [Set.mem_smul_set_iff_inv_smul_mem, smul_eq_mul, inv_mul_cancel, SetLike.mem_coe,
     one_mem V]
@@ -109,8 +109,7 @@ variable [TopologicalGroup G]
 lemma is_open_compl_coset' (y : G)
     (V : OpenSubgroup G) :
     IsOpen  (y • (V : Set G))ᶜ := by
-  simp only [isOpen_compl_iff]
-  refine IsClosed.smul (OpenSubgroup.isClosed V) y
+  simp only [isOpen_compl_iff, IsClosed.smul (OpenSubgroup.isClosed V) y]
 
 variable [NonarchimedeanGroup G] [T2Space G]
 
