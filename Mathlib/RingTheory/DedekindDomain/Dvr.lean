@@ -3,7 +3,6 @@ Copyright (c) 2020 Kenji Nakagawa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
 -/
-import Mathlib.RingTheory.Localization.LocalizationLocalization
 import Mathlib.RingTheory.Localization.Submodule
 import Mathlib.RingTheory.DiscreteValuationRing.TFAE
 
@@ -53,7 +52,6 @@ open scoped nonZeroDivisors Polynomial
 localization at every nonzero prime is a discrete valuation ring.
 
 This is equivalent to `IsDedekindDomain`.
-TODO: prove the equivalence.
 -/
 structure IsDedekindDomainDvr : Prop where
   isNoetherianRing : IsNoetherianRing A
@@ -143,3 +141,38 @@ theorem IsDedekindDomain.isDedekindDomainDvr [IsDedekindDomain A] : IsDedekindDo
   { isNoetherianRing := IsDedekindRing.toIsNoetherian
     is_dvr_at_nonzero_prime := fun _ hP _ =>
       IsLocalization.AtPrime.discreteValuationRing_of_dedekind_domain A hP _ }
+
+variable {A}
+
+theorem IsDedekindDomainDvr.ring_dimensionLEOne (h : IsDedekindDomainDvr A) :
+    Ring.DimensionLEOne A where
+  maximalOfPrime := by
+    intro p hp hpp
+    rcases p.exists_le_maximal (Ideal.IsPrime.ne_top hpp) with ⟨q, hq, hpq⟩
+    let f := (IsLocalization.orderIsoOfPrime q.primeCompl (Localization.AtPrime q)).symm
+    let P := f ⟨p, hpp, HasSubset.Subset.disjoint_compl_left hpq⟩
+    let Q := f ⟨q, hq.isPrime, HasSubset.Subset.disjoint_compl_left (fun _ a => a)⟩
+    have hinj : Function.Injective (algebraMap A (Localization.AtPrime q)) :=
+      IsLocalization.injective (Localization.AtPrime q) q.primeCompl_le_nonZeroDivisors
+    have hp1 : P.1 ≠ ⊥ := fun x => hp ((p.map_eq_bot_iff_of_injective hinj).mp x)
+    have hq1 : Q.1 ≠ ⊥ :=
+      fun x => (ne_bot_of_le_ne_bot hp hpq) ((q.map_eq_bot_iff_of_injective hinj).mp x)
+    rcases (DiscreteValuationRing.iff_pid_with_one_nonzero_prime (Localization.AtPrime q)).mp
+      (h.is_dvr_at_nonzero_prime q (ne_bot_of_le_ne_bot hp hpq) hq.isPrime) with ⟨_, huq⟩
+    rw [show p = q from Subtype.val_inj.mpr <| f.injective <|
+      Subtype.val_inj.mp (huq.unique ⟨hp1, P.2⟩ ⟨hq1, Q.2⟩)]
+    exact hq
+
+theorem IsDedekindDomainDvr.isIntegrallyClosed (h : IsDedekindDomainDvr A) :
+    IsIntegrallyClosed A :=
+  IsIntegrallyClosed.of_localization_maximal <| fun p hp0 hpm =>
+    let ⟨_, _⟩ := (DiscreteValuationRing.iff_pid_with_one_nonzero_prime (Localization.AtPrime p)).mp
+      (h.is_dvr_at_nonzero_prime p hp0 hpm.isPrime)
+    inferInstance
+
+/-- If an integral domain is Noetherian, and the localization at every nonzero prime is
+a discrete valuation ring, then it is a Dedekind domain. -/
+theorem IsDedekindDomainDvr.isDedekindDomain (h : IsDedekindDomainDvr A) : IsDedekindDomain A where
+  __ := h.1
+  __ := IsDedekindDomainDvr.ring_dimensionLEOne h
+  __ := IsDedekindDomainDvr.isIntegrallyClosed h
