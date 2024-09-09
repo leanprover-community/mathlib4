@@ -56,7 +56,7 @@ private def insertLoop (i : Nat) (keys : Array Key) (v : α)
     tries.modify trieIdx fun (.node values s c p) => .node (values.push v) s c p
 
 /-- Insert `keys`, `v` into `tree` in a strict way. -/
-def insert (tree : RefinedDiscrTree α) (keys : Array Key) (v : α) : RefinedDiscrTree α :=
+def strictInsert (tree : RefinedDiscrTree α) (keys : Array Key) (v : α) : RefinedDiscrTree α :=
   let key := keys[0]!
   let { root, tries, .. } := tree
   match root[key]? with

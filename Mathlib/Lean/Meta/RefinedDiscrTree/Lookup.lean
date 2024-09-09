@@ -147,7 +147,7 @@ private structure PartialMatch where
   trie : TrieIndex
   /-- Metavariable assignments for `.star` patterns in the discrimination tree.
     We use a `List Key`, in the reverse order. -/
-  treeStars : AssocList Nat (List Key) := {}
+  treeStars : Std.HashMap Nat (List Key) := {}
   /-- Metavariable assignments for `.star` patterns in the lookup expression.
     We use a `List Key`, in the reverse order. -/
   queryStars : AssocList Nat (List Key) := {}
@@ -193,7 +193,7 @@ private partial def matchTreeStars (key : Key) (stars : Std.HashMap Nat TrieInde
   else
     let (dropped, keys) := drop [key] pMatch.keys key.arity
     stars.fold (init := todo) fun todo id trie =>
-      match pMatch.treeStars.find? id with
+      match pMatch.treeStars[id]? with
       | some assignment =>
         if dropped == assignment then
           todo.push { pMatch with keys, trie, score := pMatch.score + dropped.length }

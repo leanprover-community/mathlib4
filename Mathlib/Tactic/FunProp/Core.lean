@@ -326,8 +326,8 @@ def applyMorRules (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     applyCompRule funPropDecl e f g funProp
   | .exact =>
 
-    let ext := morTheoremsExt.getState (← getEnv)
-    let (candidates, _) ← ext.theorems.getMatch e false true
+    let (candidates, thms) ← (← get).morTheorems.theorems.getMatch e false true
+    modify ({ · with morTheorems := ⟨thms⟩ })
     let candidates := candidates.elts.foldl (init := #[]) fun r a => a.foldl (init := r) (· ++ ·)
 
     trace[Meta.Tactic.fun_prop]
@@ -345,8 +345,8 @@ def applyTransitionRules (e : Expr) (funProp : Expr → FunPropM (Option Result)
     FunPropM (Option Result) := do
   withIncreasedTransitionDepth do
 
-  let ext := transitionTheoremsExt.getState (← getEnv)
-  let (candidates, _) ← ext.theorems.getMatch e false true
+  let (candidates, thms) ← (← get).transitionTheorems.theorems.getMatch e false true
+  modify ({ · with transitionTheorems := ⟨thms⟩ })
   let candidates := candidates.elts.foldl (init := #[]) fun r a => a.foldl (init := r) (· ++ ·)
 
   trace[Meta.Tactic.fun_prop]

@@ -6,7 +6,7 @@ Authors: Tomáš Skřivan
 import Mathlib.Tactic.FunProp.Decl
 import Mathlib.Tactic.FunProp.Types
 import Mathlib.Tactic.FunProp.FunctionData
-import Mathlib.Lean.Meta.RefinedDiscrTree.StrictInsert
+import Mathlib.Lean.Meta.RefinedDiscrTree.Initialize
 import Mathlib.Lean.Meta.RefinedDiscrTree.Encode
 import Batteries.Data.RBMap.Alter
 
@@ -210,28 +210,9 @@ def getTheoremsForFunction (funName : Name) (funPropName : Name) :
 
 --------------------------------------------------------------------------------
 
-/-- General theorem about function property
-  used for transition and morphism theorems -/
-structure GeneralTheorem where
-  /-- function property name -/
-  funPropName   : Name
-  /-- theorem name -/
-  thmName     : Name
-  /-- discrimination tree keys used to index this theorem -/
-  keys        : Array (Array RefinedDiscrTree.Key)
-  /-- priority -/
-  priority    : Nat  := eval_prio default
-  deriving Inhabited, BEq
-
 /-- Get proof of a theorem. -/
 def GeneralTheorem.getProof (thm : GeneralTheorem) : MetaM Expr := do
   mkConstWithFreshMVarLevels thm.thmName
-
-/-- -/
-structure GeneralTheorems where
-  /-- -/
-  theorems     : RefinedDiscrTree GeneralTheorem := { config := { iota := false, zeta := false } }
-  deriving Inhabited
 
 /-- -/
 abbrev GeneralTheoremsExt := SimpleScopedEnvExtension GeneralTheorem GeneralTheorems
@@ -242,7 +223,8 @@ initialize transitionTheoremsExt : GeneralTheoremsExt ←
     name     := by exact decl_name%
     initial  := {}
     addEntry := fun d e =>
-      {d with theorems := e.keys.foldl (RefinedDiscrTree.insert · · e) d.theorems}
+      {d with theorems := e.keys.foldl (fun thms (key, entry) =>
+        RefinedDiscrTree.insert thms key { entry with val := e }) d.theorems}
   }
 
 /-- -/
@@ -251,7 +233,8 @@ initialize morTheoremsExt : GeneralTheoremsExt ←
     name     := by exact decl_name%
     initial  := {}
     addEntry := fun d e =>
-      {d with theorems := e.keys.foldl (RefinedDiscrTree.insert · · e) d.theorems}
+      {d with theorems := e.keys.foldl (fun thms (key, entry) =>
+        RefinedDiscrTree.insert thms key { entry with val := e }) d.theorems}
   }
 
 
@@ -339,11 +322,11 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
       }
     | .fvar .. =>
       let (_,_,b') ← forallMetaTelescope info.type
-      let keys := ← RefinedDiscrTree.encodeExpr b' {}
+      let keys ← RefinedDiscrTree.initializeLazyEntry b' () {}
       let thm : GeneralTheorem := {
         funPropName := funPropName
         thmName := declName
-        keys    := keys
+        keys    := keys.toArray
         priority  := prio
       }
       -- todo: maybe do a little bit more careful detection of morphism and transition theorems

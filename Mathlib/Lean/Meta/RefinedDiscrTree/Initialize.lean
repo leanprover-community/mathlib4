@@ -20,6 +20,14 @@ namespace Lean.Meta.RefinedDiscrTree
 
 variable {α β : Type}
 
+/-- Directly insert a `Key` `LazyEntry` pair into a `RefinedDiscrTree`. -/
+def insert (d : RefinedDiscrTree α) (k : Key) (e : LazyEntry α) : RefinedDiscrTree α :=
+  match d.root[k]? with
+  | none =>
+    { d with root := d.root.insert k d.tries.size, tries := d.tries.push <| .node #[] {} {} #[e] }
+  | some i =>
+    { d with tries := d.tries.modify i fun (.node v s c p) => .node v s c (p.push e)}
+
 /--
 Structure for quickly initializing a lazy discrimination tree with a large number
 of elements using concurrent functions for generating entries.
