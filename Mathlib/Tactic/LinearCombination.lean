@@ -62,14 +62,21 @@ partial def expandLinearCombo (ty : Expr) (stx : Syntax.Term) : TermElabM Expand
     match ← expandLinearCombo ty e₁, ← expandLinearCombo ty e₂ with
     | .const c₁, .const c₂ => .const <$> ``($c₁ + $c₂)
     | .proof p₁, .proof p₂ => .proof <$> ``(add_pf $p₁ $p₂)
-    | _ , _ => throwError "'linear_combination' is agnostic to the addition of constants"
+    | .proof p, .const c | .const c, .proof p =>
+      logWarningAt c "this constant has no effect on the linear combination; it can be dropped \
+        from the term"
+      pure (.proof p)
   | `($e₁ - $e₂) => do
     match ← expandLinearCombo ty e₁, ← expandLinearCombo ty e₂ with
     | .const c₁, .const c₂ => .const <$> ``($c₁ - $c₂)
-    | .proof _, .const _ =>
-      throwError "'linear_combination' is agnostic to the subtraction of constants"
-    | .const _, .proof _ =>
-      throwError "'linear_combination' is agnostic to the addition of constants"
+    | .proof p, .const c =>
+      logWarningAt c "this constant has no effect on the linear combination; it can be dropped \
+        from the term"
+      pure (.proof p)
+    | .const c, .proof p =>
+      logWarningAt c "this constant has no effect on the linear combination; it can be dropped \
+        from the term"
+      .proof <$> ``(Eq.symm $p)
     | .proof p₁, .proof p₂ => .proof <$> ``(add_pf $p₁ (Eq.symm $p₂))
   | `(-$e) => do
     match ← expandLinearCombo ty e with
@@ -118,7 +125,10 @@ def elabLinearCombination (tk : Syntax)
   | none => `(Eq.refl 0)
   | some e =>
     match ← expandLinearCombo ty e with
-    | .const _ => throwError "To run 'linear_combination' without hypotheses, call it without input"
+    | .const c =>
+      logWarningAt c "this constant has no effect on the linear combination; it can be dropped \
+        from the term"
+      `(Eq.refl 0)
     | .proof p => pure p
   let norm := norm?.getD (Unhygienic.run <| withRef tk `(tactic| ring1))
   let lem : Ident ← mkIdent <$> do
