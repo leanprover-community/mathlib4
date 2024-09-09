@@ -177,7 +177,11 @@ def structuralAtom? (e : Expr) : MetaM (Option StructuralAtom) := do
     | (``MonoidalCategoryStruct.rightUnitor, #[_, _, _, f]) =>
       return some <| .rightUnitorInv (← toMor₁ f)
     | _ => return none
-  | _ => return none
+  | _ =>
+    match (← whnfR e).getAppFnArgs with
+    | (``MonoidalCoherence.hom, #[_, _, f, g, inst]) =>
+      return some <| .monoidalCoherence (← toMor₁ f) (← toMor₁ g) inst
+    | _ => return none
 
 /-- Expressions for atomic non-structural 2-morphisms. -/
 structure Atom where

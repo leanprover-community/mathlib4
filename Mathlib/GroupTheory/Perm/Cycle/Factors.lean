@@ -316,7 +316,7 @@ def cycleFactorsAux [DecidableEq α] [Fintype α] (l : List α) (f : Perm α)
     if hx : f x = x then cycleFactorsAux l f (by
         intro y hy; exact List.mem_of_ne_of_mem (fun h => hy (by rwa [h])) (h hy))
     else
-      let ⟨m, hm₁, hm₂, hm₃⟩ :=
+      let ⟨m, hm⟩ :=
         cycleFactorsAux l ((cycleOf f x)⁻¹ * f) (by
         intro y hy
         exact List.mem_of_ne_of_mem
@@ -326,10 +326,8 @@ def cycleFactorsAux [DecidableEq α] [Fintype α] (l : List α) (f : Perm α)
             (h fun h : f y = y => by
               rw [mul_apply, h, Ne, inv_eq_iff_eq, cycleOf_apply] at hy
               split_ifs at hy <;> tauto))
-      ⟨cycleOf f x::m, by
-        rw [List.prod_cons, hm₁]
-        simp,
-        fun g hg ↦ ((List.mem_cons).1 hg).elim (fun hg => hg.symm ▸ isCycle_cycleOf _ hx) (hm₂ g),
+      ⟨cycleOf f x :: m, by simp [List.prod_cons, hm.1],
+        fun g hg ↦ ((List.mem_cons).1 hg).elim (fun hg => hg ▸ isCycle_cycleOf _ hx) (hm.2.1 g),
         List.pairwise_cons.2
           ⟨fun g hg y =>
             or_iff_not_imp_left.2 fun hfy =>
@@ -338,16 +336,17 @@ def cycleFactorsAux [DecidableEq α] [Fintype α] (l : List α) (f : Perm α)
               have hgm : (g::m.erase g) ~ m :=
                 List.cons_perm_iff_perm_erase.2 ⟨hg, List.Perm.refl _⟩
               have : ∀ h ∈ m.erase g, Disjoint g h :=
-                (List.pairwise_cons.1 ((hgm.pairwise_iff Disjoint.symm).2 hm₃)).1
+                (List.pairwise_cons.1 ((hgm.pairwise_iff Disjoint.symm).2 hm.2.2)).1
               by_cases id fun hgy : g y ≠ y =>
                 (disjoint_prod_right _ this y).resolve_right <| by
                   have hsc : SameCycle f⁻¹ x (f y) := by
                     rwa [sameCycle_inv, sameCycle_apply_right]
-                  rw [disjoint_prod_perm hm₃ hgm.symm, List.prod_cons,
+                  have hm₁ := hm.1
+                  rw [disjoint_prod_perm hm.2.2 hgm.symm, List.prod_cons,
                       ← eq_inv_mul_iff_mul_eq] at hm₁
                   rwa [hm₁, mul_apply, mul_apply, cycleOf_inv, hsc.cycleOf_apply, inv_apply_self,
                     inv_eq_iff_eq, eq_comm],
-            hm₃⟩⟩
+            hm.2.2⟩⟩
 
 theorem mem_list_cycles_iff {α : Type*} [Finite α] {l : List (Perm α)}
     (h1 : ∀ σ : Perm α, σ ∈ l → σ.IsCycle) (h2 : l.Pairwise Disjoint) {σ : Perm α} :

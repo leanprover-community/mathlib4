@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Maps
+import Mathlib.Data.List.Lemmas
 
 /-!
 
@@ -499,6 +500,17 @@ theorem support_reverse {u v : V} (p : G.Walk u v) : p.reverse.support = p.suppo
 @[simp]
 theorem support_ne_nil {u v : V} (p : G.Walk u v) : p.support ≠ [] := by cases p <;> simp
 
+@[simp]
+theorem head_support {G : SimpleGraph V} {a b : V} (p : G.Walk a b) :
+    p.support.head (by simp) = a := by cases p <;> simp
+
+@[simp]
+theorem getLast_support {G : SimpleGraph V} {a b : V} (p : G.Walk a b) :
+    p.support.getLast (by simp) = b := by
+  induction p
+  · simp
+  · simpa
+
 theorem tail_support_append {u v w : V} (p : G.Walk u v) (p' : G.Walk v w) :
     (p.append p').support.tail = p.support.tail ++ p'.support.tail := by
   rw [support_append, List.tail_append_of_ne_nil _ _ (support_ne_nil _)]
@@ -640,6 +652,21 @@ theorem map_fst_darts_append {u v : V} (p : G.Walk u v) :
 
 theorem map_fst_darts {u v : V} (p : G.Walk u v) : p.darts.map (·.fst) = p.support.dropLast := by
   simpa! using congr_arg List.dropLast (map_fst_darts_append p)
+
+@[simp]
+theorem head_darts_fst {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (hp : p.darts ≠ []) :
+    (p.darts.head hp).fst = a := by
+  cases p
+  · contradiction
+  · simp
+
+@[simp]
+theorem getLast_darts_snd {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (hp : p.darts ≠ []) :
+    (p.darts.getLast hp).snd = b := by
+  rw [← List.getLast_map (f := fun x : G.Dart ↦ x.snd)]
+  simp_rw [p.map_snd_darts, List.getLast_tail]
+  exact p.getLast_support
+  simpa
 
 @[simp]
 theorem edges_nil {u : V} : (nil : G.Walk u u).edges = [] := rfl
