@@ -47,7 +47,7 @@ def heavyRflLinter : Linter where run := withSetOptionIn fun stx ↦ do
   let declId :=
     (stx.find? (·.isOfKind ``Lean.Parser.Command.declId)).getD (mkNode `null #[mkIdent `ohHi])
   let declName    := declId[0].getId
-  let newDeclName := declName ++ `_hb
+  let newDeclName := ((← getScope).currNamespace ++ declName ++ `_hb)
   let newId       := mkIdentFrom declId[0] newDeclName
   let newDeclId   := mkNode ``Lean.Parser.Command.declId #[newId, declId.getArgs.back]
   let repl ← stx.replaceM fun s => do
@@ -62,6 +62,7 @@ def heavyRflLinter : Linter where run := withSetOptionIn fun stx ↦ do
 --  withScope (fun sc => {sc with currNamespace := `X ++ sc.currNamespace}) do
   --logInfo repl
   let s ← get
+  dbg_trace "Declaration '{(← getScope).currNamespace ++ declName}'"
   elabCommand repl
   set s
 
