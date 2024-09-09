@@ -183,6 +183,11 @@ noncomputable instance (x : Ideal R) [H : x.IsPrime] [IsDomain R] :
       rw [mem_nonZeroDivisors_iff_ne_zero]
       exact fun h => ha (h.symm ▸ x.zero_mem))
 
+instance {R : Type*} [CommRing R] [IsDomain R] (p : Ideal R) [p.IsPrime] :
+    IsScalarTower R (Localization.AtPrime p) (FractionRing R) :=
+  localization_isScalarTower_of_submonoid_le (Localization.AtPrime p) (FractionRing R)
+    p.primeCompl (nonZeroDivisors R) p.primeCompl_le_nonZeroDivisors
+
 /-- If `M ≤ N` are submonoids of `R`, then `N⁻¹S` is also the localization of `M⁻¹S` at `N`. -/
 theorem isLocalization_of_submonoid_le (M N : Submonoid R) (h : M ≤ N) [IsLocalization M S]
     [IsLocalization N T] [Algebra S T] [IsScalarTower R S T] :
@@ -275,5 +280,10 @@ theorem isFractionRing_of_isDomain_of_isLocalization [IsDomain R] (S T : Type*) 
   apply @zero_ne_one S
   rw [← (algebraMap R S).map_one, ← @mk'_one R _ M, @comm _ Eq, mk'_eq_zero_iff]
   exact ⟨⟨x, hx⟩, by simp [hx']⟩
+
+instance {R : Type*} [CommRing R] [IsDomain R] (p : Ideal R) [p.IsPrime] :
+    IsFractionRing (Localization.AtPrime p) (FractionRing R) :=
+  IsFractionRing.isFractionRing_of_isDomain_of_isLocalization p.primeCompl
+    (Localization.AtPrime p) (FractionRing R)
 
 end IsFractionRing
