@@ -217,7 +217,7 @@ theorem birthday_toGame (o : Ordinal) : birthday o.toGame = o := by
     rw [← PGame.equiv_iff_game_eq] at hx₁
     exact hx₁.2.trans (PGame.le_birthday x)
 
-@[simp]
+@[simp, norm_cast]
 theorem birthday_natCast (n : ℕ) : birthday n = n := by
   rw [← toGame_natCast]
   exact birthday_toGame _
