@@ -135,10 +135,9 @@ variable [NonarchimedeanGroup G] [T2Space G]
 theorem non_singleton_set_disconnected
     (x y : G) (U : Set G)
     (hx : x ∈ U) (hy :  y ∈ U) (hxy : y ≠ x) : ¬ IsConnected U := by
-  have exv : ∃ (A B : Opens G),
-    (y⁻¹ * x) ∈ A  ∧ 1 ∈ B ∧ Disjoint (A : Set G) B ∧
-    ∃ V : OpenSubgroup G, (V : Set G) ⊆ B   := by
-      have ht : y⁻¹ * x ≠ 1 := by
+  have : ∃ (A : Opens G) (V : OpenSubgroup G), y⁻¹ * x ∈ A ∧ 1 ∈ V ∧
+          Disjoint (A : Set G) V := by
+    have ht : y⁻¹ * x ≠ 1 := by
         by_contra! con
         have hy : y⁻¹ * y = 1 := inv_mul_cancel y
         rw [← hy] at con
@@ -146,29 +145,14 @@ theorem non_singleton_set_disconnected
           apply mul_left_cancel at con
           exact con
         exact hxy (id (Eq.symm this))
-      have : ∃ (A : Opens G) (V : OpenSubgroup G), y⁻¹ * x ∈ A ∧ 1 ∈ V ∧
-          Disjoint (A : Set G) V := by
-        exact NonarchimedeanGroup.auxiliary.open_subgroup_separating' G (y⁻¹ * x) ht
-      rcases this with ⟨A , V, ha, hv, dav⟩
-      use A , V
-      constructor
-      · exact ha
-      · constructor
-        · exact hv
-        · constructor
-          · simp only [OpenSubgroup.coe_toOpens]
-            exact dav
-          · use V
-            exact fun ⦃a⦄ a ↦ a
-  rcases exv with ⟨A , B, ha, _ , dab, V, vb⟩
-  have dva' : Disjoint (V : Set G) A :=
-    Set.disjoint_of_subset vb (fun ⦃a⦄ a ↦ a) (id (Disjoint.symm dab))
+    exact NonarchimedeanGroup.auxiliary.open_subgroup_separating' G (y⁻¹ * x) ht
+  rcases this with ⟨A , V, ha, _ , dav⟩
   obtain ⟨u , v, ou, ov, Uuv, Uu, Uv, emptyUuv⟩ : ∃ u v : Set G, (IsOpen u) ∧ (IsOpen v) ∧
       (U ⊆ u ∪ v) ∧ ((U ∩ u).Nonempty) ∧ ((U ∩ v).Nonempty) ∧ (¬(U ∩ (u ∩ v)).Nonempty) := by
     use (y • (V : Set G)) , (y • (V : Set G))ᶜ
     refine ⟨is_open_coset G y V, is_open_compl_coset' G y V, subset_coset_comp G y U V,
         non_empty_intersection_coset G x y U hy hxy V,
-        non_empty_intersection_compl_coset G x y U hx A ha V dva',
+        non_empty_intersection_compl_coset G x y U hx A ha V dav.symm,
         intersection_of_intersection_of_complements_empty G y U V⟩
   rintro ⟨_, h2⟩
   exact emptyUuv <| ((((h2 u v ou) ov) Uuv) Uu) Uv
