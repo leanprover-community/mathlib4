@@ -57,20 +57,9 @@ lemma open_subgroup_separating' -- not using  [TopologicalGroup G]
 
 end NonarchimedeanGroup.auxiliary
 
-namespace Coset
-open scoped Pointwise
-open TopologicalSpace
-
-variable (G : Type*) [TopologicalSpace G] [Group G] [TopologicalGroup G]
-  [NonarchimedeanGroup G] [T2Space G]
-
-end Coset
-
-
 namespace NonarchimedeanGroup
 open scoped Pointwise
 open TopologicalSpace
-
 
 variable (G : Type*) [TopologicalSpace G] [Group G]
 
