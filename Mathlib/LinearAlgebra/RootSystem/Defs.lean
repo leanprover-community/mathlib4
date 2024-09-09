@@ -97,9 +97,9 @@ structure RootPairing extends PerfectPairing R M N :=
   /-- A parametrized family of permutations, induced by reflection. -/
   reflection_perm : ι → (ι ≃ ι)
   reflection_perm_root : ∀ i j,
-    root j - toLin (root j) (coroot i) • root i = root (reflection_perm i j)
+    root j - toPerfectPairing (root j) (coroot i) • root i = root (reflection_perm i j)
   reflection_perm_coroot : ∀ i j,
-    coroot j - toLin (root i) (coroot j) • coroot i = coroot (reflection_perm i j)
+    coroot j - toPerfectPairing (root i) (coroot j) • coroot i = coroot (reflection_perm i j)
 
 /-- A root datum is a root pairing with coefficients in the integers and for which the root and
 coroot spaces are finitely-generated free Abelian groups.
@@ -128,6 +128,10 @@ lemma ne_zero [CharZero R] : (P.root i : M) ≠ 0 :=
 lemma ne_zero' [CharZero R] : (P.coroot i : N) ≠ 0 :=
   fun h ↦ by simpa [h] using P.root_coroot_two i
 
+@[simp]
+lemma toLin_toPerfectPairing (x : M) (y : N) : P.toLin x y = P.toPerfectPairing x y :=
+  rfl
+
 /-- If we interchange the roles of `M` and `N`, we still have a root pairing. -/
 protected def flip : RootPairing ι R N M :=
   { P.toPerfectPairing.flip with
@@ -143,10 +147,10 @@ lemma flip_flip : P.flip.flip = P :=
   rfl
 
 /-- This is the pairing between roots and coroots. -/
-def pairing : R := P.toLin (P.root i) (P.coroot j)
+def pairing : R := P.toPerfectPairing (P.root i) (P.coroot j)
 
 @[simp]
-lemma root_coroot_eq_pairing : P.toLin (P.root i) (P.coroot j) = P.pairing i j :=
+lemma root_coroot_eq_pairing : P.toPerfectPairing (P.root i) (P.coroot j) = P.pairing i j :=
   rfl
 
 lemma coroot_root_eq_pairing : P.toLin.flip (P.coroot i) (P.root j) = P.pairing j i := by
@@ -174,7 +178,7 @@ theorem mapsTo_reflection_root :
   exact P.root_reflection_perm i j ▸ mem_range_self (P.reflection_perm i j)
 
 lemma reflection_apply (x : M) :
-    P.reflection i x = x - (P.toLin x (P.coroot i)) • P.root i :=
+    P.reflection i x = x - (P.toPerfectPairing x (P.coroot i)) • P.root i :=
   rfl
 
 lemma reflection_apply_root :
@@ -205,13 +209,25 @@ lemma reflection_sq :
 lemma reflection_perm_sq :
     P.reflection_perm i ^ 2 = 1 := by
   ext j
-  refine Embedding.injective P.root ?_
+  apply P.root.injective
   simp only [sq, Equiv.Perm.mul_apply, root_reflection_perm, reflection_same, Equiv.Perm.one_apply]
 
 @[simp]
 lemma reflection_perm_inv :
     (P.reflection_perm i)⁻¹ = P.reflection_perm i :=
   (mul_eq_one_iff_eq_inv.mp <| P.reflection_perm_sq i).symm
+
+@[simp]
+lemma reflection_perm_self : P.reflection_perm i (P.reflection_perm i j) = j := by
+  apply P.root.injective
+  simp only [root_reflection_perm, reflection_same]
+
+lemma reflection_perm_involutive : Involutive (P.reflection_perm i) :=
+  involutive_iff_iter_2_eq_id.mpr (by ext; simp)
+
+@[simp]
+lemma reflection_perm_symm : (P.reflection_perm i).symm = P.reflection_perm i :=
+  Involutive.symm_eq_self_of_involutive (P.reflection_perm i) <| P.reflection_perm_involutive i
 
 lemma bijOn_reflection_root :
     BijOn (P.reflection i) (range P.root) (range P.root) :=
@@ -237,7 +253,7 @@ theorem mapsTo_coreflection_coroot :
   exact P.coroot_reflection_perm i j ▸ mem_range_self (P.reflection_perm i j)
 
 lemma coreflection_apply (f : N) :
-    P.coreflection i f = f - (P.toLin (P.root i) f) • P.coroot i :=
+    P.coreflection i f = f - (P.toPerfectPairing (P.root i) f) • P.coroot i :=
   rfl
 
 lemma coreflection_apply_coroot :
@@ -279,7 +295,7 @@ lemma coreflection_eq_flip_reflection :
 lemma reflection_dualMap_eq_coreflection :
     (P.reflection i).dualMap ∘ₗ P.toLin.flip = P.toLin.flip ∘ₗ P.coreflection i := by
   ext n m
-  simp [coreflection_apply, reflection_apply, mul_comm (P.toLin m (P.coroot i))]
+  simp [coreflection_apply, reflection_apply, mul_comm (P.toPerfectPairing m (P.coroot i))]
 
 lemma coroot_eq_coreflection_of_root_eq
     {i j k : ι} (hk : P.root k = P.reflection i (P.root j)) :
@@ -290,7 +306,7 @@ lemma coroot_eq_coreflection_of_root_eq
 /-- A root pairing is said to be crystallographic if the pairing between a root and coroot is
 always an integer. -/
 def IsCrystallographic : Prop :=
-  ∀ i, MapsTo (P.toLin (P.root i)) (range P.coroot) (zmultiples (1 : R))
+  ∀ i, MapsTo (P.toPerfectPairing (P.root i)) (range P.coroot) (zmultiples (1 : R))
 
 lemma isCrystallographic_iff :
     P.IsCrystallographic ↔ ∀ i j, ∃ z : ℤ, z = P.pairing i j := by
@@ -477,7 +493,7 @@ lemma isOrthogonal_comm (h : IsOrthogonal P i j) : Commute (P.reflection i) (P.r
   replace h : P.pairing i j = 0 ∧ P.pairing j i = 0 := by simpa [IsOrthogonal] using h
   erw [LinearMap.mul_apply, LinearMap.mul_apply]
   simp only [LinearEquiv.coe_coe, reflection_apply, map_sub, map_smul, root_coroot_eq_pairing,
-    zero_smul, sub_zero, h]
+    zero_smul, sub_zero, toLin_toPerfectPairing, h]
   abel
 
 end RootPairing
