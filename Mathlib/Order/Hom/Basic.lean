@@ -522,8 +522,10 @@ protected def withTopMap (f : α →o β) : WithTop α →o WithTop β :=
 
 end OrderHom
 
--- See note [lower instance priority]
-instance (priority := 100) OrderHomClass.toOrderHomClassOrderDual [LE α] [LE β]
+/-- An `OrderHomClass` between `X` and `Y` can also be considered an `OrderHomClass` between
+`Xᵒᵈ` and `Yᵒᵈ`. This is a definition because `OrderHomClass` has the domain and codomain
+as out-params.  -/
+def OrderHomClass.toOrderHomClassOrderDual [LE α] [LE β]
     [FunLike F α β] [OrderHomClass F α β] : OrderHomClass F αᵒᵈ βᵒᵈ where
   map_rel f := map_rel f
 
