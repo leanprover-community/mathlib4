@@ -146,7 +146,7 @@ end Preorder
 
 section PartialOrder
 
-variable [PartialOrder α] [SuccOrder α] {a b : α} {C : α → Sort*}
+variable [PartialOrder α] [SuccOrder α] {a b : α}
 
 theorem isSuccPrelimit_of_succ_ne (h : ∀ b, succ b ≠ a) : IsSuccPrelimit a := fun b hba =>
   h b (CovBy.succ_eq hba)
@@ -389,7 +389,7 @@ end Preorder
 
 section PartialOrder
 
-variable [PartialOrder α] [PredOrder α] {a b : α} {C : α → Sort*}
+variable [PartialOrder α] [PredOrder α] {a b : α}
 
 theorem isPredPrelimit_of_pred_ne (h : ∀ b, pred b ≠ a) : IsPredPrelimit a := fun b hba =>
   h b (CovBy.pred_eq hba)
@@ -478,30 +478,29 @@ end PartialOrder
 /-! ### Induction principles -/
 
 
-variable {C : α → Sort*} {b : α}
-
 section isSuccPrelimitRecOn
+
+variable {C : α → Sort*} {b : α}
 
 section PartialOrder
 
 variable [PartialOrder α] [SuccOrder α]
+  (hs : ∀ a, ¬ IsMax a → C (succ a)) (hl : ∀ a, IsSuccPrelimit a → C a)
 
-/-- A value can be built by building it on successors and successor limits. -/
+variable (b) in
+open Classical in
+/-- A value can be built by building it on successors and successor pre-limits. -/
 @[elab_as_elim]
-noncomputable def isSuccPrelimitRecOn (b : α) (hs : ∀ a, ¬ IsMax a → C (succ a))
-    (hl : ∀ a, IsSuccPrelimit a → C a) : C b := by
-  by_cases hb : IsSuccPrelimit b
-  · exact hl b hb
-  · have H := Classical.choose_spec (not_isSuccPrelimit_iff.1 hb)
-    rw [← H.2]
-    exact hs _ H.1
+noncomputable def isSuccPrelimitRecOn : C b :=
+  if hb : IsSuccPrelimit b then hl b hb else
+    haveI H := Classical.choose_spec (not_isSuccPrelimit_iff.1 hb)
+    cast (congr_arg C H.2) (hs _ H.1)
 
 @[deprecated isSuccPrelimitRecOn (since := "2024-09-05")]
 alias isSuccLimitRecOn := isSuccPrelimitRecOn
 
-theorem isSuccPrelimitRecOn_limit (hs : ∀ a, ¬ IsMax a → C (succ a))
-    (hl : ∀ a, IsSuccPrelimit a → C a) (hb : IsSuccPrelimit b) :
-    isSuccPrelimitRecOn b hs hl = hl b hb :=
+@[simp]
+theorem isSuccPrelimitRecOn_limit (hb : IsSuccPrelimit b) : isSuccPrelimitRecOn b hs hl = hl b hb :=
   dif_pos hb
 
 @[deprecated isSuccPrelimitRecOn_limit (since := "2024-09-05")]
@@ -512,25 +511,22 @@ end PartialOrder
 section LinearOrder
 
 variable [LinearOrder α] [SuccOrder α]
+  (hs : ∀ a, ¬ IsMax a → C (succ a)) (hl : ∀ a, IsSuccPrelimit a → C a)
 
-theorem isSuccPrelimitRecOn_succ' (hs : ∀ a, ¬ IsMax a → C (succ a))
-    (hl : ∀ a, IsSuccPrelimit a → C a) (hb : ¬ IsMax b) :
+theorem isSuccPrelimitRecOn_succ' (hb : ¬ IsMax b) :
     isSuccPrelimitRecOn (succ b) hs hl = hs b hb := by
   have hb' := not_isSuccPrelimit_succ_of_not_isMax hb
   have H := Classical.choose_spec (not_isSuccPrelimit_iff.1 hb')
-  rw [isSuccPrelimitRecOn]
-  simp only [cast_eq_iff_heq, hb', not_false_iff, eq_mpr_eq_cast, dif_neg]
-  congr 1 <;> first |
-    exact (succ_eq_succ_iff_of_not_isMax H.left hb).mp H.right |
-    exact proof_irrel_heq H.left hb
+  rw [isSuccPrelimitRecOn, dif_neg hb', cast_eq_iff_heq]
+  congr
+  exacts [(succ_eq_succ_iff_of_not_isMax H.1 hb).1 H.2, proof_irrel_heq _ _]
 
 @[deprecated isSuccPrelimitRecOn_succ' (since := "2024-09-05")]
 alias isSuccLimitRecOn_succ' := isSuccPrelimitRecOn_succ'
 
 @[simp]
-theorem isSuccPrelimitRecOn_succ [NoMaxOrder α] (hs : ∀ a, ¬ IsMax a → C (succ a))
-    (hl : ∀ a, IsSuccPrelimit a → C a) (b : α) :
-    @isSuccPrelimitRecOn α C _ _ (succ b) hs hl = hs b (not_isMax b) :=
+theorem isSuccPrelimitRecOn_succ [NoMaxOrder α] (b : α) :
+    isSuccPrelimitRecOn (succ b) hs hl = hs b (not_isMax b) :=
   isSuccPrelimitRecOn_succ' _ _ _
 
 @[deprecated isSuccPrelimitRecOn_succ (since := "2024-09-05")]
@@ -542,22 +538,24 @@ end isSuccPrelimitRecOn
 
 section isPredPrelimitRecOn
 
+variable {C : α → Sort*} {b : α}
+
 section PartialOrder
 
 variable [PartialOrder α] [PredOrder α]
+  (hs : ∀ a, ¬ IsMin a → C (pred a)) (hl : ∀ a, IsPredPrelimit a → C a)
 
-/-- A value can be built by building it on predecessors and predecessor limits. -/
+variable (b) in
+/-- A value can be built by building it on predecessors and predecessor pre-limits. -/
 @[elab_as_elim]
-noncomputable def isPredPrelimitRecOn (b : α) (hs : ∀ a, ¬ IsMin a → C (pred a))
-    (hl : ∀ a, IsPredPrelimit a → C a) : C b :=
-  @isSuccPrelimitRecOn αᵒᵈ _ _ _ _ hs fun _ ha => hl _ ha.dual
+noncomputable def isPredPrelimitRecOn : C b :=
+  isSuccPrelimitRecOn (α := αᵒᵈ) b hs (fun a ha ↦ hl a ha.dual)
 
 @[deprecated isPredPrelimitRecOn (since := "2024-09-05")]
 alias isPredLimitRecOn := isPredPrelimitRecOn
 
-theorem isPredPrelimitRecOn_limit (hs : ∀ a, ¬ IsMin a → C (pred a))
-    (hl : ∀ a, IsPredPrelimit a → C a) (hb : IsPredPrelimit b) :
-    isPredPrelimitRecOn b hs hl = hl b hb :=
+@[simp]
+theorem isPredPrelimitRecOn_limit (hb : IsPredPrelimit b) : isPredPrelimitRecOn b hs hl = hl b hb :=
   isSuccPrelimitRecOn_limit _ _ hb.dual
 
 @[deprecated isPredPrelimitRecOn_limit (since := "2024-09-05")]
@@ -570,17 +568,17 @@ section LinearOrder
 variable [LinearOrder α] [PredOrder α]
   (hs : ∀ a, ¬ IsMin a → C (pred a)) (hl : ∀ a, IsPredPrelimit a → C a)
 
-theorem isPredPrelimitRecOn_pred' {b : α} (hb : ¬ IsMin b) :
-    @isPredPrelimitRecOn α C _ _ (pred b) hs hl = hs b hb :=
-  isSuccPrelimitRecOn_succ' _ _ _
+theorem isPredPrelimitRecOn_pred' (hb : ¬ IsMin b) :
+    isPredPrelimitRecOn (pred b) hs hl = hs b hb :=
+  isSuccPrelimitRecOn_succ' (α := αᵒᵈ) _ _ _
 
 @[deprecated isPredPrelimitRecOn_pred' (since := "2024-09-05")]
 alias isPredLimitRecOn_pred' := isPredPrelimitRecOn_pred'
 
 @[simp]
 theorem isPredPrelimitRecOn_pred [NoMinOrder α] (b : α) :
-    @isPredPrelimitRecOn α C _ _ (pred b) hs hl = hs b (not_isMin b) :=
-  isSuccPrelimitRecOn_succ _ _ _
+    isPredPrelimitRecOn (pred b) hs hl = hs b (not_isMin b) :=
+  isPredPrelimitRecOn_pred' _ _ _
 
 @[deprecated isPredPrelimitRecOn_pred (since := "2024-09-05")]
 alias isPredLimitRecOn_pred := isPredPrelimitRecOn_pred
@@ -593,34 +591,33 @@ end Order
 
 open Order
 
-variable {C : α → Sort*} {b : α}
-
 namespace SuccOrder
 
 section prelimitRecOn
 
+variable {C : α → Sort*} {b : α}
+
 section PartialOrder
 
 variable [PartialOrder α] [SuccOrder α] [WellFoundedLT α]
+  (hs : ∀ a, ¬ IsMax a → C a → C (Order.succ a)) (hl : ∀ a, IsSuccPrelimit a → (∀ b < a, C b) → C a)
 
-open scoped Classical in
+variable (b) in
+open Classical in
 /-- Recursion principle on a well-founded partial `SuccOrder`. -/
-@[elab_as_elim] noncomputable def prelimitRecOn (b : α)
-    (hs : ∀ a, ¬ IsMax a → C a → C (Order.succ a))
-    (hl : ∀ a, IsSuccPrelimit a → (∀ b < a, C b) → C a) : C b :=
+@[elab_as_elim] noncomputable def prelimitRecOn : C b :=
   wellFounded_lt.fix
     (fun a IH ↦ if h : IsSuccPrelimit a then hl a h IH else
-      let x := Classical.indefiniteDescription _ (not_isSuccPrelimit_iff.mp h)
-      x.2.2 ▸ hs x x.2.1 (IH x <| x.2.2.subst <| lt_succ_of_not_isMax x.2.1))
+      haveI H := Classical.choose_spec (not_isSuccPrelimit_iff.1 h)
+      cast (congr_arg C H.2) (hs _ H.1 <| IH _ <| H.2.subst <| lt_succ_of_not_isMax H.1))
     b
 
 @[deprecated prelimitRecOn (since := "2024-09-05")]
 alias limitRecOn := prelimitRecOn
 
 @[simp]
-theorem prelimitRecOn_limit (hs : ∀ a, ¬ IsMax a → C a → C (Order.succ a))
-    (hl : ∀ a, IsSuccPrelimit a → (∀ b < a, C b) → C a) (hb : IsSuccPrelimit b) :
-    prelimitRecOn b hs hl = hl b hb fun x _ ↦ prelimitRecOn x hs hl := by
+theorem prelimitRecOn_limit (hb : IsSuccPrelimit b) :
+    prelimitRecOn b hs hl = hl b hb fun x _ ↦ SuccOrder.prelimitRecOn x hs hl := by
   rw [prelimitRecOn, WellFounded.fix_eq, dif_pos hb]; rfl
 
 @[deprecated prelimitRecOn_limit (since := "2024-09-05")]
@@ -633,15 +630,19 @@ section LinearOrder
 variable [LinearOrder α] [SuccOrder α] [WellFoundedLT α]
   (hs : ∀ a, ¬ IsMax a → C a → C (Order.succ a)) (hl : ∀ a, IsSuccPrelimit a → (∀ b < a, C b) → C a)
 
-@[simp]
-theorem prelimitRecOn_succ (hb : ¬ IsMax b) :
+theorem prelimitRecOn_succ' (hb : ¬ IsMax b) :
     prelimitRecOn (Order.succ b) hs hl = hs b hb (prelimitRecOn b hs hl) := by
   have h := not_isSuccPrelimit_succ_of_not_isMax hb
+  have H := Classical.choose_spec (not_isSuccPrelimit_iff.1 h)
   rw [prelimitRecOn, WellFounded.fix_eq, dif_neg h]
-  have {b c hb hc} {x : ∀ a, C a} (h : b = c) :
-    congr_arg Order.succ h ▸ hs b hb (x b) = hs c hc (x c) := by subst h; rfl
-  let x := Classical.indefiniteDescription _ (not_isSuccPrelimit_iff.mp h)
-  exact this ((succ_eq_succ_iff_of_not_isMax x.2.1 hb).mp x.2.2)
+  have {a c : α} {ha hc} {x : ∀ a, C a} (h : a = c) :
+    cast (congr_arg (C ∘ succ) h) (hs a ha (x a)) = hs c hc (x c) := by subst h; rfl
+  exact this <| (succ_eq_succ_iff_of_not_isMax H.1 hb).1 H.2
+
+@[simp]
+theorem prelimitRecOn_succ [NoMaxOrder α] (b : α) :
+    prelimitRecOn (Order.succ b) hs hl = hs b (not_isMax b) (prelimitRecOn b hs hl) :=
+  prelimitRecOn_succ' _ _ _
 
 @[deprecated prelimitRecOn_succ (since := "2024-09-05")]
 alias limitRecOn_succ := prelimitRecOn_succ
@@ -654,24 +655,25 @@ end SuccOrder
 
 namespace PredOrder
 
+variable {C : α → Sort*} {b : α}
+
 section prelimitRecOn
 
 section PartialOrder
 
 variable [PartialOrder α] [PredOrder α] [WellFoundedGT α]
+  (hp : ∀ a, ¬ IsMin a → C a → C (Order.pred a)) (hl : ∀ a, IsPredPrelimit a → (∀ b > a, C b) → C a)
 
+variable (b) in
 /-- Recursion principle on a well-founded partial `PredOrder`. -/
-@[elab_as_elim] noncomputable def prelimitRecOn (b : α)
-    (hp : ∀ a, ¬ IsMin a → C a → C (Order.pred a))
-    (hl : ∀ a, IsPredPrelimit a → (∀ b > a, C b) → C a) : C b :=
-  SuccOrder.prelimitRecOn (α := αᵒᵈ) b hp fun a ha => hl a ha.dual
+@[elab_as_elim] noncomputable def prelimitRecOn : C b :=
+  SuccOrder.prelimitRecOn (α := αᵒᵈ) b hp (fun a ha => hl a ha.dual)
 
 @[deprecated prelimitRecOn (since := "2024-09-05")]
 alias limitRecOn := prelimitRecOn
 
 @[simp]
-theorem prelimitRecOn_limit (hp : ∀ a, ¬ IsMin a → C a → C (Order.pred a))
-    (hl : ∀ a, IsPredPrelimit a → (∀ b > a, C b) → C a) (hb : IsPredPrelimit b) :
+theorem prelimitRecOn_limit (hb : IsPredPrelimit b) :
     prelimitRecOn b hp hl = hl b hb fun x _ ↦ prelimitRecOn x hp hl :=
   SuccOrder.prelimitRecOn_limit _ _ hb.dual
 
@@ -685,10 +687,14 @@ section LinearOrder
 variable [LinearOrder α] [PredOrder α] [WellFoundedGT α]
   (hp : ∀ a, ¬ IsMin a → C a → C (Order.pred a)) (hl : ∀ a, IsPredPrelimit a → (∀ b > a, C b) → C a)
 
-@[simp]
-theorem prelimitRecOn_pred (hb : ¬ IsMin b) :
+theorem prelimitRecOn_pred' (hb : ¬ IsMin b) :
     prelimitRecOn (Order.pred b) hp hl = hp b hb (prelimitRecOn b hp hl) :=
-  SuccOrder.prelimitRecOn_succ (α := αᵒᵈ) _ _ hb
+  SuccOrder.prelimitRecOn_succ' _ _ _
+
+@[simp]
+theorem prelimitRecOn_pred [NoMinOrder α] (b : α) :
+    prelimitRecOn (Order.pred b) hp hl = hp b (not_isMin b) (prelimitRecOn b hp hl) :=
+  prelimitRecOn_pred' _ _ _
 
 @[deprecated prelimitRecOn_pred (since := "2024-09-05")]
 alias limitRecOn_pred := prelimitRecOn_pred
