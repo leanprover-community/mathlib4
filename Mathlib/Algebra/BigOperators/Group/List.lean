@@ -138,23 +138,28 @@ theorem rel_prod {R : M → N → Prop} (h : R 1 1) (hf : (R ⇒ R ⇒ R) (· * 
   rel_foldl hf h
 
 @[to_additive]
+theorem prod_hom_nonempty {l : List M} {F : Type*} [FunLike F M N] [MulHomClass F M N] (f : F)
+    (hl : l ≠ []) : (l.map f).prod = f l.prod :=
+  match l, hl with | x :: xs, hl => by induction xs generalizing x <;> aesop
+
+@[to_additive]
 theorem prod_hom (l : List M) {F : Type*} [FunLike F M N] [MonoidHomClass F M N] (f : F) :
     (l.map f).prod = f l.prod := by
   simp only [prod, foldl_map, ← map_one f]
   exact l.foldl_hom f (· * ·) (· * f ·) 1 (fun x y => (map_mul f x y).symm)
 
 @[to_additive]
+theorem prod_hom₂_nonempty {l : List ι} (f : M → N → P)
+    (hf : ∀ a b c d, f (a * b) (c * d) = f a c * f b d) (f₁ : ι → M) (f₂ : ι → N) (hl : l ≠ []) :
+    (l.map fun i => f (f₁ i) (f₂ i)).prod = f (l.map f₁).prod (l.map f₂).prod := by
+  match l, hl with | x :: xs, hl => induction xs generalizing x <;> aesop
+
+@[to_additive]
 theorem prod_hom₂ (l : List ι) (f : M → N → P) (hf : ∀ a b c d, f (a * b) (c * d) = f a c * f b d)
     (hf' : f 1 1 = 1) (f₁ : ι → M) (f₂ : ι → N) :
     (l.map fun i => f (f₁ i) (f₂ i)).prod = f (l.map f₁).prod (l.map f₂).prod := by
-  simp only [prod, foldl_map]
-  -- Porting note: next 3 lines used to be
-  -- convert l.foldl_hom₂ (fun a b => f a b) _ _ _ _ _ fun a b i => _
-  -- · exact hf'.symm
-  -- · exact hf _ _ _ _
-  rw [← l.foldl_hom₂ (fun a b => f a b), hf']
-  intros
-  exact hf _ _ _ _
+  rw [prod, prod, prod, foldl_map, foldl_map, foldl_map,
+    ← l.foldl_hom₂ f _ _ (fun x y => x * f (f₁ y) (f₂ y)) _ _ (by simp [hf]), hf']
 
 @[to_additive (attr := simp)]
 theorem prod_map_mul {α : Type*} [CommMonoid α] {l : List ι} {f g : ι → α} :
