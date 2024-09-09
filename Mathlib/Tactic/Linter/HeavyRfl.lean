@@ -1,11 +1,22 @@
+/-
+Copyright (c) 2024 Damiano Testa. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Damiano Testa
+-/
+
 import Mathlib.Util.CountHeartbeats
+
+/-!
+A linter that flags tactic `rfl`s that take over `10 ^ 5` heartbeats to elaborate.
+-/
 
 open Lean Elab Command
 
 /-!
 #  The "heavyRfl" linter
 
-The "heavyRfl" linter emits a warning somewhere.
+For "each" tactic `rfl`, the "heavyRfl" linter prints the number of heartbeats that it takes
+to elaborate it, assuming that it exceeds the linter's value (set to `10 ^5` by default).
 -/
 
 open Lean Elab
@@ -15,7 +26,7 @@ namespace Mathlib.Linter
 /-- The "heavyRfl" linter prints the number of heartbeat that a tactic `rfl` uses, if they exceed
 the value of the linter option. -/
 register_option linter.heavyRfl : Nat := {
-  defValue := 10^5
+  defValue := 10 ^ 5
   descr := "enable the heavyRfl linter"
 }
 
