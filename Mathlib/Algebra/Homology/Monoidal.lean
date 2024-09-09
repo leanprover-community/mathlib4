@@ -96,10 +96,9 @@ noncomputable def tensorUnitIso :
 
 end
 
-variable [∀ (X₁ X₂ : GradedObject I C), GradedObject.HasTensor X₁ X₂]
-
-instance (K₁ K₂ : HomologicalComplex C c) : HasTensor K₁ K₂ :=
-  inferInstanceAs (GradedObject.HasTensor K₁.X K₂.X)
+instance (K₁ K₂ : HomologicalComplex C c) [GradedObject.HasTensor K₁.X K₂.X] :
+    HasTensor K₁ K₂ := by
+  assumption
 
 instance (K₁ K₂ K₃ : HomologicalComplex C c)
     [GradedObject.HasGoodTensor₁₂Tensor K₁.X K₂.X K₃.X] :
@@ -114,6 +113,12 @@ instance (K₁ K₂ K₃ : HomologicalComplex C c)
 section
 
 variable (K : HomologicalComplex C c) [DecidableEq I]
+
+instance : HasTensor (tensorUnit C c) K := by
+  -- use GradedObject.hasTensor_of_iso
+  sorry
+
+instance : HasTensor K (tensorUnit C c) := sorry
 
 @[simp]
 lemma unit_tensor_d₁ (i₁ i₂ j : I) :
@@ -137,7 +142,9 @@ lemma tensor_unit_d₂ (i₁ i₂ j : I) :
 
 end
 
-variable [∀ X₁, PreservesColimit (Functor.empty.{0} C) ((curriedTensor C).obj X₁)]
+-- TODO: weaken these assumptions for some definitions/lemmas in this API
+variable [∀ (X₁ X₂ : GradedObject I C), GradedObject.HasTensor X₁ X₂]
+  [∀ X₁, PreservesColimit (Functor.empty.{0} C) ((curriedTensor C).obj X₁)]
   [∀ X₂, PreservesColimit (Functor.empty.{0} C) ((curriedTensor C).flip.obj X₂)]
   [∀ (X₁ X₂ X₃ X₄ : GradedObject I C), GradedObject.HasTensor₄ObjExt X₁ X₂ X₃ X₄]
   [∀ (X₁ X₂ X₃ : GradedObject I C), GradedObject.HasGoodTensor₁₂Tensor X₁ X₂ X₃]
