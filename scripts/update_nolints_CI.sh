@@ -3,7 +3,7 @@
 # Check if there are changes to `nolints.json` and file a PR updating it if necessary.
 # DO NOT run this as a human; this is meant only for automation usage!
 
- Make this script robust against unintentional errors.
+# Make this script robust against unintentional errors.
 # See e.g. http://redsymbol.net/articles/unofficial-bash-strict-mode/ for explanation.
 set -euo pipefail
 IFS=$'\n\t'
