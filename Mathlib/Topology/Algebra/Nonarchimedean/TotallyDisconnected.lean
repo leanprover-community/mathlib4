@@ -72,8 +72,7 @@ lemma subset_coset_comp (y : G) (U : Set G) (V : OpenSubgroup G) :
 @[to_additive]
 lemma mem_subgroup_coset (x y : G) (hxy : y ≠ x) (V : OpenSubgroup G) :
     y ∈ (y • (V : Set G)) := by
-  simp only [ne_eq] at hxy
-  rw [← inv_mul_eq_one] at hxy
+  rw [ne_eq, ← inv_mul_eq_one] at hxy
   simp only [Set.mem_smul_set_iff_inv_smul_mem, smul_eq_mul, inv_mul_cancel, SetLike.mem_coe,
     one_mem V]
 
@@ -114,8 +113,7 @@ lemma is_open_compl_coset' (y : G)
 variable [NonarchimedeanGroup G] [T2Space G]
 
 @[to_additive]
-theorem non_singleton_set_disconnected
-    (x y : G) (U : Set G)
+theorem non_singleton_set_disconnected (x y : G) (U : Set G)
     (hx : x ∈ U) (hy :  y ∈ U) (hxy : y ≠ x) : ¬ IsConnected U := by
   obtain ⟨A , V, ha, _ , dav⟩ : ∃ (A : Opens G) (V : OpenSubgroup G), y⁻¹ * x ∈ A ∧ 1 ∈ V ∧
           Disjoint (A : Set G) V := by
