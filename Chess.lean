@@ -56,14 +56,10 @@ theorem List.countP_set (p : α → Bool) (l : List α) (i : Nat) (a : α) (h : 
 @[simp] theorem boole_pos_iff [Decidable p] : (0 < if p then 1 else 0) ↔ p := by
   split <;> simp_all
 
-@[simp] theorem List.countP_pos_iff (p : α → Bool) (l : List α) : 0 < l.countP p ↔ ∃ x ∈ l, p x := by
-  induction l with
-  | nil => simp
-  | cons x l ih =>
-    simp [countP_cons, ih, or_comm]
+attribute [simp] List.countP_pos
 
 @[simp] theorem List.one_le_countP_iff (p : α → Bool) (l : List α) : 1 ≤ l.countP p ↔ ∃ x ∈ l, p x :=
-  countP_pos_iff p l
+  countP_pos p
 
 theorem List.getElem_le_sum_nat (l : List Nat) (i : Nat) (h : i < l.length) : l[i] ≤ l.sum := by
   induction l generalizing i with
@@ -94,8 +90,6 @@ theorem List.apply_getElem_le_sum_map_nat (f : α → Nat) (l : List α) (i : Na
       simp_all
       omega
 
-#check Array.data
-#check Array.toList
 @[simp] theorem Array.getElem_data (a : Array α) (i : Nat) (h : i < a.size) : a.data[i] = a[i] := rfl
 
 @[simp] theorem Array.getElem_mk (data : List α) (i : Nat) (h : i < data.length) : (Array.mk data)[i] = data[i] := rfl
