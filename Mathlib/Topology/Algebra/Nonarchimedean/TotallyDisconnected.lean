@@ -89,11 +89,11 @@ lemma non_empty_intersection_compl_coset (x y : G) (U : Set G) (hx : x ∈ U)
   rw [subempty] at mem
   simp at mem
 
-@[to_additive]
+/-@[to_additive]
 lemma intersection_of_intersection_of_complements_empty (y : G)  (U : Set G)
     (V : OpenSubgroup G) : ¬ (U ∩ ((y • (V : Set G)) ∩
     (y • (V : Set G))ᶜ)).Nonempty := by
-  simp only [Set.inter_compl_self, Set.inter_empty, Set.not_nonempty_empty, not_false_eq_true]
+  simp only [Set.inter_compl_self, Set.inter_empty, Set.not_nonempty_empty, not_false_eq_true]-/
 
 @[to_additive]
   lemma non_empty_intersection_coset (x y : G) (U : Set G) (hy :  y ∈ U) (hxy : y ≠ x)
@@ -119,21 +119,25 @@ theorem non_singleton_set_disconnected (x y : G) (U : Set G)
           Disjoint (A : Set G) V := by
     have ht : y⁻¹ * x ≠ 1 := by
         by_contra! con
-        have hy : y⁻¹ * y = 1 := inv_mul_cancel y
-        rw [← hy] at con
-        have : x = y := by
-          apply mul_left_cancel at con
-          exact con
-        exact hxy (id (Eq.symm this))
+        rw [← inv_mul_cancel y] at con
+        apply mul_left_cancel at con
+        exact hxy (id (Eq.symm con))
     exact NonarchimedeanGroup.auxiliary.open_subgroup_separating G (y⁻¹ * x) ht
   obtain ⟨u , v, ou, ov, Uuv, Uu, Uv, emptyUuv⟩ : ∃ u v : Set G, (IsOpen u) ∧ (IsOpen v) ∧
       (U ⊆ u ∪ v) ∧ ((U ∩ u).Nonempty) ∧ ((U ∩ v).Nonempty) ∧ (¬(U ∩ (u ∩ v)).Nonempty) := by
     use (y • (V : Set G)) , (y • (V : Set G))ᶜ
-    refine ⟨(IsOpen.smul (OpenSubgroup.isOpen V) y), is_open_compl_coset' G y V,
+    simp_rw [(IsOpen.smul (OpenSubgroup.isOpen V) y), is_open_compl_coset' G y V,
         subset_coset_comp G y U V ,
         non_empty_intersection_coset G x y U hy hxy V,
         non_empty_intersection_compl_coset G x y U hx A ha V dav.symm,
-        intersection_of_intersection_of_complements_empty G y U V⟩
+        Set.inter_compl_self, Set.inter_empty, Set.not_nonempty_empty, not_false_eq_true,
+        and_self]
+
+    /-refine ⟨(IsOpen.smul (OpenSubgroup.isOpen V) y), is_open_compl_coset' G y V,
+        subset_coset_comp G y U V ,
+        non_empty_intersection_coset G x y U hy hxy V,
+        non_empty_intersection_compl_coset G x y U hx A ha V dav.symm,
+        intersection_of_intersection_of_complements_empty G y U V⟩-/
   rintro ⟨_, h2⟩
   exact emptyUuv <| ((((h2 u v ou) ov) Uuv) Uu) Uv
 
