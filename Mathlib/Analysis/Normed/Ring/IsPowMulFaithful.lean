@@ -80,13 +80,6 @@ theorem eq_seminorms {F : Type*} {α : outParam (Type*)} [Ring α] [FunLike F α
 
 variable {R S : Type*} [NormedCommRing R] [CommRing S] [Algebra R S]
 
-/-- The restriction of a power-multiplicative function to a subalgebra is power-multiplicative. -/
-theorem IsPowMul.restriction (A : Subalgebra R S) {f : S → ℝ} (hf_pm : IsPowMul f) :
-    IsPowMul fun x : A => f x.val := fun x n hn => by
-  simpa [SubsemiringClass.coe_pow] using hf_pm (↑x) hn
-
-#find_home IsPowMul.restriction
-
 /-- If `R` is a normed commutative ring and `f₁` and `f₂` are two power-multiplicative `R`-algebra
   norms on `S`, then if `f₁` and `f₂` are equivalent on every  subring `R[y]` for `y : S`, it
   follows that `f₁ = f₂` [BGR, Proposition 3.1.5/1][bosch-guntzer-remmert]. -/
