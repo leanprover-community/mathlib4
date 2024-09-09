@@ -102,13 +102,13 @@ def addRewriteEntry (name : Name) (cinfo : ConstantInfo) :
       if badMatch rhs then
         return []
       else
-        initializeLazyEntry rhs { name, symm := true } {}
+        initializeLazyEntryAux rhs { name, symm := true } {}
     else
-      let result ← initializeLazyEntry lhs { name, symm := false } {}
+      let result ← initializeLazyEntryAux lhs { name, symm := false } {}
       if badMatch rhs || isMVarSwap lhs rhs then
         return result
       else
-        return result ++ (← initializeLazyEntry rhs { name, symm := true } {})
+        return result ++ (← initializeLazyEntryAux rhs { name, symm := true } {})
   match eqn.eq? with
   | some (_, lhs, rhs) => cont lhs rhs
   | none => match eqn.iff? with
@@ -120,8 +120,8 @@ def addLocalRewriteEntry (decl : LocalDecl) :
   withReducible do
   let (_,_,eqn) ← forallMetaTelescope decl.type
   let cont lhs rhs := do
-    let result ← initializeLazyEntry lhs (decl.fvarId, false) {}
-    return result ++ (← initializeLazyEntry rhs (decl.fvarId, true) {})
+    let result ← initializeLazyEntryAux lhs (decl.fvarId, false) {}
+    return result ++ (← initializeLazyEntryAux rhs (decl.fvarId, true) {})
   match ← matchEq? eqn with
   | some (_, lhs, rhs) => cont lhs rhs
   | none => match eqn.iff? with

@@ -290,9 +290,14 @@ private def encodingStep' (original : Expr) (root : Bool) (config : WhnfCoreConf
       encodingStepAux e lambdas root)
 
 /-- Encode `e` as a sequence of keys, computing only the first `Key`. -/
-def initializeLazyEntry (e : Expr) (val : α) (config : WhnfCoreConfig) :
+def initializeLazyEntryAux (e : Expr) (val : α) (config : WhnfCoreConfig) :
     MetaM (List (Key × LazyEntry α)) := do
   encodingStep e true config { val, mctx := ← getMCtx } |>.run { bvars := [] }
+
+/-- Encode `e` as a sequence of keys, computing only the first `Key`. -/
+def initializeLazyEntry (e : Expr) (val : α) (config : WhnfCoreConfig) :
+    MetaM (List (Key × LazyEntry α)) := do
+  withReducible do initializeLazyEntryAux e val config
 
 /-- Encode `e` as a sequence of keys, computing only the first `Key`. -/
 private def initializeLazyEntry' (e : Expr) (val : α) (config : WhnfCoreConfig) :
