@@ -502,4 +502,4 @@ instance : BicategoryLike.MkMor₂ MonoidalM where
 instance : MonadCoherehnceHom MonoidalM where
   unfoldM α := Mor₂IsoOfExpr α.unfold
 
-end Mathlib.Tactic.Monoidal
+end Mathlib.Tactic.Monoidal'
