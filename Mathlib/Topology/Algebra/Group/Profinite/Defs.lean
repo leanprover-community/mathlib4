@@ -30,12 +30,14 @@ universe u v
 
 open CategoryTheory Topology
 
+/--Defining the structure of profinite group-/
 @[pp_with_univ]
 structure ProfiniteGrp where
   toProfinite : Profinite
   [isGroup : Group toProfinite]
   [isTopologicalGroup : TopologicalGroup toProfinite]
 
+/--Defining the structure of finite group-/
 @[pp_with_univ]
 structure FiniteGrp where
   toGrp : Grp
@@ -60,10 +62,12 @@ instance (G H : FiniteGrp) : FunLike (G ⟶ H) G H :=
 instance (G H : FiniteGrp) : MonoidHomClass (G ⟶ H) G H :=
   inferInstanceAs <| MonoidHomClass (G →* H) G H
 
+/--Making a finite group into a FiniteGrp-/
 def of (G : Type u) [Group G] [Finite G] : FiniteGrp where
   toGrp := Grp.of G
   isFinite := ‹_›
 
+/--The morphisms between FiniteGrp-/
 def ofHom {X Y : Type u} [Group X] [Finite X] [Group Y] [Finite Y] (f : X →* Y) : of X ⟶ of Y :=
   Grp.ofHom f
 
@@ -82,17 +86,20 @@ instance (G : ProfiniteGrp) : Group G := G.isGroup
 
 instance (G : ProfiniteGrp) : TopologicalGroup G := G.isTopologicalGroup
 
+/--A topological group that is compact and totally disconnected is profinite-/
 def of (G : Type u) [Group G] [TopologicalSpace G] [TopologicalGroup G]
     [CompactSpace G] [TotallyDisconnectedSpace G] : ProfiniteGrp where
   toProfinite := .of G
   isGroup := ‹_›
   isTopologicalGroup := ‹_›
 
+/--A topological group when considered as a topological space is profinite is profinite-/
 def ofProfinite (G : Profinite) [Group G] [TopologicalGroup G] : ProfiniteGrp where
   toProfinite := G
   isGroup := inferInstanceAs <| Group G
   isTopologicalGroup := inferInstanceAs <| TopologicalGroup G
 
+/--The product of profinite group is profinite-/
 def Pi.profiniteGrp {α : Type u} (β : α → ProfiniteGrp) : ProfiniteGrp :=
   let pitype := Profinite.Pi.profinite fun (a : α) => (β a).toProfinite
   letI (a : α): Group (β a).toProfinite := (β a).isGroup
@@ -124,6 +131,7 @@ instance : ConcreteCategory ProfiniteGrp where
         simp only [OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, id_eq] at h ⊢
         exact DFunLike.ext _ _ <| fun x => congr_fun h x }
 
+/--A FiniteGrp when given the discrete topology can be condsidered as a profinite group-/
 def ofFiniteGrp (G : FiniteGrp) : ProfiniteGrp :=
   letI : TopologicalSpace G := ⊥
   letI : DiscreteTopology G := ⟨rfl⟩
