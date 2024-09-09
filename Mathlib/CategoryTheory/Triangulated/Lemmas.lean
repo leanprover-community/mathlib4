@@ -6,6 +6,40 @@ universe u v
 
 namespace CategoryTheory
 
+section Shift
+
+variable {C : Type u} {A : Type*} [CategoryTheory.Category.{v, u} C] [AddCommMonoid A]
+  [CategoryTheory.HasShift C A]
+
+@[reassoc]
+lemma shiftFunctorComm_hom_app_comp_shift_shiftFunctorAdd'_hom_app (m₁ m₂ m₃ m : A)
+    (hm : m₂ + m₃ = m) (X : C) :
+    (shiftFunctorComm C m₁ m).hom.app X ≫
+    ((shiftFunctorAdd' C m₂ m₃ m hm).hom.app X)⟦m₁⟧' =
+  (shiftFunctorAdd' C m₂ m₃ m hm).hom.app (X⟦m₁⟧) ≫
+    ((shiftFunctorComm C m₁ m₂).hom.app X)⟦m₃⟧' ≫
+    (shiftFunctorComm C m₁ m₃).hom.app (X⟦m₂⟧) := by
+  rw [← cancel_mono ((shiftFunctorComm C m₁ m₃).inv.app (X⟦m₂⟧)),
+    ← cancel_mono (((shiftFunctorComm C m₁ m₂).inv.app X)⟦m₃⟧')]
+  simp only [Functor.comp_obj, Category.assoc, Iso.hom_inv_id_app, Category.comp_id]
+  simp only [shiftFunctorComm_eq C _ _ _ rfl]
+  dsimp
+  simp only [Functor.map_comp, Category.assoc]
+  slice_rhs 3 4 => rw [← Functor.map_comp, Iso.hom_inv_id_app, Functor.map_id]
+  rw [Category.id_comp]
+  conv_rhs => rw [← Functor.map_comp, Iso.inv_hom_id_app]; erw [Functor.map_id, Category.comp_id]
+  slice_lhs 2 3 => rw [shiftFunctorAdd'_assoc_hom_app m₂ m₃ m₁ m (m₁ + m₃) (m₁ + m) hm
+    (add_comm _ _) (by rw [hm]; exact add_comm _ _)]
+  simp only [Functor.comp_obj, Category.assoc, Iso.hom_inv_id_app, Category.comp_id]
+  slice_lhs 2 3 => rw [← shiftFunctorAdd'_assoc_hom_app m₂ m₁ m₃ (m₁ + m₂) (m₁ + m₃) (m₁ + m)
+    (add_comm _ _) rfl (by rw [add_comm m₂, add_assoc, hm])]
+  slice_lhs 3 4 => rw [← Functor.map_comp, Iso.hom_inv_id_app, Functor.map_id]
+  erw [Category.id_comp]
+  rw [shiftFunctorAdd'_assoc_hom_app m₁ m₂ m₃ (m₁ + m₂) m (m₁ + m) rfl hm (by rw [add_assoc, hm])]
+  simp only [Functor.comp_obj, Iso.inv_hom_id_app_assoc]
+
+end Shift
+
 section
 
 variable {C : Type u} [Category.{v,u} C]

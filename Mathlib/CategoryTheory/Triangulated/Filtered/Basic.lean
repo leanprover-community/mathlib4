@@ -170,12 +170,44 @@ lemma α_vs_second_shift_aux1 (n : ℕ) : ∀ (X : C),
   induction' n with n hn
   · intro X
     simp only [Int.Nat.cast_ofNat_Int, Functor.id_obj, Functor.comp_obj]
-    sorry --rw [shiftFunctorComm_zero_hom_app]
+    have : (@shiftFunctorComm C _ _ _ Shift₂ 0 1).hom.app X =
+        ((@shiftFunctorZero C _ _ _ Shift₂).hom.app X)⟪1⟫' ≫
+        (@shiftFunctorZero C _ _ _ Shift₂).inv.app (X⟪1⟫) := by
+      simp only [Functor.comp_obj, Functor.id_obj]
+      rw [← cancel_mono ((@shiftFunctorComm C _ _ _ Shift₂ 0 1).inv.app X), ← shiftFunctorComm_symm]
+      simp only [Functor.comp_obj, Iso.symm_hom, Iso.symm_inv, Iso.inv_hom_id_app, assoc]
+      rw [@shiftFunctorComm_zero_hom_app C _ _ _ Shift₂]
+      simp only [Functor.id_obj, Iso.inv_hom_id_app_assoc]
+      rw [← Functor.map_comp, Iso.hom_inv_id_app, Functor.map_id]
+    rw [this]
+    have := hP.α.naturality ((@shiftFunctorZero C _ _ _ Shift₂).hom.app X)
+    simp only [Functor.id_obj, Functor.id_map] at this
+    rw [← assoc, ← this]
+    simp only [Functor.id_obj, assoc]
+    rw [← cancel_mono ((@shiftFunctorZero C ℤ _ _ Shift₂).hom.app (X⟪1⟫))]
+    simp only [Functor.id_obj, NatTrans.naturality, Functor.id_map, assoc, Iso.inv_hom_id_app,
+      comp_id]
   · intro X
     have heq : (@shiftFunctorComm C _ _ _ Shift₂ ↑(n + 1) 1).hom.app X =
         ((@shiftFunctorAdd' C _ _ _ Shift₂ n 1 ↑(n + 1) rfl).hom.app X)⟪1⟫'
         ≫ ((@shiftFunctorComm C _ _ _ Shift₂ n 1).hom.app X)⟪1⟫'
-        ≫ (@shiftFunctorAdd' C _ _ _ Shift₂ n 1 ↑(n + 1) rfl).inv.app (X⟪1⟫):= sorry
+        ≫ (@shiftFunctorAdd' C _ _ _ Shift₂ n 1 ↑(n + 1) rfl).inv.app (X⟪1⟫):= by
+      simp only [Functor.comp_obj]
+      rw [@shiftFunctorComm_eq C ℤ _ _ Shift₂ n 1 ↑(n + 1) rfl]
+      simp only [Iso.trans_hom, Iso.symm_hom, NatTrans.comp_app, Functor.comp_obj, Functor.map_comp,
+        assoc]
+      rw [← assoc, ← Functor.map_comp, Iso.hom_inv_id_app, Functor.map_id, id_comp]
+      rw [← cancel_epi ((@shiftFunctorComm C _ _ _ Shift₂ ↑(n + 1) 1).inv.app X)]
+      conv_rhs => rw [← shiftFunctorComm_symm, Iso.symm_inv]
+      conv_lhs => rw [Iso.inv_hom_id_app]
+      rw [← assoc, @shiftFunctorComm_hom_app_comp_shift_shiftFunctorAdd'_hom_app C _ _ _ Shift₂
+        1 1 n ↑(n + 1) (by simp only [add_comm, Nat.cast_add, Nat.cast_one])]
+      simp only [Functor.comp_obj, shiftFunctorComm_eq_refl, Iso.refl_hom, NatTrans.id_app,
+        Functor.map_id, id_comp, assoc]
+      rw [@shiftFunctorComm_eq C _ _ _ Shift₂ 1 n ↑(n + 1) (by simp only [add_comm,
+        Nat.cast_add, Nat.cast_one])]
+      simp only [Iso.trans_hom, Iso.symm_hom, NatTrans.comp_app, Functor.comp_obj, assoc,
+        Iso.hom_inv_id_app, comp_id]
     rw [heq]
     have := (@shiftFunctorAdd' C _ _ _ Shift₂ n 1 (n + 1) rfl).hom.naturality (α.app X)
     rw [← cancel_mono ((@shiftFunctorAdd' C _ _ _ Shift₂ n 1 ↑(n + 1) rfl).hom.app (X⟪1⟫))]
