@@ -7,13 +7,7 @@ import Mathlib.Data.Nat.Prime.Defs
 
 /-!
 
-Marginis
-
--/
-
-
-/-
-
+Marginis:
 Formal marginalia for
 Enlargements of schemes
 by
@@ -50,26 +44,26 @@ theorem sqrt_mod3 : ¬ ∃ x :ℕ, isSqrtMod 3 x  := by
   rcases this with Hl | He
   have hz : x % 3 = 0 := Nat.lt_one_iff.mp Hl
   have : (x*x) % 3 = 2 % 3 := hx
-  have hzt : 0 = 2 := (calc
-  0 = (0 * 0) % 3:= by rfl
-  _ = ((x % 3) * (x % 3)) % 3 := by rw [hz.symm]
-  _ = (x*x) % 3 := (Nat.mul_mod x x 3).symm
-  _ = 2 % 3 := by rw [this])
+  have hzt : 0 = 2 := calc
+    0 = (0 * 0) % 3:= by rfl
+    _ = ((x % 3) * (x % 3)) % 3 := by rw [hz.symm]
+    _ = (x*x) % 3 := (Nat.mul_mod x x 3).symm
+    _ = 2 % 3 := by rw [this]
   have : ¬ 0 = Nat.succ 1 := Nat.ne_of_beq_eq_false rfl
   exact this hzt
 
-  have hzt : 1 = 2 := (calc
-  1 = (1 * 1) % 3 := by rfl
-  _ = ((x % 3) * (x % 3)) % 3 := by rw [He.symm]
-  _ = (x*x) % 3 := (Nat.mul_mod x x 3).symm
-  _ = 2 % 3 := hx)
+  have hzt : 1 = 2 := calc
+    1 = (1 * 1) % 3 := by rfl
+    _ = ((x % 3) * (x % 3)) % 3 := by rw [He.symm]
+    _ = (x*x) % 3 := (Nat.mul_mod x x 3).symm
+    _ = 2 % 3 := hx
   have : ¬ 1 = Nat.succ 1 := Nat.ne_of_beq_eq_false rfl
   exact this hzt
 
-  have hzt : 1 = 2 := (calc
-  1 = (2 * 2) % 3 := by rfl
-  _ = ((x % 3) * (x % 3)) % 3 := by rw [he.symm]
-  _ = (x*x) % 3 := (Nat.mul_mod x x 3).symm
-  _ = 2 % 3 := hx)
+  have hzt : 1 = 2 := calc
+    1 = (2 * 2) % 3 := by rfl
+    _ = ((x % 3) * (x % 3)) % 3 := by rw [he.symm]
+    _ = (x*x) % 3 := (Nat.mul_mod x x 3).symm
+    _ = 2 % 3 := hx
   have : ¬ 1 = Nat.succ 1 := Nat.ne_of_beq_eq_false rfl
   exact this hzt
