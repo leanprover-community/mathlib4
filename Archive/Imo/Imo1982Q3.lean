@@ -187,7 +187,7 @@ lemma ineq₂ {x : ℕ → ℝ} {N : ℕ}
 
 
 lemma ineq₃ {x : ℕ → ℝ} {N : ℕ } (hN : 1 < N) (x_pos : ∀ i, x i > (0 : ℝ)) :
-  2 * (∑ n : Fin N, x (n + 1)) ≤ 1 + (∑ n : Fin N, x (n + 1))^2 := by
+    2 * (∑ n : Fin N, x (n + 1)) ≤ 1 + (∑ n : Fin N, x (n + 1))^2 := by
   have sum_fin_pos : 0 < ∑ n : Fin N, x (↑n + 1) := by
     apply Finset.sum_pos
     intro i _hi
