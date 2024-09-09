@@ -18,9 +18,7 @@ widgets.
 open Lean Meta Elab Qq
 open CategoryTheory Mathlib.Tactic.BicategoryLike MonoidalCategory
 
-namespace Mathlib.Tactic
-
-namespace Monoidal
+namespace Mathlib.Tactic.Monoidal'
 
 /-- The domain of a morphism. -/
 def srcExpr (η : Expr) : MetaM Expr := do
@@ -49,7 +47,7 @@ def tgtExprOfIso (η : Expr) : MetaM Expr := do
 initialize registerTraceClass `monoidal
 
 /-- The context for evaluating expressions. -/
-structure Context' where
+structure Context where
   /-- The level for morphisms. -/
   level₂ : Level
   /-- The level for objects. -/
@@ -62,7 +60,7 @@ structure Context' where
   instMonoidal? : Option Q(MonoidalCategory.{level₂, level₁} $C)
 
 /-- Populate a `context` object for evaluating `e`. -/
-def mkContext'? (e : Expr) : MetaM (Option Context') := do
+def mkContext? (e : Expr) : MetaM (Option Context) := do
   let e ← instantiateMVars e
   let type ← instantiateMVars <| ← inferType e
   match (← whnfR type).getAppFnArgs with
@@ -77,17 +75,17 @@ def mkContext'? (e : Expr) : MetaM (Option Context') := do
     return some ⟨level₂, level₁, C, instCat, instMonoidal?⟩
   | _ => return none
 
-instance : BicategoryLike.Context Monoidal.Context' where
-  mkContext? := Monoidal.mkContext'?
+instance : BicategoryLike.Context Monoidal'.Context where
+  mkContext? := Monoidal'.mkContext?
 
 /-- The monad for the normalization of 2-morphisms. -/
-abbrev MonoidalM' := CoherenceM Context'
+abbrev MonoidalM := CoherenceM Context
 
 /-- Throw an error if the monoidal category instance is not found. -/
 def synthMonoidalError {α : Type} : MetaM α := do
   throwError "failed to find monoidal category instance"
 
-instance : MonadMor₁ MonoidalM' where
+instance : MonadMor₁ MonoidalM where
   id₁M a := do
     let ctx ← read
     let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
@@ -137,7 +135,7 @@ end
 
 open MonadMor₁
 
-instance : MonadMor₂Iso MonoidalM' where
+instance : MonadMor₂Iso MonoidalM where
   associatorM f g h := do
     let ctx ← read
     let .some _monoidal := ctx.instMonoidal? | synthMonoidalError
@@ -244,7 +242,7 @@ instance : MonadMor₂Iso MonoidalM' where
 
 open MonadMor₂Iso
 
-instance : MonadMor₂ MonoidalM' where
+instance : MonadMor₂ MonoidalM where
   homM η := do
     let ctx ← read
     let _cat := ctx.instCat
@@ -402,7 +400,7 @@ instance : MonadMor₂ MonoidalM' where
     return .coherenceComp e iso_lift? f g h i α η θ
 
 /-- Check that `e` is definitionally equal to `𝟙_ C`. -/
-def id₁? (e : Expr) : MonoidalM' (Option Obj) := do
+def id₁? (e : Expr) : MonoidalM (Option Obj) := do
   let ctx ← read
   match ctx.instMonoidal? with
   | .some _monoidal => do
@@ -413,7 +411,7 @@ def id₁? (e : Expr) : MonoidalM' (Option Obj) := do
   | _ => return none
 
 /-- Return `(f, g)` if `e` is definitionally equal to `f ⊗ g`. -/
-def comp? (e : Expr) : MonoidalM' (Option (Mor₁ × Mor₁)) := do
+def comp? (e : Expr) : MonoidalM (Option (Mor₁ × Mor₁)) := do
   let ctx ← read
   let f ← mkFreshExprMVarQ ctx.C
   let g ← mkFreshExprMVarQ ctx.C
@@ -428,7 +426,7 @@ def comp? (e : Expr) : MonoidalM' (Option (Mor₁ × Mor₁)) := do
     | _ => return none
 
 /-- Construct a `Mor₁` expression from a Lean expression. -/
-partial def mor₁OfExpr (e : Expr) : MonoidalM' Mor₁ := do
+partial def mor₁OfExpr (e : Expr) : MonoidalM Mor₁ := do
   if let some f := (← get).cache.find? e then
     return f
   let f ←
@@ -441,11 +439,11 @@ partial def mor₁OfExpr (e : Expr) : MonoidalM' Mor₁ := do
   modify fun s => { s with cache := s.cache.insert e f }
   return f
 
-instance : MkMor₁ MonoidalM' where
+instance : MkMor₁ MonoidalM where
   ofExpr := mor₁OfExpr
 
 /-- Construct a `Mor₂Iso` term from a Lean expression. -/
-partial def Mor₂IsoOfExpr (e : Expr) : MonoidalM' Mor₂Iso := do
+partial def Mor₂IsoOfExpr (e : Expr) : MonoidalM Mor₂Iso := do
   match (← whnfR e).getAppFnArgs with
   | (``MonoidalCategoryStruct.associator, #[_, _, _, f, g, h]) =>
     associatorM' (← MkMor₁.ofExpr f) (← MkMor₁.ofExpr g) (← MkMor₁.ofExpr h)
@@ -475,7 +473,7 @@ partial def Mor₂IsoOfExpr (e : Expr) : MonoidalM' Mor₂Iso := do
 
 open MonadMor₂ in
 /-- Construct a `Mor₂` term from a Lean expression. -/
-partial def Mor₂OfExpr (e : Expr) : MonoidalM' Mor₂ := do
+partial def Mor₂OfExpr (e : Expr) : MonoidalM Mor₂ := do
   match ← whnfR e with
   -- whnfR version of `Iso.hom η`
   | .proj ``Iso 0 η => homM (← Mor₂IsoOfExpr η)
@@ -498,10 +496,10 @@ partial def Mor₂OfExpr (e : Expr) : MonoidalM' Mor₂ := do
   | _ =>
     return .of ⟨e, ← MkMor₁.ofExpr (← srcExpr e), ← MkMor₁.ofExpr (← tgtExpr e)⟩
 
-instance : BicategoryLike.MkMor₂ MonoidalM' where
+instance : BicategoryLike.MkMor₂ MonoidalM where
   ofExpr := Mor₂OfExpr
 
-instance : MonadCoherehnceHom MonoidalM' where
+instance : MonadCoherehnceHom MonoidalM where
   unfoldM α := Mor₂IsoOfExpr α.unfold
 
 end Mathlib.Tactic.Monoidal
