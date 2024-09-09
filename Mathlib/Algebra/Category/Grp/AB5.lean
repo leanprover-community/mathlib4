@@ -8,7 +8,6 @@ import Mathlib.Algebra.Homology.ShortComplex.Ab
 import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 import Mathlib.CategoryTheory.Abelian.FunctorCategory
 
-
 /-!
 # The category of abelian groups satisfies Grothendieck's axiom AB5
 
