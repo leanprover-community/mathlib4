@@ -3,9 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne, Joël Riou, Ravi Vakil
 -/
-import Mathlib.AlgebraicGeometry.Gluing
 import Mathlib.AlgebraicGeometry.Sites.BigZariski
-import Mathlib.CategoryTheory.Sites.OneHypercover
 
 /-!
 # The 1-hypercover of a glue data
