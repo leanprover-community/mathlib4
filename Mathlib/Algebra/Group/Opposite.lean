@@ -131,13 +131,13 @@ instance instMonoid [Monoid α] : Monoid αᵐᵒᵖ where
 
 @[to_additive]
 instance instLeftCancelMonoid [RightCancelMonoid α] : LeftCancelMonoid αᵐᵒᵖ where
-  toLeftCancelSemigroup := instLeftCancelSemigroup
-  __ := instMonoid
+  toMonoid := instMonoid
+  __ := instLeftCancelSemigroup
 
 @[to_additive]
 instance instRightCancelMonoid [LeftCancelMonoid α] : RightCancelMonoid αᵐᵒᵖ where
-  toRightCancelSemigroup := instRightCancelSemigroup
-  __ := instMonoid
+  toMonoid := instMonoid
+  __ := instRightCancelSemigroup
 
 @[to_additive]
 instance instCancelMonoid [CancelMonoid α] : CancelMonoid αᵐᵒᵖ where
@@ -151,8 +151,8 @@ instance instCommMonoid [CommMonoid α] : CommMonoid αᵐᵒᵖ where
 
 @[to_additive]
 instance instCancelCommMonoid [CancelCommMonoid α] : CancelCommMonoid αᵐᵒᵖ where
-  toLeftCancelMonoid := instLeftCancelMonoid
-  __ := instCommMonoid
+  toCommMonoid := instCommMonoid
+  __ := instLeftCancelMonoid
 
 @[to_additive AddOpposite.instSubNegMonoid]
 instance instDivInvMonoid [DivInvMonoid α] : DivInvMonoid αᵐᵒᵖ where
@@ -348,9 +348,9 @@ instance instAddCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithO
   natCast_succ := show ∀ n, op ((n + 1 : ℕ) : α) = op ↑(n : ℕ) + 1 by simp [add_comm]
 
 instance instAddCommGroupWithOne [AddCommGroupWithOne α] : AddCommGroupWithOne αᵃᵒᵖ where
-  toIntCast := instIntCast
-  toAddCommGroup := instAddCommGroup
+  toAddGroup := instAddGroup
   __ := instAddCommMonoidWithOne
+  toIntCast := instIntCast
   intCast_ofNat _ := congr_arg op <| Int.cast_natCast _
   intCast_negSucc _ := congr_arg op <| Int.cast_negSucc _
 
