@@ -100,6 +100,11 @@ theorem prod_Ico_add [OrderedCancelAddCommMonoid α] [ExistsAddOfLE α] [Locally
   rw [add_comm]
 
 @[to_additive]
+theorem prod_Ico_eq_add_sub (f : ℕ → M) (a b c : ℕ) :
+    (∏ x ∈ Ico a b, f x) = ∏ x ∈ Ico (a + c) (b + c), f (x - c) := by
+  simp only [← map_add_right_Ico, prod_map, addRightEmbedding_apply, add_tsub_cancel_right]
+
+@[to_additive]
 theorem prod_Ico_succ_top {a b : ℕ} (hab : a ≤ b) (f : ℕ → M) :
     (∏ k ∈ Ico a (b + 1), f k) = (∏ k ∈ Ico a b, f k) * f b := by
   rw [Nat.Ico_succ_right_eq_insert_Ico hab, prod_insert right_not_mem_Ico, mul_comm]
@@ -137,6 +142,11 @@ theorem prod_Icc_succ_top {a b : ℕ} (hab : a ≤ b + 1) (f : ℕ → M) :
 theorem prod_range_mul_prod_Ico (f : ℕ → M) {m n : ℕ} (h : m ≤ n) :
     ((∏ k ∈ range m, f k) * ∏ k ∈ Ico m n, f k) = ∏ k ∈ range n, f k :=
   Nat.Ico_zero_eq_range ▸ Nat.Ico_zero_eq_range ▸ prod_Ico_consecutive f m.zero_le h
+
+@[to_additive]
+theorem prod_range_eq_add_Ico (f : ℕ → M) {n : ℕ} (hn : 0 < n) :
+    ∏ x ∈ Finset.range n, f x = f 0 * ∏ x ∈ Ico 1 n, f x :=
+  Finset.range_eq_Ico ▸ Finset.prod_eq_prod_Ico_succ_bot hn f
 
 @[to_additive]
 theorem prod_Ico_eq_mul_inv {δ : Type*} [CommGroup δ] (f : ℕ → δ) {m n : ℕ} (h : m ≤ n) :
