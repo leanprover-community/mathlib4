@@ -31,21 +31,26 @@ namespace Matrix
 section Semiring
 variable [Semiring α]
 
-/-- A copy of `invOf_mul_self_assoc` for rectangular matrices. -/
-protected theorem invOf_mul_self_assoc (A : Matrix n n α) (B : Matrix n m α) [Invertible A] :
+/-- A copy of `invOf_mul_cancel_left` for rectangular matrices. -/
+protected theorem invOf_mul_cancel_left (A : Matrix n n α) (B : Matrix n m α) [Invertible A] :
     ⅟ A * (A * B) = B := by rw [← Matrix.mul_assoc, invOf_mul_self, Matrix.one_mul]
 
-/-- A copy of `mul_invOf_self_assoc` for rectangular matrices. -/
-protected theorem mul_invOf_self_assoc (A : Matrix n n α) (B : Matrix n m α) [Invertible A] :
+/-- A copy of `mul_invOf_cancel_left` for rectangular matrices. -/
+protected theorem mul_invOf_cancel_left (A : Matrix n n α) (B : Matrix n m α) [Invertible A] :
     A * (⅟ A * B) = B := by rw [← Matrix.mul_assoc, mul_invOf_self, Matrix.one_mul]
 
-/-- A copy of `mul_invOf_mul_self_cancel` for rectangular matrices. -/
-protected theorem mul_invOf_mul_self_cancel (A : Matrix m n α) (B : Matrix n n α) [Invertible B] :
+/-- A copy of `invOf_mul_cancel_right` for rectangular matrices. -/
+protected theorem invOf_mul_cancel_right (A : Matrix m n α) (B : Matrix n n α) [Invertible B] :
     A * ⅟ B * B = A := by rw [Matrix.mul_assoc, invOf_mul_self, Matrix.mul_one]
 
-/-- A copy of `mul_mul_invOf_self_cancel` for rectangular matrices. -/
-protected theorem mul_mul_invOf_self_cancel (A : Matrix m n α) (B : Matrix n n α) [Invertible B] :
+/-- A copy of `mul_invOf_cancel_right` for rectangular matrices. -/
+protected theorem mul_invOf_cancel_right (A : Matrix m n α) (B : Matrix n n α) [Invertible B] :
     A * B * ⅟ B = A := by rw [Matrix.mul_assoc, mul_invOf_self, Matrix.mul_one]
+
+@[deprecated (since := "2024-09-07")] alias invOf_mul_self_assoc := invOf_mul_cancel_left
+@[deprecated (since := "2024-09-07")] alias mul_invOf_self_assoc := mul_invOf_cancel_left
+@[deprecated (since := "2024-09-07")] alias mul_invOf_mul_self_cancel := invOf_mul_cancel_right
+@[deprecated (since := "2024-09-07")] alias mul_mul_invOf_self_cancel := mul_invOf_cancel_right
 
 section ConjTranspose
 variable [StarRing α] (A : Matrix n n α)

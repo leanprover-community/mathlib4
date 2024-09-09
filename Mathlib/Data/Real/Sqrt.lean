@@ -127,8 +127,7 @@ theorem continuous_sqrt : Continuous (√· : ℝ → ℝ) :=
 
 theorem sqrt_eq_zero_of_nonpos (h : x ≤ 0) : sqrt x = 0 := by simp [sqrt, Real.toNNReal_eq_zero.2 h]
 
-theorem sqrt_nonneg (x : ℝ) : 0 ≤ √x :=
-  NNReal.coe_nonneg _
+@[simp] theorem sqrt_nonneg (x : ℝ) : 0 ≤ √x := NNReal.coe_nonneg _
 
 @[simp]
 theorem mul_self_sqrt (h : 0 ≤ x) : √x * √x = x := by
