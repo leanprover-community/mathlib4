@@ -15,7 +15,7 @@ namespace Mathlib.Linter
 /-- The "heavyRfl" linter prints the number of heartbeat that a tactic `rfl` uses, if they exceed
 the value of the linter option. -/
 register_option linter.heavyRfl : Nat := {
-  defValue := 10^4
+  defValue := 10^5
   descr := "enable the heavyRfl linter"
 }
 
