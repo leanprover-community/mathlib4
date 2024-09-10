@@ -486,7 +486,8 @@ def rootMultiplicity (a : R) (p : R[X]) : ℕ :=
   if h0 : p = 0 then 0
   else
     let _ : DecidablePred fun n : ℕ => ¬(X - C a) ^ (n + 1) ∣ p := fun n =>
-      @Not.decidable _ (decidableDvdMonic p ((monic_X_sub_C a).pow (n + 1)))
+      have := decidableDvdMonic p ((monic_X_sub_C a).pow (n + 1))
+      inferInstanceAs (Decidable ¬_)
     Nat.find (multiplicity_X_sub_C_finite a h0)
 
 /- Porting note: added the following due to diamond with decidableProp and
@@ -494,7 +495,8 @@ decidableDvdMonic see also [Zulip]
 (https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/non-defeq.20aliased.20instance) -/
 theorem rootMultiplicity_eq_nat_find_of_nonzero [DecidableEq R] {p : R[X]} (p0 : p ≠ 0) {a : R} :
     letI : DecidablePred fun n : ℕ => ¬(X - C a) ^ (n + 1) ∣ p := fun n =>
-      @Not.decidable _ (decidableDvdMonic p ((monic_X_sub_C a).pow (n + 1)))
+      have := decidableDvdMonic p ((monic_X_sub_C a).pow (n + 1))
+      inferInstanceAs (Decidable ¬_)
     rootMultiplicity a p = Nat.find (multiplicity_X_sub_C_finite a p0) := by
   dsimp [rootMultiplicity]
   cases Subsingleton.elim ‹DecidableEq R› (Classical.decEq R)
