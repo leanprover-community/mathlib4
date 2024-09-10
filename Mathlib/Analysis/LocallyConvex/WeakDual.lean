@@ -8,6 +8,7 @@ import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Analysis.RCLike.Lemmas
 import Mathlib.Topology.Separation
+import Mathlib.Analysis.Normed.Module.WeakDual
 
 /-!
 # Weak Dual in Topological Vector Spaces
@@ -157,8 +158,15 @@ def dual_of_separating_family {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜}
     (h_sep : ∀ x : E, x ≠ 0 → (∃ f : F, B x f ≠ 0)) : (WeakBilin B →L[𝕜] 𝕜) ≃L[𝕜] F := by
   sorry
 
+-- A continuous linear map e between E and F lifts to a continuous linear map between the WeakSpaces
+-- is `WeakSpace.map e`.
 
-def induced_WeakSpace_ContinuousLinearEquivalence (e : E ≃L[𝕜] F) :
-    (WeakSpace 𝕜 E) ≃L[𝕜] (WeakSpace 𝕜 F) := by sorry
+--can't seem to get the WeakSpace.map to work below...some typeclass synthesis issue?
+
+theorem Preliminary (e : E ≃L[𝕜] F) (f : (F →L[𝕜] 𝕜) ≃L[𝕜] (E →L[𝕜] 𝕜)) (C : Set (WeakSpace 𝕜 E)) :
+    (WeakSpace.map e) (closure C) = closure ((WeakSpace.map e) C) := by sorry
+
+
+
 
 end LocallyConvex
