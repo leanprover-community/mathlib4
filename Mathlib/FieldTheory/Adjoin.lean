@@ -8,6 +8,7 @@ import Mathlib.FieldTheory.IntermediateField.Algebraic
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.SplittingField.IsSplittingField
 import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 
 /-!
 # Adjoining Elements to Fields
@@ -1068,6 +1069,8 @@ theorem adjoin_minpoly_coeff_of_exists_primitive_element
   convert natDegree_le_of_dvd dvd_g
     ((g.monic_toSubring _ _).mpr <| (minpoly.monic <| .of_finite K α).map _).ne_zero using 1
   rw [natDegree_toSubring, natDegree_map]
+
+instance : Module.Finite F (⊥ : IntermediateField F E) := Subalgebra.finite_bot
 
 variable {F} in
 /-- If `E / F` is an infinite algebraic extension, then there exists an intermediate field
