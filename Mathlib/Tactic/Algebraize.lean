@@ -166,7 +166,7 @@ properties that have been tagged with the `algebraize` attribute, and uses this 
 corresponding `Algebra` property. -/
 def searchContext (t : Array Expr) : TacticM Unit := withMainContext do
   let ctx ← getLCtx
-  for decl in ctx do
+  ctx.forM fun decl => do
     if decl.isImplementationDetail then return
     let (nm, args) := decl.type.getAppFnArgs
     -- Check if the type of the current hypothesis has been tagged with the `algebraize` attribute
