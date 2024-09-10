@@ -443,7 +443,7 @@ macro "isBoundedDefault" : tactic =>
 
 section ConditionallyCompleteLattice
 
-variable [ConditionallyCompleteLattice α]
+variable [ConditionallyCompleteLattice α] {s : Set α} {u : β → α}
 
 -- Porting note: Renamed from Limsup and Liminf to limsSup and limsInf
 /-- The `limsSup` of a filter `f` is the infimum of the `a` such that, eventually for `f`,
@@ -632,12 +632,17 @@ theorem liminf_le_liminf_of_le {α β} [ConditionallyCompleteLattice β] {f g : 
     liminf u f ≤ liminf u g :=
   limsInf_le_limsInf_of_le (map_mono h) hf hg
 
-theorem limsSup_principal {s : Set α} (h : BddAbove s) (hs : s.Nonempty) :
-    limsSup (𝓟 s) = sSup s := by
-  simp only [limsSup, eventually_principal]; exact csInf_upper_bounds_eq_csSup h hs
+lemma limsSup_principal_eq_csSup (h : BddAbove s) (hs : s.Nonempty) : limsSup (𝓟 s) = sSup s := by
+  simp only [limsSup, eventually_principal]; exact csInf_upperBounds_eq_csSup h hs
 
-theorem limsInf_principal {s : Set α} (h : BddBelow s) (hs : s.Nonempty) : limsInf (𝓟 s) = sInf s :=
-  limsSup_principal (α := αᵒᵈ) h hs
+lemma limsInf_principal_eq_csSup (h : BddBelow s) (hs : s.Nonempty) : limsInf (𝓟 s) = sInf s :=
+  limsSup_principal_eq_csSup (α := αᵒᵈ) h hs
+
+lemma limsup_top_eq_ciSup [Nonempty β] (hu : BddAbove (range u)) : limsup u ⊤ = ⨆ i, u i := by
+  rw [limsup, map_top, limsSup_principal_eq_csSup hu (range_nonempty _), sSup_range]
+
+lemma liminf_top_eq_ciInf [Nonempty β] (hu : BddBelow (range u)) : liminf u ⊤ = ⨅ i, u i := by
+  rw [liminf, map_top, limsInf_principal_eq_csSup hu (range_nonempty _), sInf_range]
 
 theorem limsup_congr {α : Type*} [ConditionallyCompleteLattice β] {f : Filter α} {u v : α → β}
     (h : ∀ᶠ a in f, u a = v a) : limsup u f = limsup v f := by
@@ -786,7 +791,22 @@ theorem HasBasis.limsup_eq_iInf_iSup {p : ι → Prop} {s : ι → Set β} {f : 
     (h : f.HasBasis p s) : limsup u f = ⨅ (i) (_ : p i), ⨆ a ∈ s i, u a :=
   (h.map u).limsSup_eq_iInf_sSup.trans <| by simp only [sSup_image, id]
 
-@[simp] lemma limsup_top (u : β → α) : limsup u ⊤ = ⨆ i, u i := by simp [limsup_eq_iInf_iSup]
+lemma limsSup_principal_eq_sSup (s : Set α) : limsSup (𝓟 s) = sSup s := by
+  simpa only [limsSup, eventually_principal] using sInf_upperBounds_eq_csSup s
+
+lemma limsInf_principal_eq_sInf (s : Set α) : limsInf (𝓟 s) = sInf s := by
+  simpa only [limsInf, eventually_principal] using sSup_lowerBounds_eq_sInf s
+
+@[simp] lemma limsup_top_eq_iSup (u : β → α) : limsup u ⊤ = ⨆ i, u i := by
+  rw [limsup, map_top, limsSup_principal_eq_sSup, sSup_range]
+
+@[simp] lemma liminf_top_eq_iInf (u : β → α) : liminf u ⊤ = ⨅ i, u i := by
+  rw [liminf, map_top, limsInf_principal_eq_sInf, sInf_range]
+
+@[deprecated (since := "2024-08-27")] alias limsSup_principal := limsSup_principal_eq_sSup
+@[deprecated (since := "2024-08-27")] alias limsInf_principal := limsInf_principal_eq_sInf
+@[deprecated (since := "2024-08-27")] alias limsup_top := limsup_top_eq_iSup
+@[deprecated (since := "2024-08-27")] alias liminf_top := liminf_top_eq_iInf
 
 theorem blimsup_congr' {f : Filter β} {p q : β → Prop} {u : β → α}
     (h : ∀ᶠ x in f, u x ≠ ⊥ → (p x ↔ q x)) : blimsup u f p = blimsup u f q := by
@@ -824,8 +844,6 @@ theorem liminf_eq_iSup_iInf_of_nat {u : ℕ → α} : liminf u atTop = ⨆ n : �
 
 theorem liminf_eq_iSup_iInf_of_nat' {u : ℕ → α} : liminf u atTop = ⨆ n : ℕ, ⨅ i : ℕ, u (i + n) :=
   @limsup_eq_iInf_iSup_of_nat' αᵒᵈ _ _
-
-@[simp] lemma liminf_top (u : β → α) : liminf u ⊤ = ⨅ i, u i := by simp [liminf_eq_iSup_iInf]
 
 theorem HasBasis.liminf_eq_iSup_iInf {p : ι → Prop} {s : ι → Set β} {f : Filter β} {u : β → α}
     (h : f.HasBasis p s) : liminf u f = ⨆ (i) (_ : p i), ⨅ a ∈ s i, u a :=

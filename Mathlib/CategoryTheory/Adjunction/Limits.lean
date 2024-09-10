@@ -74,10 +74,9 @@ def functorialityCounit :
   app c := { hom := adj.counit.app c.pt }
 
 /-- The functor `Cocones.functoriality K F : Cocone K ⥤ Cocone (K ⋙ F)` is a left adjoint. -/
-def functorialityAdjunction : Cocones.functoriality K F ⊣ functorialityRightAdjoint adj K :=
-  mkOfUnitCounit
-    { unit := functorialityUnit adj K
-      counit := functorialityCounit adj K}
+def functorialityAdjunction : Cocones.functoriality K F ⊣ functorialityRightAdjoint adj K where
+unit := functorialityUnit adj K
+counit := functorialityCounit adj K
 
 /-- A left adjoint preserves colimits.
 
@@ -178,10 +177,9 @@ def functorialityCounit' :
   app c := { hom := adj.counit.app c.pt }
 
 /-- The functor `Cones.functoriality K G : Cone K ⥤ Cone (K ⋙ G)` is a right adjoint. -/
-def functorialityAdjunction' : functorialityLeftAdjoint adj K ⊣ Cones.functoriality K G :=
-  mkOfUnitCounit
-    { unit := functorialityUnit' adj K
-      counit := functorialityCounit' adj K }
+def functorialityAdjunction' : functorialityLeftAdjoint adj K ⊣ Cones.functoriality K G where
+  unit := functorialityUnit' adj K
+  counit := functorialityCounit' adj K
 
 /-- A right adjoint preserves limits.
 

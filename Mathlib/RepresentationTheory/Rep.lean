@@ -404,7 +404,7 @@ theorem ihom_obj_ρ_def (A B : Rep k G) : ((ihom A).obj B).ρ = ((Rep.ihom A).ob
 
 @[simp]
 theorem homEquiv_def (A B C : Rep k G) : (ihom.adjunction A).homEquiv B C = Rep.homEquiv A B C :=
-  rfl
+  congrFun (congrFun (Adjunction.mkOfHomEquiv_homEquiv _) _) _
 
 @[simp]
 theorem ihom_ev_app_hom (A B : Rep k G) :
@@ -445,7 +445,9 @@ theorem MonoidalClosed.linearHomEquivComm_hom (f : A ⊗ B ⟶ C) :
   rfl
 
 theorem MonoidalClosed.linearHomEquiv_symm_hom (f : B ⟶ A ⟶[Rep k G] C) :
-    ((MonoidalClosed.linearHomEquiv A B C).symm f).hom = TensorProduct.uncurry k A B C f.hom.flip :=
+    ((MonoidalClosed.linearHomEquiv A B C).symm f).hom =
+      TensorProduct.uncurry k A B C f.hom.flip := by
+  simp [linearHomEquiv]
   rfl
 
 theorem MonoidalClosed.linearHomEquivComm_symm_hom (f : A ⟶ B ⟶[Rep k G] C) :
