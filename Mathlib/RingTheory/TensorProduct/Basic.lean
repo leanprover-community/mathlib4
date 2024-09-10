@@ -991,8 +991,8 @@ theorem tensorTensorTensorComm_tmul (m : A) (n : B) (p : C) (q : D) :
 
 @[simp]
 theorem tensorTensorTensorComm_symm :
-    (tensorTensorTensorComm R A B C D).symm = tensorTensorTensorComm R A C B D :=
-  by ext; rfl
+    (tensorTensorTensorComm R A B C D).symm = tensorTensorTensorComm R A C B D := by
+  ext; rfl
 
 @[simp]
 theorem tensorTensorTensorComm_toLinearEquiv :

@@ -14,6 +14,15 @@ We define the data in the monoidal structure on the category of bialgebras - e.g
 instance on a tensor product of bialgebras, and the tensor product of two `BialgHom`s as a
 `BialgHom`. This is done by combining the corresponding API for coalgebras and algebras.
 
+## Implementation notes
+
+Since the coalgebra instance on a tensor product of coalgebras is defined using a universe
+monomorphic monoidal category structure on `ModuleCat R`, we require our bialgebras to be in the
+same universe as the base ring `R` here too. Any contribution that achieves universe polymorphism
+would be welcome. For instance, the tensor product of bialgebras in the
+[FLT repo](https://github.com/eric-wieser/FLT/blob/8764e28f03cd0d03f673e1288f47fc7a665207de/FLT/for_mathlib/Coalgebra/TensorProduct.lean)
+is already universe polymorphic since it does not go via category theory.
+
 -/
 
 universe v u
@@ -28,14 +37,13 @@ variable {R A B : Type u} [CommRing R] [Ring A] [Ring B]
 lemma coe_counit_eq :
     ⇑(Coalgebra.counit (R := R) (A := A ⊗[R] B))
       = (Algebra.TensorProduct.lmul' R).comp (Algebra.TensorProduct.map
-      (Bialgebra.counitAlgHom R A) (Bialgebra.counitAlgHom R B)) := by
+      (counitAlgHom R A) (counitAlgHom R B)) := by
   rfl
 
 lemma coe_comul_eq :
     ⇑(Coalgebra.comul (R := R) (A := A ⊗[R] B))
       = (Algebra.TensorProduct.tensorTensorTensorComm R A A B B).toAlgHom.comp
-      (Algebra.TensorProduct.map (Bialgebra.comulAlgHom R A)
-      (Bialgebra.comulAlgHom R B)) := by
+      (Algebra.TensorProduct.map (comulAlgHom R A) (comulAlgHom R B)) := by
   rfl
 
 end Bialgebra.TensorProduct
@@ -43,7 +51,7 @@ end Bialgebra.TensorProduct
 noncomputable instance TensorProduct.instBialgebra
     {R A B : Type u} [CommRing R] [Ring A] [Ring B]
     [Bialgebra R A] [Bialgebra R B] : Bialgebra R (A ⊗[R] B) := by
-  refine' Bialgebra.mk' R (A ⊗[R] B) _ (fun {x y} => _) _ (fun {x y} => _)
+  refine Bialgebra.mk' R (A ⊗[R] B) ?_ (fun {x y} => ?_) ?_ (fun {x y} => ?_)
   <;> simp only [Bialgebra.TensorProduct.coe_counit_eq, Bialgebra.TensorProduct.coe_comul_eq]
   <;> simp only [_root_.map_one, _root_.map_mul]
 
@@ -110,7 +118,6 @@ theorem lid_tmul (r : R) (a : A) : Bialgebra.TensorProduct.lid R A (r ⊗ₜ a) 
 @[simp]
 theorem lid_symm_apply (a : A) : (Bialgebra.TensorProduct.lid R A).symm a = 1 ⊗ₜ a := rfl
 
--- could deal with this better
 theorem coalgebraRid_eq_algebraRid_apply (x) :
     Coalgebra.TensorProduct.rid R A x = Algebra.TensorProduct.rid R R A x := by
   show _root_.TensorProduct.rid R A x = _
@@ -121,12 +128,12 @@ variable (R A)
 
 /-- The base ring is a right identity for the tensor product of bialgebras, up to
 bialgebra equivalence. -/
-protected noncomputable def rid : A ⊗[R] R ≃ₐc[R] A :=
-  { Coalgebra.TensorProduct.rid R A with
-    map_mul' := fun x y => by
-      simp only [CoalgEquiv.toCoalgHom_eq_coe, CoalgHom.toLinearMap_eq_coe, AddHom.toFun_eq_coe,
-        LinearMap.coe_toAddHom, CoalgHom.coe_toLinearMap, CoalgHom.coe_coe,
-        coalgebraRid_eq_algebraRid_apply, AlgEquiv.map_mul] }
+protected noncomputable def rid : A ⊗[R] R ≃ₐc[R] A where
+  toCoalgEquiv := Coalgebra.TensorProduct.rid R A
+  map_mul' x y := by
+    simp only [CoalgEquiv.toCoalgHom_eq_coe, CoalgHom.toLinearMap_eq_coe, AddHom.toFun_eq_coe,
+      LinearMap.coe_toAddHom, CoalgHom.coe_toLinearMap, CoalgHom.coe_coe,
+      coalgebraRid_eq_algebraRid_apply, map_mul]
 
 variable {R A}
 
