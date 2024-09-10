@@ -97,7 +97,7 @@ variable [CommSemiring R]
 variable [NonUnitalNonAssocSemiring A] [Module R A] [Star A]
 variable [NonUnitalNonAssocSemiring B] [Module R B] [Star B]
 variable [NonUnitalNonAssocSemiring C] [Module R C] [Star C]
-variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [NonUnitalStarAlgHomClass F R A B]
+variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [StarHomClass F A B]
 
 instance instSetLike : SetLike (NonUnitalStarSubalgebra R A) A where
   coe {s} := s.carrier
@@ -398,7 +398,7 @@ variable [CommSemiring R]
 variable [NonUnitalNonAssocSemiring A] [Module R A] [Star A]
 variable [NonUnitalNonAssocSemiring B] [Module R B] [Star B]
 variable [NonUnitalNonAssocSemiring C] [Module R C] [Star C]
-variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [NonUnitalStarAlgHomClass F R A B]
+variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [StarHomClass F A B]
 
 /-- Range of an `NonUnitalAlgHom` as a `NonUnitalStarSubalgebra`. -/
 protected def range (φ : F) : NonUnitalStarSubalgebra R B where
@@ -471,7 +471,7 @@ variable [CommSemiring R]
 variable [NonUnitalSemiring A] [Module R A] [Star A]
 variable [NonUnitalSemiring B] [Module R B] [Star B]
 variable [NonUnitalSemiring C] [Module R C] [Star C]
-variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [NonUnitalStarAlgHomClass F R A B]
+variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [StarHomClass F A B]
 
 /-- Restrict a non-unital star algebra homomorphism with a left inverse to an algebra isomorphism
 to its range.
@@ -600,7 +600,7 @@ namespace NonUnitalStarAlgebra
 variable [CommSemiring R] [StarRing R]
 variable [NonUnitalSemiring A] [StarRing A] [Module R A]
 variable [NonUnitalSemiring B] [StarRing B] [Module R B]
-variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [NonUnitalStarAlgHomClass F R A B]
+variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [StarHomClass F A B]
 
 section StarSubAlgebraA
 
@@ -831,7 +831,7 @@ open NonUnitalStarAlgebra
 variable [CommSemiring R]
 variable [NonUnitalSemiring A] [StarRing A] [Module R A]
 variable [NonUnitalSemiring B] [StarRing B] [Module R B]
-variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [NonUnitalStarAlgHomClass F R A B]
+variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [StarHomClass F A B]
 variable (S : NonUnitalStarSubalgebra R A)
 
 section StarSubalgebra
