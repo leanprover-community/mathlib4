@@ -141,7 +141,7 @@ theorem iterate_apply_lie (D : LieDerivation R L L) (n : ℕ) (a b : L) :
 theorem iterate_apply_lie' (D : LieDerivation R L L) (n : ℕ) (a b : L) :
     D^[n] ⁅a, b⁆ = ∑ i in range (n + 1), n.choose i • ⁅D^[i] a, D^[n - i] b⁆ := by
   rw [iterate_apply_lie D n a b]
-  exact Nat.sum_antidiagonal_eq_sum_range_succ (fun i j => n.choose i • ⁅(⇑D)^[i] a, (⇑D)^[j] b⁆) n
+  exact sum_antidiagonal_eq_sum_range_succ (fun i j => n.choose i • ⁅(⇑D)^[i] a, (⇑D)^[j] b⁆) n
 
 end
 
