@@ -48,7 +48,7 @@ variable (p : PerfectPairing R M N) (root : ι ↪ M) (coroot : ι ↪ N) (i j :
 include h
 
 private theorem exist_eq_reflection_of_mapsTo  :
-    ∃ k, root k = (preReflection (root i) (p.toLin.flip (coroot i))) (root j) :=
+    ∃ k, root k = (preReflection (root i) (p.flip (coroot i))) (root j) :=
   h i (mem_range_self j)
 
 variable (hp : ∀ i, p.toLin (root i) (coroot i) = 2)
@@ -112,7 +112,7 @@ Formally, the point is that the hypothesis `hc` depends only on the range of the
 @[ext]
 protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
     {P₁ P₂ : RootPairing ι R M N}
-    (he : P₁.toLin = P₂.toLin)
+    (he : P₁.toPerfectPairing = P₂.toPerfectPairing)
     (hr : P₁.root = P₂.root)
     (hc : range P₁.coroot = range P₂.coroot) :
     P₁ = P₂ := by
@@ -139,34 +139,35 @@ private lemma coroot_eq_coreflection_of_root_eq' [CharZero R] [NoZeroSMulDivisor
     (p : PerfectPairing R M N)
     (root : ι ↪ M)
     (coroot : ι ↪ N)
-    (hp : ∀ i, p.toLin (root i) (coroot i) = 2)
-    (hr : ∀ i, MapsTo (preReflection (root i) (p.toLin.flip (coroot i))) (range root) (range root))
-    (hc : ∀ i, MapsTo (preReflection (coroot i) (p.toLin (root i))) (range coroot) (range coroot))
-    {i j k : ι} (hk : root k = preReflection (root i) (p.toLin.flip (coroot i)) (root j)) :
-    coroot k = preReflection (coroot i) (p.toLin (root i)) (coroot j) := by
+    (hp : ∀ i, p (root i) (coroot i) = 2)
+    (hr : ∀ i, MapsTo (preReflection (root i) (p.flip (coroot i))) (range root) (range root))
+    (hc : ∀ i, MapsTo (preReflection (coroot i) (p (root i))) (range coroot) (range coroot))
+    {i j k : ι} (hk : root k = preReflection (root i) (p.flip (coroot i)) (root j)) :
+    coroot k = preReflection (coroot i) (p (root i)) (coroot j) := by
   set α := root i
   set β := root j
   set α' := coroot i
   set β' := coroot j
-  set sα := preReflection α (p.toLin.flip α')
-  set sβ := preReflection β (p.toLin.flip β')
-  let sα' := preReflection α' (p.toLin α)
-  have hij : preReflection (sα β) (p.toLin.flip (sα' β')) = sα ∘ₗ sβ ∘ₗ sα := by
+  set sα := preReflection α (p.flip α')
+  set sβ := preReflection β (p.flip β')
+  let sα' := preReflection α' (p α)
+  have hij : preReflection (sα β) (p.flip (sα' β')) = sα ∘ₗ sβ ∘ₗ sα := by
     ext
-    have hpi : (p.toLin.flip (coroot i)) (root i) = 2 := by rw [LinearMap.flip_apply, hp i]
-    simp [α, β, α', β', sα, sβ, sα', ← preReflection_preReflection β (p.toLin.flip β') hpi,
+    have hpi : (p.flip (coroot i)) (root i) = 2 := by rw [PerfectPairing.flip_apply_apply, hp i]
+    simp [α, β, α', β', sα, sβ, sα', ← preReflection_preReflection β (p.flip β') hpi,
       preReflection_apply]
-  have hk₀ : root k ≠ 0 := fun h ↦ by simpa [h] using hp k
+  have hk₀ : root k ≠ 0 := fun h ↦ by simpa [h, ← PerfectPairing.toLin_apply] using hp k
   obtain ⟨l, hl⟩ := hc i (mem_range_self j)
   rw [← hl]
-  have hkl : (p.toLin.flip (coroot l)) (root k) = 2 := by
-    simp [hl, hk, preReflection_apply, mul_sub, mul_two, β', α, α', β, sα, hp i, hp j]
-    rw [mul_comm (p.toLin (root i) (coroot j))]
+  have hkl : (p.flip (coroot l)) (root k) = 2 := by
+    simp only [hl, preReflection_apply, hk, PerfectPairing.flip_apply_apply, map_sub, hp j,
+      map_smul, smul_eq_mul, hp i, mul_sub, sα, α, α', β, mul_two, mul_add]
+    rw [mul_comm (p (root i) (coroot j))]
     abel
-  suffices p.toLin.flip (coroot k) = p.toLin.flip (coroot l) from p.bijectiveRight.injective this
+  suffices p.flip (coroot k) = p.flip (coroot l) from p.bijectiveRight.injective this
   have _i : NoZeroSMulDivisors ℤ M := NoZeroSMulDivisors.int_of_charZero R M
   have := injOn_dualMap_subtype_span_range_range (finite_range root)
-    (c := p.toLin.flip ∘ coroot) hp hr
+    (c := p.flip ∘ coroot) hp hr
   apply this (mem_range_self k) (mem_range_self l)
   refine Dual.eq_of_preReflection_mapsTo' hk₀ (finite_range root)
     (Submodule.subset_span <| mem_range_self k) (hp k) (hr k) hkl ?_
@@ -179,9 +180,9 @@ def mk' [Finite ι] [CharZero R] [NoZeroSMulDivisors R M]
     (p : PerfectPairing R M N)
     (root : ι ↪ M)
     (coroot : ι ↪ N)
-    (hp : ∀ i, p.toLin (root i) (coroot i) = 2)
-    (hr : ∀ i, MapsTo (preReflection (root i) (p.toLin.flip (coroot i))) (range root) (range root))
-    (hc : ∀ i, MapsTo (preReflection (coroot i) (p.toLin (root i))) (range coroot) (range coroot)) :
+    (hp : ∀ i, p (root i) (coroot i) = 2)
+    (hr : ∀ i, MapsTo (preReflection (root i) (p.flip (coroot i))) (range root) (range root))
+    (hc : ∀ i, MapsTo (preReflection (coroot i) (p (root i))) (range coroot) (range coroot)) :
     RootPairing ι R M N where
   toPerfectPairing := p
   root := root
@@ -190,7 +191,7 @@ def mk' [Finite ι] [CharZero R] [NoZeroSMulDivisors R M]
   reflection_perm i := RootPairing.equiv_of_mapsTo p root coroot i hr hp
   reflection_perm_root i j := by
     rw [equiv_of_mapsTo_apply, (exist_eq_reflection_of_mapsTo p root coroot i j hr).choose_spec,
-      preReflection_apply, LinearMap.flip_apply]
+      preReflection_apply, PerfectPairing.flip_apply_apply]
   reflection_perm_coroot i j := by
     refine (coroot_eq_coreflection_of_root_eq' p root coroot hp hr hc ?_).symm
     rw [equiv_of_mapsTo_apply, (exist_eq_reflection_of_mapsTo p root coroot i j hr).choose_spec]
@@ -208,11 +209,11 @@ its roots. -/
 @[ext]
 protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
     {P₁ P₂ : RootSystem ι R M N}
-    (he : P₁.toLin = P₂.toLin)
+    (he : P₁.toPerfectPairing = P₂.toPerfectPairing)
     (hr : P₁.root = P₂.root) :
     P₁ = P₂ := by
-  suffices ∀ P₁ P₂ : RootSystem ι R M N, P₁.toLin = P₂.toLin → P₁.root = P₂.root →
-      range P₁.coroot ⊆ range P₂.coroot by
+  suffices ∀ P₁ P₂ : RootSystem ι R M N, P₁.toPerfectPairing = P₂.toPerfectPairing →
+      P₁.root = P₂.root → range P₁.coroot ⊆ range P₂.coroot by
     have h₁ := this P₁ P₂ he hr
     have h₂ := this P₂ P₁ he.symm hr.symm
     cases' P₁ with P₁
@@ -233,28 +234,28 @@ private lemma coroot_eq_coreflection_of_root_eq_of_span_eq_top [CharZero R] [NoZ
     (p : PerfectPairing R M N)
     (root : ι ↪ M)
     (coroot : ι ↪ N)
-    (hp : ∀ i, p.toLin (root i) (coroot i) = 2)
-    (hs : ∀ i, MapsTo (preReflection (root i) (p.toLin.flip (coroot i))) (range root) (range root))
+    (hp : ∀ i, p (root i) (coroot i) = 2)
+    (hs : ∀ i, MapsTo (preReflection (root i) (p.flip (coroot i))) (range root) (range root))
     (hsp : span R (range root) = ⊤)
-    {i j k : ι} (hk : root k = preReflection (root i) (p.toLin.flip (coroot i)) (root j)) :
-    coroot k = preReflection (coroot i) (p.toLin (root i)) (coroot j) := by
+    {i j k : ι} (hk : root k = preReflection (root i) (p.flip (coroot i)) (root j)) :
+    coroot k = preReflection (coroot i) (p (root i)) (coroot j) := by
   set α := root i
   set β := root j
   set α' := coroot i
   set β' := coroot j
-  set sα := preReflection α (p.toLin.flip α')
-  set sβ := preReflection β (p.toLin.flip β')
-  let sα' := preReflection α' (p.toLin α)
+  set sα := preReflection α (p.flip α')
+  set sβ := preReflection β (p.flip β')
+  let sα' := preReflection α' (p α)
   have hij : preReflection (sα β) (p.toLin.flip (sα' β')) = sα ∘ₗ sβ ∘ₗ sα := by
     ext
-    have hpi : (p.toLin.flip (coroot i)) (root i) = 2 := by rw [LinearMap.flip_apply, hp i]
-    simp [α, β, α', β', sα, sβ, sα', ← preReflection_preReflection β (p.toLin.flip β') hpi,
+    have hpi : (p.flip (coroot i)) (root i) = 2 := by rw [PerfectPairing.flip_apply_apply, hp i]
+    simp [α, β, α', β', sα, sβ, sα', ← preReflection_preReflection β (p.flip β') hpi,
       preReflection_apply] -- v4.7.0-rc1 issues
-  have hk₀ : root k ≠ 0 := fun h ↦ by simpa [h] using hp k
+  have hk₀ : root k ≠ 0 := fun h ↦ by simpa [h, ← PerfectPairing.toLin_apply] using hp k
   apply p.bijectiveRight.injective
   apply Dual.eq_of_preReflection_mapsTo hk₀ (finite_range root) hsp (hp k) (hs k)
   · simp [α, β, α', β', sα, sβ, sα', hk, preReflection_apply, hp i, hp j, mul_two,
-      mul_comm (p.toLin α β')]
+      mul_comm (p α β')]
     ring -- v4.7.0-rc1 issues
   · rw [hk, hij]
     exact (hs i).comp <| (hs j).comp (hs i)

@@ -656,7 +656,7 @@ def liftMagma [Module k A] [IsScalarTower k A A] [SMulCommClass k A A] :
           intros
           rw [← add_smul]
         -- Porting note: `reducible` cannot be `local` so proof gets long.
-        simp_rw [Finsupp.mul_sum, Finsupp.sum_mul, smul_mul_smul, ← f.map_mul, mul_def,
+        simp_rw [Finsupp.mul_sum, Finsupp.sum_mul, smul_mul_smul_comm, ← f.map_mul, mul_def,
           sum_comm a₂ a₁]
         rw [sum_sum_index h₁ h₂]; congr; ext
         rw [sum_sum_index h₁ h₂]; congr; ext

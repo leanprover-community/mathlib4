@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.Elementwise
 
 # Compactly generated topological spaces
 
-This file defines the category of compactly generated topological spaces. These are spaces `X` such
+This file defines the category of compactly generated topological spaces. These are spaces `X` such
 that a map `f : X → Y` is continuous whenever the composition `S → X → Y` is continuous for all
 compact Hausdorff spaces `S` mapping continuously to `X`.
 

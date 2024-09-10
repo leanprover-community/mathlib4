@@ -409,6 +409,10 @@ lemma comap_neg {f : M →ₗ[R] M₂} {p : Submodule R M₂} :
     p.comap (-f) = p.comap f := by
   ext; simp
 
+lemma map_toAddSubgroup (f : M →ₗ[R] M₂) (p : Submodule R M) :
+    (p.map f).toAddSubgroup = p.toAddSubgroup.map (f : M →+ M₂) :=
+  rfl
+
 end AddCommGroup
 
 end Submodule
