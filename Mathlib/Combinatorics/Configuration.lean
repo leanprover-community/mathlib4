@@ -467,97 +467,56 @@ variable {K : Type*} [Field K]
 
 open scoped LinearAlgebra.Projectivization
 
-instance : Membership (ℙ K (Fin 3 → K)) (ℙ K (Fin 3 → K)) :=
-  ⟨Function.swap Projectivization.orthogonal⟩
+open Matrix Projectivization
 
-lemma mem_iff (v w : ℙ K (Fin 3 → K)) : v ∈ w ↔ Projectivization.orthogonal v w :=
+instance : Membership (ℙ K (Fin 3 → K)) (ℙ K (Fin 3 → K)) :=
+  ⟨Function.swap orthogonal⟩
+
+lemma mem_iff (v w : ℙ K (Fin 3 → K)) : v ∈ w ↔ orthogonal v w :=
   Iff.rfl
 
-lemma rank_add_rank_le_card_of_mul_eq_zero {l m n : Type*} [Fintype l] [Fintype m] [Fintype n]
-    {A : Matrix l m K} {B : Matrix m n K} (hAB : A * B = 0) :
-    A.rank + B.rank ≤ Fintype.card m := by
-  classical
-  let el : Basis l K (l → K) := Pi.basisFun K l
-  let em : Basis m K (m → K) := Pi.basisFun K m
-  let en : Basis n K (n → K) := Pi.basisFun K n
-  rw [Matrix.rank_eq_finrank_range_toLin A el em,
-      Matrix.rank_eq_finrank_range_toLin B em en,
-      ← FiniteDimensional.finrank_fintype_fun_eq_card K,
-      ← LinearMap.finrank_range_add_finrank_ker (Matrix.toLin em el A),
-      add_le_add_iff_left]
-  apply Submodule.finrank_mono
-  rw [LinearMap.range_le_ker_iff, ← Matrix.toLin_mul, hAB, map_zero]
-
-theorem _root_.LinearIndependent.rank_matrix {m n : Type*} [Fintype m] [Fintype n]
-  {M : Matrix m n K} (h : LinearIndependent K M) : M.rank = Fintype.card m := by
-  rw [M.rank_eq_finrank_span_row, linearIndependent_iff_card_eq_finrank_span.mp h, Set.finrank]
-
-lemma crossProduct_eq_zero_of_dotProduct_eq_zero' {m n : Type*} [Fintype m] [Fintype n]
-    {A B : Matrix m n K} (hA : LinearIndependent K A) (hB : LinearIndependent K B)
-    (hAB : A * B.transpose = 0) : 2 * Fintype.card m ≤ Fintype.card n := by
-  refine le_of_eq_of_le ?_ (rank_add_rank_le_card_of_mul_eq_zero hAB)
-  rw [hA.rank_matrix, B.rank_transpose, hB.rank_matrix, two_mul]
-
-lemma crossProduct_eq_zero_of_dotProduct_eq_zero {a b c d : (Fin 3 → K)}
-    (hac : Matrix.dotProduct a c = 0) (hbc : Matrix.dotProduct b c = 0)
-    (had : Matrix.dotProduct a d = 0) (hbd : Matrix.dotProduct b d = 0) :
+-- This lemma can't be moved to the crossProduct file due to heavy imports
+lemma crossProduct_eq_zero_of_dotProduct_eq_zero {a b c d : Fin 3 → K} (hac : dotProduct a c = 0)
+    (hbc : dotProduct b c = 0) (had : dotProduct a d = 0) (hbd : dotProduct b d = 0) :
     crossProduct a b = 0 ∨ crossProduct c d = 0 := by
   by_contra h
-  rw [not_or, ← ne_eq, ← ne_eq,
-    crossProduct_ne_zero_iff_linearIndependent,
-    crossProduct_ne_zero_iff_linearIndependent] at h
-  let key1 : Matrix (Fin 2) (Fin 3) K := ![a, b]
-  let key2 : Matrix (Fin 2) (Fin 3) K := ![c, d]
-  let key3 := key1 * key2.transpose
-  have key' : key3 = ![![Matrix.dotProduct a c, Matrix.dotProduct a d],
-    ![Matrix.dotProduct b c, Matrix.dotProduct b d]] := by
+  simp_rw [not_or, ← ne_eq, crossProduct_ne_zero_iff_linearIndependent] at h
+  let A : Matrix (Fin 2) (Fin 3) K := ![a, b]
+  let B : Matrix (Fin 2) (Fin 3) K := ![c, d]
+  have hAB : A * B.transpose = 0 := by
     ext i j
-    simp only [key3, key1, key2, Matrix.mul_apply', Matrix.transpose_apply]
-    fin_cases i <;> fin_cases j <;> rfl
-  have key : key3 = 0 := by
-    rw [key', hac, hbc, had, hbd]
-    ext i j; fin_cases i <;> fin_cases j <;> rfl
-  have key := crossProduct_eq_zero_of_dotProduct_eq_zero' h.1 h.2 key
-  rw [Fintype.card_fin] at key
-  rw [Fintype.card_fin] at key
+    fin_cases i <;> fin_cases j <;> assumption
+  replace hAB := rank_add_rank_le_card_of_mul_eq_zero hAB
+  rw [rank_transpose, h.1.rank_matrix, h.2.rank_matrix, Fintype.card_fin, Fintype.card_fin] at hAB
   contradiction
 
-lemma eq_or_eq_of_orthogonal {a b c d : ℙ K (Fin 3 → K)}
-    (hac : a.orthogonal c) (hbc : b.orthogonal c)
-    (had : a.orthogonal d) (hbd : b.orthogonal d) :
+lemma eq_or_eq_of_orthogonal {a b c d : ℙ K (Fin 3 → K)} (hac : a.orthogonal c)
+    (hbc : b.orthogonal c) (had : a.orthogonal d) (hbd : b.orthogonal d) :
     a = b ∨ c = d := by
   induction' a with a ha
   induction' b with b hb
   induction' c with c hc
   induction' d with d hd
-  rw [Projectivization.mk_eq_mk_iff_crossProduct_eq_zero,
-    Projectivization.mk_eq_mk_iff_crossProduct_eq_zero]
+  rw [mk_eq_mk_iff_crossProduct_eq_zero, mk_eq_mk_iff_crossProduct_eq_zero]
   exact crossProduct_eq_zero_of_dotProduct_eq_zero hac hbc had hbd
 
 instance : Nondegenerate (ℙ K (Fin 3 → K)) (ℙ K (Fin 3 → K)) :=
-  { exists_point := Projectivization.exists_not_orthogonal_self
-    exists_line := Projectivization.exists_not_self_orthogonal
+  { exists_point := exists_not_orthogonal_self
+    exists_line := exists_not_self_orthogonal
     eq_or_eq := eq_or_eq_of_orthogonal }
 
 noncomputable instance [DecidableEq K] : ProjectivePlane (ℙ K (Fin 3 → K)) (ℙ K (Fin 3 → K)) :=
   { mkPoint := by
       intro v w _
-      exact Projectivization.cross v w
-    mkPoint_ax := fun h ↦
-      ⟨Projectivization.cross_orthogonal_left h, Projectivization.cross_orthogonal_right h⟩
+      exact cross v w
+    mkPoint_ax := fun h ↦ ⟨cross_orthogonal_left h, cross_orthogonal_right h⟩
     mkLine := by
       intro v w _
-      exact Projectivization.cross v w
-    mkLine_ax := fun h ↦
-      ⟨Projectivization.orthogonal_cross_left h, Projectivization.orthogonal_cross_right h⟩
+      exact cross v w
+    mkLine_ax := fun h ↦ ⟨orthogonal_cross_left h, orthogonal_cross_right h⟩
     exists_config := by
-      use Projectivization.mk K ![0, 1, 1] (by simp)
-      use Projectivization.mk K ![1, 0, 0] (by simp)
-      use Projectivization.mk K ![1, 0, 1] (by simp)
-      use Projectivization.mk K ![1, 0, 0] (by simp)
-      use Projectivization.mk K ![0, 1, 0] (by simp)
-      use Projectivization.mk K ![0, 0, 1] (by simp)
-      simp [mem_iff, Projectivization.orthogonal_mk] }
+      refine ⟨mk K ![0, 1, 1] ?_, mk K ![1, 0, 0] ?_, mk K ![1, 0, 1] ?_, mk K ![1, 0, 0] ?_,
+        mk K ![0, 1, 0] ?_, mk K ![0, 0, 1] ?_, ?_⟩ <;> simp [mem_iff, orthogonal_mk] }
 
 end ofField
 
