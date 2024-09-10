@@ -121,10 +121,8 @@ def mkProjectMapExpr (e : Expr) : TermElabM Expr := do
 def monoidal_coherence (g : MVarId) : TermElabM Unit := g.withContext do
   withOptions (fun opts => synthInstance.maxSize.set opts
     (max 512 (synthInstance.maxSize.get opts))) do
-  let thms := [``MonoidalCoherence.iso, ``BicategoricalCoherence.iso,
-    ``Iso.trans, ``Iso.symm, ``Iso.refl,
-    ``MonoidalCategory.whiskerRightIso, ``MonoidalCategory.whiskerLeftIso,
-    ``Bicategory.whiskerRightIso, ``Bicategory.whiskerLeftIso].foldl
+  let thms := [``MonoidalCoherence.iso, ``Iso.trans, ``Iso.symm, ``Iso.refl,
+    ``MonoidalCategory.whiskerRightIso, ``MonoidalCategory.whiskerLeftIso].foldl
     (·.addDeclToUnfoldCore ·) {}
   let (ty, _) ← dsimp (← g.getType) { simpTheorems := #[thms] }
   let some (_, lhs, rhs) := (← whnfR ty).eq? | exception g "Not an equation of morphisms."
