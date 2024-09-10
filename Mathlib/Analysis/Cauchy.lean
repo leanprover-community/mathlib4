@@ -31,7 +31,6 @@ lemma NNReal.geom_sum {x : ℝ≥0} (h : 1 < x) (n : ℕ) :
 
 theorem norm_lt_cauchyBound_add_one_of_isRoot (p : K[X]) (hp : p ≠ 0) (a : K) (h : p.IsRoot a) :
     ‖a‖₊ < cauchyBound p + 1 := by
-  have : 0 < p.natDegree := coe_lt_degree.mp <| degree_pos_of_root hp h
   rw [IsRoot.def, eval_eq_sum_range, range_add_one] at h
   simp only [mem_range, lt_self_iff_false, not_false_eq_true, sum_insert, coeff_natDegree,
     add_eq_zero_iff_eq_neg] at h
