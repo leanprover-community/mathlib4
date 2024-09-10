@@ -251,8 +251,8 @@ def onScalar {u₁ u₂ : Level} {R₁ : Q(Type u₁)} {R₂ : Q(Type u₂)} (l 
 
 /-- Given two terms `l₁`, `l₂` of type `qNF R M`, i.e. lists of `(Q($R) × Q($M)) × ℕ`s (two `Expr`s
 and a natural number), construct another such term `l`, which will have the property that in the
-in the `$R`-module `$M`, the sums of the "linear combinations" represented by `l₁` and `l₂` is the
-linear combination represented by `l`.
+`$R`-module `$M`, the sum of the "linear combinations" represented by `l₁` and `l₂` is the linear
+combination represented by `l`.
 
 The construction assumes, to be valid, that the lists `l₁` and `l₂` are in strictly increasing order
 by `ℕ`-component, and that if pairs `(a₁, x₁)` and `(a₂, x₂)` appear in `l₁`, `l₂` respectively with
@@ -273,8 +273,8 @@ def add (iR : Q(Semiring $R)) : qNF R M → qNF R M → qNF R M
       ((a₂, x₂), k₂) :: add iR (((a₁, x₁), k₁) :: t₁) t₂
 
 /-- Given two terms `l₁`, `l₂` of type `qNF R M`, i.e. lists of `(Q($R) × Q($M)) × ℕ`s (two `Expr`s
-and a natural number), recursively construct a proof that in the in the `$R`-module `$M`, the sums
-of the "linear combinations" represented by `l₁` and `l₂` is the linear combination represented by
+and a natural number), recursively construct a proof that in the `$R`-module `$M`, the sum of the
+"linear combinations" represented by `l₁` and `l₂` is the linear combination represented by
 `Module.qNF.add iR l₁ l₁`.-/
 def mkAddProof {iR : Q(Semiring $R)} {iM : Q(AddCommMonoid $M)} (iRM : Q(Module $R $M))
     (l₁ l₂ : qNF R M) :
@@ -295,8 +295,8 @@ def mkAddProof {iR : Q(Semiring $R)} {iM : Q(AddCommMonoid $M)} (iRM : Q(Module 
 
 /-- Given two terms `l₁`, `l₂` of type `qNF R M`, i.e. lists of `(Q($R) × Q($M)) × ℕ`s (two `Expr`s
 and a natural number), construct another such term `l`, which will have the property that in the
-in the `$R`-module `$M`, the difference of the "linear combinations" represented by `l₁` and `l₂` is
-the linear combination represented by `l`.
+`$R`-module `$M`, the difference of the "linear combinations" represented by `l₁` and `l₂` is the
+linear combination represented by `l`.
 
 The construction assumes, to be valid, that the lists `l₁` and `l₂` are in strictly increasing order
 by `ℕ`-component, and that if pairs `(a₁, x₁)` and `(a₂, x₂)` appear in `l₁`, `l₂` respectively with
@@ -318,9 +318,9 @@ def sub (iR : Q(Ring $R)) : qNF R M → qNF R M → qNF R M
       ((q(-$a₂), x₂), k₂) :: sub iR (((a₁, x₁), k₁) :: t₁) t₂
 
 /-- Given two terms `l₁`, `l₂` of type `qNF R M`, i.e. lists of `(Q($R) × Q($M)) × ℕ`s (two `Expr`s
-and a natural number), recursively construct a proof that in the in the `$R`-module `$M`, the
-difference of the "linear combinations" represented by `l₁` and `l₂` is the linear combination
-represented by `Module.qNF.sub iR l₁ l₁`.-/
+and a natural number), recursively construct a proof that in the `$R`-module `$M`, the difference
+of the "linear combinations" represented by `l₁` and `l₂` is the linear combination represented by
+`Module.qNF.sub iR l₁ l₁`.-/
 def mkSubProof (iR : Q(Ring $R)) (iM : Q(AddCommGroup $M)) (iRM : Q(Module $R $M))
     (l₁ l₂ : qNF R M) :
     Q(NF.eval $(l₁.toNF) - NF.eval $(l₂.toNF) = NF.eval $((qNF.sub iR l₁ l₂).toNF)) :=
