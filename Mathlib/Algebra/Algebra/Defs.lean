@@ -103,6 +103,8 @@ class Algebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends SM
   commutes' : ∀ r x, toRingHom r * x = x * toRingHom r
   smul_def' : ∀ r x, r • x = toRingHom r * x
 
+set_synth_order Algebra.toSMul #[4, 2, 3]
+
 end Prio
 
 /-- Embedding `R →+* A` given by `Algebra` structure. -/
@@ -264,6 +266,8 @@ instance (priority := 200) toModule : Module R A where
   smul_zero := by simp [smul_def']
   add_smul := by simp [smul_def', add_mul]
   zero_smul := by simp [smul_def']
+
+set_synth_order Algebra.toModule #[4, 2, 3]
 
 -- Porting note: this caused deterministic timeouts later in mathlib3 but not in mathlib 4.
 -- attribute [instance 0] Algebra.toSMul
