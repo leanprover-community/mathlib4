@@ -1100,7 +1100,8 @@ instance (α β : Type*) [LE α] [LE β] : LE (α × β) :=
 
 -- Porting note (#10754): new instance
 instance instDecidableLE (α β : Type*) [LE α] [LE β] (x y : α × β)
-    [Decidable (x.1 ≤ y.1)] [Decidable (x.2 ≤ y.2)] : Decidable (x ≤ y) := instDecidableAnd
+    [Decidable (x.1 ≤ y.1)] [Decidable (x.2 ≤ y.2)] : Decidable (x ≤ y) :=
+  inferInstanceAs (Decidable (x.1 ≤ y.1 ∧ x.2 ≤ y.2))
 
 theorem le_def [LE α] [LE β] {x y : α × β} : x ≤ y ↔ x.1 ≤ y.1 ∧ x.2 ≤ y.2 :=
   Iff.rfl
