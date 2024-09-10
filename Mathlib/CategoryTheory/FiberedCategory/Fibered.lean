@@ -146,6 +146,16 @@ lemma isStronglyCartesian_of_exists_isCartesian' (p : 𝒳 ⥤ 𝒮) (h : ∀ (a
   simp [hπ_comp, Φ]
 
 
+/-- Alternate constructor for `IsFibered`, a functor `p : 𝒳 ⥤ 𝒴` is fibered if any diagram of the
+form
+```
+          a
+          -
+          |
+          v
+R --f--> p(a)
+```
+admits a strongly cartesian lift `b ⟶ a` of `f`. -/
 lemma of_exists_isStronglyCartesian' {p : 𝒳 ⥤ 𝒮} (h : ∀ (a : 𝒳) (R : 𝒮) (f : R ⟶ p.obj a),
     ∃ (b : 𝒳) (φ : b ⟶ a), IsStronglyCartesian p f φ) : IsFibered p where
   exists_isCartesian' := by
