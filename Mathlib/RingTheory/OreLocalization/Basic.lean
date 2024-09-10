@@ -281,7 +281,7 @@ theorem oreDiv_smul_oreDiv {r₁ : R} {r₂ : X} {s₁ s₂ : S} :
 
 -- a variant of `oreDiv_smul_oreDiv` valid for `R` commutative
 theorem smul_def {R : Type*} [CommMonoid R] {S : Submonoid R} {A : Type*}
-  [MulAction R A] {r : R} {a : A} {s₁ s₂ : S} :
+    [MulAction R A] {r : R} {a : A} {s₁ s₂ : S} :
     (r /ₒ s₁) • (a /ₒ s₂) = r • a /ₒ (s₂ * s₁) := rfl
 
 @[to_additive]
