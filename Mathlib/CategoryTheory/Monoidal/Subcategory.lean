@@ -198,15 +198,16 @@ instance fullMonoidalClosedSubcategory : MonoidalClosed (FullSubcategory P) wher
     { rightAdj := FullSubcategory.lift P (fullSubcategoryInclusion P ⋙ ihom X.1)
         fun Y => prop_ihom X.2 Y.2
       adj :=
-        Adjunction.mkOfUnitCounit
         { unit :=
           { app := fun Y => (ihom.coev X.1).app Y.1
             naturality := fun Y Z f => ihom.coev_naturality X.1 f }
           counit :=
           { app := fun Y => (ihom.ev X.1).app Y.1
             naturality := fun Y Z f => ihom.ev_naturality X.1 f }
-          left_triangle := by ext Y; simp [FullSubcategory.comp_def, FullSubcategory.id_def]
-          right_triangle := by ext Y; simp [FullSubcategory.comp_def, FullSubcategory.id_def] } }
+          left_triangle_components := fun X ↦
+            by simp [FullSubcategory.comp_def, FullSubcategory.id_def]
+          right_triangle_components := fun Y ↦
+            by simp [FullSubcategory.comp_def, FullSubcategory.id_def] } }
 
 @[simp]
 theorem fullMonoidalClosedSubcategory_ihom_obj (X Y : FullSubcategory P) :
