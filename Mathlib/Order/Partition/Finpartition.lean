@@ -548,6 +548,8 @@ lemma card_mod_card_parts_le : s.card % P.parts.card ≤ P.parts.card := by
     rw [h, h']
   · exact (Nat.mod_lt _ h).le
 
+section Setoid
+
 variable [Fintype α]
 
 /-- A setoid over a finite type induces a finpartition of the type's elements,
@@ -586,6 +588,8 @@ theorem mem_part_ofSetoid_iff_rel {s : Setoid α} [DecidableRel s.r] {b : α} :
   obtain ⟨⟨_, hc⟩, this⟩ := this
   simp only [← hc, mem_univ, mem_filter, true_and] at this ⊢
   exact ⟨s.trans (s.symm this), s.trans this⟩
+
+end Setoid
 
 section Atomise
 
