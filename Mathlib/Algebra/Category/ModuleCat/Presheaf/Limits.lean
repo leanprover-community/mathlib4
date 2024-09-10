@@ -6,15 +6,12 @@ Authors: Joël Riou
 import Mathlib.Algebra.Category.ModuleCat.Presheaf
 import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 import Mathlib.CategoryTheory.Limits.Preserves.Limits
-import Mathlib.CategoryTheory.Limits.FunctorCategory
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 
 /-! # Limits in categories of presheaves of modules
 
 In this file, it is shown that under suitable assumptions,
 limits exist in the category `PresheafOfModules R`.
-
-## TODO
-* do the same for colimits
 
 -/
 
@@ -131,7 +128,7 @@ noncomputable instance toPresheafPreservesLimit :
     PreservesLimit F (toPresheaf R) :=
   preservesLimitOfPreservesLimitCone (isLimitLimitCone F)
     (Limits.evaluationJointlyReflectsLimits _
-      (fun X => isLimitOfPreserves (evaluation R X ⋙ forget₂ _ AddCommGroupCat)
+      (fun X => isLimitOfPreserves (evaluation R X ⋙ forget₂ _ AddCommGrp)
         (isLimitLimitCone F)))
 
 end Limits
@@ -152,7 +149,7 @@ noncomputable instance toPresheafPreservesLimitsOfShape :
 
 end Small
 
-namespace Finite
+section Finite
 
 instance hasFiniteLimits : HasFiniteLimits (PresheafOfModules.{v} R) :=
   ⟨fun _ => inferInstance⟩
@@ -161,7 +158,7 @@ noncomputable instance evaluationPreservesFiniteLimits (X : Cᵒᵖ) :
     PreservesFiniteLimits (evaluation.{v} R X) where
 
 noncomputable instance toPresheafPreservesFiniteLimits :
-    PreservesFiniteLimits (toPresheaf R) where
+    PreservesFiniteLimits (toPresheaf.{v} R) where
 
 end Finite
 

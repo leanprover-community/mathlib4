@@ -6,8 +6,6 @@ Authors: Michael Jendrusch, Scott Morrison
 import Mathlib.CategoryTheory.Monoidal.Types.Basic
 import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 
-#align_import category_theory.monoidal.types.coyoneda from "leanprover-community/mathlib"@"95a87616d63b3cb49d3fe678d416fbe9c4217bf4"
-
 /-!
 # `(𝟙_ C ⟶ -)` is a lax monoidal functor to `Type`
 -/
@@ -27,14 +25,7 @@ open Opposite
 
 open MonoidalCategory
 
--- Porting note: made it noncomputable.
--- `failed to compile definition, consider marking it as 'noncomputable' because it`
--- `depends on 'CategoryTheory.typesMonoidal', and it does not have executable code`
--- I don't know if that is a problem, might need to change it back in the future, but
--- if so it might be better to fix then instead of at the moment of porting.
-
 /-- `(𝟙_ C ⟶ -)` is a lax monoidal functor to `Type`. -/
-noncomputable
 def coyonedaTensorUnit (C : Type u) [Category.{v} C] [MonoidalCategory C] :
     LaxMonoidalFunctor C (Type v) := .ofTensorHom
     (F := coyoneda.obj (op (𝟙_ C)))
@@ -58,6 +49,5 @@ def coyonedaTensorUnit (C : Type u) [Category.{v} C] [MonoidalCategory C] :
       ext ⟨f, ⟨⟩⟩; dsimp at f
       dsimp
       simp [unitors_inv_equal])
-#align category_theory.coyoneda_tensor_unit CategoryTheory.coyonedaTensorUnit
 
 end CategoryTheory

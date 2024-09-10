@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Floor.Div
-import Mathlib.Data.Nat.Factorization.Basic
+import Mathlib.Data.Nat.Factorization.Defs
 
 /-!
 # Roots of natural numbers, rounded up and down
@@ -68,7 +68,7 @@ lemma floorRoot_ne_zero : floorRoot n a ≠ 0 ↔ n ≠ 0 ∧ a ≠ 0 := by
   simp (config := { contextual := true }) [floorRoot, not_imp_not, not_or]
 
 @[simp] lemma floorRoot_eq_zero : floorRoot n a = 0 ↔ n = 0 ∨ a = 0 :=
-  floorRoot_ne_zero.not_right.trans $ by simp only [not_and_or, ne_eq, not_not]
+  floorRoot_ne_zero.not_right.trans <| by simp only [not_and_or, ne_eq, not_not]
 
 @[simp] lemma factorization_floorRoot (n a : ℕ) :
     (floorRoot n a).factorization = a.factorization ⌊/⌋ n := by
@@ -76,7 +76,7 @@ lemma floorRoot_ne_zero : floorRoot n a ≠ 0 ↔ n ≠ 0 ∧ a ≠ 0 := by
   split_ifs with h
   · obtain rfl | rfl := h <;> simp
   refine prod_pow_factorization_eq_self fun p hp ↦ ?_
-  have : p.Prime ∧ _ := by simpa using support_floorDiv_subset hp
+  have : p.Prime ∧ p ∣ a ∧ ¬a = 0 := by simpa using support_floorDiv_subset hp
   exact this.1
 
 /-- Galois connection between `a ↦ a ^ n : ℕ → ℕ` and `floorRoot n : ℕ → ℕ` where `ℕ` is ordered
@@ -130,7 +130,7 @@ lemma ceilRoot_ne_zero : ceilRoot n a ≠ 0 ↔ n ≠ 0 ∧ a ≠ 0 := by
   simp (config := { contextual := true }) [ceilRoot_def, not_imp_not, not_or]
 
 @[simp] lemma ceilRoot_eq_zero : ceilRoot n a = 0 ↔ n = 0 ∨ a = 0 :=
-  ceilRoot_ne_zero.not_right.trans $ by simp only [not_and_or, ne_eq, not_not]
+  ceilRoot_ne_zero.not_right.trans <| by simp only [not_and_or, ne_eq, not_not]
 
 @[simp] lemma factorization_ceilRoot (n a : ℕ) :
     (ceilRoot n a).factorization = a.factorization ⌈/⌉ n := by
@@ -138,7 +138,7 @@ lemma ceilRoot_ne_zero : ceilRoot n a ≠ 0 ↔ n ≠ 0 ∧ a ≠ 0 := by
   split_ifs with h
   · obtain rfl | rfl := h <;> simp
   refine prod_pow_factorization_eq_self fun p hp ↦ ?_
-  have : p.Prime ∧ _ := by simpa using support_ceilDiv_subset hp
+  have : p.Prime ∧ p ∣ a ∧ ¬a = 0 := by simpa using support_ceilDiv_subset hp
   exact this.1
 
 /-- Galois connection between `ceilRoot n : ℕ → ℕ` and `a ↦ a ^ n : ℕ → ℕ` where `ℕ` is ordered

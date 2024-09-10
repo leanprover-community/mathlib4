@@ -5,7 +5,6 @@ Authors: Lucas Allen, Scott Morrison
 -/
 
 import Mathlib.Tactic.Conv
-import Std.Tactic.OpenPrivate
 
 /-!
 ## Introduce the `apply_congr` conv mode tactic.

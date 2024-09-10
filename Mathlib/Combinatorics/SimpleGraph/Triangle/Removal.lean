@@ -61,7 +61,7 @@ private lemma card_bound (hP₁ : P.IsEquipartition) (hP₃ : P.parts.card ≤ b
   calc
     _ ≤ card α / (2 * P.parts.card : ℝ) := by gcongr
     _ ≤ ↑(card α / P.parts.card) :=
-      (div_le_iff' (by positivity)).2 $ mod_cast (aux ‹_› P.card_parts_le_card).le
+      (div_le_iff₀' (by positivity)).2 <| mod_cast (aux ‹_› P.card_parts_le_card).le
     _ ≤ (s.card : ℝ) := mod_cast hP₁.average_le_card_part hX
 
 private lemma triangle_removal_aux (hε : 0 < ε) (hP₁ : P.IsEquipartition)
@@ -103,8 +103,8 @@ lemma regularityReduced_edges_card_aux [Nonempty α] (hε : 0 < ε) (hP : P.IsEq
     _ = ↑((univ ×ˢ univ).filter fun (x, y) ↦
         G.Adj x y ∧ ¬(G.regularityReduced P (ε / 8) (ε /4)).Adj x y).card := by
       rw [univ_product_univ, mul_sub, filter_and_not, cast_card_sdiff]
-      norm_cast
-      rw [two_mul_card_edgeFinset, two_mul_card_edgeFinset]
+      · norm_cast
+        rw [two_mul_card_edgeFinset, two_mul_card_edgeFinset]
       · exact monotone_filter_right _ fun xy hxy ↦ regularityReduced_le hxy
     _ ≤ ((A ∪ B ∪ C).card : ℝ) := by gcongr; exact unreduced_edges_subset
     _ ≤ ((A ∪ B).card + C.card : ℝ) := mod_cast (card_union_le _ _)

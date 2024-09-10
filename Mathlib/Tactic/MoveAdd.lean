@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Damiano Testa
 -/
 import Mathlib.Algebra.Group.Basic
-import Mathlib.Init.Order.LinearOrder
 
 /-!
 
@@ -459,3 +458,7 @@ elab "move_mul" rws:rwRuleSeq : tactic => do
   evalTactic (← `(tactic| move_oper $hmul $rws))
 
 end parsing
+
+end MoveAdd
+
+end Mathlib
