@@ -868,10 +868,9 @@ lemma darts_getElem_fst_eq_support_tail
     {u v} {p : G.Walk u v} (i : ℕ) (hi : 0 < i ∧ i < p.length) :
     (p.darts[i]'(by simp; omega)).fst = p.support.tail[i - 1]'(by simp; omega) := by
   simp only [← List.drop_one]
-  rw [← List.getElem_drop, p.darts_getElem_fst]
+  rw [List.getElem_drop, p.darts_getElem_fst]
   simp only [show 1 + (i - 1) = i by omega]
   exact hi.2
-  simp; omega
 
 theorem darts_getElem_snd_eq_support_tail
     {u v : V} {p : G.Walk u v} (i : ℕ) (h : i < p.length) :
@@ -883,10 +882,9 @@ theorem darts_getElem_snd
     (p.darts[i]'(by simpa)).snd = p.support[i + 1]'(by simpa) := by
   rw [darts_getElem_snd_eq_support_tail i hi]
   simp only [← List.drop_one]
-  rw [← List.getElem_drop]
+  rw [List.getElem_drop]
   congr 1
-  rw [add_comm]
-  simp; omega
+  apply add_comm
 
 lemma support_getElem_eq_getVert {u v} {p : G.Walk u v} {i} (hi : i < p.length + 1) :
     p.support[i]'(by simpa using hi) = p.getVert i := by
