@@ -420,7 +420,6 @@ instance [AddCommMonoid V] [Module R V] : Module (HahnSeries Γ R) (SummableFami
   smul_add _ _ _ := ext fun _ => by simp
   mul_smul _ _ _ := ext fun _ => by simp [HahnModule.instModule.mul_smul]
 
-@[simp]
 theorem hsum_smul {x : HahnSeries Γ R} {s : SummableFamily Γ R α} :
     (x • s).hsum = x * s.hsum := by
   rw [hsum_smul', of_symm_smul_of_eq_mul]
