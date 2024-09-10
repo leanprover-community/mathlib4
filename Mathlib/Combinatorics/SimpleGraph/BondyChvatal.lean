@@ -348,13 +348,13 @@ theorem from_ClosureStep (hG : IsHamiltonian (closureStep G)) : IsHamiltonian G 
     have hd''₁ : (q'.darts[i - 1]).fst = w' := by
       rw [darts_getElem_fst _ (by simpa using i_min_1)]
       simp only [q'_support, ← List.drop_one]
-      rw [List.getElem_drop', ← hd'₁]
-      congr
+      rw [List.getElem_drop, ← hd'₁]
+      congr 1
       omega
     have hd''₂ : (q'.darts[i - 1]).snd = w := by
       rw [darts_getElem_snd _ (by simpa using i_min_1)]
       simp only [q'_support, ← List.drop_one]
-      rw [List.getElem_drop', ← hd'₂]
+      rw [List.getElem_drop, ← hd'₂]
       congr 1
       omega
     have w'_ne_u : w' ≠ u := fun eq => by simp [eq] at hw'
