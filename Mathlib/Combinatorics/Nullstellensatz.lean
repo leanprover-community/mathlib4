@@ -288,11 +288,9 @@ theorem Alon1 [IsDomain R] (S : σ → Finset R) (Sne : ∀ i, (S i).Nonempty)
   · intro x hx
     rw [Iff.symm sub_eq_iff_eq_add'] at hf
     rw [← hf, map_sub, Heval x hx, zero_sub, neg_eq_zero]
-    simp only [linearCombination, coe_lsum, LinearMap.coe_smulRight, LinearMap.id_coe, id_eq,
-      smul_eq_mul]
-    rw [Finsupp.sum, eval_sum, Finset.sum_eq_zero]
+    rw [linearCombination_apply, map_finsupp_sum, Finsupp.sum, Finset.sum_eq_zero]
     intro i _
-    rw [map_mul]
+    rw [smul_eq_mul, map_mul]
     convert mul_zero _
     rw [Alon.P, map_prod]
     apply Finset.prod_eq_zero (hx i)
@@ -314,8 +312,7 @@ theorem Alon2 [IsDomain R]
   change f = linearCombination (MvPolynomial σ R) (fun i ↦ Alon.P (S i) i) h at hf
   change ∀ i, (Alon.P (S i) i * h i).totalDegree ≤ _ at hh
   rw [hf]
-  simp only [linearCombination, coe_lsum, sum, LinearMap.coe_smulRight, LinearMap.id_coe, id_eq,
-    smul_eq_mul, coeff_sum]
+  rw [linearCombination_apply, Finsupp.sum, coeff_sum]
   apply Finset.sum_eq_zero
   intro i _
   set g := h i * Alon.P (S i) i with hg
@@ -332,7 +329,7 @@ theorem Alon2 [IsDomain R]
   by_contra hp
   push_neg at hp
   apply ht
-  rw [hg, coeff_mul, Finset.sum_eq_zero]
+  rw [smul_eq_mul, coeff_mul, Finset.sum_eq_zero]
   rintro ⟨p, q⟩ hpq
   simp only [Finset.mem_antidiagonal] at hpq
   simp only [mul_eq_zero, Classical.or_iff_not_imp_right]
