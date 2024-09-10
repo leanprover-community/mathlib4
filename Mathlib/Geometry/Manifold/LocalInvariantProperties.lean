@@ -515,9 +515,9 @@ theorem liftProp_subtype_val {Q : (H → H) → Set H → H → Prop} (hG : Loca
 
 theorem liftProp_inclusion {Q : (H → H) → Set H → H → Prop} (hG : LocalInvariantProp G G Q)
     (hQ : ∀ y, Q id univ y) {U V : Opens M} (hUV : U ≤ V) :
-    LiftProp Q (Set.inclusion hUV : U → V) := by
+    LiftProp Q (Opens.inclusion hUV : U → V) := by
   intro x
-  show LiftPropAt Q (id ∘ inclusion hUV) x
+  show LiftPropAt Q (id ∘ Opens.inclusion hUV) x
   rw [← hG.liftPropAt_iff_comp_inclusion hUV]
   apply hG.liftProp_id hQ
 

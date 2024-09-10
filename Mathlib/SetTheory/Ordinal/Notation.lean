@@ -230,9 +230,10 @@ theorem NF.zero_of_zero {e n a} (h : NF (ONote.oadd e n a)) (e0 : e = 0) : a = 0
   simpa [e0, NFBelow_zero] using h.snd'
 
 theorem NFBelow.repr_lt {o b} (h : NFBelow o b) : repr o < ω ^ b := by
-  induction' h with _ e n a eb b h₁ h₂ h₃ _ IH
-  · exact opow_pos _ omega_pos
-  · rw [repr]
+  induction h with
+  | zero => exact opow_pos _ omega_pos
+  | oadd' _ _ h₃ _ IH =>
+    rw [repr]
     apply ((add_lt_add_iff_left _).2 IH).trans_le
     rw [← mul_succ]
     apply (mul_le_mul_left' (succ_le_of_lt (nat_lt_omega _)) _).trans
@@ -240,8 +241,9 @@ theorem NFBelow.repr_lt {o b} (h : NFBelow o b) : repr o < ω ^ b := by
     exact opow_le_opow_right omega_pos (succ_le_of_lt h₃)
 
 theorem NFBelow.mono {o b₁ b₂} (bb : b₁ ≤ b₂) (h : NFBelow o b₁) : NFBelow o b₂ := by
-  induction' h with _ e n a eb b h₁ h₂ h₃ _ _ <;> constructor
-  exacts [h₁, h₂, lt_of_lt_of_le h₃ bb]
+  induction h with
+  | zero => exact zero
+  | oadd' h₁ h₂ h₃ _ _ => constructor; exacts [h₁, h₂, lt_of_lt_of_le h₃ bb]
 
 theorem NF.below_of_lt {e n a b} (H : repr e < b) :
     NF (ONote.oadd e n a) → NFBelow (ONote.oadd e n a) b

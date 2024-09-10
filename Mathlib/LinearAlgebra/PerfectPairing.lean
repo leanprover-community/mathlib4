@@ -65,6 +65,7 @@ protected def copy (p : PerfectPairing R M N) (p' : M → N →ₗ[R] R) (h : p'
     simp_rw [h]
     exact p.bijectiveRight
 
+@[simp]
 lemma toLin_apply (p : PerfectPairing R M N) {x : M} : p.toLin x = p x := by
   rfl
 
@@ -81,7 +82,8 @@ lemma flip_apply_apply {x : M} {y : N} : p.flip y x = p x y :=
   rfl
 
 @[simp]
-lemma flip_flip : p.flip.flip = p := rfl
+lemma flip_flip : p.flip.flip = p :=
+  rfl
 
 /-- The linear equivalence from `M` to `Dual R N` induced by a perfect pairing. -/
 noncomputable def toDualLeft : M ≃ₗ[R] Dual R N :=
