@@ -62,7 +62,7 @@ instance : Mul (A[S⁻¹]) where
   mul := OreLocalization.mul
 
 protected def mul_def (a : A) (s : { x // x ∈ S }) (b : A) (t : { x // x ∈ S }) :
-  a /ₒ s * (b /ₒ t) = a * b /ₒ (t * s) := rfl
+    a /ₒ s * (b /ₒ t) = a * b /ₒ (t * s) := rfl
 
 -- no diamond
 example (as bt : R[S⁻¹]) : as * bt = as • bt := rfl
