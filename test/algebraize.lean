@@ -21,7 +21,6 @@ example (A B C : Type*) [CommRing A] [CommRing B] [CommRing C] (f : A →+* B) (
   guard_hyp h₀ := (g.comp f).toAlgebra
   trivial
 
-
 /-- Synthesize algebra instance and scalar tower instance from a composition -/
 example (A B C : Type*) [CommRing A] [CommRing B] [CommRing C] (f : A →+* B) (g : B →+* C) :
     True := by
