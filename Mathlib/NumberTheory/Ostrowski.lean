@@ -11,12 +11,16 @@ import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 import Mathlib.Analysis.Normed.Ring.Seminorm
 import Mathlib.NumberTheory.Padics.PadicNorm
+import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 
 /-!
 # Ostrowski’s Theorem
 
-The goal of this file is to prove Ostrowski’s Theorem which gives a list of all the nontrivial
-absolute values on a number field up to equivalence. (TODO)
+Ostrowski's Theorem for the field `ℚ`: every absolute value on `ℚ`
+is equivalent to either a `p`-adic absolute value or to the standard
+Archimedean (Euclidean) absolute value
+
+(TODO: extension to arbitrary number fields)
 
 ## References
 * [K. Conrad, *Ostroski's Theorem for Q*][conradQ]
@@ -28,51 +32,35 @@ absolute values on a number field up to equivalence. (TODO)
 ring_norm, ostrowski
 -/
 
-namespace Filter
-
-/-! ## Preliminary lemmas on limits -/
-
-/-- If `a : ℝ` is bounded above by a function `g : ℕ → ℝ` for every `0 < k`
-then it is less or equal than the limit `lim_{k → ∞} g(k)` --/
-lemma le_of_limit_le {a : ℝ} {g : ℕ → ℝ} {l : ℝ} (ha : ∀ (k : ℕ) (_ : 0 < k), a ≤ g k)
-    (hg : Filter.Tendsto g Filter.atTop (nhds l)) : a ≤ l := by
-  apply le_of_tendsto_of_tendsto tendsto_const_nhds hg
-  rw [Filter.EventuallyLE, Filter.eventually_atTop]
-  exact ⟨1, ha⟩
-
-/-- For any `C > 0`, the limit of `C ^ (1/k)` is 1 as `k → ∞`. --/
-lemma tendsto_root_atTop_nhds_one {C : ℝ} (hC : 0 < C) : Filter.Tendsto
-    (fun k : ℕ ↦ C ^ (k : ℝ)⁻¹) Filter.atTop (nhds 1) := by
-  rw [← Real.exp_log hC]
-  simp_rw [← Real.exp_mul]
-  apply Real.tendsto_exp_nhds_zero_nhds_one.comp
-  exact tendsto_const_div_atTop_nhds_zero_nat (Real.log C)
+/- ## Preliminary lemmas on limits -/
 
 open Filter
 
-/-- extends the lemma `tendsto_rpow_div` when the function has natural input --/
-lemma tendsto_nat_rpow_div : Filter.Tendsto (fun k : ℕ ↦ (k : ℝ) ^ (k : ℝ)⁻¹)
-    Filter.atTop (nhds 1) := by
-  simp only [Filter.tendsto_def, Filter.mem_atTop_sets]
-  intro N hN
-  let h := tendsto_rpow_div
-  simp only [Filter.tendsto_def, one_div, Filter.mem_atTop_sets] at h
-  rcases h N hN with ⟨a, ha⟩
-  use (Nat.floor a) + 1
-  intro b hb
-  exact ha b (le_trans (le_of_lt (Nat.lt_floor_add_one a)) (mod_cast hb))
+-- If `a : ℝ` is bounded by `g(k)` for every `0 < k` then it is bounded by `lim_{k → ∞} g(k)`
+private lemma le_of_limit_le {a : ℝ} {g : ℕ → ℝ} {l : ℝ} (ha : ∀ (k : ℕ) (_ : 0 < k), a ≤ g k)
+  (hg : Tendsto g Filter.atTop (nhds l)) : a ≤ l := by
+  apply le_of_tendsto_of_tendsto tendsto_const_nhds hg
+  rw [EventuallyLE, eventually_atTop]
+  exact ⟨1, ha⟩
 
-end Filter
 
-namespace Real
+-- For any `C > 0`, the limit of `C ^ (1/k)` is 1 as `k → ∞`
+private lemma tendsto_root_atTop_nhds_one {C : ℝ} (hC : 0 < C) : Tendsto
+    (fun k : ℕ ↦ C ^ (k : ℝ)⁻¹) atTop (nhds 1) := by
+  convert_to Tendsto ((fun k ↦ C ^ k) ∘ (fun k : ℝ ↦ k⁻¹) ∘ (Nat.cast))
+    atTop (nhds 1)
+  exact Tendsto.comp (Continuous.tendsto' (continuous_iff_continuousAt.2
+    (fun a ↦ Real.continuousAt_const_rpow (Ne.symm (ne_of_lt hC)))) 0 1 (Real.rpow_zero C))
+    <| Tendsto.comp tendsto_inv_atTop_zero tendsto_natCast_atTop_atTop
 
-/-- `Nat.log` is less than or equal to `Real.log`. --/
-lemma nat_log_le_real_log {a b : ℕ}  (hb : 1 < b) : Nat.log b a ≤ Real.logb b a := by
-  apply le_trans _ (Int.floor_le ((b : ℝ).logb a))
-  simp only [Real.floor_logb_natCast hb (Nat.cast_nonneg a), Int.log_natCast, Int.cast_natCast,
-    le_refl]
+--extends the lemma `tendsto_rpow_div` when the function has natural input
+private lemma tendsto_nat_rpow_div : Tendsto (fun k : ℕ ↦ (k : ℝ) ^ (k : ℝ)⁻¹)
+    atTop (nhds 1) := by
+  convert_to Tendsto ((fun k : ℝ ↦ k ^ k⁻¹) ∘ (Nat.cast) ) atTop (nhds 1)
+  apply Tendsto.comp _ tendsto_natCast_atTop_atTop
+  simp_rw [← one_div]
+  exact tendsto_rpow_div
 
-end Real
 
 namespace Rat.MulRingNorm
 open Int
@@ -107,7 +95,10 @@ open Rat.MulRingNorm
 
 section Non_archimedean
 
-/-! ## Non-archimedean case -/
+/-! ## Non-archimedean case
+
+Every bounded absolute value is equivalent to a `p`-adic absolute value
+ -/
 
 /-- The mulRingNorm corresponding to the p-adic norm on `ℚ`. --/
 def mulRingNorm_padic (p : ℕ) [Fact p.Prime] : MulRingNorm ℚ :=
@@ -299,13 +290,18 @@ lemma MulRingNorm_le_sum_digits (n : ℕ) {m : ℕ} (hm : 1 < m):
       apply List.sum_le_sum
       rintro ⟨i,a⟩ hia
       dsimp [Function.uncurry]
-      replace hia := List.mem_enumFrom L hia
+      replace hia := List.mem_enumFrom hia
       push_cast
       rw [map_mul, map_pow]
-      exact mul_le_mul_of_nonneg_right (le_of_lt (hcoef hia.2.2))
+      apply mul_le_mul_of_nonneg_right (le_of_lt (hcoef _))
         (pow_nonneg (apply_nonneg f ↑m) i)
+      simp only [zero_le, zero_add, tsub_zero, true_and] at hia
+      refine List.mem_iff_get.mpr ?_
+      use ⟨i, hia.1⟩
+      exact id (Eq.symm hia.2)
 
 open Real Nat
+open Filter
 
 /-! ## Step 1: if f is a MulRingNorm and f n > 1 for some natural n, then f n > 1 for all n ≥ 2 -/
 
@@ -333,7 +329,7 @@ lemma one_lt_of_not_bounded (notbdd : ¬ ∀ (n : ℕ), f n ≤ 1) {n₀ : ℕ} 
         apply mul_le_mul_of_nonneg_left _ (Nat.cast_nonneg n₀)
         push_cast
         simp only [add_le_add_iff_right]
-        exact nat_log_le_real_log hn₀
+        exact natLog_le_logb m n₀
       · simp_all only [List.mem_map, Prod.exists, Function.uncurry_apply_pair, exists_and_right,
           and_imp, implies_true, forall_exists_index, forall_const]
   -- For h_ineq2 we need to exclude the case n = 0.
@@ -362,11 +358,11 @@ lemma one_lt_of_not_bounded (notbdd : ¬ ∀ (n : ℕ), f n ≤ 1) {n₀ : ℕ} 
       Filter.atTop (nhds 1) := by
     nth_rw 2 [← mul_one 1]
     have hnlim : Filter.Tendsto (fun k : ℕ ↦ (n₀ * (Real.logb n₀ n + 1)) ^ (k : ℝ)⁻¹)
-        Filter.atTop (nhds 1) := Filter.tendsto_root_atTop_nhds_one
+        Filter.atTop (nhds 1) := tendsto_root_atTop_nhds_one
         (mul_pos (mod_cast (lt_trans zero_lt_one hn₀))
         (add_pos (Real.logb_pos (mod_cast hn₀) (by norm_cast; omega)) Real.zero_lt_one))
-    exact Filter.Tendsto.mul hnlim Filter.tendsto_nat_rpow_div
-  exact Filter.le_of_limit_le h_ineq2 prod_limit
+    exact Filter.Tendsto.mul hnlim tendsto_nat_rpow_div
+  exact le_of_limit_le h_ineq2 prod_limit
 
 end Archimedean
 
