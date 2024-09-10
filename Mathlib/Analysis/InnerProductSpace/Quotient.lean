@@ -1,47 +1,23 @@
 /-
-Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
+Copyright (c) 2024 Yoh Tanimoto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
+Authors: Yoh Tanimoto
 -/
-import Mathlib.Algebra.Module.Equiv.Basic
-import Mathlib.Algebra.DirectSum.Module
-import Mathlib.Algebra.Module.LinearMap.Basic
-import Mathlib.Algebra.QuadraticDiscriminant
-import Mathlib.Analysis.Complex.Basic
-import Mathlib.Analysis.Convex.Uniform
-import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.Analysis.InnerProductSpace.Dual
-import Mathlib.Analysis.Normed.Module.Completion
-import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
-import Mathlib.LinearAlgebra.Quotient
-import Mathlib.GroupTheory.QuotientGroup.Basic
-/-!
-# Canonial Hilbert space from Inner product space
 
-This file defines a complete inner product space from a preinner product space by
-quotienting the null space and taking the completion.
+/-!
+# Canonial inner product space from Preinner product space
+
+This file defines the inner product space from a preinner product space (the inner product
+can be degenerate) by quotienting the null space.
 
 ## Main results
-
-- **
-
-## Notation
-
-We globally denote the real and complex inner products by `⟪·, ·⟫_ℝ` and `⟪·, ·⟫_ℂ` respectively.
-We also provide two notation namespaces: `RealInnerProductSpace`, `ComplexInnerProductSpace`,
-which respectively introduce the plain notation `⟪·, ·⟫` for the real and complex inner product.
 
 -/
 
 noncomputable section
 
-open RCLike Real Filter
-
-open Topology ComplexConjugate Finsupp
-
-open LinearMap (BilinForm)
-
-open Submodule Quotient LinearMap InnerProductSpace InnerProductSpace.Core
+open RCLike Submodule Quotient LinearMap InnerProductSpace InnerProductSpace.Core
 
 variable (𝕜 E : Type*) [k: RCLike 𝕜]
 
@@ -67,12 +43,11 @@ def nullSpace : Submodule 𝕜 E where
     simp only [Set.mem_setOf_eq]
     rw [norm_smul, hx, mul_zero]
 
-lemma mem_nullSpace_iff_norm_eq_zero {x : E} : x ∈ nullSpace 𝕜 E ↔ ‖x‖ = 0 := by
-  exact Eq.to_iff rfl
+lemma mem_nullSpace_iff_norm_eq_zero {x : E} : x ∈ nullSpace 𝕜 E ↔ ‖x‖ = 0 := Eq.to_iff rfl
 
 abbrev Q := (mk : E → (E ⧸ (nullSpace 𝕜 E)))
 
-lemma inner_nullSpace_eq_zero (x y : E) (h : x ∈ nullSpace 𝕜 E): ⟪x, y⟫_𝕜 = 0 := by
+lemma inner_nullSpace_left_eq_zero (x y : E) (h : x ∈ nullSpace 𝕜 E): ⟪x, y⟫_𝕜 = 0 := by
   rw [← norm_eq_zero, ← sq_eq_zero_iff]
   apply le_antisymm _ (sq_nonneg _)
   rw [sq]
@@ -83,24 +58,54 @@ lemma inner_nullSpace_eq_zero (x y : E) (h : x ∈ nullSpace 𝕜 E): ⟪x, y⟫
   _ = (0 * 0) * re ⟪y, y⟫_𝕜 := by rw [(mem_nullSpace_iff_norm_eq_zero 𝕜 E).mp h]
   _ = 0 := by ring
 
-lemma inner_nullSpace_eq_zero' (x y : E) (h : y ∈ nullSpace 𝕜 E): ⟪x, y⟫_𝕜 = 0 := by
+lemma inner_nullSpace_right_eq_zero (x y : E) (h : y ∈ nullSpace 𝕜 E): ⟪x, y⟫_𝕜 = 0 := by
   rw [inner_eq_zero_symm]
-  exact inner_nullSpace_eq_zero 𝕜 E y x h
+  exact inner_nullSpace_left_eq_zero 𝕜 E y x h
 
-theorem nullSpace_le_ker_toDualMap (x : E) : (nullSpace 𝕜 E) ≤ ker (toDualMap 𝕜 E x) := by
+lemma nullSpace_le_ker_toDualMap (x : E) : (nullSpace 𝕜 E) ≤ ker (toDualMap 𝕜 E x) := by
   intro y hy
   refine LinearMap.mem_ker.mpr ?_
   simp only [toDualMap_apply]
-  exact inner_nullSpace_eq_zero' 𝕜 E x y hy
+  exact inner_nullSpace_right_eq_zero 𝕜 E x y hy
+
+lemma nullSpace_le_ker_toDualMap' : (nullSpace 𝕜 E) ≤ ker (toDualMap 𝕜 E) := by
+  intro x hx
+  refine LinearMap.mem_ker.mpr ?_
+  ext y
+  simp only [toDualMap_apply, ContinuousLinearMap.zero_apply]
+  exact inner_nullSpace_left_eq_zero 𝕜 E x y hx
+
+def preInnerQ : E ⧸ (nullSpace 𝕜 E) →ₗ⋆[𝕜] (NormedSpace.Dual 𝕜 E) :=
+  liftQ (nullSpace 𝕜 E) (toDualMap 𝕜 E).toLinearMap (nullSpace_le_ker_toDualMap' 𝕜 E)
+
+lemma nullSpace_le_ker_preInnerQ (x : E ⧸ (nullSpace 𝕜 E)) : (nullSpace 𝕜 E) ≤
+    ker (preInnerQ 𝕜 E x) := by
+  intro y hy
+  simp only [LinearMap.mem_ker]
+  obtain ⟨z, hz⟩ := Submodule.mkQ_surjective (nullSpace 𝕜 E) x
+  rw [preInnerQ]
+  rw [← hz, mkQ_apply, Submodule.liftQ_apply]
+  simp only [LinearIsometry.coe_toLinearMap, toDualMap_apply]
+  exact inner_nullSpace_right_eq_zero 𝕜 E z y hy
 
 def innerQ : E ⧸ (nullSpace 𝕜 E) → E ⧸ (nullSpace 𝕜 E) → 𝕜 :=
-  @liftQ 𝕜 E _ _ _ (nullSpace 𝕜 E) 𝕜 _ _ _ _ k.conjToRingEquiv (toDualMap 𝕜 E)
-
--- to define quotient space, define inner product on it,
--- use Submodule.liftQ, but need a conjugate-linear version of it
--- then make an instance of PreInnerProductSpace.Core
+  fun x => liftQ (nullSpace 𝕜 E) (preInnerQ 𝕜 E x).toLinearMap (nullSpace_le_ker_preInnerQ 𝕜 E x)
 
 end Nullspace
+
+section InnerProductSpace.Core
+
+variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+
+instance : InnerProductSpace.Core 𝕜 (E ⧸ (nullSpace 𝕜 E)) where
+  inner := innerQ 𝕜 E
+  conj_symm := sorry
+  nonneg_re := sorry
+  add_left := sorry
+  smul_left := sorry
+  definite := sorry
+
+end InnerProductSpace.Core
 
 end
 
