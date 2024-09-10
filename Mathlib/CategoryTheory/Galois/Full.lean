@@ -8,11 +8,12 @@ import Mathlib.CategoryTheory.Galois.Prorepresentability
 
 /-!
 
-# Fiber functors are full
+# Fiber functors are (faithfully) full
 
 Any (fiber) functor `F : C ⥤ FintypeCat` factors via the forgetful functor
 from finite `Aut F`-sets to finite sets. The induced functor
-`H : C ⥤ Action FintypeCat (MonCat.of (Aut F))` is shown to be full in this file.
+`H : C ⥤ Action FintypeCat (MonCat.of (Aut F))` is faithfully full. The faithfulness
+follows easily from the faithfulness of `F`. In this file we show that `H` is also full.
 
 ## Main results
 
