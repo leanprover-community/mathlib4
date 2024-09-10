@@ -120,8 +120,12 @@ end Lean.PrettyPrinter.Parenthesizer
 
 namespace Mathlib.StacksTag
 
+/-- The syntax category for the database name. -/
 declare_syntax_cat stacksTagDB
+
+/-- The syntax for a "kerodon" database identifier in a `@[kerodon]` attribute. -/
 syntax "kerodon" : stacksTagDB
+/-- The syntax for a "stacks" database identifier in a `@[stacks]` attribute. -/
 syntax "stacks" : stacksTagDB
 
 /-- The `stacksTag` attribute.
