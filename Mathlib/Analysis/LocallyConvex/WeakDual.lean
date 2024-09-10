@@ -161,10 +161,9 @@ def dual_of_separating_family {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜}
 -- A continuous linear map e between E and F lifts to a continuous linear map between the WeakSpaces
 -- is `WeakSpace.map e`.
 
---can't seem to get the WeakSpace.map to work below...some typeclass synthesis issue?
-
 theorem Preliminary (e : E ≃L[𝕜] F) (f : (F →L[𝕜] 𝕜) ≃L[𝕜] (E →L[𝕜] 𝕜)) (C : Set (WeakSpace 𝕜 E)) :
-    (WeakSpace.map e) (closure C) = closure ((WeakSpace.map e) C) := by sorry
+    (WeakSpace.map (ContinuousLinearEquiv.toContinuousLinearMap e))'' (closure C) =
+    closure ((WeakSpace.map (ContinuousLinearEquiv.toContinuousLinearMap e))'' C) := by sorry
 
 
 
