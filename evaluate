@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if [ -z "$1" ]; then
+  echo "Usage: evaluate <file>"
+  exit 1
+fi
+
+lake clean && \
+  lake build && \
+  lake env lean Evaluation.lean > $1
