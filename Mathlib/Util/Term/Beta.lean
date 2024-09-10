@@ -16,7 +16,7 @@ The purpose of this is to support substitutions in notations such as
 `∀ i, beta% p i` so that `p i` gets beta reduced when `p` is a lambda.
 -/
 
-namespace Mathlib.Util.TermBeta
+namespace Mathlib.Util.Term.Beta
 
 open Lean Elab Term
 
@@ -38,4 +38,4 @@ def elabBeta : TermElab := fun stx expectedType? =>
     return (← instantiateMVars e).headBeta
   | _ => throwUnsupportedSyntax
 
-end Mathlib.Util.TermBeta
+end Mathlib.Util.Term.Beta
