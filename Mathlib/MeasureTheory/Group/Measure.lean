@@ -3,15 +3,9 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Dynamics.Ergodic.MeasurePreserving
-import Mathlib.GroupTheory.GroupAction.Hom
 import Mathlib.MeasureTheory.Constructions.Prod.Basic
 import Mathlib.MeasureTheory.Group.Action
-import Mathlib.MeasureTheory.Group.MeasurableEquiv
-import Mathlib.MeasureTheory.Measure.OpenPos
-import Mathlib.MeasureTheory.Measure.Regular
 import Mathlib.Topology.ContinuousFunction.CocompactMap
-import Mathlib.Topology.Homeomorph
 
 /-!
 # Measures on Groups
@@ -359,7 +353,7 @@ instance inv.instIsMulRightInvariant [IsMulLeftInvariant μ] : IsMulRightInvaria
   intro g
   conv_rhs => rw [← map_mul_left_eq_self μ g⁻¹]
   simp_rw [Measure.inv, map_map (measurable_mul_const g) measurable_inv,
-    map_map measurable_inv (measurable_const_mul g⁻¹), Function.comp, mul_inv_rev, inv_inv]
+    map_map measurable_inv (measurable_const_mul g⁻¹), Function.comp_def, mul_inv_rev, inv_inv]
 
 @[to_additive]
 instance inv.instIsMulLeftInvariant [IsMulRightInvariant μ] : IsMulLeftInvariant μ.inv := by
@@ -367,7 +361,7 @@ instance inv.instIsMulLeftInvariant [IsMulRightInvariant μ] : IsMulLeftInvarian
   intro g
   conv_rhs => rw [← map_mul_right_eq_self μ g⁻¹]
   simp_rw [Measure.inv, map_map (measurable_const_mul g) measurable_inv,
-    map_map measurable_inv (measurable_mul_const g⁻¹), Function.comp, mul_inv_rev, inv_inv]
+    map_map measurable_inv (measurable_mul_const g⁻¹), Function.comp_def, mul_inv_rev, inv_inv]
 
 @[to_additive]
 theorem measurePreserving_div_left (μ : Measure G) [IsInvInvariant μ] [IsMulLeftInvariant μ]

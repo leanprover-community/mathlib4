@@ -3,13 +3,8 @@ Copyright (c) 2022 Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémi Bottinelli
 -/
-import Mathlib.CategoryTheory.Category.Basic
-import Mathlib.CategoryTheory.Functor.Basic
 import Mathlib.CategoryTheory.Groupoid
-import Mathlib.Tactic.NthRewrite
 import Mathlib.CategoryTheory.PathCategory
-import Mathlib.CategoryTheory.Quotient
-import Mathlib.Combinatorics.Quiver.Symmetric
 
 /-!
 # Free groupoid on a quiver
@@ -80,6 +75,7 @@ theorem congr_reverse {X Y : Paths <| Quiver.Symmetrify V} (p q : X ⟶ Y) :
     Quiver.Path.reverse_comp, Quiver.reverse_reverse, Quiver.Path.reverse_toPath,
     Quiver.Path.comp_assoc] using this
 
+open Relation in
 theorem congr_comp_reverse {X Y : Paths <| Quiver.Symmetrify V} (p : X ⟶ Y) :
     Quot.mk (@Quotient.CompClosure _ _ redStep _ _) (p ≫ p.reverse) =
       Quot.mk (@Quotient.CompClosure _ _ redStep _ _) (𝟙 X) := by

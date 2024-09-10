@@ -3,11 +3,7 @@ Copyright (c) 2023 Michael Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Lee, Geoffrey Irving
 -/
-import Mathlib.Analysis.Analytic.Composition
-import Mathlib.Analysis.Analytic.Constructions
-import Mathlib.Analysis.Analytic.Linear
 import Mathlib.Analysis.Analytic.Within
-import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
 
 /-!
@@ -135,11 +131,11 @@ theorem analyticGroupoid_prod {E A : Type} [NormedAddCommGroup E] [NormedSpace �
   have pe : range (I.prod J) = (range I).prod (range J) := I.range_prod
   simp only [mem_analyticGroupoid, Function.comp, image_subset_iff] at fa ga ⊢
   exact ⟨AnalyticWithinOn.prod
-      (fa.1.comp (analyticOn_fst _).analyticWithinOn fun _ m ↦ ⟨m.1.1, (pe.subst m.2).1⟩)
-      (ga.1.comp (analyticOn_snd _).analyticWithinOn fun _ m ↦ ⟨m.1.2, (pe.subst m.2).2⟩),
+      (fa.1.comp (analyticOn_fst _).analyticWithinOn fun _ m ↦ ⟨m.1.1, (pe ▸ m.2).1⟩)
+      (ga.1.comp (analyticOn_snd _).analyticWithinOn fun _ m ↦ ⟨m.1.2, (pe ▸ m.2).2⟩),
     AnalyticWithinOn.prod
-      (fa.2.comp (analyticOn_fst _).analyticWithinOn fun _ m ↦ ⟨m.1.1, (pe.subst m.2).1⟩)
-      (ga.2.comp (analyticOn_snd _).analyticWithinOn fun _ m ↦ ⟨m.1.2, (pe.subst m.2).2⟩)⟩
+      (fa.2.comp (analyticOn_fst _).analyticWithinOn fun _ m ↦ ⟨m.1.1, (pe ▸ m.2).1⟩)
+      (ga.2.comp (analyticOn_snd _).analyticWithinOn fun _ m ↦ ⟨m.1.2, (pe ▸ m.2).2⟩)⟩
 
 end analyticGroupoid
 
