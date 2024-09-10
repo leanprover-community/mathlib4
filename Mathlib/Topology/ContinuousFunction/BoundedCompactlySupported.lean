@@ -98,8 +98,8 @@ instance : SMul C(α, γ) C_cb(α, γ) where
     (hasCompactSupport_mul_of_continuous_compactlySupported f.1 f.2 g), by
       apply mem_compactlySupported.mpr
       rw [ofCompactSupport]
-      apply hasCompactSupport_mul_of_continuous_compactlySupported
-      simp only [SetLike.coe_mem]
+      refine HasCompactSupport.mul_left ?_
+      simp only [SetLike.coe_mem, mem_compactlySupported]
     ⟩)
 
 end CompactlySupported
