@@ -1,13 +1,11 @@
 import Mathlib.RingTheory.OreLocalization.Ring
---import Mathlib -- just in case, when developing
 
 /-!
 
 # Algebra instances of Ore Localizations
 
 If `R` is a commutative ring with submonoid `S`, and if `A` is a commutative `R`-algebra,
-then my guess is that `A[S⁻¹]` is an `R[S⁻¹]`-algebra. Let's see if I'm right and if so,
-in what generality.
+then this file gives `A[S⁻¹]` the strucure of an`R[S⁻¹]`-algebra.
 
 -/
 
@@ -102,15 +100,13 @@ instance commMonoid' : CommMonoid (A[S⁻¹]) where
     induction' a with a
     induction' b with b
     induction' c with c
-    change (a * b * c) /ₒ _ = (a * (b * c)) /ₒ _
-    simp [mul_assoc]
+    simp only [OreLocalization.mul_def, mul_assoc]
   one_mul a := by
     induction' a with a
-    change (1 * a) /ₒ _ = a /ₒ _
-    simp
+    simp only [OreLocalization.one_def', OreLocalization.mul_def, one_mul, mul_one]
   mul_one a := by
     induction' a with a s
-    simp [OreLocalization.mul_def, OreLocalization.one_def']
+    simp only [OreLocalization.one_def', OreLocalization.mul_def, mul_one, one_mul]
   mul_comm a b := by
     induction' a with a
     induction' b with b
@@ -132,18 +128,32 @@ theorem left_distrib' (a b c : A[S⁻¹]) :
   simp only [OreLocalization.mul_def]
   rcases oreDivAddChar' (a * b) (a * c) (s * r) (t * r) with ⟨r₂, s₂, h₂, q⟩; rw [q]; clear q
   rw [oreDiv_eq_iff]
-  obtain ⟨r, hr⟩ := r
-  obtain ⟨s, hs⟩ := s
   obtain ⟨t, ht⟩ := t
-  obtain ⟨s₁, hs₁⟩ := s₁
   obtain ⟨s₂, hs₂⟩ := s₂
   simp only [Submonoid.mk_smul, Submonoid.coe_mul] at h₁ h₂ ⊢
-  sorry
-  --use ⟨?_, ?_⟩, ?_
-  --constructor
-  --· simp
-  --  sorry
-  --· sorry
+  rw [h₂, h₁]
+  use s₁ * s * r, s₂ * s * r
+  obtain ⟨s₁, hs₁⟩ := s₁
+  obtain ⟨s, hs⟩ := s
+  obtain ⟨r, hr⟩ := r
+  simp only [Submonoid.mk_mul_mk, smul_add, Submonoid.mk_smul] at h₁ h₂ ⊢
+  constructor
+  · rw [mul_add, smul_add]
+    congr 1
+    · rw [smul_smul, mul_comm a (s₁ • b), show s₁ * s * r * s₂ = (s₂ * s * r) * s₁ by
+        rw [mul_comm, mul_assoc, mul_assoc, mul_assoc, mul_comm s₁, mul_assoc]]
+      rw [mul_smul]
+      congr 1
+      rw [mul_comm, smul_mul_assoc]
+    · rw [h₁, mul_assoc s₂, h₂, mul_comm r₂, mul_assoc, mul_comm r₁, mul_smul, mul_smul (t * r)]
+      congr 1
+      rw [smul_smul, mul_comm, mul_smul, mul_comm a, mul_comm a, smul_mul_assoc]
+  · rw [mul_assoc s₂, h₂, h₁]
+    repeat rw [← mul_assoc]
+    congr 2
+    rw [mul_right_comm _ r, mul_right_comm _ r]
+    congr 1
+    rw [mul_comm, mul_assoc, mul_comm r₁]
 
 instance instCommSemiring' : CommSemiring A[S⁻¹] where
   __ := commMonoid'
@@ -165,61 +175,41 @@ section Algebra
 
 variable {R A : Type} [cR : CommSemiring R] [cA : CommSemiring A] [cRA : Algebra R A]
     {S : Submonoid R}
--- **TODO** `A[S⁻¹]` prettyprints as `OreLocalization S A`
-
-private abbrev to_fun' (r : R) (s : S) : A[S⁻¹] :=
-  (algebraMap R A r) /ₒ s
-
--- simplfication of `oreDiv_add_oreDiv` in the commutative case
-theorem add_def {r r' : A} {s s' : S} :
-    r /ₒ s + r' /ₒ s' =
-      (s' • r + (s : R) • r') /ₒ (s' * s) := by
-  with_unfolding_all rfl
-
--- simplification of oreDiv_smul_oreDiv in comm case
-theorem smul_def {r₁ : R} {r₂ : A} {s₁ s₂ : S} :
-    (r₁ /ₒ s₁) • (r₂ /ₒ s₂) = r₁ • r₂ /ₒ (s₂ * s₁) := rfl
 
 instance : Algebra (R[S⁻¹]) (A[S⁻¹]) where
-  toFun := liftExpand to_fun' fun r₁ r₂ s hs => by
+  toFun := liftExpand (fun r s ↦ (algebraMap R A r) /ₒ s) fun r₁ r₂ s hs => by
     rw [oreDiv_eq_iff]
     use s, r₂ * s
     rw [smul_eq_mul, map_mul]
     obtain ⟨s, hs⟩ := s
     simp only [Submonoid.mk_smul] at hs ⊢
     refine ⟨?_, mul_comm s (r₂ * s)⟩
-    rw [← smul_mul_assoc]
-    rw [Algebra.algebraMap_eq_smul_one r₂, smul_smul, mul_comm s]
+    rw [← smul_mul_assoc, Algebra.algebraMap_eq_smul_one r₂, smul_smul, mul_comm s]
     simp only [smul_mul_assoc, one_mul]
   map_one' := by
-    unfold OreLocalization.to_fun'
-    simp [OreLocalization.one_def', liftExpand_of]
+    simp only [OreLocalization.one_def', liftExpand_of, map_one]
   map_mul' a b := by
     induction' a with a s
     induction' b with b t
-    simp only [OreLocalization.mul_def, liftExpand_of, OreLocalization.to_fun', map_mul]
+    simp only [OreLocalization.mul_def, liftExpand_of, map_mul]
   map_zero' := by
-    unfold OreLocalization.to_fun'
     simp only [OreLocalization.zero_def, liftExpand_of]
     simp only [map_zero, zero_oreDiv]
   map_add' r₁ r₂ := by
     induction' r₁ with r₁ s₁
     induction' r₂ with r₂ s2
-    dsimp
-    unfold OreLocalization.to_fun'
-    simp [add_def, add_def, liftExpand_of, map_add, algebraMap.coe_smul, Algebra.smul_def]
+    simp only [add_def, smul_eq_mul, liftExpand_of, map_add, algebraMap.coe_smul, map_mul,
+      Algebra.smul_def]
   commutes' r₁ r₂ := by
     induction' r₁ with r₁ s₁
     induction' r₂ with r₂ s₂
-    dsimp
-    unfold OreLocalization.to_fun'
     simp only [OreLocalization.mul_def, mul_comm]
   smul_def' r a := by
     induction' r with r s
     induction' a with a t
-    dsimp
-    unfold OreLocalization.to_fun'
-    simp only [OreLocalization.smul_def, Algebra.smul_def, OreLocalization.mul_def]
+    simp only [smul_eq_mul, id_eq, Submonoid.mk_smul, eq_mpr_eq_cast, cast_eq, OneHom.toFun_eq_coe,
+      OneHom.coe_mk, liftExpand_of, RingHom.coe_mk, MonoidHom.coe_mk,
+      OreLocalization.smul_def, Algebra.smul_def, OreLocalization.mul_def]
 
 end Algebra
 

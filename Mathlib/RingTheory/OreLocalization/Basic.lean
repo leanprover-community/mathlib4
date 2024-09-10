@@ -279,6 +279,11 @@ theorem oreDiv_smul_oreDiv {r₁ : R} {r₂ : X} {s₁ s₂ : S} :
     (r₁ /ₒ s₁) • (r₂ /ₒ s₂) = oreNum r₁ s₂ • r₂ /ₒ (oreDenom r₁ s₂ * s₁) := by
   with_unfolding_all rfl
 
+-- a variant of `oreDiv_smul_oreDiv` valid for `R` commutative
+theorem smul_def {R : Type*} [CommMonoid R] {S : Submonoid R} {A : Type*}
+  [MulAction R A] {r : R} {a : A} {s₁ s₂ : S} :
+    (r /ₒ s₁) • (a /ₒ s₂) = r • a /ₒ (s₂ * s₁) := rfl
+
 @[to_additive]
 theorem oreDiv_mul_oreDiv {r₁ : R} {r₂ : R} {s₁ s₂ : S} :
     (r₁ /ₒ s₁) * (r₂ /ₒ s₂) = oreNum r₁ s₂ * r₂ /ₒ (oreDenom r₁ s₂ * s₁) := by
@@ -761,6 +766,13 @@ def oreDivAddChar' (r r' : X) (s s' : S) :
     Σ'r'' : R,
       Σ's'' : S, s'' * s = r'' * s' ∧ r /ₒ s + r' /ₒ s' = (s'' • r + r'' • r') /ₒ (s'' * s) :=
   ⟨oreNum (s : R) s', oreDenom (s : R) s', ore_eq (s : R) s', oreDiv_add_oreDiv⟩
+
+-- simplification of `oreDiv_add_oreDiv` in the commutative case
+theorem add_def {R : Type*} [CommMonoid R] {S : Submonoid R} {A : Type*}
+  [AddMonoid A] [DistribMulAction R A] {r r' : A} {s s' : S} :
+    r /ₒ s + r' /ₒ s' =
+      (s' • r + (s : R) • r') /ₒ (s' * s) := by
+  with_unfolding_all rfl
 
 @[simp]
 theorem add_oreDiv {r r' : X} {s : S} : r /ₒ s + r' /ₒ s = (r + r') /ₒ s := by
