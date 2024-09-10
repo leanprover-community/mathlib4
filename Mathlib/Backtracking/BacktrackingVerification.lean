@@ -26,13 +26,17 @@ open scoped Classical -- this does not prevent us from also using `by decide`
 
 /-- A predicate `P` preserved under suffixes, with an optional condition `Q` at the leaves. -/
 structure MonoPred (b:Nat) where
+  /-- The predicate to be checked recursively. -/
   P : List (Fin b) → Prop
   preserved_under_suffixes (u v : List (Fin b)): u <:+ v → P v → P u
+  /-- The optional predicate at the leaves. -/
   Q (l: List (Fin b)) : Prop := True
 
 /-- A predicate `P` with an optional condition `Q` at the leaves. -/
 structure MonoPred_unverified (b:Nat) where
+  /-- The predicate to be checked (recursively if it is monotone). -/
   P : List (Fin b) → Prop
+  /-- The optional predicate at the leaves. -/
   Q : List (Fin b) → Prop := fun _ ↦ True -- we can specify an extra condition that is not monotone
 
 /-- A vector `k` entries away from full length `L`. -/
