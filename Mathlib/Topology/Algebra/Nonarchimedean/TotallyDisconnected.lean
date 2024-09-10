@@ -7,7 +7,7 @@ Authors: Jou Glasheen, Kevin Buzzard
 import Mathlib.Topology.Algebra.Nonarchimedean.Basic
 
 /-!
-# Total Disconnectedness of Nonarchimedean Groups
+# Total disconnectedness of nonarchimedean groups
 
 In this file, we prove that a nonarchimedean group is a totally disconnected topological space.
 
@@ -19,10 +19,11 @@ In this file, we prove that a nonarchimedean group is a totally disconnected top
 
 ## Notation
 
- - `G` : Nonarchimedean group.
- - `V` : Open subgroup which is a neighbourhood of the identity in `G`.
+ - `G` : Is a nonarchimedean group.
+ - `V` : Is an open subgroup which is a neighbourhood of the identity in `G`.
 
 ## References
+
 Prop 2.3.9. of Gouvêa, F. Q. (2020) p-adic Numbers An Introduction. 3rd edition.
   Cham, Springer International Publishing.
 -/
