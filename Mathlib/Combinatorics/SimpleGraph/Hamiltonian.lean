@@ -141,7 +141,7 @@ protected theorem rotate (hp : p.IsHamiltonianCycle) :
 lemma mem_tail_support (hp : p.IsHamiltonianCycle) : b ∈ p.support.tail := by
   rw [← List.count_pos_iff_mem]
   have := hp.2 b
-  simp at this
+  rw [← Walk.support_tail _ hp.not_nil]
   omega
 
 lemma mem_dropLast_support (hp : p.IsHamiltonianCycle) : b ∈ p.support.dropLast := by
@@ -290,7 +290,8 @@ theorem IsHamiltonianCycle_iff_support_count
         exact nodup i (j - 1) h₅ (by omega) (by omega) h
       · apply_fun (·.fst) at h
         by_cases i0 : i = 0
-        · simp only [i0, darts_getElem_zero (show 0 < p.length by omega)] at h
+        · simp only [i0, List.getElem_zero,
+            p.head_darts_fst (by apply List.ne_nil_of_length_pos; simp; omega)] at h
           have : p.support.tail[p.length - 1]'(by simp; omega) = a := by
             simp [List.getElem_tail, show p.length - 1 + 1 = p.length by omega,
               support_getElem_eq_getVert]
