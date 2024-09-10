@@ -408,8 +408,8 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
       if (line.splitOn "http").length ≤ 1 then
         let stringMsg := if line.contains '"' then
           "\nYou can use \"string gaps\" to format long strings: within a string quotation, \
-          using a '\' at the end of a line allows you to continue the string on the following line, removing all \
-          intervening whitespace."
+          using a '\' at the end of a line allows you to continue the string on the following \
+          line, removing all intervening whitespace."
         else ""
         Linter.logLint linter.style.longLine (.ofRange ⟨line.startPos, line.stopPos⟩)
           m!"This line exceeds the 100 character limit, please shorten it!{stringMsg}"
