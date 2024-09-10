@@ -6,6 +6,7 @@ Authors: Robert Y. Lewis, Keeley Hoek
 import Mathlib.Algebra.NeZero
 import Mathlib.Data.Nat.Defs
 import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Data.Int.DivMod
 import Mathlib.Logic.Embedding.Basic
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Tactic.Common
@@ -189,6 +190,7 @@ protected theorem heq_ext_iff {k l : ℕ} (h : k = l) {i : Fin k} {j : Fin l} :
 
 end coe
 
+
 section Order
 
 /-!
@@ -326,6 +328,54 @@ theorem one_lt_last [NeZero n] : 1 < last (n + 1) := by
   exact NeZero.ne n
 
 end Order
+
+/-! ### Coercions to `ℤ` -/
+
+open Int
+
+theorem coe_int_sub_eq_if {n : Nat} (u v : Fin n) :
+    ((u - v : Fin n) : Int) = if v ≤ u then (u - v : Int) else (u - v : Int) + n := by
+  rw [Fin.sub_def]
+  split
+  · rw [ofNat_emod, Int.emod_eq_sub_self_emod, Int.emod_eq_of_lt] <;> omega
+  · rw [ofNat_emod, Int.emod_eq_of_lt] <;> omega
+
+theorem coe_int_sub_eq_mod {n : Nat} (u v : Fin n) :
+    ((u - v : Fin n) : Int) = ((u : Int) - (v : Int)) % n := by
+  rw [coe_int_sub_eq_if]
+  split
+  · rw [Int.emod_eq_of_lt] <;> omega
+  · rw [Int.emod_eq_add_self_emod, Int.emod_eq_of_lt] <;> omega
+
+theorem coe_int_add_eq_if {n : Nat} (u v : Fin n) :
+    ((u + v : Fin n) : Int) = if (u + v : ℕ) < n then (u + v : Int) else (u + v : Int) - n := by
+  rw [Fin.add_def]
+  split
+  · rw [ofNat_emod, Int.emod_eq_of_lt] <;> omega
+  · rw [ofNat_emod, Int.emod_eq_sub_self_emod, Int.emod_eq_of_lt] <;> omega
+
+theorem coe_int_add_eq_mod {n : Nat} (u v : Fin n) :
+    ((u + v : Fin n) : Int) = ((u : Int) + (v : Int)) % n := by
+  rw [coe_int_add_eq_if]
+  split
+  · rw [Int.emod_eq_of_lt] <;> omega
+  · rw [Int.emod_eq_sub_self_emod, Int.emod_eq_of_lt] <;> omega
+
+/--
+Preprocessor for `omega` to handle inequalities in `Fin`.
+Note that this involves a lot of case splitting, so may be slow.
+-/
+macro "fin_omega" : tactic => `(tactic|
+  { simp only [
+      -- Write `a + b` as `if (a + b : ℕ) < n then (a + b : ℤ) else (a + b : ℤ) - n` and
+      -- similarly `a - b` as `if (b : ℕ) ≤ a then (a - b : ℤ) else (a - b : ℤ) + n`.
+      coe_int_sub_eq_if, coe_int_add_eq_if,
+      -- Rewrite inequalities in `Fin` to inequalities in `ℤ`
+      Fin.lt_iff_val_lt_val, ← Int.ofNat_lt,
+      Fin.le_iff_val_le_val, ← Int.ofNat_le,
+      -- Rewrite `1 : Fin (n + 2)` to `1 : ℤ`
+      val_one] at *
+    omega })
 
 section Add
 
@@ -1485,11 +1535,7 @@ lemma pos_of_ne_zero {n : ℕ} {a : Fin (n + 1)} (h : a ≠ 0) :
   Nat.pos_of_ne_zero (val_ne_of_ne h)
 
 lemma sub_succ_le_sub_of_le {n : ℕ} {u v : Fin (n + 2)} (h : u < v) : v - (u + 1) < v - u := by
-  have h' : u + 1 ≤ v := add_one_le_of_lt h
-  apply lt_def.mpr
-  simp only [sub_val_of_le h', sub_val_of_le (Fin.le_of_lt h)]
-  refine Nat.sub_lt_sub_left h (lt_def.mp ?_)
-  exact lt_add_one_iff.mpr (Fin.lt_of_lt_of_le h v.le_last)
+  fin_omega
 
 end AddGroup
 
