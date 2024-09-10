@@ -178,7 +178,7 @@ instance : (forget (AlgebraCat.{u} R)).IsRightAdjoint := (adj R).isRightAdjoint
 end AlgebraCat
 
 variable {R}
-variable {X₁ X₂ : Type u}
+variable {X₁ X₂ : Type v}
 
 /-- Build an isomorphism in the category `AlgebraCat R` from a `AlgEquiv` between `Algebra`s. -/
 @[simps]
@@ -215,7 +215,7 @@ end CategoryTheory.Iso
 /-- Algebra equivalences between `Algebra`s are the same as (isomorphic to) isomorphisms in
 `AlgebraCat`. -/
 @[simps]
-def algEquivIsoAlgebraIso {X Y : Type u} [Ring X] [Ring Y] [Algebra R X] [Algebra R Y] :
+def algEquivIsoAlgebraIso {X Y : Type v} [Ring X] [Ring Y] [Algebra R X] [Algebra R Y] :
     (X ≃ₐ[R] Y) ≅ AlgebraCat.of R X ≅ AlgebraCat.of R Y where
   hom e := e.toAlgebraIso
   inv i := i.toAlgEquiv
@@ -231,10 +231,10 @@ instance AlgebraCat.forget_reflects_isos : (forget (AlgebraCat.{u} R)).ReflectsI
 -/
 
 @[simp] theorem AlgHom.comp_id_algebraCat
-    {R} [CommRing R] {G : AlgebraCat.{u} R} {H : Type u} [Ring H] [Algebra R H] (f : G →ₐ[R] H) :
+    {R} [CommRing R] {G : AlgebraCat.{v} R} {H : Type v} [Ring H] [Algebra R H] (f : G →ₐ[R] H) :
     f.comp (𝟙 G) = f :=
   Category.id_comp (AlgebraCat.ofHom f)
 @[simp] theorem AlgHom.id_algebraCat_comp
-    {R} [CommRing R] {G : Type u} [Ring G] [Algebra R G] {H : AlgebraCat.{u} R} (f : G →ₐ[R] H) :
+    {R} [CommRing R] {G : Type v} [Ring G] [Algebra R G] {H : AlgebraCat.{v} R} (f : G →ₐ[R] H) :
     AlgHom.comp (𝟙 H) f = f :=
   Category.comp_id (AlgebraCat.ofHom f)

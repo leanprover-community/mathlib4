@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Scott Morrison, Jakob von Raumer
 -/
 import Mathlib.Algebra.Category.ModuleCat.Basic
+import Mathlib.Algebra.Module.ULift
 import Mathlib.LinearAlgebra.TensorProduct.Basic
 import Mathlib.CategoryTheory.Monoidal.Linear
 
@@ -33,6 +34,14 @@ suppress_compilation
 universe v w x u
 
 open CategoryTheory
+
+@[ext]
+theorem ULift.ext_linearMap {R : Type u} [Semiring R]
+    {M : Type v} {N : Type w} [AddCommMonoid M] [AddCommMonoid N]
+    [Module R M] [Module R N] (f g : ULift.{x} M →ₗ[R] N)
+    (h : f ∘ₗ (moduleEquiv (R := R) (M := M)).symm
+      = g ∘ₗ ((moduleEquiv (R := R) (M := M)).symm : M →ₗ[R] _)) : f = g :=
+  LinearMap.ext fun ⟨x⟩ => congr($h x)
 
 namespace ModuleCat
 
@@ -83,20 +92,20 @@ def associator (M : ModuleCat.{v} R) (N : ModuleCat.{w} R) (K : ModuleCat.{x} R)
   (TensorProduct.assoc R M N K).toModuleIso
 
 /-- (implementation) the left unitor for R-modules -/
-def leftUnitor (M : ModuleCat.{u} R) : ModuleCat.of R (R ⊗[R] M) ≅ M :=
-  (LinearEquiv.toModuleIso (TensorProduct.lid R M) : of R (R ⊗ M) ≅ of R M).trans (ofSelfIso M)
+def leftUnitor (M : ModuleCat.{max v u} R) : ModuleCat.of R (ULift R ⊗[R] M) ≅ M :=
+  (ULift.moduleEquiv.rTensor M ≪≫ₗ TensorProduct.lid R M).toModuleIso.trans (ofSelfIso M)
 
 /-- (implementation) the right unitor for R-modules -/
-def rightUnitor (M : ModuleCat.{u} R) : ModuleCat.of R (M ⊗[R] R) ≅ M :=
-  (LinearEquiv.toModuleIso (TensorProduct.rid R M) : of R (M ⊗ R) ≅ of R M).trans (ofSelfIso M)
+def rightUnitor (M : ModuleCat.{max v u} R) : ModuleCat.of R (M ⊗[R] ULift R) ≅ M :=
+  (ULift.moduleEquiv.lTensor M ≪≫ₗ TensorProduct.rid R M).toModuleIso.trans (ofSelfIso M)
 
 @[simps (config := .lemmasOnly)]
-instance instMonoidalCategoryStruct : MonoidalCategoryStruct (ModuleCat.{u} R) where
+instance instMonoidalCategoryStruct : MonoidalCategoryStruct (ModuleCatMax.{v, u} R) where
   tensorObj := tensorObj
   whiskerLeft := whiskerLeft
   whiskerRight := whiskerRight
   tensorHom f g := TensorProduct.map f g
-  tensorUnit := ModuleCat.of R R
+  tensorUnit := ModuleCat.of R (ULift R)
   associator := associator
   leftUnitor := leftUnitor
   rightUnitor := rightUnitor
@@ -147,39 +156,42 @@ theorem pentagon (W X Y Z : ModuleCat R) :
   convert pentagon_aux R W X Y Z using 1
 
 theorem leftUnitor_naturality {M N : ModuleCat R} (f : M ⟶ N) :
-    tensorHom (𝟙 (ModuleCat.of R R)) f ≫ (leftUnitor N).hom = (leftUnitor M).hom ≫ f := by
+    tensorHom (𝟙 (ModuleCat.of R (ULift R))) f ≫ (leftUnitor N).hom = (leftUnitor M).hom ≫ f := by
   -- Porting note (#11041): broken ext
   apply TensorProduct.ext
+  apply ULift.ext_linearMap
   apply LinearMap.ext_ring
   apply LinearMap.ext; intro x
+  dsimp
   -- Porting note (#10934): used to be dsimp
-  change ((leftUnitor N).hom) ((tensorHom (𝟙 (of R R)) f) ((1 : R) ⊗ₜ[R] x)) =
+  change ((leftUnitor N).hom) ((tensorHom (𝟙 (of R <| ULift R)) f) (⟨1⟩ ⊗ₜ[R] x)) =
     f (((leftUnitor M).hom) (1 ⊗ₜ[R] x))
   erw [TensorProduct.lid_tmul, TensorProduct.lid_tmul]
   rw [LinearMap.map_smul]
   rfl
 
 theorem rightUnitor_naturality {M N : ModuleCat R} (f : M ⟶ N) :
-    tensorHom f (𝟙 (ModuleCat.of R R)) ≫ (rightUnitor N).hom = (rightUnitor M).hom ≫ f := by
+    tensorHom f (𝟙 (ModuleCat.of R (ULift R))) ≫ (rightUnitor N).hom
+      = (rightUnitor M).hom ≫ f := by
   -- Porting note (#11041): broken ext
   apply TensorProduct.ext
   apply LinearMap.ext; intro x
+  apply ULift.ext_linearMap
   apply LinearMap.ext_ring
   -- Porting note (#10934): used to be dsimp
-  change ((rightUnitor N).hom) ((tensorHom f (𝟙 (of R R))) (x ⊗ₜ[R] (1 : R))) =
+  change ((rightUnitor N).hom) ((tensorHom f (𝟙 (of R <| ULift R))) (x ⊗ₜ[R] ⟨1⟩)) =
     f (((rightUnitor M).hom) (x ⊗ₜ[R] 1))
   erw [TensorProduct.rid_tmul, TensorProduct.rid_tmul]
   rw [LinearMap.map_smul]
   rfl
 
-theorem triangle (M N : ModuleCat.{u} R) :
-    (associator M (ModuleCat.of R R) N).hom ≫ tensorHom (𝟙 M) (leftUnitor N).hom =
+theorem triangle (M N : ModuleCat R) :
+    (associator M (ModuleCat.of R (ULift R)) N).hom ≫ tensorHom (𝟙 M) (leftUnitor N).hom =
       tensorHom (rightUnitor M).hom (𝟙 N) := by
   apply TensorProduct.ext_threefold
-  intro x y z
-  change R at y
+  rintro x ⟨y⟩ z
   -- Porting note (#10934): used to be dsimp [tensorHom, associator]
-  change x ⊗ₜ[R] ((leftUnitor N).hom) (y ⊗ₜ[R] z) = ((rightUnitor M).hom) (x ⊗ₜ[R] y) ⊗ₜ[R] z
+  change x ⊗ₜ[R] ((leftUnitor N).hom) (⟨y⟩ ⊗ₜ[R] z) = ((rightUnitor M).hom) (x ⊗ₜ[R] ⟨y⟩) ⊗ₜ[R] z
   erw [TensorProduct.lid_tmul, TensorProduct.rid_tmul]
   exact (TensorProduct.smul_tmul _ _ _).symm
 
@@ -187,7 +199,7 @@ end MonoidalCategory
 
 open MonoidalCategory
 
-instance monoidalCategory : MonoidalCategory (ModuleCat.{u} R) := MonoidalCategory.ofTensorHom
+instance monoidalCategory : MonoidalCategory (ModuleCat R) := MonoidalCategory.ofTensorHom
   (tensor_id := fun M N ↦ tensor_id M N)
   (tensor_comp := fun f g h ↦ MonoidalCategory.tensor_comp f g h)
   (associator_naturality := fun f g h ↦ MonoidalCategory.associator_naturality f g h)
@@ -197,55 +209,55 @@ instance monoidalCategory : MonoidalCategory (ModuleCat.{u} R) := MonoidalCatego
   (triangle := fun M N ↦ triangle M N)
 
 /-- Remind ourselves that the monoidal unit, being just `R`, is still a commutative ring. -/
-instance : CommRing ((𝟙_ (ModuleCat.{u} R) : ModuleCat.{u} R) : Type u) :=
-  inferInstanceAs <| CommRing R
+instance : CommRing (𝟙_ (ModuleCat R)) :=
+  inferInstanceAs <| CommRing (ULift R)
 
 namespace MonoidalCategory
 
 @[simp]
-theorem hom_apply {K L M N : ModuleCat.{u} R} (f : K ⟶ L) (g : M ⟶ N) (k : K) (m : M) :
+theorem hom_apply {K L M N : ModuleCat R} (f : K ⟶ L) (g : M ⟶ N) (k : K) (m : M) :
     (f ⊗ g) (k ⊗ₜ m) = f k ⊗ₜ g m :=
   rfl
 
 @[simp]
-theorem whiskerLeft_apply (L : ModuleCat.{u} R) {M N : ModuleCat.{u} R} (f : M ⟶ N)
+theorem whiskerLeft_apply (L : ModuleCat R) {M N : ModuleCat R} (f : M ⟶ N)
     (l : L) (m : M) :
     (L ◁ f) (l ⊗ₜ m) = l ⊗ₜ f m :=
   rfl
 
 @[simp]
-theorem whiskerRight_apply {L M : ModuleCat.{u} R} (f : L ⟶ M) (N : ModuleCat.{u} R)
+theorem whiskerRight_apply {L M : ModuleCat R} (f : L ⟶ M) (N : ModuleCat R)
     (l : L) (n : N) :
     (f ▷ N) (l ⊗ₜ n) = f l ⊗ₜ n :=
   rfl
 
 @[simp]
-theorem leftUnitor_hom_apply {M : ModuleCat.{u} R} (r : R) (m : M) :
+theorem leftUnitor_hom_apply {M : ModuleCat R} (r : ULift R) (m : M) :
     ((λ_ M).hom : 𝟙_ (ModuleCat R) ⊗ M ⟶ M) (r ⊗ₜ[R] m) = r • m :=
   TensorProduct.lid_tmul m r
 
 @[simp]
-theorem leftUnitor_inv_apply {M : ModuleCat.{u} R} (m : M) :
-    ((λ_ M).inv : M ⟶ 𝟙_ (ModuleCat.{u} R) ⊗ M) m = 1 ⊗ₜ[R] m :=
-  TensorProduct.lid_symm_apply m
+theorem leftUnitor_inv_apply {M : ModuleCat R} (m : M) :
+    ((λ_ M).inv : M ⟶ 𝟙_ (ModuleCat R) ⊗ M) m = ⟨1⟩ ⊗ₜ[R] m :=
+  rfl
 
 @[simp]
-theorem rightUnitor_hom_apply {M : ModuleCat.{u} R} (m : M) (r : R) :
+theorem rightUnitor_hom_apply {M : ModuleCat R} (m : M) (r : ULift R) :
     ((ρ_ M).hom : M ⊗ 𝟙_ (ModuleCat R) ⟶ M) (m ⊗ₜ r) = r • m :=
   TensorProduct.rid_tmul m r
 
 @[simp]
-theorem rightUnitor_inv_apply {M : ModuleCat.{u} R} (m : M) :
-    ((ρ_ M).inv : M ⟶ M ⊗ 𝟙_ (ModuleCat.{u} R)) m = m ⊗ₜ[R] 1 :=
-  TensorProduct.rid_symm_apply m
+theorem rightUnitor_inv_apply {M : ModuleCat R} (m : M) :
+    ((ρ_ M).inv : M ⟶ M ⊗ 𝟙_ (ModuleCat R)) m = m ⊗ₜ[R] ⟨1⟩ :=
+  rfl
 
 @[simp]
-theorem associator_hom_apply {M N K : ModuleCat.{u} R} (m : M) (n : N) (k : K) :
+theorem associator_hom_apply {M N K : ModuleCat R} (m : M) (n : N) (k : K) :
     ((α_ M N K).hom : (M ⊗ N) ⊗ K ⟶ M ⊗ N ⊗ K) (m ⊗ₜ n ⊗ₜ k) = m ⊗ₜ (n ⊗ₜ k) :=
   rfl
 
 @[simp]
-theorem associator_inv_apply {M N K : ModuleCat.{u} R} (m : M) (n : N) (k : K) :
+theorem associator_inv_apply {M N K : ModuleCat R} (m : M) (n : N) (k : K) :
     ((α_ M N K).inv : M ⊗ N ⊗ K ⟶ (M ⊗ N) ⊗ K) (m ⊗ₜ (n ⊗ₜ k)) = m ⊗ₜ n ⊗ₜ k :=
   rfl
 
@@ -254,7 +266,7 @@ end MonoidalCategory
 open Opposite
 
 -- Porting note: simp wasn't firing but rw was, annoying
-instance : MonoidalPreadditive (ModuleCat.{u} R) := by
+instance : MonoidalPreadditive (ModuleCat R) := by
   refine ⟨?_, ?_, ?_, ?_⟩
   · intros
     refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => ?_)
@@ -288,7 +300,7 @@ instance : MonoidalPreadditive (ModuleCat.{u} R) := by
     rw [LinearMap.add_apply, TensorProduct.add_tmul]
 
 -- Porting note: simp wasn't firing but rw was, annoying
-instance : MonoidalLinear R (ModuleCat.{u} R) := by
+instance : MonoidalLinear R (ModuleCat R) := by
   refine ⟨?_, ?_⟩
   · intros
     refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => ?_)

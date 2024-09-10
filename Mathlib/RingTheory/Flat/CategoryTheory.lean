@@ -28,13 +28,13 @@ In this file we prove that tensoring with a flat module is an exact functor.
 
 -/
 
-universe u
+universe v u
 
 open CategoryTheory MonoidalCategory ShortComplex.ShortExact
 
 namespace Module.Flat
 
-variable {R : Type u} [CommRing R] (M : ModuleCat.{u} R)
+variable {R : Type u} [CommRing R] (M : ModuleCat R)
 
 lemma lTensor_shortComplex_exact [Flat R M] (C : ShortComplex <| ModuleCat R) (hC : C.Exact) :
     C.map (tensorLeft M) |>.Exact := by

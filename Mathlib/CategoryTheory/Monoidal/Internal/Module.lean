@@ -40,16 +40,16 @@ namespace MonModuleEquivalenceAlgebra
 -- Porting note: `simps(!)` doesn't work, I guess we will see what `simp` lemmas are needed and
 -- add them manually
 -- @[simps!]
-instance Ring_of_Mon_ (A : Mon_ (ModuleCat.{u} R)) : Ring A.X :=
+instance Ring_of_Mon_ (A : Mon_ (ModuleCat R)) : Ring A.X :=
   { (inferInstance : AddCommGroup A.X) with
-    one := A.one (1 : R)
+    one := A.one ⟨1⟩
     mul := fun x y => A.mul (x ⊗ₜ y)
     one_mul := fun x => by
-      have := LinearMap.congr_fun A.one_mul ((1 : R) ⊗ₜ x)
+      have := LinearMap.congr_fun A.one_mul (⟨1⟩ ⊗ₜ x)
       convert this
-      rw [MonoidalCategory.leftUnitor_hom_apply, one_smul]
+      rw [MonoidalCategory.leftUnitor_hom_apply, ULift.smul_def, one_smul]
     mul_one := fun x => by
-      have := LinearMap.congr_fun A.mul_one (x ⊗ₜ (1 : R))
+      have := LinearMap.congr_fun A.mul_one (x ⊗ₜ ⟨1⟩)
       convert this
       erw [MonoidalCategory.leftUnitor_hom_apply, one_smul]
     mul_assoc := fun x y z => by
@@ -70,70 +70,60 @@ instance Ring_of_Mon_ (A : Mon_ (ModuleCat.{u} R)) : Ring A.X :=
     mul_zero := fun x => show A.mul _ = 0 by
       rw [TensorProduct.tmul_zero, map_zero] }
 
-instance Algebra_of_Mon_ (A : Mon_ (ModuleCat.{u} R)) : Algebra R A.X :=
-  { A.one with
-    map_zero' := A.one.map_zero
+instance Algebra_of_Mon_ (A : Mon_ (ModuleCat R)) : Algebra R A.X :=
+  { A.one ∘ₗ ULift.moduleEquiv.symm.toLinearMap with
+    map_zero' := map_zero _
     map_one' := rfl
     map_mul' := fun x y => by
-      have h := LinearMap.congr_fun A.one_mul.symm (x ⊗ₜ A.one y)
-      rwa [MonoidalCategory.leftUnitor_hom_apply, ← A.one.map_smul] at h
+      have h := LinearMap.congr_fun A.one_mul.symm (⟨x⟩ ⊗ₜ A.one ⟨y⟩)
+      rwa [MonoidalCategory.leftUnitor_hom_apply, ULift.smul_def, ← A.one.map_smul] at h
     commutes' := fun r a => by
       dsimp
-      have h₁ := LinearMap.congr_fun A.one_mul (r ⊗ₜ a)
-      have h₂ := LinearMap.congr_fun A.mul_one (a ⊗ₜ r)
+      have h₁ := LinearMap.congr_fun A.one_mul (⟨r⟩ ⊗ₜ a)
+      have h₂ := LinearMap.congr_fun A.mul_one (a ⊗ₜ ⟨r⟩)
       exact h₁.trans h₂.symm
-    smul_def' := fun r a => (LinearMap.congr_fun A.one_mul (r ⊗ₜ a)).symm }
+    smul_def' := fun r a => (LinearMap.congr_fun A.one_mul (⟨r⟩ ⊗ₜ a)).symm }
 
 @[simp]
-theorem algebraMap (A : Mon_ (ModuleCat.{u} R)) (r : R) : algebraMap R A.X r = A.one r :=
+theorem algebraMap (A : Mon_ (ModuleCat R)) (r : R) : algebraMap R A.X r = A.one ⟨r⟩ :=
   rfl
 
 /-- Converting a monoid object in `ModuleCat R` to a bundled algebra.
 -/
 @[simps!]
-def functor : Mon_ (ModuleCat.{u} R) ⥤ AlgebraCat R where
+def functor : Mon_ (ModuleCat R) ⥤ AlgebraCat R where
   obj A := AlgebraCat.of R A.X
   map {A B} f :=
     { f.hom.toAddMonoidHom with
       toFun := f.hom
-      map_one' := LinearMap.congr_fun f.one_hom (1 : R)
+      map_one' := LinearMap.congr_fun f.one_hom ⟨1⟩
       map_mul' := fun x y => LinearMap.congr_fun f.mul_hom (x ⊗ₜ y)
-      commutes' := fun r => LinearMap.congr_fun f.one_hom r }
+      commutes' := fun r => LinearMap.congr_fun f.one_hom ⟨r⟩ }
 
 /-- Converting a bundled algebra to a monoid object in `ModuleCat R`.
 -/
 @[simps]
-def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
+def inverseObj (A : AlgebraCat R) : Mon_ (ModuleCat.{max v u} R) where
   X := ModuleCat.of R A
-  one := Algebra.linearMap R A
+  one := Algebra.linearMap R A ∘ₗ ULift.moduleEquiv.toLinearMap
   mul := LinearMap.mul' R A
   one_mul := by
     -- Porting note: `ext` did not pick up `TensorProduct.ext`
-    refine TensorProduct.ext <| LinearMap.ext_ring <| LinearMap.ext fun x => ?_
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    erw [compr₂_apply, compr₂_apply, CategoryTheory.comp_apply]
-    -- Porting note: this `dsimp` does nothing
-    -- dsimp [AlgebraCat.id_apply, TensorProduct.mk_apply, Algebra.linearMap_apply,
-    --   LinearMap.compr₂_apply, Function.comp_apply, RingHom.map_one,
-    --   ModuleCat.MonoidalCategory.hom_apply, AlgebraCat.coe_comp,
-    --   ModuleCat.MonoidalCategory.leftUnitor_hom_apply]
-    -- Porting note: because `dsimp` is not effective, `rw` needs to be changed to `erw`
-    erw [LinearMap.mul'_apply, MonoidalCategory.leftUnitor_hom_apply, ← Algebra.smul_def]
-    erw [id_apply]
+    refine TensorProduct.ext <| ULift.ext_linearMap _ _
+      <| LinearMap.ext_ring <| LinearMap.ext fun x => ?_
+    show mul' R A (_root_.algebraMap R A 1 ⊗ₜ x) = (1 : ULift.{v} R) • x
+    simp only [map_one, mul'_apply, one_mul, one_smul]
   mul_one := by
     -- Porting note: `ext` did not pick up `TensorProduct.ext`
-    refine TensorProduct.ext <| LinearMap.ext fun x => LinearMap.ext_ring ?_
+    refine TensorProduct.ext <| LinearMap.ext fun x =>
+      ULift.ext_linearMap _ _ <| LinearMap.ext_ring ?_
     -- Porting note: this `dsimp` does nothing
     -- dsimp only [AlgebraCat.id_apply, TensorProduct.mk_apply, Algebra.linearMap_apply,
     --   LinearMap.compr₂_apply, Function.comp_apply, ModuleCat.MonoidalCategory.hom_apply,
     --   AlgebraCat.coe_comp]
-    -- Porting note: because `dsimp` is not effective, `rw` needs to be changed to `erw`
-    erw [compr₂_apply, compr₂_apply]
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    erw [CategoryTheory.comp_apply]
-    erw [LinearMap.mul'_apply, ModuleCat.MonoidalCategory.rightUnitor_hom_apply, ← Algebra.commutes,
-      ← Algebra.smul_def]
-    erw [id_apply]
+    -- Porting note: because `dsimp` is not effective, `rw` needs to be changed to `show`
+    show mul' R A (x ⊗ₜ _root_.algebraMap R A 1) = (1 : ULift.{v} R) • x
+    simp only [map_one, mul'_apply, mul_one, one_smul]
   mul_assoc := by
     set_option tactic.skipAssignedInstances false in
     -- Porting note: `ext` did not pick up `TensorProduct.ext`
@@ -154,11 +144,11 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
 /-- Converting a bundled algebra to a monoid object in `ModuleCat R`.
 -/
 @[simps]
-def inverse : AlgebraCat.{u} R ⥤ Mon_ (ModuleCat.{u} R) where
+def inverse : AlgebraCat R ⥤ Mon_ (ModuleCat R) where
   obj := inverseObj
   map f :=
     { hom := f.toLinearMap
-      one_hom := LinearMap.ext f.commutes
+      one_hom := ULift.ext_linearMap _ _ <| LinearMap.ext <| f.commutes
       mul_hom := TensorProduct.ext <| LinearMap.ext₂ <| map_mul f }
 
 end MonModuleEquivalenceAlgebra
@@ -169,7 +159,7 @@ set_option maxHeartbeats 400000 in
 /-- The category of internal monoid objects in `ModuleCat R`
 is equivalent to the category of "native" bundled `R`-algebras.
 -/
-def monModuleEquivalenceAlgebra : Mon_ (ModuleCat.{u} R) ≌ AlgebraCat R where
+def monModuleEquivalenceAlgebra : Mon_ (ModuleCat R) ≌ AlgebraCat R where
   functor := functor
   inverse := inverse
   unitIso :=
@@ -220,8 +210,8 @@ attribute [nolint simpNF] ModuleCat.MonModuleEquivalenceAlgebra.functor_map_appl
 is naturally compatible with the forgetful functors to `ModuleCat R`.
 -/
 def monModuleEquivalenceAlgebraForget :
-    MonModuleEquivalenceAlgebra.functor ⋙ forget₂ (AlgebraCat.{u} R) (ModuleCat.{u} R) ≅
-      Mon_.forget (ModuleCat.{u} R) :=
+    MonModuleEquivalenceAlgebra.functor ⋙ forget₂ (AlgebraCat R) (ModuleCat R) ≅
+      Mon_.forget (ModuleCat R) :=
   NatIso.ofComponents
     (fun A =>
       { hom :=
