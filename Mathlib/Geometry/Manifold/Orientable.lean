@@ -183,11 +183,13 @@ def orientationPreservingPregroupoid [FiniteDimensional ℝ E] : Pregroupoid H w
     (fun _ ⟨x, ⟨aux, hxint⟩, hx⟩ ↦ have ⟨v, _, hxv, ⟨_, hint⟩⟩ := h (I.symm x) aux
     hx ▸ hint (mem_image_of_mem (↑I ∘ f ∘ ↑I.symm) ⟨⟨aux, hxv⟩, hxint⟩))
   congr {f g u} hu fg hf := by
+    have : EqOn (↑I ∘ g ∘ ↑I.symm) (↑I ∘ f ∘ ↑I.symm) (I.symm ⁻¹' u ∩ interior (range ↑I)) := by
+      simp_all [EqOn]
     apply And.intro
     · intro x hx
       have : fderivWithin ℝ (↑I ∘ g ∘ ↑I.symm) (I.symm ⁻¹' u ∩ interior (range ↑I)) x
           = fderivWithin ℝ (↑I ∘ f ∘ ↑I.symm) (I.symm ⁻¹' u ∩ interior (range ↑I)) x :=
-        fderivWithin_congr' (by simp_all [EqOn]) hx
+        fderivWithin_congr' this hx
       have : fderiv ℝ (↑I ∘ g ∘ ↑I.symm) x = fderiv ℝ (↑I ∘ f ∘ ↑I.symm) x := by
         rw [fderivWithin_of_isOpen, fderivWithin_of_isOpen] at this
         exact this
@@ -204,7 +206,7 @@ def orientationPreservingPregroupoid [FiniteDimensional ℝ E] : Pregroupoid H w
         exact hu
         exact hx
       exact this ▸ hf.1 x hx
-    · sorry
+    · exact Set.EqOn.image_eq this ▸ hf.2
 
 /-- The groupoid of orientation-preserving maps. -/
 def orientationPreservingGroupoid [FiniteDimensional ℝ E] : StructureGroupoid H :=
