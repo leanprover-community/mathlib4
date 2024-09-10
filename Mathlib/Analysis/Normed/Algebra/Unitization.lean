@@ -213,7 +213,7 @@ theorem uniformEmbedding_addEquiv {𝕜} [NontriviallyNormedField 𝕜] :
   comap_uniformity := rfl
   inj := (addEquiv 𝕜 A).injective
 
-/-- `Unitization 𝕜 A` is complete whenever `𝕜` and `A` are also.  -/
+/-- `Unitization 𝕜 A` is complete whenever `𝕜` and `A` are also. -/
 instance instCompleteSpace [CompleteSpace 𝕜] [CompleteSpace A] :
     CompleteSpace (Unitization 𝕜 A) :=
   (completeSpace_congr uniformEmbedding_addEquiv).mpr CompleteSpace.prod

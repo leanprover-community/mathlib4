@@ -8,7 +8,7 @@ import Lean.Elab.Declaration
 import Lean.Elab.Notation
 
 /-!
-# Supressing compilation to executable code in a file or in a section
+# Suppressing compilation to executable code in a file or in a section
 
 Currently, the compiler may spend a lot of time trying to produce executable code for complicated
 definitions. This is a waste of resources for definitions in area of mathematics that will never

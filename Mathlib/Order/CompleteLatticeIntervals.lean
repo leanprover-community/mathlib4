@@ -52,7 +52,7 @@ theorem subset_sSup_def [Inhabited s] :
   rfl
 
 theorem subset_sSup_of_within [Inhabited s] {t : Set s}
-    (h' : t.Nonempty) (h'' : BddAbove t)  (h : sSup ((↑) '' t : Set α) ∈ s) :
+    (h' : t.Nonempty) (h'' : BddAbove t) (h : sSup ((↑) '' t : Set α) ∈ s) :
     sSup ((↑) '' t : Set α) = (@sSup s _ t : α) := by simp [dif_pos, h, h', h'']
 
 theorem subset_sSup_emptyset [Inhabited s] :

@@ -366,7 +366,7 @@ namespace ContinuousMap
 
 /-- Continuous functions are dense in `MeasureTheory.Lp`, `1 ≤ p < ∞`. This theorem assumes that
 the domain is a compact space because otherwise `ContinuousMap.toLp` is undefined. Use
-`BoundedContinuousFunction.toLp_denseRange` if the domain is not a compact space.  -/
+`BoundedContinuousFunction.toLp_denseRange` if the domain is not a compact space. -/
 theorem toLp_denseRange [CompactSpace α] [μ.WeaklyRegular] [IsFiniteMeasure μ] (hp : p ≠ ∞) :
     DenseRange (toLp p μ 𝕜 : C(α, E) →L[𝕜] Lp E p μ) := by
   refine (BoundedContinuousFunction.toLp_denseRange _ _ 𝕜 hp).mono ?_

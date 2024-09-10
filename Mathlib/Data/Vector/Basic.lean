@@ -17,17 +17,13 @@ import Mathlib.Control.Traversable.Basic
 This file introduces the infix notation `::ᵥ` for `Vector.cons`.
 -/
 
-set_option autoImplicit true
-
 universe u
 
-variable {n : ℕ}
+variable {α β γ σ φ : Type*} {m n : ℕ}
 
 namespace Mathlib
 
 namespace Vector
-
-variable {α : Type*}
 
 @[inherit_doc]
 infixr:67 " ::ᵥ " => Vector.cons
@@ -640,7 +636,7 @@ protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : Vector 
   · simp! [cast, *, functor_norm]
     rfl
   · rw [Vector.traverse_def, ih]
-    simp [functor_norm, (· ∘ ·)]
+    simp [functor_norm, Function.comp_def]
 
 protected theorem traverse_eq_map_id {α β} (f : α → β) :
     ∀ x : Vector α n, x.traverse ((pure : _ → Id _) ∘ f) = (pure : _ → Id _) (map f x) := by
@@ -690,7 +686,7 @@ instance : LawfulTraversable.{u} (flip Vector n) where
 
 section Simp
 
-variable (xs : Vector α n)
+variable {x : α} {y : β} {s : σ} (xs : Vector α n)
 
 @[simp]
 theorem replicate_succ (val : α) :
@@ -729,7 +725,7 @@ theorem get_map₂ (v₁ : Vector α n) (v₂ : Vector β n) (f : α → β → 
     · simp only [get_cons_succ, ih]
 
 @[simp]
-theorem mapAccumr_cons :
+theorem mapAccumr_cons {f : α → σ → σ × β} :
     mapAccumr f (x ::ᵥ xs) s
     = let r := mapAccumr f xs s
       let q := f x r.1
@@ -737,7 +733,7 @@ theorem mapAccumr_cons :
   rfl
 
 @[simp]
-theorem mapAccumr₂_cons :
+theorem mapAccumr₂_cons {f : α → β → σ → σ × φ} :
     mapAccumr₂ f (x ::ᵥ xs) (y ::ᵥ ys) s
     = let r := mapAccumr₂ f xs ys s
       let q := f x y r.1
