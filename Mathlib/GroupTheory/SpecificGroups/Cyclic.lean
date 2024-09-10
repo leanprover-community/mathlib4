@@ -512,7 +512,7 @@ open Subgroup
 variable {G : Type*} {H : Type*} [Group G] [Group H]
 
 /-- A group is commutative if the quotient by the center is cyclic.
-  Also see `commGroup_of_cycle_center_quotient` for the `CommGroup` instance. -/
+  Also see `commGroupOfCyclicCenterQuotient` for the `CommGroup` instance. -/
 @[to_additive
       "A group is commutative if the quotient by the center is cyclic.
       Also see `addCommGroup_of_cyclic_center_quotient` for the `AddCommGroup` instance."]
