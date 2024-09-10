@@ -23,8 +23,8 @@ cartesian.
 
 In the literature one often sees the notion of a fibered category defined as the existence of
 strongly cartesian morphisms lying over any given morphism in the base. This is equivalent to the
-notion above, and we give an alternate constructor `IsFibered.of_has_pullbacks'` for constructing
-a fibered category this way.
+notion above, and we give an alternate constructor `IsFibered.of_exists_isCartesian'` for
+constructing a fibered category this way.
 
 
 ## Implementation
@@ -122,9 +122,9 @@ instance isStronglyCartesian_of_isCartesian (p : 𝒳 ⥤ 𝒮) [p.IsFibered] {R
 /-- In a category which admits strongly cartesian pullbacks, any cartesian morphism is
 strongly cartesian. This is a helper-lemma for the fact that admitting strongly cartesian pullbacks
 implies being fibered. -/
-lemma isStronglyCartesian_of_has_pullbacks' (p : 𝒳 ⥤ 𝒮) (h : ∀ (a : 𝒳) (R : 𝒮) (f : R ⟶ p.obj a),
-    ∃ (b : 𝒳) (φ : b ⟶ a), IsStronglyCartesian p f φ) {R S : 𝒮} (f : R ⟶ S) {a b : 𝒳}
-      (φ : a ⟶ b) [p.IsCartesian f φ] : p.IsStronglyCartesian f φ := by
+lemma isStronglyCartesian_of_exists_isCartesian' (p : 𝒳 ⥤ 𝒮) (h : ∀ (a : 𝒳) (R : 𝒮)
+    (f : R ⟶ p.obj a), ∃ (b : 𝒳) (φ : b ⟶ a), IsStronglyCartesian p f φ) {R S : 𝒮} (f : R ⟶ S)
+      {a b : 𝒳} (φ : a ⟶ b) [p.IsCartesian f φ] : p.IsStronglyCartesian f φ := by
   constructor
   intro c g φ' hφ'
   subst_hom_lift p f φ; clear a b R S
@@ -146,17 +146,16 @@ lemma isStronglyCartesian_of_has_pullbacks' (p : 𝒳 ⥤ 𝒮) (h : ∀ (a : �
   simp [hπ_comp, Φ]
 
 
-lemma of_has_pullbacks' {p : 𝒳 ⥤ 𝒮} (h : ∀ (a : 𝒳) (R : 𝒮) (f : R ⟶ p.obj a),
+lemma of_exists_isStronglyCartesian' {p : 𝒳 ⥤ 𝒮} (h : ∀ (a : 𝒳) (R : 𝒮) (f : R ⟶ p.obj a),
     ∃ (b : 𝒳) (φ : b ⟶ a), IsStronglyCartesian p f φ) : IsFibered p where
   exists_isCartesian' := by
     intro a R f
     obtain ⟨b, φ, hφ⟩ := h a R f
     refine ⟨b, φ, inferInstance⟩
-  comp := by
-    intro R S T f g a b c φ ψ _ _
-    have : p.IsStronglyCartesian f φ := by apply isStronglyCartesian_of_has_pullbacks' p h
-    have : p.IsStronglyCartesian g ψ := by apply isStronglyCartesian_of_has_pullbacks' p h
-    infer_instance
+  comp := fun R S T f g {a b c} φ ψ _ _ =>
+    have : p.IsStronglyCartesian f φ := isStronglyCartesian_of_exists_isCartesian' p h _ _
+    have : p.IsStronglyCartesian g ψ := isStronglyCartesian_of_exists_isCartesian' p h _ _
+    inferInstance
 
 /-- Given a diagram
 ```
