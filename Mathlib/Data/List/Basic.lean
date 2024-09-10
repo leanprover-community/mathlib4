@@ -1754,12 +1754,8 @@ lemma filter_attach (l : List α) (p : α → Bool) :
     simp_rw [map_map, comp_def, Subtype.map, id, ← Function.comp_apply (g := Subtype.val),
       ← filter_map, attach_map_subtype_val]
 
-#adaptation_note
-/--
-After nightly-2024-09-06 we can remove the `_root_` prefix below.
--/
 lemma filter_comm (q) (l : List α) : filter p (filter q l) = filter q (filter p l) := by
-  simp [_root_.and_comm]
+  simp [Bool.and_comm]
 
 @[simp]
 theorem filter_true (l : List α) :

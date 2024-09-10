@@ -316,13 +316,12 @@ theorem Nodup.union [DecidableEq α] (l₁ : List α) (h : Nodup l₂) : (l₁ �
 theorem Nodup.inter [DecidableEq α] (l₂ : List α) : Nodup l₁ → Nodup (l₁ ∩ l₂) :=
   Nodup.filter _
 
-theorem Nodup.diff_eq_filter [DecidableEq α] :
+theorem Nodup.diff_eq_filter [BEq α] [LawfulBEq α] :
     ∀ {l₁ l₂ : List α} (_ : l₁.Nodup), l₁.diff l₂ = l₁.filter (· ∉ l₂)
   | l₁, [], _ => by simp
   | l₁, a :: l₂, hl₁ => by
     rw [diff_cons, (hl₁.erase _).diff_eq_filter, hl₁.erase_eq_filter, filter_filter]
-    simp only [decide_not, Bool.not_eq_true', decide_eq_false_iff_not, bne_iff_ne, ne_eq, and_comm,
-      Bool.decide_and, mem_cons, not_or]
+    simp only [decide_not, bne, Bool.and_comm, mem_cons, not_or, decide_mem_cons, Bool.not_or]
 
 theorem Nodup.mem_diff_iff [DecidableEq α] (hl₁ : l₁.Nodup) : a ∈ l₁.diff l₂ ↔ a ∈ l₁ ∧ a ∉ l₂ := by
   rw [hl₁.diff_eq_filter, mem_filter, decide_eq_true_iff]
