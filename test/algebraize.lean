@@ -67,6 +67,7 @@ example (A B : Type*) [CommRing A] [CommRing B] (f : A →+* B) (hf : f.IsIntegr
   guard_hyp h : Algebra.IsIntegral A B
   trivial
 
+set_option tactic.hygienic false in
 /-- Synthesize from morphism property of a composition (and check that tower is also synthesized). -/
 example (A B C : Type*) [CommRing A] [CommRing B] [CommRing C] (f : A →+* B) (g : B →+* C)
     (hfg : (g.comp f).Flat) : True := by

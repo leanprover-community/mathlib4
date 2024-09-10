@@ -130,11 +130,11 @@ as when `algebraize` calls `addAlgebraInstanceFromRingHom` it has already comput
 def addAlgebraInstanceFromRingHom (f ft : Expr) : TacticM Unit := withMainContext do
   let (_, l) := ft.getAppFnArgs
   -- The type of the corresponding algebra instance
-  let alg ← mkAppOptM `Algebra #[l[0]!, l[1]!, none, none]
+  let alg ← mkAppOptM ``Algebra #[l[0]!, l[1]!, none, none]
   try let _ ← synthInstance alg -- If the instance already exists, we do not do anything
   catch _ => liftMetaTactic fun mvarid => do
-    let nm ← mkFreshUserName `algInst
-    let mvar ← mvarid.define nm alg (← mkAppM `RingHom.toAlgebra #[f])
+    let nm ← mkFreshBinderNameForTactic `algInst
+    let mvar ← mvarid.define nm alg (← mkAppM ``RingHom.toAlgebra #[f])
     let (_, mvar) ← mvar.intro1P
     return [mvar]
 
@@ -142,19 +142,19 @@ def addAlgebraInstanceFromRingHom (f ft : Expr) : TacticM Unit := withMainContex
 the instance `IsScalarTower A B C` to the context (if it does not already exist). -/
 def addIsScalarTowerInstanceFromRingHomComp (fn : Expr) : TacticM Unit := withMainContext do
   let (_, l) := fn.getAppFnArgs
-  let tower ← mkAppOptM `IsScalarTower #[l[0]!, l[1]!, l[2]!, none, none, none]
+  let tower ← mkAppOptM ``IsScalarTower #[l[0]!, l[1]!, l[2]!, none, none, none]
   try let _ ← synthInstance tower -- If the instance already exists, we do not do anything
   catch _ => liftMetaTactic fun mvarid => do
-    let nm ← mkFreshUserName `scalarTowerInst
-    let h ← mkFreshExprMVar (← mkAppM `Eq #[
-      ← mkAppOptM `algebraMap #[l[0]!, l[2]!, none, none, none],
-      ← mkAppM `RingHom.comp #[
-        ← mkAppOptM `algebraMap #[l[1]!, l[2]!, none, none, none],
-        ← mkAppOptM `algebraMap #[l[0]!, l[1]!, none, none, none]]])
+    let nm ← mkFreshBinderNameForTactic `scalarTowerInst
+    let h ← mkFreshExprMVar (← mkAppM ``Eq #[
+      ← mkAppOptM ``algebraMap #[l[0]!, l[2]!, none, none, none],
+      ← mkAppM ``RingHom.comp #[
+        ← mkAppOptM ``algebraMap #[l[1]!, l[2]!, none, none, none],
+        ← mkAppOptM ``algebraMap #[l[0]!, l[1]!, none, none, none]]])
     -- Note: this could fail, but then `algebraize` will just continue, and won't add this instance
     h.mvarId!.refl
     let mvar ← mvarid.define nm tower
-      (← mkAppOptM `IsScalarTower.of_algebraMap_eq'
+      (← mkAppOptM ``IsScalarTower.of_algebraMap_eq'
         #[l[0]!, l[1]!, l[2]!, none, none, none, none, none, none, h])
     let (_, mvar) ← mvar.intro1P
     return [mvar]
@@ -189,7 +189,7 @@ def searchContext (t : Array Expr) : TacticM Unit := withMainContext do
         let pargs := pargs.set! 1 args[1]!
         let tp ← mkAppOptM p pargs -- This should be the type `Algebra.Property A B`
         liftMetaTactic fun mvarid => do
-          let nm ← mkFreshUserName `AlgebraizeInst
+          let nm ← mkFreshBinderNameForTactic `AlgebraizeInst
           let (_, mvar) ← mvarid.note nm decl.toExpr tp
           return [mvar]
       /- Otherwise, the attribute points to a constructor of the `Algebra` property. In this case,
@@ -199,7 +199,7 @@ def searchContext (t : Array Expr) : TacticM Unit := withMainContext do
         let pargs := pargs.set! (n - 1) decl.toExpr
         let val ← mkAppOptM p pargs
         liftMetaTactic fun mvarid => do
-          let nm ← mkFreshUserName `AlgebraizeInst
+          let nm ← mkFreshBinderNameForTactic `AlgebraizeInst
           let (_, mvar) ← mvarid.note nm val
           return [mvar]
     | none => return
@@ -225,12 +225,12 @@ elab_rules : tactic
     for f in t do
       let ft ← inferType f
       match ft.getAppFn with
-      | Expr.const `RingHom _ => addAlgebraInstanceFromRingHom f ft
+      | Expr.const ``RingHom _ => addAlgebraInstanceFromRingHom f ft
       | _ => throwError m!"{f} is not of type `RingHom`"
     -- After having added the algebra instances we try to add scalar tower instances
     for f in t do
       match f.getAppFn with
-      | Expr.const `RingHom.comp _ =>
+      | Expr.const ``RingHom.comp _ =>
         try addIsScalarTowerInstanceFromRingHomComp f
         catch _ => continue
       | _ => continue
@@ -248,12 +248,12 @@ elab_rules : tactic
     for f in t do
       let ft ← inferType f
       match ft.getAppFn with
-      | Expr.const `RingHom _ => addAlgebraInstanceFromRingHom f ft
+      | Expr.const ``RingHom _ => addAlgebraInstanceFromRingHom f ft
       | _ => throwError m!"{f} is not of type `RingHom`"
     -- After having added the algebra instances we try to add scalar tower instances
     for f in t do
       match f.getAppFn with
-      | Expr.const `RingHom.comp _ =>
+      | Expr.const ``RingHom.comp _ =>
         try addIsScalarTowerInstanceFromRingHomComp f
         catch _ => continue
       | _ => continue
