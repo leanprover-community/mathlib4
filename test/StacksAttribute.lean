@@ -12,7 +12,7 @@ theorem tagged : True := .intro
 end X
 
 #guard_msgs in
-@[stacks 0BR2, keredon 0X12]
+@[stacks 0BR2, kerodon 0X12]
 example : True := .intro
 
 @[stacks 0BR2, stacks 0X14 "I can also have a comment"]

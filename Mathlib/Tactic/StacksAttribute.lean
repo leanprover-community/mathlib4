@@ -6,30 +6,34 @@ Authors: Damiano Testa
 import Lean.Elab.Command
 
 /-!
-# The `stacks` attribute
+# The `stacks` and `kerodon` attributes
 
-This allows tagging of mathlib lemmas with the corresponding
-[Tags](https://stacks.math.columbia.edu/tags) from the Stacks Project.
+This allows tagging of mathlib results with the corresponding
+tags from the [Stacks Project](https://stacks.math.columbia.edu/tags) and
+[Kerodon](https://kerodon.net/tag/).
+
+While the Stacks Project is the main focus, because the tag format at Kerodon is
+compatible, the attribute can be used to tag results with Kerodon tags as well.
 -/
 
 open Lean Elab
 
 namespace Mathlib.StacksTag
 
-/-- Web database users of stacks projects tags -/
+/-- Web database users of projects tags -/
 inductive Database where
-  | keredon
+  | kerodon
   | stacks
   deriving BEq, Hashable
 
-/-- `Tag` is the structure that carries the data of a Stacks Projects tag and a corresponding
+/-- `Tag` is the structure that carries the data of a project tag and a corresponding
 Mathlib declaration. -/
 structure Tag where
   /-- The name of the declaration with the given tag. -/
   declName : Name
   /-- The online database where the tag is found. -/
   database : Database
-  /-- The Stacks Project tag. -/
+  /-- The database tag. -/
   tag : String
   /-- The (optional) comment that comes with the given tag. -/
   comment : String
@@ -117,28 +121,28 @@ end Lean.PrettyPrinter.Parenthesizer
 namespace Mathlib.StacksTag
 
 declare_syntax_cat stacksTagDB
-syntax "keredon" : stacksTagDB
+syntax "kerodon" : stacksTagDB
 syntax "stacks" : stacksTagDB
 
 /-- The `stacksTag` attribute.
-Use it as `@[keredon TAG "Optional comment"]` or `@[stacks TAG "Optional comment"]`
+Use it as `@[kerodon TAG "Optional comment"]` or `@[stacks TAG "Optional comment"]`
 depending on the database you are referencing.
 
 The `TAG` is mandatory and should be a sequence of 4 digits or uppercase letters.
 
 See the [Tags page](https://stacks.math.columbia.edu/tags) in the Stacks project or
-[Tags page](https://keredon.net/tag/) in the Keredon project for more details.
+[Tags page](https://kerodon.net/tag/) in the Kerodon project for more details.
 -/
 syntax (name := stacksTag) stacksTagDB stacksTagParser (ppSpace str)? : attr
 
 initialize Lean.registerBuiltinAttribute {
   name := `stacksTag
-  descr := "Apply a Stacks project tag to a theorem."
+  descr := "Apply a Stacks or Kerodon project tag to a theorem."
   add := fun decl stx _attrKind => match stx with
     | `(attr| stacks $tag $[$comment]?) => do
       addTagEntry decl .stacks (← tag.getStacksTag) <| (comment.map (·.getString)).getD ""
-    | `(attr| keredon $tag $[$comment]?) => do
-      addTagEntry decl .keredon (← tag.getStacksTag) <| (comment.map (·.getString)).getD ""
+    | `(attr| kerodon $tag $[$comment]?) => do
+      addTagEntry decl .kerodon (← tag.getStacksTag) <| (comment.map (·.getString)).getD ""
     | _ => throwUnsupportedSyntax
 }
 
@@ -161,7 +165,7 @@ private def Lean.Environment.getSortedStackProjectDeclNames (env : Environment) 
 
 private def Mathlib.StacksTag.databaseURL (db : Database) : String :=
   match db with
-  | .keredon => "https://keredon.net/tag/"
+  | .kerodon => "https://kerodon.net/tag/"
   | .stacks => "https://stacks.math.columbia.edu/tag/"
 
 /--
@@ -198,14 +202,13 @@ The variant `#stacks_tags!` also adds the theorem statement after each summary l
 elab (name := Mathlib.Stacks.stacksTags) "#stacks_tags" tk:("!")?: command =>
   traceStacksTags .stacks (tk.isSome)
 
-/-- The `#keredon_tags` command retrieves all declarations that have the `keredon` attribute.
+/-- The `#kerodon_tags` command retrieves all declarations that have the `kerodon` attribute.
 
 For each found declaration, it prints a line
 ```
 'declaration_name' corresponds to tag 'declaration_tag'.
 ```
-The variant `#keredon_tags!` also adds the theorem statement after each summary line.
+The variant `#kerodon_tags!` also adds the theorem statement after each summary line.
 -/
-elab (name := Mathlib.Stacks.keredonTags) "#keredon_tags" tk:("!")?: command =>
-  traceStacksTags .keredon (tk.isSome)
-
+elab (name := Mathlib.Stacks.kerodonTags) "#kerodon_tags" tk:("!")?: command =>
+  traceStacksTags .kerodon (tk.isSome)
