@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Mathlib.CategoryTheory.Galois.Action
-import Mathlib.CategoryTheory.Galois.Examples
-import Mathlib.CategoryTheory.Galois.Prorepresentability
 
 /-!
 
