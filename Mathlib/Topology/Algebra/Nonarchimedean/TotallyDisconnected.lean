@@ -16,7 +16,6 @@ In this file, we prove that a nonarchimedean group is a totally disconnected top
 - `NonarchimedeanGroup.instTotallyDisconnectedSpace`: A nonarchimedean group is a
                                                       totally disconnected topological space.
 
-
 ## Notation
 
  - `G` : Is a nonarchimedean group.
@@ -24,7 +23,8 @@ In this file, we prove that a nonarchimedean group is a totally disconnected top
 
 ## References
 
-Prop 2.3.9. of Gouvêa, F. Q. (2020) p-adic Numbers An Introduction. 3rd edition.
+See Proposition 2.3.9 and Problem 63 in :
+Gouvêa, F. Q. (2020) p-adic Numbers An Introduction. 3rd edition.
   Cham, Springer International Publishing.
 -/
 
@@ -37,8 +37,9 @@ lemma mem_unique_to_singleton {X : Type*} {U : Set X} {x : X} (hx : x ∈ U)
 
 end Set
 
+open Pointwise TopologicalSpace
+
 namespace NonarchimedeanGroup.auxiliary
-open TopologicalSpace
 
 variable (G : Type*) [TopologicalSpace G] [Group G] [NonarchimedeanGroup G] [T2Space G]
 
@@ -54,7 +55,7 @@ lemma open_subgroup_separating
 end NonarchimedeanGroup.auxiliary
 
 namespace NonarchimedeanGroup
-open NonarchimedeanGroup.auxiliary Pointwise TopologicalSpace
+open NonarchimedeanGroup.auxiliary
 
 variable (G : Type*) [TopologicalSpace G] [Group G]
 
@@ -72,7 +73,7 @@ lemma non_empty_intersection_compl_coset (x y : G) (U : Set G) (hx : x ∈ U)
   simp at mem
 
 @[to_additive]
-  lemma non_empty_intersection_coset (y : G) (U : Set G) (hy :  y ∈ U)
+lemma non_empty_intersection_coset (y : G) (U : Set G) (hy :  y ∈ U)
     (V : OpenSubgroup G) : (U ∩ (y • (V : Set G))).Nonempty := by
   simp only [Set.inter_nonempty]
   use y
@@ -82,6 +83,7 @@ lemma non_empty_intersection_compl_coset (x y : G) (U : Set G) (hx : x ∈ U)
 
 variable [TopologicalGroup G] [NonarchimedeanGroup G] [T2Space G]
 
+/-- In a nonarchimedean group, any set which contains two distinct points is disconnected. -/
 @[to_additive]
 theorem non_singleton_set_disconnected (x y : G) (U : Set G)
     (hx : x ∈ U) (hy :  y ∈ U) (hxy : y ≠ x) : ¬ IsConnected U := by
@@ -109,13 +111,13 @@ theorem non_singleton_set_disconnected (x y : G) (U : Set G)
 /-- A nonarchimedean group is a totally disconnected topological space. -/
 @[to_additive]
 instance : TotallyDisconnectedSpace G := by
-      rw [totallyDisconnectedSpace_iff_connectedComponent_singleton]
-      intro x
-      by_contra con
-      obtain ⟨y, hyu, hneq⟩ : ∃ y : G, (y ∈ connectedComponent x) ∧ (y ≠ x) := by
-        by_contra! con2
-        exact con <| Set.mem_unique_to_singleton mem_connectedComponent con2
-      exact non_singleton_set_disconnected G x y (connectedComponent x) mem_connectedComponent hyu
-        hneq isConnected_connectedComponent
+  rw [totallyDisconnectedSpace_iff_connectedComponent_singleton]
+  intro x
+  by_contra con
+  obtain ⟨y, hyu, hneq⟩ : ∃ y : G, (y ∈ connectedComponent x) ∧ (y ≠ x) := by
+    by_contra! con2
+    exact con <| Set.mem_unique_to_singleton mem_connectedComponent con2
+  exact non_singleton_set_disconnected G x y (connectedComponent x) mem_connectedComponent hyu
+    hneq isConnected_connectedComponent
 
 end NonarchimedeanGroup
