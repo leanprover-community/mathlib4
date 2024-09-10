@@ -207,25 +207,6 @@ def orientationPreservingPregroupoid [FiniteDimensional ℝ E] : Pregroupoid H w
         exact hx
       exact this ▸ hf.1 x hx
     · sorry
-    -- · have h_eq : ∀ y ∈ I.symm ⁻¹' u, (I ∘ g ∘ I.symm) y = (I ∘ f ∘ I.symm) y := by simp_all
-    --   intro x hx
-    --   have hx_in_domain : x ∈ I.symm ⁻¹' u := hx.1
-    --   have h_eq_on : EqOn (I ∘ g ∘ I.symm) (I ∘ f ∘ I.symm) (I.symm ⁻¹' u) := h_eq
-    --   have h_diff : DifferentiableAt ℝ (I ∘ g ∘ I.symm) x := by
-    --     apply DifferentiableAt.congr_of_eventuallyEq
-    --     · exact hf.1.differentiableAt hx
-    --     ·
-    --       have : I.symm x ∈ u := by simp_all
-    --       sorry
-
-    --   have h_fderiv_eq : fderiv ℝ (I ∘ g ∘ I.symm) x = fderiv ℝ (I ∘ f ∘ I.symm) x := by
-    --     -- use HasFDerivAt.congr_fderiv
-    --     obtain ⟨g', hg'⟩ := h_diff
-    --     apply hg'.fderiv_congr hf.1.differentiableAt hx_in_domain h_eq_on
-
-    --   rw [h_fderiv_eq]
-    --   exact hf.1 x hx
-
 
 /-- The groupoid of orientation-preserving maps. -/
 def orientationPreservingGroupoid [FiniteDimensional ℝ E] : StructureGroupoid H :=
