@@ -45,8 +45,6 @@ def nullSpace : Submodule 𝕜 E where
 
 lemma mem_nullSpace_iff_norm_eq_zero {x : E} : x ∈ nullSpace 𝕜 E ↔ ‖x‖ = 0 := Eq.to_iff rfl
 
-abbrev Q := (mk : E → (E ⧸ (nullSpace 𝕜 E)))
-
 lemma inner_nullSpace_left_eq_zero (x y : E) (h : x ∈ nullSpace 𝕜 E): ⟪x, y⟫_𝕜 = 0 := by
   rw [← norm_eq_zero, ← sq_eq_zero_iff]
   apply le_antisymm _ (sq_nonneg _)
@@ -75,6 +73,8 @@ lemma nullSpace_le_ker_toDualMap' : (nullSpace 𝕜 E) ≤ ker (toDualMap 𝕜 E
   simp only [toDualMap_apply, ContinuousLinearMap.zero_apply]
   exact inner_nullSpace_left_eq_zero 𝕜 E x y hx
 
+/-- An auxiliary map to define the inner product on the quotient. Only the first entry is
+quotiented. -/
 def preInnerQ : E ⧸ (nullSpace 𝕜 E) →ₗ⋆[𝕜] (NormedSpace.Dual 𝕜 E) :=
   liftQ (nullSpace 𝕜 E) (toDualMap 𝕜 E).toLinearMap (nullSpace_le_ker_toDualMap' 𝕜 E)
 
@@ -83,11 +83,11 @@ lemma nullSpace_le_ker_preInnerQ (x : E ⧸ (nullSpace 𝕜 E)) : (nullSpace �
   intro y hy
   simp only [LinearMap.mem_ker]
   obtain ⟨z, hz⟩ := Submodule.mkQ_surjective (nullSpace 𝕜 E) x
-  rw [preInnerQ]
-  rw [← hz, mkQ_apply, Submodule.liftQ_apply]
+  rw [preInnerQ, ← hz, mkQ_apply, Submodule.liftQ_apply]
   simp only [LinearIsometry.coe_toLinearMap, toDualMap_apply]
   exact inner_nullSpace_right_eq_zero 𝕜 E z y hy
 
+/-- The inner product on the quotient, composed as the composition of two lifts to the quotients. -/
 def innerQ : E ⧸ (nullSpace 𝕜 E) → E ⧸ (nullSpace 𝕜 E) → 𝕜 :=
   fun x => liftQ (nullSpace 𝕜 E) (preInnerQ 𝕜 E x).toLinearMap (nullSpace_le_ker_preInnerQ 𝕜 E x)
 
@@ -99,14 +99,69 @@ variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 instance : InnerProductSpace.Core 𝕜 (E ⧸ (nullSpace 𝕜 E)) where
   inner := innerQ 𝕜 E
-  conj_symm := sorry
-  nonneg_re := sorry
-  add_left := sorry
-  smul_left := sorry
-  definite := sorry
+  conj_symm := by
+    intro x y
+    rw [inner]
+    simp only
+    rw [innerQ, innerQ]
+    obtain ⟨z, hz⟩ := Submodule.mkQ_surjective (nullSpace 𝕜 E) x
+    obtain ⟨w, hw⟩ := Submodule.mkQ_surjective (nullSpace 𝕜 E) y
+    rw [← hz, ← hw]
+    simp only [mkQ_apply, liftQ_apply, ContinuousLinearMap.coe_coe]
+    rw [preInnerQ, Submodule.liftQ_apply, Submodule.liftQ_apply]
+    simp only [LinearIsometry.coe_toLinearMap, toDualMap_apply]
+    exact conj_symm z w
+  nonneg_re := by
+    intro x
+    rw [inner]
+    simp only
+    rw [innerQ]
+    obtain ⟨z, hz⟩ := Submodule.mkQ_surjective (nullSpace 𝕜 E) x
+    rw [← hz]
+    simp only [mkQ_apply, liftQ_apply, ContinuousLinearMap.coe_coe]
+    rw [preInnerQ, Submodule.liftQ_apply]
+    simp only [LinearIsometry.coe_toLinearMap, toDualMap_apply]
+    exact _root_.inner_self_nonneg
+  add_left := by
+    intro x y z
+    rw [inner]
+    simp only
+    rw [innerQ, innerQ, innerQ]
+    obtain ⟨a, ha⟩ := Submodule.mkQ_surjective (nullSpace 𝕜 E) x
+    obtain ⟨b, hb⟩ := Submodule.mkQ_surjective (nullSpace 𝕜 E) y
+    obtain ⟨c, hc⟩ := Submodule.mkQ_surjective (nullSpace 𝕜 E) z
+    rw [← ha, ← hb, ← hc]
+    simp only [mkQ_apply, liftQ_apply, ContinuousLinearMap.coe_coe]
+    rw [preInnerQ, Submodule.liftQ_apply, Submodule.liftQ_apply, map_add, Submodule.liftQ_apply]
+    simp only [LinearIsometry.coe_toLinearMap, liftQ_apply, ContinuousLinearMap.add_apply,
+      toDualMap_apply]
+  smul_left := by
+    intro x y r
+    rw [inner]
+    simp only
+    rw [innerQ, innerQ]
+    obtain ⟨a, ha⟩ := Submodule.mkQ_surjective (nullSpace 𝕜 E) x
+    obtain ⟨b, hb⟩ := Submodule.mkQ_surjective (nullSpace 𝕜 E) y
+    rw [← ha, ← hb]
+    simp only [mkQ_apply, liftQ_apply, ContinuousLinearMap.coe_coe]
+    rw [preInnerQ, Submodule.liftQ_apply]
+    simp only [LinearMap.map_smulₛₗ, liftQ_apply, LinearIsometry.coe_toLinearMap,
+      ContinuousLinearMap.coe_smul', Pi.smul_apply, toDualMap_apply, smul_eq_mul]
+  definite := by
+    intro x
+    rw [inner]
+    simp only
+    rw [innerQ]
+    obtain ⟨a, ha⟩ := Submodule.mkQ_surjective (nullSpace 𝕜 E) x
+    rw [← ha]
+    simp only [mkQ_apply, liftQ_apply, ContinuousLinearMap.coe_coe, Quotient.mk_eq_zero]
+    rw [preInnerQ]
+    simp only [liftQ_apply, LinearIsometry.coe_toLinearMap, toDualMap_apply]
+    rw [inner_self_eq_norm_sq_to_K]
+    intro ha
+    simp only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, pow_eq_zero_iff, map_eq_zero] at ha
+    exact ha
 
 end InnerProductSpace.Core
 
 end
-
-#min_imports
