@@ -3,13 +3,11 @@ Copyright (c) 2021 Antoine Labelle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
 -/
-import Mathlib.Algebra.Group.Fin
+import Mathlib.Algebra.Group.Fin.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Finset.Sort
 import Mathlib.Order.Interval.Finset.Fin
 import Mathlib.Tactic.Linarith
-
-#align_import imo.imo1994_q1 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
 
 /-!
 # IMO 1994 Q1
@@ -33,15 +31,13 @@ open Finset
 
 namespace Imo1994Q1
 
-theorem tedious (m : ℕ) (k : Fin (m + 1)) : m - (m + (m + 1 - ↑k)) % (m + 1) = ↑k := by
+theorem tedious (m : ℕ) (k : Fin (m + 1)) : m - ((m + 1 - ↑k) + m) % (m + 1) = ↑k := by
   cases' k with k hk
   rw [Nat.lt_succ_iff, le_iff_exists_add] at hk
   rcases hk with ⟨c, rfl⟩
-  have : k + c + (k + c + 1 - k) = c + (k + c + 1) := by
-    simp only [add_assoc, add_tsub_cancel_left, add_left_comm]
+  have : (k + c + 1 - k) + (k + c) = c + (k + c + 1) := by omega
   rw [Fin.val_mk, this, Nat.add_mod_right, Nat.mod_eq_of_lt, Nat.add_sub_cancel]
-  linarith
-#align imo1994_q1.tedious Imo1994Q1.tedious
+  omega
 
 end Imo1994Q1
 
@@ -93,4 +89,3 @@ theorem imo1994_q1 (n : ℕ) (m : ℕ) (A : Finset ℕ) (hm : A.card = m + 1)
     simpa using (hrange (a i) (ha i)).1
   -- A set of size `k+1` embed in one of size `k`, which yields a contradiction
   simpa [Fin.coe_sub, tedious, rev] using card_le_card hf
-#align imo1994_q1 imo1994_q1

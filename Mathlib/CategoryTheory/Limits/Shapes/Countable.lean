@@ -17,7 +17,7 @@ limits, see `sequentialFunctor_initial`.
 
 ## Projects
 
-* There is a series of `proof_wanted` at the bottom of this file, implying that all cofiltered
+* There is a series of `proof_wanted` at the bottom of this file, implying that all cofiltered
   limits over countable categories are isomorphic to sequential limits.
 
 * Prove the dual result for filtered colimits.
@@ -36,7 +36,7 @@ instance and `J : Type` has a limit.
 -/
 class HasCountableLimits : Prop where
   /-- `C` has all limits over any type `J` whose objects and morphisms lie in the same universe
-  and which has countably many objects and morphisms-/
+  and which has countably many objects and morphisms -/
   out (J : Type) [SmallCategory J] [CountableCategory J] : HasLimitsOfShape J C
 
 instance (priority := 100) hasFiniteLimits_of_hasCountableLimits [HasCountableLimits C] :
@@ -58,7 +58,7 @@ instance and `J : Type` has a colimit.
 -/
 class HasCountableColimits : Prop where
   /-- `C` has all limits over any type `J` whose objects and morphisms lie in the same universe
-  and which has countably many objects and morphisms-/
+  and which has countably many objects and morphisms -/
   out (J : Type) [SmallCategory J] [CountableCategory J] : HasColimitsOfShape J C
 
 instance (priority := 100) hasFiniteColimits_of_hasCountableColimits [HasCountableColimits C] :
@@ -86,7 +86,7 @@ noncomputable def sequentialFunctor_obj : ℕ → J := fun
   | .succ n => (IsCofilteredOrEmpty.cone_objs ((exists_surjective_nat _).choose n)
       (sequentialFunctor_obj n)).choose
 
-theorem sequentialFunctor_map  : Antitone (sequentialFunctor_obj J) :=
+theorem sequentialFunctor_map : Antitone (sequentialFunctor_obj J) :=
   antitone_nat_of_succ_le fun n ↦
     leOfHom (IsCofilteredOrEmpty.cone_objs ((exists_surjective_nat _).choose n)
       (sequentialFunctor_obj J n)).choose_spec.choose_spec.choose
@@ -102,10 +102,10 @@ noncomputable def sequentialFunctor : ℕᵒᵖ ⥤ J where
 theorem sequentialFunctor_initial_aux (j : J) : ∃ (n : ℕ), sequentialFunctor_obj J n ≤ j := by
   obtain ⟨m, h⟩ := (exists_surjective_nat _).choose_spec j
   refine ⟨m + 1, ?_⟩
-  simpa [h] using leOfHom (IsCofilteredOrEmpty.cone_objs ((exists_surjective_nat _).choose m)
+  simpa only [h] using leOfHom (IsCofilteredOrEmpty.cone_objs ((exists_surjective_nat _).choose m)
     (sequentialFunctor_obj J m)).choose_spec.choose
 
-instance sequentialFunctor_initial : (sequentialFunctor J).Initial  where
+instance sequentialFunctor_initial : (sequentialFunctor J).Initial where
   out d := by
     obtain ⟨n, (g : (sequentialFunctor J).obj ⟨n⟩ ≤ d)⟩ := sequentialFunctor_initial_aux J d
     have : Nonempty (CostructuredArrow (sequentialFunctor J) d) :=
@@ -113,9 +113,10 @@ instance sequentialFunctor_initial : (sequentialFunctor J).Initial  where
     apply isConnected_of_zigzag
     refine fun i j ↦ ⟨[j], ?_⟩
     simp only [List.chain_cons, Zag, List.Chain.nil, and_true, ne_eq, not_false_eq_true,
-      List.getLast_cons, not_true_eq_false, List.getLast_singleton']
+      List.getLast_cons, not_true_eq_false, List.getLast_singleton', reduceCtorEq]
+    clear! C
     wlog h : (unop i.left) ≤ (unop j.left)
-    · exact or_comm.1 (this (C := C) J d n g inferInstance j i (le_of_lt (not_le.mp h)))
+    · exact or_comm.1 (this J d n g inferInstance j i (le_of_lt (not_le.mp h)))
     · right
       exact ⟨CostructuredArrow.homMk (homOfLE h).op rfl⟩
 
@@ -126,7 +127,7 @@ proof_wanted preorder_of_cofiltered (J : Type*) [Category J] [IsCofiltered J] :
     ∃ (I : Type*) (_ : Preorder I) (_ : IsCofiltered I) (F : I ⥤ J), F.Initial
 
 /--
-The proof of `preorder_of_cofiltered` should give a countable `I` in the case that `J` is a
+The proof of `preorder_of_cofiltered` should give a countable `I` in the case that `J` is a
 countable category.
 -/
 proof_wanted preorder_of_cofiltered_countable

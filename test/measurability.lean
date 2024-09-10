@@ -3,17 +3,16 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Tactic
 import Mathlib.MeasureTheory.MeasurableSpace.Basic
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Inner
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
+import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
 
 
 open MeasureTheory TopologicalSpace
 
-variable {α β : Type _} [MeasurableSpace α] [MeasurableSpace β]
+variable {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
   {f g : α → β} {s₁ s₂ : Set α} {t₁ t₂ : Set β} {μ ν : MeasureTheory.Measure α}
 
 set_option linter.unusedVariables false
@@ -35,8 +34,8 @@ example {ι} [Encodable ι] {S₁ S₂ : ι → Set α} (hS₁ : ∀ i, Measurab
 
 -- Tests on sets
 
-example (hs₁ : MeasurableSet s₁) (hs₂ : MeasurableSet s₂) : MeasurableSet (s₁ ∪ s₁) :=
-  by measurability
+example (hs₁ : MeasurableSet s₁) (hs₂ : MeasurableSet s₂) : MeasurableSet (s₁ ∪ s₁) := by
+  measurability
 
 example {ι} [Encodable ι] {S : ι → Set α} (hs : ∀ i, MeasurableSet (S i)) :
     MeasurableSet (⋃ i, S i) := by measurability

@@ -1,14 +1,12 @@
 /-
-Copyright (c) 202 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Yury Kudryashov
 -/
 import Mathlib.SetTheory.Ordinal.Basic
 import Mathlib.Tactic.GCongr
-import Mathlib.Topology.EMetricSpace.Basic
 import Mathlib.Topology.Compactness.Paracompact
-
-#align_import topology.metric_space.emetric_paracompact from "leanprover-community/mathlib"@"57ac39bd365c2f80589a700f9fbb664d3a1a30c2"
+import Mathlib.Topology.EMetricSpace.Basic
 
 /-!
 # (Extended) metric spaces are paracompact
@@ -107,9 +105,9 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
     norm_num1
   -- Let us show the rest of the properties. Since the definition expects a family indexed
   -- by a single parameter, we use `ℕ × ι` as the domain.
-  refine' ⟨ℕ × ι, fun ni => D ni.1 ni.2, fun _ => Dopen _ _, _, _, fun ni => ⟨ni.2, HDS _ _⟩⟩
+  refine ⟨ℕ × ι, fun ni => D ni.1 ni.2, fun _ => Dopen _ _, ?_, ?_, fun ni => ⟨ni.2, HDS _ _⟩⟩
   -- The sets `D n i` cover the whole space as we proved earlier
-  · refine iUnion_eq_univ_iff.2 fun x => ?_
+  · refine iUnion_eq_univ_iff.2 fun x ↦ ?_
     rcases Dcov x with ⟨n, i, h⟩
     exact ⟨⟨n, i⟩, h⟩
   /- Let us prove that the covering `D n i` is locally finite. Take a point `x` and choose
@@ -163,10 +161,8 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
     simp only [mem_iUnion]
     refine ⟨I.1, ?_, I.2, hI, rfl⟩
     exact not_lt.1 fun hlt => (Hgt I.1 hlt I.2).le_bot hI.choose_spec
-#align emetric.paracompact_space EMetric.instParacompactSpace
 
 -- Porting note: no longer an instance because `inferInstance` can find it
 theorem t4Space [EMetricSpace α] : T4Space α := inferInstance
-#align emetric.normal_of_emetric EMetric.t4Space
 
 end EMetric

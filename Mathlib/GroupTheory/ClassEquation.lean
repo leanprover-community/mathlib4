@@ -58,8 +58,8 @@ theorem Group.nat_card_center_add_sum_card_noncenter_eq_card [Finite G] :
   calc
     Fintype.card (Subgroup.center G) = Fintype.card ((noncenter G)ᶜ : Set _) :=
       Fintype.card_congr ((mk_bijOn G).equiv _)
-    _ = Finset.card (Finset.univ \ (noncenter G).toFinset) :=
-      by rw [← Set.toFinset_card, Set.toFinset_compl, Finset.compl_eq_univ_sdiff]
+    _ = Finset.card (Finset.univ \ (noncenter G).toFinset) := by
+      rw [← Set.toFinset_card, Set.toFinset_compl, Finset.compl_eq_univ_sdiff]
     _ = _ := ?_
   rw [Finset.card_eq_sum_ones]
   refine Finset.sum_congr rfl ?_

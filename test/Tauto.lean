@@ -97,8 +97,8 @@ example (hp : p) (hq : q) : p ∧ q := by
 example (hp : ¬ p) (hq : ¬ (q ↔ p) := by sorry) : q := by
   tauto
 
-example (P : Nat → Prop) (n : Nat) : P n → n = 7 ∨ n = 0 ∨ ¬ (n = 7 ∨ n = 0) ∧ P n :=
-by tauto
+example (P : Nat → Prop) (n : Nat) : P n → n = 7 ∨ n = 0 ∨ ¬ (n = 7 ∨ n = 0) ∧ P n := by
+  tauto
 
 section implementation_detail_ldecl
 variable (a b c : Nat)
@@ -169,8 +169,8 @@ end closer
 /-  Zulip discussion:
 https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/tauto!.20fails.20on.20ne
 -/
-example {x y : Nat} (h : ¬x ≠ y) : x = y :=
-by tauto
+example {x y : Nat} (h : ¬x ≠ y) : x = y := by
+  tauto
 
 /-
 Test the case where the goal depends on a hypothesis

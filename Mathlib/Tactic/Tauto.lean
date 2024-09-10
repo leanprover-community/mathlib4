@@ -8,6 +8,7 @@ import Mathlib.Tactic.Core
 import Mathlib.Lean.Elab.Tactic.Basic
 import Mathlib.Logic.Basic
 import Qq
+import Batteries.Tactic.Classical
 
 /-!
 The `tauto` tactic.
@@ -219,3 +220,5 @@ syntax (name := tauto) "tauto" (config)? : tactic
 elab_rules : tactic | `(tactic| tauto $[$cfg:config]?) => do
   let _cfg ← elabConfig (mkOptionalNode cfg)
   tautology
+
+end Mathlib.Tactic.Tauto

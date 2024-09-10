@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Topology.ContinuousFunction.Algebra
+import Mathlib.Topology.ContinuousFunction.Compact
 
 /-!
 # Continuous maps sending zero to zero
@@ -16,6 +17,8 @@ overly burdensome on type class synthesis.
 Of course, one could generalize to maps between pointed topological spaces, but that goes beyond
 the purpose of this type.
 -/
+
+assert_not_exists StarOrderedRing
 
 open Set Function
 
@@ -55,7 +58,7 @@ lemma ext {f g : C(X, R)₀} (h : ∀ x, f x = g x) : f = g := DFunLike.ext f g 
 @[simp]
 lemma coe_mk {f : C(X, R)} {h0 : f 0 = 0} : ⇑(mk f h0) = f := rfl
 
-lemma toContinuousMap_injective [Zero R] : Injective ((↑) : C(X, R)₀ → C(X, R)) :=
+lemma toContinuousMap_injective : Injective ((↑) : C(X, R)₀ → C(X, R)) :=
   fun _ _ h ↦ congr(.mk $(h) _)
 
 lemma range_toContinuousMap : range ((↑) : C(X, R)₀ → C(X, R)) = {f : C(X, R) | f 0 = 0} :=
@@ -91,6 +94,14 @@ lemma closedEmbedding_toContinuousMap [T1Space R] :
   isClosed_range := by
     rw [range_toContinuousMap]
     exact isClosed_singleton.preimage <| ContinuousMap.continuous_eval_const 0
+
+@[fun_prop]
+lemma continuous_comp_left {X Y Z : Type*} [TopologicalSpace X]
+    [TopologicalSpace Y] [TopologicalSpace Z] [Zero X] [Zero Y] [Zero Z] (f : C(X, Y)₀) :
+    Continuous fun g : C(Y, Z)₀ ↦ g.comp f := by
+  rw [continuous_induced_rng]
+  show Continuous fun g : C(Y, Z)₀ ↦ (g : C(Y, Z)).comp (f : C(X, Y))
+  fun_prop
 
 /-- The identity function as an element of `C(s, R)₀` when `0 ∈ (s : Set R)`. -/
 @[simps!]
@@ -174,6 +185,9 @@ instance instStarModule [StarRing R] {M : Type*} [SMulZeroClass M R] [Continuous
 
 @[simp] lemma coe_star [StarRing R] [ContinuousStar R] (f : C(X, R)₀) : ⇑(star f) = star ⇑f := rfl
 
+instance [StarRing R] [ContinuousStar R] [TrivialStar R] : TrivialStar C(X, R)₀ where
+  star_trivial _ := DFunLike.ext _ _ fun _ ↦ star_trivial _
+
 instance instCanLift : CanLift C(X, R) C(X, R)₀ (↑) (fun f ↦ f 0 = 0) where
   prf f hf := ⟨⟨f, hf⟩, rfl⟩
 
@@ -190,6 +204,33 @@ def toContinuousMapHom [StarRing R] [ContinuousStar R] : C(X, R)₀ →⋆ₙₐ
 lemma coe_toContinuousMapHom [StarRing R] [ContinuousStar R] :
     ⇑(toContinuousMapHom (X := X) (R := R)) = (↑) :=
   rfl
+
+/-- The coercion `C(X, R)₀ → C(X, R)` bundled as a continuous linear map. -/
+@[simps]
+def toContinuousMapCLM (M : Type*) [Semiring M] [Module M R] [ContinuousConstSMul M R] :
+    C(X, R)₀ →L[M] C(X, R) where
+  toFun f := f
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+/-- The evaluation at a point, as a continuous linear map from `C(X, R)₀` to `R`. -/
+def evalCLM (𝕜 : Type*) {R : Type*} [CompactSpace X] [NormedField 𝕜] [NormedCommRing R]
+    [NormedSpace 𝕜 R] (x : X) : C(X, R)₀ →L[𝕜] R :=
+  (ContinuousMap.evalCLM 𝕜 x).comp (toContinuousMapCLM 𝕜 : C(X, R)₀ →L[𝕜] C(X, R))
+
+@[simp]
+lemma evalCLM_apply {𝕜 : Type*} {R : Type*} [CompactSpace X] [NormedField 𝕜] [NormedCommRing R]
+    [NormedSpace 𝕜 R] (x : X) (f : C(X, R)₀) : evalCLM 𝕜 x f = f x := rfl
+
+/-- Coercion to a function as an `AddMonoidHom`. Similar to `ContinuousMap.coeFnAddMonoidHom`. -/
+def coeFnAddMonoidHom : C(X, R)₀ →+ X → R where
+  toFun f := f
+  map_zero' := coe_zero
+  map_add' f g := by simp
+
+@[simp] lemma coe_sum {ι : Type*} (s : Finset ι)
+    (f : ι → C(X, R)₀) : ⇑(s.sum f) = s.sum (fun i => ⇑(f i)) :=
+  map_sum coeFnAddMonoidHom f s
 
 end Semiring
 
@@ -293,5 +334,28 @@ def nonUnitalStarAlgHom_postcomp (φ : R →⋆ₙₐ[M] S) (hφ : Continuous φ
   map_smul' r f := ext <| by simp
 
 end CompHoms
+
+section Norm
+
+variable {α : Type*} {𝕜 : Type*} {R : Type*} [TopologicalSpace α] [CompactSpace α] [Zero α]
+
+noncomputable instance [MetricSpace R] [Zero R]: MetricSpace C(α, R)₀ :=
+  ContinuousMapZero.uniformEmbedding_toContinuousMap.comapMetricSpace _
+
+noncomputable instance [NormedAddCommGroup R] : Norm C(α, R)₀ where
+  norm f := ‖(f : C(α, R))‖
+
+noncomputable instance [NormedCommRing R] : NonUnitalNormedCommRing C(α, R)₀ where
+  dist_eq f g := NormedAddGroup.dist_eq (f : C(α, R)) g
+  norm_mul f g := NormedRing.norm_mul (f : C(α, R)) g
+  mul_comm f g := mul_comm f g
+
+instance [NormedField 𝕜] [NormedCommRing R] [NormedAlgebra 𝕜 R] : NormedSpace 𝕜 C(α, R)₀ where
+  norm_smul_le r f := norm_smul_le r (f : C(α, R))
+
+instance [NormedCommRing R] [StarRing R] [CStarRing R] : CStarRing C(α, R)₀ where
+  norm_mul_self_le f := CStarRing.norm_mul_self_le (f : C(α, R))
+
+end Norm
 
 end ContinuousMapZero

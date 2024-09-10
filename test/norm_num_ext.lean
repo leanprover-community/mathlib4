@@ -375,8 +375,8 @@ example : (∑ i ∈ Finset.Ico 5 10, (i^2 : ℕ)) = 255 := by norm_num
 example : (∑ i ∈ Finset.Ioc 5 10, (i^2 : ℕ)) = 330 := by norm_num
 example : (∑ i ∈ Finset.Ioo 5 10, (i^2 : ℕ)) = 230 := by norm_num
 example : (∑ i ∈ Finset.Ioo (-5) 5, i^2) = 60 := by norm_num
-example (f : ℕ → α) : ∑ i ∈ Finset.mk {0, 1, 2} dec_trivial, f i = f 0 + f 1 + f 2 :=
-  by norm_num; ring
+example (f : ℕ → α) : ∑ i ∈ Finset.mk {0, 1, 2} dec_trivial, f i = f 0 + f 1 + f 2 := by
+  norm_num; ring
 -/
 
 -- Combined with other `norm_num` extensions:
@@ -388,6 +388,18 @@ example : ∏ i ∈ Finset.range 9, Nat.sqrt (i + 1) = 96 := by norm_num1
 -- example : ∑ i : Fin 2, ∑ j : Fin 2, ![![0, 1], ![2, 3]] i j = 6 := by norm_num1
 
 end big_operators
+
+section floor
+
+variable (R : Type*) [LinearOrderedRing R] [FloorRing R]
+variable (K : Type*) [LinearOrderedField K] [FloorRing K]
+
+example : ⌊(-1 : R)⌋ = -1 := by norm_num
+example : ⌊(2 : R)⌋ = 2 := by norm_num
+example : ⌊(15 / 16 : K)⌋ + 1 = 1 := by norm_num
+example : ⌊(-15 / 16 : K)⌋ + 1 = 0 := by norm_num
+
+end floor
 
 section jacobi
 

@@ -5,6 +5,7 @@ Authors: Jeremy Tan
 -/
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.Analysis.SpecificLimits.Normed
+import Mathlib.Tactic.Peel
 
 /-!
 # Abel's limit theorem
@@ -267,6 +268,5 @@ theorem tendsto_tsum_powerSeries_nhdsWithin_lt
   convert h
   simp_rw [Function.comp_apply, dist_eq_norm]
   norm_cast
-  rw [norm_real]
 
 end Real
