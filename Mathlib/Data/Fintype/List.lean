@@ -39,7 +39,7 @@ theorem lists_coe (l : List α) : lists (l : Multiset α) = l.permutations :=
   rfl
 
 @[simp]
-theorem lists_nodup_finset (l : Finset α) [Fintype α] : (lists (l.val)).Nodup := by
+theorem lists_nodup_finset (l : Finset α) : (lists (l.val)).Nodup := by
   have h_nodup : l.val.Nodup := l.nodup
   rw [← Finset.coe_toList l, Multiset.coe_nodup ] at h_nodup
   rw [← Finset.coe_toList l]
@@ -67,13 +67,11 @@ instance fintypeNodupList [Fintype α] : Fintype { l : List α // l.Nodup } := b
     use ((Finset.univ : Finset α).powerset.toList : (List (Finset α)))
     constructor
     · simp only [Finset.coe_toList]
-    · have := Finset.nodup_toList (Finset.univ.powerset : Finset (Finset α))
-      convert this
+    · convert Finset.nodup_toList (Finset.univ.powerset : Finset (Finset α))
       ext l
       unfold Nodup
-      refine Pairwise.iff ?h.e.h.a.H
+      refine Pairwise.iff ?_
       intro m n
-      have := m.coe_toList
       rw [← m.coe_toList, ← n.coe_toList, Multiset.lists_coe, Multiset.lists_coe ]
       simp only [Multiset.coe_disjoint, ne_eq]
       rw [List.disjoint_iff_ne]
@@ -86,13 +84,12 @@ instance fintypeNodupList [Fintype α] : Fintype { l : List α // l.Nodup } := b
         use n.toList
         simp
       · intro h
-        simp
+        simp only [mem_permutations]
         intro a ha b hb
         by_contra hab
         absurd h
         rw [hab] at ha
-        have : m.toList ~ n.toList := Perm.trans (id (Perm.symm ha)) hb
-        exact perm_to_list.mp this
+        exact perm_to_list.mp <| Perm.trans (id (Perm.symm ha)) hb
   · intro l
     simp only [Finset.mem_mk, Multiset.mem_bind, Finset.mem_val, Finset.mem_powerset,
       Finset.subset_univ, Multiset.mem_lists_iff, Multiset.quot_mk_to_coe, true_and]
@@ -104,4 +101,4 @@ instance fintypeNodupList [Fintype α] : Fintype { l : List α // l.Nodup } := b
         exact f.nodup
       exact this
     · intro h
-      exact CanLift.prf (_) h
+      exact CanLift.prf _ h
