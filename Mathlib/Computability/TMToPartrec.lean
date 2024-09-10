@@ -1906,3 +1906,5 @@ end
 end PartrecToTM2
 
 end Turing
+
+set_option linter.style.longFile 2100

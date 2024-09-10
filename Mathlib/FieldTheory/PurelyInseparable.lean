@@ -127,7 +127,7 @@ separable degree, degree, separable closure, purely inseparable
 
 -/
 
-open FiniteDimensional Polynomial IntermediateField Field
+open FiniteDimensional Polynomial IntermediateField Field Finsupp
 
 noncomputable section
 
@@ -282,7 +282,7 @@ theorem mem_perfectClosure_iff_pow_mem (q : ℕ) [ExpChar F q] {x : E} :
     x ∈ perfectClosure F E ↔ ∃ n : ℕ, x ^ q ^ n ∈ (algebraMap F E).range := by
   rw [mem_perfectClosure_iff, ringExpChar.eq F q]
 
-/-- An element is contained in the relative perfect closure if and only if its mininal polynomial
+/-- An element is contained in the relative perfect closure if and only if its minimal polynomial
 has separable degree one. -/
 theorem mem_perfectClosure_iff_natSepDegree_eq_one {x : E} :
     x ∈ perfectClosure F E ↔ (minpoly F x).natSepDegree = 1 := by
@@ -629,7 +629,7 @@ namespace IntermediateField
 instance isPurelyInseparable_bot : IsPurelyInseparable F (⊥ : IntermediateField F E) :=
   (botEquiv F E).symm.isPurelyInseparable
 
-/-- `F⟮x⟯ / F` is a purely inseparable extension if and only if the mininal polynomial of `x`
+/-- `F⟮x⟯ / F` is a purely inseparable extension if and only if the minimal polynomial of `x`
 has separable degree one. -/
 theorem isPurelyInseparable_adjoin_simple_iff_natSepDegree_eq_one {x : E} :
     IsPurelyInseparable F F⟮x⟯ ↔ (minpoly F x).natSepDegree = 1 := by
@@ -920,8 +920,8 @@ theorem LinearIndependent.map_of_isPurelyInseparable_of_isSeparable [IsPurelyIns
     rw [hlF, Finsupp.not_mem_support_iff.1 hs, zero_pow this]
   replace h := linearIndependent_iff.1 (h.map_pow_expChar_pow_of_isIntegral' q n hsep) lF₀ <| by
     replace hl := congr($hl ^ q ^ n)
-    rw [Finsupp.total_apply, Finsupp.sum, sum_pow_char_pow, zero_pow this] at hl
-    rw [← hl, Finsupp.total_apply, Finsupp.onFinset_sum _ (fun _ ↦ by exact zero_smul _ _)]
+    rw [linearCombination_apply, Finsupp.sum, sum_pow_char_pow, zero_pow this] at hl
+    rw [← hl, linearCombination_apply, onFinset_sum _ (fun _ ↦ by exact zero_smul _ _)]
     refine Finset.sum_congr rfl fun i _ ↦ ?_
     simp_rw [Algebra.smul_def, mul_pow, IsScalarTower.algebraMap_apply F E K, hlF, map_pow]
   refine pow_eq_zero ((hlF _).symm.trans ?_)

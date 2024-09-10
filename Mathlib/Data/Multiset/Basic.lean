@@ -7,7 +7,6 @@ import Mathlib.Algebra.Group.Nat
 import Mathlib.Algebra.Order.Sub.Unbundled.Basic
 import Mathlib.Data.List.Perm
 import Mathlib.Data.Set.List
-import Mathlib.Init.Quot
 import Mathlib.Order.Hom.Basic
 
 /-!
@@ -27,7 +26,7 @@ open List Subtype Nat Function
 variable {α : Type*} {β : Type v} {γ : Type*}
 
 /-- `Multiset α` is the quotient of `List α` by list permutation. The result
-  is a type of finite sets with duplicates allowed.  -/
+  is a type of finite sets with duplicates allowed. -/
 def Multiset.{u} (α : Type u) : Type u :=
   Quotient (List.isSetoid α)
 
@@ -215,7 +214,7 @@ theorem mem_coe {a : α} {l : List α} : a ∈ (l : Multiset α) ↔ a ∈ l :=
   Iff.rfl
 
 instance decidableMem [DecidableEq α] (a : α) (s : Multiset α) : Decidable (a ∈ s) :=
-  Quot.recOnSubsingleton' s fun l ↦ inferInstanceAs (Decidable (a ∈ l))
+  Quot.recOnSubsingleton s fun l ↦ inferInstanceAs (Decidable (a ∈ l))
 
 @[simp]
 theorem mem_cons {a b : α} {s : Multiset α} : a ∈ b ::ₘ s ↔ a = b ∨ a ∈ s :=
@@ -1283,7 +1282,7 @@ theorem foldl_induction (f : α → α → α) (H : RightCommutative f) (x : α)
 /-- Lift of the list `pmap` operation. Map a partial function `f` over a multiset
   `s` whose elements are all in the domain of `f`. -/
 nonrec def pmap {p : α → Prop} (f : ∀ a, p a → β) (s : Multiset α) : (∀ a ∈ s, p a) → Multiset β :=
-  Quot.recOn' s (fun l H => ↑(pmap f l H)) fun l₁ l₂ (pp : l₁ ~ l₂) =>
+  Quot.recOn s (fun l H => ↑(pmap f l H)) fun l₁ l₂ (pp : l₁ ~ l₂) =>
     funext fun H₂ : ∀ a ∈ l₂, p a =>
       have H₁ : ∀ a ∈ l₁, p a := fun a h => H₂ a (pp.subset h)
       have : ∀ {s₂ e H}, @Eq.ndrec (Multiset α) l₁ (fun s => (∀ a ∈ s, p a) → Multiset β)
@@ -2738,3 +2737,5 @@ theorem coe_subsingletonEquiv [Subsingleton α] :
 @[deprecated (since := "2023-12-27")] alias card_lt_of_lt := card_lt_card
 
 end Multiset
+
+set_option linter.style.longFile 2900

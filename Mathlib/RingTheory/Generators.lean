@@ -45,7 +45,7 @@ variable (R : Type u) (S : Type v) [CommRing R] [CommRing S] [Algebra R S]
 2. `val : vars → S`: The assignment of each variable to a value in `S`.
 3. `σ`: A section of `R[X] → S`. -/
 structure Algebra.Generators where
-  /-- The type of variables.  -/
+  /-- The type of variables. -/
   vars : Type w
   /-- The assignment of each variable to a value in `S`. -/
   val : vars → S
@@ -157,7 +157,7 @@ end Localization
 variable {T} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
 /-- Given two families of generators `S[X] → T` and `R[Y] → S`,
-we may constuct the family of generators `R[X, Y] → T`. -/
+we may construct the family of generators `R[X, Y] → T`. -/
 @[simps val, simps (config := .lemmasOnly) vars σ]
 noncomputable
 def comp (Q : Generators S T) (P : Generators R S) : Generators R T where
@@ -381,10 +381,10 @@ instance : AddCommGroup P.Cotangent := inferInstanceAs (AddCommGroup P.ker.Cotan
 
 variable {P}
 
-/-- The identity map `P.ker.Cotangent → P.Cotangent` into the type synonym.  -/
+/-- The identity map `P.ker.Cotangent → P.Cotangent` into the type synonym. -/
 def Cotangent.of (x : P.ker.Cotangent) : P.Cotangent := x
 
-/-- The identity map `P.Cotangent → P.ker.Cotangent` from the type synonym.  -/
+/-- The identity map `P.Cotangent → P.ker.Cotangent` from the type synonym. -/
 def Cotangent.val (x : P.Cotangent) : P.ker.Cotangent := x
 
 @[ext]

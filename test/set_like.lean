@@ -51,7 +51,7 @@ example [Monoid M] (x y z : M) (S₁ S₂ : Submonoid M) (h : S₁ ≤ S₂) (hx
     x * y * z ∈ S₁ ⊔ S₂ := by
   aesop
 
-example [Monoid M] (x y z : M) (S : Submonoid M) (hxy : x * y ∈ S)  (hz : z ∈ S) :
+example [Monoid M] (x y z : M) (S : Submonoid M) (hxy : x * y ∈ S) (hz : z ∈ S) :
     z * (x * y) ∈ S := by
   aesop
 

@@ -73,8 +73,6 @@ scoped notation "Kernel[" mα "]" α:arg β:arg => @Kernel α β mα _
 /-- Notation for `Kernel` with respect to a non-standard σ-algebra in the domain and codomain. -/
 scoped notation "Kernel[" mα ", " mβ "]" α:arg β:arg => @Kernel α β mα mβ
 
-initialize_simps_projections Kernel (toFun → apply)
-
 variable {α β ι : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
 
 namespace Kernel
@@ -84,6 +82,9 @@ instance instFunLike : FunLike (Kernel α β) α (Measure β) where
   coe_injective' f g h := by cases f; cases g; congr
 
 lemma measurable (κ : Kernel α β) : Measurable κ := κ.measurable'
+@[simp, norm_cast] lemma coe_mk (f : α → Measure β) (hf) : mk f hf = f := rfl
+
+initialize_simps_projections Kernel (toFun → apply)
 
 instance instZero : Zero (Kernel α β) where zero := ⟨0, measurable_zero⟩
 noncomputable instance instAdd : Add (Kernel α β) where add κ η := ⟨κ + η, κ.2.add η.2⟩
@@ -223,7 +224,7 @@ lemma IsFiniteKernel.integrable (μ : Measure α) [IsFiniteMeasure μ]
     (κ : Kernel α β) [IsFiniteKernel κ] {s : Set β} (hs : MeasurableSet s) :
     Integrable (fun x => (κ x s).toReal) μ := by
   refine Integrable.mono' (integrable_const (IsFiniteKernel.bound κ).toReal)
-    ((κ.measurable_coe  hs).ennreal_toReal.aestronglyMeasurable)
+    ((κ.measurable_coe hs).ennreal_toReal.aestronglyMeasurable)
     (ae_of_all μ fun x => ?_)
   rw [Real.norm_eq_abs, abs_of_nonneg ENNReal.toReal_nonneg,
     ENNReal.toReal_le_toReal (measure_ne_top _ _) (IsFiniteKernel.bound_ne_top _)]

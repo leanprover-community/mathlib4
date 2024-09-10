@@ -298,13 +298,13 @@ theorem sumCompl_symm_apply_of_not_mem {α : Type u} {s : Set α} [DecidablePred
 
 @[simp]
 theorem sumCompl_symm_apply {α : Type*} {s : Set α} [DecidablePred (· ∈ s)] {x : s} :
-    (Equiv.Set.sumCompl s).symm x = Sum.inl x := by
-  cases' x with x hx; exact Set.sumCompl_symm_apply_of_mem hx
+    (Equiv.Set.sumCompl s).symm x = Sum.inl x :=
+  Set.sumCompl_symm_apply_of_mem x.2
 
 @[simp]
 theorem sumCompl_symm_apply_compl {α : Type*} {s : Set α} [DecidablePred (· ∈ s)]
-    {x : (sᶜ : Set α)} : (Equiv.Set.sumCompl s).symm x = Sum.inr x := by
-  cases' x with x hx; exact Set.sumCompl_symm_apply_of_not_mem hx
+    {x : (sᶜ : Set α)} : (Equiv.Set.sumCompl s).symm x = Sum.inr x :=
+  Set.sumCompl_symm_apply_of_not_mem x.2
 
 /-- `sumDiffSubset s t` is the natural equivalence between
 `s ⊕ (t \ s)` and `t`, where `s` and `t` are two sets. -/

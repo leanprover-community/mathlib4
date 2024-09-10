@@ -73,7 +73,7 @@ lemma not_even_degree_iff (w : Verts) : ¬Even (degree w) ↔ w = V1 ∨ w = V2 
 lemma setOf_odd_degree_eq :
     {v | Odd (graph.degree v)} = {Verts.V1, Verts.V2, Verts.V3, Verts.V4} := by
   ext w
-  simp [not_even_degree_iff]
+  simp [not_even_degree_iff, ← Nat.not_even_iff_odd]
 
 /-- The Königsberg graph is not Eulerian. -/
 theorem not_isEulerian {u v : Verts} (p : graph.Walk u v) (h : p.IsEulerian) : False := by

@@ -92,7 +92,7 @@ theorem OpenCover.iSup_opensRange {X : Scheme.{u}} (𝒰 : X.OpenCover) :
   Opens.ext <| by rw [Opens.coe_iSup]; exact 𝒰.iUnion_range
 
 /-- Given an open cover `{ Uᵢ }` of `X`, and for each `Uᵢ` an open cover, we may combine these
-open covers to form an open cover of `X`.  -/
+open covers to form an open cover of `X`. -/
 @[simps! J obj map]
 def OpenCover.bind (f : ∀ x : 𝒰.J, OpenCover (𝒰.obj x)) : OpenCover X where
   J := Σ i : 𝒰.J, (f i).J

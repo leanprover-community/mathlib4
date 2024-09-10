@@ -58,7 +58,7 @@ variable {n : ℕ} (P : MvPFunctor.{u} (n + 1))
 
 /-- A path from the root of a tree to one of its node -/
 inductive M.Path : P.last.M → Fin2 n → Type u
-  | root  (x : P.last.M)
+  | root (x : P.last.M)
           (a : P.A)
           (f : P.last.B a → P.last.M)
           (h : PFunctor.M.dest x = ⟨a, f⟩)
@@ -268,7 +268,7 @@ theorem M.bisim₀ {α : TypeVec n} (R : P.M α → P.M α → Prop) (h₀ : Equ
   intro i
   replace h₁ := congr_fun (congr_fun h₁ Fin2.fz) i
   simp only [TypeVec.comp, appendFun, splitFun] at h₁
-  replace h₁ := Quot.exact _ h₁
+  replace h₁ := Quot.eqvGen_exact _ h₁
   rw [h₀.eqvGen_iff] at h₁
   exact h₁
 

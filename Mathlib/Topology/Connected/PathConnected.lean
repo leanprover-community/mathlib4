@@ -33,7 +33,7 @@ Then there are corresponding relative notions for `F : Set X`.
 * `LocPathConnectedSpace X` is a predicate class asserting that `X` is locally path-connected:
   each point has a basis of path-connected neighborhoods (we do *not* ask these to be open).
 
-## Main theorems
+## Main theorems
 
 * `Joined` and `JoinedIn F` are transitive relations.
 

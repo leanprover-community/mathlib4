@@ -538,7 +538,7 @@ def of (x : α) : FreeGroup α :=
 @[to_additive]
 theorem Red.exact : mk L₁ = mk L₂ ↔ Join Red L₁ L₂ :=
   calc
-    mk L₁ = mk L₂ ↔ EqvGen Red.Step L₁ L₂ := Iff.intro (Quot.exact _) Quot.EqvGen_sound
+    mk L₁ = mk L₂ ↔ EqvGen Red.Step L₁ L₂ := Iff.intro (Quot.eqvGen_exact _) Quot.eqvGen_sound
     _ ↔ Join Red L₁ L₂ := eqvGen_step_iff_join_red
 
 /-- The canonical map from the type to the free group is an injection. -/

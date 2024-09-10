@@ -41,9 +41,9 @@ export WfDvdMonoid (wellFounded_dvdNotUnit)
 
 -- see Note [lower instance priority]
 instance (priority := 100) IsNoetherianRing.wfDvdMonoid [CommRing α] [IsDomain α]
-    [IsNoetherianRing α] : WfDvdMonoid α :=
+    [h : IsNoetherianRing α] : WfDvdMonoid α :=
   ⟨by
-    convert InvImage.wf (fun a => Ideal.span ({a} : Set α)) (wellFounded_submodule_gt _ _)
+    convert InvImage.wf (fun a => Ideal.span ({a} : Set α)) h.wf
     ext
     exact Ideal.span_singleton_lt_span_singleton.symm⟩
 
@@ -1975,3 +1975,5 @@ lemma factors_multiset_prod_of_irreducible {s : Multiset ℕ} (h : ∀ x : ℕ, 
   exact fun con ↦ not_irreducible_zero (h 0 con)
 
 end Nat
+
+set_option linter.style.longFile 2100

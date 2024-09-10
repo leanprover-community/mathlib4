@@ -1564,3 +1564,5 @@ noncomputable def toSet_equiv : ZFSet.{u} ≃ {s : Set ZFSet.{u} // Small.{u, u+
   right_inv s := Subtype.coe_injective <| toSet_equiv_aux s.2
 
 end ZFSet
+
+set_option linter.style.longFile 1700

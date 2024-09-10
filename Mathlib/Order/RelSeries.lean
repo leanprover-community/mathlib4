@@ -100,7 +100,7 @@ lemma toList_chain' (x : RelSeries r) : x.toList.Chain' r := by
 lemma toList_ne_nil (x : RelSeries r) : x.toList ≠ [] := fun m =>
   List.eq_nil_iff_forall_not_mem.mp m (x 0) <| (List.mem_ofFn _ _).mpr ⟨_, rfl⟩
 
-/-- Every nonempty list satisfying the chain condition gives a relation series-/
+/-- Every nonempty list satisfying the chain condition gives a relation series -/
 @[simps]
 def fromListChain' (x : List α) (x_ne_nil : x ≠ []) (hx : x.Chain' r) : RelSeries r where
   length := x.length - 1

@@ -276,7 +276,7 @@ private lemma tendsto_log_one_sub_sub_log_nhdsWithin_one_atBot :
   · have : Tendsto log (𝓝[>] 0) atBot := Real.tendsto_log_nhdsWithin_zero_right
     apply Tendsto.comp (f := (1 - ·)) (g := log) this
     have contF : Continuous ((1 : ℝ) - ·) := continuous_sub_left 1
-    have : MapsTo ((1 : ℝ) - ·)  (Iio 1) (Ioi 0) := by
+    have : MapsTo ((1 : ℝ) - ·) (Iio 1) (Ioi 0) := by
       intro p hx
       simp_all only [mem_Iio, mem_Ioi, sub_pos]
     convert ContinuousWithinAt.tendsto_nhdsWithin (x :=(1 : ℝ)) contF.continuousWithinAt this

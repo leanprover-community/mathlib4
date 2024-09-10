@@ -117,7 +117,9 @@ import Mathlib.Tactic.Linarith.Parsing
 import Mathlib.Tactic.Linarith.Preprocessing
 import Mathlib.Tactic.Linarith.Verification
 import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.LinearCombination'
 import Mathlib.Tactic.Linter
+import Mathlib.Tactic.Linter.AdmitLinter
 import Mathlib.Tactic.Linter.GlobalAttributeIn
 import Mathlib.Tactic.Linter.HashCommandLinter
 import Mathlib.Tactic.Linter.HaveLetLinter
@@ -202,6 +204,7 @@ import Mathlib.Tactic.Simps.NotationClass
 import Mathlib.Tactic.SlimCheck
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Spread
+import Mathlib.Tactic.StacksAttribute
 import Mathlib.Tactic.Subsingleton
 import Mathlib.Tactic.Substs
 import Mathlib.Tactic.SuccessIfFailWithMsg

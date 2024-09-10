@@ -1025,7 +1025,7 @@ lemma le_biSup {ι : Type*} {s : Set ι} (f : ι → α) {i : ι} (hi : i ∈ s)
 
 begin
   apply @le_antisymm,
-  safe, pose h := f a ⊓ g a, begin [smt] ematch, ematch  end
+  safe, pose h := f a ⊓ g a, begin [smt] ematch, ematch end
 end
 -/
 theorem iSup_sup [Nonempty ι] {f : ι → α} {a : α} : (⨆ x, f x) ⊔ a = ⨆ x, f x ⊔ a := by
@@ -1719,3 +1719,5 @@ instance instCompleteLinearOrder : CompleteLinearOrder PUnit where
   top_sdiff := by intros; trivial
 
 end PUnit
+
+set_option linter.style.longFile 1900

@@ -327,7 +327,7 @@ end Indep
 
 section FromIndepToIndep
 
-variable {m : ι → MeasurableSpace Ω}  {_mΩ : MeasurableSpace Ω} {μ : Measure Ω}
+variable {m : ι → MeasurableSpace Ω} {_mΩ : MeasurableSpace Ω} {μ : Measure Ω}
 
 theorem iIndepSets.indepSets {s : ι → Set (Set Ω)}
     (h_indep : iIndepSets s μ) {i j : ι} (hij : i ≠ j) : IndepSets (s i) (s j) μ :=
@@ -471,6 +471,10 @@ theorem indepSet_iff_measure_inter_eq_mul (hs_meas : MeasurableSet s)
     [IsProbabilityMeasure μ] : IndepSet s t μ ↔ μ (s ∩ t) = μ s * μ t :=
   (indepSet_iff_indepSets_singleton hs_meas ht_meas μ).trans indepSets_singleton_iff
 
+lemma IndepSet.measure_inter_eq_mul {μ : Measure Ω} (h : IndepSet s t μ) :
+    μ (s ∩ t) = μ s * μ t := by
+  simpa using Kernel.IndepSet.measure_inter_eq_mul _ _ h
+
 theorem IndepSets.indepSet_of_mem (hs : s ∈ S) (ht : t ∈ T)
     (hs_meas : MeasurableSet s) (ht_meas : MeasurableSet t)
     (μ : Measure Ω := by volume_tac) [IsProbabilityMeasure μ]
@@ -497,6 +501,10 @@ theorem iIndepSets_singleton_iff {s : ι → Set Ω} :
     iIndepSets (fun i ↦ {s i}) μ ↔ ∀ t, μ (⋂ i ∈ t, s i) = ∏ i ∈ t, μ (s i) := by
   simp_rw [iIndepSets, Kernel.iIndepSets_singleton_iff, ae_dirac_eq, Filter.eventually_pure,
     Kernel.const_apply]
+
+theorem iIndepSet.meas_biInter {f : ι → Set Ω} (h : iIndepSet f μ) (s : Finset ι) :
+    μ (⋂ i ∈ s, f i) = ∏ i ∈ s, μ (f i) := by
+  simpa using Kernel.iIndepSet.meas_biInter h s
 
 variable [IsProbabilityMeasure μ]
 
@@ -533,13 +541,17 @@ theorem indepFun_iff_measure_inter_preimage_eq_mul {mβ : MeasurableSpace β}
   simp only [IndepFun, Kernel.indepFun_iff_measure_inter_preimage_eq_mul, ae_dirac_eq,
     Filter.eventually_pure, Kernel.const_apply]
 
+alias ⟨IndepFun.measure_inter_preimage_eq_mul, _⟩ := indepFun_iff_measure_inter_preimage_eq_mul
+
 theorem iIndepFun_iff_measure_inter_preimage_eq_mul {ι : Type*} {β : ι → Type*}
-    (m : ∀ x, MeasurableSpace (β x)) (f : ∀ i, Ω → β i) :
+    {m : ∀ x, MeasurableSpace (β x)} {f : ∀ i, Ω → β i} :
     iIndepFun m f μ ↔
       ∀ (S : Finset ι) {sets : ∀ i : ι, Set (β i)} (_H : ∀ i, i ∈ S → MeasurableSet[m i] (sets i)),
         μ (⋂ i ∈ S, f i ⁻¹' sets i) = ∏ i ∈ S, μ (f i ⁻¹' sets i) := by
   simp only [iIndepFun, Kernel.iIndepFun_iff_measure_inter_preimage_eq_mul, ae_dirac_eq,
     Filter.eventually_pure, Kernel.const_apply]
+
+alias ⟨iIndepFun.measure_inter_preimage_eq_mul, _⟩ := iIndepFun_iff_measure_inter_preimage_eq_mul
 
 theorem indepFun_iff_indepSet_preimage {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     [IsProbabilityMeasure μ] (hf : Measurable f) (hg : Measurable g) :
@@ -705,3 +717,44 @@ theorem iIndepSet.iIndepFun_indicator [Zero β] [One β] {m : MeasurableSpace β
 end IndepFun
 
 end ProbabilityTheory
+
+namespace MeasureTheory
+
+open Filter ProbabilityTheory
+open scoped NNReal Topology
+
+/-- If a nonzero function belongs to `ℒ^p` and is independent of another function, then
+the space is a probability space. -/
+lemma Memℒp.isProbabilityMeasure_of_indepFun
+    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
+    {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E]
+    {F : Type*} [MeasurableSpace F]
+    (f : Ω → E) (g : Ω → F) {p : ℝ≥0∞} (hp : p ≠ 0) (hp' : p ≠ ∞)
+    (hℒp : Memℒp f p μ) (h'f : ¬(∀ᵐ ω ∂μ, f ω = 0)) (hindep : IndepFun f g μ) :
+    IsProbabilityMeasure μ := by
+  obtain ⟨c, c_pos, hc⟩ : ∃ (c : ℝ≥0), 0 < c ∧ 0 < μ {ω | c ≤ ‖f ω‖₊} := by
+    contrapose! h'f
+    have A (c : ℝ≥0) (hc : 0 < c) : ∀ᵐ ω ∂μ, ‖f ω‖₊ < c := by simpa [ae_iff] using h'f c hc
+    obtain ⟨u, -, u_pos, u_lim⟩ : ∃ u, StrictAnti u ∧ (∀ (n : ℕ), 0 < u n)
+      ∧ Tendsto u atTop (𝓝 0) := exists_seq_strictAnti_tendsto (0 : ℝ≥0)
+    filter_upwards [ae_all_iff.2 (fun n ↦ A (u n) (u_pos n))] with ω hω
+    simpa using ge_of_tendsto' u_lim (fun i ↦ (hω i).le)
+  have h'c : μ {ω | c ≤ ‖f ω‖₊} < ∞ := hℒp.meas_ge_lt_top hp hp' c_pos.ne'
+  have := hindep.measure_inter_preimage_eq_mul {x | c ≤ ‖x‖₊} Set.univ
+    (isClosed_le continuous_const continuous_nnnorm).measurableSet MeasurableSet.univ
+  simp only [Set.preimage_setOf_eq, Set.preimage_univ, Set.inter_univ] at this
+  exact ⟨(ENNReal.mul_eq_left hc.ne' h'c.ne).1 this.symm⟩
+
+/-- If a nonzero function is integrable and is independent of another function, then
+the space is a probability space. -/
+lemma Integrable.isProbabilityMeasure_of_indepFun
+    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
+    {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E]
+    {F : Type*} [MeasurableSpace F]
+    (f : Ω → E) (g : Ω → F)
+    (hf : Integrable f μ) (h'f : ¬(∀ᵐ ω ∂μ, f ω = 0)) (hindep : IndepFun f g μ) :
+    IsProbabilityMeasure μ :=
+  Memℒp.isProbabilityMeasure_of_indepFun f g one_ne_zero ENNReal.one_ne_top
+    (memℒp_one_iff_integrable.mpr hf) h'f hindep
+
+end MeasureTheory

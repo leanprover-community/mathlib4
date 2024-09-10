@@ -9,7 +9,7 @@ import Mathlib.RingTheory.DedekindDomain.Ideal
 /-!
 # Criteria under which a Dedekind domain is a PID
 
-This file contains some results that we can use to test wether all ideals in a Dedekind domain are
+This file contains some results that we can use to test whether all ideals in a Dedekind domain are
 principal.
 
 ## Main results

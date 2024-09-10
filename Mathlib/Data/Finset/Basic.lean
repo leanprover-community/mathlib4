@@ -105,8 +105,9 @@ In Lean, we use lattice notation to talk about things involving unions and inter
 
 ### Equivalences between finsets
 
-* The `Mathlib/Data/Equiv.lean` files describe a general type of equivalence, so look in there for
-  any lemmas. There is some API for rewriting sums and products from `s` to `t` given that `s ≃ t`.
+* The `Mathlib/Logic/Equiv/Defs.lean` files describe a general type of equivalence, so look in there
+  for any lemmas. There is some API for rewriting sums and products from `s` to `t` given that
+  `s ≃ t`.
   TODO: examples
 
 ## Tags
@@ -1441,6 +1442,10 @@ theorem singleton_inter_of_not_mem {a : α} {s : Finset α} (H : a ∉ s) : {a} 
   eq_empty_of_forall_not_mem <| by
     simp only [mem_inter, mem_singleton]; rintro x ⟨rfl, h⟩; exact H h
 
+lemma singleton_inter {a : α} {s : Finset α} :
+    {a} ∩ s = if a ∈ s then {a} else ∅ := by
+  split_ifs with h <;> simp [h]
+
 @[simp]
 theorem inter_singleton_of_mem {a : α} {s : Finset α} (h : a ∈ s) : s ∩ {a} = {a} := by
   rw [inter_comm, singleton_inter_of_mem h]
@@ -1448,6 +1453,10 @@ theorem inter_singleton_of_mem {a : α} {s : Finset α} (h : a ∈ s) : s ∩ {a
 @[simp]
 theorem inter_singleton_of_not_mem {a : α} {s : Finset α} (h : a ∉ s) : s ∩ {a} = ∅ := by
   rw [inter_comm, singleton_inter_of_not_mem h]
+
+lemma inter_singleton {a : α} {s : Finset α} :
+    s ∩ {a} = if a ∈ s then {a} else ∅ := by
+  split_ifs with h <;> simp [h]
 
 @[mono, gcongr]
 theorem inter_subset_inter {x y s t : Finset α} (h : x ⊆ y) (h' : s ⊆ t) : x ∩ s ⊆ y ∩ t := by
@@ -3061,3 +3070,5 @@ def proveFinsetNonempty {u : Level} {α : Q(Type u)} (s : Q(Finset $α)) :
   Lean.getExprMVarAssignment? mvar
 
 end Mathlib.Meta
+
+set_option linter.style.longFile 3100

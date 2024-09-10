@@ -17,7 +17,7 @@ open List
 
 variable {α : Type u} {β : α → Type v}
 
-/-! ### Multisets of sigma types-/
+/-! ### Multisets of sigma types -/
 
 namespace Multiset
 

@@ -25,7 +25,7 @@ the one element space in `CompHaus`.
 of the constant sheaf functor.
 * `isDiscrete_iff_of_equivalence` : The property of a sheaf of being discrete is invariant under
 equivalence of sheaf categories.
-* `isDiscrete_iff_forget` : Given a "forgetful" functor `U : A ⥤ B` a sheaf `F : Sheaf J A` is
+* `isDiscrete_iff_forget` : Given a "forgetful" functor `U : A ⥤ B` a sheaf `F : Sheaf J A` is
 discrete if and only if the sheaf given by postcomposition with `U` is discrete.
 
 ## Future work

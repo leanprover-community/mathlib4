@@ -230,6 +230,9 @@ theorem tendsto_approx_atTop (c : CU P) (x : X) :
 theorem lim_of_mem_C (c : CU P) (x : X) (h : x ∈ c.C) : c.lim x = 0 := by
   simp only [CU.lim, approx_of_mem_C, h, ciSup_const]
 
+theorem disjoint_C_support_lim (c : CU P) : Disjoint c.C (Function.support c.lim) :=
+  Function.disjoint_support_iff.mpr (fun x hx => lim_of_mem_C c x hx)
+
 theorem lim_of_nmem_U (c : CU P) (x : X) (h : x ∉ c.U) : c.lim x = 1 := by
   simp only [CU.lim, approx_of_nmem_U c _ h, ciSup_const]
 
@@ -430,6 +433,54 @@ theorem exists_continuous_one_zero_of_isCompact_of_isGδ [RegularSpace X] [Local
   · exact tsum_nonneg (fun n ↦ mul_nonneg (u_pos n).le (f_range n x).1)
   · apply le_trans _ hu.le
     exact tsum_le_tsum (fun n ↦ I n x) (S x) u_sum
+
+/-- A variation of Urysohn's lemma. In a `T2Space X`, for a closed set `t` and a relatively
+compact open set `s` such that `t ⊆ s`, there is a continuous function `f` supported in `s`,
+`f x = 1` on `t` and `0 ≤ f x ≤ 1`. -/
+lemma exists_tsupport_one_of_isOpen_isClosed [T2Space X] {s t : Set X}
+    (hs : IsOpen s) (hscp : IsCompact (closure s)) (ht : IsClosed t) (hst : t ⊆ s) : ∃ f : C(X, ℝ),
+    tsupport f ⊆ s ∧ EqOn f 1 t ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1 := by
+-- separate `sᶜ` and `t` by `u` and `v`.
+  rw [← compl_compl s] at hscp
+  obtain ⟨u, v, huIsOpen, hvIsOpen, hscompl_subset_u, ht_subset_v, hDjsjointuv⟩ :=
+    SeparatedNhds.of_isClosed_isCompact_closure_compl_isClosed (isClosed_compl_iff.mpr hs)
+    hscp ht (HasSubset.Subset.disjoint_compl_left hst)
+  rw [← subset_compl_iff_disjoint_right] at hDjsjointuv
+  have huvc : closure u ⊆ vᶜ := closure_minimal hDjsjointuv hvIsOpen.isClosed_compl
+-- although `sᶜ` is not compact, `closure s` is compact and we can apply
+-- `SeparatedNhds.of_isClosed_isCompact_closure_compl_isClosed`. To apply the condition
+-- recursively, we need to make sure that `sᶜ ⊆ C`.
+  let P : Set X → Prop := fun C => sᶜ ⊆ C
+  set c : Urysohns.CU P :=
+  { C := closure u
+    U := tᶜ
+    P_C := hscompl_subset_u.trans subset_closure
+    closed_C := isClosed_closure
+    open_U := ht.isOpen_compl
+    subset := subset_compl_comm.mp
+      (Subset.trans ht_subset_v (subset_compl_comm.mp huvc))
+    hP := by
+      intro c u0 cIsClosed Pc u0IsOpen csubu0
+      obtain ⟨u1, hu1⟩ := SeparatedNhds.of_isClosed_isCompact_closure_compl_isClosed cIsClosed
+        (IsCompact.of_isClosed_subset hscp isClosed_closure
+        (closure_mono (compl_subset_compl.mpr Pc)))
+        (isClosed_compl_iff.mpr u0IsOpen) (HasSubset.Subset.disjoint_compl_right csubu0)
+      simp_rw [← subset_compl_iff_disjoint_right, compl_subset_comm (s := u0)] at hu1
+      obtain ⟨v1, hu1, hv1, hcu1, hv1u, hu1v1⟩ := hu1
+      refine ⟨u1, hu1, hcu1, ?_, (Pc.trans hcu1).trans subset_closure⟩
+      exact closure_minimal hu1v1 hv1.isClosed_compl |>.trans hv1u }
+-- `c.lim = 0` on `closure u` and `c.lim = 1` on `t`, so that `tsupport c.lim ⊆ s`.
+  use ⟨c.lim, c.continuous_lim⟩
+  simp only [ContinuousMap.coe_mk]
+  refine ⟨?_, ?_, Urysohns.CU.lim_mem_Icc c⟩
+  · apply Subset.trans _ (compl_subset_comm.mp hscompl_subset_u)
+    rw [← IsClosed.closure_eq (isClosed_compl_iff.mpr huIsOpen)]
+    apply closure_mono
+    exact Disjoint.subset_compl_right (disjoint_of_subset_right subset_closure
+      (Disjoint.symm (Urysohns.CU.disjoint_C_support_lim c)))
+  · intro x hx
+    apply Urysohns.CU.lim_of_nmem_U
+    exact not_mem_compl_iff.mpr hx
 
 theorem exists_continuous_nonneg_pos [RegularSpace X] [LocallyCompactSpace X] (x : X) :
     ∃ f : C(X, ℝ), HasCompactSupport f ∧ 0 ≤ (f : X → ℝ) ∧ f x ≠ 0 := by

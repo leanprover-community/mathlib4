@@ -342,11 +342,8 @@ abbrev pseudoMetricAux : PseudoMetricSpace (PiLp p α) :=
       rcases p.dichotomy with (rfl | h)
       · exact iSup_edist_ne_top_aux f g
       · rw [edist_eq_sum (zero_lt_one.trans_le h)]
-        exact
-          ENNReal.rpow_ne_top_of_nonneg (one_div_nonneg.2 (zero_le_one.trans h))
-            (ne_of_lt <|
-              ENNReal.sum_lt_top fun i hi =>
-                ENNReal.rpow_ne_top_of_nonneg (zero_le_one.trans h) (edist_ne_top _ _)))
+        exact ENNReal.rpow_ne_top_of_nonneg (by positivity) <| ENNReal.sum_ne_top.2 fun _ _ ↦
+          ENNReal.rpow_ne_top_of_nonneg (by positivity) (edist_ne_top _ _))
     fun f g => by
     rcases p.dichotomy with (rfl | h)
     · rw [edist_eq_iSup, dist_eq_iSup]
@@ -643,7 +640,7 @@ variable (p 𝕜)
 variable (E : Type*) [SeminormedAddCommGroup E] [Module 𝕜 E]
 
 /-- An equivalence of finite domains induces a linearly isometric equivalence of finitely supported
-functions-/
+functions -/
 def _root_.LinearIsometryEquiv.piLpCongrLeft (e : ι ≃ ι') :
     (PiLp p fun _ : ι => E) ≃ₗᵢ[𝕜] PiLp p fun _ : ι' => E where
   toLinearEquiv := LinearEquiv.piCongrLeft' 𝕜 (fun _ : ι => E) e

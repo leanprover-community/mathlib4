@@ -217,7 +217,7 @@ lemma odd_matches_node_outside {u : Set V} {c : ConnectedComponent (Subgraph.del
       and_true] at hv' ⊢
     trivial
 
-  apply Nat.odd_iff_not_even.mp codd
+  apply Nat.not_even_iff_odd.2 codd
   haveI : Fintype ↑(Subgraph.induce M (Subtype.val '' supp c)).verts := Fintype.ofFinite _
   classical
   have hMeven := Subgraph.IsMatching.even_card hMmatch

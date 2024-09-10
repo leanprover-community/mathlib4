@@ -683,7 +683,7 @@ theorem sin_sq_pi_over_two_pow_succ (n : ℕ) :
 @[simp]
 theorem sin_pi_over_two_pow_succ (n : ℕ) :
     sin (π / 2 ^ (n + 2)) = √(2 - sqrtTwoAddSeries 0 n) / 2 := by
-  rw [eq_div_iff_mul_eq two_ne_zero, eq_comm, sqrt_eq_iff_sq_eq, mul_pow,
+  rw [eq_div_iff_mul_eq two_ne_zero, eq_comm, sqrt_eq_iff_eq_sq, mul_pow,
     sin_sq_pi_over_two_pow_succ, sub_mul]
   · congr <;> norm_num
   · rw [sub_nonneg]

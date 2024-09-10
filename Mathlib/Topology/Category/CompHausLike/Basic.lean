@@ -49,7 +49,7 @@ instance hasForget₂ : HasForget₂ (CompHausLike P) TopCat :=
 
 variable (X : Type u) [TopologicalSpace X] [CompactSpace X] [T2Space X]
 
-/-- This wraps the predicate `P : TopCat → Prop` in a typeclass. -/
+/-- This wraps the predicate `P : TopCat → Prop` in a typeclass. -/
 class HasProp : Prop where
   hasProp : P (TopCat.of X)
 
@@ -91,7 +91,7 @@ instance (X : CompHausLike.{u} P) : T2Space ((forget (CompHausLike P)).obj X) :=
 
 variable {P}
 
-/-- If `P` imples `P'`, then there is a functor from `CompHausLike P` to `CompHausLike P'`. -/
+/-- If `P` imples `P'`, then there is a functor from `CompHausLike P` to `CompHausLike P'`. -/
 @[simps]
 def toCompHausLike {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
     CompHausLike P ⥤ CompHausLike P' where
@@ -104,7 +104,7 @@ section
 
 variable {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop)
 
-/-- If `P` imples `P'`, then the functor from `CompHausLike P` to `CompHausLike P'` is fully
+/-- If `P` imples `P'`, then the functor from `CompHausLike P` to `CompHausLike P'` is fully
 faithful. -/
 def fullyFaithfulToCompHausLike : (toCompHausLike h).FullyFaithful :=
   fullyFaithfulInducedFunctor _

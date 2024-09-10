@@ -19,25 +19,39 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: "${{ secrets.NIGHTLY_TESTING }}"
+          token: "${{ secrets.UPDATE_DEPENDENCIES_TOKEN }}"
+
+      - name: Get PR and labels
+        id: PR # all the steps below are skipped if 'ready-to-merge' is in the list of labels found here
+        uses: 8BitJonny/gh-get-current-pr@3.0.0
+        # TODO: this may not work properly if the same commit is pushed to multiple branches:
+        # https://github.com/8BitJonny/gh-get-current-pr/issues/8
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # Only return if PR is still open
+          filterOutClosed: true
 
       - name: Configure Git User
+        if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}
         run: |
           git config user.name "leanprover-community-mathlib4-bot"
           git config user.email "leanprover-community-mathlib4-bot@users.noreply.github.com"
 
       - name: Update dependencies
+        if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}
         run: lake update
 
       - name: Generate PR title
+        if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}
         run: |
           echo "timestamp=$(date -u +"%Y-%m-%d-%H-%M")" >> "$GITHUB_ENV"
           echo "pr_title=chore: update Mathlib dependencies $(date -u +"%Y-%m-%d")" >> "$GITHUB_ENV"
 
       - name: Create Pull Request
+        if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}
         uses: peter-evans/create-pull-request@v6
         with:
-          token: "${{ secrets.NIGHTLY_TESTING }}"
+          token: "${{ secrets.UPDATE_DEPENDENCIES_TOKEN }}"
           commit-message: "chore: update Mathlib dependencies ${{ env.timestamp }}"
           # this branch is referenced in update_dependencies_zulip.yml
           branch: "update-dependencies-bot-use-only"

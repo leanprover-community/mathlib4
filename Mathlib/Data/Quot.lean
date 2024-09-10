@@ -46,6 +46,9 @@ instance (r : α → α → Prop) [Inhabited α] : Inhabited (Quot r) :=
 protected instance Subsingleton [Subsingleton α] : Subsingleton (Quot ra) :=
   ⟨fun x ↦ Quot.induction_on x fun _ ↦ Quot.ind fun _ ↦ congr_arg _ (Subsingleton.elim _ _)⟩
 
+@[deprecated (since := "2024-08-26")] alias recOn' := Quot.recOn
+@[deprecated (since := "2024-08-26")] alias recOnSubsingleton' := Quot.recOnSubsingleton
+
 instance [Unique α] : Unique (Quot ra) := Unique.mk' _
 
 /-- Recursion on two `Quotient` arguments `a` and `b`, result type depends on `⟦a⟧` and `⟦b⟧`. -/
@@ -264,7 +267,7 @@ end Quotient
 
 theorem Quot.eq {α : Type*} {r : α → α → Prop} {x y : α} :
     Quot.mk r x = Quot.mk r y ↔ EqvGen r x y :=
-  ⟨Quot.exact r, Quot.EqvGen_sound⟩
+  ⟨Quot.eqvGen_exact r, Quot.eqvGen_sound⟩
 
 @[simp]
 theorem Quotient.eq [r : Setoid α] {x y : α} : Quotient.mk r x = ⟦y⟧ ↔ x ≈ y :=

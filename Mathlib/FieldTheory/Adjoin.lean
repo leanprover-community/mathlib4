@@ -356,12 +356,12 @@ theorem adjoin_adjoin_left (T : Set E) :
   apply Set.eq_of_subset_of_subset <;> rw [adjoin_subset_adjoin_iff] <;> constructor
   · rintro _ ⟨⟨x, hx⟩, rfl⟩; exact adjoin.mono _ _ _ Set.subset_union_left hx
   · exact subset_adjoin_of_subset_right _ _ Set.subset_union_right
--- Porting note: orginal proof times out
+-- Porting note: original proof times out
   · rintro x ⟨f, rfl⟩
     refine Subfield.subset_closure ?_
     left
     exact ⟨f, rfl⟩
--- Porting note: orginal proof times out
+-- Porting note: original proof times out
   · refine Set.union_subset (fun x hx => Subfield.subset_closure ?_)
       (fun x hx => Subfield.subset_closure ?_)
     · left
