@@ -1205,10 +1205,10 @@ end WithBot
 
 section OrdConnected
 
-variable {α : Type*} [PartialOrder α]
+variable {α : Type*} [PartialOrder α] {s : Set α} [s.OrdConnected]
 
 open scoped Classical in
-noncomputable instance Set.OrdConnected.predOrder [PredOrder α] (s : Set α) [s.OrdConnected] :
+noncomputable instance Set.OrdConnected.predOrder [PredOrder α] :
     PredOrder s where
   pred x := if h : Order.pred x.1 ∈ s then ⟨Order.pred x.1, h⟩ else x
   pred_le := fun ⟨x, hx⟩ ↦ by dsimp; split <;> simp_all [Order.pred_le]
@@ -1233,9 +1233,47 @@ noncomputable instance Set.OrdConnected.predOrder [PredOrder α] (s : Set α) [s
     · exact h.le_pred
     · exact h.le
 
-noncomputable instance Set.OrdConnected.succOrder [SuccOrder α] (s : Set α) [s.OrdConnected] :
+@[simp, norm_cast]
+lemma coe_pred_of_mem [PredOrder α] {a : s} (h : pred a.1 ∈ s) :
+    (pred a).1 = pred a.1 := by classical
+  change Subtype.val (dite ..) = _
+  simp [h]
+
+lemma pred_eq_self_of_not_mem [PredOrder α] {a : s} (h : pred a.1 ∉ s) : pred a = a := by classical
+  change dite .. = _
+  simp [h]
+
+@[simp]
+lemma pred_eq_self_iff_not_pred_mem [PredOrder α] [NoMinOrder α] {a : s} :
+    pred a = a ↔ pred a.1 ∉ s where
+  mp h nh := by
+    replace h := congr($h.1)
+    rw [coe_pred_of_mem nh] at h
+    simp at h
+  mpr := pred_eq_self_of_not_mem
+
+noncomputable instance Set.OrdConnected.succOrder [SuccOrder α] :
     SuccOrder s :=
   letI : PredOrder sᵒᵈ := inferInstanceAs (PredOrder (OrderDual.ofDual ⁻¹' s))
   inferInstanceAs (SuccOrder sᵒᵈᵒᵈ)
+
+@[simp, norm_cast]
+lemma coe_succ_of_mem [SuccOrder α] {a : s} (h : succ a.1 ∈ s) :
+    (succ a).1 = succ a.1 := by classical
+  change Subtype.val (dite ..) = _
+  split_ifs <;> trivial
+
+lemma succ_eq_self_of_not_mem [SuccOrder α] {a : s} (h : succ a.1 ∉ s) : succ a = a := by classical
+  change dite .. = _
+  split_ifs <;> trivial
+
+@[simp]
+lemma succ_eq_self_iff_not_succ_mem [SuccOrder α] [NoMaxOrder α] {a : s} :
+    succ a = a ↔ succ a.1 ∉ s where
+  mp h nh := by
+    replace h := congr($h.1)
+    rw [coe_succ_of_mem nh] at h
+    simp at h
+  mpr := succ_eq_self_of_not_mem
 
 end OrdConnected
