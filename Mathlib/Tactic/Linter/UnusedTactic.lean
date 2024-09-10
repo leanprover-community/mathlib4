@@ -127,6 +127,9 @@ initialize ignoreTacticKindsRef : IO.Ref NameHashSet ←
     |>.insert `Mathlib.Tactic.Hint.registerHintStx
     |>.insert `Mathlib.Tactic.LinearCombination.linearCombination
     |>.insert `Mathlib.Tactic.LinearCombination'.linearCombination'
+    |>.insert `Aesop.Frontend.Parser.addRules
+    |>.insert `Aesop.Frontend.Parser.aesopTactic
+    |>.insert `Aesop.Frontend.Parser.aesopTactic?
     -- the following `SyntaxNodeKind`s play a role in silencing `test`s
     |>.insert ``Lean.Parser.Tactic.failIfSuccess
     |>.insert `Mathlib.Tactic.successIfFailWithMsg
