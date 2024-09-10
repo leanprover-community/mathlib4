@@ -656,7 +656,7 @@ theorem mem_ker (v : V₁) : v ∈ f.ker ↔ f v = 0 := by
 @[simps]
 def ker.lift (h : g.comp f = 0) : NormedAddGroupHom V₁ g.ker where
   toFun v := ⟨f v, by rw [g.mem_ker, ← comp_apply g f, h, zero_apply]⟩
-  map_add' v w := by simp only [map_add, AddSubmonoid.mk_add_mk]
+  map_add' v w := by simp only [map_add, AddMemClass.mk_add_mk]
   bound' := f.bound'
 
 @[simp]

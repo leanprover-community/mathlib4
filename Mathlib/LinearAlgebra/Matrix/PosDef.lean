@@ -18,7 +18,7 @@ of quadratic forms. Most results require `𝕜 = ℝ` or `ℂ`.
 * `Matrix.PosSemidef` : a matrix `M : Matrix n n 𝕜` is positive semidefinite if it is hermitian
   and `xᴴMx` is nonnegative for all `x`.
 
-## Main results
+## Main results
 
 * `Matrix.posSemidef_iff_eq_transpose_mul_self` : a matrix `M : Matrix n n 𝕜` is positive
   semidefinite iff it has the form `Bᴴ * B` for some `B`.

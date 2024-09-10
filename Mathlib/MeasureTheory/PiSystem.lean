@@ -207,25 +207,25 @@ theorem subset_generatePiSystem_self {α} (S : Set (Set α)) : S ⊆ generatePiS
 
 theorem generatePiSystem_subset_self {α} {S : Set (Set α)} (h_S : IsPiSystem S) :
     generatePiSystem S ⊆ S := fun x h => by
-  induction' h with _ h_s s u _ _ h_nonempty h_s h_u
-  · exact h_s
-  · exact h_S _ h_s _ h_u h_nonempty
+  induction h with
+  | base h_s => exact h_s
+  | inter _ _ h_nonempty h_s h_u => exact h_S _ h_s _ h_u h_nonempty
 
 theorem generatePiSystem_eq {α} {S : Set (Set α)} (h_pi : IsPiSystem S) : generatePiSystem S = S :=
   Set.Subset.antisymm (generatePiSystem_subset_self h_pi) (subset_generatePiSystem_self S)
 
 theorem generatePiSystem_mono {α} {S T : Set (Set α)} (hST : S ⊆ T) :
     generatePiSystem S ⊆ generatePiSystem T := fun t ht => by
-  induction' ht with s h_s s u _ _ h_nonempty h_s h_u
-  · exact generatePiSystem.base (Set.mem_of_subset_of_mem hST h_s)
-  · exact isPiSystem_generatePiSystem T _ h_s _ h_u h_nonempty
+  induction ht with
+  | base h_s => exact generatePiSystem.base (Set.mem_of_subset_of_mem hST h_s)
+  | inter _ _ h_nonempty h_s h_u => exact isPiSystem_generatePiSystem T _ h_s _ h_u h_nonempty
 
 theorem generatePiSystem_measurableSet {α} [M : MeasurableSpace α] {S : Set (Set α)}
     (h_meas_S : ∀ s ∈ S, MeasurableSet s) (t : Set α) (h_in_pi : t ∈ generatePiSystem S) :
     MeasurableSet t := by
-  induction' h_in_pi with s h_s s u _ _ _ h_s h_u
-  · apply h_meas_S _ h_s
-  · apply MeasurableSet.inter h_s h_u
+  induction h_in_pi with
+  | base h_s => apply h_meas_S _ h_s
+  | inter _ _ _ h_s h_u => apply MeasurableSet.inter h_s h_u
 
 theorem generateFrom_measurableSet_of_generatePiSystem {α} {g : Set (Set α)} (t : Set α)
     (ht : t ∈ generatePiSystem g) : MeasurableSet[generateFrom g] t :=

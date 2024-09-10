@@ -60,7 +60,7 @@ partial def finCasesAt (g : MVarId) (hyp : FVarId) : MetaM (List MVarId) := g.wi
     -- Deal with `x : A`, where `[Fintype A]` is available:
     let inst ← synthInstance (← mkAppM ``Fintype #[type])
     let elems ← mkAppOptM ``Fintype.elems #[type, inst]
-    let t ← mkAppM ``Membership.mem #[.fvar hyp, elems]
+    let t ← mkAppM ``Membership.mem #[elems, .fvar hyp]
     let v ← mkAppOptM ``Fintype.complete #[type, inst, Expr.fvar hyp]
     let (fvar, g) ← (← g.assert `this t v).intro1P
     finCasesAt g fvar

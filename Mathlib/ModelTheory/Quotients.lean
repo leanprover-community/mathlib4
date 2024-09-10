@@ -64,9 +64,9 @@ theorem relMap_quotient_mk' {n : ℕ} (r : L.Relations n) (x : Fin n → M) :
 
 theorem Term.realize_quotient_mk' {β : Type*} (t : L.Term β) (x : β → M) :
     (t.realize fun i => (⟦x i⟧ : Quotient s)) = ⟦@Term.realize _ _ ps.toStructure _ x t⟧ := by
-  induction' t with _ _ _ _ ih
-  · rfl
-  · simp only [ih, funMap_quotient_mk', Term.realize]
+  induction t with
+  | var => rfl
+  | func _ _ ih => simp only [ih, funMap_quotient_mk', Term.realize]
 
 end Language
 

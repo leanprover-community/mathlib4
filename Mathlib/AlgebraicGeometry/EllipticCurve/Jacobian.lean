@@ -359,8 +359,8 @@ variable (W') in
 /-- The proposition that a point representative $(x, y, z)$ in `W'` is nonsingular.
 In other words, either $W_X(x, y, z) \ne 0$, $W_Y(x, y, z) \ne 0$, or $W_Z(x, y, z) \ne 0$.
 
-Note that this definition is only mathematically accurate for fields.
-TODO: generalise this definition to be mathematically accurate for a larger class of rings. -/
+Note that this definition is only mathematically accurate for fields. -/
+-- TODO: generalise this definition to be mathematically accurate for a larger class of rings.
 def Nonsingular (P : Fin 3 → R) : Prop :=
   W'.Equation P ∧
     (eval P W'.polynomialX ≠ 0 ∨ eval P W'.polynomialY ≠ 0 ∨ eval P W'.polynomialZ ≠ 0)

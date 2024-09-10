@@ -256,7 +256,7 @@ instance List.sampleableExt [SampleableExt α] : SampleableExt (List α) where
 
 end Samplers
 
-/-- An annotation for values that should never get shrinked. -/
+/-- An annotation for values that should never get shrunk. -/
 def NoShrink (α : Type u) := α
 
 namespace NoShrink

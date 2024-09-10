@@ -282,7 +282,7 @@ theorem mem_perfectClosure_iff_pow_mem (q : ℕ) [ExpChar F q] {x : E} :
     x ∈ perfectClosure F E ↔ ∃ n : ℕ, x ^ q ^ n ∈ (algebraMap F E).range := by
   rw [mem_perfectClosure_iff, ringExpChar.eq F q]
 
-/-- An element is contained in the relative perfect closure if and only if its mininal polynomial
+/-- An element is contained in the relative perfect closure if and only if its minimal polynomial
 has separable degree one. -/
 theorem mem_perfectClosure_iff_natSepDegree_eq_one {x : E} :
     x ∈ perfectClosure F E ↔ (minpoly F x).natSepDegree = 1 := by
@@ -629,7 +629,7 @@ namespace IntermediateField
 instance isPurelyInseparable_bot : IsPurelyInseparable F (⊥ : IntermediateField F E) :=
   (botEquiv F E).symm.isPurelyInseparable
 
-/-- `F⟮x⟯ / F` is a purely inseparable extension if and only if the mininal polynomial of `x`
+/-- `F⟮x⟯ / F` is a purely inseparable extension if and only if the minimal polynomial of `x`
 has separable degree one. -/
 theorem isPurelyInseparable_adjoin_simple_iff_natSepDegree_eq_one {x : E} :
     IsPurelyInseparable F F⟮x⟯ ↔ (minpoly F x).natSepDegree = 1 := by
@@ -741,7 +741,8 @@ private theorem LinearIndependent.map_pow_expChar_pow_of_fd_isSeparable
     (finrank_eq_card_basis b).symm
   let f (i : ι) : ι' := ⟨v i, h'.subset_extend _ ⟨i, rfl⟩⟩
   convert H.comp f fun _ _ heq ↦ h.injective (by simpa only [f, Subtype.mk.injEq] using heq)
-  simp_rw [Function.comp_apply, b, Basis.extend_apply_self]
+  simp_rw [Function.comp_apply, b]
+  rw [Basis.extend_apply_self]
 
 /-- If `E / F` is a separable extension of exponential characteristic `q`, if `{ u_i }` is a
 family of elements of `E` which is `F`-linearly independent, then `{ u_i ^ (q ^ n) }` is also

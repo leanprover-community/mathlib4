@@ -558,6 +558,7 @@ theorem Measurable.isLUB_of_mem {ι} [Countable ι] {f : ι → δ → α} {g g'
           simp only [mem_singleton_iff]
         · rintro - rfl
           exact ⟨i, rfl⟩
+      simp only [exists_prop'] at this
       simp [A, this, hg' hb, isLUB_singleton]
 
 theorem AEMeasurable.isLUB {ι} {μ : Measure δ} [Countable ι] {f : ι → δ → α} {g : δ → α}
