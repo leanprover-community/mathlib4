@@ -1,8 +1,8 @@
 import Mathlib.Tactic.Lift
 import Batteries.Tactic.PermuteGoals
 import Mathlib.Tactic.Coe
-import Mathlib.Init.Set
-import Mathlib.Order.Basic
+import Mathlib.Data.Set.Defs
+import Mathlib.Order.WithBot
 import Mathlib.Algebra.Group.WithOne.Defs
 import Mathlib.Data.Set.Image
 import Mathlib.Data.Set.List
@@ -110,7 +110,8 @@ example (n : ℤ) : ℕ := by
   fail_if_success lift n to ℕ
   exact 0
 
-instance canLift_subtype (R : Type _) (s : Set R) : CanLift R {x // x ∈ s} ((↑) : {x // x ∈ s} → R) (fun x => x ∈ s) :=
+instance canLift_subtype (R : Type _) (s : Set R) :
+    CanLift R {x // x ∈ s} ((↑) : {x // x ∈ s} → R) (fun x => x ∈ s) :=
   { prf := fun x hx => ⟨⟨x, hx⟩, rfl⟩ }
 
 example {R : Type _} {P : R → Prop} (x : R) (hx : P x) : P x := by

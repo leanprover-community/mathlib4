@@ -7,7 +7,6 @@ import Lean.Meta.Tactic.TryThis
 import Batteries.Linter.UnreachableTactic
 import Batteries.Control.Nondet.Basic
 import Mathlib.Tactic.FailIfNoProgress
-import Mathlib.Mathport.Rename
 
 /-!
 # The `hint` tactic.

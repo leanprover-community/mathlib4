@@ -1,4 +1,4 @@
-import Mathlib.Tactic.Congr!
+import Mathlib.Tactic.CongrExclamation
 import Mathlib.Algebra.BigOperators.Ring.List
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Data.Subtype
@@ -220,13 +220,13 @@ example {α β γ δ} {F : ∀{α β}, (α → β) → γ → δ} {f g : α → 
   funext
   apply h
 
-example {α β} {f : _ → β} {x y : {x : {x : α // x = x} // x = x} } (h : x.1 = y.1) :
+example {α β} {f : _ → β} {x y : {x : {x : α // x = x} // x = x}} (h : x.1 = y.1) :
     f x = f y := by
   congr! 1
   ext1
   exact h
 
-example {α β} {F : _ → β} {f g : {f : α → β // f = f} }
+example {α β} {F : _ → β} {f g : {f : α → β // f = f}}
     (h : ∀ x : α, (f : α → β) x = (g : α → β) x) :
     F f = F g := by
   congr!
@@ -339,6 +339,20 @@ x : α
 ⊢ inst1 = inst2
 -/
 #guard_msgs in
-example {α : Type} (inst1 : BEq α) [LawfulBEq α] (inst2 : BEq α) [LawfulBEq α] (xs : List α) (x : α) :
+example
+    {α : Type} (inst1 : BEq α) [LawfulBEq α] (inst2 : BEq α) [LawfulBEq α] (xs : List α) (x : α) :
     @List.erase _ inst1 xs x = @List.erase _ inst2 xs x := by
   congr! (config := { beqEq := false })
+
+
+/-!
+Check that congruence theorem generator operates at default transparency.
+Fixes error reported on Zulip:
+https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/congr!.20internal.20error/near/464820779
+-/
+
+def F := ∀ x : ℕ, x = 0 → ℕ
+def F.A (_ : F) : ℕ := 0
+def F.B (_ : F) : ℕ := 0
+theorem bug (H : F) (hp : H.A = 0) (hp' : H.B = 0) :
+  H H.A hp = H H.B hp' := by with_reducible congr!

@@ -3,13 +3,13 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.Algebra.GroupWithZero.Action.Prod
+import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Polynomial.Basic
-import Mathlib.GroupTheory.GroupAction.Prod
-import Mathlib.GroupTheory.GroupAction.Units
 import Mathlib.Data.Complex.Module
-import Mathlib.RingTheory.Algebraic
 import Mathlib.Data.ZMod.Basic
+import Mathlib.RingTheory.Algebraic
 import Mathlib.RingTheory.TensorProduct.Basic
 
 /-! # Tests that instances do not form diamonds -/
@@ -63,11 +63,9 @@ noncomputable def f : ℂ ⊗[ℝ] ℂ →ₗ[ℝ] ℝ :=
     { toFun := fun z => z.re • reLm
       map_add' := fun z w => by simp [add_smul]
       map_smul' := fun r z => by simp [mul_smul] }
-#align tensor_product.f TensorProduct.f
 
 @[simp]
 theorem f_apply (z w : ℂ) : f (z ⊗ₜ[ℝ] w) = z.re * w.re := by simp [f]
-#align tensor_product.f_apply TensorProduct.f_apply
 
 unseal Algebra.TensorProduct.mul in
 /- `TensorProduct.Algebra.module` forms a diamond with `Mul.toSMul` and
@@ -143,7 +141,7 @@ example : @Monoid.toMulOneClass (Multiplicative ℕ) CommMonoid.toMonoid =
 
 end Multiplicative
 
-/-! ## `Finsupp` instances-/
+/-! ## `Finsupp` instances -/
 
 
 section Finsupp
@@ -210,13 +208,13 @@ example [CommSemiring R] [Nontrivial R] :
   rfl
 
 -- fails `with_reducible_and_instances` #10906
-/-- `Polynomial.algebraOfAlgebra` is consistent with `algebraNat`. -/
-example [Semiring R] : (Polynomial.algebraOfAlgebra : Algebra ℕ R[X]) = algebraNat :=
+/-- `Polynomial.algebraOfAlgebra` is consistent with `Semiring.toNatAlgebra`. -/
+example [Semiring R] : (Polynomial.algebraOfAlgebra : Algebra ℕ R[X]) = Semiring.toNatAlgebra :=
   rfl
 
 -- fails `with_reducible_and_instances` #10906
-/-- `Polynomial.algebraOfAlgebra` is consistent with `algebraInt`. -/
-example [Ring R] : (Polynomial.algebraOfAlgebra : Algebra ℤ R[X]) = algebraInt _ :=
+/-- `Polynomial.algebraOfAlgebra` is consistent with `Ring.toIntAlgebra`. -/
+example [Ring R] : (Polynomial.algebraOfAlgebra : Algebra ℤ R[X]) = Ring.toIntAlgebra _ :=
   rfl
 
 end Polynomial

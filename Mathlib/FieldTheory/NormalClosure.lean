@@ -6,8 +6,7 @@ Authors: Thomas Browning
 
 import Mathlib.FieldTheory.Normal
 import Mathlib.Order.Closure
-
-#align_import field_theory.normal from "leanprover-community/mathlib"@"9fb8964792b4237dac6200193a0d533f1b3f7423"
+import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 /-!
 # Normal closures
 
@@ -73,6 +72,7 @@ lemma normalClosure_le_iSup_adjoin :
 
 variable (splits : ∀ x : K, (minpoly F x).Splits (algebraMap F L))
 
+include splits in
 lemma normalClosure_eq_iSup_adjoin_of_splits :
     normalClosure F K L = ⨆ x : K, IntermediateField.adjoin F ((minpoly F x).rootSet L) :=
   normalClosure_le_iSup_adjoin.antisymm <|
@@ -89,6 +89,7 @@ lemma isNormalClosure_iff : IsNormalClosure F K L ↔
     simpa only [normalClosure_eq_iSup_adjoin_of_splits splits] using h
 -- TODO: IntermediateField.isNormalClosure_iff similar to IntermediateField.isSplittingField_iff
 
+include splits in
 /-- `normalClosure F K L` is a valid normal closure if `K/F` is algebraic
   and all minimal polynomials of `K/F` splits in `L/F`. -/
 lemma isNormalClosure_normalClosure : IsNormalClosure F K (normalClosure F K L) := by
@@ -98,8 +99,8 @@ lemma isNormalClosure_normalClosure : IsNormalClosure F K (normalClosure F K L) 
       SetLike.coe_subset_coe.mpr <| by apply le_iSup _ x)
   simp_rw [normalClosure, ← top_le_iff]
   refine fun x _ ↦ (IntermediateField.val _).injective.mem_set_image.mp ?_
-  change x.val ∈ IntermediateField.map (IntermediateField.val _) _
-  rw [IntermediateField.map_iSup]
+  rw [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, coe_val, ← IntermediateField.coe_val,
+    ← IntermediateField.coe_map, IntermediateField.map_iSup]
   refine (iSup_le fun f ↦ ?_ : normalClosure F K L ≤ _) x.2
   refine le_iSup_of_le (f.codRestrict _ fun x ↦ f.fieldRange_le_normalClosure ⟨x, rfl⟩) ?_
   rw [AlgHom.map_fieldRange, val, AlgHom.val_comp_codRestrict]
@@ -148,7 +149,6 @@ theorem normalClosure_eq_iSup_adjoin' [ne : Nonempty (K →ₐ[F] L)] [h : Norma
 theorem normalClosure_eq_iSup_adjoin [Algebra K L] [IsScalarTower F K L] [Normal F L] :
     normalClosure F K L = ⨆ x : K, adjoin F ((minpoly F x).rootSet L) :=
   normalClosure_eq_iSup_adjoin' (ne := ⟨IsScalarTower.toAlgHom F K L⟩)
-#align normal_closure.restrict_scalars_eq_supr_adjoin normalClosure_eq_iSup_adjoin
 
 namespace normalClosure
 
@@ -163,7 +163,6 @@ instance normal [h : Normal F L] : Normal F (normalClosure F K L) := by
   obtain _ | φ := isEmpty_or_nonempty (K →ₐ[F] L)
   · rw [normalClosure, iSup_of_empty]; exact Normal.of_algEquiv (botEquiv F L).symm
   · exact (isNormalClosure_normalClosure F K L).normal
-#align normal_closure.normal normalClosure.normal
 
 instance is_finiteDimensional [FiniteDimensional F K] :
     FiniteDimensional F (normalClosure F K L) := by
@@ -175,7 +174,7 @@ variable [Algebra K L] [IsScalarTower F K L]
 
 noncomputable instance algebra :
     Algebra K (normalClosure F K L) :=
-  IntermediateField.algebra
+  IntermediateField.algebra'
     { ⨆ f : K →ₐ[F] L, f.fieldRange with
       algebraMap_mem' := fun r ↦ (toAlgHom F K L).fieldRange_le_normalClosure ⟨r, rfl⟩ }
 
