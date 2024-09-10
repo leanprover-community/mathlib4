@@ -80,8 +80,8 @@ theorem aevalMultiset_map (f : σ → S) (p : symmetricSubalgebra σ R) :
   rw [aevalMultiset_apply]
   conv_rhs =>
     rw [← AlgEquiv.apply_symm_apply (esymmAlgEquiv R rfl) p]
-  simp_rw [esymmAlgEquiv_symm_apply, esymmAlgEquiv_apply, esymmAlgHom_apply,
-    ← aeval_esymm_eq_multiset_esymm σ R, ← comp_aeval, AlgHom.coe_comp, Function.comp_apply]
+  simp_rw [esymmAlgEquiv_apply, esymmAlgHom_apply, ← aeval_esymm_eq_multiset_esymm σ R,
+    ← comp_aeval, AlgHom.coe_comp, Function.comp_apply]
 
 theorem aevalMultiset_map' (f : τ → S) (p : symmetricSubalgebra σ R)
     (h : Fintype.card σ = Fintype.card τ) :
