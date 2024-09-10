@@ -241,7 +241,7 @@ instance Int.instBinomialRing : BinomialRing ℤ where
   nsmul_right_injective n hn r s hrs := Int.eq_of_mul_eq_mul_left (Int.ofNat_ne_zero.mpr hn) hrs
   multichoose := Int.multichoose
   factorial_nsmul_multichoose r k := by
-    rw [Int.multichoose, nsmul_eq_mul]
+    rw [Int.multichoose.eq_def, nsmul_eq_mul]
     cases r with
     | ofNat n =>
       simp only [multichoose, nsmul_eq_mul, Int.ofNat_eq_coe, Int.ofNat_mul_out]

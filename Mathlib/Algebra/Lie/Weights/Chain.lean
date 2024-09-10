@@ -173,7 +173,11 @@ lemma trace_toEnd_genWeightSpaceChain_eq_zero
           lie_mem_genWeightSpaceChain_of_genWeightSpace_eq_bot_left M α χ p q hp hz hm⟩
         map_add' := fun _ _ ↦ by simp
         map_smul' := fun t m ↦ by simp }
-    have hfg : toEnd R H _ u = ⁅f, g⁆ := by ext; simp [f, g, ← hyz]
+    have hfg : toEnd R H _ u = ⁅f, g⁆ := by
+      ext
+      rw [toEnd_apply_apply, LieSubmodule.coe_bracket, LieSubalgebra.coe_bracket_of_module, ← hyz]
+      simp only [lie_lie, LieHom.lie_apply, LinearMap.coe_mk, AddHom.coe_mk, Module.End.lie_apply,
+      AddSubgroupClass.coe_sub, f, g]
     simp [hfg]
   · simp
   · simp_all
@@ -210,6 +214,7 @@ lemma exists_forall_mem_corootSpace_smul_add_eq_zero
   rw [← trace_toEnd_genWeightSpaceChain_eq_zero M α χ p q hp hq hx,
     ← LieSubmodule.toEnd_restrict_eq_toEnd,
     LinearMap.trace_eq_sum_trace_restrict_of_eq_biSup _ h₁ h₂ (genWeightSpaceChain M α χ p q) h₃]
+  dsimp [N]
   simp_rw [LieSubmodule.toEnd_restrict_eq_toEnd,
     trace_toEnd_genWeightSpace, Pi.add_apply, Pi.smul_apply, smul_add, ← smul_assoc,
     Finset.sum_add_distrib, ← Finset.sum_smul, natCast_zsmul]

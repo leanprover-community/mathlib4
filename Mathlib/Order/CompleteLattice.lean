@@ -757,6 +757,12 @@ theorem sSup_eq_iSup {s : Set α} : sSup s = ⨆ a ∈ s, a :=
 theorem sInf_eq_iInf {s : Set α} : sInf s = ⨅ a ∈ s, a :=
   @sSup_eq_iSup αᵒᵈ _ _
 
+lemma sSup_lowerBounds_eq_sInf (s : Set α) : sSup (lowerBounds s) = sInf s :=
+  (isLUB_sSup _).unique (isGLB_sInf _).isLUB
+
+lemma sInf_upperBounds_eq_csSup (s : Set α) : sInf (upperBounds s) = sSup s :=
+  (isGLB_sInf _).unique (isLUB_sSup _).isGLB
+
 theorem Monotone.le_map_iSup [CompleteLattice β] {f : α → β} (hf : Monotone f) :
     ⨆ i, f (s i) ≤ f (iSup s) :=
   iSup_le fun _ => hf <| le_iSup _ _
@@ -1600,7 +1606,7 @@ theorem snd_iInf [InfSet α] [InfSet β] (f : ι → α × β) : (iInf f).snd = 
   congr_arg sInf (range_comp _ _).symm
 
 theorem swap_iInf [InfSet α] [InfSet β] (f : ι → α × β) : (iInf f).swap = ⨅ i, (f i).swap := by
-  simp_rw [iInf, swap_sInf, ← range_comp, Function.comp]  -- Porting note: need to unfold `∘`
+  simp_rw [iInf, swap_sInf, ← range_comp, comp_def]  -- Porting note: need to unfold `∘`
 
 theorem iInf_mk [InfSet α] [InfSet β] (f : ι → α) (g : ι → β) :
     ⨅ i, (f i, g i) = (⨅ i, f i, ⨅ i, g i) :=
@@ -1613,7 +1619,7 @@ theorem snd_iSup [SupSet α] [SupSet β] (f : ι → α × β) : (iSup f).snd = 
   congr_arg sSup (range_comp _ _).symm
 
 theorem swap_iSup [SupSet α] [SupSet β] (f : ι → α × β) : (iSup f).swap = ⨆ i, (f i).swap := by
-  simp_rw [iSup, swap_sSup, ← range_comp, Function.comp]  -- Porting note: need to unfold `∘`
+  simp_rw [iSup, swap_sSup, ← range_comp, comp_def]  -- Porting note: need to unfold `∘`
 
 theorem iSup_mk [SupSet α] [SupSet β] (f : ι → α) (g : ι → β) :
     ⨆ i, (f i, g i) = (⨆ i, f i, ⨆ i, g i) :=

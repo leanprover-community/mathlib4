@@ -475,7 +475,7 @@ protected def compHomeomorph {Z' : Type*} [TopologicalSpace Z'] (h : Z' ≃ₜ Z
   toPartialHomeomorph := h.toPartialHomeomorph.trans e.toPartialHomeomorph
   baseSet := e.baseSet
   open_baseSet := e.open_baseSet
-  source_eq := by simp [source_eq, preimage_preimage, (· ∘ ·)]
+  source_eq := by simp [source_eq, preimage_preimage, Function.comp_def]
   target_eq := by simp [target_eq]
   proj_toFun p hp := by
     have hp : h p ∈ e.source := by simpa using hp

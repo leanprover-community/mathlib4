@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Kenny Lau, Yury Kudryashov
 import Mathlib.Logic.Relation
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.List.Lex
-import Mathlib.Data.List.Infix
 
 /-!
 # Relation chain
@@ -37,9 +36,12 @@ theorem Chain.iff {S : α → α → Prop} (H : ∀ a b, R a b ↔ S a b) {a : �
 theorem Chain.iff_mem {a : α} {l : List α} :
     Chain R a l ↔ Chain (fun x y => x ∈ a :: l ∧ y ∈ l ∧ R x y) a l :=
   ⟨fun p => by
-    induction' p with _ a b l r _ IH <;> constructor <;>
-      [exact ⟨mem_cons_self _ _, mem_cons_self _ _, r⟩;
-      exact IH.imp fun a b ⟨am, bm, h⟩ => ⟨mem_cons_of_mem _ am, mem_cons_of_mem _ bm, h⟩],
+    induction p with
+    | nil => exact nil
+    | @cons _ _ _ r _ IH =>
+      constructor
+      · exact ⟨mem_cons_self _ _, mem_cons_self _ _, r⟩
+      · exact IH.imp fun a b ⟨am, bm, h⟩ => ⟨mem_cons_of_mem _ am, mem_cons_of_mem _ bm, h⟩,
     Chain.imp fun a b h => h.2.2⟩
 
 theorem chain_singleton {a b : α} : Chain R a [b] ↔ R a b := by
@@ -339,7 +341,7 @@ theorem Chain'.induction (p : α → Prop) (l : List α) (h : Chain' r l)
   split at h
   · simp
   · simp_all only [ne_eq, not_false_eq_true, head_cons, true_implies, mem_cons, forall_eq_or_imp,
-      true_and]
+      true_and, reduceCtorEq]
     exact h.induction p _ carries initial
 
 /-- Given a chain from `a` to `b`, and a predicate true at `b`, if `r x y → p y → p x` then
@@ -353,7 +355,8 @@ theorem Chain.backwards_induction (p : α → Prop) (l : List α) (h : Chain r a
   replace this := chain'_reverse.mpr this
   simp_rw (config := {singlePass := true}) [← List.mem_reverse]
   apply this.induction _ _ (fun _ _ h ↦ carries h)
-  simpa only [ne_eq, reverse_eq_nil_iff, not_false_eq_true, head_reverse, forall_true_left, hb]
+  simpa only [ne_eq, reverse_eq_nil_iff, not_false_eq_true, head_reverse, forall_true_left, hb,
+    reduceCtorEq]
 
 /-- Given a chain from `a` to `b`, and a predicate true at `b`, if `r x y → p y → p x` then
 the predicate is true at `a`.
@@ -383,7 +386,7 @@ theorem Chain'.cons_of_le [LinearOrder α] {a : α} {as m : List α}
     apply hm.cons
     cases as with
     | nil =>
-      simp only [le_iff_lt_or_eq, or_false] at hmas
+      simp only [le_iff_lt_or_eq, reduceCtorEq, or_false] at hmas
       exact (List.Lex.not_nil_right (·<·) _ hmas).elim
     | cons a' as =>
       rw [List.chain'_cons] at ha
