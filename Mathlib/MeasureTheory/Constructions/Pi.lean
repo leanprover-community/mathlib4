@@ -210,9 +210,7 @@ variable {δ : Type*} {π : δ → Type*} [∀ x, MeasurableSpace (π x)]
 /-- A product of measures in `tprod α l`. -/
 protected def tprod (l : List δ) (μ : ∀ i, Measure (π i)) : Measure (TProd π l) := by
   induction' l with i l ih
-  · exact dirac PUnit.unit
-  · have := (μ i).prod (α := π i) ih
-    exact this
+    exact ⟨dirac PUnit.unit, (μ i).prod (α := π i) ih⟩
 
 @[simp]
 theorem tprod_nil (μ : ∀ i, Measure (π i)) : Measure.tprod [] μ = dirac PUnit.unit :=

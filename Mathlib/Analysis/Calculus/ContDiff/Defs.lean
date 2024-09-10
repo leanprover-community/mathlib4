@@ -506,8 +506,8 @@ theorem ContDiffWithinAt.differentiable_within_at' (h : ContDiffWithinAt 𝕜 n 
   rcases h 1 hn with ⟨u, hu, p, H⟩
   rcases mem_nhdsWithin.1 hu with ⟨t, t_open, xt, tu⟩
   rw [inter_comm] at tu
-  have := ((H.mono tu).differentiableOn le_rfl) x ⟨mem_insert x s, xt⟩
-  exact (differentiableWithinAt_inter (IsOpen.mem_nhds t_open xt)).1 this
+  exact (differentiableWithinAt_inter (IsOpen.mem_nhds t_open xt)).1
+    ((H.mono tu).differentiableOn le_rfl) x ⟨mem_insert x s, xt⟩
 
 theorem ContDiffWithinAt.differentiableWithinAt (h : ContDiffWithinAt 𝕜 n f s x) (hn : 1 ≤ n) :
     DifferentiableWithinAt 𝕜 f s x :=
