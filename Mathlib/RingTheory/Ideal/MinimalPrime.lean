@@ -159,7 +159,8 @@ theorem Ideal.exists_minimalPrimes_comap_eq {I : Ideal S} (f : R →+* S) (p)
   obtain ⟨q, hq, hq'⟩ := Ideal.exists_minimalPrimes_le h₂
   refine ⟨q, hq, Eq.symm ?_⟩
   have := hq.1.1
-  exact (H.2 ⟨inferInstance, Ideal.comap_mono hq.1.2⟩ this).antisymm <| (Ideal.comap_mono hq').trans_eq h₃
+  have := (Ideal.comap_mono hq').trans_eq h₃
+  exact (H.2 ⟨inferInstance, Ideal.comap_mono hq.1.2⟩ this).antisymm this
 
 theorem Ideal.minimal_primes_comap_of_surjective {f : R →+* S} (hf : Function.Surjective f)
     {I J : Ideal S} (h : J ∈ I.minimalPrimes) : J.comap f ∈ (I.comap f).minimalPrimes := by
