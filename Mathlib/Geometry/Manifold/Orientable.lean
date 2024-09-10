@@ -185,11 +185,9 @@ def orientationPreservingPregroupoid [FiniteDimensional ℝ E] : Pregroupoid H w
   congr {f g u} hu fg hf := by
     apply And.intro
     · intro x hx
-      have : ∀ x ∈ I.symm ⁻¹' u ∩ interior (range ↑I), (I ∘ g ∘ I.symm) x = (I ∘ f ∘ I.symm) x := by
-        simp_all
       have : fderivWithin ℝ (↑I ∘ g ∘ ↑I.symm) (I.symm ⁻¹' u ∩ interior (range ↑I)) x
           = fderivWithin ℝ (↑I ∘ f ∘ ↑I.symm) (I.symm ⁻¹' u ∩ interior (range ↑I)) x :=
-        fderivWithin_congr' this hx
+        fderivWithin_congr' (by simp_all [EqOn]) hx
       have : fderiv ℝ (↑I ∘ g ∘ ↑I.symm) x = fderiv ℝ (↑I ∘ f ∘ ↑I.symm) x := by
         rw [fderivWithin_of_isOpen, fderivWithin_of_isOpen] at this
         exact this
