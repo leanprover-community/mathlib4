@@ -16,6 +16,36 @@ Here we collect properties of C⋆-algebra homomorphisms.
   is isometric.
 -/
 
+open CStarAlgebra in
+lemma IsSelfAdjoint.map_spectrum_real {F A B : Type*}
+    [NormedRing A] [CompleteSpace A] [StarRing A] [CStarRing A]
+    [NormedAlgebra ℂ A] [StarModule ℂ A]
+    [NormedRing B] [CompleteSpace B] [StarRing B] [CStarRing B]
+    [NormedAlgebra ℂ B] [StarModule ℂ B]
+    [FunLike F A B] [AlgHomClass F ℂ A B] [StarAlgHomClass F ℂ A B]
+    {a : A} (ha : IsSelfAdjoint a) (φ : F) (hφ : Function.Injective φ) :
+    spectrum ℝ (φ a) = spectrum ℝ a := by
+  have h_spec := AlgHom.spectrum_apply_subset ((φ : A →⋆ₐ[ℂ] B).restrictScalars ℝ) a
+  refine Set.eq_of_subset_of_subset h_spec fun x hx ↦ ?_
+  /- we prove the reverse inclusion by contradiction, so assume that `x ∈ spectrum ℝ a`, but
+  `x ∉ spectrum ℝ (φ a)`. Then by Urysohn's lemma we can get a function for which `f x = 1`, but
+  `f = 0` on `spectrum ℝ a`. -/
+  by_contra hx'
+  obtain ⟨f, h_eqOn, h_eqOn_x, -⟩ := exists_continuous_zero_one_of_isClosed
+    (spectrum.isClosed (𝕜 := ℝ) (φ a)) (isClosed_singleton (x := x)) <| by simpa
+  /- it suffices to show that `φ (f a) = 0`, for if so, then `f a = 0` by injectivity of `φ`, and
+  hence `f = 0` on `spectrum ℝ a`, contradicting the fact that `f x = 1`. -/
+  suffices φ (cfc f a) = 0 by
+    rw [map_eq_zero_iff φ hφ, ← cfc_zero ℝ a, cfc_eq_cfc_iff_eqOn] at this
+    exact zero_ne_one <| calc
+      0 = f x := (this hx).symm
+      _ = 1 := h_eqOn_x <| Set.mem_singleton x
+  /- Finally, `φ (f a) = f (φ a) = 0`, where the last equality follows since `f = 0` on
+  `spectrum ℝ (φ a)`. -/
+  calc φ (cfc f a) = cfc f (φ a) := StarAlgHomClass.map_cfc φ f a
+    _ = cfc (0 : ℝ → ℝ) (φ a) := cfc_congr h_eqOn
+    _ = 0 := by simp
+
 namespace NonUnitalStarAlgHom
 
 variable {F A B : Type*}
@@ -34,40 +64,17 @@ lemma norm_map (φ : F) (hφ : Function.Injective φ) (a : A) : ‖φ a‖ = ‖
       (a : Unitization ℂ A), ‖ψ a‖ = ‖a‖ by
     simpa [norm_inr] using this (starMap_injective (φ := (φ : A →⋆ₙₐ[ℂ] B)) hφ) a
   intro ψ hψ a
-  -- to show `‖ψ a‖ = ‖a‖`, by the C⋆-property it suffices to show `‖ψ (star a * a)‖ = ‖star a * a‖`.
+  -- to show `‖ψ a‖ = ‖a‖`, by the C⋆-property it suffices to show `‖ψ (star a * a)‖ = ‖star a * a‖`
   rw [← sq_eq_sq (by positivity) (by positivity)]
   simp only [sq, ← CStarRing.norm_star_mul_self, ← map_star, ← map_mul]
-  /- since `star a * a` is selfadjoint, it suffices to show that it has the same `ℝ`-spectrum as
-  `ψ (star a * a)`, since the spectral radius coincides with the norm. -/
-  suffices ∀ a, IsSelfAdjoint a → spectrum ℝ (ψ a) = spectrum ℝ a from
-    have ha : IsSelfAdjoint (star a * a) := .star_mul_self a
-    calc ‖ψ (star a * a)‖ = (spectralRadius ℝ (ψ (star a * a))).toReal :=
-        ha.map ψ |>.toReal_spectralRadius_eq_norm.symm
-      _ = (spectralRadius ℝ (star a * a)).toReal := by simp only [spectralRadius, this _ ha]
-      _ = ‖star a * a‖ := ha.toReal_spectralRadius_eq_norm
-  /- so suppose that `a` is selfadjoint. The inclusion `spectrum ℝ (ψ a) ⊆ spectrum ℝ a` is
-  immediate because `ψ` is a homomorphism. -/
-  intro a ha
-  have h_spec := AlgHom.spectrum_apply_subset (ψ.restrictScalars ℝ) a
-  refine Set.eq_of_subset_of_subset h_spec fun x hx ↦ ?_
-  /- we prove the reverse inclusion by contradiction, so assume that `x ∈ spectrum ℝ a`, but
-  `x ∉ spectrum ℝ (ψ a)`. Then by Urysohn's lemma we can get a function for which `f x = 1`, but
-  `f = 0` on `spectrum ℝ a`. -/
-  by_contra hx'
-  obtain ⟨f, h_eqOn, h_eqOn_x, -⟩ := exists_continuous_zero_one_of_isClosed
-    (spectrum.isClosed (𝕜 := ℝ) (ψ a)) (isClosed_singleton (x := x)) <| by simpa
-  /- it suffices to show that `ψ (f a) = 0`, for if so, then `f a = 0` by injectivity of `ψ`, and
-  hence `f = 0` on `spectrum ℝ a`, contradicting the fact that `f x = 1`. -/
-  suffices ψ (cfc f a) = 0 by
-    rw [map_eq_zero_iff ψ hψ, ← cfc_zero ℝ a, cfc_eq_cfc_iff_eqOn] at this
-    exact zero_ne_one <| calc
-      0 = f x := (this hx).symm
-      _ = 1 := h_eqOn_x <| Set.mem_singleton x
-  /- Finally, `ψ (f a) = f (ψ a) = 0`, where the last equality follows since `f = 0` on
-  `spectrum ℝ (ψ a)`. -/
-  calc ψ (cfc f a) = cfc f (ψ a) := ψ.map_cfc f a
-    _ = cfc (0 : ℝ → ℝ) (ψ a) := cfc_congr h_eqOn
-    _ = 0 := by simp
+  /- since `star a * a` is selfadjoint, it has the same `ℝ`-spectrum as `ψ (star a * a)`.
+  Since the spectral radius over `ℝ` coincides with the norm, `‖ψ (star a * a)‖ = ‖star a * a‖`. -/
+  have ha : IsSelfAdjoint (star a * a) := .star_mul_self a
+  calc ‖ψ (star a * a)‖ = (spectralRadius ℝ (ψ (star a * a))).toReal :=
+      ha.map ψ |>.toReal_spectralRadius_eq_norm.symm
+    _ = (spectralRadius ℝ (star a * a)).toReal := by
+      simp only [spectralRadius, ha.map_spectrum_real ψ hψ]
+    _ = ‖star a * a‖ := ha.toReal_spectralRadius_eq_norm
 
 /-- A non-unital star algebra monomorphism of complex C⋆-algebras is isometric. -/
 lemma nnnorm_map (φ : F) (hφ : Function.Injective φ) (a : A) : ‖φ a‖₊ = ‖a‖₊ :=
