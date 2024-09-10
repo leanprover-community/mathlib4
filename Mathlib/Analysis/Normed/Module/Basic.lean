@@ -44,6 +44,8 @@ class NormedSpace (𝕜 : Type*) (E : Type*) [NormedField 𝕜] [SeminormedAddCo
     extends Module 𝕜 E where
   norm_smul_le : ∀ (a : 𝕜) (b : E), ‖a • b‖ ≤ ‖a‖ * ‖b‖
 
+set_synth_order NormedSpace.toModule #[4, 2, 3]
+
 attribute [inherit_doc NormedSpace] NormedSpace.norm_smul_le
 
 end Prio
@@ -253,6 +255,8 @@ variable [NormedSpace 𝕜 𝕜'] [SMulCommClass 𝕜 𝕜' 𝕜'] [IsScalarTowe
 class NormedAlgebra (𝕜 : Type*) (𝕜' : Type*) [NormedField 𝕜] [SeminormedRing 𝕜'] extends
   Algebra 𝕜 𝕜' where
   norm_smul_le : ∀ (r : 𝕜) (x : 𝕜'), ‖r • x‖ ≤ ‖r‖ * ‖x‖
+
+set_synth_order NormedAlgebra.toAlgebra #[4, 2, 3]
 
 attribute [inherit_doc NormedAlgebra] NormedAlgebra.norm_smul_le
 
