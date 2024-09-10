@@ -418,18 +418,6 @@ theorem mulSingle_mono : Monotone (Pi.mulSingle i : f i → ∀ i, f i) :=
 theorem mulSingle_strictMono : StrictMono (Pi.mulSingle i : f i → ∀ i, f i) :=
   Function.update_strictMono
 
-lemma monotone_zero {α β} [Preorder α] [Preorder β] [Zero β] : Monotone (0 : α → β) :=
-  monotone_const
-
-lemma antitone_zero {α β} [Preorder α] [Preorder β] [Zero β] : Antitone (0 : α → β) :=
-  antitone_const
-
-lemma monotone_one {α β} [Preorder α] [Preorder β] [One β] : Monotone (1 : α → β) :=
-  monotone_const
-
-lemma antitone_one {α β} [Preorder α] [Preorder β] [One β] : Antitone (1 : α → β) :=
-  antitone_const
-
 end Pi
 
 namespace Sigma
