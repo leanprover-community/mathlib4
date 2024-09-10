@@ -33,8 +33,6 @@ example (K L M : List α) (w : L.Disjoint M) (m : K ⊆ L) : True := by
 ```
 -/
 
-set_option autoImplicit true
-
 namespace Mathlib.Tactic.Propose
 
 open Lean Meta Batteries.Tactic Tactic.TryThis
@@ -145,3 +143,5 @@ macro_rules
     `(tactic| have?%$tk ! $[: $type]? using $terms,*)
   | `(tactic| have!?%$tk $[: $type]? using $terms,*) =>
     `(tactic| have?%$tk ! $[: $type]? using $terms,*)
+
+end Mathlib.Tactic.Propose

@@ -14,7 +14,7 @@ endomorphisms.
 
 ## Main definitions / results
 
- * `Module.End.IsSemisimple.generalizedEigenspace_eq_eigenspace`: for a semisimple endomorphism,
+ * `Module.End.IsSemisimple.genEigenspace_eq_eigenspace`: for a semisimple endomorphism,
    a generalized eigenspace is an eigenspace.
 
 -/
@@ -26,17 +26,17 @@ namespace Module.End
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] {f g : End R M}
 
 lemma apply_eq_of_mem_genEigenspace_of_comm_of_isSemisimple_of_isNilpotent_sub
-    {μ : R} {k : ℕ} {m : M} (hm : m ∈ f.generalizedEigenspace μ k)
+    {μ : R} {k : ℕ} {m : M} (hm : m ∈ f.genEigenspace μ k)
     (hfg : Commute f g) (hss : g.IsSemisimple) (hnil : IsNilpotent (f - g)) :
     g m = μ • m := by
-  set p := f.generalizedEigenspace μ k
-  have h₁ : MapsTo g p p := mapsTo_generalizedEigenspace_of_comm hfg μ k
+  set p := f.genEigenspace μ k
+  have h₁ : MapsTo g p p := mapsTo_genEigenspace_of_comm hfg μ k
   have h₂ : MapsTo (g - algebraMap R (End R M) μ) p p :=
-    mapsTo_generalizedEigenspace_of_comm (hfg.sub_right <| Algebra.commute_algebraMap_right μ f) μ k
+    mapsTo_genEigenspace_of_comm (hfg.sub_right <| Algebra.commute_algebraMap_right μ f) μ k
   have h₃ : MapsTo (f - g) p p :=
-    mapsTo_generalizedEigenspace_of_comm (Commute.sub_right rfl hfg) μ k
+    mapsTo_genEigenspace_of_comm (Commute.sub_right rfl hfg) μ k
   have h₄ : MapsTo (f - algebraMap R (End R M) μ) p p :=
-    mapsTo_generalizedEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f μ) μ k
+    mapsTo_genEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f μ) μ k
   replace hfg : Commute (f - algebraMap R (End R M) μ) (f - g) :=
     (Commute.sub_right rfl hfg).sub_left <| Algebra.commute_algebraMap_left μ (f - g)
   suffices IsNilpotent ((g - algebraMap R (End R M) μ).restrict h₂) by
@@ -46,10 +46,16 @@ lemma apply_eq_of_mem_genEigenspace_of_comm_of_isSemisimple_of_isNilpotent_sub
   simpa [LinearMap.restrict_sub h₄ h₃] using (LinearMap.restrict_commute hfg h₄ h₃).isNilpotent_sub
     (f.isNilpotent_restrict_sub_algebraMap μ k) (Module.End.isNilpotent.restrict h₃ hnil)
 
-lemma IsSemisimple.generalizedEigenspace_eq_eigenspace
+lemma IsSemisimple.genEigenspace_eq_eigenspace
     (hf : f.IsSemisimple) (μ : R) {k : ℕ} (hk : 0 < k) :
-    f.generalizedEigenspace μ k = f.eigenspace μ := by
-  refine le_antisymm (fun m hm ↦ mem_eigenspace_iff.mpr ?_) (eigenspace_le_generalizedEigenspace hk)
+    f.genEigenspace μ k = f.eigenspace μ := by
+  refine le_antisymm (fun m hm ↦ mem_eigenspace_iff.mpr ?_) (eigenspace_le_genEigenspace hk)
   exact apply_eq_of_mem_genEigenspace_of_comm_of_isSemisimple_of_isNilpotent_sub hm rfl hf (by simp)
+
+lemma IsSemisimple.maxGenEigenspace_eq_eigenspace
+    (hf : f.IsSemisimple) (μ : R) :
+    f.maxGenEigenspace μ = f.eigenspace μ := by
+  simp_rw [maxGenEigenspace, ← (f.genEigenspace μ).monotone.iSup_nat_add 1,
+    hf.genEigenspace_eq_eigenspace μ (Nat.zero_lt_succ _), ciSup_const]
 
 end Module.End
