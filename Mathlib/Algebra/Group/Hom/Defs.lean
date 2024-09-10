@@ -186,7 +186,7 @@ instance OneHom.oneHomClass : OneHomClass (OneHom M N) M N where
 
 variable [FunLike F M N]
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp low)]
 theorem map_one [OneHomClass F M N] (f : F) : f 1 = 1 :=
   OneHomClass.map_one f
 
@@ -277,7 +277,7 @@ instance MulHom.mulHomClass : MulHomClass (M →ₙ* N) M N where
 
 variable [FunLike F M N]
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp low)]
 theorem map_mul [MulHomClass F M N] (f : F) (x y : M) : f (x * y) = f x * f y :=
   MulHomClass.map_mul f x y
 
@@ -392,7 +392,7 @@ lemma map_comp_div' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H] (f 
   ext; simp [map_div' f hf]
 
 /-- Group homomorphisms preserve inverse. -/
-@[to_additive (attr := simp) "Additive group homomorphisms preserve negation."]
+@[to_additive (attr := simp low) "Additive group homomorphisms preserve negation."]
 theorem map_inv [Group G] [DivisionMonoid H] [MonoidHomClass F G H]
     (f : F) (a : G) : f a⁻¹ = (f a)⁻¹ :=
   eq_inv_of_mul_eq_one_left <| map_mul_eq_one f <| inv_mul_cancel _
@@ -411,7 +411,7 @@ lemma map_comp_mul_inv [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : 
     f ∘ (g * h⁻¹) = f ∘ g * (f ∘ h)⁻¹ := by simp
 
 /-- Group homomorphisms preserve division. -/
-@[to_additive (attr := simp) "Additive group homomorphisms preserve subtraction."]
+@[to_additive (attr := simp low) "Additive group homomorphisms preserve subtraction."]
 theorem map_div [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) :
     ∀ a b, f (a / b) = f a / f b := map_div' _ <| map_inv f
 
@@ -419,7 +419,7 @@ theorem map_div [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) :
 lemma map_comp_div [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) (g h : ι → G) :
     f ∘ (g / h) = f ∘ g / f ∘ h := by ext; simp
 
-@[to_additive (attr := simp) (reorder := 9 10)]
+@[to_additive (attr := simp low) (reorder := 9 10)]
 theorem map_pow [Monoid G] [Monoid H] [MonoidHomClass F G H] (f : F) (a : G) :
     ∀ n : ℕ, f (a ^ n) = f a ^ n
   | 0 => by rw [pow_zero, pow_zero, map_one]
@@ -441,7 +441,7 @@ lemma map_comp_zpow' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H] (f
   ext; simp [map_zpow' f hf]
 
 /-- Group homomorphisms preserve integer power. -/
-@[to_additive (attr := simp) (reorder := 9 10)
+@[to_additive (attr := simp low) (reorder := 9 10)
 "Additive group homomorphisms preserve integer scaling."]
 theorem map_zpow [Group G] [DivisionMonoid H] [MonoidHomClass F G H]
     (f : F) (g : G) (n : ℤ) : f (g ^ n) = f g ^ n := map_zpow' f (map_inv f) g n
