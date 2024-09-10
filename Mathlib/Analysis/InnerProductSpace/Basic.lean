@@ -113,6 +113,8 @@ class InnerProductSpace (𝕜 : Type*) (E : Type*) [RCLike 𝕜] [SeminormedAddC
   /-- The inner product is conjugate linear in the first coordinate. -/
   smul_left : ∀ x y r, inner (r • x) y = conj r * inner x y
 
+set_synth_order InnerProductSpace.toNormedSpace #[4, 2, 3]
+
 /-!
 ### Constructing a normed space structure from an inner product
 

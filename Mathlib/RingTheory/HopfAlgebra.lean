@@ -57,6 +57,8 @@ class HopfAlgebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extend
   mul_antipode_lTensor_comul :
     LinearMap.mul' R A ∘ₗ antipode.lTensor A ∘ₗ comul = (Algebra.linearMap R A) ∘ₗ counit
 
+set_synth_order HopfAlgebra.toBialgebra #[4, 2, 3]
+
 namespace HopfAlgebra
 
 variable {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [HopfAlgebra R A]

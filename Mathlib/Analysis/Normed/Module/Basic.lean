@@ -283,6 +283,8 @@ See `NormedSpace.toModule'` for a similar situation. -/
 instance (priority := 100) NormedAlgebra.toNormedSpace' {𝕜'} [NormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜'] :
     NormedSpace 𝕜 𝕜' := by infer_instance
 
+set_synth_order NormedAlgebra.toNormedSpace' #[4, 1, 3]
+
 theorem norm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖ = ‖x‖ * ‖(1 : 𝕜')‖ := by
   rw [Algebra.algebraMap_eq_smul_one]
   exact norm_smul _ _
