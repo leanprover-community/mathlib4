@@ -769,7 +769,7 @@ def oreDivAddChar' (r r' : X) (s s' : S) :
 
 -- simplification of `oreDiv_add_oreDiv` in the commutative case
 theorem add_def {R : Type*} [CommMonoid R] {S : Submonoid R} {A : Type*}
-  [AddMonoid A] [DistribMulAction R A] {r r' : A} {s s' : S} :
+    [AddMonoid A] [DistribMulAction R A] {r r' : A} {s s' : S} :
     r /ₒ s + r' /ₒ s' =
       (s' • r + (s : R) • r') /ₒ (s' * s) := by
   with_unfolding_all rfl
