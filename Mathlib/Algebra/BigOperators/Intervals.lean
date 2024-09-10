@@ -99,9 +99,10 @@ theorem prod_Ico_add [OrderedCancelAddCommMonoid α] [ExistsAddOfLE α] [Locally
   convert prod_Ico_add' f a b c using 2
   rw [add_comm]
 
-@[to_additive]
-theorem prod_Ico_eq_add_sub (f : ℕ → M) (a b c : ℕ) :
-    (∏ x ∈ Ico a b, f x) = ∏ x ∈ Ico (a + c) (b + c), f (x - c) := by
+@[to_additive (attr := simp)]
+theorem prod_Ico_add_right_sub_eq [OrderedCancelAddCommMonoid α] [ExistsAddOfLE α]
+    [LocallyFiniteOrder α] [Sub α] [OrderedSub α] (a b c : α) :
+    ∏ x ∈ Ico (a + c) (b + c), f (x - c) = ∏ x ∈ Ico a b, f x := by
   simp only [← map_add_right_Ico, prod_map, addRightEmbedding_apply, add_tsub_cancel_right]
 
 @[to_additive]
@@ -144,7 +145,7 @@ theorem prod_range_mul_prod_Ico (f : ℕ → M) {m n : ℕ} (h : m ≤ n) :
   Nat.Ico_zero_eq_range ▸ Nat.Ico_zero_eq_range ▸ prod_Ico_consecutive f m.zero_le h
 
 @[to_additive]
-theorem prod_range_eq_add_Ico (f : ℕ → M) {n : ℕ} (hn : 0 < n) :
+theorem prod_range_eq_mul_Ico (f : ℕ → M) {n : ℕ} (hn : 0 < n) :
     ∏ x ∈ Finset.range n, f x = f 0 * ∏ x ∈ Ico 1 n, f x :=
   Finset.range_eq_Ico ▸ Finset.prod_eq_prod_Ico_succ_bot hn f
 
