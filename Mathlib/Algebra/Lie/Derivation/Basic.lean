@@ -152,9 +152,6 @@ theorem pow_leibniz (D : LieDerivation R L L) (n : ℕ) (a b : L) :
         tsub_tsub_assoc (Nat.le_of_lt_succ hk₂) hk₁, ← add_smul]
       nth_rw 1 [add_comm, Nat.choose_succ_left _ _ hk₁]
 
-
-
-
 instance instZero : Zero (LieDerivation R L M) where
   zero :=
     { toLinearMap := 0
