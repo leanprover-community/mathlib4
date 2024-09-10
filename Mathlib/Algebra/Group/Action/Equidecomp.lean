@@ -47,7 +47,7 @@ Let `G` be a group acting on a space `X`, and `A B : Set X`.
 
 -/
 
-variable {X G : Type*} {A B C: Set X}
+variable {X G : Type*} {A B C D: Set X}
 
 open Function Set Pointwise
 
@@ -134,6 +134,8 @@ theorem Decomp.mono {f : A → B} {S : Finset G} (h : Decomp f S)
   rw [coe_inclusion] at hg
   rw [← hg, ← hf', coe_inclusion]
 
+noncomputable def Embeddidecomp.equidecompImage (f : A ↪ₑ[G] B) (C : Set X) (hC : C ⊆ A) :
+
 /-- An embeddidecomposition is an equidecomposition with its range. -/
 noncomputable def Embeddidecomp.equidecompRange (f : A ↪ₑ[G] B) :
     A ≃ₑ[G] (range <| Subtype.val ∘ f) where
@@ -147,6 +149,11 @@ noncomputable def Embeddidecomp.equidecompRange (f : A ↪ₑ[G] B) :
     intro a
     simp only [Equiv.toFun_as_coe, Equiv.ofInjective_apply, comp_apply, Subtype.map_id, id_eq]
     rfl
+
+def Equidecomp.union (f : A ≃ₑ[G] B) (g : C ≃ₑ[G] D) (hAC : Disjoint A C) (hBD : Disjoint B D) :
+    A ∪ C ≃ₑ[G] B ∪ D where
+  toEquiv := sorry
+  decomp := sorry
 
 end SMul
 

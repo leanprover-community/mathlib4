@@ -37,6 +37,9 @@ section antisymm
 
 variable {α : Type u} {β : Type v}
 
+/-- This constructs set `s` which is useful for many chröder-Bernstein-type results.
+Rougly speaking, the key property of `s` is that, if `f` and `g` are injective,
+`s.piecewise f g.invfun` will be a bijection. -/
 theorem schroeder_bernstein_set (f : α → β) (g : β → α) : ∃ s : Set α, (g '' (f '' s)ᶜ)ᶜ = s := by
   set F : Set α →o Set α :=
     { toFun := fun s => (g '' (f '' s)ᶜ)ᶜ
