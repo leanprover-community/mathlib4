@@ -40,8 +40,6 @@ theorem c_add_pf [Add α] (p : b = c) (a : α) : a + b = a + c := p ▸ rfl
 theorem add_pf [Add α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ + a₂ = b₁ + b₂ := p₁ ▸ p₂ ▸ rfl
 theorem pf_sub_c [Sub α] (p : a = b) (c : α) : a - c = b - c := p ▸ rfl
 theorem c_sub_pf [Sub α] (p : b = c) (a : α) : a - b = a - c := p ▸ rfl
-theorem sub_pf [Sub α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ - a₂ = b₁ - b₂ := p₁ ▸ p₂ ▸ rfl
-theorem neg_pf [Neg α] (p : (a:α) = b) : -a = -b := p ▸ rfl
 theorem pf_mul_c [Mul α] (p : a = b) (c : α) : a * c = b * c := p ▸ rfl
 theorem c_mul_pf [Mul α] (p : b = c) (a : α) : a * b = a * c := p ▸ rfl
 theorem mul_pf [Mul α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ * a₂ = b₁ * b₂ := p₁ ▸ p₂ ▸ rfl
@@ -79,14 +77,10 @@ partial def expandLinearCombo (ty : Expr) (stx : Syntax.Term) : TermElabM Expand
     | .const c₁, .const c₂ => .const <$> ``($c₁ - $c₂)
     | .proof p₁, .const c₂ => .proof <$> ``(pf_sub_c $p₁ $c₂)
     | .const c₁, .proof p₂ => .proof <$> ``(c_sub_pf $p₂ $c₁)
-    | .proof p₁, .proof p₂ => .proof <$> ``(sub_pf $p₁ $p₂)
+    | .proof p₁, .proof p₂ => .proof <$> ``(add_pf $p₁ (Eq.symm $p₂))
   | `(-$e) => do
     match ← expandLinearCombo ty e with
     | .const c => .const <$> `(-$c)
-    | .proof p => .proof <$> ``(neg_pf $p)
-  | `(← $e) => do
-    match ← expandLinearCombo ty e with
-    | .const c => return .const c
     | .proof p => .proof <$> ``(Eq.symm $p)
   | `($e₁ * $e₂) => do
     match ← expandLinearCombo ty e₁, ← expandLinearCombo ty e₂ with
@@ -115,40 +109,47 @@ partial def expandLinearCombo (ty : Expr) (stx : Syntax.Term) : TermElabM Expand
       else
         .const <$> c.toSyntax
 
-theorem eq_trans₃ (p : (a:α) = b) (p₁ : a = a') (p₂ : b = b') : a' = b' := p₁ ▸ p₂ ▸ p
-
-theorem eq_of_add [AddGroup α] (p : (a:α) = b) (H : (a' - b') - (a - b) = 0) : a' = b' := by
+theorem eq_of_sub [AddGroup α] (p : (a:α) = b) (H : (a' - b') - (a - b) = 0) : a' = b' := by
   rw [← sub_eq_zero] at p ⊢; rwa [sub_eq_zero, p] at H
+
+theorem eq_of_add [Add α] [IsRightCancelAdd α] (p : (a:α) = b) (H : a' + b = b' + a) : a' = b' := by
+  rw [p] at H
+  exact add_right_cancel H
 
 theorem eq_of_add_pow [Ring α] [NoZeroDivisors α] (n : ℕ) (p : (a:α) = b)
     (H : (a' - b')^n - (a - b) = 0) : a' = b' := by
   rw [← sub_eq_zero] at p ⊢; apply pow_eq_zero (n := n); rwa [sub_eq_zero, p] at H
 
-/-- Implementation of `linear_combination` and `linear_combination2`. -/
+/-- Implementation of `linear_combination`. -/
 def elabLinearCombination (tk : Syntax)
-    (norm? : Option Syntax.Tactic) (exp? : Option Syntax.NumLit) (input : Option Syntax.Term)
-    (twoGoals := false) : Tactic.TacticM Unit := Tactic.withMainContext do
+    (norm? : Option Syntax.Tactic) (exp? : Option Syntax.NumLit) (input : Option Syntax.Term) :
+    Tactic.TacticM Unit := Tactic.withMainContext do
   let some (ty, _) := (← (← Tactic.getMainGoal).getType').eq? |
     throwError "'linear_combination' only proves equalities"
   let p ← match input with
   | none => `(Eq.refl 0)
   | some e =>
     match ← expandLinearCombo ty e with
-    | .const c => `(Eq.refl $c)
+    | .const _ => throwError "To run 'linear_combination' without hypotheses, call it without input"
     | .proof p => pure p
   let norm := norm?.getD (Unhygienic.run <| withRef tk `(tactic| ring1))
+  let lem : Ident ← mkIdent <$> do
+    try
+      -- if we are in a "true" ring, with well-behaved negation, it is better to present the
+      -- normalization tactic with a goal of the form `[stuff] = 0`, because this gives more useful
+      -- error messages on failure
+      let _ ← synthInstance (← mkAppM ``Neg #[ty])
+      pure ``eq_of_sub
+    catch _ =>
+      -- but otherwise (for example over `ℕ` or `ℝ≥0`) we can solve the problem by presenting the
+      -- normalization tactic with a goal of the form `[stuff] = [stuff]`
+      pure ``eq_of_add
   Term.withoutErrToSorry <| Tactic.evalTactic <| ← withFreshMacroScope <|
-  if twoGoals then
-    `(tactic| (
-      refine eq_trans₃ $p ?a ?b
-      case' a => $norm:tactic
-      case' b => $norm:tactic))
-  else
-    match exp? with
-    | some n =>
-      if n.getNat = 1 then `(tactic| (refine eq_of_add $p ?a; case' a => $norm:tactic))
-      else `(tactic| (refine eq_of_add_pow $n $p ?a; case' a => $norm:tactic))
-    | _ => `(tactic| (refine eq_of_add $p ?a; case' a => $norm:tactic))
+  match exp? with
+  | some n =>
+    if n.getNat = 1 then `(tactic| (refine $lem $p ?a; case' a => $norm:tactic))
+    else `(tactic| (refine eq_of_add_pow $n $p ?a; case' a => $norm:tactic))
+  | _ => `(tactic| (refine $lem $p ?a; case' a => $norm:tactic))
 
 /--
 The `(norm := $tac)` syntax says to use `tac` as a normalization postprocessor for
@@ -172,9 +173,13 @@ syntax expStx := atomic(" (" &"exp" " := ") withoutPosition(num) ")"
   configuration is set to false, then the tactic will simply set the user up to
   prove their target using the linear combination instead of normalizing the subtraction.
 
-Note: The left and right sides of all the equalities should have the same
-  type, and the coefficients should also have this type.  There must be
-  instances of `Mul` and `AddGroup` for this type.
+Note: The left and right sides of all the equalities should have the same type `α`, and the
+coefficients should also have type `α`.  For full functionality `α` should be a commutative ring --
+strictly speaking, a commutative semiring with "cancellative" addition (in the semiring case,
+negation and subtraction will be handled "formally" as if operating in the enveloping ring). If a
+nonstandard normalization is used (for example `abel` or `skip`), the tactic will work over types
+`α` with less algebraic structure: the minimum is instances of `[Add α] [IsRightCancelAdd α]`
+together with instances of whatever operations are used in the tactic call.
 
 * The input `e` in `linear_combination e` is a linear combination of proofs of equalities,
   given as a sum/difference of coefficients multiplied by expressions.
@@ -190,17 +195,6 @@ Note: The left and right sides of all the equalities should have the same
 * `linear_combination (exp := n) e` will take the goal to the `n`th power before subtracting the
   combination `e`. In other words, if the goal is `t1 = t2`, `linear_combination (exp := n) e`
   will change the goal to `(t1 - t2)^n = 0` before proceeding as above.
-  This feature is not supported for `linear_combination2`.
-* `linear_combination2 e` is the same as `linear_combination e` but it produces two
-  subgoals instead of one: rather than proving that `(a - b) - (a' - b') = 0` where
-  `a' = b'` is the linear combination from `e` and `a = b` is the goal,
-  it instead attempts to prove `a = a'` and `b = b'`.
-  Because it does not use subtraction, this form is applicable also to semirings.
-  * Note that a goal which is provable by `linear_combination e` may not be provable
-    by `linear_combination2 e`; in general you may need to add a coefficient to `e`
-    to make both sides match, as in `linear_combination2 e + c`.
-  * You can also reverse equalities using `← h`, so for example if `h₁ : a = b`
-    then `2 * (← h)` is a proof of `2 * b = 2 * a`.
 
 Example Usage:
 ```
@@ -239,11 +233,5 @@ syntax (name := linearCombination) "linear_combination"
 elab_rules : tactic
   | `(tactic| linear_combination%$tk $[(norm := $tac)]? $[(exp := $n)]? $(e)?) =>
     elabLinearCombination tk tac n e
-
-@[inherit_doc linearCombination]
-syntax "linear_combination2" (normStx)? (ppSpace colGt term)? : tactic
-elab_rules : tactic
-  | `(tactic| linear_combination2%$tk $[(norm := $tac)]? $(e)?) =>
-    elabLinearCombination tk tac none e true
 
 end Mathlib.Tactic.LinearCombination

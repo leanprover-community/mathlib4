@@ -8,7 +8,7 @@ import Mathlib.Algebra.Algebra.Prod
 import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Algebra.Module.Rat
-import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Analysis.Normed.Field.Lemmas
 import Mathlib.Analysis.Normed.MulAction
 
 /-!
@@ -43,6 +43,8 @@ typeclass can be used for "semi normed spaces" too, just as `Module` can be used
 class NormedSpace (𝕜 : Type*) (E : Type*) [NormedField 𝕜] [SeminormedAddCommGroup E]
     extends Module 𝕜 E where
   norm_smul_le : ∀ (a : 𝕜) (b : E), ‖a • b‖ ≤ ‖a‖ * ‖b‖
+
+set_synth_order NormedSpace.toModule #[4, 2, 3]
 
 attribute [inherit_doc NormedSpace] NormedSpace.norm_smul_le
 
@@ -253,6 +255,8 @@ variable [NormedSpace 𝕜 𝕜'] [SMulCommClass 𝕜 𝕜' 𝕜'] [IsScalarTowe
 class NormedAlgebra (𝕜 : Type*) (𝕜' : Type*) [NormedField 𝕜] [SeminormedRing 𝕜'] extends
   Algebra 𝕜 𝕜' where
   norm_smul_le : ∀ (r : 𝕜) (x : 𝕜'), ‖r • x‖ ≤ ‖r‖ * ‖x‖
+
+set_synth_order NormedAlgebra.toAlgebra #[4, 2, 3]
 
 attribute [inherit_doc NormedAlgebra] NormedAlgebra.norm_smul_le
 

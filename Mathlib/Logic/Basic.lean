@@ -168,7 +168,7 @@ theorem eq_or_ne {α : Sort*} (x y : α) : x = y ∨ x ≠ y := em <| x = y
 
 theorem ne_or_eq {α : Sort*} (x y : α) : x ≠ y ∨ x = y := em' <| x = y
 
-theorem by_contradiction {p : Prop} : (¬p → False) → p := Decidable.by_contradiction
+theorem by_contradiction {p : Prop} : (¬p → False) → p := Decidable.byContradiction
 
 theorem by_cases {p q : Prop} (hpq : p → q) (hnpq : ¬p → q) : q :=
 if hp : p then hpq hp else hnpq hp
@@ -956,6 +956,9 @@ section
 variable [Decidable Q]
 
 theorem ite_and : ite (P ∧ Q) a b = ite P (ite Q a b) b := by
+  by_cases hp : P <;> by_cases hq : Q <;> simp [hp, hq]
+
+theorem ite_or : ite (P ∨ Q) a b = ite P a (ite Q a b) := by
   by_cases hp : P <;> by_cases hq : Q <;> simp [hp, hq]
 
 theorem dite_dite_comm {B : Q → α} {C : ¬P → ¬Q → α} (h : P → ¬Q) :

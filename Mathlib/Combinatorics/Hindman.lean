@@ -3,9 +3,10 @@ Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
-import Mathlib.Topology.StoneCech
-import Mathlib.Topology.Algebra.Semigroup
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.Stream.Init
+import Mathlib.Topology.Algebra.Semigroup
+import Mathlib.Topology.StoneCech
 
 /-!
 # Hindman's theorem on finite sums
@@ -228,7 +229,7 @@ theorem FP.mul_two {M} [Semigroup M] (a : Stream' M) (i j : ℕ) (ij : i < j) :
   refine FP_drop_subset_FP _ i ?_
   rw [← Stream'.head_drop]
   apply FP.cons
-  rcases le_iff_exists_add.mp (Nat.succ_le_of_lt ij) with ⟨d, hd⟩
+  rcases Nat.exists_eq_add_of_le (Nat.succ_le_of_lt ij) with ⟨d, hd⟩
   -- Porting note: need to fix breakage of Set notation
   change _ ∈ FP _
   have := FP.singleton (a.drop i).tail d
@@ -250,7 +251,7 @@ theorem FP.finset_prod {M} [CommMonoid M] (a : Stream' M) (s : Finset ℕ) (hs :
     refine Set.mem_of_subset_of_mem ?_ (ih _ (Finset.erase_ssubset <| s.min'_mem hs) h)
     have : s.min' hs + 1 ≤ (s.erase (s.min' hs)).min' h :=
       Nat.succ_le_of_lt (Finset.min'_lt_of_mem_erase_min' _ _ <| Finset.min'_mem _ _)
-    obtain ⟨d, hd⟩ := le_iff_exists_add.mp this
+    obtain ⟨d, hd⟩ := Nat.exists_eq_add_of_le this
     rw [hd, add_comm, ← Stream'.drop_drop]
     apply FP_drop_subset_FP
 

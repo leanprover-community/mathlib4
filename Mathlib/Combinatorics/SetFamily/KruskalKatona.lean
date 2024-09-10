@@ -142,7 +142,7 @@ private def UsefulCompression (U V : Finset α) : Prop :=
   Disjoint U V ∧ U.card = V.card ∧ ∃ (HU : U.Nonempty) (HV : V.Nonempty), max' U HU < max' V HV
 
 private instance UsefulCompression.instDecidableRel : @DecidableRel (Finset α) UsefulCompression :=
-  fun _U _V ↦ And.decidable
+  fun _ _ ↦ inferInstanceAs (Decidable (_ ∧ _))
 
 /-- Applying a good compression will decrease measure, keep cardinality, keep sizes and decrease
 shadow. In particular, 'good' means it's useful, and every smaller compression won't make a
