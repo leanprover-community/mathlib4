@@ -163,10 +163,10 @@ end CommSemiring
 
 section Algebra
 
-variable {R A : Type} [cR : CommSemiring R] [cA : CommSemiring A] [cRA : Algebra R A]
-    {S : Submonoid R}
+variable (R A : Type*) [cR : CommSemiring R] [cA : CommSemiring A] [cRA : Algebra R A]
+    (S : Submonoid R)
 
-instance : Algebra (R[S⁻¹]) (A[S⁻¹]) where
+def instAlgebra' : Algebra (R[S⁻¹]) (A[S⁻¹]) where
   toFun := liftExpand (fun r s ↦ (algebraMap R A r) /ₒ s) fun r₁ r₂ s hs => by
     rw [oreDiv_eq_iff]
     use s, r₂ * s
@@ -200,6 +200,10 @@ instance : Algebra (R[S⁻¹]) (A[S⁻¹]) where
     simp only [smul_eq_mul, id_eq, Submonoid.mk_smul, eq_mpr_eq_cast, cast_eq, OneHom.toFun_eq_coe,
       OneHom.coe_mk, liftExpand_of, RingHom.coe_mk, MonoidHom.coe_mk,
       OreLocalization.smul_def, Algebra.smul_def, OreLocalization.mul_def]
+
+-- this would be a diamond if `instAlgebra'` were an instance
+--example : (instAlgebra' R R S : Algebra R[S⁻¹] R[S⁻¹]) =
+--  (inferInstance : Algebra R[S⁻¹] R[S⁻¹]) := rfl
 
 end Algebra
 
