@@ -1,19 +1,29 @@
+/-
+Copyright (c) 2024 Bjørn Kjos-Hanssen. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Bjørn Kjos-Hanssen
+-/
 import Mathlib.Data.Vector.Defs
 import Batteries.Data.List.Basic
 import Mathlib.Data.Vector.Basic
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Tactic.Linarith.Frontend
 
-open scoped Classical -- this does not prevent us from also using `by decide`
-
+/-!
+# Marginis
 /- We formally verify the method known as recursive backtracking
 for a monotone predicate P and another predicate Q at the leaves. -/
 
--- A vector of length L monus k, thought of as a possible suffix for a word of length L
--- in which the first k bits are unspecified
--- For example, a Gap 10 10 has length 10 - 10.
+A vector of length L monus k, thought of as a possible suffix for a word of length L
+in which the first k bits are unspecified
+For example, a Gap 10 10 has length 10 - 10.
 
--- [This is a rewrite to replace `by induction` by `match with`.]
+[This is a rewrite to replace `by induction` by `match with`.]
+
+-/
+
+open scoped Classical -- this does not prevent us from also using `by decide`
+
 
 structure MonoPred (b:Nat) where
   P : List (Fin b) → Prop
