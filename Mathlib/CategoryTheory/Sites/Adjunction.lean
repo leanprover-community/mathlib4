@@ -5,7 +5,6 @@ Authors: Adam Topaz, Joël Riou
 -/
 import Mathlib.CategoryTheory.Adjunction.Restrict
 import Mathlib.CategoryTheory.Adjunction.Whiskering
-import Mathlib.CategoryTheory.Adjunction.Restrict
 import Mathlib.CategoryTheory.Sites.PreservesSheafification
 
 /-!
