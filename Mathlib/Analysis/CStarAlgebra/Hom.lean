@@ -22,7 +22,7 @@ lemma IsSelfAdjoint.map_spectrum_real {F A B : Type*}
     [NormedAlgebra ℂ A] [StarModule ℂ A]
     [NormedRing B] [CompleteSpace B] [StarRing B] [CStarRing B]
     [NormedAlgebra ℂ B] [StarModule ℂ B]
-    [FunLike F A B] [AlgHomClass F ℂ A B] [StarAlgHomClass F ℂ A B]
+    [FunLike F A B] [AlgHomClass F ℂ A B] [StarHomClass F A B]
     {a : A} (ha : IsSelfAdjoint a) (φ : F) (hφ : Function.Injective φ) :
     spectrum ℝ (φ a) = spectrum ℝ a := by
   have h_spec := AlgHom.spectrum_apply_subset ((φ : A →⋆ₐ[ℂ] B).restrictScalars ℝ) a
@@ -53,7 +53,7 @@ variable [NonUnitalNormedRing A] [CompleteSpace A] [StarRing A] [CStarRing A]
 variable [NormedSpace ℂ A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A] [StarModule ℂ A]
 variable [NonUnitalNormedRing B] [CompleteSpace B] [StarRing B] [CStarRing B]
 variable [NormedSpace ℂ B] [IsScalarTower ℂ B B] [SMulCommClass ℂ B B] [StarModule ℂ B]
-variable [FunLike F A B] [NonUnitalAlgHomClass F ℂ A B] [NonUnitalStarAlgHomClass F ℂ A B]
+variable [FunLike F A B] [NonUnitalAlgHomClass F ℂ A B] [StarHomClass F A B]
 
 open CStarAlgebra Unitization in
 /-- A non-unital star algebra monomorphism of complex C⋆-algebras is isometric. -/
