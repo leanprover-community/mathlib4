@@ -32,7 +32,7 @@ However, this approach forces our coalgebras to be in the same universe as the b
 since it relies on the monoidal category structure on `ModuleCat R`, which is currently
 universe monomorphic. Any contribution that achieves universe polymorphism would be welcome. For
 instance, the tensor product of coalgebras in the
-[FLT repo](https://github.com/eric-wieser/FLT/blob/8764e28f03cd0d03f673e1288f47fc7a665207de/FLT/for_mathlib/Coalgebra/TensorProduct.lean)
+[FLT repo](https://github.com/ImperialCollegeLondon/FLT/blob/eef74b4538c8852363936dfaad23e6ffba72eca5/FLT/mathlibExperiments/Coalgebra/TensorProduct.lean)
 is already universe polymorphic since it does not go via category theory.
 
 -/

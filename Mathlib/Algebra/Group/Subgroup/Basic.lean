@@ -1020,6 +1020,10 @@ theorem mem_closure_singleton {x y : G} : y ∈ closure ({x} : Set G) ↔ ∃ n 
 theorem closure_singleton_one : closure ({1} : Set G) = ⊥ := by
   simp [eq_bot_iff_forall, mem_closure_singleton]
 
+@[to_additive (attr := simp)]
+lemma mem_closure_singleton_self (x : G) : x ∈ closure ({x} : Set G) := by
+  simpa [-subset_closure] using subset_closure (k := {x})
+
 @[to_additive]
 theorem le_closure_toSubmonoid (S : Set G) : Submonoid.closure S ≤ (closure S).toSubmonoid :=
   Submonoid.closure_le.2 subset_closure
