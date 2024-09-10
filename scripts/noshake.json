@@ -39,6 +39,7 @@
   "Mathlib.CategoryTheory.Category.Init",
   "Mathlib.Combinatorics.SimpleGraph.Init",
   "Mathlib.Control.Traversable.Lemmas",
+  "Mathlib.Data.Finsupp.Notation",
   "Mathlib.Data.Int.Defs",
   "Mathlib.Data.Matrix.Notation",
   "Mathlib.Data.Matroid.Init",
