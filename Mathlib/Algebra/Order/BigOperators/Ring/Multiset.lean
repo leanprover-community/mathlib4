@@ -3,7 +3,7 @@ Copyright (c) 2021 Ruben Van de Velde. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ruben Van de Velde
 -/
-import Mathlib.Algebra.BigOperators.Multiset.Basic
+import Mathlib.Algebra.BigOperators.Group.Multiset
 import Mathlib.Algebra.Order.BigOperators.Ring.List
 
 /-!
@@ -25,7 +25,6 @@ lemma prod_nonneg (h : ∀ a ∈ s, 0 ≤ a) : 0 ≤ s.prod := by
   · simp
   · rw [prod_cons]
     exact mul_nonneg (ih _ <| mem_cons_self _ _) (hs fun a ha ↦ ih _ <| mem_cons_of_mem ha)
-#align multiset.prod_nonneg Multiset.prod_nonneg
 
 end OrderedCommSemiring
 

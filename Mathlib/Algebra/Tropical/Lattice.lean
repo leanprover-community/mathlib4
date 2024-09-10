@@ -6,8 +6,6 @@ Authors: Yakov Pechersky
 import Mathlib.Algebra.Tropical.Basic
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
-#align_import algebra.tropical.lattice from "leanprover-community/mathlib"@"6d0adfa76594f304b4650d098273d4366edeb61b"
-
 /-!
 
 # Order on tropical algebraic structure

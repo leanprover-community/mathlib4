@@ -16,21 +16,22 @@ that come from core Lean 4 that do not handle universe polymorphism.
 In addition, we provide some additional `ToExpr` instances for core definitions.
 -/
 
-set_option autoImplicit true
-
 section override
 namespace Lean
 
 attribute [-instance] Lean.instToExprOption
 
+set_option autoImplicit true in
 deriving instance ToExpr for Option
 
 attribute [-instance] Lean.instToExprList
 
+set_option autoImplicit true in
 deriving instance ToExpr for List
 
 attribute [-instance] Lean.instToExprArray
 
+universe u in
 instance {α : Type u} [ToExpr α] [ToLevel.{u}] : ToExpr (Array α) :=
   let type := toTypeExpr α
   { toExpr     := fun as => mkApp2 (mkConst ``List.toArray [toLevel.{u}]) type (toExpr as.toList)
@@ -38,6 +39,7 @@ instance {α : Type u} [ToExpr α] [ToLevel.{u}] : ToExpr (Array α) :=
 
 attribute [-instance] Lean.instToExprProd
 
+set_option autoImplicit true in
 deriving instance ToExpr for Prod
 
 deriving instance ToExpr for System.FilePath
@@ -50,8 +52,10 @@ open Lean
 
 deriving instance ToExpr for Int
 
+set_option autoImplicit true in
 deriving instance ToExpr for ULift
 
+universe u in
 /-- Hand-written instance since `PUnit` is a `Sort` rather than a `Type`. -/
 instance [ToLevel.{u}] : ToExpr PUnit.{u+1} where
   toExpr _ := mkConst ``PUnit.unit [toLevel.{u+1}]

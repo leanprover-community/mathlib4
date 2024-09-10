@@ -160,7 +160,7 @@ lemma leftShift_add (a n' : ℤ) (hn' : n + a = n') :
 
 @[simp]
 lemma shift_add (a : ℤ) :
-    (γ₁ + γ₂).shift a = γ₁.shift a + γ₂.shift a:= by
+    (γ₁ + γ₂).shift a = γ₁.shift a + γ₂.shift a := by
   ext p q hpq
   simp [shift_v']
 

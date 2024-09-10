@@ -1,8 +1,7 @@
 /-
 Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne Baanen,
-  Frédéric Dupuis, Heather Macbeth, Amelia Livingston
+Authors: Amelia Livingston
 -/
 import Mathlib.RingTheory.Coalgebra.Equiv
 import Mathlib.RingTheory.Bialgebra.Hom
@@ -22,10 +21,6 @@ This file defines bundled isomorphisms of `R`-bialgebras. We simply mimic the ea
 * `A ≃ₐc[R] B` : `R`-bialgebra equivalence from `A` to `B`.
 -/
 
-set_option autoImplicit true
-
-open BigOperators
-
 universe u v w u₁ v₁
 
 variable {R : Type u} {A : Type v} {B : Type w} {C : Type u₁}
@@ -44,7 +39,7 @@ attribute [nolint docBlame] BialgEquiv.toCoalgEquiv
 notation:50 A " ≃ₐc[" R "] " B => BialgEquiv R A B
 
 /-- `BialgEquivClass F R A B` asserts `F` is a type of bundled bialgebra equivalences
-from `A` to `B`.  -/
+from `A` to `B`. -/
 class BialgEquivClass (F : Type*) (R A B : outParam Type*) [CommSemiring R]
     [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
     [CoalgebraStruct R A] [CoalgebraStruct R B] [EquivLike F A B]
@@ -66,12 +61,12 @@ instance (priority := 100) toBialgHomClass : BialgHomClass F R A B where
 
 /-- Reinterpret an element of a type of bialgebra equivalences as a bialgebra equivalence. -/
 @[coe]
-def bialgEquiv (f : F) : A ≃ₐc[R] B :=
+def toBialgEquiv (f : F) : A ≃ₐc[R] B :=
   { (f : A ≃ₗc[R] B), (f : A →ₐc[R] B) with }
 
 /-- Reinterpret an element of a type of bialgebra equivalences as a bialgebra equivalence. -/
-instance instCoeToBialgEquiv : CoeTC F (A ≃ₐc[R] B) where
-  coe f := bialgEquiv f
+instance instCoeToBialgEquiv : CoeHead F (A ≃ₐc[R] B) where
+  coe f := toBialgEquiv f
 
 instance (priority := 100) toAlgEquivClass : AlgEquivClass F R A B where
   map_mul := map_mul
@@ -81,8 +76,6 @@ instance (priority := 100) toAlgEquivClass : AlgEquivClass F R A B where
 end BialgEquivClass
 
 namespace BialgEquiv
-
-section Semiring
 
 variable [CommSemiring R]
 
@@ -104,7 +97,7 @@ def toAlgEquiv (f : A ≃ₐc[R] B) : A ≃ₐ[R] B :=
     map_add' := map_add f.toCoalgEquiv
     commutes' := AlgHomClass.commutes f.toBialgHom }
 
-/-- The equivalence of types underlying a linear equivalence. -/
+/-- The equivalence of types underlying a bialgebra equivalence. -/
 def toEquiv : (A ≃ₐc[R] B) → A ≃ B := fun f => f.toCoalgEquiv.toEquiv
 
 theorem toEquiv_injective : Function.Injective (toEquiv : (A ≃ₐc[R] B) → A ≃ B) :=
@@ -142,9 +135,6 @@ theorem toBialgHom_inj {e₁ e₂ : A ≃ₐc[R] B} : (↑e₁ : A →ₐc[R] B)
 @[simp]
 theorem coe_mk {f h h₀ h₁ h₂ h₃ h₄ h₅ h₆} :
     (⟨⟨⟨⟨⟨f, h⟩, h₀⟩, h₁, h₂⟩, h₃, h₄, h₅⟩, h₆⟩ : A ≃ₐc[R] B) = f := rfl
-
-theorem coe_injective : @Function.Injective (A ≃ₐc[R] B) (A → B) CoeFun.coe :=
-  DFunLike.coe_injective
 
 end
 
@@ -191,14 +181,10 @@ theorem coe_toBialgHom : ⇑(e : A →ₐc[R] B) = e :=
 theorem coe_toAlgEquiv : ⇑(e : A ≃ₐ[R] B) = e :=
   rfl
 
-@[simp]
 theorem toCoalgEquiv_toCoalgHom : ((e : A ≃ₐc[R] B) : A →ₗc[R] B) = (e : A →ₐc[R] B) :=
   rfl
 
-@[simp]
 theorem toBialgHom_toAlgHom : ((e : A →ₐc[R] B) : A →ₐ[R] B) = e := rfl
-
-theorem toFun_eq_coe : e.toFun = e := rfl
 
 section
 
@@ -207,9 +193,6 @@ variable {e e'}
 @[ext]
 theorem ext (h : ∀ x, e x = e' x) : e = e' :=
   DFunLike.ext _ _ h
-
-theorem ext_iff : e = e' ↔ ∀ x, e x = e' x :=
-  DFunLike.ext_iff
 
 protected theorem congr_arg {x x'} : x = x' → e x = e x' :=
   DFunLike.congr_arg e
@@ -255,7 +238,7 @@ def Simps.symm_apply {R : Type*} [CommSemiring R]
 
 initialize_simps_projections BialgEquiv (invFun → symm_apply)
 
-theorem invFun_eq_symm : e.invFun = e.symm := by
+theorem invFun_eq_symm : e.invFun = e.symm :=
   rfl
 
 @[simp]
@@ -282,5 +265,4 @@ theorem coe_toEquiv_trans : (e₁₂ : A ≃ B).trans e₂₃ = (e₁₂.trans e
   rfl
 
 end
-end Semiring
 end BialgEquiv
