@@ -28,12 +28,8 @@ noncomputable def real_of_cantor : (ℕ → Bool) → ℝ :=
 
 /--  The classic geometric series summing to 1. -/
 lemma geom_value : ∑' (n : ℕ), ((1:ℝ) / 2 ^ n.succ)  = 1 := by
-  have E := tsum_geometric_two' 1
-  nth_rewrite 2 [← E]
-  apply tsum_congr
-  intro b
-  rw [Nat.succ_eq_add_one]
-  ring_nf
+  nth_rewrite 2 [← tsum_geometric_two' 1]
+  exact tsum_congr (fun b => by rw [Nat.succ_eq_add_one]; ring_nf)
 
 /-- A minor variant of the geometric series is summable. -/
 lemma geom_summable: Summable (fun n : ℕ ↦ (1:ℝ) / 2^n.succ) := by
@@ -52,14 +48,8 @@ def halfminus := fun n ↦ ite (n=0) false true
 def halfplus  := fun n ↦ ite (n=0) true false
 
 /-- In Cantor space, .0111... ≠ .1000... -/
-lemma halfplus_ne_halfminus : halfplus ≠ halfminus := by
-  intro hc
-  have : true = false := calc
-    true = halfplus 0  := rfl
-    _    = halfminus 0 := by rw [hc];
-    _    = false       := rfl
-  tauto
-
+lemma halfplus_ne_halfminus : halfplus ≠ halfminus :=
+  fun hc => Bool.true_eq_false ▸ (by show halfplus 0 = halfminus 0; rw [hc])
 
 /-- The binary number .0111... is equal to 1/2. -/
 theorem real_of_cantor_halfminus : real_of_cantor halfminus = 1 / 2 :=
@@ -70,8 +60,7 @@ theorem real_of_cantor_halfminus : real_of_cantor halfminus = 1 / 2 :=
       inv_pow, ite_not]
     simp_rw [div_pow, one_pow]
     have t := pow_one (2:ℝ) ▸ tsum_eq_add_tsum_ite geom_summable 0
-    rw [← t]
-    rw [geom_value]
+    rw [← t, geom_value]
     exact (add_halves 1).symm)
 
 /-- The natural map from Cantor space to ℝ is not injective. -/
