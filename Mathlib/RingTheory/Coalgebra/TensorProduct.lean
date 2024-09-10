@@ -30,7 +30,10 @@ to prove things. Then, we use the definitions in this file to make a monoidal ca
 
 However, this approach forces our coalgebras to be in the same universe as the base ring `R`,
 since it relies on the monoidal category structure on `ModuleCat R`, which is currently
-universe monomorphic. Any contribution that achieves universe polymorphism would be welcome.
+universe monomorphic. Any contribution that achieves universe polymorphism would be welcome. For
+instance, the tensor product of coalgebras in the
+[FLT repo](https://github.com/eric-wieser/FLT/blob/8764e28f03cd0d03f673e1288f47fc7a665207de/FLT/for_mathlib/Coalgebra/TensorProduct.lean)
+is already universe polymorphic since it does not go via category theory.
 
 -/
 
