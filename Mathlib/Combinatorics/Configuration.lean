@@ -3,25 +3,9 @@ Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Combinatorics.Hall.Basic
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Matrix.Rank
-import Mathlib.LinearAlgebra.CrossProduct
-import Mathlib.LinearAlgebra.Determinant
-import Mathlib.LinearAlgebra.Dimension.Constructions
-import Mathlib.LinearAlgebra.Dual
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-import Mathlib.LinearAlgebra.FiniteDimensional
-import Mathlib.LinearAlgebra.Matrix.DotProduct
-import Mathlib.LinearAlgebra.Matrix.Dual
-import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
-import Mathlib.LinearAlgebra.Projectivization.Basic
-import Mathlib.SetTheory.Cardinal.Finite
-import Mathlib.GroupTheory.SchurZassenhaus
-import Mathlib.FieldTheory.Adjoin
-import Mathlib.Tactic.Polyrith
+import Mathlib.LinearAlgebra.Projectivization.Constructions
 
 /-!
 # Configurations of Points and lines
@@ -477,149 +461,14 @@ theorem card_lines [Finite P] [Fintype L] : Fintype.card L = order P L ^ 2 + ord
 
 end ProjectivePlane
 
-end Configuration
-
-namespace Projectivization
-
-open scoped LinearAlgebra.Projectivization
-
-variable {K : Type*} [Field K] {m : Type*} [Fintype m]
-
-/-- Orthogonality on the projective plane. -/
-def orthogonal : ℙ K (m → K) → ℙ K (m → K) → Prop :=
-  Quotient.lift₂ (fun v w ↦ Matrix.dotProduct v.1 w.1 = 0) (fun _ _ _ _ ⟨_, h1⟩ ⟨_, h2⟩ ↦ by
-    simp_rw [← h1, ← h2, Matrix.dotProduct_smul, Matrix.smul_dotProduct, smul_smul,
-      smul_eq_zero_iff_eq])
-
-lemma orthogonal_mk {v w : m → K} (hv : v ≠ 0) (hw : w ≠ 0) :
-    orthogonal (mk K v hv) (mk K w hw) ↔ Matrix.dotProduct v w = 0 :=
-  Iff.rfl
-
-lemma orthogonal_comm {v w : ℙ K (m → K)} : orthogonal v w ↔ orthogonal w v := by
-  induction' v with v hv
-  induction' w with w hw
-  rw [orthogonal_mk hv hw, orthogonal_mk hw hv, Matrix.dotProduct_comm]
-
-lemma exists_not_self_orthogonal (v : ℙ K (m → K)) : ∃ w, ¬ orthogonal v w := by
-  induction' v with v hv
-  rw [ne_eq, ← Matrix.dotProduct_eq_zero_iff, not_forall] at hv
-  obtain ⟨w, hw⟩ := hv
-  exact ⟨mk K w fun h ↦ hw (by rw [h, Matrix.dotProduct_zero]), hw⟩
-
-lemma exists_not_orthogonal_self (v : ℙ K (m → K)) : ∃ w, ¬ orthogonal w v := by
-  simp only [orthogonal_comm]
-  exact exists_not_self_orthogonal v
-
-variable [DecidableEq K]
-
-/-- Cross product on the projective plane. -/
-def cross : ℙ K (Fin 3 → K) → ℙ K (Fin 3 → K) → ℙ K (Fin 3 → K) :=
-  Quotient.map₂' (fun v w ↦ if h : crossProduct v.1 w.1 = 0 then v else ⟨crossProduct v.1 w.1, h⟩)
-    (fun _ _ ⟨a, ha⟩ _ _ ⟨b, hb⟩ ↦ by
-      simp_rw [← ha, ← hb, LinearMap.map_smul_of_tower, LinearMap.smul_apply, smul_smul,
-        mul_comm b a, smul_eq_zero_iff_eq]
-      split_ifs
-      · use a
-      · use a * b)
-
-lemma cross_mk {v w : Fin 3 → K} (hv : v ≠ 0) (hw : w ≠ 0) :
-    cross (mk K v hv) (mk K w hw) =
-      if h : crossProduct v w = 0 then mk K v hv else mk K (crossProduct v w) h := by
-  change Quotient.mk'' _ = _
-  split_ifs with h <;> simp only [h] <;> rfl
-
-lemma cross_mk_of_cross_eq_zero {v w : Fin 3 → K} (hv : v ≠ 0) (hw : w ≠ 0)
-    (h : crossProduct v w = 0) :
-    cross (mk K v hv) (mk K w hw) = mk K v hv := by
-  rw [cross_mk, dif_pos h]
-
-lemma cross_mk_of_cross_ne_zero {v w : Fin 3 → K} (hv : v ≠ 0) (hw : w ≠ 0)
-    (h : crossProduct v w ≠ 0) :
-    cross (mk K v hv) (mk K w hw) = mk K (crossProduct v w) h := by
-  rw [cross_mk, dif_neg h]
-
-lemma cross_self (v : ℙ K (Fin 3 → K)) : cross v v = v := by
-  induction' v with v hv
-  exact cross_mk_of_cross_eq_zero hv hv (_root_.cross_self v)
-
-lemma crossProduct_ne_zero_iff_linearIndependent {v w : Fin 3 → K} :
-    crossProduct v w ≠ 0 ↔ LinearIndependent K ![v, w] := by
-  simp_rw [ne_eq, ← Matrix.dotProduct_eq_zero_iff, not_forall, ← ne_eq, Matrix.dotProduct_comm,
-    triple_product_eq_det, ← isUnit_iff_ne_zero, ← Matrix.isUnit_iff_isUnit_det,
-    ← Matrix.linearIndependent_rows_iff_isUnit]
-  refine (exists_congr fun x ↦ linearIndependent_fin_cons).trans ?_
-  rw [exists_and_left, and_iff_left]
-  rw [← not_forall, ← Submodule.eq_top_iff', Matrix.range_cons, Matrix.range_cons,
-    Matrix.range_empty, Set.union_empty, Set.singleton_union]
-  intro h
-  replace h : FiniteDimensional.finrank K (Submodule.span K {v, w}) = 3 := by
-    rw [h, finrank_top, FiniteDimensional.finrank_fin_fun]
-  have h' : FiniteDimensional.finrank K (Submodule.span K {v, w}) ≤ 2 := by
-    apply (finrank_span_le_card {v, w}).trans
-    rw [Set.toFinset_insert, Set.toFinset_singleton]
-    apply Finset.card_insert_le
-  rw [h] at h'
-  contradiction
-
-lemma crossProduct_eq_zero_iff_not_linearIndependent {v w : Fin 3 → K} :
-    crossProduct v w = 0 ↔ ¬ LinearIndependent K ![v, w] := by
-  rw [← crossProduct_ne_zero_iff_linearIndependent, ne_eq, not_not]
-
-lemma mk_eq_mk_iff_crossProduct_eq_zero {v w : Fin 3 → K} (hv : v ≠ 0) (hw : w ≠ 0) :
-    mk K v hv = mk K w hw ↔ crossProduct v w = 0 := by
-  rw [← not_iff_not, mk_eq_mk_iff', not_exists, ← LinearIndependent.pair_iff' hw,
-    ← crossProduct_ne_zero_iff_linearIndependent, ← cross_anticomm, neg_ne_zero]
-
-lemma cross_mk_of_ne {v w : Fin 3 → K} (hv : v ≠ 0) (hw : w ≠ 0) (h : mk K v hv ≠ mk K w hw) :
-    cross (mk K v hv) (mk K w hw) = mk K (crossProduct v w)
-      (mt (mk_eq_mk_iff_crossProduct_eq_zero hv hw).mpr h) := by
-  rw [cross_mk_of_cross_ne_zero]
-
-lemma cross_comm (v w : ℙ K (Fin 3 → K)) : cross v w = cross w v := by
-  rcases eq_or_ne v w with rfl | h
-  · rfl
-  · induction' v with v hv
-    induction' w with w hw
-    rw [cross_mk_of_ne hv hw h, cross_mk_of_ne hw hv h.symm, mk_eq_mk_iff_crossProduct_eq_zero,
-      ← cross_anticomm v w, map_neg, _root_.cross_self, neg_zero]
-
-noncomputable def cross_orthogonal_left {v w : ℙ K (Fin 3 → K)} (h : v ≠ w) :
-    (cross v w).orthogonal v := by
-  induction' v with v hv
-  induction' w with w hw
-  rw [cross_mk_of_ne hv hw h, orthogonal_mk, Matrix.dotProduct_comm, dot_self_cross]
-
-noncomputable def cross_orthogonal_right {v w : ℙ K (Fin 3 → K)} (h : v ≠ w) :
-    (cross v w).orthogonal w := by
-  rw [cross_comm]
-  exact cross_orthogonal_left h.symm
-
-noncomputable def orthogonal_cross_left {v w : ℙ K (Fin 3 → K)} (h : v ≠ w) :
-    v.orthogonal (cross v w) := by
-  rw [orthogonal_comm]
-  exact cross_orthogonal_left h
-
-noncomputable def orthogonal_cross_right {v w : ℙ K (Fin 3 → K)} (h : v ≠ w) :
-    w.orthogonal (cross v w) := by
-  rw [orthogonal_comm]
-  exact cross_orthogonal_right h
-
-end Projectivization
-
--- if z is orthogonal to both v and w, then z x (v x w) = 0 ?
-
-namespace Configuration
-
 namespace ofField
 
-variable {K : Type*} [Field K] [DecidableEq K]
+variable {K : Type*} [Field K]
 
 open scoped LinearAlgebra.Projectivization
 
-open LinearAlgebra.Projectivization
-
 instance : Membership (ℙ K (Fin 3 → K)) (ℙ K (Fin 3 → K)) :=
-  ⟨Projectivization.orthogonal⟩
+  ⟨Function.swap Projectivization.orthogonal⟩
 
 lemma mem_iff (v w : ℙ K (Fin 3 → K)) : v ∈ w ↔ Projectivization.orthogonal v w :=
   Iff.rfl
@@ -639,30 +488,15 @@ lemma rank_add_rank_le_card_of_mul_eq_zero {l m n : Type*} [Fintype l] [Fintype 
   apply Submodule.finrank_mono
   rw [LinearMap.range_le_ker_iff, ← Matrix.toLin_mul, hAB, map_zero]
 
--- PRed
-theorem _root_.Matrix.rank_transpose' {m n : Type*} [Fintype m] [Fintype n] (M : Matrix m n K) :
-  M.transpose.rank = M.rank := by
-  classical
-  rw [M.transpose.rank_eq_finrank_range_toLin (Pi.basisFun K n).dualBasis (Pi.basisFun K m).dualBasis,
-      Matrix.toLin_transpose, ← LinearMap.dualMap_def,
-      LinearMap.finrank_range_dualMap_eq_finrank_range, Matrix.toLin_eq_toLin',
-      Matrix.toLin'_apply', Matrix.rank]
-
--- PRed
-theorem _root_.Matrix.rank_eq_finrank_span_row' {R m n : Type*} [Field R] [Finite m] [Fintype n] (A : Matrix m n R) :
-    A.rank = FiniteDimensional.finrank R (Submodule.span R (Set.range A)) := by
-  cases nonempty_fintype m
-  rw [← Matrix.rank_transpose', Matrix.rank_eq_finrank_span_cols, Matrix.transpose_transpose]
-
 theorem _root_.LinearIndependent.rank_matrix {m n : Type*} [Fintype m] [Fintype n]
   {M : Matrix m n K} (h : LinearIndependent K M) : M.rank = Fintype.card m := by
-  rw [M.rank_eq_finrank_span_row', linearIndependent_iff_card_eq_finrank_span.mp h, Set.finrank]
+  rw [M.rank_eq_finrank_span_row, linearIndependent_iff_card_eq_finrank_span.mp h, Set.finrank]
 
 lemma crossProduct_eq_zero_of_dotProduct_eq_zero' {m n : Type*} [Fintype m] [Fintype n]
     {A B : Matrix m n K} (hA : LinearIndependent K A) (hB : LinearIndependent K B)
     (hAB : A * B.transpose = 0) : 2 * Fintype.card m ≤ Fintype.card n := by
   refine le_of_eq_of_le ?_ (rank_add_rank_le_card_of_mul_eq_zero hAB)
-  rw [hA.rank_matrix, B.rank_transpose', hB.rank_matrix, two_mul]
+  rw [hA.rank_matrix, B.rank_transpose, hB.rank_matrix, two_mul]
 
 lemma crossProduct_eq_zero_of_dotProduct_eq_zero {a b c d : (Fin 3 → K)}
     (hac : Matrix.dotProduct a c = 0) (hbc : Matrix.dotProduct b c = 0)
@@ -670,8 +504,8 @@ lemma crossProduct_eq_zero_of_dotProduct_eq_zero {a b c d : (Fin 3 → K)}
     crossProduct a b = 0 ∨ crossProduct c d = 0 := by
   by_contra h
   rw [not_or, ← ne_eq, ← ne_eq,
-    Projectivization.crossProduct_ne_zero_iff_linearIndependent,
-    Projectivization.crossProduct_ne_zero_iff_linearIndependent] at h
+    crossProduct_ne_zero_iff_linearIndependent,
+    crossProduct_ne_zero_iff_linearIndependent] at h
   let key1 : Matrix (Fin 2) (Fin 3) K := ![a, b]
   let key2 : Matrix (Fin 2) (Fin 3) K := ![c, d]
   let key3 := key1 * key2.transpose
@@ -705,7 +539,7 @@ instance : Nondegenerate (ℙ K (Fin 3 → K)) (ℙ K (Fin 3 → K)) :=
     exists_line := Projectivization.exists_not_self_orthogonal
     eq_or_eq := eq_or_eq_of_orthogonal }
 
-noncomputable instance : ProjectivePlane (ℙ K (Fin 3 → K)) (ℙ K (Fin 3 → K)) :=
+noncomputable instance [DecidableEq K] : ProjectivePlane (ℙ K (Fin 3 → K)) (ℙ K (Fin 3 → K)) :=
   { mkPoint := by
       intro v w _
       exact Projectivization.cross v w
