@@ -3,8 +3,9 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn
 -/
+import Mathlib.Algebra.Group.Action.Basic
+import Mathlib.Algebra.Group.Pointwise.Set
 import Mathlib.Data.Set.Finite
-import Mathlib.Data.Set.Pointwise.SMul
 
 /-! # Finiteness lemmas for pointwise operations on sets -/
 
@@ -62,7 +63,7 @@ instance decidableMemMul [Fintype α] [DecidableEq α] [DecidablePred (· ∈ s)
 instance decidableMemPow [Fintype α] [DecidableEq α] [DecidablePred (· ∈ s)] (n : ℕ) :
     DecidablePred (· ∈ s ^ n) := by
   induction' n with n ih
-  · simp only [Nat.zero_eq, pow_zero, mem_one]
+  · simp only [pow_zero, mem_one]
     infer_instance
   · letI := ih
     rw [pow_succ]

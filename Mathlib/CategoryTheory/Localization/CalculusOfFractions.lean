@@ -226,7 +226,7 @@ lemma LeftFraction.rightFraction_fac [W.HasRightCalculusOfFractions] {X Y : C}
 
 /-- The equivalence relation on left fractions for a morphism property `W`. -/
 def LeftFractionRel {X Y : C} (z₁ z₂ : W.LeftFraction X Y) : Prop :=
-  ∃ (Z : C)  (t₁ : z₁.Y' ⟶ Z) (t₂ : z₂.Y' ⟶ Z) (_ : z₁.s ≫ t₁ = z₂.s ≫ t₂)
+  ∃ (Z : C) (t₁ : z₁.Y' ⟶ Z) (t₂ : z₂.Y' ⟶ Z) (_ : z₁.s ≫ t₁ = z₂.s ≫ t₂)
     (_ : z₁.f ≫ t₁ = z₂.f ≫ t₂), W (z₁.s ≫ t₁)
 
 namespace LeftFractionRel
@@ -768,6 +768,7 @@ lemma MorphismProperty.map_eq_iff_postcomp {X Y : C} (f₁ f₂ : X ⟶ Y) :
     simp only [← cancel_mono (Localization.isoOfHom L W s hs).hom,
       Localization.isoOfHom_hom, ← L.map_comp, fac]
 
+include W in
 lemma Localization.essSurj_mapArrow :
     L.mapArrow.EssSurj where
   mem_essImage f := by
@@ -876,7 +877,7 @@ instance (W : MorphismProperty Cᵒᵖ) [h : W.HasRightCalculusOfFractions] :
 
 /-- The equivalence relation on right fractions for a morphism property `W`. -/
 def RightFractionRel {X Y : C} (z₁ z₂ : W.RightFraction X Y) : Prop :=
-  ∃ (Z : C)  (t₁ : Z ⟶ z₁.X') (t₂ : Z ⟶ z₂.X') (_ : t₁ ≫ z₁.s = t₂ ≫ z₂.s)
+  ∃ (Z : C) (t₁ : Z ⟶ z₁.X') (t₂ : Z ⟶ z₂.X') (_ : t₁ ≫ z₁.s = t₂ ≫ z₂.s)
     (_ : t₁ ≫ z₁.f = t₂ ≫ z₂.f), W (t₁ ≫ z₁.s)
 
 lemma RightFractionRel.op {X Y : C} {z₁ z₂ : W.RightFraction X Y}
@@ -976,6 +977,7 @@ lemma MorphismProperty.map_eq_iff_precomp {Y Z : C} (f₁ f₂ : Y ⟶ Z) :
     simp only [← cancel_epi (Localization.isoOfHom L W s hs).hom,
       Localization.isoOfHom_hom, ← L.map_comp, fac]
 
+include W in
 lemma Localization.essSurj_mapArrow_of_hasRightCalculusOfFractions :
     L.mapArrow.EssSurj where
   mem_essImage f := by

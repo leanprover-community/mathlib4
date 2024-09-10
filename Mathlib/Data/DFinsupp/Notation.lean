@@ -19,9 +19,7 @@ is correct.
 
 namespace DFinsupp
 
-open Lean
-open Lean.Parser
-open Lean.Parser.Term
+open Lean Parser Term
 
 attribute [term_parser] Finsupp.stxSingle₀ Finsupp.stxUpdate₀
 
@@ -42,7 +40,7 @@ def elabUpdate₀ : Elab.Term.TermElab
     Elab.Term.tryPostponeIfNoneOrMVar ty?
     let .some ty := ty? | Elab.throwUnsupportedSyntax
     let_expr DFinsupp _ _ _ := ← Meta.withReducible (Meta.whnf ty) | Elab.throwUnsupportedSyntax
-    Elab.Term.elabTerm (← `(DFinsupp.update $i $f $x)) ty?
+    Elab.Term.elabTerm (← `(DFinsupp.update $f $i $x)) ty?
   | _ => fun _ => Elab.throwUnsupportedSyntax
 
 /-- Unexpander for the `fun₀ | i => x` notation. -/

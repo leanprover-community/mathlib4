@@ -255,7 +255,7 @@ theorem hausdorffDist_optimal {X : Type u} [MetricSpace X] [CompactSpace X] [Non
       rcases exists_mem_of_nonempty X with ⟨xX, _⟩
       have : ∃ y ∈ range Ψ, dist (Φ xX) y < diam (univ : Set X) + 1 + diam (univ : Set Y) := by
         rw [Ψrange]
-        have : Φ xX ∈ ↑p := Φrange.subst (mem_range_self _)
+        have : Φ xX ∈ (p : Set _) := Φrange ▸ (mem_range_self _)
         exact
           exists_dist_lt_of_hausdorffDist_lt this bound
             (hausdorffEdist_ne_top_of_nonempty_of_bounded p.nonempty q.nonempty
@@ -315,7 +315,7 @@ theorem hausdorffDist_optimal {X : Type u} [MetricSpace X] [CompactSpace X] [Non
     refine le_trans this (le_of_forall_le_of_dense fun r hr => ?_)
     have I1 : ∀ x : X, (⨅ y, Fb (inl x, inr y)) ≤ r := by
       intro x
-      have : f (inl x) ∈ ↑p := Φrange.subst (mem_range_self _)
+      have : f (inl x) ∈ (p : Set _) := Φrange ▸ (mem_range_self _)
       rcases exists_dist_lt_of_hausdorffDist_lt this hr
           (hausdorffEdist_ne_top_of_nonempty_of_bounded p.nonempty q.nonempty p.isCompact.isBounded
             q.isCompact.isBounded) with
@@ -331,7 +331,7 @@ theorem hausdorffDist_optimal {X : Type u} [MetricSpace X] [CompactSpace X] [Non
 
     have I2 : ∀ y : Y, (⨅ x, Fb (inl x, inr y)) ≤ r := by
       intro y
-      have : f (inr y) ∈ ↑q := Ψrange.subst (mem_range_self _)
+      have : f (inr y) ∈ (q : Set _) := Ψrange ▸ (mem_range_self _)
       rcases exists_dist_lt_of_hausdorffDist_lt' this hr
           (hausdorffEdist_ne_top_of_nonempty_of_bounded p.nonempty q.nonempty p.isCompact.isBounded
             q.isCompact.isBounded) with
@@ -743,7 +743,7 @@ instance : SecondCountableTopology GHSpace := by
           _ ≤ 1 := le_of_lt (abs_sub_lt_one_of_floor_eq_floor this)
       calc
         |dist x y - dist (Ψ x) (Ψ y)| = ε * ε⁻¹ * |dist x y - dist (Ψ x) (Ψ y)| := by
-          rw [mul_inv_cancel (ne_of_gt εpos), one_mul]
+          rw [mul_inv_cancel₀ (ne_of_gt εpos), one_mul]
         _ = ε * (|ε⁻¹| * |dist x y - dist (Ψ x) (Ψ y)|) := by
           rw [abs_of_nonneg (le_of_lt (inv_pos.2 εpos)), mul_assoc]
         _ ≤ ε * 1 := mul_le_mul_of_nonneg_left I (le_of_lt εpos)
@@ -914,7 +914,7 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
           _ ≤ 1 := le_of_lt (abs_sub_lt_one_of_floor_eq_floor this)
       calc
         |dist x y - dist (Ψ x) (Ψ y)| = ε * ε⁻¹ * |dist x y - dist (Ψ x) (Ψ y)| := by
-          rw [mul_inv_cancel (ne_of_gt εpos), one_mul]
+          rw [mul_inv_cancel₀ (ne_of_gt εpos), one_mul]
         _ = ε * (|ε⁻¹| * |dist x y - dist (Ψ x) (Ψ y)|) := by
           rw [abs_of_nonneg (le_of_lt (inv_pos.2 εpos)), mul_assoc]
         _ ≤ ε * 1 := mul_le_mul_of_nonneg_left I (le_of_lt εpos)
@@ -940,7 +940,7 @@ limit of the `Y n`, and finally let `Z` be the completion of `Z0`.
 The images `X2 n` of `X n` in `Z` are at Hausdorff distance `< 1/2^n` by construction, hence they
 form a Cauchy sequence for the Hausdorff distance. By completeness (of `Z`, and therefore of its
 set of nonempty compact subsets), they converge to a limit `L`. This is the nonempty
-compact metric space we are looking for.  -/
+compact metric space we are looking for. -/
 variable (X : ℕ → Type) [∀ n, MetricSpace (X n)] [∀ n, CompactSpace (X n)] [∀ n, Nonempty (X n)]
 
 /-- Auxiliary structure used to glue metric spaces below, recording an isometric embedding

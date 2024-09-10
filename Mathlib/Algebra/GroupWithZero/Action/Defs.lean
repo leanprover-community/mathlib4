@@ -3,11 +3,9 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Group.TypeTags
-import Mathlib.Algebra.Opposites
-import Mathlib.Logic.Embedding.Basic
+import Mathlib.Algebra.Group.Action.Units
+import Mathlib.Algebra.Group.Equiv.Basic
+import Mathlib.Algebra.GroupWithZero.Units.Basic
 
 /-!
 # Definitions of group actions
@@ -45,15 +43,56 @@ More sophisticated lemmas belong in `GroupTheory.GroupAction`.
 group action
 -/
 
+assert_not_exists Equiv.Perm.equivUnitsEnd
+assert_not_exists Prod.fst_mul
+assert_not_exists Ring
 
-variable {M N G A B α β γ δ : Type*}
+open Function
 
-open Function (Injective Surjective)
+variable {R R' M M' N G A B α β : Type*}
+
+/-- `Monoid.toMulAction` is faithful on nontrivial cancellative monoids with zero. -/
+instance CancelMonoidWithZero.faithfulSMul [CancelMonoidWithZero α] [Nontrivial α] :
+    FaithfulSMul α α where eq_of_smul_eq_smul  h := mul_left_injective₀ one_ne_zero (h 1)
+
+section GroupWithZero
+variable [GroupWithZero α] [MulAction α β] {a : α}
+
+@[simp] lemma inv_smul_smul₀ (ha : a ≠ 0) (x : β) : a⁻¹ • a • x = x :=
+  inv_smul_smul (Units.mk0 a ha) x
+
+@[simp]
+lemma smul_inv_smul₀ (ha : a ≠ 0) (x : β) : a • a⁻¹ • x = x := smul_inv_smul (Units.mk0 a ha) x
+
+lemma inv_smul_eq_iff₀ (ha : a ≠ 0) {x y : β} : a⁻¹ • x = y ↔ x = a • y :=
+  inv_smul_eq_iff (g := Units.mk0 a ha)
+
+lemma eq_inv_smul_iff₀ (ha : a ≠ 0) {x y : β} : x = a⁻¹ • y ↔ a • x = y :=
+  eq_inv_smul_iff (g := Units.mk0 a ha)
+
+@[simp]
+lemma Commute.smul_right_iff₀ [Mul β] [SMulCommClass α β β] [IsScalarTower α β β] {x y : β}
+    (ha : a ≠ 0) : Commute x (a • y) ↔ Commute x y := Commute.smul_right_iff (g := Units.mk0 a ha)
+
+@[simp]
+lemma Commute.smul_left_iff₀ [Mul β] [SMulCommClass α β β] [IsScalarTower α β β] {x y : β}
+    (ha : a ≠ 0) : Commute (a • x) y ↔ Commute x y := Commute.smul_left_iff (g := Units.mk0 a ha)
+
+/-- Right scalar multiplication as an order isomorphism. -/
+@[simps] def Equiv.smulRight (ha : a ≠ 0) : β ≃ β where
+  toFun b := a • b
+  invFun b := a⁻¹ • b
+  left_inv := inv_smul_smul₀ ha
+  right_inv := smul_inv_smul₀ ha
+
+end GroupWithZero
 
 /-- Typeclass for scalar multiplication that preserves `0` on the right. -/
 class SMulZeroClass (M A : Type*) [Zero A] extends SMul M A where
   /-- Multiplying `0` by a scalar gives `0` -/
   smul_zero : ∀ a : M, a • (0 : A) = 0
+
+set_synth_order SMulZeroClass.toSMul #[3, 2]
 
 section smul_zero
 
@@ -123,6 +162,8 @@ class DistribSMul (M A : Type*) [AddZeroClass A] extends SMulZeroClass M A where
   /-- Scalar multiplication distributes across addition -/
   smul_add : ∀ (a : M) (x y : A), a • (x + y) = a • x + a • y
 
+set_synth_order DistribSMul.toSMulZeroClass #[3, 2]
+
 section DistribSMul
 
 variable [AddZeroClass A] [DistribSMul M A]
@@ -189,6 +230,8 @@ class DistribMulAction (M A : Type*) [Monoid M] [AddMonoid A] extends MulAction 
   /-- Scalar multiplication distributes across addition -/
   smul_add : ∀ (a : M) (x y : A), a • (x + y) = a • x + a • y
 
+set_synth_order DistribMulAction.toMulAction #[4, 2, 3]
+
 section
 
 variable [Monoid M] [AddMonoid A] [DistribMulAction M A]
@@ -196,6 +239,8 @@ variable [Monoid M] [AddMonoid A] [DistribMulAction M A]
 -- See note [lower instance priority]
 instance (priority := 100) DistribMulAction.toDistribSMul : DistribSMul M A :=
   { ‹DistribMulAction M A› with }
+
+set_synth_order DistribMulAction.toDistribSMul #[4, 2, 3]
 
 -- Porting note: this probably is no longer relevant.
 /-! Since Lean 3 does not have definitional eta for structures, we have to make sure
@@ -274,7 +319,7 @@ instance AddGroup.int_smulCommClass' : SMulCommClass M ℤ A :=
 
 @[simp]
 theorem smul_neg (r : M) (x : A) : r • -x = -(r • x) :=
-  eq_neg_of_add_eq_zero_left <| by rw [← smul_add, neg_add_self, smul_zero]
+  eq_neg_of_add_eq_zero_left <| by rw [← smul_add, neg_add_cancel, smul_zero]
 
 theorem smul_sub (r : M) (x y : A) : r • (x - y) = r • x - r • y := by
   rw [sub_eq_add_neg, sub_eq_add_neg, smul_add, smul_neg]
@@ -290,6 +335,8 @@ class MulDistribMulAction (M : Type*) (A : Type*) [Monoid M] [Monoid A] extends
   smul_mul : ∀ (r : M) (x y : A), r • (x * y) = r • x * r • y
   /-- Multiplying `1` by a scalar gives `1` -/
   smul_one : ∀ r : M, r • (1 : A) = 1
+
+set_synth_order MulDistribMulAction.toMulAction #[4, 2, 3]
 
 export MulDistribMulAction (smul_one)
 
@@ -391,3 +438,24 @@ theorem AddMonoid.End.smul_def [AddMonoid α] (f : AddMonoid.End α) (a : α) : 
 instance AddMonoid.End.applyFaithfulSMul [AddMonoid α] :
     FaithfulSMul (AddMonoid.End α) α :=
   ⟨fun {_ _ h} => AddMonoidHom.ext h⟩
+
+/-- Each non-zero element of a `GroupWithZero` defines an additive monoid isomorphism of an
+`AddMonoid` on which it acts distributively.
+This is a stronger version of `DistribMulAction.toAddMonoidHom`. -/
+def DistribMulAction.toAddEquiv₀ {α : Type*} (β : Type*) [GroupWithZero α] [AddMonoid β]
+    [DistribMulAction α β] (x : α) (hx : x ≠ 0) : β ≃+ β :=
+  { DistribMulAction.toAddMonoidHom β x with
+    invFun := fun b ↦ x⁻¹ • b
+    left_inv := fun b ↦ inv_smul_smul₀ hx b
+    right_inv := fun b ↦ smul_inv_smul₀ hx b }
+
+section Group
+variable [Group α] [AddMonoid β] [DistribMulAction α β]
+
+lemma smul_eq_zero_iff_eq (a : α) {x : β} : a • x = 0 ↔ x = 0 :=
+  ⟨fun h => by rw [← inv_smul_smul a x, h, smul_zero], fun h => h.symm ▸ smul_zero _⟩
+
+lemma smul_ne_zero_iff_ne (a : α) {x : β} : a • x ≠ 0 ↔ x ≠ 0 :=
+  not_congr <| smul_eq_zero_iff_eq a
+
+end Group

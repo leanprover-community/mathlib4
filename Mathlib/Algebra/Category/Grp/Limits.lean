@@ -8,7 +8,7 @@ import Mathlib.Algebra.Category.Grp.ForgetCorepresentable
 import Mathlib.Algebra.Category.Grp.Preadditive
 import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.CategoryTheory.Comma.Over
-import Mathlib.CategoryTheory.Limits.ConcreteCategory
+import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 
 /-!
@@ -126,7 +126,7 @@ instance hasLimit : HasLimit F :=
 end
 
 /-- A functor `F : J ⥤ Grp.{u}` has a limit iff `(F ⋙ forget Grp).sections` is
-`u`-small.  -/
+`u`-small. -/
 @[to_additive "A functor `F : J ⥤ AddGrp.{u}` has a limit iff
 `(F ⋙ forget AddGrp).sections` is `u`-small."]
 lemma hasLimit_iff_small_sections :
@@ -281,7 +281,7 @@ instance hasLimit : HasLimit F :=
 end
 
 /-- A functor `F : J ⥤ CommGrp.{u}` has a limit iff `(F ⋙ forget CommGrp).sections` is
-`u`-small.  -/
+`u`-small. -/
 @[to_additive "A functor `F : J ⥤ AddCommGrp.{u}` has a limit iff
 `(F ⋙ forget AddCommGrp).sections` is `u`-small."]
 lemma hasLimit_iff_small_sections :

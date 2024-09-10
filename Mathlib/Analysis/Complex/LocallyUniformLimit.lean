@@ -26,7 +26,7 @@ open Set Metric MeasureTheory Filter Complex intervalIntegral
 
 open scoped Real Topology
 
-variable {E ι : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E] {U K : Set ℂ}
+variable {E ι : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] {U K : Set ℂ}
   {z : ℂ} {M r δ : ℝ} {φ : Filter ι} {F : ι → ℂ → E} {f g : ℂ → E}
 
 namespace Complex
@@ -39,7 +39,7 @@ holomorphic, because it depends continuously on `f` for the uniform topology. -/
 noncomputable def cderiv (r : ℝ) (f : ℂ → E) (z : ℂ) : E :=
   (2 * π * I : ℂ)⁻¹ • ∮ w in C(z, r), ((w - z) ^ 2)⁻¹ • f w
 
-theorem cderiv_eq_deriv (hU : IsOpen U) (hf : DifferentiableOn ℂ f U) (hr : 0 < r)
+theorem cderiv_eq_deriv [CompleteSpace E] (hU : IsOpen U) (hf : DifferentiableOn ℂ f U) (hr : 0 < r)
     (hzr : closedBall z r ⊆ U) : cderiv r f z = deriv f z :=
   two_pi_I_inv_smul_circleIntegral_sub_sq_inv_smul_of_differentiable hU hzr hf (mem_ball_self hr)
 
@@ -102,6 +102,8 @@ theorem _root_.TendstoUniformlyOn.cderiv (hF : TendstoUniformlyOn F f φ (cthick
   simpa only [mul_div_cancel_right₀ _ hδ.ne.symm] using norm_cderiv_sub_lt hδ e2 hf (h'.mono e3)
 
 end Cderiv
+
+variable [CompleteSpace E]
 
 section Weierstrass
 
@@ -168,7 +170,7 @@ theorem differentiableOn_tsum_of_summable_norm {u : ι → ℝ} (hu : Summable u
     DifferentiableOn ℂ (fun w : ℂ => ∑' i : ι, F i w) U := by
   classical
   have hc := (tendstoUniformlyOn_tsum hu hF_le).tendstoLocallyUniformlyOn
-  refine hc.differentiableOn (eventually_of_forall fun s => ?_) hU
+  refine hc.differentiableOn (Eventually.of_forall fun s => ?_) hU
   exact DifferentiableOn.sum fun i _ => hf i
 
 /-- If the terms in the sum `∑' (i : ι), F i` are uniformly bounded on `U` by a
@@ -180,7 +182,7 @@ theorem hasSum_deriv_of_summable_norm {u : ι → ℝ} (hu : Summable u)
     HasSum (fun i : ι => deriv (F i) z) (deriv (fun w : ℂ => ∑' i : ι, F i w) z) := by
   rw [HasSum]
   have hc := (tendstoUniformlyOn_tsum hu hF_le).tendstoLocallyUniformlyOn
-  convert (hc.deriv (eventually_of_forall fun s =>
+  convert (hc.deriv (Eventually.of_forall fun s =>
     DifferentiableOn.sum fun i _ => hf i) hU).tendsto_at hz using 1
   ext1 s
   exact (deriv_sum fun i _ => (hf i).differentiableAt (hU.mem_nhds hz)).symm

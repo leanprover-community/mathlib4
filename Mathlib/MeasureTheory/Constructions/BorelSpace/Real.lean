@@ -26,7 +26,7 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 
 open Set Filter MeasureTheory MeasurableSpace
 
-open scoped Classical Topology NNReal ENNReal MeasureTheory
+open scoped Topology NNReal ENNReal
 
 universe u v w x y
 
@@ -303,6 +303,7 @@ lemma aemeasurable_of_tendsto' {ι : Type*} {f : ι → α → ℝ≥0∞} {g : 
   set p : α → (ℕ → ℝ≥0∞) → Prop := fun x f' ↦ Tendsto f' atTop (𝓝 (g x))
   have hp : ∀ᵐ x ∂μ, p x fun n ↦ f (v n) x := by
     filter_upwards [hlim] with x hx using hx.comp hv
+  classical
   set aeSeqLim := fun x ↦ ite (x ∈ aeSeqSet h'f p) (g x) (⟨f (v 0) x⟩ : Nonempty ℝ≥0∞).some
   refine ⟨aeSeqLim, measurable_of_tendsto' atTop (aeSeq.measurable h'f p)
     (tendsto_pi_nhds.mpr fun x ↦ ?_), ?_⟩
@@ -440,6 +441,9 @@ theorem AEMeasurable.coe_ereal_ennreal {f : α → ℝ≥0∞} {μ : Measure α}
 
 namespace NNReal
 
+instance : MeasurableSMul₂ ℝ≥0 ℝ≥0∞ where
+  measurable_smul := show Measurable fun r : ℝ≥0 × ℝ≥0∞ ↦ (r.1 : ℝ≥0) * r.2 by fun_prop
+
 /-- A limit (over a general filter) of measurable `ℝ≥0` valued functions is measurable. -/
 theorem measurable_of_tendsto' {ι} {f : ι → α → ℝ≥0} {g : α → ℝ≥0} (u : Filter ι) [NeBot u]
     [IsCountablyGenerated u] (hf : ∀ i, Measurable (f i)) (lim : Tendsto f u (𝓝 g)) :
@@ -466,7 +470,8 @@ end NNReal
 spanning measurable sets with finite measure on which `f` is bounded.
 See also `StronglyMeasurable.exists_spanning_measurableSet_norm_le` for functions into normed
 groups. -/
-theorem exists_spanning_measurableSet_le {m : MeasurableSpace α} {f : α → ℝ≥0}
+-- We redeclare `α` to temporarily avoid the `[MeasurableSpace α]` instance.
+theorem exists_spanning_measurableSet_le {α : Type*} {m : MeasurableSpace α} {f : α → ℝ≥0}
     (hf : Measurable f) (μ : Measure α) [SigmaFinite μ] :
     ∃ s : ℕ → Set α,
       (∀ n, MeasurableSet (s n) ∧ μ (s n) < ∞ ∧ ∀ x ∈ s n, f x ≤ n) ∧
@@ -500,7 +505,7 @@ variable (μ : Measure ℝ) [IsFiniteMeasureOnCompacts μ]
 lemma tendsto_measure_Icc_nhdsWithin_right' (b : ℝ) :
     Tendsto (fun δ ↦ μ (Icc (b - δ) (b + δ))) (𝓝[>] (0 : ℝ)) (𝓝 (μ {b})) := by
   rw [Real.singleton_eq_inter_Icc]
-  apply tendsto_measure_biInter_gt (fun r hr ↦ measurableSet_Icc)
+  apply tendsto_measure_biInter_gt (fun r hr ↦ measurableSet_Icc.nullMeasurableSet)
   · intro r s _rpos hrs
     exact Icc_subset_Icc (by linarith) (by linarith)
   · exact ⟨1, zero_lt_one, isCompact_Icc.measure_ne_top⟩

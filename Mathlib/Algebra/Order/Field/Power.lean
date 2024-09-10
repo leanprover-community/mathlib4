@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2014 Robert Lewis. All rights reserved.
+Copyright (c) 2014 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Robert Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
+Authors: Robert Y. Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
 -/
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.GroupWithZero.Commute
@@ -133,7 +133,7 @@ protected lemma Odd.zpow_nonneg_iff (hn : Odd n) : 0 ≤ a ^ n ↔ 0 ≤ a :=
 theorem Odd.zpow_nonpos_iff (hn : Odd n) : a ^ n ≤ 0 ↔ a ≤ 0 := by
   rw [le_iff_lt_or_eq, le_iff_lt_or_eq, hn.zpow_neg_iff, zpow_eq_zero_iff]
   rintro rfl
-  exact Int.odd_iff_not_even.1 hn even_zero
+  exact Int.not_even_iff_odd.2 hn even_zero
 
 lemma Odd.zpow_pos_iff (hn : Odd n) : 0 < a ^ n ↔ 0 < a := lt_iff_lt_of_le_iff_le hn.zpow_nonpos_iff
 
@@ -148,7 +148,7 @@ theorem Even.zpow_abs {p : ℤ} (hp : Even p) (a : α) : |a| ^ p = a ^ p := by
 
 /-- Bernoulli's inequality reformulated to estimate `(n : α)`. -/
 theorem Nat.cast_le_pow_sub_div_sub (H : 1 < a) (n : ℕ) : (n : α) ≤ (a ^ n - 1) / (a - 1) :=
-  (le_div_iff (sub_pos.2 H)).2 <|
+  (le_div_iff₀ (sub_pos.2 H)).2 <|
     le_sub_left_of_add_le <| one_add_mul_sub_le_pow ((neg_le_self zero_le_one).trans H.le) _
 
 /-- For any `a > 1` and a natural `n` we have `n ≤ a ^ n / (a - 1)`. See also

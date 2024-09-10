@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Maps
+import Mathlib.Data.List.Lemmas
 
 /-!
 
@@ -499,6 +500,17 @@ theorem support_reverse {u v : V} (p : G.Walk u v) : p.reverse.support = p.suppo
 @[simp]
 theorem support_ne_nil {u v : V} (p : G.Walk u v) : p.support ≠ [] := by cases p <;> simp
 
+@[simp]
+theorem head_support {G : SimpleGraph V} {a b : V} (p : G.Walk a b) :
+    p.support.head (by simp) = a := by cases p <;> simp
+
+@[simp]
+theorem getLast_support {G : SimpleGraph V} {a b : V} (p : G.Walk a b) :
+    p.support.getLast (by simp) = b := by
+  induction p
+  · simp
+  · simpa
+
 theorem tail_support_append {u v w : V} (p : G.Walk u v) (p' : G.Walk v w) :
     (p.append p').support.tail = p.support.tail ++ p'.support.tail := by
   rw [support_append, List.tail_append_of_ne_nil _ _ (support_ne_nil _)]
@@ -642,6 +654,21 @@ theorem map_fst_darts {u v : V} (p : G.Walk u v) : p.darts.map (·.fst) = p.supp
   simpa! using congr_arg List.dropLast (map_fst_darts_append p)
 
 @[simp]
+theorem head_darts_fst {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (hp : p.darts ≠ []) :
+    (p.darts.head hp).fst = a := by
+  cases p
+  · contradiction
+  · simp
+
+@[simp]
+theorem getLast_darts_snd {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (hp : p.darts ≠ []) :
+    (p.darts.getLast hp).snd = b := by
+  rw [← List.getLast_map (f := fun x : G.Dart ↦ x.snd)]
+  simp_rw [p.map_snd_darts, List.getLast_tail]
+  exact p.getLast_support
+  simpa
+
+@[simp]
 theorem edges_nil {u : V} : (nil : G.Walk u u).edges = [] := rfl
 
 @[simp]
@@ -717,6 +744,19 @@ theorem edges_nodup_of_support_nodup {u v : V} {p : G.Walk u v} (h : p.support.N
   | cons _ p' ih =>
     simp only [edges_cons, support_cons, List.nodup_cons] at h ⊢
     exact ⟨fun h' => h.1 (fst_mem_support_of_mem_edges p' h'), ih h.2⟩
+
+theorem edges_injective {u v : V} : Function.Injective (Walk.edges : G.Walk u v → List (Sym2 V))
+  | .nil, .nil, _ => rfl
+  | .nil, .cons _ _, h => by simp at h
+  | .cons _ _, .nil, h => by simp at h
+  | .cons' u v c h₁ w₁, .cons' _ v' _ h₂ w₂, h => by
+    have h₃ : u ≠ v' := by rintro rfl; exact G.loopless _ h₂
+    obtain ⟨rfl, h₃⟩ : v = v' ∧ w₁.edges = w₂.edges := by simpa [h₁, h₃] using h
+    obtain rfl := Walk.edges_injective h₃
+    rfl
+
+theorem darts_injective {u v : V} : Function.Injective (Walk.darts : G.Walk u v → List G.Dart) :=
+  edges_injective.of_comp
 
 /-- Predicate for the empty walk.
 
@@ -925,7 +965,7 @@ theorem count_edges_takeUntil_le_one {u v w : V} (p : G.Walk v w) (h : u ∈ p.s
         simp
       · rw [edges_cons, List.count_cons]
         split_ifs with h''
-        · rw [Sym2.eq_iff] at h''
+        · simp only [beq_iff_eq, Sym2.eq, Sym2.rel_iff'] at h''
           obtain ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ := h''
           · exact (h' rfl).elim
           · cases p' <;> simp!
@@ -1106,7 +1146,7 @@ theorem map_copy (hu : u = u') (hv : v = v') :
 theorem map_id (p : G.Walk u v) : p.map Hom.id = p := by
   induction p with
   | nil => rfl
-  | cons _ p' ih => simp [ih p']
+  | cons _ p' ih => simp [ih]
 
 @[simp]
 theorem map_map : (p.map f).map f' = p.map (f'.comp f) := by
@@ -1169,7 +1209,7 @@ theorem map_injective_of_injective {f : G →g G'} (hinj : Function.Injective f)
 abbrev mapLe {G G' : SimpleGraph V} (h : G ≤ G') {u v : V} (p : G.Walk u v) : G'.Walk u v :=
   p.map (Hom.mapSpanningSubgraphs h)
 
-/-! ### Transferring between graphs -/
+/-! ### Transferring between graphs -/
 
 /-- The walk `p` transferred to lie in `H`, given that `H` contains its edges. -/
 @[simp]

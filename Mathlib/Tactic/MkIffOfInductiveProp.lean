@@ -411,3 +411,5 @@ initialize Lean.registerBuiltinAttribute {
       | _ => throwError "unrecognized syntax"
     mkIffOfInductivePropImpl decl tgt idStx
 }
+
+end Mathlib.Tactic.MkIff

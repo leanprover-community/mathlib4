@@ -8,7 +8,7 @@ import Mathlib.Algebra.Algebra.Prod
 import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Algebra.Module.Rat
-import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Analysis.Normed.Field.Lemmas
 import Mathlib.Analysis.Normed.MulAction
 
 /-!
@@ -44,6 +44,8 @@ class NormedSpace (𝕜 : Type*) (E : Type*) [NormedField 𝕜] [SeminormedAddCo
     extends Module 𝕜 E where
   norm_smul_le : ∀ (a : 𝕜) (b : E), ‖a • b‖ ≤ ‖a‖ * ‖b‖
 
+set_synth_order NormedSpace.toModule #[4, 2, 3]
+
 attribute [inherit_doc NormedSpace] NormedSpace.norm_smul_le
 
 end Prio
@@ -62,7 +64,7 @@ instance NormedField.to_boundedSMul : BoundedSMul 𝕜 𝕜 :=
   NormedSpace.boundedSMul
 
 variable (𝕜) in
-theorem norm_zsmul [NormedSpace 𝕜 E] (n : ℤ) (x : E) : ‖n • x‖ = ‖(n : 𝕜)‖ * ‖x‖ := by
+theorem norm_zsmul (n : ℤ) (x : E) : ‖n • x‖ = ‖(n : 𝕜)‖ * ‖x‖ := by
   rw [← norm_smul, ← Int.smul_one_eq_cast, smul_assoc, one_smul]
 
 theorem eventually_nhds_norm_smul_sub_lt (c : 𝕜) (x : E) {ε : ℝ} (h : 0 < ε) :
@@ -178,6 +180,7 @@ section NontriviallyNormedSpace
 
 variable (𝕜 E)
 variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [Nontrivial E]
+include 𝕜
 
 /-- If `E` is a nontrivial normed space over a nontrivially normed field `𝕜`, then `E` is unbounded:
 for any `c : ℝ`, there exists a vector `x : E` with norm strictly greater than `c`. -/
@@ -212,6 +215,7 @@ section NormedSpace
 
 variable (𝕜 E)
 variable [NormedField 𝕜] [Infinite 𝕜] [NormedAddCommGroup E] [Nontrivial E] [NormedSpace 𝕜 E]
+include 𝕜
 
 /-- A normed vector space over an infinite normed field is a noncompact space.
 This cannot be an instance because in order to apply it,
@@ -251,6 +255,8 @@ variable [NormedSpace 𝕜 𝕜'] [SMulCommClass 𝕜 𝕜' 𝕜'] [IsScalarTowe
 class NormedAlgebra (𝕜 : Type*) (𝕜' : Type*) [NormedField 𝕜] [SeminormedRing 𝕜'] extends
   Algebra 𝕜 𝕜' where
   norm_smul_le : ∀ (r : 𝕜) (x : 𝕜'), ‖r • x‖ ≤ ‖r‖ * ‖x‖
+
+set_synth_order NormedAlgebra.toAlgebra #[4, 2, 3]
 
 attribute [inherit_doc NormedAlgebra] NormedAlgebra.norm_smul_le
 
@@ -453,8 +459,10 @@ Please consider using `IsScalarTower` and/or `RestrictScalars 𝕜 𝕜' E` inst
 This definition allows the `RestrictScalars.normedSpace` instance to be put directly on `E`
 rather on `RestrictScalars 𝕜 𝕜' E`. This would be a very bad instance; both because `𝕜'` cannot be
 inferred, and because it is likely to create instance diamonds.
+
+See Note [reducible non-instances].
 -/
-def NormedSpace.restrictScalars : NormedSpace 𝕜 E :=
+abbrev NormedSpace.restrictScalars : NormedSpace 𝕜 E :=
   RestrictScalars.normedSpace _ 𝕜' E
 
 end NormedSpace
@@ -486,8 +494,10 @@ Please consider using `IsScalarTower` and/or `RestrictScalars 𝕜 𝕜' E` inst
 This definition allows the `RestrictScalars.normedAlgebra` instance to be put directly on `E`
 rather on `RestrictScalars 𝕜 𝕜' E`. This would be a very bad instance; both because `𝕜'` cannot be
 inferred, and because it is likely to create instance diamonds.
+
+See Note [reducible non-instances].
 -/
-def NormedAlgebra.restrictScalars : NormedAlgebra 𝕜 E :=
+abbrev NormedAlgebra.restrictScalars : NormedAlgebra 𝕜 E :=
   RestrictScalars.normedAlgebra _ 𝕜' _
 
 end NormedAlgebra
