@@ -1019,7 +1019,7 @@ instance instIsScalarTower {𝕜' : Type*} [PseudoMetricSpace 𝕜'] [Zero 𝕜'
   smul_assoc _ _ _ := ext fun _ ↦ smul_assoc ..
 
 instance instSMulCommClass {𝕜' : Type*} [PseudoMetricSpace 𝕜'] [Zero 𝕜'] [SMul 𝕜' β]
-    [BoundedSMul 𝕜' β] [SMul 𝕜' 𝕜] [SMulCommClass 𝕜' 𝕜 β] :
+    [BoundedSMul 𝕜' β] [SMulCommClass 𝕜' 𝕜 β] :
     SMulCommClass 𝕜' 𝕜 (α →ᵇ β) where
   smul_comm _ _ _ := ext fun _ ↦ smul_comm ..
 

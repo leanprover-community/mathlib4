@@ -20,15 +20,19 @@ heavier imports.
 
 -/
 
+/-- The class of non-unital (complex) C⋆-algebras. -/
 class NonUnitalCStarAlgebra (A : Type*) extends NonUnitalNormedRing A, StarRing A, CompleteSpace A,
     CStarRing A, NormedSpace ℂ A, IsScalarTower ℂ A A, SMulCommClass ℂ A A, StarModule ℂ A where
 
+/-- The class of non-unital commutative (complex) C⋆-algebras. -/
 class NonUnitalCommCStarAlgebra (A : Type*) extends NonUnitalCStarAlgebra A where
   mul_comm : ∀ (a b : A), a * b = b * a
 
+/-- The class of unital (complex) C⋆-algebras. -/
 class CStarAlgebra (A : Type*) extends NormedRing A, StarRing A, CompleteSpace A, CStarRing A,
     NormedAlgebra ℂ A, StarModule ℂ A where
 
+/-- The class of unital commutative (complex) C⋆-algebras. -/
 class CommCStarAlgebra (A : Type*) extends CStarAlgebra A where
   mul_comm : ∀ (a b : A), a * b = b * a
 
@@ -46,16 +50,6 @@ instance (priority := 100) CommCStarAlgebra.toNormedCommRing
 instance (priority := 100) NonUnitalCommCStarAlgebra.toNonUnitalNormedCommRing
     (A : Type*) [NonUnitalCommCStarAlgebra A] : NonUnitalNormedCommRing A where
   mul_comm := mul_comm
-
--- missing instance: where should it go?
--- `Algebra.Ring.Subsemiring.Basic`
-instance {S R : Type*} [Ring R] [SetLike S R] [SubsemiringClass S R] :
-    NonUnitalSubsemiringClass S R where
-  mul_mem := mul_mem
-
--- missing instance: where should it go?
-instance {S R : Type*} [Ring R] [SetLike S R] [SubringClass S R] :
-    NonUnitalSubringClass S R where
 
 /-- This is not registered as an instance to avoid Lean searching for `IsClosed (s : Set A)`
 instances frequently. -/
