@@ -140,7 +140,7 @@ private theorem from_ClosureStep_aux
     IsHamiltonian G := by
   have hv : v ∈ p.support := by simp [List.Perm.mem_iff hp]
   have not_nil : ¬(p.dropUntil v hv).Nil := dropUntil_not_nil hv ne
-  have snd_eq_v' : (p.dropUntil v hv).sndOfNotNil not_nil = v' := by
+  have snd_eq_v' : (p.dropUntil v hv).getVert 1 = v' := by
     rw [← hd₂]
     refine p.next_unique ?_
       (p.darts_dropUntil_subset _ <| (p.dropUntil v hv).firstDart_mem_darts not_nil)
@@ -151,7 +151,7 @@ private theorem from_ClosureStep_aux
     apply List.Nodup.sublist (List.dropLast_sublist _) this
   let q := (p.takeUntil _ hv)
     |>.append vu'.toWalk
-    |>.append (p.dropUntil v hv |>.tail not_nil |>.reverse.copy rfl snd_eq_v')
+    |>.append (p.dropUntil v hv |>.tail |>.reverse.copy rfl snd_eq_v')
     |>.append v'u.toWalk
   suffices q.IsHamiltonianCycle from fun _ => ⟨u, q, this⟩
   apply IsHamiltonianCycle.isHamiltonianCycle_of_tail_toFinset
@@ -160,15 +160,16 @@ private theorem from_ClosureStep_aux
       p.length + 1 = p.support.length := by simp
       _ = Finset.univ.toList.length := by apply List.Perm.length_eq hp
       _ = ‖V‖ := by simp
+    have := Walk.length_tail_add_one not_nil
     simp [q, add_assoc]
     omega
   · assumption
   · simp only [tail_support_append, support_cons, support_nil, List.tail_cons, support_copy,
-      support_reverse, tail_support_eq_support_tail, List.tails_reverse,
-      List.append_assoc, List.singleton_append, List.cons_append, List.toFinset_append,
-      List.toFinset_cons, List.toFinset_reverse, List.toFinset_nil, insert_emptyc_eq,
-      Finset.union_insert, Finset.eq_univ_iff_forall, Finset.mem_insert, Finset.mem_union,
-      List.mem_toFinset, Finset.mem_singleton, Finset.not_mem_empty, false_or, q]
+      support_reverse, List.tails_reverse, List.append_assoc, List.singleton_append,
+      List.cons_append, List.toFinset_append, List.toFinset_cons, List.toFinset_reverse,
+      List.toFinset_nil, insert_emptyc_eq, Finset.union_insert, Finset.eq_univ_iff_forall,
+      Finset.mem_insert, Finset.mem_union, List.mem_toFinset, Finset.mem_singleton,
+      Finset.not_mem_empty, false_or, q]
     intro w
     by_contra hw
     simp only [not_or] at hw
@@ -181,10 +182,10 @@ private theorem from_ClosureStep_aux
     have not_mem_drop : w ∉ (p.dropUntil v hv).support.tail := by
       have tail_not_nil := support_tail_ne_nil not_nil
       have : (p.dropUntil v hv).support.tail.getLast tail_not_nil = u' := by
-        rw [List.getLast_tail, support_getLast]
+        rw [List.getLast_tail, getLast_support]
       rw [← List.dropLast_append_getLast tail_not_nil, this]
       rw [List.tail_reverse_eq_reverse_dropLast, List.mem_reverse] at hw₃
-      simpa using ⟨hw₃, hw₁⟩
+      simpa [← support_tail_of_not_nil _ not_nil] using ⟨hw₃, hw₁⟩
     have append : p.support.tail =
         (p.takeUntil v hv).support.tail ++ (p.dropUntil v hv).support.tail := by
       rw [← tail_support_append, take_spec]
@@ -293,12 +294,12 @@ theorem from_ClosureStep (hG : IsHamiltonian (closureStep G)) : IsHamiltonian G 
     have q_not_nil : ¬q.Nil := by
       erw [rotate_Nil_iff]
       exact hp.1.not_nil
-    have next_u_eq_v : q.sndOfNotNil q_not_nil = v := by
+    have next_u_eq_v : q.getVert 1 = v := by
       exact hq.1.next_unique (q.firstDart_mem_darts q_not_nil) hd_q rfl
-    have uv_not_edge : s(u, v) ∉ (q.tail q_not_nil).edges := by
-      have : q = cons (q.adj_sndOfNotNil q_not_nil) (q.tail q_not_nil) := by
-        exact (q.cons_tail_eq _).symm
-      have : q.edges = s(u, v) :: (q.tail q_not_nil).edges := by
+    have uv_not_edge : s(u, v) ∉ q.tail.edges := by
+      have : q = cons (q.adj_getVert_one q_not_nil) q.tail := by
+        exact (q.cons_tail_eq q_not_nil).symm
+      have : q.edges = s(u, v) :: q.tail.edges := by
         simp only [this, edges_cons]
         simpa using Or.inl next_u_eq_v
       intro h
@@ -307,7 +308,7 @@ theorem from_ClosureStep (hG : IsHamiltonian (closureStep G)) : IsHamiltonian G 
       exact List.not_nodup_cons_of_mem h nodup
     have G_closure_del : G.closureStep.deleteEdges {s(u, v)} = G := by
       exact closureStep_deleteEdge _ hd' d.adj
-    let q' := q.tail q_not_nil
+    let q' := q.tail
       |>.toDeleteEdge s(u, v) uv_not_edge
       |>.transfer G (by
         simp (config := {singlePass := true}) only [← G_closure_del]
@@ -318,10 +319,8 @@ theorem from_ClosureStep (hG : IsHamiltonian (closureStep G)) : IsHamiltonian G 
       simp only [transfer_transfer, support_copy, support_transfer, support_tail,
         List.perm_iff_count, hq.2, q']
       intro a
-      symm
-      apply List.count_eq_one_of_mem
-      apply Finset.nodup_toList
-      simp
+      rw [List.count_eq_one_of_mem (Finset.nodup_toList _) (by simp)]
+      simpa [← support_tail_of_not_nil _ q_not_nil] using hq.2 _
     have hV : ‖V‖ ≥ 3 := hq.length_eq ▸ hq.isCycle.three_le_length
     have deg_sum := closureStep_deg_sum G hd' d.adj
     have next_u : v = hq.next u := by
@@ -329,14 +328,15 @@ theorem from_ClosureStep (hG : IsHamiltonian (closureStep G)) : IsHamiltonian G 
       exact hd'₃ ▸ hq.isCycle.next_unique hd_q hd'₁ hd'₂.symm
     obtain ⟨w, w', d', hw, hw', d'_mem, hd'₁, hd'₂⟩ :=
       from_ClosureStep_aux' hq hV deg_sum next_u hd'
-    have q'_support : q'.support = q.support.tail := by simp [q']
+    have q'_support : q'.support = q.support.tail := by
+      simp [q', support_tail_of_not_nil _ q_not_nil]
     obtain ⟨i, i_lt, hi⟩ := List.getElem_of_mem d'_mem
     simp only [length_darts] at i_lt
     rw [← hi, darts_getElem_snd i i_lt] at hd'₂
     rw [← hi, darts_getElem_fst i i_lt] at hd'₁
     have i_nz : i ≠ 0 := by
       intro i_zero
-      simp only [i_zero, List.getElem_zero, support_head] at hd'₁
+      simp only [i_zero, List.getElem_zero, head_support] at hd'₁
       simp [hd'₁] at hw'
     have i_min_1 : i - 1 < q'.darts.length := by
       have q'_length : q'.length = q.length - 1 := by
