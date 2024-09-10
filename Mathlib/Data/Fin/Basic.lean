@@ -363,7 +363,7 @@ Preprocessor for `omega` to handle inequalities in `Fin`.
 Note that this involves a lot of case splitting, so may be slow.
 -/
 macro "fin_omega" : tactic => `(tactic|
-  { simp only [
+  { try simp only [
       -- Write `a + b` as `if (a + b : ℕ) < n then (a + b : ℤ) else (a + b : ℤ) - n` and
       -- similarly `a - b` as `if (b : ℕ) ≤ a then (a - b : ℤ) else (a - b : ℤ) + n`.
       coe_int_sub_eq_if, coe_int_add_eq_if,
