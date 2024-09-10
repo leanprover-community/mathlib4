@@ -1508,6 +1508,7 @@ import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
 import Mathlib.CategoryTheory.Functor.OfSequence
 import Mathlib.CategoryTheory.Functor.ReflectsIso
 import Mathlib.CategoryTheory.Functor.Trifunctor
+import Mathlib.CategoryTheory.Galois.Action
 import Mathlib.CategoryTheory.Galois.Basic
 import Mathlib.CategoryTheory.Galois.Decomposition
 import Mathlib.CategoryTheory.Galois.Examples
@@ -3547,8 +3548,14 @@ import Mathlib.Order.Disjointed
 import Mathlib.Order.Estimator
 import Mathlib.Order.Extension.Linear
 import Mathlib.Order.Extension.Well
-import Mathlib.Order.Filter.Archimedean
 import Mathlib.Order.Filter.AtTopBot
+import Mathlib.Order.Filter.AtTopBot.Archimedean
+import Mathlib.Order.Filter.AtTopBot.BigOperators
+import Mathlib.Order.Filter.AtTopBot.Field
+import Mathlib.Order.Filter.AtTopBot.Group
+import Mathlib.Order.Filter.AtTopBot.ModEq
+import Mathlib.Order.Filter.AtTopBot.Monoid
+import Mathlib.Order.Filter.AtTopBot.Ring
 import Mathlib.Order.Filter.Bases
 import Mathlib.Order.Filter.Basic
 import Mathlib.Order.Filter.CardinalInter
@@ -3568,7 +3575,6 @@ import Mathlib.Order.Filter.Interval
 import Mathlib.Order.Filter.Ker
 import Mathlib.Order.Filter.Lift
 import Mathlib.Order.Filter.ListTraverse
-import Mathlib.Order.Filter.ModEq
 import Mathlib.Order.Filter.NAry
 import Mathlib.Order.Filter.Partial
 import Mathlib.Order.Filter.Pi
@@ -3781,6 +3787,7 @@ import Mathlib.RingTheory.ClassGroup
 import Mathlib.RingTheory.Coalgebra.Basic
 import Mathlib.RingTheory.Coalgebra.Equiv
 import Mathlib.RingTheory.Coalgebra.Hom
+import Mathlib.RingTheory.Coalgebra.TensorProduct
 import Mathlib.RingTheory.Complex
 import Mathlib.RingTheory.Congruence.Basic
 import Mathlib.RingTheory.Congruence.BigOperators
@@ -4024,6 +4031,7 @@ import Mathlib.RingTheory.Valuation.PrimeMultiplicity
 import Mathlib.RingTheory.Valuation.Quotient
 import Mathlib.RingTheory.Valuation.RamificationGroup
 import Mathlib.RingTheory.Valuation.RankOne
+import Mathlib.RingTheory.Valuation.ValExtension
 import Mathlib.RingTheory.Valuation.ValuationRing
 import Mathlib.RingTheory.Valuation.ValuationSubring
 import Mathlib.RingTheory.WittVector.Basic
@@ -4747,6 +4755,7 @@ import Mathlib.Util.LongNames
 import Mathlib.Util.MemoFix
 import Mathlib.Util.Notation3
 import Mathlib.Util.Qq
+import Mathlib.Util.SetSynthOrder
 import Mathlib.Util.SleepHeartbeats
 import Mathlib.Util.Superscript
 import Mathlib.Util.SynthesizeUsing
