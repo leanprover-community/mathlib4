@@ -242,7 +242,7 @@ private def smul'' (r : R) (s : S) : X[S⁻¹] → X[S⁻¹] :=
     rw [mul_assoc (s₄' : R), h₃, ← mul_assoc]
 
 /-- The scalar multiplication on the Ore localization of monoids. -/
-@[to_additive (attr := irreducible)
+@[to_additive
   "the vector addition on the Ore localization of additive monoids."]
 protected def smul : R[S⁻¹] → X[S⁻¹] → X[S⁻¹] :=
   liftExpand smul'' fun r₁ r₂ s hs => by
@@ -317,7 +317,7 @@ def oreDivMulChar' (r₁ r₂ : R) (s₁ s₂ : S) :
   ⟨oreNum r₁ s₂, oreDenom r₁ s₂, ore_eq r₁ s₂, oreDiv_mul_oreDiv⟩
 
 /-- `1` in the localization, defined as `1 /ₒ 1`. -/
-@[to_additive (attr := irreducible) "`0` in the additive localization, defined as `0 -ₒ 0`."]
+@[to_additive "`0` in the additive localization, defined as `0 -ₒ 0`."]
 protected def one : R[S⁻¹] := 1 /ₒ 1
 
 @[to_additive]
@@ -375,10 +375,9 @@ protected theorem mul_assoc (x y z : R[S⁻¹]) : x * y * z = x * (y * z) :=
   OreLocalization.mul_smul x y z
 
 /-- `npow` of `OreLocalization` -/
-@[to_additive (attr := irreducible) "`nsmul` of `AddOreLocalization`"]
+@[to_additive "`nsmul` of `AddOreLocalization`"]
 protected def npow : ℕ → R[S⁻¹] → R[S⁻¹] := npowRec
 
-unseal OreLocalization.npow in
 @[to_additive]
 instance : Monoid R[S⁻¹] where
   one_mul := OreLocalization.one_mul
