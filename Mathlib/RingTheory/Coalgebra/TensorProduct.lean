@@ -28,9 +28,14 @@ structure on coalgebras induced by an equivalence with comonoid objects in the c
 to prove things. Then, we use the definitions in this file to make a monoidal category instance on
 `CoalgebraCat R` in `Mathlib.Algebra.Category.CoalgebraCat.Monoidal` that has simpler data.
 
+However, this approach forces our coalgebras to be in the same universe as the base ring `R`,
+since it relies on the monoidal category structure on `ModuleCat R`, which is currently
+universe monomorphic. Any contribution that achieves universe polymorphism would be welcome.
+
 -/
 
 universe v u
+
 open CategoryTheory
 open scoped TensorProduct
 
@@ -57,6 +62,7 @@ end
 
 namespace Coalgebra
 namespace TensorProduct
+
 open CoalgebraCat.MonoidalCategoryAux MonoidalCategory
 
 variable {R M N P Q : Type u} [CommRing R]
@@ -68,14 +74,14 @@ section
 
 /-- The tensor product of two coalgebra morphisms as a coalgebra morphism. -/
 noncomputable def map (f : M →ₗc[R] N) (g : P →ₗc[R] Q) :
-    M ⊗[R] P →ₗc[R] N ⊗[R] Q :=
-  { _root_.TensorProduct.map f.toLinearMap g.toLinearMap with
-    counit_comp := by
-      simp_rw [← tensorHom_toLinearMap]
-      apply (CoalgebraCat.ofHom f ⊗ CoalgebraCat.ofHom g).1.counit_comp
-    map_comp_comul := by
-      simp_rw [← tensorHom_toLinearMap, ← comul_tensorObj]
-      apply (CoalgebraCat.ofHom f ⊗ CoalgebraCat.ofHom g).1.map_comp_comul }
+    M ⊗[R] P →ₗc[R] N ⊗[R] Q where
+  toLinearMap := _root_.TensorProduct.map f.toLinearMap g.toLinearMap
+  counit_comp := by
+    simp_rw [← tensorHom_toLinearMap]
+    apply (CoalgebraCat.ofHom f ⊗ CoalgebraCat.ofHom g).1.counit_comp
+  map_comp_comul := by
+    simp_rw [← tensorHom_toLinearMap, ← comul_tensorObj]
+    apply (CoalgebraCat.ofHom f ⊗ CoalgebraCat.ofHom g).1.map_comp_comul
 
 @[simp]
 theorem map_tmul (f : M →ₗc[R] N) (g : P →ₗc[R] Q) (x : M) (y : P) :
