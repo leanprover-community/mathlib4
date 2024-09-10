@@ -142,7 +142,7 @@ theorem log_stirlingSeq_bounded_aux :
     have := (summable_nat_add_iff 1).mpr <| Real.summable_one_div_nat_pow.mpr one_lt_two
     exact sum_le_tsum (range n) (fun k _ => by positivity) this
   calc
-    log (stirlingSeq 1) - log (stirlingSeq (n + 1)) = log_stirlingSeq' 0 - log_stirlingSeq' n :=
+    log (stirlingSeq 1) - log (stirlingSeq (n + 1)) = log_stirling  Seq' 0 - log_stirlingSeq' n :=
       rfl
     _ = ∑ k ∈ range n, (log_stirlingSeq' k - log_stirlingSeq' (k + 1)) := by
       rw [← sum_range_sub' log_stirlingSeq' n]
