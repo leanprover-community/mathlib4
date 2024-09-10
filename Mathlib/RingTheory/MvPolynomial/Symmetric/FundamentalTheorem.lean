@@ -239,7 +239,7 @@ lemma IsSymmetric.antitone_supDegree [LinearOrder σ] {p : MvPolynomial σ R} (h
     Antitone ↑(ofLex <| p.supDegree toLex) := by
   obtain rfl | h0 := eq_or_ne p 0
   · rw [supDegree_zero, Finsupp.bot_eq_zero]
-    exact Pi.monotone_zero
+    exact Pi.zero_mono
   rw [Antitone]
   by_contra! h
   obtain ⟨i, j, hle, hlt⟩ := h
@@ -330,7 +330,7 @@ lemma esymmAlgHom_surjective (hn : Fintype.card σ ≤ n) :
   exact (AlgEquiv.surjective _).comp (esymmAlgHom_fin_surjective R hn)
 
 /-- If the cardinality of `σ` is `n`, then `esymmAlgHom σ R n` is an isomorphism. -/
-@[simps!]
+@[simps! apply]
 noncomputable def esymmAlgEquiv (hn : Fintype.card σ = n) :
     MvPolynomial (Fin n) R ≃ₐ[R] symmetricSubalgebra σ R :=
   AlgEquiv.ofBijective (esymmAlgHom σ R n)
