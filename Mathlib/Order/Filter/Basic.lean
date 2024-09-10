@@ -1271,12 +1271,15 @@ theorem Eventually.choice {r : α → β → Prop} {l : Filter α} [l.NeBot] (h 
 def EventuallyEq (l : Filter α) (f g : α → β) : Prop :=
   ∀ᶠ x in l, f x = g x
 
+section EventuallyEq
+variable {l : Filter α} {f g : α → β}
+
 @[inherit_doc]
 notation:50 f " =ᶠ[" l:50 "] " g:50 => EventuallyEq l f g
 
-theorem EventuallyEq.eventually {l : Filter α} {f g : α → β} (h : f =ᶠ[l] g) :
-    ∀ᶠ x in l, f x = g x :=
-  h
+theorem EventuallyEq.eventually (h : f =ᶠ[l] g) : ∀ᶠ x in l, f x = g x := h
+
+@[simp] lemma eventuallyEq_top : f =ᶠ[⊤] g ↔ f = g := by simp [EventuallyEq, funext_iff]
 
 theorem EventuallyEq.rw {l : Filter α} {f g : α → β} (h : f =ᶠ[l] g) (p : α → β → Prop)
     (hf : ∀ᶠ x in l, p x (f x)) : ∀ᶠ x in l, p x (g x) :=
@@ -1644,6 +1647,8 @@ theorem EventuallyLE.le_sup_of_le_right [SemilatticeSup β] {l : Filter α} {f g
 
 theorem join_le {f : Filter (Filter α)} {l : Filter α} (h : ∀ᶠ m in f, m ≤ l) : join f ≤ l :=
   fun _ hs => h.mono fun _ hm => hm hs
+
+end EventuallyEq
 
 /-! ### Push-forwards, pull-backs, and the monad structure -/
 
