@@ -174,11 +174,11 @@ lemma differentiableAt_binEntropy_iff_ne_zero_one :
   refine ⟨fun h ↦ ⟨?_, ?_⟩, fun h ↦ differentiableAt_binEntropy h.1 h.2⟩
     <;> rintro rfl <;> unfold binEntropy at h
   · rw [DifferentiableAt.add_iff_left] at h
-    simp [log_inv, mul_neg, ← neg_mul, ← negMulLog_def, differentiableAt_negMulLog_iff] at h
-    fun_prop (disch := simp)
+    · simp [log_inv, mul_neg, ← neg_mul, ← negMulLog_def, differentiableAt_negMulLog_iff] at h
+    · fun_prop (disch := simp)
   · rw [DifferentiableAt.add_iff_right, differentiableAt_iff_comp_const_sub (b := 1)] at h
-    simp [log_inv, mul_neg, ← neg_mul, ← negMulLog_def, differentiableAt_negMulLog_iff] at h
-    fun_prop (disch := simp)
+    · simp [log_inv, mul_neg, ← neg_mul, ← negMulLog_def, differentiableAt_negMulLog_iff] at h
+    · fun_prop (disch := simp)
 
 set_option push_neg.use_distrib true in
 /-- Binary entropy has derivative `log (1 - p) - log p`.
@@ -189,7 +189,7 @@ lemma deriv_binEntropy (p : ℝ) : deriv binEntropy p = log (1 - p) - log p := b
     rw [ne_comm, ← sub_ne_zero] at hp₁
     rw [binEntropy_eq_negMulLog_add_negMulLog_one_sub', deriv_add, deriv_comp_const_sub,
       deriv_negMulLog hp₀, deriv_negMulLog hp₁]
-    ring
+    · ring
     all_goals fun_prop (disch := assumption)
   -- pathological case where `deriv = 0` since `binEntropy` is not differentiable there
   · rw [deriv_zero_of_not_differentiableAt (differentiableAt_binEntropy_iff_ne_zero_one.not.2 hp)]
@@ -246,8 +246,8 @@ lemma deriv_qaryEntropy (hp₀ : p ≠ 0) (hp₁ : p ≠ 1) :
     deriv (qaryEntropy q) p = log (q - 1) + log (1 - p) - log p := by
   unfold qaryEntropy
   rw [deriv_add]
-  simp only [Int.cast_sub, Int.cast_natCast, Int.cast_one, differentiableAt_id', deriv_mul_const,
-    deriv_id'', one_mul, deriv_binEntropy, add_sub_assoc]
+  · simp only [Int.cast_sub, Int.cast_natCast, Int.cast_one, differentiableAt_id', deriv_mul_const,
+      deriv_id'', one_mul, deriv_binEntropy, add_sub_assoc]
   all_goals fun_prop (disch := assumption)
 
 /-- Binary entropy has derivative `log (1 - p) - log p`. -/
@@ -297,12 +297,12 @@ lemma not_continuousAt_deriv_qaryEntropy_one :
     apply tendsto_atBot_add_const_left
     exact tendsto_log_one_sub_sub_log_nhdsWithin_one_atBot
   apply not_continuousAt_of_tendsto (Filter.Tendsto.congr' _ tendstoBot) nhdsWithin_le_nhds
-  simp only [disjoint_nhds_atBot_iff, not_isBot, not_false_eq_true]
+  · simp only [disjoint_nhds_atBot_iff, not_isBot, not_false_eq_true]
   filter_upwards [Ioo_mem_nhdsWithin_Iio' (show 1 - 2⁻¹ < (1 : ℝ) by norm_num)]
   intros
   apply (deriv_qaryEntropy _ _).symm
-  simp_all only [mem_Ioo, ne_eq]
-  · linarith [show (1 : ℝ) = 2⁻¹ + 2⁻¹ by norm_num]
+  · simp_all only [mem_Ioo, ne_eq]
+    linarith [show (1 : ℝ) = 2⁻¹ + 2⁻¹ by norm_num]
   · simp_all only [mem_Ioo, ne_eq]
     linarith [two_inv_lt_one (α := ℝ)]
 
@@ -314,12 +314,12 @@ lemma not_continuousAt_deriv_qaryEntropy_zero :
     rw [this]
     exact tendsto_atTop_add_const_left _ _ tendsto_log_one_sub_sub_log_nhdsWithin_atAtop
   apply not_continuousAt_of_tendsto (Filter.Tendsto.congr' _ tendstoTop) nhdsWithin_le_nhds
-  simp only [disjoint_nhds_atTop_iff, not_isTop, not_false_eq_true]
+  · simp only [disjoint_nhds_atTop_iff, not_isTop, not_false_eq_true]
   filter_upwards [Ioo_mem_nhdsWithin_Ioi' (show (0 : ℝ) < 2⁻¹ by norm_num)]
   intros
   apply (deriv_qaryEntropy _ _).symm
-  simp_all only [zero_add, mem_Ioo, ne_eq]
-  · linarith
+  · simp_all only [zero_add, mem_Ioo, ne_eq]
+    linarith
   · simp_all only [zero_add, mem_Ioo, ne_eq]
     linarith [two_inv_lt_one (α := ℝ)]
 
@@ -440,8 +440,8 @@ lemma strictConcaveOn_qaryEntropy : StrictConcaveOn ℝ (Icc 0 1) (qaryEntropy q
   rw [deriv2_qaryEntropy]
   · simp_all only [interior_Icc, mem_Ioo]
     apply div_neg_of_neg_of_pos
-    norm_num [show 0 < log 2 by positivity]
-    simp_all only [gt_iff_lt, mul_pos_iff_of_pos_left, sub_pos, hp]
+    · norm_num [show 0 < log 2 by positivity]
+    · simp_all only [gt_iff_lt, mul_pos_iff_of_pos_left, sub_pos, hp]
 
 lemma strictConcave_binEntropy : StrictConcaveOn ℝ (Icc 0 1) binEntropy :=
   qaryEntropy_two ▸ strictConcaveOn_qaryEntropy

@@ -220,9 +220,10 @@ theorem char_rmatch_iff (a : α) (x : List α) : rmatch (char a) x ↔ x = [a] :
 
 theorem add_rmatch_iff (P Q : RegularExpression α) (x : List α) :
     (P + Q).rmatch x ↔ P.rmatch x ∨ Q.rmatch x := by
-  induction' x with _ _ ih generalizing P Q
-  · simp only [rmatch, matchEpsilon, Bool.or_eq_true_iff]
-  · repeat rw [rmatch]
+  induction x generalizing P Q with
+  | nil => simp only [rmatch, matchEpsilon, Bool.or_eq_true_iff]
+  | cons _ _ ih =>
+    repeat rw [rmatch]
     rw [deriv_add]
     exact ih _ _
 
