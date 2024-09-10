@@ -53,7 +53,7 @@ theorem isPWO_iUnion_support_powers [LinearOrderedCancelAddCommMonoid Γ] [Ring 
       (le_trans (le_of_lt hx) (orderTop_le_of_coeff_ne_zero hg))
   refine Set.iUnion_subset fun n => ?_
   induction' n with n ih <;> intro g hn
-  · simp only [Nat.zero_eq, pow_zero, support_one, Set.mem_singleton_iff] at hn
+  · simp only [pow_zero, support_one, Set.mem_singleton_iff] at hn
     rw [hn, SetLike.mem_coe]
     exact AddSubmonoid.zero_mem _
   · obtain ⟨i, hi, j, hj, rfl⟩ := support_mul_subset_add_support hn
@@ -505,7 +505,7 @@ instance instField [Field R] : Field (HahnSeries Γ R) where
       (single (-x.order)) (x.leadingCoeff)⁻¹ *
         (SummableFamily.powers _ (unit_aux x (inv_mul_cancel₀ (leadingCoeff_ne_iff.mpr x0)))).hsum
   inv_zero := dif_pos rfl
-  mul_inv_cancel x x0 := (congr rfl (dif_neg x0)).trans $ by
+  mul_inv_cancel x x0 := (congr rfl (dif_neg x0)).trans <| by
     have h :=
       SummableFamily.one_sub_self_mul_hsum_powers
         (unit_aux x (inv_mul_cancel₀ (leadingCoeff_ne_iff.mpr x0)))

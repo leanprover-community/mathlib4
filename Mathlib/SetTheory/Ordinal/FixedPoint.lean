@@ -263,7 +263,7 @@ theorem apply_lt_nfpBFamily (H : ∀ i hi, IsNormal (f i hi)) {a b} (hb : b < nf
 theorem apply_lt_nfpBFamily_iff (ho : o ≠ 0) (H : ∀ i hi, IsNormal (f i hi)) {a b} :
     (∀ i hi, f i hi b < nfpBFamily.{u, v} o f a) ↔ b < nfpBFamily.{u, v} o f a :=
   ⟨fun h => by
-    haveI := out_nonempty_iff_ne_zero.2 ho
+    haveI := toType_nonempty_iff_ne_zero.2 ho
     refine (apply_lt_nfpFamily_iff.{u, v} ?_).1 fun _ => h _ _
     exact fun _ => H _ _, apply_lt_nfpBFamily H⟩
 
@@ -368,10 +368,9 @@ def nfp (f : Ordinal → Ordinal) : Ordinal → Ordinal :=
 theorem nfp_eq_nfpFamily (f : Ordinal → Ordinal) : nfp f = nfpFamily fun _ : Unit => f :=
   rfl
 
-@[simp]
-theorem sup_iterate_eq_nfp (f : Ordinal.{u} → Ordinal.{u}) :
-    (fun a => sup fun n : ℕ => f^[n] a) = nfp f := by
-  refine funext fun a => le_antisymm ?_ (sup_le fun l => ?_)
+theorem sup_iterate_eq_nfp (f : Ordinal.{u} → Ordinal.{u}) (a : Ordinal.{u}) :
+    (sup fun n : ℕ => f^[n] a) = nfp f a := by
+  refine le_antisymm ?_ (sup_le fun l => ?_)
   · rw [sup_le_iff]
     intro n
     rw [← List.length_replicate n Unit.unit, ← List.foldr_const f a]
@@ -477,18 +476,18 @@ theorem deriv_eq_enumOrd (H : IsNormal f) : deriv f = enumOrd (Function.fixedPoi
 theorem deriv_eq_id_of_nfp_eq_id {f : Ordinal → Ordinal} (h : nfp f = id) : deriv f = id :=
   (IsNormal.eq_iff_zero_and_succ (deriv_isNormal _) IsNormal.refl).2 <| by simp [h]
 
-@[simp]
-theorem nfp_zero : nfp 0 = id := by
+theorem nfp_zero_left (a) : nfp 0 a = a := by
   rw [← sup_iterate_eq_nfp]
-  refine funext fun a => (sup_le fun n => ?_).antisymm (le_sup (fun n => 0^[n] a) 0)
+  apply (sup_le fun n => ?_).antisymm (le_sup (fun n => 0^[n] a) 0)
   induction' n with n _
   · rfl
-  rw [Function.iterate_succ']
-  exact Ordinal.zero_le a
+  · rw [Function.iterate_succ']
+    exact Ordinal.zero_le a
 
-theorem nfp_zero_left (a) : nfp 0 a = a := by
-  rw [nfp_zero]
-  rfl
+@[simp]
+theorem nfp_zero : nfp 0 = id := by
+  ext
+  exact nfp_zero_left _
 
 @[simp]
 theorem deriv_zero : deriv 0 = id :=
@@ -501,7 +500,6 @@ theorem deriv_zero_left (a) : deriv 0 a = a := by
 end
 
 /-! ### Fixed points of addition -/
-
 
 @[simp]
 theorem nfp_add_zero (a) : nfp (a + ·) 0 = a * omega := by
@@ -542,19 +540,14 @@ theorem deriv_add_eq_mul_omega_add (a b : Ordinal.{u}) : deriv (a + ·) b = a * 
 
 /-! ### Fixed points of multiplication -/
 
--- Porting note: commented out, doesn't seem necessary
--- local infixr:0 "^" => @Pow.pow Ordinal Ordinal Ordinal.hasPow
-
 @[simp]
 theorem nfp_mul_one {a : Ordinal} (ha : 0 < a) : nfp (a * ·) 1 = (a^omega) := by
-  rw [← sup_iterate_eq_nfp, ← sup_opow_nat]
-  · dsimp
-    congr
-    funext n
-    induction' n with n hn
-    · rw [Nat.cast_zero, opow_zero, iterate_zero_apply]
-    rw [iterate_succ_apply', Nat.add_comm, Nat.cast_add, Nat.cast_one, opow_add, opow_one, hn]
-  · exact ha
+  rw [← sup_iterate_eq_nfp, ← sup_opow_nat ha]
+  congr
+  funext n
+  induction' n with n hn
+  · rw [pow_zero, iterate_zero_apply]
+  · rw [iterate_succ_apply', Nat.add_comm, pow_add, pow_one, hn]
 
 @[simp]
 theorem nfp_mul_zero (a : Ordinal) : nfp (a * ·) 0 = 0 := by

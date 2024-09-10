@@ -82,7 +82,7 @@ def presheafHomSectionsEquiv : (presheafHom F G).sections ≃ (F ⟶ G) where
         dsimp
         refine Eq.trans ?_ ((s.1 ⟨X₁⟩).naturality
           (Over.homMk f : Over.mk f ⟶ Over.mk (𝟙 X₁)).op)
-        erw [← s.2 f.op, presheafHom_map_app_op_mk_id]
+        rw [← s.2 f.op, presheafHom_map_app_op_mk_id]
         rfl }
   invFun f := ⟨fun X => whiskerLeft _ f, fun _ => rfl⟩
   left_inv s := by
@@ -174,7 +174,7 @@ lemma presheafHom_isSheafFor  :
           rintro ⟨Z : Over Y₂.left, hZ⟩
           dsimp
           rw [assoc, assoc, app_cond hG x hx Y₂.hom Z.hom hZ, ← G.map_comp, ← op_comp]
-          erw [app_cond hG x hx Y₁.hom (Z.hom ≫ φ.left) (by simpa using hZ),
+          rw [app_cond hG x hx Y₁.hom (Z.hom ≫ φ.left) (by simpa using hZ),
             ← F.map_comp_assoc, op_comp]
           congr 3
           simp }, ?_⟩

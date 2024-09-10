@@ -234,22 +234,18 @@ instance instIsMarkovKernelBorelMarkovFromReal (η : Kernel α ℝ) [IsMarkovKer
   · rw [deterministic_apply]
     simp [(range_nonempty (embeddingReal Ω)).choose_spec]
 
-/-- For `κ' := map κ (Prod.map (id : β → β) e) (measurable_id.prod_map he.measurable)`, the
-hypothesis `hη` is `fst κ' ⊗ₖ η = κ'`. The conclusion of the lemma is
-`fst κ ⊗ₖ borelMarkovFromReal Ω η = comapRight (fst κ' ⊗ₖ η) _`. -/
+/-- For `κ' := map κ (Prod.map (id : β → β) e)`, the hypothesis `hη` is `fst κ' ⊗ₖ η = κ'`.
+The conclusion of the lemma is `fst κ ⊗ₖ borelMarkovFromReal Ω η = comapRight (fst κ' ⊗ₖ η) _`. -/
 lemma compProd_fst_borelMarkovFromReal_eq_comapRight_compProd
     (κ : Kernel α (β × Ω)) [IsSFiniteKernel κ] (η : Kernel (α × β) ℝ) [IsSFiniteKernel η]
-    (hη : (fst (map κ (Prod.map (id : β → β) (embeddingReal Ω))
-        (measurable_id.prod_map (measurableEmbedding_embeddingReal Ω).measurable))) ⊗ₖ η
-      = map κ (Prod.map (id : β → β) (embeddingReal Ω))
-        (measurable_id.prod_map (measurableEmbedding_embeddingReal Ω).measurable)) :
+    (hη : (fst (map κ (Prod.map (id : β → β) (embeddingReal Ω)))) ⊗ₖ η
+      = map κ (Prod.map (id : β → β) (embeddingReal Ω))) :
     fst κ ⊗ₖ borelMarkovFromReal Ω η
-      = comapRight (fst (map κ (Prod.map (id : β → β) (embeddingReal Ω))
-          (measurable_id.prod_map (measurableEmbedding_embeddingReal Ω).measurable)) ⊗ₖ η)
+      = comapRight (fst (map κ (Prod.map (id : β → β) (embeddingReal Ω))) ⊗ₖ η)
         (MeasurableEmbedding.id.prod_mk (measurableEmbedding_embeddingReal Ω)) := by
   let e := embeddingReal Ω
   let he := measurableEmbedding_embeddingReal Ω
-  let κ' := map κ (Prod.map (id : β → β) e) (measurable_id.prod_map he.measurable)
+  let κ' := map κ (Prod.map (id : β → β) e)
   have hη' : fst κ' ⊗ₖ η = κ' := hη
   have h_prod_embed : MeasurableEmbedding (Prod.map (id : β → β) e) :=
     MeasurableEmbedding.id.prod_mk he
@@ -258,7 +254,8 @@ lemma compProd_fst_borelMarkovFromReal_eq_comapRight_compProd
   have h_fst : fst κ' = fst κ := by
     ext a u
     unfold_let κ'
-    rw [fst_apply, map_apply, Measure.map_map measurable_fst h_prod_embed.measurable, fst_apply]
+    rw [fst_apply, map_apply _ (by fun_prop),
+      Measure.map_map measurable_fst h_prod_embed.measurable, fst_apply]
     congr
   rw [h_fst]
   ext a t ht : 2
@@ -268,7 +265,7 @@ lemma compProd_fst_borelMarkovFromReal_eq_comapRight_compProd
     rw [← h_fst]
     have h_compProd : κ' a (univ ×ˢ range e)ᶜ = 0 := by
       unfold_let κ'
-      rw [map_apply']
+      rw [map_apply' _ (by fun_prop)]
       swap; · exact (MeasurableSet.univ.prod he.measurableSet_range).compl
       suffices Prod.map id e ⁻¹' (univ ×ˢ range e)ᶜ = ∅ by rw [this]; simp
       ext x
@@ -286,26 +283,23 @@ lemma compProd_fst_borelMarkovFromReal_eq_comapRight_compProd
   rw [piecewise_apply, if_pos]
   exact ha
 
-/-- For `κ' := map κ (Prod.map (id : β → β) e) (measurable_id.prod_map he.measurable)`, the
-hypothesis `hη` is `fst κ' ⊗ₖ η = κ'`. With that hypothesis,
-`fst κ ⊗ₖ borelMarkovFromReal κ η = κ`.-/
+/-- For `κ' := map κ (Prod.map (id : β → β) e)`, the hypothesis `hη` is `fst κ' ⊗ₖ η = κ'`.
+With that hypothesis, `fst κ ⊗ₖ borelMarkovFromReal κ η = κ`.-/
 lemma compProd_fst_borelMarkovFromReal (κ : Kernel α (β × Ω)) [IsSFiniteKernel κ]
     (η : Kernel (α × β) ℝ) [IsSFiniteKernel η]
-    (hη : (fst (map κ (Prod.map (id : β → β) (embeddingReal Ω))
-        (measurable_id.prod_map (measurableEmbedding_embeddingReal Ω).measurable))) ⊗ₖ η
-      = map κ (Prod.map (id : β → β) (embeddingReal Ω))
-        (measurable_id.prod_map (measurableEmbedding_embeddingReal Ω).measurable)) :
+    (hη : (fst (map κ (Prod.map (id : β → β) (embeddingReal Ω)))) ⊗ₖ η
+      = map κ (Prod.map (id : β → β) (embeddingReal Ω))) :
     fst κ ⊗ₖ borelMarkovFromReal Ω η = κ := by
   let e := embeddingReal Ω
   let he := measurableEmbedding_embeddingReal Ω
-  let κ' := map κ (Prod.map (id : β → β) e) (measurable_id.prod_map he.measurable)
+  let κ' := map κ (Prod.map (id : β → β) e)
   have hη' : fst κ' ⊗ₖ η = κ' := hη
   have h_prod_embed : MeasurableEmbedding (Prod.map (id : β → β) e) :=
     MeasurableEmbedding.id.prod_mk he
   have : κ = comapRight κ' h_prod_embed := by
     ext c t : 2
     unfold_let κ'
-    rw [comapRight_apply, map_apply, h_prod_embed.comap_map]
+    rw [comapRight_apply, map_apply _ (by fun_prop), h_prod_embed.comap_map]
   conv_rhs => rw [this, ← hη']
   exact compProd_fst_borelMarkovFromReal_eq_comapRight_compProd κ η hη
 
@@ -320,9 +314,7 @@ A conditional kernel for `κ : Kernel α (γ × Ω)` where `γ` is countably gen
 standard Borel. -/
 noncomputable
 def condKernelBorel (κ : Kernel α (γ × Ω)) [IsFiniteKernel κ] : Kernel (α × γ) Ω :=
-  let e := embeddingReal Ω
-  let he := measurableEmbedding_embeddingReal Ω
-  let κ' := map κ (Prod.map (id : γ → γ) e) (measurable_id.prod_map he.measurable)
+  let κ' := map κ (Prod.map (id : γ → γ) (embeddingReal Ω))
   borelMarkovFromReal Ω (condKernelReal κ')
 
 instance instIsMarkovKernelCondKernelBorel (κ : Kernel α (γ × Ω)) [IsFiniteKernel κ] :
@@ -349,9 +341,7 @@ variable (κ : Kernel Unit (α × Ω)) [IsFiniteKernel κ]
 A conditional kernel for `κ : Kernel Unit (α × Ω)` where `Ω` is standard Borel. -/
 noncomputable
 def condKernelUnitBorel : Kernel (Unit × α) Ω :=
-  let e := embeddingReal Ω
-  let he := measurableEmbedding_embeddingReal Ω
-  let κ' := map κ (Prod.map (id : α → α) e) (measurable_id.prod_map he.measurable)
+  let κ' := map κ (Prod.map (id : α → α) (embeddingReal Ω))
   borelMarkovFromReal Ω (condKernelUnitReal κ')
 
 instance instIsMarkovKernelCondKernelUnitBorel : IsMarkovKernel κ.condKernelUnitBorel := by

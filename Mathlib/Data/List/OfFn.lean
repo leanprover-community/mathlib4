@@ -3,8 +3,8 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Batteries.Data.List.Pairwise
 import Mathlib.Data.Fin.Tuple.Basic
-import Mathlib.Data.List.Basic
 
 /-!
 # Lists from functions
@@ -74,18 +74,6 @@ theorem getElem?_ofFn {n} (f : Fin n → α) (i) : (ofFn f)[i]? = ofFnNthVal f i
 theorem get?_ofFn {n} (f : Fin n → α) (i) : get? (ofFn f) i = ofFnNthVal f i := by
   simp
 
-set_option linter.deprecated false in
-@[deprecated get_ofFn (since := "2023-01-17")]
-theorem nthLe_ofFn {n} (f : Fin n → α) (i : Fin n) :
-    nthLe (ofFn f) i ((length_ofFn f).symm ▸ i.2) = f i := by
-  simp [nthLe]
-
-set_option linter.deprecated false in
-@[simp, deprecated get_ofFn (since := "2023-01-17")]
-theorem nthLe_ofFn' {n} (f : Fin n → α) {i : ℕ} (h : i < (ofFn f).length) :
-    nthLe (ofFn f) i h = f ⟨i, length_ofFn f ▸ h⟩ :=
-  nthLe_ofFn f ⟨i, length_ofFn f ▸ h⟩
-
 @[simp]
 theorem map_ofFn {β : Type*} {n : ℕ} (f : Fin n → α) (g : α → β) :
     map g (ofFn f) = ofFn (g ∘ f) :=
@@ -129,7 +117,7 @@ theorem ofFn_succ' {n} (f : Fin (succ n) → α) :
 
 @[simp]
 theorem ofFn_eq_nil_iff {n : ℕ} {f : Fin n → α} : ofFn f = [] ↔ n = 0 := by
-  cases n <;> simp only [ofFn_zero, ofFn_succ, eq_self_iff_true, Nat.succ_ne_zero]
+  cases n <;> simp only [ofFn_zero, ofFn_succ, eq_self_iff_true, Nat.succ_ne_zero, reduceCtorEq]
 
 theorem last_ofFn {n : ℕ} (f : Fin n → α) (h : ofFn f ≠ [])
     (hn : n - 1 < n := Nat.pred_lt <| ofFn_eq_nil_iff.not.mp h) :
@@ -200,11 +188,6 @@ theorem ofFn_getElem_eq_map {β : Type*} (l : List α) (f : α → β) :
 @[deprecated ofFn_getElem_eq_map (since := "2024-06-12")]
 theorem ofFn_get_eq_map {β : Type*} (l : List α) (f : α → β) : ofFn (f <| l.get ·) = l.map f := by
   simp
-
-set_option linter.deprecated false in
-@[deprecated ofFn_get (since := "2023-01-17")]
-theorem ofFn_nthLe : ∀ l : List α, (ofFn fun i => nthLe l i i.2) = l :=
-  ofFn_get
 
 -- not registered as a simp lemma, as otherwise it fires before `forall_mem_ofFn_iff` which
 -- is much more useful

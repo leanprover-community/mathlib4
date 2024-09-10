@@ -54,6 +54,9 @@ instance : CommRing (FiniteIntegralAdeles R K) :=
 instance : TopologicalSpace (FiniteIntegralAdeles R K) :=
   inferInstanceAs (TopologicalSpace (∀ v : HeightOneSpectrum R, v.adicCompletionIntegers K))
 
+instance (v : HeightOneSpectrum R) : TopologicalRing (v.adicCompletionIntegers K) :=
+  Subring.instTopologicalRing ..
+
 instance : TopologicalRing (FiniteIntegralAdeles R K) :=
   inferInstanceAs (TopologicalRing (∀ v : HeightOneSpectrum R, v.adicCompletionIntegers K))
 
@@ -344,7 +347,7 @@ lemma ext {a₁ a₂ : FiniteAdeleRing R K} (h : (a₁ : K_hat R K) = a₂) : a�
 instance : Algebra (R_hat R K) (FiniteAdeleRing R K) where
   smul rhat fadele := ⟨fun v ↦ rhat v * fadele.1 v, Finite.subset fadele.2 <| fun v hv ↦ by
     simp only [mem_adicCompletionIntegers, mem_compl_iff, mem_setOf_eq, map_mul] at hv ⊢
-    exact mt (mul_le_one₀ (rhat v).2) hv
+    exact mt (mul_le_one' (rhat v).2) hv
     ⟩
   toFun r := ⟨r, by simp_all⟩
   map_one' := by ext; rfl

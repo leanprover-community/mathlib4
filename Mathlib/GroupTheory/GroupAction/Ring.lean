@@ -25,17 +25,17 @@ variable {α : Type*}
 instance NonUnitalNonAssocSemiring.nat_smulCommClass [NonUnitalNonAssocSemiring α] :
     SMulCommClass ℕ α α where
   smul_comm n x y := by
-    induction' n with n ih
-    · simp [zero_nsmul]
-    · simp_rw [succ_nsmul, smul_eq_mul, mul_add, ← smul_eq_mul, ih]
+    induction n with
+    | zero => simp [zero_nsmul]
+    | succ n ih => simp_rw [succ_nsmul, smul_eq_mul, mul_add, ← smul_eq_mul, ih]
 
 /-- Note that `AddCommMonoid.nat_isScalarTower` requires stronger assumptions on `α`. -/
 instance NonUnitalNonAssocSemiring.nat_isScalarTower [NonUnitalNonAssocSemiring α] :
     IsScalarTower ℕ α α where
   smul_assoc n x y := by
-    induction' n with n ih
-    · simp [zero_nsmul]
-    · simp_rw [succ_nsmul, ← ih, smul_eq_mul, add_mul]
+    induction n with
+    | zero => simp [zero_nsmul]
+    | succ n ih => simp_rw [succ_nsmul, ← ih, smul_eq_mul, add_mul]
 
 /-- Note that `AddMonoid.int_smulCommClass` requires stronger assumptions on `α`. -/
 instance NonUnitalNonAssocRing.int_smulCommClass [NonUnitalNonAssocRing α] :

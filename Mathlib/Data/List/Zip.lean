@@ -144,26 +144,11 @@ theorem get_zipWith {f : α → β → γ} {l : List α} {l' : List β} {i : Fin
         (l'.get ⟨i, lt_length_right_of_zipWith i.isLt⟩) := by
   simp
 
-set_option linter.deprecated false in
-@[simp, deprecated get_zipWith (since := "2024-05-09")]
-theorem nthLe_zipWith {f : α → β → γ} {l : List α} {l' : List β} {i : ℕ}
-    {h : i < (zipWith f l l').length} :
-    (zipWith f l l').nthLe i h =
-      f (l.nthLe i (lt_length_left_of_zipWith h)) (l'.nthLe i (lt_length_right_of_zipWith h)) :=
-  get_zipWith (i := ⟨i, h⟩)
-
 @[deprecated getElem_zip (since := "2024-06-12")]
 theorem get_zip {l : List α} {l' : List β} {i : Fin (zip l l').length} :
     (zip l l').get i =
       (l.get ⟨i, lt_length_left_of_zip i.isLt⟩, l'.get ⟨i, lt_length_right_of_zip i.isLt⟩) := by
   simp
-
-set_option linter.deprecated false in
-@[simp, deprecated get_zip (since := "2024-05-09")]
-theorem nthLe_zip {l : List α} {l' : List β} {i : ℕ} {h : i < (zip l l').length} :
-    (zip l l').nthLe i h =
-      (l.nthLe i (lt_length_left_of_zip h), l'.nthLe i (lt_length_right_of_zip h)) :=
-  nthLe_zipWith
 
 theorem mem_zip_inits_tails {l : List α} {init tail : List α} :
     (init, tail) ∈ zip l.inits l.tails ↔ init ++ tail = l := by

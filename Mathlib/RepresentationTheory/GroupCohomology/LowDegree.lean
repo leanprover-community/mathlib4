@@ -39,7 +39,7 @@ The file also contains an identification between the definitions in
 1-coboundaries (i.e. `B¹(G, A) := Im(d⁰: A → Fun(G, A))`).
 * `groupCohomology.H2 A`: 2-cocycles (i.e. `Z²(G, A) := Ker(d² : Fun(G², A) → Fun(G³, A)`) modulo
 2-coboundaries (i.e. `B²(G, A) := Im(d¹: Fun(G, A) → Fun(G², A))`).
-* `groupCohomology.H1LequivOfIsTrivial`: the isomorphism `H¹(G, A) ≃ Hom(G, A)` when  the
+* `groupCohomology.H1LequivOfIsTrivial`: the isomorphism `H¹(G, A) ≃ Hom(G, A)` when the
 representation on `A` is trivial.
 * `groupCohomology.isoHn` for `n = 0, 1, 2`: an isomorphism
 `groupCohomology A n ≅ groupCohomology.Hn A`.
@@ -82,7 +82,7 @@ def twoCochainsLequiv : (inhomogeneousCochains A).X 2 ≃ₗ[k] G × G → A :=
 /-- The 3rd object in the complex of inhomogeneous cochains of `A : Rep k G` is isomorphic
 to `Fun(G³, A)` as a `k`-module. -/
 def threeCochainsLequiv : (inhomogeneousCochains A).X 3 ≃ₗ[k] G × G × G → A :=
-  LinearEquiv.funCongrLeft k A <| ((Equiv.piFinSucc 2 G).trans
+  LinearEquiv.funCongrLeft k A <| ((Fin.consEquiv _).symm.trans
     ((Equiv.refl G).prodCongr (piFinTwoEquiv fun _ => G))).symm
 
 end Cochains
@@ -337,7 +337,7 @@ theorem oneCoboundaries_of_mem_range_apply {f : G → A} (h : f ∈ LinearMap.ra
 `ρ(g)(x) - x = f(g)` for all `g : G`. -/
 def oneCoboundariesOfEq {f : G → A} {x : A} (hf : ∀ g, A.ρ g x - x = f g) :
     oneCoboundaries A :=
-  oneCoboundariesOfMemRange ⟨x, by ext g; exact hf g⟩
+  oneCoboundariesOfMemRange ⟨x, funext hf⟩
 
 theorem oneCoboundariesOfEq_apply {f : G → A} {x : A} (hf : ∀ g, A.ρ g x - x = f g) :
     (oneCoboundariesOfEq hf).1.1 = f := rfl
@@ -365,7 +365,7 @@ theorem twoCoboundariesOfMemRange_apply {f : G × G → A} (h : f ∈ LinearMap.
 def twoCoboundariesOfEq {f : G × G → A} {x : G → A}
     (hf : ∀ g h, A.ρ g (x h) - x (g * h) + x g = f (g, h)) :
     twoCoboundaries A :=
-  twoCoboundariesOfMemRange ⟨x, by ext g; exact hf g.1 g.2⟩
+  twoCoboundariesOfMemRange ⟨x, funext fun g ↦ hf g.1 g.2⟩
 
 theorem twoCoboundariesOfEq_apply {f : G × G → A} {x : G → A}
     (hf : ∀ g h, A.ρ g (x h) - x (g * h) + x g = f (g, h)) :
@@ -465,7 +465,7 @@ theorem isOneCocycle_of_oneCocycles (f : oneCocycles (Rep.ofDistribMulAction k G
 on `A` induced by the `DistribMulAction`. -/
 def oneCoboundariesOfIsOneCoboundary {f : G → A} (hf : IsOneCoboundary f) :
     oneCoboundaries (Rep.ofDistribMulAction k G A) :=
-  oneCoboundariesOfMemRange (by rcases hf with ⟨x, hx⟩; exact ⟨x, by ext g; exact hx g⟩)
+  oneCoboundariesOfMemRange ⟨hf.choose, funext hf.choose_spec⟩
 
 theorem isOneCoboundary_of_oneCoboundaries (f : oneCoboundaries (Rep.ofDistribMulAction k G A)) :
     IsOneCoboundary (A := A) f.1.1 := by
@@ -487,7 +487,7 @@ theorem isTwoCocycle_of_twoCocycles (f : twoCocycles (Rep.ofDistribMulAction k G
 representation on `A` induced by the `DistribMulAction`. -/
 def twoCoboundariesOfIsTwoCoboundary {f : G × G → A} (hf : IsTwoCoboundary f) :
     twoCoboundaries (Rep.ofDistribMulAction k G A) :=
-  twoCoboundariesOfMemRange (by rcases hf with ⟨x, hx⟩; exact ⟨x, by ext g; exact hx g.1 g.2⟩)
+  twoCoboundariesOfMemRange (⟨hf.choose,funext fun g ↦ hf.choose_spec g.1 g.2⟩)
 
 theorem isTwoCoboundary_of_twoCoboundaries (f : twoCoboundaries (Rep.ofDistribMulAction k G A)) :
     IsTwoCoboundary (A := A) f.1.1 := by
@@ -588,8 +588,7 @@ theorem isMulOneCocycle_of_oneCocycles (f : oneCocycles (Rep.ofMulDistribMulActi
 1-coboundary for the representation on `Additive M` induced by the `MulDistribMulAction`. -/
 def oneCoboundariesOfIsMulOneCoboundary {f : G → M} (hf : IsMulOneCoboundary f) :
     oneCoboundaries (Rep.ofMulDistribMulAction G M) :=
-  oneCoboundariesOfMemRange (f := Additive.ofMul ∘ f)
-    (by rcases hf with ⟨x, hx⟩; exact ⟨x, by ext g; exact hx g⟩)
+  oneCoboundariesOfMemRange (f := Additive.ofMul ∘ f) ⟨hf.choose, funext hf.choose_spec⟩
 
 theorem isMulOneCoboundary_of_oneCoboundaries
     (f : oneCoboundaries (Rep.ofMulDistribMulAction G M)) :
@@ -612,7 +611,7 @@ theorem isMulTwoCocycle_of_twoCocycles (f : twoCocycles (Rep.ofMulDistribMulActi
 2-coboundary for the representation on `M` induced by the `MulDistribMulAction`. -/
 def twoCoboundariesOfIsMulTwoCoboundary {f : G × G → M} (hf : IsMulTwoCoboundary f) :
     twoCoboundaries (Rep.ofMulDistribMulAction G M) :=
-  twoCoboundariesOfMemRange (by rcases hf with ⟨x, hx⟩; exact ⟨x, by ext g; exact hx g.1 g.2⟩)
+  twoCoboundariesOfMemRange ⟨hf.choose, funext fun g ↦ hf.choose_spec g.1 g.2⟩
 
 theorem isMulTwoCoboundary_of_twoCoboundaries
     (f : twoCoboundaries (Rep.ofMulDistribMulAction G M)) :

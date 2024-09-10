@@ -54,7 +54,6 @@ namespace Mathlib.Tactic
 
 open Lean Meta Elab
 open CategoryTheory
-open Mathlib.Tactic.Coherence
 
 open Mathlib.Tactic.Monoidal
 
@@ -183,10 +182,8 @@ def NormalExpr.nodes (e : NormalExpr) : MetaM (List (List Node)) := do
   | NormalExpr.cons _ η _ => return (← topNodes η) :: (← e.nodesAux 1)
 
 /-- `pairs [a, b, c, d]` is `[(a, b), (b, c), (c, d)]`. -/
-def pairs {α : Type} : List α → List (α × α)
-  | [] => []
-  | [_] => []
-  | (x :: y :: ys) => (x, y) :: pairs (y :: ys)
+def pairs {α : Type} : List α → List (α × α) :=
+  fun l => l.zip (l.drop 1)
 
 /-- The list of strands associated with a 2-morphism. -/
 def NormalExpr.strands (e : NormalExpr) : MetaM (List (List Strand)) := do
@@ -215,11 +212,11 @@ structure PenroseVar : Type where
 instance : ToString PenroseVar :=
   ⟨fun v => v.ident ++ v.indices.foldl (fun s x => s ++ s!"_{x}") ""⟩
 
-/-- The penrose variable assciated with a node. -/
+/-- The penrose variable associated with a node. -/
 def Node.toPenroseVar (n : Node) : PenroseVar :=
   ⟨"E", [n.vPos, n.hPosSrc, n.hPosTar], n.e⟩
 
-/-- The penrose variable assciated with a strand. -/
+/-- The penrose variable associated with a strand. -/
 def Strand.toPenroseVar (s : Strand) : PenroseVar :=
   ⟨"f", [s.vPos, s.hPos], s.atom₁.e⟩
 
