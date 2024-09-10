@@ -185,10 +185,12 @@ def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ Profinite.{max u v}) : L
 /-- The limit cone `Profinite.limitCone F` is indeed a limit cone. -/
 def limitConeIsLimit {J : Type v} [SmallCategory J] (F : J ⥤ Profinite.{max u v}) :
     Limits.IsLimit (limitCone F) where
-  lift S :=
-    (CompHaus.limitConeIsLimit.{v, u} (F ⋙ profiniteToCompHaus)).lift
-      (profiniteToCompHaus.mapCone S)
-  uniq S m h := (CompHaus.limitConeIsLimit.{v, u} _).uniq (profiniteToCompHaus.mapCone S) _ h
+  lift S := CompHausLike.homMk ((CompHaus.limitConeIsLimit.{v, u} (F ⋙ profiniteToCompHaus)).lift
+      (profiniteToCompHaus.mapCone S)).hom
+  uniq S m h := by
+    simpa only [CompHausLike.hom_ext_iff] using
+      (CompHaus.limitConeIsLimit.{v, u} _).uniq (profiniteToCompHaus.mapCone S)
+        (CompHausLike.homMk m.hom) (by simpa only [CompHausLike.hom_ext_iff] using h)
 
 /-- The adjunction between CompHaus.to_Profinite and Profinite.to_CompHaus -/
 def toProfiniteAdjToCompHaus : CompHaus.toProfinite ⊣ profiniteToCompHaus :=
@@ -223,7 +225,7 @@ theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Funct
     contrapose!
     rintro ⟨y, hy⟩ hf
     let C := Set.range f
-    have hC : IsClosed C := (isCompact_range f.continuous).isClosed
+    have hC : IsClosed C := (isCompact_range f.hom.continuous).isClosed
     let U := Cᶜ
     have hyU : y ∈ U := by
       refine Set.mem_compl ?_
@@ -241,14 +243,18 @@ theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Funct
         apply ULift.ext
         dsimp [g, LocallyConstant.ofIsClopen]
         -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-        erw [comp_apply, ContinuousMap.coe_mk, comp_apply, ContinuousMap.coe_mk,
-          Function.comp_apply, if_neg]
+        erw [CompHausLike.homMk_apply]
+        conv_rhs => erw [CompHausLike.homMk_apply]
+        dsimp
+        rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Function.comp_apply, if_neg]
         refine mt (fun α => hVU α) ?_
-        simp only [U, C, Set.mem_range_self, not_true, not_false_iff, Set.mem_compl_iff]
+        simpa only [U, C, Set.mem_compl_iff, Decidable.not_not] using Set.mem_range_self x
       apply_fun fun e => (e y).down at H
       dsimp [g, LocallyConstant.ofIsClopen] at H
       -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-      erw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Function.comp_apply, if_pos hyV] at H
+      erw [CompHausLike.homMk_apply] at H
+      erw [CompHausLike.homMk_apply] at H
+      rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Function.comp_apply, if_pos hyV] at H
       exact top_ne_bot H
   · rw [← CategoryTheory.epi_iff_surjective]
     apply (forget Profinite).epi_of_epi_map

@@ -142,6 +142,9 @@ variable {P}
 lemma hom_ext {X Y : CompHausLike P} {f g : X ⟶ Y} (h : f.hom = g.hom) : f = g :=
   (forget₂ _ TopCat).map_injective h
 
+lemma hom_ext_iff {X Y : CompHausLike P} {f g : X ⟶ Y} : f = g ↔ f.hom = g.hom :=
+  ⟨fun h ↦ by rw [h], hom_ext⟩
+
 /-- If `P` imples `P'`, then there is a functor from `CompHausLike P` to `CompHausLike P'`. -/
 @[simps]
 def toCompHausLike {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
@@ -244,6 +247,10 @@ noncomputable def isoOfBijective {X Y : CompHausLike.{u} P} (f : X ⟶ Y)
 @[simps]
 def homMk {X Y : CompHausLike.{u} P} (f : X.toTop ⟶ Y.toTop) : X ⟶ Y where
   hom := f
+
+@[simp]
+lemma homMk_apply {X Y : CompHausLike.{u} P} (f : X.toTop ⟶ Y.toTop) (x : X) :
+    homMk f x = f x := rfl
 
 /-- Construct an isomorphism from a homeomorphism. -/
 @[simps!]
