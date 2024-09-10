@@ -76,6 +76,8 @@ class Bialgebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends
   mul_compr₂_comul :
     (LinearMap.mul R A).compr₂ comul = (LinearMap.mul R (A ⊗[R] A)).compl₁₂ comul comul
 
+set_synth_order Bialgebra.toAlgebra #[4, 2, 3]
+
 namespace Bialgebra
 
 open Coalgebra
