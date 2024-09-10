@@ -36,7 +36,7 @@ lemma IsHamiltonian.map {H : SimpleGraph β} (f : G →g H) (hf : Bijective f) (
 
 /-- A hamiltonian path visits every vertex. -/
 @[simp] lemma IsHamiltonian.mem_support (hp : p.IsHamiltonian) (c : α) : c ∈ p.support := by
-  simp only [← List.count_pos_iff_mem, hp _, Nat.zero_lt_one]
+  simp only [← List.count_pos_iff, hp _, Nat.zero_lt_one]
 
 /-- Hamiltonian paths are paths. -/
 lemma IsHamiltonian.isPath (hp : p.IsHamiltonian) : p.IsPath :=
@@ -45,7 +45,7 @@ lemma IsHamiltonian.isPath (hp : p.IsHamiltonian) : p.IsPath :=
 /-- A path whose support contains every vertex is hamiltonian. -/
 lemma IsPath.isHamiltonian_of_mem (hp : p.IsPath) (hp' : ∀ w, w ∈ p.support) :
     p.IsHamiltonian := fun _ ↦
-  le_antisymm (List.nodup_iff_count_le_one.1 hp.support_nodup _) (List.count_pos_iff_mem.2 (hp' _))
+  le_antisymm (List.nodup_iff_count_le_one.1 hp.support_nodup _) (List.count_pos_iff.2 (hp' _))
 
 lemma IsPath.isHamiltonian_iff (hp : p.IsPath) : p.IsHamiltonian ↔ ∀ w, w ∈ p.support :=
   ⟨(·.mem_support), hp.isHamiltonian_of_mem⟩
