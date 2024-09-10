@@ -18,11 +18,12 @@ square-free words. "
 
 -/
 
+/-- A word `w` is squarefree if it does not contain a nonempty subword `vv`. -/
 def squarefree {b:ℕ} (w: List (Fin b)) : Prop :=
   ∀ l:ℕ, l < w.length → ∀ v : Mathlib.Vector (Fin b) l,
   v.1 ≠ List.nil → ¬ List.IsInfix (v.1 ++ v.1) w
 
-
+/-- A word `w` is cubefree if it does not contain a nonempty subword `vvv`. -/
 def cubefree {b:ℕ} (w: List (Fin b)) : Prop :=
   ∀ l:ℕ, l < w.length → ∀ v : Mathlib.Vector (Fin b) l,
   v.1 ≠ List.nil → ¬ List.IsInfix (v.1 ++ v.1 ++ v.1) w
@@ -42,6 +43,7 @@ def cubefree {b:ℕ} (w: List (Fin b)) : Prop :=
 
 -- example : ∀ w : Mathlib.Vector (Fin 2) 4, ¬ squarefree w.1 := by decide
 
+/-- A suffix of a squarefree word is itself squarefree. -/
 theorem suffix_squarefree (b:ℕ) (u v : List (Fin b)) (h: u <:+ v) (hu : squarefree v) :
     squarefree u := by
   intro lx _ x hx
@@ -58,6 +60,7 @@ theorem suffix_squarefree (b:ℕ) (u v : List (Fin b)) (h: u <:+ v) (hu : square
   have : ∃ s t, s ++ (x.1 ++ x.1) ++ t = v := by use t ++ s₀; use s₁; rw [← ht,← hs₁]; simp
   exact G this
 
+/-- A suffix of a cubefree word is itself cubefree. -/
 theorem suffix_cubefree (b:ℕ) (u v : List (Fin b)) (h: u <:+ v) (hu : cubefree v) : cubefree u := by
   intro lx _ x hx hc
   obtain ⟨t,ht⟩ := h

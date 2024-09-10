@@ -24,12 +24,13 @@ For example, a Gap 10 10 has length 10 - 10.
 
 open scoped Classical -- this does not prevent us from also using `by decide`
 
-
+/-- A predicate `P` preserved under suffixes, with an optional condition `Q` at the leaves. -/
 structure MonoPred (b:Nat) where
   P : List (Fin b) → Prop
   preserved_under_suffixes (u v : List (Fin b)): u <:+ v → P v → P u
-  Q (l: List (Fin b)) : Prop := True -- we can specify an extra condition that is not monotone
+  Q (l: List (Fin b)) : Prop := True
 
+/-- A predicate `P` with an optional condition `Q` at the leaves. -/
 structure MonoPred_unverified (b:Nat) where
   P : List (Fin b) → Prop
   Q : List (Fin b) → Prop := fun _ ↦ True -- we can specify an extra condition that is not monotone
