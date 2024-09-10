@@ -20,10 +20,11 @@ final can be restated. We show:
   if `StructuredArrow d F` is connected for all `d : D`.
 * Under categories of objects of filtered categories are filtered and their forgetful functors
   are final.
-
-Additionally, we show that if `D` is a filtered category and `F : C ⥤ D` is fully faithful and
-satisfies the additional condition that for every `d : D` there is an object `c : D` and a morphism
-`d ⟶ F.obj c`, then `C` is filtered and `F` is final.
+* If `D` is a filtered category and `F : C ⥤ D` is fully faithful and satisfies the additional
+  condition that for every `d : D` there is an object `c : D` and a morphism `d ⟶ F.obj c`, then
+  `C` is filtered and `F` is final.
+* Finality and initiality of diagonal functors `diag : C ⥤ C × C` and of projection functors
+  of (co)structured arrow categories.
 
 ## References
 
@@ -287,6 +288,32 @@ instance [IsCofiltered C] (X : C × C) : IsCofiltered (CostructuredArrow (diag C
 /-- The diagonal functor on any cofiltered category is initial. -/
 instance Functor.diag_initial_of_isFiltered [IsCofiltered C] : Initial (Functor.diag C) :=
   initial_of_isCofiltered_costructuredArrow _
+
+/-- The functor `StructuredArrow.proj : StructuredArrow Y T` is final if `T : C ⥤ D` is final
+and `C` is filtered. -/
+instance StructuredArrow.proj_final_of_filtered [IsFiltered C]
+    {D : Type u₂} [Category.{v₁} D] (T : C ⥤ D) [Final T] (Y : D) :
+    Final (StructuredArrow.proj Y T) := by
+  haveI : ∀ (X : C), IsFiltered (StructuredArrow X (proj Y T)) := fun X => by
+    haveI : IsFiltered (StructuredArrow Y (Under.forget X ⋙ T)) := by
+      revert Y
+      rw [← Functor.final_iff_isFiltered_structuredArrow]
+      exact final_comp (Under.forget X) T
+    apply IsFiltered.of_equivalence (ofStructuredArrowProjEquivalence T Y X).symm
+  apply final_of_isFiltered_structuredArrow
+
+/-- The functor `StructuredArrow.proj : StructuredArrow Y T` is final if `T : C ⥤ D` is final
+and `C` is filtered. -/
+instance CostructuredArrow.proj_initial_of_cofiltered [IsCofiltered C]
+    {D : Type u₂} [Category.{v₁} D] (T : C ⥤ D) [Initial T] (Y : D) :
+    Initial (CostructuredArrow.proj T Y) := by
+  haveI : ∀ (X : C), IsCofiltered (CostructuredArrow (proj T Y) X) := fun X => by
+    haveI : IsCofiltered (CostructuredArrow (Over.forget X ⋙ T) Y) := by
+      revert Y
+      rw [← Functor.initial_iff_isCofiltered_costructuredArrow]
+      exact initial_comp (Over.forget X) T
+    apply IsCofiltered.of_equivalence (ofCostructuredArrowProjEquivalence T Y X).symm
+  apply initial_of_isCofiltered_costructuredArrow
 
 end LocallySmall
 
