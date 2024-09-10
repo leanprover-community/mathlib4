@@ -40,8 +40,7 @@ class MulSemiringAction (M : Type u) (R : Type v) [Monoid M] [Semiring R] extend
   /-- Scalar multiplication distributes across multiplication -/
   smul_mul : ∀ (g : M) (x y : R), g • (x * y) = g • x * g • y
 
-run_meta
-  Lean.Meta.addInstanceWithSynthOrder ``MulSemiringAction.toDistribMulAction .global 1000 #[4, 2, 3]
+set_synth_order MulSemiringAction.toDistribMulAction #[4, 2, 3]
 
 section Semiring
 
@@ -49,13 +48,11 @@ variable (M N G : Type*) [Monoid M] [Monoid N] [Group G]
 variable (A R S F : Type v) [AddMonoid A] [Semiring R] [CommSemiring S]
 
 -- note we could not use `extends` since these typeclasses are made with `old_structure_cmd`
-def MulSemiringAction.toMulDistribMulAction [h : MulSemiringAction M R] :
+instance (priority := 100) MulSemiringAction.toMulDistribMulAction [h : MulSemiringAction M R] :
     MulDistribMulAction M R :=
   { h with }
 
-run_meta
-  Lean.Meta.addInstanceWithSynthOrder ``MulSemiringAction.toMulDistribMulAction
-    .global 100 #[4, 1, 3]
+set_synth_order MulSemiringAction.toMulDistribMulAction #[4, 1, 3]
 
 /-- Each element of the monoid defines a semiring homomorphism. -/
 @[simps!]

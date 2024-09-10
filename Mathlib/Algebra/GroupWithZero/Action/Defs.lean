@@ -92,8 +92,7 @@ class SMulZeroClass (M A : Type*) [Zero A] extends SMul M A where
   /-- Multiplying `0` by a scalar gives `0` -/
   smul_zero : ∀ a : M, a • (0 : A) = 0
 
-run_meta
-  Lean.Meta.addInstanceWithSynthOrder ``SMulZeroClass.toSMul .global 1000 #[3, 2]
+set_synth_order SMulZeroClass.toSMul #[3, 2]
 
 section smul_zero
 
@@ -163,8 +162,7 @@ class DistribSMul (M A : Type*) [AddZeroClass A] extends SMulZeroClass M A where
   /-- Scalar multiplication distributes across addition -/
   smul_add : ∀ (a : M) (x y : A), a • (x + y) = a • x + a • y
 
-run_meta
-  Lean.Meta.addInstanceWithSynthOrder ``DistribSMul.toSMulZeroClass .global 1000 #[3, 2]
+set_synth_order DistribSMul.toSMulZeroClass #[3, 2]
 
 section DistribSMul
 
@@ -232,19 +230,17 @@ class DistribMulAction (M A : Type*) [Monoid M] [AddMonoid A] extends MulAction 
   /-- Scalar multiplication distributes across addition -/
   smul_add : ∀ (a : M) (x y : A), a • (x + y) = a • x + a • y
 
-run_meta
-  Lean.Meta.addInstanceWithSynthOrder ``DistribMulAction.toMulAction .global 1000 #[4, 2, 3]
+set_synth_order DistribMulAction.toMulAction #[4, 2, 3]
 
 section
 
 variable [Monoid M] [AddMonoid A] [DistribMulAction M A]
 
 -- See note [lower instance priority]
-def DistribMulAction.toDistribSMul : DistribSMul M A :=
+instance (priority := 100) DistribMulAction.toDistribSMul : DistribSMul M A :=
   { ‹DistribMulAction M A› with }
 
-run_meta
-  Lean.Meta.addInstanceWithSynthOrder ``DistribMulAction.toDistribSMul .global 100 #[4, 2, 3]
+set_synth_order DistribMulAction.toDistribSMul #[4, 2, 3]
 
 -- Porting note: this probably is no longer relevant.
 /-! Since Lean 3 does not have definitional eta for structures, we have to make sure
@@ -340,8 +336,7 @@ class MulDistribMulAction (M : Type*) (A : Type*) [Monoid M] [Monoid A] extends
   /-- Multiplying `1` by a scalar gives `1` -/
   smul_one : ∀ r : M, r • (1 : A) = 1
 
-run_meta
-  Lean.Meta.addInstanceWithSynthOrder ``MulDistribMulAction.toMulAction .global 1000 #[4, 2, 3]
+set_synth_order MulDistribMulAction.toMulAction #[4, 2, 3]
 
 export MulDistribMulAction (smul_one)
 

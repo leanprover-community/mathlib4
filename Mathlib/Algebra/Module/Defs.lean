@@ -61,8 +61,7 @@ class Module (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] extends
   /-- Scalar multiplication by zero gives zero. -/
   protected zero_smul : ∀ x : M, (0 : R) • x = 0
 
-run_meta
-  Lean.Meta.addInstanceWithSynthOrder ``Module.toDistribMulAction .global 1000 #[4, 2, 3]
+set_synth_order Module.toDistribMulAction #[4, 2, 3]
 
 section AddCommMonoid
 
@@ -70,13 +69,12 @@ variable [Semiring R] [AddCommMonoid M] [Module R M] (r s : R) (x y : M)
 
 -- see Note [lower instance priority]
 /-- A module over a semiring automatically inherits a `MulActionWithZero` structure. -/
-def Module.toMulActionWithZero : MulActionWithZero R M :=
+instance (priority := 100) Module.toMulActionWithZero : MulActionWithZero R M :=
   { (inferInstance : MulAction R M) with
     smul_zero := smul_zero
     zero_smul := Module.zero_smul }
 
-run_meta
-  Lean.Meta.addInstanceWithSynthOrder ``Module.toMulActionWithZero .global 100 #[4, 2, 3]
+set_synth_order Module.toMulActionWithZero #[4, 2, 3]
 
 instance AddCommGroup.toNatModule : Module ℕ M where
   one_smul := one_nsmul
