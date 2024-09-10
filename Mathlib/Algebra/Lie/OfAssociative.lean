@@ -49,6 +49,8 @@ instance (priority := 100) ofAssociativeRing : LieRing A where
   leibniz_lie _ _ _ := by
     simp only [Ring.lie_def, mul_sub_left_distrib, mul_sub_right_distrib, mul_assoc]; abel
 
+set_synth_order LieAlgebra.ofAssociativeAlgebra #[4, 1, 3]
+
 theorem of_associative_ring_bracket (x y : A) : ⁅x, y⁆ = x * y - y * x :=
   rfl
 

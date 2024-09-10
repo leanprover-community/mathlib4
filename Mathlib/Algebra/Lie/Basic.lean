@@ -72,6 +72,8 @@ class LieAlgebra (R : Type u) (L : Type v) [CommRing R] [LieRing L] extends Modu
   Lie algebra has a natural Lie module action on itself, see `LieModule`. -/
   protected lie_smul : ∀ (t : R) (x y : L), ⁅x, t • y⁆ = t • ⁅x, y⁆
 
+set_synth_order LieAlgebra.toModule #[4, 2, 3]
+
 /-- A Lie ring module is an additive group, together with an additive action of a
 Lie ring on this group, such that the Lie bracket acts as the commutator of endomorphisms.
 (For representations of Lie *algebras* see `LieModule`.) -/

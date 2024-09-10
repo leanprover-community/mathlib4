@@ -174,6 +174,8 @@ gives some more context. -/
 instance (priority := 100) NormedSpace.toModule' : Module 𝕜 F :=
   NormedSpace.toModule
 
+set_synth_order NormedSpace.toModule' #[4, 2, 3]
+
 end NormedAddCommGroup
 
 section NontriviallyNormedSpace
@@ -267,6 +269,8 @@ instance (priority := 100) NormedAlgebra.toNormedSpace : NormedSpace 𝕜 𝕜' 
   -- Porting note: previous Lean could figure out what we were extending
   { NormedAlgebra.toAlgebra.toModule with
   norm_smul_le := NormedAlgebra.norm_smul_le }
+
+set_synth_order NormedAlgebra.toNormedSpace #[4, 2, 3]
 
 /-- While this may appear identical to `NormedAlgebra.toNormedSpace`, it contains an implicit
 argument involving `NormedRing.toSeminormedRing` that typeclass inference has trouble inferring.
