@@ -23,7 +23,7 @@ lemma expSum_zero : expSum A 0 = 1 := by
   · rw [not_nontrivial_iff_subsingleton] at hA
     exact Subsingleton.elim _ _
 
-lemma expSum_eq_ge_range {x : A} (hx : IsNilpotent x) {n : ℕ} (hn : nilpotencyClass x ≤ n) :
+lemma expSum_eq_sum_range_ge {x : A} (hx : IsNilpotent x) {n : ℕ} (hn : nilpotencyClass x ≤ n) :
     expSum A x = ∑ i in Finset.range n, (1 / i.factorial : ℚ) • (x ^ i) := by
   rw [← Finset.sum_range_add_sum_Ico _ hn, expSum, self_eq_add_right]
   apply Finset.sum_eq_zero
@@ -34,14 +34,15 @@ lemma expSum_eq_ge_range {x : A} (hx : IsNilpotent x) {n : ℕ} (hn : nilpotency
 lemma expSum_eq_range_add {x : A} (hx : IsNilpotent x) {n : ℕ} :
     expSum A x = ∑ i in Finset.range (nilpotencyClass x + n),
       (1 / i.factorial : ℚ) • (x ^ i) := by
-  rw [expSum_eq_ge_range hx]
+  rw [expSum_eq_sum_range_ge hx]
   exact Nat.le_add_right (nilpotencyClass x) n
-
-variable [Nontrivial A]
 
 lemma expSum_eq_one_add {a : A} (ha : IsNilpotent a) : expSum A a =
     1 + ∑ n in Finset.Ico 1 (nilpotencyClass a), (1 / n.factorial : ℚ) • (a ^ n) := by
-  simp [expSum, ← Finset.sum_range_add_sum_Ico _ (nilpotencyClass_pos ha)]
+  by_cases hA : Nontrivial A
+  · simp [expSum, ← Finset.sum_range_add_sum_Ico _ (nilpotencyClass_pos ha)]
+  · rw [not_nontrivial_iff_subsingleton] at hA
+    exact Subsingleton.elim _ _
 
 end general_expSum
 
@@ -71,7 +72,7 @@ lemma expSum_add_of_comm {a b : A} (ha : IsNilpotent a) (hb : IsNilpotent b) (ha
   have hbn : nilpotencyClass b ≤ N := le_max_right _ _
   have habn : nilpotencyClass (a + b) ≤ 2*N := (hab.nilpotencyClass_add_le ha hb).trans (by omega)
   -- We apply the binomial theorem to write `expSum A (a + b)` as a double sum
-  simp only [expSum_eq_ge_range (hab.isNilpotent_add ha hb) habn, hab.add_pow, Finset.smul_sum]
+  simp only [expSum_eq_sum_range_ge (hab.isNilpotent_add ha hb) habn, hab.add_pow, Finset.smul_sum]
   /- Let `S` be the set of integers `(k, l)` such that `0 ≤ k, l ≤ 2*N` and `l < k + 1`. We can
   rewrite the double sum as a sum indexed by `S`. -/
   let S := (Finset.range (2*N) ×ˢ Finset.range (2*N + 1)).filter (fun ⟨k, l⟩ => l < k + 1)
@@ -86,7 +87,7 @@ lemma expSum_add_of_comm {a b : A} (ha : IsNilpotent a) (hb : IsNilpotent b) (ha
   `0 ≤ k, l ≤ 2*N` and `k + l < 2*N`. We also define a function `i : S' → ℕ × ℕ` which induces
   a bijection from `S'` to `S`. -/
   let S' := (Finset.range (2*N) ×ˢ Finset.range (2*N + 1)).filter (fun ⟨a, b⟩ => a + b < 2*N)
-  let i : ∀ x ∈ S', ℕ × ℕ := fun ⟨x, y⟩ hxy => ⟨x + y, y⟩
+  let i : ∀ x ∈ S', ℕ × ℕ := fun ⟨x, y⟩ _ => ⟨x + y, y⟩
   have hi : ∀ x hx, i x hx ∈ S := by simp [S, S']; omega
   have hi_inj : ∀ x₁ hx₁ x₂ hx₂, i x₁ hx₁ = i x₂ hx₂ → x₁ = x₂ := by
     intro x₁ hx₁ x₂ hx₂ h
@@ -129,7 +130,7 @@ lemma expSum_add_of_comm {a b : A} (ha : IsNilpotent a) (hb : IsNilpotent b) (ha
   -- Now it is clear that this sum is the product of `expSum A a` and `expSum A b`
   rw [Finset.sum_product]
   simp only [← Finset.sum_mul_sum]
-  rw [expSum_eq_ge_range ha han, expSum_eq_ge_range hb hbn, mul_comm]
+  rw [expSum_eq_sum_range_ge ha han, expSum_eq_sum_range_ge hb hbn, mul_comm]
 
 @[simp]
 lemma expSum_mul_neg_self {a : A} (ha : IsNilpotent a) : expSum A a * expSum A (-a) = 1 := by
@@ -194,7 +195,6 @@ theorem Finset.sum_range_sum_range_eq {α : Type*} [NonUnitalNonAssocSemiring α
   --apply Finset.sum_equiv f
   sorry
 
--- TODO: this one should not be in mathlib probably?
 theorem Finset.sum_range_mul_sum_range {α : Type*} [NonUnitalNonAssocSemiring α] (f : ℕ → α)
     (g : ℕ → α) (n : ℕ) : (∑ i ∈ Finset.range n, f i) * ∑ j ∈ Finset.range n, g j =
       ∑ i ∈ Finset.range (2*n - 1), ∑ j ∈ Finset.Ico (i - n) (min i n), f j * g (i - j) := by
