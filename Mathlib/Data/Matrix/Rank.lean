@@ -266,7 +266,7 @@ theorem rank_eq_finrank_span_row [Field R] [Finite m] (A : Matrix m n R) :
   rw [← rank_transpose, rank_eq_finrank_span_cols, transpose_transpose]
 
 theorem _root_.LinearIndependent.rank_matrix [Field R] [Fintype m]
-  {M : Matrix m n R} (h : LinearIndependent R M) : M.rank = Fintype.card m := by
+    {M : Matrix m n R} (h : LinearIndependent R M) : M.rank = Fintype.card m := by
   rw [M.rank_eq_finrank_span_row, linearIndependent_iff_card_eq_finrank_span.mp h, Set.finrank]
 
 lemma rank_add_rank_le_card_of_mul_eq_zero [Field R] [Fintype l] [Fintype m]
