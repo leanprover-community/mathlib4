@@ -135,8 +135,9 @@ end Topology
 
 section LocallyConvex
 
-variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [TopologicalSpace F]
-  [Module 𝕜 F] [Nonempty ι] [NormedSpace ℝ 𝕜] [Module ℝ E] [IsScalarTower ℝ 𝕜 E]
+variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [TopologicalSpace E]
+  [TopologicalSpace F][ContinuousSMul 𝕜 E] [Module 𝕜 F] [Nonempty ι] [NormedSpace ℝ 𝕜] [Module ℝ E]
+  [IsScalarTower ℝ 𝕜 E]
 
 instance WeakBilin.locallyConvexSpace {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} :
     LocallyConvexSpace ℝ (WeakBilin B) :=
@@ -155,5 +156,9 @@ instance WeakBilin.T2 {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (h_sep : ∀ x : 
 def dual_of_separating_family {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜}
     (h_sep : ∀ x : E, x ≠ 0 → (∃ f : F, B x f ≠ 0)) : (WeakBilin B →L[𝕜] 𝕜) ≃L[𝕜] F := by
   sorry
+
+
+def induced_WeakSpace_ContinuousLinearEquivalence (e : E ≃L[𝕜] F) :
+    (WeakSpace 𝕜 E) ≃L[𝕜] (WeakSpace 𝕜 F) := by sorry
 
 end LocallyConvex
