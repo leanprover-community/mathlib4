@@ -1070,15 +1070,14 @@ theorem hasFTaylorSeriesUpToOn_pi :
   set L : ∀ m : ℕ, (∀ i, E[×m]→L[𝕜] F' i) ≃ₗᵢ[𝕜] E[×m]→L[𝕜] ∀ i, F' i := fun m =>
     ContinuousMultilinearMap.piₗᵢ _ _
   refine ⟨fun h i => ?_, fun h => ⟨fun x hx => ?_, ?_, ?_⟩⟩
-  · convert h.continuousLinearMap_comp (pr i)
+  · exact h.continuousLinearMap_comp (pr i)
   · ext1 i
     exact (h i).zero_eq x hx
   · intro m hm x hx
-    have := hasFDerivWithinAt_pi.2 fun i => (h i).fderivWithin m hm x hx
-    convert (L m).hasFDerivAt.comp_hasFDerivWithinAt x this
+    exact (L m).hasFDerivAt.comp_hasFDerivWithinAt x <|
+      hasFDerivWithinAt_pi.2 fun i => (h i).fderivWithin m hm x hx
   · intro m hm
-    have := continuousOn_pi.2 fun i => (h i).cont m hm
-    convert (L m).continuous.comp_continuousOn this
+    exact (L m).continuous.comp_continuousOn <| continuousOn_pi.2 fun i => (h i).cont m hm
 
 @[simp]
 theorem hasFTaylorSeriesUpToOn_pi' :
@@ -1086,7 +1085,7 @@ theorem hasFTaylorSeriesUpToOn_pi' :
       ∀ i, HasFTaylorSeriesUpToOn n (fun x => Φ x i)
         (fun x m => (@ContinuousLinearMap.proj 𝕜 _ ι F' _ _ _ i).compContinuousMultilinearMap
           (P' x m)) s := by
-  convert hasFTaylorSeriesUpToOn_pi (𝕜 := 𝕜) (φ := fun i x ↦ Φ x i); ext; rfl
+     hasFTaylorSeriesUpToOn_pi (𝕜 := 𝕜) (φ := fun i x ↦ Φ x i); ext; rfl
 
 theorem contDiffWithinAt_pi :
     ContDiffWithinAt 𝕜 n Φ s x ↔ ∀ i, ContDiffWithinAt 𝕜 n (fun x => Φ x i) s x := by
