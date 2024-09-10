@@ -1512,18 +1512,19 @@ theorem modifyLast.go_append_one (f : α → α) (a : α) (tl : List α) (r : Ar
     rw [modifyLast.go, modifyLast.go]
     case x_3 | x_3 => exact append_ne_nil_of_right_ne_nil tl (cons_ne_nil a [])
     rw [modifyLast.go_append_one _ _ tl _, modifyLast.go_append_one _ _ tl (Array.push #[] hd)]
-    simp only [Array.toListAppend_eq, Array.push_data, Array.data_toArray, nil_append, append_assoc]
+    simp only [Array.toListAppend_eq, Array.push_toList, Array.toList_toArray, nil_append,
+      append_assoc]
 
 theorem modifyLast_append_one (f : α → α) (a : α) (l : List α) :
     modifyLast f (l ++ [a]) = l ++ [f a] := by
   cases l with
   | nil =>
-    simp only [nil_append, modifyLast, modifyLast.go, Array.toListAppend_eq, Array.data_toArray]
+    simp only [nil_append, modifyLast, modifyLast.go, Array.toListAppend_eq, Array.toList_toArray]
   | cons _ tl =>
     simp only [cons_append, modifyLast]
     rw [modifyLast.go]
     case x_3 => exact append_ne_nil_of_right_ne_nil tl (cons_ne_nil a [])
-    rw [modifyLast.go_append_one, Array.toListAppend_eq, Array.push_data, Array.data_toArray,
+    rw [modifyLast.go_append_one, Array.toListAppend_eq, Array.push_toList, Array.toList_toArray,
       nil_append, cons_append, nil_append, cons_inj_right]
     exact modifyLast_append_one _ _ tl
 
@@ -1574,11 +1575,13 @@ variable (f : α → Option α)
 theorem lookmap.go_append (l : List α) (acc : Array α) :
     lookmap.go f l acc = acc.toListAppend (lookmap f l) := by
   cases l with
-  | nil => rfl
+  | nil => simp [go, lookmap]
   | cons hd tl =>
     rw [lookmap, go, go]
     cases f hd with
-    | none => simp only [go_append tl _, Array.toListAppend_eq, append_assoc, Array.push_data]; rfl
+    | none =>
+      simp only [go_append tl _, Array.toListAppend_eq, append_assoc, Array.push_toList]
+      rfl
     | some a => rfl
 
 @[simp]
@@ -1588,13 +1591,13 @@ theorem lookmap_nil : [].lookmap f = [] :=
 @[simp]
 theorem lookmap_cons_none {a : α} (l : List α) (h : f a = none) :
     (a :: l).lookmap f = a :: l.lookmap f := by
-  simp only [lookmap, lookmap.go, Array.toListAppend_eq, Array.data_toArray, nil_append]
+  simp only [lookmap, lookmap.go, Array.toListAppend_eq, Array.toList_toArray, nil_append]
   rw [lookmap.go_append, h]; rfl
 
 @[simp]
 theorem lookmap_cons_some {a b : α} (l : List α) (h : f a = some b) :
     (a :: l).lookmap f = b :: l := by
-  simp only [lookmap, lookmap.go, Array.toListAppend_eq, Array.data_toArray, nil_append]
+  simp only [lookmap, lookmap.go, Array.toListAppend_eq, Array.toList_toArray, nil_append]
   rw [h]
 
 theorem lookmap_some : ∀ l : List α, l.lookmap some = l
