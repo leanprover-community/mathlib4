@@ -464,15 +464,20 @@ theorem SemanticallyEquivalent.trans {φ ψ θ : L.BoundedFormula α n}
   rw [BoundedFormula.realize_iff] at *
   exact ⟨h2'.1 ∘ h1'.1, h1'.2 ∘ h2'.2⟩
 
-theorem SemanticallyEquivalent.realize_bd_iff {φ ψ : L.BoundedFormula α n} {M : Type max u v}
-    [Nonempty M] [L.Structure M] [T.Model M] (h : T.SemanticallyEquivalent φ ψ)
+theorem SemanticallyEquivalent.realize_bd_iff {φ ψ : L.BoundedFormula α n} {M : Type*}
+    [Nonempty M] [L.Structure M] [M ⊨ T] (h : T.SemanticallyEquivalent φ ψ)
     {v : α → M} {xs : Fin n → M} : φ.Realize v xs ↔ ψ.Realize v xs :=
-  BoundedFormula.realize_iff.1 (h (ModelType.of T M) v xs)
+  BoundedFormula.realize_iff.1 (h.realize_boundedFormula M)
 
 theorem SemanticallyEquivalent.realize_iff {φ ψ : L.Formula α} {M : Type max u v} [Nonempty M]
-    [L.Structure M] (_hM : T.Model M) (h : T.SemanticallyEquivalent φ ψ) {v : α → M} :
+    [L.Structure M] [M ⊨ T] (h : T.SemanticallyEquivalent φ ψ) {v : α → M} :
     φ.Realize v ↔ ψ.Realize v :=
   h.realize_bd_iff
+
+theorem SemanticallyEquivalent.models_sentence_iff {φ ψ : L.Sentence} {M : Type*} [Nonempty M]
+    [L.Structure M] [M ⊨ T] (h : T.SemanticallyEquivalent φ ψ) :
+    M ⊨ φ ↔ M ⊨ ψ :=
+  h.realize_iff
 
 /-- Semantic equivalence forms an equivalence relation on formulas. -/
 def semanticallyEquivalentSetoid (T : L.Theory) : Setoid (L.BoundedFormula α n) where
