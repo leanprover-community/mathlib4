@@ -1235,17 +1235,17 @@ noncomputable instance Set.OrdConnected.predOrder [PredOrder α] :
 
 @[simp, norm_cast]
 lemma coe_pred_of_mem [PredOrder α] {a : s} (h : pred a.1 ∈ s) :
-    (pred a).1 = pred a.1 := by classical
+    (pred a).1 = pred ↑a := by classical
   change Subtype.val (dite ..) = _
   simp [h]
 
-lemma pred_eq_self_of_not_mem [PredOrder α] {a : s} (h : pred a.1 ∉ s) : pred a = a := by classical
+lemma pred_eq_self_of_not_mem [PredOrder α] {a : s} (h : pred ↑a ∉ s) : pred a = a := by classical
   change dite .. = _
   simp [h]
 
 @[simp]
 lemma pred_eq_self_iff_not_pred_mem [PredOrder α] [NoMinOrder α] {a : s} :
-    pred a = a ↔ pred a.1 ∉ s where
+    pred a = a ↔ pred ↑a ∉ s where
   mp h nh := by
     replace h := congr($h.1)
     rw [coe_pred_of_mem nh] at h
@@ -1258,18 +1258,18 @@ noncomputable instance Set.OrdConnected.succOrder [SuccOrder α] :
   inferInstanceAs (SuccOrder sᵒᵈᵒᵈ)
 
 @[simp, norm_cast]
-lemma coe_succ_of_mem [SuccOrder α] {a : s} (h : succ a.1 ∈ s) :
-    (succ a).1 = succ a.1 := by classical
+lemma coe_succ_of_mem [SuccOrder α] {a : s} (h : succ ↑a ∈ s) :
+    (succ a).1 = succ ↑a := by classical
   change Subtype.val (dite ..) = _
   split_ifs <;> trivial
 
-lemma succ_eq_self_of_not_mem [SuccOrder α] {a : s} (h : succ a.1 ∉ s) : succ a = a := by classical
+lemma succ_eq_self_of_not_mem [SuccOrder α] {a : s} (h : succ ↑a ∉ s) : succ a = a := by classical
   change dite .. = _
   split_ifs <;> trivial
 
 @[simp]
 lemma succ_eq_self_iff_not_succ_mem [SuccOrder α] [NoMaxOrder α] {a : s} :
-    succ a = a ↔ succ a.1 ∉ s where
+    succ a = a ↔ succ ↑a ∉ s where
   mp h nh := by
     replace h := congr($h.1)
     rw [coe_succ_of_mem nh] at h
