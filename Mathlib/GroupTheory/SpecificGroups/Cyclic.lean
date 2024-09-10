@@ -515,7 +515,7 @@ variable {G : Type*} {H : Type*} [Group G] [Group H]
   Also see `commGroupOfCyclicCenterQuotient` for the `CommGroup` instance. -/
 @[to_additive
       "A group is commutative if the quotient by the center is cyclic.
-      Also see `addCommGroup_of_cyclic_center_quotient` for the `AddCommGroup` instance."]
+      Also see `addCommGroupOfCyclicCenterQuotient` for the `AddCommGroup` instance."]
 theorem commutative_of_cyclic_center_quotient [IsCyclic H] (f : G →* H) (hf : f.ker ≤ center G)
     (a b : G) : a * b = b * a :=
   let ⟨⟨x, y, (hxy : f y = x)⟩, (hx : ∀ a : f.range, a ∈ zpowers _)⟩ :=
