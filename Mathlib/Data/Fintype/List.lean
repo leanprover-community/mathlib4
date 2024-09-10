@@ -15,33 +15,35 @@ admits a `Fintype` instance.
 
 ## Implementation details
 To construct the `Fintype` instance, a function lifting a `Multiset α`
-to the `Finset (List α)` that can construct it is provided.
+to the `Multiset (List α)` that can construct it is provided.
 This function is applied to the `Finset.powerset` of `Finset.univ`.
-
-In general, a `DecidableEq` instance is not necessary to define this function,
-but a proof of `(List.permutations l).nodup` is required to avoid it,
-which is a TODO.
 
 -/
 
 
-variable {α : Type*} [DecidableEq α]
-
+variable {α : Type*}
 open List
 
 namespace Multiset
 
-/-- The `Finset` of `l : List α` that, given `m : Multiset α`, have the property `⟦l⟧ = m`.
+/-- The `Multiset` of `l : List α` that, given `m : Multiset α`, have the property `⟦l⟧ = m`.
 -/
-def lists : Multiset α → Finset (List α) := fun s =>
-  Quotient.liftOn s (fun l => l.permutations.toFinset) fun l l' (h : l ~ l') => by
-    ext sl
+def lists : Multiset α → Multiset (List α) := fun s =>
+  Quotient.liftOn s (fun l => l.permutations) fun l l' (h : l ~ l') => by
     simp only [mem_permutations, List.mem_toFinset]
-    exact ⟨fun hs => hs.trans h, fun hs => hs.trans h.symm⟩
+    refine coe_eq_coe.mpr ?_
+    exact Perm.permutations h
 
 @[simp]
-theorem lists_coe (l : List α) : lists (l : Multiset α) = l.permutations.toFinset :=
+theorem lists_coe (l : List α) : lists (l : Multiset α) = l.permutations :=
   rfl
+
+@[simp]
+theorem lists_nodup_finset (l : Finset α) [Fintype α] : (lists (l.val)).Nodup := by
+  have h_nodup : l.val.Nodup := l.nodup
+  rw [← Finset.coe_toList l, Multiset.coe_nodup ] at h_nodup
+  rw [← Finset.coe_toList l]
+  exact nodup_permutations l.val.toList (h_nodup)
 
 @[simp]
 theorem mem_lists_iff (s : Multiset α) (l : List α) : l ∈ lists s ↔ s = ⟦l⟧ := by
@@ -50,12 +52,56 @@ theorem mem_lists_iff (s : Multiset α) (l : List α) : l ∈ lists s ↔ s = �
 
 end Multiset
 
-instance fintypeNodupList [Fintype α] : Fintype { l : List α // l.Nodup } :=
-  Fintype.subtype ((Finset.univ : Finset α).powerset.biUnion fun s => s.val.lists) fun l => by
-    suffices (∃ a : Finset α, a.val = ↑l) ↔ l.Nodup by simpa
+@[simp]
+theorem perm_to_list {f₁ f₂ : Finset α} : f₁.toList ~ f₂.toList ↔ f₁ = f₂ :=
+  ⟨fun h => Finset.ext_iff.mpr (fun x => by simpa [← Finset.mem_toList] using Perm.mem_iff h),
+   fun h ↦ Perm.of_eq <| congrArg Finset.toList h⟩
+
+instance fintypeNodupList [Fintype α] : Fintype { l : List α // l.Nodup } := by
+  refine Fintype.ofFinset ?_ ?_
+  · let univSubsets := ((Finset.univ : Finset α).powerset.1 : (Multiset (Finset α)))
+    let allPerms := Multiset.bind univSubsets (fun s => (Multiset.lists s.1))
+    refine ⟨allPerms, Multiset.nodup_bind.mpr ?_⟩
+    simp only [Multiset.lists_nodup_finset, implies_true, true_and]
+    unfold Multiset.Pairwise
+    use ((Finset.univ : Finset α).powerset.toList : (List (Finset α)))
     constructor
-    · rintro ⟨s, hs⟩
-      simpa [← Multiset.coe_nodup, ← hs] using s.nodup
-    · intro hl
-      refine ⟨⟨↑l, hl⟩, ?_⟩
-      simp
+    · simp only [Finset.coe_toList]
+    · have := Finset.nodup_toList (Finset.univ.powerset : Finset (Finset α))
+      convert this
+      ext l
+      unfold Nodup
+      refine Pairwise.iff ?h.e.h.a.H
+      intro m n
+      have := m.coe_toList
+      rw [← m.coe_toList, ← n.coe_toList, Multiset.lists_coe, Multiset.lists_coe ]
+      simp only [Multiset.coe_disjoint, ne_eq]
+      rw [List.disjoint_iff_ne]
+      constructor
+      · intro h
+        by_contra hc
+        rw [hc] at h
+        absurd h
+        push_neg
+        use n.toList
+        simp
+      · intro h
+        simp
+        intro a ha b hb
+        by_contra hab
+        absurd h
+        rw [hab] at ha
+        have : m.toList ~ n.toList := Perm.trans (id (Perm.symm ha)) hb
+        exact perm_to_list.mp this
+  · intro l
+    simp only [Finset.mem_mk, Multiset.mem_bind, Finset.mem_val, Finset.mem_powerset,
+      Finset.subset_univ, Multiset.mem_lists_iff, Multiset.quot_mk_to_coe, true_and]
+    constructor
+    · intro h
+      rcases h with ⟨f, hf⟩
+      have : (l : Multiset α).Nodup := by
+        rw [← hf]
+        exact f.nodup
+      exact this
+    · intro h
+      exact CanLift.prf (_) h
