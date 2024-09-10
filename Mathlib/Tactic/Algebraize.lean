@@ -165,18 +165,18 @@ which it tries to add the corresponding `Algebra` properties to the context. It 
 properties that have been tagged with the `algebraize` attribute, and uses this tag to find the
 corresponding `Algebra` property. -/
 def searchContext (t : Array Expr) : TacticM Unit := withMainContext do
-  let ctx ← MonadLCtx.getLCtx
-  ctx.forM fun decl => do
+  let ctx ← getLCtx
+  for decl in ctx do
     if decl.isImplementationDetail then return
     let (nm, args) := decl.type.getAppFnArgs
     -- Check if the type of the current hypothesis has been tagged with the `algebraize` attribute
     match Attr.algebraizeAttr.getParam? (← getEnv) nm with
     -- If it has, `p` will be the name of the corresponding `Algebra` property (or a constructor)
     | some p =>
-      -- The last argument is the `RingHom` property is assumed to be `f`
+      -- The last argument of the `RingHom` property is assumed to be `f`
       let f := args[args.size - 1]!
       -- Check that `f` appears in the list of functions given to `algebraize`
-      if ¬ (← t.anyM (fun j => Meta.isDefEq j f)) then return
+      if ¬ (← t.anyM (Meta.isDefEq · f)) then return
 
       let cinfo ← getConstInfo p
       let n ← getExpectedNumArgs cinfo.type
@@ -189,7 +189,7 @@ def searchContext (t : Array Expr) : TacticM Unit := withMainContext do
         let pargs := pargs.set! 1 args[1]!
         let tp ← mkAppOptM p pargs -- This should be the type `Algebra.Property A B`
         liftMetaTactic fun mvarid => do
-          let nm ← mkFreshBinderNameForTactic `AlgebraizeInst
+          let nm ← mkFreshBinderNameForTactic `algebraizeInst
           let (_, mvar) ← mvarid.note nm decl.toExpr tp
           return [mvar]
       /- Otherwise, the attribute points to a constructor of the `Algebra` property. In this case,
