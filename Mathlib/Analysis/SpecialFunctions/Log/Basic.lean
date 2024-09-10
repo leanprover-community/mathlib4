@@ -124,7 +124,7 @@ theorem log_le_log_iff (h : 0 < x) (h₁ : 0 < y) : log x ≤ log y ↔ x ≤ y 
 lemma log_le_log (hx : 0 < x) (hxy : x ≤ y) : log x ≤ log y :=
   (log_le_log_iff hx (hx.trans_le hxy)).2 hxy
 
-@[gcongr]
+@[gcongr, bound]
 theorem log_lt_log (hx : 0 < x) (h : x < y) : log x < log y := by
   rwa [← exp_lt_exp, exp_log hx, exp_log (lt_trans hx h)]
 
@@ -143,6 +143,7 @@ theorem log_pos_iff (hx : 0 < x) : 0 < log x ↔ 1 < x := by
   rw [← log_one]
   exact log_lt_log_iff zero_lt_one hx
 
+@[bound]
 theorem log_pos (hx : 1 < x) : 0 < log x :=
   (log_pos_iff (lt_trans zero_lt_one hx)).2 hx
 
@@ -155,6 +156,7 @@ theorem log_neg_iff (h : 0 < x) : log x < 0 ↔ x < 1 := by
   rw [← log_one]
   exact log_lt_log_iff h zero_lt_one
 
+@[bound]
 theorem log_neg (h0 : 0 < x) (h1 : x < 1) : log x < 0 :=
   (log_neg_iff h0).2 h1
 
@@ -177,6 +179,7 @@ theorem log_nonpos_iff' (hx : 0 ≤ x) : log x ≤ 0 ↔ x ≤ 1 := by
   · simp [le_refl, zero_le_one]
   exact log_nonpos_iff hx
 
+@[bound]
 theorem log_nonpos (hx : 0 ≤ x) (h'x : x ≤ 1) : log x ≤ 0 :=
   (log_nonpos_iff' hx).2 h'x
 
@@ -366,33 +369,7 @@ theorem isLittleO_const_log_atTop {c : ℝ} : (fun _ => c) =o[atTop] log := by
   refine Asymptotics.isLittleO_of_tendsto' ?_
     <| Tendsto.div_atTop (a := c) (by simp) tendsto_log_atTop
   filter_upwards [eventually_gt_atTop 1] with x hx
-  #adaptation_note
-  /--
-  Prior to https://github.com/leanprover/lean4/pull/5225 and
-  https://github.com/leanprover/lean4/pull/5226, this worked via
-  `aesop (add safe forward log_pos)`
-  but this now fails with
-  ```
-  aesop: failed to prove the goal.
-  Some goals were not explored because the maximum rule application depth (30) was reached.
-  Set option 'maxRuleApplicationDepth' to increase the limit.
-  ```
-  -/
-  intro a
-  simp_all only [log_eq_zero]
-  have fwd : 0 < log x := log_pos hx
-  cases a with
-  | inl h =>
-    subst h
-    simp_all only [log_zero, lt_self_iff_false]
-  | inr h_1 =>
-    cases h_1 with
-    | inl h =>
-      subst h
-      simp_all only [lt_self_iff_false]
-    | inr h_2 =>
-      subst h_2
-      simp_all only [lt_neg_self_iff, log_neg_eq_log, log_one, lt_self_iff_false]
+  aesop (add safe forward log_pos)
 
 end Real
 
