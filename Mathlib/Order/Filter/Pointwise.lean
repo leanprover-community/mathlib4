@@ -595,7 +595,7 @@ variable [DivisionMonoid α] {f g : Filter α}
 @[to_additive]
 protected theorem mul_eq_one_iff : f * g = 1 ↔ ∃ a b, f = pure a ∧ g = pure b ∧ a * b = 1 := by
   refine ⟨fun hfg => ?_, ?_⟩
-  · obtain ⟨t₁, h₁, t₂, h₂, h⟩ : (1 : Set α) ∈ f * g := hfg.symm.subst one_mem_one
+  · obtain ⟨t₁, h₁, t₂, h₂, h⟩ : (1 : Set α) ∈ f * g := hfg.symm ▸ one_mem_one
     have hfg : (f * g).NeBot := hfg.symm.subst one_neBot
     rw [(hfg.nonempty_of_mem <| mul_mem_mul h₁ h₂).subset_one_iff, Set.mul_eq_one_iff] at h
     obtain ⟨a, b, rfl, rfl, h⟩ := h
@@ -1048,7 +1048,7 @@ protected def mulAction [Monoid α] [MulAction α β] : MulAction (Filter α) (F
 @[to_additive "An additive action of an additive monoid on a type `β` gives an additive action on
  `Filter β`."]
 protected def mulActionFilter [Monoid α] [MulAction α β] : MulAction α (Filter β) where
-  mul_smul a b f := by simp only [← Filter.map_smul, map_map, Function.comp, ← mul_smul]
+  mul_smul a b f := by simp only [← Filter.map_smul, map_map, Function.comp_def, ← mul_smul]
   one_smul f := by simp only [← Filter.map_smul, one_smul, map_id']
 
 scoped[Pointwise] attribute [instance] Filter.mulAction Filter.addAction Filter.mulActionFilter

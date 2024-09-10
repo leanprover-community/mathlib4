@@ -33,7 +33,7 @@ Then there are corresponding relative notions for `F : Set X`.
 * `LocPathConnectedSpace X` is a predicate class asserting that `X` is locally path-connected:
   each point has a basis of path-connected neighborhoods (we do *not* ask these to be open).
 
-## Main theorems
+## Main theorems
 
 * `Joined` and `JoinedIn F` are transitive relations.
 
@@ -247,7 +247,6 @@ theorem extend_zero : γ.extend 0 = x := by simp
 
 theorem extend_one : γ.extend 1 = y := by simp
 
-@[simp]
 theorem extend_extends' {a b : X} (γ : Path a b) (t : (Icc 0 1 : Set ℝ)) : γ.extend t = γ t :=
   IccExtend_val _ γ t
 

@@ -56,7 +56,7 @@ instance normalizationMonoid : NormalizationMonoid ℤ where
   normUnit a := if 0 ≤ a then 1 else -1
   normUnit_zero := if_pos le_rfl
   normUnit_mul {a b} hna hnb := by
-    cases' hna.lt_or_lt with ha ha <;> cases' hnb.lt_or_lt with hb hb <;>
+    rcases hna.lt_or_lt with ha | ha <;> rcases hnb.lt_or_lt with hb | hb <;>
       simp [Int.mul_nonneg_iff, ha.le, ha.not_le, hb.le, hb.not_le]
   normUnit_coe_units u :=
     (units_eq_one_or u).elim (fun eq => eq.symm ▸ if_pos Int.one_nonneg) fun eq =>
@@ -131,7 +131,7 @@ theorem natAbs_lcm (i j : ℤ) : natAbs (GCDMonoid.lcm i j) = Int.lcm i j :=
 end GCDMonoid
 
 theorem exists_unit_of_abs (a : ℤ) : ∃ (u : ℤ) (_ : IsUnit u), (Int.natAbs a : ℤ) = u * a := by
-  cases' natAbs_eq a with h h
+  rcases natAbs_eq a with h | h
   · use 1, isUnit_one
     rw [← h, one_mul]
   · use -1, isUnit_one.neg

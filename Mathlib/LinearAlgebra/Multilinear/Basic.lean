@@ -1771,3 +1771,5 @@ def range [Nonempty ι] (f : MultilinearMap R M₁ M₂) : SubMulAction R M₂ :
 end Submodule
 
 end MultilinearMap
+
+set_option linter.style.longFile 1900

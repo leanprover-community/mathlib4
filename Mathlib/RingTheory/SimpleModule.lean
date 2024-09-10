@@ -285,7 +285,7 @@ theorem IsSemisimpleModule.sup {p q : Submodule R M}
 instance IsSemisimpleRing.isSemisimpleModule [IsSemisimpleRing R] : IsSemisimpleModule R M :=
   have : IsSemisimpleModule R (M →₀ R) := isSemisimpleModule_of_isSemisimpleModule_submodule'
     (fun _ ↦ .congr (LinearMap.quotKerEquivRange _).symm) Finsupp.iSup_lsingle_range
-  .congr (LinearMap.quotKerEquivOfSurjective _ <| Finsupp.total_id_surjective R M).symm
+  .congr (LinearMap.quotKerEquivOfSurjective _ <| Finsupp.linearCombination_id_surjective R M).symm
 
 instance IsSemisimpleRing.isCoatomic_submodule [IsSemisimpleRing R] : IsCoatomic (Submodule R M) :=
   isCoatomic_of_isAtomic_of_complementedLattice_of_isModular
