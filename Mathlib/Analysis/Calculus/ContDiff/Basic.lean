@@ -617,18 +617,9 @@ private theorem ContDiffOn.comp_same_univ_glouglou {Eu : Type u} [NormedAddCommG
     ContDiffOnOmegaAux 𝕜 n (g ∘ f) s := by
   induction n generalizing Eu Fu Gu with
   | zero =>
-
-
+    simp only [contDiffOnOmegaAux_zero] at hf hg ⊢
+    exact hg.comp hf st
   | succ n IH =>
-
-
-
-
-#exit
-
-  · rw [WithTop.coe_zero, contDiffOn_zero] at hf hg ⊢
-    exact ContinuousOn.comp hg hf st
-  · change ContDiffOn 𝕜 (n + 1 : ℕ) _ _ at hf hg ⊢
     rw [contDiffOn_succ_iff_hasFDerivWithinAt] at hg ⊢
     intro x hx
     rcases (contDiffOn_succ_iff_hasFDerivWithinAt.1 hf) x hx with ⟨u, hu, f', hf', f'_diff⟩
