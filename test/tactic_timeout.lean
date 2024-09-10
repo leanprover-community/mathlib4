@@ -4,7 +4,6 @@ import Mathlib.Tactic.Linarith
 # Test that tactics respond to a cancellation request
 -/
 
-set_option linter.unusedTactic false
 
 variable {α}
 
@@ -49,6 +48,8 @@ elab "with_timeout " ms:num "=>" tac:tacticSeq : tactic => do
   if let .inr _duration ← Tactic.withTimeout ms (evalTactic tac) then
     throwError f!"Tactic took more than {ms}ms"
 
+set_option linter.unusedTactic false
+
 /-- error: Tactic took more than 500ms -/
 #guard_msgs in
 example : True := by
@@ -78,6 +79,8 @@ elab "check_timeouts " tol_ms:num "=>" tac:tacticSeq : tactic => do
     t := t + tol_ms
 
 set_option maxHeartbeats 0
+set_option linter.unusedTactic false
+set_option linter.unusedVariables false
 
 theorem linear_combination_with_10_terms
     (a b c d e f g h i j : Int)
