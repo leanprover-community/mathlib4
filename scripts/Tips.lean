@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Lean.Expr.Basic
+import ImportGraph.RequiredModules
 --import Mathlib
 
 /-!
@@ -12,17 +13,22 @@ import Mathlib.Lean.Expr.Basic
 
 open Lean Elab Command
 
+def elimOnce (consts : ConstMap) (tips : NameSet) : NameSet := Id.run do
+  let mut tips := tips
+  for (_declName, cinfo) in consts do
+    let csts := cinfo.getUsedConstantsAsSet
+    tips := tips.diff (csts.erase _declName)
+  return tips
+
 elab "#tips" : command => do
   let env ← getEnv
   let mut tips : NameSet := ← env.constants.map₁.foldM (init := {}) fun map n _ => do
-    if ← n.isBlackListed then return map else return map.insert n
-  --let mut seen : NameSet := {}
-  for (_declName, cinfo) in env.constants do --.map₁.fold (init := {}) fun map name cinfo =>
-    --if !seen.contains declName then
-      let csts := cinfo.getUsedConstantsAsSet
-      --seen := seen.append csts
-      tips := tips.diff csts
-  dbg_trace tips.toArray
+    if (← n.isBlackListed) || n.getRoot == `Lean then return map else return map.insert n
+  dbg_trace "Total declarations: {tips.size}"
+  tips := elimOnce env.constants tips
+  let withLengths ← liftCoreM do tips.foldM (init := (#[] : Array (Name × Nat))) fun arr n => do
+    return arr.push (n, (← n.transitivelyUsedConstants).size)
+  dbg_trace "Unused declarations: {tips.size}"
+  dbg_trace "With size: {withLengths.qsort (·.2 < ·.2)}"
 
-set_option trace.profiler true
 #tips
