@@ -93,7 +93,7 @@ theorem coe_comp {X Y Z : ProfiniteGrp} (f : X ⟶ Y) (g : Y ⟶ Z) :
   rfl
 
 /--A topological group when considered as a topological space is profinite is profinite-/
-def ofProfinite (G : Profinite) [Group G] [TopologicalGroup G] :
+abbrev ofProfinite (G : Profinite) [Group G] [TopologicalGroup G] :
     ProfiniteGrp := of G
 
 /--The product of profinite group is profinite-/
