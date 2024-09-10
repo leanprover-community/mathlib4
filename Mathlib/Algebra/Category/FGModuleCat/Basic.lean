@@ -141,40 +141,42 @@ instance : Linear R (FGModuleCat R) := by
   dsimp [FGModuleCat]
   infer_instance
 
-instance monoidalPredicate_module_finite :
-    MonoidalCategory.MonoidalPredicate fun V : ModuleCat.{u} R => Module.Finite R V where
-  prop_id := Module.Finite.self R
-  prop_tensor := @fun X Y _ _ => Module.Finite.tensorProduct R X Y
+open scoped MonoidalCategory in
+@[simps]
+instance : MonoidalCategoryStruct (FGModuleCat R) where
+  tensorObj X Y := ⟨X.1 ⊗ Y.1, Module.Finite.tensorProduct R X Y⟩
+  whiskerLeft X _ _ f := X.1 ◁ f
+  whiskerRight {X₁ X₂} (f : X₁.1 ⟶ X₂.1) Y := (f ▷ Y.1 :)
+  tensorHom {X Y W Z} (f : X.1 ⟶ Y.1) (g : W.1 ⟶ Z.1) := (f ⊗ g :)
+  tensorUnit := ⟨ModuleCat.of R R, Module.Finite.self R⟩
+  associator X Y Z := ⟨(α_ X.1 Y.1 Z.1).hom, (α_ X.1 Y.1 Z.1).inv,
+      (α_ X.1 Y.1 Z.1).hom_inv_id, (α_ X.1 Y.1 Z.1).inv_hom_id⟩
+  leftUnitor X :=
+    let lid := (TensorProduct.lid R X.1).toModuleIso
+    ⟨lid.hom, lid.inv, lid.hom_inv_id, lid.inv_hom_id⟩
+  rightUnitor X :=
+    let rid := (TensorProduct.rid R X.1).toModuleIso
+    ⟨rid.hom, rid.inv, rid.hom_inv_id, rid.inv_hom_id⟩
 
-instance : MonoidalCategory (FGModuleCat R) := by
-  dsimp [FGModuleCat]
-  infer_instance
+@[simps]
+def moduleCatInducingFunctorData :
+    Monoidal.InducingFunctorData (forget₂ (FGModuleCat R) (ModuleCat R)) where
+  μIso X Y := Iso.refl _
+  εIso := ModuleCat.tensorUnitIso R
+  associator_eq X Y Z := TensorProduct.ext_threefold fun x y z => rfl
+  leftUnitor_eq X := TensorProduct.ext rfl
+  rightUnitor_eq X := TensorProduct.ext rfl
 
-open MonoidalCategory
+instance : MonoidalCategory (FGModuleCat R) :=
+  Monoidal.induced (forget₂ (FGModuleCat R) (ModuleCat R)) <| moduleCatInducingFunctorData R
 
-@[simp] lemma tensorUnit_obj : (𝟙_ (FGModuleCat R)).obj = 𝟙_ (ModuleCat R) := rfl
-@[simp] lemma tensorObj_obj (M N : FGModuleCat.{u} R) : (M ⊗ N).obj = (M.obj ⊗ N.obj) := rfl
+/-- `forget₂ (FGModuleCat R) (ModuleCat R)` as a monoidal functor. -/
+def forget₂Monoidal : MonoidalFunctor (FGModuleCat R) (ModuleCat R) := by
+  unfold instMonoidalCategory
+  exact Monoidal.fromInduced (forget₂ (FGModuleCat R) (ModuleCat R)) _
 
-instance : SymmetricCategory (FGModuleCat R) := by
-  dsimp [FGModuleCat]
-  infer_instance
-
-instance : MonoidalPreadditive (FGModuleCat R) := by
-  dsimp [FGModuleCat]
-  infer_instance
-
-instance : MonoidalLinear R (FGModuleCat R) := by
-  dsimp [FGModuleCat]
-  infer_instance
-
-/-- The forgetful functor `FGModuleCat R ⥤ Module R` as a monoidal functor. -/
-def forget₂Monoidal : MonoidalFunctor (FGModuleCat R) (ModuleCat.{u} R) :=
-  MonoidalCategory.fullMonoidalSubcategoryInclusion _
-
-instance forget₂Monoidal_faithful : (forget₂Monoidal R).Faithful := by
-  dsimp [forget₂Monoidal]
-  -- Porting note (#11187): was `infer_instance`
-  exact FullSubcategory.faithful _
+instance : (forget₂Monoidal R).Faithful :=
+  forget₂_faithful _ _
 
 instance forget₂Monoidal_additive : (forget₂Monoidal R).Additive := by
   dsimp [forget₂Monoidal]
@@ -185,6 +187,32 @@ instance forget₂Monoidal_linear : (forget₂Monoidal R).Linear R := by
   dsimp [forget₂Monoidal]
   -- Porting note (#11187): was `infer_instance`
   exact Functor.fullSubcategoryInclusionLinear _ _
+
+open MonoidalCategory
+
+@[simp] lemma tensorUnit_obj : (𝟙_ (FGModuleCat R)).obj = ModuleCat.of R R := rfl
+@[simp] lemma tensorObj_obj (M N : FGModuleCat.{u} R) : (M ⊗ N).obj = (M.obj ⊗ N.obj) := rfl
+
+instance : BraidedCategory (FGModuleCat.{u} R) :=
+  braidedCategoryOfFaithful (forget₂Monoidal R)
+    (fun X Y =>  ⟨(β_ X.1 Y.1).hom, (β_ X.1 Y.1).inv,
+      (β_ X.1 Y.1).hom_inv_id, (β_ X.1 Y.1).inv_hom_id⟩)
+    (by aesop_cat)
+
+/-- `forget₂ (FGModuleCat R) (ModuleCat R)` as a braided functor. -/
+@[simps toMonoidalFunctor]
+def forget₂Braided : BraidedFunctor (FGModuleCat.{u} R) (ModuleCat.{u} R) where
+  toMonoidalFunctor := forget₂Monoidal R
+
+instance : (forget₂Braided R).Faithful :=
+  forget₂_faithful _ _
+
+instance instSymmetricCategory : SymmetricCategory (FGModuleCat.{u} R) :=
+  symmetricCategoryOfFaithful (forget₂Braided R)
+
+instance : MonoidalPreadditive (FGModuleCat R) where
+
+instance : MonoidalLinear R (FGModuleCat R) where
 
 theorem Iso.conj_eq_conj {V W : FGModuleCat R} (i : V ≅ W) (f : End V) :
     Iso.conj i f = LinearEquiv.conj (isoToLinearEquiv i) f :=
@@ -203,11 +231,19 @@ instance closedPredicateModuleFinite :
     MonoidalCategory.ClosedPredicate fun V : ModuleCat.{u} K ↦ Module.Finite K V where
   prop_ihom {X Y} _ _ := Module.Finite.linearMap K K X Y
 
-instance : MonoidalClosed (FGModuleCat K) := by
-  dsimp [FGModuleCat]
-  -- Porting note (#11187): was `infer_instance`
-  exact MonoidalCategory.fullMonoidalClosedSubcategory
-    (fun V : ModuleCat.{u} K => Module.Finite K V)
+instance : MonoidalClosed (FGModuleCat K) where
+  closed X :=
+    { rightAdj := FullSubcategory.lift _ (fullSubcategoryInclusion _ ⋙ ihom X.1)
+        fun Y => Module.Finite.linearMap K K X Y
+      adj :=
+        { unit :=
+          { app := fun Y => (ihom.coev X.1).app Y.1
+            naturality := fun _ _ f => ihom.coev_naturality X.1 f }
+          counit :=
+          { app := fun Y => (ihom.ev X.1).app Y.1
+            naturality := fun _ _ f => ihom.ev_naturality X.1 f }
+          left_triangle_components := fun _ ↦ TensorProduct.ext' fun _ _ => rfl
+          right_triangle_components := fun _ ↦ rfl } }
 
 variable (V W : FGModuleCat K)
 
