@@ -326,7 +326,8 @@ def applyMorRules (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     applyCompRule funPropDecl e f g funProp
   | .exact =>
 
-    let (candidates, thms) ← (← get).morTheorems.theorems.getMatch e false true
+    let thms := (← get).morTheorems.theorems
+    let (candidates, thms) ← thms.getMatch e { iota := false, zeta := false } false true
     modify ({ · with morTheorems := ⟨thms⟩ })
     let candidates := candidates.elts.foldl (init := #[]) fun r a => a.foldl (init := r) (· ++ ·)
 
@@ -345,7 +346,8 @@ def applyTransitionRules (e : Expr) (funProp : Expr → FunPropM (Option Result)
     FunPropM (Option Result) := do
   withIncreasedTransitionDepth do
 
-  let (candidates, thms) ← (← get).transitionTheorems.theorems.getMatch e false true
+  let thms := (← get).transitionTheorems.theorems
+  let (candidates, thms) ← thms.getMatch e { iota := false, zeta := false } false true
   modify ({ · with transitionTheorems := ⟨thms⟩ })
   let candidates := candidates.elts.foldl (init := #[]) fun r a => a.foldl (init := r) (· ++ ·)
 

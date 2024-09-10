@@ -204,11 +204,13 @@ instance : ToFormat StackEntry := ⟨StackEntry.format⟩
 
 /-- A `LazyEntry` represents a snapshot of the computation of encoding an `Expr` as `Array Key`.
 This is used for computing the keys one by one. -/
-structure LazyEntry (α : Type) where
+structure LazyEntry where
   /-- If the previous expression creates more StackEntries, then we store its `ExprInfo`. -/
   previous : Option ExprInfo := none
   /-- The stack, used to emulate recursion. -/
   stack    : List StackEntry := []
+  /-- The configuration for normalization. -/
+  config : WhnfCoreConfig
   /-- The metavariable context, which may contain variables appearing in this entry. -/
   mctx     : MetavarContext
   /-- The `MVarId` assignments for converting into `.star` keys. -/
@@ -219,19 +221,17 @@ structure LazyEntry (α : Type) where
   results  : List Key := []
   /-- The cache of past computations that have multiple possible outcomes. -/
   cache    : AssocList Expr (List Key) := {}
-  /-- The return value. -/
-  val      : α
 
 variable {α : Type}
 
-instance [Inhabited α] : Inhabited (LazyEntry α) where
-  default := { val := default, mctx := {} }
+instance : Inhabited (LazyEntry) where
+  default := { config := {}, mctx := {} }
 
-private def LazyEntry.format [ToFormat α] (entry : LazyEntry α) : Format :=
-  let results := if entry.results matches [] then f!"" else f!"results: {entry.results}, "
-  f!"stack: {entry.stack}, {results}value: {entry.val}"
+private def LazyEntry.format (entry : LazyEntry) : Format :=
+  let results := if entry.results matches [] then f!"" else f!", results: {entry.results}, "
+  f!"stack: {entry.stack}{results}"
 
-instance [ToFormat α] : ToFormat (LazyEntry α) := ⟨LazyEntry.format⟩
+instance : ToFormat LazyEntry := ⟨LazyEntry.format⟩
 
 /-- Index of a `Trie α` in the `Array (Trie α)` of a `RefinedDiscrTree`. -/
 abbrev TrieIndex := Nat
@@ -254,7 +254,7 @@ structure Trie (α : Type) where
     /-- Following `Trie`s based on the `Key`. -/
     children : Std.HashMap Key TrieIndex
     /-- Lazy entries that still have to be evaluated. -/
-    pending : Array (LazyEntry α)
+    pending : Array (LazyEntry × α)
 
 
 instance : Inhabited (Trie α) := ⟨.node #[] {} {} #[]⟩
@@ -274,8 +274,6 @@ structure RefinedDiscrTree (α : Type) where
   root : Std.HashMap Key TrieIndex := {}
   /-- Array of trie entries. Should be owned by this trie. -/
   tries : Array (Trie α) := #[]
-  /-- Configuration for normalization. -/
-  config : WhnfCoreConfig := {}
 
 namespace RefinedDiscrTree
 
@@ -294,7 +292,7 @@ where
   go (trie : TrieIndex) : Format :=
     let { values, stars, children, pending } := tree.tries[trie]!
     let lines := if pending.isEmpty then #[] else
-      #[f! "pending entries: {pending.map (·.val)}"]
+      #[f! "pending entries: {pending.map (·.2)}"]
     let lines := if values.isEmpty then lines else
       lines.push f! "entries: {values}"
     let lines := stars.fold (init := lines) fun lines key trie =>

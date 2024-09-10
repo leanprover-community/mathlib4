@@ -85,12 +85,10 @@ where
 
 /-- Try adding the lemma to the `RefinedDiscrTree`. -/
 def addRewriteEntry (name : Name) (cinfo : ConstantInfo) :
-    MetaM (List (Key × LazyEntry RewriteLemma)) := do
-  if name matches .str _ "injEq" | .str _ "sizeOf_spec" then
-    return []
+    MetaM (List (RewriteLemma × List (Key × LazyEntry))) := do
+  if name matches .str _ "injEq" | .str _ "sizeOf_spec" then return [] else
   let .const head _ := cinfo.type.getForallBody.getAppFn | return []
-  unless head == ``Eq || head == ``Iff do
-    return []
+  if !(head == ``Eq || head == ``Iff) then return [] else
   setMCtx {}
   let (_,_,eqn) ← forallMetaTelescope cinfo.type
   let cont lhs rhs := do
@@ -102,13 +100,13 @@ def addRewriteEntry (name : Name) (cinfo : ConstantInfo) :
       if badMatch rhs then
         return []
       else
-        initializeLazyEntryAux rhs { name, symm := true } {}
+        return [({ name, symm := true }, ← initializeLazyEntryAux rhs {})]
     else
-      let result ← initializeLazyEntryAux lhs { name, symm := false } {}
+      let result := ({ name, symm := false }, ← initializeLazyEntryAux lhs {})
       if badMatch rhs || isMVarSwap lhs rhs then
-        return result
+        return [result]
       else
-        return result ++ (← initializeLazyEntryAux rhs { name, symm := true } {})
+        return [result, ({ name, symm := true }, ← initializeLazyEntryAux rhs {})]
   match eqn.eq? with
   | some (_, lhs, rhs) => cont lhs rhs
   | none => match eqn.iff? with
@@ -116,12 +114,12 @@ def addRewriteEntry (name : Name) (cinfo : ConstantInfo) :
     | none => return []
 /-- Try adding the local hypothesis to the `RefinedDiscrTree`. -/
 def addLocalRewriteEntry (decl : LocalDecl) :
-    MetaM (List (Key × LazyEntry (FVarId × Bool))) :=
+    MetaM (List ((FVarId × Bool) × List (Key × LazyEntry))) :=
   withReducible do
   let (_,_,eqn) ← forallMetaTelescope decl.type
   let cont lhs rhs := do
-    let result ← initializeLazyEntryAux lhs (decl.fvarId, false) {}
-    return result ++ (← initializeLazyEntryAux rhs (decl.fvarId, true) {})
+    let result := ((decl.fvarId, false), ← initializeLazyEntryAux lhs {})
+    return [result, ((decl.fvarId, true), ← initializeLazyEntryAux rhs {})]
   match ← matchEq? eqn with
   | some (_, lhs, rhs) => cont lhs rhs
   | none => match eqn.iff? with
@@ -282,9 +280,10 @@ def getHypotheses (except : Option FVarId) : MetaM (RefinedDiscrTree (FVarId × 
   let mut tree : PreDiscrTree (FVarId × Bool) := {}
   for decl in ← getLCtx do
     if !decl.isImplementationDetail && except.all (· != decl.fvarId) then
-      for (key, entry) in ← addLocalRewriteEntry decl do
-        tree := tree.push key entry
-  return tree.toLazy
+      for (val, entries) in ← addLocalRewriteEntry decl do
+        for (key, entry) in entries do
+          tree := tree.push key (entry, val)
+  return tree.toRefinedDiscrTree
 
 /-- Return all applicable hypothesis rewrites of `e`. Similar to `getImportRewrites`. -/
 def getHypothesisRewrites (e : Expr) (except : Option FVarId) :

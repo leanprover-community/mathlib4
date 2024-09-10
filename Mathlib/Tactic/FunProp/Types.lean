@@ -103,7 +103,7 @@ structure GeneralTheorem where
   /-- theorem name -/
   thmName     : Name
   /-- discrimination tree keys used to index this theorem -/
-  keys        : Array (RefinedDiscrTree.Key × RefinedDiscrTree.LazyEntry Unit)
+  keys        : Array (RefinedDiscrTree.Key × RefinedDiscrTree.LazyEntry)
   /-- priority -/
   priority    : Nat  := eval_prio default
   deriving Inhabited
@@ -111,7 +111,7 @@ structure GeneralTheorem where
 /-- -/
 structure GeneralTheorems where
   /-- -/
-  theorems     : RefinedDiscrTree GeneralTheorem := { config := { iota := false, zeta := false } }
+  theorems     : RefinedDiscrTree GeneralTheorem := {}
   deriving Inhabited
 
 /-- `fun_prop` state -/

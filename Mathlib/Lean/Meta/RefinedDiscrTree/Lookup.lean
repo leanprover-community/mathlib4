@@ -29,24 +29,24 @@ namespace Lean.Meta.RefinedDiscrTree
 variable {α β : Type}
 
 /-- Monad for working with a `RefinedDiscrTree`. -/
-abbrev TreeM α := ReaderT WhnfCoreConfig (StateRefT (Array (Trie α)) MetaM)
+abbrev TreeM α := StateRefT (Array (Trie α)) MetaM
 
 /-- Run a `TreeM` computation using a `RefinedDiscrTree`. -/
 def runTreeM (d : RefinedDiscrTree α) (m : TreeM α β) :
     MetaM (β × RefinedDiscrTree α) := do
-  let { config, tries, root } := d
-  let (result, tries) ← withReducible <| (m.run config).run tries
-  pure (result, { config, tries, root })
+  let { tries, root } := d
+  let (result, tries) ← withReducible <| m.run tries
+  pure (result, { tries, root })
 
 private def setTrie (i : TrieIndex) (v : Trie α) : TreeM α Unit :=
   modify (·.set! i v)
 
 /-- Create a new trie with the given lazy entry. -/
-private def newTrie (e : LazyEntry α) : TreeM α TrieIndex := do
+private def newTrie (e : LazyEntry × α) : TreeM α TrieIndex := do
   modifyGet fun a => let sz := a.size; (sz, a.push (.node #[] {} {} #[e]))
 
 /-- Add a lazy entry to an existing trie. -/
-private def addLazyEntryToTrie (i : TrieIndex) (e : LazyEntry α) : TreeM α Unit :=
+private def addLazyEntryToTrie (i : TrieIndex) (e : LazyEntry × α) : TreeM α Unit :=
   modify (·.modify i fun | .node vs star cs p => .node vs star cs (p.push e))
 
 /-- Evaluate the `Trie α` at index `trie`,
@@ -61,11 +61,12 @@ def evalNode (trie : TrieIndex) :
   let mut values := values
   let mut stars := stars
   let mut children := children
-  for entry in pending do
-    match ← evalLazyEntry entry (← read) with
-    | .inr v => values := values.push v
-    | .inl xs =>
+  for (entry, value) in pending do
+    match ← evalLazyEntry entry with
+    | none => values := values.push value
+    | some xs =>
       for (key, entry) in xs do
+        let entry := (entry, value)
         if let .star id := key then
           match stars[id]? with
           | none     => stars := stars.insert id (← newTrie entry)
@@ -254,10 +255,10 @@ private def matchTreeRootStar (root : Std.HashMap Key TrieIndex) : TreeM α (Mat
     return ({} : MatchResult α).push (score := 0) values
 
 /-- Find values that match `e` in `d`.
-`unify == true` if metavarables in `e` can be assigned. -/
-def getMatch (d : RefinedDiscrTree α) (e : Expr) (unify matchRootStar : Bool) :
-    MetaM (MatchResult α × RefinedDiscrTree α) := do
-  let (key, keys) ← encodeExpr' e d.config
+if `unify == true` then metavarables in `e` can be assigned. -/
+def getMatch (d : RefinedDiscrTree α) (e : Expr) (config : WhnfCoreConfig := {})
+    (unify matchRootStar : Bool) : MetaM (MatchResult α × RefinedDiscrTree α) := do
+  let (key, keys) ← encodeExpr' e config
   withReducible do runTreeM d do
     let pMatch : PartialMatch := { keys, score := 0, trie := default }
     if key matches .star _ then

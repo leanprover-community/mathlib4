@@ -86,8 +86,8 @@ less potential matches can save a significant amount of computation.
 ## Lazy computation
 
 We encode an `Expr` as an `Array Key`. This is implemented with a lazy computation:
-we start with a `LazyEntry α`, which comes with a step function of type
-`LazyEntry α → MetaM (Array (Key × LazyEntry α) ⊕ α)`.
+we start with a `LazyEntry`, which comes with a step function of type
+`LazyEntry → MetaM (Option (List (Key × LazyEntry)))`.
 
 -/
 
@@ -109,7 +109,7 @@ private def treeCtx (ctx : Core.Context) : Core.Context := {
 /-- Returns candidates from all imported modules that match the expression. -/
 def findImportMatches
     (ext : EnvExtension (IO.Ref (Option (RefinedDiscrTree α))))
-    (addEntry : Name → ConstantInfo → MetaM (List (Key × LazyEntry α))) (ty : Expr)
+    (addEntry : Name → ConstantInfo → MetaM (List (α × List (Key × LazyEntry)))) (ty : Expr)
     (constantsPerTask : Nat := 1000) (capacityPerTask : Nat := 128)
     (config : WhnfCoreConfig := {}) : MetaM (MatchResult α) := do
   let cctx ← (read : CoreM Core.Context)
@@ -119,70 +119,41 @@ def findImportMatches
   let dummy : IO.Ref (Option (RefinedDiscrTree α)) ← IO.mkRef none
   let ref := @EnvExtension.getState _ ⟨dummy⟩ ext (← getEnv)
   let importTree ← (← ref.get).getDM do
-    profileitM Exception  "lazy discriminator import initialization" (← getOptions) <|
+    profileitM Exception  "RefinedDiscrTree import initialization" (← getOptions) <|
       createImportedDiscrTree
-        (treeCtx cctx) cNGen (← getEnv) addEntry constantsPerTask capacityPerTask config
-  let (importCandidates, importTree) ← getMatch importTree ty false false
+        (treeCtx cctx) cNGen (← getEnv) addEntry constantsPerTask capacityPerTask
+  let (importCandidates, importTree) ← getMatch importTree ty config false false
   ref.set (some importTree)
   return importCandidates
 
-/--
-Returns candidates from this module in this module that match the expression.
-
-* `moduleRef` is a references to a lazy discriminator tree only containing
-this module's definitions.
--/
-def findModuleMatches (moduleRef : ModuleDiscrTreeRef α) (ty : Expr) : MetaM (MatchResult α) := do
-  profileitM Exception  "lazy discriminator local search" (← getOptions) do
+/-- Returns candidates from this module that match the expression. -/
+def findModuleMatches (moduleRef : ModuleDiscrTreeRef α) (ty : Expr)
+    (config : WhnfCoreConfig := {}) : MetaM (MatchResult α) := do
+  profileitM Exception  "RefinedDiscrTree local search" (← getOptions) do
     let discrTree ← moduleRef.ref.get
-    let (localCandidates, localTree) ← getMatch discrTree ty false false
+    let (localCandidates, localTree) ← getMatch discrTree ty config false false
     moduleRef.ref.set localTree
     return localCandidates
 
 /--
-`findMatchesExt` searches for entries in a lazily initialized discriminator tree.
-
-It provides some additional capabilities beyond `findMatches` to adjust results
-based on priority and cache module declarations
-
-* `modulesTreeRef` points to the discriminator tree for local environment.
-  Used for caching and created by `createLocalTree`.
-* `ext` should be an environment extension with an IO.Ref for caching the import lazy
-   discriminator tree.
-* `addEntry` is the function for creating discriminator tree entries from constants.
-* `droppedKeys` contains keys we do not want to consider when searching for matches.
-  It is used for dropping very general keys.
-* `constantsPerTask` stores number of constants in imported modules used to
-  decide when to create new task.
-* `ty` is the expression type.
--/
-def findMatchesExt
-    (moduleTreeRef : ModuleDiscrTreeRef α)
-    (ext : EnvExtension (IO.Ref (Option (RefinedDiscrTree α))))
-    (addEntry : Name → ConstantInfo → MetaM (List (Key × LazyEntry α)))
-    (ty : Expr) (constantsPerTask : Nat := 1000) (capacityPerTask : Nat := 128)
-    (config : WhnfCoreConfig := {}) : MetaM (MatchResult α × MatchResult α) := do
-  let moduleMatches ← findModuleMatches moduleTreeRef ty
-  let importMatches ← findImportMatches ext addEntry ty constantsPerTask capacityPerTask config
-  return (moduleMatches, importMatches)
-
-/--
-`findMatches` searches for entries in a lazily initialized discriminator tree.
+`findMatches` combines `findImportMatches` and `findModuleMatches`.
 
 * `ext` should be an environment extension with an IO.Ref for caching the import lazy
    discriminator tree.
 * `addEntry` is the function for creating discriminator tree entries from constants.
-* `droppedKeys` contains keys we do not want to consider when searching for matches.
-  It is used for dropping very general keys.
-* `constantsPerTask` stores number of constants in imported modules used to
-  decide when to create new task.
 * `ty` is the expression type.
+* `constantsPerTask` is the number of constants in imported modules to be used for each
+  new task.
+* `capacityPerTask` is the initial capacity of the `HashMap` at the root of the
+  `RefinedDiscrTree` for each new task.
+* `config` is the `WhnfCoreConfig` used for reducing `ty`.
 -/
 def findMatches (ext : EnvExtension (IO.Ref (Option (RefinedDiscrTree α))))
-    (addEntry : Name → ConstantInfo → MetaM (List (Key × LazyEntry α)))
+    (addEntry : Name → ConstantInfo → MetaM (List (α × List (Key × LazyEntry))))
     (ty : Expr) (constantsPerTask : Nat := 1000) (capacityPerTask : Nat := 128)
     (config : WhnfCoreConfig := {}) : MetaM (MatchResult α × MatchResult α) := do
-  let moduleTreeRef ← createModuleTreeRef addEntry
-  findMatchesExt moduleTreeRef ext addEntry ty constantsPerTask capacityPerTask config
+  let moduleMatches ← findModuleMatches (← createModuleTreeRef addEntry) ty config
+  let importMatches ← findImportMatches ext addEntry ty constantsPerTask capacityPerTask config
+  return (moduleMatches, importMatches)
 
 end Lean.Meta.RefinedDiscrTree

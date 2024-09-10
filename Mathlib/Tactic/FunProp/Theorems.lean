@@ -224,7 +224,7 @@ initialize transitionTheoremsExt : GeneralTheoremsExt ←
     initial  := {}
     addEntry := fun d e =>
       {d with theorems := e.keys.foldl (fun thms (key, entry) =>
-        RefinedDiscrTree.insert thms key { entry with val := e }) d.theorems}
+        RefinedDiscrTree.insert thms key (entry, e)) d.theorems}
   }
 
 /-- -/
@@ -234,7 +234,7 @@ initialize morTheoremsExt : GeneralTheoremsExt ←
     initial  := {}
     addEntry := fun d e =>
       {d with theorems := e.keys.foldl (fun thms (key, entry) =>
-        RefinedDiscrTree.insert thms key { entry with val := e }) d.theorems}
+        RefinedDiscrTree.insert thms key (entry, e)) d.theorems}
   }
 
 
@@ -322,7 +322,7 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
       }
     | .fvar .. =>
       let (_,_,b') ← forallMetaTelescope info.type
-      let keys ← RefinedDiscrTree.initializeLazyEntry b' () {}
+      let keys ← RefinedDiscrTree.initializeLazyEntry b' {}
       let thm : GeneralTheorem := {
         funPropName := funPropName
         thmName := declName
