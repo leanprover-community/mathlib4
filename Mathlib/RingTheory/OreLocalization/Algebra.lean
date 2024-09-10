@@ -45,25 +45,15 @@ private def mul''
 protected def mul : A[S⁻¹] → A[S⁻¹] → A[S⁻¹] :=
   liftExpand mul'' fun a₁ r₁ s hs => by
   obtain ⟨s₁, hs₁⟩ := s
-  simp only at hs
-  unfold OreLocalization.mul''
-  simp
-  unfold OreLocalization.mul'
-  dsimp
+  unfold OreLocalization.mul'' OreLocalization.mul'
   ext sa
-  induction sa
-  rename_i a s_temp
+  induction' sa with a s_temp
   obtain ⟨s, hs⟩ := s_temp
-  rw [liftExpand_of]
-  rw [liftExpand_of]
-  rw [oreDiv_eq_iff]
-  simp only [Submonoid.mk_smul, Submonoid.coe_mul]
+  simp only [liftExpand_of, oreDiv_eq_iff, Submonoid.mk_smul, Submonoid.coe_mul]
   use ⟨s₁, hs₁⟩, r₁ * s₁
   simp only [Submonoid.mk_smul, Submonoid.coe_mul]
   constructor
-  · rw [smul_mul_assoc]
-    rw [← mul_smul]
-    rw [mul_comm]
+  · rw [smul_mul_assoc, ← mul_smul, mul_comm]
   · repeat rw [mul_assoc]
     repeat rw [mul_left_comm s₁]
     rw [mul_left_comm s]
