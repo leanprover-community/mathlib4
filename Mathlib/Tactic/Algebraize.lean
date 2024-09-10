@@ -199,7 +199,7 @@ def searchContext (t : Array Expr) : TacticM Unit := withMainContext do
         let pargs := pargs.set! (n - 1) decl.toExpr
         let val ← mkAppOptM p pargs
         liftMetaTactic fun mvarid => do
-          let nm ← mkFreshBinderNameForTactic `AlgebraizeInst
+          let nm ← mkFreshBinderNameForTactic `algebraizeInst
           let (_, mvar) ← mvarid.note nm val
           return [mvar]
     | none => return
