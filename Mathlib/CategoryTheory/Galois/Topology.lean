@@ -3,11 +3,8 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Endomorphism
-import Mathlib.CategoryTheory.Limits.FintypeCat
-import Mathlib.Topology.Algebra.Group.Basic
-import Mathlib.CategoryTheory.Galois.Decomposition
 import Mathlib.CategoryTheory.Galois.Prorepresentability
+import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
 
