@@ -1,8 +1,8 @@
 /-
-Copyright (c) 2024 Filippo A. E. Nuccio, Huanyu Zheng, Wanyi He, Sihan Wu, Yi Yuan.
+Copyright (c) 2024 Huanyu Zheng, Wanyi He, Sihan Wu, Yi Yuan, Filippo A. E. Nuccio.
 All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Filippo A. E. Nuccio, Huanyu Zheng, Sihan Wu, Wanyi He, Yi Yuan
+Authors: Huanyu Zheng, Sihan Wu, Wanyi He, Yi Yuan, Filippo A. E. Nuccio.
 -/
 import Mathlib.FieldTheory.Separable
 import Mathlib.Algebra.CharP.Subring
@@ -32,7 +32,7 @@ the noncommutative division algebra `D` with the center `k`.
 * <https://ysharifi.wordpress.com/2011/09/30/the-jacobson-noether-theorem/>
 -/
 
-
+-- *Filippo* This should probably be moved to another file.
 /-- a⁻¹ * d ^ s * a = (a⁻¹ * d * a) ^ s when a is not zero -/
 lemma conj_nonComm_Algebra {D : Type*} [DivisionRing D] (s : ℕ) (a d : D) (ha : a ≠ 0) :
     a⁻¹ * d ^ s * a = (a⁻¹ * d * a) ^ s := by
