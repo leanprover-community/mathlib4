@@ -279,10 +279,8 @@ theorem compiler_correctness
   | const => simp [StateEq, step]; rfl
   -- 5.II
   | var =>
-    simp [hmap, StateEq, step] -- Porting note: was `finish [hmap, StateEq, step]`
-    constructor
-    · simp_all only [read, loc]
-    · rfl
+    -- Porting note: was `finish [hmap, StateEq, step]`
+    simp_all [StateEq, StateEqRs, step]
   -- 5.III
   | sum =>
     rename_i e_s₁ e_s₂ e_ih_s₁ e_ih_s₂
