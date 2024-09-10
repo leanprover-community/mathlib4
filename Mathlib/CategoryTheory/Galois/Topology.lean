@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.CategoryTheory.Limits.FintypeCat
 import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.CategoryTheory.Galois.Decomposition
+import Mathlib.CategoryTheory.Galois.Prorepresentability
 
 /-!
 
@@ -179,6 +180,36 @@ lemma exists_set_ker_evaluation_subset_of_isOpen {H : Set (Aut F)} (hone : 1 ∈
       rw [FintypeCat.id_apply, ← ha, FunctorToFintypeCat.naturality]
       simp [h ⟨(ff _) j, ⟨Set.range (ff ⟨X, XinI⟩), ⟨⟨_, rfl⟩, ⟨j, rfl⟩⟩⟩⟩]
     exact Iso.ext h
+
+open Limits
+
+/-- The stabilizers of points in the fibers of Galois objects form a neighbourhood basis
+of the identity in `Aut F`. -/
+lemma nhds_one_has_basis_stabilizers : (nhds (1 : Aut F)).HasBasis (fun _ ↦ True)
+    (fun X : PointedGaloisObject F ↦ MulAction.stabilizer (Aut F) X.pt) where
+  mem_iff' S := by
+    rw [mem_nhds_iff]
+    refine ⟨?_, ?_⟩
+    · intro ⟨U, hU, hUopen, hUone⟩
+      obtain ⟨I, _, hc, hmem⟩ := exists_set_ker_evaluation_subset_of_isOpen F hUone hUopen
+      let P : C := ∏ᶜ fun X : I ↦ X.val
+      obtain ⟨A, a, hgal, hbij⟩ := exists_galois_representative F P
+      refine ⟨⟨A, a, hgal⟩, trivial, ?_⟩
+      intro t (ht : t.hom.app A a = a)
+      apply hU
+      apply hmem
+      haveI (X : I) : IsConnected X.val := hc X.val X.property
+      haveI (X : I) : Nonempty (F.obj X.val) := nonempty_fiber_of_isConnected F X
+      intro X
+      ext x
+      simp only [FintypeCat.id_apply]
+      obtain ⟨z, rfl⟩ :=
+        surjective_of_nonempty_fiber_of_isConnected F (Pi.π (fun X : I ↦ X.val) X) x
+      obtain ⟨f, rfl⟩ := hbij.surjective z
+      rw [FunctorToFintypeCat.naturality, FunctorToFintypeCat.naturality, ht]
+    · intro ⟨X, _, h⟩
+      exact ⟨MulAction.stabilizer (Aut F) X.pt, h, stabilizer_isOpen (Aut F) X.pt,
+        Subgroup.one_mem _⟩
 
 end PreGaloisCategory
 

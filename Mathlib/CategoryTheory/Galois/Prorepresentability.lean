@@ -49,9 +49,9 @@ namespace PreGaloisCategory
 open Limits Functor
 
 variable {C : Type u₁} [Category.{u₂} C] [GaloisCategory C]
-variable (F : C ⥤ FintypeCat.{u₂})
+
 /-- A pointed Galois object is a Galois object with a fixed point of its fiber. -/
-structure PointedGaloisObject : Type (max u₁ u₂) where
+structure PointedGaloisObject (F : C ⥤ FintypeCat.{w}) : Type (max u₁ u₂ w) where
   /-- The underlying object of `C`. -/
   obj : C
   /-- An element of the fiber of `obj`. -/
@@ -60,6 +60,10 @@ structure PointedGaloisObject : Type (max u₁ u₂) where
   isGalois : IsGalois obj := by infer_instance
 
 namespace PointedGaloisObject
+
+section General
+
+variable (F : C ⥤ FintypeCat.{w})
 
 attribute [instance] isGalois
 
@@ -116,6 +120,10 @@ lemma incl_obj (A : PointedGaloisObject F) : (incl F).obj A = A :=
 @[simp]
 lemma incl_map {A B : PointedGaloisObject F} (f : A ⟶ B) : (incl F).map f = f.val :=
   rfl
+
+end General
+
+variable (F : C ⥤ FintypeCat.{u₂})
 
 /-- `F ⋙ FintypeCat.incl` as a cocone over `(can F).op ⋙ coyoneda`.
 This is a colimit cocone (see `PreGaloisCategory.isColimìt`) -/
@@ -175,6 +183,8 @@ instance : HasColimit ((incl F).op ⋙ coyoneda) where
 end PointedGaloisObject
 
 open PointedGaloisObject
+
+variable (F : C ⥤ FintypeCat.{u₂})
 
 /-- The diagram sending each pointed Galois object to its automorphism group
 as an object of `C`. -/
