@@ -3,13 +3,16 @@ Copyright (c) 2024 Wanyi He. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wanyi He, Huanyu Zheng
 -/
-import Mathlib.Algebra.Ring.Subring.Basic
 import Mathlib.Algebra.CharP.Algebra
 
 variable {R M : Type*} [CommSemiring R] [AddCommMonoidWithOne M] [Module R M]
 
+/-- For a commutative semiring `R` and a `R`-module `M` (which is also
+  an additive commutative monoid with one), if `R` satisfies reduction condition,
+  then the characteristic of `R` is equal to the characteristic of `R`-linear
+  endomorphism of `M`.-/
 instance char_eq_if {p : ℕ} [hchar : CharP R p]
-  (hconvert : ∀ r : R, r • (1 : M) = 0 → r = 0) : CharP (M →ₗ[R] M) p where
+  (hreduction : ∀ (r : R), r • (1 : M) = 0 → r = 0) : CharP (M →ₗ[R] M) p where
   cast_eq_zero_iff' := by
     intro n
     replace hchar := hchar.1 n
@@ -17,17 +20,17 @@ instance char_eq_if {p : ℕ} [hchar : CharP R p]
       simp only [Nat.cast_smul_eq_nsmul, nsmul_eq_mul, mul_one]
     rw [reduce, LinearMap.ext_iff, hchar.symm]
     simp only [LinearMap.smul_apply, LinearMap.one_apply, LinearMap.zero_apply]
-    refine ⟨fun h ↦ hconvert n <| h 1,
+    refine ⟨fun h ↦ hreduction n <| h 1,
       fun h ↦ (congrArg (fun t ↦ ∀ (x : M), t • x = 0) h).mpr fun x ↦ zero_smul R x⟩
 
 variable {D : Type*} [DivisionRing D]
 
 local notation "k" => (Subring.center D)
 
-instance : Module k (D →ₗ[k] D) := inferInstance
-
 instance : Algebra k D := Algebra.ofModule smul_mul_assoc mul_smul_comm
 
+/--The characteristic of a division ring is equal to the characteristic of its
+  center-/
 theorem center_char_iff {p : ℕ} : CharP D p ↔ CharP k p :=
   (@RingHom.charP_iff k D _ _ (algebraMap k D)
     (NoZeroSMulDivisors.algebraMap_injective k D) p).symm

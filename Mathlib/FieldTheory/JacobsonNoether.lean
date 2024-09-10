@@ -4,7 +4,6 @@ All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Filippo A. E. Nuccio, Huanyu Zheng, Sihan Wu, Wanyi He, Yi Yuan
 -/
-import Mathlib.RingTheory.Algebraic
 import Mathlib.FieldTheory.Separable
 import Mathlib.Algebra.CharP.Subring
 import Mathlib.Algebra.CharP.LinearMaps
