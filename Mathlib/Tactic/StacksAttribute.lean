@@ -167,7 +167,9 @@ private def Lean.Environment.getSortedStackProjectDeclNames (env : Environment) 
   let tags := env.getSortedStackProjectTags
   tags.filterMap fun d => if d.tag == tag then some d.declName else none
 
-private def Mathlib.StacksTag.databaseURL (db : Database) : String :=
+namespace Mathlib.StacksTag
+
+private def databaseURL (db : Database) : String :=
   match db with
   | .kerodon => "https://kerodon.net/tag/"
   | .stacks => "https://stacks.math.columbia.edu/tag/"
@@ -176,7 +178,8 @@ private def Mathlib.StacksTag.databaseURL (db : Database) : String :=
 `traceStacksTags db verbose` prints the tags of the database `db` to the user and
 inlines the theorem statements if `verbose` is `true`.
 -/
-def Mathlib.StacksTag.traceStacksTags (db : Database) (verbose : Bool := false) : Command.CommandElabM Unit := do
+def traceStacksTags (db : Database) (verbose : Bool := false) :
+    Command.CommandElabM Unit := do
   let env ← getEnv
   let entries := env.getSortedStackProjectTags |>.filter (·.database == db)
   if entries.isEmpty then logInfo "No tags found." else
@@ -203,7 +206,7 @@ For each found declaration, it prints a line
 ```
 The variant `#stacks_tags!` also adds the theorem statement after each summary line.
 -/
-elab (name := Mathlib.Stacks.stacksTags) "#stacks_tags" tk:("!")?: command =>
+elab (name := stacksTags) "#stacks_tags" tk:("!")?: command =>
   traceStacksTags .stacks (tk.isSome)
 
 /-- The `#kerodon_tags` command retrieves all declarations that have the `kerodon` attribute.
@@ -214,5 +217,7 @@ For each found declaration, it prints a line
 ```
 The variant `#kerodon_tags!` also adds the theorem statement after each summary line.
 -/
-elab (name := Mathlib.Stacks.kerodonTags) "#kerodon_tags" tk:("!")?: command =>
+elab (name := kerodonTags) "#kerodon_tags" tk:("!")?: command =>
   traceStacksTags .kerodon (tk.isSome)
+
+end Mathlib.StacksTag
