@@ -58,6 +58,11 @@ end DotProduct
 
 section CrossProduct
 
+lemma mk_eq_mk_iff_crossProduct_eq_zero {v w : Fin 3 → F} (hv : v ≠ 0) (hw : w ≠ 0) :
+    mk F v hv = mk F w hw ↔ crossProduct v w = 0 := by
+  rw [← not_iff_not, mk_eq_mk_iff', not_exists, ← LinearIndependent.pair_iff' hw,
+    ← crossProduct_ne_zero_iff_linearIndependent, ← cross_anticomm, neg_ne_zero]
+
 variable [DecidableEq F]
 
 /-- Cross product on the projective plane. -/
@@ -85,11 +90,6 @@ lemma cross_mk_of_cross_ne_zero {v w : Fin 3 → F} (hv : v ≠ 0) (hw : w ≠ 0
     (h : crossProduct v w ≠ 0) :
     cross (mk F v hv) (mk F w hw) = mk F (crossProduct v w) h := by
   rw [cross_mk, dif_neg h]
-
-lemma mk_eq_mk_iff_crossProduct_eq_zero {v w : Fin 3 → F} (hv : v ≠ 0) (hw : w ≠ 0) :
-    mk F v hv = mk F w hw ↔ crossProduct v w = 0 := by
-  rw [← not_iff_not, mk_eq_mk_iff', not_exists, ← LinearIndependent.pair_iff' hw,
-    ← crossProduct_ne_zero_iff_linearIndependent, ← cross_anticomm, neg_ne_zero]
 
 lemma cross_self (v : ℙ F (Fin 3 → F)) : cross v v = v := by
   induction' v with v hv
