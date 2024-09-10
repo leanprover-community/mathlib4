@@ -781,16 +781,12 @@ lemma starMap_inl (φ : A →⋆ₙₐ[R] B) (r : R) :
 
 /-- If `φ : A →⋆ₙₐ[R] B` is injective, the lift `starMap φ : Unitization R A →⋆ₐ[R] Unitization R B`
 is also injective. -/
-lemma starMap_injective {R A B : Type*} [CommRing R] [StarRing R]
-    [NonUnitalRing A] [StarRing A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
-    [NonUnitalRing B] [StarRing B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
-    [StarModule R B] {φ : A →⋆ₙₐ[R] B} (hφ : Function.Injective φ) :
-    Function.Injective (starMap φ) :=
-  injective_iff_map_eq_zero _ |>.mpr fun a h ↦ by
+lemma starMap_injective {φ : A →⋆ₙₐ[R] B} (hφ : Function.Injective φ) :
+    Function.Injective (starMap φ) := by
+  intro x y h
   ext
   · simpa using congr(fst $(h))
-  · exact map_eq_zero_iff _ hφ |>.mp <| by
-      simpa [algebraMap_eq_inl] using congr(snd $(h))
+  · exact hφ <| by simpa [algebraMap_eq_inl] using congr(snd $(h))
 
 /-- If `φ : A →⋆ₙₐ[R] B` is surjective, the lift
 `starMap φ : Unitization R A →⋆ₐ[R] Unitization R B` is also surjective. -/
