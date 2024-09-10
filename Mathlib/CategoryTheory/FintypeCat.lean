@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Adam Topaz
 -/
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.CategoryTheory.FullSubcategory
+import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.CategoryTheory.Skeletal
-import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Finite.Basic
 
 /-!
 # The category of finite types.
@@ -98,6 +98,15 @@ def equivEquivIso {A B : FintypeCat} : A ≃ B ≃ (A ≅ B) where
       right_inv := congr_fun i.inv_hom_id }
   left_inv := by aesop_cat
   right_inv := by aesop_cat
+
+instance foo (X Y : FintypeCat) : Finite (X ⟶ Y) :=
+  inferInstanceAs <| Finite (X → Y)
+
+instance (X Y : FintypeCat) : Finite (X ≅ Y) :=
+  Finite.of_injective _ (fun _ _ h ↦ Iso.ext h)
+
+instance (X : FintypeCat) : Finite (Aut X) :=
+  inferInstanceAs <| Finite (X ≅ X)
 
 universe u
 
