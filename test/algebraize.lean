@@ -35,7 +35,7 @@ example (A B : Type*) [CommRing A] [CommRing B] (f : A →+* B) (hf : f.Finite) 
   fail_if_success -- Check that this instance is not available by default
     have h : Module.Finite A B := inferInstance
   algebraize f
-  guard_hyp AlgebraizeInst : Module.Finite A B
+  guard_hyp algebraizeInst : Module.Finite A B
   trivial
 
 /-- Synthesize `Algebra.FiniteType` from morphism property. -/
@@ -43,7 +43,7 @@ example (A B : Type*) [CommRing A] [CommRing B] (f : A →+* B) (hf : f.FiniteTy
   fail_if_success -- Check that this instance is not available by default
     have h : Algebra.FiniteType A B := inferInstance
   algebraize f
-  guard_hyp AlgebraizeInst : Algebra.FiniteType A B
+  guard_hyp algebraizeInst : Algebra.FiniteType A B
   trivial
 
 /-- Synthesize `Algebra.Flat` from morphism property. -/
@@ -51,7 +51,7 @@ example (A B : Type*) [CommRing A] [CommRing B] (f : A →+* B) (hf : f.Flat) : 
   fail_if_success -- Check that this instance is not available by default
     have h : Algebra.Flat A B := inferInstance
   algebraize f
-  guard_hyp AlgebraizeInst : Algebra.Flat A B
+  guard_hyp algebraizeInst : Algebra.Flat A B
   trivial
 
 /-- Synthesize `Algebra.Integral` from morphism property. -/
@@ -59,7 +59,7 @@ example (A B : Type*) [CommRing A] [CommRing B] (f : A →+* B) (hf : f.IsIntegr
   fail_if_success -- Check that this instance is not available by default
     have h : Algebra.IsIntegral A B := inferInstance
   algebraize f
-  guard_hyp AlgebraizeInst : Algebra.IsIntegral A B
+  guard_hyp algebraizeInst : Algebra.IsIntegral A B
   trivial
 
 set_option tactic.hygienic false in
@@ -71,6 +71,6 @@ example (A B C : Type*) [CommRing A] [CommRing B] [CommRing C] (f : A →+* B) (
   fail_if_success
     have h : IsScalarTower A B C := inferInstance
   algebraize f g (g.comp f)
-  guard_hyp AlgebraizeInst : Algebra.Flat A C
+  guard_hyp algebraizeInst : Algebra.Flat A C
   guard_hyp scalarTowerInst := IsScalarTower.of_algebraMap_eq' rfl
   trivial
