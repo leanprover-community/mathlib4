@@ -62,7 +62,7 @@ theorem isRat_lt_true [LinearOrderedRing α] [Nontrivial α] : {a b : α} → {n
     have hb : 0 < ⅟(db : α) := pos_invOf_of_invertible_cast db
     have h := (mul_lt_mul_of_pos_left · hb) <| mul_lt_mul_of_pos_right h ha
     rw [← mul_assoc, Int.commute_cast] at h
-    simp? at h says simp only [Int.cast_mul, Int.cast_natCast, mul_mul_invOf_self_cancel'] at h
+    simp? at h says simp only [Int.cast_mul, Int.cast_natCast, mul_invOf_cancel_right'] at h
     rwa [Int.commute_cast] at h
 
 theorem isRat_le_false [LinearOrderedRing α] [Nontrivial α] {a b : α} {na nb : ℤ} {da db : ℕ}
