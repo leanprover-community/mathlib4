@@ -137,7 +137,7 @@ lemma isStronglyCartesian_of_exists_isCartesian' (p : 𝒳 ⥤ 𝒮) (h : ∀ (a
   -- The map induced by `φ` will be `τ' ≫ Φ.hom`
   use τ' ≫ Φ.hom
   -- It is easily verified that `τ' ≫ Φ.hom` lifts `g` and `τ' ≫ Φ.hom ≫ φ = φ'`
-  refine ⟨⟨by simp only [domainUniqueUpToIso_hom, Φ]; infer_instance, ?_⟩, ?_⟩
+  refine ⟨⟨by simp only [Φ]; infer_instance, ?_⟩, ?_⟩
   · simp [τ', Φ, IsStronglyCartesian.map_uniq p (p.map φ) ψ rfl φ']
   -- It remains to check that it is unique. This follows from the universal property of `ψ`.
   intro π ⟨hπ, hπ_comp⟩
