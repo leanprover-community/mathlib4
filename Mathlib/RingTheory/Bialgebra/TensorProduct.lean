@@ -27,7 +27,6 @@ is already universe polymorphic since it does not go via category theory.
 
 universe v u
 
-section
 open scoped TensorProduct
 
 namespace Bialgebra.TensorProduct
