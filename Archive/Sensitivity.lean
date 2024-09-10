@@ -227,7 +227,8 @@ open Classical in
 /-- `e` and `ε` are dual families of vectors. It implies that `e` is indeed a basis
 and `ε` computes coefficients of decompositions of vectors on that basis. -/
 theorem dualBases_e_ε (n : ℕ) : DualBases (@e n) (@ε n) where
-  eval := duality
+  eval_same := by simp [duality]
+  eval_of_ne _ _ h := by simp [duality, h]
   total := @epsilon_total _
 
 /-! We will now derive the dimension of `V`, first as a cardinal in `dim_V` and,
@@ -278,10 +279,11 @@ is necessary since otherwise `n • v` refers to the multiplication defined
 using only the addition of `V`. -/
 
 
-theorem f_squared : ∀ v : V n, (f n) (f n v) = (n : ℝ) • v := by
-  induction' n with n IH _ <;> intro v
-  · simp only [Nat.cast_zero, zero_smul]; rfl
-  · cases v; rw [f_succ_apply, f_succ_apply]; simp [IH, add_smul (n : ℝ) 1, add_assoc, V]; abel
+theorem f_squared (v : V n) : (f n) (f n v) = (n : ℝ) • v := by
+  induction n with
+  | zero =>  simp only [Nat.cast_zero, zero_smul, f_zero, zero_apply]
+  | succ n IH =>
+    cases v; rw [f_succ_apply, f_succ_apply]; simp [IH, add_smul (n : ℝ) 1, add_assoc, V]; abel
 
 /-! We now compute the matrix of `f` in the `e` basis (`p` is the line index,
 `q` the column index). -/
@@ -423,7 +425,8 @@ theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
     _ =
         |(coeffs y).sum fun (i : Q m.succ) (a : ℝ) =>
             a • (ε q ∘ f m.succ ∘ fun i : Q m.succ => e i) i| := by
-      erw [(f m.succ).map_finsupp_total, (ε q).map_finsupp_total, Finsupp.total_apply]
+      erw [(f m.succ).map_finsupp_linearCombination, (ε q).map_finsupp_linearCombination,
+           Finsupp.linearCombination_apply]
     _ ≤ ∑ p ∈ (coeffs y).support, |coeffs y p * (ε q <| f m.succ <| e p)| :=
       (norm_sum_le _ fun p => coeffs y p * _)
     _ = ∑ p ∈ (coeffs y).support, |coeffs y p| * ite (p ∈ q.adjacent) 1 0 := by

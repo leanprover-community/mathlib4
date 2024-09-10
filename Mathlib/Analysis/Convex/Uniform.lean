@@ -117,7 +117,7 @@ theorem exists_forall_closed_ball_dist_add_le_two_mul_sub (hε : 0 < ε) (r : �
   rw [← div_le_one hr, div_eq_inv_mul, ← norm_smul_of_nonneg (inv_nonneg.2 hr.le)] at hx hy
   have := h hx hy
   simp_rw [← smul_add, ← smul_sub, norm_smul_of_nonneg (inv_nonneg.2 hr.le), ← div_eq_inv_mul,
-    div_le_div_right hr, div_le_iff hr, sub_mul] at this
+    div_le_div_right hr, div_le_iff₀ hr, sub_mul] at this
   exact this hxy
 
 end SeminormedAddCommGroup
