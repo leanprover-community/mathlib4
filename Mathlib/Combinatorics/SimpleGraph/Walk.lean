@@ -850,13 +850,7 @@ lemma edge_firstDart (p : G.Walk v w) (hp : ¬ p.Nil) :
 
 lemma firstDart_mem_darts {u v : V} (p : G.Walk u v) (hp : ¬p.Nil) :
     p.firstDart hp ∈ p.darts := by
-  induction p <;> simp [Walk.firstDart, Walk.sndOfNotNil, Walk.notNilRec] at hp ⊢
-
-lemma darts_getElem_zero {u v} {p : G.Walk u v} (hi : 0 < p.length) :
-    (p.darts[0]'(by simp; omega)).fst = u := by
-  induction p with
-  | nil => simp at hi
-  | cons => simp
+  induction p <;> simp [Walk.firstDart] at hp ⊢
 
 theorem darts_getElem_fst
     {u v : V} {p : G.Walk u v} (i : ℕ) (hi : i < p.length) :
@@ -904,18 +898,9 @@ lemma support_getElem_eq_getVert {u v} {p : G.Walk u v} {i} (hi : i < p.length +
     · simp [Walk.getVert] at hi
       simpa [Walk.getVert] using ih (by omega)
 
-@[simp] lemma support_head {u v : V} {p : G.Walk u v} : p.support.head (by simp) = u := by
-  induction p <;> simp
-
 @[simp] lemma support_tail_ne_nil {u v : V} {p : G.Walk u v} (hp : ¬p.Nil) :
     p.support.tail ≠ [] := by
   cases p <;> simp at hp |-
-
-@[simp] lemma support_getLast {u v : V} {p : G.Walk u v} :
-    p.support.getLast (by simp) = v := by
-  have : p.support.getLast (by simp) = p.reverse.support.head (by simp) := by
-    simp [List.head_reverse]
-  simp only [support_head, this]
 
 lemma IsRotated_dropLast_tail (p : G.Walk u u) : p.support.dropLast ~r p.support.tail := by
   apply List.IsRotated.dropLast_tail (show p.support ≠ [] by simp)
