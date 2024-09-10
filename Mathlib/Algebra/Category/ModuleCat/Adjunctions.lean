@@ -65,11 +65,11 @@ attribute [local ext] TensorProduct.ext
 
 /-- (Implementation detail) The unitor for `Free R`. -/
 def ε : 𝟙_ (ModuleCat.{u} R) ⟶ (free R).obj (𝟙_ (Type u)) :=
-  Finsupp.lsingle PUnit.unit
+  (tensorUnitIso R).hom ≫ ModuleCat.ofHom (Finsupp.lsingle PUnit.unit)
 
 -- This lemma has always been bad, but lean4#2644 made `simp` start noticing
 @[simp, nolint simpNF]
-theorem ε_apply (r : R) : ε R r = Finsupp.single PUnit.unit r :=
+theorem ε_apply (r : ULift R) : ε R r = Finsupp.single PUnit.unit r.down :=
   rfl
 
 /-- (Implementation detail) The tensorator for `Free R`. -/
@@ -103,6 +103,7 @@ theorem left_unitality (X : Type u) :
       (ε R ⊗ 𝟙 ((free R).obj X)) ≫ (μ R (𝟙_ (Type u)) X).hom ≫ map (free R).obj (λ_ X).hom := by
   -- Porting note (#11041): broken ext
   apply TensorProduct.ext
+  apply ULift.ext_linearMap
   apply LinearMap.ext_ring
   apply Finsupp.lhom_ext'
   intro x
@@ -125,6 +126,7 @@ theorem right_unitality (X : Type u) :
   apply Finsupp.lhom_ext'
   intro x
   apply LinearMap.ext_ring
+  apply ULift.ext_linearMap
   apply LinearMap.ext_ring
   apply Finsupp.ext
   intro x'
@@ -179,23 +181,23 @@ instance : LaxMonoidal.{u} (free R).obj := .ofTensorHom
   (associativity := associativity R)
 
 instance : IsIso (@LaxMonoidal.ε _ _ _ _ _ _ (free R).obj _ _) := by
-  refine ⟨⟨Finsupp.lapply PUnit.unit, ⟨?_, ?_⟩⟩⟩
+  refine ⟨⟨Finsupp.lapply PUnit.unit ≫ (tensorUnitIso R).inv, ⟨?_, ?_⟩⟩⟩
   · -- Porting note (#11041): broken ext
-    apply LinearMap.ext_ring
+    refine ULift.ext_linearMap _ _<| LinearMap.ext_ring <| ULift.ext _ _ ?_
     -- Porting note (#10959): simp used to be able to close this goal
-    dsimp
-    erw [ModuleCat.comp_def, LinearMap.comp_apply, ε_apply, Finsupp.lapply_apply,
-      Finsupp.single_eq_same, id_apply]
+    show Finsupp.lapply _ (Finsupp.single _ _) = _
+    simp only [tensorUnitIso, LinearEquiv.toModuleIso_hom, Finsupp.lapply_apply,
+      Finsupp.single_eq_same]
+    rfl
   · -- Porting note (#11041): broken ext
     apply Finsupp.lhom_ext'
     intro ⟨⟩
     apply LinearMap.ext_ring
     apply Finsupp.ext
     intro ⟨⟩
-    -- Porting note (#10959): simp used to be able to close this goal
-    dsimp
-    erw [ModuleCat.comp_def, LinearMap.comp_apply, ε_apply, Finsupp.lapply_apply,
-      Finsupp.single_eq_same]
+    show Finsupp.single PUnit.unit _ PUnit.unit = _
+    rw [Finsupp.single_eq_same]
+    rfl
 
 end Free
 

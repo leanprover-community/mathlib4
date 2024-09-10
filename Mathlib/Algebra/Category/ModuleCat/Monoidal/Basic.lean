@@ -212,6 +212,10 @@ instance monoidalCategory : MonoidalCategory (ModuleCat R) := MonoidalCategory.o
 instance : CommRing (𝟙_ (ModuleCat R)) :=
   inferInstanceAs <| CommRing (ULift R)
 
+variable (R) in
+def tensorUnitIso : 𝟙_ (ModuleCat.{u} R) ≅ ModuleCat.of R R :=
+  ULift.moduleEquiv.toModuleIso
+
 namespace MonoidalCategory
 
 @[simp]
