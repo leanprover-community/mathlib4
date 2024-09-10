@@ -339,7 +339,7 @@ instance Truncated.hasColimits {n : ℕ} : HasColimits (Truncated n) := by
 @[ext]
 lemma Truncated.hom_ext {n : ℕ} {X Y : Truncated n} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) :
     f = g :=
-  NatTrans.ext _ _ (funext w)
+  NatTrans.ext (funext w)
 
 /-- The skeleton functor on simplicial sets. -/
 def sk (n : ℕ) : SSet ⥤ SSet.Truncated n :=

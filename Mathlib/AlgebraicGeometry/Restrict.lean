@@ -17,7 +17,7 @@ import Mathlib.AlgebraicGeometry.Cover.Open
 
 -/
 
--- Explicit universe annotations were used in this file to improve perfomance #12737
+-- Explicit universe annotations were used in this file to improve performance #12737
 
 
 noncomputable section
@@ -69,7 +69,7 @@ lemma ι_appLE (V W e) :
     U.ι.appLE V W e =
       X.presheaf.map (homOfLE (x := U.ι ''ᵁ W) (Set.image_subset_iff.mpr ‹_›)).op := by
   simp only [Hom.appLE, ι_app, Functor.op_obj, Opens.carrier_eq_coe, toScheme_presheaf_map,
-    Quiver.Hom.unop_op, Hom.opensFunctor_map_homOfLE, Opens.coe_inclusion, ← Functor.map_comp]
+    Quiver.Hom.unop_op, Hom.opensFunctor_map_homOfLE, Opens.coe_inclusion', ← Functor.map_comp]
   rfl
 
 @[simp]
@@ -89,7 +89,7 @@ lemma ι_image_top : U.ι ''ᵁ ⊤ = U :=
 
 @[simp]
 lemma ι_preimage_self : U.ι ⁻¹ᵁ U = ⊤ :=
-  Opens.inclusion_map_eq_top _
+  Opens.inclusion'_map_eq_top _
 
 instance ι_appLE_isIso :
     IsIso (U.ι.appLE U ⊤ U.ι_preimage_self.ge) := by
@@ -121,16 +121,29 @@ def stalkIso {X : Scheme.{u}} (U : X.Opens) (x : U) :
 
 @[reassoc (attr := simp)]
 lemma germ_stalkIso_hom {X : Scheme.{u}} (U : X.Opens)
-    {V : TopologicalSpace.Opens U} (x : V) :
+    {V : U.toScheme.Opens} (x : V) :
       U.toScheme.presheaf.germ x ≫ (U.stalkIso x.1).hom =
         X.presheaf.germ ⟨x.1.1, show x.1.1 ∈ U.ι ''ᵁ V from ⟨x.1, x.2, rfl⟩⟩ :=
-    PresheafedSpace.restrictStalkIso_hom_eq_germ _ _ _ _ _
+    PresheafedSpace.restrictStalkIso_hom_eq_germ _ U.openEmbedding _ _ _
+
+@[reassoc (attr := simp)]
+lemma germ_stalkIso_hom' {X : Scheme.{u}} (U : X.Opens)
+    {V : TopologicalSpace.Opens U} (x : U) (hx : x ∈ V) :
+      U.toScheme.presheaf.germ ⟨x, hx⟩ ≫ (U.stalkIso x).hom =
+        X.presheaf.germ ⟨x.1, show x.1 ∈ U.ι ''ᵁ V from ⟨x, hx, rfl⟩⟩ :=
+    PresheafedSpace.restrictStalkIso_hom_eq_germ _ U.openEmbedding _ _ _
+
+@[simp, reassoc]
+lemma germ_stalkIso_inv {X : Scheme.{u}} (U : X.Opens) (V : U.toScheme.Opens) (x : U)
+    (hx : x ∈ V) : X.presheaf.germ ⟨x.val, show x.val ∈ U.ι ''ᵁ V from ⟨x, hx, rfl⟩⟩ ≫
+      (U.stalkIso x).inv = U.toScheme.presheaf.germ ⟨x, hx⟩ :=
+  PresheafedSpace.restrictStalkIso_inv_eq_germ X.toPresheafedSpace U.openEmbedding V x hx
 
 end Scheme.Opens
 
 /-- If `U` is a family of open sets that covers `X`, then `X.restrict U` forms an `X.open_cover`. -/
 @[simps! J obj map]
-def Scheme.openCoverOfSuprEqTop {s : Type*} (X : Scheme.{u}) (U : s → X.Opens)
+def Scheme.openCoverOfISupEqTop {s : Type*} (X : Scheme.{u}) (U : s → X.Opens)
     (hU : ⨆ i, U i = ⊤) : X.OpenCover where
   J := s
   obj i := U i
@@ -143,6 +156,9 @@ def Scheme.openCoverOfSuprEqTop {s : Type*} (X : Scheme.{u}) (U : s → X.Opens)
     have : x ∈ ⨆ i, U i := hU.symm ▸ show x ∈ (⊤ : X.Opens) by trivial
     exact (Opens.mem_iSup.mp this).choose_spec
 
+@[deprecated (since := "2024-07-24")]
+noncomputable alias Scheme.openCoverOfSuprEqTop := Scheme.openCoverOfISupEqTop
+
 /-- The open sets of an open subscheme corresponds to the open sets containing in the subset. -/
 @[simps!]
 def opensRestrict :
@@ -150,8 +166,8 @@ def opensRestrict :
   (IsOpenImmersion.opensEquiv (U.ι)).trans (Equiv.subtypeEquivProp (by simp))
 
 instance ΓRestrictAlgebra {X : Scheme.{u}} (U : X.Opens) :
-    Algebra (Scheme.Γ.obj (op X)) (Scheme.Γ.obj (op U)) :=
-  (Scheme.Γ.map U.ι.op).toAlgebra
+    Algebra (Γ(X, ⊤)) Γ(U, ⊤) :=
+  (U.ι.app ⊤).toAlgebra
 
 lemma Scheme.map_basicOpen' (r : Γ(U, ⊤)) :
     U.ι ''ᵁ (U.toScheme.basicOpen r) = X.basicOpen
@@ -218,7 +234,7 @@ theorem Scheme.restrictFunctor_map_base {U V : X.Opens} (i : U ⟶ V) :
 theorem Scheme.restrictFunctor_map_app_aux {U V : X.Opens} (i : U ⟶ V) (W : Opens V) :
     U.ι ''ᵁ ((X.restrictFunctor.map i).1 ⁻¹ᵁ W) ≤ V.ι ''ᵁ W := by
   simp only [← SetLike.coe_subset_coe, IsOpenMap.functor_obj_coe, Set.image_subset_iff,
-    Scheme.restrictFunctor_map_base, Opens.map_coe, Opens.inclusion_apply]
+    Scheme.restrictFunctor_map_base, Opens.map_coe, Opens.inclusion'_apply]
   rintro _ h
   exact ⟨_, h, rfl⟩
 
@@ -450,7 +466,7 @@ def morphismRestrictRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (V :
   refine Arrow.isoMk' _ _ (Scheme.restrictRestrict _ _ _ ≪≫ Scheme.restrictIsoOfEq _ ?_)
     (Scheme.restrictRestrict _ _ _) ?_
   · ext x
-    simp only [IsOpenMap.functor_obj_coe, Opens.coe_inclusion,
+    simp only [IsOpenMap.functor_obj_coe, Opens.coe_inclusion',
       Opens.map_coe, Set.mem_image, Set.mem_preimage, SetLike.mem_coe, morphismRestrict_val_base]
     constructor
     · rintro ⟨⟨a, h₁⟩, h₂, rfl⟩
@@ -464,7 +480,7 @@ def morphismRestrictRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (V :
       Scheme.restrictRestrict_hom_restrict,
       morphismRestrict_ι_assoc, morphismRestrict_ι]
 
-/-- Restricting a morphism twice onto a basic open set is isomorphic to one restriction.  -/
+/-- Restricting a morphism twice onto a basic open set is isomorphic to one restriction. -/
 def morphismRestrictRestrictBasicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (r : Γ(Y, U)) :
     Arrow.mk (f ∣_ U ∣_
           U.toScheme.basicOpen (Y.presheaf.map (eqToHom U.openEmbedding_obj_top).op r)) ≅
@@ -472,7 +488,7 @@ def morphismRestrictRestrictBasicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Op
   refine morphismRestrictRestrict _ _ _ ≪≫ morphismRestrictEq _ ?_
   have e := Scheme.preimage_basicOpen U.ι r
   rw [Scheme.Opens.ι_app] at e
-  rw [← U.toScheme.basicOpen_res_eq _ (eqToHom U.inclusion_map_eq_top).op]
+  rw [← U.toScheme.basicOpen_res_eq _ (eqToHom U.inclusion'_map_eq_top).op]
   erw [← comp_apply]
   erw [← Y.presheaf.map_comp]
   rw [eqToHom_op, eqToHom_op, eqToHom_map, eqToHom_trans]
@@ -485,23 +501,14 @@ def morphismRestrictRestrictBasicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Op
 /-- The stalk map of a restriction of a morphism is isomorphic to the stalk map of the original map.
 -/
 def morphismRestrictStalkMap {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (x) :
-    Arrow.mk (PresheafedSpace.stalkMap (f ∣_ U).1 x) ≅
-      Arrow.mk (PresheafedSpace.stalkMap f.1 x.1) := by
-  fapply Arrow.isoMk'
-  · refine U.stalkIso ((f ∣_ U).1.1 x) ≪≫ TopCat.Presheaf.stalkCongr _ ?_
-    apply Inseparable.of_eq
-    exact morphismRestrict_base_coe f U x
-  · exact Scheme.Opens.stalkIso _ _
-  · apply TopCat.Presheaf.stalk_hom_ext
+    Arrow.mk ((f ∣_ U).stalkMap x) ≅ Arrow.mk (f.stalkMap x.1) := Arrow.isoMk' _ _
+  (U.stalkIso ((f ∣_ U).1.base x) ≪≫
+    (TopCat.Presheaf.stalkCongr _ <| Inseparable.of_eq <| morphismRestrict_base_coe f U x))
+  ((f ⁻¹ᵁ U).stalkIso x) <| by
+    apply TopCat.Presheaf.stalk_hom_ext
     intro V hxV
     change ↑(f ⁻¹ᵁ U) at x
-    simp only [Scheme.restrict_presheaf_obj, unop_op, Opens.coe_inclusion, Iso.trans_hom,
-      TopCat.Presheaf.stalkCongr_hom, Category.assoc, Scheme.restrict_toPresheafedSpace]
-    rw [Scheme.Opens.germ_stalkIso_hom_assoc,
-      TopCat.Presheaf.germ_stalkSpecializes'_assoc,
-      PresheafedSpace.stalkMap_germ'_assoc, PresheafedSpace.stalkMap_germ',
-      ← Scheme.Hom.app, ← Scheme.Hom.app, morphismRestrict_app,
-      Scheme.Opens.germ_stalkIso_hom, Category.assoc, TopCat.Presheaf.germ_res]
+    simp [Scheme.stalkMap_germ'_assoc, Scheme.Hom.appLE]
 
 instance {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) [IsOpenImmersion f] :
     IsOpenImmersion (f ∣_ U) := by

@@ -35,8 +35,6 @@ and require `0⁻¹ = 0`.
 
 assert_not_exists DenselyOrdered
 
-open scoped Classical
-
 open Function
 
 variable {α M₀ G₀ M₀' G₀' F F' : Type*}
@@ -56,8 +54,9 @@ theorem right_ne_zero_of_mul : a * b ≠ 0 → b ≠ 0 :=
 theorem ne_zero_and_ne_zero_of_mul (h : a * b ≠ 0) : a ≠ 0 ∧ b ≠ 0 :=
   ⟨left_ne_zero_of_mul h, right_ne_zero_of_mul h⟩
 
-theorem mul_eq_zero_of_ne_zero_imp_eq_zero {a b : M₀} (h : a ≠ 0 → b = 0) : a * b = 0 :=
-  if ha : a = 0 then by rw [ha, zero_mul] else by rw [h ha, mul_zero]
+theorem mul_eq_zero_of_ne_zero_imp_eq_zero {a b : M₀} (h : a ≠ 0 → b = 0) : a * b = 0 := by
+  have : Decidable (a = 0) := Classical.propDecidable (a = 0)
+  exact if ha : a = 0 then by rw [ha, zero_mul] else by rw [h ha, mul_zero]
 
 /-- To match `one_mul_eq_id`. -/
 theorem zero_mul_eq_const : ((0 : M₀) * ·) = Function.const _ 0 :=
@@ -151,7 +150,7 @@ lemma pow_eq_zero_of_le : ∀ {m n} (hmn : m ≤ n) (ha : a ^ m = 0), a ^ n = 0
   | _, _, Nat.le.refl, ha => ha
   | _, _, Nat.le.step hmn, ha => by rw [pow_succ, pow_eq_zero_of_le hmn ha, zero_mul]
 
-lemma ne_zero_pow (hn : n ≠ 0) (ha : a ^ n ≠ 0) : a ≠ 0 := by rintro rfl; exact ha $ zero_pow hn
+lemma ne_zero_pow (hn : n ≠ 0) (ha : a ^ n ≠ 0) : a ≠ 0 := by rintro rfl; exact ha <| zero_pow hn
 
 @[simp]
 lemma zero_pow_eq_zero [Nontrivial M₀] : (0 : M₀) ^ n = 0 ↔ n ≠ 0 :=
@@ -239,11 +238,11 @@ variable [GroupWithZero G₀] {a b c g h x : G₀}
 
 theorem GroupWithZero.mul_left_injective (h : x ≠ 0) :
     Function.Injective fun y => x * y := fun y y' w => by
-  simpa only [← mul_assoc, inv_mul_cancel h, one_mul] using congr_arg (fun y => x⁻¹ * y) w
+  simpa only [← mul_assoc, inv_mul_cancel₀ h, one_mul] using congr_arg (fun y => x⁻¹ * y) w
 
 theorem GroupWithZero.mul_right_injective (h : x ≠ 0) :
     Function.Injective fun y => y * x := fun y y' w => by
-  simpa only [mul_assoc, mul_inv_cancel h, mul_one] using congr_arg (fun y => y * x⁻¹) w
+  simpa only [mul_assoc, mul_inv_cancel₀ h, mul_one] using congr_arg (fun y => y * x⁻¹) w
 
 @[simp]
 theorem inv_mul_cancel_right₀ (h : b ≠ 0) (a : G₀) : a * b⁻¹ * b = a :=
@@ -269,7 +268,7 @@ instance (priority := 100) GroupWithZero.toDivisionMonoid : DivisionMonoid G₀ 
     inv_inv := fun a => by
       by_cases h : a = 0
       · simp [h]
-      · exact left_inv_eq_right_inv (inv_mul_cancel <| inv_ne_zero h) (inv_mul_cancel h)
+      · exact left_inv_eq_right_inv (inv_mul_cancel₀ <| inv_ne_zero h) (inv_mul_cancel₀ h)
         ,
     mul_inv_rev := fun a b => by
       by_cases ha : a = 0
@@ -306,16 +305,16 @@ theorem div_zero (a : G₀) : a / 0 = 0 := by rw [div_eq_mul_inv, inv_zero, mul_
 theorem mul_self_mul_inv (a : G₀) : a * a * a⁻¹ = a := by
   by_cases h : a = 0
   · rw [h, inv_zero, mul_zero]
-  · rw [mul_assoc, mul_inv_cancel h, mul_one]
+  · rw [mul_assoc, mul_inv_cancel₀ h, mul_one]
 
 
 /-- Multiplying `a` by its inverse and then by itself results in `a`
 (whether or not `a` is zero). -/
 @[simp]
-theorem mul_inv_mul_self (a : G₀) : a * a⁻¹ * a = a := by
+theorem mul_inv_mul_cancel (a : G₀) : a * a⁻¹ * a = a := by
   by_cases h : a = 0
   · rw [h, inv_zero, mul_zero]
-  · rw [mul_inv_cancel h, one_mul]
+  · rw [mul_inv_cancel₀ h, one_mul]
 
 
 /-- Multiplying `a⁻¹` by `a` twice results in `a` (whether or not `a`
@@ -324,7 +323,7 @@ is zero). -/
 theorem inv_mul_mul_self (a : G₀) : a⁻¹ * a * a = a := by
   by_cases h : a = 0
   · rw [h, inv_zero, mul_zero]
-  · rw [inv_mul_cancel h, one_mul]
+  · rw [inv_mul_cancel₀ h, one_mul]
 
 
 /-- Multiplying `a` by itself and then dividing by itself results in `a`, whether or not `a` is
@@ -335,7 +334,7 @@ theorem mul_self_div_self (a : G₀) : a * a / a = a := by rw [div_eq_mul_inv, m
 /-- Dividing `a` by itself and then multiplying by itself results in `a`, whether or not `a` is
 zero. -/
 @[simp]
-theorem div_self_mul_self (a : G₀) : a / a * a = a := by rw [div_eq_mul_inv, mul_inv_mul_self a]
+theorem div_self_mul_self (a : G₀) : a / a * a = a := by rw [div_eq_mul_inv, mul_inv_mul_cancel a]
 
 attribute [local simp] div_eq_mul_inv mul_comm mul_assoc mul_left_comm
 
@@ -371,10 +370,10 @@ theorem eq_zero_of_one_div_eq_zero {a : G₀} (h : 1 / a = 0) : a = 0 :=
   Classical.byCases (fun ha => ha) fun ha => ((one_div_ne_zero ha) h).elim
 
 theorem mul_left_surjective₀ {a : G₀} (h : a ≠ 0) : Surjective fun g => a * g := fun g =>
-  ⟨a⁻¹ * g, by simp [← mul_assoc, mul_inv_cancel h]⟩
+  ⟨a⁻¹ * g, by simp [← mul_assoc, mul_inv_cancel₀ h]⟩
 
 theorem mul_right_surjective₀ {a : G₀} (h : a ≠ 0) : Surjective fun g => g * a := fun g =>
-  ⟨g * a⁻¹, by simp [mul_assoc, inv_mul_cancel h]⟩
+  ⟨g * a⁻¹, by simp [mul_assoc, inv_mul_cancel₀ h]⟩
 
 lemma zero_zpow : ∀ n : ℤ, n ≠ 0 → (0 : G₀) ^ n = 0
   | (n : ℕ), h => by rw [zpow_natCast, zero_pow]; simpa [Int.natCast_eq_zero] using h
@@ -387,22 +386,22 @@ lemma zero_zpow_eq (n : ℤ) : (0 : G₀) ^ n = if n = 0 then 1 else 0 := by
 
 lemma zpow_add_one₀ (ha : a ≠ 0) : ∀ n : ℤ, a ^ (n + 1) = a ^ n * a
   | (n : ℕ) => by simp only [← Int.ofNat_succ, zpow_natCast, pow_succ]
-  | .negSucc 0 => by erw [zpow_zero, zpow_negSucc, pow_one, inv_mul_cancel ha]
+  | .negSucc 0 => by erw [zpow_zero, zpow_negSucc, pow_one, inv_mul_cancel₀ ha]
   | .negSucc (n + 1) => by
     rw [Int.negSucc_eq, zpow_neg, Int.neg_add, Int.neg_add_cancel_right, zpow_neg, ← Int.ofNat_succ,
-      zpow_natCast, zpow_natCast, pow_succ' _ (n + 1), mul_inv_rev, mul_assoc, inv_mul_cancel ha,
+      zpow_natCast, zpow_natCast, pow_succ' _ (n + 1), mul_inv_rev, mul_assoc, inv_mul_cancel₀ ha,
       mul_one]
 
 lemma zpow_sub_one₀ (ha : a ≠ 0) (n : ℤ) : a ^ (n - 1) = a ^ n * a⁻¹ :=
   calc
-    a ^ (n - 1) = a ^ (n - 1) * a * a⁻¹ := by rw [mul_assoc, mul_inv_cancel ha, mul_one]
+    a ^ (n - 1) = a ^ (n - 1) * a * a⁻¹ := by rw [mul_assoc, mul_inv_cancel₀ ha, mul_one]
     _ = a ^ n * a⁻¹ := by rw [← zpow_add_one₀ ha, Int.sub_add_cancel]
 
 lemma zpow_add₀ (ha : a ≠ 0) (m n : ℤ) : a ^ (m + n) = a ^ m * a ^ n := by
-  induction' n using Int.induction_on with n ihn n ihn
-  · simp
-  · simp only [← Int.add_assoc, zpow_add_one₀ ha, ihn, mul_assoc]
-  · rw [zpow_sub_one₀ ha, ← mul_assoc, ← ihn, ← zpow_sub_one₀ ha, Int.add_sub_assoc]
+  induction n using Int.induction_on with
+  | hz => simp
+  | hp n ihn => simp only [← Int.add_assoc, zpow_add_one₀ ha, ihn, mul_assoc]
+  | hn n ihn => rw [zpow_sub_one₀ ha, ← mul_assoc, ← ihn, ← zpow_sub_one₀ ha, Int.add_sub_assoc]
 
 lemma zpow_add' {m n : ℤ} (h : a ≠ 0 ∨ m + n ≠ 0 ∨ m = 0 ∧ n = 0) :
     a ^ (m + n) = a ^ m * a ^ n := by

@@ -32,6 +32,8 @@ For a module over a normed ring:
 seminorm, locally convex, LCTVS
 -/
 
+assert_not_exists balancedCore
+
 open NormedField Set Filter
 
 open scoped NNReal Pointwise Topology Uniformity
@@ -471,8 +473,7 @@ theorem smul_inf [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] (r 
 
 section Classical
 
-open scoped Classical
-
+open Classical in
 /-- We define the supremum of an arbitrary subset of `Seminorm 𝕜 E` as follows:
 * if `s` is `BddAbove` *as a set of functions `E → ℝ`* (that is, if `s` is pointwise bounded
 above), we take the pointwise supremum of all elements of `s`, and we prove that it is indeed a
@@ -663,7 +664,7 @@ theorem closedBall_smul (p : Seminorm 𝕜 E) {c : NNReal} (hc : 0 < c) (r : ℝ
     (c • p).closedBall x r = p.closedBall x (r / c) := by
   ext
   rw [mem_closedBall, mem_closedBall, smul_apply, NNReal.smul_def, smul_eq_mul, mul_comm,
-    le_div_iff (NNReal.coe_pos.mpr hc)]
+    le_div_iff₀ (NNReal.coe_pos.mpr hc)]
 
 theorem ball_sup (p : Seminorm 𝕜 E) (q : Seminorm 𝕜 E) (e : E) (r : ℝ) :
     ball (p ⊔ q) e r = ball p e r ∩ ball q e r := by
@@ -1187,10 +1188,10 @@ lemma rescale_to_shell_zpow (p : Seminorm 𝕜 E) {c : 𝕜} (hc : 1 < ‖c‖) 
         norm_zpow]
     exact (div_lt_iff εpos).1 (hn.2)
   · show ε / ‖c‖ ≤ p (c ^ (-(n + 1)) • x)
-    rw [zpow_neg, div_le_iff cpos, map_smul_eq_mul, norm_inv, norm_zpow, zpow_add₀ (ne_of_gt cpos),
-        zpow_one, mul_inv_rev, mul_comm, ← mul_assoc, ← mul_assoc, mul_inv_cancel (ne_of_gt cpos),
-        one_mul, ← div_eq_inv_mul, le_div_iff (zpow_pos_of_pos cpos _), mul_comm]
-    exact (le_div_iff εpos).1 hn.1
+    rw [zpow_neg, div_le_iff₀ cpos, map_smul_eq_mul, norm_inv, norm_zpow, zpow_add₀ (ne_of_gt cpos),
+        zpow_one, mul_inv_rev, mul_comm, ← mul_assoc, ← mul_assoc, mul_inv_cancel₀ (ne_of_gt cpos),
+        one_mul, ← div_eq_inv_mul, le_div_iff₀ (zpow_pos_of_pos cpos _), mul_comm]
+    exact (le_div_iff₀ εpos).1 hn.1
   · show ‖(c ^ (-(n + 1)))‖⁻¹ ≤ ε⁻¹ * ‖c‖ * p x
     have : ε⁻¹ * ‖c‖ * p x = ε⁻¹ * p x * ‖c‖ := by ring
     rw [zpow_neg, norm_inv, inv_inv, norm_zpow, zpow_add₀ (ne_of_gt cpos), zpow_one, this,
@@ -1254,7 +1255,7 @@ lemma bddAbove_of_absorbent {ι : Sort*} {p : ι → Seminorm 𝕜 E} {s : Set E
   obtain ⟨c, hc₀, hc⟩ : ∃ c ≠ 0, (c : 𝕜) • x ∈ s :=
     (eventually_mem_nhdsWithin.and (hs.eventually_nhdsWithin_zero x)).exists
   rcases h _ hc with ⟨M, hM⟩
-  refine ⟨M / ‖c‖, forall_mem_range.mpr fun i ↦ (le_div_iff' (norm_pos_iff.2 hc₀)).2 ?_⟩
+  refine ⟨M / ‖c‖, forall_mem_range.mpr fun i ↦ (le_div_iff₀' (norm_pos_iff.2 hc₀)).2 ?_⟩
   exact hM ⟨i, map_smul_eq_mul ..⟩
 
 end NontriviallyNormedField
@@ -1328,5 +1329,3 @@ lemma rescale_to_shell [NormedAddCommGroup F] [NormedSpace 𝕜 F] {c : 𝕜} (h
   rescale_to_shell_semi_normed hc εpos (norm_ne_zero_iff.mpr hx)
 
 end normSeminorm
-
-assert_not_exists balancedCore

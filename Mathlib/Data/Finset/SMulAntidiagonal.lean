@@ -3,7 +3,7 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.Algebra.Group.Pointwise.Set
 import Mathlib.Data.Set.SMulAntidiagonal
 
 /-!
@@ -27,8 +27,8 @@ open Pointwise
 namespace Set
 
 @[to_additive]
-theorem IsPWO.smul [PartialOrder G] [PartialOrder P] [SMul G P] [IsOrderedCancelSMul G P] {s : Set G}
-    {t : Set P} (hs : s.IsPWO) (ht : t.IsPWO) : IsPWO (s • t) := by
+theorem IsPWO.smul [PartialOrder G] [PartialOrder P] [SMul G P] [IsOrderedCancelSMul G P]
+    {s : Set G} {t : Set P} (hs : s.IsPWO) (ht : t.IsPWO) : IsPWO (s • t) := by
   rw [← @image_smul_prod]
   exact (hs.prod ht).image_of_monotone (monotone_fst.smul monotone_snd)
 

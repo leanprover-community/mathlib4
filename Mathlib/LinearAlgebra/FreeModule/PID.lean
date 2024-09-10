@@ -99,8 +99,12 @@ section PrincipalIdealDomain
 
 open Submodule.IsPrincipal Set Submodule
 
-variable {ι : Type*} {R : Type*} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
+variable {ι : Type*} {R : Type*} [CommRing R]
 variable {M : Type*} [AddCommGroup M] [Module R M] {b : ι → M}
+
+section StrongRankCondition
+
+variable [IsDomain R] [IsPrincipalIdealRing R]
 
 open Submodule.IsPrincipal
 
@@ -365,9 +369,8 @@ noncomputable def Module.basisOfFiniteTypeTorsionFree [Fintype ι] {s : ι → M
         apply this
       intro i
       calc
-        (∏ j, a j) • s i = (∏ j ∈ {i}ᶜ, a j) • a i • s i := by
-          rw [Fintype.prod_eq_prod_compl_mul i, mul_smul]
-        _ ∈ N := N.smul_mem _ (ha' i)
+        (∏ j ∈ {i}ᶜ, a j) • a i • s i ∈ N := N.smul_mem _ (ha' i)
+        _ = (∏ j, a j) • s i := by rw [Fintype.prod_eq_prod_compl_mul i, mul_smul]
 
     -- Since a submodule of a free `R`-module is free, we get that `A • M` is free
     obtain ⟨n, b : Basis (Fin n) R (LinearMap.range φ)⟩ := Submodule.basisOfPidOfLE this sI_basis
@@ -400,6 +403,8 @@ instance {S : Type*} [CommRing S] [Algebra R S] {I : Ideal S} [hI₁ : Module.Fi
 theorem Module.free_iff_noZeroSMulDivisors [Module.Finite R M] :
     Module.Free R M ↔ NoZeroSMulDivisors R M :=
   ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
+
+end StrongRankCondition
 
 section SmithNormal
 
@@ -474,6 +479,8 @@ lemma toMatrix_restrict_eq_toMatrix [Fintype ι] [DecidableEq ι]
   simp [snf.snf]
 
 end Basis.SmithNormalForm
+
+variable [IsDomain R] [IsPrincipalIdealRing R]
 
 /-- If `M` is finite free over a PID `R`, then any submodule `N` is free
 and we can find a basis for `M` and `N` such that the inclusion map is a diagonal matrix

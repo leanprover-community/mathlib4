@@ -55,7 +55,7 @@ We also provide the instances `P.IsMultiplicative`, `P.IsStableUnderComposition`
 
 -/
 
--- Explicit universe annotations were used in this file to improve perfomance #12737
+-- Explicit universe annotations were used in this file to improve performance #12737
 
 universe u
 
@@ -73,8 +73,7 @@ theorem StableUnderBaseChange.pullback_fst_app_top
   erw [← PreservesPullback.iso_inv_fst AffineScheme.forgetToScheme (AffineScheme.ofHom f)
       (AffineScheme.ofHom g)]
   rw [Scheme.comp_app, hP'.cancel_right_isIso, AffineScheme.forgetToScheme_map]
-  have :=
-    _root_.congr_arg Quiver.Hom.unop
+  have := congr_arg Quiver.Hom.unop
       (PreservesPullback.iso_hom_fst AffineScheme.Γ.rightOp (AffineScheme.ofHom f)
         (AffineScheme.ofHom g))
   simp only [AffineScheme.Γ, Functor.rightOp_obj, Functor.comp_obj, Functor.op_obj, unop_comp,
@@ -159,7 +158,7 @@ theorem sourceAffineLocally_isLocal (h₁ : RingHom.RespectsIso P)
     intro r
     simp_rw [sourceAffineLocally_morphismRestrict] at hs'
     have := hs' r ⟨X.basicOpen (f.appLE ⊤ U le_top r.1), U.2.basicOpen (f.appLE ⊤ U le_top r.1)⟩
-      (by simpa [Scheme.Hom.appLE] using Scheme.basicOpen_restrict _ _ _)
+      (by simp [Scheme.Hom.appLE])
     rwa [IsAffineOpen.appLE_eq_away_map f (isAffineOpen_top Y) U.2,
       ← h₁.is_localization_away_iff] at this
 
@@ -201,6 +200,7 @@ theorem app_top (H : P f) [IsAffine X] [IsAffine Y] : Q (f.app ⊤) := by
   rw [Scheme.Hom.app_eq_appLE]
   exact appLE P f H ⟨_, isAffineOpen_top _⟩ ⟨_, isAffineOpen_top _⟩ _
 
+include Q in
 theorem comp_of_isOpenImmersion [IsOpenImmersion f] (H : P g) :
     P (f ≫ g) := by
   rw [eq_affineLocally P, affineLocally_iff_affineOpens_le] at H ⊢
@@ -266,8 +266,8 @@ theorem of_iSup_eq_top [IsAffine Y] {ι : Type*}
     (U : ι → X.affineOpens) (hU : ⨆ i, (U i : Opens X) = ⊤)
     (H : ∀ i, Q (f.appLE ⊤ (U i).1 le_top)) :
     P f := by
-  have (i) : IsAffine ((X.openCoverOfSuprEqTop _ hU).obj i) := (U i).2
-  refine of_source_openCover (X.openCoverOfSuprEqTop _ hU) fun i ↦ ?_
+  have (i) : IsAffine ((X.openCoverOfISupEqTop _ hU).obj i) := (U i).2
+  refine of_source_openCover (X.openCoverOfISupEqTop _ hU) fun i ↦ ?_
   simpa [Scheme.Hom.app_eq_appLE] using (f.appLE_congr _ rfl (by simp) Q).mp (H i)
 
 theorem iff_of_iSup_eq_top [IsAffine Y] {ι : Type*}
@@ -281,7 +281,7 @@ instance : IsLocalAtSource P := by
   simp_rw [← HasAffineProperty.iff_of_isAffine (P := P),
     iff_of_source_openCover 𝒰.affineRefinement.openCover,
     fun i ↦ iff_of_source_openCover (P := P) (f := 𝒰.map i ≫ f) (𝒰.obj i).affineCover]
-  simp [Scheme.OpenCover.affineRefinement]
+  simp [Scheme.OpenCover.affineRefinement, Sigma.forall]
 
 instance : P.ContainsIdentities where
   id_mem X := by
@@ -341,6 +341,7 @@ theorem of_comp
 
 instance : P.IsMultiplicative where
 
+include Q in
 lemma of_isOpenImmersion [IsOpenImmersion f] : P f := IsLocalAtSource.of_isOpenImmersion f
 
 lemma stableUnderBaseChange (hP : RingHom.StableUnderBaseChange Q) : P.StableUnderBaseChange := by

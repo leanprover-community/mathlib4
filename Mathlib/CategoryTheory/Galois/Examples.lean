@@ -54,7 +54,7 @@ noncomputable def Action.imageComplement {X Y : Action FintypeCat (MonCat.of G)}
       use X.ρ g⁻¹ x
       calc (X.ρ g⁻¹ ≫ f.hom) x
           = (Y.ρ g⁻¹ * Y.ρ g) y.val := by rw [f.comm, FintypeCat.comp_apply, h]; rfl
-        _ = y.val := by rw [← map_mul, mul_left_inv, Action.ρ_one, FintypeCat.id_apply]
+        _ = y.val := by rw [← map_mul, inv_mul_cancel, Action.ρ_one, FintypeCat.id_apply]
     map_one' := by simp only [Action.ρ_one]; rfl
     map_mul' := fun g h ↦ FintypeCat.hom_ext _ _ <| fun y ↦ Subtype.ext <| by
       exact congrFun (MonoidHom.map_mul Y.ρ g h) y.val
@@ -95,6 +95,10 @@ noncomputable instance : FiberFunctor (Action.forget FintypeCat (MonCat.of G)) w
   preservesFiniteCoproducts := ⟨fun _ _ ↦ inferInstance⟩
   preservesQuotientsByFiniteGroups _ _ _ := inferInstance
   reflectsIsos := ⟨fun f (h : IsIso f.hom) => inferInstance⟩
+
+/-- The forgetful functor from finite `G`-sets to sets is a `FiberFunctor`. -/
+noncomputable instance : FiberFunctor (forget₂ (Action FintypeCat (MonCat.of G)) FintypeCat) :=
+  inferInstanceAs <| FiberFunctor (Action.forget FintypeCat (MonCat.of G))
 
 /-- The category of finite `G`-sets is a `GaloisCategory`. -/
 instance : GaloisCategory (Action FintypeCat (MonCat.of G)) where

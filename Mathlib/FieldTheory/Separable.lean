@@ -29,7 +29,6 @@ over `K`
 
 universe u v w
 
-open scoped Classical
 open Polynomial Finset
 
 namespace Polynomial
@@ -86,11 +85,13 @@ theorem Separable.of_dvd {f g : R[X]} (hf : f.Separable) (hfg : g ∣ f) : g.Sep
   rcases hfg with ⟨f', rfl⟩
   exact Separable.of_mul_left hf
 
-theorem separable_gcd_left {F : Type*} [Field F] {f : F[X]} (hf : f.Separable) (g : F[X]) :
+theorem separable_gcd_left {F : Type*} [Field F] [DecidableEq F[X]]
+    {f : F[X]} (hf : f.Separable) (g : F[X]) :
     (EuclideanDomain.gcd f g).Separable :=
   Separable.of_dvd hf (EuclideanDomain.gcd_dvd_left f g)
 
-theorem separable_gcd_right {F : Type*} [Field F] {g : F[X]} (f : F[X]) (hg : g.Separable) :
+theorem separable_gcd_right {F : Type*} [Field F] [DecidableEq F[X]]
+    {g : F[X]} (f : F[X]) (hg : g.Separable) :
     (EuclideanDomain.gcd f g).Separable :=
   Separable.of_dvd hg (EuclideanDomain.gcd_dvd_right f g)
 
@@ -166,7 +167,8 @@ theorem isUnit_of_self_mul_dvd_separable {p q : R[X]} (hp : p.Separable) (hq : q
     ring
   exact IsCoprime.of_mul_right_left (IsCoprime.of_mul_left_left this)
 
-theorem multiplicity_le_one_of_separable {p q : R[X]} (hq : ¬IsUnit q) (hsep : Separable p) :
+theorem multiplicity_le_one_of_separable [DecidableRel fun (x : R[X]) x_1 ↦ x ∣ x_1]
+    {p q : R[X]} (hq : ¬IsUnit q) (hsep : Separable p) :
     multiplicity q p ≤ 1 := by
   contrapose! hq
   apply isUnit_of_self_mul_dvd_separable hsep
@@ -181,6 +183,7 @@ theorem multiplicity_le_one_of_separable {p q : R[X]} (hq : ¬IsUnit q) (hsep : 
 See `PerfectField.separable_iff_squarefree` for the converse when the coefficients are a perfect
 field. -/
 theorem Separable.squarefree {p : R[X]} (hsep : Separable p) : Squarefree p := by
+  classical
   rw [multiplicity.squarefree_iff_multiplicity_le_one p]
   exact fun f => or_iff_not_imp_right.mpr fun hunit => multiplicity_le_one_of_separable hunit hsep
 
@@ -201,8 +204,9 @@ theorem Separable.mul {f g : R[X]} (hf : f.Separable) (hg : g.Separable) (h : Is
 
 theorem separable_prod' {ι : Sort _} {f : ι → R[X]} {s : Finset ι} :
     (∀ x ∈ s, ∀ y ∈ s, x ≠ y → IsCoprime (f x) (f y)) →
-      (∀ x ∈ s, (f x).Separable) → (∏ x ∈ s, f x).Separable :=
-  Finset.induction_on s (fun _ _ => separable_one) fun a s has ih h1 h2 => by
+      (∀ x ∈ s, (f x).Separable) → (∏ x ∈ s, f x).Separable := by
+  classical
+  exact Finset.induction_on s (fun _ _ => separable_one) fun a s has ih h1 h2 => by
     simp_rw [Finset.forall_mem_insert, forall_and] at h1 h2; rw [prod_insert has]
     exact
       h2.1.mul (ih h1.2.2 h2.2)
@@ -215,6 +219,7 @@ theorem separable_prod {ι : Sort _} [Fintype ι] {f : ι → R[X]} (h1 : Pairwi
 theorem Separable.inj_of_prod_X_sub_C [Nontrivial R] {ι : Sort _} {f : ι → R} {s : Finset ι}
     (hfs : (∏ i ∈ s, (X - C (f i))).Separable) {x y : ι} (hx : x ∈ s) (hy : y ∈ s)
     (hfxy : f x = f y) : x = y := by
+  classical
   by_contra hxy
   rw [← insert_erase hx, prod_insert (not_mem_erase _ _), ←
     insert_erase (mem_erase_of_ne_of_mem (Ne.symm hxy) hy), prod_insert (not_mem_erase _ _), ←
@@ -253,6 +258,7 @@ theorem separable_X_pow_sub_C_unit {n : ℕ} (u : Rˣ) (hn : IsUnit (n : R)) :
 
 theorem rootMultiplicity_le_one_of_separable [Nontrivial R] {p : R[X]} (hsep : Separable p)
     (x : R) : rootMultiplicity x p ≤ 1 := by
+  classical
   by_cases hp : p = 0
   · simp [hp]
   rw [rootMultiplicity_eq_multiplicity, dif_neg hp, ← PartENat.coe_le_coe, PartENat.natCast_get,
@@ -265,12 +271,14 @@ section IsDomain
 
 variable {R : Type u} [CommRing R] [IsDomain R]
 
-theorem count_roots_le_one {p : R[X]} (hsep : Separable p) (x : R) : p.roots.count x ≤ 1 := by
+theorem count_roots_le_one [DecidableEq R] {p : R[X]} (hsep : Separable p) (x : R) :
+    p.roots.count x ≤ 1 := by
   rw [count_roots p]
   exact rootMultiplicity_le_one_of_separable hsep x
 
-theorem nodup_roots {p : R[X]} (hsep : Separable p) : p.roots.Nodup :=
-  Multiset.nodup_iff_count_le_one.mpr (count_roots_le_one hsep)
+theorem nodup_roots {p : R[X]} (hsep : Separable p) : p.roots.Nodup := by
+  classical
+  exact Multiset.nodup_iff_count_le_one.mpr (count_roots_le_one hsep)
 
 end IsDomain
 
@@ -317,8 +325,9 @@ section CharP
 variable (p : ℕ) [HF : CharP F p]
 
 theorem separable_or {f : F[X]} (hf : Irreducible f) :
-    f.Separable ∨ ¬f.Separable ∧ ∃ g : F[X], Irreducible g ∧ expand F p g = f :=
-  if H : derivative f = 0 then by
+    f.Separable ∨ ¬f.Separable ∧ ∃ g : F[X], Irreducible g ∧ expand F p g = f := by
+  classical
+  exact if H : derivative f = 0 then by
     rcases p.eq_zero_or_pos with (rfl | hp)
     · haveI := CharP.charP_to_charZero F
       have := natDegree_eq_zero_of_derivative_eq_zero H
@@ -373,8 +382,6 @@ theorem unique_separable_of_irreducible {f : F[X]} (hf : Irreducible f) (hp : 0 
     (g₁ : F[X]) (hg₁ : g₁.Separable) (hgf₁ : expand F (p ^ n₁) g₁ = f) (n₂ : ℕ) (g₂ : F[X])
     (hg₂ : g₂.Separable) (hgf₂ : expand F (p ^ n₂) g₂ = f) : n₁ = n₂ ∧ g₁ = g₂ := by
   revert g₁ g₂
-  -- Porting note: the variable `K` affects the `wlog` tactic.
-  clear! K
   wlog hn : n₁ ≤ n₂
   · intro g₁ hg₁ Hg₁ g₂ hg₂ Hg₂
     simpa only [eq_comm] using this p hf hp n₂ n₁ (le_of_not_le hn) g₂ hg₂ Hg₂ g₁ hg₁ Hg₁
@@ -415,6 +422,7 @@ section Splits
 
 theorem card_rootSet_eq_natDegree [Algebra F K] {p : F[X]} (hsep : p.Separable)
     (hsplit : Splits (algebraMap F K) p) : Fintype.card (p.rootSet K) = p.natDegree := by
+  classical
   simp_rw [rootSet_def, Finset.coe_sort_coe, Fintype.card_coe]
   rw [Multiset.toFinset_card_of_nodup (nodup_roots hsep.map), ← natDegree_eq_card_roots hsplit]
 
@@ -422,6 +430,7 @@ theorem card_rootSet_eq_natDegree [Algebra F K] {p : F[X]} (hsep : p.Separable)
 if and only if it is separable. -/
 theorem nodup_roots_iff_of_splits {f : F[X]} (hf : f ≠ 0) (h : f.Splits (RingHom.id F)) :
     f.roots.Nodup ↔ f.Separable := by
+  classical
   refine ⟨(fun hnsep ↦ ?_).mtr, nodup_roots⟩
   rw [Separable, ← gcd_isUnit_iff, isUnit_iff_degree_eq_zero] at hnsep
   obtain ⟨x, hx⟩ := exists_root_of_splits _
@@ -438,6 +447,7 @@ theorem nodup_aroots_iff_of_splits [Algebra F K] {f : F[X]} (hf : f ≠ 0)
 
 theorem card_rootSet_eq_natDegree_iff_of_splits [Algebra F K] {f : F[X]} (hf : f ≠ 0)
     (h : f.Splits (algebraMap F K)) : Fintype.card (f.rootSet K) = f.natDegree ↔ f.Separable := by
+  classical
   simp_rw [rootSet_def, Finset.coe_sort_coe, Fintype.card_coe, natDegree_eq_card_roots h,
     Multiset.toFinset_card_eq_card_iff_nodup, nodup_aroots_iff_of_splits hf h]
 
@@ -463,6 +473,7 @@ theorem eq_X_sub_C_of_separable_of_root_eq {x : F} {h : F[X]} (h_sep : h.Separab
 
 theorem exists_finset_of_splits (i : F →+* K) {f : F[X]} (sep : Separable f) (sp : Splits i f) :
     ∃ s : Finset K, f.map i = C (i f.leadingCoeff) * s.prod fun a : K => X - C a := by
+  classical
   obtain ⟨s, h⟩ := (splits_iff_exists_multiset _).1 sp
   use s.toFinset
   rw [h, Finset.prod_eq_multiset_prod, ← Multiset.toFinset_eq]
@@ -544,6 +555,7 @@ theorem Algebra.isSeparable_iff :
     fun h => ⟨fun x => (h x).2⟩⟩
 
 variable {E : Type*} [Ring E] [Algebra F E] (e : K ≃ₐ[F] E)
+include e
 
 /-- Transfer `Algebra.IsSeparable` across an `AlgEquiv`. -/
 theorem AlgEquiv.isSeparable [Algebra.IsSeparable F K] : Algebra.IsSeparable F E :=
@@ -630,6 +642,7 @@ variable [Algebra K S] [Algebra K L]
 theorem AlgHom.card_of_powerBasis (pb : PowerBasis K S) (h_sep : IsSeparable K pb.gen)
     (h_splits : (minpoly K pb.gen).Splits (algebraMap K L)) :
     @Fintype.card (S →ₐ[K] L) (PowerBasis.AlgHom.fintype pb) = pb.dim := by
+  classical
   let _ := (PowerBasis.AlgHom.fintype pb : Fintype (S →ₐ[K] L))
   rw [Fintype.card_congr pb.liftEquiv', Fintype.card_of_subtype _ (fun x => Multiset.mem_toFinset),
     ← pb.natDegree_minpoly, natDegree_eq_card_roots h_splits, Multiset.toFinset_card_of_nodup]

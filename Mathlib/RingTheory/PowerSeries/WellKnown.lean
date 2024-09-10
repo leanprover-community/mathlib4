@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
@@ -73,7 +73,7 @@ Note that the power series `1 + X + X^2 + ...` is written as `mk 1` where `1` is
 function so that `mk 1` is the power series with all coefficients equal to one.
 -/
 theorem mk_one_mul_one_sub_eq_one : (mk 1 : S⟦X⟧) * (1 - X) = 1 := by
-  rw [mul_comm, ext_iff]
+  rw [mul_comm, PowerSeries.ext_iff]
   intro n
   cases n with
   | zero => simp
@@ -151,7 +151,7 @@ def sin : PowerSeries A :=
 def cos : PowerSeries A :=
   mk fun n => if Even n then algebraMap ℚ A ((-1) ^ (n / 2) / n !) else 0
 
-variable {A A'} [Ring A] [Ring A'] [Algebra ℚ A] [Algebra ℚ A'] (n : ℕ) (f : A →+* A')
+variable {A A'} (n : ℕ)
 
 @[simp]
 theorem coeff_exp : coeff A n (exp A) = algebraMap ℚ A (1 / n !) :=
@@ -161,6 +161,8 @@ theorem coeff_exp : coeff A n (exp A) = algebraMap ℚ A (1 / n !) :=
 theorem constantCoeff_exp : constantCoeff A (exp A) = 1 := by
   rw [← coeff_zero_eq_constantCoeff_apply, coeff_exp]
   simp
+
+variable (f : A →+* A')
 
 @[simp]
 theorem map_exp : map (f : A →+* A') (exp A) = exp A' := by

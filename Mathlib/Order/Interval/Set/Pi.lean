@@ -51,22 +51,20 @@ theorem piecewise_mem_Icc' {s : Set ι} [∀ j, Decidable (j ∈ s)] {f₁ f₂ 
 
 section Nonempty
 
-variable [Nonempty ι]
-
-theorem pi_univ_Ioi_subset : (pi univ fun i ↦ Ioi (x i)) ⊆ Ioi x := fun z hz ↦
+theorem pi_univ_Ioi_subset [Nonempty ι]: (pi univ fun i ↦ Ioi (x i)) ⊆ Ioi x := fun z hz ↦
   ⟨fun i ↦ le_of_lt <| hz i trivial, fun h ↦
-    (Nonempty.elim ‹Nonempty ι›) fun i ↦ not_lt_of_le (h i) (hz i trivial)⟩
+    (‹Nonempty ι›.elim) fun i ↦ not_lt_of_le (h i) (hz i trivial)⟩
 
-theorem pi_univ_Iio_subset : (pi univ fun i ↦ Iio (x i)) ⊆ Iio x :=
-  @pi_univ_Ioi_subset ι (fun i ↦ (α i)ᵒᵈ) _ x _
+theorem pi_univ_Iio_subset [Nonempty ι]: (pi univ fun i ↦ Iio (x i)) ⊆ Iio x :=
+  pi_univ_Ioi_subset (α := fun i ↦ (α i)ᵒᵈ) x
 
-theorem pi_univ_Ioo_subset : (pi univ fun i ↦ Ioo (x i) (y i)) ⊆ Ioo x y := fun _ hx ↦
+theorem pi_univ_Ioo_subset [Nonempty ι]: (pi univ fun i ↦ Ioo (x i) (y i)) ⊆ Ioo x y := fun _ hx ↦
   ⟨(pi_univ_Ioi_subset _) fun i hi ↦ (hx i hi).1, (pi_univ_Iio_subset _) fun i hi ↦ (hx i hi).2⟩
 
-theorem pi_univ_Ioc_subset : (pi univ fun i ↦ Ioc (x i) (y i)) ⊆ Ioc x y := fun _ hx ↦
+theorem pi_univ_Ioc_subset [Nonempty ι]: (pi univ fun i ↦ Ioc (x i) (y i)) ⊆ Ioc x y := fun _ hx ↦
   ⟨(pi_univ_Ioi_subset _) fun i hi ↦ (hx i hi).1, fun i ↦ (hx i trivial).2⟩
 
-theorem pi_univ_Ico_subset : (pi univ fun i ↦ Ico (x i) (y i)) ⊆ Ico x y := fun _ hx ↦
+theorem pi_univ_Ico_subset [Nonempty ι]: (pi univ fun i ↦ Ico (x i) (y i)) ⊆ Ico x y := fun _ hx ↦
   ⟨fun i ↦ (hx i trivial).1, (pi_univ_Iio_subset _) fun i hi ↦ (hx i hi).2⟩
 
 end Nonempty
@@ -290,10 +288,9 @@ theorem Icc_diff_pi_univ_Ioo_subset (x y x' y' : ∀ i, α i) :
     (Icc x y \ pi univ fun i ↦ Ioo (x' i) (y' i)) ⊆
     (⋃ i : ι, Icc x (update y i (x' i))) ∪ ⋃ i : ι, Icc (update x i (y' i)) y := by
   rintro a ⟨⟨hxa, hay⟩, ha'⟩
-  simp at ha'
-  simp only [le_update_iff, ne_eq, not_and, not_forall, not_le, exists_prop, gt_iff_lt,
-    update_le_iff, mem_union, mem_iUnion, mem_Icc, hxa, hay _, implies_true, and_true, true_and,
-    hxa _, hay, ← exists_or]
+  simp only [mem_pi, mem_univ, mem_Ioo, true_implies, not_forall] at ha'
+  simp only [le_update_iff, update_le_iff, mem_union, mem_iUnion, mem_Icc,
+    hxa, hay _, hxa _, hay, ← exists_or]
   rcases ha' with ⟨w, hw⟩
   apply Exists.intro w
   cases lt_or_le (x' w) (a w) <;> simp_all

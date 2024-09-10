@@ -24,8 +24,6 @@ namespace ModuleCat
 
 universe u
 
-open scoped Classical
-
 variable (R : Type u)
 
 section

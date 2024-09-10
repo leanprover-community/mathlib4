@@ -17,10 +17,7 @@ This file provides lemmas about the interaction between infinite sums and multip
 * `tsum_mul_tsum_eq_tsum_sum_antidiagonal`: Cauchy product formula
 -/
 
-
 open Filter Finset Function
-
-open scoped Classical
 
 variable {ι κ R α : Type*}
 
@@ -51,10 +48,11 @@ theorem Summable.tsum_mul_left (a) (hf : Summable f) : ∑' i, a * f i = a * ∑
 theorem Summable.tsum_mul_right (a) (hf : Summable f) : ∑' i, f i * a = (∑' i, f i) * a :=
   (hf.hasSum.mul_right _).tsum_eq
 
-theorem Commute.tsum_right (a) (h : ∀ i, Commute a (f i)) : Commute a (∑' i, f i) :=
-  if hf : Summable f then
-    (hf.tsum_mul_left a).symm.trans ((congr_arg _ <| funext h).trans (hf.tsum_mul_right a))
-  else (tsum_eq_zero_of_not_summable hf).symm ▸ Commute.zero_right _
+theorem Commute.tsum_right (a) (h : ∀ i, Commute a (f i)) : Commute a (∑' i, f i) := by
+  classical
+  by_cases hf : Summable f
+  · exact (hf.tsum_mul_left a).symm.trans ((congr_arg _ <| funext h).trans (hf.tsum_mul_right a))
+  · exact (tsum_eq_zero_of_not_summable hf).symm ▸ Commute.zero_right _
 
 theorem Commute.tsum_left (a) (h : ∀ i, Commute (f i) a) : Commute (∑' i, f i) a :=
   (Commute.tsum_right _ fun i ↦ (h i).symm).symm
@@ -92,14 +90,16 @@ theorem summable_mul_right_iff (h : a ≠ 0) : (Summable fun i ↦ f i * a) ↔ 
 theorem summable_div_const_iff (h : a ≠ 0) : (Summable fun i ↦ f i / a) ↔ Summable f := by
   simpa only [div_eq_mul_inv] using summable_mul_right_iff (inv_ne_zero h)
 
-theorem tsum_mul_left [T2Space α] : ∑' x, a * f x = a * ∑' x, f x :=
-  if hf : Summable f then hf.tsum_mul_left a
+theorem tsum_mul_left [T2Space α] : ∑' x, a * f x = a * ∑' x, f x := by
+  classical
+  exact if hf : Summable f then hf.tsum_mul_left a
   else if ha : a = 0 then by simp [ha]
   else by rw [tsum_eq_zero_of_not_summable hf,
               tsum_eq_zero_of_not_summable (mt (summable_mul_left_iff ha).mp hf), mul_zero]
 
-theorem tsum_mul_right [T2Space α] : ∑' x, f x * a = (∑' x, f x) * a :=
-  if hf : Summable f then hf.tsum_mul_right a
+theorem tsum_mul_right [T2Space α] : ∑' x, f x * a = (∑' x, f x) * a := by
+  classical
+  exact if hf : Summable f then hf.tsum_mul_right a
   else if ha : a = 0 then by simp [ha]
   else by rw [tsum_eq_zero_of_not_summable hf,
               tsum_eq_zero_of_not_summable (mt (summable_mul_right_iff ha).mp hf), zero_mul]
@@ -115,7 +115,7 @@ end DivisionSemiring
 In this section, we prove various results about `(∑' x : ι, f x) * (∑' y : κ, g y)`. Note that we
 always assume that the family `fun x : ι × κ ↦ f x.1 * g x.2` is summable, since there is no way to
 deduce this from the summabilities of `f` and `g` in general, but if you are working in a normed
-space, you may want to use the analogous lemmas in `Analysis/NormedSpace/Basic`
+space, you may want to use the analogous lemmas in `Analysis.Normed.Module.Basic`
 (e.g `tsum_mul_tsum_of_summable_norm`).
 
 We first establish results about arbitrary index types, `ι` and `κ`, and then we specialize to

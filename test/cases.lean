@@ -1,3 +1,4 @@
+import Batteries.Logic
 import Mathlib.Tactic.Cases
 import Mathlib.Init.Logic
 import Mathlib.Data.Nat.Notation

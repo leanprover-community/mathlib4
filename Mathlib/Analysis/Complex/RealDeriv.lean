@@ -149,7 +149,7 @@ theorem DifferentiableAt.conformalAt (h : DifferentiableAt ℂ f z) (hf' : deriv
     ConformalAt f z := by
   rw [conformalAt_iff_isConformalMap_fderiv, (h.hasFDerivAt.restrictScalars ℝ).fderiv]
   apply isConformalMap_complex_linear
-  simpa only [Ne, ext_ring_iff]
+  simpa only [Ne, ContinuousLinearMap.ext_ring_iff]
 
 /-- A complex function is conformal if and only if the function is holomorphic or antiholomorphic
     with a nonvanishing differential. -/

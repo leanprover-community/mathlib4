@@ -40,8 +40,6 @@ variable (R A K : Type*) [CommRing R] [CommRing A] [Field K]
 
 open scoped nonZeroDivisors Polynomial
 
-variable [IsDomain A]
-
 section IsIntegralClosure
 
 /-! ### `IsIntegralClosure` section
@@ -57,10 +55,11 @@ variable [Algebra A K] [IsFractionRing A K]
 variable (L : Type*) [Field L] (C : Type*) [CommRing C]
 variable [Algebra K L] [Algebra A L] [IsScalarTower A K L]
 variable [Algebra C L] [IsIntegralClosure C A L] [Algebra A C] [IsScalarTower A C L]
+include K L
 
 /-- If `L` is an algebraic extension of `K = Frac(A)` and `L` has no zero smul divisors by `A`,
 then `L` is the localization of the integral closure `C` of `A` in `L` at `A⁰`. -/
-theorem IsIntegralClosure.isLocalization [Algebra.IsAlgebraic K L] :
+theorem IsIntegralClosure.isLocalization [IsDomain A] [Algebra.IsAlgebraic K L] :
     IsLocalization (Algebra.algebraMapSubmonoid C A⁰) L := by
   haveI : IsDomain C :=
     (IsIntegralClosure.equiv A C L (integralClosure A L)).toMulEquiv.isDomain (integralClosure A L)
@@ -80,7 +79,7 @@ theorem IsIntegralClosure.isLocalization [Algebra.IsAlgebraic K L] :
       smul_def]
   · simp only [IsIntegralClosure.algebraMap_injective C A L h]
 
-theorem IsIntegralClosure.isLocalization_of_isSeparable [Algebra.IsSeparable K L] :
+theorem IsIntegralClosure.isLocalization_of_isSeparable [IsDomain A] [Algebra.IsSeparable K L] :
     IsLocalization (Algebra.algebraMapSubmonoid C A⁰) L :=
   IsIntegralClosure.isLocalization A K L C
 
@@ -107,6 +106,7 @@ theorem integralClosure_le_span_dualBasis [Algebra.IsSeparable K L] {ι : Type*}
   intro x hx
   exact ⟨⟨x, hx⟩, rfl⟩
 
+variable [IsDomain A]
 variable (A K)
 
 /-- Send a set of `x`s in a finite extension `L` of the fraction field of `R`
