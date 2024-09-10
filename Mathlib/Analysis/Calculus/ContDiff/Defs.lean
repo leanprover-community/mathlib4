@@ -479,6 +479,10 @@ def ContDiffOnOmegaAux (n : ℕ) (f : E → F) (s : Set E) : Prop :=
 
 variable {𝕜}
 
+lemma ContDiffOn.contDiffOnOmegaAux (h : ContDiffOn 𝕜 ω f s) (m : ℕ) :
+    ContDiffOnOmegaAux 𝕜 m f s :=
+  fun x hx ↦ h x hx m
+
 lemma ContDiffOnOmegaAux.of_le {m n : ℕ} (h : ContDiffOnOmegaAux 𝕜 n f s) (h' : m ≤ n) :
     ContDiffOnOmegaAux 𝕜 m f s := by
   intro x hx
@@ -509,7 +513,7 @@ theorem ContDiffOn.contDiffWithinAt (h : ContDiffOn 𝕜 n f s) (hx : x ∈ s) :
     ContDiffWithinAt 𝕜 n f s x :=
   h x hx
 
-theorem ContDiffWithinAt.contDiffOn' {m : ℕ} (hm : (m : ℕ∞) ≤ n)
+theorem ContDiffWithinAt.contDiffOn' {m : ℕ} (hm : m ≤ n)
     (h : ContDiffWithinAt 𝕜 n f s x) :
     ∃ u, IsOpen u ∧ x ∈ u ∧ ContDiffOn 𝕜 m f (insert x s ∩ u) := by
   rcases contDiffWithinAt_nat.1 (h.of_le hm) with ⟨t, ht, p, hp⟩
@@ -517,10 +521,20 @@ theorem ContDiffWithinAt.contDiffOn' {m : ℕ} (hm : (m : ℕ∞) ≤ n)
   rw [inter_comm] at hut
   exact ⟨u, huo, hxu, (hp.mono hut).contDiffOn⟩
 
-theorem ContDiffWithinAt.contDiffOn {m : ℕ} (hm : (m : ℕ∞) ≤ n) (h : ContDiffWithinAt 𝕜 n f s x) :
+theorem ContDiffWithinAt.contDiffOn {m : ℕ} (hm : m ≤ n) (h : ContDiffWithinAt 𝕜 n f s x) :
     ∃ u ∈ 𝓝[insert x s] x, u ⊆ insert x s ∧ ContDiffOn 𝕜 m f u :=
   let ⟨_u, uo, xu, h⟩ := h.contDiffOn' hm
   ⟨_, inter_mem_nhdsWithin _ (uo.mem_nhds xu), inter_subset_left, h⟩
+
+theorem ContDiffWithinAtOmegaAux.contDiffOnOmegaAux
+    {m : ℕ} (h : ContDiffWithinAtOmegaAux 𝕜 m f s x) :
+    ∃ u ∈ 𝓝[insert x s] x, u ⊆ insert x s ∧ ContDiffOnOmegaAux 𝕜 m f u := by
+  rcases h with ⟨u, hu, p, hp, Hp⟩
+  refine ⟨insert x s ∩ u, inter_mem self_mem_nhdsWithin hu, inter_subset_left, fun y hy ↦ ?_⟩
+  refine ⟨insert x s ∩ u, ?_, p, hp.mono inter_subset_right,
+    fun i hi ↦ (Hp i hi).mono inter_subset_right⟩
+  rw [insert_eq_of_mem hy]
+  exact self_mem_nhdsWithin
 
 theorem ContDiffOn.analyticWithinOn (h : ContDiffOn 𝕜 ω f s) : AnalyticWithinOn 𝕜 f s :=
   fun x hx ↦ (h x hx).analyticWithinAt
@@ -566,6 +580,12 @@ theorem contDiffOn_congr (h₁ : ∀ x ∈ s, f₁ x = f x) : ContDiffOn 𝕜 n 
 
 theorem ContDiffOn.mono (h : ContDiffOn 𝕜 n f s) {t : Set E} (hst : t ⊆ s) : ContDiffOn 𝕜 n f t :=
   fun x hx => (h x (hst hx)).mono hst
+
+theorem ContDiffOnOmegaAux.mono {n : ℕ}
+    (h : ContDiffOnOmegaAux 𝕜 n f s) {t : Set E} (hst : t ⊆ s) : ContDiffOnOmegaAux 𝕜 n f t := by
+  intro x hx
+  rcases h x (hst hx) with ⟨u, hu, p, hp, h'p⟩
+  exact ⟨u, nhdsWithin_mono _ (insert_subset_insert hst) hu, p, hp, h'p⟩
 
 theorem ContDiffOn.congr_mono (hf : ContDiffOn 𝕜 n f s) (h₁ : ∀ x ∈ s₁, f₁ x = f x) (hs : s₁ ⊆ s) :
     ContDiffOn 𝕜 n f₁ s₁ :=

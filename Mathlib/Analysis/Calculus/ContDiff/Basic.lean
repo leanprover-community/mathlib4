@@ -495,21 +495,26 @@ theorem HasFTaylorSeriesUpToOn.prod {n : ℕ∞} (hf : HasFTaylorSeriesUpToOn n 
   · intro m hm
     exact (L m).continuous.comp_continuousOn ((hf.cont m hm).prod (hg.cont m hm))
 
+theorem ContDiffWithinAtOmegaAux.prod {n : ℕ} {s : Set E} {f : E → F} {g : E → G}
+    (hf : ContDiffWithinAtOmegaAux 𝕜 n f s x) (hg : ContDiffWithinAtOmegaAux 𝕜 n g s x) :
+    ContDiffWithinAtOmegaAux 𝕜 n (fun x : E => (f x, g x)) s x := by
+  obtain ⟨u, hu, p, hp, h'p⟩ := hf
+  obtain ⟨v, hv, q, hq, h'q⟩ := hg
+  refine ⟨u ∩ v, Filter.inter_mem hu hv, _,
+    (hp.mono inter_subset_left).prod (hq.mono inter_subset_right), fun i hi ↦ ?_⟩
+  change AnalyticWithinOn 𝕜 (fun x ↦ ContinuousMultilinearMap.prodL _ _ _ _ (p x i, q x i))
+    (u ∩ v)
+  apply AnalyticOn.comp_analyticWithinOn (LinearIsometryEquiv.analyticOn _ _) _
+    (Set.mapsTo_univ _ _)
+  exact ((h'p i hi).mono inter_subset_left).prod ((h'q i hi).mono inter_subset_right)
+
 /-- The cartesian product of `C^n` functions at a point in a domain is `C^n`. -/
 theorem ContDiffWithinAt.prod {s : Set E} {f : E → F} {g : E → G} (hf : ContDiffWithinAt 𝕜 n f s x)
     (hg : ContDiffWithinAt 𝕜 n g s x) : ContDiffWithinAt 𝕜 n (fun x : E => (f x, g x)) s x := by
   match n with
   | ω =>
     intro m
-    obtain ⟨u, hu, p, hp, h'p⟩ := hf m
-    obtain ⟨v, hv, q, hq, h'q⟩ := hg m
-    refine ⟨u ∩ v, Filter.inter_mem hu hv, _,
-      (hp.mono inter_subset_left).prod (hq.mono inter_subset_right), fun i hi ↦ ?_⟩
-    change AnalyticWithinOn 𝕜 (fun x ↦ ContinuousMultilinearMap.prodL _ _ _ _ (p x i, q x i))
-      (u ∩ v)
-    apply AnalyticOn.comp_analyticWithinOn (LinearIsometryEquiv.analyticOn _ _) _
-      (Set.mapsTo_univ _ _)
-    exact ((h'p i hi).mono inter_subset_left).prod ((h'q i hi).mono inter_subset_right)
+    exact ContDiffWithinAtOmegaAux.prod (hf m) (hg m)
   | (n : ℕ∞) =>
     intro m hm
     rcases hf m hm with ⟨u, hu, p, hp⟩
@@ -517,6 +522,11 @@ theorem ContDiffWithinAt.prod {s : Set E} {f : E → F} {g : E → G} (hf : Cont
     exact
       ⟨u ∩ v, Filter.inter_mem hu hv, _,
         (hp.mono inter_subset_left).prod (hq.mono inter_subset_right)⟩
+
+theorem ContDiffOnOmegaAux.prod {n : ℕ} {s : Set E} {f : E → F} {g : E → G}
+    (hf : ContDiffOnOmegaAux 𝕜 n f s) (hg : ContDiffOnOmegaAux 𝕜 n g s) :
+    ContDiffOnOmegaAux 𝕜 n (fun x : E => (f x, g x)) s :=
+  fun x hx ↦ ContDiffWithinAtOmegaAux.prod (hf x hx) (hg x hx)
 
 /-- The cartesian product of `C^n` functions on domains is `C^n`. -/
 theorem ContDiffOn.prod {s : Set E} {f : E → F} {g : E → G} (hf : ContDiffOn 𝕜 n f s)
@@ -563,9 +573,11 @@ being `C^n`, which concludes the proof.
 
 
 /-- Auxiliary lemma proving that the composition of `C^n` functions on domains is `C^n` when all
-spaces live in the same universe. Use instead `ContDiffOn.comp` which removes the universe
-assumption (but is deduced from this one). -/
-private theorem ContDiffOn.comp_same_univ {Eu : Type u} [NormedAddCommGroup Eu] [NormedSpace 𝕜 Eu]
+spaces live in the same universe, and `n` is not `ω`.
+Use instead `ContDiffOn.comp` which removes the universe assumption
+(but is deduced from this one). -/
+private theorem ContDiffOn.comp_same_univ_enat
+    {Eu : Type u} [NormedAddCommGroup Eu] [NormedSpace 𝕜 Eu]
     {Fu : Type u} [NormedAddCommGroup Fu] [NormedSpace 𝕜 Fu] {Gu : Type u} [NormedAddCommGroup Gu]
     [NormedSpace 𝕜 Gu] {s : Set Eu} {t : Set Fu} {g : Fu → Gu} {f : Eu → Fu} {n : ℕ∞}
     (hg : ContDiffOn 𝕜 n g t) (hf : ContDiffOn 𝕜 n f s) (st : s ⊆ f ⁻¹' t) :
@@ -607,10 +619,12 @@ private theorem ContDiffOn.comp_same_univ {Eu : Type u} [NormedAddCommGroup Eu] 
   · rw [contDiffOn_top] at hf hg ⊢
     exact fun n => Itop n (hg n) (hf n) st
 
-/-- Auxiliary lemma proving that the composition of `C^n` functions on domains is `C^n` when all
-spaces live in the same universe. Use instead `ContDiffOn.comp` which removes the universe
-assumption (but is deduced from this one). -/
-private theorem ContDiffOn.comp_same_univ_glouglou {Eu : Type u} [NormedAddCommGroup Eu] [NormedSpace 𝕜 Eu]
+/-- Auxiliary lemma proving that the composition of functions with `n` anlytic derivatives on
+domains also have `n` analytic derivatives, when the spaces live in the same universe.
+Use instead `ContDiffOn.comp` which removes the universe assumption
+(but is deduced from this one). -/
+private theorem ContDiffOnOmegaAux.comp_same_univ
+    {Eu : Type u} [NormedAddCommGroup Eu] [NormedSpace 𝕜 Eu]
     {Fu : Type u} [NormedAddCommGroup Fu] [NormedSpace 𝕜 Fu] {Gu : Type u} [NormedAddCommGroup Gu]
     [NormedSpace 𝕜 Gu] {s : Set Eu} {t : Set Fu} {g : Fu → Gu} {f : Eu → Fu} {n : ℕ}
     (hg : ContDiffOnOmegaAux 𝕜 n g t) (hf : ContDiffOnOmegaAux 𝕜 n f s) (st : s ⊆ f ⁻¹' t) :
@@ -620,17 +634,18 @@ private theorem ContDiffOn.comp_same_univ_glouglou {Eu : Type u} [NormedAddCommG
     simp only [contDiffOnOmegaAux_zero] at hf hg ⊢
     exact hg.comp hf st
   | succ n IH =>
-    rw [contDiffOn_succ_iff_hasFDerivWithinAt] at hg ⊢
+    rw [contDiffOnOmegaAux_succ_iff_hasFDerivWithinAt] at hg ⊢
     intro x hx
-    rcases (contDiffOn_succ_iff_hasFDerivWithinAt.1 hf) x hx with ⟨u, hu, f', hf', f'_diff⟩
-    rcases hg (f x) (st hx) with ⟨v, hv, g', hg', g'_diff⟩
+    rcases (contDiffOnOmegaAux_succ_iff_hasFDerivWithinAt.1 hf) x hx
+      with ⟨u, hu, Hf, f', hf', f'_diff⟩
+    rcases hg (f x) (st hx) with ⟨v, hv, Hg, g', hg', g'_diff⟩
     rw [insert_eq_of_mem hx] at hu ⊢
     have xu : x ∈ u := mem_of_mem_nhdsWithin hx hu
     let w := s ∩ (u ∩ f ⁻¹' v)
     have wv : w ⊆ f ⁻¹' v := fun y hy => hy.2.2
     have wu : w ⊆ u := fun y hy => hy.2.1
     have ws : w ⊆ s := fun y hy => hy.1
-    refine ⟨w, ?_, fun y => (g' (f y)).comp (f' y), ?_, ?_⟩
+    refine ⟨w, ?_, Hg.comp (Hf.mono wu) wv, fun y => (g' (f y)).comp (f' y), ?_, ?_⟩
     · show w ∈ 𝓝[s] x
       apply Filter.inter_mem self_mem_nhdsWithin
       apply Filter.inter_mem hu
@@ -642,19 +657,32 @@ private theorem ContDiffOn.comp_same_univ_glouglou {Eu : Type u} [NormedAddCommG
     · show ∀ y ∈ w, HasFDerivWithinAt (g ∘ f) ((g' (f y)).comp (f' y)) w y
       rintro y ⟨-, yu, yv⟩
       exact (hg' (f y) yv).comp y ((hf' y yu).mono wu) wv
-    · show ContDiffOn 𝕜 n (fun y => (g' (f y)).comp (f' y)) w
-      have A : ContDiffOn 𝕜 n (fun y => g' (f y)) w :=
+    · show ContDiffOnOmegaAux 𝕜 n (fun y => (g' (f y)).comp (f' y)) w
+      have A : ContDiffOnOmegaAux 𝕜 n (fun y => g' (f y)) w :=
         IH g'_diff ((hf.of_le (by simp)).mono ws) wv
-      have B : ContDiffOn 𝕜 n f' w := f'_diff.mono wu
-      have C : ContDiffOn 𝕜 n (fun y => (g' (f y), f' y)) w := A.prod B
-      have D : ContDiffOn 𝕜 n (fun p : (Fu →L[𝕜] Gu) × (Eu →L[𝕜] Fu) => p.1.comp p.2) univ :=
-        isBoundedBilinearMap_comp.contDiff.contDiffOn
+      have B : ContDiffOnOmegaAux 𝕜 n f' w := f'_diff.mono wu
+      have C : ContDiffOnOmegaAux 𝕜 n (fun y => (g' (f y), f' y)) w := A.prod B
+      have D : ContDiffOnOmegaAux 𝕜 n (fun p : (Fu →L[𝕜] Gu) × (Eu →L[𝕜] Fu) =>
+          p.1.comp p.2) univ :=
+        fun x hx ↦ (isBoundedBilinearMap_comp.contDiff (n := ω)).contDiffOn x hx n
       exact IH D C (subset_univ _)
-  · rw [contDiffOn_top] at hf hg ⊢
-    exact fun n => Itop n (hg n) (hf n) st
 
-
-#exit
+/-- Auxiliary lemma proving that the composition of `C^n` functions on domains is `C^n` when all
+spaces live in the same universe.
+Use instead `ContDiffOn.comp` which removes the universe assumption
+(but is deduced from this one). -/
+private theorem ContDiffOn.comp_same_univ
+    {Eu : Type u} [NormedAddCommGroup Eu] [NormedSpace 𝕜 Eu]
+    {Fu : Type u} [NormedAddCommGroup Fu] [NormedSpace 𝕜 Fu] {Gu : Type u} [NormedAddCommGroup Gu]
+    [NormedSpace 𝕜 Gu] {s : Set Eu} {t : Set Fu} {g : Fu → Gu} {f : Eu → Fu}
+    (hg : ContDiffOn 𝕜 n g t) (hf : ContDiffOn 𝕜 n f s) (st : s ⊆ f ⁻¹' t) :
+    ContDiffOn 𝕜 n (g ∘ f) s := by
+  match n with
+  | ω =>
+    intro x hx m
+    exact ContDiffOnOmegaAux.comp_same_univ (hg.contDiffOnOmegaAux m) (hf.contDiffOnOmegaAux m) st
+      x hx
+  | (n : ℕ∞) => exact ContDiffOn.comp_same_univ_enat hg hf st
 
 /-- The composition of `C^n` functions on domains is `C^n`. -/
 theorem ContDiffOn.comp {s : Set E} {t : Set F} {g : F → G} {f : E → F} (hg : ContDiffOn 𝕜 n g t)
@@ -671,6 +699,40 @@ theorem ContDiffOn.comp {s : Set E} {t : Set F} {g : F → G} {f : E → F} (hg 
   -- lift the functions to the new spaces, check smoothness there, and then go back.
   let fu : Eu → Fu := (isoF.symm ∘ f) ∘ isoE
   have fu_diff : ContDiffOn 𝕜 n fu (isoE ⁻¹' s) := by
+    rwa [isoE.contDiffOn_comp_iff, isoF.symm.comp_contDiffOn_iff]
+  let gu : Fu → Gu := (isoG.symm ∘ g) ∘ isoF
+  have gu_diff : ContDiffOn 𝕜 n gu (isoF ⁻¹' t) := by
+    rwa [isoF.contDiffOn_comp_iff, isoG.symm.comp_contDiffOn_iff]
+  have main : ContDiffOn 𝕜 n (gu ∘ fu) (isoE ⁻¹' s) := by
+    apply ContDiffOn.comp_same_univ gu_diff fu_diff
+    intro y hy
+    simp only [fu, ContinuousLinearEquiv.coe_apply, Function.comp_apply, mem_preimage]
+    rw [isoF.apply_symm_apply (f (isoE y))]
+    exact st hy
+  have : gu ∘ fu = (isoG.symm ∘ g ∘ f) ∘ isoE := by
+    ext y
+    simp only [fu, gu, Function.comp_apply]
+    rw [isoF.apply_symm_apply (f (isoE y))]
+  rwa [this, isoE.contDiffOn_comp_iff, isoG.symm.comp_contDiffOn_iff] at main
+
+
+/-- The composition of functions with `n` analytic derivatives on domains has `n` analytic
+derivatives. -/
+theorem ContDiffOnOmegaAux.comp {n : ℕ} {s : Set E} {t : Set F} {g : F → G} {f : E → F}
+    (hg : ContDiffOnOmegaAux 𝕜 n g t) (hf : ContDiffOnOmegaAux 𝕜 n f s) (st : s ⊆ f ⁻¹' t) :
+    ContDiffOnOmegaAux 𝕜 n (g ∘ f) s := by
+  /- we lift all the spaces to a common universe, as we have already proved the result in this
+    situation. -/
+  let Eu : Type max uE uF uG := ULift.{max uF uG} E
+  let Fu : Type max uE uF uG := ULift.{max uE uG} F
+  let Gu : Type max uE uF uG := ULift.{max uE uF} G
+  -- declare the isomorphisms
+  have isoE : Eu ≃L[𝕜] E := ContinuousLinearEquiv.ulift
+  have isoF : Fu ≃L[𝕜] F := ContinuousLinearEquiv.ulift
+  have isoG : Gu ≃L[𝕜] G := ContinuousLinearEquiv.ulift
+  -- lift the functions to the new spaces, check smoothness there, and then go back.
+  let fu : Eu → Fu := (isoF.symm ∘ f) ∘ isoE
+  have fu_diff : ContDiffOnOmegaAux 𝕜 n fu (isoE ⁻¹' s) := by
     rwa [isoE.contDiffOn_comp_iff, isoF.symm.comp_contDiffOn_iff]
   let gu : Fu → Gu := (isoG.symm ∘ g) ∘ isoF
   have gu_diff : ContDiffOn 𝕜 n gu (isoF ⁻¹' t) := by
@@ -706,28 +768,58 @@ theorem ContDiff.comp {g : F → G} {f : E → F} (hg : ContDiff 𝕜 n g) (hf :
 theorem ContDiffWithinAt.comp {s : Set E} {t : Set F} {g : F → G} {f : E → F} (x : E)
     (hg : ContDiffWithinAt 𝕜 n g t (f x)) (hf : ContDiffWithinAt 𝕜 n f s x) (st : s ⊆ f ⁻¹' t) :
     ContDiffWithinAt 𝕜 n (g ∘ f) s x := by
-  intro m hm
-  rcases hg.contDiffOn hm with ⟨u, u_nhd, _, hu⟩
-  rcases hf.contDiffOn hm with ⟨v, v_nhd, vs, hv⟩
-  have xmem : x ∈ f ⁻¹' u ∩ v :=
-    ⟨(mem_of_mem_nhdsWithin (mem_insert (f x) _) u_nhd : _),
-      mem_of_mem_nhdsWithin (mem_insert x s) v_nhd⟩
-  have : f ⁻¹' u ∈ 𝓝[insert x s] x := by
-    apply hf.continuousWithinAt.insert_self.preimage_mem_nhdsWithin'
-    apply nhdsWithin_mono _ _ u_nhd
-    rw [image_insert_eq]
-    exact insert_subset_insert (image_subset_iff.mpr st)
-  have Z :=
-    (hu.comp (hv.mono inter_subset_right) inter_subset_left).contDiffWithinAt
-      xmem m le_rfl
-  have : 𝓝[f ⁻¹' u ∩ v] x = 𝓝[insert x s] x := by
-    have A : f ⁻¹' u ∩ v = insert x s ∩ (f ⁻¹' u ∩ v) := by
-      apply Subset.antisymm _ inter_subset_right
-      rintro y ⟨hy1, hy2⟩
-      simpa only [mem_inter_iff, mem_preimage, hy2, and_true, true_and, vs hy2] using hy1
-    rw [A, ← nhdsWithin_restrict'']
-    exact Filter.inter_mem this v_nhd
-  rwa [insert_eq_of_mem xmem, this] at Z
+  match n with
+  | ω =>
+    intro m
+    obtain ⟨u, u_nhd, _, hu⟩ := ContDiffWithinAtOmegaAux.contDiffOnOmegaAux (hg m)
+    obtain ⟨v, v_nhd, vs, hv⟩ := ContDiffWithinAtOmegaAux.contDiffOnOmegaAux (hf m)
+    have xmem : x ∈ f ⁻¹' u ∩ v :=
+      ⟨(mem_of_mem_nhdsWithin (mem_insert (f x) _) u_nhd : _),
+        mem_of_mem_nhdsWithin (mem_insert x s) v_nhd⟩
+    have : f ⁻¹' u ∈ 𝓝[insert x s] x := by
+      apply hf.continuousWithinAt.insert_self.preimage_mem_nhdsWithin'
+      apply nhdsWithin_mono _ _ u_nhd
+      rw [image_insert_eq]
+      exact insert_subset_insert (image_subset_iff.mpr st)
+    have Z :=
+      (hu.comp (hv.mono inter_subset_right) inter_subset_left).contDiffWithinAt
+        xmem m le_rfl
+    have : 𝓝[f ⁻¹' u ∩ v] x = 𝓝[insert x s] x := by
+      have A : f ⁻¹' u ∩ v = insert x s ∩ (f ⁻¹' u ∩ v) := by
+        apply Subset.antisymm _ inter_subset_right
+        rintro y ⟨hy1, hy2⟩
+        simpa only [mem_inter_iff, mem_preimage, hy2, and_true, true_and, vs hy2] using hy1
+      rw [A, ← nhdsWithin_restrict'']
+      exact Filter.inter_mem this v_nhd
+    rwa [insert_eq_of_mem xmem, this] at Z
+
+
+  | (n : ℕ∞) =>
+    intro m hm
+    have h'm : (m : WithTop ℕ∞) ≤ n := by exact_mod_cast hm
+    rcases hg.contDiffOn h'm with ⟨u, u_nhd, _, hu⟩
+    rcases hf.contDiffOn h'm with ⟨v, v_nhd, vs, hv⟩
+    have xmem : x ∈ f ⁻¹' u ∩ v :=
+      ⟨(mem_of_mem_nhdsWithin (mem_insert (f x) _) u_nhd : _),
+        mem_of_mem_nhdsWithin (mem_insert x s) v_nhd⟩
+    have : f ⁻¹' u ∈ 𝓝[insert x s] x := by
+      apply hf.continuousWithinAt.insert_self.preimage_mem_nhdsWithin'
+      apply nhdsWithin_mono _ _ u_nhd
+      rw [image_insert_eq]
+      exact insert_subset_insert (image_subset_iff.mpr st)
+    have Z :=
+      (hu.comp (hv.mono inter_subset_right) inter_subset_left).contDiffWithinAt
+        xmem m le_rfl
+    have : 𝓝[f ⁻¹' u ∩ v] x = 𝓝[insert x s] x := by
+      have A : f ⁻¹' u ∩ v = insert x s ∩ (f ⁻¹' u ∩ v) := by
+        apply Subset.antisymm _ inter_subset_right
+        rintro y ⟨hy1, hy2⟩
+        simpa only [mem_inter_iff, mem_preimage, hy2, and_true, true_and, vs hy2] using hy1
+      rw [A, ← nhdsWithin_restrict'']
+      exact Filter.inter_mem this v_nhd
+    rwa [insert_eq_of_mem xmem, this] at Z
+
+#exit
 
 /-- The composition of `C^n` functions at points in domains is `C^n`,
   with a weaker condition on `s` and `t`. -/
