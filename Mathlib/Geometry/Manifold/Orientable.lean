@@ -146,7 +146,7 @@ open Set
 def orientationPreservingPregroupoid [FiniteDimensional ℝ E] : Pregroupoid H where
   property f s :=
     OrientationPreserving (I ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ interior (range I))
-    -- This second condition basically says "on `s`, "f" maps the interior of `M`
+    -- This second condition basically says "on `s`, `f` maps the interior of `M`
     -- to the interior of `M`: this can be proven superfluous in many contexts,
     -- but such a proof is currently out of reach for mathlib.
     -- Hence, we add this condition.
@@ -167,37 +167,65 @@ def orientationPreservingPregroupoid [FiniteDimensional ℝ E] : Pregroupoid H w
   id_mem := by
     dsimp
     constructor
-    · rw [univ_inter]
-      have h_fderiv : ∀ x ∈ interior (range I), fderiv ℝ (I ∘ I.symm) x = fderiv ℝ id x := by
+    · have h_fderiv : ∀ x ∈ interior (range I), fderiv ℝ (I ∘ I.symm) x = fderiv ℝ id x := by
         intro x hx
         apply Filter.EventuallyEq.fderiv_eq
         exact Filter.eventually_of_mem (mem_interior_iff_mem_nhds.mp hx) (by simp)
-      intro x hx
-      rw [h_fderiv x hx]
-      exact orientationPreserving_id _ x hx
+      exact univ_inter _ ▸ fun x hx ↦ h_fderiv x hx ▸ orientationPreserving_id _ x hx
     · rw [univ_inter]
       rintro x ⟨x', hx', hx''⟩
-      have : x = x' := by
-        rw [← hx'']
-        apply I.right_inv (interior_subset hx')
-      rw [this]
-      exact hx'
-  locality {f u} _ h := by
-    constructor
-    · intro x hxu
-      have ⟨v, _, hxv, h⟩ := h (I.symm x) hxu.1
-      exact h.1 _ ⟨Set.mem_inter hxu.1 hxv, hxu.2⟩
-    · rintro _y ⟨x, ⟨aux, hxint⟩, hx⟩
-      rw [← hx]
-      have ⟨v, _, hxv, ⟨_, hint⟩⟩ := h (I.symm x) aux
-      exact hint (mem_image_of_mem (↑I ∘ f ∘ ↑I.symm) ⟨⟨aux, hxv⟩, hxint⟩)
+      have : x = x' := hx'' ▸ I.right_inv (interior_subset hx')
+      exact this ▸ hx'
+  locality {f u} _ h :=
+    And.intro
+    (fun x hxu ↦ have ⟨v, _, hxv, h⟩ := h (I.symm x) hxu.1
+    h.1 _ ⟨Set.mem_inter hxu.1 hxv, hxu.2⟩)
+    (fun _ ⟨x, ⟨aux, hxint⟩, hx⟩ ↦ have ⟨v, _, hxv, ⟨_, hint⟩⟩ := h (I.symm x) aux
+    hx ▸ hint (mem_image_of_mem (↑I ∘ f ∘ ↑I.symm) ⟨⟨aux, hxv⟩, hxint⟩))
   congr {f g u} hu fg hf := by
-    constructor
+    apply And.intro
     · intro x hx
-      sorry -- old proof was:
-      -- rw [(Filter.eventuallyEq_of_mem (hu.mem_nhds hx) fg).fderiv_eq]
-      --exact hf x hx
+      have : ∀ x ∈ I.symm ⁻¹' u ∩ interior (range ↑I), (I ∘ g ∘ I.symm) x = (I ∘ f ∘ I.symm) x := by
+        simp_all
+      have : fderivWithin ℝ (↑I ∘ g ∘ ↑I.symm) (I.symm ⁻¹' u ∩ interior (range ↑I)) x
+          = fderivWithin ℝ (↑I ∘ f ∘ ↑I.symm) (I.symm ⁻¹' u ∩ interior (range ↑I)) x :=
+        fderivWithin_congr' this hx
+      have : fderiv ℝ (↑I ∘ g ∘ ↑I.symm) x = fderiv ℝ (↑I ∘ f ∘ ↑I.symm) x := by
+        rw [fderivWithin_of_isOpen, fderivWithin_of_isOpen] at this
+        exact this
+        rw [Set.inter_comm]
+        apply ContinuousOn.isOpen_inter_preimage
+        · exact ModelWithCorners.continuousOn_symm I
+        · exact isOpen_interior
+        exact hu
+        exact hx
+        rw [Set.inter_comm]
+        apply ContinuousOn.isOpen_inter_preimage
+        · exact ModelWithCorners.continuousOn_symm I
+        · exact isOpen_interior
+        exact hu
+        exact hx
+      exact this ▸ hf.1 x hx
     · sorry
+    -- · have h_eq : ∀ y ∈ I.symm ⁻¹' u, (I ∘ g ∘ I.symm) y = (I ∘ f ∘ I.symm) y := by simp_all
+    --   intro x hx
+    --   have hx_in_domain : x ∈ I.symm ⁻¹' u := hx.1
+    --   have h_eq_on : EqOn (I ∘ g ∘ I.symm) (I ∘ f ∘ I.symm) (I.symm ⁻¹' u) := h_eq
+    --   have h_diff : DifferentiableAt ℝ (I ∘ g ∘ I.symm) x := by
+    --     apply DifferentiableAt.congr_of_eventuallyEq
+    --     · exact hf.1.differentiableAt hx
+    --     ·
+    --       have : I.symm x ∈ u := by simp_all
+    --       sorry
+
+    --   have h_fderiv_eq : fderiv ℝ (I ∘ g ∘ I.symm) x = fderiv ℝ (I ∘ f ∘ I.symm) x := by
+    --     -- use HasFDerivAt.congr_fderiv
+    --     obtain ⟨g', hg'⟩ := h_diff
+    --     apply hg'.fderiv_congr hf.1.differentiableAt hx_in_domain h_eq_on
+
+    --   rw [h_fderiv_eq]
+    --   exact hf.1 x hx
+
 
 /-- The groupoid of orientation-preserving maps. -/
 def orientationPreservingGroupoid [FiniteDimensional ℝ E] : StructureGroupoid H :=
