@@ -25,6 +25,8 @@ section Nullspace
 
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
+/-- The null space with respect to the canonical inner product. It is defined by `‖x‖ = 0` and
+it is proven using the Cauchy-Schwarz inequality that ` ⟪x, y⟫_𝕜 = 0` for all `y : E`. -/
 def nullSpace : Submodule 𝕜 E where
   carrier := {x : E | ‖x‖ = 0}
   add_mem' := by
