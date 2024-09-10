@@ -3,9 +3,7 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Galois.Basic
 import Mathlib.CategoryTheory.Galois.Topology
-import Mathlib.CategoryTheory.Galois.Prorepresentability
 import Mathlib.Topology.Algebra.OpenSubgroup
 
 /-!
@@ -18,7 +16,7 @@ the automorphism group `Aut F` of certain fiber functors `F`, this causes fricti
 
 Hence, in this file we develop conditions when a topological group `G` is canonically isomorphic to
 the automorphism group `Aut F` of `F`. Consequently, the API for Galois categories and their fiber
-functors should be stated in terms of an abstract topological group `G` satisfying
+functors should be stated in terms of an arbitrary topological group `G` satisfying
 `IsFundamentalGroup` in the places where `Aut F` would appear.
 
 ## Main definition
