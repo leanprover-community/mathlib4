@@ -30,7 +30,6 @@ assert_not_exists Prod.fst_mul
 
 universe u v
 
-no_instances
 /-- Typeclass for multiplicative actions by monoids on semirings.
 
 This combines `DistribMulAction` with `MulDistribMulAction`. -/

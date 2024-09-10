@@ -87,7 +87,6 @@ lemma Commute.smul_left_iff₀ [Mul β] [SMulCommClass α β β] [IsScalarTower 
 
 end GroupWithZero
 
-no_instances
 /-- Typeclass for scalar multiplication that preserves `0` on the right. -/
 class SMulZeroClass (M A : Type*) [Zero A] extends SMul M A where
   /-- Multiplying `0` by a scalar gives `0` -/
@@ -155,7 +154,6 @@ def SMulZeroClass.toZeroHom (x : M) :
 
 end smul_zero
 
-no_instances
 /-- Typeclass for scalar multiplication that preserves `0` and `+` on the right.
 
 This is exactly `DistribMulAction` without the `MulAction` part.
@@ -226,7 +224,6 @@ def DistribSMul.toAddMonoidHom (x : M) : A →+ A :=
 
 end DistribSMul
 
-no_instances
 /-- Typeclass for multiplicative actions on additive structures. This generalizes group modules. -/
 @[ext]
 class DistribMulAction (M A : Type*) [Monoid M] [AddMonoid A] extends MulAction M A where
@@ -333,7 +330,6 @@ theorem smul_sub (r : M) (x y : A) : r • (x - y) = r • x - r • y := by
 
 end
 
-no_instances
 /-- Typeclass for multiplicative actions on multiplicative structures. This generalizes
 conjugation actions. -/
 @[ext]

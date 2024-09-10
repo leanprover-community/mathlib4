@@ -93,7 +93,6 @@ section Prio
 
 /- control priority of
 `instance [Algebra R A] : SMul R A` -/
-no_instances
 /-- An associative unital `R`-algebra is a semiring `A` equipped with a map into its center `R → A`.
 
 See the implementation notes in this file for discussion of the details of this definition.

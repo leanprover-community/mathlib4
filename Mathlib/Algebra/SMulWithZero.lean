@@ -42,7 +42,6 @@ section Zero
 
 variable (R M)
 
-no_instances
 /-- `SMulWithZero` is a class consisting of a Type `R` with `0 ∈ R` and a scalar multiplication
 of `R` on a Type `M` with `0`, such that the equality `r • m = 0` holds if at least one among `r`
 or `m` equals `0`. -/
@@ -120,7 +119,6 @@ section MonoidWithZero
 variable [MonoidWithZero R] [MonoidWithZero R'] [Zero M]
 variable (R M)
 
-no_instances
 /-- An action of a monoid with zero `R` on a Type `M`, also with `0`, extends `MulAction` and
 is compatible with `0` (both in `R` and in `M`), with `1 ∈ R`, and with associativity of
 multiplication on the monoid `M`. -/

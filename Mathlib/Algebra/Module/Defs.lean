@@ -48,7 +48,6 @@ universe u v
 
 variable {α R k S M M₂ M₃ ι : Type*}
 
-no_instances
 /-- A module is a generalization of vector spaces to a scalar semiring.
   It consists of a scalar semiring `R` and an additive monoid of "vectors" `M`,
   connected by a "scalar multiplication" operation `r • x : M`
