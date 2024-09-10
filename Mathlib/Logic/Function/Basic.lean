@@ -3,9 +3,11 @@ Copyright (c) 2016 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Logic.Nonempty
-import Mathlib.Init.Set
+import Mathlib.Init.Algebra.Classes
+import Mathlib.Data.Set.Defs
 import Mathlib.Logic.Basic
+import Mathlib.Logic.Nonempty
+import Batteries.Tactic.Init
 
 /-!
 # Miscellaneous function constructions and lemmas
@@ -454,7 +456,7 @@ end SurjInv
 
 section Update
 
-variable {α : Sort u} {β : α → Sort v} {α' : Sort w} [DecidableEq α] [DecidableEq α']
+variable {α : Sort u} {β : α → Sort v} {α' : Sort w} [DecidableEq α]
   {f g : (a : α) → β a} {a : α} {b : β a}
 
 
@@ -522,6 +524,8 @@ theorem update_eq_self (a : α) (f : ∀ a, β a) : update f a (f a) = f :=
 theorem update_comp_eq_of_forall_ne' {α'} (g : ∀ a, β a) {f : α' → α} {i : α} (a : β i)
     (h : ∀ x, f x ≠ i) : (fun j ↦ (update g i a) (f j)) = fun j ↦ g (f j) :=
   funext fun _ ↦ update_noteq (h _) _ _
+
+variable [DecidableEq α']
 
 /-- Non-dependent version of `Function.update_comp_eq_of_forall_ne'` -/
 theorem update_comp_eq_of_forall_ne {α β : Sort*} (g : α' → β) {f : α → α'} {i : α'} (a : β)
@@ -752,11 +756,17 @@ namespace Involutive
 
 variable {α : Sort u} {f : α → α} (h : Involutive f)
 
+include h
+
 @[simp]
 theorem comp_self : f ∘ f = id :=
   funext h
 
 protected theorem leftInverse : LeftInverse f f := h
+
+theorem leftInverse_iff {g : α → α} :
+    g.LeftInverse f ↔ g = f :=
+  ⟨fun hg ↦ funext fun x ↦ by rw [← h x, hg, h], fun he ↦ he ▸ h.leftInverse⟩
 
 protected theorem rightInverse : RightInverse f f := h
 

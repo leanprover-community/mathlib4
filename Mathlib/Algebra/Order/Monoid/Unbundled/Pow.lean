@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jeremy Avigad, Robert Y. Lewis, Yury G. Kudryashov
+Authors: Jeremy Avigad, Robert Y. Lewis, Yury Kudryashov
 -/
 import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
@@ -62,10 +62,9 @@ theorem pow_le_pow_right_of_le_one' {a : M} {n m : ℕ} (ha : a ≤ 1) (h : n �
 theorem one_lt_pow' {a : M} (ha : 1 < a) {k : ℕ} (hk : k ≠ 0) : 1 < a ^ k := by
   rcases Nat.exists_eq_succ_of_ne_zero hk with ⟨l, rfl⟩
   clear hk
-  induction' l with l IH
-  · rw [pow_succ]; simpa using ha
-  · rw [pow_succ]
-    exact one_lt_mul'' IH ha
+  induction l with
+  | zero => rw [pow_succ]; simpa using ha
+  | succ l IH => rw [pow_succ]; exact one_lt_mul'' IH ha
 
 @[to_additive nsmul_neg]
 theorem pow_lt_one' {a : M} (ha : a < 1) {k : ℕ} (hk : k ≠ 0) : a ^ k < 1 :=

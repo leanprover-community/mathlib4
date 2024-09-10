@@ -328,13 +328,11 @@ theorem ne_zero_of_mk'_ne_zero {x : R} {y : M} (hxy : IsLocalization.mk' S x y �
 
 section Ext
 
-variable [Algebra R P] [IsLocalization M P]
-
-theorem eq_iff_eq {x y} :
+theorem eq_iff_eq [Algebra R P] [IsLocalization M P] {x y} :
     algebraMap R S x = algebraMap R S y ↔ algebraMap R P x = algebraMap R P y :=
   (toLocalizationMap M S).eq_iff_eq (toLocalizationMap M P)
 
-theorem mk'_eq_iff_mk'_eq {x₁ x₂} {y₁ y₂ : M} :
+theorem mk'_eq_iff_mk'_eq [Algebra R P] [IsLocalization M P] {x₁ x₂} {y₁ y₂ : M} :
     mk' S x₁ y₁ = mk' S x₂ y₂ ↔ mk' P x₁ y₁ = mk' P x₂ y₂ :=
   (toLocalizationMap M S).mk'_eq_iff_mk'_eq (toLocalizationMap M P)
 
@@ -492,6 +490,9 @@ theorem lift_of_comp (j : S →+* P) : lift (isUnit_comp M j) = j :=
 
 variable (M)
 
+section
+include M
+
 /-- See note [partially-applied ext lemmas] -/
 theorem monoidHom_ext ⦃j k : S →* P⦄
     (h : j.comp (algebraMap R S : R →* S) = k.comp (algebraMap R S)) : j = k :=
@@ -520,6 +521,7 @@ protected theorem ext (j k : S → P) (hj1 : j 1 = 1) (hk1 : k 1 = 1)
     { toFun := k, map_one' := hk1, map_mul' := hkm }
   have : j' = k' := monoidHom_ext M (MonoidHom.ext h)
   show j'.toFun = k'.toFun by rw [this]
+end
 
 variable {M}
 
@@ -543,7 +545,7 @@ theorem lift_injective_iff :
 
 section Map
 
-variable {T : Submonoid P} {Q : Type*} [CommSemiring Q] (hy : M ≤ T.comap g)
+variable {T : Submonoid P} {Q : Type*} [CommSemiring Q]
 variable [Algebra P Q] [IsLocalization T Q]
 
 section
@@ -561,6 +563,10 @@ noncomputable def map (g : R →+* P) (hy : M ≤ T.comap g) : S →+* Q :=
 
 end
 
+section
+variable (hy : M ≤ T.comap g)
+include hy
+
 -- Porting note: added `simp` attribute, since it proves very similar lemmas marked `simp`
 @[simp]
 theorem map_eq (x) : map Q g hy ((algebraMap R S) x) = algebraMap P Q (g x) :=
@@ -573,16 +579,6 @@ theorem map_comp : (map Q g hy).comp (algebraMap R S) = (algebraMap P Q).comp g 
 theorem map_mk' (x) (y : M) : map Q g hy (mk' S x y) = mk' Q (g x) ⟨g y, hy y.2⟩ :=
   Submonoid.LocalizationMap.map_mk' (toLocalizationMap M S) (g := g.toMonoidHom)
     (fun y => hy y.2) (k := toLocalizationMap T Q) ..
-
-@[simp]
-theorem map_id_mk' {Q : Type*} [CommSemiring Q] [Algebra R Q] [IsLocalization M Q] (x) (y : M) :
-    map Q (RingHom.id R) (le_refl M) (mk' S x y) = mk' Q x y :=
-  map_mk' ..
-
-@[simp]
-theorem map_id (z : S) (h : M ≤ M.comap (RingHom.id R) := le_refl M) :
-    map S (RingHom.id _) h z = z :=
-  lift_id _
 
 theorem map_unique (j : S →+* Q) (hj : ∀ x : R, j (algebraMap R S x) = algebraMap P Q (g x)) :
     map Q g hy = j :=
@@ -606,6 +602,18 @@ theorem map_map {A : Type*} [CommSemiring A] {U : Submonoid A} {W} [CommSemiring
 
 theorem map_smul (x : S) (z : R) : map Q g hy (z • x : S) = g z • map Q g hy x := by
   rw [Algebra.smul_def, Algebra.smul_def, RingHom.map_mul, map_eq]
+
+end
+
+@[simp]
+theorem map_id_mk' {Q : Type*} [CommSemiring Q] [Algebra R Q] [IsLocalization M Q] (x) (y : M) :
+    map Q (RingHom.id R) (le_refl M) (mk' S x y) = mk' Q x y :=
+  map_mk' ..
+
+@[simp]
+theorem map_id (z : S) (h : M ≤ M.comap (RingHom.id R) := le_refl M) :
+    map S (RingHom.id _) h z = z :=
+  lift_id _
 
 section
 
@@ -675,6 +683,7 @@ theorem algEquiv_mk' (x : R) (y : M) : algEquiv M S Q (mk' S x y) = mk' Q x y :=
 theorem algEquiv_symm_mk' (x : R) (y : M) : (algEquiv M S Q).symm (mk' Q x y) = mk' S x y := by simp
 
 variable (M) in
+include M in
 protected lemma bijective (f : S →+* Q) (hf : f.comp (algebraMap R S) = algebraMap R Q) :
     Function.Bijective f :=
   (show f = IsLocalization.algEquiv M S Q by
@@ -684,8 +693,7 @@ protected lemma bijective (f : S →+* Q) (hf : f.comp (algebraMap R S) = algebr
 end AlgEquiv
 
 section at_units
-
-lemma at_units {R : Type*} [CommSemiring R] (S : Submonoid R)
+lemma at_units (S : Submonoid R)
     (hS : S ≤ IsUnit.submonoid R) : IsLocalization S R where
   map_units' y := hS y.prop
   surj' := fun s ↦ ⟨⟨s, 1⟩, by simp⟩
@@ -1063,7 +1071,7 @@ section Algebra
 variable {S} {Rₘ Sₘ : Type*} [CommRing Rₘ] [CommRing Sₘ]
 variable [Algebra R Rₘ] [IsLocalization M Rₘ]
 variable [Algebra S Sₘ] [i : IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ]
-
+include S
 section
 
 variable (S M)

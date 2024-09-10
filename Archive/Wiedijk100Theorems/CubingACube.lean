@@ -132,6 +132,7 @@ structure Correct (cs : ι → Cube n) : Prop where
 namespace Correct
 
 variable (h : Correct cs)
+include h
 
 theorem toSet_subset_unitCube {i} : (cs i).toSet ⊆ unitCube.toSet := by
   convert h.iUnion_eq ▸ subset_iUnion _ i
@@ -180,7 +181,7 @@ theorem shiftUp_bottom_subset_bottoms (hc : (cs i).xm ≠ 1) :
     (cs i).shiftUp.bottom ⊆ ⋃ i : ι, (cs i).bottom := by
   intro p hp; cases' hp with hp0 hps; rw [tail_shiftUp] at hps
   have : p ∈ (unitCube : Cube (n + 1)).toSet := by
-    simp only [toSet, forall_fin_succ, hp0, side_unitCube, mem_setOf_eq, mem_Ico, head_shiftUp]
+    simp only [toSet, forall_iff_succ, hp0, side_unitCube, mem_setOf_eq, mem_Ico, head_shiftUp]
     refine ⟨⟨?_, ?_⟩, ?_⟩
     · rw [← zero_add (0 : ℝ)]; apply add_le_add
       · apply zero_le_b h
@@ -224,7 +225,7 @@ theorem valley_unitCube [Nontrivial ι] (h : Correct cs) : Valley cs unitCube :=
     intro h0 hv
     have : v ∈ (unitCube : Cube (n + 1)).toSet := by
       dsimp only [toSet, unitCube, mem_setOf_eq]
-      rw [forall_fin_succ, h0]; constructor
+      rw [forall_iff_succ, h0]; constructor
       · norm_num [side, unitCube]
       · exact hv
     rw [← h.2, mem_iUnion] at this; rcases this with ⟨i, hi⟩
@@ -259,6 +260,9 @@ theorem t_le_t (hi : i ∈ bcubes cs c) (j : Fin n) :
   have h' := tail_sub hi j; dsimp only [side] at h'; rw [Ico_subset_Ico_iff] at h'
   · exact h'.2
   · simp [hw]
+
+section
+include h v
 
 /-- Every cube in the valley must be smaller than it -/
 theorem w_lt_w (hi : i ∈ bcubes cs c) : (cs i).w < c.w := by
@@ -404,14 +408,14 @@ theorem mi_not_onBoundary (j : Fin n) : ¬OnBoundary (mi_mem_bcubes : mi h v ∈
   have i'_i'' : i' ≠ i'' := by
     rintro ⟨⟩
     have : (cs i).b ∈ (cs i').toSet := by
-      simp only [toSet, forall_fin_succ, hi.1, bottom_mem_side h2i', true_and_iff, mem_setOf_eq]
+      simp only [toSet, forall_iff_succ, hi.1, bottom_mem_side h2i', true_and_iff, mem_setOf_eq]
       intro j₂; by_cases hj₂ : j₂ = j
       · simpa [p', side_tail, hj'.symm, hj₂] using hi''.2 j
       · simpa [p, hj₂] using hi'.2 j₂
     apply not_disjoint_iff.mpr ⟨(cs i).b, (cs i).b_mem_toSet, this⟩ (h.1 i_i')
   have i_i'' : i ≠ i'' := by intro h; induction h; simpa [p', hx'.2] using hi''.2 j'
   apply Not.elim _ (h.1 i'_i'')
-  simp_rw [onFun, comp, toSet_disjoint, not_exists, not_disjoint_iff, forall_fin_succ]
+  simp_rw [onFun, comp, toSet_disjoint, not_exists, not_disjoint_iff, forall_iff_succ]
   refine ⟨⟨c.b 0, bottom_mem_side h2i', bottom_mem_side h2i''⟩, ?_⟩
   intro j₂
   by_cases hj₂ : j₂ = j
@@ -476,9 +480,9 @@ theorem valley_mi : Valley cs (cs (mi h v)).shiftUp := by
     have h3i'' : (cs i).w < (cs i'').w := by
       apply mi_strict_minimal _ h2i''; rintro rfl; apply h2p3; convert hi''.2
     let p' := @cons n (fun _ => ℝ) (cs i).xm p3
-    have hp' : p' ∈ (cs i').toSet := by simpa [p', toSet, forall_fin_succ, hi'.symm] using h1p3
+    have hp' : p' ∈ (cs i').toSet := by simpa [p', toSet, forall_iff_succ, hi'.symm] using h1p3
     have h2p' : p' ∈ (cs i'').toSet := by
-      simp only [p', toSet, forall_fin_succ, cons_succ, cons_zero, mem_setOf_eq]
+      simp only [p', toSet, forall_iff_succ, cons_succ, cons_zero, mem_setOf_eq]
       refine ⟨?_, by simpa [toSet] using hi''.2⟩
       have : (cs i).b 0 = (cs i'').b 0 := by rw [hi.1, h2i''.1]
       simp [side, hw', xm, this, h3i'']
@@ -508,6 +512,11 @@ noncomputable def sequenceOfCubes : ℕ → { i : ι // Valley cs (cs i).shiftUp
 def decreasingSequence (k : ℕ) : ℝ :=
   (cs (sequenceOfCubes h k).1).w
 
+end
+
+variable [Finite ι] [Nontrivial ι]
+
+include h in
 theorem strictAnti_sequenceOfCubes : StrictAnti <| decreasingSequence h :=
   strictAnti_nat_of_succ_lt fun k => by
     let v := (sequenceOfCubes h k).2; dsimp only [decreasingSequence, sequenceOfCubes]

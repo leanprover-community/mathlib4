@@ -24,7 +24,7 @@ Semiring, and Algebra over a CommSemiring K.
 
 namespace Matrix
 
-variable  (I J K L R : Type*)
+variable (I J K L R : Type*)
 
 /-- I by J matrix where each entry is a K by L matrix is equivalent to
     I × K by J × L matrix -/
@@ -57,7 +57,7 @@ def compRingEquiv : Matrix I I (Matrix J J R) ≃+* Matrix (I × J) (I × J) R w
   __ := Matrix.compAddEquiv I I J J R
   map_mul' _ _ := by
     ext _ _
-    exact (Matrix.sum_apply _ _ _ _).trans $ Eq.symm Fintype.sum_prod_type
+    exact (Matrix.sum_apply _ _ _ _).trans <| Eq.symm Fintype.sum_prod_type
 
 end Semiring
 

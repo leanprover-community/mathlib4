@@ -3,7 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.Pointwise
+import Mathlib.Data.Finset.Pointwise.Basic
 import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
@@ -65,8 +65,6 @@ lemma exists_subset_mul_div (hs : s.Finite) (ht' : t.Finite) (ht : t.Nonempty) :
   classical
   obtain ⟨u, hu, hsut⟩ := Finset.exists_subset_mul_div s ht
   refine ⟨u, ?_⟩
-  -- `norm_cast` would find these automatically, but breaks `to_additive` when it does so
-  rw [← Finset.coe_mul, ← Finset.coe_mul, ← Finset.coe_div]
   norm_cast
   simp [*]
 

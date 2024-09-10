@@ -29,12 +29,13 @@ theorem exists_idempotent_of_compact_t2_of_continuous_mul_left {M} [Nonempty M] 
      It will turn out that any minimal element is `{m}` for an idempotent `m : M`. -/
   let S : Set (Set M) :=
     { N | IsClosed N ∧ N.Nonempty ∧ ∀ (m) (_ : m ∈ N) (m') (_ : m' ∈ N), m * m' ∈ N }
-  rsuffices ⟨N, ⟨N_closed, ⟨m, hm⟩, N_mul⟩, N_minimal⟩ : ∃ N ∈ S, ∀ N' ∈ S, N' ⊆ N → N' = N
-  · use m
+  rsuffices ⟨N, hN⟩ : ∃ N', Minimal (· ∈ S) N'
+  · obtain ⟨N_closed, ⟨m, hm⟩, N_mul⟩ := hN.prop
+    use m
     /- We now have an element `m : M` of a minimal subsemigroup `N`, and want to show `m + m = m`.
     We first show that every element of `N` is of the form `m' + m`. -/
     have scaling_eq_self : (· * m) '' N = N := by
-      apply N_minimal
+      apply hN.eq_of_subset
       · refine ⟨(continuous_mul_left m).isClosedMap _ N_closed, ⟨_, ⟨m, hm, rfl⟩⟩, ?_⟩
         rintro _ ⟨m'', hm'', rfl⟩ _ ⟨m', hm', rfl⟩
         exact ⟨m'' * m * m', N_mul _ (N_mul _ hm'' _ hm) _ hm', mul_assoc _ _ _⟩
@@ -43,14 +44,13 @@ theorem exists_idempotent_of_compact_t2_of_continuous_mul_left {M} [Nonempty M] 
     /- In particular, this means that `m' * m = m` for some `m'`. We now use minimality again
        to show that this holds for all `m' ∈ N`. -/
     have absorbing_eq_self : N ∩ { m' | m' * m = m } = N := by
-      apply N_minimal
+      apply hN.eq_of_subset
       · refine ⟨N_closed.inter ((T1Space.t1 m).preimage (continuous_mul_left m)), ?_, ?_⟩
         · rwa [← scaling_eq_self] at hm
         · rintro m'' ⟨mem'', eq'' : _ = m⟩ m' ⟨mem', eq' : _ = m⟩
           refine ⟨N_mul _ mem'' _ mem', ?_⟩
           rw [Set.mem_setOf_eq, mul_assoc, eq', eq'']
       apply Set.inter_subset_left
-    -- Thus `m * m = m` as desired.
     rw [← absorbing_eq_self] at hm
     exact hm.2
   refine zorn_superset _ fun c hcs hc => ?_

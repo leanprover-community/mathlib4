@@ -37,7 +37,7 @@ namespace CategoryTheory
 open Category Limits
 
 variable {C : Type*} [Category C] {Φ : C ⥤ C} (ε : 𝟭 C ⟶ Φ)
-  {J : Type u} [LinearOrder J] [IsWellOrder J (· < ·)] [OrderBot J]
+  {J : Type u} [LinearOrder J]
 
 namespace Functor
 
@@ -47,7 +47,7 @@ variable {j : J} (F : { i // i ≤ j } ⥤ C)
 
 /-- The map `F.obj ⟨i, _⟩ ⟶ F.obj ⟨wellOrderSucc i, _⟩` when `F : { i // i ≤ j } ⥤ C`
 and `i : J` is such that `i < j`. -/
-noncomputable abbrev mapSucc' (i : J) (hi : i < j) :
+noncomputable abbrev mapSucc' [IsWellOrder J (· < ·)] (i : J) (hi : i < j) :
     F.obj ⟨i, hi.le⟩ ⟶ F.obj ⟨wellOrderSucc i, wellOrderSucc_le hi⟩ :=
   F.map (homOfLE (by simpa only [Subtype.mk_le_mk] using self_le_wellOrderSucc i))
 
@@ -77,6 +77,8 @@ def coconeOfLE : Cocone (restrictionLT F hi) where
         simp [comp_id, ← Functor.map_comp, homOfLE_comp] }
 
 end Iteration
+
+variable [IsWellOrder J (· < ·)] [OrderBot J]
 
 /-- The category of `j`th iterations of a functor `Φ` equipped with a natural
 transformation `ε : 𝟭 C ⟶ Φ`. An object consists of the data of all iterations

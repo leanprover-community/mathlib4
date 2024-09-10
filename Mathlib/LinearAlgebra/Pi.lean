@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Eric Wieser
 -/
 import Mathlib.Algebra.Group.Fin.Tuple
+import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Module.Submodule.Ker
+import Mathlib.Algebra.Module.Submodule.Range
 import Mathlib.Algebra.Module.Equiv.Basic
-import Mathlib.GroupTheory.GroupAction.BigOperators
 import Mathlib.Logic.Equiv.Fin
 
 /-!
@@ -113,25 +114,93 @@ theorem apply_single [AddCommMonoid M] [Module R M] [DecidableEq ι] (f : (i : �
     (i j : ι) (x : φ i) : f j (Pi.single i x j) = (Pi.single i (f i x) : ι → M) j :=
   Pi.apply_single (fun i => f i) (fun i => (f i).map_zero) _ _ _
 
+variable (R φ)
+
 /-- The `LinearMap` version of `AddMonoidHom.single` and `Pi.single`. -/
 def single [DecidableEq ι] (i : ι) : φ i →ₗ[R] (i : ι) → φ i :=
   { AddMonoidHom.single φ i with
     toFun := Pi.single i
     map_smul' := Pi.single_smul i }
 
-@[simp]
-theorem coe_single [DecidableEq ι] (i : ι) : ⇑(single i : φ i →ₗ[R] (i : ι) → φ i) = Pi.single i :=
+lemma single_apply [DecidableEq ι] {i : ι} (v : φ i) :
+    single R φ i v = Pi.single i v :=
   rfl
 
-variable (R φ)
+@[simp]
+theorem coe_single [DecidableEq ι] (i : ι) :
+    ⇑(single R φ i : φ i →ₗ[R] (i : ι) → φ i) = Pi.single i :=
+  rfl
+
+variable [DecidableEq ι]
+
+theorem proj_comp_single_same (i : ι) : (proj i).comp (single R φ i) = id :=
+  LinearMap.ext <| Pi.single_eq_same i
+
+theorem proj_comp_single_ne (i j : ι) (h : i ≠ j) : (proj i).comp (single R φ j) = 0 :=
+  LinearMap.ext <| Pi.single_eq_of_ne h
+
+theorem iSup_range_single_le_iInf_ker_proj (I J : Set ι) (h : Disjoint I J) :
+    ⨆ i ∈ I, range (single R φ i) ≤ ⨅ i ∈ J, ker (proj i : (∀ i, φ i) →ₗ[R] φ i) := by
+  refine iSup_le fun i => iSup_le fun hi => range_le_iff_comap.2 ?_
+  simp only [← ker_comp, eq_top_iff, SetLike.le_def, mem_ker, comap_iInf, mem_iInf]
+  rintro b - j hj
+  rw [proj_comp_single_ne R φ j i, zero_apply]
+  rintro rfl
+  exact h.le_bot ⟨hi, hj⟩
+
+theorem iInf_ker_proj_le_iSup_range_single {I : Finset ι} {J : Set ι} (hu : Set.univ ⊆ ↑I ∪ J) :
+    ⨅ i ∈ J, ker (proj i : (∀ i, φ i) →ₗ[R] φ i) ≤ ⨆ i ∈ I, range (single R φ i) :=
+  SetLike.le_def.2
+    (by
+      intro b hb
+      simp only [mem_iInf, mem_ker, proj_apply] at hb
+      rw [←
+        show (∑ i ∈ I, Pi.single i (b i)) = b by
+          ext i
+          rw [Finset.sum_apply, ← Pi.single_eq_same i (b i)]
+          refine Finset.sum_eq_single i (fun j _ ne => Pi.single_eq_of_ne ne.symm _) ?_
+          intro hiI
+          rw [Pi.single_eq_same]
+          exact hb _ ((hu trivial).resolve_left hiI)]
+      exact sum_mem_biSup fun i _ => mem_range_self (single R φ i) (b i))
+
+theorem iSup_range_single_eq_iInf_ker_proj {I J : Set ι} (hd : Disjoint I J)
+    (hu : Set.univ ⊆ I ∪ J) (hI : Set.Finite I) :
+    ⨆ i ∈ I, range (single R φ i) = ⨅ i ∈ J, ker (proj i : (∀ i, φ i) →ₗ[R] φ i) := by
+  refine le_antisymm (iSup_range_single_le_iInf_ker_proj _ _ _ _ hd) ?_
+  have : Set.univ ⊆ ↑hI.toFinset ∪ J := by rwa [hI.coe_toFinset]
+  refine le_trans (iInf_ker_proj_le_iSup_range_single R φ this) (iSup_mono fun i => ?_)
+  rw [Set.Finite.mem_toFinset]
+
+theorem iSup_range_single [Finite ι] : ⨆ i, range (single R φ i) = ⊤ := by
+  cases nonempty_fintype ι
+  convert top_unique (iInf_emptyset.ge.trans <| iInf_ker_proj_le_iSup_range_single R φ _)
+  · rename_i i
+    exact ((@iSup_pos _ _ _ fun _ => range <| single R φ i) <| Finset.mem_univ i).symm
+  · rw [Finset.coe_univ, Set.union_empty]
+
+theorem disjoint_single_single (I J : Set ι) (h : Disjoint I J) :
+    Disjoint (⨆ i ∈ I, range (single R φ i)) (⨆ i ∈ J, range (single R φ i)) := by
+  refine
+    Disjoint.mono (iSup_range_single_le_iInf_ker_proj _ _ _ _ <| disjoint_compl_right)
+      (iSup_range_single_le_iInf_ker_proj _ _ _ _ <| disjoint_compl_right) ?_
+  simp only [disjoint_iff_inf_le, SetLike.le_def, mem_iInf, mem_inf, mem_ker, mem_bot, proj_apply,
+    funext_iff]
+  rintro b ⟨hI, hJ⟩ i
+  classical
+    by_cases hiI : i ∈ I
+    · by_cases hiJ : i ∈ J
+      · exact (h.le_bot ⟨hiI, hiJ⟩).elim
+      · exact hJ i hiJ
+    · exact hI i hiI
 
 /-- The linear equivalence between linear functions on a finite product of modules and
 families of functions on these modules. See note [bundled maps over different rings]. -/
 @[simps symm_apply]
-def lsum (S) [AddCommMonoid M] [Module R M] [Fintype ι] [DecidableEq ι] [Semiring S] [Module S M]
+def lsum (S) [AddCommMonoid M] [Module R M] [Fintype ι] [Semiring S] [Module S M]
     [SMulCommClass R S M] : ((i : ι) → φ i →ₗ[R] M) ≃ₗ[S] ((i : ι) → φ i) →ₗ[R] M where
   toFun f := ∑ i : ι, (f i).comp (proj i)
-  invFun f i := f.comp (single i)
+  invFun f i := f.comp (single R φ i)
   map_add' f g := by simp only [Pi.add_apply, add_comp, Finset.sum_add_distrib]
   map_smul' c f := by simp only [Pi.smul_apply, smul_comp, Finset.smul_sum, RingHom.id_apply]
   left_inv f := by
@@ -143,21 +212,21 @@ def lsum (S) [AddCommMonoid M] [Module R M] [Fintype ι] [DecidableEq ι] [Semir
     rw [Finset.univ_sum_single]
 
 @[simp]
-theorem lsum_apply (S) [AddCommMonoid M] [Module R M] [Fintype ι] [DecidableEq ι] [Semiring S]
+theorem lsum_apply (S) [AddCommMonoid M] [Module R M] [Fintype ι] [Semiring S]
     [Module S M] [SMulCommClass R S M] (f : (i : ι) → φ i →ₗ[R] M) :
     lsum R φ S f = ∑ i : ι, (f i).comp (proj i) := rfl
 
 @[simp high]
 theorem lsum_single {ι R : Type*} [Fintype ι] [DecidableEq ι] [CommRing R] {M : ι → Type*}
     [(i : ι) → AddCommGroup (M i)] [(i : ι) → Module R (M i)] :
-    LinearMap.lsum R M R LinearMap.single = LinearMap.id :=
+    LinearMap.lsum R M R (LinearMap.single R M) = LinearMap.id :=
   LinearMap.ext fun x => by simp [Finset.univ_sum_single]
 
 variable {R φ}
 
 section Ext
 
-variable [Finite ι] [DecidableEq ι] [AddCommMonoid M] [Module R M] {f g : ((i : ι) → φ i) →ₗ[R] M}
+variable [Finite ι] [AddCommMonoid M] [Module R M] {f g : ((i : ι) → φ i) →ₗ[R] M}
 
 theorem pi_ext (h : ∀ i x, f (Pi.single i x) = g (Pi.single i x)) : f = g :=
   toAddMonoidHom_injective <| AddMonoidHom.functions_ext _ _ _ h
@@ -168,12 +237,9 @@ theorem pi_ext_iff : f = g ↔ ∀ i x, f (Pi.single i x) = g (Pi.single i x) :=
 /-- This is used as the ext lemma instead of `LinearMap.pi_ext` for reasons explained in
 note [partially-applied ext lemmas]. -/
 @[ext]
-theorem pi_ext' (h : ∀ i, f.comp (single i) = g.comp (single i)) : f = g := by
+theorem pi_ext' (h : ∀ i, f.comp (single R φ i) = g.comp (single R φ i)) : f = g := by
   refine pi_ext fun i x => ?_
   convert LinearMap.congr_fun (h i) x
-
-theorem pi_ext'_iff : f = g ↔ ∀ i, f.comp (single i) = g.comp (single i) :=
-  ⟨fun h _ => h ▸ rfl, pi_ext'⟩
 
 end Ext
 
@@ -215,8 +281,6 @@ end
 
 section
 
-variable [DecidableEq ι]
-
 /-- `diag i j` is the identity map if `i = j`. Otherwise it is the constant 0 map. -/
 def diag (i j : ι) : φ i →ₗ[R] φ j :=
   @Function.update ι (fun j => φ i →ₗ[R] φ j) _ 0 i id j
@@ -227,11 +291,25 @@ theorem update_apply (f : (i : ι) → M₂ →ₗ[R] φ i) (c : M₂) (i j : ι
   · rw [h, update_same, update_same]
   · rw [update_noteq h, update_noteq h]
 
+variable (R φ)
+
+theorem single_eq_pi_diag (i : ι) : single R φ i = pi (diag i) := by
+  ext x j
+  -- Porting note: made types explicit
+  convert (update_apply (R := R) (φ := φ) (ι := ι) 0 x i j _).symm
+  rfl
+
+theorem ker_single (i : ι) : ker (single R φ i) = ⊥ :=
+  ker_eq_bot_of_injective <| Pi.single_injective _ _
+
+theorem proj_comp_single (i j : ι) : (proj i).comp (single R φ j) = diag j i := by
+  rw [single_eq_pi_diag, proj_pi]
+
 end
 
 /-- A linear map `f` applied to `x : ι → R` can be computed using the image under `f` of elements
 of the canonical basis. -/
-theorem pi_apply_eq_sum_univ [Fintype ι] [DecidableEq ι] (f : (ι → R) →ₗ[R] M₂) (x : ι → R) :
+theorem pi_apply_eq_sum_univ [Fintype ι] (f : (ι → R) →ₗ[R] M₂) (x : ι → R) :
     f x = ∑ i, x i • f fun j => if i = j then 1 else 0 := by
   conv_lhs => rw [pi_eq_sum_univ x, map_sum]
   refine Finset.sum_congr rfl (fun _ _ => ?_)
@@ -286,7 +364,7 @@ theorem iInf_comap_proj :
   simp
 
 theorem iSup_map_single [DecidableEq ι] [Finite ι] :
-    ⨆ i, map (LinearMap.single i : φ i →ₗ[R] (i : ι) → φ i) (p i) = pi Set.univ p := by
+    ⨆ i, map (LinearMap.single R φ i : φ i →ₗ[R] (i : ι) → φ i) (p i) = pi Set.univ p := by
   cases nonempty_fintype ι
   refine (iSup_le fun i => ?_).antisymm ?_
   · rintro _ ⟨x, hx : x ∈ p i, rfl⟩ j -
@@ -296,7 +374,7 @@ theorem iSup_map_single [DecidableEq ι] [Finite ι] :
     exact sum_mem_iSup fun i => mem_map_of_mem (hx i trivial)
 
 theorem le_comap_single_pi [DecidableEq ι] (p : (i : ι) → Submodule R (φ i)) {i} :
-    p i ≤ Submodule.comap (LinearMap.single i : φ i →ₗ[R] _) (Submodule.pi Set.univ p) := by
+    p i ≤ Submodule.comap (LinearMap.single R φ i : φ i →ₗ[R] _) (Submodule.pi Set.univ p) := by
   intro x hx
   rw [Submodule.mem_comap, Submodule.mem_pi]
   rintro j -

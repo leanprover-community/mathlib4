@@ -22,7 +22,7 @@ open Complex Filter Bornology
 /--
 error: failed to synthesize
   AddMonoidHomClass (AddGroupSeminorm ℂ) ℂ ℝ
-use `set_option diagnostics true` to get diagnostic information
+Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
 #guard_msgs in
 set_option synthInstance.maxHeartbeats 3000 in
@@ -43,7 +43,7 @@ section
 /-- info: NonUnitalNonAssocRing.toNonUnitalNonAssocSemiring -/
 #guard_msgs in
 variable {A : Type} [NormedRing A] [NormedAlgebra ℂ A] [StarRing A]
-  [CstarRing A] [StarModule ℂ A] (x : A) in
+  [CStarRing A] [StarModule ℂ A] (x : A) in
 #synth NonUnitalNonAssocSemiring (elementalStarAlgebra ℂ x)
 
 end
@@ -54,7 +54,7 @@ section
 
 open Real in
 set_option synthInstance.maxHeartbeats 10000 in
-example : expMapCircle (2 * π) = 1 := by simp
+example : Circle.exp (2 * π) = 1 := by simp
 
 end
 
@@ -63,7 +63,7 @@ section
 -- Initial issue: https://github.com/leanprover-community/mathlib4/issues/12230
 
 open Complex in
-set_option synthInstance.maxHeartbeats 3000 in
+set_option synthInstance.maxHeartbeats 3200 in
 example (x : ℝ) : abs (cos x + sin x * I) = 1 := by simp
 
 end

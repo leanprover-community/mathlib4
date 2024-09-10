@@ -6,7 +6,6 @@ Authors: Scott Morrison, Justus Springer
 import Mathlib.Topology.Category.TopCat.OpenNhds
 import Mathlib.Topology.Sheaves.Presheaf
 import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
-import Mathlib.CategoryTheory.Adjunction.Evaluation
 import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 import Mathlib.CategoryTheory.Limits.Final
@@ -91,15 +90,29 @@ theorem stalkFunctor_obj (ℱ : X.Presheaf C) (x : X) : (stalkFunctor C x).obj �
 def germ (F : X.Presheaf C) {U : Opens X} (x : U) : F.obj (op U) ⟶ stalk F x :=
   colimit.ι ((OpenNhds.inclusion x.1).op ⋙ F) (op ⟨U, x.2⟩)
 
+/-- The germ of a global section of a presheaf at a point. -/
+def Γgerm (F : X.Presheaf C) (x : X) : F.obj (op ⊤) ⟶ stalk F x :=
+  F.germ ⟨x, show x ∈ ⊤ by trivial⟩
+
+@[reassoc (attr := simp)]
 theorem germ_res (F : X.Presheaf C) {U V : Opens X} (i : U ⟶ V) (x : U) :
     F.map i.op ≫ germ F x = germ F (i x : V) :=
   let i' : (⟨U, x.2⟩ : OpenNhds x.1) ⟶ ⟨V, (i x : V).2⟩ := i
   colimit.w ((OpenNhds.inclusion x.1).op ⋙ F) i'.op
 
+@[reassoc]
+lemma map_germ_eq_Γgerm (F : X.Presheaf C) {U : Opens X} {i : U ⟶ ⊤} (x : U) :
+    F.map i.op ≫ germ F x = Γgerm F (i x) :=
+  germ_res F i x
+
 -- Porting note: `@[elementwise]` did not generate the best lemma when applied to `germ_res`
 attribute [local instance] ConcreteCategory.instFunLike in
 theorem germ_res_apply (F : X.Presheaf C) {U V : Opens X} (i : U ⟶ V) (x : U) [ConcreteCategory C]
     (s) : germ F x (F.map i.op s) = germ F (i x) s := by rw [← comp_apply, germ_res]
+
+attribute [local instance] ConcreteCategory.instFunLike in
+lemma Γgerm_res_apply (F : X.Presheaf C) {U : Opens X} {i : U ⟶ ⊤} (x : U) [ConcreteCategory C]
+    (s) : germ F x (F.map i.op s) = Γgerm F x.val s := germ_res_apply F i x s
 
 /-- A morphism from the stalk of `F` at `x` to some object `Y` is completely determined by its
 composition with the `germ` morphisms.
@@ -460,7 +473,7 @@ instance stalkFunctor_preserves_mono (x : X) :
       (app_injective_iff_stalkFunctor_map_injective f.1).mpr
         (fun c =>
           (ConcreteCategory.mono_iff_injective_of_preservesPullback (f.1.app (op c))).mp
-            ((NatTrans.mono_iff_mono_app _ f.1).mp
+            ((NatTrans.mono_iff_mono_app f.1).mp
                 (CategoryTheory.presheaf_mono_of_mono ..) <|
               op c))
         x⟩
@@ -472,7 +485,7 @@ theorem stalk_mono_of_mono {F G : Sheaf C X} (f : F ⟶ G) [Mono f] :
 theorem mono_of_stalk_mono {F G : Sheaf C X} (f : F ⟶ G) [∀ x, Mono <| (stalkFunctor C x).map f.1] :
     Mono f :=
   (Sheaf.Hom.mono_iff_presheaf_mono _ _ _).mpr <|
-    (NatTrans.mono_iff_mono_app _ _).mpr fun U =>
+    (NatTrans.mono_iff_mono_app _).mpr fun U =>
       (ConcreteCategory.mono_iff_injective_of_preservesPullback _).mpr <|
         app_injective_of_stalkFunctor_map_injective f.1 U.unop fun ⟨_x, _hx⟩ =>
           (ConcreteCategory.mono_iff_injective_of_preservesPullback _).mp <| inferInstance

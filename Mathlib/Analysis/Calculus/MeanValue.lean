@@ -66,13 +66,12 @@ In this file we prove the following facts:
   strictly differentiable. (This is a corollary of the mean value inequality.)
 -/
 
-
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {F : Type*} [NormedAddCommGroup F]
   [NormedSpace ℝ F]
 
 open Metric Set Asymptotics ContinuousLinearMap Filter
 
-open scoped Classical Topology NNReal
+open scoped Topology NNReal
 
 /-! ### One-dimensional fencing inequalities -/
 
@@ -679,6 +678,7 @@ variable (f f' : ℝ → ℝ) {a b : ℝ} (hab : a < b) (hfc : ContinuousOn f (I
   (g g' : ℝ → ℝ) (hgc : ContinuousOn g (Icc a b)) (hgg' : ∀ x ∈ Ioo a b, HasDerivAt g (g' x) x)
   (hgd : DifferentiableOn ℝ g (Ioo a b))
 
+include hab hfc hff' hgc hgg' in
 /-- Cauchy's **Mean Value Theorem**, `HasDerivAt` version. -/
 theorem exists_ratio_hasDerivAt_eq_ratio_slope :
     ∃ c ∈ Ioo a b, (g b - g a) * f' c = (f b - f a) * g' c := by
@@ -692,6 +692,7 @@ theorem exists_ratio_hasDerivAt_eq_ratio_slope :
   rcases exists_hasDerivAt_eq_zero hab hhc hI hhh' with ⟨c, cmem, hc⟩
   exact ⟨c, cmem, sub_eq_zero.1 hc⟩
 
+include hab in
 /-- Cauchy's **Mean Value Theorem**, extended `HasDerivAt` version. -/
 theorem exists_ratio_hasDerivAt_eq_ratio_slope' {lfa lga lfb lgb : ℝ}
     (hff' : ∀ x ∈ Ioo a b, HasDerivAt f (f' x) x) (hgg' : ∀ x ∈ Ioo a b, HasDerivAt g (g' x) x)
@@ -716,6 +717,7 @@ theorem exists_ratio_hasDerivAt_eq_ratio_slope' {lfa lga lfb lgb : ℝ}
   rcases exists_hasDerivAt_eq_zero' hab hha hhb hhh' with ⟨c, cmem, hc⟩
   exact ⟨c, cmem, sub_eq_zero.1 hc⟩
 
+include hab hfc hff' in
 /-- Lagrange's Mean Value Theorem, `HasDerivAt` version -/
 theorem exists_hasDerivAt_eq_slope : ∃ c ∈ Ioo a b, f' c = (f b - f a) / (b - a) := by
   obtain ⟨c, cmem, hc⟩ : ∃ c ∈ Ioo a b, (b - a) * f' c = (f b - f a) * 1 :=
@@ -724,6 +726,7 @@ theorem exists_hasDerivAt_eq_slope : ∃ c ∈ Ioo a b, f' c = (f b - f a) / (b 
   use c, cmem
   rwa [mul_one, mul_comm, ← eq_div_iff (sub_ne_zero.2 hab.ne')] at hc
 
+include hab hfc hgc hgd hfd in
 /-- Cauchy's Mean Value Theorem, `deriv` version. -/
 theorem exists_ratio_deriv_eq_ratio_slope :
     ∃ c ∈ Ioo a b, (g b - g a) * deriv f c = (f b - f a) * deriv g c :=
@@ -732,6 +735,7 @@ theorem exists_ratio_deriv_eq_ratio_slope :
     (deriv g) hgc fun x hx =>
     ((hgd x hx).differentiableAt <| IsOpen.mem_nhds isOpen_Ioo hx).hasDerivAt
 
+include hab in
 /-- Cauchy's Mean Value Theorem, extended `deriv` version. -/
 theorem exists_ratio_deriv_eq_ratio_slope' {lfa lga lfb lgb : ℝ}
     (hdf : DifferentiableOn ℝ f <| Ioo a b) (hdg : DifferentiableOn ℝ g <| Ioo a b)
@@ -742,10 +746,133 @@ theorem exists_ratio_deriv_eq_ratio_slope' {lfa lga lfb lgb : ℝ}
     (fun x hx => ((hdf x hx).differentiableAt <| Ioo_mem_nhds hx.1 hx.2).hasDerivAt)
     (fun x hx => ((hdg x hx).differentiableAt <| Ioo_mem_nhds hx.1 hx.2).hasDerivAt) hfa hga hfb hgb
 
+include hab hfc hfd in
 /-- Lagrange's **Mean Value Theorem**, `deriv` version. -/
 theorem exists_deriv_eq_slope : ∃ c ∈ Ioo a b, deriv f c = (f b - f a) / (b - a) :=
   exists_hasDerivAt_eq_slope f (deriv f) hab hfc fun x hx =>
     ((hfd x hx).differentiableAt <| IsOpen.mem_nhds isOpen_Ioo hx).hasDerivAt
+
+include hab hfc hfd in
+/-- Lagrange's **Mean Value Theorem**, `deriv` version. -/
+theorem exists_deriv_eq_slope' : ∃ c ∈ Ioo a b, deriv f c = slope f a b := by
+  rw [slope_def_field]
+  exact exists_deriv_eq_slope f hab hfc hfd
+
+/-- A real function whose derivative tends to infinity from the right at a point is not
+differentiable on the right at that point -/
+theorem not_differentiableWithinAt_of_deriv_tendsto_atTop_Ioi (f : ℝ → ℝ) {a : ℝ}
+    (hf : Tendsto (deriv f) (𝓝[>] a) atTop) : ¬ DifferentiableWithinAt ℝ f (Ioi a) a := by
+  replace hf : Tendsto (derivWithin f (Ioi a)) (𝓝[>] a) atTop := by
+    refine hf.congr' ?_
+    filter_upwards [eventually_mem_nhdsWithin] with x hx
+    have : Ioi a ∈ 𝓝 x := by simp [← mem_interior_iff_mem_nhds, hx]
+    exact (derivWithin_of_mem_nhds this).symm
+  by_cases hcont_at_a : ContinuousWithinAt f (Ici a) a
+  case neg =>
+    intro hcontra
+    have := hcontra.continuousWithinAt
+    rw [← ContinuousWithinAt.diff_iff this] at hcont_at_a
+    simp at hcont_at_a
+  case pos =>
+    intro hdiff
+    replace hdiff := hdiff.hasDerivWithinAt
+    rw [hasDerivWithinAt_iff_tendsto_slope, Set.diff_singleton_eq_self not_mem_Ioi_self] at hdiff
+    have h₀ : ∀ᶠ b in 𝓝[>] a,
+        ∀ x ∈ Ioc a b, max (derivWithin f (Ioi a) a + 1) 0 < derivWithin f (Ioi a) x := by
+      rw [(nhdsWithin_Ioi_basis a).eventually_iff]
+      rw [(nhdsWithin_Ioi_basis a).tendsto_left_iff] at hf
+      obtain ⟨b, hab, hb⟩ := hf (Ioi (max (derivWithin f (Ioi a) a + 1) 0)) (Ioi_mem_atTop _)
+      refine ⟨b, hab, fun x hx z hz => ?_⟩
+      simp only [MapsTo, mem_Ioo, mem_Ioi, and_imp] at hb
+      exact hb hz.1 <| hz.2.trans_lt hx.2
+    have h₁ : ∀ᶠ b in 𝓝[>] a, slope f a b < derivWithin f (Ioi a) a + 1 := by
+      rw [(nhds_basis_Ioo _).tendsto_right_iff] at hdiff
+      specialize hdiff ⟨derivWithin f (Ioi a) a - 1, derivWithin f (Ioi a) a + 1⟩ <| by simp
+      filter_upwards [hdiff] with z hz using hz.2
+    have hcontra : ∀ᶠ _ in 𝓝[>] a, False := by
+      filter_upwards [h₀, h₁, eventually_mem_nhdsWithin] with b hb hslope (hab : a < b)
+      have hdiff' : DifferentiableOn ℝ f (Ioc a b) := fun z hz => by
+        refine DifferentiableWithinAt.mono (t := Ioi a) ?_ Ioc_subset_Ioi_self
+        have : derivWithin f (Ioi a) z ≠ 0 := ne_of_gt <| by
+          simp_all only [mem_Ioo, and_imp, mem_Ioc, max_lt_iff]
+        exact differentiableWithinAt_of_derivWithin_ne_zero this
+      have hcont_Ioc : ∀ z ∈ Ioc a b, ContinuousWithinAt f (Icc a b) z := by
+        intro z hz''
+        refine (hdiff'.continuousOn z hz'').mono_of_mem ?_
+        have hfinal : 𝓝[Ioc a b] z = 𝓝[Icc a b] z := by
+          refine nhdsWithin_eq_nhdsWithin' (s := Ioi a) (Ioi_mem_nhds hz''.1) ?_
+          simp only [Ioc_inter_Ioi, le_refl, sup_of_le_left]
+          ext y
+          exact ⟨fun h => ⟨mem_Icc_of_Ioc h, mem_of_mem_inter_left h⟩, fun ⟨H1, H2⟩ => ⟨H2, H1.2⟩⟩
+        rw [← hfinal]
+        exact self_mem_nhdsWithin
+      have hcont : ContinuousOn f (Icc a b) := by
+        intro z hz
+        by_cases hz' : z = a
+        · rw [hz']
+          exact hcont_at_a.mono Icc_subset_Ici_self
+        · exact hcont_Ioc z ⟨lt_of_le_of_ne hz.1 (Ne.symm hz'), hz.2⟩
+      obtain ⟨x, hx₁, hx₂⟩ :=
+        exists_deriv_eq_slope' f hab hcont (hdiff'.mono (Ioo_subset_Ioc_self))
+      specialize hb x ⟨hx₁.1, le_of_lt hx₁.2⟩
+      replace hx₂ : derivWithin f (Ioi a) x = slope f a b := by
+        have : Ioi a ∈ 𝓝 x := by simp [← mem_interior_iff_mem_nhds, hx₁.1]
+        rwa [derivWithin_of_mem_nhds this]
+      rw [hx₂, max_lt_iff] at hb
+      linarith
+    simp [Filter.eventually_false_iff_eq_bot, ← not_mem_closure_iff_nhdsWithin_eq_bot] at hcontra
+
+/-- A real function whose derivative tends to minus infinity from the right at a point is not
+differentiable on the right at that point -/
+theorem not_differentiableWithinAt_of_deriv_tendsto_atBot_Ioi (f : ℝ → ℝ) {a : ℝ}
+    (hf : Tendsto (deriv f) (𝓝[>] a) atBot) : ¬ DifferentiableWithinAt ℝ f (Ioi a) a := by
+  intro h
+  have hf' : Tendsto (deriv (-f)) (𝓝[>] a) atTop := by
+    rw [Pi.neg_def, deriv.neg']
+    exact tendsto_neg_atBot_atTop.comp hf
+  exact not_differentiableWithinAt_of_deriv_tendsto_atTop_Ioi (-f) hf' h.neg
+
+/-- A real function whose derivative tends to minus infinity from the left at a point is not
+differentiable on the left at that point -/
+theorem not_differentiableWithinAt_of_deriv_tendsto_atBot_Iio (f : ℝ → ℝ) {a : ℝ}
+    (hf : Tendsto (deriv f) (𝓝[<] a) atBot) : ¬ DifferentiableWithinAt ℝ f (Iio a) a := by
+  let f' := f ∘ Neg.neg
+  have hderiv : deriv f' =ᶠ[𝓝[>] (-a)] -(deriv f ∘ Neg.neg) := by
+    rw [atBot_basis.tendsto_right_iff] at hf
+    specialize hf (-1) trivial
+    rw [(nhdsWithin_Iio_basis a).eventually_iff] at hf
+    rw [EventuallyEq, (nhdsWithin_Ioi_basis (-a)).eventually_iff]
+    obtain ⟨b, hb₁, hb₂⟩ := hf
+    refine ⟨-b, by linarith, fun x hx => ?_⟩
+    simp only [Pi.neg_apply, Function.comp_apply]
+    suffices deriv f' x = deriv f (-x) * deriv (Neg.neg : ℝ → ℝ) x by simpa using this
+    refine deriv.comp x (differentiableAt_of_deriv_ne_zero ?_) (by fun_prop)
+    rw [mem_Ioo] at hx
+    have h₁ : -x ∈ Ioo b a := ⟨by linarith, by linarith⟩
+    have h₂ : deriv f (-x) ≤ -1 := hb₂ h₁
+    exact ne_of_lt (by linarith)
+  have hmain : ¬ DifferentiableWithinAt ℝ f' (Ioi (-a)) (-a) := by
+    refine not_differentiableWithinAt_of_deriv_tendsto_atTop_Ioi f' <| Tendsto.congr' hderiv.symm ?_
+    refine Tendsto.comp (g := -deriv f) ?_ tendsto_neg_nhdsWithin_Ioi_neg
+    exact Tendsto.comp (g := Neg.neg) tendsto_neg_atBot_atTop hf
+  intro h
+  have : DifferentiableWithinAt ℝ f' (Ioi (-a)) (-a) := by
+    refine DifferentiableWithinAt.comp (g := f) (f := Neg.neg) (t := Iio a) (-a) ?_ ?_ ?_
+    · simp [h]
+    · fun_prop
+    · intro x
+      simp [neg_lt]
+  exact hmain this
+
+/-- A real function whose derivative tends to infinity from the left at a point is not
+differentiable on the left at that point -/
+theorem not_differentiableWithinAt_of_deriv_tendsto_atTop_Iio (f : ℝ → ℝ) {a : ℝ}
+    (hf : Tendsto (deriv f) (𝓝[<] a) atTop) : ¬ DifferentiableWithinAt ℝ f (Iio a) a := by
+  intro h
+  have hf' : Tendsto (deriv (-f)) (𝓝[<] a) atBot := by
+    rw [Pi.neg_def, deriv.neg']
+    exact tendsto_neg_atTop_atBot.comp hf
+  exact not_differentiableWithinAt_of_deriv_tendsto_atBot_Iio (-f) hf' h.neg
 
 end Interval
 
@@ -790,7 +917,7 @@ theorem Convex.mul_sub_le_image_sub_of_le_deriv {D : Set ℝ} (hD : Convex ℝ D
   obtain ⟨a, a_mem, ha⟩ : ∃ a ∈ Ioo x y, deriv f a = (f y - f x) / (y - x) :=
     exists_deriv_eq_slope f hxy' (hf.mono hxyD) (hf'.mono hxyD')
   have : C ≤ (f y - f x) / (y - x) := ha ▸ hf'_ge _ (hxyD' a_mem)
-  exact (le_div_iff (sub_pos.2 hxy')).1 this
+  exact (le_div_iff₀ (sub_pos.2 hxy')).1 this
 
 /-- Let `f : ℝ → ℝ` be a differentiable function. If `C ≤ f'`, then `f` grows at least as fast
 as `C * x`, i.e., `C * (y - x) ≤ f y - f x` whenever `x ≤ y`. -/

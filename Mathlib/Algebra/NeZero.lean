@@ -5,7 +5,7 @@ Authors: Eric Rodriguez
 -/
 import Mathlib.Logic.Basic
 import Mathlib.Algebra.Group.ZeroOne
-import Mathlib.Init.Order.Defs
+import Mathlib.Order.Defs
 
 /-!
 # `NeZero` typeclass
@@ -19,7 +19,7 @@ We create a typeclass `NeZero n` which carries around the fact that `(n : R) ≠
 
 variable {R : Type*} [Zero R]
 
-/-- A type-class version of `n ≠ 0`.  -/
+/-- A type-class version of `n ≠ 0`. -/
 class NeZero (n : R) : Prop where
   /-- The proposition that `n` is not zero. -/
   out : n ≠ 0

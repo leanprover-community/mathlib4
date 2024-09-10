@@ -19,10 +19,7 @@ We introduce a typeclass `Nontrivial` formalizing this property.
 Basic results about nontrivial types are in `Mathlib.Logic.Nontrivial.Basic`.
 -/
 
-
 variable {α : Type*} {β : Type*}
-
-open scoped Classical
 
 /-- Predicate typeclass for expressing that a type is not reduced to a single element. In rings,
 this is equivalent to `0 ≠ 1`. In vector spaces, this is equivalent to positive dimension. -/
@@ -44,6 +41,7 @@ protected theorem Decidable.exists_ne [Nontrivial α] [DecidableEq α] (x : α) 
     exact ⟨y', h.symm⟩
   · exact ⟨y, Ne.symm hx⟩
 
+open Classical in
 theorem exists_ne [Nontrivial α] (x : α) : ∃ y, y ≠ x := Decidable.exists_ne x
 
 -- `x` and `y` are explicit here, as they are often needed to guide typechecking of `h`.
@@ -58,7 +56,7 @@ instance : Nontrivial Prop :=
 
 /-- See Note [lower instance priority]
 
-Note that since this and `nonempty_of_inhabited` are the most "obvious" way to find a nonempty
+Note that since this and `instNonemptyOfInhabited` are the most "obvious" way to find a nonempty
 instance if no direct instance can be found, we give this a higher priority than the usual `100`.
 -/
 instance (priority := 500) Nontrivial.to_nonempty [Nontrivial α] : Nonempty α :=

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Howes, Newell Jensen
 -/
 import Mathlib.GroupTheory.FreeGroup.Basic
-import Mathlib.GroupTheory.QuotientGroup
+import Mathlib.GroupTheory.QuotientGroup.Basic
 
 /-!
 # Defining a group given by generators and relations
@@ -64,25 +64,24 @@ variable {G : Type*} [Group G] {f : α → G} {rels : Set (FreeGroup α)}
 
 local notation "F" => FreeGroup.lift f
 
--- Porting note: `F` has been expanded, because `F r = 1` produces a sorry.
-variable (h : ∀ r ∈ rels, FreeGroup.lift f r = 1)
-
-theorem closure_rels_subset_ker : Subgroup.normalClosure rels ≤ MonoidHom.ker F :=
+theorem closure_rels_subset_ker (h : ∀ r ∈ rels, FreeGroup.lift f r = 1) :
+    Subgroup.normalClosure rels ≤ MonoidHom.ker F :=
   Subgroup.normalClosure_le_normal fun x w ↦ (MonoidHom.mem_ker _).2 (h x w)
 
-theorem to_group_eq_one_of_mem_closure : ∀ x ∈ Subgroup.normalClosure rels, F x = 1 :=
+theorem to_group_eq_one_of_mem_closure (h : ∀ r ∈ rels, FreeGroup.lift f r = 1) :
+    ∀ x ∈ Subgroup.normalClosure rels, F x = 1 :=
   fun _ w ↦ (MonoidHom.mem_ker _).1 <| closure_rels_subset_ker h w
 
 /-- The extension of a map `f : α → G` that satisfies the given relations to a group homomorphism
 from `PresentedGroup rels → G`. -/
-def toGroup : PresentedGroup rels →* G :=
+def toGroup (h : ∀ r ∈ rels, FreeGroup.lift f r = 1) : PresentedGroup rels →* G :=
   QuotientGroup.lift (Subgroup.normalClosure rels) F (to_group_eq_one_of_mem_closure h)
 
 @[simp]
-theorem toGroup.of {x : α} : toGroup h (of x) = f x :=
+theorem toGroup.of (h : ∀ r ∈ rels, FreeGroup.lift f r = 1) {x : α} : toGroup h (of x) = f x :=
   FreeGroup.lift.of
 
-theorem toGroup.unique (g : PresentedGroup rels →* G)
+theorem toGroup.unique (h : ∀ r ∈ rels, FreeGroup.lift f r = 1) (g : PresentedGroup rels →* G)
     (hg : ∀ x : α, g (PresentedGroup.of x) = f x) : ∀ {x}, g x = toGroup h x := by
   intro x
   refine QuotientGroup.induction_on x ?_

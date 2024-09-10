@@ -103,11 +103,9 @@ namespace Field
 
 variable (K : Type*) [Field K]
 
-open scoped Classical
-
 -- see Note [lower instance priority]
-instance (priority := 100) : LocalRing K :=
-  LocalRing.of_isUnit_or_isUnit_one_sub_self fun a =>
+instance (priority := 100) : LocalRing K := by
+  classical exact LocalRing.of_isUnit_or_isUnit_one_sub_self fun a =>
     if h : a = 0 then Or.inr (by rw [h, sub_zero]; exact isUnit_one)
     else Or.inl <| IsUnit.mk0 a h
 

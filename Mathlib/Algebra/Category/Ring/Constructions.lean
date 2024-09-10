@@ -26,7 +26,7 @@ suppress_compilation
 
 universe u u'
 
-open CategoryTheory CategoryTheory.Limits TensorProduct
+open CategoryTheory Limits TensorProduct
 
 namespace CommRingCat
 

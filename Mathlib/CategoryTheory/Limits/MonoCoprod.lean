@@ -109,6 +109,7 @@ section
 variable {I₁ I₂ : Type*} {X : I₁ ⊕ I₂ → C} (c : Cofan X)
   (c₁ : Cofan (X ∘ Sum.inl)) (c₂ : Cofan (X ∘ Sum.inr))
   (hc : IsColimit c) (hc₁ : IsColimit c₁) (hc₂ : IsColimit c₂)
+include hc hc₁ hc₂
 
 /-- Given a family of objects `X : I₁ ⊕ I₂ → C`, a cofan of `X`, and two colimit cofans
 of `X ∘ Sum.inl` and `X ∘ Sum.inr`, this is a cofan for `c₁.pt` and `c₂.pt` whose
@@ -157,13 +158,11 @@ end
 
 section
 
-variable [MonoCoprod C] {I J : Type*} (X : I → C) (ι : J → I) (hι : Function.Injective ι)
+variable [MonoCoprod C] {I J : Type*} (X : I → C) (ι : J → I)
 
-section
-
-variable (c : Cofan X) (c₁ : Cofan (X ∘ ι)) (hc : IsColimit c) (hc₁ : IsColimit c₁)
-
-lemma mono_of_injective_aux (c₂ : Cofan (fun (k : ((Set.range ι)ᶜ : Set I)) => X k.1))
+lemma mono_of_injective_aux (hι : Function.Injective ι) (c : Cofan X) (c₁ : Cofan (X ∘ ι))
+    (hc : IsColimit c) (hc₁ : IsColimit c₁)
+    (c₂ : Cofan (fun (k : ((Set.range ι)ᶜ : Set I)) => X k.1))
     (hc₂ : IsColimit c₂) : Mono (Cofan.IsColimit.desc hc₁ (fun i => c.inj (ι i))) := by
   classical
   let e := ((Equiv.ofInjective ι hι).sumCongr (Equiv.refl _)).trans (Equiv.Set.sumCompl _)
@@ -172,11 +171,14 @@ lemma mono_of_injective_aux (c₂ : Cofan (fun (k : ((Set.range ι)ᶜ : Set I))
   exact IsColimit.ofIsoColimit ((IsColimit.ofCoconeEquiv (Cocones.equivalenceOfReindexing
     (Discrete.equivalence e) (Iso.refl _))).symm hc) (Cocones.ext (Iso.refl _))
 
+variable (hι : Function.Injective ι) (c : Cofan X) (c₁ : Cofan (X ∘ ι))
+  (hc : IsColimit c) (hc₁ : IsColimit c₁)
+include hι
+
+include hc in
 lemma mono_of_injective [HasCoproduct (fun (k : ((Set.range ι)ᶜ : Set I)) => X k.1)] :
     Mono (Cofan.IsColimit.desc hc₁ (fun i => c.inj (ι i))) :=
   mono_of_injective_aux X ι hι c c₁ hc hc₁ _ (colimit.isColimit _)
-
-end
 
 lemma mono_of_injective' [HasCoproduct (X ∘ ι)] [HasCoproduct X]
     [HasCoproduct (fun (k : ((Set.range ι)ᶜ : Set I)) => X k.1)] :
