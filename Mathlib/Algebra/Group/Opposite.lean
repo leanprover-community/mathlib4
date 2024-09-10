@@ -348,9 +348,9 @@ instance instAddCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithO
   natCast_succ := show ∀ n, op ((n + 1 : ℕ) : α) = op ↑(n : ℕ) + 1 by simp [add_comm]
 
 instance instAddCommGroupWithOne [AddCommGroupWithOne α] : AddCommGroupWithOne αᵃᵒᵖ where
-  toAddGroup := instAddGroup
-  __ := instAddCommMonoidWithOne
   toIntCast := instIntCast
+  toAddCommGroup := instAddCommGroup
+  __ := instAddCommMonoidWithOne
   intCast_ofNat _ := congr_arg op <| Int.cast_natCast _
   intCast_negSucc _ := congr_arg op <| Int.cast_negSucc _
 
