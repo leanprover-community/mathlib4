@@ -3,6 +3,7 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+import Mathlib.Algebra.Group.EvenFunction
 import Mathlib.Analysis.SpecialFunctions.Complex.CircleAddChar
 import Mathlib.Analysis.Fourier.FourierTransform
 import Mathlib.NumberTheory.DirichletCharacter.GaussSum
@@ -24,13 +25,6 @@ Basic definitions and properties of the discrete Fourier transform for functions
 -/
 
 open MeasureTheory Finset AddChar ZMod
-
-/-- A function is _even_ if it satisfis `f (-x) = f x` for all `x`. -/
-protected def Function.Even {R R' : Type*} [Neg R] (f : R → R') : Prop := ∀ (x : R), f (-x) = f x
-
-/-- A function is _odd_ if it satisfis `f (-x) = -f x` for all `x`. -/
-protected def Function.Odd {R R' : Type*} [Neg R] [Neg R'] (f : R → R') : Prop :=
-  ∀ (x : R), f (-x) = -(f x)
 
 namespace ZMod
 
