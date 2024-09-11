@@ -51,7 +51,7 @@ theorem mem_ideal_span_X_image {x : MvPolynomial σ R} {s : Set σ} :
 
 /-- If a set `A` is contained in the span of another `B` then the span of `A` is also contained. -/
 lemma sub_span_span_sub {A B : Set (MvPolynomial σ R)} (h : A ⊆ Ideal.span B) :
-    SetLike.coe (Ideal.span A) ⊆ Ideal.span B := by
+    (Ideal.span A : Set (MvPolynomial σ R)) ⊆ Ideal.span B := by
   simp only [SetLike.coe_subset_coe, Ideal.span_le.mpr h]
 
 /-- Spans of two sets `A`, `B` are equal if and only if each is contained in the span of the
