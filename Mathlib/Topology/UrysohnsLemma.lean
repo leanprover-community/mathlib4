@@ -92,7 +92,7 @@ open neighborhood `U`, together with the assumption that `C` satisfies the prope
 latter assumption will make it possible to prove simultaneously both versions of Urysohn's lemma,
 in normal spaces (with `P` always true) and in locally compact spaces (with `P = IsCompact`).
 We put also in the structure the assumption that, for any such pair, one may find an intermediate
-pair inbetween satisfying `P`, to avoid carrying it around in the argument. -/
+pair in between satisfying `P`, to avoid carrying it around in the argument. -/
 structure CU {X : Type*} [TopologicalSpace X] (P : Set X → Prop) where
   /-- The inner set in the inductive construction towards Urysohn's lemma -/
   protected C : Set X
