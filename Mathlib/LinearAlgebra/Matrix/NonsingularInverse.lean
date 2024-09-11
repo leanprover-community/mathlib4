@@ -489,34 +489,16 @@ variable [Fintype m] [DecidableEq m]
 variable (A: Matrix n n α) (U : Matrix n m α) (C : Matrix m m α) (V : Matrix m n α)
 variable [Invertible A] [Invertible C] [Invertible (⅟C + V * ⅟A* U)]
 
-lemma add_mul_mul_invOf_mul_eq_one : (A + U*C*V)*(⅟A - ⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A) = 1 := by
-  calc
-      (A + U*C*V)*(⅟A - ⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A)
-      _ = A*⅟A - A*⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A + U*C*V*⅟A - U*C*V*⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A := by
-        simp_rw [add_sub_assoc, Matrix.add_mul, Matrix.mul_sub, Matrix.mul_assoc]
-      _ = (1 + U*C*V*⅟A) - (U*⅟(⅟C + V*⅟A*U)*V*⅟A + U*C*V*⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A) := by
-        rw [mul_invOf_self, Matrix.one_mul]
-        abel
-      _ = 1 + U*C*V*⅟A - (U + U*C*V*⅟A*U)*⅟(⅟C + V*⅟A*U)*V*⅟A := by
-        rw [sub_right_inj, Matrix.add_mul, Matrix.add_mul, Matrix.add_mul]
-      _ = 1 + U*C*V*⅟A - U*C*(⅟C + V*⅟A*U)*⅟(⅟C + V*⅟A*U)*V*⅟A := by
-        congr
-        simp only [Matrix.mul_add, Matrix.mul_mul_invOf_self_cancel, ← Matrix.mul_assoc]
-      _ = 1 := by
-        rw [Matrix.mul_mul_invOf_self_cancel]
-        abel
-
 /-- If matrices `A`, `C`, and `C⁻¹ + V*A⁻¹*U` are invertible, then so is `A + U * C * V`-/
 def add_mul_mul_inv: Invertible (A + U*C*V) := by
-  apply Matrix.invertibleOfRightInverse _ _ (add_mul_mul_invOf_mul_eq_one A U C V)
+  apply Matrix.invertibleOfRightInverse _ _ (Matrix.add_mul_mul_invOf_mul_eq_one A U C V)
 
 /-- **Woodbury Identity** -/
-theorem add_mul_mul_inv_eq_sub[Invertible (A + U*C*V)]:
+theorem add_mul_mul_inv_eq_sub [Invertible (A + U*C*V)]:
     ⅟(A + U*C*V) = ⅟A - ⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A := by
       rw [@invOf_eq_nonsing_inv]
       apply inv_eq_right_inv
-      apply add_mul_mul_invOf_mul_eq_one
-
+      apply Matrix.add_mul_mul_invOf_mul_eq_one
 
 end Woodbury
 
@@ -658,14 +640,14 @@ theorem list_prod_inv_reverse : ∀ l : List (Matrix n n α), l.prod⁻¹ = (l.r
     rw [List.reverse_cons', List.map_concat, List.prod_concat, List.prod_cons,
       mul_inv_rev, list_prod_inv_reverse Xs]
 
-/-- One form of ** Cramer's rule**. See `Matrix.mulVec_cramer` for a stronger form. -/
+/-- One form of **Cramer's rule**. See `Matrix.mulVec_cramer` for a stronger form. -/
 @[simp]
 theorem det_smul_inv_mulVec_eq_cramer (A : Matrix n n α) (b : n → α) (h : IsUnit A.det) :
     A.det • A⁻¹ *ᵥ b = cramer A b := by
   rw [cramer_eq_adjugate_mulVec, A.nonsing_inv_apply h, ← smul_mulVec_assoc, smul_smul,
     h.mul_val_inv, one_smul]
 
-/-- One form of ** Cramer's rule**. See `Matrix.mulVec_cramer` for a stronger form. -/
+/-- One form of **Cramer's rule**. See `Matrix.mulVec_cramer` for a stronger form. -/
 @[simp]
 theorem det_smul_inv_vecMul_eq_cramer_transpose (A : Matrix n n α) (b : n → α) (h : IsUnit A.det) :
     A.det • b ᵥ* A⁻¹ = cramer Aᵀ b := by

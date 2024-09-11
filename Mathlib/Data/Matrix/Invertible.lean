@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Data.Matrix.Basic
+import Mathlib.Tactic.Abel
 
 /-! # Extra lemmas about invertible matrices
 
@@ -100,5 +101,31 @@ def transposeInvertibleEquivInvertible : Invertible Aᵀ ≃ Invertible A where
     (transposeInvertibleEquivInvertible A).nonempty_congr]
 
 end CommSemiring
+
+section Ring
+
+variable [Ring α] (A : Matrix n n α)
+
+lemma add_mul_mul_invOf_mul_eq_one [Fintype m] [DecidableEq m]
+  (U : Matrix n m α) (C : Matrix m m α) (V : Matrix m n α)
+  [Invertible A] [Invertible C] [Invertible (⅟C + V * ⅟A* U)]:
+  (A + U*C*V)*(⅟A - ⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A) = 1 := by
+  calc
+      (A + U*C*V)*(⅟A - ⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A)
+      _ = A*⅟A - A*⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A + U*C*V*⅟A - U*C*V*⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A := by
+        simp_rw [add_sub_assoc, Matrix.add_mul, Matrix.mul_sub, Matrix.mul_assoc]
+      _ = (1 + U*C*V*⅟A) - (U*⅟(⅟C + V*⅟A*U)*V*⅟A + U*C*V*⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A) := by
+        rw [mul_invOf_self, Matrix.one_mul]
+        abel
+      _ = 1 + U*C*V*⅟A - (U + U*C*V*⅟A*U)*⅟(⅟C + V*⅟A*U)*V*⅟A := by
+        rw [sub_right_inj, Matrix.add_mul, Matrix.add_mul, Matrix.add_mul]
+      _ = 1 + U*C*V*⅟A - U*C*(⅟C + V*⅟A*U)*⅟(⅟C + V*⅟A*U)*V*⅟A := by
+        congr
+        simp only [Matrix.mul_add, Matrix.mul_mul_invOf_self_cancel, ← Matrix.mul_assoc]
+      _ = 1 := by
+        rw [Matrix.mul_mul_invOf_self_cancel]
+        abel
+
+end Ring
 
 end Matrix
