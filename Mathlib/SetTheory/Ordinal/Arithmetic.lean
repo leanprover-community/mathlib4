@@ -1996,7 +1996,7 @@ theorem eq_enumOrd (f : Ordinal → Ordinal) (hS : Unbounded (· < ·) S) :
     StrictMono f ∧ range f = S ↔ f = enumOrd S := by
   constructor
   · rintro ⟨h₁, h₂⟩
-    rwa [← lt_wf.eq_strictMono_iff_eq_range h₁ (enumOrd_strictMono hS), range_enumOrd hS]
+    rwa [← StrictMono.range_inj h₁ (enumOrd_strictMono hS), range_enumOrd hS]
   · rintro rfl
     exact ⟨enumOrd_strictMono hS, range_enumOrd hS⟩
 
