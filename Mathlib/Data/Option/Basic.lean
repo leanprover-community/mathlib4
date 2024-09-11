@@ -137,10 +137,6 @@ variable {p : α → Prop} (f : ∀ a : α, p a → β) (x : Option α)
 theorem pbind_eq_bind (f : α → Option β) (x : Option α) : (x.pbind fun a _ ↦ f a) = x.bind f := by
   cases x <;> simp only [pbind, none_bind', some_bind']
 
-theorem map_bind {α β γ} (f : β → γ) (x : Option α) (g : α → Option β) :
-    Option.map f (x >>= g) = x >>= fun a ↦ Option.map f (g a) := by
-  simp only [← map_eq_map, ← bind_pure_comp, LawfulMonad.bind_assoc]
-
 theorem map_bind' (f : β → γ) (x : Option α) (g : α → Option β) :
     Option.map f (x.bind g) = x.bind fun a ↦ Option.map f (g a) := by cases x <;> simp
 
