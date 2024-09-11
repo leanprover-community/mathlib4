@@ -175,7 +175,7 @@ namespace Game
 
 /-- The birthday of a game is defined as the least birthday among all pre-games that define it. -/
 noncomputable def birthday (x : Game.{u}) : Ordinal.{u} :=
-  sInf (PGame.birthday '' Quotient.mk' ⁻¹' {x})
+  sInf (PGame.birthday '' (Quotient.mk' ⁻¹' {x}))
 
 theorem birthday_eq_pGameBirthday (x : Game) :
     ∃ y : PGame.{u}, ⟦y⟧ = x ∧ y.birthday = birthday x := by
