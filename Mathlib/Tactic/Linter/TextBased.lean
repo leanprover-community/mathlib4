@@ -398,10 +398,13 @@ def lintModules (moduleNames : Array String) (style : ErrorFormat) (fix : Bool) 
   -- If this poses an issue, I can either filter the output
   -- or wait until lint-style.py is fully rewritten in Lean.
   let args := if fix then #["--fix"] else #[]
-  let pythonOutput ← IO.Process.run { cmd := "./scripts/print-style-errors.sh", args := args }
-  if pythonOutput != "" then
+  let output ← IO.Process.output { cmd := "./scripts/print-style-errors.sh", args := args }
+  if output.exitCode != 0 then
     numberErrorFiles := numberErrorFiles + 1
-    IO.print pythonOutput
+    IO.print s!"error: `print-style-error.sh` exited with code {output.exitCode}"
+  else if output.stdout != "" then
+    numberErrorFiles := numberErrorFiles + 1
+    IO.print output.stdout
   formatErrors allUnexpectedErrors style
   if allUnexpectedErrors.size > 0 then
     IO.println s!"error: found {allUnexpectedErrors.size} new style error(s)"
