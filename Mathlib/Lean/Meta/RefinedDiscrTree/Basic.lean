@@ -102,7 +102,7 @@ where
       let mut r := f
       for _ in [:nargs] do
         r := r ++ m!" {← go}"
-      return parenthesize m!"({r})" paren
+      return parenthesize m!"{r}" paren
 
   /-- Format the next expression. -/
   go (paren := true) : StateRefT (List Key) CoreM MessageData := do

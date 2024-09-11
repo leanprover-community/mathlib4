@@ -103,7 +103,7 @@ structure GeneralTheorem where
   /-- theorem name -/
   thmName     : Name
   /-- discrimination tree keys used to index this theorem -/
-  keys        : Array (RefinedDiscrTree.Key × RefinedDiscrTree.LazyEntry)
+  keys        : List (RefinedDiscrTree.Key × RefinedDiscrTree.LazyEntry)
   /-- priority -/
   priority    : Nat  := eval_prio default
   deriving Inhabited

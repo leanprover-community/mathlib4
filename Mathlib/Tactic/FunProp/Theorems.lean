@@ -326,7 +326,7 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
       let thm : GeneralTheorem := {
         funPropName := funPropName
         thmName := declName
-        keys    := keys.toArray
+        keys    := keys
         priority  := prio
       }
       -- todo: maybe do a little bit more careful detection of morphism and transition theorems
