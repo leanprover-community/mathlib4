@@ -12,9 +12,40 @@ import Mathlib.Logic.Equiv.TransferInstance
 import Mathlib.Data.Finsupp.MonomialOrder
 import Mathlib.RingTheory.MvPolynomial.MonomialOrder
 
-/-! # Monomial orders, division algorithm, examples, Dickson orders
+/-! # Division algorithm with respect to monomial orders 
 
-Reference : [Becker-Weispfenning1993] -/
+We provide a division algorithm with respect to monomial orders in polynomial rings.
+Let `R` be a commutative ring, `σ` a type of indeterminates and `m : MonomialOrder σ` 
+a monomial ordering on `σ →₀ ℕ`.
+
+Consider a family of polynomials `b : ι → MvPolynomial σ R` with invertible leading coefficients
+(with respect to `m`) : we assume `hb : ∀ i, IsUnit (m.lCoeff (b i))`).
+
+* `MonomialOrder.div hb f` furnishes 
+  - a finitely supported family `g : ι →₀ MvPolynomial σ R` 
+  - and a “remainder” `r : MvPolynomial σ R` 
+such that the three properties hold:
+  (1) One has `f = ∑ (g i) * (b i) + r` 
+  (2) For every `i`, `m.degree ((g i) * (b i)` is less than or equal to that of `f`
+  (3) For every `i`, every monomial in the support of `r` is strictly smaller 
+    than the leading term of `b i`,
+
+The proof is done by induction, using two standard constructions 
+
+* `MonomialOrder.subLTerm f` deletes the leading term of a polynomial `f`
+
+* `MonomialOrder.reduce hb f` subtracts from `f` the appropriate multiple of `b : MvPolynomial σ R`,
+provided `IsUnit (m.lCoeff b)`. 
+
+* `MonomialOrder.div_set` is the variant of `MonomialOrder.div` for a set of polynomials.
+
+## Reference : [Becker-Weispfenning1993] 
+
+## TODO
+
+* Prove that under `Field F`, `IsUnit (m.lCoeff (b i))` is equivalent to `b i ≠ 0`.
+
+-/
 
 namespace MonomialOrder
 
@@ -93,53 +124,53 @@ theorem degree_reduce_lt {f b : MvPolynomial σ R} (hb : IsUnit (m.lCoeff b))
     rw [H', degree_zero] at K
     exact hf K.symm
 
-theorem monomialOrderDiv {B : Set (MvPolynomial σ R)}
-    (hB : ∀ b ∈ B, IsUnit (m.lCoeff b)) (f : MvPolynomial σ R) :
-    ∃ (g : B →₀ (MvPolynomial σ R)) (r : MvPolynomial σ R),
-      f = Finsupp.linearCombination _ (fun (b : B) ↦ (b : MvPolynomial σ R)) g + r ∧
-        (∀ (b : B), m.degree ((b : MvPolynomial σ R) * (g b)) ≼[m] m.degree f) ∧
-        (∀ c ∈ r.support, ∀ b ∈ B, ¬ (m.degree b ≤ c)) := by
-  by_cases hB' : ∃ b ∈ B, m.degree b = 0
-  · obtain ⟨b, hb, hb0⟩ := hB'
-    use Finsupp.single ⟨b, hb⟩ ((hB b hb).unit⁻¹ • f), 0
+theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
+    (hb : ∀ i, IsUnit (m.lCoeff (b i))) (f : MvPolynomial σ R) :
+    ∃ (g : ι →₀ (MvPolynomial σ R)) (r : MvPolynomial σ R),
+      f = Finsupp.linearCombination _ b g + r ∧
+        (∀ i, m.degree (b i * (g i)) ≼[m] m.degree f) ∧
+        (∀ c ∈ r.support, ∀ i, ¬ (m.degree (b i) ≤ c)) := by
+  by_cases hb' : ∃ i, m.degree (b i) = 0
+  · obtain ⟨i, hb0⟩ := hb'
+    use Finsupp.single i ((hb i).unit⁻¹ • f), 0
     constructor
     · simp only [Finsupp.linearCombination_single, smul_eq_mul, add_zero]
       simp only [smul_mul_assoc, ← smul_eq_iff_eq_inv_smul, Units.smul_isUnit]
       nth_rewrite 2 [eq_C_of_degree_eq_zero hb0]
       rw [mul_comm, smul_eq_C_mul]
     constructor
-    · intro c
-      by_cases hc : c = ⟨b, hb⟩
+    · intro j
+      by_cases hj : j = i
       · apply le_trans degree_mul_le
-        simp only [hc, hb0, Finsupp.single_eq_same, zero_add]
+        simp only [hj, hb0, Finsupp.single_eq_same, zero_add]
         apply le_of_eq
         simp only [EmbeddingLike.apply_eq_iff_eq]
         apply degree_smul (Units.isRegular _)
-      · simp only [Finsupp.single_eq_of_ne (Ne.symm hc), mul_zero, degree_zero, map_zero]
+      · simp only [Finsupp.single_eq_of_ne (Ne.symm hj), mul_zero, degree_zero, map_zero]
         apply bot_le
     · simp
-  push_neg at hB'
+  push_neg at hb'
   by_cases hf0 : f = 0
   · refine ⟨0, 0, by simp [hf0], ?_, by simp⟩
     intro b
     simp only [Finsupp.coe_zero, Pi.zero_apply, mul_zero, degree_zero, map_zero]
     exact bot_le
-  by_cases hf : ∃ b ∈ B, m.degree b ≤ m.degree f
-  · obtain ⟨b, hb, hf⟩ := hf
-    have deg_reduce : m.degree (m.reduce (hB b hb) f) ≺[m] m.degree f := by
-      apply degree_reduce_lt (hB b hb) hf
+  by_cases hf : ∃ i, m.degree (b i) ≤ m.degree f
+  · obtain ⟨i, hf⟩ := hf
+    have deg_reduce : m.degree (m.reduce (hb i) f) ≺[m] m.degree f := by
+      apply degree_reduce_lt (hb i) hf
       intro hf0'
-      apply hB' b hb
+      apply hb' i
       simpa [hf0'] using hf
-    obtain ⟨g', r', H'⟩ := monomialOrderDiv hB (m.reduce (hB b hb) f)
+    obtain ⟨g', r', H'⟩ := monomialOrderDiv hb (m.reduce (hb i) f)
     use g' +
-      Finsupp.single ⟨b, hb⟩ (monomial (m.degree f - m.degree b) ((hB b hb).unit⁻¹ * m.lCoeff f))
+      Finsupp.single i (monomial (m.degree f - m.degree (b i)) ((hb i).unit⁻¹ * m.lCoeff f))
     use r'
     constructor
     · rw [map_add, add_assoc, add_comm _ r', ← add_assoc, ← H'.1]
       simp [reduce]
     constructor
-    · rintro c
+    · rintro j
       simp only [Finsupp.coe_add, Pi.add_apply]
       rw [mul_add]
       apply le_trans degree_add_le
@@ -160,33 +191,30 @@ theorem monomialOrderDiv {B : Set (MvPolynomial σ R)}
           exact bot_le
     · exact H'.2.2
   · push_neg at hf
-    suffices ∃ (g' : B →₀ MvPolynomial σ R), ∃ r',
-        (m.subLTerm f = (Finsupp.linearCombination (MvPolynomial σ R) fun b ↦ ↑b) g' + r') ∧
-        (∀ (b : B), m.degree ((b : MvPolynomial σ R) * (g' b)) ≼[m] m.degree (m.subLTerm f)) ∧
-        (∀ c ∈ r'.support, ∀ b ∈ B, ¬ m.degree b ≤ c) by
+    suffices ∃ (g' : ι →₀ MvPolynomial σ R), ∃ r',
+        (m.subLTerm f = Finsupp.linearCombination (MvPolynomial σ R) b g' + r') ∧
+        (∀ i, m.degree ((b  i) * (g' i)) ≼[m] m.degree (m.subLTerm f)) ∧
+        (∀ c ∈ r'.support, ∀ i, ¬ m.degree (b i) ≤ c) by
       obtain ⟨g', r', H'⟩ := this
       use g', r' +  monomial (m.degree f) (m.lCoeff f)
       constructor
       · simp [← add_assoc, ← H'.1, subLTerm]
       constructor
       · exact fun b ↦ le_trans (H'.2.1 b) (degree_sub_LTerm_le f)
-      · intro c hc b hb
+      · intro c hc i
         by_cases hc' : c ∈ r'.support
-        · exact H'.2.2 c hc' b hb
-        · classical
+        · exact H'.2.2 c hc' i
+        · convert hf i
+          classical
           have := MvPolynomial.support_add hc
           rw [Finset.mem_union, Classical.or_iff_not_imp_left] at this
-          specialize this hc'
-          simp only [mem_support_iff, coeff_monomial, ne_eq, ite_eq_right_iff,
-            coeff_degree_eq_zero_iff, Classical.not_imp] at this
-          rw [← this.1]
-          exact hf b hb
+          simpa only [Finset.mem_singleton] using support_monomial_subset (this hc')
     by_cases hf'0 : m.subLTerm f = 0
     · refine ⟨0, 0, by simp [hf'0], ?_, by simp⟩
       intro b
       simp only [Finsupp.coe_zero, Pi.zero_apply, mul_zero, degree_zero, map_zero]
       exact bot_le
-    · apply monomialOrderDiv hB
+    · apply monomialOrderDiv hb
 termination_by WellFounded.wrap
   ((isWellFounded_iff m.syn fun x x_1 ↦ x < x_1).mp m.wf) (m.toSyn (m.degree f))
 decreasing_by
@@ -197,6 +225,15 @@ decreasing_by
   simp only [subLTerm, sub_eq_zero]
   nth_rewrite 1 [eq_C_of_degree_eq_zero hf0, hf0]
   simp
+
+theorem div_set {B : Set (MvPolynomial σ R)}
+    (hB : ∀ b ∈ B, IsUnit (m.lCoeff b)) (f : MvPolynomial σ R) :
+    ∃ (g : B →₀ (MvPolynomial σ R)) (r : MvPolynomial σ R),
+      f = Finsupp.linearCombination _ (fun (b : B) ↦ (b : MvPolynomial σ R)) g + r ∧
+        (∀ (b : B), m.degree ((b : MvPolynomial σ R) * (g b)) ≼[m] m.degree f) ∧
+        (∀ c ∈ r.support, ∀ b ∈ B, ¬ (m.degree b ≤ c)) := by
+  obtain ⟨g, r, H⟩ := m.monomialOrderDiv (b := fun (p : B) ↦ p) (fun b ↦ hB b b.prop) f
+  exact ⟨g, r, H.1, H.2.1, fun c hc b hb ↦ H.2.2 c hc ⟨b, hb⟩⟩
 
 end MonomialOrder
 
