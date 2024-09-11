@@ -42,6 +42,8 @@ lemma getElem_tail {i} (L : List α) (hi : i < L.tail.length) :
     L.tail[i] = L[i + 1]'(by simp at *; omega) := by
   induction L <;> simp at hi |-
 
+@[deprecated (since := "2024-08-19")] alias nthLe_tail := getElem_tail
+
 theorem injOn_insertNth_index_of_not_mem (l : List α) (x : α) (hx : x ∉ l) :
     Set.InjOn (fun k => insertNth k x l) { n | n ≤ l.length } := by
   induction' l with hd tl IH
