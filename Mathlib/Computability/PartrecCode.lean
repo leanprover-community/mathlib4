@@ -900,7 +900,7 @@ private theorem hG : Primrec G := by
       Primrec.fst
 
 private theorem evaln_map (k c n) :
-    ((((List.range k)[n]?).map (evaln k c)).bind fun b => b) = evaln k c n := by
+    ((List.range k)[n]?.bind fun a ↦ evaln k c a) = evaln k c n := by
   by_cases kn : n < k
   · simp [List.getElem?_range kn]
   · rw [List.getElem?_len_le]
