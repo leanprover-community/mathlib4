@@ -900,26 +900,6 @@ theorem sum_nat_eq_add_sum_succ (f : ℕ → Cardinal.{u}) :
   refine (Equiv.sigmaNatSucc fun i => Quotient.out (f i)).cardinal_eq.trans ?_
   simp only [mk_sum, mk_out, lift_id, mk_sigma]
 
-lemma exists_eq_of_iSup_eq_of_not_isSuccLimit
-    {ι : Type u} (f : ι → Cardinal.{v}) (ω : Cardinal.{v})
-    (hω : ¬ Order.IsSuccLimit ω)
-    (h : ⨆ i : ι, f i = ω) : ∃ i, f i = ω := by
-  subst h
-  refine (isLUB_csSup' ?_).exists_of_not_isSuccLimit hω
-  contrapose! hω with hf
-  rw [iSup, csSup_of_not_bddAbove hf, csSup_empty]
-  exact Order.isSuccLimit_bot
-
-lemma exists_eq_of_iSup_eq_of_not_isLimit
-    {ι : Type u} [hι : Nonempty ι] (f : ι → Cardinal.{v}) (hf : BddAbove (range f))
-    (ω : Cardinal.{v}) (hω : ¬ ω.IsLimit)
-    (h : ⨆ i : ι, f i = ω) : ∃ i, f i = ω := by
-  refine (not_and_or.mp hω).elim (fun e ↦ ⟨hι.some, ?_⟩)
-    (Cardinal.exists_eq_of_iSup_eq_of_not_isSuccLimit.{u, v} f ω · h)
-  cases not_not.mp e
-  rw [← le_zero_iff] at h ⊢
-  exact (le_ciSup hf _).trans h
-
 end Cardinal
 
 /-! ### Well-ordering theorem -/
