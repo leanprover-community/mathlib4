@@ -41,14 +41,17 @@ def docPrimeLinter : Linter where run := withSetOptionIn fun stx ↦ do
       stx[1][3][0]
     else
       stx[1][1]
-  let declName := declId[0].getId
-  let msg := m!"`{declId}` is missing a doc-string, please add one.\n\
+  let declName :=
+    if let `_root_ :: rest := declId[0].getId.components then
+      rest.foldl (· ++ ·) default
+    else (← getCurrNamespace) ++ declId[0].getId
+  let msg := m!"`{declName}` is missing a doc-string, please add one.\n\
           Declarations whose name contains a `'` are expected to contain an explanation for the \
           presence of a `'` in their doc-string. This may consist of discussion of the difference \
           relative to the unprimed version, or an explanation as to why no better naming scheme \
           is possible."
   if docstring[0][1].getAtomVal.isEmpty && declName.toString.contains '\'' then
-    if ← System.FilePath.pathExists "scripts/no_lints_prime_decls.txt" then
+    if ← System.FilePath.pathExists "scripts/no_lints_prime_decls1.txt" then
       if (← IO.FS.lines "scripts/no_lints_prime_decls.txt").contains declName.toString then
         return
       else

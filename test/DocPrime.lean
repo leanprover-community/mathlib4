@@ -7,6 +7,25 @@ set_option linter.docPrime true
 /-- X' has a doc-string -/
 def X' := 0
 
+namespace X
+/--
+warning: `thm_no_doc1'` is missing a doc-string, please add one.
+Declarations whose name contains a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.
+note: this linter can be disabled with `set_option linter.docPrime false`
+-/
+#guard_msgs in
+theorem _root_.thm_no_doc1' : True := .intro
+
+/--
+warning: `X.thm_no_doc2'` is missing a doc-string, please add one.
+Declarations whose name contains a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.
+note: this linter can be disabled with `set_option linter.docPrime false`
+-/
+#guard_msgs in
+theorem thm_no_doc2' : True := .intro
+
+end X
+
 /--
 warning: `thm_no_doc'` is missing a doc-string, please add one.
 Declarations whose name contains a `'` are expected to contain an explanation for the presence of a `'` in their doc-string. This may consist of discussion of the difference relative to the unprimed version, or an explanation as to why no better naming scheme is possible.
