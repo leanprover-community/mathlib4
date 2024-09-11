@@ -5,7 +5,6 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.Ring.Defs
-import Mathlib.Algebra.SMulWithZero
 
 /-!
 # Commutativity and associativity of action of integers on rings
