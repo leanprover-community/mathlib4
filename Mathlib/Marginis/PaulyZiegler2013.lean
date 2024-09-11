@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Bjørn Kjos-Hanssen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bjørn Kjos-Hanssen, Clark Eggerman
+Authors: Bjørn Kjos-Hanssen
 -/
 import Mathlib.LinearAlgebra.Matrix.Trace
 import Mathlib.Data.Real.Basic
@@ -29,28 +29,23 @@ In that case, we show that one of the four variables can be ignored and the conv
 def Henkin {n:ℕ} {U : Type} (R : (Fin n → U) → (Fin n → U) → Prop) :=
   ∃ Y : Fin n → U → U, ∀ x : Fin n → U, R x (fun k ↦ Y k (x k))
 
-example {n : ℕ} {U : Type} (R : (Fin n → U) → (Fin n → U) → Prop) :
+/-- The Henkin property is a kind of "uniform ∀ x, ∃ y". -/
+lemma henkin_implies {n : ℕ} {U : Type} (R : (Fin n → U) → (Fin n → U) → Prop) :
   Henkin R → ∀ x, ∃ y, R x y := by
   intro h x
   obtain ⟨Y,hY⟩ := h
   use (fun k ↦ Y k (x k))
   tauto
 
--- How large a domain do we need in order to separate these? n=0 is not enough:
-
-lemma l₀ {U : Type} (x y : Fin 0 → U) : x =y := by
-  apply funext
-  intro a
-  exfalso
-  exact Nat.not_succ_le_zero a.1 a.2
+/-- There is only one empty tuple. -/
+lemma empty_tuples {U : Type} (x y : Fin 0 → U) : x = y := List.ofFn_inj.mp rfl
 
 
-lemma l₁ {U : Type} (a x : Fin 0 → U) (R : (Fin 0 → U) → (Fin 0 → U) → Prop) (y : Fin 0 → U):
-  R a x → R a y := by
-    intro h
-    rw [← l₀ x y]
-    tauto
+/-- There is only one empty tuple so they "all" have the same properties. -/
+lemma empty_tuples_agree {U : Type} (a x : Fin 0 → U) (R : (Fin 0 → U) → (Fin 0 → U) → Prop)
+    (y : Fin 0 → U) (h : R a x) : R a y := (empty_tuples x y) ▸ h
 
+/-- How large a domain do we need in order to separate Henkin and ∀x ∃y? n=0 is not enough -/
 lemma zero_not_enough : ¬ ∃ U, ∃ (R : (Fin 0 → U) → (Fin 0 → U) → Prop),
   (∀ x, ∃ y, R x y) ∧ ¬ Henkin R := by
     push_neg
@@ -58,11 +53,10 @@ lemma zero_not_enough : ¬ ∃ U, ∃ (R : (Fin 0 → U) → (Fin 0 → U) → P
     use (fun k : Fin 0 ↦ False.elim (Nat.not_succ_le_zero k.1 k.2))
     intro x
     obtain ⟨y,hy⟩ := h x
-    let Q := l₁ x y R
-    apply Q
-    tauto
+    apply empty_tuples_agree x y R
+    exact hy
 
--- n=1 is not enough either. The proof uses Choice:
+/-- n=1 is not enough to separate Henkin and ∀x∃y, either. The proof uses Choice. -/
 lemma one_not_enough : ¬ ∃ U, ∃ (R : (Fin 1 → U) → (Fin 1 → U) → Prop),
   (∀ x, ∃ y, R x y) ∧ ¬ Henkin R := by
     push_neg
@@ -87,8 +81,8 @@ lemma one_not_enough : ¬ ∃ U, ∃ (R : (Fin 1 → U) → (Fin 1 → U) → Pr
     exact (Classical.choice (nonempty_subtype.mpr (h fun _ ↦ x 0))).2
 
 
--- n=2 may be enough, but not if U has only one element:
-example {n : ℕ} : ¬ ∃ (R : (Fin n → Unit) → (Fin n → Unit) → Prop),
+/-- n=2 may be enough to separate Henkin and ∀x∃y, but not if U has only one element. -/
+lemma unit_not_enough {n : ℕ} : ¬ ∃ (R : (Fin n → Unit) → (Fin n → Unit) → Prop),
   (∀ x, ∃ y, R x y) ∧ ¬ Henkin R := by
     intro hc
     obtain ⟨R,hR⟩ := hc
@@ -107,7 +101,7 @@ example {n : ℕ} : ¬ ∃ (R : (Fin n → Unit) → (Fin n → Unit) → Prop),
 
 /-- n=2 is enough with U having two elements.
   We can even ignore one of the variables (`y 1` below) completely. -/
-example : ∃ (R : (Fin 2 → Bool) → (Fin 2 → Bool) → Prop),
+lemma separate_henkin : ∃ (R : (Fin 2 → Bool) → (Fin 2 → Bool) → Prop),
   (∀ x, ∃ y, R x y) ∧ ¬ Henkin R := by
   use (fun x y ↦  y 0 = xor (x 0) (x 1))
   constructor
@@ -166,13 +160,7 @@ theorem implies_HenkinInfinite {A : Type}
   push_neg at hs
   obtain ⟨a,ha⟩ := hs
   use a, (fun _ => f)
-  simp only [Fin.isValue, ne_eq]
-  intro x
-  constructor
-  · constructor
-    · intro h;rw [h]
-    · intro h;exact hi h
-  exact ha _
+  exact fun x => ⟨⟨congrArg f, @hi (x 0) (x 1)⟩, ha _⟩
 
 /-- A result mentioned in Wikipedia at
   https://en.wikipedia.org/wiki/Branching_quantifier#Definition_and_properties -/
