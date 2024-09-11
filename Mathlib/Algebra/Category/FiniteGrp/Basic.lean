@@ -17,7 +17,7 @@ universe u v
 
 open CategoryTheory
 
-/--Defining the structure of finite group-/
+/-- The structure of finite groups -/
 @[pp_with_univ]
 structure FiniteGrp where
   /--A group that is finite-/
