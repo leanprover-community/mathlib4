@@ -507,6 +507,60 @@ theorem HasFPowerSeriesAt.eventually_eq_zero
   let ⟨_, hr⟩ := hf
   hr.eventually_eq_zero
 
+
+@[simp] lemma hasFPowerSeriesWithinOnBall_univ :
+    HasFPowerSeriesWithinOnBall f p univ x r ↔ HasFPowerSeriesOnBall f p x r := by
+  constructor
+  · intro h
+    refine ⟨h.r_le, h.r_pos, fun {y} m ↦ h.hasSum (by simp) m⟩
+  · intro h
+    exact ⟨h.r_le, h.r_pos, fun {y} _ m => h.hasSum m⟩
+
+@[simp] lemma hasFPowerSeriesWithinAt_univ :
+    HasFPowerSeriesWithinAt f p univ x ↔ HasFPowerSeriesAt f p x := by
+  simp only [HasFPowerSeriesWithinAt, hasFPowerSeriesWithinOnBall_univ, HasFPowerSeriesAt]
+
+@[simp] lemma analyticWithinAt_univ :
+    AnalyticWithinAt 𝕜 f univ x ↔ AnalyticAt 𝕜 f x := by
+  simp [AnalyticWithinAt, AnalyticAt]
+
+@[simp] lemma analyticWithinOn_univ {f : E → F} :
+    AnalyticWithinOn 𝕜 f univ ↔ AnalyticOn 𝕜 f univ := by
+  simp only [AnalyticWithinOn, analyticWithinAt_univ, AnalyticOn]
+
+lemma HasFPowerSeriesWithinOnBall.mono (hf : HasFPowerSeriesWithinOnBall f p s x r) (h : t ⊆ s) :
+    HasFPowerSeriesWithinOnBall f p t x r where
+  r_le := hf.r_le
+  r_pos := hf.r_pos
+  hasSum hy h'y := hf.hasSum (insert_subset_insert h hy) h'y
+
+lemma HasFPowerSeriesOnBall.hasFPowerSeriesWithinOnBall (hf : HasFPowerSeriesOnBall f p x r) :
+    HasFPowerSeriesWithinOnBall f p s x r := by
+  rw [← hasFPowerSeriesWithinOnBall_univ] at hf
+  exact hf.mono (subset_univ _)
+
+lemma HasFPowerSeriesWithinAt.mono (hf : HasFPowerSeriesWithinAt f p s x) (h : t ⊆ s) :
+    HasFPowerSeriesWithinAt f p t x := by
+  obtain ⟨r, hp⟩ := hf
+  exact ⟨r, hp.mono h⟩
+
+lemma HasFPowerSeriesAt.hasFPowerSeriesWithinAt (hf : HasFPowerSeriesAt f p x) :
+    HasFPowerSeriesWithinAt f p s x := by
+  rw [← hasFPowerSeriesWithinAt_univ] at hf
+  apply hf.mono (subset_univ _)
+
+lemma AnalyticWithinAt.mono (hf : AnalyticWithinAt 𝕜 f s x) (h : t ⊆ s) :
+    AnalyticWithinAt 𝕜 f t x := by
+  obtain ⟨p, hp⟩ := hf
+  exact ⟨p, hp.mono h⟩
+
+lemma AnalyticAt.analyticWithinAt (hf : AnalyticAt 𝕜 f x) : AnalyticWithinAt 𝕜 f s x := by
+  rw [← analyticWithinAt_univ] at hf
+  apply hf.mono (subset_univ _)
+
+lemma AnalyticOn.analyticWithinOn (hf : AnalyticOn 𝕜 f s) : AnalyticWithinOn 𝕜 f s :=
+  fun x hx ↦ (hf x hx).analyticWithinAt
+
 theorem hasFPowerSeriesOnBall_const {c : F} {e : E} :
     HasFPowerSeriesOnBall (fun _ => c) (constFormalMultilinearSeries 𝕜 E c) e ⊤ := by
   refine ⟨by simp, WithTop.zero_lt_top, fun _ => hasSum_single 0 fun n hn => ?_⟩
@@ -521,6 +575,13 @@ theorem analyticAt_const {v : F} : AnalyticAt 𝕜 (fun _ => v) x :=
 
 theorem analyticOn_const {v : F} {s : Set E} : AnalyticOn 𝕜 (fun _ => v) s :=
   fun _ _ => analyticAt_const
+
+theorem analyticWithinAt_const {v : F} {s : Set E} : AnalyticWithinAt 𝕜 (fun _ => v) s x :=
+  analyticAt_const.analyticWithinAt
+
+theorem analyticWithinOn_const {v : F} {s : Set E} : AnalyticWithinOn 𝕜 (fun _ => v) s :=
+  analyticOn_const.analyticWithinOn
+
 
 theorem HasFPowerSeriesOnBall.add (hf : HasFPowerSeriesOnBall f pf x r)
     (hg : HasFPowerSeriesOnBall g pg x r) : HasFPowerSeriesOnBall (f + g) (pf + pg) x r :=
@@ -601,56 +662,6 @@ theorem AnalyticOn.neg (hf : AnalyticOn 𝕜 f s) : AnalyticOn 𝕜 (-f) s :=
 theorem AnalyticOn.sub (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g s) :
     AnalyticOn 𝕜 (f - g) s :=
   fun z hz => (hf z hz).sub (hg z hz)
-
-@[simp] lemma hasFPowerSeriesWithinOnBall_univ :
-    HasFPowerSeriesWithinOnBall f p univ x r ↔ HasFPowerSeriesOnBall f p x r := by
-  constructor
-  · intro h
-    refine ⟨h.r_le, h.r_pos, fun {y} m ↦ h.hasSum (by simp) m⟩
-  · intro h
-    exact ⟨h.r_le, h.r_pos, fun {y} _ m => h.hasSum m⟩
-
-@[simp] lemma hasFPowerSeriesWithinAt_univ :
-    HasFPowerSeriesWithinAt f p univ x ↔ HasFPowerSeriesAt f p x := by
-  simp only [HasFPowerSeriesWithinAt, hasFPowerSeriesWithinOnBall_univ, HasFPowerSeriesAt]
-
-@[simp] lemma analyticWithinAt_univ :
-    AnalyticWithinAt 𝕜 f univ x ↔ AnalyticAt 𝕜 f x := by
-  simp [AnalyticWithinAt, AnalyticAt]
-
-@[simp] lemma analyticWithinOn_univ {f : E → F} :
-    AnalyticWithinOn 𝕜 f univ ↔ AnalyticOn 𝕜 f univ := by
-  simp only [AnalyticWithinOn, analyticWithinAt_univ, AnalyticOn]
-
-lemma HasFPowerSeriesWithinOnBall.mono (hf : HasFPowerSeriesWithinOnBall f p s x r) (h : t ⊆ s) :
-    HasFPowerSeriesWithinOnBall f p t x r where
-  r_le := hf.r_le
-  r_pos := hf.r_pos
-  hasSum hy h'y := hf.hasSum (insert_subset_insert h hy) h'y
-
-lemma HasFPowerSeriesOnBall.hasFPowerSeriesWithinOnBall (hf : HasFPowerSeriesOnBall f p x r) :
-    HasFPowerSeriesWithinOnBall f p s x r := by
-  rw [← hasFPowerSeriesWithinOnBall_univ] at hf
-  exact hf.mono (subset_univ _)
-
-lemma HasFPowerSeriesWithinAt.mono (hf : HasFPowerSeriesWithinAt f p s x) (h : t ⊆ s) :
-    HasFPowerSeriesWithinAt f p t x := by
-  obtain ⟨r, hp⟩ := hf
-  exact ⟨r, hp.mono h⟩
-
-lemma HasFPowerSeriesAt.hasFPowerSeriesWithinAt (hf : HasFPowerSeriesAt f p x) :
-    HasFPowerSeriesWithinAt f p s x := by
-  rw [← hasFPowerSeriesWithinAt_univ] at hf
-  apply hf.mono (subset_univ _)
-
-lemma AnalyticWithinAt.mono (hf : AnalyticWithinAt 𝕜 f s x) (h : t ⊆ s) :
-    AnalyticWithinAt 𝕜 f t x := by
-  obtain ⟨p, hp⟩ := hf
-  exact ⟨p, hp.mono h⟩
-
-lemma AnalyticAt.analyticWithinAt (hf : AnalyticAt 𝕜 f x) : AnalyticWithinAt 𝕜 f s x := by
-  rw [← analyticWithinAt_univ] at hf
-  apply hf.mono (subset_univ _)
 
 theorem HasFPowerSeriesWithinOnBall.coeff_zero (hf : HasFPowerSeriesWithinOnBall f pf s x r)
     (v : Fin 0 → E) : pf 0 v = f x := by
