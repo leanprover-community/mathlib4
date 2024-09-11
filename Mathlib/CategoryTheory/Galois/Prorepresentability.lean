@@ -33,6 +33,20 @@ groups of all Galois objects.
 - `FiberFunctor.isPretransitive_of_isConnected`: The `Aut F` action on the fiber of a connected
   object is transitive.
 
+## Implementation details
+
+The pro-representability statement and the isomorphism of `Aut F` with the limit over the
+automorphism groups of all Galois objects naturally forces `F` to take values in `FintypeCat.{u₂}`
+where `u₂` is the `Hom`-universe of `C`. Since this is used to show that `Aut F` acts
+transitively on `F.obj X` for connected `X`, we a priori only obtain this result for
+the mentioned specialized universe setup. To obtain the result for `F` taking values in an arbitrary
+`FintypeCat.{w}`, we postcompose with an equivalence `FintypeCat.{w} ≌ FintypeCat.{u₂}` and apply
+the specialized result.
+
+In the following the section `Specialized` is reserved for the setup where `F` takes values in
+`FintypeCat.{u₂}` and the section `General` contains results holding for `F` taking values in
+an arbitrary `FintypeCat.{w}`.
+
 ## References
 
 * [lenstraGSchemes]: H. W. Lenstra. Galois theory for schemes.
@@ -449,7 +463,7 @@ instance FiberFunctor.isPretransitive_of_isConnected (X : C) [IsConnected X] :
       erw [FintypeCat.switchUniverseEquiv_naturality (F.map f)]
       rw [← Functor.comp_map, ← FunctorToFintypeCat.naturality]
       simp only [comp_obj, Functor.comp_map, F']
-      rw [FintypeCat.switchUniverseEquiv_naturality' (F.map f)]
+      rw [FintypeCat.switchUniverseEquiv_symm_naturality (F.map f)]
     refine ⟨g, show (gapp X).hom x = y from ?_⟩
     simp only [FintypeCat.equivEquivIso_apply_hom, Equiv.trans_apply,
       FintypeCat.equivEquivIso_symm_apply_apply, Iso.app_hom, gapp]
