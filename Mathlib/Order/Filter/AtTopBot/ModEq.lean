@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Data.Nat.ModEq
-import Mathlib.Order.Filter.AtTopBot
+import Mathlib.Order.Filter.AtTopBot.Monoid
 
 /-!
 # Numbers are frequently ModEq to fixed numbers
