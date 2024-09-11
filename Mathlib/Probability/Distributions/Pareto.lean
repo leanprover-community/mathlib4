@@ -72,7 +72,7 @@ lemma measurable_paretoPDFReal (t r : ℝ) : Measurable (paretoPDFReal t r) :=
 
 /-- The pareto pdf is positive for all reals >= t -/
 lemma paretoPDFReal_pos {t r x : ℝ} (ht : 0 < t) (hr : 0 < r) (hx : t ≤ x) :
-  0 < paretoPDFReal t r x := by
+    0 < paretoPDFReal t r x := by
   rw [paretoPDFReal, if_pos hx]
   have _ : 0 < x := by linarith
   positivity
