@@ -31,4 +31,13 @@ elab "#tips" : command => do
   dbg_trace "Unused declarations: {tips.size}"
   dbg_trace "With size: {withLengths.qsort (·.2 < ·.2)}"
 
-#tips
+elab "#direct_deps" : command => do
+  let env ← getEnv
+  let mut tips : Std.HashMap Name Nat := ← liftCoreM do
+    env.constants.map₁.foldM (init := {}) fun map n ci => do
+      if (← n.isBlackListed) || n.getRoot == `Lean then return map else return map.insert n ci.getUsedConstantsAsSet.size
+  dbg_trace "Total declarations: {tips.size}"
+  dbg_trace "With size: {tips.toArray.qsort (·.2 < ·.2)}"
+
+--#tips
+#direct_deps
