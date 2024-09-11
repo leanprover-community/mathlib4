@@ -836,7 +836,7 @@ theorem contDiffOn_succ_of_fderivWithin {n : ℕ} (hf : DifferentiableOn 𝕜 f 
   exact
     ⟨s, self_mem_nhdsWithin, fderivWithin 𝕜 f s, fun y hy => (hf y hy).hasFDerivWithinAt, h x hx⟩
 
-theorem contDiffOn_omega_of_fderivWithin (hf : AnalyticWithinOn 𝕜 f s)
+theorem contDiffOn_of_analyticWithinOn_of_fderivWithin (hf : AnalyticWithinOn 𝕜 f s)
     (h : ContDiffOn 𝕜 ω (fun y ↦ fderivWithin 𝕜 f s y) s) : ContDiffOn 𝕜 n f s := by
   suffices ContDiffOn 𝕜 ω f s from this.of_le le_top
   intro x hx
@@ -874,7 +874,7 @@ condition is not needed when the space is complete, see `AnalyticWithinOn.contDi
 theorem contDiffOn_omega_iff_fderivWithin (hs : UniqueDiffOn 𝕜 s) :
     ContDiffOn 𝕜 ω f s ↔
       AnalyticWithinOn 𝕜 f s ∧ ContDiffOn 𝕜 ω (fun y => fderivWithin 𝕜 f s y) s := by
-  refine ⟨fun H => ?_, fun h => contDiffOn_omega_of_fderivWithin h.1 h.2⟩
+  refine ⟨fun H => ?_, fun h => contDiffOn_of_analyticWithinOn_of_fderivWithin h.1 h.2⟩
   refine ⟨H.analyticWithinOn, fun x hx => ?_⟩
   rcases contDiffWithinAt_omega_iff_hasFDerivWithinAt.1 (H x hx) with ⟨u, hu, -, f', hff', hf'⟩
   rcases mem_nhdsWithin.1 hu with ⟨o, o_open, xo, ho⟩
@@ -1148,10 +1148,10 @@ theorem contDiff_one_iff_hasFDerivAt : ContDiff 𝕜 1 f ↔
     ∃ f' : E → E →L[𝕜] F, Continuous f' ∧ ∀ x, HasFDerivAt f (f' x) x := by
   convert contDiff_succ_iff_hasFDerivAt using 4; simp
 
-theorem contDiff_omega_of_fderiv (hf : AnalyticOn 𝕜 f univ)
+theorem contDiff_of_analyticOn_of_fderiv (hf : AnalyticOn 𝕜 f univ)
     (h : ContDiff 𝕜 ω (fun y ↦ fderiv 𝕜 f y)) : ContDiff 𝕜 n f := by
   rw [← contDiffOn_univ] at h ⊢
-  apply contDiffOn_omega_of_fderivWithin
+  apply contDiffOn_of_analyticWithinOn_of_fderivWithin
   · simpa using hf
   · simpa [fderivWithin_univ] using h
 
