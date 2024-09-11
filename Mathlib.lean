@@ -4198,7 +4198,6 @@ import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.IrreducibleDef
-import Mathlib.Tactic.LeanSearchExamples
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.Lift
 import Mathlib.Tactic.LiftLets
@@ -4754,6 +4753,7 @@ import Mathlib.Util.Export
 import Mathlib.Util.FormatTable
 import Mathlib.Util.GetAllModules
 import Mathlib.Util.IncludeStr
+import Mathlib.Util.LeanSearchExamples
 import Mathlib.Util.LongNames
 import Mathlib.Util.MemoFix
 import Mathlib.Util.Notation3
