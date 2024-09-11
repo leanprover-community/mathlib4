@@ -698,6 +698,24 @@ lemma existence_omega_aux (n : ℕ) : ∀ (X : C) [IsLE X 0], Finset.card (suppo
       rw [Limits.IsZero.eq_zero_of_src h₀ f, Limits.IsZero.eq_zero_of_src h₀ g]
     exact Limits.isIso_of_isInitial h₁.isInitial h₂.isInitial _
   · set b := sSup (support X).toSet
+    set T := (triangleGELT b).obj X
+    set dT := triangleGELT_distinguished b X
+    have : IsLE T.obj₁ 0 := sorry
+    have : IsLE T.obj₃ 0 := sorry
+    have h₁ : Finset.card (support T.obj₁) = 1 := sorry
+    have h₃ : Finset.card (support T.obj₃) < n := sorry
+    obtain ⟨Y₁, s₁, hY₁⟩ := existence_omega_support_singleton T.obj₁ h₁
+    obtain ⟨Y₃, s₃, hY₃⟩ := hn _ h₃ T.obj₃ rfl
+    have : IsGE Y₃.1 0 := {ge := Y₃.2.2}
+    have := hY₃ (Y₁.1⟦(1 : ℤ)⟧) inferInstance
+    set w : Y₃.obj ⟶ Y₁.obj⟦(1 : ℤ)⟧ := inv (((preadditiveYoneda.obj (Y₁.obj⟦(1 : ℤ)⟧)).map s₃.op))
+      (T.mor₃ ≫ s₁⟦1⟧') with hwdef
+    have hw : s₃ ≫ w = T.mor₃ ≫ s₁⟦1⟧' := by
+      rw [hwdef]
+      simp only [preadditiveYoneda_obj, Functor.comp_obj, preadditiveYonedaObj_obj,
+        ModuleCat.forget₂_obj, AddCommGrp.coe_of, Functor.comp_map, preadditiveYonedaObj_map,
+        Quiver.Hom.unop_op, ModuleCat.forget₂_map]
+      sorry
     sorry
 
   #exit
