@@ -71,17 +71,23 @@ private def evalNode (trie : TrieIndex) :
     | some xs =>
       for (key, entry) in xs do
         let entry := (entry, value)
-        if let .star id := key then
+        match star? key with
+        | some id =>
           match stars[id]? with
+          | some idx => addLazyEntryToTrie idx entry
           | none     => stars := stars.insert id (← newTrie entry)
-          | some idx => addLazyEntryToTrie idx entry
-        else
+        | none =>
           match children[key]? with
-          | none     => children := children.insert key (← newTrie entry)
           | some idx => addLazyEntryToTrie idx entry
+          | none     => children := children.insert key (← newTrie entry)
 
   setTrie trie <| .node values stars children #[]
   return (values, stars, children)
+where
+  /-- Helper function that helps reduce compilation time -/
+  @[inline] star? : Key → Option Nat
+    | .star id => some id
+    | _ => none
 
 
 /--
@@ -217,7 +223,7 @@ where
 /-- Add to the `todo` stack the match with `key`. -/
 private def matchKey (key : Key) (children : Std.HashMap Key TrieIndex) (pMatch : PartialMatch)
     (todo : Array PartialMatch) : Array PartialMatch :=
-  if key matches .opaque then todo else
+  if key == .opaque then todo else
   match children[key]? with
   | none      => todo
   | some trie => todo.push { pMatch with trie, score := pMatch.score + 1 }
@@ -263,7 +269,7 @@ def getMatch (d : RefinedDiscrTree α) (e : Expr) (config : WhnfCoreConfig := {}
   let (key, keys) ← encodeExpr' e config
   withReducible do runTreeM d do
     let pMatch : PartialMatch := { keys, score := 0, trie := default }
-    if key matches .star _ then
+    if key == .star 0 then
       if unify then
         if matchRootStar then
           matchEverything d

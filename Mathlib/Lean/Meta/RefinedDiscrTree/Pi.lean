@@ -9,7 +9,7 @@ import Lean.Meta.WHNF
 /-!
 # Reducing Pi instances for indexing in the RefinedDiscrTree
 
-The function `reducePi` reduces operations `+`, `-`, `*`, `/`, `⁻¹`, `+ᵥ`, `•`, `^`,
+The function `Pi.reduce` reduces operations `+`, `-`, `*`, `/`, `⁻¹`, `+ᵥ`, `•`, `^`,
 according to the following reductions:
 - η-expand: increase the number of arguments in case of under application.
   For example `HAdd.hAdd a` is turned into `fun x => a + x`.
@@ -38,9 +38,7 @@ the bound variable. In this case we never want to distribute the function.
 
 -/
 
-open Lean Meta
-
-namespace Lean.Meta.RefinedDiscrTree
+namespace Lean.Meta.RefinedDiscrTree.Pi
 
 /-- Reduce the Pi type instance to whnf, reducing inside of `numArgs` lambda binders. -/
 private def unfoldPiInst (inst : Expr) (numArgs : Nat) : MetaM Expr := do
@@ -172,6 +170,18 @@ private def etaExpand {α} (args : Array Expr) (type : Expr) (lambdas : List FVa
   else
     k args lambdas (by omega)
 
+@[inline] def app6? (fName : Name) (e : Expr) : Option (Expr × Expr × Expr) :=
+  if e.isAppOfArity fName 6 then
+    some (e.appFn!.appFn!.appArg!, e.appFn!.appArg!, e.appArg!)
+  else
+    none
+
+def lambdaBody? (n : Nat) (e : Expr) : Option Expr :=
+match n, e with
+| 0, e => some e
+| n+1, .lam _ _ b _ => lambdaBody? n b
+| _, _ => none
+
 /-- Normalize an application if the head is `⁻¹` or `-`. -/
 def reduceUnOp (n : Name) (args : Array Expr) (lambdas : List FVarId) :
     MetaM (Option (List (Array (Option Expr) × List FVarId))) := withDefault do
@@ -181,47 +191,37 @@ def reduceUnOp (n : Name) (args : Array Expr) (lambdas : List FVarId) :
   etaExpand args type lambdas 3 fun args lambdas _ => do
     let arg := args[2]
     reduceUnOpAux type inst arg lambdas args #[inst] 3
-      (fun
-        | .lam _ _ (.lam _ _
-          (mkApp6 (.const n' _) _ _ _ inst (.app (.bvar 2) (.bvar 0)) (.bvar 1))
-          _) _ => if n' == n then inst else none
-        | _ => none) 1
+      (lambdaBody? 2 >=> app6? n >=> fun (inst, f, b) =>
+        if (b == .bvar 1 && f == .app (.bvar 2) (.bvar 0)) then inst else none) 1
       (fun type arg => #[type, none, arg])
 
 /-- Normalize an application if the head is `•` or `+ᵥ`. -/
 def reduceHActOp (n : Name) (args : Array Expr) (lambdas : List FVarId) :
     MetaM (Option (List (Array (Option Expr) × List FVarId))) := withDefault do
   if h : args.size < 5 then return none else
-  let mkApp3 (.const i _) α type inst := args[3] | return none
-  let instH := match n with
+  let rec instH := match n with
     | `HVAdd.hVAdd => `instHVAdd
     | `HSMul.hSMul => `instHSMul
     | _ => unreachable!
-  unless i == instH do return none
+  let some (α, type, inst) := args[3].app3? instH | return none
   etaExpand args type lambdas 6 fun args lambdas _ => do
     let a := args[4]
     let arg := args[5]
     reduceUnOpAux type inst arg lambdas args #[inst, a] 6
-      (fun
-        | .lam _ _ (.lam _ _ (.lam _ _
-          (mkApp6 (.const n' _) _ _ _ inst (.bvar 2) (.app (.bvar 1) (.bvar 0)))
-          _) _) _ => if n' == n then inst else none
-        | _ => none) 2
+      (lambdaBody? 3 >=> app6? n >=> fun (inst, f, b) =>
+        if (b == .bvar 1 && f == .app (.bvar 2) (.bvar 0)) then inst else none) 2
       (fun type arg => #[α, type, none, none, a, arg])
 
-/-- Normalize an application if the head is `^`. -/
+/-- Normalize an app lication if the head is `^`. -/
 def reduceHPow (args : Array Expr) (lambdas : List FVarId) :
     MetaM (Option (List (Array (Option Expr) × List FVarId))) := withDefault do
   if h : args.size < 6 then return none else
-  let mkApp3 (.const ``instHPow _) type β inst := args[3] | return none
+  let some (type, β, inst) := args[3].app3? ``instHPow | return none
   let arg := args[4]
   let exp := args[5]
   reduceUnOpAux type inst arg lambdas args #[inst, exp] 6
-      (fun
-        | .lam _ _ (.lam _ _ (.lam _ _
-          (mkApp6 (.const ``HPow.hPow _) _ _ _ inst (.app (.bvar 2) (.bvar 0)) (.bvar 1))
-          _) _) _ => inst
-        | _ => none) 2
+      (lambdaBody? 3 >=> app6? ``HPow.hPow >=> fun (inst, f, b) =>
+        if (b == .bvar 1 && f == .app (.bvar 2) (.bvar 0)) then inst else none) 2
     (fun type arg => #[type, β, none, none, arg, exp])
 
 
@@ -229,24 +229,19 @@ def reduceHPow (args : Array Expr) (lambdas : List FVarId) :
 def reduceHBinOp (n : Name) (args : Array Expr) (lambdas : List FVarId):
     MetaM (Option (List (Array (Option Expr) × List FVarId))) := withDefault do
   if h : args.size < 4 then return none else do
-  let mkApp2 (.const i _) type inst := args[3] | return none
-  let instH := match n with
+  let rec instH := match n with
     | ``HAdd.hAdd => ``instHAdd
     | ``HMul.hMul => ``instHMul
     | ``HSub.hSub => ``instHSub
     | ``HDiv.hDiv => ``instHDiv
     | _ => unreachable!
-  unless i == instH do return none
+  let some (type, inst) := args[3].app2? instH | return none
   etaExpand args type lambdas 6 fun args lambdas _ => do
     let lhs := args[4]
     let rhs := args[5]
     reduceBinOpAux type inst lhs rhs lambdas args #[inst] 6
-      (fun
-        | .lam _ _ (.lam _ _ (.lam _ _
-          (mkApp6 (.const n' _) _ _ _ inst (.app (.bvar 2) (.bvar 0)) (.app (.bvar 1) (.bvar 0)))
-          _) _) _ =>
-          if n == n' then inst else none
-        | _ => none) 2
+      (lambdaBody? 3 >=> app6? n >=> fun (inst, f, b) =>
+        if (b == .bvar 1 && f == .app (.bvar 2) (.bvar 0)) then inst else none) 2
       (fun type lhs rhs => #[type, type, none, none, lhs, rhs])
 
 /--
@@ -263,7 +258,7 @@ We apply the following reductions whenever possible:
 - Absorbing lambdas: lambdas in front of the constant can be moved inside.
   For example `fun x => x + 1` is turned into `(fun x => x) + (fun x => 1)`.
 -/
-def reducePi (e : Expr) (lambdas : List FVarId) :
+def reduce (e : Expr) (lambdas : List FVarId) :
     MetaM (Option (Name × List (Array (Option Expr) × List FVarId))) := do
   if let .const n _ := e.getAppFn then
     match n with
@@ -280,4 +275,4 @@ def reducePi (e : Expr) (lambdas : List FVarId) :
   else
     return none
 
-end Lean.Meta.RefinedDiscrTree
+end Lean.Meta.RefinedDiscrTree.Pi

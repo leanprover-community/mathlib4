@@ -221,7 +221,7 @@ private partial def lambdaTelescopeReduce {m} [Inhabited (m α)] [Monad m] [Mona
         lambdaTelescopeReduce (b.instantiate1 fvar) (fvar.fvarId! :: lambdas) config noIndex k
     | e => k e lambdas
 
-private def useReducePi (name : Name) : Array (Option Expr) × List FVarId → LazyM Key
+private def usePiReduce (name : Name) : Array (Option Expr) × List FVarId → LazyM Key
 | (args, lambdas) => do
   let bvars := lambdas ++ (← read).bvars
   let lctx ← getLCtx
@@ -241,8 +241,8 @@ private def encodingStep (original : Expr) (root : Bool)
       return [← (do withLams lambdas (← mkNewStar)).run entry])
     (fun e lambdas => do
       unless root do
-        if let some (n, as) ← reducePi e lambdas then
-          return ← as.mapM fun data => do (useReducePi n data).run (← read) entry
+        if let some (n, as) ← Pi.reduce e lambdas then
+          return ← as.mapM fun data => do (usePiReduce n data).run (← read) entry
 
       cacheEtaPossibilities e original lambdas root entry)
 
@@ -252,8 +252,8 @@ private def encodingStep' (original : Expr) (root : Bool) : LazyM Key := do
     (fun lambdas => do withLams lambdas (← mkNewStar))
     (fun e lambdas => do
       unless root do
-        if let some (n, as) ← reducePi e lambdas then
-          return ← useReducePi n as.head!
+        if let some (n, as) ← Pi.reduce e lambdas then
+          return ← usePiReduce n as.head!
       encodingStepAux e lambdas root)
 
 /-- Encode `e` as a sequence of keys, computing only the first `Key`. -/
@@ -332,8 +332,8 @@ private partial def processLazyEntryAux' (entry : LazyEntry) :
 
 /-- Determine for each argument whether it should be ignored,
 and return a list consisting of one `StackEntry` for each argument. -/
-private def getEntries (fn : Expr) (args : Array Expr) (bvars : List FVarId) (lctx : LocalContext)
-    (localInsts : LocalInstances) : MetaM (List StackEntry) := do
+private partial def getEntries (fn : Expr) (args : Array Expr) (bvars : List FVarId)
+    (lctx : LocalContext) (localInsts : LocalInstances) : MetaM (List StackEntry) := do
   let mut fnType ← inferType fn
   loop fnType 0 0 []
 where
@@ -346,13 +346,14 @@ where
           loop b (i+1) j (.star :: entries)
         else
           loop b (i+1) j (( .expr { expr := arg, bvars, lctx, localInsts }) :: entries)
-      match fnType with
-      | .forallE _ d b bi => cont j d b bi
-      | fnType =>
+      let rec reduce := do
         match ← whnfD (fnType.instantiateRevRange j i args) with
         | .forallE _ d b bi => cont i d b bi
         | fnType =>
           throwFunctionExpected fnType
+      match fnType with
+      | .forallE _ d b bi => cont j d b bi
+      | _ => reduce
     else
       return entries
   /-- Determine whether the argument should be ignored. -/

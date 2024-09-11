@@ -95,42 +95,35 @@ where
     set keys
     return key
   /-- Format the application `f args`. -/
-  mkApp (f : MessageData) (args : Array MessageData) (paren : Bool) : CoreM MessageData := do
-    if args.isEmpty then
+  mkApp (f : MessageData) (nargs : Nat) (paren : Bool) : StateRefT (List Key) CoreM MessageData :=
+    if nargs == 0 then
       return f
-    else
+    else do
       let mut r := f
-      for arg in args do
-        r := r ++ m!" {arg}"
-      if paren then
-        return m!"({r})"
-      else
-        return r
+      for _ in [:nargs] do
+        r := r ++ m!" {← go}"
+      return parenthesize m!"({r})" paren
+
   /-- Format the next expression. -/
   go (paren := true) : StateRefT (List Key) CoreM MessageData := do
     let key ← next
     match key with
     | .const declName nargs =>
-      mkApp m!"{← mkConstWithLevelParams declName}" (← goN nargs) paren
+      mkApp m!"{← mkConstWithLevelParams declName}" nargs paren
     | .fvar fvarId nargs =>
-      mkApp m!"{mkFVar fvarId}" (← goN nargs) paren
+      mkApp m!"{mkFVar fvarId}" nargs paren
     | .proj _ i nargs =>
-      mkApp m!"{← go}.{i+1}" (← goN nargs) paren
+      mkApp m!"{← go}.{i+1}" nargs paren
     | .bvar i nargs =>
-      mkApp m!"#{i}" (← goN nargs) paren
+      mkApp m!"#{i}" nargs paren
     | .lam =>
-      let r := m!"λ, {← go (paren := false)}"
-      if paren then return m!"({r})" else return r
+      return parenthesize m!"λ, {← go (paren := false)}" paren
     | .forall =>
-      let r := m!"{← go} → {← go (paren := false)}";
-      if paren then return m!"({r})" else return r
+      return parenthesize m!"{← go} → {← go (paren := false)}" paren
     | _ => return key.format
-  /-- Format the next `n` expressions. -/
-  goN (num : Nat) : StateRefT (List Key) CoreM (Array MessageData) := do
-    let mut r := #[]
-    for _ in [: num] do
-      r := r.push (← go)
-    return r
+  /-- Add parentheses if `paren == true`. -/
+  parenthesize (msg : MessageData) (paren : Bool) : MessageData :=
+    if paren then m! "({msg})" else msg
 
 /-- Return the number of arguments that the `Key` takes. -/
 def Key.arity : Key → Nat

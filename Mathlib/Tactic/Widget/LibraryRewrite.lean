@@ -62,24 +62,27 @@ where
     guard (isTricky s)
     match t, s with
     -- Note we don't bother keeping track of universe level metavariables.
-    | .const n₁ _       , .const n₂ _        => guard (n₁ == n₂); return l
-    | .sort _           , .sort _            => return l
+    | .const n₁ _       , .const n₂ _        => guard (n₁ == n₂); some l
+    | .sort _           , .sort _            => some l
     | .forallE _ d₁ b₁ _, .forallE _ d₂ b₂ _ => go d₁ d₂ l >>= go b₁ b₂
     | .lam _ d₁ b₁ _    , .lam _ d₂ b₂ _     => go d₁ d₂ l >>= go b₁ b₂
     | .mdata d₁ e₁      , .mdata d₂ e₂       => guard (d₁ == d₂); go e₁ e₂ l
     | .letE _ t₁ v₁ b₁ _, .letE _ t₂ v₂ b₂ _ => go t₁ t₂ l >>= go v₁ v₂ >>= go b₁ b₂
     | .app f₁ a₁        , .app f₂ a₂         => go f₁ f₂ l >>= go a₁ a₂
     | .proj n₁ i₁ e₁    , .proj n₂ i₂ e₂     => guard (n₁ == n₂ && i₁ == i₂); go e₁ e₂ l
+    | .fvar fvarId₁     , .fvar fvarId₂      => guard (fvarId₁ == fvarId₂); some l
+    | .lit v₁           , .lit v₂            => guard (v₁ == v₂); some l
+    | .bvar i₁          , .bvar i₂           => guard (i₁ == i₂); some l
     | .mvar mvarId₁     , .mvar mvarId₂      =>
       match l.find? mvarId₁ with
       | none =>
         let l := l.insert mvarId₁ mvarId₂
         if mvarId₁ == mvarId₂ then
-          return l
+          some l
         else
-          return l.insert mvarId₂ mvarId₁
-      | some mvarId => guard (mvarId == mvarId₂); return l
-    | t                 , s                  => guard (t == s); return l
+          some <| l.insert mvarId₂ mvarId₁
+      | some mvarId => guard (mvarId == mvarId₂); some l
+    | _                 , _                  => none
   else
     guard (t == s); return l
 
@@ -112,6 +115,7 @@ def addRewriteEntry (name : Name) (cinfo : ConstantInfo) :
   | none => match eqn.iff? with
     | some (lhs, rhs) => cont lhs rhs
     | none => return []
+
 /-- Try adding the local hypothesis to the `RefinedDiscrTree`. -/
 def addLocalRewriteEntry (decl : LocalDecl) :
     MetaM (List ((FVarId × Bool) × List (Key × LazyEntry))) :=
@@ -153,10 +157,6 @@ def getLibrarySearchExcludedModules (o : Options) : List Name :=
   (librarySearch.excludedModules.get o).splitOn.filterMap (match ·.toName with
     | .anonymous => none
     | name => name)
-
-/-- Determine whether the list of names contains a prefix of the name. -/
-def containsPrefixOf (names : List Name) (name : Name) : Bool :=
-  names.any (·.isPrefixOf name)
 
 /-- Get all potential rewrite lemmas from the imported environment.
 By setting the `librarySearch.excludedModules` option, all lemmas from certain modules
@@ -229,12 +229,12 @@ def checkRewrite (thm e : Expr) (symm : Bool) : MetaM (Option Rewrite) := do
   for mvar in mvars, bi in binderInfos do
     -- we need to check that all instances can be synthesized
     if bi.isInstImplicit then
-      let some inst ← withTraceNodeBefore `rw?? (return m! "synthesising {← mvar.mvarId!.getType}")
-        (synthInstance? (← mvar.mvarId!.getType)) | return none
-      let unifies ← withTraceNodeBefore `rw??
-        (return m! "unifying with synthesized instance {mvar} =?= {inst}")
-        (isDefEq inst mvar)
-      unless unifies do
+      let cls ← mvar.mvarId!.getType
+      let synthesized ← withTraceNodeBefore `rw??
+          (return m! "synthesising {cls}, and assigning the result to {mvar}") do
+        let some inst ← synthInstance? cls | return false
+        isDefEq inst mvar
+      unless synthesized do
         return none
     else
       unless ← mvar.mvarId!.isAssigned do
@@ -305,7 +305,7 @@ def getBinderInfos (fn : Expr) (args : Array Expr) : MetaM (Array BinderInfo) :=
   let mut result := Array.mkEmpty args.size
   let mut j := 0
   for i in [:args.size] do
-    unless fnType matches .forallE .. do
+    unless fnType.isForall do
       fnType ← whnfD (fnType.instantiateRevRange j i args)
       j := i
     let .forallE _ _ b bi := fnType | throwError m! "expected function type {indentExpr fnType}"
