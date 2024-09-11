@@ -755,8 +755,7 @@ theorem smul_eq_mul : ∀ (n : ℕ) (a : Ordinal), n • a = a * n
 
 
 /-- The set in the definition of division is nonempty. -/
-@[deprecated (since := "2024-09-11")]
-theorem div_nonempty {a b : Ordinal} (h : b ≠ 0) : { o | a < b * succ o }.Nonempty :=
+private theorem div_nonempty {a b : Ordinal} (h : b ≠ 0) : { o | a < b * succ o }.Nonempty :=
   ⟨a, (succ_le_iff (a := a) (b := b * succ a)).1 <| by
     simpa only [succ_zero, one_mul] using
       mul_le_mul_right' (succ_le_of_lt (Ordinal.pos_iff_ne_zero.2 h)) (succ a)⟩
@@ -773,11 +772,7 @@ private theorem div_def (a) {b : Ordinal} (h : b ≠ 0) : a / b = sInf { o | a <
   dif_neg h
 
 theorem lt_mul_succ_div (a) {b : Ordinal} (h : b ≠ 0) : a < b * succ (a / b) := by
-  rw [div_def a h]
-  refine csInf_mem (s := { o | a < b * succ o }) ⟨a, ?_⟩
-  dsimp
-  rw [← succ_le_iff]
-  exact le_mul_right _ (Ordinal.pos_iff_ne_zero.2 h)
+  rw [div_def a h]; exact csInf_mem (div_nonempty h)
 
 theorem lt_mul_div_add (a) {b : Ordinal} (h : b ≠ 0) : a < b * (a / b) + b := by
   simpa only [mul_succ] using lt_mul_succ_div a h
