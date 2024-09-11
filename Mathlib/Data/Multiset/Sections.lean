@@ -42,7 +42,7 @@ theorem coe_sections :
   | a :: l => by
     simp only [List.map_cons, List.sections]
     rw [← cons_coe, sections_cons, bind_map_comm, coe_sections l]
-    simp [List.sections, (· ∘ ·), List.bind]
+    simp [List.sections, Function.comp_def, List.bind]
 
 @[simp]
 theorem sections_add (s t : Multiset (Multiset α)) :
