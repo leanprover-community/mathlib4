@@ -2,11 +2,10 @@
 Copyright (c) 2024 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
- -/
+-/
 import Mathlib.Analysis.BoxIntegral.Integrability
 
- /-!
- 
+/-!
 # Unit Partition
 
 Fix `n` a positive integer. `BoxIntegral.unitPartition.Box` are boxes in `ι → ℝ` obtained by
@@ -35,7 +34,6 @@ coordinates in `ℤ`
 * `BoxIntegral.unitPartition.prepartition_isPartition`: For `B : BoxIntegral.Box`, if `B`
 has integral corners, the prepartition of `unitPartition.Box` admissible for `B` is a partition
 of `B`.
-
 -/
 
 noncomputable section
