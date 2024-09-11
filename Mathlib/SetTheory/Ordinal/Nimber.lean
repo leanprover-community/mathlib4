@@ -140,10 +140,13 @@ protected theorem pos_iff_ne_zero {a : Nimber} : 0 < a ↔ a ≠ 0 :=
 instance (a : Nimber.{u}) : Small.{u} (Set.Iio a) :=
   Ordinal.small_Iio a
 
-theorem not_small_nimber : ¬ Small.{u} Nimber.{u} :=
-  not_small_ordinal
+instance (a : Nimber.{u}) : Small.{u} (Set.Iic a) :=
+  Ordinal.small_Iic a
 
 end Nimber
+
+theorem not_small_nimber : ¬ Small.{u} Nimber.{max u v} :=
+  not_small_ordinal
 
 namespace Ordinal
 
