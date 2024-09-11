@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Violeta Hernández Palacios, Grayson Burton, Floris van Doorn
 -/
 import Mathlib.Order.Interval.Set.OrdConnected
+import Mathlib.Order.Interval.Set.WithBotTop
 import Mathlib.Order.Antisymmetrization
 
 /-!
@@ -125,6 +126,19 @@ theorem ofDual_wcovBy_ofDual_iff {a b : αᵒᵈ} : ofDual a ⩿ ofDual b ↔ b 
 alias ⟨_, WCovBy.toDual⟩ := toDual_wcovBy_toDual_iff
 
 alias ⟨_, WCovBy.ofDual⟩ := ofDual_wcovBy_ofDual_iff
+
+theorem OrderEmbedding.wcovBy_of_apply {α β : Type*} [Preorder α] [Preorder β]
+    (f : α ↪o β) {x y : α} (h : f x ⩿ f y) : x ⩿ y := by
+  use f.le_iff_le.1 h.1
+  intro a
+  rw [← f.lt_iff_lt, ← f.lt_iff_lt]
+  apply h.2
+
+theorem OrderIso.map_wcovBy {α β : Type*} [Preorder α] [Preorder β]
+    (f : α ≃o β) {x y : α} : f x ⩿ f y ↔ x ⩿ y := by
+  use f.toOrderEmbedding.wcovBy_of_apply
+  conv_lhs => rw [← f.symm_apply_apply x, ← f.symm_apply_apply y]
+  exact f.symm.toOrderEmbedding.wcovBy_of_apply
 
 end Preorder
 
@@ -311,6 +325,19 @@ theorem apply_covBy_apply_iff {E : Type*} [EquivLike E α β] [OrderIsoClass E �
 
 theorem covBy_of_eq_or_eq (hab : a < b) (h : ∀ c, a ≤ c → c ≤ b → c = a ∨ c = b) : a ⋖ b :=
   ⟨hab, fun c ha hb => (h c ha.le hb.le).elim ha.ne' hb.ne⟩
+
+theorem OrderEmbedding.covBy_of_apply {α β : Type*} [Preorder α] [Preorder β]
+    (f : α ↪o β) {x y : α} (h : f x ⋖ f y) : x ⋖ y := by
+  use f.lt_iff_lt.1 h.1
+  intro a
+  rw [← f.lt_iff_lt, ← f.lt_iff_lt]
+  apply h.2
+
+theorem OrderIso.map_covBy {α β : Type*} [Preorder α] [Preorder β]
+    (f : α ≃o β) {x y : α} : f x ⋖ f y ↔ x ⋖ y := by
+  use f.toOrderEmbedding.covBy_of_apply
+  conv_lhs => rw [← f.symm_apply_apply x, ← f.symm_apply_apply y]
+  exact f.symm.toOrderEmbedding.covBy_of_apply
 
 end Preorder
 
@@ -522,3 +549,45 @@ theorem covBy_iff : x ⋖ y ↔ x.1 ⋖ y.1 ∧ x.2 = y.2 ∨ x.2 ⋖ y.2 ∧ x.
   exact mk_covBy_mk_iff
 
 end Prod
+
+namespace WithTop
+
+variable [Preorder α] {a b : α}
+
+@[simp, norm_cast] lemma coe_wcovBy_coe : (a : WithTop α) ⩿ b ↔ a ⩿ b :=
+  Set.OrdConnected.apply_wcovBy_apply_iff OrderEmbedding.withTopCoe <| by
+    simp [WithTop.range_coe, ordConnected_Iio]
+
+@[simp, norm_cast] lemma coe_covBy_coe : (a : WithTop α) ⋖ b ↔ a ⋖ b :=
+  Set.OrdConnected.apply_covBy_apply_iff OrderEmbedding.withTopCoe <| by
+    simp [WithTop.range_coe, ordConnected_Iio]
+
+@[simp] lemma coe_covBy_top : (a : WithTop α) ⋖ ⊤ ↔ IsMax a := by
+  simp only [covBy_iff_Ioo_eq, ← image_coe_Ioi, coe_lt_top, image_eq_empty,
+    true_and, Ioi_eq_empty_iff]
+
+@[simp] lemma coe_wcovBy_top : (a : WithTop α) ⩿ ⊤ ↔ IsMax a := by
+  simp only [wcovBy_iff_Ioo_eq, ← image_coe_Ioi, le_top, image_eq_empty, true_and, Ioi_eq_empty_iff]
+
+end WithTop
+
+namespace WithBot
+
+variable [Preorder α] {a b : α}
+
+@[simp, norm_cast] lemma coe_wcovBy_coe : (a : WithBot α) ⩿ b ↔ a ⩿ b :=
+  Set.OrdConnected.apply_wcovBy_apply_iff OrderEmbedding.withBotCoe <| by
+    simp [WithBot.range_coe, ordConnected_Ioi]
+
+@[simp, norm_cast] lemma coe_covBy_coe : (a : WithBot α) ⋖ b ↔ a ⋖ b :=
+  Set.OrdConnected.apply_covBy_apply_iff OrderEmbedding.withBotCoe <| by
+    simp [WithBot.range_coe, ordConnected_Ioi]
+
+@[simp] lemma bot_covBy_coe : ⊥ ⋖ (a : WithBot α) ↔ IsMin a := by
+  simp only [covBy_iff_Ioo_eq, ← image_coe_Iio, bot_lt_coe, image_eq_empty,
+    true_and, Iio_eq_empty_iff]
+
+@[simp] lemma bot_wcovBy_coe : ⊥ ⩿ (a : WithBot α) ↔ IsMin a := by
+  simp only [wcovBy_iff_Ioo_eq, ← image_coe_Iio, bot_le, image_eq_empty, true_and, Iio_eq_empty_iff]
+
+end WithBot

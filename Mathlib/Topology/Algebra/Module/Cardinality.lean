@@ -87,8 +87,8 @@ lemma cardinal_eq_of_mem_nhds_zero
     have : (c^n • s :) ≃ s :=
     { toFun := fun x ↦ ⟨(c^n)⁻¹ • x.1, (mem_smul_set_iff_inv_smul_mem₀ (cn_ne n) _ _).1 x.2⟩
       invFun := fun x ↦ ⟨(c^n) • x.1, smul_mem_smul_set x.2⟩
-      left_inv := fun x ↦ by simp [smul_smul, mul_inv_cancel (cn_ne n)]
-      right_inv := fun x ↦ by simp [smul_smul, inv_mul_cancel (cn_ne n)] }
+      left_inv := fun x ↦ by simp [smul_smul, mul_inv_cancel₀ (cn_ne n)]
+      right_inv := fun x ↦ by simp [smul_smul, inv_mul_cancel₀ (cn_ne n)] }
     exact Cardinal.mk_congr this
   apply (Cardinal.mk_of_countable_eventually_mem A B).symm
 

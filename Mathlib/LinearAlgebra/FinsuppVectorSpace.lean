@@ -154,9 +154,16 @@ theorem _root_.Finset.sum_single_ite [Fintype n] (a : R) (i : n) :
   simp only [apply_ite (Finsupp.single _), Finsupp.single_zero, Finset.sum_ite_eq,
     if_pos (Finset.mem_univ _)]
 
-theorem equivFun_symm_stdBasis [Finite n] (b : Basis n R M) (i : n) :
-    b.equivFun.symm (LinearMap.stdBasis R (fun _ => R) i 1) = b i := by
+@[simp]
+theorem equivFun_symm_single [Finite n] (b : Basis n R M) (i : n) :
+    b.equivFun.symm (Pi.single i 1) = b i := by
   cases nonempty_fintype n
-  simp
+  simp [Pi.single_apply]
+
+set_option linter.deprecated false in
+@[deprecated equivFun_symm_single (since := "2024-08-09")]
+theorem equivFun_symm_stdBasis [Finite n] (b : Basis n R M) (i : n) :
+    b.equivFun.symm (LinearMap.stdBasis R (fun _ => R) i 1) = b i :=
+  equivFun_symm_single ..
 
 end Basis

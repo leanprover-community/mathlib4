@@ -67,17 +67,18 @@ theorem Finset.prod_nonneg_of_card_nonpos_even {α β : Type*} [LinearOrderedCom
 theorem int_prod_range_nonneg (m : ℤ) (n : ℕ) (hn : Even n) :
     0 ≤ ∏ k ∈ Finset.range n, (m - k) := by
   rcases hn with ⟨n, rfl⟩
-  induction' n with n ihn
-  · simp
-  rw [← two_mul] at ihn
-  rw [← two_mul, mul_add, mul_one, ← one_add_one_eq_two, ← add_assoc,
-    Finset.prod_range_succ, Finset.prod_range_succ, mul_assoc]
-  refine mul_nonneg ihn ?_; generalize (1 + 1) * n = k
-  rcases le_or_lt m k with hmk | hmk
-  · have : m ≤ k + 1 := hmk.trans (lt_add_one (k : ℤ)).le
-    convert mul_nonneg_of_nonpos_of_nonpos (sub_nonpos_of_le hmk) _
-    convert sub_nonpos_of_le this
-  · exact mul_nonneg (sub_nonneg_of_le hmk.le) (sub_nonneg_of_le hmk)
+  induction n with
+  | zero => simp
+  | succ n ihn =>
+    rw [← two_mul] at ihn
+    rw [← two_mul, mul_add, mul_one, ← one_add_one_eq_two, ← add_assoc,
+      Finset.prod_range_succ, Finset.prod_range_succ, mul_assoc]
+    refine mul_nonneg ihn ?_; generalize (1 + 1) * n = k
+    rcases le_or_lt m k with hmk | hmk
+    · have : m ≤ k + 1 := hmk.trans (lt_add_one (k : ℤ)).le
+      convert mul_nonneg_of_nonpos_of_nonpos (sub_nonpos_of_le hmk) _
+      convert sub_nonpos_of_le this
+    · exact mul_nonneg (sub_nonneg_of_le hmk.le) (sub_nonneg_of_le hmk)
 
 theorem int_prod_range_pos {m : ℤ} {n : ℕ} (hn : Even n) (hm : m ∉ Ico (0 : ℤ) n) :
     0 < ∏ k ∈ Finset.range n, (m - k) := by

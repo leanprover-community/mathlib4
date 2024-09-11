@@ -323,7 +323,7 @@ protected theorem congr_fun (h : f = g) (x : M) : f x = g x :=
 
 @[simp]
 theorem mk_coe (f : M →ₛₗ[σ] M₃) (h) : (LinearMap.mk f h : M →ₛₗ[σ] M₃) = f :=
-  ext fun _ ↦ rfl
+  rfl
 
 variable (fₗ gₗ f g)
 
@@ -503,11 +503,11 @@ theorem coe_comp : (f.comp g : M₁ → M₃) = f ∘ g :=
 
 @[simp]
 theorem comp_id : f.comp id = f :=
-  LinearMap.ext fun _ ↦ rfl
+  rfl
 
 @[simp]
 theorem id_comp : id.comp f = f :=
-  LinearMap.ext fun _ ↦ rfl
+  rfl
 
 theorem comp_assoc
     {R₄ M₄ : Type*} [Semiring R₄] [AddCommMonoid M₄] [Module R₄ M₄]
@@ -881,7 +881,7 @@ def toAddMonoidHom' : (M →ₛₗ[σ₁₂] M₂) →+ M →+ M₂ where
   map_zero' := by ext; rfl
   map_add' := by intros; ext; rfl
 
-/-- If `M` is the zero module, then  the identity map of `M` is the zero map. -/
+/-- If `M` is the zero module, then the identity map of `M` is the zero map. -/
 @[simp]
 theorem identityMapOfZeroModuleIsZero [Subsingleton M] : id (R := R₁) (M := M) = 0 :=
   Subsingleton.eq_zero id

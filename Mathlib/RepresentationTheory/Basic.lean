@@ -3,12 +3,7 @@ Copyright (c) 2022 Antoine Labelle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
 -/
-import Mathlib.Algebra.Group.Equiv.TypeTags
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.MonoidAlgebra.Basic
-import Mathlib.LinearAlgebra.Dual
 import Mathlib.LinearAlgebra.Contraction
-import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 # Monoid representations
@@ -371,8 +366,8 @@ tensor product `V ⊗[k] W`.
 -/
 noncomputable def tprod : Representation k G (V ⊗[k] W) where
   toFun g := TensorProduct.map (ρV g) (ρW g)
-  map_one' := by simp only [_root_.map_one, TensorProduct.map_one]
-  map_mul' g h := by simp only [_root_.map_mul, TensorProduct.map_mul]
+  map_one' := by simp only [map_one, TensorProduct.map_one]
+  map_mul' g h := by simp only [map_mul, TensorProduct.map_mul]
 
 local notation ρV " ⊗ " ρW => tprod ρV ρW
 

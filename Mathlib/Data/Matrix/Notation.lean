@@ -46,8 +46,8 @@ variable {α : Type u} {o n m : ℕ} {m' : Type uₘ} {n' : Type uₙ} {o' : Typ
 open Matrix
 
 section toExpr
-open Lean
-open Qq
+
+open Lean Qq
 
 /-- Matrices can be reflected whenever their entries can. We insert a `Matrix.of` to
 prevent immediate decay to a function. -/

@@ -18,7 +18,7 @@ This file defines instances for `MulActionWithZero` and related structures on `�
 * `Algebra.GroupWithZero.Action.Units`
 -/
 
-assert_not_exists MonoidWithZero
+assert_not_exists Ring
 
 variable {M N α β : Type*}
 
@@ -89,6 +89,6 @@ def DistribMulAction.prodEquiv : DistribMulAction (M × N) α ≃
     congr 1
     · funext i; congr; ext m a; clear i; (conv_rhs => rw [← one_smul N a]); rfl
     · ext n a; (conv_rhs => rw [← one_smul M (SMul.smul n a)]); rfl
-    · apply heq_prop
+    · exact proof_irrel_heq ..
 
 end Action_by_Prod

@@ -22,6 +22,8 @@ Possibly it's best to axiomatize delta functors, and obtain a unique characteris
 -/
 
 
+assert_not_exists ModuleCat.abelian
+
 noncomputable section
 
 open CategoryTheory.Limits
@@ -70,5 +72,3 @@ lemma isZero_Tor'_succ_of_projective (X Y : C) [Projective X] (n : ℕ) :
   apply Functor.isZero_leftDerived_obj_projective_succ
 
 end CategoryTheory
-
-assert_not_exists Module.abelian

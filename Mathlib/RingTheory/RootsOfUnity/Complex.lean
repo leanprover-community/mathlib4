@@ -117,7 +117,6 @@ theorem IsPrimitiveRoot.arg_eq_pi_iff {n : ℕ} {ζ : ℂ} (hζ : IsPrimitiveRoo
       (h.trans Complex.arg_neg_one.symm),
     fun h => h.symm ▸ Complex.arg_neg_one⟩
 
-set_option tactic.skipAssignedInstances false in
 theorem IsPrimitiveRoot.arg {n : ℕ} {ζ : ℂ} (h : IsPrimitiveRoot ζ n) (hn : n ≠ 0) :
     ∃ i : ℤ, ζ.arg = i / n * (2 * Real.pi) ∧ IsCoprime i n ∧ i.natAbs < n := by
   rw [Complex.isPrimitiveRoot_iff _ _ hn] at h
@@ -153,7 +152,7 @@ theorem IsPrimitiveRoot.arg {n : ℕ} {ζ : ℂ} (h : IsPrimitiveRoot ζ n) (hn 
     rw [← mul_rotate', mul_div_assoc]
     rw [← mul_one n] at h₂
     exact mul_le_of_le_one_right Real.pi_pos.le
-      ((div_le_iff' <| mod_cast pos_of_gt h).mpr <| mod_cast h₂)
+      ((div_le_iff₀' <| mod_cast pos_of_gt h).mpr <| mod_cast h₂)
   rw [← Complex.cos_sub_two_pi, ← Complex.sin_sub_two_pi]
   convert Complex.arg_cos_add_sin_mul_I _
   · push_cast

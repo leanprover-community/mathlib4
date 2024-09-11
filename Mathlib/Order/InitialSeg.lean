@@ -249,6 +249,17 @@ theorem coe_coe_fn' [IsTrans β s] (f : r ≺i s) : ((f : r ≼i s) : α → β)
 theorem init_iff [IsTrans β s] (f : r ≺i s) {a : α} {b : β} : s b (f a) ↔ ∃ a', f a' = b ∧ r a' a :=
   @InitialSeg.init_iff α β r s f a b
 
+/-- A principal segment is the same as a non-surjective initial segment. -/
+noncomputable def _root_.InitialSeg.toPrincipalSeg [IsWellOrder β s] (f : r ≼i s)
+    (hf : ¬ Surjective f) : r ≺i s :=
+  letI H := f.eq_or_principal.resolve_left hf
+  ⟨f, Classical.choose H, Classical.choose_spec H⟩
+
+@[simp]
+theorem _root_.InitialSeg.toPrincipalSeg_apply [IsWellOrder β s] (f : r ≼i s)
+    (hf : ¬ Surjective f) (x : α) : f.toPrincipalSeg hf x = f x :=
+  rfl
+
 theorem irrefl {r : α → α → Prop} [IsWellOrder α r] (f : r ≺i r) : False := by
   have h := f.lt_top f.top
   rw [show f f.top = f.top from InitialSeg.eq (↑f) (InitialSeg.refl r) f.top] at h
@@ -426,8 +437,7 @@ of the range) or an order isomorphism (if the range is everything). -/
 noncomputable def InitialSeg.ltOrEq [IsWellOrder β s] (f : r ≼i s) : (r ≺i s) ⊕ (r ≃r s) := by
   by_cases h : Surjective f
   · exact Sum.inr (RelIso.ofSurjective f h)
-  · have h' : _ := (InitialSeg.eq_or_principal f).resolve_left h
-    exact Sum.inl ⟨f, Classical.choose h', Classical.choose_spec h'⟩
+  · exact Sum.inl (f.toPrincipalSeg h)
 
 theorem InitialSeg.ltOrEq_apply_left [IsWellOrder β s] (f : r ≼i s) (g : r ≺i s) (a : α) :
     g a = f a :=

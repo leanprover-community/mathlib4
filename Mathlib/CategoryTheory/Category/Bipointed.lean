@@ -93,14 +93,11 @@ def swap : Bipointed ⥤ Bipointed where
 
 /-- The equivalence between `Bipointed` and itself induced by `Prod.swap` both ways. -/
 @[simps!]
-def swapEquiv : Bipointed ≌ Bipointed :=
-  CategoryTheory.Equivalence.mk swap swap
-    (NatIso.ofComponents fun X =>
-        { hom := ⟨id, rfl, rfl⟩
-          inv := ⟨id, rfl, rfl⟩ })
-    (NatIso.ofComponents fun X =>
-        { hom := ⟨id, rfl, rfl⟩
-          inv := ⟨id, rfl, rfl⟩ })
+def swapEquiv : Bipointed ≌ Bipointed where
+  functor := swap
+  inverse := swap
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
 
 @[simp]
 theorem swapEquiv_symm : swapEquiv.symm = swapEquiv :=
