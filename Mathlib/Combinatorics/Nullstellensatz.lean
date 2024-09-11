@@ -241,7 +241,7 @@ private lemma prod_support_le {ι : Type*} (i : ι) (s : Finset R) (m : ι →�
   by_cases hR : Nontrivial R
   letI : LinearOrder Unit := WellOrderingRel.isWellOrder.linearOrder
   letI : WellFoundedGT Unit := Finite.to_wellFoundedGT
-  have : single () (e ()) ≼[lex Unit] single () s.card := by
+  have : single () (e ()) ≼[lex] single () s.card := by
     rw [← Alon.degP]
     apply MonomialOrder.le_degree
     rw [mem_support_iff]
@@ -249,7 +249,7 @@ private lemma prod_support_le {ι : Type*} (i : ι) (s : Finset R) (m : ι →�
     ext
     rw [single_eq_same]
   change toLex (single () (e ())) ≤ toLex _ at this
-  simp [lex_le_iff] at this
+  simp [Finsupp.lex_le_iff] at this
   rcases this with (h | h)
   · exact le_of_eq h
   · exact le_of_lt h.2
@@ -265,8 +265,8 @@ theorem Alon1 [IsDomain R] (S : σ → Finset R) (Sne : ∀ i, (S i).Nonempty)
       (_ : ∀ i, ((S i).prod (fun s ↦ X i - C s) * (h i)).totalDegree ≤ f.totalDegree),
     f = linearCombination (MvPolynomial σ R) (fun i ↦ (S i).prod (fun r ↦ X i - C r)) h := by
   letI : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
-  obtain ⟨h, r, hf, hh, hr⟩ := (degLex σ).monomialOrderDiv (fun i ↦ Alon.P (S i) i)
-      (fun i ↦ by rw [Alon.lCoeffP]; exact isUnit_one) f
+  obtain ⟨h, r, hf, hh, hr⟩ := degLex.div (b := fun i ↦ Alon.P (S i) i)
+      (fun i ↦ by simp only [Alon.lCoeffP, isUnit_one]) f
   use h
   suffices r = 0 by
     rw [this, add_zero] at hf
