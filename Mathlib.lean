@@ -941,6 +941,7 @@ import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unitary
 import Mathlib.Analysis.CStarAlgebra.Exponential
 import Mathlib.Analysis.CStarAlgebra.GelfandDuality
+import Mathlib.Analysis.CStarAlgebra.Hom
 import Mathlib.Analysis.CStarAlgebra.Matrix
 import Mathlib.Analysis.CStarAlgebra.Module.Constructions
 import Mathlib.Analysis.CStarAlgebra.Module.Defs
@@ -1508,6 +1509,7 @@ import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
 import Mathlib.CategoryTheory.Functor.OfSequence
 import Mathlib.CategoryTheory.Functor.ReflectsIso
 import Mathlib.CategoryTheory.Functor.Trifunctor
+import Mathlib.CategoryTheory.Galois.Action
 import Mathlib.CategoryTheory.Galois.Basic
 import Mathlib.CategoryTheory.Galois.Decomposition
 import Mathlib.CategoryTheory.Galois.Examples
@@ -3037,6 +3039,7 @@ import Mathlib.LinearAlgebra.PiTensorProduct
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.LinearAlgebra.Projection
 import Mathlib.LinearAlgebra.Projectivization.Basic
+import Mathlib.LinearAlgebra.Projectivization.Constructions
 import Mathlib.LinearAlgebra.Projectivization.Independence
 import Mathlib.LinearAlgebra.Projectivization.Subspace
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
@@ -3110,6 +3113,7 @@ import Mathlib.Logic.Equiv.Pairwise
 import Mathlib.Logic.Equiv.PartialEquiv
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Logic.Equiv.TransferInstance
+import Mathlib.Logic.ExistsUnique
 import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Function.CompTypeclasses
 import Mathlib.Logic.Function.Conjugate
@@ -3786,6 +3790,7 @@ import Mathlib.RingTheory.ClassGroup
 import Mathlib.RingTheory.Coalgebra.Basic
 import Mathlib.RingTheory.Coalgebra.Equiv
 import Mathlib.RingTheory.Coalgebra.Hom
+import Mathlib.RingTheory.Coalgebra.TensorProduct
 import Mathlib.RingTheory.Complex
 import Mathlib.RingTheory.Congruence.Basic
 import Mathlib.RingTheory.Congruence.BigOperators
@@ -3807,6 +3812,7 @@ import Mathlib.RingTheory.DedekindDomain.SelmerGroup
 import Mathlib.RingTheory.Derivation.Basic
 import Mathlib.RingTheory.Derivation.DifferentialRing
 import Mathlib.RingTheory.Derivation.Lie
+import Mathlib.RingTheory.Derivation.MapCoeffs
 import Mathlib.RingTheory.Derivation.ToSquareZero
 import Mathlib.RingTheory.DiscreteValuationRing.Basic
 import Mathlib.RingTheory.DiscreteValuationRing.TFAE
@@ -4029,6 +4035,7 @@ import Mathlib.RingTheory.Valuation.PrimeMultiplicity
 import Mathlib.RingTheory.Valuation.Quotient
 import Mathlib.RingTheory.Valuation.RamificationGroup
 import Mathlib.RingTheory.Valuation.RankOne
+import Mathlib.RingTheory.Valuation.ValExtension
 import Mathlib.RingTheory.Valuation.ValuationRing
 import Mathlib.RingTheory.Valuation.ValuationSubring
 import Mathlib.RingTheory.WittVector.Basic

@@ -75,8 +75,8 @@ def functorialityCounit :
 
 /-- The functor `Cocones.functoriality K F : Cocone K ⥤ Cocone (K ⋙ F)` is a left adjoint. -/
 def functorialityAdjunction : Cocones.functoriality K F ⊣ functorialityRightAdjoint adj K where
-unit := functorialityUnit adj K
-counit := functorialityCounit adj K
+  unit := functorialityUnit adj K
+  counit := functorialityCounit adj K
 
 /-- A left adjoint preserves colimits.
 
