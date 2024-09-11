@@ -175,9 +175,6 @@ end CanonicallyOrderedCommMonoid
 theorem pos_of_gt {M : Type*} [CanonicallyOrderedAddCommMonoid M] {n m : M} (h : n < m) : 0 < m :=
   lt_of_le_of_lt (zero_le _) h
 
-theorem pos_of_gt' {M : Type*} [Preorder M] [OrderBot M] {n m : M} (h : n < m) : ⊥ < m :=
-  lt_of_le_of_lt bot_le h
-
 namespace NeZero
 
 theorem pos {M} (a : M) [CanonicallyOrderedAddCommMonoid M] [NeZero a] : 0 < a :=

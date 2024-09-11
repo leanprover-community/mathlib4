@@ -253,6 +253,11 @@ theorem ne_bot_of_gt (h : a < b) : b ≠ ⊥ :=
 
 alias LT.lt.ne_bot := ne_bot_of_gt
 
+theorem bot_lt_of_gt (h : a < b) : ⊥ < b :=
+  lt_of_le_of_lt bot_le h
+
+alias LT.lt.bot_lt := bot_lt_of_gt
+
 end Preorder
 
 variable [PartialOrder α] [OrderBot α] [Preorder β] {f : α → β} {a b : α}
