@@ -524,7 +524,7 @@ variable [SMul R' X] [SMul R' M] [IsScalarTower R' M M] [IsScalarTower R' M X]
 variable [SMul R R'] [IsScalarTower R R' M]
 
 /-- Scalar multiplication in a monoid localization. -/
-@[to_additive (attr := irreducible) "Vector addition in an additive monoid localization."]
+@[to_additive "Vector addition in an additive monoid localization."]
 protected def hsmul (c : R) :
     X[S⁻¹] → X[S⁻¹] :=
   liftExpand (fun m s ↦ oreNum (c • 1) s • m /ₒ oreDenom (c • 1) s) (fun r t s ht ↦ by
@@ -629,7 +629,6 @@ variable [MulAction R X]
 
 
 /-- `0` in the localization, defined as `0 /ₒ 1`. -/
-@[irreducible]
 protected def zero : X[S⁻¹] := 0 /ₒ 1
 
 instance : Zero X[S⁻¹] :=
@@ -721,7 +720,6 @@ private def add' (r₂ : X) (s₂ : S) : X[S⁻¹] → X[S⁻¹] :=
     rw [this, hc, mul_assoc]
 
 /-- The addition on the Ore localization. -/
-@[irreducible]
 private def add : X[S⁻¹] → X[S⁻¹] → X[S⁻¹] := fun x =>
   Quotient.lift (fun rs : X × S => add' rs.1 rs.2 x)
     (by
