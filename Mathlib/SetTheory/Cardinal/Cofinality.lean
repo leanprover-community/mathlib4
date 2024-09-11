@@ -329,7 +329,7 @@ theorem iSup_lt_lift {ι} {f : ι → Cardinal} {c : Cardinal}
   refine sup_lt_ord_lift hι fun i => ?_
   rw [ord_lt_ord]
   apply hf
-
+ciSup_mono' (bddAbove_range' _) fun ⟨s, h⟩
 theorem iSup_lt {ι} {f : ι → Cardinal} {c : Cardinal} (hι : #ι < c.ord.cof) :
     (∀ i, f i < c) → iSup f < c :=
   iSup_lt_lift (by rwa [(#ι).lift_id])
