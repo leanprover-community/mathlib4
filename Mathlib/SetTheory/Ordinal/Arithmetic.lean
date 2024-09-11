@@ -461,8 +461,7 @@ alias IsLimit.add := add_isLimit
 
 
 /-- The set in the definition of subtraction is nonempty. -/
-@[deprecated (since := "2024-09-11")]
-theorem sub_nonempty {a b : Ordinal} : { o | a ≤ b + o }.Nonempty :=
+private theorem sub_nonempty {a b : Ordinal} : { o | a ≤ b + o }.Nonempty :=
   ⟨a, le_add_left _ _⟩
 
 /-- `a - b` is the unique ordinal satisfying `b + (a - b) = a` when `b ≤ a`. -/
@@ -470,7 +469,7 @@ instance sub : Sub Ordinal :=
   ⟨fun a b => sInf { o | a ≤ b + o }⟩
 
 theorem le_add_sub (a b : Ordinal) : a ≤ b + (a - b) :=
-  csInf_mem (s := { o | a ≤ b + o }) ⟨a, le_add_left _ _⟩
+  csInf_mem sub_nonempty
 
 theorem sub_le {a b c : Ordinal} : a - b ≤ c ↔ a ≤ b + c :=
   ⟨fun h => (le_add_sub a b).trans (add_le_add_left h _), fun h => csInf_le' h⟩
