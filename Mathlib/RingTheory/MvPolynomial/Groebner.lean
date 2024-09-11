@@ -22,8 +22,9 @@ open MvPolynomial
 
 open scoped MonomialOrder
 
-variable {σ : Type*} (m : MonomialOrder σ)
+variable {σ : Type*} {m : MonomialOrder σ} {R : Type*} [CommRing R]
 
+variable (m) in 
 /-- Delete the leading term in a multivariate polynomial (for some monomial order) -/
 noncomputable def subLTerm (f : MvPolynomial σ R) : MvPolynomial σ R :=
   f - monomial (m.degree f) (m.lCoeff f)
@@ -49,6 +50,7 @@ theorem degree_sub_LTerm_lt {f : MvPolynomial σ R} (hf : m.degree f ≠ 0) :
   apply this
   simp [subLTerm, coeff_monomial, lCoeff]
 
+variable (m) in
 /-- Reduce a polynomial modulo a polynomial with unit leading term (for some monomial order) -/
 noncomputable def reduce {b : MvPolynomial σ R} (hb : IsUnit (m.lCoeff b)) (f : MvPolynomial σ R) :
     MvPolynomial σ R :=
@@ -91,8 +93,8 @@ theorem degree_reduce_lt {f b : MvPolynomial σ R} (hb : IsUnit (m.lCoeff b))
     rw [H', degree_zero] at K
     exact hf K.symm
 
-theorem monomialOrderDiv (B : Set (MvPolynomial σ R)) (hB : ∀ b ∈ B, IsUnit (m.lCoeff b))
-    (f : MvPolynomial σ R) :
+theorem monomialOrderDiv {B : Set (MvPolynomial σ R)}
+    (hB : ∀ b ∈ B, IsUnit (m.lCoeff b)) (f : MvPolynomial σ R) :
     ∃ (g : B →₀ (MvPolynomial σ R)) (r : MvPolynomial σ R),
       f = Finsupp.linearCombination _ (fun (b : B) ↦ (b : MvPolynomial σ R)) g + r ∧
         (∀ (b : B), m.degree ((b : MvPolynomial σ R) * (g b)) ≼[m] m.degree f) ∧
@@ -129,7 +131,7 @@ theorem monomialOrderDiv (B : Set (MvPolynomial σ R)) (hB : ∀ b ∈ B, IsUnit
       intro hf0'
       apply hB' b hb
       simpa [hf0'] using hf
-    obtain ⟨g', r', H'⟩ := monomialOrderDiv B hB (m.reduce (hB b hb) f)
+    obtain ⟨g', r', H'⟩ := monomialOrderDiv hB (m.reduce (hB b hb) f)
     use g' +
       Finsupp.single ⟨b, hb⟩ (monomial (m.degree f - m.degree b) ((hB b hb).unit⁻¹ * m.lCoeff f))
     use r'
@@ -184,7 +186,7 @@ theorem monomialOrderDiv (B : Set (MvPolynomial σ R)) (hB : ∀ b ∈ B, IsUnit
       intro b
       simp only [Finsupp.coe_zero, Pi.zero_apply, mul_zero, degree_zero, map_zero]
       exact bot_le
-    · apply monomialOrderDiv B hB
+    · apply monomialOrderDiv hB
 termination_by WellFounded.wrap
   ((isWellFounded_iff m.syn fun x x_1 ↦ x < x_1).mp m.wf) (m.toSyn (m.degree f))
 decreasing_by
