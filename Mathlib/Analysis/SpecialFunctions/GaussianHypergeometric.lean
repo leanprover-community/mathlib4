@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2024 Edward Watine. All rights reserved.
+Copyright (c) 2024 Edward Watine and Alvan Caleb Arulandu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Edward Watine
+Authors: Edward Watine and Alvan Caleb Arulandu
 -/
 
 import Mathlib.Analysis.Analytic.Basic
@@ -145,23 +145,21 @@ lemma gaussianHypergeometricSeries_succ_norm_div_norm (n : ℕ)
   ring
   all_goals rewrite [norm_ne_zero_iff]
   any_goals
-    apply (not_iff_not.2 <| ascPochhammer_eval_nonzero_eq_zero_iff_not_nonneg_int n _).2
+    apply (not_iff_not.2 (ascPochhammer_eval_nonzero_eq_zero_iff_not_nonneg_int n _)).2
     first | exact ha | exact hb | exact hc
-  simp only [ne_eq, cast_eq_zero]
+
+  rw [cast_ne_zero]
   exact factorial_ne_zero n
 
+-- theorem gaussianHypergeometric_nonpos_int_radius_top
+--     (habc : a ∈ negativeInts ∨ b ∈ negativeInts ∨ c ∈ negativeInts) :=
 
-
-
-theorem gaussianHypergeometric_nonpos_int_radius_top
-    (habc : a ∈ negativeInts ∨ b ∈ negativeInts ∨ c ∈ negativeInts) :=
-
-theorem gaussianHypergeometric_radius_eq_one (hc : c ∉ {z | (z:ℤ) < 0}):
-    (gaussianHypergeometricSeries 𝔸 a b c).radius = 1 := by
-  apply le_antisymm
-  · refine ENNReal.le_of_forall_nnreal_lt (fun r hr ↦ ?_)
-    rw [← ENNReal.coe_one, ENNReal.coe_le_coe]
-    have := FormalMultilinearSeries.summable_norm_mul_pow _ hr
-    contrapose! this
-    apply not_summable_of_ratio_norm_eventually_ge this
-    .
+-- theorem gaussianHypergeometric_radius_eq_one (hc : c ∉ {z | (z:ℤ) < 0}):
+--     (gaussianHypergeometricSeries 𝔸 a b c).radius = 1 := by
+--   apply le_antisymm
+--   · refine ENNReal.le_of_forall_nnreal_lt (fun r hr ↦ ?_)
+--     rw [← ENNReal.coe_one, ENNReal.coe_le_coe]
+--     have := FormalMultilinearSeries.summable_norm_mul_pow _ hr
+--     contrapose! this
+--     apply not_summable_of_ratio_norm_eventually_ge this
+--     .
