@@ -123,7 +123,7 @@ theorem map_mk_sublist_sym2 (x : α) (xs : List α) (h : x ∈ xs) :
   induction xs with
   | nil => simp
   | cons x' xs ih =>
-    simp [List.sym2]
+    simp only [map_cons, List.sym2, cons_append]
     cases h with
     | head =>
       exact (sublist_append_left _ _).cons₂ _
@@ -269,7 +269,7 @@ protected theorem Sublist.sym (n : ℕ) {xs ys : List α} (h : xs <+ ys) : xs.sy
     · exact h.sym (n + 1)
 
 theorem sym_sublist_sym_cons {a : α} : xs.sym n <+ (a :: xs).sym n :=
-  (sublist_cons a xs).sym n
+  (sublist_cons_self a xs).sym n
 
 theorem mem_of_mem_of_mem_sym {n : ℕ} {xs : List α} {a : α} {z : Sym α n}
     (ha : a ∈ z) (hz : z ∈ xs.sym n) : a ∈ xs :=

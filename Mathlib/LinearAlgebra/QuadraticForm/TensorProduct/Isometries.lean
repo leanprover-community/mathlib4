@@ -58,7 +58,7 @@ theorem tmul_tensorMap_apply
 namespace Isometry
 
 /-- `TensorProduct.map` for `Quadraticform.Isometry`s -/
-def tmul
+def _root_.QuadraticMap.Isometry.tmul
     {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
     {Q₃ : QuadraticForm R M₃} {Q₄ : QuadraticForm R M₄}
     (f : Q₁ →qᵢ Q₂) (g : Q₃ →qᵢ Q₄) : (Q₁.tmul Q₃) →qᵢ (Q₂.tmul Q₄) where
@@ -66,7 +66,7 @@ def tmul
   map_app' := tmul_tensorMap_apply f g
 
 @[simp]
-theorem tmul_apply
+theorem _root_.QuadraticMap.Isometry.tmul_apply
     {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
     {Q₃ : QuadraticForm R M₃} {Q₄ : QuadraticForm R M₄}
     (f : Q₁ →qᵢ Q₂) (g : Q₃ →qᵢ Q₄) (x : M₁ ⊗[R] M₃) :

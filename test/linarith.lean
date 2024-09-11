@@ -189,7 +189,8 @@ example (a b c : Rat) (h2 : (2 : Rat) > 3) : a + b - c ≥ 3 := by
 
 -- Verify that we split conjunctions in hypotheses.
 example (x y : Rat)
-    (h : 6 + ((x + 4) * x + (6 + 3 * y) * y) = 3 ∧ (x + 4) * x ≥ 0 ∧ (6 + 3 * y) * y ≥ 0) : False := by
+    (h : 6 + ((x + 4) * x + (6 + 3 * y) * y) = 3 ∧ (x + 4) * x ≥ 0 ∧ (6 + 3 * y) * y ≥ 0) :
+    False := by
   fail_if_success
     linarith (config := {splitHypotheses := false})
   linarith

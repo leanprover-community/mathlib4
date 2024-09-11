@@ -5,8 +5,6 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Group.Action.Defs
 
-#align_import group_theory.group_action.option from "leanprover-community/mathlib"@"f1a2caaf51ef593799107fe9a8d5e411599f3996"
-
 /-!
 # Option instances for additive and multiplicative actions
 
@@ -37,20 +35,14 @@ instance : SMul M (Option α) :=
 @[to_additive]
 theorem smul_def : a • x = x.map (a • ·) :=
   rfl
-#align option.smul_def Option.smul_def
-#align option.vadd_def Option.vadd_def
 
 @[to_additive (attr := simp)]
 theorem smul_none : a • (none : Option α) = none :=
   rfl
-#align option.smul_none Option.smul_none
-#align option.vadd_none Option.vadd_none
 
 @[to_additive (attr := simp)]
 theorem smul_some : a • some b = some (a • b) :=
   rfl
-#align option.smul_some Option.smul_some
-#align option.vadd_some Option.vadd_some
 
 @[to_additive]
 instance instIsScalarTowerOfSMul [SMul M N] [IsScalarTower M N α] : IsScalarTower M N (Option α) :=

@@ -7,8 +7,6 @@ import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Logic.Equiv.Fin
 
-#align_import algebra.ring.fin from "leanprover-community/mathlib"@"1f0096e6caa61e9c849ec2adbd227e960e9dff58"
-
 /-!
 # Rings and `Fin`
 
@@ -29,6 +27,3 @@ def RingEquiv.piFinTwo (R : Fin 2 → Type*) [∀ i, Semiring (R i)] :
     toFun := piFinTwoEquiv R
     map_add' := fun _ _ => rfl
     map_mul' := fun _ _ => rfl }
-#align ring_equiv.pi_fin_two RingEquiv.piFinTwo
-#align ring_equiv.pi_fin_two_apply RingEquiv.piFinTwo_apply
-#align ring_equiv.pi_fin_two_symm_apply RingEquiv.piFinTwo_symm_apply

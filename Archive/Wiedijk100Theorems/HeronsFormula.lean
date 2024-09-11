@@ -5,8 +5,6 @@ Authors: Matt Kempster
 -/
 import Mathlib.Geometry.Euclidean.Triangle
 
-#align_import wiedijk_100_theorems.herons_formula from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
-
 /-!
 # Freek № 57: Heron's Formula
 
@@ -68,6 +66,5 @@ theorem heron {p1 p2 p3 : P} (h1 : p1 ≠ p2) (h2 : p3 ≠ p2) :
     _ = ↑1 / ↑4 * √ (s * (s - a) * (s - b) * (s - c) * ↑4 ^ 2) := by simp only [s]; ring_nf
     _ = √ (s * (s - a) * (s - b) * (s - c)) := by
       rw [sqrt_mul', sqrt_sq, div_mul_eq_mul_div, one_mul, mul_div_cancel_right₀] <;> norm_num
-#align theorems_100.heron Theorems100.heron
 
 end Theorems100

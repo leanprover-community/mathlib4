@@ -6,8 +6,6 @@ Authors: Scott Morrison
 import Mathlib.Logic.Small.Basic
 import Mathlib.Data.Vector.Basic
 
-#align_import logic.small.list from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
-
 /-!
 # Instances for `Small (List α)` and `Small (Vector α)`.
 
@@ -22,9 +20,7 @@ open Mathlib
 
 instance smallVector {α : Type v} {n : ℕ} [Small.{u} α] : Small.{u} (Vector α n) :=
   small_of_injective (Equiv.vectorEquivFin α n).injective
-#align small_vector smallVector
 
 instance smallList {α : Type v} [Small.{u} α] : Small.{u} (List α) := by
   let e : (Σn, Vector α n) ≃ List α := Equiv.sigmaFiberEquiv List.length
   exact small_of_surjective e.surjective
-#align small_list smallList

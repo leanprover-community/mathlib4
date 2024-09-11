@@ -30,7 +30,6 @@ instance FormallyUnramified.subsingleton_kaehlerDifferential [FormallyUnramified
   apply FormallyUnramified.lift_unique' _ _ _ _ (f₁.2.trans f₂.2.symm)
   rw [← AlgHom.toRingHom_eq_coe, AlgHom.ker_kerSquareLift]
   exact ⟨_, Ideal.cotangentIdeal_square _⟩
-#align algebra.formally_unramified.subsingleton_kaehler_differential Algebra.FormallyUnramified.subsingleton_kaehlerDifferential
 
 theorem FormallyUnramified.iff_subsingleton_kaehlerDifferential :
     FormallyUnramified R S ↔ Subsingleton (Ω[S⁄R]) := by
@@ -45,6 +44,5 @@ theorem FormallyUnramified.iff_subsingleton_kaehlerDifferential :
       ((KaehlerDifferential.linearMapEquivDerivation R S).toEquiv.trans
             (derivationToSquareZeroEquivLift I hI)).surjective.subsingleton
     exact Subtype.ext_iff.mp (@Subsingleton.elim _ this ⟨f₁, rfl⟩ ⟨f₂, e.symm⟩)
-#align algebra.formally_unramified.iff_subsingleton_kaehler_differential Algebra.FormallyUnramified.iff_subsingleton_kaehlerDifferential
 
 end Algebra

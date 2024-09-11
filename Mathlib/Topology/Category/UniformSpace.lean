@@ -9,8 +9,6 @@ import Mathlib.CategoryTheory.Monad.Limits
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Topology.UniformSpace.Completion
 
-#align_import topology.category.UniformSpace from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
-
 /-!
 # The category of uniform spaces
 
@@ -25,12 +23,10 @@ universe u
 
 open CategoryTheory
 
-set_option linter.uppercaseLean3 false
 
 /-- A (bundled) uniform space. -/
 def UniformSpaceCat : Type (u + 1) :=
   Bundled UniformSpace
-#align UniformSpace UniformSpaceCat
 
 namespace UniformSpaceCat
 
@@ -52,7 +48,6 @@ instance (x : UniformSpaceCat) : UniformSpace x :=
 /-- Construct a bundled `UniformSpace` from the underlying type and the typeclass. -/
 def of (α : Type u) [UniformSpace α] : UniformSpaceCat :=
   ⟨α, ‹_›⟩
-#align UniformSpace.of UniformSpaceCat.of
 
 instance : Inhabited UniformSpaceCat :=
   ⟨UniformSpaceCat.of Empty⟩
@@ -60,7 +55,6 @@ instance : Inhabited UniformSpaceCat :=
 @[simp]
 theorem coe_of (X : Type u) [UniformSpace X] : (of X : Type u) = X :=
   rfl
-#align UniformSpace.coe_of UniformSpaceCat.coe_of
 
 instance (X Y : UniformSpaceCat) : CoeFun (X ⟶ Y) fun _ => X → Y :=
   ⟨(forget UniformSpaceCat).map⟩
@@ -68,23 +62,19 @@ instance (X Y : UniformSpaceCat) : CoeFun (X ⟶ Y) fun _ => X → Y :=
 @[simp]
 theorem coe_comp {X Y Z : UniformSpaceCat} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g : X → Z) = g ∘ f :=
   rfl
-#align UniformSpace.coe_comp UniformSpaceCat.coe_comp
 
 @[simp]
 theorem coe_id (X : UniformSpaceCat) : (𝟙 X : X → X) = id :=
   rfl
-#align UniformSpace.coe_id UniformSpaceCat.coe_id
 
 -- Porting note (#11119): removed `simp` attribute
 -- due to `LEFT-HAND SIDE HAS VARIABLE AS HEAD SYMBOL.`
 theorem coe_mk {X Y : UniformSpaceCat} (f : X → Y) (hf : UniformContinuous f) :
     ((⟨f, hf⟩ : X ⟶ Y) : X → Y) = f :=
   rfl
-#align UniformSpace.coe_mk UniformSpaceCat.coe_mk
 
 theorem hom_ext {X Y : UniformSpaceCat} {f g : X ⟶ Y} : (f : X → Y) = g → f = g :=
   Subtype.eq
-#align UniformSpace.hom_ext UniformSpaceCat.hom_ext
 
 /-- The forgetful functor from uniform spaces to topological spaces. -/
 instance hasForgetToTop : HasForget₂ UniformSpaceCat.{u} TopCat.{u} where
@@ -93,7 +83,6 @@ instance hasForgetToTop : HasForget₂ UniformSpaceCat.{u} TopCat.{u} where
       map := fun f =>
         { toFun := f
           continuous_toFun := f.property.continuous } }
-#align UniformSpace.has_forget_to_Top UniformSpaceCat.hasForgetToTop
 
 end UniformSpaceCat
 
@@ -104,7 +93,6 @@ structure CpltSepUniformSpace where
   [isUniformSpace : UniformSpace α]
   [isCompleteSpace : CompleteSpace α]
   [isT0 : T0Space α]
-#align CpltSepUniformSpace CpltSepUniformSpace
 
 namespace CpltSepUniformSpace
 
@@ -116,26 +104,21 @@ attribute [instance] isUniformSpace isCompleteSpace isT0
 /-- The function forgetting that a complete separated uniform spaces is complete and separated. -/
 def toUniformSpace (X : CpltSepUniformSpace) : UniformSpaceCat :=
   UniformSpaceCat.of X
-#align CpltSepUniformSpace.to_UniformSpace CpltSepUniformSpace.toUniformSpace
 
 instance completeSpace (X : CpltSepUniformSpace) : CompleteSpace (toUniformSpace X).α :=
   CpltSepUniformSpace.isCompleteSpace X
-#align CpltSepUniformSpace.complete_space CpltSepUniformSpace.completeSpace
 
 instance t0Space (X : CpltSepUniformSpace) : T0Space (toUniformSpace X).α :=
   CpltSepUniformSpace.isT0 X
-#align CpltSepUniformSpace.separated_space CpltSepUniformSpace.t0Space
 
 /-- Construct a bundled `UniformSpace` from the underlying type and the appropriate typeclasses. -/
 def of (X : Type u) [UniformSpace X] [CompleteSpace X] [T0Space X] : CpltSepUniformSpace :=
   ⟨X⟩
-#align CpltSepUniformSpace.of CpltSepUniformSpace.of
 
 @[simp]
 theorem coe_of (X : Type u) [UniformSpace X] [CompleteSpace X] [T0Space X] :
     (of X : Type u) = X :=
   rfl
-#align CpltSepUniformSpace.coe_of CpltSepUniformSpace.coe_of
 
 instance : Inhabited CpltSepUniformSpace :=
   ⟨CpltSepUniformSpace.of Empty⟩
@@ -143,16 +126,13 @@ instance : Inhabited CpltSepUniformSpace :=
 /-- The category instance on `CpltSepUniformSpace`. -/
 instance category : LargeCategory CpltSepUniformSpace :=
   InducedCategory.category toUniformSpace
-#align CpltSepUniformSpace.category CpltSepUniformSpace.category
 
 /-- The concrete category instance on `CpltSepUniformSpace`. -/
 instance concreteCategory : ConcreteCategory CpltSepUniformSpace :=
   InducedCategory.concreteCategory toUniformSpace
-#align CpltSepUniformSpace.concrete_category CpltSepUniformSpace.concreteCategory
 
 instance hasForgetToUniformSpace : HasForget₂ CpltSepUniformSpace UniformSpaceCat :=
   InducedCategory.hasForget₂ toUniformSpace
-#align CpltSepUniformSpace.has_forget_to_UniformSpace CpltSepUniformSpace.hasForgetToUniformSpace
 
 end CpltSepUniformSpace
 
@@ -168,19 +148,16 @@ noncomputable def completionFunctor : UniformSpaceCat ⥤ CpltSepUniformSpace wh
   map f := ⟨Completion.map f.1, Completion.uniformContinuous_map⟩
   map_id _ := Subtype.eq Completion.map_id
   map_comp f g := Subtype.eq (Completion.map_comp g.property f.property).symm
-#align UniformSpace.completion_functor UniformSpaceCat.completionFunctor
 
 /-- The inclusion of a uniform space into its completion. -/
 def completionHom (X : UniformSpaceCat) :
     X ⟶ (forget₂ CpltSepUniformSpace UniformSpaceCat).obj (completionFunctor.obj X) where
   val := ((↑) : X → Completion X)
   property := Completion.uniformContinuous_coe X
-#align UniformSpace.completion_hom UniformSpaceCat.completionHom
 
 @[simp]
 theorem completionHom_val (X : UniformSpaceCat) (x) : (completionHom X) x = (x : Completion X) :=
   rfl
-#align UniformSpace.completion_hom_val UniformSpaceCat.completionHom_val
 
 /-- The mate of a morphism from a `UniformSpace` to a `CpltSepUniformSpace`. -/
 noncomputable def extensionHom {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
@@ -188,7 +165,6 @@ noncomputable def extensionHom {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
     completionFunctor.obj X ⟶ Y where
   val := Completion.extension f
   property := Completion.uniformContinuous_extension
-#align UniformSpace.extension_hom UniformSpaceCat.extensionHom
 
 -- Porting note (#10754): added this instance to make things compile
 instance (X : UniformSpaceCat) : UniformSpace ((forget _).obj X) :=
@@ -200,7 +176,6 @@ attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike in
 theorem extensionHom_val {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
     (f : X ⟶ (forget₂ _ _).obj Y) (x) : (extensionHom f) x = Completion.extension f x :=
   rfl
-#align UniformSpace.extension_hom_val UniformSpaceCat.extensionHom_val
 
 @[simp]
 theorem extension_comp_coe {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
@@ -209,7 +184,6 @@ theorem extension_comp_coe {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
   apply Subtype.eq
   funext x
   exact congr_fun (Completion.extension_comp_coe f.property) x
-#align UniformSpace.extension_comp_coe UniformSpaceCat.extension_comp_coe
 
 /-- The completion functor is left adjoint to the forgetful functor. -/
 noncomputable def adj : completionFunctor ⊣ forget₂ CpltSepUniformSpace UniformSpaceCat :=
@@ -230,7 +204,6 @@ noncomputable def adj : completionFunctor ⊣ forget₂ CpltSepUniformSpace Unif
         simp only [forget_map_eq_coe] at this ⊢
         erw [this]
         rfl }
-#align UniformSpace.adj UniformSpaceCat.adj
 
 noncomputable instance : Reflective (forget₂ CpltSepUniformSpace UniformSpaceCat) where
   adj := adj

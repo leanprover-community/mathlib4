@@ -5,8 +5,6 @@ Authors: Tian Chen
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
-#align_import imo.imo2001_q2 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
-
 /-!
 # IMO 2001 Q2
 
@@ -48,7 +46,6 @@ theorem bound (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) :
       = 2 * (a ^ 2 * (b ^ 2 - c ^ 2)) ^ 2 + (b ^ 4 - c ^ 4) ^ 2 +
         (2 * (a ^ 2 * b * c - b ^ 2 * c ^ 2)) ^ 2 := by ring
     _ ≥ 0 := by positivity
-#align imo2001_q2.bound Imo2001Q2.bound
 
 theorem imo2001_q2' (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) :
     ↑1 ≤ a ^ 3 / sqrt ((a ^ 3) ^ 2 + ↑8 * b ^ 3 * c ^ 3) +
@@ -58,7 +55,6 @@ theorem imo2001_q2' (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) :
   calc
     _ ≥ _ := add_le_add (add_le_add (bound ha hb hc) (bound hb hc ha)) (bound hc ha hb)
     _ = 1 := by ring_nf at H ⊢; field_simp
-#align imo2001_q2.imo2001_q2' Imo2001Q2.imo2001_q2'
 
 end Imo2001Q2
 
@@ -71,4 +67,3 @@ theorem imo2001_q2 (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) : ↑1 ≤
   calc
     1 ≤ _ := imo2001_q2' (rpow_pos_of_pos ha _) (rpow_pos_of_pos hb _) (rpow_pos_of_pos hc _)
     _ = _ := by rw [h3 ha, h3 hb, h3 hc]
-#align imo2001_q2 imo2001_q2

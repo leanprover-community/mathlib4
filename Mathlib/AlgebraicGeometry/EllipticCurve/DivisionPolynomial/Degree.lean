@@ -153,7 +153,8 @@ private def expDegree (n : ℕ) : ℕ :=
 private lemma expDegree_cast {n : ℕ} (hn : n ≠ 0) :
     2 * (expDegree n : ℤ) = n ^ 2 - if Even n then 4 else 1 := by
   rcases n.even_or_odd' with ⟨n, rfl | rfl⟩
-  · rcases n with _ | n; contradiction
+  · rcases n with _ | n
+    · contradiction
     push_cast [expDegree, show (2 * (n + 1)) ^ 2 = 2 * (2 * n * (n + 2)) + 4 by ring1, even_two_mul,
       Nat.add_sub_cancel, Nat.mul_div_cancel_left _ two_pos]
     ring1
@@ -321,7 +322,8 @@ private lemma natDegree_coeff_ΨSq_ofNat (n : ℕ) :
     (W.ΨSq n).natDegree ≤ n ^ 2 - 1 ∧ (W.ΨSq n).coeff (n ^ 2 - 1) = (n ^ 2 : ℤ) := by
   let dp {m n p} : _ → (p ^ n : R[X]).natDegree ≤ n * m := natDegree_pow_le_of_le n
   let h {n} := W.natDegree_coeff_preΨ' n
-  rcases n with _ | n; simp
+  rcases n with _ | n
+  · simp
   have hd : (n + 1) ^ 2 - 1 = 2 * expDegree (n + 1) + if Even (n + 1) then 3 else 0 := by
     push_cast [← @Nat.cast_inj ℤ, add_sq, expDegree_cast (by omega : n + 1 ≠ 0)]
     split_ifs <;> ring1
@@ -334,7 +336,7 @@ private lemma natDegree_coeff_ΨSq_ofNat (n : ℕ) :
     split_ifs <;> simp only [apply_ite natDegree, natDegree_one.le, W.natDegree_Ψ₂Sq_le]
   · erw [coeff_mul_of_natDegree_le (dp h.1), coeff_pow_of_natDegree_le h.1, h.2, apply_ite₂ coeff,
       coeff_Ψ₂Sq, coeff_one_zero, hc]
-    norm_cast
+    · norm_cast
     split_ifs <;> simp only [apply_ite natDegree, natDegree_one.le, W.natDegree_Ψ₂Sq_le]
 
 lemma natDegree_ΨSq_le (n : ℤ) : (W.ΨSq n).natDegree ≤ n.natAbs ^ 2 - 1 := by
@@ -386,7 +388,9 @@ private lemma natDegree_coeff_Φ_ofNat (n : ℕ) :
   let dp {m n p} : _ → (p ^ n : R[X]).natDegree ≤ n * m := natDegree_pow_le_of_le n
   let cm {m n p q} : _ → _ → (p * q : R[X]).coeff (m + n) = _ := coeff_mul_of_natDegree_le
   let h {n} := W.natDegree_coeff_preΨ' n
-  rcases n with _ | _ | n; simp; simp [natDegree_X_le]
+  rcases n with _ | _ | n
+  · simp
+  · simp [natDegree_X_le]
   have hd : (n + 1 + 1) ^ 2 = 1 + 2 * expDegree (n + 2) + if Even (n + 1) then 0 else 3 := by
     push_cast [← @Nat.cast_inj ℤ, expDegree_cast (by omega : n + 2 ≠ 0), Nat.even_add_one, ite_not]
     split_ifs <;> ring1

@@ -6,8 +6,6 @@ Authors: Anatole Dedecker
 import Mathlib.RingTheory.SimpleModule
 import Mathlib.Topology.Algebra.Module.Basic
 
-#align_import topology.algebra.module.simple from "leanprover-community/mathlib"@"f430769b562e0cedef59ee1ed968d67e0e0c86ba"
-
 /-!
 # The kernel of a linear function is closed or dense
 
@@ -32,4 +30,3 @@ theorem LinearMap.isClosed_or_dense_ker (l : M →ₗ[R] N) :
   · rw [LinearMap.ker_zero]
     left
     exact isClosed_univ
-#align linear_map.is_closed_or_dense_ker LinearMap.isClosed_or_dense_ker

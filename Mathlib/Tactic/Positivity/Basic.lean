@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Group.PosPart
 import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.Algebra.Order.Ring.Rat
 import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.NNRat.Defs
@@ -19,7 +18,7 @@ import Qq
 This file sets up the basic `positivity` extensions tagged with the `@[positivity]` attribute.
 -/
 
-set_option autoImplicit true
+variable {α : Type*}
 
 namespace Mathlib.Meta.Positivity
 open Lean Meta Qq Function
@@ -85,7 +84,7 @@ such that `positivity` successfully recognises both `a` and `b`. -/
   | _, _ => pure .none
 
 section LinearOrder
-variable [LinearOrder R] {a b c : R}
+variable {R : Type*} [LinearOrder R] {a b c : R}
 
 private lemma le_min_of_lt_of_le (ha : a < b) (hb : a ≤ c) : a ≤ min b c := le_min ha.le hb
 private lemma le_min_of_le_of_lt (ha : a ≤ b) (hb : a < c) : a ≤ min b c := le_min ha hb.le
@@ -256,7 +255,7 @@ private theorem pow_zero_pos [OrderedSemiring α] [Nontrivial α] (a : α) : 0 <
 
 /-- The `positivity` extension which identifies expressions of the form `a ^ (0:ℕ)`.
 This extension is run in addition to the general `a ^ b` extension (they are overlapping). -/
-@[positivity (_ : α) ^ (0:ℕ)]
+@[positivity _ ^ (0:ℕ)]
 def evalPowZeroNat : PositivityExt where eval {u α} _zα _pα e := do
   let .app (.app _ (a : Q($α))) _ ← withReducible (whnf e) | throwError "not ^"
   _ ← synthInstanceQ (q(OrderedSemiring $α) : Q(Type u))
@@ -265,7 +264,7 @@ def evalPowZeroNat : PositivityExt where eval {u α} _zα _pα e := do
 
 /-- The `positivity` extension which identifies expressions of the form `a ^ (b : ℕ)`,
 such that `positivity` successfully recognises both `a` and `b`. -/
-@[positivity (_ : α) ^ (_ : ℕ)]
+@[positivity _ ^ (_ : ℕ)]
 def evalPow : PositivityExt where eval {u α} zα pα e := do
   let .app (.app _ (a : Q($α))) (b : Q(ℕ)) ← withReducible (whnf e) | throwError "not ^"
   let result ← catchNone do
@@ -308,7 +307,7 @@ private theorem abs_pos_of_ne_zero {α : Type*} [AddGroup α] [LinearOrder α]
     [CovariantClass α α (·+·) (·≤·)] {a : α} : a ≠ 0 → 0 < |a| := abs_pos.mpr
 
 /-- The `positivity` extension which identifies expressions of the form `|a|`. -/
-@[positivity |(_ : α)|]
+@[positivity |_|]
 def evalAbs : PositivityExt where eval {u} (α : Q(Type u)) zα pα (e : Q($α)) := do
   let ~q(@abs _ (_) (_) $a) := e | throwError "not |·|"
   try
@@ -484,9 +483,9 @@ def evalRatNum : PositivityExt where eval {u α} _ _ e := do
     let pα : Q(PartialOrder ℚ) := q(inferInstance)
     assumeInstancesCommute
     match ← core zα pα a with
-    | .positive pa => pure $ .positive q(num_pos_of_pos $pa)
-    | .nonnegative pa => pure $ .nonnegative q(num_nonneg_of_nonneg $pa)
-    | .nonzero pa => pure $ .nonzero q(num_ne_zero_of_ne_zero $pa)
+    | .positive pa => pure <| .positive q(num_pos_of_pos $pa)
+    | .nonnegative pa => pure <| .nonnegative q(num_nonneg_of_nonneg $pa)
+    | .nonzero pa => pure <| .nonzero q(num_ne_zero_of_ne_zero $pa)
     | .none => pure .none
   | _, _ => throwError "not Rat.num"
 
@@ -496,7 +495,7 @@ def evalRatDen : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Rat.den $a) =>
     assumeInstancesCommute
-    pure $ .positive q(den_pos $a)
+    pure <| .positive q(den_pos $a)
   | _, _ => throwError "not Rat.num"
 
 /-- Extension for `posPart`. `a⁺` is always nonegative, and positive if `a` is. -/
