@@ -62,6 +62,8 @@ inductive StyleError where
   /-- Lint against "too broad" imports, such as `Mathlib.Tactic` or any module in `Lake`
   (unless carefully measured) -/
   | broadImport (module : BroadImports)
+  /-- A line ends with windows line endings (\r\n) instead of unix ones (\n). -/
+  | windowsLineEnding
 deriving BEq
 
 /-- How to format style errors -/
@@ -90,6 +92,8 @@ def StyleError.errorMessage (err : StyleError) : String := match err with
       "In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter (see \
       e.g. mathlib4#13779). Please consider carefully if this import is useful and make sure to \
       benchmark it. If this is fine, feel free to allow this linter."
+  | windowsLineEnding => "This line ends with a windows line ending (\r\n): please use Unix line\
+    endings (\n) instead"
 
 /-- The error code for a given style error. Keep this in sync with `parse?_errorContext` below! -/
 -- FUTURE: we're matching the old codes in `lint-style.py` for compatibility;
@@ -99,6 +103,7 @@ def StyleError.errorCode (err : StyleError) : String := match err with
   | StyleError.authors => "ERR_AUT"
   | StyleError.adaptationNote => "ERR_ADN"
   | StyleError.broadImport _ => "ERR_IMP"
+  | StyleError.windowsLineEnding => "ERR_WIN"
 
 /-- Context for a style error: the actual error, the line number in the file we're reading
 and the path to the file. -/
@@ -184,6 +189,7 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
         | "ERR_COP" => some (StyleError.copyright none)
         | "ERR_AUT" => some (StyleError.authors)
         | "ERR_ADN" => some (StyleError.adaptationNote)
+        | "ERR_WIN" => some (StyleError.windowsLineEnding)
         | "ERR_IMP" =>
           -- XXX tweak exceptions messages to ease parsing?
           if (errorMessage.get! 0).containsSubstr "tactic" then
@@ -213,8 +219,11 @@ def formatErrors (errors : Array ErrorContext) (style : ErrorFormat) : IO Unit :
     IO.println (outputMessage e style)
 
 /-- Core logic of a text based linter: given a collection of lines,
-return an array of all style errors with line numbers. -/
-abbrev TextbasedLinter := Array String → Array (StyleError × ℕ)
+return an array of all style errors with line numbers. If possible,
+also return the collection of all lines, changed as needed to fix the linter errors.
+(Such automatic fixes are only possible for some kinds of `StyleError`s.)
+-/
+abbrev TextbasedLinter := Array String → Array (StyleError × ℕ) × (Option (Array String))
 
 /-! Definitions of the actual text-based linters. -/
 section
@@ -263,7 +272,7 @@ def copyrightHeaderLinter : TextbasedLinter := fun lines ↦ Id.run do
       -- If it does, we check the authors line is formatted correctly.
       if !isCorrectAuthorsLine line then
         output := output.push (StyleError.authors, 4)
-  return output
+  return (output, none)
 
 /-- Lint on any occurrences of the string "Adaptation note:" or variants thereof. -/
 def adaptationNoteLinter : TextbasedLinter := fun lines ↦ Id.run do
@@ -274,7 +283,7 @@ def adaptationNoteLinter : TextbasedLinter := fun lines ↦ Id.run do
     if line.containsSubstr "daptation note" then
       errors := errors.push (StyleError.adaptationNote, lineNumber)
     lineNumber := lineNumber + 1
-  return errors
+  return (errors, none)
 
 /-- Lint a collection of input strings if one of them contains an unnecessarily broad import. -/
 def broadImportsLinter : TextbasedLinter := fun lines ↦ Id.run do
@@ -302,7 +311,7 @@ def broadImportsLinter : TextbasedLinter := fun lines ↦ Id.run do
             else if name == "Lake" || name.startsWith "Lake." then
               errors := errors.push (StyleError.broadImport BroadImports.Lake, lineNumber)
       lineNumber := lineNumber + 1
-  return errors
+  return (errors, none)
 
 
 /-- Whether a collection of lines consists *only* of imports, blank lines and single-line comments.
@@ -320,25 +329,48 @@ def allLinters : Array TextbasedLinter := #[
   ]
 
 
-/-- Read a file and apply all text-based linters. Return a list of all unexpected errors.
+/-- Read a file and apply all text-based linters.
+Return a list of all unexpected errors, and, if some errors could be fixed automatically,
+the collection of all lines with every automatic fix applied.
 `exceptions` are any pre-existing style exceptions for this file. -/
 def lintFile (path : FilePath) (exceptions : Array ErrorContext) :
-    IO (Array ErrorContext) := do
-  let lines ← IO.FS.lines path
-  -- We don't need to run any checks on imports-only files.
-  if isImportsOnlyFile lines then
-    return #[]
+    IO (Array ErrorContext × Option (Array String)) := do
   let mut errors := #[]
-  let allOutput := (Array.map (fun lint ↦
-    (Array.map (fun (e, n) ↦ ErrorContext.mk e n path)) (lint lines))) allLinters
+  -- Whether any changes were made by auto-fixes.
+  let mut changes_made := false
+  -- Check for windows line endings first: as `FS.lines` treats Unix and Windows lines the same,
+  -- we need to analyse the actual file contents.
+  let contents ← IO.FS.readFile path
+  let replaced := contents.crlfToLf
+  if replaced != contents then
+    changes_made := true
+    errors := errors.push (ErrorContext.mk StyleError.windowsLineEnding 1 path)
+  let lines := (replaced.splitOn "\n").toArray
+
+  -- We don't need to run any further checks on imports-only files.
+  if isImportsOnlyFile lines then
+    return (errors, if changes_made then some lines else none)
+
+  -- All further style errors raised in this file.
+  let mut allOutput := #[]
+  -- A working copy of the lines in this file, modified by applying the auto-fixes.
+  let mut changed := lines
+
+  for lint in allLinters do
+    let (err, changes) := lint changed
+    allOutput := allOutput.append (Array.map (fun (e, n) ↦ #[(ErrorContext.mk e n path)]) err)
+    if let some c := changes then
+      changed := c
+      changes_made := true
   -- This list is not sorted: for github, this is fine.
   errors := errors.append
     (allOutput.flatten.filter (fun e ↦ (e.find?_comparable exceptions).isNone))
-  return errors
+  return (errors, if changes_made then some changed else none)
+
 
 /-- Lint a collection of modules for style violations.
 Print formatted errors for all unexpected style violations to standard output;
-update the list of style exceptions if configured so.
+correct automatically fixable style errors if configured so.
 Return the number of files which had new style errors.
 `moduleNames` are all the modules to lint,
 `mode` specifies what kind of output this script should produce,
@@ -353,7 +385,11 @@ def lintModules (moduleNames : Array String) (style : ErrorFormat) (fix : Bool) 
   for module in moduleNames do
     -- Convert the module name to a file name, then lint that file.
     let path := (mkFilePath (module.split (· == '.'))).addExtension "lean"
-    let errors := ← lintFile path styleExceptions
+
+    let (errors, changed) := ← lintFile path styleExceptions
+    if let some c := changed then
+      if fix then
+        let _ := ← IO.FS.writeFile path ("\n".intercalate c.toList)
     if errors.size > 0 then
       allUnexpectedErrors := allUnexpectedErrors.append errors
       numberErrorFiles := numberErrorFiles + 1

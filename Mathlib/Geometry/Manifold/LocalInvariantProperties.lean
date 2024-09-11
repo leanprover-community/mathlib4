@@ -515,18 +515,9 @@ theorem liftProp_subtype_val {Q : (H → H) → Set H → H → Prop} (hG : Loca
 
 theorem liftProp_inclusion {Q : (H → H) → Set H → H → Prop} (hG : LocalInvariantProp G G Q)
     (hQ : ∀ y, Q id univ y) {U V : Opens M} (hUV : U ≤ V) :
-    letI : ChartedSpace H { x // x ∈ V } := V.instChartedSpace
-    letI : ChartedSpace H { x // x ∈ U } := U.instChartedSpace
-    LiftProp Q (Set.inclusion hUV : U → V) := by
-  #adaptation_note
-  /--
-  After lean4#5020, many instances for Lie algebras and manifolds are no longer found.
-  See https://leanprover.zulipchat.com/#narrow/stream/428973-nightly-testing/topic/.2316244.20adaptations.20for.20nightly-2024-08-28/near/466219124
-  -/
-  letI : ChartedSpace H { x // x ∈ V } := V.instChartedSpace
-  letI : ChartedSpace H { x // x ∈ U } := U.instChartedSpace
+    LiftProp Q (Opens.inclusion hUV : U → V) := by
   intro x
-  show LiftPropAt Q (id ∘ inclusion hUV) x
+  show LiftPropAt Q (id ∘ Opens.inclusion hUV) x
   rw [← hG.liftPropAt_iff_comp_inclusion hUV]
   apply hG.liftProp_id hQ
 
