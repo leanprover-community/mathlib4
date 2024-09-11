@@ -5,7 +5,6 @@ Authors: Siddhartha Gadgil
 -/
 import Lean
 import LeanSearchClient.Syntax
-import Mathlib.Tactic
 
 /-!
 # Lean Search Examples
@@ -16,8 +15,6 @@ The search is triggered when the sentence ends with a full stop (period) or a qu
 This file is mainly for testing during the PR review. It may be removed later.
 -/
 section leansearch
-set_option linter.style.longLine false
-set_option linter.unusedTactic false
 
 /--
 warning: Lean search query should end with a full stop (period) or a question mark. Note this command sends your query to an external service at https://leansearch.net/.
