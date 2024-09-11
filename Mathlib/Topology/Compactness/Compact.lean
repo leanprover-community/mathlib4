@@ -301,7 +301,7 @@ theorem IsCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed (t : �
     (htcl : ∀ i, IsClosed (t i)) : (⋂ i, t i).Nonempty :=
   have tmono : Antitone t := antitone_nat_of_succ_le htd
   have htd : Directed (· ⊇ ·) t := tmono.directed_ge
-  have : ∀ i, t i ⊆ t 0 := fun i => tmono <| zero_le i
+  have : ∀ i, t i ⊆ t 0 := fun i => tmono <| Nat.zero_le i
   have htc : ∀ i, IsCompact (t i) := fun i => ht0.of_isClosed_subset (htcl i) (this i)
   IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed t htd htn htc htcl
 

@@ -168,7 +168,7 @@ theorem eq_or_ne {α : Sort*} (x y : α) : x = y ∨ x ≠ y := em <| x = y
 
 theorem ne_or_eq {α : Sort*} (x y : α) : x ≠ y ∨ x = y := em' <| x = y
 
-theorem by_contradiction {p : Prop} : (¬p → False) → p := Decidable.by_contradiction
+theorem by_contradiction {p : Prop} : (¬p → False) → p := Decidable.byContradiction
 
 theorem by_cases {p q : Prop} (hpq : p → q) (hnpq : ¬p → q) : q :=
 if hp : p then hpq hp else hnpq hp

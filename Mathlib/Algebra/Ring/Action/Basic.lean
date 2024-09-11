@@ -40,6 +40,8 @@ class MulSemiringAction (M : Type u) (R : Type v) [Monoid M] [Semiring R] extend
   /-- Scalar multiplication distributes across multiplication -/
   smul_mul : ∀ (g : M) (x y : R), g • (x * y) = g • x * g • y
 
+set_synth_order MulSemiringAction.toDistribMulAction #[4, 2, 3]
+
 section Semiring
 
 variable (M N G : Type*) [Monoid M] [Monoid N] [Group G]
@@ -49,6 +51,8 @@ variable (A R S F : Type v) [AddMonoid A] [Semiring R] [CommSemiring S]
 instance (priority := 100) MulSemiringAction.toMulDistribMulAction [h : MulSemiringAction M R] :
     MulDistribMulAction M R :=
   { h with }
+
+set_synth_order MulSemiringAction.toMulDistribMulAction #[4, 1, 3]
 
 /-- Each element of the monoid defines a semiring homomorphism. -/
 @[simps!]
