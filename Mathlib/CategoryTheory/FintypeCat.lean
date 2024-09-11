@@ -99,7 +99,7 @@ def equivEquivIso {A B : FintypeCat} : A ≃ B ≃ (A ≅ B) where
   left_inv := by aesop_cat
   right_inv := by aesop_cat
 
-instance foo (X Y : FintypeCat) : Finite (X ⟶ Y) :=
+instance (X Y : FintypeCat) : Finite (X ⟶ Y) :=
   inferInstanceAs <| Finite (X → Y)
 
 instance (X Y : FintypeCat) : Finite (X ≅ Y) :=
@@ -229,24 +229,26 @@ lemma switchUniverseEquiv_naturality' {X Y : FintypeCat.{u}} (f : X ⟶ Y) (x : 
   rw [← Equiv.apply_eq_iff_eq_symm_apply, ← switchUniverseEquiv_naturality f,
     Equiv.apply_symm_apply]
 
+lemma switchUniverse_map_switchUniverse_map {X Y : FintypeCat.{u}} (f : X ⟶ Y) :
+    switchUniverse.map (switchUniverse.map f) =
+    (equivEquivIso ((switchUniverse.obj X).switchUniverseEquiv.trans X.switchUniverseEquiv)).hom ≫
+      f ≫ (equivEquivIso ((switchUniverse.obj Y).switchUniverseEquiv.trans
+      Y.switchUniverseEquiv)).inv := by
+  ext x
+  simp only [comp_apply, equivEquivIso_apply_hom, Equiv.trans_apply]
+  rw [switchUniverseEquiv_naturality f, ← switchUniverseEquiv_naturality]
+  rfl
+
 /-- `switchUniverse.{u, v}` is an equivalence of categories with quasi-inverse
 `switchUniverse.{v, u}`. -/
 noncomputable def switchUniverseEquivalence : FintypeCat.{u} ≌ FintypeCat.{v} :=
   CategoryTheory.Equivalence.mk switchUniverse switchUniverse
-    (NatIso.ofComponents (fun X ↦ equivEquivIso.toFun <|
-        X.switchUniverseEquiv.symm.trans (switchUniverse.obj X).switchUniverseEquiv.symm) <| by
-      intro X Y f
-      ext x
-      simp only [Functor.comp_obj, Functor.id_obj, Functor.id_map, Equiv.toFun_as_coe, comp_apply,
-        equivEquivIso_apply_hom, Equiv.trans_apply, Functor.comp_map]
-      rw [switchUniverseEquiv_naturality', switchUniverseEquiv_naturality'])
-    (NatIso.ofComponents (fun X ↦ equivEquivIso.toFun <|
+    (NatIso.ofComponents (fun X ↦ (equivEquivIso <|
+        (switchUniverse.obj X).switchUniverseEquiv.trans X.switchUniverseEquiv).symm) <| by
+        simp [switchUniverse_map_switchUniverse_map])
+    (NatIso.ofComponents (fun X ↦ equivEquivIso <|
         (switchUniverse.obj X).switchUniverseEquiv.trans X.switchUniverseEquiv) <| by
-      intro X Y f
-      ext x
-      simp only [Functor.id_obj, Functor.comp_obj, Functor.comp_map, Equiv.toFun_as_coe, comp_apply,
-        equivEquivIso_apply_hom, Equiv.trans_apply, Functor.id_map]
-      rw [switchUniverseEquiv_naturality f, ← switchUniverseEquiv_naturality])
+      simp [switchUniverse_map_switchUniverse_map])
 
 instance : switchUniverse.IsEquivalence :=
   switchUniverseEquivalence.isEquivalence_functor
