@@ -289,7 +289,7 @@ instance [IsCofiltered C] (X : C × C) : IsCofiltered (CostructuredArrow (diag C
 instance Functor.diag_initial_of_isFiltered [IsCofiltered C] : Initial (Functor.diag C) :=
   initial_of_isCofiltered_costructuredArrow _
 
-/-- The functor `StructuredArrow.proj : StructuredArrow Y T` is final if `T : C ⥤ D` is final
+/-- The functor `StructuredArrow.proj : StructuredArrow Y T ⥤ C` is final if `T : C ⥤ D` is final
 and `C` is filtered. -/
 instance StructuredArrow.proj_final_of_filtered [IsFiltered C]
     {D : Type u₂} [Category.{v₁} D] (T : C ⥤ D) [Final T] (Y : D) :
@@ -302,8 +302,8 @@ instance StructuredArrow.proj_final_of_filtered [IsFiltered C]
     apply IsFiltered.of_equivalence (ofStructuredArrowProjEquivalence T Y X).symm
   apply final_of_isFiltered_structuredArrow
 
-/-- The functor `StructuredArrow.proj : StructuredArrow Y T` is final if `T : C ⥤ D` is final
-and `C` is filtered. -/
+/-- The functor `CostructuredArrow.proj : CostructuredArrow Y T ⥤ C` is initial if `T : C ⥤ D` is
+initial and `C` is cofiltered. -/
 instance CostructuredArrow.proj_initial_of_cofiltered [IsCofiltered C]
     {D : Type u₂} [Category.{v₁} D] (T : C ⥤ D) [Initial T] (Y : D) :
     Initial (CostructuredArrow.proj T Y) := by
