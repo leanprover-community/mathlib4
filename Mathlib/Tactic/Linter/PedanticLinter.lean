@@ -62,7 +62,7 @@ def polishSource (s : String) : String × Array Nat :=
     let txt := q.trimLeft.length
     (p.push (q.length - txt)).push txt
   let preWS := preWS.eraseIdx 0
-  let s := (split.map .trimLeft).filter (!· == "")
+  let s := (split.map .trimLeft).filter (· != "")
   (" ".intercalate (s.filter (!·.isEmpty)), preWS)
 
 /-- `posToShiftedPos lths diff` takes as input an array `lths` of natural numbers,
@@ -120,7 +120,7 @@ def pedantic : Linter where run := withSetOptionIn fun stx ↦ do
       return
     if (← MonadState.get).messages.hasErrors then
       return
-    let stx:= capSyntax stx (stx.getTailPos?.getD default).1
+    let stx := capSyntax stx (stx.getTailPos?.getD default).1
     let origSubstring := stx.getSubstring?.getD default
     let (real, lths) := polishSource origSubstring.toString
     let fmt ← (liftCoreM do PrettyPrinter.ppCategory `command stx <|> (do
