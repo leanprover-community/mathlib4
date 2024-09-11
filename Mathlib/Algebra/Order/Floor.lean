@@ -1025,7 +1025,7 @@ theorem fract_div_intCast_eq_div_intCast_mod {m : ℤ} {n : ℕ} :
     obtain ⟨l₀, rfl | rfl⟩ := l.eq_nat_or_neg
     · rw [cast_natCast, ← natCast_mod, cast_natCast, fract_div_natCast_eq_div_natCast_mod]
     · rw [Right.nonneg_neg_iff, natCast_nonpos_iff] at hl
-      simp [hl, zero_mod]
+      simp [hl]
   obtain ⟨m₀, rfl | rfl⟩ := m.eq_nat_or_neg
   · exact this (ofNat_nonneg m₀)
   let q := ⌈↑m₀ / (n : k)⌉
