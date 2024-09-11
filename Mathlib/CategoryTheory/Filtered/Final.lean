@@ -32,7 +32,7 @@ final can be restated. We show:
 
 -/
 
-universe v₁ v₂ u₁ u₂
+universe v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
@@ -313,6 +313,27 @@ instance CostructuredArrow.proj_initial_of_cofiltered [IsCofiltered C]
       rw [← Functor.initial_iff_isCofiltered_costructuredArrow]
       exact initial_comp (Over.forget X) T
     apply IsCofiltered.of_equivalence (ofCostructuredArrowProjEquivalence T Y X).symm
+  apply initial_of_isCofiltered_costructuredArrow
+
+/-- The functor `StructuredArrow.pre X T S` is final if `T` is final and the domain of `T` is
+filtered. -/
+instance StructuredArrow.pre_final [IsFiltered C] {D : Type u₂} [Category.{v₁} D] {E : Type u₃}
+    [Category.{v₁} E] (T : C ⥤ D) [Final T] (S : D ⥤ E) (X : E) : Final (pre X T S) := by
+  haveI : ∀ Y, IsFiltered (StructuredArrow Y T) := by
+    rwa [← Functor.final_iff_isFiltered_structuredArrow]
+  haveI : ∀ f, IsFiltered (StructuredArrow f (pre X T S)) := fun f => by
+    apply IsFiltered.of_equivalence (StructuredArrow.preEquivalence T f).symm
+  apply final_of_isFiltered_structuredArrow
+
+/-- The functor `CostructuredArrow.pre X T S` is initial if `T` is initial and the domain of `T` is
+cofiltered. -/
+theorem CostructuredArrow.pre_initial [IsCofiltered C] {D : Type u₂} [Category.{v₁} D]
+    {E : Type u₃} [Category.{v₁} E] (T : C ⥤ D) [Initial T] (S : D ⥤ E) (X : E) :
+    Initial (pre T S X) := by
+  haveI : ∀ Y, IsCofiltered (CostructuredArrow T Y) := by
+    rwa [← Functor.initial_iff_isCofiltered_costructuredArrow]
+  haveI : ∀ f, IsCofiltered (CostructuredArrow (pre T S X) f) := fun f => by
+    apply IsCofiltered.of_equivalence (CostructuredArrow.preEquivalence T f).symm
   apply initial_of_isCofiltered_costructuredArrow
 
 end LocallySmall
