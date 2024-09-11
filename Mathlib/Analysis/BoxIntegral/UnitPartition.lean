@@ -6,6 +6,7 @@ Authors: Xavier Roblot
 import Mathlib.Analysis.BoxIntegral.Integrability
 
  /-!
+ 
 # Unit Partition
 
 Fix `n` a positive integer. `BoxIntegral.unitPartition.Box` are boxes in `ι → ℝ` obtained by
