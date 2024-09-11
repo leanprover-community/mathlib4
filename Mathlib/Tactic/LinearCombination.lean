@@ -169,8 +169,8 @@ syntax expStx := atomic(" (" &"exp" " := ") withoutPosition(num) ")"
   of a list of equalities and subtracting it from the target.
   The tactic will create a linear
   combination by adding the equalities together from left to right, so the order
-  of the input hypotheses does matter.  If the `normalize` field of the
-  configuration is set to false, then the tactic will simply set the user up to
+  of the input hypotheses does matter.  If the `norm` field of the
+  tactic is set to `skip`, then the tactic will simply set the user up to
   prove their target using the linear combination instead of normalizing the subtraction.
 
 Note: The left and right sides of all the equalities should have the same type `α`, and the
