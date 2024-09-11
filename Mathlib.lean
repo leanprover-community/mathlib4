@@ -4198,6 +4198,7 @@ import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.IrreducibleDef
+import Mathlib.Tactic.LeanSearchExample
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.Lift
 import Mathlib.Tactic.LiftLets
