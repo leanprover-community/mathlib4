@@ -98,6 +98,14 @@ open BigOperators Finset in
 #guard_msgs in
 # Nat.sqrt $ (id ^ 3 : Nat → Nat) 6
 
+/-- info: Nat.sqrt (@HVAdd.hVAdd ℕ ℕ *0 *1 4 (@id ℕ 6)) -/
+#guard_msgs in
+# Nat.sqrt $ (4 +ᵥ id : Nat → Nat) 6
+
+/-- info: Int.sqrt (@Neg.neg ℤ *0 (@id ℤ 6)) -/
+#guard_msgs in
+# Int.sqrt $ (-id : Int → Int) 6
+
 
 -- only distibute the sum function application if the instance is Pi.instAdd:
 private instance (priority := high) : Add (Nat → Nat) where
