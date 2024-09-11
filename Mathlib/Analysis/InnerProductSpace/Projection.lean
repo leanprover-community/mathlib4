@@ -42,6 +42,8 @@ The Coq code is available at the following address: <http://www.lri.fr/~sboldo/e
 
 noncomputable section
 
+open InnerProductSpace
+
 open RCLike Real Filter
 
 open LinearMap (ker range)
@@ -278,7 +280,7 @@ theorem exists_norm_eq_iInf_of_complete_subspace (h : IsComplete (↑K : Set E))
 Let `u` be a point in a real inner product space, and let `K` be a nonempty subspace.
 Then point `v` minimizes the distance `‖u - v‖` over points in `K` if and only if
 for all `w ∈ K`, `⟪u - v, w⟫ = 0` (i.e., `u - v` is orthogonal to the subspace `K`).
-This is superceded by `norm_eq_iInf_iff_inner_eq_zero` that gives the same conclusion over
+This is superseded by `norm_eq_iInf_iff_inner_eq_zero` that gives the same conclusion over
 any `RCLike` field.
 -/
 theorem norm_eq_iInf_iff_real_inner_eq_zero (K : Submodule ℝ F) {u : F} {v : F} (hv : v ∈ K) :
