@@ -883,10 +883,8 @@ protected theorem neg_add_cancel (x : X[S⁻¹]) : -x + x = 0 := by
   induction' x with r s; simp
 
 /-- `zsmul` of `OreLocalization` -/
-@[irreducible]
 protected def zsmul : ℤ → X[S⁻¹] → X[S⁻¹] := zsmulRec
 
-unseal OreLocalization.zsmul in
 instance instAddGroupOreLocalization : AddGroup X[S⁻¹] where
   neg_add_cancel := OreLocalization.neg_add_cancel
   zsmul := OreLocalization.zsmul
