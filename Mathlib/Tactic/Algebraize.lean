@@ -204,9 +204,15 @@ def searchContext (t : Array Expr) : TacticM Unit := withMainContext do
           return [mvar]
     | none => return
 
+structure Config where
+  searchContext : Bool := true
+deriving Inhabited
+
+declare_config_elab elabAlgebraizeConfig Algebraize.Config
+
 end Algebraize
 
-open Algebraize
+open Algebraize Lean.Parser.Tactic
 
 /-- Tactic that, given `RingHom`s, adds the corresponding `Algebra` and (if possible)
 `IsScalarTower` instances, as well as `Algebra` corresponding to `RingHom` properties available
@@ -216,10 +222,11 @@ Example: given `f : A →+* B` and `g : B →+* C`, and `hf : f.FiniteType`, `al
 the instances `Algebra A B`, `Algebra B C`, and `Algebra.FiniteType A B`.
 
 See the `algebraize` tag for instructions on what properties can be added. -/
-syntax "algebraize" (ppSpace colGt term:max)* : tactic
+syntax "algebraize" (config)? (ppSpace colGt term:max)* : tactic
 
 elab_rules : tactic
-  | `(tactic| algebraize $[$t:term]*) => do
+  | `(tactic| algebraize $[$config]? $[$t:term]*) => do
+    let cfg ← elabAlgebraizeConfig (mkOptionalNode config)
     let t ← t.mapM fun i => Term.elabTerm i none
     -- We loop through the given terms and add algebra instances
     for f in t do
@@ -236,7 +243,8 @@ elab_rules : tactic
       | _ => continue
 
     -- Search through the local context to find other instances of algebraize
-    searchContext t
+    if cfg.searchContext then
+      searchContext t
 
 /-- Version of `algebraize`, which only adds `Algebra` instances and `IsScalarTower` instances. -/
 syntax "algebraize'" (ppSpace colGt term:max)* : tactic
