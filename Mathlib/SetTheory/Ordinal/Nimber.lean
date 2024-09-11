@@ -344,14 +344,14 @@ theorem add_cancel_left (a b : Nimber) : a + (a + b) = b := by
   rw [← add_assoc, add_self, zero_add]
 
 theorem add_trichotomy {a b c : Nimber} (h : a + b + c ≠ 0) :
-    b + c < a ∨ a + c < b ∨ a + b < c := by
+    b + c < a ∨ c + a < b ∨ a + b < c := by
   rw [← Nimber.pos_iff_ne_zero] at h
   obtain ⟨x, hx, hx'⟩ | ⟨x, hx, hx'⟩ := exists_of_lt_add h <;>
   rw [add_eq_zero] at hx'
   · obtain ⟨x, hx, hx'⟩ | ⟨x, hx, hx'⟩ := exists_of_lt_add (hx' ▸ hx)
     · rw [← hx', add_comm, add_cancel_right]
       exact Or.inl hx
-    · rw [← hx', add_cancel_left]
+    · rw [← hx', add_comm a, add_cancel_right]
       exact Or.inr <| Or.inl hx
   · rw [← hx'] at hx
     exact Or.inr <| Or.inr hx
