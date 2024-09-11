@@ -184,7 +184,7 @@ section
 variable (h_e : UniformInducing e)
 
 /-- Extension of a continuous linear map `f : E →SL[σ₁₂] F`, with `E` a normed space and `F` a
-complete normed space, along a uniform and dense embedding `e : E →L[𝕜] Fₗ`.  -/
+complete normed space, along a uniform and dense embedding `e : E →L[𝕜] Fₗ`. -/
 def extend : Fₗ →SL[σ₁₂] F :=
   -- extension of `f` is continuous
   have cont := (uniformContinuous_uniformly_extend h_e h_dense f.uniformContinuous).continuous

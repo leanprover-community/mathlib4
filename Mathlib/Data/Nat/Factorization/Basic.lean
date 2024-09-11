@@ -388,7 +388,7 @@ lemma factorizationLCMRight_pos :
   rw [factorizationLCMRight, Finsupp.prod_ne_zero_iff]
   intro p _ H
   by_cases h : b.factorization p ≤ a.factorization p
-  · simp only [h, reduceIte, pow_eq_zero_iff', ne_eq] at H
+  · simp only [h, reduceIte, pow_eq_zero_iff', ne_eq, reduceCtorEq] at H
   · simp only [h, ↓reduceIte, pow_eq_zero_iff', ne_eq] at H
     simpa [H.1] using H.2
 
@@ -530,7 +530,7 @@ theorem prod_pow_prime_padicValNat (n : Nat) (hn : n ≠ 0) (m : Nat) (pr : n < 
 
 -- TODO: Port lemmas from `Data/Nat/Multiplicity` to here, re-written in terms of `factorization`
 /-- Exactly `n / p` naturals in `[1, n]` are multiples of `p`.
-See `Nat.card_multiples'` for an alternative spelling of the statement.  -/
+See `Nat.card_multiples'` for an alternative spelling of the statement. -/
 theorem card_multiples (n p : ℕ) : card ((Finset.range n).filter fun e => p ∣ e + 1) = n / p := by
   induction' n with n hn
   · simp

@@ -224,7 +224,7 @@ def ElementaryEmbedding.ofModelsElementaryDiagram (N : Type*) [L.Structure N] [L
                   (Constants.term ∘ Sum.inr ∘ x)).alls).trans
           ?_)
     · simp_rw [Sentence.Realize, BoundedFormula.realize_alls, BoundedFormula.realize_subst,
-        LHom.realize_onBoundedFormula, Formula.Realize, Unique.forall_iff, Function.comp,
+        LHom.realize_onBoundedFormula, Formula.Realize, Unique.forall_iff, Function.comp_def,
         Term.realize_constants]
     · simp_rw [Sentence.Realize, BoundedFormula.realize_alls, BoundedFormula.realize_subst,
         LHom.realize_onBoundedFormula, Formula.Realize, Unique.forall_iff]
@@ -248,9 +248,9 @@ theorem isElementary_of_exists (f : M ↪[L] N)
   refine fun n φ => φ.recOn ?_ ?_ ?_ ?_ ?_
   · exact fun {_} _ => Iff.rfl
   · intros
-    simp [BoundedFormula.Realize, ← Sum.comp_elim, Embedding.realize_term]
+    simp [BoundedFormula.Realize, ← Sum.comp_elim, HomClass.realize_term]
   · intros
-    simp only [BoundedFormula.Realize, ← Sum.comp_elim, realize_term]
+    simp only [BoundedFormula.Realize, ← Sum.comp_elim, HomClass.realize_term]
     erw [map_rel f]
   · intro _ _ _ ih1 ih2 _
     simp [ih1, ih2]
@@ -301,7 +301,7 @@ end Equiv
 @[simp]
 theorem realize_term_substructure {α : Type*} {S : L.Substructure M} (v : α → S) (t : L.Term α) :
     t.realize ((↑) ∘ v) = (↑(t.realize v) : M) :=
-  S.subtype.realize_term t
+  HomClass.realize_term S.subtype
 
 end Language
 

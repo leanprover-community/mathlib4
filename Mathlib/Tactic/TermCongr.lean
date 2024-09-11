@@ -139,7 +139,7 @@ def cHole? (e : Expr) (mvarCounterSaved? : Option Nat := none) : Option (Bool ×
     return (forLhs, val, pf)
   | _ => none
 
-/-- Returns any subexpression that is a recent congruence hole.  -/
+/-- Returns any subexpression that is a recent congruence hole. -/
 def hasCHole (mvarCounterSaved : Nat) (e : Expr) : Option Expr :=
   e.find? fun e' => (cHole? e' mvarCounterSaved).isSome
 

@@ -428,8 +428,8 @@ theorem memℒp_const (c : E) [IsFiniteMeasure μ] : Memℒp (fun _ : α => c) p
   by_cases hμ : μ = 0
   · simp [hμ]
   rw [eLpNorm_const c h0 hμ]
-  refine ENNReal.mul_lt_top ENNReal.coe_ne_top ?_
-  refine (ENNReal.rpow_lt_top_of_nonneg ?_ (measure_ne_top μ Set.univ)).ne
+  refine ENNReal.mul_lt_top ENNReal.coe_lt_top ?_
+  refine ENNReal.rpow_lt_top_of_nonneg ?_ (measure_ne_top μ Set.univ)
   simp
 
 theorem memℒp_top_const (c : E) : Memℒp (fun _ : α => c) ∞ μ := by
@@ -661,7 +661,7 @@ theorem eLpNorm_norm_rpow (f : α → F) (hq_pos : 0 < q) :
       congr
       ext1 x
       conv_rhs => rw [← nnnorm_norm]
-      rw [ENNReal.coe_rpow_of_nonneg _ hq_pos.le, ENNReal.coe_inj]
+      rw [← ENNReal.coe_rpow_of_nonneg _ hq_pos.le, ENNReal.coe_inj]
       ext
       push_cast
       rw [Real.norm_rpow_of_nonneg (norm_nonneg _)]
@@ -850,7 +850,7 @@ theorem Memℒp.of_measure_le_smul {μ' : Measure α} (c : ℝ≥0∞) (hc : c �
   by_cases hc0 : c = 0
   · simp [hc0]
   rw [eLpNorm_smul_measure_of_ne_zero hc0, smul_eq_mul]
-  refine ENNReal.mul_lt_top ?_ hf.2.ne
+  refine ENNReal.mul_lt_top (Ne.lt_top ?_) hf.2
   simp [hc, hc0]
 
 theorem Memℒp.smul_measure {f : α → E} {c : ℝ≥0∞} (hf : Memℒp f p μ) (hc : c ≠ ∞) :
@@ -1094,7 +1094,7 @@ theorem eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul {f : α → F} {g : α →
   rw [← ENNReal.rpow_le_rpow_iff hp, ENNReal.smul_def, smul_eq_mul,
     ENNReal.mul_rpow_of_nonneg _ _ hp.le]
   simp_rw [← ENNReal.rpow_mul, one_div, inv_mul_cancel₀ hp.ne.symm, ENNReal.rpow_one,
-    ENNReal.coe_rpow_of_nonneg _ hp.le, ← lintegral_const_mul' _ _ ENNReal.coe_ne_top, ←
+    ← ENNReal.coe_rpow_of_nonneg _ hp.le, ← lintegral_const_mul' _ _ ENNReal.coe_ne_top, ←
     ENNReal.coe_mul]
   apply lintegral_mono_ae
   simp_rw [ENNReal.coe_le_coe, ← NNReal.mul_rpow, NNReal.rpow_le_rpow_iff hp]
@@ -1165,13 +1165,13 @@ theorem Memℒp.of_nnnorm_le_mul {f : α → E} {g : α → F} {c : ℝ≥0} (hg
     (hf : AEStronglyMeasurable f μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) : Memℒp f p μ :=
   ⟨hf,
     (eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul hfg p).trans_lt <|
-      ENNReal.mul_lt_top ENNReal.coe_ne_top hg.eLpNorm_ne_top⟩
+      ENNReal.mul_lt_top ENNReal.coe_lt_top hg.eLpNorm_lt_top⟩
 
 theorem Memℒp.of_le_mul {f : α → E} {g : α → F} {c : ℝ} (hg : Memℒp g p μ)
     (hf : AEStronglyMeasurable f μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖ ≤ c * ‖g x‖) : Memℒp f p μ :=
   ⟨hf,
     (eLpNorm_le_mul_eLpNorm_of_ae_le_mul hfg p).trans_lt <|
-      ENNReal.mul_lt_top ENNReal.ofReal_ne_top hg.eLpNorm_ne_top⟩
+      ENNReal.mul_lt_top ENNReal.ofReal_lt_top hg.eLpNorm_lt_top⟩
 
 end Monotonicity
 
@@ -1210,7 +1210,7 @@ alias snorm_const_smul_le := eLpNorm_const_smul_le
 
 theorem Memℒp.const_smul {f : α → E} (hf : Memℒp f p μ) (c : 𝕜) : Memℒp (c • f) p μ :=
   ⟨AEStronglyMeasurable.const_smul hf.1 c,
-    (eLpNorm_const_smul_le c f).trans_lt (ENNReal.mul_lt_top ENNReal.coe_ne_top hf.2.ne)⟩
+    (eLpNorm_const_smul_le c f).trans_lt (ENNReal.mul_lt_top ENNReal.coe_lt_top hf.2)⟩
 
 theorem Memℒp.const_mul {R} [NormedRing R] {f : α → R} (hf : Memℒp f p μ) (c : R) :
     Memℒp (fun x => c * f x) p μ :=
