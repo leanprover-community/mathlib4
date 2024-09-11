@@ -146,6 +146,11 @@ protected lemma isNilpotent_sum {ι : Type*} {s : Finset ι} {f : ι → R}
   · exact ih (fun i hi ↦ hnp i (by simp [hi]))
       (fun i j hi hj ↦ h_comm i j (by simp [hi]) (by simp [hj]))
 
+theorem nilpotencyClass_add_le (h_comm : Commute x y) (hx : IsNilpotent x) (hy : IsNilpotent y) :
+    nilpotencyClass (x + y) ≤ nilpotencyClass x + nilpotencyClass y - 1 := by
+  apply nilpotencyClass_le
+  exact h_comm.add_pow_add_eq_zero_of_pow_eq_zero (pow_nilpotencyClass hx) (pow_nilpotencyClass hy)
+
 protected lemma isNilpotent_mul_left_iff (h_comm : Commute x y) (hy : y ∈ nonZeroDivisorsLeft R) :
     IsNilpotent (x * y) ↔ IsNilpotent x := by
   refine ⟨?_, h_comm.isNilpotent_mul_left⟩

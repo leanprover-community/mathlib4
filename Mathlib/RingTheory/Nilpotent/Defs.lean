@@ -122,6 +122,9 @@ lemma isNilpotent_of_pos_nilpotencyClass (hx : 0 < nilpotencyClass x) :
 lemma pow_nilpotencyClass (hx : IsNilpotent x) : x ^ (nilpotencyClass x) = 0 :=
   Nat.sInf_mem hx
 
+lemma nilpotencyClass_le {k : ℕ} (hk : x ^ k = 0) : nilpotencyClass x ≤ k :=
+  Nat.sInf_le hk
+
 end ZeroPow
 
 section MonoidWithZero
@@ -138,12 +141,15 @@ lemma nilpotencyClass_eq_succ_iff {k : ℕ} :
     nilpotencyClass (0 : R) = 1 :=
   nilpotencyClass_eq_succ_iff.mpr <| by constructor <;> simp
 
-@[simp] lemma pos_nilpotencyClass_iff [Nontrivial R] :
-    0 < nilpotencyClass x ↔ IsNilpotent x := by
-  refine ⟨isNilpotent_of_pos_nilpotencyClass, fun hx ↦ Nat.pos_of_ne_zero fun hx' ↦ ?_⟩
+lemma nilpotencyClass_pos [Nontrivial R] (hx : IsNilpotent x) : 0 < nilpotencyClass x := by
+  apply Nat.pos_of_ne_zero (fun hx' => ?_)
   replace hx := pow_nilpotencyClass hx
   rw [hx', pow_zero] at hx
   exact one_ne_zero hx
+
+@[simp] lemma pos_nilpotencyClass_iff [Nontrivial R] :
+    0 < nilpotencyClass x ↔ IsNilpotent x :=
+  ⟨isNilpotent_of_pos_nilpotencyClass, nilpotencyClass_pos⟩
 
 lemma pow_pred_nilpotencyClass [Nontrivial R] (hx : IsNilpotent x) :
     x ^ (nilpotencyClass x - 1) ≠ 0 :=
@@ -157,6 +163,11 @@ lemma eq_zero_of_nilpotencyClass_eq_one (hx : nilpotencyClass x = 1) :
 @[simp] lemma nilpotencyClass_eq_one [Nontrivial R] :
     nilpotencyClass x = 1 ↔ x = 0 :=
   ⟨eq_zero_of_nilpotencyClass_eq_one, fun hx ↦ hx ▸ nilpotencyClass_zero⟩
+
+lemma pow_eq_zero_of_nilpotencyClass_le (hx : IsNilpotent x) {k : ℕ} (hk : nilpotencyClass x ≤ k) :
+    x ^ k = 0 := by
+  obtain ⟨l, rfl⟩ := Nat.le.dest hk
+  rw [pow_add, pow_nilpotencyClass hx, zero_mul]
 
 end MonoidWithZero
 
