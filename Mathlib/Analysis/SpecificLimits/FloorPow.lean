@@ -212,7 +212,7 @@ theorem tendsto_div_of_monotone_of_tendsto_div_floor_pow (u : ℕ → ℝ) (l : 
     field_simp [(zero_lt_one.trans (cone k)).ne', (H n).ne']
     ring
   filter_upwards [(tendsto_order.1 B).2 a hk] with n hn
-  exact (div_le_iff (H n)).1 hn.le
+  exact (div_le_iff₀ (H n)).1 hn.le
 
 /-- The sum of `1/(c^i)^2` above a threshold `j` is comparable to `1/j^2`, up to a multiplicative
 constant. -/
@@ -296,7 +296,7 @@ theorem sum_div_nat_floor_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c :
       · exact sq_pos_of_pos (pow_pos cpos _)
       rw [one_mul, ← mul_pow]
       gcongr
-      rw [← div_eq_inv_mul, le_div_iff A, mul_comm]
+      rw [← div_eq_inv_mul, le_div_iff₀ A, mul_comm]
       exact mul_pow_le_nat_floor_pow hc i
     _ ≤ (1 - c⁻¹)⁻¹ ^ 2 * (c ^ 3 * (c - 1)⁻¹) / j ^ 2 := by
       rw [← mul_sum, ← mul_div_assoc']

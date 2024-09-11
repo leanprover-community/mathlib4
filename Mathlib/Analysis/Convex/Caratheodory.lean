@@ -79,7 +79,7 @@ theorem mem_convexHull_erase [DecidableEq E] {t : Finset E} (h : ¬AffineIndepen
     · have hge : 0 < g e := by
         rw [mem_filter] at hes
         exact hes.2
-      rw [← le_div_iff hge]
+      rw [← le_div_iff₀ hge]
       exact w _ hes
     · calc
         _ ≤ 0 := by

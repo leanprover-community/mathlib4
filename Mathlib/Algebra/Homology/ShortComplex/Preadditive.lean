@@ -508,7 +508,7 @@ def op (h : Homotopy φ₁ φ₂) : Homotopy (opMap φ₁) (opMap φ₂) where
 /-- The homotopy between morphisms in `ShortComplex C` that is induced by a homotopy
 between morphisms in `ShortComplex Cᵒᵖ`. -/
 @[simps]
-def unop {S₁ S₂ : ShortComplex Cᵒᵖ} {φ₁ φ₂ : S₁ ⟶ S₂}  (h : Homotopy φ₁ φ₂) :
+def unop {S₁ S₂ : ShortComplex Cᵒᵖ} {φ₁ φ₂ : S₁ ⟶ S₂} (h : Homotopy φ₁ φ₂) :
     Homotopy (unopMap φ₁) (unopMap φ₂) where
   h₀ := h.h₃.unop
   h₁ := h.h₂.unop

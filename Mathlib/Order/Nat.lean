@@ -23,6 +23,9 @@ instance instOrderBot : OrderBot ℕ where
   bot := 0
   bot_le := zero_le
 
+instance instNoMaxOrder : NoMaxOrder ℕ where
+  exists_gt n := ⟨n + 1, n.lt_succ_self⟩
+
 /-! ### Miscellaneous lemmas -/
 
 -- We want to use this lemma earlier than the lemma simp can prove it with

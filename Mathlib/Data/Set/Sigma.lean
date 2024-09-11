@@ -191,7 +191,7 @@ theorem mk_preimage_sigma_fn_eq_if {β : Type*} [DecidablePred (· ∈ s)] (g : 
 
 theorem sigma_univ_range_eq {f : ∀ i, α i → β i} :
     (univ : Set ι).sigma (fun i ↦ range (f i)) = range fun x : Σ i, α i ↦ ⟨x.1, f _ x.2⟩ :=
-  ext <| by simp [range]
+  ext <| by simp [range, Sigma.forall]
 
 protected theorem Nonempty.sigma :
     s.Nonempty → (∀ i, (t i).Nonempty) → (s.sigma t).Nonempty := fun ⟨i, hi⟩ h ↦

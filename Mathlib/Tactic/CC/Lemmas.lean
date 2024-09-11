@@ -88,7 +88,7 @@ theorem if_eq_of_eq_true {c : Prop} [d : Decidable c] {α : Sort u} (t e : α) (
 
 theorem if_eq_of_eq_false {c : Prop} [d : Decidable c] {α : Sort u} (t e : α) (h : c = False) :
     @ite α c d t e = e :=
-  if_neg (not_of_eq_false h)
+  if_neg (of_eq_false h)
 
 theorem if_eq_of_eq (c : Prop) [d : Decidable c] {α : Sort u} {t e : α} (h : t = e) :
     @ite α c d t e = t :=

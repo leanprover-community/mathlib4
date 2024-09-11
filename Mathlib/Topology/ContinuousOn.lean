@@ -3,6 +3,7 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Algebra.Group.Indicator
 import Mathlib.Topology.Constructions
 
 /-!
@@ -1138,7 +1139,8 @@ theorem IsOpen.ite' {s s' t : Set α} (hs : IsOpen s) (hs' : IsOpen s')
     (ht : ∀ x ∈ frontier t, x ∈ s ↔ x ∈ s') : IsOpen (t.ite s s') := by
   classical
     simp only [isOpen_iff_continuous_mem, Set.ite] at *
-    convert continuous_piecewise (fun x hx => propext (ht x hx)) hs.continuousOn hs'.continuousOn
+    convert
+      continuous_piecewise (fun x hx => propext (ht x hx)) hs.continuousOn hs'.continuousOn using 2
     rename_i x
     by_cases hx : x ∈ t <;> simp [hx]
 
