@@ -446,6 +446,7 @@ theorem nmul_def (a b : Ordinal) :
     a ⨳ b = sInf {c | ∀ a' < a, ∀ b' < b, a' ⨳ b ♯ a ⨳ b' < c ♯ a' ⨳ b'} := by rw [nmul]
 
 /-- The set in the definition of `nmul` is nonempty. -/
+@[deprecated (since := "2024-09-11")]
 theorem nmul_nonempty (a b : Ordinal.{u}) :
     {c : Ordinal.{u} | ∀ a' < a, ∀ b' < b, a' ⨳ b ♯ a ⨳ b' < c ♯ a' ⨳ b'}.Nonempty :=
   ⟨_, fun _ ha _ hb => (lt_blsub₂.{u, u, u} _ ha hb).trans_le le_self_nadd⟩
@@ -453,7 +454,8 @@ theorem nmul_nonempty (a b : Ordinal.{u}) :
 theorem nmul_nadd_lt {a' b' : Ordinal} (ha : a' < a) (hb : b' < b) :
     a' ⨳ b ♯ a ⨳ b' < a ⨳ b ♯ a' ⨳ b' := by
   rw [nmul_def a b]
-  exact csInf_mem (nmul_nonempty a b) a' ha b' hb
+  refine csInf_mem (s := {c : Ordinal.{u} | ∀ a' < a, ∀ b' < b, _ < c ♯ _}) ?_ a' ha b' hb
+  exact ⟨_, fun _ ha _ hb => (lt_blsub₂.{u, u, u} _ ha hb).trans_le le_self_nadd⟩
 
 theorem nmul_nadd_le {a' b' : Ordinal} (ha : a' ≤ a) (hb : b' ≤ b) :
     a' ⨳ b ♯ a ⨳ b' ≤ a ⨳ b ♯ a' ⨳ b' := by

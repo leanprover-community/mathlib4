@@ -461,6 +461,7 @@ alias IsLimit.add := add_isLimit
 
 
 /-- The set in the definition of subtraction is nonempty. -/
+@[deprecated (since := "2024-09-11")]
 theorem sub_nonempty {a b : Ordinal} : { o | a ≤ b + o }.Nonempty :=
   ⟨a, le_add_left _ _⟩
 
@@ -469,7 +470,7 @@ instance sub : Sub Ordinal :=
   ⟨fun a b => sInf { o | a ≤ b + o }⟩
 
 theorem le_add_sub (a b : Ordinal) : a ≤ b + (a - b) :=
-  csInf_mem sub_nonempty
+  csInf_mem (s := { o | a ≤ b + o }) ⟨a, le_add_left _ _⟩
 
 theorem sub_le {a b c : Ordinal} : a - b ≤ c ↔ a ≤ b + c :=
   ⟨fun h => (le_add_sub a b).trans (add_le_add_left h _), fun h => csInf_le' h⟩
@@ -755,6 +756,7 @@ theorem smul_eq_mul : ∀ (n : ℕ) (a : Ordinal), n • a = a * n
 
 
 /-- The set in the definition of division is nonempty. -/
+@[deprecated (since := "2024-09-11")]
 theorem div_nonempty {a b : Ordinal} (h : b ≠ 0) : { o | a < b * succ o }.Nonempty :=
   ⟨a, (succ_le_iff (a := a) (b := b * succ a)).1 <| by
     simpa only [succ_zero, one_mul] using
@@ -768,11 +770,15 @@ instance div : Div Ordinal :=
 theorem div_zero (a : Ordinal) : a / 0 = 0 :=
   dif_pos rfl
 
-theorem div_def (a) {b : Ordinal} (h : b ≠ 0) : a / b = sInf { o | a < b * succ o } :=
+private theorem div_def (a) {b : Ordinal} (h : b ≠ 0) : a / b = sInf { o | a < b * succ o } :=
   dif_neg h
 
 theorem lt_mul_succ_div (a) {b : Ordinal} (h : b ≠ 0) : a < b * succ (a / b) := by
-  rw [div_def a h]; exact csInf_mem (div_nonempty h)
+  rw [div_def a h]
+  refine csInf_mem (s := { o | a < b * succ o }) ⟨a, ?_⟩
+  dsimp
+  rw [← succ_le_iff]
+  exact le_mul_right _ (Ordinal.pos_iff_ne_zero.2 h)
 
 theorem lt_mul_div_add (a) {b : Ordinal} (h : b ≠ 0) : a < b * (a / b) + b := by
   simpa only [mul_succ] using lt_mul_succ_div a h
