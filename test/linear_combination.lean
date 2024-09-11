@@ -273,6 +273,14 @@ warning: this constant has no effect on the linear combination; it can be droppe
 #guard_msgs in
 example (x : ℤ) : x ^ 2 = x ^ 2 := by linear_combination x ^ 2
 
+/-- error: 'linear_combination' supports only linear operations -/
+#guard_msgs in
+example {x y : ℤ} (h : x = y) : x ^ 2 = y ^ 2 := by linear_combination h * h
+
+/-- error: 'linear_combination' supports only linear operations -/
+#guard_msgs in
+example {x y : ℤ} (h : x = y) : 3 / x = 3 / y := by linear_combination 3 / h
+
 /-! ### Cases with exponent -/
 
 example (x y z : ℚ) (h : x = y) (h2 : x * y = 0) : x + y*z = 0 := by

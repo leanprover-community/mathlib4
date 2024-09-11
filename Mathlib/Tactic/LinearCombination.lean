@@ -87,12 +87,14 @@ partial def expandLinearCombo (ty : Expr) (stx : Syntax.Term) : TermElabM Expand
     | .const c₁, .const c₂ => .const <$> ``($c₁ * $c₂)
     | .proof p₁, .const c₂ => .proof <$> ``(pf_mul_c $p₁ $c₂)
     | .const c₁, .proof p₂ => .proof <$> ``(c_mul_pf $p₂ $c₁)
-    | .proof _, .proof _ => throwError "'linear_combination' supports only linear operations"
+    | .proof _, .proof _ =>
+      throwErrorAt (stx : Syntax)[1] "'linear_combination' supports only linear operations"
   | `($e₁ / $e₂) => do
     match ← expandLinearCombo ty e₁, ← expandLinearCombo ty e₂ with
     | .const c₁, .const c₂ => .const <$> ``($c₁ / $c₂)
     | .proof p₁, .const c₂ => .proof <$> ``(pf_div_c $p₁ $c₂)
-    | _, .proof _ => throwError "'linear_combination' supports only linear operations"
+    | _, .proof _ =>
+      throwErrorAt (stx : Syntax)[1] "'linear_combination' supports only linear operations"
   | e =>
     -- We have the expected type from the goal, so we can fully synthesize this leaf node.
     withSynthesize do
