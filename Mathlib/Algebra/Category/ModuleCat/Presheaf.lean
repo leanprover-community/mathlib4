@@ -52,7 +52,7 @@ namespace PresheafOfModules
 attribute [simp] map_id map_comp
 attribute [reassoc] map_comp
 
-variable {M M₁ M₂ : PresheafOfModules.{v} R}
+variable (M M₁ M₂ : PresheafOfModules.{v} R)
 
 lemma map_smul {X Y : Cᵒᵖ} (f : X ⟶ Y) (r : R.obj X) (m : M.obj X) :
     M.map f (r • m) = R.map f r • M.map f m := by simp
@@ -60,7 +60,6 @@ lemma map_smul {X Y : Cᵒᵖ} (f : X ⟶ Y) (r : R.obj X) (m : M.obj X) :
 lemma congr_map_apply {X Y : Cᵒᵖ} {f g : X ⟶ Y} (h : f = g) (m : M.obj X) :
     M.map f m = M.map g m := by rw [h]
 
-variable (M₁ M₂) in
 /-- A morphism of presheaves of modules consists of a family of linear maps which
 satisfy the naturality condition. -/
 @[ext]
@@ -77,6 +76,8 @@ instance : Category (PresheafOfModules.{v} R) where
   Hom := Hom
   id _ := { app := fun _ ↦ 𝟙 _ }
   comp f g := { app := fun _ ↦ f.app _ ≫ g.app _ }
+
+variable {M₁ M₂}
 
 @[ext]
 lemma hom_ext {f g : M₁ ⟶ M₂} (h : ∀ (X : Cᵒᵖ), f.app X = g.app X) :
@@ -96,16 +97,16 @@ lemma naturality_apply (f : M₁ ⟶ M₂) {X Y : Cᵒᵖ} (g : X ⟶ Y) (x : M�
   congr_fun ((forget _).congr_map (Hom.naturality f g)) x
 
 /-- The underlying presheaf of abelian groups of a presheaf of modules. -/
-def presheaf (M : PresheafOfModules R) : Cᵒᵖ ⥤ Ab where
+def presheaf : Cᵒᵖ ⥤ Ab where
   obj X := (forget₂ _ _).obj (M.obj X)
   map f := AddMonoidHom.mk' (M.map f) (by simp)
 
 @[simp]
-lemma presheaf_obj_coe (M : PresheafOfModules R) (X : Cᵒᵖ) :
+lemma presheaf_obj_coe (X : Cᵒᵖ) :
     (M.presheaf.obj X : Type _) = M.obj X := rfl
 
 @[simp]
-lemma presheaf_map_apply_coe (M : PresheafOfModules R) {X Y : Cᵒᵖ} (f : X ⟶ Y) (x : M.obj X) :
+lemma presheaf_map_apply_coe {X Y : Cᵒᵖ} (f : X ⟶ Y) (x : M.obj X) :
     DFunLike.coe (α := M.obj X) (β := fun _ ↦ M.obj Y) (M.presheaf.map f) x = M.map f x := rfl
 
 instance (M : PresheafOfModules R) (X : Cᵒᵖ) :
@@ -120,7 +121,6 @@ def toPresheaf : PresheafOfModules.{v} R ⥤ Cᵒᵖ ⥤ Ab where
     { app := fun X ↦ AddMonoidHom.mk' (Hom.app f X) (by simp)
       naturality := fun X Y g ↦ by ext x; exact naturality_apply f g x }
 
-variable (M) in
 @[simp]
 lemma toPresheaf_obj_coe (X : Cᵒᵖ) :
     (((toPresheaf R).obj M).obj X : Type _) = M.obj X := rfl

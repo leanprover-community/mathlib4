@@ -207,48 +207,17 @@ noncomputable def homEquivOfIsLocallyBijective : (M₂ ⟶ N) ≃ (M₁ ⟶ N) w
           ((PresheafOfModules.toPresheaf R).map f)).homEquiv _ hN).surjective
           ((PresheafOfModules.toPresheaf R).map ψ)
         simp only [← hφ, Equiv.symm_apply_apply]
+        replace hφ : ∀ (Z : Cᵒᵖ) (x : M₁.obj Z), φ.app Z (f.app Z x) = ψ.app Z x :=
+          fun Z x ↦ congr_fun ((forget _).congr_map (congr_app hφ Z)) x
         intro X r y
         apply hN.isSeparated _ _
           (Presheaf.imageSieve_mem J ((toPresheaf R).map f) y)
-        rintro Y p ⟨x, hx⟩
-        replace hφ := congr_fun ((forget _).congr_map (congr_app hφ (Opposite.op Y))) x
-        dsimp at hφ
-        erw [CategoryTheory.comp_apply] at hφ
-        rw [toPresheaf_map_app_apply] at hφ
-        erw [toPresheaf_map_app_apply] at hφ
-        have eq := (ψ.app (Opposite.op Y)).map_smul (R.map p.op r) x
-        simp only [← hφ] at eq
-        dsimp at eq
-        erw [presheaf_map_apply_coe]
-        conv_rhs => erw [presheaf_map_apply_coe]
-        dsimp
-        erw [← NatTrans.naturality_apply φ p.op (r • y)]
-        erw [presheaf_map_apply_coe]
-        rw [N.map_smul, M₂.map_smul]
-        erw [← NatTrans.naturality_apply φ p.op y]
-        erw [← hx]
-        erw [← eq]
-        sorry
-        --have eq := ψ.map_smul _ (R.map p.op r) x
-        --simp only [← hφ] at eq
-        --dsimp at eq
-        --erw [← NatTrans.naturality_apply φ p.op (r • y), N.map_smul, M₂.map_smul,
-        --  ← NatTrans.naturality_apply φ p.op y, ← hx, ← eq, f.map_smul]
-        )
-    /-{ hom := ((J.W_of_isLocallyBijective f.hom).homEquiv _ hN).symm ψ.hom
-      map_smul := by
-        obtain ⟨φ, hφ⟩ := ((J.W_of_isLocallyBijective f.hom).homEquiv _ hN).surjective ψ.hom
-        simp only [← hφ, Equiv.symm_apply_apply]
-        dsimp at hφ
-        intro X r y
-        apply hN.isSeparated _ _ (Presheaf.imageSieve_mem J f.hom y)
-        rintro Y p ⟨x, hx⟩
-        have eq := ψ.map_smul _ (R.map p.op r) x
-        simp only [← hφ] at eq
-        dsimp at eq
-        erw [← NatTrans.naturality_apply φ p.op (r • y), N.map_smul, M₂.map_smul,
-          ← NatTrans.naturality_apply φ p.op y, ← hx, ← eq, f.map_smul]
-        rfl }-/
+        rintro Y p ⟨x : M₁.obj _, hx : f.app _ x = M₂.map p.op y⟩
+        have hφ' : ∀ (z : M₂.obj X), φ.app _ (M₂.map p.op z) =
+            N.map p.op (φ.app _ z) := congr_fun ((forget _).congr_map (φ.naturality p.op))
+        change N.map p.op (φ.app X (r • y)) = N.map p.op (r • φ.app X y)
+        rw [← hφ', M₂.map_smul, ← hx, ← (f.app _).map_smul, hφ, (ψ.app _).map_smul,
+          ← hφ, hx, N.map_smul, hφ'])
   left_inv φ := (toPresheaf _).map_injective
     (((J.W_of_isLocallyBijective
       ((PresheafOfModules.toPresheaf R).map f)).homEquiv _ hN).left_inv
