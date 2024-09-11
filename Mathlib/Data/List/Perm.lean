@@ -360,6 +360,23 @@ theorem Perm.dropSlice_inter [DecidableEq α] {xs ys : List α} (n m : ℕ) (h :
   · exact Perm.append (Perm.take_inter _ h h') (Perm.drop_inter _ h h')
   · exact disjoint_take_drop h₂ this
 
+/-- If `p` is a permutation of `x :: l`, it can be written as `init ++ x :: tail`.
+
+See also `List.cons_perm_iff_perm_erase` for a spelling with erase -/
+theorem perm_cons_iff_exists {p : List α} {x : α} {l : List α} :
+    p ~ x :: l ↔ ∃ init tail, x ∉ init ∧ p = init ++ x :: tail ∧ init ++ tail ~ l := by
+  classical
+  rw [perm_comm, cons_perm_iff_perm_erase]
+  constructor
+  · rintro ⟨hx, hperm⟩
+    obtain ⟨init, tail, hinit, rfl, h⟩ := List.exists_erase_eq hx
+    refine ⟨init, tail, hinit, rfl, ?_⟩
+    rw [← h]
+    exact hperm.symm
+  · rintro ⟨init, tail, hinit, rfl, h⟩
+    refine ⟨by simp, h.symm.trans ?_⟩
+    rw [erase_append_right _ hinit, erase_cons_head]
+
 -- enumerating permutations
 section Permutations
 
