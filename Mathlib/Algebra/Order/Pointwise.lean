@@ -5,7 +5,6 @@ Authors: Alex J. Best, Yaël Dillies
 -/
 import Mathlib.Algebra.Bounds
 import Mathlib.Algebra.Order.Field.Basic -- Porting note: `LinearOrderedField`, etc
-import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Algebra.SMulWithZero
 
 /-!
