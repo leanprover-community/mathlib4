@@ -119,12 +119,14 @@ protected theorem lt_succ_iff {r : α → α → Prop} [wo : IsWellOrder α r] {
     exact hy
   rintro (hy | rfl); (· exact _root_.trans hy (wo.wf.lt_succ h)); exact wo.wf.lt_succ h
 
+end WellFounded
+
 section LinearOrder
 
 variable [LinearOrder β] [PartialOrder γ]
 
-theorem min_le (h : WellFounded ((· < ·) : β → β → Prop)) {x : β} {s : Set β} (hx : x ∈ s)
-    (hne : s.Nonempty := ⟨x, hx⟩) : h.min s hne ≤ x :=
+theorem WellFounded.min_le (h : WellFounded ((· < ·) : β → β → Prop))
+    {x : β} {s : Set β} (hx : x ∈ s) (hne : s.Nonempty := ⟨x, hx⟩) : h.min s hne ≤ x :=
   not_lt.1 <| h.not_lt_min _ _ hx
 
 private theorem range_injOn_strictMono_aux {f g : β → γ} (hf : StrictMono f) (hg : StrictMono g)
@@ -135,7 +137,7 @@ private theorem range_injOn_strictMono_aux {f g : β → γ} (hf : StrictMono f)
     exact (hc.not_lt hcb).elim
   · rwa [← hc, hf.le_iff_le]
 
-theorem range_injOn_strictMono [WellFoundedLT β] :
+theorem Set.range_injOn_strictMono [WellFoundedLT β] :
     Set.InjOn Set.range { f : β → γ | StrictMono f } := by
   intro f hf g hg hfg
   ext a
@@ -143,20 +145,20 @@ theorem range_injOn_strictMono [WellFoundedLT β] :
   exact fun b IH => (range_injOn_strictMono_aux hf hg hfg IH).antisymm
     (range_injOn_strictMono_aux hg hf hfg.symm fun a hab => (IH a hab).symm)
 
-theorem range_injOn_strictAnti [WellFoundedGT β] :
+theorem Set.range_injOn_strictAnti [WellFoundedGT β] :
     Set.InjOn Set.range { f : β → γ | StrictAnti f } :=
-  fun _ hf _ hg ↦ range_injOn_strictMono (β := βᵒᵈ) hf.dual hg.dual
+  fun _ hf _ hg ↦ Set.range_injOn_strictMono (β := βᵒᵈ) hf.dual hg.dual
 
 theorem StrictMono.range_inj [WellFoundedLT β] {f g : β → γ}
     (hf : StrictMono f) (hg : StrictMono g) : Set.range f = Set.range g ↔ f = g :=
-  range_injOn_strictMono.eq_iff hf hg
+  Set.range_injOn_strictMono.eq_iff hf hg
 
 theorem StrictAnti.range_inj [WellFoundedGT β] {f g : β → γ}
     (hf : StrictAnti f) (hg : StrictAnti g) : Set.range f = Set.range g ↔ f = g :=
-  range_injOn_strictAnti.eq_iff hf hg
+  Set.range_injOn_strictAnti.eq_iff hf hg
 
 @[deprecated StrictMono.range_inj (since := "2024-09-11")]
-theorem eq_strictMono_iff_eq_range (h : WellFounded ((· < ·) : β → β → Prop))
+theorem WellFounded.eq_strictMono_iff_eq_range (h : WellFounded ((· < ·) : β → β → Prop))
     {f g : β → γ} (hf : StrictMono f) (hg : StrictMono g) :
     Set.range f = Set.range g ↔ f = g :=
   @StrictMono.range_inj β γ _ _ ⟨h⟩ f g hf hg
@@ -171,15 +173,13 @@ theorem StrictMono.le_id [WellFoundedGT β] {f : β → β} (hf : StrictMono f) 
   StrictMono.id_le (β := βᵒᵈ) hf.dual
 
 @[deprecated StrictMono.id_le (since := "2024-09-11")]
-theorem self_le_of_strictMono (h : WellFounded ((· < ·) : β → β → Prop))
+theorem WellFounded.self_le_of_strictMono (h : WellFounded ((· < ·) : β → β → Prop))
     {f : β → β} (hf : StrictMono f) : ∀ n, n ≤ f n := by
   by_contra! h₁
   have h₂ := h.min_mem _ h₁
   exact h.not_lt_min _ h₁ (hf h₂) h₂
 
 end LinearOrder
-
-end WellFounded
 
 namespace Function
 
