@@ -12,7 +12,8 @@ import Mathlib.Order.WellFounded
 This file defines initial and principal segment embeddings. Though these definitions make sense for
 arbitrary relations, they're intended for use with well orders.
 
-An initial segment is simply a lower set. A principal segment is a set of the form `Set.Iio x` for some `x`.
+An initial segment is simply a lower set. A principal segment is a set of the form `Set.Iio x` for
+some `x`.
 
 An initial segment embedding `r ≼i s` is an order embedding `r ↪ s` such that its range is an
 initial segment. Likewise, a principal segment embedding `r ≺i s` has a principal segment for a
