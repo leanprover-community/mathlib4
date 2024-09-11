@@ -1883,63 +1883,94 @@ namespace Ordinal
 section
 
 /-- Enumerator function for an unbounded set of ordinals. -/
-def enumOrd (S : Set Ordinal.{u}) : Ordinal → Ordinal :=
-  lt_wf.fix fun o f => sInf (S ∩ Set.Ici (blsub.{u, u} o f))
+def enumOrd (S : Set Ordinal.{u}) (o : Ordinal.{u}) : Ordinal.{u} :=
+  sInf (S ∩ { b | ∀ c, c < o → enumOrd S c < b })
+termination_by o
 
 variable {S : Set Ordinal.{u}}
 
-/-- The equation that characterizes `enumOrd` definitionally. This isn't the nicest expression to
-    work with, so consider using `enumOrd_def` instead. -/
-theorem enumOrd_def' (o) :
-    enumOrd S o = sInf (S ∩ Set.Ici (blsub.{u, u} o fun a _ => enumOrd S a)) :=
-  lt_wf.fix_eq _ _
+/-- The set in the definition of `enumOrd` is nonempty. -/
+private theorem enumOrd_nonempty (hS : ¬ BddAbove S) (o : Ordinal.{u}) :
+    (S ∩ { b | ∀ c, c < o → enumOrd S c < b }).Nonempty := by
+  rw [not_bddAbove_iff] at hS
+  obtain ⟨a, ha⟩ := bddAbove_of_small (enumOrd S '' (Set.Iio o))
+  obtain ⟨b, hb, hba⟩ := hS a
+  exact ⟨b, hb, fun c hc ↦ (ha (mem_image_of_mem _ hc)).trans_lt hba⟩
 
-/-- The set in `enumOrd_def'` is nonempty. -/
-theorem enumOrd_def'_nonempty (hS : Unbounded (· < ·) S) (a) : (S ∩ Set.Ici a).Nonempty :=
-  let ⟨b, hb, hb'⟩ := hS a
-  ⟨b, hb, le_of_not_gt hb'⟩
+private theorem enumOrd_mem_aux (hS : ¬ BddAbove S) (o : Ordinal.{u}) :
+    enumOrd S o ∈ S ∩ { b | ∀ c, c < o → enumOrd S c < b } := by
+  rw [enumOrd]
+  exact csInf_mem (enumOrd_nonempty hS o)
 
-private theorem enumOrd_mem_aux (hS : Unbounded (· < ·) S) (o) :
-    enumOrd S o ∈ S ∩ Set.Ici (blsub.{u, u} o fun c _ => enumOrd S c) := by
-  rw [enumOrd_def']
-  exact csInf_mem (enumOrd_def'_nonempty hS _)
+theorem enumOrd_mem (hS : ¬ BddAbove S) (o) : enumOrd S o ∈ S :=
+  (enumOrd_mem_aux hS o).1
 
+theorem enumOrd_strictMono (hS : ¬ BddAbove S) : StrictMono (enumOrd S) :=
+  fun a b ↦ (enumOrd_mem_aux hS b).2 a
+
+theorem not_bddAbove_range_strictMono {f : Ordinal.{u} → Ordinal.{u}} (hf : StrictMono f) :
+    ¬ BddAbove (range f) := by
+  rintro ⟨a, ha⟩
+  exact (((lt_wf.self_le_of_strictMono hf a).trans_lt (hf (lt_succ a))).trans_le <|
+    ha (mem_range_self (succ a))).false
+
+@[simp]
+theorem enumOrd_range {f : Ordinal → Ordinal} (hf : StrictMono f) : enumOrd (range f) = f := by
+  ext o
+  apply Ordinal.induction o
+  intro a IH
+  rw [enumOrd]
+  apply le_antisymm
+  · refine csInf_le' ⟨mem_range_self a, fun b hb ↦ ?_⟩
+    rwa [IH b hb, hf.lt_iff_lt]
+  · apply le_csInf (enumOrd_nonempty _ _)
+    · rintro k ⟨⟨b, rfl⟩, hb⟩
+      rw [hf.le_iff_le, ← forall_lt_iff_le]
+      intro c hc
+      have := hb c hc
+      rwa [IH c hc, hf.lt_iff_lt] at this
+    · exact not_bddAbove_range_strictMono hf
+
+theorem enumOrd_def (S : Set Ordinal.{u}) (o : Ordinal) :
+    enumOrd S o = sInf (S \ enumOrd S '' Set.Iio o) := by
+  rw [enumOrd]
+  congr
+  ext a
+  constructor
+  · rintro ha ⟨b, hb, rfl⟩
+    exact (ha b hb).false
+  · intro b c hc
+    simp at b
+
+
+  #exit
+
+
+
+#exit
+
+theorem enumOrd_def (S : Set Ordinal.{u}) (o : Ordinal) :
+    enumOrd S o = sInf (S \ enumOrd S '' Set.Iio o) := by
+  induction o using Ordinal.induction with
+  | h o IH =>
+    rw [enumOrd]
+    congr
+    ext b
+    simp
+
+      sorry
+
+
+
+#exit
 theorem enumOrd_mem (hS : Unbounded (· < ·) S) (o) : enumOrd S o ∈ S :=
   (enumOrd_mem_aux hS o).left
 
+
+#exit
 theorem blsub_le_enumOrd (hS : Unbounded (· < ·) S) (o) :
     (blsub.{u, u} o fun c _ => enumOrd S c) ≤ enumOrd S o :=
   (enumOrd_mem_aux hS o).right
-
-theorem enumOrd_strictMono (hS : Unbounded (· < ·) S) : StrictMono (enumOrd S) := fun _ _ h =>
-  (lt_blsub.{u, u} _ _ h).trans_le (blsub_le_enumOrd hS _)
-
-/-- A more workable definition for `enumOrd`. -/
-theorem enumOrd_def (o) : enumOrd S o = sInf (S ∩ { b | ∀ c, c < o → enumOrd S c < b }) := by
-  rw [enumOrd_def']
-  congr; ext
-  exact ⟨fun h a hao => (lt_blsub.{u, u} _ _ hao).trans_le h, blsub_le⟩
-
-/-- The set in `enumOrd_def` is nonempty. -/
-theorem enumOrd_def_nonempty (hS : Unbounded (· < ·) S) {o} :
-    { x | x ∈ S ∧ ∀ c, c < o → enumOrd S c < x }.Nonempty :=
-  ⟨_, enumOrd_mem hS o, fun _ b => enumOrd_strictMono hS b⟩
-
-@[simp]
-theorem enumOrd_range {f : Ordinal → Ordinal} (hf : StrictMono f) : enumOrd (range f) = f :=
-  funext fun o => by
-    apply Ordinal.induction o
-    intro a H
-    rw [enumOrd_def a]
-    have Hfa : f a ∈ range f ∩ { b | ∀ c, c < a → enumOrd (range f) c < b } :=
-      ⟨mem_range_self a, fun b hb => by
-        rw [H b hb]
-        exact hf hb⟩
-    refine (csInf_le' Hfa).antisymm ((le_csInf_iff'' ⟨_, Hfa⟩).2 ?_)
-    rintro _ ⟨⟨c, rfl⟩, hc : ∀ b < a, enumOrd (range f) b < f c⟩
-    rw [hf.le_iff_le]
-    contrapose! hc
-    exact ⟨c, hc, (H c hc).ge⟩
 
 @[simp]
 theorem enumOrd_univ : enumOrd Set.univ = id := by
@@ -1999,7 +2030,7 @@ theorem eq_enumOrd (f : Ordinal → Ordinal) (hS : Unbounded (· < ·) S) :
     rwa [← lt_wf.eq_strictMono_iff_eq_range h₁ (enumOrd_strictMono hS), range_enumOrd hS]
   · rintro rfl
     exact ⟨enumOrd_strictMono hS, range_enumOrd hS⟩
-
+#exit
 end
 
 /-! ### Casting naturals into ordinals, compatibility with operations -/
