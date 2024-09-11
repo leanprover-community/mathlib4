@@ -108,6 +108,75 @@ section NonUnitalRing
 
 variable {R : Type*} [NonUnitalRing R]
 
+open AddSubgroup in
+/-- If `s : Set R` is absorbing under multiplication, then its `TwoSidedIdeal.span` coincides with
+it's `AddSubgroup.closure`, as sets. -/
+lemma mem_span_iff_mem_addSubgroup_closure_absorbing {s : Set R}
+    (h_left : ∀ x y, y ∈ s → x * y ∈ s) (h_right : ∀ y x, y ∈ s → y * x ∈ s) {z : R} :
+    z ∈ span s ↔ z ∈ closure s := by
+  have h_left' {x y} (hy : y ∈ closure s) : x * y ∈ closure s := by
+    have := (AddMonoidHom.mulLeft x).map_closure s ▸ mem_map_of_mem _ hy
+    refine closure_mono ?_ this
+    rintro - ⟨y, hy, rfl⟩
+    exact h_left x y hy
+  have h_right' {y x} (hy : y ∈ closure s) : y * x ∈ closure s := by
+    have := (AddMonoidHom.mulRight x).map_closure s ▸ mem_map_of_mem _ hy
+    refine closure_mono ?_ this
+    rintro - ⟨y, hy, rfl⟩
+    exact h_right y x hy
+  let I : TwoSidedIdeal R := .mk' (closure s) (AddSubgroup.zero_mem _)
+    (AddSubgroup.add_mem _) (AddSubgroup.neg_mem _) h_left' h_right'
+  suffices z ∈ span s ↔ z ∈ I by simpa only [I, mem_mk', SetLike.mem_coe]
+  rw [mem_span_iff]
+  -- Suppose that for every ideal `J` with `s ⊆ J`, then `z ∈ J`. Apply this to `I` to get `z ∈ I`.
+  refine ⟨fun h ↦ h I fun x hx ↦ ?mem_closure_of_forall, fun hz J hJ ↦ ?mem_ideal_of_subset⟩
+  case mem_closure_of_forall => simpa only [I, SetLike.mem_coe, mem_mk'] using subset_closure hx
+  /- Conversely, suppose that `z ∈ I` and that `J` is any ideal containing `s`. Then by the
+  induction principle for `AddSubgroup`, we must also have `z ∈ J`. -/
+  case mem_ideal_of_subset =>
+    simp only [I, SetLike.mem_coe, mem_mk'] at hz
+    induction hz using closure_induction' with
+    | mem x hx => exact hJ hx
+    | one => exact zero_mem _
+    | mul x _ y _ hx hy => exact J.add_mem hx hy
+    | inv x _ hx => exact J.neg_mem hx
+
+open Pointwise Set
+
+lemma set_mul_subset {s : Set R} {I : TwoSidedIdeal R} (h : s ⊆ I) (t : Set R):
+    t * s ⊆ I := by
+  rintro - ⟨r, -, x, hx, rfl⟩
+  exact mul_mem_left _ _ _ (h hx)
+
+lemma subset_mul_set {s : Set R} {I : TwoSidedIdeal R} (h : s ⊆ I) (t : Set R):
+    s * t ⊆ I := by
+  rintro - ⟨x, hx, r, -, rfl⟩
+  exact mul_mem_right _ _ _ (h hx)
+
+lemma mem_span_iff_mem_addSubgroup_closure_nonunital {s : Set R} {z : R} :
+    z ∈ span s ↔ z ∈ AddSubgroup.closure (s ∪ s * univ ∪ univ * s ∪ univ * s * univ) := by
+  trans z ∈ span (s ∪ s * univ ∪ univ * s ∪ univ * s * univ)
+  · refine ⟨(span_mono (by simp only [Set.union_assoc, Set.subset_union_left]) ·), fun h ↦ ?_⟩
+    refine mem_span_iff.mp h (span s) ?_
+    simp only [union_subset_iff, union_assoc]
+    exact ⟨subset_span, subset_mul_set subset_span _, set_mul_subset subset_span _,
+      subset_mul_set (set_mul_subset subset_span _) _⟩
+  · refine mem_span_iff_mem_addSubgroup_closure_absorbing ?_ ?_
+    · rintro x y (((hy | ⟨y, hy, r, -, rfl⟩) | ⟨r, -, y, hy, rfl⟩) |
+        ⟨-, ⟨r', -, y, hy, rfl⟩, r, -, rfl⟩)
+      · exact .inl <| .inr <| ⟨x, mem_univ _, y, hy, rfl⟩
+      · exact .inr <| ⟨x * y, ⟨x, mem_univ _, y, hy, rfl⟩, r, mem_univ _, mul_assoc ..⟩
+      · exact .inl <| .inr <| ⟨x * r, mem_univ _, y, hy, mul_assoc ..⟩
+      · refine .inr <| ⟨x * r' * y, ⟨x * r', mem_univ _, y, hy, ?_⟩, ⟨r, mem_univ _, ?_⟩⟩
+        all_goals simp [mul_assoc]
+    · rintro y x (((hy | ⟨y, hy, r, -, rfl⟩) | ⟨r, -, y, hy, rfl⟩) |
+        ⟨-, ⟨r', -, y, hy, rfl⟩, r, -, rfl⟩)
+      · exact .inl <| .inl <| .inr ⟨y, hy, x, mem_univ _, rfl⟩
+      · exact .inl <| .inl <| .inr ⟨y, hy, r * x, mem_univ _, (mul_assoc ..).symm⟩
+      · exact .inr <| ⟨r * y, ⟨r, mem_univ _, y, hy, rfl⟩, x, mem_univ _, rfl⟩
+      · refine .inr <| ⟨r' * y, ⟨r', mem_univ _, y, hy, rfl⟩, r * x, mem_univ _, ?_⟩
+        simp [mul_assoc]
+
 proof_wanted mem_span_iff_exists_nonunital {s : Set R} {z : R} :
     z ∈ span s ↔
     ∃ (t : Finset R) (_ : (t : Set R) ⊆ s) (n : R → ℤ)
@@ -120,6 +189,21 @@ end NonUnitalRing
 section Ring
 
 variable {R : Type*} [Ring R]
+
+open Pointwise Set in
+lemma mem_span_iff_mem_addSubgroup_closure {s : Set R} {z : R} :
+    z ∈ span s ↔ z ∈ AddSubgroup.closure (univ * s * univ) := by
+  trans z ∈ span (univ * s * univ)
+  · refine ⟨(span_mono (fun x hx ↦ ?_) ·), fun hz ↦ ?_⟩
+    · exact ⟨1 * x, ⟨1, mem_univ _, x, hx, rfl⟩, 1, mem_univ _, by simp⟩
+    · exact mem_span_iff.mp hz (span s) <| subset_mul_set (set_mul_subset subset_span _) _
+  · refine mem_span_iff_mem_addSubgroup_closure_absorbing ?_ ?_
+    · intro x y hy
+      rw [mul_assoc] at hy ⊢
+      obtain ⟨r, -, y, hy, rfl⟩ := hy
+      exact ⟨x * r, mem_univ _, y, hy, mul_assoc ..⟩
+    · rintro - x ⟨y, hy, r, -, rfl⟩
+      exact ⟨y, hy, r * x, mem_univ _, (mul_assoc ..).symm⟩
 
 lemma mem_span_iff_exists {s : Set R} {x} :
     x ∈ span s ↔
