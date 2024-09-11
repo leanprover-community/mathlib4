@@ -799,13 +799,19 @@ theorem lift_mk_le_lift_mk_mul_of_lift_mk_preimage_le {α : Type u} {β : Type v
         (hf b)
 
 /-- The range of an indexed cardinal function, whose outputs live in a larger universe than the
-    inputs, is always bounded above. -/
+inputs, is always bounded above. -/
 theorem bddAbove_range {ι : Type*} [Small.{u} ι] (f : ι → Cardinal.{u}) :
     BddAbove (Set.range f) := by
   use sum (f ∘ (equivShrink ι).symm)
   rintro a ⟨i, rfl⟩
   rw [← (equivShrink ι).symm_apply_apply i]
   exact le_sum _ _
+
+/-- A specialization of `bddAbove_range`, useful since `small_max` can't currently be made an
+instance. -/
+theorem bddAbove_range' {ι : Type u} (f : ι → Cardinal.{max u v}) : BddAbove (Set.range f) := by
+
+#exit
 
 instance (a : Cardinal.{u}) : Small.{u} (Set.Iic a) := by
   rw [← mk_out a]
