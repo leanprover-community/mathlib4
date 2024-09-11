@@ -58,8 +58,8 @@ instance {X Y : Cᵒᵖ} (f : X ⟶ Y) :
   change HasLimit ((F ⋙ evaluation R Y) ⋙ ModuleCat.restrictScalars (R.map f))
   infer_instance
 
-/-- Given `F : J ⥤ PresheafOfModules.{v} R`, this is the `BundledCorePresheafOfModules R` which
-corresponds to the presheaf of modules which sends `X` to the limit of `F ⋙ evaluation R X`. -/
+/-- Given `F : J ⥤ PresheafOfModules.{v} R`, this is the presheaf of modules obtained by
+taking a limit in the category of modules over `R.obj X` for all `X`. -/
 @[simps]
 noncomputable def limitPresheafOfModules : PresheafOfModules R where
   obj X := limit (F ⋙ evaluation R X)
@@ -96,7 +96,7 @@ noncomputable def limitPresheafOfModules : PresheafOfModules R where
     erw [limMap_π_assoc]
     dsimp
 
-/-- The (limit) cone for `F : J ⥤ PresheafOfModules.{v} R` that is constructed for the limit
+/-- The (limit) cone for `F : J ⥤ PresheafOfModules.{v} R` that is constructed from the limit
 of `F ⋙ evaluation R X` for all `X`. -/
 @[simps]
 noncomputable def limitCone : Cone F where
