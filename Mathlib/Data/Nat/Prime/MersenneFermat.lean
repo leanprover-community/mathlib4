@@ -16,7 +16,7 @@ import Mathlib.NumberTheory.LucasPrimality
 
 open ZMod Nat
 
-/-- Prime `a ^ n + 1` implies `n` is a power of two (Fermat primes). -/
+/-- Prime `a ^ n + 1` implies `n` is a power of two (**Fermat primes**). -/
 theorem pow_of_pow_add_prime {a n : ℕ} (ha : 1 < a) (hn : n ≠ 0) (hP : (a ^ n + 1).Prime) :
     ∃ m : ℕ, n = 2 ^ m := by
   obtain ⟨k, m, hm, rfl⟩ := exists_eq_two_pow_mul_odd hn
