@@ -198,7 +198,7 @@ end InitialSeg
 
 /-- If `r` is a relation on `α` and `s` in a relation on `β`, then `f : r ≺i s` is an initial
 segment embedding whose range is `Set.Iio top` for some element `top`. If `β` is a well-order, this
-is equivalent to the function not being surjective. -/
+is equivalent to the embedding not being surjective. -/
 structure PrincipalSeg {α β : Type*} (r : α → α → Prop) (s : β → β → Prop) extends r ↪r s where
   /-- The supremum of the principal segment. -/
   top : β
