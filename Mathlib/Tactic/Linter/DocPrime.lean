@@ -41,13 +41,22 @@ def docPrimeLinter : Linter where run := withSetOptionIn fun stx ↦ do
       stx[1][3][0]
     else
       stx[1][1]
-  if docstring[0][1].getAtomVal.isEmpty && declId[0].getId.toString.contains '\'' then
-    Linter.logLint linter.docPrime declId
-      m!"`{declId}` is missing a doc-string, please add one.\n\
-        Declarations whose name contains a `'` are expected to contain an explanation for the \
-        presence of a `'` in their doc-string. This may consist of discussion of the difference \
-        relative to the unprimed version, or an explanation as to why no better naming scheme \
-        is possible."
+  let declName := declId[0].getId
+  let msg := m!"`{declId}` is missing a doc-string, please add one.\n\
+          Declarations whose name contains a `'` are expected to contain an explanation for the \
+          presence of a `'` in their doc-string. This may consist of discussion of the difference \
+          relative to the unprimed version, or an explanation as to why no better naming scheme \
+          is possible."
+  if docstring[0][1].getAtomVal.isEmpty && declName.toString.contains '\'' then
+    if ← System.FilePath.pathExists "scripts/no_lints_prime_decls.txt" then
+      dbg_trace "path exists, {declName.toString}"
+      if (← IO.FS.lines "scripts/no_lints_prime_decls.txt").contains declName.toString then
+        return
+      else
+        Linter.logLint linter.docPrime declId msg
+    else
+      Linter.logLint linter.docPrime declId msg
+
 
 initialize addLinter docPrimeLinter
 
