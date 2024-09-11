@@ -380,8 +380,8 @@ def sumSumSumComm (α β γ δ) : (α ⊕ β) ⊕ γ ⊕ δ ≃ (α ⊕ γ) ⊕ 
       ∘ (Sum.map (Sum.map (@id α) (sumComm β γ).symm) (@id δ))
       ∘ (Sum.map (sumAssoc α γ β) (@id δ))
       ∘ (sumAssoc (α ⊕ γ) β δ).symm
-  left_inv x := by simp [Function.comp]
-  right_inv x := by simp [Function.comp]
+  left_inv x := by rcases x with ((a | b) | (c | d)) <;> simp
+  right_inv x := by rcases x with ((a | c) | (b | d)) <;> simp
 
 @[simp]
 theorem sumSumSumComm_symm (α β γ δ) : (sumSumSumComm α β γ δ).symm = sumSumSumComm α γ β δ :=

@@ -520,7 +520,7 @@ theorem inf_sup {κ : ι → Type*} (s : Finset ι) (t : ∀ i, Finset (κ i)) (
   -- Porting note: `simpa` doesn't support placeholders in proof terms
   have := h (fun j hj => if hji : j = i then cast (congr_arg κ hji.symm) a
       else g _ <| mem_of_mem_insert_of_ne hj hji) (fun j hj => ?_)
-  · simpa only [cast_eq, dif_pos, Function.comp, Subtype.coe_mk, dif_neg, aux] using this
+  · simpa only [cast_eq, dif_pos, Function.comp_def, Subtype.coe_mk, dif_neg, aux] using this
   rw [mem_insert] at hj
   obtain (rfl | hj) := hj
   · simpa
@@ -630,6 +630,22 @@ protected theorem sup_lt_iff (ha : ⊥ < a) : s.sup f < a ↔ ∀ b ∈ s, f b <
   ⟨fun hs b hb => lt_of_le_of_lt (le_sup hb) hs,
     Finset.cons_induction_on s (fun _ => ha) fun c t hc => by
       simpa only [sup_cons, sup_lt_iff, mem_cons, forall_eq_or_imp] using And.imp_right⟩
+
+theorem sup_mem_of_nonempty (hs : s.Nonempty) : s.sup f ∈ f '' s := by
+  classical
+  induction s using Finset.induction with
+  | empty => exfalso; simp only [Finset.not_nonempty_empty] at hs
+  | @insert a s _ h =>
+    rw [Finset.sup_insert (b := a) (s := s) (f := f)]
+    by_cases hs : s = ∅
+    · simp [hs]
+    · rw [← ne_eq, ← Finset.nonempty_iff_ne_empty] at hs
+      simp only [Finset.coe_insert]
+      rcases le_total (f a) (s.sup f) with (ha | ha)
+      · rw [sup_eq_right.mpr ha]
+        exact Set.image_mono (Set.subset_insert a s) (h hs)
+      · rw [sup_eq_left.mpr ha]
+        apply Set.mem_image_of_mem _ (Set.mem_insert a ↑s)
 
 end OrderBot
 

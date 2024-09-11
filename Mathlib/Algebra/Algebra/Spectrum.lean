@@ -113,6 +113,10 @@ theorem zero_not_mem_iff {a : A} : (0 : R) ∉ σ a ↔ IsUnit a := by
 
 alias ⟨isUnit_of_zero_not_mem, zero_not_mem⟩ := spectrum.zero_not_mem_iff
 
+@[simp]
+lemma _root_.Units.zero_not_mem_spectrum (a : Aˣ) : 0 ∉ spectrum R (a : A) :=
+  spectrum.zero_not_mem R a.isUnit
+
 lemma subset_singleton_zero_compl {a : A} (ha : IsUnit a) : spectrum R a ⊆ {0}ᶜ :=
   Set.subset_compl_singleton_iff.mpr <| spectrum.zero_not_mem R ha
 

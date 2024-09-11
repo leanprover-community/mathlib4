@@ -188,7 +188,9 @@ theorem coe_smul (t : R) (m : N) : (↑(t • m) : M) = t • (m : M) :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_bracket (x : L) (m : N) : (↑⁅x, m⁆ : M) = ⁅x, ↑m⁆ :=
+theorem coe_bracket (x : L) (m : N) :
+    letI : Bracket L N := LieRingModule.toBracket
+    (↑⁅x, m⁆ : M) = ⁅x, ↑m⁆ :=
   rfl
 
 variable [LieAlgebra R L] [LieModule R L M]
@@ -246,7 +248,9 @@ instance LieIdeal.lieRingModule {R L : Type*} [CommRing R] [LieRing L] [LieAlgeb
 
 @[simp]
 theorem LieIdeal.coe_bracket_of_module {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
-    (I : LieIdeal R L) [LieRingModule L M] (x : I) (m : M) : ⁅x, m⁆ = ⁅(↑x : L), m⁆ :=
+    (I : LieIdeal R L) [LieRingModule L M] (x : I) (m : M) :
+    letI : Bracket I M := LieRingModule.toBracket
+    ⁅x, m⁆ = ⁅(↑x : L), m⁆ :=
   LieSubalgebra.coe_bracket_of_module (I : LieSubalgebra R L) x m
 
 /-- Transfer the `LieModule` instance from the coercion `LieIdeal → LieSubalgebra`. -/
@@ -1289,7 +1293,7 @@ def codRestrict (P : LieSubmodule R L N) (f : M →ₗ⁅R,L⁆ N) (h : ∀ m, f
     M →ₗ⁅R,L⁆ P where
   toFun := f.toLinearMap.codRestrict P h
   __ := f.toLinearMap.codRestrict P h
-  map_lie' {x m} := by ext; simp
+  map_lie' {x m} := by ext; simp; rfl
 
 @[simp]
 lemma codRestrict_apply (P : LieSubmodule R L N) (f : M →ₗ⁅R,L⁆ N) (h : ∀ m, f m ∈ P) (m : M) :

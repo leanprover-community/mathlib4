@@ -168,7 +168,7 @@ lemma norm_sq_eq {x : E} : ‖x‖ ^ 2 = ‖⟪x, x⟫‖ := by simp [norm_eq_sq
 section
 include A
 
-protected lemma norm_nonneg {x : E} : 0 ≤ ‖x‖ := by simp [norm_eq_sqrt_norm_inner_self]; positivity
+protected lemma norm_nonneg {x : E} : 0 ≤ ‖x‖ := by simp [norm_eq_sqrt_norm_inner_self]
 
 protected lemma norm_pos {x : E} (hx : x ≠ 0) : 0 < ‖x‖ := by
   simp only [norm_eq_sqrt_norm_inner_self, Real.sqrt_pos, norm_pos_iff]

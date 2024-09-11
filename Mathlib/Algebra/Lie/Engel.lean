@@ -200,7 +200,9 @@ theorem LieAlgebra.exists_engelian_lieSubalgebra_of_lt_normalizer {K : LieSubalg
   have hI₂ : (R ∙ (⟨x, hxK'⟩ : K')) ⊔ (LieSubmodule.toSubmodule I) = ⊤ := by
     rw [← LieIdeal.coe_to_lieSubalgebra_to_submodule R K' I, hI₁]
     apply Submodule.map_injective_of_injective (K' : Submodule R L).injective_subtype
-    simp
+    simp only [LieSubalgebra.coe_ofLe, Submodule.map_sup, Submodule.map_subtype_range_inclusion,
+      Submodule.map_top, Submodule.range_subtype]
+    rw [Submodule.map_subtype_span_singleton]
   have e : K ≃ₗ⁅R⁆ I :=
     (LieSubalgebra.equivOfLe hKK').trans
       (LieEquiv.ofEq _ _ ((LieSubalgebra.coe_set_eq _ _).mpr hI₁.symm))
