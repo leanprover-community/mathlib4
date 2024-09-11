@@ -153,7 +153,7 @@ theorem StrictMono.range_inj [WellFoundedLT β] {f g : β → γ}
 
 theorem StrictAnti.range_inj [WellFoundedGT β] {f g : β → γ}
     (hf : StrictAnti f) (hg : StrictAnti g) : Set.range f = Set.range g ↔ f = g :=
-  StrictMono.range_inj (β := βᵒᵈ) hf.dual hg.dual
+  range_injOn_strictAnti.eq_iff hf hg
 
 @[deprecated StrictMono.range_inj (since := "2024-09-11")]
 theorem eq_strictMono_iff_eq_range (h : WellFounded ((· < ·) : β → β → Prop))
