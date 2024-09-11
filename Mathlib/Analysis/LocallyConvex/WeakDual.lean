@@ -9,6 +9,7 @@ import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Analysis.RCLike.Lemmas
 import Mathlib.Topology.Separation
 import Mathlib.Analysis.Normed.Module.WeakDual
+import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
 
 /-!
 # Weak Dual in Topological Vector Spaces
@@ -158,13 +159,44 @@ def dual_of_separating_family {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜}
     (h_sep : ∀ x : E, x ≠ 0 → (∃ f : F, B x f ≠ 0)) : (WeakBilin B →L[𝕜] 𝕜) ≃L[𝕜] F := by
   sorry
 
+instance instAddCommGroup : AddCommGroup (WeakSpace 𝕜 E) :=
+  WeakBilin.instAddCommGroup (topDualPairing 𝕜 E).flip
+
+instance instTopologicalAddGroup : TopologicalAddGroup (WeakSpace 𝕜 E) :=
+  WeakBilin.instTopologicalAddGroup (topDualPairing 𝕜 E).flip
+
+theorem Preliminary {s : Set E} (hs : Convex ℝ s) :
+    (toWeakSpace 𝕜 E) '' (closure s) = closure (toWeakSpace 𝕜 E '' s) := by
+  refine Set.eq_of_subset_of_subset ?_ ?_
+  exact (map_continuous <| continuousLinearMapToWeakSpace 𝕜 E).continuousOn.image_closure
+  rw [← Set.compl_subset_compl]
+  intro x hx
+  let _ : Module ℝ (WeakSpace 𝕜 E) := WeakBilin.instModule' (topDualPairing 𝕜 E).flip
+  have : LocallyConvexSpace ℝ (WeakSpace 𝕜 E) := WeakBilin.locallyConvexSpace
+  have : ContinuousSMul ℝ (WeakSpace 𝕜 E) := by sorry
+  have h₁ : Convex ℝ (toWeakSpace 𝕜 E '' (closure s)) := sorry
+  have h₂ : IsClosed (toWeakSpace 𝕜 E '' (closure s)) := sorry
+  obtain ⟨f, u, hus, hux⟩ := geometric_hahn_banach_closed_point h₁ h₂ hx
+  -- now we extend `f` to be a `𝕜`-linear functional, call it `g`
+  -- then we precompose with `(toWeakSpace 𝕜 E).symm`, which is *still* continuous because of
+  -- properties `WeakSpace`. Then ...
+  sorry
+
+
 -- A continuous linear map e between E and F lifts to a continuous linear map between the WeakSpaces
 -- is `WeakSpace.map e`.
 
-theorem Preliminary (e : E ≃L[𝕜] F) (f : (F →L[𝕜] 𝕜) ≃L[𝕜] (E →L[𝕜] 𝕜)) (C : Set (WeakSpace 𝕜 E)) :
-    (WeakSpace.map (ContinuousLinearEquiv.toContinuousLinearMap e))'' (closure C) =
-    closure ((WeakSpace.map (ContinuousLinearEquiv.toContinuousLinearMap e))'' C) := by sorry
+--theorem Preliminary (e : E ≃L[𝕜] F) (f : (F →L[𝕜] 𝕜) ≃L[𝕜] (E →L[𝕜] 𝕜)) (C : Set (WeakSpace 𝕜 E)) :
+--    (WeakSpace.map (ContinuousLinearEquiv.toContinuousLinearMap e))'' (closure C) =
+--    closure ((WeakSpace.map (ContinuousLinearEquiv.toContinuousLinearMap e))'' C) := by
+--  refine Eq.symm (ClosedEmbedding.closure_image_eq ?hf C)
+--  simp only [WeakSpace.coe_map, ContinuousLinearEquiv.coe_coe]
+--  refine closedEmbedding_of_embedding_closed ?hf.h₁ ?hf.h₂
 
+
+--(LinearMap.ker_eq_bot.mpr <| ContinuousLinearEquiv.injective e)
+
+--LinearMap.closedEmbedding_of_injective
 
 
 
