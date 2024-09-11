@@ -129,7 +129,7 @@ theorem map_map (f : α ↪ β) (g : β ↪ γ) (s : Finset α) : (s.map f).map 
 
 theorem map_comm {β'} {f : β ↪ γ} {g : α ↪ β} {f' : α ↪ β'} {g' : β' ↪ γ}
     (h_comm : ∀ a, f (g a) = g' (f' a)) : (s.map g).map f = (s.map f').map g' := by
-  simp_rw [map_map, Embedding.trans, Function.comp, h_comm]
+  simp_rw [map_map, Embedding.trans, Function.comp_def, h_comm]
 
 theorem _root_.Function.Semiconj.finset_map {f : α ↪ β} {ga : α ↪ α} {gb : β ↪ β}
     (h : Function.Semiconj f ga gb) : Function.Semiconj (map f) (map ga) (map gb) := fun _ =>
@@ -186,7 +186,7 @@ theorem filter_map {p : β → Prop} [DecidablePred p] :
 lemma map_filter' (p : α → Prop) [DecidablePred p] (f : α ↪ β) (s : Finset α)
     [DecidablePred (∃ a, p a ∧ f a = ·)] :
     (s.filter p).map f = (s.map f).filter fun b => ∃ a, p a ∧ f a = b := by
-  simp [(· ∘ ·), filter_map, f.injective.eq_iff]
+  simp [Function.comp_def, filter_map, f.injective.eq_iff]
 
 lemma filter_attach' [DecidableEq α] (s : Finset α) (p : s → Prop) [DecidablePred p] :
     s.attach.filter p =
@@ -201,7 +201,7 @@ lemma filter_attach (p : α → Prop) [DecidablePred p] (s : Finset α) :
 
 theorem map_filter {f : α ≃ β} {p : α → Prop} [DecidablePred p] :
     (s.filter p).map f.toEmbedding = (s.map f.toEmbedding).filter (p ∘ f.symm) := by
-  simp only [filter_map, Function.comp, Equiv.toEmbedding_apply, Equiv.symm_apply_apply]
+  simp only [filter_map, Function.comp_def, Equiv.toEmbedding_apply, Equiv.symm_apply_apply]
 
 @[simp]
 theorem disjoint_map {s t : Finset α} (f : α ↪ β) :
@@ -255,7 +255,7 @@ theorem map_nontrivial : (s.map f).Nontrivial ↔ s.Nontrivial :=
 theorem attach_map_val {s : Finset α} : s.attach.map (Embedding.subtype _) = s :=
   eq_of_veq <| by rw [map_val, attach_val]; exact Multiset.attach_map_val _
 
-theorem disjoint_range_addLeftEmbedding (a : ℕ) (s : Finset ℕ):
+theorem disjoint_range_addLeftEmbedding (a : ℕ) (s : Finset ℕ) :
     Disjoint (range a) (map (addLeftEmbedding a) s) := by
   simp_rw [disjoint_left, mem_map, mem_range, addLeftEmbedding_apply]
   rintro _ h ⟨l, -, rfl⟩
@@ -392,7 +392,7 @@ theorem image_image [DecidableEq γ] {g : β → γ} : (s.image f).image g = s.i
 
 theorem image_comm {β'} [DecidableEq β'] [DecidableEq γ] {f : β → γ} {g : α → β} {f' : α → β'}
     {g' : β' → γ} (h_comm : ∀ a, f (g a) = g' (f' a)) :
-    (s.image g).image f = (s.image f').image g' := by simp_rw [image_image, comp, h_comm]
+    (s.image g).image f = (s.image f').image g' := by simp_rw [image_image, comp_def, h_comm]
 
 theorem _root_.Function.Semiconj.finset_image [DecidableEq α] {f : α → β} {ga : α → α} {gb : β → β}
     (h : Function.Semiconj f ga gb) : Function.Semiconj (image f) (image ga) (image gb) := fun _ =>
@@ -633,7 +633,7 @@ theorem mem_subtype {p : α → Prop} [DecidablePred p] {s : Finset α} :
   | ⟨a, ha⟩ => by simp [Finset.subtype, ha]
 
 theorem subtype_eq_empty {p : α → Prop} [DecidablePred p] {s : Finset α} :
-    s.subtype p = ∅ ↔ ∀ x, p x → x ∉ s := by simp [ext_iff, Subtype.forall, Subtype.coe_mk]
+    s.subtype p = ∅ ↔ ∀ x, p x → x ∉ s := by simp [Finset.ext_iff, Subtype.forall, Subtype.coe_mk]
 
 @[mono]
 theorem subtype_mono {p : α → Prop} [DecidablePred p] : Monotone (Finset.subtype p) :=

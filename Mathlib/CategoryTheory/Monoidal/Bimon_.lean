@@ -14,8 +14,6 @@ as comonoid objects in the category of monoid objects in `C`.
 We verify that this is equivalent to the monoid objects in the category of comonoid objects.
 
 ## TODO
-* Define Hopf monoids, which in a cartesian monoidal category are exactly group objects,
-  and use this to define group schemes.
 * Construct the category of modules, and show that it is monoidal with a monoidal forgetful functor
   to `C`.
 * Some form of Tannaka reconstruction:
@@ -111,5 +109,72 @@ def equivMon_Comon_ : Bimon_ C ≌ Mon_ (Comon_ C) where
   inverse := ofMon_Comon_ C
   unitIso := NatIso.ofComponents (fun _ => Comon_.mkIso (Mon_.mkIso (Iso.refl _)))
   counitIso := NatIso.ofComponents (fun _ => Mon_.mkIso (Comon_.mkIso (Iso.refl _)))
+
+/-! # The trivial bimonoid -/
+
+/-- The trivial bimonoid object. -/
+@[simps!]
+def trivial : Bimon_ C := Comon_.trivial (Mon_ C)
+
+/-- The bimonoid morphism from the trivial bimonoid to any bimonoid. -/
+@[simps]
+def trivial_to (A : Bimon_ C) : trivial C ⟶ A :=
+  { hom := (default : Mon_.trivial C ⟶ A.X), }
+
+/-- The bimonoid morphism from any bimonoid to the trivial bimonoid. -/
+@[simps!]
+def to_trivial (A : Bimon_ C) : A ⟶ trivial C :=
+  (default : @Quiver.Hom (Comon_ (Mon_ C)) _ A (Comon_.trivial (Mon_ C)))
+
+/-! # Additional lemmas -/
+
+variable {C}
+
+@[reassoc]
+theorem one_comul (M : Bimon_ C) :
+    M.X.one ≫ M.comul.hom = (λ_ _).inv ≫ (M.X.one ⊗ M.X.one) := by
+  simp
+
+@[reassoc]
+theorem mul_counit (M : Bimon_ C) :
+    M.X.mul ≫ M.counit.hom = (M.counit.hom ⊗ M.counit.hom) ≫ (λ_ _).hom := by
+  simp
+
+/-- Compatibility of the monoid and comonoid structures, in terms of morphisms in `C`. -/
+@[reassoc (attr := simp)] theorem compatibility (M : Bimon_ C) :
+    (M.comul.hom ⊗ M.comul.hom) ≫
+      (α_ _ _ (M.X.X ⊗ M.X.X)).hom ≫ M.X.X ◁ (α_ _ _ _).inv ≫
+      M.X.X ◁ (β_ M.X.X M.X.X).hom ▷ M.X.X ≫
+      M.X.X ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv ≫
+      (M.X.mul ⊗ M.X.mul) =
+    M.X.mul ≫ M.comul.hom := by
+  have := (Mon_.Hom.mul_hom M.comul).symm
+  simpa [-Mon_.Hom.mul_hom, tensor_μ] using this
+
+@[reassoc (attr := simp)] theorem comul_counit_hom (M : Bimon_ C) :
+    M.comul.hom ≫ (_ ◁ M.counit.hom) = (ρ_ _).inv := by
+  simpa [- Comon_.comul_counit] using congr_arg Mon_.Hom.hom M.comul_counit
+
+@[reassoc (attr := simp)] theorem counit_comul_hom (M : Bimon_ C) :
+    M.comul.hom ≫ (M.counit.hom ▷ _) = (λ_ _).inv := by
+  simpa [- Comon_.counit_comul] using congr_arg Mon_.Hom.hom M.counit_comul
+
+@[reassoc (attr := simp)] theorem comul_assoc_hom (M : Bimon_ C) :
+    M.comul.hom ≫ (M.X.X ◁ M.comul.hom) =
+      M.comul.hom ≫ (M.comul.hom ▷ M.X.X) ≫ (α_ M.X.X M.X.X M.X.X).hom := by
+  simpa [- Comon_.comul_assoc] using congr_arg Mon_.Hom.hom M.comul_assoc
+
+@[reassoc] theorem comul_assoc_flip_hom (M : Bimon_ C) :
+    M.comul.hom ≫ (M.comul.hom ▷ M.X.X) =
+      M.comul.hom ≫ (M.X.X ◁ M.comul.hom) ≫ (α_ M.X.X M.X.X M.X.X).inv := by
+  simp
+
+@[reassoc] theorem hom_comul_hom {M N : Bimon_ C} (f : M ⟶ N) :
+    f.hom.hom ≫ N.comul.hom = M.comul.hom ≫ (f.hom.hom ⊗ f.hom.hom) := by
+  simpa [- Comon_.Hom.hom_comul] using congr_arg Mon_.Hom.hom f.hom_comul
+
+@[reassoc] theorem hom_counit_hom {M N : Bimon_ C} (f : M ⟶ N) :
+    f.hom.hom ≫ N.counit.hom = M.counit.hom := by
+  simpa [- Comon_.Hom.hom_counit] using congr_arg Mon_.Hom.hom f.hom_counit
 
 end Bimon_

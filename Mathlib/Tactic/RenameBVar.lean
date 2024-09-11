@@ -49,3 +49,5 @@ elab "rename_bvar " old:ident " → " new:ident loc?:(location)? : tactic => do
       (fun fvarId ↦ renameBVarHyp mvarId fvarId old.getId new.getId)
       (renameBVarTarget mvarId old.getId new.getId)
       fun _ ↦ throwError "unexpected location syntax"
+
+end Mathlib.Tactic

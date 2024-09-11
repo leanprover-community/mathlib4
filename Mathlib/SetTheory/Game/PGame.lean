@@ -216,9 +216,9 @@ theorem wf_isOption : WellFounded IsOption :=
   ⟨fun x =>
     moveRecOn x fun x IHl IHr =>
       Acc.intro x fun y h => by
-        induction' h with _ i _ j
-        · exact IHl i
-        · exact IHr j⟩
+        induction h with
+        | moveLeft i => exact IHl i
+        | moveRight j => exact IHr j⟩
 
 /-- `Subsequent x y` says that `x` can be obtained by playing some nonempty sequence of moves from
 `y`. It is the transitive closure of `IsOption`. -/
@@ -458,7 +458,7 @@ private theorem le_trans_aux {x y z : PGame}
 instance : Preorder PGame :=
   { PGame.le with
     le_refl := fun x => by
-      induction' x with _ _ _ _ IHl IHr
+      induction x with | mk _ _ _ _ IHl IHr => _
       exact
         le_of_forall_lf (fun i => lf_of_le_moveLeft (IHl i)) fun i => lf_of_moveRight_le (IHr i)
     le_trans := by
@@ -638,7 +638,7 @@ theorem leftResponse_spec {x : PGame} (h : 0 ≤ x) (j : x.RightMoves) :
 /-- A small family of pre-games is bounded above. -/
 lemma bddAbove_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → PGame.{u}) :
     BddAbove (Set.range f) := by
-  let x : PGame.{u} := ⟨Σ i, (f $ (equivShrink.{u} ι).symm i).LeftMoves, PEmpty,
+  let x : PGame.{u} := ⟨Σ i, (f <| (equivShrink.{u} ι).symm i).LeftMoves, PEmpty,
     fun x ↦ moveLeft _ x.2, PEmpty.elim⟩
   refine ⟨x, Set.forall_mem_range.2 fun i ↦ ?_⟩
   rw [← (equivShrink ι).symm_apply_apply i, le_iff_forall_lf]
@@ -651,7 +651,7 @@ lemma bddAbove_of_small (s : Set PGame.{u}) [Small.{u} s] : BddAbove s := by
 /-- A small family of pre-games is bounded below. -/
 lemma bddBelow_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → PGame.{u}) :
     BddBelow (Set.range f) := by
-  let x : PGame.{u} := ⟨PEmpty, Σ i, (f $ (equivShrink.{u} ι).symm i).RightMoves, PEmpty.elim,
+  let x : PGame.{u} := ⟨PEmpty, Σ i, (f <| (equivShrink.{u} ι).symm i).RightMoves, PEmpty.elim,
     fun x ↦ moveRight _ x.2⟩
   refine ⟨x, Set.forall_mem_range.2 fun i ↦ ?_⟩
   rw [← (equivShrink ι).symm_apply_apply i, le_iff_forall_lf]
@@ -676,7 +676,7 @@ instance : IsEquiv _ PGame.Equiv where
   trans := fun _ _ _ ⟨xy, yx⟩ ⟨yz, zy⟩ => ⟨xy.trans yz, zy.trans yx⟩
   symm _ _ := And.symm
 
--- Porting note: moved the setoid instance from Basic.lean to here
+-- Porting note: moved the setoid instance from Basic.lean to here
 
 instance setoid : Setoid PGame :=
   ⟨Equiv, refl, symm, Trans.trans⟩
@@ -1262,8 +1262,8 @@ theorem zero_fuzzy_neg_iff {x : PGame} : 0 ‖ -x ↔ 0 ‖ x := by rw [← neg_
 /-- The sum of `x = {xL | xR}` and `y = {yL | yR}` is `{xL + y, x + yL | xR + y, x + yR}`. -/
 instance : Add PGame.{u} :=
   ⟨fun x y => by
-    induction' x with xl xr _ _ IHxl IHxr generalizing y
-    induction' y with yl yr yL yR IHyl IHyr
+    induction x generalizing y with | mk xl xr _ _ IHxl IHxr => _
+    induction y with | mk yl yr yL yR IHyl IHyr => _
     have y := mk yl yr yL yR
     refine ⟨xl ⊕ yl, xr ⊕ yr, Sum.rec ?_ ?_, Sum.rec ?_ ?_⟩
     · exact fun i => IHxl i y
@@ -1760,3 +1760,5 @@ theorem zero_lf_one : (0 : PGame) ⧏ 1 :=
 end PGame
 
 end SetTheory
+
+set_option linter.style.longFile 1900

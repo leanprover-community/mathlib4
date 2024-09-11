@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Johannes Hölzl, Yury Kudryashov, Patrick Massot
 -/
 import Mathlib.Algebra.GeomSum
-import Mathlib.Order.Filter.Archimedean
+import Mathlib.Order.Filter.AtTopBot.Archimedean
 import Mathlib.Order.Iterate
 import Mathlib.Topology.Algebra.Algebra
 import Mathlib.Topology.Algebra.InfiniteSum.Real
@@ -99,7 +99,7 @@ statement simultaneously on `ℚ`, `ℝ` and `ℂ`. -/
 theorem tendsto_natCast_div_add_atTop {𝕜 : Type*} [DivisionRing 𝕜] [TopologicalSpace 𝕜]
     [CharZero 𝕜] [Algebra ℝ 𝕜] [ContinuousSMul ℝ 𝕜] [TopologicalDivisionRing 𝕜] (x : 𝕜) :
     Tendsto (fun n : ℕ ↦ (n : 𝕜) / (n + x)) atTop (𝓝 1) := by
-  convert Tendsto.congr' ((eventually_ne_atTop 0).mp (eventually_of_forall fun n hn ↦ _)) _
+  convert Tendsto.congr' ((eventually_ne_atTop 0).mp (Eventually.of_forall fun n hn ↦ _)) _
   · exact fun n : ℕ ↦ 1 / (1 + x / n)
   · field_simp [Nat.cast_ne_zero.mpr hn]
   · have : 𝓝 (1 : 𝕜) = 𝓝 (1 / (1 + x * (0 : 𝕜))) := by
@@ -167,7 +167,7 @@ theorem tendsto_pow_atTop_nhdsWithin_zero_of_lt_one {𝕜 : Type*} [LinearOrdere
     Tendsto (fun n : ℕ ↦ r ^ n) atTop (𝓝[>] 0) :=
   tendsto_inf.2
     ⟨tendsto_pow_atTop_nhds_zero_of_lt_one h₁.le h₂,
-      tendsto_principal.2 <| eventually_of_forall fun _ ↦ pow_pos h₁ _⟩
+      tendsto_principal.2 <| Eventually.of_forall fun _ ↦ pow_pos h₁ _⟩
 
 @[deprecated (since := "2024-01-31")]
 alias tendsto_pow_atTop_nhdsWithin_0_of_lt_1 := tendsto_pow_atTop_nhdsWithin_zero_of_lt_one
@@ -258,7 +258,7 @@ protected theorem ENNReal.tendsto_pow_atTop_nhds_top_iff {r : ℝ≥0∞} :
     simp only [ENNReal.tendsto_pow_atTop_nhds_zero_iff, inv_zero] at obs
     simpa [← ENNReal.inv_pow] using obs <| ENNReal.inv_lt_one.mpr r_gt_one
 
-/-! ### Geometric series-/
+/-! ### Geometric series -/
 
 
 section Geometric
@@ -605,7 +605,7 @@ theorem tendsto_factorial_div_pow_self_atTop :
     Tendsto (fun n ↦ n ! / (n : ℝ) ^ n : ℕ → ℝ) atTop (𝓝 0) :=
   tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds
     (tendsto_const_div_atTop_nhds_zero_nat 1)
-    (eventually_of_forall fun n ↦
+    (Eventually.of_forall fun n ↦
       div_nonneg (mod_cast n.factorial_pos.le)
         (pow_nonneg (mod_cast n.zero_le) _))
     (by
@@ -654,12 +654,12 @@ theorem tendsto_nat_floor_mul_div_atTop {a : R} (ha : 0 ≤ a) :
   rw [sub_zero] at A
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le' A tendsto_const_nhds
   · refine eventually_atTop.2 ⟨1, fun x hx ↦ ?_⟩
-    simp only [le_div_iff (zero_lt_one.trans_le hx), _root_.sub_mul,
+    simp only [le_div_iff₀ (zero_lt_one.trans_le hx), _root_.sub_mul,
       inv_mul_cancel₀ (zero_lt_one.trans_le hx).ne']
     have := Nat.lt_floor_add_one (a * x)
     linarith
   · refine eventually_atTop.2 ⟨1, fun x hx ↦ ?_⟩
-    rw [div_le_iff (zero_lt_one.trans_le hx)]
+    rw [div_le_iff₀ (zero_lt_one.trans_le hx)]
     simp [Nat.floor_le (mul_nonneg ha (zero_le_one.trans hx))]
 
 theorem tendsto_nat_floor_div_atTop : Tendsto (fun x ↦ (⌊x⌋₊ : R) / x) atTop (𝓝 1) := by
@@ -672,10 +672,10 @@ theorem tendsto_nat_ceil_mul_div_atTop {a : R} (ha : 0 ≤ a) :
   rw [add_zero] at A
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds A
   · refine eventually_atTop.2 ⟨1, fun x hx ↦ ?_⟩
-    rw [le_div_iff (zero_lt_one.trans_le hx)]
+    rw [le_div_iff₀ (zero_lt_one.trans_le hx)]
     exact Nat.le_ceil _
   · refine eventually_atTop.2 ⟨1, fun x hx ↦ ?_⟩
-    simp [div_le_iff (zero_lt_one.trans_le hx), inv_mul_cancel₀ (zero_lt_one.trans_le hx).ne',
+    simp [div_le_iff₀ (zero_lt_one.trans_le hx), inv_mul_cancel₀ (zero_lt_one.trans_le hx).ne',
       (Nat.ceil_lt_add_one (mul_nonneg ha (zero_le_one.trans hx))).le, add_mul]
 
 theorem tendsto_nat_ceil_div_atTop : Tendsto (fun x ↦ (⌈x⌉₊ : R) / x) atTop (𝓝 1) := by

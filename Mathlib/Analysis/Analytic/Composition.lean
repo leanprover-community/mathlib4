@@ -419,7 +419,7 @@ theorem id_comp (p : FormalMultilinearSeries 𝕜 E F) (h : p 0 = 0) : (id 𝕜 
       rfl
     · simp
 
-/-! ### Summability properties of the composition of formal power series-/
+/-! ### Summability properties of the composition of formal power series -/
 
 
 section
@@ -856,7 +856,7 @@ where `v' = (v_l, v_{l+1}, ..., v_{m-1})`. Therefore, we get
 r.comp (q.comp p) n v =
 ∑_{c : Composition n} ∑_{d₀ : Composition (c.blocksFun 0),
   ..., d_{c.length - 1} : Composition (c.blocksFun (c.length - 1))}
-  r c.length (λ i, q dᵢ.length (applyComposition p dᵢ v'ᵢ))
+  r c.length (fun i ↦ q dᵢ.length (applyComposition p dᵢ v'ᵢ))
 ```
 To show that these terms coincide, we need to explain how to reindex the sums to put them in
 bijection (and then the terms we are summing will correspond to each other). Suppose we have a
@@ -1029,7 +1029,7 @@ theorem sizeUpTo_sizeUpTo_add (a : Composition n) (b : Composition a.length) {i 
     have : sizeUpTo b i + Nat.succ j = (sizeUpTo b i + j).succ := rfl
     rw [this, sizeUpTo_succ _ D, IHj A, sizeUpTo_succ _ B]
     simp only [sigmaCompositionAux, add_assoc, add_left_inj, Fin.val_mk]
-    rw [getElem_of_eq (getElem_splitWrtComposition _ _ _ _), getElem_drop', getElem_take _ _ C]
+    rw [getElem_of_eq (getElem_splitWrtComposition _ _ _ _), getElem_drop, getElem_take _ _ C]
 
 /-- Natural equivalence between `(Σ (a : Composition n), Composition a.length)` and
 `(Σ (c : Composition n), Π (i : Fin c.length), Composition (c.blocksFun i))`, that shows up as a
@@ -1086,7 +1086,7 @@ def sigmaEquivSigmaPi (n : ℕ) :
     -- but we need to massage it to take care of the dependent setting.
     rintro ⟨c, d⟩
     have : map List.sum (ofFn fun i : Fin (Composition.length c) => (d i).blocks) = c.blocks := by
-      simp [map_ofFn, (· ∘ ·), Composition.blocks_sum, Composition.ofFn_blocksFun]
+      simp [map_ofFn, Function.comp_def, Composition.blocks_sum, Composition.ofFn_blocksFun]
     rw [sigma_pi_composition_eq_iff]
     dsimp
     congr! 1

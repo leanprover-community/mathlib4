@@ -8,7 +8,6 @@ import Mathlib.Topology.ContinuousFunction.Algebra
 import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
 import Mathlib.Analysis.CStarAlgebra.Basic
-import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 import Mathlib.Topology.Bornology.BoundedOperation
 
 /-!
@@ -228,12 +227,12 @@ theorem tendsto_iff_tendstoUniformly {ι : Type*} {F : ι → α →ᵇ β} {f :
     (fun h =>
       tendstoUniformly_iff.2 fun ε ε0 =>
         (Metric.tendsto_nhds.mp h ε ε0).mp
-          (eventually_of_forall fun n hn x =>
+          (Eventually.of_forall fun n hn x =>
             lt_of_le_of_lt (dist_coe_le_dist x) (dist_comm (F n) f ▸ hn)))
     fun h =>
     Metric.tendsto_nhds.mpr fun _ ε_pos =>
       (h _ (dist_mem_uniformity <| half_pos ε_pos)).mp
-        (eventually_of_forall fun n hn =>
+        (Eventually.of_forall fun n hn =>
           lt_of_le_of_lt
             ((dist_le (half_pos ε_pos).le).mpr fun x => dist_comm (f x) (F n x) ▸ le_of_lt (hn x))
             (half_lt_self ε_pos))
@@ -307,7 +306,7 @@ instance instCompleteSpace [CompleteSpace β] : CompleteSpace (α →ᵇ β) :=
         refine ((tendsto_order.1 b_lim).2 ε ε0).mono fun n hn x => ?_
         rw [dist_comm]
         exact lt_of_le_of_lt (fF_bdd x n) hn
-      exact this.continuous (eventually_of_forall fun N => (f N).continuous)
+      exact this.continuous (Eventually.of_forall fun N => (f N).continuous)
     · -- Check that `F` is bounded
       rcases (f 0).bounded with ⟨C, hC⟩
       refine ⟨C + (b 0 + b 0), fun x y => ?_⟩
@@ -1513,3 +1512,5 @@ lemma norm_sub_nonneg (f : α →ᵇ ℝ) :
 end
 
 end BoundedContinuousFunction
+
+set_option linter.style.longFile 1700

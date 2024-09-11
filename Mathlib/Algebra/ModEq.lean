@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Data.Int.ModEq
-import Mathlib.GroupTheory.QuotientGroup
+import Mathlib.Algebra.Field.Basic
+import Mathlib.GroupTheory.QuotientGroup.Basic
 
 /-!
 # Equality modulo an element

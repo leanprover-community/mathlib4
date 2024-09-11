@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Topology.Instances.Irrational
 import Mathlib.Topology.Instances.Rat
 import Mathlib.Topology.Compactification.OnePoint
+import Mathlib.Topology.Metrizable.Uniformity
 
 /-!
 # Additional lemmas about the topology on rational numbers

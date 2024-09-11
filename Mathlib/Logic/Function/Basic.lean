@@ -3,9 +3,10 @@ Copyright (c) 2016 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Logic.Nonempty
-import Mathlib.Init.Set
+import Mathlib.Init.Algebra.Classes
+import Mathlib.Data.Set.Defs
 import Mathlib.Logic.Basic
+import Mathlib.Logic.Nonempty
 import Batteries.Tactic.Init
 
 /-!
@@ -763,6 +764,10 @@ theorem comp_self : f ∘ f = id :=
 
 protected theorem leftInverse : LeftInverse f f := h
 
+theorem leftInverse_iff {g : α → α} :
+    g.LeftInverse f ↔ g = f :=
+  ⟨fun hg ↦ funext fun x ↦ by rw [← h x, hg, h], fun he ↦ he ▸ h.leftInverse⟩
+
 protected theorem rightInverse : RightInverse f f := h
 
 protected theorem injective : Injective f := h.leftInverse.injective
@@ -927,7 +932,7 @@ theorem Function.LeftInverse.eq_rec_eq {γ : β → Sort v} {f : α → β} {g :
     (h : Function.LeftInverse g f) (C : ∀ a : α, γ (f a)) (a : α) :
     -- TODO: mathlib3 uses `(congr_arg f (h a)).rec (C (g (f a)))` for LHS
     @Eq.rec β (f (g (f a))) (fun x _ ↦ γ x) (C (g (f a))) (f a) (congr_arg f (h a)) = C a :=
-  eq_of_heq <| (eq_rec_heq _ _).trans <| by rw [h]
+  eq_of_heq <| (eqRec_heq _ _).trans <| by rw [h]
 
 theorem Function.LeftInverse.eq_rec_on_eq {γ : β → Sort v} {f : α → β} {g : β → α}
     (h : Function.LeftInverse g f) (C : ∀ a : α, γ (f a)) (a : α) :

@@ -343,22 +343,25 @@ protected theorem zero_lt_one : (0 : ℝ) < 1 := by
 protected theorem fact_zero_lt_one : Fact ((0 : ℝ) < 1) :=
   ⟨Real.zero_lt_one⟩
 
+@[deprecated mul_pos (since := "2024-08-15")]
 protected theorem mul_pos {a b : ℝ} : 0 < a → 0 < b → 0 < a * b := by
   induction' a using Real.ind_mk with a
   induction' b using Real.ind_mk with b
   simpa only [mk_lt, mk_pos, ← mk_mul] using CauSeq.mul_pos
 
-instance : StrictOrderedCommRing ℝ :=
-  { Real.commRing, Real.partialOrder,
-    Real.semiring with
-    exists_pair_ne := ⟨0, 1, Real.zero_lt_one.ne⟩
-    add_le_add_left := by
-      simp only [le_iff_eq_or_lt]
-      rintro a b ⟨rfl, h⟩
-      · simp only [lt_self_iff_false, or_false, forall_const]
-      · exact fun c => Or.inr ((add_lt_add_iff_left c).2 ‹_›)
-    zero_le_one := le_of_lt Real.zero_lt_one
-    mul_pos := @Real.mul_pos }
+instance instStrictOrderedCommRing : StrictOrderedCommRing ℝ where
+  __ := Real.commRing
+  exists_pair_ne := ⟨0, 1, Real.zero_lt_one.ne⟩
+  add_le_add_left := by
+    simp only [le_iff_eq_or_lt]
+    rintro a b ⟨rfl, h⟩
+    · simp only [lt_self_iff_false, or_false, forall_const]
+    · exact fun c => Or.inr ((add_lt_add_iff_left c).2 ‹_›)
+  zero_le_one := le_of_lt Real.zero_lt_one
+  mul_pos a b :=  by
+    induction' a using Real.ind_mk with a
+    induction' b using Real.ind_mk with b
+    simpa only [mk_lt, mk_pos, ← mk_mul] using CauSeq.mul_pos
 
 instance strictOrderedRing : StrictOrderedRing ℝ :=
   inferInstance
