@@ -79,6 +79,8 @@ theorem gaussianHypergeometric_unop [T2Space 𝔸] (x : 𝔸ᵐᵒᵖ) :
   simp [gaussianHypergeometric, gaussianHypergeometric_sum_eq, ←MulOpposite.unop_pow,
      ←MulOpposite.unop_smul, tsum_unop]
 
+private def negativeInts := {(k : 𝕂) | ∃ kn : ℤ, kn ≤ 0 ∧ k = kn}
+
 theorem ascPochhammer_eval_nonzero_eq_zero_iff_not_nonneg_int (n : ℕ) (k : 𝕂) :
     (ascPochhammer 𝕂 n).eval k = 0 ↔ ∃ kn : ℤ, kn ≤ 0 ∧ k = kn ∧ n ≥ 1 - kn := by
   induction n with
@@ -111,19 +113,48 @@ theorem ascPochhammer_eval_nonzero_eq_zero_iff_not_nonneg_int (n : ℕ) (k : �
       rw [kkn.1, this]
       simp
 
-variable (𝕂 𝔸 𝔹 : Type*) [RCLike 𝕂] [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸] [NormOneClass 𝔸]
-    (a b c : 𝕂) : (2 : )
+variable (𝕂 𝔸 𝔹 : Type*) [RCLike 𝕂] [NormedDivisionRing 𝔸] [NormedAlgebra 𝕂 𝔸] [NormOneClass 𝔸]
+    (a b c : 𝕂)
 
 open Asymptotics Filter Real Set
 
 #check 𝕂
 
-lemma gaussianHypergeometricSeries_succ_norm_div_norm (n : ℕ) :
-    ‖gaussianHypergeometricSeries 𝔸 a b c (n+1)‖ / ‖gaussianHypergeometricSeries 𝔸 a b c n‖ =
-    ‖a + n‖ * ‖b + n‖ * ‖c + n‖⁻¹ * (n : ℝ)⁻¹ := by
+lemma gaussianHypergeometricSeries_succ_norm_div_norm (n : ℕ)
+    (ha : ¬∃ kn : ℤ, kn ≤ 0 ∧ a = kn ∧ n ≥ 1 - kn) (hb : ¬∃ kn : ℤ, kn ≤ 0 ∧ b = kn ∧ n ≥ 1 - kn)
+    (hc : ¬∃ kn : ℤ, kn ≤ 0 ∧ c = kn ∧ n ≥ 1 - kn) : ‖gaussianHypergeometricSeries 𝔸 a b c (n+1)‖ /
+    ‖gaussianHypergeometricSeries 𝔸 a b c n‖ = ‖a + n‖ * ‖b + n‖ * ‖c + n‖⁻¹ * ‖1 + (n : 𝕂)‖⁻¹ := by
   simp [gaussianHypergeometricSeries, factorial_succ, ascPochhammer_succ_eval]
-  rewrite [←norm_div]
-  sorry
+  rewrite [norm_smul (x:=ContinuousMultilinearMap.mkPiAlgebraFin 𝕂 (n + 1) 𝔸),
+    norm_smul (x:=ContinuousMultilinearMap.mkPiAlgebraFin 𝕂 n 𝔸)]
+  simp only [norm_mul, norm_inv, ContinuousMultilinearMap.norm_mkPiAlgebraFin, mul_one]
+  ring_nf
+  simp only [inv_inv]
+  have : ‖(n ! : 𝕂)‖⁻¹ * ‖1 + (n : 𝕂)‖⁻¹ * ‖Polynomial.eval a (ascPochhammer 𝕂 n)‖ * ‖↑n + a‖ *
+    ‖Polynomial.eval b (ascPochhammer 𝕂 n)‖ * ‖↑n + b‖ * ‖↑n + c‖⁻¹ *
+    ‖Polynomial.eval c (ascPochhammer 𝕂 n)‖⁻¹ * ‖(n ! : 𝕂)‖ *
+    ‖Polynomial.eval a (ascPochhammer 𝕂 n)‖⁻¹ *
+    ‖Polynomial.eval b (ascPochhammer 𝕂 n)‖⁻¹ * ‖Polynomial.eval c (ascPochhammer 𝕂 n)‖ =
+    ‖(n ! : 𝕂)‖ * ‖(n ! : 𝕂)‖⁻¹ * ‖Polynomial.eval a (ascPochhammer 𝕂 n)‖ *
+    ‖Polynomial.eval a (ascPochhammer 𝕂 n)‖⁻¹ * ‖Polynomial.eval b (ascPochhammer 𝕂 n)‖ *
+    ‖Polynomial.eval b (ascPochhammer 𝕂 n)‖⁻¹ * ‖Polynomial.eval c (ascPochhammer 𝕂 n)‖ *
+    ‖Polynomial.eval c (ascPochhammer 𝕂 n)‖⁻¹ * ‖↑n + a‖ * ‖↑n + b‖ * ‖↑n + c‖⁻¹ *
+    ‖1 + (n : 𝕂)‖⁻¹ := by ring
+  rewrite [this]
+  repeat rewrite [DivisionRing.mul_inv_cancel, one_mul]
+  ring
+  all_goals rewrite [norm_ne_zero_iff]
+  any_goals
+    apply (not_iff_not.2 <| ascPochhammer_eval_nonzero_eq_zero_iff_not_nonneg_int n _).2
+    first | exact ha | exact hb | exact hc
+  simp only [ne_eq, cast_eq_zero]
+  exact factorial_ne_zero n
+
+
+
+
+theorem gaussianHypergeometric_nonpos_int_radius_top
+    (habc : a ∈ negativeInts ∨ b ∈ negativeInts ∨ c ∈ negativeInts) :=
 
 theorem gaussianHypergeometric_radius_eq_one (hc : c ∉ {z | (z:ℤ) < 0}):
     (gaussianHypergeometricSeries 𝔸 a b c).radius = 1 := by
