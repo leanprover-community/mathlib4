@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Siddhartha Gadgil
 -/
 import Lean
-import LeanSearchClient.Basic
+import LeanSearchClient.Syntax
 
 /-!
 # Lean Search Examples
