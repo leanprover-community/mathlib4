@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 
-import Mathlib.Data.Finsupp.Order
+import Mathlib.Data.Finsupp.WellFounded
 import Mathlib.Data.List.TFAE
 import Mathlib.Order.OrderIsoNat
 
@@ -143,12 +143,6 @@ theorem isDickson_tfae (α : Type*) [PartialOrder α] : List.TFAE [
   tfae_have 3 → 1
   · exact isDickson_of_minimal_ne_and_finite
   tfae_finish
-
-/-
-lemma _root_.Set.Infinite.exists_extraction
-  {S : Set ℕ} (hS : S.Infinite) : ∃ n : ℕ → ℕ, StrictMono n ∧ Set.range n = S := by
-  use Nat.nth (fun x ↦ x ∈ S), Nat.nth_strictMono hS, Nat.range_nth_of_infinite hS
-  -/
 
 theorem isDickson_iff_exists_monotone (α : Type*) [PartialOrder α] :
     isDickson α ↔ ∀ (a : ℕ → α), ∃ (n : ℕ → ℕ), StrictMono n ∧ Monotone (a ∘ n) := by
