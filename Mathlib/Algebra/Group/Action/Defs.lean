@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Group.TypeTags
 import Mathlib.Algebra.Opposites
 import Mathlib.Logic.Embedding.Basic
+import Mathlib.Util.SetSynthOrder
 
 /-!
 # Definitions of group actions
@@ -97,6 +98,9 @@ class MulAction (α : Type*) (β : Type*) [Monoid α] extends SMul α β where
   protected one_smul : ∀ b : β, (1 : α) • b = b
   /-- Associativity of `•` and `*` -/
   mul_smul : ∀ (x y : α) (b : β), (x * y) • b = x • y • b
+
+set_synth_order MulAction.toSMul #[3, 2]
+set_synth_order AddAction.toVAdd #[3, 2]
 
 /-!
 ### (Pre)transitive action
