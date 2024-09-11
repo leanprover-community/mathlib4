@@ -43,7 +43,7 @@ def docPrimeLinter : Linter where run := withSetOptionIn fun stx ↦ do
       stx[1][1]
   if docstring[0][1].getAtomVal.isEmpty && declId[0].getId.toString.contains '\'' then
     Linter.logLint linter.docPrime declId
-      m!"`{declId}` is missing doc-string, please add one.\n\
+      m!"`{declId}` is missing a doc-string, please add one.\n\
         Declarations whose name contains a `'` are expected to contain an explanation for the \
         presence of a `'` in their doc-string. This may consist of discussion of the difference \
         relative to the unprimed version, or an explanation as to why no better naming scheme \
