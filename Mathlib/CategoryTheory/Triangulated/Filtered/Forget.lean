@@ -430,6 +430,9 @@ lemma support_def (X : C) (n : ℤ) : n ∈ support X ↔ ¬ (IsZero ((Gr'' n).o
 lemma support_def' (X : C) (n : ℤ) : n ∉ support X ↔ IsZero ((Gr'' n).obj X) := by
   rw [support_def]; simp only [Decidable.not_not]
 
+lemma support_shift (X : C) (a b n : ℤ) (hab : a + n = b) :
+    a ∈ support X ↔ b ∈ support ((@shiftFunctor C _ _ _ Shift₂ n).obj X) := sorry
+
 lemma isLE_iff_support_bounded_above (X : C) (n : ℤ) :
     IsLE X n ↔ (support X).toSet ⊆ Set.Iic n := by
   constructor
@@ -495,6 +498,19 @@ lemma shift_isCore_iff_support_sub_singleton (X : C) (n : ℤ) :
   rw [isCore_iff_support_sub_0]
   constructor
   · intro h a ha
+    rw [support_shift X a (a - n) (-n) (by linarith)] at ha
+    have := h ha
+    have : a = n := by simp only [Finset.mem_singleton] at this; linarith
+    rw [this, Finset.mem_singleton]
+  · intro h a ha
+    rw [← support_shift X (a + n) a (-n) (by linarith)] at ha
+    have := h ha
+    have : a = 0 := by simp only [Finset.mem_singleton, add_left_eq_self] at this; exact this
+    rw [this, Finset.mem_singleton]
+
+  #exit
+  constructor
+  · intro h a ha
     rw [support_def] at ha
     rw [Iso.isZero_iff ((Gr_shift a (-n) (a - n) (by linarith)).symm.app X),
       Functor.comp_obj, ← support_def] at ha
@@ -533,10 +549,6 @@ lemma support_truncGE (X : C) (n : ℤ) :
     rfl
   · simp only [h, and_false, iff_false, Decidable.not_not]
     exact Gr_zero_of_isGE ((truncGE n).obj X) n a (by linarith)
-
-/- The functor forgetting filtrations on the subcategory of objects `X` such that `IsLE X 0`.-/
-
-/- First we do the case where the support is a singleton.-/
 
 /-- The morphism "`αⁿ`"" from `X` to `X⟪n⟫`, if `n` is a natural number.-/
 noncomputable def power_of_alpha (X : C) (n : ℕ) :
@@ -618,6 +630,16 @@ lemma adj_left_extended (n : ℕ) : ∀ (X Y : C) (m : ℤ) [IsLE X m] [IsGE Y (
       exact adj_left_shift _ _ (m + n) (m + ↑(n + 1))
         (by simp only [Nat.cast_add, Nat.cast_one]; linarith)
     · exact IsIso.comp_left_bijective _
+
+
+/- The functor forgetting filtrations on the subcategory of objects `X` such that `IsLE X 0`.-/
+
+/- First we do the case where the support is a singleton.-/
+
+lemma existence_omega_support_singleton : ∀ (X : C) [IsLE X 0], Finset.card (support X) = 1 →
+    ∃ (Y : hP.Core') (s : X ⟶ Y.1),
+    ∀ (Z : C), IsGE Z 0 → IsIso ((preadditiveYoneda.obj Z).map (Quiver.Hom.op s)) := by
+  sorry
 
 /- Then the general case, by induction on the size of the support.-/
 
