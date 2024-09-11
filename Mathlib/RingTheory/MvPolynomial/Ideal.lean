@@ -80,11 +80,11 @@ element of the basis dividing `m`. -/
 lemma mem_span_exists_dvd_mem_basis {S : Set (σ →₀ ℕ)} (s : σ →₀ ℕ)
     (h : monomial s 1 ∈ Ideal.span ((fun s ↦ monomial s (1 : R)) '' S)) :
     ∃ i ∈ S, monomial i (1 : R) ∣ monomial s 1 := by
- classical
- rcases mem_ideal_span_monomial_image_iff_dvd.1 h s (by
-  simp only [support_monomial, if_neg one_ne_zero, Finset.mem_singleton_self]) with ⟨j, hS, hj⟩
- use j, hS
- simpa [coeff_monomial, if_pos] using hj
+  classical
+  rcases mem_ideal_span_monomial_image_iff_dvd.1 h s (by
+    simp only [support_monomial, if_neg one_ne_zero, Finset.mem_singleton_self]) with ⟨j, hS, hj⟩
+  use j, hS
+  simpa [coeff_monomial, if_pos] using hj
 
 
 end MvPolynomial
