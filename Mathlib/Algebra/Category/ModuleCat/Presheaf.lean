@@ -120,6 +120,16 @@ def toPresheaf : PresheafOfModules.{v} R ⥤ Cᵒᵖ ⥤ Ab where
     { app := fun X ↦ AddMonoidHom.mk' (Hom.app f X) (by simp)
       naturality := fun X Y g ↦ by ext x; exact naturality_apply f g x }
 
+variable (M) in
+@[simp]
+lemma toPresheaf_obj_coe (X : Cᵒᵖ) :
+    (((toPresheaf R).obj M).obj X : Type _) = M.obj X := rfl
+
+@[simp]
+lemma toPresheaf_map_app_apply (f : M₁ ⟶ M₂) (X : Cᵒᵖ) (x : M₁.obj X) :
+    DFunLike.coe (α := M₁.obj X) (β := fun _ ↦ M₂.obj X)
+      (((toPresheaf R).map f).app X) x = f.app X x := rfl
+
 instance : (toPresheaf R).Faithful where
   map_injective {_ _ f g} h := by
     ext X x
