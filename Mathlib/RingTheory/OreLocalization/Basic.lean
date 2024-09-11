@@ -803,7 +803,6 @@ protected theorem add_zero (x : X[S⁻¹]) : x + 0 = x := by
   induction x
   rw [← zero_oreDiv, add_oreDiv]; simp
 
-@[irreducible]
 private def nsmul : ℕ → X[S⁻¹] → X[S⁻¹] := nsmulRec
 
 instance : AddMonoid X[S⁻¹] where
