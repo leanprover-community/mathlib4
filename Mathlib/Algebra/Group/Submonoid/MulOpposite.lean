@@ -164,7 +164,7 @@ theorem op_closure (s : Set M) : (closure s).op = closure (MulOpposite.unop ⁻�
 @[to_additive]
 theorem unop_closure (s : Set Mᵐᵒᵖ) : (closure s).unop = closure (MulOpposite.op ⁻¹' s) := by
   rw [← op_inj, op_unop, op_closure]
-  rfl
+  simp_rw [Set.preimage_preimage, MulOpposite.op_unop, Set.preimage_id']
 
 /-- Bijection between a submonoid `H` and its opposite. -/
 @[to_additive (attr := simps!) "Bijection between an additive submonoid `H` and its opposite."]

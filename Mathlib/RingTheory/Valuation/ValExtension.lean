@@ -89,8 +89,7 @@ end algebraMap
 
 instance id : IsValExtension vR vR where
   val_isEquiv_comap := by
-    simp only [Algebra.id.map_eq_id, comap_id]
-    rfl
+    simp only [Algebra.id.map_eq_id, comap_id, IsEquiv.refl]
 
 section integer
 
@@ -108,8 +107,7 @@ theorem ofComapInteger (h : vA.integer.comap (algebraMap K A) = vK.integer) :
   val_isEquiv_comap := by
     rw [isEquiv_iff_val_le_one]
     intro x
-    rw [← Valuation.mem_integer_iff, ← Valuation.mem_integer_iff, ← h]
-    rfl
+    simp_rw [← Valuation.mem_integer_iff, ← h, Subring.mem_comap, mem_integer_iff, comap_apply]
 
 instance instAlgebraInteger : Algebra vR.integer vA.integer where
   smul r a := ⟨r • a,

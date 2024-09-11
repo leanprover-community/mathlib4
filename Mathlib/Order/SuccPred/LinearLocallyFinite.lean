@@ -68,13 +68,14 @@ instance (priority := 100) isPredArchimedean_of_isSuccArchimedean [IsSuccArchime
       ⟨Nat.find h_exists, Nat.find_spec h_exists, fun m hmn ↦ Nat.find_min h_exists hmn⟩
     refine ⟨n, ?_⟩
     rw [← hn_eq]
-    induction' n with n
-    · simp only [Function.iterate_zero, id]
-    · rw [pred_succ_iterate_of_not_isMax]
+    cases n with
+    | zero => simp only [Function.iterate_zero, id]
+    | succ n =>
+      rw [pred_succ_iterate_of_not_isMax]
       rw [Nat.succ_sub_succ_eq_sub, tsub_zero]
       suffices succ^[n] i < succ^[n.succ] i from not_isMax_of_lt this
       refine lt_of_le_of_ne ?_ ?_
-      · rw [Function.iterate_succ']
+      · rw [Function.iterate_succ_apply']
         exact le_succ _
       · rw [hn_eq]
         exact hn_lt_ne _ (Nat.lt_succ_self n)
@@ -84,9 +85,9 @@ instance isSuccArchimedean_of_isPredArchimedean [IsPredArchimedean ι] : IsSuccA
 
 /-- In a linear `SuccOrder` that's also a `PredOrder`, `IsSuccArchimedean` and `IsPredArchimedean`
 are equivalent. -/
-theorem isSuccArchimedean_iff_isPredArchimedean : IsSuccArchimedean ι ↔ IsPredArchimedean ι :=
-  ⟨fun  _ => isPredArchimedean_of_isSuccArchimedean,
-    fun  _ => isSuccArchimedean_of_isPredArchimedean⟩
+theorem isSuccArchimedean_iff_isPredArchimedean : IsSuccArchimedean ι ↔ IsPredArchimedean ι where
+  mp _ := isPredArchimedean_of_isSuccArchimedean
+  mpr _ := isSuccArchimedean_of_isPredArchimedean
 
 end LinearOrder
 

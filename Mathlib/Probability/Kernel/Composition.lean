@@ -113,7 +113,7 @@ theorem compProdFun_iUnion (κ : Kernel α β) (η : Kernel (α × β) γ) [IsSF
         Set.mem_empty_iff_false] using hf_disj hij hbci hbcj
     · exact fun i ↦ measurable_prod_mk_left (hf_meas i)
   rw [h_tsum, lintegral_tsum]
-  · rfl
+  · simp [compProdFun]
   · intro i
     have hm : MeasurableSet {p : (α × β) × γ | (p.1.2, p.2) ∈ f i} :=
       measurable_fst.snd.prod_mk measurable_snd (hf_meas i)
@@ -320,8 +320,7 @@ theorem compProd_restrict {s : Set β} {t : Set γ} (hs : MeasurableSet s) (ht :
     classical
     rw [Set.indicator_apply]
     split_ifs with h
-    · simp only [h, true_and]
-      rfl
+    · simp only [h, true_and, Set.inter_def, Set.mem_setOf]
     · simp only [h, false_and, and_false, Set.setOf_false, measure_empty]
   simp_rw [this]
   rw [lintegral_indicator _ hs]
@@ -593,8 +592,7 @@ theorem map_of_not_measurable (κ : Kernel α β) {f : β → γ} (hf : ¬(Measu
   simp [map, hf]
 
 theorem map_apply (κ : Kernel α β) (hf : Measurable f) (a : α) : map κ f a = (κ a).map f := by
-  simp only [map, hf, ↓reduceDIte, mapOfMeasurable]
-  rfl
+  simp only [map, hf, ↓reduceDIte, mapOfMeasurable, coe_mk]
 
 theorem map_apply' (κ : Kernel α β) (hf : Measurable f) (a : α) {s : Set γ} (hs : MeasurableSet s) :
     map κ f a s = κ a (f ⁻¹' s) := by rw [map_apply _ hf, Measure.map_apply hf hs]
@@ -916,8 +914,8 @@ lemma fst_map_prod (κ : Kernel α β) {f : β → γ} {g : β → δ} (hg : Mea
     fst (map κ (fun x ↦ (f x, g x))) = map κ f := by
   by_cases hf : Measurable f
   · ext x s hs
-    rw [fst_apply' _ _ hs, map_apply' _ (hf.prod hg), map_apply' _ hf _ hs]
-    · rfl
+    rw [fst_apply' _ _ hs, map_apply' _ (hf.prod hg) _, map_apply' _ hf _ hs]
+    · simp only [Set.preimage, Set.mem_setOf]
     · exact measurable_fst hs
   · have : ¬ Measurable (fun x ↦ (f x, g x)) := by
       contrapose! hf; exact hf.fst
@@ -993,7 +991,7 @@ lemma snd_map_prod (κ : Kernel α β) {f : β → γ} {g : β → δ} (hf : Mea
   by_cases hg : Measurable g
   · ext x s hs
     rw [snd_apply' _ _ hs, map_apply' _ (hf.prod hg), map_apply' _ hg _ hs]
-    · rfl
+    · simp only [Set.preimage, Set.mem_setOf]
     · exact measurable_snd hs
   · have : ¬ Measurable (fun x ↦ (f x, g x)) := by
       contrapose! hg; exact hg.snd

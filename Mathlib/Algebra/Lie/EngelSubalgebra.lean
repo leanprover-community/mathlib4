@@ -133,8 +133,9 @@ lemma normalizer_eq_self_of_engel_le [IsArtinian R L]
     clear hk; revert hy
     generalize k+1 = k
     induction k generalizing y with
-    | zero => cases y; intro hy; simp only [pow_zero, LinearMap.one_apply]; exact
-      (AddSubmonoid.mk_eq_zero N.toAddSubmonoid).mp hy
+    | zero =>
+      cases y; intro hy; simp only [pow_zero, LinearMap.one_apply]
+      exact (AddSubmonoid.mk_eq_zero N.toAddSubmonoid).mp hy
     | succ k ih => simp only [pow_succ, LinearMap.mem_ker, LinearMap.mul_apply] at ih ⊢; apply ih
   · rw [← Submodule.map_le_iff_le_comap]
     apply le_sup_of_le_right

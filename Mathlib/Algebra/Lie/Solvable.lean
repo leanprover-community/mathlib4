@@ -198,7 +198,7 @@ namespace LieAlgebra
 class IsSolvable : Prop where
   solvable : ∃ k, derivedSeries R L k = ⊥
 
-instance isSolvableBot : IsSolvable R ((⊥ : LieIdeal R L)) :=
+instance isSolvableBot : IsSolvable R (⊥ : LieIdeal R L) :=
   ⟨⟨0, Subsingleton.elim _ ⊥⟩⟩
 
 instance isSolvableAdd {I J : LieIdeal R L} [hI : IsSolvable R I] [hJ : IsSolvable R J] :
