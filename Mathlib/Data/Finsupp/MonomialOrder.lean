@@ -10,24 +10,76 @@ import Mathlib.Data.List.TFAE
 import Mathlib.Data.Finsupp.Lex
 import Mathlib.Logic.Equiv.TransferInstance
 
-/-! # Monomial orders, division algorithm, examples, Dickson orders -/
+/-! # Monomial orders 
+
+## Monomial orders
+
+A *monomial order* is well ordering relation on a type of the form `σ →₀ ℕ` which 
+is compatible with addition and for which `0` is the smallest element.
+Since several monomial orders may have to be used simultaneously, one cannot 
+gets them as instances.
+In this formalization, they are presented as a structure `MonomialOrder` which encapsulates
+`MonomialOrder.toSyn`, an additive and monotone isomorphism to a linearly ordered cancellative 
+additive commutative monoid.
+The entry `MonomialOrder.wf` asserts that `MonomialOrder.syn` is well founded.
+
+The terminology comes from commutative algebra and algebraic geometry, especially Gröbner bases,
+where `c : σ →₀ ℕ` are exponents of monomial. 
+
+Given a monomial order `m : MonomialOrder σ`, we provide the notation 
+`c ≼[m] d` and `c ≺[m] d` to compare `c d : σ →₀ ℕ` with respect to `m`.
+It is activated using `open scoped MonomialOrder`.
+
+## Examples
+
+We provide four examples of monomial orders, the most standard one in commutative algebra.
+
+* `MonomialOrder.lex` : the lexicographic ordering on `σ →₀ ℕ`. 
+For this, `σ` needs to be embedded with an ordering relation which statisfies `WellFoundedGT σ`. 
+(This last property is automatic when `σ` is finite).
+
+The type synonym is `Lex (σ →₀ ℕ)` and the two lemmas `MonomialOrder.lex_le_iff` 
+and `MonomialOrder.lex_lt_iff` rewrite the ordering as comparisons in the type `Lex (σ →₀ ℕ)`.
+
+* `MonomialOrder.revLex` : the reverse lexicographic ordering on `σ →₀ ℕ`. 
+For this, `σ` needs to be embedded with an ordering relation which statisfies `WellFoundedLT σ`. 
+(This last property is automatic when `σ` is finite).
+
+The type synonym is `Lex (σᵒᵈ →₀ ℕ)` and the two lemmas `MonomialOrder.revLex_le_iff` 
+and `MonomialOrder.revLex_lt_iff` rewrite the ordering as comparisons in the type `Lex (σᵒᵈ →₀ ℕ)`.
+
+* `MonomialOrder.degLex`: a variant of the lexicographic ordering that first compares degrees.
+For this, `σ` needs to be embedded with an ordering relation which statisfies `WellFoundedGT σ`. 
+(This last property is automatic when `σ` is finite).
+
+The type synonym is `DegLex (σ →₀ ℕ)` and the two lemmas `MonomialOrder.degLex_le_iff` 
+and `MonomialOrder.degLex_lt_iff` rewrite the ordering as comparisons in the type `Lex (σ →₀ ℕ)`.
+
+* `MonomialOrder.degRevLex`: a variant of the reverse lexicographic ordering 
+that first compares degrees.
+For this, `σ` needs to be embedded with an ordering relation which statisfies `WellFoundedLT σ`. 
+(This last property is automatic when `σ` is finite).
+
+The type synonym is `DegLex (σᵒᵈ →₀ ℕ)` and the two lemmas `MonomialOrder.degRevLex_le_iff` 
+and `MonomialOrder.degRevLex_lt_iff` rewrite the ordering as comparisons in the type 
+`DegLex (σᵒᵈ →₀ ℕ)`.
+
+-/
 
 /-- Monomial orders : equivalence of `σ →₀ ℕ` with a well ordered type -/
 structure MonomialOrder (σ : Type*) where
   /-- The synonym type -/
   syn : Type*
-  /-- syn is a linear ordered cancel add comm monoid -/
+  /-- `syn` is a linearly ordered cancellative additive commutative monoid -/
   locacm : LinearOrderedCancelAddCommMonoid syn
-  /-- the add equivalence from `σ →₀ ℕ` to `syn` -/
+  /-- the additive equivalence from `σ →₀ ℕ` to `syn` -/
   toSyn : (σ →₀ ℕ) ≃+ syn
-  /-- toSyn is monotone -/
+  /-- `toSyn` is monotone -/
   toSyn_monotone : Monotone toSyn
   /-- `syn` is a well ordering -/
   wf : WellFoundedLT syn
 
-instance (σ : Type*) (m : MonomialOrder σ) : LinearOrderedCancelAddCommMonoid m.syn := m.locacm
-
-instance (σ : Type*) (m : MonomialOrder σ) : WellFoundedLT m.syn := m.wf
+attribute [instance] MonomialOrder.locacm MonomialOrder.wf
 
 variable {σ : Type*} (m : MonomialOrder σ)
 
@@ -37,16 +89,6 @@ lemma le_add_right (a b : σ →₀ ℕ) :
     m.toSyn a ≤ m.toSyn a + m.toSyn b := by
   rw [← map_add]
   exact m.toSyn_monotone le_self_add
-
-/-
-lemma MonomialOrder.toSyn_monotone : Monotone (m.toSyn) := by
-  intro a b h
-  have : b = a + (b - a) := by
-    ext s
-    simp only [coe_add, coe_tsub, Pi.add_apply, Pi.sub_apply]
-    rw [add_tsub_cancel_of_le (h s)]
-  rw [this]
-  apply le_add_right -/
 
 instance orderBot : OrderBot (m.syn) where
   bot := 0
@@ -77,7 +119,9 @@ end MonomialOrder
 
 section Lex
 
-open Finsupp
+open Finsupp 
+
+open scoped MonomialOrder
 
 -- The linear order on `Finsupp`s obtained by the lexicographic ordering. -/
 noncomputable instance {α N : Type*} [LinearOrder α] [OrderedCancelAddCommMonoid N] :
@@ -105,8 +149,10 @@ theorem _root_.Finsupp.toLex_monotone' {σ : Type*} [LinearOrder σ] :
   apply bot_le
 -/
 
+variable {σ : Type*} [LinearOrder σ] 
+
 /-- The lexicographic order on `σ →₀ ℕ`, as a `MonomialOrder` -/
-noncomputable def MonomialOrder.lex (σ : Type*) [LinearOrder σ] [WellFoundedGT σ] :
+noncomputable def MonomialOrder.lex [WellFoundedGT σ] :
     MonomialOrder σ where
   syn := Lex (σ →₀ ℕ)
   locacm := Lex.linearOrderedCancelAddCommMonoid
@@ -116,9 +162,24 @@ noncomputable def MonomialOrder.lex (σ : Type*) [LinearOrder σ] [WellFoundedGT
   wf := Lex.wellFoundedLT
   toSyn_monotone := Finsupp.toLex_monotone
 
+theorem MonomialOrder.lex_le_iff [WellFoundedGT σ] {c d : σ →₀ ℕ} :
+    c ≼[lex] d ↔ toLex c ≤ toLex d := Iff.rfl
+
+theorem MonomialOrder.lex_lt_iff [WellFoundedGT σ] {c d : σ →₀ ℕ} :
+    c ≺[lex] d ↔ toLex c < toLex d := Iff.rfl
+
 /-- The reverse lexicographic order on `σ →₀ ℕ`, as a `MonomialOrder` -/
-noncomputable def MonomialOrder.revlex (σ : Type*) [LinearOrder σ] [WellFoundedLT σ] :
-    MonomialOrder σ := MonomialOrder.lex σᵒᵈ
+noncomputable def MonomialOrder.revLex [WellFoundedLT σ] :
+    MonomialOrder σ := 
+  MonomialOrder.lex (σ := σᵒᵈ)
+
+theorem MonomialOrder.revLex_le_iff [WellFoundedLT σ] {c d : σ →₀ ℕ} :
+    c ≼[revLex] d ↔ (toLex c : Lex (σᵒᵈ →₀ ℕ)) ≤ (toLex d : Lex (σᵒᵈ →₀ ℕ)) := 
+  Iff.rfl
+
+theorem MonomialOrder.revLlex_lt_iff [WellFoundedLT σ] {c d : σ →₀ ℕ} :
+    c ≺[revLex] d ↔ (toLex c : Lex (σᵒᵈ →₀ ℕ)) < (toLex d : Lex (σᵒᵈ →₀ ℕ)) := 
+  Iff.rfl
 
 end Lex
 
@@ -302,12 +363,14 @@ instance DegLex.wellFoundedLT [WellFoundedGT α] :
 
 end Finsupp
 
-namespace MonomialOrder
+open scoped MonomialOrder
 
 open Finsupp
 
+variable {σ : Type*} [LinearOrder σ]
+
 /-- The deg-lexicographic order on `σ →₀ ℕ`, as a `MonomialOrder` -/
-noncomputable def degLex (σ : Type*) [LinearOrder σ] [WellFoundedGT σ] :
+noncomputable def MonomialOrder.degLex [WellFoundedGT σ] :
     MonomialOrder σ where
   syn := DegLex (σ →₀ ℕ)
   locacm := inferInstance
@@ -322,18 +385,27 @@ noncomputable def degLex (σ : Type*) [LinearOrder σ] [WellFoundedGT σ] :
       rw [← add_tsub_cancel_of_le h, degree_add]
       exact Nat.le_add_right a.degree (b - a).degree
 
-theorem degLex_lt_iff {σ : Type*} [LinearOrder σ] [WellFoundedGT σ]
-    {a b : σ →₀ ℕ} :
-    (MonomialOrder.degLex σ).toSyn a < (MonomialOrder.degLex σ).toSyn b
-      ↔ toDegLex a < toDegLex b :=
+theorem MonomialOrder.degLex_le_iff [WellFoundedGT σ] {a b : σ →₀ ℕ} :
+    a ≼[degLex] b ↔ toDegLex a ≤ toDegLex b :=
+  Iff.rfl
+
+theorem MonomialOrder.degLex_lt_iff [WellFoundedGT σ] {a b : σ →₀ ℕ} :
+    a ≺[degLex] b ↔ toDegLex a < toDegLex b :=
   Iff.rfl
 
 /-- The deg-reverse lexicographic order on `σ →₀ ℕ`, as a `MonomialOrder` -/
-noncomputable def degRevLex (σ : Type*) [LinearOrder σ] [WellFoundedLT σ] :
+noncomputable def MonomialOrder.degRevLex [WellFoundedLT σ] :
     MonomialOrder σ :=
-  MonomialOrder.degLex σᵒᵈ
+  MonomialOrder.degLex (σ := σᵒᵈ)
 
-end MonomialOrder
+theorem MonomialOrder.degRevLex_le_iff [WellFoundedLT σ] {a b : σ →₀ ℕ} :
+    a ≼[degRevLex] b ↔ (toDegLex a : σᵒᵈ →₀ ℕ) ≤ (toDegLex b : σᵒᵈ →₀ ℕ) :=
+  Iff.rfl
+
+theorem MonomialOrder.degRevLex_lt_iff [WellFoundedLT σ] {a b : σ →₀ ℕ} :
+    a ≺[degRevLex] b ↔ (toDegLex a : σᵒᵈ →₀ ℕ) < (toDegLex b : σᵒᵈ →₀ ℕ) :=
+  Iff.rfl
+
 
 end degLex
 
