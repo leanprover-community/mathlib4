@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2024 Kevin Buzzard. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kevin Buzzard
+-/
 import Mathlib.RingTheory.OreLocalization.Ring
 
 /-!
@@ -5,7 +10,7 @@ import Mathlib.RingTheory.OreLocalization.Ring
 # Algebra instances of Ore Localizations
 
 If `R` is a commutative ring with submonoid `S`, and if `A` is a commutative `R`-algebra,
-then this file gives `A[S⁻¹]` the strucure of an`R[S⁻¹]`-algebra.
+then this file gives `A[S⁻¹]` the structure of an`R[S⁻¹]`-algebra.
 
 -/
 
@@ -30,14 +35,9 @@ private def mul''
   use ⟨s₁, hs₁⟩, r₁ * s₁
   simp only [Submonoid.mk_smul, Submonoid.coe_mul]
   constructor
-  · rw [← smul_mul_assoc]
-    rw [← smul_mul_assoc]
-    rw [mul_comm]
-    rw [smul_mul_assoc, smul_mul_assoc]
-    rw [mul_comm]
-    -- it's like a bloody Rubik's cube
-    rw [smul_mul_assoc]
-    rw [← mul_smul]
+  · -- lol this was fun. Do we have a tactic for this?
+    rw [← smul_mul_assoc, ← smul_mul_assoc, mul_comm, smul_mul_assoc, smul_mul_assoc, mul_comm,
+      smul_mul_assoc, ← mul_smul] --
   · obtain ⟨s₂, hs₂⟩ := s
     simpa only [Submonoid.mk_smul, Submonoid.coe_mul] using mul_left_comm s₁ (r₁ * s₁) s₂
 
@@ -85,7 +85,7 @@ section CommMonoid
 variable {R A : Type*} [CommMonoid R] [CommMonoid A] [MulAction R A] [IsScalarTower R A A]
   {S : Submonoid R}
 
-instance commMonoid' : CommMonoid (A[S⁻¹]) where
+instance instCommMonoid' : CommMonoid (A[S⁻¹]) where
   mul_assoc a b c := by
     induction' a with a
     induction' b with b
@@ -146,7 +146,7 @@ theorem left_distrib' (a b c : A[S⁻¹]) :
     rw [mul_comm, mul_assoc, mul_comm r₁]
 
 instance instCommSemiring' : CommSemiring A[S⁻¹] where
-  __ := commMonoid'
+  __ := instCommMonoid'
   left_distrib := left_distrib'
   right_distrib a b c := by
     rw [mul_comm, mul_comm a, mul_comm b, left_distrib']
@@ -166,7 +166,7 @@ section Algebra
 variable (R A : Type*) [cR : CommSemiring R] [cA : CommSemiring A] [cRA : Algebra R A]
     (S : Submonoid R)
 
-def instAlgebra' : Algebra (R[S⁻¹]) (A[S⁻¹]) where
+def algebra : Algebra (R[S⁻¹]) (A[S⁻¹]) where
   toFun := liftExpand (fun r s ↦ (algebraMap R A r) /ₒ s) fun r₁ r₂ s hs => by
     rw [oreDiv_eq_iff]
     use s, r₂ * s
@@ -201,9 +201,19 @@ def instAlgebra' : Algebra (R[S⁻¹]) (A[S⁻¹]) where
       OneHom.coe_mk, liftExpand_of, RingHom.coe_mk, MonoidHom.coe_mk,
       OreLocalization.smul_def, Algebra.smul_def, OreLocalization.mul_def]
 
--- this would be a diamond if `instAlgebra'` were an instance
---example : (instAlgebra' R R S : Algebra R[S⁻¹] R[S⁻¹]) =
---  (inferInstance : Algebra R[S⁻¹] R[S⁻¹]) := rfl
+-- If `algebra` were an instance then this would be a diamond:
+/-
+example : (algebra R R S : Algebra R[S⁻¹] R[S⁻¹]) =
+    (inferInstance : Algebra R[S⁻¹] R[S⁻¹]) := rfl -- fails
+
+-- how far is this from `rfl`?
+example : (algebra R R S : Algebra R[S⁻¹] R[S⁻¹]) =
+    (inferInstance : Algebra R[S⁻¹] R[S⁻¹]) := by
+  refine Algebra.algebra_ext (algebra R R S) inferInstance fun r ↦ ?_
+  refine Quotient.inductionOn r ?_
+  rintro ⟨r, s⟩
+  rfl
+-/
 
 end Algebra
 
