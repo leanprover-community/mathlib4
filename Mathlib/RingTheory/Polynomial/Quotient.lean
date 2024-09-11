@@ -7,14 +7,11 @@ import Mathlib.Algebra.Polynomial.Div
 import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.RingTheory.Ideal.QuotientOperations
 
-#align_import ring_theory.polynomial.quotient from "leanprover-community/mathlib"@"4f840b8d28320b20c87db17b3a6eef3d325fca87"
-
 /-!
 # Quotients of polynomial rings
 -/
 
 
-set_option linter.uppercaseLean3 false
 
 open Polynomial
 
@@ -38,19 +35,16 @@ isomorphism of $R$-algebras $R[X] / \langle X - x \rangle \cong R$. -/
 noncomputable def quotientSpanXSubCAlgEquiv (x : R) :
     (R[X] ⧸ Ideal.span ({X - C x} : Set R[X])) ≃ₐ[R] R :=
   (quotientSpanXSubCAlgEquivAux1 x).trans (quotientSpanXSubCAlgEquivAux2 x)
-#align polynomial.quotient_span_X_sub_C_alg_equiv Polynomial.quotientSpanXSubCAlgEquiv
 
 @[simp]
 theorem quotientSpanXSubCAlgEquiv_mk (x : R) (p : R[X]) :
     quotientSpanXSubCAlgEquiv x (Ideal.Quotient.mk _ p) = p.eval x :=
   rfl
-#align polynomial.quotient_span_X_sub_C_alg_equiv_mk Polynomial.quotientSpanXSubCAlgEquiv_mk
 
 @[simp]
 theorem quotientSpanXSubCAlgEquiv_symm_apply (x : R) (y : R) :
     (quotientSpanXSubCAlgEquiv x).symm y = algebraMap R _ y :=
   rfl
-#align polynomial.quotient_span_X_sub_C_alg_equiv_symm_apply Polynomial.quotientSpanXSubCAlgEquiv_symm_apply
 
 /-- For a commutative ring $R$, evaluating a polynomial at an element $y \in R$ induces an
 isomorphism of $R$-algebras $R[X] / \langle x, X - y \rangle \cong R / \langle x \rangle$. -/
@@ -61,7 +55,6 @@ noncomputable def quotientSpanCXSubCAlgEquiv (x y : R) :
       (Ideal.quotientEquivAlg _ _ (quotientSpanXSubCAlgEquiv y) rfl).trans <|
         Ideal.quotientEquivAlgOfEq R <| by
           simp only [Ideal.map_span, Set.image_singleton]; congr 2; exact eval_C
-#align polynomial.quotient_span_C_X_sub_C_alg_equiv Polynomial.quotientSpanCXSubCAlgEquiv
 
 /-- For a commutative ring $R$, evaluating a polynomial at elements $y(X) \in R[X]$ and $x \in R$
 induces an isomorphism of $R$-algebras $R[X, Y] / \langle X - x, Y - y(X) \rangle \cong R$. -/
@@ -89,7 +82,6 @@ theorem quotient_map_C_eq_zero {I : Ideal R} :
   intro a ha
   rw [RingHom.comp_apply, Quotient.eq_zero_iff_mem]
   exact mem_map_of_mem _ ha
-#align ideal.quotient_map_C_eq_zero Ideal.quotient_map_C_eq_zero
 
 theorem eval₂_C_mk_eq_zero {I : Ideal R} :
     ∀ f ∈ (map (C : R →+* R[X]) I : Ideal R[X]), eval₂RingHom (C.comp (Quotient.mk I)) X f = 0 := by
@@ -105,7 +97,6 @@ theorem eval₂_C_mk_eq_zero {I : Ideal R} :
   by_cases h : m = 0
   · simpa [h] using Quotient.eq_zero_iff_mem.2 ((mem_map_C_iff.1 ha) n)
   · simp [h]
-#align ideal.eval₂_C_mk_eq_zero Ideal.eval₂_C_mk_eq_zero
 
 /-- If `I` is an ideal of `R`, then the ring polynomials over the quotient ring `I.quotient` is
 isomorphic to the quotient of `R[X]` by the ideal `map C I`,
@@ -144,7 +135,6 @@ def polynomialQuotientEquivQuotientPolynomial (I : Ideal R) :
         Submodule.Quotient.quot_mk_eq_mk, Quotient.mk_eq_mk, eval₂_X_pow, eval₂_smul,
         coe_eval₂RingHom, RingHom.map_pow, eval₂_C, RingHom.coe_comp, RingHom.map_mul, eval₂_X,
         Function.comp_apply]
-#align ideal.polynomial_quotient_equiv_quotient_polynomial Ideal.polynomialQuotientEquivQuotientPolynomial
 
 @[simp]
 theorem polynomialQuotientEquivQuotientPolynomial_symm_mk (I : Ideal R) (f : R[X]) :
@@ -152,7 +142,6 @@ theorem polynomialQuotientEquivQuotientPolynomial_symm_mk (I : Ideal R) (f : R[X
   rw [polynomialQuotientEquivQuotientPolynomial, RingEquiv.symm_mk, RingEquiv.coe_mk,
     Equiv.coe_fn_mk, Quotient.lift_mk, coe_eval₂RingHom, eval₂_eq_eval_map, ← Polynomial.map_map,
     ← eval₂_eq_eval_map, Polynomial.eval₂_C_X]
-#align ideal.polynomial_quotient_equiv_quotient_polynomial_symm_mk Ideal.polynomialQuotientEquivQuotientPolynomial_symm_mk
 
 @[simp]
 theorem polynomialQuotientEquivQuotientPolynomial_map_mk (I : Ideal R) (f : R[X]) :
@@ -160,13 +149,11 @@ theorem polynomialQuotientEquivQuotientPolynomial_map_mk (I : Ideal R) (f : R[X]
     Quotient.mk (map C I : Ideal R[X]) f := by
   apply (polynomialQuotientEquivQuotientPolynomial I).symm.injective
   rw [RingEquiv.symm_apply_apply, polynomialQuotientEquivQuotientPolynomial_symm_mk]
-#align ideal.polynomial_quotient_equiv_quotient_polynomial_map_mk Ideal.polynomialQuotientEquivQuotientPolynomial_map_mk
 
 /-- If `P` is a prime ideal of `R`, then `R[x]/(P)` is an integral domain. -/
 theorem isDomain_map_C_quotient {P : Ideal R} (_ : IsPrime P) :
     IsDomain (R[X] ⧸ (map (C : R →+* R[X]) P : Ideal R[X])) :=
   MulEquiv.isDomain (Polynomial (R ⧸ P)) (polynomialQuotientEquivQuotientPolynomial P).symm
-#align ideal.is_domain_map_C_quotient Ideal.isDomain_map_C_quotient
 
 /-- Given any ring `R` and an ideal `I` of `R[X]`, we get a map `R → R[x] → R[x]/I`.
   If we let `R` be the image of `R` in `R[x]/I` then we also have a map `R[x] → R'[x]`.
@@ -192,7 +179,6 @@ theorem eq_zero_of_polynomial_mem_map_range (I : Ideal R[X]) (x : ((Quotient.mk 
     refine sub_add_cancel (C y) f ▸ I.add_mem (hi' ?_ : C y - f ∈ I) hf.1
     rw [RingHom.mem_ker, RingHom.map_sub, hf.2, sub_eq_zero, coe_mapRingHom, map_C]
   exact hx
-#align ideal.eq_zero_of_polynomial_mem_map_range Ideal.eq_zero_of_polynomial_mem_map_range
 
 end
 
@@ -207,7 +193,6 @@ theorem quotient_map_C_eq_zero {I : Ideal R} {i : R} (hi : i ∈ I) :
       Ideal (MvPolynomial σ R))).comp C i = 0 := by
   simp only [Function.comp_apply, RingHom.coe_comp, Ideal.Quotient.eq_zero_iff_mem]
   exact Ideal.mem_map_of_mem _ hi
-#align mv_polynomial.quotient_map_C_eq_zero MvPolynomial.quotient_map_C_eq_zero
 
 theorem eval₂_C_mk_eq_zero {I : Ideal R} {a : MvPolynomial σ R}
     (ha : a ∈ (Ideal.map (C : R →+* MvPolynomial σ R) I : Ideal (MvPolynomial σ R))) :
@@ -221,7 +206,6 @@ theorem eval₂_C_mk_eq_zero {I : Ideal R} {a : MvPolynomial σ R}
     rw [← @Ideal.mk_ker R _ I, RingHom.mem_ker] at this
     simp only [this, C_0]
   exact mem_map_C_iff.1 ha n
-#align mv_polynomial.eval₂_C_mk_eq_zero MvPolynomial.eval₂_C_mk_eq_zero
 
 lemma quotientEquivQuotientMvPolynomial_rightInverse (I : Ideal R) :
     Function.RightInverse
@@ -286,6 +270,5 @@ noncomputable def quotientEquivQuotientMvPolynomial (I : Ideal R) :
       (eval₂Hom (C.comp (Ideal.Quotient.mk I)) X) fun _ ha => eval₂_C_mk_eq_zero ha
     left_inv := quotientEquivQuotientMvPolynomial_rightInverse I
     right_inv := quotientEquivQuotientMvPolynomial_leftInverse I }
-#align mv_polynomial.quotient_equiv_quotient_mv_polynomial MvPolynomial.quotientEquivQuotientMvPolynomial
 
 end MvPolynomial

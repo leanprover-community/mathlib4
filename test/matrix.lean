@@ -78,6 +78,21 @@ end safety
 #guard !![1,2;3,4;]  = of ![![1,2], ![3,4]]
 #guard !![1,2,;3,4,] = of ![![1,2], ![3,4]]
 
+/-- info: !![0, 1, 2; 3, 4, 5] : Matrix (Fin 2) (Fin 3) ℕ -/
+#guard_msgs in #check (!![0, 1, 2; 3, 4, 5] : Matrix (Fin 2) (Fin 3) ℕ)
+
+/-- info: !![0, 1, 2; 3, 4, 5] 1 1 : ℕ -/
+#guard_msgs in #check (!![0, 1, 2; 3, 4, 5] : Matrix (Fin 2) (Fin 3) ℕ) 1 1
+
+/-- info: !![,,,] : Matrix (Fin 0) (Fin 3) ℕ -/
+#guard_msgs in #check (!![,,,] : Matrix (Fin 0) (Fin 3) ℕ)
+
+/-- info: !![;;;] : Matrix (Fin 3) (Fin 0) ℕ -/
+#guard_msgs in #check (!![;;;] : Matrix (Fin 3) (Fin 0) ℕ)
+
+/-- info: !![] : Matrix (Fin 0) (Fin 0) ℕ -/
+#guard_msgs in #check (!![] : Matrix (Fin 0) (Fin 0) ℕ)
+
 example {a a' b b' c c' d d' : α} :
   !![a, b; c, d] + !![a', b'; c', d'] = !![a + a', b + b'; c + c', d + d'] := by
   simp

@@ -5,8 +5,6 @@ Authors: Adam Topaz
 -/
 import Mathlib.CategoryTheory.Sites.Sheaf
 
-#align_import category_theory.sites.whiskering from "leanprover-community/mathlib"@"9f9015c645d85695581237cc761981036be8bd37"
-
 /-!
 
 In this file we construct the functor `Sheaf J A ⥤ Sheaf J B` between sheaf categories
@@ -48,10 +46,8 @@ variable [J.HasSheafCompose F] [J.HasSheafCompose G] [J.HasSheafCompose H]
 def sheafCompose : Sheaf J A ⥤ Sheaf J B where
   obj G := ⟨G.val ⋙ F, GrothendieckTopology.HasSheafCompose.isSheaf G.val G.2⟩
   map η := ⟨whiskerRight η.val _⟩
-  map_id _ := Sheaf.Hom.ext _ _ <| whiskerRight_id _
-  map_comp _ _ := Sheaf.Hom.ext _ _ <| whiskerRight_comp _ _ _
-set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf_compose CategoryTheory.sheafCompose
+  map_id _ := Sheaf.Hom.ext <| whiskerRight_id _
+  map_comp _ _ := Sheaf.Hom.ext <| whiskerRight_comp _ _ _
 
 instance [F.Faithful] : (sheafCompose J F ⋙ sheafToPresheaf _ _).Faithful :=
   show (sheafToPresheaf _ _ ⋙ (whiskeringRight Cᵒᵖ A B).obj F).Faithful from inferInstance
@@ -106,7 +102,6 @@ def multicospanComp : (S.index (P ⋙ F)).multicospan ≅ (S.index P).multicospa
     (by
       rintro (a | b) (a | b) (f | f | f)
       all_goals aesop_cat)
-#align category_theory.grothendieck_topology.cover.multicospan_comp CategoryTheory.GrothendieckTopology.Cover.multicospanComp
 
 /-- Mapping the multifork associated to a cover `S : J.Cover X` and a presheaf `P` with
 respect to a functor `F` is isomorphic (upto a natural isomorphism of the underlying functors)
@@ -115,7 +110,6 @@ def mapMultifork :
     F.mapCone (S.multifork P) ≅
       (Limits.Cones.postcompose (S.multicospanComp F P).hom).obj (S.multifork (P ⋙ F)) :=
   Cones.ext (Iso.refl _)
-#align category_theory.grothendieck_topology.cover.map_multifork CategoryTheory.GrothendieckTopology.Cover.mapMultifork
 
 end GrothendieckTopology.Cover
 
@@ -135,10 +129,10 @@ instance hasSheafCompose_of_preservesMulticospan (F : A ⥤ B)
     exact ⟨Limits.IsLimit.postcomposeHomEquiv (S.multicospanComp F P) _ h⟩
 
 /--
-Composing a sheaf with a functor preserving limits of the same size as the hom sets in `C` yields a
+Composing a sheaf with a functor preserving limits of the same size as the hom sets in `C` yields a
 functor between sheaf categories.
 
-Note: the size of the limit that `F` is required to preserve in
+Note: the size of the limit that `F` is required to preserve in
 `hasSheafCompose_of_preservesMulticospan` is in general larger than this.
 -/
 instance hasSheafCompose_of_preservesLimitsOfSize [PreservesLimitsOfSize.{v₁, max u₁ v₁} F] :

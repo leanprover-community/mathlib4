@@ -6,8 +6,6 @@ Authors: Johan Commelin
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Algebra.Algebra.Defs
 
-#align_import data.zmod.algebra from "leanprover-community/mathlib"@"0723536a0522d24fc2f159a096fb3304bef77472"
-
 /-!
 # The `ZMod n`-algebra structure on rings whose characteristic divides `n`
 -/
@@ -35,15 +33,13 @@ abbrev algebra' (h : m ∣ n) : Algebra (ZMod n) R :=
         show ZMod.castHom h R k * r = r * ZMod.castHom h R k
         rw [map_intCast, Int.cast_comm]
     smul_def' := fun a r => rfl }
-#align zmod.algebra' ZMod.algebra'
 
 end
 
-/-- The `zmod p`-algebra structure on a ring of characteristic `p`. This is not an
-instance since it creates a diamond with `algebra.id`.
+/-- The `ZMod p`-algebra structure on a ring of characteristic `p`. This is not an
+instance since it creates a diamond with `Algebra.id`.
 See note [reducible non-instances]. -/
 abbrev algebra (p : ℕ) [CharP R p] : Algebra (ZMod p) R :=
   algebra' R p dvd_rfl
-#align zmod.algebra ZMod.algebra
 
 end ZMod

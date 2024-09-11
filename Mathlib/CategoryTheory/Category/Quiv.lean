@@ -7,8 +7,6 @@ import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.PathCategory
 
-#align_import category_theory.category.Quiv from "leanprover-community/mathlib"@"350a381705199e9a070f84e98e803c3c25a97a4c"
-
 /-!
 # The category of quivers
 
@@ -26,8 +24,6 @@ namespace CategoryTheory
 @[nolint checkUnivs]
 def Quiv :=
   Bundled Quiver.{v + 1, u}
-set_option linter.uppercaseLean3 false in
-#align category_theory.Quiv CategoryTheory.Quiv
 
 namespace Quiv
 
@@ -35,14 +31,10 @@ instance : CoeSort Quiv (Type u) where coe := Bundled.α
 
 instance str' (C : Quiv.{v, u}) : Quiver.{v + 1, u} C :=
   C.str
-set_option linter.uppercaseLean3 false in
-#align category_theory.Quiv.str CategoryTheory.Quiv.str'
 
 /-- Construct a bundled `Quiv` from the underlying type and the typeclass. -/
 def of (C : Type u) [Quiver.{v + 1} C] : Quiv.{v, u} :=
   Bundled.of C
-set_option linter.uppercaseLean3 false in
-#align category_theory.Quiv.of CategoryTheory.Quiv.of
 
 instance : Inhabited Quiv :=
   ⟨Quiv.of (Quiver.Empty PEmpty)⟩
@@ -52,16 +44,12 @@ instance category : LargeCategory.{max v u} Quiv.{v, u} where
   Hom C D := Prefunctor C D
   id C := Prefunctor.id C
   comp F G := Prefunctor.comp F G
-set_option linter.uppercaseLean3 false in
-#align category_theory.Quiv.category CategoryTheory.Quiv.category
 
 /-- The forgetful functor from categories to quivers. -/
 @[simps]
 def forget : Cat.{v, u} ⥤ Quiv.{v, u} where
   obj C := Quiv.of C
   map F := F.toPrefunctor
-set_option linter.uppercaseLean3 false in
-#align category_theory.Quiv.forget CategoryTheory.Quiv.forget
 
 end Quiv
 
@@ -85,8 +73,6 @@ def free : Quiv.{v, u} ⥤ Cat.{max u v, u} where
     ext; swap
     · apply eq_conj_eqToHom
     · rfl
-set_option linter.uppercaseLean3 false in
-#align category_theory.Cat.free CategoryTheory.Cat.free
 
 end Cat
 
@@ -98,8 +84,6 @@ def lift {V : Type u} [Quiver.{v + 1} V] {C : Type*} [Category C] (F : Prefuncto
     Paths V ⥤ C where
   obj X := F.obj X
   map f := composePath (F.mapPath f)
-set_option linter.uppercaseLean3 false in
-#align category_theory.Quiv.lift CategoryTheory.Quiv.lift
 
 -- We might construct `of_lift_iso_self : Paths.of ⋙ lift F ≅ F`
 -- (and then show that `lift F` is initial amongst such functors)
@@ -124,8 +108,6 @@ def adj : Cat.free ⊣ Quiv.forget :=
         ext; swap
         · apply eq_conj_eqToHom
         · rfl }
-set_option linter.uppercaseLean3 false in
-#align category_theory.Quiv.adj CategoryTheory.Quiv.adj
 
 end Quiv
 

@@ -68,13 +68,15 @@ class Bialgebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends
   /-- The comultiplication on a bialgebra preserves multiplication. This is written in
   a rather obscure way: it says that two bilinear maps `A →ₗ[R] A →ₗ[R] (A ⊗[R] A)`
   are equal. The corresponding equal linear maps `A ⊗[R] A →ₗ[R] A ⊗[R] A`
-  are firstly multiplcation followed by `comul`, and secondly `comul ⊗ comul` followed
+  are firstly multiplication followed by `comul`, and secondly `comul ⊗ comul` followed
   by multiplication on `A ⊗[R] A`.
 
   See `Bialgebra.mk'` for a constructor for bialgebras which uses the more familiar
   but mathematically equivalent `comul (a * b) = comul a * comul b`. -/
   mul_compr₂_comul :
     (LinearMap.mul R A).compr₂ comul = (LinearMap.mul R (A ⊗[R] A)).compl₁₂ comul comul
+
+set_synth_order Bialgebra.toAlgebra #[4, 2, 3]
 
 namespace Bialgebra
 
@@ -135,19 +137,17 @@ variable {R A}
   map_natCast (comulAlgHom R A) _
 
 @[simp] lemma counit_pow (a : A) (n : ℕ) : counit (R := R) (a ^ n) = counit a ^ n :=
-  (counitAlgHom R A).map_pow a n
+  map_pow (counitAlgHom R A) a n
 
 @[simp] lemma comul_pow (a : A) (n : ℕ) : comul (R := R) (a ^ n) = comul a ^ n :=
-  (comulAlgHom R A).map_pow a n
+  map_pow (comulAlgHom R A) a n
 
 end Bialgebra
 
-section CommSemiring
+namespace CommSemiring
 variable (R : Type u) [CommSemiring R]
 
 open Bialgebra
-
-namespace CommSemiring
 
 /-- Every commutative (semi)ring is a bialgebra over itself -/
 noncomputable

@@ -8,8 +8,6 @@ import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Analysis.NormedSpace.Pointwise
 import Mathlib.Data.Real.Sqrt
 
-#align_import analysis.normed_space.basic from "leanprover-community/mathlib"@"bc91ed7093bf098d253401e69df601fc33dde156"
-
 /-!
 # (Local) homeomorphism between a normed space and a ball
 
@@ -62,7 +60,7 @@ def PartialHomeomorph.univUnitBall : PartialHomeomorph E E where
   open_source := isOpen_univ
   open_target := isOpen_ball
   continuousOn_toFun := by
-    suffices Continuous fun (x:E) => (√(1 + ‖x‖ ^ 2))⁻¹
+    suffices Continuous fun (x : E) => (√(1 + ‖x‖ ^ 2))⁻¹
      from (this.smul continuous_id).continuousOn
     refine Continuous.inv₀ ?_ fun x => Real.sqrt_ne_zero'.mpr (by positivity)
     continuity
@@ -92,13 +90,11 @@ for smoothness properties that hold when `E` is an inner-product space. -/
 @[simps! (config := .lemmasOnly)]
 def Homeomorph.unitBall : E ≃ₜ ball (0 : E) 1 :=
   (Homeomorph.Set.univ _).symm.trans PartialHomeomorph.univUnitBall.toHomeomorphSourceTarget
-#align homeomorph_unit_ball Homeomorph.unitBall
 
 @[simp]
 theorem Homeomorph.coe_unitBall_apply_zero :
     (Homeomorph.unitBall (0 : E) : E) = 0 :=
   PartialHomeomorph.univUnitBall_apply_zero
-#align coe_homeomorph_unit_ball_apply_zero Homeomorph.coe_unitBall_apply_zero
 
 variable {P : Type*} [PseudoMetricSpace P] [NormedAddTorsor E P]
 
@@ -151,3 +147,5 @@ theorem continuous_univBall (c : P) (r : ℝ) : Continuous (univBall c r) := by
 
 theorem continuousOn_univBall_symm (c : P) (r : ℝ) : ContinuousOn (univBall c r).symm (ball c r) :=
   (univBall c r).symm.continuousOn.mono <| ball_subset_univBall_target c r
+
+end PartialHomeomorph

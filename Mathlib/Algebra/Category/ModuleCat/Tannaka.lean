@@ -6,8 +6,6 @@ Authors: Scott Morrison
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.LinearAlgebra.Span
 
-#align_import algebra.category.Module.tannaka from "leanprover-community/mathlib"@"71150516f28d9826c7341f8815b31f7d8770c212"
-
 /-!
 # Tannaka duality for rings
 
@@ -57,5 +55,3 @@ def ringEquivEndForget₂ (R : Type u) [Ring R] :
     dsimp
     simp only [AddCommGrp.ofHom_apply, DistribMulAction.toAddMonoidHom_apply, mul_smul]
     rfl
-
-#align ring_equiv_End_forget₂ ringEquivEndForget₂

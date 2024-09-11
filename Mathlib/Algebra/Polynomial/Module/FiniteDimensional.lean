@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.FieldTheory.Minpoly.Field
-import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.Algebra.Polynomial.Module.AEval
 
 /-!
