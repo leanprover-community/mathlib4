@@ -234,6 +234,11 @@ lemma Iff.ne_right {α β : Sort*} {a b : α} {c d : β} : (a ≠ b ↔ c = d) �
 
 /-! ### Declarations about `Xor'` -/
 
+/-- `Xor' a b` is the exclusive-or of propositions. -/
+def Xor' (a b : Prop) := (a ∧ ¬b) ∨ (b ∧ ¬a)
+
+instance [Decidable a] [Decidable b] : Decidable (Xor' a b) := inferInstanceAs (Decidable (Or ..))
+
 @[simp] theorem xor_true : Xor' True = Not := by
   simp (config := { unfoldPartialApp := true }) [Xor']
 
@@ -505,15 +510,6 @@ theorem forall₂_true_iff {β : α → Sort*} : (∀ a, β a → True) ↔ True
 theorem forall₃_true_iff {β : α → Sort*} {γ : ∀ a, β a → Sort*} :
     (∀ (a) (b : β a), γ a b → True) ↔ True := by simp
 
-@[simp] theorem exists_unique_iff_exists [Subsingleton α] {p : α → Prop} :
-    (∃! x, p x) ↔ ∃ x, p x :=
-  ⟨fun h ↦ h.exists, Exists.imp fun x hx ↦ ⟨hx, fun y _ ↦ Subsingleton.elim y x⟩⟩
-
--- forall_forall_const is no longer needed
-
-theorem exists_unique_const {b : Prop} (α : Sort*) [i : Nonempty α] [Subsingleton α] :
-    (∃! _ : α, b) ↔ b := by simp
-
 theorem Decidable.and_forall_ne [DecidableEq α] (a : α) {p : α → Prop} :
     (p a ∧ ∀ b, b ≠ a → p b) ↔ ∀ b, p b := by
   simp only [← @forall_eq _ p a, ← forall_and, ← or_imp, Decidable.em, forall_const]
@@ -523,12 +519,6 @@ theorem and_forall_ne (a : α) : (p a ∧ ∀ b, b ≠ a → p b) ↔ ∀ b, p b
 
 theorem Ne.ne_or_ne {x y : α} (z : α) (h : x ≠ y) : x ≠ z ∨ y ≠ z :=
   not_and_or.1 <| mt (and_imp.2 (· ▸ ·)) h.symm
-
-@[simp] theorem exists_unique_eq {a' : α} : ∃! a, a = a' := by
-  simp only [eq_comm, ExistsUnique, and_self, forall_eq', exists_eq']
-
-@[simp] theorem exists_unique_eq' {a' : α} : ∃! a, a' = a := by
-  simp only [ExistsUnique, and_self, forall_eq', exists_eq']
 
 @[simp]
 theorem exists_apply_eq_apply' (f : α → β) (a' : α) : ∃ a, f a' = f a := ⟨a', rfl⟩
@@ -608,10 +598,6 @@ protected theorem Decidable.forall_or_right {q} {p : α → Prop} [Decidable q] 
 theorem forall_or_right {q} {p : α → Prop} : (∀ x, p x ∨ q) ↔ (∀ x, p x) ∨ q :=
   Decidable.forall_or_right
 
-theorem exists_unique_prop {p q : Prop} : (∃! _ : p, q) ↔ p ∧ q := by simp
-
-@[simp] theorem exists_unique_false : ¬∃! _ : α, False := fun ⟨_, h, _⟩ ↦ h
-
 theorem Exists.fst {b : Prop} {p : b → Prop} : Exists p → b
   | ⟨h, _⟩ => h
 
@@ -627,9 +613,6 @@ theorem Prop.forall_iff {p : Prop → Prop} : (∀ h, p h) ↔ p False ∧ p Tru
 
 theorem exists_iff_of_forall {p : Prop} {q : p → Prop} (h : ∀ h, q h) : (∃ h, q h) ↔ p :=
   ⟨Exists.fst, fun H ↦ ⟨H, h H⟩⟩
-
-theorem exists_unique_prop_of_true {p : Prop} {q : p → Prop} (h : p) : (∃! h' : p, q h') ↔ q h :=
-  @exists_unique_const (q h) p ⟨h⟩ _
 
 theorem exists_prop_of_false {p : Prop} {q : p → Prop} : ¬p → ¬∃ h' : p, q h' :=
   mt Exists.fst
@@ -668,29 +651,6 @@ lemma iff_eq_eq {a b : Prop} : (a ↔ b) = (a = b) := propext ⟨propext, Eq.to_
 /-- See `IsEmpty.forall_iff` for the `False` version. -/
 @[simp] theorem forall_true_left (p : True → Prop) : (∀ x, p x) ↔ p True.intro :=
   forall_prop_of_true _
-
-theorem ExistsUnique.elim₂ {α : Sort*} {p : α → Sort*} [∀ x, Subsingleton (p x)]
-    {q : ∀ (x) (_ : p x), Prop} {b : Prop} (h₂ : ∃! x, ∃! h : p x, q x h)
-    (h₁ : ∀ (x) (h : p x), q x h → (∀ (y) (hy : p y), q y hy → y = x) → b) : b := by
-  simp only [exists_unique_iff_exists] at h₂
-  apply h₂.elim
-  exact fun x ⟨hxp, hxq⟩ H ↦ h₁ x hxp hxq fun y hyp hyq ↦ H y ⟨hyp, hyq⟩
-
-theorem ExistsUnique.intro₂ {α : Sort*} {p : α → Sort*} [∀ x, Subsingleton (p x)]
-    {q : ∀ (x : α) (_ : p x), Prop} (w : α) (hp : p w) (hq : q w hp)
-    (H : ∀ (y) (hy : p y), q y hy → y = w) : ∃! x, ∃! hx : p x, q x hx := by
-  simp only [exists_unique_iff_exists]
-  exact ExistsUnique.intro w ⟨hp, hq⟩ fun y ⟨hyp, hyq⟩ ↦ H y hyp hyq
-
-theorem ExistsUnique.exists₂ {α : Sort*} {p : α → Sort*} {q : ∀ (x : α) (_ : p x), Prop}
-    (h : ∃! x, ∃! hx : p x, q x hx) : ∃ (x : _) (hx : p x), q x hx :=
-  h.exists.imp fun _ hx ↦ hx.exists
-
-theorem ExistsUnique.unique₂ {α : Sort*} {p : α → Sort*} [∀ x, Subsingleton (p x)]
-    {q : ∀ (x : α) (_ : p x), Prop} (h : ∃! x, ∃! hx : p x, q x hx) {y₁ y₂ : α}
-    (hpy₁ : p y₁) (hqy₁ : q y₁ hpy₁) (hpy₂ : p y₂) (hqy₂ : q y₂ hpy₂) : y₁ = y₂ := by
-  simp only [exists_unique_iff_exists] at h
-  exact h.unique ⟨hpy₁, hqy₁⟩ ⟨hpy₂, hqy₂⟩
 
 end Quantifiers
 
