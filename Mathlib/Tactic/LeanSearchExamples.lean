@@ -1,4 +1,10 @@
-import LeanSearchClient.Syntax
+/-
+Copyright (c) 2024 Siddhartha Gadgil. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Siddhartha Gadgil
+-/
+import Lean
+import LeanSearchClient.Basic
 
 /-!
 # Lean Search Examples
