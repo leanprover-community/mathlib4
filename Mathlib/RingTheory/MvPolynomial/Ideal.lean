@@ -65,7 +65,7 @@ lemma span_eq_iff_basis_sub (A B : Set (MvPolynomial σ R)) :
     · simpa [h] using Ideal.subset_span
   · intro ⟨hA, hB⟩
     simpa [← SetLike.coe_set_eq, Set.Subset.antisymm_iff] using
-    ⟨sub_span_span_sub hA, sub_span_span_sub hB⟩
+      ⟨sub_span_span_sub hA, sub_span_span_sub hB⟩
 
 /-- If an element is a member of the basis of a span, it is in the span. -/
 lemma mem_basis_mem_span {x : MvPolynomial σ R} {A : Set (MvPolynomial σ R)} (h : x ∈ A) :
