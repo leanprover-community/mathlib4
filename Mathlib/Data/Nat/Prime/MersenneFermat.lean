@@ -27,7 +27,7 @@ theorem pow_of_pow_add_prime {a n : ℕ} (ha : 1 < a) (hn : n ≠ 0) (hP : (a ^ 
   rw [one_pow, hP.dvd_iff_eq (Nat.lt_add_right 1 ha).ne', add_left_inj, pow_eq_self_iff ha] at h
   rw [h, mul_one]
 
-/-- `Fₙ = 2^(2^n)+1` is prime only if `3^(2^(2^n-1)) = -1 mod Fₙ` (Pépin's test). -/
+/-- `Fₙ = 2^(2^n)+1` is prime only if `3^(2^(2^n-1)) = -1 mod Fₙ` (**Pépin's test**). -/
 lemma pepin_primality (n : ℕ) (h : 3 ^ (2 ^ (2 ^ n - 1)) = (-1 : ZMod (2 ^ (2 ^ n) + 1))) :
     (2 ^ (2 ^ n) + 1).Prime := by
   have := Fact.mk (succ_lt_succ (Nat.one_lt_pow (pow_ne_zero n two_ne_zero) one_lt_two))
