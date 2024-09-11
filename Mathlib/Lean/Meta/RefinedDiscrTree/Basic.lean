@@ -3,6 +3,7 @@ Copyright (c) 2024 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
+import Mathlib.Init
 import Lean.Meta.WHNF
 
 /-!
@@ -12,11 +13,9 @@ We define
 * `Key`, the discrimination tree key
 * `LazyEntry`, the partial, lazy computation of a sequence of `Key`s
 * `Trie`, a node of the discrimination tree, which is indexed with `Key`s
-  and stores an array of pending `LazyEntrie`s
-* `RefinedDiscrTree`, the driscrimination tree.
+  and stores an array of pending `LazyEntry`s
+* `RefinedDiscrTree`, the discrimination tree itself.
 -/
-
-open Lean Meta
 
 namespace Lean.Meta.RefinedDiscrTree
 
@@ -24,72 +23,46 @@ namespace Lean.Meta.RefinedDiscrTree
 /-- Discrimination tree key. -/
 inductive Key where
   /-- A metavariable. This key matches with anything. It stores an identifier. -/
-  | star : (id : Nat) → Key
-  /-- An opaque variable. This key only matches with itself or `Key.star`. -/
-  | opaque : Key
+  | star (id : Nat)
+  /-- An opaque variable. This key only matches with `Key.star`. -/
+  | opaque
   /-- A constant. It stores the name and the arity. -/
-  | const : (declName : Name) → (nargs : Nat) → Key
+  | const (declName : Name) (nargs : Nat)
   /-- A free variable. It stores the `FVarId` and the arity. -/
-  | fvar : (fvarId : FVarId) → (nargs : Nat) → Key
+  | fvar (fvarId : FVarId) (nargs : Nat)
   /-- A bound variable, from a lambda or forall binder.
   It stores the De Bruijn index and the arity. -/
-  | bvar : (deBruijnIndex nargs : Nat) → Key
+  | bvar (deBruijnIndex nargs : Nat)
   /-- A literal. -/
-  | lit : Literal → Key
+  | lit (v : Literal)
   /-- A sort. Universe levels are ignored. -/
-  | sort : Key
+  | sort
   /-- A lambda function. -/
-  | lam : Key
+  | lam
   /-- A dependent arrow. -/
-  | forall : Key
+  | forall
   /-- A projection. It stores the structure name, the projection index and the arity. -/
-  | proj : (typeName : Name) → (idx nargs : Nat) → Key
-  deriving Inhabited, BEq, Repr
+  | proj (typeName : Name) (idx nargs : Nat)
+  deriving Inhabited, BEq
 
+/-
+At the root, `.const` is the most common key, and it is very uncommon
+to get the same contant name with a different arity.
+So for performance, we just use `hash name` to hash `.const name _`.
+-/
 private nonrec def Key.hash : Key → UInt64
-  | .star id             => mixHash 7883 $ hash id
+  | .star id             => mixHash 7883 <| hash id
   | .opaque              => 342
-  | .const name nargs    => mixHash 5237 $ mixHash (hash name) (hash nargs)
-  | .fvar fvarId nargs   => mixHash 8765 $ mixHash (hash fvarId) (hash nargs)
-  | .bvar idx nargs      => mixHash 4323 $ mixHash (hash idx) (hash nargs)
-  | .lit v               => mixHash 1879 $ hash v
+  | .const name _        => hash name
+  | .fvar fvarId nargs   => mixHash 8765 <| mixHash (hash fvarId) (hash nargs)
+  | .bvar idx nargs      => mixHash 4323 <| mixHash (hash idx) (hash nargs)
+  | .lit v               => mixHash 1879 <| hash v
   | .sort                => 2411
   | .lam                 => 4742
   | .«forall»            => 9752
-  | .proj name idx nargs => mixHash (hash nargs) $ mixHash (hash name) (hash idx)
+  | .proj name idx nargs => mixHash (hash nargs) <| mixHash (hash name) (hash idx)
 
 instance : Hashable Key := ⟨Key.hash⟩
-
-/-- Constructor index used for ordering `Key`.
-Note that the index of the star pattern is 0, so that when looking up in a `Trie`,
-we can look at the start of the sorted array for all `.star` patterns. -/
-def Key.ctorIdx : Key → Nat
-  | .star ..   => 0
-  | .opaque .. => 1
-  | .const ..  => 2
-  | .fvar ..   => 3
-  | .bvar ..   => 4
-  | .lit ..    => 5
-  | .sort      => 6
-  | .lam       => 7
-  | .forall    => 8
-  | .proj ..   => 9
-
-/-- The order on `Key` used in the `RefinedDiscrTree`. -/
-private def Key.lt : Key → Key → Bool
-  | .star id₁,               .star id₂               => id₁ < id₂
-  | .const name₁ nargs₁,     .const name₂ nargs₂     => Name.quickLt name₁ name₂ ||
-                                                          name₁ == name₂ && nargs₁ < nargs₂
-  | .fvar f₁ nargs₁,         .fvar f₂ nargs₂         => Name.quickLt f₁.name f₂.name ||
-                                                          f₁ == f₂ && nargs₁ < nargs₂
-  | .bvar i₁ nargs₁,         .bvar i₂ nargs₂         => i₁ < i₂ || (i₁ == i₂ && nargs₁ < nargs₂)
-  | .lit v₁,                 .lit v₂                 => v₁ < v₂
-  | .proj name₁ idx₁ nargs₁, .proj name₂ idx₂ nargs₂ => Name.quickLt name₁ name₂ ||
-    name₁ == name₂ && (idx₁ < idx₂ || idx₁ == idx₂ && nargs₁ < nargs₂)
-  | k₁,             k₂             => k₁.ctorIdx < k₂.ctorIdx
-
-instance : LT Key := ⟨fun a b => Key.lt a b⟩
-instance (a b : Key) : Decidable (a < b) := inferInstanceAs (Decidable (Key.lt a b))
 
 private def Key.format : Key → Format
   | .star id                => f!"*{id}"
@@ -110,8 +83,8 @@ instance : ToFormat Key := ⟨Key.format⟩
 Converts an entry (i.e., `List Key`) to the discrimination tree into
 `MessageData` that is more user-friendly.
 -/
-partial def keysAsPattern (keys : List Key) : CoreM MessageData := do
-  let (msg, keys) ← go (paren := false) |>.run keys
+partial def keysAsPattern (keys : Array Key) : CoreM MessageData := do
+  let (msg, keys) ← go (paren := false) |>.run keys.toList
   if !keys.isEmpty then
     throwError "illegal discrimination tree entry: {keys.map Key.format}"
   return msg
@@ -122,42 +95,35 @@ where
     set keys
     return key
   /-- Format the application `f args`. -/
-  mkApp (f : MessageData) (args : Array MessageData) (paren : Bool) : CoreM MessageData := do
-    if args.isEmpty then
+  mkApp (f : MessageData) (nargs : Nat) (paren : Bool) : StateRefT (List Key) CoreM MessageData :=
+    if nargs == 0 then
       return f
-    else
+    else do
       let mut r := f
-      for arg in args do
-        r := r ++ m!" {arg}"
-      if paren then
-        return m!"({r})"
-      else
-        return r
+      for _ in [:nargs] do
+        r := r ++ m!" {← go}"
+      return parenthesize m!"{r}" paren
+
   /-- Format the next expression. -/
   go (paren := true) : StateRefT (List Key) CoreM MessageData := do
     let key ← next
     match key with
     | .const declName nargs =>
-      mkApp m!"{← mkConstWithLevelParams declName}" (← goN nargs) paren
+      mkApp m!"{← mkConstWithLevelParams declName}" nargs paren
     | .fvar fvarId nargs =>
-      mkApp m!"{mkFVar fvarId}" (← goN nargs) paren
+      mkApp m!"{mkFVar fvarId}" nargs paren
     | .proj _ i nargs =>
-      mkApp m!"{← go}.{i+1}" (← goN nargs) paren
+      mkApp m!"{← go}.{i+1}" nargs paren
     | .bvar i nargs =>
-      mkApp m!"#{i}" (← goN nargs) paren
+      mkApp m!"#{i}" nargs paren
     | .lam =>
-      let r := m!"λ, {← go (paren := false)}"
-      if paren then return m!"({r})" else return r
+      return parenthesize m!"λ, {← go (paren := false)}" paren
     | .forall =>
-      let r := m!"{← go} → {← go (paren := false)}";
-      if paren then return m!"({r})" else return r
+      return parenthesize m!"{← go} → {← go (paren := false)}" paren
     | _ => return key.format
-  /-- Format the next `n` expressions. -/
-  goN (num : Nat) : StateRefT (List Key) CoreM (Array MessageData) := do
-    let mut r := #[]
-    for _ in [: num] do
-      r := r.push (← go)
-    return r
+  /-- Add parentheses if `paren == true`. -/
+  parenthesize (msg : MessageData) (paren : Bool) : MessageData :=
+    if paren then m! "({msg})" else msg
 
 /-- Return the number of arguments that the `Key` takes. -/
 def Key.arity : Key → Nat
@@ -176,8 +142,6 @@ structure ExprInfo where
   /-- Variables that come from a lambda or forall binder.
   The list index gives the De Bruijn index. -/
   bvars : List FVarId := []
-  /-- Variables that come from a lambda that has been removed via η-reduction. -/
-  forbiddenVars : List FVarId := []
   /-- The local context, which contains the introduced bound variables. -/
   lctx : LocalContext
   /-- The local instances, which may contain the introduced bound variables. -/
@@ -202,66 +166,105 @@ instance : ToFormat StackEntry := ⟨StackEntry.format⟩
 
 /-- A `LazyEntry` represents a snapshot of the computation of encoding an `Expr` as `Array Key`.
 This is used for computing the keys one by one. -/
-structure LazyEntry (α : Type) where
+structure LazyEntry where
+  /-- If the previous expression creates more StackEntries, then we store its `ExprInfo`. -/
+  previous : Option ExprInfo := none
   /-- The stack, used to emulate recursion. -/
-  stack   : List StackEntry := []
+  stack    : List StackEntry := []
+  /-- The configuration for normalization.
+  It could also be stored in the `RefinedDiscrTree` instead, but that is less convenient -/
+  config : WhnfCoreConfig
   /-- The metavariable context, which may contain variables appearing in this entry. -/
-  mctx    : MetavarContext
+  mctx     : MetavarContext
   /-- The `MVarId` assignments for converting into `.star` keys. -/
-  stars   : RBMap MVarId Nat (·.name.quickCmp ·.name) := {}
+  stars    : AssocList MVarId Nat := {}
   /-- The number to be used for the next new `.star` key. -/
-  nStars  : Nat := 0
+  nStars   : Nat := 0
   /-- The `Key`s that have already been computed. -/
-  results : List Key := []
+  results  : List Key := []
   /-- The cache of past computations that have multiple possible outcomes. -/
-  cache   : AssocList Expr (List Key) := .nil
-  /-- The return value. -/
-  val     : α
+  cache    : AssocList Expr (List Key) := {}
 
-variable {α : Type}
+instance : Inhabited (LazyEntry) where
+  default := { config := {}, mctx := {} }
 
-instance [Inhabited α] : Inhabited (LazyEntry α) where
-  default := { val := default, mctx := {} }
+private def LazyEntry.format (entry : LazyEntry) : Format :=
+  let results := if entry.results matches [] then f!"" else f!", results: {entry.results}, "
+  f!"stack: {entry.stack}{results}"
 
-private def LazyEntry.format [ToFormat α] (entry : LazyEntry α) : Format :=
-  let results := if entry.results matches [] then f!"" else f!"results: {entry.results}, "
-  f!"stack: {entry.stack}, {results}value: {entry.val}"
+instance : ToFormat LazyEntry := ⟨LazyEntry.format⟩
 
-instance [ToFormat α] : ToFormat (LazyEntry α) := ⟨LazyEntry.format⟩
-
-/-- Index of a `Trie α` in the `Array (Trie α)` of a `RefinedDiscrTree`. -/
+/-- Array index of a `Trie α` in the `tries` of a `RefinedDiscrTree`. -/
 abbrev TrieIndex := Nat
 
-/-- Discrimination tree trie. See `RefinedDiscrTree`. -/
+/--
+Discrimination tree trie. See `RefinedDiscrTree`.
+
+A `Trie` will normally have exactly one of the following
+- nonempty `values`
+- nonempty`stars` or `children`
+- nonempty `pending`
+But defining it as a structure that can have all at the same time turns out to be easier.
+-/
 structure Trie (α : Type) where
   node ::
-    /-- Leaf values of the Trie. `values` is an `Array` of size at least 1. -/
+    /-- Return values, at a leaf -/
     values : Array α
     /-- Following `Trie`s based on a `Key.star`. -/
-    stars : HashMap Nat TrieIndex
+    stars : Std.HashMap Nat TrieIndex
     /-- Following `Trie`s based on the `Key`. -/
-    children : HashMap Key TrieIndex
+    children : Std.HashMap Key TrieIndex
     /-- Lazy entries that still have to be evaluated. -/
-    pending : Array (LazyEntry α)
+    pending : Array (LazyEntry × α)
 
-
-instance : Inhabited (Trie α) := ⟨.node #[] {} {} #[]⟩
+instance {α : Type} : Inhabited (Trie α) := ⟨.node #[] {} {} #[]⟩
 
 end RefinedDiscrTree
 
 open RefinedDiscrTree in
 
-/-- Discrimination tree. It is an index from expressions to values of type `α`. -/
+/--
+Discrimination tree. It is an index from expressions to values of type `α`.
+
+We store all of the nodes in one `Array`, `tries`, instead of using a 'normal' inductive type.
+This is so that we can modify the tree globally, which is very useful when evaluating lazy
+entries and saving the result globally.
+-/
 structure RefinedDiscrTree (α : Type) where
   /-- `Trie`s at the root based of the `Key`. -/
-  root : HashMap Key TrieIndex := {}
+  root : Std.HashMap Key TrieIndex := {}
   /-- Array of trie entries. Should be owned by this trie. -/
   tries : Array (Trie α) := #[]
-  /-- Configuration for normalization. -/
-  config : Lean.Meta.WhnfCoreConfig := {}
 
 namespace RefinedDiscrTree
 
 variable {α : Type}
 
 instance : Inhabited (RefinedDiscrTree α) := ⟨{}⟩
+
+private partial def format [ToFormat α] (tree : RefinedDiscrTree α) : Format :=
+  let lines := tree.root.fold (init := #[]) fun lines key trie =>
+    lines.push (Format.nest 2 f! "{key} =>{Format.line}{go trie}")
+  if lines.size = 0 then
+    f! "<empty discrimination tree>"
+  else
+    lines.foldl (init := "Discrimination tree flowchart:") (· ++ Format.line ++ ·)
+where
+  go (trie : TrieIndex) : Format :=
+    let { values, stars, children, pending } := tree.tries[trie]!
+    let lines := if pending.isEmpty then #[] else
+      #[f! "pending entries: {pending.map (·.2)}"]
+    let lines := if values.isEmpty then lines else
+      lines.push f! "entries: {values}"
+    let lines := stars.fold (init := lines) fun lines key trie =>
+      lines.push (Format.nest 2 f! "*{key} =>{Format.line}{go trie}")
+    let lines := children.fold (init := lines) fun lines key trie =>
+      lines.push (Format.nest 2 f! "{key} =>{Format.line}{go trie}")
+    if h : lines.size = 0 then
+      f! "<empty node>"
+    else
+      lines.foldl (init := lines[0]) (· ++ Format.line ++ ·) (start := 1)
+
+instance [ToFormat α] : ToFormat (RefinedDiscrTree α) := ⟨format⟩
+
+end Lean.Meta.RefinedDiscrTree

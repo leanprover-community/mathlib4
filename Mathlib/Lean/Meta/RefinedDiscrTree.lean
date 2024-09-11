@@ -11,11 +11,6 @@ A discrimination tree for the purpose of unifying local expressions with library
 
 This data structure is based on `Lean.Meta.DiscrTree` and `Lean.Meta.LazyDiscrTree`,
 and includes many more features.
-Comparing performance with `Lean.Meta.DiscrTree`, this version is a bit slower.
-However in practice this does not matter, because a lookup in a discrimination tree is always
-combined with `isDefEq` unification and these unifications are significantly more expensive,
-so the extra lookup cost is neglegible, while better discrimination tree indexing, and thus
-less potential matches can save a significant amount of computation.
 
 ## New features
 
@@ -36,7 +31,7 @@ less potential matches can save a significant amount of computation.
   the library pattern `?a + ?a` is encoded as `@HAdd.hAdd *0 *0 *1 *2 *3 *3`.
   `*0` corresponds to the type of `a`, `*1` to the outParam of `HAdd.hAdd`,
   `*2` to the `HAdd` instance, and `*3` to `a`. This means that it will only match an expression
-  `x + y` if `x` is definitionally equal to `y`. The matching algorithm requires
+  `x + y` if `x` is indexed the same as `y`. The matching algorithm requires
   that the same stars from the discrimination tree match with the same patterns
   in the lookup expression, and similarly requires that the same metavariables
   form the lookup expression match with the same pattern in the discrimination tree.
@@ -44,13 +39,13 @@ less potential matches can save a significant amount of computation.
 - We evaluate the matching score of a unification.
   This score represents the number of keys that had to be the same for the unification to succeed.
   For example, matching `(1 + 2) + 3` with `add_comm` gives a score of 2,
-  since the pattern of commutativity is `@HAdd.hAdd *0 *0 *0 *1 *2 *3`: matching `HAdd.hAdd`
+  since the pattern of `add_comm` is `@HAdd.hAdd *0 *0 *0 *1 *2 *3`: matching `HAdd.hAdd`
   gives 1 point, and matching `*0` again after its first appearence gives another point.
   Similarly, matching it with `add_assoc` gives a score of 5.
 
 - Patterns that have the potential to be η-reduced are put into the `RefinedDiscrTree` under all
   possible reduced key sequences. This is for terms of the form `fun x => f (?m x₁ .. xₙ)`, where
-  `?m` is a metavariable, and one of `x₁, .., xₙ` is `x`.
+  `?m` is a metavariable, and one of `x₁, .., xₙ` is `x` (and `f` is not a metavariable).
   For example, the pattern `Continuous fun y => Real.exp (f y)])` is indexed by
   both `@Continuous *0 ℝ *1 *2 (λ, Real.exp *3)`
   and  `@Continuous *0 ℝ *1 *2 Real.exp`
@@ -59,7 +54,7 @@ less potential matches can save a significant amount of computation.
 - For sub-expressions not at the root of the original expression we have some additional reductions:
   - Any combination of `ofNat`, `Nat.zero`, `Nat.succ` and number literals
     is stored as just a number literal.
-    This behaviour should be updated once the lean4 issue #2867 has been resolved.
+    When issue lean4#2867 gets resolved, this behaviour should be updated.
   - The expression `fun a : α => a` is stored as `@id α`.
     - This makes lemmas such as `continuous_id'` redundant, which is the same as `continuous_id`,
       with `id` replaced by `fun x => x`.
@@ -78,16 +73,17 @@ less potential matches can save a significant amount of computation.
       which matches with `Continuous (f + g)` from `Continuous.add`.
 
 - The key `Key.opaque` only matches with a `Key.star` key.
-  Using the `WhnfCoreConfig` argument, we can disable β-reduction and ζ-reduction.
+  With the `WhnfCoreConfig` argument, we can disable β-reduction and ζ-reduction.
   As a result, we may get a lambda expression applied to an argument or a let-expression.
   Since there is no other support for indexing these, they will be indexed by `Key.opaque`.
 
 
 ## Lazy computation
 
-We encode an `Expr` as an `Array Key`. This is implemented with a lazy computation:
-we start with a `LazyEntry α`, which comes with a step function of type
-`LazyEntry α → MetaM (Array (Key × LazyEntry α) ⊕ α)`.
+We encode an `Expr` as a sequence of `Key`. This is implemented with a lazy computation:
+we start with a `LazyEntry` and we have a incremental evaluation function of type
+`LazyEntry → MetaM (Option (List (Key × LazyEntry)))`, which computes the next keys
+and lazy entries, or returns `none` if the last key has been reached already.
 
 -/
 
@@ -109,81 +105,51 @@ private def treeCtx (ctx : Core.Context) : Core.Context := {
 /-- Returns candidates from all imported modules that match the expression. -/
 def findImportMatches
     (ext : EnvExtension (IO.Ref (Option (RefinedDiscrTree α))))
-    (addEntry : Name → ConstantInfo → MetaM (Array (Key × LazyEntry α)))
-    (droppedKeys : List (List RefinedDiscrTree.Key) := [])
-    (constantsPerTask : Nat := 1000)
-    (ty : Expr) : MetaM (MatchResult α) := do
+    (addEntry : Name → ConstantInfo → MetaM (List (α × List (Key × LazyEntry)))) (ty : Expr)
+    (constantsPerTask : Nat := 1000) (capacityPerTask : Nat := 128)
+    (config : WhnfCoreConfig := {}) : MetaM (MatchResult α) := do
   let cctx ← (read : CoreM Core.Context)
   let ngen ← getNGen
   let (cNGen, ngen) := ngen.mkChild
   setNGen ngen
   let dummy : IO.Ref (Option (RefinedDiscrTree α)) ← IO.mkRef none
   let ref := @EnvExtension.getState _ ⟨dummy⟩ ext (← getEnv)
-  let importTree ← (← ref.get).getDM $ do
-    profileitM Exception  "lazy discriminator import initialization" (←getOptions) <|
-      createImportedDiscrTree (treeCtx cctx) cNGen (← getEnv) addEntry droppedKeys
-                (constantsPerTask := constantsPerTask)
-  let (importCandidates, importTree) ← getMatch importTree ty false
+  let importTree ← (← ref.get).getDM do
+    profileitM Exception  "RefinedDiscrTree import initialization" (← getOptions) <|
+      createImportedDiscrTree
+        (treeCtx cctx) cNGen (← getEnv) addEntry constantsPerTask capacityPerTask
+  let (importCandidates, importTree) ← getMatch importTree ty config false false
   ref.set (some importTree)
   return importCandidates
 
-/--
-Returns candidates from this module in this module that match the expression.
-
-* `moduleRef` is a references to a lazy discriminator tree only containing
-this module's definitions.
--/
-def findModuleMatches (moduleRef : ModuleDiscrTreeRef α) (ty : Expr) : MetaM (MatchResult α) := do
-  profileitM Exception  "lazy discriminator local search" (← getOptions) $ do
+/-- Returns candidates from this module that match the expression. -/
+def findModuleMatches (moduleRef : ModuleDiscrTreeRef α) (ty : Expr)
+    (config : WhnfCoreConfig := {}) : MetaM (MatchResult α) := do
+  profileitM Exception  "RefinedDiscrTree local search" (← getOptions) do
     let discrTree ← moduleRef.ref.get
-    let (localCandidates, localTree) ← getMatch discrTree ty false
+    let (localCandidates, localTree) ← getMatch discrTree ty config false false
     moduleRef.ref.set localTree
     return localCandidates
 
 /--
-`findMatchesExt` searches for entries in a lazily initialized discriminator tree.
-
-It provides some additional capabilities beyond `findMatches` to adjust results
-based on priority and cache module declarations
-
-* `modulesTreeRef` points to the discriminator tree for local environment.
-  Used for caching and created by `createLocalTree`.
-* `ext` should be an environment extension with an IO.Ref for caching the import lazy
-   discriminator tree.
-* `addEntry` is the function for creating discriminator tree entries from constants.
-* `droppedKeys` contains keys we do not want to consider when searching for matches.
-  It is used for dropping very general keys.
-* `constantsPerTask` stores number of constants in imported modules used to
-  decide when to create new task.
-* `ty` is the expression type.
--/
-def findMatchesExt
-    (moduleTreeRef : ModuleDiscrTreeRef α)
-    (ext : EnvExtension (IO.Ref (Option (RefinedDiscrTree α))))
-    (addEntry : Name → ConstantInfo → MetaM (Array (Key × LazyEntry α)))
-    (droppedKeys : List (List RefinedDiscrTree.Key) := [])
-    (constantsPerTask : Nat := 1000)
-    (ty : Expr) : MetaM (MatchResult α × MatchResult α) := do
-  let moduleMatches ← findModuleMatches moduleTreeRef ty
-  let importMatches ← findImportMatches ext addEntry droppedKeys constantsPerTask ty
-  return (moduleMatches, importMatches)
-
-/--
-`findMatches` searches for entries in a lazily initialized discriminator tree.
+`findMatches` combines `findImportMatches` and `findModuleMatches`.
 
 * `ext` should be an environment extension with an IO.Ref for caching the import lazy
    discriminator tree.
 * `addEntry` is the function for creating discriminator tree entries from constants.
-* `droppedKeys` contains keys we do not want to consider when searching for matches.
-  It is used for dropping very general keys.
-* `constantsPerTask` stores number of constants in imported modules used to
-  decide when to create new task.
 * `ty` is the expression type.
+* `constantsPerTask` is the number of constants in imported modules to be used for each
+  new task.
+* `capacityPerTask` is the initial capacity of the `HashMap` at the root of the
+  `RefinedDiscrTree` for each new task.
+* `config` is the `WhnfCoreConfig` used for reducing `ty`.
 -/
 def findMatches (ext : EnvExtension (IO.Ref (Option (RefinedDiscrTree α))))
-    (addEntry : Name → ConstantInfo → MetaM (Array (Key × LazyEntry α)))
-    (droppedKeys : List (List RefinedDiscrTree.Key) := [])
-    (constantsPerTask : Nat := 1000)
-    (ty : Expr) : MetaM (MatchResult α × MatchResult α) := do
-  let moduleTreeRef ← createModuleTreeRef addEntry droppedKeys
-  findMatchesExt moduleTreeRef ext addEntry droppedKeys constantsPerTask ty
+    (addEntry : Name → ConstantInfo → MetaM (List (α × List (Key × LazyEntry))))
+    (ty : Expr) (constantsPerTask : Nat := 1000) (capacityPerTask : Nat := 128)
+    (config : WhnfCoreConfig := {}) : MetaM (MatchResult α × MatchResult α) := do
+  let moduleMatches ← findModuleMatches (← createModuleTreeRef addEntry) ty config
+  let importMatches ← findImportMatches ext addEntry ty constantsPerTask capacityPerTask config
+  return (moduleMatches, importMatches)
+
+end Lean.Meta.RefinedDiscrTree
