@@ -3,7 +3,7 @@ Copyright (c) 2018 Michael Jendrusch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Jendrusch, Scott Morrison, Bhavik Mehta
 -/
-import Mathlib.Algebra.Category.ModuleCat.Monoidal.lmfao
+import Mathlib.Algebra.Category.ModuleCat.Monoidal.Category
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 import Mathlib.CategoryTheory.Products.Basic
 
@@ -49,9 +49,10 @@ section
 
 open SemigroupalCategory
 
-variable (C : Type u₁) [Category.{v₁} C] [SemigroupalCategory.{v₁} C] (D : Type u₂)
-  [Category.{v₂} D] [SemigroupalCategory.{v₂} D]
+variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 
+section
+variable [SemigroupalCategoryStruct.{v₁} C] [SemigroupalCategoryStruct.{v₂} D]
 -- The direction of `left_unitality` and `right_unitality` as simp lemmas may look strange:
 -- remember the rule of thumb that component indices of natural transformations
 -- "weigh more" than structural maps.
@@ -77,6 +78,7 @@ structure LaxSemigroupalFunctor extends C ⥤ D where
         (α_ (obj X) (obj Y) (obj Z)).hom ≫ obj X ◁ μ Y Z ≫ μ X (Y ⊗ Z) := by
     aesop_cat
 
+end
 -- Porting note (#11215): TODO: remove this configuration and use the default configuration.
 -- We keep this to be consistent with Lean 3.
 -- See also `initialize_simps_projections SemigroupalFunctor` below.
@@ -94,6 +96,7 @@ attribute [reassoc (attr := simp)] LaxSemigroupalFunctor.associativity
 section
 
 variable {C D}
+variable [SemigroupalCategory.{v₁} C] [SemigroupalCategory.{v₂} D]
 
 @[reassoc (attr := simp)]
 theorem LaxSemigroupalFunctor.μ_natural (F : LaxSemigroupalFunctor C D) {X Y X' Y' : C}
@@ -141,6 +144,9 @@ theorem LaxSemigroupalFunctor.associativity_inv (F : LaxSemigroupalFunctor C D) 
 
 end
 
+section
+variable [SemigroupalCategoryStruct.{v₁} C] [SemigroupalCategoryStruct.{v₂} D]
+
 /-- A oplax semigroupal functor is a functor `F : C ⥤ D` between semigroupal categories,
 equipped with morphisms `η : F.obj (𝟙_ C) ⟶ 𝟙 _D` and `δ X Y : F.obj (X ⊗ Y) ⟶ F.obj X ⊗ F.obj Y`,
 satisfying the appropriate coherences. -/
@@ -162,6 +168,7 @@ structure OplaxSemigroupalFunctor extends C ⥤ D where
         map (α_ X Y Z).hom ≫ δ X (Y ⊗ Z) ≫ obj X ◁ δ Y Z := by
     aesop_cat
 
+end
 initialize_simps_projections OplaxSemigroupalFunctor (+toFunctor, -obj, -map)
 
 attribute [reassoc (attr := simp)] OplaxSemigroupalFunctor.δ_natural_left
@@ -172,6 +179,7 @@ attribute [reassoc (attr := simp)] OplaxSemigroupalFunctor.associativity
 section
 
 variable {C D}
+variable [SemigroupalCategory.{v₁} C] [SemigroupalCategory.{v₂} D]
 
 @[reassoc (attr := simp)]
 theorem OplaxSemigroupalFunctor.δ_natural (F : OplaxSemigroupalFunctor C D) {X Y X' Y' : C}
@@ -188,8 +196,12 @@ theorem OplaxSemigroupalFunctor.associativity_inv (F : OplaxSemigroupalFunctor C
 
 end
 
+section
+variable [SemigroupalCategoryStruct.{v₁} C] [SemigroupalCategoryStruct.{v₂} D]
+
 /--
-A semigroupal functor is a lax semigroupal functor for which the tensorator and unitor are isomorphisms.
+A semigroupal functor is a lax semigroupal functor for which the tensorator
+and unitor are isomorphisms.
 
 See <https://stacks.math.columbia.edu/tag/0FFL>.
 -/
@@ -209,6 +221,10 @@ noncomputable def SemigroupalFunctor.μIso (F : SemigroupalFunctor.{v₁, v₂} 
     F.obj X ⊗ F.obj Y ≅ F.obj (X ⊗ Y) :=
   asIso (F.μ X Y)
 
+end
+section
+variable [SemigroupalCategory.{v₁} C] [SemigroupalCategory.{v₂} D]
+
 /-- The underlying oplax semigroupal functor of a (strong) semigroupal functor. -/
 @[simps]
 noncomputable def SemigroupalFunctor.toOplaxSemigroupalFunctor (F : SemigroupalFunctor C D) :
@@ -225,6 +241,7 @@ noncomputable def SemigroupalFunctor.toOplaxSemigroupalFunctor (F : SemigroupalF
         rw [F.associativity]
       simp }
 
+end
 end
 
 open SemigroupalCategory
@@ -567,8 +584,10 @@ noncomputable def semigroupalInverse [F.IsEquivalence] :
 
 open MonoidalCategory
 
-variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C] (D : Type u₂) [Category.{v₂} D]
-  [MonoidalCategory.{v₂} D]
+variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
+
+section
+variable [MonoidalCategoryStruct.{v₁} C] [MonoidalCategoryStruct.{v₂} D]
 
 -- The direction of `left_unitality` and `right_unitality` as simp lemmas may look strange:
 -- remember the rule of thumb that component indices of natural transformations
@@ -595,12 +614,15 @@ initialize_simps_projections LaxMonoidalFunctor (+toFunctor, -obj, -map)
 attribute [simp] LaxMonoidalFunctor.left_unitality
 attribute [simp] LaxMonoidalFunctor.right_unitality
 
+end
+
 -- When `rewrite_search` lands, add @[search] attributes to
 -- LaxMonoidalFunctor.μ_natural LaxMonoidalFunctor.left_unitality
 -- LaxMonoidalFunctor.right_unitality LaxMonoidalFunctor.associativity
 section
 
 variable {C D}
+variable [MonoidalCategory.{v₁} C] [MonoidalCategory.{v₂} D]
 
 /--
 A constructor for lax monoidal functors whose axioms are described by `tensorHom` instead of
@@ -667,6 +689,9 @@ theorem LaxMonoidalFunctor.associativity_inv (F : LaxMonoidalFunctor C D) (X Y Z
 -/
 end
 
+section
+variable [MonoidalCategoryStruct.{v₁} C] [MonoidalCategoryStruct.{v₂} D]
+
 /-- A oplax monoidal functor is a functor `F : C ⥤ D` between monoidal categories,
 equipped with morphisms `η : F.obj (𝟙_ C) ⟶ 𝟙 _D` and `δ X Y : F.obj (X ⊗ Y) ⟶ F.obj X ⊗ F.obj Y`,
 satisfying the appropriate coherences. -/
@@ -691,9 +716,12 @@ attribute [simp] OplaxMonoidalFunctor.right_unitality
 
 --attribute [reassoc (attr := simp)] OplaxMonoidalFunctor.associativity
 
+end
 section
 
 variable {C D}
+variable [MonoidalCategory.{v₁} C] [MonoidalCategory.{v₂} D]
+
 /-
 @[reassoc (attr := simp)]
 theorem OplaxMonoidalFunctor.δ_natural (F : OplaxMonoidalFunctor C D) {X Y X' Y' : C}
@@ -723,6 +751,9 @@ theorem OplaxMonoidalFunctor.associativity_inv (F : OplaxMonoidalFunctor C D) (X
 -/
 end
 
+section
+variable [MonoidalCategoryStruct.{v₁} C] [MonoidalCategoryStruct.{v₂} D]
+
 /--
 A monoidal functor is a lax monoidal functor for which the tensorator and unitor are isomorphisms.
 
@@ -750,6 +781,10 @@ noncomputable def MonoidalFunctor.εIso (F : MonoidalFunctor.{v₁, v₂} C D) :
 noncomputable def MonoidalFunctor.μIso (F : MonoidalFunctor.{v₁, v₂} C D) (X Y : C) :
     F.obj X ⊗ F.obj Y ≅ F.obj (X ⊗ Y) :=
   asIso (F.μ X Y)
+
+end
+section
+variable [MonoidalCategory.{v₁} C] [MonoidalCategory.{v₂} D]
 
 /-- The underlying oplax monoidal functor of a (strong) monoidal functor. -/
 @[simps]
@@ -781,6 +816,7 @@ noncomputable def MonoidalFunctor.toOplaxMonoidalFunctor (F : MonoidalFunctor C 
         rw [← F.map_comp, Iso.hom_inv_id, F.map_id]
       simp }
 
+end
 end
 
 open MonoidalCategory

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
-import Mathlib.Algebra.Category.ModuleCat.Monoidal.lmfao3
+import Mathlib.Algebra.Category.ModuleCat.Monoidal.Functor
 import Mathlib.CategoryTheory.FullSubcategory
 
 /-!

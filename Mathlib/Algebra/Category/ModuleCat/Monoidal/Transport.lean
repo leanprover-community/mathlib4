@@ -3,7 +3,7 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Algebra.Category.ModuleCat.Monoidal.lmfao4
+import Mathlib.Algebra.Category.ModuleCat.Monoidal.NaturalTransformation
 
 /-!
 # Transport a monoidal structure along an equivalence.
@@ -13,6 +13,7 @@ we can transport a monoidal structure on `C` along the equivalence as
 `CategoryTheory.Monoidal.transport`, obtaining a monoidal structure on `D`.
 
 More generally, we can transport the lawfulness of a monoidal structure along a suitable faithful
+
 functor, as `CategoryTheory.Monoidal.induced`.
 The comparison is analogous to the difference between `Equiv.monoid` and
 `Function.Injective.monoid`.
@@ -53,21 +54,11 @@ structure InducingFunctorData [SemigroupalCategoryStruct D] (F : D ⥤ C) where
   tensorHom_eq : ∀ {X₁ Y₁ X₂ Y₂ : D} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂),
     F.map (f ⊗ g) = (μIso _ _).inv ≫ (F.map f ⊗ F.map g) ≫ (μIso _ _).hom := by
     aesop_cat
-  /-- Analogous to `CategoryTheory.LaxMonoidalFunctor.εIso` -/
-  εIso : 𝟙_ _ ≅ F.obj (𝟙_ _)
   associator_eq : ∀ X Y Z : D,
     F.map (α_ X Y Z).hom =
       (((μIso _ _).symm ≪≫ ((μIso _ _).symm ⊗ .refl _))
         ≪≫ α_ (F.obj X) (F.obj Y) (F.obj Z)
         ≪≫ ((.refl _ ⊗ μIso _ _) ≪≫ μIso _ _)).hom := by
-    aesop_cat
-  leftUnitor_eq : ∀ X : D,
-    F.map (λ_ X).hom =
-      (((μIso _ _).symm ≪≫ (εIso.symm ⊗ .refl _)) ≪≫ λ_ (F.obj X)).hom := by
-    aesop_cat
-  rightUnitor_eq : ∀ X : D,
-    F.map (ρ_ X).hom =
-      (((μIso _ _).symm ≪≫ (.refl _ ⊗ εIso.symm)) ≪≫ ρ_ (F.obj X)).hom := by
     aesop_cat
 
 -- these are theorems so don't need docstrings (std4#217)
@@ -76,8 +67,6 @@ attribute [nolint docBlame]
   InducingFunctorData.whiskerRight_eq
   InducingFunctorData.tensorHom_eq
   InducingFunctorData.associator_eq
-  InducingFunctorData.leftUnitor_eq
-  InducingFunctorData.rightUnitor_eq
 
 /--
 Induce the lawfulness of the monoidal structure along an faithful functor of (plain) categories,
@@ -97,7 +86,8 @@ abbrev induced [SemigroupalCategoryStruct D] (F : D ⥤ C) [F.Faithful]
   tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂} f₁ f₂ g₁ g₂ := F.map_injective <| by cases fData; aesop_cat
   whiskerLeft_id X Y := F.map_injective <| by simp [fData.whiskerLeft_eq]
   id_whiskerRight X Y := F.map_injective <| by simp [fData.whiskerRight_eq]
-  triangle X Y := F.map_injective <| by cases fData; aesop_cat
+  associator_naturality f g h := F.map_injective <| by
+    simp [fData.tensorHom_eq, fData.associator_eq, tensorHom_def, whisker_exchange_assoc]
   pentagon W X Y Z := F.map_injective <| by
     simp only [Functor.map_comp, fData.whiskerRight_eq, fData.associator_eq, Iso.trans_assoc,
       Iso.trans_hom, Iso.symm_hom, tensorIso_hom, Iso.refl_hom, tensorHom_id, id_tensorHom,
@@ -108,12 +98,6 @@ abbrev induced [SemigroupalCategoryStruct D] (F : D ⥤ C) [F.Faithful]
       rw [← SemigroupalCategory.whiskerLeft_comp, hom_inv_whiskerRight]
     rw [whisker_exchange_assoc]
     simp
-  leftUnitor_naturality {X Y : D} f := F.map_injective <| by
-    simp [fData.leftUnitor_eq, fData.whiskerLeft_eq, whisker_exchange_assoc]
-  rightUnitor_naturality {X Y : D} f := F.map_injective <| by
-    simp [fData.rightUnitor_eq, fData.whiskerRight_eq, ← whisker_exchange_assoc]
-  associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃} f₁ f₂ f₃ := F.map_injective <| by
-    simp [fData.tensorHom_eq, fData.associator_eq, tensorHom_def, whisker_exchange_assoc]
 
 /--
 We can upgrade `F` to a monoidal functor from `D` to `E` with the induced structure.
@@ -125,13 +109,10 @@ def fromInduced [SemigroupalCategoryStruct D] (F : D ⥤ C) [F.Faithful]
     SemigroupalFunctor D C :=
   letI := induced F fData
   { toFunctor := F
-    ε := fData.εIso.hom
     μ := fun X Y => (fData.μIso X Y).hom
     μ_natural_left := by cases fData; aesop_cat
     μ_natural_right := by cases fData; aesop_cat
-    associativity := by cases fData; aesop_cat
-    left_unitality := by cases fData; aesop_cat
-    right_unitality := by cases fData; aesop_cat }
+    associativity := by cases fData; aesop_cat }
 
 /-- Transport a monoidal structure along an equivalence of (plain) categories.
 -/
@@ -141,26 +122,18 @@ def transportStruct (e : C ≌ D) : SemigroupalCategoryStruct.{v₂} D where
   whiskerLeft X _ _ f := e.functor.map (e.inverse.obj X ◁ e.inverse.map f)
   whiskerRight f X := e.functor.map (e.inverse.map f ▷ e.inverse.obj X)
   tensorHom f g := e.functor.map (e.inverse.map f ⊗ e.inverse.map g)
-  tensorUnit := e.functor.obj (𝟙_ C)
   associator X Y Z :=
     e.functor.mapIso
       (((e.unitIso.app _).symm ⊗ Iso.refl _) ≪≫
         α_ (e.inverse.obj X) (e.inverse.obj Y) (e.inverse.obj Z) ≪≫
         (Iso.refl _ ⊗ e.unitIso.app _))
-  leftUnitor X :=
-    e.functor.mapIso (((e.unitIso.app _).symm ⊗ Iso.refl _) ≪≫ λ_ (e.inverse.obj X)) ≪≫
-      e.counitIso.app _
-  rightUnitor X :=
-    e.functor.mapIso ((Iso.refl _ ⊗ (e.unitIso.app _).symm) ≪≫ ρ_ (e.inverse.obj X)) ≪≫
-      e.counitIso.app _
 
 /-- Transport a monoidal structure along an equivalence of (plain) categories.
 -/
 def transport (e : C ≌ D) : SemigroupalCategory.{v₂} D :=
   letI : SemigroupalCategoryStruct.{v₂} D := transportStruct e
   induced e.inverse
-    { μIso := fun X Y => e.unitIso.app _
-      εIso := e.unitIso.app _ }
+    { μIso := fun X Y => e.unitIso.app _ }
 
 /-- A type synonym for `D`, which will carry the transported monoidal structure. -/
 @[nolint unusedArguments]
@@ -175,15 +148,11 @@ instance Transported.instSemigroupalCategoryStruct (e : C ≌ D) :
 instance Transported.instSemigroupalCategory (e : C ≌ D) : SemigroupalCategory (Transported e) :=
   transport e
 
-instance (e : C ≌ D) : Inhabited (Transported e) :=
-  ⟨𝟙_ _⟩
-
 /-- We can upgrade `e.inverse` to a monoidal functor from `D` with the transported structure to `C`.
 -/
 @[simps!]
 def fromTransported (e : C ≌ D) : SemigroupalFunctor (Transported e) C := by
-  dsimp only [transport, Transported.instSemigroupalCategory]
-  exact fromInduced (D := Transported e) e.inverse _
+  exact fromInduced (D := Transported e) e.inverse { μIso := fun X Y => e.unitIso.app _ }
 
 instance instIsEquivalence_fromTransported (e : C ≌ D) :
     (fromTransported e).IsEquivalence := by
@@ -194,7 +163,7 @@ instance instIsEquivalence_fromTransported (e : C ≌ D) :
 -/
 @[simps!]
 def toTransported (e : C ≌ D) : SemigroupalFunctor C (Transported e) :=
-  monoidalInverse (fromTransported e) e.symm.toAdjunction
+  semigroupalInverse (fromTransported e) e.symm.toAdjunction
 
 instance (e : C ≌ D) : (toTransported e).IsEquivalence :=
   e.isEquivalence_functor
@@ -204,14 +173,14 @@ instance (e : C ≌ D) : (toTransported e).IsEquivalence :=
 def transportedSemigroupalUnitIso (e : C ≌ D) :
     LaxSemigroupalFunctor.id C ≅
       (toTransported e).toLaxSemigroupalFunctor ⊗⋙ (fromTransported e).toLaxSemigroupalFunctor :=
-  asIso (monoidalCounit (fromTransported e) e.symm.toAdjunction) |>.symm
+  asIso (semigroupalCounit (fromTransported e) e.symm.toAdjunction) |>.symm
 
 /-- The counit isomorphism upgrades to a monoidal isomorphism. -/
 @[simps! hom inv]
 def transportedSemigroupalCounitIso (e : C ≌ D) :
     (fromTransported e).toLaxSemigroupalFunctor ⊗⋙ (toTransported e).toLaxSemigroupalFunctor ≅
       LaxSemigroupalFunctor.id (Transported e) :=
-  asIso (monoidalUnit (fromTransported e) e.symm.toAdjunction) |>.symm
+  asIso (semigroupalUnit (fromTransported e) e.symm.toAdjunction) |>.symm
 
 end CategoryTheory.Semigroupal
 
@@ -225,27 +194,10 @@ variable {D : Type u₂} [Category.{v₂} D]
 /-- The data needed to induce a `MonoidalCategory` via the functor `F`; namely, pre-existing
 definitions of `⊗`, `𝟙_`, `▷`, `◁` that are preserved by `F`.
 -/
-structure InducingFunctorData [MonoidalCategoryStruct D] (F : D ⥤ C) where
-  /-- Analogous to `CategoryTheory.LaxMonoidalFunctor.μIso` -/
-  μIso : ∀ X Y,
-    F.obj X ⊗ F.obj Y ≅ F.obj (X ⊗ Y)
-  whiskerLeft_eq : ∀ (X : D) {Y₁ Y₂ : D} (f : Y₁ ⟶ Y₂),
-    F.map (X ◁ f) = (μIso _ _).inv ≫ (F.obj X ◁ F.map f) ≫ (μIso _ _).hom := by
-    aesop_cat
-  whiskerRight_eq : ∀ {X₁ X₂ : D} (f : X₁ ⟶ X₂) (Y : D),
-    F.map (f ▷ Y) = (μIso _ _).inv ≫ (F.map f ▷ F.obj Y) ≫ (μIso _ _).hom := by
-    aesop_cat
-  tensorHom_eq : ∀ {X₁ Y₁ X₂ Y₂ : D} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂),
-    F.map (f ⊗ g) = (μIso _ _).inv ≫ (F.map f ⊗ F.map g) ≫ (μIso _ _).hom := by
-    aesop_cat
+structure InducingFunctorData [MonoidalCategoryStruct D] (F : D ⥤ C) extends
+    Semigroupal.InducingFunctorData F where
   /-- Analogous to `CategoryTheory.LaxMonoidalFunctor.εIso` -/
   εIso : 𝟙_ _ ≅ F.obj (𝟙_ _)
-  associator_eq : ∀ X Y Z : D,
-    F.map (α_ X Y Z).hom =
-      (((μIso _ _).symm ≪≫ ((μIso _ _).symm ⊗ .refl _))
-        ≪≫ α_ (F.obj X) (F.obj Y) (F.obj Z)
-        ≪≫ ((.refl _ ⊗ μIso _ _) ≪≫ μIso _ _)).hom := by
-    aesop_cat
   leftUnitor_eq : ∀ X : D,
     F.map (λ_ X).hom =
       (((μIso _ _).symm ≪≫ (εIso.symm ⊗ .refl _)) ≪≫ λ_ (F.obj X)).hom := by
@@ -257,10 +209,6 @@ structure InducingFunctorData [MonoidalCategoryStruct D] (F : D ⥤ C) where
 
 -- these are theorems so don't need docstrings (std4#217)
 attribute [nolint docBlame]
-  InducingFunctorData.whiskerLeft_eq
-  InducingFunctorData.whiskerRight_eq
-  InducingFunctorData.tensorHom_eq
-  InducingFunctorData.associator_eq
   InducingFunctorData.leftUnitor_eq
   InducingFunctorData.rightUnitor_eq
 
@@ -274,32 +222,15 @@ categories.
 -/
 abbrev induced [MonoidalCategoryStruct D] (F : D ⥤ C) [F.Faithful]
     (fData : InducingFunctorData F) :
-    MonoidalCategory.{v₂} D where
-  tensorHom_def {X₁ Y₁ X₂ Y₂} f g := F.map_injective <| by
-    rw [fData.tensorHom_eq, Functor.map_comp, fData.whiskerRight_eq, fData.whiskerLeft_eq]
-    simp only [tensorHom_def, assoc, Iso.hom_inv_id_assoc]
-  tensor_id X₁ X₂ := F.map_injective <| by cases fData; aesop_cat
-  tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂} f₁ f₂ g₁ g₂ := F.map_injective <| by cases fData; aesop_cat
-  whiskerLeft_id X Y := F.map_injective <| by simp [fData.whiskerLeft_eq]
-  id_whiskerRight X Y := F.map_injective <| by simp [fData.whiskerRight_eq]
-  triangle X Y := F.map_injective <| by cases fData; aesop_cat
-  pentagon W X Y Z := F.map_injective <| by
-    simp only [Functor.map_comp, fData.whiskerRight_eq, fData.associator_eq, Iso.trans_assoc,
-      Iso.trans_hom, Iso.symm_hom, tensorIso_hom, Iso.refl_hom, tensorHom_id, id_tensorHom,
-      comp_whiskerRight, whisker_assoc, assoc, fData.whiskerLeft_eq,
-      MonoidalCategory.whiskerLeft_comp, Iso.hom_inv_id_assoc, whiskerLeft_hom_inv_assoc,
-      hom_inv_whiskerRight_assoc, Iso.inv_hom_id_assoc, Iso.cancel_iso_inv_left]
-    slice_lhs 5 6 =>
-      rw [← MonoidalCategory.whiskerLeft_comp, hom_inv_whiskerRight]
-    rw [whisker_exchange_assoc]
-    simp
-  leftUnitor_naturality {X Y : D} f := F.map_injective <| by
+    MonoidalCategory.{v₂} D :=
+{ Semigroupal.induced F fData.1 with
+  triangle := fun X Y => F.map_injective <| by
+    simp [fData.associator_eq, fData.whiskerLeft_eq, fData.whiskerRight_eq,
+      fData.rightUnitor_eq, fData.leftUnitor_eq]
+  leftUnitor_naturality := fun {X Y : D} f => F.map_injective <| by
     simp [fData.leftUnitor_eq, fData.whiskerLeft_eq, whisker_exchange_assoc]
-  rightUnitor_naturality {X Y : D} f := F.map_injective <| by
-    simp [fData.rightUnitor_eq, fData.whiskerRight_eq, ← whisker_exchange_assoc]
-  associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃} f₁ f₂ f₃ := F.map_injective <| by
-    simp [fData.tensorHom_eq, fData.associator_eq, tensorHom_def, whisker_exchange_assoc]
-
+  rightUnitor_naturality := fun {X Y : D} f => F.map_injective <| by
+    simp [fData.rightUnitor_eq, fData.whiskerRight_eq, ← whisker_exchange_assoc] }
 /--
 We can upgrade `F` to a monoidal functor from `D` to `E` with the induced structure.
 -/
@@ -309,12 +240,9 @@ def fromInduced [MonoidalCategoryStruct D] (F : D ⥤ C) [F.Faithful]
     letI := induced F fData
     MonoidalFunctor D C :=
   letI := induced F fData
-  { toFunctor := F
+  { Semigroupal.fromInduced F fData.1 with
+    toFunctor := F
     ε := fData.εIso.hom
-    μ := fun X Y => (fData.μIso X Y).hom
-    μ_natural_left := by cases fData; aesop_cat
-    μ_natural_right := by cases fData; aesop_cat
-    associativity := by cases fData; aesop_cat
     left_unitality := by cases fData; aesop_cat
     right_unitality := by cases fData; aesop_cat }
 
@@ -367,8 +295,9 @@ instance (e : C ≌ D) : Inhabited (Transported e) :=
 -/
 @[simps!]
 def fromTransported (e : C ≌ D) : MonoidalFunctor (Transported e) C := by
-  dsimp only [transport, Transported.instMonoidalCategory]
-  exact fromInduced (D := Transported e) e.inverse _
+  exact fromInduced (D := Transported e) e.inverse
+    { μIso := fun X Y => e.unitIso.app _
+      εIso := e.unitIso.app _ }
 
 instance instIsEquivalence_fromTransported (e : C ≌ D) :
     (fromTransported e).IsEquivalence := by
