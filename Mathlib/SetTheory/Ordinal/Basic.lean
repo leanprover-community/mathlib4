@@ -298,7 +298,7 @@ For `Ordinal`:
   a function embedding `r` as a *principal* segment of `s`.
 
 Note that most of the relevant results on initial and principal segments are proved in the
-`Order/InitialSeg` file.
+`Order.InitialSeg` file.
 -/
 instance partialOrder : PartialOrder Ordinal where
   le a b :=
