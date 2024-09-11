@@ -741,7 +741,8 @@ private theorem LinearIndependent.map_pow_expChar_pow_of_fd_isSeparable
     (finrank_eq_card_basis b).symm
   let f (i : ι) : ι' := ⟨v i, h'.subset_extend _ ⟨i, rfl⟩⟩
   convert H.comp f fun _ _ heq ↦ h.injective (by simpa only [f, Subtype.mk.injEq] using heq)
-  simp_rw [Function.comp_apply, b, Basis.extend_apply_self]
+  simp_rw [Function.comp_apply, b]
+  rw [Basis.extend_apply_self]
 
 /-- If `E / F` is a separable extension of exponential characteristic `q`, if `{ u_i }` is a
 family of elements of `E` which is `F`-linearly independent, then `{ u_i ^ (q ^ n) }` is also

@@ -8,29 +8,35 @@ jobs:
   update-dependencies:
     runs-on: ubuntu-latest
     steps:
+      - name: Install elan
+        run: |
+          set -o pipefail
+          curl -sSfL "https://github.com/leanprover/elan/releases/download/v3.1.1/elan-x86_64-unknown-linux-gnu.tar.gz" | tar xz
+          ./elan-init -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
+
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: "${{ secrets.NIGHTLY_TESTING }}"
+          token: "${{ secrets.UPDATE_DEPENDENCIES_TOKEN }}"
+
+      - name: Get sha of branch
+        id: sha
+        run: |
+          echo "sha=$(git rev-parse --verify origin/update-dependencies-bot-use-only)" >> "$GITHUB_OUTPUT"
 
       - name: Get PR and labels
+        if: ${{ steps.sha.outputs.sha }}
         id: PR # all the steps below are skipped if 'ready-to-merge' is in the list of labels found here
         uses: 8BitJonny/gh-get-current-pr@3.0.0
         # TODO: this may not work properly if the same commit is pushed to multiple branches:
         # https://github.com/8BitJonny/gh-get-current-pr/issues/8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          sha: ${{ steps.sha.outputs.sha }}
           # Only return if PR is still open
           filterOutClosed: true
-
-      - name: Install elan
-        if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}
-        run: |
-          set -o pipefail
-          curl -sSfL "https://github.com/leanprover/elan/releases/download/v3.1.1/elan-x86_64-unknown-linux-gnu.tar.gz" | tar xz
-          ./elan-init -y --default-toolchain none
-          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
       - name: Configure Git User
         if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}
@@ -52,7 +58,7 @@ jobs:
         if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}
         uses: peter-evans/create-pull-request@v6
         with:
-          token: "${{ secrets.NIGHTLY_TESTING }}"
+          token: "${{ secrets.UPDATE_DEPENDENCIES_TOKEN }}"
           commit-message: "chore: update Mathlib dependencies ${{ env.timestamp }}"
           # this branch is referenced in update_dependencies_zulip.yml
           branch: "update-dependencies-bot-use-only"

@@ -60,7 +60,7 @@ theorem regulator_eq_det' (e : {w : InfinitePlace K // w ≠ w₀} ≃ Fin (rank
     regulator K = |(Matrix.of fun i ↦ (logEmbedding K) (fundSystem K (e i))).det| := by
   simp_rw [regulator, Zlattice.covolume_eq_det _
     (((basisModTorsion K).map (logEmbeddingEquiv K)).reindex e.symm), Basis.coe_reindex,
-    Function.comp, Basis.map_apply, ← fundSystem_mk, Equiv.symm_symm]
+    Function.comp_def, Basis.map_apply, ← fundSystem_mk, Equiv.symm_symm]
   rfl
 
 /-- Let `u : Fin (rank K) → (𝓞 K)ˣ` be a family of units and let `w₁` and `w₂` be two infinite
