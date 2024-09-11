@@ -112,8 +112,8 @@ theorem tendsto_toNNReal {a : ℝ≥0∞} (ha : a ≠ ∞) :
   exact tendsto_id
 
 theorem tendsto_toNNReal_iff {ι : Type*} {f : ι → ℝ≥0∞} {u : Filter ι} {a : ℝ≥0∞}
-    (ha : a ≠ ∞) (hf : ∀ x, f x ≠ ⊤) : Tendsto f u (𝓝 a) ↔
-    Tendsto (ENNReal.toNNReal ∘ f ) u (nhds (ENNReal.toNNReal a)) := by
+    (ha : a ≠ ∞) (hf : ∀ x, f x ≠ ∞) : Tendsto f u (𝓝 a) ↔
+    Tendsto (ENNReal.toNNReal ∘ f ) u (nhds (a.toNNReal)) := by
   constructor
   · exact fun h =>  Filter.Tendsto.comp (ENNReal.tendsto_toNNReal ha) h
   · intro h
@@ -122,7 +122,7 @@ theorem tendsto_toNNReal_iff {ι : Type*} {f : ι → ℝ≥0∞} {u : Filter ι
     exact h2
 
 theorem tendsto_toNNReal_iff' {ι : Type*} {f : ι → ℝ≥0∞} {u : Filter ι} {a : ℝ≥0}
-    (hf : ∀ x, f x ≠ ⊤): Tendsto f u (𝓝 a) ↔ Tendsto (ENNReal.toNNReal ∘ f ) u (𝓝 a) := by
+    (hf : ∀ x, f x ≠ ∞): Tendsto f u (𝓝 a) ↔ Tendsto (ENNReal.toNNReal ∘ f ) u (𝓝 a) := by
   rw [← @toNNReal_coe a]
   exact tendsto_toNNReal_iff coe_ne_top hf
 
