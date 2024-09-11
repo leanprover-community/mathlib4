@@ -231,6 +231,7 @@ theorem join_perm_cons_iff (p : List (List α)) (x : α) (l : List α):
     simpa using h
 
 
+-- oops: not true
 
 -- TODO: is `p.join ~ l` really the best we can do here?
 /--
