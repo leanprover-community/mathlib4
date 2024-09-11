@@ -11,9 +11,53 @@ import Mathlib.Data.Finsupp.Lex
 import Mathlib.Logic.Equiv.TransferInstance
 import Mathlib.Data.Finsupp.MonomialOrder
 
-/-! # Monomial orders, division algorithm, examples, Dickson orders
+/-! # Degree and leading coefficient of polynomials with respect to a monomial order
 
-Reference : [Becker-Weispfenning1993] -/
+We consider a type `σ` of indeterminates and a commutative semiring `R`
+and a monomial order `m : MonomialOrder σ`.
+
+* `m.degree f` is the degree of `f` for the monomial ordering `m`
+
+* `m.lCoeff f` is the leading coefficient of `f` for the monomial ordering `m`
+
+* `m.lCoeff_ne_zero_iff f` asserts that this coefficient is nonzero iff `f ≠ 0`.
+
+* in a field, `m.lCoeff_is_unit_iff f` asserts that this coefficient is a unit iff `f ≠ 0`.
+
+* `m.degree_add_le` : the `m.degree` of `f + g` is smaller than or equal to the supremum
+of those of `f` and `g`
+
+* `m.degree_add_of_lt h` : the `m.degree` of `f + g` is equal to that of `f`
+if the `m.degree` of `g` is strictly smaller than that `f`
+
+* `m.lCoeff_add_of_lt h`: then, the leading coefficient of `f + g` is that of `f` .
+
+* `m.degree_add_of_ne h` : the `m.degree` of `f + g` is equal to that the supremum
+of those of `f` and `g` if they are distinct
+
+* `m.degree_sub_le` : the `m.degree` of `f - g` is smaller than or equal to the supremum
+of those of `f` and `g`
+
+* `m.degree_sub_of_lt h` : the `m.degree` of `f - g` is equal to that of `f`
+if the `m.degree` of `g` is strictly smaller than that `f`
+
+* `m.lCoeff_sub_of_lt h`: then, the leading coefficient of `f - g` is that of `f` .
+
+* `m.degree_mul_le`: the `m.degree` of `f * g` is smaller than or equal to the sum of those of
+`f` and `g`.
+
+* `m.degree_mul_of_isRegular_left`, `m.degree_mul_of_isRegular_right` and `m.degree_mul`
+assert the  equality when the leading coefficient of `f` or `g` is regular,
+or when `R` is a domain and `f` and `g` are nonzero.
+
+* `m.lCoeff_mul_of_isRegular_left`, `m.lCoeff_mul_of_isRegular_right`  and `m.lCoeff_mul`
+say that `m.lCoeff (f * g) = m.lCoeff f * m.lCoeff g`
+
+## Reference
+
+[Becker-Weispfenning1993]
+
+-/
 
 namespace MonomialOrder
 
@@ -21,17 +65,21 @@ open MvPolynomial
 
 open scoped MonomialOrder
 
-variable {σ : Type*} (m : MonomialOrder σ)
+variable {σ : Type*} {m : MonomialOrder σ}
 
+section Semiring
+
+variable {R : Type*} [CommSemiring R]
+
+variable (m) in
 /-- the degree of a multivariate polynomial with respect to a monomial ordering -/
-def degree {R : Type*} [CommRing R] (f : MvPolynomial σ R) : σ →₀ ℕ :=
+def degree {R : Type*} [CommSemiring R] (f : MvPolynomial σ R) : σ →₀ ℕ :=
   m.toSyn.symm (f.support.sup m.toSyn)
 
+variable (m) in
 /-- the leading coefficient of a multivariate polynomial with respect to a monomial ordering -/
-def lCoeff {R : Type*} [CommRing R] (f : MvPolynomial σ R) : R :=
+def lCoeff {R : Type*} [CommSemiring R] (f : MvPolynomial σ R) : R :=
   f.coeff (m.degree f)
-
-variable {m : MonomialOrder σ} {R : Type*} [CommRing R]
 
 @[simp]
 theorem degree_zero : m.degree (0 : MvPolynomial σ R) = 0 := by
@@ -124,12 +172,6 @@ theorem degree_eq_zero_iff_totalDegree_eq_zero {f : MvPolynomial σ R} :
   exact Finsupp.ext_iff
 
 @[simp]
-theorem degree_neg {f : MvPolynomial σ R} :
-    m.degree (-f) = m.degree f := by
-  unfold degree
-  rw [support_neg]
-
-@[simp]
 theorem degree_C (r : R) :
     m.degree (C r) = 0 := by
   rw [degree_eq_zero_iff_totalDegree_eq_zero, totalDegree_C]
@@ -148,12 +190,6 @@ theorem degree_add_le {f g : MvPolynomial σ R} :
     simp only [not_mem_support_iff] at hf
     simpa only [mem_support_iff, coeff_add, hf, zero_add] using hb
 
-theorem degree_sub_le {f g : MvPolynomial σ R} :
-    m.toSyn (m.degree (f - g)) ≤ m.toSyn (m.degree f) ⊔ m.toSyn (m.degree g) := by
-  rw [sub_eq_add_neg]
-  apply le_of_le_of_eq m.degree_add_le
-  rw [degree_neg]
-
 theorem degree_add_of_lt {f g : MvPolynomial σ R} (h : m.degree g ≺[m] m.degree f) :
     m.degree (f + g) = m.degree f := by
   apply m.toSyn.injective
@@ -167,6 +203,10 @@ theorem degree_add_of_lt {f g : MvPolynomial σ R} (h : m.degree g ≺[m] m.degr
     apply h
     simp only [degree_zero, map_zero]
     apply bot_le
+
+theorem lCoeff_add_of_lt {f g : MvPolynomial σ R} (h : m.degree g ≺[m] m.degree f) :
+    m.lCoeff (f + g) = m.lCoeff f := by
+  simp only [lCoeff, m.degree_add_of_lt h, coeff_add, coeff_eq_zero_of_lt h, add_zero]
 
 theorem degree_add_of_ne {f g : MvPolynomial σ R}
     (h : m.degree f ≠ m.degree g) :
@@ -240,13 +280,22 @@ theorem degree_mul_of_isRegular_left {f g : MvPolynomial σ R}
     lCoeff_eq_zero_iff]
   exact hg
 
+theorem lCoeff_mul_of_isRegular_left {f g : MvPolynomial σ R}
+    (hf : IsRegular (m.lCoeff f)) (hg : g ≠ 0) :
+    m.lCoeff (f * g) = m.lCoeff f * m.lCoeff g := by
+  simp only [lCoeff, degree_mul_of_isRegular_left hf hg, lCoeff_mul']
+
 theorem degree_mul_of_isRegular_right {f g : MvPolynomial σ R}
     (hf : f ≠ 0) (hg : IsRegular (m.lCoeff g)) :
     m.degree (f * g) = m.degree f + m.degree g := by
   rw [mul_comm, m.degree_mul_of_isRegular_left hg hf, add_comm]
 
-theorem degree_mul [IsDomain R] {f g : MvPolynomial σ R}
-    (hf : f ≠ 0) (hg : g ≠ 0) :
+theorem lCoeff_mul_of_isRegular_right {f g : MvPolynomial σ R}
+    (hf : f ≠ 0) (hg : IsRegular (m.lCoeff g)) :
+    m.lCoeff (f * g) = m.lCoeff f * m.lCoeff g := by
+  simp only [lCoeff, degree_mul_of_isRegular_right hf hg, lCoeff_mul']
+
+theorem degree_mul [IsDomain R] {f g : MvPolynomial σ R} (hf : f ≠ 0) (hg : g ≠ 0) :
     m.degree (f * g) = m.degree f + m.degree g :=
   degree_mul_of_isRegular_left (isRegular_of_ne_zero (lCoeff_ne_zero_iff.mpr hf)) hg
 
@@ -288,4 +337,46 @@ theorem eq_C_of_degree_eq_zero {f : MvPolynomial σ R} (hf : m.degree f = 0) :
     rw [hf, map_zero, lt_iff_le_and_ne, ne_eq, eq_comm, AddEquivClass.map_eq_zero_iff]
     exact ⟨bot_le, hd⟩
 
+end Semiring
 
+section Ring
+
+variable {R : Type*} [CommRing R]
+
+@[simp]
+theorem degree_neg {f : MvPolynomial σ R} :
+    m.degree (-f) = m.degree f := by
+  unfold degree
+  rw [support_neg]
+
+theorem degree_sub_le {f g : MvPolynomial σ R} :
+    m.toSyn (m.degree (f - g)) ≤ m.toSyn (m.degree f) ⊔ m.toSyn (m.degree g) := by
+  rw [sub_eq_add_neg]
+  apply le_of_le_of_eq m.degree_add_le
+  rw [degree_neg]
+
+theorem degree_sub_of_lt {f g : MvPolynomial σ R} (h : m.degree g ≺[m] m.degree f) :
+    m.degree (f - g) = m.degree f := by
+  rw [sub_eq_add_neg]
+  apply degree_add_of_lt
+  simp only [degree_neg, h]
+
+theorem lCoeff_sub_of_lt {f g : MvPolynomial σ R} (h : m.degree g ≺[m] m.degree f) :
+    m.lCoeff (f - g) = m.lCoeff f := by
+  rw [sub_eq_add_neg]
+  apply lCoeff_add_of_lt
+  simp only [degree_neg, h]
+
+end Ring
+
+section Field
+
+variable {R : Type*} [Field R]
+
+theorem lCoeff_is_unit_iff {f : MvPolynomial σ R} :
+    IsUnit (m.lCoeff f) ↔ f ≠ 0 := by
+  simp only [isUnit_iff_ne_zero, ne_eq, lCoeff_eq_zero_iff]
+
+end Field
+
+end MonomialOrder
