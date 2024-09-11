@@ -162,7 +162,7 @@ theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
       intro hf0'
       apply hb' i
       simpa [hf0'] using hf
-    obtain ⟨g', r', H'⟩ := monomialOrderDiv hb (m.reduce (hb i) f)
+    obtain ⟨g', r', H'⟩ := m.div hb (m.reduce (hb i) f)
     use g' +
       Finsupp.single i (monomial (m.degree f - m.degree (b i)) ((hb i).unit⁻¹ * m.lCoeff f))
     use r'
@@ -214,7 +214,7 @@ theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
       intro b
       simp only [Finsupp.coe_zero, Pi.zero_apply, mul_zero, degree_zero, map_zero]
       exact bot_le
-    · apply monomialOrderDiv hb
+    · apply m.div hb
 termination_by WellFounded.wrap
   ((isWellFounded_iff m.syn fun x x_1 ↦ x < x_1).mp m.wf) (m.toSyn (m.degree f))
 decreasing_by
@@ -232,7 +232,7 @@ theorem div_set {B : Set (MvPolynomial σ R)}
       f = Finsupp.linearCombination _ (fun (b : B) ↦ (b : MvPolynomial σ R)) g + r ∧
         (∀ (b : B), m.degree ((b : MvPolynomial σ R) * (g b)) ≼[m] m.degree f) ∧
         (∀ c ∈ r.support, ∀ b ∈ B, ¬ (m.degree b ≤ c)) := by
-  obtain ⟨g, r, H⟩ := m.monomialOrderDiv (b := fun (p : B) ↦ p) (fun b ↦ hB b b.prop) f
+  obtain ⟨g, r, H⟩ := m.div (b := fun (p : B) ↦ p) (fun b ↦ hB b b.prop) f
   exact ⟨g, r, H.1, H.2.1, fun c hc b hb ↦ H.2.2 c hc ⟨b, hb⟩⟩
 
 end MonomialOrder
