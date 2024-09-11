@@ -210,16 +210,26 @@ variable (R : Type u) (L : Type v) [CommRing R] [Algebra ℚ R] [LieRing L] [Lie
 -- 2. Go with clean derivation proof (annoying w tensor products)
 
 
+/-
+Clean derivation proof:
+
+-/
+
+
 noncomputable def exp : (LieDerivation ℚ L L) → L →ₗ⁅ℚ⁆ L := fun δ ↦ {
   toLinearMap := expSum (L →ₗ[ℚ] L) δ
   map_lie' := by
     intro x y
+    conv_lhs =>
+      simp only [expSum, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearMap.coeFn_sum,
+        Finset.sum_apply, LinearMap.smul_apply]
+      arg 2
+      simp only [pow_apply_lie, Finset.smul_sum, ← Nat.cast_smul_eq_nsmul (R := ℚ), smul_smul,
+        one_div_mul_eq_div]
+      intro z
     simp [expSum]
     simp only [sum_lie ℚ, lie_sum ℚ]
-    rw [Finset.sum_range_sum_range_eq] -- TODO: need to be able to apply this..
-
-    -- Then: apply Leibniz (should be immediate)
-    sorry -- need to simplify once more...
+    sorry
 }
 
 /-

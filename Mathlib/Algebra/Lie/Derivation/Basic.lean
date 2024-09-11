@@ -142,6 +142,11 @@ theorem iterate_apply_lie' (D : LieDerivation R L L) (n : ℕ) (a b : L) :
   rw [iterate_apply_lie D n a b]
   exact sum_antidiagonal_eq_sum_range_succ (fun i j ↦ n.choose i • ⁅D^[i] a, D^[j] b⁆) n
 
+theorem pow_apply_lie (D : LieDerivation R L L) (n : ℕ) (a b : L) :
+    (D.toLinearMap^n) ⁅a, b⁆ = ∑ ij in antidiagonal n,
+      choose n ij.1 • ⁅(D.toLinearMap^ij.1) a, (D.toLinearMap^ij.2) b⁆ := by
+  sorry
+
 end
 
 instance instZero : Zero (LieDerivation R L M) where
