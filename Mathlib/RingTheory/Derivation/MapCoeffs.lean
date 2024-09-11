@@ -22,7 +22,7 @@ open Polynomial Module
 namespace Derivation
 
 variable {R A M : Type*} [CommRing R] [CommRing A] [Algebra R A] [AddCommGroup M]
-  [Module A M] [Module R M] [IsScalarTower R A M] (d : Derivation R A M) (a : A)
+  [Module A M] [Module R M] (d : Derivation R A M) (a : A)
 
 /--
 The `R`-derivation from `A[X]` to `M[X]` which applies the derivative to each
@@ -80,7 +80,7 @@ theorem apply_aeval_eq' (d' : Derivation R B M') (f : M →ₗ[A] M')
     simp only [aeval_monomial, leibniz, leibniz_pow, mapCoeffs_monomial,
       PolynomialModule.map_single, PolynomialModule.eval_single, derivative_monomial, map_mul,
       _root_.map_natCast, h]
-    rw [add_comm, ← smul_smul, ← smul_smul, ← nsmul_eq_smul_cast]
+    rw [add_comm, ← smul_smul, ← smul_smul, Nat.cast_smul_eq_nsmul]
 
 
 theorem apply_aeval_eq [IsScalarTower R A B] [IsScalarTower A B M'] (d : Derivation R B M')
