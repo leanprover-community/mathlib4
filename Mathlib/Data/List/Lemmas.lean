@@ -32,7 +32,7 @@ theorem tail_reverse_eq_reverse_dropLast (l : List α) :
 
 theorem getLast_tail (l : List α) (hl : l.tail ≠ []) :
     l.tail.getLast hl = l.getLast (by intro h; rw [h] at hl; simp at hl) := by
-  simp only [← drop_one, ne_eq, drop_eq_nil_iff_le,
+  simp only [← drop_one, ne_eq, drop_eq_nil_iff,
     not_le, getLast_eq_getElem, length_drop] at hl |-
   rw [← getElem_drop']
   · simp [show 1 + (l.length - 1 - 1) = l.length - 1 by omega]
