@@ -815,9 +815,9 @@ theorem bddAbove_range {ι : Type*} [Small.{u} ι] (f : ι → Cardinal.{u}) :
 
 /-- A specialization of `bddAbove_range`, useful since `small_max` can't currently be made an
 instance. -/
-theorem bddAbove_range' {ι : Type u} (f : ι → Cardinal.{max u v}) : BddAbove (Set.range f) := by
-
-#exit
+theorem bddAbove_range' {ι : Type u} (f : ι → Cardinal.{max u v}) : BddAbove (Set.range f) :=
+  have := small_max
+  bddAbove_range f
 
 instance (a : Cardinal.{u}) : Small.{u} (Set.Iic a) := by
   rw [← mk_out a]
@@ -860,8 +860,7 @@ theorem iSup_le_sum {ι} (f : ι → Cardinal) : iSup f ≤ sum f :=
 theorem sum_le_iSup_lift {ι : Type u}
     (f : ι → Cardinal.{max u v}) : sum f ≤ Cardinal.lift #ι * iSup f := by
   rw [← (iSup f).lift_id, ← lift_umax, lift_umax.{max u v, u}, ← sum_const]
-  have := small_max.{v, u} ι
-  exact sum_le_sum _ _ (le_ciSup <| bddAbove_range f)
+  exact sum_le_sum _ _ (le_ciSup <| bddAbove_range' f)
 
 theorem sum_le_iSup {ι : Type u} (f : ι → Cardinal.{u}) : sum f ≤ #ι * iSup f := by
   rw [← lift_id #ι]
