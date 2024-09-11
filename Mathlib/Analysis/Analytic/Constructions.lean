@@ -305,7 +305,7 @@ theorem Finset.analyticWithinAt_sum {f : α → E → F} {c : E} {s : Set E}
     AnalyticWithinAt 𝕜 (fun z ↦ ∑ n ∈ N, f n z) s c := by
   induction' N using Finset.induction with a B aB hB
   · simp only [Finset.sum_empty]
-    exact analyticAt_const
+    exact analyticWithinAt_const
   · simp_rw [Finset.sum_insert aB]
     simp only [Finset.mem_insert] at h
     exact (h a (Or.inl rfl)).add (hB fun b m ↦ h b (Or.inr m))
