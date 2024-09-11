@@ -431,7 +431,9 @@ lemma support_def' (X : C) (n : ℤ) : n ∉ support X ↔ IsZero ((Gr'' n).obj 
   rw [support_def]; simp only [Decidable.not_not]
 
 lemma support_shift (X : C) (a b n : ℤ) (hab : a + n = b) :
-    a ∈ support X ↔ b ∈ support ((@shiftFunctor C _ _ _ Shift₂ n).obj X) := sorry
+    a ∈ support X ↔ b ∈ support ((@shiftFunctor C _ _ _ Shift₂ n).obj X) := by
+  rw [support_def, support_def,
+    Iso.isZero_iff ((hP.Gr_shift a n b (by linarith [hab])).symm.app X), Functor.comp_obj]
 
 lemma isLE_iff_support_bounded_above (X : C) (n : ℤ) :
     IsLE X n ↔ (support X).toSet ⊆ Set.Iic n := by
@@ -493,37 +495,19 @@ lemma isCore_iff_support_sub_0 (X : C) : tCore.P X ↔ support X ⊆ {0} := by
     rw [h a ha]
     simp only [Set.mem_inter_iff, Set.mem_Iic, le_refl, Set.mem_Ici, and_self]
 
-lemma shift_isCore_iff_support_sub_singleton (X : C) (n : ℤ) :
-    tCore.P ((@shiftFunctor C _ _ _ Shift₂ (-n)).obj X) ↔ support X ⊆ {n} := by
+lemma shift_isCore_iff_support_sub_singleton (X : C) (n n' : ℤ) (hnn' : n + n' = 0) :
+    tCore.P ((@shiftFunctor C _ _ _ Shift₂ n').obj X) ↔ support X ⊆ {n} := by
   rw [isCore_iff_support_sub_0]
   constructor
   · intro h a ha
-    rw [support_shift X a (a - n) (-n) (by linarith)] at ha
+    rw [support_shift X a (a - n) n' (by linarith)] at ha
     have := h ha
     have : a = n := by simp only [Finset.mem_singleton] at this; linarith
     rw [this, Finset.mem_singleton]
   · intro h a ha
-    rw [← support_shift X (a + n) a (-n) (by linarith)] at ha
+    rw [← support_shift X (a + n) a n' (by linarith)] at ha
     have := h ha
     have : a = 0 := by simp only [Finset.mem_singleton, add_left_eq_self] at this; exact this
-    rw [this, Finset.mem_singleton]
-
-  #exit
-  constructor
-  · intro h a ha
-    rw [support_def] at ha
-    rw [Iso.isZero_iff ((Gr_shift a (-n) (a - n) (by linarith)).symm.app X),
-      Functor.comp_obj, ← support_def] at ha
-    have := h ha
-    rw [Finset.mem_singleton, Int.sub_eq_zero] at this
-    rw [this, Finset.mem_singleton]
-  · intro h a ha
-    rw [support_def] at ha
-    erw [Iso.isZero_iff ((Gr_shift (C := C) (a + n) (-n) a (by linarith)).app X)] at ha
-    rw [← support_def] at ha
-    have := h ha
-    rw [Finset.mem_singleton] at this
-    have : a = 0 := by linarith
     rw [this, Finset.mem_singleton]
 
 lemma support_truncLE (X : C) (n : ℤ) :
@@ -636,10 +620,47 @@ lemma adj_left_extended (n : ℕ) : ∀ (X Y : C) (m : ℤ) [IsLE X m] [IsGE Y (
 
 /- First we do the case where the support is a singleton.-/
 
-lemma existence_omega_support_singleton : ∀ (X : C) [IsLE X 0], Finset.card (support X) = 1 →
+lemma existence_omega_support_singleton (X : C) [IsLE X 0] (hsupp : Finset.card (support X) = 1) :
     ∃ (Y : hP.Core') (s : X ⟶ Y.1),
     ∀ (Z : C), IsGE Z 0 → IsIso ((preadditiveYoneda.obj Z).map (Quiver.Hom.op s)) := by
-  sorry
+  obtain ⟨n, hsupp⟩ := Finset.card_eq_one.mp hsupp
+  have hn : n ≤ 0 := by
+    have := (isLE_iff_support_bounded_above X 0).mp inferInstance
+    have h : n ∈ support X := by rw [hsupp, Finset.mem_singleton]
+    exact Set.mem_Iic.mp (this h)
+  have hn : n = - ↑n.natAbs := by rw [Int.ofNat_natAbs_of_nonpos hn, neg_neg]
+  existsi ⟨(@shiftFunctor C _ _ _ Shift₂ n.natAbs).obj X, ?_⟩, power_of_alpha X n.natAbs
+  · rw [shift_isCore_iff_support_sub_singleton X n n.natAbs (by linarith), hsupp]
+  · intro Z _
+    have : IsLE X n := by
+      rw [isLE_iff_support_bounded_above X n, hsupp]
+      simp only [Finset.coe_singleton, Set.singleton_subset_iff, Set.mem_Iic, le_refl]
+    have : IsGE Z (n + n.natAbs) := by
+      rw [hn]; simp only [Int.natCast_natAbs, Int.natAbs_neg, abs_abs, add_left_neg]
+      infer_instance
+    set f : ((@shiftFunctor C _ _ _ Shift₂ ↑n.natAbs).obj X ⟶ Z) →+ (X ⟶ Z) :=
+      {
+       toFun := fun f ↦ power_of_alpha X n.natAbs ≫ f,
+       map_zero' := by simp only [comp_zero]
+       map_add' := fun _ _ ↦ by simp only [comp_add]
+      }
+    set e := AddEquiv.ofBijective f (adj_left_extended n.natAbs X Z n)
+    simp only [preadditiveYoneda_obj, Int.reduceNeg, Int.rawCast, Int.cast_id, Nat.rawCast,
+      Nat.cast_id, Int.Nat.cast_ofNat_Int, Int.reduceAdd, Int.ofNat_eq_coe, eq_mp_eq_cast, id_eq,
+      eq_mpr_eq_cast, Functor.comp_obj, preadditiveYonedaObj_obj, ModuleCat.forget₂_obj,
+      Functor.comp_map, preadditiveYonedaObj_map, Quiver.Hom.unop_op, ModuleCat.forget₂_map]
+    change IsIso (AddCommGrp.ofHom e.toAddMonoidHom)
+    apply IsIso.mk
+    existsi (AddCommGrp.ofHom e.symm.toAddMonoidHom)
+    constructor
+    · ext a
+      change e.symm.toFun (e.toFun a) = a
+      simp only [AddEquiv.toEquiv_eq_coe, AddEquiv.toEquiv_symm, Equiv.toFun_as_coe,
+        EquivLike.coe_coe, EquivLike.coe_symm_apply_apply]
+    · ext a
+      change e.toFun (e.symm.toFun a) = a
+      simp only [AddEquiv.toEquiv_eq_coe, AddEquiv.toEquiv_symm, Equiv.toFun_as_coe,
+        AddEquiv.coe_toEquiv_symm, EquivLike.coe_coe, AddEquiv.apply_symm_apply]
 
 /- Then the general case, by induction on the size of the support.-/
 
