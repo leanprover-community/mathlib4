@@ -18,8 +18,8 @@ Let `B` be a `BoxIntegral`. A `unitPartition.Box` is admissible for `B` (more pr
 admissible) if it is contained in `B`. There are finitely many admissible `unitPartition.Box` for
 `B` and thus we can form the corresponing tagged prepartition, see
 `BoxIntegral.unitPartition.prepartition` (note that each `unitPartition.Box` coming with its
-tag situed at its "upper most" corner). If `B` satifies `BoxIntegral.hasIntegralVertices`, that
-is its cornes are in `ι → ℤ`, then the corresponding prepartition is actually a partition.
+tag situed at its "upper most" corner). If `B` satifies `hasIntegralVertices`, that
+is its corners are in `ι → ℤ`, then the corresponding prepartition is actually a partition.
 
 ## Main definitions and results
 
