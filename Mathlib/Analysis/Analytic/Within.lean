@@ -37,12 +37,6 @@ variable {E F G H : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAd
 ### Basic properties
 -/
 
-lemma HasFPowerSeriesWithinOnBall.of_le {f : E → F} {p : FormalMultilinearSeries 𝕜 E F}
-    {s : Set E} {x : E} {r r' : ℝ≥0∞}
-    (h : HasFPowerSeriesWithinOnBall f p s x r) (h' : r' ≤ r) (h'' : 0 < r') :
-    HasFPowerSeriesWithinOnBall f p s x r' :=
-  ⟨h'.trans h.r_le, h'', fun hy h'y ↦ h.hasSum hy (EMetric.ball_subset_ball h' h'y)⟩
-
 lemma HasFPowerSeriesWithinOnBall.congr {f g : E → F} {p : FormalMultilinearSeries 𝕜 E F}
     {s : Set E} {x : E} {r : ℝ≥0∞} (h : HasFPowerSeriesWithinOnBall f p s x r)
     (h' : EqOn g f (s ∩ EMetric.ball x r)) (h'' : g x = f x) :
@@ -65,7 +59,7 @@ lemma HasFPowerSeriesWithinAt.congr {f g : E → F} {p : FormalMultilinearSeries
     EMetric.mem_nhdsWithin_iff.1 h'
   let r' := min r ε
   refine ⟨r', ?_⟩
-  have := hr.of_le (r' := r') (min_le_left _ _) (by simp [r', εpos, hr.r_pos])
+  have := hr.of_le (r' := r') (by simp [r', εpos, hr.r_pos]) (min_le_left _ _)
   apply this.congr _ h''
   intro z hz
   exact hε ⟨EMetric.ball_subset_ball (min_le_right _ _) hz.2, hz.1⟩
@@ -89,11 +83,6 @@ lemma analyticWithinAt_of_singleton_mem {f : E → F} {s : Set E} {x : E} (h : {
       simp only [this]
       apply (hasFPowerSeriesOnBall_const (e := 0)).hasSum
       simp only [Metric.emetric_ball_top, mem_univ] }⟩
-
-/-- Analyticity on `s` implies analyticity within `s` -/
-lemma AnalyticOn.analyticWithinOn {f : E → F} {s : Set E} (h : AnalyticOn 𝕜 f s) :
-    AnalyticWithinOn 𝕜 f s :=
-  fun x m ↦ (h x m).analyticWithinAt
 
 lemma AnalyticWithinOn.continuousOn {f : E → F} {s : Set E} (h : AnalyticWithinOn 𝕜 f s) :
     ContinuousOn f s :=
@@ -279,7 +268,7 @@ theorem AnalyticWithinAt.mono_of_mem {f : E → F} {s t : Set E} {x : E}
   rcases h with ⟨p, r, hr⟩
   rcases EMetric.mem_nhdsWithin_iff.1 hst with ⟨r', r'_pos, hr'⟩
   refine ⟨p, min r r', ?_⟩
-  have Z := hr.of_le (min_le_left r r') (by simp [r'_pos, hr.r_pos])
+  have Z := hr.of_le (by simp [r'_pos, hr.r_pos]) (min_le_left r r')
   refine ⟨Z.r_le, Z.r_pos, fun {y} hy h'y ↦ ?_⟩
   apply Z.hasSum ?_ h'y
   simp only [mem_insert_iff, add_right_eq_self] at hy
@@ -379,3 +368,26 @@ lemma AnalyticWithinOn.prod {f : E → F} {g : E → G} {s : Set E}
     (hf : AnalyticWithinOn 𝕜 f s) (hg : AnalyticWithinOn 𝕜 g s) :
     AnalyticWithinOn 𝕜 (fun x ↦ (f x, g x)) s :=
   fun x hx ↦ (hf x hx).prod (hg x hx)
+
+/-!
+### Analyticity in pi spaces
+-/
+
+#check FormalMultilinearSeries.pi
+
+lemma HasFPowerSeriesWithinOnBall.pi {e : E} {F : ι → Type*}
+    [∀ i, NormedAddCommGroup (F i)] [∀ i, NormedSpace 𝕜 (F i)]
+    {f : Π i, E → F i} {s : Set E} {r : ℝ≥0∞}
+    {p : Π i, FormalMultilinearSeries 𝕜 E (F i)}
+    (hf : ∀ i, HasFPowerSeriesWithinOnBall (f i) p s e r) :
+    HasFPowerSeriesWithinOnBall (fun x ↦ (fun i ↦ f i x)) (FormalMultilinearSeries.pi p) s e r where
+  r_le := by
+    rw [p.radius_prod_eq_min]
+    exact min_le_min hf.r_le hg.r_le
+  r_pos := lt_min hf.r_pos hg.r_pos
+  hasSum := by
+    intro y m hy
+    simp_rw [FormalMultilinearSeries.prod, ContinuousMultilinearMap.prod_apply]
+    refine (hf.hasSum m ?_).prod_mk (hg.hasSum m ?_)
+    · exact EMetric.mem_ball.mpr (lt_of_lt_of_le hy (min_le_left _ _))
+    · exact EMetric.mem_ball.mpr (lt_of_lt_of_le hy (min_le_right _ _))
