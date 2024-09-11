@@ -189,9 +189,8 @@ def monoidalCounit :
   unit := by
     have eq := h.counit.naturality F.ε
     dsimp at eq ⊢
-    rw [Adjunction.homEquiv_unit, map_inv, map_comp, assoc, assoc, map_inv,
-      ← cancel_mono F.ε, assoc, assoc, assoc, ← eq, IsIso.inv_hom_id_assoc,
-      Adjunction.left_triangle_components, comp_id, id_comp]
+    rw [map_inv, map_comp, assoc, assoc, map_inv, ← cancel_mono F.ε, assoc, assoc, assoc, ← eq,
+      IsIso.inv_hom_id_assoc, Adjunction.left_triangle_components, comp_id, id_comp]
 
 instance [F.IsEquivalence] : IsIso (monoidalUnit F h) := by
   dsimp [monoidalUnit]
