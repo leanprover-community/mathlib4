@@ -221,7 +221,7 @@ private partial def lambdaTelescopeReduce {m} [Inhabited (m α)] [Monad m] [Mona
         lambdaTelescopeReduce (b.instantiate1 fvar) (fvar.fvarId! :: lambdas) config noIndex k
     | e => k e lambdas
 
-private def usePiReduce (name : Name) : Array (Option Expr) × List FVarId → LazyM Key
+private def useReducePi (name : Name) : Array (Option Expr) × List FVarId → LazyM Key
 | (args, lambdas) => do
   let bvars := lambdas ++ (← read).bvars
   let lctx ← getLCtx
@@ -241,8 +241,8 @@ private def encodingStep (original : Expr) (root : Bool)
       return [← (do withLams lambdas (← mkNewStar)).run entry])
     (fun e lambdas => do
       unless root do
-        if let some (n, as) ← Pi.reduce e lambdas then
-          return ← as.mapM fun data => do (usePiReduce n data).run (← read) entry
+        if let some (n, as) ← reducePi e lambdas then
+          return ← as.mapM fun data => do (useReducePi n data).run (← read) entry
 
       cacheEtaPossibilities e original lambdas root entry)
 
@@ -252,8 +252,8 @@ private def encodingStep' (original : Expr) (root : Bool) : LazyM Key := do
     (fun lambdas => do withLams lambdas (← mkNewStar))
     (fun e lambdas => do
       unless root do
-        if let some (n, as) ← Pi.reduce e lambdas then
-          return ← usePiReduce n as.head!
+        if let some (n, as) ← reducePi e lambdas then
+          return ← useReducePi n as.head!
       encodingStepAux e lambdas root)
 
 /-- Encode `e` as a sequence of keys, computing only the first `Key`. -/

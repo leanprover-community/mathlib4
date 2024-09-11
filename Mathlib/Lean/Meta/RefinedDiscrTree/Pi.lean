@@ -38,7 +38,7 @@ the bound variable. In this case we never want to distribute the function.
 
 -/
 
-namespace Lean.Meta.RefinedDiscrTree.Pi
+namespace Lean.Meta.RefinedDiscrTree
 
 /-- Reduce the Pi type instance to whnf, reducing inside of `numArgs` lambda binders. -/
 private def unfoldPiInst (inst : Expr) (numArgs : Nat) : MetaM Expr := do
@@ -136,9 +136,9 @@ private def absorbLambdasBinOp (lambdas : List FVarId) (type lhs rhs : Expr)
 
 /-- Normalize an application of a constant with a Pi-type instance which distributes over
 one argument. -/
-@[specialize] def reduceUnOpAux (type inst arg : Expr) (lambdas : List FVarId) (args : Array Expr)
-    (otherArgs : Array Expr) (arity : Nat) (matchPiInst : Expr → Option Expr) (numArgs : Nat)
-    (mk : Expr → Expr → Array (Option Expr)) :
+@[specialize] private def reduceUnOpAux (type inst arg : Expr) (lambdas : List FVarId)
+    (args : Array Expr) (otherArgs : Array Expr) (arity : Nat) (matchPiInst : Expr → Option Expr)
+    (numArgs : Nat) (mk : Expr → Expr → Array (Option Expr)) :
     MetaM (List (Array (Option Expr) × List FVarId)) := do
   let (type, arg, idx) ← absorbArgsUnOp args arity type inst arg matchPiInst numArgs
   match idx with
@@ -149,7 +149,7 @@ one argument. -/
 
 /-- Normalize an application of a constant with a Pi-type instance which distributes over
 two arguments that have the same type. -/
-@[specialize] def reduceBinOpAux (type inst lhs rhs : Expr) (lambdas : List FVarId)
+@[specialize] private def reduceBinOpAux (type inst lhs rhs : Expr) (lambdas : List FVarId)
     (args : Array Expr) (otherArgs : Array Expr) (arity : Nat) (matchPiInst : Expr → Option Expr)
     (numArgs : Nat) (mk : Expr → Expr → Expr → Array (Option Expr)) :
     MetaM (List (Array (Option Expr) × List FVarId)) := do
@@ -170,20 +170,20 @@ private def etaExpand {α} (args : Array Expr) (type : Expr) (lambdas : List FVa
   else
     k args lambdas (by omega)
 
-@[inline] def app6? (fName : Name) (e : Expr) : Option (Expr × Expr × Expr) :=
+@[inline] private def app6? (fName : Name) (e : Expr) : Option (Expr × Expr × Expr) :=
   if e.isAppOfArity fName 6 then
     some (e.appFn!.appFn!.appArg!, e.appFn!.appArg!, e.appArg!)
   else
     none
 
-def lambdaBody? (n : Nat) (e : Expr) : Option Expr :=
+private def lambdaBody? (n : Nat) (e : Expr) : Option Expr :=
 match n, e with
 | 0, e => some e
 | n+1, .lam _ _ b _ => lambdaBody? n b
 | _, _ => none
 
 /-- Normalize an application if the head is `⁻¹` or `-`. -/
-def reduceUnOp (n : Name) (args : Array Expr) (lambdas : List FVarId) :
+private def reduceUnOp (n : Name) (args : Array Expr) (lambdas : List FVarId) :
     MetaM (Option (List (Array (Option Expr) × List FVarId))) := withDefault do
   if h : args.size < 2 then return none else some <$> do
   let type := args[0]
@@ -196,7 +196,7 @@ def reduceUnOp (n : Name) (args : Array Expr) (lambdas : List FVarId) :
       (fun type arg => #[type, none, arg])
 
 /-- Normalize an application if the head is `•` or `+ᵥ`. -/
-def reduceHActOp (n : Name) (args : Array Expr) (lambdas : List FVarId) :
+private def reduceHActOp (n : Name) (args : Array Expr) (lambdas : List FVarId) :
     MetaM (Option (List (Array (Option Expr) × List FVarId))) := withDefault do
   if h : args.size < 5 then return none else
   let rec instH := match n with
@@ -213,7 +213,7 @@ def reduceHActOp (n : Name) (args : Array Expr) (lambdas : List FVarId) :
       (fun type arg => #[α, type, none, none, a, arg])
 
 /-- Normalize an app lication if the head is `^`. -/
-def reduceHPow (args : Array Expr) (lambdas : List FVarId) :
+private def reduceHPow (args : Array Expr) (lambdas : List FVarId) :
     MetaM (Option (List (Array (Option Expr) × List FVarId))) := withDefault do
   if h : args.size < 6 then return none else
   let some (type, β, inst) := args[3].app3? ``instHPow | return none
@@ -226,7 +226,7 @@ def reduceHPow (args : Array Expr) (lambdas : List FVarId) :
 
 
 /-- Normalize an application if the head is `+`, `*`, `-` or `/`. -/
-def reduceHBinOp (n : Name) (args : Array Expr) (lambdas : List FVarId):
+private def reduceHBinOp (n : Name) (args : Array Expr) (lambdas : List FVarId):
     MetaM (Option (List (Array (Option Expr) × List FVarId))) := withDefault do
   if h : args.size < 4 then return none else do
   let rec instH := match n with
@@ -258,7 +258,7 @@ We apply the following reductions whenever possible:
 - Absorbing lambdas: lambdas in front of the constant can be moved inside.
   For example `fun x => x + 1` is turned into `(fun x => x) + (fun x => 1)`.
 -/
-def reduce (e : Expr) (lambdas : List FVarId) :
+def reducePi (e : Expr) (lambdas : List FVarId) :
     MetaM (Option (Name × List (Array (Option Expr) × List FVarId))) := do
   if let .const n _ := e.getAppFn then
     match n with
@@ -275,4 +275,4 @@ def reduce (e : Expr) (lambdas : List FVarId) :
   else
     return none
 
-end Lean.Meta.RefinedDiscrTree.Pi
+end Lean.Meta.RefinedDiscrTree
