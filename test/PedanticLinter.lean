@@ -1,7 +1,5 @@
 import Mathlib.Tactic.Linter.PedanticLinter
 
-set_option linter.pedantic false
-
 /--
 info: "a   a"
 ---
@@ -49,7 +47,7 @@ set_option linter.pedantic true in
 variable {a :Nat}
 
 /--
-info: (fun x x_1 => x + x_1) 0 1 : Nat
+info: (fun x1 x2 => x1 + x2) 0 1 : Nat
 ---
 warning: source context
 'k (·+·) '

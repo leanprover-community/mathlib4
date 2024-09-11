@@ -10,5 +10,6 @@ This file is ignored by `shake`:
 
 import Mathlib.Tactic.Linter.FlexibleLinter
 import Mathlib.Tactic.Linter.HaveLetLinter
+import Mathlib.Tactic.Linter.PedanticLinter
 import Mathlib.Tactic.Linter.MinImports
 import Mathlib.Tactic.Linter.TextBased

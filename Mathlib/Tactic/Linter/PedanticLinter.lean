@@ -6,6 +6,7 @@ Authors: Damiano Testa
 
 import Lean.Elab.Command
 import Lean.Linter.Util
+import Mathlib.Init
 
 /-!
 #  The "pedantic" linter
@@ -27,7 +28,7 @@ It also prints both the source code and the "expected code" in a 5-character rad
 the first difference.
 -/
 register_option linter.pedantic : Bool := {
-  defValue := true
+  defValue := false
   descr := "enable the pedantic linter"
 }
 
@@ -51,19 +52,16 @@ def polishPP (s : String) : String :=
     |>.replace "`` " "``" -- weird pp ```#eval ``«Nat»``` pretty-prints as ```#eval `` «Nat»```
     |>.replace "notation3(" "notation3 ("
     |>.replace "notation3\"" "notation3 \""
-    --|>.replace "{" "{"   -- probably better?
 
 /-- `polishSource s` is similar to `polishPP s`, but expects the input to be actual source code.
 For this reason, `polishSource s` performs more conservative changes:
 it only replace all whitespace starting from a linebreak (`\n`) with a single whitespace. -/
 def polishSource (s : String) : String × Array Nat :=
   let split := s.split (· == '\n')
-  --let lengths := split.map (·.length)
   let preWS := split.foldl (init := #[]) fun p q =>
     let txt := q.trimLeft.length
     (p.push (q.length - txt)).push txt
   let preWS := preWS.eraseIdx 0
-  --dbg_trace "(spaces, sum, total): {(preWS, preWS.foldl (· + ·) 0, s.length)}"
   let s := (split.map .trimLeft).filter (!· == "")
   (" ".intercalate (s.filter (!·.isEmpty)), preWS)
 
@@ -116,12 +114,9 @@ def capSyntax (stx : Syntax) (p : Nat) : Syntax :=
 
 namespace Pedantic
 
-/-- Gets the value of the `linter.pedantic` option. -/
-def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.pedantic o
-
 @[inherit_doc Mathlib.Linter.linter.pedantic]
 def pedantic : Linter where run := withSetOptionIn fun stx ↦ do
-    unless getLinterHash (← getOptions) do
+    unless Linter.getLinterValue linter.pedantic (← getOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
@@ -147,4 +142,4 @@ def pedantic : Linter where run := withSetOptionIn fun stx ↦ do
 
 initialize addLinter pedantic
 
-end Pedantic
+end Mathlib.Linter.Pedantic
