@@ -191,8 +191,9 @@ private def reduceUnOp (n : Name) (args : Array Expr) (lambdas : List FVarId) :
   etaExpand args type lambdas 3 fun args lambdas _ => do
     let arg := args[2]
     reduceUnOpAux type inst arg lambdas args #[inst] 3
-      (lambdaBody? 2 >=> app6? n >=> fun (inst, f, b) =>
-        if (b == .bvar 1 && f == .app (.bvar 2) (.bvar 0)) then inst else none) 1
+      (lambdaBody? 2 >=> (·.app3? n) >=> fun (_, inst, a) =>
+        -- require `fun a x => -a x` or `fun a x => (a x)⁻¹`
+        if (a == .app (.bvar 1) (.bvar 0)) then inst else none) 1
       (fun type arg => #[type, none, arg])
 
 /-- Normalize an application if the head is `•` or `+ᵥ`. -/
@@ -208,8 +209,9 @@ private def reduceHActOp (n : Name) (args : Array Expr) (lambdas : List FVarId) 
     let a := args[4]
     let arg := args[5]
     reduceUnOpAux type inst arg lambdas args #[inst, a] 6
-      (lambdaBody? 3 >=> app6? n >=> fun (inst, f, b) =>
-        if (b == .bvar 1 && f == .app (.bvar 2) (.bvar 0)) then inst else none) 2
+      (lambdaBody? 3 >=> app6? n >=> fun (inst, a, b) =>
+        -- require `fun a b x => a • b x` or `fun a b x => a +ᵥ b x`
+        if (a == .bvar 2) && b == .app (.bvar 1) (.bvar 0) then inst else none) 2
       (fun type arg => #[α, type, none, none, a, arg])
 
 /-- Normalize an app lication if the head is `^`. -/
@@ -220,8 +222,9 @@ private def reduceHPow (args : Array Expr) (lambdas : List FVarId) :
   let arg := args[4]
   let exp := args[5]
   reduceUnOpAux type inst arg lambdas args #[inst, exp] 6
-      (lambdaBody? 3 >=> app6? ``HPow.hPow >=> fun (inst, f, b) =>
-        if (b == .bvar 1 && f == .app (.bvar 2) (.bvar 0)) then inst else none) 2
+      (lambdaBody? 3 >=> app6? ``HPow.hPow >=> fun (inst, a, b) =>
+        -- require `fun a b x => a x ^ b`
+        if (a == .app (.bvar 2) (.bvar 0) && b == .bvar 1) then inst else none) 2
     (fun type arg => #[type, β, none, none, arg, exp])
 
 
@@ -240,8 +243,9 @@ private def reduceHBinOp (n : Name) (args : Array Expr) (lambdas : List FVarId):
     let lhs := args[4]
     let rhs := args[5]
     reduceBinOpAux type inst lhs rhs lambdas args #[inst] 6
-      (lambdaBody? 3 >=> app6? n >=> fun (inst, f, b) =>
-        if (b == .bvar 1 && f == .app (.bvar 2) (.bvar 0)) then inst else none) 2
+      (lambdaBody? 3 >=> app6? n >=> fun (inst, a, b) =>
+        -- require `fun a b x => a x + b x`, or that with `*`, `-`, `/`
+        if (a == .app (.bvar 2) (.bvar 0) && b == .app (.bvar 1) (.bvar 0)) then inst else none) 2
       (fun type lhs rhs => #[type, type, none, none, lhs, rhs])
 
 /--
