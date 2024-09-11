@@ -75,6 +75,10 @@ jobs:
           ./elan-init -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
+      - name: check {Mathlib, Tactic, Counterexamples, Archive}.lean are up to date
+        # update the "import all" files, since they are used by `lint-style`
+        run: lake exe mk_all --check || echo "Please run 'lake exe mk_all'"
+
       - name: "run style linters"
         run: |
           lake exe lint-style
