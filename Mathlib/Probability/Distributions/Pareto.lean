@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alvan Caleb Arulandu
 -/
 import Mathlib.Probability.Notation
-import Mathlib.Probability.Cdf
+import Mathlib.Probability.CDF
 import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 
 /-! # Pareto distributions over ℝ
@@ -53,7 +53,7 @@ lemma paretoPDF_of_nonneg {t r x : ℝ} (hx : t ≤ x) :
 /-- The Lebesgue integral of the pareto pdf over reals < t equals 0 -/
 lemma lintegral_paretoPDF_of_nonpos {t r x : ℝ} (hx : x < t) :
     ∫⁻ y in Iio x, paretoPDF t r y = 0 := by
-  rw [set_lintegral_congr_fun (g := fun _ ↦ 0) measurableSet_Iio]
+  rw [setLIntegral_congr_fun (g := fun _ ↦ 0) measurableSet_Iio]
   · rw [lintegral_zero, ← ENNReal.ofReal_zero]
   · simp only [paretoPDF_eq, ge_iff_le, ENNReal.ofReal_eq_zero]
     filter_upwards with a (_ : a < _)
@@ -82,10 +82,10 @@ lemma paretoPDFReal_nonneg {t r : ℝ} (ht : 0 < t) (hr : 0 < r) (x : ℝ) :
     0 ≤ paretoPDFReal t r x := by
   unfold paretoPDFReal
   split_ifs with h
-  . have h2 := paretoPDFReal_pos ht hr h
+  · have h2 := paretoPDFReal_pos ht hr h
     rw [paretoPDFReal, if_pos h] at h2
     linarith
-  . positivity
+  · positivity
 
 open Measure
 
@@ -94,27 +94,27 @@ open Measure
 lemma lintegral_paretoPDF_eq_one {t r : ℝ} (ht : 0 < t) (hr : 0 < r) :
     ∫⁻ x, paretoPDF t r x = 1 := by
   have leftSide : ∫⁻ x in Iio t, paretoPDF t r x = 0 := by
-    rw [set_lintegral_congr_fun measurableSet_Iio
+    rw [setLIntegral_congr_fun measurableSet_Iio
       (ae_of_all _ (fun x (hx : x < t) ↦ paretoPDF_of_neg hx)), lintegral_zero]
   have rightSide : ∫⁻ x in Ici t, paretoPDF t r x =
       ∫⁻ x in Ici t, ENNReal.ofReal (r * t ^ r * x ^ (-(r + 1))) :=
-    set_lintegral_congr_fun measurableSet_Ici (ae_of_all _ (fun _ ↦ paretoPDF_of_nonneg))
+    setLIntegral_congr_fun measurableSet_Ici (ae_of_all _ (fun _ ↦ paretoPDF_of_nonneg))
   rw [← ENNReal.toReal_eq_one_iff, ← lintegral_add_compl _ measurableSet_Ici, compl_Ici,
     leftSide, rightSide, add_zero, ← integral_eq_lintegral_of_nonneg_ae]
-  . rw [integral_Ici_eq_integral_Ioi]
+  · rw [integral_Ici_eq_integral_Ioi]
     rw [integral_mul_left]
     rw [integral_Ioi_rpow_of_lt _ ht]
-    . simp
+    · simp
       rw [← mul_div_assoc, mul_assoc, mul_comm, mul_div_assoc, div_self, mul_one, ← rpow_add ht]
-      . rw [add_neg_self, rpow_zero]
-      . linarith
-    . linarith
-  . rw [EventuallyLE, ae_restrict_iff' measurableSet_Ici]
+      · rw [add_neg_cancel, rpow_zero]
+      · linarith
+    · linarith
+  · rw [EventuallyLE, ae_restrict_iff' measurableSet_Ici]
     exact ae_of_all _ (fun x (hx : t ≤ x) ↦ by
       have _ : 0 < x := by linarith
       positivity
     )
-  . apply (measurable_paretoPDFReal t r).aestronglyMeasurable.congr
+  · apply (measurable_paretoPDFReal t r).aestronglyMeasurable.congr
     refine (ae_restrict_iff' measurableSet_Ici).mpr <| ae_of_all _ fun x (hx : t ≤ x) ↦ ?_
     simp_rw [paretoPDFReal, eq_true_intro hx, ite_true]
 end ParetoPDF
@@ -152,3 +152,4 @@ lemma paretoCDFReal_eq_lintegral {t r : ℝ} (ht : 0 < t) (hr : 0 < r) (x : ℝ)
   simp only [paretoMeasure, measurableSet_Iic, withDensity_apply, paretoPDF]
 
 end ParetoCDF
+end ProbabilityTheory
