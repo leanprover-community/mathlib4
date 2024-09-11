@@ -24,7 +24,7 @@ open scoped MonomialOrder
 
 variable {σ : Type*} {m : MonomialOrder σ} {R : Type*} [CommRing R]
 
-variable (m) in 
+variable (m) in
 /-- Delete the leading term in a multivariate polynomial (for some monomial order) -/
 noncomputable def subLTerm (f : MvPolynomial σ R) : MvPolynomial σ R :=
   f - monomial (m.degree f) (m.lCoeff f)
