@@ -83,7 +83,7 @@ theorem isGalois_iff_pretransitive (X : C) [IsConnected X] :
   rw [isGalois_iff_aux, Equiv.nonempty_congr <| quotientByAutTerminalEquivUniqueQuotient F X]
   exact (MulAction.pretransitive_iff_unique_quotient_of_nonempty (Aut X) (F.obj X)).symm
 
-/-- If `X` is Galois, the quotient `X / Aut X` is terminal.  -/
+/-- If `X` is Galois, the quotient `X / Aut X` is terminal. -/
 noncomputable def isTerminalQuotientOfIsGalois (X : C) [IsGalois X] :
     IsTerminal <| colimit <| SingleObj.functor <| Aut.toEnd X :=
   Nonempty.some IsGalois.quotientByAutTerminal

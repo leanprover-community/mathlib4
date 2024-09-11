@@ -90,6 +90,9 @@ theorem one_eq_mk [One M] [One N] : (1 : M × N) = (1, 1) :=
   rfl
 
 @[to_additive (attr := simp)]
+theorem mk_one_one [One M] [One N] : ((1 : M), (1 : N)) = 1 := rfl
+
+@[to_additive (attr := simp)]
 theorem mk_eq_one [One M] [One N] {x : M} {y : N} : (x, y) = 1 ↔ x = 1 ∧ y = 1 :=
   mk.inj_iff
 
@@ -215,12 +218,14 @@ instance [RightCancelSemigroup G] [RightCancelSemigroup H] : RightCancelSemigrou
 @[to_additive]
 instance [LeftCancelMonoid M] [LeftCancelMonoid N] : LeftCancelMonoid (M × N) :=
   { mul_one := by simp,
-    one_mul := by simp }
+    one_mul := by simp
+    mul_left_cancel := by simp }
 
 @[to_additive]
 instance [RightCancelMonoid M] [RightCancelMonoid N] : RightCancelMonoid (M × N) :=
   { mul_one := by simp,
-    one_mul := by simp }
+    one_mul := by simp
+    mul_right_cancel := by simp }
 
 @[to_additive]
 instance [CancelMonoid M] [CancelMonoid N] : CancelMonoid (M × N) :=
@@ -232,7 +237,7 @@ instance instCommMonoid [CommMonoid M] [CommMonoid N] : CommMonoid (M × N) :=
 
 @[to_additive]
 instance [CancelCommMonoid M] [CancelCommMonoid N] : CancelCommMonoid (M × N) :=
-  { mul_comm := fun ⟨m₁, n₁⟩ ⟨_, _⟩ => by rw [mk_mul_mk, mk_mul_mk, mul_comm m₁, mul_comm n₁] }
+  { mul_left_cancel := by simp }
 
 @[to_additive]
 instance instCommGroup [CommGroup G] [CommGroup H] : CommGroup (G × H) :=

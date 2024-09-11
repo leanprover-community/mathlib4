@@ -207,7 +207,7 @@ end DirectSum
 
 open DirectSum
 
-/-- The projection maps of graded algebra-/
+/-- The projection maps of graded algebra -/
 def GradedAlgebra.proj (𝒜 : ι → Submodule R A) [GradedAlgebra 𝒜] (i : ι) : A →ₗ[R] A :=
   (𝒜 i).subtype.comp <| (DFinsupp.lapply i).comp <| (decomposeAlgEquiv 𝒜).toAlgHom.toLinearMap
 
@@ -350,7 +350,7 @@ noncomputable def coeAlgEquiv (hM : DirectSum.IsInternal M) :
 
 /-- Given an `R`-algebra `A` and a family `ι → Submodule R A` of submodules
 parameterized by an additive monoid `ι`
-and statisfying `SetLike.GradedMonoid M` (essentially, is multiplicative)
+and satisfying `SetLike.GradedMonoid M` (essentially, is multiplicative)
 such that `DirectSum.IsInternal M` (`A` is the direct sum of the `M i`),
 we endow `A` with the structure of a graded algebra.
 The submodules are the *homogeneous* parts. -/
