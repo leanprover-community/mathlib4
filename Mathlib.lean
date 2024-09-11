@@ -1511,6 +1511,7 @@ import Mathlib.CategoryTheory.Functor.Trifunctor
 import Mathlib.CategoryTheory.Galois.Basic
 import Mathlib.CategoryTheory.Galois.Decomposition
 import Mathlib.CategoryTheory.Galois.Examples
+import Mathlib.CategoryTheory.Galois.Full
 import Mathlib.CategoryTheory.Galois.GaloisObjects
 import Mathlib.CategoryTheory.Galois.Prorepresentability
 import Mathlib.CategoryTheory.Galois.Topology
@@ -4505,6 +4506,7 @@ import Mathlib.Topology.Constructions
 import Mathlib.Topology.ContinuousFunction.Algebra
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Topology.ContinuousFunction.Bounded
+import Mathlib.Topology.ContinuousFunction.BoundedCompactlySupported
 import Mathlib.Topology.ContinuousFunction.CocompactMap
 import Mathlib.Topology.ContinuousFunction.Compact
 import Mathlib.Topology.ContinuousFunction.CompactlySupported

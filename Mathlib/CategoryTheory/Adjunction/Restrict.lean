@@ -69,6 +69,11 @@ lemma restrictFullyFaithful_homEquiv_apply {X : C} {Y : D} (f : L.obj X ⟶ Y) :
     (adj.restrictFullyFaithful hiC hiD comm1 comm2).homEquiv X Y f =
       hiC.preimage (adj.unit.app (iC.obj X) ≫ R'.map (comm1.hom.app X) ≫
         R'.map (iD.map f) ≫ comm2.hom.app Y) := by
-  simp [restrictFullyFaithful]
+  -- This proof was just `simp [restrictFullyFaithful]` before #16317 
+  apply hiC.map_injective
+  simp only [homEquiv_apply, Functor.comp_obj, Functor.map_comp, map_restrictFullyFaithful_unit_app,
+    Functor.id_obj, assoc, Functor.FullyFaithful.map_preimage]
+  congr 2
+  exact (comm2.hom.naturality _).symm
 
 end CategoryTheory.Adjunction
