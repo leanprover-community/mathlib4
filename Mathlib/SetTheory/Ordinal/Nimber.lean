@@ -247,17 +247,11 @@ instance : IsRightCancelAdd Nimber := by
   · exact fun hc => (add_ne_of_lt a b).1 c hc h.symm
   · exact fun ha => (add_ne_of_lt c b).1 a ha h
 
--- Ideally the proof would be an easy induction on `add_def`, but rewriting under binders trips up
--- the termination checker.
 protected theorem add_comm (a b : Nimber) : a + b = b + a := by
-  apply le_antisymm <;>
-  apply add_le_of_forall_ne <;>
-  intro x hx
-  on_goal 1 => rw [Nimber.add_comm x, add_ne_add_right]
-  on_goal 2 => rw [Nimber.add_comm a, add_ne_add_left]
-  on_goal 3 => rw [← Nimber.add_comm a, add_ne_add_right]
-  on_goal 4 => rw [← Nimber.add_comm x, add_ne_add_left]
-  all_goals exact hx.ne
+  rw [add_def, add_def]
+  simp_rw [or_comm]
+  congr! 7 <;>
+  (rw [and_congr_right_iff]; intro; rw [Nimber.add_comm])
 termination_by (a, b)
 
 @[simp]
