@@ -201,7 +201,7 @@ theorem mem_ofSet_iff {s : Set α} [DecidablePred (· ∈ s)] {a b : α} :
   · simp only [mem_def, eq_comm, some.injEq, iff_self_and]
     rintro rfl
     exact h
-  · simp only [mem_def, false_iff, not_and]
+  · simp only [mem_def, false_iff, not_and, reduceCtorEq]
     rintro rfl
     exact h
 
@@ -294,9 +294,9 @@ def single (a : α) (b : β) :
     dsimp only
     split_ifs with h1 h2
     · simp [*]
-    · simp only [mem_def, some.injEq, iff_false] at *
+    · simp only [mem_def, some.injEq, iff_false, reduceCtorEq] at *
       exact Ne.symm h2
-    · simp only [mem_def, some.injEq, false_iff] at *
+    · simp only [mem_def, some.injEq, false_iff, reduceCtorEq] at *
       exact Ne.symm h1
     · simp
 
@@ -343,7 +343,7 @@ theorem trans_single_of_eq_none {b : β} (c : γ) {f : δ ≃. β} (h : f.symm b
   ext
   simp only [eq_none_iff_forall_not_mem, Option.mem_def, f.eq_some_iff] at h
   dsimp [PEquiv.trans, single]
-  simp only [mem_def, bind_eq_some, iff_false, not_exists, not_and]
+  simp only [mem_def, bind_eq_some, iff_false, not_exists, not_and, reduceCtorEq]
   intros
   split_ifs <;> simp_all
 

@@ -433,6 +433,9 @@ theorem coe_top : ((⊤ : Subring R) : Set R) = Set.univ :=
 def topEquiv : (⊤ : Subring R) ≃+* R :=
   Subsemiring.topEquiv
 
+instance {R : Type*} [Ring R] [Fintype R] : Fintype (⊤ : Subring R) :=
+  inferInstanceAs (Fintype (⊤ : Set R))
+
 theorem card_top (R) [Ring R] [Fintype R] : Fintype.card (⊤ : Subring R) = Fintype.card R :=
   Fintype.card_congr topEquiv.toEquiv
 

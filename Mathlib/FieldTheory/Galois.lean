@@ -380,9 +380,6 @@ theorem of_separable_splitting_field [sp : p.IsSplittingField F E] (hp : p.Separ
     rw [IntermediateField.adjoin_zero]
   intro K x hx hK
   simp only [P] at *
-  -- Porting note: need to specify two implicit arguments of `finrank_mul_finrank`
-  letI := K⟮x⟯.module
-  letI := K⟮x⟯.isScalarTower (R := F)
   rw [of_separable_splitting_field_aux hp K (Multiset.mem_toFinset.mp hx), hK, finrank_mul_finrank]
   symm
   refine LinearEquiv.finrank_eq ?_

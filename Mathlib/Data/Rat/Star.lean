@@ -5,7 +5,7 @@ Authors: Jireh Loreaux, Yaël Dillies
 -/
 import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Algebra.Star.Order
+import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Data.NNRat.Lemmas
 import Mathlib.Algebra.Order.Monoid.Submonoid
 import Mathlib.Tactic.FieldSimp
