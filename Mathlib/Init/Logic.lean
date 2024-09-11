@@ -166,19 +166,7 @@ theorem imp_of_if_pos {c t e : Prop} [Decidable c] (h : ite c t e) (hc : c) : t 
 theorem imp_of_if_neg {c t e : Prop} [Decidable c] (h : ite c t e) (hnc : ¬c) : e :=
   (if_neg hnc ▸ h :)
 
-theorem if_ctx_congr {α : Sort u} {b c : Prop} [dec_b : Decidable b] [dec_c : Decidable c]
-    {x y u v : α} (h_c : b ↔ c) (h_t : c → x = u) (h_e : ¬c → y = v) : ite b x y = ite c u v :=
-  match dec_b, dec_c with
-  | isFalse _,  isFalse h₂ => h_e h₂
-  | isTrue _,   isTrue h₂  => h_t h₂
-  | isFalse h₁, isTrue h₂  => absurd h₂ (Iff.mp (not_congr h_c) h₁)
-  | isTrue h₁,  isFalse h₂ => absurd h₁ (Iff.mpr (not_congr h_c) h₂)
-
-theorem if_congr {α : Sort u} {b c : Prop} [Decidable b] [Decidable c]
-    {x y u v : α} (h_c : b ↔ c) (h_t : x = u) (h_e : y = v) : ite b x y = ite c u v :=
-  if_ctx_congr h_c (fun _ ↦ h_t) (fun _ ↦ h_e)
-
--- @[congr]
+@[deprecated (since := "2024-09-11")]
 theorem dif_ctx_congr {α : Sort u} {b c : Prop} [dec_b : Decidable b] [dec_c : Decidable c]
     {x : b → α} {u : c → α} {y : ¬b → α} {v : ¬c → α}
     (h_c : b ↔ c) (h_t : ∀ h : c, x (Iff.mpr h_c h) = u h)
