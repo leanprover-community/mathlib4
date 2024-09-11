@@ -49,7 +49,6 @@ def docPrimeLinter : Linter where run := withSetOptionIn fun stx ↦ do
           is possible."
   if docstring[0][1].getAtomVal.isEmpty && declName.toString.contains '\'' then
     if ← System.FilePath.pathExists "scripts/no_lints_prime_decls.txt" then
-      dbg_trace "path exists, {declName.toString}"
       if (← IO.FS.lines "scripts/no_lints_prime_decls.txt").contains declName.toString then
         return
       else
