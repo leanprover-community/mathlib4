@@ -1,6 +1,4 @@
-import Mathlib.RingTheory.Flat.Algebra
-import Mathlib.RingTheory.FinitePresentation
-import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
+import Mathlib.Tactic.Algebraize
 
 section example_definitions
 
