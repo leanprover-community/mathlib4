@@ -7,7 +7,6 @@ import Mathlib.Data.Finset.Piecewise
 import Mathlib.Order.Filter.Curry
 import Mathlib.Topology.Maps.Basic
 import Mathlib.Topology.NhdsSet
-import Mathlib.Order.Filter.Curry
 
 /-!
 # Constructions of new topological spaces from old ones
