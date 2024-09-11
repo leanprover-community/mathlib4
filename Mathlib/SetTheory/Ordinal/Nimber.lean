@@ -49,7 +49,7 @@ def Nimber : Type _ :=
   Ordinal deriving Zero, Inhabited, One, WellFoundedRelation
 
 instance Nimber.linearOrder : LinearOrder Nimber := {Ordinal.linearOrder with}
-instance Nimber.succOrder : SuccOrder Nimber := {Ordinal.succOrder with}
+instance Nimber.succOrder : SuccOrder Nimber := {Ordinal.instSuccOrder with}
 instance Nimber.orderBot : OrderBot Nimber := {Ordinal.orderBot with}
 instance Nimber.noMaxOrder : NoMaxOrder Nimber := {Ordinal.noMaxOrder with}
 instance Nimber.zeroLEOneClass : ZeroLEOneClass Nimber := {Ordinal.zeroLEOneClass with}
@@ -137,6 +137,12 @@ protected theorem not_lt_zero (a : Nimber) : ¬ a < 0 :=
 protected theorem pos_iff_ne_zero {a : Nimber} : 0 < a ↔ a ≠ 0 :=
   Ordinal.pos_iff_ne_zero
 
+instance (a : Nimber.{u}) : Small.{u} (Set.Iio a) :=
+  Ordinal.small_Iio a
+
+theorem not_small_nimber : ¬ Small.{u} Nimber.{u} :=
+  not_small_ordinal
+
 end Nimber
 
 namespace Ordinal
@@ -204,15 +210,13 @@ theorem add_def (a b : Nimber) :
   rfl
 
 /-- The set in the definition of `Nimber.add` is nonempty. -/
-theorem add_nonempty (a b : Nimber) :
+private theorem add_nonempty (a b : Nimber.{u}) :
     {x | (∃ a' < a, a' + b = x) ∨ ∃ b' < b, a + b' = x}ᶜ.Nonempty := by
-  use Ordinal.blsub₂ (succ a) (succ b) @fun x _ y _ => Nimber.add x y
-  simp only [Set.mem_compl_iff, Set.mem_setOf_eq, not_or, not_exists, not_and]
-  constructor <;>
-  intro x hx <;>
-  apply ne_of_lt <;>
-  apply Ordinal.lt_blsub₂
-  exacts [hx.trans <| lt_succ _, lt_succ _, lt_succ _, hx.trans <| lt_succ _]
+  simp_rw [Set.nonempty_compl, Set.setOf_or, ← Set.mem_Iio, ← Set.image.eq_1]
+  apply_fun (fun a : Set Nimber ↦ Small.{u} a)
+  have : Small.{u} ↑((· + b) '' Set.Iio a ∪ (a + ·) '' Set.Iio b) := inferInstance
+  simp [this, small_congr (Equiv.Set.univ _)]
+  exact not_small_nimber
 
 theorem exists_of_lt_add (h : c < a + b) : (∃ a' < a, a' + b = c) ∨ ∃ b' < b, a + b' = c := by
   rw [add_def] at h
@@ -254,32 +258,31 @@ protected theorem add_comm (a b : Nimber) : a + b = b + a := by
   (rw [and_congr_right_iff]; intro; rw [Nimber.add_comm])
 termination_by (a, b)
 
-@[simp]
-theorem add_eq_zero_iff {a b : Nimber} : a + b = 0 ↔ a = b := by
+theorem add_eq_zero {a b : Nimber} : a + b = 0 ↔ a = b := by
   constructor <;>
   intro hab
   · obtain h | rfl | h := lt_trichotomy a b
-    · have ha : a + a = 0 := add_eq_zero_iff.2 rfl
+    · have ha : a + a = 0 := add_eq_zero.2 rfl
       rwa [← ha, add_right_inj, eq_comm] at hab
     · rfl
-    · have hb : b + b = 0 := add_eq_zero_iff.2 rfl
+    · have hb : b + b = 0 := add_eq_zero.2 rfl
       rwa [← hb, add_left_inj] at hab
   · rw [← Nimber.le_zero]
     apply add_le_of_forall_ne <;>
     simp_rw [ne_eq] <;>
     intro x hx
-    · rw [add_eq_zero_iff, ← hab]
+    · rw [add_eq_zero, ← hab]
       exact hx.ne
-    · rw [add_eq_zero_iff, hab]
+    · rw [add_eq_zero, hab]
       exact hx.ne'
 termination_by (a, b)
 
 theorem add_ne_zero_iff : a + b ≠ 0 ↔ a ≠ b :=
-  add_eq_zero_iff.not
+  add_eq_zero.not
 
 @[simp]
 theorem add_self (a : Nimber) : a + a = 0 :=
-  add_eq_zero_iff.2 rfl
+  add_eq_zero.2 rfl
 
 protected theorem add_assoc (a b c : Nimber) : a + b + c = a + (b + c) := by
   apply le_antisymm <;>
@@ -332,24 +335,25 @@ instance : AddCommGroupWithOne Nimber where
 
 -- TODO: add CharP 2 instance
 
+@[simp]
 theorem add_cancel_right (a b : Nimber) : a + b + b = a := by
   rw [add_assoc, add_self, add_zero]
 
+@[simp]
 theorem add_cancel_left (a b : Nimber) : a + (a + b) = b := by
   rw [← add_assoc, add_self, zero_add]
 
-theorem add_trichotomy {a b c : Nimber} (h : a ≠ b + c) :
+theorem add_trichotomy {a b c : Nimber} (h : a + b + c ≠ 0) :
     b + c < a ∨ a + c < b ∨ a + b < c := by
-  rw [← add_ne_zero_iff, ← Nimber.pos_iff_ne_zero] at h
+  rw [← Nimber.pos_iff_ne_zero] at h
   obtain ⟨x, hx, hx'⟩ | ⟨x, hx, hx'⟩ := exists_of_lt_add h <;>
-  rw [add_eq_zero_iff] at hx'
-  · exact Or.inl (hx' ▸ hx)
-  · rw [← hx'] at hx
-    obtain ⟨x, hx, hx'⟩ | ⟨x, hx, hx'⟩ := exists_of_lt_add hx
-    · rw [← hx', add_cancel_right]
+  rw [add_eq_zero] at hx'
+  · obtain ⟨x, hx, hx'⟩ | ⟨x, hx, hx'⟩ := exists_of_lt_add (hx' ▸ hx)
+    · rw [← hx', add_comm, add_cancel_right]
+      exact Or.inl hx
+    · rw [← hx', add_cancel_left]
       exact Or.inr <| Or.inl hx
-    · rw [add_comm] at hx'
-      rw [← hx', add_cancel_right]
-      exact Or.inr <| Or.inr hx
+  · rw [← hx'] at hx
+    exact Or.inr <| Or.inr hx
 
 end Nimber
