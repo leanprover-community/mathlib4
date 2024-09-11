@@ -51,28 +51,22 @@ lemma zero_not_enough : ¬ ∃ U, ∃ (R : (Fin 0 → U) → (Fin 0 → U) → P
     apply empty_tuples_agree x y R
     exact hy
 
-/-- n=1 is not enough to separate Henkin and ∀x∃y, either. The proof uses Choice. -/
+/-- n=1 is not enough to separate Henkin and ∀x∃y, either.
+  The proof uses Choice (and is basically equivalent to Choice). -/
 lemma one_not_enough : ¬ ∃ U, ∃ (R : (Fin 1 → U) → (Fin 1 → U) → Prop),
   (∀ x, ∃ y, R x y) ∧ ¬ Henkin R := by
     push_neg
     intro U R h
-    use (fun _ x ↦ by
-      let V := {y // R (fun _ ↦ x) y}
-      have : Nonempty V := by
-        exact nonempty_subtype.mpr (h fun _ ↦ x)
-      let A := @Classical.choice V this
-      exact A.1 0
-    )
+    use (fun _ x ↦
+      (@Classical.choice {y // R (fun _ ↦ x) y} (nonempty_subtype.mpr (h _))).1 0)
     intro x
-    have h₀ : x = (fun _ ↦ x 0) := by
-      apply funext; intro x₁; rw [Fin.fin_one_eq_zero x₁]
-    have h₁: (fun k ↦ (Classical.choice (nonempty_subtype.mpr (h fun _ ↦ x k))).1 0) =
-    (Classical.choice (nonempty_subtype.mpr (h fun _ ↦ x 0))).1 := by
-      apply funext; intro x₁; rw [Fin.fin_one_eq_zero x₁]
-
+    have h₁: (fun k ↦
+      (Classical.choice (nonempty_subtype.mpr (h fun _ ↦ x k))).1 0) =
+      (Classical.choice (nonempty_subtype.mpr (h fun _ ↦ x 0))).1 :=
+      funext (fun x₁ => Fin.fin_one_eq_zero x₁ ▸ rfl)
+    have h₀ : x = (fun _ ↦ x 0) := funext (fun x₁ => by rw [Fin.fin_one_eq_zero x₁])
     nth_rewrite 1 [h₀]
     rw [h₁]
-
     exact (Classical.choice (nonempty_subtype.mpr (h fun _ ↦ x 0))).2
 
 
