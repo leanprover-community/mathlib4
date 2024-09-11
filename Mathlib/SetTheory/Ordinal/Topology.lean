@@ -247,7 +247,7 @@ theorem IsAcc.isLimit {o : Ordinal} {U : Set Ordinal} (h : o.IsAcc U) : IsLimit 
   rcases h.2 x (lt_of_lt_of_le (lt_succ x) hx.symm.le) with ⟨p, hp⟩
   exact (hx.symm ▸ (succ_le_iff.mpr hp.2.1)).not_lt hp.2.2
 
-theorem IsAcc.inter_Ioo_nonempty' {o : Ordinal} {U : Set Ordinal} (hU : o.IsAcc U)
+theorem IsAcc.inter_Ioo_nonempty {o : Ordinal} {U : Set Ordinal} (hU : o.IsAcc U)
     {p : Ordinal} (hp : p < o) : (U ∩ Ioo p o).Nonempty := (hU.2 p hp).casesOn fun q hq ↦
   ⟨q, hq.1, hq.2.1, hq.2.2⟩
 
