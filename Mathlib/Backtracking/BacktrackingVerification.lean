@@ -45,15 +45,15 @@ def Gap (b L k : ℕ) : Type := Mathlib.Vector (Fin b) (L - k)
 /-- Note that `Gap_cons` requires the use of L.succ instead of just L. -/
 def Gap_cons {n L b:ℕ} (a:Fin b) (w : Gap b L.succ n.succ)
     (h: ¬ n ≥ L.succ) : Gap b L.succ n :=
-  ⟨a :: w.1, by simp only [List.length_cons, Mathlib.Vector.length_val,
-    Nat.succ_sub_succ_eq_sub];exact (Nat.succ_sub (Nat.not_lt.mp h)).symm⟩
+  ⟨a :: w.1, by
+      rw [List.length_cons,Mathlib.Vector.length_val,Nat.succ_sub_succ_eq_sub]
+      exact .symm <| Nat.succ_sub <| Nat.not_lt.mp h⟩
 
 /-- The empty "gap", with possible length overflow. -/
-def Gap_nil {k b L : ℕ} (h : k ≥ L) : Gap b L k
-  := ⟨List.nil, by simp only [List.length_nil];rw [Nat.sub_eq_zero_of_le h]⟩
+def Gap_nil {k b L : ℕ} (h : k ≥ L) : Gap b L k := ⟨List.nil, (Nat.sub_eq_zero_of_le h).symm⟩
 
 /-- The empty "gap". -/
-def Gap_nil'  (b n : ℕ)             : Gap b n n := ⟨[], by simp⟩
+def Gap_nil' (b n : ℕ) : Gap b n n := ⟨[], by simp⟩
 
 /-- The number of strings satisfying `P ∧ Q`, where
 `P` is a monotone predicate and `Q` is a predicate at the leaves.-/
@@ -70,13 +70,13 @@ def num_by_backtracking {k b L:ℕ}
 
 /-- The list `w` is a suffix of `a :: w`, in the setting of the `Gap` types. -/
 theorem cons_suffix {b:ℕ} {L n_1: ℕ} {a : Fin b} (h: ¬n_1 ≥ Nat.succ L)
-(w: Mathlib.Vector (Fin b) (Nat.succ L -  (Nat.succ n_1)))
-: w.1 <:+ (Gap_cons a w h).1 := by exists [a]
+    (w: Mathlib.Vector (Fin b) (Nat.succ L -  (Nat.succ n_1))) :
+    w.1 <:+ (Gap_cons a w h).1 := by exists [a]
 
 /-- Preservation under suffices for `M.P`, for the `Gap` types.-/
 lemma still_holds {b L z: ℕ } {M: MonoPred b} {w: Gap b (Nat.succ L) (Nat.succ z)}
-{h: ¬z ≥ Nat.succ L} {a : Fin b} (H: M.P (Gap_cons a w h).1)
-: M.P w.1 := M.preserved_under_suffixes w.1 (Gap_cons a w h).1 (cons_suffix _ _) H
+    {h: ¬z ≥ Nat.succ L} {a : Fin b} (H: M.P (Gap_cons a w h).1) :
+    M.P w.1 := M.preserved_under_suffixes w.1 (Gap_cons a w h).1 (cons_suffix _ _) H
 
 
 /-- Simplifying a list defined by a vacuous `ite`. -/
@@ -131,7 +131,7 @@ theorem subtype_ext {α:Type} (P Q:α→ Prop) (h : ∀ x, P x ↔ Q x):
   congrArg Subtype (funext (fun x => propext (h x)))
 
 /-- Fintype.card extensionality. -/
-theorem fincard_ext {α:Type} (P Q:α→ Prop) (h : ∀ x, P x ↔ Q x)
+theorem fincard_ext {α:Type} {P Q : α → Prop} (h : ∀ x, P x ↔ Q x)
     [Fintype {x : α // P x}][Fintype {x : α // Q x}] :
     Fintype.card {x : α // P x} = Fintype.card {x : α // Q x} := by
   simp_rw [subtype_ext P Q h]
@@ -139,7 +139,7 @@ theorem fincard_ext {α:Type} (P Q:α→ Prop) (h : ∀ x, P x ↔ Q x)
 /-- Two vectors are equal if they have the same length and one is a suffix of the other. -/
 theorem Mathlib.Vector_eq_of_suffix_of_length_eq {L b:ℕ} {w : Mathlib.Vector (Fin b) L}
     {v : Mathlib.Vector (Fin b) L} (hv : w.1 <:+ v.1) : w.1 = v.1 :=
-  List.IsSuffix.eq_of_length hv (by {rw [v.2,w.2]})
+  List.IsSuffix.eq_of_length hv <| Eq.trans w.2 <| .symm v.2
 
 /-- If `i≠j` then `i::w` and `j::w` can't be suffixes of the same Mathlib.Vector `v`.-/
 theorem disjoint_branch''  {L b: ℕ} {M:MonoPred b} {n:ℕ}
@@ -176,11 +176,11 @@ theorem Mathlib.Vector_append_succ_ne_nil {L n b: ℕ}
     {w: Mathlib.Vector (Fin b) (Nat.succ L - Nat.succ n)}
     {v: Mathlib.Vector (Fin b) (Nat.succ L)} {t: List (Fin b)} (ht: t ++ w.1 = v.1) :
     t ≠ List.nil := by
-  intro hc; subst hc;  simp only [List.nil_append] at ht ;
-  apply congr_arg List.length at ht; simp only [Mathlib.Vector.length_val,
-    Nat.succ_sub_succ_eq_sub] at ht
-  have : L - n ≤ L := Nat.sub_le L n; rw [ht] at this; revert this;exact
-    Nat.not_succ_le_self L;
+  intro hc
+  rw [hc, List.nil_append] at ht
+  apply congr_arg List.length at ht
+  simp only [Mathlib.Vector.length_val, Nat.succ_sub_succ_eq_sub] at ht
+  exact Nat.not_succ_le_self L <| ht ▸ (Nat.sub_le L n)
 
 /-- The reverse of a nonempty list is also nonempty. -/
 theorem List_reverse_ne_nil {α : Type} {t : List α} (hlong : t ≠ []) : t.reverse ≠ [] := by
@@ -189,8 +189,9 @@ theorem List_reverse_ne_nil {α : Type} {t : List α} (hlong : t ≠ []) : t.rev
 /-- Reversing a list constructor. -/
 theorem List_reverse_cons {α : Type} {s t: List α} {a: α} (hs: t.reverse = a :: s) :
     t = s.reverse ++ [a] := by
-  apply congrArg List.reverse at hs; simp only [List.reverse_reverse,
-    List.reverse_cons] at hs ;tauto
+  apply congrArg List.reverse at hs
+  rw [List.reverse_reverse, List.reverse_cons] at hs
+  exact hs
 
 
 /-- If `x` and `y` have `w` as a prefix and are of the same length as `w`, then `x=y`. -/
@@ -249,7 +250,9 @@ lemma disjoint_cast {α: Type} {n_1: ℕ} {p: Fin (Nat.succ n_1) → α → Prop
     (∀ (i j : Fin n_1),     i ≠ j → Disjoint (p i.castSucc) (p j.castSucc)) := by
   intro i j hij
   have : Fin.castSucc i ≠ Fin.castSucc j := by
-    contrapose hij; simp only [ne_eq, not_not] at *;exact Fin.castSucc_inj.mp hij
+    contrapose hij
+    simp only [ne_eq, not_not] at *
+    exact Fin.castSucc_inj.mp hij
   exact h (Fin.castSucc i) (Fin.castSucc j) this
 
 
@@ -261,15 +264,15 @@ theorem Fintype_card_subtype_of_disjoint {α:Type} [Fintype α] {n:ℕ} (p : Fin
     List.sum (List.ofFn (fun i ↦ Fintype.card {x:α // p i x}))
       = Fintype.card {x:α // ∃ i, p i x} := by
   induction n with
-  |zero => simp only [Nat.zero_eq, List.ofFn_zero, List.sum_nil,
-    IsEmpty.exists_iff, Fintype.card_eq_zero]
+  |zero => simp
   |succ n_1 n_ih =>
     rw [list_sum_ofFn_succ]
     norm_cast
     rw [
       n_ih (fun i a ↦ p (Fin.castSucc i) a) (disjoint_cast h),
       ← Fintype.card_subtype_or_disjoint _ _ (disjoint_from_last h)
-    ]; apply fincard_ext; exact distinguish_from_last
+    ]
+    exact fincard_ext distinguish_from_last
 
 /-- If x is a proper suffix of y then
   some a :: x is a suffix of y. -/
