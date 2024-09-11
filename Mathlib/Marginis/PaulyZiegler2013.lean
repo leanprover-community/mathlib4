@@ -3,11 +3,10 @@ Copyright (c) 2024 Bjørn Kjos-Hanssen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bjørn Kjos-Hanssen
 -/
-import Mathlib.LinearAlgebra.Matrix.Trace
-import Mathlib.Data.Real.Basic
-import Mathlib.Data.Complex.Basic
 import Mathlib.Data.Fin.Basic
 import Mathlib.Logic.Function.Defs
+import Mathlib.Data.List.OfFn
+import Mathlib.Data.Fin.VecNotation
 /-!
 
 Marginis:
@@ -37,13 +36,9 @@ lemma henkin_implies {n : ℕ} {U : Type} (R : (Fin n → U) → (Fin n → U) �
   use (fun k ↦ Y k (x k))
   tauto
 
-/-- There is only one empty tuple. -/
-lemma empty_tuples {U : Type} (x y : Fin 0 → U) : x = y := List.ofFn_inj.mp rfl
-
-
 /-- There is only one empty tuple so they "all" have the same properties. -/
 lemma empty_tuples_agree {U : Type} (a x : Fin 0 → U) (R : (Fin 0 → U) → (Fin 0 → U) → Prop)
-    (y : Fin 0 → U) (h : R a x) : R a y := (empty_tuples x y) ▸ h
+    (y : Fin 0 → U) (h : R a x) : R a y := ((List.ofFn_inj.mp rfl) : x = y) ▸ h
 
 /-- How large a domain do we need in order to separate Henkin and ∀x ∃y? n=0 is not enough -/
 lemma zero_not_enough : ¬ ∃ U, ∃ (R : (Fin 0 → U) → (Fin 0 → U) → Prop),
