@@ -6,10 +6,11 @@ Authors: Mario Carneiro
 import Batteries.Logic
 import Batteries.Tactic.Exact
 import Batteries.Tactic.Init
+import Mathlib.Logic.Basic
+import Mathlib.Logic.ExistsUnique
 import Mathlib.Tactic.Hint
 import Mathlib.Tactic.DeriveToExpr
 import Mathlib.Util.AtomM
-import Mathlib.Init.Logic
 import Qq
 
 /-!

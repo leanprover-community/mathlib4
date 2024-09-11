@@ -56,11 +56,7 @@ theorem eq_rec_compose {α β φ : Sort u} :
       (Eq.recOn p₁ (Eq.recOn p₂ a : β) : φ) = Eq.recOn (Eq.trans p₂ p₁) a
   | rfl, rfl, _ => rfl
 
-/- xor -/
-
-variable {a b c d : Prop}
-
-def Xor' (a b : Prop) := (a ∧ ¬ b) ∨ (b ∧ ¬ a)
+variable {a b : Prop}
 
 /- iff -/
 
@@ -68,7 +64,8 @@ attribute [refl] Iff.refl
 attribute [trans] Iff.trans
 attribute [symm] Iff.symm
 
-alias ⟨not_of_not_not_not, _⟩ := not_not_not
+-- unused in Mathlib
+@[deprecated (since := "2024-09-11")] alias ⟨not_of_not_not_not, _⟩ := not_not_not
 
 variable (p)
 
@@ -93,93 +90,6 @@ theorem iff_false_iff : (a ↔ False) ↔ ¬a := iff_of_eq (iff_false _)
 theorem false_iff_iff : (False ↔ a) ↔ ¬a := iff_of_eq (false_iff _)
 
 theorem iff_self_iff (a : Prop) : (a ↔ a) ↔ True := iff_of_eq (iff_self _)
-
-/- exists unique -/
-
-def ExistsUnique (p : α → Prop) := ∃ x, p x ∧ ∀ y, p y → y = x
-
-namespace Mathlib.Notation
-open Lean
-
-/--
-Checks to see that `xs` has only one binder.
--/
-def isExplicitBinderSingular (xs : TSyntax ``explicitBinders) : Bool :=
-  match xs with
-  | `(explicitBinders| $_:binderIdent $[: $_]?) => true
-  | `(explicitBinders| ($_:binderIdent : $_)) => true
-  | _ => false
-
-open TSyntax.Compat in
-/--
-`∃! x : α, p x` means that there exists a unique `x` in `α` such that `p x`.
-This is notation for `ExistsUnique (fun (x : α) ↦ p x)`.
-
-This notation does not allow multiple binders like `∃! (x : α) (y : β), p x y`
-as a shorthand for `∃! (x : α), ∃! (y : β), p x y` since it is liable to be misunderstood.
-Often, the intended meaning is instead `∃! q : α × β, p q.1 q.2`.
--/
-macro "∃!" xs:explicitBinders ", " b:term : term => do
-  if !isExplicitBinderSingular xs then
-    Macro.throwErrorAt xs "\
-      The `ExistsUnique` notation should not be used with more than one binder.\n\
-      \n\
-      The reason for this is that `∃! (x : α), ∃! (y : β), p x y` has a completely different \
-      meaning from `∃! q : α × β, p q.1 q.2`. \
-      To prevent confusion, this notation requires that you be explicit \
-      and use one with the correct interpretation."
-  expandExplicitBinders ``ExistsUnique xs b
-
-/--
-Pretty-printing for `ExistsUnique`, following the same pattern as pretty printing for `Exists`.
-However, it does *not* merge binders.
--/
-@[app_unexpander ExistsUnique] def unexpandExistsUnique : Lean.PrettyPrinter.Unexpander
-  | `($(_) fun $x:ident ↦ $b)                      => `(∃! $x:ident, $b)
-  | `($(_) fun ($x:ident : $t) ↦ $b)               => `(∃! $x:ident : $t, $b)
-  | _                                               => throw ()
-
-/--
-`∃! x ∈ s, p x` means `∃! x, x ∈ s ∧ p x`, which is to say that there exists a unique `x ∈ s`
-such that `p x`.
-Similarly, notations such as `∃! x ≤ n, p n` are supported,
-using any relation defined using the `binder_predicate` command.
--/
-syntax "∃! " binderIdent binderPred ", " term : term
-
-macro_rules
-  | `(∃! $x:ident $p:binderPred, $b) => `(∃! $x:ident, satisfies_binder_pred% $x $p ∧ $b)
-  | `(∃! _ $p:binderPred, $b) => `(∃! x, satisfies_binder_pred% x $p ∧ $b)
-
-end Mathlib.Notation
-
--- @[intro] -- TODO
-theorem ExistsUnique.intro {p : α → Prop} (w : α)
-    (h₁ : p w) (h₂ : ∀ y, p y → y = w) : ∃! x, p x := ⟨w, h₁, h₂⟩
-
-theorem ExistsUnique.elim {α : Sort u} {p : α → Prop} {b : Prop}
-    (h₂ : ∃! x, p x) (h₁ : ∀ x, p x → (∀ y, p y → y = x) → b) : b :=
-  Exists.elim h₂ (fun w hw ↦ h₁ w (And.left hw) (And.right hw))
-
-theorem exists_unique_of_exists_of_unique {α : Sort u} {p : α → Prop}
-    (hex : ∃ x, p x) (hunique : ∀ y₁ y₂, p y₁ → p y₂ → y₁ = y₂) : ∃! x, p x :=
-  Exists.elim hex (fun x px ↦ ExistsUnique.intro x px (fun y (h : p y) ↦ hunique y x h px))
-
-theorem ExistsUnique.exists {p : α → Prop} : (∃! x, p x) → ∃ x, p x | ⟨x, h, _⟩ => ⟨x, h⟩
-
-theorem ExistsUnique.unique {α : Sort u} {p : α → Prop}
-    (h : ∃! x, p x) {y₁ y₂ : α} (py₁ : p y₁) (py₂ : p y₂) : y₁ = y₂ :=
-  let ⟨_, _, hy⟩ := h; (hy _ py₁).trans (hy _ py₂).symm
-
-/- exists, forall, exists unique congruences -/
-
--- TODO
--- attribute [congr] forall_congr'
--- attribute [congr] exists_congr'
-
--- @[congr]
-theorem existsUnique_congr {p q : α → Prop} (h : ∀ a, p a ↔ q a) : (∃! a, p a) ↔ ∃! a, q a :=
-  exists_congr fun _ ↦ and_congr (h _) <| forall_congr' fun _ ↦ imp_congr_left (h _)
 
 /- decidable -/
 
@@ -213,9 +123,6 @@ end Decidable
 @[deprecated (since := "2024-09-03")] alias Iff.decidable := instDecidableIff
 @[deprecated (since := "2024-09-03")] alias decidableTrue := instDecidableTrue
 @[deprecated (since := "2024-09-03")] alias decidableFalse := instDecidableFalse
-
-instance {q : Prop} [Decidable p] [Decidable q] : Decidable (Xor' p q) :=
-    inferInstanceAs (Decidable (Or ..))
 
 @[deprecated (since := "2024-09-03")] -- unused in Mathlib
 def IsDecEq {α : Sort u} (p : α → α → Bool) : Prop := ∀ ⦃x y : α⦄, p x y = true → x = y
