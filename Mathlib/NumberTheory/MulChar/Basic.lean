@@ -75,11 +75,11 @@ class MulCharClass (F : Type*) (R R' : outParam Type*) [CommMonoid R]
 
 initialize_simps_projections MulChar (toFun → apply, -toMonoidHom)
 
-attribute [simp] MulCharClass.map_nonunit
-
 end Defi
 
 namespace MulChar
+
+attribute [scoped simp] MulCharClass.map_nonunit
 
 section Group
 
@@ -323,7 +323,7 @@ noncomputable instance commGroup : CommGroup (MulChar R R') :=
   { one := 1
     mul := (· * ·)
     inv := Inv.inv
-    mul_left_inv := inv_mul
+    inv_mul_cancel := inv_mul
     mul_assoc := by
       intro χ₁ χ₂ χ₃
       ext a
@@ -454,7 +454,7 @@ lemma injective_ringHomComp {f : R' →+* R''} (hf : Function.Injective f) :
 
 lemma ringHomComp_eq_one_iff {f : R' →+* R''} (hf : Function.Injective f) {χ : MulChar R R'} :
     χ.ringHomComp f = 1 ↔ χ = 1 := by
-  conv_lhs => rw [← (show  (1 : MulChar R R').ringHomComp f = 1 by ext; simp)]
+  conv_lhs => rw [← (show (1 : MulChar R R').ringHomComp f = 1 by ext; simp)]
   exact (injective_ringHomComp hf).eq_iff
 
 lemma ringHomComp_ne_one_iff {f : R' →+* R''} (hf : Function.Injective f) {χ : MulChar R R'} :
@@ -491,7 +491,7 @@ theorem IsQuadratic.inv {χ : MulChar R R'} (hχ : χ.IsQuadratic) : χ⁻¹ = �
 
 /-- The square of a quadratic character is the trivial character. -/
 theorem IsQuadratic.sq_eq_one {χ : MulChar R R'} (hχ : χ.IsQuadratic) : χ ^ 2 = 1 := by
-  rw [← mul_left_inv χ, pow_two, hχ.inv]
+  rw [← inv_mul_cancel χ, pow_two, hχ.inv]
 
 /-- The `p`th power of a quadratic character is itself, when `p` is the (prime) characteristic
 of the target ring. -/

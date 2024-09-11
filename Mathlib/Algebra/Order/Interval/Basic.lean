@@ -3,8 +3,8 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Algebra.Group.Pointwise.Set
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.Order.Interval.Basic
 
 /-!
@@ -187,8 +187,8 @@ variable [Monoid α] [Preorder α]
 
 @[to_additive existing]
 instance NonemptyInterval.hasPow
-  [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)] :
-  Pow (NonemptyInterval α) ℕ :=
+    [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)] :
+    Pow (NonemptyInterval α) ℕ :=
   ⟨fun s n => ⟨s.toProd ^ n, pow_le_pow_left' s.fst_le_snd _⟩⟩
 
 namespace NonemptyInterval

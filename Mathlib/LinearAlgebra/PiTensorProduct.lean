@@ -313,7 +313,7 @@ def lifts (x : ⨂[R] i, s i) : Set (FreeAddMonoid (R × Π i, s i)) :=
   {p | AddCon.toQuotient (c := addConGen (PiTensorProduct.Eqv R s)) p = x}
 
 /-- An element `p` of `FreeAddMonoid (R × Π i, s i)` lifts an element `x` of `⨂[R] i, s i`
-if and only if `x` is equal to to the sum of `a • ⨂ₜ[R] i, m i` over all the entries
+if and only if `x` is equal to the sum of `a • ⨂ₜ[R] i, m i` over all the entries
 `(a, m)` of `p`.
 -/
 lemma mem_lifts_iff (x : ⨂[R] i, s i) (p : FreeAddMonoid (R × Π i, s i)) :

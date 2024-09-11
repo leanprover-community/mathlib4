@@ -97,11 +97,15 @@ is a probability measure. -/
 theorem cond_isProbabilityMeasure [IsFiniteMeasure μ] (hcs : μ s ≠ 0) :
     IsProbabilityMeasure μ[|s] := cond_isProbabilityMeasure_of_finite μ hcs (measure_ne_top μ s)
 
-instance cond_isFiniteMeasure : IsFiniteMeasure μ[|s] := by
+instance : IsZeroOrProbabilityMeasure μ[|s] := by
   constructor
-  simp only [Measure.coe_smul, Pi.smul_apply, MeasurableSet.univ, Measure.restrict_apply,
-    Set.univ_inter, smul_eq_mul, ProbabilityTheory.cond, ← ENNReal.div_eq_inv_mul]
-  exact ENNReal.div_self_le_one.trans_lt ENNReal.one_lt_top
+  simp only [cond, Measure.coe_smul, Pi.smul_apply, MeasurableSet.univ, Measure.restrict_apply,
+    univ_inter, smul_eq_mul, ← ENNReal.div_eq_inv_mul]
+  rcases eq_or_ne (μ s) 0 with h | h
+  · simp [h]
+  rcases eq_or_ne (μ s) ∞ with h' | h'
+  · simp [h']
+  simp [ENNReal.div_self h h']
 
 theorem cond_toMeasurable_eq :
     μ[|(toMeasurable μ s)] = μ[|s] := by
@@ -139,6 +143,9 @@ theorem cond_apply (hms : MeasurableSet s) (t : Set Ω) : μ[t|s] = (μ s)⁻¹ 
 
 theorem cond_apply' {t : Set Ω} (hA : MeasurableSet t) : μ[t|s] = (μ s)⁻¹ * μ (s ∩ t) := by
   rw [cond, Measure.smul_apply, Measure.restrict_apply hA, Set.inter_comm, smul_eq_mul]
+
+@[simp] lemma cond_apply_self (hs₀ : μ s ≠ 0) (hs : μ s ≠ ∞) : μ[s|s] = 1 := by
+  simpa [cond] using ENNReal.inv_mul_cancel hs₀ hs
 
 theorem cond_inter_self (hms : MeasurableSet s) (t : Set Ω) : μ[s ∩ t|s] = μ[t|s] := by
   rw [cond_apply _ hms, ← Set.inter_assoc, Set.inter_self, ← cond_apply _ hms]
@@ -224,8 +231,7 @@ lemma sum_meas_smul_cond_fiber {X : Ω → α} (hX : Measurable X) (μ : Measure
         Pi.smul_apply, smul_eq_mul]
       simp_rw [mul_comm (μ _), cond_mul_eq_inter _ (hX (.singleton _))]
     _ = _ := by
-      have : ⋃ x ∈ Finset.univ, X ⁻¹' {x} ∩ E = E := by
-        simp only [Finset.mem_univ, iUnion_true]; ext _; simp
+      have : ⋃ x ∈ Finset.univ, X ⁻¹' {x} ∩ E = E := by ext; simp
       rw [← measure_biUnion_finset _ fun _ _ ↦ (hX (.singleton _)).inter hE, this]
       aesop (add simp [PairwiseDisjoint, Set.Pairwise, Function.onFun, disjoint_left])
 

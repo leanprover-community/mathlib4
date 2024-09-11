@@ -5,7 +5,7 @@ Authors: Kenny Lau
 -/
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.Module.BigOperators
-import Mathlib.LinearAlgebra.Basis
+import Mathlib.LinearAlgebra.Basis.Basic
 
 /-!
 # Towers of algebras

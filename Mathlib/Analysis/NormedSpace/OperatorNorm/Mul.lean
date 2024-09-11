@@ -116,7 +116,7 @@ theorem opNorm_mulLeftRight_le :
 /-- This is a mixin class for non-unital normed algebras which states that the left-regular
 representation of the algebra on itself is isometric. Every unital normed algebra with `‖1‖ = 1` is
 a regular normed algebra (see `NormedAlgebra.instRegularNormedAlgebra`). In addition, so is every
-C⋆-algebra, non-unital included (see `CstarRing.instRegularNormedAlgebra`), but there are yet other
+C⋆-algebra, non-unital included (see `CStarRing.instRegularNormedAlgebra`), but there are yet other
 examples. Any algebra with an approximate identity (e.g., $$L^1$$) is also regular.
 
 This is a useful class because it gives rise to a nice norm on the unitization; in particular it is

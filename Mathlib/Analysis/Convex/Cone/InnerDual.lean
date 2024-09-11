@@ -147,6 +147,7 @@ section CompleteSpace
 
 variable [CompleteSpace H]
 
+open scoped InnerProductSpace in
 /-- This is a stronger version of the Hahn-Banach separation theorem for closed convex cones. This
 is also the geometric interpretation of Farkas' lemma. -/
 theorem ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem (K : ConvexCone ℝ H)
@@ -181,7 +182,7 @@ theorem ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem (K : Co
       _ = ⟪b - z, b - z + z⟫_ℝ := (inner_add_right _ _ _).symm
       _ = ⟪b - z, b⟫_ℝ := by rw [sub_add_cancel]
 
-/-- The inner dual of inner dual of a non-empty, closed convex cone is itself.  -/
+/-- The inner dual of inner dual of a non-empty, closed convex cone is itself. -/
 theorem ConvexCone.innerDualCone_of_innerDualCone_eq_self (K : ConvexCone ℝ H)
     (ne : (K : Set H).Nonempty) (hc : IsClosed (K : Set H)) :
     ((K : Set H).innerDualCone : Set H).innerDualCone = K := by

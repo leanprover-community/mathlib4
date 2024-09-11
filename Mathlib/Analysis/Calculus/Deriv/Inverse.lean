@@ -24,9 +24,7 @@ derivative, inverse function
 
 universe u v w
 
-open scoped Classical
-open Topology Filter ENNReal
-
+open scoped Classical Topology ENNReal
 open Filter Asymptotics Set
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]

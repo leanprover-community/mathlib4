@@ -166,15 +166,22 @@ theorem continuum_mul_ofNat {n : ℕ} [Nat.AtLeastTwo n] : 𝔠 * no_index (OfNa
 
 
 @[simp]
-theorem aleph0_power_aleph0 : aleph0.{u} ^ aleph0.{u} = 𝔠 :=
+theorem aleph0_power_aleph0 : ℵ₀ ^ ℵ₀ = 𝔠 :=
   power_self_eq le_rfl
 
 @[simp]
-theorem nat_power_aleph0 {n : ℕ} (hn : 2 ≤ n) : (n ^ aleph0.{u} : Cardinal.{u}) = 𝔠 :=
+theorem nat_power_aleph0 {n : ℕ} (hn : 2 ≤ n) : n ^ ℵ₀ = 𝔠 :=
   nat_power_eq le_rfl hn
 
 @[simp]
-theorem continuum_power_aleph0 : continuum.{u} ^ aleph0.{u} = 𝔠 := by
+theorem continuum_power_aleph0 : 𝔠 ^ ℵ₀ = 𝔠 := by
   rw [← two_power_aleph0, ← power_mul, mul_eq_left le_rfl le_rfl aleph0_ne_zero]
+
+theorem power_aleph0_of_le_continuum {x : Cardinal} (h₁ : 2 ≤ x) (h₂ : x ≤ 𝔠) : x ^ ℵ₀ = 𝔠 := by
+  apply le_antisymm
+  · rw [← continuum_power_aleph0]
+    exact power_le_power_right h₂
+  · rw [← two_power_aleph0]
+    exact power_le_power_right h₁
 
 end Cardinal

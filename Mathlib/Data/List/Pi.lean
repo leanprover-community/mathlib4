@@ -24,12 +24,12 @@ def nil (α : ι → Sort*) : (∀ i ∈ ([] : List ι), α i) :=
 
 variable {i : ι} {l : List ι}
 
-/-- Given `f` a function whose domain is `i :: l`, get its value at `i`.  -/
+/-- Given `f` a function whose domain is `i :: l`, get its value at `i`. -/
 def head (f : ∀ j ∈ i :: l, α j) : α i :=
   f i (mem_cons_self _ _)
 
 /-- Given `f` a function whose domain is `i :: l`, produce a function whose domain
-is restricted to `l`.  -/
+is restricted to `l`. -/
 def tail (f : ∀ j ∈ i :: l, α j) : ∀ j ∈ l, α j :=
   fun j hj ↦ f j (mem_cons_of_mem _ hj)
 

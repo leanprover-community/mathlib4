@@ -89,6 +89,10 @@ instance : Full (essImageInclusion F) :=
 instance : Faithful (essImageInclusion F) :=
   (inferInstance : Faithful (fullSubcategoryInclusion _))
 
+lemma essImage_ext (F : C ⥤ D) {X Y : F.EssImageSubcategory} (f g : X ⟶ Y)
+    (h : F.essImageInclusion.map f = F.essImageInclusion.map g) : f = g := by
+  simpa using h
+
 /--
 Given a functor `F : C ⥤ D`, we have an (essentially surjective) functor from `C` to the essential
 image of `F`.

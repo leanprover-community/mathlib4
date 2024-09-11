@@ -123,9 +123,10 @@ theorem mul_sub_algebraMap_commutes [Ring A] [Algebra R A] (x : A) (r : R) :
 
 theorem mul_sub_algebraMap_pow_commutes [Ring A] [Algebra R A] (x : A) (r : R) (n : ℕ) :
     x * (x - algebraMap R A r) ^ n = (x - algebraMap R A r) ^ n * x := by
-  induction' n with n ih
-  · simp
-  · rw [pow_succ', ← mul_assoc, mul_sub_algebraMap_commutes, mul_assoc, ih, ← mul_assoc]
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [pow_succ', ← mul_assoc, mul_sub_algebraMap_commutes, mul_assoc, ih, ← mul_assoc]
 
 end CommSemiring
 
@@ -283,6 +284,16 @@ theorem algebraMap_injective [CommRing R] [Ring A] [Nontrivial A] [Algebra R A]
     [NoZeroSMulDivisors R A] : Function.Injective (algebraMap R A) := by
   simpa only [algebraMap_eq_smul_one'] using smul_left_injective R one_ne_zero
 
+@[simp]
+lemma algebraMap_eq_zero_iff [CommRing R] [Ring A] [Nontrivial A] [Algebra R A]
+    [NoZeroSMulDivisors R A] {r : R} : algebraMap R A r = 0 ↔ r = 0 :=
+  map_eq_zero_iff _ <| algebraMap_injective R A
+
+@[simp]
+lemma algebraMap_eq_one_iff [CommRing R] [Ring A] [Nontrivial A] [Algebra R A]
+    [NoZeroSMulDivisors R A] {r : R} : algebraMap R A r = 1 ↔ r = 1 :=
+  map_eq_one_iff _ <| algebraMap_injective R A
+
 theorem _root_.NeZero.of_noZeroSMulDivisors (n : ℕ) [CommRing R] [NeZero (n : R)] [Ring A]
     [Nontrivial A] [Algebra R A] [NoZeroSMulDivisors R A] : NeZero (n : A) :=
   NeZero.nat_of_injective <| NoZeroSMulDivisors.algebraMap_injective R A
@@ -335,7 +346,7 @@ theorem NoZeroSMulDivisors.trans (R A M : Type*) [CommRing R] [Ring A] [IsDomain
     [NoZeroSMulDivisors A M] : NoZeroSMulDivisors R M := by
   refine ⟨fun {r m} h => ?_⟩
   rw [algebra_compatible_smul A r m] at h
-  cases' smul_eq_zero.1 h with H H
+  rcases smul_eq_zero.1 h with H | H
   · have : Function.Injective (algebraMap R A) :=
       NoZeroSMulDivisors.iff_algebraMap_injective.1 inferInstance
     left

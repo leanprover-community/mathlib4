@@ -106,3 +106,5 @@ theorem comp_assoc {Q : Type*} [Monoid Q]
     exact ⟨by simp only [← κ.comp_eq, ← h, ← κ'.comp_eq, MonoidHom.comp_assoc]⟩
 
 end MonoidHom.CompTriple
+
+end MonoidHomCompTriple
