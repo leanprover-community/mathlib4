@@ -12,7 +12,7 @@ import Mathlib.Order.WellFounded
 This file defines initial and principal segment embeddings. Though these definitions make sense for
 arbitrary relations, they're intended for use with well orders.
 
-An initial segment is simply a lower set. A principal segment is a set of the form `Set.Iic x` for some `x`.
+An initial segment is simply a lower set. A principal segment is a set of the form `Set.Iio x` for some `x`.
 
 An initial segment embedding `r ≼i s` is an order embedding `r ↪ s` such that its range is an
 initial segment. Likewise, a principal segment embedding `r ≺i s` has a principal segment for a
@@ -39,10 +39,10 @@ variable {α : Type*} {β : Type*} {γ : Type*} {r : α → α → Prop} {s : β
 open Function
 
 /-- If `r` is a relation on `α` and `s` in a relation on `β`, then `f : r ≼i s` is an order
-embedding whose `Set.range` is downwards closed. That is, whenever `b < f a` in `β` then `b` is in
-the range of `f`. -/
+embedding whose `Set.range` is a lower set. That is, whenever `b < f a` in `β` then `b` is in the
+range of `f`. -/
 structure InitialSeg {α β : Type*} (r : α → α → Prop) (s : β → β → Prop) extends r ↪r s where
-  /-- The range of the embedding is downwards closed. -/
+  /-- The range of the embedding is a lower set. -/
   init' : ∀ a b, s b (toRelEmbedding a) → b ∈ Set.range toRelEmbedding
 
 @[inherit_doc]
@@ -197,8 +197,8 @@ end InitialSeg
 /-! ### Principal segments -/
 
 /-- If `r` is a relation on `α` and `s` in a relation on `β`, then `f : r ≺i s` is an initial
-segment embedding that isn't surjective. We express this via the existence of `top` such that the
-range of `f` is `Iio top`. -/
+segment embedding whose range is `Set.Iio top` for some element `top`. If `β` is a well-order, this
+is equivalent to the function not being surjective. -/
 structure PrincipalSeg {α β : Type*} (r : α → α → Prop) (s : β → β → Prop) extends r ↪r s where
   /-- The supremum of the principal segment. -/
   top : β
