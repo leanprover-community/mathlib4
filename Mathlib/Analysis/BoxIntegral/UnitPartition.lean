@@ -2,24 +2,24 @@
 Copyright (c) 2024 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
- -/
-import Mathlib.Algebra.Module.ZLattice.Basic
-import Mathlib.Analysis.BoxIntegral.Integrability
+-/
+import Mathlib.Analysis.BoxIntegral.Partition.Measure
+import Mathlib.Analysis.BoxIntegral.Partition.Tagged
 
- /-!
+/-!
 # Unit Partition
 
-`BoxIntegral.unitPartition.Box` are boxes in `ι → ℝ` obtained by dividing the unit box
-into smaller boxes with sides of length `1 / n` and then translating by the lattice `ι → ℤ` so
-that they cover the whole space. There are indexed by the positive integer `n` and a
-vector `ν : ι → ℤ`.
+Fix `n` a positive integer. `BoxIntegral.unitPartition.Box` are boxes in `ι → ℝ` obtained by
+dividing the unit box uniformly into boxes of side length `1 / n` and translating the boxes by
+the lattice `ι → ℤ` so that they cover the whole space. For fixed `n`, there are indexed by
+vectors `ν : ι → ℤ`.
 
 Let `B` be a `BoxIntegral`. A `unitPartition.Box` is admissible for `B` (more precisely its index is
 admissible) if it is contained in `B`. There are finitely many admissible `unitPartition.Box` for
 `B` and thus we can form the corresponing tagged prepartition, see
 `BoxIntegral.unitPartition.prepartition` (note that each `unitPartition.Box` coming with its
 tag situed at its "upper most" corner). If `B` satifies `BoxIntegral.hasIntegralVertices`, that
-is its vertices are in `ι → ℤ`, then the corresponding prepartition is actually a partition.
+is its corners are in `ι → ℤ`, then the corresponding prepartition is actually a partition.
 
 ## Main results
 
@@ -42,21 +42,21 @@ noncomputable section
 
 variable {ι : Type*}
 
-section hasIntegralVertices
+section hasIntegralCorners
 
 open Bornology
 
 /-- A `BoxIntegral.Box` has integral devices if its corners has coordinates in `ℤ`. -/
-def BoxIntegral.hasIntegralVertices (B : Box ι) : Prop :=
+def BoxIntegral.hasIntegralCorners (B : Box ι) : Prop :=
   ∃ l u : ι → ℤ, (∀ i, B.lower i = l i) ∧ (∀ i, B.upper i = u i)
 
-/-- Any bounded set is contained in a `BoxIntegral.Box` with integral vertices. -/
+/-- Any bounded set is contained in a `BoxIntegral.Box` with integral corners. -/
 theorem BoxIntegral.le_hasIntegralVertices_of_isBounded [Finite ι] {s : Set (ι → ℝ)}
     (h : IsBounded s) :
-    ∃ B : BoxIntegral.Box ι, hasIntegralVertices B ∧ s ≤ B := by
+    ∃ B : BoxIntegral.Box ι, hasIntegralCorners B ∧ s ≤ B := by
   have := Fintype.ofFinite ι
   obtain ⟨R, hR₁, hR₂⟩ := IsBounded.subset_ball_lt h 0 0
-  letI C : ℕ+ := ⟨⌈R⌉₊, Nat.ceil_pos.mpr hR₁⟩
+  let C : ℕ+ := ⟨⌈R⌉₊, Nat.ceil_pos.mpr hR₁⟩
   let I : Box ι := BoxIntegral.Box.mk (fun _ ↦ - C) (fun _ ↦ C ) (fun _ ↦ by norm_num [hR₁])
   refine ⟨I, ⟨fun _ ↦ - C, fun _ ↦ C, by aesop⟩, le_trans hR₂ ?_⟩
   suffices Metric.ball (0 : ι → ℝ) C ≤ I from
@@ -65,7 +65,7 @@ theorem BoxIntegral.le_hasIntegralVertices_of_isBounded [Finite ι] {s : Set (ι
   simp_rw [mem_ball_zero_iff, pi_norm_lt_iff (by aesop : (0:ℝ) < C), Real.norm_eq_abs, abs_lt] at hx
   exact fun i ↦ ⟨(hx i).1, le_of_lt (hx i).2⟩
 
-end hasIntegralVertices
+end hasIntegralCorners
 
 namespace BoxIntegral.unitPartition
 
@@ -73,12 +73,20 @@ open Bornology MeasureTheory Fintype BoxIntegral
 
 variable (n : ℕ+)
 
-/-- The `BoxIntegral.unitPartition.Box` are the boxes obtained by dividing the unit box into `n`
-parts and then translating so that they cover the whole space. -/
+/-- A `BoxIntegral`, indexed by a positive integer `n` and `ν : ι → ℤ`, with corners `ν i / n`
+and of side length `1 / n`. -/
 def box (ν : ι → ℤ) : Box ι where
   lower := fun i ↦ ν i / n
   upper := fun i ↦ ν i / n + 1 / n
   lower_lt_upper := fun _ ↦ by norm_num
+
+@[simp]
+theorem box_lower (ν : ι → ℤ) :
+    (box n ν).lower = fun i ↦ (ν i / n : ℝ) := rfl
+
+@[simp]
+theorem box_upper (ν : ι → ℤ) :
+    (box n ν).upper = fun i ↦ (ν i / n + 1 / n : ℝ) := rfl
 
 variable {n} in
 @[simp]
@@ -92,22 +100,7 @@ theorem mem_box_iff' {ν : ι → ℤ} {x : ι → ℝ} :
   have h_npos : 0 < (n:ℝ) := Nat.cast_pos.mpr <| PNat.pos n
   simp_rw [mem_box_iff, ← _root_.le_div_iff₀' h_npos, ← div_lt_iff' h_npos, add_div]
 
-/-- For `x : ι → ℝ`, its index is the index of the unique `BoxIntegral.unitPartition.Box` to which
-it belongs`. -/
-def index (x : ι → ℝ) (i : ι) : ℤ := ⌈n * x i⌉ - 1
-
-@[simp]
-theorem index_apply {x : ι → ℝ} (i : ι) :
-    index n x i = ⌈n * x i⌉ - 1 := rfl
-
-variable {n} in
-theorem mem_box_iff_index {x : ι → ℝ} {ν : ι → ℤ} :
-    x ∈ box n ν ↔ index n x = ν := by
-  rw [mem_box_iff', Function.funext_iff]
-  simp_rw [index_apply, sub_eq_iff_eq_add, Int.ceil_eq_iff, Int.cast_add, Int.cast_one,
-    add_sub_cancel_right]
-
-/-- The tag of a `BoxIntegral.unitPartition.Box`. -/
+/-- The tag of a `unitPartition.Box`. -/
 abbrev tag (ν : ι → ℤ) : ι → ℝ := fun i ↦ (ν i + 1) / n
 
 @[simp]
@@ -125,15 +118,28 @@ theorem tag_mem (ν : ι → ℤ) :
   rw [tag, add_div]
   exact ⟨by norm_num, le_rfl⟩
 
+/-- For `x : ι → ℝ`, its index is the index of the unique `unitPartition.Box` to which
+it belongs. -/
+def index (x : ι → ℝ) (i : ι) : ℤ := ⌈n * x i⌉ - 1
+
+@[simp]
+theorem index_apply {x : ι → ℝ} (i : ι) :
+    index n x i = ⌈n * x i⌉ - 1 := rfl
+
+variable {n} in
+theorem mem_box_iff_index {x : ι → ℝ} {ν : ι → ℤ} :
+    x ∈ box n ν ↔ index n x = ν := by
+  simp_rw [mem_box_iff', Function.funext_iff, index_apply, sub_eq_iff_eq_add, Int.ceil_eq_iff,
+    Int.cast_add, Int.cast_one, add_sub_cancel_right]
+
 @[simp]
 theorem index_tag (ν : ι → ℤ) :
     index n (tag n ν) = ν := mem_box_iff_index.mp (tag_mem n ν)
 
 variable {n} in
-theorem disjoint_box {ν ν' : ι → ℤ} :
+theorem disjoint {ν ν' : ι → ℤ} :
     ν ≠ ν' ↔ Disjoint (box n ν).toSet (box n ν').toSet := by
   rw [not_iff_not.symm, ne_eq, not_not, Set.not_disjoint_iff]
-  simp_rw [Box.mem_coe]
   refine ⟨fun h ↦ ?_, fun ⟨x, hx, hx'⟩ ↦ ?_⟩
   · exact ⟨tag n ν, tag_mem n ν, h ▸ tag_mem n ν⟩
   · rw [← mem_box_iff_index.mp hx, ← mem_box_iff_index.mp hx']
@@ -141,7 +147,7 @@ theorem disjoint_box {ν ν' : ι → ℤ} :
 theorem box_injective : Function.Injective (fun ν : ι → ℤ ↦ box n ν) := by
   intro _ _ h
   contrapose! h
-  exact Box.ne_of_disjoint_coe (disjoint_box.mp h)
+  exact Box.ne_of_disjoint_coe (disjoint.mp h)
 
 variable [Fintype ι]
 
@@ -157,9 +163,8 @@ theorem diam_boxIcc (ν : ι → ℤ) :
 theorem volume_box (ν : ι → ℤ) :
     volume (box n ν : Set (ι → ℝ)) = 1 / n ^ card ι := by
   simp_rw [volume_pi, BoxIntegral.Box.coe_eq_pi, Measure.pi_pi, Real.volume_Ioc, box,
-    add_sub_cancel_left]
-  rw [Finset.prod_const, ENNReal.ofReal_div_of_pos (Nat.cast_pos.mpr n.pos), ENNReal.ofReal_one,
-    ENNReal.ofReal_natCast, Finset.card_univ, one_div, one_div, ENNReal.inv_pow]
+    add_sub_cancel_left, Finset.prod_const, ENNReal.ofReal_div_of_pos (Nat.cast_pos.mpr n.pos),
+    ENNReal.ofReal_one, ENNReal.ofReal_natCast, Finset.card_univ, one_div, ENNReal.inv_pow]
 
 theorem setFinite_index {s : Set (ι → ℝ)} (hs₁ : NullMeasurableSet s) (hs₂ : volume s ≠ ⊤) :
     Set.Finite {ν : ι → ℤ | ↑(box n ν) ⊆ s} := by
@@ -168,13 +173,13 @@ theorem setFinite_index {s : Set (ι → ℝ)} (hs₁ : NullMeasurableSet s) (hs
       (fun _ hν ↦ ?_)
   · refine NullMeasurableSet.inter ?_ hs₁
     exact (box n ν).measurableSet_coe.nullMeasurableSet
-  · exact ((Disjoint.inter_right _ (disjoint_box.mp h)).inter_left _ ).aedisjoint
+  · exact ((Disjoint.inter_right _ (disjoint.mp h)).inter_left _ ).aedisjoint
   · exact lt_top_iff_ne_top.mp <| measure_lt_top_of_subset (by aesop) hs₂
   · rw [Set.mem_setOf, Set.inter_eq_self_of_subset_left hν, volume_box]
 
-/-- For `B : BoxIntegral.Box`, the set of admissible index is the set of all the indices of
-`BoxIntegral.unitPartition.Box` that are subset of `B`. It is a finite set. These boxes cover `B`
-if it has integral vertices, see `BoxIntegral.unitPartition.prepartition_isPartition`. -/
+/-- For `B : BoxIntegral.Box`, the set of indices of `unitPartition.Box` that are subset of `B`.
+It is a finite set. These boxes cover `B` if it has integral corners, see
+`unitPartition.prepartition_isPartition`. -/
 def admissibleIndex (B : Box ι) : Finset (ι → ℤ) := by
   refine (setFinite_index n B.measurableSet_coe.nullMeasurableSet ?_).toFinset
   exact lt_top_iff_ne_top.mp (IsBounded.measure_lt_top B.isBounded)
@@ -186,7 +191,7 @@ theorem mem_admissibleIndex_iff {B : Box ι} {ν : ι → ℤ} :
 
 open Classical in
 /-- For `B : BoxIntegral.Box`, the `TaggedPrepartition` formed by the set of all
-`BoxIntegral.unitPartition.Box` that are subset of `B`. -/
+`unitPartition.Box` whose index is `B`-admissible. -/
 def prepartition (B : Box ι) : TaggedPrepartition B where
   boxes := Finset.image (fun ν ↦ box n ν) (admissibleIndex n B)
   le_of_mem' _ hI := by
@@ -195,7 +200,7 @@ def prepartition (B : Box ι) : TaggedPrepartition B where
   pairwiseDisjoint _ hI₁ _ hI₂ h := by
     obtain ⟨_, _, rfl⟩ := Finset.mem_image.mp hI₁
     obtain ⟨_, _, rfl⟩ := Finset.mem_image.mp hI₂
-    exact disjoint_box.mp fun x ↦ h (congrArg (box n) x)
+    exact disjoint.mp fun x ↦ h (congrArg (box n) x)
   tag I := by
     by_cases hI : ∃ ν ∈ admissibleIndex n B, I = box n ν
     · exact tag n hI.choose
@@ -247,37 +252,37 @@ theorem prepartition_isSubordinate (B : Box ι) {r : ℝ} (hr : 0 < r) (hn : 1 /
     exact Box.coe_subset_Icc (tag_mem _ _)
   · exact le_trans (diam_boxIcc n ν) hn
 
-/-- If `B : BoxIntegral.Box` has integral vertices and contains the point `x`, then it contains the
-`BoxIntegral.unitPartition.Box` if index `index n x`. -/
-theorem mem_admissibleIndex_of_mem_box {B : Box ι} (hB : hasIntegralVertices B) {x : ι → ℝ}
+theorem mem_admissibleIndex_of_mem_box_aux₁ (x : ℝ) (a : ℤ) :
+    a < x ↔ a ≤ (⌈n * x⌉ - 1) / (n : ℝ) := by
+  rw [le_div_iff₀' (by positivity), le_sub_iff_add_le, show (n : ℝ) * a + 1 =
+    (n * a + 1 : ℤ) by norm_cast, Int.cast_le, Int.add_one_le_ceil_iff, Int.cast_mul,
+    Int.cast_natCast, mul_lt_mul_left (by positivity)]
+
+theorem mem_admissibleIndex_of_mem_box_aux₂ (x : ℝ) (a : ℤ) :
+    x ≤ a ↔ (⌈n * x⌉ - 1) / (n : ℝ) + 1 / n ≤ a := by
+  rw [← add_div, sub_add_cancel, div_le_iff₀' (by positivity), show (n : ℝ) * a = (n * a : ℤ)
+    by norm_cast, Int.cast_le, Int.ceil_le, Int.cast_mul, Int.cast_natCast, mul_le_mul_left
+    (by positivity)]
+
+/-- If `B : BoxIntegral.Box` has integral corners and contains the point `x`, then the index of
+`x` is admissible for `B`. -/
+theorem mem_admissibleIndex_of_mem_box {B : Box ι} (hB : hasIntegralCorners B) {x : ι → ℝ}
     (hx : x ∈ B) : index n x ∈ admissibleIndex n B := by
-  have h : (0 : ℝ) < n := by aesop
-  have ineq₁ : ∀ ⦃x : ℝ⦄ ⦃a : ℤ⦄, a < x ↔ a ≤ (⌈n * x⌉ - 1 : ℤ) / (n : ℝ) := by
-    intro x a
-    rw [le_div_iff₀' h, Int.cast_sub, Int.cast_one, le_sub_iff_add_le, show (n : ℝ) * a + 1 =
-      (n * a + 1 : ℤ) by norm_cast, Int.cast_le, Int.add_one_le_ceil_iff, Int.cast_mul,
-      Int.cast_natCast, mul_lt_mul_left h]
-  have ineq₂ : ∀ ⦃x : ℝ⦄ ⦃a : ℤ⦄, x ≤ a ↔ (⌈n * x⌉ - 1 : ℤ) / (n : ℝ) + 1 / n ≤ a := by
-    intro x a
-    rw [Int.cast_sub, Int.cast_one, ← add_div, sub_add_cancel, div_le_iff₀' h, show (n : ℝ) * a =
-      (n * a : ℤ) by norm_cast, Int.cast_le, Int.ceil_le, Int.cast_mul, Int.cast_natCast,
-      mul_le_mul_left h]
   obtain ⟨l, u, hl, hu⟩ := hB
-  simp_rw [Box.mem_def, Set.mem_Ioc] at hx
-  simp_rw [mem_admissibleIndex_iff, Box.le_iff_bounds, box, Pi.le_def, index_apply, hl, hu]
-  exact ⟨fun i ↦ ineq₁.mp (hl i ▸ (hx i).1), fun i ↦ ineq₂.mp (hu i ▸ (hx i).2)⟩
+  simp_rw [mem_admissibleIndex_iff, Box.le_iff_bounds, box_lower, box_upper, Pi.le_def,
+    index_apply, hl, hu, ← forall_and]
+  push_cast
+  refine fun i ↦ ⟨?_, ?_⟩
+  · exact (mem_admissibleIndex_of_mem_box_aux₁ n (x i) (l i)).mp ((hl i) ▸ (hx i).1)
+  · exact (mem_admissibleIndex_of_mem_box_aux₂ n (x i) (u i)).mp ((hu i) ▸ (hx i).2)
 
-theorem exists_admissibleIndex {B : Box ι} (hB : hasIntegralVertices B) {x : ι → ℝ} (hx : x ∈ B) :
-    ∃ ν ∈ admissibleIndex n B, box n ν = box n (index n x) :=
-  ⟨index n x, mem_admissibleIndex_of_mem_box n hB hx, rfl⟩
-
-/-- If `B : BoxIntegral.Box` has integral vertices, then `prepartition n B` is a partition of
+/-- If `B : BoxIntegral.Box` has integral corners, then `prepartition n B` is a partition of
 `B`. -/
-theorem prepartition_isPartition {B : Box ι} (hB : hasIntegralVertices B) :
+theorem prepartition_isPartition {B : Box ι} (hB : hasIntegralCorners B) :
     (prepartition n B).IsPartition := by
   refine fun x hx ↦ ⟨box n (index n x), ?_, mem_box_iff_index.mpr rfl⟩
-  rw [BoxIntegral.TaggedPrepartition.mem_toPrepartition, mem_prepartition_iff]
-  exact exists_admissibleIndex n hB hx
+  rw [TaggedPrepartition.mem_toPrepartition, mem_prepartition_iff]
+  exact ⟨index n x, mem_admissibleIndex_of_mem_box n hB hx, rfl⟩
 
 open Submodule Pointwise BigOperators
 
