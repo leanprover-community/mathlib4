@@ -12,34 +12,34 @@ import Mathlib.Logic.Equiv.TransferInstance
 import Mathlib.Data.Finsupp.MonomialOrder
 import Mathlib.RingTheory.MvPolynomial.MonomialOrder
 
-/-! # Division algorithm with respect to monomial orders 
+/-! # Division algorithm with respect to monomial orders
 
 We provide a division algorithm with respect to monomial orders in polynomial rings.
-Let `R` be a commutative ring, `σ` a type of indeterminates and `m : MonomialOrder σ` 
+Let `R` be a commutative ring, `σ` a type of indeterminates and `m : MonomialOrder σ`
 a monomial ordering on `σ →₀ ℕ`.
 
 Consider a family of polynomials `b : ι → MvPolynomial σ R` with invertible leading coefficients
 (with respect to `m`) : we assume `hb : ∀ i, IsUnit (m.lCoeff (b i))`).
 
-* `MonomialOrder.div hb f` furnishes 
-  - a finitely supported family `g : ι →₀ MvPolynomial σ R` 
-  - and a “remainder” `r : MvPolynomial σ R` 
+* `MonomialOrder.div hb f` furnishes
+  - a finitely supported family `g : ι →₀ MvPolynomial σ R`
+  - and a “remainder” `r : MvPolynomial σ R`
 such that the three properties hold:
-  (1) One has `f = ∑ (g i) * (b i) + r` 
+  (1) One has `f = ∑ (g i) * (b i) + r`
   (2) For every `i`, `m.degree ((g i) * (b i)` is less than or equal to that of `f`
-  (3) For every `i`, every monomial in the support of `r` is strictly smaller 
+  (3) For every `i`, every monomial in the support of `r` is strictly smaller
     than the leading term of `b i`,
 
-The proof is done by induction, using two standard constructions 
+The proof is done by induction, using two standard constructions
 
 * `MonomialOrder.subLTerm f` deletes the leading term of a polynomial `f`
 
 * `MonomialOrder.reduce hb f` subtracts from `f` the appropriate multiple of `b : MvPolynomial σ R`,
-provided `IsUnit (m.lCoeff b)`. 
+provided `IsUnit (m.lCoeff b)`.
 
 * `MonomialOrder.div_set` is the variant of `MonomialOrder.div` for a set of polynomials.
 
-## Reference : [Becker-Weispfenning1993] 
+## Reference : [Becker-Weispfenning1993]
 
 ## TODO
 
