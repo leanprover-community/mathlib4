@@ -113,12 +113,12 @@ theorem area_disc : volume (disc r) = NNReal.pi * r ^ 2 := by
       ring
     · suffices -(1 : ℝ) < (r : ℝ)⁻¹ * x by exact this.ne'
       calc
-        -(1 : ℝ) = (r : ℝ)⁻¹ * -r := by simp [inv_mul_cancel hlt.ne']
+        -(1 : ℝ) = (r : ℝ)⁻¹ * -r := by simp [inv_mul_cancel₀ hlt.ne']
         _ < (r : ℝ)⁻¹ * x := by nlinarith [inv_pos.mpr hlt]
     · suffices (r : ℝ)⁻¹ * x < 1 by exact this.ne
       calc
         (r : ℝ)⁻¹ * x < (r : ℝ)⁻¹ * r := by nlinarith [inv_pos.mpr hlt]
-        _ = 1 := inv_mul_cancel hlt.ne'
+        _ = 1 := inv_mul_cancel₀ hlt.ne'
     · nlinarith
   have hcont : ContinuousOn F (Icc (-r) r) := (by continuity : Continuous F).continuousOn
   calc
@@ -126,6 +126,6 @@ theorem area_disc : volume (disc r) = NNReal.pi * r ^ 2 := by
       integral_eq_sub_of_hasDerivAt_of_le (neg_le_self r.2) hcont hderiv
         (continuous_const.mul hf).continuousOn.intervalIntegrable
     _ = NNReal.pi * (r : ℝ) ^ 2 := by
-      norm_num [F, inv_mul_cancel hlt.ne', ← mul_div_assoc, mul_comm π]
+      norm_num [F, inv_mul_cancel₀ hlt.ne', ← mul_div_assoc, mul_comm π]
 
 end Theorems100

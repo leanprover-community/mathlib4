@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
 import Mathlib.Data.Set.Subsingleton
-import Mathlib.Order.WithBot
+import Mathlib.Tactic.Use
 import Batteries.Tactic.Congr
+import Mathlib.Order.TypeTags
+import Mathlib.Data.Option.Basic
 
 /-!
 # Images and preimages of sets
@@ -134,8 +136,9 @@ theorem preimage_comp_eq : preimage (g ∘ f) = preimage f ∘ preimage g :=
   rfl
 
 theorem preimage_iterate_eq {f : α → α} {n : ℕ} : Set.preimage f^[n] = (Set.preimage f)^[n] := by
-  induction' n with n ih; · simp
-  rw [iterate_succ, iterate_succ', preimage_comp_eq, ih]
+  induction n with
+  | zero => simp
+  | succ n ih => rw [iterate_succ, iterate_succ', preimage_comp_eq, ih]
 
 theorem preimage_preimage {g : β → γ} {f : α → β} {s : Set γ} :
     f ⁻¹' (g ⁻¹' s) = (fun x => g (f x)) ⁻¹' s :=
@@ -174,7 +177,7 @@ section Image
 
 variable {f : α → β} {s t : Set α}
 
--- Porting note: `Set.image` is already defined in `Init.Set`
+-- Porting note: `Set.image` is already defined in `Data.Set.Defs`
 
 @[deprecated mem_image (since := "2024-03-23")]
 theorem mem_image_iff_bex {f : α → β} {s : Set α} {y : β} :
@@ -190,7 +193,7 @@ theorem _root_.Function.Injective.mem_set_image {f : α → β} (hf : Injective 
 
 lemma preimage_subset_of_surjOn {t : Set β} (hf : Injective f) (h : SurjOn f s t) :
     f ⁻¹' t ⊆ s := fun _ hx ↦
-  hf.mem_set_image.1 $ h hx
+  hf.mem_set_image.1 <| h hx
 
 theorem forall_mem_image {f : α → β} {s : Set α} {p : β → Prop} :
     (∀ y ∈ f '' s, p y) ↔ ∀ ⦃x⦄, x ∈ s → p (f x) := by simp
@@ -298,7 +301,7 @@ theorem image_eq_empty {α β} {f : α → β} {s : Set α} : f '' s = ∅ ↔ s
   simp only [eq_empty_iff_forall_not_mem]
   exact ⟨fun H a ha => H _ ⟨_, ha, rfl⟩, fun H b ⟨_, ha, _⟩ => H _ ha⟩
 
--- Porting note: `compl` is already defined in `Init.Set`
+-- Porting note: `compl` is already defined in `Data.Set.Defs`
 theorem preimage_compl_eq_image_compl [BooleanAlgebra α] (S : Set α) :
     HasCompl.compl ⁻¹' S = HasCompl.compl '' S :=
   Set.ext fun x =>
@@ -937,19 +940,7 @@ theorem range_diff_image {f : α → β} (H : Injective f) (s : Set α) : range 
 @[simp]
 theorem range_inclusion (h : s ⊆ t) : range (inclusion h) = { x : t | (x : α) ∈ s } := by
   ext ⟨x, hx⟩
-  -- Porting note: `simp [inclusion]` doesn't solve goal
-  apply Iff.intro
-  · rw [mem_range]
-    rintro ⟨a, ha⟩
-    rw [inclusion, Subtype.mk.injEq] at ha
-    rw [mem_setOf, Subtype.coe_mk, ← ha]
-    exact Subtype.coe_prop _
-  · rw [mem_setOf, Subtype.coe_mk, mem_range]
-    intro hx'
-    use ⟨x, hx'⟩
-    trivial
-  -- simp_rw [inclusion, mem_range, Subtype.mk_eq_mk]
-  -- rw [SetCoe.exists, Subtype.coe_mk, exists_prop, exists_eq_right, mem_set_of, Subtype.coe_mk]
+  simp
 
 -- When `f` is injective, see also `Equiv.ofInjective`.
 theorem leftInverse_rangeSplitting (f : α → β) :
@@ -1294,13 +1285,13 @@ theorem preimage_injective : Injective (preimage f) ↔ Surjective f := by
 @[simp]
 theorem preimage_surjective : Surjective (preimage f) ↔ Injective f := by
   refine ⟨fun h x x' hx => ?_, Injective.preimage_surjective⟩
-  cases' h {x} with s hs; have := mem_singleton x
+  rcases h {x} with ⟨s, hs⟩; have := mem_singleton x
   rwa [← hs, mem_preimage, hx, ← mem_preimage, hs, mem_singleton_iff, eq_comm] at this
 
 @[simp]
 theorem image_surjective : Surjective (image f) ↔ Surjective f := by
   refine ⟨fun h y => ?_, Surjective.image_surjective⟩
-  cases' h {y} with s hs
+  rcases h {y} with ⟨s, hs⟩
   have := mem_singleton y; rw [← hs] at this; rcases this with ⟨x, _, hx⟩
   exact ⟨x, hx⟩
 

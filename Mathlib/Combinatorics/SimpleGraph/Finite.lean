@@ -128,7 +128,7 @@ theorem edgeFinset_deleteEdges [DecidableEq V] [Fintype G.edgeSet] (s : Finset (
 section DeleteFar
 
 -- Porting note: added `Fintype (Sym2 V)` argument.
-variable {𝕜 : Type*} [OrderedRing 𝕜] [Fintype V] [Fintype (Sym2 V)]
+variable {𝕜 : Type*} [OrderedRing 𝕜]
   [Fintype G.edgeSet] {p : SimpleGraph V → Prop} {r r₁ r₂ : 𝕜}
 
 /-- A graph is `r`-*delete-far* from a property `p` if we must delete at least `r` edges from it to
@@ -138,7 +138,7 @@ def DeleteFar (p : SimpleGraph V → Prop) (r : 𝕜) : Prop :=
 
 variable {G}
 
-theorem deleteFar_iff :
+theorem deleteFar_iff [Fintype (Sym2 V)] :
     G.DeleteFar p r ↔ ∀ ⦃H : SimpleGraph _⦄ [DecidableRel H.Adj],
       H ≤ G → p H → r ≤ G.edgeFinset.card - H.edgeFinset.card := by
   classical
@@ -242,7 +242,7 @@ theorem mem_incidenceFinset [DecidableEq V] (e : Sym2 V) :
   Set.mem_toFinset
 
 theorem incidenceFinset_eq_filter [DecidableEq V] [Fintype G.edgeSet] :
-    G.incidenceFinset v = G.edgeFinset.filter (Membership.mem v) := by
+    G.incidenceFinset v = G.edgeFinset.filter (v ∈ ·) := by
   ext e
   induction e
   simp [mk'_mem_incidenceSet_iff]
@@ -278,7 +278,7 @@ section Finite
 variable [Fintype V]
 
 instance neighborSetFintype [DecidableRel G.Adj] (v : V) : Fintype (G.neighborSet v) :=
-  @Subtype.fintype _ _
+  @Subtype.fintype _ (· ∈ G.neighborSet v)
     (by
       simp_rw [mem_neighborSet]
       infer_instance)

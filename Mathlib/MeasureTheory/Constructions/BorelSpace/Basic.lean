@@ -37,7 +37,7 @@ noncomputable section
 
 open Set Filter MeasureTheory
 
-open scoped Classical Topology NNReal ENNReal MeasureTheory
+open scoped Topology NNReal ENNReal MeasureTheory
 
 universe u v w x y
 
@@ -54,14 +54,6 @@ theorem borel_anti : Antitone (@borel α) := fun _ _ h =>
 
 theorem borel_eq_top_of_discrete [TopologicalSpace α] [DiscreteTopology α] : borel α = ⊤ :=
   top_le_iff.1 fun s _ => GenerateMeasurable.basic s (isOpen_discrete s)
-
-theorem borel_eq_top_of_countable [TopologicalSpace α] [T1Space α] [Countable α] : borel α = ⊤ := by
-  refine top_le_iff.1 fun s _ => biUnion_of_singleton s ▸ ?_
-  apply MeasurableSet.biUnion s.to_countable
-  intro x _
-  apply MeasurableSet.of_compl
-  apply GenerateMeasurable.basic
-  exact isClosed_singleton.isOpen_compl
 
 theorem borel_eq_generateFrom_of_subbasis {s : Set (Set α)} [t : TopologicalSpace α]
     [SecondCountableTopology α] (hs : t = .generateFrom s) : borel α = .generateFrom s :=
@@ -157,7 +149,7 @@ def borelToRefl (e : Expr) (i : FVarId) : TacticM Unit := do
       `‹TopologicalSpace {e}› := {et}\n\
       depends on\n\
       {Expr.fvar i} : MeasurableSpace {e}`\n\
-      so `borelize` isn't avaliable"
+      so `borelize` isn't available"
   evalTactic <| ← `(tactic|
     refine_lift
       letI : MeasurableSpace $te := borel $te
@@ -238,6 +230,9 @@ variable [TopologicalSpace α] [MeasurableSpace α] [OpensMeasurableSpace α] [T
 theorem IsOpen.measurableSet (h : IsOpen s) : MeasurableSet s :=
   OpensMeasurableSpace.borel_le _ <| GenerateMeasurable.basic _ h
 
+theorem IsOpen.nullMeasurableSet {μ} (h : IsOpen s) : NullMeasurableSet s μ :=
+  h.measurableSet.nullMeasurableSet
+
 instance (priority := 1000) {s : Set α} [h : HasCountableSeparatingOn α IsOpen s] :
     CountablySeparated s := by
   rw [CountablySeparated.subtype_iff]
@@ -258,14 +253,20 @@ theorem measurableSet_of_continuousAt {β} [EMetricSpace β] (f : α → β) :
 theorem IsClosed.measurableSet (h : IsClosed s) : MeasurableSet s :=
   h.isOpen_compl.measurableSet.of_compl
 
+theorem IsClosed.nullMeasurableSet {μ} (h : IsClosed s) : NullMeasurableSet s μ :=
+  h.measurableSet.nullMeasurableSet
+
 theorem IsCompact.measurableSet [T2Space α] (h : IsCompact s) : MeasurableSet s :=
   h.isClosed.measurableSet
+
+theorem IsCompact.nullMeasurableSet [T2Space α] {μ} (h : IsCompact s) : NullMeasurableSet s μ :=
+  h.isClosed.nullMeasurableSet
 
 /-- If two points are topologically inseparable,
 then they can't be separated by a Borel measurable set. -/
 theorem Inseparable.mem_measurableSet_iff {x y : γ} (h : Inseparable x y) {s : Set γ}
     (hs : MeasurableSet s) : x ∈ s ↔ y ∈ s :=
-  hs.induction_on_open (C := fun s ↦ (x ∈ s ↔ y ∈ s)) (fun _ ↦ h.mem_open_iff) (fun s _ hs ↦ hs.not)
+  hs.induction_on_open (C := fun s ↦ (x ∈ s ↔ y ∈ s)) (fun _ ↦ h.mem_open_iff) (fun s _ ↦ Iff.not)
     fun _ _ _ h ↦ by simp [h]
 
 /-- If `K` is a compact set in an R₁ space and `s ⊇ K` is a Borel measurable superset,
@@ -280,7 +281,7 @@ the measure of the closure of a compact set `K` is equal to the measure of `K`.
 
 See also `MeasureTheory.Measure.OuterRegular.measure_closure_eq_of_isCompact`
 for a version that assumes `μ` to be outer regular
-but does not assume the `σ`-algebra to be Borel.  -/
+but does not assume the `σ`-algebra to be Borel. -/
 theorem IsCompact.measure_closure [R1Space γ] {K : Set γ} (hK : IsCompact K) (μ : Measure γ) :
     μ (closure K) = μ K := by
   refine le_antisymm ?_ (measure_mono subset_closure)
@@ -332,6 +333,12 @@ instance (priority := 100) OpensMeasurableSpace.separatesPoints [T0Space α] :
   apply Inseparable.eq
   rw [inseparable_iff_forall_open]
   exact fun s hs => hxy _ hs.measurableSet
+
+theorem borel_eq_top_of_countable {α : Type*} [TopologicalSpace α] [T0Space α] [Countable α] :
+    borel α = ⊤ := by
+  refine top_unique fun s _ ↦ ?_
+  borelize α
+  exact .of_discrete
 
 -- see Note [lower instance priority]
 instance (priority := 100) OpensMeasurableSpace.toMeasurableSingletonClass [T1Space α] :
@@ -461,6 +468,7 @@ theorem Continuous.measurable {f : α → γ} (hf : Continuous f) : Measurable f
 
 /-- A continuous function from an `OpensMeasurableSpace` to a `BorelSpace`
 is ae-measurable. -/
+@[fun_prop]
 theorem Continuous.aemeasurable {f : α → γ} (h : Continuous f) {μ : Measure α} : AEMeasurable f μ :=
   h.measurable.aemeasurable
 
@@ -498,6 +506,7 @@ instance (priority := 100) TopologicalGroup.measurableInv [Group γ] [Topologica
     MeasurableInv γ :=
   ⟨continuous_inv.measurable⟩
 
+@[to_additive]
 instance (priority := 100) ContinuousSMul.measurableSMul {M α} [TopologicalSpace M]
     [TopologicalSpace α] [MeasurableSpace M] [MeasurableSpace α] [OpensMeasurableSpace M]
     [BorelSpace α] [SMul M α] [ContinuousSMul M α] : MeasurableSMul M α :=
@@ -616,7 +625,7 @@ instance _root_.ULift.instBorelSpace : BorelSpace (ULift α) :=
 
 instance DiscreteMeasurableSpace.toBorelSpace {α : Type*} [TopologicalSpace α] [DiscreteTopology α]
     [MeasurableSpace α] [DiscreteMeasurableSpace α] : BorelSpace α := by
-  constructor; ext; simp [MeasurableSpace.measurableSet_generateFrom, measurableSet_discrete]
+  constructor; ext; simp [MeasurableSpace.measurableSet_generateFrom, MeasurableSet.of_discrete]
 
 protected theorem Embedding.measurableEmbedding {f : α → β} (h₁ : Embedding f)
     (h₂ : MeasurableSet (range f)) : MeasurableEmbedding f :=

@@ -6,8 +6,6 @@ Mario Carneiro
 -/
 import Mathlib.Data.List.Defs
 import Mathlib.Data.Option.Basic
-import Mathlib.Data.Nat.Defs
-import Mathlib.Init.Data.List.Basic
 import Mathlib.Util.AssertExists
 
 /-! # getD and getI
@@ -15,11 +13,9 @@ import Mathlib.Util.AssertExists
 This file provides theorems for working with the `getD` and `getI` functions. These are used to
 access an element of a list by numerical index, with a default value as a fallback when the index
 is out of range.
-
 -/
 
--- Make sure we haven't imported `Data.Nat.Order.Basic`
-assert_not_exists OrderedSub
+assert_not_imported Mathlib.Algebra.Order.Group.Nat
 
 namespace List
 
@@ -31,13 +27,17 @@ section getD
 
 variable (d : α)
 
-theorem getD_eq_get {n : ℕ} (hn : n < l.length) : l.getD n d = l.get ⟨n, hn⟩ := by
+theorem getD_eq_getElem {n : ℕ} (hn : n < l.length) : l.getD n d = l[n] := by
   induction l generalizing n with
   | nil => simp at hn
   | cons head tail ih =>
     cases n
     · exact getD_cons_zero
     · exact ih _
+
+@[deprecated getD_eq_getElem (since := "2024-08-02")]
+theorem getD_eq_get {n : ℕ} (hn : n < l.length) : l.getD n d = l.get ⟨n, hn⟩ :=
+  getD_eq_getElem l d hn
 
 theorem getD_map {n : ℕ} (f : α → β) : (map f l).getD n (f d) = f (l.getD n d) := by simp
 
@@ -69,18 +69,16 @@ theorem getElem?_getD_replicate_default_eq (r n : ℕ) : (replicate r d)[n]?.get
 @[deprecated (since := "2024-06-12")]
 alias getD_replicate_default_eq := getElem?_getD_replicate_default_eq
 
-set_option linter.deprecated false in
 theorem getD_append (l l' : List α) (d : α) (n : ℕ) (h : n < l.length) :
     (l ++ l').getD n d = l.getD n d := by
-  rw [getD_eq_get _ _ (Nat.lt_of_lt_of_le h (length_append _ _ ▸ Nat.le_add_right _ _)),
-    get_append _ h, getD_eq_get]
+  rw [getD_eq_getElem _ _ (Nat.lt_of_lt_of_le h (length_append _ _ ▸ Nat.le_add_right _ _)),
+    getElem_append _ h, getD_eq_getElem]
 
 theorem getD_append_right (l l' : List α) (d : α) (n : ℕ) (h : l.length ≤ n) :
     (l ++ l').getD n d = l'.getD (n - l.length) d := by
   cases Nat.lt_or_ge n (l ++ l').length with
   | inl h' =>
-    rw [getD_eq_get (l ++ l') d h', get_eq_getElem, getElem_append_right, getD_eq_get,
-      get_eq_getElem]
+    rw [getD_eq_getElem (l ++ l') d h', getElem_append_right, getD_eq_getElem]
     · rw [length_append] at h'
       exact Nat.sub_lt_left_of_lt_add h h'
     · exact Nat.not_lt_of_le h
@@ -90,7 +88,7 @@ theorem getD_append_right (l l' : List α) (d : α) (n : ℕ) (h : l.length ≤ 
 
 theorem getD_eq_getD_get? (n : ℕ) : l.getD n d = (l.get? n).getD d := by
   cases Nat.lt_or_ge n l.length with
-  | inl h => rw [getD_eq_get _ _ h, get?_eq_get h, Option.getD_some]
+  | inl h => rw [getD_eq_getElem _ _ h, get?_eq_get h, get_eq_getElem, Option.getD_some]
   | inr h => rw [getD_eq_default _ _ h, get?_eq_none.mpr h, Option.getD_none]
 
 end getD
@@ -111,8 +109,12 @@ theorem getI_cons_zero : getI (x :: xs) 0 = x :=
 theorem getI_cons_succ : getI (x :: xs) (n + 1) = getI xs n :=
   rfl
 
+theorem getI_eq_getElem {n : ℕ} (hn : n < l.length) : l.getI n = l[n] :=
+  getD_eq_getElem l default hn
+
+@[deprecated getI_eq_getElem (since := "2024-08-02")]
 theorem getI_eq_get {n : ℕ} (hn : n < l.length) : l.getI n = l.get ⟨n, hn⟩ :=
-  getD_eq_get ..
+  getD_eq_getElem l default hn
 
 theorem getI_eq_default {n : ℕ} (hn : l.length ≤ n) : l.getI n = default :=
   getD_eq_default _ _ hn
@@ -133,3 +135,5 @@ theorem getI_eq_iget_get? (n : ℕ) : l.getI n = (l.get? n).iget := by
 theorem getI_zero_eq_headI : l.getI 0 = l.headI := by cases l <;> rfl
 
 end getI
+
+end List

@@ -267,5 +267,6 @@ use `set_option maxRecDepth <num>` to increase limit
 use `set_option diagnostics true` to get diagnostic information
 -/
 #guard_msgs (error) in
-example (_h₁ : Function.Injective (funFamily ((List.range 128).map (fun _ => 0)).sum)) : true = true := by
+example (_h₁ : Function.Injective (funFamily ((List.range 128).map (fun _ => 0)).sum)) :
+    true = true := by
   apply_fun funFamily 0

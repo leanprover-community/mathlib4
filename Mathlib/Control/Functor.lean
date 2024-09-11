@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
 import Mathlib.Control.Basic
-import Mathlib.Init.Set
+import Mathlib.Data.Set.Defs
 import Mathlib.Tactic.TypeStar
 import Batteries.Tactic.Lint
 
@@ -186,17 +186,17 @@ protected theorem comp_map (g' : α → β) (h : β → γ) :
 
 instance lawfulFunctor : LawfulFunctor (Comp F G) where
   map_const := rfl
-  id_map := @Comp.id_map F G _ _ _ _
-  comp_map := @Comp.comp_map F G _ _ _ _
+  id_map := Comp.id_map
+  comp_map := Comp.comp_map
 
 -- Porting note: had to use switch to `Id` from `id` because this has the `Functor` instance.
 theorem functor_comp_id {F} [AF : Functor F] [LawfulFunctor F] :
     @Comp.functor F Id _ _ = AF :=
-  @Functor.ext F _ AF (@Comp.lawfulFunctor F Id _ _ _ _) _ fun _ _ _ _ => rfl
+  @Functor.ext F _ AF (Comp.lawfulFunctor (G := Id)) _ fun _ _ _ _ => rfl
 
 -- Porting note: had to use switch to `Id` from `id` because this has the `Functor` instance.
 theorem functor_id_comp {F} [AF : Functor F] [LawfulFunctor F] : @Comp.functor Id F _ _ = AF :=
-  @Functor.ext F _ AF (@Comp.lawfulFunctor Id F _ _ _ _) _ fun _ _ _ _ => rfl
+  @Functor.ext F _ AF (Comp.lawfulFunctor (F := Id)) _ fun _ _ _ _ => rfl
 
 end Comp
 

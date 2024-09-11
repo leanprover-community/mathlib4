@@ -8,6 +8,7 @@ import Mathlib.Algebra.Polynomial.Derivative
 import Mathlib.Data.Nat.Choose.Cast
 import Mathlib.Data.Nat.Choose.Vandermonde
 import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Positivity
 
 /-!
 # Hasse derivative of polynomials

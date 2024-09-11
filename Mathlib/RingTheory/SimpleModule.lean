@@ -68,11 +68,13 @@ theorem IsSimpleModule.nontrivial [IsSimpleModule R M] : Nontrivial M :=
       ext x
       simp [Submodule.mem_bot, Submodule.mem_top, h x]⟩⟩
 
-variable {m : Submodule R M} {N : Type*} [AddCommGroup N] [Module R N] {R S M}
+variable {m : Submodule R M} {N : Type*} [AddCommGroup N] {R S M}
 
 theorem LinearMap.isSimpleModule_iff_of_bijective [Module S N] {σ : R →+* S} [RingHomSurjective σ]
     (l : M →ₛₗ[σ] N) (hl : Function.Bijective l) : IsSimpleModule R M ↔ IsSimpleModule S N :=
   (Submodule.orderIsoMapComapOfBijective l hl).isSimpleOrder_iff
+
+variable [Module R N]
 
 theorem IsSimpleModule.congr (l : M ≃ₗ[R] N) [IsSimpleModule R N] : IsSimpleModule R M :=
   (Submodule.orderIsoMapComap l).isSimpleOrder
@@ -204,7 +206,7 @@ instance submodule {m : Submodule R M} : IsSemisimpleModule R m :=
 variable {R M}
 open LinearMap
 
-theorem congr [IsSemisimpleModule R N] (e : M ≃ₗ[R] N) : IsSemisimpleModule R M :=
+theorem congr (e : N ≃ₗ[R] M) : IsSemisimpleModule R N :=
   (Submodule.orderIsoMapComap e.symm).complementedLattice
 
 instance quotient : IsSemisimpleModule R (M ⧸ m) :=
@@ -217,19 +219,21 @@ protected theorem range (f : M →ₗ[R] N) : IsSemisimpleModule R (range f) :=
 
 section
 
-variable [Module S N] {σ : R →+* S} [RingHomSurjective σ] (l : M →ₛₗ[σ] N)
+variable {M' : Type*} [AddCommGroup M'] [Module R M'] {N'} [AddCommGroup N'] [Module S N']
+  {σ : R →+* S} (l : M' →ₛₗ[σ] N')
 
-theorem _root_.LinearMap.isSemisimpleModule_iff_of_bijective (hl : Function.Bijective l) :
-    IsSemisimpleModule R M ↔ IsSemisimpleModule S N :=
+theorem _root_.LinearMap.isSemisimpleModule_iff_of_bijective
+    [RingHomSurjective σ] (hl : Function.Bijective l) :
+    IsSemisimpleModule R M' ↔ IsSemisimpleModule S N' :=
   (Submodule.orderIsoMapComapOfBijective l hl).complementedLattice_iff
 
 -- TODO: generalize Submodule.equivMapOfInjective from InvPair to RingHomSurjective
 proof_wanted _root_.LinearMap.isSemisimpleModule_of_injective (_ : Function.Injective l)
-    [IsSemisimpleModule S N] : IsSemisimpleModule R M
+    [IsSemisimpleModule S N'] : IsSemisimpleModule R M'
 
 --TODO: generalize LinearMap.quotKerEquivOfSurjective to SemilinearMaps + RingHomSurjective
 proof_wanted _root_.LinearMap.isSemisimpleModule_of_surjective (_ : Function.Surjective l)
-    [IsSemisimpleModule R M] : IsSemisimpleModule S N
+    [IsSemisimpleModule R M'] : IsSemisimpleModule S N'
 
 end
 
@@ -281,7 +285,7 @@ theorem IsSemisimpleModule.sup {p q : Submodule R M}
 instance IsSemisimpleRing.isSemisimpleModule [IsSemisimpleRing R] : IsSemisimpleModule R M :=
   have : IsSemisimpleModule R (M →₀ R) := isSemisimpleModule_of_isSemisimpleModule_submodule'
     (fun _ ↦ .congr (LinearMap.quotKerEquivRange _).symm) Finsupp.iSup_lsingle_range
-  .congr (LinearMap.quotKerEquivOfSurjective _ <| Finsupp.total_id_surjective R M).symm
+  .congr (LinearMap.quotKerEquivOfSurjective _ <| Finsupp.linearCombination_id_surjective R M).symm
 
 instance IsSemisimpleRing.isCoatomic_submodule [IsSemisimpleRing R] : IsCoatomic (Submodule R M) :=
   isCoatomic_of_isAtomic_of_complementedLattice_of_isModular
@@ -296,7 +300,7 @@ instance {ι} [Finite ι] (R : ι → Type*) [∀ i, Ring (R i)] [∀ i, IsSemis
   have (i) : IsSemisimpleModule (∀ i, R i) (R i) :=
     ((e i).isSemisimpleModule_iff_of_bijective Function.bijective_id).mpr inferInstance
   classical
-  exact isSemisimpleModule_of_isSemisimpleModule_submodule' (p := (range <| single ·))
+  exact isSemisimpleModule_of_isSemisimpleModule_submodule' (p := (range <| single _ _ ·))
     (fun i ↦ .range _) (by simp_rw [range_eq_map, Submodule.iSup_map_single, Submodule.pi_top])
 
 /-- A binary product of semisimple rings is semisimple. -/
@@ -394,7 +398,9 @@ noncomputable instance _root_.Module.End.divisionRing
     exact (LinearEquiv.ofBijective _ <| bijective_of_ne_zero a0).right_inv _
   inv_zero := dif_pos rfl
   nnqsmul := _
+  nnqsmul_def := fun q a => rfl
   qsmul := _
+  qsmul_def := fun q a => rfl
 
 end LinearMap
 

@@ -23,7 +23,7 @@ t.pt ---t.snd---> Y
   v               v
   X -----f------> Z
 ```
-The type `PullbackCone f g` is implemented as an abbrevation for `Cone (cospan f g)`, so general
+The type `PullbackCone f g` is implemented as an abbreviation for `Cone (cospan f g)`, so general
 results about cones are also available for `PullbackCone f g`.
 
 * `PushoutCone f g`: Given morphisms `f : X ⟶ Y` and `g : X ⟶ Z`, a term `t : PushoutCone f g`
@@ -51,8 +51,8 @@ Various ways of constructing pullback cones:
 Interaction with `IsLimit`:
 * `PullbackCone.isLimitAux` and `PullbackCone.isLimitAux'` provide two convenient ways to show that
   a given `PullbackCone` is a limit cone.
-* `PullbackCone.isLimit.mk` provides a convenient way to show that a `PullbackCone` constructed using
-  `PullbackCone.mk` is a limit cone.
+* `PullbackCone.isLimit.mk` provides a convenient way to show that a `PullbackCone` constructed
+  using `PullbackCone.mk` is a limit cone.
 * `PullbackCone.IsLimit.lift` and `PullbackCone.IsLimit.lift'` provides convenient ways for
   constructing the morphisms to the point of a limit `PullbackCone` from the universal property.
 * `PullbackCone.IsLimit.hom_ext` provides a convenient way to show that two morphisms to the point

@@ -3,6 +3,7 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
+import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.GroupTheory.MonoidLocalization.Basic
 
 /-!
@@ -24,7 +25,7 @@ variable [OrderedCancelCommMonoid α] {s : Submonoid α} {a₁ b₁ : α} {a₂ 
 instance le : LE (Localization s) :=
   ⟨fun a b =>
     Localization.liftOn₂ a b (fun a₁ a₂ b₁ b₂ => ↑b₂ * a₁ ≤ a₂ * b₁)
-      @fun a₁ b₁ a₂ b₂ c₁ d₁ c₂ d₂ hab hcd => propext <| by
+      fun {a₁ b₁ a₂ b₂ c₁ d₁ c₂ d₂} hab hcd => propext <| by
         obtain ⟨e, he⟩ := r_iff_exists.1 hab
         obtain ⟨f, hf⟩ := r_iff_exists.1 hcd
         simp only [mul_right_inj] at he hf
@@ -37,7 +38,7 @@ instance le : LE (Localization s) :=
 instance lt : LT (Localization s) :=
   ⟨fun a b =>
     Localization.liftOn₂ a b (fun a₁ a₂ b₁ b₂ => ↑b₂ * a₁ < a₂ * b₁)
-      @fun a₁ b₁ a₂ b₂ c₁ d₁ c₂ d₂ hab hcd => propext <| by
+      fun {a₁ b₁ a₂ b₂ c₁ d₁ c₂ d₂} hab hcd => propext <| by
         obtain ⟨e, he⟩ := r_iff_exists.1 hab
         obtain ⟨f, hf⟩ := r_iff_exists.1 hcd
         simp only [mul_right_inj] at he hf

@@ -28,10 +28,7 @@ actual `SplittingField` will be a quotient of a `MvPolynomial`, it has nice inst
 
 -/
 
-
 noncomputable section
-
-open scoped Classical Polynomial
 
 universe u v w
 
@@ -45,6 +42,7 @@ open Polynomial
 
 section SplittingField
 
+open Classical in
 /-- Non-computably choose an irreducible factor from a polynomial. -/
 def factor (f : K[X]) : K[X] :=
   if H : ∃ g, Irreducible g ∧ g ∣ f then Classical.choose H else X
@@ -188,6 +186,7 @@ theorem adjoin_rootSet (n : ℕ) :
     have hndf : f.natDegree ≠ 0 := by intro h; rw [h] at hfn; cases hfn
     have hfn0 : f ≠ 0 := by intro h; rw [h] at hndf; exact hndf rfl
     have hmf0 : map (algebraMap K (SplittingFieldAux n.succ f)) f ≠ 0 := map_ne_zero hfn0
+    classical
     rw [rootSet_def, aroots_def]
     rw [algebraMap_succ, ← map_map, ← X_sub_C_mul_removeFactor _ hndf, Polynomial.map_mul] at hmf0 ⊢
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
@@ -246,7 +245,7 @@ instance instGroupWithZero : GroupWithZero (SplittingField f) :=
   let e := algEquivSplittingFieldAux f
   { inv := fun a ↦ e.symm (e a)⁻¹
     inv_zero := by simp
-    mul_inv_cancel := fun a ha ↦ e.injective $ by simp [(AddEquivClass.map_ne_zero_iff _).2 ha]
+    mul_inv_cancel := fun a ha ↦ e.injective <| by simp [(AddEquivClass.map_ne_zero_iff _).2 ha]
     __ := e.surjective.nontrivial }
 
 instance instField : Field (SplittingField f) where
@@ -259,9 +258,9 @@ instance instField : Field (SplittingField f) where
   nnratCast_def q := by change algebraMap K _ _ = _; simp_rw [NNRat.cast_def, map_div₀, map_natCast]
   ratCast_def q := by
     change algebraMap K _ _ = _; rw [Rat.cast_def, map_div₀, map_intCast, map_natCast]
-  nnqsmul_def q x := Quotient.inductionOn x fun p ↦ congr_arg Quotient.mk'' $ by
+  nnqsmul_def q x := Quotient.inductionOn x fun p ↦ congr_arg Quotient.mk'' <| by
     ext; simp [MvPolynomial.algebraMap_eq, NNRat.smul_def]
-  qsmul_def q x := Quotient.inductionOn x fun p ↦ congr_arg Quotient.mk'' $ by
+  qsmul_def q x := Quotient.inductionOn x fun p ↦ congr_arg Quotient.mk'' <| by
     ext; simp [MvPolynomial.algebraMap_eq, Rat.smul_def]
 
 instance instCharZero [CharZero K] : CharZero (SplittingField f) :=

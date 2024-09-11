@@ -150,7 +150,7 @@ theorem matPolyEquiv_symm_map_eval (M : (Matrix n n R)[X]) (r : R) :
     DFunLike.congr_fun this M
   ext : 1
   · ext M : 1
-    simp [Function.comp]
+    simp [Function.comp_def]
   · simp [smul_eq_diagonal_mul]
 
 theorem matPolyEquiv_eval_eq_map (M : Matrix n n R[X]) (r : R) :
@@ -217,7 +217,7 @@ lemma derivative_det_one_add_X_smul (M : Matrix n n R) :
   · ext; simp [e]
   · delta trace
     rw [← (Fintype.equivFin n).symm.sum_comp]
-    rfl
+    simp_rw [e, reindexLinearEquiv_apply, reindex_apply, diag_apply, submatrix_apply]
 
 lemma coeff_det_one_add_X_smul_one (M : Matrix n n R) :
     (det (1 + (X : R[X]) • M.map C)).coeff 1 = trace M := by
@@ -298,7 +298,6 @@ end Ideal
 
 section reverse
 
-open Polynomial
 open LaurentPolynomial hiding C
 
 /-- The reverse of the characteristic polynomial of a matrix.
@@ -315,7 +314,7 @@ lemma reverse_charpoly (M : Matrix n n R) :
   let t_inv : R[T;T⁻¹] := T (-1)
   let p : R[T;T⁻¹] := det (scalar n t - M.map LaurentPolynomial.C)
   let q : R[T;T⁻¹] := det (1 - scalar n t * M.map LaurentPolynomial.C)
-  have ht : t_inv * t = 1 := by rw [← T_add, add_left_neg, T_zero]
+  have ht : t_inv * t = 1 := by rw [← T_add, neg_add_cancel, T_zero]
   have hp : toLaurentAlg M.charpoly = p := by
     simp [p, charpoly, charmatrix, AlgHom.map_det, map_sub, map_smul']
   have hq : toLaurentAlg M.charpolyRev = q := by

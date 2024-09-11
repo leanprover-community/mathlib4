@@ -158,7 +158,7 @@ theorem map_equivMapOfInjective_symm_apply (f : F) (i : Injective f) (p : Submod
     i.eq_iff, LinearEquiv.apply_symm_apply]
 
 /-- The pullback of a submodule `p ⊆ M₂` along `f : M → M₂` -/
-def comap (f : F) (p : Submodule R₂ M₂) : Submodule R M :=
+def comap [SemilinearMapClass F σ₁₂ M M₂] (f : F) (p : Submodule R₂ M₂) : Submodule R M :=
   { p.toAddSubmonoid.comap f with
     carrier := f ⁻¹' p
     -- Note: #8386 added `map_smulₛₗ _`
@@ -191,9 +191,9 @@ theorem comap_mono {f : F} {q q' : Submodule R₂ M₂} : q ≤ q' → comap f q
 
 theorem le_comap_pow_of_le_comap (p : Submodule R M) {f : M →ₗ[R] M} (h : p ≤ p.comap f) (k : ℕ) :
     p ≤ p.comap (f ^ k) := by
-  induction' k with k ih
-  · simp [LinearMap.one_eq_id]
-  · simp [LinearMap.iterate_succ, comap_comp, h.trans (comap_mono ih)]
+  induction k with
+  | zero => simp [LinearMap.one_eq_id]
+  | succ k ih => simp [LinearMap.iterate_succ, comap_comp, h.trans (comap_mono ih)]
 
 section
 
@@ -247,15 +247,17 @@ theorem le_comap_map [RingHomSurjective σ₁₂] (f : F) (p : Submodule R M) : 
 
 section GaloisInsertion
 
-variable {f : F} (hf : Surjective f)
-variable [RingHomSurjective σ₁₂]
+variable [RingHomSurjective σ₁₂] {f : F}
 
 /-- `map f` and `comap f` form a `GaloisInsertion` when `f` is surjective. -/
-def giMapComap : GaloisInsertion (map f) (comap f) :=
+def giMapComap (hf : Surjective f) : GaloisInsertion (map f) (comap f) :=
   (gc_map_comap f).toGaloisInsertion fun S x hx => by
     rcases hf x with ⟨y, rfl⟩
     simp only [mem_map, mem_comap]
     exact ⟨y, hx, rfl⟩
+
+variable (hf : Surjective f)
+include hf
 
 theorem map_comap_eq_of_surjective (p : Submodule R₂ M₂) : (p.comap f).map f = p :=
   (giMapComap hf).l_u_eq _
@@ -292,15 +294,18 @@ end GaloisInsertion
 
 section GaloisCoinsertion
 
-variable [RingHomSurjective σ₁₂] {f : F} (hf : Injective f)
+variable [RingHomSurjective σ₁₂] {f : F}
 
 /-- `map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective. -/
-def gciMapComap : GaloisCoinsertion (map f) (comap f) :=
+def gciMapComap (hf : Injective f) : GaloisCoinsertion (map f) (comap f) :=
   (gc_map_comap f).toGaloisCoinsertion fun S x => by
-    simp [mem_comap, mem_map, forall_exists_index, and_imp]
+    simp only [mem_comap, mem_map, forall_exists_index, and_imp]
     intro y hy hxy
     rw [hf.eq_iff] at hxy
     rwa [← hxy]
+
+variable (hf : Injective f)
+include hf
 
 theorem comap_map_eq_of_injective (p : Submodule R M) : (p.map f).comap f = p :=
   (gciMapComap hf).u_l_eq _
@@ -403,6 +408,10 @@ protected theorem map_neg (f : M →ₗ[R] M₂) : map (-f) p = map f p :=
 lemma comap_neg {f : M →ₗ[R] M₂} {p : Submodule R M₂} :
     p.comap (-f) = p.comap f := by
   ext; simp
+
+lemma map_toAddSubgroup (f : M →ₗ[R] M₂) (p : Submodule R M) :
+    (p.map f).toAddSubgroup = p.toAddSubgroup.map (f : M →+ M₂) :=
+  rfl
 
 end AddCommGroup
 

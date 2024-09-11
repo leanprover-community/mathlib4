@@ -107,7 +107,7 @@ def isLimitMultiforkOfIsLimit (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPres
       erw [(isLimitOfPreserves ((evaluation Cᵒᵖ D).obj (op X)) hE).fac
         (multiforkEvaluationCone F E X W S)]
       dsimp [multiforkEvaluationCone, Presheaf.isLimitOfIsSheaf]
-      erw [Presheaf.IsSheaf.amalgamate_map]
+      rw [Presheaf.IsSheaf.amalgamate_map]
       rfl)
     (by
       intro S m hm
@@ -138,7 +138,7 @@ theorem isSheaf_of_isLimit (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPreshea
 instance (F : K ⥤ Sheaf J D) : CreatesLimit F (sheafToPresheaf J D) :=
   createsLimitOfReflectsIso fun E hE =>
     { liftedCone := ⟨⟨E.pt, isSheaf_of_isLimit _ _ hE⟩,
-        ⟨fun t => ⟨E.π.app _⟩, fun u v e => Sheaf.Hom.ext _ _ <| E.π.naturality _⟩⟩
+        ⟨fun t => ⟨E.π.app _⟩, fun u v e => Sheaf.Hom.ext <| E.π.naturality _⟩⟩
       validLift := Cones.ext (eqToIso rfl) fun j => by
         dsimp
         simp

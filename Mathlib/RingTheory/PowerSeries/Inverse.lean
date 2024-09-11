@@ -10,8 +10,6 @@ import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.RingTheory.PowerSeries.Order
 import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 
-
-
 /-! # Formal power series - Inverses
 
 If the constant coefficient of a formal (univariate) power series is invertible,

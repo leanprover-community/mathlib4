@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Frédéric Dupuis, Heather Macbeth
 -/
 import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Analysis.NormedSpace.Banach
+import Mathlib.Analysis.Normed.Operator.Banach
 import Mathlib.LinearAlgebra.SesquilinearForm
 
 /-!
@@ -124,6 +124,7 @@ section Complex
 
 variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℂ V]
 
+attribute [local simp] map_ofNat in -- use `ofNat` simp theorem with bad keys
 /-- A linear operator on a complex inner product space is symmetric precisely when
 `⟪T v, v⟫_ℂ` is real for all v. -/
 theorem isSymmetric_iff_inner_map_self_real (T : V →ₗ[ℂ] V) :
