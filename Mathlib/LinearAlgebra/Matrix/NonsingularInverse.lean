@@ -494,11 +494,16 @@ def add_mul_mul_inv: Invertible (A + U*C*V) := by
   apply Matrix.invertibleOfRightInverse _ _ (Matrix.add_mul_mul_invOf_mul_eq_one A U C V)
 
 /-- **Woodbury Identity** -/
-theorem add_mul_mul_inv_eq_sub [Invertible (A + U*C*V)]:
+theorem add_mul_mul_invOf_eq_sub [Invertible (A + U*C*V)]:
     ⅟(A + U*C*V) = ⅟A - ⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A := by
       rw [@invOf_eq_nonsing_inv]
       apply inv_eq_right_inv
       apply Matrix.add_mul_mul_invOf_mul_eq_one
+
+theorem add_mul_mul_inv_eq_sub [Invertible (A + U*C*V)]:
+    (A + U*C*V)⁻¹ = A⁻¹ - A⁻¹*U*(C⁻¹ + V*A⁻¹*U)⁻¹*V*A⁻¹ := by
+      simp only [← invOf_eq_nonsing_inv]
+      apply add_mul_mul_invOf_eq_sub
 
 end Woodbury
 
