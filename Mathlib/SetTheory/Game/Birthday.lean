@@ -179,8 +179,7 @@ noncomputable def birthday (x : Game.{u}) : Ordinal.{u} :=
 
 theorem birthday_eq_pGameBirthday (x : Game) :
     ∃ y : PGame.{u}, ⟦y⟧ = x ∧ y.birthday = birthday x := by
-  apply csInf_mem
-  rw [Set.image_nonempty]
+  refine csInf_mem (Set.image_nonempty.2 ?_)
   exact ⟨_, x.out_eq⟩
 
 theorem birthday_quot_le_pGameBirthday  (x : PGame) : birthday ⟦x⟧ ≤ x.birthday :=
