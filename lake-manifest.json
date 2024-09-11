@@ -65,7 +65,7 @@
    "type": "git",
    "subDir": null,
    "scope": "",
-   "rev": "236071fde12f178a8401c8726bc3f35f41a39e86",
+   "rev": "1709ad59875371cbba82f94fab1fe09462893a72",
    "name": "LeanSearchClient",
    "manifestFile": "lake-manifest.json",
    "inputRev": "main",
