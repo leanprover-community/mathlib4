@@ -474,7 +474,7 @@ theorem _root_.Monotone.measure_iUnion [Preorder ι] [IsDirected ι (· ≤ ·)]
         refine measure_mono <| iUnion_mono' fun i ↦ ?_
         rcases (hx.eventually_ge_atTop i).exists with ⟨n, hn⟩
         exact ⟨n, hs hn⟩
-      _ = ⨆ n, μ (s (x n)) := (hs.comp hxm).directed_le.measure_iUnion 
+      _ = ⨆ n, μ (s (x n)) := (hs.comp hxm).directed_le.measure_iUnion
       _ ≤ ⨆ i, μ (s i) := iSup_comp_le (μ ∘ s) x
 
 theorem _root_.Antitone.measure_iUnion [Preorder ι] [IsDirected ι (· ≥ ·)]
