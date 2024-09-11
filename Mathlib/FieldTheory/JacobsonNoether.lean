@@ -230,3 +230,29 @@ theorem Jacobson_Noether (H : k ≠ (⊤ : Subring D)) :
     exact JacobsonNoether_charZero H
 
 end JacobsonNoether
+
+namespace test
+
+example {k D : Type*} [Field k] [DivisionRing D] [Algebra k D] [Algebra.IsAlgebraic k D]
+  (hcenter : Subalgebra.center k D = ⊥)
+  (hneq : (⊥ : Subalgebra k D) ≠ ⊤) :
+  ∃ x : D, x ∉ (⊥ : Subalgebra k D) ∧ IsSeparable k x := by
+  set k' := (⊥ : Subalgebra k D).toSubring with hk'
+  have hcenter' : k' = Subring.center D := by apply (hcenter.symm) ▸ hk'
+  have aux1 : (⊤ : Subring D) = (⊤ : Subalgebra k D).toSubring := rfl
+  have ntrivial : k' ≠ ⊤ := by
+    refine Ne.intro ?_
+    exact fun heq ↦
+      hneq <| Algebra.toSubring_eq_top.mp <| aux1 ▸ hk' ▸ heq
+  letI : Algebra.IsAlgebraic (@Subtype D fun x ↦ x ∈ Subring.center D) D := by
+    -- rw [← hcenter']
+    sorry
+  obtain ⟨x, hx⟩ := @JacobsonNoether.Jacobson_Noether D _ _ (hcenter' ▸ ntrivial)
+  use x
+  constructor
+  · simp_rw [← hcenter', hk'] at hx
+    exact hx.1
+  · have base := hx.2
+    sorry
+
+end test
