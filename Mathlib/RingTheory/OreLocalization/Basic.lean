@@ -865,7 +865,6 @@ variable {R : Type*} [Monoid R] {S : Submonoid R} [OreSet S]
 variable {X : Type*} [AddGroup X] [DistribMulAction R X]
 
 /-- Negation on the Ore localization is defined via negation on the numerator. -/
-@[irreducible]
 protected def neg : X[S⁻¹] → X[S⁻¹] :=
   liftExpand (fun (r : X) (s : S) => -r /ₒ s) fun r t s ht => by
     -- Porting note(#12129): additional beta reduction needed
