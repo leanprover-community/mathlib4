@@ -81,8 +81,10 @@ include hG in
 theorem adjMatrix_sq_of_ne {v w : V} (hvw : v ≠ w) :
     (G.adjMatrix R ^ 2 : Matrix V V R) v w = 1 := by
   rw [sq, ← Nat.cast_one, ← hG hvw]
-  simp [commonNeighbors, neighborFinset_eq_filter, Finset.filter_filter, and_comm,
-    ← neighborFinset_def]
+  simp only [mul_adjMatrix_apply, neighborFinset_eq_filter, adjMatrix_apply,
+    sum_boole, filter_filter, and_comm, commonNeighbors,
+    Fintype.card_ofFinset (s := filter (fun x ↦ x ∈ G.neighborSet v ∩ G.neighborSet w) univ),
+    Set.mem_inter_iff, mem_neighborSet]
 
 include hG in
 /-- This calculation amounts to counting the number of length 3 walks between nonadjacent vertices.

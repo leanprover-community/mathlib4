@@ -176,7 +176,7 @@ lemma pow_cpow_nat_inv {x : ℂ} {n : ℕ} (h₀ : n ≠ 0) (hlt : -(π / n) < x
     (x ^ n) ^ (n⁻¹ : ℂ) = x := by
   rw [← cpow_nat_mul', mul_inv_cancel₀ (Nat.cast_ne_zero.2 h₀), cpow_one]
   · rwa [← div_lt_iff' (Nat.cast_pos.2 h₀.bot_lt), neg_div]
-  · rwa [← le_div_iff' (Nat.cast_pos.2 h₀.bot_lt)]
+  · rwa [← le_div_iff₀' (Nat.cast_pos.2 h₀.bot_lt)]
 
 lemma pow_cpow_ofNat_inv {x : ℂ} {n : ℕ} [n.AtLeastTwo] (hlt : -(π / OfNat.ofNat n) < x.arg)
     (hle : x.arg ≤ π / OfNat.ofNat n) :

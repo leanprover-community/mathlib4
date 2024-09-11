@@ -127,7 +127,7 @@ theorem num_series' [Field α] (i : ℕ) :
     | zero => simp [mul_sub, zero_pow, constantCoeff_indicator]
     | succ n =>
       simp only [coeff_one, if_false, mul_sub, mul_one, coeff_indicator,
-        LinearMap.map_sub]
+        LinearMap.map_sub, reduceCtorEq]
       simp_rw [coeff_mul, coeff_X_pow, coeff_indicator, @boole_mul _ _ _ _]
       erw [sum_ite, sum_ite]
       simp_rw [@filter_filter _ _ _ _ _, sum_const_zero, add_zero, sum_const, nsmul_eq_mul, mul_one,
@@ -314,10 +314,9 @@ theorem partialDistinctGF_prop [CommSemiring α] (n m : ℕ) :
   convert partialGF_prop α n
     ((range m).map ⟨Nat.succ, Nat.succ_injective⟩) _ (fun _ => {0, 1}) (fun _ _ => Or.inl rfl)
     using 2
-  · congr
-    congr! with p
+  · congr! with p
     rw [Multiset.nodup_iff_count_le_one]
-    congr! with i
+    congr! 1 with i
     rcases Multiset.count i p.parts with (_ | _ | ms) <;> simp
   · simp_rw [Finset.prod_map, two_series]
     congr with i

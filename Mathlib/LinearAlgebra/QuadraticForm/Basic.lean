@@ -63,7 +63,7 @@ substantial refactors from the current version, such that $Q(rm) = rQ(m)r^*$ for
 suitable conjugation $r^*$.
 
 The [Zulip thread](https://leanprover.zulipchat.com/#narrow/stream/116395-maths/topic/Quadratic.20Maps/near/395529867)
-has some further discusion.
+has some further discussion.
 
 ## References
 
@@ -145,7 +145,6 @@ section QuadraticForm
 
 variable (R : Type u) (M : Type v) [CommSemiring R] [AddCommMonoid M] [Module R M]
 
-variable (R M) in
 /-- A quadratic form on a module. -/
 abbrev QuadraticForm : Type _ := QuadraticMap R M R
 

@@ -5,7 +5,6 @@ Authors: Robert Y. Lewis, Keeley Hoek
 -/
 import Mathlib.Data.Fin.Basic
 import Mathlib.Order.Hom.Set
-import Mathlib.Init.Data.Nat.Lemmas
 
 /-!
 # `Fin n` forms a bounded linear order

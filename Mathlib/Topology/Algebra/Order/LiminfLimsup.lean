@@ -7,7 +7,7 @@ import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.Order.Group.Indicator
 import Mathlib.Order.LiminfLimsup
-import Mathlib.Order.Filter.Archimedean
+import Mathlib.Order.Filter.AtTopBot.Archimedean
 import Mathlib.Order.Filter.CountableInter
 import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Data.Set.Lattice
@@ -210,10 +210,11 @@ theorem tendsto_of_le_liminf_of_limsup_le {f : Filter β} {u : β → α} {a : �
     (hsup : limsup u f ≤ a) (h : f.IsBoundedUnder (· ≤ ·) u := by isBoundedDefault)
     (h' : f.IsBoundedUnder (· ≥ ·) u := by isBoundedDefault) : Tendsto u f (𝓝 a) := by
   classical
-  exact if hf : f = ⊥ then hf.symm ▸ tendsto_bot
-  else
-    haveI : NeBot f := ⟨hf⟩
-    tendsto_of_liminf_eq_limsup (le_antisymm (le_trans (liminf_le_limsup h h') hsup) hinf)
+  by_cases hf : f = ⊥
+  · rw [hf]
+    exact tendsto_bot
+  · haveI : NeBot f := ⟨hf⟩
+    exact tendsto_of_liminf_eq_limsup (le_antisymm (le_trans (liminf_le_limsup h h') hsup) hinf)
       (le_antisymm hsup (le_trans hinf (liminf_le_limsup h h'))) h h'
 
 /-- Assume that, for any `a < b`, a sequence can not be infinitely many times below `a` and
@@ -302,7 +303,7 @@ theorem Antitone.map_limsSup_of_continuousAt {F : Filter R} [NeBot F] {f : R →
     (cobdd : F.IsCobounded (· ≤ ·) := by isBoundedDefault) :
     f F.limsSup = F.liminf f := by
   apply le_antisymm
-  · rw [limsSup, f_decr.map_sInf_of_continuousAt' f_cont bdd_above cobdd]
+  · rw [limsSup, f_decr.map_csInf_of_continuousAt f_cont bdd_above cobdd]
     apply le_of_forall_lt
     intro c hc
     simp only [liminf, limsInf, eventually_map] at hc ⊢

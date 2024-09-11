@@ -390,7 +390,7 @@ instance {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] :
 
 section Zeta
 
-/-- `ζ 0 = 0`, otherwise `ζ x = 1`. The Dirichlet Series is the Riemann `ζ`.  -/
+/-- `ζ 0 = 0`, otherwise `ζ x = 1`. The Dirichlet Series is the Riemann `ζ`. -/
 def zeta : ArithmeticFunction ℕ :=
   ⟨fun x => ite (x = 0) 0 1, rfl⟩
 
@@ -776,7 +776,7 @@ end IsMultiplicative
 
 section SpecialFunctions
 
-/-- The identity on `ℕ` as an `ArithmeticFunction`.  -/
+/-- The identity on `ℕ` as an `ArithmeticFunction`. -/
 nonrec  -- Porting note (#11445): added
 def id : ArithmeticFunction ℕ :=
   ⟨id, rfl⟩
