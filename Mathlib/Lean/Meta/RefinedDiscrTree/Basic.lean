@@ -14,7 +14,7 @@ We define
 * `LazyEntry`, the partial, lazy computation of a sequence of `Key`s
 * `Trie`, a node of the discrimination tree, which is indexed with `Key`s
   and stores an array of pending `LazyEntry`s
-* `RefinedDiscrTree`, the driscrimination tree itself.
+* `RefinedDiscrTree`, the discrimination tree itself.
 -/
 
 namespace Lean.Meta.RefinedDiscrTree
@@ -23,27 +23,27 @@ namespace Lean.Meta.RefinedDiscrTree
 /-- Discrimination tree key. -/
 inductive Key where
   /-- A metavariable. This key matches with anything. It stores an identifier. -/
-  | star : (id : Nat) → Key
-  /-- An opaque variable. This key only matches with itself or `Key.star`. -/
-  | opaque : Key
+  | star (id : Nat)
+  /-- An opaque variable. This key only matches with `Key.star`. -/
+  | opaque
   /-- A constant. It stores the name and the arity. -/
-  | const : (declName : Name) → (nargs : Nat) → Key
+  | const (declName : Name) (nargs : Nat)
   /-- A free variable. It stores the `FVarId` and the arity. -/
-  | fvar : (fvarId : FVarId) → (nargs : Nat) → Key
+  | fvar (fvarId : FVarId) (nargs : Nat)
   /-- A bound variable, from a lambda or forall binder.
   It stores the De Bruijn index and the arity. -/
-  | bvar : (deBruijnIndex nargs : Nat) → Key
+  | bvar (deBruijnIndex nargs : Nat)
   /-- A literal. -/
-  | lit : Literal → Key
+  | lit (v : Literal)
   /-- A sort. Universe levels are ignored. -/
-  | sort : Key
+  | sort
   /-- A lambda function. -/
-  | lam : Key
+  | lam
   /-- A dependent arrow. -/
-  | forall : Key
+  | forall
   /-- A projection. It stores the structure name, the projection index and the arity. -/
-  | proj : (typeName : Name) → (idx nargs : Nat) → Key
-  deriving Inhabited, BEq, Repr
+  | proj (typeName : Name) (idx nargs : Nat)
+  deriving Inhabited, BEq
 
 /-
 At the root, `.const` is the most common key, and it is very uncommon
@@ -63,37 +63,6 @@ private nonrec def Key.hash : Key → UInt64
   | .proj name idx nargs => mixHash (hash nargs) <| mixHash (hash name) (hash idx)
 
 instance : Hashable Key := ⟨Key.hash⟩
-
-/-- Constructor index used for ordering `Key`.
-Note that the index of the star pattern is 0, so that when looking up in a `Trie`,
-we can look at the start of the sorted array for all `.star` patterns. -/
-def Key.ctorIdx : Key → Nat
-  | .star ..   => 0
-  | .opaque .. => 1
-  | .const ..  => 2
-  | .fvar ..   => 3
-  | .bvar ..   => 4
-  | .lit ..    => 5
-  | .sort      => 6
-  | .lam       => 7
-  | .forall    => 8
-  | .proj ..   => 9
-
-/-- The order on `Key` used in the `RefinedDiscrTree`. -/
-private def Key.lt : Key → Key → Bool
-  | .star id₁,               .star id₂               => id₁ < id₂
-  | .const name₁ nargs₁,     .const name₂ nargs₂     => Name.quickLt name₁ name₂ ||
-                                                          name₁ == name₂ && nargs₁ < nargs₂
-  | .fvar f₁ nargs₁,         .fvar f₂ nargs₂         => Name.quickLt f₁.name f₂.name ||
-                                                          f₁ == f₂ && nargs₁ < nargs₂
-  | .bvar i₁ nargs₁,         .bvar i₂ nargs₂         => i₁ < i₂ || (i₁ == i₂ && nargs₁ < nargs₂)
-  | .lit v₁,                 .lit v₂                 => v₁ < v₂
-  | .proj name₁ idx₁ nargs₁, .proj name₂ idx₂ nargs₂ => Name.quickLt name₁ name₂ ||
-    name₁ == name₂ && (idx₁ < idx₂ || idx₁ == idx₂ && nargs₁ < nargs₂)
-  | k₁,             k₂             => k₁.ctorIdx < k₂.ctorIdx
-
-instance : LT Key := ⟨fun a b => Key.lt a b⟩
-instance (a b : Key) : Decidable (a < b) := inferInstanceAs (Decidable (Key.lt a b))
 
 private def Key.format : Key → Format
   | .star id                => f!"*{id}"
@@ -209,7 +178,8 @@ structure LazyEntry where
   previous : Option ExprInfo := none
   /-- The stack, used to emulate recursion. -/
   stack    : List StackEntry := []
-  /-- The configuration for normalization. -/
+  /-- The configuration for normalization.
+  It could also be stored in the `RefinedDiscrTree` instead, but that is less convenient -/
   config : WhnfCoreConfig
   /-- The metavariable context, which may contain variables appearing in this entry. -/
   mctx     : MetavarContext
@@ -222,8 +192,6 @@ structure LazyEntry where
   /-- The cache of past computations that have multiple possible outcomes. -/
   cache    : AssocList Expr (List Key) := {}
 
-variable {α : Type}
-
 instance : Inhabited (LazyEntry) where
   default := { config := {}, mctx := {} }
 
@@ -233,7 +201,7 @@ private def LazyEntry.format (entry : LazyEntry) : Format :=
 
 instance : ToFormat LazyEntry := ⟨LazyEntry.format⟩
 
-/-- Index of a `Trie α` in the `Array (Trie α)` of a `RefinedDiscrTree`. -/
+/-- Array index of a `Trie α` in the `tries` of a `RefinedDiscrTree`. -/
 abbrev TrieIndex := Nat
 
 /--
@@ -256,8 +224,7 @@ structure Trie (α : Type) where
     /-- Lazy entries that still have to be evaluated. -/
     pending : Array (LazyEntry × α)
 
-
-instance : Inhabited (Trie α) := ⟨.node #[] {} {} #[]⟩
+instance {α : Type} : Inhabited (Trie α) := ⟨.node #[] {} {} #[]⟩
 
 end RefinedDiscrTree
 
@@ -266,8 +233,9 @@ open RefinedDiscrTree in
 /--
 Discrimination tree. It is an index from expressions to values of type `α`.
 
-We store all of the nodes in one `Array` (`tries`), instead of using a 'normal' inductive type.
-This is so that we can modify the tree globally, which is useful when doing lookups.
+We store all of the nodes in one `Array`, `tries`, instead of using a 'normal' inductive type.
+This is so that we can modify the tree globally, which is very useful when evaluating lazy
+entries and saving the result globally.
 -/
 structure RefinedDiscrTree (α : Type) where
   /-- `Trie`s at the root based of the `Key`. -/

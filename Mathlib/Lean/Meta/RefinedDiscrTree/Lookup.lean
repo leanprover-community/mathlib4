@@ -10,9 +10,13 @@ import Mathlib.Lean.Meta.RefinedDiscrTree.Encode
 
 This file defines the matching procedure for the `RefinedDiscrTree`.
 
-We define the `TreeM` monad for doing computations that affect the `RefinedDiscrTree`,
-we define the function `evalNode` which evaluates a node of the `RefinedDiscrTree`, and
-we define the matching function is `getMatch`. It returns an updated `RefinedDiscrTree`.
+The main definitions are
+* The structure `MatchResult`, which contains the match results, ordered by matching score.
+* The (private) function `evalNode` which evaluates a node of the `RefinedDiscrTree`
+* The (private) function `getMatchLoop`, which is the main function that computes the matches.
+  It implements the non-deterministic computation by keeping a stack of `PartialMatch`es,
+  and repeatedly processing the most recent one.
+* The matching function `getMatch` that also returns an updated `RefinedDiscrTree`
 
 To find the matches, we first encode the expression as a `List Key`. Then using this,
 we find all matches with the tree. When `unify == true`, we also allow metavariables in the target
@@ -29,10 +33,10 @@ namespace Lean.Meta.RefinedDiscrTree
 variable {α β : Type}
 
 /-- Monad for working with a `RefinedDiscrTree`. -/
-abbrev TreeM α := StateRefT (Array (Trie α)) MetaM
+private abbrev TreeM α := StateRefT (Array (Trie α)) MetaM
 
 /-- Run a `TreeM` computation using a `RefinedDiscrTree`. -/
-def runTreeM (d : RefinedDiscrTree α) (m : TreeM α β) :
+private def runTreeM (d : RefinedDiscrTree α) (m : TreeM α β) :
     MetaM (β × RefinedDiscrTree α) := do
   let { tries, root } := d
   let (result, tries) ← withReducible <| m.run tries
@@ -52,7 +56,7 @@ private def addLazyEntryToTrie (i : TrieIndex) (e : LazyEntry × α) : TreeM α 
 /-- Evaluate the `Trie α` at index `trie`,
 replacing it with the evaluated value,
 and returning the new `values`, `stars` and `children`. -/
-def evalNode (trie : TrieIndex) :
+private def evalNode (trie : TrieIndex) :
     TreeM α (Array α × Std.HashMap Nat TrieIndex × Std.HashMap Key TrieIndex) := do
   let .node values stars children pending := (← get).get! trie
   if pending.isEmpty then
@@ -133,8 +137,7 @@ end MatchResult
 
 
 /-
-A partial match captures the intermediate state of a match
-execution.
+A partial match captures the intermediate state of a match execution.
 
 N.B. Discrimination tree matching has non-determinism due to stars,
 so the matching loop maintains a stack of partial match results.
@@ -155,8 +158,7 @@ private structure PartialMatch where
   deriving Inhabited
 
 
-
-/-- Add to the stack all matches that result from a `.star id` in the query expression. -/
+/-- Add to the `todo` stack all matches that result from a `.star id` in the query expression. -/
 private partial def matchQueryStar (id : Nat) (trie : TrieIndex) (pMatch : PartialMatch)
     (todo : Array PartialMatch) (skip : Nat := 1) (skipped : List Key := []) :
     TreeM α (Array PartialMatch) := do
@@ -186,7 +188,7 @@ private def matchEverything (tree : RefinedDiscrTree α) : TreeM α (MatchResult
     let (values, _) ← evalNode pMatch.trie
     return result.push (score := 0) values
 
-/-- Add to the stack all matches that result from a `.star _` in the discrimination tree. -/
+/-- Add to the `todo` stack all matches that result from a `.star _` in the discrimination tree. -/
 private partial def matchTreeStars (key : Key) (stars : Std.HashMap Nat TrieIndex)
     (pMatch : PartialMatch) (todo : Array PartialMatch) : Array PartialMatch :=
   if stars.isEmpty then
@@ -212,7 +214,7 @@ where
       let key :: rest := rest | panic! "too few keys"
       drop (key :: dropped) rest (n + key.arity)
 
-/-- Add to the stack the match with `key`. -/
+/-- Add to the `todo` stack the match with `key`. -/
 private def matchKey (key : Key) (children : Std.HashMap Key TrieIndex) (pMatch : PartialMatch)
     (todo : Array PartialMatch) : Array PartialMatch :=
   if key matches .opaque then todo else
@@ -266,7 +268,7 @@ def getMatch (d : RefinedDiscrTree α) (e : Expr) (config : WhnfCoreConfig := {}
         if matchRootStar then
           matchEverything d
         else
-          return {} -- we don't want to evaluate the whole tree, as this is too expensive.
+          return {}
       else
         matchTreeRootStar d.root
     else

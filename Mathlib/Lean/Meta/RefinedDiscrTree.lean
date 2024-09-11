@@ -11,11 +11,6 @@ A discrimination tree for the purpose of unifying local expressions with library
 
 This data structure is based on `Lean.Meta.DiscrTree` and `Lean.Meta.LazyDiscrTree`,
 and includes many more features.
-Comparing performance with `Lean.Meta.DiscrTree`, this version is a bit slower.
-However in practice this does not matter, because a lookup in a discrimination tree is always
-combined with `isDefEq` unification and these unifications are significantly more expensive,
-so the extra lookup cost is neglegible, while better discrimination tree indexing, and thus
-less potential matches can save a significant amount of computation.
 
 ## New features
 
@@ -36,7 +31,7 @@ less potential matches can save a significant amount of computation.
   the library pattern `?a + ?a` is encoded as `@HAdd.hAdd *0 *0 *1 *2 *3 *3`.
   `*0` corresponds to the type of `a`, `*1` to the outParam of `HAdd.hAdd`,
   `*2` to the `HAdd` instance, and `*3` to `a`. This means that it will only match an expression
-  `x + y` if `x` is definitionally equal to `y`. The matching algorithm requires
+  `x + y` if `x` is indexed the same as `y`. The matching algorithm requires
   that the same stars from the discrimination tree match with the same patterns
   in the lookup expression, and similarly requires that the same metavariables
   form the lookup expression match with the same pattern in the discrimination tree.
@@ -44,13 +39,13 @@ less potential matches can save a significant amount of computation.
 - We evaluate the matching score of a unification.
   This score represents the number of keys that had to be the same for the unification to succeed.
   For example, matching `(1 + 2) + 3` with `add_comm` gives a score of 2,
-  since the pattern of commutativity is `@HAdd.hAdd *0 *0 *0 *1 *2 *3`: matching `HAdd.hAdd`
+  since the pattern of `add_comm` is `@HAdd.hAdd *0 *0 *0 *1 *2 *3`: matching `HAdd.hAdd`
   gives 1 point, and matching `*0` again after its first appearence gives another point.
   Similarly, matching it with `add_assoc` gives a score of 5.
 
 - Patterns that have the potential to be η-reduced are put into the `RefinedDiscrTree` under all
   possible reduced key sequences. This is for terms of the form `fun x => f (?m x₁ .. xₙ)`, where
-  `?m` is a metavariable, and one of `x₁, .., xₙ` is `x`.
+  `?m` is a metavariable, and one of `x₁, .., xₙ` is `x` (and `f` is not a metavariable).
   For example, the pattern `Continuous fun y => Real.exp (f y)])` is indexed by
   both `@Continuous *0 ℝ *1 *2 (λ, Real.exp *3)`
   and  `@Continuous *0 ℝ *1 *2 Real.exp`
@@ -59,7 +54,7 @@ less potential matches can save a significant amount of computation.
 - For sub-expressions not at the root of the original expression we have some additional reductions:
   - Any combination of `ofNat`, `Nat.zero`, `Nat.succ` and number literals
     is stored as just a number literal.
-    This behaviour should be updated once the lean4 issue #2867 has been resolved.
+    When issue lean4#2867 gets resolved, this behaviour should be updated.
   - The expression `fun a : α => a` is stored as `@id α`.
     - This makes lemmas such as `continuous_id'` redundant, which is the same as `continuous_id`,
       with `id` replaced by `fun x => x`.
@@ -78,16 +73,17 @@ less potential matches can save a significant amount of computation.
       which matches with `Continuous (f + g)` from `Continuous.add`.
 
 - The key `Key.opaque` only matches with a `Key.star` key.
-  Using the `WhnfCoreConfig` argument, we can disable β-reduction and ζ-reduction.
+  With the `WhnfCoreConfig` argument, we can disable β-reduction and ζ-reduction.
   As a result, we may get a lambda expression applied to an argument or a let-expression.
   Since there is no other support for indexing these, they will be indexed by `Key.opaque`.
 
 
 ## Lazy computation
 
-We encode an `Expr` as an `Array Key`. This is implemented with a lazy computation:
-we start with a `LazyEntry`, which comes with a step function of type
-`LazyEntry → MetaM (Option (List (Key × LazyEntry)))`.
+We encode an `Expr` as a sequence of `Key`. This is implemented with a lazy computation:
+we start with a `LazyEntry` and we have a incremental evaluation function of type
+`LazyEntry → MetaM (Option (List (Key × LazyEntry)))`, which computes the next keys
+and lazy entries, or returns `none` if the last key has been reached already.
 
 -/
 

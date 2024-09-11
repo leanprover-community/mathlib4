@@ -22,10 +22,10 @@ After this, each lemma is checked one by one to see whether it is applicable.
 The `RefinedDiscrTree` lookup groups the results by match pattern and gives a score to each pattern.
 This is used to display the results in sections. The sections are ordered by this score.
 Within each section, the lemmas are sorted by
-- number of extra goals
+- rewrites with fewer extra goals come first
 - left-to-right rewrites come first
-- length of the lemma name
-- alphabetical order of the lemma name
+- shorter lemma names come first
+- alphabetically ordered by lemma name
 
 The lemmas are optionally filtered to avoid duplicate rewrites, or trivial rewrites. This
 is controlled by the filter button on the top right of the results.
