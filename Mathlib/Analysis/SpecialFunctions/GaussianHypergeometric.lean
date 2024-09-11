@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2024 Edward Watine. All rights reserved.
+Copyright (c) 2024 Edward Watine and Alvan Caleb Arulandu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Edward Watine
+Authors: Edward Watine and Alvan Caleb Arulandu
 -/
 
 import Mathlib.Analysis.Analytic.Basic
@@ -168,41 +168,22 @@ lemma gaussianHypergeometricSeries_succ_norm_div_norm (n : ℕ)
   any_goals
     apply (not_iff_not.2 <| ascPochhammer_eq_zero_iff n _).2
     first | exact ha | exact hb | exact hc
-  simp only [ne_eq, cast_eq_zero]
+
+  rw [cast_ne_zero]
   exact factorial_ne_zero n
 
-theorem gaussianHypergeometric_nonpos_int_radius_top₁ (ha : a ∈ negativeInts) :
-    (gaussianHypergeometricSeries 𝔸 a b c).radius = ⊤ := by
-  have ⟨an, ha'⟩ := ha
-  apply FormalMultilinearSeries.radius_eq_top_of_forall_image_add_eq_zero _ <| Int.toNat (1-an)
-  intro m
-  apply gaussianHypergeometricSeries_eq_zero_of_nonpos_int
-  refine ⟨an, ha'.1, Or.inl ha'.2, ?_⟩
-  rewrite [Nat.cast_add, Int.toNat_of_nonneg]
-  all_goals linarith
-
-theorem gaussianHypergeometric_nonpos_int_radius_top₂ (hb : b ∈ negativeInts) :
-    (gaussianHypergeometricSeries 𝔸 a b c).radius = ⊤ := by
-  rewrite [gaussianHypergeometricSeries_symm]
-  exact gaussianHypergeometric_nonpos_int_radius_top₁ 𝔸 b a c hb
-
-theorem gaussianHypergeometric_nonpos_int_radius_top₃ (hc : c ∈ negativeInts) :
-    (gaussianHypergeometricSeries 𝔸 a b c).radius = ⊤ := by
-  have ⟨cn, hc'⟩ := hc
-  apply FormalMultilinearSeries.radius_eq_top_of_forall_image_add_eq_zero _ <| Int.toNat (1-cn)
-  intro m
-  apply gaussianHypergeometricSeries_eq_zero_of_nonpos_int
-  refine ⟨cn, hc'.1, Or.inr <| Or.inr hc'.2, ?_⟩
-  rewrite [Nat.cast_add, Int.toNat_of_nonneg]
-  all_goals linarith
 
 
-theorem gaussianHypergeometric_radius_eq_one (hc : c ∉ {z | (z:ℤ) < 0}):
-    (gaussianHypergeometricSeries 𝔸 a b c).radius = 1 := by
-  apply le_antisymm
-  · refine ENNReal.le_of_forall_nnreal_lt (fun r hr ↦ ?_)
-    rw [← ENNReal.coe_one, ENNReal.coe_le_coe]
-    have := FormalMultilinearSeries.summable_norm_mul_pow _ hr
-    contrapose! this
-    apply not_summable_of_ratio_norm_eventually_ge this
-    .
+
+theorem gaussianHypergeometric_nonpos_int_radius_top
+    (habc : a ∈ negativeInts ∨ b ∈ negativeInts ∨ c ∈ negativeInts) :=
+
+-- theorem gaussianHypergeometric_radius_eq_one (hc : c ∉ {z | (z:ℤ) < 0}):
+--     (gaussianHypergeometricSeries 𝔸 a b c).radius = 1 := by
+--   apply le_antisymm
+--   · refine ENNReal.le_of_forall_nnreal_lt (fun r hr ↦ ?_)
+--     rw [← ENNReal.coe_one, ENNReal.coe_le_coe]
+--     have := FormalMultilinearSeries.summable_norm_mul_pow _ hr
+--     contrapose! this
+--     apply not_summable_of_ratio_norm_eventually_ge this
+--     .
