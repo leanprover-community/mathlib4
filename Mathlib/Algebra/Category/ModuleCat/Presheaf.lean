@@ -108,9 +108,13 @@ lemma presheaf_obj_coe (M : PresheafOfModules R) (X : Cᵒᵖ) :
 lemma presheaf_map_apply_coe (M : PresheafOfModules R) {X Y : Cᵒᵖ} (f : X ⟶ Y) (x : M.obj X) :
     DFunLike.coe (α := M.obj X) (β := fun _ ↦ M.obj Y) (M.presheaf.map f) x = M.map f x := rfl
 
+instance (M : PresheafOfModules R) (X : Cᵒᵖ) :
+    Module (R.obj X) (M.presheaf.obj X) :=
+  inferInstanceAs (Module (R.obj X) (M.obj X))
+
 variable (R) in
 /-- The forgetful functor `PresheafOfModules R ⥤ Cᵒᵖ ⥤ Ab`. -/
-def toPresheaf : PresheafOfModules R ⥤ Cᵒᵖ ⥤ Ab where
+def toPresheaf : PresheafOfModules.{v} R ⥤ Cᵒᵖ ⥤ Ab where
   obj M := M.presheaf
   map f :=
     { app := fun X ↦ AddMonoidHom.mk' (Hom.app f X) (by simp)
@@ -120,6 +124,21 @@ instance : (toPresheaf R).Faithful where
   map_injective {_ _ f g} h := by
     ext X x
     exact congr_fun (((evaluation _ _).obj X ⋙ forget _).congr_map h) x
+
+/-- The morphism of presheaves of modules `M₁ ⟶ M₂` given by a morphism
+of abelian presheaves `M₁.presheaf ⟶ M₂.presheaf`
+which satisfy a suitable linearity condition. -/
+@[simps]
+def homMk (φ : M₁.presheaf ⟶ M₂.presheaf)
+    (hφ : ∀ (X : Cᵒᵖ) (r : R.obj X) (m : M₁.obj X), φ.app X (r • m) = r • φ.app X m) :
+    M₁ ⟶ M₂ where
+  app X :=
+    { toFun := φ.app X
+      map_add' := by simp
+      map_smul' := hφ X }
+  naturality := fun f ↦ by
+    ext x
+    exact congr_fun ((forget _).congr_map (φ.naturality f)) x
 
 instance : Zero (M₁ ⟶ M₂) where
   zero := { app := fun _ ↦ 0 }
@@ -189,6 +208,13 @@ variable (R)
 def evaluation (X : Cᵒᵖ) : PresheafOfModules.{v} R ⥤ ModuleCat (R.obj X) where
   obj M := M.obj X
   map f := f.app X
+
+/-- The restriction natural transformation on presheaves of modules, considered as linear maps
+to restriction of scalars. -/
+@[simps]
+noncomputable def restriction {X Y : Cᵒᵖ} (f : X ⟶ Y) :
+    evaluation R X ⟶ evaluation R Y ⋙ ModuleCat.restrictScalars (R.map f) where
+  app M := M.map f
 
 /-- The obvious free presheaf of modules of rank `1`. -/
 def unit : PresheafOfModules R where
