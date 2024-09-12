@@ -213,7 +213,7 @@ theorem keys_singleton (a : α) (b : β a) : (singleton a b).keys = {a} :=
 
 @[simp]
 theorem mem_singleton (x y : α) (b : β y) : x ∈ singleton y b ↔ x = y := by
-  simp only [singleton]; erw [mem_cons, mem_nil_iff, or_false_iff]
+  simp only [singleton]; erw [mem_cons, mem_nil_iff, or_false]
 
 section
 

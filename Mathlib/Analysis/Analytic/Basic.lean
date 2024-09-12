@@ -1347,7 +1347,7 @@ theorem hasFPowerSeriesAt_iff :
   simp only [Metric.eventually_nhds_iff]
   rintro ⟨r, r_pos, h⟩
   refine ⟨p.radius ⊓ r.toNNReal, by simp, ?_, ?_⟩
-  · simp only [r_pos.lt, lt_inf_iff, ENNReal.coe_pos, Real.toNNReal_pos, and_true_iff]
+  · simp only [r_pos.lt, lt_inf_iff, ENNReal.coe_pos, Real.toNNReal_pos, and_true]
     obtain ⟨z, z_pos, le_z⟩ := NormedField.exists_norm_lt 𝕜 r_pos.lt
     have : (‖z‖₊ : ENNReal) ≤ p.radius := by
       simp only [dist_zero_right] at h

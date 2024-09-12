@@ -8,7 +8,7 @@ import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Algebra.Order.Monoid.Submonoid
 
 /-!
-# Submonoids of archimdean monoids
+# Submonoids of archimedean monoids
 
 This file defines the instances that show that the (mul)archimedean property is retained in a
 submonoid of the ambient group.
