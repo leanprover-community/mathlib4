@@ -31,21 +31,21 @@ register_option linter.heavyRfl : Nat := {
 def renameDecl (stxO : Syntax) (ns tail : Name) : (Option (Syntax × Name)) :=
   -- this allows the rename to work inside `open ... in ...`
   match stxO.find? (·.isOfKind ``Lean.Parser.Command.declaration) with
-    | none => none
-    | some stx =>
-      match stx.find? (·.isOfKind ``Lean.Parser.Command.declId) with
-      | none => some (stx, .anonymous)
-      | some declId =>
-        let id := declId[0]
-        let declName := id.getId
-        let newDeclName := ns ++ id.getId ++ tail
-        let newId       := mkIdentFrom id newDeclName
-        let newDeclId   := mkNode ``Lean.Parser.Command.declId #[newId, declId.getArgs.back]
-        let new := stxO.replaceM (m := Id) (match · with
-          | .node _ ``Lean.Parser.Command.declId _ => some newDeclId
-          | .ident _ _ dName _ => if dName == declName then some newId else none
-          | _ => none)
-        some (new, newId.getId)
+  | none => none
+  | some stx =>
+    match stx.find? (·.isOfKind ``Lean.Parser.Command.declId) with
+    | none => some (stx, .anonymous)
+    | some declId =>
+      let id := declId[0]
+      let declName := id.getId
+      let newDeclName := ns ++ id.getId ++ tail
+      let newId       := mkIdentFrom id newDeclName
+      let newDeclId   := mkNode ``Lean.Parser.Command.declId #[newId, declId.getArgs.back]
+      let new := stxO.replaceM (m := Id) (match · with
+        | .node _ ``Lean.Parser.Command.declId _ => some newDeclId
+        | .ident _ _ dName _ => if dName == declName then some newId else none
+        | _ => none)
+      some (new, newId.getId)
 
 elab "rn" id:(ident)? cmd:command : command => do
   elabCommand cmd
