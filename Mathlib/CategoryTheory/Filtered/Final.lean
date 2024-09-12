@@ -313,18 +313,16 @@ theorem Functor.initial_of_isCofiltered_pUnit [IsCofiltered C] (F : C ⥤ Discre
 
 /-- The functor `StructuredArrow.proj : StructuredArrow Y T ⥤ C` is final if `T : C ⥤ D` is final
 and `C` is filtered. -/
-instance StructuredArrow.final_proj_of_filtered [IsFiltered C]
-    {D : Type u₂} [Category.{v₂} D] (T : C ⥤ D) [Final T] (Y : D) :
-    Final (StructuredArrow.proj Y T) := by
+instance StructuredArrow.final_proj_of_filtered [IsFilteredOrEmpty C]
+    (T : C ⥤ D) [Final T] (Y : D) : Final (StructuredArrow.proj Y T) := by
   refine ⟨fun X => ?_⟩
   rw [isConnected_iff_of_equivalence (ofStructuredArrowProjEquivalence T Y X)]
   exact (final_comp (Under.forget X) T).out _
 
 /-- The functor `CostructuredArrow.proj : CostructuredArrow Y T ⥤ C` is initial if `T : C ⥤ D` is
 initial and `C` is cofiltered. -/
-instance CostructuredArrow.initial_proj_of_cofiltered [IsCofiltered C]
-    (T : C ⥤ D) [Initial T] (Y : D) :
-    Initial (CostructuredArrow.proj T Y) := by
+instance CostructuredArrow.initial_proj_of_cofiltered [IsCofilteredOrEmpty C]
+    (T : C ⥤ D) [Initial T] (Y : D) : Initial (CostructuredArrow.proj T Y) := by
   refine ⟨fun X => ?_⟩
   rw [isConnected_iff_of_equivalence (ofCostructuredArrowProjEquivalence T Y X)]
   exact (initial_comp (Over.forget X) T).out _
