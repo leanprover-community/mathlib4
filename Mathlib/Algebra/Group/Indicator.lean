@@ -123,6 +123,10 @@ theorem mem_of_mulIndicator_ne_one (h : mulIndicator s f a ≠ 1) : a ∈ s :=
 theorem eqOn_mulIndicator : EqOn (mulIndicator s f) f s := fun _ hx => mulIndicator_of_mem hx f
 
 @[to_additive]
+theorem eqOn_mulIndicator' : EqOn (mulIndicator s f) 1 sᶜ :=
+  fun _ hx => mulIndicator_of_not_mem hx f
+
+@[to_additive]
 theorem mulSupport_mulIndicator_subset : mulSupport (s.mulIndicator f) ⊆ s := fun _ hx =>
   hx.imp_symm fun h => mulIndicator_of_not_mem h f
 
