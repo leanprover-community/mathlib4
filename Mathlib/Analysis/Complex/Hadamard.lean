@@ -432,7 +432,7 @@ def scale (f : ℂ → E) (l u : ℝ) : ℂ → E := fun z ↦ f (l + z • (u -
 
 /-- The transformation on ℂ that is used for `scale` maps the strip ``re ⁻¹' (l,u)``
   to the strip ``re ⁻¹' (0,1)``. -/
-lemma scale_mem_verticalStrip_of_mem_verticalStrip {l u : ℝ} (hul : l < u) {z : ℂ}
+lemma scale_id_mem_verticalStrip_of_mem_verticalStrip {l u : ℝ} (hul : l < u) {z : ℂ}
     (hz : z ∈ verticalStrip 0 1) : l + z * (u - l)  ∈ verticalStrip l u := by
   simp only [verticalStrip, mem_preimage, mem_Ioo] at hz
   simp only [verticalStrip, mem_preimage, add_re, ofReal_re, mul_re, sub_re, sub_im, ofReal_im,
@@ -448,7 +448,7 @@ lemma scale_mem_verticalStrip_of_mem_verticalStrip {l u : ℝ} (hul : l < u) {z 
 
 /-- The transformation on ℂ that is used for `scale` maps the closed strip ``re ⁻¹' [l,u]``
   to the closed strip ``re ⁻¹' [0,1]``. -/
-lemma scale_mem_verticalClosedStrip_of_mem_verticalClosedStrip {l u : ℝ} (hul : l < u) {z : ℂ}
+lemma scale_id_mem_verticalClosedStrip_of_mem_verticalClosedStrip {l u : ℝ} (hul : l < u) {z : ℂ}
     (hz : z ∈ verticalClosedStrip 0 1) : l + z * (u - l)  ∈ verticalClosedStrip l u := by
   simp only [verticalClosedStrip, mem_preimage, add_re, ofReal_re, mul_re, sub_re, sub_im,
     ofReal_im, sub_self, mul_zero, sub_zero, mem_Icc, le_add_iff_nonneg_right]
@@ -493,7 +493,7 @@ lemma scale_diffContOnCl [NormedSpace ℂ E] {f : ℂ → E} {l u : ℝ} (hul : 
     exact Differentiable.diffContOnCl differentiable_id'
   · rw [MapsTo]
     intro z hz
-    exact scale_mem_verticalStrip_of_mem_verticalStrip hul hz
+    exact scale_id_mem_verticalStrip_of_mem_verticalStrip hul hz
 
 
 /-- The norm of the function `scale f l u` is bounded above on the closed strip `re⁻¹' [0,1]`. -/
@@ -510,7 +510,7 @@ lemma scale_bddAbove {f : ℂ → E} {l u : ℝ} (hul : l < u)
     simp only [comp_apply, mem_image]
     use ↑l + w * (↑u - ↑l)
     simp only [and_true]
-    exact scale_mem_verticalClosedStrip_of_mem_verticalClosedStrip hul hw₁
+    exact scale_id_mem_verticalClosedStrip_of_mem_verticalClosedStrip hul hw₁
   exact hR ‖f (↑l + w * (↑u - ↑l))‖ this
 
 
