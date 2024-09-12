@@ -9,7 +9,7 @@ import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Set.Pointwise.Finite
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Data.Set.Pointwise.ListOfFn
-import Mathlib.Data.ULift
+-- import Mathlib.Data.ULift
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Ring.Nat
 
@@ -122,9 +122,9 @@ theorem subset_one_iff_eq : s ⊆ 1 ↔ s = ∅ ∨ s = 1 :=
 theorem Nonempty.subset_one_iff (h : s.Nonempty) : s ⊆ 1 ↔ s = 1 :=
   h.subset_singleton_iff
 
-@[to_additive (attr := simp)]
-theorem card_one : (1 : Finset α).card = 1 :=
-  card_singleton _
+-- @[to_additive (attr := simp)]
+-- theorem card_one : (1 : Finset α).card = 1 :=
+--   card_singleton _
 
 /-- The singleton operation as a `OneHom`. -/
 @[to_additive "The singleton operation as a `ZeroHom`."]
@@ -202,9 +202,9 @@ theorem mem_inv {x : α} : x ∈ s⁻¹ ↔ ∃ y ∈ s, y⁻¹ = x :=
 theorem inv_mem_inv (ha : a ∈ s) : a⁻¹ ∈ s⁻¹ :=
   mem_image_of_mem _ ha
 
-@[to_additive]
-theorem card_inv_le : s⁻¹.card ≤ s.card :=
-  card_image_le
+-- @[to_additive]
+-- theorem card_inv_le : s⁻¹.card ≤ s.card :=
+--   card_image_le
 
 @[to_additive (attr := simp)]
 theorem inv_empty : (∅ : Finset α)⁻¹ = ∅ :=
@@ -268,8 +268,8 @@ lemma mem_inv' : a ∈ s⁻¹ ↔ a⁻¹ ∈ s := by simp [mem_inv, inv_eq_iff_e
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_inv (s : Finset α) : ↑s⁻¹ = (s : Set α)⁻¹ := coe_image.trans Set.image_inv
 
-@[to_additive (attr := simp)]
-theorem card_inv (s : Finset α) : s⁻¹.card = s.card := card_image_of_injective _ inv_injective
+-- @[to_additive (attr := simp)]
+-- theorem card_inv (s : Finset α) : s⁻¹.card = s.card := card_image_of_injective _ inv_injective
 
 @[to_additive (attr := simp)]
 theorem preimage_inv (s : Finset α) : s.preimage (·⁻¹) inv_injective.injOn = s⁻¹ :=
@@ -320,14 +320,14 @@ theorem coe_mul (s t : Finset α) : (↑(s * t) : Set α) = ↑s * ↑t :=
 theorem mul_mem_mul : a ∈ s → b ∈ t → a * b ∈ s * t :=
   mem_image₂_of_mem
 
-@[to_additive]
-theorem card_mul_le : (s * t).card ≤ s.card * t.card :=
-  card_image₂_le _ _ _
+-- @[to_additive]
+-- theorem card_mul_le : (s * t).card ≤ s.card * t.card :=
+--   card_image₂_le _ _ _
 
-@[to_additive]
-theorem card_mul_iff :
-    (s * t).card = s.card * t.card ↔ (s ×ˢ t : Set (α × α)).InjOn fun p => p.1 * p.2 :=
-  card_image₂_iff
+-- @[to_additive]
+-- theorem card_mul_iff :
+--     (s * t).card = s.card * t.card ↔ (s ×ˢ t : Set (α × α)).InjOn fun p => p.1 * p.2 :=
+--   card_image₂_iff
 
 @[to_additive (attr := simp)]
 theorem empty_mul (s : Finset α) : ∅ * s = ∅ :=
@@ -509,9 +509,9 @@ theorem coe_div (s t : Finset α) : (↑(s / t) : Set α) = ↑s / ↑t :=
 theorem div_mem_div : a ∈ s → b ∈ t → a / b ∈ s / t :=
   mem_image₂_of_mem
 
-@[to_additive]
-theorem div_card_le : (s / t).card ≤ s.card * t.card :=
-  card_image₂_le _ _ _
+-- @[to_additive]
+-- theorem div_card_le : (s / t).card ≤ s.card * t.card :=
+--   card_image₂_le _ _ _
 
 @[to_additive (attr := simp)]
 theorem empty_div (s : Finset α) : ∅ / s = ∅ :=
@@ -1104,9 +1104,9 @@ theorem coe_smul (s : Finset α) (t : Finset β) : ↑(s • t) = (s : Set α) �
 theorem smul_mem_smul : a ∈ s → b ∈ t → a • b ∈ s • t :=
   mem_image₂_of_mem
 
-@[to_additive]
-theorem smul_card_le : (s • t).card ≤ s.card • t.card :=
-  card_image₂_le _ _ _
+-- @[to_additive]
+-- theorem smul_card_le : (s • t).card ≤ s.card • t.card :=
+--   card_image₂_le _ _ _
 
 @[to_additive (attr := simp)]
 theorem empty_smul (t : Finset β) : (∅ : Finset α) • t = ∅ :=
@@ -1226,8 +1226,8 @@ theorem coe_vsub (s t : Finset β) : (↑(s -ᵥ t) : Set α) = (s : Set β) -�
 theorem vsub_mem_vsub : b ∈ s → c ∈ t → b -ᵥ c ∈ s -ᵥ t :=
   mem_image₂_of_mem
 
-theorem vsub_card_le : (s -ᵥ t : Finset α).card ≤ s.card * t.card :=
-  card_image₂_le _ _ _
+-- theorem vsub_card_le : (s -ᵥ t : Finset α).card ≤ s.card * t.card :=
+--   card_image₂_le _ _ _
 
 @[simp]
 theorem empty_vsub (t : Finset β) : (∅ : Finset β) -ᵥ t = ∅ :=
@@ -1340,9 +1340,9 @@ theorem coe_smul_finset (a : α) (s : Finset β) : ↑(a • s) = a • (↑s : 
 theorem smul_mem_smul_finset : b ∈ s → a • b ∈ a • s :=
   mem_image_of_mem _
 
-@[to_additive]
-theorem smul_finset_card_le : (a • s).card ≤ s.card :=
-  card_image_le
+-- @[to_additive]
+-- theorem smul_finset_card_le : (a • s).card ≤ s.card :=
+--   card_image_le
 
 @[to_additive (attr := simp)]
 theorem smul_finset_empty (a : α) : a • (∅ : Finset β) = ∅ :=
@@ -1560,17 +1560,17 @@ theorem pairwiseDisjoint_smul_iff {s : Set α} {t : Finset α} :
     s.PairwiseDisjoint (· • t) ↔ (s ×ˢ t : Set (α × α)).InjOn fun p => p.1 * p.2 := by
   simp_rw [← pairwiseDisjoint_coe, coe_smul_finset, Set.pairwiseDisjoint_smul_iff]
 
-@[to_additive (attr := simp)]
-theorem card_singleton_mul : ({a} * t).card = t.card :=
-  card_image₂_singleton_left _ <| mul_right_injective _
+-- @[to_additive (attr := simp)]
+-- theorem card_singleton_mul : ({a} * t).card = t.card :=
+--   card_image₂_singleton_left _ <| mul_right_injective _
 
 @[to_additive]
 theorem singleton_mul_inter : {a} * (s ∩ t) = {a} * s ∩ ({a} * t) :=
   image₂_singleton_inter _ _ <| mul_right_injective _
 
-@[to_additive]
-theorem card_le_card_mul_left {s : Finset α} (hs : s.Nonempty) : t.card ≤ (s * t).card :=
-  card_le_card_image₂_left _ hs mul_right_injective
+-- @[to_additive]
+-- theorem card_le_card_mul_left {s : Finset α} (hs : s.Nonempty) : t.card ≤ (s * t).card :=
+--   card_le_card_image₂_left _ hs mul_right_injective
 
 end IsLeftCancelMul
 
@@ -1578,28 +1578,28 @@ section
 
 variable [Mul α] [IsRightCancelMul α] [DecidableEq α] (s t : Finset α) (a : α)
 
-@[to_additive (attr := simp)]
-theorem card_mul_singleton : (s * {a}).card = s.card :=
-  card_image₂_singleton_right _ <| mul_left_injective _
+-- @[to_additive (attr := simp)]
+-- theorem card_mul_singleton : (s * {a}).card = s.card :=
+--   card_image₂_singleton_right _ <| mul_left_injective _
 
 @[to_additive]
 theorem inter_mul_singleton : s ∩ t * {a} = s * {a} ∩ (t * {a}) :=
   image₂_inter_singleton _ _ <| mul_left_injective _
 
-@[to_additive]
-theorem card_le_card_mul_right {t : Finset α} (ht : t.Nonempty) : s.card ≤ (s * t).card :=
-  card_le_card_image₂_right _ ht mul_left_injective
+-- @[to_additive]
+-- theorem card_le_card_mul_right {t : Finset α} (ht : t.Nonempty) : s.card ≤ (s * t).card :=
+--   card_le_card_image₂_right _ ht mul_left_injective
 
 end
 
 section Group
 variable [Group α] [DecidableEq α] {s t : Finset α}
 
-@[to_additive] lemma card_le_card_div_left (hs : s.Nonempty) : t.card ≤ (s / t).card :=
-  card_le_card_image₂_left _ hs fun _ ↦ div_right_injective
+-- @[to_additive] lemma card_le_card_div_left (hs : s.Nonempty) : t.card ≤ (s / t).card :=
+--   card_le_card_image₂_left _ hs fun _ ↦ div_right_injective
 
-@[to_additive] lemma card_le_card_div_right (ht : t.Nonempty) : s.card ≤ (s / t).card :=
-  card_le_card_image₂_right _ ht fun _ ↦ div_left_injective
+-- @[to_additive] lemma card_le_card_div_right (ht : t.Nonempty) : s.card ≤ (s / t).card :=
+--   card_le_card_image₂_right _ ht fun _ ↦ div_left_injective
 
 end Group
 
@@ -1670,36 +1670,36 @@ theorem smul_univ [Fintype β] {s : Finset α} (hs : s.Nonempty) : s • (univ :
     push_cast
     exact Set.smul_univ hs
 
-@[to_additive (attr := simp)]
-theorem card_smul_finset (a : α) (s : Finset β) : (a • s).card = s.card :=
-  card_image_of_injective _ <| MulAction.injective _
+-- @[to_additive (attr := simp)]
+-- theorem card_smul_finset (a : α) (s : Finset β) : (a • s).card = s.card :=
+--   card_image_of_injective _ <| MulAction.injective _
 
-/-- If the left cosets of `t` by elements of `s` are disjoint (but not necessarily distinct!), then
-the size of `t` divides the size of `s • t`. -/
-@[to_additive "If the left cosets of `t` by elements of `s` are disjoint (but not necessarily
-distinct!), then the size of `t` divides the size of `s +ᵥ t`."]
-theorem card_dvd_card_smul_right {s : Finset α} :
-    ((· • t) '' (s : Set α)).PairwiseDisjoint id → t.card ∣ (s • t).card :=
-  card_dvd_card_image₂_right fun _ _ => MulAction.injective _
+-- /-- If the left cosets of `t` by elements of `s` are disjoint (but not necessarily distinct!), then
+-- the size of `t` divides the size of `s • t`. -/
+-- @[to_additive "If the left cosets of `t` by elements of `s` are disjoint (but not necessarily
+-- distinct!), then the size of `t` divides the size of `s +ᵥ t`."]
+-- theorem card_dvd_card_smul_right {s : Finset α} :
+--     ((· • t) '' (s : Set α)).PairwiseDisjoint id → t.card ∣ (s • t).card :=
+--   card_dvd_card_image₂_right fun _ _ => MulAction.injective _
 
 variable [DecidableEq α]
 
-/-- If the right cosets of `s` by elements of `t` are disjoint (but not necessarily distinct!), then
-the size of `s` divides the size of `s * t`. -/
-@[to_additive "If the right cosets of `s` by elements of `t` are disjoint (but not necessarily
-distinct!), then the size of `s` divides the size of `s + t`."]
-theorem card_dvd_card_mul_left {s t : Finset α} :
-    ((fun b => s.image fun a => a * b) '' (t : Set α)).PairwiseDisjoint id →
-      s.card ∣ (s * t).card :=
-  card_dvd_card_image₂_left fun _ _ => mul_left_injective _
+-- /-- If the right cosets of `s` by elements of `t` are disjoint (but not necessarily distinct!), then
+-- the size of `s` divides the size of `s * t`. -/
+-- @[to_additive "If the right cosets of `s` by elements of `t` are disjoint (but not necessarily
+-- distinct!), then the size of `s` divides the size of `s + t`."]
+-- theorem card_dvd_card_mul_left {s t : Finset α} :
+--     ((fun b => s.image fun a => a * b) '' (t : Set α)).PairwiseDisjoint id →
+--       s.card ∣ (s * t).card :=
+--   card_dvd_card_image₂_left fun _ _ => mul_left_injective _
 
-/-- If the left cosets of `t` by elements of `s` are disjoint (but not necessarily distinct!), then
-the size of `t` divides the size of `s * t`. -/
-@[to_additive "If the left cosets of `t` by elements of `s` are disjoint (but not necessarily
-distinct!), then the size of `t` divides the size of `s + t`."]
-theorem card_dvd_card_mul_right {s t : Finset α} :
-    ((· • t) '' (s : Set α)).PairwiseDisjoint id → t.card ∣ (s * t).card :=
-  card_dvd_card_image₂_right fun _ _ => mul_right_injective _
+-- /-- If the left cosets of `t` by elements of `s` are disjoint (but not necessarily distinct!), then
+-- the size of `t` divides the size of `s * t`. -/
+-- @[to_additive "If the left cosets of `t` by elements of `s` are disjoint (but not necessarily
+-- distinct!), then the size of `t` divides the size of `s + t`."]
+-- theorem card_dvd_card_mul_right {s t : Finset α} :
+--     ((· • t) '' (s : Set α)).PairwiseDisjoint id → t.card ∣ (s * t).card :=
+--   card_dvd_card_image₂_right fun _ _ => mul_right_injective _
 
 @[to_additive (attr := simp)]
 lemma inv_smul_finset_distrib (a : α) (s : Finset α) : (a • s)⁻¹ = op a⁻¹ • s⁻¹ := by
@@ -1995,3 +1995,5 @@ instance Nat.decidablePred_mem_vadd_set {s : Set ℕ} [DecidablePred (· ∈ s)]
     DecidablePred (· ∈ a +ᵥ s) :=
   fun n ↦ decidable_of_iff' (a ≤ n ∧ n - a ∈ s) <| by
     simp only [Set.mem_vadd_set, vadd_eq_add]; aesop
+
+#min_imports
