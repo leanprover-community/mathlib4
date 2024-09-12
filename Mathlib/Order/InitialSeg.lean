@@ -422,7 +422,7 @@ namespace InitialSeg
 
 /-- Every initial segment embedding into a well order can be turned into an isomorphism if
 surjective, or into a principal segment embedding if not. -/
-noncomputable def InitialSeg.ltOrEq [IsWellOrder β s] (f : r ≼i s) : (r ≺i s) ⊕ (r ≃r s) := by
+noncomputable def ltOrEq [IsWellOrder β s] (f : r ≼i s) : (r ≺i s) ⊕ (r ≃r s) := by
   by_cases h : Surjective f
   · exact Sum.inr (RelIso.ofSurjective f h)
   · exact Sum.inl (f.toPrincipalSeg h)
@@ -457,7 +457,7 @@ namespace RelEmbedding
 private noncomputable def collapseF [IsWellOrder β s] (f : r ↪r s) : Π a, { b // ¬s (f a) b } :=
   (RelEmbedding.isWellFounded f).fix fun a IH =>
     haveI H : f a ∈ { b | ∀ a h, s (IH a h).1 b } :=
-      fun b h => trans_le_lt (IH b h).2 (f.map_rel_iff.2 h)
+      fun b h => IsWellOrder.trans_le_lt (IH b h).2 (f.map_rel_iff.2 h)
     ⟨_, IsWellFounded.wf.not_lt_min _ ⟨_, H⟩ H⟩
 
 private theorem collapseF.lt [IsWellOrder β s] (f : r ↪r s) {a : α} :
