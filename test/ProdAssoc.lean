@@ -3,8 +3,7 @@ import Mathlib.Tactic.ProdAssoc
 variable {α β γ δ : Type*}
 
 example : (α × β) × (γ × δ) ≃ α × (β × γ) × δ := by
-  have := (prod_assoc% : (α × β) × (γ × δ) ≃ α × (β × γ) × δ)
-  exact this
+  exact (prod_assoc% : (α × β) × (γ × δ) ≃ α × (β × γ) × δ)
 
 example : (α × β) × (γ × δ) ≃ α × (β × γ) × δ := prod_assoc%
 

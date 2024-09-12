@@ -149,7 +149,7 @@ def split (I : Box ι) (i : ι) (x : ℝ) : Prepartition I :=
       rintro J (rfl | rfl)
       exacts [Box.splitLower_le, Box.splitUpper_le])
     (by
-      simp only [Finset.coe_insert, Finset.coe_singleton, true_and_iff, Set.mem_singleton_iff,
+      simp only [Finset.coe_insert, Finset.coe_singleton, true_and, Set.mem_singleton_iff,
         pairwise_insert_of_symmetric symmetric_disjoint, pairwise_singleton]
       rintro J rfl -
       exact I.disjoint_splitLower_splitUpper i x)

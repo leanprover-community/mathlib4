@@ -183,7 +183,7 @@ lemma mulEnergy_univ_left : Eₘ[univ, t] = Fintype.card α * t.card ^ 2 := by
     rw [mul_right_cancel h.1]
   rw [← card_image_of_injOn this]
   congr with a
-  simp only [mem_filter, mem_product, mem_univ, true_and_iff, mem_image, exists_prop,
+  simp only [mem_filter, mem_product, mem_univ, true_and, mem_image, exists_prop,
     Prod.exists]
   refine ⟨fun h => ⟨a.1.1 * a.2.2⁻¹, _, _, h.1, by simp [f, mul_right_comm, h.2]⟩, ?_⟩
   rintro ⟨b, c, d, hcd, rfl⟩

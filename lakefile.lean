@@ -12,6 +12,7 @@ require "leanprover-community" / "Qq" @ git "master"
 require "leanprover-community" / "aesop" @ git "master"
 require "leanprover-community" / "proofwidgets" @ git "v0.0.42"
 require "leanprover-community" / "importGraph" @ git "main"
+require "siddhartha-gadgil" / "LeanSearchClient" @ git "main"
 
 /-!
 ## Options for building mathlib
