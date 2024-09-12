@@ -83,9 +83,9 @@ lemma isPrincipalIdealRing_iff_not_denselyOrdered [MulArchimedean Γ₀] (hv : I
   · simp only [Function.comp_apply, Submodule.bot_coe, Set.image_singleton, _root_.map_zero]
     exact ⟨0, by simp⟩
   let e' : (MonoidHom.mrange v)ˣ ≃o Multiplicative ℤ := ⟨
-    (MulEquiv.unzeroCongr ((WithZero.unitsWithZeroMulEquivGroupWithZero _).trans e)).toEquiv, by
+    (MulEquiv.unzero (WithZero.withZeroUnitsEquiv.trans e)).toEquiv, by
     intros
-    simp only [MulEquiv.unzeroCongr, WithZero.unitsWithZeroMulEquivGroupWithZero,
+    simp only [MulEquiv.unzero, WithZero.withZeroUnitsEquiv,
       MulEquiv.trans_apply, MulEquiv.coe_mk, Equiv.coe_fn_mk, WithZero.recZeroCoe_coe,
       OrderMonoidIso.coe_mulEquiv, MulEquiv.symm_trans_apply, MulEquiv.symm_mk, Units.val_mk0,
       Equiv.coe_fn_symm_mk, map_eq_zero, WithZero.coe_ne_zero, ↓reduceDIte, WithZero.unzero_coe,
