@@ -220,16 +220,16 @@ lemma LinearOrderedCommGroupWithZero.discrete_or_denselyOrdered (G : Type*)
   refine (LinearOrderedCommGroup.discrete_or_denselyOrdered Gˣ).imp ?_ ?_
   · intro ⟨f⟩
     refine ⟨OrderMonoidIso.trans
-      ⟨(WithZero.unitsWithZeroMulEquivGroupWithZero G).symm, ?_⟩ ⟨f.withZeroCongr, ?_⟩⟩
+      ⟨WithZero.withZeroUnitsEquiv.symm, ?_⟩ ⟨f.withZero, ?_⟩⟩
     · intro
-      simp only [WithZero.unitsWithZeroMulEquivGroupWithZero, MulEquiv.symm_mk,
+      simp only [WithZero.withZeroUnitsEquiv, MulEquiv.symm_mk,
         MulEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe, MulEquiv.coe_mk,
         Equiv.coe_fn_symm_mk ]
       split_ifs <;>
       simp_all [← Units.val_le_val]
     · intro a b
       induction a <;> induction b <;>
-      simp [MulEquiv.withZeroCongr]
+      simp [MulEquiv.withZero]
   · intro H
     refine ⟨fun x y h ↦ ?_⟩
     rcases (zero_le' (a := x)).eq_or_lt with rfl|hx
