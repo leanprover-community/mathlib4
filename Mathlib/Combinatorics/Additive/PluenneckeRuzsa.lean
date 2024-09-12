@@ -7,6 +7,9 @@ import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Data.Finset.Pointwise.Card
 import Mathlib.Tactic.GCongr
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Positivity.Finset
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Field.Rat
 
@@ -41,8 +44,7 @@ theorem ruzsa_triangle_inequality_div_div_div (A B C : Finset α) :
     (A / C).card * B.card ≤ (A / B).card * (B / C).card := by
   rw [← card_product (A / B), ← mul_one ((A / B) ×ˢ (B / C)).card]
   refine card_mul_le_card_mul (fun b ac ↦ ac.1 * ac.2 = b) (fun x hx ↦ ?_)
-    fun x _ ↦ card_le_one_iff.2 fun hu hv ↦
-      ((mem_bipartiteBelow _).1 hu).2.symm.trans ?_
+    fun x _ ↦ card_le_one_iff.2 fun hu hv ↦ ((mem_bipartiteBelow _).1 hu).2.symm.trans ?_
   · obtain ⟨a, ha, c, hc, rfl⟩ := mem_div.1 hx
     refine card_le_card_of_injOn (fun b ↦ (a / b, b / c)) (fun b hb ↦ ?_) fun b₁ _ b₂ _ h ↦ ?_
     · rw [mem_bipartiteAbove]
@@ -96,48 +98,49 @@ theorem pluennecke_petridis_inequality_mul (C : Finset α)
   refine (mul_le_mul_right' h₃ _).trans ?_
   rw [tsub_mul, add_mul]
   refine (tsub_le_tsub (add_le_add_right ih _) <| hA _ inter_subset_left).trans_eq ?_
-  rw [← mul_add, ← mul_tsub, ← hA', hC', insert_eq, mul_union, ← card_mul_singleton A x, ←
-    card_mul_singleton A' x, add_comm (card _), h₀,
-    eq_tsub_of_add_eq (card_union_add_card_inter _ _)]
+  rw [← mul_add, ← mul_tsub, ← hA', hC', insert_eq, mul_union, ← card_mul_singleton A x,
+    ← card_mul_singleton A' x, add_comm, h₀, eq_tsub_of_add_eq (card_union_add_card_inter _ _)]
 
 /-! ### Sum triangle inequality -/
 
+@[to_additive]
+private theorem mul_aux2 (hA : A.Nonempty)
+    (h : ∀ A' ∈ B.powerset.erase ∅, ((A * C).card : ℚ) / ↑A.card ≤ (A' * C).card / A'.card) :
+    ∀ A' ∈ B.powerset.erase ∅, (A * C).card * A'.card ≤ (A' * C).card * A.card := by
+  rintro A' hAA'
+  obtain rfl | hA' := A'.eq_empty_or_nonempty
+  · simp
+  exact_mod_cast (div_le_div_iff (cast_pos.2 hA.card_pos) (cast_pos.2 hA'.card_pos)).1 (h A' hAA')
 
 -- Auxiliary lemma for Ruzsa's triangle sum inequality, and the Plünnecke-Ruzsa inequality.
 @[to_additive]
 private theorem mul_aux (hA : A.Nonempty) (hAB : A ⊆ B)
-    (h : ∀ A' ∈ B.powerset.erase ∅, ((A * C).card : ℚ≥0) / ↑A.card ≤ (A' * C).card / ↑A'.card) :
+    (h : ∀ A' ∈ B.powerset.erase ∅, ((A * C).card : ℚ) / A.card ≤ (A' * C).card / A'.card) :
     ∀ A' ⊆ A, (A * C).card * A'.card ≤ (A' * C).card * A.card := by
   rintro A' hAA'
   obtain rfl | hA' := A'.eq_empty_or_nonempty
   · simp
-  have hA₀ : (0 : ℚ≥0) < A.card := cast_pos.2 hA.card_pos
-  have hA₀' : (0 : ℚ≥0) < A'.card := cast_pos.2 hA'.card_pos
-  exact mod_cast
-    (div_le_div_iff hA₀ hA₀').1
-      (h _ <| mem_erase_of_ne_of_mem hA'.ne_empty <| mem_powerset.2 <| hAA'.trans hAB)
+  exact mul_aux2 hA h _ (by simp [hA'.ne_empty, *, hAA'.trans hAB])
+
+attribute [aesop safe apply (rule_sets := [finsetNonempty])] Nonempty.mul
 
 /-- **Ruzsa's triangle inequality**. Multiplication version. -/
 @[to_additive "**Ruzsa's triangle inequality**. Addition version."]
 theorem ruzsa_triangle_inequality_mul_mul_mul (A B C : Finset α) :
     (A * C).card * B.card ≤ (A * B).card * (B * C).card := by
-  obtain rfl | hB := B.eq_empty_or_nonempty
-  · simp
-  have hB' : B ∈ B.powerset.erase ∅ := mem_erase_of_ne_of_mem hB.ne_empty (mem_powerset_self _)
-  obtain ⟨U, hU, hUA⟩ :=
-    exists_min_image (B.powerset.erase ∅) (fun U ↦ (U * A).card / U.card : _ → ℚ≥0) ⟨B, hB'⟩
+  obtain rfl | hA := A.eq_empty_or_nonempty; simp
+  obtain rfl | hB := B.eq_empty_or_nonempty; simp
+  have hB' : B ∈ B.powerset.erase ∅ := by simp [hB.ne_empty]
+  obtain ⟨U, hU, hUA⟩ := exists_min_image _ (fun U ↦ (U * A).card / U.card : _ → ℚ) ⟨B, hB'⟩
   rw [mem_erase, mem_powerset, ← nonempty_iff_ne_empty] at hU
-  refine cast_le.1 (?_ : (_ : ℚ≥0) ≤ _)
-  push_cast
-  refine (le_div_iff <| cast_pos.2 hB.card_pos).1 ?_
-  rw [mul_div_right_comm, mul_comm _ B]
-  refine (Nat.cast_le.2 <| card_le_card_mul_left _ hU.1).trans ?_
-  refine le_trans ?_
-    (mul_le_mul (hUA _ hB') (cast_le.2 <| card_le_card <| mul_subset_mul_right hU.2)
-      (zero_le _) (zero_le _))
-  rw [← mul_div_right_comm, ← mul_assoc]
-  refine (le_div_iff <| cast_pos.2 hU.1.card_pos).2 ?_
-  exact mod_cast pluennecke_petridis_inequality_mul C (mul_aux hU.1 hU.2 hUA)
+  have := pluennecke_petridis_inequality_mul C (mul_aux hU.1 hU.2 hUA)
+  have : (U * A).card * B.card ≤ (A * B).card * U.card := mul_comm A B ▸ mul_aux2 hU.1 hUA B hB'
+  have : (U * C).card ≤ (B * C).card := card_le_card (mul_subset_mul_right hU.2)
+  have : (A * C).card ≤ (U * A * C).card := mul_assoc U A C ▸ card_le_card_mul_left _ hU.1
+  have : 0 ≤ U.card * (A * B).card := by positivity
+  have : 0 ≤ (U * A).card * (A * B).card := by positivity
+  have : 0 < (U * A).card := by positivity
+  nlinarith
 
 /-- **Ruzsa's triangle inequality**. Mul-div-div version. -/
 @[to_additive "**Ruzsa's triangle inequality**. Add-sub-sub version."]
@@ -168,10 +171,8 @@ private lemma card_mul_pow_le (hAB : ∀ A' ⊆ A, (A * B).card * A'.card ≤ (A
   · simp
   induction' n with n ih
   · simp
-  rw [_root_.pow_succ', ← mul_assoc, _root_.pow_succ', @mul_assoc ℚ≥0, ← mul_div_right_comm,
-    le_div_iff, ← cast_mul]
-  swap
-  · exact cast_pos.2 hA.card_pos
+  rw [_root_.pow_succ', ← mul_assoc, _root_.pow_succ', mul_assoc (G := ℚ≥0), ← mul_div_right_comm,
+    le_div_iff (by positivity), ← cast_mul]
   refine (Nat.cast_le.2 <| pluennecke_petridis_inequality_mul _ hAB).trans ?_
   rw [cast_mul]
   gcongr
@@ -191,12 +192,12 @@ theorem pluennecke_ruzsa_inequality_pow_div_pow_mul (hA : A.Nonempty) (B : Finse
   refine (Nat.cast_le.2 <| ruzsa_triangle_inequality_div_mul_mul _ _ _).trans ?_
   push_cast
   rw [mul_comm _ C]
-  refine (mul_le_mul (card_mul_pow_le (mul_aux hC.1 hC.2 hCA) _)
-    (card_mul_pow_le (mul_aux hC.1 hC.2 hCA) _) (zero_le _) (zero_le _)).trans ?_
+  refine (mul_le_mul (card_mul_pow_le (mul_aux hC.1 hC.2 hCA) m)
+    (card_mul_pow_le (mul_aux hC.1 hC.2 hCA) n) (zero_le _) (zero_le _)).trans ?_
   rw [mul_mul_mul_comm, ← pow_add, ← mul_assoc]
-  gcongr ((?_ ^ _) * Nat.cast ?_) * _
+  gcongr ((?_ ^ _) * card ?_) * _
   · exact hCA _ hA'
-  · exact card_le_card hC.2
+  · exact hC.2
 
 /-- The **Plünnecke-Ruzsa inequality**. Division version. -/
 @[to_additive "The **Plünnecke-Ruzsa inequality**. Subtraction version."]
