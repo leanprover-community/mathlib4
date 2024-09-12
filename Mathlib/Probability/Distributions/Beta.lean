@@ -61,7 +61,7 @@ theorem integral_ofReal {a b : ℝ} {μ : Measure ℝ} {f : ℝ → ℝ} :
     (∫ x in (a)..b, (f x : ℂ) ∂μ) = ↑(∫ x in (a)..b, f x ∂μ) :=
   RCLike.intervalIntegral_ofReal
 
-theorem betaIntegral_ofReal {a b : ℝ} (ha: 0 < a) (hb : 0 < b) :
+theorem betaIntegral_ofReal_cast {a b : ℝ} :
   ∫ x : ℝ in Ioo 0 1, (x:ℂ) ^ (↑a - 1:ℂ) * (1 - (x:ℂ)) ^ (↑b - 1:ℂ)
 = ↑(∫ x : ℝ in Ioo 0 1, x ^ (a - 1) * (1 - x) ^ (b - 1)) := by
   have hcast: ∀ r : ℝ, Complex.ofReal' r = @RCLike.ofReal ℂ _ r := fun r => rfl
@@ -76,7 +76,7 @@ theorem betaIntegral_ofReal {a b : ℝ} (ha: 0 < a) (hb : 0 < b) :
   simp [Complex.ofReal_sub, Complex.ofReal_one]
   exact le_of_lt hx1.left
 
-lemma betaIntegral_real_eq {a b : ℝ} (ha : 0 < a) (hb : 0 < b):
+lemma betaIntegral_ofReal_interval {a b : ℝ} (ha : 0 < a) (hb : 0 < b):
 Complex.re (∫ (x : ℝ) in (0)..1, ↑x ^ (↑a - 1:ℂ) * (1 - ↑x) ^ (↑b - 1:ℂ)) =
 ∫ (x : ℝ) in (0)..1, x ^ (a - 1) * (1 - x) ^ (b - 1) := by
   sorry
@@ -90,13 +90,13 @@ sorry
 
 lemma betaReal_integral_eq {a b : ℝ} (ha : 0 < a) (hb : 0 < b) :
 ∫ (x : ℝ) in (0)..1, x ^ (a - 1) * (1 - x) ^ (b - 1)
-= ∫ (x : ℝ) in Ioc 0 1, x ^ (a - 1) * (1 - x) ^ (b - 1) := by
+= ∫ (x : ℝ) in Ioo 0 1, x ^ (a - 1) * (1 - x) ^ (b - 1) := by
 sorry
 
 lemma betaReal_Integral {a b : ℝ} (ha : 0 < a) (hb : 0 < b) :
-Beta a b = ∫ (x : ℝ) in Ioc 0 1, x ^ (a - 1) * (1 - x) ^ (b - 1) := by
+Beta a b = ∫ (x : ℝ) in Ioo 0 1, x ^ (a - 1) * (1 - x) ^ (b - 1) := by
   rw [Beta, Complex.betaIntegral]
-  rw [betaIntegral_real_eq ha hb]
+  rw [betaIntegral_ofReal_interval ha hb]
   exact betaReal_integral_eq ha hb
 
 example {X : Type*} [MeasurableSpace X] (μ : Measure X) {f : X → ℂ} (hf : Integrable f μ) :
@@ -128,7 +128,7 @@ lemma betaIntervalIntegralPos {a b : ℝ} (ha: 0 < a) (hb : 0 < b) :
 
 lemma beta_pos {a b : ℝ} (ha : 0 < a) (hb : 0 < b) : Beta a b > 0 := by
   rw [Beta, Complex.betaIntegral]
-  rw [betaIntegral_real_eq ha hb]
+  rw [betaIntegral_ofReal_interval ha hb]
   exact betaIntervalIntegralPos ha hb
 
 lemma betaPDFReal_nonneg {a b : ℝ} (ha : 0 < a) (hb : 0 < b) (x : ℝ) : 0 ≤ betaPDFReal a b x := by
@@ -234,7 +234,8 @@ lemma lintegral_betaPDF_eq_one {a b : ℝ} (ha : 0 < a) (hb: 0 < b) :
     leftmid, right, zero_add]
   rw [← ENNReal.toReal_eq_one_iff, ← integral_eq_lintegral_of_nonneg_ae]
 
-  · simp_rw [← integral_Ioc_eq_integral_Ioo, mul_assoc]
+  · simp_rw [mul_assoc]
+    -- rw [← integral_Ioc_eq_integral_Ioo] # if change from oo -> oc add this back
     rw [integral_mul_left]
     rw [← betaReal_Integral ha hb]
     ring_nf
