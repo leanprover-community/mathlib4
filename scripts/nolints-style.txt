@@ -32,3 +32,8 @@ Mathlib/Tactic/Linter/TextBased.lean : line 84 : ERR_ADN : Found the string "Ada
 Mathlib/Tactic/Linter/TextBased.lean : line 274 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead
 Mathlib/Tactic/Linter/TextBased.lean : line 279 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead
 Mathlib/Tactic/Linter/TextBased.lean : line 280 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead
+
+-- The linter for the substring " ;" fires on its own implementation.
+Mathlib/Tactic/Linter/TextBased.lean : line 69 : ERR_SEM : This line contains a space before a semicolon
+Mathlib/Tactic/Linter/TextBased.lean : line 336 : ERR_SEM : This line contains a space before a semicolon
+Mathlib/Tactic/Linter/TextBased.lean : line 345 : ERR_SEM : This line contains a space before a semicolon
