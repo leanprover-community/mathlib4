@@ -51,7 +51,7 @@ def docPrimeLinter : Linter where run := withSetOptionIn fun stx ↦ do
           relative to the unprimed version, or an explanation as to why no better naming scheme \
           is possible."
   if docstring[0][1].getAtomVal.isEmpty && declName.toString.contains '\'' then
-    if ← System.FilePath.pathExists "scripts/no_lints_prime_decls1.txt" then
+    if ← System.FilePath.pathExists "scripts/no_lints_prime_decls.txt" then
       if (← IO.FS.lines "scripts/no_lints_prime_decls.txt").contains declName.toString then
         return
       else
