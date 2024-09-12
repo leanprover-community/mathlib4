@@ -51,7 +51,6 @@ scoped prefix:75 "∫ " => Pseudofunctor.Grothendieck
 /-- A morphism in the Grothendieck category `F : C ⥤ Cat` consists of
 `base : X.base ⟶ Y.base` and `f.fiber : (F.map base).obj X.fiber ⟶ Y.fiber`.
 -/
-@[ext]
 structure Hom (X Y : ∫ F) where
   /-- The morphism between base objects. -/
   base : X.base ⟶ Y.base
@@ -70,10 +69,10 @@ instance categoryStruct : CategoryStruct (∫ F) where
       (F.mapComp g.base.op.toLoc f.base.op.toLoc).inv.app Z.fiber }
 section
 
-variable {a b : ∫ F} (f : a ⟶ b)
+variable {a b : ∫ F}
 
 @[ext (iff := false)]
-lemma Hom.ext' (g : a ⟶ b) (hfg₁ : f.base = g.base)
+lemma Hom.ext (f g : a ⟶ b) (hfg₁ : f.base = g.base)
     (hfg₂ : f.fiber = g.fiber ≫ eqToHom (hfg₁ ▸ rfl)) : f = g := by
   cases f; cases g
   congr
@@ -81,40 +80,36 @@ lemma Hom.ext' (g : a ⟶ b) (hfg₁ : f.base = g.base)
   rw [← conj_eqToHom_iff_heq _ _ rfl (hfg₁ ▸ rfl)]
   simpa only [eqToHom_refl, id_comp] using hfg₂
 
-lemma Hom.ext'_iff (g : a ⟶ b) :
+lemma Hom.ext_iff (f g : a ⟶ b) :
     f = g ↔ ∃ (hfg : f.base = g.base), f.fiber = g.fiber ≫ eqToHom (hfg ▸ rfl) where
   mp hfg := ⟨by rw [hfg], by simp [hfg]⟩
-  mpr := fun ⟨hfg₁, hfg₂⟩ => Hom.ext' f g hfg₁ hfg₂
+  mpr := fun ⟨hfg₁, hfg₂⟩ => Hom.ext f g hfg₁ hfg₂
 
 lemma Hom.congr {a b : ∫ F} {f g : a ⟶ b} (h : f = g) :
     f.fiber = g.fiber ≫ eqToHom (h ▸ rfl) := by
   simp [h]
 
-lemma id_comp : 𝟙 a ≫ f = f := by
-  ext
-  · simp
-  · simp [F.mapComp_id_right_inv f.base.op.toLoc, ← (F.mapId ⟨op a.1⟩).inv.naturality_assoc f.fiber]
-
-lemma comp_id : f ≫ 𝟙 b = f := by
-  ext
-  · simp
-  · simp [F.mapComp_id_left_inv_app, ← Functor.map_comp_assoc]
-
 end
-
-lemma assoc {a b c d : ∫ F} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) : (f ≫ g) ≫ h = f ≫ g ≫ h := by
-  ext
-  · simp
-  dsimp
-  slice_lhs 3 4 => rw [← (F.mapComp g.base.op.toLoc f.base.op.toLoc).inv.naturality h.fiber]
-  simp [F.mapComp_assoc_right_inv_app]
 
 /-- The category structure on `∫ F`. -/
 instance category : Category (∫ F) where
   toCategoryStruct := Pseudofunctor.Grothendieck.categoryStruct
-  id_comp := Pseudofunctor.Grothendieck.id_comp
-  comp_id := Pseudofunctor.Grothendieck.comp_id
-  assoc := Pseudofunctor.Grothendieck.assoc
+  id_comp {a b} f := by
+    ext
+    · simp
+    · simp [F.mapComp_id_right_inv_app, Strict.rightUnitor_eqToIso,
+        ← (F.mapId ⟨op a.1⟩).inv.naturality_assoc f.fiber]
+  comp_id {a b} f := by
+    ext
+    · simp
+    · simp [F.mapComp_id_left_inv_app, ← Functor.map_comp_assoc, Strict.leftUnitor_eqToIso]
+  assoc f g h := by
+    ext
+    · simp
+    · dsimp
+      slice_lhs 3 4 => rw [← (F.mapComp g.base.op.toLoc f.base.op.toLoc).inv.naturality h.fiber]
+      simp [F.mapComp_assoc_right_inv_app, Strict.associator_eqToIso]
+
 
 /-- The projection `∫ F ⥤ 𝒮` given by projecting both objects and homs to the first
 factor. -/
