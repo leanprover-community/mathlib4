@@ -162,12 +162,8 @@ theorem JacobsonNoether_charP (p : ℕ) [Fact p.Prime] [CharP D p]
   set c := ((δ a) ^ n) b with hc_def
   letI : Invertible c := ⟨c⁻¹, inv_mul_cancel₀ (hb.1), mul_inv_cancel₀ (hb.1)⟩
   have hc : c * a = a * c := by
-    rw [← show (f a) c = a * c by rfl, ← show (g a) c = c * a by rfl, ← zero_add (g a c)]
-    apply add_eq_of_eq_add_neg
-    have temp := δ_iterate_succ a b n
-    simp only [δ_def, f_def, g_def] at temp
-    simp only [temp, f_def, g_def, ← sub_eq_add_neg]
-    exact hb.2.symm
+    symm; apply eq_of_sub_eq_zero
+    rw [← f_def a c, ← g_def a c, ← δ_def, δ_iterate_succ a b n, hb.2]
   -- We now make some computation to obtain the *absurd* equation `final_eq`, contradiction.
   set d := c⁻¹ * a * (δ a) ^[n-1] b with hd_def
   have hc': c⁻¹ * a = a * c⁻¹ := by
