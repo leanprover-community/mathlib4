@@ -52,26 +52,65 @@ lemma betaPDF_eq (a b x : ℝ) :
     betaPDF a b x = ENNReal.ofReal (if 0 < x ∧ x < 1
     then 1 / (Beta a b) * x ^ (a - 1) * (1 - x) ^ (b - 1) else 0) := rfl
 
+lemma xyz {X : Type*} [MeasurableSpace X] (μ : Measure X) {f : X → ℂ} (hf : Integrable f μ) :
+    ∫ x, (f x).re ∂μ = (∫x, f x ∂μ).re := by
+  rw [← fun z ↦ congrFun RCLike.re_eq_complex_re z, ← integral_re hf]
+  rfl
+
+lemma betaIntegral_real_eq {a b : ℝ} (ha : 0 < a) (hb : 0 < b):
+Complex.re (∫ (x : ℝ) in (0)..1, ↑x ^ (↑a - 1:ℂ) * (1 - ↑x) ^ (↑b - 1:ℂ)) =
+∫ (x : ℝ) in (0)..1, x ^ (a - 1) * (1 - x) ^ (b - 1) := by
+  sorry
+
+lemma betaPDF_integrable_cast {a b : ℝ} :
+@IntervalIntegrable ℂ Complex.instNormedAddCommGroup
+(fun x ↦ ↑x ^ (↑a - 1:ℂ) * (1 - ↑x) ^ (↑b - 1:ℂ)) ℙ 0 1
+= @IntervalIntegrable ℝ normedAddCommGroup
+(fun x ↦ x ^ (a - 1) * (1 - x) ^ (b - 1)) ℙ 0 1 := by
+sorry
+
+lemma betaReal_integral_eq {a b : ℝ} (ha : 0 < a) (hb : 0 < b) :
+∫ (x : ℝ) in (0)..1, x ^ (a - 1) * (1 - x) ^ (b - 1)
+= ∫ (x : ℝ) in Ioc 0 1, x ^ (a - 1) * (1 - x) ^ (b - 1) := by
+sorry
+
 lemma betaReal_Integral {a b : ℝ} (ha : 0 < a) (hb : 0 < b) :
 Beta a b = ∫ (x : ℝ) in Ioc 0 1, x ^ (a - 1) * (1 - x) ^ (b - 1) := by
   rw [Beta, Complex.betaIntegral]
-  -- (1) + (2)
-  -- type casting weirdness
-  sorry
+  rw [betaIntegral_real_eq ha hb]
+  exact betaReal_integral_eq ha hb
 
--- (1) prove complex.re integral = real integral [interval]
--- (2) prove real integral [interval] = real integral [bochner]
+example {X : Type*} [MeasurableSpace X] (μ : Measure X) {f : X → ℂ} (hf : Integrable f μ) :
+    ∫ x, (f x).re ∂μ = (∫x, f x ∂μ).re := by
+  rw [← fun z ↦ congrFun RCLike.re_eq_complex_re z, ← integral_re hf]
+  rfl
+
+lemma betaPDFReal_integrable {a b : ℝ} (ha : 0 < a) (hb : 0 < b):
+@IntervalIntegrable ℝ normedAddCommGroup (fun x ↦ x ^ (a - 1) * (1 - x) ^ (b - 1)) ℙ 0 1 := by
+  have ha' : 0 < (↑a : ℂ).re := by
+    rw [Complex.ofReal_re]
+    exact ha
+  have hb' : 0 < (↑b : ℂ).re := by
+    rw [Complex.ofReal_re]
+    exact hb
+  have h := Complex.betaIntegral_convergent ha' hb'
+  rw [betaPDF_integrable_cast] at h
+  exact h
 
 lemma betaIntervalIntegralPos {a b : ℝ} (ha: 0 < a) (hb : 0 < b) :
-∫ (x : ℝ) in (0)..1, ↑x ^ (↑a - 1) * (1 - ↑x) ^ (↑b - 1) > 0 := by
-  -- prove positivity of integral f(x) by showing f(x) > 0 in interior of (0, 1)
-  sorry
+∫ (x : ℝ) in (0)..1, x ^ (a - 1) * (1 - x) ^ (b - 1) > 0 := by
+  apply intervalIntegral.intervalIntegral_pos_of_pos_on
+  · exact betaPDFReal_integrable ha hb
+  · simp
+    intros x hxpos hx1
+    have hp : 1 - x > 0 := by linarith
+    positivity
+  · exact zero_lt_one
 
 lemma beta_pos {a b : ℝ} (ha : 0 < a) (hb : 0 < b) : Beta a b > 0 := by
   rw [Beta, Complex.betaIntegral]
-  have h1 := betaIntervalIntegralPos ha hb
-  -- (1)
-  sorry
+  rw [betaIntegral_real_eq ha hb]
+  exact betaIntervalIntegralPos ha hb
 
 lemma betaPDFReal_nonneg {a b : ℝ} (ha : 0 < a) (hb : 0 < b) (x : ℝ) : 0 ≤ betaPDFReal a b x := by
   unfold betaPDFReal
