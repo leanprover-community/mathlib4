@@ -137,13 +137,13 @@ theorem uniformContinuous_mul_right' [UniformContinuousConstSMul Rᵐᵒᵖ R] (
   uniformContinuous_id.mul_const' _
 
 theorem UniformContinuous.div_const' {R β : Type*} [DivisionRing R] [UniformSpace R]
-    [UniformContinuousConstSMul R R] [UniformContinuousConstSMul Rᵐᵒᵖ R]
-    [UniformSpace β] {f : β → R} (hf : UniformContinuous f) (a : R) :
+    [UniformContinuousConstSMul Rᵐᵒᵖ R] [UniformSpace β] {f : β → R}
+    (hf : UniformContinuous f) (a : R) :
     UniformContinuous fun x ↦ f x / a := by
   simpa [div_eq_mul_inv] using hf.mul_const' a⁻¹
 
 theorem uniformContinuous_div_const' {R : Type*} [DivisionRing R] [UniformSpace R]
-    [UniformContinuousConstSMul R R] [UniformContinuousConstSMul Rᵐᵒᵖ R] (a : R) :
+    [UniformContinuousConstSMul Rᵐᵒᵖ R] (a : R) :
     UniformContinuous fun b : R => b / a :=
   uniformContinuous_id.div_const' _
 
