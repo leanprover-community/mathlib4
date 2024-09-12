@@ -2006,11 +2006,11 @@ theorem countP_eq_countP_filter_add (s) (p q : α → Prop) [DecidablePred p] [D
 
 @[simp]
 theorem countP_True {s : Multiset α} : countP (fun _ => True) s = card s :=
-  Quot.inductionOn s fun _l => List.countP_true
+  Quot.inductionOn s fun _l => congrFun List.countP_true _
 
 @[simp]
 theorem countP_False {s : Multiset α} : countP (fun _ => False) s = 0 :=
-  Quot.inductionOn s fun _l => List.countP_false
+  Quot.inductionOn s fun _l => congrFun List.countP_false _
 
 theorem countP_map (f : α → β) (s : Multiset α) (p : β → Prop) [DecidablePred p] :
     countP p (map f s) = card (s.filter fun a => p (f a)) := by
