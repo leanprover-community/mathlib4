@@ -1017,7 +1017,7 @@ theorem fundamentalSequence_has_prop (o) : FundamentalSequenceProp o (fundamenta
       simp only [repr, iha, ihb, opow_lt_opow_iff_right one_lt_omega, add_lt_add_iff_left, add_zero,
         eq_self_iff_true, lt_add_iff_pos_right, lt_def, mul_one, Nat.cast_zero, Nat.cast_succ,
         Nat.succPNat_coe, opow_succ, opow_zero, mul_add_one, PNat.one_coe, succ_zero,
-        true_and_iff, _root_.zero_add, zero_def]
+        _root_.zero_add, zero_def]
     · decide
     · exact ⟨rfl, inferInstance⟩
     · have := opow_pos (repr a') omega_pos

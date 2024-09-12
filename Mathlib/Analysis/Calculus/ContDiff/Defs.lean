@@ -323,7 +323,7 @@ theorem HasFTaylorSeriesUpToOn.contDiffOn {f' : E → FormalMultilinearSeries �
     (hf : HasFTaylorSeriesUpToOn n f f' s) : ContDiffOn 𝕜 n f s := by
   intro x hx m hm
   use s
-  simp only [Set.insert_eq_of_mem hx, self_mem_nhdsWithin, true_and_iff]
+  simp only [Set.insert_eq_of_mem hx, self_mem_nhdsWithin, true_and]
   exact ⟨f', hf.of_le hm⟩
 
 theorem ContDiffOn.contDiffWithinAt (h : ContDiffOn 𝕜 n f s) (hx : x ∈ s) :
