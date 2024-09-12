@@ -165,7 +165,7 @@ theorem mem_genWeightSpaceOf (χ : R) (x : L) (m : M) :
 
 theorem coe_genWeightSpaceOf_zero (x : L) :
     ↑(genWeightSpaceOf M (0 : R) x) = ⨆ k, LinearMap.ker (toEnd R L M x ^ k) := by
-  simp [genWeightSpaceOf, Module.End.maxGenEigenspace]
+  simp [genWeightSpaceOf, ← Module.End.iSup_genEigenspace_eq]
 
 /-- If `M` is a representation of a nilpotent Lie algebra `L`
 and `χ : L → R` is a family of scalars,
@@ -265,7 +265,7 @@ lemma genWeightSpaceOf_ne_bot (χ : Weight R L M) (x : L) :
 lemma hasEigenvalueAt (χ : Weight R L M) (x : L) :
     (toEnd R L M x).HasEigenvalue (χ x) := by
   obtain ⟨k : ℕ, hk : (toEnd R L M x).genEigenspace (χ x) k ≠ ⊥⟩ := by
-    simpa [Module.End.maxGenEigenspace, genWeightSpaceOf] using χ.genWeightSpaceOf_ne_bot x
+    simpa [genWeightSpaceOf, ← Module.End.iSup_genEigenspace_eq] using χ.genWeightSpaceOf_ne_bot x
   exact Module.End.hasEigenvalue_of_hasGenEigenvalue hk
 
 lemma apply_eq_zero_of_isNilpotent [NoZeroSMulDivisors R M] [IsReduced R]
@@ -306,7 +306,7 @@ theorem exists_genWeightSpace_le_ker_of_isNoetherian [IsNoetherian R M] (χ : L 
   intro m hm
   replace hm : m ∈ (toEnd R L M x).maxGenEigenspace (χ x) :=
     genWeightSpace_le_genWeightSpaceOf M x χ hm
-  rwa [Module.End.maxGenEigenspace_eq] at hm
+  rwa [Module.End.maxGenEigenspace_eq, Module.End.genEigenspace_def] at hm
 
 variable (R) in
 theorem exists_genWeightSpace_zero_le_ker_of_isNoetherian
