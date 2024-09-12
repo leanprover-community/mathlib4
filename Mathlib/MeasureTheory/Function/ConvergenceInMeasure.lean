@@ -273,13 +273,13 @@ theorem TendstoInMeasure.exists_seq_tendsto_ae' {u : Filter ι} [NeBot u] [IsCou
 section
 
 /- An auxiliary lemma for a proof by contradiction in exists_seq_tendstoInMeasure_atTop_iff -/
-lemma false_of_tendsto_of_boundBelow_aux (f : ℕ → ℝ≥0) (δ : ℝ) (hδ: (0 : ℝ) < δ)
+lemma false_of_tendsto_of_bddBelow_aux (f : ℕ → ℝ≥0) (δ : ℝ) (hδ: (0 : ℝ) < δ)
     (hf1 : Tendsto f atTop (𝓝 0)) (hf2 : ∀ n, δ ≤ (f n) ) : False := by
   have h : ∀ x : ℝ≥0, x.toReal = dist x 0 := by
     intro x
     rw [NNReal.dist_eq x 0, NNReal.coe_zero, sub_zero, NNReal.abs_eq]
   simp_rw [h] at hf2
-  apply Metric.false_of_Tendsto_of_boundBelow
+  apply Metric.false_of_Tendsto_of_bddBelow
     hδ (Tendsto.comp (NNReal.tendsto_coe'.mpr ⟨Preorder.le_refl 0, fun ⦃_⦄ a ↦ a ⟩) hf1) _
   refine frequently_atTop'.mpr ?_
   intro n
@@ -351,7 +351,7 @@ theorem exists_seq_tendstoInMeasure_atTop_iff (hfin : MeasureTheory.IsFiniteMeas
     rw [tendstoInMeasure_iff_tendsto_toNNReal] at h8
     exfalso
     revert h7
-    apply false_of_tendsto_of_boundBelow_aux
+    apply false_of_tendsto_of_bddBelow_aux
       (fun n => (μ {x | ε ≤ dist (f (ns (ns' n)) x) (g x)}).toNNReal) δ hδ (h8 ε hε)
 
 section

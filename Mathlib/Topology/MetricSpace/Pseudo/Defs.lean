@@ -824,7 +824,7 @@ theorem tendsto_atTop' [Nonempty β] [SemilatticeSup β] [NoMaxOrder β] {u : β
 
 /-- This variant can be useful for proofs by contradiction.
 -/
-lemma false_of_Tendsto_of_boundBelow  [Nonempty β] [SemilatticeSup β] {u : β → α}
+lemma false_of_Tendsto_of_bddBelow  [Nonempty β] [SemilatticeSup β] {u : β → α}
     {a : α} {δ : ℝ} (hδ: (0 : ℝ) < δ) (hu1 : Tendsto u atTop (𝓝 a))
     (hu2 : ∃ᶠ n in atTop, δ ≤ dist (u n) a ) : False := by
   revert hu2
