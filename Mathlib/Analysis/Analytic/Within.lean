@@ -112,7 +112,7 @@ lemma analyticWithinOn_of_locally_analyticWithinOn {f : E → F} {s : Set E}
         · simp only [EMetric.mem_ball, yr] }⟩
 
 /-- On open sets, `AnalyticOn` and `AnalyticWithinOn` coincide -/
-@[simp] lemma IsOpen.analyticWithinOn_iff_analyticOn {f : E → F} {s : Set E} (hs : IsOpen s) :
+lemma IsOpen.analyticWithinOn_iff_analyticOn {f : E → F} {s : Set E} (hs : IsOpen s) :
     AnalyticWithinOn 𝕜 f s ↔ AnalyticOn 𝕜 f s := by
   refine ⟨?_, AnalyticOn.analyticWithinOn⟩
   intro hf x m
@@ -322,7 +322,7 @@ lemma AnalyticOn.comp_analyticWithinOn {f : F → G} {g : E → F} {s : Set F}
 lemma AnalyticWithinAt.contDiffWithinAt [CompleteSpace F] {f : E → F} {s : Set E} {x : E}
     (h : AnalyticWithinAt 𝕜 f s x) {n : ℕ∞} : ContDiffWithinAt 𝕜 n f s x := by
   rcases h.exists_analyticAt with ⟨g, fx, fg, hg⟩
-  exact hg.contDiffAt.contDiffWithinAt.congr_of_eventuallyEq fg fx
+  exact hg.contDiffAt.contDiffWithinAt.congr (fg.mono (subset_insert _ _)) fx
 
 lemma AnalyticWithinOn.contDiffOn [CompleteSpace F] {f : E → F} {s : Set E}
     (h : AnalyticWithinOn 𝕜 f s) {n : ℕ∞} : ContDiffOn 𝕜 n f s :=
