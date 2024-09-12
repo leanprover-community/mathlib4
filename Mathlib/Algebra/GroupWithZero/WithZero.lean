@@ -285,8 +285,7 @@ noncomputable def _root_.MulEquiv.withZero [Group β] (e : α ≃* β) :
   invFun := map' e.symm.toMonoidHom
   left_inv := (by induction · <;> simp)
   right_inv := (by induction · <;> simp)
-  map_mul' := by
-    intro x y
+  map_mul' x y := by
     induction x <;> induction y <;>
     simp
 
