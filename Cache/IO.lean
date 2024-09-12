@@ -10,7 +10,7 @@ import Lean.Data.RBTree
 import Lean.Data.Json.Printer
 import Lean.Data.Json.Parser
 
-set_option autoImplicit true
+variable {α : Type}
 
 /-- Removes a parent path from the beginning of a path -/
 def System.FilePath.withoutParent (path parent : FilePath) : FilePath :=
@@ -137,7 +137,8 @@ private def CacheM.getContext : IO CacheM.Context := do
     ("Cli", LAKEPACKAGESDIR / "Cli"),
     ("ProofWidgets", LAKEPACKAGESDIR / "proofwidgets"),
     ("Qq", LAKEPACKAGESDIR / "Qq"),
-    ("ImportGraph", LAKEPACKAGESDIR / "importGraph")
+    ("ImportGraph", LAKEPACKAGESDIR / "importGraph"),
+    ("LeanSearchClient", LAKEPACKAGESDIR / "LeanSearchClient")
   ]⟩
 
 def CacheM.run (f : CacheM α) : IO α := do ReaderT.run f (← getContext)

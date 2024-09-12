@@ -191,9 +191,9 @@ theorem comap_mono {f : F} {q q' : Submodule R₂ M₂} : q ≤ q' → comap f q
 
 theorem le_comap_pow_of_le_comap (p : Submodule R M) {f : M →ₗ[R] M} (h : p ≤ p.comap f) (k : ℕ) :
     p ≤ p.comap (f ^ k) := by
-  induction' k with k ih
-  · simp [LinearMap.one_eq_id]
-  · simp [LinearMap.iterate_succ, comap_comp, h.trans (comap_mono ih)]
+  induction k with
+  | zero => simp [LinearMap.one_eq_id]
+  | succ k ih => simp [LinearMap.iterate_succ, comap_comp, h.trans (comap_mono ih)]
 
 section
 
@@ -409,6 +409,10 @@ lemma comap_neg {f : M →ₗ[R] M₂} {p : Submodule R M₂} :
     p.comap (-f) = p.comap f := by
   ext; simp
 
+lemma map_toAddSubgroup (f : M →ₗ[R] M₂) (p : Submodule R M) :
+    (p.map f).toAddSubgroup = p.toAddSubgroup.map (f : M →+ M₂) :=
+  rfl
+
 end AddCommGroup
 
 end Submodule
@@ -620,7 +624,7 @@ This is `LinearEquiv.ofSubmodule'` but with `map` on the right instead of `comap
 def submoduleMap (p : Submodule R M) : p ≃ₛₗ[σ₁₂] ↥(p.map (e : M →ₛₗ[σ₁₂] M₂) : Submodule R₂ M₂) :=
   { ((e : M →ₛₗ[σ₁₂] M₂).domRestrict p).codRestrict (p.map (e : M →ₛₗ[σ₁₂] M₂)) fun x =>
       ⟨x, by
-        simp only [LinearMap.domRestrict_apply, eq_self_iff_true, and_true_iff, SetLike.coe_mem,
+        simp only [LinearMap.domRestrict_apply, eq_self_iff_true, and_true, SetLike.coe_mem,
           SetLike.mem_coe]⟩ with
     invFun := fun y =>
       ⟨(e.symm : M₂ →ₛₗ[σ₂₁] M) y, by

@@ -40,7 +40,7 @@ namespace RingOfIntegers
 
 variable {L : Type*} (K : Type*) [Field K] [Field L] [Algebra K L] [FiniteDimensional K L]
 
-/-- `Algebra.norm` as a morphism betwen the rings of integers. -/
+/-- `Algebra.norm` as a morphism between the rings of integers. -/
 noncomputable def norm [Algebra.IsSeparable K L] : 𝓞 L →* 𝓞 K :=
   RingOfIntegers.restrict_monoidHom
     ((Algebra.norm K).comp (algebraMap (𝓞 L) L : (𝓞 L) →* L))

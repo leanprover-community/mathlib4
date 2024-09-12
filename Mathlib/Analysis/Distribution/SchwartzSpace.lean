@@ -138,7 +138,7 @@ theorem isBigO_cocompact_zpow_neg_nat (k : ℕ) :
   simp_rw [Asymptotics.IsBigO, Asymptotics.IsBigOWith]
   refine ⟨d, Filter.Eventually.filter_mono Filter.cocompact_le_cofinite ?_⟩
   refine (Filter.eventually_cofinite_ne 0).mono fun x hx => ?_
-  rw [Real.norm_of_nonneg (zpow_nonneg (norm_nonneg _) _), zpow_neg, ← div_eq_mul_inv, le_div_iff']
+  rw [Real.norm_of_nonneg (zpow_nonneg (norm_nonneg _) _), zpow_neg, ← div_eq_mul_inv, le_div_iff₀']
   exacts [hd' x, zpow_pos_of_pos (norm_pos_iff.mpr hx) _]
 
 theorem isBigO_cocompact_rpow [ProperSpace E] (s : ℝ) :
@@ -380,7 +380,7 @@ end Module
 
 section Seminorms
 
-/-! ### Seminorms on Schwartz space-/
+/-! ### Seminorms on Schwartz space -/
 
 
 variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
@@ -480,7 +480,7 @@ end Seminorms
 
 section Topology
 
-/-! ### The topology on the Schwartz space-/
+/-! ### The topology on the Schwartz space -/
 
 
 variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
@@ -533,7 +533,7 @@ theorem _root_.Function.HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux {f
   choose k C f using hf_temperate.2
   use (Finset.range (n + 1)).sup k
   let C' := max (0 : ℝ) ((Finset.range (n + 1)).sup' (by simp) C)
-  have hC' : 0 ≤ C' := by simp only [C', le_refl, Finset.le_sup'_iff, true_or_iff, le_max_iff]
+  have hC' : 0 ≤ C' := by simp only [C', le_refl, Finset.le_sup'_iff, true_or, le_max_iff]
   use C', hC'
   intro N hN x
   rw [← Finset.mem_range_succ_iff] at hN
@@ -860,7 +860,7 @@ def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
         ∀ i, i ≤ n → ‖iteratedFDeriv ℝ i f (g x)‖ ≤ 2 ^ k' * seminorm_f / (1 + ‖g x‖) ^ k' := by
         intro i hi
         have hpos : 0 < (1 + ‖g x‖) ^ k' := by positivity
-        rw [le_div_iff' hpos]
+        rw [le_div_iff₀' hpos]
         change i ≤ (k', n).snd at hi
         exact one_add_le_sup_seminorm_apply le_rfl hi _ _
       have hgrowth' : ∀ N : ℕ, 1 ≤ N → N ≤ n →
@@ -886,7 +886,7 @@ def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
         ring
       rw [rearrange]
       have hgxk' : 0 < (1 + ‖g x‖) ^ k' := by positivity
-      rw [← div_le_iff hgxk'] at hg_upper''
+      rw [← div_le_iff₀ hgxk'] at hg_upper''
       have hpos : (0 : ℝ) ≤ (C + 1) ^ n * n ! * 2 ^ k' * seminorm_f := by
         have : 0 ≤ seminorm_f := apply_nonneg _ _
         positivity
@@ -1089,7 +1089,7 @@ def integralCLM : 𝓢(D, V) →L[𝕜] V :=
       have h' : ∀ x, ‖f x‖ ≤ (1 + ‖x‖) ^ (-(n : ℝ)) *
           (2 ^ n * ((Finset.Iic m).sup (fun m' => SchwartzMap.seminorm 𝕜 m'.1 m'.2) f)) := by
         intro x
-        rw [rpow_neg (by positivity), ← div_eq_inv_mul, le_div_iff' (by positivity), rpow_natCast]
+        rw [rpow_neg (by positivity), ← div_eq_inv_mul, le_div_iff₀' (by positivity), rpow_natCast]
         simpa using one_add_le_sup_seminorm_apply (m := m) (k := n) (n := 0) le_rfl le_rfl f x
       apply (integral_mono (by simpa using f.integrable_pow_mul μ 0) _ h').trans
       · rw [integral_mul_right, ← mul_assoc, mul_comm (2 ^ n)]
@@ -1189,7 +1189,7 @@ instance instZeroAtInftyContinuousMapClass : ZeroAtInftyContinuousMapClass 𝓢(
       simp only [hxzero, norm_zero, zero_mul, ← not_le] at hx
       exact hx (apply_nonneg (SchwartzMap.seminorm ℝ 1 0) f)
     have := norm_pow_mul_le_seminorm ℝ f 1 x
-    rw [pow_one, ← le_div_iff' hxpos] at this
+    rw [pow_one, ← le_div_iff₀' hxpos] at this
     apply lt_of_le_of_lt this
     rwa [div_lt_iff' hxpos]
 

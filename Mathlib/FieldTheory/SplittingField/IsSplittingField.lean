@@ -150,6 +150,13 @@ theorem IntermediateField.splits_of_splits (h : p.Splits (algebraMap K L))
   simp_rw [← F.fieldRange_val, rootSet_def, Finset.mem_coe, Multiset.mem_toFinset] at hF
   exact splits_of_comp _ F.val.toRingHom h hF
 
+theorem IntermediateField.splits_iff_mem (h : p.Splits (algebraMap K L)) :
+    p.Splits (algebraMap K F) ↔ ∀ x ∈ p.rootSet L, x ∈ F := by
+  refine ⟨?_, IntermediateField.splits_of_splits h⟩
+  intro hF
+  rw [← Polynomial.image_rootSet hF F.val, Set.forall_mem_image]
+  exact fun x _ ↦ x.2
+
 theorem IsIntegral.mem_intermediateField_of_minpoly_splits {x : L} (int : IsIntegral K x)
     {F : IntermediateField K L} (h : Splits (algebraMap K F) (minpoly K x)) : x ∈ F := by
   rw [← F.fieldRange_val]; exact int.mem_range_algebraMap_of_minpoly_splits h

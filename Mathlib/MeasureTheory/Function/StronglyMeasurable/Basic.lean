@@ -278,13 +278,13 @@ theorem finStronglyMeasurable_of_set_sigmaFinite [TopologicalSpace β] [Zero β]
     refine Set.indicator_of_not_mem ?_ _
     simp [hxt]
   refine ⟨fs, ?_, fun x => ?_⟩
-  · simp_rw [SimpleFunc.support_eq]
-    refine fun n => (measure_biUnion_finset_le _ _).trans_lt ?_
-    refine ENNReal.sum_lt_top_iff.mpr fun y hy => ?_
+  · simp_rw [SimpleFunc.support_eq, ← Finset.mem_coe]
+    classical
+    refine fun n => measure_biUnion_lt_top {y ∈ (fs n).range | y ≠ 0}.finite_toSet fun y hy => ?_
     rw [SimpleFunc.restrict_preimage_singleton _ ((hS_meas n).inter ht)]
     swap
     · letI : (y : β) → Decidable (y = 0) := fun y => Classical.propDecidable _
-      rw [Finset.mem_filter] at hy
+      rw [Finset.mem_coe, Finset.mem_filter] at hy
       exact hy.2
     refine (measure_mono Set.inter_subset_left).trans_lt ?_
     have h_lt_top := measure_spanningSets_lt_top (μ.restrict t) n
@@ -887,7 +887,7 @@ theorem stronglyMeasurable_of_measurableSpace_le_on {α E} {m m₂ : MeasurableS
             exact MeasurableSet.empty
           ext1 y
           simp only [mem_inter_iff, mem_preimage, mem_singleton_iff, mem_compl_iff,
-            mem_empty_iff_false, iff_false_iff, not_and, not_not_mem]
+            mem_empty_iff_false, iff_false, not_and, not_not_mem]
           refine Function.mtr fun hys => ?_
           rw [hg_seq_zero y hys n]
           exact Ne.symm hx
@@ -1880,3 +1880,5 @@ theorem stronglyMeasurable_uncurry_of_continuous_of_stronglyMeasurable {α β ι
   exact ((t_sf n).measurable.comp measurable_fst).subtype_mk
 
 end MeasureTheory
+
+set_option linter.style.longFile 2000

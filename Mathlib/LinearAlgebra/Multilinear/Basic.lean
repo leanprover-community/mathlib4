@@ -522,7 +522,7 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
         simpa [C] using hj
       rw [this]
       simp only [B, mem_sdiff, eq_self_iff_true, not_true, not_false_iff, Finset.mem_singleton,
-        update_same, and_false_iff]
+        update_same, and_false]
     · simp [hi]
   have Beq :
     Function.update (fun i => ∑ j ∈ A i, g i j) i₀ (∑ j ∈ B i₀, g i₀ j) = fun i =>
@@ -797,7 +797,7 @@ theorem compMultilinearMap_apply (g : M₂ →ₗ[R] M₃) (f : MultilinearMap R
 @[simp]
 theorem subtype_compMultilinearMap_codRestrict (f : MultilinearMap R M₁ M₂) (p : Submodule R M₂)
     (h) : p.subtype.compMultilinearMap (f.codRestrict p h) = f :=
-  MultilinearMap.ext fun _ => rfl
+  rfl
 
 /-- The multilinear version of `LinearMap.comp_codRestrict` -/
 @[simp]
@@ -805,7 +805,7 @@ theorem compMultilinearMap_codRestrict (g : M₂ →ₗ[R] M₃) (f : Multilinea
     (p : Submodule R M₃) (h) :
     (g.codRestrict p h).compMultilinearMap f =
       (g.compMultilinearMap f).codRestrict p fun v => h (f v) :=
-  MultilinearMap.ext fun _ => rfl
+  rfl
 
 variable {ι₁ ι₂ : Type*}
 
@@ -1771,3 +1771,5 @@ def range [Nonempty ι] (f : MultilinearMap R M₁ M₂) : SubMulAction R M₂ :
 end Submodule
 
 end MultilinearMap
+
+set_option linter.style.longFile 1900

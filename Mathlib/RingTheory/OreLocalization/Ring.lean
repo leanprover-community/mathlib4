@@ -229,7 +229,7 @@ instance nontrivial : Nontrivial R[R⁰⁻¹] :=
 variable [NoZeroDivisors R]
 
 open Classical in
-/-- The inversion of Ore fractions for a ring without zero divisors, satisying `0⁻¹ = 0` and
+/-- The inversion of Ore fractions for a ring without zero divisors, satisfying `0⁻¹ = 0` and
 `(r /ₒ r')⁻¹ = r' /ₒ r` for `r ≠ 0`. -/
 @[irreducible]
 protected def inv : R[R⁰⁻¹] → R[R⁰⁻¹] :=

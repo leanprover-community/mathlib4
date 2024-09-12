@@ -108,7 +108,7 @@ theorem right_inverse_eq (I J : FractionalIdeal R₁⁰ K) (h : I * J = 1) : J =
   apply (le_div_iff_of_nonzero hI).mpr _
   intro y hy x hx
   rw [mul_comm]
-  exact mul_mem_mul hx hy
+  exact mul_mem_mul hy hx
 
 theorem mul_inv_cancel_iff {I : FractionalIdeal R₁⁰ K} : I * I⁻¹ = 1 ↔ ∃ J, I * J = 1 :=
   ⟨fun h => ⟨I⁻¹, h⟩, fun ⟨J, hJ⟩ => by rwa [← right_inverse_eq K I J hJ]⟩
@@ -609,10 +609,9 @@ theorem Ideal.dvdNotUnit_iff_lt {I J : Ideal A} : DvdNotUnit I J ↔ J < I :=
       (mt Ideal.dvd_iff_le.mp (not_le_of_lt h))⟩
 
 instance : WfDvdMonoid (Ideal A) where
-  wellFounded_dvdNotUnit := by
-    have : WellFounded ((· > ·) : Ideal A → Ideal A → Prop) :=
-      isNoetherian_iff_wellFounded.mp (isNoetherianRing_iff.mp IsDedekindRing.toIsNoetherian)
-    convert this
+  wf := by
+    have : WellFoundedGT (Ideal A) := inferInstance
+    convert this.wf
     ext
     rw [Ideal.dvdNotUnit_iff_lt]
 
@@ -631,7 +630,7 @@ instance Ideal.uniqueFactorizationMonoid : UniqueFactorizationMonoid (Ideal A) :
         rintro ⟨⟨x, x_mem, x_not_mem⟩, ⟨y, y_mem, y_not_mem⟩⟩
         exact
           ⟨x * y, Ideal.mul_mem_mul x_mem y_mem,
-            mt this.isPrime.mem_or_mem (not_or_of_not x_not_mem y_not_mem)⟩⟩, Prime.irreducible⟩ }
+            mt this.isPrime.mem_or_mem (not_or_intro x_not_mem y_not_mem)⟩⟩, Prime.irreducible⟩ }
 
 instance Ideal.normalizationMonoid : NormalizationMonoid (Ideal A) :=
   normalizationMonoidOfUniqueUnits
