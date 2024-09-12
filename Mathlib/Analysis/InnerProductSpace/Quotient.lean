@@ -63,7 +63,7 @@ lemma inner_nullSpace_right_eq_zero (x y : E) (h : y ∈ nullSpace 𝕜 E): ⟪x
   rw [inner_eq_zero_symm]
   exact inner_nullSpace_left_eq_zero 𝕜 E y x h
 
-lemma nullSpace_le_ker_toDualMap (x : E) : (nullSpace 𝕜 E) ≤ ker (toDualMap 𝕜 E x) := by
+lemma nullSpace_le_ker_toDualMap (x : E) : nullSpace 𝕜 E ≤ ker (toDualMap 𝕜 E x) := by
   intro y hy
   refine LinearMap.mem_ker.mpr ?_
   simp only [toDualMap_apply]
