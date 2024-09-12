@@ -6,6 +6,8 @@ Authors: Kenny Lau
 import Mathlib.Algebra.Algebra.Operations
 import Mathlib.Data.Fintype.Lattice
 import Mathlib.RingTheory.Coprime.Lemmas
+import Mathlib.RingTheory.NonUnitalSubring.Basic
+import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 
 /-!
 # More operations on modules and ideals
@@ -1209,7 +1211,8 @@ theorem range_finsuppTotal :
   refine ⟨fun ⟨f, h⟩ => ⟨Finsupp.mapRange.linearMap I.subtype f, fun i => (f i).2, h⟩, ?_⟩
   rintro ⟨a, ha, rfl⟩
   classical
-    refine ⟨a.mapRange (fun r => if h : r ∈ I then ⟨r, h⟩ else 0) (by simp), ?_⟩
+    refine ⟨a.mapRange (fun r => if h : r ∈ I then ⟨r, h⟩ else 0)
+      (by simp only [Submodule.zero_mem, ↓reduceDIte]; rfl), ?_⟩
     rw [finsuppTotal_apply, Finsupp.sum_mapRange_index]
     · apply Finsupp.sum_congr
       intro i _
@@ -1273,3 +1276,7 @@ theorem set_smul_top_eq_span (s : Set R) :
     Eq.trans (smul_eq_mul (Ideal R)) (Ideal.mul_top (.span s))
 
 end Submodule
+
+instance {R} [Semiring R] : NonUnitalSubsemiringClass (Ideal R) R where
+  mul_mem _ hb := Ideal.mul_mem_left _ _ hb
+instance {R} [Ring R] : NonUnitalSubringClass (Ideal R) R where

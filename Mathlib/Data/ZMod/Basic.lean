@@ -1038,7 +1038,7 @@ theorem val_cast_zmod_lt {m : ℕ} [NeZero m] (n : ℕ) [NeZero n] (a : ZMod m) 
   by_cases h : m < n
   · rcases n with (⟨⟩|⟨n⟩); · simp at h
     rw [← natCast_val, val_cast_of_lt]
-    apply ZMod.val_lt a
+    · apply a.val_lt
     apply lt_of_le_of_lt (Nat.le_of_lt_succ (ZMod.val_lt a)) h
   · rw [not_lt] at h
     apply lt_of_lt_of_le (ZMod.val_lt _) (le_trans h (Nat.le_succ m))
@@ -1476,6 +1476,8 @@ lemma pow_pow_zmod_val_inv (hn : (Nat.card α).Coprime n) (a : α) :
 
 end Group
 
+open ZMod
+
 /-- The range of `(m * · + k)` on natural numbers is the set of elements `≥ k` in the
 residue class of `k` mod `m`. -/
 lemma Nat.range_mul_add (m k : ℕ) :
@@ -1489,3 +1491,17 @@ lemma Nat.range_mul_add (m k : ℕ) :
     simp only [ha, Nat.cast_add, add_right_eq_self, ZMod.natCast_zmod_eq_zero_iff_dvd] at H₁
     obtain ⟨b, rfl⟩ := H₁
     exact ⟨b, ha⟩
+
+/-- Equivalence between `ℕ` and `ZMod N × ℕ`, sending `n` to `(n mod N, n / N)`. -/
+def Nat.residueClassesEquiv (N : ℕ) [NeZero N] : ℕ ≃ ZMod N × ℕ where
+  toFun n := (↑n, n / N)
+  invFun p := p.1.val + N * p.2
+  left_inv n := by simpa only [val_natCast] using mod_add_div n N
+  right_inv p := by
+    ext1
+    · simp only [add_comm p.1.val, cast_add, cast_mul, natCast_self, zero_mul, natCast_val,
+        cast_id', id_eq, zero_add]
+    · simp only [add_comm p.1.val, mul_add_div (NeZero.pos _),
+        (Nat.div_eq_zero_iff <| (NeZero.pos _)).2 p.1.val_lt, add_zero]
+
+set_option linter.style.longFile 1700

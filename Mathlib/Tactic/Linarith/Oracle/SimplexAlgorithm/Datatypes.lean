@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasily Nesterov
 -/
 import Mathlib.Init
-import Lean.Data.HashMap
 import Batteries.Data.Rat.Basic
+import Std.Data.HashMap.Basic
 
 /-!
 # Datatypes for the Simplex Algorithm implementation
@@ -82,10 +82,10 @@ values.
 -/
 structure SparseMatrix (n m : Nat) where
   /-- The content of the matrix. -/
-  data : Array <| Lean.HashMap Nat Rat
+  data : Array <| Std.HashMap Nat Rat
 
 instance : UsableInSimplexAlgorithm SparseMatrix where
-  getElem mat i j := mat.data[i]!.findD j 0
+  getElem mat i j := mat.data[i]!.getD j 0
   setElem mat i j v :=
     if v == 0 then
       ⟨mat.data.modify i fun row => row.erase j⟩
@@ -96,7 +96,7 @@ instance : UsableInSimplexAlgorithm SparseMatrix where
       let rowVals := row.toList.map fun (j, v) => (i, j, v)
       rowVals ++ acc
   ofValues {n _ : Nat} vals := Id.run do
-    let mut data : Array (Lean.HashMap Nat Rat) := Array.mkArray n .empty
+    let mut data : Array (Std.HashMap Nat Rat) := Array.mkArray n .empty
     for ⟨i, j, v⟩ in vals do
       if v != 0 then
         data := data.modify i fun row => row.insert j v
@@ -105,12 +105,12 @@ instance : UsableInSimplexAlgorithm SparseMatrix where
   subtractRow mat i j coef :=
     let newData := mat.data.modify j fun row =>
       mat.data[i]!.fold (fun cur k val =>
-        let newVal := (cur.findD k 0) - coef * val
+        let newVal := (cur.getD k 0) - coef * val
         if newVal != 0 then cur.insert k newVal else cur.erase k
       ) row
     ⟨newData⟩
   divideRow mat i coef :=
-    let newData : Array (Lean.HashMap Nat Rat) := mat.data.modify i fun row =>
+    let newData : Array (Std.HashMap Nat Rat) := mat.data.modify i fun row =>
       row.fold (fun cur k v => cur.insert k (v / coef)) row
     ⟨newData⟩
 
