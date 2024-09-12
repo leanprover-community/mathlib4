@@ -131,6 +131,43 @@ def etaExpand1 (f : Expr) : MetaM Expr := do
     withDefault do forallBoundedTelescope (← inferType f) (.some 1) fun xs _ => do
       mkLambdaFVars xs (mkAppN f xs)
 
+/-- Implementation of `betaThroughLet` -/
+private def betaThroughLetAux (f : Expr) (args : List Expr) : Expr :=
+  match f, args with
+  | f, [] => f
+  | .lam _ _ b _, a :: as => (betaThroughLetAux (b.instantiate1 a) as)
+  | .letE n t v b _, args => .letE n t v (betaThroughLetAux b args) false
+  | .mdata _ b, args => betaThroughLetAux b args
+  | f, args => mkAppN f args.toArray
+
+/-- Apply the given arguments to `f`, beta-reducing if `f` is a lambda expression. This variant
+does beta-reduction through let bindings without inlining them.
+
+Example
+```
+beta' (fun x => let y := x * x; fun z => x + y + z) #[a,b]
+==>
+let y := a * a; a + y + b
+```
+-/
+def betaThroughLet (f : Expr) (args : Array Expr) : Expr :=
+  betaThroughLetAux f args.toList
+
+/-- Beta reduces head of an expression, `(fun x => e) a` ==> `e[x/a]`. This version applies
+arguments through let bindings without inlining them.
+
+Example
+```
+headBeta' ((fun x => let y := x * x; fun z => x + y + z) a b)
+==>
+let y := a * a; a + y + b
+```
+-/
+def headBetaThroughLet (e : Expr) : Expr :=
+  let f := e.getAppFn
+  if f.isHeadBetaTargetFn true then betaThroughLet f e.getAppArgs else e
+
+
 end Meta.FunProp
 
 end Mathlib

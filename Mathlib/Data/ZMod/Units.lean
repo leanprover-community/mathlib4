@@ -42,7 +42,7 @@ theorem unitsMap_surjective [hm : NeZero m] (h : n ∣ m) :
     have ⟨k, hk⟩ := this x.val.val (val_coe_unit_coprime x)
     refine ⟨unitOfCoprime _ hk, Units.ext ?_⟩
     have : NeZero n := ⟨fun hn ↦ hm.out (eq_zero_of_zero_dvd (hn ▸ h))⟩
-    simp [unitsMap_def]
+    simp [unitsMap_def, - castHom_apply]
   intro x hx
   let ps := m.primeFactors.filter (fun p ↦ ¬p ∣ x)
   use ps.prod id
