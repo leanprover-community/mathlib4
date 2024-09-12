@@ -275,16 +275,16 @@ lemma LinearOrderedCommGroupWithZero.discrete_or_denselyOrdered (G : Type*)
   refine (LinearOrderedCommGroup.discrete_or_denselyOrdered Gˣ).imp_left ?_
   intro ⟨f⟩
   refine ⟨OrderMonoidIso.trans
-    ⟨(WithZero.unitsWithZeroMulEquivGroupWithZero G).symm, ?_⟩ ⟨f.withZeroCongr, ?_⟩⟩
+    ⟨WithZero.withZeroUnitsEquiv.symm, ?_⟩ ⟨f.withZero, ?_⟩⟩
   · intro
-    simp only [WithZero.unitsWithZeroMulEquivGroupWithZero, MulEquiv.symm_mk,
+    simp only [WithZero.withZeroUnitsEquiv, MulEquiv.symm_mk,
       MulEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe, MulEquiv.coe_mk,
       Equiv.coe_fn_symm_mk ]
     split_ifs <;>
     simp_all [← Units.val_le_val]
   · intro a b
     induction a <;> induction b <;>
-    simp [MulEquiv.withZeroCongr]
+    simp [MulEquiv.withZero]
 
 open WithZero in
 /-- Any nontrivial (has other than 0 and 1) linearly ordered mul-archimedean group with zero is
@@ -295,16 +295,16 @@ lemma LinearOrderedCommGroupWithZero.discrete_iff_not_denselyOrdered (G : Type*)
   rw [← denselyOrdered_units_iff,
       ← LinearOrderedCommGroup.discrete_iff_not_denselyOrdered]
   refine Nonempty.congr ?_ ?_ <;> intro f
-  · refine ⟨MulEquiv.unzeroCongr ((unitsWithZeroMulEquivGroupWithZero _).trans f), ?_⟩
+  · refine ⟨MulEquiv.unzero (withZeroUnitsEquiv.trans f), ?_⟩
     intros
-    simp only [MulEquiv.unzeroCongr, unitsWithZeroMulEquivGroupWithZero, MulEquiv.trans_apply,
+    simp only [MulEquiv.unzero, withZeroUnitsEquiv, MulEquiv.trans_apply,
       MulEquiv.coe_mk, Equiv.coe_fn_mk, recZeroCoe_coe, OrderMonoidIso.coe_mulEquiv,
       MulEquiv.symm_trans_apply, MulEquiv.symm_mk, Equiv.coe_fn_symm_mk, map_eq_zero, coe_ne_zero,
       ↓reduceDIte, unzero_coe, MulEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe]
     rw [← Units.val_le_val, ← map_le_map_iff f, ← coe_le_coe, coe_unzero, coe_unzero]
-  · refine ⟨(unitsWithZeroMulEquivGroupWithZero _).symm.trans (MulEquiv.withZeroCongr f), ?_⟩
+  · refine ⟨withZeroUnitsEquiv.symm.trans (MulEquiv.withZero f), ?_⟩
     intros
-    simp only [unitsWithZeroMulEquivGroupWithZero, MulEquiv.symm_mk, MulEquiv.withZeroCongr,
+    simp only [withZeroUnitsEquiv, MulEquiv.symm_mk, MulEquiv.withZero,
       MulEquiv.toMonoidHom_eq_coe, MulEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
       MulEquiv.trans_apply, MulEquiv.coe_mk, Equiv.coe_fn_symm_mk, Equiv.coe_fn_mk]
     split_ifs <;>
