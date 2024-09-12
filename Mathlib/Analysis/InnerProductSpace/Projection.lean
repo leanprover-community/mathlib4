@@ -42,6 +42,8 @@ The Coq code is available at the following address: <http://www.lri.fr/~sboldo/e
 
 noncomputable section
 
+open InnerProductSpace
+
 open RCLike Real Filter
 
 open LinearMap (ker range)
@@ -216,8 +218,7 @@ theorem norm_eq_iInf_iff_real_inner_le_zero {K : Set F} (h : Convex ℝ K) {u : 
         θ * θ * ‖w - v‖ ^ 2 - 2 * θ * inner (u - v) (w - v) =
           θ * (θ * ‖w - v‖ ^ 2 - 2 * inner (u - v) (w - v)) := by ring
       rw [eq₂] at this
-      have := le_of_sub_nonneg (nonneg_of_mul_nonneg_right this hθ₁)
-      exact this
+      exact le_of_sub_nonneg (nonneg_of_mul_nonneg_right this hθ₁)
     by_cases hq : q = 0
     · rw [hq] at this
       have : p ≤ 0 := by
