@@ -289,28 +289,6 @@ instance [IsCofiltered C] (X : C × C) : IsCofiltered (CostructuredArrow (diag C
 instance Functor.initial_diag_of_isFiltered [IsCofiltered C] : Initial (Functor.diag C) :=
   initial_of_isCofiltered_costructuredArrow _
 
-/-- The functor `StructuredArrow.pre X T S` is final if `T` is final and the domain of `T` is
-filtered. -/
-instance StructuredArrow.final_pre [IsFilteredOrEmpty C] {D : Type u₂} [Category.{v₁} D]
-    {E : Type u₃} [Category.{v₁} E] (T : C ⥤ D) [Final T] (S : D ⥤ E) (X : E) :
-    Final (pre X T S) := by
-  haveI : ∀ Y, IsFiltered (StructuredArrow Y T) := by
-    rwa [← Functor.final_iff_isFiltered_structuredArrow]
-  haveI : ∀ f, IsFiltered (StructuredArrow f (pre X T S)) := fun f => by
-    apply IsFiltered.of_equivalence (StructuredArrow.preEquivalence T f).symm
-  apply final_of_isFiltered_structuredArrow
-
-/-- The functor `CostructuredArrow.pre X T S` is initial if `T` is initial and the domain of `T` is
-cofiltered. -/
-theorem CostructuredArrow.initial_pre [IsCofilteredOrEmpty C] {D : Type u₂} [Category.{v₁} D]
-    {E : Type u₃} [Category.{v₁} E] (T : C ⥤ D) [Initial T] (S : D ⥤ E) (X : E) :
-    Initial (pre T S X) := by
-  haveI : ∀ Y, IsCofiltered (CostructuredArrow T Y) := by
-    rwa [← Functor.initial_iff_isCofiltered_costructuredArrow]
-  haveI : ∀ f, IsCofiltered (CostructuredArrow (pre T S X) f) := fun f => by
-    apply IsCofiltered.of_equivalence (CostructuredArrow.preEquivalence T f).symm
-  apply initial_of_isCofiltered_costructuredArrow
-
 end LocallySmall
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
@@ -348,5 +326,23 @@ instance CostructuredArrow.initial_proj_of_isCofiltered [IsCofilteredOrEmpty C]
   refine ⟨fun X => ?_⟩
   rw [isConnected_iff_of_equivalence (ofCostructuredArrowProjEquivalence T Y X)]
   exact (initial_comp (Over.forget X) T).out _
+
+/-- The functor `StructuredArrow.pre X T S` is final if `T` is final and the domain of `T` is
+filtered. -/
+instance StructuredArrow.final_pre [IsFilteredOrEmpty C]
+    {E : Type u₃} [Category.{v₃} E] (T : C ⥤ D) [Final T] (S : D ⥤ E) (X : E) :
+    Final (pre X T S) := by
+  refine ⟨fun f => ?_⟩
+  rw [isConnected_iff_of_equivalence (StructuredArrow.preEquivalence T f)]
+  exact Final.out f.right
+
+/-- The functor `CostructuredArrow.pre X T S` is initial if `T` is initial and the domain of `T` is
+cofiltered. -/
+theorem CostructuredArrow.initial_pre [IsCofilteredOrEmpty C]
+    {E : Type u₃} [Category.{v₃} E] (T : C ⥤ D) [Initial T] (S : D ⥤ E) (X : E) :
+    Initial (pre T S X) := by
+  refine ⟨fun f => ?_⟩
+  rw [isConnected_iff_of_equivalence (CostructuredArrow.preEquivalence T f)]
+  exact Initial.out f.left
 
 end CategoryTheory
