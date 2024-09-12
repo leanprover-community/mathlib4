@@ -1215,6 +1215,11 @@ theorem ker_map (f : R →+* S) :
   rw [MvPolynomial.mem_map_C_iff, RingHom.mem_ker, MvPolynomial.ext_iff]
   simp_rw [coeff_map, coeff_zero, RingHom.mem_ker]
 
+lemma ker_mapAlgHom {S₁ S₂ σ : Type*} [CommRing S₁] [CommRing S₂] [Algebra R S₁]
+    [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :
+    RingHom.ker (MvPolynomial.mapAlgHom (σ := σ) f) = Ideal.map MvPolynomial.C (RingHom.ker f) :=
+  MvPolynomial.ker_map (f.toRingHom : S₁ →+* S₂)
+
 end MvPolynomial
 
 section UniqueFactorizationDomain
