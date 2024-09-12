@@ -420,7 +420,7 @@ theorem IsNormal.isLimit {f} (H : IsNormal f) {o} (l : IsLimit o) : IsLimit (f o
     let ⟨_b, h₁, h₂⟩ := (H.limit_lt l).1 h
     (succ_le_of_lt h₂).trans_lt (H.lt_iff.2 h₁)⟩
 
-@[deprecated (since := "2024-09-11")]
+@[deprecated StrictMono.id_le (since := "2024-09-11")]
 theorem IsNormal.le_iff_eq {f} (H : IsNormal f) {a} : f a ≤ a ↔ f a = a :=
   (H.strictMono.id_le a).le_iff_eq
 
