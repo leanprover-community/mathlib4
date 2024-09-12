@@ -24,7 +24,7 @@ for this in Lean 3 was `mono*`. Both `mono` and `mono*` implement this behavior 
 -/
 
 open Lean Elab Tactic Parser Tactic
-open Std Tactic SolveByElim
+open Tactic SolveByElim
 
 namespace Mathlib.Tactic.Monotonicity
 
@@ -53,3 +53,7 @@ elab_rules : tactic
     transparency := .reducible
     exfalso := false }
   liftMetaTactic fun g => do processSyntax cfg false false [] [] #[mkIdent `mono] [g]
+
+end Monotonicity
+
+end Mathlib.Tactic

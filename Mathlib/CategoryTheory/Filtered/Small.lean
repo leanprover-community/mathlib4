@@ -56,11 +56,11 @@ namespace FilteredClosureSmall
     in `C`. This would require some kind of inductive-recursive definition, which Lean does not
     allow. Our solution is to define a function `ℕ → Σ t : Type (max v w), t → C` by (strong)
     induction and then take the union over all natural numbers, mimicking what one would do in a
-    set-theoretic setting.  -/
+    set-theoretic setting. -/
 
 /-- One step of the inductive procedure consists of adjoining all maxima and coequalizers of all
     objects and morphisms obtained so far. This is quite redundant, picking up many objects which we
-    already hit in earlier iterations, but this is easier to work with later.  -/
+    already hit in earlier iterations, but this is easier to work with later. -/
 private inductive InductiveStep (n : ℕ) (X : ∀ (k : ℕ), k < n → Σ t : Type (max v w), t → C) :
     Type (max v w)
   | max : {k k' : ℕ} → (hk : k < n) → (hk' : k' < n) → (X _ hk).1 → (X _ hk').1 → InductiveStep n X
@@ -75,11 +75,14 @@ private noncomputable def inductiveStepRealization (n : ℕ)
   | (InductiveStep.coeq _ _ _ _ f g) => coeq f g
 
 /-- All steps of building the abstract filtered closure together with the realization function,
-    as a function of `ℕ`. -/
-private noncomputable def bundledAbstractFilteredClosure : ℕ → Σ t : Type (max v w), t → C :=
-  Nat.strongRec' fun n => match n with
-    | 0 => fun _ => ⟨ULift.{v} α, f ∘ ULift.down⟩
-    | (n + 1) => fun X => ⟨InductiveStep.{w, v, u} (n + 1) X, inductiveStepRealization (n + 1) X⟩
+    as a function of `ℕ`.
+
+   The function is defined by well-founded recursion, but we really want to use its
+   definitional equalities in the proofs below, so lets make it semireducible. -/
+@[semireducible] private noncomputable def bundledAbstractFilteredClosure :
+    ℕ → Σ t : Type (max v w), t → C
+  | 0 => ⟨ULift.{v} α, f ∘ ULift.down⟩
+  | (n + 1) => ⟨_, inductiveStepRealization (n + 1) (fun m _ => bundledAbstractFilteredClosure m)⟩
 
 /-- The small type modelling the filtered closure. -/
 private noncomputable def AbstractFilteredClosure : Type (max v w) :=
@@ -93,21 +96,21 @@ end FilteredClosureSmall
 
 theorem small_fullSubcategory_filteredClosure :
     Small.{max v w} (FullSubcategory (FilteredClosure f)) := by
-  refine' small_of_injective_of_exists (FilteredClosureSmall.abstractFilteredClosureRealization f)
-    FullSubcategory.ext _
+  refine small_of_injective_of_exists (FilteredClosureSmall.abstractFilteredClosureRealization f)
+    (fun _ _ => FullSubcategory.ext) ?_
   rintro ⟨j, h⟩
   induction h with
   | base x => exact ⟨⟨0, ⟨x⟩⟩, rfl⟩
   | max hj₁ hj₂ ih ih' =>
     rcases ih with ⟨⟨n, x⟩, rfl⟩
     rcases ih' with ⟨⟨m, y⟩, rfl⟩
-    refine' ⟨⟨(Max.max n m).succ, FilteredClosureSmall.InductiveStep.max _ _ x y⟩, rfl⟩
+    refine ⟨⟨(Max.max n m).succ, FilteredClosureSmall.InductiveStep.max ?_ ?_ x y⟩, rfl⟩
     all_goals apply Nat.lt_succ_of_le
     exacts [Nat.le_max_left _ _, Nat.le_max_right _ _]
   | coeq hj₁ hj₂ g g' ih ih' =>
     rcases ih with ⟨⟨n, x⟩, rfl⟩
     rcases ih' with ⟨⟨m, y⟩, rfl⟩
-    refine' ⟨⟨(Max.max n m).succ, FilteredClosureSmall.InductiveStep.coeq _ _ x y g g'⟩, rfl⟩
+    refine ⟨⟨(Max.max n m).succ, FilteredClosureSmall.InductiveStep.coeq ?_ ?_ x y g g'⟩, rfl⟩
     all_goals apply Nat.lt_succ_of_le
     exacts [Nat.le_max_left _ _, Nat.le_max_right _ _]
 
@@ -142,11 +145,11 @@ noncomputable def factoring : D ⥤ SmallFilteredIntermediate F :=
 noncomputable def inclusion : SmallFilteredIntermediate F ⥤ C :=
   (equivSmallModel _).inverse ⋙ fullSubcategoryInclusion _
 
-instance : Faithful (inclusion F) :=
-  show Faithful ((equivSmallModel _).inverse ⋙ fullSubcategoryInclusion _) from Faithful.comp _ _
+instance : (inclusion F).Faithful :=
+  show ((equivSmallModel _).inverse ⋙ fullSubcategoryInclusion _).Faithful from inferInstance
 
-noncomputable instance : Full (inclusion F) :=
-  show Full ((equivSmallModel _).inverse ⋙ fullSubcategoryInclusion _) from Full.comp _ _
+noncomputable instance : (inclusion F).Full :=
+  show ((equivSmallModel _).inverse ⋙ fullSubcategoryInclusion _).Full from inferInstance
 
 /-- The factorization through a small filtered category is in fact a factorization, up to natural
     isomorphism. -/
@@ -205,11 +208,14 @@ private noncomputable def inductiveStepRealization (n : ℕ)
   | (InductiveStep.eq _ _ _ _ f g) => eq f g
 
 /-- Implementation detail for the instance
-    `EssentiallySmall.{max v w} (FullSubcategory (CofilteredClosure f))`. -/
-private noncomputable def bundledAbstractCofilteredClosure : ℕ → Σ t : Type (max v w), t → C :=
-  Nat.strongRec' fun n => match n with
-    | 0 => fun _ => ⟨ULift.{v} α, f ∘ ULift.down⟩
-    | (n + 1) => fun X => ⟨InductiveStep.{w, v, u} (n + 1) X, inductiveStepRealization (n + 1) X⟩
+   `EssentiallySmall.{max v w} (FullSubcategory (CofilteredClosure f))`.
+
+   The function is defined by well-founded recursion, but we really want to use its
+   definitional equalities in the proofs below, so lets make it semireducible. -/
+@[semireducible] private noncomputable def bundledAbstractCofilteredClosure :
+    ℕ → Σ t : Type (max v w), t → C
+  | 0 => ⟨ULift.{v} α, f ∘ ULift.down⟩
+  | (n + 1) => ⟨_, inductiveStepRealization (n + 1) (fun m _ => bundledAbstractCofilteredClosure m)⟩
 
 /-- Implementation detail for the instance
     `EssentiallySmall.{max v w} (FullSubcategory (CofilteredClosure f))`. -/
@@ -225,21 +231,22 @@ end CofilteredClosureSmall
 
 theorem small_fullSubcategory_cofilteredClosure :
     Small.{max v w} (FullSubcategory (CofilteredClosure f)) := by
-  refine' small_of_injective_of_exists
-    (CofilteredClosureSmall.abstractCofilteredClosureRealization f) FullSubcategory.ext _
+  refine small_of_injective_of_exists
+    (CofilteredClosureSmall.abstractCofilteredClosureRealization f)
+    (fun _ _ => FullSubcategory.ext) ?_
   rintro ⟨j, h⟩
   induction h with
   | base x => exact ⟨⟨0, ⟨x⟩⟩, rfl⟩
   | min hj₁ hj₂ ih ih' =>
     rcases ih with ⟨⟨n, x⟩, rfl⟩
     rcases ih' with ⟨⟨m, y⟩, rfl⟩
-    refine' ⟨⟨(Max.max n m).succ, CofilteredClosureSmall.InductiveStep.min _ _ x y⟩, rfl⟩
+    refine ⟨⟨(Max.max n m).succ, CofilteredClosureSmall.InductiveStep.min ?_ ?_ x y⟩, rfl⟩
     all_goals apply Nat.lt_succ_of_le
     exacts [Nat.le_max_left _ _, Nat.le_max_right _ _]
   | eq hj₁ hj₂ g g' ih ih' =>
     rcases ih with ⟨⟨n, x⟩, rfl⟩
     rcases ih' with ⟨⟨m, y⟩, rfl⟩
-    refine' ⟨⟨(Max.max n m).succ, CofilteredClosureSmall.InductiveStep.eq _ _ x y g g'⟩, rfl⟩
+    refine ⟨⟨(Max.max n m).succ, CofilteredClosureSmall.InductiveStep.eq ?_ ?_ x y g g'⟩, rfl⟩
     all_goals apply Nat.lt_succ_of_le
     exacts [Nat.le_max_left _ _, Nat.le_max_right _ _]
 
@@ -275,11 +282,11 @@ noncomputable def factoring : D ⥤ SmallCofilteredIntermediate F :=
 noncomputable def inclusion : SmallCofilteredIntermediate F ⥤ C :=
   (equivSmallModel _).inverse ⋙ fullSubcategoryInclusion _
 
-instance : Faithful (inclusion F) :=
-  show Faithful ((equivSmallModel _).inverse ⋙ fullSubcategoryInclusion _) from Faithful.comp _ _
+instance : (inclusion F).Faithful :=
+  show ((equivSmallModel _).inverse ⋙ fullSubcategoryInclusion _).Faithful from inferInstance
 
-noncomputable instance : Full (inclusion F) :=
-  show Full ((equivSmallModel _).inverse ⋙ fullSubcategoryInclusion _) from Full.comp _ _
+noncomputable instance : (inclusion F).Full :=
+  show ((equivSmallModel _).inverse ⋙ fullSubcategoryInclusion _).Full from inferInstance
 
 /-- The factorization through a small filtered category is in fact a factorization, up to natural
     isomorphism. -/

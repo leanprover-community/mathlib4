@@ -3,8 +3,9 @@ Copyright (c) 2023 Lawrence Wu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lawrence Wu
 -/
+import Mathlib.Algebra.Module.Submodule.Lattice
 import Mathlib.Data.ZMod.Basic
-import Mathlib.Algebra.Module.LinearMap.Basic
+import Mathlib.Order.OmegaCompletePartialOrder
 
 /-!
 # The `ZMod n`-module structure on Abelian groups whose elements have order dividing `n`
@@ -15,8 +16,7 @@ variable {n : ℕ} {M M₁ : Type*}
 /-- The `ZMod n`-module structure on commutative monoids whose elements have order dividing `n ≠ 0`.
 Also implies a group structure via `Module.addCommMonoidToAddCommGroup`.
 See note [reducible non-instances]. -/
-@[reducible]
-def AddCommMonoid.zmodModule [NeZero n] [AddCommMonoid M] (h : ∀ (x : M), n • x = 0) :
+abbrev AddCommMonoid.zmodModule [NeZero n] [AddCommMonoid M] (h : ∀ (x : M), n • x = 0) :
     Module (ZMod n) M := by
   have h_mod (c : ℕ) (x : M) : (c % n) • x = c • x := by
     suffices (c % n + c / n * n) • x = c • x by rwa [add_nsmul, mul_nsmul, h, add_zero] at this
@@ -35,11 +35,10 @@ def AddCommMonoid.zmodModule [NeZero n] [AddCommMonoid M] (h : ∀ (x : M), n �
 
 /-- The `ZMod n`-module structure on Abelian groups whose elements have order dividing `n`.
 See note [reducible non-instances]. -/
-@[reducible]
-def AddCommGroup.zmodModule {G : Type*} [AddCommGroup G] (h : ∀ (x : G), n • x = 0) :
+abbrev AddCommGroup.zmodModule {G : Type*} [AddCommGroup G] (h : ∀ (x : G), n • x = 0) :
     Module (ZMod n) G :=
   match n with
-  | 0 => AddCommGroup.intModule G
+  | 0 => AddCommGroup.toIntModule G
   | _ + 1 => AddCommMonoid.zmodModule h
 
 variable {F S : Type*} [AddCommGroup M] [AddCommGroup M₁] [FunLike F M M₁]
@@ -49,11 +48,11 @@ variable {F S : Type*} [AddCommGroup M] [AddCommGroup M₁] [FunLike F M M₁]
 namespace ZMod
 
 theorem map_smul (f : F) (c : ZMod n) (x : M) : f (c • x) = c • f x := by
-  rw [← ZMod.int_cast_zmod_cast c]
-  exact map_int_cast_smul f _ _ (cast c) x
+  rw [← ZMod.intCast_zmod_cast c]
+  exact map_intCast_smul f _ _ (cast c) x
 
 theorem smul_mem (hx : x ∈ K) (c : ZMod n) : c • x ∈ K := by
-  rw [← ZMod.int_cast_zmod_cast c, ← zsmul_eq_smul_cast]
+  rw [← ZMod.intCast_zmod_cast c, Int.cast_smul_eq_zsmul]
   exact zsmul_mem hx (cast c)
 
 end ZMod
@@ -68,7 +67,7 @@ See also:
 `AddMonoidHom.toIntLinearMap`, `AddMonoidHom.toNatLinearMap`, `AddMonoidHom.toRatLinearMap` -/
 def toZModLinearMap (f : M →+ M₁) : M →ₗ[ZMod n] M₁ := { f with map_smul' := ZMod.map_smul f }
 
-theorem toZModLinearMap_injective: Function.Injective <| toZModLinearMap n (M := M) (M₁ := M₁) :=
+theorem toZModLinearMap_injective : Function.Injective <| toZModLinearMap n (M := M) (M₁ := M₁) :=
   fun _ _ h ↦ ext fun x ↦ congr($h x)
 
 @[simp]

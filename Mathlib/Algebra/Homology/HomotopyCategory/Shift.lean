@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.HomotopyCategory
-import Mathlib.Algebra.GroupPower.NegOnePow
+import Mathlib.Algebra.Ring.NegOnePow
 import Mathlib.CategoryTheory.Shift.Quotient
 import Mathlib.CategoryTheory.Linear.LinearFunctor
 import Mathlib.Tactic.Linarith
@@ -15,6 +15,10 @@ import Mathlib.Tactic.Linarith
 In this file, we show that for any preadditive category `C`, the categories
 `CochainComplex C ℤ` and `HomotopyCategory C (ComplexShape.up ℤ)` are
 equipped with a shift by `ℤ`.
+
+We also show that if `F : C ⥤ D` is an additive functor, then the functors
+`F.mapHomologicalComplex (ComplexShape.up ℤ)` and
+`F.mapHomotopyCategory (ComplexShape.up ℤ)` commute with the shift by `ℤ`.
 
 -/
 
@@ -28,8 +32,6 @@ variable (C : Type u) [Category.{v} C] [Preadditive C]
 namespace CochainComplex
 
 open HomologicalComplex
-
-attribute [local simp] XIsoOfEq_hom_naturality
 
 /-- The shift functor by `n : ℤ` on `CochainComplex C ℤ` which sends a cochain
 complex `K` to the complex which is `K.X (i + n)` in degree `i`, and which
@@ -67,7 +69,11 @@ variable {C}
 def shiftFunctorObjXIso (K : CochainComplex C ℤ) (n i m : ℤ) (hm : m = i + n) :
     ((shiftFunctor C n).obj K).X i ≅ K.X m := K.XIsoOfEq hm.symm
 
+section
+
 variable (C)
+
+attribute [local simp] XIsoOfEq_hom_naturality
 
 /-- The shift functor by `n` on `CochainComplex C ℤ` identifies to the identity
 functor when `n = 0`. -/
@@ -103,7 +109,7 @@ instance (n : ℤ) :
     (CategoryTheory.shiftFunctor (HomologicalComplex C (ComplexShape.up ℤ)) n).Additive :=
   (inferInstance : (CochainComplex.shiftFunctor C n).Additive)
 
-variable {C}
+end
 
 @[simp]
 lemma shiftFunctor_obj_X' (K : CochainComplex C ℤ) (n p : ℤ) :
@@ -188,6 +194,19 @@ lemma shiftFunctorComm_hom_app_f (K : CochainComplex C ℤ) (a b p : ℤ) :
   dsimp
   rw [shiftFunctorAdd'_inv_app_f', shiftFunctorAdd'_hom_app_f']
   simp only [XIsoOfEq, eqToIso.hom, eqToHom_trans]
+
+variable (C)
+
+attribute [local simp] XIsoOfEq_hom_naturality
+
+/-- Shifting cochain complexes by `n` and evaluating in a degree `i` identifies
+to the evaluation in degree `i'` when `n + i = i'`. -/
+@[simps!]
+def shiftEval (n i i' : ℤ) (hi : n + i = i') :
+    (CategoryTheory.shiftFunctor (CochainComplex C ℤ) n) ⋙
+      HomologicalComplex.eval C (ComplexShape.up ℤ) i ≅
+      HomologicalComplex.eval C (ComplexShape.up ℤ) i' :=
+  NatIso.ofComponents (fun K => K.XIsoOfEq (by dsimp; rw [← hi, add_comm i]))
 
 end CochainComplex
 
@@ -291,5 +310,18 @@ instance (n : ℤ) : (shiftFunctor (HomotopyCategory C (ComplexShape.up ℤ)) n)
   have : ((quotient C (ComplexShape.up ℤ) ⋙ shiftFunctor _ n)).Additive :=
     Functor.additive_of_iso ((quotient C (ComplexShape.up ℤ)).commShiftIso n)
   apply Functor.additive_of_full_essSurj_comp (quotient _ _ )
+
+section
+
+variable {C}
+variable (F : C ⥤ D) [F.Additive]
+
+noncomputable instance : (F.mapHomotopyCategory (ComplexShape.up ℤ)).CommShift ℤ :=
+  Quotient.liftCommShift _ _ _ _
+
+instance : NatTrans.CommShift (F.mapHomotopyCategoryFactors (ComplexShape.up ℤ)).hom ℤ :=
+  Quotient.liftCommShift_compatibility _ _ _ _
+
+end
 
 end HomotopyCategory
