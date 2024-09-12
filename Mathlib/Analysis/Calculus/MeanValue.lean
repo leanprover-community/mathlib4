@@ -917,7 +917,7 @@ theorem Convex.mul_sub_le_image_sub_of_le_deriv {D : Set ℝ} (hD : Convex ℝ D
   obtain ⟨a, a_mem, ha⟩ : ∃ a ∈ Ioo x y, deriv f a = (f y - f x) / (y - x) :=
     exists_deriv_eq_slope f hxy' (hf.mono hxyD) (hf'.mono hxyD')
   have : C ≤ (f y - f x) / (y - x) := ha ▸ hf'_ge _ (hxyD' a_mem)
-  exact (le_div_iff (sub_pos.2 hxy')).1 this
+  exact (le_div_iff₀ (sub_pos.2 hxy')).1 this
 
 /-- Let `f : ℝ → ℝ` be a differentiable function. If `C ≤ f'`, then `f` grows at least as fast
 as `C * x`, i.e., `C * (y - x) ≤ f y - f x` whenever `x ≤ y`. -/

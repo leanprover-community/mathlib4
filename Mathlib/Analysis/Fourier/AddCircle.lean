@@ -111,7 +111,7 @@ theorem fourier_apply {n : ℤ} {x : AddCircle T} : fourier n x = toCircle (n �
 theorem fourier_coe_apply {n : ℤ} {x : ℝ} :
     fourier n (x : AddCircle T) = Complex.exp (2 * π * Complex.I * n * x / T) := by
   rw [fourier_apply, ← QuotientAddGroup.mk_zsmul, toCircle, Function.Periodic.lift_coe,
-    Circle.exp_apply, Complex.ofReal_mul, Complex.ofReal_div, Complex.ofReal_mul, zsmul_eq_mul,
+    Circle.coe_exp, Complex.ofReal_mul, Complex.ofReal_div, Complex.ofReal_mul, zsmul_eq_mul,
     Complex.ofReal_mul, Complex.ofReal_intCast]
   norm_num
   congr 1; ring
@@ -173,7 +173,7 @@ theorem fourier_add_half_inv_index {n : ℤ} (hn : n ≠ 0) (hT : 0 < T) (x : Ad
   rw [fourier_apply, zsmul_add, ← QuotientAddGroup.mk_zsmul, toCircle_add, coe_mul_unitSphere]
   have : (n : ℂ) ≠ 0 := by simpa using hn
   have : (@toCircle T (n • (T / 2 / n) : ℝ) : ℂ) = -1 := by
-    rw [zsmul_eq_mul, toCircle, Function.Periodic.lift_coe, Circle.exp_apply]
+    rw [zsmul_eq_mul, toCircle, Function.Periodic.lift_coe, Circle.coe_exp]
     replace hT := Complex.ofReal_ne_zero.mpr hT.ne'
     convert Complex.exp_pi_mul_I using 3
     field_simp; ring

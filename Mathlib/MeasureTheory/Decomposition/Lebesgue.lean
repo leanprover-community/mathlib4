@@ -108,9 +108,15 @@ theorem haveLebesgueDecomposition_add (μ ν : Measure α) [HaveLebesgueDecompos
     μ = μ.singularPart ν + ν.withDensity (μ.rnDeriv ν) :=
   (haveLebesgueDecomposition_spec μ ν).2.2
 
+/-- For the versions of this lemma where `ν.withDensity (μ.rnDeriv ν)` or `μ.singularPart ν` are
+isolated, see `MeasureTheory.Measure.measure_sub_singularPart` and
+`MeasureTheory.Measure.measure_sub_rnDeriv`. -/
 lemma singularPart_add_rnDeriv (μ ν : Measure α) [HaveLebesgueDecomposition μ ν] :
     μ.singularPart ν + ν.withDensity (μ.rnDeriv ν) = μ := (haveLebesgueDecomposition_add μ ν).symm
 
+/-- For the versions of this lemma where `μ.singularPart ν` or `ν.withDensity (μ.rnDeriv ν)` are
+isolated, see `MeasureTheory.Measure.measure_sub_singularPart` and
+`MeasureTheory.Measure.measure_sub_rnDeriv`. -/
 lemma rnDeriv_add_singularPart (μ ν : Measure α) [HaveLebesgueDecomposition μ ν] :
     ν.withDensity (μ.rnDeriv ν) + μ.singularPart ν = μ := by rw [add_comm, singularPart_add_rnDeriv]
 
@@ -463,6 +469,17 @@ lemma singularPart_restrict (μ ν : Measure α) [HaveLebesgueDecomposition μ �
   · ext t
     rw [withDensity_indicator hs, ← restrict_withDensity hs, ← Measure.restrict_add,
       ← μ.haveLebesgueDecomposition_add ν]
+
+lemma measure_sub_singularPart (μ ν : Measure α) [HaveLebesgueDecomposition μ ν]
+    [IsFiniteMeasure μ] :
+    μ - μ.singularPart ν = ν.withDensity (μ.rnDeriv ν) := by
+  nth_rw 1 [← rnDeriv_add_singularPart μ ν]
+  exact Measure.add_sub_cancel
+
+lemma measure_sub_rnDeriv (μ ν : Measure α) [HaveLebesgueDecomposition μ ν] [IsFiniteMeasure μ] :
+    μ - ν.withDensity (μ.rnDeriv ν) = μ.singularPart ν := by
+  nth_rw 1 [← singularPart_add_rnDeriv μ ν]
+  exact Measure.add_sub_cancel
 
 /-- Given measures `μ` and `ν`, if `s` is a measure mutually singular to `ν` and `f` is a
 measurable function such that `μ = s + fν`, then `f = μ.rnDeriv ν`.

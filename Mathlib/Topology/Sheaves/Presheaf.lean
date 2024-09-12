@@ -154,7 +154,7 @@ def pushforward {X Y : TopCat.{w}} (f : X ⟶ Y) : X.Presheaf C ⥤ Y.Presheaf C
   (whiskeringLeft _ _ _).obj (Opens.map f).op
 
 set_option quotPrecheck false in
-/-- push forward of a presheaf-/
+/-- push forward of a presheaf -/
 notation f:80 " _* " P:81 => (pushforward _ f).obj P
 
 @[simp]
@@ -291,7 +291,7 @@ def pullbackInvIsoPushforwardHom {X Y : TopCat.{v}} (H : X ≅ Y) :
 
 variable {C}
 
-/-- If `f '' U` is open, then `f⁻¹ℱ U ≅ ℱ (f '' U)`.  -/
+/-- If `f '' U` is open, then `f⁻¹ℱ U ≅ ℱ (f '' U)`. -/
 def pullbackObjObjOfImageOpen {X Y : TopCat.{v}} (f : X ⟶ Y) (ℱ : Y.Presheaf C) (U : Opens X)
     (H : IsOpen (f '' SetLike.coe U)) : ((pullback C f).obj ℱ).obj (op U) ≅ ℱ.obj (op ⟨_, H⟩) := by
   let x : CostructuredArrow (Opens.map f).op (op U) := CostructuredArrow.mk
@@ -303,7 +303,7 @@ def pullbackObjObjOfImageOpen {X Y : TopCat.{v}} (f : X ⟶ Y) (ℱ : Y.Presheaf
           refine (homOfLE ?_).op
           apply (Set.image_subset f s.pt.hom.unop.le).trans
           exact Set.image_preimage.l_u_le (SetLike.coe s.pt.left.unop)
-        · simp [autoParam, eq_iff_true_of_subsingleton] }
+        · simp [eq_iff_true_of_subsingleton] }
   exact IsColimit.coconePointUniqueUpToIso
     ((Opens.map f).op.isPointwiseLeftKanExtensionLanUnit ℱ (op U))
     (colimitOfDiagramTerminal hx _)

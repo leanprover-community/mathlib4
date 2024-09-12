@@ -99,7 +99,7 @@ lemma coeff_list_sum (l : List R[X]) (n : ℕ) :
 
 lemma coeff_list_sum_map {ι : Type*} (l : List ι) (f : ι → R[X]) (n : ℕ) :
     (l.map f).sum.coeff n = (l.map (fun a => (f a).coeff n)).sum := by
-  simp_rw [coeff_list_sum, List.map_map, Function.comp, lcoeff_apply]
+  simp_rw [coeff_list_sum, List.map_map, Function.comp_def, lcoeff_apply]
 
 theorem coeff_sum [Semiring S] (n : ℕ) (f : ℕ → R → S[X]) :
     coeff (p.sum f) n = p.sum fun a b => coeff (f a b) n := by
@@ -118,6 +118,11 @@ theorem coeff_mul (p q : R[X]) (n : ℕ) :
 
 @[simp]
 theorem mul_coeff_zero (p q : R[X]) : coeff (p * q) 0 = coeff p 0 * coeff q 0 := by simp [coeff_mul]
+
+theorem mul_coeff_one (p q : R[X]) :
+    coeff (p * q) 1 = coeff p 0 * coeff q 1 + coeff p 1 * coeff q 0 := by
+  rw [coeff_mul, Nat.antidiagonal_eq_map]
+  simp [sum_range_succ]
 
 /-- `constantCoeff p` returns the constant term of the polynomial `p`,
   defined as `coeff p 0`. This is a ring homomorphism. -/
