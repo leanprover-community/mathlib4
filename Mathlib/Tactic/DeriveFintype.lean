@@ -70,7 +70,7 @@ for each individual constructor's proxy type.
 
 namespace Mathlib.Deriving.Fintype
 open Lean Elab Lean.Parser.Term
-open Meta Command
+open Meta Command Deriving
 
 /--
 The term elaborator `derive_fintype% α` tries to synthesize a `Fintype α` instance
@@ -89,10 +89,12 @@ Creates a `Fintype` instance by adding additional `Fintype` and `Decidable` inst
 for every type and prop parameter of the type, then use the `derive_fintype%` elaborator.
 -/
 def mkFintype (declName : Name) : CommandElabM Bool := do
-  let indVal ← getConstInfoInduct declName
+  let ctx ← liftTermElabM <| mkContext "repr" declName false
+  let nestedOcc := ctx.typeInfos[0]!
+  let argNames := ctx.typeArgNames[0]!
   let cmd ← liftTermElabM do
-    let header ← Deriving.mkHeader `Fintype 0 indVal
-    let binders' ← Deriving.mkInstImplicitBinders `Decidable indVal header.argNames
+    let header ← Deriving.mkHeader `Fintype 0 argNames nestedOcc
+    let binders' ← Deriving.mkInstImplicitBinders `Decidable nestedOcc header.argNames
     let instCmd ← `(command|
       instance $header.binders:bracketedBinder* $(binders'.map TSyntax.mk):bracketedBinder* :
           Fintype $header.targetType := derive_fintype% _)
