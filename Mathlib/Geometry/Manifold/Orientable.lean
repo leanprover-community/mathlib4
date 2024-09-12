@@ -147,8 +147,8 @@ open Set
 def orientationPreservingPregroupoid [FiniteDimensional ℝ E] : Pregroupoid H where
   property f s :=
     OrientationPreserving (I ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ interior (range I))
-    -- This second condition basically says "on `s`, `f` maps the interior of `M`
-    -- to the interior of `M`: this can be proven superfluous in many contexts,
+    -- The second condition states that "on `s`, `f` maps the interior of `M`
+    -- to the interior of `M`": this can be proven superfluous in many contexts,
     -- but such a proof is currently out of reach for mathlib.
     -- Hence, we add this condition.
     ∧ (I.symm ⁻¹' s ∩ interior (range I)).image (I ∘ f ∘ I.symm) ⊆ interior (range I)
