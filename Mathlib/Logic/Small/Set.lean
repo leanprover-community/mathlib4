@@ -63,7 +63,7 @@ instance small_insert (x : α) (s : Set α) [Small.{u} s] :
   Set.insert_eq x s ▸ small_union.{u} {x} s
 
 instance small_diff (s t : Set α) [Small.{u} s] : Small.{u} (s \ t : Set α) :=
-  small_subset (Set.diff_subset s t)
+  small_subset (Set.diff_subset)
 
 instance small_sep (s : Set α) (P : α → Prop) [Small.{u} s] :
     Small.{u} { x | x ∈ s ∧ P x} :=
@@ -71,11 +71,11 @@ instance small_sep (s : Set α) (P : α → Prop) [Small.{u} s] :
 
 instance small_inter_of_left (s t : Set α) [Small.{u} s] :
     Small.{u} (s ∩ t : Set α) :=
-  small_subset (Set.inter_subset_left s t)
+  small_subset Set.inter_subset_left
 
 instance small_inter_of_right (s t : Set α) [Small.{u} t] :
     Small.{u} (s ∩ t : Set α) :=
-  small_subset (Set.inter_subset_right s t)
+  small_subset Set.inter_subset_right
 
 theorem small_iInter (s : ι → Set α) (i : ι)
     [Small.{u} (s i)] : Small.{u} (⋂ i, s i) :=
