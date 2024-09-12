@@ -54,6 +54,9 @@ protected def prod (f : Filter α) (g : Filter β) : Filter (α × β) :=
 instance instSProd : SProd (Filter α) (Filter β) (Filter (α × β)) where
   sprod := Filter.prod
 
+theorem prod_eq_inf (f : Filter α) (g : Filter β) : f ×ˢ g = f.comap Prod.fst ⊓ g.comap Prod.snd :=
+  rfl
+
 theorem prod_mem_prod (hs : s ∈ f) (ht : t ∈ g) : s ×ˢ t ∈ f ×ˢ g :=
   inter_mem_inf (preimage_mem_comap hs) (preimage_mem_comap ht)
 
@@ -98,6 +101,10 @@ theorem eventually_prod_principal_iff {p : α × β → Prop} {s : Set β} :
 theorem comap_prod (f : α → β × γ) (b : Filter β) (c : Filter γ) :
     comap f (b ×ˢ c) = comap (Prod.fst ∘ f) b ⊓ comap (Prod.snd ∘ f) c := by
   erw [comap_inf, Filter.comap_comap, Filter.comap_comap]
+
+theorem comap_prodMap_prod (f : α → β) (g : γ → δ) (lb : Filter β) (ld : Filter δ) :
+    comap (Prod.map f g) (lb ×ˢ ld) = comap f lb ×ˢ comap g ld := by
+  simp [prod_eq_inf, comap_comap, Function.comp_def]
 
 theorem prod_top : f ×ˢ (⊤ : Filter β) = f.comap Prod.fst := by
   dsimp only [SProd.sprod]
