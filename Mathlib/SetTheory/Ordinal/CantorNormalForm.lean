@@ -37,6 +37,8 @@ open List
 
 namespace Ordinal
 
+/-! ### Recursion principles -/
+
 /-- Inducts on the base `b` expansion of an ordinal. -/
 @[elab_as_elim]
 noncomputable def CNFRec (b : Ordinal) {C : Ordinal → Sort*} (H0 : C 0)
@@ -56,6 +58,28 @@ theorem CNFRec_zero {C : Ordinal → Sort*} (b : Ordinal) (H0 : C 0)
 theorem CNFRec_pos (b : Ordinal) {o : Ordinal} {C : Ordinal → Sort*} (ho : o ≠ 0) (H0 : C 0)
     (H : ∀ o, o ≠ 0 → C (o % b ^ log b o) → C o) :
     @CNFRec b C H0 H o = H o ho (@CNFRec b C H0 H _) := by rw [CNFRec, dif_neg ho]
+
+/-- Inducts on the base `ω` expansion of an ordinal.
+
+This differs from `CNFRec` in that every instance of `ω ^ a` is considered separately. -/
+@[elab_as_elim]
+noncomputable def CNFRec_omega {C : Ordinal → Sort*} (H0 : C 0)
+    (H : ∀ o, o ≠ 0 → C (o - ω ^ log ω o) → C o) (o : Ordinal) : C o :=
+  if h : o = 0 then h ▸ H0 else H o h (CNFRec_omega H0 H (o - ω ^ log ω o))
+termination_by o
+decreasing_by exact sub_opow_log_omega_lt h
+
+@[simp]
+theorem CNFRec_omega_zero {C : Ordinal → Sort*} (H0 : C 0)
+    (H : ∀ o, o ≠ 0 → C (o - ω ^ log ω o) → C o) : CNFRec_omega H0 H 0 = H0 := by
+  rw [CNFRec_omega, dif_pos rfl]
+
+theorem CNFRec_omega_pos {o : Ordinal} {C : Ordinal → Sort*} (ho : o ≠ 0) (H0 : C 0)
+    (H : ∀ o, o ≠ 0 → C (o - ω ^ log ω o) → C o) :
+    CNFRec_omega H0 H o = H o ho (@CNFRec_omega C H0 H _) := by
+  rw [CNFRec_omega, dif_neg ho]
+
+/-! ### Cantor normal form as a list -/
 
 /-- The Cantor normal form of an ordinal `o` is the list of coefficients and exponents in the
 base-`b` expansion of `o`.
