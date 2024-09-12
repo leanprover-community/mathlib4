@@ -47,21 +47,20 @@ namespace CategoryTheory
 
 section
 
-open MonoidalCategory
+open SemigroupalCategory
 
-variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C] (D : Type u₂) [Category.{v₂} D]
-  [MonoidalCategory.{v₂} D]
+variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 
+section
+variable [SemigroupalCategoryStruct.{v₁} C] [SemigroupalCategoryStruct.{v₂} D]
 -- The direction of `left_unitality` and `right_unitality` as simp lemmas may look strange:
 -- remember the rule of thumb that component indices of natural transformations
 -- "weigh more" than structural maps.
 -- (However by this argument `associativity` is currently stated backwards!)
-/-- A lax monoidal functor is a functor `F : C ⥤ D` between monoidal categories,
+/-- A lax semigroupal functor is a functor `F : C ⥤ D` between semigroupal categories,
 equipped with morphisms `ε : 𝟙 _D ⟶ F.obj (𝟙_ C)` and `μ X Y : F.obj X ⊗ F.obj Y ⟶ F.obj (X ⊗ Y)`,
 satisfying the appropriate coherences. -/
-structure LaxMonoidalFunctor extends C ⥤ D where
-  /-- unit morphism -/
-  ε : 𝟙_ D ⟶ obj (𝟙_ C)
+structure LaxSemigroupalFunctor extends C ⥤ D where
   /-- tensorator -/
   μ : ∀ X Y : C, obj X ⊗ obj Y ⟶ obj (X ⊗ Y)
   μ_natural_left :
@@ -78,6 +77,528 @@ structure LaxMonoidalFunctor extends C ⥤ D where
       μ X Y ▷ obj Z ≫ μ (X ⊗ Y) Z ≫ map (α_ X Y Z).hom =
         (α_ (obj X) (obj Y) (obj Z)).hom ≫ obj X ◁ μ Y Z ≫ μ X (Y ⊗ Z) := by
     aesop_cat
+
+end
+-- Porting note (#11215): TODO: remove this configuration and use the default configuration.
+-- We keep this to be consistent with Lean 3.
+-- See also `initialize_simps_projections SemigroupalFunctor` below.
+-- This may require waiting on https://github.com/leanprover-community/mathlib4/pull/2936
+initialize_simps_projections LaxSemigroupalFunctor (+toFunctor, -obj, -map)
+
+attribute [reassoc (attr := simp)] LaxSemigroupalFunctor.μ_natural_left
+attribute [reassoc (attr := simp)] LaxSemigroupalFunctor.μ_natural_right
+
+attribute [reassoc (attr := simp)] LaxSemigroupalFunctor.associativity
+
+-- When `rewrite_search` lands, add @[search] attributes to
+-- LaxSemigroupalFunctor.μ_natural LaxSemigroupalFunctor.left_unitality
+-- LaxSemigroupalFunctor.right_unitality LaxSemigroupalFunctor.associativity
+section
+
+variable {C D}
+variable [SemigroupalCategory.{v₁} C] [SemigroupalCategory.{v₂} D]
+
+@[reassoc (attr := simp)]
+theorem LaxSemigroupalFunctor.μ_natural (F : LaxSemigroupalFunctor C D) {X Y X' Y' : C}
+    (f : X ⟶ Y) (g : X' ⟶ Y') :
+      (F.map f ⊗ F.map g) ≫ F.μ Y Y' = F.μ X X' ≫ F.map (f ⊗ g) := by
+  simp [tensorHom_def]
+
+/--
+A constructor for lax semigroupal functors whose axioms are described by `tensorHom` instead of
+`whiskerLeft` and `whiskerRight`.
+-/
+@[simps]
+def LaxSemigroupalFunctor.ofTensorHom (F : C ⥤ D)
+    /- tensorator -/
+    (μ : ∀ X Y : C, F.obj X ⊗ F.obj Y ⟶ F.obj (X ⊗ Y))
+    (μ_natural :
+      ∀ {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y'),
+        (F.map f ⊗ F.map g) ≫ μ Y Y' = μ X X' ≫ F.map (f ⊗ g) := by
+      aesop_cat)
+    /- associativity of the tensorator -/
+    (associativity :
+      ∀ X Y Z : C,
+        (μ X Y ⊗ 𝟙 (F.obj Z)) ≫ μ (X ⊗ Y) Z ≫ F.map (α_ X Y Z).hom =
+          (α_ (F.obj X) (F.obj Y) (F.obj Z)).hom ≫ (𝟙 (F.obj X) ⊗ μ Y Z) ≫ μ X (Y ⊗ Z) := by
+      aesop_cat) :
+        LaxSemigroupalFunctor C D where
+  obj := F.obj
+  map := F.map
+  map_id := F.map_id
+  map_comp := F.map_comp
+  μ := μ
+  μ_natural_left := fun f X' => by
+    simp_rw [← tensorHom_id, ← F.map_id, μ_natural]
+  μ_natural_right := fun X' f => by
+    simp_rw [← id_tensorHom, ← F.map_id, μ_natural]
+  associativity := fun X Y Z => by
+    simp_rw [← tensorHom_id, ← id_tensorHom, associativity]
+
+@[reassoc (attr := simp)]
+theorem LaxSemigroupalFunctor.associativity_inv (F : LaxSemigroupalFunctor C D) (X Y Z : C) :
+    F.obj X ◁ F.μ Y Z ≫ F.μ X (Y ⊗ Z) ≫ F.map (α_ X Y Z).inv =
+      (α_ (F.obj X) (F.obj Y) (F.obj Z)).inv ≫ F.μ X Y ▷ F.obj Z ≫ F.μ (X ⊗ Y) Z := by
+  rw [Iso.eq_inv_comp, ← F.associativity_assoc, ← F.toFunctor.map_comp, Iso.hom_inv_id,
+    F.toFunctor.map_id, comp_id]
+
+end
+
+section
+variable [SemigroupalCategoryStruct.{v₁} C] [SemigroupalCategoryStruct.{v₂} D]
+
+/-- A oplax semigroupal functor is a functor `F : C ⥤ D` between semigroupal categories,
+equipped with morphisms `η : F.obj (𝟙_ C) ⟶ 𝟙 _D` and `δ X Y : F.obj (X ⊗ Y) ⟶ F.obj X ⊗ F.obj Y`,
+satisfying the appropriate coherences. -/
+structure OplaxSemigroupalFunctor extends C ⥤ D where
+  /-- cotensorator -/
+  δ : ∀ X Y : C, obj (X ⊗ Y) ⟶ obj X ⊗ obj Y
+  δ_natural_left :
+    ∀ {X Y : C} (f : X ⟶ Y) (X' : C),
+      δ X X' ≫ map f ▷ obj X' = map (f ▷ X') ≫ δ Y X' := by
+    aesop_cat
+  δ_natural_right :
+    ∀ {X Y : C} (X' : C) (f : X ⟶ Y) ,
+      δ X' X ≫ obj X' ◁ map f = map (X' ◁ f) ≫ δ X' Y := by
+    aesop_cat
+  /-- associativity of the tensorator -/
+  associativity :
+    ∀ X Y Z : C,
+      δ (X ⊗ Y) Z ≫ δ X Y ▷ obj Z ≫ (α_ (obj X) (obj Y) (obj Z)).hom =
+        map (α_ X Y Z).hom ≫ δ X (Y ⊗ Z) ≫ obj X ◁ δ Y Z := by
+    aesop_cat
+
+end
+initialize_simps_projections OplaxSemigroupalFunctor (+toFunctor, -obj, -map)
+
+attribute [reassoc (attr := simp)] OplaxSemigroupalFunctor.δ_natural_left
+attribute [reassoc (attr := simp)] OplaxSemigroupalFunctor.δ_natural_right
+
+attribute [reassoc (attr := simp)] OplaxSemigroupalFunctor.associativity
+
+section
+
+variable {C D}
+variable [SemigroupalCategory.{v₁} C] [SemigroupalCategory.{v₂} D]
+
+@[reassoc (attr := simp)]
+theorem OplaxSemigroupalFunctor.δ_natural (F : OplaxSemigroupalFunctor C D) {X Y X' Y' : C}
+    (f : X ⟶ Y) (g : X' ⟶ Y') :
+      F.δ X X' ≫ (F.map f ⊗ F.map g) = F.map (f ⊗ g) ≫ F.δ Y Y' := by
+  simp [tensorHom_def]
+
+@[reassoc (attr := simp)]
+theorem OplaxSemigroupalFunctor.associativity_inv (F : OplaxSemigroupalFunctor C D) (X Y Z : C) :
+    F.δ X (Y ⊗ Z) ≫ F.obj X ◁ F.δ Y Z ≫ (α_ (F.obj X) (F.obj Y) (F.obj Z)).inv =
+      F.map (α_ X Y Z).inv ≫ F.δ (X ⊗ Y) Z ≫ F.δ X Y ▷ F.obj Z := by
+  rw [← Category.assoc, Iso.comp_inv_eq, Category.assoc, Category.assoc, F.associativity,
+    ← Category.assoc, ← F.toFunctor.map_comp, Iso.inv_hom_id, F.toFunctor.map_id, id_comp]
+
+end
+
+section
+variable [SemigroupalCategoryStruct.{v₁} C] [SemigroupalCategoryStruct.{v₂} D]
+
+/--
+A semigroupal functor is a lax semigroupal functor for which the tensorator
+and unitor are isomorphisms.
+
+See <https://stacks.math.columbia.edu/tag/0FFL>.
+-/
+structure SemigroupalFunctor extends LaxSemigroupalFunctor.{v₁, v₂} C D where
+  μ_isIso : ∀ X Y : C, IsIso (μ X Y) := by infer_instance
+
+-- See porting note on `initialize_simps_projections LaxSemigroupalFunctor`
+initialize_simps_projections SemigroupalFunctor (+toLaxSemigroupalFunctor, -obj, -map, -μ)
+
+attribute [instance] SemigroupalFunctor.μ_isIso
+
+variable {C D}
+
+/-- The tensorator of a (strong) semigroupal functor as an isomorphism.
+-/
+noncomputable def SemigroupalFunctor.μIso (F : SemigroupalFunctor.{v₁, v₂} C D) (X Y : C) :
+    F.obj X ⊗ F.obj Y ≅ F.obj (X ⊗ Y) :=
+  asIso (F.μ X Y)
+
+end
+section
+variable [SemigroupalCategory.{v₁} C] [SemigroupalCategory.{v₂} D]
+
+/-- The underlying oplax semigroupal functor of a (strong) semigroupal functor. -/
+@[simps]
+noncomputable def SemigroupalFunctor.toOplaxSemigroupalFunctor (F : SemigroupalFunctor C D) :
+    OplaxSemigroupalFunctor C D :=
+  { F with
+    δ := fun X Y => inv (F.μ X Y),
+    δ_natural_left := by aesop_cat
+    δ_natural_right := by aesop_cat
+    associativity := by
+      intros X Y Z
+      dsimp
+      rw [IsIso.inv_comp_eq, ← inv_whiskerRight, IsIso.inv_comp_eq]
+      slice_rhs 1 3 =>
+        rw [F.associativity]
+      simp }
+
+end
+end
+
+open SemigroupalCategory
+
+namespace LaxSemigroupalFunctor
+
+variable (C : Type u₁) [Category.{v₁} C] [SemigroupalCategory.{v₁} C]
+
+/-- The identity lax semigroupal functor. -/
+@[simps]
+def id : LaxSemigroupalFunctor.{v₁, v₁} C C :=
+  { 𝟭 C with
+    μ := fun X Y => 𝟙 _ }
+
+instance : Inhabited (LaxSemigroupalFunctor C C) :=
+  ⟨id C⟩
+
+end LaxSemigroupalFunctor
+
+namespace OplaxSemigroupalFunctor
+
+variable (C : Type u₁) [Category.{v₁} C] [SemigroupalCategory.{v₁} C]
+
+/-- The identity lax semigroupal functor. -/
+@[simps]
+def id : OplaxSemigroupalFunctor.{v₁, v₁} C C :=
+  { 𝟭 C with
+    δ := fun X Y => 𝟙 _ }
+
+instance : Inhabited (OplaxSemigroupalFunctor C C) :=
+  ⟨id C⟩
+
+end OplaxSemigroupalFunctor
+
+namespace SemigroupalFunctor
+
+section
+
+variable {C : Type u₁} [Category.{v₁} C] [SemigroupalCategory.{v₁} C]
+variable {D : Type u₂} [Category.{v₂} D] [SemigroupalCategory.{v₂} D]
+variable (F : SemigroupalFunctor.{v₁, v₂} C D)
+
+@[reassoc]
+theorem map_tensor {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
+    F.map (f ⊗ g) = inv (F.μ X X') ≫ (F.map f ⊗ F.map g) ≫ F.μ Y Y' := by simp
+
+@[reassoc]
+theorem map_whiskerLeft (X : C) {Y Z : C} (f : Y ⟶ Z) :
+    F.map (X ◁ f) = inv (F.μ X Y) ≫ F.obj X ◁ F.map f ≫ F.μ X Z := by simp
+
+@[reassoc]
+theorem map_whiskerRight {X Y : C} (f : X ⟶ Y) (Z : C) :
+    F.map (f ▷ Z) = inv (F.μ X Z) ≫ F.map f ▷ F.obj Z ≫ F.μ Y Z := by simp
+
+/-- The tensorator as a natural isomorphism. -/
+noncomputable def μNatIso :
+    Functor.prod F.toFunctor F.toFunctor ⋙ tensor D ≅ tensor C ⋙ F.toFunctor :=
+  NatIso.ofComponents
+    (by
+      intros
+      apply F.μIso)
+    (by
+      intros
+      apply F.toLaxSemigroupalFunctor.μ_natural)
+
+@[simp]
+theorem μIso_hom (X Y : C) : (F.μIso X Y).hom = F.μ X Y :=
+  rfl
+
+@[reassoc (attr := simp)]
+theorem μ_inv_hom_id (X Y : C) : (F.μIso X Y).inv ≫ F.μ X Y = 𝟙 _ :=
+  (F.μIso X Y).inv_hom_id
+
+@[simp]
+theorem μ_hom_inv_id (X Y : C) : F.μ X Y ≫ (F.μIso X Y).inv = 𝟙 _ :=
+  (F.μIso X Y).hom_inv_id
+
+/-- Semigroupal functors commute with left tensoring up to isomorphism -/
+@[simps!]
+noncomputable def commTensorLeft (X : C) :
+    F.toFunctor ⋙ tensorLeft (F.toFunctor.obj X) ≅ tensorLeft X ⋙ F.toFunctor :=
+  NatIso.ofComponents (fun Y => F.μIso X Y) fun f => F.μ_natural_right X f
+
+/-- Semigroupal functors commute with right tensoring up to isomorphism -/
+@[simps!]
+noncomputable def commTensorRight (X : C) :
+    F.toFunctor ⋙ tensorRight (F.toFunctor.obj X) ≅ tensorRight X ⋙ F.toFunctor :=
+  NatIso.ofComponents (fun Y => F.μIso Y X) fun f => F.μ_natural_left f X
+
+end
+
+section
+
+variable (C : Type u₁) [Category.{v₁} C] [SemigroupalCategory.{v₁} C]
+
+/-- The identity semigroupal functor. -/
+@[simps]
+def id : SemigroupalFunctor.{v₁, v₁} C C :=
+  { 𝟭 C with
+    μ := fun X Y => 𝟙 _ }
+
+instance : Inhabited (SemigroupalFunctor C C) :=
+  ⟨id C⟩
+
+end
+
+end SemigroupalFunctor
+
+variable {C : Type u₁} [Category.{v₁} C] [SemigroupalCategory.{v₁} C]
+variable {D : Type u₂} [Category.{v₂} D] [SemigroupalCategory.{v₂} D]
+variable {E : Type u₃} [Category.{v₃} E] [SemigroupalCategory.{v₃} E]
+
+namespace LaxSemigroupalFunctor
+
+variable (F : LaxSemigroupalFunctor.{v₁, v₂} C D) (G : LaxSemigroupalFunctor.{v₂, v₃} D E)
+
+/-- The composition of two lax semigroupal functors is again lax semigroupal. -/
+@[simps]
+def comp : LaxSemigroupalFunctor.{v₁, v₃} C E :=
+  { F.toFunctor ⋙ G.toFunctor with
+    μ := fun X Y => G.μ (F.obj X) (F.obj Y) ≫ G.map (F.μ X Y)
+    μ_natural_left := by
+      intro X Y f X'
+      simp_rw [comp_obj, F.comp_map, μ_natural_left_assoc, assoc, ← G.map_comp, μ_natural_left]
+    μ_natural_right := by
+      intro X Y f X'
+      simp_rw [comp_obj, F.comp_map, μ_natural_right_assoc, assoc, ← G.map_comp, μ_natural_right]
+    associativity := fun X Y Z => by
+      dsimp
+      simp_rw [comp_whiskerRight, assoc, μ_natural_left_assoc, SemigroupalCategory.whiskerLeft_comp,
+        assoc, μ_natural_right_assoc]
+      slice_rhs 1 3 => rw [← G.associativity]
+      simp_rw [Category.assoc, ← G.toFunctor.map_comp, F.associativity] }
+
+@[inherit_doc]
+infixr:80 " ⊗⋙ " => comp
+
+end LaxSemigroupalFunctor
+
+namespace OplaxSemigroupalFunctor
+
+variable (F : OplaxSemigroupalFunctor.{v₁, v₂} C D) (G : OplaxSemigroupalFunctor.{v₂, v₃} D E)
+
+/-- The composition of two oplax semigroupal functors is again oplax semigroupal. -/
+@[simps]
+def comp : OplaxSemigroupalFunctor.{v₁, v₃} C E :=
+  { F.toFunctor ⋙ G.toFunctor with
+    δ := fun X Y => G.map (F.δ X Y) ≫ G.δ (F.obj X) (F.obj Y)
+    δ_natural_left := by
+      intro X Y f X'
+      simp_rw [comp_obj, Functor.comp_map, ← G.map_comp_assoc, ← F.δ_natural_left, assoc,
+        G.δ_natural_left, ← G.map_comp_assoc]
+    δ_natural_right := by
+      intro X Y f X'
+      simp_rw [comp_obj, Functor.comp_map, ← G.map_comp_assoc, ← F.δ_natural_right, assoc,
+        G.δ_natural_right, ← G.map_comp_assoc]
+    associativity := fun X Y Z => by
+      dsimp
+      simp_rw [comp_whiskerRight, assoc, δ_natural_left_assoc, SemigroupalCategory.whiskerLeft_comp,
+        δ_natural_right_assoc]
+      slice_rhs 1 3 =>
+        simp only [← G.toFunctor.map_comp]
+        rw [← F.associativity]
+      rw [G.associativity]
+      simp only [G.map_comp, Category.assoc] }
+
+@[inherit_doc]
+infixr:80 " ⊗⋙ " => comp
+
+end OplaxSemigroupalFunctor
+
+namespace LaxSemigroupalFunctor
+
+universe v₀ u₀
+
+variable {B : Type u₀} [Category.{v₀} B] [SemigroupalCategory.{v₀} B]
+variable (F : LaxSemigroupalFunctor.{v₀, v₁} B C) (G : LaxSemigroupalFunctor.{v₂, v₃} D E)
+
+attribute [local simp] μ_natural associativity
+
+/-- The cartesian product of two lax semigroupal functors is lax semigroupal. -/
+@[simps]
+def prod : LaxSemigroupalFunctor (B × D) (C × E) :=
+  { F.toFunctor.prod G.toFunctor with
+    μ := fun X Y => (μ F X.1 Y.1, μ G X.2 Y.2) }
+
+end LaxSemigroupalFunctor
+
+namespace SemigroupalFunctor
+
+variable (C)
+
+/-- The diagonal functor as a semigroupal functor. -/
+@[simps]
+def diag : SemigroupalFunctor C (C × C) :=
+  { Functor.diag C with
+    μ := fun X Y => 𝟙 _ }
+
+end SemigroupalFunctor
+
+namespace LaxSemigroupalFunctor
+
+variable (F : LaxSemigroupalFunctor.{v₁, v₂} C D) (G : LaxSemigroupalFunctor.{v₁, v₃} C E)
+
+/-- The cartesian product of two lax semigroupal functors starting from the same semigroupal category `C`
+    is lax semigroupal. -/
+def prod' : LaxSemigroupalFunctor C (D × E) :=
+  (SemigroupalFunctor.diag C).toLaxSemigroupalFunctor ⊗⋙ F.prod G
+
+@[simp]
+theorem prod'_toFunctor : (F.prod' G).toFunctor = F.toFunctor.prod' G.toFunctor :=
+  rfl
+
+@[simp]
+theorem prod'_μ (X Y : C) : (F.prod' G).μ X Y = (F.μ X Y, G.μ X Y) := by
+  dsimp [prod']
+  simp
+
+end LaxSemigroupalFunctor
+
+namespace SemigroupalFunctor
+
+variable (F : SemigroupalFunctor.{v₁, v₂} C D) (G : SemigroupalFunctor.{v₂, v₃} D E)
+
+/-- The composition of two semigroupal functors is again semigroupal. -/
+@[simps]
+def comp : SemigroupalFunctor.{v₁, v₃} C E :=
+  {
+    F.toLaxSemigroupalFunctor.comp
+      G.toLaxSemigroupalFunctor with
+    μ_isIso := by
+      dsimp
+      infer_instance }
+
+@[inherit_doc]
+infixr:80
+  " ⊗⋙ " =>-- We overload notation; potentially dangerous, but it seems to work.
+  comp
+
+end SemigroupalFunctor
+
+namespace SemigroupalFunctor
+
+universe v₀ u₀
+
+variable {B : Type u₀} [Category.{v₀} B] [SemigroupalCategory.{v₀} B]
+variable (F : SemigroupalFunctor.{v₀, v₁} B C) (G : SemigroupalFunctor.{v₂, v₃} D E)
+
+/-- The cartesian product of two semigroupal# functors is semigroupal. -/
+@[simps]
+def prod : SemigroupalFunctor (B × D) (C × E) :=
+  {
+    F.toLaxSemigroupalFunctor.prod
+      G.toLaxSemigroupalFunctor with
+    μ_isIso := fun X Y => (isIso_prod_iff C E).mpr ⟨μ_isIso F X.1 Y.1, μ_isIso G X.2 Y.2⟩ }
+
+end SemigroupalFunctor
+
+namespace SemigroupalFunctor
+
+variable (F : SemigroupalFunctor.{v₁, v₂} C D) (G : SemigroupalFunctor.{v₁, v₃} C E)
+
+/-- The cartesian product of two semigroupal functors starting from the same semigroupal category `C`
+    is semigroupal. -/
+def prod' : SemigroupalFunctor C (D × E) :=
+  diag C ⊗⋙ F.prod G
+
+@[simp]
+theorem prod'_toLaxSemigroupalFunctor :
+    (F.prod' G).toLaxSemigroupalFunctor
+      = F.toLaxSemigroupalFunctor.prod' G.toLaxSemigroupalFunctor :=
+  rfl
+
+end SemigroupalFunctor
+
+section
+
+-- TODO: The definitions below would be slightly better phrased if, in addition to
+-- `SemigroupalFunctor` (which extends `Functor`), we had a data valued type class
+-- `Functor.Semigroupal` (resp. `Functor.LaxSemigroupal`) so that the definitions below
+-- could be phrased in terms of `F : C ⥤ D`, `G : D ⥤ D`, `h : F ⊣ G` and `[F.Semigroupal]`.
+-- Then, in the case of an equivalence (see `semigroupalInverse`), we could just take as
+-- input an equivalence of categories `e : C ≌ D` and the data `[e.functor.Semigroupal]`.
+
+variable (F : SemigroupalFunctor C D) {G : D ⥤ C} (h : F.toFunctor ⊣ G)
+
+/-- If we have a right adjoint functor `G` to a semigroupal functor `F`, then `G` has a lax semigroupal
+structure as well.
+-/
+@[simp]
+noncomputable def semigroupalAdjoint :
+    LaxSemigroupalFunctor D C where
+  toFunctor := G
+  μ := fun X Y =>
+    h.homEquiv _ _ (inv (F.μ (G.obj X) (G.obj Y)) ≫ (h.counit.app X ⊗ h.counit.app Y))
+  μ_natural_left {X Y} f X' := by
+    rw [← h.homEquiv_naturality_left, ← h.homEquiv_naturality_right, Equiv.apply_eq_iff_eq,
+      assoc, IsIso.eq_inv_comp,
+      ← F.toLaxSemigroupalFunctor.μ_natural_left_assoc, IsIso.hom_inv_id_assoc, tensorHom_def,
+      ← comp_whiskerRight_assoc, Adjunction.counit_naturality, comp_whiskerRight_assoc,
+      ← whisker_exchange, ← tensorHom_def_assoc]
+  μ_natural_right {X Y} X' f := by
+    rw [← h.homEquiv_naturality_left, ← h.homEquiv_naturality_right, Equiv.apply_eq_iff_eq,
+      assoc, IsIso.eq_inv_comp,
+      ← F.toLaxSemigroupalFunctor.μ_natural_right_assoc, IsIso.hom_inv_id_assoc, tensorHom_def',
+      ← SemigroupalCategory.whiskerLeft_comp_assoc, Adjunction.counit_naturality, whisker_exchange,
+      SemigroupalCategory.whiskerLeft_comp, ← tensorHom_def_assoc]
+  associativity X Y Z := by
+    dsimp only
+    rw [← h.homEquiv_naturality_right, ← h.homEquiv_naturality_left, ← h.homEquiv_naturality_left,
+      ← h.homEquiv_naturality_left, Equiv.apply_eq_iff_eq,
+      ← cancel_epi (F.μ (G.obj X ⊗ G.obj Y) (G.obj Z)),
+      ← cancel_epi (F.μ (G.obj X) (G.obj Y) ▷ (F.obj (G.obj Z)))]
+    simp only [assoc]
+    calc
+      _ = (α_ _ _ _).hom ≫ (h.counit.app X ⊗ h.counit.app Y ⊗ h.counit.app Z) := by
+        rw [← F.μ_natural_left_assoc, IsIso.hom_inv_id_assoc, h.homEquiv_unit,
+          tensorHom_def_assoc (h.counit.app (X ⊗ Y)) (h.counit.app Z)]
+        dsimp only [comp_obj, id_obj]
+        simp_rw [← SemigroupalCategory.comp_whiskerRight_assoc]
+        rw [F.map_comp_assoc, h.counit_naturality, h.left_triangle_components_assoc,
+          IsIso.hom_inv_id_assoc, ← tensorHom_def_assoc, associator_naturality]
+      _ = _ := by
+        rw [F.associativity_assoc, ← F.μ_natural_right_assoc, IsIso.hom_inv_id_assoc,
+          h.homEquiv_unit, tensorHom_def (h.counit.app X) (h.counit.app (Y ⊗ Z))]
+        dsimp only [id_obj, comp_obj]
+        rw [whisker_exchange_assoc, ← SemigroupalCategory.whiskerLeft_comp, F.map_comp_assoc,
+          h.counit_naturality, h.left_triangle_components_assoc, whisker_exchange_assoc,
+          ← SemigroupalCategory.whiskerLeft_comp, ← tensorHom_def, IsIso.hom_inv_id_assoc]
+
+instance (X Y : D) [F.IsEquivalence] : IsIso ((semigroupalAdjoint F h).μ X Y) := by
+  dsimp
+  infer_instance
+
+/-- If a semigroupal functor `F` is an equivalence of categories then its inverse is also semigroupal. -/
+@[simps]
+noncomputable def semigroupalInverse [F.IsEquivalence] :
+    SemigroupalFunctor D C where
+  toLaxSemigroupalFunctor := semigroupalAdjoint F h
+
+open MonoidalCategory
+
+variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
+
+section
+variable [MonoidalCategoryStruct.{v₁} C] [MonoidalCategoryStruct.{v₂} D]
+
+-- The direction of `left_unitality` and `right_unitality` as simp lemmas may look strange:
+-- remember the rule of thumb that component indices of natural transformations
+-- "weigh more" than structural maps.
+-- (However by this argument `associativity` is currently stated backwards!)
+/-- A lax monoidal functor is a functor `F : C ⥤ D` between monoidal categories,
+equipped with morphisms `ε : 𝟙 _D ⟶ F.obj (𝟙_ C)` and `μ X Y : F.obj X ⊗ F.obj Y ⟶ F.obj (X ⊗ Y)`,
+satisfying the appropriate coherences. -/
+structure LaxMonoidalFunctor extends LaxSemigroupalFunctor C D where
+  /-- unit morphism -/
+  ε : 𝟙_ D ⟶ obj (𝟙_ C)
   -- unitality
   left_unitality : ∀ X : C, (λ_ (obj X)).hom = ε ▷ obj X ≫ μ (𝟙_ C) X ≫ map (λ_ X).hom := by
     aesop_cat
@@ -90,14 +611,10 @@ structure LaxMonoidalFunctor extends C ⥤ D where
 -- This may require waiting on https://github.com/leanprover-community/mathlib4/pull/2936
 initialize_simps_projections LaxMonoidalFunctor (+toFunctor, -obj, -map)
 
-attribute [reassoc (attr := simp)] LaxMonoidalFunctor.μ_natural_left
-attribute [reassoc (attr := simp)] LaxMonoidalFunctor.μ_natural_right
-
 attribute [simp] LaxMonoidalFunctor.left_unitality
-
 attribute [simp] LaxMonoidalFunctor.right_unitality
 
-attribute [reassoc (attr := simp)] LaxMonoidalFunctor.associativity
+end
 
 -- When `rewrite_search` lands, add @[search] attributes to
 -- LaxMonoidalFunctor.μ_natural LaxMonoidalFunctor.left_unitality
@@ -105,12 +622,7 @@ attribute [reassoc (attr := simp)] LaxMonoidalFunctor.associativity
 section
 
 variable {C D}
-
-@[reassoc (attr := simp)]
-theorem LaxMonoidalFunctor.μ_natural (F : LaxMonoidalFunctor C D) {X Y X' Y' : C}
-    (f : X ⟶ Y) (g : X' ⟶ Y') :
-      (F.map f ⊗ F.map g) ≫ F.μ Y Y' = F.μ X X' ≫ F.map (f ⊗ g) := by
-  simp [tensorHom_def]
+variable [MonoidalCategory.{v₁} C] [MonoidalCategory.{v₂} D]
 
 /--
 A constructor for lax monoidal functors whose axioms are described by `tensorHom` instead of
@@ -139,23 +651,22 @@ def LaxMonoidalFunctor.ofTensorHom (F : C ⥤ D)
     (right_unitality :
       ∀ X : C, (ρ_ (F.obj X)).hom = (𝟙 (F.obj X) ⊗ ε) ≫ μ X (𝟙_ C) ≫ F.map (ρ_ X).hom := by
         aesop_cat) :
-        LaxMonoidalFunctor C D where
-  obj := F.obj
-  map := F.map
-  map_id := F.map_id
-  map_comp := F.map_comp
-  ε := ε
-  μ := μ
-  μ_natural_left := fun f X' => by
-    simp_rw [← tensorHom_id, ← F.map_id, μ_natural]
-  μ_natural_right := fun X' f => by
-    simp_rw [← id_tensorHom, ← F.map_id, μ_natural]
-  associativity := fun X Y Z => by
-    simp_rw [← tensorHom_id, ← id_tensorHom, associativity]
-  left_unitality := fun X => by
-    simp_rw [← tensorHom_id, left_unitality]
-  right_unitality := fun X => by
-    simp_rw [← id_tensorHom, right_unitality]
+        LaxMonoidalFunctor C D :=
+  { LaxSemigroupalFunctor.ofTensorHom F μ μ_natural associativity with
+    obj := F.obj
+    map := F.map
+    ε := ε
+    μ := μ
+    μ_natural_left := fun f X' => by
+      simp_rw [← tensorHom_id, ← F.map_id, μ_natural]
+    μ_natural_right := fun X' f => by
+      simp_rw [← id_tensorHom, ← F.map_id, μ_natural]
+    associativity := fun X Y Z => by
+      simp_rw [← tensorHom_id, ← id_tensorHom, associativity]
+    left_unitality := fun X => by
+      simp_rw [← tensorHom_id, left_unitality]
+    right_unitality := fun X => by
+      simp_rw [← id_tensorHom, right_unitality] }
 
 @[reassoc (attr := simp)]
 theorem LaxMonoidalFunctor.left_unitality_inv (F : LaxMonoidalFunctor C D) (X : C) :
@@ -168,38 +679,25 @@ theorem LaxMonoidalFunctor.right_unitality_inv (F : LaxMonoidalFunctor C D) (X :
     (ρ_ (F.obj X)).inv ≫ F.obj X ◁ F.ε ≫ F.μ X (𝟙_ C) = F.map (ρ_ X).inv := by
   rw [Iso.inv_comp_eq, F.right_unitality, Category.assoc, Category.assoc, ← F.toFunctor.map_comp,
     Iso.hom_inv_id, F.toFunctor.map_id, comp_id]
-
+/-
 @[reassoc (attr := simp)]
 theorem LaxMonoidalFunctor.associativity_inv (F : LaxMonoidalFunctor C D) (X Y Z : C) :
     F.obj X ◁ F.μ Y Z ≫ F.μ X (Y ⊗ Z) ≫ F.map (α_ X Y Z).inv =
       (α_ (F.obj X) (F.obj Y) (F.obj Z)).inv ≫ F.μ X Y ▷ F.obj Z ≫ F.μ (X ⊗ Y) Z := by
   rw [Iso.eq_inv_comp, ← F.associativity_assoc, ← F.toFunctor.map_comp, Iso.hom_inv_id,
     F.toFunctor.map_id, comp_id]
-
+-/
 end
+
+section
+variable [MonoidalCategoryStruct.{v₁} C] [MonoidalCategoryStruct.{v₂} D]
 
 /-- A oplax monoidal functor is a functor `F : C ⥤ D` between monoidal categories,
 equipped with morphisms `η : F.obj (𝟙_ C) ⟶ 𝟙 _D` and `δ X Y : F.obj (X ⊗ Y) ⟶ F.obj X ⊗ F.obj Y`,
 satisfying the appropriate coherences. -/
-structure OplaxMonoidalFunctor extends C ⥤ D where
+structure OplaxMonoidalFunctor extends OplaxSemigroupalFunctor C D where
   /-- counit morphism -/
   η : obj (𝟙_ C) ⟶ 𝟙_ D
-  /-- cotensorator -/
-  δ : ∀ X Y : C, obj (X ⊗ Y) ⟶ obj X ⊗ obj Y
-  δ_natural_left :
-    ∀ {X Y : C} (f : X ⟶ Y) (X' : C),
-      δ X X' ≫ map f ▷ obj X' = map (f ▷ X') ≫ δ Y X' := by
-    aesop_cat
-  δ_natural_right :
-    ∀ {X Y : C} (X' : C) (f : X ⟶ Y) ,
-      δ X' X ≫ obj X' ◁ map f = map (X' ◁ f) ≫ δ X' Y := by
-    aesop_cat
-  /-- associativity of the tensorator -/
-  associativity :
-    ∀ X Y Z : C,
-      δ (X ⊗ Y) Z ≫ δ X Y ▷ obj Z ≫ (α_ (obj X) (obj Y) (obj Z)).hom =
-        map (α_ X Y Z).hom ≫ δ X (Y ⊗ Z) ≫ obj X ◁ δ Y Z := by
-    aesop_cat
   -- unitality
   left_unitality : ∀ X : C, (λ_ (obj X)).inv = map (λ_ X).inv ≫ δ (𝟙_ C) X ≫ η ▷ obj X := by
     aesop_cat
@@ -208,24 +706,28 @@ structure OplaxMonoidalFunctor extends C ⥤ D where
 
 initialize_simps_projections OplaxMonoidalFunctor (+toFunctor, -obj, -map)
 
-attribute [reassoc (attr := simp)] OplaxMonoidalFunctor.δ_natural_left
-attribute [reassoc (attr := simp)] OplaxMonoidalFunctor.δ_natural_right
+/- these would exist but export complains ?? -/
+/-attribute [reassoc (attr := simp)] OplaxMonoidalFunctor.δ_natural_left
+attribute [reassoc (attr := simp)] OplaxMonoidalFunctor.δ_natural_right-/
 
 attribute [simp] OplaxMonoidalFunctor.left_unitality
 
 attribute [simp] OplaxMonoidalFunctor.right_unitality
 
-attribute [reassoc (attr := simp)] OplaxMonoidalFunctor.associativity
+--attribute [reassoc (attr := simp)] OplaxMonoidalFunctor.associativity
 
+end
 section
 
 variable {C D}
+variable [MonoidalCategory.{v₁} C] [MonoidalCategory.{v₂} D]
 
+/-
 @[reassoc (attr := simp)]
 theorem OplaxMonoidalFunctor.δ_natural (F : OplaxMonoidalFunctor C D) {X Y X' Y' : C}
     (f : X ⟶ Y) (g : X' ⟶ Y') :
       F.δ X X' ≫ (F.map f ⊗ F.map g) = F.map (f ⊗ g) ≫ F.δ Y Y' := by
-  simp [tensorHom_def]
+  simp [tensorHom_def]-/
 
 @[reassoc (attr := simp)]
 theorem OplaxMonoidalFunctor.left_unitality_hom (F : OplaxMonoidalFunctor C D) (X : C) :
@@ -239,23 +741,27 @@ theorem OplaxMonoidalFunctor.right_unitality_hom (F : OplaxMonoidalFunctor C D) 
   rw [← Category.assoc, ← Iso.eq_comp_inv, F.right_unitality, ← Category.assoc,
     ← F.toFunctor.map_comp, Iso.hom_inv_id, F.toFunctor.map_id, id_comp]
 
+/-
 @[reassoc (attr := simp)]
 theorem OplaxMonoidalFunctor.associativity_inv (F : OplaxMonoidalFunctor C D) (X Y Z : C) :
     F.δ X (Y ⊗ Z) ≫ F.obj X ◁ F.δ Y Z ≫ (α_ (F.obj X) (F.obj Y) (F.obj Z)).inv =
       F.map (α_ X Y Z).inv ≫ F.δ (X ⊗ Y) Z ≫ F.δ X Y ▷ F.obj Z := by
   rw [← Category.assoc, Iso.comp_inv_eq, Category.assoc, Category.assoc, F.associativity,
     ← Category.assoc, ← F.toFunctor.map_comp, Iso.inv_hom_id, F.toFunctor.map_id, id_comp]
-
+-/
 end
+
+section
+variable [MonoidalCategoryStruct.{v₁} C] [MonoidalCategoryStruct.{v₂} D]
 
 /--
 A monoidal functor is a lax monoidal functor for which the tensorator and unitor are isomorphisms.
 
 See <https://stacks.math.columbia.edu/tag/0FFL>.
 -/
-structure MonoidalFunctor extends LaxMonoidalFunctor.{v₁, v₂} C D where
+structure MonoidalFunctor extends
+    LaxMonoidalFunctor.{v₁, v₂} C D, SemigroupalFunctor.{v₁, v₂} C D where
   ε_isIso : IsIso ε := by infer_instance
-  μ_isIso : ∀ X Y : C, IsIso (μ X Y) := by infer_instance
 
 -- See porting note on `initialize_simps_projections LaxMonoidalFunctor`
 initialize_simps_projections MonoidalFunctor (+toLaxMonoidalFunctor, -obj, -map, -ε, -μ)
@@ -276,15 +782,16 @@ noncomputable def MonoidalFunctor.μIso (F : MonoidalFunctor.{v₁, v₂} C D) (
     F.obj X ⊗ F.obj Y ≅ F.obj (X ⊗ Y) :=
   asIso (F.μ X Y)
 
+end
+section
+variable [MonoidalCategory.{v₁} C] [MonoidalCategory.{v₂} D]
+
 /-- The underlying oplax monoidal functor of a (strong) monoidal functor. -/
 @[simps]
 noncomputable def MonoidalFunctor.toOplaxMonoidalFunctor (F : MonoidalFunctor C D) :
     OplaxMonoidalFunctor C D :=
-  { F with
+  { F, F.toSemigroupalFunctor.toOplaxSemigroupalFunctor with
     η := inv F.ε,
-    δ := fun X Y => inv (F.μ X Y),
-    δ_natural_left := by aesop_cat
-    δ_natural_right := by aesop_cat
     associativity := by
       intros X Y Z
       dsimp
@@ -309,6 +816,7 @@ noncomputable def MonoidalFunctor.toOplaxMonoidalFunctor (F : MonoidalFunctor C 
         rw [← F.map_comp, Iso.hom_inv_id, F.map_id]
       simp }
 
+end
 end
 
 open MonoidalCategory
@@ -379,7 +887,7 @@ theorem map_rightUnitor (X : C) :
     F.map (ρ_ X).hom = inv (F.μ X (𝟙_ C)) ≫ F.obj X ◁ inv F.ε ≫ (ρ_ (F.obj X)).hom := by
   simp only [LaxMonoidalFunctor.right_unitality]
   slice_rhs 2 3 =>
-    rw [← MonoidalCategory.whiskerLeft_comp]
+    rw [← SemigroupalCategory.whiskerLeft_comp]
     simp
   simp
 
@@ -461,21 +969,8 @@ variable (F : LaxMonoidalFunctor.{v₁, v₂} C D) (G : LaxMonoidalFunctor.{v₂
 /-- The composition of two lax monoidal functors is again lax monoidal. -/
 @[simps]
 def comp : LaxMonoidalFunctor.{v₁, v₃} C E :=
-  { F.toFunctor ⋙ G.toFunctor with
-    ε := G.ε ≫ G.map F.ε
-    μ := fun X Y => G.μ (F.obj X) (F.obj Y) ≫ G.map (F.μ X Y)
-    μ_natural_left := by
-      intro X Y f X'
-      simp_rw [comp_obj, F.comp_map, μ_natural_left_assoc, assoc, ← G.map_comp, μ_natural_left]
-    μ_natural_right := by
-      intro X Y f X'
-      simp_rw [comp_obj, F.comp_map, μ_natural_right_assoc, assoc, ← G.map_comp, μ_natural_right]
-    associativity := fun X Y Z => by
-      dsimp
-      simp_rw [comp_whiskerRight, assoc, μ_natural_left_assoc, MonoidalCategory.whiskerLeft_comp,
-        assoc, μ_natural_right_assoc]
-      slice_rhs 1 3 => rw [← G.associativity]
-      simp_rw [Category.assoc, ← G.toFunctor.map_comp, F.associativity] }
+  { F.toFunctor ⋙ G.toFunctor, F.1.comp G.1 with
+    ε := G.ε ≫ G.map F.ε }
 
 @[inherit_doc]
 infixr:80 " ⊗⋙ " => comp
@@ -489,26 +984,8 @@ variable (F : OplaxMonoidalFunctor.{v₁, v₂} C D) (G : OplaxMonoidalFunctor.{
 /-- The composition of two oplax monoidal functors is again oplax monoidal. -/
 @[simps]
 def comp : OplaxMonoidalFunctor.{v₁, v₃} C E :=
-  { F.toFunctor ⋙ G.toFunctor with
-    η := G.map F.η ≫ G.η
-    δ := fun X Y => G.map (F.δ X Y) ≫ G.δ (F.obj X) (F.obj Y)
-    δ_natural_left := by
-      intro X Y f X'
-      simp_rw [comp_obj, Functor.comp_map, ← G.map_comp_assoc, ← F.δ_natural_left, assoc,
-        G.δ_natural_left, ← G.map_comp_assoc]
-    δ_natural_right := by
-      intro X Y f X'
-      simp_rw [comp_obj, Functor.comp_map, ← G.map_comp_assoc, ← F.δ_natural_right, assoc,
-        G.δ_natural_right, ← G.map_comp_assoc]
-    associativity := fun X Y Z => by
-      dsimp
-      simp_rw [comp_whiskerRight, assoc, δ_natural_left_assoc, MonoidalCategory.whiskerLeft_comp,
-        δ_natural_right_assoc]
-      slice_rhs 1 3 =>
-        simp only [← G.toFunctor.map_comp]
-        rw [← F.associativity]
-      rw [G.associativity]
-      simp only [G.map_comp, Category.assoc] }
+  { F.toFunctor ⋙ G.toFunctor, F.1.comp G.1 with
+    η := G.map F.η ≫ G.η }
 
 @[inherit_doc]
 infixr:80 " ⊗⋙ " => comp
@@ -522,14 +999,14 @@ universe v₀ u₀
 variable {B : Type u₀} [Category.{v₀} B] [MonoidalCategory.{v₀} B]
 variable (F : LaxMonoidalFunctor.{v₀, v₁} B C) (G : LaxMonoidalFunctor.{v₂, v₃} D E)
 
-attribute [local simp] μ_natural associativity left_unitality right_unitality
+attribute [local simp] left_unitality right_unitality
 
 /-- The cartesian product of two lax monoidal functors is lax monoidal. -/
 @[simps]
 def prod : LaxMonoidalFunctor (B × D) (C × E) :=
-  { F.toFunctor.prod G.toFunctor with
+  { F.toFunctor.prod G.toFunctor, F.1.prod G.1 with
     ε := (ε F, ε G)
-    μ := fun X Y => (μ F X.1 Y.1, μ G X.2 Y.2) }
+    μ := fun X Y => (F.1.μ X.1 Y.1, G.1.μ X.2 Y.2) }
 
 end LaxMonoidalFunctor
 
@@ -650,50 +1127,19 @@ noncomputable def monoidalAdjoint :
   ε := h.homEquiv _ _ (inv F.ε)
   μ := fun X Y =>
     h.homEquiv _ _ (inv (F.μ (G.obj X) (G.obj Y)) ≫ (h.counit.app X ⊗ h.counit.app Y))
-  μ_natural_left {X Y} f X' := by
-    rw [← h.homEquiv_naturality_left, ← h.homEquiv_naturality_right, Equiv.apply_eq_iff_eq,
-      assoc, IsIso.eq_inv_comp,
-      ← F.toLaxMonoidalFunctor.μ_natural_left_assoc, IsIso.hom_inv_id_assoc, tensorHom_def,
-      ← comp_whiskerRight_assoc, Adjunction.counit_naturality, comp_whiskerRight_assoc,
-      ← whisker_exchange, ← tensorHom_def_assoc]
-  μ_natural_right {X Y} X' f := by
-    rw [← h.homEquiv_naturality_left, ← h.homEquiv_naturality_right, Equiv.apply_eq_iff_eq,
-      assoc, IsIso.eq_inv_comp,
-      ← F.toLaxMonoidalFunctor.μ_natural_right_assoc, IsIso.hom_inv_id_assoc, tensorHom_def',
-      ← MonoidalCategory.whiskerLeft_comp_assoc, Adjunction.counit_naturality, whisker_exchange,
-      MonoidalCategory.whiskerLeft_comp, ← tensorHom_def_assoc]
-  associativity X Y Z := by
-    dsimp only
-    rw [← h.homEquiv_naturality_right, ← h.homEquiv_naturality_left, ← h.homEquiv_naturality_left,
-      ← h.homEquiv_naturality_left, Equiv.apply_eq_iff_eq,
-      ← cancel_epi (F.μ (G.obj X ⊗ G.obj Y) (G.obj Z)),
-      ← cancel_epi (F.μ (G.obj X) (G.obj Y) ▷ (F.obj (G.obj Z)))]
-    simp only [assoc]
-    calc
-      _ = (α_ _ _ _).hom ≫ (h.counit.app X ⊗ h.counit.app Y ⊗ h.counit.app Z) := by
-        rw [← F.μ_natural_left_assoc, IsIso.hom_inv_id_assoc, h.homEquiv_unit,
-          tensorHom_def_assoc (h.counit.app (X ⊗ Y)) (h.counit.app Z)]
-        dsimp only [comp_obj, id_obj]
-        simp_rw [← MonoidalCategory.comp_whiskerRight_assoc]
-        rw [F.map_comp_assoc, h.counit_naturality, h.left_triangle_components_assoc,
-          IsIso.hom_inv_id_assoc, ← tensorHom_def_assoc, associator_naturality]
-      _ = _ := by
-        rw [F.associativity_assoc, ← F.μ_natural_right_assoc, IsIso.hom_inv_id_assoc,
-          h.homEquiv_unit, tensorHom_def (h.counit.app X) (h.counit.app (Y ⊗ Z))]
-        dsimp only [id_obj, comp_obj]
-        rw [whisker_exchange_assoc, ← MonoidalCategory.whiskerLeft_comp, F.map_comp_assoc,
-          h.counit_naturality, h.left_triangle_components_assoc, whisker_exchange_assoc,
-          ← MonoidalCategory.whiskerLeft_comp, ← tensorHom_def, IsIso.hom_inv_id_assoc]
+  μ_natural_left {X Y} f X' := (semigroupalAdjoint F.toSemigroupalFunctor h).μ_natural_left f X'
+  μ_natural_right {X Y} X' f := (semigroupalAdjoint F.toSemigroupalFunctor h).μ_natural_right X' f
+  associativity X Y Z := (semigroupalAdjoint F.toSemigroupalFunctor h).associativity X Y Z
   left_unitality X := by
     rw [← h.homEquiv_naturality_right, ← h.homEquiv_naturality_left, ← Equiv.symm_apply_eq,
       h.homEquiv_counit, F.map_leftUnitor_assoc, h.homEquiv_unit, F.map_whiskerRight_assoc, assoc,
-      IsIso.hom_inv_id_assoc, tensorHom_def_assoc, ← MonoidalCategory.comp_whiskerRight_assoc,
+      IsIso.hom_inv_id_assoc, tensorHom_def_assoc, ← SemigroupalCategory.comp_whiskerRight_assoc,
       F.map_comp_assoc, h.counit_naturality, h.left_triangle_components_assoc]
     simp
   right_unitality X := by
     rw [← h.homEquiv_naturality_right, ← h.homEquiv_naturality_left, ← Equiv.symm_apply_eq,
       h.homEquiv_counit, F.map_rightUnitor_assoc, h.homEquiv_unit, F.map_whiskerLeft_assoc, assoc,
-      IsIso.hom_inv_id_assoc, tensorHom_def'_assoc, ← MonoidalCategory.whiskerLeft_comp_assoc,
+      IsIso.hom_inv_id_assoc, tensorHom_def'_assoc, ← SemigroupalCategory.whiskerLeft_comp_assoc,
       F.map_comp_assoc, h.counit_naturality, h.left_triangle_components_assoc]
     simp
 

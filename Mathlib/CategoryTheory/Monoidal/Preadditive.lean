@@ -7,9 +7,9 @@ import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 import Mathlib.CategoryTheory.Monoidal.Functor
 
 /-!
-# Preadditive monoidal categories
+# Preadditive semigroupal categories
 
-A monoidal category is `MonoidalPreadditive` if it is preadditive and tensor product of morphisms
+A semigroupal category is `SemigroupalPreadditive` if it is preadditive and tensor product of morphisms
 is linear in both factors.
 -/
 
@@ -21,28 +21,28 @@ namespace CategoryTheory
 
 open CategoryTheory.Limits
 
-open CategoryTheory.MonoidalCategory
+open CategoryTheory.SemigroupalCategory
 
-variable (C : Type*) [Category C] [Preadditive C] [MonoidalCategory C]
+variable (C : Type*) [Category C] [Preadditive C] [SemigroupalCategory C]
 
-/-- A category is `MonoidalPreadditive` if tensoring is additive in both factors.
+/-- A category is `SemigroupalPreadditive` if tensoring is additive in both factors.
 
 Note we don't `extend Preadditive C` here, as `Abelian C` already extends it,
 and we'll need to have both typeclasses sometimes.
 -/
-class MonoidalPreadditive : Prop where
+class SemigroupalPreadditive : Prop where
   whiskerLeft_zero : ∀ {X Y Z : C}, X ◁ (0 : Y ⟶ Z) = 0 := by aesop_cat
   zero_whiskerRight : ∀ {X Y Z : C}, (0 : Y ⟶ Z) ▷ X = 0 := by aesop_cat
   whiskerLeft_add : ∀ {X Y Z : C} (f g : Y ⟶ Z), X ◁ (f + g) = X ◁ f + X ◁ g := by aesop_cat
   add_whiskerRight : ∀ {X Y Z : C} (f g : Y ⟶ Z), (f + g) ▷ X = f ▷ X + g ▷ X := by aesop_cat
 
-attribute [simp] MonoidalPreadditive.whiskerLeft_zero MonoidalPreadditive.zero_whiskerRight
-attribute [simp] MonoidalPreadditive.whiskerLeft_add MonoidalPreadditive.add_whiskerRight
+attribute [simp] SemigroupalPreadditive.whiskerLeft_zero SemigroupalPreadditive.zero_whiskerRight
+attribute [simp] SemigroupalPreadditive.whiskerLeft_add SemigroupalPreadditive.add_whiskerRight
 
 variable {C}
-variable [MonoidalPreadditive C]
+variable [SemigroupalPreadditive C]
 
-namespace MonoidalPreadditive
+namespace SemigroupalPreadditive
 
 -- The priority setting will not be needed when we replace `𝟙 X ⊗ f` by `X ◁ f`.
 @[simp (low)]
@@ -60,7 +60,7 @@ theorem tensor_add {W X Y Z : C} (f : W ⟶ X) (g h : Y ⟶ Z) : f ⊗ (g + h) =
 theorem add_tensor {W X Y Z : C} (f g : W ⟶ X) (h : Y ⟶ Z) : (f + g) ⊗ h = f ⊗ h + g ⊗ h := by
   simp [tensorHom_def]
 
-end MonoidalPreadditive
+end SemigroupalPreadditive
 
 instance tensorLeft_additive (X : C) : (tensorLeft X).Additive where
 
@@ -70,11 +70,11 @@ instance tensoringLeft_additive (X : C) : ((tensoringLeft C).obj X).Additive whe
 
 instance tensoringRight_additive (X : C) : ((tensoringRight C).obj X).Additive where
 
-/-- A faithful additive monoidal functor to a monoidal preadditive category
-ensures that the domain is monoidal preadditive. -/
-theorem monoidalPreadditive_of_faithful {D} [Category D] [Preadditive D] [MonoidalCategory D]
-    (F : MonoidalFunctor D C) [F.Faithful] [F.Additive] :
-    MonoidalPreadditive D :=
+/-- A faithful additive semigroupal functor to a semigroupal preadditive category
+ensures that the domain is semigroupal preadditive. -/
+theorem semigroupalPreadditive_of_faithful {D} [Category D] [Preadditive D] [SemigroupalCategory D]
+    (F : SemigroupalFunctor D C) [F.Faithful] [F.Additive] :
+    SemigroupalPreadditive D :=
   { whiskerLeft_zero := by
       intros
       apply F.toFunctor.map_injective
@@ -87,12 +87,12 @@ theorem monoidalPreadditive_of_faithful {D} [Category D] [Preadditive D] [Monoid
       intros
       apply F.toFunctor.map_injective
       simp only [F.map_whiskerLeft, Functor.map_add, Preadditive.comp_add, Preadditive.add_comp,
-        MonoidalPreadditive.whiskerLeft_add]
+        SemigroupalPreadditive.whiskerLeft_add]
     add_whiskerRight := by
       intros
       apply F.toFunctor.map_injective
       simp only [F.map_whiskerRight, Functor.map_add, Preadditive.comp_add, Preadditive.add_comp,
-        MonoidalPreadditive.add_whiskerRight] }
+        SemigroupalPreadditive.add_whiskerRight] }
 
 theorem whiskerLeft_sum (P : C) {Q R : C} {J : Type*} (s : Finset J) (g : J → (Q ⟶ R)) :
     P ◁ ∑ j ∈ s, g j = ∑ j ∈ s, P ◁ g j :=
@@ -110,7 +110,7 @@ theorem sum_tensor {P Q R S : C} {J : Type*} (s : Finset J) (f : P ⟶ Q) (g : J
     (∑ j ∈ s, g j) ⊗ f = ∑ j ∈ s, g j ⊗ f := by
   simp only [tensorHom_def, sum_whiskerRight, Preadditive.sum_comp]
 
--- In a closed monoidal category, this would hold because
+-- In a closed semigroupal category, this would hold because
 -- `tensorLeft X` is a left adjoint and hence preserves all colimits.
 -- In any case it is true in any preadditive category.
 instance (X : C) : PreservesFiniteBiproducts (tensorLeft X) where
@@ -162,13 +162,13 @@ theorem leftDistributor_hom_comp_biproduct_π {J : Type} [Fintype J] (X : C) (f 
 @[reassoc (attr := simp)]
 theorem biproduct_ι_comp_leftDistributor_hom {J : Type} [Fintype J] (X : C) (f : J → C) (j : J) :
     (X ◁ biproduct.ι _ j) ≫ (leftDistributor X f).hom = biproduct.ι (fun j => X ⊗ f j) j := by
-  simp [leftDistributor_hom, Preadditive.comp_sum, ← MonoidalCategory.whiskerLeft_comp_assoc,
+  simp [leftDistributor_hom, Preadditive.comp_sum, ← SemigroupalCategory.whiskerLeft_comp_assoc,
     biproduct.ι_π, whiskerLeft_dite, dite_comp]
 
 @[reassoc (attr := simp)]
 theorem leftDistributor_inv_comp_biproduct_π {J : Type} [Fintype J] (X : C) (f : J → C) (j : J) :
     (leftDistributor X f).inv ≫ (X ◁ biproduct.π _ j) = biproduct.π _ j := by
-  simp [leftDistributor_inv, Preadditive.sum_comp, ← MonoidalCategory.whiskerLeft_comp,
+  simp [leftDistributor_inv, Preadditive.sum_comp, ← SemigroupalCategory.whiskerLeft_comp,
     biproduct.ι_π, whiskerLeft_dite, comp_dite]
 
 @[reassoc (attr := simp)]
@@ -223,7 +223,7 @@ theorem biproduct_ι_comp_rightDistributor_hom {J : Type} [Fintype J] (f : J →
 @[reassoc (attr := simp)]
 theorem rightDistributor_inv_comp_biproduct_π {J : Type} [Fintype J] (f : J → C) (X : C) (j : J) :
     (rightDistributor f X).inv ≫ (biproduct.π _ j ▷ X) = biproduct.π _ j := by
-  simp [rightDistributor_inv, Preadditive.sum_comp, ← MonoidalCategory.comp_whiskerRight,
+  simp [rightDistributor_inv, Preadditive.sum_comp, ← SemigroupalCategory.comp_whiskerRight,
     biproduct.ι_π, dite_whiskerRight, comp_dite]
 
 @[reassoc (attr := simp)]

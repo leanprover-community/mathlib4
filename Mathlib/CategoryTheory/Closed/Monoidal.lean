@@ -22,39 +22,40 @@ universe v u u₂ v₂
 
 namespace CategoryTheory
 
-open Category MonoidalCategory
+open Category SemigroupalCategory
 
 -- Note that this class carries a particular choice of right adjoint,
 -- (which is only unique up to isomorphism),
 -- not merely the existence of such, and
 -- so definitional properties of instances may be important.
 /-- An object `X` is (right) closed if `(X ⊗ -)` is a left adjoint. -/
-class Closed {C : Type u} [Category.{v} C] [MonoidalCategory.{v} C] (X : C) where
+class Closed {C : Type u} [Category.{v} C] [SemigroupalCategory.{v} C] (X : C) where
   /-- a choice of a right adjoint for `tensorLeft X` -/
   rightAdj : C ⥤ C
   /-- `tensorLeft X` is a left adjoint -/
   adj : tensorLeft X ⊣ rightAdj
 
 /-- A monoidal category `C` is (right) monoidal closed if every object is (right) closed. -/
-class MonoidalClosed (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C] where
+class SemigroupalClosed (C : Type u) [Category.{v} C] [SemigroupalCategory.{v} C] where
   closed (X : C) : Closed X := by infer_instance
 
-attribute [instance 100] MonoidalClosed.closed
+attribute [instance 100] SemigroupalClosed.closed
 
-variable {C : Type u} [Category.{v} C] [MonoidalCategory.{v} C]
+variable {C : Type u} [Category.{v} C] [SemigroupalCategory.{v} C]
 
 /-- If `X` and `Y` are closed then `X ⊗ Y` is.
 This isn't an instance because it's not usually how we want to construct internal homs,
 we'll usually prove all objects are closed uniformly.
 -/
 def tensorClosed {X Y : C} (hX : Closed X) (hY : Closed Y) : Closed (X ⊗ Y) where
-  adj := (hY.adj.comp hX.adj).ofNatIsoLeft (MonoidalCategory.tensorLeftTensor X Y).symm
+  adj := (hY.adj.comp hX.adj).ofNatIsoLeft (SemigroupalCategory.tensorLeftTensor X Y).symm
 
+open MonoidalCategory in
 /-- The unit object is always closed.
 This isn't an instance because most of the time we'll prove closedness for all objects at once,
 rather than just for this one.
 -/
-def unitClosed : Closed (𝟙_ C) where
+def unitClosed {C : Type u} [Category C] [MonoidalCategory C] : Closed (𝟙_ C) where
   rightAdj := 𝟭 C
   adj := Adjunction.id.ofNatIsoLeft (MonoidalCategory.leftUnitorNatIso C).symm
 
@@ -120,7 +121,7 @@ instance : PreservesColimits (tensorLeft A) :=
 variable {A}
 
 -- Wrap these in a namespace so we don't clash with the core versions.
-namespace MonoidalClosed
+namespace SemigroupalClosed
 
 /-- Currying in a monoidal closed category. -/
 def curry : (A ⊗ Y ⟶ X) → (Y ⟶ A ⟶[C] X) :=
@@ -212,7 +213,7 @@ theorem id_tensor_pre_app_comp_ev (f : B ⟶ A) (X : C) :
 
 @[simp]
 theorem uncurry_pre (f : B ⟶ A) (X : C) :
-    MonoidalClosed.uncurry ((pre f).app X) = f ▷ _ ≫ (ihom.ev A).app X := by
+    SemigroupalClosed.uncurry ((pre f).app X) = f ▷ _ ≫ (ihom.ev A).app X := by
   simp [uncurry_eq]
 
 @[reassoc (attr := simp)]
@@ -237,23 +238,23 @@ end Pre
 
 /-- The internal hom functor given by the monoidal closed structure. -/
 @[simps]
-def internalHom [MonoidalClosed C] : Cᵒᵖ ⥤ C ⥤ C where
+def internalHom [SemigroupalClosed C] : Cᵒᵖ ⥤ C ⥤ C where
   obj X := ihom X.unop
   map f := pre f.unop
 
 section OfEquiv
 
-variable {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
+variable {D : Type u₂} [Category.{v₂} D] [SemigroupalCategory.{v₂} D]
 
-variable (F : MonoidalFunctor C D) {G : D ⥤ C} (adj : F.toFunctor ⊣ G)
-  [F.IsEquivalence] [MonoidalClosed D]
+variable (F : SemigroupalFunctor C D) {G : D ⥤ C} (adj : F.toFunctor ⊣ G)
+  [F.IsEquivalence] [SemigroupalClosed D]
 /-- Transport the property of being monoidal closed across a monoidal equivalence of categories -/
-noncomputable def ofEquiv : MonoidalClosed C where
+noncomputable def ofEquiv : SemigroupalClosed C where
   closed X :=
     { rightAdj := F.toFunctor ⋙ ihom (F.obj X) ⋙ G
       adj := (adj.comp ((ihom.adjunction (F.obj X)).comp
           adj.toEquivalence.symm.toAdjunction)).ofNatIsoLeft
-            (Iso.compInverseIso (H := adj.toEquivalence) (MonoidalFunctor.commTensorLeft F X)) }
+            (Iso.compInverseIso (H := adj.toEquivalence) (SemigroupalFunctor.commTensorLeft F X)) }
 
 /-- Suppose we have a monoidal equivalence `F : C ≌ D`, with `D` monoidal closed. We can pull the
 monoidal closed instance back along the equivalence. For `X, Y, Z : C`, this lemma describes the
@@ -262,11 +263,11 @@ resulting currying map `Hom(X ⊗ Y, Z) → Hom(Y, (X ⟶[C] Z))`. (`X ⟶[C] Z`
 `D` by `F.`) -/
 theorem ofEquiv_curry_def {X Y Z : C} (f : X ⊗ Y ⟶ Z) :
     letI := ofEquiv F adj
-    MonoidalClosed.curry f =
+    SemigroupalClosed.curry f =
       adj.homEquiv Y ((ihom (F.obj X)).obj (F.obj Z))
-        (MonoidalClosed.curry (adj.toEquivalence.symm.toAdjunction.homEquiv (F.obj X ⊗ F.obj Y) Z
+        (SemigroupalClosed.curry (adj.toEquivalence.symm.toAdjunction.homEquiv (F.obj X ⊗ F.obj Y) Z
         ((Iso.compInverseIso (H := adj.toEquivalence)
-          (MonoidalFunctor.commTensorLeft F X)).hom.app Y ≫ f))) := by
+          (SemigroupalFunctor.commTensorLeft F X)).hom.app Y ≫ f))) := by
   -- This whole proof used to be `rfl` before #16317.
   change ((adj.comp ((ihom.adjunction (F.obj X)).comp
       adj.toEquivalence.symm.toAdjunction)).ofNatIsoLeft _).homEquiv _ _ _ = _
@@ -283,11 +284,11 @@ defined to be `F⁻¹(F(X) ⟶[D] F(Z))`, so uncurrying in `C` is given by essen
 uncurrying in `D` by `F.`) -/
 theorem ofEquiv_uncurry_def {X Y Z : C} :
     letI := ofEquiv F adj
-    ∀ (f : Y ⟶ (ihom X).obj Z), MonoidalClosed.uncurry f =
+    ∀ (f : Y ⟶ (ihom X).obj Z), SemigroupalClosed.uncurry f =
       ((Iso.compInverseIso (H := adj.toEquivalence)
-          (MonoidalFunctor.commTensorLeft F X)).inv.app Y) ≫
+          (SemigroupalFunctor.commTensorLeft F X)).inv.app Y) ≫
             (adj.toEquivalence.symm.toAdjunction.homEquiv _ _).symm
-              (MonoidalClosed.uncurry ((adj.homEquiv _ _).symm f)) := by
+              (SemigroupalClosed.uncurry ((adj.homEquiv _ _).symm f)) := by
   intro f
   -- This whole proof used to be `rfl` before #16317.
   change (((adj.comp ((ihom.adjunction (F.obj X)).comp
@@ -300,7 +301,7 @@ theorem ofEquiv_uncurry_def {X Y Z : C} :
 
 end OfEquiv
 
-end MonoidalClosed
-attribute [nolint simpNF] CategoryTheory.MonoidalClosed.homEquiv_apply_eq
-  CategoryTheory.MonoidalClosed.homEquiv_symm_apply_eq
+end SemigroupalClosed
+attribute [nolint simpNF] CategoryTheory.SemigroupalClosed.homEquiv_apply_eq
+  CategoryTheory.SemigroupalClosed.homEquiv_symm_apply_eq
 end CategoryTheory
