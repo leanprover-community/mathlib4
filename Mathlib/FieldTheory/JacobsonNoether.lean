@@ -64,9 +64,7 @@ private lemma δ_def (a x : D) : δ a x = f a x - g a x := rfl
 @[simp]
 private lemma δ_def' (a : D) : δ a = f a - g a := rfl
 
-private lemma fg_comm (a : D) : Commute (f a) (g a) := by
-  rw [commute_iff_eq, LinearMap.mk.injEq, AddHom.mk.injEq]
-  exact funext fun x ↦ (mul_assoc a x a).symm
+private lemma fg_comm (a : D) : Commute (f a) (g a) := LinearMap.commute_mulLeft_right a a
 
 private lemma f_pow (a : D) (n : ℕ) : ∀ x : D, ((f a) ^ n).1 x = (a ^ n) * x := by
   intro x
