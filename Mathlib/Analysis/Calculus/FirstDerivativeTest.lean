@@ -143,18 +143,13 @@ then `P` contains a punctured neighborhood. -/
 lemma nhdsWithin_punctured_of_Iio_Ioi (P : Set ℝ)
     (hl : P ∈ nhdsWithin 0 (Set.Iio 0)) (hr : P ∈ nhdsWithin 0 (Set.Ioi 0)) :
     P ∈ nhdsWithin 0 {0}ᶜ := by
-  rw [mem_nhdsWithin]
-  rw [mem_nhdsWithin] at hl hr
+  rw [mem_nhdsWithin] at *
   obtain ⟨u,hu⟩ := hl
   obtain ⟨v,hv⟩ := hr
-  use u ∩ v
-  simp_all only [Set.mem_inter_iff, and_self, true_and]
-  exact ⟨
-    IsOpen.inter (by tauto) (by tauto),
+  exact ⟨u ∩ v, IsOpen.inter (by tauto) (by tauto), by tauto,
     fun x hx => by
       simp_all only [Set.mem_inter_iff]
-      exact  ((lt_or_gt_of_ne hx.2)).elim (fun _ => hu.2.2 (by tauto)) (fun _ => hv.2.2 (by tauto))
-  ⟩
+      exact  ((lt_or_gt_of_ne hx.2)).elim (fun _ => hu.2.2 (by tauto)) (fun _ => hv.2.2 (by tauto))⟩
 
 /-- If a set `P` contains a punctured neighborhood of `x`
 then `P` contains a left neighborhoods of `x`. -/
@@ -162,10 +157,7 @@ lemma nhdsWithin_Iio_of_punctured {b:ℝ} {P : Set ℝ} (h : P ∈ nhdsWithin b 
     P ∈ nhdsWithin b (Set.Iio b) := by
   rw [mem_nhdsWithin] at *
   obtain ⟨u,hu⟩ := h
-  use u
-  simp_all only [true_and]
-  intro x hx;apply hu.2.2;simp_all only [mem_inter_iff, mem_Iio, mem_compl_iff, mem_singleton_iff,
-    true_and];linarith;
+  exact ⟨u, hu.1, hu.2.1, fun x hx => hu.2.2 <| by aesop⟩
 
 /-- If a set `P` contains a punctured neighborhood of `x`
 then `P` contains a right neighborhoods of `x`. -/
@@ -173,9 +165,7 @@ lemma nhdsWithin_Ioi_of_punctured {b:ℝ} {P : Set ℝ} (h : P ∈ nhdsWithin b 
     P ∈ nhdsWithin b (Set.Ioi b) := by
   rw [mem_nhdsWithin] at *
   obtain ⟨u,hu⟩ := h
-  use u
-  simp_all only [true_and]
-  intro x hx;apply hu.2.2;simp_all;linarith
+  exact ⟨u, hu.1, hu.2.1, fun x hx => hu.2.2 <| by aesop⟩
 
 /-- The First Derivative test, maximum version. -/
 theorem first_derivative_test_max {f : ℝ → ℝ} {b : ℝ} (h : ContinuousAt f b)
