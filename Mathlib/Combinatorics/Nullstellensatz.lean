@@ -321,9 +321,9 @@ theorem Alon2 [IsDomain R]
   have : g.totalDegree ≤ f.totalDegree := by
     simp only [hg, mul_comm, hh i]
   -- simplify this by proving `degree_mul_eq` (at least in a domain)
-  rw [hg, ← degLex_degree_degree, 
-    degree_mul_of_isRegular_right hi (by simp only [Alon.lCoeffP, isRegular_one]), 
-    Alon.degP, degree_add, degLex_degree_degree, degree_apply_single, ht'] at this 
+  rw [hg, ← degLex_degree_degree,
+    degree_mul_of_isRegular_right hi (by simp only [Alon.lCoeffP, isRegular_one]),
+    Alon.degP, degree_add, degLex_degree_degree, degree_apply_single, ht'] at this
   rw [smul_eq_mul, coeff_mul, Finset.sum_eq_zero]
   rintro ⟨p, q⟩ hpq
   simp only [Finset.mem_antidiagonal] at hpq
