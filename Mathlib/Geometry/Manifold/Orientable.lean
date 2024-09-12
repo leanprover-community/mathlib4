@@ -45,7 +45,8 @@ Jacobian.
 - Generalize this discussion to other fields, for example over `ℚ`.
 - On a given connected set, a diffeomorphism is either orientation preserving or orientation
   reversing.
-- A real interval `Icc x y` is orientableA normed space (with the trivial model) is orientable.
+- A real interval `Icc x y` is orientable.
+- A normed space (with the trivial model) is orientable.
 - The `n`-sphere is orientable.
 - Products of orientable manifolds are orientable.
 - Define orientations of a smooth manifold, and show that a manifold is orientable if and only if it
@@ -151,7 +152,7 @@ def orientationPreservingPregroupoid [FiniteDimensional ℝ E] : Pregroupoid H w
     -- but such a proof is currently out of reach for mathlib.
     -- Hence, we add this condition.
     ∧ (I.symm ⁻¹' s ∩ interior (range I)).image (I ∘ f ∘ I.symm) ⊆ interior (range I)
-  comp {f g} U V hf hg hU hV hUV := by
+  comp {f g} U V hf hg _ _ _ := by
     refine ⟨fun x ⟨hx₁, hx₂⟩ ↦ ?_, fun y ⟨x, hx, _⟩ ↦ ?_⟩
     · have hx' : x ∈ I.symm ⁻¹' U ∩ interior (range I) ∩
           I ∘ f ∘ I.symm ⁻¹' (I.symm ⁻¹' V ∩ interior (range I)) :=
@@ -235,8 +236,29 @@ lemma orientableManifold_of_zero_dim {E H : Type*} [NormedAddCommGroup E] [Norme
     [TopologicalSpace H] (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
     (I : ModelWithCorners ℝ E H) [FiniteDimensional ℝ E] (h : FiniteDimensional.finrank ℝ E = 0) :
     OrientableManifold M I where
-  compatible := sorry /- fun _ _ _ ↦
-    ⟨orientationPreserving_of_zero_dim _ _ h, orientationPreserving_of_zero_dim _ _ h⟩ -/
+  compatible {e₁ e₂} _ _ := by
+    refine ⟨⟨orientationPreserving_of_zero_dim _ _ h, ?_⟩,
+      orientationPreserving_of_zero_dim _ _ h, ?_⟩
+    · by_cases hE : interior (Set.range I) = ∅
+      · simp [hE]
+      · rw [Set.subset_def]
+        intro y hy
+        rw [Set.eq_empty_iff_forall_not_mem] at hE
+        push_neg at hE
+        obtain ⟨x, hx⟩ := hE
+        let s := I ∘ (e₁.symm.trans e₂) ∘ I.symm ''
+          (I.symm ⁻¹' (e₁.symm.trans e₂).source ∩ interior (Set.range I))
+        simp_all [(fun _ _ _ ↦ (FiniteDimensional.finrank_zero_iff.mp h).elim x y) s y hy]
+    · by_cases hE : interior (Set.range I) = ∅
+      · simp [hE]
+      · rw [Set.subset_def]
+        intro y hy
+        rw [Set.eq_empty_iff_forall_not_mem] at hE
+        push_neg at hE
+        obtain ⟨x, hx⟩ := hE
+        let s := I ∘ (e₁.symm.trans e₂).symm ∘ I.symm ''
+          (I.symm ⁻¹' (e₁.symm.trans e₂).target ∩ interior (Set.range I))
+        simp_all [(fun _ _ _ ↦ (FiniteDimensional.finrank_zero_iff.mp h).elim x y) s y hy]
 
 /-- Typeclass defining orientable smooth manifolds: a smooth manifold is orientable
 if and only if it admits an atlas which is both smooth and orientable -/
