@@ -7,7 +7,7 @@ import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Order.Interval.Finset.Basic
 
 /-!
-# Restriction of a function indexed by natural integers
+# Restriction of a function indexed by a preorder
 
 Given a preorder `α` and dependent function `f : (i : α) → π i` and `a : α`, one might want
 to consider the restriction of `f` to elements `≤ a`.
