@@ -5,15 +5,16 @@ Authors: Yakov Pechersky
 -/
 import Mathlib.RingTheory.DiscreteValuationRing.Basic
 import Mathlib.RingTheory.Ideal.IsPrincipalPowQuotient
+import Mathlib.RingTheory.Valuation.Archimedean
 import Mathlib.Topology.Algebra.Valued.NormedValued
 import Mathlib.Topology.Algebra.Valued.ValuedField
 
 /-!
 # Necessary and sufficient conditions for a locally compact nonarchimedean normed field
 
-## Main Definitions
-* `totallyBounded_iff_finite_residueField`: when the valuation ring is a DVR,
-  it is totally bounded iff the residue field is finite.
+## Main Results
+* `compactSpace_iff_complete_and_discreteValuationRing_and_finite_residueField`:
+  when the valuation ring is compact, it is complete and is a DVR and has finite residue field
 
 ## Tags
 
@@ -47,6 +48,9 @@ lemma norm_unit (u : 𝒪[K]ˣ) : ‖(u : 𝒪[K])‖ = 1 := by
   suffices ‖(u⁻¹).val‖ > 1 from absurd this (norm_le_one _).not_lt
   rw [← norm_one (α := K), ← OneMemClass.coe_one (𝒪[K]), ← u.mul_inv, Subring.coe_mul]
   simpa using hu
+
+@[simp]
+lemma nnnorm_one : ‖(1 : 𝒪[K])‖₊ = 1 := coe_inj.mp (by simp)
 
 @[simp]
 lemma norm_coe_unit (u : 𝒪[K]ˣ) : ‖((u : 𝒪[K]) : K)‖ = 1 :=
@@ -138,8 +142,6 @@ lemma _root_.Irreducible.maximalIdeal_pow_eq_closedBall_pow [DiscreteValuationRi
 
 section FiniteResidueField
 
-variable {K : Type*} [NontriviallyNormedField K] [IsUltrametricDist K]
-
 open Valued
 
 lemma finite_quotient_maximalIdeal_pow_of_finite_residueField [DiscreteValuationRing 𝒪[K]]
@@ -198,5 +200,121 @@ lemma totallyBounded_iff_finite_residueField [DiscreteValuationRing 𝒪[K]] :
     exact (Metric.closedBall_subset_ball hn).trans (Set.subset_iUnion_of_subset _ le_rfl)
 
 end FiniteResidueField
+
+section CompactDVR
+
+open Valued
+
+variable (K) in
+lemma exists_norm_coe_lt : ∃ x : 𝒪[K], 0 < ‖(x : K)‖ ∧ ‖(x : K)‖ < 1 := by
+  obtain ⟨x, hx, hx'⟩ := NormedField.exists_norm_lt_one K
+  refine ⟨⟨x, hx'.le⟩, ?_⟩
+  simpa [hx', Subtype.ext_iff] using hx
+
+variable (K) in
+lemma exists_norm_lt : ∃ x : 𝒪[K], 0 < ‖x‖ ∧ ‖x‖ < 1 := by
+  exact exists_norm_coe_lt K
+
+variable (K) in
+lemma exists_nnnorm_lt : ∃ x : 𝒪[K], 0 < ‖x‖₊ ∧ ‖x‖₊ < 1 := by
+  exact exists_norm_coe_lt K
+
+lemma discreteValuationRing_of_compactSpace [h : CompactSpace 𝒪[K]] :
+    DiscreteValuationRing 𝒪[K] := by
+  have hl : LocalRing 𝒪[K] := inferInstance
+  obtain ⟨x, hx, hx'⟩ := exists_nnnorm_lt K
+  rw [← nnnorm_one (K := K)] at hx'
+  have hi : Valuation.Integers (R := K) Valued.v 𝒪[K] := Valuation.integer.integers v
+  have key : IsPrincipalIdealRing 𝒪[K]:= by
+    rw [hi.isPrincipalIdealRing_iff_not_denselyOrdered]
+    intro H
+    replace H : DenselyOrdered (Set.range ((‖·‖₊) : 𝒪[K] → ℝ≥0)) := by
+      constructor
+      rintro ⟨_, a, rfl⟩ ⟨_, b, rfl⟩ h
+      replace h : (⟨_, a, rfl⟩ : Set.range (v : K → ℝ≥0)) < ⟨_, b, rfl⟩ := h
+      obtain ⟨⟨_, c, rfl⟩, hc⟩ := exists_between h
+      refine ⟨⟨_, ⟨c, ?_⟩, rfl⟩, hc⟩
+      · rw [mem_integer_iff']
+        simp only [v_eq_valuation, NormedField.valuation_apply, Subtype.mk_lt_mk, ← coe_lt_coe,
+          coe_nnnorm] at hc
+        simpa using hc.right.le.trans (mem_integer_iff'.mp b.prop)
+    let U : 𝒪[K] → Set 𝒪[K] := fun y ↦ if ‖y‖₊ < ‖x‖₊
+      then Metric.closedBall 0 ‖x‖
+      else Metric.sphere 0 ‖y‖
+    obtain ⟨t, ht⟩ := CompactSpace.elim_nhds_subcover U <| by
+      intro y
+      simp only [AddSubgroupClass.coe_norm, U]
+      split_ifs with hy
+      · refine (IsUltrametricDist.isOpen_closedBall _ ?_).mem_nhds (by simpa using hy.le)
+        simpa using hx
+      · refine (IsUltrametricDist.isOpen_sphere _ ?_).mem_nhds (by simp)
+        simpa using (hx.trans_le (le_of_not_lt hy)).ne'
+    have htm : ∀ y : 𝒪[K], ‖x‖₊ < ‖y‖₊ → ∃ z ∈ t, ‖z‖₊ = ‖y‖₊ := by
+      intro y hy
+      have := ht.ge (Set.mem_univ y)
+      simp only [AddSubgroupClass.coe_norm, Set.mem_iUnion, exists_prop', nonempty_prop, U] at this
+      obtain ⟨z, hz, hz'⟩ := this
+      split_ifs at hz' with h
+      · simp only [← coe_lt_coe, coe_nnnorm, AddSubgroupClass.coe_norm] at hy
+        simp [hy.not_le] at hz'
+      · simp only [mem_sphere_iff_norm, sub_zero, AddSubgroupClass.coe_norm] at hz'
+        refine ⟨z, hz, ?_⟩
+        simp [← coe_inj, hz']
+    obtain ⟨y, _, hy'⟩ : ∃ y : 𝒪[K], y ∈ t ∧ ‖y‖₊ = 1 := by simpa using htm 1 hx'
+    obtain ⟨w, hwt, hw1, hxw⟩ : ∃ w : 𝒪[K], w ∈ t ∧ ‖w‖₊ < 1 ∧ ‖x‖₊ < ‖w‖₊ := by
+      replace hx' : (⟨_, x, rfl⟩ : Set.range ((‖·‖₊) : 𝒪[K] → ℝ≥0)) < ⟨_, 1, rfl⟩ := hx'
+      obtain ⟨⟨_, w, rfl⟩, hw, hw'⟩ := exists_between hx'
+      obtain ⟨u, hu, hu'⟩ := htm w hw
+      exact ⟨u, hu, hu' ▸ by simpa using hw', hu' ▸ by simpa using hw⟩
+    let u := t.filter (fun a ↦ ‖a‖₊ < 1)
+    have hwu : w ∈ u := by simp [u, hwt, hw1]
+    have hu : u.Nonempty := ⟨w, hwu⟩
+    have := hu.iSup_nnnorm_mem_image id
+    simp only [id_eq, Finset.mem_image] at this
+    obtain ⟨l, hl, hl'⟩ := this
+    rw [hu.ciSup_eq_max'_image] at hl'
+    have hm : (⟨‖l‖₊, l, rfl⟩ : Set.range ((‖·‖₊) : 𝒪[K] → ℝ≥0)) < (⟨1, y, hy'⟩) := by
+      simp only [Finset.mem_filter, u] at hl
+      simp [hl.right]
+    obtain ⟨⟨_, m, rfl⟩, hm⟩ := exists_between hm
+    simp only [Subtype.mk_lt_mk] at hm
+    obtain ⟨n, hn, hn'⟩ : ∃ n ∈ t, ‖n‖₊ = ‖m‖₊ := by
+      refine htm m (hxw.trans (hm.left.trans_le' ?_))
+      rw [hl']
+      refine Finset.le_max' _ _ ?_
+      simp only [Finset.mem_image]
+      exact ⟨_, hwu, rfl⟩
+    rw [← hn'] at hm
+    refine hm.left.not_le ?_
+    rw [hl']
+    refine Finset.le_max' _ _ ?_
+    simp only [Finset.mem_image]
+    refine ⟨n, ?_, rfl⟩
+    simp [u, hn, hm.right]
+  exact {
+    __ := hl
+    __ := key
+    not_a_field' := by
+      simp only [ne_eq, Ideal.ext_iff, LocalRing.mem_maximalIdeal, mem_nonunits_iff, Ideal.mem_bot,
+        not_forall, isUnit_iff_norm_eq_one]
+      refine ⟨x, ?_⟩
+      simp only [← coe_lt_coe, coe_zero, coe_nnnorm, norm_pos_iff, ne_eq,
+        ZeroMemClass.coe_eq_zero, nnnorm_one, coe_one] at hx hx'
+      simpa [hx] using hx'.ne
+  }
+
+end CompactDVR
+
+lemma compactSpace_iff_complete_and_discreteValuationRing_and_finite_residueField :
+    CompactSpace 𝒪[K] ↔ CompleteSpace 𝒪[K] ∧ DiscreteValuationRing 𝒪[K] ∧ Finite 𝓀[K] := by
+  refine ⟨fun h ↦ ?_, fun ⟨_, _, h⟩ ↦ ⟨?_⟩⟩
+  · have : DiscreteValuationRing 𝒪[K] := discreteValuationRing_of_compactSpace
+    refine ⟨complete_of_compact, by assumption, ?_⟩
+    rw [← isCompact_univ_iff, isCompact_iff_totallyBounded_isComplete,
+        totallyBounded_iff_finite_residueField] at h
+    exact h.left
+  · rw [← totallyBounded_iff_finite_residueField] at h
+    rw [isCompact_iff_totallyBounded_isComplete]
+    exact ⟨h, completeSpace_iff_isComplete_univ.mp ‹_›⟩
 
 end Valued.integer
