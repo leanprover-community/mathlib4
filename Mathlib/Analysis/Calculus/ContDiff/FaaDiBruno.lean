@@ -255,11 +255,12 @@ theorem faaDiBruno {n : ℕ∞} {g : F → G} {f : E → F}
     (hg : HasFTaylorSeriesUpToOn n g q t) (hf : HasFTaylorSeriesUpToOn n f p s) (h : MapsTo f s t) :
     HasFTaylorSeriesUpToOn n (g ∘ f) (fun x ↦ (q (f x)).taylorComp (p x)) s := sorry
 
-theorem analyticWithinOn_compAlongOrderedFinpartition
+theorem analyticWithinOn_taylorComp
     (hq : ∀ (n : ℕ), AnalyticWithinOn 𝕜 (fun x ↦ q x n) t)
     (hp : ∀ n, AnalyticWithinOn 𝕜 (fun x ↦ p x n) s) {f : E → F}
-    (hf : AnalyticWithinOn 𝕜 f s) (h : MapsTo f s t) (n : ℕ) (c : OrderedFinpartition n) :
-    AnalyticWithinOn 𝕜 (fun x ↦ (q (f x)).compAlongOrderedFinpartition (p x) c) s := by
+    (hf : AnalyticWithinOn 𝕜 f s) (h : MapsTo f s t) (n : ℕ) :
+    AnalyticWithinOn 𝕜 (fun x ↦ (q (f x)).taylorComp (p x) n) s := by
+  apply Finset.analyticWithinOn_sum _ (fun c _ ↦ ?_)
   let B := c.compAlongOrderedFinpartitionL 𝕜 E F G
   change AnalyticWithinOn 𝕜
     ((fun p ↦ B p.1 p.2) ∘ (fun x ↦ (q (f x) c.length, fun m ↦ p x (c.partSize m)))) s
@@ -267,17 +268,3 @@ theorem analyticWithinOn_compAlongOrderedFinpartition
   apply AnalyticWithinOn.prod
   · exact (hq c.length).comp hf h
   · exact AnalyticWithinOn.pi (fun i ↦ hp _)
-
-
-
-
-
-
-
-
-theorem analyticWithinOn_taylorComp
-    (hq : ∀ (n : ℕ), AnalyticWithinOn 𝕜 (fun x ↦ q x n) t)
-    (hp : ∀ n, AnalyticWithinOn 𝕜 (fun x ↦ p x n) s) {f : E → F}
-    (hf : AnalyticWithinOn 𝕜 f s) (h : MapsTo f s t) (n : ℕ) :
-    AnalyticWithinOn 𝕜 (fun x ↦ (q (f x)).taylorComp (p x) n) s := by
-  apply Finset.analyticWithinOn_sum
