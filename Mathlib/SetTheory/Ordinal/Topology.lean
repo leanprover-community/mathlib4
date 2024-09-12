@@ -242,14 +242,13 @@ def IsClosed (S : Set Ordinal) (o : Ordinal) : Prop :=
 theorem IsAcc.subset {o : Ordinal} {S T : Set Ordinal} (h : S ⊆ T) (ho : o.IsAcc S) :
     o.IsAcc T := ⟨ho.1, fun p plto ↦ (ho.2 p plto).casesOn fun s hs ↦ ⟨s, h hs.1, hs.2⟩⟩
 
-theorem IsAcc.isLimit {o : Ordinal} {U : Set Ordinal} (h : o.IsAcc U) : IsLimit o := by
+theorem IsAcc.isLimit {o : Ordinal} {S : Set Ordinal} (h : o.IsAcc S) : IsLimit o := by
   refine isLimit_of_not_succ_of_ne_zero (fun ⟨x, hx⟩ ↦ ?_) h.1
   rcases h.2 x (lt_of_lt_of_le (lt_succ x) hx.symm.le) with ⟨p, hp⟩
   exact (hx.symm ▸ (succ_le_iff.mpr hp.2.1)).not_lt hp.2.2
 
-theorem IsAcc.inter_Ioo_nonempty {o : Ordinal} {U : Set Ordinal} (hU : o.IsAcc U)
-    {p : Ordinal} (hp : p < o) : (U ∩ Ioo p o).Nonempty := (hU.2 p hp).casesOn fun q hq ↦
-  ⟨q, hq.1, hq.2.1, hq.2.2⟩
+theorem IsAcc.inter_Ioo_nonempty {o : Ordinal} {S : Set Ordinal} (hS : o.IsAcc S)
+    {p : Ordinal} (hp : p < o) : (S ∩ Ioo p o).Nonempty := hS.2 p hp
 
 theorem isClosed_zero (S : Set Ordinal) : IsClosed S 0 := fun _ h ↦
   False.elim <| (Ordinal.zero_le _).not_lt h
@@ -259,9 +258,7 @@ theorem IsClosed.sInter {o : Ordinal} {S : Set (Set Ordinal)} (h : ∀ C ∈ S, 
   fun p plto pAcc C CmemS ↦ (h C CmemS) p plto (pAcc.subset (sInter_subset_of_mem CmemS))
 
 theorem IsClosed.iInter {ι : Type u} {f : ι → Set Ordinal} {o : Ordinal}
-    (h : ∀ i, IsClosed (f i) o) : IsClosed (⋂ i, f i) o := by
-  have := IsClosed.sInter (fun C (⟨i, fieqC⟩ : C ∈ range f) ↦ fieqC ▸ (h i))
-  change IsClosed (⋂₀ (range f)) o at this
-  rwa [sInter_range] at this
+    (h : ∀ i, IsClosed (f i) o) : IsClosed (⋂ i, f i) o :=
+  IsClosed.sInter fun _ ⟨i, hi⟩ ↦ hi ▸ (h i)
 
 end Ordinal
