@@ -1,3 +1,4 @@
+AbelRuffini.not_solvable_by_rad
 abs_add'
 abs_le_of_sq_le_sq'
 abs_lt_of_sq_lt_sq'
@@ -265,6 +266,7 @@ Asymptotics.IsLittleO.right_isTheta_add'
 Asymptotics.isTheta_of_norm_eventuallyEq'
 Asymptotics.SuperpolynomialDecay.congr'
 ball_eq'
+Ballot.ballot_problem
 Basis.det_map'
 Basis.det_reindex'
 Basis.equiv'_apply
@@ -2401,6 +2403,8 @@ Ideal.quotientInfToPiQuotient_mk'
 Ideal.Quotient.smulCommClass'
 Ideal.span_mul_span'
 Ideal.subset_union_prime'
+IfExpr.eval_ite_ite
+IfNormalization.WithoutAesop
 iInf₂_mono'
 iInf_le'
 iInf_mono'
@@ -2412,6 +2416,8 @@ iInf_subtype'
 iInf_subtype''
 imageSubobjectIso_imageToKernel'
 imageToKernel'_kernelSubobjectIso
+Imo1962Q1.ProblemPredicate
+Imo2001Q2.imo2001_q2
 imp_or'
 induced_orderTopology'
 Inducing.continuousAt_iff'
@@ -5161,6 +5167,11 @@ Projectivization.submodule_mk''
 Prop.countable'
 ptendsto'_nhds
 pure_id'_seq
+Q60596.Q'_add
+Q60596.Q'_apply
+Q60596.Q'_apply_single
+Q60596.Q'_sub
+Q60596.Q'_zero_under_ideal
 QPF.Cofix.bisim'
 QPF.liftp_iff'
 QPF.recF_eq'
@@ -6256,6 +6267,7 @@ TensorProduct.finsuppLeft_smul'
 TensorProduct.isPushout'
 TensorProduct.lift.tmul'
 TensorProduct.smul_tmul'
+Theorems100.num_series
 three_ne_zero'
 toBilin'Aux_toMatrixAux
 toIcoDiv_add_left'
