@@ -28,25 +28,24 @@ register_option linter.heavyRfl : Nat := {
   descr := "enable the heavyRfl linter"
 }
 
-def renameDecl (stx : Syntax) (ns tail : Name) : (Option (Syntax × Name)) :=
-  if ! stx.isOfKind ``Lean.Parser.Command.declaration then none
-  else
-  match stx.find? (·.isOfKind ``Lean.Parser.Command.declId) with
-  | none => some (stx, .anonymous)
-  | some declId =>
-    let id := declId[0]
-    let declName := id.getId
-    let newDeclName := ns ++ id.getId ++ tail
-    let newId       := mkIdentFrom id newDeclName
-    let newDeclId   := mkNode ``Lean.Parser.Command.declId #[newId, declId.getArgs.back]
-    let new := Id.run do stx.replaceM fun s => do
-      match s with
-        | .node _ ``Lean.Parser.Command.declId _ =>
-          return some newDeclId
-        | .ident _ _ dName _ =>
-          if dName == declName then return some newId else return none
-        | _ => return none
-    some (new, newId.getId)
+def renameDecl (stxO : Syntax) (ns tail : Name) : (Option (Syntax × Name)) :=
+  -- this allows the rename to work inside `open ... in ...`
+  match stxO.find? (·.isOfKind ``Lean.Parser.Command.declaration) with
+    | none => none
+    | some stx =>
+      match stx.find? (·.isOfKind ``Lean.Parser.Command.declId) with
+      | none => some (stx, .anonymous)
+      | some declId =>
+        let id := declId[0]
+        let declName := id.getId
+        let newDeclName := ns ++ id.getId ++ tail
+        let newId       := mkIdentFrom id newDeclName
+        let newDeclId   := mkNode ``Lean.Parser.Command.declId #[newId, declId.getArgs.back]
+        let new := stxO.replaceM (m := Id) (match · with
+          | .node _ ``Lean.Parser.Command.declId _ => some newDeclId
+          | .ident _ _ dName _ => if dName == declName then some newId else none
+          | _ => none)
+        some (new, newId.getId)
 
 elab "rn" id:(ident)? cmd:command : command => do
   elabCommand cmd
@@ -56,6 +55,22 @@ elab "rn" id:(ident)? cmd:command : command => do
     | some (d, n) =>
       logInfo m!"Name produced: '{n}'\n\nElaborating\n\n{d}"
       elabCommand d
+
+end Mathlib.Linter
+
+rn
+open Nat in
+def Nat.ST1Hello : Nat := zero
+/-
+Name produced: 'Nat.ST1.Hello'
+
+Elaborating
+
+-/
+
+rn
+open Nat in
+def Nat.ST1 : Nat := zero
 
 /--
 info: Name produced: 'Nat.S.Hello'
@@ -70,11 +85,7 @@ open Nat in
 rn
 def Nat.S (n : Nat) : Nat := succ n
 
-
-rn
-open Nat in
-def Nat.ST1 (n : Nat) : Nat := Nat.succ n
-
+namespace Mathlib.Linter
 
 /--
 info: Name produced: '[anonymous]'
