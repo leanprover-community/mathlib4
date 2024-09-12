@@ -3,10 +3,8 @@ Copyright (c) 2023 Jonas van der Schaaf. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Christian Merten, Jonas van der Schaaf
 -/
-import Mathlib.AlgebraicGeometry.OpenImmersion
 import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
-import Mathlib.CategoryTheory.MorphismProperty.Composition
-import Mathlib.RingTheory.LocalProperties
+import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
 
 /-!
 
@@ -38,9 +36,10 @@ namespace AlgebraicGeometry
 
 /-- A morphism of schemes `X ⟶ Y` is a closed immersion if the underlying
 topological map is a closed embedding and the induced stalk maps are surjective. -/
+@[mk_iff]
 class IsClosedImmersion {X Y : Scheme} (f : X ⟶ Y) : Prop where
   base_closed : ClosedEmbedding f.1.base
-  surj_on_stalks : ∀ x, Function.Surjective (PresheafedSpace.stalkMap f.1 x)
+  surj_on_stalks : ∀ x, Function.Surjective (f.stalkMap x)
 
 namespace IsClosedImmersion
 
@@ -48,9 +47,23 @@ lemma closedEmbedding {X Y : Scheme} (f : X ⟶ Y)
     [IsClosedImmersion f] : ClosedEmbedding f.1.base :=
   IsClosedImmersion.base_closed
 
-lemma surjective_stalkMap {X Y : Scheme} (f : X ⟶ Y)
-    [IsClosedImmersion f] (x : X) : Function.Surjective (PresheafedSpace.stalkMap f.1 x) :=
-  IsClosedImmersion.surj_on_stalks x
+lemma eq_inf : @IsClosedImmersion = (topologically ClosedEmbedding) ⊓
+    stalkwise (fun f ↦ Function.Surjective f) := by
+  ext X Y f
+  rw [isClosedImmersion_iff]
+  rfl
+
+lemma iff_isPreimmersion {X Y : Scheme} {f : X ⟶ Y} :
+    IsClosedImmersion f ↔ IsPreimmersion f ∧ IsClosed (Set.range f.1.base) := by
+  rw [and_comm, isClosedImmersion_iff, isPreimmersion_iff, ← and_assoc, closedEmbedding_iff,
+    @and_comm (Embedding _)]
+
+lemma of_isPreimmersion {X Y : Scheme} (f : X ⟶ Y) [IsPreimmersion f]
+    (hf : IsClosed (Set.range f.1.base)) : IsClosedImmersion f :=
+  iff_isPreimmersion.mpr ⟨‹_›, hf⟩
+
+instance (priority := 900) {X Y : Scheme} (f : X ⟶ Y) [IsClosedImmersion f] : IsPreimmersion f :=
+  (iff_isPreimmersion.mp ‹_›).1
 
 /-- Isomorphisms are closed immersions. -/
 instance {X Y : Scheme} (f : X ⟶ Y) [IsIso f] : IsClosedImmersion f where
@@ -61,7 +74,7 @@ instance : MorphismProperty.IsMultiplicative @IsClosedImmersion where
   id_mem _ := inferInstance
   comp_mem {X Y Z} f g hf hg := by
     refine ⟨hg.base_closed.comp hf.base_closed, fun x ↦ ?_⟩
-    erw [PresheafedSpace.stalkMap.comp]
+    rw [Scheme.stalkMap_comp]
     exact (hf.surj_on_stalks x).comp (hg.surj_on_stalks (f.1.1 x))
 
 /-- Composition of closed immersions is a closed immersion. -/
@@ -70,29 +83,37 @@ instance comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsClosedImmersion f]
   MorphismProperty.IsStableUnderComposition.comp_mem f g inferInstance inferInstance
 
 /-- Composition with an isomorphism preserves closed immersions. -/
-lemma respectsIso : MorphismProperty.RespectsIso @IsClosedImmersion := by
+instance respectsIso : MorphismProperty.RespectsIso @IsClosedImmersion := by
   constructor <;> intro X Y Z e f hf <;> infer_instance
 
 /-- Given two commutative rings `R S : CommRingCat` and a surjective morphism
 `f : R ⟶ S`, the induced scheme morphism `specObj S ⟶ specObj R` is a
 closed immersion. -/
 theorem spec_of_surjective {R S : CommRingCat} (f : R ⟶ S) (h : Function.Surjective f) :
-    IsClosedImmersion (Scheme.specMap f) where
+    IsClosedImmersion (Spec.map f) where
   base_closed := PrimeSpectrum.closedEmbedding_comap_of_surjective _ _ h
   surj_on_stalks x := by
-    erw [← localRingHom_comp_stalkIso, CommRingCat.coe_comp, CommRingCat.coe_comp]
-    apply Function.Surjective.comp (Function.Surjective.comp _ _) _
-    · exact (ConcreteCategory.bijective_of_isIso (StructureSheaf.stalkIso S x).inv).2
-    · exact surjective_localRingHom_of_surjective f h x.asIdeal
-    · let g := (StructureSheaf.stalkIso ((CommRingCat.of R))
-        ((PrimeSpectrum.comap (CommRingCat.ofHom f)) x)).hom
-      exact (ConcreteCategory.bijective_of_isIso g).2
+    haveI : (RingHom.toMorphismProperty (fun f ↦ Function.Surjective f)).RespectsIso := by
+      rw [← RingHom.toMorphismProperty_respectsIso_iff]
+      exact surjective_respectsIso
+    apply (MorphismProperty.arrow_mk_iso_iff
+      (RingHom.toMorphismProperty (fun f ↦ Function.Surjective f))
+      (Scheme.arrowStalkMapSpecIso f x)).mpr
+    exact surjective_localRingHom_of_surjective f h x.asIdeal
 
 /-- For any ideal `I` in a commutative ring `R`, the quotient map `specObj R ⟶ specObj (R ⧸ I)`
 is a closed immersion. -/
 instance spec_of_quotient_mk {R : CommRingCat.{u}} (I : Ideal R) :
-    IsClosedImmersion (Scheme.specMap (CommRingCat.ofHom (Ideal.Quotient.mk I))) :=
+    IsClosedImmersion (Spec.map (CommRingCat.ofHom (Ideal.Quotient.mk I))) :=
   spec_of_surjective _ Ideal.Quotient.mk_surjective
+
+/-- Any morphism between affine schemes that is surjective on global sections is a
+closed immersion. -/
+lemma of_surjective_of_isAffine {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶ Y)
+    (h : Function.Surjective (Scheme.Γ.map f.op)) : IsClosedImmersion f := by
+  rw [MorphismProperty.arrow_mk_iso_iff @IsClosedImmersion (arrowIsoSpecΓOfIsAffine f)]
+  apply spec_of_surjective
+  exact h
 
 /-- If `f ≫ g` is a closed immersion, then `f` is a closed immersion. -/
 theorem of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsClosedImmersion g]
@@ -107,13 +128,17 @@ theorem of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsClosedImmersion 
         ← Set.image_comp]
       exact ClosedEmbedding.isClosedMap h _ hZ
   surj_on_stalks x := by
-    have h := surjective_stalkMap (f ≫ g) x
-    erw [Scheme.comp_val, PresheafedSpace.stalkMap.comp] at h
+    have h := (f ≫ g).stalkMap_surjective x
+    simp_rw [Scheme.comp_val, Scheme.stalkMap_comp] at h
     exact Function.Surjective.of_comp h
 
 instance {X Y : Scheme} (f : X ⟶ Y) [IsClosedImmersion f] : QuasiCompact f where
   isCompact_preimage _ _ hU' := base_closed.isCompact_preimage hU'
 
 end IsClosedImmersion
+
+/-- Being a closed immersion is local at the target. -/
+instance IsClosedImmersion.isLocalAtTarget : IsLocalAtTarget @IsClosedImmersion :=
+  eq_inf ▸ inferInstance
 
 end AlgebraicGeometry

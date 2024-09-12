@@ -57,3 +57,5 @@ theorem submatrix_succAbove_det_eq_negOnePow_submatrix_succAbove_det' {n : ℕ}
     ← det_transpose, transpose_submatrix, transpose_transpose]
   ext
   simp_rw [Finset.sum_apply, transpose_apply, hv, Pi.zero_apply]
+
+end Matrix
