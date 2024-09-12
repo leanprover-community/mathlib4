@@ -256,10 +256,7 @@ elab_rules : tactic
       searchContext t
 
 /-- Version of `algebraize`, which only adds `Algebra` instances and `IsScalarTower` instances. -/
-syntax "algebraize'" (ppSpace colGt term:max)* : tactic
-
-macro_rules
-  | `(tactic| algebraize' $[$t:term]*) =>
-    `(tactic| algebraize (config := {searchContext := false}) $t*)
+macro "algebraize'" t:(colGt term:max)* : tactic =>
+  `(tactic| algebraize (config := {searchContext := false}) $[$t]* )
 
 end Mathlib.Tactic
