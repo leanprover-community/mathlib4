@@ -48,8 +48,6 @@ class SMulWithZero [Zero R] [Zero M] extends SMulZeroClass R M where
   /-- Scalar multiplication by the scalar `0` is `0`. -/
   zero_smul : ∀ m : M, (0 : R) • m = 0
 
-set_synth_order SMulWithZero.toSMulZeroClass #[4, 2, 3]
-
 instance MulZeroClass.toSMulWithZero [MulZeroClass R] : SMulWithZero R R where
   smul := (· * ·)
   smul_zero := mul_zero
@@ -127,14 +125,10 @@ class MulActionWithZero extends MulAction R M where
   /-- Scalar multiplication by the scalar `0` is `0`. -/
   zero_smul : ∀ m : M, (0 : R) • m = 0
 
-set_synth_order MulActionWithZero.toMulAction #[4, 2, 3]
-
 -- see Note [lower instance priority]
 instance (priority := 100) MulActionWithZero.toSMulWithZero [m : MulActionWithZero R M] :
     SMulWithZero R M :=
   { m with }
-
-set_synth_order MulActionWithZero.toSMulWithZero #[4, 2, 3]
 
 /-- See also `Semiring.toModule` -/
 instance MonoidWithZero.toMulActionWithZero : MulActionWithZero R R :=

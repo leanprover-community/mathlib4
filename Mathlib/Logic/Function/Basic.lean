@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Init.Algebra.Classes
 import Mathlib.Data.Set.Defs
 import Mathlib.Logic.Basic
+import Mathlib.Logic.ExistsUnique
 import Mathlib.Logic.Nonempty
 import Batteries.Tactic.Init
 

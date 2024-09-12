@@ -3,10 +3,9 @@ Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Combinatorics.Hall.Basic
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.SetTheory.Cardinal.Finite
+import Mathlib.Data.Matrix.Rank
+import Mathlib.LinearAlgebra.Projectivization.Constructions
 
 /-!
 # Configurations of Points and lines
@@ -461,5 +460,64 @@ theorem card_lines [Finite P] [Fintype L] : Fintype.card L = order P L ^ 2 + ord
   (card_points (Dual L) (Dual P)).trans (congr_arg (fun n => n ^ 2 + n + 1) (Dual.order P L))
 
 end ProjectivePlane
+
+namespace ofField
+
+variable {K : Type*} [Field K]
+
+open scoped LinearAlgebra.Projectivization
+
+open Matrix Projectivization
+
+instance : Membership (ℙ K (Fin 3 → K)) (ℙ K (Fin 3 → K)) :=
+  ⟨Function.swap orthogonal⟩
+
+lemma mem_iff (v w : ℙ K (Fin 3 → K)) : v ∈ w ↔ orthogonal v w :=
+  Iff.rfl
+
+-- This lemma can't be moved to the crossProduct file due to heavy imports
+lemma crossProduct_eq_zero_of_dotProduct_eq_zero {a b c d : Fin 3 → K} (hac : dotProduct a c = 0)
+    (hbc : dotProduct b c = 0) (had : dotProduct a d = 0) (hbd : dotProduct b d = 0) :
+    crossProduct a b = 0 ∨ crossProduct c d = 0 := by
+  by_contra h
+  simp_rw [not_or, ← ne_eq, crossProduct_ne_zero_iff_linearIndependent] at h
+  let A : Matrix (Fin 2) (Fin 3) K := ![a, b]
+  let B : Matrix (Fin 2) (Fin 3) K := ![c, d]
+  have hAB : A * B.transpose = 0 := by
+    ext i j
+    fin_cases i <;> fin_cases j <;> assumption
+  replace hAB := rank_add_rank_le_card_of_mul_eq_zero hAB
+  rw [rank_transpose, h.1.rank_matrix, h.2.rank_matrix, Fintype.card_fin, Fintype.card_fin] at hAB
+  contradiction
+
+lemma eq_or_eq_of_orthogonal {a b c d : ℙ K (Fin 3 → K)} (hac : a.orthogonal c)
+    (hbc : b.orthogonal c) (had : a.orthogonal d) (hbd : b.orthogonal d) :
+    a = b ∨ c = d := by
+  induction' a with a ha
+  induction' b with b hb
+  induction' c with c hc
+  induction' d with d hd
+  rw [mk_eq_mk_iff_crossProduct_eq_zero, mk_eq_mk_iff_crossProduct_eq_zero]
+  exact crossProduct_eq_zero_of_dotProduct_eq_zero hac hbc had hbd
+
+instance : Nondegenerate (ℙ K (Fin 3 → K)) (ℙ K (Fin 3 → K)) :=
+  { exists_point := exists_not_orthogonal_self
+    exists_line := exists_not_self_orthogonal
+    eq_or_eq := eq_or_eq_of_orthogonal }
+
+noncomputable instance [DecidableEq K] : ProjectivePlane (ℙ K (Fin 3 → K)) (ℙ K (Fin 3 → K)) :=
+  { mkPoint := by
+      intro v w _
+      exact cross v w
+    mkPoint_ax := fun h ↦ ⟨cross_orthogonal_left h, cross_orthogonal_right h⟩
+    mkLine := by
+      intro v w _
+      exact cross v w
+    mkLine_ax := fun h ↦ ⟨orthogonal_cross_left h, orthogonal_cross_right h⟩
+    exists_config := by
+      refine ⟨mk K ![0, 1, 1] ?_, mk K ![1, 0, 0] ?_, mk K ![1, 0, 1] ?_, mk K ![1, 0, 0] ?_,
+        mk K ![0, 1, 0] ?_, mk K ![0, 0, 1] ?_, ?_⟩ <;> simp [mem_iff, orthogonal_mk] }
+
+end ofField
 
 end Configuration

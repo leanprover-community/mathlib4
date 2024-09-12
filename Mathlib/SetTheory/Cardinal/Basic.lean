@@ -796,7 +796,7 @@ theorem lift_succ (a) : lift.{v, u} (succ a) = succ (lift.{v, u} a) :=
 /-- A cardinal is a limit if it is not zero or a successor cardinal. Note that `ℵ₀` is a limit
   cardinal by this definition, but `0` isn't.
 
-  Use `IsSuccPrelimit` if you want to include the `c = 0` case. -/
+TODO: deprecate this in favor of `Order.IsSuccLimit`. -/
 def IsLimit (c : Cardinal) : Prop :=
   c ≠ 0 ∧ IsSuccPrelimit c
 
@@ -1038,7 +1038,7 @@ theorem lift_iSup_le_lift_iSup' {ι : Type v} {ι' : Type v'} {f : ι → Cardin
 
 lemma exists_eq_of_iSup_eq_of_not_isSuccPrelimit
     {ι : Type u} (f : ι → Cardinal.{v}) (ω : Cardinal.{v})
-    (hω : ¬ Order.IsSuccPrelimit ω)
+    (hω : ¬ IsSuccPrelimit ω)
     (h : ⨆ i : ι, f i = ω) : ∃ i, f i = ω := by
   subst h
   refine (isLUB_csSup' ?_).exists_of_not_isSuccPrelimit hω
