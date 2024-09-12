@@ -988,12 +988,12 @@ to
   ∃ a, s = {a} ∧ IsUnit a -/
 -- @[simp]
 theorem isUnit_iff_singleton : IsUnit s ↔ ∃ a, s = {a} := by
-  simp only [isUnit_iff, Group.isUnit, and_true_iff]
+  simp only [isUnit_iff, Group.isUnit, and_true]
 
 @[simp]
 theorem isUnit_iff_singleton_aux {α} [Group α] {s : Finset α} :
     (∃ a, s = {a} ∧ IsUnit a) ↔ ∃ a, s = {a} := by
-  simp only [Group.isUnit, and_true_iff]
+  simp only [Group.isUnit, and_true]
 
 @[to_additive (attr := simp)]
 theorem image_mul_left :
