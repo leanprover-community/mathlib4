@@ -48,7 +48,7 @@ def nullSpace : Submodule 𝕜 E where
 @[simp]
 lemma mem_nullSpace_iff {x : E} : x ∈ nullSpace 𝕜 E ↔ ‖x‖ = 0 := Iff.rfl
 
-lemma inner_nullSpace_left_eq_zero (x y : E) (h : x ∈ nullSpace 𝕜 E): ⟪x, y⟫_𝕜 = 0 := by
+lemma inner_eq_zero_of_left_mem_nullSpace (x y : E) (h : x ∈ nullSpace 𝕜 E) : ⟪x, y⟫_𝕜 = 0 := by
   rw [← norm_eq_zero, ← sq_eq_zero_iff]
   apply le_antisymm _ (sq_nonneg _)
   rw [sq]
