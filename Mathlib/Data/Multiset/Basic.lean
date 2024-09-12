@@ -1312,11 +1312,6 @@ theorem pmap_cons {p : α → Prop} (f : ∀ a, p a → β) (a : α) (m : Multis
 def attach (s : Multiset α) : Multiset { x // x ∈ s } :=
   pmap Subtype.mk s fun _a => id
 
-/-- "Attach" a proof `P x` that holds for all the elements of `s` to produce a new multiset
-  with the same elements but in the type `{x // P x}`. -/
-def attachWith (s : Multiset α) (P : α → Prop) (H : ∀ (x : α), x ∈ s → P x) : Multiset {x // P x} :=
-  s.pmap Subtype.mk H
-
 @[simp]
 theorem coe_attach (l : List α) : @Eq (Multiset { x // x ∈ l }) (@attach α l) l.attach :=
   rfl
