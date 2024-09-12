@@ -443,6 +443,13 @@ protected def subtype {p : α → Prop} (s : Finset α) (H : ∀ x : α, x ∈ s
 def ofFinset {p : Set α} (s : Finset α) (H : ∀ x, x ∈ s ↔ x ∈ p) : Fintype p :=
   Fintype.subtype s H
 
+/-- Given a fintype `α`, a subtype of `α` is also a fintype. -/
+def subtypeOfFintype [Fintype α] (P : α → Prop) [DecidablePred P] :
+    Fintype {v // P v} where
+  elems := attachWith (univ.filter P) P fun _ h => (mem_filter.mp h).2
+  complete := fun ⟨x, px⟩ => Multiset.mem_pmap.mpr
+    ⟨x, Multiset.mem_filter.mpr ⟨mem_univ _, px⟩, rfl⟩
+
 /-- If `f : α → β` is a bijection and `α` is a fintype, then `β` is also a fintype. -/
 def ofBijective [Fintype α] (f : α → β) (H : Function.Bijective f) : Fintype β :=
   ⟨univ.map ⟨f, H.1⟩, fun b =>
