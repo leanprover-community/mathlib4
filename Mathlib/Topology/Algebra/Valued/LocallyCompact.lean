@@ -13,7 +13,7 @@ import Mathlib.Topology.Algebra.Valued.ValuedField
 # Necessary and sufficient conditions for a locally compact nonarchimedean normed field
 
 ## Main Results
-* `compactSpace_iff_complete_and_discreteValuationRing_and_finite_residueField`:
+* `compactSpace_iff_completeSpace_and_discreteValuationRing_and_finite_residueField`:
   when the valuation ring is compact, it is complete and is a DVR and has finite residue field
 
 ## Tags
@@ -305,7 +305,7 @@ lemma discreteValuationRing_of_compactSpace [h : CompactSpace 𝒪[K]] :
 
 end CompactDVR
 
-lemma compactSpace_iff_complete_and_discreteValuationRing_and_finite_residueField :
+lemma compactSpace_iff_completeSpace_and_discreteValuationRing_and_finite_residueField :
     CompactSpace 𝒪[K] ↔ CompleteSpace 𝒪[K] ∧ DiscreteValuationRing 𝒪[K] ∧ Finite 𝓀[K] := by
   refine ⟨fun h ↦ ?_, fun ⟨_, _, h⟩ ↦ ⟨?_⟩⟩
   · have : DiscreteValuationRing 𝒪[K] := discreteValuationRing_of_compactSpace
