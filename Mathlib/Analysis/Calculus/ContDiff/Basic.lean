@@ -1070,15 +1070,14 @@ theorem hasFTaylorSeriesUpToOn_pi :
   set L : ∀ m : ℕ, (∀ i, E[×m]→L[𝕜] F' i) ≃ₗᵢ[𝕜] E[×m]→L[𝕜] ∀ i, F' i := fun m =>
     ContinuousMultilinearMap.piₗᵢ _ _
   refine ⟨fun h i => ?_, fun h => ⟨fun x hx => ?_, ?_, ?_⟩⟩
-  · convert h.continuousLinearMap_comp (pr i)
+  · exact h.continuousLinearMap_comp (pr i)
   · ext1 i
     exact (h i).zero_eq x hx
   · intro m hm x hx
-    have := hasFDerivWithinAt_pi.2 fun i => (h i).fderivWithin m hm x hx
-    convert (L m).hasFDerivAt.comp_hasFDerivWithinAt x this
+    exact (L m).hasFDerivAt.comp_hasFDerivWithinAt x <|
+      hasFDerivWithinAt_pi.2 fun i => (h i).fderivWithin m hm x hx
   · intro m hm
-    have := continuousOn_pi.2 fun i => (h i).cont m hm
-    convert (L m).continuous.comp_continuousOn this
+    exact (L m).continuous.comp_continuousOn <| continuousOn_pi.2 fun i => (h i).cont m hm
 
 @[simp]
 theorem hasFTaylorSeriesUpToOn_pi' :

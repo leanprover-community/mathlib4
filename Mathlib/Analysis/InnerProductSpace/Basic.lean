@@ -82,7 +82,7 @@ class Inner (𝕜 E : Type*) where
 export Inner (inner)
 
 /-- The inner product with values in `𝕜`. -/
-notation3:max "⟪" x ", " y "⟫_" 𝕜:max => @inner 𝕜 _ _ x y
+scoped[InnerProductSpace] notation3:max "⟪" x ", " y "⟫_" 𝕜:max => @inner 𝕜 _ _ x y
 
 section Notations
 
@@ -508,8 +508,9 @@ end
 
 /-! ### Properties of inner product spaces -/
 
-
 section BasicProperties_Seminormed
+
+open scoped InnerProductSpace
 
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 variable [SeminormedAddCommGroup F] [InnerProductSpace ℝ F]
@@ -754,6 +755,7 @@ variable {𝕜}
 theorem inner_self_nonpos {x : E} : re ⟪x, x⟫ ≤ 0 ↔ x = 0 := by
   rw [← norm_sq_eq_inner, (sq_nonneg _).le_iff_eq, sq_eq_zero_iff, norm_eq_zero]
 
+open scoped InnerProductSpace in
 theorem real_inner_self_nonpos {x : F} : ⟪x, x⟫_ℝ ≤ 0 ↔ x = 0 :=
   @inner_self_nonpos ℝ F _ _ _ x
 
@@ -1024,6 +1026,8 @@ theorem Orthonormal.ne_zero {v : ι → E} (hv : Orthonormal 𝕜 v) (i : ι) : 
 end OrthonormalSets
 
 section Norm_Seminormed
+
+open scoped InnerProductSpace
 
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 variable [SeminormedAddCommGroup F] [InnerProductSpace ℝ F]
@@ -1575,6 +1579,8 @@ end ContinuousLinearMap
 end Norm_Seminormed
 
 section Norm
+
+open scoped InnerProductSpace
 
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 variable [NormedAddCommGroup F] [InnerProductSpace ℝ F]
@@ -2195,6 +2201,8 @@ theorem DirectSum.IsInternal.collectedBasis_orthonormal [DecidableEq ι] {V : ι
 end OrthogonalFamily
 
 section RCLikeToReal
+
+open scoped InnerProductSpace
 
 variable {G : Type*}
 variable (𝕜 E)
