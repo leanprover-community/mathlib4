@@ -41,7 +41,11 @@ private def mul''
   · obtain ⟨s₂, hs₂⟩ := s
     simpa only [Submonoid.mk_smul, Submonoid.coe_mul] using mul_left_comm s₁ (r₁ * s₁) s₂
 
-@[to_additive]
+/-- The multiplication on `A[S⁻¹]` induced from the multiplication on `A`.
+-/
+@[to_additive
+  "The addition on `AddOreLocalization S A` induced from the
+  addition on `A`."]
 protected def mul : A[S⁻¹] → A[S⁻¹] → A[S⁻¹] :=
   liftExpand mul'' fun a₁ r₁ s hs => by
   obtain ⟨s₁, hs₁⟩ := s
@@ -61,7 +65,7 @@ protected def mul : A[S⁻¹] → A[S⁻¹] → A[S⁻¹] :=
 instance : Mul (A[S⁻¹]) where
   mul := OreLocalization.mul
 
-protected def mul_def (a : A) (s : { x // x ∈ S }) (b : A) (t : { x // x ∈ S }) :
+protected lemma mul_def (a : A) (s : { x // x ∈ S }) (b : A) (t : { x // x ∈ S }) :
     a /ₒ s * (b /ₒ t) = a * b /ₒ (t * s) := rfl
 
 -- no diamond
@@ -166,6 +170,10 @@ section Algebra
 variable (R A : Type*) [cR : CommSemiring R] [cA : CommSemiring A] [cRA : Algebra R A]
     (S : Submonoid R)
 
+/-
+The `R[S⁻¹]`-algebra structure on `A[S⁻¹]` induced by the `R`-algebra
+structure on `A`.
+-/
 def algebra : Algebra (R[S⁻¹]) (A[S⁻¹]) where
   toFun := liftExpand (fun r s ↦ (algebraMap R A r) /ₒ s) fun r₁ r₂ s hs => by
     rw [oreDiv_eq_iff]
