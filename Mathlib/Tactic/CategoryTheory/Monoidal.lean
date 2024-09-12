@@ -58,8 +58,6 @@ open CategoryTheory
 
 namespace Mathlib.Tactic.Monoidal
 
-namespace Mathlib.Tactic.Monoidal
-
 /-- The context for evaluating expressions. -/
 structure Context where
   /-- The expression for the underlying category. -/
@@ -179,11 +177,7 @@ def structuralAtom? (e : Expr) : MetaM (Option StructuralAtom) := do
     | (``MonoidalCategoryStruct.rightUnitor, #[_, _, _, f]) =>
       return some <| .rightUnitorInv (← toMor₁ f)
     | _ => return none
-  | _ =>
-    match (← whnfR e).getAppFnArgs with
-    | (``MonoidalCoherence.hom, #[_, _, f, g, inst]) =>
-      return some <| .monoidalCoherence (← toMor₁ f) (← toMor₁ g) inst
-    | _ => return none
+  | _ => return none
 
 /-- Expressions for atomic non-structural 2-morphisms. -/
 structure Atom where
@@ -199,16 +193,10 @@ inductive WhiskerRightExpr : Type
   | whisker (η : WhiskerRightExpr) (f : Atom₁) : WhiskerRightExpr
   deriving Inhabited
 
-/-- Expressions of the form `η₁ ⊗ ... ⊗ ηₙ`. -/
-inductive TensorHomExpr : Type
-  | of (η : WhiskerRightExpr) : TensorHomExpr
-  | cons (head : WhiskerRightExpr) (tail : TensorHomExpr) : TensorHomExpr
-  deriving Inhabited
-
 /-- Expressions of the form `f₁ ◁ ... ◁ fₙ ◁ η`. -/
 inductive WhiskerLeftExpr : Type
   /-- Construct the expression for a right-whiskered 2-morphism. -/
-  | of (η : TensorHomExpr) : WhiskerLeftExpr
+  | of (η : WhiskerRightExpr) : WhiskerLeftExpr
   /-- Construct the expression for `f ◁ η`. -/
   | whisker (f : Atom₁) (η : WhiskerLeftExpr) : WhiskerLeftExpr
   deriving Inhabited
@@ -264,23 +252,13 @@ def WhiskerRightExpr.tgt : WhiskerRightExpr → MetaM Mor₁
   | WhiskerRightExpr.whisker η f => return (← WhiskerRightExpr.tgt η).comp (Mor₁.of f)
 
 /-- The domain of a 2-morphism. -/
-def TensorHomExpr.src : TensorHomExpr → MetaM Mor₁
-  | TensorHomExpr.of η => η.src
-  | TensorHomExpr.cons η ηs => return (← η.src).comp (← ηs.src)
-
-/-- The codomain of a 2-morphism. -/
-def TensorHomExpr.tgt : TensorHomExpr → MetaM Mor₁
-  | TensorHomExpr.of η => η.tgt
-  | TensorHomExpr.cons η ηs => return (← η.tgt).comp (← ηs.tgt)
-
-/-- The domain of a 2-morphism. -/
 def WhiskerLeftExpr.src : WhiskerLeftExpr → MetaM Mor₁
-  | WhiskerLeftExpr.of η => TensorHomExpr.src η
+  | WhiskerLeftExpr.of η => WhiskerRightExpr.src η
   | WhiskerLeftExpr.whisker f η => return (Mor₁.of f).comp (← WhiskerLeftExpr.src η)
 
 /-- The codomain of a 2-morphism. -/
 def WhiskerLeftExpr.tgt : WhiskerLeftExpr → MetaM Mor₁
-  | WhiskerLeftExpr.of η => TensorHomExpr.tgt η
+  | WhiskerLeftExpr.of η => WhiskerRightExpr.tgt η
   | WhiskerLeftExpr.whisker f η => return (Mor₁.of f).comp (← WhiskerLeftExpr.tgt η)
 
 /-- The domain of a 2-morphism. -/
@@ -359,7 +337,7 @@ def NormalExpr.of (η : WhiskerLeftExpr) : MetaM NormalExpr := do
 
 /-- Construct a `NormalExpr` expression from a Lean expression for an atomic 2-morphism. -/
 def NormalExpr.ofExpr (η : Expr) : MetaM NormalExpr :=
-  NormalExpr.of <| .of <| .of <| .of ⟨η⟩
+  NormalExpr.of <| .of <| .of ⟨η⟩
 
 /-- If `e` is an expression of the form `η ⊗≫ θ := η ≫ α ≫ θ` in the monoidal category `C`,
 return the expression for `α` .-/
@@ -391,16 +369,7 @@ universe v u
 
 variable {C : Type u} [Category.{v} C]
 
-variable {f f' g g' h h' i i' j : C}
-
-@[nolint synTaut]
-theorem ofNormalExpr_nil (α : f ⟶ g) (β : g ⟶ h) :
-    α ≫ β = α ≫ β := by
-  simp
-
-theorem ofNormalExpr_cons (α : f ⟶ g) (β : g ⟶ h) (η : h ⟶ i) (ηs : i ⟶ j) :
-    α ≫ (β ≫ η ≫ ηs) = (α ≫ β) ≫ η ≫ ηs := by
-  simp
+variable {f f' g g' h i j : C}
 
 theorem evalComp_nil_cons {f g h i j : C} (α : f ⟶ g) (β : g ⟶ h) (η : h ⟶ i) (ηs : i ⟶ j) :
     α ≫ (β ≫ η ≫ ηs) = (α ≫ β) ≫ η ≫ ηs := by
@@ -475,12 +444,10 @@ theorem evalWhiskerRight_nil (α : f ⟶ g) (h : C) :
   simp
 
 theorem evalWhiskerRight_cons_of_of
-    {α : f ⟶ g} {η : g ⟶ h} {ηs : h ⟶ i} {ηs₁ : h ⊗ j ⟶ i ⊗ j}
-    {η₁ : g ⊗ j ⟶ h ⊗ j} {η₂ : g ⊗ j ⟶ i ⊗ j} {η₃ : f ⊗ j ⟶ i ⊗ j}
-    (pf_ηs₁ : ηs ▷ j = ηs₁) (pf_η₁ : η ▷ j = η₁)
-    (pf_η₂ : η₁ ≫ ηs₁ = η₂) (pf_η₃ : α ▷ j ≫ η₂ = η₃) :
-    (α ≫ η ≫ ηs) ▷ j = η₃ := by
-  simp_all
+    (α : f ⟶ g) (η : g ⟶ h) {ηs : h ⟶ i} {θ : h ⊗ j ⟶ i ⊗ j}
+    (pf_θ : ηs ▷ j = θ) :
+    (α ≫ η ≫ ηs) ▷ j = α ▷ j ≫ η ▷ j ≫ θ := by
+  simp [pf_θ]
 
 theorem evalWhiskerRight_cons_whisker
     {α : g ⟶ f ⊗ h} {η : h ⟶ i} {ηs : f ⊗ i ⟶ j} {k : C}
@@ -550,12 +517,6 @@ def WhiskerRightExpr.e : WhiskerRightExpr → MonoidalM Expr
   | WhiskerRightExpr.whisker η f => do
     mkAppM ``MonoidalCategoryStruct.whiskerRight #[← η.e, f.e]
 
-/-- Extract a Lean expression from a `TensorHomExpr` expression. -/
-def TensorHomExpr.e : TensorHomExpr → MonoidalM Expr
-  | TensorHomExpr.of η => η.e
-  | TensorHomExpr.cons η ηs => do
-    mkAppM ``MonoidalCategoryStruct.tensorHom #[← η.e, ← ηs.e]
-
 /-- Extract a Lean expression from a `WhiskerLeftExpr` expression. -/
 def WhiskerLeftExpr.e : WhiskerLeftExpr → MonoidalM Expr
   | WhiskerLeftExpr.of η => η.e
@@ -574,19 +535,6 @@ structure Result where
   expr : NormalExpr
   /-- The proof that the normalized expression is equal to the original expression. -/
   proof : Expr
-
-/-- Construct a `NormalExpr` expression from another `NormalExpr` expression by adding a structural
-2-morphism at the head. -/
-def NormalExpr.ofNormalExpr (α : Structural) (e : NormalExpr) : MonoidalM Result :=
-  match e with
-  | .nil β => do
-    let αβ := .nil (α.comp β)
-    return ⟨αβ, ← mkAppM ``ofNormalExpr_nil #[← α.e, ← β.e]⟩
-  | .cons β η ηs => do
-    let αβ := .cons (α.comp β) η ηs
-    return ⟨αβ, ← mkAppM ``ofNormalExpr_cons #[← α.e, ← β.e, ← η.e, ← ηs.e]⟩
-
-mutual
 
 /-- Evaluate the expression `η ≫ θ` into a normalized form. -/
 partial def evalComp : NormalExpr → NormalExpr → MonoidalM Result
