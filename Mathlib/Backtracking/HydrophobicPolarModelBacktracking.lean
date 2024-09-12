@@ -16,20 +16,7 @@ import Mathlib.Data.Vector.Basic
 import Mathlib.Data.Nat.Digits
 import Mathlib.Backtracking.HydrophobicPolarModel
 /-!
-# Marginis
-
--/
-
--- import Mathlib.Tactic
-
-
-/-
-
-[
-Updated June 30, 2024 to fit
-  - new Mathlib
-  - match-with use in BacktrackingVerification.lean
-]
+# Hydrophobic-polar protein folding model: automatic use of backtracking
 
 A treatment of the hydrophobic-polar protein folding model in a generality
 that covers rectangular, triangular and hexagonal lattices: `P_rect`, `P_tri`, `P_hex`.
@@ -56,10 +43,6 @@ To prove some results about rotations
 we use the type
 `Fin n → α` instead of `Mathlib.Vector α n`
 
-In `HPModel_pathF'.lean` we showed that orderly walks are sufficient,
-in particular "3" (down) can be avoided by reflection,
-      except got stuck on proving that the moves left followed by right lead to non-injectivity,
-      which was not a problem using pathF.
 -/
 
 

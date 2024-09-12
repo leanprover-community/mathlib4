@@ -16,7 +16,7 @@ import Mathlib.Data.Vector.Basic
 import Mathlib.Data.Nat.Digits
 
 /-!
-# Marginis
+# Hydrophobic-polar protein folding model: basics
 
 A treatment of the hydrophobic-polar protein folding model in a generality
 that covers rectangular, triangular and hexagonal lattices: `P_rect`, `P_tri`, `P_hex`.

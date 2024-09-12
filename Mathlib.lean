@@ -1350,6 +1350,10 @@ import Mathlib.Analysis.SumIntegralComparisons
 import Mathlib.Analysis.SumOverResidueClass
 import Mathlib.Analysis.VonNeumannAlgebra.Basic
 import Mathlib.Backtracking.BacktrackingVerification
+import Mathlib.Backtracking.Basic
+import Mathlib.Backtracking.HydrophobicPolarModel
+import Mathlib.Backtracking.HydrophobicPolarModelBacktracking
+import Mathlib.Backtracking.HydrophobicPolarModelBasic
 import Mathlib.Backtracking.Squarefree
 import Mathlib.CategoryTheory.Abelian.Basic
 import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
