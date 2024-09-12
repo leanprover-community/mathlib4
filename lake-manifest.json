@@ -65,11 +65,11 @@
    "type": "git",
    "subDir": null,
    "scope": "",
-   "rev": "1709ad59875371cbba82f94fab1fe09462893a72",
+   "rev": "c260ed920e2ebd23ef9fc8ca3fd24115e04c18b1",
    "name": "LeanSearchClient",
    "manifestFile": "lake-manifest.json",
    "inputRev": "main",
    "inherited": false,
-   "configFile": "lakefile.lean"}],
+   "configFile": "lakefile.toml"}],
  "name": "mathlib",
  "lakeDir": ".lake"}
