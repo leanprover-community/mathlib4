@@ -509,3 +509,12 @@ lemma isLower_orderDual [Preorder α] [TopologicalSpace α] : IsLower αᵒᵈ �
   isUpper_orderDual.symm
 
 end Topology
+
+noncomputable instance : LinearOrder Prop := Prop.linearOrder
+
+lemma test {X : Set Prop} (h : IsOpen X) : IsUpperSet X :=
+  match h with
+  | GenerateOpen.basic s hs => by aesop
+  | GenerateOpen.univ => fun ⦃a b⦄ _ a ↦ a
+  | GenerateOpen.inter s t hs ht => IsUpperSet.inter (test hs) (test ht)
+  | GenerateOpen.sUnion S hS => isUpperSet_sUnion (fun s hs => test (hS s hs))
