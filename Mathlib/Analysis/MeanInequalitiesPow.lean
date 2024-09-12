@@ -221,7 +221,7 @@ theorem rpow_arith_mean_le_arith_mean_rpow (w z : ι → ℝ≥0∞) (hw' : ∑ 
   · -- first, prove `(∑ i ∈ s, w i * z i) ^ p = ⊤ → ∑ i ∈ s, (w i * z i ^ p) = ⊤`
     rw [rpow_eq_top_iff, sum_eq_top, sum_eq_top]
     intro h
-    simp only [and_false_iff, hp_not_neg, false_or_iff] at h
+    simp only [and_false, hp_not_neg, false_or] at h
     rcases h.left with ⟨a, H, ha⟩
     use a, H
     rwa [← h_top_iff_rpow_top a H]

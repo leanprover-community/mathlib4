@@ -69,27 +69,33 @@ attribute [symm] Iff.symm
 
 variable (p)
 
--- FIXME: remove _iff and add _eq for the lean 4 core versions
+@[deprecated and_true (since := "2024-09-12")]
 theorem and_true_iff : p ∧ True ↔ p := iff_of_eq (and_true _)
+@[deprecated true_and (since := "2024-09-12")]
 theorem true_and_iff : True ∧ p ↔ p := iff_of_eq (true_and _)
+@[deprecated and_false (since := "2024-09-12")]
 theorem and_false_iff : p ∧ False ↔ False := iff_of_eq (and_false _)
+@[deprecated false_and (since := "2024-09-12")]
 theorem false_and_iff : False ∧ p ↔ False := iff_of_eq (false_and _)
-
-theorem true_or_iff : True ∨ p ↔ True := iff_of_eq (true_or _)
+@[deprecated or_true (since := "2024-09-12")]
 theorem or_true_iff : p ∨ True ↔ True := iff_of_eq (or_true _)
-theorem false_or_iff : False ∨ p ↔ p := iff_of_eq (false_or _)
+@[deprecated true_or (since := "2024-09-12")]
+theorem true_or_iff : True ∨ p ↔ True := iff_of_eq (true_or _)
+@[deprecated or_false (since := "2024-09-12")]
 theorem or_false_iff : p ∨ False ↔ p := iff_of_eq (or_false _)
-
-theorem not_or_of_not : ¬a → ¬b → ¬(a ∨ b) := fun h1 h2 ↦ not_or.2 ⟨h1, h2⟩
-
+@[deprecated false_or (since := "2024-09-12")]
+theorem false_or_iff : False ∨ p ↔ p := iff_of_eq (false_or _)
+@[deprecated iff_true (since := "2024-09-12")]
 theorem iff_true_iff : (a ↔ True) ↔ a := iff_of_eq (iff_true _)
+@[deprecated true_iff (since := "2024-09-12")]
 theorem true_iff_iff : (True ↔ a) ↔ a := iff_of_eq (true_iff _)
-
+@[deprecated iff_false (since := "2024-09-12")]
 theorem iff_false_iff : (a ↔ False) ↔ ¬a := iff_of_eq (iff_false _)
-
+@[deprecated false_iff (since := "2024-09-12")]
 theorem false_iff_iff : (False ↔ a) ↔ ¬a := iff_of_eq (false_iff _)
-
+@[deprecated iff_self (since := "2024-09-12")]
 theorem iff_self_iff (a : Prop) : (a ↔ a) ↔ True := iff_of_eq (iff_self _)
+@[deprecated (since := "2024-09-12")] alias not_or_of_not := not_or_intro
 
 /- decidable -/
 

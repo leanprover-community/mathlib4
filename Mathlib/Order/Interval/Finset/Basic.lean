@@ -113,19 +113,19 @@ theorem Ioo_eq_empty_of_le (h : b ≤ a) : Ioo a b = ∅ :=
 
 -- porting note (#10618): simp can prove this
 -- @[simp]
-theorem left_mem_Icc : a ∈ Icc a b ↔ a ≤ b := by simp only [mem_Icc, true_and_iff, le_rfl]
+theorem left_mem_Icc : a ∈ Icc a b ↔ a ≤ b := by simp only [mem_Icc, true_and, le_rfl]
 
 -- porting note (#10618): simp can prove this
 -- @[simp]
-theorem left_mem_Ico : a ∈ Ico a b ↔ a < b := by simp only [mem_Ico, true_and_iff, le_refl]
+theorem left_mem_Ico : a ∈ Ico a b ↔ a < b := by simp only [mem_Ico, true_and, le_refl]
 
 -- porting note (#10618): simp can prove this
 -- @[simp]
-theorem right_mem_Icc : b ∈ Icc a b ↔ a ≤ b := by simp only [mem_Icc, and_true_iff, le_rfl]
+theorem right_mem_Icc : b ∈ Icc a b ↔ a ≤ b := by simp only [mem_Icc, and_true, le_rfl]
 
 -- porting note (#10618): simp can prove this
 -- @[simp]
-theorem right_mem_Ioc : b ∈ Ioc a b ↔ a < b := by simp only [mem_Ioc, and_true_iff, le_rfl]
+theorem right_mem_Ioc : b ∈ Ioc a b ↔ a < b := by simp only [mem_Ioc, and_true, le_rfl]
 
 -- porting note (#10618): simp can prove this
 -- @[simp]
