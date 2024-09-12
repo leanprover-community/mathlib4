@@ -26,9 +26,9 @@ class SemigroupalCategoryStruct (C : Type u) [𝒞 : Category.{v} C] where
 namespace SemigroupalCategory
 export SemigroupalCategoryStruct (tensorObj whiskerLeft whiskerRight tensorHom associator)
 end SemigroupalCategory
-namespace MonoidalCategory
+namespace MonoidalCategoryStruct
 export SemigroupalCategoryStruct (tensorObj whiskerLeft whiskerRight tensorHom associator)
-end MonoidalCategory
+end MonoidalCategoryStruct
 
 /-- Auxiliary structure to carry only the data fields of (and provide notation for)
 `MonoidalCategory`. -/
@@ -41,7 +41,8 @@ class MonoidalCategoryStruct (C : Type u) [𝒞 : Category.{v} C] extends
   rightUnitor : ∀ X : C, tensorObj X tensorUnit ≅ X
 
 namespace MonoidalCategory
-export MonoidalCategoryStruct (tensorUnit leftUnitor rightUnitor)
+export MonoidalCategoryStruct (tensorUnit leftUnitor rightUnitor
+  tensorObj whiskerLeft whiskerRight tensorHom associator)
 end MonoidalCategory
 
 namespace SemigroupalCategory
@@ -103,7 +104,6 @@ attribute [reassoc] SemigroupalCategory.associator_naturality
 attribute [reassoc (attr := simp)] SemigroupalCategory.pentagon
 
 namespace MonoidalCategory
-
 export SemigroupalCategory (tensorHom_def tensor_id tensor_comp whiskerLeft_id id_whiskerRight
   associator_naturality pentagon)
 

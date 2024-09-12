@@ -44,7 +44,7 @@ instance : Inhabited (MonoidalSingleObj C) := by
   unfold MonoidalSingleObj
   infer_instance
 
-open MonoidalCategory
+open MonoidalCategory SemigroupalCategory
 
 instance : Bicategory (MonoidalSingleObj C) where
   Hom _ _ := C
@@ -74,8 +74,11 @@ We subsequently show this is an equivalence.
 def endMonoidalStarFunctor : MonoidalFunctor (EndMonoidal (MonoidalSingleObj.star C)) C where
   obj X := X
   map f := f
-  ε := 𝟙 _
   μ X Y := 𝟙 _
+  ε := 𝟙 _
+  μ_isIso X Y := inferInstance
+  ε_isIso := inferInstance
+-- bad sign that I needed to add these I guess.
 
 /-- The equivalence between the endomorphisms of the single object
 when we promote a monoidal category to a single object bicategory,

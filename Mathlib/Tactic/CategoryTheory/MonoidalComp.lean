@@ -32,7 +32,7 @@ are completed as `𝟙 (V₁ ⊗ V₂ ⊗ V₃ ⊗ V₄ ⊗ V₅)` and `𝟙 (V�
 
 universe v u
 
-open CategoryTheory MonoidalCategory
+open CategoryTheory MonoidalCategory SemigroupalCategory
 
 namespace CategoryTheory
 
