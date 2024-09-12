@@ -285,13 +285,13 @@ lemma discreteValuationRing_of_compactSpace [h : CompactSpace 𝒪[K]] :
     obtain ⟨n, hn, hn'⟩ : ∃ n ∈ t, ‖n‖₊ = ‖m‖₊ := by
       refine htm m (hxw.trans (hm.left.trans_le' ?_))
       rw [hl']
-      refine Finset.le_max' _ _ ?_
+      convert Finset.le_max' _ _ ?_
       simp only [Finset.mem_image]
       exact ⟨_, hwu, rfl⟩
     rw [← hn'] at hm
     refine hm.left.not_le ?_
     rw [hl']
-    refine Finset.le_max' _ _ ?_
+    convert Finset.le_max' _ _ ?_
     simp only [Finset.mem_image]
     refine ⟨n, ?_, rfl⟩
     simp [u, hn, hm.right]
