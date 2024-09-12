@@ -151,7 +151,7 @@ theorem radical_mul {a b : R} (hc : IsCoprime a b) :
     simp only [zero_mul, radical_zero_eq, one_mul, radical_unit_eq_one hc]
   by_cases hb : b = 0
   · subst hb; rw [isCoprime_zero_right] at hc
-    simp only [MulZeroClass.mul_zero, radical_zero_eq, mul_one, radical_unit_eq_one hc]
+    simp only [mul_zero, radical_zero_eq, mul_one, radical_unit_eq_one hc]
   simp_rw [radical]
   rw [mul_primeFactors_disjUnion ha hb hc]
   rw [Finset.prod_disjUnion (disjoint_primeFactors hc)]
