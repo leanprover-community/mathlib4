@@ -3,7 +3,7 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
+import Mathlib.Geometry.Manifold.Orientable
 import Mathlib.Analysis.InnerProductSpace.PiL2
 
 /-!
@@ -357,5 +357,9 @@ section
 instance : ChartedSpace (EuclideanHalfSpace 1) (Icc (0 : ℝ) 1) := by infer_instance
 
 instance : SmoothManifoldWithCorners (𝓡∂ 1) (Icc (0 : ℝ) 1) := by infer_instance
+
+instance : OrientableSmoothManifold (𝓡∂ 1) (Icc (0 : ℝ) 1) where
+  compatible {e₁ e₂} h₁ h₂ := by
+    sorry
 
 end

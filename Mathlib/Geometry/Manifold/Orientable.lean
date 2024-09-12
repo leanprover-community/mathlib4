@@ -226,16 +226,16 @@ section OrientableManifold
 
 /-- Typeclass defining orientable manifolds: a finite-dimensional (topological) manifold
 is orientable if and only if it admits an orientable atlas. -/
-class OrientableManifold {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [TopologicalSpace H] (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
-    (I : ModelWithCorners ℝ E H) [FiniteDimensional ℝ E] extends
+class OrientableManifold {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [TopologicalSpace H]
+    (I : ModelWithCorners ℝ E H) [FiniteDimensional ℝ E] (M : Type*) [TopologicalSpace M]
+    [ChartedSpace H M] extends
   HasGroupoid M (orientationPreservingGroupoid I) : Prop
 
 /-- `0`-dimensional manifolds are always orientable. -/
 lemma orientableManifold_of_zero_dim {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [TopologicalSpace H] (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
     (I : ModelWithCorners ℝ E H) [FiniteDimensional ℝ E] (h : FiniteDimensional.finrank ℝ E = 0) :
-    OrientableManifold M I where
+    OrientableManifold I M where
   compatible {e₁ e₂} _ _ := by
     refine ⟨⟨orientationPreserving_of_zero_dim _ _ h, ?_⟩,
       orientationPreserving_of_zero_dim _ _ h, ?_⟩
@@ -263,13 +263,13 @@ lemma orientableManifold_of_zero_dim {E H : Type*} [NormedAddCommGroup E] [Norme
 /-- Typeclass defining orientable smooth manifolds: a smooth manifold is orientable
 if and only if it admits an atlas which is both smooth and orientable -/
 class OrientableSmoothManifold {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [TopologicalSpace H] (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
-    (I : ModelWithCorners ℝ E H) [FiniteDimensional ℝ E] extends
+    [TopologicalSpace H] (I : ModelWithCorners ℝ E H) [FiniteDimensional ℝ E] (M : Type*)
+    [TopologicalSpace M] [ChartedSpace H M] extends
   HasGroupoid M (contDiffOrientationPreservingGroupoid ⊤ I) : Prop
 
 /-- A finite-dimensional normed space is an orientable smooth manifold. -/
 instance {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
-    {I : ModelWithCorners ℝ E E} : OrientableSmoothManifold E (I := I) :=
+    {I : ModelWithCorners ℝ E E} : OrientableSmoothManifold I E :=
   { hasGroupoid_model_space _ _ with }
 
 end OrientableManifold
