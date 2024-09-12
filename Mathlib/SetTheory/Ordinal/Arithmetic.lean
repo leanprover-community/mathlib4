@@ -2302,6 +2302,15 @@ theorem toNat_mul (a b : Ordinal) : toNat (a * b) = toNat a * toNat b := by
   · rw [toNat_of_omega_le, toNat_of_omega_le ha', zero_mul]
     exact ha'.trans <| le_mul_left a hb
 
+/-- The natural numbers are order isomorphic to the ordinals below `ω`. -/
+@[simps]
+def omegaIso : ℕ ≃o Iio ω where
+  toFun n := ⟨n, nat_lt_omega n⟩
+  invFun n := toNat n.1
+  left_inv := toNat_natCast
+  right_inv n := by ext; exact natCast_toNat n.2
+  map_rel_iff' := @fun m n ↦ by simp
+
 end Ordinal
 
 variable {α : Type u} {r : α → α → Prop} {a b : α}
