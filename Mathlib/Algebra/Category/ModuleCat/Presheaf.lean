@@ -135,6 +135,29 @@ instance : (toPresheaf R).Faithful where
     ext X x
     exact congr_fun (((evaluation _ _).obj X ⋙ forget _).congr_map h) x
 
+section
+
+variable (M : Cᵒᵖ ⥤ Ab.{v}) [∀ X, Module (R.obj X) (M.obj X)]
+  (map_smul : ∀ ⦃X Y : Cᵒᵖ⦄ (f : X ⟶ Y) (r : R.obj X) (m : M.obj X),
+    M.map f (r • m) = R.map f r • M.map f m)
+
+/-- The object in `PresheafOfModules R` that is obtained from `M : Cᵒᵖ ⥤ Ab.{v}` such
+that for all `X : Cᵒᵖ`, `M.obj X` if a `R.obj X` module, in such a way that the
+restriction maps are semilinear. (This constructor should be used only in cases
+when the preferred constructor is `PresheafOfModules.mk` is not as convenient as this one.) -/
+@[simps]
+def ofPresheaf : PresheafOfModules.{v} R where
+  obj X := ModuleCat.of _ (M.obj X)
+  map f :=
+    { toFun := fun x ↦ M.map f x
+      map_add' := by simp
+      map_smul' := fun r m ↦ map_smul f r m }
+
+@[simp]
+lemma ofPresheaf_presheaf : (ofPresheaf M map_smul).presheaf = M := rfl
+
+end
+
 /-- The morphism of presheaves of modules `M₁ ⟶ M₂` given by a morphism
 of abelian presheaves `M₁.presheaf ⟶ M₂.presheaf`
 which satisfy a suitable linearity condition. -/
