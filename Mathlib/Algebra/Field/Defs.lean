@@ -45,6 +45,9 @@ field, division ring, skew field, skew-field, skewfield
 
 assert_not_imported Mathlib.Tactic.Common
 
+-- `NeZero` theory should not be needed in the basic algebraic hierarchy
+assert_not_imported Mathlib.Algebra.NeZero
+
 assert_not_exists MonoidHom
 
 open Function Set
