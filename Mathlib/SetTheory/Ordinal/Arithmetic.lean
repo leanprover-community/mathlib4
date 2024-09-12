@@ -212,7 +212,9 @@ theorem lift_pred (o : Ordinal.{v}) : lift.{u} (pred o) = pred (lift.{u} o) := b
 /-! ### Limit ordinals -/
 
 
-/-- A limit ordinal is an ordinal which is not zero and not a successor. -/
+/-- A limit ordinal is an ordinal which is not zero and not a successor.
+
+TODO: deprecate this in favor of `Order.IsSuccLimit`. -/
 def IsLimit (o : Ordinal) : Prop :=
   o ≠ 0 ∧ ∀ a < o, succ a < o
 
