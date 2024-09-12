@@ -761,8 +761,7 @@ theorem iInf_toSubmodule {ι : Sort*} (S : ι → Subalgebra R A) :
 @[simp]
 theorem iInf_toSubsemiring {ι : Sort*} (S : ι → Subalgebra R A) :
     (iInf S).toSubsemiring = ⨅ i, (S i).toSubsemiring := by
-  simp only [iInf, sInf_toSubsemiring, ← Set.range_comp]
-  rfl
+  simp only [iInf, sInf_toSubsemiring, ← Set.range_comp, Function.comp_def]
 
 @[simp]
 theorem iSup_toSubsemiring {ι : Sort*} [Nonempty ι] (S : ι → Subalgebra R A) :
