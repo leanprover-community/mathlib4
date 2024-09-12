@@ -129,6 +129,9 @@ theorem Tendsto.countable_compl_preimage_ker {f : α → β}
     {l : Filter β} [l.IsCountablyGenerated] (h : Tendsto f cofinite l) :
     Set.Countable (f ⁻¹' l.ker)ᶜ := by rw [← ker_comap]; exact countable_compl_ker h.le_comap
 
+/-- Given a collection of filters `l i : Filter (α i)` and sets `s i ∈ l i`,
+if all but finitely many of `s i` are the whole space,
+then their indexed product `Set.pi Set.univ s` belongs to the filter `Filter.pi l`. -/
 theorem univ_pi_mem_pi {α : ι → Type*} {s : ∀ i, Set (α i)} {l : ∀ i, Filter (α i)}
     (h : ∀ i, s i ∈ l i) (hfin : ∀ᶠ i in cofinite, s i = univ) : univ.pi s ∈ pi l := by
   filter_upwards [pi_mem_pi hfin fun i _ ↦ h i] with a ha i _
@@ -137,6 +140,13 @@ theorem univ_pi_mem_pi {α : ι → Type*} {s : ∀ i, Set (α i)} {l : ∀ i, F
   else
     exact ha i hi
 
+/-- Given a family of maps `f i : α i → β i` and a family of filters `l i : Filter (α i)`,
+if all but finitely many of `f i` are surjective,
+then the indexed product of `f i`s maps the indexed product of the filters `l i`
+to the indexed products of their pushforwards under individual `f i`s.
+
+See also `map_dcomp_pi_finite` for the case of a finite index type.
+-/
 theorem map_dcomp_pi {α β : ι → Type*} {f : ∀ i, α i → β i}
     (hf : ∀ᶠ i in cofinite, Surjective (f i)) (l : ∀ i, Filter (α i)) :
     map (f _ ∘' ·) (pi l) = pi fun i ↦ map (f i) (l i) := by
@@ -153,6 +163,12 @@ theorem map_dcomp_pi {α β : ι → Type*} {f : ∀ i, α i → β i}
   · filter_upwards [hf, hI.compl_mem_cofinite] with i hsurj (hiI : i ∉ I)
     simp [hiI, hsurj.range_eq]
 
+/-- Given finite families of maps `f i : α i → β i` and of filters `l i : Filter (α i)`,
+the indexed product of `f i`s maps the indexed product of the filters `l i`
+to the indexed products of their pushforwards under individual `f i`s.
+
+See also `map_dcomp_pi` for a more general case.
+-/
 theorem map_dcomp_pi_finite {α β : ι → Type*} [Finite ι]
     (f : ∀ i, α i → β i) (l : ∀ i, Filter (α i)) :
     map (f _ ∘' ·) (pi l) = pi fun i ↦ map (f i) (l i) :=
