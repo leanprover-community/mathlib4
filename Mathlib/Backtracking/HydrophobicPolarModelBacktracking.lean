@@ -1342,15 +1342,15 @@ those_with_suffix'
     )
     (Gap_nil' 4 8) = ∅
 
-#eval (those_with_suffix'
-    (fun w ↦ Function.Injective (fun i ↦ (path rect w).get i))
-    (fun w ↦ pts_tot'_list rect  x w > 2 ∧ orderly_and_nontrivial w)
-    (Gap_nil' 4 7))
+-- #eval (those_with_suffix'
+--     (fun w ↦ Function.Injective (fun i ↦ (path rect w).get i))
+--     (fun w ↦ pts_tot'_list rect  x w > 2 ∧ orderly_and_nontrivial w)
+--     (Gap_nil' 4 7))
 
-#eval (those_with_suffix'
-    (fun w ↦ Function.Injective (fun i ↦ w.get i))
-    (fun w ↦ w = [0,0])
-    (Gap_nil' 4 2))
+-- #eval (those_with_suffix'
+--     (fun w ↦ Function.Injective (fun i ↦ w.get i))
+--     (fun w ↦ w = [0,0])
+--     (Gap_nil' 4 2))
 
 def stecher_conjecture_counterexample : Prop := stecher1  ∧ stecher2
 
@@ -1358,8 +1358,8 @@ instance : Decidable stecher2 := by unfold stecher2; apply decEq
 instance : Decidable stecher_conjecture_counterexample := by
   unfold stecher_conjecture_counterexample; unfold stecher1; unfold stecher2; exact instDecidableAnd
 
-#eval stecher1
+-- #eval stecher1
 -- #eval stecher2
-#reduce stecher_conjecture_counterexample
+-- #reduce stecher_conjecture_counterexample
 
 end Backtracking_usage

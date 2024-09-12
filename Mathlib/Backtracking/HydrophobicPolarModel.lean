@@ -76,7 +76,6 @@ Fin l.succ → α
   := fun i ↦ (M go).eval (List.ofFn (fun j : Fin i.1 ↦
     (moves ⟨j.1, Fin.val_lt_of_le j (Fin.is_le i)⟩)))
 
-#eval pathD rect ![0,1,1]
 
 def path₀ {l:ℕ} {α : Type} [OfNat α 0] {β : Type} (go : β → α → α)
   (moves : Mathlib.Vector β l) (i: Fin l.succ)
@@ -95,8 +94,6 @@ def path₂ {l:ℕ} {α : Type} [OfNat α 0] {β : Type}
   := List.foldl (fun x y ↦ go y x) 0
     (List.ofFn (fun j : Fin i ↦  (moves ⟨j.1, Fin.val_lt_of_le j (Fin.is_le i)⟩)))
 
-#eval path₁ rect  ![0,0,1,1]
-#eval path₂ rect  ![0,0,1,1] -- wrong!
 
 def pathEnrico {σ μ : Type} [Zero σ] {n : ℕ} (update : μ → σ → σ)
   (μs : Fin n → μ) : Fin (n+1) → σ :=
@@ -106,7 +103,6 @@ match n with
 let init := pathEnrico update (Fin.init μs)
 Fin.snoc init (update (μs n) (init n))
 
-#eval pathEnrico rect ![0,0,1,1]
 
 -- def path₁ {l:ℕ} {α : Type} [OfNat α 0] {β : Type} (go : β → α → α) (moves : Fin l → β) :=
 -- path₀ go (List.ofFn moves)
