@@ -205,7 +205,6 @@ namespace MonoidHom
 
 variable {G : Type*} [Group G] [TopologicalSpace G]
   [TopologicalGroup G] [SecondCountableTopology G] [MeasurableSpace G] [BorelSpace G]
- 
 @[to_additive]
 theorem preErgodic_of_dense_iUnion_preimage_one
     {μ : Measure G} [IsFiniteMeasure μ] [μ.InnerRegular] [μ.IsMulLeftInvariant]
