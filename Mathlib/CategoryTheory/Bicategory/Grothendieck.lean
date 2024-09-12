@@ -67,6 +67,7 @@ instance categoryStruct : CategoryStruct (∫ F) where
     base := f.base ≫ g.base
     fiber := f.fiber ≫ (F.map f.base.op.toLoc).map g.fiber ≫
       (F.mapComp g.base.op.toLoc f.base.op.toLoc).inv.app Z.fiber }
+
 section
 
 variable {a b : ∫ F}
