@@ -61,7 +61,6 @@ example {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) : f �
 
 end
 
-set_option linter.setOption false
 set_option trace.string_diagram true
 
 variable {C : Type u} [Category.{v} C] [i : MonoidalCategory C] {X Y : C}
