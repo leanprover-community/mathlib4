@@ -525,7 +525,7 @@ end OrderHom
 /-- An `OrderHomClass` between `X` and `Y` can also be considered an `OrderHomClass` between
 `Xᵒᵈ` and `Yᵒᵈ`. This is a definition because `OrderHomClass` has the domain and codomain
 as out-params.  -/
-def OrderHomClass.toOrderHomClassOrderDual [LE α] [LE β]
+lemma OrderHomClass.toOrderHomClassOrderDual [LE α] [LE β]
     [FunLike F α β] [OrderHomClass F α β] : OrderHomClass F αᵒᵈ βᵒᵈ where
   map_rel f := map_rel f
 
