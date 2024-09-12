@@ -3,13 +3,16 @@ Copyright (c) 2024 Daniel Weber. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Weber
 -/
-import Mathlib.RingTheory.Derivation.DifferentialRing
+import Mathlib.RingTheory.Derivation.Basic
 import Mathlib.Algebra.Polynomial.Module.Basic
 
 /-!
-# Derivations of univariate polynomials
+# Coefficient-wise derivation on polynomials
 
-In this file we prove properties about `R`-derivations of `Polynomial A`.
+In this file we define applying a derivation on the coefficients of a polynomial,
+show this forms a derivation, and prove `apply_eval_eq`, which shows that for a derivation `D`,
+`D(p(x)) = (D.mapCoeffs p)(x) + D(x) * p'(x)`. `apply_aeval_eq` and `apply_aeval_eq'`
+are generalizations of that for algebras. We also have a special case for `DifferentialAlgebra`s.
 -/
 
 noncomputable section
@@ -19,7 +22,7 @@ open Polynomial Module
 namespace Derivation
 
 variable {R A M : Type*} [CommRing R] [CommRing A] [Algebra R A] [AddCommGroup M]
-  [Module A M] [Module R M] [IsScalarTower R A M] (d : Derivation R A M) (a : A)
+  [Module A M] [Module R M] (d : Derivation R A M) (a : A)
 
 /--
 The `R`-derivation from `A[X]` to `M[X]` which applies the derivative to each
@@ -63,25 +66,24 @@ lemma mapCoeffs_X :
 @[simp]
 lemma mapCoeffs_C (x : A) :
     d.mapCoeffs (C x) = .single A 0 (d x) := by simp [← monomial_zero_left]
+variable {B M' : Type*} [CommRing B] [Algebra R B] [Algebra A B]
+    [AddCommGroup M'] [Module B M'] [Module R M'] [Module A M']
 
-variable {K M' : Type*} [CommRing K] [Algebra R K] [Algebra A K]
-    [AddCommGroup M'] [Module K M'] [Module R M'] [Module A M']
-
-theorem apply_aeval_eq' (d2 : Derivation R K M') (f : M →ₗ[A] M')
-    (h : ∀ a, f (d a) = d2 (algebraMap A K a)) (x : K) (p : A[X]) :
-    d2 (aeval x p) = PolynomialModule.eval x (PolynomialModule.map K f (d.mapCoeffs p)) +
-      aeval x (derivative p) • d2 x := by
+theorem apply_aeval_eq' (d' : Derivation R B M') (f : M →ₗ[A] M')
+    (h : ∀ a, f (d a) = d' (algebraMap A B a)) (x : B) (p : A[X]) :
+    d' (aeval x p) = PolynomialModule.eval x (PolynomialModule.map B f (d.mapCoeffs p)) +
+      aeval x (derivative p) • d' x := by
   induction p using Polynomial.induction_on' with
   | h_add => simp_all only [eval_add, map_add, add_smul]; abel
   | h_monomial =>
     simp only [aeval_monomial, leibniz, leibniz_pow, mapCoeffs_monomial,
       PolynomialModule.map_single, PolynomialModule.eval_single, derivative_monomial, map_mul,
       _root_.map_natCast, h]
-    rw [add_comm, ← smul_smul, ← smul_smul, ← nsmul_eq_smul_cast]
+    rw [add_comm, ← smul_smul, ← smul_smul, Nat.cast_smul_eq_nsmul]
 
 
-theorem apply_aeval_eq [IsScalarTower R A K] [IsScalarTower A K M'] (d : Derivation R K M')
-    (x : K) (p : A[X]) :
+theorem apply_aeval_eq [IsScalarTower R A B] [IsScalarTower A B M'] (d : Derivation R B M')
+    (x : B) (p : A[X]) :
     d (aeval x p) = PolynomialModule.eval x ((d.compAlgebraMap A).mapCoeffs p) +
       aeval x (derivative p) • d x := by
   convert apply_aeval_eq' (d.compAlgebraMap A) d LinearMap.id _ x p
