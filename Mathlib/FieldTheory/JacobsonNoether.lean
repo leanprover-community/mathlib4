@@ -3,7 +3,6 @@ Copyright (c) 2024 F. Nuccio, H. Zheng, W. He, S. Wu, Y. Yuan, W. Jiao. All righ
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Filippo A. E. Nuccio, Huanyu Zheng, Sihan Wu, Wanyi He, Weichen Jiao, Yi Yuan
 -/
-import Mathlib.RingTheory.Algebraic
 import Mathlib.FieldTheory.Separable
 import Mathlib.Algebra.CharP.Subring
 import Mathlib.Algebra.CharP.LinearMaps
@@ -32,7 +31,7 @@ the noncommutative division algebra `D` with the center `k`.
 * <https://ysharifi.wordpress.com/2011/09/30/the-jacobson-noether-theorem/>
 -/
 
-
+-- *Filippo* This should probably be moved to another file.
 /-- a⁻¹ * d ^ s * a = (a⁻¹ * d * a) ^ s when a is not zero -/
 lemma conj_nonComm_Algebra {D : Type*} [DivisionRing D] (s : ℕ) (a d : D) (ha : a ≠ 0) :
     a⁻¹ * d ^ s * a = (a⁻¹ * d * a) ^ s := by
@@ -230,3 +229,29 @@ theorem Jacobson_Noether (H : k ≠ (⊤ : Subring D)) :
     exact JacobsonNoether_charZero H
 
 end JacobsonNoether
+
+namespace test
+
+example {k D : Type*} [Field k] [DivisionRing D] [Algebra k D] [Algebra.IsAlgebraic k D]
+  (hcenter : Subalgebra.center k D = ⊥)
+  (hneq : (⊥ : Subalgebra k D) ≠ ⊤) :
+  ∃ x : D, x ∉ (⊥ : Subalgebra k D) ∧ IsSeparable k x := by
+  set k' := (⊥ : Subalgebra k D).toSubring with hk'
+  have hcenter' : k' = Subring.center D := by apply (hcenter.symm) ▸ hk'
+  have aux1 : (⊤ : Subring D) = (⊤ : Subalgebra k D).toSubring := rfl
+  have ntrivial : k' ≠ ⊤ := by
+    refine Ne.intro ?_
+    exact fun heq ↦
+      hneq <| Algebra.toSubring_eq_top.mp <| aux1 ▸ hk' ▸ heq
+  letI : Algebra.IsAlgebraic (@Subtype D fun x ↦ x ∈ Subring.center D) D := by
+    -- rw [← hcenter']
+    sorry
+  obtain ⟨x, hx⟩ := @JacobsonNoether.Jacobson_Noether D _ _ (hcenter' ▸ ntrivial)
+  use x
+  constructor
+  · simp_rw [← hcenter', hk'] at hx
+    exact hx.1
+  · have base := hx.2
+    sorry
+
+end test
