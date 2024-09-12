@@ -69,7 +69,7 @@ variable (𝕜 : Type*) [NNNorm 𝕜] [Nonempty 𝕜] {E : Type*} [Zero E] [SMul
   {c : 𝕜} {s t : Set E} {x : E} {r : ℝ≥0∞}
 
 @[simp] lemma egauge_zero_left_eq_top : egauge 𝕜 0 x = ∞ ↔ x ≠ 0 := by
-  simp [egauge_eq_top]
+  simp [egauge_eq_top, forall_const]
 
 @[simp] alias ⟨_, egauge_zero_left⟩ := egauge_zero_left_eq_top
 

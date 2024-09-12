@@ -254,7 +254,7 @@ theorem iff_of_source_openCover [IsAffine Y] (𝒰 : X.OpenCover) [∀ i, IsAffi
 theorem iff_of_isAffine [IsAffine X] [IsAffine Y] :
     P f ↔ Q (f.app ⊤) := by
   rw [iff_of_source_openCover (P := P) (Scheme.openCoverOfIsIso.{u} (𝟙 _))]
-  simp
+  simp [forall_const]
 
 theorem Spec_iff {R S : CommRingCat.{u}} {φ : R ⟶ S} :
     P (Spec.map φ) ↔ Q φ := by

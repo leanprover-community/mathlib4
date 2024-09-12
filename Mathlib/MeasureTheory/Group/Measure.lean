@@ -823,7 +823,7 @@ instance (priority := 100) IsHaarMeasure.noAtoms [TopologicalGroup G] [BorelSpac
     [WeaklyLocallyCompactSpace G] [(𝓝[≠] (1 : G)).NeBot] (μ : Measure G) [μ.IsHaarMeasure] :
     NoAtoms μ := by
   cases eq_or_ne (μ 1) 0 with
-  | inl h => constructor; simpa
+  | inl h => constructor; intro g; simpa
   | inr h =>
     obtain ⟨K, K_compact, K_nhds⟩ : ∃ K : Set G, IsCompact K ∧ K ∈ 𝓝 1 := exists_compact_mem_nhds 1
     have K_inf : Set.Infinite K := infinite_of_mem_nhds (1 : G) K_nhds

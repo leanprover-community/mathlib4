@@ -124,7 +124,7 @@ protected theorem intCast [StarOrderedRing R] [DecidableEq n] (d : ℤ) (hd : 0 
 protected theorem _root_.Matrix.posSemidef_intCast_iff
     [StarOrderedRing R] [DecidableEq n] [Nonempty n] [Nontrivial R] (d : ℤ) :
     PosSemidef (d : Matrix n n R) ↔ 0 ≤ d :=
-  posSemidef_diagonal_iff.trans <| by simp [Pi.le_def]
+  posSemidef_diagonal_iff.trans <| by simp [Pi.le_def, forall_const]
 
 protected lemma pow [StarOrderedRing R] [DecidableEq n]
     {M : Matrix n n R} (hM : M.PosSemidef) (k : ℕ) :
@@ -384,7 +384,7 @@ protected theorem natCast [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
 theorem _root_.Matrix.posDef_natCast_iff [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
     [Nonempty n] [Nontrivial R] {d : ℕ} :
     PosDef (d : Matrix n n R) ↔ 0 < d :=
-  posDef_diagonal_iff.trans <| by simp
+  posDef_diagonal_iff.trans <| by simp [forall_const]
 
 -- See note [no_index around OfNat.ofNat]
 protected theorem ofNat [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
@@ -404,7 +404,7 @@ protected theorem intCast [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
 theorem _root_.Matrix.posDef_intCast_iff [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
     [Nonempty n] [Nontrivial R] {d : ℤ} :
     PosDef (d : Matrix n n R) ↔ 0 < d :=
-  posDef_diagonal_iff.trans <| by simp
+  posDef_diagonal_iff.trans <| by simp [forall_const]
 
 protected lemma add_posSemidef [CovariantClass R R (· + ·) (· ≤ · )]
     {A : Matrix m m R} {B : Matrix m m R}

@@ -302,7 +302,7 @@ theorem add_apply (f g : CuspForm Γ k) (z : ℍ) : (f + g) z = f z + g z :=
 instance instZero : Zero (CuspForm Γ k) :=
   ⟨ { toSlashInvariantForm := 0
       holo' := fun _ => mdifferentiableAt_const 𝓘(ℂ, ℂ) 𝓘(ℂ, ℂ)
-      zero_at_infty' := by simpa using Filter.zero_zeroAtFilter _ } ⟩
+      zero_at_infty' := fun _ => by simpa using Filter.zero_zeroAtFilter _ } ⟩
 
 @[simp]
 theorem coe_zero : ⇑(0 : CuspForm Γ k) = (0 : ℍ → ℂ) :=
