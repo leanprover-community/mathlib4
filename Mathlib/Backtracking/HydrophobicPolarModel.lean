@@ -9,6 +9,11 @@ import Mathlib.Backtracking.BacktrackingVerification
 import Mathlib.Computability.NFA
 import Mathlib.MeasureTheory.Constructions.Prod.Basic
 import Mathlib.Data.Matrix.Basic
+import Mathlib.Data.Vector.Defs
+import Batteries.Data.List.Basic
+import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Data.Vector.Basic
+import Mathlib.Data.Nat.Digits
 
 /-!
 # Marginis
@@ -192,22 +197,40 @@ def pts_at' {α β : Type} [DecidableEq α] [Fintype β] (go : β → α → α)
 
 open Finset
 
-def change_type_general'' -- this adds a "pred" that can be used in applications
-{l:ℕ} (k : Fin l) (P : Fin l → Fin l → Bool)
-[DecidablePred fun i : Fin l => P i k]
-(h: ∀ x y : Fin l, P x y → x.1.succ < y.1):
-  filter (fun i : Fin l        ↦ P                 i  k) univ
-→ filter (fun i : Fin k.1.pred ↦ P (Fin_trans_pred i) k) univ
-  := by
-    intro ip
-    have : P (ip.1) k = true := by
-      let i₃ := ip.2;
-      simp only [Finset.mem_filter, Finset.mem_univ, true_and] at i₃ ;
-      exact i₃
-    simp only [Finset.mem_filter, Finset.mem_univ, true_and];
-    exact ⟨(⟨ip.1.1,Nat.lt_pred_iff.mpr (h _ _ this)⟩ : Fin k.1.pred),this⟩
+
+/-- Since the other proof didn't survive "Mathlib transition", we give this nicer proof. -/
+def embed_pred {l:ℕ} (k : Fin l) (P : Fin l → Fin l → Bool)
+  [DecidablePred fun i : Fin l => P i k] :
+  filter (fun i : Fin k.1.pred ↦ P (Fin_trans_pred i) k) univ
+  → filter (fun i : Fin l        ↦ P                 i  k) univ :=
+fun ip => ⟨Fin_trans_pred _, mem_filter.mpr ⟨mem_univ _, (mem_filter.mp ip.2).2⟩⟩
+
+lemma embed_pred_inj  {l:ℕ} (k : Fin l) (P : Fin l → Fin l → Bool)
+    [DecidablePred fun i : Fin l => P i k] :
+    Function.Injective (embed_pred k P) :=
+  fun x y hxy => by
+    unfold embed_pred Fin_trans_pred at hxy
+    simp only [Nat.pred_eq_sub_one, Subtype.mk.injEq, Fin.mk.injEq] at hxy
+    exact Subtype.eq <| Fin.eq_of_val_eq hxy
+
+lemma embed_pred_surj {l:ℕ} (k : Fin l) (P : Fin l → Fin l → Bool)
+    [DecidablePred fun i : Fin l => P i k]
+    (h: ∀ {x y : Fin l}, P x y → x.1 < y.1.pred) :
+    Function.Surjective (embed_pred k P) := by
+  intro y
+  unfold embed_pred Fin_trans_pred
+  simp only [Nat.pred_eq_sub_one, Subtype.exists, mem_filter, mem_univ, true_and]
+  use ⟨y.1.1, h (mem_filter.mp y.2).2⟩
+  use (mem_filter.mp y.2).2
+
+lemma embed_pred_bij {l:ℕ} (k : Fin l) (P : Fin l → Fin l → Bool)
+    [DecidablePred fun i : Fin l => P i k] (h: ∀ {x y : Fin l}, P x y → x.1 < y.1.pred) :
+    Function.Bijective (embed_pred k P) :=
+  ⟨embed_pred_inj k P, embed_pred_surj k P h⟩
 
 
+
+-- Sep 11, 2024 version
 theorem change_type_card_general'' {l:ℕ} (k : Fin l) (P : Fin l → Fin l → Bool)
 [DecidablePred fun i : Fin l => P i k]
 (h: ∀ x y : Fin l, P x y → x.1.succ < y.1)
@@ -215,39 +238,12 @@ theorem change_type_card_general'' {l:ℕ} (k : Fin l) (P : Fin l → Fin l → 
 Fintype.card (Finset.filter (fun i : Fin l ↦ P i k) Finset.univ)
 =
 Fintype.card (Finset.filter (fun i : Fin k.1.pred ↦ (P (Fin_trans_pred i) k)) Finset.univ)
-:= by
-  have : Function.Bijective (change_type_general'' k P h) := by
-    constructor
-    · intro i₁ i₂ hi; unfold change_type_general'' at hi;
-      simp only [eq_mpr_eq_cast, Finset.filter_congr_decidable, Finset.filter_val,
-        Multiset.mem_filter, Finset.mem_val, Finset.mem_univ, true_and, set_coe_cast,
-        Subtype.mk.injEq, Fin.mk.injEq] at hi
-      apply SetCoe.ext
-      apply Fin.ext
-      simp only [Nat.pred_eq_sub_one, cast_inj, Subtype.mk.injEq, Fin.mk.injEq] at hi
-      exact hi
-    · intro i;
-      unfold change_type_general''
-
-      exists ⟨Fin_trans_pred i, by
-        have Q := i.2;
-        simp only [Finset.mem_filter, Finset.mem_univ] at Q ;
-        simp only [Finset.mem_filter, Finset.mem_univ];
-        exact Q⟩
-      simp
-      aesop
-      apply Subtype.ext
-      simp
-      apply Fin.ext;
-      unfold Fin_trans_pred;simp
-
-
-      sorry
-
-  let Q := Fintype.card_of_bijective this
-  rw [Q]
-
-
+:=  .symm <| Fintype.card_of_bijective (by
+    exact @embed_pred_bij l k P _ (by
+      intro x y hxy;
+      exact Nat.lt_pred_iff_succ_lt.mpr (h x y hxy)
+    )
+  )
 
 theorem change_type_card_improved  {α:Type} {β : Type} [Fintype β] (go : β → α → α)
   [DecidableEq α] {l:ℕ} (k : Fin l) (ph : Mathlib.Vector Bool l) (fold : Mathlib.Vector α l):
@@ -2600,10 +2596,10 @@ theorem towards_orderly
         · cases Q with
           |inl h_1 =>
             intro hc;unfold morf at hc; simp only [Mathlib.Vector.get_map] at hc ;
-            rw [h_1] at hc;contrapose hc;decide
+            rw [h_1] at hc;revert hc;decide
           |inr h_1 =>
             intro hc;unfold morf at hc; simp only [Mathlib.Vector.get_map] at hc ;
-            rw [h_1] at hc;contrapose hc;decide
+            rw [h_1] at hc;revert hc;decide
         · by_cases he : j₁ = j
           · -- pos
             subst he;rw [this];symm;decide
@@ -2615,10 +2611,10 @@ theorem towards_orderly
             cases R with
             |inl h_1 =>
               unfold morf at h_1; simp only [Mathlib.Vector.get_map] at h_1
-              rw [Q] at h_1;contrapose h_1;decide
+              rw [Q] at h_1;exfalso;revert h_1;decide
             |inr h_1 =>
               unfold morf at h_1; simp only [Mathlib.Vector.get_map] at h_1
-              rw [Q] at h_1;contrapose h_1;decide
+              rw [Q] at h_1;exfalso;revert h_1;decide
       · -- neg.intr.right.right
         calc
         _ ≤ pts_tot' κ ph (π κ moves₀) := hmoves₀.2
@@ -2846,33 +2842,35 @@ def toSet
   {l:ℕ} (ph : Mathlib.Vector Bool l) :=
   (Finset.filter (fun i ↦ ph.get i) (Finset.univ : Finset (Fin l)))
 
-/-- This result from March 29, 2024 proves the obvious fact that more H amino acids leads to more points. -/
+/-- This result from March 29, 2024 proves the obvious fact that
+  more H amino acids leads to more points. -/
 theorem toSet_dominates {α β:Type} [Fintype β] [OfNat α 0] [DecidableEq α]
-(go: β → α→α) {l:ℕ} (ph₀ ph₁ : Mathlib.Vector Bool l.succ) (hsub:
-  toSet ph₀ ⊆ toSet ph₁) :
-       HP go ph₀ ≤ HP go ph₁ := by
-    apply Nat.find_mono
-    intro n h moves h_inj
-    let h₁ := h moves h_inj
-    unfold pts_tot' at *
-    have h₀ : (Finset.sum Finset.univ fun i => pts_at' go i ph₀ ⟨ (path go moves.1).1, by rw [path_len]⟩)
-            ≤ (Finset.sum Finset.univ fun i => pts_at' go i ph₁ ⟨ (path go moves.1).1, by rw [path_len]⟩) := by
-      apply Finset.sum_le_sum
-      intro i; intro
-      apply Finset.card_le_card
-      intro j hj
-      unfold pt_loc at *
-      simp only [Finset.mem_univ, Bool.and_eq_true, decide_eq_true_eq,
-        Finset.mem_filter, true_and] at *
-      unfold toSet at hsub
+    (go: β → α→α) {l:ℕ} (ph₀ ph₁ : Mathlib.Vector Bool l.succ) (hsub: toSet ph₀ ⊆ toSet ph₁) :
+    HP go ph₀ ≤ HP go ph₁ := by
+  apply Nat.find_mono
+  intro n h moves h_inj
+  let h₁ := h moves h_inj
+  unfold pts_tot' at *
+  have h₀ : (Finset.sum Finset.univ fun i =>
+    pts_at' go i ph₀ ⟨ (path go moves.1).1, by rw [path_len]⟩)
+          ≤ (Finset.sum Finset.univ fun i =>
+    pts_at' go i ph₁ ⟨ (path go moves.1).1, by rw [path_len]⟩) := by
+    apply Finset.sum_le_sum
+    intro i; intro
+    apply Finset.card_le_card
+    intro j hj
+    unfold pt_loc at *
+    simp only [Finset.mem_univ, Bool.and_eq_true, decide_eq_true_eq,
+      Finset.mem_filter, true_and] at *
+    unfold toSet at hsub
 
-      have h_ : j ∈ Finset.filter (fun i' => Mathlib.Vector.get ph₀ i' = true) Finset.univ
-              ∧ i ∈ Finset.filter (fun i' => Mathlib.Vector.get ph₀ i' = true) Finset.univ := by
-                simp only [Finset.mem_filter, Finset.mem_univ, true_and];exact hj.1.1
-      let Q := And.intro (hsub h_.1) (hsub h_.2)
-      simp only [Finset.mem_filter, Finset.mem_univ, true_and] at Q
-      tauto
-    exact LE.le.trans h₀ h₁
+    have h_ : j ∈ Finset.filter (fun i' => Mathlib.Vector.get ph₀ i' = true) Finset.univ
+            ∧ i ∈ Finset.filter (fun i' => Mathlib.Vector.get ph₀ i' = true) Finset.univ := by
+              simp only [Finset.mem_filter, Finset.mem_univ, true_and];exact hj.1.1
+    let Q := And.intro (hsub h_.1) (hsub h_.2)
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and] at Q
+    tauto
+  exact LE.le.trans h₀ h₁
 
 theorem more_pts_of_subset (go: Fin 4 → ℤ×ℤ→ℤ×ℤ) {l:ℕ} {ph₀ ph₁ : Mathlib.Vector Bool l.succ.succ}
   (w: Gap 4 (Nat.succ l) 0)
@@ -3176,7 +3174,7 @@ def stecher_conjecture_counterexample : Prop := stecher1  ∧ stecher2
 
 instance : Decidable stecher2 := by unfold stecher2; apply decEq
 instance : Decidable stecher_conjecture_counterexample := by
-  unfold stecher_conjecture_counterexample; unfold stecher1; unfold stecher2; exact And.decidable
+  unfold stecher_conjecture_counterexample; unfold stecher1; unfold stecher2; exact instDecidableAnd
 
 #eval stecher1
 -- #eval stecher2
