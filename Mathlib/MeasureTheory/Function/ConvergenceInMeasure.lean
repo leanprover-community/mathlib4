@@ -62,7 +62,7 @@ theorem tendstoInMeasure_iff_norm [SeminormedAddCommGroup E] {l : Filter ι} {f 
       ∀ ε, 0 < ε → Tendsto (fun i => μ { x | ε ≤ ‖f i x - g x‖ }) l (𝓝 0) := by
   simp_rw [TendstoInMeasure, dist_eq_norm]
 
-theorem TendstoInMeasure_iff_tendsto_toNNReal [Dist E] {_ : MeasurableSpace α} {μ : Measure α}
+theorem tendstoInMeasure_iff_tendsto_toNNReal [Dist E] {_ : MeasurableSpace α} {μ : Measure α}
     [hfin: MeasureTheory.IsFiniteMeasure μ] {f : ι → α → E} {l : Filter ι} {g : α → E} :
     TendstoInMeasure μ f l g ↔ ∀ ε, 0 < ε → Tendsto (fun i =>
     (μ { x | ε ≤ dist (f i x) (g x) }).toNNReal) l (𝓝 0) := by
@@ -273,7 +273,7 @@ theorem TendstoInMeasure.exists_seq_tendsto_ae' {u : Filter ι} [NeBot u] [IsCou
 section
 
 /- An auxiliary lemma for a proof by contradiction in exists_seq_tendstoInMeasure_atTop_iff -/
-lemma false_of_Tendsto_of_boundBelow_aux (f : ℕ → ℝ≥0) (δ : ℝ) (hδ: (0 : ℝ) < δ)
+lemma false_of_tendsto_of_boundBelow_aux (f : ℕ → ℝ≥0) (δ : ℝ) (hδ: (0 : ℝ) < δ)
     (hf1 : Tendsto f atTop (𝓝 0)) (hf2 : ∀ n, δ ≤ (f n) ) : False := by
   have h : ∀ x : ℝ≥0, x.toReal = dist x 0 := by
     intro x
@@ -298,7 +298,7 @@ lemma forall_seq_tendstoInMeasure_atTop {u : Filter ι} {v : Filter κ} {f : ι 
     TendstoInMeasure μ (fun n => f (ns n)) v g :=
   fun ε hε => (hfg ε hε).comp hns
 
-lemma subseq_of_notTendsto {f : ℕ → NNReal} (h : ¬Tendsto f atTop (𝓝 (0 : ℝ≥0))) :
+lemma subseq_of_not_tendsto {f : ℕ → NNReal} (h : ¬Tendsto f atTop (𝓝 (0 : ℝ≥0))) :
     ∃ ε > 0, ∃ (ns : ℕ → ℕ) (_ : StrictMono ns), ∀ n, ε ≤ (f (ns n)).toReal := by
   rw [Filter.not_tendsto_iff_exists_frequently_nmem] at h
   rcases h with ⟨A, ⟨hA1, hA2⟩⟩
@@ -317,12 +317,12 @@ theorem exists_seq_tendstoInMeasure_atTop_iff (hfin : MeasureTheory.IsFiniteMeas
     (TendstoInMeasure μ f atTop g) ↔
     ∀ (ns : ℕ → ℕ) (_ : StrictMono ns), ∃ (ns' : ℕ → ℕ) (_ : StrictMono ns'), ∀ᵐ (ω : α) ∂μ,
     Tendsto (fun i ↦ f (ns (ns' i)) ω) atTop (𝓝 (g ω)) := by
-  rw [TendstoInMeasure_iff_tendsto_toNNReal]
+  rw [tendstoInMeasure_iff_tendsto_toNNReal]
   constructor
   · intros hfg ns hns
     have h1 : TendstoInMeasure μ (f ∘ ns)
       atTop g := (TendstoInMeasure.subseq hns
-      (TendstoInMeasure_iff_tendsto_toNNReal.mpr hfg))
+      (tendstoInMeasure_iff_tendsto_toNNReal.mpr hfg))
     have ⟨ns', hns1, hns2⟩ :=
     TendstoInMeasure.exists_seq_tendsto_ae h1
     use ns', hns1
@@ -338,7 +338,7 @@ theorem exists_seq_tendstoInMeasure_atTop_iff (hfin : MeasureTheory.IsFiniteMeas
         push_neg at h3
         exact h3
     rcases h2 with ⟨ε, hε, h4⟩
-    obtain h5 := @subseq_of_notTendsto (fun n ↦ (μ {x | ε ≤ dist (f n x) (g x)}).toNNReal) h4
+    obtain h5 := @subseq_of_not_tendsto (fun n ↦ (μ {x | ε ≤ dist (f n x) (g x)}).toNNReal) h4
     rcases h5 with ⟨δ, hδ, ns, hns, h5⟩
     use ns, hns
     intros ns' _
@@ -348,10 +348,10 @@ theorem exists_seq_tendstoInMeasure_atTop_iff (hfin : MeasureTheory.IsFiniteMeas
       (hf ((ns ∘ ns') n))
     have h8 := (MeasureTheory.tendstoInMeasure_of_tendsto_ae (f := f ∘ ns ∘ ns') (h4) h6)
     obtain h7 := fun n => h5 (ns' n)
-    rw [TendstoInMeasure_iff_tendsto_toNNReal] at h8
+    rw [tendstoInMeasure_iff_tendsto_toNNReal] at h8
     exfalso
     revert h7
-    apply false_of_Tendsto_of_boundBelow_aux
+    apply false_of_tendsto_of_boundBelow_aux
       (fun n => (μ {x | ε ≤ dist (f (ns (ns' n)) x) (g x)}).toNNReal) δ hδ (h8 ε hε)
 
 section
