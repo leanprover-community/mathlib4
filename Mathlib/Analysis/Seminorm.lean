@@ -495,7 +495,7 @@ noncomputable instance instSupSet : SupSet (Seminorm 𝕜 E) where
     if h : BddAbove ((↑) '' s : Set (E → ℝ)) then
       { toFun := ⨆ p : s, ((p : Seminorm 𝕜 E) : E → ℝ)
         map_zero' := by
-          rw [iSup_apply, ← @Real.ciSup_const_zero s]
+          rw [iSup_apply, ← @Real.iSup_const_zero s]
           congr!
           rename_i _ _ _ i
           exact map_zero i.1
