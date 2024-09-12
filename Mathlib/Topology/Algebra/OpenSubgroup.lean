@@ -290,7 +290,6 @@ lemma discreteTopology [ContinuousMul G] (U : Subgroup G) (h : IsOpen (U : Set G
 @[to_additive]
 lemma quotient_finite_of_isOpen [ContinuousMul G] [CompactSpace G] (U : Subgroup G)
     (h : IsOpen (U : Set G)) : Finite (G ⧸ U) :=
-  have : CompactSpace (G ⧸ U) := Quotient.compactSpace
   have : DiscreteTopology (G ⧸ U) := U.discreteTopology h
   finite_of_compact_of_discrete
 
