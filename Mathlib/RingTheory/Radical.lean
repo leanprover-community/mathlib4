@@ -41,7 +41,7 @@ namespace UniqueFactorizationMonoid
 -- `CancelCommMonoidWithZero` is required by `UniqueFactorizationMonoid`
 variable {M : Type*} [CancelCommMonoidWithZero M] [NormalizationMonoid M]
   [UniqueFactorizationMonoid M]
-variable {R : Type _} [CommRing R] [IsDomain R] [NormalizationMonoid R]
+variable {R : Type*} [CommRing R] [IsDomain R] [NormalizationMonoid R]
   [UniqueFactorizationMonoid R]
 
 /-- The finite set of prime factors of an element in a unique factorization monoid. -/
@@ -148,7 +148,7 @@ theorem radical_mul {a b : R} (hc : IsCoprime a b) :
     radical (a * b) = (radical a) * (radical b) := by
   by_cases ha : a = 0
   · subst ha; rw [isCoprime_zero_left] at hc
-    simp only [MulZeroClass.zero_mul, radical_zero_eq, one_mul, radical_unit_eq_one hc]
+    simp only [zero_mul, radical_zero_eq, one_mul, radical_unit_eq_one hc]
   by_cases hb : b = 0
   · subst hb; rw [isCoprime_zero_right] at hc
     simp only [MulZeroClass.mul_zero, radical_zero_eq, mul_one, radical_unit_eq_one hc]
