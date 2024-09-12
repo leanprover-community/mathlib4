@@ -66,7 +66,7 @@ def toCatExpr (e : Expr) : MetaM Expr := do
       return (← inferType x).getAppFnArgs == (`CategoryTheory.Bicategory, #[B])
     | throwError "Can not find the argument for the bicategory instance of the bicategory in which \
       the equality is taking place."
-  let _ ← isDefEq inst (.const ``CategoryTheory.Cat.bicategory [u, v])
+  let _ ← isDefEq inst (.const ``CategoryTheory.Cat.bicategory [v, u])
   -- Construct the new expression
   let value := mkAppN e args
   let rec
