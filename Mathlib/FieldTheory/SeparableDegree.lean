@@ -589,7 +589,7 @@ end Polynomial
 
 namespace minpoly
 
-variable {F E}
+variable {F : Type u} {E : Type v} [Field F] [Ring E] [IsDomain E] [Algebra F E]
 variable (q : ℕ) [hF : ExpChar F q] {x : E}
 
 /-- The minimal polynomial of an element of `E / F` of exponential characteristic `q` has
@@ -632,17 +632,18 @@ separable degree one if and only if the minimal polynomial is of the form
 theorem natSepDegree_eq_one_iff_eq_X_sub_C_pow : (minpoly F x).natSepDegree = 1 ↔
     ∃ n : ℕ, (minpoly F x).map (algebraMap F E) = (X - C x) ^ q ^ n := by
   haveI := expChar_of_injective_algebraMap (algebraMap F E).injective q
-  haveI := expChar_of_injective_algebraMap (NoZeroSMulDivisors.algebraMap_injective E E[X]) q
+  haveI := expChar_of_injective_ringHom (C_injective (R := E)) q
   refine ⟨fun h ↦ ?_, fun ⟨n, h⟩ ↦ (natSepDegree_eq_one_iff_pow_mem q).2 ?_⟩
   · obtain ⟨n, y, h⟩ := (natSepDegree_eq_one_iff_eq_X_pow_sub_C q).1 h
     have hx := congr_arg (Polynomial.aeval x) h.symm
     rw [minpoly.aeval, map_sub, map_pow, aeval_X, aeval_C, sub_eq_zero, eq_comm] at hx
     use n
-    rw [h, Polynomial.map_sub, Polynomial.map_pow, map_X, map_C, hx, map_pow, ← sub_pow_expChar_pow]
+    rw [h, Polynomial.map_sub, Polynomial.map_pow, map_X, map_C, hx, map_pow,
+      ← sub_pow_expChar_pow_of_commute E[X] X (C x) (commute_X _)]
   apply_fun constantCoeff at h
   simp_rw [map_pow, map_sub, constantCoeff_apply, coeff_map, coeff_X_zero, coeff_C_zero] at h
   rw [zero_sub, neg_pow, ExpChar.neg_one_pow_expChar_pow] at h
-  exact ⟨n, -(minpoly F x).coeff 0, by rw [map_neg, h]; ring1⟩
+  exact ⟨n, -(minpoly F x).coeff 0, by rw [map_neg, h, neg_mul, one_mul, neg_neg]⟩
 
 end minpoly
 

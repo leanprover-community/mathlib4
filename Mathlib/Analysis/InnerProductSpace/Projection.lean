@@ -42,6 +42,8 @@ The Coq code is available at the following address: <http://www.lri.fr/~sboldo/e
 
 noncomputable section
 
+open InnerProductSpace
+
 open RCLike Real Filter
 
 open LinearMap (ker range)

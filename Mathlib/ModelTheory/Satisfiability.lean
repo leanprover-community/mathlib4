@@ -281,7 +281,7 @@ variable (T)
 /-- A theory models a (bounded) formula when any of its nonempty models realizes that formula on all
   inputs. -/
 def ModelsBoundedFormula (φ : L.BoundedFormula α n) : Prop :=
-  ∀ (M : ModelType.{u, v, max u v} T) (v : α → M) (xs : Fin n → M), φ.Realize v xs
+  ∀ (M : ModelType.{u, v, max u v w} T) (v : α → M) (xs : Fin n → M), φ.Realize v xs
 
 -- Porting note: In Lean3 it was `⊨` but ambiguous.
 @[inherit_doc FirstOrder.Language.Theory.ModelsBoundedFormula]
@@ -290,7 +290,7 @@ infixl:51 " ⊨ᵇ " => ModelsBoundedFormula -- input using \|= or \vDash, but n
 variable {T}
 
 theorem models_formula_iff {φ : L.Formula α} :
-    T ⊨ᵇ φ ↔ ∀ (M : ModelType.{u, v, max u v} T) (v : α → M), φ.Realize v :=
+    T ⊨ᵇ φ ↔ ∀ (M : ModelType.{u, v, max u v w} T) (v : α → M), φ.Realize v :=
   forall_congr' fun _ => forall_congr' fun _ => Unique.forall_iff
 
 theorem models_sentence_iff {φ : L.Sentence} : T ⊨ᵇ φ ↔ ∀ M : ModelType.{u, v, max u v} T, M ⊨ φ :=
@@ -327,12 +327,47 @@ theorem ModelsBoundedFormula.realize_sentence {φ : L.Sentence} (h : T ⊨ᵇ φ
     exact ⟨h, inferInstance⟩
   exact Model.isSatisfiable M
 
+theorem models_formula_iff_onTheory_models_equivSentence {φ : L.Formula α} :
+    T ⊨ᵇ φ ↔ (L.lhomWithConstants α).onTheory T ⊨ᵇ Formula.equivSentence φ := by
+  refine ⟨fun h => models_sentence_iff.2 (fun M => ?_),
+    fun h => models_formula_iff.2 (fun M v => ?_)⟩
+  · letI := (L.lhomWithConstants α).reduct M
+    have : (L.lhomWithConstants α).IsExpansionOn M := LHom.isExpansionOn_reduct _ _
+      -- why doesn't that instance just work?
+    rw [Formula.realize_equivSentence]
+    have : M ⊨ T := (LHom.onTheory_model _ _).1 M.is_model -- why isn't M.is_model inferInstance?
+    let M' := Theory.ModelType.of T M
+    exact h M' (fun a => (L.con a : M)) _
+  · letI : (constantsOn α).Structure M := constantsOn.structure v
+    have : M ⊨ (L.lhomWithConstants α).onTheory T := (LHom.onTheory_model _ _).2 inferInstance
+    exact (Formula.realize_equivSentence _ _).1 (h.realize_sentence M)
+
+theorem ModelsBoundedFormula.realize_formula {φ : L.Formula α} (h : T ⊨ᵇ φ) (M : Type*)
+    [L.Structure M] [M ⊨ T] [Nonempty M] {v : α → M} : φ.Realize v := by
+  rw [models_formula_iff_onTheory_models_equivSentence] at h
+  letI : (constantsOn α).Structure M := constantsOn.structure v
+  have : M ⊨ (L.lhomWithConstants α).onTheory T := (LHom.onTheory_model _ _).2 inferInstance
+  exact (Formula.realize_equivSentence _ _).1 (h.realize_sentence M)
+
+theorem models_toFormula_iff {φ : L.BoundedFormula α n} : T ⊨ᵇ φ.toFormula ↔ T ⊨ᵇ φ := by
+  refine ⟨fun h M v xs => ?_, ?_⟩
+  · have h' : φ.toFormula.Realize (Sum.elim v xs) := h.realize_formula M
+    simp only [BoundedFormula.realize_toFormula, Sum.elim_comp_inl, Sum.elim_comp_inr] at h'
+    exact h'
+  · simp only [models_formula_iff, BoundedFormula.realize_toFormula]
+    exact fun h M v => h M _ _
+
+theorem ModelsBoundedFormula.realize_boundedFormula
+    {φ : L.BoundedFormula α n} (h : T ⊨ᵇ φ) (M : Type*)
+    [L.Structure M] [M ⊨ T] [Nonempty M] {v : α → M} {xs : Fin n → M} : φ.Realize v xs := by
+  have h' : φ.toFormula.Realize (Sum.elim v xs) := (models_toFormula_iff.2 h).realize_formula M
+  simp only [BoundedFormula.realize_toFormula, Sum.elim_comp_inl, Sum.elim_comp_inr] at h'
+  exact h'
+
 theorem models_of_models_theory {T' : L.Theory}
     (h : ∀ φ : L.Sentence, φ ∈ T' → T ⊨ᵇ φ)
-    {φ : L.Formula α} (hφ : T' ⊨ᵇ φ) : T ⊨ᵇ φ := by
-  simp only [models_sentence_iff] at h
-  intro M
-  have hM : M ⊨ T' := T'.model_iff.2 (fun ψ hψ => h ψ hψ M)
+    {φ : L.Formula α} (hφ : T' ⊨ᵇ φ) : T ⊨ᵇ φ := fun M => by
+  have hM : M ⊨ T' := T'.model_iff.2 (fun ψ hψ => (h ψ hψ).realize_sentence M)
   let M' : ModelType T' := ⟨M⟩
   exact hφ M'
 
@@ -429,15 +464,20 @@ theorem SemanticallyEquivalent.trans {φ ψ θ : L.BoundedFormula α n}
   rw [BoundedFormula.realize_iff] at *
   exact ⟨h2'.1 ∘ h1'.1, h1'.2 ∘ h2'.2⟩
 
-theorem SemanticallyEquivalent.realize_bd_iff {φ ψ : L.BoundedFormula α n} {M : Type max u v}
-    [Nonempty M] [L.Structure M] [T.Model M] (h : T.SemanticallyEquivalent φ ψ)
+theorem SemanticallyEquivalent.realize_bd_iff {φ ψ : L.BoundedFormula α n} {M : Type*}
+    [Nonempty M] [L.Structure M] [M ⊨ T] (h : T.SemanticallyEquivalent φ ψ)
     {v : α → M} {xs : Fin n → M} : φ.Realize v xs ↔ ψ.Realize v xs :=
-  BoundedFormula.realize_iff.1 (h (ModelType.of T M) v xs)
+  BoundedFormula.realize_iff.1 (h.realize_boundedFormula M)
 
-theorem SemanticallyEquivalent.realize_iff {φ ψ : L.Formula α} {M : Type max u v} [Nonempty M]
-    [L.Structure M] (_hM : T.Model M) (h : T.SemanticallyEquivalent φ ψ) {v : α → M} :
+theorem SemanticallyEquivalent.realize_iff {φ ψ : L.Formula α} {M : Type*} [Nonempty M]
+    [L.Structure M] [M ⊨ T] (h : T.SemanticallyEquivalent φ ψ) {v : α → M} :
     φ.Realize v ↔ ψ.Realize v :=
   h.realize_bd_iff
+
+theorem SemanticallyEquivalent.models_sentence_iff {φ ψ : L.Sentence} {M : Type*} [Nonempty M]
+    [L.Structure M] [M ⊨ T] (h : T.SemanticallyEquivalent φ ψ) :
+    M ⊨ φ ↔ M ⊨ ψ :=
+  h.realize_iff
 
 /-- Semantic equivalence forms an equivalence relation on formulas. -/
 def semanticallyEquivalentSetoid (T : L.Theory) : Setoid (L.BoundedFormula α n) where
