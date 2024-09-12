@@ -8,8 +8,6 @@ import Mathlib.Topology.Algebra.Order.Compact
 import Mathlib.Topology.Order.LocalExtr
 import Mathlib.Topology.Order.T5
 
-#align_import analysis.calculus.local_extr from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
-
 /-!
 # Rolle's Theorem (topological part)
 
@@ -53,7 +51,6 @@ theorem exists_Ioo_extr_on_Icc (hab : a < b) (hfc : ContinuousOn f (Icc a b)) (h
       exacts [fun h => by rw [h], fun h => by rw [h, hfI]]
   · refine ⟨c, ⟨lt_of_le_of_ne cmem.1 <| mt ?_ hc, lt_of_le_of_ne cmem.2 <| mt ?_ hc⟩, Or.inl cle⟩
     exacts [fun h => by rw [h], fun h => by rw [h, hfI]]
-#align exists_Ioo_extr_on_Icc exists_Ioo_extr_on_Icc
 
 /-- A continuous function on a closed interval with `f a = f b`
 has a local extremum at some point of the corresponding open interval. -/
@@ -61,7 +58,6 @@ theorem exists_isLocalExtr_Ioo (hab : a < b) (hfc : ContinuousOn f (Icc a b)) (h
     ∃ c ∈ Ioo a b, IsLocalExtr f c :=
   let ⟨c, cmem, hc⟩ := exists_Ioo_extr_on_Icc hab hfc hfI
   ⟨c, cmem, hc.isLocalExtr <| Icc_mem_nhds cmem.1 cmem.2⟩
-#align exists_local_extr_Ioo exists_isLocalExtr_Ioo
 
 /-- If a function `f` is continuous on an open interval
 and tends to the same value at its endpoints, then it has an extremum on this open interval. -/

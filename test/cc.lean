@@ -8,6 +8,7 @@ set_option linter.unusedVariables false
 
 section CC1
 
+open Mathlib (Vector)
 open Mathlib.Tactic.CC
 
 open Lean Meta Elab Tactic
@@ -216,6 +217,8 @@ end CC3
 section CC4
 
 universe u
+
+open Mathlib
 
 axiom app : {α : Type u} → {n m : Nat} → Vector α m → Vector α n → Vector α (m + n)
 
@@ -527,6 +530,13 @@ example (a b : String) : a = "hello" → b = "world" → a = b → False := by
 example (a b c : String) : a = c → a = "hello" → c = "world" → c = b → False := by
   cc
 
+local instance instOfNatNat' (n : ℕ) : OfNat ℕ n where
+  ofNat := n
+
+example : @OfNat.ofNat ℕ (nat_lit 0) (instOfNatNat _) =
+    @OfNat.ofNat ℕ (nat_lit 0) (instOfNatNat' _) := by
+  cc
+
 end CCValue
 
 section Config
@@ -575,6 +585,6 @@ example : nat_lit 0 = nat_lit 0 := by
   cc
 
 example : "Miyahara Kō" = "Miyahara Kō" := by
-  cc (config := { values := false })
+  cc
 
 end lit

@@ -5,8 +5,6 @@ Authors: Anne Baanen
 -/
 import Mathlib.Data.FunLike.Basic
 
-#align_import data.fun_like.embedding from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
-
 /-!
 # Typeclass for a type `F` with an injective map to `A ↪ B`
 
@@ -133,7 +131,6 @@ injective coercion to injective functions `α ↪ β`.
 class EmbeddingLike (F : Sort*) (α β : outParam (Sort*)) [FunLike F α β] : Prop where
   /-- The coercion to functions must produce injective functions. -/
   injective' : ∀ f : F, Function.Injective (DFunLike.coe f)
-#align embedding_like EmbeddingLike
 
 namespace EmbeddingLike
 
@@ -141,17 +138,14 @@ variable {F α β γ : Sort*} [FunLike F α β] [i : EmbeddingLike F α β]
 
 protected theorem injective (f : F) : Function.Injective f :=
   injective' f
-#align embedding_like.injective EmbeddingLike.injective
 
 @[simp]
 theorem apply_eq_iff_eq (f : F) {x y : α} : f x = f y ↔ x = y :=
   (EmbeddingLike.injective f).eq_iff
-#align embedding_like.apply_eq_iff_eq EmbeddingLike.apply_eq_iff_eq
 
 @[simp]
 theorem comp_injective {F : Sort*} [FunLike F β γ] [EmbeddingLike F β γ] (f : α → β) (e : F) :
     Function.Injective (e ∘ f) ↔ Function.Injective f :=
   (EmbeddingLike.injective e).of_comp_iff f
-#align embedding_like.comp_injective EmbeddingLike.comp_injective
 
 end EmbeddingLike

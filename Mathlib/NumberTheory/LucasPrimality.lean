@@ -8,8 +8,6 @@ import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Tactic.Zify
 import Mathlib.Data.Nat.Totient
 
-#align_import number_theory.lucas_primality from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
-
 /-!
 # The Lucas test for primes.
 
@@ -61,4 +59,3 @@ theorem lucas_primality (p : ℕ) (a : ZMod p) (ha : a ^ (p - 1) = 1)
     p - 1 = orderOf a := order_of_a.symm
     _ = orderOf a' := (orderOf_injective (Units.coeHom (ZMod p)) Units.ext a')
     _ ≤ Fintype.card (ZMod p)ˣ := orderOf_le_card_univ
-#align lucas_primality lucas_primality

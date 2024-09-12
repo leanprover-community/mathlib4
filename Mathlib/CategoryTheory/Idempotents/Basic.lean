@@ -5,8 +5,6 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Abelian.Basic
 
-#align_import category_theory.idempotents.basic from "leanprover-community/mathlib"@"3a061790136d13594ec10c7c90d202335ac5d854"
-
 /-!
 # Idempotent complete categories
 
@@ -54,7 +52,6 @@ class IsIdempotentComplete : Prop where
     split as a composition `p = e ≫ i` with `i ≫ e = 𝟙 _` -/
   idempotents_split :
     ∀ (X : C) (p : X ⟶ X), p ≫ p = p → ∃ (Y : C) (i : Y ⟶ X) (e : X ⟶ Y), i ≫ e = 𝟙 Y ∧ e ≫ i = p
-#align category_theory.is_idempotent_complete CategoryTheory.IsIdempotentComplete
 
 namespace Idempotents
 
@@ -90,7 +87,6 @@ theorem isIdempotentComplete_iff_hasEqualizer_of_id_and_idempotent :
     simp only [assoc, limit.lift_π, Eq.ndrec, id_eq, eq_mpr_eq_cast, Fork.ofι_pt,
       Fork.ofι_π_app, id_comp]
     rw [← equalizer.condition, comp_id]
-#align category_theory.idempotents.is_idempotent_complete_iff_has_equalizer_of_id_and_idempotent CategoryTheory.Idempotents.isIdempotentComplete_iff_hasEqualizer_of_id_and_idempotent
 
 variable {C}
 
@@ -99,7 +95,6 @@ then `𝟙 X - p` is also idempotent. -/
 theorem idem_of_id_sub_idem [Preadditive C] {X : C} (p : X ⟶ X) (hp : p ≫ p = p) :
     (𝟙 _ - p) ≫ (𝟙 _ - p) = 𝟙 _ - p := by
   simp only [comp_sub, sub_comp, id_comp, comp_id, hp, sub_self, sub_zero]
-#align category_theory.idempotents.idem_of_id_sub_idem CategoryTheory.Idempotents.idem_of_id_sub_idem
 
 variable (C)
 
@@ -115,7 +110,6 @@ theorem isIdempotentComplete_iff_idempotents_have_kernels [Preadditive C] :
   · intro h X p hp
     haveI : HasKernel (𝟙 _ - p) := h X (𝟙 _ - p) (idem_of_id_sub_idem p hp)
     apply Preadditive.hasEqualizer_of_hasKernel
-#align category_theory.idempotents.is_idempotent_complete_iff_idempotents_have_kernels CategoryTheory.Idempotents.isIdempotentComplete_iff_idempotents_have_kernels
 
 /-- An abelian category is idempotent complete. -/
 instance (priority := 100) isIdempotentComplete_of_abelian (D : Type*) [Category D] [Abelian D] :
@@ -123,7 +117,6 @@ instance (priority := 100) isIdempotentComplete_of_abelian (D : Type*) [Category
   rw [isIdempotentComplete_iff_idempotents_have_kernels]
   intros
   infer_instance
-#align category_theory.idempotents.is_idempotent_complete_of_abelian CategoryTheory.Idempotents.isIdempotentComplete_of_abelian
 
 variable {C}
 
@@ -138,7 +131,6 @@ theorem split_imp_of_iso {X X' : C} (φ : X ≅ X') (p : X ⟶ X) (p' : X' ⟶ X
     rw [id_comp, h₁]
   · slice_lhs 2 3 => rw [h₂]
     rw [hpp', ← assoc, φ.inv_hom_id, id_comp]
-#align category_theory.idempotents.split_imp_of_iso CategoryTheory.Idempotents.split_imp_of_iso
 
 theorem split_iff_of_iso {X X' : C} (φ : X ≅ X') (p : X ⟶ X) (p' : X' ⟶ X')
     (hpp' : p ≫ φ.hom = φ.hom ≫ p') :
@@ -152,7 +144,6 @@ theorem split_iff_of_iso {X X' : C} (φ : X ≅ X') (p : X ⟶ X) (p' : X' ⟶ X
     slice_rhs 1 2 => erw [φ.inv_hom_id]
     simp only [id_comp]
     rfl
-#align category_theory.idempotents.split_iff_of_iso CategoryTheory.Idempotents.split_iff_of_iso
 
 theorem Equivalence.isIdempotentComplete {D : Type*} [Category D] (ε : C ≌ D)
     (h : IsIdempotentComplete C) : IsIdempotentComplete D := by
@@ -171,7 +162,6 @@ theorem Equivalence.isIdempotentComplete {D : Type*} [Category D] (ε : C ≌ D)
   · rw [← ε.functor.map_comp, h₁, ε.functor.map_id]
   · simp only [← ε.functor.map_comp, h₂, Equivalence.fun_inv_map]
     rfl
-#align category_theory.idempotents.equivalence.is_idempotent_complete CategoryTheory.Idempotents.Equivalence.isIdempotentComplete
 
 /-- If `C` and `D` are equivalent categories, that `C` is idempotent complete iff `D` is. -/
 theorem isIdempotentComplete_iff_of_equivalence {D : Type*} [Category D] (ε : C ≌ D) :
@@ -179,7 +169,6 @@ theorem isIdempotentComplete_iff_of_equivalence {D : Type*} [Category D] (ε : C
   constructor
   · exact Equivalence.isIdempotentComplete ε
   · exact Equivalence.isIdempotentComplete ε.symm
-#align category_theory.idempotents.is_idempotent_complete_iff_of_equivalence CategoryTheory.Idempotents.isIdempotentComplete_iff_of_equivalence
 
 theorem isIdempotentComplete_of_isIdempotentComplete_opposite (h : IsIdempotentComplete Cᵒᵖ) :
     IsIdempotentComplete C := by
@@ -193,7 +182,6 @@ theorem isIdempotentComplete_of_isIdempotentComplete_opposite (h : IsIdempotentC
     rfl
   · simp only [← unop_comp, h₂]
     rfl
-#align category_theory.idempotents.is_idempotent_complete_of_is_idempotent_complete_opposite CategoryTheory.Idempotents.isIdempotentComplete_of_isIdempotentComplete_opposite
 
 theorem isIdempotentComplete_iff_opposite : IsIdempotentComplete Cᵒᵖ ↔ IsIdempotentComplete C := by
   constructor
@@ -202,7 +190,6 @@ theorem isIdempotentComplete_iff_opposite : IsIdempotentComplete Cᵒᵖ ↔ IsI
     apply isIdempotentComplete_of_isIdempotentComplete_opposite
     rw [isIdempotentComplete_iff_of_equivalence (opOpEquivalence C)]
     exact h
-#align category_theory.idempotents.is_idempotent_complete_iff_opposite CategoryTheory.Idempotents.isIdempotentComplete_iff_opposite
 
 instance [IsIdempotentComplete C] : IsIdempotentComplete Cᵒᵖ := by
   rwa [isIdempotentComplete_iff_opposite]

@@ -7,8 +7,6 @@ import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.Linarith
 
-#align_import imo.imo2021_q1 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
-
 /-!
 # IMO 2021 Q1
 
@@ -61,7 +59,6 @@ theorem exists_numbers_in_interval (n : ℕ) (hn : 100 ≤ n) :
   · calc n + 4 * l ≤ (l ^ 2 + 4 * l + 2) + 4 * l := by linarith only [h₂]
       _ ≤ 2 * l ^ 2 := by nlinarith only [h₃]
   · linarith only [h₁]
-#align imo2021_q1.exists_numbers_in_interval Imo2021Q1.exists_numbers_in_interval
 
 theorem exists_triplet_summing_to_squares (n : ℕ) (hn : 100 ≤ n) :
     ∃ a b c : ℕ, n ≤ a ∧ a < b ∧ b < c ∧ c ≤ 2 * n ∧
@@ -73,7 +70,6 @@ theorem exists_triplet_summing_to_squares (n : ℕ) (hn : 100 ≤ n) :
   refine ⟨2 * l ^ 2 - 4 * l, 2 * l ^ 2 + 1, 2 * l ^ 2 + 4 * l, ?_, ?_, ?_,
     ⟨?_, ⟨2 * l - 1, ?_⟩, ⟨2 * l, ?_⟩, 2 * l + 1, ?_⟩⟩
   all_goals zify [h₁, h₂]; linarith
-#align imo2021_q1.exists_triplet_summing_to_squares Imo2021Q1.exists_triplet_summing_to_squares
 
 -- Since it will be more convenient to work with sets later on, we will translate the above claim
 -- to state that there always exists a set B ⊆ [n, 2n] of cardinality at least 3, such that each
@@ -102,7 +98,6 @@ theorem exists_finset_3_le_card_with_pairs_summing_to_squares (n : ℕ) (hn : 10
       | simpa only [add_comm x y]
   · simp only [Finset.mem_insert, Finset.mem_singleton]
     rintro d (rfl | rfl | rfl) <;> constructor <;> linarith only [hna, hab, hbc, hcn]
-#align imo2021_q1.exists_finset_3_le_card_with_pairs_summing_to_squares Imo2021Q1.exists_finset_3_le_card_with_pairs_summing_to_squares
 
 end Imo2021Q1
 
@@ -136,4 +131,3 @@ theorem imo2021_q1 :
   -- Now we split into the two cases C ⊆ [n, 2n] \ A and C ⊆ A, which can be dealt with identically.
   cases' hCA with hCA hCA <;> [right; left] <;>
     exact ⟨a, (hCA ha).2, b, (hCA hb).2, hab, h₁ a (hCA ha).1 b (hCA hb).1 hab⟩
-#align imo2021_q1 imo2021_q1
