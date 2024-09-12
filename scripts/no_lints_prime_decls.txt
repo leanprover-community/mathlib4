@@ -1293,6 +1293,7 @@ Denumerable.lower_raise'
 Denumerable.raise'_chain
 Denumerable.raise_lower'
 deriv_add_const'
+Derivation.apply_aeval_eq'
 Derivation.coe_mk'
 Derivation.coe_mk'_linearMap
 deriv_const'
