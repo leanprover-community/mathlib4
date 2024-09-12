@@ -675,7 +675,7 @@ section Discrete
 
 variable {𝕜 : Type*} [NormedDivisionRing 𝕜] [DiscreteTopology 𝕜]
 
-lemma norm_eq_one_iff_ne_zero_discrete {x : 𝕜} : ‖x‖ = 1 ↔ x ≠ 0 := by
+lemma norm_eq_one_iff_ne_zero_of_discrete {x : 𝕜} : ‖x‖ = 1 ↔ x ≠ 0 := by
   constructor <;> intro hx
   · contrapose! hx
     simp [hx]
@@ -699,7 +699,7 @@ lemma norm_le_one_of_discrete
     (x : 𝕜) : ‖x‖ ≤ 1 := by
   rcases eq_or_ne x 0 with rfl|hx
   · simp
-  · simp [norm_eq_one_iff_ne_zero_discrete.mpr hx]
+  · simp [norm_eq_one_iff_ne_zero_of_discrete.mpr hx]
 
 lemma discreteTopology_unit_closedBall_eq_univ : (Metric.closedBall 0 1 : Set 𝕜) = Set.univ := by
   ext
