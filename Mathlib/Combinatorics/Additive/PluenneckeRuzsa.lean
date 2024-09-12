@@ -3,10 +3,10 @@ Copyright (c) 2022 Yaël Dillies, George Shakan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, George Shakan
 -/
+import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.Algebra.Pointwise.Finset.Basic
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Tactic.GCongr
 
