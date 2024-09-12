@@ -58,6 +58,16 @@ elab "rn" id:(ident)? cmd:command : command => do
 
 end Mathlib.Linter
 
+/--
+info: Name produced: 'Nat.ST1Hello.Hello'
+
+Elaborating
+
+open Nat in
+def Nat.ST1Hello.Hello : Nat :=
+  zero
+-/
+#guard_msgs in
 rn
 open Nat in
 def Nat.ST1Hello : Nat := zero
@@ -68,6 +78,16 @@ Elaborating
 
 -/
 
+/--
+info: Name produced: 'Nat.ST1.Hello'
+
+Elaborating
+
+open Nat in
+def Nat.ST1.Hello : Nat :=
+  zero
+-/
+#guard_msgs in
 rn
 open Nat in
 def Nat.ST1 : Nat := zero
