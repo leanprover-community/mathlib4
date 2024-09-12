@@ -1202,21 +1202,6 @@ theorem le_sup_shrink_equiv {s : Set Ordinal.{u}} (hs : Small.{u} s) (a) (ha : a
   convert le_sup.{u, u} (fun x => ((@equivShrink s hs).symm x).val) ((@equivShrink s hs) ⟨a, ha⟩)
   rw [symm_apply_apply]
 
-instance small_Iio (o : Ordinal.{u}) : Small.{u} (Set.Iio o) :=
-  let f : o.toType → Set.Iio o :=
-    fun x => ⟨typein (α := o.toType) (· < ·) x, typein_lt_self x⟩
-  let hf : Surjective f := fun b =>
-    ⟨enum (α := o.toType) (· < ·) ⟨b.val,
-        by
-          rw [type_lt]
-          exact b.prop⟩,
-      Subtype.ext (typein_enum _ _)⟩
-  small_of_surjective hf
-
-instance small_Iic (o : Ordinal.{u}) : Small.{u} (Set.Iic o) := by
-  rw [← Iio_succ]
-  infer_instance
-
 theorem bddAbove_iff_small {s : Set Ordinal.{u}} : BddAbove s ↔ Small.{u} s :=
   ⟨fun ⟨a, h⟩ => small_subset <| show s ⊆ Iic a from fun _x hx => h hx, fun h =>
     ⟨sup.{u, u} fun x => ((@equivShrink s h).symm x).val, le_sup_shrink_equiv h⟩⟩

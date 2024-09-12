@@ -1036,6 +1036,10 @@ noncomputable def enumIsoToType (o : Ordinal) : Set.Iio o ≃o o.toType where
 @[deprecated (since := "2024-08-26")]
 alias enumIsoOut := enumIsoToType
 
+instance small_Iic (o : Ordinal.{u}) : Small.{u} (Set.Iic o) := by
+  rw [← Iio_succ]
+  exact ⟨_, ⟨(enumIsoToType _).toEquiv⟩⟩
+
 /-- `o.toType` is an `OrderBot` whenever `0 < o`. -/
 def toTypeOrderBotOfPos {o : Ordinal} (ho : 0 < o) : OrderBot o.toType where
   bot_le := enum_zero_le' ho

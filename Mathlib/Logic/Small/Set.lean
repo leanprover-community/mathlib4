@@ -112,3 +112,27 @@ theorem small_single (x : α) : Small.{u} ({x} : Set α) :=
 
 theorem small_pair (x y : α) : Small.{u} ({x, y} : Set α) :=
   inferInstance
+
+/-! The following lemmas are intended for types like `Ordinal` or `Cardinal` where sets bounded
+above are small. -/
+
+section Iic
+
+variable (x y : α) [Preorder α] [Small.{u} (Set.Iic y)]
+
+instance small_Iio_of_Iic : Small.{u} (Set.Iio y) :=
+  small_subset Set.Iio_subset_Iic_self
+
+instance small_Icc_of_Iic : Small.{u} (Set.Icc x y) :=
+  small_subset Set.Icc_subset_Iic_self
+
+instance small_Ico_of_Iic : Small.{u} (Set.Ico x y) :=
+  small_subset Set.Ico_subset_Iio_self
+
+instance small_Ioc_of_Iic : Small.{u} (Set.Ioc x y) :=
+  small_subset Set.Ioc_subset_Iic_self
+
+instance small_Ioo_of_Iic : Small.{u} (Set.Ioo x y) :=
+  small_subset Set.Ioo_subset_Iio_self
+
+end Iic
