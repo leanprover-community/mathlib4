@@ -221,7 +221,12 @@ as hypotheses.
 Example: given `f : A →+* B` and `g : B →+* C`, and `hf : f.FiniteType`, `algebraize f g` will add
 the instances `Algebra A B`, `Algebra B C`, and `Algebra.FiniteType A B`.
 
-See the `algebraize` tag for instructions on what properties can be added. -/
+See the `algebraize` tag for instructions on what properties can be added.
+
+The tactic also comes with a configuration option `searchContext` which, if set to `true` (default).
+This determines whether the tactic should search through the local context for `RingHom` properties
+that can be converted to `Algebra` properties. The macro `algebraize'` calls `algebraize` with
+`searchContext := false`, so in other words it only adds `Algebra` and `IsScalarTower` instances. -/
 syntax "algebraize" (config)? (ppSpace colGt term:max)* : tactic
 
 elab_rules : tactic
@@ -246,28 +251,11 @@ elab_rules : tactic
     if cfg.searchContext then
       searchContext t
 
--- syntax "algebraize'" (ppSpace colGt term:max)* : tactic
-
 /-- Version of `algebraize`, which only adds `Algebra` instances and `IsScalarTower` instances. -/
-macro "algebraize'" t:term:max+ : tactic =>
-  `(tactic| algebraize (config := {searchContext := false}) $t*)
+syntax "algebraize'" (ppSpace colGt term:max)* : tactic
 
--- elab_rules : tactic
---   | `(tactic| algebraize' $[$t:term]*) => do
---     let t ← t.mapM fun i => Term.elabTerm i none
---     -- We loop through the given terms and add algebra instances
---     for f in t do
---       let ft ← inferType f
---       match ft.getAppFn with
---       | Expr.const ``RingHom _ => addAlgebraInstanceFromRingHom f ft
---       | _ => throwError m!"{f} is not of type `RingHom`"
---     -- After having added the algebra instances we try to add scalar tower instances
---     for f in t do
---       match f.getAppFn with
---       | Expr.const ``RingHom.comp _ =>
---         try addIsScalarTowerInstanceFromRingHomComp f
---         catch _ => continue
---       | _ => continue
-
+macro_rules
+  | `(tactic| algebraize' $[$t:term]*) =>
+    `(tactic| algebraize (config := {searchContext := false}) $t*)
 
 end Mathlib.Tactic
