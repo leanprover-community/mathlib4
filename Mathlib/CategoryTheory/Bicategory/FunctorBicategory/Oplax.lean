@@ -3,7 +3,7 @@ Copyright (c) 2022 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Oplax
+import Mathlib.CategoryTheory.Bicategory.Modification.Oplax
 
 /-!
 # The bicategory of oplax functors between two bicategories
@@ -26,7 +26,9 @@ universe w₁ w₂ v₁ v₂ u₁ u₂
 variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
 variable {F G H I : OplaxFunctor B C}
 
-namespace OplaxNatTrans
+namespace OplaxTrans
+
+open Oplax
 
 /-- Left whiskering of an oplax natural transformation and a modification. -/
 @[simps]
@@ -47,38 +49,45 @@ def whiskerRight {η θ : F ⟶ G} (Γ : η ⟶ θ) (ι : G ⟶ H) : η ≫ ι �
     simp
 
 /-- Associator for the vertical composition of oplax natural transformations. -/
--- Porting note: verified that projections are correct and changed @[simps] to @[simps!]
 @[simps!]
 def associator (η : F ⟶ G) (θ : G ⟶ H) (ι : H ⟶ I) : (η ≫ θ) ≫ ι ≅ η ≫ θ ≫ ι :=
   ModificationIso.ofComponents (fun a => α_ (η.app a) (θ.app a) (ι.app a)) (by aesop_cat)
 
 /-- Left unitor for the vertical composition of oplax natural transformations. -/
--- Porting note: verified that projections are correct and changed @[simps] to @[simps!]
 @[simps!]
 def leftUnitor (η : F ⟶ G) : 𝟙 F ≫ η ≅ η :=
   ModificationIso.ofComponents (fun a => λ_ (η.app a)) (by aesop_cat)
 
 /-- Right unitor for the vertical composition of oplax natural transformations. -/
--- Porting note: verified that projections are correct and changed @[simps] to @[simps!]
 @[simps!]
 def rightUnitor (η : F ⟶ G) : η ≫ 𝟙 G ≅ η :=
   ModificationIso.ofComponents (fun a => ρ_ (η.app a)) (by aesop_cat)
 
-end OplaxNatTrans
+end OplaxTrans
 
 variable (B C)
 
+-- example (B : Type u₁) [inst : CategoryTheory.Bicategory B] (C : Type u₂)
+-- [inst_1 : CategoryTheory.Bicategory C]
+--         {X Y Z : CategoryTheory.OplaxFunctor B C} (η : X ⟶ Y)
+--         (θ : CategoryTheory.OplaxTrans Y Z) {a b : B} (f : a ⟶ b) :
+--         (η ≫ θ).naturality f =
+--           (α_ (X.map f) (η.app b) (θ.app b)).inv ≫
+--             η.naturality f ▷ θ.app b ≫
+--               (α_ (η.app a) (Y.map f) (θ.app b)).hom ≫ η.app a ◁ θ.naturality f ≫
+-- (α_ (η.app a) (θ.app a) (Z.map f)).inv := by
+--   simp only [OplaxTrans.instCategoryStructOplaxFunctor_comp, OplaxTrans.vcomp_naturality]
+
 /-- A bicategory structure on the oplax functors between bicategories. -/
--- Porting note: verified that projections are correct and changed @[simps] to @[simps!]
 @[simps!]
 instance OplaxFunctor.bicategory : Bicategory (OplaxFunctor B C) where
-  whiskerLeft {F G H} η _ _ Γ := OplaxNatTrans.whiskerLeft η Γ
-  whiskerRight {F G H} _ _ Γ η := OplaxNatTrans.whiskerRight Γ η
-  associator {F G H} I := OplaxNatTrans.associator
-  leftUnitor {F G} := OplaxNatTrans.leftUnitor
-  rightUnitor {F G} := OplaxNatTrans.rightUnitor
-  whisker_exchange {a b c f g h i} η θ := by
-    ext
-    exact whisker_exchange _ _
+  whiskerLeft {F G H} η _ _ Γ := OplaxTrans.whiskerLeft η Γ
+  whiskerRight {F G H} _ _ Γ η := OplaxTrans.whiskerRight Γ η
+  associator {F G H} I := OplaxTrans.associator
+  leftUnitor {F G} := OplaxTrans.leftUnitor
+  rightUnitor {F G} := OplaxTrans.rightUnitor
+  whisker_exchange {a b c f g h i} η θ := by ext; exact whisker_exchange _ _
+
+
 
 end CategoryTheory
