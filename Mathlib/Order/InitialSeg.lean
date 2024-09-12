@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Floris van Doorn
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Order.RelIso.Set
 import Mathlib.Order.WellFounded
+import Mathlib.Data.Sum.Order
 /-!
 # Initial and principal segments
 
@@ -431,35 +432,39 @@ theorem wellFounded_iff_principalSeg.{u} {β : Type u} {s : β → β → Prop} 
 /-! ### Properties of initial and principal segments -/
 
 
+namespace InitialSeg
+
 /-- To an initial segment taking values in a well order, one can associate either a principal
 segment (if the range is not everything, hence one can take as top the minimum of the complement
 of the range) or an order isomorphism (if the range is everything). -/
-noncomputable def InitialSeg.ltOrEq [IsWellOrder β s] (f : r ≼i s) : (r ≺i s) ⊕ (r ≃r s) := by
+noncomputable def ltOrEq [IsWellOrder β s] (f : r ≼i s) : (r ≺i s) ⊕ (r ≃r s) := by
   by_cases h : Surjective f
   · exact Sum.inr (RelIso.ofSurjective f h)
   · exact Sum.inl (f.toPrincipalSeg h)
 
-theorem InitialSeg.ltOrEq_apply_left [IsWellOrder β s] (f : r ≼i s) (g : r ≺i s) (a : α) :
+theorem ltOrEq_apply_left [IsWellOrder β s] (f : r ≼i s) (g : r ≺i s) (a : α) :
     g a = f a :=
   @InitialSeg.eq α β r s _ g f a
 
-theorem InitialSeg.ltOrEq_apply_right [IsWellOrder β s] (f : r ≼i s) (g : r ≃r s) (a : α) :
+theorem ltOrEq_apply_right [IsWellOrder β s] (f : r ≼i s) (g : r ≃r s) (a : α) :
     g a = f a :=
   InitialSeg.eq (InitialSeg.ofIso g) f a
 
 /-- Composition of an initial segment taking values in a well order and a principal segment. -/
-noncomputable def InitialSeg.leLT [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g : s ≺i t) :
+noncomputable def leLT [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g : s ≺i t) :
     r ≺i t :=
   match f.ltOrEq with
   | Sum.inl f' => f'.trans g
   | Sum.inr f' => PrincipalSeg.equivLT f' g
 
 @[simp]
-theorem InitialSeg.leLT_apply [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g : s ≺i t) (a : α) :
+theorem leLT_apply [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g : s ≺i t) (a : α) :
     (f.leLT g) a = g (f a) := by
   delta InitialSeg.leLT; cases' f.ltOrEq with f' f'
   · simp only [PrincipalSeg.trans_apply, f.ltOrEq_apply_left]
   · simp only [PrincipalSeg.equivLT_apply, f.ltOrEq_apply_right]
+
+end InitialSeg
 
 namespace RelEmbedding
 
@@ -508,5 +513,23 @@ theorem collapse_apply [IsWellOrder β s] (f : r ↪r s) (a) : collapse f a = (c
   rfl
 
 end RelEmbedding
+
+/-- For any two well orders, one is an initial segment of the other. -/
+noncomputable def InitialSeg.total (r s) [IsWellOrder α r] [IsWellOrder β s] :
+    (r ≼i s) ⊕ (s ≼i r) :=
+  match (leAdd r s).ltOrEq, (RelEmbedding.sumLexInr r s).collapse.ltOrEq with
+  | Sum.inl f, Sum.inr g => Sum.inl <| f.ltEquiv g.symm
+  | Sum.inr f, Sum.inl g => Sum.inr <| g.ltEquiv f.symm
+  | Sum.inr f, Sum.inr g => Sum.inl <| InitialSeg.ofIso (f.trans g.symm)
+  | Sum.inl f, Sum.inl g => Classical.choice <| by
+      obtain h | h | h := trichotomous_of (Sum.Lex r s) f.top g.top
+      · exact ⟨Sum.inl <| (f.codRestrict {x | Sum.Lex r s x g.top}
+          (fun a => _root_.trans (f.lt_top a) h) h).ltEquiv g.subrelIso⟩
+      · let f := f.subrelIso
+        rw [h] at f
+        exact ⟨Sum.inl <| InitialSeg.ofIso (f.symm.trans g.subrelIso)⟩
+      · exact ⟨Sum.inr <| (g.codRestrict {x | Sum.Lex r s x f.top}
+          (fun a => _root_.trans (g.lt_top a) h) h).ltEquiv f.subrelIso⟩
+
 attribute [nolint simpNF] PrincipalSeg.ofElement_apply PrincipalSeg.subrelIso_symm_apply
   PrincipalSeg.apply_subrelIso PrincipalSeg.subrelIso_apply
