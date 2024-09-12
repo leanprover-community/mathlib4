@@ -106,16 +106,14 @@ theorem radical_pow_of_prime {a : M} (ha : Prime a) {n : ℕ} (hn : 0 < n) :
   rw [radical_pow a hn]
   exact radical_of_prime ha
 
-
--- Theorems for commutative rings
-
--- TODO: This holds for "nontrivial" monoids - do not need ring assumption.
-theorem radical_ne_zero (a : R) : radical a ≠ 0 := by
+theorem radical_ne_zero (a : M) (h: Nontrivial M) : radical a ≠ 0 := by
   rw [radical, ← Finset.prod_val]
   apply Multiset.prod_ne_zero
   rw [primeFactors]
   simp only [Multiset.toFinset_val, Multiset.mem_dedup]
   exact zero_not_mem_normalizedFactors _
+
+-- Theorems for commutative rings
 
 /-- Coprime elements have disjoint prime factors (as multisets). -/
 theorem disjoint_normalizedFactors {a b : R} (hc : IsCoprime a b) :
