@@ -50,6 +50,8 @@ variable {ι α β : Type*} [LinearOrderedSemiring α] [ExistsAddOfLE α]
 
 /-! ### Scalar multiplication versions -/
 
+section SMul
+
 /-! #### Weak rearrangement inequality -/
 
 section weak_inequality
@@ -282,8 +284,8 @@ theorem MonovaryOn.sum_smul_comp_perm_lt_sum_smul_iff (hfg : MonovaryOn f g s)
 /-- **Strict inequality case of the Rearrangement Inequality**: Pointwise scalar multiplication of
 `f` and `g`, which antivary together on `s`, is strictly decreased by a permutation if and only if
 `f` and `g ∘ σ` do not antivary together on `s`. Stated by permuting the entries of `g`. -/
-theorem AntivaryOn.sum_smul_lt_sum_smul_comp_perm_iff
-    (hfg : AntivaryOn f g s) (hσ : {x | σ x ≠ x} ⊆ s) :
+theorem AntivaryOn.sum_smul_lt_sum_smul_comp_perm_iff (hfg : AntivaryOn f g s)
+    (hσ : {x | σ x ≠ x} ⊆ s) :
     ∑ i ∈ s, f i • g i < ∑ i ∈ s, f i • g (σ i) ↔ ¬AntivaryOn f (g ∘ σ) s := by
   simp [← hfg.sum_smul_comp_perm_eq_sum_smul_iff hσ, lt_iff_le_and_ne, eq_comm,
     hfg.sum_smul_le_sum_smul_comp_perm hσ]
@@ -340,6 +342,7 @@ theorem Antivary.sum_smul_lt_sum_comp_perm_smul_iff (hfg : Antivary f g) :
   simp [(hfg.antivaryOn _).sum_smul_lt_sum_comp_perm_smul_iff fun _ _ ↦ mem_univ _]
 
 end strict_inequality
+end SMul
 
 /-!
 ### Multiplication versions
