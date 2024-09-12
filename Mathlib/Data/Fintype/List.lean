@@ -41,7 +41,7 @@ theorem lists_coe (l : List α) : lists (l : Multiset α) = l.permutations :=
 @[simp]
 theorem lists_nodup_finset (l : Finset α) : (lists (l.val)).Nodup := by
   have h_nodup : l.val.Nodup := l.nodup
-  rw [← Finset.coe_toList l, Multiset.coe_nodup ] at h_nodup
+  rw [← Finset.coe_toList l, Multiset.coe_nodup] at h_nodup
   rw [← Finset.coe_toList l]
   exact nodup_permutations l.val.toList (h_nodup)
 
