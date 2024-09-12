@@ -462,6 +462,11 @@ end Complex
 
 namespace Real
 
+/-- The `Γ` function (of a real variable `s`). -/
+@[pp_nodot]
+def Beta (a b : ℝ) : ℝ :=
+  (Complex.betaIntegral a b).re
+
 /-- The sequence with `n`-th term `n ^ s * n! / (s * (s + 1) * ... * (s + n))`, for real `s`. We
 will show that this tends to `Γ(s)` as `n → ∞`. -/
 noncomputable def GammaSeq (s : ℝ) (n : ℕ) :=
