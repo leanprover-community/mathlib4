@@ -382,9 +382,15 @@ theorem IsNormal.le_iff {f} (H : IsNormal f) {a b} : f a ≤ f b ↔ a ≤ b :=
 theorem IsNormal.inj {f} (H : IsNormal f) {a b} : f a = f b ↔ a = b := by
   simp only [le_antisymm_iff, H.le_iff]
 
-@[deprecated StrictMono.id_le (since := "2024-09-11")]
+theorem IsNormal.id_le {f} (H : IsNormal f) : id ≤ f :=
+  H.strictMono.id_le
+
+@[deprecated IsNormal.id_le (since := "2024-09-11")]
 theorem IsNormal.self_le {f} (H : IsNormal f) (a) : a ≤ f a :=
   H.strictMono.id_le a
+
+theorem IsNormal.le_iff_eq {f} (H : IsNormal f) {a} : f a ≤ a ↔ f a = a :=
+  (H.id_le a).le_iff_eq
 
 theorem IsNormal.le_set {f o} (H : IsNormal f) (p : Set Ordinal) (p0 : p.Nonempty) (b)
     (H₂ : ∀ o, b ≤ o ↔ ∀ a ∈ p, a ≤ o) : f b ≤ o ↔ ∀ a ∈ p, f a ≤ o :=
@@ -419,10 +425,6 @@ theorem IsNormal.isLimit {f} (H : IsNormal f) {o} (l : IsLimit o) : IsLimit (f o
   ⟨ne_of_gt <| (Ordinal.zero_le _).trans_lt <| H.lt_iff.2 l.pos, fun _ h =>
     let ⟨_b, h₁, h₂⟩ := (H.limit_lt l).1 h
     (succ_le_of_lt h₂).trans_lt (H.lt_iff.2 h₁)⟩
-
-@[deprecated StrictMono.id_le (since := "2024-09-11")]
-theorem IsNormal.le_iff_eq {f} (H : IsNormal f) {a} : f a ≤ a ↔ f a = a :=
-  (H.strictMono.id_le a).le_iff_eq
 
 theorem add_le_of_limit {a b c : Ordinal} (h : IsLimit b) : a + b ≤ c ↔ ∀ b' < b, a + b' ≤ c :=
   ⟨fun h b' l => (add_le_add_left l.le _).trans h, fun H =>

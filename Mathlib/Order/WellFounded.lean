@@ -163,12 +163,14 @@ theorem WellFounded.eq_strictMono_iff_eq_range (h : WellFounded ((· < ·) : β 
     Set.range f = Set.range g ↔ f = g :=
   @StrictMono.range_inj β γ _ _ ⟨h⟩ f g hf hg
 
+/-- A strict monotonic function `f` on a well order satisfies `x ≤ f x` for all `x`. -/
 theorem StrictMono.id_le [WellFoundedLT β] {f : β → β} (hf : StrictMono f) : id ≤ f := by
   rw [Pi.le_def]
   by_contra! H
   obtain ⟨m, hm, hm'⟩ := wellFounded_lt.has_min _ H
   exact hm' _ (hf hm) hm
 
+/-- A strict monotonic function `f` on a dual well order satisfies `f x ≤ x` for all `x`. -/
 theorem StrictMono.le_id [WellFoundedGT β] {f : β → β} (hf : StrictMono f) : f ≤ id :=
   StrictMono.id_le (β := βᵒᵈ) hf.dual
 
