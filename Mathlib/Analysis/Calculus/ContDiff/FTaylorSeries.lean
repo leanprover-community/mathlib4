@@ -7,9 +7,94 @@ import Mathlib.Analysis.Calculus.FDeriv.Equiv
 import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 
 /-!
-# Functions with a Taylor series
+# Iterated derivatives of a function
 
+In this file, we define iteratively the `n+1`-th derivative of a function as the
+derivative of the `n`-th derivative. It is called `iteratedFDeriv 𝕜 n f x` where `𝕜` is the
+field, `n` is the number of iterations, `f` is the function and `x` is the point, and it is given
+as an `n`-multilinear map. We also define a version `iteratedFDerivWithin` relative to a domain.
+Note that, in domains, there may be several choices of possible derivative, so we make some
+arbitrary choice in the definition.
+
+We also define a predicate `HasFTaylorSeriesUpTo` (and its localized version
+`HasFTaylorSeriesUpToOn`), saying that a sequence of multilinear maps is *a* sequence of
+derivatives of `f`. Contrary to `iteratedFDerivWithin`, it accomodates well the
+non-uniqueness of derivatives.
+
+## Main definitions and results
+
+Let `f : E → F` be a map between normed vector spaces over a nontrivially normed field `𝕜`.
+
+* `HasFTaylorSeriesUpTo n f p`: expresses that the formal multilinear series `p` is a sequence
+  of iterated derivatives of `f`, up to the `n`-th term (where `n` is a natural number or `∞`).
+* `HasFTaylorSeriesUpToOn n f p s`: same thing, but inside a set `s`. The notion of derivative
+  is now taken inside `s`. In particular, derivatives don't have to be unique.
+
+* `iteratedFDerivWithin 𝕜 n f s x` is an `n`-th derivative of `f` over the field `𝕜` on the
+  set `s` at the point `x`. It is a continuous multilinear map from `E^n` to `F`, defined as a
+  derivative within `s` of `iteratedFDerivWithin 𝕜 (n-1) f s` if one exists, and `0` otherwise.
+* `iteratedFDeriv 𝕜 n f x` is the `n`-th derivative of `f` over the field `𝕜` at the point `x`.
+  It is a continuous multilinear map from `E^n` to `F`, defined as a derivative of
+  `iteratedFDeriv 𝕜 (n-1) f` if one exists, and `0` otherwise.
+
+
+### Side of the composition, and universe issues
+
+With a naïve direct definition, the `n`-th derivative of a function belongs to the space
+`E →L[𝕜] (E →L[𝕜] (E ... F)...)))` where there are n iterations of `E →L[𝕜]`. This space
+may also be seen as the space of continuous multilinear functions on `n` copies of `E` with
+values in `F`, by uncurrying. This is the point of view that is usually adopted in textbooks,
+and that we also use. This means that the definition and the first proofs are slightly involved,
+as one has to keep track of the uncurrying operation. The uncurrying can be done from the
+left or from the right, amounting to defining the `n+1`-th derivative either as the derivative of
+the `n`-th derivative, or as the `n`-th derivative of the derivative.
+For proofs, it would be more convenient to use the latter approach (from the right),
+as it means to prove things at the `n+1`-th step we only need to understand well enough the
+derivative in `E →L[𝕜] F` (contrary to the approach from the left, where one would need to know
+enough on the `n`-th derivative to deduce things on the `n+1`-th derivative).
+
+However, the definition from the right leads to a universe polymorphism problem: if we define
+`iteratedFDeriv 𝕜 (n + 1) f x = iteratedFDeriv 𝕜 n (fderiv 𝕜 f) x` by induction, we need to
+generalize over all spaces (as `f` and `fderiv 𝕜 f` don't take values in the same space). It is
+only possible to generalize over all spaces in some fixed universe in an inductive definition.
+For `f : E → F`, then `fderiv 𝕜 f` is a map `E → (E →L[𝕜] F)`. Therefore, the definition will only
+work if `F` and `E →L[𝕜] F` are in the same universe.
+
+This issue does not appear with the definition from the left, where one does not need to generalize
+over all spaces. Therefore, we use the definition from the left. This means some proofs later on
+become a little bit more complicated: to prove that a function is `C^n`, the most efficient approach
+is to exhibit a formula for its `n`-th derivative and prove it is continuous (contrary to the
+inductive approach where one would prove smoothness statements without giving a formula for the
+derivative). In the end, this approach is still satisfactory as it is good to have formulas for the
+iterated derivatives in various constructions.
+
+One point where we depart from this explicit approach is in the proof of smoothness of a
+composition: there is a formula for the `n`-th derivative of a composition (Faà di Bruno's formula),
+but it is very complicated and barely usable, while the inductive proof is very simple. Thus, we
+give the inductive proof. As explained above, it works by generalizing over the target space, hence
+it only works well if all spaces belong to the same universe. To get the general version, we lift
+things to a common universe using a trick.
+
+### Variables management
+
+The textbook definitions and proofs use various identifications and abuse of notations, for instance
+when saying that the natural space in which the derivative lives, i.e.,
+`E →L[𝕜] (E →L[𝕜] ( ... →L[𝕜] F))`, is the same as a space of multilinear maps. When doing things
+formally, we need to provide explicit maps for these identifications, and chase some diagrams to see
+everything is compatible with the identifications. In particular, one needs to check that taking the
+derivative and then doing the identification, or first doing the identification and then taking the
+derivative, gives the same result. The key point for this is that taking the derivative commutes
+with continuous linear equivalences. Therefore, we need to implement all our identifications with
+continuous linear equivs.
+
+## Notations
+
+We use the notation `E [×n]→L[𝕜] F` for the space of continuous multilinear maps on `E^n` with
+values in `F`. This is the space in which the `n`-th derivative of a function from `E` to `F` lives.
+
+In this file, we denote `⊤ : ℕ∞` with `∞`.
 -/
+
 
 noncomputable section
 
@@ -585,7 +670,7 @@ theorem iteratedFDerivWithin_inter_open {n : ℕ} (hu : IsOpen u) (hx : x ∈ u)
 
 /-- On a set with unique differentiability, any choice of iterated differential has to coincide
 with the one we have chosen in `iteratedFDerivWithin 𝕜 m f s`. -/
-theorem HasFTaylorSeriesUpToOn.eq_iteratedFDerivWithin_of_uniqueDiffOn {n : ℕ∞}
+theorem HasFTaylorSeriesUpToOn.eq_iteratedFDerivWithin_of_uniqueDiffOn
     (h : HasFTaylorSeriesUpToOn n f p s) {m : ℕ} (hmn : (m : ℕ∞) ≤ n) (hs : UniqueDiffOn 𝕜 s)
     (hx : x ∈ s) : p x m = iteratedFDerivWithin 𝕜 m f s x := by
   induction' m with m IH generalizing x
@@ -603,7 +688,103 @@ theorem HasFTaylorSeriesUpToOn.eq_iteratedFDerivWithin_of_uniqueDiffOn {n : ℕ�
 alias HasFTaylorSeriesUpToOn.eq_ftaylor_series_of_uniqueDiffOn :=
   HasFTaylorSeriesUpToOn.eq_iteratedFDerivWithin_of_uniqueDiffOn
 
+
+/-! ### Functions with a Taylor series on the whole space -/
+
+/-- `HasFTaylorSeriesUpTo n f p` registers the fact that `p 0 = f` and `p (m+1)` is a
+derivative of `p m` for `m < n`, and is continuous for `m ≤ n`. This is a predicate analogous to
+`HasFDerivAt` but for higher order derivatives.
+
+Notice that `p` does not sum up to `f` on the diagonal (`FormalMultilinearSeries.sum`), even if
+`f` is analytic and `n = ∞`: an addition `1/m!` factor on the `m`th term is necessary for that. -/
+structure HasFTaylorSeriesUpTo (n : ℕ∞) (f : E → F) (p : E → FormalMultilinearSeries 𝕜 E F) :
+  Prop where
+  zero_eq : ∀ x, (p x 0).uncurry0 = f x
+  fderiv : ∀ m : ℕ, (m : ℕ∞) < n → ∀ x, HasFDerivAt (fun y => p y m) (p x m.succ).curryLeft x
+  cont : ∀ m : ℕ, (m : ℕ∞) ≤ n → Continuous fun x => p x m
+
+theorem HasFTaylorSeriesUpTo.zero_eq' (h : HasFTaylorSeriesUpTo n f p) (x : E) :
+    p x 0 = (continuousMultilinearCurryFin0 𝕜 E F).symm (f x) := by
+  rw [← h.zero_eq x]
+  exact (p x 0).uncurry0_curry0.symm
+
+theorem hasFTaylorSeriesUpToOn_univ_iff :
+    HasFTaylorSeriesUpToOn n f p univ ↔ HasFTaylorSeriesUpTo n f p := by
+  constructor
+  · intro H
+    constructor
+    · exact fun x => H.zero_eq x (mem_univ x)
+    · intro m hm x
+      rw [← hasFDerivWithinAt_univ]
+      exact H.fderivWithin m hm x (mem_univ x)
+    · intro m hm
+      rw [continuous_iff_continuousOn_univ]
+      exact H.cont m hm
+  · intro H
+    constructor
+    · exact fun x _ => H.zero_eq x
+    · intro m hm x _
+      rw [hasFDerivWithinAt_univ]
+      exact H.fderiv m hm x
+    · intro m hm
+      rw [← continuous_iff_continuousOn_univ]
+      exact H.cont m hm
+
+theorem HasFTaylorSeriesUpTo.hasFTaylorSeriesUpToOn (h : HasFTaylorSeriesUpTo n f p) (s : Set E) :
+    HasFTaylorSeriesUpToOn n f p s :=
+  (hasFTaylorSeriesUpToOn_univ_iff.2 h).mono (subset_univ _)
+
+theorem HasFTaylorSeriesUpTo.ofLe (h : HasFTaylorSeriesUpTo n f p) (hmn : m ≤ n) :
+    HasFTaylorSeriesUpTo m f p := by
+  rw [← hasFTaylorSeriesUpToOn_univ_iff] at h ⊢; exact h.of_le hmn
+
+theorem HasFTaylorSeriesUpTo.continuous (h : HasFTaylorSeriesUpTo n f p) : Continuous f := by
+  rw [← hasFTaylorSeriesUpToOn_univ_iff] at h
+  rw [continuous_iff_continuousOn_univ]
+  exact h.continuousOn
+
+theorem hasFTaylorSeriesUpTo_zero_iff :
+    HasFTaylorSeriesUpTo 0 f p ↔ Continuous f ∧ ∀ x, (p x 0).uncurry0 = f x := by
+  simp [hasFTaylorSeriesUpToOn_univ_iff.symm, continuous_iff_continuousOn_univ,
+    hasFTaylorSeriesUpToOn_zero_iff]
+
+theorem hasFTaylorSeriesUpTo_top_iff :
+    HasFTaylorSeriesUpTo ∞ f p ↔ ∀ n : ℕ, HasFTaylorSeriesUpTo n f p := by
+  simp only [← hasFTaylorSeriesUpToOn_univ_iff, hasFTaylorSeriesUpToOn_top_iff]
+
+/-- In the case that `n = ∞` we don't need the continuity assumption in
+`HasFTaylorSeriesUpTo`. -/
+theorem hasFTaylorSeriesUpTo_top_iff' :
+    HasFTaylorSeriesUpTo ∞ f p ↔
+      (∀ x, (p x 0).uncurry0 = f x) ∧
+        ∀ (m : ℕ) (x), HasFDerivAt (fun y => p y m) (p x m.succ).curryLeft x := by
+  simp only [← hasFTaylorSeriesUpToOn_univ_iff, hasFTaylorSeriesUpToOn_top_iff', mem_univ,
+    forall_true_left, hasFDerivWithinAt_univ]
+
+/-- If a function has a Taylor series at order at least `1`, then the term of order `1` of this
+series is a derivative of `f`. -/
+theorem HasFTaylorSeriesUpTo.hasFDerivAt (h : HasFTaylorSeriesUpTo n f p) (hn : 1 ≤ n) (x : E) :
+    HasFDerivAt f (continuousMultilinearCurryFin1 𝕜 E F (p x 1)) x := by
+  rw [← hasFDerivWithinAt_univ]
+  exact (hasFTaylorSeriesUpToOn_univ_iff.2 h).hasFDerivWithinAt hn (mem_univ _)
+
+theorem HasFTaylorSeriesUpTo.differentiable (h : HasFTaylorSeriesUpTo n f p) (hn : 1 ≤ n) :
+    Differentiable 𝕜 f := fun x => (h.hasFDerivAt hn x).differentiableAt
+
+/-- `p` is a Taylor series of `f` up to `n+1` if and only if `p.shift` is a Taylor series up to `n`
+for `p 1`, which is a derivative of `f`. -/
+theorem hasFTaylorSeriesUpTo_succ_iff_right {n : ℕ} :
+    HasFTaylorSeriesUpTo (n + 1 : ℕ) f p ↔
+      (∀ x, (p x 0).uncurry0 = f x) ∧
+        (∀ x, HasFDerivAt (fun y => p y 0) (p x 1).curryLeft x) ∧
+          HasFTaylorSeriesUpTo n (fun x => continuousMultilinearCurryFin1 𝕜 E F (p x 1)) fun x =>
+            (p x).shift := by
+  simp only [hasFTaylorSeriesUpToOn_succ_iff_right, ← hasFTaylorSeriesUpToOn_univ_iff, mem_univ,
+    forall_true_left, hasFDerivWithinAt_univ]
+
+
 /-! ### Iterated derivative -/
+
 
 variable (𝕜)
 

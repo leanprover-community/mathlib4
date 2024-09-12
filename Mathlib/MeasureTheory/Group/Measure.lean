@@ -518,7 +518,7 @@ theorem null_iff_of_isMulLeftInvariant [Regular μ] {s : Set G} (hs : IsOpen s) 
     μ s = 0 ↔ s = ∅ ∨ μ = 0 := by
   rcases eq_zero_or_neZero μ with rfl|hμ
   · simp
-  · simp only [or_false_iff, hs.measure_eq_zero_iff μ, NeZero.ne μ]
+  · simp only [or_false, hs.measure_eq_zero_iff μ, NeZero.ne μ]
 
 @[to_additive]
 theorem measure_ne_zero_iff_nonempty_of_isMulLeftInvariant [Regular μ] (hμ : μ ≠ 0) {s : Set G}

@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Analytic.Within
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
-import Mathlib.Analysis.Calculus.ContDiff.HasFTaylorSeries
+import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
 
 /-!
 # Higher differentiability
@@ -17,11 +17,7 @@ It is `C^∞` if it is `C^n` for all n.
 Finally, it is `C^ω` if it is analytic (as well as all its derivative, which is automatic if the
 space is complete).
 
-We formalize these notions by defining iteratively the `n+1`-th derivative of a function as the
-derivative of the `n`-th derivative. It is called `iteratedFDeriv 𝕜 n f x` where `𝕜` is the
-field, `n` is the number of iterations, `f` is the function and `x` is the point, and it is given
-as an `n`-multilinear map. We also define a version `iteratedFDerivWithin` relative to a domain,
-as well as predicates `ContDiffWithinAt`, `ContDiffAt`, `ContDiffOn` and
+We formalize these notions with predicates `ContDiffWithinAt`, `ContDiffAt`, `ContDiffOn` and
 `ContDiff` saying that the function is `C^n` within a set at a point, at a point, on a set
 and on the whole space respectively.
 
@@ -29,28 +25,18 @@ To avoid the issue of choice when choosing a derivative in sets where the deriva
 necessarily unique, `ContDiffOn` is not defined directly in terms of the
 regularity of the specific choice `iteratedFDerivWithin 𝕜 n f s` inside `s`, but in terms of the
 existence of a nice sequence of derivatives, expressed with a predicate
-`HasFTaylorSeriesUpToOn`.
+`HasFTaylorSeriesUpToOn` defined in the file `FTaylorSeries`.
 
 We prove basic properties of these notions.
 
 ## Main definitions and results
 Let `f : E → F` be a map between normed vector spaces over a nontrivially normed field `𝕜`.
 
-* `HasFTaylorSeriesUpTo n f p`: expresses that the formal multilinear series `p` is a sequence
-  of iterated derivatives of `f`, up to the `n`-th term (where `n` is a natural number or `∞`).
-* `HasFTaylorSeriesUpToOn n f p s`: same thing, but inside a set `s`. The notion of derivative
-  is now taken inside `s`. In particular, derivatives don't have to be unique.
 * `ContDiff 𝕜 n f`: expresses that `f` is `C^n`, i.e., it admits a Taylor series up to
   rank `n`.
 * `ContDiffOn 𝕜 n f s`: expresses that `f` is `C^n` in `s`.
 * `ContDiffAt 𝕜 n f x`: expresses that `f` is `C^n` around `x`.
 * `ContDiffWithinAt 𝕜 n f s x`: expresses that `f` is `C^n` around `x` within the set `s`.
-* `iteratedFDerivWithin 𝕜 n f s x` is an `n`-th derivative of `f` over the field `𝕜` on the
-  set `s` at the point `x`. It is a continuous multilinear map from `E^n` to `F`, defined as a
-  derivative within `s` of `iteratedFDerivWithin 𝕜 (n-1) f s` if one exists, and `0` otherwise.
-* `iteratedFDeriv 𝕜 n f x` is the `n`-th derivative of `f` over the field `𝕜` at the point `x`.
-  It is a continuous multilinear map from `E^n` to `F`, defined as a derivative of
-  `iteratedFDeriv 𝕜 (n-1) f` if one exists, and `0` otherwise.
 
 In sets of unique differentiability, `ContDiffOn 𝕜 n f s` can be expressed in terms of the
 properties of `iteratedFDerivWithin 𝕜 m f s` for `m ≤ n`. In the whole space,
@@ -94,55 +80,6 @@ within `s`. However, this does not imply continuity or differentiability within 
 at `x` when `x` does not belong to `s`. Therefore, we require such existence and good behavior on
 a neighborhood of `x` within `s ∪ {x}` (which appears as `insert x s` in this file).
 
-### Side of the composition, and universe issues
-
-With a naïve direct definition, the `n`-th derivative of a function belongs to the space
-`E →L[𝕜] (E →L[𝕜] (E ... F)...)))` where there are n iterations of `E →L[𝕜]`. This space
-may also be seen as the space of continuous multilinear functions on `n` copies of `E` with
-values in `F`, by uncurrying. This is the point of view that is usually adopted in textbooks,
-and that we also use. This means that the definition and the first proofs are slightly involved,
-as one has to keep track of the uncurrying operation. The uncurrying can be done from the
-left or from the right, amounting to defining the `n+1`-th derivative either as the derivative of
-the `n`-th derivative, or as the `n`-th derivative of the derivative.
-For proofs, it would be more convenient to use the latter approach (from the right),
-as it means to prove things at the `n+1`-th step we only need to understand well enough the
-derivative in `E →L[𝕜] F` (contrary to the approach from the left, where one would need to know
-enough on the `n`-th derivative to deduce things on the `n+1`-th derivative).
-
-However, the definition from the right leads to a universe polymorphism problem: if we define
-`iteratedFDeriv 𝕜 (n + 1) f x = iteratedFDeriv 𝕜 n (fderiv 𝕜 f) x` by induction, we need to
-generalize over all spaces (as `f` and `fderiv 𝕜 f` don't take values in the same space). It is
-only possible to generalize over all spaces in some fixed universe in an inductive definition.
-For `f : E → F`, then `fderiv 𝕜 f` is a map `E → (E →L[𝕜] F)`. Therefore, the definition will only
-work if `F` and `E →L[𝕜] F` are in the same universe.
-
-This issue does not appear with the definition from the left, where one does not need to generalize
-over all spaces. Therefore, we use the definition from the left. This means some proofs later on
-become a little bit more complicated: to prove that a function is `C^n`, the most efficient approach
-is to exhibit a formula for its `n`-th derivative and prove it is continuous (contrary to the
-inductive approach where one would prove smoothness statements without giving a formula for the
-derivative). In the end, this approach is still satisfactory as it is good to have formulas for the
-iterated derivatives in various constructions.
-
-One point where we depart from this explicit approach is in the proof of smoothness of a
-composition: there is a formula for the `n`-th derivative of a composition (Faà di Bruno's formula),
-but it is very complicated and barely usable, while the inductive proof is very simple. Thus, we
-give the inductive proof. As explained above, it works by generalizing over the target space, hence
-it only works well if all spaces belong to the same universe. To get the general version, we lift
-things to a common universe using a trick.
-
-### Variables management
-
-The textbook definitions and proofs use various identifications and abuse of notations, for instance
-when saying that the natural space in which the derivative lives, i.e.,
-`E →L[𝕜] (E →L[𝕜] ( ... →L[𝕜] F))`, is the same as a space of multilinear maps. When doing things
-formally, we need to provide explicit maps for these identifications, and chase some diagrams to see
-everything is compatible with the identifications. In particular, one needs to check that taking the
-derivative and then doing the identification, or first doing the identification and then taking the
-derivative, gives the same result. The key point for this is that taking the derivative commutes
-with continuous linear equivalences. Therefore, we need to implement all our identifications with
-continuous linear equivs.
-
 ## Notations
 
 We use the notation `E [×n]→L[𝕜] F` for the space of continuous multilinear maps on `E^n` with
@@ -178,7 +115,10 @@ variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type uE} [NormedAdd
   {s s₁ t u : Set E} {f f₁ : E → F} {g : F → G} {x x₀ : E} {c : F}
   {p : E → FormalMultilinearSeries 𝕜 E F}
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/master
 /-! ### Smooth functions within a set around a point -/
 
 local notation "ω" => (⊤ : WithTop (ℕ∞))
@@ -363,8 +303,8 @@ theorem ContDiffWithinAt.differentiable_within_at' (h : ContDiffWithinAt 𝕜 n 
   rcases contDiffWithinAt_nat.1 (h.of_le hn) with ⟨u, hu, p, H⟩
   rcases mem_nhdsWithin.1 hu with ⟨t, t_open, xt, tu⟩
   rw [inter_comm] at tu
-  have := ((H.mono tu).differentiableOn le_rfl) x ⟨mem_insert x s, xt⟩
-  exact (differentiableWithinAt_inter (IsOpen.mem_nhds t_open xt)).1 this
+  exact (differentiableWithinAt_inter (IsOpen.mem_nhds t_open xt)).1 <|
+    ((H.mono tu).differentiableOn le_rfl) x ⟨mem_insert x s, xt⟩
 
 theorem ContDiffWithinAt.differentiableWithinAt (h : ContDiffWithinAt 𝕜 n f s x) (hn : 1 ≤ n) :
     DifferentiableWithinAt 𝕜 f s x :=
@@ -524,7 +464,7 @@ theorem HasFTaylorSeriesUpToOn.contDiffOn {n : ℕ∞} {f' : E → FormalMultili
     (hf : HasFTaylorSeriesUpToOn n f f' s) : ContDiffOn 𝕜 n f s := by
   intro x hx m hm
   use s
-  simp only [Set.insert_eq_of_mem hx, self_mem_nhdsWithin, true_and_iff]
+  simp only [Set.insert_eq_of_mem hx, self_mem_nhdsWithin, true_and]
   exact ⟨f', hf.of_le hm⟩
 
 theorem ContDiffOn.contDiffWithinAt (h : ContDiffOn 𝕜 n f s) (hx : x ∈ s) :
