@@ -255,8 +255,6 @@ theorem faaDiBruno {n : ℕ∞} {g : F → G} {f : E → F}
     (hg : HasFTaylorSeriesUpToOn n g q t) (hf : HasFTaylorSeriesUpToOn n f p s) (h : MapsTo f s t) :
     HasFTaylorSeriesUpToOn n (g ∘ f) (fun x ↦ (q (f x)).taylorComp (p x)) s := sorry
 
-#check Finset.analyticOn_prod
-
 theorem analyticWithinOn_compAlongOrderedFinpartition
     (hq : ∀ (n : ℕ), AnalyticWithinOn 𝕜 (fun x ↦ q x n) t)
     (hp : ∀ n, AnalyticWithinOn 𝕜 (fun x ↦ p x n) s) {f : E → F}
@@ -268,7 +266,7 @@ theorem analyticWithinOn_compAlongOrderedFinpartition
   apply (blou B).comp_analyticWithinOn ?_ (mapsTo_univ _ _)
   apply AnalyticWithinOn.prod
   · exact (hq c.length).comp hf h
-  sorry
+  · exact AnalyticWithinOn.pi (fun i ↦ hp _)
 
 
 
@@ -282,4 +280,4 @@ theorem analyticWithinOn_taylorComp
     (hp : ∀ n, AnalyticWithinOn 𝕜 (fun x ↦ p x n) s) {f : E → F}
     (hf : AnalyticWithinOn 𝕜 f s) (h : MapsTo f s t) (n : ℕ) :
     AnalyticWithinOn 𝕜 (fun x ↦ (q (f x)).taylorComp (p x) n) s := by
-  apply Finset.analyticOn_sum
+  apply Finset.analyticWithinOn_sum
