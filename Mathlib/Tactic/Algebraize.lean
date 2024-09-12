@@ -204,10 +204,14 @@ def searchContext (t : Array Expr) : TacticM Unit := withMainContext do
           return [mvar]
     | none => return
 
+/-- Configuration for `algebraize`. -/
 structure Config where
+  /-- If true (default), the tactic will search the local context for `RingHom` properties
+    that can be converted to `Algebra` properties. -/
   searchContext : Bool := true
 deriving Inhabited
 
+/-- Function elaborating `Algebraize.Config`. -/
 declare_config_elab elabAlgebraizeConfig Algebraize.Config
 
 end Algebraize
