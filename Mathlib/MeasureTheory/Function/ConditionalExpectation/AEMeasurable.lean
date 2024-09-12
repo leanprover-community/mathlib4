@@ -100,6 +100,12 @@ theorem const_inner {𝕜 β} [RCLike 𝕜] [NormedAddCommGroup β] [InnerProduc
   dsimp only
   rw [hx]
 
+@[simp] theorem of_subsingleton [Subsingleton β] : AEStronglyMeasurable' m f μ :=
+  ⟨f, by simp, by simp⟩
+
+@[simp] theorem of_subsingleton' [Subsingleton α] : AEStronglyMeasurable' m f μ :=
+  ⟨f, by simp, by simp⟩
+
 /-- An `m`-strongly measurable function almost everywhere equal to `f`. -/
 noncomputable def mk (f : α → β) (hfm : AEStronglyMeasurable' m f μ) : α → β :=
   hfm.choose

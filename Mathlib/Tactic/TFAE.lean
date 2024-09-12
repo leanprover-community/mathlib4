@@ -101,7 +101,7 @@ where
 variable (hyps : Array (ℕ × ℕ × Expr)) (atoms : Array Q(Prop))
 
 /-- Uses depth-first search to find a path from `P` to `P'`. -/
-partial def dfs (i j : ℕ) (P P' : Q(Prop)) (hP : Q($P)) : StateT (HashSet ℕ) MetaM Q($P') := do
+partial def dfs (i j : ℕ) (P P' : Q(Prop)) (hP : Q($P)) : StateT (Std.HashSet ℕ) MetaM Q($P') := do
   if i == j then
     return hP
   modify (·.insert i)

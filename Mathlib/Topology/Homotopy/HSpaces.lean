@@ -170,7 +170,7 @@ theorem qRight_zero_left (θ : I) : qRight (0, θ) = 0 :=
 
 theorem qRight_one_left (θ : I) : qRight (1, θ) = 1 :=
   Set.projIcc_of_right_le _ <|
-    (le_div_iff <| add_pos zero_lt_one).2 <| by
+    (le_div_iff₀ <| add_pos zero_lt_one).2 <| by
       dsimp only
       rw [coe_one, one_mul, mul_one, add_comm, ← one_add_one_eq_two]
       simp only [add_le_add_iff_right]

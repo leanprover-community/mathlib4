@@ -538,7 +538,7 @@ theorem coordChange_linear_comp (i j k : ι) :
 @[nolint unusedArguments] -- Porting note(#5171): was `nolint has_nonempty_instance`
 def Index := ι
 
-/-- The base space of a vector bundle core, as a convenience function for dot notation-/
+/-- The base space of a vector bundle core, as a convenience function for dot notation -/
 @[nolint unusedArguments, reducible]
 def Base := B
 

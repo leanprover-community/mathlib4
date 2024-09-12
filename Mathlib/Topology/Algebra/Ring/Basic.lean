@@ -40,7 +40,7 @@ The `TopologicalSemiring` class should *only* be instantiated in the presence of
 `NonUnitalNonAssocSemiring` instance; if there is an instance of `NonUnitalNonAssocRing`,
 then `TopologicalRing` should be used. Note: in the presence of `NonAssocRing`, these classes are
 mathematically equivalent (see `TopologicalSemiring.continuousNeg_of_mul` or
-`TopologicalSemiring.toTopologicalRing`).  -/
+`TopologicalSemiring.toTopologicalRing`). -/
 class TopologicalSemiring [TopologicalSpace α] [NonUnitalNonAssocSemiring α] extends
   ContinuousAdd α, ContinuousMul α : Prop
 
