@@ -3,7 +3,7 @@ Copyright (c) 2018 Violeta Hernández Palacios, Mario Carneiro. All rights reser
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios, Mario Carneiro
 -/
-import Mathlib.SetTheory.Ordinal.Arithmetic
+import Mathlib.SetTheory.Ordinal.Enum
 import Mathlib.SetTheory.Ordinal.Exponential
 
 /-!
@@ -122,9 +122,19 @@ theorem nfpFamily_eq_self {f : ι → Ordinal → Ordinal} {a} (h : ∀ i, f i a
     nfpFamily f a = a :=
   le_antisymm (sup_le fun l => by rw [List.foldr_fixed' h l]) <| le_nfpFamily f a
 
+
 -- Todo: This is actually a special case of the fact the intersection of club sets is a club set.
 /-- A generalization of the fixed point lemma for normal functions: any family of normal functions
     has an unbounded set of common fixed points. -/
+theorem not_bddAbove_fp_family (H : ∀ i, IsNormal (f i)) :
+    ¬ BddAbove (⋂ i, Function.fixedPoints (f i)) := by
+  rw [not_bddAbove_iff]
+  rintro ⟨a, ha⟩
+  dsimp [upperBounds, fixedPoints] at ha
+  have := @ha <| nfpFamily f (succ a)
+  have := le_nfpFamily f a
+
+    #exit
 theorem fp_family_unbounded (H : ∀ i, IsNormal (f i)) :
     (⋂ i, Function.fixedPoints (f i)).Unbounded (· < ·) := fun a =>
   ⟨nfpFamily.{u, v} f a, fun s ⟨i, hi⟩ => by
