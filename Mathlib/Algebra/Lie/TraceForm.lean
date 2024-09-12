@@ -224,9 +224,12 @@ lemma traceForm_eq_sum_genWeightSpaceOf
     convert finite_genWeightSpaceOf_ne_bot R L M z
     exact LieSubmodule.coeSubmodule_eq_bot_iff (genWeightSpaceOf M _ _)
   classical
-  have hds := DirectSum.isInternal_submodule_of_independent_of_iSup_eq_top
-    (LieSubmodule.independent_iff_coe_toSubmodule.mp <| independent_genWeightSpaceOf R L M z)
+  have h := LieSubmodule.independent_iff_coe_toSubmodule.mp <| independent_genWeightSpaceOf R L M z
+  dsimp only [genWeightSpaceOf] at h hfin hxy ⊢
+  simp_rw [Module.End.maxGenEigenspace_def] at h
+  have hds := DirectSum.isInternal_submodule_of_independent_of_iSup_eq_top h
     (IsTriangularizable.iSup_eq_top z)
+  simp_rw [← Module.End.maxGenEigenspace_def] at hds ⊢
   simp only [LinearMap.coeFn_sum, Finset.sum_apply, traceForm_apply_apply,
     LinearMap.trace_eq_sum_trace_restrict' hds hfin hxy]
   exact Finset.sum_congr (by simp) (fun χ _ ↦ rfl)
@@ -275,8 +278,27 @@ lemma lowerCentralSeries_one_inf_center_le_ker_traceForm [Module.Free R M] [Modu
     exact y.induction_on rfl (fun a u ↦ by simp [hzc u]) (fun u v hu hv ↦ by simp [hu, hv])
   apply LinearMap.trace_comp_eq_zero_of_commute_of_trace_restrict_eq_zero
   · exact IsTriangularizable.iSup_eq_top (1 ⊗ₜ[R] x)
-  · exact fun μ ↦ trace_toEnd_eq_zero_of_mem_lcs A (A ⊗[R] L)
-      (genWeightSpaceOf (A ⊗[R] M) μ (1 ⊗ₜ x)) (le_refl 1) hz
+  · intro μ
+    have := trace_toEnd_eq_zero_of_mem_lcs A (A ⊗[R] L)
+      (genWeightSpaceOf (A ⊗[R] M) μ ((1:A) ⊗ₜ[R] x)) (le_refl 1) hz
+    dsimp only [genWeightSpaceOf] at this
+    rw [← this]
+    sorry
+    -- -- TODO: refactor LinearMap.trace_comp_eq_zero_of_commute_of_trace_restrict_eq_zero
+    -- -- to use maxGenEigenspace, so that the following hack is not needed
+    -- have aux (V W : Submodule A (A ⊗[R] M)) (hVW : V = W) (f : Module.End A V) (g : Module.End A W)
+    --     (hfg : ∀ x, (hx : x ∈ V ⊓ W) →
+    --       (f ⟨x, Set.inter_subset_left hx⟩ : A ⊗[R] M) = g ⟨x, Set.inter_subset_right hx⟩) :
+    --     trace A V f = trace A W g := by
+    --   subst W
+    --   congr 1
+    --   ext x
+    --   apply hfg
+    --   simp
+    -- apply aux
+    -- · rw [Module.End.maxGenEigenspace_def]
+    -- · intro x hx
+    --   rfl
   · exact commute_toEnd_of_mem_center_right (A ⊗[R] M) hzc (1 ⊗ₜ x)
 
 /-- A nilpotent Lie algebra with a representation whose trace form is non-singular is Abelian. -/

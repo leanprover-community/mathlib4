@@ -625,6 +625,8 @@ end fitting_decomposition
 lemma disjoint_genWeightSpaceOf [NoZeroSMulDivisors R M] {x : L} {φ₁ φ₂ : R} (h : φ₁ ≠ φ₂) :
     Disjoint (genWeightSpaceOf M φ₁ x) (genWeightSpaceOf M φ₂ x) := by
   rw [LieSubmodule.disjoint_iff_coe_toSubmodule]
+  dsimp [genWeightSpaceOf]
+  simp_rw [Module.End.maxGenEigenspace_def]
   exact Module.End.disjoint_iSup_genEigenspace _ h
 
 lemma disjoint_genWeightSpace [NoZeroSMulDivisors R M] {χ₁ χ₂ : L → R} (h : χ₁ ≠ χ₂) :
@@ -692,6 +694,8 @@ lemma independent_genWeightSpace' [NoZeroSMulDivisors R M] :
 lemma independent_genWeightSpaceOf [NoZeroSMulDivisors R M] (x : L) :
     CompleteLattice.Independent fun (χ : R) ↦ genWeightSpaceOf M χ x := by
   rw [LieSubmodule.independent_iff_coe_toSubmodule]
+  dsimp [genWeightSpaceOf]
+  simp_rw [Module.End.maxGenEigenspace_def]
   exact (toEnd R L M x).independent_genEigenspace
 
 lemma finite_genWeightSpaceOf_ne_bot [NoZeroSMulDivisors R M] [IsNoetherian R M] (x : L) :
@@ -732,6 +736,8 @@ lemma iSup_genWeightSpaceOf_eq_top [IsTriangularizable R L M] (x : L) :
     ⨆ (φ : R), genWeightSpaceOf M φ x = ⊤ := by
   rw [← LieSubmodule.coe_toSubmodule_eq_iff, LieSubmodule.iSup_coe_toSubmodule,
     LieSubmodule.top_coeSubmodule]
+  dsimp [genWeightSpaceOf]
+  simp_rw [Module.End.maxGenEigenspace_def]
   exact IsTriangularizable.iSup_eq_top x
 
 open LinearMap FiniteDimensional in
