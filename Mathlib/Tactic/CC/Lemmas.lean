@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 
-import Mathlib.Init.Logic
-
 /-! Lemmas use by the congruence closure module -/
 
 namespace Mathlib.Tactic.CC
