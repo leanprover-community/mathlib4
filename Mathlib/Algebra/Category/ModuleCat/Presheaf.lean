@@ -242,6 +242,8 @@ def evaluation (X : Cᵒᵖ) : PresheafOfModules.{v} R ⥤ ModuleCat (R.obj X) w
   obj M := M.obj X
   map f := f.app X
 
+instance (X : Cᵒᵖ) : (evaluation.{v} R X).Additive where
+
 /-- The restriction natural transformation on presheaves of modules, considered as linear maps
 to restriction of scalars. -/
 @[simps]

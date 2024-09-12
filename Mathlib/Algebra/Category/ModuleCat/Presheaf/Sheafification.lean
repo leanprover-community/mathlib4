@@ -43,15 +43,19 @@ the associated sheaf of modules functor `PresheafOfModules.{v} R₀ ⥤ SheafOfM
 @[simps! (config := .lemmasOnly) map]
 noncomputable def sheafification : PresheafOfModules.{v} R₀ ⥤ SheafOfModules.{v} R where
   obj M₀ := sheafify α (CategoryTheory.toSheafify J M₀.presheaf)
-  map f := sheafifyMap _ _ _ f ((presheafToSheaf J AddCommGrp).map f.hom) (by simp)
+  map f := sheafifyMap _ _ _ f
+    ((toPresheaf R₀ ⋙ presheafToSheaf J AddCommGrp).map f)
+      (by apply toSheafify_naturality)
   map_id M₀ := by
     ext1
     apply (toPresheaf _).map_injective
-    simp [toPresheaf, sheafify]
+    simp
+    rfl
   map_comp _ _ := by
     ext1
     apply (toPresheaf _).map_injective
-    simp [toPresheaf, sheafify]
+    simp
+    rfl
 
 /-- The sheafification of presheaves of modules commutes with the functor which
 forgets the module structures. -/
