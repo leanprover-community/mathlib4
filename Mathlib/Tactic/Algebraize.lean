@@ -227,8 +227,11 @@ the instances `Algebra A B`, `Algebra B C`, and `Algebra.FiniteType A B`.
 
 See the `algebraize` tag for instructions on what properties can be added.
 
-The tactic also comes with a configuration option `searchContext`. If set to `true` (default), the tactic searches through the local context for `RingHom` properties
-that can be converted to `Algebra` properties. The macro `algebraize'` calls `algebraize (config := {searchContext := false})`, so in other words it only adds `Algebra` and `IsScalarTower` instances. -/
+The tactic also comes with a configuration option `searchContext`. If set to `true` (default), the
+tactic searches through the local context for `RingHom` properties that can be converted to
+`Algebra` properties. The macro `algebraize'` calls
+`algebraize (config := {searchContext := false})`,
+so in other words it only adds `Algebra` and `IsScalarTower` instances. -/
 syntax "algebraize" (config)? (ppSpace colGt term:max)* : tactic
 
 elab_rules : tactic
