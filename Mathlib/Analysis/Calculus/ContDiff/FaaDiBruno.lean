@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Analytic.Within
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
-import Mathlib.Analysis.Calculus.ContDiff.HasFTaylorSeries
+import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
 
 /-!
 # Faa Di Bruno formula
