@@ -216,19 +216,50 @@ Clean derivation proof:
 -/
 
 
+open scoped Finset in
 noncomputable def exp : (LieDerivation ℚ L L) → L →ₗ⁅ℚ⁆ L := fun δ ↦ {
   toLinearMap := expSum (L →ₗ[ℚ] L) δ
   map_lie' := by
     intro x y
+
+    nth_rw 1 [expSum_eq_sum_range_ge sorry (show _ ≤ 2*nilpotencyClass δ.toLinearMap from sorry)]
+
+    have h : ∀ n : ℕ, ∀ xy ∈ Finset.antidiagonal n,
+      (n.choose xy.1 / n.factorial : ℚ) • ⁅(δ.toLinearMap ^ xy.1) x, (δ.toLinearMap ^ xy.2) y⁆ =
+      ⁅(1 / xy.1.factorial : ℚ) • (δ.toLinearMap^xy.1) x,
+        (1 / xy.2.factorial : ℚ) • (δ.toLinearMap^xy.2) y⁆ := by
+      intro n xy hxy
+      rw [Finset.mem_antidiagonal] at hxy
+      -- TODO: add le of mem antidiagonal somewhere (and want add version of the just used lemma)
+      rw [Nat.choose_div_factorial_eq_div_factorial_div_factorial sorry]
+      rw [show n - xy.1 = xy.2 by omega]
+      rw [div_mul_eq_div_mul_one_div, mul_smul, ← lie_smul, ← smul_lie]
+
     conv_lhs =>
       simp only [expSum, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearMap.coeFn_sum,
         Finset.sum_apply, LinearMap.smul_apply]
       arg 2
       simp only [pow_apply_lie, Finset.smul_sum, ← Nat.cast_smul_eq_nsmul (R := ℚ), smul_smul,
         one_div_mul_eq_div]
-      intro z
-    simp [expSum]
-    simp only [sum_lie ℚ, lie_sum ℚ]
+      intro n
+      rw [Finset.sum_congr rfl (h n)]
+
+    -- (need to have multiplied the nilpotency class by 2 at this point)
+    have h : (Finset.range (2*nilpotencyClass δ.toLinearMap)).toSet.PairwiseDisjoint
+      (fun z ↦ Finset.antidiagonal z) := by sorry
+    rw [← Finset.sum_biUnion h]
+    have h₁ :
+      Finset.range (nilpotencyClass δ.toLinearMap) ×ˢ
+        Finset.range (nilpotencyClass δ.toLinearMap) ⊆
+      (Finset.range (2 * nilpotencyClass δ.toLinearMap)).biUnion fun z ↦
+        Finset.antidiagonal z := by sorry
+
+
+    -- 2. go to subset
+
+
+    -- simp [expSum]
+    -- simp only [sum_lie ℚ, lie_sum ℚ]
     sorry
 }
 
