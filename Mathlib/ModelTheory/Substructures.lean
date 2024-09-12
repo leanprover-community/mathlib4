@@ -309,7 +309,7 @@ lemma closure_eq_of_isRelational [L.IsRelational] (s : Set M) : closure L s = s 
 @[simp]
 lemma mem_closure_iff_of_isRelational [L.IsRelational] (s : Set M) (m : M) :
     m ∈ closure L s ↔ m ∈ s := by
-  rw [← SetLike.mem_coe, ((closure L).mem_closed_iff s).1 (mem_closed_of_isRelational L s)]
+  rw [← SetLike.mem_coe, closure_eq_of_isRelational]
 
 theorem _root_.Set.Countable.substructure_closure
     [Countable (Σl, L.Functions l)] (h : s.Countable) : Countable.{w + 1} (closure L s) := by

@@ -70,7 +70,7 @@ lemma preReflection_apply_self (h : f x = 2) :
 
 lemma involutive_preReflection (h : f x = 2) :
     Involutive (preReflection x f) :=
-  fun y ↦ by simp [h, smul_sub, two_smul, preReflection_apply]
+  fun y ↦ by simp [map_sub, h, smul_sub, two_smul, preReflection_apply]
 
 lemma preReflection_preReflection (g : Dual R M) (h : f x = 2) :
     preReflection (preReflection x f y) (preReflection f (Dual.eval R M x) g) =
