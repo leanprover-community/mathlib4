@@ -28,6 +28,13 @@ register_option linter.heavyRfl : Nat := {
   descr := "enable the heavyRfl linter"
 }
 
+
+
+/-- `renameDecl stxO ns tail` takes as input an "original" syntax `stxO` and two
+`Names` `ns` and `tail`.
+The output is `none` if there is no `declaration` buried inside `stxO`.
+If there is a `declaration` in `stxO`, then the
+-/
 def renameDecl (stxO : Syntax) (ns tail : Name) : (Option (Syntax × Name)) :=
   -- this allows the rename to work inside `open ... in ...`
   match stxO.find? (·.isOfKind ``Lean.Parser.Command.declaration) with
@@ -36,11 +43,16 @@ def renameDecl (stxO : Syntax) (ns tail : Name) : (Option (Syntax × Name)) :=
     match stx.find? (·.isOfKind ``Lean.Parser.Command.declId) with
     | none => some (stx, .anonymous)
     | some declId =>
+      -- we found a `declId` for `stxO`, so we construct a "new" `declId` and
+      -- new `ident` to replace the old `declId` and potential recursive calls
+      -- to its `ident`.
       let id := declId[0]
       let declName := id.getId
       let newDeclName := ns ++ id.getId ++ tail
       let newId       := mkIdentFrom id newDeclName
       let newDeclId   := mkNode ``Lean.Parser.Command.declId #[newId, declId.getArgs.back]
+      -- in the original syntax, we replace the declId with the new one
+      -- and potential recursive calls to that same identifier with the new one
       let new := stxO.replaceM (m := Id) (match · with
         | .node _ ``Lean.Parser.Command.declId _ => some newDeclId
         | .ident _ _ dName _ => if dName == declName then some newId else none
