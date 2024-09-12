@@ -189,14 +189,14 @@ lemma fermatLastTheoremWith'_iff_fermatLastTheoremWith {α : Type*} [CommSemirin
 
 lemma fermatLastTheoremWith'_nat_int_tfae (n : ℕ) :
     TFAE [FermatLastTheoremFor n, FermatLastTheoremWith' ℕ n, FermatLastTheoremWith' ℤ n] := by
-  tfae_have 2 ↔ 1
-  · apply fermatLastTheoremWith'_iff_fermatLastTheoremWith
+  tfae_have 2 ↔ 1 := by
+    apply fermatLastTheoremWith'_iff_fermatLastTheoremWith
     simp only [Nat.isUnit_iff]
     intro _ _ _ ha hb hc
     rw [ha, hb, hc]
     simp only [one_pow, Nat.reduceAdd, ne_eq, OfNat.ofNat_ne_one, not_false_eq_true]
-  tfae_have 3 ↔ 1
-  · rw [fermatLastTheoremFor_iff_int]
+  tfae_have 3 ↔ 1 := by
+    rw [fermatLastTheoremFor_iff_int]
     apply fermatLastTheoremWith'_iff_fermatLastTheoremWith
     intro a b c ha hb hc
     by_cases hn : n = 0
