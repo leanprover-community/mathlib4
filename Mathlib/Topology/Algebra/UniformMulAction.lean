@@ -118,31 +118,32 @@ instance UniformGroup.to_uniformContinuousConstSMul {G : Type u} [Group G] [Unif
 
 section Ring
 
-variable {R β : Type*} [Ring R] [UniformSpace R] [UniformAddGroup R] [ContinuousMul R]
-  [UniformSpace β] {f : β → R}
+variable {R β : Type*} [Ring R] [UniformSpace R] [UniformSpace β]
 
-theorem UniformContinuous.const_mul' (hf : UniformContinuous f) (a : R) :
-    UniformContinuous fun x ↦ a * f x :=
+theorem UniformContinuous.const_mul' [UniformContinuousConstSMul R R] {f : β → R}
+    (hf : UniformContinuous f) (a : R) : UniformContinuous fun x ↦ a * f x :=
   hf.const_smul a
 
-theorem UniformContinuous.mul_const' (hf : UniformContinuous f) (a : R) :
-    UniformContinuous fun x ↦ f x * a :=
+theorem UniformContinuous.mul_const' [UniformContinuousConstSMul Rᵐᵒᵖ R] {f : β → R}
+    (hf : UniformContinuous f) (a : R) : UniformContinuous fun x ↦ f x * a :=
   hf.const_smul (MulOpposite.op a)
 
-theorem uniformContinuous_mul_left' (a : R) : UniformContinuous fun b : R => a * b :=
+theorem uniformContinuous_mul_left' [UniformContinuousConstSMul R R] (a : R) :
+    UniformContinuous fun b : R => a * b :=
   uniformContinuous_id.const_mul' _
 
-theorem uniformContinuous_mul_right' (a : R) : UniformContinuous fun b : R => b * a :=
+theorem uniformContinuous_mul_right' [UniformContinuousConstSMul Rᵐᵒᵖ R] (a : R) :
+    UniformContinuous fun b : R => b * a :=
   uniformContinuous_id.mul_const' _
 
 theorem UniformContinuous.div_const' {R β : Type*} [DivisionRing R] [UniformSpace R]
-    [UniformAddGroup R] [ContinuousMul R] [UniformSpace β] {f : β → R}
-    (hf : UniformContinuous f) (a : R) :
+    [UniformContinuousConstSMul R R] [UniformContinuousConstSMul Rᵐᵒᵖ R]
+    [UniformSpace β] {f : β → R} (hf : UniformContinuous f) (a : R) :
     UniformContinuous fun x ↦ f x / a := by
   simpa [div_eq_mul_inv] using hf.mul_const' a⁻¹
 
 theorem uniformContinuous_div_const' {R : Type*} [DivisionRing R] [UniformSpace R]
-    [UniformAddGroup R] [ContinuousMul R] (a : R) :
+    [UniformContinuousConstSMul R R] [UniformContinuousConstSMul Rᵐᵒᵖ R] (a : R) :
     UniformContinuous fun b : R => b / a :=
   uniformContinuous_id.div_const' _
 
