@@ -55,12 +55,22 @@ lemma betaPDF_eq (a b x : ℝ) :
 lemma betaReal_Integral {a b : ℝ} (ha : 0 < a) (hb : 0 < b) :
 Beta a b = ∫ (x : ℝ) in Ioc 0 1, x ^ (a - 1) * (1 - x) ^ (b - 1) := by
   rw [Beta, Complex.betaIntegral]
+  -- (1) + (2)
   -- type casting weirdness
   sorry
 
-lemma beta_pos {a b : ℝ} (ha : 0 < a) (hb : 0 < b) : Beta a b > 0 := by
-  rw [betaReal_Integral ha hb]
+-- (1) prove complex.re integral = real integral [interval]
+-- (2) prove real integral [interval] = real integral [bochner]
+
+lemma betaIntervalIntegralPos {a b : ℝ} (ha: 0 < a) (hb : 0 < b) :
+∫ (x : ℝ) in (0)..1, ↑x ^ (↑a - 1) * (1 - ↑x) ^ (↑b - 1) > 0 := by
   -- prove positivity of integral f(x) by showing f(x) > 0 in interior of (0, 1)
+  sorry
+
+lemma beta_pos {a b : ℝ} (ha : 0 < a) (hb : 0 < b) : Beta a b > 0 := by
+  rw [Beta, Complex.betaIntegral]
+  have h1 := betaIntervalIntegralPos ha hb
+  -- (1)
   sorry
 
 lemma betaPDFReal_nonneg {a b : ℝ} (ha : 0 < a) (hb : 0 < b) (x : ℝ) : 0 ≤ betaPDFReal a b x := by
