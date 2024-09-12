@@ -19,8 +19,6 @@ For "each" tactic `rfl`, the "heavyRfl" linter prints the number of heartbeats t
 to elaborate it, assuming that it exceeds the linter's value (set to `10 ^5` by default).
 -/
 
-open Lean Elab
-
 namespace Mathlib.Linter
 
 /-- The "heavyRfl" linter prints the number of heartbeat that a tactic `rfl` uses, if they exceed
@@ -29,6 +27,142 @@ register_option linter.heavyRfl : Nat := {
   defValue := 10 ^ 5
   descr := "enable the heavyRfl linter"
 }
+
+def renameDecl (stx : Syntax) (ns tail : Name) : (Option (Syntax × Name)) :=
+  if ! stx.isOfKind ``Lean.Parser.Command.declaration then none
+  else
+  match stx.find? (·.isOfKind ``Lean.Parser.Command.declId) with
+  | none => some (stx, .anonymous)
+  | some declId =>
+    let id := declId[0]
+    let declName := id.getId
+    let newDeclName := ns ++ id.getId ++ tail
+    let newId       := mkIdentFrom id newDeclName
+    let newDeclId   := mkNode ``Lean.Parser.Command.declId #[newId, declId.getArgs.back]
+    let new := Id.run do stx.replaceM fun s => do
+      match s with
+        | .node _ ``Lean.Parser.Command.declId _ =>
+          return some newDeclId
+        | .ident _ _ dName _ =>
+          if dName == declName then return some newId else return none
+        | _ => return none
+    some (new, newId.getId)
+
+elab "rn" id:(ident)? cmd:command : command => do
+  elabCommand cmd
+  let id := id.getD (mkIdent `Hello)
+  match renameDecl cmd .anonymous /-(← getCurrNamespace)-/ id.getId with
+    | none => logInfo "no declaration name found"
+    | some (d, n) =>
+      logInfo m!"Name produced: '{n}'\n\nElaborating\n\n{d}"
+      elabCommand d
+
+/--
+info: Name produced: 'Nat.S.Hello'
+
+Elaborating
+
+def Nat.S.Hello (n : Nat) : Nat :=
+  succ n
+-/
+#guard_msgs in
+open Nat in
+rn
+def Nat.S (n : Nat) : Nat := succ n
+
+
+rn
+open Nat in
+def Nat.ST1 (n : Nat) : Nat := Nat.succ n
+
+
+/--
+info: Name produced: '[anonymous]'
+
+Elaborating
+
+instance : Add Nat :=
+  ⟨Nat.add⟩
+-/
+#guard_msgs in
+rn
+instance : Add Nat := ⟨Nat.add⟩
+
+/--
+info: Name produced: 'X.Hello'
+
+Elaborating
+
+inductive X.Hello
+  | id : Nat → X.Hello
+-/
+#guard_msgs in
+rn
+inductive X
+  | id : Nat → X
+
+namespace Y
+
+/--
+info: Name produced: 'XX.Hello'
+
+Elaborating
+
+@[simp, inline]
+def XX.Hello : True :=
+  .intro
+-/
+#guard_msgs in
+rn
+@[simp, inline]
+def XX : True := .intro
+
+/--
+info: Name produced: '[anonymous]'
+
+Elaborating
+
+@[simp, inline]
+instance : True :=
+  .intro
+-/
+#guard_msgs in
+rn
+@[simp, inline]
+instance : True := .intro
+
+/--
+info: Name produced: 'F.Hello'
+
+Elaborating
+
+@[simp, inline]
+instance F.Hello : True :=
+  .intro
+-/
+#guard_msgs in
+rn
+@[simp, inline]
+instance F : True := .intro
+
+/-- info: Mathlib.Linter.Y.XX.Hello : True -/
+#guard_msgs in
+#check Y.XX.Hello
+
+namespace Int
+/--
+info: Name produced: 'Int.X.Hello'
+
+Elaborating
+
+theorem Int.X.Hello {n : Int} : 0 + n = n :=
+  Int.zero_add ..
+-/
+#guard_msgs in
+rn
+theorem Int.X {n : Int} : 0 + n = n := Int.zero_add ..
+
+namespace Mathlib.Linter
 
 namespace HeavyRfl
 
