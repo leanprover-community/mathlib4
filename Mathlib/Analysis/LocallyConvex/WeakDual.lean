@@ -140,7 +140,7 @@ section LocallyConvex
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [TopologicalSpace E]
   [TopologicalSpace F] [TopologicalAddGroup E] [ContinuousSMul 𝕜 E] [ContinuousConstSMul 𝕜 E]
   [Module 𝕜 F] [Nonempty ι] [NormedSpace ℝ 𝕜] [Module ℝ E] [ContinuousSMul ℝ E]
-  [IsScalarTower ℝ 𝕜 E]
+  [IsScalarTower ℝ 𝕜 E] [LocallyConvexSpace ℝ E]
 
 instance WeakBilin.locallyConvexSpace {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} :
     LocallyConvexSpace ℝ (WeakBilin B) :=
@@ -166,47 +166,31 @@ instance instAddCommGroup : AddCommGroup (WeakSpace 𝕜 E) :=
 instance instTopologicalAddGroup : TopologicalAddGroup (WeakSpace 𝕜 E) :=
   WeakBilin.instTopologicalAddGroup (topDualPairing 𝕜 E).flip
 
-#synth ContinuousSMul ℝ (WeakSpace 𝕜 E)
-
 theorem Preliminary {s : Set E} (hs : Convex ℝ s) :
     (toWeakSpace 𝕜 E) '' (closure s) = closure (toWeakSpace 𝕜 E '' s) := by
   refine Set.eq_of_subset_of_subset ?_ ?_
   exact (map_continuous <| continuousLinearMapToWeakSpace 𝕜 E).continuousOn.image_closure
   rw [← Set.compl_subset_compl]
   intro x hx
+  have : (toWeakSpace 𝕜 E) '' (closure s)ᶜ = (toWeakSpace 𝕜 E '' (closure s))ᶜ :=
+    (toWeakSpace 𝕜 E).toEquiv.image_compl (closure s) -- why doesn't this take `EquivLike`?
+  rw [← this] at hx
+  obtain ⟨x, hx, rfl⟩ := hx
+  obtain ⟨f, u, hus, hux⟩ := geometric_hahn_banach_closed_point hs.closure isClosed_closure hx
+  have f' : E →L[𝕜] 𝕜 := sorry --- this is the `extendTo𝕜` bit
+  have hf' (y : E) : RCLike.re (f' y) = f y := sorry -- should follow from def of `extendTo𝕜`
+  let f'' : WeakSpace 𝕜 E →L[𝕜] 𝕜 :=
+    { toLinearMap := (f' : E →ₗ[𝕜] 𝕜).comp ((toWeakSpace 𝕜 E).symm : WeakSpace 𝕜 E →ₗ[𝕜] E)
+      cont := WeakBilin.eval_continuous (topDualPairing 𝕜 E).flip _ }
   let _ : Module ℝ (WeakSpace 𝕜 E) := WeakBilin.instModule' (topDualPairing 𝕜 E).flip
-  have : LocallyConvexSpace ℝ (WeakSpace 𝕜 E) := WeakBilin.locallyConvexSpace
-  have : ContinuousSMul ℝ (WeakSpace 𝕜 E) := sorry
-  have h₁ : Convex ℝ (toWeakSpace 𝕜 E '' (closure s)) := by
-    have AA := Convex.closure hs
-    simp only [Convex, Set.mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
-    intro a ha
-    simp only [StarConvex, Set.mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
-    intro b c v t hv ht hsum
-
-    sorry
-  have h₂ : IsClosed (toWeakSpace 𝕜 E '' (closure s)) := sorry
-  obtain ⟨f, u, hus, hux⟩ := geometric_hahn_banach_closed_point h₁ h₂ hx
-  -- now we extend `f` to be a `𝕜`-linear functional, call it `g`
-  -- then we precompose with `(toWeakSpace 𝕜 E).symm`, which is *still* continuous because of
-  -- properties `WeakSpace`. Then ...
-  sorry
-
-
--- A continuous linear map e between E and F lifts to a continuous linear map between the WeakSpaces
--- is `WeakSpace.map e`.
-
-theorem Preliminary (e : E ≃L[𝕜] F) (f : (F →L[𝕜] 𝕜) ≃L[𝕜] (E →L[𝕜] 𝕜)) (C : Set (WeakSpace 𝕜 E)) :
-    (WeakSpace.map (ContinuousLinearEquiv.toContinuousLinearMap e))'' (closure C) =
-    closure ((WeakSpace.map (ContinuousLinearEquiv.toContinuousLinearMap e))'' C) := by sorry
---  refine Eq.symm (ClosedEmbedding.closure_image_eq ?hf C)
---  simp only [WeakSpace.coe_map, ContinuousLinearEquiv.coe_coe]
---  refine closedEmbedding_of_embedding_closed ?hf.h₁ ?hf.h₂
-
-
---(LinearMap.ker_eq_bot.mpr <| ContinuousLinearEquiv.injective e)
-
---LinearMap.closedEmbedding_of_injective
+  have _ : IsScalarTower ℝ 𝕜 (WeakSpace 𝕜 E) := WeakBilin.instIsScalarTower (topDualPairing 𝕜 E).flip
+  have hux' : u < RCLike.reCLM.comp (f''.restrictScalars ℝ) (toWeakSpace 𝕜 E x) := by
+    simpa [f'', hf']
+  have hus' : closure (toWeakSpace 𝕜 E '' s) ⊆ { y | RCLike.reCLM.comp (f''.restrictScalars ℝ) y ≤ u} := by
+    refine closure_minimal ?_ <| isClosed_le (by fun_prop) (by fun_prop)
+    rintro - ⟨y, hy, rfl⟩
+    simpa [f'', hf'] using (hus y <| subset_closure hy).le
+  exact (hux'.not_le <| hus' ·)
 
 
 
