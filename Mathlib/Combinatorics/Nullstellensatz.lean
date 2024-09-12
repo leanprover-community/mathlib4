@@ -316,42 +316,31 @@ theorem Alon2 [IsDomain R]
   apply Finset.sum_eq_zero
   intro i _
   set g := h i * Alon.P (S i) i with hg
-  by_contra ht
-  have : g.totalDegree = f.totalDegree := by
-    apply le_antisymm (by simp only [g, mul_comm, hh i])
-    rw [ht']
-    apply le_totalDegree
-    rwa [mem_support_iff]
-  suffices ∃ p, p + single i (S i).card = t by
-    obtain ⟨p, hp⟩ := this
-    apply not_le.mpr (htS i)
-    simp [← hp]
-  by_contra hp
-  push_neg at hp
-  apply ht
+  by_cases hi : h i = 0
+  · simp [hi]
+  have : g.totalDegree ≤ f.totalDegree := by
+    simp only [hg, mul_comm, hh i]
+  -- simplify this by proving `degree_mul_eq` (at least in a domain)
+  rw [hg, ← degLex_degree_degree, 
+    degree_mul_of_isRegular_right hi (by simp only [Alon.lCoeffP, isRegular_one]), 
+    Alon.degP, degree_add, degLex_degree_degree, degree_apply_single, ht'] at this 
   rw [smul_eq_mul, coeff_mul, Finset.sum_eq_zero]
   rintro ⟨p, q⟩ hpq
   simp only [Finset.mem_antidiagonal] at hpq
   simp only [mul_eq_zero, Classical.or_iff_not_imp_right]
   rw [← ne_eq, ← mem_support_iff]
   intro hq
-  obtain ⟨e, he, hq⟩ := prod_support_le _ _ _ hq
+  obtain ⟨e, _, hq⟩ := prod_support_le _ _ _ hq
   apply coeff_eq_zero_of_totalDegree_lt
   change (h i).totalDegree < p.degree
   apply lt_of_add_lt_add_right (a := (S i).card)
-  rw [hg, ← degLex_degree_degree, degree_mul_of_isRegular_right, Alon.degP, degree_add,
-    degLex_degree_degree, degree_apply_single] at this
-  · rw [this, ht', ← hpq, degree_add, add_lt_add_iff_left, ← not_le]
-    intro hq'
-    apply hp p
-    rw [← hpq, hq]
-    simp only [add_right_inj]
-    apply congr_arg
-    apply le_antisymm _ he
-    apply le_of_le_of_eq hq'
-    simp only [hq, degree_apply_single i e]
-  · intro H; apply ht; simp [hg, H]
-  · rw [Alon.lCoeffP]
-    apply isRegular_one
+  apply lt_of_le_of_lt this
+  rw [← hpq, degree_add, add_lt_add_iff_left, hq, degree_apply_single]
+  rw [← not_le]
+  intro hq'
+  apply not_le.mpr (htS i)
+  apply le_trans hq'
+  simp only [← hpq, hq, coe_add, Pi.add_apply, single_eq_same, le_add_iff_nonneg_left, zero_le]
+
 
 end MvPolynomial
