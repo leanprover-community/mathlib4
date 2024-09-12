@@ -52,7 +52,7 @@ instance impartial_zero : Impartial 0 := by
 
 instance impartial_star : Impartial star := by
   rw [impartial_def]
-  simpa using Impartial.impartial_zero
+  simpa [forall_const] using Impartial.impartial_zero
 
 theorem neg_equiv_self (G : PGame) [h : G.Impartial] : G ≈ -G :=
   (impartial_def.1 h).1

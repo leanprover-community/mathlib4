@@ -1511,7 +1511,7 @@ variable {H K : Subgroup G}
 
 @[to_additive]
 instance (priority := 100) normal_of_comm {G : Type*} [CommGroup G] (H : Subgroup G) : H.Normal :=
-  ⟨by simp [mul_comm, mul_left_comm]⟩
+  ⟨by simp [mul_comm, mul_left_comm, forall_const]⟩
 
 namespace Normal
 

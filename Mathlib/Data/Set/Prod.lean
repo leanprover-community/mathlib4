@@ -89,7 +89,7 @@ theorem univ_prod {t : Set β} : (univ : Set α) ×ˢ t = Prod.snd ⁻¹' t := b
 theorem prod_univ {s : Set α} : s ×ˢ (univ : Set β) = Prod.fst ⁻¹' s := by simp [prod_eq]
 
 @[simp] lemma prod_eq_univ [Nonempty α] [Nonempty β] : s ×ˢ t = univ ↔ s = univ ∧ t = univ := by
-  simp [eq_univ_iff_forall, forall_and]
+  simp [eq_univ_iff_forall, forall_and, forall_const]
 
 @[simp]
 theorem singleton_prod : ({a} : Set α) ×ˢ t = Prod.mk a '' t := by
@@ -647,7 +647,8 @@ theorem pi_eq_empty_iff : s.pi t = ∅ ↔ ∃ i, IsEmpty (α i) ∨ i ∈ s ∧
   rw [← not_nonempty_iff_eq_empty, pi_nonempty_iff]
   push_neg
   refine exists_congr fun i => ?_
-  cases isEmpty_or_nonempty (α i) <;> simp [*, forall_and, eq_empty_iff_forall_not_mem]
+  cases isEmpty_or_nonempty (α i) <;>
+    simp [*, forall_and, forall_const, eq_empty_iff_forall_not_mem]
 
 @[simp]
 theorem univ_pi_eq_empty_iff : pi univ t = ∅ ↔ ∃ i, t i = ∅ := by

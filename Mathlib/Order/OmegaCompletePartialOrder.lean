@@ -363,7 +363,9 @@ theorem id_continuous' : Continuous' (@id α) :=
 
 @[deprecated ωScottContinuous.const (since := "2024-05-29")]
 theorem continuous_const (x : β) : Continuous (OrderHom.const α x) := fun c =>
-  eq_of_forall_ge_iff fun z => by rw [ωSup_le_iff, Chain.map_coe, OrderHom.const_coe_coe]; simp
+  eq_of_forall_ge_iff fun z => by
+    rw [ωSup_le_iff, Chain.map_coe, OrderHom.const_coe_coe]
+    simp [forall_const]
 
 @[deprecated ωScottContinuous.const (since := "2024-05-29")]
 theorem const_continuous' (x : β) : Continuous' (Function.const α x) :=
@@ -567,7 +569,7 @@ lemma ωScottContinuous.sup (hf : ωScottContinuous f) (hg : ωScottContinuous g
 
 lemma ωScottContinuous.top : ωScottContinuous (⊤ : α → β) :=
   ωScottContinuous.of_monotone_map_ωSup
-    ⟨monotone_const, fun c ↦ eq_of_forall_ge_iff fun a ↦ by simp⟩
+    ⟨monotone_const, fun c ↦ eq_of_forall_ge_iff fun a ↦ by simp [forall_const]⟩
 
 lemma ωScottContinuous.bot : ωScottContinuous (⊥ : α → β) := by
   rw [← sSup_empty]; exact ωScottContinuous.sSup (by simp)

@@ -79,7 +79,7 @@ theorem numeric_powHalf (n) : (powHalf n).Numeric := by
   | zero => exact numeric_one
   | succ n hn =>
     constructor
-    · simpa using hn.moveLeft_lt default
+    · intros; simpa using hn.moveLeft_lt default
     · exact ⟨fun _ => numeric_zero, fun _ => hn⟩
 
 theorem powHalf_succ_lt_powHalf (n : ℕ) : powHalf (n + 1) < powHalf n :=

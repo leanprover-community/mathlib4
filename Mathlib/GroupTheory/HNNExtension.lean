@@ -259,7 +259,7 @@ theorem group_smul_head (g : G) (w : NormalWord d) : (g • w).head = g * w.head
 @[simp]
 theorem group_smul_toList (g : G) (w : NormalWord d) : (g • w).toList = w.toList := rfl
 
-instance : FaithfulSMul G (NormalWord d) := ⟨by simp [group_smul_def]⟩
+instance : FaithfulSMul G (NormalWord d) := ⟨by simp [group_smul_def, forall_const]⟩
 
 /-- A constructor to append an element `g` of `G` and `u : ℤˣ` to a word `w` with sufficient
 hypotheses that no normalization or cancellation need take place for the result to be in normal form

@@ -574,10 +574,10 @@ instance : FaithfulSMul (PushoutI φ) (NormalWord d) :=
   ⟨fun h => by simpa using congr_arg prod (h empty)⟩
 
 instance (i : ι) : FaithfulSMul (G i) (NormalWord d) :=
-  ⟨by simp [summand_smul_def']⟩
+  ⟨by simp [summand_smul_def', forall_const]⟩
 
 instance : FaithfulSMul H (NormalWord d) :=
-  ⟨by simp [base_smul_def']⟩
+  ⟨by simp [base_smul_def', forall_const]⟩
 
 end NormalWord
 

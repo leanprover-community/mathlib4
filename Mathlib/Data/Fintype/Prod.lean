@@ -44,7 +44,7 @@ variable [Fintype α] [Fintype β] {s : Finset α} {t : Finset β}
 @[simp] lemma univ_product_univ : univ ×ˢ univ = (univ : Finset (α × β)) := rfl
 
 @[simp] lemma product_eq_univ [Nonempty α] [Nonempty β] : s ×ˢ t = univ ↔ s = univ ∧ t = univ := by
-  simp [eq_univ_iff_forall, forall_and]
+  simp [eq_univ_iff_forall, forall_and, forall_const]
 
 end Finset
 
