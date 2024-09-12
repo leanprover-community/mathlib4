@@ -3,7 +3,7 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Analysis.Normed.Module.FiniteDimension
+import Mathlib.Analysis.Normed.Field.ProperSpace
 import Mathlib.RingTheory.DiscreteValuationRing.Basic
 import Mathlib.RingTheory.Ideal.IsPrincipalPowQuotient
 import Mathlib.RingTheory.Valuation.Archimedean
@@ -327,7 +327,7 @@ lemma properSpace_iff_compactSpace_integer :
              mem_integer_iff', ← mem_closedBall_zero_iff, Set.setOf_mem_eq]
   constructor <;> intro h
   · exact isCompact_closedBall 0 1
-  · suffices LocallyCompactSpace K from .of_locallyCompactSpace K
+  · suffices LocallyCompactSpace K from .of_weaklyLocallyCompactSpace_of_nontriviallyNormedField K
     exact IsCompact.locallyCompactSpace_of_mem_nhds_of_addGroup h <|
       Metric.closedBall_mem_nhds 0 zero_lt_one
 
