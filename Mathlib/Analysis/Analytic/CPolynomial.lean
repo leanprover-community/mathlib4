@@ -37,6 +37,10 @@ We develop the basic properties of these notions, notably:
   `changeOrigin_finite_of_finite`. See `HasFiniteFPowerSeriesOnBall.changeOrigin `. It follows in
   particular that the set of points at which a given function is continuously polynomial is open,
   see `isOpen_cPolynomialAt`.
+
+We prove in particular that continuous multilinear maps are continuously polynomial, and so
+are continuous linear maps into continuous multilinear maps. In particular, such maps are
+analytic.
 -/
 
 variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -539,3 +543,52 @@ theorem CPolynomialAt.exists_ball_cPolynomialOn {f : E → F} {x : E} (h : CPoly
   Metric.isOpen_iff.mp (isOpen_cPolynomialAt _ _) _ h
 
 end
+
+
+namespace ContinuousMultilinearMap
+
+variable {ι : Type*} {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
+  [Fintype ι] (f : ContinuousMultilinearMap 𝕜 E F)
+
+open FormalMultilinearSeries
+
+protected theorem hasFiniteFPowerSeriesOnBall :
+    HasFiniteFPowerSeriesOnBall f f.toFormalMultilinearSeries 0 (Fintype.card ι + 1) ⊤ :=
+  .mk' (fun m hm ↦ dif_neg (Nat.succ_le_iff.mp hm).ne) ENNReal.zero_lt_top fun y _ ↦ by
+    rw [Finset.sum_eq_single_of_mem _ (Finset.self_mem_range_succ _), zero_add]
+    · rw [toFormalMultilinearSeries, dif_pos rfl]; rfl
+    · intro m _ ne; rw [toFormalMultilinearSeries, dif_neg ne.symm]; rfl
+
+lemma cPolynomialAt : CPolynomialAt 𝕜 f x :=
+  f.hasFiniteFPowerSeriesOnBall.cPolynomialAt_of_mem
+    (by simp only [Metric.emetric_ball_top, Set.mem_univ])
+
+lemma cPolyomialOn : CPolynomialOn 𝕜 f ⊤ := fun x _ ↦ f.cPolynomialAt x
+
+end ContinuousMultilinearMap
+
+namespace ContinuousLinearMap
+
+variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+  (B : G →L[𝕜] ContinuousMultilinearMap 𝕜 E F)
+
+noncomputable def _root_.ContinuousLinearMap.toFormalMultilinearSeries' :
+    FormalMultilinearSeries 𝕜 (G × (Π i, E i)) F :=
+  fun n ↦ if h : Fintype.card (Option ι) = n then
+    (B.continuousMultilinearMapOption).domDomCongr (Fintype.equivFinOfCardEq h)
+  else 0
+
+protected theorem _root_.ContinuousLinearMap.hasFiniteFPowerSeriesOnBall_of_bilinear :
+    HasFiniteFPowerSeriesOnBall (fun (p : G × (Π i, E i)) ↦ B p.1 p.2)
+      B.toFormalMultilinearSeries'
+       0 (Fintype.card (Option ι) + 1) ⊤ := by
+  apply HasFiniteFPowerSeriesOnBall.mk' ?_ ENNReal.zero_lt_top  ?_
+  · intro m hm
+    apply dif_neg
+    exact Nat.ne_of_lt hm
+  · intro y _
+    rw [Finset.sum_eq_single_of_mem _ (Finset.self_mem_range_succ _), zero_add]
+    · rw [ContinuousLinearMap.toFormalMultilinearSeries', dif_pos rfl]; rfl
+    · intro m _ ne; rw [ContinuousLinearMap.toFormalMultilinearSeries', dif_neg ne.symm]; rfl
+
+end ContinuousLinearMap
