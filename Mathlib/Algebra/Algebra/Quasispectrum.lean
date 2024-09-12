@@ -336,7 +336,7 @@ lemma zero_mem_spectrum_inr (R S : Type*) {A : Type*} [CommSemiring R]
 lemma mem_spectrum_inr_of_not_isUnit {R A : Type*} [CommRing R]
     [NonUnitalRing A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
     (a : A) (r : R) (hr : ¬ IsUnit r) : r ∈ spectrum R (a : Unitization R A) :=
-  fun h ↦ hr <| by simpa using h.map (fstHom R A)
+  fun h ↦ hr <| by simpa [map_sub] using h.map (fstHom R A)
 
 lemma quasispectrum_eq_spectrum_inr (R : Type*) {A : Type*} [CommRing R] [Ring A]
     [Algebra R A] (a : A) : quasispectrum R a = spectrum R (a : Unitization R A) := by

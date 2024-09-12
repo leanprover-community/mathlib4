@@ -151,7 +151,7 @@ and nothing on the other. -/
 def BalancedSz (l r : ℕ) : Prop :=
   l + r ≤ 1 ∨ l ≤ delta * r ∧ r ≤ delta * l
 
-instance BalancedSz.dec : DecidableRel BalancedSz := fun _ _ => Or.decidable
+instance BalancedSz.dec : DecidableRel BalancedSz := fun _ _ => inferInstanceAs (Decidable (_ ∨ _))
 
 /-- The `Balanced t` asserts that the tree `t` satisfies the balance invariants
 (at every level). -/
