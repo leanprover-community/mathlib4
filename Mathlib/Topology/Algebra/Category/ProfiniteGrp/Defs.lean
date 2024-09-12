@@ -19,35 +19,37 @@ disconnected.
 
 * `ProfiniteGrp` is the type of profinite groups.
 
-* `FiniteGrp` is the type of finite groups.
-
 * `Pi.profiniteGrp` : The product of profinite groups is also a profinite group.
 
 -/
 
 suppress_compilation
 
-universe u v
+universe u
 
 open CategoryTheory Topology
 
-/--Defining the structure of profinite group-/
+/--
+The category of profinite groups. A term of this type consists of a profinite
+set with a topological group structure.
+-/
 @[pp_with_univ]
 structure ProfiniteGrp where
-  /--the underlying set is profinite-/
+  /-- The underlying profinite topological space. -/
   toProfinite : Profinite
-  /--it is also a topological group with the topology given-/
-  [isGroup : Group toProfinite]
-  [isTopologicalGroup : TopologicalGroup toProfinite]
+  /-- The group structure. -/
+  [group : Group toProfinite]
+  /-- The above data together form a topological group. -/
+  [topologicalGroup : TopologicalGroup toProfinite]
 
 namespace ProfiniteGrp
 
 instance : CoeSort ProfiniteGrp (Type u) where
   coe G := G.toProfinite
 
-instance (G : ProfiniteGrp) : Group G := G.isGroup
+instance (G : ProfiniteGrp) : Group G := G.group
 
-instance (G : ProfiniteGrp) : TopologicalGroup G := G.isTopologicalGroup
+instance (G : ProfiniteGrp) : TopologicalGroup G := G.topologicalGroup
 
 instance : Category ProfiniteGrp where
   Hom A B := ContinuousMonoidHom A B
@@ -76,8 +78,8 @@ instance : ConcreteCategory ProfiniteGrp where
 def of (G : Type u) [Group G] [TopologicalSpace G] [TopologicalGroup G]
     [CompactSpace G] [TotallyDisconnectedSpace G] : ProfiniteGrp where
   toProfinite := .of G
-  isGroup := ‹_›
-  isTopologicalGroup := ‹_›
+  group := ‹_›
+  topologicalGroup := ‹_›
 
 @[simp]
 theorem coe_of (X : ProfiniteGrp) : (of X : Type _) = X :=
@@ -97,9 +99,9 @@ abbrev ofProfinite (G : Profinite) [Group G] [TopologicalGroup G] :
     ProfiniteGrp := of G
 
 /--The product of profinite group is profinite-/
-def Pi.profiniteGrp {α : Type u} (β : α → ProfiniteGrp) : ProfiniteGrp :=
-  let pitype := Profinite.Pi.profinite fun (a : α) => (β a).toProfinite
-  letI (a : α): Group (β a).toProfinite := (β a).isGroup
+def pi {α : Type u} (β : α → ProfiniteGrp) : ProfiniteGrp :=
+  let pitype := Profinite.pi fun (a : α) => (β a).toProfinite
+  letI (a : α): Group (β a).toProfinite := (β a).group
   letI : Group pitype := Pi.group
   letI : TopologicalGroup pitype := Pi.topologicalGroup
   ofProfinite pitype
