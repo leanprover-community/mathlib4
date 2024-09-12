@@ -4,10 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Yury Kudryashov
 -/
 import Mathlib.Analysis.Convex.Normed
-import Mathlib.Analysis.Convex.Strict
-import Mathlib.Analysis.Normed.Order.Basic
-import Mathlib.Analysis.Normed.Affine.AddTorsor
-import Mathlib.Analysis.NormedSpace.Pointwise
 import Mathlib.Analysis.Normed.Module.Ray
 
 /-!
