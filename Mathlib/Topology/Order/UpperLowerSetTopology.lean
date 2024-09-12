@@ -415,3 +415,24 @@ def map (f : α →o β) : C(WithLowerSet α, WithLowerSet β) where
 
 end WithLowerSet
 end Topology
+
+noncomputable instance : LinearOrder Prop := Prop.linearOrder
+
+lemma singleton_isUpperSet : IsUpperSet {True} := by
+  aesop
+
+lemma test {X : Set Prop} (h : IsOpen X) : IsUpperSet X :=
+  match h with
+  | GenerateOpen.basic s hs => by aesop
+  | GenerateOpen.univ => by aesop
+  | GenerateOpen.inter s t hs ht => by
+    apply IsUpperSet.inter
+    apply test
+    exact hs
+    apply test
+    exact ht
+  | GenerateOpen.sUnion S hS => by
+    apply isUpperSet_sUnion
+    intro s hs
+    apply test
+    exact hS s hs
