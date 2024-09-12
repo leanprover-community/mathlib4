@@ -15,11 +15,7 @@ import Mathlib.CategoryTheory.Preadditive.Basic
 
 open Valuation Valued Function NNReal CategoryTheory
 
--- `RankOne or NNReal?`
--- class PerfectoidField (K : Type*) {Γ : outParam Type*} [Field K]
---     [LinearOrderedCommGroupWithZero Γ]
---     [vK : Valued K Γ] [vK.v.RankOne] [CompleteSpace K] where
--- NNRat
+-- `Valuation is not a part of information it only require the topology comes from a valuation`
 
 class PerfectoidField (p : outParam ℕ) [Fact p.Prime] (K : Type*) [Field K]
     [val : Valued K ℝ≥0] extends CompleteSpace K : Prop
@@ -29,39 +25,45 @@ class PerfectoidField (p : outParam ℕ) [Fact p.Prime] (K : Type*) [Field K]
       ∃ y : 𝒪[K]⧸Ideal.span {(p : 𝒪[K])} , x = y ^ p
       -- Surjective <| frobenius (𝒪[K]⧸Ideal.span {(p : 𝒪[K])}) p
 -- definition of module
+
+namespace PerfectoidField
+
+variable (p : outParam ℕ) [Fact (p.Prime)] (K : Type*) {Γ : outParam Type*} [Field K]
+    [LinearOrderedCommGroupWithZero Γ] [vK : Valued K ℝ≥0] [CompleteSpace K]
+    [perf : PerfectoidField p K]
+
+theorem val_p_lt_1 : vK.v p < 1 := sorry
+
 #check Module
 
-variable (L : Type*) (p : ℕ) [Fact (Nat.Prime p)]
-  [Field L] [Valued L ℝ≥0] [PerfectoidField p L]
+def Tilt := @_root_.Tilt K _ vK.v 𝒪[K] _ _ (integer.integers vK.v) p _ ⟨ne_of_lt <| val_p_lt_1 p K⟩
+
+noncomputable instance : Field (Tilt p K) := inferInstanceAs <|
+    Field (@_root_.Tilt K _ vK.v 𝒪[K] _ _ (integer.integers vK.v) p _ ⟨ne_of_lt <| val_p_lt_1 p K⟩)
 -- C_p =
-section Facts
-instance primePerfectoidFieldP (K : Type*) [Field K]
-    [Valued K ℝ≥0] [CompleteSpace K]
-    [perf : PerfectoidField K] : Fact (Nat.Prime (PerfectoidField.p K)) := ⟨perf.p_prime⟩
--- `Should I write Fact instance?`
-
-instance primePerfectoidFieldValuationPNeOne (K : Type*) [Field K]
-    [vK: Valued K ℝ≥0] [CompleteSpace K]
-    [perf : PerfectoidField K] : Fact (vK.v (PerfectoidField.p K) ≠ 1) := sorry
-
-end Facts
 
 variable (K : Type*) {Γ : outParam Type*} [Field K] [LinearOrderedCommGroupWithZero Γ]
-    [vK : Valued K ℝ≥0] [CompleteSpace K] [perf : PerfectoidField K]
-
-#synth Fact (Nat.Prime (PerfectoidField.p K))
+    [vK : Valued K ℝ≥0] [CompleteSpace K] [perf : PerfectoidField p K]
 
 -- `Should I define a PerfectoidField.Tilt?`
 -- This is not a proposition I need to proof in order to prove the final theorem.
 theorem PerfectoidField.isAlgClosed_iff_isAlgClosed_tilt (K : Type*) {Γ : outParam Type*}
     [Field K] [LinearOrderedCommGroupWithZero Γ]
-    [vK : Valued K ℝ≥0] [CompleteSpace K] [perf : PerfectoidField K] :
-    IsAlgClosed K ↔ IsAlgClosed (Tilt K vK.v 𝒪[K] (integer.integers vK.v) perf.p) := sorry
+    [vK : Valued K ℝ≥0] [CompleteSpace K] [perf : PerfectoidField p K] :
+    -- IsAlgClosed K ↔ IsAlgClosed (_root_.Tilt K vK.v 𝒪[K] (integer.integers vK.v) p ) := sorry
+    IsAlgClosed K ↔ IsAlgClosed (Tilt p K) := sorry
 
-def PerfectoidField.ofFiniteDimensional (K L : Type*) [Field K]
-    [vK : Valued K ℝ≥0] [CompleteSpace K] [PerfectoidField K] [Field L]
-    [Algebra K L] [FiniteDimensional K L] : @PerfectoidField L _ sorry sorry := sorry
-    -- this can be a theorem if p is moved outside the perfectoid
+def valuedRankOneValuationFiniteDimensional (K L : Type*) [Field K]
+    [vK : Valued K ℝ≥0] [CompleteSpace K] [Field L] [Algebra K L] [FiniteDimensional K L] :
+    Valued L ℝ≥0 := sorry
+
+-- `In the case L has is an extension of K complete with respect to a rank one valuation, L has a`
+-- `unique extension of valuation. But it cannot be an instance`
+
+instance ofFiniteDimensional (K L : Type*) [Field K]
+    [vK : Valued K ℝ≥0] [CompleteSpace K] [PerfectoidField p K] [Field L]
+    [Algebra K L] [FiniteDimensional K L] :
+    @PerfectoidField p _ L _ (valuedRankOneValuationFiniteDimensional K L) := sorry
 
 section FiniteExts
 
@@ -87,6 +89,9 @@ end FiniteExts
 -- 2. the category of all perfectoid fields then use CategoryTheory.Over?
 -- 3. first define a structure perfectoid fields K and its boundled hom,
 --    then use CategoryTheory.Bundled.
+
+def PerfFieldCat := CategoryTheory.Bundled (PerfectoidField p) -- topological field only + some prop
+
 def PerfectoidFieldOver (K : Type*) [Field K]: Type* := sorry
 
 instance PerfectoidFieldOver.category (K : Type*) [Field K] :
