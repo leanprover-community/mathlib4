@@ -25,21 +25,6 @@ norm, nonarchimedean, rank one, compact, locally compact
 
 variable {X Y : Type*} [UniformSpace X] [UniformSpace Y] {s : Set X}
 
-/-- If `f : X → Y` is an `Inducing` map, the image `f '' s` of a set `s` is complete
-  if and only if `s` is complete. -/
-theorem UniformInducing.isComplete_iff {f : X → Y} (hf : UniformInducing f) :
-    IsComplete s ↔ IsComplete (f '' s) := (isComplete_image_iff hf).symm
-
-/-- If `f : X → Y` is an `UniformEmbedding`, the image `f '' s` of a set `s` is complete
-  if and only if `s` is complete. -/
-theorem UniformEmbedding.isCompact_iff {f : X → Y} (hf : UniformEmbedding f) :
-    IsComplete s ↔ IsComplete (f '' s) := hf.toUniformInducing.isComplete_iff
-
-/-- Sets of subtype are complete iff the image under a coercion is. -/
-theorem Subtype.isComplete_iff {p : X → Prop} {s : Set { x // p x }} :
-    IsComplete s ↔ IsComplete ((↑) '' s : Set X) :=
-  uniformEmbedding_subtype_val.isComplete_iff
-
 variable {K : Type*} [NontriviallyNormedField K] [IsUltrametricDist K]
 
 open NNReal
