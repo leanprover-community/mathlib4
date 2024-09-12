@@ -156,7 +156,7 @@ theorem quotient_norm_mk_eq (S : AddSubgroup M) (m : M) :
 
 /-- The quotient norm is nonnegative. -/
 theorem quotient_norm_nonneg (S : AddSubgroup M) (x : M ⧸ S) : 0 ≤ ‖x‖ :=
-  Real.sInf_nonneg _ <| forall_mem_image.2 fun _ _ ↦ norm_nonneg _
+  Real.sInf_nonneg <| forall_mem_image.2 fun _ _ ↦ norm_nonneg _
 
 /-- The quotient norm is nonnegative. -/
 theorem norm_mk_nonneg (S : AddSubgroup M) (m : M) : 0 ≤ ‖mk' S m‖ :=
