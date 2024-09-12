@@ -58,12 +58,10 @@ Beta a b = ∫ (x : ℝ) in Ioc 0 1, x ^ (a - 1) * (1 - x) ^ (b - 1) := by
   -- type casting weirdness
   sorry
 
-lemma Gamma_mul_Gamma_div_Gamma_eq_betaIntegralReal {a b : ℝ} :
-Beta a b = Gamma a * Gamma b / Gamma (a+b) := by sorry --  doable w ha/hb + real?
-
 lemma beta_pos {a b : ℝ} (ha : 0 < a) (hb : 0 < b) : Beta a b > 0 := by
-  rw [Gamma_mul_Gamma_div_Gamma_eq_betaIntegralReal]
-  positivity
+  rw [betaReal_Integral ha hb]
+  -- prove positivity of integral f(x) by showing f(x) > 0 in interior of (0, 1)
+  sorry
 
 lemma betaPDFReal_nonneg {a b : ℝ} (ha : 0 < a) (hb : 0 < b) (x : ℝ) : 0 ≤ betaPDFReal a b x := by
   unfold betaPDFReal
