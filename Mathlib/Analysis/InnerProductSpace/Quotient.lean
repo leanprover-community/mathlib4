@@ -138,8 +138,7 @@ instance : InnerProductSpace.Core 𝕜 (E ⧸ (nullSpace 𝕜 E)) where
     rw [preInnerQ, Submodule.liftQ_apply, Submodule.liftQ_apply, map_add, Submodule.liftQ_apply]
     simp only [LinearIsometry.coe_toLinearMap, liftQ_apply, ContinuousLinearMap.add_apply,
       toDualMap_apply]
-  smul_left := by
-    intro x y r
+  smul_left x y r := by
     rw [inner]
     simp only
     rw [innerQ, innerQ]
