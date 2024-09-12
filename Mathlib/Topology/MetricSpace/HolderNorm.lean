@@ -14,7 +14,7 @@ This file defines the Hölder (semi-)norm for Hölder functions alongside some b
 
 * `eHolderNorm r f`: `r`-Hölder (semi-)norm in `ℝ≥0∞` of a function `f`.
 * `nnHolderNorm r f`: `r`-Hölder (semi-)norm in `ℝ≥0` of a function `f`.
-* `MemHolder r f`: `f` is `r`-Hölder continuous.
+* `MemHolder r f`: Predicate for a function `f` being `r`-Hölder continuous.
 
 ## Main results
 
@@ -47,8 +47,8 @@ def eHolderNorm (r : ℝ≥0) (f : X → Y) : ℝ≥0∞ := ⨅ (C) (_ : HolderW
 noncomputable
 def nnHolderNorm (r : ℝ≥0) (f : X → Y) : ℝ≥0 := (eHolderNorm r f).toNNReal
 
-/-- A function `f` is `MemHolder r f` if it is Hölder continuous. Namley, `f` has a finite
-`r`-Hölder constant. This is equivalent to that `f` has a finite Holder norm.
+/-- A function `f` is `MemHolder r f` if it is Hölder continuous. Namely, `f` has a finite
+`r`-Hölder constant. This is equivalent to `f` having finite Hölder norm.
 c.f. `memHolder_iff`. -/
 def MemHolder (r : ℝ≥0) (f : X → Y) : Prop := ∃ C, HolderWith C r f
 
@@ -149,7 +149,7 @@ lemma memHolder_iff_holderWith {r : ℝ≥0} {f : X → Y} :
     MemHolder r f ↔ HolderWith (nnHolderNorm r f) r f :=
   ⟨MemHolder.holderWith, HolderWith.memHolder⟩
 
-lemma coe_HolderNorm_le_eHolderNorm
+lemma coe_nnHolderNorm_le_eHolderNorm
     {r : ℝ≥0} {f : X → Y} :
     (nnHolderNorm r f : ℝ≥0∞) ≤ eHolderNorm r f :=
   coe_toNNReal_le_self
@@ -160,7 +160,7 @@ lemma HolderWith.coe_HolderNorm_eq_eHolderNorm
   rw [nnHolderNorm, coe_toNNReal]
   exact ne_of_lt <| lt_of_le_of_lt hf.eHolderNorm_le <| coe_lt_top (r := C)
 
-lemma MemHolder.coe_HolderNorm_eq_eHolderNorm
+lemma MemHolder.coe_nnHolderNorm_eq_eHolderNorm
     {r : ℝ≥0} {f : X → Y} (hf : MemHolder r f) :
     (nnHolderNorm r f : ℝ≥0∞) = eHolderNorm r f :=
   hf.holderWith.coe_HolderNorm_eq_eHolderNorm
