@@ -277,6 +277,8 @@ macro_rules
   let id := HygieneInfo.mkIdent hy (← mkTFAEId t) (canonical := true)
   `(tfaeHave'|tfae_have $id : $t)
 
+open Term
+
 elab_rules : tactic
 | `(tfaeHave|tfae_have $d:tfaeHaveDecl) => withMainContext do
   let goal ← getMainGoal
@@ -285,13 +287,13 @@ elab_rules : tactic
     match d with
     | `(tfaeHaveDecl| $b : $t:tfaeType := $pf:term) =>
       let type ← elabTFAEType tfaeList t
-      evalTactic <|← `(tactic|have $b : $(← type.toSyntax) := $pf)
+      evalTactic <|← `(tactic|have $b : $(← exprToSyntax type) := $pf)
     | `(tfaeHaveDecl| $b : $t:tfaeType $alts:matchAlts) =>
       let type ← elabTFAEType tfaeList t
-      evalTactic <|← `(tactic|have $b : $(← type.toSyntax) $alts:matchAlts)
+      evalTactic <|← `(tactic|have $b : $(← exprToSyntax type) $alts:matchAlts)
     | `(tfaeHaveDecl| $pat:term : $t:tfaeType := $pf:term) =>
       let type ← elabTFAEType tfaeList t
-      evalTactic <|← `(tactic|have $pat:term : $(← type.toSyntax) := $pf)
+      evalTactic <|← `(tactic|have $pat:term : $(← exprToSyntax type) := $pf)
     | _ => throwUnsupportedSyntax
 
 -- Mathlib `have`
@@ -301,7 +303,7 @@ elab_rules : tactic
   match d with
   | `(tfaeHaveIdLhs| $b:ident : $t:tfaeType) =>
     let type ← elabTFAEType tfaeList t
-    evalTactic <|← `(tactic|have $b:ident : $(← type.toSyntax))
+    evalTactic <|← `(tactic|have $b:ident : $(← exprToSyntax type))
   | _ => throwUnsupportedSyntax
 
 
