@@ -97,8 +97,6 @@ noncomputable section
 open scoped Classical
 open NNReal Topology Filter
 
--- local notation "∞" => (⊤ : ℕ∞)
-
 /-
 Porting note: These lines are not required in Mathlib4.
 attribute [local instance 1001]
@@ -107,28 +105,18 @@ attribute [local instance 1001]
 
 open Set Fin Filter Function
 
+local notation "ω" => (⊤ : WithTop (ℕ∞))
+local notation "∞" => ((⊤ : ℕ∞) : WithTop (ℕ∞))
+
 universe u uE uF uG uX
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type uE} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {F : Type uF} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type uG}
   [NormedAddCommGroup G] [NormedSpace 𝕜 G] {X : Type uX} [NormedAddCommGroup X] [NormedSpace 𝕜 X]
   {s s₁ t u : Set E} {f f₁ : E → F} {g : F → G} {x x₀ : E} {c : F}
-  {p : E → FormalMultilinearSeries 𝕜 E F}
+  {p : E → FormalMultilinearSeries 𝕜 E F} {m n : WithTop (ℕ∞)}
 
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/master
-/-! ### Smooth functions within a set around a point -/
-
-local notation "ω" => (⊤ : WithTop (ℕ∞))
-local notation "∞" => ((⊤ : ℕ∞) : WithTop (ℕ∞))
-
-
-variable (𝕜)
-
-variable {m n : WithTop (ℕ∞)}
-
+variable (𝕜) in
 /-- A function is continuously differentiable up to order `n` within a set `s` at a point `x` if
 it admits continuous derivatives up to order `n` in a neighborhood of `x` in `s ∪ {x}`.
 For `n = ∞`, we only require that this holds up to any finite order (where the neighborhood may
@@ -146,8 +134,6 @@ def ContDiffWithinAt (n : WithTop ℕ∞) (f : E → F) (s : Set E) (x : E) : Pr
       HasFTaylorSeriesUpToOn ⊤ f p u ∧ ∀ i, AnalyticWithinOn 𝕜 (fun x ↦ p x i) u
   | (n : ℕ∞) => ∀ m : ℕ, (m : ℕ∞) ≤ n → ∃ u ∈ 𝓝[insert x s] x,
       ∃ p : E → FormalMultilinearSeries 𝕜 E F, HasFTaylorSeriesUpToOn m f p u
-
-variable {𝕜}
 
 lemma ContDiffWithinAt.analyticWithinOn (h : ContDiffWithinAt 𝕜 ω f s x) :
     ∃ u ∈ 𝓝[insert x s] x, AnalyticWithinOn 𝕜 f u := by
@@ -447,8 +433,7 @@ theorem contDiffWithinAt_omega_iff_hasFDerivWithinAt :
 
 /-! ### Smooth functions within a set -/
 
-variable (𝕜)
-
+variable (𝕜) in
 /-- A function is continuously differentiable up to `n` on `s` if, for any point `x` in `s`, it
 admits continuous derivatives up to order `n` on a neighborhood of `x` in `s`.
 
@@ -457,8 +442,6 @@ depend on the finite order we consider).
 -/
 def ContDiffOn (n : WithTop (ℕ∞)) (f : E → F) (s : Set E) : Prop :=
   ∀ x ∈ s, ContDiffWithinAt 𝕜 n f s x
-
-variable {𝕜}
 
 theorem HasFTaylorSeriesUpToOn.contDiffOn {n : ℕ∞} {f' : E → FormalMultilinearSeries 𝕜 E F}
     (hf : HasFTaylorSeriesUpToOn n f f' s) : ContDiffOn 𝕜 n f s := by
@@ -913,15 +896,12 @@ theorem ContDiffOn.continuousOn_fderiv_of_isOpen (h : ContDiffOn 𝕜 n f s) (hs
 
 /-! ### Smooth functions at a point -/
 
-variable (𝕜)
-
+variable (𝕜) in
 /-- A function is continuously differentiable up to `n` at a point `x` if, for any integer `k ≤ n`,
 there is a neighborhood of `x` where `f` admits derivatives up to order `n`, which are continuous.
 -/
 def ContDiffAt (n : WithTop ℕ∞) (f : E → F) (x : E) : Prop :=
   ContDiffWithinAt 𝕜 n f univ x
-
-variable {𝕜}
 
 theorem contDiffWithinAt_univ : ContDiffWithinAt 𝕜 n f univ x ↔ ContDiffAt 𝕜 n f x :=
   Iff.rfl
@@ -983,8 +963,7 @@ protected theorem ContDiffAt.eventually (h : ContDiffAt 𝕜 n f x) (h' : n ≠ 
 
 /-! ### Smooth functions -/
 
-variable (𝕜)
-
+variable (𝕜) in
 /-- A function is continuously differentiable up to `n` if it admits derivatives up to
 order `n`, which are continuous. Contrary to the case of definitions in domains (where derivatives
 might not be unique) we do not need to localize the definition in space or time.
@@ -994,8 +973,6 @@ def ContDiff (n : WithTop ℕ∞) (f : E → F) : Prop :=
   | ω => ∃ p : E → FormalMultilinearSeries 𝕜 E F, HasFTaylorSeriesUpTo ⊤ f p
       ∧ ∀ i, AnalyticOn 𝕜 (fun x ↦ p x i) univ
   | (n : ℕ∞) => ∃ p : E → FormalMultilinearSeries 𝕜 E F, HasFTaylorSeriesUpTo n f p
-
-variable {𝕜}
 
 /-- If `f` has a Taylor series up to `n`, then it is `C^n`. -/
 theorem HasFTaylorSeriesUpTo.contDiff {n : ℕ∞} {f' : E → FormalMultilinearSeries 𝕜 E F}
