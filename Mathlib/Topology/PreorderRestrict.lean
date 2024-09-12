@@ -7,10 +7,10 @@ import Mathlib.Order.Restriction
 import Mathlib.Topology.Constructions
 
 /-!
-# Measurability of the restriction function for functions indexed by a preorder
+# Continuity of the restriction function for functions indexed by a preorder
 
 We prove that the map which restricts a function `f : (i : α) → X i` to elements `≤ a` is
-measurable.
+continuous.
 -/
 
 namespace Preorder
