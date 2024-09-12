@@ -875,12 +875,12 @@ theorem Set.measurable_restrict₂ {s t : Set δ} (hst : s ⊆ t) :
   measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
 
 @[measurability, fun_prop]
-theorem Finset.measurable_restrict (s : Finset δ) : Measurable (s.restrict (β := π)) :=
+theorem Finset.measurable_restrict (s : Finset δ) : Measurable (s.restrict (π := π)) :=
   measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
 
 @[measurability, fun_prop]
 theorem Finset.measurable_restrict₂ {s t : Finset δ} (hst : s ⊆ t) :
-    Measurable (Finset.restrict₂ (β := π) hst) :=
+    Measurable (Finset.restrict₂ (π := π) hst) :=
   measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
 
 variable (π) in

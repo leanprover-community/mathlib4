@@ -1218,12 +1218,12 @@ lemma Pi.continuous_restrict₂ {s t : Set ι} (hst : s ⊆ t) : Continuous (res
   continuous_pi fun _ ↦ continuous_apply _
 
 @[continuity, fun_prop]
-theorem Finset.continuous_restrict (s : Finset ι) : Continuous (s.restrict (β := π)) :=
+theorem Finset.continuous_restrict (s : Finset ι) : Continuous (s.restrict (π := π)) :=
   continuous_pi fun _ ↦ continuous_apply _
 
 @[continuity, fun_prop]
 theorem Finset.continuous_restrict₂ {s t : Finset ι} (hst : s ⊆ t) :
-    Continuous (Finset.restrict₂ (β := π) hst) :=
+    Continuous (Finset.restrict₂ (π := π) hst) :=
   continuous_pi fun _ ↦ continuous_apply _
 
 lemma Pi.induced_restrict (S : Set ι) :
