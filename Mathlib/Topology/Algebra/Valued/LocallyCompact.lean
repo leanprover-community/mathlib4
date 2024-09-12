@@ -3,6 +3,7 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
+import Mathlib.Analysis.Normed.Module.FiniteDimension
 import Mathlib.RingTheory.DiscreteValuationRing.Basic
 import Mathlib.RingTheory.Ideal.IsPrincipalPowQuotient
 import Mathlib.RingTheory.Valuation.Archimedean
@@ -13,13 +14,31 @@ import Mathlib.Topology.Algebra.Valued.ValuedField
 # Necessary and sufficient conditions for a locally compact nonarchimedean normed field
 
 ## Main Results
-* `compactSpace_iff_completeSpace_and_discreteValuationRing_and_finite_residueField`:
-  when the valuation ring is compact, it is complete and is a DVR and has finite residue field
+* `properSpace_iff_completeSpace_and_discreteValuationRing_integer_and_finite_residueField`:
+  when the field is locally compact, it is complete and the valuation ring is a DVR and
+  has finite residue field
 
 ## Tags
 
 norm, nonarchimedean, rank one, compact, locally compact
 -/
+
+variable {X Y : Type*} [UniformSpace X] [UniformSpace Y] {s : Set X}
+
+/-- If `f : X → Y` is an `Inducing` map, the image `f '' s` of a set `s` is complete
+  if and only if `s` is complete. -/
+theorem UniformInducing.isComplete_iff {f : X → Y} (hf : UniformInducing f) :
+    IsComplete s ↔ IsComplete (f '' s) := (isComplete_image_iff hf).symm
+
+/-- If `f : X → Y` is an `UniformEmbedding`, the image `f '' s` of a set `s` is complete
+  if and only if `s` is complete. -/
+theorem UniformEmbedding.isCompact_iff {f : X → Y} (hf : UniformEmbedding f) :
+    IsComplete s ↔ IsComplete (f '' s) := hf.toUniformInducing.isComplete_iff
+
+/-- Sets of subtype are complete iff the image under a coercion is. -/
+theorem Subtype.isComplete_iff {p : X → Prop} {s : Set { x // p x }} :
+    IsComplete s ↔ IsComplete ((↑) '' s : Set X) :=
+  uniformEmbedding_subtype_val.isComplete_iff
 
 variable {K : Type*} [NontriviallyNormedField K] [IsUltrametricDist K]
 
@@ -316,5 +335,23 @@ lemma compactSpace_iff_completeSpace_and_discreteValuationRing_and_finite_residu
   · rw [← totallyBounded_iff_finite_residueField] at h
     rw [isCompact_iff_totallyBounded_isComplete]
     exact ⟨h, completeSpace_iff_isComplete_univ.mp ‹_›⟩
+
+lemma properSpace_iff_compactSpace_integer :
+    ProperSpace K ↔ CompactSpace 𝒪[K] := by
+  simp only [← isCompact_univ_iff, Subtype.isCompact_iff, Set.image_univ, Subtype.range_coe_subtype,
+             mem_integer_iff', ← mem_closedBall_zero_iff, Set.setOf_mem_eq]
+  constructor <;> intro h
+  · exact isCompact_closedBall 0 1
+  · suffices LocallyCompactSpace K from .of_locallyCompactSpace K
+    exact IsCompact.locallyCompactSpace_of_mem_nhds_of_addGroup h <|
+      Metric.closedBall_mem_nhds 0 zero_lt_one
+
+lemma properSpace_iff_completeSpace_and_discreteValuationRing_integer_and_finite_residueField :
+    ProperSpace K ↔ CompleteSpace K ∧ DiscreteValuationRing 𝒪[K] ∧ Finite 𝓀[K] := by
+  simp only [properSpace_iff_compactSpace_integer,
+      compactSpace_iff_completeSpace_and_discreteValuationRing_and_finite_residueField,
+      completeSpace_iff_isComplete_univ (α := 𝒪[K]), Subtype.isComplete_iff,
+      NormedField.completeSpace_iff_isComplete_closedBall, Set.image_univ,
+      Subtype.range_coe_subtype, mem_integer_iff', ← mem_closedBall_zero_iff, Set.setOf_mem_eq]
 
 end Valued.integer
