@@ -10,6 +10,22 @@ import Mathlib.MeasureTheory.Measure.Haar.Unique
 /-!
 # Ergodicity from minimality
 
+In this file we prove that the left shift `(a * ·)` on a compact topological group `G`
+is ergodic with respect to the Haar measure if and only if its minimal,
+i.e., the powers `a ^ n` are dense in `G`.
+
+The proof of the more difficult "if minimal, then ergodic" implication
+is based on the ergodicity of the left action of a group on itself
+and the following fact that we prove in `ergodic_smul_of_denseRange_pow` below:
+
+If a monoid `M` continuously acts on an R₁ topological space `X`,
+`g` is an element of `M such that its natural powers are dense in `M`,
+and `μ` is a finite inner regular measure on `X` which is ergodic with respect to the action of `M`,
+then the scalar multiplication by `g` is an ergodic map.
+
+We also prove that a continuous monoid homomorphism `f : G →* G` is dense,
+if it is surjective and the preimages of `1` under iterations of `f` are dense in the group.
+This theorem applies, e.g., to the map `z ↦ n • z` on the additive circle or a torus.
 -/
 
 open MeasureTheory Filter Set Function
