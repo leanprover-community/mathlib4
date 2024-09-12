@@ -274,7 +274,7 @@ instance [IsFiltered C] (X : C × C) : IsFiltered (StructuredArrow X (diag C)) :
   apply IsFiltered.of_equivalence (StructuredArrow.ofDiagEquivalence X).symm
 
 /-- The diagonal functor on any filtered category is final. -/
-instance Functor.diag_final_of_isFiltered [IsFiltered C] : Final (Functor.diag C) :=
+instance Functor.final_diag_of_isFiltered [IsFiltered C] : Final (Functor.diag C) :=
   final_of_isFiltered_structuredArrow _
 
 /-- If `C` is cofiltered, then the costructured arrow category on the diagonal functor `C ⥤ C × C`
@@ -286,12 +286,12 @@ instance [IsCofiltered C] (X : C × C) : IsCofiltered (CostructuredArrow (diag C
   apply IsCofiltered.of_equivalence (CostructuredArrow.ofDiagEquivalence X).symm
 
 /-- The diagonal functor on any cofiltered category is initial. -/
-instance Functor.diag_initial_of_isFiltered [IsCofiltered C] : Initial (Functor.diag C) :=
+instance Functor.initial_diag_of_isFiltered [IsCofiltered C] : Initial (Functor.diag C) :=
   initial_of_isCofiltered_costructuredArrow _
 
 /-- The functor `StructuredArrow.proj : StructuredArrow Y T ⥤ C` is final if `T : C ⥤ D` is final
 and `C` is filtered. -/
-instance StructuredArrow.proj_final_of_filtered [IsFiltered C]
+instance StructuredArrow.final_proj_of_filtered [IsFiltered C]
     {D : Type u₂} [Category.{v₁} D] (T : C ⥤ D) [Final T] (Y : D) :
     Final (StructuredArrow.proj Y T) := by
   haveI : ∀ (X : C), IsFiltered (StructuredArrow X (proj Y T)) := fun X => by
@@ -304,7 +304,7 @@ instance StructuredArrow.proj_final_of_filtered [IsFiltered C]
 
 /-- The functor `CostructuredArrow.proj : CostructuredArrow Y T ⥤ C` is initial if `T : C ⥤ D` is
 initial and `C` is cofiltered. -/
-instance CostructuredArrow.proj_initial_of_cofiltered [IsCofiltered C]
+instance CostructuredArrow.initial_proj_of_cofiltered [IsCofiltered C]
     {D : Type u₂} [Category.{v₁} D] (T : C ⥤ D) [Initial T] (Y : D) :
     Initial (CostructuredArrow.proj T Y) := by
   haveI : ∀ (X : C), IsCofiltered (CostructuredArrow (proj T Y) X) := fun X => by
