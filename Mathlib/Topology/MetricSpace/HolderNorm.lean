@@ -180,8 +180,8 @@ section SeminormedAddCommGroup
 variable [MetricSpace X] [NormedAddCommGroup Y]
 variable {C r : ℝ≥0} {f g : X → Y}
 
-lemma MemHolder.add (hf : MemHolder r f) (hg : MemHolder r g) : MemHolder r (f + g) := by
-  refine (hf.holderWith.add hg.holderWith).memHolder
+lemma MemHolder.add (hf : MemHolder r f) (hg : MemHolder r g) : MemHolder r (f + g) :=
+  (hf.holderWith.add hg.holderWith).memHolder
 
 lemma MemHolder.smul {α} [NormedDivisionRing α] [Module α Y] [BoundedSMul α Y]
     (c : α) (hf : MemHolder r f) : MemHolder r (c • f) :=
