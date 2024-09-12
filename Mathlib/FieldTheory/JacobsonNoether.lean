@@ -46,29 +46,17 @@ local notation3 "k" => (Subring.center D)
 
 instance : Algebra (Subring.center D) D := Algebra.ofModule smul_mul_assoc mul_smul_comm
 
-private def f (a : D) : D →ₗ[k] D := {
-  toFun := fun x ↦ a * x
-  map_add' := fun x y ↦ LeftDistribClass.left_distrib a x y
-  map_smul' := fun m x ↦ by simp only [mul_smul_comm, RingHom.id_apply]
-}
+private def f : D → D →ₗ[k] D := LinearMap.mulLeft k
 
 @[simp]
 private lemma f_def (a x : D) : f a x = a * x := rfl
 
-private def g (a : D) : D →ₗ[k] D := {
-  toFun := fun x ↦ x * a
-  map_add' := fun x y ↦ RightDistribClass.right_distrib x y a
-  map_smul' := fun m x ↦ by simp only [smul_mul_assoc, RingHom.id_apply]
-}
+private def g : D → D →ₗ[k] D := LinearMap.mulRight k
 
 @[simp]
 private lemma g_def (a x : D) : g a x = x * a := rfl
 
-private def δ (a : D) : D →ₗ[k] D := {
-  toFun := f a - g a
-  map_add' := fun x y ↦ by simp only [Pi.sub_apply, map_add, map_add, add_sub_add_comm]
-  map_smul' := fun m x ↦ by simp only [Pi.sub_apply, map_smul, RingHom.id_apply, smul_sub]
-}
+private def δ : D → D →ₗ[k] D := f - g
 
 @[simp]
 private lemma δ_def (a x : D) : δ a x = f a x - g a x := rfl
@@ -83,18 +71,16 @@ private lemma fg_comm (a : D) : Commute (f a) (g a) := by
 private lemma f_pow (a : D) (n : ℕ) : ∀ x : D, ((f a) ^ n).1 x = (a ^ n) * x := by
   intro x
   rw [LinearMap.coe_toAddHom, LinearMap.pow_apply]
-  induction n with
-  | zero => simp only [Function.iterate_zero, id_eq, pow_zero, one_mul]
-  | succ _ _ => simp only [Subring.center_toSubsemiring, f, LinearMap.coe_mk, AddHom.coe_mk,
-      Function.iterate_succ', mul_left_iterate, Function.comp_apply, pow_succ', mul_assoc]
+  induction n
+  · simp only [Function.iterate_zero, id_eq, pow_zero, one_mul]
+  · simp only [Function.iterate_succ', Function.comp_apply, *, pow_succ', mul_assoc, f_def]
 
 private lemma g_pow (a : D) (n : ℕ) : ∀ x : D, ((g a) ^ n).1 x = x * (a ^ n) := by
   intro x
   rw [LinearMap.coe_toAddHom, LinearMap.pow_apply]
-  induction n with
-  | zero => simp only [Function.iterate_zero, id_eq, pow_zero, mul_one]
-  | succ _ _ => simp only [Subring.center_toSubsemiring, g, LinearMap.coe_mk, AddHom.coe_mk,
-      Function.iterate_succ', mul_right_iterate, Function.comp_apply, pow_succ, ← mul_assoc]
+  induction n
+  · simp only [Function.iterate_zero, id_eq, pow_zero, mul_one]
+  · simp only [Function.iterate_succ', Function.comp_apply, *, pow_add, pow_one, mul_assoc, g_def]
 
 private lemma δ_iterate_succ (x y : D) (n : ℕ) :
     δ x (((δ x) ^ n) y) = ((δ x) ^ (n + 1)) y := by
@@ -102,7 +88,7 @@ private lemma δ_iterate_succ (x y : D) (n : ℕ) :
 
 variable [Algebra.IsAlgebraic (Subring.center D) D]
 
-open Polynomial Classical
+open Polynomial
 
 /-- Any inseparable extension is an extension by some p^n th -root -/
 lemma exists_pow_mem_center_ofInseparable (p : ℕ) [Fact p.Prime] [CharP D p] (a : D)
@@ -165,6 +151,7 @@ theorem JacobsonNoether_charP (p : ℕ) [Fact p.Prime] [CharP D p]
     have exist : ∃ n > 0, ((δ a) ^ (n + 1)) b = 0 := by
       refine ⟨p ^ m, ⟨pow_pos (Nat.Prime.pos (@Fact.out _ _)) m, ?_ ⟩⟩
       simp only [hm2 (p^ m + 1) (by linarith), LinearMap.zero_apply]
+    classical
     refine ⟨Nat.find exist, ⟨(Nat.find_spec exist).1, ?_, (Nat.find_spec exist).2⟩⟩
     set t := (Nat.find exist - 1 : ℕ) with ht
     by_cases choice : 0 < t
