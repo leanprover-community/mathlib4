@@ -85,9 +85,6 @@ instance Equiv.coeEmbedding : Coe (α ≃ β) (α ↪ β) :=
 @[instance] abbrev Equiv.Perm.coeEmbedding : Coe (Equiv.Perm α) (α ↪ α) :=
   Equiv.coeEmbedding
 
--- Porting note : `theorem Equiv.coe_eq_to_embedding : ↑f = f.toEmbedding` is a
--- syntactic tautology in Lean 4
-
 end Equiv
 
 namespace Function
@@ -104,10 +101,6 @@ theorem ext {α β} {f g : Embedding α β} (h : ∀ x, f x = g x) : f = g :=
 instance {α β : Sort*} [IsEmpty α] : Unique (α ↪ β) where
   default := ⟨isEmptyElim, Function.injective_of_subsingleton _⟩
   uniq := by intro; ext v; exact isEmptyElim v
-
--- Porting note : in Lean 3 `DFunLike.ext_iff.symm` works
-theorem ext_iff {α β} {f g : Embedding α β} : (∀ x, f x = g x) ↔ f = g :=
-  Iff.symm (DFunLike.ext_iff)
 
 @[simp]
 theorem toFun_eq_coe {α β} (f : α ↪ β) : toFun f = f :=

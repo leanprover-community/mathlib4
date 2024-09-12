@@ -5,8 +5,8 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 import Mathlib.Analysis.Normed.Group.Lemmas
-import Mathlib.Analysis.NormedSpace.AddTorsor
-import Mathlib.Analysis.NormedSpace.AffineIsometry
+import Mathlib.Analysis.Normed.Affine.AddTorsor
+import Mathlib.Analysis.Normed.Affine.Isometry
 import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
 import Mathlib.Analysis.NormedSpace.RieszLemma
 import Mathlib.Analysis.NormedSpace.Pointwise
@@ -44,13 +44,11 @@ then the identities from `E` to `E'` and from `E'`to `E` are continuous thanks t
 `LinearMap.continuous_of_finiteDimensional`. This gives the desired norm equivalence.
 -/
 
-
 universe u v w x
 
 noncomputable section
 
-open Set FiniteDimensional TopologicalSpace Filter Asymptotics Classical Topology
-  NNReal Metric
+open Set FiniteDimensional TopologicalSpace Filter Asymptotics Topology NNReal Metric
 
 namespace LinearIsometry
 
@@ -153,6 +151,7 @@ theorem ContinuousLinearMap.continuous_det : Continuous fun f : E →L[𝕜] E =
   by_cases h : ∃ s : Finset E, Nonempty (Basis (↥s) 𝕜 E)
   · rcases h with ⟨s, ⟨b⟩⟩
     haveI : FiniteDimensional 𝕜 E := FiniteDimensional.of_fintype_basis b
+    classical
     simp_rw [LinearMap.det_eq_det_toMatrix_of_finset b]
     refine Continuous.matrix_det ?_
     exact
@@ -239,6 +238,7 @@ theorem ContinuousLinearMap.isOpen_injective [FiniteDimensional 𝕜 E] :
 protected theorem LinearIndependent.eventually {ι} [Finite ι] {f : ι → E}
     (hf : LinearIndependent 𝕜 f) : ∀ᶠ g in 𝓝 f, LinearIndependent 𝕜 g := by
   cases nonempty_fintype ι
+  classical
   simp only [Fintype.linearIndependent_iff'] at hf ⊢
   rcases LinearMap.exists_antilipschitzWith _ hf with ⟨K, K0, hK⟩
   have : Tendsto (fun g : ι → E => ∑ i, ‖g i - f i‖) (𝓝 f) (𝓝 <| ∑ i, ‖f i - f i‖) :=
@@ -508,7 +508,7 @@ lemma ProperSpace.of_locallyCompactSpace (𝕜 : Type*) [NontriviallyNormedField
     simpa [_root_.smul_closedBall' this] using hr.smul (c ^ n)
   have hTop : Tendsto (fun n ↦ ‖c‖^n * r) atTop atTop :=
     Tendsto.atTop_mul_const rpos (tendsto_pow_atTop_atTop_of_one_lt hc)
-  exact .of_seq_closedBall hTop (eventually_of_forall hC)
+  exact .of_seq_closedBall hTop (Eventually.of_forall hC)
 
 @[deprecated (since := "2024-01-31")]
 alias properSpace_of_locallyCompactSpace := ProperSpace.of_locallyCompactSpace

@@ -30,7 +30,7 @@ In the argument, P3 is stated with four variables `x₁`, `x₂`, `y₁`, `y₂`
 `y₁ < y₂`, and says that `x₁ * y₂ + x₂ * x₁ < x₁ * y₁ + x₂ * y₂`, which is equivalent to
 `0 < x₂ - x₁ → 0 < y₂ - y₁ → 0 < (x₂ - x₁) * (y₂ - y₁)`, i.e.
 `@mul_pos PGame _ (x₂ - x₁) (y₂ - y₁)`. It has to be stated in this form and not in terms of
-`mul_pos` because we need to show show P1, P2 and (a specialized form of) P3 simultaneously, and
+`mul_pos` because we need to show P1, P2 and (a specialized form of) P3 simultaneously, and
 for example `P1 x y` will be deduced from P3 with variables taking values simpler than `x` or `y`
 (among other induction hypotheses), but if you subtract two pregames simpler than `x` or `y`,
 the result may no longer be simpler.
@@ -40,19 +40,19 @@ requires that `y₂ = y` or `-y` and that `y₁` is a left option of `y₂`. Aft
 shown, a further inductive argument (this time using the `GameAdd` relation) proves P3 in full.
 
 Implementation strategy of the inductive argument: we
-* extract specialized versions (`IH1`, `IH2`, `IH3`, `IH4` and `IH24`) of the
-  induction hypothesis that are easier to apply (takes `IsOption` arguments directly), and
-* show they are invariant under certain symmetries (permutation and negation of arguments)
-  and that the induction hypothesis indeed implies the specialized versions.
+* extract specialized versions (`IH1`, `IH2`, `IH3`, `IH4` and `IH24`) of the induction hypothesis
+  that are easier to apply (taking `IsOption` arguments directly), and
+* show they are invariant under certain symmetries (permutation and negation of arguments) and that
+  the induction hypothesis indeed implies the specialized versions.
 * utilize the symmetries to minimize calculation.
 
 The whole proof features a clear separation into lemmas of different roles:
 * verification of symmetry properties of P and IH (`P3_comm`, `ih1_neg_left`, etc.),
-* calculations that connects P1, P2, P3, and inequalities between the product of
+* calculations that connect P1, P2, P3, and inequalities between the product of
   two surreals and its options (`mulOption_lt_iff_P1`, etc.),
 * specializations of the induction hypothesis
   (`numeric_option_mul`, `ih1`, `ih1_swap`, `ih₁₂`, `ih4`, etc.),
-* application of specialized indution hypothesis
+* application of specialized induction hypothesis
   (`P1_of_ih`, `mul_right_le_of_equiv`, `P3_of_lt`, etc.).
 
 ## References
@@ -68,8 +68,8 @@ open SetTheory Game PGame WellFounded
 
 namespace Surreal.Multiplication
 
-/-- The nontrivial part of P1 in [SchleicherStoll] says that the left options of `x * y`
-  are less than the right options, and this is the general form of these statements. -/
+/-- The nontrivial part of P1 in [SchleicherStoll] says that the left options of `x * y` are less
+  than the right options, and this is the general form of these statements. -/
 def P1 (x₁ x₂ x₃ y₁ y₂ y₃ : PGame) :=
   ⟦x₁ * y₁⟧ + ⟦x₂ * y₂⟧ - ⟦x₁ * y₂⟧ < ⟦x₃ * y₁⟧ + ⟦x₂ * y₃⟧ - (⟦x₃ * y₃⟧ : Game)
 
@@ -173,7 +173,7 @@ open Relation
 
 /-- The relation specifying when a list of (pregame) arguments is considered simpler than another:
   `ArgsRel a₁ a₂` is true if `a₁`, considered as a multiset, can be obtained from `a₂` by
-  repeatedly removing a pregame from `a₂` and adding back one or two options of the pregame.  -/
+  repeatedly removing a pregame from `a₂` and adding back one or two options of the pregame. -/
 def ArgsRel := InvImage (TransGen <| CutExpand IsOption) Args.toMultiset
 
 /-- `ArgsRel` is well-founded. -/
@@ -205,7 +205,6 @@ lemma ih1_neg_right : IH1 x y → IH1 x (-y) :=
     apply h
 
 /-! #### Specialize `ih` to obtain specialized induction hypotheses for P1 -/
-
 
 lemma numeric_option_mul (ih : ∀ a, ArgsRel a (Args.P1 x y) → P124 a) (h : IsOption x' x) :
     (x' * y).Numeric :=
@@ -453,26 +452,30 @@ namespace SetTheory.PGame
 open Surreal.Multiplication
 
 variable {x x₁ x₂ y y₁ y₂ : PGame.{u}}
-  (hx : x.Numeric) (hx₁ : x₁.Numeric) (hx₂ : x₂.Numeric)
-  (hy : y.Numeric) (hy₁ : y₁.Numeric) (hy₂ : y₂.Numeric)
 
-theorem Numeric.mul : Numeric (x * y) := main _ <| Args.numeric_P1.mpr ⟨hx, hy⟩
+theorem Numeric.mul (hx : x.Numeric) (hy : y.Numeric) : Numeric (x * y) :=
+  main _ <| Args.numeric_P1.mpr ⟨hx, hy⟩
 
-theorem P24 : P24 x₁ x₂ y := main _ <| Args.numeric_P24.mpr ⟨hx₁, hx₂, hy⟩
+theorem P24 (hx₁ : x₁.Numeric) (hx₂ : x₂.Numeric) (hy : y.Numeric) : P24 x₁ x₂ y :=
+  main _ <| Args.numeric_P24.mpr ⟨hx₁, hx₂, hy⟩
 
-theorem Equiv.mul_congr_left (he : x₁ ≈ x₂) : x₁ * y ≈ x₂ * y :=
+theorem Equiv.mul_congr_left (hx₁ : x₁.Numeric) (hx₂ : x₂.Numeric) (hy : y.Numeric)
+    (he : x₁ ≈ x₂) : x₁ * y ≈ x₂ * y :=
   equiv_iff_game_eq.2 <| (P24 hx₁ hx₂ hy).1 he
 
-theorem Equiv.mul_congr_right (he : y₁ ≈ y₂) : x * y₁ ≈ x * y₂ :=
+theorem Equiv.mul_congr_right (hx : x.Numeric) (hy₁ : y₁.Numeric) (hy₂ : y₂.Numeric)
+    (he : y₁ ≈ y₂) : x * y₁ ≈ x * y₂ :=
   .trans (mul_comm_equiv _ _) <| .trans (mul_congr_left hy₁ hy₂ hx he) (mul_comm_equiv _ _)
 
-theorem Equiv.mul_congr (hx : x₁ ≈ x₂) (hy : y₁ ≈ y₂) : x₁ * y₁ ≈ x₂ * y₂ :=
+theorem Equiv.mul_congr (hx₁ : x₁.Numeric) (hx₂ : x₂.Numeric)
+    (hy₁ : y₁.Numeric) (hy₂ : y₂.Numeric) (hx : x₁ ≈ x₂) (hy : y₁ ≈ y₂) : x₁ * y₁ ≈ x₂ * y₂ :=
   .trans (mul_congr_left hx₁ hx₂ hy₁ hx) (mul_congr_right hx₂ hy₁ hy₂ hy)
 
 open Prod.GameAdd
 
 /-- One additional inductive argument that supplies the last missing part of Theorem 8. -/
-theorem P3_of_lt_of_lt (hx : x₁ < x₂) (hy : y₁ < y₂) : P3 x₁ x₂ y₁ y₂ := by
+theorem P3_of_lt_of_lt (hx₁ : x₁.Numeric) (hx₂ : x₂.Numeric) (hy₁ : y₁.Numeric) (hy₂ : y₂.Numeric)
+    (hx : x₁ < x₂) (hy : y₁ < y₂) : P3 x₁ x₂ y₁ y₂ := by
   revert x₁ x₂
   rw [← Prod.forall']
   refine (wf_isOption.prod_gameAdd wf_isOption).fix ?_
@@ -488,7 +491,8 @@ theorem P3_of_lt_of_lt (hx : x₁ < x₂) (hy : y₁ < y₂) : P3 x₁ x₂ y₁
         rw [moveLeft_neg', ← P3_neg, neg_lt_neg_iff]
         exact ih _ (fst <| IsOption.moveRight _) (hx₁.moveRight _) hx₂⟩
 
-theorem Numeric.mul_pos (hp₁ : 0 < x₁) (hp₂ : 0 < x₂) : 0 < x₁ * x₂ := by
+theorem Numeric.mul_pos (hx₁ : x₁.Numeric) (hx₂ : x₂.Numeric) (hp₁ : 0 < x₁) (hp₂ : 0 < x₂) :
+    0 < x₁ * x₂ := by
   rw [lt_iff_game_lt]
   have := P3_of_lt_of_lt numeric_zero hx₁ numeric_zero hx₂ hp₁ hp₂
   simp_rw [P3, quot_zero_mul, quot_mul_zero, add_lt_add_iff_left] at this

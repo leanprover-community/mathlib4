@@ -61,7 +61,7 @@ def CofreeEqualizer.ι : X ⟶ (Comonad.cofree T).obj X.A where
 theorem CofreeEqualizer.condition :
     CofreeEqualizer.ι X ≫ CofreeEqualizer.topMap X =
       CofreeEqualizer.ι X ≫ CofreeEqualizer.bottomMap X :=
-  Coalgebra.Hom.ext _ _ X.coassoc.symm
+  Coalgebra.Hom.ext X.coassoc.symm
 
 instance : IsCoreflexivePair (CofreeEqualizer.topMap X) (CofreeEqualizer.bottomMap X) := by
   apply IsCoreflexivePair.mk' _ _ _

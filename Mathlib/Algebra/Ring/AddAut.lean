@@ -3,7 +3,7 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.GroupTheory.GroupAction.Group
+import Mathlib.Algebra.GroupWithZero.Action.Basic
 import Mathlib.Algebra.Module.Defs
 
 /-!

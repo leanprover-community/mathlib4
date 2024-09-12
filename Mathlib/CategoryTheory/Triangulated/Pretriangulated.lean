@@ -233,6 +233,7 @@ lemma contractible_distinguished₂ (X : C) :
 namespace Triangle
 
 variable (T : Triangle C) (hT : T ∈ distTriang C)
+include hT
 
 lemma yoneda_exact₂ {X : C} (f : T.obj₂ ⟶ X) (hf : T.mor₁ ≫ f = 0) :
     ∃ (g : T.obj₃ ⟶ X), f = T.mor₂ ≫ g := by
@@ -399,12 +400,12 @@ lemma shift_distinguished (n : ℤ) :
     isomorphic_distinguished _ (hb _ (ha _ hT)) _
       ((Triangle.shiftFunctorAdd' C _ _ _ hc).app T)
   obtain (n|n) := n
-  · induction' n with n hn
-    · exact H_zero
-    · exact H_add hn H_one rfl
-  · induction' n with n hn
-    · exact H_neg_one
-    · exact H_add hn H_neg_one rfl
+  · induction n with
+    | zero =>  exact H_zero
+    | succ n hn => exact H_add hn H_one rfl
+  · induction n with
+    | zero => exact H_neg_one
+    | succ n hn => exact H_add hn H_neg_one rfl
 
 end Triangle
 

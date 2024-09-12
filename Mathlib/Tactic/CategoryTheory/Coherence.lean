@@ -31,10 +31,12 @@ open CategoryTheory FreeMonoidalCategory
 -- we put everything inside a namespace.
 namespace Mathlib.Tactic.Coherence
 
-variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
+variable {C : Type u} [Category.{v} C]
 open scoped MonoidalCategory
 
 noncomputable section lifting
+
+variable [MonoidalCategory C]
 
 /-- A typeclass carrying a choice of lift of an object from `C` to `FreeMonoidalCategory C`.
 It must be the case that `projectObj id (LiftObj.lift x) = x` by defeq. -/
@@ -119,8 +121,10 @@ def mkProjectMapExpr (e : Expr) : TermElabM Expr := do
 def monoidal_coherence (g : MVarId) : TermElabM Unit := g.withContext do
   withOptions (fun opts => synthInstance.maxSize.set opts
     (max 512 (synthInstance.maxSize.get opts))) do
-  let (ty, _) ← dsimp (← g.getType)
-    { simpTheorems := #[.addDeclToUnfoldCore {} ``MonoidalCoherence.hom] }
+  let thms := [``MonoidalCoherence.iso, ``Iso.trans, ``Iso.symm, ``Iso.refl,
+    ``MonoidalCategory.whiskerRightIso, ``MonoidalCategory.whiskerLeftIso].foldl
+    (·.addDeclToUnfoldCore ·) {}
+  let (ty, _) ← dsimp (← g.getType) { simpTheorems := #[thms] }
   let some (_, lhs, rhs) := (← whnfR ty).eq? | exception g "Not an equation of morphisms."
   let projectMap_lhs ← mkProjectMapExpr lhs
   let projectMap_rhs ← mkProjectMapExpr rhs
@@ -182,7 +186,9 @@ elab (name := liftable_prefixes) "liftable_prefixes" : tactic => do
     (max 256 (synthInstance.maxSize.get opts))) do
   evalTactic (← `(tactic|
     (simp (config := {failIfUnchanged := false}) only
-      [monoidalComp, Category.assoc, MonoidalCoherence.hom, BicategoricalCoherence.hom]) <;>
+      [monoidalComp, Category.assoc, BicategoricalCoherence.hom,
+      MonoidalCoherence.iso, Iso.trans, Iso.symm, Iso.refl,
+      MonoidalCategory.whiskerRightIso, MonoidalCategory.whiskerLeftIso]) <;>
     (apply (cancel_epi (𝟙 _)).1 <;> try infer_instance) <;>
     (simp (config := {failIfUnchanged := false}) only
       [assoc_liftHom, Mathlib.Tactic.BicategoryCoherence.assoc_liftHom₂])))
@@ -289,6 +295,4 @@ elab_rules : tactic
 
 end Coherence
 
-end Tactic
-
-end Mathlib
+end Mathlib.Tactic

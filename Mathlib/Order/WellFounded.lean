@@ -89,8 +89,7 @@ protected theorem lt_sup {r : α → α → Prop} (wf : WellFounded r) {s : Set 
 
 section
 
-open scoped Classical
-
+open Classical in
 /-- A successor of an element `x` in a well-founded order is a minimal element `y` such that
 `x < y` if one exists. Otherwise it is `x` itself. -/
 protected noncomputable def succ {r : α → α → Prop} (wf : WellFounded r) (x : α) : α :=
@@ -134,15 +133,15 @@ private theorem eq_strictMono_iff_eq_range_aux {f g : β → γ} (hf : StrictMon
   obtain ⟨c, hc⟩ : g b ∈ Set.range f := by
     rw [hfg]
     exact Set.mem_range_self b
-  cases' lt_or_le c b with hcb hbc
+  rcases lt_or_le c b with hcb | hbc
   · rw [H c hcb] at hc
     rw [hg.injective hc] at hcb
     exact hcb.false.elim
   · rw [← hc]
     exact hf.monotone hbc
 
-theorem eq_strictMono_iff_eq_range (h : WellFounded ((· < ·) : β → β → Prop)) {f g : β → γ}
-    (hf : StrictMono f) (hg : StrictMono g) :
+theorem eq_strictMono_iff_eq_range (h : WellFounded ((· < ·) : β → β → Prop))
+    {f g : β → γ} (hf : StrictMono f) (hg : StrictMono g) :
     Set.range f = Set.range g ↔ f = g :=
   ⟨fun hfg => by
     funext a
@@ -152,8 +151,8 @@ theorem eq_strictMono_iff_eq_range (h : WellFounded ((· < ·) : β → β → P
         (eq_strictMono_iff_eq_range_aux hg hf hfg.symm fun a hab => (H a hab).symm),
     congr_arg _⟩
 
-theorem self_le_of_strictMono (h : WellFounded ((· < ·) : β → β → Prop)) {f : β → β}
-    (hf : StrictMono f) : ∀ n, n ≤ f n := by
+theorem self_le_of_strictMono (h : WellFounded ((· < ·) : β → β → Prop))
+    {f : β → β} (hf : StrictMono f) : ∀ n, n ≤ f n := by
   by_contra! h₁
   have h₂ := h.min_mem _ h₁
   exact h.not_lt_min _ h₁ (hf h₂) h₂
@@ -281,3 +280,15 @@ theorem StrictAnti.wellFoundedGT [WellFoundedLT β] (hf : StrictAnti f) : WellFo
   StrictMono.wellFoundedLT (α := αᵒᵈ) (fun _ _ h ↦ hf h)
 
 end WellFoundedLT
+
+/-- A nonempty linear order with well-founded `<` has a bottom element. -/
+noncomputable def WellFoundedLT.toOrderBot {α} [LinearOrder α] [Nonempty α] [h : WellFoundedLT α] :
+    OrderBot α where
+  bot := h.wf.min _ Set.univ_nonempty
+  bot_le a := h.wf.min_le (Set.mem_univ a)
+
+/-- A nonempty linear order with well-founded `>` has a top element. -/
+noncomputable def WellFoundedGT.toOrderTop {α} [LinearOrder α] [Nonempty α] [WellFoundedGT α] :
+    OrderTop α :=
+  have := WellFoundedLT.toOrderBot (α := αᵒᵈ)
+  inferInstanceAs (OrderTop αᵒᵈᵒᵈ)

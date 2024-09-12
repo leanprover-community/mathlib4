@@ -4,12 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.Data.Countable.Small
 import Mathlib.Data.Fintype.Option
-import Mathlib.Data.Fintype.Pi
-import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Shrink
-import Mathlib.Data.Fintype.Sum
 
 /-!
 # The Hales-Jewett theorem
@@ -498,7 +494,7 @@ theorem exists_mono_in_high_dimension (α κ η) [Finite α] [Finite κ] [Finite
 
 /-- A variant of the **extended Hales-Jewett theorem** `exists_mono_in_high_dimension` where the
 returned type is some `Fin n` instead of a general fintype. -/
-theorem exists_mono_in_high_dimension_fin (α κ η) [Fintype α] [Fintype κ] [Fintype η] :
+theorem exists_mono_in_high_dimension_fin (α κ η) [Finite α] [Finite κ] [Finite η] :
     ∃ n, ∀ C : (Fin n → α) → κ, ∃ l : Subspace η α (Fin n), l.IsMono C := by
   obtain ⟨ι, ιfin, hι⟩ := exists_mono_in_high_dimension α κ η
   refine ⟨Fintype.card ι, fun C ↦ ?_⟩

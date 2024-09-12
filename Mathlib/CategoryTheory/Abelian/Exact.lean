@@ -231,6 +231,7 @@ section
 
 variable [L.PreservesZeroMorphisms]
 variable (hL : ∀ (S : ShortComplex A), S.Exact → (S.map L).Exact)
+include hL
 
 open ZeroObject
 
@@ -239,14 +240,14 @@ theorem preservesMonomorphisms_of_map_exact : L.PreservesMonomorphisms where
   preserves f hf := by
     apply ((Abelian.tfae_mono (L.map f) (L.obj 0)).out 2 0).mp
     refine ShortComplex.exact_of_iso ?_ (hL _ (((tfae_mono f 0).out 0 2).mp hf))
-    exact ShortComplex.isoMk (Iso.refl _) (Iso.refl _)  (Iso.refl _)
+    exact ShortComplex.isoMk (Iso.refl _) (Iso.refl _) (Iso.refl _)
 
 /-- A functor which preserves exactness preserves epimorphisms. -/
 theorem preservesEpimorphisms_of_map_exact : L.PreservesEpimorphisms where
   preserves f hf := by
     apply ((Abelian.tfae_epi (L.map f) (L.obj 0)).out 2 0).mp
     refine ShortComplex.exact_of_iso ?_ (hL _ (((tfae_epi f 0).out 0 2).mp hf))
-    exact ShortComplex.isoMk (Iso.refl _) (Iso.refl _)  (Iso.refl _)
+    exact ShortComplex.isoMk (Iso.refl _) (Iso.refl _) (Iso.refl _)
 
 /-- A functor which preserves the exactness of short complexes preserves homology. -/
 def preservesHomologyOfMapExact : L.PreservesHomology where

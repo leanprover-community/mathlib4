@@ -466,7 +466,7 @@ theorem le_glb_Ioi (a : α) (hb : IsGLB (Ioi a) b) : a ≤ b :=
 
 theorem lub_Iio_eq_self_or_Iio_eq_Iic [PartialOrder γ] {j : γ} (i : γ) (hj : IsLUB (Iio i) j) :
     j = i ∨ Iio i = Iic j := by
-  cases' eq_or_lt_of_le (lub_Iio_le i hj) with hj_eq_i hj_lt_i
+  rcases eq_or_lt_of_le (lub_Iio_le i hj) with hj_eq_i | hj_lt_i
   · exact Or.inl hj_eq_i
   · right
     exact Set.ext fun k => ⟨fun hk_lt => hj.1 hk_lt, fun hk_le_j => lt_of_le_of_lt hk_le_j hj_lt_i⟩
@@ -609,7 +609,7 @@ variable [SemilatticeSup γ] [DenselyOrdered γ]
 
 theorem isGLB_Ioo {a b : γ} (h : a < b) : IsGLB (Ioo a b) a :=
   ⟨fun x hx => hx.1.le, fun x hx => by
-    cases' eq_or_lt_of_le (le_sup_right : a ≤ x ⊔ a) with h₁ h₂
+    rcases eq_or_lt_of_le (le_sup_right : a ≤ x ⊔ a) with h₁ | h₂
     · exact h₁.symm ▸ le_sup_left
     obtain ⟨y, lty, ylt⟩ := exists_between h₂
     apply (not_lt_of_le (sup_le (hx ⟨lty, ylt.trans_le (sup_le _ h.le)⟩) lty.le) ylt).elim
@@ -759,7 +759,7 @@ theorem nonempty_of_not_bddBelow [Nonempty α] (h : ¬BddBelow s) : s.Nonempty :
 @[simp]
 theorem bddAbove_insert [IsDirected α (· ≤ ·)] {s : Set α} {a : α} :
     BddAbove (insert a s) ↔ BddAbove s := by
-  simp only [insert_eq, bddAbove_union, bddAbove_singleton, true_and_iff]
+  simp only [insert_eq, bddAbove_union, bddAbove_singleton, true_and]
 
 protected theorem BddAbove.insert [IsDirected α (· ≤ ·)] {s : Set α} (a : α) :
     BddAbove s → BddAbove (insert a s) :=
@@ -769,7 +769,7 @@ protected theorem BddAbove.insert [IsDirected α (· ≤ ·)] {s : Set α} (a : 
 @[simp]
 theorem bddBelow_insert [IsDirected α (· ≥ ·)] {s : Set α} {a : α} :
     BddBelow (insert a s) ↔ BddBelow s := by
-  simp only [insert_eq, bddBelow_union, bddBelow_singleton, true_and_iff]
+  simp only [insert_eq, bddBelow_union, bddBelow_singleton, true_and]
 
 protected theorem BddBelow.insert [IsDirected α (· ≥ ·)] {s : Set α} (a : α) :
     BddBelow s → BddBelow (insert a s) :=
@@ -957,21 +957,22 @@ end LinearOrder
 
 namespace MonotoneOn
 
-variable [Preorder α] [Preorder β] {f : α → β} {s t : Set α} (Hf : MonotoneOn f t) {a : α}
-  (Hst : s ⊆ t)
+variable [Preorder α] [Preorder β] {f : α → β} {s t : Set α} {a : α}
 
-theorem mem_upperBounds_image (Has : a ∈ upperBounds s) (Hat : a ∈ t) :
-    f a ∈ upperBounds (f '' s) :=
+theorem mem_upperBounds_image (Hf : MonotoneOn f t) (Hst : s ⊆ t) (Has : a ∈ upperBounds s)
+    (Hat : a ∈ t) : f a ∈ upperBounds (f '' s) :=
   forall_mem_image.2 fun _ H => Hf (Hst H) Hat (Has H)
 
-theorem mem_upperBounds_image_self : a ∈ upperBounds t → a ∈ t → f a ∈ upperBounds (f '' t) :=
+theorem mem_upperBounds_image_self (Hf : MonotoneOn f t) :
+    a ∈ upperBounds t → a ∈ t → f a ∈ upperBounds (f '' t) :=
   Hf.mem_upperBounds_image subset_rfl
 
-theorem mem_lowerBounds_image (Has : a ∈ lowerBounds s) (Hat : a ∈ t) :
-    f a ∈ lowerBounds (f '' s) :=
+theorem mem_lowerBounds_image (Hf : MonotoneOn f t) (Hst : s ⊆ t) (Has : a ∈ lowerBounds s)
+    (Hat : a ∈ t) : f a ∈ lowerBounds (f '' s) :=
   forall_mem_image.2 fun _ H => Hf Hat (Hst H) (Has H)
 
-theorem mem_lowerBounds_image_self : a ∈ lowerBounds t → a ∈ t → f a ∈ lowerBounds (f '' t) :=
+theorem mem_lowerBounds_image_self (Hf : MonotoneOn f t) :
+    a ∈ lowerBounds t → a ∈ t → f a ∈ lowerBounds (f '' t) :=
   Hf.mem_lowerBounds_image subset_rfl
 
 theorem image_upperBounds_subset_upperBounds_image (Hf : MonotoneOn f t) (Hst : s ⊆ t) :
@@ -979,69 +980,76 @@ theorem image_upperBounds_subset_upperBounds_image (Hf : MonotoneOn f t) (Hst : 
   rintro _ ⟨a, ha, rfl⟩
   exact Hf.mem_upperBounds_image Hst ha.1 ha.2
 
-theorem image_lowerBounds_subset_lowerBounds_image :
+theorem image_lowerBounds_subset_lowerBounds_image (Hf : MonotoneOn f t) (Hst : s ⊆ t) :
     f '' (lowerBounds s ∩ t) ⊆ lowerBounds (f '' s) :=
   Hf.dual.image_upperBounds_subset_upperBounds_image Hst
 
 /-- The image under a monotone function on a set `t` of a subset which has an upper bound in `t`
   is bounded above. -/
-theorem map_bddAbove : (upperBounds s ∩ t).Nonempty → BddAbove (f '' s) := fun ⟨C, hs, ht⟩ =>
+theorem map_bddAbove (Hf : MonotoneOn f t) (Hst : s ⊆ t) :
+    (upperBounds s ∩ t).Nonempty → BddAbove (f '' s) := fun ⟨C, hs, ht⟩ =>
   ⟨f C, Hf.mem_upperBounds_image Hst hs ht⟩
 
 /-- The image under a monotone function on a set `t` of a subset which has a lower bound in `t`
   is bounded below. -/
-theorem map_bddBelow : (lowerBounds s ∩ t).Nonempty → BddBelow (f '' s) := fun ⟨C, hs, ht⟩ =>
+theorem map_bddBelow (Hf : MonotoneOn f t) (Hst : s ⊆ t) :
+    (lowerBounds s ∩ t).Nonempty → BddBelow (f '' s) := fun ⟨C, hs, ht⟩ =>
   ⟨f C, Hf.mem_lowerBounds_image Hst hs ht⟩
 
 /-- A monotone map sends a least element of a set to a least element of its image. -/
-theorem map_isLeast (Ha : IsLeast t a) : IsLeast (f '' t) (f a) :=
+theorem map_isLeast (Hf : MonotoneOn f t) (Ha : IsLeast t a) : IsLeast (f '' t) (f a) :=
   ⟨mem_image_of_mem _ Ha.1, Hf.mem_lowerBounds_image_self Ha.2 Ha.1⟩
 
 /-- A monotone map sends a greatest element of a set to a greatest element of its image. -/
-theorem map_isGreatest (Ha : IsGreatest t a) : IsGreatest (f '' t) (f a) :=
+theorem map_isGreatest (Hf : MonotoneOn f t) (Ha : IsGreatest t a) : IsGreatest (f '' t) (f a) :=
   ⟨mem_image_of_mem _ Ha.1, Hf.mem_upperBounds_image_self Ha.2 Ha.1⟩
 
 end MonotoneOn
 
 namespace AntitoneOn
 
-variable [Preorder α] [Preorder β] {f : α → β} {s t : Set α} (Hf : AntitoneOn f t) {a : α}
-  (Hst : s ⊆ t)
+variable [Preorder α] [Preorder β] {f : α → β} {s t : Set α} {a : α}
 
-theorem mem_upperBounds_image (Has : a ∈ lowerBounds s) : a ∈ t → f a ∈ upperBounds (f '' s) :=
+theorem mem_upperBounds_image (Hf : AntitoneOn f t) (Hst : s ⊆ t) (Has : a ∈ lowerBounds s) :
+    a ∈ t → f a ∈ upperBounds (f '' s) :=
   Hf.dual_right.mem_lowerBounds_image Hst Has
 
-theorem mem_upperBounds_image_self : a ∈ lowerBounds t → a ∈ t → f a ∈ upperBounds (f '' t) :=
+theorem mem_upperBounds_image_self (Hf : AntitoneOn f t) :
+    a ∈ lowerBounds t → a ∈ t → f a ∈ upperBounds (f '' t) :=
   Hf.dual_right.mem_lowerBounds_image_self
 
-theorem mem_lowerBounds_image : a ∈ upperBounds s → a ∈ t → f a ∈ lowerBounds (f '' s) :=
+theorem mem_lowerBounds_image (Hf : AntitoneOn f t) (Hst : s ⊆ t) :
+    a ∈ upperBounds s → a ∈ t → f a ∈ lowerBounds (f '' s) :=
   Hf.dual_right.mem_upperBounds_image Hst
 
-theorem mem_lowerBounds_image_self : a ∈ upperBounds t → a ∈ t → f a ∈ lowerBounds (f '' t) :=
+theorem mem_lowerBounds_image_self (Hf : AntitoneOn f t) :
+    a ∈ upperBounds t → a ∈ t → f a ∈ lowerBounds (f '' t) :=
   Hf.dual_right.mem_upperBounds_image_self
 
-theorem image_lowerBounds_subset_upperBounds_image :
+theorem image_lowerBounds_subset_upperBounds_image (Hf : AntitoneOn f t) (Hst : s ⊆ t) :
     f '' (lowerBounds s ∩ t) ⊆ upperBounds (f '' s) :=
   Hf.dual_right.image_lowerBounds_subset_lowerBounds_image Hst
 
-theorem image_upperBounds_subset_lowerBounds_image :
+theorem image_upperBounds_subset_lowerBounds_image (Hf : AntitoneOn f t) (Hst : s ⊆ t) :
     f '' (upperBounds s ∩ t) ⊆ lowerBounds (f '' s) :=
   Hf.dual_right.image_upperBounds_subset_upperBounds_image Hst
 
 /-- The image under an antitone function of a set which is bounded above is bounded below. -/
-theorem map_bddAbove : (upperBounds s ∩ t).Nonempty → BddBelow (f '' s) :=
+theorem map_bddAbove (Hf : AntitoneOn f t) (Hst : s ⊆ t) :
+    (upperBounds s ∩ t).Nonempty → BddBelow (f '' s) :=
   Hf.dual_right.map_bddAbove Hst
 
 /-- The image under an antitone function of a set which is bounded below is bounded above. -/
-theorem map_bddBelow : (lowerBounds s ∩ t).Nonempty → BddAbove (f '' s) :=
+theorem map_bddBelow (Hf : AntitoneOn f t) (Hst : s ⊆ t) :
+    (lowerBounds s ∩ t).Nonempty → BddAbove (f '' s) :=
   Hf.dual_right.map_bddBelow Hst
 
 /-- An antitone map sends a greatest element of a set to a least element of its image. -/
-theorem map_isGreatest : IsGreatest t a → IsLeast (f '' t) (f a) :=
+theorem map_isGreatest (Hf : AntitoneOn f t) : IsGreatest t a → IsLeast (f '' t) (f a) :=
   Hf.dual_right.map_isGreatest
 
 /-- An antitone map sends a least element of a set to a greatest element of its image. -/
-theorem map_isLeast : IsLeast t a → IsGreatest (f '' t) (f a) :=
+theorem map_isLeast (Hf : AntitoneOn f t) : IsLeast t a → IsGreatest (f '' t) (f a) :=
   Hf.dual_right.map_isLeast
 
 end AntitoneOn
@@ -1050,13 +1058,15 @@ namespace Monotone
 
 variable [Preorder α] [Preorder β] {f : α → β} (Hf : Monotone f) {a : α} {s : Set α}
 
+include Hf
+
 theorem mem_upperBounds_image (Ha : a ∈ upperBounds s) : f a ∈ upperBounds (f '' s) :=
   forall_mem_image.2 fun _ H => Hf (Ha H)
 
 theorem mem_lowerBounds_image (Ha : a ∈ lowerBounds s) : f a ∈ lowerBounds (f '' s) :=
   forall_mem_image.2 fun _ H => Hf (Ha H)
 
-theorem image_upperBounds_subset_upperBounds_image (Hf : Monotone f) :
+theorem image_upperBounds_subset_upperBounds_image :
     f '' upperBounds s ⊆ upperBounds (f '' s) := by
   rintro _ ⟨a, ha, rfl⟩
   exact Hf.mem_upperBounds_image ha
@@ -1087,6 +1097,8 @@ end Monotone
 namespace Antitone
 
 variable [Preorder α] [Preorder β] {f : α → β} (hf : Antitone f) {a : α} {s : Set α}
+
+include hf
 
 theorem mem_upperBounds_image : a ∈ lowerBounds s → f a ∈ upperBounds (f '' s) :=
   hf.dual_right.mem_lowerBounds_image
@@ -1127,6 +1139,8 @@ section MonotoneMonotone
 
 variable (h₀ : ∀ b, Monotone (swap f b)) (h₁ : ∀ a, Monotone (f a))
 
+include h₀ h₁
+
 theorem mem_upperBounds_image2 (ha : a ∈ upperBounds s) (hb : b ∈ upperBounds t) :
     f a b ∈ upperBounds (image2 f s t) :=
   forall_image2_iff.2 fun _ hx _ hy => (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
@@ -1144,13 +1158,13 @@ theorem image2_lowerBounds_lowerBounds_subset :
   image2_subset_iff.2 fun _ ha _ hb ↦ mem_lowerBounds_image2 h₀ h₁ ha hb
 
 /-- See also `Monotone.map_bddAbove`. -/
-protected theorem BddAbove.image2 (h₀ : ∀ b, Monotone (swap f b)) (h₁ : ∀ a, Monotone (f a)) :
+protected theorem BddAbove.image2 :
     BddAbove s → BddAbove t → BddAbove (image2 f s t) := by
   rintro ⟨a, ha⟩ ⟨b, hb⟩
   exact ⟨f a b, mem_upperBounds_image2 h₀ h₁ ha hb⟩
 
 /-- See also `Monotone.map_bddBelow`. -/
-protected theorem BddBelow.image2 (h₀ : ∀ b, Monotone (swap f b)) (h₁ : ∀ a, Monotone (f a)) :
+protected theorem BddBelow.image2 :
     BddBelow s → BddBelow t → BddBelow (image2 f s t) := by
   rintro ⟨a, ha⟩ ⟨b, hb⟩
   exact ⟨f a b, mem_lowerBounds_image2 h₀ h₁ ha hb⟩
@@ -1168,6 +1182,8 @@ end MonotoneMonotone
 section MonotoneAntitone
 
 variable (h₀ : ∀ b, Monotone (swap f b)) (h₁ : ∀ a, Antitone (f a))
+
+include h₀ h₁
 
 theorem mem_upperBounds_image2_of_mem_upperBounds_of_mem_lowerBounds (ha : a ∈ upperBounds s)
     (hb : b ∈ lowerBounds t) : f a b ∈ upperBounds (image2 f s t) :=
@@ -1213,6 +1229,8 @@ section AntitoneAntitone
 
 variable (h₀ : ∀ b, Antitone (swap f b)) (h₁ : ∀ a, Antitone (f a))
 
+include h₀ h₁
+
 theorem mem_upperBounds_image2_of_mem_lowerBounds (ha : a ∈ lowerBounds s)
     (hb : b ∈ lowerBounds t) : f a b ∈ upperBounds (image2 f s t) :=
   forall_image2_iff.2 fun _ hx _ hy => (h₀ _ <| ha hx).trans <| h₁ _ <| hb hy
@@ -1252,6 +1270,8 @@ end AntitoneAntitone
 section AntitoneMonotone
 
 variable (h₀ : ∀ b, Antitone (swap f b)) (h₁ : ∀ a, Monotone (f a))
+
+include h₀ h₁
 
 theorem mem_upperBounds_image2_of_mem_upperBounds_of_mem_upperBounds (ha : a ∈ lowerBounds s)
     (hb : b ∈ upperBounds t) : f a b ∈ upperBounds (image2 f s t) :=
@@ -1410,31 +1430,3 @@ lemma BddBelow.range_comp {γ : Type*} [Preorder β] [Preorder γ] {f : α → �
     (hf : BddBelow (range f)) (hg : Monotone g) : BddBelow (range (fun x => g (f x))) := by
   change BddBelow (range (g ∘ f))
   simpa only [Set.range_comp] using hg.map_bddBelow hf
-
-section ScottContinuous
-variable [Preorder α] [Preorder β] {f : α → β} {a : α}
-
-/-- A function between preorders is said to be Scott continuous if it preserves `IsLUB` on directed
-sets. It can be shown that a function is Scott continuous if and only if it is continuous wrt the
-Scott topology.
-
-The dual notion
-
-```lean
-∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≥ ·) d → ∀ ⦃a⦄, IsGLB d a → IsGLB (f '' d) (f a)
-```
-
-does not appear to play a significant role in the literature, so is omitted here.
--/
-def ScottContinuous (f : α → β) : Prop :=
-  ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → IsLUB (f '' d) (f a)
-
-protected theorem ScottContinuous.monotone (h : ScottContinuous f) : Monotone f := by
-  refine fun a b hab =>
-    (h (insert_nonempty _ _) (directedOn_pair le_refl hab) ?_).1
-      (mem_image_of_mem _ <| mem_insert _ _)
-  rw [IsLUB, upperBounds_insert, upperBounds_singleton,
-    inter_eq_self_of_subset_right (Ici_subset_Ici.2 hab)]
-  exact isLeast_Ici
-
-end ScottContinuous

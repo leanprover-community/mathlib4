@@ -97,9 +97,9 @@ See <https://stacks.math.columbia.edu/tag/001D>. We do not define 'strictly full
 -/
 @[ext]
 structure FullSubcategory where
-  /-- The category of which this is a full subcategory-/
+  /-- The category of which this is a full subcategory -/
   obj : C
-  /-- The predicate satisfied by all objects in this subcategory-/
+  /-- The predicate satisfied by all objects in this subcategory -/
   property : Z obj
 
 instance FullSubcategory.category : Category.{v} (FullSubcategory Z) :=

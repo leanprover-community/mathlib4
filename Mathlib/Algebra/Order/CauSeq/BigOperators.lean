@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yaël Dillies
 -/
 import Mathlib.Algebra.GeomSum
-import Mathlib.Algebra.Order.Archimedean
+import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Algebra.Order.CauSeq.Basic
 
 /-!
@@ -94,7 +94,7 @@ theorem _root_.cauchy_product (ha : IsCauSeq abs fun m ↦ ∑ n ∈ range m, ab
         abv (f i) * abv ((∑ k ∈ range (K - i), g k) - ∑ k ∈ range K, g k)) ≤
       ∑ i ∈ range (max N M + 1), abv (f i) * (ε / (2 * P)) := by
     gcongr with m hmJ
-    refine le_of_lt $ hN (K - m) (le_tsub_of_add_le_left $ hK.trans' ?_) K hKN.le
+    refine le_of_lt <| hN (K - m) (le_tsub_of_add_le_left <| hK.trans' ?_) K hKN.le
     rw [two_mul]
     gcongr
     · exact (mem_range.1 hmJ).le
@@ -133,8 +133,9 @@ theorem _root_.cauchy_product (ha : IsCauSeq abs fun m ↦ ∑ n ∈ range m, ab
         rw [← sum_mul, ← sum_range_sub_sum_range (le_of_lt hNMK)]
         have := lt_of_le_of_lt (abv_nonneg _ _) (hQ 0)
         gcongr
-        exact (le_abs_self _).trans_lt $ hM _ ((Nat.le_succ_of_le (le_max_right _ _)).trans hNMK.le)
-          _  $ Nat.le_succ_of_le $ le_max_right _ _
+        exact (le_abs_self _).trans_lt <|
+          hM _ ((Nat.le_succ_of_le (le_max_right _ _)).trans hNMK.le) _ <|
+            Nat.le_succ_of_le <| le_max_right _ _
 
 variable [Archimedean α]
 
@@ -172,7 +173,7 @@ lemma of_decreasing_bounded (f : ℕ → α) {a : α} {m : ℕ} (ham : ∀ n ≥
 
 lemma of_mono_bounded (f : ℕ → α) {a : α} {m : ℕ} (ham : ∀ n ≥ m, |f n| ≤ a)
     (hnm : ∀ n ≥ m, f n ≤ f n.succ) : IsCauSeq abs f :=
-  (of_decreasing_bounded (-f) (a := a) (m := m) (by simpa using ham) $ by simpa using hnm).of_neg
+  (of_decreasing_bounded (-f) (a := a) (m := m) (by simpa using ham) <| by simpa using hnm).of_neg
 
 lemma geo_series [Nontrivial β] (x : β) (hx1 : abv x < 1) :
     IsCauSeq abv fun n ↦ ∑ m ∈ range n, x ^ m := by

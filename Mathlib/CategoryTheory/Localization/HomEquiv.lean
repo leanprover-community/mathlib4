@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 
 import Mathlib.CategoryTheory.Localization.LocalizerMorphism
-import Mathlib.CategoryTheory.Conj
+import Mathlib.CategoryTheory.HomCongr
 
 /-!
 # Bijections between morphisms in two localized categories

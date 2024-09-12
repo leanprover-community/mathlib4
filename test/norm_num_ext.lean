@@ -389,6 +389,18 @@ example : ∏ i ∈ Finset.range 9, Nat.sqrt (i + 1) = 96 := by norm_num1
 
 end big_operators
 
+section floor
+
+variable (R : Type*) [LinearOrderedRing R] [FloorRing R]
+variable (K : Type*) [LinearOrderedField K] [FloorRing K]
+
+example : ⌊(-1 : R)⌋ = -1 := by norm_num
+example : ⌊(2 : R)⌋ = 2 := by norm_num
+example : ⌊(15 / 16 : K)⌋ + 1 = 1 := by norm_num
+example : ⌊(-15 / 16 : K)⌋ + 1 = 0 := by norm_num
+
+end floor
+
 section jacobi
 
 -- Jacobi and Legendre symbols

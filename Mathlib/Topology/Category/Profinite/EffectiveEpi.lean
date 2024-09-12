@@ -7,63 +7,27 @@ import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPreregular
 import Mathlib.Topology.Category.CompHaus.EffectiveEpi
 import Mathlib.Topology.Category.Profinite.Limits
 import Mathlib.Topology.Category.Stonean.Basic
-
 /-!
-# Effective epimorphisms and finite effective epimorphic families in `Profinite`
 
-This file proves that `Profinite` is `Preregular`. Together with the fact that it is
-`FinitaryPreExtensive`, this implies that `Profinite` is `Precoherent`.
+# Effective epimorphisms in `Profinite`
 
-To do this, we need to characterise effective epimorphisms in `Profinite`. As a consequence, we also
-get a characterisation of finite effective epimorphic families.
+This file proves that `EffectiveEpi`, `Epi` and `Surjective` are all equivalent in `Profinite`.
+As a consequence we deduce from the material in
+`Mathlib.Topology.Category.CompHausLike.EffectiveEpi` that `Profinite` is `Preregular`
+and `Precoherent`.
 
-## Main results
-
-* `Profinite.effectiveEpi_tfae`: For a morphism in `Profinite`, the conditions surjective,
-  epimorphic, and effective epimorphic are all equivalent.
-
-* `Profinite.effectiveEpiFamily_tfae`: For a finite family of morphisms in `Profinite` with fixed
-  target in `Profinite`, the conditions jointly surjective, jointly epimorphic and effective
-  epimorphic are all equivalent.
-
-As a consequence, we obtain instances that `Profinite` is precoherent and preregular.
-
+We also prove that for a finite family of morphisms in `Profinite` with fixed
+target, the conditions jointly surjective, jointly epimorphic and effective epimorphic are all
+equivalent.
 -/
 
 universe u
 
-/-
-Previously, this had accidentally been made a global instance,
-and we now turn it on locally when convenient.
--/
-attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
-
 open CategoryTheory Limits
 
-namespace Profinite
+attribute [local instance] ConcreteCategory.instFunLike
 
-/--
-Implementation: If `π` is a surjective morphism in `Profinite`, then it is an effective epi.
-The theorem `Profinite.effectiveEpi_tfae` should be used instead.
--/
-noncomputable
-def struct {B X : Profinite.{u}} (π : X ⟶ B) (hπ : Function.Surjective π) :
-    EffectiveEpiStruct π where
-  desc e h := (QuotientMap.of_surjective_continuous hπ π.continuous).lift e fun a b hab ↦
-    DFunLike.congr_fun (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩
-    (by ext; exact hab)) a
-  fac e h := ((QuotientMap.of_surjective_continuous hπ π.continuous).lift_comp e
-    fun a b hab ↦ DFunLike.congr_fun (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩
-    (by ext; exact hab)) a)
-  uniq e h g hm := by
-    suffices g = (QuotientMap.of_surjective_continuous hπ π.continuous).liftEquiv ⟨e,
-      fun a b hab ↦ DFunLike.congr_fun
-        (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩ (by ext; exact hab))
-        a⟩ by assumption
-    rw [← Equiv.symm_apply_eq (QuotientMap.of_surjective_continuous hπ π.continuous).liftEquiv]
-    ext
-    simp only [QuotientMap.liftEquiv_symm_apply_coe, ContinuousMap.comp_apply, ← hm]
-    rfl
+namespace Profinite
 
 open List in
 theorem effectiveEpi_tfae
@@ -78,7 +42,7 @@ theorem effectiveEpi_tfae
   tfae_have 2 ↔ 3
   · exact epi_iff_surjective π
   tfae_have 3 → 1
-  · exact fun hπ ↦ ⟨⟨struct π hπ⟩⟩
+  · exact fun hπ ↦ ⟨⟨CompHausLike.effectiveEpiStruct π hπ⟩⟩
   tfae_finish
 
 instance : profiniteToCompHaus.PreservesEffectiveEpis where
@@ -90,7 +54,7 @@ instance : profiniteToCompHaus.ReflectsEffectiveEpis where
     ((Profinite.effectiveEpi_tfae f).out 0 2).mpr (((CompHaus.effectiveEpi_tfae _).out 0 2).mp h)
 
 /--
-An effective presentation of an `X : Profinite` with respect to the inclusion functor from `Stonean`
+An effective presentation of an `X : Profinite` with respect to the inclusion functor from `Stonean`
 -/
 noncomputable def profiniteToCompHausEffectivePresentation (X : CompHaus) :
     profiniteToCompHaus.EffectivePresentation X where

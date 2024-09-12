@@ -232,7 +232,7 @@ variable {R G : Type*} [CommSemiring R] [Group G] [MulAction G R] [SMulCommClass
 
 theorem isCoprime_group_smul_left : IsCoprime (x • y) z ↔ IsCoprime y z :=
   ⟨fun ⟨a, b, h⟩ => ⟨x • a, b, by rwa [smul_mul_assoc, ← mul_smul_comm]⟩, fun ⟨a, b, h⟩ =>
-    ⟨x⁻¹ • a, b, by rwa [smul_mul_smul, inv_mul_self, one_smul]⟩⟩
+    ⟨x⁻¹ • a, b, by rwa [smul_mul_smul_comm, inv_mul_cancel, one_smul]⟩⟩
 
 theorem isCoprime_group_smul_right : IsCoprime y (x • z) ↔ IsCoprime y z :=
   isCoprime_comm.trans <| (isCoprime_group_smul_left x z y).trans isCoprime_comm
@@ -244,26 +244,32 @@ end ScalarTower
 
 section CommSemiringUnit
 
-variable {R : Type*} [CommSemiring R] {x : R} (hu : IsUnit x) (y z : R)
+variable {R : Type*} [CommSemiring R] {x : R}
 
-theorem isCoprime_mul_unit_left_left : IsCoprime (x * y) z ↔ IsCoprime y z :=
+theorem isCoprime_mul_unit_left_left (hu : IsUnit x) (y z : R) :
+    IsCoprime (x * y) z ↔ IsCoprime y z :=
   let ⟨u, hu⟩ := hu
   hu ▸ isCoprime_group_smul_left u y z
 
-theorem isCoprime_mul_unit_left_right : IsCoprime y (x * z) ↔ IsCoprime y z :=
+theorem isCoprime_mul_unit_left_right (hu : IsUnit x) (y z : R) :
+    IsCoprime y (x * z) ↔ IsCoprime y z :=
   let ⟨u, hu⟩ := hu
   hu ▸ isCoprime_group_smul_right u y z
 
-theorem isCoprime_mul_unit_left : IsCoprime (x * y) (x * z) ↔ IsCoprime y z :=
+theorem isCoprime_mul_unit_left (hu : IsUnit x) (y z : R) :
+    IsCoprime (x * y) (x * z) ↔ IsCoprime y z :=
   (isCoprime_mul_unit_left_left hu y (x * z)).trans (isCoprime_mul_unit_left_right hu y z)
 
-theorem isCoprime_mul_unit_right_left : IsCoprime (y * x) z ↔ IsCoprime y z :=
+theorem isCoprime_mul_unit_right_left (hu : IsUnit x) (y z : R) :
+    IsCoprime (y * x) z ↔ IsCoprime y z :=
   mul_comm x y ▸ isCoprime_mul_unit_left_left hu y z
 
-theorem isCoprime_mul_unit_right_right : IsCoprime y (z * x) ↔ IsCoprime y z :=
+theorem isCoprime_mul_unit_right_right (hu : IsUnit x) (y z : R) :
+    IsCoprime y (z * x) ↔ IsCoprime y z :=
   mul_comm x z ▸ isCoprime_mul_unit_left_right hu y z
 
-theorem isCoprime_mul_unit_right : IsCoprime (y * x) (z * x) ↔ IsCoprime y z :=
+theorem isCoprime_mul_unit_right (hu : IsUnit x) (y z : R) :
+    IsCoprime (y * x) (z * x) ↔ IsCoprime y z :=
   (isCoprime_mul_unit_right_left hu y (z * x)).trans (isCoprime_mul_unit_right_right hu y z)
 
 end CommSemiringUnit
@@ -354,7 +360,7 @@ end CommRing
 theorem sq_add_sq_ne_zero {R : Type*} [LinearOrderedCommRing R] {a b : R} (h : IsCoprime a b) :
     a ^ 2 + b ^ 2 ≠ 0 := by
   intro h'
-  obtain ⟨ha, hb⟩ := (add_eq_zero_iff' (sq_nonneg _) (sq_nonneg _)).mp h'
+  obtain ⟨ha, hb⟩ := (add_eq_zero_iff_of_nonneg (sq_nonneg _) (sq_nonneg _)).mp h'
   obtain rfl := pow_eq_zero ha
   obtain rfl := pow_eq_zero hb
   exact not_isCoprime_zero_zero h
@@ -363,30 +369,30 @@ end IsCoprime
 
 namespace IsRelPrime
 
-variable {R} [CommRing R] {x y : R} (h : IsRelPrime x y) (z : R)
+variable {R} [CommRing R] {x y : R}
 
-theorem add_mul_left_left (h : IsRelPrime x y) : IsRelPrime (x + y * z) y :=
+theorem add_mul_left_left (h : IsRelPrime x y) (z : R) : IsRelPrime (x + y * z) y :=
   @of_add_mul_left_left R _ _ _ (-z) <| by simpa only [mul_neg, add_neg_cancel_right] using h
 
-theorem add_mul_right_left : IsRelPrime (x + z * y) y :=
+theorem add_mul_right_left (h : IsRelPrime x y) (z : R) : IsRelPrime (x + z * y) y :=
   mul_comm z y ▸ h.add_mul_left_left z
 
-theorem add_mul_left_right : IsRelPrime x (y + x * z) :=
+theorem add_mul_left_right (h : IsRelPrime x y) (z : R) : IsRelPrime x (y + x * z) :=
   (h.symm.add_mul_left_left z).symm
 
-theorem add_mul_right_right : IsRelPrime x (y + z * x) :=
+theorem add_mul_right_right (h : IsRelPrime x y) (z : R) : IsRelPrime x (y + z * x) :=
   (h.symm.add_mul_right_left z).symm
 
-theorem mul_add_left_left : IsRelPrime (y * z + x) y :=
+theorem mul_add_left_left (h : IsRelPrime x y) (z : R) : IsRelPrime (y * z + x) y :=
   add_comm x _ ▸ h.add_mul_left_left z
 
-theorem mul_add_right_left : IsRelPrime (z * y + x) y :=
+theorem mul_add_right_left (h : IsRelPrime x y) (z : R) : IsRelPrime (z * y + x) y :=
   add_comm x _ ▸ h.add_mul_right_left z
 
-theorem mul_add_left_right : IsRelPrime x (x * z + y) :=
+theorem mul_add_left_right (h : IsRelPrime x y) (z : R) : IsRelPrime x (x * z + y) :=
   add_comm y _ ▸ h.add_mul_left_right z
 
-theorem mul_add_right_right : IsRelPrime x (z * x + y) :=
+theorem mul_add_right_right (h : IsRelPrime x y) (z : R) : IsRelPrime x (z * x + y) :=
   add_comm y _ ▸ h.add_mul_right_right z
 
 variable {z}
@@ -415,9 +421,9 @@ theorem mul_add_left_right_iff {x y z : R} : IsRelPrime x (x * z + y) ↔ IsRelP
 theorem mul_add_right_right_iff {x y z : R} : IsRelPrime x (z * x + y) ↔ IsRelPrime x y :=
   ⟨of_mul_add_right_right, fun h ↦ h.mul_add_right_right z⟩
 
-theorem neg_left : IsRelPrime (-x) y := fun _ ↦ (h <| dvd_neg.mp ·)
-theorem neg_right : IsRelPrime x (-y) := h.symm.neg_left.symm
-protected theorem neg_neg : IsRelPrime (-x) (-y) := h.neg_left.neg_right
+theorem neg_left (h : IsRelPrime x y) : IsRelPrime (-x) y := fun _ ↦ (h <| dvd_neg.mp ·)
+theorem neg_right (h : IsRelPrime x y) : IsRelPrime x (-y) := h.symm.neg_left.symm
+protected theorem neg_neg (h : IsRelPrime x y) : IsRelPrime (-x) (-y) := h.neg_left.neg_right
 
 theorem neg_left_iff (x y : R) : IsRelPrime (-x) y ↔ IsRelPrime x y :=
   ⟨fun h ↦ neg_neg x ▸ h.neg_left, neg_left⟩

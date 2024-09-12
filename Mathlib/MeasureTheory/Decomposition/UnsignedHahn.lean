@@ -22,10 +22,7 @@ Hahn decomposition
 -/
 
 
-open Set Filter
-
-open scoped Classical
-open Topology ENNReal
+open Set Filter Topology ENNReal
 
 namespace MeasureTheory
 
@@ -59,9 +56,8 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
   have d_Inter (s : ℕ → Set α) (hs : ∀ n, MeasurableSet (s n)) (hm : ∀ n m, n ≤ m → s m ⊆ s n) :
         Tendsto (fun n => d (s n)) atTop (𝓝 (d (⋂ n, s n))) := by
     refine Tendsto.sub ?_ ?_ <;>
-      refine
-        NNReal.tendsto_coe.2 <|
-          (ENNReal.tendsto_toNNReal <| ?_).comp <| tendsto_measure_iInter hs hm ?_
+      refine NNReal.tendsto_coe.2 <| (ENNReal.tendsto_toNNReal <| ?_).comp <|
+        tendsto_measure_iInter (fun n ↦ (hs n).nullMeasurableSet) hm ?_
     exacts [hμ _, ⟨0, hμ _⟩, hν _, ⟨0, hν _⟩]
   have bdd_c : BddAbove c := by
     use (μ univ).toNNReal
