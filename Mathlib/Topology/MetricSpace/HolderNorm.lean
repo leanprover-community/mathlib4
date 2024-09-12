@@ -165,7 +165,7 @@ lemma MemHolder.coe_nnHolderNorm_eq_eHolderNorm
     (nnHolderNorm r f : ℝ≥0∞) = eHolderNorm r f :=
   hf.holderWith.coe_HolderNorm_eq_eHolderNorm
 
-lemma HolderWith.holderNorm_le {C r : ℝ≥0} {f : X → Y} (hf : HolderWith C r f) :
+lemma HolderWith.nnholderNorm_le {C r : ℝ≥0} {f : X → Y} (hf : HolderWith C r f) :
     nnHolderNorm r f ≤ C := by
   rw [← ENNReal.coe_le_coe, hf.coe_HolderNorm_eq_eHolderNorm]
   exact hf.eHolderNorm_le
@@ -192,11 +192,11 @@ variable (r f g) in
 lemma eHolderNorm_add :
     eHolderNorm r (f + g) ≤ eHolderNorm r f + eHolderNorm r g := by
   by_cases hfg : MemHolder r f  ∧ MemHolder r g
-  . obtain ⟨hf, hg⟩ := hfg
-    rw [← hf.coe_HolderNorm_eq_eHolderNorm, ← hg.coe_HolderNorm_eq_eHolderNorm, ← coe_add]
+  · obtain ⟨hf, hg⟩ := hfg
+    rw [← hf.coe_nnHolderNorm_eq_eHolderNorm, ← hg.coe_nnHolderNorm_eq_eHolderNorm, ← coe_add]
     exact (hf.add hg).holderWith.eHolderNorm_le.trans <|
-      coe_le_coe.2 (hf.holderWith.add hg.holderWith).holderNorm_le
-  . rw [Classical.not_and_iff_or_not_not, not_memHolder, not_memHolder] at hfg
+      coe_le_coe.2 (hf.holderWith.add hg.holderWith).nnholderNorm_le
+  · rw [Classical.not_and_iff_or_not_not, not_memHolder, not_memHolder] at hfg
     obtain (h | h) := hfg
     all_goals simp [h]
 
@@ -207,7 +207,7 @@ lemma eHolderNorm_smul {α} [NormedDivisionRing α] [Module α Y] [BoundedSMul �
     simp [hc]
   by_cases hf : MemHolder r f
   · refine le_antisymm ((hf.holderWith.smul c).eHolderNorm_le.trans ?_) <| mul_le_of_le_div' ?_
-    · rw [coe_mul, hf.coe_HolderNorm_eq_eHolderNorm, mul_comm]
+    · rw [coe_mul, hf.coe_nnHolderNorm_eq_eHolderNorm, mul_comm]
     · rw [← (hf.holderWith.smul c).coe_HolderNorm_eq_eHolderNorm, ← coe_div hc]
       refine HolderWith.eHolderNorm_le fun x₁ x₂ => ?_
       rw [coe_div hc, ← ENNReal.mul_div_right_comm,
