@@ -167,6 +167,72 @@ lemma jacobiMatrix_apply (i j : P.rels) :
 
 end Matrix
 
+section Constructions
+
+section Localization
+
+variable (r : R) [IsLocalization.Away r S]
+
+variable (S) in
+@[simps map]
+noncomputable def localizationAway : PreSubmersivePresentation R S where
+  toPresentation := Presentation.localizationAway r
+  map _ := ()
+  map_inj _ _ h := h
+  relations_finite := inferInstanceAs <| Finite Unit
+
+lemma localizationAway_det : (localizationAway S r).jacobian = algebraMap R S r := by
+  simp [jacobian]
+  classical
+  letI : Fintype (localizationAway r (S := S)).rels := inferInstanceAs <| Fintype Unit
+  rw [← LinearMap.det_toMatrix (localizationAway r (S := S)).basis]
+  have : (LinearMap.toMatrix (localizationAway r (S := S)).basis (localizationAway S r).basis)
+      (localizationAway S r).differential = Matrix.diagonal (fun () ↦ MvPolynomial.C r) := by
+    ext (i : Unit) (j : Unit) : 1
+    simp [differential, LinearMap.toMatrix]
+    erw [Presentation.localizationAway_relation]
+    rw [map_sub]
+    erw [MvPolynomial.pderiv_C_mul]
+    rw [MvPolynomial.pderiv_X]
+    simp
+  rw [this]
+  rw [Matrix.det_diagonal]
+  simp
+
+end Localization
+
+section Composition
+
+variable {T} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+variable (Q : PreSubmersivePresentation S T) (P : PreSubmersivePresentation R S)
+
+/-- Given an `R`-algebra `S` and an `S`-algebra `T` with pre-submersive presentations,
+this is the canonical pre-submersive presentation of `T` as an `R`-algebra. -/
+@[simps map]
+noncomputable def comp : PreSubmersivePresentation R T where
+  toPresentation := Q.toPresentation.comp P.toPresentation
+  map := Sum.elim (fun rq ↦ Sum.inl <| Q.map rq) (fun rp ↦ Sum.inr <| P.map rp)
+  map_inj := Function.Injective.sum_elim ((Sum.inl_injective).comp (Q.map_inj))
+    ((Sum.inr_injective).comp (P.map_inj)) <| by simp
+  relations_finite := inferInstanceAs <| Finite (Q.rels ⊕ P.rels)
+
+/-- The dimension of the composition of two finite submersive presentations is
+the sum of the dimensions. -/
+lemma dimension_comp_eq_dimension_add_dimension [Q.IsFinite] [P.IsFinite] :
+    (Q.comp P).dimension = Q.dimension + P.dimension := by
+  simp only [Presentation.dimension]
+  erw [Presentation.comp_rels, Generators.comp_vars]
+  have : Nat.card P.rels ≤ Nat.card P.vars :=
+    card_relations_le_card_vars_of_isFinite P
+  have : Nat.card Q.rels ≤ Nat.card Q.vars :=
+    card_relations_le_card_vars_of_isFinite Q
+  simp only [Nat.card_sum]
+  omega
+
+end Composition
+
+end Constructions
+
 end PreSubmersivePresentation
 
 /--
