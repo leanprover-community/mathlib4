@@ -200,10 +200,20 @@ theorem gaussianHypergeometric_nonpos_int_radius_top₃ (hc : c ∈ negativeInts
 theorem gaussianHypergeometric_radius_eq_one :
     (gaussianHypergeometricSeries 𝔸 a b c).radius = 1 := by
   apply le_antisymm
-  sorry
   · refine ENNReal.le_of_forall_nnreal_lt (fun r hr ↦ ?_)
     rw [← ENNReal.coe_one, ENNReal.coe_le_coe]
-    have := FormalMultilinearSeries.summable_norm_mul_pow _ hr
-    contrapose! this
-    apply not_summable_of_ratio_norm_eventually_ge this
-    .
+    sorry
+  · refine ENNReal.le_of_forall_nnreal_lt (fun r hr ↦ ?_)
+    rw [← Nat.cast_one, ENNReal.coe_lt_natCast, Nat.cast_one] at hr
+    apply FormalMultilinearSeries.le_radius_of_summable
+    apply summable_of_ratio_norm_eventually_le
+    · trivial
+    · apply Filter.eventually_atTop.2 -- uses hr for the r here when it should be anything
+      ring_nf
+      use 1 -- need to choose large enough n and figure out the asymptotics of the ratio
+      intro n hn
+      simp
+      rw [← mul_assoc, mul_assoc, mul_comm]
+      have hr_pos : r ≠ 0 := by sorry
+      norm_cast -- cancel terms
+      sorry
