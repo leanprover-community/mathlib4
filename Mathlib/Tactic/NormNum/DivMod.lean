@@ -147,8 +147,8 @@ theorem isInt_dvd_true : {a b : ℤ} → {a' b' c : ℤ} →
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨_, rfl⟩
 
 theorem isInt_dvd_false : {a b : ℤ} → {a' b' : ℤ} →
-    IsInt a a' → IsInt b b' → Int.mod b' a' != 0 → ¬a ∣ b
-  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, e => mt Int.mod_eq_zero_of_dvd (by simpa using e)
+    IsInt a a' → IsInt b b' → Int.emod b' a' != 0 → ¬a ∣ b
+  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, e => mt Int.emod_eq_zero_of_dvd (by simpa using e)
 
 /-- The `norm_num` extension which identifies expressions of the form `(a : ℤ) ∣ b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
@@ -167,7 +167,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
     haveI' : Int.mul $na $c =Q $nb := ⟨⟩
     return .isTrue q(isInt_dvd_true $pa $pb (.refl $nb))
   else
-    have : Q(Int.mod $nb $na != 0) := (q(Eq.refl true) : Expr)
+    have : Q(Int.emod $nb $na != 0) := (q(Eq.refl true) : Expr)
     return .isFalse q(isInt_dvd_false $pa $pb $this)
 
 end Mathlib.Meta.NormNum

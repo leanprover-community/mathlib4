@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Algebra.Order.Interval.Finset
+import Mathlib.Algebra.SMulWithZero
 import Mathlib.Combinatorics.Additive.FreimanHom
-import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Order.Interval.Finset.Fin
 
 /-!
