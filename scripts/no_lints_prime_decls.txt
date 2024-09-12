@@ -4628,6 +4628,7 @@ OrderIso.mulLeft₀'_symm
 OrderIso.mulRight₀'_symm
 Order.isPredPrelimitRecOn_pred'
 Order.isSuccPrelimitRecOn_succ'
+Order.not_isPredPrelimit_iff'
 Order.not_isSuccPrelimit_iff'
 orderOf_eq_zero_iff'
 orderOf_pow'
