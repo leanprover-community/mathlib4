@@ -3,8 +3,7 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.Ring.Subring.Basic
+import Mathlib.Algebra.CharP.Algebra
 
 /-!
 # Characteristic of subrings
@@ -32,5 +31,12 @@ instance subring (R : Type u) [Ring R] (p : ℕ) [CharP R p] (S : Subring R) : C
 
 instance subring' (R : Type u) [CommRing R] (p : ℕ) [CharP R p] (S : Subring R) : CharP S p :=
   CharP.subring R p S
+
+/-- The characteristic of a division ring is equal to the characteristic
+  of its center-/
+theorem center_char_eq_iff {R : Type u} [DivisionRing R] {p : ℕ} :
+  CharP R p ↔ CharP (Subring.center R) p :=
+  (@RingHom.charP_iff (Subring.center R) R _ _ (algebraMap (Subring.center R) R)
+    (NoZeroSMulDivisors.algebraMap_injective (Subring.center R) R) p).symm
 
 end CharP

@@ -132,17 +132,17 @@ end CommSemiring
 
 section Ring
 
-variable [CommRing R]
-variable (R)
-
 /-- A `Semiring` that is an `Algebra` over a commutative ring carries a natural `Ring` structure.
 See note [reducible non-instances]. -/
-abbrev semiringToRing [Semiring A] [Algebra R A] : Ring A :=
+abbrev semiringToRing (R : Type*) [CommRing R] [Semiring A] [Algebra R A] : Ring A :=
   { __ := (inferInstance : Semiring A)
     __ := Module.addCommMonoidToAddCommGroup R
     intCast := fun z => algebraMap R A z
     intCast_ofNat := fun z => by simp only [Int.cast_natCast, map_natCast]
     intCast_negSucc := fun z => by simp }
+
+instance {R : Type*} [Ring R] : Algebra (Subring.center R) R :=
+  Algebra.ofModule smul_mul_assoc mul_smul_comm
 
 end Ring
 

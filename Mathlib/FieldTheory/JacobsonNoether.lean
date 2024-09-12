@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Filippo A. E. Nuccio, Huanyu Zheng, Sihan Wu, Wanyi He, Weichen Jiao, Yi Yuan
 -/
 import Mathlib.FieldTheory.Separable
-import Mathlib.Algebra.CharP.Subring
 import Mathlib.Algebra.CharP.LinearMaps
 
 /-!
@@ -33,7 +32,7 @@ the noncommutative division algebra `D` with the center `k`.
 
 -- *Filippo* This should probably be moved to another file.
 /-- a⁻¹ * d ^ s * a = (a⁻¹ * d * a) ^ s when a is not zero -/
-lemma conj_nonComm_Algebra {D : Type*} [DivisionRing D] (s : ℕ) (a d : D) (ha : a ≠ 0) :
+lemma conj_nonComm_Algebra {D : Type*} [DivisionSemiring D] (s : ℕ) (a d : D) (ha : a ≠ 0) :
     a⁻¹ * d ^ s * a = (a⁻¹ * d * a) ^ s := by
   let u : Dˣ := ⟨a, a⁻¹, mul_inv_cancel₀ ha, inv_mul_cancel₀ ha⟩
   exact (Units.conj_pow' u d s).symm
