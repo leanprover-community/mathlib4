@@ -21,7 +21,8 @@ namespace Mathlib.Linter
 The "docPrime" linter emits a warning on declarations that have no doc-string and whose
 name contains a `'`.
 
-The file `scripts/no_lints_prime_decls.txt` contains a list of exceptions.
+The file `scripts/no_lints_prime_decls.txt` records the list of exceptions at the moment in
+which the linter was written.
 -/
 register_option linter.docPrime : Bool := {
   defValue := false
