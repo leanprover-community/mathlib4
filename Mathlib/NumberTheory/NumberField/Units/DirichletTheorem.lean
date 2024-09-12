@@ -368,7 +368,7 @@ instance instDiscrete_unitLattice : DiscreteTopology (unitLattice K) := by
     rintro ⟨x, hx, rfl⟩
     exact ⟨Subtype.mem x, hx⟩
 
-instance instZlattice_unitLattice : IsZlattice ℝ (unitLattice K) where
+instance instZLattice_unitLattice : IsZLattice ℝ (unitLattice K) where
   span_top := unitLattice_span_eq_top K
 
 protected theorem finrank_eq_rank :
@@ -379,7 +379,7 @@ protected theorem finrank_eq_rank :
 @[simp]
 theorem unitLattice_rank :
     finrank ℤ (unitLattice K) = Units.rank K := by
-  rw [← Units.finrank_eq_rank, Zlattice.rank ℝ]
+  rw [← Units.finrank_eq_rank, ZLattice.rank ℝ]
 
 /-- The map obtained by quotienting by the kernel of `logEmbedding`. -/
 def logEmbeddingQuot :

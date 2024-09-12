@@ -544,7 +544,7 @@ theorem norm_lt_of_mem_ball' (h : b ∈ ball a r) : ‖b‖ < ‖a‖ + r :=
 
 @[to_additive]
 theorem norm_div_sub_norm_div_le_norm_div (u v w : E) : ‖u / w‖ - ‖v / w‖ ≤ ‖u / v‖ := by
-  simpa only [div_div_div_cancel_right'] using norm_sub_norm_le' (u / w) (v / w)
+  simpa only [div_div_div_cancel_right] using norm_sub_norm_le' (u / w) (v / w)
 
 @[to_additive (attr := simp 1001) mem_sphere_iff_norm]
 -- Porting note: increase priority so the left-hand side doesn't reduce
@@ -1152,24 +1152,26 @@ theorem norm_of_nonpos (hr : r ≤ 0) : ‖r‖ = -r :=
 theorem le_norm_self (r : ℝ) : r ≤ ‖r‖ :=
   le_abs_self r
 
--- Porting note (#10618): `simp` can prove this
-theorem norm_natCast (n : ℕ) : ‖(n : ℝ)‖ = n :=
-  abs_of_nonneg n.cast_nonneg
-
-@[simp]
-theorem nnnorm_natCast (n : ℕ) : ‖(n : ℝ)‖₊ = n :=
-  NNReal.eq <| norm_natCast _
+@[simp 1100] lemma norm_natCast (n : ℕ) : ‖(n : ℝ)‖ = n := abs_of_nonneg n.cast_nonneg
+@[simp 1100] lemma nnnorm_natCast (n : ℕ) : ‖(n : ℝ)‖₊ = n := NNReal.eq <| norm_natCast _
 
 @[deprecated (since := "2024-04-05")] alias norm_coe_nat := norm_natCast
 @[deprecated (since := "2024-04-05")] alias nnnorm_coe_nat := nnnorm_natCast
 
--- Porting note (#10618): `simp` can prove this
-theorem norm_two : ‖(2 : ℝ)‖ = 2 :=
-  abs_of_pos zero_lt_two
+@[simp 1100] lemma norm_ofNat (n : ℕ) [n.AtLeastTwo] :
+    ‖(no_index (OfNat.ofNat n) : ℝ)‖ = OfNat.ofNat n := norm_natCast n
 
-@[simp]
-theorem nnnorm_two : ‖(2 : ℝ)‖₊ = 2 :=
-  NNReal.eq <| by simp
+@[simp 1100] lemma nnnorm_ofNat (n : ℕ) [n.AtLeastTwo] :
+    ‖(no_index (OfNat.ofNat n) : ℝ)‖₊ = OfNat.ofNat n := nnnorm_natCast n
+
+lemma norm_two : ‖(2 : ℝ)‖ = 2 := abs_of_pos zero_lt_two
+lemma nnnorm_two : ‖(2 : ℝ)‖₊ = 2 := NNReal.eq <| by simp
+
+@[simp 1100, norm_cast]
+lemma norm_nnratCast (q : ℚ≥0) : ‖(q : ℝ)‖ = q := norm_of_nonneg q.cast_nonneg
+
+@[simp 1100, norm_cast]
+lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : ℝ)‖₊ = q := by simp [nnnorm, -norm_eq_abs]
 
 theorem nnnorm_of_nonneg (hr : 0 ≤ r) : ‖r‖₊ = ⟨r, hr⟩ :=
   NNReal.eq <| norm_of_nonneg hr
