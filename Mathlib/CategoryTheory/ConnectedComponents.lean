@@ -7,7 +7,6 @@ import Mathlib.Data.List.Chain
 import Mathlib.CategoryTheory.IsConnected
 import Mathlib.CategoryTheory.Sigma.Basic
 import Mathlib.CategoryTheory.FullSubcategory
-import Mathlib.Data.List.Infix
 
 /-!
 # Connected components of a category

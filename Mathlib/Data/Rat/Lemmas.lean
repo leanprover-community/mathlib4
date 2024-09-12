@@ -53,7 +53,7 @@ theorem num_mk (n d : ℤ) : (n /. d).num = d.sign * n / n.gcd d := by
   have (m : ℕ) : Int.natAbs (m + 1) = m + 1 := by
     rw [← Nat.cast_one, ← Nat.cast_add, Int.natAbs_cast]
   rcases d with ((_ | _) | _) <;>
-  rw [← Int.div_eq_ediv_of_dvd] <;>
+  rw [← Int.tdiv_eq_ediv_of_dvd] <;>
   simp [divInt, mkRat, Rat.normalize, Nat.succPNat, Int.sign, Int.gcd,
     Int.zero_ediv, Int.ofNat_dvd_left, Nat.gcd_dvd_left, this]
 
@@ -195,7 +195,7 @@ theorem div_int_inj {a b c d : ℤ} (hb0 : 0 < b) (hd0 : 0 < d) (h1 : Nat.Coprim
 theorem intCast_div_self (n : ℤ) : ((n / n : ℤ) : ℚ) = n / n := by
   by_cases hn : n = 0
   · subst hn
-    simp only [Int.cast_zero, Int.zero_div, zero_div, Int.ediv_zero]
+    simp only [Int.cast_zero, Int.zero_tdiv, zero_div, Int.ediv_zero]
   · have : (n : ℚ) ≠ 0 := by rwa [← coe_int_inj] at hn
     simp only [Int.ediv_self hn, Int.cast_one, Ne, not_false_iff, div_self this]
 

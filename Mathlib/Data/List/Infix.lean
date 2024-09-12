@@ -71,9 +71,6 @@ theorem tail_subset (l : List α) : tail l ⊆ l :=
 theorem mem_of_mem_dropLast (h : a ∈ l.dropLast) : a ∈ l :=
   dropLast_subset l h
 
-theorem mem_of_mem_tail (h : a ∈ l.tail) : a ∈ l :=
-  tail_subset l h
-
 attribute [gcongr] Sublist.drop
 
 theorem concat_get_prefix {x y : List α} (h : x <+: y) (hl : x.length < y.length) :

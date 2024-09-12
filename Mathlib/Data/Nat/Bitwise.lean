@@ -9,6 +9,7 @@ import Mathlib.Algebra.Ring.Nat
 import Mathlib.Order.Basic
 import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.Common
+import Mathlib.Algebra.NeZero
 
 /-!
 # Bitwise operations on natural numbers
