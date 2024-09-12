@@ -44,19 +44,15 @@ variable {D : Type*} [DivisionRing D]
 
 local notation3 "k" => (Subring.center D)
 
-instance : Algebra (Subring.center D) D := Algebra.ofModule smul_mul_assoc mul_smul_comm
-
 private def f : D → D →ₗ[k] D := LinearMap.mulLeft k
+private def g : D → D →ₗ[k] D := LinearMap.mulRight k
+private def δ : D → D →ₗ[k] D := f - g
 
 @[simp]
 private lemma f_def (a x : D) : f a x = a * x := rfl
 
-private def g : D → D →ₗ[k] D := LinearMap.mulRight k
-
 @[simp]
 private lemma g_def (a x : D) : g a x = x * a := rfl
-
-private def δ : D → D →ₗ[k] D := f - g
 
 @[simp]
 private lemma δ_def (a x : D) : δ a x = f a x - g a x := rfl
