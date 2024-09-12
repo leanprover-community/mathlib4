@@ -27,7 +27,7 @@ and `f'.range = ⊤`. This version is named `HasStrictFDerivAt.implicitFunction`
 
 Finally, if bivariate $f(x,y)$ has $\partial f/\partial y$ invertible at $(x₀,y₀)$, then we may
 apply the general theorem to obtain $ψ$ satisfying $f(x,ψ(x))=f(x₀,y₀)$ in a neighbourhood of $x₀$.
-To many this version of the implicit function theorem might be most familiar.
+To many this version of the implicit function theorem will be most familiar.
 
 ## TODO
 
@@ -463,11 +463,11 @@ section Bivariate
 ### Bivariate case
 
 Here we identify `E` with `X × Y`, `G` with `X` and `g : E → G` with the first projection out of
-`X × Y`. For consistency of notation `F` becomes `Z`. Now `f : X × Y → Z` is an explicity bivariate
-function. If `f` has an invertible partial derivative with respect to `y` then we get that the
-kernels of `f` and `g` are complementary so we can construct an instance of the
-`ImplicitFunctionData` data structure (provided above) and extract implicit function `ψ : X → Y`
-whose germ is unique. This functionality is wrapped by `HasStrictFDerivAt.implicitFunOfBivariate`.
+`X × Y`. For consistency of notation `F` becomes `Z`. Now `f : X × Y → Z` is explicitly bivariate,
+and if its partial derivative with respect to `y` is invertible then the kernels of `f` and `g` are
+complementary. In such circumstances we may construct an instance of the `ImplicitFunctionData` data
+structure provided above and extract implicit function `ψ : X → Y` whose germ is unique. This
+functionality is wrapped by `HasStrictFDerivAt.implicitFunOfBivariate`.
 
 ## TODO
 
@@ -482,8 +482,8 @@ variable {Y : Type*} [NormedAddCommGroup Y] [NormedSpace 𝕜 Y] [CompleteSpace 
 variable {Z : Type*} [NormedAddCommGroup Z] [NormedSpace 𝕜 Z] [CompleteSpace Z]
 
 /-- Given map `fx : X →L[𝕜] Z`, equivalence `fy : Y ≃L[𝕜] Z}` and that
-`HasStrictFDerivAt f (fx.coprod fy) p₀` we construct an object of type `ImplicitFunctionData`
-thus permitting use of the machinery already provided for the general case. -/
+`HasStrictFDerivAt f (fx.coprod fy) p₀`, we construct an object of type `ImplicitFunctionData`, thus
+permitting use of the machinery provided above for the general case. -/
 def implicitFunDataOfBivariate {f : X × Y → Z} {p₀ : X × Y}
     {fx : X →L[𝕜] Z} {fy : Y ≃L[𝕜] Z} (hf₀ : HasStrictFDerivAt f (fx.coprod fy) p₀) :
     ImplicitFunctionData 𝕜 (X × Y) Z X :=
@@ -507,8 +507,8 @@ def implicitFunDataOfBivariate {f : X × Y → Z} {p₀ : X × Y}
       intro (ξ, η)
       exact ⟨(ξ, fy.symm (fx (-ξ))), by simp, (0, η - fy.symm (fx (-ξ))), by simp, by simp⟩ }
 
-/-- Implicit function `ψ : X → Y` associated with (uncurried) bivariate function `f : X × Y → Z` at
-`p₀ : X × Y`. -/
+/-- Implicit function `ψ : X → Y` associated with the (uncurried) bivariate function `f : X × Y → Z`
+at `p₀ : X × Y`. -/
 def implicitFunOfBivariate {f : X × Y → Z} {p₀ : X × Y}
     {fx : X →L[𝕜] Z} {fy : Y ≃L[𝕜] Z} (hf₀ : HasStrictFDerivAt f (fx.coprod fy) p₀) :
     X → Y :=
