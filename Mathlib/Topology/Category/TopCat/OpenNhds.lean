@@ -144,9 +144,8 @@ def functorNhds (h : IsOpenMap f) (x : X) : OpenNhds x ⥤ OpenNhds (f x) where
   map i := h.functor.map i
 
 /-- An open map `f : X ⟶ Y` induces an adjunction between `OpenNhds x` and `OpenNhds (f x)`. -/
-def adjunctionNhds (h : IsOpenMap f) (x : X) : IsOpenMap.functorNhds h x ⊣ OpenNhds.map f x :=
-  Adjunction.mkOfUnitCounit
-    { unit := { app := fun U => homOfLE fun x hxU => ⟨x, hxU, rfl⟩ }
-      counit := { app := fun V => homOfLE fun y ⟨_, hfxV, hxy⟩ => hxy ▸ hfxV } }
+def adjunctionNhds (h : IsOpenMap f) (x : X) : IsOpenMap.functorNhds h x ⊣ OpenNhds.map f x where
+  unit := { app := fun U => homOfLE fun x hxU => ⟨x, hxU, rfl⟩ }
+  counit := { app := fun V => homOfLE fun y ⟨_, hfxV, hxy⟩ => hxy ▸ hfxV }
 
 end IsOpenMap
