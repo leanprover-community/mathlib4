@@ -87,7 +87,7 @@ lemma analyticWithinOn_of_locally_analyticWithinOn {f : E → F} {s : Set E}
         · simp only [EMetric.mem_ball, yr] }⟩
 
 /-- On open sets, `AnalyticOn` and `AnalyticWithinOn` coincide -/
-@[simp] lemma IsOpen.analyticWithinOn_iff_analyticOn {f : E → F} {s : Set E} (hs : IsOpen s) :
+lemma IsOpen.analyticWithinOn_iff_analyticOn {f : E → F} {s : Set E} (hs : IsOpen s) :
     AnalyticWithinOn 𝕜 f s ↔ AnalyticOn 𝕜 f s := by
   refine ⟨?_, AnalyticOn.analyticWithinOn⟩
   intro hf x m
