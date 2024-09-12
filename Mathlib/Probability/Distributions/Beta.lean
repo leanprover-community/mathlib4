@@ -57,6 +57,25 @@ lemma xyz {X : Type*} [MeasurableSpace X] (μ : Measure X) {f : X → ℂ} (hf :
   rw [← fun z ↦ congrFun RCLike.re_eq_complex_re z, ← integral_re hf]
   rfl
 
+theorem integral_ofReal {a b : ℝ} {μ : Measure ℝ} {f : ℝ → ℝ} :
+    (∫ x in (a)..b, (f x : ℂ) ∂μ) = ↑(∫ x in (a)..b, f x ∂μ) :=
+  RCLike.intervalIntegral_ofReal
+
+theorem betaIntegral_ofReal {a b : ℝ} (ha: 0 < a) (hb : 0 < b) :
+  ∫ x : ℝ in Ioo 0 1, (x:ℂ) ^ (↑a - 1:ℂ) * (1 - (x:ℂ)) ^ (↑b - 1:ℂ)
+= ↑(∫ x : ℝ in Ioo 0 1, x ^ (a - 1) * (1 - x) ^ (b - 1)) := by
+  have hcast: ∀ r : ℝ, Complex.ofReal' r = @RCLike.ofReal ℂ _ r := fun r => rfl
+  conv_rhs => rw [hcast, ← _root_.integral_ofReal]
+  dsimp
+  refine setIntegral_congr measurableSet_Ioo ?_
+  intro x hx; dsimp only
+  -- conv_rhs => rw [hcast]
+  have hx1 : 0 < x ∧ x < 1 := mem_Ioo.mp hx
+  have hx10 : 0 ≤ 1-x := by linarith
+  rw [Complex.ofReal_mul, Complex.ofReal_cpow, Complex.ofReal_cpow hx10]
+  simp [Complex.ofReal_sub, Complex.ofReal_one]
+  exact le_of_lt hx1.left
+
 lemma betaIntegral_real_eq {a b : ℝ} (ha : 0 < a) (hb : 0 < b):
 Complex.re (∫ (x : ℝ) in (0)..1, ↑x ^ (↑a - 1:ℂ) * (1 - ↑x) ^ (↑b - 1:ℂ)) =
 ∫ (x : ℝ) in (0)..1, x ^ (a - 1) * (1 - x) ^ (b - 1) := by
