@@ -90,7 +90,7 @@ def prod (p : FormalMultilinearSeries 𝕜 E F) (q : FormalMultilinearSeries �
 
 /-- Product of formal multilinear series (with the same field `𝕜` and the same source
 space, but possibly different target spaces). -/
-nonrec def pi {ι : Type*} {F : ι → Type*}
+@[simp] def pi {ι : Type*} {F : ι → Type*}
     [∀ i, AddCommGroup (F i)] [∀ i, Module 𝕜 (F i)] [∀ i, TopologicalSpace (F i)]
     [∀ i, TopologicalAddGroup (F i)] [∀ i, ContinuousConstSMul 𝕜 (F i)]
     (p : Π i, FormalMultilinearSeries 𝕜 E (F i)) :
