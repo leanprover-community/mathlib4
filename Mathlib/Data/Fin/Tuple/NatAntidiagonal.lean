@@ -120,10 +120,10 @@ theorem antidiagonalTuple_zero_right : ∀ k, antidiagonalTuple k 0 = [0]
 @[simp]
 theorem antidiagonalTuple_one (n : ℕ) : antidiagonalTuple 1 n = [![n]] := by
   simp_rw [antidiagonalTuple, antidiagonal, List.range_succ, List.map_append, List.map_singleton,
-    tsub_self, List.bind_append, List.bind_singleton, List.bind_map]
+    Nat.sub_self, List.bind_append, List.bind_singleton, List.bind_map]
   conv_rhs => rw [← List.nil_append [![n]]]
   congr 1
-  simp_rw [List.bind_eq_nil, List.mem_range, List.map_eq_nil]
+  simp_rw [List.bind_eq_nil_iff, List.mem_range, List.map_eq_nil_iff]
   intro x hx
   obtain ⟨m, rfl⟩ := Nat.exists_eq_add_of_lt hx
   rw [add_assoc, add_tsub_cancel_left, antidiagonalTuple_zero_succ]

@@ -132,7 +132,7 @@ section BundledSMul
 def smulMulHom [Monoid α] [Mul β] [MulAction α β] [IsScalarTower α β β] [SMulCommClass α β β] :
     α × β →ₙ* β where
   toFun a := a.1 • a.2
-  map_mul' _ _ := (smul_mul_smul _ _ _ _).symm
+  map_mul' _ _ := (smul_mul_smul_comm _ _ _ _).symm
 
 /-- Scalar multiplication as a monoid homomorphism. -/
 @[simps]
@@ -184,6 +184,6 @@ def MulAction.prodEquiv :
     congr 1
     · funext; congr; ext m a; (conv_rhs => rw [← hN.one_smul a]); rfl
     · ext n a; (conv_rhs => rw [← hM.one_smul (SMul.smul n a)]); rfl
-    · apply heq_prop
+    · exact proof_irrel_heq ..
 
 end Action_by_Prod

@@ -28,7 +28,7 @@ open Function Set
 open scoped Topology ENNReal
 
 /-- An isometry (also known as isometric embedding) is a map preserving the edistance
-between pseudoemetric spaces, or equivalently the distance between pseudometric space.  -/
+between pseudoemetric spaces, or equivalently the distance between pseudometric space. -/
 def Isometry [PseudoEMetricSpace α] [PseudoEMetricSpace β] (f : α → β) : Prop :=
   ∀ x1 x2 : α, edist (f x1) (f x2) = edist x1 x2
 
@@ -451,7 +451,7 @@ instance : Group (α ≃ᵢ α) where
   mul_assoc e₁ e₂ e₃ := rfl
   one_mul e := ext fun _ => rfl
   mul_one e := ext fun _ => rfl
-  mul_left_inv e := ext e.symm_apply_apply
+  inv_mul_cancel e := ext e.symm_apply_apply
 
 @[simp] theorem coe_one : ⇑(1 : α ≃ᵢ α) = id := rfl
 

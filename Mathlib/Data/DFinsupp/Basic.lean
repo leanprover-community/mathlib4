@@ -3,14 +3,15 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau
 -/
+import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
+import Mathlib.Algebra.Group.Action.Prod
 import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Algebra.GroupWithZero.Action.Pi
 import Mathlib.Algebra.Module.LinearMap.Defs
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Fintype.Quotient
 import Mathlib.Data.Set.Finite
-import Mathlib.GroupTheory.GroupAction.BigOperators
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
@@ -1039,7 +1040,7 @@ instance decidableZero [∀ (i) (x : β i), Decidable (x = 0)] (f : Π₀ i, β 
         case neg => exact (s.prop i).resolve_left hs₂
 
 theorem support_subset_iff {s : Set ι} {f : Π₀ i, β i} : ↑f.support ⊆ s ↔ ∀ i ∉ s, f i = 0 := by
-  simp [Set.subset_def]; exact forall_congr' fun i => not_imp_comm
+  simpa [Set.subset_def] using forall_congr' fun i => not_imp_comm
 
 theorem support_single_ne_zero {i : ι} {b : β i} (hb : b ≠ 0) : (single i b).support = {i} := by
   ext j; by_cases h : i = j
@@ -1299,7 +1300,7 @@ instance distribMulAction₂ [Monoid γ] [∀ i j, AddMonoid (δ i j)]
 
 variable [DecidableEq ι]
 
-/-- The natural map between `Π₀ (i : Σ i, α i), δ i.1 i.2` and `Π₀ i (j : α i), δ i j`.  -/
+/-- The natural map between `Π₀ (i : Σ i, α i), δ i.1 i.2` and `Π₀ i (j : α i), δ i j`. -/
 def sigmaCurry [∀ i j, Zero (δ i j)] (f : Π₀ (i : Σ _, _), δ i.1 i.2) :
     Π₀ (i) (j), δ i j where
   toFun := fun i ↦
@@ -2092,3 +2093,5 @@ instance DFinsupp.infinite_of_right {ι : Sort _} {π : ι → Sort _} [∀ i, I
   DFinsupp.infinite_of_exists_right (Classical.arbitrary ι)
 
 end FiniteInfinite
+
+set_option linter.style.longFile 2200

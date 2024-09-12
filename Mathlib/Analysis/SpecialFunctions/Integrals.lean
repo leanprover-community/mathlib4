@@ -33,7 +33,7 @@ integrate, integration, integrable, integrability
 -/
 
 
-open Real Nat Set Finset
+open Real Set Finset
 
 open scoped Real Interval
 
@@ -462,7 +462,7 @@ theorem integral_exp_mul_complex {c : ℂ} (hc : c ≠ 0) :
 theorem integral_log (h : (0 : ℝ) ∉ [[a, b]]) :
     ∫ x in a..b, log x = b * log b - a * log a - b + a := by
   have h' := fun x (hx : x ∈ [[a, b]]) => ne_of_mem_of_not_mem hx h
-  have heq := fun x hx => mul_inv_cancel (h' x hx)
+  have heq := fun x hx => mul_inv_cancel₀ (h' x hx)
   convert integral_mul_deriv_eq_deriv_mul (fun x hx => hasDerivAt_log (h' x hx))
     (fun x _ => hasDerivAt_id x) (continuousOn_inv₀.mono <|
       subset_compl_singleton_iff.mpr h).intervalIntegrable
@@ -580,8 +580,9 @@ theorem integral_mul_rpow_one_add_sq {t : ℝ} (ht : t ≠ -1) :
 
 end RpowCpow
 
-/-! ### Integral of `sin x ^ n` -/
+open Nat
 
+/-! ### Integral of `sin x ^ n` -/
 
 theorem integral_sin_pow_aux :
     (∫ x in a..b, sin x ^ (n + 2)) =

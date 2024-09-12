@@ -220,7 +220,7 @@ theorem smul_restrictScalars {R S M} [CommSemiring R] [CommSemiring S]
     (I.map (algebraMap R S) • N).restrictScalars R = I • N.restrictScalars R := by
   simp_rw [map, Submodule.span_smul_eq, ← Submodule.coe_set_smul,
     Submodule.set_smul_eq_iSup, ← element_smul_restrictScalars, iSup_image]
-  exact (_root_.map_iSup₂ (Submodule.restrictScalarsLatticeHom R S M) _)
+  exact map_iSup₂ (Submodule.restrictScalarsLatticeHom R S M) _
 
 @[simp]
 theorem smul_top_eq_map {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
@@ -615,7 +615,7 @@ theorem ker_isMaximal_of_surjective {R K F : Type*} [Ring R] [Field K]
   rw [H]
   refine J.sub_mem (J.mul_mem_left _ hxJ) (hJ ?_)
   rw [mem_ker]
-  simp only [hy, map_sub, map_one, map_mul, inv_mul_cancel (mt (mem_ker f).mpr hxf), sub_self]
+  simp only [hy, map_sub, map_one, map_mul, inv_mul_cancel₀ (mt (mem_ker f).mpr hxf), sub_self]
 
 end RingHom
 

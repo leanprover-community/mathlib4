@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Yury Kudryashov
 -/
 import Mathlib.Geometry.Manifold.Diffeomorph
 import Mathlib.Geometry.Manifold.Instances.Real
@@ -25,7 +25,6 @@ for sufficiently large `n` there exists a smooth embedding `M → ℝ^n`.
 partition of unity, smooth bump function, whitney theorem
 -/
 
-
 universe uι uE uH uM
 
 variable {ι : Type uι} {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -33,8 +32,7 @@ variable {ι : Type uι} {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E
   {M : Type uM} [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M]
 
 open Function Filter FiniteDimensional Set
-
-open scoped Topology Manifold Classical Filter
+open scoped Manifold
 
 noncomputable section
 

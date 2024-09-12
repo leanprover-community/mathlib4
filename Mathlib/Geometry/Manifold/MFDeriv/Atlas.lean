@@ -198,7 +198,8 @@ theorem comp_symm_deriv {x : M'} (hx : x ∈ e.target) :
 
 /-- The derivative of a differentiable partial homeomorphism, as a continuous linear equivalence
 between the tangent spaces at `x` and `e x`. -/
-protected def mfderiv {x : M} (hx : x ∈ e.source) : TangentSpace I x ≃L[𝕜] TangentSpace I' (e x) :=
+protected def mfderiv (he : e.MDifferentiable I I') {x : M} (hx : x ∈ e.source) :
+    TangentSpace I x ≃L[𝕜] TangentSpace I' (e x) :=
   { mfderiv I I' e x with
     invFun := mfderiv I' I e.symm (e x)
     continuous_toFun := (mfderiv I I' e x).cont

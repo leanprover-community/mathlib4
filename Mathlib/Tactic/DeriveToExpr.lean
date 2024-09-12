@@ -223,7 +223,7 @@ def mkToExprInstanceHandler (declNames : Array Name) : CommandElabM Bool := do
     return false
 
 initialize
-  registerDerivingHandler `Lean.ToExpr mkToExprInstanceHandler
+  registerDerivingHandler ``Lean.ToExpr mkToExprInstanceHandler
   registerTraceClass `Elab.Deriving.toExpr
 
 end Mathlib.Deriving.ToExpr

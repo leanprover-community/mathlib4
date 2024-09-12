@@ -302,6 +302,10 @@ theorem cos_periodic : Function.Periodic cos (2 * π) :=
   cos_antiperiodic.periodic_two_mul
 
 @[simp]
+theorem abs_cos_int_mul_pi (k : ℤ) : |cos (k * π)| = 1 := by
+  simp [abs_cos_eq_sqrt_one_sub_sin_sq]
+
+@[simp]
 theorem cos_add_pi (x : ℝ) : cos (x + π) = -cos x :=
   cos_antiperiodic x
 
@@ -513,7 +517,7 @@ theorem cos_eq_one_iff (x : ℝ) : cos x = 1 ↔ ∃ n : ℤ, (n : ℝ) * (2 * �
       (Int.emod_two_eq_zero_or_one n).elim
         (fun hn0 => by
           rwa [← mul_assoc, ← @Int.cast_two ℝ, ← Int.cast_mul,
-            Int.ediv_mul_cancel ((Int.dvd_iff_emod_eq_zero _ _).2 hn0)])
+            Int.ediv_mul_cancel (Int.dvd_iff_emod_eq_zero.2 hn0)])
         fun hn1 => by
         rw [← Int.emod_add_ediv n 2, hn1, Int.cast_add, Int.cast_one, add_mul, one_mul, add_comm,
               mul_comm (2 : ℤ), Int.cast_mul, mul_assoc, Int.cast_two] at hn
@@ -679,7 +683,7 @@ theorem sin_sq_pi_over_two_pow_succ (n : ℕ) :
 @[simp]
 theorem sin_pi_over_two_pow_succ (n : ℕ) :
     sin (π / 2 ^ (n + 2)) = √(2 - sqrtTwoAddSeries 0 n) / 2 := by
-  rw [eq_div_iff_mul_eq two_ne_zero, eq_comm, sqrt_eq_iff_sq_eq, mul_pow,
+  rw [eq_div_iff_mul_eq two_ne_zero, eq_comm, sqrt_eq_iff_eq_sq, mul_pow,
     sin_sq_pi_over_two_pow_succ, sub_mul]
   · congr <;> norm_num
   · rw [sub_nonneg]

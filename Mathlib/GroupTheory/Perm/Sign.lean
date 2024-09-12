@@ -47,7 +47,7 @@ def modSwap (i j : α) : Setoid (Perm α) :=
 
 noncomputable instance {α : Type*} [Fintype α] [DecidableEq α] (i j : α) :
     DecidableRel (modSwap i j).r :=
-  fun _ _ => Or.decidable
+  fun _ _ => inferInstanceAs (Decidable (_ ∨ _))
 
 /-- Given a list `l : List α` and a permutation `f : Perm α` such that the nonfixed points of `f`
   are in `l`, recursively factors `f` as a product of transpositions. -/
@@ -184,7 +184,7 @@ theorem signBijAux_injOn {n : ℕ} {f : Perm (Fin n)} :
   rw [Finset.mem_coe, mem_finPairsLT] at *
   have : ¬b₁ < b₂ := hb.le.not_lt
   split_ifs at h <;>
-  simp_all [(Equiv.injective f).eq_iff, eq_self_iff_true, and_self_iff, heq_iff_eq]
+  simp_all only [not_lt, Sigma.mk.inj_iff, (Equiv.injective f).eq_iff, heq_eq_eq]
   · exact absurd this (not_le.mpr ha)
   · exact absurd this (not_le.mpr ha)
 
@@ -417,7 +417,7 @@ theorem sign_trans_trans_symm [DecidableEq β] [Fintype β] (f : Perm β) (e : �
 theorem sign_prod_list_swap {l : List (Perm α)} (hl : ∀ g ∈ l, IsSwap g) :
     sign l.prod = (-1) ^ l.length := by
   have h₁ : l.map sign = List.replicate l.length (-1) :=
-    List.eq_replicate.2
+    List.eq_replicate_iff.2
       ⟨by simp, fun u hu =>
         let ⟨g, hg⟩ := List.mem_map.1 hu
         hg.2 ▸ (hl _ hg.1).sign_eq⟩
@@ -549,7 +549,7 @@ theorem sign_prodCongrRight (σ : α → Perm β) : sign (prodCongrRight σ) = �
     exact List.mem_toFinset.mpr (mem_l b)
   rw [← prod_prodExtendRight σ hl mem_l, map_list_prod sign, List.map_map, ← l_to_finset,
     List.prod_toFinset _ hl]
-  simp_rw [← fun a => sign_prodExtendRight a (σ a), Function.comp]
+  simp_rw [← fun a => sign_prodExtendRight a (σ a), Function.comp_def]
 
 theorem sign_prodCongrLeft (σ : α → Perm β) : sign (prodCongrLeft σ) = ∏ k, sign (σ k) := by
   refine (sign_eq_sign_of_equiv _ _ (prodComm β α) ?_).trans (sign_prodCongrRight σ)

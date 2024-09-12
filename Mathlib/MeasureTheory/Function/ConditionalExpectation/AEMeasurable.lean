@@ -100,6 +100,12 @@ theorem const_inner {𝕜 β} [RCLike 𝕜] [NormedAddCommGroup β] [InnerProduc
   dsimp only
   rw [hx]
 
+@[simp] theorem of_subsingleton [Subsingleton β] : AEStronglyMeasurable' m f μ :=
+  ⟨f, by simp, by simp⟩
+
+@[simp] theorem of_subsingleton' [Subsingleton α] : AEStronglyMeasurable' m f μ :=
+  ⟨f, by simp, by simp⟩
+
 /-- An `m`-strongly measurable function almost everywhere equal to `f`. -/
 noncomputable def mk (f : α → β) (hfm : AEStronglyMeasurable' m f μ) : α → β :=
   hfm.choose
@@ -379,7 +385,7 @@ theorem lpMeasSubgroupToLpTrim_neg (hm : m ≤ m0) (f : lpMeasSubgroup F m p μ)
   refine EventuallyEq.trans ?_ (EventuallyEq.neg (lpMeasSubgroupToLpTrim_ae_eq hm f).symm)
   refine (Lp.coeFn_neg _).trans ?_
   simp_rw [lpMeasSubgroup_coe]
-  exact eventually_of_forall fun x => by rfl
+  exact Eventually.of_forall fun x => by rfl
 
 theorem lpMeasSubgroupToLpTrim_sub (hm : m ≤ m0) (f g : lpMeasSubgroup F m p μ) :
     lpMeasSubgroupToLpTrim F p μ hm (f - g) =

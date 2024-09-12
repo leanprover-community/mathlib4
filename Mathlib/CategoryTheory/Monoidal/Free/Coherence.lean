@@ -185,7 +185,7 @@ def normalizeIsoApp :
   | tensor X a, n =>
     (α_ _ _ _).symm ≪≫ whiskerRightIso (normalizeIsoApp X n) a ≪≫ normalizeIsoApp _ _
 
-/-- Almost non-definitionally equall to `normalizeIsoApp`, but has a better definitional property
+/-- Almost non-definitionally equal to `normalizeIsoApp`, but has a better definitional property
 in the proof of `normalize_naturality`. -/
 @[simp]
 def normalizeIsoApp' :

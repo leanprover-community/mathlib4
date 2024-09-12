@@ -236,14 +236,14 @@ theorem inv_def (x : CoprodI G) :
   rfl
 
 instance : Group (CoprodI G) :=
-  { mul_left_inv := by
+  { inv_mul_cancel := by
       intro m
       rw [inv_def]
       induction m using CoprodI.induction_on with
       | h_one => rw [MonoidHom.map_one, MulOpposite.unop_one, one_mul]
       | h_of m ih =>
         change of _⁻¹ * of _ = 1
-        rw [← of.map_mul, mul_left_inv, of.map_one]
+        rw [← of.map_mul, inv_mul_cancel, of.map_one]
       | h_mul x y ihx ihy =>
         rw [MonoidHom.map_mul, MulOpposite.unop_mul, mul_assoc, ← mul_assoc _ x y, ihx, one_mul,
           ihy] }
@@ -535,7 +535,7 @@ theorem mem_smul_iff {i j : ι} {m₁ : M i} {m₂ : M j} {w : Word M} :
         · rintro rfl
           exact Or.inl ⟨_, rfl, rfl⟩
         · rintro (⟨_, h, rfl⟩ | hm')
-          · simp [Sigma.ext_iff] at h
+          · simp only [Sigma.ext_iff, heq_eq_eq, true_and] at h
             subst h
             rfl
           · simp only [fstIdx, Option.map_eq_some', Sigma.exists,
@@ -772,9 +772,10 @@ theorem mulHead_head {i j : ι} (w : NeWord M i j) (x : M i) (hnotone : x * w.he
 theorem mulHead_prod {i j : ι} (w : NeWord M i j) (x : M i) (hnotone : x * w.head ≠ 1) :
     (mulHead w x hnotone).prod = of x * w.prod := by
   unfold mulHead
-  induction' w with _ _ _ _ _ _ _ _ _ _ w_ih_w₁ w_ih_w₂
-  · simp [mulHead, replaceHead]
-  · specialize w_ih_w₁ _ hnotone
+  induction w with
+  | singleton => simp [mulHead, replaceHead]
+  | append _ _ _ w_ih_w₁ w_ih_w₂ =>
+    specialize w_ih_w₁ _ hnotone
     clear w_ih_w₂
     simp? [replaceHead, ← mul_assoc] at * says
       simp only [replaceHead, head, append_prod, ← mul_assoc] at *

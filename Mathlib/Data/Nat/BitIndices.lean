@@ -7,8 +7,8 @@ import Mathlib.Data.List.Sort
 import Mathlib.Data.Nat.Bitwise
 import Mathlib.Algebra.BigOperators.Ring.List
 import Mathlib.Algebra.Order.BigOperators.Group.List
+import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Algebra.Order.Sub.Defs
-import Mathlib.Algebra.Star.Order
 
 /-!
 # Bit Indices
@@ -35,9 +35,9 @@ elements of `s` in increasing order. -/
 def bitIndices (n : ℕ) : List ℕ :=
   @binaryRec (fun _ ↦ List ℕ) [] (fun b _ s ↦ b.casesOn (s.map (· + 1)) (0 :: s.map (· + 1))) n
 
-@[simp] theorem bitIndices_zero : bitIndices 0 = [] := by rfl
+@[simp] theorem bitIndices_zero : bitIndices 0 = [] := by simp [bitIndices]
 
-@[simp] theorem bitIndices_one : bitIndices 1 = [0] := by rfl
+@[simp] theorem bitIndices_one : bitIndices 1 = [0] := by simp [bitIndices]
 
 theorem bitIndices_bit_true (n : ℕ) :
     bitIndices (bit true n) = 0 :: ((bitIndices n).map (· + 1)) :=

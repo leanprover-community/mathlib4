@@ -26,7 +26,7 @@ variable [Semiring R] [CharP R 2]
 
 theorem two_eq_zero : (2 : R) = 0 := by rw [← Nat.cast_two, CharP.cast_eq_zero]
 
-@[simp]
+@[scoped simp]
 theorem add_self_eq_zero (x : R) : x + x = 0 := by rw [← two_smul R x, two_eq_zero, zero_smul]
 
 end Semiring
@@ -35,14 +35,14 @@ section Ring
 
 variable [Ring R] [CharP R 2]
 
-@[simp]
+@[scoped simp]
 theorem neg_eq (x : R) : -x = x := by
   rw [neg_eq_iff_add_eq_zero, ← two_smul R x, two_eq_zero, zero_smul]
 
 theorem neg_eq' : Neg.neg = (id : R → R) :=
   funext neg_eq
 
-@[simp]
+@[scoped simp]
 theorem sub_eq_add (x y : R) : x - y = x + y := by rw [sub_eq_add_neg, neg_eq]
 
 theorem sub_eq_add' : HSub.hSub = ((· + ·) : R → R → R) :=

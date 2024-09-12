@@ -167,7 +167,7 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
   convert I using 1
   · congr 1
     simp only [g, Nat.one_ne_zero, add_zero, one_mul, zero_div, zero_mul, sub_zero,
-      zero_smul, Ne, not_false_iff, zero_pow]
+      zero_smul, Ne, not_false_iff, zero_pow, reduceCtorEq]
     abel
   · simp only [Real.norm_eq_abs, abs_mul, add_nonneg (norm_nonneg v) (norm_nonneg w), abs_of_nonneg,
       hpos.le, mul_assoc, norm_nonneg, abs_pow]
@@ -319,4 +319,4 @@ theorem second_derivative_symmetric_of_eventually {f : E → F} {f' : E → E �
 derivative is symmetric. -/
 theorem second_derivative_symmetric {f : E → F} {f' : E → E →L[ℝ] F} {f'' : E →L[ℝ] E →L[ℝ] F}
     (hf : ∀ y, HasFDerivAt f (f' y) y) (hx : HasFDerivAt f' f'' x) (v w : E) : f'' v w = f'' w v :=
-  second_derivative_symmetric_of_eventually (Filter.eventually_of_forall hf) hx v w
+  second_derivative_symmetric_of_eventually (Filter.Eventually.of_forall hf) hx v w

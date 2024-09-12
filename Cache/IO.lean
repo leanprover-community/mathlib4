@@ -4,13 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino
 -/
 
-import Lean.Data.HashMap
+import Std.Data.HashMap
 import Lean.Data.RBMap
 import Lean.Data.RBTree
 import Lean.Data.Json.Printer
 import Lean.Data.Json.Parser
 
-set_option autoImplicit true
+variable {α : Type}
 
 /-- Removes a parent path from the beginning of a path -/
 def System.FilePath.withoutParent (path parent : FilePath) : FilePath :=
@@ -337,7 +337,7 @@ def packCache (hashMap : HashMap) (overwrite verbose unpackedOnly : Bool)
 /-- Gets the set of all cached files -/
 def getLocalCacheSet : IO <| Lean.RBTree String compare := do
   let paths ← getFilesWithExtension CACHEDIR "ltar"
-  return .fromList (paths.data.map (·.withoutParent CACHEDIR |>.toString)) _
+  return .fromList (paths.toList.map (·.withoutParent CACHEDIR |>.toString)) _
 
 def isPathFromMathlib (path : FilePath) : Bool :=
   match path.components with

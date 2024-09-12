@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.Topology.Baire.Lemmas
 import Mathlib.Topology.Baire.CompleteMetrizable
 import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
-import Mathlib.Analysis.NormedSpace.AffineIsometry
+import Mathlib.Analysis.Normed.Affine.Isometry
 import Mathlib.Analysis.Normed.Group.InfiniteSum
 
 /-!
@@ -129,7 +129,7 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
     have J : ‖f (σ' d⁻¹ • x) - y‖ ≤ 1 / 2 * ‖y‖ :=
       calc
         ‖f (σ' d⁻¹ • x) - y‖ = ‖d⁻¹ • f x - (d⁻¹ * d) • y‖ := by
-          rwa [f.map_smulₛₗ _, inv_mul_cancel, one_smul, map_inv₀, map_inv₀,
+          rwa [f.map_smulₛₗ _, inv_mul_cancel₀, one_smul, map_inv₀, map_inv₀,
             RingHomCompTriple.comp_apply, RingHom.id_apply]
         _ = ‖d⁻¹ • (f x - d • y)‖ := by rw [mul_smul, smul_sub]
         _ = ‖d‖⁻¹ * ‖f x - d • y‖ := by rw [norm_smul, norm_inv]
@@ -138,7 +138,7 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
           simp only [δ]
           ring
         _ = ‖y‖ / 2 := by
-          rw [inv_mul_cancel, one_mul]
+          rw [inv_mul_cancel₀, one_mul]
           simp [norm_eq_zero, hd]
         _ = 1 / 2 * ‖y‖ := by ring
     rw [← dist_eq_norm] at J
@@ -177,9 +177,10 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
   refine ⟨2 * C + 1, by linarith, fun y => ?_⟩
   have hnle : ∀ n : ℕ, ‖h^[n] y‖ ≤ (1 / 2) ^ n * ‖y‖ := by
     intro n
-    induction' n with n IH
-    · simp only [one_div, Nat.zero_eq, one_mul, iterate_zero_apply, pow_zero, le_rfl]
-    · rw [iterate_succ']
+    induction n with
+    | zero => simp only [one_div, one_mul, iterate_zero_apply, pow_zero, le_rfl]
+    | succ n IH =>
+      rw [iterate_succ']
       apply le_trans (hle _) _
       rw [pow_succ', mul_assoc]
       gcongr
@@ -205,9 +206,9 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
       _ = (2 * C + 1) * ‖y‖ := by ring
   have fsumeq : ∀ n : ℕ, f (∑ i ∈ Finset.range n, u i) = y - h^[n] y := by
     intro n
-    induction' n with n IH
-    · simp [f.map_zero]
-    · rw [sum_range_succ, f.map_add, IH, iterate_succ_apply', sub_add]
+    induction n with
+    | zero => simp [f.map_zero]
+    | succ n IH => rw [sum_range_succ, f.map_add, IH, iterate_succ_apply', sub_add]
   have : Tendsto (fun n => ∑ i ∈ Finset.range n, u i) atTop (𝓝 x) := su.hasSum.tendsto_sum_nat
   have L₁ : Tendsto (fun n => f (∑ i ∈ Finset.range n, u i)) atTop (𝓝 (f x)) :=
     (f.continuous.tendsto _).comp this
@@ -530,7 +531,7 @@ section BijectivityCriteria
 
 namespace ContinuousLinearMap
 
-variable {σ : 𝕜 →+* 𝕜'}  {σ' : 𝕜' →+* 𝕜} [RingHomInvPair σ σ'] {f : E →SL[σ] F}
+variable {σ : 𝕜 →+* 𝕜'} {σ' : 𝕜' →+* 𝕜} [RingHomInvPair σ σ'] {f : E →SL[σ] F}
 variable {F : Type u_4} [NormedAddCommGroup F] [NormedSpace 𝕜' F]
 variable [CompleteSpace E]
 

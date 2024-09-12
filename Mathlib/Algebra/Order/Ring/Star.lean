@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Star.Order
+import Mathlib.Algebra.Order.Star.Basic
 
 /-!
 # Commutative star-ordered rings are ordered rings
@@ -23,7 +23,7 @@ namespace StarOrderedRing
 
 /- This example shows that nonnegative elements in a ordered semiring which is also star-ordered
 must commute. We provide this only as an example as opposed to a lemma because we never expect the
-type class assumptions to be satisfied without a `CommSemiring` intance already in scope; not that
+type class assumptions to be satisfied without a `CommSemiring` instance already in scope; not that
 it is impossible, only that it shouldn't occur in practice. -/
 example {R : Type*} [OrderedSemiring R] [StarRing R] [StarOrderedRing R] {x y : R} (hx : 0 ≤ x)
     (hy : 0 ≤ y) : x * y = y * x := by

@@ -6,7 +6,7 @@ Authors: Eric Rodriguez
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 import Mathlib.Tactic.ByContra
 import Mathlib.Topology.Algebra.Polynomial
-import Mathlib.NumberTheory.Padics.PadicVal
+import Mathlib.NumberTheory.Padics.PadicVal.Basic
 import Mathlib.Analysis.Complex.Arg
 
 /-!
@@ -80,7 +80,7 @@ theorem cyclotomic_pos {n : ℕ} (hn : 2 < n) {R} [LinearOrderedCommRing R] (x :
     cases' h with hk hx
     · refine (ih _ hi.2.2 (Nat.two_lt_of_ne ?_ hi.1 ?_)).le <;> rintro rfl
       · exact hn'.ne' (zero_dvd_iff.mp hi.2.1)
-      · exact even_iff_not_odd.mp (even_iff_two_dvd.mpr hi.2.1) hk
+      · exact not_odd_iff_even.2 (even_iff_two_dvd.mpr hi.2.1) hk
     · rcases eq_or_ne i 2 with (rfl | hk)
       · simpa only [eval_X, eval_one, cyclotomic_two, eval_add] using hx.le
       refine (ih _ hi.2.2 (Nat.two_lt_of_ne ?_ hi.1 hk)).le
@@ -104,12 +104,17 @@ theorem cyclotomic_pos {n : ℕ} (hn : 2 < n) {R} [LinearOrderedCommRing R] (x :
       exact hn'.ne' hi.2.2.1
     · simpa only [eval_X, eval_one, cyclotomic_two, eval_add] using h.right.le
 
+#adaptation_note
+/--
+After nightly-2024-09-06 we can remove the `_root_` prefix below.
+-/
 theorem cyclotomic_pos_and_nonneg (n : ℕ) {R} [LinearOrderedCommRing R] (x : R) :
     (1 < x → 0 < eval x (cyclotomic n R)) ∧ (1 ≤ x → 0 ≤ eval x (cyclotomic n R)) := by
   rcases n with (_ | _ | _ | n)
-  · simp only [cyclotomic_zero, eval_one, zero_lt_one, implies_true, zero_le_one, and_self]
+  · simp only [cyclotomic_zero, eval_one, zero_lt_one, implies_true, zero_le_one,
+      _root_.and_self]
   · simp only [zero_add, cyclotomic_one, eval_sub, eval_X, eval_one, sub_pos, imp_self, sub_nonneg,
-      and_self]
+      _root_.and_self]
   · simp only [zero_add, reduceAdd, cyclotomic_two, eval_add, eval_X, eval_one]
     constructor <;> intro <;> linarith
   · constructor <;> intro <;> [skip; apply le_of_lt] <;> apply cyclotomic_pos (by omega)

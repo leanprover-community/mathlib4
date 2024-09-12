@@ -64,7 +64,7 @@ variation, and is therefore ae differentiable, together with a Fubini argument.
 theorem memℒp_lineDeriv (hf : LipschitzWith C f) (v : E) :
     Memℒp (fun x ↦ lineDeriv ℝ f x v) ∞ μ :=
   memℒp_top_of_bound (aestronglyMeasurable_lineDeriv hf.continuous μ)
-    (C * ‖v‖) (eventually_of_forall (fun _x ↦ norm_lineDeriv_le_of_lipschitz ℝ hf))
+    (C * ‖v‖) (.of_forall fun _x ↦ norm_lineDeriv_le_of_lipschitz ℝ hf)
 
 variable [FiniteDimensional ℝ E] [IsAddHaarMeasure μ]
 
@@ -287,8 +287,8 @@ theorem hasFderivAt_of_hasLineDerivAt_of_closure
   rcases eq_or_ne v 0 with rfl|v_ne
   · simp
   obtain ⟨w, ρ, w_mem, hvw, hρ⟩ : ∃ w ρ, w ∈ sphere 0 1 ∧ v = ρ • w ∧ ρ = ‖v‖ := by
-    refine ⟨‖v‖⁻¹ • v, ‖v‖, by simp [norm_smul, inv_mul_cancel (norm_ne_zero_iff.2 v_ne)], ?_, rfl⟩
-    simp [smul_smul, mul_inv_cancel (norm_ne_zero_iff.2 v_ne)]
+    refine ⟨‖v‖⁻¹ • v, ‖v‖, by simp [norm_smul, inv_mul_cancel₀ (norm_ne_zero_iff.2 v_ne)], ?_, rfl⟩
+    simp [smul_smul, mul_inv_cancel₀ (norm_ne_zero_iff.2 v_ne)]
   have norm_rho : ‖ρ‖ = ρ := by rw [hρ, norm_norm]
   have rho_pos : 0 ≤ ρ := by simp [hρ]
   obtain ⟨y, yq, hy⟩ : ∃ y ∈ q, ‖w - y‖ < δ := by simpa [← dist_eq_norm] using hq w_mem
