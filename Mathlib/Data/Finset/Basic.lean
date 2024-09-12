@@ -2070,7 +2070,7 @@ def attach (s : Finset α) : Finset { x // x ∈ s } :=
   ⟨Multiset.attach s.1, nodup_attach.2 s.2⟩
 
 def attachWith {α : Type*} (s : Finset α) (P : α → Prop) (H : ∀ (x : α), x ∈ s → P x) :
-  Finset {x // P x} where
+    Finset {x // P x} where
   val := s.val.attachWith P H
   nodup := s.nodup.pmap fun _ _ _ _ => Subtype.ext_iff.mp
 
