@@ -1425,7 +1425,7 @@ theorem nsmul_lt_aleph0_iff {n : ℕ} {a : Cardinal} : n • a < ℵ₀ ↔ n = 
   cases n with
   | zero => simpa using nat_lt_aleph0 0
   | succ n =>
-      simp only [Nat.succ_ne_zero, false_or_iff]
+      simp only [Nat.succ_ne_zero, false_or]
       induction' n with n ih
       · simp
       rw [succ_nsmul, add_lt_aleph0_iff, ih, and_self_iff]
