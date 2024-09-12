@@ -138,8 +138,9 @@ end Topology
 section LocallyConvex
 
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [TopologicalSpace E]
-  [TopologicalSpace F][ContinuousSMul 𝕜 E] [Module 𝕜 F] [Nonempty ι]
-  [NormedSpace ℝ 𝕜] [Module ℝ E] [ContinuousSMul ℝ E] [IsScalarTower ℝ 𝕜 E]
+  [TopologicalSpace F] [TopologicalAddGroup E] [ContinuousSMul 𝕜 E] [ContinuousConstSMul 𝕜 E]
+  [Module 𝕜 F] [Nonempty ι] [NormedSpace ℝ 𝕜] [Module ℝ E] [ContinuousSMul ℝ E]
+  [IsScalarTower ℝ 𝕜 E]
 
 instance WeakBilin.locallyConvexSpace {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} :
     LocallyConvexSpace ℝ (WeakBilin B) :=
@@ -177,10 +178,12 @@ theorem Preliminary {s : Set E} (hs : Convex ℝ s) :
   have : LocallyConvexSpace ℝ (WeakSpace 𝕜 E) := WeakBilin.locallyConvexSpace
   have : ContinuousSMul ℝ (WeakSpace 𝕜 E) := sorry
   have h₁ : Convex ℝ (toWeakSpace 𝕜 E '' (closure s)) := by
+    have AA := Convex.closure hs
     simp only [Convex, Set.mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
     intro a ha
     simp only [StarConvex, Set.mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
-    intro a b s t ha hb hsum
+    intro b c v t hv ht hsum
+
     sorry
   have h₂ : IsClosed (toWeakSpace 𝕜 E '' (closure s)) := sorry
   obtain ⟨f, u, hus, hux⟩ := geometric_hahn_banach_closed_point h₁ h₂ hx
