@@ -531,5 +531,43 @@ noncomputable def InitialSeg.total (r s) [IsWellOrder α r] [IsWellOrder β s] :
       · exact ⟨Sum.inr <| (g.codRestrict {x | Sum.Lex r s x f.top}
           (fun a => _root_.trans (g.lt_top a) h) h).ltEquiv f.subrelIso⟩
 
+/-! ### Order isomorphisms of well orders -/
+
+
+namespace OrderIso
+
+instance subsingleton_of_wellFoundedLT [LinearOrder α] [WellFoundedLT α] [Preorder β] :
+    Subsingleton (α ≃o β) := by
+  have : IsWellOrder α (· < ·) := ⟨ ⟩
+  refine ⟨fun f g ↦ ?_⟩
+  have := (f.symm.toRelIsoLT).toRelEmbedding.isWellOrder
+  ext a
+  change (InitialSeg.ofIso f.toRelIsoLT a) = (InitialSeg.ofIso g.toRelIsoLT a)
+  rw [InitialSeg.eq]
+
+instance subsingleton_of_wellFoundedLT' [LinearOrder β] [WellFoundedLT β] [Preorder α] :
+    Subsingleton (α ≃o β) := by
+  refine ⟨fun f g ↦ ?_⟩
+  change f.symm.symm = g.symm.symm
+  rw [Subsingleton.elim f.symm]
+
+instance unique_of_wellFoundedLT [LinearOrder α] [WellFoundedLT α] : Unique (α ≃o α) := Unique.mk' _
+
+instance subsingleton_of_wellFoundedGT [LinearOrder α] [WellFoundedGT α] [Preorder β] :
+    Subsingleton (α ≃o β) := by
+  refine ⟨fun f g ↦ ?_⟩
+  change f.dual.dual = g.dual.dual
+  rw [Subsingleton.elim f.dual]
+
+instance subsingleton_of_wellFoundedGT' [LinearOrder β] [WellFoundedGT β] [Preorder α] :
+    Subsingleton (α ≃o β) := by
+  refine ⟨fun f g ↦ ?_⟩
+  change f.dual.dual = g.dual.dual
+  rw [Subsingleton.elim f.dual]
+
+instance unique_of_wellFoundedGT [LinearOrder α] [WellFoundedGT α] : Unique (α ≃o α) := Unique.mk' _
+
+end OrderIso
+
 attribute [nolint simpNF] PrincipalSeg.ofElement_apply PrincipalSeg.subrelIso_symm_apply
   PrincipalSeg.apply_subrelIso PrincipalSeg.subrelIso_apply

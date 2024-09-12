@@ -5,6 +5,7 @@ Authors: Robert Y. Lewis, Keeley Hoek
 -/
 import Mathlib.Data.Fin.Basic
 import Mathlib.Order.Hom.Set
+import Mathlib.Order.InitialSeg
 
 /-!
 # `Fin n` forms a bounded linear order
@@ -277,16 +278,6 @@ map. In this lemma we state that for each `i : Fin n` we have `(e i : ℕ) = (i 
     convert this
     simpa using h _ this (e.symm _).is_lt
   · rwa [← h j hj (hj.trans hi), ← lt_iff_val_lt_val, e.lt_iff_lt]
-
-instance orderIso_subsingleton : Subsingleton (Fin n ≃o α) :=
-  ⟨fun e e' => by
-    ext i
-    rw [← e.symm.apply_eq_iff_eq, e.symm_apply_apply, ← e'.trans_apply, Fin.ext_iff,
-      coe_orderIso_apply]⟩
-
-instance orderIso_subsingleton' : Subsingleton (α ≃o Fin n) := OrderIso.symm_injective.subsingleton
-
-instance orderIsoUnique : Unique (Fin n ≃o Fin n) := Unique.mk' _
 
 /-- Two strictly monotone functions from `Fin n` are equal provided that their ranges
 are equal. -/
