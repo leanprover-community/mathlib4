@@ -81,6 +81,7 @@ instance : CStarModule A A where
     rw [← sq_eq_sq (norm_nonneg _) (by positivity)]
     simpa [sq] using Eq.symm <| CStarRing.norm_star_mul_self
 
+open scoped InnerProductSpace in
 lemma inner_def (x y : A) : ⟪x, y⟫_A = star x * y := rfl
 
 end Self
@@ -88,6 +89,8 @@ end Self
 /-! ## Products of C⋆-modules -/
 
 section Prod
+
+open scoped InnerProductSpace
 
 variable {E F : Type*}
 variable [NormedAddCommGroup E] [Module ℂ E] [SMul Aᵐᵒᵖ E]
@@ -188,6 +191,8 @@ end Prod
 /-! ## Pi-types of C⋆-modules -/
 
 section Pi
+
+open scoped InnerProductSpace
 
 variable {ι : Type*} {E : ι → Type*} [Fintype ι]
 variable [∀ i, NormedAddCommGroup (E i)] [∀ i, Module ℂ (E i)] [∀ i, SMul Aᵐᵒᵖ (E i)]
@@ -312,6 +317,7 @@ variable {E : Type*}
 variable [NormedAddCommGroup E] [InnerProductSpace ℂ E]
 variable [instSMulOp : SMul ℂᵐᵒᵖ E] [instCentral : IsCentralScalar ℂ E]
 
+open scoped InnerProductSpace in
 /-- Reinterpret an inner product space `E` over `ℂ` as a `CStarModule` over `ℂ`.
 
 Note: this instance requires `SMul ℂᵐᵒᵖ E` and `IsCentralScalar ℂ E` instances to exist on `E`,

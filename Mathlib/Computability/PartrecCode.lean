@@ -624,8 +624,8 @@ theorem evaln_mono : ∀ {k₁ k₂ c n x}, k₁ ≤ k₂ → x ∈ evaln k₁ c
     iterate 4 exact h
     · -- pair cf cg
       simp? [Seq.seq, Option.bind_eq_some] at h ⊢ says
-        simp only [Seq.seq, Option.map_eq_map, Option.mem_def, Option.bind_eq_some,
-          Option.map_eq_some', exists_exists_and_eq_and] at h ⊢
+        simp only [Seq.seq, Option.map_eq_map, Option.bind_map, Function.comp_apply,
+          Option.mem_def, Option.bind_eq_some, Option.map_eq_some'] at h ⊢
       exact h.imp fun a => And.imp (hf _ _) <| Exists.imp fun b => And.imp_left (hg _ _)
     · -- comp cf cg
       simp? [Bind.bind, Option.bind_eq_some] at h ⊢ says
@@ -900,7 +900,7 @@ private theorem hG : Primrec G := by
       Primrec.fst
 
 private theorem evaln_map (k c n) :
-    ((((List.range k)[n]?).map (evaln k c)).bind fun b => b) = evaln k c n := by
+    ((List.range k)[n]?.bind fun a ↦ evaln k c a) = evaln k c n := by
   by_cases kn : n < k
   · simp [List.getElem?_range kn]
   · rw [List.getElem?_len_le]
