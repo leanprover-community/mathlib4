@@ -45,7 +45,8 @@ def nullSpace : Submodule 𝕜 E where
     simp only [Set.mem_setOf_eq]
     rw [norm_smul, hx, mul_zero]
 
-lemma mem_nullSpace_iff_norm_eq_zero {x : E} : x ∈ nullSpace 𝕜 E ↔ ‖x‖ = 0 := Eq.to_iff rfl
+@[simp]
+lemma mem_nullSpace_iff {x : E} : x ∈ nullSpace 𝕜 E ↔ ‖x‖ = 0 := Iff.rfl
 
 lemma inner_nullSpace_left_eq_zero (x y : E) (h : x ∈ nullSpace 𝕜 E): ⟪x, y⟫_𝕜 = 0 := by
   rw [← norm_eq_zero, ← sq_eq_zero_iff]
