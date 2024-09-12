@@ -261,31 +261,6 @@ lemma AnalyticWithinOn.mono {f : E → F} {s t : Set E} (h : AnalyticWithinOn �
   fun _ m ↦ (h _ (hs m)).mono hs
 
 /-!
-### Analyticity within respects composition
-
-Currently we require `CompleteSpace`s to use equivalence to local extensions, but this is not
-essential.
--/
-
-lemma AnalyticWithinAt.comp [CompleteSpace F] [CompleteSpace G] {f : F → G} {g : E → F} {s : Set F}
-    {t : Set E} {x : E} (hf : AnalyticWithinAt 𝕜 f s (g x)) (hg : AnalyticWithinAt 𝕜 g t x)
-    (h : MapsTo g t s) : AnalyticWithinAt 𝕜 (f ∘ g) t x := by
-  rcases hf.exists_analyticAt with ⟨f', _, ef, hf'⟩
-  rcases hg.exists_analyticAt with ⟨g', gx, eg, hg'⟩
-  refine analyticWithinAt_iff_exists_analyticAt.mpr ⟨f' ∘ g', ?_, ?_⟩
-  · have h' : MapsTo g (insert x t) (insert (g x) s) := h.insert x
-    have gt := hg.continuousWithinAt_insert.tendsto_nhdsWithin h'
-    filter_upwards [self_mem_nhdsWithin, gt.eventually self_mem_nhdsWithin]
-    intro y gy (fgy : g y ∈ insert (g x) s)
-    simp [Function.comp_apply, ← eg gy, ef fgy]
-  · exact hf'.comp_of_eq hg' gx.symm
-
-lemma AnalyticWithinOn.comp [CompleteSpace F] [CompleteSpace G] {f : F → G} {g : E → F} {s : Set F}
-    {t : Set E} (hf : AnalyticWithinOn 𝕜 f s) (hg : AnalyticWithinOn 𝕜 g t) (h : MapsTo g t s) :
-    AnalyticWithinOn 𝕜 (f ∘ g) t :=
-  fun x m ↦ (hf _ (h m)).comp (hg x m) h
-
-/-!
 ### Analyticity within implies smoothness
 -/
 
