@@ -170,7 +170,7 @@ section Algebra
 variable (R A : Type*) [cR : CommSemiring R] [cA : CommSemiring A] [cRA : Algebra R A]
     (S : Submonoid R)
 
-/-
+/--
 The `R[S⁻¹]`-algebra structure on `A[S⁻¹]` induced by the `R`-algebra
 structure on `A`.
 -/
