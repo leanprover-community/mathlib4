@@ -208,7 +208,7 @@ lemma Ico_sdiff_zero_eq_Ico {N : ℕ} : Ico 0 N \ {0} = Ico 1 N := by
 
 
 lemma eq₀ {x : ℕ → ℝ} {N : ℕ} (hN : 1 < N) (hx₀ : x 0 = (1 : ℝ)) :
-  (∑ n : Fin N, (x n))^2
+    (∑ n : Fin N, (x n))^2
     = 1 + 2 * (∑ n : Fin (N - 1), x (n + 1)) + (∑ n : Fin (N - 1), x (n + 1))^2 := by
   have zero_lt_N : 0  < N := by linarith
   have two_le_N : 2 ≤ N := by linarith
