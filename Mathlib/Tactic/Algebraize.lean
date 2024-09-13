@@ -12,7 +12,7 @@ import Mathlib.Algebra.Algebra.Tower
 
 This file defines the `algebraize` tactic. The basic functionality of this tactic is to
 automatically add `Algebra` instances given `RingHom`s. For example, `algebraize f g` where
-`f : A →+* B` and `g : B →+* C` are `RinHom`s, will add the instances `Algebra A B` and
+`f : A →+* B` and `g : B →+* C` are `RingHom`s, will add the instances `Algebra A B` and
 `Algebra B C` corresponding to these `RingHom`s.
 
 ## Further functionality
@@ -75,7 +75,7 @@ open Lean Elab Tactic Term Meta
 
 namespace Lean.Attr
 
-/-- Function that extracts the name of the corresponding `Algebra` property from the a `RingHom`
+/-- Function that extracts the name of the corresponding `Algebra` property from a `RingHom`
 property that has been tagged with the `algebraize` attribute. This is done by either returning the
 parameter of the attribute, or by assuming that the tagged declaration has name `RingHom.Property`
 and then returning `Algebra.Property`. -/
