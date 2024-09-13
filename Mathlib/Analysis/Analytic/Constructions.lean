@@ -154,8 +154,8 @@ lemma FormalMultilinearSeries.le_pi_radius (h : ∀ i, r ≤ (p i).radius) :
   have I i : ∃ C > 0, ∀ n, ‖p i n‖ * (r' : ℝ) ^ n ≤ C :=
     norm_mul_pow_le_of_lt_radius _ (hr'.trans_le (h i))
   choose C C_pos hC using I
-  obtain ⟨D, D_nonneg, hD⟩ : ∃ D ≥ 0, ∀ i, C i ≤ D := by
-    refine ⟨∑ i, C i, Finset.sum_nonneg (fun i _ ↦ (C_pos i).le),
+  obtain ⟨D, D_nonneg, hD⟩ : ∃ D ≥ 0, ∀ i, C i ≤ D :=
+    ⟨∑ i, C i, Finset.sum_nonneg (fun i _ ↦ (C_pos i).le),
       fun i ↦ Finset.single_le_sum (fun j _ ↦ (C_pos j).le) (Finset.mem_univ _)⟩
   apply le_radius_of_bound _ D (fun n ↦ ?_)
   rcases le_or_lt ((r' : ℝ)^n) 0 with hr' | hr'
