@@ -189,7 +189,7 @@ theorem rightFun_implicitFun_mixed_args : ∀ᶠ x in 𝓝 φ.pt,
   have := φ.right_map_implicitFunction.curry_nhds.self_of_nhds.prod_inr_nhds (φ.leftFun φ.pt)
   rwa [← prodFun_apply, ← φ.hasStrictFDerivAt.map_nhds_eq_of_equiv, eventually_map] at this
 
-theorem leftFun_eq_iff_implicitFun_eq : ∀ᶠ x in 𝓝 φ.pt,
+theorem leftFun_eq_iff_implicitFun : ∀ᶠ x in 𝓝 φ.pt,
     φ.leftFun x = φ.leftFun φ.pt ↔ φ.implicitFunction (φ.leftFun φ.pt) (φ.rightFun x) = x := by
   filter_upwards [φ.implicitFunction_apply_image, φ.leftFun_implicitFun_mixed_args] with x hx₁ hx₂
   constructor <;> exact fun h => by rwa [← h]
@@ -528,16 +528,15 @@ theorem image_eq_iff_implicitFunOfBivariate {f : X × Y → Z} {p₀ : X × Y}
     {fx : X →L[𝕜] Z} {fy : Y ≃L[𝕜] Z} (hf₀ : HasStrictFDerivAt f (fx.coprod fy) p₀) :
     ∀ᶠ p in 𝓝 p₀, f p = f p₀ ↔ hf₀.implicitFunOfBivariate p.1 = p.2 := by
   let φ := hf₀.implicitFunDataOfBivariate
-  filter_upwards [φ.leftFun_eq_iff_implicitFun_eq, φ.rightFun_implicitFun_mixed_args] with p h h'
+  filter_upwards [φ.leftFun_eq_iff_implicitFun, φ.rightFun_implicitFun_mixed_args] with p h h'
   exact Iff.trans h ⟨congrArg _, by aesop⟩
 
 theorem image_implicitFunOfBivariate {f : X × Y → Z} {x₀ : X} {y₀ : Y}
     {fx : X →L[𝕜] Z} {fy : Y ≃L[𝕜] Z} (hf₀ : HasStrictFDerivAt f (fx.coprod fy) (x₀, y₀)) :
     ∀ᶠ x in 𝓝 x₀, f (x, hf₀.implicitFunOfBivariate x) = f (x₀, y₀) := by
   set ψ := hf₀.implicitFunOfBivariate
-  suffices ∀ᶠ x in 𝓝 x₀, f (x, ψ x) = f (x₀, y₀) ↔ ψ x = ψ x by
-    simp [eventually_congr this]
-  apply Eventually.prod_nhds_image (r := fun x y => f (x, y) = f (x₀, y₀) ↔ ψ x = y)
+  suffices ∀ᶠ x in 𝓝 x₀, f (x, ψ x) = f (x₀, y₀) ↔ ψ x = ψ x by simp [eventually_congr this]
+  apply Eventually.nhds_prod_image (r := fun x y => f (x, y) = f (x₀, y₀) ↔ ψ x = y)
   · convert hf₀.image_eq_iff_implicitFunOfBivariate
     rw [← hf₀.image_eq_iff_implicitFunOfBivariate.self_of_nhds]
   · exact hf₀.implicitFunOfBivariate_hasStrictFDerivAt.continuousAt
