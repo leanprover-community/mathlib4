@@ -218,3 +218,31 @@ lemma SuccOrder.forall_ne_bot_iff
   rw [← Nat.succ_pred_eq_of_pos hj]
   simp only [Function.iterate_succ', Function.comp_apply]
   apply h
+
+section OrderIso
+
+lemma IsSuccArchimedean.of_orderIso {X Y : Type*} [PartialOrder X] [PartialOrder Y]
+    [SuccOrder X] [IsSuccArchimedean X] [SuccOrder Y] (f : X ≃o Y) : IsSuccArchimedean Y where
+  exists_succ_iterate_of_le {a b} h := by
+    refine (exists_succ_iterate_of_le ((map_inv_le_map_inv_iff f).mpr h)).imp ?_
+    intro n
+    rw [← f.apply_eq_iff_eq, EquivLike.apply_inv_apply]
+    rintro rfl
+    clear h
+    induction n generalizing a with
+    | zero => simp
+    | succ n IH => simp only [Function.iterate_succ', Function.comp_apply, IH, f.map_succ]
+
+lemma IsPredArchimedean.of_orderIso {X Y : Type*} [PartialOrder X] [PartialOrder Y]
+    [PredOrder X] [IsPredArchimedean X] [PredOrder Y] (f : X ≃o Y) : IsPredArchimedean Y where
+  exists_pred_iterate_of_le {a b} h := by
+    refine (exists_pred_iterate_of_le ((map_inv_le_map_inv_iff f).mpr h)).imp ?_
+    intro n
+    rw [← f.apply_eq_iff_eq, EquivLike.apply_inv_apply]
+    rintro rfl
+    clear h
+    induction n generalizing b with
+    | zero => simp
+    | succ n IH => simp only [Function.iterate_succ', Function.comp_apply, IH, f.map_pred]
+
+end OrderIso
