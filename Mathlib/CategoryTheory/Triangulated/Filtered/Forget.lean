@@ -809,6 +809,11 @@ lemma existence_omega_aux (n : ℕ) : ∀ (X : C) [IsLE X 0], Finset.card (suppo
                simp only [Int.reduceNeg, Functor.id_obj, Functor.map_comp, shiftEquiv'_functor,
                  shiftEquiv'_inverse, shiftEquiv'_unitIso, Iso.symm_inv, assoc, Functor.comp_obj,
                  Functor.comp_map]
+    set T'₂ := (triangleOpEquivalence C).functor.obj (Opposite.op (Triangle.mk u v w))
+    have dT'₂ : T'₂ ∈ Opposite.distinguishedTriangles C := by
+      rw [Opposite.mem_distinguishedTriangles_iff']
+      existsi (Triangle.mk u v w), dT'
+      exact Nonempty.intro (Iso.refl _)
     refine Abelian.isIso_of_epi_of_isIso_of_isIso_of_mono (R₁ := R₁) (R₂ := R₂) ?_ ?_ φ
       ?_ ?_ ?_ ?_
     · refine {zero := fun i _ ↦ ?_, exact := fun i _ ↦ ?_}
@@ -824,8 +829,20 @@ lemma existence_omega_aux (n : ℕ) : ∀ (X : C) [IsLE X 0], Finset.card (suppo
         | 2 => sorry
       · match i with
         | 0 => have := Functor.IsHomological.exact (F := preadditiveYoneda.obj Z) _
-                 ((Opposite.mem_distinguishedTriangles_iff _).mp dT')
-        | 1 => sorry
+                 dT'₂
+               change (ShortComplex.mk ((preadditiveYoneda.obj Z).map w.op)
+                 ((preadditiveYoneda.obj Z).map v.op) sorry).Exact
+               change (ShortComplex.mk _ _ _).Exact at this
+               simp only [triangleOpEquivalence_functor,
+                 TriangleOpEquivalence.functor_obj, Triangle.mk_obj₃, Triangle.mk_obj₂,
+                 Triangle.mk_obj₁, Triangle.mk_mor₂, Triangle.mk_mor₁,
+                 opShiftFunctorEquivalence_inverse, opShiftFunctorEquivalence_functor,
+                 Functor.comp_obj, Functor.op_obj, Triangle.mk_mor₃, shortComplexOfDistTriangle_X₁,
+                 shortComplexOfDistTriangle_X₂,
+                 shortComplexOfDistTriangle_X₃, shortComplexOfDistTriangle_f, Functor.comp_map,
+                 Quiver.Hom.unop_op, shortComplexOfDistTriangle_g, T'₂] at this
+               sorry
+        | 1 => exact Functor.IsHomological.exact (F := preadditiveYoneda.obj Z) _ dT'₂
         | 2 => sorry
     · refine {zero := fun i _ ↦ ?_, exact := fun i _ ↦ ?_}
       · match i with
