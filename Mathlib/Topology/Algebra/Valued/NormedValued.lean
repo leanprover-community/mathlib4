@@ -126,4 +126,68 @@ def toNormedField : NormedField L :=
         exact ⟨fun a b hab => lt_of_lt_of_le hab (min_le_left _ _), fun a b hab =>
             lt_of_lt_of_le hab (min_le_right _ _)⟩ }
 
+namespace toNormedField
+
+@[simp]
+theorem norm_le_iff {x x' : L} :
+    let _ := val.toNormedField
+    ‖x‖ ≤ ‖x'‖ ↔ val.v x ≤ val.v x' := (Valuation.RankOne.strictMono val.v).le_iff_le
+
+@[simp]
+theorem norm_lt_iff {x x' : L} :
+    let _ := val.toNormedField
+    ‖x‖ < ‖x'‖ ↔ val.v x < val.v x' := (Valuation.RankOne.strictMono val.v).lt_iff_lt
+
+@[simp]
+theorem norm_le_one_iff {x : L} :
+    let _ := val.toNormedField
+    ‖x‖ ≤ 1 ↔ val.v x ≤ 1 := by
+  simpa only [_root_.map_one] using (Valuation.RankOne.strictMono val.v).le_iff_le (b := 1)
+
+@[simp]
+theorem norm_lt_one_iff {x : L} :
+    let _ := val.toNormedField
+    ‖x‖ < 1 ↔ val.v x < 1 := by
+  simpa only [_root_.map_one] using (Valuation.RankOne.strictMono val.v).lt_iff_lt (b := 1)
+
+@[simp]
+theorem one_le_norm_iff {x : L} :
+    let _ := val.toNormedField
+    1 ≤ ‖x‖ ↔ 1 ≤ val.v x := by
+  simpa only [_root_.map_one] using (Valuation.RankOne.strictMono val.v).le_iff_le (a := 1)
+
+@[simp]
+theorem one_lt_norm_iff {x : L} :
+    let _ := val.toNormedField
+    1 < ‖x‖ ↔ 1 < val.v x := by
+  simpa only [_root_.map_one] using (Valuation.RankOne.strictMono val.v).lt_iff_lt (a := 1)
+
+/--
+The norm associated to a rank-one valued field is nonarchimedean.
+-/
+theorem isNonarchimedean:
+    let _ := val.toNormedField
+    IsNonarchimedean (norm : L → ℝ) := by
+  intro x y
+  simp only [norm, le_max_iff, NNReal.coe_le_coe, (Valuation.RankOne.strictMono val.v).le_iff_le,
+    Valuation.map_add', implies_true]
+
+end toNormedField
+
+/--
+The nontrivially normed field structure determined by a rank one valuation.
+-/
+def toNontriviallyNormedField: NontriviallyNormedField L := {
+  val.toNormedField with
+  non_trivial := by
+    obtain ⟨x, hx⟩ := Valuation.RankOne.nontrivial val.v
+    have : x ≠ 0 := val.v.ne_zero_iff.mp hx.1
+    rcases Valuation.val_le_one_or_val_inv_le_one val.v x with h | h
+    · use x⁻¹
+      simp only [toNormedField.one_lt_norm_iff, map_inv₀, one_lt_inv₀ hx.1, lt_of_le_of_ne h hx.2]
+    · use x
+      simp only [map_inv₀, inv_le_one₀ <| zero_lt_iff.mpr hx.1] at h
+      simp only [toNormedField.one_lt_norm_iff, lt_of_le_of_ne h hx.2.symm]
+}
+
 end Valued
