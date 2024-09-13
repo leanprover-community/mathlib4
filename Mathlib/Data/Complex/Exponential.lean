@@ -210,7 +210,7 @@ theorem exp_nat_mul (x : ℂ) : ∀ n : ℕ, exp (n * x) = exp x ^ n
 
 @[simp]
 theorem exp_ne_zero : exp x ≠ 0 := fun h =>
-  zero_ne_one <| by rw [← exp_zero, ← add_neg_cancel x, exp_add, h]; simp
+  zero_ne_one (α := ℂ) <| by rw [← exp_zero, ← add_neg_cancel x, exp_add, h]; simp
 
 theorem exp_neg : exp (-x) = (exp x)⁻¹ := by
   rw [← mul_right_inj' (exp_ne_zero x), ← exp_add]; simp [mul_inv_cancel₀ (exp_ne_zero x)]
@@ -1357,7 +1357,7 @@ theorem sin_pos_of_pos_of_le_one {x : ℝ} (hx0 : 0 < x) (hx : x ≤ 1) : 0 < si
       sub_le_comm.1 (abs_sub_le_iff.1 (sin_bound (by rwa [_root_.abs_of_nonneg (le_of_lt hx0)]))).2
 
 theorem sin_pos_of_pos_of_le_two {x : ℝ} (hx0 : 0 < x) (hx : x ≤ 2) : 0 < sin x :=
-  have : x / 2 ≤ 1 := (div_le_iff (by norm_num)).mpr (by simpa)
+  have : x / 2 ≤ 1 := (div_le_iff₀ (by norm_num)).mpr (by simpa)
   calc
     0 < 2 * sin (x / 2) * cos (x / 2) :=
       mul_pos (mul_pos (by norm_num) (sin_pos_of_pos_of_le_one (half_pos hx0) this))

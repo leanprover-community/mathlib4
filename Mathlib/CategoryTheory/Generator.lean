@@ -310,7 +310,8 @@ theorem wellPowered_of_isDetecting [HasPullbacks C] {𝒢 : Set C} [Small.{v₁}
     (h𝒢 : IsDetecting 𝒢) : WellPowered C :=
   ⟨fun X =>
     @small_of_injective _ _ _ (fun P : Subobject X => { f : ΣG : 𝒢, G.1 ⟶ X | P.Factors f.2 })
-      fun P Q h => Subobject.eq_of_isDetecting h𝒢 _ _ (by simpa [Set.ext_iff] using h)⟩
+      fun P Q h => Subobject.eq_of_isDetecting h𝒢 _ _
+        (by simpa [Set.ext_iff, Sigma.forall] using h)⟩
 
 end WellPowered
 

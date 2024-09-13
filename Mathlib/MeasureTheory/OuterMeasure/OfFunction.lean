@@ -46,11 +46,11 @@ section OfFunction
 
 -- Porting note: "set_option eqn_compiler.zeta true" removed
 
-variable {α : Type*} (m : Set α → ℝ≥0∞) (m_empty : m ∅ = 0)
+variable {α : Type*}
 
 /-- Given any function `m` assigning measures to sets satisying `m ∅ = 0`, there is
   a unique maximal outer measure `μ` satisfying `μ s ≤ m s` for all `s : Set α`. -/
-protected def ofFunction : OuterMeasure α :=
+protected def ofFunction (m : Set α → ℝ≥0∞) (m_empty : m ∅ = 0) : OuterMeasure α :=
   let μ s := ⨅ (f : ℕ → Set α) (_ : s ⊆ ⋃ i, f i), ∑' i, m (f i)
   { measureOf := μ
     empty :=
@@ -85,6 +85,8 @@ protected def ofFunction : OuterMeasure α :=
         rw [iUnion_unpair]
         intro j
         apply subset_iUnion₂ i }
+
+variable (m : Set α → ℝ≥0∞) (m_empty : m ∅ = 0)
 
 theorem ofFunction_apply (s : Set α) :
     OuterMeasure.ofFunction m m_empty s = ⨅ (t : ℕ → Set α) (_ : s ⊆ iUnion t), ∑' n, m (t n) :=

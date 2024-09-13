@@ -3,7 +3,7 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.ModelTheory.Semantics
+import Mathlib.ModelTheory.Complexity
 
 /-!
 # Ordered First-Ordered Structures
@@ -108,13 +108,32 @@ variable (L) [IsOrdered L]
 def preorderTheory : L.Theory :=
   {leSymb.reflexive, leSymb.transitive}
 
+instance : Theory.IsUniversal L.preorderTheory := ⟨by
+  simp only [preorderTheory, Set.mem_insert_iff, Set.mem_singleton_iff, forall_eq_or_imp, forall_eq]
+  exact ⟨leSymb.isUniversal_reflexive, leSymb.isUniversal_transitive⟩⟩
+
 /-- The theory of partial orders. -/
 def partialOrderTheory : L.Theory :=
   {leSymb.reflexive, leSymb.antisymmetric, leSymb.transitive}
 
+instance : Theory.IsUniversal L.partialOrderTheory := ⟨by
+  simp only [partialOrderTheory,
+    Set.mem_insert_iff, Set.mem_singleton_iff, forall_eq_or_imp, forall_eq]
+  exact ⟨leSymb.isUniversal_reflexive, leSymb.isUniversal_antisymmetric,
+    leSymb.isUniversal_transitive⟩⟩
+
 /-- The theory of linear orders. -/
 def linearOrderTheory : L.Theory :=
   {leSymb.reflexive, leSymb.antisymmetric, leSymb.transitive, leSymb.total}
+
+instance : Theory.IsUniversal L.linearOrderTheory := ⟨by
+  simp only [linearOrderTheory,
+    Set.mem_insert_iff, Set.mem_singleton_iff, forall_eq_or_imp, forall_eq]
+  exact ⟨leSymb.isUniversal_reflexive, leSymb.isUniversal_antisymmetric,
+    leSymb.isUniversal_transitive, leSymb.isUniversal_total⟩⟩
+
+example [L.Structure M] [M ⊨ L.linearOrderTheory] (S : L.Substructure M) :
+    S ⊨ L.linearOrderTheory := inferInstance
 
 /-- A sentence indicating that an order has no top element:
 $\forall x, \exists y, \neg y \le x$.   -/

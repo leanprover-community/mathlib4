@@ -634,7 +634,7 @@ theorem real_inner_self_nonneg {x : F} : 0 ≤ ⟪x, x⟫_ℝ :=
 
 @[simp]
 theorem inner_self_ofReal_re (x : E) : (re ⟪x, x⟫ : 𝕜) = ⟪x, x⟫ :=
-  ((RCLike.is_real_TFAE (⟪x, x⟫ : 𝕜)).out 2 3).2 (inner_self_im _)
+  ((RCLike.is_real_TFAE (⟪x, x⟫ : 𝕜)).out 2 3).2 (inner_self_im (𝕜 := 𝕜) x)
 
 theorem inner_self_eq_norm_sq_to_K (x : E) : ⟪x, x⟫ = (‖x‖ : 𝕜) ^ 2 := by
   rw [← inner_self_ofReal_re, ← norm_sq_eq_inner, ofReal_pow]
@@ -829,7 +829,7 @@ theorem orthonormal_subtype_iff_ite [DecidableEq E] {s : Set E} :
 /-- The inner product of a linear combination of a set of orthonormal vectors with one of those
 vectors picks out the coefficient of that vector. -/
 theorem Orthonormal.inner_right_finsupp {v : ι → E} (hv : Orthonormal 𝕜 v) (l : ι →₀ 𝕜) (i : ι) :
-    ⟪v i, Finsupp.total ι E 𝕜 v l⟫ = l i := by
+    ⟪v i, Finsupp.total 𝕜 v l⟫ = l i := by
   classical
   simpa [Finsupp.total_apply, Finsupp.inner_sum, orthonormal_iff_ite.mp hv] using Eq.symm
 
@@ -849,7 +849,7 @@ theorem Orthonormal.inner_right_fintype [Fintype ι] {v : ι → E} (hv : Orthon
 /-- The inner product of a linear combination of a set of orthonormal vectors with one of those
 vectors picks out the coefficient of that vector. -/
 theorem Orthonormal.inner_left_finsupp {v : ι → E} (hv : Orthonormal 𝕜 v) (l : ι →₀ 𝕜) (i : ι) :
-    ⟪Finsupp.total ι E 𝕜 v l, v i⟫ = conj (l i) := by rw [← inner_conj_symm, hv.inner_right_finsupp]
+    ⟪Finsupp.total 𝕜 v l, v i⟫ = conj (l i) := by rw [← inner_conj_symm, hv.inner_right_finsupp]
 
 /-- The inner product of a linear combination of a set of orthonormal vectors with one of those
 vectors picks out the coefficient of that vector. -/
@@ -868,13 +868,13 @@ theorem Orthonormal.inner_left_fintype [Fintype ι] {v : ι → E} (hv : Orthono
 /-- The inner product of two linear combinations of a set of orthonormal vectors, expressed as
 a sum over the first `Finsupp`. -/
 theorem Orthonormal.inner_finsupp_eq_sum_left {v : ι → E} (hv : Orthonormal 𝕜 v) (l₁ l₂ : ι →₀ 𝕜) :
-    ⟪Finsupp.total ι E 𝕜 v l₁, Finsupp.total ι E 𝕜 v l₂⟫ = l₁.sum fun i y => conj y * l₂ i := by
+    ⟪Finsupp.total 𝕜 v l₁, Finsupp.total 𝕜 v l₂⟫ = l₁.sum fun i y => conj y * l₂ i := by
   simp only [l₁.total_apply _, Finsupp.sum_inner, hv.inner_right_finsupp, smul_eq_mul]
 
 /-- The inner product of two linear combinations of a set of orthonormal vectors, expressed as
 a sum over the second `Finsupp`. -/
 theorem Orthonormal.inner_finsupp_eq_sum_right {v : ι → E} (hv : Orthonormal 𝕜 v) (l₁ l₂ : ι →₀ 𝕜) :
-    ⟪Finsupp.total ι E 𝕜 v l₁, Finsupp.total ι E 𝕜 v l₂⟫ = l₂.sum fun i y => conj (l₁ i) * y := by
+    ⟪Finsupp.total 𝕜 v l₁, Finsupp.total 𝕜 v l₂⟫ = l₂.sum fun i y => conj (l₁ i) * y := by
   simp only [l₂.total_apply _, Finsupp.inner_sum, hv.inner_left_finsupp, mul_comm, smul_eq_mul]
 
 /-- The inner product of two linear combinations of a set of orthonormal vectors, expressed as
@@ -900,7 +900,7 @@ theorem Orthonormal.linearIndependent {v : ι → E} (hv : Orthonormal 𝕜 v) :
   rw [linearIndependent_iff]
   intro l hl
   ext i
-  have key : ⟪v i, Finsupp.total ι E 𝕜 v l⟫ = ⟪v i, 0⟫ := by rw [hl]
+  have key : ⟪v i, Finsupp.total 𝕜 v l⟫ = ⟪v i, 0⟫ := by rw [hl]
   simpa only [hv.inner_right_finsupp, inner_zero_right] using key
 
 /-- A subfamily of an orthonormal family (i.e., a composition with an injective map) is an
@@ -932,7 +932,7 @@ theorem Orthonormal.toSubtypeRange {v : ι → E} (hv : Orthonormal 𝕜 v) :
 set. -/
 theorem Orthonormal.inner_finsupp_eq_zero {v : ι → E} (hv : Orthonormal 𝕜 v) {s : Set ι} {i : ι}
     (hi : i ∉ s) {l : ι →₀ 𝕜} (hl : l ∈ Finsupp.supported 𝕜 𝕜 s) :
-    ⟪Finsupp.total ι E 𝕜 v l, v i⟫ = 0 := by
+    ⟪Finsupp.total 𝕜 v l, v i⟫ = 0 := by
   rw [Finsupp.mem_supported'] at hl
   simp only [hv.inner_left_finsupp, hl i hi, map_zero]
 
@@ -1414,8 +1414,8 @@ theorem norm_add_sq_eq_norm_sq_add_norm_sq_iff_real_inner_eq_zero (x y : F) :
 /-- Pythagorean theorem, if-and-if vector inner product form using square roots. -/
 theorem norm_add_eq_sqrt_iff_real_inner_eq_zero {x y : F} :
     ‖x + y‖ = √(‖x‖ * ‖x‖ + ‖y‖ * ‖y‖) ↔ ⟪x, y⟫_ℝ = 0 := by
-  rw [← norm_add_sq_eq_norm_sq_add_norm_sq_iff_real_inner_eq_zero, eq_comm,
-    sqrt_eq_iff_mul_self_eq (add_nonneg (mul_self_nonneg _) (mul_self_nonneg _)) (norm_nonneg _)]
+  rw [← norm_add_sq_eq_norm_sq_add_norm_sq_iff_real_inner_eq_zero, eq_comm, sqrt_eq_iff_mul_self_eq,
+    eq_comm] <;> positivity
 
 /-- Pythagorean theorem, vector inner product form. -/
 theorem norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero (x y : E) (h : ⟪x, y⟫ = 0) :
@@ -1441,8 +1441,8 @@ theorem norm_sub_sq_eq_norm_sq_add_norm_sq_iff_real_inner_eq_zero (x y : F) :
 roots. -/
 theorem norm_sub_eq_sqrt_iff_real_inner_eq_zero {x y : F} :
     ‖x - y‖ = √(‖x‖ * ‖x‖ + ‖y‖ * ‖y‖) ↔ ⟪x, y⟫_ℝ = 0 := by
-  rw [← norm_sub_sq_eq_norm_sq_add_norm_sq_iff_real_inner_eq_zero, eq_comm,
-    sqrt_eq_iff_mul_self_eq (add_nonneg (mul_self_nonneg _) (mul_self_nonneg _)) (norm_nonneg _)]
+  rw [← norm_sub_sq_eq_norm_sq_add_norm_sq_iff_real_inner_eq_zero, eq_comm, sqrt_eq_iff_mul_self_eq,
+    eq_comm] <;> positivity
 
 /-- Pythagorean theorem, subtracting vectors, vector inner product
 form. -/

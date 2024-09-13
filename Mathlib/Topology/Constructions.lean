@@ -713,6 +713,12 @@ theorem isOpen_prod_iff' {s : Set X} {t : Set Y} :
       simp only [st.1.ne_empty, st.2.ne_empty, not_false_iff, or_false_iff] at H
       exact H.1.prod H.2
 
+theorem quotientMap_fst [Nonempty Y] : QuotientMap (Prod.fst : X × Y → X) :=
+  isOpenMap_fst.to_quotientMap continuous_fst Prod.fst_surjective
+
+theorem quotientMap_snd [Nonempty X] : QuotientMap (Prod.snd : X × Y → Y) :=
+  isOpenMap_snd.to_quotientMap continuous_snd Prod.snd_surjective
+
 theorem closure_prod_eq {s : Set X} {t : Set Y} : closure (s ×ˢ t) = closure s ×ˢ closure t :=
   ext fun ⟨a, b⟩ => by
     simp_rw [mem_prod, mem_closure_iff_nhdsWithin_neBot, nhdsWithin_prod_eq, prod_neBot]
@@ -906,6 +912,10 @@ theorem Continuous.sum_map {f : X → Y} {g : Z → W} (hf : Continuous f) (hg :
 theorem isOpenMap_sum {f : X ⊕ Y → Z} :
     IsOpenMap f ↔ (IsOpenMap fun a => f (inl a)) ∧ IsOpenMap fun b => f (inr b) := by
   simp only [isOpenMap_iff_nhds_le, Sum.forall, nhds_inl, nhds_inr, Filter.map_map, comp]
+
+theorem IsOpenMap.sumMap {f : X → Y} {g : Z → W} (hf : IsOpenMap f) (hg : IsOpenMap g) :
+    IsOpenMap (Sum.map f g) := by
+  exact isOpenMap_sum.2 ⟨isOpenMap_inl.comp hf,isOpenMap_inr.comp hg⟩
 
 @[simp]
 theorem isOpenMap_sum_elim {f : X → Z} {g : Y → Z} :

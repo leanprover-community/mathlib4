@@ -77,14 +77,6 @@ theorem nodup_iff_injective_get {l : List α} :
   change _ ↔ Injective (fun i => l.get i)
   simp
 
-set_option linter.deprecated false in
-@[deprecated nodup_iff_injective_get (since := "2023-01-10")]
-theorem nodup_iff_nthLe_inj {l : List α} :
-    Nodup l ↔ ∀ i j h₁ h₂, nthLe l i h₁ = nthLe l j h₂ → i = j :=
-  nodup_iff_injective_get.trans
-    ⟨fun hinj _ _ _ _ h => congr_arg Fin.val (hinj h),
-     fun hinj i j h => Fin.eq_of_val_eq (hinj i j i.2 j.2 h)⟩
-
 theorem Nodup.get_inj_iff {l : List α} (h : Nodup l) {i j : Fin l.length} :
     l.get i = l.get j ↔ i = j :=
   (nodup_iff_injective_get.1 h).eq_iff
@@ -95,19 +87,13 @@ theorem Nodup.getElem_inj_iff {l : List α} (h : Nodup l)
   have := @Nodup.get_inj_iff _ _ h ⟨i, hi⟩ ⟨j, hj⟩
   simpa
 
-set_option linter.deprecated false in
-@[deprecated Nodup.get_inj_iff (since := "2023-01-10")]
-theorem Nodup.nthLe_inj_iff {l : List α} (h : Nodup l) {i j : ℕ} (hi : i < l.length)
-    (hj : j < l.length) : l.nthLe i hi = l.nthLe j hj ↔ i = j :=
-  ⟨nodup_iff_nthLe_inj.mp h _ _ _ _, by simp (config := { contextual := true })⟩
-
 theorem nodup_iff_getElem?_ne_getElem? {l : List α} :
     l.Nodup ↔ ∀ i j : ℕ, i < j → j < l.length → l[i]? ≠ l[j]? := by
   rw [Nodup, pairwise_iff_getElem]
   constructor
   · intro h i j hij hj
     rw [getElem?_eq_getElem (lt_trans hij hj), getElem?_eq_getElem hj, Ne, Option.some_inj]
-    exact h _ _ _ _ hij
+    exact h _ _ (by omega) hj hij
   · intro h i j hi hj hij
     rw [Ne, ← Option.some_inj, ← getElem?_eq_getElem, ← getElem?_eq_getElem]
     exact h i j hij hj
@@ -372,7 +358,7 @@ theorem Nodup.pairwise_coe [IsSymm α r] (hl : l.Nodup) :
   rw [List.nodup_cons] at hl
   have : ∀ b ∈ l, ¬a = b → r a b ↔ r a b := fun b hb =>
     imp_iff_right (ne_of_mem_of_not_mem hb hl.1).symm
-  simp [Set.setOf_or, Set.pairwise_insert_of_symmetric (@symm_of _ r _), ih hl.2, and_comm,
+  simp [Set.setOf_or, Set.pairwise_insert_of_symmetric fun _ _ ↦ symm_of r, ih hl.2, and_comm,
     forall₂_congr this]
 
 theorem Nodup.take_eq_filter_mem [DecidableEq α] :

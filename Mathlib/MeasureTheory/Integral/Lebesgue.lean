@@ -146,7 +146,7 @@ alias set_lintegral_one := setLIntegral_one
 theorem setLIntegral_const_lt_top [IsFiniteMeasure μ] (s : Set α) {c : ℝ≥0∞} (hc : c ≠ ∞) :
     ∫⁻ _ in s, c ∂μ < ∞ := by
   rw [lintegral_const]
-  exact ENNReal.mul_lt_top hc (measure_ne_top (μ.restrict s) univ)
+  exact ENNReal.mul_lt_top hc.lt_top (measure_lt_top (μ.restrict s) univ)
 
 @[deprecated (since := "2024-06-29")]
 alias set_lintegral_const_lt_top := setLIntegral_const_lt_top
@@ -1649,7 +1649,7 @@ theorem setLIntegral_lt_top_of_le_nnreal {s : Set α} (hs : μ s ≠ ∞) {f : �
     (hbdd : ∃ y : ℝ≥0, ∀ x ∈ s, f x ≤ y) : ∫⁻ x in s, f x ∂μ < ∞ := by
   obtain ⟨M, hM⟩ := hbdd
   refine lt_of_le_of_lt (setLIntegral_mono measurable_const hM) ?_
-  simp [ENNReal.mul_lt_top, hs]
+  simp [ENNReal.mul_lt_top, hs.lt_top]
 
 /-- Lebesgue integral of a bounded function over a set of finite measure is finite.
 Note that this lemma assumes no regularity of either `f` or `s`. -/
@@ -1832,7 +1832,7 @@ theorem exists_measurable_le_forall_setLIntegral_eq [SFinite μ] (f : α → ℝ
   have hφle : φ ≤ f := fun x ↦ iSup_le (hgf · x)
   refine ⟨φ, hφm, hφle, fun s ↦ ?_⟩
   -- Now we show the inequality between set integrals.
-  -- Choose a simple function `ψ ≤ f` with values in `ℝ≥0` and prove  for `ψ`.
+  -- Choose a simple function `ψ ≤ f` with values in `ℝ≥0` and prove for `ψ`.
   rw [lintegral_eq_nnreal]
   refine iSup₂_le fun ψ hψ ↦ ?_
   -- Choose `n` such that `ψ x ≤ n` for all `x`.
@@ -1943,7 +1943,8 @@ constant. -/
 theorem lintegral_le_of_forall_fin_meas_le [MeasurableSpace α] {μ : Measure α} [SigmaFinite μ]
     (C : ℝ≥0∞) {f : α → ℝ≥0∞}
     (hf : ∀ s, MeasurableSet s → μ s ≠ ∞ → ∫⁻ x in s, f x ∂μ ≤ C) : ∫⁻ x, f x ∂μ ≤ C :=
-  @lintegral_le_of_forall_fin_meas_trim_le _ _ _ _ _ (by rwa [trim_eq_self]) C _ hf
+  have : SigmaFinite (μ.trim le_rfl) := by rwa [trim_eq_self]
+  lintegral_le_of_forall_fin_meas_trim_le _ C hf
 
 theorem SimpleFunc.exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : MeasurableSpace α}
     {μ : Measure α} [SigmaFinite μ] {f : α →ₛ ℝ≥0} {L : ℝ≥0∞} (hL : L < ∫⁻ x, f x ∂μ) :
@@ -1967,7 +1968,7 @@ theorem SimpleFunc.exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : Measurabl
       exact zero_le _
     · simp only [ht, const_zero, coe_piecewise, coe_const, SimpleFunc.coe_zero, univ_inter,
         piecewise_eq_indicator, ENNReal.coe_indicator, Function.const_apply, lintegral_indicator,
-        lintegral_const, Measure.restrict_apply', ENNReal.mul_lt_top ENNReal.coe_ne_top t_top.ne]
+        lintegral_const, Measure.restrict_apply', ENNReal.mul_lt_top ENNReal.coe_lt_top t_top]
     · simp only [ht, const_zero, coe_piecewise, coe_const, SimpleFunc.coe_zero,
         piecewise_eq_indicator, ENNReal.coe_indicator, Function.const_apply, lintegral_indicator,
         lintegral_const, Measure.restrict_apply', univ_inter]

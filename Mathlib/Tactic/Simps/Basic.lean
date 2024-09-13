@@ -482,7 +482,7 @@ We use this variant because the latter is often a different field with an auto-g
 -/
 private def dropPrefixIfNotNumber? (s : String) (pre : Substring) : Option Substring := do
   let ret ← Substring.dropPrefix? s pre
-  -- flag is true when the remaning part is nonempty and starts with a digit.
+  -- flag is true when the remaining part is nonempty and starts with a digit.
   let flag := ret.toString.data.head?.elim false Char.isDigit
   if flag then none else some ret
 
@@ -535,7 +535,7 @@ partial def getCompositeOfProjectionsAux (proj : String) (e : Expr) (pos : Array
   initialize_simps_projections (toFun_toFun_toFun → myMul)
   ```
   we will be able to generate the "projection"
-    `λ {A} (f : gradedFun A) (x : A i) (y : A j) ↦ ↑(↑(f.toFun i j) x) y`,
+    `fun {A} (f : gradedFun A) (x : A i) (y : A j) ↦ ↑(↑(f.toFun i j) x) y`,
   which projection notation cannot do. -/
 def getCompositeOfProjections (structName : Name) (proj : String) : MetaM (Expr × Array Nat) := do
   let strExpr ← mkConstWithLevelParams structName

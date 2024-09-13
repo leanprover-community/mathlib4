@@ -600,7 +600,7 @@ theorem prod_rpow_of_ne_top {ι} {s : Finset ι} {f : ι → ℝ≥0∞} (hf : �
   | @insert i s hi ih =>
     have h2f : ∀ i ∈ s, f i ≠ ∞ := fun i hi ↦ hf i <| mem_insert_of_mem hi
     rw [prod_insert hi, prod_insert hi, ih h2f, ← mul_rpow_of_ne_top <| hf i <| mem_insert_self ..]
-    apply prod_lt_top h2f |>.ne
+    apply prod_ne_top h2f
 
 theorem prod_rpow_of_nonneg {ι} {s : Finset ι} {f : ι → ℝ≥0∞} {r : ℝ} (hr : 0 ≤ r) :
     ∏ i ∈ s, f i ^ r = (∏ i ∈ s, f i) ^ r := by

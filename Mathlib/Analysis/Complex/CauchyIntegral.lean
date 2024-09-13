@@ -466,7 +466,7 @@ theorem two_pi_I_inv_smul_circleIntegral_sub_inv_smul_of_differentiable_on_off_c
   rcases mem_nhds_iff_exists_Ioo_subset.1 (this <| inter_mem ht <| isOpen_ball.mem_nhds hw) with
     ⟨l, u, hlu₀, hlu_sub⟩
   obtain ⟨x, hx⟩ : (Ioo l u \ g ⁻¹' s).Nonempty := by
-    refine nonempty_diff.2 fun hsub => ?_
+    refine diff_nonempty.2 fun hsub => ?_
     have : (Ioo l u).Countable :=
       (hs.preimage ((add_right_injective w).comp ofReal_injective)).mono hsub
     rw [← Cardinal.le_aleph0_iff_set_countable, Cardinal.mk_Ioo_real (hlu₀.1.trans hlu₀.2)] at this

@@ -1220,7 +1220,7 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
     rw [Finset.mem_Ico] at hn
     have htmp1 : 0 < 1 - ε n := h_smoothingFn_floor n hn.1
     have htmp2 : 0 < asympBound g a b n := h_asympBound_floor n hn.1
-    rw [← _root_.div_le_iff (by positivity)]
+    rw [← _root_.div_le_iff₀ (by positivity)]
     rw [← Finset.mem_Ico] at hn
     calc T n / ((1 - ε ↑n) * asympBound g a b n)
            ≤ (Finset.Ico (⌊b' * n₀⌋₊) n₀).sup' h_base_nonempty
@@ -1369,7 +1369,7 @@ lemma smoothingFn_mul_asympBound_isBigO_T :
     rw [Finset.mem_Ico] at hn
     have htmp1 : 0 < 1 + ε n := h_smoothingFn_floor n hn.1
     have htmp2 : 0 < asympBound g a b n := h_asympBound_floor n hn.1
-    rw [← _root_.le_div_iff (by positivity)]
+    rw [← _root_.le_div_iff₀ (by positivity)]
     rw [← Finset.mem_Ico] at hn
     calc T n / ((1 + ε ↑n) * asympBound g a b n)
            ≥ (Finset.Ico (⌊b' * n₀⌋₊) n₀).inf' h_base_nonempty

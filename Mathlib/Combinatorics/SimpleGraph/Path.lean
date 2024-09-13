@@ -264,7 +264,8 @@ protected theorem IsTrail.takeUntil {u v w : V} {p : G.Walk v w} (hc : p.IsTrail
 
 protected theorem IsTrail.dropUntil {u v w : V} {p : G.Walk v w} (hc : p.IsTrail)
     (h : u ∈ p.support) : (p.dropUntil u h).IsTrail :=
-  IsTrail.of_append_right (q := p.dropUntil u h) (by rwa [← take_spec _ h] at hc)
+  IsTrail.of_append_right (p := p.takeUntil u h) (q := p.dropUntil u h)
+    (by rwa [← take_spec _ h] at hc)
 
 protected theorem IsPath.takeUntil {u v w : V} {p : G.Walk v w} (hc : p.IsPath)
     (h : u ∈ p.support) : (p.takeUntil u h).IsPath :=
@@ -273,7 +274,8 @@ protected theorem IsPath.takeUntil {u v w : V} {p : G.Walk v w} (hc : p.IsPath)
 -- Porting note: p was previously accidentally an explicit argument
 protected theorem IsPath.dropUntil {u v w : V} {p : G.Walk v w} (hc : p.IsPath)
     (h : u ∈ p.support) : (p.dropUntil u h).IsPath :=
-  IsPath.of_append_right (q := p.dropUntil u h) (by rwa [← take_spec _ h] at hc)
+  IsPath.of_append_right (p := p.takeUntil u h) (q := p.dropUntil u h)
+    (by rwa [← take_spec _ h] at hc)
 
 protected theorem IsTrail.rotate {u v : V} {c : G.Walk v v} (hc : c.IsTrail) (h : u ∈ c.support) :
     (c.rotate h).IsTrail := by
@@ -794,6 +796,12 @@ namespace ConnectedComponent
 instance inhabited [Inhabited V] : Inhabited G.ConnectedComponent :=
   ⟨G.connectedComponentMk default⟩
 
+instance isEmpty [IsEmpty V] : IsEmpty (ConnectedComponent G) := by
+  by_contra! hc
+  rw [@not_isEmpty_iff] at hc
+  obtain ⟨v, _⟩ := (Classical.inhabited_of_nonempty hc).default.exists_rep
+  exact IsEmpty.false v
+
 @[elab_as_elim]
 protected theorem ind {β : G.ConnectedComponent → Prop}
     (h : ∀ v : V, β (G.connectedComponentMk v)) (c : G.ConnectedComponent) : β c :=
@@ -979,6 +987,31 @@ lemma mem_coe_supp_of_adj {v w : V} {H : Subgraph G} {c : ConnectedComponent H.c
   use ⟨w, hw⟩
   rw [← (mem_supp_iff _ _).mp h.1]
   exact ⟨connectedComponentMk_eq_of_adj <| Subgraph.Adj.coe <| h.2 ▸ hadj.symm, rfl⟩
+
+lemma connectedComponentMk_supp_subset_supp {G'} {v : V} (h : G ≤ G') (c' : G'.ConnectedComponent)
+    (hc' : v ∈ c'.supp) : (G.connectedComponentMk v).supp ⊆ c'.supp := by
+  intro v' hv'
+  simp only [mem_supp_iff, ConnectedComponent.eq] at hv' ⊢
+  rw [ConnectedComponent.sound (hv'.mono h)]
+  exact hc'
+
+lemma biUnion_supp_eq_supp {G G' : SimpleGraph V} (h : G ≤ G') (c' : ConnectedComponent G') :
+    ⋃ (c : ConnectedComponent G) (_ : c.supp ⊆ c'.supp), c.supp = c'.supp := by
+  ext v
+  simp_rw [Set.mem_iUnion]
+  refine ⟨fun ⟨_, ⟨hi, hi'⟩⟩ ↦ hi hi', ?_⟩
+  intro hv
+  use G.connectedComponentMk v
+  use c'.connectedComponentMk_supp_subset_supp h hv
+  simp only [mem_supp_iff]
+
+lemma top_supp_eq_univ (c : ConnectedComponent (⊤ : SimpleGraph V)) :
+    c.supp = (Set.univ : Set V) := by
+  have ⟨w, hw⟩ := c.exists_rep
+  ext v
+  simp only [Set.mem_univ, iff_true, mem_supp_iff, ← hw]
+  apply SimpleGraph.ConnectedComponent.sound
+  exact (@SimpleGraph.top_connected V (Nonempty.intro v)).preconnected v w
 
 end ConnectedComponent
 

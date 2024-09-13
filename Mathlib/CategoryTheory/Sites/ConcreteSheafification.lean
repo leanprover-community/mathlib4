@@ -369,7 +369,7 @@ theorem exists_of_sep (P : Cᵒᵖ ⥤ D)
     ⟨I.Y, _, _, I.hf, Sieve.downward_closed _ II.hf _, rfl⟩⟩
   let IB : S.Arrow := IA.fromMiddle
   let IC : (T IB).Arrow := IA.toMiddle
-  let ID : (T I).Arrow := ⟨IV.Y, IV.f ≫ II.f, Sieve.downward_closed (T I).sieve II.hf IV.f⟩
+  let ID : (T I).Arrow := ⟨IV.Y, IV.f ≫ II.f, Sieve.downward_closed (T I).1 II.hf IV.f⟩
   change t IB IC = t I ID
   apply inj IV.Y
   erw [toPlus_apply (T I) (t I) ID, toPlus_apply (T IB) (t IB) IC, ← ht, ← ht]
@@ -588,13 +588,5 @@ instance presheaf_mono_of_mono {F G : Sheaf J D} (f : F ⟶ G) [Mono f] : Mono f
 
 theorem Sheaf.Hom.mono_iff_presheaf_mono {F G : Sheaf J D} (f : F ⟶ G) : Mono f ↔ Mono f.1 :=
   ⟨fun m => by infer_instance, fun m => by exact Sheaf.Hom.mono_of_presheaf_mono J D f⟩
-
--- Porting note: added to ease the port of CategoryTheory.Sites.LeftExact
--- in mathlib, this was `by refl`, but here it would timeout
-@[simps! hom_app inv_app]
-noncomputable
-def GrothendieckTopology.sheafificationIsoPresheafToSheafCompSheafToPreasheaf :
-    J.sheafification D ≅ plusPlusSheaf J D ⋙ sheafToPresheaf J D :=
-  NatIso.ofComponents fun P => Iso.refl _
 
 end CategoryTheory

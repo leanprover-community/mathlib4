@@ -86,7 +86,7 @@ assert_not_exists Multiset
 assert_not_exists Ring
 
 open Function
-open Int
+open scoped Int
 
 variable {G G' G'' : Type*} [Group G] [Group G'] [Group G'']
 variable {A : Type*} [AddGroup A]
@@ -1366,7 +1366,7 @@ theorem top_prod_top : (⊤ : Subgroup G).prod (⊤ : Subgroup N) = ⊤ :=
 
 @[to_additive]
 theorem bot_prod_bot : (⊥ : Subgroup G).prod (⊥ : Subgroup N) = ⊥ :=
-  SetLike.coe_injective <| by simp [coe_prod, Prod.one_eq_mk]
+  SetLike.coe_injective <| by simp [coe_prod]
 
 @[to_additive le_prod_iff]
 theorem le_prod_iff {H : Subgroup G} {K : Subgroup N} {J : Subgroup (G × N)} :

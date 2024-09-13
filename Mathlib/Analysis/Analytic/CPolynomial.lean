@@ -42,10 +42,8 @@ We develop the basic properties of these notions, notably:
 variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
-open scoped Classical
-open Topology NNReal Filter ENNReal
-
-open Set Filter Asymptotics
+open scoped Classical Topology
+open Set Filter Asymptotics NNReal ENNReal
 
 variable {f g : E → F} {p pf pg : FormalMultilinearSeries 𝕜 E F} {x : E} {r r' : ℝ≥0∞} {n m : ℕ}
 
@@ -347,7 +345,8 @@ protected theorem FormalMultilinearSeries.sum_of_finite (p : FormalMultilinearSe
 protected theorem FormalMultilinearSeries.hasSum_of_finite (p : FormalMultilinearSeries 𝕜 E F)
     {n : ℕ} (hn : ∀ m, n ≤ m → p m = 0) (x : E) :
     HasSum (fun n : ℕ => p n fun _ => x) (p.sum x) :=
-  summable_of_ne_finset_zero (fun m hm ↦ by rw [Finset.mem_range, not_lt] at hm; rw [hn m hm]; rfl)
+  summable_of_ne_finset_zero (s := .range n)
+    (fun m hm ↦ by rw [Finset.mem_range, not_lt] at hm; rw [hn m hm]; rfl)
     |>.hasSum
 
 /-- The sum of a finite power series `p` admits `p` as a power series. -/

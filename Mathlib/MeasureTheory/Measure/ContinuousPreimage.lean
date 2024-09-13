@@ -84,7 +84,7 @@ theorem tendsto_measure_symmDiff_preimage_nhds_zero
   -- This is possible, because `K` is a compact set and `s` is an open set.
   filter_upwards [hf, ContinuousMap.tendsto_nhds_compactOpen.mp hfg K hKco s hso hKg] with a hfa ha
   -- Then each of the sets `g ⁻¹' s ∆ K = g ⁻¹' s \ K` and `f a ⁻¹' s ∆ K = f a ⁻¹' s \ K`
-  -- have measure at most `ε / 2`, thus `f a ⁻¹' s ∆ g ⁻¹' s` has measure at  most `ε`.
+  -- have measure at most `ε / 2`, thus `f a ⁻¹' s ∆ g ⁻¹' s` has measure at most `ε`.
   rw [← ENNReal.add_halves ε]
   refine (measure_symmDiff_le _ K _).trans ?_
   rw [symmDiff_of_ge ha.subset_preimage, symmDiff_of_le hKg.subset_preimage]

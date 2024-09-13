@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.CategoryTheory.Elementwise
-import Mathlib.CategoryTheory.Adjunction.Evaluation
+import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 import Mathlib.Tactic.CategoryTheory.Elementwise
 import Mathlib.CategoryTheory.Adhesive
 import Mathlib.CategoryTheory.Sites.ConcreteSheafification
@@ -269,12 +269,10 @@ noncomputable def Subpresheaf.sheafifyLift (f : G.toPresheaf ⟶ F') (h : Presie
     change _ = F'.map (j ≫ i.unop).op _
     refine Eq.trans ?_ (Presieve.IsSheafFor.valid_glue (h _ s.2)
       ((G.family_of_elements_compatible s.1).compPresheafMap f) (j ≫ i.unop) ?_).symm
-    swap -- Porting note: need to swap two goals otherwise the first goal needs to be proven
-    -- inside the second goal any way
-    · dsimp [Presieve.FamilyOfElements.compPresheafMap] at hj ⊢
-      rwa [FunctorToTypes.map_comp_apply]
     · dsimp [Presieve.FamilyOfElements.compPresheafMap]
       exact congr_arg _ (Subtype.ext (FunctorToTypes.map_comp_apply _ _ _ _).symm)
+    · dsimp [Presieve.FamilyOfElements.compPresheafMap] at hj ⊢
+      rwa [FunctorToTypes.map_comp_apply]
 
 theorem Subpresheaf.to_sheafifyLift (f : G.toPresheaf ⟶ F') (h : Presieve.IsSheaf J F') :
     Subpresheaf.homOfLe (G.le_sheafify J) ≫ G.sheafifyLift f h = f := by
@@ -351,14 +349,14 @@ theorem toImagePresheaf_ι (f : F' ⟶ F) : toImagePresheaf f ≫ (imagePresheaf
 theorem imagePresheaf_comp_le (f₁ : F ⟶ F') (f₂ : F' ⟶ F'') :
     imagePresheaf (f₁ ≫ f₂) ≤ imagePresheaf f₂ := fun U _ hx => ⟨f₁.app U hx.choose, hx.choose_spec⟩
 
-instance isIso_toImagePresheaf {F F' : Cᵒᵖ ⥤ TypeMax.{v, w}} (f : F ⟶ F') [hf : Mono f] :
+instance isIso_toImagePresheaf {F F' : Cᵒᵖ ⥤ (Type (max v w))} (f : F ⟶ F') [hf : Mono f] :
   IsIso (toImagePresheaf f) := by
   have : ∀ (X : Cᵒᵖ), IsIso ((toImagePresheaf f).app X) := by
     intro X
     rw [isIso_iff_bijective]
     constructor
     · intro x y e
-      have := (NatTrans.mono_iff_mono_app _ _).mp hf X
+      have := (NatTrans.mono_iff_mono_app f).mp hf X
       rw [mono_iff_injective] at this
       exact this (congr_arg Subtype.val e : _)
     · rintro ⟨_, ⟨x, rfl⟩⟩
@@ -417,13 +415,12 @@ def imageMonoFactorization {F F' : Sheaf J (Type w)} (f : F ⟶ F') : Limits.Mon
   e := toImageSheaf f
 
 /-- The mono factorization given by `image_sheaf` for a morphism is an image. -/
-noncomputable def imageFactorization {F F' : Sheaf J TypeMax.{v, u}} (f : F ⟶ F') :
+noncomputable def imageFactorization {F F' : Sheaf J (Type (max v u))} (f : F ⟶ F') :
     Limits.ImageFactorisation f where
   F := imageMonoFactorization f
   isImage :=
     { lift := fun I => by
-        -- Porting note: need to specify the target category (TypeMax.{v, u}) for this to work.
-        haveI M := (Sheaf.Hom.mono_iff_presheaf_mono J TypeMax.{v, u} _).mp I.m_mono
+        haveI M := (Sheaf.Hom.mono_iff_presheaf_mono J (Type (max v u)) _).mp I.m_mono
         haveI := isIso_toImagePresheaf I.m.1
         refine ⟨Subpresheaf.homOfLe ?_ ≫ inv (toImagePresheaf I.m.1)⟩
         apply Subpresheaf.sheafify_le

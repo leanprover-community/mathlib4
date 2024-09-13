@@ -5,10 +5,10 @@ Authors: Xavier Roblot
 -/
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.Data.Complex.FiniteDimensional
-import Mathlib.FieldTheory.IntermediateField
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.Topology.Algebra.Field
 import Mathlib.Topology.Algebra.UniformRing
+import Mathlib.FieldTheory.IntermediateField.Basic
 
 /-!
 # Some results about the topology of ℂ

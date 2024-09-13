@@ -21,10 +21,10 @@ This file defines linear independence in a module or vector space.
 
 It is inspired by Isabelle/HOL's linear algebra, and hence indirectly by HOL Light.
 
-We define `LinearIndependent R v` as `ker (Finsupp.total ι M R v) = ⊥`. Here `Finsupp.total` is the
+We define `LinearIndependent R v` as `ker (Finsupp.total R v) = ⊥`. Here `Finsupp.total` is the
 linear map sending a function `f : ι →₀ R` with finite support to the linear combination of vectors
 from `v` with these coefficients. Then we prove that several other statements are equivalent to this
-one, including injectivity of `Finsupp.total ι M R v` and some versions with explicitly written
+one, including injectivity of `Finsupp.total R v` and some versions with explicitly written
 linear combinations.
 
 ## Main definitions
@@ -97,7 +97,7 @@ variable (R) (v)
 
 /-- `LinearIndependent R v` states the family of vectors `v` is linearly independent over `R`. -/
 def LinearIndependent : Prop :=
-  LinearMap.ker (Finsupp.total ι M R v) = ⊥
+  LinearMap.ker (Finsupp.total R v) = ⊥
 
 open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Delaborator for `LinearIndependent` that suggests pretty printing with type hints
@@ -122,7 +122,7 @@ def delabLinearIndependent : Delab :=
 variable {R} {v}
 
 theorem linearIndependent_iff :
-    LinearIndependent R v ↔ ∀ l, Finsupp.total ι M R v l = 0 → l = 0 := by
+    LinearIndependent R v ↔ ∀ l, Finsupp.total R v l = 0 → l = 0 := by
   simp [LinearIndependent, LinearMap.ker_eq_bot']
 
 theorem linearIndependent_iff' :
@@ -406,7 +406,7 @@ section Subtype
 
 theorem linearIndependent_comp_subtype {s : Set ι} :
     LinearIndependent R (v ∘ (↑) : s → M) ↔
-      ∀ l ∈ Finsupp.supported R R s, (Finsupp.total ι M R v) l = 0 → l = 0 := by
+      ∀ l ∈ Finsupp.supported R R s, (Finsupp.total R v) l = 0 → l = 0 := by
   simp only [linearIndependent_iff, (· ∘ ·), Finsupp.mem_supported, Finsupp.total_apply,
     Set.subset_def, Finset.mem_coe]
   constructor
@@ -423,7 +423,7 @@ theorem linearIndependent_comp_subtype {s : Set ι} :
 
 theorem linearDependent_comp_subtype' {s : Set ι} :
     ¬LinearIndependent R (v ∘ (↑) : s → M) ↔
-      ∃ f : ι →₀ R, f ∈ Finsupp.supported R R s ∧ Finsupp.total ι M R v f = 0 ∧ f ≠ 0 := by
+      ∃ f : ι →₀ R, f ∈ Finsupp.supported R R s ∧ Finsupp.total R v f = 0 ∧ f ≠ 0 := by
   simp [linearIndependent_comp_subtype, and_left_comm]
 
 /-- A version of `linearDependent_comp_subtype'` with `Finsupp.total` unfolded. -/
@@ -434,17 +434,17 @@ theorem linearDependent_comp_subtype {s : Set ι} :
 
 theorem linearIndependent_subtype {s : Set M} :
     LinearIndependent R (fun x => x : s → M) ↔
-      ∀ l ∈ Finsupp.supported R R s, (Finsupp.total M M R id) l = 0 → l = 0 := by
+      ∀ l ∈ Finsupp.supported R R s, (Finsupp.total R id) l = 0 → l = 0 := by
   apply linearIndependent_comp_subtype (v := id)
 
 theorem linearIndependent_comp_subtype_disjoint {s : Set ι} :
     LinearIndependent R (v ∘ (↑) : s → M) ↔
-      Disjoint (Finsupp.supported R R s) (LinearMap.ker <| Finsupp.total ι M R v) := by
+      Disjoint (Finsupp.supported R R s) (LinearMap.ker <| Finsupp.total R v) := by
   rw [linearIndependent_comp_subtype, LinearMap.disjoint_ker]
 
 theorem linearIndependent_subtype_disjoint {s : Set M} :
     LinearIndependent R (fun x => x : s → M) ↔
-      Disjoint (Finsupp.supported R R s) (LinearMap.ker <| Finsupp.total M M R id) := by
+      Disjoint (Finsupp.supported R R s) (LinearMap.ker <| Finsupp.total R id) := by
   apply linearIndependent_comp_subtype_disjoint (v := id)
 
 theorem linearIndependent_iff_totalOn {s : Set M} :
@@ -516,16 +516,16 @@ variable [Module R M] [Module R M'] [Module R M'']
 variable {a b : R} {x y : M}
 
 theorem linearIndependent_iff_injective_total :
-    LinearIndependent R v ↔ Function.Injective (Finsupp.total ι M R v) :=
+    LinearIndependent R v ↔ Function.Injective (Finsupp.total R v) :=
   linearIndependent_iff.trans
-    (injective_iff_map_eq_zero (Finsupp.total ι M R v).toAddMonoidHom).symm
+    (injective_iff_map_eq_zero (Finsupp.total R v).toAddMonoidHom).symm
 
 alias ⟨LinearIndependent.injective_total, _⟩ := linearIndependent_iff_injective_total
 
 theorem LinearIndependent.injective [Nontrivial R] (hv : LinearIndependent R v) : Injective v := by
   intro i j hij
   let l : ι →₀ R := Finsupp.single i (1 : R) - Finsupp.single j 1
-  have h_total : Finsupp.total ι M R v l = 0 := by
+  have h_total : Finsupp.total R v l = 0 := by
     simp_rw [l, LinearMap.map_sub, Finsupp.total_apply]
     simp [hij]
   have h_single_eq : Finsupp.single i (1 : R) = Finsupp.single j 1 := by
@@ -657,7 +657,7 @@ theorem LinearIndependent.eq_of_smul_apply_eq_smul_apply {M : Type*} [AddCommGro
     {v : ι → M} (li : LinearIndependent R v) (c d : R) (i j : ι) (hc : c ≠ 0)
     (h : c • v i = d • v j) : i = j := by
   let l : ι →₀ R := Finsupp.single i c - Finsupp.single j d
-  have h_total : Finsupp.total ι M R v l = 0 := by
+  have h_total : Finsupp.total R v l = 0 := by
     simp_rw [l, LinearMap.map_sub, Finsupp.total_apply]
     simp [h]
   have h_single_eq : Finsupp.single i c = Finsupp.single j d := by
@@ -690,7 +690,7 @@ theorem LinearIndependent.not_mem_span_image [Nontrivial R] (hv : LinearIndepend
   simpa using h
 
 theorem LinearIndependent.total_ne_of_not_mem_support [Nontrivial R] (hv : LinearIndependent R v)
-    {x : ι} (f : ι →₀ R) (h : x ∉ f.support) : Finsupp.total ι M R v f ≠ v x := by
+    {x : ι} (f : ι →₀ R) (h : x ∉ f.support) : Finsupp.total R v f ≠ v x := by
   replace h : x ∉ (f.support : Set ι) := h
   have p := hv.not_mem_span_image h
   intro w
@@ -803,7 +803,7 @@ variable (hv : LinearIndependent R v)
 @[simps (config := { rhsMd := default }) symm_apply]
 def LinearIndependent.totalEquiv (hv : LinearIndependent R v) :
     (ι →₀ R) ≃ₗ[R] span R (range v) := by
-  apply LinearEquiv.ofBijective (LinearMap.codRestrict (span R (range v)) (Finsupp.total ι M R v) _)
+  apply LinearEquiv.ofBijective (LinearMap.codRestrict (span R (range v)) (Finsupp.total R v) _)
   constructor
   · rw [← LinearMap.ker_eq_bot, LinearMap.ker_codRestrict]
     · apply hv
@@ -819,7 +819,7 @@ def LinearIndependent.totalEquiv (hv : LinearIndependent R v) :
 --               different from the theorem on Lean 3, and not simp-normal form.
 @[simp]
 theorem LinearIndependent.totalEquiv_apply_coe (hv : LinearIndependent R v) (l : ι →₀ R) :
-    hv.totalEquiv l = Finsupp.total ι M R v l := rfl
+    hv.totalEquiv l = Finsupp.total R v l := rfl
 
 /-- Linear combination representing a vector in the span of linearly independent vectors.
 
@@ -830,11 +830,11 @@ def LinearIndependent.repr (hv : LinearIndependent R v) : span R (range v) →�
   hv.totalEquiv.symm
 
 @[simp]
-theorem LinearIndependent.total_repr (x) : Finsupp.total ι M R v (hv.repr x) = x :=
+theorem LinearIndependent.total_repr (x) : Finsupp.total R v (hv.repr x) = x :=
   Subtype.ext_iff.1 (LinearEquiv.apply_symm_apply hv.totalEquiv x)
 
 theorem LinearIndependent.total_comp_repr :
-    (Finsupp.total ι M R v).comp hv.repr = Submodule.subtype _ :=
+    (Finsupp.total R v).comp hv.repr = Submodule.subtype _ :=
   LinearMap.ext <| hv.total_repr
 
 theorem LinearIndependent.repr_ker : LinearMap.ker hv.repr = ⊥ := by
@@ -844,10 +844,10 @@ theorem LinearIndependent.repr_range : LinearMap.range hv.repr = ⊤ := by
   rw [LinearIndependent.repr, LinearEquiv.range]
 
 theorem LinearIndependent.repr_eq {l : ι →₀ R} {x : span R (range v)}
-    (eq : Finsupp.total ι M R v l = ↑x) : hv.repr x = l := by
+    (eq : Finsupp.total R v l = ↑x) : hv.repr x = l := by
   have :
     ↑((LinearIndependent.totalEquiv hv : (ι →₀ R) →ₗ[R] span R (range v)) l) =
-      Finsupp.total ι M R v l :=
+      Finsupp.total R v l :=
     rfl
   have : (LinearIndependent.totalEquiv hv : (ι →₀ R) →ₗ[R] span R (range v)) l = x := by
     rw [eq] at this
@@ -979,12 +979,12 @@ theorem surjective_of_linearIndependent_of_span [Nontrivial R] (hv : LinearIndep
   intro i
   let repr : (span R (range (v ∘ f)) : Type _) → ι' →₀ R := (hv.comp f f.injective).repr
   let l := (repr ⟨v i, hss (mem_range_self i)⟩).mapDomain f
-  have h_total_l : Finsupp.total ι M R v l = v i := by
+  have h_total_l : Finsupp.total R v l = v i := by
     dsimp only [l]
     rw [Finsupp.total_mapDomain]
     rw [(hv.comp f f.injective).total_repr]
     -- Porting note: `rfl` isn't necessary.
-  have h_total_eq : (Finsupp.total ι M R v) l = (Finsupp.total ι M R v) (Finsupp.single i 1) := by
+  have h_total_eq : (Finsupp.total R v) l = (Finsupp.total R v) (Finsupp.single i 1) := by
     rw [h_total_l, Finsupp.total_single, one_smul]
   have l_eq : l = _ := LinearMap.ker_eq_bot.1 hv h_total_eq
   dsimp only [l] at l_eq

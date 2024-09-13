@@ -40,11 +40,11 @@ their counterparts in `Mathlib/Analysis/Complex/Basic.lean` (which causes linter
 A few lemmas requiring heavier imports are in `Mathlib/Data/RCLike/Lemmas.lean`.
 -/
 
+open scoped ComplexConjugate
+
 section
 
 local notation "𝓚" => algebraMap ℝ _
-
-open ComplexConjugate
 
 /--
 This typeclass captures properties shared by ℝ and ℂ, with an API that closely matches that of ℂ.
@@ -81,8 +81,6 @@ end
 variable {K E : Type*} [RCLike K]
 
 namespace RCLike
-
-open ComplexConjugate
 
 /-- Coercion from `ℝ` to an `RCLike` field. -/
 @[coe] abbrev ofReal : ℝ → K := Algebra.cast
@@ -333,7 +331,9 @@ theorem is_real_TFAE (z : K) : TFAE [conj z = z, ∃ r : ℝ, (r : K) = z, ↑(r
   tfae_finish
 
 theorem conj_eq_iff_real {z : K} : conj z = z ↔ ∃ r : ℝ, z = (r : K) :=
-  ((is_real_TFAE z).out 0 1).trans <| by simp only [eq_comm]
+  calc
+    _ ↔ ∃ r : ℝ, (r : K) = z := (is_real_TFAE z).out 0 1
+    _ ↔ _                    := by simp only [eq_comm]
 
 theorem conj_eq_iff_re {z : K} : conj z = z ↔ (re z : K) = z :=
   (is_real_TFAE z).out 0 2
@@ -666,7 +666,7 @@ end RCLike
 
 section Instances
 
-noncomputable instance Real.RCLike : RCLike ℝ where
+noncomputable instance Real.instRCLike : RCLike ℝ where
   re := AddMonoidHom.id ℝ
   im := 0
   I := 0
@@ -821,8 +821,6 @@ instance {A : Type*} [NonUnitalRing A] [StarRing A] [PartialOrder A] [StarOrdere
 scoped[ComplexOrder] attribute [instance] StarModule.instOrderedSMul
 
 end Order
-
-open ComplexConjugate
 
 section CleanupLemmas
 
@@ -1020,3 +1018,14 @@ noncomputable def realLinearIsometryEquiv (h : I = (0 : K)) : K ≃ₗᵢ[ℝ] �
 end CaseSpecific
 
 end RCLike
+
+namespace AddChar
+variable {G : Type*} [Finite G]
+
+lemma inv_apply_eq_conj [AddLeftCancelMonoid G] (ψ : AddChar G K) (x : G) : (ψ x)⁻¹ = conj (ψ x) :=
+  RCLike.inv_eq_conj <| norm_apply _ _
+
+lemma map_neg_eq_conj [AddCommGroup G] (ψ : AddChar G K) (x : G) : ψ (-x) = conj (ψ x) := by
+  rw [map_neg_eq_inv, inv_apply_eq_conj]
+
+end AddChar

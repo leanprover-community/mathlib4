@@ -380,7 +380,7 @@ instance : LightDiagram'.toLightFunctor.{u}.EssSurj where
 
 instance : LightDiagram'.toLightFunctor.IsEquivalence where
 
-/-- The equivalence beween `LightDiagram` and a small category. -/
+/-- The equivalence between `LightDiagram` and a small category. -/
 def LightDiagram.equivSmall : LightDiagram.{u} ≌ LightDiagram'.{u} :=
   LightDiagram'.toLightFunctor.asEquivalence.symm
 

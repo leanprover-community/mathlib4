@@ -15,7 +15,6 @@ subgroup, subgroups
 
 -/
 
-
 variable {ι : Sort*} {G : Type*} [Group G]
 
 namespace Subgroup
@@ -86,17 +85,41 @@ def opEquiv : Subgroup G ≃o Subgroup Gᵐᵒᵖ where
   right_inv := op_unop
   map_rel_iff' := op_le_op_iff
 
+@[to_additive]
+theorem op_injective : (@Subgroup.op G _).Injective := opEquiv.injective
+
+@[to_additive]
+theorem unop_injective : (@Subgroup.unop G _).Injective := opEquiv.symm.injective
+
+@[to_additive (attr := simp)]
+theorem op_inj {S T : Subgroup G} : S.op = T.op ↔ S = T := opEquiv.eq_iff_eq
+
+@[to_additive (attr := simp)]
+theorem unop_inj {S T : Subgroup Gᵐᵒᵖ} : S.unop = T.unop ↔ S = T := opEquiv.symm.eq_iff_eq
+
 @[to_additive (attr := simp)]
 theorem op_bot : (⊥ : Subgroup G).op = ⊥ := opEquiv.map_bot
+
+@[to_additive (attr := simp)]
+theorem op_eq_bot {S : Subgroup G} : S.op = ⊥ ↔ S = ⊥ := op_injective.eq_iff' op_bot
 
 @[to_additive (attr := simp)]
 theorem unop_bot : (⊥ : Subgroup Gᵐᵒᵖ).unop = ⊥ := opEquiv.symm.map_bot
 
 @[to_additive (attr := simp)]
-theorem op_top : (⊤ : Subgroup G).op = ⊤ := opEquiv.map_top
+theorem unop_eq_bot {S : Subgroup Gᵐᵒᵖ} : S.unop = ⊥ ↔ S = ⊥ := unop_injective.eq_iff' unop_bot
 
 @[to_additive (attr := simp)]
-theorem unop_top : (⊤ : Subgroup Gᵐᵒᵖ).unop = ⊤ := opEquiv.symm.map_top
+theorem op_top : (⊤ : Subgroup G).op = ⊤ := rfl
+
+@[to_additive (attr := simp)]
+theorem op_eq_top {S : Subgroup G} : S.op = ⊤ ↔ S = ⊤ := op_injective.eq_iff' op_top
+
+@[to_additive (attr := simp)]
+theorem unop_top : (⊤ : Subgroup Gᵐᵒᵖ).unop = ⊤ := rfl
+
+@[to_additive (attr := simp)]
+theorem unop_eq_top {S : Subgroup Gᵐᵒᵖ} : S.unop = ⊤ ↔ S = ⊤ := unop_injective.eq_iff' unop_top
 
 @[to_additive]
 theorem op_sup (S₁ S₂ : Subgroup G) : (S₁ ⊔ S₂).op = S₁.op ⊔ S₂.op :=
@@ -107,11 +130,10 @@ theorem unop_sup (S₁ S₂ : Subgroup Gᵐᵒᵖ) : (S₁ ⊔ S₂).unop = S₁
   opEquiv.symm.map_sup _ _
 
 @[to_additive]
-theorem op_inf (S₁ S₂ : Subgroup G) : (S₁ ⊓ S₂).op = S₁.op ⊓ S₂.op := opEquiv.map_inf _ _
+theorem op_inf (S₁ S₂ : Subgroup G) : (S₁ ⊓ S₂).op = S₁.op ⊓ S₂.op := rfl
 
 @[to_additive]
-theorem unop_inf (S₁ S₂ : Subgroup Gᵐᵒᵖ) : (S₁ ⊓ S₂).unop = S₁.unop ⊓ S₂.unop :=
-  opEquiv.symm.map_inf _ _
+theorem unop_inf (S₁ S₂ : Subgroup Gᵐᵒᵖ) : (S₁ ⊓ S₂).unop = S₁.unop ⊓ S₂.unop := rfl
 
 @[to_additive]
 theorem op_sSup (S : Set (Subgroup G)) : (sSup S).op = sSup (.unop ⁻¹' S) :=
@@ -151,9 +173,8 @@ theorem op_closure (s : Set G) : (closure s).op = closure (MulOpposite.unop ⁻�
 
 @[to_additive]
 theorem unop_closure (s : Set Gᵐᵒᵖ) : (closure s).unop = closure (MulOpposite.op ⁻¹' s) := by
-  simp_rw [closure, unop_sInf, Set.preimage_setOf_eq, Subgroup.op_coe]
-  congr with a
-  exact MulOpposite.op_surjective.forall
+  rw [← op_inj, op_unop, op_closure]
+  rfl
 
 /-- Bijection between a subgroup `H` and its opposite. -/
 @[to_additive (attr := simps!) "Bijection between an additive subgroup `H` and its opposite."]
@@ -172,5 +193,32 @@ instance (H : Subgroup G) [Countable H] : Countable H.op :=
 theorem smul_opposite_mul {H : Subgroup G} (x g : G) (h : H.op) :
     h • (g * x) = g * h • x :=
   mul_assoc _ _ _
+
+@[to_additive]
+theorem op_normalizer (H : Subgroup G) : H.normalizer.op = H.op.normalizer := by
+  ext x
+  simp [mem_normalizer_iff', MulOpposite.op_surjective.forall, iff_comm]
+
+@[to_additive]
+theorem unop_normalizer (H : Subgroup Gᵐᵒᵖ) : H.normalizer.unop = H.unop.normalizer := by
+  rw [← op_inj, op_unop, op_normalizer, op_unop]
+
+@[to_additive (attr := simp)]
+theorem normal_op {H : Subgroup G} : H.op.Normal ↔ H.Normal := by
+  simp only [← normalizer_eq_top, ← op_normalizer, op_eq_top]
+
+@[to_additive] alias ⟨Normal.of_op, Normal.op⟩ := normal_op
+
+@[to_additive]
+instance op.instNormal {H : Subgroup G} [H.Normal] : H.op.Normal := .op ‹_›
+
+@[to_additive (attr := simp)]
+theorem normal_unop {H : Subgroup Gᵐᵒᵖ} : H.unop.Normal ↔ H.Normal := by
+  rw [← normal_op, op_unop]
+
+@[to_additive] alias ⟨Normal.of_unop, Normal.unop⟩ := normal_unop
+
+@[to_additive]
+instance unop.instNormal {H : Subgroup Gᵐᵒᵖ} [H.Normal] : H.unop.Normal := .unop ‹_›
 
 end Subgroup

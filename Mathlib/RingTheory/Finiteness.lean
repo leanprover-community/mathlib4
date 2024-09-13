@@ -278,8 +278,8 @@ theorem fg_of_fg_map_of_fg_inf_ker {R M P : Type*} [Ring R] [AddCommGroup M] [Mo
   rcases this with ⟨l, hl1, hl2⟩
   refine
     mem_sup.2
-      ⟨(Finsupp.total M M R id).toFun ((Finsupp.lmapDomain R R g : (P →₀ R) → M →₀ R) l), ?_,
-        x - Finsupp.total M M R id ((Finsupp.lmapDomain R R g : (P →₀ R) → M →₀ R) l), ?_,
+      ⟨(Finsupp.total R id).toFun ((Finsupp.lmapDomain R R g : (P →₀ R) → M →₀ R) l), ?_,
+        x - Finsupp.total R id ((Finsupp.lmapDomain R R g : (P →₀ R) → M →₀ R) l), ?_,
         add_sub_cancel _ _⟩
   · rw [← Set.image_id (g '' ↑t1), Finsupp.mem_span_image_iff_total]
     refine ⟨_, ?_, rfl⟩

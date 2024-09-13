@@ -829,7 +829,7 @@ instance QuotientGroup.completeSpace' (G : Type u) [Group G] [TopologicalSpace G
     exact fun m =>
       ⟨m, fun n hmn =>
         Nat.decreasingInduction'
-          (fun k _ _ hk => u_mul k ⟨_, hx' k, _, hk, div_mul_div_cancel' _ _ _⟩) hmn
+          (fun k _ _ hk => u_mul k ⟨_, hx' k, _, hk, div_mul_div_cancel _ _ _⟩) hmn
           (by simpa only [div_self'] using mem_of_mem_nhds (hu.mem _))⟩
   /- Since `G` is complete, `x'` converges to some `x₀`, and so the image of this sequence under
     the quotient map converges to `↑x₀`. The image of `x'` is a convergent subsequence of `x`, and

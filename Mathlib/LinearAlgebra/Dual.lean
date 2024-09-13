@@ -281,7 +281,7 @@ theorem toDual_apply (i j : ι) : b.toDual (b i) (b j) = if i = j then 1 else 0 
 
 @[simp]
 theorem toDual_total_left (f : ι →₀ R) (i : ι) :
-    b.toDual (Finsupp.total ι M R b f) (b i) = f i := by
+    b.toDual (Finsupp.total R b f) (b i) = f i := by
   rw [Finsupp.total_apply, Finsupp.sum, _root_.map_sum, LinearMap.sum_apply]
   simp_rw [LinearMap.map_smul, LinearMap.smul_apply, toDual_apply, smul_eq_mul, mul_boole,
     Finset.sum_ite_eq']
@@ -291,7 +291,7 @@ theorem toDual_total_left (f : ι →₀ R) (i : ι) :
 
 @[simp]
 theorem toDual_total_right (f : ι →₀ R) (i : ι) :
-    b.toDual (b i) (Finsupp.total ι M R b f) = f i := by
+    b.toDual (b i) (Finsupp.total R b f) = f i := by
   rw [Finsupp.total_apply, Finsupp.sum, _root_.map_sum]
   simp_rw [LinearMap.map_smul, toDual_apply, smul_eq_mul, mul_boole, Finset.sum_ite_eq]
   split_ifs with h
@@ -335,7 +335,7 @@ theorem toDual_ker : LinearMap.ker b.toDual = ⊥ :=
 theorem toDual_range [Finite ι] : LinearMap.range b.toDual = ⊤ := by
   refine eq_top_iff'.2 fun f => ?_
   let lin_comb : ι →₀ R := Finsupp.equivFunOnFinite.symm fun i => f (b i)
-  refine ⟨Finsupp.total ι M R b lin_comb, b.ext fun i => ?_⟩
+  refine ⟨Finsupp.total R b lin_comb, b.ext fun i => ?_⟩
   rw [b.toDual_eq_repr _ i, repr_total b]
   rfl
 
@@ -396,7 +396,7 @@ theorem dualBasis_apply_self (i j : ι) : b.dualBasis i (b j) =
   rw [@eq_comm _ j i]
 
 theorem total_dualBasis (f : ι →₀ R) (i : ι) :
-    Finsupp.total ι (Dual R M) R b.dualBasis f (b i) = f i := by
+    Finsupp.total R b.dualBasis f (b i) = f i := by
   cases nonempty_fintype ι
   rw [Finsupp.total_apply, Finsupp.sum_fintype, LinearMap.sum_apply]
   · simp_rw [LinearMap.smul_apply, smul_eq_mul, dualBasis_apply_self, mul_boole,
@@ -457,7 +457,7 @@ end CommRing
 /-- `simp` normal form version of `total_dualBasis` -/
 @[simp]
 theorem total_coord [CommRing R] [AddCommGroup M] [Module R M] [Finite ι] (b : Basis ι R M)
-    (f : ι →₀ R) (i : ι) : Finsupp.total ι (Dual R M) R b.coord f (b i) = f i := by
+    (f : ι →₀ R) (i : ι) : Finsupp.total R b.coord f (b i) = f i := by
   haveI := Classical.decEq ι
   rw [← coe_dualBasis, total_dualBasis]
 
@@ -669,7 +669,7 @@ section DualBases
 open Module
 
 variable {R M ι : Type*}
-variable [CommSemiring R] [AddCommMonoid M] [Module R M] [DecidableEq ι]
+variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 -- Porting note: replace use_finite_instance tactic
 open Lean.Elab.Tactic in
@@ -682,10 +682,10 @@ elab "use_finite_instance" : tactic => evalUseFiniteInstance
 /-- `e` and `ε` have characteristic properties of a basis and its dual -/
 -- @[nolint has_nonempty_instance] Porting note (#5171): removed
 structure Module.DualBases (e : ι → M) (ε : ι → Dual R M) : Prop where
-  eval : ∀ i j : ι, ε i (e j) = if i = j then 1 else 0
+  eval_same : ∀ i, ε i (e i) = 1
+  eval_of_ne : Pairwise fun i j ↦ ε i (e j) = 0
   protected total : ∀ {m : M}, (∀ i, ε i m = 0) → m = 0
-  protected finite : ∀ m : M, { i | ε i m ≠ 0 }.Finite := by
-      use_finite_instance
+  protected finite : ∀ m : M, {i | ε i m ≠ 0}.Finite := by use_finite_instance
 
 end DualBases
 
@@ -698,35 +698,35 @@ variable [CommRing R] [AddCommGroup M] [Module R M]
 variable {e : ι → M} {ε : ι → Dual R M}
 
 /-- The coefficients of `v` on the basis `e` -/
-def coeffs [DecidableEq ι] (h : DualBases e ε) (m : M) : ι →₀ R where
+def coeffs (h : DualBases e ε) (m : M) : ι →₀ R where
   toFun i := ε i m
   support := (h.finite m).toFinset
   mem_support_toFun i := by rw [Set.Finite.mem_toFinset, Set.mem_setOf_eq]
 
 @[simp]
-theorem coeffs_apply [DecidableEq ι] (h : DualBases e ε) (m : M) (i : ι) : h.coeffs m i = ε i m :=
+theorem coeffs_apply (h : DualBases e ε) (m : M) (i : ι) : h.coeffs m i = ε i m :=
   rfl
 
 /-- linear combinations of elements of `e`.
-This is a convenient abbreviation for `Finsupp.total _ M R e l` -/
+This is a convenient abbreviation for `Finsupp.total R e l` -/
 def lc {ι} (e : ι → M) (l : ι →₀ R) : M :=
   l.sum fun (i : ι) (a : R) => a • e i
 
-theorem lc_def (e : ι → M) (l : ι →₀ R) : lc e l = Finsupp.total _ _ R e l :=
+theorem lc_def (e : ι → M) (l : ι →₀ R) : lc e l = Finsupp.total R e l :=
   rfl
 
 open Module
 
-variable [DecidableEq ι] (h : DualBases e ε)
+variable (h : DualBases e ε)
 include h
 
 theorem dual_lc (l : ι →₀ R) (i : ι) : ε i (DualBases.lc e l) = l i := by
   rw [lc, _root_.map_finsupp_sum, Finsupp.sum_eq_single i (g := fun a b ↦ (ε i) (b • e a))]
   -- Porting note: cannot get at •
   -- simp only [h.eval, map_smul, smul_eq_mul]
-  · simp [h.eval, smul_eq_mul]
+  · simp [h.eval_same, smul_eq_mul]
   · intro q _ q_ne
-    simp [q_ne.symm, h.eval, smul_eq_mul]
+    simp [h.eval_of_ne q_ne.symm, smul_eq_mul]
   · simp
 
 @[simp]
@@ -741,7 +741,7 @@ theorem lc_coeffs (m : M) : DualBases.lc e (h.coeffs m) = m := by
   simp [LinearMap.map_sub, h.dual_lc, sub_eq_zero]
 
 /-- `(h : DualBases e ε).basis` shows the family of vectors `e` forms a basis. -/
-@[simps]
+@[simps repr_apply, simps (config := .lemmasOnly) repr_symm_apply]
 def basis : Basis ι R M :=
   Basis.ofRepr
     { toFun := coeffs h
@@ -755,19 +755,15 @@ def basis : Basis ι R M :=
         ext i
         exact (ε i).map_smul c v }
 
--- Porting note: from simpNF the LHS simplifies; it yields lc_def.symm
--- probably not a useful simp lemma; nolint simpNF since it cannot see this removal
-attribute [-simp, nolint simpNF] basis_repr_symm_apply
-
 @[simp]
 theorem coe_basis : ⇑h.basis = e := by
   ext i
   rw [Basis.apply_eq_iff]
   ext j
-  rw [h.basis_repr_apply, coeffs_apply, h.eval, Finsupp.single_apply]
-  convert if_congr (eq_comm (a := j) (b := i)) rfl rfl
+  rcases eq_or_ne i j with rfl | hne
+  · simp [h.eval_same]
+  · simp [hne, h.eval_of_ne hne.symm]
 
--- `convert` to get rid of a `DecidableEq` mismatch
 theorem mem_of_mem_span {H : Set ι} {x : M} (hmem : x ∈ Submodule.span R (e '' H)) :
     ∀ i : ι, ε i x ≠ 0 → i ∈ H := by
   intro i hi
@@ -775,10 +771,8 @@ theorem mem_of_mem_span {H : Set ι} {x : M} (hmem : x ∈ Submodule.span R (e '
   apply not_imp_comm.mp ((Finsupp.mem_supported' _ _).mp supp_l i)
   rwa [← lc_def, h.dual_lc] at hi
 
-theorem coe_dualBasis [_root_.Finite ι] : ⇑h.basis.dualBasis = ε :=
-  funext fun i =>
-    h.basis.ext fun j => by
-      rw [h.basis.dualBasis_apply_self, h.coe_basis, h.eval, if_congr eq_comm rfl rfl]
+theorem coe_dualBasis [DecidableEq ι] [_root_.Finite ι] : ⇑h.basis.dualBasis = ε :=
+  funext fun i => h.basis.ext fun j => by simp
 
 end Module.DualBases
 

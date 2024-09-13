@@ -103,7 +103,7 @@ Note that there is no relation between `val` and the proof.
 We need to decouple these to support letting the proof's elaboration be deferred until
 we know whether we want an iff, eq, or heq, while also allowing it to choose
 to elaborate as an iff, eq, or heq.
-Later, the congruence generator handles any discrepencies.
+Later, the congruence generator handles any discrepancies.
 See `Mathlib.Tactic.TermCongr.CongrResult`. -/
 @[reducible, nolint unusedArguments]
 def cHole {α : Sort u} (val : α) {p : Prop} (_pf : p) : α := val
