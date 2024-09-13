@@ -104,7 +104,6 @@ lemma toSheaf_map_sheafificationHomEquiv_symm
 /-- Given a locally bijective morphism `α : R₀ ⟶ R.val` where `R₀` is a presheaf of rings
 and `R` a sheaf of rings, this is the adjunction
 `sheafification.{v} α ⊣ SheafOfModules.forget R ⋙ restrictScalars α`. -/
-@[simps! (config := .lemmasOnly) homEquiv_apply]
 noncomputable def sheafificationAdjunction :
     sheafification.{v} α ⊣ SheafOfModules.forget R ⋙ restrictScalars α :=
   Adjunction.mkOfHomEquiv
@@ -121,6 +120,10 @@ noncomputable def sheafificationAdjunction :
         erw [sheafificationHomEquiv_hom, sheafificationHomEquiv_hom]
         rw [Functor.map_comp]
         apply Adjunction.homEquiv_naturality_right }
+
+lemma sheaififcationAdjunction_homEquiv_apply {P : PresheafOfModules.{v} R₀}
+    {F : SheafOfModules.{v} R} (f : (sheafification α).obj P ⟶ F) :
+    (sheafificationAdjunction α).homEquiv P F f = sheafificationHomEquiv α f := rfl
 
 @[simp]
 lemma sheafificationAdjunction_unit_app_hom (M₀ : PresheafOfModules.{v} R₀) :

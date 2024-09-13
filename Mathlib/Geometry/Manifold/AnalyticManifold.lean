@@ -86,7 +86,7 @@ theorem ofSet_mem_analyticGroupoid {s : Set H} (hs : IsOpen s) :
   suffices h : AnalyticWithinOn 𝕜 (I ∘ I.symm) (I.symm ⁻¹' s ∩ range I) by
     simp [h, analyticPregroupoid]
   have hi : AnalyticWithinOn 𝕜 id (univ : Set E) := (analyticOn_id _).analyticWithinOn
-  exact (hi.mono (subset_univ _)).congr (fun x hx ↦ (I.right_inv hx.2).symm)
+  exact (hi.mono (subset_univ _)).congr (fun x hx ↦ I.right_inv hx.2)
 
 /-- The composition of a partial homeomorphism from `H` to `M` and its inverse belongs to
 the analytic groupoid. -/
