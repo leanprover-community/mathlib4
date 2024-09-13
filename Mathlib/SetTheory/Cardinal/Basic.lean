@@ -903,7 +903,6 @@ end Cardinal
 
 /-! ### Well-ordering theorem -/
 
-
 open Cardinal in
 theorem nonempty_embedding_to_cardinal : Nonempty (α ↪ Cardinal.{u}) :=
   (Embedding.total _ _).resolve_left fun ⟨⟨f, hf⟩⟩ =>
