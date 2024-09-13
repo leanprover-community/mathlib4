@@ -829,7 +829,7 @@ instance StructuredArrow.final_pre (T : C ⥤ D) [Final T] (S : D ⥤ E) (X : E)
   exact Final.out f.right
 
 /-- The functor `CostructuredArrow.pre X T S` is initial if `T` is initial. -/
-theorem CostructuredArrow.initial_pre (T : C ⥤ D) [Initial T] (S : D ⥤ E) (X : E) :
+instance CostructuredArrow.initial_pre (T : C ⥤ D) [Initial T] (S : D ⥤ E) (X : E) :
     Initial (CostructuredArrow.pre T S X) := by
   refine ⟨fun f => ?_⟩
   rw [isConnected_iff_of_equivalence (CostructuredArrow.preEquivalence T f)]
