@@ -180,11 +180,6 @@ theorem adj_getVert_succ {u v} (w : G.Walk u v) {i : ℕ} (hi : i < w.length) :
     · simp [getVert, hxy]
     · exact ih (Nat.succ_lt_succ_iff.1 hi)
 
-lemma getVert_cons_one {u v w} (q : G.Walk v w) (hadj : G.Adj u v) :
-    (q.cons hadj).snd = v := by
-  have : (q.cons hadj).snd = q.getVert 0 := rfl
-  simpa [getVert_zero] using this
-
 @[simp]
 lemma getVert_cons_succ {u v w n} (p : G.Walk v w) (h : G.Adj u v) :
     (p.cons h).getVert (n + 1) = p.getVert n := rfl
@@ -802,6 +797,9 @@ abbrev snd (p : G.Walk u v) : V := p.getVert 1
 @[simp] lemma adj_snd {p : G.Walk v w} (hp : ¬ p.Nil) :
     G.Adj v p.snd := by
   simpa using adj_getVert_succ p (by simpa [not_nil_iff_lt_length] using hp : 0 < p.length)
+
+lemma snd_cons {u v w} (q : G.Walk v w) (hadj : G.Adj u v) :
+    (q.cons hadj).snd = v := by simp
 
 /-- The penultimate vertex of a walk, or the only vertex in a nil walk. -/
 abbrev penultimate (p : G.Walk u v) : V := p.getVert (p.length - 1)
