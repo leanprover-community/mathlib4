@@ -504,7 +504,8 @@ section Tensor
 
 variable {C}
 
-/-- The strength of the tensor product functor from `C × C` to `C`. -/
+/-- Swap the second and third objects in `(X₁ ⊗ X₂) ⊗ (Y₁ ⊗ Y₂)`. This is used to strength the
+tensor product functor from `C × C` to `C` as a monoidal functor. -/
 def tensor_μ (X₁ X₂ Y₁ Y₂ : C) : (X₁ ⊗ X₂) ⊗ Y₁ ⊗ Y₂ ⟶ (X₁ ⊗ Y₁) ⊗ X₂ ⊗ Y₂ :=
   (α_ X₁ X₂ (Y₁ ⊗ Y₂)).hom ≫
     (X₁ ◁ (α_ X₂ Y₁ Y₂).inv) ≫
