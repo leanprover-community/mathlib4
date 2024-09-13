@@ -53,7 +53,7 @@ section
 variable {σ : Type*}
 variable {R : Type*} [CommRing R] [TopologicalSpace R]
 variable {S : Type*} [CommRing S] [TopologicalSpace S]
-variable {φ : R →+* S} (hφ : Continuous φ)
+variable {φ : R →+* S}
 
 -- We endow MvPowerSeries σ R with the Pi topology
 open WithPiTopology
@@ -141,9 +141,8 @@ section Evaluation
 open WithPiTopology
 
 variable {σ : Type*} -- [DecidableEq σ]
-variable {R : Type*} [CommRing R] [UniformSpace R] -- [UniformAddGroup R] [TopologicalRing R]
+variable {R : Type*} [CommRing R] [UniformSpace R] 
 variable {S : Type*} [CommRing S] [UniformSpace S]
-  -- [UniformAddGroup S] [TopologicalRing S] [T2Space S] [CompleteSpace S]
 variable {φ : R →+* S} -- (hφ : Continuous φ)
 
 -- We endow MvPowerSeries σ R with the product uniform structure
