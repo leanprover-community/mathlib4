@@ -199,45 +199,41 @@ theorem sInf_of_not_bddBelow (hs : ¬BddBelow s) : sInf s = 0 :=
 theorem iInf_of_not_bddBelow (hf : ¬BddBelow (Set.range f)) : ⨅ i, f i = 0 :=
   sInf_of_not_bddBelow hf
 
-/-- As `sSup s = 0` when `s` is a set of reals that's either empty or unbounded above,
-it suffices to show that all elements of `s` are at most some nonnegative number `a` to show that
-`sSup s ≤ a`. -/
+/-- As `sSup s = 0` when `s` is an empty set of reals, it suffices to show that all elements of `s`
+are at most some nonnegative number `a` to show that `sSup s ≤ a`. -/
 protected lemma sSup_le (hs : ∀ x ∈ s, x ≤ a) (ha : 0 ≤ a) : sSup s ≤ a := by
   obtain rfl | hs' := s.eq_empty_or_nonempty
   exacts [sSup_empty.trans_le ha, csSup_le hs' hs]
 
-/-- As `⨆ i, f i = 0` when `f` is the empty function or unbounded above,
-it suffices to show that all values of `f` are at most some nonnegative number `a` to show that
-`⨆ i, f i ≤ a`. -/
+/-- As `⨆ i, f i = 0` when `f` is the empty function, it suffices to show that all values of `f`
+are at most some nonnegative number `a` to show that `⨆ i, f i ≤ a`. -/
 protected lemma iSup_le (hf : ∀ i, f i ≤ a) (ha : 0 ≤ a) : ⨆ i, f i ≤ a :=
   Real.sSup_le (Set.forall_mem_range.2 hf) ha
 
-/-- As `sInf s = 0` when `s` is a set of reals that's either empty or unbounded below,
-it suffices to show that all elements of `s` are at least some nonpositive number `a` to show that
-`a ≤ sInf s`. -/
+/-- As `sInf s = 0` when `s` is an empty set of reals, it suffices to show that all elements of `s`
+are at least some nonpositive number `a` to show that `a ≤ sInf s`. -/
 protected lemma le_sInf (hs : ∀ x ∈ s, a ≤ x) (ha : a ≤ 0) : a ≤ sInf s := by
   obtain rfl | hs' := s.eq_empty_or_nonempty
   exacts [ha.trans_eq sInf_empty.symm, le_csInf hs' hs]
 
-/-- As `⨅ i, f i = 0` when `f` is the empty function or unbounded above,
-it suffices to show that all values of `f` are at least some nonnegative number `a` to show that
-`a ≤ ⨅ i, f i`. -/
+/-- As `⨅ i, f i = 0` when `f` is the empty function, it suffices to show that all values of `f`
+are at least some nonnegative number `a` to show that `a ≤ ⨅ i, f i`. -/
 protected lemma le_iInf (hf : ∀ i, a ≤ f i) (ha : a ≤ 0) : a ≤ ⨅ i, f i :=
   Real.le_sInf (Set.forall_mem_range.2 hf) ha
 
-/-- As `sSup s = 0` when `s` is a set of reals that's either empty or unbounded above,
+/-- As `sSup s = 0` when `s` is an empty set of reals,
 it suffices to show that all elements of `s` are nonpositive to show that `sSup s ≤ 0`. -/
 lemma sSup_nonpos (hs : ∀ x ∈ s, x ≤ 0) : sSup s ≤ 0 := Real.sSup_le hs le_rfl
 
-/-- As `⨆ i, f i = 0` when `f` is the empty function or unbounded above,
+/-- As `⨆ i, f i = 0` when `f` is the empty function,
 it suffices to show that all values of `f` are nonpositive to show that `⨆ i, f i ≤ 0`. -/
 lemma iSup_nonpos (hf : ∀ i, f i ≤ 0) : ⨆ i, f i ≤ 0 := Real.iSup_le hf le_rfl
 
-/-- As `sInf s = 0` when `s` is a set of reals that's either empty or unbounded below,
+/-- As `sInf s = 0` when `s` is an empty set of reals,
 it suffices to show that all elements of `s` are nonnegative to show that `0 ≤ sInf s`. -/
 lemma sInf_nonneg (hs : ∀ x ∈ s, 0 ≤ x) : 0 ≤ sInf s := Real.le_sInf hs le_rfl
 
-/-- As `⨅ i, f i = 0` when `f` is the empty function or unbounded below,
+/-- As `⨅ i, f i = 0` when `f` is the empty function,
 it suffices to show that all values of `f` are nonnegative to show that `0 ≤ ⨅ i, f i`. -/
 lemma iInf_nonneg (hf : ∀ i, 0 ≤ f i) : 0 ≤ iInf f := Real.le_iInf hf le_rfl
 
