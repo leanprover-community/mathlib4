@@ -220,7 +220,7 @@ theorem separableClosure.eq_top_iff : separableClosure F E = ⊤ ↔ Algebra.IsS
 `separableClosure E K`. -/
 theorem separableClosure.le_restrictScalars [Algebra E K] [IsScalarTower F E K] :
     separableClosure F K ≤ (separableClosure E K).restrictScalars F :=
-  fun _ h ↦ IsSeparable.tower_top E h
+  fun _ ↦ IsSeparable.tower_top E
 
 /-- If `K / E / F` is a field extension tower, such that `E / F` is separable, then
 `separableClosure F K` is equal to `separableClosure E K`. -/
