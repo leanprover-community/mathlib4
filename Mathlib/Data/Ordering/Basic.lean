@@ -19,7 +19,7 @@ namespace Ordering
 
 variable {α : Type*}
 
-@[deprecated] alias orElse := «then»
+@[deprecated (since := "2024-09-13")] alias orElse := «then»
 
 /-- `Compares o a b` means that `a` and `b` have the ordering relation `o` between them, assuming
 that the relation `a < b` is defined. -/
@@ -30,7 +30,7 @@ def Compares [LT α] : Ordering → α → α → Prop
   | eq, a, b => a = b
   | gt, a, b => a > b
 
-@[deprecated] alias toRel := Compares
+@[deprecated (since := "2024-09-13")] alias toRel := Compares
 
 @[simp] lemma compares_lt [LT α] (a b : α) : Compares lt a b = (a < b) := rfl
 
