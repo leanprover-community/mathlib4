@@ -848,8 +848,18 @@ def firstDart (p : G.Walk v w) (hp : ¬ p.Nil) : G.Dart where
   snd := p.snd
   adj := p.adj_snd hp
 
+/-- The last dart of a walk. -/
+@[simps]
+def lastDart (p : G.Walk v w) (hp : ¬ p.Nil) : G.Dart where
+  fst := p.penultimate
+  snd := w
+  adj := p.adj_penultimate hp
+
 lemma edge_firstDart (p : G.Walk v w) (hp : ¬ p.Nil) :
     (p.firstDart hp).edge = s(v, p.snd) := rfl
+
+lemma edge_lastDart (p : G.Walk v w) (hp : ¬ p.Nil) :
+    (p.lastDart hp).edge = s(p.penultimate, w) := rfl
 
 variable {x y : V} -- TODO: rename to u, v, w instead?
 
