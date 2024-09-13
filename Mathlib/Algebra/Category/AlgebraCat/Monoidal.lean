@@ -58,8 +58,8 @@ instance : MonoidalCategoryStruct (AlgebraCat.{u} R) where
 noncomputable instance instMonoidalCategory : MonoidalCategory (AlgebraCat.{u} R) :=
   Monoidal.induced
     (forget₂ (AlgebraCat R) (ModuleCat R))
-    { μIso := fun X Y => LinearEquiv.toModuleIso' (LinearEquiv.refl R (TensorProduct R X Y))
-      εIso := LinearEquiv.toModuleIso' (LinearEquiv.refl R (𝟙_ (ModuleCat R)))
+    { μIso := fun X Y => Iso.refl _
+      εIso := Iso.refl _
       associator_eq := fun X Y Z => TensorProduct.ext₃ (fun x y z => rfl)
       leftUnitor_eq := fun X => TensorProduct.ext' (fun x y => rfl)
       rightUnitor_eq := fun X => TensorProduct.ext' (fun x y => rfl) }
