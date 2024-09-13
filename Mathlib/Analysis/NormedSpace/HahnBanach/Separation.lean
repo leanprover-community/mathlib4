@@ -7,6 +7,7 @@ import Mathlib.Analysis.Convex.Cone.Extension
 import Mathlib.Analysis.Convex.Gauge
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 import Mathlib.Topology.Algebra.Module.LocallyConvex
+import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Analysis.NormedSpace.Extend
 
@@ -210,10 +211,10 @@ end
 
 namespace RCLike
 
-variable [RCLike 𝕜] [Module 𝕜 E] [ContinuousSMul 𝕜 E] [IsScalarTower ℝ 𝕜 E]
+variable [RCLike 𝕜] [Module 𝕜 E] [IsScalarTower ℝ 𝕜 E]
 
 /--Real linear extension of continuous extension of `LinearMap.extendTo𝕜'` -/
-noncomputable def extendTo𝕜'ₗ : (E →L[ℝ] ℝ) →ₗ[ℝ] (E →L[𝕜] 𝕜) :=
+noncomputable def extendTo𝕜'ₗ [ContinuousConstSMul 𝕜 E]: (E →L[ℝ] ℝ) →ₗ[ℝ] (E →L[𝕜] 𝕜) :=
   letI to𝕜 (fr : (E →L[ℝ] ℝ)) : (E →L[𝕜] 𝕜) :=
     { toLinearMap := LinearMap.extendTo𝕜' fr
       cont := show Continuous fun x ↦ (fr x : 𝕜) - (I : 𝕜) * (fr ((I : 𝕜) • x) : 𝕜) by fun_prop }
@@ -223,12 +224,23 @@ noncomputable def extendTo𝕜'ₗ : (E →L[ℝ] ℝ) →ₗ[ℝ] (E →L[𝕜]
     map_smul' := by intros; ext; simp [h, real_smul_eq_coe_mul]; ring }
 
 @[simp]
-lemma re_extendTo𝕜'ₗ (g : E →L[ℝ] ℝ) (x : E) : re ((extendTo𝕜'ₗ g) x : 𝕜) = g x := by
+lemma re_extendTo𝕜'ₗ [ContinuousConstSMul 𝕜 E] (g : E →L[ℝ] ℝ) (x : E) : re ((extendTo𝕜'ₗ g) x : 𝕜)
+    = g x := by
   have h g (x : E) : extendTo𝕜'ₗ g x = ((g x : 𝕜) - (I : 𝕜) * (g ((I : 𝕜) • x) : 𝕜)) := rfl
   simp only [h , map_sub, ofReal_re, mul_re, I_re, zero_mul, ofReal_im, mul_zero,
     sub_self, sub_zero]
 
-variable [TopologicalAddGroup E] [ContinuousSMul ℝ E]
+variable [TopologicalAddGroup E] [ContinuousSMul 𝕜 E]
+
+lemma IsScalarTower.continuousSMul {M : Type*} (N : Type*) {α : Type*} [Monoid N] [SMul M N]
+    [MulAction N α] [SMul M α] [IsScalarTower M N α] [TopologicalSpace M] [TopologicalSpace N]
+    [TopologicalSpace α] [ContinuousSMul M N] [ContinuousSMul N α] : ContinuousSMul M α :=
+  { continuous_smul := by
+      suffices Continuous (fun p : M × α ↦ (p.1 • (1 : N)) • p.2) by simpa
+      fun_prop }
+
+lemma continuous_SMul_re_of_ContinuousSMul_RCLike : ContinuousSMul ℝ E :=
+  IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
 
 theorem separate_convex_open_set {s : Set E}
     (hs₀ : (0 : E) ∈ s) (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) {x₀ : E} (hx₀ : x₀ ∉ s) :
