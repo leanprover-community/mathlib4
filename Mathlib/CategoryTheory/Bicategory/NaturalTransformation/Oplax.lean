@@ -92,7 +92,7 @@ variable {a b c : B} {a' : C}
 theorem whiskerLeft_naturality_naturality (f : a' ⟶ G.obj a) {g h : a ⟶ b} (β : g ⟶ h) :
     f ◁ G.map₂ β ▷ θ.app b ≫ f ◁ θ.naturality h =
       f ◁ θ.naturality g ≫ f ◁ θ.app a ◁ H.map₂ β := by
-  simp_rw [← whiskerLeft_comp, naturality_naturality]
+  simp_rw [← Bicategory.whiskerLeft_comp, naturality_naturality]
 
 @[reassoc (attr := simp)]
 theorem whiskerRight_naturality_naturality {f g : a ⟶ b} (β : f ⟶ g) (h : G.obj b ⟶ a') :
@@ -107,7 +107,7 @@ theorem whiskerLeft_naturality_comp (f : a' ⟶ G.obj a) (g : a ⟶ b) (h : b �
         f ◁ (α_ _ _ _).hom ≫
           f ◁ G.map g ◁ θ.naturality h ≫
             f ◁ (α_ _ _ _).inv ≫ f ◁ θ.naturality g ▷ H.map h ≫ f ◁ (α_ _ _ _).hom := by
-  simp_rw [← whiskerLeft_comp, naturality_comp]
+  simp_rw [← Bicategory.whiskerLeft_comp, naturality_comp]
 
 @[reassoc (attr := simp)]
 theorem whiskerRight_naturality_comp (f : a ⟶ b) (g : b ⟶ c) (h : G.obj c ⟶ a') :
@@ -125,7 +125,7 @@ theorem whiskerRight_naturality_comp (f : a ⟶ b) (g : b ⟶ c) (h : G.obj c �
 theorem whiskerLeft_naturality_id (f : a' ⟶ G.obj a) :
     f ◁ θ.naturality (𝟙 a) ≫ f ◁ θ.app a ◁ H.mapId a =
       f ◁ G.mapId a ▷ θ.app a ≫ f ◁ (λ_ (θ.app a)).hom ≫ f ◁ (ρ_ (θ.app a)).inv := by
-  simp_rw [← whiskerLeft_comp, naturality_id]
+  simp_rw [← Bicategory.whiskerLeft_comp, naturality_id]
 
 @[reassoc (attr := simp)]
 theorem whiskerRight_naturality_id (f : G.obj a ⟶ a') :
@@ -221,7 +221,7 @@ variable (Γ : Modification η θ) {a b c : B} {a' : C}
 @[reassoc (attr := simp)]
 theorem whiskerLeft_naturality (f : a' ⟶ F.obj b) (g : b ⟶ c) :
     f ◁ F.map g ◁ Γ.app c ≫ f ◁ θ.naturality g = f ◁ η.naturality g ≫ f ◁ Γ.app b ▷ G.map g := by
-  simp_rw [← whiskerLeft_comp, naturality]
+  simp_rw [← Bicategory.whiskerLeft_comp, naturality]
 
 @[reassoc (attr := simp)]
 theorem whiskerRight_naturality (f : a ⟶ b) (g : G.obj b ⟶ a') :

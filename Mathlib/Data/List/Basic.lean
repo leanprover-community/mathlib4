@@ -718,7 +718,7 @@ theorem indexOf_eq_length {a : α} {l : List α} : indexOf a l = length l ↔ a 
   rw [cond_eq_if]
   split_ifs with h <;> simp at h
   · exact iff_of_false (by rintro ⟨⟩) fun H => H <| Or.inl h.symm
-  · simp only [Ne.symm h, false_or_iff]
+  · simp only [Ne.symm h, false_or]
     rw [← ih]
     exact succ_inj'
 
@@ -734,7 +734,7 @@ theorem indexOf_le_length {a : α} {l : List α} : indexOf a l ≤ length l := b
   · rw [if_neg h]; exact succ_le_succ ih
 
 theorem indexOf_lt_length {a} {l : List α} : indexOf a l < length l ↔ a ∈ l :=
-  ⟨fun h => Decidable.by_contradiction fun al => Nat.ne_of_lt h <| indexOf_eq_length.2 al,
+  ⟨fun h => Decidable.byContradiction fun al => Nat.ne_of_lt h <| indexOf_eq_length.2 al,
    fun al => (lt_of_le_of_ne indexOf_le_length) fun h => indexOf_eq_length.1 h al⟩
 
 theorem indexOf_append_of_mem {a : α} (h : a ∈ l₁) : indexOf a (l₁ ++ l₂) = indexOf a l₁ := by
@@ -1288,25 +1288,26 @@ section FoldlEqFoldr
 -- foldl and foldr coincide when f is commutative and associative
 variable {f : α → α → α}
 
-theorem foldl1_eq_foldr1 (hassoc : Associative f) :
+theorem foldl1_eq_foldr1 [hassoc : Std.Associative f] :
     ∀ a b l, foldl f a (l ++ [b]) = foldr f b (a :: l)
   | a, b, nil => rfl
   | a, b, c :: l => by
-    simp only [cons_append, foldl_cons, foldr_cons, foldl1_eq_foldr1 hassoc _ _ l]; rw [hassoc]
+    simp only [cons_append, foldl_cons, foldr_cons, foldl1_eq_foldr1 _ _ l]
+    rw [hassoc.assoc]
 
-theorem foldl_eq_of_comm_of_assoc (hcomm : Commutative f) (hassoc : Associative f) :
+theorem foldl_eq_of_comm_of_assoc [hcomm : Std.Commutative f] [hassoc : Std.Associative f] :
     ∀ a b l, foldl f a (b :: l) = f b (foldl f a l)
-  | a, b, nil => hcomm a b
+  | a, b, nil => hcomm.comm a b
   | a, b, c :: l => by
     simp only [foldl_cons]
-    rw [← foldl_eq_of_comm_of_assoc hcomm hassoc .., right_comm _ hcomm hassoc]; rfl
+    rw [← foldl_eq_of_comm_of_assoc .., right_comm _ hcomm.comm hassoc.assoc]; rfl
 
-theorem foldl_eq_foldr (hcomm : Commutative f) (hassoc : Associative f) :
+theorem foldl_eq_foldr [Std.Commutative f] [Std.Associative f] :
     ∀ a l, foldl f a l = foldr f a l
   | a, nil => rfl
   | a, b :: l => by
-    simp only [foldr_cons, foldl_eq_of_comm_of_assoc hcomm hassoc]
-    rw [foldl_eq_foldr hcomm hassoc a l]
+    simp only [foldr_cons, foldl_eq_of_comm_of_assoc]
+    rw [foldl_eq_foldr a l]
 
 end FoldlEqFoldr
 
@@ -2197,7 +2198,7 @@ variable {p q : α → Prop} {l : List α}
 
 @[simp]
 theorem forall_cons (p : α → Prop) (x : α) : ∀ l : List α, Forall p (x :: l) ↔ p x ∧ Forall p l
-  | [] => (and_true_iff _).symm
+  | [] => (and_iff_left_of_imp fun _ ↦ trivial).symm
   | _ :: _ => Iff.rfl
 
 theorem forall_iff_forall_mem : ∀ {l : List α}, Forall p l ↔ ∀ x ∈ l, p x

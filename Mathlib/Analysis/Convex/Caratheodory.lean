@@ -85,7 +85,7 @@ theorem mem_convexHull_erase [DecidableEq E] {t : Finset E} (h : ¬AffineIndepen
         _ ≤ 0 := by
           apply mul_nonpos_of_nonneg_of_nonpos
           · apply div_nonneg (fpos i₀ (mem_of_subset (filter_subset _ t) mem)) (le_of_lt hg)
-          · simpa only [s, mem_filter, het, true_and_iff, not_lt] using hes
+          · simpa only [s, mem_filter, het, true_and, not_lt] using hes
         _ ≤ f e := fpos e het
   · rw [Subtype.coe_mk, centerMass_eq_of_sum_1 _ id ksum]
     calc
