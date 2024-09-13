@@ -503,8 +503,7 @@ instance : @Std.Associative (Finset α) (· ○ ·) := ⟨disjSups_assoc⟩
 theorem disjSups_left_comm : s ○ (t ○ u) = t ○ (s ○ u) := by
   simp_rw [← disjSups_assoc, disjSups_comm s]
 
-theorem disjSups_right_comm : s ○ t ○ u = s ○ u ○ t := by
-  simp_rw [disjSups_assoc, disjSups_comm]
+theorem disjSups_right_comm : s ○ t ○ u = s ○ u ○ t := by simp_rw [disjSups_assoc, disjSups_comm]
 
 theorem disjSups_disjSups_disjSups_comm : s ○ t ○ (u ○ v) = s ○ u ○ (t ○ v) := by
   simp_rw [← disjSups_assoc, disjSups_right_comm]
