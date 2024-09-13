@@ -107,7 +107,7 @@ theorem measurableSet_Ici : MeasurableSet (Ici a) :=
 
 @[simp, measurability]
 theorem nullMeasurableSet_Ici : NullMeasurableSet (Ici a) μ :=
-  measurableSet_Ici.nullMeasurableSet
+  nullMeasurableSet_Ici
 
 @[simp, measurability]
 theorem measurableSet_Iic : MeasurableSet (Iic a) :=
@@ -115,7 +115,7 @@ theorem measurableSet_Iic : MeasurableSet (Iic a) :=
 
 @[simp, measurability]
 theorem nullMeasurableSet_Iic : NullMeasurableSet (Iic a) μ :=
-  measurableSet_Iic.nullMeasurableSet
+  nullMeasurableSet_Iic
 
 @[simp, measurability]
 theorem measurableSet_Icc : MeasurableSet (Icc a b) :=
@@ -123,7 +123,7 @@ theorem measurableSet_Icc : MeasurableSet (Icc a b) :=
 
 @[simp, measurability]
 theorem nullMeasurableSet_Icc : NullMeasurableSet (Icc a b) μ :=
-  measurableSet_Icc.nullMeasurableSet
+  nullMeasurableSet_Icc
 
 instance nhdsWithin_Ici_isMeasurablyGenerated : (𝓝[Ici b] a).IsMeasurablyGenerated :=
   measurableSet_Ici.nhdsWithin_isMeasurablyGenerated _
