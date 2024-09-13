@@ -156,23 +156,40 @@ def extendLeft (c : OrderedFinpartition n) : OrderedFinpartition (n + 1) :=
     disjoint := sorry
     cover := sorry }
 
+/-- Extend an ordered partition of `n` entries, by adding to the `i`-th part a new point to the
+left. -/
 def extendMiddle (c : OrderedFinpartition n) (i : Fin c.length) : OrderedFinpartition (n + 1) :=
   { length := c.length
     partSize := update c.partSize i (c.partSize i + 1)
     partSize_pos := sorry
     emb := by
       intro m
-      by cases h : m = i
-      · simp [h]
-      · sorry
+      by_cases h : m = i
+      · have : update c.partSize i (c.partSize i + 1) m = c.partSize i + 1 := by
+          rw [h]; simp
+        exact (Fin.cases 0 (Fin.succ ∘ (c.emb i))) ∘ (Fin.cast this)
+      · have : update c.partSize i (c.partSize i + 1) m = c.partSize m := by simp [h]
+        exact Fin.succ ∘ (c.emb m) ∘ (Fin.cast this)
     emb_strictMono := sorry
     parts_strictMono := sorry
     disjoint := sorry
     cover := sorry }
 
+/-- Extend an ordered partition of `n` entries, by adding singleton to the left or appending it
+to one of the existing part. -/
+def extend (c : OrderedFinpartition n) (i : Option (Fin c.length)) : OrderedFinpartition (n + 1) :=
+  match i with
+  | none => c.extendLeft
+  | some i => c.extendMiddle i
 
-
-#exit
+/-- Extending the ordered partitions of `Fin n` bijects with the ordered partitions
+of `Fin (n+1)`. -/
+def extendEquiv (n : ℕ) :
+     ((i : OrderedFinpartition n) × Option (Fin i.length)) ≃ OrderedFinpartition (n + 1) :=
+  { toFun := fun p ↦ p.1.extend p.2
+    invFun := sorry
+    left_inv := sorry
+    right_inv := sorry }
 
 /-- Given a formal multilinear series `p`, an ordered partition `c` of `n` and the index `i` of a
 block of `c`, we may define a function on `Fin n → E` by picking the variables in the `i`-th block
@@ -351,6 +368,35 @@ theorem faaDiBruno {n : ℕ∞} {g : F → G} {f : E → F}
   · intro x hx
     simp [FormalMultilinearSeries.taylorComp, default, HasFTaylorSeriesUpToOn.zero_eq' hg (h hx)]
   · intro m hm x hx
+    have A (c : OrderedFinpartition m) :
+      HasFDerivWithinAt (fun x ↦ (q (f x)).compAlongOrderedFinpartition (p x) c)
+        (∑ i : Option (Fin c.length),
+          ((q (f x)).compAlongOrderedFinpartition (p x) (c.extend i)).curryLeft) s x := by
+      let B := c.compAlongOrderedFinpartitionL 𝕜 E F G
+      change HasFDerivWithinAt ((fun p ↦ B p.1 p.2)
+          ∘ (fun y ↦ (q (f y) c.length, fun i ↦ p y (c.partSize i))))
+        (∑ i : Option (Fin c.length),
+          ((q (f x)).compAlongOrderedFinpartition (p x) (c.extend i)).curryLeft) s x
+
+
+#exit
+
+    have B : HasFDerivWithinAt (fun x ↦ (q (f x)).taylorComp (p x) m)
+        (∑ c : OrderedFinpartition m, ∑ i : Option (Fin c.length),
+          ((q (f x)).compAlongOrderedFinpartition (p x) (c.extend i)).curryLeft) s x :=
+      HasFDerivWithinAt.sum (fun c hc ↦ A c)
+    suffices ∑ c : OrderedFinpartition m, ∑ i : Option (Fin c.length),
+          ((q (f x)).compAlongOrderedFinpartition (p x) (c.extend i)) =
+        (q (f x)).taylorComp (p x) (m + 1) by
+      rw [← this]
+      convert B
+      ext v
+      simp only [Nat.succ_eq_add_one, Fintype.sum_option, ContinuousMultilinearMap.curryLeft_apply,
+        ContinuousMultilinearMap.sum_apply, ContinuousMultilinearMap.add_apply,
+        FormalMultilinearSeries.compAlongOrderedFinpartition_apply, ContinuousLinearMap.coe_sum',
+        Finset.sum_apply, ContinuousLinearMap.add_apply]
+    rw [Finset.sum_sigma']
+    exact Fintype.sum_equiv (OrderedFinpartition.extendEquiv m) _ _ (fun p ↦ rfl)
 
   · intro m hm
     apply continuousOn_finset_sum _ (fun c hc ↦ ?_)

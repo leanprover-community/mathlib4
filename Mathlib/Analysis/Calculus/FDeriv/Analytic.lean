@@ -9,6 +9,7 @@ import Mathlib.Analysis.Analytic.Within
 import Mathlib.Analysis.Calculus.Deriv.Basic
 import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
 import Mathlib.Analysis.Calculus.FDeriv.Add
+import Mathlib.Analysis.Calculus.FDeriv.Prod
 
 /-!
 # Frechet derivatives of analytic functions.
@@ -363,6 +364,34 @@ protected theorem hasFDerivAt [DecidableEq ι] : HasFDerivAt f (f.linearDeriv x)
   rw [← changeOrigin_toFormalMultilinearSeries]
   convert f.hasFiniteFPowerSeriesOnBall.hasFDerivAt (y := x) ENNReal.coe_lt_top
   rw [zero_add]
+
+#check hasFDerivAt_pi
+
+
+lemma foo {E F G 𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+    (A A' : (E →L[𝕜] F)) (B : G →L[𝕜] E) : (A + A') ∘L B = A ∘L B + A' ∘L B := by
+  exact?
+
+
+
+theorem hasFDerivAt_comp [DecidableEq ι] {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+    (g : ∀ i, G → E i) (g' : ∀ i, G →L[𝕜] E i) (x : G)
+    (hg : ∀ i, HasFDerivAt (g i) (g' i) x) :
+    HasFDerivAt (fun x ↦ f (fun i ↦ g i x))
+      ((∑ i : ι, (f.toContinuousLinearMap (fun j ↦ g j x) i) ∘L (g' i))) x := by
+  have Z := (f.hasFDerivAt (fun j ↦ g j x)).comp x (hasFDerivAt_pi.2 hg)
+  simp [linearDeriv] at Z
+  convert Z
+  simp [sum_comp]
+
+
+
+--  HasFDerivAt
+
+
+#exit
+
 
 /-- Technical lemma used in the proof of `hasFTaylorSeriesUpTo_iteratedFDeriv`, to compare sums
 over embedding of `Fin k` and `Fin (k + 1)`. -/
