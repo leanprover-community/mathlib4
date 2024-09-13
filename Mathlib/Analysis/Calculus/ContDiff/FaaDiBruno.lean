@@ -24,6 +24,7 @@ variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type uE} [NormedAdd
 
 /-- A partition of `Fin n` into finitely many nonempty subsets, given by the increasing
 parameterization of these subsets. We order the subsets by increasing greatest element. -/
+@[ext]
 structure OrderedFinpartition (n : ℕ) where
   /-- The number of parts in the partition -/
   length : ℕ
@@ -34,7 +35,7 @@ structure OrderedFinpartition (n : ℕ) where
   emb : ∀ m, (Fin (partSize m)) → Fin n
   emb_strictMono : ∀ m, StrictMono (emb m)
   /-- The parts are ordered by increasing greatest element. -/
-  parts_mono :
+  parts_strictMono :
     StrictMono (fun m ↦ emb m ⟨partSize m - 1, Nat.sub_one_lt_of_lt (partSize_pos m)⟩)
   /-- The parts are disjoint -/
   disjoint : PairwiseDisjoint univ (fun m ↦ range (emb m))
@@ -43,9 +44,53 @@ structure OrderedFinpartition (n : ℕ) where
 
 namespace OrderedFinpartition
 
+/-- The ordered finpartition of `Fin n` into singletons. -/
+@[simps] def atomic (n : ℕ) : OrderedFinpartition n where
+  length := n
+  partSize _ :=  1
+  partSize_pos _ := _root_.zero_lt_one
+  emb m _ := m
+  emb_strictMono _ := Subsingleton.strictMono _
+  parts_strictMono := strictMono_id
+  disjoint _ _ _ _ h := by simpa using h
+  cover := eq_univ_of_forall (fun m ↦ by simp)
+
 variable {n : ℕ} (c : OrderedFinpartition n)
 
-instance : Fintype (OrderedFinpartition n) := sorry
+instance : Inhabited (OrderedFinpartition n) := ⟨atomic n⟩
+
+lemma length_le : c.length ≤ n := by
+  simpa only [Fintype.card_fin] using Fintype.card_le_of_injective _ c.parts_strictMono.injective
+
+lemma partSize_le (m : Fin c.length) : c.partSize m ≤ n := by
+  simpa only [Fintype.card_fin] using Fintype.card_le_of_injective _ (c.emb_strictMono m).injective
+
+/-- Embedding of ordered finpartitions in a sigma type. The sigma type on the right is quite big,
+but this is enough to get finiteness of ordered finpartitions. -/
+def embSigma (n : ℕ) : OrderedFinpartition n →
+    (Σ (l : Fin (n + 1)), Σ (p : Fin l → Fin (n + 1)), Π (i : Fin l), (Fin (p i) → Fin n)) :=
+  fun c ↦ ⟨⟨c.length, Order.lt_add_one_iff.mpr c.length_le⟩,
+    fun m ↦ ⟨c.partSize m, Order.lt_add_one_iff.mpr (c.partSize_le m)⟩, fun j ↦ c.emb j⟩
+
+lemma injective_embSigma (n : ℕ) : Injective (embSigma n) := by
+  rintro ⟨plength, psize, -, pemb, -, -, -, -⟩ ⟨qlength, qsize, -, qemb, -, -, -, -⟩
+  intro hpq
+  simp_all only [Sigma.mk.inj_iff, heq_eq_eq, true_and, mk.injEq, and_true, Fin.mk.injEq, embSigma]
+  have : plength = qlength := hpq.1
+  subst this
+  simp_all only [Sigma.mk.inj_iff, heq_eq_eq, true_and, mk.injEq, and_true, Fin.mk.injEq, embSigma]
+  ext i
+  exact mk.inj_iff.mp (congr_fun hpq.1 i)
+
+/- The best proof would probably to establish the bijection with Finpartitions, but we opt
+for a direct argument, embedding `OrderedPartition n` in a type which is obviously finite. -/
+noncomputable instance : Fintype (OrderedFinpartition n) :=
+  Fintype.ofInjective _ (injective_embSigma n)
+
+instance : Unique (OrderedFinpartition 0) := by
+  have : Subsingleton (OrderedFinpartition 0) :=
+    Fintype.card_le_one_iff_subsingleton.mp (Fintype.card_le_of_injective _ (injective_embSigma 0))
+  exact Unique.mk' (OrderedFinpartition 0)
 
 lemma exists_inverse {n : ℕ} (c : OrderedFinpartition n) (j : Fin n) :
     ∃ p : Σ m, Fin (c.partSize m), c.emb p.1 p.2 = j := by
@@ -240,20 +285,35 @@ the iterated derivatives of `g` and of `f`.
 Not to be confused with another notion of composition for formal multilinear series, called just
 `FormalMultilinearSeries.comp`, appearing in the composition of analytic functions.
 -/
-protected def taylorComp (q : FormalMultilinearSeries 𝕜 F G) (p : FormalMultilinearSeries 𝕜 E F) :
+protected noncomputable def taylorComp
+    (q : FormalMultilinearSeries 𝕜 F G) (p : FormalMultilinearSeries 𝕜 E F) :
     FormalMultilinearSeries 𝕜 E G :=
   fun n ↦ ∑ c : OrderedFinpartition n, q.compAlongOrderedFinpartition p c
 
 end FormalMultilinearSeries
 
-theorem blou {ι : Type*} [Fintype ι] {F : ι → Type*} [∀ i, NormedAddCommGroup (F i)]
-  [∀ i, NormedSpace 𝕜 (F i)] (B : E →L[𝕜] (ContinuousMultilinearMap 𝕜 F G))
-  {s : Set (E × (Π i, F i))} :
-  AnalyticOn 𝕜 (fun (p : (E × (Π i, F i))) ↦ B p.1 p.2) s := sorry
-
 theorem faaDiBruno {n : ℕ∞} {g : F → G} {f : E → F}
     (hg : HasFTaylorSeriesUpToOn n g q t) (hf : HasFTaylorSeriesUpToOn n f p s) (h : MapsTo f s t) :
-    HasFTaylorSeriesUpToOn n (g ∘ f) (fun x ↦ (q (f x)).taylorComp (p x)) s := sorry
+    HasFTaylorSeriesUpToOn n (g ∘ f) (fun x ↦ (q (f x)).taylorComp (p x)) s := by
+  constructor
+  · intro x hx
+    simp [FormalMultilinearSeries.taylorComp, default, HasFTaylorSeriesUpToOn.zero_eq' hg (h hx)]
+  · sorry
+  · intro m hm
+    apply continuousOn_finset_sum _ (fun c hc ↦ ?_)
+    let B := c.compAlongOrderedFinpartitionL 𝕜 E F G
+    --change ContinuousOn
+    --  ((fun p ↦ B p.1 p.2) ∘ (fun x ↦ (q (f x) c.length, fun m ↦ p x (c.partSize m)))) s
+    apply B.continuousOn_uncurry_of_multilinear.comp₂
+
+
+
+
+
+
+
+
+#exit
 
 theorem analyticWithinOn_taylorComp
     (hq : ∀ (n : ℕ), AnalyticWithinOn 𝕜 (fun x ↦ q x n) t)
@@ -264,7 +324,7 @@ theorem analyticWithinOn_taylorComp
   let B := c.compAlongOrderedFinpartitionL 𝕜 E F G
   change AnalyticWithinOn 𝕜
     ((fun p ↦ B p.1 p.2) ∘ (fun x ↦ (q (f x) c.length, fun m ↦ p x (c.partSize m)))) s
-  apply (blou B).comp_analyticWithinOn ?_ (mapsTo_univ _ _)
+  apply B.analyticOn_uncurry_of_multilinear.comp_analyticWithinOn ?_ (mapsTo_univ _ _)
   apply AnalyticWithinOn.prod
   · exact (hq c.length).comp hf h
   · exact AnalyticWithinOn.pi (fun i ↦ hp _)
