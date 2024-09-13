@@ -612,11 +612,17 @@ lemma iSup_genEigenspace_eq (f : End R M) (μ : R) :
   simp only [iSup_subtype, le_top, iSup_pos]
   rfl
 
-lemma mapsTo_iSup_genEigenspace_of_comm {f g : End R M} (h : Commute f g) (μ : R) :
-    MapsTo g ↑(⨆ k, f.genEigenspace μ k) ↑(⨆ k, f.genEigenspace μ k) := by
+lemma mapsTo_maxGenEigenspace_of_comm {f g : End R M} (h : Commute f g) (μ : R) :
+    MapsTo g ↑(f.maxGenEigenspace μ) ↑(f.maxGenEigenspace μ) := by
+  rw [maxGenEigenspace_def]
   simp only [MapsTo, Submodule.coe_iSup_of_chain, mem_iUnion, SetLike.mem_coe]
   rintro x ⟨k, hk⟩
   exact ⟨k, f.mapsTo_genEigenspace_of_comm h μ k hk⟩
+
+lemma mapsTo_iSup_genEigenspace_of_comm {f g : End R M} (h : Commute f g) (μ : R) :
+    MapsTo g ↑(⨆ k, f.genEigenspace μ k) ↑(⨆ k, f.genEigenspace μ k) := by
+  rw [← maxGenEigenspace_def]
+  apply mapsTo_maxGenEigenspace_of_comm h
 
 /-- The restriction of `f - μ • 1` to the `k`-fold generalized `μ`-eigenspace is nilpotent. -/
 lemma isNilpotent_restrict_sub_algebraMap (f : End R M) (μ : R) (k : ℕ)
@@ -625,6 +631,17 @@ lemma isNilpotent_restrict_sub_algebraMap (f : End R M) (μ : R) (k : ℕ)
       mapsTo_genEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f μ) μ k) :
     IsNilpotent ((f - algebraMap R (End R M) μ).restrict h) :=
   isNilpotent_restrict_unifEigenspace_nat _ _ _
+
+/-- The restriction of `f - μ • 1` to the generalized `μ`-eigenspace is nilpotent. -/
+lemma isNilpotent_restrict_maxGenEigenspace_sub_algebraMap [IsNoetherian R M] (f : End R M) (μ : R)
+    (h : MapsTo (f - algebraMap R (End R M) μ)
+      ↑(f.maxGenEigenspace μ) ↑(f.maxGenEigenspace μ) :=
+      mapsTo_maxGenEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f μ) μ) :
+    IsNilpotent ((f - algebraMap R (End R M) μ).restrict h) := by
+  apply isNilpotent_restrict_of_le (q := f.unifEigenspace μ (maxUnifEigenspaceIndex f μ))
+    _ (isNilpotent_restrict_unifEigenspace_nat f μ (maxUnifEigenspaceIndex f μ))
+  rw [maxGenEigenspace_eq]
+  exact le_rfl
 
 /-- The restriction of `f - μ • 1` to the generalized `μ`-eigenspace is nilpotent. -/
 lemma isNilpotent_restrict_iSup_sub_algebraMap [IsNoetherian R M] (f : End R M) (μ : R)
@@ -687,9 +704,10 @@ lemma injOn_genEigenspace [NoZeroSMulDivisors R M] (f : End R M) :
   apply hμ₂
   simpa only [hμ₁₂, disjoint_self] using f.disjoint_iSup_genEigenspace contra
 
-theorem independent_genEigenspace [NoZeroSMulDivisors R M] (f : End R M) :
-    CompleteLattice.Independent (fun μ ↦ ⨆ k, f.genEigenspace μ k) := by
+theorem independent_maxGenEigenspace [NoZeroSMulDivisors R M] (f : End R M) :
+    CompleteLattice.Independent (fun μ ↦ f.maxGenEigenspace μ) := by
   classical
+  simp_rw [maxGenEigenspace_def]
   suffices ∀ μ (s : Finset R), μ ∉ s → Disjoint (⨆ k, f.genEigenspace μ k)
       (s.sup fun μ ↦ ⨆ k, f.genEigenspace μ k) by
     simp_rw [CompleteLattice.independent_iff_supIndep_of_injOn f.injOn_genEigenspace,
@@ -725,6 +743,11 @@ theorem independent_genEigenspace [NoZeroSMulDivisors R M] (f : End R M) :
   rw [ih.eq_bot, Submodule.mem_bot] at hyz
   simp_rw [Submodule.mem_iSup_of_chain, mem_genEigenspace]
   exact ⟨k, hyz⟩
+
+theorem independent_genEigenspace [NoZeroSMulDivisors R M] (f : End R M) :
+    CompleteLattice.Independent (fun μ ↦ ⨆ k, f.genEigenspace μ k) := by
+  simp_rw [← maxGenEigenspace_def]
+  apply independent_maxGenEigenspace
 
 /-- The eigenspaces of a linear operator form an independent family of subspaces of `M`.  That is,
 any eigenspace has trivial intersection with the span of all the other eigenspaces. -/

@@ -122,6 +122,35 @@ lemma trace_comp_eq_zero_of_commute_of_trace_restrict_eq_zero
   rw [restrict_comp, trace_comp_eq_mul_of_commute_of_isNilpotent μ h_comm
     (f.isNilpotent_restrict_iSup_sub_algebraMap μ), hg, mul_zero]
 
+/-- If `f` and `g` are commuting endomorphisms of a finite, free `R`-module `M`, such that `f`
+is triangularizable, then to prove that the trace of `g ∘ f` vanishes, it is sufficient to prove
+that the trace of `g` vanishes on each generalized eigenspace of `f`. -/
+lemma trace_comp_eq_zero_of_commute_of_trace_restrict_eq_zero'
+    [IsDomain R] [IsPrincipalIdealRing R] [Module.Free R M] [Module.Finite R M]
+    {f g : Module.End R M}
+    (h_comm : Commute f g)
+    (hf : ⨆ μ, f.maxGenEigenspace μ = ⊤)
+    (hg : ∀ μ, trace R _ (g.restrict (f.mapsTo_maxGenEigenspace_of_comm h_comm μ)) = 0) :
+    trace R _ (g ∘ₗ f) = 0 := by
+  have hfg : ∀ μ,
+      MapsTo (g ∘ₗ f) ↑(f.maxGenEigenspace μ) ↑(f.maxGenEigenspace μ) :=
+    fun μ ↦ (f.mapsTo_maxGenEigenspace_of_comm h_comm μ).comp
+      (f.mapsTo_maxGenEigenspace_of_comm rfl μ)
+  suffices ∀ μ, trace R _ ((g ∘ₗ f).restrict (hfg μ)) = 0 by
+    classical
+    have hds := DirectSum.isInternal_submodule_of_independent_of_iSup_eq_top
+      f.independent_maxGenEigenspace hf
+    have h_fin : {μ | f.maxGenEigenspace μ ≠ ⊥}.Finite :=
+      CompleteLattice.WellFounded.finite_ne_bot_of_independent IsWellFounded.wf
+        f.independent_maxGenEigenspace
+    simp [trace_eq_sum_trace_restrict' hds h_fin hfg, this]
+  intro μ
+  replace h_comm : Commute (g.restrict (f.mapsTo_maxGenEigenspace_of_comm h_comm μ))
+      (f.restrict (f.mapsTo_maxGenEigenspace_of_comm rfl μ)) :=
+    restrict_commute h_comm.symm _ _
+  rw [restrict_comp, trace_comp_eq_mul_of_commute_of_isNilpotent μ h_comm
+    (f.isNilpotent_restrict_maxGenEigenspace_sub_algebraMap μ), hg, mul_zero]
+
 lemma mapsTo_biSup_of_mapsTo {ι : Type*} {N : ι → Submodule R M}
     (s : Set ι) {f : Module.End R M} (hf : ∀ i, MapsTo f (N i) (N i)) :
     MapsTo f ↑(⨆ i ∈ s, N i) ↑(⨆ i ∈ s, N i) := by
