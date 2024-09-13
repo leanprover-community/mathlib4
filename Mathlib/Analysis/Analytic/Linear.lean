@@ -9,7 +9,10 @@ import Mathlib.Analysis.Analytic.Basic
 # Linear functions are analytic
 
 In this file we prove that a `ContinuousLinearMap` defines an analytic function with
-the formal power series `f x = f a + f (x - a)`. We also prove similar results for multilinear maps.
+the formal power series `f x = f a + f (x - a)`. We also prove similar results for bilinear maps.
+
+TODO: port to use `CPolynomial`, and prove the stronger result that continuous linear maps are
+continuously polynomial
 -/
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
@@ -124,32 +127,48 @@ protected theorem analyticOn_bilinear (f : E →L[𝕜] F →L[𝕜] G) (s : Set
 
 end ContinuousLinearMap
 
-variable (𝕜)
+variable {s : Set E} {z : E} {t : Set (E × F)} {p : E × F}
 
-lemma analyticAt_id (z : E) : AnalyticAt 𝕜 (id : E → E) z :=
+lemma analyticAt_id : AnalyticAt 𝕜 (id : E → E) z :=
   (ContinuousLinearMap.id 𝕜 E).analyticAt z
 
+lemma analyticWithinAt_id : AnalyticWithinAt 𝕜 (id : E → E) s z :=
+  analyticAt_id.analyticWithinAt
+
 /-- `id` is entire -/
-theorem analyticOn_id {s : Set E} : AnalyticOn 𝕜 (fun x : E ↦ x) s :=
-  fun _ _ ↦ analyticAt_id _ _
+theorem analyticOn_id : AnalyticOn 𝕜 (fun x : E ↦ x) s :=
+  fun _ _ ↦ analyticAt_id
+
+theorem analyticWithinOn_id : AnalyticWithinOn 𝕜 (fun x : E ↦ x) s :=
+  fun _ _ ↦ analyticWithinAt_id
 
 /-- `fst` is analytic -/
-theorem analyticAt_fst {p : E × F} : AnalyticAt 𝕜 (fun p : E × F ↦ p.fst) p :=
+theorem analyticAt_fst  : AnalyticAt 𝕜 (fun p : E × F ↦ p.fst) p :=
   (ContinuousLinearMap.fst 𝕜 E F).analyticAt p
 
+theorem analyticWithinAt_fst  : AnalyticWithinAt 𝕜 (fun p : E × F ↦ p.fst) t p :=
+  analyticAt_fst.analyticWithinAt
+
 /-- `snd` is analytic -/
-theorem analyticAt_snd {p : E × F} : AnalyticAt 𝕜 (fun p : E × F ↦ p.snd) p :=
+theorem analyticAt_snd : AnalyticAt 𝕜 (fun p : E × F ↦ p.snd) p :=
   (ContinuousLinearMap.snd 𝕜 E F).analyticAt p
 
+theorem analyticWithinAt_snd : AnalyticWithinAt 𝕜 (fun p : E × F ↦ p.snd) t p :=
+  analyticAt_snd.analyticWithinAt
+
 /-- `fst` is entire -/
-theorem analyticOn_fst {s : Set (E × F)} : AnalyticOn 𝕜 (fun p : E × F ↦ p.fst) s :=
-  fun _ _ ↦ analyticAt_fst _
+theorem analyticOn_fst : AnalyticOn 𝕜 (fun p : E × F ↦ p.fst) t :=
+  fun _ _ ↦ analyticAt_fst
+
+theorem analyticWithinOn_fst : AnalyticWithinOn 𝕜 (fun p : E × F ↦ p.fst) t :=
+  fun _ _ ↦ analyticWithinAt_fst
 
 /-- `snd` is entire -/
-theorem analyticOn_snd {s : Set (E × F)} : AnalyticOn 𝕜 (fun p : E × F ↦ p.snd) s :=
-  fun _ _ ↦ analyticAt_snd _
+theorem analyticOn_snd : AnalyticOn 𝕜 (fun p : E × F ↦ p.snd) t :=
+  fun _ _ ↦ analyticAt_snd
 
-variable {𝕜}
+theorem analyticWithinOn_snd : AnalyticWithinOn 𝕜 (fun p : E × F ↦ p.snd) t :=
+  fun _ _ ↦ analyticWithinAt_snd
 
 namespace ContinuousLinearEquiv
 
