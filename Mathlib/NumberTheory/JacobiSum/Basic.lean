@@ -174,3 +174,52 @@ theorem jacobiSum_mul_nontrivial {χ φ : MulChar F R} (h : χ * φ ≠ 1) (ψ :
     (χ * φ).map_zero, zero_mul, add_zero]
 
 end FiniteField
+
+section field_field
+
+variable {F F' : Type*} [Fintype F] [DecidableEq F] [Field F] [Field F']
+
+/-- If `χ` and `φ` are multiplicative characters on a finite field `F` with values
+in another field `F'` and such that `χφ` is nontrivial, then `J(χ,φ) = g(χ) * g(φ) / g(χφ)`. -/
+theorem jacobiSum_eq_gaussSum_mul_gaussSum_div_gaussSum (h : (Fintype.card F : F') ≠ 0)
+    {χ φ : MulChar F F'} (hχφ : χ * φ ≠ 1) {ψ : AddChar F F'} (hψ : ψ.IsPrimitive) :
+    jacobiSum χ φ = gaussSum χ ψ * gaussSum φ ψ / gaussSum (χ * φ) ψ := by
+  rw [eq_div_iff <| gaussSum_ne_zero_of_nontrivial h hχφ hψ, mul_comm]
+  exact jacobiSum_mul_nontrivial hχφ ψ
+
+open AddChar MulChar in
+/-- If `χ` and `φ` are multiplicative characters on a finite field `F` with values in another
+field `F'` such that `χ`, `φ` and `χφ` are all nontrivial and `char F' ≠ char F`, then
+`J(χ,φ) * J(χ⁻¹,φ⁻¹) = #F` (in `F'`). -/
+lemma jacobiSum_mul_jacobiSum_inv (h : ringChar F' ≠ ringChar F) {χ φ : MulChar F F'} (hχ : χ ≠ 1)
+    (hφ : φ ≠ 1) (hχφ : χ * φ ≠ 1) :
+    jacobiSum χ φ * jacobiSum χ⁻¹ φ⁻¹ = Fintype.card F := by
+  obtain ⟨n, hp, hc⟩ := FiniteField.card F (ringChar F)
+  let ψ := FiniteField.primitiveChar F F' h   -- obtain primitive additive character `ψ : F → FF'`
+  let FF' := CyclotomicField ψ.n F'           -- the target field of `ψ`
+  let χ' := χ.ringHomComp (algebraMap F' FF') -- consider `χ` and `φ` as characters `F → FF'`
+  let φ' := φ.ringHomComp (algebraMap F' FF')
+  have hinj := (algebraMap F' FF').injective
+  apply hinj
+  rw [map_mul, ← jacobiSum_ringHomComp, ← jacobiSum_ringHomComp]
+  have Hχφ : χ' * φ' ≠ 1 := by
+    rw [← ringHomComp_mul]
+    exact (MulChar.ringHomComp_ne_one_iff hinj).mpr hχφ
+  have Hχφ' : χ'⁻¹ * φ'⁻¹ ≠ 1 := by
+    rwa [← mul_inv, inv_ne_one]
+  have Hχ : χ' ≠ 1 := (MulChar.ringHomComp_ne_one_iff hinj).mpr hχ
+  have Hφ : φ' ≠ 1 := (MulChar.ringHomComp_ne_one_iff hinj).mpr hφ
+  have Hcard : (Fintype.card F : FF') ≠ 0 := by
+    intro H
+    simp only [hc, Nat.cast_pow, ne_eq, PNat.ne_zero, not_false_eq_true, pow_eq_zero_iff] at H
+    exact h <| (Algebra.ringChar_eq F' FF').trans <| CharP.ringChar_of_prime_eq_zero hp H
+  have H := (gaussSum_mul_gaussSum_eq_card Hχφ ψ.prim).trans_ne Hcard
+  apply_fun (gaussSum (χ' * φ') ψ.char * gaussSum (χ' * φ')⁻¹ ψ.char⁻¹ * ·)
+    using mul_right_injective₀ H
+  simp only
+  rw [mul_mul_mul_comm, jacobiSum_mul_nontrivial Hχφ, mul_inv, ← ringHomComp_inv,
+    ← ringHomComp_inv, jacobiSum_mul_nontrivial Hχφ', map_natCast, ← mul_mul_mul_comm,
+    gaussSum_mul_gaussSum_eq_card Hχ ψ.prim, gaussSum_mul_gaussSum_eq_card Hφ ψ.prim,
+    ← mul_inv, gaussSum_mul_gaussSum_eq_card Hχφ ψ.prim]
+
+end field_field
