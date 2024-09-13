@@ -20,7 +20,7 @@ open CategoryTheory
 /-- The category of finite groups -/
 @[pp_with_univ]
 structure FiniteGrp where
-  /--A group that is finite-/
+  /-- A group that is finite-/
   toGrp : Grp
   [isFinite : Finite toGrp]
 
