@@ -263,10 +263,43 @@ end zero_one
 
 instance nonUnitalNonAssocSemiring [Fintype n] [NonUnitalNonAssocSemiring A] :
     NonUnitalNonAssocSemiring (CStarMatrix n n A) where
-  left_distrib := by sorry
-  right_distrib := by sorry
-  zero_mul := by sorry
-  mul_zero := by sorry
+  left_distrib := left_distrib (R := Matrix n n A)
+  right_distrib := right_distrib (R := Matrix n n A)
+  zero_mul := zero_mul (M₀ := Matrix n n A)
+  mul_zero := mul_zero (M₀ := Matrix n n A)
+
+instance nonUnitalNonAssocRing [Fintype n] [NonUnitalNonAssocRing A] :
+    NonUnitalNonAssocRing (CStarMatrix n n A) where
+  left_distrib := left_distrib (R := Matrix n n A)
+  right_distrib := right_distrib (R := Matrix n n A)
+  zero_mul := zero_mul (M₀ := Matrix n n A)
+  mul_zero := mul_zero (M₀ := Matrix n n A)
+
+instance nonUnitalSemiring [Fintype n] [NonUnitalSemiring A] :
+    NonUnitalSemiring (CStarMatrix n n A) where
+  mul_assoc := mul_assoc (G := Matrix n n A)
+
+instance nonAssocSemiring [Fintype n] [DecidableEq n] [NonAssocSemiring A] :
+    NonAssocSemiring (CStarMatrix n n A) where
+  one_mul := one_mul (M := Matrix n n A)
+  mul_one := mul_one (M := Matrix n n A)
+
+instance nonUnitalRing [Fintype n] [NonUnitalRing A] :
+    NonUnitalRing (CStarMatrix n n A) where
+  mul_assoc := mul_assoc (G := Matrix n n A)
+
+instance nonAssocRing [Fintype n] [DecidableEq n] [NonAssocRing A] :
+    NonAssocRing (CStarMatrix n n A) where
+  one_mul := one_mul (M := Matrix n n A)
+  mul_one := mul_one (M := Matrix n n A)
+
+instance semiring [Fintype n] [DecidableEq n] [Semiring A] :
+    Semiring (CStarMatrix n n A) where
+  one_mul := one_mul (M := Matrix n n A)
+  mul_one := mul_one (M := Matrix n n A)
+
+instance ring [Fintype n] [DecidableEq n] [Ring A] : Ring (CStarMatrix n n A) :=
+  { semiring, instAddCommGroupWithOne with }
 
 end basic
 
