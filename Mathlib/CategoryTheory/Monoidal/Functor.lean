@@ -367,8 +367,9 @@ theorem map_whiskerRight {X Y : C} (f : X ⟶ Y) (Z : C) :
 
 @[reassoc]
 theorem map_associator (X Y Z : C) :
-    F.map (α_ X Y Z).hom = inv (F.μ (X ⊗ Y) Z) ≫ inv (F.μ X Y) ▷ F.obj Z ≫
-      (α_ (F.obj X) (F.obj Y) (F.obj Z)).hom ≫ F.obj X ◁ F.μ Y Z ≫ F.μ X (Y ⊗ Z) := by
+    F.map (α_ X Y Z).hom =
+      inv (F.μ (X ⊗ Y) Z) ≫ inv (F.μ X Y) ▷ F.obj Z ≫
+        (α_ (F.obj X) (F.obj Y) (F.obj Z)).hom ≫ F.obj X ◁ F.μ Y Z ≫ F.μ X (Y ⊗ Z) := by
   rw [← inv_whiskerRight, ← IsIso.inv_comp_assoc, IsIso.eq_inv_comp]
   simp
 
