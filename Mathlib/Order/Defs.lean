@@ -536,8 +536,8 @@ lemma compare_ge_iff_ge : compare a b ≠ .lt ↔ a ≥ b := by
   · exact le_of_eq <| (·.symm) <| compare_eq_iff_eq.1 h
   · exact le_of_lt <| compare_gt_iff_gt.1 h
 
-lemma compare_iff (a b : α) : compare a b = o ↔ o.toRel a b := by
-  cases o <;> simp only [Ordering.toRel]
+lemma compare_iff (a b : α) {o : Ordering} : compare a b = o ↔ o.Compares a b := by
+  cases o <;> simp only [Ordering.Compares]
   · exact compare_lt_iff_lt
   · exact compare_eq_iff_eq
   · exact compare_gt_iff_gt
