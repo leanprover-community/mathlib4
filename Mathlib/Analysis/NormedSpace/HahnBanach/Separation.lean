@@ -232,19 +232,10 @@ lemma re_extendTo𝕜'ₗ [ContinuousConstSMul 𝕜 E] (g : E →L[ℝ] ℝ) (x 
 
 variable [TopologicalAddGroup E] [ContinuousSMul 𝕜 E]
 
-lemma IsScalarTower.continuousSMul {M : Type*} (N : Type*) {α : Type*} [Monoid N] [SMul M N]
-    [MulAction N α] [SMul M α] [IsScalarTower M N α] [TopologicalSpace M] [TopologicalSpace N]
-    [TopologicalSpace α] [ContinuousSMul M N] [ContinuousSMul N α] : ContinuousSMul M α :=
-  { continuous_smul := by
-      suffices Continuous (fun p : M × α ↦ (p.1 • (1 : N)) • p.2) by simpa
-      fun_prop }
-
-lemma continuous_SMul_re_of_ContinuousSMul_RCLike : ContinuousSMul ℝ E :=
-  IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
-
 theorem separate_convex_open_set {s : Set E}
     (hs₀ : (0 : E) ∈ s) (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) {x₀ : E} (hx₀ : x₀ ∉ s) :
     ∃ f : E →L[𝕜] 𝕜, re (f x₀) = 1 ∧ ∀ x ∈ s, re (f x) < 1 := by
+  have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
   obtain ⟨g, hg⟩ := _root_.separate_convex_open_set hs₀ hs₁ hs₂ hx₀
   use extendTo𝕜'ₗ g
   simp only [re_extendTo𝕜'ₗ]
@@ -253,6 +244,7 @@ theorem separate_convex_open_set {s : Set E}
 theorem geometric_hahn_banach_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (ht : Convex ℝ t)
     (disj : Disjoint s t) : ∃ (f : E →L[𝕜] 𝕜) (u : ℝ), (∀ a ∈ s, re (f a) < u) ∧
     ∀ b ∈ t, u ≤ re (f b) := by
+  have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
   obtain ⟨f, u, h⟩ := _root_.geometric_hahn_banach_open hs₁ hs₂ ht disj
   use extendTo𝕜'ₗ f
   simp only [re_extendTo𝕜'ₗ]
@@ -260,6 +252,7 @@ theorem geometric_hahn_banach_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (ht
 
 theorem geometric_hahn_banach_open_point (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (disj : x ∉ s) :
     ∃ f : E →L[𝕜] 𝕜, ∀ a ∈ s, re (f a) < re (f x) := by
+  have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
   obtain ⟨f, h⟩ := _root_.geometric_hahn_banach_open_point hs₁ hs₂ disj
   use extendTo𝕜'ₗ f
   simp only [re_extendTo𝕜'ₗ]
@@ -273,6 +266,7 @@ theorem geometric_hahn_banach_point_open (ht₁ : Convex ℝ t) (ht₂ : IsOpen 
 theorem geometric_hahn_banach_open_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s)
     (ht₁ : Convex ℝ t) (ht₃ : IsOpen t) (disj : Disjoint s t) :
     ∃ (f : E →L[𝕜] 𝕜) (u : ℝ), (∀ a ∈ s, re (f a) < u) ∧ ∀ b ∈ t, u < re (f b) := by
+  have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
   obtain ⟨f, u, h⟩ := _root_.geometric_hahn_banach_open_open hs₁ hs₂ ht₁ ht₃ disj
   use extendTo𝕜'ₗ f
   simp only [re_extendTo𝕜'ₗ]
@@ -283,6 +277,7 @@ variable [LocallyConvexSpace ℝ E]
 theorem geometric_hahn_banach_compact_closed (hs₁ : Convex ℝ s) (hs₂ : IsCompact s)
     (ht₁ : Convex ℝ t) (ht₂ : IsClosed t) (disj : Disjoint s t) :
     ∃ (f : E →L[𝕜] 𝕜) (u v : ℝ), (∀ a ∈ s, re (f a) < u) ∧ u < v ∧ ∀ b ∈ t, v < re (f b) := by
+  have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
   obtain ⟨g, u, v, h1⟩ := _root_.geometric_hahn_banach_compact_closed hs₁ hs₂ ht₁ ht₂ disj
   use extendTo𝕜'ₗ g
   simp only [re_extendTo𝕜'ₗ, exists_and_left]
