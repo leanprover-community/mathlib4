@@ -206,7 +206,7 @@ theorem first_vote_pos :
         ((countedSequence_nonempty _ _).image _)]
     · have : List.cons (-1) '' countedSequence (p + 1) q ∩ {l : List ℤ | l.headI = 1} = ∅ := by
         ext
-        simp only [mem_inter_iff, mem_image, mem_setOf_eq, mem_empty_iff_false, iff_false_iff,
+        simp only [mem_inter_iff, mem_image, mem_setOf_eq, mem_empty_iff_false, iff_false,
           not_and, forall_exists_index, and_imp]
         rintro l _ rfl
         norm_num
@@ -262,7 +262,7 @@ theorem countedSequence_int_pos_counted_succ_succ (p q : ℕ) :
       (_ : List.cons (-1) '' countedSequence (p + 1) q ∩ {l | l.headI = 1} = ∅), union_empty] <;>
     · ext
       simp only [mem_inter_iff, mem_image, mem_setOf_eq, and_iff_left_iff_imp, mem_empty_iff_false,
-        iff_false_iff, not_and, forall_exists_index, and_imp]
+        iff_false, not_and, forall_exists_index, and_imp]
       rintro y _ rfl
       norm_num
 
@@ -289,7 +289,7 @@ theorem countedSequence_int_neg_counted_succ_succ (p q : ℕ) :
       empty_union] <;>
     · ext
       simp only [mem_inter_iff, mem_image, mem_setOf_eq, and_iff_left_iff_imp, mem_empty_iff_false,
-        iff_false_iff, not_and, forall_exists_index, and_imp]
+        iff_false, not_and, forall_exists_index, and_imp]
       rintro y _ rfl
       norm_num
 
@@ -363,7 +363,7 @@ theorem ballot_problem :
   rwa [ENNReal.toReal_eq_toReal (measure_lt_top _ _).ne] at this
   simp only [Ne, ENNReal.div_eq_top, tsub_eq_zero_iff_le, Nat.cast_le, not_le,
     add_eq_zero, Nat.cast_eq_zero, ENNReal.add_eq_top, ENNReal.natCast_ne_top, or_self_iff,
-    not_false_iff, and_true_iff]
+    not_false_iff, and_true]
   push_neg
   exact ⟨fun _ _ => by linarith, (tsub_le_self.trans_lt (ENNReal.natCast_ne_top p).lt_top).ne⟩
 
