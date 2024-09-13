@@ -167,8 +167,8 @@ theorem limsSup_nhds (a : α) : limsSup (𝓝 a) = a :=
       | Or.inl ⟨c, hac, hcb⟩ => ⟨c, ge_mem_nhds hac, hcb⟩
       | Or.inr ⟨_, h⟩ => ⟨a, (𝓝 a).sets_of_superset (gt_mem_nhds hba) h, hba⟩
 
-theorem limsInf_nhds : ∀ a : α, limsInf (𝓝 a) = a :=
-  limsSup_nhds (α := αᵒᵈ)
+theorem limsInf_nhds (a : α) : limsInf (𝓝 a) = a :=
+  limsSup_nhds (α := αᵒᵈ) a
 
 /-- If a filter is converging, its limsup coincides with its limit. -/
 theorem limsInf_eq_of_le_nhds {f : Filter α} {a : α} [NeBot f] (h : f ≤ 𝓝 a) : f.limsInf = a :=
