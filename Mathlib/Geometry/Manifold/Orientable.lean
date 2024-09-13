@@ -45,7 +45,6 @@ Jacobian.
 - Generalize this discussion to other fields, for example over `ℚ`.
 - On a given connected set, a diffeomorphism is either orientation preserving or orientation
   reversing.
-- A real interval `Icc x y` is orientable.
 - A normed space (with the trivial model) is orientable.
 - The `n`-sphere is orientable.
 - Products of orientable manifolds are orientable.
@@ -217,6 +216,32 @@ def orientationPreservingGroupoid [FiniteDimensional ℝ E] : StructureGroupoid 
 def contDiffOrientationPreservingGroupoid (n : ℕ∞) (I : ModelWithCorners ℝ E H)
     [FiniteDimensional ℝ E] : StructureGroupoid H :=
   (orientationPreservingGroupoid I) ⊓ (contDiffGroupoid n I)
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*}
+  [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
+
+/-- An identity partial homeomorphism belongs to the orientation-preserving groupoid. -/
+theorem ofSet_mem_orientationPreservingGroupoid [FiniteDimensional ℝ E] {s : Set H}
+    (hs : IsOpen s) : PartialHomeomorph.ofSet s hs ∈ orientationPreservingGroupoid I := by
+  have h_fderiv : ∀ x ∈ interior (range I), fderiv ℝ (I ∘ I.symm) x = fderiv ℝ id x := by
+    intro x hx
+    apply Filter.EventuallyEq.fderiv_eq
+    exact Filter.eventually_of_mem (mem_interior_iff_mem_nhds.mp hx) (by simp)
+  refine ⟨⟨fun x hx ↦ h_fderiv x hx.2 ▸ orientationPreserving_id _ x hx.2, ?a⟩,
+          fun x hx ↦ h_fderiv x hx.2 ▸ orientationPreserving_id _ x hx.2, ?a⟩
+  rintro x ⟨x', hx', hx''⟩
+  have : x = x' := hx'' ▸ I.right_inv (interior_subset hx'.2)
+  exact this ▸ hx'.2
+
+/--
+The composition of a partial homeomorphism from `H` to `M` and its inverse belongs to the
+orientation-preserving groupoid.
+-/
+theorem symm_trans_mem_orientationPreservingGroupoid [FiniteDimensional ℝ E]
+    (e : PartialHomeomorph M H) : e.symm.trans e ∈ orientationPreservingGroupoid I :=
+  have h : e.symm.trans e ≈ PartialHomeomorph.ofSet e.target e.open_target :=
+    PartialHomeomorph.symm_trans_self _
+  StructureGroupoid.mem_of_eqOnSource _ (ofSet_mem_orientationPreservingGroupoid I e.open_target) h
 
 end OrientationPreserving
 

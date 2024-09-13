@@ -349,6 +349,26 @@ instance Icc_smooth_manifold (x y : ℝ) [Fact (x < y)] :
   ·-- `e = right chart`, `e' = right chart`
     exact (mem_groupoid_of_pregroupoid.mpr (symm_trans_mem_contDiffGroupoid _ _ _)).1
 
+/-- The manifold structure on `[x, y]` is orientable. -/
+instance Icc_orientable_manifold (x y : ℝ) [Fact (x < y)] :
+    OrientableManifold (𝓡∂ 1) (Icc x y) where
+  compatible {e₁ e₂} he₁ he₂ := by
+    simp only [atlas, mem_singleton_iff, mem_insert_iff] at he₁ he₂
+    rcases he₁ with (rfl | rfl) <;> rcases he₂ with (rfl | rfl)
+    · exact mem_groupoid_of_pregroupoid.mpr
+      <| symm_trans_mem_orientationPreservingGroupoid (𝓡∂ 1) (IccLeftChart x y)
+    · constructor
+      · constructor
+        · rintro z ⟨hz₁, s, ⟨hs₁, hs₂⟩, hz₂⟩
+          -- since the dimension is 1, i think i should be able to change the goal into proving that
+          -- the derivative is positive everywhere.
+          sorry
+        · sorry
+      · sorry
+    · sorry
+    · exact mem_groupoid_of_pregroupoid.mpr
+      <| symm_trans_mem_orientationPreservingGroupoid (𝓡∂ 1) (IccRightChart x y)
+
 /-! Register the manifold structure on `Icc 0 1`, and also its zero and one. -/
 
 
@@ -358,8 +378,6 @@ instance : ChartedSpace (EuclideanHalfSpace 1) (Icc (0 : ℝ) 1) := by infer_ins
 
 instance : SmoothManifoldWithCorners (𝓡∂ 1) (Icc (0 : ℝ) 1) := by infer_instance
 
-instance : OrientableSmoothManifold (𝓡∂ 1) (Icc (0 : ℝ) 1) where
-  compatible {e₁ e₂} h₁ h₂ := by
-    sorry
+instance : OrientableManifold (𝓡∂ 1) (Icc (0 : ℝ) 1) := by infer_instance
 
 end
