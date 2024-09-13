@@ -718,7 +718,7 @@ theorem indexOf_eq_length {a : α} {l : List α} : indexOf a l = length l ↔ a 
   rw [cond_eq_if]
   split_ifs with h <;> simp at h
   · exact iff_of_false (by rintro ⟨⟩) fun H => H <| Or.inl h.symm
-  · simp only [Ne.symm h, false_or_iff]
+  · simp only [Ne.symm h, false_or]
     rw [← ih]
     exact succ_inj'
 
@@ -2197,7 +2197,7 @@ variable {p q : α → Prop} {l : List α}
 
 @[simp]
 theorem forall_cons (p : α → Prop) (x : α) : ∀ l : List α, Forall p (x :: l) ↔ p x ∧ Forall p l
-  | [] => (and_true_iff _).symm
+  | [] => (and_iff_left_of_imp fun _ ↦ trivial).symm
   | _ :: _ => Iff.rfl
 
 theorem forall_iff_forall_mem : ∀ {l : List α}, Forall p l ↔ ∀ x ∈ l, p x
