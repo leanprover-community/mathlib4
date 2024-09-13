@@ -64,7 +64,7 @@ lemma vecMul_SL2_mem_gammaSet {v : Fin 2 → ℤ} (hv : v ∈ gammaSet N a) (γ 
   refine ⟨?_, hv.2.vecMulSL γ⟩
   have := RingHom.map_vecMul (m := Fin 2) (n := Fin 2) (Int.castRingHom (ZMod N)) γ v
   simp only [eq_intCast, Int.coe_castRingHom] at this
-  simp_rw [Function.comp, this, hv.1]
+  simp_rw [Function.comp_def, this, hv.1]
   simp
 
 variable (a) in

@@ -149,8 +149,7 @@ protected def binCast [Zero R] [One R] [Add R] : ℕ → R
 @[simp]
 theorem binCast_eq [AddMonoidWithOne R] (n : ℕ) :
     (Nat.binCast n : R) = ((n : ℕ) : R) := by
-  apply Nat.strongInductionOn n
-  intros k hk
+  induction n using Nat.strongRecOn with | ind k hk => ?_
   cases k with
   | zero => rw [Nat.binCast, Nat.cast_zero]
   | succ k =>

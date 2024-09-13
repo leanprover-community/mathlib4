@@ -173,8 +173,8 @@ theorem Submartingale.upcrossings_ae_lt_top' [IsFiniteMeasure μ] (hf : Submarti
           exact norm_nonneg _
       · simp only [Ne, ENNReal.coe_ne_top, not_false_iff]
     · simp only [hab, Ne, ENNReal.ofReal_eq_zero, sub_nonpos, not_le]
-  · simp only [hab, Ne, ENNReal.ofReal_eq_zero, sub_nonpos, not_le, true_or_iff]
-  · simp only [Ne, ENNReal.ofReal_ne_top, not_false_iff, true_or_iff]
+  · simp only [hab, Ne, ENNReal.ofReal_eq_zero, sub_nonpos, not_le, true_or]
+  · simp only [Ne, ENNReal.ofReal_ne_top, not_false_iff, true_or]
 
 theorem Submartingale.upcrossings_ae_lt_top [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
     (hbdd : ∀ n, eLpNorm (f n) 1 μ ≤ R) : ∀ᵐ ω ∂μ, ∀ a b : ℚ, a < b → upcrossings a b f ω < ∞ := by
@@ -269,12 +269,12 @@ $(f_n)_n$ is a martingale by the tower property for conditional expectations. Fu
 $(f_n)_n$ is uniformly integrable in the probability sense. Indeed, as a single function is
 uniformly integrable in the measure theory sense, for all $\epsilon > 0$, there exists some
 $\delta > 0$ such that for all measurable set $A$ with $\mu(A) < δ$, we have
-$\mathbb{E}|h|\mathbf{1}_A < \epsilon$. So, since for sufficently large $\lambda$, by the Markov
+$\mathbb{E}|h|\mathbf{1}_A < \epsilon$. So, since for sufficiently large $\lambda$, by the Markov
 inequality, we have for all $n$,
 $$
   \mu(|f_n| \ge \lambda) \le \lambda^{-1}\mathbb{E}|f_n| \le \lambda^{-1}\mathbb|g| < \delta,
 $$
-we have for sufficently large $\lambda$, for all $n$,
+we have for sufficiently large $\lambda$, for all $n$,
 $$
   \mathbb{E}|f_n|\mathbf{1}_{|f_n| \ge \lambda} \le
     \mathbb|g|\mathbf{1}_{|f_n| \ge \lambda} < \epsilon,
