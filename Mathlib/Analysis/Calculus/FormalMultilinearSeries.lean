@@ -88,6 +88,15 @@ def prod (p : FormalMultilinearSeries 𝕜 E F) (q : FormalMultilinearSeries �
     FormalMultilinearSeries 𝕜 E (F × G)
   | n => (p n).prod (q n)
 
+/-- Product of formal multilinear series (with the same field `𝕜` and the same source
+space, but possibly different target spaces). -/
+@[simp] def pi {ι : Type*} {F : ι → Type*}
+    [∀ i, AddCommGroup (F i)] [∀ i, Module 𝕜 (F i)] [∀ i, TopologicalSpace (F i)]
+    [∀ i, TopologicalAddGroup (F i)] [∀ i, ContinuousConstSMul 𝕜 (F i)]
+    (p : Π i, FormalMultilinearSeries 𝕜 E (F i)) :
+    FormalMultilinearSeries 𝕜 E (Π i, F i)
+  | n => ContinuousMultilinearMap.pi (fun i ↦ p i n)
+
 /-- Killing the zeroth coefficient in a formal multilinear series -/
 def removeZero (p : FormalMultilinearSeries 𝕜 E F) : FormalMultilinearSeries 𝕜 E F
   | 0 => 0
