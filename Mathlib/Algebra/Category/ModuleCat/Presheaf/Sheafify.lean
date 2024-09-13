@@ -313,11 +313,15 @@ noncomputable def sheafify : SheafOfModules.{v} R where
   isSheaf := A.cond
 
 /-- The canonical morphism from a presheaf of modules to its associated sheaf. -/
-@[simps!]
 def toSheafify : M₀ ⟶ (restrictScalars α).obj (sheafify α φ).val :=
   homMk φ (fun X r₀ m₀ ↦ by
     simpa using (Sheafify.map_smul_eq α φ (α.app _ r₀) (φ.app _ m₀) (𝟙 _)
       r₀ (by aesop) m₀ (by simp)).symm)
+
+@[simp]
+lemma toSheafify_app_apply (X : Cᵒᵖ) (x : M₀.obj X) :
+    DFunLike.coe (α := M₀.obj X) (β := fun _ ↦ A.val.obj X)
+      ((toSheafify α φ).app X) x = φ.app X x := rfl
 
 @[simp]
 lemma toPresheaf_map_toSheafify : (toPresheaf R₀).map (toSheafify α φ) = φ := rfl

@@ -180,16 +180,19 @@ end SheafOfModules
 namespace PresheafOfModules
 
 variable (J)
-variable {R : Cᵒᵖ ⥤ RingCat.{u}} {M₁ M₂ : PresheafOfModules.{v} R}
-    (f : M₁ ⟶ M₂) {N : PresheafOfModules.{v} R}
+variable {R : Cᵒᵖ ⥤ RingCat.{u}} {M₁ M₂ : PresheafOfModules.{v} R} (f : M₁ ⟶ M₂)
 
+/-- A morphism of presheaves of modules is locally surjective
+if the underlying morphism of presheaves of abelian groups is. -/
 abbrev IsLocallySurjective : Prop :=
   Presheaf.IsLocallySurjective J ((PresheafOfModules.toPresheaf R).map f)
 
+/-- A morphism of presheaves of modules is locally injective
+if the underlying morphism of presheaves of abelian groups is. -/
 abbrev IsLocallyInjective : Prop :=
   Presheaf.IsLocallyInjective J ((PresheafOfModules.toPresheaf R).map f)
 
-variable (hN : Presheaf.IsSheaf J N.presheaf)
+variable {N : PresheafOfModules.{v} R} (hN : Presheaf.IsSheaf J N.presheaf)
   [J.WEqualsLocallyBijective AddCommGrp.{v}]
   [IsLocallySurjective J f] [IsLocallyInjective J f]
 
