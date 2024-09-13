@@ -206,12 +206,59 @@ theorem Jacobson_Noether (H : k ≠ (⊤ : Subring D)) :
 
 end JacobsonNoether
 
+#exit
 namespace test
 
-example {k D : Type*} [Field k] [DivisionRing D] [Algebra k D] [Algebra.IsAlgebraic k D]
-  (hcenter : Subalgebra.center k D = ⊥)
-  (hneq : (⊥ : Subalgebra k D) ≠ ⊤) :
-  ∃ x : D, x ∉ (⊥ : Subalgebra k D) ∧ IsSeparable k x := by
+#help tactic infer
+
+example {L D : Type*} [Field L] [DivisionRing D] [Algebra L D] [Algebra.IsAlgebraic L D]
+    (hcenter : Subalgebra.center L D = ⊥) (hneq : (⊥ : Subalgebra L D) ≠ ⊤) :
+    ∃ x : D, x ∉ (⊥ : Subalgebra L D) ∧ IsSeparable L x := by
+  have aux : Algebra.IsAlgebraic L D := inferInstance
+  -- set c := @(Algebra.ofId L D).range with hc
+  set a := Subring.center D with ha
+  have hac : (⊥ : Subalgebra L D).toSubring = a := by
+    · rw [← hcenter]
+      rfl
+  set φ := RingEquiv.subringCongr (hac).symm with hφ
+  set ψ : L ≃+* (⊥ : Subalgebra L D) := by
+    · use ((Algebra.botEquiv L D).toRingEquiv).symm
+      · intro x y
+        simp only [Equiv.toFun_as_coe, EquivLike.coe_coe, map_mul]
+      · intro x y
+        simp only [Equiv.toFun_as_coe, EquivLike.coe_coe, map_add]
+
+
+
+  let comm : CommSemiring (⊥ : Subalgebra L D) := ψ.symm.commSemiring
+
+  let _ : Algebra L a := by
+    · have := @RingHom.toAlgebra L (⊥ : Subalgebra L D) _ comm ψ.toRingHom
+    -- · have := Algebra L (⊥ : Subalgebra L D)
+
+      --use Algebra.ofId L D
+  let _ : IsScalarTower L a D := sorry
+  have aux2 : Algebra.IsAlgebraic a D := by
+    · apply Algebra.IsAlgebraic.tower_top_of_injective (R := L) (S := a) (A := D)
+      sorry
+  have := @JacobsonNoether.Jacobson_Noether D _ aux2
+
+    -- · rw [hc]
+  have hcc : c = ⊥ := rfl
+  have aux' := aux.1
+  have hab : a = b := rfl
+  rw [hcenter] at hb
+  have : Algebra.IsAlgebraic a D := by
+    constructor
+    intro x
+    have : IsAlgebraic L x := by
+      sorry
+    convert this
+
+
+
+
+
   set k' := (⊥ : Subalgebra k D).toSubring with hk'
   have hcenter' : k' = Subring.center D := by apply (hcenter.symm) ▸ hk'
   have aux1 : (⊤ : Subring D) = (⊤ : Subalgebra k D).toSubring := rfl
@@ -219,7 +266,9 @@ example {k D : Type*} [Field k] [DivisionRing D] [Algebra k D] [Algebra.IsAlgebr
     refine Ne.intro ?_
     exact fun heq ↦
       hneq <| Algebra.toSubring_eq_top.mp <| aux1 ▸ hk' ▸ heq
-  letI : Algebra.IsAlgebraic (@Subtype D fun x ↦ x ∈ Subring.center D) D := by
+  -- have := @JacobsonNoether.Jacobson_Noether D _ _ ntrivial
+
+    -- infer_instance
     -- rw [← hcenter']
     sorry
   obtain ⟨x, hx⟩ := @JacobsonNoether.Jacobson_Noether D _ _ (hcenter' ▸ ntrivial)
