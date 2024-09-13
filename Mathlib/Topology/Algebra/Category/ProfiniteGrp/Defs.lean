@@ -95,7 +95,7 @@ instance : ConcreteCategory ProfiniteGrp where
         exact DFunLike.ext _ _ <| fun x => congr_fun h x }
 
 /--Construct a term of `ProfiniteGrp` from a type endowed with the structure of a
-compact, Hausdorff and totally disconnected topological group.-/
+compact and totally disconnected (implies Hausdorff) topological group.-/
 @[to_additive]
 def of (G : Type u) [Group G] [TopologicalSpace G] [TopologicalGroup G]
     [CompactSpace G] [TotallyDisconnectedSpace G] : ProfiniteGrp where
@@ -104,7 +104,7 @@ def of (G : Type u) [Group G] [TopologicalSpace G] [TopologicalGroup G]
   topologicalGroup := ‹_›
 
 /--Construct a term of `ProfiniteAddGrp` from a type endowed with the structure of a
-compact, Hausdorff and totally disconnected topological additive group.-/
+compact and totally disconnected (implies Hausdorff) topological additive group.-/
 add_decl_doc ProfiniteAddGrp.of
 
 @[to_additive (attr := simp)]
