@@ -1411,6 +1411,7 @@ import Mathlib.CategoryTheory.Category.PartialFun
 import Mathlib.CategoryTheory.Category.Pointed
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Category.Quiv
+import Mathlib.CategoryTheory.Category.ReflQuiv
 import Mathlib.CategoryTheory.Category.RelCat
 import Mathlib.CategoryTheory.Category.TwoP
 import Mathlib.CategoryTheory.Category.ULift
@@ -1920,6 +1921,7 @@ import Mathlib.Combinatorics.Quiver.ConnectedComponent
 import Mathlib.Combinatorics.Quiver.Covering
 import Mathlib.Combinatorics.Quiver.Path
 import Mathlib.Combinatorics.Quiver.Push
+import Mathlib.Combinatorics.Quiver.ReflQuiver
 import Mathlib.Combinatorics.Quiver.SingleObj
 import Mathlib.Combinatorics.Quiver.Subquiver
 import Mathlib.Combinatorics.Quiver.Symmetric
