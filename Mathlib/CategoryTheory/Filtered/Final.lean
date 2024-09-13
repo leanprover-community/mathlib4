@@ -23,8 +23,8 @@ final can be restated. We show:
 * If `D` is a filtered category and `F : C ⥤ D` is fully faithful and satisfies the additional
   condition that for every `d : D` there is an object `c : D` and a morphism `d ⟶ F.obj c`, then
   `C` is filtered and `F` is final.
-* Finality and initiality of diagonal functors `diag : C ⥤ C × C` and of projection and
-  precomposition functors of (co)structured arrow categories.
+* Finality and initiality of diagonal functors `diag : C ⥤ C × C` and project functors of
+  (co)structured arrow categories.
 
 ## References
 
@@ -326,21 +326,5 @@ instance CostructuredArrow.initial_proj_of_isCofiltered [IsCofilteredOrEmpty C]
   refine ⟨fun X => ?_⟩
   rw [isConnected_iff_of_equivalence (ofCostructuredArrowProjEquivalence T Y X)]
   exact (initial_comp (Over.forget X) T).out _
-
-/-- The functor `StructuredArrow.pre X T S` is final if `T` is final and the domain of `T` is
-filtered. -/
-instance StructuredArrow.final_pre {E : Type u₃} [Category.{v₃} E] (T : C ⥤ D) [Final T]
-    (S : D ⥤ E) (X : E) : Final (pre X T S) := by
-  refine ⟨fun f => ?_⟩
-  rw [isConnected_iff_of_equivalence (StructuredArrow.preEquivalence T f)]
-  exact Final.out f.right
-
-/-- The functor `CostructuredArrow.pre X T S` is initial if `T` is initial and the domain of `T` is
-cofiltered. -/
-theorem CostructuredArrow.initial_pre {E : Type u₃} [Category.{v₃} E] (T : C ⥤ D) [Initial T]
-    (S : D ⥤ E) (X : E) : Initial (pre T S X) := by
-  refine ⟨fun f => ?_⟩
-  rw [isConnected_iff_of_equivalence (CostructuredArrow.preEquivalence T f)]
-  exact Initial.out f.left
 
 end CategoryTheory

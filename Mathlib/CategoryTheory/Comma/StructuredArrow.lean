@@ -917,7 +917,7 @@ def StructuredArrow.preEquivalence.inverse (f : StructuredArrow e G) :
       Functor.comp_map, Category.assoc, ← w φ, Functor.map_comp]
 
 /-- A structured arrow category on a `StructuredArrow.pre e F G` functor is equivalent to the
-structure arrow category on F -/
+structured arrow category on F -/
 def StructuredArrow.preEquivalence (f : StructuredArrow e G) :
     StructuredArrow f (pre e F G) ≌ StructuredArrow f.right F where
   functor := StructuredArrow.preEquivalence.functor F f
@@ -946,7 +946,7 @@ def CostructuredArrow.preEquivalence.inverse (f : CostructuredArrow G e) :
       ← w φ, Functor.map_comp, Category.assoc]
 
 /-- A costructured arrow category on a `CostructuredArrow.pre F G e` functor is equivalent to the
-costructure arrow category on F -/
+costructured arrow category on F -/
 def CostructuredArrow.preEquivalence (f : CostructuredArrow G e) :
     CostructuredArrow (pre F G e) f ≌ CostructuredArrow F f.left where
   functor := CostructuredArrow.preEquivalence.functor F f
