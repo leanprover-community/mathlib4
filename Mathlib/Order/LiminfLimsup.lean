@@ -3,6 +3,9 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Johannes Hölzl, Rémy Degenne
 -/
+import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.Group.Unbundled.Abs
 import Mathlib.Order.Filter.Cofinite
 import Mathlib.Order.Hom.CompleteLattice
 
@@ -1148,12 +1151,12 @@ theorem cofinite.bliminf_set_eq : bliminf s cofinite p = { x | { n | p n ∧ x �
 /-- In other words, `limsup cofinite s` is the set of elements lying inside the family `s`
 infinitely often. -/
 theorem cofinite.limsup_set_eq : limsup s cofinite = { x | { n | x ∈ s n }.Infinite } := by
-  simp only [← cofinite.blimsup_true s, cofinite.blimsup_set_eq, true_and_iff]
+  simp only [← cofinite.blimsup_true s, cofinite.blimsup_set_eq, true_and]
 
 /-- In other words, `liminf cofinite s` is the set of elements lying outside the family `s`
 finitely often. -/
 theorem cofinite.liminf_set_eq : liminf s cofinite = { x | { n | x ∉ s n }.Finite } := by
-  simp only [← cofinite.bliminf_true s, cofinite.bliminf_set_eq, true_and_iff]
+  simp only [← cofinite.bliminf_true s, cofinite.bliminf_set_eq, true_and]
 
 theorem exists_forall_mem_of_hasBasis_mem_blimsup {l : Filter β} {b : ι → Set β} {q : ι → Prop}
     (hl : l.HasBasis q b) {u : β → Set α} {p : β → Prop} {x : α} (hx : x ∈ blimsup u l p) :

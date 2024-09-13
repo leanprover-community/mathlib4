@@ -225,7 +225,7 @@ theorem mem_support_cycleOf_iff [DecidableEq α] [Fintype α] :
     simp [hx]
   · rw [mem_support, cycleOf_apply]
     split_ifs with hy
-    · simp only [hx, hy, iff_true_iff, Ne, not_false_iff, and_self_iff, mem_support]
+    · simp only [hx, hy, Ne, not_false_iff, and_self_iff, mem_support]
       rcases hy with ⟨k, rfl⟩
       rw [← not_mem_support]
       simpa using hx
@@ -308,7 +308,7 @@ def cycleFactorsAux [DecidableEq α] [Fintype α] (l : List α) (f : Perm α)
     { l : List (Perm α) // l.prod = f ∧ (∀ g ∈ l, IsCycle g) ∧ l.Pairwise Disjoint } :=
   match l with
   | [] => ⟨[], by
-      { simp only [imp_false, List.Pairwise.nil, List.not_mem_nil, forall_const, and_true_iff,
+      { simp only [imp_false, List.Pairwise.nil, List.not_mem_nil, forall_const, and_true,
           forall_prop_of_false, Classical.not_not, not_false_iff, List.prod_nil] at *
         ext
         simp [*]}⟩

@@ -32,6 +32,13 @@ the set defined by `ZSpan.fundamentalDomain` is a fundamental domain.
 `ℤ`-module
 * `ZLattice.rank`: a `ℤ`-submodule of `E` that is discrete and spans `E` over `K` is free
 of `ℤ`-rank equal to the `K`-rank of `E`
+
+## Implementation Notes
+
+A `ZLattice` could be defined either as a `AddSubgroup E` or a `Submodule ℤ E`. However, the module
+aspect appears to be the more useful one (especially in computations involving basis) and is also
+consistent with the `ZSpan` construction of `ℤ`-lattices.
+
 -/
 
 

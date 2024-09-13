@@ -527,8 +527,7 @@ def compPartialSumSource (m M N : ℕ) : Finset (Σ n, Fin n → ℕ) :=
 theorem mem_compPartialSumSource_iff (m M N : ℕ) (i : Σ n, Fin n → ℕ) :
     i ∈ compPartialSumSource m M N ↔
       (m ≤ i.1 ∧ i.1 < M) ∧ ∀ a : Fin i.1, 1 ≤ i.2 a ∧ i.2 a < N := by
-  simp only [compPartialSumSource, Finset.mem_Ico, Fintype.mem_piFinset, Finset.mem_sigma,
-    iff_self_iff]
+  simp only [compPartialSumSource, Finset.mem_Ico, Fintype.mem_piFinset, Finset.mem_sigma]
 
 /-- Change of variables appearing to compute the composition of partial sums of formal
 power series -/
@@ -569,7 +568,7 @@ theorem compPartialSumTargetSet_image_compPartialSumSource (m M N : ℕ)
   rcases i with ⟨n, c⟩
   refine ⟨⟨c.length, c.blocksFun⟩, ?_, ?_⟩
   · simp only [compPartialSumTargetSet, Set.mem_setOf_eq] at hi
-    simp only [mem_compPartialSumSource_iff, hi.left, hi.right, true_and_iff, and_true_iff]
+    simp only [mem_compPartialSumSource_iff, hi.left, hi.right, true_and, and_true]
     exact fun a => c.one_le_blocks' _
   · dsimp [compChangeOfVariables]
     rw [Composition.sigma_eq_iff_blocks_eq]
@@ -608,7 +607,7 @@ theorem compChangeOfVariables_sum {α : Type*} [AddCommMonoid α] (m M N : ℕ)
     -- Porting note: added
     simp only at H
     simp only [mem_compPartialSumTarget_iff, Composition.length, Composition.blocks, H.left,
-      map_ofFn, length_ofFn, true_and_iff, compChangeOfVariables]
+      map_ofFn, length_ofFn, true_and, compChangeOfVariables]
     intro j
     simp only [Composition.blocksFun, (H.right _).right, List.get_ofFn]
   -- 2 - show that the map is injective
