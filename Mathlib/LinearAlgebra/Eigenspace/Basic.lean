@@ -780,7 +780,7 @@ theorem genEigenspace_restrict (f : End R M) (p : Submodule R M) (k : ℕ) (μ :
     (hfp : ∀ x : M, x ∈ p → f x ∈ p) :
     genEigenspace (LinearMap.restrict f hfp) μ k =
       Submodule.comap p.subtype (f.genEigenspace μ k) := by
-  simp only [genEigenspace, unifEigenspace_nat, OrderHom.coe_mk, ← LinearMap.ker_comp]
+  simp only [genEigenspace_def, OrderHom.coe_mk, ← LinearMap.ker_comp]
   induction' k with k ih
   · rw [pow_zero, pow_zero, LinearMap.one_eq_id]
     apply (Submodule.ker_subtype _).symm
