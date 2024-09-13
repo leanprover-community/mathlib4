@@ -917,6 +917,7 @@ import Mathlib.AlgebraicTopology.HomotopyCat
 import Mathlib.AlgebraicTopology.KanComplex
 import Mathlib.AlgebraicTopology.MooreComplex
 import Mathlib.AlgebraicTopology.Nerve
+import Mathlib.AlgebraicTopology.NerveAdjunction
 import Mathlib.AlgebraicTopology.Quasicategory
 import Mathlib.AlgebraicTopology.SimplexCategory
 import Mathlib.AlgebraicTopology.SimplicialCategory.Basic
