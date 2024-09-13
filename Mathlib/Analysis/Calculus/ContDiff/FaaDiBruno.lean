@@ -122,6 +122,58 @@ noncomputable def invEmbedding (j : Fin n) :
     c.emb (c.index j) (c.invEmbedding j) = j :=
   (c.exists_inverse j).choose_spec
 
+/-
+
+structure OrderedFinpartition (n : ℕ) where
+  /-- The number of parts in the partition -/
+  length : ℕ
+  /-- The size of each part -/
+  partSize : Fin length → ℕ
+  partSize_pos : ∀ m, 0 < partSize m
+  /-- The increasing parameterization of each part -/
+  emb : ∀ m, (Fin (partSize m)) → Fin n
+  emb_strictMono : ∀ m, StrictMono (emb m)
+  /-- The parts are ordered by increasing greatest element. -/
+  parts_strictMono :
+    StrictMono (fun m ↦ emb m ⟨partSize m - 1, Nat.sub_one_lt_of_lt (partSize_pos m)⟩)
+  /-- The parts are disjoint -/
+  disjoint : PairwiseDisjoint univ (fun m ↦ range (emb m))
+  /-- The parts cover everything -/
+  cover : ⋃ m, range (emb m) = univ
+-/
+
+/-- Extend an ordered partition of `n` entries, by adding a new singleton part to the left. -/
+def extendLeft (c : OrderedFinpartition n) : OrderedFinpartition (n + 1) :=
+  { length := c.length + 1
+    partSize := Fin.cons 1 c.partSize
+    partSize_pos := by
+      apply Fin.cases
+      simp
+      simp [c.partSize_pos]
+    emb := Fin.cases (fun _ ↦ 0) (fun m ↦ Fin.succ ∘ (c.emb m))
+    emb_strictMono := sorry
+    parts_strictMono := sorry
+    disjoint := sorry
+    cover := sorry }
+
+def extendMiddle (c : OrderedFinpartition n) (i : Fin c.length) : OrderedFinpartition (n + 1) :=
+  { length := c.length
+    partSize := update c.partSize i (c.partSize i + 1)
+    partSize_pos := sorry
+    emb := by
+      intro m
+      by cases h : m = i
+      · simp [h]
+      · sorry
+    emb_strictMono := sorry
+    parts_strictMono := sorry
+    disjoint := sorry
+    cover := sorry }
+
+
+
+#exit
+
 /-- Given a formal multilinear series `p`, an ordered partition `c` of `n` and the index `i` of a
 block of `c`, we may define a function on `Fin n → E` by picking the variables in the `i`-th block
 of `n`, and applying the corresponding coefficient of `p` to these variables. This function is
@@ -298,16 +350,21 @@ theorem faaDiBruno {n : ℕ∞} {g : F → G} {f : E → F}
   constructor
   · intro x hx
     simp [FormalMultilinearSeries.taylorComp, default, HasFTaylorSeriesUpToOn.zero_eq' hg (h hx)]
-  · sorry
+  · intro m hm x hx
+
   · intro m hm
     apply continuousOn_finset_sum _ (fun c hc ↦ ?_)
     let B := c.compAlongOrderedFinpartitionL 𝕜 E F G
     change ContinuousOn
-      ((fun p ↦ B p.1 p.2) ∘ (fun x ↦ (q (f x) c.length, fun m ↦ p x (c.partSize m)))) s
+      ((fun p ↦ B p.1 p.2) ∘ (fun x ↦ (q (f x) c.length, fun i ↦ p x (c.partSize i)))) s
     apply B.continuous_uncurry_of_multilinear.comp_continuousOn (ContinuousOn.prod ?_ ?_)
     · have : (c.length : ℕ∞) ≤ m := by exact_mod_cast OrderedFinpartition.length_le c
-      have Z := hg.cont c.length (this.trans hm)
-      apply this.comp
+      exact (hg.cont c.length (this.trans hm)).comp hf.continuousOn h
+    · apply continuousOn_pi.2 (fun i ↦ ?_)
+      have : (c.partSize i : ℕ∞) ≤ m := by exact_mod_cast OrderedFinpartition.partSize_le c i
+      exact hf.cont _ (this.trans hm)
+
+
 
 
 
