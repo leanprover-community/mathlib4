@@ -89,7 +89,8 @@ theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
       ∃ (ι : Type u), Nonempty ι ∧ ∃ f : ι → Ordinal, (∀ i, f i ∈ s) ∧ sup.{u, u} f = a] := by
   tfae
     1 → 2 := by
-      simp only [mem_closure_iff_nhdsWithin_neBot, inter_comm s, nhdsWithin_inter', nhds_left_eq_nhds]
+      simp only [mem_closure_iff_nhdsWithin_neBot, inter_comm s, nhdsWithin_inter',
+        nhds_left_eq_nhds]
       exact id
     2 → 3
     | h => by

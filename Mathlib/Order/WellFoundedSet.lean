@@ -143,7 +143,8 @@ theorem acc_iff_wellFoundedOn {α} {r : α → α → Prop} {a : α} :
       · exact h.inv h'
     2 → 3 := fun h => h.subset fun _ => TransGen.to_reflTransGen
     3 → 1 := by
-      refine fun h => Acc.intro _ (fun b hb => (h.apply ⟨b, .single hb⟩).of_fibration Subtype.val ?_)
+      refine fun h =>
+        Acc.intro _ (fun b hb => (h.apply ⟨b, .single hb⟩).of_fibration Subtype.val ?_)
       exact fun ⟨c, hc⟩ d h => ⟨⟨d, .head h hc⟩, h, rfl⟩
 
 end WellFoundedOn

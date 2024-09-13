@@ -389,8 +389,8 @@ protected theorem NormedSpace.equicontinuous_TFAE : List.TFAE
     -- equicontinuity into existence of some continuous seminorm and
     -- `Seminorm.bound_of_continuous_normedSpace` which characterize such seminorms.
     3 ↔ 4 := by
-      refine ((norm_withSeminorms 𝕜₂ F).uniformEquicontinuous_iff_exists_continuous_seminorm _).trans
-        ?_
+      refine
+        ((norm_withSeminorms 𝕜₂ F).uniformEquicontinuous_iff_exists_continuous_seminorm _).trans ?_
       rw [forall_const]
       constructor
       · intro ⟨p, hp, hpf⟩
