@@ -226,7 +226,7 @@ theorem canonicalEquiv_symm : (canonicalEquiv S P P').symm = canonicalEquiv S P'
       exact ⟨fun ⟨y, mem, Eq⟩ => ⟨y, mem, Eq⟩, fun ⟨y, mem, Eq⟩ => ⟨y, mem, Eq⟩⟩
 
 theorem canonicalEquiv_flip (I) : canonicalEquiv S P P' (canonicalEquiv S P' P I) = I := by
-  rw [← canonicalEquiv_symm]; erw [RingEquiv.apply_symm_apply]
+  rw [← canonicalEquiv_symm, RingEquiv.symm_apply_apply]
 
 @[simp]
 theorem canonicalEquiv_canonicalEquiv (P'' : Type*) [CommRing P''] [Algebra R P'']
@@ -454,7 +454,7 @@ theorem eq_one_div_of_mul_eq_one_right (I J : FractionalIdeal R₁⁰ K) (h : I 
   apply (le_div_iff_of_nonzero hI).mpr _
   intro y hy x hx
   rw [mul_comm]
-  exact mul_mem_mul hx hy
+  exact mul_mem_mul hy hx
 
 theorem mul_div_self_cancel_iff {I : FractionalIdeal R₁⁰ K} : I * (1 / I) = 1 ↔ ∃ J, I * J = 1 :=
   ⟨fun h => ⟨1 / I, h⟩, fun ⟨J, hJ⟩ => by rwa [← eq_one_div_of_mul_eq_one_right I J hJ]⟩
@@ -736,7 +736,7 @@ theorem div_spanSingleton (J : FractionalIdeal R₁⁰ K) (d : K) :
     rw [coe_mul, one_div_spanSingleton, h_xd]
     exact Submodule.mul_mem_mul (mem_spanSingleton_self R₁⁰ _) hx
   · rw [le_div_iff_mul_le h_spand, mul_assoc, mul_left_comm, one_div_spanSingleton,
-      spanSingleton_mul_spanSingleton, inv_mul_cancel hd, spanSingleton_one, mul_one]
+      spanSingleton_mul_spanSingleton, inv_mul_cancel₀ hd, spanSingleton_one, mul_one]
 
 theorem exists_eq_spanSingleton_mul (I : FractionalIdeal R₁⁰ K) :
     ∃ (a : R₁) (aI : Ideal R₁), a ≠ 0 ∧ I = spanSingleton R₁⁰ (algebraMap R₁ K a)⁻¹ * aI := by
@@ -753,12 +753,12 @@ theorem exists_eq_spanSingleton_mul (I : FractionalIdeal R₁⁰ K) :
     rw [Algebra.smul_def] at hx'
     refine ⟨algebraMap R₁ K x', (mem_coeIdeal _).mpr ⟨x', mem_singleton_mul.mpr ?_, rfl⟩, ?_⟩
     · exact ⟨x, hx, hx'⟩
-    · rw [hx', ← mul_assoc, inv_mul_cancel map_a_nonzero, one_mul]
+    · rw [hx', ← mul_assoc, inv_mul_cancel₀ map_a_nonzero, one_mul]
   · rintro ⟨y, hy, rfl⟩
     obtain ⟨x', hx', rfl⟩ := (mem_coeIdeal _).mp hy
     obtain ⟨y', hy', hx'⟩ := mem_singleton_mul.mp hx'
     rw [Algebra.linearMap_apply] at hx'
-    rwa [hx', ← mul_assoc, inv_mul_cancel map_a_nonzero, one_mul]
+    rwa [hx', ← mul_assoc, inv_mul_cancel₀ map_a_nonzero, one_mul]
 
 
 /-- If `I` is a nonzero fractional ideal, `a ∈ R`, and `J` is an ideal of `R` such that
@@ -857,7 +857,7 @@ theorem isNoetherian_spanSingleton_inv_to_map_mul (x : R₁) {I : FractionalIdea
   obtain ⟨s, hs⟩ := hI _ hJ
   use s * {(algebraMap R₁ K x)⁻¹}
   rw [Finset.coe_mul, Finset.coe_singleton, ← span_mul_span, hs, ← coe_spanSingleton R₁⁰, ←
-    coe_mul, mul_assoc, spanSingleton_mul_spanSingleton, mul_inv_cancel h_gx, spanSingleton_one,
+    coe_mul, mul_assoc, spanSingleton_mul_spanSingleton, mul_inv_cancel₀ h_gx, spanSingleton_one,
     mul_one]
 
 /-- Every fractional ideal of a noetherian integral domain is noetherian. -/

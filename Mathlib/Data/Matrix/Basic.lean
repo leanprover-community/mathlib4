@@ -5,6 +5,7 @@ Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu
 -/
 import Mathlib.Algebra.Algebra.Opposite
 import Mathlib.Algebra.Algebra.Pi
+import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.RingEquiv
@@ -13,7 +14,6 @@ import Mathlib.Algebra.Star.BigOperators
 import Mathlib.Algebra.Star.Module
 import Mathlib.Algebra.Star.Pi
 import Mathlib.Data.Fintype.BigOperators
-import Mathlib.GroupTheory.GroupAction.BigOperators
 
 /-!
 # Matrices
@@ -733,7 +733,7 @@ theorem dotProduct_comp_equiv_symm (e : n ≃ m) : u ⬝ᵥ x ∘ e.symm = u ∘
 @[simp]
 theorem comp_equiv_dotProduct_comp_equiv (e : m ≃ n) : x ∘ e ⬝ᵥ y ∘ e = x ⬝ᵥ y := by
   -- Porting note: was `simp only` with all three lemmas
-  rw [← dotProduct_comp_equiv_symm]; simp only [Function.comp, Equiv.apply_symm_apply]
+  rw [← dotProduct_comp_equiv_symm]; simp only [Function.comp_def, Equiv.apply_symm_apply]
 
 end NonUnitalNonAssocSemiring
 
@@ -782,6 +782,14 @@ variable [NonAssocSemiring α]
 @[simp]
 theorem one_dotProduct_one : (1 : n → α) ⬝ᵥ 1 = Fintype.card n := by
   simp [dotProduct]
+
+theorem dotProduct_single_one [DecidableEq n] (v : n → α) (i : n) :
+    dotProduct v (Pi.single i 1) = v i := by
+  rw [dotProduct_single, mul_one]
+
+theorem single_one_dotProduct [DecidableEq n] (i : n) (v : n → α) :
+    dotProduct (Pi.single i 1) v = v i := by
+  rw [single_dotProduct, one_mul]
 
 end NonAssocSemiring
 
@@ -1263,7 +1271,7 @@ def mapMatrix (f : α ≃+ β) : Matrix m n α ≃+ Matrix m n β :=
   { f.toEquiv.mapMatrix with
     toFun := fun M => M.map f
     invFun := fun M => M.map f.symm
-    map_add' := Matrix.map_add f f.map_add }
+    map_add' := Matrix.map_add f (map_add f) }
 
 @[simp]
 theorem mapMatrix_refl : (AddEquiv.refl α).mapMatrix = AddEquiv.refl (Matrix m n α) :=
@@ -1585,6 +1593,14 @@ theorem mulVec_single [Fintype n] [DecidableEq n] [NonUnitalNonAssocSemiring R] 
 theorem single_vecMul [Fintype m] [DecidableEq m] [NonUnitalNonAssocSemiring R] (M : Matrix m n R)
     (i : m) (x : R) : Pi.single i x ᵥ* M = fun j => x * M i j :=
   funext fun _ => single_dotProduct _ _ _
+
+theorem mulVec_single_one [Fintype n] [DecidableEq n] [NonAssocSemiring R]
+    (M : Matrix m n R) (j : n) :
+    M *ᵥ Pi.single j 1 = Mᵀ j := by ext; simp
+
+theorem single_one_vecMul [Fintype m] [DecidableEq m] [NonAssocSemiring R]
+    (i : m) (M : Matrix m n R) :
+    Pi.single i 1 ᵥ* M = M i := by simp
 
 -- @[simp] -- Porting note: not in simpNF
 theorem diagonal_mulVec_single [Fintype n] [DecidableEq n] [NonUnitalNonAssocSemiring R] (v : n → R)
@@ -2510,10 +2526,12 @@ theorem map_dotProduct [NonAssocSemiring R] [NonAssocSemiring S] (f : R →+* S)
 
 theorem map_vecMul [NonAssocSemiring R] [NonAssocSemiring S] (f : R →+* S) (M : Matrix n m R)
     (v : n → R) (i : m) : f ((v ᵥ* M) i) =  ((f ∘ v) ᵥ* M.map f) i := by
-  simp only [Matrix.vecMul, Matrix.map_apply, RingHom.map_dotProduct, Function.comp]
+  simp only [Matrix.vecMul, Matrix.map_apply, RingHom.map_dotProduct, Function.comp_def]
 
 theorem map_mulVec [NonAssocSemiring R] [NonAssocSemiring S] (f : R →+* S) (M : Matrix m n R)
     (v : n → R) (i : m) : f ((M *ᵥ v) i) = (M.map f *ᵥ (f ∘ v)) i := by
-  simp only [Matrix.mulVec, Matrix.map_apply, RingHom.map_dotProduct, Function.comp]
+  simp only [Matrix.mulVec, Matrix.map_apply, RingHom.map_dotProduct, Function.comp_def]
 
 end RingHom
+
+set_option linter.style.longFile 2700

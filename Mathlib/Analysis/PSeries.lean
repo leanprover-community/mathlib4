@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
@@ -48,16 +48,17 @@ variable {M : Type*} [OrderedAddCommMonoid M] {f : ℕ → M} {u : ℕ → ℕ}
 theorem le_sum_schlomilch' (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n)
     (hu : Monotone u) (n : ℕ) :
     (∑ k ∈ Ico (u 0) (u n), f k) ≤ ∑ k ∈ range n, (u (k + 1) - u k) • f (u k) := by
-  induction' n with n ihn
-  · simp
-  suffices (∑ k ∈ Ico (u n) (u (n + 1)), f k) ≤ (u (n + 1) - u n) • f (u n) by
-    rw [sum_range_succ, ← sum_Ico_consecutive]
-    · exact add_le_add ihn this
-    exacts [hu n.zero_le, hu n.le_succ]
-  have : ∀ k ∈ Ico (u n) (u (n + 1)), f k ≤ f (u n) := fun k hk =>
-    hf (Nat.succ_le_of_lt (h_pos n)) (mem_Ico.mp hk).1
-  convert sum_le_sum this
-  simp [pow_succ, mul_two]
+  induction n with
+  | zero => simp
+  | succ n ihn =>
+    suffices (∑ k ∈ Ico (u n) (u (n + 1)), f k) ≤ (u (n + 1) - u n) • f (u n) by
+      rw [sum_range_succ, ← sum_Ico_consecutive]
+      · exact add_le_add ihn this
+      exacts [hu n.zero_le, hu n.le_succ]
+    have : ∀ k ∈ Ico (u n) (u (n + 1)), f k ≤ f (u n) := fun k hk =>
+      hf (Nat.succ_le_of_lt (h_pos n)) (mem_Ico.mp hk).1
+    convert sum_le_sum this
+    simp [pow_succ, mul_two]
 
 theorem le_sum_condensed' (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
     (∑ k ∈ Ico 1 (2 ^ n), f k) ≤ ∑ k ∈ range n, 2 ^ k • f (2 ^ k) := by
@@ -80,18 +81,19 @@ theorem le_sum_condensed (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m)
 theorem sum_schlomilch_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n)
     (hu : Monotone u) (n : ℕ) :
     (∑ k ∈ range n, (u (k + 1) - u k) • f (u (k + 1))) ≤ ∑ k ∈ Ico (u 0 + 1) (u n + 1), f k := by
-  induction' n with n ihn
-  · simp
-  suffices (u (n + 1) - u n) • f (u (n + 1)) ≤ ∑ k ∈ Ico (u n + 1) (u (n + 1) + 1), f k by
-    rw [sum_range_succ, ← sum_Ico_consecutive]
-    exacts [add_le_add ihn this,
-      (add_le_add_right (hu n.zero_le) _ : u 0 + 1 ≤ u n + 1),
-      add_le_add_right (hu n.le_succ) _]
-  have : ∀ k ∈ Ico (u n + 1) (u (n + 1) + 1), f (u (n + 1)) ≤ f k := fun k hk =>
-    hf (Nat.lt_of_le_of_lt (Nat.succ_le_of_lt (h_pos n)) <| (Nat.lt_succ_of_le le_rfl).trans_le
-      (mem_Ico.mp hk).1) (Nat.le_of_lt_succ <| (mem_Ico.mp hk).2)
-  convert sum_le_sum this
-  simp [pow_succ, mul_two]
+  induction n with
+  | zero => simp
+  | succ n ihn =>
+    suffices (u (n + 1) - u n) • f (u (n + 1)) ≤ ∑ k ∈ Ico (u n + 1) (u (n + 1) + 1), f k by
+      rw [sum_range_succ, ← sum_Ico_consecutive]
+      exacts [add_le_add ihn this,
+        (add_le_add_right (hu n.zero_le) _ : u 0 + 1 ≤ u n + 1),
+        add_le_add_right (hu n.le_succ) _]
+    have : ∀ k ∈ Ico (u n + 1) (u (n + 1) + 1), f (u (n + 1)) ≤ f k := fun k hk =>
+      hf (Nat.lt_of_le_of_lt (Nat.succ_le_of_lt (h_pos n)) <| (Nat.lt_succ_of_le le_rfl).trans_le
+        (mem_Ico.mp hk).1) (Nat.le_of_lt_succ <| (mem_Ico.mp hk).2)
+    convert sum_le_sum this
+    simp [pow_succ, mul_two]
 
 theorem sum_condensed_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
     (∑ k ∈ range n, 2 ^ k • f (2 ^ (k + 1))) ≤ ∑ k ∈ Ico 2 (2 ^ n + 1), f k := by
@@ -196,7 +198,7 @@ theorem summable_schlomilch_iff {C : ℕ} {u : ℕ → ℕ} {f : ℕ → ℝ≥0
     simpa [add_eq_top, mul_ne_top, mul_eq_top, hC_nonzero] using eq_top_mono hC h
   · replace hf : ∀ m n, 0 < m → m ≤ n → (f n : ℝ≥0∞) ≤ f m := fun m n hm hmn =>
       ENNReal.coe_le_coe.2 (hf hm hmn)
-    have : ∑ k ∈ range (u 0), (f k : ℝ≥0∞) ≠ ∞ := (sum_lt_top fun a _ => coe_ne_top).ne
+    have : ∑ k ∈ range (u 0), (f k : ℝ≥0∞) ≠ ∞ := sum_ne_top.2 fun a _ => coe_ne_top
     simpa [h, add_eq_top, this] using le_tsum_schlomilch hf h_pos hu_strict
 
 open ENNReal in
@@ -374,7 +376,6 @@ open Finset
 
 variable {α : Type*} [LinearOrderedField α]
 
-set_option tactic.skipAssignedInstances false in
 theorem sum_Ioc_inv_sq_le_sub {k n : ℕ} (hk : k ≠ 0) (h : k ≤ n) :
     (∑ i ∈ Ioc k n, ((i : α) ^ 2)⁻¹) ≤ (k : α)⁻¹ - (n : α)⁻¹ := by
   refine Nat.le_induction ?_ ?_ n h
@@ -400,7 +401,7 @@ theorem sum_Ioo_inv_sq_le (k n : ℕ) : (∑ i ∈ Ioo k n, (i ^ 2 : α)⁻¹) �
       apply sum_le_sum_of_subset_of_nonneg
       · intro x hx
         simp only [mem_Ioo] at hx
-        simp only [hx, hx.2.le, mem_Ioc, le_max_iff, or_true_iff, and_self_iff]
+        simp only [hx, hx.2.le, mem_Ioc, le_max_iff, or_true, and_self_iff]
       · intro i _hi _hident
         positivity
     _ ≤ ((k + 1 : α) ^ 2)⁻¹ + ∑ i ∈ Ioc k.succ (max (k + 1) n), ((i : α) ^ 2)⁻¹ := by

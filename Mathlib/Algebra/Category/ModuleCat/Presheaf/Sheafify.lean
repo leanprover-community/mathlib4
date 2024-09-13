@@ -53,8 +53,7 @@ variable {R₀ R : Cᵒᵖ ⥤ RingCat.{u}} (α : R₀ ⟶ R) [Presheaf.IsLocall
   [Presheaf.IsLocallyInjective J φ] (hA : Presheaf.IsSeparated J A)
   {X : C} (r : R.obj (Opposite.op X)) (m : A.obj (Opposite.op X)) {P : Presieve X}
   (r₀ : FamilyOfElements (R₀ ⋙ forget _) P) (m₀ : FamilyOfElements (M₀.presheaf ⋙ forget _) P)
-  (hr₀ : (r₀.map (whiskerRight α (forget _))).IsAmalgamation r)
-  (hm₀ : (m₀.map (whiskerRight φ (forget _))).IsAmalgamation m)
+include hA
 
 lemma _root_.PresheafOfModules.Sheafify.app_eq_of_isLocallyInjective
     {Y : C} (r₀ r₀' : R₀.obj (Opposite.op Y))
@@ -84,6 +83,10 @@ lemma isCompatible_map_smul_aux {Y Z : C} (f : Y ⟶ X) (g : Z ⟶ Y)
     erw [NatTrans.naturality_apply]
     rfl
 
+variable (hr₀ : (r₀.map (whiskerRight α (forget _))).IsAmalgamation r)
+  (hm₀ : (m₀.map (whiskerRight φ (forget _))).IsAmalgamation m)
+
+include hr₀ hm₀ in
 lemma isCompatible_map_smul : ((r₀.smul m₀).map (whiskerRight φ (forget _))).Compatible := by
   intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ fac
   let a₁ := r₀ f₁ h₁
@@ -359,13 +362,12 @@ variable {M₀' : PresheafOfModules.{v} R₀} {A' : Sheaf J AddCommGrp.{v}}
   (φ' : M₀'.presheaf ⟶ A'.val)
   [Presheaf.IsLocallyInjective J φ'] [Presheaf.IsLocallySurjective J φ']
   (τ₀ : M₀ ⟶ M₀') (τ : A ⟶ A')
-  (fac : τ₀.hom ≫ φ' = φ ≫ τ.val)
 
 /-- The morphism of sheaves of modules `sheafify α φ ⟶ sheafify α φ'`
 induced by morphisms `τ₀ : M₀ ⟶ M₀'` and `τ : A ⟶ A'`
 which satisfy `τ₀.hom ≫ φ' = φ ≫ τ.val`. -/
 @[simps]
-def sheafifyMap : sheafify α φ ⟶ sheafify α φ' where
+def sheafifyMap (fac : τ₀.hom ≫ φ' = φ ≫ τ.val) : sheafify α φ ⟶ sheafify α φ' where
   val :=
     { hom := τ.val
       map_smul := by

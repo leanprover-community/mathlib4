@@ -70,8 +70,8 @@ lemma colimit_no_zero_smul_divisor
   obtain ⟨j'', H⟩ := H
   simpa [elementwise_of% (colimit.w F), map_zero] using congr(colimit.ι F _
     $(H (IsFiltered.sup {j, j', j''} { ⟨j, j', by simp, by simp, i⟩ })
-      (IsFiltered.toSup _ _ $ by simp)
-      (F.map (IsFiltered.toSup _ _ $ by simp) x)
+      (IsFiltered.toSup _ _ <| by simp)
+      (F.map (IsFiltered.toSup _ _ <| by simp) x)
       (by rw [← IsFiltered.toSup_commutes (f := i) (mY := by simp) (mf := by simp), F.map_comp,
         comp_apply, ← map_smul, ← map_smul, h, map_zero])))
 

@@ -394,7 +394,7 @@ theorem isCycle_swap_mul_aux₂ {α : Type*} [DecidableEq α] :
           isCycle_swap_mul_aux₁ n hb
             (show (f⁻¹ ^ n) (f⁻¹ x) = f⁻¹ b by
               rw [← zpow_natCast, ← h, ← mul_apply, ← mul_apply, ← mul_apply, zpow_negSucc,
-                ← inv_pow, pow_succ, mul_assoc, mul_assoc, inv_mul_self, mul_one, zpow_natCast,
+                ← inv_pow, pow_succ, mul_assoc, mul_assoc, inv_mul_cancel, mul_one, zpow_natCast,
                 ← pow_succ', ← pow_succ])
         have h : (swap x (f⁻¹ x) * f⁻¹) (f x) = f⁻¹ x := by
           rw [mul_apply, inv_apply_self, swap_apply_left]

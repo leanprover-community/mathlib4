@@ -85,10 +85,10 @@ instance Endofunctor.algebraPreadditive : Preadditive (Endofunctor.Algebra F) wh
         intros
         apply Algebra.Hom.ext
         simp only [negSucc_zsmul, neg_inj, ← Nat.cast_smul_eq_nsmul ℤ]
-      add_left_neg := by
+      neg_add_cancel := by
         intros
         apply Algebra.Hom.ext
-        apply add_left_neg
+        apply neg_add_cancel
       add_comm := by
         intros
         apply Algebra.Hom.ext
@@ -163,10 +163,10 @@ instance Endofunctor.coalgebraPreadditive : Preadditive (Endofunctor.Coalgebra F
         intros
         apply Coalgebra.Hom.ext
         simp only [negSucc_zsmul, neg_inj, ← Nat.cast_smul_eq_nsmul ℤ]
-      add_left_neg := by
+      neg_add_cancel := by
         intros
         apply Coalgebra.Hom.ext
-        apply add_left_neg
+        apply neg_add_cancel
       add_comm := by
         intros
         apply Coalgebra.Hom.ext

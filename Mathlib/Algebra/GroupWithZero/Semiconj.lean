@@ -5,7 +5,6 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.Group.Semiconj.Units
-import Mathlib.Init.Classical
 
 /-!
 # Lemmas about semiconjugate elements in a `GroupWithZero`.

@@ -160,8 +160,8 @@ variable (K)
 
 /-- The lattice formed by the image of the logarithmic embedding. -/
 noncomputable def _root_.NumberField.Units.unitLattice :
-    AddSubgroup ({w : InfinitePlace K // w ≠ w₀} → ℝ) :=
-  AddSubgroup.map (logEmbedding K) ⊤
+    Submodule ℤ ({w : InfinitePlace K // w ≠ w₀} → ℝ) :=
+  Submodule.map (logEmbedding K).toIntLinearMap ⊤
 
 theorem unitLattice_inter_ball_finite (r : ℝ) :
     ((unitLattice K : Set ({ w : InfinitePlace K // w ≠ w₀} → ℝ)) ∩
@@ -204,6 +204,7 @@ open NumberField.mixedEmbedding NNReal
 
 variable (w₁ : InfinitePlace K) {B : ℕ} (hB : minkowskiBound K 1 < (convexBodyLTFactor K) * B)
 
+include hB in
 /-- This result shows that there always exists a next term in the sequence. -/
 theorem seq_next {x : 𝓞 K} (hx : x ≠ 0) :
     ∃ y : 𝓞 K, y ≠ 0 ∧
@@ -297,7 +298,7 @@ theorem exists_unit (w₁ : InfinitePlace K) :
     · calc
         _ = w (algebraMap (𝓞 K) K (seq K w₁ hB m) * (algebraMap (𝓞 K) K (seq K w₁ hB n))⁻¹) := by
           rw [← congr_arg (algebraMap (𝓞 K) K) hu.choose_spec, mul_comm, map_mul (algebraMap _ _),
-          ← mul_assoc, inv_mul_cancel (seq_ne_zero K w₁ hB n), one_mul]
+          ← mul_assoc, inv_mul_cancel₀ (seq_ne_zero K w₁ hB n), one_mul]
         _ = w (algebraMap (𝓞 K) K (seq K w₁ hB m)) * w (algebraMap (𝓞 K) K (seq K w₁ hB n))⁻¹ :=
           _root_.map_mul _ _ _
         _ < 1 := by
@@ -324,8 +325,7 @@ theorem unitLattice_span_eq_top :
   suffices B.det v ≠ 0 by
     rw [← isUnit_iff_ne_zero, ← is_basis_iff_det] at this
     rw [← this.2]
-    exact Submodule.span_monotone (fun _ ⟨w, hw⟩ =>
-      ⟨(exists_unit K w).choose, trivial, by rw [← hw]⟩)
+    refine  Submodule.span_monotone fun _ ⟨w, hw⟩ ↦ ⟨(exists_unit K w).choose, trivial, hw⟩
   rw [Basis.det_apply]
   -- We use a specific lemma to prove that this determinant is nonzero
   refine det_ne_zero_of_sum_col_lt_diag (fun w => ?_)
@@ -367,7 +367,7 @@ instance instDiscrete_unitLattice : DiscreteTopology (unitLattice K) := by
     rintro ⟨x, hx, rfl⟩
     exact ⟨Subtype.mem x, hx⟩
 
-instance instZlattice_unitLattice : IsZlattice ℝ (unitLattice K) where
+instance instZLattice_unitLattice : IsZLattice ℝ (unitLattice K) where
   span_top := unitLattice_span_eq_top K
 
 protected theorem finrank_eq_rank :
@@ -378,7 +378,7 @@ protected theorem finrank_eq_rank :
 @[simp]
 theorem unitLattice_rank :
     finrank ℤ (unitLattice K) = Units.rank K := by
-  rw [← Units.finrank_eq_rank, Zlattice.rank ℝ]
+  rw [← Units.finrank_eq_rank, ZLattice.rank ℝ]
 
 /-- The map obtained by quotienting by the kernel of `logEmbedding`. -/
 def logEmbeddingQuot :
@@ -419,11 +419,13 @@ set_option maxSynthPendingDepth 2 -- Note this is active for the remainder of th
 `unitLattice` . -/
 def logEmbeddingEquiv :
     Additive ((𝓞 K)ˣ ⧸ (torsion K)) ≃ₗ[ℤ] (unitLattice K) :=
-  (AddEquiv.ofBijective (AddMonoidHom.codRestrict (logEmbeddingQuot K) _
-  (Quotient.ind fun x ↦ logEmbeddingQuot_apply K _ ▸ AddSubgroup.mem_map_of_mem _ trivial))
-  ⟨fun _ _ ↦ by
-    rw [AddMonoidHom.codRestrict_apply, AddMonoidHom.codRestrict_apply, Subtype.mk.injEq]
-    apply logEmbeddingQuot_injective K, fun ⟨a, ⟨b, _, ha⟩⟩ ↦ ⟨⟦b⟧, by simp [ha]⟩⟩).toIntLinearEquiv
+  LinearEquiv.ofBijective ((logEmbeddingQuot K).codRestrict (unitLattice K)
+    (Quotient.ind fun x ↦ logEmbeddingQuot_apply K _ ▸
+      Submodule.mem_map_of_mem trivial)).toIntLinearMap
+    ⟨fun _ _ ↦ by
+      rw [AddMonoidHom.coe_toIntLinearMap, AddMonoidHom.codRestrict_apply,
+        AddMonoidHom.codRestrict_apply, Subtype.mk.injEq]
+      apply logEmbeddingQuot_injective K, fun ⟨a, ⟨b, _, ha⟩⟩ ↦ ⟨⟦b⟧, by simpa using ha⟩⟩
 
 @[simp]
 theorem logEmbeddingEquiv_apply (x : (𝓞 K)ˣ) :

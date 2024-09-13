@@ -60,7 +60,7 @@ theorem _root_.MeasureTheory.Memℒp.evariance_lt_top [IsFiniteMeasure μ] (hX :
   have := ENNReal.pow_lt_top (hX.sub <| memℒp_const <| μ[X]).2 2
   rw [eLpNorm_eq_lintegral_rpow_nnnorm two_ne_zero ENNReal.two_ne_top, ← ENNReal.rpow_two] at this
   simp only [ENNReal.toReal_ofNat, Pi.sub_apply, ENNReal.one_toReal, one_div] at this
-  rw [← ENNReal.rpow_mul, inv_mul_cancel (two_ne_zero : (2 : ℝ) ≠ 0), ENNReal.rpow_one] at this
+  rw [← ENNReal.rpow_mul, inv_mul_cancel₀ (two_ne_zero : (2 : ℝ) ≠ 0), ENNReal.rpow_one] at this
   simp_rw [ENNReal.rpow_two] at this
   exact this
 
@@ -210,7 +210,7 @@ theorem variance_le_expectation_sq [@IsProbabilityMeasure Ω _ ℙ] {X : Ω → 
       apply hX
       convert A.add B
       simp
-  · exact eventually_of_forall fun x => sq_nonneg _
+  · exact Eventually.of_forall fun x => sq_nonneg _
   · exact (AEMeasurable.pow_const (hm.aemeasurable.sub_const _) _).aestronglyMeasurable
 
 theorem evariance_def' [@IsProbabilityMeasure Ω _ ℙ] {X : Ω → ℝ} (hX : AEStronglyMeasurable X ℙ) :
@@ -228,7 +228,7 @@ theorem evariance_def' [@IsProbabilityMeasure Ω _ ℙ] {X : Ω → ℝ} (hX : A
     rw [Memℒp, not_and] at hℒ
     specialize hℒ hX
     simp only [eLpNorm_eq_lintegral_rpow_nnnorm two_ne_zero ENNReal.two_ne_top, not_lt, top_le_iff,
-      ENNReal.toReal_ofNat, one_div, ENNReal.rpow_eq_top_iff, inv_lt_zero, inv_pos, and_true_iff,
+      ENNReal.toReal_ofNat, one_div, ENNReal.rpow_eq_top_iff, inv_lt_zero, inv_pos, and_true,
       or_iff_not_imp_left, not_and_or, zero_lt_two] at hℒ
     exact mod_cast hℒ fun _ => zero_le_two
 
@@ -246,7 +246,7 @@ theorem meas_ge_le_evariance_div_sq {X : Ω → ℝ} (hX : AEStronglyMeasurable 
       ENNReal.toReal_ofNat, one_div, Pi.sub_apply]
     rw [div_eq_mul_inv, ENNReal.inv_pow, mul_comm, ENNReal.rpow_two]
     congr
-    simp_rw [← ENNReal.rpow_mul, inv_mul_cancel (two_ne_zero : (2 : ℝ) ≠ 0), ENNReal.rpow_two,
+    simp_rw [← ENNReal.rpow_mul, inv_mul_cancel₀ (two_ne_zero : (2 : ℝ) ≠ 0), ENNReal.rpow_two,
       ENNReal.rpow_one, evariance]
 
 /-- **Chebyshev's inequality**: one can control the deviation probability of a real random variable
@@ -255,7 +255,7 @@ theorem meas_ge_le_variance_div_sq [@IsFiniteMeasure Ω _ ℙ] {X : Ω → ℝ} 
     (hc : 0 < c) : ℙ {ω | c ≤ |X ω - 𝔼[X]|} ≤ ENNReal.ofReal (Var[X] / c ^ 2) := by
   rw [ENNReal.ofReal_div_of_pos (sq_pos_of_ne_zero hc.ne.symm), hX.ofReal_variance_eq]
   convert @meas_ge_le_evariance_div_sq _ _ _ hX.1 c.toNNReal (by simp [hc]) using 1
-  · simp only [Real.coe_toNNReal', max_le_iff, abs_nonneg, and_true_iff]
+  · simp only [Real.coe_toNNReal', max_le_iff, abs_nonneg, and_true]
   · rw [ENNReal.ofReal_pow hc.le]
     rfl
 
