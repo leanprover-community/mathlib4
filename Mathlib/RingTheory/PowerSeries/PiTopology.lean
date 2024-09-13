@@ -27,8 +27,7 @@ variable [TopologicalSpace R]
 namespace WithPiTopology
 
 /-- The pointwise topology on PowerSeries -/
-scoped instance : TopologicalSpace (PowerSeries R) :=
-  Pi.topologicalSpace
+scoped instance : TopologicalSpace (PowerSeries R) := Pi.topologicalSpace
 
 variable [Semiring R]
 
@@ -69,7 +68,7 @@ theorem instTopologicalRing [Ring R] [TopologicalRing R] :
 /-- PowerSeries on a T2Space form a T2Space -/
 @[scoped instance]
 theorem instT2Space [T2Space R] : T2Space (PowerSeries R) :=
-  MvPowerSeries.WithPiTopology.instT2Space Unit R
+  MvPowerSeries.WithPiTopology.instT2Space
 
 end WithPiTopology
 
@@ -77,15 +76,13 @@ end Topological
 
 section Uniform
 
-namespace WithPiUniformity
-
-open WithPiTopology
+namespace WithPiTopology
 
 variable [UniformSpace R]
 
 /-- The componentwise uniformity on PowerSeries -/
 scoped instance : UniformSpace (PowerSeries R) :=
-  MvPowerSeries.WithPiUniformity.instUniformSpace Unit R
+  MvPowerSeries.WithPiTopology.instUniformSpace Unit R
 
 /-- Coefficients are uniformly continuous -/
 theorem uniformContinuous_coeff [Semiring R] (d : ℕ) :
@@ -98,26 +95,20 @@ variable [Ring R]
 @[scoped instance]
 theorem instUniformAddGroup [UniformAddGroup R] :
     UniformAddGroup (PowerSeries R) :=
-  MvPowerSeries.WithPiUniformity.instUniformAddGroup Unit R
+  MvPowerSeries.WithPiTopology.instUniformAddGroup Unit R
 
 /-- Completeness of the uniform structure on PowerSeries -/
 @[scoped instance]
 theorem instCompleteSpace [CompleteSpace R] :
     CompleteSpace (PowerSeries R) :=
-  MvPowerSeries.WithPiUniformity.instCompleteSpace Unit R
+  MvPowerSeries.WithPiTopology.instCompleteSpace Unit R
 
 /-- Separation of the uniform structure on PowerSeries -/
 @[scoped instance]
 theorem instT0Space [T0Space R] : T0Space (PowerSeries R) :=
-  MvPowerSeries.WithPiUniformity.instT0Space Unit R
+  MvPowerSeries.WithPiTopology.instT0Space
 
-/-- the topological ring structure on Power Series` -/
-@[scoped instance]
-theorem instTopologicalRing [UniformAddGroup R] [TopologicalRing R] :
-    TopologicalRing (PowerSeries R) :=
-  MvPowerSeries.WithPiUniformity.instTopologicalRing Unit R
-
-end WithPiUniformity
+end WithPiTopology
 
 end Uniform
 
@@ -127,26 +118,31 @@ variable {R}
 
 variable [TopologicalSpace R]
 
-open WithPiTopology WithPiUniformity
+namespace WithPiTopology
 
-theorem continuous_C [Ring R] [TopologicalRing R] : Continuous (C R) := MvPowerSeries.continuous_C
+open MvPowerSeries.WithPiTopology
+
+theorem continuous_C [Ring R] [TopologicalRing R] : Continuous (C R) :=
+  MvPowerSeries.WithPiTopology.continuous_C
 
 theorem tendsto_pow_zero_of_constantCoeff_nilpotent [CommSemiring R]
     {f : PowerSeries R} (hf : IsNilpotent (constantCoeff R f)) :
     Tendsto (fun n : ℕ => f ^ n) atTop (nhds 0) :=
-  MvPowerSeries.tendsto_pow_zero_of_constantCoeff_nilpotent hf
+  MvPowerSeries.WithPiTopology.tendsto_pow_zero_of_constantCoeff_nilpotent hf
 
 theorem tendsto_pow_zero_of_constantCoeff_zero [CommSemiring R]
     {f : PowerSeries R} (hf : constantCoeff R f = 0) :
     Tendsto (fun n : ℕ => f ^ n) atTop (nhds 0) :=
-  MvPowerSeries.tendsto_pow_zero_of_constantCoeff_zero hf
+  MvPowerSeries.WithPiTopology.tendsto_pow_zero_of_constantCoeff_zero hf
 
 /-- Bourbaki, Algèbre, chap. 4, §4, n°2, corollaire de la prop. 3 -/
 theorem tendsto_pow_of_constantCoeff_nilpotent_iff
     [CommRing R] [DiscreteTopology R] (f : PowerSeries R) :
     Tendsto (fun n : ℕ => f ^ n) atTop (nhds 0) ↔
       IsNilpotent (constantCoeff R f) :=
-  MvPowerSeries.tendsto_pow_of_constantCoeff_nilpotent_iff f
+  MvPowerSeries.WithPiTopology.tendsto_pow_of_constantCoeff_nilpotent_iff f
+
+end WithPiTopology
 
 end
 
@@ -163,7 +159,7 @@ variable {R}
 theorem hasSum_of_monomials_self (f : PowerSeries R) :
     HasSum (fun d : ℕ => monomial R d (coeff R d f)) f := by
   rw [← (Finsupp.LinearEquiv.finsuppUnique ℕ ℕ Unit).toEquiv.hasSum_iff]
-  convert MvPowerSeries.hasSum_of_monomials_self f
+  convert MvPowerSeries.WithPiTopology.hasSum_of_monomials_self f
   simp only [LinearEquiv.coe_toEquiv, comp_apply, monomial, coeff,
     Finsupp.LinearEquiv.finsuppUnique_apply, PUnit.default_eq_unit]
   congr
