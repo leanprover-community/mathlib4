@@ -974,7 +974,6 @@ theorem bddAbove_range_comp {ι : Type u} {f : ι → Cardinal.{v}} (hf : BddAbo
 
 /-! ### Bounds on suprema -/
 
-
 theorem sum_le_iSup_lift {ι : Type u}
     (f : ι → Cardinal.{max u v}) : sum f ≤ Cardinal.lift #ι * iSup f := by
   rw [← (iSup f).lift_id, ← lift_umax, lift_umax.{max u v, u}, ← sum_const]
