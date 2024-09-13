@@ -108,15 +108,15 @@ def LeftDistributive  := ∀ a b c, a * (b + c) = a * b + a * c
 def RightDistributive := ∀ a b c, (a + b) * c = a * c + b * c
 
 /-- `LeftCommutative op` where `op : α → β → β` says that `op` is a left-commutative operation,
-i.e. `a₁ ∘ (a₂ ∘ b) = a₂ ∘ (a₁ ∘ b)`. -/
+i.e. `op a₁ (op a₂ b) = op a₂ (op a₁ b)`. -/
 class LeftCommutative (op : α → β → β) : Prop where
-  /-- A left-commutative operation satisfies `a₁ ∘ (a₂ ∘ b) = a₂ ∘ (a₁ ∘ b)`. -/
+  /-- A left-commutative operation satisfies `op a₁ (op a₂ b) = op a₂ (op a₁ b)`. -/
   left_comm : (a₁ a₂ : α) → (b : β) → op a₁ (op a₂ b) = op a₂ (op a₁ b)
 
 /-- `RightCommutative op` where `op : β → α → β` says that `op` is a right-commutative operation,
-i.e. `(b ∘ a₁) ∘ a₂ = (b ∘ a₂) ∘ a₁`. -/
+i.e. `op (op b a₁) a₂ = op (op b a₂) a₁`. -/
 class RightCommutative (op : β → α → β) : Prop where
-  /-- A right-commutative operation satisfies `(b ∘ a₁) ∘ a₂ = (b ∘ a₂) ∘ a₁`. -/
+  /-- A right-commutative operation satisfies `op (op b a₁) a₂ = op (op b a₂) a₁`. -/
   right_comm : (b : β) → (a₁ a₂ : α) → op (op b a₁) a₂ = op (op b a₂) a₁
 
 instance {f : α → β → β} [h : LeftCommutative f] : RightCommutative (fun x y ↦ f y x) :=
