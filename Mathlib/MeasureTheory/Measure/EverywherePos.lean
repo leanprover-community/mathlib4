@@ -45,12 +45,12 @@ variable {α : Type*} [TopologicalSpace α] [MeasurableSpace α]
 /-- A set `s` is *everywhere positive* (also called *self-supporting*) with respect to a
 measure `μ` if it has positive measure around each of its points, i.e., if all neighborhoods `n`
 of points of `s` satisfy `μ (s ∩ n) > 0`. -/
-@[pp_dot] def IsEverywherePos (μ : Measure α) (s : Set α) : Prop :=
+def IsEverywherePos (μ : Measure α) (s : Set α) : Prop :=
   ∀ x ∈ s, ∀ n ∈ 𝓝[s] x, 0 < μ n
 
 /-- * The everywhere positive subset of a set is the subset made of those points all of whose
 neighborhoods have positive measure inside the set. -/
-@[pp_dot] def everywherePosSubset (μ : Measure α) (s : Set α) : Set α :=
+def everywherePosSubset (μ : Measure α) (s : Set α) : Set α :=
   {x | x ∈ s ∧ ∀ n ∈ 𝓝[s] x, 0 < μ n}
 
 lemma everywherePosSubset_subset (μ : Measure α) (s : Set α) : μ.everywherePosSubset s ⊆ s :=
@@ -101,15 +101,15 @@ lemma measure_eq_zero_of_subset_diff_everywherePosSubset
   · exact fun s t hst ht ↦ measure_mono_null hst ht
   · exact fun s t hs ht ↦ measure_union_null hs ht
   · intro x hx
-    obtain ⟨u, ux, hu⟩ : ∃ u ∈ 𝓝[s] x, μ u = 0 :=
-      by simpa [everywherePosSubset, (h'k hx).1] using (h'k hx).2
-    exact ⟨u, nhdsWithin_mono x (h'k.trans (diff_subset _ _)) ux, hu⟩
+    obtain ⟨u, ux, hu⟩ : ∃ u ∈ 𝓝[s] x, μ u = 0 := by
+      simpa [everywherePosSubset, (h'k hx).1] using (h'k hx).2
+    exact ⟨u, nhdsWithin_mono x (h'k.trans diff_subset) ux, hu⟩
 
 /-- In a space with an inner regular measure, any measurable set coincides almost everywhere with
 its everywhere positive subset. -/
 lemma everywherePosSubset_ae_eq [OpensMeasurableSpace α] [InnerRegular μ] (hs : MeasurableSet s) :
     μ.everywherePosSubset s =ᵐ[μ] s := by
-  simp only [ae_eq_set, diff_eq_empty.mpr (everywherePosSubset_subset μ s), OuterMeasure.empty',
+  simp only [ae_eq_set, diff_eq_empty.mpr (everywherePosSubset_subset μ s), measure_empty,
     true_and, (hs.diff hs.everywherePosSubset).measure_eq_iSup_isCompact, ENNReal.iSup_eq_zero]
   intro k hk h'k
   exact measure_eq_zero_of_subset_diff_everywherePosSubset h'k hk
@@ -120,8 +120,8 @@ lemma everywherePosSubset_ae_eq_of_measure_ne_top
     [OpensMeasurableSpace α] [InnerRegularCompactLTTop μ] (hs : MeasurableSet s) (h's : μ s ≠ ∞) :
     μ.everywherePosSubset s =ᵐ[μ] s := by
   have A : μ (s \ μ.everywherePosSubset s) ≠ ∞ :=
-    ((measure_mono (diff_subset _ _ )).trans_lt h's.lt_top).ne
-  simp only [ae_eq_set, diff_eq_empty.mpr (everywherePosSubset_subset μ s), OuterMeasure.empty',
+    ((measure_mono diff_subset).trans_lt h's.lt_top).ne
+  simp only [ae_eq_set, diff_eq_empty.mpr (everywherePosSubset_subset μ s), measure_empty,
     true_and, (hs.diff hs.everywherePosSubset).measure_eq_iSup_isCompact_of_ne_top A,
     ENNReal.iSup_eq_zero]
   intro k hk h'k
@@ -176,8 +176,8 @@ lemma IsEverywherePos.of_forall_exists_nhds_eq (hs : IsEverywherePos μ s)
     (h : ∀ x ∈ s, ∃ t ∈ 𝓝 x, ∀ u ⊆ t, ν u = μ u) : IsEverywherePos ν s := by
   intro x hx n hn
   rcases h x hx with ⟨t, t_mem, ht⟩
-  apply lt_of_lt_of_le _ (measure_mono (inter_subset_left n t))
-  rw [ht _ (inter_subset_right n t)]
+  refine lt_of_lt_of_le ?_ (measure_mono (inter_subset_left (t := t)))
+  rw [ht (n ∩ t) inter_subset_right]
   exact hs x hx _ (inter_mem hn (mem_nhdsWithin_of_mem_nhds t_mem))
 
 /-- If two measures coincide locally, then a set is everywhere positive for the former iff it is
@@ -243,13 +243,13 @@ lemma IsEverywherePos.IsGdelta_of_isMulLeftInvariant
     apply le_of_lt (hW _ _ ?_)
     have : W n * {z} ∈ 𝓝 z := (IsOpen.mul_right (W_open n)).mem_nhds (by simp [mem_W])
     obtain ⟨i, hi, ni⟩ : ∃ i, y i ∈ W n * {z} ∧ n < i :=
-      (((mapClusterPt_iff _ _ _).1 hz _ this).and_eventually (eventually_gt_atTop n)).exists
+      ((mapClusterPt_iff.1 hz _ this).and_eventually (eventually_gt_atTop n)).exists
     refine ⟨x * (y i) ⁻¹, ?_, y i * z⁻¹, by simpa using hi, by group⟩
     have I : V i ⊆ W n := iInter₂_subset n (by simp [ni])
     have J : x * (y i) ⁻¹ ∈ V i := by simpa [← hvy i] using hv i
     exact I J
   have B : μ (((x * z ⁻¹) • k) \ k) = 0 :=
-    le_antisymm (ge_of_tendsto u_lim (eventually_of_forall A)) bot_le
+    le_antisymm (ge_of_tendsto u_lim (Eventually.of_forall A)) bot_le
   have C : μ (k \ (z * x⁻¹) • k) = 0 := by
     have : μ ((z * x⁻¹) • (((x * z ⁻¹) • k) \ k)) = 0 := by rwa [measure_smul]
     rw [← this, smul_set_sdiff, smul_smul]
@@ -294,3 +294,9 @@ theorem innerRegularWRT_preimage_one_hasCompactSupport_measure_ne_top_of_group :
     apply measure_congr
     exact everywherePosSubset_ae_eq_of_measure_ne_top K_closed.measurableSet
       K_comp.measure_lt_top.ne
+
+end TopologicalGroup
+
+end Measure
+
+end MeasureTheory

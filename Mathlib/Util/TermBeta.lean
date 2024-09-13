@@ -3,6 +3,7 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
+import Mathlib.Init
 import Lean.Elab.Term
 
 /-! `beta%` term elaborator
@@ -36,3 +37,5 @@ def elabBeta : TermElab := fun stx expectedType? =>
     let e ← elabTerm t expectedType?
     return (← instantiateMVars e).headBeta
   | _ => throwUnsupportedSyntax
+
+end Mathlib.Util.TermBeta

@@ -10,8 +10,6 @@ import Mathlib.MeasureTheory.Covering.DensityTheorem
 import Mathlib.MeasureTheory.Group.AddCircle
 import Mathlib.MeasureTheory.Measure.Haar.Unique
 
-#align_import dynamics.ergodic.add_circle from "leanprover-community/mathlib"@"5f6e827d81dfbeb6151d7016586ceeb0099b9655"
-
 /-!
 # Ergodic maps of the additive circle
 
@@ -72,7 +70,7 @@ theorem ae_empty_or_univ_of_forall_vadd_ae_eq_self {s : Set <| AddCircle T}
     have hδ₀ : ∀ᶠ j in l, 0 < δ j :=
       (hu₂.eventually_gt_atTop 0).mono fun j hj => div_pos hT₀ <| by positivity
     have hδ₁ : Tendsto δ l (𝓝[>] 0) := by
-      refine' tendsto_nhdsWithin_iff.mpr ⟨_, hδ₀⟩
+      refine tendsto_nhdsWithin_iff.mpr ⟨?_, hδ₀⟩
       replace hu₂ : Tendsto (fun j => T⁻¹ * 2 * n j) l atTop :=
         (tendsto_natCast_atTop_iff.mpr hu₂).const_mul_atTop (by positivity : 0 < T⁻¹ * 2)
       convert hu₂.inv_tendsto_atTop
@@ -85,7 +83,7 @@ theorem ae_empty_or_univ_of_forall_vadd_ae_eq_self {s : Set <| AddCircle T}
   suffices ∀ᶠ j in l, μ (s ∩ I j) / μ (I j) = μ s / ENNReal.ofReal T by
     replace hd := hd.congr' this
     rwa [tendsto_const_nhds_iff, ENNReal.div_eq_one_iff hT₁ ENNReal.ofReal_ne_top] at hd
-  refine' (hu₂.eventually_gt_atTop 0).mono fun j hj => _
+  refine (hu₂.eventually_gt_atTop 0).mono fun j hj => ?_
   have : addOrderOf (u j) = n j := rfl
   have huj : IsOfFinAddOrder (u j) := addOrderOf_pos_iff.mp hj
   have huj' : 1 ≤ (↑(n j) : ℝ) := by norm_cast
@@ -99,11 +97,10 @@ theorem ae_empty_or_univ_of_forall_vadd_ae_eq_self {s : Set <| AddCircle T}
   rw [ENNReal.div_eq_div_iff hT₁ ENNReal.ofReal_ne_top hI₀ hI₁,
     volume_of_add_preimage_eq s _ (u j) d huj (hu₁ j) closedBall_ae_eq_ball, nsmul_eq_mul, ←
     mul_assoc, this, hI₂]
-#align add_circle.ae_empty_or_univ_of_forall_vadd_ae_eq_self AddCircle.ae_empty_or_univ_of_forall_vadd_ae_eq_self
 
 theorem ergodic_zsmul {n : ℤ} (hn : 1 < |n|) : Ergodic fun y : AddCircle T => n • y :=
   { measurePreserving_zsmul volume (abs_pos.mp <| lt_trans zero_lt_one hn) with
-    ae_empty_or_univ := fun s hs hs' => by
+    aeconst_set := fun s hs hs' => by
       let u : ℕ → AddCircle T := fun j => ↑((↑1 : ℝ) / ↑(n.natAbs ^ j) * T)
       replace hn : 1 < n.natAbs := by rwa [Int.abs_eq_natAbs, Nat.one_lt_cast] at hn
       have hu₀ : ∀ j, addOrderOf (u j) = n.natAbs ^ j := fun j => by
@@ -111,18 +108,17 @@ theorem ergodic_zsmul {n : ℤ} (hn : 1 < |n|) : Ergodic fun y : AddCircle T => 
           (pow_pos (pos_of_gt hn) j) (gcd_one_left _)
         norm_cast
       have hnu : ∀ j, n ^ j • u j = 0 := fun j => by
-        rw [← addOrderOf_dvd_iff_zsmul_eq_zero, hu₀, Int.coe_nat_pow, Int.natCast_natAbs, ← abs_pow,
+        rw [← addOrderOf_dvd_iff_zsmul_eq_zero, hu₀, Int.natCast_pow, Int.natCast_natAbs, ← abs_pow,
           abs_dvd]
       have hu₁ : ∀ j, (u j +ᵥ s : Set _) =ᵐ[volume] s := fun j => by
         rw [vadd_eq_self_of_preimage_zsmul_eq_self hs' (hnu j)]
       have hu₂ : Tendsto (fun j => addOrderOf <| u j) atTop atTop := by
         simp_rw [hu₀]; exact Nat.tendsto_pow_atTop_atTop_of_one_lt hn
+      rw [eventuallyConst_set']
       exact ae_empty_or_univ_of_forall_vadd_ae_eq_self hs.nullMeasurableSet hu₁ hu₂ }
-#align add_circle.ergodic_zsmul AddCircle.ergodic_zsmul
 
 theorem ergodic_nsmul {n : ℕ} (hn : 1 < n) : Ergodic fun y : AddCircle T => n • y :=
   ergodic_zsmul (by simp [hn] : 1 < |(n : ℤ)|)
-#align add_circle.ergodic_nsmul AddCircle.ergodic_nsmul
 
 theorem ergodic_zsmul_add (x : AddCircle T) {n : ℤ} (h : 1 < |n|) : Ergodic fun y => n • y + x := by
   set f : AddCircle T → AddCircle T := fun y => n • y + x
@@ -140,10 +136,8 @@ theorem ergodic_zsmul_add (x : AddCircle T) {n : ℤ} (h : 1 < |n|) : Ergodic fu
   simp only [f, e, hnx, MeasurableEquiv.coe_addLeft, MeasurableEquiv.symm_addLeft, comp_apply,
     smul_add, zsmul_neg', neg_smul, neg_add_rev]
   abel
-#align add_circle.ergodic_zsmul_add AddCircle.ergodic_zsmul_add
 
 theorem ergodic_nsmul_add (x : AddCircle T) {n : ℕ} (h : 1 < n) : Ergodic fun y => n • y + x :=
   ergodic_zsmul_add x (by simp [h] : 1 < |(n : ℤ)|)
-#align add_circle.ergodic_nsmul_add AddCircle.ergodic_nsmul_add
 
 end AddCircle
