@@ -30,10 +30,10 @@ universe u v
 variable {α : Sort u} {β : Sort v}
 
 /-- `IsSymmOp op` where `op : α → α → β` says that `op` is a symmetric operation,
-i.e. `a ∘ b = b ∘ a`.
-It is the natural generalisation of `Std.IsCommutative` (`β = α`) and `IsSymm` (`β = Prop`). -/
+i.e. `op a b = op b a`.
+It is the natural generalisation of `Std.Commutative` (`β = α`) and `IsSymm` (`β = Prop`). -/
 class IsSymmOp (op : α → α → β) : Prop where
-  /-- A symmetric operation satisfies `a ∘ b = b ∘ a`. -/
+  /-- A symmetric operation satisfies `op a b = op b a`. -/
   symm_op : ∀ a b, op a b = op b a
 
 instance (priority := 100) isSymmOp_of_isCommutative (α : Sort u) (op : α → α → α)
