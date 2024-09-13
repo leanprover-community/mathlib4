@@ -459,11 +459,11 @@ theorem Gamma_ne_zero_of_re_pos {s : ℂ} (hs : 0 < re s) : Gamma s ≠ 0 := by
   simpa only [hs, neg_re, ← ofReal_natCast, ofReal_re, neg_nonpos] using Nat.cast_nonneg _
 
 lemma integral_re {X : Type*} [MeasurableSpace X]
-(μ : Measure X) {f : X → ℂ} (hf : Integrable f μ) :
+    (μ : Measure X) {f : X → ℂ} (hf : Integrable f μ) :
     ∫ x, (f x).re ∂μ = (∫x, f x ∂μ).re := _root_.integral_re hf
 
 lemma setIntegral_re {X : Type*} [MeasurableSpace X]
-(μ : Measure X) {s : Set X} {f : X → ℂ} (hf : IntegrableOn f s μ) :
+    (μ : Measure X) {s : Set X} {f : X → ℂ} (hf : IntegrableOn f s μ) :
     ∫ x in s, (f x).re ∂μ = (∫x in s, f x ∂μ).re := Complex.integral_re _ hf.integrable
 
 end Complex
@@ -504,7 +504,7 @@ lemma BetaIntegral_ofReal_interval {a b : ℝ} (ha : 0 < a) (hb : 0 < b) :
   exact Complex.betaIntegral_convergent ha' hb'
 
 lemma BetaIntegral_ofReal {a b : ℝ} (ha : 0 < a) (hb : 0 < b) :
-Beta a b = ∫ (x : ℝ) in Ioo 0 1, x ^ (a - 1) * (1 - x) ^ (b - 1) := by
+    Beta a b = ∫ (x : ℝ) in Ioo 0 1, x ^ (a - 1) * (1 - x) ^ (b - 1) := by
   rw [Beta, Complex.betaIntegral]
   rw [BetaIntegral_ofReal_interval ha hb]
   rw [intervalIntegral.integral_of_le (by norm_num)]
@@ -524,7 +524,7 @@ private lemma Beta_integrable_cast {a b : ℝ} :
   any_goals linarith
 
 lemma Beta_integrand_intervalIntegrable {a b : ℝ} (ha : 0 < a) (hb : 0 < b):
-@IntervalIntegrable ℝ normedAddCommGroup (fun x ↦ x ^ (a - 1) * (1 - x) ^ (b - 1)) volume 0 1 := by
+    @IntervalIntegrable ℝ normedAddCommGroup (fun x ↦ x ^ (a - 1) * (1 - x) ^ (b - 1)) volume 0 1 := by
   have ha' : 0 < (↑a : ℂ).re := by
     rw [Complex.ofReal_re]
     exact ha
