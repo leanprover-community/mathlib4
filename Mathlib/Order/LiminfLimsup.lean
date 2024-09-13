@@ -126,8 +126,18 @@ lemma isBoundedUnder_iff_eventually_bddBelow :
 lemma _root_.BddAbove.isBoundedUnder (hs : s ∈ f) (hu : BddAbove (u '' s)) :
     f.IsBoundedUnder (· ≤ ·) u := isBoundedUnder_iff_eventually_bddAbove.2 ⟨_, hu, hs⟩
 
+/-- A bounded above function `u` is in particular eventually bounded above. -/
+lemma _root_.BddAbove.isBoundedUnder_of_range {f : Filter β} {u : β → α} :
+    BddAbove (Set.range u) → f.IsBoundedUnder (· ≤ ·) u
+  | ⟨b, hb⟩ => isBoundedUnder_of ⟨b, by simpa [mem_upperBounds] using hb⟩
+
 lemma _root_.BddBelow.isBoundedUnder (hs : s ∈ f) (hu : BddBelow (u '' s)) :
     f.IsBoundedUnder (· ≥ ·) u := isBoundedUnder_iff_eventually_bddBelow.2 ⟨_, hu, hs⟩
+
+/-- A bounded below function `u` is in particular eventually bounded below. -/
+lemma _root_.BddBelow.isBoundedUnder_of_range {f : Filter β} {u : β → α} :
+    BddBelow (Set.range u) → f.IsBoundedUnder (· ≥ ·) u
+  | ⟨b, hb⟩ => isBoundedUnder_of ⟨b, by simpa [mem_lowerBounds] using hb⟩
 
 end Preorder
 
