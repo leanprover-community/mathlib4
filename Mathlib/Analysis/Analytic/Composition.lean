@@ -830,6 +830,11 @@ theorem AnalyticWithinAt.comp_of_eq {g : F → G} {f : E → F} {y : F} {x : E} 
   rw [← hy] at hg
   exact hg.comp hf h
 
+lemma AnalyticWithinOn.comp {f : F → G} {g : E → F} {s : Set F}
+    {t : Set E} (hf : AnalyticWithinOn 𝕜 f s) (hg : AnalyticWithinOn 𝕜 g t) (h : Set.MapsTo g t s) :
+    AnalyticWithinOn 𝕜 (f ∘ g) t :=
+  fun x m ↦ (hf _ (h m)).comp (hg x m) h
+
 /-- If two functions `g` and `f` are analytic respectively at `f x` and `x`, then `g ∘ f` is
 analytic at `x`. -/
 theorem AnalyticAt.comp {g : F → G} {f : E → F} {x : E} (hg : AnalyticAt 𝕜 g (f x))
@@ -864,6 +869,11 @@ theorem AnalyticOn.comp' {s : Set E} {g : F → G} {f : E → F} (hg : AnalyticO
 theorem AnalyticOn.comp {s : Set E} {t : Set F} {g : F → G} {f : E → F} (hg : AnalyticOn 𝕜 g t)
     (hf : AnalyticOn 𝕜 f s) (st : Set.MapsTo f s t) : AnalyticOn 𝕜 (g ∘ f) s :=
   comp' (mono hg (Set.mapsTo'.mp st)) hf
+
+lemma AnalyticOn.comp_analyticWithinOn {f : F → G} {g : E → F} {s : Set F}
+    {t : Set E} (hf : AnalyticOn 𝕜 f s) (hg : AnalyticWithinOn 𝕜 g t) (h : Set.MapsTo g t s) :
+    AnalyticWithinOn 𝕜 (f ∘ g) t :=
+  fun x m ↦ (hf _ (h m)).comp_analyticWithinAt (hg x m)
 
 /-!
 ### Associativity of the composition of formal multilinear series

@@ -48,6 +48,7 @@ def analyticPregroupoid : Pregroupoid H where
   comp {f g u v} hf hg _ _ _ := by
     have : I ∘ (g ∘ f) ∘ I.symm = (I ∘ g ∘ I.symm) ∘ I ∘ f ∘ I.symm := by ext x; simp
     simp only [this]
+    dsimp at hg
     apply hg.comp
     · exact hf.mono fun _ ⟨hx1, hx2⟩ ↦ ⟨hx1.1, hx2⟩
     · rintro x ⟨hx1, _⟩
