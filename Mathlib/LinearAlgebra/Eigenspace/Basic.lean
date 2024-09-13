@@ -125,9 +125,6 @@ lemma mem_unifEigenspace_zero {f : End R M} {μ : R} {x : M} :
     x ∈ f.unifEigenspace μ 0 ↔ x = 0 := by
   rw [← Nat.cast_zero, mem_unifEigenspace_nat, pow_zero, LinearMap.mem_ker, LinearMap.one_apply]
 
-lemma eigenspace_def (f : End R M) (μ : R) :
-    f.eigenspace μ = LinearMap.ker (f - algebraMap R (End R M) μ) := rfl
-
 @[simp]
 lemma unifEigenspace_zero {f : End R M} {μ : R} :
     f.unifEigenspace μ 0 = ⊥ := by
@@ -254,7 +251,7 @@ noncomputable def maxUnifEigenspaceIndex (f : End R M) (μ : R) :=
 lemma unifEigenspace_top [h : IsNoetherian R M] (f : End R M) (μ : R) :
     unifEigenspace f μ ⊤ =
       f.unifEigenspace μ (maxUnifEigenspaceIndex f μ) := by
-  rw [isNoetherian_iff_wellFounded] at h
+  rw [isNoetherian_iff] at h
   have := WellFounded.iSup_eq_monotonicSequenceLimit h
     { toFun := (f.unifEigenspace μ ·),
       monotone' := fun k l hkl ↦ unifEigenspace_mono f μ <| by simpa }
@@ -295,7 +292,7 @@ lemma HasUnifEigenvalue.le {f : End R M} {μ : R} {k m : ENat}
 lemma HasUnifEigenvalue.lt {f : End R M} {μ : R} {k m : ENat}
     (hm : 0 < m) (hk : f.HasUnifEigenvalue μ k) :
     f.HasUnifEigenvalue μ m := by
-  apply HasUnifEigenvalue.le (k := 1) (ENat.one_le_iff_pos.mpr hm)
+  apply HasUnifEigenvalue.le (k := 1) (Order.one_le_iff_pos.mpr hm)
   intro contra; apply hk
   rw [unifEigenspace_one, LinearMap.ker_eq_bot] at contra
   rw [eq_bot_iff]
@@ -408,9 +405,6 @@ abbrev HasEigenvector (f : End R M) (μ : R) (x : M) : Prop :=
 lemma hasEigenvector_iff {f : End R M} {μ : R} {x : M} :
     f.HasEigenvector μ x ↔ x ∈ f.eigenspace μ ∧ x ≠ 0 := Iff.rfl
 
-lemma hasEigenvector_iff {f : End R M} {μ : R} {x : M} :
-    f.HasEigenvector μ x ↔ x ∈ eigenspace f μ ∧ x ≠ 0 := Iff.rfl
-
 /-- A scalar `μ` is an eigenvalue for a linear map `f` if there are nonzero vectors `x`
     such that `f x = μ • x`. (Def 5.5 of [axler2015]) -/
 abbrev HasEigenvalue (f : End R M) (a : R) : Prop :=
@@ -418,8 +412,6 @@ abbrev HasEigenvalue (f : End R M) (a : R) : Prop :=
 
 lemma hasEigenvalue_iff {f : End R M} {μ : R} :
     f.HasEigenvalue μ ↔ f.eigenspace μ ≠ ⊥ := Iff.rfl
-
-lemma hasEigenvalue_iff (f : End R M) (μ : R) : f.HasEigenvalue μ ↔ eigenspace f μ ≠ ⊥ := Iff.rfl
 
 /-- The eigenvalues of the endomorphism `f`, as a subtype of `R`. -/
 abbrev Eigenvalues (f : End R M) : Type _ :=
@@ -489,9 +481,6 @@ lemma genEigenspace_def (f : End R M) (μ : R) (k : ℕ) :
     f.genEigenspace μ k = LinearMap.ker ((f - μ • 1) ^ k) := by
   rw [genEigenspace, OrderHom.coe_mk, unifEigenspace_nat]
 
-lemma genEigenspace_def (f : End R M) (μ : R) (k : ℕ) :
-    f.genEigenspace μ k = LinearMap.ker ((f - algebraMap R (End R M) μ) ^ k) := rfl
-
 @[simp]
 theorem mem_genEigenspace (f : End R M) (μ : R) (k : ℕ) (m : M) :
     m ∈ f.genEigenspace μ k ↔ ((f - μ • (1 : End R M)) ^ k) m = 0 :=
@@ -508,7 +497,7 @@ abbrev HasGenEigenvector (f : End R M) (μ : R) (k : ℕ) (x : M) : Prop :=
   HasUnifEigenvector f μ k x
 
 lemma hasGenEigenvector_iff {f : End R M} {μ : R} {k : ℕ} {x : M} :
-    f.HasGenEigenvector μ k x ↔ x ≠ 0 ∧ x ∈ f.genEigenspace μ k := Iff.rfl
+    f.HasGenEigenvector μ k x ↔ x ∈ f.genEigenspace μ k ∧ x ≠ 0 := Iff.rfl
 
 /-- A scalar `μ` is a generalized eigenvalue for a linear map `f` and an exponent `k ∈ ℕ` if there
     are generalized eigenvectors for `f`, `k`, and `μ`. -/
@@ -518,9 +507,6 @@ abbrev HasGenEigenvalue (f : End R M) (μ : R) (k : ℕ) : Prop :=
 lemma hasGenEigenvalue_iff {f : End R M} {μ : R} {k : ℕ} :
     f.HasGenEigenvalue μ k ↔ f.genEigenspace μ k ≠ ⊥ := Iff.rfl
 
-lemma hasGenEigenvalue_iff (f : End R M) (μ : R) (k : ℕ) :
-    f.HasGenEigenvalue μ k ↔ genEigenspace f μ k ≠ ⊥ := Iff.rfl
-
 /-- The generalized eigenrange for a linear map `f`, a scalar `μ`, and an exponent `k ∈ ℕ` is the
     range of `(f - μ • id) ^ k`. -/
 abbrev genEigenrange (f : End R M) (μ : R) (k : ℕ) : Submodule R M :=
@@ -529,9 +515,6 @@ abbrev genEigenrange (f : End R M) (μ : R) (k : ℕ) : Submodule R M :=
 lemma genEigenrange_def {f : End R M} {μ : R} {k : ℕ} :
     f.genEigenrange μ k = LinearMap.range ((f - μ • 1) ^ k) := by
   rw [genEigenrange, unifEigenrange_nat]
-
-lemma genEigenrange_def (f : End R M) (μ : R) (k : ℕ) :
-    f.genEigenrange μ k = LinearMap.range ((f - algebraMap R (End R M) μ) ^ k) := rfl
 
 /-- The exponent of a generalized eigenvalue is never 0. -/
 theorem exp_ne_zero_of_hasGenEigenvalue {f : End R M} {μ : R} {k : ℕ}
@@ -546,9 +529,6 @@ lemma maxGenEigenspace_def (f : End R M) (μ : R) :
     f.maxGenEigenspace μ = ⨆ k, f.genEigenspace μ k := by
   rw [maxGenEigenspace, unifEigenspace_eq_iSup_unifEigenspace_nat, iSup_subtype]
   simp only [le_top, iSup_pos, genEigenspace, OrderHom.coe_mk]
-
-lemma maxGenEigenspace_def (f : End R M) (μ : R) :
-    f.maxGenEigenspace μ = ⨆ k, f.genEigenspace μ k := rfl
 
 theorem genEigenspace_le_maximal (f : End R M) (μ : R) (k : ℕ) :
     f.genEigenspace μ k ≤ f.maxGenEigenspace μ :=
@@ -567,14 +547,9 @@ noncomputable abbrev maxGenEigenspaceIndex (f : End R M) (μ : R) :=
 
 /-- For an endomorphism of a Noetherian module, the maximal eigenspace is always of the form kernel
 `(f - μ • id) ^ k` for some `k`. -/
-theorem maxGenEigenspace_eq' [IsNoetherian R M] (f : End R M) (μ : R) :
-    maxGenEigenspace f μ =
-      f.genEigenspace μ (maxGenEigenspaceIndex f μ) :=
-  unifEigenspace_top _ _
-
-theorem maxGenEigenspace_eq [h : IsNoetherian R M] (f : End R M) (μ : R) :
+theorem maxGenEigenspace_eq [IsNoetherian R M] (f : End R M) (μ : R) :
     maxGenEigenspace f μ = f.genEigenspace μ (maxGenEigenspaceIndex f μ) :=
-  h.wf.iSup_eq_monotonicSequenceLimit (f.genEigenspace μ)
+  unifEigenspace_top _ _
 
 /-- A generalized eigenvalue for some exponent `k` is also
     a generalized eigenvalue for exponents larger than `k`. -/
