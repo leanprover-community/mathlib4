@@ -547,6 +547,11 @@ theorem IsSeparable.isIntegral {x : K} (h : IsSeparable F x) : IsIntegral F x :=
 theorem Algebra.IsSeparable.isIntegral [Algebra.IsSeparable F K] : ∀ x : K, IsIntegral F x :=
   fun x ↦ _root_.IsSeparable.isIntegral (Algebra.IsSeparable.isSeparable F x)
 
+variable (K) in
+instance Algebra.IsSeparable.isAlgebraic [Nontrivial F] [Algebra.IsSeparable F K] :
+    Algebra.IsAlgebraic F K :=
+  ⟨fun x ↦ (Algebra.IsSeparable.isIntegral F x).isAlgebraic⟩
+
 variable {F}
 
 theorem Algebra.isSeparable_iff :
@@ -556,7 +561,7 @@ theorem Algebra.isSeparable_iff :
 
 variable {E : Type*}
 
-section
+section AlgEquiv
 
 variable [Ring E] [Algebra F E] (e : K ≃ₐ[F] E)
 include e
@@ -575,14 +580,9 @@ alias AlgEquiv.isSeparable := AlgEquiv.Algebra.isSeparable
 theorem AlgEquiv.Algebra.isSeparable_iff : Algebra.IsSeparable F K ↔ Algebra.IsSeparable F E :=
   ⟨fun _ ↦ AlgEquiv.Algebra.isSeparable e, fun _ ↦ AlgEquiv.Algebra.isSeparable e.symm⟩
 
-variable (F K) in
-instance Algebra.IsSeparable.isAlgebraic [Nontrivial F] [Algebra.IsSeparable F K] :
-    Algebra.IsAlgebraic F K :=
-  ⟨fun x ↦ (Algebra.IsSeparable.isIntegral F x).isAlgebraic⟩
+end AlgEquiv
 
-end
-
-section
+section IsScalarTower
 
 variable [Field L] [CommRing E] [Algebra F L]
     [Algebra F E] [Algebra L E] [IsScalarTower F L E]
@@ -601,7 +601,7 @@ theorem Algebra.isSeparable_tower_top_of_isSeparable [Algebra.IsSeparable F E] :
 @[deprecated (since := "2024-08-06")]
 alias IsSeparable.of_isScalarTower := Algebra.isSeparable_tower_top_of_isSeparable
 
-end
+end IsScalarTower
 
 end CommRing
 
@@ -609,7 +609,7 @@ section Field
 
 variable (F : Type*) [Field F] {K E E' : Type*}
 
-section
+section FiniteDimensional
 
 variable [Ring K] [Algebra F K]
 
@@ -626,15 +626,15 @@ variable [IsDomain K] [FiniteDimensional F K] [CharZero F]
 theorem IsSeparable.of_finite (x : K) : IsSeparable F x :=
   (minpoly.irreducible <| .of_finite F x).separable
 
-variable (K) in
 -- See note [lower instance priority]
+variable (K) in
 /-- A finite field extension in characteristic 0 is separable. -/
 protected instance (priority := 100) Algebra.IsSeparable.of_finite : Algebra.IsSeparable F K :=
-  ⟨fun _ => _root_.IsSeparable.of_finite _ _⟩
+  ⟨_root_.IsSeparable.of_finite _⟩
 
-end
+end FiniteDimensional
 
-section
+section IsScalarTower
 
 variable [Field K] [Ring E] [Algebra F K] [Algebra F E] [Algebra K E]
   [Nontrivial E] [IsScalarTower F K E]
@@ -654,7 +654,7 @@ theorem Algebra.isSeparable_tower_bot_of_isSeparable [h : Algebra.IsSeparable F 
     Algebra.IsSeparable F K :=
   ⟨fun _ ↦ IsSeparable.tower_bot (h.isSeparable _)⟩
 
-end
+end IsScalarTower
 
 section
 
@@ -677,7 +677,7 @@ end
 
 end Field
 
-section
+section AlgEquiv
 
 variable {A₁ B₁ A₂ B₂ : Type*} [Field A₁] [Field B₁]
     [Field A₂] [Field B₂] [Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂) (e₂ : B₁ ≃+* B₂)
@@ -701,7 +701,7 @@ lemma Algebra.IsSeparable.of_equiv_equiv
   ⟨fun x ↦ (e₂.apply_symm_apply x) ▸ _root_.IsSeparable.of_equiv_equiv e₁ e₂ he
     (Algebra.IsSeparable.isSeparable _ _)⟩
 
-end
+end AlgEquiv
 
 section CardAlgHom
 
