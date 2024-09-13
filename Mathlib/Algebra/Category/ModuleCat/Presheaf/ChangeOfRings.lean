@@ -23,7 +23,7 @@ namespace PresheafOfModules
 
 variable {C : Type u'} [Category.{v'} C] {R R' : Cᵒᵖ ⥤ RingCat.{u}}
 
---/-- The restriction of scalars of presheaves of modules, on objects. -/
+/-- The restriction of scalars of presheaves of modules, on objects. -/
 @[simps]
 noncomputable def restrictScalarsObj (M' : PresheafOfModules.{v} R') (α : R ⟶ R') :
     PresheafOfModules R where
