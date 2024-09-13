@@ -757,6 +757,12 @@ theorem sSup_eq_iSup {s : Set α} : sSup s = ⨆ a ∈ s, a :=
 theorem sInf_eq_iInf {s : Set α} : sInf s = ⨅ a ∈ s, a :=
   @sSup_eq_iSup αᵒᵈ _ _
 
+lemma sSup_lowerBounds_eq_sInf (s : Set α) : sSup (lowerBounds s) = sInf s :=
+  (isLUB_sSup _).unique (isGLB_sInf _).isLUB
+
+lemma sInf_upperBounds_eq_csSup (s : Set α) : sInf (upperBounds s) = sSup s :=
+  (isGLB_sInf _).unique (isLUB_sSup _).isGLB
+
 theorem Monotone.le_map_iSup [CompleteLattice β] {f : α → β} (hf : Monotone f) :
     ⨆ i, f (s i) ≤ f (iSup s) :=
   iSup_le fun _ => hf <| le_iSup _ _

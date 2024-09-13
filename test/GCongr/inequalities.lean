@@ -228,3 +228,13 @@ example {α β : Type*}  [SemilatticeSup α] (f : β → α)
     {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂) (h₁ : s₁.Nonempty) (h₂ : s₂.Nonempty) :
     s₁.sup' h₁ f ≤ s₂.sup' h₂ f := by
   gcongr
+
+/-! Test that `gcongr` can solve side goals of the form `∀ i, f i` when `f i` is in scope for
+`positivity` -/
+
+example {ι : Type*} [Fintype ι] {f g : ι → ℝ} : ∏ i, f i ^ 2 ≤ ∏ i, g i ^ 2 := by
+  gcongr with i _ i _
+  · guard_target = 0 ≤ f i
+    exact test_sorry
+  · guard_target = f i ≤ g i
+    exact test_sorry
