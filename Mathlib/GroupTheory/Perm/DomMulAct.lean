@@ -89,14 +89,14 @@ lemma stabilizerMulEquiv_apply (g : (stabilizer (Perm α)ᵈᵐᵃ f)ᵐᵒᵖ) 
 
 section Fintype
 
-variable [Fintype α] [Fintype ι] [DecidableEq α] [DecidableEq ι]
+variable [Fintype α] [DecidableEq α] [DecidableEq ι]
 
 open Nat
 
 variable (f)
 
 /-- The cardinality of the type of permutations preserving a function -/
-theorem stabilizer_card :
+theorem stabilizer_card [Fintype ι] :
     Fintype.card {g : Perm α // f ∘ g = f} = ∏ i, (Fintype.card {a // f a = i})! := by
   -- rewriting via Nat.card because Fintype instance is not found
   rw [← Nat.card_eq_fintype_card,
@@ -107,7 +107,7 @@ theorem stabilizer_card :
   · rfl
 
 /-- The cardinality of the set of permutations preserving a function -/
-theorem stabilizer_ncard :
+theorem stabilizer_ncard [Fintype ι] :
     Set.ncard {g : Perm α | f ∘ g = f} = ∏ i, (Set.ncard {a | f a = i})! := by
   simp only [← Set.Nat.card_coe_set_eq, Set.coe_setOf, card_eq_fintype_card]
   exact stabilizer_card f

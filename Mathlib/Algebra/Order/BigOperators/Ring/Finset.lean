@@ -154,7 +154,7 @@ variable [CanonicallyOrderedCommSemiring R] {f g h : ι → R} {s : Finset ι} {
 /-- Note that the name is to match `CanonicallyOrderedCommSemiring.mul_pos`. -/
 @[simp] lemma _root_.CanonicallyOrderedCommSemiring.prod_pos [Nontrivial R] :
     0 < ∏ i ∈ s, f i ↔ (∀ i ∈ s, (0 : R) < f i) :=
-  CanonicallyOrderedCommSemiring.multiset_prod_pos.trans Multiset.forall_mem_map_iff
+  Multiset.CanonicallyOrderedCommSemiring.multiset_prod_pos.trans Multiset.forall_mem_map_iff
 
 /-- If `g, h ≤ f` and `g i + h i ≤ f i`, then the product of `f` over `s` is at least the
   sum of the products of `g` and `h`. This is the version for `CanonicallyOrderedCommSemiring`.
