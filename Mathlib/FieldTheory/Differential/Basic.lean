@@ -12,7 +12,7 @@ import Mathlib.Tactic.FieldSimp
 # Differential Fields
 
 This file defines the logarithmic derivative `Differential.logDeriv` and proves properties of it.
-This is defined algebraiclly, compared to `logDeriv` which is analytical.
+This is defined algebraically, compared to `logDeriv` which is analytical.
 -/
 
 namespace Differential
@@ -32,8 +32,7 @@ lemma logDeriv_zero : logDeriv (0 : R) = 0 := by
 
 @[simp]
 lemma logDeriv_one : logDeriv (1 : R) = 0 := by
-  unfold logDeriv
-  simp
+  simp [logDeriv]
 
 lemma logDeriv_mul (ha : a ≠ 0) (hb : b ≠ 0) : logDeriv (a * b) = logDeriv a + logDeriv b := by
   unfold logDeriv
@@ -74,7 +73,7 @@ lemma logDeriv_multisetProd {ι : Type*} (s : Multiset ι) {f : ι → R} (h : �
 lemma logDeriv_prod (ι : Type*) (s : Finset ι) (f : ι → R) (h : ∀ x ∈ s, f x ≠ 0) :
     logDeriv (∏ x ∈ s, f x) = ∑ x ∈ s, logDeriv (f x) := logDeriv_multisetProd _ h
 
-lemma logDeriv_prod_of_zero (ι : Type*) (s : Finset ι) (f : ι → R) (h : ∀ x ∈ s, f x = 0) :
+lemma logDeriv_prod_of_eq_zero (ι : Type*) (s : Finset ι) (f : ι → R) (h : ∀ x ∈ s, f x = 0) :
     logDeriv (∏ x ∈ s, f x) = ∑ x ∈ s, logDeriv (f x) := by
   unfold logDeriv
   simp_all
