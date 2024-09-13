@@ -122,26 +122,6 @@ noncomputable def invEmbedding (j : Fin n) :
     c.emb (c.index j) (c.invEmbedding j) = j :=
   (c.exists_inverse j).choose_spec
 
-/-
-
-structure OrderedFinpartition (n : ℕ) where
-  /-- The number of parts in the partition -/
-  length : ℕ
-  /-- The size of each part -/
-  partSize : Fin length → ℕ
-  partSize_pos : ∀ m, 0 < partSize m
-  /-- The increasing parameterization of each part -/
-  emb : ∀ m, (Fin (partSize m)) → Fin n
-  emb_strictMono : ∀ m, StrictMono (emb m)
-  /-- The parts are ordered by increasing greatest element. -/
-  parts_strictMono :
-    StrictMono (fun m ↦ emb m ⟨partSize m - 1, Nat.sub_one_lt_of_lt (partSize_pos m)⟩)
-  /-- The parts are disjoint -/
-  disjoint : PairwiseDisjoint univ (fun m ↦ range (emb m))
-  /-- The parts cover everything -/
-  cover : ⋃ m, range (emb m) = univ
--/
-
 /-- Extend an ordered partition of `n` entries, by adding a new singleton part to the left. -/
 def extendLeft (c : OrderedFinpartition n) : OrderedFinpartition (n + 1) :=
   { length := c.length + 1
@@ -151,8 +131,21 @@ def extendLeft (c : OrderedFinpartition n) : OrderedFinpartition (n + 1) :=
       simp
       simp [c.partSize_pos]
     emb := Fin.cases (fun _ ↦ 0) (fun m ↦ Fin.succ ∘ (c.emb m))
-    emb_strictMono := sorry
-    parts_strictMono := sorry
+    emb_strictMono := by
+      refine Fin.cases ?_ (fun i ↦ ?_)
+      · exact @Subsingleton.strictMono _ _ _ _ (by simp; infer_instance) _
+      · exact strictMono_succ.comp (c.emb_strictMono i)
+    parts_strictMono := by
+      refine Fin.cases ?_ ?_
+      · refine Fin.cases ?_ ?_
+        · simp
+        · simp
+      · intro i
+        refine Fin.cases ?_ ?_
+        · simp
+        · intro j hij
+          simp only [cons_succ, cases_succ, comp_apply, succ_lt_succ_iff]
+          exact c.parts_strictMono (by simpa using hij)
     disjoint := sorry
     cover := sorry }
 
@@ -365,38 +358,49 @@ protected noncomputable def taylorComp
 
 end FormalMultilinearSeries
 
-lemma glou {m : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
+open OrderedFinpartition
+
+lemma faaDiBruno_aux1 {m : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
     (p : FormalMultilinearSeries 𝕜 E F) (c : OrderedFinpartition m) :
     (q.compAlongOrderedFinpartition p (c.extend none)).curryLeft =
     ((c.compAlongOrderedFinpartitionL 𝕜 E F G).flipMultilinear fun i ↦ p (c.partSize i)).comp
       ((q (c.length + 1)).curryLeft.comp ((continuousMultilinearCurryFin1 𝕜 E F) (p 1))) := by
   ext e v
-  simp only [Nat.succ_eq_add_one, OrderedFinpartition.extend, OrderedFinpartition.extendLeft,
+  simp only [Nat.succ_eq_add_one, OrderedFinpartition.extend, extendLeft,
     ContinuousMultilinearMap.curryLeft_apply,
-    FormalMultilinearSeries.compAlongOrderedFinpartition_apply, ContinuousLinearMap.coe_comp',
-    comp_apply, continuousMultilinearCurryFin1_apply, Matrix.zero_empty,
-    ContinuousLinearMap.flipMultilinear_apply_apply,
-    OrderedFinpartition.compAlongOrderedFinpartitionL_apply,
-    OrderedFinpartition.compAlongOrderFinpartition_apply]
+    FormalMultilinearSeries.compAlongOrderedFinpartition_apply, applyOrderedFinpartition_apply,
+    ContinuousLinearMap.coe_comp', comp_apply, continuousMultilinearCurryFin1_apply,
+    Matrix.zero_empty, ContinuousLinearMap.flipMultilinear_apply_apply,
+    compAlongOrderedFinpartitionL_apply, compAlongOrderFinpartition_apply]
   congr
-  simp only [OrderedFinpartition.applyOrderedFinpartition_apply]
   ext j
   exact Fin.cases rfl (fun i ↦ rfl) j
 
-lemma gloub {m : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
+lemma faaDiBruno_aux2 {m : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
     (p : FormalMultilinearSeries 𝕜 E F) (c : OrderedFinpartition m) (i : Fin c.length) :
     (q.compAlongOrderedFinpartition p (c.extend (some i))).curryLeft =
     ((c.compAlongOrderedFinpartitionL 𝕜 E F G (q c.length)).toContinuousLinearMap
       (fun i ↦ p (c.partSize i)) i).comp (p (c.partSize i + 1)).curryLeft := by
   ext e v
-  simp only [Nat.succ_eq_add_one, OrderedFinpartition.extend, OrderedFinpartition.extendMiddle,
+  simp only [Nat.succ_eq_add_one, OrderedFinpartition.extend, extendMiddle,
     ContinuousMultilinearMap.curryLeft_apply,
     FormalMultilinearSeries.compAlongOrderedFinpartition_apply, ContinuousLinearMap.coe_comp',
-    comp_apply]
-
-
-#exit
-
+    comp_apply, ContinuousMultilinearMap.toContinuousLinearMap_toFun,
+    compAlongOrderedFinpartitionL_apply, compAlongOrderFinpartition_apply,
+    applyOrderedFinpartition_apply]
+  congr
+  ext j
+  rcases eq_or_ne j i with rfl | hij
+  · simp only [↓reduceDIte, update_same, ContinuousMultilinearMap.curryLeft_apply,
+      Nat.succ_eq_add_one]
+    apply FormalMultilinearSeries.congr _ (by simp)
+    intro a ha h'a
+    match a with
+    | 0 => simp
+    | a + 1 => simp [cons]
+  · simp only [hij, ↓reduceDIte, ne_eq, not_false_eq_true, update_noteq]
+    apply FormalMultilinearSeries.congr _ (by simp [hij])
+    simp
 
 theorem faaDiBruno {n : ℕ∞} {g : F → G} {f : E → F}
     (hg : HasFTaylorSeriesUpToOn n g q t) (hf : HasFTaylorSeriesUpToOn n f p s) (h : MapsTo f s t) :
@@ -420,21 +424,12 @@ theorem faaDiBruno {n : ℕ∞} {g : F → G} {f : E → F}
       have J := hg.fderivWithin c.length (cm.trans_lt hm) (f x) (h hx)
       have K := hf.hasFDerivWithinAt (le_add_self.trans (Order.add_one_le_of_lt hm)) hx
       convert HasFDerivWithinAt.linear_multilinear_comp (J.comp x K h) I B
-      simp only [Nat.succ_eq_add_one, Fintype.sum_option, comp_apply]
-      congr
-      · exact glou _ _ _
-      · ext i : 1
-
-
-
-
-
-#exit
-
+      simp only [Nat.succ_eq_add_one, Fintype.sum_option, comp_apply, faaDiBruno_aux1,
+        faaDiBruno_aux2]
     have B : HasFDerivWithinAt (fun x ↦ (q (f x)).taylorComp (p x) m)
         (∑ c : OrderedFinpartition m, ∑ i : Option (Fin c.length),
           ((q (f x)).compAlongOrderedFinpartition (p x) (c.extend i)).curryLeft) s x :=
-      HasFDerivWithinAt.sum (fun c hc ↦ A c)
+      HasFDerivWithinAt.sum (fun c _ ↦ A c)
     suffices ∑ c : OrderedFinpartition m, ∑ i : Option (Fin c.length),
           ((q (f x)).compAlongOrderedFinpartition (p x) (c.extend i)) =
         (q (f x)).taylorComp (p x) (m + 1) by
@@ -447,9 +442,8 @@ theorem faaDiBruno {n : ℕ∞} {g : F → G} {f : E → F}
         Finset.sum_apply, ContinuousLinearMap.add_apply]
     rw [Finset.sum_sigma']
     exact Fintype.sum_equiv (OrderedFinpartition.extendEquiv m) _ _ (fun p ↦ rfl)
-
   · intro m hm
-    apply continuousOn_finset_sum _ (fun c hc ↦ ?_)
+    apply continuousOn_finset_sum _ (fun c _ ↦ ?_)
     let B := c.compAlongOrderedFinpartitionL 𝕜 E F G
     change ContinuousOn
       ((fun p ↦ B p.1 p.2) ∘ (fun x ↦ (q (f x) c.length, fun i ↦ p x (c.partSize i)))) s
@@ -459,18 +453,6 @@ theorem faaDiBruno {n : ℕ∞} {g : F → G} {f : E → F}
     · apply continuousOn_pi.2 (fun i ↦ ?_)
       have : (c.partSize i : ℕ∞) ≤ m := by exact_mod_cast OrderedFinpartition.partSize_le c i
       exact hf.cont _ (this.trans hm)
-
-
-
-
-
-
-
-
-
-
-
-#exit
 
 theorem analyticWithinOn_taylorComp
     (hq : ∀ (n : ℕ), AnalyticWithinOn 𝕜 (fun x ↦ q x n) t)
