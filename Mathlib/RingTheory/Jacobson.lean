@@ -127,7 +127,7 @@ theorem isJacobson_of_isIntegral [Algebra R S] [Algebra.IsIntegral R S] (hR : Is
       ((isJacobson_iff_prime_eq.1 hR) (comap (algebraMap R S) P) (comap_isPrime _ _)),
       comap_jacobson]
     refine sInf_le_sInf fun J hJ => ?_
-    simp only [true_and_iff, Set.mem_image, bot_le, Set.mem_setOf_eq]
+    simp only [true_and, Set.mem_image, bot_le, Set.mem_setOf_eq]
     have : J.IsMaximal := by simpa using hJ
     exact exists_ideal_over_maximal_of_isIntegral J
       (comap_bot_le_of_injective _ algebraMap_quotient_injective)

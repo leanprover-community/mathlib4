@@ -11,7 +11,7 @@ import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Data.List.TFAE
 import Mathlib.Data.Nat.Choose.Bounds
-import Mathlib.Order.Filter.ModEq
+import Mathlib.Order.Filter.AtTopBot.ModEq
 import Mathlib.RingTheory.Polynomial.Pochhammer
 import Mathlib.Tactic.NoncommRing
 
@@ -157,7 +157,7 @@ theorem TFAE_exists_lt_isLittleO_pow (f : ℕ → ℝ) (R : ℝ) :
     · obtain rfl : f = 0 := by
         ext n
         simpa using H n
-      simp only [lt_irrefl, false_or_iff] at h₀
+      simp only [lt_irrefl, false_or] at h₀
       exact ⟨0, ⟨neg_lt_zero.2 h₀, h₀⟩, isBigO_zero _ _⟩
     exact ⟨a, A ⟨ha₀, ha⟩,
       isBigO_of_le' _ fun n ↦ (H n).trans <| mul_le_mul_of_nonneg_left (le_abs_self _) hC₀.le⟩
