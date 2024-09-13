@@ -1057,7 +1057,6 @@ lemma exists_eq_of_iSup_eq_of_not_isLimit
 
 /-! ### Indexed cardinal `prod` -/
 
-
 /-- The indexed product of cardinals is the cardinality of the Pi type
   (dependent product). -/
 def prod {ι : Type u} (f : ι → Cardinal) : Cardinal :=
