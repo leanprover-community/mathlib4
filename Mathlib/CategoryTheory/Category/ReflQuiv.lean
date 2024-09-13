@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Emily Riehl
 -/
 import Mathlib.Combinatorics.Quiver.ReflQuiver
 import Mathlib.CategoryTheory.Category.Cat
+import Mathlib.CategoryTheory.Category.Quiv
 
 /-!
 # The category of refl quivers
@@ -16,6 +17,7 @@ The category `ReflQuiv` of (bundled) reflexive quivers, and the free/forgetful 
 namespace CategoryTheory
 universe v u
 
+/-- Category of refl quivers. -/
 @[nolint checkUnivs]
 def ReflQuiv :=
   Bundled ReflQuiver.{v + 1, u}
@@ -26,6 +28,7 @@ instance : CoeSort ReflQuiv (Type u) where coe := Bundled.α
 
 instance str' (C : ReflQuiv.{v, u}) : ReflQuiver.{v + 1, u} C := C.str
 
+/-- The underlying quiver of a reflexive quiver.-/
 def toQuiv (C : ReflQuiv.{v, u}) : Quiv.{v, u} := Quiv.of C.α
 
 /-- Construct a bundled `ReflQuiv` from the underlying type and the typeclass. -/
@@ -76,6 +79,7 @@ end ReflQuiv
 
 namespace ReflPrefunctor
 
+/-- A refl prefunctor can be promoted to a functor if it respects composition.-/
 def toFunctor {C D : Cat} (F : (ReflQuiv.of C) ⟶ (ReflQuiv.of D))
     (hyp : ∀ {X Y Z : ↑C} (f : X ⟶ Y) (g : Y ⟶ Z),
       F.map (CategoryStruct.comp (obj := C) f g) =
@@ -89,15 +93,21 @@ end ReflPrefunctor
 
 namespace Cat
 
+/-- The hom relation that identifies the specified reflexivity arrows with the nil paths.-/
 inductive FreeReflRel {V} [ReflQuiver V] : (X Y : Paths V) → (f g : X ⟶ Y) → Prop
   | mk {X : V} : FreeReflRel X X (Quiver.Hom.toPath (𝟙rq X)) .nil
 
+/-- A reflexive quiver generates a free category, defined as as quotient of the free category
+on its underlying quiver (called the "path category") by the hom relation that uses the specified
+reflexivity arrows as the identity arrows. -/
 def FreeRefl (V) [ReflQuiver V] :=
   Quotient (C := Cat.free.obj (Quiv.of V)) (FreeReflRel (V := V))
 
 instance (V) [ReflQuiver V] : Category (FreeRefl V) :=
   inferInstanceAs (Category (Quotient _))
 
+/-- The quotient functor associated to a quotient category defines a natural map from the free
+category on the underlying quiver of a refl quiver to the free category on the reflexive quiver.-/
 def FreeRefl.quotientFunctor (V) [ReflQuiver V] : Cat.free.obj (Quiv.of V) ⥤ FreeRefl V :=
   Quotient.functor (C := Cat.free.obj (Quiv.of V)) (FreeReflRel (V := V))
 
@@ -106,6 +116,8 @@ theorem FreeRefl.lift_unique' {V} [ReflQuiver V] {D} [Category D] (F₁ F₂ : F
     F₁ = F₂ :=
   Quotient.lift_unique' (C := Cat.free.obj (Quiv.of V)) (FreeReflRel (V := V)) _ _ h
 
+/-- The functor sending a reflexive quiver to the free category it generates, a quotient of
+its path category.-/
 @[simps!]
 def freeRefl : ReflQuiv.{v, u} ⥤ Cat.{max u v, u} where
   obj V := Cat.of (FreeRefl V)
@@ -141,6 +153,8 @@ theorem freeRefl_naturality {X Y} [ReflQuiver X] [ReflQuiver Y] (f : X ⥤rq Y) 
   simp only [free_obj, FreeRefl.quotientFunctor, freeRefl, ReflQuiv.of_val]
   rw [Quotient.lift_spec]
 
+/-- We will make use of the natural quotient map from the free category on the underlying
+quiver of a refl quiver to the free category on the reflexive quiver.-/
 def freeReflNatTrans : ReflQuiv.forgetToQuiv ⋙ Cat.free ⟶ freeRefl where
   app V := FreeRefl.quotientFunctor V
   naturality _ _ f := freeRefl_naturality f
@@ -150,6 +164,8 @@ end Cat
 namespace ReflQuiv
 open Category Functor
 
+/-- The unit components are defined as the composite of the corresponding unit component for the
+adjunction between categories and quivers with the map underlying the quotient functor.-/
 @[simps! toPrefunctor obj map]
 def adj.unit.app (V : ReflQuiv.{max u v, u}) : V ⥤rq forget.obj (Cat.freeRefl.obj V) where
   toPrefunctor := Quiv.adj.unit.app (V.toQuiv) ⋙q
@@ -161,6 +177,8 @@ theorem adj.unit.component_eq (V : ReflQuiv.{max u v, u}) :
     forgetToQuiv.map (adj.unit.app V) = Quiv.adj.unit.app (V.toQuiv) ≫
     Quiv.forget.map (Y := Cat.of _) (Cat.FreeRefl.quotientFunctor V) := rfl
 
+/-- The counit components are defined using the universal property of the quotient
+from the corresponding counit component for the adjunction between categories and quivers.-/
 @[simps!]
 def adj.counit.app (C : Cat) : Cat.freeRefl.obj (forget.obj C) ⥤ C := by
   fapply Quotient.lift
