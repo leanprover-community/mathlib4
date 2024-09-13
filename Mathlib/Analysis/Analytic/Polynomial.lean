@@ -35,7 +35,7 @@ theorem AnalyticOn.aeval_polynomial (hf : AnalyticOn 𝕜 f s) (p : A[X]) :
     AnalyticOn 𝕜 (fun x ↦ aeval (f x) p) s := fun x hx ↦ (hf x hx).aeval_polynomial p
 
 theorem AnalyticOn.eval_polynomial {A} [NormedCommRing A] [NormedAlgebra 𝕜 A] (p : A[X]) :
-    AnalyticOn 𝕜 (eval · p) Set.univ := (analyticOn_id 𝕜).aeval_polynomial p
+    AnalyticOn 𝕜 (eval · p) Set.univ := analyticOn_id.aeval_polynomial p
 
 end Polynomial
 
