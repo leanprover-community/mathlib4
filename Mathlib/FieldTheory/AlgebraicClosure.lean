@@ -7,7 +7,7 @@ import Mathlib.FieldTheory.NormalClosure
 import Mathlib.FieldTheory.Galois
 
 /-!
-# Algebraic Closure
+# Relative Algebraic Closure
 
 In this file we construct the relative algebraic closure of a field extension.
 
@@ -30,8 +30,7 @@ of `E / F`, is defined to be the integral closure of `F` in `E`.
 The previous results prove that the integral closure is indeed an intermediate field.
 This is the same as the intermediate field of `E / F` consisting of all integral/algebraic elements.
 -/
-def algebraicClosure
-    : IntermediateField F E where
+def algebraicClosure : IntermediateField F E where
   toSubalgebra := _root_.integralClosure F E
   inv_mem' x hx := Subalgebra.inv_mem_of_algebraic (x := ⟨x, hx⟩)
     (isAlgebraic_iff_isIntegral.mpr hx)
