@@ -693,7 +693,7 @@ lemma IsSeparable.of_equiv_equiv {x : B₁} (h : IsSeparable A₁ x) : IsSeparab
     { e₂ with
       commutes' := fun r ↦ by
         simpa [RingHom.algebraMap_toAlgebra] using DFunLike.congr_fun he.symm (e₁.symm r) }
-  haveI := IsSeparable.tower_top A₂ h
+  have := IsSeparable.tower_top A₂ h
   IsSeparable.of_algHom e.symm ((e₂.symm_apply_apply x).symm ▸ this)
 
 lemma Algebra.IsSeparable.of_equiv_equiv
