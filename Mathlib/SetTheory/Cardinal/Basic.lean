@@ -929,7 +929,6 @@ instance IsWellOrder.subtype_nonempty : Nonempty { r // IsWellOrder α r } :=
 
 /-! ### Small sets of cardinals -/
 
-
 namespace Cardinal
 
 /-- The range of an indexed cardinal function, whose outputs live in a higher universe than the
