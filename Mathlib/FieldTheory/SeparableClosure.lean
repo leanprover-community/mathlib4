@@ -170,7 +170,7 @@ theorem separableClosure.separableClosure_eq_bot :
 theorem separableClosure.normalClosure_eq_self :
     normalClosure F (separableClosure F E) E = separableClosure F E :=
   le_antisymm (normalClosure_le_iff.2 fun i ↦
-    haveI : Algebra.IsSeparable F i.fieldRange :=
+    have : Algebra.IsSeparable F i.fieldRange :=
       (AlgEquiv.Algebra.isSeparable (AlgEquiv.ofInjectiveField i))
     le_separableClosure F E _) (le_normalClosure _)
 
