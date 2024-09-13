@@ -84,7 +84,7 @@ variable [Semiring R]
 /-- The ring topology on `PowerSeries` of a topological semiring. -/
 @[scoped instance]
 theorem instTopologicalSemiring [TopologicalSemiring R] :
-    TopologicalSemiring (PowerSeries R) := 
+    TopologicalSemiring (PowerSeries R) :=
   MvPowerSeries.WithPiTopology.instTopologicalSemiring Unit R
 
 /-- `coeff` are continuous. -/
