@@ -255,7 +255,7 @@ theorem Pi.mulSingle_pow [∀ i, Monoid (f i)] (i : I) (x : f i) (n : ℕ) :
 
 @[to_additive]
 theorem Pi.mulSingle_zpow [∀ i, Group (f i)] (i : I) (x : f i) (n : ℤ) :
-    Pi.mulSingle i (x ^ n) = (Pi.mulSingle i x) ^ n :=
+    mulSingle i (x ^ n) = mulSingle i x ^ n :=
   (MonoidHom.mulSingle f i).map_zpow x n
 
 /-- The injection into a pi group at different indices commutes.
