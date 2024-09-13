@@ -35,28 +35,29 @@ ring_norm, ostrowski
 /- ## Preliminary lemmas on limits -/
 
 open Filter
+open Topology
 
 -- If `a : ℝ` is bounded by `g(k)` for every `0 < k` then it is bounded by `lim_{k → ∞} g(k)`
 private lemma le_of_limit_le {a : ℝ} {g : ℕ → ℝ} {l : ℝ} (ha : ∀ (k : ℕ) (_ : 0 < k), a ≤ g k)
-  (hg : Tendsto g Filter.atTop (nhds l)) : a ≤ l := by
+  (hg : Tendsto g Filter.atTop (𝓝 l)) : a ≤ l := by
   apply le_of_tendsto_of_tendsto tendsto_const_nhds hg
   rw [EventuallyLE, eventually_atTop]
   exact ⟨1, ha⟩
 
 
 -- For any `C > 0`, the limit of `C ^ (1/k)` is 1 as `k → ∞`
-private lemma tendsto_root_atTop_nhds_one {C : ℝ} (hC : 0 < C) : Tendsto
-    (fun k : ℕ ↦ C ^ (k : ℝ)⁻¹) atTop (nhds 1) := by
+private lemma tendsto_root_atTop_nhds_one {C : ℝ} (hC : 0 < C) :
+    Tendsto (fun k : ℕ ↦ C ^ (k : ℝ)⁻¹) atTop (𝓝 1) := by
   convert_to Tendsto ((fun k ↦ C ^ k) ∘ (fun k : ℝ ↦ k⁻¹) ∘ (Nat.cast))
-    atTop (nhds 1)
+    atTop (𝓝 1)
   exact Tendsto.comp (Continuous.tendsto' (continuous_iff_continuousAt.2
-    (fun a ↦ Real.continuousAt_const_rpow (Ne.symm (ne_of_lt hC)))) 0 1 (Real.rpow_zero C))
+    (fun a ↦ Real.continuousAt_const_rpow hC.ne')) 0 1 (Real.rpow_zero C))
     <| Tendsto.comp tendsto_inv_atTop_zero tendsto_natCast_atTop_atTop
 
 --extends the lemma `tendsto_rpow_div` when the function has natural input
-private lemma tendsto_nat_rpow_div : Tendsto (fun k : ℕ ↦ (k : ℝ) ^ (k : ℝ)⁻¹)
-    atTop (nhds 1) := by
-  convert_to Tendsto ((fun k : ℝ ↦ k ^ k⁻¹) ∘ (Nat.cast) ) atTop (nhds 1)
+private lemma tendsto_nat_rpow_div :
+    Tendsto (fun k : ℕ ↦ (k : ℝ) ^ (k : ℝ)⁻¹) atTop (𝓝 1) := by
+  convert_to Tendsto ((fun k : ℝ ↦ k ^ k⁻¹) ∘ Nat.cast) atTop (𝓝 1)
   apply Tendsto.comp _ tendsto_natCast_atTop_atTop
   simp_rw [← one_div]
   exact tendsto_rpow_div
@@ -171,7 +172,7 @@ lemma is_prime_of_minimal_nat_zero_lt_mulRingNorm_lt_one : p.Prime := by
 open Real
 
 include hp0 hp1 hmin bdd in
-/-- A natural number not divible by `p` has absolute value 1. -/
+/-- A natural number not divible by `p` has absolute value 1. --/
 lemma mulRingNorm_eq_one_of_not_dvd {m : ℕ} (hpm : ¬ p ∣ m) : f m = 1 := by
   apply le_antisymm (bdd m)
   by_contra! hm
@@ -214,7 +215,7 @@ lemma mulRingNorm_eq_one_of_not_dvd {m : ℕ} (hpm : ¬ p ∣ m) : f m = 1 := by
 /-! ## Step 4: f p = p ^ (- t) for some positive real t -/
 
 include hp0 hp1 hmin in
-/-- The absolute value of `p` is `p ^ (-t)` for some positive real number `t`. -/
+/-- The absolute value of `p` is `p ^ (-t)` for some positive real number `t`. --/
 lemma exists_pos_mulRingNorm_eq_pow_neg : ∃ t : ℝ, 0 < t ∧ f p = p ^ (-t) := by
   have pprime := is_prime_of_minimal_nat_zero_lt_mulRingNorm_lt_one hp0 hp1 hmin
   refine ⟨- logb p (f p), Left.neg_pos_iff.2 <| logb_neg (mod_cast pprime.one_lt) hp0 hp1, ?_⟩
@@ -225,7 +226,7 @@ lemma exists_pos_mulRingNorm_eq_pow_neg : ∃ t : ℝ, 0 < t ∧ f p = p ^ (-t) 
 /-! ## Non-archimedean case: end goal -/
 
 include hf_nontriv bdd in
-/-- If `f` is bounded and not trivial, then it is equivalent to a p-adic absolute value. -/
+/-- If `f` is bounded and not trivial, then it is equivalent to a p-adic absolute value. --/
 theorem mulRingNorm_equiv_padic_of_bounded :
     ∃! p, ∃ (hp : Fact (p.Prime)), MulRingNorm.equiv f (mulRingNorm_padic p) := by
   obtain ⟨p, hfp, hmin⟩ := exists_minimal_nat_zero_lt_mulRingNorm_lt_one hf_nontriv bdd
@@ -288,7 +289,7 @@ lemma MulRingNorm_le_sum_digits (n : ℕ) {m : ℕ} (hm : 1 < m):
     _ ≤ (L.mapIdx fun i _ ↦ m * (f m) ^ i).sum := by
       simp only [hL', List.mapIdx_eq_enum_map, List.map_map]
       apply List.sum_le_sum
-      rintro ⟨i,a⟩ hia
+      rintro ⟨i, a⟩ hia
       dsimp [Function.uncurry]
       replace hia := List.mem_enumFrom hia
       push_cast
@@ -298,7 +299,7 @@ lemma MulRingNorm_le_sum_digits (n : ℕ) {m : ℕ} (hm : 1 < m):
       simp only [zero_le, zero_add, tsub_zero, true_and] at hia
       refine List.mem_iff_get.mpr ?_
       use ⟨i, hia.1⟩
-      exact id (Eq.symm hia.2)
+      exact (Eq.symm hia.2)
 
 open Real Nat
 open Filter
@@ -333,7 +334,8 @@ lemma one_lt_of_not_bounded (notbdd : ¬ ∀ (n : ℕ), f n ≤ 1) {n₀ : ℕ} 
       · simp_all only [List.mem_map, Prod.exists, Function.uncurry_apply_pair, exists_and_right,
           and_imp, implies_true, forall_exists_index, forall_const]
   -- For h_ineq2 we need to exclude the case n = 0.
-  rcases eq_or_ne n 0 with rfl | h₀; simp only [CharP.cast_eq_zero, map_zero, zero_le_one]
+  rcases eq_or_ne n 0 with rfl | h₀
+  · simp only [CharP.cast_eq_zero, map_zero, zero_le_one]
   -- h_ineq2 needs to be in this form because it is applied in le_of_limit_le above
   have h_ineq2 : ∀ (k : ℕ), 0 < k →
       f n ≤ (n₀ * (Real.logb n₀ n + 1)) ^ (k : ℝ)⁻¹ * k ^ (k : ℝ)⁻¹ := by
@@ -355,13 +357,14 @@ lemma one_lt_of_not_bounded (notbdd : ¬ ∀ (n : ℕ), f n ≤ 1) {n₀ : ℕ} 
   rcases eq_or_ne n 1 with rfl | h₁; simp only [Nat.cast_one, map_one, le_refl]
   have prod_limit : Filter.Tendsto
       (fun k : ℕ ↦ (n₀ * (Real.logb n₀ n + 1)) ^ (k : ℝ)⁻¹ * (k ^ (k : ℝ)⁻¹))
-      Filter.atTop (nhds 1) := by
+      Filter.atTop (𝓝 1) := by
     nth_rw 2 [← mul_one 1]
-    have hnlim : Filter.Tendsto (fun k : ℕ ↦ (n₀ * (Real.logb n₀ n + 1)) ^ (k : ℝ)⁻¹)
-        Filter.atTop (nhds 1) := tendsto_root_atTop_nhds_one
-        (mul_pos (mod_cast (lt_trans zero_lt_one hn₀))
-        (add_pos (Real.logb_pos (mod_cast hn₀) (by norm_cast; omega)) Real.zero_lt_one))
-    exact Filter.Tendsto.mul hnlim tendsto_nat_rpow_div
+    have hnlim : Tendsto (fun k : ℕ ↦ (n₀ * (Real.logb n₀ n + 1)) ^ (k : ℝ)⁻¹) atTop (𝓝 1) :=
+      tendsto_root_atTop_nhds_one
+        (mul_pos
+          (mod_cast (lt_trans zero_lt_one hn₀))
+          (add_pos (Real.logb_pos (mod_cast hn₀) (by norm_cast; omega)) Real.zero_lt_one))
+    exact hnlim.mul tendsto_nat_rpow_div
   exact le_of_limit_le h_ineq2 prod_limit
 
 end Archimedean
