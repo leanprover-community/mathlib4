@@ -63,8 +63,6 @@ lemma dropSlice_subset (n m : ℕ) (l : List α) : l.dropSlice n m ⊆ l :=
 lemma mem_of_mem_dropSlice {n m : ℕ} {l : List α} {a : α} (h : a ∈ l.dropSlice n m) : a ∈ l :=
   dropSlice_subset n m l h
 
-attribute [gcongr] drop_sublist_drop_left
-
 theorem tail_subset (l : List α) : tail l ⊆ l :=
   (tail_sublist l).subset
 
@@ -73,8 +71,6 @@ theorem mem_of_mem_dropLast (h : a ∈ l.dropLast) : a ∈ l :=
 
 theorem mem_of_mem_tail (h : a ∈ l.tail) : a ∈ l :=
   tail_subset l h
-
-attribute [gcongr] Sublist.drop
 
 theorem concat_get_prefix {x y : List α} (h : x <+: y) (hl : x.length < y.length) :
     x ++ [y.get ⟨x.length, hl⟩] <+: y := by
