@@ -396,7 +396,7 @@ theorem norm_eq_norm (x : K) :
   simp_rw [mixedEmbedding.norm_apply, normAtPlace_apply, prod_eq_abs_norm]
 
 theorem norm_unit (u : (𝓞 K)ˣ) :
-     mixedEmbedding.norm (mixedEmbedding K u) = 1 := by
+    mixedEmbedding.norm (mixedEmbedding K u) = 1 := by
   rw [norm_eq_norm, Units.norm, Rat.cast_one]
 
 theorem norm_eq_zero_iff' {x : mixedSpace K} (hx : x ∈ Set.range (mixedEmbedding K)) :
