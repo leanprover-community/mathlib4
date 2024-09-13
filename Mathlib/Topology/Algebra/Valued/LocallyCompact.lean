@@ -327,7 +327,7 @@ lemma properSpace_iff_compactSpace_integer :
              mem_integer_iff', ← mem_closedBall_zero_iff, Set.setOf_mem_eq]
   constructor <;> intro h
   · exact isCompact_closedBall 0 1
-  · suffices LocallyCompactSpace K from .of_weaklyLocallyCompactSpace_of_nontriviallyNormedField K
+  · suffices LocallyCompactSpace K from .of_nontriviallyNormedField_of_weaklyLocallyCompactSpace K
     exact IsCompact.locallyCompactSpace_of_mem_nhds_of_addGroup h <|
       Metric.closedBall_mem_nhds 0 zero_lt_one
 
