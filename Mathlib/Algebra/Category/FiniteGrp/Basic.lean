@@ -17,17 +17,17 @@ universe u v
 
 open CategoryTheory
 
-/--The category of finite groups -/
+/-- The category of finite groups -/
 @[pp_with_univ]
 structure FiniteGrp where
   /--A group that is finite-/
   toGrp : Grp
   [isFinite : Finite toGrp]
 
-/--The category of finite groups -/
+/-- The category of finite groups -/
 @[pp_with_univ]
 structure FiniteAddGrp where
-  /--A add group that is finite-/
+  /-- A add group that is finite -/
   toAddGrp : AddGrp
   [isFinite : Finite toAddGrp]
 
@@ -59,22 +59,22 @@ instance (G H : FiniteGrp) : FunLike (G ⟶ H) G H :=
 instance (G H : FiniteGrp) : MonoidHomClass (G ⟶ H) G H :=
   inferInstanceAs <| MonoidHomClass (G →* H) G H
 
-/--Construct a term of `FiniteGrp` from a type endowed with the structure of a finite group.-/
+/-- Construct a term of `FiniteGrp` from a type endowed with the structure of a finite group. -/
 @[to_additive]
 def of (G : Type u) [Group G] [Finite G] : FiniteGrp where
   toGrp := Grp.of G
   isFinite := ‹_›
 
-/--Construct a term of `FiniteAddGrp` from a type endowed with the structure of a
-  finite additive group.-/
+/-- Construct a term of `FiniteAddGrp` from a type endowed with the structure of a
+  finite additive group. -/
 add_decl_doc FiniteAddGrp.of
 
-/--The morphisms between FiniteGrp-/
+/-- The morphism in FiniteGrps, induced from morphism of the category Grp. -/
 @[to_additive]
 def ofHom {X Y : Type u} [Group X] [Finite X] [Group Y] [Finite Y] (f : X →* Y) : of X ⟶ of Y :=
   Grp.ofHom f
 
-/--The morphisms between FiniteAddGrp-/
+/-- The morphism in FiniteAddGrps, induced from morphism of the category AddGrp -/
 add_decl_doc FiniteAddGrp.ofHom
 
 @[to_additive]
