@@ -59,13 +59,14 @@ instance (G H : FiniteGrp) : FunLike (G ⟶ H) G H :=
 instance (G H : FiniteGrp) : MonoidHomClass (G ⟶ H) G H :=
   inferInstanceAs <| MonoidHomClass (G →* H) G H
 
-/--Making a finite group into a FiniteGrp-/
+/--Construct a term of `FiniteGrp` from a type endowed with the structure of a finite group.-/
 @[to_additive]
 def of (G : Type u) [Group G] [Finite G] : FiniteGrp where
   toGrp := Grp.of G
   isFinite := ‹_›
 
-/--Making a finite add group into a FiniteAddGrp-/
+/--Construct a term of `FiniteAddGrp` from a type endowed with the structure of a
+  finite additive group.-/
 add_decl_doc FiniteAddGrp.of
 
 /--The morphisms between FiniteGrp-/
