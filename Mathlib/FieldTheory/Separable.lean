@@ -619,7 +619,7 @@ theorem isSeparable_algebraMap (x : F) : IsSeparable F (algebraMap F K x) :=
     (minpoly.dvd F (algebraMap F K x) (by simp only [map_sub, aeval_X, aeval_C, sub_self]))
 
 instance Algebra.isSeparable_self : Algebra.IsSeparable F F :=
-  ⟨fun _ => isSeparable_algebraMap _⟩
+  ⟨isSeparable_algebraMap⟩
 
 variable [IsDomain K] [FiniteDimensional F K] [CharZero F]
 
