@@ -33,7 +33,7 @@ theorem finiteType_holdsForLocalizationAway : HoldsForLocalizationAway @FiniteTy
   exact IsLocalization.finiteType_of_monoid_fg (Submonoid.powers r) S
 
 theorem finiteType_ofLocalizationSpanTarget : OfLocalizationSpanTarget @FiniteType := by
-  -- Setup algebra intances.
+  -- Setup algebra instances.
   rw [ofLocalizationSpanTarget_iff_finite]
   introv R hs H
   classical
@@ -47,7 +47,7 @@ theorem finiteType_ofLocalizationSpanTarget : OfLocalizationSpanTarget @FiniteTy
   -- `∑ lᵢ * sᵢ = 1`. I claim that all `s` and `l` and the numerators of `t` and generates `S`.
   choose t ht using H
   obtain ⟨l, hl⟩ :=
-    (Finsupp.mem_span_iff_total S (s : Set S) 1).mp
+    (Finsupp.mem_span_iff_linearCombination S (s : Set S) 1).mp
       (show (1 : S) ∈ Ideal.span (s : Set S) by rw [hs]; trivial)
   let sf := fun x : s => IsLocalization.finsetIntegerMultiple (Submonoid.powers (x : S)) (t x)
   use s.attach.biUnion sf ∪ s ∪ l.support.image l

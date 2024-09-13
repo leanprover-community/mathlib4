@@ -573,12 +573,12 @@ theorem fromEdgeSet_edgeSet : fromEdgeSet G.edgeSet = G := by
 @[simp]
 theorem fromEdgeSet_empty : fromEdgeSet (∅ : Set (Sym2 V)) = ⊥ := by
   ext v w
-  simp only [fromEdgeSet_adj, Set.mem_empty_iff_false, false_and_iff, bot_adj]
+  simp only [fromEdgeSet_adj, Set.mem_empty_iff_false, false_and, bot_adj]
 
 @[simp]
 theorem fromEdgeSet_univ : fromEdgeSet (Set.univ : Set (Sym2 V)) = ⊤ := by
   ext v w
-  simp only [fromEdgeSet_adj, Set.mem_univ, true_and_iff, top_adj]
+  simp only [fromEdgeSet_adj, Set.mem_univ, true_and, top_adj]
 
 @[simp]
 theorem fromEdgeSet_inter (s t : Set (Sym2 V)) :
@@ -603,7 +603,7 @@ theorem fromEdgeSet_sdiff (s t : Set (Sym2 V)) :
 theorem fromEdgeSet_mono {s t : Set (Sym2 V)} (h : s ⊆ t) : fromEdgeSet s ≤ fromEdgeSet t := by
   rintro v w
   simp (config := { contextual := true }) only [fromEdgeSet_adj, Ne, not_false_iff,
-    and_true_iff, and_imp]
+    and_true, and_imp]
   exact fun vws _ => h vws
 
 @[simp] lemma disjoint_fromEdgeSet : Disjoint G (fromEdgeSet s) ↔ Disjoint G.edgeSet s := by

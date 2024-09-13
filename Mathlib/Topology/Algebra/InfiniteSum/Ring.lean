@@ -50,9 +50,9 @@ theorem Summable.tsum_mul_right (a) (hf : Summable f) : ∑' i, f i * a = (∑' 
 
 theorem Commute.tsum_right (a) (h : ∀ i, Commute a (f i)) : Commute a (∑' i, f i) := by
   classical
-  exact if hf : Summable f then
-    (hf.tsum_mul_left a).symm.trans ((congr_arg _ <| funext h).trans (hf.tsum_mul_right a))
-  else (tsum_eq_zero_of_not_summable hf).symm ▸ Commute.zero_right _
+  by_cases hf : Summable f
+  · exact (hf.tsum_mul_left a).symm.trans ((congr_arg _ <| funext h).trans (hf.tsum_mul_right a))
+  · exact (tsum_eq_zero_of_not_summable hf).symm ▸ Commute.zero_right _
 
 theorem Commute.tsum_left (a) (h : ∀ i, Commute (f i) a) : Commute (∑' i, f i) a :=
   (Commute.tsum_right _ fun i ↦ (h i).symm).symm

@@ -124,10 +124,13 @@ def N₁_iso_normalizedMooreComplex_comp_toKaroubi : N₁ ≅ normalizedMooreCom
           comm := by erw [inclusionOfMooreComplexMap_comp_PInfty, id_comp] }
       naturality := fun X Y f => by
         ext
-        simp only [Functor.comp_map, normalizedMooreComplex_map, Karoubi.comp_f, toKaroubi_map_f,
-          HomologicalComplex.comp_f, NormalizedMooreComplex.map_f,
-          inclusionOfMooreComplexMap_f, factorThru_arrow, N₁_map_f,
-          inclusionOfMooreComplexMap_comp_PInfty_assoc, AlternatingFaceMapComplex.map_f] }
+        simp only [Functor.comp_obj, normalizedMooreComplex_obj, toKaroubi_obj_X,
+          NormalizedMooreComplex.obj_X, N₁_obj_X, AlternatingFaceMapComplex.obj_X, Functor.comp_map,
+          normalizedMooreComplex_map, Karoubi.comp_f, toKaroubi_map_f, HomologicalComplex.comp_f,
+          NormalizedMooreComplex.map_f, inclusionOfMooreComplexMap_f, NormalizedMooreComplex.objX,
+          factorThru_arrow, N₁_map_f, inclusionOfMooreComplexMap_comp_PInfty_assoc,
+          AlternatingFaceMapComplex.map_f]
+         }
   hom_inv_id := by
     ext X : 3
     simp only [PInftyToNormalizedMooreComplex_comp_inclusionOfMooreComplexMap,

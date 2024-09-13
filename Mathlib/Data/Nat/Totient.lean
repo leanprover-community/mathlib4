@@ -229,7 +229,7 @@ theorem prime_iff_card_units (p : ℕ) [Fintype (ZMod p)ˣ] :
     p.Prime ↔ Fintype.card (ZMod p)ˣ = p - 1 := by
   cases' eq_zero_or_neZero p with hp hp
   · subst hp
-    simp only [ZMod, not_prime_zero, false_iff_iff, zero_tsub]
+    simp only [ZMod, not_prime_zero, false_iff, zero_tsub]
     -- the subst created a non-defeq but subsingleton instance diamond; resolve it
     suffices Fintype.card ℤˣ ≠ 0 by convert this
     simp
@@ -245,7 +245,7 @@ theorem totient_eq_one_iff : ∀ {n : ℕ}, n.totient = 1 ↔ n = 1 ∨ n = 2
   | 2 => by simp
   | n + 3 => by
     have : 3 ≤ n + 3 := le_add_self
-    simp only [succ_succ_ne_one, false_or_iff]
+    simp only [succ_succ_ne_one, false_or]
     exact ⟨fun h => not_even_one.elim <| h ▸ totient_even this, by rintro ⟨⟩⟩
 
 theorem dvd_two_of_totient_le_one {a : ℕ} (han : 0 < a) (ha : a.totient ≤ 1) : a ∣ 2 := by
