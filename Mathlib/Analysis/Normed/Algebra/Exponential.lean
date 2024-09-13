@@ -5,10 +5,7 @@ Authors: Anatole Dedecker, Eric Wieser
 -/
 import Mathlib.Analysis.Analytic.Basic
 import Mathlib.Analysis.Complex.Basic
-import Mathlib.Analysis.Normed.Field.InfiniteSum
 import Mathlib.Data.Nat.Choose.Cast
-import Mathlib.Data.Finset.NoncommProd
-import Mathlib.Topology.Algebra.Algebra
 
 /-!
 # Exponential in a Banach algebra
@@ -154,6 +151,7 @@ theorem star_exp [T2Space 𝔸] [StarRing 𝔸] [ContinuousStar 𝔸] (x : 𝔸)
 
 variable (𝕂)
 
+@[aesop safe apply]
 theorem _root_.IsSelfAdjoint.exp [T2Space 𝔸] [StarRing 𝔸] [ContinuousStar 𝔸] {x : 𝔸}
     (h : IsSelfAdjoint x) : IsSelfAdjoint (exp 𝕂 x) :=
   (star_exp x).trans <| h.symm ▸ rfl

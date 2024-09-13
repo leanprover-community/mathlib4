@@ -310,7 +310,7 @@ theorem ListBlank.nth_modifyNth {Γ} [Inhabited Γ] (f : Γ → Γ) (n i) (L : L
     (L.modifyNth f n).nth i = if i = n then f (L.nth i) else L.nth i := by
   induction' n with n IH generalizing i L
   · cases i <;> simp only [ListBlank.nth_zero, if_true, ListBlank.head_cons, ListBlank.modifyNth,
-      ListBlank.nth_succ, if_false, ListBlank.tail_cons]
+      ListBlank.nth_succ, if_false, ListBlank.tail_cons, reduceCtorEq]
   · cases i
     · rw [if_neg (Nat.succ_ne_zero _).symm]
       simp only [ListBlank.nth_zero, ListBlank.head_cons, ListBlank.modifyNth]
@@ -1383,7 +1383,7 @@ theorem tr_supports {S : Finset Λ} (ss : TM1.Supports M S) :
     cases' q' with q' v'
     simp only [trStmts, Finset.mem_coe] at h₂ ⊢
     rw [Finset.mem_product] at h₂ ⊢
-    simp only [Finset.mem_univ, and_true_iff] at h₂ ⊢
+    simp only [Finset.mem_univ, and_true] at h₂ ⊢
     cases q'; · exact Multiset.mem_cons_self _ _
     simp only [tr, Option.mem_def] at h₁
     have := TM1.stmts_supportsStmt ss h₂
@@ -1614,7 +1614,8 @@ theorem stepAux_write (q : Stmt'₁) (v : σ) (a b : Γ) (L R : ListBlank Γ) :
   induction' l₂ with a l₂ IH generalizing l₁ l₂'
   · cases List.length_eq_zero.1 e
     rfl
-  cases' l₂' with b l₂' <;> simp only [List.length_nil, List.length_cons, Nat.succ_inj'] at e
+  cases' l₂' with b l₂' <;>
+    simp only [List.length_nil, List.length_cons, Nat.succ_inj', reduceCtorEq] at e
   rw [List.reverseAux, ← IH (a :: l₁) l₂' e]
   simp only [stepAux, ListBlank.append, Tape.write_mk', Tape.move_right_mk', ListBlank.head_cons,
     ListBlank.tail_cons]
@@ -1733,7 +1734,7 @@ theorem tr_supports [Inhabited Λ] {S : Finset Λ} (ss : Supports M S) :
       cases d <;> simp only [trNormal, iterate, supportsStmt_move, IH]
     | write f q IH =>
       unfold writes at hw ⊢
-      simp only [Finset.mem_image, Finset.mem_union, Finset.mem_univ, exists_prop, true_and_iff]
+      simp only [Finset.mem_image, Finset.mem_union, Finset.mem_univ, exists_prop, true_and]
         at hw ⊢
       replace IH := IH hs fun q hq ↦ hw q (Or.inr hq)
       refine ⟨supportsStmt_read _ fun a _ s ↦ hw _ (Or.inl ⟨_, rfl⟩), fun q' hq ↦ ?_⟩
@@ -2353,7 +2354,7 @@ theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : Stmt₂₁} {v : σ} {S 
     · refine
         ⟨_, fun k' ↦ ?_, by
           erw [List.length_cons, Tape.move_right_n_head, Tape.mk'_nth_nat, addBottom_nth_succ_fst,
-            cond, iterate_succ', Function.comp, Tape.move_right_left, Tape.move_right_n_head,
+            cond_false, iterate_succ', Function.comp, Tape.move_right_left, Tape.move_right_n_head,
             Tape.mk'_nth_nat, Tape.write_move_right_n fun a : Γ' ↦ (a.1, update a.2 k none),
             addBottom_modifyNth fun a ↦ update a k none, addBottom_nth_snd,
             stk_nth_val _ (hL k), e,
@@ -2487,7 +2488,6 @@ theorem trCfg_init (k) (L : List (Γ k)) : TrCfg (TM2.init k L) (TM1.init (trIni
       rw [ListBlank.nth_mk, List.getI_eq_iget_get?, List.map, List.reverse_nil]
       cases L.reverse.get? i <;> rfl
   · rw [trInit, TM1.init]
-    dsimp only
     congr <;> cases L.reverse <;> try rfl
     simp only [List.map_map, List.tail_cons, List.map]
     rfl

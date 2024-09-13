@@ -92,6 +92,8 @@ instance (priority := 900) _root_.NormedAlgebra.complexToReal {A : Type*} [Semin
     [NormedAlgebra ℂ A] : NormedAlgebra ℝ A :=
   NormedAlgebra.restrictScalars ℝ ℂ A
 
+@[simp] lemma nnnorm_I : ‖I‖₊ = 1 := by simp [nnnorm]
+
 theorem dist_eq (z w : ℂ) : dist z w = abs (z - w) :=
   rfl
 
@@ -279,7 +281,7 @@ theorem restrictScalars_one_smulRight' (x : E) :
     ContinuousLinearMap.restrictScalars ℝ ((1 : ℂ →L[ℂ] ℂ).smulRight x : ℂ →L[ℂ] E) =
       reCLM.smulRight x + I • imCLM.smulRight x := by
   ext ⟨a, b⟩
-  simp [mk_eq_add_mul_I, mul_smul, smul_comm I b x]
+  simp [map_add, mk_eq_add_mul_I, mul_smul, smul_comm I b x]
 
 theorem restrictScalars_one_smulRight (x : ℂ) :
     ContinuousLinearMap.restrictScalars ℝ ((1 : ℂ →L[ℂ] ℂ).smulRight x : ℂ →L[ℂ] ℂ) =

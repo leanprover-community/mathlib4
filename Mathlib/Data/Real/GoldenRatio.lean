@@ -120,8 +120,7 @@ theorem neg_one_lt_goldConj : -1 < ψ := by
 theorem gold_irrational : Irrational φ := by
   have := Nat.Prime.irrational_sqrt (show Nat.Prime 5 by norm_num)
   have := this.rat_add 1
-  have := this.rat_mul (show (0.5 : ℚ) ≠ 0 by norm_num)
-  convert this
+  convert this.rat_mul (show (0.5 : ℚ) ≠ 0 by norm_num)
   norm_num
   field_simp
 
@@ -129,8 +128,7 @@ theorem gold_irrational : Irrational φ := by
 theorem goldConj_irrational : Irrational ψ := by
   have := Nat.Prime.irrational_sqrt (show Nat.Prime 5 by norm_num)
   have := this.rat_sub 1
-  have := this.rat_mul (show (0.5 : ℚ) ≠ 0 by norm_num)
-  convert this
+  convert this.rat_mul (show (0.5 : ℚ) ≠ 0 by norm_num)
   norm_num
   field_simp
 
