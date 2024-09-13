@@ -157,3 +157,5 @@ noncomputable def equivPresentedMonoid (rel : FreeMonoid β → FreeMonoid β �
   Con.congr (Con.comap_conGen_of_Bijective (FreeMonoid.congr_iso e) (MulEquiv.bijective _) _ rel)
 
 end Isomorphism
+
+end PresentedMonoid
