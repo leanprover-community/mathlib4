@@ -359,8 +359,10 @@ instance {n} : Inhabited (SSet.Truncated n) :=
 section adjunctions
 open SimplexCategory
 
+/-- The adjunction between n-truncation and the n-skeleton.-/
 noncomputable def skAdj (n) : lan (Δ.ι n).op ⊣ truncation.{u} n := lanAdjunction _ _
 
+/-- The adjunction between n-truncation and the n-coskeleton.-/
 noncomputable def coskAdj (n) : truncation.{u} n ⊣ ran (Δ.ι n).op := ranAdjunction _ _
 
 instance coskeleton_reflective (n) : IsIso ((coskAdj n).counit) :=
@@ -369,7 +371,8 @@ instance coskeleton_reflective (n) : IsIso ((coskAdj n).counit) :=
 instance skeleton_reflective (n) : IsIso ((skAdj n).unit) :=
   coreflective' (Δ.ι n).op
 
-noncomputable instance coskeleton.fullyFaithful (n) :
+/-- Since the inclusion Δ.ι n is fully faithful, so is right Kan extension along it.-/
+noncomputable def coskeleton.fullyFaithful (n) :
     (ran (H := Type u) (Δ.ι n).op).FullyFaithful := by
   apply Adjunction.fullyFaithfulROfIsIsoCounit (coskAdj n)
 
@@ -382,7 +385,8 @@ instance coskeleton.faithful (k) : (ran (H := Type u) (Δ.ι k).op).Faithful :=
 noncomputable instance coskAdj.reflective (k) : Reflective (ran (H := Type u) (Δ.ι k).op) :=
   Reflective.mk (truncation k) (coskAdj k)
 
-noncomputable instance skeleton.fullyFaithful (k) :
+/-- Since the inclusion Δ.ι n is fully faithful, so is left Kan extension along it.-/
+noncomputable def skeleton.fullyFaithful (k) :
     (lan (H := Type u) (Δ.ι k).op).FullyFaithful :=
   Adjunction.fullyFaithfulLOfIsIsoUnit (skAdj k)
 

@@ -210,6 +210,7 @@ without identifying `n` with `[n].len`.
 def mkHom {n m : ℕ} (f : Fin (n + 1) →o Fin (m + 1)) : ([n] : SimplexCategory) ⟶ [m] :=
   SimplexCategory.Hom.mk f
 
+/-- The morphism `[1] ⟶ [n]` that picks out a specified `h : i ≤ j` in `Fin (n+1)`.-/
 def mkOfLe {n} (i j : Fin (n+1)) (h : i ≤ j) : ([1] : SimplexCategory) ⟶ [n] :=
   SimplexCategory.mkHom {
     toFun := fun | 0 => i | 1 => j
@@ -218,6 +219,7 @@ def mkOfLe {n} (i j : Fin (n+1)) (h : i ≤ j) : ([1] : SimplexCategory) ⟶ [n]
       | 0, 1, _ => h
   }
 
+/-- The morphism `[1] ⟶ [n]` that picks out the arrow `i ⟶ i+1` in `Fin (n+1)`.-/
 def mkOfSucc {n} (i : Fin n) : ([1] : SimplexCategory) ⟶ [n] :=
   SimplexCategory.mkHom {
     toFun := fun | 0 => i.castSucc | 1 => i.succ
@@ -226,6 +228,7 @@ def mkOfSucc {n} (i : Fin n) : ([1] : SimplexCategory) ⟶ [n] :=
       | 0, 1, _ => Fin.le_succ i
   }
 
+/-- The morphism `[2] ⟶ [n]` that picks out a specified composite of morphisms in `Fin (n+1)`.-/
 def mkOfLeComp {n} (i j k : Fin (n+1)) (h₁ : i ≤ j) (h₂ : j ≤ k): ([2] : SimplexCategory) ⟶ [n] :=
   SimplexCategory.mkHom {
     toFun := fun | 0 => i | 1 => j | 2 => k
@@ -584,8 +587,10 @@ def inclusion {n : ℕ} : SimplexCategory.Truncated n ⥤ SimplexCategory :=
 
 instance (n : ℕ) : (inclusion : Truncated n ⥤ _).Full := FullSubcategory.full _
 instance (n : ℕ) : (inclusion : Truncated n ⥤ _).Faithful := FullSubcategory.faithful _
-noncomputable instance (n : ℕ) : (inclusion : Truncated n ⥤ _).op.FullyFaithful :=
-  Functor.FullyFaithful.ofFullyFaithful _
+
+/-- A proof that the full subcategory inclusion is fully faithful.-/
+noncomputable def inclusion.fullyFaithful (n : ℕ) :
+    (inclusion : Truncated n ⥤ _).op.FullyFaithful := Functor.FullyFaithful.ofFullyFaithful _
 
 @[ext]
 theorem Hom.ext {n} {a b : Truncated n} (f g : a ⟶ b) :
@@ -593,6 +598,8 @@ theorem Hom.ext {n} {a b : Truncated n} (f g : a ⟶ b) :
 
 end Truncated
 
+/-- An abbreviation for the full subcategory of the simplex category spanned by the objects
+0, ..., k. -/
 abbrev Δ (k : ℕ) := SimplexCategory.Truncated k
 
 /-- An abbreviation for the truncated inclusion because skAdj and coskAdj in SimplicialSet

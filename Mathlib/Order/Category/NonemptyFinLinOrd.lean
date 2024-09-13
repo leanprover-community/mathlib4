@@ -238,4 +238,5 @@ def nonemptyFinLinOrdDualCompForgetToFinPartOrd :
 
 theorem Fin.le_succ {n} (i : Fin n) : i.castSucc ≤ i.succ := Nat.le_succ i
 
+/-- The generating arrow `i ⟶ i+1` in the category `Fin n`.-/
 def Fin.hom_succ {n} (i : Fin n) : i.castSucc ⟶ i.succ := homOfLE (Fin.le_succ i)
