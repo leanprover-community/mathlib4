@@ -177,7 +177,7 @@ namespace DifferentialsConstruction
 
 /-- The presheaf of relative differentials of a morphism of presheaves of
 commutative rings. -/
-@[simps]
+@[simps (config := .lemmasOnly)]
 noncomputable def relativeDifferentials' :
     PresheafOfModules.{u} (R ⋙ forget₂ _ _) where
   obj X := CommRingCat.KaehlerDifferential (φ'.app X)
@@ -185,17 +185,20 @@ noncomputable def relativeDifferentials' :
   map_id _ := by ext; simp; rfl
   map_comp _ _ := by ext; simp; rfl
 
+attribute [simp] relativeDifferentials'_obj
+
+@[simp]
 lemma relativeDifferentials'_map_d {X Y : Dᵒᵖ} (f : X ⟶ Y) (x : R.obj X) :
-    (relativeDifferentials' φ').map f (CommRingCat.KaehlerDifferential.d x) =
-      CommRingCat.KaehlerDifferential.d (R.map f x) := by
-  dsimp
-  rw [CommRingCat.KaehlerDifferential.map_d, CommRingCat.forgetToRingCat_map_apply]
+    DFunLike.coe (α := CommRingCat.KaehlerDifferential (φ'.app X))
+      (β := fun _ ↦ CommRingCat.KaehlerDifferential (φ'.app Y))
+      ((relativeDifferentials' φ').map f) (CommRingCat.KaehlerDifferential.d x) =
+        CommRingCat.KaehlerDifferential.d (R.map f x) :=
+  CommRingCat.KaehlerDifferential.map_d (φ'.naturality f) _
 
 /-- The universal derivation. -/
 noncomputable def derivation' : (relativeDifferentials' φ').Derivation' φ' :=
-  Derivation'.mk (fun X ↦ CommRingCat.KaehlerDifferential.D (φ'.app X)) (fun X Y f x ↦ by
-    dsimp
-    rw [CommRingCat.KaehlerDifferential.map_d, CommRingCat.forgetToRingCat_map_apply])
+  Derivation'.mk (fun X ↦ CommRingCat.KaehlerDifferential.D (φ'.app X))
+    (fun _ _ f x ↦ (relativeDifferentials'_map_d φ' f x).symm)
 
 /-- The derivation `Derivation' φ'` is universal. -/
 noncomputable def isUniversal' : (derivation' φ').Universal :=
@@ -204,9 +207,11 @@ noncomputable def isUniversal' : (derivation' φ').Universal :=
       { app := fun X ↦ (d'.app X).desc
         naturality := fun {X Y} f ↦ CommRingCat.KaehlerDifferential.ext (fun b ↦ by
           dsimp
-          rw [CommRingCat.KaehlerDifferential.map_d, ModuleCat.Derivation.desc_d,
-            ModuleCat.Derivation.desc_d, Derivation'.app_apply, Derivation'.app_apply,
-            CommRingCat.forgetToRingCat_map_apply, d'.d_map]
+          rw [ModuleCat.Derivation.desc_d, Derivation'.app_apply]
+          erw [relativeDifferentials'_map_d φ' f]
+          rw [ModuleCat.Derivation.desc_d]
+          dsimp
+          rw [Derivation.d_map]
           dsimp) })
     (fun {M'} d' ↦ by
       ext X b
