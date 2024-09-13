@@ -42,6 +42,17 @@ structure ProfiniteGrp where
   /-- The above data together form a topological group. -/
   [topologicalGroup : TopologicalGroup toProfinite]
 
+@[pp_with_univ]
+structure ProfiniteAddGrp where
+  /-- The underlying profinite topological space. -/
+  toProfinite : Profinite
+  /-- The add group structure. -/
+  [addGroup : AddGroup toProfinite]
+  /-- The above data together form a topological add group. -/
+  [topologicalAddGroup : TopologicalAddGroup toProfinite]
+
+attribute [to_additive] ProfiniteGrp
+
 namespace ProfiniteGrp
 
 instance : CoeSort ProfiniteGrp (Type u) where
