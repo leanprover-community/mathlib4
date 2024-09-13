@@ -69,8 +69,7 @@ theorem of_finiteType [IsNoetherianRing R] : FiniteType R A ↔ FinitePresentati
   -- Porting note: rewrote code to help typeclass inference
   rw [isNoetherianRing_iff] at hnoet
   letI : Module (MvPolynomial (Fin n) R) (MvPolynomial (Fin n) R) := Semiring.toModule
-  have := hnoet.noetherian (RingHom.ker f.toRingHom)
-  convert this
+  convert hnoet.noetherian (RingHom.ker f.toRingHom)
 
 /-- If `e : A ≃ₐ[R] B` and `A` is finitely presented, then so is `B`. -/
 theorem equiv [FinitePresentation R A] (e : A ≃ₐ[R] B) : FinitePresentation R B := by

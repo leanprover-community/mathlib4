@@ -216,9 +216,9 @@ theorem wf_isOption : WellFounded IsOption :=
   ⟨fun x =>
     moveRecOn x fun x IHl IHr =>
       Acc.intro x fun y h => by
-        induction' h with _ i _ j
-        · exact IHl i
-        · exact IHr j⟩
+        induction h with
+        | moveLeft i => exact IHl i
+        | moveRight j => exact IHr j⟩
 
 /-- `Subsequent x y` says that `x` can be obtained by playing some nonempty sequence of moves from
 `y`. It is the transitive closure of `IsOption`. -/
@@ -458,7 +458,7 @@ private theorem le_trans_aux {x y z : PGame}
 instance : Preorder PGame :=
   { PGame.le with
     le_refl := fun x => by
-      induction' x with _ _ _ _ IHl IHr
+      induction x with | mk _ _ _ _ IHl IHr => _
       exact
         le_of_forall_lf (fun i => lf_of_le_moveLeft (IHl i)) fun i => lf_of_moveRight_le (IHr i)
     le_trans := by
@@ -1262,8 +1262,8 @@ theorem zero_fuzzy_neg_iff {x : PGame} : 0 ‖ -x ↔ 0 ‖ x := by rw [← neg_
 /-- The sum of `x = {xL | xR}` and `y = {yL | yR}` is `{xL + y, x + yL | xR + y, x + yR}`. -/
 instance : Add PGame.{u} :=
   ⟨fun x y => by
-    induction' x with xl xr _ _ IHxl IHxr generalizing y
-    induction' y with yl yr yL yR IHyl IHyr
+    induction x generalizing y with | mk xl xr _ _ IHxl IHxr => _
+    induction y with | mk yl yr yL yR IHyl IHyr => _
     have y := mk yl yr yL yR
     refine ⟨xl ⊕ yl, xr ⊕ yr, Sum.rec ?_ ?_, Sum.rec ?_ ?_⟩
     · exact fun i => IHxl i y

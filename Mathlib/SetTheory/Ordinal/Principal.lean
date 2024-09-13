@@ -200,7 +200,7 @@ theorem principal_add_iff_zero_or_omega_opow {o : Ordinal} :
   rcases eq_or_ne o 0 with (rfl | ho)
   · simp only [principal_zero, Or.inl]
   · rw [principal_add_iff_add_left_eq_self]
-    simp only [ho, false_or_iff]
+    simp only [ho, false_or]
     refine
       ⟨fun H => ⟨_, ((lt_or_eq_of_le (opow_log_le_self _ ho)).resolve_left fun h => ?_)⟩,
         fun ⟨b, e⟩ => e.symm ▸ fun a => add_omega_opow⟩
