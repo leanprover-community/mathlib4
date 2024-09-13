@@ -3,11 +3,7 @@ Copyright (c) 2023 Michael Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Lee, Geoffrey Irving
 -/
-import Mathlib.Analysis.Analytic.Composition
-import Mathlib.Analysis.Analytic.Constructions
-import Mathlib.Analysis.Analytic.Linear
 import Mathlib.Analysis.Analytic.Within
-import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
 
 /-!
@@ -90,7 +86,7 @@ theorem ofSet_mem_analyticGroupoid {s : Set H} (hs : IsOpen s) :
   suffices h : AnalyticWithinOn 𝕜 (I ∘ I.symm) (I.symm ⁻¹' s ∩ range I) by
     simp [h, analyticPregroupoid]
   have hi : AnalyticWithinOn 𝕜 id (univ : Set E) := (analyticOn_id _).analyticWithinOn
-  exact (hi.mono (subset_univ _)).congr (fun x hx ↦ (I.right_inv hx.2).symm)
+  exact (hi.mono (subset_univ _)).congr (fun x hx ↦ I.right_inv hx.2)
 
 /-- The composition of a partial homeomorphism from `H` to `M` and its inverse belongs to
 the analytic groupoid. -/
