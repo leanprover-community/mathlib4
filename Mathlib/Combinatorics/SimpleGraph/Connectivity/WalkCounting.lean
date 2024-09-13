@@ -113,7 +113,8 @@ theorem Walk.mem_finsetWalkLength_iff_length_eq {n : ℕ} {u v : V} (p : G.Walk 
 
 variable (G)
 
-/-- The `Finset` of walks from `u` to `v` with length less than `n`. See `finsetWalkLength`. --/
+/-- The `Finset` of walks from `u` to `v` with length less than `n`. See `finsetWalkLength` for
+context. In particular, we use this definition for `SimpleGraph.Path.instFintype`. --/
 def finsetWalkLengthLT (n : ℕ) (u v : V) : Finset (G.Walk u v) :=
   (Finset.range n).disjiUnion
     (fun l ↦ G.finsetWalkLength l u v)
