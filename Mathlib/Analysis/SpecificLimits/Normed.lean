@@ -145,11 +145,13 @@ theorem TFAE_exists_lt_isLittleO_pow (f : ℕ → ℝ) (R : ℝ) :
       rintro ⟨a, ha, H⟩
       rcases bound_of_isBigO_nat_atTop H with ⟨C, hC₀, hC⟩
       refine ⟨a, ha, C, hC₀, fun n ↦ ?_⟩
-      simpa only [Real.norm_eq_abs, abs_pow, abs_of_nonneg ha.1.le] using hC (pow_ne_zero n ha.1.ne')
+      simpa only [Real.norm_eq_abs, abs_pow, abs_of_nonneg ha.1.le]
+        using hC (pow_ne_zero n ha.1.ne')
     6 → 5 := fun ⟨a, ha, C, H₀, H⟩ ↦ ⟨a, ha.2, C, Or.inl H₀, H⟩
     5 → 3 := by
       rintro ⟨a, ha, C, h₀, H⟩
-      rcases sign_cases_of_C_mul_pow_nonneg fun n ↦ (abs_nonneg _).trans (H n) with (rfl | ⟨hC₀, ha₀⟩)
+      rcases sign_cases_of_C_mul_pow_nonneg fun n ↦ (abs_nonneg _).trans (H n)
+        with (rfl | ⟨hC₀, ha₀⟩)
       · obtain rfl : f = 0 := by
           ext n
           simpa using H n
