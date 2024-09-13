@@ -155,6 +155,9 @@ protected theorem coe_injective : Injective ((↑) : ℝ≥0 → ℝ) := Subtype
 
 @[simp, norm_cast] lemma coe_one : ((1 : ℝ≥0) : ℝ) = 1 := rfl
 
+@[simp] lemma mk_zero : (⟨0, le_rfl⟩ : ℝ≥0) = 0 := rfl
+@[simp] lemma mk_one : (⟨1, zero_le_one⟩ : ℝ≥0) = 1 := rfl
+
 @[simp, norm_cast]
 protected theorem coe_add (r₁ r₂ : ℝ≥0) : ((r₁ + r₂ : ℝ≥0) : ℝ) = r₁ + r₂ :=
   rfl
@@ -296,6 +299,7 @@ theorem _root_.Real.toNNReal_prod_of_nonneg {α} {s : Finset α} {f : α → ℝ
   exact Finset.prod_congr rfl fun x hxs => by rw [Real.coe_toNNReal _ (hf x hxs)]
 
 @[simp, norm_cast] lemma coe_nsmul (r : ℝ≥0) (n : ℕ) : ↑(n • r) = n • (r : ℝ) := rfl
+@[simp, norm_cast] lemma coe_nnqsmul (q : ℚ≥0) (x : ℝ≥0) : ↑(q • x) = (q • x : ℝ) := rfl
 
 @[simp, norm_cast]
 protected theorem coe_natCast (n : ℕ) : (↑(↑n : ℝ≥0) : ℝ) = n :=
@@ -428,7 +432,7 @@ theorem orderIsoIccZeroCoe_symm_apply_coe (a : ℝ≥0) (b : Set.Iic a) :
 
 -- note we need the `@` to make the `Membership.mem` have a sensible type
 theorem coe_image {s : Set ℝ≥0} :
-    (↑) '' s = { x : ℝ | ∃ h : 0 ≤ x, @Membership.mem ℝ≥0 _ _ ⟨x, h⟩ s } :=
+    (↑) '' s = { x : ℝ | ∃ h : 0 ≤ x, @Membership.mem ℝ≥0 _ _ s ⟨x, h⟩ } :=
   Subtype.coe_image
 
 theorem bddAbove_coe {s : Set ℝ≥0} : BddAbove (((↑) : ℝ≥0 → ℝ) '' s) ↔ BddAbove s :=

@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Finset.Image
 import Mathlib.Data.List.FinRange
-import Mathlib.Init.Data.Nat.Lemmas
 
 /-!
 # Finite types
@@ -271,7 +270,7 @@ theorem compl_erase : (s.erase a)ᶜ = insert a sᶜ := by
 @[simp]
 theorem compl_insert : (insert a s)ᶜ = sᶜ.erase a := by
   ext
-  simp only [not_or, mem_insert, iff_self_iff, mem_compl, mem_erase]
+  simp only [not_or, mem_insert, mem_compl, mem_erase]
 
 theorem insert_compl_insert (ha : a ∉ s) : insert a (insert a s)ᶜ = sᶜ := by
   simp_rw [compl_insert, insert_erase (mem_compl.2 ha)]
@@ -593,7 +592,7 @@ namespace Set
 
 variable {s t : Set α}
 
-/-- Construct a finset enumerating a set `s`, given a `Fintype` instance.  -/
+/-- Construct a finset enumerating a set `s`, given a `Fintype` instance. -/
 def toFinset (s : Set α) [Fintype s] : Finset α :=
   (@Finset.univ s _).map <| Function.Embedding.subtype _
 

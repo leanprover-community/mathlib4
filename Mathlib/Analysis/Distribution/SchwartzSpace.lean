@@ -380,7 +380,7 @@ end Module
 
 section Seminorms
 
-/-! ### Seminorms on Schwartz space-/
+/-! ### Seminorms on Schwartz space -/
 
 
 variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
@@ -480,7 +480,7 @@ end Seminorms
 
 section Topology
 
-/-! ### The topology on the Schwartz space-/
+/-! ### The topology on the Schwartz space -/
 
 
 variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
@@ -533,7 +533,7 @@ theorem _root_.Function.HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux {f
   choose k C f using hf_temperate.2
   use (Finset.range (n + 1)).sup k
   let C' := max (0 : ℝ) ((Finset.range (n + 1)).sup' (by simp) C)
-  have hC' : 0 ≤ C' := by simp only [C', le_refl, Finset.le_sup'_iff, true_or_iff, le_max_iff]
+  have hC' : 0 ≤ C' := by simp only [C', le_refl, Finset.le_sup'_iff, true_or, le_max_iff]
   use C', hC'
   intro N hN x
   rw [← Finset.mem_range_succ_iff] at hN

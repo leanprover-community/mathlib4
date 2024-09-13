@@ -184,7 +184,7 @@ theorem hasIntegral_iff : HasIntegral I l f vol y ↔
     simp [@forall_swap ℝ≥0 (TaggedPrepartition I)]
 
 /-- Quite often it is more natural to prove an estimate of the form `a * ε`, not `ε` in the RHS of
-`BoxIntegral.hasIntegral_iff`, so we provide this auxiliary lemma.  -/
+`BoxIntegral.hasIntegral_iff`, so we provide this auxiliary lemma. -/
 theorem HasIntegral.of_mul (a : ℝ)
     (h : ∀ ε : ℝ, 0 < ε → ∃ r : ℝ≥0 → ℝⁿ → Ioi (0 : ℝ), (∀ c, l.RCond (r c)) ∧ ∀ c π,
       l.MemBaseSet I c (r c) π → IsPartition π → dist (integralSum f vol π) y ≤ a * ε) :
@@ -391,7 +391,7 @@ additional distortion estimates if `BoxIntegral.IntegrationParams.bDistortion l 
 corresponding integral sum is `ε`-close to the integral.
 
 If `BoxIntegral.IntegrationParams.bRiemann = true`, then `r c x` does not depend on `x`. If
-`ε ≤ 0`, then we use `r c x = 1`.  -/
+`ε ≤ 0`, then we use `r c x = 1`. -/
 def convergenceR (h : Integrable I l f vol) (ε : ℝ) : ℝ≥0 → ℝⁿ → Ioi (0 : ℝ) :=
   if hε : 0 < ε then (hasIntegral_iff.1 h.hasIntegral ε hε).choose
   else fun _ _ => ⟨1, Set.mem_Ioi.2 zero_lt_one⟩
@@ -447,7 +447,7 @@ theorem dist_integralSum_le_of_memBaseSet (h : Integrable I l f vol) (hpos₁ : 
 
 /-- If `f` is integrable on `I` along `l`, then for two sufficiently fine tagged prepartitions
 (in the sense of the filter `BoxIntegral.IntegrationParams.toFilter l I`) such that they cover
-the same part of `I`, the integral sums of `f` over `π₁` and `π₂` are very close to each other.  -/
+the same part of `I`, the integral sums of `f` over `π₁` and `π₂` are very close to each other. -/
 theorem tendsto_integralSum_toFilter_prod_self_inf_iUnion_eq_uniformity (h : Integrable I l f vol) :
     Tendsto (fun π : TaggedPrepartition I × TaggedPrepartition I =>
       (integralSum f vol π.1, integralSum f vol π.2))

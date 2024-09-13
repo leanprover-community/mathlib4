@@ -187,7 +187,7 @@ def counitCofork (B : D) :
   Cofork.ofπ (adj.counit.app B) (adj.counit_naturality _)
 
 variable {adj} in
-/-- The unit cofork is a colimit provided `G` preserves it.  -/
+/-- The unit cofork is a colimit provided `G` preserves it. -/
 def unitColimitOfPreservesCoequalizer (A : adj.toMonad.Algebra)
     [HasCoequalizer (F.map A.a) (adj.counit.app (F.obj A.A))]
     [PreservesColimit (parallelPair (F.map A.a) (adj.counit.app (F.obj A.A))) G] :
