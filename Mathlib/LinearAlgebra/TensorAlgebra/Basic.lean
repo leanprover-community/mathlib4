@@ -177,7 +177,7 @@ theorem hom_ext {A : Type*} [Semiring A] [Algebra R A] {f g : TensorAlgebra R M 
 
 -- This proof closely follows `FreeAlgebra.induction`
 /-- If `C` holds for the `algebraMap` of `r : R` into `TensorAlgebra R M`, the `ι` of `x : M`,
-and is preserved under addition and muliplication, then it holds for all of `TensorAlgebra R M`.
+and is preserved under addition and multiplication, then it holds for all of `TensorAlgebra R M`.
 -/
 @[elab_as_elim]
 theorem induction {C : TensorAlgebra R M → Prop}

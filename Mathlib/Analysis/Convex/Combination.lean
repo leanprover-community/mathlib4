@@ -124,7 +124,7 @@ theorem Finset.centerMass_subset {t' : Finset ι} (ht : t ⊆ t') (h : ∀ i ∈
 theorem Finset.centerMass_filter_ne_zero :
     (t.filter fun i => w i ≠ 0).centerMass w z = t.centerMass w z :=
   Finset.centerMass_subset z (filter_subset _ _) fun i hit hit' => by
-    simpa only [hit, mem_filter, true_and_iff, Ne, Classical.not_not] using hit'
+    simpa only [hit, mem_filter, true_and, Ne, Classical.not_not] using hit'
 
 namespace Finset
 
@@ -481,7 +481,7 @@ theorem Set.Finite.convexHull_eq_image {s : Set E} (hs : s.Finite) : convexHull 
   letI := hs.fintype
   rw [← convexHull_basis_eq_stdSimplex, LinearMap.image_convexHull, ← Set.range_comp]
   apply congr_arg
-  simp_rw [Function.comp]
+  simp_rw [Function.comp_def]
   convert Subtype.range_coe.symm
   simp [LinearMap.sum_apply, ite_smul, Finset.filter_eq, Finset.mem_univ]
 

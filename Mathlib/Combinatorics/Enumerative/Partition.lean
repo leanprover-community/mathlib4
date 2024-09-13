@@ -50,7 +50,7 @@ namespace Nat
 structure Partition (n : ℕ) where
   /-- positive integers summing to `n`-/
   parts : Multiset ℕ
-  /-- proof that the `parts` are positive-/
+  /-- proof that the `parts` are positive -/
   parts_pos : ∀ {i}, i ∈ parts → 0 < i
   /-- proof that the `parts` sum to `n`-/
   parts_sum : parts.sum = n

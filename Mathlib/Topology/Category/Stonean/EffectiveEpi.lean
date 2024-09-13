@@ -55,7 +55,7 @@ instance : Stonean.toCompHaus.ReflectsEffectiveEpis where
       (((CompHaus.effectiveEpi_tfae (Stonean.toCompHaus.map f)).out 0 2).mp h)
 
 /--
-An effective presentation of an `X : CompHaus` with respect to the inclusion functor from `Stonean`
+An effective presentation of an `X : CompHaus` with respect to the inclusion functor from `Stonean`
 -/
 noncomputable def stoneanToCompHausEffectivePresentation (X : CompHaus) :
     Stonean.toCompHaus.EffectivePresentation X where

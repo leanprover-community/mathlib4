@@ -433,6 +433,9 @@ theorem coe_top : ((⊤ : Subring R) : Set R) = Set.univ :=
 def topEquiv : (⊤ : Subring R) ≃+* R :=
   Subsemiring.topEquiv
 
+instance {R : Type*} [Ring R] [Fintype R] : Fintype (⊤ : Subring R) :=
+  inferInstanceAs (Fintype (⊤ : Set R))
+
 theorem card_top (R) [Ring R] [Fintype R] : Fintype.card (⊤ : Subring R) = Fintype.card R :=
   Fintype.card_congr topEquiv.toEquiv
 
@@ -819,7 +822,7 @@ theorem mem_closure_iff {s : Set R} {x} :
           mul_mem hx hy)
       (zero_mem _) (fun x y hx hy => add_mem hx hy) fun x hx => neg_mem hx⟩
 
-/-- If all elements of `s : Set A` commute pairwise, then `closure s` is a commutative ring.  -/
+/-- If all elements of `s : Set A` commute pairwise, then `closure s` is a commutative ring. -/
 def closureCommRingOfComm {s : Set R} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
     CommRing (closure s) :=
   { (closure s).toRing with
