@@ -21,9 +21,9 @@ universe u v
 variable {α : Sort u}
 
 -- attribute [refl] HEq.refl -- FIXME This is still rejected after #857
-attribute [refl] Iff.refl
 attribute [trans] HEq.trans
 attribute [trans] heq_of_eq_of_heq
+attribute [refl] Iff.refl
 attribute [trans] Iff.trans
 
 section Relation
