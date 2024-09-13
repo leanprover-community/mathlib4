@@ -5,6 +5,8 @@ Authors: Daniel Weber
 -/
 import Mathlib.RingTheory.Derivation.DifferentialRing
 import Mathlib.Algebra.Polynomial.Module.Basic
+import Mathlib.FieldTheory.Minpoly.Field
+import Mathlib.Algebra.Polynomial.Derivation
 
 /-!
 # Coefficient-wise derivation on polynomials
@@ -103,6 +105,7 @@ end Derivation
 namespace Differential
 
 variable {A : Type*} [CommRing A] [Differential A]
+variable {K : Type*} [Field K] [Differential K]
 
 /--
 A specialization of `Derivation.mapCoeffs` for the case of a differential ring.
@@ -134,5 +137,63 @@ theorem deriv_aeval_eq (x : R) (p : A[X]) :
   convert Derivation.apply_aeval_eq' Differential.deriv _ (Algebra.linearMap A R) ..
   · simp [mapCoeffs]
   · simp [deriv_algebraMap]
+
+def implicitDeriv (v : A[X]) :
+    Derivation ℤ A[X] A[X] :=
+  mapCoeffs + v • derivative'.restrictScalars ℤ
+
+@[simp]
+lemma implicitDeriv_C (v : A[X]) (b : A) :
+    implicitDeriv v (C b) = C b′ := by
+  unfold implicitDeriv
+  simp
+
+variable (A) in
+def implicitDeriv' {K : Type*} [Field K] [Algebra A K] (x : K) : K :=
+  - (aeval x (mapCoeffs (minpoly A x))) / (aeval x (derivative (minpoly A x)))
+
+variable {R : Type*} [CommRing R] [Differential R] [Algebra K R] [DifferentialAlgebra K R]
+
+lemma deriv_aeval_eq_implicitDeriv (x : R) (v : K[X]) (h : x′ = aeval x v) (p : K[X]) :
+    (aeval x p)′ = aeval x (implicitDeriv v p) := by
+  simp [deriv_aeval_eq, implicitDeriv, h, mul_comm]
+
+lemma deriv_eq_implicitDeriv' {F : Type*} [Field F] [Differential F] [Algebra A F]
+    [DifferentialAlgebra A F] (x : F) (h : IsIntegral A x) :
+    x′ = implicitDeriv' A x := by
+  sorry
+  -- simp [deriv_aeval_eq, implicitDeriv, h, mul_comm]
+
+variable {R' : Type*} [CommRing R'] [Differential R'] [Algebra K R'] [DifferentialAlgebra K R']
+variable [IsLeftCancelMulZero R'] [Nontrivial R] [CharZero K]
+
+lemma algHom_deriv (f : R →ₐ[K] R') (hf : Function.Injective f) (x : R) (h : IsIntegral K x) :
+    f (x′) = (f x)′ := by
+  let p := minpoly K x
+  apply mul_left_cancel₀ (a := aeval (f x) (derivative p))
+  · intro nh
+    have := minpoly.degree_le_of_ne_zero K (f x) (fun h2 ↦ ((minpoly.natDegree_pos h).trans_eq
+      (natDegree_eq_zero_of_derivative_eq_zero h2)).false) nh
+    absurd minpoly.algHom_eq f hf x ▸ this
+    simp only [not_le]
+    apply Polynomial.degree_derivative_lt
+    exact minpoly.ne_zero h
+  conv => lhs; rw [Polynomial.aeval_algHom]
+  simp [← map_mul]
+  apply add_left_cancel (a := aeval (f x) (mapCoeffs p))
+  rw [← deriv_aeval_eq]
+  simp only [aeval_algHom, AlgHom.coe_comp, Function.comp_apply, ← map_add, ← deriv_aeval_eq,
+    minpoly.aeval, map_zero, p]
+
+lemma algEquiv_deriv (f : R ≃ₐ[K] R') (x : R) (h : IsIntegral K x) :
+    f (x′) = (f x)′ := algHom_deriv f.toAlgHom f.injective x h
+
+variable [Algebra.IsIntegral K R]
+
+lemma algHom_deriv' (f : R →ₐ[K] R') (hf : Function.Injective f) (x : R) :
+    f (x′) = (f x)′ := algHom_deriv f hf x (Algebra.IsIntegral.isIntegral x)
+
+lemma algEquiv_deriv' (f : R ≃ₐ[K] R') (x : R) :
+    f (x′) = (f x)′ := algHom_deriv' f.toAlgHom f.injective x
 
 end Differential

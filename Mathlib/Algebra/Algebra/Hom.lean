@@ -421,9 +421,17 @@ def toNatAlgHom [Semiring R] [Semiring S] (f : R →+* S) : R →ₐ[ℕ] S :=
     toFun := f
     commutes' := fun n => by simp }
 
+@[simp]
+lemma toNatAlgHom_apply [Semiring R] [Semiring S] (f : R →+* S) (v : R) :
+    f.toNatAlgHom v = f v := rfl
+
 /-- Reinterpret a `RingHom` as a `ℤ`-algebra homomorphism. -/
 def toIntAlgHom [Ring R] [Ring S] [Algebra ℤ R] [Algebra ℤ S] (f : R →+* S) : R →ₐ[ℤ] S :=
   { f with commutes' := fun n => by simp }
+
+@[simp]
+lemma toIntAlgHom_apply [Ring R] [Ring S] (f : R →+* S) (v : R) :
+    f.toIntAlgHom v = f v := rfl
 
 lemma toIntAlgHom_injective [Ring R] [Ring S] [Algebra ℤ R] [Algebra ℤ S] :
     Function.Injective (RingHom.toIntAlgHom : (R →+* S) → _) :=
