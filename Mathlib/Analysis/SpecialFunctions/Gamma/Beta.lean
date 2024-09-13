@@ -524,7 +524,7 @@ private lemma Beta_integrable_cast {a b : ℝ} :
   any_goals linarith
 
 lemma Beta_integrand_intervalIntegrable {a b : ℝ} (ha : 0 < a) (hb : 0 < b):
-    @IntervalIntegrable ℝ normedAddCommGroup (fun x ↦ x ^ (a - 1) * (1 - x) ^ (b - 1)) volume 0 1 := by
+    IntervalIntegrable (fun x ↦ x ^ (a - 1) * (1 - x) ^ (b - 1)) volume 0 1 := by
   have ha' : 0 < (↑a : ℂ).re := by
     rw [Complex.ofReal_re]
     exact ha
