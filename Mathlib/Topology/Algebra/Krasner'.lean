@@ -9,7 +9,7 @@ import Mathlib.Topology.Algebra.Module.FiniteDimension
 import Mathlib.Topology.Connected.Separation
 import Mathlib.FieldTheory.Normal
 import Mathlib.FieldTheory.SeparableDegree
-
+import Mathlib.Topology.Algebra.UniformField
 
 import Mathlib.Topology.Algebra.KrasnerDependency
 
@@ -21,18 +21,27 @@ import Mathlib.Topology.Algebra.KrasnerDependency
 4. fill the version of valuations
 
 5. Furthur change theorem like `Normal.minpoly_eq_iff_mem_orbit` using `IsConjRoot`
+
+How to split into PRs? blocked by spectral Norm, Function extends, Valued,
+application blocked by C_p
+delete KrasnerNorm?
+
+OutParam vR
+
+If K is perfectoid field, K is algebraically closed iff K♭ is (not needed)
+completion of alg closure is completed is needed
+
 -/
 
 open Polynomial minpoly IntermediateField
+
+section conj
 
 variable {R : Type*} {A : Type*} [CommRing R] [Ring A] [Algebra R A]
 
 variable (K : Type*) {L : Type*} {ΓK ΓL : outParam Type*}
     [LinearOrderedCommGroupWithZero ΓK] [LinearOrderedCommGroupWithZero ΓL]
     [Field K] [Field L] [Algebra K L] [vK : Valued K ΓK] [vL : Valued L ΓL]
-
-
-section conj
 
 variable (R) in
 def IsConjRoot (x x' : A) : Prop := (minpoly R x) = (minpoly R x')
@@ -71,6 +80,11 @@ variable (R) in
 theorem of_isScalarTower {S : Type*} [CommRing S] [Algebra R S] [Algebra S A]
     [IsScalarTower R S A] {x x' : A} (h : IsConjRoot S x x') : IsConjRoot R x x' := sorry
 -- minpoly.aeval_of_isScalarTower
+
+-- isIntegral_algHom_iff
+theorem algHom_iff {B} [Ring B] [Algebra R B] {x x' : A} (f : A →ₐ[R] B)
+    (hf : Function.Injective f) :
+  IsConjRoot R (f x) (f x') ↔ IsConjRoot R x x' := sorry
 
 theorem add_algebraMap {x x' : A} (r : R) (h : IsConjRoot R x x') :
     IsConjRoot R (x + algebraMap R A r) (x' + algebraMap R A r) := sorry
@@ -121,6 +135,8 @@ section Separable
 
 -- pow
 
+variable {R : Type*} [CommRing R]
+
 variable (A : Type*) {B : Type*} [Field A] [CommRing B] [Algebra R A]
     [Algebra R B] [Algebra A B] [IsScalarTower R A B]
 
@@ -133,37 +149,41 @@ end Separable
 
 section NormedValued
 
+variable (K : Type*) {L : Type*} {ΓK ΓL : outParam Type*}
+    [LinearOrderedCommGroupWithZero ΓK] [LinearOrderedCommGroupWithZero ΓL]
+    [Field K] [Field L] [Algebra K L] [vK : Valued K ΓK] [vL : Valued L ΓL]
+
 @[simp]
 theorem Valued.toNormedField.norm_le_iff [vL.v.RankOne] {x x' : L} :
-    letI := vL.toNormedField
+    let _ := vL.toNormedField
     ‖x‖ ≤ ‖x'‖ ↔ vL.v x ≤ vL.v x' := (Valuation.RankOne.strictMono vL.v).le_iff_le
 
 @[simp]
 theorem Valued.toNormedField.norm_lt_iff [vL.v.RankOne] {x x' : L} :
-    letI := vL.toNormedField
+    let _ := vL.toNormedField
     ‖x‖ < ‖x'‖ ↔ vL.v x < vL.v x' := (Valuation.RankOne.strictMono vL.v).lt_iff_lt
 
 @[simp]
 theorem Valued.toNormedField.norm_le_one_iff [vL.v.RankOne] {x : L} :
-    letI := vL.toNormedField
+    let _ := vL.toNormedField
     ‖x‖ ≤ 1 ↔ vL.v x ≤ 1 := by
   simpa only [map_one] using (Valuation.RankOne.strictMono vL.v).le_iff_le (b := 1)
 
 @[simp]
 theorem Valued.toNormedField.norm_lt_one_iff [vL.v.RankOne] {x : L} :
-    letI := vL.toNormedField
+    let _ := vL.toNormedField
     ‖x‖ < 1 ↔ vL.v x < 1 := by
   simpa only [map_one] using (Valuation.RankOne.strictMono vL.v).lt_iff_lt (b := 1)
 
 @[simp]
 theorem Valued.toNormedField.one_le_norm_iff [vL.v.RankOne] {x : L} :
-    letI := vL.toNormedField
+    let _ := vL.toNormedField
     1 ≤ ‖x‖ ↔ 1 ≤ vL.v x := by
   simpa only [map_one] using (Valuation.RankOne.strictMono vL.v).le_iff_le (a := 1)
 
 @[simp]
 theorem Valued.toNormedField.one_lt_norm_iff [vL.v.RankOne] {x : L} :
-    letI := vL.toNormedField
+    let _ := vL.toNormedField
     1 < ‖x‖ ↔ 1 < vL.v x := by
   simpa only [map_one] using (Valuation.RankOne.strictMono vL.v).lt_iff_lt (a := 1)
 
@@ -176,26 +196,31 @@ def Valued.toNontriviallyNormedField [vL.v.RankOne] : NontriviallyNormedField L 
     · use x⁻¹
       simp only [toNormedField.one_lt_norm_iff, map_inv₀, one_lt_inv₀ hx.1, lt_of_le_of_ne h hx.2]
     · use x
-      simp only [map_inv₀, inv_le_one₀ hx.1] at h
+      simp only [map_inv₀, inv_le_one₀ <| zero_lt_iff.mpr hx.1] at h
       simp only [toNormedField.one_lt_norm_iff, lt_of_le_of_ne h hx.2.symm]
 }
 
 theorem Valued.toNormedField.isNonarchimedean [vL.v.RankOne] :
-    letI := vL.toNormedField
+    let _ := vL.toNormedField
     IsNonarchimedean (norm : L → ℝ) := by
   intro x y
   simp only [norm, le_max_iff, NNReal.coe_le_coe, (Valuation.RankOne.strictMono vL.v).le_iff_le,
-    Valuation.map_add']
+    Valuation.map_add', implies_true]
 
 end NormedValued
 
 section ContinuousSMul
 
-instance ContinuousSMul.instBotIntermediateField {K L : Type*} [Field K] [Field L] [Algebra K L]
-    [TopologicalSpace L] [TopologicalRing L] (M : IntermediateField K L) :
+variable {K L : Type*} [Field K] [Field L] [Algebra K L]
+    [TopologicalSpace L] [TopologicalRing L] (M : IntermediateField K L)
+
+-- shortcut to avoid time out
+instance : ContinuousSMul M L := Submonoid.continuousSMul
+
+instance ContinuousSMul.instBotIntermediateField :
     ContinuousSMul (⊥ : IntermediateField K L) M :=
-  Inducing.continuousSMul (N := (⊥ : IntermediateField K L)) (Y := M)
-    (M := (⊥ : IntermediateField K L)) (X := L) inducing_subtype_val continuous_id rfl
+  Inducing.continuousSMul (X := L) (N := (⊥ : IntermediateField K L)) (Y := M)
+    (M := (⊥ : IntermediateField K L)) inducing_subtype_val continuous_id rfl
 
 end ContinuousSMul
 
@@ -215,6 +240,8 @@ end NormedField
 
 section FunctionExtends
 
+variable {R : Type*} [CommRing R]
+
 theorem functionExtends_of_functionExtends_of_functionExtends {A} [CommRing A] [Algebra R A]
     {B : Type*} [Ring B] [Algebra R B] [Algebra A B] [IsScalarTower R A B] {fR : R → ℝ}
     {fA : A → ℝ} {fB : B → ℝ} (h1 : FunctionExtends fR fA) (h2 : FunctionExtends fA fB) :
@@ -229,27 +256,65 @@ end FunctionExtends
 
 section IntegralClosure
 
-def IntegralClosure (R A : Type*) [CommRing R] [CommRing A] [Algebra R A] : Subalgebra R A := sorry
+#check Subalgebra.isField_of_algebraic
 
-instance IntegralClosure.isIntegralClosure (R A : Type*) [CommRing R] [CommRing A] [Algebra R A]:
-    IsIntegralClosure (IntegralClosure R A) R A := sorry
-
-instance IntermediateField.IntegralClosure (K L : Type*) [Field K] [Field L] [Algebra K L]
+-- not in mathlib, maximal algebraic extension
+instance IntermediateField.algebraicClosure (K L : Type*) [Field K] [Field L] [Algebra K L]
     : IntermediateField K L where
-  toSubalgebra := _root_.IntegralClosure K L
-  inv_mem' := sorry
-#check integralClosure
-variable (R A) [CommRing R] [CommRing A] [Algebra R A]
-#synth IsIntegralClosure (integralClosure R A) R A
+  toSubalgebra := _root_.integralClosure K L
+  inv_mem' x hx := Subalgebra.inv_mem_of_algebraic (x := ⟨x, hx⟩)
+    (isAlgebraic_iff_isIntegral.mpr hx)
+
+instance isIntegralClosureIntermediateFieldAlgebraicClosure (K L : Type*) [Field K] [Field L]
+    [Algebra K L] : IsIntegralClosure (IntermediateField.algebraicClosure K L) K L :=
+  inferInstanceAs (IsIntegralClosure (_root_.integralClosure K L) K L)
+
 theorem Algebra.IsAlgebraic.of_isIntegralClosure (A R B : Type*)
-    [CommRing R] [CommRing A] [CommRing B] [Algebra R A] [Algebra R B] [Algebra A B]
-    [IsIntegralClosure A R B] : Algebra.IsAlgebraic R A := sorry
+    [Field R] [CommRing A] [CommRing B] [Algebra R A] [Algebra R B] [Algebra A B]
+    [IsScalarTower R A B] [IsIntegralClosure A R B] : Algebra.IsAlgebraic R A :=
+  Algebra.isAlgebraic_iff_isIntegral.mpr (IsIntegralClosure.isIntegral_algebra R B)
+
+instance instIntermediateFieldAlgebraicClosureIsAlgebraic (K L : Type*) [Field K] [Field L]
+    [Algebra K L] : Algebra.IsAlgebraic K (IntermediateField.algebraicClosure K L) :=
+  Algebra.isAlgebraic_iff_isIntegral.mpr (IsIntegralClosure.isIntegral_algebra K L)
 
 end IntegralClosure
+
+section IsSeparable
+
+variable {F E} (E') [Field F] [Field E] [Field E'] [Algebra F E] [Algebra F E']
+    (f : E →ₐ[F] E')
+
+include f
+
+theorem IsSeparable.of_algHom' {x : E} (h : IsSeparable F (f x)) : IsSeparable F x := by
+  letI : Algebra E E' := RingHom.toAlgebra f.toRingHom
+  haveI : IsScalarTower F E E' := IsScalarTower.of_algebraMap_eq fun x => (f.commutes x).symm
+  exact h.tower_bot
+
+end IsSeparable
+
+section Valuation.IsEquiv
+
+theorem Valuation.isEquiv_iff_val_lt_val {K : Type*} [DivisionRing K] {Γ₀ Γ'₀: Type*}
+    [LinearOrderedCommGroupWithZero Γ₀] [LinearOrderedCommGroupWithZero Γ'₀]
+    (v : Valuation K Γ₀) (v' : Valuation K Γ'₀) :
+  v.IsEquiv v' ↔ ∀ {x y : K}, v x < v y ↔ v' x < v' y := by
+  constructor
+  · intro h x y
+    simpa only [not_le] using (h y x).not
+  · intro h x y
+    simpa only [not_lt] using h.not
+
+end Valuation.IsEquiv
 
 
 open Algebra
 open IntermediateField
+
+variable (K : Type*) {L : Type*} {ΓK ΓL : outParam Type*}
+    [LinearOrderedCommGroupWithZero ΓK] [LinearOrderedCommGroupWithZero ΓL]
+    [Field K] [Field L] [Algebra K L] [vK : Valued K ΓK] [vL : Valued L ΓL]
 
 variable (L) in
 class IsKrasner : Prop where
@@ -296,7 +361,7 @@ variable (M : IntermediateField K L)
 #check spectralNorm_unique_field_norm_ext
 
 include extd is_na
-theorem of_completeSpace [Algebra.IsAlgebraic K L] [CompleteSpace K] : IsKrasnerNorm K L := by
+theorem of_completeSpace_aux [Algebra.IsAlgebraic K L] [CompleteSpace K] : IsKrasnerNorm K L := by
   constructor
   intro x y xsep hyK hxy
   let z := x - y
@@ -380,6 +445,25 @@ theorem of_completeSpace [Algebra.IsAlgebraic K L] [CompleteSpace K] : IsKrasner
       _ = ‖z - z'‖ := by congr 1; ring
   simp only [lt_self_iff_false] at this
 
+variable (K L) (M : IntermediateField K L)
+#synth Algebra M L
+
+-- add a requirement that the uniquess is need and
+-- TODO: we know this is true and after it is in mathlib we can remove this condition.
+theorem of_completeSpace [CompleteSpace K] : IsKrasnerNorm K L := by
+  constructor
+  intro x y xsep hyK hxy
+  let L' := IntermediateField.algebraicClosure K L
+  let xL : L' := ⟨x, IsSeparable.isIntegral xsep⟩
+  let yL : L' := ⟨y, hyK⟩
+  suffices xL ∈ K⟮yL⟯ by
+    rwa [← IntermediateField.lift_adjoin_simple K L' yL, IntermediateField.mem_lift xL]
+  have hL' : IsKrasnerNorm K L' := IsKrasnerNorm.of_completeSpace_aux is_na extd
+  apply hL'.krasner_norm
+  · exact IsSeparable.of_algHom' L (L'.val) xsep
+  · exact (isIntegral_algHom_iff _ L'.val.toRingHom.injective).mp hyK
+  · exact fun x' hx' hne => hxy x' ((IsConjRoot.algHom_iff _ L'.val.toRingHom.injective).mpr hx')
+      (Subtype.coe_ne_coe.mpr hne)
 end IsKrasnerNorm
 
 section Valued
@@ -387,11 +471,29 @@ section Valued
 variable {Γ Γ' : Type*} [LinearOrderedCommGroupWithZero Γ] [LinearOrderedCommGroupWithZero Γ']
     {vK : Valued K Γ} {vK' : Valued K Γ'}
 
+variable {K} (vK) in
+theorem Valued.surj : Function.Surjective vK.v := sorry -- wrong, but will be
+  -- replaced once the definition of Valued changed.
+
 variable {K} in
 /-- Equivalent valuations induces the same topology -/
 theorem Valued.toUniformSpace_eq_of_isEquiv (h : vK.v.IsEquiv vK'.v) :
-  vK.toUniformSpace = vK'.toUniformSpace := by
-  sorry -- `must use new definition of is_topological_valuation`
+    vK.toUniformSpace = vK'.toUniformSpace := by
+  apply UniformAddGroup.ext vK.toUniformAddGroup vK'.toUniformAddGroup
+  ext U
+  rw [vK.is_topological_valuation, vK'.is_topological_valuation]
+  constructor <;>
+  intro ⟨γ, hγ⟩
+  · obtain ⟨x, hx⟩ := Valued.surj vK γ.1
+    use Units.mk0 (vK'.v x) (h.ne_zero.mp <| hx ▸ γ.ne_zero)
+    convert hγ
+    simp only [Units.val_mk0, ← hx]
+    exact ((Valuation.isEquiv_iff_val_lt_val vK.v vK'.v).mp h).symm
+  · obtain ⟨x, hx⟩ := Valued.surj vK' γ.1
+    use Units.mk0 (vK.v x) (h.symm.ne_zero.mp <| hx ▸ γ.ne_zero)
+    convert hγ
+    simp only [Units.val_mk0, ← hx]
+    exact ((Valuation.isEquiv_iff_val_lt_val vK.v vK'.v).mp h)
 -- `prove a copy of this using that the valuation is surjective`
 
 variable {A B : Type*} [CommRing A] [Ring B] {Γ : Type*}
@@ -455,3 +557,41 @@ theorem of_completeSpace [rk1L : vL.v.RankOne] {ΓK : outParam Type*}
     exact Valued.toNormedField.norm_lt_iff.mpr (hxy x' hx' hne)
 
 end IsKrasner
+
+/- `theorem the completion of an algebraic closure of a complete rank one valued field`
+`is again complete`
+`Or a normed field`
+-/
+
+
+def valuedIsAlgebraic (k K : Type*) {Γk : Type*} [Field k] [LinearOrderedCommGroupWithZero Γk]
+    [vk : Valued k Γk] [CompleteSpace k] [rk1k : vk.v.RankOne] [Field K] [Algebra k K]
+    [Algebra.IsAlgebraic k K] :
+    Valued K NNReal := sorry
+
+variable (k K : Type*) {Γk : Type*} [Field k] [LinearOrderedCommGroupWithZero Γk] [vk : Valued k Γk]
+    [CompleteSpace k] [rk1k : vk.v.RankOne] [Field K] [Algebra k K] [IsAlgClosure k K]
+
+instance :
+    letI := valuedIsAlgebraic k K
+    TopologicalDivisionRing K := sorry
+
+instance :
+    @TopologicalDivisionRing K _ (valuedIsAlgebraic k K).toTopologicalSpace:= sorry
+
+instance :
+    letI := valuedIsAlgebraic k K
+    CompletableTopField K := sorry
+
+instance :
+    letI := valuedIsAlgebraic k K
+    UniformAddGroup K := sorry
+
+instance :
+    letI := valuedIsAlgebraic k K
+    IsAlgClosed (UniformSpace.Completion K) := sorry
+
+
+
+
+-- inline Function extd.
