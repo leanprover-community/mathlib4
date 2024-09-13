@@ -76,22 +76,60 @@ theorem betaIntegral_ofReal_cast {a b : ℝ} :
   simp [Complex.ofReal_sub, Complex.ofReal_one]
   exact le_of_lt hx1.left
 
-lemma betaIntegral_ofReal_interval {a b : ℝ} (ha : 0 < a) (hb : 0 < b):
-Complex.re (∫ (x : ℝ) in (0)..1, ↑x ^ (↑a - 1:ℂ) * (1 - ↑x) ^ (↑b - 1:ℂ)) =
-∫ (x : ℝ) in (0)..1, x ^ (a - 1) * (1 - x) ^ (b - 1) := by
-  sorry
+lemma Complex.integral_re {X : Type*} [MeasurableSpace X]
+(μ : Measure X) {f : X → ℂ} (hf : Integrable f μ) :
+    ∫ x, (f x).re ∂μ = (∫x, f x ∂μ).re := _root_.integral_re hf
+
+lemma Complex.setIntegral_re {X : Type*} [MeasurableSpace X]
+(μ : Measure X) {s : Set X} {f : X → ℂ} (hf : IntegrableOn f s μ) :
+    ∫ x in s, (f x).re ∂μ = (∫x in s, f x ∂μ).re := Complex.integral_re _ hf.integrable
+
+lemma integrable_iff_ofReal {X : Type*} [MeasurableSpace X] {μ : Measure X}
+    {f : X → ℝ} : Integrable f μ ↔ Integrable (fun x ↦ (f x : ℂ)) μ :=
+    ⟨fun hf ↦ hf.ofReal, fun hf ↦ hf.re⟩
+
+lemma integrableOn_iff_ofReal {X : Type*} [MeasurableSpace X] {μ : Measure X} {s : Set X}
+    {f : X → ℝ} : IntegrableOn f s μ ↔ IntegrableOn (fun x ↦ (f x : ℂ)) s μ := integrable_iff_ofReal
 
 lemma betaPDF_integrable_cast {a b : ℝ} :
-@IntervalIntegrable ℂ Complex.instNormedAddCommGroup
-(fun x ↦ ↑x ^ (↑a - 1:ℂ) * (1 - ↑x) ^ (↑b - 1:ℂ)) ℙ 0 1
-= @IntervalIntegrable ℝ normedAddCommGroup
-(fun x ↦ x ^ (a - 1) * (1 - x) ^ (b - 1)) ℙ 0 1 := by
-sorry
+    IntervalIntegrable (fun x ↦ (x : ℂ) ^ (↑a - 1:ℂ) * (1 - ↑x) ^ (↑b - 1:ℂ)) ℙ 0 1 ↔
+    IntervalIntegrable (fun x ↦ x ^ (a - 1) * (1 - x) ^ (b - 1)) ℙ 0 1 := by
+  rw [intervalIntegrable_iff_integrableOn_Ioc_of_le (by norm_num),
+    intervalIntegrable_iff_integrableOn_Ioc_of_le (by norm_num),
+    integrableOn_iff_ofReal]
+  refine integrableOn_congr_fun (fun x hx ↦ ?_) measurableSet_Ioc
+  rw [mem_Ioc] at hx
+  norm_cast
+  rw [← Complex.ofReal_cpow, ← Complex.ofReal_cpow]
+  simp
+  any_goals linarith
+
+lemma betaIntegral_ofReal_interval {a b : ℝ} (ha : 0 < a) (hb : 0 < b) :
+    (∫ (x : ℝ) in (0)..1, (x : ℂ) ^ (↑a - 1:ℂ) * (1 - ↑x) ^ (↑b - 1:ℂ)).re =
+      ∫ (x : ℝ) in (0)..1, x ^ (a - 1) * (1 - x) ^ (b - 1) := by
+  rw [intervalIntegral.integral_of_le (by norm_num), intervalIntegral.integral_of_le (by norm_num),
+    ← Complex.setIntegral_re]
+  refine setIntegral_congr (measurableSet_Ioc) fun x hx ↦ ?_
+  rw [mem_Ioc] at hx
+  norm_cast
+  rw [← Complex.ofReal_cpow, ← Complex.ofReal_cpow]
+  simp
+  any_goals linarith
+  have ha' : 0 < (a: ℂ).re := by
+    rw [Complex.ofReal_re]
+    exact ha
+  have hb' : 0 < (b : ℂ).re := by
+    rw [Complex.ofReal_re]
+    exact hb
+
+  rw [← intervalIntegrable_iff_integrableOn_Ioc_of_le (by norm_num)]
+  exact Complex.betaIntegral_convergent ha' hb'
 
 lemma betaReal_integral_eq {a b : ℝ} (ha : 0 < a) (hb : 0 < b) :
 ∫ (x : ℝ) in (0)..1, x ^ (a - 1) * (1 - x) ^ (b - 1)
 = ∫ (x : ℝ) in Ioo 0 1, x ^ (a - 1) * (1 - x) ^ (b - 1) := by
-sorry
+  rw [intervalIntegral.integral_of_le (by norm_num)]
+  rw [integral_Ioc_eq_integral_Ioo]
 
 lemma betaReal_Integral {a b : ℝ} (ha : 0 < a) (hb : 0 < b) :
 Beta a b = ∫ (x : ℝ) in Ioo 0 1, x ^ (a - 1) * (1 - x) ^ (b - 1) := by
