@@ -24,9 +24,20 @@ This file defines `Finset.expect`, the average (aka expectation) of a function o
   as `expectWith` in lemma names.
 * `𝔼 (i ∈ s) (j ∈ t), f i j` is notation for `Finset.expect (s ×ˢ t) (fun ⟨i, j⟩ ↦ f i j)`.
 
+## Implementation notes
+
+This definition is a special case of the general convex comnination operator in a convex space.
+However:
+1. We don't yet have general convex spaces.
+2. The uniform weights case is a overwhelmingly useful special case which should have its own API.
+
+When convex spaces are finally defined, we should redefine `Finset.expect` in terms of that convex
+combination operator.
+
 ## TODO
 
-Connect `Finset.expect` with the expectation over `s` in the probability theory sense.
+* Connect `Finset.expect` with the expectation over `s` in the probability theory sense.
+* Give a formulation of Jensen's inequality and the Cauchy-Schwarz inequality in this language.
 -/
 
 open Finset Function
@@ -227,10 +238,18 @@ most arguments. -/
 lemma expect_equiv (e : ι ≃ κ) (hst : ∀ i, i ∈ s ↔ e i ∈ t) (hfg : ∀ i ∈ s, f i = g (e i)) :
     𝔼 i ∈ s, f i = 𝔼 i ∈ t, g i := by simp_rw [expect, card_equiv e hst, sum_equiv e hst hfg]
 
-lemma expect_product (f : ι × κ → M) : 𝔼 x ∈ s ×ˢ t, f x = 𝔼 i ∈ s, 𝔼 j ∈ t, f (i, j) := by
+/-- Expectation over a product set equals the expectation of the fiberwise expectations.
+
+For rewriting in the reverse direction, use `Finset.expect_product'`. -/
+lemma expect_product (s : Finset ι) (t : Finset κ) (f : ι × κ → M) :
+    𝔼 x ∈ s ×ˢ t, f x = 𝔼 i ∈ s, 𝔼 j ∈ t, f (i, j) := by
   simp only [expect, card_product, sum_product, smul_sum, mul_inv, mul_smul, Nat.cast_mul]
 
-lemma expect_product' (f : ι → κ → M) : 𝔼 i ∈ s ×ˢ t, f i.1 i.2 = 𝔼 i ∈ s, 𝔼 j ∈ t, f i j := by
+/-- Expectation over a product set equals the expectation of the fiberwise expectations.
+
+For rewriting in the reverse direction, use `Finset.expect_product`. -/
+lemma expect_product' (s : Finset ι) (t : Finset κ) (f : ι → κ → M) :
+    𝔼 i ∈ s ×ˢ t, f i.1 i.2 = 𝔼 i ∈ s, 𝔼 j ∈ t, f i j := by
   simp only [expect, card_product, sum_product', smul_sum, mul_inv, mul_smul, Nat.cast_mul]
 
 @[simp]
