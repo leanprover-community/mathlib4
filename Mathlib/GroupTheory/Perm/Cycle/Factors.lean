@@ -294,7 +294,7 @@ theorem SameCycle.exists_pow_eq [DecidableEq α] [Fintype α] (f : Perm α) (h :
 
 variable [DecidableEq α] [Fintype α]
 
-theorem zpow_eq_zpow_on_iff [DecidableEq α] [Fintype α]
+theorem zpow_eq_zpow_on_iff
     (g : Perm α) {m n : ℤ} {x : α} (hx : g x ≠ x) :
     (g ^ m) x = (g ^ n) x ↔
       m % (g.cycleOf x).support.card = n % (g.cycleOf x).support.card := by
