@@ -39,7 +39,7 @@ structure we are constructing here.
 
 set_option maxSynthPendingDepth 2
 
-open scoped ComplexOrder Topology Uniformity Bornology Matrix NNReal
+open scoped ComplexOrder Topology Uniformity Bornology Matrix NNReal InnerProductSpace
 
 local notation:25 n " →C⋆ " A:0 => WithCStarModule (n → A)
 
@@ -110,7 +110,7 @@ lemma mul_entry_mul_eq_inner_toCLM [DecidableEq m] [DecidableEq n] {M : CStarMat
     {i : m} {j : n} (a b : A) :
     star a * M i j * b
       = ⟪equiv _ |>.symm (Pi.single i a), toCLM M (equiv _ |>.symm <| Pi.single j b)⟫_A := by
-  simp [mul_assoc]
+  simp [mul_assoc, inner_def]
 
 lemma toCLM_injective [DecidableEq n] : Function.Injective (toCLM (A := A) (m := m) (n := n)) := by
   rw [injective_iff_map_eq_zero]
@@ -364,9 +364,9 @@ noncomputable instance instNormedAlgebra : NormedAlgebra ℂ (CStarMatrix n n A)
   norm_smul_le r M := by simpa only [norm_def, map_smul] using (toCLM M).opNorm_smul_le r
 
 -- TODO: make this non-unital
-instance instPartialOrder : PartialOrder (CStarMatrix n n A) := CStarRing.spectralOrder _
+instance instPartialOrder : PartialOrder (CStarMatrix n n A) := CStarAlgebra.spectralOrder _
 instance instStarOrderedRing : StarOrderedRing (CStarMatrix n n A) :=
-  CStarRing.spectralOrderedRing _
+  CStarAlgebra.spectralOrderedRing _
 
 end unital
 
