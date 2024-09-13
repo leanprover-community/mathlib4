@@ -144,7 +144,7 @@ theorem odd_of_centralizer_le_alternatingGroup
   rw [← Finset.mem_def] at hc
   suffices sign c = 1 by
     rw [IsCycle.sign _, neg_eq_iff_eq_neg] at this
-    · rw [Nat.odd_iff_not_even, Function.comp_apply]
+    · rw [← Nat.not_even_iff_odd, Function.comp_apply]
       rw [← Int.units_ne_iff_eq_neg] at this
       exact fun h ↦ this h.neg_one_pow
     · rw [mem_cycleFactorsFinset_iff] at hc
