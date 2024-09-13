@@ -14,8 +14,8 @@ This module introduces *acyclic graphs* (a.k.a. *forests*) and *trees*.
 
 ## Main definitions
 
-* `SimpleGraph.IsAcyclic` is a predicate for a graph having no cyclic walks
-* `SimpleGraph.IsTree` is a predicate for a graph being a tree (a connected acyclic graph)
+* `SimpleGraph.IsAcyclic` is a predicate for a graph having no cyclic walks.
+* `SimpleGraph.IsTree` is a predicate for a graph being a tree (a connected acyclic graph).
 
 ## Main statements
 
