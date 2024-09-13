@@ -21,9 +21,9 @@ The reason is that we did not want to change existing names in the library.
 -/
 
 /-
-`NeZero` should not be needed at this point in the ordered algebraic hierarchy.
+`NeZero` theory should not be needed at this point in the ordered algebraic hierarchy.
 -/
-assert_not_exists NeZero
+assert_not_imported Mathlib.Algebra.NeZero
 
 open Function
 
