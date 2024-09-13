@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Batteries.Classes.Order
-import Mathlib.Init.Logic
 import Mathlib.Data.Ordering.Basic
+import Mathlib.Tactic.Lemma
+import Mathlib.Tactic.Relation.Trans
 import Mathlib.Tactic.SplitIfs
+import Mathlib.Tactic.TypeStar
 
 /-!
 # Orders

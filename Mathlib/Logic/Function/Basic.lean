@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Init.Algebra.Classes
+import Mathlib.Init.Logic
 import Mathlib.Data.Set.Defs
 import Mathlib.Logic.Basic
 import Mathlib.Logic.ExistsUnique
@@ -956,7 +957,7 @@ theorem IsSymmOp.flip_eq (op) [IsSymmOp α β op] : flip op = op :=
 
 theorem InvImage.equivalence {α : Sort u} {β : Sort v} (r : β → β → Prop) (f : α → β)
     (h : Equivalence r) : Equivalence (InvImage r f) :=
-  ⟨fun _ ↦ h.1 _, fun w ↦ h.symm w, fun h₁ h₂ ↦ InvImage.trans r f (fun _ _ _ ↦ h.trans) h₁ h₂⟩
+  ⟨fun _ ↦ h.1 _, h.symm, h.trans⟩
 
 instance {α β : Type*} {r : α → β → Prop} {x : α × β} [Decidable (r x.1 x.2)] :
   Decidable (uncurry r x) :=
