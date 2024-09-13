@@ -12,12 +12,12 @@ import Mathlib.Algebra.Algebra.Tower
 
 This file defines the `algebraize` tactic. The basic functionality of this tactic is to
 automatically add `Algebra` instances given `RingHom`s. For example, `algebraize f g` where
-`f : A →+* B` and `g : B →+* C` are `RinHom`'s, will add the instances `Algebra A B` and
+`f : A →+* B` and `g : B →+* C` are `RinHom`s, will add the instances `Algebra A B` and
 `Algebra B C` corresponding to these `RingHom`s.
 
 ## Further functionality
 
-When given a composition of `RingHom`'s, e.g. `algebraize g.comp f`, the tactic will also try to
+When given a composition of `RingHom`s, e.g. `algebraize g.comp f`, the tactic will also try to
 add the instance `IsScalarTower A B C` if possible.
 
 After having added suitable `Algebra` and `IsScalarTower` instances, the tactic will search through
@@ -159,7 +159,7 @@ def addIsScalarTowerInstanceFromRingHomComp (fn : Expr) : TacticM Unit := withMa
     let (_, mvar) ← mvar.intro1P
     return [mvar]
 
-/-- This function takes an array of expressions `t`, all of which are assumed to be `RingHom`'s,
+/-- This function takes an array of expressions `t`, all of which are assumed to be `RingHom`s,
 and searches through the local context to find any additional properties of these `RingHoms`, after
 which it tries to add the corresponding `Algebra` properties to the context. It only looks for
 properties that have been tagged with the `algebraize` attribute, and uses this tag to find the
