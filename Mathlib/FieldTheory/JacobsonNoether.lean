@@ -210,17 +210,27 @@ end JacobsonNoether
 namespace test
 
 #help tactic infer
+open Algebra
 
 example {L D : Type*} [Field L] [DivisionRing D] [Algebra L D] [Algebra.IsAlgebraic L D]
     (hcenter : Subalgebra.center L D = ⊥) (hneq : (⊥ : Subalgebra L D) ≠ ⊤) :
     ∃ x : D, x ∉ (⊥ : Subalgebra L D) ∧ IsSeparable L x := by
-  have aux : Algebra.IsAlgebraic L D := inferInstance
-  -- set c := @(Algebra.ofId L D).range with hc
+  -- have aux : Algebra.IsAlgebraic L D := inferInstance
+  -- let cmm1 : CommRing (⊥ : Subalgebra L D) := by
+  --   rw [← hcenter]
+  --   infer_instance
   set a := Subring.center D with ha
   have hac : (⊥ : Subalgebra L D).toSubring = a := by
     · rw [← hcenter]
       rfl
   set φ := RingEquiv.subringCongr (hac).symm with hφ
+  let cmm2 : CommRing (⊥ : Subalgebra L D) := (φ.symm).commRing
+  -- have check : cmm1 = cmm2 := rfl
+  -- have : Algebra (⊥ : Subalgebra L D) D := by
+    -- have := (φ.toRingHom).toAlgebra
+
+  -- set c := @(Algebra.ofId L D).range with hc
+  -- set a := Subring.center D with ha
   set ψ : L ≃+* (⊥ : Subalgebra L D) := by
     · use ((Algebra.botEquiv L D).toRingEquiv).symm
       · intro x y
@@ -230,10 +240,11 @@ example {L D : Type*} [Field L] [DivisionRing D] [Algebra L D] [Algebra.IsAlgebr
 
 
 
-  let comm : CommSemiring (⊥ : Subalgebra L D) := ψ.symm.commSemiring
+  -- let comm : CommSemiring (⊥ : Subalgebra L D) := ψ.symm.commSemiring
 
   let _ : Algebra L a := by
-    · have := @RingHom.toAlgebra L (⊥ : Subalgebra L D) _ comm ψ.toRingHom
+    use (ψ.trans φ.symm).toRingHom.toAlgebra
+    -- · have := @RingHom.toAlgebra L (⊥ : Subalgebra L D) _ comm ψ.toRingHom
     -- · have := Algebra L (⊥ : Subalgebra L D)
 
       --use Algebra.ofId L D
