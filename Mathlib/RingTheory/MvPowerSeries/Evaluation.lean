@@ -51,7 +51,7 @@ open Filter MvPolynomial RingHom Set TopologicalSpace UniformSpace
 section
 
 variable {σ : Type*}
-variable {R : Type*} [CommRing R] [TopologicalSpace R] 
+variable {R : Type*} [CommRing R] [TopologicalSpace R]
 variable {S : Type*} [CommRing S] [TopologicalSpace S]
 variable {φ : R →+* S} (hφ : Continuous φ)
 
@@ -142,7 +142,7 @@ open WithPiTopology
 
 variable {σ : Type*} -- [DecidableEq σ]
 variable {R : Type*} [CommRing R] [UniformSpace R] -- [UniformAddGroup R] [TopologicalRing R]
-variable {S : Type*} [CommRing S] [UniformSpace S] 
+variable {S : Type*} [CommRing S] [UniformSpace S]
   -- [UniformAddGroup S] [TopologicalRing S] [T2Space S] [CompleteSpace S]
 variable {φ : R →+* S} -- (hφ : Continuous φ)
 
@@ -166,7 +166,7 @@ theorem _root_.MvPolynomial.coeToMvPowerSeries_denseInducing :
 variable {a : σ → S}
 
 /- The coercion of polynomials into power series is uniformly continuous. -/
-theorem _root_.MvPolynomial.coeToMvPowerSeries_uniformContinuous 
+theorem _root_.MvPolynomial.coeToMvPowerSeries_uniformContinuous
     [UniformAddGroup R] [UniformAddGroup S] [hS : LinearTopology S]
     (hφ : Continuous φ) (ha : EvalDomain a):
     UniformContinuous (MvPolynomial.eval₂Hom φ a) := by
