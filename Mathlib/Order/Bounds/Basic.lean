@@ -759,7 +759,7 @@ theorem nonempty_of_not_bddBelow [Nonempty α] (h : ¬BddBelow s) : s.Nonempty :
 @[simp]
 theorem bddAbove_insert [IsDirected α (· ≤ ·)] {s : Set α} {a : α} :
     BddAbove (insert a s) ↔ BddAbove s := by
-  simp only [insert_eq, bddAbove_union, bddAbove_singleton, true_and_iff]
+  simp only [insert_eq, bddAbove_union, bddAbove_singleton, true_and]
 
 protected theorem BddAbove.insert [IsDirected α (· ≤ ·)] {s : Set α} (a : α) :
     BddAbove s → BddAbove (insert a s) :=
@@ -769,7 +769,7 @@ protected theorem BddAbove.insert [IsDirected α (· ≤ ·)] {s : Set α} (a : 
 @[simp]
 theorem bddBelow_insert [IsDirected α (· ≥ ·)] {s : Set α} {a : α} :
     BddBelow (insert a s) ↔ BddBelow s := by
-  simp only [insert_eq, bddBelow_union, bddBelow_singleton, true_and_iff]
+  simp only [insert_eq, bddBelow_union, bddBelow_singleton, true_and]
 
 protected theorem BddBelow.insert [IsDirected α (· ≥ ·)] {s : Set α} (a : α) :
     BddBelow s → BddBelow (insert a s) :=
