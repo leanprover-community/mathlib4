@@ -77,30 +77,33 @@ variable (P : RootPairing ι R M N) (i j : ι)
 
 lemma reflection_apply_lin_comb (x : M) (a b : R) :
     P.reflection i (x + a • P.root i + b • P.root j) =
-    x + (- a - P.toLin x (P.coroot i) - b * P.pairing j i) • P.root i + b • P.root j := by
-  rw [reflection_apply, LinearMap.map_add₂, LinearMap.map_add₂, map_smul, LinearMap.smul_apply,
-    root_coroot_eq_pairing, pairing_same, smul_eq_mul, mul_comm, two_mul]
-  simp only [map_smul, LinearMap.smul_apply, root_coroot_eq_pairing, smul_eq_mul, sub_smul,
-    add_smul, neg_smul]
+      x + (- a - P.toPerfectPairing x (P.coroot i) - b * P.pairing j i) • P.root i +
+      b • P.root j := by
+  simp only [reflection_apply, ← toLin_toPerfectPairing, LinearMap.map_add₂, LinearMap.add_apply,
+    LinearMap.smul_apply, LinearMap.map_smul₂, smul_eq_mul, add_smul]
+  simp only [toLin_toPerfectPairing, root_coroot_eq_pairing, pairing_same, mul_two, two_smul,
+    add_smul, sub_smul, mul_smul, neg_smul]
   abel
 
 lemma reflection_reflection (x : M) : P.reflection i (P.reflection j x) =
-    x - P.toLin x (P.coroot j) • P.root j - (P.toLin x (P.coroot i) -
-    P.toLin x (P.coroot j) • (P.pairing j i)) • P.root i := by
+    x - P.toPerfectPairing x (P.coroot j) • P.root j - (P.toPerfectPairing x (P.coroot i) -
+    P.toPerfectPairing x (P.coroot j) • (P.pairing j i)) • P.root i := by
   rw [reflection_apply P j, reflection_apply P i]
-  simp only [map_sub, map_smul, LinearMap.sub_apply, LinearMap.smul_apply, root_coroot_eq_pairing,
-    smul_eq_mul]
+  simp only [← toLin_toPerfectPairing, map_sub, map_smul,
+    LinearMap.sub_apply, LinearMap.smul_apply, smul_eq_mul, sub_right_inj]
+  simp only [PerfectPairing.toLin_apply, root_coroot_eq_pairing]
 
 lemma two_root_eq_pairing_root (h : P.reflection i = P.reflection j) :
     (2 : R) • P.root i = (P.pairing i j) • P.root j := by
   have h₂ : ∀ (x : M), P.reflection i x = P.reflection j x := congrFun (congrArg DFunLike.coe h)
-  have h₃ : ∀ (x : M), P.toLin x (P.coroot i) • P.root i = P.toLin x (P.coroot j) • P.root j := by
+  have h₃ : ∀ (x : M), P.toPerfectPairing x (P.coroot i) • P.root i =
+      P.toPerfectPairing x (P.coroot j) • P.root j := by
     intro x
     specialize h₂ x
     rw [reflection_apply, reflection_apply, sub_eq_sub_iff_add_eq_add, add_left_cancel_iff] at h₂
     exact id h₂.symm
   specialize h₃ (P.root i)
-  rw [root_coroot_two, root_coroot_eq_pairing] at h₃
+  rw [root_coroot_eq_pairing, pairing_same] at h₃
   exact h₃
 
 lemma linearDependent_of_eq_reflection (h : P.reflection i = P.reflection j) (h₁ : ¬ (2 : R) = 0) :

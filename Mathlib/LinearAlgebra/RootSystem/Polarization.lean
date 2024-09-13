@@ -78,21 +78,23 @@ roots that has nonpositive norm.
 def Polarization [Finite ι] : M →ₗ[R] N where
   toFun m :=
     haveI := Fintype.ofFinite ι
-    ∑ (i : ι), P.toLin m (P.coroot i) • (P.coroot i)
+    ∑ (i : ι), P.toPerfectPairing m (P.coroot i) • (P.coroot i)
   map_add' x y := by
-    simp only [map_add, LinearMap.add_apply, add_smul, Finset.sum_add_distrib]
+    simp only [← toLin_toPerfectPairing, map_add, PerfectPairing.toLin_apply, LinearMap.add_apply,
+      add_smul, Finset.sum_add_distrib]
   map_smul' r x := by
-    simp only [map_smul, LinearMap.smul_apply, RingHom.id_apply, Finset.smul_sum, smul_assoc]
+    simp only [← toLin_toPerfectPairing, map_smul, LinearMap.smul_apply, RingHom.id_apply,
+      Finset.smul_sum, smul_assoc]
 
 theorem polarization_self [Finite ι] (x : M) :
     haveI := Fintype.ofFinite ι
-    P.toLin x (P.Polarization x) =
-      ∑ (i : ι), P.toLin x (P.coroot i) * P.toLin x (P.coroot i) := by
+    P.toPerfectPairing x (P.Polarization x) =
+      ∑ (i : ι), P.toPerfectPairing x (P.coroot i) * P.toPerfectPairing x (P.coroot i) := by
   simp
 
 theorem polarization_root_self [Finite ι] (j : ι) :
     haveI := Fintype.ofFinite ι
-    P.toLin (P.root j) (P.Polarization (P.root j)) =
+    P.toPerfectPairing (P.root j) (P.Polarization (P.root j)) =
       ∑ (i : ι), (P.pairing j i) * (P.pairing j i) := by
   simp
 
@@ -110,20 +112,23 @@ theorem polInner_symmetric [Finite ι] (x y : M) :
   simp [mul_comm]
 
 lemma reflection_coroot_perm {i j : ι} (y : M) :
-    (P.toLin ((P.reflection i) y)) (P.coroot j) = P.toLin y (P.coroot (P.reflection_perm i j)) := by
-  simp only [reflection_apply, map_sub, LinearMapClass.map_smul, LinearMap.sub_apply,
-    LinearMap.smul_apply, root_coroot_eq_pairing, smul_eq_mul, mul_comm, coroot_reflection_perm,
+    (P.toPerfectPairing ((P.reflection i) y)) (P.coroot j) =
+      P.toPerfectPairing y (P.coroot (P.reflection_perm i j)) := by
+  simp only [reflection_apply, map_sub, ← PerfectPairing.toLin_apply, map_smul, LinearMap.sub_apply,
+    LinearMap.smul_apply, root_coroot_eq_pairing, smul_eq_mul, coroot_reflection_perm,
     coreflection_apply_coroot]
+  simp [mul_comm]
 
 theorem polInner_reflection_invariant [Finite ι] (i : ι) (x y : M) :
     P.PolInner (P.reflection i x) (P.reflection i y) = P.PolInner x y := by
   simp only [PolInner_apply, LinearMap.coe_comp, comp_apply, Polarization_apply, map_sum,
-    LinearMapClass.map_smul, smul_eq_mul, reflection_coroot_perm]
+    LinearMapClass.map_smul, smul_eq_mul, reflection_coroot_perm, toLin_toPerfectPairing]
   letI := Fintype.ofFinite ι
   exact Fintype.sum_equiv (P.reflection_perm i)
-    (fun x_1 ↦ (P.toLin y) (P.coroot ((P.reflection_perm i) x_1)) *
-      (P.toLin x) (P.coroot ((P.reflection_perm i) x_1)))
-    (fun x_1 ↦ (P.toLin y) (P.coroot x_1) * (P.toLin x) (P.coroot x_1)) (congrFun rfl)
+    (fun x_1 ↦ (P.toPerfectPairing y) (P.coroot ((P.reflection_perm i) x_1)) *
+      (P.toPerfectPairing x) (P.coroot ((P.reflection_perm i) x_1)))
+    (fun x_1 ↦ (P.toPerfectPairing y) (P.coroot x_1) *
+      (P.toPerfectPairing x) (P.coroot x_1)) (congrFun rfl)
 
 -- TODO : polInner_weyl_invariant
 /-! lemma polInner_weyl_invariant (P : RootPairing ι R M N) [Finite ι]
@@ -138,19 +143,24 @@ theorem polInner_reflection_invariant [Finite ι] (i : ι) (x y : M) :
 -/
 
 lemma root_covector_coroot (x : N) (i : ι) :
-    (P.toLin (P.root i) x) • P.coroot i = (x - P.coreflection i x) := by
+    (P.toPerfectPairing (P.root i) x) • P.coroot i = (x - P.coreflection i x) := by
   rw [coreflection_apply, sub_sub_cancel]
 
 lemma pairing_reflection_perm (P : RootPairing ι R M N) (i j k : ι) :
     P.pairing j (P.reflection_perm i k) = P.pairing (P.reflection_perm i j) k := by
-  rw [pairing, ← reflection_perm_coroot, pairing, ← reflection_perm_root, map_sub, map_sub]
-  simp [mul_comm]
+  simp only [pairing, coroot_reflection_perm, root_reflection_perm]
+  simp only [coreflection_apply_coroot, map_sub, root_coroot_eq_pairing, map_smul, smul_eq_mul,
+    reflection_apply_root]
+  simp only [← toLin_toPerfectPairing, map_smul, LinearMap.smul_apply, map_sub, map_smul,
+    LinearMap.sub_apply, smul_eq_mul]
+  simp only [PerfectPairing.toLin_apply, root_coroot_eq_pairing, sub_right_inj, mul_comm]
 
 @[simp]
 lemma pairing_reflection_perm_self (P : RootPairing ι R M N) (i j : ι) :
     P.pairing (P.reflection_perm i i) j = - P.pairing i j := by
-  rw [pairing, ← reflection_perm_root, root_coroot_two, two_smul, sub_add_cancel_left,
-    LinearMap.map_neg₂, root_coroot_eq_pairing]
+  rw [pairing, ← reflection_perm_root, root_coroot_eq_pairing, pairing_same, two_smul,
+    sub_add_cancel_left, ← toLin_toPerfectPairing, LinearMap.map_neg₂, toLin_toPerfectPairing,
+    root_coroot_eq_pairing]
 
 /-- SGA3 XXI Lemma 1.2.1 (10) -/
 lemma PolInner_self_coroot (P : RootPairing ι R M N) [Finite ι] (i : ι) :
@@ -199,9 +209,9 @@ variable [LinearOrderedCommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N
 -- should I just say positive semi-definite?
 theorem polInner_self_non_neg [Finite ι] (x : M) : 0 ≤ P.PolInner x x := by
   simp only [PolInner, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.coe_comp, comp_apply,
-    polarization_self]
+    polarization_self, toLin_toPerfectPairing]
   exact Finset.sum_nonneg fun i _ =>
-    (sq (P.toLin x (P.coroot i))) ▸ sq_nonneg (P.toLin x (P.coroot i))
+    (sq (P.toPerfectPairing x (P.coroot i))) ▸ sq_nonneg (P.toPerfectPairing x (P.coroot i))
 
 --lemma coxeter_weight_leq_4 :
 
@@ -209,7 +219,7 @@ theorem polInner_self_non_neg [Finite ι] (x : M) : 0 ≤ P.PolInner x x := by
 theorem polInner_root_self_pos [Finite ι] (j : ι) :
     0 < P.PolInner (P.root j) (P.root j) := by
   simp only [PolInner, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.coe_comp, comp_apply,
-    polarization_root_self]
+    polarization_root_self, toLin_toPerfectPairing]
   refine Finset.sum_pos' (fun i _ => (sq (P.pairing j i)) ▸ sq_nonneg (P.pairing j i)) ?_
   use j
   refine ⟨letI := Fintype.ofFinite ι; Finset.mem_univ j, ?_⟩
