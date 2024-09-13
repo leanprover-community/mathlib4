@@ -52,123 +52,6 @@ lemma betaPDF_eq (a b x : ℝ) :
     betaPDF a b x = ENNReal.ofReal (if 0 < x ∧ x < 1
     then 1 / (Beta a b) * x ^ (a - 1) * (1 - x) ^ (b - 1) else 0) := rfl
 
-lemma xyz {X : Type*} [MeasurableSpace X] (μ : Measure X) {f : X → ℂ} (hf : Integrable f μ) :
-    ∫ x, (f x).re ∂μ = (∫x, f x ∂μ).re := by
-  rw [← fun z ↦ congrFun RCLike.re_eq_complex_re z, ← integral_re hf]
-  rfl
-
-theorem integral_ofReal {a b : ℝ} {μ : Measure ℝ} {f : ℝ → ℝ} :
-    (∫ x in (a)..b, (f x : ℂ) ∂μ) = ↑(∫ x in (a)..b, f x ∂μ) :=
-  RCLike.intervalIntegral_ofReal
-
-theorem betaIntegral_ofReal_cast {a b : ℝ} :
-  ∫ x : ℝ in Ioo 0 1, (x:ℂ) ^ (↑a - 1:ℂ) * (1 - (x:ℂ)) ^ (↑b - 1:ℂ)
-= ↑(∫ x : ℝ in Ioo 0 1, x ^ (a - 1) * (1 - x) ^ (b - 1)) := by
-  have hcast: ∀ r : ℝ, Complex.ofReal' r = @RCLike.ofReal ℂ _ r := fun r => rfl
-  conv_rhs => rw [hcast, ← _root_.integral_ofReal]
-  dsimp
-  refine setIntegral_congr measurableSet_Ioo ?_
-  intro x hx; dsimp only
-  -- conv_rhs => rw [hcast]
-  have hx1 : 0 < x ∧ x < 1 := mem_Ioo.mp hx
-  have hx10 : 0 ≤ 1-x := by linarith
-  rw [Complex.ofReal_mul, Complex.ofReal_cpow, Complex.ofReal_cpow hx10]
-  simp [Complex.ofReal_sub, Complex.ofReal_one]
-  exact le_of_lt hx1.left
-
-lemma Complex.integral_re {X : Type*} [MeasurableSpace X]
-(μ : Measure X) {f : X → ℂ} (hf : Integrable f μ) :
-    ∫ x, (f x).re ∂μ = (∫x, f x ∂μ).re := _root_.integral_re hf
-
-lemma Complex.setIntegral_re {X : Type*} [MeasurableSpace X]
-(μ : Measure X) {s : Set X} {f : X → ℂ} (hf : IntegrableOn f s μ) :
-    ∫ x in s, (f x).re ∂μ = (∫x in s, f x ∂μ).re := Complex.integral_re _ hf.integrable
-
-lemma integrable_iff_ofReal {X : Type*} [MeasurableSpace X] {μ : Measure X}
-    {f : X → ℝ} : Integrable f μ ↔ Integrable (fun x ↦ (f x : ℂ)) μ :=
-    ⟨fun hf ↦ hf.ofReal, fun hf ↦ hf.re⟩
-
-lemma integrableOn_iff_ofReal {X : Type*} [MeasurableSpace X] {μ : Measure X} {s : Set X}
-    {f : X → ℝ} : IntegrableOn f s μ ↔ IntegrableOn (fun x ↦ (f x : ℂ)) s μ := integrable_iff_ofReal
-
-lemma betaPDF_integrable_cast {a b : ℝ} :
-    IntervalIntegrable (fun x ↦ (x : ℂ) ^ (↑a - 1:ℂ) * (1 - ↑x) ^ (↑b - 1:ℂ)) ℙ 0 1 ↔
-    IntervalIntegrable (fun x ↦ x ^ (a - 1) * (1 - x) ^ (b - 1)) ℙ 0 1 := by
-  rw [intervalIntegrable_iff_integrableOn_Ioc_of_le (by norm_num),
-    intervalIntegrable_iff_integrableOn_Ioc_of_le (by norm_num),
-    integrableOn_iff_ofReal]
-  refine integrableOn_congr_fun (fun x hx ↦ ?_) measurableSet_Ioc
-  rw [mem_Ioc] at hx
-  norm_cast
-  rw [← Complex.ofReal_cpow, ← Complex.ofReal_cpow]
-  simp
-  any_goals linarith
-
-lemma betaIntegral_ofReal_interval {a b : ℝ} (ha : 0 < a) (hb : 0 < b) :
-    (∫ (x : ℝ) in (0)..1, (x : ℂ) ^ (↑a - 1:ℂ) * (1 - ↑x) ^ (↑b - 1:ℂ)).re =
-      ∫ (x : ℝ) in (0)..1, x ^ (a - 1) * (1 - x) ^ (b - 1) := by
-  rw [intervalIntegral.integral_of_le (by norm_num), intervalIntegral.integral_of_le (by norm_num),
-    ← Complex.setIntegral_re]
-  refine setIntegral_congr (measurableSet_Ioc) fun x hx ↦ ?_
-  rw [mem_Ioc] at hx
-  norm_cast
-  rw [← Complex.ofReal_cpow, ← Complex.ofReal_cpow]
-  simp
-  any_goals linarith
-  have ha' : 0 < (a: ℂ).re := by
-    rw [Complex.ofReal_re]
-    exact ha
-  have hb' : 0 < (b : ℂ).re := by
-    rw [Complex.ofReal_re]
-    exact hb
-
-  rw [← intervalIntegrable_iff_integrableOn_Ioc_of_le (by norm_num)]
-  exact Complex.betaIntegral_convergent ha' hb'
-
-lemma betaReal_integral_eq {a b : ℝ} (ha : 0 < a) (hb : 0 < b) :
-∫ (x : ℝ) in (0)..1, x ^ (a - 1) * (1 - x) ^ (b - 1)
-= ∫ (x : ℝ) in Ioo 0 1, x ^ (a - 1) * (1 - x) ^ (b - 1) := by
-  rw [intervalIntegral.integral_of_le (by norm_num)]
-  rw [integral_Ioc_eq_integral_Ioo]
-
-lemma betaReal_Integral {a b : ℝ} (ha : 0 < a) (hb : 0 < b) :
-Beta a b = ∫ (x : ℝ) in Ioo 0 1, x ^ (a - 1) * (1 - x) ^ (b - 1) := by
-  rw [Beta, Complex.betaIntegral]
-  rw [betaIntegral_ofReal_interval ha hb]
-  exact betaReal_integral_eq ha hb
-
-example {X : Type*} [MeasurableSpace X] (μ : Measure X) {f : X → ℂ} (hf : Integrable f μ) :
-    ∫ x, (f x).re ∂μ = (∫x, f x ∂μ).re := by
-  rw [← fun z ↦ congrFun RCLike.re_eq_complex_re z, ← integral_re hf]
-  rfl
-
-lemma betaPDFReal_integrable {a b : ℝ} (ha : 0 < a) (hb : 0 < b):
-@IntervalIntegrable ℝ normedAddCommGroup (fun x ↦ x ^ (a - 1) * (1 - x) ^ (b - 1)) ℙ 0 1 := by
-  have ha' : 0 < (↑a : ℂ).re := by
-    rw [Complex.ofReal_re]
-    exact ha
-  have hb' : 0 < (↑b : ℂ).re := by
-    rw [Complex.ofReal_re]
-    exact hb
-  have h := Complex.betaIntegral_convergent ha' hb'
-  rw [betaPDF_integrable_cast] at h
-  exact h
-
-lemma betaIntervalIntegralPos {a b : ℝ} (ha: 0 < a) (hb : 0 < b) :
-∫ (x : ℝ) in (0)..1, x ^ (a - 1) * (1 - x) ^ (b - 1) > 0 := by
-  apply intervalIntegral.intervalIntegral_pos_of_pos_on
-  · exact betaPDFReal_integrable ha hb
-  · simp
-    intros x hxpos hx1
-    have hp : 1 - x > 0 := by linarith
-    positivity
-  · exact zero_lt_one
-
-lemma beta_pos {a b : ℝ} (ha : 0 < a) (hb : 0 < b) : Beta a b > 0 := by
-  rw [Beta, Complex.betaIntegral]
-  rw [betaIntegral_ofReal_interval ha hb]
-  exact betaIntervalIntegralPos ha hb
-
 lemma betaPDFReal_nonneg {a b : ℝ} (ha : 0 < a) (hb : 0 < b) (x : ℝ) : 0 ≤ betaPDFReal a b x := by
   unfold betaPDFReal
   split_ifs with ht
@@ -176,7 +59,8 @@ lemma betaPDFReal_nonneg {a b : ℝ} (ha : 0 < a) (hb : 0 < b) (x : ℝ) : 0 ≤
     have h2 : (1 - x) ^ (b - 1) ≥ 0 := by
       have hp : 1 - x ≥ 0 := by linarith
       exact rpow_nonneg hp (b - 1)
-    have hbeta:= beta_pos ha hb
+    have hbeta:= Beta_pos ha hb
+
     positivity
   trivial
 
@@ -187,7 +71,6 @@ lemma betaPDF_of_non01 {a b x : ℝ} (hx : x <= 0 ∨ x >= 1) : betaPDF a b x = 
     exact hx
 
   rw [if_neg hx_n, ENNReal.ofReal_zero]
-
 
 lemma betaPDF_of_01 {a b x : ℝ} (hx : 0 < x ∧ x < 1) :
     betaPDF a b x = ENNReal.ofReal (1 / (Beta a b) * x ^ (a - 1) * (1 - x) ^ (b - 1)) := by
@@ -273,12 +156,11 @@ lemma lintegral_betaPDF_eq_one {a b : ℝ} (ha : 0 < a) (hb: 0 < b) :
   rw [← ENNReal.toReal_eq_one_iff, ← integral_eq_lintegral_of_nonneg_ae]
 
   · simp_rw [mul_assoc]
-    -- rw [← integral_Ioc_eq_integral_Ioo] # if change from oo -> oc add this back
     rw [integral_mul_left]
-    rw [← betaReal_Integral ha hb]
+    rw [← BetaIntegral_ofReal ha hb]
     ring_nf
     apply DivisionRing.mul_inv_cancel
-    have h_betapos := beta_pos ha hb
+    have h_betapos := Beta_pos ha hb
     positivity
   · rw [EventuallyLE, ae_restrict_iff' measurableSet_Ioo]
     exact ae_of_all _ (fun x (hx : 0 < x ∧ x < 1) ↦ by
