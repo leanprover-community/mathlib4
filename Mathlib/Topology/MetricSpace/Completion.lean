@@ -103,7 +103,7 @@ protected theorem mem_uniformity_dist (s : Set (Completion α × Completion α))
         · have Z := hε (not_le.1 h)
           simp only [Set.mem_setOf_eq] at Z
           exact Or.inr Z
-    simp only [not_le.mpr hxy, false_or_iff, not_le] at this
+    simp only [not_le.mpr hxy, false_or, not_le] at this
     exact ts this
   · /- Start from a set `s` containing an ε-neighborhood of the diagonal in `Completion α`. To show
         that it is an entourage, we use the fact that `dist` is uniformly continuous on
