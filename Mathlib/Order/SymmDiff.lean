@@ -397,7 +397,7 @@ theorem symmDiff_symmDiff_right :
 theorem symmDiff_assoc : a ∆ b ∆ c = a ∆ (b ∆ c) := by
   rw [symmDiff_symmDiff_left, symmDiff_symmDiff_right]
 
-instance symmDiff_isAssociative : Std.Associative (α := α)  (· ∆ ·) :=
+instance symmDiff_isAssociative : Std.Associative (α := α) (· ∆ ·) :=
   ⟨symmDiff_assoc⟩
 
 theorem symmDiff_left_comm : a ∆ (b ∆ c) = b ∆ (a ∆ c) := by

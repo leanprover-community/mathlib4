@@ -25,7 +25,7 @@ section
 variable [IsWellOrder α (· < ·)]
 
 /-- Given an element `a : α` in a well ordered set, this is the successor of `a`,
-i.e. the smallest element stricly greater than `a` if it exists (or `a` itself otherwise). -/
+i.e. the smallest element strictly greater than `a` if it exists (or `a` itself otherwise). -/
 noncomputable def wellOrderSucc (a : α) : α :=
   (IsWellFounded.wf (r := (· < ·))).succ a
 

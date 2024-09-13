@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Algebra.BigOperators.Ring.List
+import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.List.Prime
 import Mathlib.Data.List.Sort
@@ -79,7 +80,7 @@ theorem prod_primeFactorsList : ∀ {n}, n ≠ 0 → List.prod (primeFactorsList
         Nat.mul_div_cancel' (minFac_dvd _)]
 
 theorem primeFactorsList_prime {p : ℕ} (hp : Nat.Prime p) : p.primeFactorsList = [p] := by
-  have : p = p - 2 + 2 := (Nat.sub_add_cancel hp.two_le).symm
+  have : p = p - 2 + 2 := Nat.eq_add_of_sub_eq hp.two_le rfl
   rw [this, primeFactorsList]
   simp only [Eq.symm this]
   have : Nat.minFac p = p := (Nat.prime_def_minFac.mp hp).2

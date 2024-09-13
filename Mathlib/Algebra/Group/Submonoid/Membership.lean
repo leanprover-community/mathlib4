@@ -131,7 +131,7 @@ theorem multiset_prod_mem {M} [CommMonoid M] (S : Submonoid M) (m : Multiset M)
 @[to_additive]
 theorem multiset_noncommProd_mem (S : Submonoid M) (m : Multiset M) (comm) (h : ∀ x ∈ m, x ∈ S) :
     m.noncommProd comm ∈ S := by
-  induction' m using Quotient.inductionOn with l
+  induction m using Quotient.inductionOn with | h l => ?_
   simp only [Multiset.quot_mk_to_coe, Multiset.noncommProd_coe]
   exact Submonoid.list_prod_mem _ h
 
@@ -293,7 +293,7 @@ variable {S : Submonoid M} [Fintype S]
 open Fintype
 
 /- curly brackets `{}` are used here instead of instance brackets `[]` because
-  the instance in a goal is often not the same as the one inferred by type class inference.  -/
+  the instance in a goal is often not the same as the one inferred by type class inference. -/
 @[to_additive]
 theorem card_bot {_ : Fintype (⊥ : Submonoid M)} : card (⊥ : Submonoid M) = 1 :=
   card_eq_one_iff.2
@@ -356,9 +356,10 @@ theorem closure_induction_left {s : Set M} {p : (m : M) → m ∈ closure s → 
     p x h := by
   simp_rw [closure_eq_mrange] at h
   obtain ⟨l, rfl⟩ := h
-  induction' l with x y ih
-  · exact one
-  · simp only [map_mul, FreeMonoid.lift_eval_of]
+  induction l with
+  | h0 => exact one
+  | ih x y ih =>
+    simp only [map_mul, FreeMonoid.lift_eval_of]
     refine mul_left _ x.prop (FreeMonoid.lift Subtype.val y) _ (ih ?_)
     simp only [closure_eq_mrange, mem_mrange, exists_apply_eq_apply]
 
