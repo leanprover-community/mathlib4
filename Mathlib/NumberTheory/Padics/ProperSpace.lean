@@ -55,7 +55,7 @@ namespace Padic
 
 /-- The field of p-adic numbers `ℚ_[p]` is a proper metric space. -/
 instance : ProperSpace ℚ_[p] := by
-  suffices LocallyCompactSpace ℚ_[p] from .of_weaklyLocallyCompactSpace_of_nontriviallyNormedField _
+  suffices LocallyCompactSpace ℚ_[p] from .of_nontriviallyNormedField_of_weaklyLocallyCompactSpace _
   have : closedBall 0 1 ∈ 𝓝 (0 : ℚ_[p]) := closedBall_mem_nhds _ zero_lt_one
   simp only [closedBall, dist_eq_norm_sub, sub_zero] at this
   refine IsCompact.locallyCompactSpace_of_mem_nhds_of_addGroup ?_ this
