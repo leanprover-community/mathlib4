@@ -658,7 +658,7 @@ lemma isNilpotent_restrict_iSup_sub_algebraMap [IsNoetherian R M] (f : End R M) 
 lemma disjoint_unifEigenspace [NoZeroSMulDivisors R M]
     (f : End R M) {μ₁ μ₂ : R} (hμ : μ₁ ≠ μ₂) (k l : ENat) :
     Disjoint (f.unifEigenspace μ₁ k) (f.unifEigenspace μ₂ l) := by
-  rw [unifEigenspace_eq_iSup_unifEigenspace_nat, unifEigenspace_eq_iSup_unifEigenspace_nat] 
+  rw [unifEigenspace_eq_iSup_unifEigenspace_nat, unifEigenspace_eq_iSup_unifEigenspace_nat]
   simp_rw [unifEigenspace_directed.disjoint_iSup_left, unifEigenspace_directed.disjoint_iSup_right]
   rintro ⟨k, -⟩ ⟨l, -⟩
   nontriviality M
