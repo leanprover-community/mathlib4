@@ -143,7 +143,7 @@ def pi {α : Type u} (β : α → ProfiniteGrp) : ProfiniteGrp :=
 /-- The product of profinite additive groups is a profinite additive group. -/
 add_decl_doc ProfiniteAddGrp.pi
 
-/-- A FiniteGrp when given the discrete topology can be condsidered as a profinite group. -/
+/-- A `FiniteGrp` when given the discrete topology can be condsidered as a profinite group. -/
 @[to_additive]
 def ofFiniteGrp (G : FiniteGrp) : ProfiniteGrp :=
   letI : TopologicalSpace G := ⊥
@@ -151,7 +151,7 @@ def ofFiniteGrp (G : FiniteGrp) : ProfiniteGrp :=
   letI : TopologicalGroup G := {}
   of G
 
-/-- A FiniteAddGrp when given the discrete topology can be condsidered as a
+/-- A `FiniteAddGrp` when given the discrete topology can be condsidered as a
   profinite additive group. -/
 add_decl_doc ProfiniteAddGrp.ofFiniteAddGrp
 

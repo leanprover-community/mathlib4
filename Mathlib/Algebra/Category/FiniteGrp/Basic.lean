@@ -69,12 +69,12 @@ def of (G : Type u) [Group G] [Finite G] : FiniteGrp where
   finite additive group. -/
 add_decl_doc FiniteAddGrp.of
 
-/-- The morphism in FiniteGrps, induced from morphism of the category Grp. -/
+/-- The morphism in `FiniteGrps`, induced from morphism of the category `Grp`. -/
 @[to_additive]
 def ofHom {X Y : Type u} [Group X] [Finite X] [Group Y] [Finite Y] (f : X →* Y) : of X ⟶ of Y :=
   Grp.ofHom f
 
-/-- The morphism in FiniteAddGrps, induced from morphism of the category AddGrp -/
+/-- The morphism in `FiniteAddGrps`, induced from morphism of the category `AddGrp` -/
 add_decl_doc FiniteAddGrp.ofHom
 
 @[to_additive]
