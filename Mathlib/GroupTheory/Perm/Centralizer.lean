@@ -205,7 +205,35 @@ namespace Equiv.Perm
 
 open MulAction Equiv Subgroup
 
-variable {α : Type*} [DecidableEq α] [Fintype α] {g : Equiv.Perm α}
+variable {α : Type*} {g : Equiv.Perm α}
+
+theorem mem_fixedPoints_iff_apply_mem_of_mem_centralizer
+    {p : Perm α} (hp : p ∈ Subgroup.centralizer {g}) {x} :
+    x ∈ Function.fixedPoints g ↔ p x ∈ Function.fixedPoints g :=  by
+  simp only [mem_centralizer_singleton_iff] at hp
+  simp only [Function.mem_fixedPoints_iff]
+  rw [← mul_apply, ← hp, mul_apply]
+  simp only [EmbeddingLike.apply_eq_iff_eq]
+
+lemma disjoint_ofSubtype_of_memFixedPoints_self [DecidableEq α]
+    (u : Perm (Function.fixedPoints g)) :
+    Disjoint (ofSubtype u) g := by
+  rw [disjoint_iff_eq_or_eq]
+  intro x
+  by_cases hx : x ∈ Function.fixedPoints g
+  · right; exact hx
+  · left; rw [ofSubtype_apply_of_not_mem u hx]
+
+theorem Disjoint.disjoint_noncommProd {ι : Type*} {k : ι → Perm α} {s : Finset ι}
+    (hs : Set.Pairwise s fun i j ↦ Commute (k i) (k j))
+    (f : Perm α) (hf : ∀ i ∈ s, f.Disjoint (k i)) :
+    f.Disjoint (s.noncommProd k (hs)) := by
+  apply Finset.noncommProd_induction
+  · exact fun g h ↦ Disjoint.mul_right
+  · exact disjoint_one_right f
+  · exact hf
+
+variable [DecidableEq α] [Fintype α] 
 
 theorem mem_support_iff_mem_support_of_mem_cycleFactorsFinset {x : α} :
     x ∈ g.support ↔
@@ -245,14 +273,6 @@ theorem CycleType.count_def (n : ℕ) :
   intro d h
   simp only [Function.comp_apply, eq_comm, Finset.mem_val.mp h, exists_const]
 
-theorem mem_fixedPoints_iff_apply_mem_of_mem_centralizer
-    {p : Perm α} (hp : p ∈ Subgroup.centralizer {g}) {x} :
-    x ∈ Function.fixedPoints g ↔ p x ∈ Function.fixedPoints g :=  by
-  simp only [mem_centralizer_singleton_iff] at hp
-  simp only [Function.mem_fixedPoints_iff]
-  rw [← mul_apply, ← hp, mul_apply]
-  simp only [EmbeddingLike.apply_eq_iff_eq]
-
 lemma support_zpowers_of_mem_cycleFactorsFinset_le
     {c : g.cycleFactorsFinset} (v : zpowers (c : Perm α)) :
     (v : Perm α).support ⊆ g.support := by
@@ -260,13 +280,6 @@ lemma support_zpowers_of_mem_cycleFactorsFinset_le
   simp only [← hm]
   apply subset_trans (support_zpow_le _ _) (mem_cycleFactorsFinset_support_le c.prop)
 
-lemma disjoint_ofSubtype_of_memFixedPoints_self
-    (u : Perm (Function.fixedPoints g)) : Disjoint (ofSubtype u) g := by
-  rw [disjoint_iff_eq_or_eq]
-  intro x
-  by_cases hx : x ∈ Function.fixedPoints g
-  · right; exact hx
-  · left; rw [ofSubtype_apply_of_not_mem u hx]
 
 theorem support_ofSubtype {p : α → Prop} [DecidablePred p]
     (u : Perm (Subtype p)) :
@@ -277,15 +290,6 @@ theorem support_ofSubtype {p : α → Prop} [DecidablePred p]
   by_cases hx : p x
   · simp only [forall_prop_of_true hx, ofSubtype_apply_of_mem u hx, ← Subtype.coe_inj]
   · simp only [forall_prop_of_false hx, true_iff, ofSubtype_apply_of_not_mem u hx]
-
-theorem Disjoint.disjoint_noncommProd {ι : Type*} {k : ι → Perm α} {s : Finset ι}
-    (hs : Set.Pairwise s fun i j ↦ Commute (k i) (k j))
-    (f : Perm α) (hf : ∀ i ∈ s, f.Disjoint (k i)) :
-    f.Disjoint (s.noncommProd k (hs)) := by
-  apply Finset.noncommProd_induction
-  · exact fun g h ↦ Disjoint.mul_right
-  · exact disjoint_one_right f
-  · exact hf
 
 /- theorem Disjoint.disjoint_noncommProd' {ι : Type*} {k : ι → Perm α} {s : Finset ι}
     (hs : Set.Pairwise s fun i j ↦ Disjoint (k i) (k j))
@@ -363,7 +367,7 @@ lemma Subgroup.Centralizer.toConjAct_smul_mem_cycleFactorsFinset
     simp only [Set.smul_mem_smul_set_iff, Finset.mem_coe, Finset.coe_mem]
   have this := cycleFactorsFinset_conj_eq (ConjAct.toConjAct (k : Perm α)) g
   rw [ConjAct.toConjAct_smul, Subgroup.mem_centralizer_singleton_iff.mp k.prop, mul_assoc] at this
-  simp only [mul_right_inv, mul_one] at this
+  simp only [mul_inv_cancel, mul_one] at this
   conv_lhs => rw [this]
   simp only [Finset.coe_smul_finset]
 
@@ -450,10 +454,10 @@ class Basis (g : Equiv.Perm α) where
   /-- A choice of elements in each cycle -/
   (toFun : g.cycleFactorsFinset → α)
   /-- For each cycle, the chosen element belongs to the cycle -/
-  (mem_support_self' : ∀ c, toFun c ∈ (c : Perm α).support)
+  (mem_support_self' : ∀ (c : g.cycleFactorsFinset), toFun c ∈ (c : Perm α).support)
 
 instance (g : Perm α) :
-  DFunLike (Basis g) (g.cycleFactorsFinset) (fun _ => α) where
+    DFunLike (Basis g) (g.cycleFactorsFinset) (fun _ => α) where
   coe a := a.toFun
   coe_injective' a a' _ := by cases a; cases a'; congr
 
@@ -612,8 +616,8 @@ noncomputable def ofPermHom : range_toPermHom' g →* Perm α where
   toFun τ := {
     toFun := newK a τ
     invFun := newK a τ⁻¹
-    left_inv := fun x ↦ by rw [← newK_mul, inv_mul_self, newK_one]
-    right_inv := fun x ↦ by rw [← newK_mul, mul_right_inv, newK_one] }
+    left_inv := fun x ↦ by rw [← newK_mul, inv_mul_cancel, newK_one]
+    right_inv := fun x ↦ by rw [← newK_mul, mul_inv_cancel, newK_one] }
   map_one' := ext fun x ↦ newK_one a x
   map_mul' := fun σ τ ↦ ext fun x ↦ by simp [mul_apply, newK_mul a σ τ x]
 
@@ -669,8 +673,8 @@ on `range_toPermHom' g` -/
 noncomputable def toCentralizer :
     range_toPermHom' g →* Subgroup.centralizer {g}  where
   toFun τ := ⟨ofPermHom a τ, ofPermHom_mem_centralizer a τ⟩
-  map_one' := by simp only [map_one, Submonoid.mk_eq_one]
-  map_mul' σ τ := by simp only [map_mul, Submonoid.mk_mul_mk]
+  map_one' := by simp only [map_one, mk_eq_one]
+  map_mul' σ τ := by simp only [map_mul, MulMemClass.mk_mul_mk]
 
 theorem toCentralizer_apply (x) : (toCentralizer a τ : Perm α) x = newK a τ x := rfl
 
