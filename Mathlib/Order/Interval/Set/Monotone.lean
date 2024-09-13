@@ -188,6 +188,10 @@ theorem strictMonoOn_Iic_of_lt_succ [SuccOrder α] [IsSuccArchimedean α] {n : �
   refine hψ _ (lt_of_lt_of_le ?_ hy)
   rwa [Function.iterate_succ', Function.comp_apply, lt_succ_iff_not_isMax]
 
+theorem strictMono_of_lt_succ [SuccOrder α] [IsSuccArchimedean α]
+    (hψ : ∀ m, ψ m < ψ (succ m)) : StrictMono ψ := fun _ _ h ↦
+  (strictMonoOn_Iic_of_lt_succ fun m _ ↦ hψ m) h.le (le_refl _) h
+
 theorem strictAntiOn_Iic_of_succ_lt [SuccOrder α] [IsSuccArchimedean α] {n : α}
     (hψ : ∀ m, m < n → ψ (succ m) < ψ m) : StrictAntiOn ψ (Set.Iic n) := fun i hi j hj hij =>
   @strictMonoOn_Iic_of_lt_succ α βᵒᵈ _ _ ψ _ _ n hψ i hi j hj hij

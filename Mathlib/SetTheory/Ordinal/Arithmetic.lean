@@ -2253,30 +2253,6 @@ theorem sup_mul_nat (o : Ordinal) : (sup fun n : ℕ => o * n) = o * ω := by
     exact sup_eq_zero_iff.2 fun n => zero_mul (n : Ordinal)
   · exact (mul_isNormal ho).apply_omega
 
-/-- The natural isomorphism between ℕ and the first ω ordinals. -/
-def relIso_nat_omega : ℕ ≃o Iio ω where
-  toFun n := ⟨n, nat_lt_omega n⟩
-  invFun n := Classical.choose (lt_omega.1 n.2)
-  left_inv n := by
-    have h : ∃ m : ℕ, n = (m : Ordinal) := ⟨n, rfl⟩
-    exact (Ordinal.natCast_inj.1 (Classical.choose_spec h)).symm
-  right_inv n := Subtype.eq (Classical.choose_spec (lt_omega.1 n.2)).symm
-  map_rel_iff' := @natCast_le
-
-theorem relIso_nat_omega.symm_eq {o : Ordinal} (h : o < ω) :
-    relIso_nat_omega.symm ⟨o, h⟩ = o := by
-  rcases lt_omega.mp h with ⟨n, rfl⟩
-  exact congrArg Nat.cast <| relIso_nat_omega.symm_apply_apply n
-
-theorem strictMono_of_succ_lt_omega {o : Ordinal} (f : Iio ω → Iio o)
-    (hf : ∀ i, f i < f ⟨succ i, omega_isLimit.succ_lt i.2⟩) (i j) (h : i < j) : f i < f j := by
-  have mono := strictMono_nat_of_lt_succ fun n ↦ hf ⟨n, nat_lt_omega n⟩
-  have := mono <| (OrderIso.lt_iff_lt relIso_nat_omega.symm).mpr h
-  change f ⟨relIso_nat_omega.symm ⟨i.1, i.2⟩, _⟩ <
-    f ⟨relIso_nat_omega.symm ⟨j.1, j.2⟩, _⟩ at this
-  simp_rw [relIso_nat_omega.symm_eq] at this
-  exact this
-
 end Ordinal
 
 variable {α : Type u} {r : α → α → Prop} {a b : α}
