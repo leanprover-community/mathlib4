@@ -126,6 +126,8 @@ def toNormedField : NormedField L :=
         exact ⟨fun a b hab => lt_of_lt_of_le hab (min_le_left _ _), fun a b hab =>
             lt_of_lt_of_le hab (min_le_right _ _)⟩ }
 
+variable {L} {Γ₀}
+
 namespace toNormedField
 
 @[simp]
@@ -174,6 +176,7 @@ theorem isNonarchimedean:
 
 end toNormedField
 
+variable (L) (Γ₀)
 /--
 The nontrivially normed field structure determined by a rank one valuation.
 -/
