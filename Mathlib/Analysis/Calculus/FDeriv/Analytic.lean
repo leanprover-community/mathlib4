@@ -365,33 +365,25 @@ protected theorem hasFDerivAt [DecidableEq ι] : HasFDerivAt f (f.linearDeriv x)
   convert f.hasFiniteFPowerSeriesOnBall.hasFDerivAt (y := x) ENNReal.coe_lt_top
   rw [zero_add]
 
-#check hasFDerivAt_pi
+theorem _root_.HasFDerivWithinAt.continuousMultilinearMap_comp
+    [DecidableEq ι] {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+    {g : ∀ i, G → E i} {g' : ∀ i, G →L[𝕜] E i} {s : Set G} {x : G}
+    (hg : ∀ i, HasFDerivWithinAt (g i) (g' i) s x) :
+    HasFDerivWithinAt (fun x ↦ f (fun i ↦ g i x))
+      ((∑ i : ι, (f.toContinuousLinearMap (fun j ↦ g j x) i) ∘L (g' i))) s x := by
+  convert (f.hasFDerivAt (fun j ↦ g j x)).comp_hasFDerivWithinAt x (hasFDerivWithinAt_pi.2 hg)
+  ext v
+  simp [linearDeriv]
 
-
-lemma foo {E F G 𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-    (A A' : (E →L[𝕜] F)) (B : G →L[𝕜] E) : (A + A') ∘L B = A ∘L B + A' ∘L B := by
-  exact?
-
-
-
-theorem hasFDerivAt_comp [DecidableEq ι] {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-    (g : ∀ i, G → E i) (g' : ∀ i, G →L[𝕜] E i) (x : G)
+theorem _root_.HasFDerivAt.continuousMultilinearMap_comp
+    [DecidableEq ι] {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+    {g : ∀ i, G → E i} {g' : ∀ i, G →L[𝕜] E i} {x : G}
     (hg : ∀ i, HasFDerivAt (g i) (g' i) x) :
     HasFDerivAt (fun x ↦ f (fun i ↦ g i x))
       ((∑ i : ι, (f.toContinuousLinearMap (fun j ↦ g j x) i) ∘L (g' i))) x := by
-  have Z := (f.hasFDerivAt (fun j ↦ g j x)).comp x (hasFDerivAt_pi.2 hg)
-  simp [linearDeriv] at Z
-  convert Z
-  simp [sum_comp]
-
-
-
---  HasFDerivAt
-
-
-#exit
-
+  convert (f.hasFDerivAt (fun j ↦ g j x)).comp x (hasFDerivAt_pi.2 hg)
+  ext v
+  simp [linearDeriv]
 
 /-- Technical lemma used in the proof of `hasFTaylorSeriesUpTo_iteratedFDeriv`, to compare sums
 over embedding of `Fin k` and `Fin (k + 1)`. -/
@@ -481,3 +473,26 @@ theorem derivSeries_apply_diag (n : ℕ) (x : E) :
       Finset.card_powersetCard, ← card, card_fin, eq_comm, add_comm, Nat.choose_succ_self_right]
 
 end FormalMultilinearSeries
+
+namespace ContinuousLinearMap
+
+variable {ι : Type*} {G : ι → Type*} [∀ i, NormedAddCommGroup (G i)] [∀ i, NormedSpace 𝕜 (G i)]
+  [Fintype ι] (f : E →L[𝕜] ContinuousMultilinearMap 𝕜 G F)
+
+theorem hasFDerivAt_uncurry_of_multilinear [DecidableEq ι] (v : E × Π i, G i) :
+    HasFDerivAt (𝕜 := 𝕜) (fun (p : E × Π i, G i) ↦ f p.1 p.2) 0 v := by
+  change HasFDerivAt (fun (p : E × Π i, G i) ↦ f.continuousMultilinearMapOption (fun _ ↦ p)) 0 v
+  have Z := HasFDerivAt.continuousMultilinearMap_comp (f := f.continuousMultilinearMapOption)
+    (𝕜 := 𝕜) (g := fun (i : Option ι) p ↦ p)
+
+
+end ContinuousLinearMap
+
+#exit
+
+HasFDerivAt.continuousMultilinearMap_comp
+    [DecidableEq ι] {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+    {g : ∀ i, G → E i} {g' : ∀ i, G →L[𝕜] E i} {x : G}
+    (hg : ∀ i, HasFDerivAt (g i) (g' i) x) :
+    HasFDerivAt (fun x ↦ f (fun i ↦ g i x))
+      ((∑ i : ι, (f.toContinuousLinearMap (fun j ↦ g j x) i) ∘L (g' i))) x := by

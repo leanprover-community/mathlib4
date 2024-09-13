@@ -595,6 +595,7 @@ variable {ι : Type*} {Em : ι → Type*} [∀ i, NormedAddCommGroup (Em i)] [�
   [Fintype ι] (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 Em F)
   {s : Set (G × (Π i, Em i))} {x : G × (Π i, Em i)}
 
+/-- Formal multilinear series associated to a linear map into multilinear maps. -/
 noncomputable def toFormalMultilinearSeriesOfMultilinear :
     FormalMultilinearSeries 𝕜 (G × (Π i, Em i)) F :=
   fun n ↦ if h : Fintype.card (Option ι) = n then
