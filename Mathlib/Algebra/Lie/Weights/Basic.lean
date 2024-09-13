@@ -165,7 +165,7 @@ theorem mem_genWeightSpaceOf (χ : R) (x : L) (m : M) :
 
 theorem coe_genWeightSpaceOf_zero (x : L) :
     ↑(genWeightSpaceOf M (0 : R) x) = ⨆ k, LinearMap.ker (toEnd R L M x ^ k) := by
-  simp [genWeightSpaceOf, ← Module.End.iSup_genEigenspace_eq]
+  simp [genWeightSpaceOf, Module.End.maxGenEigenspace_def]
 
 /-- If `M` is a representation of a nilpotent Lie algebra `L`
 and `χ : L → R` is a family of scalars,
@@ -272,7 +272,7 @@ lemma genWeightSpaceOf_ne_bot (χ : Weight R L M) (x : L) :
 lemma hasEigenvalueAt (χ : Weight R L M) (x : L) :
     (toEnd R L M x).HasEigenvalue (χ x) := by
   obtain ⟨k : ℕ, hk : (toEnd R L M x).genEigenspace (χ x) k ≠ ⊥⟩ := by
-    simpa [genWeightSpaceOf, ← Module.End.iSup_genEigenspace_eq] using χ.genWeightSpaceOf_ne_bot x
+    simpa [genWeightSpaceOf, Module.End.maxGenEigenspace_def] using χ.genWeightSpaceOf_ne_bot x
   exact Module.End.hasEigenvalue_of_hasGenEigenvalue hk
 
 lemma apply_eq_zero_of_isNilpotent [NoZeroSMulDivisors R M] [IsReduced R]
