@@ -481,7 +481,7 @@ theorem UniformCauchySeqOn.prod' {β' : Type*} [UniformSpace β'] {F' : ι → �
 a Cauchy sequence. -/
 theorem UniformCauchySeqOn.cauchy_map [hp : NeBot p] (hf : UniformCauchySeqOn F p s) (hx : x ∈ s) :
     Cauchy (map (fun i => F i x) p) := by
-  simp only [cauchy_map_iff, hp, true_and_iff]
+  simp only [cauchy_map_iff, hp, true_and]
   intro u hu
   rw [mem_map]
   filter_upwards [hf u hu] with p hp using hp x hx

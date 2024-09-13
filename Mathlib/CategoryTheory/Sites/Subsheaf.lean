@@ -118,7 +118,7 @@ theorem Subpresheaf.eq_top_iff_isIso : G = ⊤ ↔ IsIso G.ι := by
     infer_instance
   · intro H
     ext U x
-    apply iff_true_iff.mpr
+    apply (iff_of_eq (iff_true _)).mpr
     rw [← IsIso.inv_hom_id_apply (G.ι.app U) x]
     exact ((inv (G.ι.app U)) x).2
 
