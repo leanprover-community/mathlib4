@@ -241,13 +241,13 @@ variable {C}
 
 end Truncated
 
-section Skeleton
+section Truncation
 
 /-- The skeleton functor from simplicial objects to truncated simplicial objects. -/
-def sk (n : ℕ) : SimplicialObject C ⥤ SimplicialObject.Truncated C n :=
+def truncation (n : ℕ) : SimplicialObject C ⥤ SimplicialObject.Truncated C n :=
   (whiskeringLeft _ _ _).obj SimplexCategory.Truncated.inclusion.op
 
-end Skeleton
+end Truncation
 
 variable (C)
 
