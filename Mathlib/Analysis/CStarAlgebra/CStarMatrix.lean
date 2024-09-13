@@ -46,20 +46,229 @@ local notation:25 n " →C⋆ " A:0 => WithCStarModule (n → A)
 /-- Type copy `Matrix m n A` meant for matrices with entries in a C⋆-algebra. This is
 a C⋆-algebra when `m = n`. This is an abbrev in order to inherit all instances from `Matrix`,
 which includes the product uniformity, but not a norm. -/
-abbrev CStarMatrix (m : Type*) (n : Type*) (A : Type*) := Matrix m n A
+def CStarMatrix (m : Type*) (n : Type*) (A : Type*) := Matrix m n A
 
 namespace CStarMatrix
 
-variable {m n A : Type*}
+variable {m n A B R S : Type*}
+
+section basic
 
 variable (m n A) in
-/-- The equivalence between `CStarMatrix m n A` and `Matrix m n A`. -/
-def toMatrix {m n A : Type*} : CStarMatrix m n A ≃ Matrix m n A := Equiv.refl _
+/-- The equivalence between `Matrix m n A` and `CStarMatrix m n A`. -/
+def ofMatrix {m n A : Type*} : Matrix m n A ≃ CStarMatrix m n A := Equiv.refl _
 
-lemma toMatrix_apply {M : Matrix m n A} {i : m} : (toMatrix M) i = M i := rfl
+lemma ofMatrix_apply {M : Matrix m n A} {i : m} : (ofMatrix M) i = M i := rfl
+
+lemma ofMatrix_symm_apply {M : CStarMatrix m n A} {i : m} : (ofMatrix.symm M) i = M i := rfl
+
+theorem ext_iff {M N : CStarMatrix m n A} : (∀ i j, M i j = N i j) ↔ M = N :=
+  ⟨fun h => funext fun i => funext <| h i, fun h => by simp [h]⟩
 
 @[ext]
-lemma ext {M₁ M₂ : CStarMatrix m n A} (h : ∀ i j, M₁ i j = M₂ i j) : M₁ = M₂ := Matrix.ext h
+lemma ext {M₁ M₂ : CStarMatrix m n A} (h : ∀ i j, M₁ i j = M₂ i j) : M₁ = M₂ := ext_iff.mp h
+
+def map (M : CStarMatrix m n A) (f : A → B) : CStarMatrix m n B :=
+  ofMatrix fun i j => f (M i j)
+
+@[simp]
+theorem map_apply {M : CStarMatrix m n A} {f : A → B} {i : m} {j : n} : M.map f i j = f (M i j) :=
+  rfl
+
+@[simp]
+theorem map_id (M : CStarMatrix m n A) : M.map id = M := by
+  ext
+  rfl
+
+@[simp]
+theorem map_id' (M : CStarMatrix m n A) : M.map (·) = M := map_id M
+
+@[simp]
+theorem map_map {C : Type*} {M : Matrix m n A} {f : A → B} {g : B → C} :
+    (M.map f).map g = M.map (g ∘ f) := by
+  ext
+  rfl
+
+theorem map_injective {f : A → B} (hf : Function.Injective f) :
+    Function.Injective fun M : CStarMatrix m n A => M.map f := fun _ _ h =>
+  ext fun i j => hf <| ext_iff.mpr h i j
+
+/-- The transpose of a matrix. -/
+def transpose (M : CStarMatrix m n A) : CStarMatrix n m A :=
+  ofMatrix fun x y => M y x
+
+@[simp]
+theorem transpose_apply (M : CStarMatrix m n A) (i j) : transpose M i j = M j i :=
+  rfl
+
+/-- The conjugate transpose of a matrix defined in term of `star`. -/
+def conjTranspose [Star A] (M : CStarMatrix m n A) : CStarMatrix n m A :=
+  M.transpose.map star
+
+instance inhabited [Inhabited A] : Inhabited (CStarMatrix m n A) :=
+  inferInstanceAs <| Inhabited <| m → n → A
+
+instance decidableEq [DecidableEq A] [Fintype m] [Fintype n] : DecidableEq (CStarMatrix m n A) :=
+  Fintype.decidablePiFintype
+
+instance {n m} [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n] (α) [Fintype α] :
+    Fintype (CStarMatrix m n α) := inferInstanceAs (Fintype (m → n → α))
+
+instance {n m} [Finite m] [Finite n] (α) [Finite α] :
+    Finite (CStarMatrix m n α) := inferInstanceAs (Finite (m → n → α))
+
+instance add [Add A] : Add (CStarMatrix m n A) :=
+  Pi.instAdd
+
+instance addSemigroup [AddSemigroup A] : AddSemigroup (CStarMatrix m n A) :=
+  Pi.addSemigroup
+
+instance addCommSemigroup [AddCommSemigroup A] : AddCommSemigroup (CStarMatrix m n A) :=
+  Pi.addCommSemigroup
+
+instance zero [Zero A] : Zero (CStarMatrix m n A) :=
+  Pi.instZero
+
+instance addZeroClass [AddZeroClass A] : AddZeroClass (CStarMatrix m n A) :=
+  Pi.addZeroClass
+
+instance addMonoid [AddMonoid A] : AddMonoid (CStarMatrix m n A) :=
+  Pi.addMonoid
+
+instance addCommMonoid [AddCommMonoid A] : AddCommMonoid (CStarMatrix m n A) :=
+  Pi.addCommMonoid
+
+instance neg [Neg A] : Neg (CStarMatrix m n A) :=
+  Pi.instNeg
+
+instance sub [Sub A] : Sub (CStarMatrix m n A) :=
+  Pi.instSub
+
+instance addGroup [AddGroup A] : AddGroup (CStarMatrix m n A) :=
+  Pi.addGroup
+
+instance addCommGroup [AddCommGroup A] : AddCommGroup (CStarMatrix m n A) :=
+  Pi.addCommGroup
+
+instance unique [Unique A] : Unique (CStarMatrix m n A) :=
+  Pi.unique
+
+instance subsingleton [Subsingleton A] : Subsingleton (CStarMatrix m n A) :=
+  inferInstanceAs <| Subsingleton <| m → n → A
+
+instance nonempty [Nonempty m] [Nonempty n] [Nontrivial A] : Nontrivial (CStarMatrix m n A) :=
+  Function.nontrivial
+
+instance smul [SMul R A] : SMul R (CStarMatrix m n A) :=
+  Pi.instSMul
+
+instance smulCommClass [SMul R A] [SMul S A] [SMulCommClass R S A] :
+    SMulCommClass R S (CStarMatrix m n A) :=
+  Pi.smulCommClass
+
+instance isScalarTower [SMul R S] [SMul R A] [SMul S A] [IsScalarTower R S A] :
+    IsScalarTower R S (CStarMatrix m n A) :=
+  Pi.isScalarTower
+
+instance isCentralScalar [SMul R A] [SMul Rᵐᵒᵖ A] [IsCentralScalar R A] :
+    IsCentralScalar R (CStarMatrix m n A) :=
+  Pi.isCentralScalar
+
+instance mulAction [Monoid R] [MulAction R A] : MulAction R (CStarMatrix m n A) :=
+  Pi.mulAction _
+
+instance distribMulAction [Monoid R] [AddMonoid A] [DistribMulAction R A] :
+    DistribMulAction R (CStarMatrix m n A) :=
+  Pi.distribMulAction _
+
+instance module [Semiring R] [AddCommMonoid A] [Module R A] : Module R (CStarMatrix m n A) :=
+  Pi.module _ _ _
+
+@[simp, nolint simpNF]
+theorem zero_apply [Zero A] (i : m) (j : n) : (0 : CStarMatrix m n A) i j = 0 := rfl
+
+@[simp] theorem add_apply [Add A] (M N : CStarMatrix m n A) (i : m) (j : n) :
+    (M + N) i j = (M i j) + (N i j) := rfl
+
+@[simp] theorem smul_apply [SMul B A] (r : B) (M : Matrix m n A) (i : m) (j : n) :
+    (r • M) i j = r • (M i j) := rfl
+
+@[simp] theorem sub_apply [Sub A] (M N : Matrix m n A) (i : m) (j : n) :
+    (M - N) i j = (M i j) - (N i j) := rfl
+
+@[simp] theorem neg_apply [Neg A] (M : Matrix m n A) (i : m) (j : n) :
+    (-M) i j = -(M i j) := rfl
+
+/-! simp-normal form pulls `of` to the outside. -/
+
+@[simp] theorem of_zero [Zero A] : ofMatrix (0 : Matrix m n A) = 0 := rfl
+
+@[simp] theorem of_add_of [Add A] (f g : Matrix m n A) :
+    ofMatrix f + ofMatrix g = ofMatrix (f + g) := rfl
+
+@[simp]
+theorem of_sub_of [Sub A] (f g : Matrix m n A) : ofMatrix f - ofMatrix g = ofMatrix (f - g) :=
+  rfl
+
+@[simp] theorem neg_of [Neg A] (f : Matrix m n A) : -ofMatrix f = ofMatrix (-f) := rfl
+
+@[simp] theorem smul_of [SMul R A] (r : R) (f : Matrix m n A) :
+    r • ofMatrix f = ofMatrix (r • f) := rfl
+
+section zero_one
+
+variable [Zero A] [One A] [DecidableEq n]
+
+instance instOne : One (CStarMatrix n n A) := ⟨ofMatrix (1 : Matrix n n A)⟩
+
+theorem one_apply {i j} : (1 : CStarMatrix n n A) i j = if i = j then 1 else 0 := rfl
+
+@[simp]
+theorem one_apply_eq (i) : (1 : CStarMatrix n n A) i i = 1 := Matrix.one_apply_eq _
+
+@[simp] theorem one_apply_ne {i j} : i ≠ j → (1 : CStarMatrix n n A) i j = 0 := Matrix.one_apply_ne
+
+theorem one_apply_ne' {i j} : j ≠ i → (1 : CStarMatrix n n A) i j = 0 := Matrix.one_apply_ne'
+
+instance instAddMonoidWithOne [AddMonoidWithOne A] : AddMonoidWithOne (CStarMatrix n n A) where
+
+instance instAddGroupWithOne [AddGroupWithOne A] : AddGroupWithOne (CStarMatrix n n A) where
+  __ := addGroup
+  __ := instAddMonoidWithOne
+
+instance instAddCommMonoidWithOne [AddCommMonoidWithOne A] :
+    AddCommMonoidWithOne (CStarMatrix n n A) where
+  __ := addCommMonoid
+  __ := instAddMonoidWithOne
+
+instance instAddCommGroupWithOne [AddCommGroupWithOne A] :
+    AddCommGroupWithOne (CStarMatrix n n A) where
+  __ := addCommGroup
+  __ := instAddGroupWithOne
+
+@[default_instance 100]
+instance {l : Type*} [Fintype m] [Mul A] [AddCommMonoid A] :
+    HMul (CStarMatrix l m A) (CStarMatrix m n A) (CStarMatrix l n A) where
+  hMul M N := ofMatrix (ofMatrix.symm M * ofMatrix.symm N)
+
+theorem mul_apply {l : Type*} [Fintype m] [Mul A] [AddCommMonoid A] {M : CStarMatrix l m A}
+    {N : CStarMatrix m n A} {i k} : (M * N) i k = ∑ j, M i j * N j k := rfl
+
+instance [Fintype n] [Mul A] [AddCommMonoid A] : Mul (CStarMatrix n n A) where mul M N := M * N
+
+theorem mul_apply' {l : Type*} [Fintype m] [Mul A] [AddCommMonoid A] {M : CStarMatrix l m A}
+    {N : CStarMatrix m n A} {i k} : (M * N) i k = (fun j => M i j) ⬝ᵥ fun j => N j k := rfl
+
+end zero_one
+
+instance nonUnitalNonAssocSemiring [Fintype n] [NonUnitalNonAssocSemiring A] :
+    NonUnitalNonAssocSemiring (CStarMatrix n n A) where
+  left_distrib := by sorry
+  right_distrib := by sorry
+  zero_mul := by sorry
+  mul_zero := by sorry
+
+end basic
 
 variable [Fintype m] [Fintype n] [NonUnitalNormedRing A] [StarRing A] [NormedSpace ℂ A]
   [PartialOrder A] [CStarRing A] [StarOrderedRing A] [SMulCommClass ℂ A A] [StarModule ℂ A]
