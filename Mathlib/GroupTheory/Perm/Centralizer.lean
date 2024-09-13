@@ -1006,7 +1006,7 @@ theorem mem_θHom_range_iff {p : Perm α} : p ∈ (θHom g).range ↔
     use θHom_apply_mem_support_cycle_iff_apply_mem c hc
     suffices ofSubtype (subtypePerm (θHom g (u,v)) _) = v ⟨c, hc⟩ by
       rw [this]
-      exact (v _).prop
+      exact (v ⟨c, hc⟩).prop
     ext x
     by_cases hx : x ∈ c.support
     · rw [ofSubtype_apply_of_mem, subtypePerm_apply]
@@ -1044,11 +1044,8 @@ lemma θHom_range_eq : (θHom g).range = (toPermHom g).ker.map (Subgroup.subtype
     exists_and_right, exists_eq_right]
 
 theorem θHom_range_card (g : Equiv.Perm α) :
-    Fintype.card (θHom g).range =
-      (Fintype.card α - g.cycleType.sum)! * g.cycleType.prod := by
-  change Fintype.card ((θHom g).range : Set (Equiv.Perm α)) = _
-  simp only [MonoidHom.coe_range]
-  rw [Set.card_range_of_injective (θHom_injective g)]
+    Fintype.card (θHom g).range = (Fintype.card α - g.cycleType.sum)! * g.cycleType.prod := by
+  erw [Set.card_range_of_injective (θHom_injective g)]
   rw [Fintype.card_prod]
   rw [Fintype.card_perm]
   rw [Fintype.card_pi]
@@ -1091,12 +1088,13 @@ theorem nat_card_centralizer :
   rw [θHom_range_eq, coe_map, Set.ncard_image_of_injective _ (subtype_injective _)]
 
 theorem card_isConj_mul_eq (g : Equiv.Perm α) :
-    Fintype.card {h : Equiv.Perm α | IsConj g h} *
+    Nat.card {h : Equiv.Perm α | IsConj g h} *
       (Fintype.card α - g.cycleType.sum)! *
       g.cycleType.prod *
       (∏ n in g.cycleType.toFinset, (g.cycleType.count n)!) =
     (Fintype.card α)! := by
   classical
+  rw [Nat.card_eq_fintype_card]
   simp only [mul_assoc]
   rw [mul_comm]
   simp only [← mul_assoc]
@@ -1109,7 +1107,7 @@ theorem card_isConj_mul_eq (g : Equiv.Perm α) :
 
 /-- Cardinality of a conjugacy class in `Equiv.Perm α` of a given `cycleType` -/
 theorem card_isConj_eq (g : Equiv.Perm α) :
-    Fintype.card {h : Equiv.Perm α | IsConj g h} =
+    Nat.card {h : Equiv.Perm α | IsConj g h} =
       (Fintype.card α)! /
         ((Fintype.card α - g.cycleType.sum)! *
           g.cycleType.prod *
@@ -1136,12 +1134,13 @@ theorem card_of_cycleType_mul_eq (m : Multiset ℕ) :
       if (m.sum ≤ Fintype.card α ∧ ∀ a ∈ m, 2 ≤ a) then (Fintype.card α)! else 0 := by
   split_ifs with hm
   · -- nonempty case
+    classical
     obtain ⟨g, hg⟩ := (exists_with_cycleType_iff α).mpr hm
     suffices (Finset.univ.filter fun h : Equiv.Perm α => h.cycleType = m) =
         Finset.univ.filter fun h : Equiv.Perm α => IsConj g h by
       rw [this, ← Fintype.card_coe, ← card_isConj_mul_eq g]
-      simp only [Fintype.card_coe, ← Set.toFinset_card, mul_assoc, hg,
-        Finset.univ_filter_exists, Set.toFinset_setOf]
+      simp only [isConj_iff, mul_assoc, Finset.univ_filter_exists, Finset.mem_image,
+        Finset.mem_univ, true_and, Set.coe_setOf, card_eq_fintype_card, hg]
     simp_rw [isConj_iff_cycleType_eq, hg]
     apply Finset.filter_congr
     simp [eq_comm]
