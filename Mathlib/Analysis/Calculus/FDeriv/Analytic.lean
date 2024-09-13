@@ -365,7 +365,9 @@ protected theorem hasFDerivAt [DecidableEq ι] : HasFDerivAt f (f.linearDeriv x)
   convert f.hasFiniteFPowerSeriesOnBall.hasFDerivAt (y := x) ENNReal.coe_lt_top
   rw [zero_add]
 
-theorem _root_.HasFDerivWithinAt.continuousMultilinearMap_comp
+/-- Given `f` a multilinear map, then the derivative of `x ↦ f (g₁ x, ..., gₙ x)` at `x` applied
+to a vector `v` is given by `∑ i, f (g₁ x, ..., g'ᵢ v, ..., gₙ x)`. Version inside a set. -/
+theorem _root_.HasFDerivWithinAt.multilinear_comp
     [DecidableEq ι] {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
     {g : ∀ i, G → E i} {g' : ∀ i, G →L[𝕜] E i} {s : Set G} {x : G}
     (hg : ∀ i, HasFDerivWithinAt (g i) (g' i) s x) :
@@ -375,7 +377,9 @@ theorem _root_.HasFDerivWithinAt.continuousMultilinearMap_comp
   ext v
   simp [linearDeriv]
 
-theorem _root_.HasFDerivAt.continuousMultilinearMap_comp
+/-- Given `f` a multilinear map, then the derivative of `x ↦ f (g₁ x, ..., gₙ x)` at `x` applied
+to a vector `v` is given by `∑ i, f (g₁ x, ..., g'ᵢ v, ..., gₙ x)`. -/
+theorem _root_.HasFDerivAt.multilinear_comp
     [DecidableEq ι] {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
     {g : ∀ i, G → E i} {g' : ∀ i, G →L[𝕜] E i} {x : G}
     (hg : ∀ i, HasFDerivAt (g i) (g' i) x) :
@@ -477,22 +481,66 @@ end FormalMultilinearSeries
 namespace ContinuousLinearMap
 
 variable {ι : Type*} {G : ι → Type*} [∀ i, NormedAddCommGroup (G i)] [∀ i, NormedSpace 𝕜 (G i)]
-  [Fintype ι] (f : E →L[𝕜] ContinuousMultilinearMap 𝕜 G F)
+  [Fintype ι]  {H : Type*} [NormedAddCommGroup H]
+  [NormedSpace 𝕜 H]
 
-theorem hasFDerivAt_uncurry_of_multilinear [DecidableEq ι] (v : E × Π i, G i) :
-    HasFDerivAt (𝕜 := 𝕜) (fun (p : E × Π i, G i) ↦ f p.1 p.2) 0 v := by
-  change HasFDerivAt (fun (p : E × Π i, G i) ↦ f.continuousMultilinearMapOption (fun _ ↦ p)) 0 v
-  have Z := HasFDerivAt.continuousMultilinearMap_comp (f := f.continuousMultilinearMapOption)
-    (𝕜 := 𝕜) (g := fun (i : Option ι) p ↦ p)
+theorem hasFDerivAt_uncurry_of_multilinear [DecidableEq ι]
+    (f : E →L[𝕜] ContinuousMultilinearMap 𝕜 G F) (v : E × Π i, G i) :
+    HasFDerivAt (fun (p : E × Π i, G i) ↦ f p.1 p.2)
+      ((f.flipMultilinear v.2) ∘L (.fst _ _ _) +
+        ∑ i : ι, ((f v.1).toContinuousLinearMap v.2 i) ∘L (.proj _) ∘L (.snd _ _ _)) v := by
+  convert HasFDerivAt.multilinear_comp (f.continuousMultilinearMapOption)
+    (g := fun (_ : Option ι) p ↦ p) (g' := fun _ ↦ ContinuousLinearMap.id _ _) (x := v)
+    (fun _ ↦ hasFDerivAt_id _)
+  have I : f.continuousMultilinearMapOption.toContinuousLinearMap (fun _ ↦ v) none =
+      (f.flipMultilinear v.2) ∘L (.fst _ _ _) := by
+    simp [ContinuousMultilinearMap.toContinuousLinearMap, continuousMultilinearMapOption]
+    apply ContinuousLinearMap.ext (fun w ↦ ?_)
+    simp
+  have J : ∀ (i : ι), f.continuousMultilinearMapOption.toContinuousLinearMap (fun _ ↦ v) (some i)
+      = ((f v.1).toContinuousLinearMap v.2 i) ∘L (.proj _) ∘L (.snd _ _ _) := by
+    intro i
+    have : Nonempty ι := ⟨i⟩
+    apply ContinuousLinearMap.ext (fun w ↦ ?_)
+    simp only [ContinuousMultilinearMap.toContinuousLinearMap, continuousMultilinearMapOption,
+      coe_mk', MultilinearMap.toLinearMap_apply, ContinuousMultilinearMap.coe_coe,
+      MultilinearMap.coe_mkContinuous, MultilinearMap.coe_mk, ne_eq, reduceCtorEq,
+      not_false_eq_true, Function.update_noteq, coe_comp', coe_snd', Function.comp_apply,
+      proj_apply]
+    congr
+    ext j
+    rcases eq_or_ne j i with rfl | hij
+    · simp
+    · simp [hij]
+  simp [I, J]
 
+/-- Given `f` a linear map into multilinear maps, then the derivative
+of `x ↦ f (a x) (b₁ x, ..., bₙ x)` at `x` applied to a vector `v` is given by
+`f (a' v) (b₁ x, ...., bₙ x) + ∑ i, f a (b₁ x, ..., b'ᵢ v, ..., bₙ x)`. Version inside a set. -/
+theorem _root_.HasFDerivWithinAt.linear_multilinear_comp
+    [DecidableEq ι] {a : H → E} {a' : H →L[𝕜] E}
+    {b : ∀ i, H → G i} {b' : ∀ i, H →L[𝕜] G i} {s : Set H} {x : H}
+    (ha : HasFDerivWithinAt a a' s x) (hb : ∀ i, HasFDerivWithinAt (b i) (b' i) s x)
+    (f : E →L[𝕜] ContinuousMultilinearMap 𝕜 G F) :
+    HasFDerivWithinAt (fun y ↦ f (a y) (fun i ↦ b i y))
+      ((f.flipMultilinear (fun i ↦ b i x)) ∘L a' +
+        ∑ i, ((f (a x)).toContinuousLinearMap (fun j ↦ b j x) i) ∘L (b' i)) s x := by
+  convert (hasFDerivAt_uncurry_of_multilinear f (a x, fun i ↦ b i x)).comp_hasFDerivWithinAt x
+    (ha.prod (hasFDerivWithinAt_pi.mpr hb))
+  ext v
+  simp
+
+/-- Given `f` a linear map into multilinear maps, then the derivative
+of `x ↦ f (a x) (b₁ x, ..., bₙ x)` at `x` applied to a vector `v` is given by
+`f (a' v) (b₁ x, ...., bₙ x) + ∑ i, f a (b₁ x, ..., b'ᵢ v, ..., bₙ x)`. Version inside a set. -/
+theorem _root_.HasFDerivAt.linear_multilinear_comp [DecidableEq ι] {a : H → E} {a' : H →L[𝕜] E}
+    {b : ∀ i, H → G i} {b' : ∀ i, H →L[𝕜] G i} {x : H}
+    (ha : HasFDerivAt a a' x) (hb : ∀ i, HasFDerivAt (b i) (b' i) x)
+    (f : E →L[𝕜] ContinuousMultilinearMap 𝕜 G F) :
+    HasFDerivAt (fun y ↦ f (a y) (fun i ↦ b i y))
+      ((f.flipMultilinear (fun i ↦ b i x)) ∘L a' +
+        ∑ i, ((f (a x)).toContinuousLinearMap (fun j ↦ b j x) i) ∘L (b' i)) x := by
+  simp_rw [← hasFDerivWithinAt_univ] at ha hb ⊢
+  exact HasFDerivWithinAt.linear_multilinear_comp ha hb f
 
 end ContinuousLinearMap
-
-#exit
-
-HasFDerivAt.continuousMultilinearMap_comp
-    [DecidableEq ι] {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-    {g : ∀ i, G → E i} {g' : ∀ i, G →L[𝕜] E i} {x : G}
-    (hg : ∀ i, HasFDerivAt (g i) (g' i) x) :
-    HasFDerivAt (fun x ↦ f (fun i ↦ g i x))
-      ((∑ i : ι, (f.toContinuousLinearMap (fun j ↦ g j x) i) ∘L (g' i))) x := by
