@@ -118,4 +118,10 @@ instance : HasForget₂ FiniteGrp ProfiniteGrp where
   { obj := ofFiniteGrp
     map := fun f => ⟨f, by continuity⟩ }
 
+instance : HasForget₂ ProfiniteGrp Grp where
+  forget₂ := {
+    obj := fun P => ⟨P, P.group⟩
+    map := fun f => f.toMonoidHom
+  }
+
 end ProfiniteGrp
