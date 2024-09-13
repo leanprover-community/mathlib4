@@ -6,21 +6,19 @@ Authors: Scott Carnahan
 import Mathlib.LinearAlgebra.RootSystem.Defs
 
 /-!
-# Morphisms of root pairings
-This file defines morphisms of root pairings, following the definition of morphisms of root data
-given in SGA III Exp. 21 Section 6.
+# Root pairings made from bilinear forms
+A common construction of root systems is given by taking the set of all vectors in an integral
+lattice for which reflection yields an automorphism of the lattice.  In this file, we generalize
+this construction, replacing the ring of integers with an arbitrary commutative ring and the
+integral lattice with an arbitrary reflexive module equipped with a bilinear form.
 
 ## Main definitions:
- * `Hom`: A morphism of root data is a linear map of weight spaces, its transverse on coweight
-   spaces, and a bijection on the set that indexes roots and coroots.
- * `Hom.id`: The identity morphism.
- * `Hom.comp`: The composite of two morphisms.
+ * `IsReflective`: Length is a regular value of `R`, and reflection is definable.
+ * `coroot_of_reflective`: The coroot corresponding to a reflective vector.
+ * `of_Bilinear`: The root pairing whose roots are reflective vectors.
 
 ## TODO
-
- * Special types of morphisms: Isogenies, weight/coweight space embeddings
- * Weyl group reimplementation?
-
+ * properties
 -/
 
 open Set Function Module
@@ -30,7 +28,6 @@ noncomputable section
 variable {ι R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
 namespace RootPairing
-
 
 section Construction
 
@@ -103,8 +100,8 @@ lemma reflective_reflection_reflective (B : M →ₗ[R] M →ₗ[R] R) (hSB : Li
     exact hy.2 _
 
 @[simp]
-lemma dual_flip_apply [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) {x y : M} (hx : IsReflective B x) :
-    (IsReflexive.toPerfectPairingDual.flip (R := R) y) (coroot_of_reflective B hx) =
+lemma dual_apply [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) {x y : M} (hx : IsReflective B x) :
+    IsReflexive.toPerfectPairingDual (R := R) (coroot_of_reflective B hx) y =
     (coroot_of_reflective B hx) y :=
   rfl
 
@@ -164,11 +161,11 @@ def of_Bilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearM
   reflection_perm_root := by
     intro x y
     simp only [coe_setOf, Embedding.coe_subtype, mem_setOf_eq, Embedding.coeFn_mk, Equiv.coe_fn_mk]
-    rw [reflection_reflective_vector B x.2, dual_flip_apply]
+    rw [reflection_reflective_vector B x.2, PerfectPairing.flip_apply_apply, dual_apply]
   reflection_perm_coroot := by
     intro x y
-    simp only [coe_setOf, mem_setOf_eq, Embedding.coeFn_mk, Embedding.coe_subtype, dual_flip_apply,
-      Equiv.coe_fn_mk]
+    simp only [coe_setOf, mem_setOf_eq, Embedding.coeFn_mk, Embedding.coe_subtype,
+      PerfectPairing.flip_apply_apply, dual_apply, Equiv.coe_fn_mk]
     ext z
     simp only [LinearMap.sub_apply, LinearMap.smul_apply, smul_eq_mul]
     refine y.2.1.1 ?_
