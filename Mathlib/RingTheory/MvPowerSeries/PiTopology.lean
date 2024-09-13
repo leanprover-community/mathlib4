@@ -20,31 +20,34 @@ It is the coarsest topology for which all coefficients maps are continuous.
 
 When `R` has `UniformSpace R`, we define the corresponding uniform structure.
 
+This topology can be included by writing `open scoped MvPowerSeries.WithPiTopology`.
+
 When the type of coefficients has the discrete topology,
-it corresponds to the topology defined by [bourbaki1981], chapter 4, §4, n°2
+it corresponds to the topology defined by [bourbaki1981], chapter 4, §4, n°2.
 
 It is *not* the adic topology in general.
 
-- `tendsto_pow_zero_of_constantCoeff_nilpotent`, `tendsto_pow_zero_of_constantCoeff_zero`:
-if the constant coefficient of `f` is nilpotent, or vanishes,
-then the powers of `f` converge to zero.
+- `MvPowerSeries.WithPiTopology.tendsto_pow_zero_of_constantCoeff_nilpotent`,
+`MvPowerSeries.WithPiTopology.tendsto_pow_zero_of_constantCoeff_zero`: if the constant coefficient
+of `f` is nilpotent, or vanishes, then the powers of `f` converge to zero.
 
-- `tendsto_pow_of_constantCoeff_nilpotent_iff` : the powers of `f` converge to zero iff
-the constant coefficient of `f` is nilpotent
+- `MvPowerSeries.WithPiTopology.tendsto_pow_of_constantCoeff_nilpotent_iff` : the powers of `f`
+converge to zero iff the constant coefficient of `f` is nilpotent.
 
-- `hasSum_of_monomials_self` : viewed as an infinite sum, a power series coverges to itself
+- `MvPowerSeries.WithPiTopology.hasSum_of_monomials_self` : viewed as an infinite sum, a power
+series coverges to itself.
 
-TODO: add the similar result for the series of homogeneous components
+TODO: add the similar result for the series of homogeneous components.
 
 ## Instances
 
-- If `R` is a topological (semi)ring, then so is `MvPowerSeries σ R`
+- If `R` is a topological (semi)ring, then so is `MvPowerSeries σ R`.
 
-- If the topology of `R` is T0 or T2, then so is that of `MvPowerSeries σ R`
+- If the topology of `R` is T0 or T2, then so is that of `MvPowerSeries σ R`.
 
-- If `R` is a `UniformAddGroup`, then so is `MvPowerSeries σ R``
+- If `R` is a `UniformAddGroup`, then so is `MvPowerSeries σ R`.
 
-- If `R` is complete, then so is `MvPowerSeries σ R`
+- If `R` is complete, then so is `MvPowerSeries σ R`.
 
 -/
 

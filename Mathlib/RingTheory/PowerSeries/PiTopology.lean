@@ -8,11 +8,46 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 import Mathlib.RingTheory.MvPowerSeries.PiTopology
 import Mathlib.RingTheory.PowerSeries.Basic
 
-/-! # Topology on power series
+/-! # Product topology on power series
 
-In this file we define the possible topologies on power series.
+Let `R` be with `Semiring R` and `TopologicalSpace R`
+In this file we define the topology on `PowerSeries σ R`
+that corresponds to the simple convergence on its coefficients.
+It is the coarsest topology for which all coefficients maps are continuous.
+
+When `R` has `UniformSpace R`, we define the corresponding uniform structure.
+
+This topology can be included by writing `open scoped PowerSeries.WithPiTopology`.
+
+When the type of coefficients has the discrete topology,
+it corresponds to the topology defined by [bourbaki1981], chapter 4, §4, n°2.
+
+It is *not* the adic topology in general.
+
+- `PowerSeries.WithPiTopology.tendsto_pow_zero_of_constantCoeff_nilpotent`,
+`PowerSeries.WithPiTopology.tendsto_pow_zero_of_constantCoeff_zero`: if the constant coefficient
+of `f` is nilpotent, or vanishes, then the powers of `f` converge to zero.
+
+- `PowerSeries.WithPiTopology.tendsto_pow_of_constantCoeff_nilpotent_iff` : the powers of `f`
+converge to zero iff the constant coefficient of `f` is nilpotent.
+
+- `PowerSeries.WithPiTopology.hasSum_of_monomials_self` : viewed as an infinite sum, a power
+series coverges to itself.
+
+TODO: add the similar result for the series of homogeneous components.
+
+## Instances
+
+- If `R` is a topological (semi)ring, then so is `PowerSeries σ R`.
+
+- If the topology of `R` is T0 or T2, then so is that of `PowerSeries σ R`.
+
+- If `R` is a `UniformAddGroup`, then so is `PowerSeries σ R`.
+
+- If `R` is complete, then so is `PowerSeries σ R`.
 
 -/
+
 
 namespace PowerSeries
 
