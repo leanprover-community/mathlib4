@@ -384,6 +384,7 @@ theorem sum_weightedHomogeneousComponent :
     rw [hm, if_pos rfl, coeff_zero] at this
     exact this.symm
 
+-- TODO : Looks useless, maybe rewrite the previous one as a `Finset.sum`
 theorem finsum_weightedHomogeneousComponent :
     (finsum fun m => weightedHomogeneousComponent w m φ) = φ := by
   rw [sum_weightedHomogeneousComponent]
