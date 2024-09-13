@@ -141,7 +141,7 @@ section Evaluation
 open WithPiTopology
 
 variable {σ : Type*} -- [DecidableEq σ]
-variable {R : Type*} [CommRing R] [UniformSpace R] 
+variable {R : Type*} [CommRing R] [UniformSpace R]
 variable {S : Type*} [CommRing S] [UniformSpace S]
 variable {φ : R →+* S} -- (hφ : Continuous φ)
 
