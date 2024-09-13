@@ -6,6 +6,7 @@ Authors: Leonardo de Moura
 import Batteries.Classes.Order
 import Mathlib.Init.Logic
 import Mathlib.Data.Ordering.Basic
+import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.SplitIfs
 
 /-!
@@ -17,8 +18,8 @@ and proves some basic lemmas about them.
 
 /-! ### Unbundled classes -/
 
-universe u
-variable {α : Type u}
+/-- An empty relation does not relate any elements. -/
+@[nolint unusedArguments] def EmptyRelation {α : Sort*} := fun _ _ : α ↦ False
 
 /-- `IsIrrefl X r` means the binary relation `r` on `X` is irreflexive (that is, `r x x` never
 holds). -/
@@ -71,7 +72,7 @@ class IsPartialOrder (α : Sort*) (r : α → α → Prop) extends IsPreorder α
 
 /-- `IsLinearOrder X r` means that the binary relation `r` on `X` is a linear order, that is,
 `IsPartialOrder X r` and `IsTotal X r`. -/
-class IsLinearOrder (α : Sort u) (r : α → α → Prop) extends IsPartialOrder α r, IsTotal α r : Prop
+class IsLinearOrder (α : Sort*) (r : α → α → Prop) extends IsPartialOrder α r, IsTotal α r : Prop
 
 /-- `IsEquiv X r` means that the binary relation `r` on `X` is an equivalence relation, that
 is, `IsPreorder X r` and `IsSymm X r`. -/
@@ -83,7 +84,7 @@ class IsStrictOrder (α : Sort*) (r : α → α → Prop) extends IsIrrefl α r,
 
 /-- `IsStrictWeakOrder X lt` means that the binary relation `lt` on `X` is a strict weak order,
 that is, `IsStrictOrder X lt` and `¬lt a b ∧ ¬lt b a → ¬lt b c ∧ ¬lt c b → ¬lt a c ∧ ¬lt c a`. -/
-class IsStrictWeakOrder (α : Sort u) (lt : α → α → Prop) extends IsStrictOrder α lt : Prop where
+class IsStrictWeakOrder (α : Sort*) (lt : α → α → Prop) extends IsStrictOrder α lt : Prop where
   incomp_trans : ∀ a b c, ¬lt a b ∧ ¬lt b a → ¬lt b c ∧ ¬lt c b → ¬lt a c ∧ ¬lt c a
 
 /-- `IsTrichotomous X lt` means that the binary relation `lt` on `X` is trichotomous, that is,
@@ -140,6 +141,8 @@ end
 
 /-! ### Bundled classes -/
 
+variable {α : Type*}
+
 section Preorder
 
 /-!
@@ -147,7 +150,7 @@ section Preorder
 -/
 
 /-- A preorder is a reflexive, transitive relation `≤` with `a < b` defined in the obvious way. -/
-class Preorder (α : Type u) extends LE α, LT α where
+class Preorder (α : Type*) extends LE α, LT α where
   le_refl : ∀ a : α, a ≤ a
   le_trans : ∀ a b c : α, a ≤ b → b ≤ c → a ≤ c
   lt := fun a b => a ≤ b ∧ ¬b ≤ a
@@ -235,7 +238,7 @@ section PartialOrder
 -/
 
 /-- A partial order is a reflexive, transitive, antisymmetric relation `≤`. -/
-class PartialOrder (α : Type u) extends Preorder α where
+class PartialOrder (α : Type*) extends Preorder α where
   le_antisymm : ∀ a b : α, a ≤ b → b ≤ a → a = b
 
 variable [PartialOrder α] {a b : α}
@@ -286,11 +289,11 @@ section LinearOrder
 -/
 
 /-- Default definition of `max`. -/
-def maxDefault {α : Type u} [LE α] [DecidableRel ((· ≤ ·) : α → α → Prop)] (a b : α) :=
+def maxDefault [LE α] [DecidableRel ((· ≤ ·) : α → α → Prop)] (a b : α) :=
   if a ≤ b then b else a
 
 /-- Default definition of `min`. -/
-def minDefault {α : Type u} [LE α] [DecidableRel ((· ≤ ·) : α → α → Prop)] (a b : α) :=
+def minDefault [LE α] [DecidableRel ((· ≤ ·) : α → α → Prop)] (a b : α) :=
   if a ≤ b then a else b
 
 /-- This attempts to prove that a given instance of `compare` is equal to `compareOfLessAndEq` by
@@ -309,7 +312,7 @@ macro "compareOfLessAndEq_rfl" : tactic =>
 
 /-- A linear order is reflexive, transitive, antisymmetric and total relation `≤`.
 We assume that every linear ordered type has decidable `(≤)`, `(<)`, and `(=)`. -/
-class LinearOrder (α : Type u) extends PartialOrder α, Min α, Max α, Ord α :=
+class LinearOrder (α : Type*) extends PartialOrder α, Min α, Max α, Ord α :=
   /-- A linear order is total. -/
   le_total (a b : α) : a ≤ b ∨ b ≤ a
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
@@ -395,12 +398,12 @@ namespace Nat
 /-! Deprecated properties of inequality on `Nat` -/
 
 @[deprecated (since := "2024-08-23")]
-protected def ltGeByCases {a b : Nat} {C : Sort u} (h₁ : a < b → C) (h₂ : b ≤ a → C) : C :=
+protected def ltGeByCases {a b : Nat} {C : Sort*} (h₁ : a < b → C) (h₂ : b ≤ a → C) : C :=
   Decidable.byCases h₁ fun h => h₂ (Or.elim (Nat.lt_or_ge a b) (fun a => absurd a h) fun a => a)
 
 set_option linter.deprecated false in
 @[deprecated ltByCases (since := "2024-08-23")]
-protected def ltByCases {a b : Nat} {C : Sort u} (h₁ : a < b → C) (h₂ : a = b → C)
+protected def ltByCases {a b : Nat} {C : Sort*} (h₁ : a < b → C) (h₂ : a = b → C)
     (h₃ : b < a → C) : C :=
   Nat.ltGeByCases h₁ fun h₁ => Nat.ltGeByCases h₃ fun h => h₂ (Nat.le_antisymm h h₁)
 
