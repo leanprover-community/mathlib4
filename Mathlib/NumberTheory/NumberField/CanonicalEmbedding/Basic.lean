@@ -675,5 +675,3 @@ theorem mem_span_fractionalIdealLatticeBasis (x : (mixedSpace K)) :
 end integerLattice
 
 end NumberField.mixedEmbedding
-
-#min_imports
