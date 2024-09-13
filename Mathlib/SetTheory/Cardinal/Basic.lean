@@ -820,7 +820,6 @@ alias isSuccLimit_zero := isSuccPrelimit_zero
 
 /-! ### Indexed cardinal `sum` -/
 
-
 /-- The indexed sum of cardinals is the cardinality of the
   indexed disjoint union, i.e. sigma type. -/
 def sum {ι} (f : ι → Cardinal) : Cardinal :=
