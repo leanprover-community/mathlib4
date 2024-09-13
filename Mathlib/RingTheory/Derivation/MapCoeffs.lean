@@ -66,6 +66,7 @@ lemma mapCoeffs_X :
 @[simp]
 lemma mapCoeffs_C (x : A) :
     d.mapCoeffs (C x) = .single A 0 (d x) := by simp [← monomial_zero_left]
+
 variable {B M' : Type*} [CommRing B] [Algebra R B] [Algebra A B]
     [AddCommGroup M'] [Module B M'] [Module R M'] [Module A M']
 
@@ -126,11 +127,11 @@ lemma mapCoeffs_X :
 lemma mapCoeffs_C (x : A) :
     mapCoeffs (C x) = C x′ := by simp [← monomial_zero_left]
 
-variable {K : Type*} [CommRing K] [Differential K] [Algebra A K] [DifferentialAlgebra A K]
+variable {R : Type*} [CommRing R] [Differential R] [Algebra A R] [DifferentialAlgebra A R]
 
-theorem deriv_aeval_eq (x : K) (p : A[X]) :
+theorem deriv_aeval_eq (x : R) (p : A[X]) :
     (aeval x p)′ = aeval x (mapCoeffs p) + aeval x (derivative p) * x′ := by
-  convert Derivation.apply_aeval_eq' Differential.deriv _ (Algebra.linearMap A K) ..
+  convert Derivation.apply_aeval_eq' Differential.deriv _ (Algebra.linearMap A R) ..
   · simp [mapCoeffs]
   · simp [deriv_algebraMap]
 
