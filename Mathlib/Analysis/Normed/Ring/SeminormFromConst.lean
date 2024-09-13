@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
 import Mathlib.Analysis.Normed.Ring.Seminorm
+import Mathlib.Data.Real.IsNonarchimedean
 
 /-!
 # SeminormFromConst

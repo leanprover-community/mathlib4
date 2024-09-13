@@ -5,6 +5,7 @@ Authors: María Inés de Frutos-Fernández
 -/
 import Mathlib.Analysis.Normed.Ring.Seminorm
 import Mathlib.Analysis.SpecialFunctions.Pow.Complex
+import Mathlib.Data.Real.IsNonarchimedean
 
 /-!
 # seminormFromBounded
