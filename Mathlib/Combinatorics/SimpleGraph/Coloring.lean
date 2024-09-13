@@ -5,10 +5,10 @@ Authors: Arthur Paulino, Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Clique
 import Mathlib.Data.ENat.Lattice
+import Mathlib.Data.Nat.Cast.Order.Ring
 import Mathlib.Data.Nat.Lattice
 import Mathlib.Data.Setoid.Partition
 import Mathlib.Order.Antichain
-import Mathlib.Data.Nat.Cast.Order.Ring
 
 /-!
 # Graph Coloring

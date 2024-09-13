@@ -5,8 +5,8 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Combinatorics.SetFamily.Compression.Down
-import Mathlib.Order.UpperLower.Basic
 import Mathlib.Data.Fintype.Powerset
+import Mathlib.Order.UpperLower.Basic
 
 /-!
 # Harris-Kleitman inequality
