@@ -1300,7 +1300,8 @@ theorem foldl_eq_of_comm_of_assoc [hcomm : Std.Commutative f] [hassoc : Std.Asso
   | a, b, nil => hcomm.comm a b
   | a, b, c :: l => by
     simp only [foldl_cons]
-    rw [← foldl_eq_of_comm_of_assoc .., right_comm _ hcomm.comm hassoc.assoc]; rfl
+    have : RightCommutative f := inferInstance
+    rw [← foldl_eq_of_comm_of_assoc .., this.right_comm]; rfl
 
 theorem foldl_eq_foldr [Std.Commutative f] [Std.Associative f] :
     ∀ a l, foldl f a l = foldr f a l
