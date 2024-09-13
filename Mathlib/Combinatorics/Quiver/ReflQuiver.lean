@@ -18,7 +18,10 @@ prefunctors" for short.
 namespace CategoryTheory
 universe v v₁ v₂ u u₁ u₂
 
-@[pp_with_univ]
+/-- A reflexive quiver extends a quiver with a specified arrow `id X : X ⟶ X` for each `X` in its
+type of objects. We denote these arrows by `id` since categories can be understood as an extension
+of refl quivers.
+-/
 class ReflQuiver (obj : Type u) extends Quiver.{v} obj : Type max u v where
   /-- The identity morphism on an object. -/
   id : ∀ X : obj, Hom X X
@@ -104,6 +107,7 @@ theorem congr_map {U V : Type*} [Quiver U] [Quiver V] (F : U ⥤q V) {X Y : U} {
 
 end ReflPrefunctor
 
+/-- A functor has an underlying refl prefunctor.-/
 def Functor.toReflPrefunctor {C D} [Category C] [Category D] (F : C ⥤ D) : C ⥤rq D := { F with }
 
 @[simp]
