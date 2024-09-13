@@ -303,8 +303,8 @@ theorem IsIntegrallyClosed.of_localization_maximal {R : Type*} [CommRing R] [IsD
     /- `x.1 / x.2.1 ∈ Rₚ` since it is integral over `Rₚ` and `Rₚ` is integrally closed.
       More precisely, `x.1 / x.2.1 = y.1 / y.2.1` where `y.1, y.2.1 ∈ R` and `y.2.1 ∉ p`. -/
     rcases (isIntegrallyClosed_iff (FractionRing R)).mp hic hxp with ⟨⟨y⟩, hy⟩
-    have hxy : algebraMap (Localization.AtPrime p) (FractionRing R) (mk' _ y.1 y.2) = mk' _ x.1 x.2
-      := by simpa only [← mk_eq_mk', ← hy] using by rfl
+    have : algebraMap (Localization.AtPrime p) (FractionRing R) (mk' _ y.1 y.2) = mk' _ x.1 x.2 :=
+      by simpa only [← mk_eq_mk', ← hy] using by rfl
     /- `y.2.1 ∈ I` since for all `a ∈ Ideal.span {x.1}`, say `a = b * x.1`,
       we have `y.2 * a = b * x.1 * y.2 = b * y.1 * x.2.1 ∈ Ideal.span {x.2.1}`. -/
     have hyi : y.2.1 ∈ I := by
@@ -315,7 +315,7 @@ theorem IsIntegrallyClosed.of_localization_maximal {R : Type*} [CommRing R] [IsD
       exact congrArg (HMul.hMul b) <| Eq.trans (mul_comm y.1 x.2.1) <|
         NoZeroSMulDivisors.algebraMap_injective R (Localization R⁰) <| mk'_eq_iff_eq.mp <|
           (mk'_eq_algebraMap_mk'_of_submonoid_le (Localization.AtPrime p)
-            (Localization R⁰) (primeCompl_le_nonZeroDivisors p) y.1 y.2).trans hxy
+            (Localization R⁰) (primeCompl_le_nonZeroDivisors p) y.1 y.2).trans this
     exact y.2.2 (hpi hyi)
   rcases mem_span_singleton'.mp (h1 x.1 (mem_span_singleton_self x.1)) with ⟨y, hy⟩
   exact ⟨y, (eq_mk'_of_mul_eq (hy.trans (one_mul x.1))).trans (mk_eq_mk'_apply x.1 x.2).symm⟩
