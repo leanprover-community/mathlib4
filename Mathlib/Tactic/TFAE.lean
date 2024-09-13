@@ -341,13 +341,17 @@ def elabTFAEType (tfaeList : List Q(Prop)) : TSyntax ``tfaeType → TermElabM Ex
     let j' ← elabIndex j l
     let Pi := tfaeList.get! (i'-1)
     let Pj := tfaeList.get! (j'-1)
-    Term.addTermInfo' i Pi q(Prop)
-    Term.addTermInfo' j Pj q(Prop)
-    match arr with
-    | `(impArrow| ← ) => Term.addTermInfo stx q($Pj → $Pi) q(Prop)
-    | `(impArrow| → ) => Term.addTermInfo stx q($Pi → $Pj) q(Prop)
-    | `(impArrow| ↔ ) => Term.addTermInfo stx q($Pi ↔ $Pj) q(Prop)
-    | _ => throwUnsupportedSyntax
+    /- TODO: This is a hack to force the type to appear on hover. Ideally, there might be some
+    other mechanism for this. See discussion on [Zulip](https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/Pre-RFC.3A.20Forcing.20terms.20to.20be.20shown.20in.20hover.3F)-/
+    Term.addTermInfo' i q(sorry : $Pi) Pi
+    Term.addTermInfo' j q(sorry : $Pj) Pj
+    let (ty : Q(Prop)) ← match arr with
+      | `(impArrow| ← ) => pure q($Pj → $Pi)
+      | `(impArrow| → ) => pure q($Pi → $Pj)
+      | `(impArrow| ↔ ) => pure q($Pi ↔ $Pj)
+      | _ => throwUnsupportedSyntax
+    Term.addTermInfo' stx q(sorry : $ty) ty
+    return ty
   | _ => throwUnsupportedSyntax
 
 /-! ## `tfae_have` -/
