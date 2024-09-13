@@ -698,7 +698,7 @@ theorem HasFPowerSeriesWithinAt.comp {g : F → G} {f : E → F} {q : FormalMult
   obtain ⟨δ, δpos, hδ⟩ :
     ∃ δ : ℝ≥0∞, 0 < δ ∧ ∀ {z : E}, z ∈ insert x s ∩ EMetric.ball x δ
       → f z ∈ insert (f x) t ∩ EMetric.ball (f x) rg := by
-    have : insert (f x) t ∩ EMetric.ball (f x) rg ∈ 𝓝[insert (f x) t] (f x) := by --
+    have : insert (f x) t ∩ EMetric.ball (f x) rg ∈ 𝓝[insert (f x) t] (f x) := by
       apply inter_mem_nhdsWithin
       exact EMetric.ball_mem_nhds _ Hg.r_pos
     have := Hf.analyticWithinAt.continuousWithinAt_insert.tendsto_nhdsWithin (hs.insert x) this
