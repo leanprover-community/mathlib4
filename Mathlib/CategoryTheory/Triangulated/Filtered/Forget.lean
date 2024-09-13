@@ -4,6 +4,11 @@ import Mathlib.Data.Int.Interval
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 import Mathlib.Algebra.Category.Grp.Zero
 import Mathlib.Data.Int.ConditionallyCompleteOrder
+import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
+import Mathlib.Algebra.Category.Grp.Abelian
+import Mathlib.Algebra.Category.Grp.EpiMono
+import Mathlib.CategoryTheory.Triangulated.Yoneda
+import Mathlib.CategoryTheory.Triangulated.Opposite
 
 namespace CategoryTheory
 
@@ -615,6 +620,15 @@ lemma adj_left_extended (n : ℕ) : ∀ (X Y : C) (m : ℤ) [IsLE X m] [IsGE Y (
         (by simp only [Nat.cast_add, Nat.cast_one]; linarith)
     · exact IsIso.comp_left_bijective _
 
+/- Lemmas about omega and shifting.-/
+
+lemma shift_omega_mono {X Y : C} (f : X ⟶ Y) (n m : ℤ) (hf : ∀ (Z : C) (hZ : IsGE Z n),
+    Mono ((preadditiveYoneda.obj Z).map f.op)) : ∀ (Z : C) (hZ : IsGE Z n),
+    Mono ((preadditiveYoneda.obj Z).map (f⟦m⟧').op) := sorry
+
+lemma shift_omega_epi {X Y : C} (f : X ⟶ Y) (n m : ℤ) (hf : ∀ (Z : C) (hZ : IsGE Z n),
+    Epi ((preadditiveYoneda.obj Z).map f.op)) : ∀ (Z : C) (hZ : IsGE Z n),
+    Epi ((preadditiveYoneda.obj Z).map (f⟦m⟧').op) := sorry
 
 /- The functor forgetting filtrations on the subcategory of objects `X` such that `IsLE X 0`.-/
 
@@ -663,6 +677,8 @@ lemma existence_omega_support_singleton (X : C) [IsLE X 0] (hsupp : Finset.card 
         AddEquiv.coe_toEquiv_symm, EquivLike.coe_coe, AddEquiv.apply_symm_apply]
 
 /- Then the general case, by induction on the size of the support.-/
+
+open CategoryTheory.Pretriangulated.Opposite
 
 lemma existence_omega_aux (n : ℕ) : ∀ (X : C) [IsLE X 0], Finset.card (support X) = n →
     ∃ (Y : hP.Core') (s : X ⟶ Y.1),
@@ -781,6 +797,49 @@ lemma existence_omega_aux (n : ℕ) : ∀ (X : C) [IsLE X 0], Finset.card (suppo
                  (preadditiveYoneda.obj Z).map (-(shiftFunctor C (-1)).map T.mor₃ ≫
                  (shiftEquiv C 1).unitIso.inv.app T.obj₁).op
                rw [← Functor.map_comp, ← Functor.map_comp]
+               congr 1
+               change (s₃⟦-1⟧' ≫ (- w⟦-1⟧' ≫ (shiftEquiv C 1).unitIso.inv.app Y₁.obj)).op
+                 = _
+               conv_lhs => rw [Preadditive.comp_neg, ← assoc, ← Functor.map_comp, hw]
+               change _ = ((-(shiftFunctor C (-1)).map T.mor₃ ≫ (shiftEquiv C 1).unitIso.inv.app
+                 T.obj₁) ≫ s₁).op
+               congr 1
+               conv_rhs => rw [Preadditive.neg_comp, assoc]
+                           erw [← (shiftEquiv C (1 : ℤ)).unitIso.inv.naturality s₁]
+               simp only [Int.reduceNeg, Functor.id_obj, Functor.map_comp, shiftEquiv'_functor,
+                 shiftEquiv'_inverse, shiftEquiv'_unitIso, Iso.symm_inv, assoc, Functor.comp_obj,
+                 Functor.comp_map]
+    refine Abelian.isIso_of_epi_of_isIso_of_isIso_of_mono (R₁ := R₁) (R₂ := R₂) ?_ ?_ φ
+      ?_ ?_ ?_ ?_
+    · refine {zero := fun i _ ↦ ?_, exact := fun i _ ↦ ?_}
+      · match i with
+        | 0 => change ((preadditiveYoneda.obj Z).map w.op) ≫ ((preadditiveYoneda.obj Z).map
+                 v.op) = 0
+               rw [← Functor.map_comp]
+               change (preadditiveYoneda.obj Z).map (v ≫ w).op = 0
+               have : v ≫ w = 0 := Pretriangulated.comp_distTriang_mor_zero₂₃ _ dT'
+               rw [this]
+               erw [Functor.map_zero]
+        | 1 => sorry
+        | 2 => sorry
+      · match i with
+        | 0 => have := Functor.IsHomological.exact (F := preadditiveYoneda.obj Z) _
+                 ((Opposite.mem_distinguishedTriangles_iff _).mp dT')
+        | 1 => sorry
+        | 2 => sorry
+    · refine {zero := fun i _ ↦ ?_, exact := fun i _ ↦ ?_}
+      · match i with
+        | 0 => sorry
+        | 1 => sorry
+        | 2 => sorry
+      · match i with
+        | 0 => sorry
+        | 1 => sorry
+        | 2 => sorry
+    · exact shift_omega_epi s₁ 0 1 (fun Z hZ ↦ @IsIso.epi_of_iso _ _ _ _ _ (hY₁ Z hZ)) Z hZ
+    · exact hY₃ Z hZ
+    · exact hY₁ Z hZ
+    · exact shift_omega_mono s₃ 0 (-1) (fun Z hZ ↦ @IsIso.mono_of_iso _ _ _ _ _ (hY₃ Z hZ)) Z hZ
 
   #exit
 
