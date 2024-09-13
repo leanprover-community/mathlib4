@@ -1,13 +1,13 @@
 /-
-Copyright (c) 2023 Floris Van Doorn. All rights reserved.
+Copyright (c) 2023 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Sébastien Gouëzel, Patrick Massot, Ruben Van de Velde, Floris Van Doorn,
+Authors: Johan Commelin, Sébastien Gouëzel, Patrick Massot, Ruben Van de Velde, Floris van Doorn,
 Junyan Xu
 -/
+import Mathlib.Algebra.MvPolynomial.Funext
 import Mathlib.Analysis.Analytic.Polynomial
 import Mathlib.Analysis.Analytic.Uniqueness
 import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
-import Mathlib.Data.MvPolynomial.Funext
 import Mathlib.LinearAlgebra.Dual
 import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.Topology.Algebra.MvPolynomial

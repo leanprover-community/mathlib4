@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Reid Barton, Simon Hudon, Thomas Murrills, Mario Carneiro
 -/
 import Qq
-import Mathlib.Init.Data.Nat.Notation
+import Mathlib.Data.Nat.Notation
 import Mathlib.Util.AtomM
 import Mathlib.Data.List.TFAE
 import Mathlib.Tactic.Have
@@ -254,7 +254,7 @@ where
 variable (hyps : Array (ℕ × ℕ × Expr)) (atoms : Array Q(Prop))
 
 /-- Uses depth-first search to find a path from `P` to `P'`. -/
-partial def dfs (i j : ℕ) (P P' : Q(Prop)) (hP : Q($P)) : StateT (HashSet ℕ) MetaM Q($P') := do
+partial def dfs (i j : ℕ) (P P' : Q(Prop)) (hP : Q($P)) : StateT (Std.HashSet ℕ) MetaM Q($P') := do
   if i == j then
     return hP
   modify (·.insert i)
@@ -368,6 +368,8 @@ macro_rules
   let id := HygieneInfo.mkIdent hy (← mkTFAEId t) (canonical := true)
   `(tfaeHave'|tfae_have $id : $t)
 
+open Term
+
 elab_rules : tactic
 | `(tfaeHave|tfae_have $d:tfaeHaveDecl) => withMainContext do
   let goal ← getMainGoal
@@ -376,13 +378,13 @@ elab_rules : tactic
     match d with
     | `(tfaeHaveDecl| $b : $t:tfaeType := $pf:term) =>
       let type ← elabTFAEType tfaeList t
-      evalTactic <|← `(tactic|have $b : $(← type.toSyntax) := $pf)
+      evalTactic <|← `(tactic|have $b : $(← exprToSyntax type) := $pf)
     | `(tfaeHaveDecl| $b : $t:tfaeType $alts:matchAlts) =>
       let type ← elabTFAEType tfaeList t
-      evalTactic <|← `(tactic|have $b : $(← type.toSyntax) $alts:matchAlts)
+      evalTactic <|← `(tactic|have $b : $(← exprToSyntax type) $alts:matchAlts)
     | `(tfaeHaveDecl| $pat:term : $t:tfaeType := $pf:term) =>
       let type ← elabTFAEType tfaeList t
-      evalTactic <|← `(tactic|have $pat:term : $(← type.toSyntax) := $pf)
+      evalTactic <|← `(tactic|have $pat:term : $(← exprToSyntax type) := $pf)
     | _ => throwUnsupportedSyntax
 
 -- Mathlib `have`
@@ -392,7 +394,7 @@ elab_rules : tactic
   match d with
   | `(tfaeHaveIdLhs| $b:ident : $t:tfaeType) =>
     let type ← elabTFAEType tfaeList t
-    evalTactic <|← `(tactic|have $b:ident : $(← type.toSyntax))
+    evalTactic <|← `(tactic|have $b:ident : $(← exprToSyntax type))
   | _ => throwUnsupportedSyntax
 
 /-! ## `tfae_finish` -/
@@ -402,7 +404,7 @@ elab_rules : tactic
   let goal ← getMainGoal
   goal.withContext do
     let (tfaeListQ, tfaeList) ← getTFAEList (← goal.getType)
-    closeMainGoal <|← AtomM.run .reducible do
+    closeMainGoal `tfae_finish <|← AtomM.run .reducible do
       let is ← tfaeList.mapM AtomM.addAtom
       let mut hyps := #[]
       for hyp in ← getLocalHyps do
@@ -443,3 +445,7 @@ elab_rules : tactic
   for t in ts do
     evalTactic <|← withRef t `(tactic|tfae_have $t:tfaeHaveDecl)
   evalTactic <|← `(tactic|tfae_finish)
+
+end TFAE
+
+end Mathlib.Tactic

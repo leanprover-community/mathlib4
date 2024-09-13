@@ -3,7 +3,6 @@ Copyright (c) 2023 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.Algebra.Function.Indicator
 import Mathlib.Topology.Separation
 
 /-!
@@ -73,8 +72,8 @@ lemma tendsto_indicator_const_apply_iff_eventually' (b : β)
   classical
   have heart := @tendsto_ite ι L β (fun i ↦ x ∈ As i) _ (x ∈ A) _ b 0 (𝓝 b) (𝓝 (0 : β))
                 nhd_o nhd_b ?_ ?_
-  convert heart
-  · by_cases hxA : x ∈ A <;> simp [hxA]
+  · convert heart
+    by_cases hxA : x ∈ A <;> simp [hxA]
   · simp only [principal_singleton, le_def, mem_pure]
     exact fun s s_nhd ↦ mem_of_mem_nhds s_nhd
   · simp only [principal_singleton, le_def, mem_pure]
