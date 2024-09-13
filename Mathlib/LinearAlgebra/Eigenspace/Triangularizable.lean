@@ -45,6 +45,16 @@ variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
 
 namespace Module.End
 
+theorem exists_hasEigenvalue_of_maxGenEigenspace_eq_top [Nontrivial M] {f : End R M}
+    (hf : ⨆ μ, f.maxGenEigenspace μ = ⊤) :
+    ∃ μ, f.HasEigenvalue μ := by
+  by_contra! contra
+  suffices ∀ μ, f.maxGenEigenspace μ = ⊥ by simp [this] at hf
+  intro μ
+  simp_rw [HasEigenvalue, ← hasUnifEigenvalue_iff_hasUnifEigenvalue_one ENat.zero_lt_top] at contra
+  simp_rw [HasUnifEigenvalue, not_not] at contra
+  apply contra
+
 theorem exists_hasEigenvalue_of_iSup_genEigenspace_eq_top [Nontrivial M] {f : End R M}
     (hf : ⨆ μ, ⨆ k, f.genEigenspace μ k = ⊤) :
     ∃ μ, f.HasEigenvalue μ := by
@@ -134,6 +144,13 @@ theorem iSup_genEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V] (f : E
     rw [← top_le_iff, ← Submodule.eq_top_of_disjoint ER ES h_dim_add h_disjoint]
     apply sup_le hER hES
 
+-- Lemma 8.21 of [axler2015]
+/-- In finite dimensions, over an algebraically closed field, the generalized eigenspaces of any
+linear endomorphism span the whole space. -/
+theorem maxGenEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V] (f : End K V) :
+    ⨆ (μ : K), f.maxGenEigenspace μ = ⊤ := by
+  simp_rw [maxGenEigenspace_def, iSup_genEigenspace_eq_top]
+
 end Module.End
 
 namespace Submodule
@@ -204,10 +221,20 @@ theorem inf_iSup_genEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x ∈
     hg₄ ⟨(hg₀ ▸ hg₁ hm₀), hg₂ hm₂⟩
   rwa [← hg₃ hy₁ hm₂ hy₂]
 
+theorem inf_maxGenEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x ∈ p) :
+    p ⊓ ⨆ μ, f.maxGenEigenspace μ = ⨆ μ, p ⊓ f.maxGenEigenspace μ := by
+  simp only [Module.End.maxGenEigenspace_def, inf_iSup_genEigenspace h]
+  simp_rw [← (f.genEigenspace _).mono.directed_le.inf_iSup_eq]
+
 theorem eq_iSup_inf_genEigenspace [FiniteDimensional K V]
     (h : ∀ x ∈ p, f x ∈ p) (h' : ⨆ μ, ⨆ k, f.genEigenspace μ k = ⊤) :
     p = ⨆ μ, ⨆ k, p ⊓ f.genEigenspace μ k := by
   rw [← inf_iSup_genEigenspace h, h', inf_top_eq]
+
+theorem eq_iSup_inf_maxGenEigenspace [FiniteDimensional K V]
+    (h : ∀ x ∈ p, f x ∈ p) (h' : ⨆ μ, f.maxGenEigenspace μ = ⊤) :
+    p = ⨆ μ, p ⊓ f.maxGenEigenspace μ := by
+  rw [← inf_maxGenEigenspace h, h', inf_top_eq]
 
 end Submodule
 
@@ -222,3 +249,12 @@ theorem Module.End.iSup_genEigenspace_restrict_eq_top
   simp_rw [Submodule.inf_genEigenspace f p h, Submodule.comap_subtype_self,
     ← Submodule.map_iSup, Submodule.comap_map_eq_of_injective h_inj] at this
   exact this.symm
+
+/-- In finite dimensions, if the generalized eigenspaces of a linear endomorphism span the whole
+space then the same is true of its restriction to any invariant submodule. -/
+theorem Module.End.maxGenEigenspace_restrict_eq_top
+    {p : Submodule K V} {f : Module.End K V} [FiniteDimensional K V]
+    (h : ∀ x ∈ p, f x ∈ p) (h' : ⨆ μ, f.maxGenEigenspace μ = ⊤) :
+    ⨆ μ, Module.End.maxGenEigenspace (LinearMap.restrict f h) μ = ⊤ := by
+  simp_rw [Module.End.maxGenEigenspace_def] at h' ⊢
+  apply iSup_genEigenspace_restrict_eq_top h h'
