@@ -166,7 +166,7 @@ variable {m : α}
 
 /-- membership in a free monoid element -/
 @[to_additive "membership in a free monoid element"]
-def mem (m : α) (a : FreeMonoid α) := m ∈ toList a
+def mem (a : FreeMonoid α) (m : α) := m ∈ toList a
 
 @[to_additive]
 instance : Membership α (FreeMonoid α) := ⟨mem⟩
@@ -224,8 +224,12 @@ protected theorem inductionOn' {p : FreeMonoid α → Prop} (a : FreeMonoid α)
 end induction_principles
 
 @[to_additive]
-theorem eq_one_or_has_last_elem (u : FreeMonoid α): u = 1 ∨ ∃ front last, u = front * of last :=
-  List.eq_nil_or_concat _
+theorem eq_one_or_has_last_elem (u : FreeMonoid α): u = 1 ∨ ∃ front last, u = front * of last := by
+  have H : ∀ (front : FreeMonoid α) (last : α), front * of last = front.concat last := by
+    intro f l
+    simp only [List.concat_eq_append]; rfl
+  simp only [H]
+  exact List.eq_nil_or_concat _
 
 /-- A version of `List.cases_on` for `FreeMonoid` using `1` and `FreeMonoid.of x * xs` instead of
 `[]` and `x :: xs`. -/
