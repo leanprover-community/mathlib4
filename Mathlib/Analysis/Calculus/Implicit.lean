@@ -25,9 +25,9 @@ Third, if the codomain of `f` is a finite dimensional space, then we can automat
 that the kernel of `f'` is complemented, hence the only assumptions are `HasStrictFDerivAt`
 and `f'.range = ⊤`. This version is named `HasStrictFDerivAt.implicitFunction`.
 
-Finally, if bivariate $f(x,y)$ has $\partial f/\partial y$ invertible at $(x₀,y₀)$, then we may
-apply the general theorem to obtain $ψ$ satisfying $f(x,ψ(x))=f(x₀,y₀)$ in a neighbourhood of $x₀$.
-To many this version of the implicit function theorem will be most familiar.
+Finally, if bivariate $f(x,y)$ has $\partial f/\partial y$ invertible at $(x_{0},y_{0})$, then we
+may apply the general theorem to obtain $ψ$ satisfying $f(x,ψ(x))=f(x_{0},y_{0})$ in a neighbourhood
+of $x_{0}$. To many this version of the implicit function theorem will be most familiar.
 
 ## TODO
 
@@ -481,9 +481,9 @@ variable {X : Type*} [NormedAddCommGroup X] [NormedSpace 𝕜 X] [CompleteSpace 
 variable {Y : Type*} [NormedAddCommGroup Y] [NormedSpace 𝕜 Y] [CompleteSpace Y]
 variable {Z : Type*} [NormedAddCommGroup Z] [NormedSpace 𝕜 Z] [CompleteSpace Z]
 
-/-- Given map `fx : X →L[𝕜] Z`, equivalence `fy : Y ≃L[𝕜] Z}` and that
-`HasStrictFDerivAt f (fx.coprod fy) p₀`, we construct an object of type `ImplicitFunctionData`, thus
-permitting use of the machinery provided above for the general case. -/
+/-- Given linear map `fx : X →L[𝕜] Z`, linear equivalence `fy : Y ≃L[𝕜] Z` and that
+`HasStrictFDerivAt f (fx.coprod fy) p₀`, we construct an object of type `ImplicitFunctionData` thus
+permitting use of the general machinery provided above. -/
 def implicitFunDataOfBivariate {f : X × Y → Z} {p₀ : X × Y}
     {fx : X →L[𝕜] Z} {fy : Y ≃L[𝕜] Z} (hf₀ : HasStrictFDerivAt f (fx.coprod fy) p₀) :
     ImplicitFunctionData 𝕜 (X × Y) Z X :=
