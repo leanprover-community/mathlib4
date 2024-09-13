@@ -63,11 +63,8 @@ namespace ProfiniteGrp
 instance : CoeSort ProfiniteGrp (Type u) where
   coe G := G.toProfinite
 
-@[to_additive]
-instance (G : ProfiniteGrp) : Group G := G.group
-
-@[to_additive]
-instance (G : ProfiniteGrp) : TopologicalGroup G := G.topologicalGroup
+attribute [instance] group topologicalGroup
+    ProfiniteAddGrp.addGroup ProfiniteAddGrp.topologicalAddGroup
 
 @[to_additive]
 instance : Category ProfiniteGrp where
