@@ -159,7 +159,8 @@ lemma isLocallyClosed_tfae (s : Set X) :
     rw [coborder_eq_union_frontier_compl, inter_union_distrib_right, this,
       inter_univ]
     exact hU.union isClosed_frontier.isOpen_compl
-  tfae_have 2 → 3 := fun h x ↦ (⟨coborder s, h.mem_nhds <| subset_coborder ·, isClosed_preimage_val_coborder⟩)
+  tfae_have 2 → 3
+  | h, x => (⟨coborder s, h.mem_nhds <| subset_coborder ·, isClosed_preimage_val_coborder⟩)
   tfae_have 3 → 4 := by
     intro h x hx
     obtain ⟨t, ht, ht'⟩ := h x hx
