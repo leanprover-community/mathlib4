@@ -159,7 +159,7 @@ def finPairsLT (n : ℕ) : Finset (Σ_ : Fin n, Fin n) :=
   (univ : Finset (Fin n)).sigma fun a => (range a).attachFin fun _ hm => (mem_range.1 hm).trans a.2
 
 theorem mem_finPairsLT {n : ℕ} {a : Σ_ : Fin n, Fin n} : a ∈ finPairsLT n ↔ a.2 < a.1 := by
-  simp only [finPairsLT, Fin.lt_iff_val_lt_val, true_and_iff, mem_attachFin, mem_range, mem_univ,
+  simp only [finPairsLT, Fin.lt_iff_val_lt_val, true_and, mem_attachFin, mem_range, mem_univ,
     mem_sigma]
 
 /-- `signAux σ` is the sign of a permutation on `Fin n`, defined as the parity of the number of
@@ -255,7 +255,7 @@ private theorem signAux_swap_zero_one' (n : ℕ) : signAux (swap (0 : Fin (n + 2
     rcases a₁.zero_le.eq_or_lt with (rfl | H)
     · exact absurd a₂.zero_le ha₁.not_le
     rcases a₂.zero_le.eq_or_lt with (rfl | H')
-    · simp only [and_true_iff, eq_self_iff_true, heq_iff_eq, mem_singleton, Sigma.mk.inj_iff] at ha₂
+    · simp only [and_true, eq_self_iff_true, heq_iff_eq, mem_singleton, Sigma.mk.inj_iff] at ha₂
       have : 1 < a₁ := lt_of_le_of_ne (Nat.succ_le_of_lt ha₁)
         (Ne.symm (by intro h; apply ha₂; simp [h]))
       have h01 : Equiv.swap (0 : Fin (n + 2)) 1 0 = 1 := by simp
@@ -526,7 +526,7 @@ theorem prod_prodExtendRight {α : Type*} [DecidableEq α] (σ : α → Perm β)
   · rw [← ha'] at *
     refine Or.inl ⟨l.mem_cons_self a, ?_⟩
     rw [prodExtendRight_apply_eq]
-  · refine Or.inr ⟨fun h => not_or_of_not ha' not_mem_l ((List.mem_cons).mp h), ?_⟩
+  · refine Or.inr ⟨fun h => not_or_intro ha' not_mem_l ((List.mem_cons).mp h), ?_⟩
     rw [prodExtendRight_apply_ne _ ha']
 
 section congr

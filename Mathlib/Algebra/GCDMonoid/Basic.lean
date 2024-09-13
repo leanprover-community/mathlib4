@@ -666,7 +666,7 @@ theorem lcm_dvd_iff [GCDMonoid α] {a b c : α} : lcm a b ∣ c ↔ a ∣ c ∧ 
   by_cases h : a = 0 ∨ b = 0
   · rcases h with (rfl | rfl) <;>
       simp (config := { contextual := true }) only [iff_def, lcm_zero_left, lcm_zero_right,
-        zero_dvd_iff, dvd_zero, eq_self_iff_true, and_true_iff, imp_true_iff]
+        zero_dvd_iff, dvd_zero, eq_self_iff_true, and_true, imp_true_iff]
   · obtain ⟨h1, h2⟩ := not_or.1 h
     have h : gcd a b ≠ 0 := fun H => h1 ((gcd_eq_zero_iff _ _).1 H).1
     rw [← mul_dvd_mul_iff_left h, (gcd_mul_lcm a b).dvd_iff_dvd_left, ←
@@ -1306,7 +1306,7 @@ instance (priority := 100) : NormalizedGCDMonoid G₀ where
         exact Associated.refl _
       -- Porting note(#12129): additional beta reduction needed
       · beta_reduce
-        rw [if_neg (not_and_of_not_left _ ha), one_mul, if_neg (not_or_of_not ha hb)]
+        rw [if_neg (not_and_of_not_left _ ha), one_mul, if_neg (not_or_intro ha hb)]
         exact (associated_one_iff_isUnit.mpr ((IsUnit.mk0 _ ha).mul (IsUnit.mk0 _ hb))).symm
   lcm_zero_left b := if_pos (Or.inl rfl)
   lcm_zero_right a := if_pos (Or.inr rfl)
