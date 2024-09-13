@@ -3,16 +3,14 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.FintypeCat
 import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 import Mathlib.CategoryTheory.Limits.FintypeCat
 import Mathlib.CategoryTheory.Limits.MonoCoprod
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
-import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
 import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
 import Mathlib.CategoryTheory.SingleObj
 import Mathlib.Data.Finite.Card
+import Mathlib.Logic.Equiv.TransferInstance
 
 /-!
 # Definition and basic properties of Galois categories
@@ -41,7 +39,7 @@ as this is not needed for the proof of the fundamental theorem on Galois categor
 
 -/
 
-universe u₁ u₂ v₁ v₂ w
+universe u₁ u₂ v₁ v₂ w t
 
 namespace CategoryTheory
 
@@ -117,6 +115,11 @@ instance : HasBinaryProducts C := hasBinaryProducts_of_hasTerminal_and_pullbacks
 
 instance : HasEqualizers C := hasEqualizers_of_hasPullbacks_and_binary_products
 
+-- A `PreGaloisCategory` has quotients by finite groups in arbitrary universes. -/
+instance {G : Type*} [Group G] [Finite G] : HasColimitsOfShape (SingleObj G) C := by
+  obtain ⟨G', hg, hf, ⟨e⟩⟩ := Finite.exists_type_univ_nonempty_mulEquiv G
+  exact Limits.hasColimitsOfShape_of_equivalence e.toSingleObjEquiv.symm
+
 end
 
 namespace FiberFunctor
@@ -135,6 +138,12 @@ noncomputable instance : ReflectsColimitsOfShape (Discrete PEmpty.{1}) F :=
 
 noncomputable instance : PreservesFiniteLimits F :=
   preservesFiniteLimitsOfPreservesTerminalAndPullbacks F
+
+/-- Fiber functors preserve quotients by finite groups in arbitrary universes. -/
+noncomputable instance {G : Type*} [Group G] [Finite G] :
+    PreservesColimitsOfShape (SingleObj G) F := by
+  choose G' hg hf he using Finite.exists_type_univ_nonempty_mulEquiv G
+  exact Limits.preservesColimitsOfShapeOfEquiv he.some.toSingleObjEquiv.symm F
 
 /-- Fiber functors reflect monomorphisms. -/
 instance : ReflectsMonomorphisms F := ReflectsMonomorphisms.mk <| by
@@ -156,6 +165,16 @@ instance : F.Faithful where
       exact IsIso.comp_isIso
     haveI : IsIso (equalizer.ι f g) := isIso_of_reflects_iso _ F
     exact eq_of_epi_equalizer
+
+section
+
+/-- If `F` is a fiber functor and `E` is an equivalence between categories of finite types,
+then `F ⋙ E` is again a fiber functor. -/
+noncomputable def compRight (E : FintypeCat.{w} ⥤ FintypeCat.{t}) [E.IsEquivalence] :
+    FiberFunctor (F ⋙ E) where
+  preservesQuotientsByFiniteGroups G := compPreservesColimitsOfShape F E
+
+end
 
 end FiberFunctor
 
