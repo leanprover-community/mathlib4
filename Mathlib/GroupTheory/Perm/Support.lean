@@ -279,7 +279,7 @@ theorem coe_support_eq_set_support (f : Perm α) : (f.support : Set α) = { x | 
 
 @[simp]
 theorem support_eq_empty_iff {σ : Perm α} : σ.support = ∅ ↔ σ = 1 := by
-  simp_rw [Finset.ext_iff, mem_support, Finset.not_mem_empty, iff_false_iff, not_not,
+  simp_rw [Finset.ext_iff, mem_support, Finset.not_mem_empty, iff_false, not_not,
     Equiv.Perm.ext_iff, one_apply]
 
 @[simp]
@@ -390,7 +390,7 @@ theorem support_swap_iff (x y : α) : support (swap x y) = {x, y} ↔ x ≠ y :=
 
 theorem support_swap_mul_swap {x y z : α} (h : List.Nodup [x, y, z]) :
     support (swap x y * swap y z) = {x, y, z} := by
-  simp only [List.not_mem_nil, and_true_iff, List.mem_cons, not_false_iff, List.nodup_cons,
+  simp only [List.not_mem_nil, and_true, List.mem_cons, not_false_iff, List.nodup_cons,
     List.mem_singleton, and_self_iff, List.nodup_nil] at h
   push_neg at h
   apply le_antisymm
@@ -487,7 +487,7 @@ theorem support_extend_domain (f : α ≃ Subtype p) {g : Perm α} :
       rw [eq_symm_apply]
       exact Subtype.coe_injective ha
   · rw [extendDomain_apply_not_subtype _ _ pb]
-    simp only [not_exists, false_iff_iff, not_and, eq_self_iff_true, not_true]
+    simp only [not_exists, false_iff, not_and, eq_self_iff_true, not_true]
     rintro a _ rfl
     exact pb (Subtype.prop _)
 

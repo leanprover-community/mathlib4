@@ -155,7 +155,7 @@ instance graph.instDecidableRelAdj : DecidableRel (graph t).Adj
   toFun x := {in₀ x.1, in₁ x.2.1, in₂ x.2.2}
   inj' := fun ⟨a, b, c⟩ ⟨a', b', c'⟩ ↦ by simpa only [Finset.Subset.antisymm_iff, Finset.subset_iff,
     mem_insert, mem_singleton, forall_eq_or_imp, forall_eq, Prod.mk.inj_iff, or_false, false_or,
-    in₀, in₁, in₂, Sum.inl.inj_iff, Sum.inr.inj_iff] using And.left
+    in₀, in₁, in₂, Sum.inl.inj_iff, Sum.inr.inj_iff, reduceCtorEq] using And.left
 
 lemma toTriangle_is3Clique (hx : x ∈ t) : (graph t).IsNClique 3 (toTriangle x) := by
   simp only [toTriangle_apply, is3Clique_triple_iff, in₀₁_iff, in₀₂_iff, in₁₂_iff]

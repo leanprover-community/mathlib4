@@ -234,34 +234,26 @@ theorem le_of_max_le_left {a b c : α} (h : max a b ≤ c) : a ≤ c :=
 theorem le_of_max_le_right {a b c : α} (h : max a b ≤ c) : b ≤ c :=
   le_trans (le_max_right _ _) h
 
-theorem max_commutative : Commutative (max : α → α → α) :=
-  max_comm
+instance instCommutativeMax : Std.Commutative (α := α) max where comm := max_comm
+instance instAssociativeMax : Std.Associative (α := α) max where assoc := max_assoc
+instance instCommutativeMin : Std.Commutative (α := α) min where comm := min_comm
+instance instAssociativeMin : Std.Associative (α := α) min where assoc := min_assoc
 
-theorem max_associative : Associative (max : α → α → α) :=
-  max_assoc
+theorem max_left_commutative : LeftCommutative (max : α → α → α) := max_left_comm
+theorem min_left_commutative : LeftCommutative (min : α → α → α) := min_left_comm
 
-instance : Std.Commutative (α := α) max where
-  comm := max_comm
+section deprecated
+set_option linter.deprecated false
 
-instance : Std.Associative (α := α) max where
-  assoc := max_assoc
+@[deprecated instCommutativeMax (since := "2024-09-12")]
+theorem max_commutative : Commutative (α := α) max := max_comm
+@[deprecated instAssociativeMax (since := "2024-09-12")]
+theorem max_associative : Associative (α := α) max := max_assoc
+@[deprecated instCommutativeMin (since := "2024-09-12")]
+theorem min_commutative : Commutative (α := α) min := min_comm
+@[deprecated instAssociativeMin (since := "2024-09-12")]
+theorem min_associative : Associative (α := α) min := min_assoc
 
-theorem max_left_commutative : LeftCommutative (max : α → α → α) :=
-  max_left_comm
-
-theorem min_commutative : Commutative (min : α → α → α) :=
-  min_comm
-
-theorem min_associative : Associative (α := α) min :=
-  min_assoc
-
-instance : Std.Commutative (α := α) min where
-  comm := min_comm
-
-instance : Std.Associative (α := α) min where
-  assoc := min_assoc
-
-theorem min_left_commutative : LeftCommutative (min : α → α → α) :=
-  min_left_comm
+end deprecated
 
 end

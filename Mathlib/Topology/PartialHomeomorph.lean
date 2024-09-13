@@ -370,7 +370,7 @@ theorem preimage_eventuallyEq_target_inter_preimage_inter {e : PartialHomeomorph
   filter_upwards [e.open_source.mem_nhds hxe,
     mem_nhdsWithin_iff_eventually.mp (hf.preimage_mem_nhdsWithin ht)]
   intro y hy hyu
-  simp_rw [mem_inter_iff, mem_preimage, mem_inter_iff, e.mapsTo hy, true_and_iff, iff_self_and,
+  simp_rw [mem_inter_iff, mem_preimage, mem_inter_iff, e.mapsTo hy, true_and, iff_self_and,
     e.left_inv hy, iff_true_intro hyu]
 
 theorem isOpen_inter_preimage {s : Set Y} (hs : IsOpen s) : IsOpen (e.source ∩ e ⁻¹' s) :=
@@ -1069,7 +1069,7 @@ theorem nhds_eq_comap_inf_principal {x} (hx : x ∈ e.source) :
   lift x to e.source using hx
   rw [← e.open_source.nhdsWithin_eq x.2, ← map_nhds_subtype_val, ← map_comap_setCoe_val,
     e.toHomeomorphSourceTarget.nhds_eq_comap, nhds_subtype_eq_comap]
-  simp only [(· ∘ ·), toHomeomorphSourceTarget_apply_coe, comap_comap]
+  simp only [Function.comp_def, toHomeomorphSourceTarget_apply_coe, comap_comap]
 
 /-- If a partial homeomorphism has source and target equal to univ, then it induces a homeomorphism
 between the whole spaces, expressed in this definition. -/

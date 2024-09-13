@@ -165,7 +165,7 @@ theorem mem_genWeightSpaceOf (χ : R) (x : L) (m : M) :
 
 theorem coe_genWeightSpaceOf_zero (x : L) :
     ↑(genWeightSpaceOf M (0 : R) x) = ⨆ k, LinearMap.ker (toEnd R L M x ^ k) := by
-  simp [genWeightSpaceOf, Module.End.maxGenEigenspace]
+  simp [genWeightSpaceOf, Module.End.maxGenEigenspace_def]
 
 /-- If `M` is a representation of a nilpotent Lie algebra `L`
 and `χ : L → R` is a family of scalars,
@@ -219,6 +219,13 @@ instance [Subsingleton M] : IsEmpty (Weight R L M) :=
   ⟨fun h ↦ h.2 (Subsingleton.elim _ _)⟩
 
 instance [Nontrivial (genWeightSpace M (0 : L → R))] : Zero (Weight R L M) :=
+  #adaptation_note
+  /--
+  After lean4#5020, many instances for Lie algebras and manifolds are no longer found.
+  See https://leanprover.zulipchat.com/#narrow/stream/428973-nightly-testing/topic/.2316244.20adaptations.20for.20nightly-2024-08-28/near/466219124
+  -/
+  letI : Unique (⊥ : LieSubmodule R L M) := Submodule.uniqueBot
+  letI : Subsingleton (⊥ : LieSubmodule R L M) := Unique.instSubsingleton
   ⟨0, fun e ↦ not_nontrivial (⊥ : LieSubmodule R L M) (e ▸ ‹_›)⟩
 
 @[simp]
@@ -265,7 +272,7 @@ lemma genWeightSpaceOf_ne_bot (χ : Weight R L M) (x : L) :
 lemma hasEigenvalueAt (χ : Weight R L M) (x : L) :
     (toEnd R L M x).HasEigenvalue (χ x) := by
   obtain ⟨k : ℕ, hk : (toEnd R L M x).genEigenspace (χ x) k ≠ ⊥⟩ := by
-    simpa [Module.End.maxGenEigenspace, genWeightSpaceOf] using χ.genWeightSpaceOf_ne_bot x
+    simpa [genWeightSpaceOf, Module.End.maxGenEigenspace_def] using χ.genWeightSpaceOf_ne_bot x
   exact Module.End.hasEigenvalue_of_hasGenEigenvalue hk
 
 lemma apply_eq_zero_of_isNilpotent [NoZeroSMulDivisors R M] [IsReduced R]
@@ -306,7 +313,7 @@ theorem exists_genWeightSpace_le_ker_of_isNoetherian [IsNoetherian R M] (χ : L 
   intro m hm
   replace hm : m ∈ (toEnd R L M x).maxGenEigenspace (χ x) :=
     genWeightSpace_le_genWeightSpaceOf M x χ hm
-  rwa [Module.End.maxGenEigenspace_eq] at hm
+  rwa [Module.End.maxGenEigenspace_eq, Module.End.genEigenspace_def] at hm
 
 variable (R) in
 theorem exists_genWeightSpace_zero_le_ker_of_isNoetherian
@@ -583,7 +590,12 @@ private lemma isCompl_genWeightSpace_zero_posFittingComp_aux
   · suffices IsNilpotent R L M by simp [M₀, M₁, isCompl_top_bot]
     replace h : M₀ = ⊤ := by simpa [M₀, genWeightSpace]
     rw [← LieModule.isNilpotent_of_top_iff', ← h]
-    infer_instance
+    #adaptation_note
+    /--
+    After lean4#5020, many instances for Lie algebras and manifolds are no longer found.
+    See https://leanprover.zulipchat.com/#narrow/stream/428973-nightly-testing/topic/.2316244.20adaptations.20for.20nightly-2024-08-28/near/466219124
+    -/
+    exact LieModule.instIsNilpotentSubtypeMemSubmoduleGenWeightSpaceOfNatForallOfIsNoetherian M
   · set M₀ₓ := genWeightSpaceOf M (0 : R) x
     set M₁ₓ := posFittingCompOf R M x
     set M₀ₓ₀ := genWeightSpace M₀ₓ (0 : L → R)
@@ -626,6 +638,8 @@ end fitting_decomposition
 lemma disjoint_genWeightSpaceOf [NoZeroSMulDivisors R M] {x : L} {φ₁ φ₂ : R} (h : φ₁ ≠ φ₂) :
     Disjoint (genWeightSpaceOf M φ₁ x) (genWeightSpaceOf M φ₂ x) := by
   rw [LieSubmodule.disjoint_iff_coe_toSubmodule]
+  dsimp [genWeightSpaceOf]
+  simp_rw [Module.End.maxGenEigenspace_def]
   exact Module.End.disjoint_iSup_genEigenspace _ h
 
 lemma disjoint_genWeightSpace [NoZeroSMulDivisors R M] {χ₁ χ₂ : L → R} (h : χ₁ ≠ χ₂) :
@@ -695,6 +709,8 @@ lemma independent_genWeightSpace' [NoZeroSMulDivisors R M] :
 lemma independent_genWeightSpaceOf [NoZeroSMulDivisors R M] (x : L) :
     CompleteLattice.Independent fun (χ : R) ↦ genWeightSpaceOf M χ x := by
   rw [LieSubmodule.independent_iff_coe_toSubmodule]
+  dsimp [genWeightSpaceOf]
+  simp_rw [Module.End.maxGenEigenspace_def]
   exact (toEnd R L M x).independent_genEigenspace
 
 lemma finite_genWeightSpaceOf_ne_bot [NoZeroSMulDivisors R M] [IsNoetherian R M] (x : L) :
@@ -735,6 +751,8 @@ lemma iSup_genWeightSpaceOf_eq_top [IsTriangularizable R L M] (x : L) :
     ⨆ (φ : R), genWeightSpaceOf M φ x = ⊤ := by
   rw [← LieSubmodule.coe_toSubmodule_eq_iff, LieSubmodule.iSup_coe_toSubmodule,
     LieSubmodule.top_coeSubmodule]
+  dsimp [genWeightSpaceOf]
+  simp_rw [Module.End.maxGenEigenspace_def]
   exact IsTriangularizable.iSup_eq_top x
 
 open LinearMap FiniteDimensional in
@@ -771,7 +789,7 @@ See also `LieModule.iSup_genWeightSpace_eq_top'`. -/
 lemma iSup_genWeightSpace_eq_top [IsTriangularizable K L M] :
     ⨆ χ : L → K, genWeightSpace M χ = ⊤ := by
   generalize h_dim : finrank K M = n
-  induction n using Nat.strongInductionOn generalizing M with | ind n ih => ?_
+  induction n using Nat.strongRecOn generalizing M with | ind n ih => ?_
   obtain h' | ⟨y : L, hy : ¬ ∃ φ, genWeightSpaceOf M φ y = ⊤⟩ :=
     forall_or_exists_not (fun (x : L) ↦ ∃ (φ : K), genWeightSpaceOf M φ x = ⊤)
   · choose χ hχ using h'

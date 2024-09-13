@@ -296,7 +296,7 @@ theorem card_eq_of_bijective (f : ∀ i, i < n → α) (hf : ∀ a ∈ s, ∃ i,
   have : s = (range n).attach.image fun i => f i.1 (mem_range.1 i.2) := by
     ext a
     suffices _ : a ∈ s ↔ ∃ (i : _) (hi : i ∈ range n), f i (mem_range.1 hi) = a by
-      simpa only [mem_image, mem_attach, true_and_iff, Subtype.exists]
+      simpa only [mem_image, mem_attach, true_and, Subtype.exists]
     constructor
     · intro ha; obtain ⟨i, hi, rfl⟩ := hf a ha; use i, mem_range.2 hi
     · rintro ⟨i, hi, rfl⟩; apply hf'

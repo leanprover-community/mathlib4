@@ -178,6 +178,19 @@ theorem IsTrail.count_edges_eq_one [DecidableEq V] {u v : V} {p : G.Walk u v} (h
     {e : Sym2 V} (he : e ∈ p.edges) : p.edges.count e = 1 :=
   List.count_eq_one_of_mem h.edges_nodup he
 
+theorem IsTrail.length_le_card_edgeFinset [Fintype G.edgeSet] {u v : V}
+    {w : G.Walk u v} (h : w.IsTrail) : w.length ≤ G.edgeFinset.card := by
+  classical
+  let edges := w.edges.toFinset
+  have : edges.card = w.length := length_edges _ ▸ List.toFinset_card_of_nodup h.edges_nodup
+  rw [← this]
+  have : edges ⊆ G.edgeFinset := by
+    intro e h
+    refine mem_edgeFinset.mpr ?_
+    apply w.edges_subset_edgeSet
+    simpa [edges] using h
+  exact Finset.card_le_card this
+
 theorem IsPath.nil {u : V} : (nil : G.Walk u u).IsPath := by constructor <;> simp
 
 theorem IsPath.of_cons {u v w : V} {h : G.Adj u v} {p : G.Walk v w} :
@@ -236,7 +249,7 @@ theorem cons_isCycle_iff {u v : V} (p : G.Walk v u) (h : G.Adj u v) :
   have : p.support.Nodup → p.edges.Nodup := edges_nodup_of_support_nodup
   tauto
 
-lemma IsPath.tail {p : G.Walk u v} (hp : p.IsPath) (hp' : ¬ p.Nil) : (p.tail hp').IsPath := by
+lemma IsPath.tail {p : G.Walk u v} (hp : p.IsPath) (hp' : ¬ p.Nil) : p.tail.IsPath := by
   rw [Walk.isPath_def] at hp ⊢
   rw [← cons_support_tail _ hp', List.nodup_cons] at hp
   exact hp.2
@@ -1111,7 +1124,7 @@ theorem adj_and_reachable_delete_edges_iff_exists_cycle {v w : V} :
       rw [Sym2.eq_swap]
       intro h
       cases hp (Walk.edges_toPath_subset p h)
-    · simp only [Sym2.eq_swap, Walk.edges_cons, List.mem_cons, eq_self_iff_true, true_or_iff]
+    · simp only [Sym2.eq_swap, Walk.edges_cons, List.mem_cons, eq_self_iff_true, true_or]
   · rintro ⟨u, c, hc, he⟩
     refine ⟨c.adj_of_mem_edges he, ?_⟩
     by_contra! hb
@@ -1130,7 +1143,7 @@ theorem isBridge_iff_adj_and_forall_cycle_not_mem {v w : V} : G.IsBridge s(v, w)
   rw [← not_iff_not]
   push_neg
   rw [← adj_and_reachable_delete_edges_iff_exists_cycle]
-  simp only [h, true_and_iff]
+  simp only [h, true_and]
 
 theorem isBridge_iff_mem_and_forall_cycle_not_mem {e : Sym2 V} :
     G.IsBridge e ↔ e ∈ G.edgeSet ∧ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → e ∉ p.edges :=

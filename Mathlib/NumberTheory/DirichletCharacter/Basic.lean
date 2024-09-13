@@ -165,7 +165,7 @@ lemma map_zero' (hn : n ≠ 1) : χ 0 = 0 :=
 
 lemma changeLevel_one {d : ℕ} (h : d ∣ n) :
     changeLevel h (1 : DirichletCharacter R d) = 1 := by
-  simp [changeLevel]
+  simp
 
 lemma factorsThrough_one_iff : FactorsThrough χ 1 ↔ χ = 1 := by
   refine ⟨fun ⟨_, χ₀, hχ₀⟩ ↦ ?_,
