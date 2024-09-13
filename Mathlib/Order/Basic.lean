@@ -463,11 +463,12 @@ theorem commutative_of_le {f : β → β → α} (comm : ∀ a b, f a b ≤ f b 
 
 /-- To prove associativity of a commutative binary operation `○`, we only to check
 `(a ○ b) ○ c ≤ a ○ (b ○ c)` for all `a`, `b`, `c`. -/
-theorem associative_of_commutative_of_le {f : α → α → α} (comm : Commutative f)
-    (assoc : ∀ a b c, f (f a b) c ≤ f a (f b c)) : Associative f := fun a b c ↦
-  le_antisymm (assoc _ _ _) <| by
-    rw [comm, comm b, comm _ c, comm a]
-    exact assoc _ _ _
+theorem associative_of_commutative_of_le {f : α → α → α} (comm : Std.Commutative f)
+    (assoc : ∀ a b c, f (f a b) c ≤ f a (f b c)) : Std.Associative f where
+  assoc a b c :=
+    le_antisymm (assoc _ _ _) <| by
+      rw [comm.comm, comm.comm b, comm.comm _ c, comm.comm a]
+      exact assoc _ _ _
 
 end PartialOrder
 

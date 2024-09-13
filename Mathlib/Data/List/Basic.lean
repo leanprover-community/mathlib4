@@ -1288,25 +1288,26 @@ section FoldlEqFoldr
 -- foldl and foldr coincide when f is commutative and associative
 variable {f : α → α → α}
 
-theorem foldl1_eq_foldr1 (hassoc : Associative f) :
+theorem foldl1_eq_foldr1 [hassoc : Std.Associative f] :
     ∀ a b l, foldl f a (l ++ [b]) = foldr f b (a :: l)
   | a, b, nil => rfl
   | a, b, c :: l => by
-    simp only [cons_append, foldl_cons, foldr_cons, foldl1_eq_foldr1 hassoc _ _ l]; rw [hassoc]
+    simp only [cons_append, foldl_cons, foldr_cons, foldl1_eq_foldr1 _ _ l]
+    rw [hassoc.assoc]
 
-theorem foldl_eq_of_comm_of_assoc (hcomm : Commutative f) (hassoc : Associative f) :
+theorem foldl_eq_of_comm_of_assoc [hcomm : Std.Commutative f] [hassoc : Std.Associative f] :
     ∀ a b l, foldl f a (b :: l) = f b (foldl f a l)
-  | a, b, nil => hcomm a b
+  | a, b, nil => hcomm.comm a b
   | a, b, c :: l => by
     simp only [foldl_cons]
-    rw [← foldl_eq_of_comm_of_assoc hcomm hassoc .., right_comm _ hcomm hassoc]; rfl
+    rw [← foldl_eq_of_comm_of_assoc .., right_comm _ hcomm.comm hassoc.assoc]; rfl
 
-theorem foldl_eq_foldr (hcomm : Commutative f) (hassoc : Associative f) :
+theorem foldl_eq_foldr [Std.Commutative f] [Std.Associative f] :
     ∀ a l, foldl f a l = foldr f a l
   | a, nil => rfl
   | a, b :: l => by
-    simp only [foldr_cons, foldl_eq_of_comm_of_assoc hcomm hassoc]
-    rw [foldl_eq_foldr hcomm hassoc a l]
+    simp only [foldr_cons, foldl_eq_of_comm_of_assoc]
+    rw [foldl_eq_foldr a l]
 
 end FoldlEqFoldr
 

@@ -468,17 +468,16 @@ theorem disjSups_inter_subset_left : (s₁ ∩ s₂) ○ t ⊆ s₁ ○ t ∩ s�
 theorem disjSups_inter_subset_right : s ○ (t₁ ∩ t₂) ⊆ s ○ t₁ ∩ s ○ t₂ := by
   simpa only [disjSups, product_inter, filter_inter_distrib] using image_inter_subset _ _ _
 
-variable (s t)
-
-theorem disjSups_comm : s ○ t = t ○ s := by
-  ext
-  rw [mem_disjSups, mem_disjSups]
-  -- Porting note: `exists₂_comm` no longer works with `∃ _ ∈ _, ∃ _ ∈ _, _`
-  constructor <;>
-  · rintro ⟨a, ha, b, hb, hd, hs⟩
-    rw [disjoint_comm] at hd
-    rw [sup_comm] at hs
-    exact ⟨b, hb, a, ha, hd, hs⟩
+instance instCommutativeDisjSups : @Std.Commutative (Finset α) (· ○ ·) where
+  comm _ _ := by
+    ext
+    rw [mem_disjSups, mem_disjSups]
+    -- Porting note: `exists₂_comm` no longer works with `∃ _ ∈ _, ∃ _ ∈ _, _`
+    constructor <;>
+    · rintro ⟨a, ha, b, hb, hd, hs⟩
+      rw [disjoint_comm] at hd
+      rw [sup_comm] at hs
+      exact ⟨b, hb, a, ha, hd, hs⟩
 
 end DisjSups
 
@@ -489,20 +488,21 @@ section DistribLattice
 variable [DecidableEq α]
 variable [DistribLattice α] [OrderBot α] [@DecidableRel α Disjoint] (s t u v : Finset α)
 
-theorem disjSups_assoc : ∀ s t u : Finset α, s ○ t ○ u = s ○ (t ○ u) := by
-  refine associative_of_commutative_of_le disjSups_comm ?_
+instance instAssociativeDisjSups : @Std.Associative (Finset α) (· ○ ·) := by
+  refine associative_of_commutative_of_le inferInstance ?_
   simp only [le_eq_subset, disjSups_subset_iff, mem_disjSups]
   rintro s t u _ ⟨a, ha, b, hb, hab, rfl⟩ c hc habc
   rw [disjoint_sup_left] at habc
   exact ⟨a, ha, _, ⟨b, hb, c, hc, habc.2, rfl⟩, hab.sup_right habc.1, (sup_assoc ..).symm⟩
 
 theorem disjSups_left_comm : s ○ (t ○ u) = t ○ (s ○ u) := by
-  simp_rw [← disjSups_assoc, disjSups_comm s]
+  simp_rw [← instAssociativeDisjSups.assoc, instCommutativeDisjSups.comm s]
 
-theorem disjSups_right_comm : s ○ t ○ u = s ○ u ○ t := by simp_rw [disjSups_assoc, disjSups_comm]
+theorem disjSups_right_comm : s ○ t ○ u = s ○ u ○ t := by
+  simp_rw [instAssociativeDisjSups.assoc, instCommutativeDisjSups.comm]
 
 theorem disjSups_disjSups_disjSups_comm : s ○ t ○ (u ○ v) = s ○ u ○ (t ○ v) := by
-  simp_rw [← disjSups_assoc, disjSups_right_comm]
+  simp_rw [← instAssociativeDisjSups.assoc, disjSups_right_comm]
 
 end DistribLattice
 section Diffs
