@@ -147,68 +147,6 @@ theorem Polynomial.minpoly_separable_of_isScalarTower {x : B} (h : (minpoly R x)
 
 end Separable
 
-section NormedValued
-
-variable (K : Type*) {L : Type*} {ΓK ΓL : outParam Type*}
-    [LinearOrderedCommGroupWithZero ΓK] [LinearOrderedCommGroupWithZero ΓL]
-    [Field K] [Field L] [Algebra K L] [vK : Valued K ΓK] [vL : Valued L ΓL]
-
-@[simp]
-theorem Valued.toNormedField.norm_le_iff [vL.v.RankOne] {x x' : L} :
-    let _ := vL.toNormedField
-    ‖x‖ ≤ ‖x'‖ ↔ vL.v x ≤ vL.v x' := (Valuation.RankOne.strictMono vL.v).le_iff_le
-
-@[simp]
-theorem Valued.toNormedField.norm_lt_iff [vL.v.RankOne] {x x' : L} :
-    let _ := vL.toNormedField
-    ‖x‖ < ‖x'‖ ↔ vL.v x < vL.v x' := (Valuation.RankOne.strictMono vL.v).lt_iff_lt
-
-@[simp]
-theorem Valued.toNormedField.norm_le_one_iff [vL.v.RankOne] {x : L} :
-    let _ := vL.toNormedField
-    ‖x‖ ≤ 1 ↔ vL.v x ≤ 1 := by
-  simpa only [map_one] using (Valuation.RankOne.strictMono vL.v).le_iff_le (b := 1)
-
-@[simp]
-theorem Valued.toNormedField.norm_lt_one_iff [vL.v.RankOne] {x : L} :
-    let _ := vL.toNormedField
-    ‖x‖ < 1 ↔ vL.v x < 1 := by
-  simpa only [map_one] using (Valuation.RankOne.strictMono vL.v).lt_iff_lt (b := 1)
-
-@[simp]
-theorem Valued.toNormedField.one_le_norm_iff [vL.v.RankOne] {x : L} :
-    let _ := vL.toNormedField
-    1 ≤ ‖x‖ ↔ 1 ≤ vL.v x := by
-  simpa only [map_one] using (Valuation.RankOne.strictMono vL.v).le_iff_le (a := 1)
-
-@[simp]
-theorem Valued.toNormedField.one_lt_norm_iff [vL.v.RankOne] {x : L} :
-    let _ := vL.toNormedField
-    1 < ‖x‖ ↔ 1 < vL.v x := by
-  simpa only [map_one] using (Valuation.RankOne.strictMono vL.v).lt_iff_lt (a := 1)
-
-def Valued.toNontriviallyNormedField [vL.v.RankOne] : NontriviallyNormedField L := {
-  vL.toNormedField with
-  non_trivial := by
-    obtain ⟨x, hx⟩ := Valuation.RankOne.nontrivial vL.v
-    have : x ≠ 0 := vL.v.ne_zero_iff.mp hx.1
-    rcases Valuation.val_le_one_or_val_inv_le_one vL.v x with h | h
-    · use x⁻¹
-      simp only [toNormedField.one_lt_norm_iff, map_inv₀, one_lt_inv₀ hx.1, lt_of_le_of_ne h hx.2]
-    · use x
-      simp only [map_inv₀, inv_le_one₀ <| zero_lt_iff.mpr hx.1] at h
-      simp only [toNormedField.one_lt_norm_iff, lt_of_le_of_ne h hx.2.symm]
-}
-
-theorem Valued.toNormedField.isNonarchimedean [vL.v.RankOne] :
-    let _ := vL.toNormedField
-    IsNonarchimedean (norm : L → ℝ) := by
-  intro x y
-  simp only [norm, le_max_iff, NNReal.coe_le_coe, (Valuation.RankOne.strictMono vL.v).le_iff_le,
-    Valuation.map_add', implies_true]
-
-end NormedValued
-
 section ContinuousSMul
 
 variable {K L : Type*} [Field K] [Field L] [Algebra K L]
