@@ -302,9 +302,13 @@ theorem faaDiBruno {n : ℕ∞} {g : F → G} {f : E → F}
   · intro m hm
     apply continuousOn_finset_sum _ (fun c hc ↦ ?_)
     let B := c.compAlongOrderedFinpartitionL 𝕜 E F G
-    --change ContinuousOn
-    --  ((fun p ↦ B p.1 p.2) ∘ (fun x ↦ (q (f x) c.length, fun m ↦ p x (c.partSize m)))) s
-    apply B.continuousOn_uncurry_of_multilinear.comp₂
+    change ContinuousOn
+      ((fun p ↦ B p.1 p.2) ∘ (fun x ↦ (q (f x) c.length, fun m ↦ p x (c.partSize m)))) s
+    apply B.continuous_uncurry_of_multilinear.comp_continuousOn (ContinuousOn.prod ?_ ?_)
+    · have : (c.length : ℕ∞) ≤ m := by exact_mod_cast OrderedFinpartition.length_le c
+      have Z := hg.cont c.length (this.trans hm)
+      apply this.comp
+
 
 
 
