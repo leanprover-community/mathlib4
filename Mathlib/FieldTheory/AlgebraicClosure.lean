@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiedong Jiang
 -/
 import Mathlib.FieldTheory.NormalClosure
-import Mathlib.FieldTheory.Galois
+import Mathlib.FieldTheory.IsAlgClosed.Basic
 
 /-!
 # Relative Algebraic Closure
