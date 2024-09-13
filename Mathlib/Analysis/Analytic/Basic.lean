@@ -518,10 +518,6 @@ theorem HasFPowerSeriesAt.eventually_eq_zero
   let ⟨_, hr⟩ := hf
   hr.eventually_eq_zero
 
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/master
 @[simp] lemma hasFPowerSeriesWithinOnBall_univ :
     HasFPowerSeriesWithinOnBall f p univ x r ↔ HasFPowerSeriesOnBall f p x r := by
   constructor
@@ -783,7 +779,6 @@ theorem ContinuousLinearMap.comp_analyticOn {s : Set E} (g : F →L[𝕜] G) (h 
   rcases h x hx with ⟨p, r, hp⟩
   exact ⟨g.compFormalMultilinearSeries p, r, g.comp_hasFPowerSeriesOnBall hp⟩
 
-
 theorem HasFPowerSeriesWithinOnBall.tendsto_partialSum
     (hf : HasFPowerSeriesWithinOnBall f p s x r) {y : E} (hy : y ∈ EMetric.ball (0 : E) r)
     (h'y : x + y ∈ insert x s) :
@@ -968,10 +963,10 @@ theorem HasFPowerSeriesAt.isBigO_sub_partialSum_pow
   rw [← hasFPowerSeriesWithinAt_univ] at hf
   simpa using hf.isBigO_sub_partialSum_pow n
 
-/-- If `f` has formal power series `∑ n, pₙ` on a ball of radius `r`, then for `y, z` in any smaller
-ball, the norm of the difference `f y - f z - p 1 (fun _ ↦ y - z)` is bounded above by
-`C * (max ‖y - x‖ ‖z - x‖) * ‖y - z‖`. This lemma formulates this property using `IsBigO` and
-`Filter.principal` on `E × E`. -/
+/-- If `f` has formal power series `∑ n, pₙ` in a set, within a ball of radius `r`, then
+for `y, z` in any smaller ball, the norm of the difference `f y - f z - p 1 (fun _ ↦ y - z)` is
+bounded above by `C * (max ‖y - x‖ ‖z - x‖) * ‖y - z‖`. This lemma formulates this property
+using `IsBigO` and `Filter.principal` on `E × E`. -/
 theorem HasFPowerSeriesWithinOnBall.isBigO_image_sub_image_sub_deriv_principal
     (hf : HasFPowerSeriesWithinOnBall f p s x r) (hr : r' < r) :
     (fun y : E × E => f y.1 - f y.2 - p 1 fun _ => y.1 - y.2)
