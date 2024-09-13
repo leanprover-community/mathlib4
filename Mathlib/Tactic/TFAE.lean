@@ -226,7 +226,7 @@ implications as `tfae_2_to_3 : P₂ → P₃`. If desired, a custom name can be 
 `h : 2 → 3 := ...` Patterns can also be used here to introduce `Iff` fields individually, e.g.
 `⟨h_mp, h_mpr⟩ : 5 ↔ 6 := ...`.
 -/
-syntax (name := tfaeBlock) "tfae" tfaeFields : tactic
+syntax (name := tfaeBlock) "tfae" colGt tfaeFields : tactic
 
 
 /-! # Setup -/
