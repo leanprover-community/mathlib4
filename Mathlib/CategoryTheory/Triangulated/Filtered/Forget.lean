@@ -706,17 +706,81 @@ lemma existence_omega_aux (n : ℕ) : ∀ (X : C) [IsLE X 0], Finset.card (suppo
     have h₃ : Finset.card (support T.obj₃) < n := sorry
     obtain ⟨Y₁, s₁, hY₁⟩ := existence_omega_support_singleton T.obj₁ h₁
     obtain ⟨Y₃, s₃, hY₃⟩ := hn _ h₃ T.obj₃ rfl
+    have : IsLE Y₁.1 0 := {le := Y₁.2.1}
+    have : IsLE Y₃.1 0 := {le := Y₃.2.1}
+    have : IsGE Y₁.1 0 := {ge := Y₁.2.2}
     have : IsGE Y₃.1 0 := {ge := Y₃.2.2}
     have := hY₃ (Y₁.1⟦(1 : ℤ)⟧) inferInstance
     set w : Y₃.obj ⟶ Y₁.obj⟦(1 : ℤ)⟧ := inv (((preadditiveYoneda.obj (Y₁.obj⟦(1 : ℤ)⟧)).map s₃.op))
       (T.mor₃ ≫ s₁⟦1⟧') with hwdef
     have hw : s₃ ≫ w = T.mor₃ ≫ s₁⟦1⟧' := by
+      change ((preadditiveYoneda.obj ((shiftFunctor C 1).obj Y₁.obj)).map s₃.op) w = _
       rw [hwdef]
+      change (_ ≫ ((preadditiveYoneda.obj ((shiftFunctor C 1).obj Y₁.obj)).map s₃.op)) _ = _
+      rw [IsIso.inv_hom_id]
       simp only [preadditiveYoneda_obj, Functor.comp_obj, preadditiveYonedaObj_obj,
-        ModuleCat.forget₂_obj, AddCommGrp.coe_of, Functor.comp_map, preadditiveYonedaObj_map,
-        Quiver.Hom.unop_op, ModuleCat.forget₂_map]
-      sorry
-    sorry
+        ModuleCat.forget₂_obj, AddCommGrp.coe_of, AddCommGrp.coe_id', id_eq]
+    obtain ⟨Y₂, u, v, dT'⟩ := distinguished_cocone_triangle₂ w
+    obtain ⟨s₂, hu, hv⟩ := complete_distinguished_triangle_morphism₂ _ _ dT dT' s₁ s₃ hw.symm
+    have hY₂ : tCore.P Y₂ := by
+      constructor
+      · refine (@LE_ext₂ C _ _ _ _ _ _ _ _ dT' 0 ?_ ?_).le
+        simp only [Triangle.mk_obj₁]; infer_instance
+        simp only [Triangle.mk_obj₃]; infer_instance
+      · refine (@GE_ext₂ C _ _ _ _ _ _ _ _ dT' 0 ?_ ?_).ge
+        simp only [Triangle.mk_obj₁]; infer_instance
+        simp only [Triangle.mk_obj₃]; infer_instance
+    existsi ⟨Y₂, hY₂⟩, s₂
+    intro Z hZ
+    set R₁ : ComposableArrows AddCommGrp 4 :=
+      ComposableArrows.mk₄ (((preadditiveYoneda.obj Z).map w.op))
+      (((preadditiveYoneda.obj Z).map v.op)) (((preadditiveYoneda.obj Z).map u.op))
+      ((preadditiveYoneda.obj Z).map (-w⟦(-1 : ℤ)⟧' ≫
+      (shiftEquiv C (1 : ℤ)).unitIso.inv.app _).op)
+    set R₂ : ComposableArrows AddCommGrp 4 :=
+      ComposableArrows.mk₄ (((preadditiveYoneda.obj Z).map T.mor₃.op))
+      (((preadditiveYoneda.obj Z).map T.mor₂.op)) (((preadditiveYoneda.obj Z).map T.mor₁.op))
+      ((preadditiveYoneda.obj Z).map (-T.mor₃⟦(-1 : ℤ)⟧' ≫
+      (shiftEquiv C (1 : ℤ)).unitIso.inv.app _).op)
+    set φ : R₁ ⟶ R₂ := by
+      refine ComposableArrows.homMk ?_ ?_
+      · intro i
+        match i with
+        | 0 => exact (preadditiveYoneda.obj Z).map (s₁⟦(1 : ℤ)⟧').op
+        | 1 => exact (preadditiveYoneda.obj Z).map s₃.op
+        | 2 => exact (preadditiveYoneda.obj Z).map s₂.op
+        | 3 => exact (preadditiveYoneda.obj Z).map s₁.op
+        | 4 => refine (preadditiveYoneda.obj Z).map (s₃⟦-1⟧').op
+      · intro i _
+        match i with
+        | 0 => change (preadditiveYoneda.obj Z).map w.op ≫ (preadditiveYoneda.obj Z).map
+                 s₃.op = (preadditiveYoneda.obj Z).map ((shiftFunctor C 1).map s₁).op ≫
+                 (preadditiveYoneda.obj Z).map T.mor₃.op
+               rw [← Functor.map_comp, ← Functor.map_comp]
+               congr 1
+               change (s₃ ≫ w).op = _
+               rw [hw]; rfl
+        | 1 => change (preadditiveYoneda.obj Z).map v.op ≫ (preadditiveYoneda.obj Z).map
+                 s₂.op = (preadditiveYoneda.obj Z).map s₃.op ≫ (preadditiveYoneda.obj Z).map
+                 T.mor₂.op
+               rw [← Functor.map_comp, ← Functor.map_comp]
+               congr 1
+               change (s₂ ≫ v).op = _
+               erw [← hv]
+               rfl
+        | 2 => change (preadditiveYoneda.obj Z).map u.op ≫ (preadditiveYoneda.obj Z).map s₁.op
+                 = (preadditiveYoneda.obj Z).map s₂.op ≫ (preadditiveYoneda.obj Z).map T.mor₁.op
+               rw [← Functor.map_comp, ← Functor.map_comp]
+               congr 1
+               change (s₁ ≫ u).op = _
+               erw [← hu]
+               rfl
+        | 3 => change (preadditiveYoneda.obj Z).map (-(shiftFunctor C (-1)).map w ≫
+                 (shiftEquiv C 1).unitIso.inv.app Y₁.obj).op ≫ (preadditiveYoneda.obj Z).map
+                 ((shiftFunctor C (-1)).map s₃).op = (preadditiveYoneda.obj Z).map s₁.op ≫
+                 (preadditiveYoneda.obj Z).map (-(shiftFunctor C (-1)).map T.mor₃ ≫
+                 (shiftEquiv C 1).unitIso.inv.app T.obj₁).op
+               rw [← Functor.map_comp, ← Functor.map_comp]
 
   #exit
 
