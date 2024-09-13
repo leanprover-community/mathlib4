@@ -333,8 +333,6 @@ section
 
 variable [HasEqualizers C]
 
-attribute [local instance] epi_comp
-
 /-- The morphism `imageSubobject (h ≫ f) ⟶ imageSubobject f`
 is an epimorphism when `h` is an epimorphism.
 In general this does not imply that `imageSubobject (h ≫ f) = imageSubobject f`,

@@ -85,13 +85,16 @@ theorem coherentTopology.mem_sieves_iff_hasEffectiveEpiFamily (S : Sieve X) :
         EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a)) )  := by
   constructor
   · intro h
-    induction' h with Y T hS Y Y R S _ _ a b
-    · obtain ⟨a, h, Y', π, h', _⟩ := hS
+    induction h with
+    | of Y T hS =>
+      obtain ⟨a, h, Y', π, h', _⟩ := hS
       refine ⟨a, h, Y', π, inferInstance, fun a' ↦ ?_⟩
       obtain ⟨rfl, _⟩ := h'
       exact ⟨Y' a', 𝟙 Y' a', π a', Presieve.ofArrows.mk a', by simp⟩
-    · exact ⟨Unit, inferInstance, fun _ => Y, fun _ => (𝟙 Y), inferInstance, by simp⟩
-    · obtain ⟨α, w, Y₁, π, ⟨h₁,h₂⟩⟩ := a
+    | top Y =>
+      exact ⟨Unit, inferInstance, fun _ => Y, fun _ => (𝟙 Y), inferInstance, by simp⟩
+    | transitive Y R S _ _ a b =>
+      obtain ⟨α, w, Y₁, π, ⟨h₁,h₂⟩⟩ := a
       choose β _ Y_n π_n H using fun a => b (h₂ a)
       exact ⟨(Σ a, β a), inferInstance, fun ⟨a,b⟩ => Y_n a b, fun ⟨a, b⟩ => (π_n a b) ≫ (π a),
         EffectiveEpiFamily.transitive_of_finite _ h₁ _ (fun a => (H a).1),

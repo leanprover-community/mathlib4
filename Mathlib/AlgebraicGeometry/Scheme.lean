@@ -18,7 +18,7 @@ A morphism of schemes is just a morphism of the underlying locally ringed spaces
 
 -/
 
--- Explicit universe annotations were used in this file to improve perfomance #12737
+-- Explicit universe annotations were used in this file to improve performance #12737
 
 
 universe u

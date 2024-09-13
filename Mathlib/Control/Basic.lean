@@ -54,6 +54,7 @@ theorem seq_map_assoc (x : F (α → β)) (f : γ → α) (y : F γ) :
   simp only [← pure_seq]
   simp only [seq_assoc, Function.comp, seq_pure, ← comp_map]
   simp [pure_seq]
+  rfl
 
 @[functor_norm]
 theorem map_seq (f : β → γ) (x : F (α → β)) (y : F α) :
@@ -224,3 +225,4 @@ theorem CommApplicative.commutative_map {m : Type u → Type v} [h : Applicative
     _ = (fun b a => f a b) <$> b <*> a := by
       rw [@CommApplicative.commutative_prod m h]
       simp [seq_map_assoc, map_seq, seq_assoc, seq_pure, map_map, (· ∘ ·)]
+      rfl

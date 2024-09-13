@@ -88,13 +88,13 @@ def PreservesLimitPair.iso : G.obj (X ⨯ Y) ≅ G.obj X ⨯ G.obj Y :=
 theorem PreservesLimitPair.iso_hom : (PreservesLimitPair.iso G X Y).hom = prodComparison G X Y :=
   rfl
 
-@[simp]
+@[simp, reassoc]
 theorem PreservesLimitPair.iso_inv_fst :
     (PreservesLimitPair.iso G X Y).inv ≫ G.map prod.fst = prod.fst := by
   rw [← Iso.cancel_iso_hom_left (PreservesLimitPair.iso G X Y), ← Category.assoc, Iso.hom_inv_id]
   simp
 
-@[simp]
+@[simp, reassoc]
 theorem PreservesLimitPair.iso_inv_snd :
     (PreservesLimitPair.iso G X Y).inv ≫ G.map prod.snd = prod.snd := by
   rw [← Iso.cancel_iso_hom_left (PreservesLimitPair.iso G X Y), ← Category.assoc, Iso.hom_inv_id]
