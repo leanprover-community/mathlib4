@@ -254,7 +254,7 @@ def checkAndSortRewriteLemmas (e : Expr) (rewrites : Array RewriteLemma) :
   let rewrites ← rewrites.filterMapM fun rw =>
     tryCatchRuntimeEx do
         let thm ← mkConstWithFreshMVarLevels rw.name
-        OptionT.run do (·, rw.name) <$> checkRewrite thm e rw.symm
+        Option.map (·, rw.name) <$> checkRewrite thm e rw.symm
       fun _ =>
         return none
   let lt (a b : (Rewrite × Name)) :=
@@ -293,7 +293,7 @@ def getHypothesisRewrites (e : Expr) (except : Option FVarId) :
   results.concatMapM <| Array.mapM <|
     Array.filterMapM fun (fvarId, symm) =>
       tryCatchRuntimeEx do
-        OptionT.run do (·, fvarId) <$> checkRewrite (.fvar fvarId) e symm
+        Option.map (·, fvarId) <$> checkRewrite (.fvar fvarId) e symm
       fun _ =>
         return none
 

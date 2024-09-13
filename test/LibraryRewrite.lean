@@ -1,3 +1,4 @@
+import Mathlib.Tactic.Widget.LibraryRewrite
 import Mathlib
 
 -- set_option trace.profiler true
