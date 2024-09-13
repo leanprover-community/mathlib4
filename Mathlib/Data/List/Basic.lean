@@ -510,6 +510,14 @@ theorem get_eq_get? (l : List α) (i : Fin l.length) :
     l.get i = (l.get? i).get (by simp [getElem?_eq_getElem]) := by
   simp
 
+theorem exists_mem_iff_get {l : List α} {p : α → Prop} :
+    (∃ x ∈ l, p x) ↔ ∃ i : Fin l.length, p (l.get i) := by
+  simp [mem_iff_get]
+
+theorem forall_mem_iff_get {l : List α} {p : α → Prop} :
+    (∀ x ∈ l, p x) ↔ ∀ i : Fin l.length, p (l.get i) := by
+  simp [mem_iff_get]
+
 theorem getElem_cons {l : List α} {a : α} {n : ℕ} (h : n < (a :: l).length) :
     (a :: l)[n] = if hn : n = 0 then a else l[n - 1]'(by rw [length_cons] at h; omega) := by
   cases n <;> simp
@@ -657,6 +665,8 @@ theorem sublist_cons_of_sublist (a : α) (h : l₁ <+ l₂) : l₁ <+ a :: l₂ 
 theorem sublist_of_cons_sublist_cons {a} (h : a :: l₁ <+ a :: l₂) : l₁ <+ l₂ := h.of_cons_cons
 
 @[deprecated (since := "2024-04-07")] alias cons_sublist_cons_iff := cons_sublist_cons
+
+attribute [gcongr] Sublist.append Sublist.append_left Sublist.append_right Sublist.reverse
 
 -- Porting note: this lemma seems to have been renamed on the occasion of its move to Batteries
 alias sublist_nil_iff_eq_nil := sublist_nil
@@ -2287,8 +2297,8 @@ theorem disjoint_pmap {p : α → Prop} {f : ∀ a : α, p a → β} {s t : List
     (hf : ∀ (a a' : α) (ha : p a) (ha' : p a'), f a ha = f a' ha' → a = a')
     (h : Disjoint s t) :
     Disjoint (s.pmap f hs) (t.pmap f ht) := by
-  simp only [Disjoint, mem_pmap]
-  rintro b ⟨a, ha, rfl⟩ ⟨a', ha', ha''⟩
+  simp only [Disjoint, mem_pmap, exists_imp]
+  rintro b a ha rfl a' ha' ha''
   apply h ha
   rwa [hf a a' (hs a ha) (ht a' ha') ha''.symm]
 
@@ -2298,6 +2308,15 @@ theorem disjoint_map {f : α → β} {s t : List α} (hf : Function.Injective f)
   rw [← pmap_eq_map _ _ _ (fun _ _ ↦ trivial), ← pmap_eq_map _ _ _ (fun _ _ ↦ trivial)]
   exact disjoint_pmap _ _ (fun _ _ _ _ h' ↦ hf h') h
 
+alias Disjoint.map := disjoint_map
+
+theorem Disjoint.of_map {f : α → β} {s t : List α} (h : Disjoint (s.map f) (t.map f)) :
+    Disjoint s t := fun _a has hat ↦
+  h (mem_map_of_mem f has) (mem_map_of_mem f hat)
+
+theorem disjoint_map_iff {f : α → β} {s t : List α} (hf : Function.Injective f) :
+    Disjoint (s.map f) (t.map f) ↔ Disjoint s t :=
+  ⟨fun h ↦ h.of_map, fun h ↦ h.map hf⟩
 
 theorem Perm.disjoint_left {l₁ l₂ l : List α} (p : List.Perm l₁ l₂) :
     Disjoint l₁ l ↔ Disjoint l₂ l := by
