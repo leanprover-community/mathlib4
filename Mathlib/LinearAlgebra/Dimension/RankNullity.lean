@@ -104,7 +104,7 @@ theorem exists_linearIndependent_of_lt_rank [StrongRankCondition R]
       ← rank_quotient_add_rank (Submodule.span R s), add_comm, rank_span_set hs]
     exact HasLeftInverse.injective ⟨Submodule.Quotient.mk, hsec⟩
   · apply LinearIndependent.union_of_quotient Submodule.subset_span hs
-    rwa [Function.comp, linearIndependent_image (hsec'.symm ▸ injective_id).injOn.image_of_comp,
+    rwa [Function.comp_def, linearIndependent_image (hsec'.symm ▸ injective_id).injOn.image_of_comp,
       ← image_comp, hsec', image_id]
 
 /-- Given a family of `n` linearly independent vectors in a space of dimension `> n`, one may extend

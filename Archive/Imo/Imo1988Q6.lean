@@ -45,7 +45,7 @@ under the following conditions:
 with `x < y` then there exists a “smaller” point on `H`: a point `(x',y')` with `x' < y' ≤ x`.
 
 For reasons of usability, the hyperbola `H` is implemented as an arbitrary predicate.
-(In question 6 of IMO1988, where this proof technique was first developped,
+(In question 6 of IMO1988, where this proof technique was first developed,
 the predicate `claim` would be `∃ (d : ℕ), d ^ 2 = k` for some natural number `k`,
 and the predicate `H` would be `fun a b ↦ a * a + b * b = (a * b + 1) * k`.)
 
