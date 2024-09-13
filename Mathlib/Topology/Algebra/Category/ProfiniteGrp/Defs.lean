@@ -59,27 +59,35 @@ attribute [to_additive] ProfiniteGrp
 
 namespace ProfiniteGrp
 
+@[to_additive]
 instance : CoeSort ProfiniteGrp (Type u) where
   coe G := G.toProfinite
 
+@[to_additive]
 instance (G : ProfiniteGrp) : Group G := G.group
 
+@[to_additive]
 instance (G : ProfiniteGrp) : TopologicalGroup G := G.topologicalGroup
 
+@[to_additive]
 instance : Category ProfiniteGrp where
   Hom A B := ContinuousMonoidHom A B
   id A := ContinuousMonoidHom.id A
   comp f g := ContinuousMonoidHom.comp g f
 
+@[to_additive]
 instance (G H : ProfiniteGrp) : FunLike (G ⟶ H) G H :=
   inferInstanceAs <| FunLike (ContinuousMonoidHom G H) G H
 
+@[to_additive]
 instance (G H : ProfiniteGrp) : MonoidHomClass (G ⟶ H) G H :=
   inferInstanceAs <| MonoidHomClass (ContinuousMonoidHom G H) G H
 
+@[to_additive]
 instance (G H : ProfiniteGrp) : ContinuousMapClass (G ⟶ H) G H :=
   inferInstanceAs <| ContinuousMapClass (ContinuousMonoidHom G H) G H
 
+@[to_additive]
 instance : ConcreteCategory ProfiniteGrp where
   forget :=
   { obj := fun G => G
@@ -90,30 +98,39 @@ instance : ConcreteCategory ProfiniteGrp where
         exact DFunLike.ext _ _ <| fun x => congr_fun h x }
 
 /--A topological group that is compact and totally disconnected is profinite-/
+@[to_additive]
 def of (G : Type u) [Group G] [TopologicalSpace G] [TopologicalGroup G]
     [CompactSpace G] [TotallyDisconnectedSpace G] : ProfiniteGrp where
   toProfinite := .of G
   group := ‹_›
   topologicalGroup := ‹_›
 
-@[simp]
+/--A topological add group that is compact and totally disconnected is profinite-/
+add_decl_doc ProfiniteAddGrp.of
+
+@[to_additive (attr := simp)]
 theorem coe_of (X : ProfiniteGrp) : (of X : Type _) = X :=
   rfl
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem coe_id (X : ProfiniteGrp) : (𝟙 ((forget ProfiniteGrp).obj X)) = id :=
   rfl
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem coe_comp {X Y Z : ProfiniteGrp} (f : X ⟶ Y) (g : Y ⟶ Z) :
     ((forget ProfiniteGrp).map f ≫ (forget ProfiniteGrp).map g) = g ∘ f :=
   rfl
 
 /--A topological group when considered as a topological space is profinite is profinite-/
+@[to_additive]
 abbrev ofProfinite (G : Profinite) [Group G] [TopologicalGroup G] :
     ProfiniteGrp := of G
 
+/--A topological add group when considered as a topological space is profinite is profinite-/
+add_decl_doc ProfiniteAddGrp.ofProfinite
+
 /--The product of profinite group is profinite-/
+@[to_additive]
 def pi {α : Type u} (β : α → ProfiniteGrp) : ProfiniteGrp :=
   let pitype := Profinite.pi fun (a : α) => (β a).toProfinite
   letI (a : α): Group (β a).toProfinite := (β a).group
@@ -121,18 +138,27 @@ def pi {α : Type u} (β : α → ProfiniteGrp) : ProfiniteGrp :=
   letI : TopologicalGroup pitype := Pi.topologicalGroup
   ofProfinite pitype
 
+/--The product of profinite add group is profinite-/
+add_decl_doc ProfiniteAddGrp.pi
+
 /--A FiniteGrp when given the discrete topology can be condsidered as a profinite group-/
+@[to_additive]
 def ofFiniteGrp (G : FiniteGrp) : ProfiniteGrp :=
   letI : TopologicalSpace G := ⊥
   letI : DiscreteTopology G := ⟨rfl⟩
   letI : TopologicalGroup G := {}
   of G
 
+/--A FiniteAddGrp when given the discrete topology can be condsidered as a profinite add group-/
+add_decl_doc ProfiniteAddGrp.ofFiniteAddGrp
+
+@[to_additive]
 instance : HasForget₂ FiniteGrp ProfiniteGrp where
   forget₂ :=
   { obj := ofFiniteGrp
     map := fun f => ⟨f, by continuity⟩ }
 
+@[to_additive]
 instance : HasForget₂ ProfiniteGrp Grp where
   forget₂ := {
     obj := fun P => ⟨P, P.group⟩
