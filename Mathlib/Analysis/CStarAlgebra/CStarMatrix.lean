@@ -261,6 +261,16 @@ theorem mul_apply' {l : Type*} [Fintype m] [Mul A] [AddCommMonoid A] {M : CStarM
 
 end zero_one
 
+@[simp]
+theorem smul_mul {l : Type*} [Fintype n] [Monoid R] [AddCommMonoid A] [Mul A] [DistribMulAction R A]
+    [IsScalarTower R A A] (a : R) (M : CStarMatrix m n A) (N : CStarMatrix n l A) :
+    (a • M) * N = a • (M * N) := Matrix.smul_mul a M N
+
+@[simp]
+theorem mul_smul {l : Type*} [Fintype n] [Monoid R] [AddCommMonoid A] [Mul A] [DistribMulAction R A]
+    [SMulCommClass R A A] (M : Matrix m n A) (a : R) (N : Matrix n l A) :
+    M * (a • N) = a • (M * N) := Matrix.mul_smul M a N
+
 instance nonUnitalNonAssocSemiring [Fintype n] [NonUnitalNonAssocSemiring A] :
     NonUnitalNonAssocSemiring (CStarMatrix n n A) where
   left_distrib := left_distrib (R := Matrix n n A)
@@ -316,8 +326,22 @@ def toCLM : CStarMatrix m n A →ₗ[ℂ] (n →C⋆ A) →L[ℂ] (m →C⋆ A) 
                cont := by
                  simp only [LinearMap.coe_mk, AddHom.coe_mk]
                  exact Continuous.comp (by fun_prop) (by fun_prop) }
-  map_add' M₁ M₂ := by ext; simp [Matrix.add_mulVec]
-  map_smul' c M := by ext; simp [Matrix.mulVec, Finset.smul_sum, smul_mul_assoc, Matrix.dotProduct]
+  map_add' M₁ M₂ := by
+    ext
+    simp only [ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply,
+      WithCStarModule.equivL_apply, WithCStarModule.equivL_symm_apply,
+      WithCStarModule.equiv_symm_pi_apply, ContinuousLinearMap.add_apply, WithCStarModule.add_apply]
+    rw [Matrix.add_mulVec, Pi.add_apply]
+  map_smul' c M := by
+    ext x i
+    simp only [ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply,
+      WithCStarModule.equivL_apply, WithCStarModule.equivL_symm_apply,
+      WithCStarModule.equiv_symm_pi_apply, Matrix.mulVec, Matrix.dotProduct,
+      WithCStarModule.equiv_pi_apply, RingHom.id_apply, ContinuousLinearMap.coe_smul',
+      Pi.smul_apply, WithCStarModule.smul_apply, Finset.smul_sum]
+    congr
+    ext j
+    rw [CStarMatrix.smul_apply, smul_mul_assoc]
 
 lemma toCLM_apply {M : CStarMatrix m n A} {v : n →C⋆ A} :
     toCLM M v = (WithCStarModule.equiv _).symm (M.mulVec v) := rfl
