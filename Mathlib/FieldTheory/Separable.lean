@@ -640,7 +640,8 @@ variable [Field K] [Ring E] [Algebra F K] [Algebra F E] [Algebra K E]
   [Nontrivial E] [IsScalarTower F K E]
 
 variable {F} in
-/-- If `E / K / F` is an extension tower, `algebraMap K E x` is separable over `F`, then `x` is
+/-- If `E / K / F` is a scalar tower and `algebraMap K E x` is separable over `F`, then `x` is
+``
 also separable over `F`. -/
 theorem IsSeparable.tower_bot {x : K} (h : IsSeparable F (algebraMap K E x)) : IsSeparable F x :=
     have ⟨_q, hq⟩ :=
