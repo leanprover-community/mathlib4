@@ -20,20 +20,6 @@ section
 variable {G : Type*} [LinearOrderedAddCommGroup G] [DenselyOrdered G] [Archimedean G] [Nontrivial G]
     [TopologicalSpace G] [OrderTopology G]
 
-theorem AddSubgroup.dense_xor'_cyclic (s : AddSubgroup G) :
-    Xor' (Dense (s : Set G)) (∃ a, s = .zmultiples a) := by
-  if hd : Dense (s : Set G) then
-    simp only [hd, xor_true]
-    rintro ⟨a, rfl⟩
-    exact not_denseRange_zsmul a hd
-  else
-    simp only [hd, xor_false, id, zmultiples_eq_closure]
-    exact s.dense_or_cyclic.resolve_left hd
-
-theorem AddSubgroup.dense_iff_ne_zmultiples {s : AddSubgroup G} :
-    Dense (s : Set G) ↔ ∀ a, s ≠ .zmultiples a := by
-  simp [xor_iff_iff_not.1 s.dense_xor'_cyclic]
-
 end
 
 theorem dense_addSubgroupClosure_pair_iff {a b : ℝ} :
@@ -103,7 +89,7 @@ theorem dense_addSubgroup_iff_ne_zmultiples' {p : ℝ} (hp : p ≠ 0) {s : AddSu
         AddSubgroup.map_comap_eq_self_of_surjective]
       exact surjective_quot_mk _
     exact ⟨a, (denseRange_zsmul_iff' hp).not.mp h, rfl⟩
-    
+
 theorem dense_addSubgroup_iff_ne_zmultiples {p : ℝ} [Fact (0 < p)] {s : AddSubgroup (AddCircle p)} :
     Dense (s : Set (AddCircle p)) ↔ ∀ a, addOrderOf a ≠ 0 → s ≠ .zmultiples a :=
   dense_addSubgroup_iff_ne_zmultiples' (Fact.out : 0 < p).ne'
