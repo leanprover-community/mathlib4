@@ -105,10 +105,17 @@ theorem transpose_apply (M : CStarMatrix m n A) (i j) : transpose M i j = M j i 
 def conjTranspose [Star A] (M : CStarMatrix m n A) : CStarMatrix n m A :=
   M.transpose.map star
 
-instance inhabited [Inhabited A] : Inhabited (CStarMatrix m n A) :=
+instance instStar [Star A] : Star (CStarMatrix n n A) where
+  star M := M.conjTranspose
+
+instance instInvolutiveStar [InvolutiveStar A] : InvolutiveStar (CStarMatrix n n A) where
+  star_involutive := star_involutive (R := Matrix n n A)
+
+instance instInhabited [Inhabited A] : Inhabited (CStarMatrix m n A) :=
   inferInstanceAs <| Inhabited <| m → n → A
 
-instance decidableEq [DecidableEq A] [Fintype m] [Fintype n] : DecidableEq (CStarMatrix m n A) :=
+instance instDecidableEq [DecidableEq A] [Fintype m] [Fintype n] :
+    DecidableEq (CStarMatrix m n A) :=
   Fintype.decidablePiFintype
 
 instance {n m} [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n] (α) [Fintype α] :
@@ -215,6 +222,13 @@ theorem of_sub_of [Sub A] (f g : Matrix m n A) : ofMatrix f - ofMatrix g = ofMat
 @[simp] theorem smul_of [SMul R A] (r : R) (f : Matrix m n A) :
     r • ofMatrix f = ofMatrix (r • f) := rfl
 
+instance starAddMonoid [AddMonoid A] [StarAddMonoid A] : StarAddMonoid (CStarMatrix n n A) where
+  star_add := star_add (R := Matrix n n A)
+
+instance starModule [Star R] [Star A] [SMul R A] [StarModule R A] :
+    StarModule R (CStarMatrix n n A) where
+  star_smul := star_smul (A := Matrix n n A)
+
 section zero_one
 
 variable [Zero A] [One A] [DecidableEq n]
@@ -251,15 +265,15 @@ instance {l : Type*} [Fintype m] [Mul A] [AddCommMonoid A] :
     HMul (CStarMatrix l m A) (CStarMatrix m n A) (CStarMatrix l n A) where
   hMul M N := ofMatrix (ofMatrix.symm M * ofMatrix.symm N)
 
+instance [Fintype n] [Mul A] [AddCommMonoid A] : Mul (CStarMatrix n n A) where mul M N := M * N
+
+end zero_one
+
 theorem mul_apply {l : Type*} [Fintype m] [Mul A] [AddCommMonoid A] {M : CStarMatrix l m A}
     {N : CStarMatrix m n A} {i k} : (M * N) i k = ∑ j, M i j * N j k := rfl
 
-instance [Fintype n] [Mul A] [AddCommMonoid A] : Mul (CStarMatrix n n A) where mul M N := M * N
-
 theorem mul_apply' {l : Type*} [Fintype m] [Mul A] [AddCommMonoid A] {M : CStarMatrix l m A}
     {N : CStarMatrix m n A} {i k} : (M * N) i k = (fun j => M i j) ⬝ᵥ fun j => N j k := rfl
-
-end zero_one
 
 @[simp]
 theorem smul_mul {l : Type*} [Fintype n] [Monoid R] [AddCommMonoid A] [Mul A] [DistribMulAction R A]
@@ -310,6 +324,31 @@ instance semiring [Fintype n] [DecidableEq n] [Semiring A] :
 
 instance ring [Fintype n] [DecidableEq n] [Ring A] : Ring (CStarMatrix n n A) :=
   { semiring, instAddCommGroupWithOne with }
+
+def ofMatrixRingEquiv [Fintype n] [DecidableEq n] [Semiring A] :
+    Matrix n n A ≃+* CStarMatrix n n A :=
+  { ofMatrix with
+    map_mul' := fun _ _ => rfl
+    map_add' := fun _ _ => rfl }
+
+instance starRing [Fintype n] [NonUnitalSemiring A] [StarRing A] :
+    StarRing (CStarMatrix n n A) where
+  star_mul := star_mul (R := Matrix n n A)
+  star_add := star_add (R := Matrix n n A)
+
+instance instAlgebra [Fintype n] [DecidableEq n] [CommSemiring R] [Semiring A] [Algebra R A] :
+    Algebra R (CStarMatrix n n A) where
+  toRingHom := ofMatrixRingEquiv.toRingHom.comp <| algebraMap R (Matrix n n A)
+  commutes' r M := by
+    apply ofMatrixRingEquiv.symm.injective
+    simp only [RingEquiv.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply,
+      map_mul, RingEquiv.symm_apply_apply]
+    exact Algebra.commutes (R := R) (A := Matrix n n A) _ _
+  smul_def' r M := by
+    apply ofMatrixRingEquiv.symm.injective
+    simp only [RingEquiv.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply,
+      map_mul, RingEquiv.symm_apply_apply]
+    exact Algebra.smul_def (R := R) (A := Matrix n n A) _ _
 
 end basic
 
@@ -567,7 +606,15 @@ variable {A : Type*} [NonUnitalNormedRing A] [StarRing A] [CStarRing A] [Partial
 
 variable {m n : Type*} [Fintype m] [Fintype n] [DecidableEq m]
 
+instance instTopologicalSpace : TopologicalSpace (CStarMatrix m n A) := Pi.topologicalSpace
+
+instance instUniformSpace : UniformSpace (CStarMatrix m n A) := Pi.uniformSpace _
+
 instance instBornology : Bornology (CStarMatrix m n A) := Pi.instBornology
+
+instance instCompleteSpace : CompleteSpace (CStarMatrix m n A) := Pi.complete _
+
+instance instT2Space : T2Space (CStarMatrix m n A) := Pi.t2Space
 
 noncomputable instance instNormedAddCommGroup [DecidableEq n] :
     NormedAddCommGroup (CStarMatrix m n A) :=
