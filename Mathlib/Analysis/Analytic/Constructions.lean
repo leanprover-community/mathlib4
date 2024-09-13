@@ -136,6 +136,14 @@ theorem AnalyticAt.comp₂ {h : F × G → H} {f : E → F} {g : E → G} {x : E
     AnalyticAt 𝕜 (fun x ↦ h (f x, g x)) x :=
   AnalyticAt.comp ha (fa.prod ga)
 
+/-- `AnalyticWithinAt.comp` for functions on product spaces -/
+theorem AnalyticWithinAt.comp₂ {h : F × G → H} {f : E → F} {g : E → G} {s : Set (F × G)}
+    {t : Set E} {x : E}
+    (ha : AnalyticWithinAt 𝕜 h s (f x, g x)) (fa : AnalyticWithinAt 𝕜 f t x)
+    (ga : AnalyticWithinAt 𝕜 g t x) (hf : Set.MapsTo (fun y ↦ (f y, g y)) t s) :
+    AnalyticWithinAt 𝕜 (fun x ↦ h (f x, g x)) t x :=
+  AnalyticWithinAt.comp ha (fa.prod ga) hf
+
 /-- `AnalyticAt.comp_analyticWithinAt` for functions on product spaces -/
 theorem AnalyticAt.comp₂_analyticWithinAt
     {h : F × G → H} {f : E → F} {g : E → G} {x : E} {s : Set E}
@@ -150,30 +158,57 @@ theorem AnalyticOn.comp₂ {h : F × G → H} {f : E → F} {g : E → G} {s : S
     (m : ∀ x, x ∈ t → (f x, g x) ∈ s) : AnalyticOn 𝕜 (fun x ↦ h (f x, g x)) t :=
   fun _ xt ↦ (ha _ (m _ xt)).comp₂ (fa _ xt) (ga _ xt)
 
+/-- `AnalyticWithinOn.comp` for functions on product spaces -/
+theorem AnalyticWithinOn.comp₂ {h : F × G → H} {f : E → F} {g : E → G} {s : Set (F × G)}
+    {t : Set E}
+    (ha : AnalyticWithinOn 𝕜 h s) (fa : AnalyticWithinOn 𝕜 f t)
+    (ga : AnalyticWithinOn 𝕜 g t) (m : Set.MapsTo (fun y ↦ (f y, g y)) t s) :
+    AnalyticWithinOn 𝕜 (fun x ↦ h (f x, g x)) t :=
+  fun x hx ↦ (ha _ (m hx)).comp₂ (fa x hx) (ga x hx) m
+
 /-- Analytic functions on products are analytic in the first coordinate -/
 theorem AnalyticAt.curry_left {f : E × F → G} {p : E × F} (fa : AnalyticAt 𝕜 f p) :
     AnalyticAt 𝕜 (fun x ↦ f (x, p.2)) p.1 :=
-  AnalyticAt.comp₂ fa (analyticAt_id _ _) analyticAt_const
+  AnalyticAt.comp₂ fa analyticAt_id analyticAt_const
 alias AnalyticAt.along_fst := AnalyticAt.curry_left
+
+theorem AnalyticWithinAt.curry_left
+    {f : E × F → G} {s : Set (E × F)} {p : E × F} (fa : AnalyticWithinAt 𝕜 f s p) :
+    AnalyticWithinAt 𝕜 (fun x ↦ f (x, p.2)) {x | (x, p.2) ∈ s} p.1 :=
+  AnalyticWithinAt.comp₂ fa analyticWithinAt_id analyticWithinAt_const (fun _ hx ↦ hx)
 
 /-- Analytic functions on products are analytic in the second coordinate -/
 theorem AnalyticAt.curry_right {f : E × F → G} {p : E × F} (fa : AnalyticAt 𝕜 f p) :
     AnalyticAt 𝕜 (fun y ↦ f (p.1, y)) p.2 :=
-  AnalyticAt.comp₂ fa analyticAt_const (analyticAt_id _ _)
+  AnalyticAt.comp₂ fa analyticAt_const analyticAt_id
 alias AnalyticAt.along_snd := AnalyticAt.curry_right
+
+theorem AnalyticWithinAt.curry_right
+    {f : E × F → G} {s : Set (E × F)} {p : E × F} (fa : AnalyticWithinAt 𝕜 f s p) :
+    AnalyticWithinAt 𝕜 (fun y ↦ f (p.1, y)) {y | (p.1, y) ∈ s} p.2 :=
+  AnalyticWithinAt.comp₂ fa  analyticWithinAt_const analyticWithinAt_id (fun _ hx ↦ hx)
 
 /-- Analytic functions on products are analytic in the first coordinate -/
 theorem AnalyticOn.curry_left {f : E × F → G} {s : Set (E × F)} {y : F} (fa : AnalyticOn 𝕜 f s) :
     AnalyticOn 𝕜 (fun x ↦ f (x, y)) {x | (x, y) ∈ s} :=
-  fun x m ↦ (fa (x, y) m).along_fst
+  fun x m ↦ (fa (x, y) m).curry_left
 alias AnalyticOn.along_fst := AnalyticOn.curry_left
+
+theorem AnalyticWithinOn.curry_left
+    {f : E × F → G} {s : Set (E × F)} {y : F} (fa : AnalyticWithinOn 𝕜 f s) :
+    AnalyticWithinOn 𝕜 (fun x ↦ f (x, y)) {x | (x, y) ∈ s} :=
+  fun x m ↦ (fa (x, y) m).curry_left
 
 /-- Analytic functions on products are analytic in the second coordinate -/
 theorem AnalyticOn.curry_right {f : E × F → G} {x : E} {s : Set (E × F)} (fa : AnalyticOn 𝕜 f s) :
     AnalyticOn 𝕜 (fun y ↦ f (x, y)) {y | (x, y) ∈ s} :=
-  fun y m ↦ (fa (x, y) m).along_snd
+  fun y m ↦ (fa (x, y) m).curry_right
 alias AnalyticOn.along_snd := AnalyticOn.curry_right
 
+theorem AnalyticWithinOn.curry_right
+    {f : E × F → G} {x : E} {s : Set (E × F)} (fa : AnalyticWithinOn 𝕜 f s) :
+    AnalyticWithinOn 𝕜 (fun y ↦ f (x, y)) {y | (x, y) ∈ s} :=
+  fun y m ↦ (fa (x, y) m).curry_right
 
 /-!
 ### Analyticity in Pi spaces
@@ -421,8 +456,8 @@ lemma analyticAt_inv {z : 𝕝} (hz : z ≠ 0) : AnalyticAt 𝕜 Inv.inv z := by
   have f3val : f3 z = 0 := by simp only [f3, div_self hz, sub_self]
   have f3an : AnalyticAt 𝕜 f3 z := by
     apply analyticAt_const.sub
-    simpa only [div_eq_inv_mul] using analyticAt_const.mul (analyticAt_id 𝕜 z)
-  exact feq ▸ (analyticAt_const.mul (analyticAt_id _ _)).comp
+    simpa only [div_eq_inv_mul] using analyticAt_const.mul analyticAt_id
+  exact feq ▸ (analyticAt_const.mul analyticAt_id).comp
     ((f3val.symm ▸ analyticAt_inv_one_sub 𝕝).comp f3an)
 
 /-- `x⁻¹` is analytic away from zero -/
