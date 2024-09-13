@@ -9,6 +9,9 @@ import Mathlib.Topology.MetricSpace.Holder
 # Hölder norm
 
 This file defines the Hölder (semi-)norm for Hölder functions alongside some basic properties.
+The `r`-Hölder norm of a function `f : X → Y` between two metric spaces is the least non-negative
+real number `C` for which `f` is `r`-Hölder continuous with constant `C`, i.e. it is the least `C`
+for which `WithHolder C r f` is true.
 
 ## Main definitions
 
