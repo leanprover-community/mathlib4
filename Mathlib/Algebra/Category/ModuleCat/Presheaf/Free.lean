@@ -15,6 +15,11 @@ which sends a presheaf of types to the corresponding presheaf of free modules.
 `PresheafOfModules.freeAdjunction` shows that this functor is the left
 adjoint to the forget functor.
 
+## Notes
+
+This contribution was created as part of the AIM workshop
+"Formalizing algebraic geometry" in June 2024.
+
 -/
 
 universe u v₁ u₁
