@@ -278,7 +278,7 @@ lemma lowerCentralSeries_one_inf_center_le_ker_traceForm [Module.Free R M] [Modu
     simp only [mem_maxTrivSubmodule] at hzc ⊢
     intro y
     exact y.induction_on rfl (fun a u ↦ by simp [hzc u]) (fun u v hu hv ↦ by simp [hu, hv])
-  apply LinearMap.trace_comp_eq_zero_of_commute_of_trace_restrict_eq_zero'
+  apply LinearMap.trace_comp_eq_zero_of_commute_of_trace_restrict_eq_zero
   · simp_rw [Module.End.maxGenEigenspace_def]
     exact IsTriangularizable.iSup_eq_top (1 ⊗ₜ[R] x)
   · intro μ
