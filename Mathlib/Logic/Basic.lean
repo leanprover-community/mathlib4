@@ -952,6 +952,22 @@ theorem dite_prop_iff_and {Q : P → Prop} {R : ¬P → Prop} :
     dite P Q R ↔ (∀ h, Q h) ∧ (∀ h, R h) := by
   by_cases h : P <;> simp [h, forall_prop_of_false, forall_prop_of_true]
 
+section congr
+
+variable [Decidable Q] {x y u v : α}
+
+theorem if_ctx_congr (h_c : P ↔ Q) (h_t : Q → x = u) (h_e : ¬Q → y = v) : ite P x y = ite Q u v :=
+  match ‹Decidable P›, ‹Decidable Q› with
+  | isFalse _,  isFalse h₂ => by simp_all
+  | isTrue _,   isTrue h₂  => by simp_all
+  | isFalse h₁, isTrue h₂  => absurd h₂ (Iff.mp (not_congr h_c) h₁)
+  | isTrue h₁,  isFalse h₂ => absurd h₁ (Iff.mpr (not_congr h_c) h₂)
+
+theorem if_congr (h_c : P ↔ Q) (h_t : x = u) (h_e : y = v) : ite P x y = ite Q u v :=
+  if_ctx_congr h_c (fun _ ↦ h_t) (fun _ ↦ h_e)
+
+end congr
+
 end ite
 
 theorem not_beq_of_ne {α : Type*} [BEq α] [LawfulBEq α] {a b : α} (ne : a ≠ b) : ¬(a == b) :=

@@ -215,7 +215,7 @@ theorem zero : (0 : K_hat R K).IsFiniteAdele := by
   rw [IsFiniteAdele, Filter.eventually_cofinite]
   have h_empty :
     {v : HeightOneSpectrum R | ¬(0 : v.adicCompletion K) ∈ v.adicCompletionIntegers K} = ∅ := by
-    ext v; rw [mem_empty_iff_false, iff_false_iff]; intro hv
+    ext v; rw [mem_empty_iff_false, iff_false]; intro hv
     rw [mem_setOf] at hv; apply hv; rw [mem_adicCompletionIntegers]
     have h_zero : (Valued.v (0 : v.adicCompletion K) : WithZero (Multiplicative ℤ)) = 0 :=
       Valued.v.map_zero'
@@ -259,7 +259,7 @@ theorem one : (1 : K_hat R K).IsFiniteAdele := by
   rw [IsFiniteAdele, Filter.eventually_cofinite]
   have h_empty :
     {v : HeightOneSpectrum R | ¬(1 : v.adicCompletion K) ∈ v.adicCompletionIntegers K} = ∅ := by
-    ext v; rw [mem_empty_iff_false, iff_false_iff]; intro hv
+    ext v; rw [mem_empty_iff_false, iff_false]; intro hv
     rw [mem_setOf] at hv; apply hv; rw [mem_adicCompletionIntegers]
     exact le_of_eq Valued.v.map_one'
   -- Porting note: was `exact`, but `OfNat` got in the way.
