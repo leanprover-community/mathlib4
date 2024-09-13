@@ -23,7 +23,7 @@ final can be restated. We show:
 * If `D` is a filtered category and `F : C ⥤ D` is fully faithful and satisfies the additional
   condition that for every `d : D` there is an object `c : D` and a morphism `d ⟶ F.obj c`, then
   `C` is filtered and `F` is final.
-* Finality and initiality of diagonal functors `diag : C ⥤ C × C` and projection functors
+* Finality and initiality of diagonal functors `diag : C ⥤ C × C` and of projection functors
   of (co)structured arrow categories.
 
 ## References
