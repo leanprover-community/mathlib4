@@ -1,4 +1,5 @@
 import Mathlib.Algebra.Lie.Derivation.Basic
+import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 
 namespace LieDerivation
@@ -126,7 +127,7 @@ lemma expSum_add_of_comm {a b : A} (ha : IsNilpotent a) (hb : IsNilpotent b) (ha
       exact pow_eq_zero_of_nilpotencyClass_le hb (le_trans hbn hx)
     · apply mul_eq_zero_of_right _ (smul_eq_zero_of_right _ _)
       exact pow_eq_zero_of_nilpotencyClass_le ha (le_trans (le_max_left _ _) hy)
-  rw [← Finset.sum_subset (s₁ := S'') hS''₀ hS''₁]
+  rw [← Finset.sum_subset hS''₀ hS''₁]
   -- Now it is clear that this sum is the product of `expSum A a` and `expSum A b`
   rw [Finset.sum_product]
   simp only [← Finset.sum_mul_sum]
@@ -215,7 +216,6 @@ Clean derivation proof:
 
 -/
 
-
 open scoped Finset in
 noncomputable def exp : (LieDerivation ℚ L L) → L →ₗ⁅ℚ⁆ L := fun δ ↦ {
   toLinearMap := expSum (L →ₗ[ℚ] L) δ
@@ -253,6 +253,11 @@ noncomputable def exp : (LieDerivation ℚ L L) → L →ₗ⁅ℚ⁆ L := fun �
         Finset.range (nilpotencyClass δ.toLinearMap) ⊆
       (Finset.range (2 * nilpotencyClass δ.toLinearMap)).biUnion fun z ↦
         Finset.antidiagonal z := by sorry
+    rw [← Finset.sum_subset h₁]
+    rw [Finset.sum_product]
+    conv_rhs =>
+      simp [expSum]
+
 
 
     -- 2. go to subset
