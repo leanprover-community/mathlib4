@@ -42,6 +42,10 @@ structure ProfiniteGrp where
   /-- The above data together form a topological group. -/
   [topologicalGroup : TopologicalGroup toProfinite]
 
+/--
+The category of profinite add groups. A term of this type consists of a profinite
+set with a topological add group structure.
+-/
 @[pp_with_univ]
 structure ProfiniteAddGrp where
   /-- The underlying profinite topological space. -/
