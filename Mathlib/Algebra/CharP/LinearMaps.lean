@@ -12,7 +12,7 @@ variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
   depends on specific `•`), then the characteristic of `R` is equal to the
   characteristic of `R`-linear endomorphism of `M`.-/
 theorem char_eq_if {p : ℕ} [hchar : CharP R p]
-  (hreduction : ∃ x : M, ∀ r : R, r • x = 0 → r = 0) : CharP (M →ₗ[R] M) p where
+    (hreduction : ∃ x : M, ∀ r : R, r • x = 0 → r = 0) : CharP (M →ₗ[R] M) p where
   cast_eq_zero_iff' := by
     intro n
     replace hchar := hchar.1 n
