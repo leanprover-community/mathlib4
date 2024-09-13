@@ -23,8 +23,6 @@ open CategoryTheory CategoryTheory.Limits
 variable {ι : Type*}
 variable {V : Type u} [Category.{v} V] [HasZeroMorphisms V]
 
-open scoped Classical
-
 noncomputable section
 
 section
@@ -149,7 +147,7 @@ instance imageToKernel_epi_of_epi_of_zero [HasImages V] [Epi f] :
   simp only [imageToKernel_zero_right]
   haveI := epi_image_of_epi f
   rw [← imageSubobject_arrow]
-  exact @epi_comp _ _ _ _ _ _ (epi_comp _ _) _ _
+  infer_instance
 
 end
 

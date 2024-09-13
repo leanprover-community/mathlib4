@@ -279,19 +279,6 @@ theorem tensorHom_def' {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ �
     f ⊗ g = X₁ ◁ g ≫ f ▷ Y₂ :=
   whisker_exchange f g ▸ tensorHom_def f g
 
-@[reassoc]
-lemma whiskerLeft_whiskerLeft_associator_inv (X Y : C) {Z₁ Z₂ : C} (f : Z₁ ⟶ Z₂) :
-    X ◁ Y ◁ f ≫ (α_ _ _ _).inv = (α_ _ _ _).inv ≫ _ ◁ f := by simp
-
-end MonoidalCategory
-
-open scoped MonoidalCategory
-open MonoidalCategory
-
-variable {C : Type u} [𝒞 : Category.{v} C] [MonoidalCategory C]
-
-namespace MonoidalCategory
-
 @[reassoc (attr := simp)]
 theorem whiskerLeft_hom_inv (X : C) {Y Z : C} (f : Y ≅ Z) :
     X ◁ f.hom ≫ X ◁ f.inv = 𝟙 (X ⊗ Y) := by
@@ -388,11 +375,9 @@ lemma whiskerRightIso_trans {X Y Z : C} (f : X ≅ Y) (g : Y ≅ Z) (W : C) :
 lemma whiskerRightIso_symm {X Y : C} (f : X ≅ Y) (W : C) :
     (whiskerRightIso f W).symm = whiskerRightIso f.symm W := rfl
 
-end MonoidalCategory
-
 /-- The tensor product of two isomorphisms is an isomorphism. -/
 @[simps]
-def tensorIso {C : Type u} {X Y X' Y' : C} [Category.{v} C] [MonoidalCategory.{v} C] (f : X ≅ Y)
+def tensorIso {X Y X' Y' : C} (f : X ≅ Y)
     (g : X' ≅ Y') : X ⊗ X' ≅ Y ⊗ Y' where
   hom := f.hom ⊗ g.hom
   inv := f.inv ⊗ g.inv
@@ -402,11 +387,13 @@ def tensorIso {C : Type u} {X Y X' Y' : C} [Category.{v} C] [MonoidalCategory.{v
 /-- Notation for `tensorIso`, the tensor product of isomorphisms -/
 infixr:70 " ⊗ " => tensorIso
 
-namespace MonoidalCategory
+theorem tensorIso_def {X Y X' Y' : C} (f : X ≅ Y) (g : X' ≅ Y') :
+    f ⊗ g = whiskerRightIso f X' ≪≫ whiskerLeftIso Y g :=
+  Iso.ext (tensorHom_def f.hom g.hom)
 
-section
-
-variable {C : Type u} [Category.{v} C] [MonoidalCategory.{v} C]
+theorem tensorIso_def' {X Y X' Y' : C} (f : X ≅ Y) (g : X' ≅ Y') :
+    f ⊗ g = whiskerLeftIso X g ≪≫ whiskerRightIso f Y' :=
+  Iso.ext (tensorHom_def' f.hom g.hom)
 
 instance tensor_isIso {W X Y Z : C} (f : W ⟶ X) [IsIso f] (g : Y ⟶ Z) [IsIso g] : IsIso (f ⊗ g) :=
   (asIso f ⊗ asIso g).isIso_hom
@@ -762,8 +749,6 @@ theorem tensor_id_comp_id_tensor (f : W ⟶ X) (g : Y ⟶ Z) : (g ⊗ 𝟙 W) �
 theorem tensor_left_iff {X Y : C} (f g : X ⟶ Y) : 𝟙 (𝟙_ C) ⊗ f = 𝟙 (𝟙_ C) ⊗ g ↔ f = g := by simp
 
 theorem tensor_right_iff {X Y : C} (f g : X ⟶ Y) : f ⊗ 𝟙 (𝟙_ C) = g ⊗ 𝟙 (𝟙_ C) ↔ f = g := by simp
-
-end
 
 section
 

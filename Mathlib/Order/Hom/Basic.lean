@@ -69,6 +69,8 @@ We also define two functions to convert other bundled maps to `α →o β`:
 monotone map, bundled morphism
 -/
 
+-- Developments relating order homs and sets belong in `Order.Hom.Set` or later.
+assert_not_exists Set.range
 
 open OrderDual
 
@@ -171,6 +173,10 @@ theorem map_inv_le_iff (f : F) {a : α} {b : β} : EquivLike.inv f b ≤ a ↔ b
   convert (map_le_map_iff f (a := EquivLike.inv f b) (b := a)).symm
   exact (EquivLike.right_inv f _).symm
 
+theorem map_inv_le_map_inv_iff (f : F) {a b : β} :
+    EquivLike.inv f b ≤ EquivLike.inv f a ↔ b ≤ a := by
+  simp
+
 -- Porting note: needed to add explicit arguments to map_le_map_iff
 @[simp]
 theorem le_map_inv_iff (f : F) {a : α} {b : β} : a ≤ EquivLike.inv f b ↔ f a ≤ b := by
@@ -188,6 +194,10 @@ theorem map_lt_map_iff (f : F) {a b : α} : f a < f b ↔ a < b :=
 theorem map_inv_lt_iff (f : F) {a : α} {b : β} : EquivLike.inv f b < a ↔ b < f a := by
   rw [← map_lt_map_iff f]
   simp only [EquivLike.apply_inv_apply]
+
+theorem map_inv_lt_map_inv_iff (f : F) {a b : β} :
+    EquivLike.inv f b < EquivLike.inv f a ↔ b < a := by
+  simp
 
 @[simp]
 theorem lt_map_inv_iff (f : F) {a : α} {b : β} : a < EquivLike.inv f b ↔ f a < b := by
@@ -424,7 +434,7 @@ def coeFnHom : (α →o β) →o α → β where
   monotone' _ _ h := h
 
 /-- Function application `fun f => f a` (for fixed `a`) is a monotone function from the
-monotone function space `α →o β` to `β`. See also `Pi.evalOrderHom`.  -/
+monotone function space `α →o β` to `β`. See also `Pi.evalOrderHom`. -/
 @[simps! (config := .asFn)]
 def apply (x : α) : (α →o β) →o β :=
   (Pi.evalOrderHom x).comp coeFnHom
@@ -445,7 +455,7 @@ def piIso : (α →o ∀ i, π i) ≃o ∀ i, α →o π i where
   right_inv _ := rfl
   map_rel_iff' := forall_swap
 
-/-- `Subtype.val` as a bundled monotone function.  -/
+/-- `Subtype.val` as a bundled monotone function. -/
 @[simps (config := .asFn)]
 def Subtype.val (p : α → Prop) : Subtype p →o α :=
   ⟨_root_.Subtype.val, fun _ _ h => h⟩
@@ -588,6 +598,18 @@ protected def withBotMap (f : α ↪o β) : WithBot α ↪o WithBot β :=
 @[simps (config := .asFn)]
 protected def withTopMap (f : α ↪o β) : WithTop α ↪o WithTop β :=
   { f.dual.withBotMap.dual with toFun := WithTop.map f }
+
+/-- Coercion `α → WithBot α` as an `OrderEmbedding`. -/
+@[simps (config := .asFn)]
+protected def withBotCoe : α ↪o WithBot α where
+  toFun := .some
+  inj' := Option.some_injective _
+  map_rel_iff' := WithBot.coe_le_coe
+
+/-- Coercion `α → WithTop α` as an `OrderEmbedding`. -/
+@[simps (config := .asFn)]
+protected def withTopCoe : α ↪o WithTop α :=
+  { (OrderEmbedding.withBotCoe (α := αᵒᵈ)).dual with toFun := .some }
 
 /-- To define an order embedding from a partial order to a preorder it suffices to give a function
 together with a proof that it satisfies `f a ≤ f b ↔ a ≤ b`.
@@ -772,9 +794,7 @@ theorem symm_apply_eq (e : α ≃o β) {x : α} {y : β} : e.symm y = x ↔ y = 
   e.toEquiv.symm_apply_eq
 
 @[simp]
-theorem symm_symm (e : α ≃o β) : e.symm.symm = e := by
-  ext
-  rfl
+theorem symm_symm (e : α ≃o β) : e.symm.symm = e := rfl
 
 theorem symm_bijective : Function.Bijective (OrderIso.symm : (α ≃o β) → β ≃o α) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
@@ -1085,6 +1105,18 @@ theorem OrderIso.map_sup [SemilatticeSup α] [SemilatticeSup β] (f : α ≃o β
     f (x ⊔ y) = f x ⊔ f y :=
   f.dual.map_inf x y
 
+theorem OrderIso.isMax_apply {α β : Type*} [Preorder α] [Preorder β] (f : α ≃o β) {x : α} :
+    IsMax (f x) ↔ IsMax x := by
+  refine ⟨f.strictMono.isMax_of_apply, ?_⟩
+  conv_lhs => rw [← f.symm_apply_apply x]
+  exact f.symm.strictMono.isMax_of_apply
+
+theorem OrderIso.isMin_apply {α β : Type*} [Preorder α] [Preorder β] (f : α ≃o β) {x : α} :
+    IsMin (f x) ↔ IsMin x := by
+  refine ⟨f.strictMono.isMin_of_apply, ?_⟩
+  conv_lhs => rw [← f.symm_apply_apply x]
+  exact f.symm.strictMono.isMin_of_apply
+
 /-- Note that this goal could also be stated `(Disjoint on f) a b` -/
 theorem Disjoint.map_orderIso [SemilatticeInf α] [OrderBot α] [SemilatticeInf β] [OrderBot β]
     {a b : α} (f : α ≃o β) (ha : Disjoint a b) : Disjoint (f a) (f b) := by
@@ -1240,5 +1272,19 @@ end BoundedOrder
 
 end LatticeIsos
 
--- Developments relating order homs and sets belong in `Order.Hom.Set` or later.
-assert_not_exists Set.range
+section DenselyOrdered
+
+lemma denselyOrdered_iff_of_orderIsoClass {X Y F : Type*} [Preorder X] [Preorder Y]
+    [EquivLike F X Y] [OrderIsoClass F X Y] (f : F) :
+    DenselyOrdered X ↔ DenselyOrdered Y := by
+  constructor
+  · intro H
+    refine ⟨fun a b h ↦ ?_⟩
+    obtain ⟨c, hc⟩ := exists_between ((map_inv_lt_map_inv_iff f).mpr h)
+    exact ⟨f c, by simpa using hc⟩
+  · intro H
+    refine ⟨fun a b h ↦ ?_⟩
+    obtain ⟨c, hc⟩ := exists_between ((map_lt_map_iff f).mpr h)
+    exact ⟨EquivLike.inv f c, by simpa using hc⟩
+
+end DenselyOrdered

@@ -35,9 +35,9 @@ section CantorInjMetric
 
 open Function ENNReal
 
-variable {α : Type*} [MetricSpace α] {C : Set α} (hC : Perfect C) {ε : ℝ≥0∞}
+variable {α : Type*} [MetricSpace α] {C : Set α} {ε : ℝ≥0∞}
 
-private theorem Perfect.small_diam_aux (ε_pos : 0 < ε) {x : α} (xC : x ∈ C) :
+private theorem Perfect.small_diam_aux (hC : Perfect C) (ε_pos : 0 < ε) {x : α} (xC : x ∈ C) :
     let D := closure (EMetric.ball x (ε / 2) ∩ C)
     Perfect D ∧ D.Nonempty ∧ D ⊆ C ∧ EMetric.diam D ≤ ε := by
   have : x ∈ EMetric.ball x (ε / 2) := by
@@ -53,11 +53,9 @@ private theorem Perfect.small_diam_aux (ε_pos : 0 < ε) {x : α} (xC : x ∈ C)
   convert EMetric.diam_ball (x := x)
   rw [mul_comm, ENNReal.div_mul_cancel] <;> norm_num
 
-variable (hnonempty : C.Nonempty)
-
 /-- A refinement of `Perfect.splitting` for metric spaces, where we also control
 the diameter of the new perfect sets. -/
-theorem Perfect.small_diam_splitting (ε_pos : 0 < ε) :
+theorem Perfect.small_diam_splitting (hC : Perfect C) (hnonempty : C.Nonempty) (ε_pos : 0 < ε) :
     ∃ C₀ C₁ : Set α, (Perfect C₀ ∧ C₀.Nonempty ∧ C₀ ⊆ C ∧ EMetric.diam C₀ ≤ ε) ∧
     (Perfect C₁ ∧ C₁.Nonempty ∧ C₁ ⊆ C ∧ EMetric.diam C₁ ≤ ε) ∧ Disjoint C₀ C₁ := by
   rcases hC.splitting hnonempty with ⟨D₀, D₁, ⟨perf0, non0, sub0⟩, ⟨perf1, non1, sub1⟩, hdisj⟩
@@ -74,7 +72,8 @@ open CantorScheme
 
 /-- Any nonempty perfect set in a complete metric space admits a continuous injection
 from the Cantor space, `ℕ → Bool`. -/
-theorem Perfect.exists_nat_bool_injection [CompleteSpace α] :
+theorem Perfect.exists_nat_bool_injection
+    (hC : Perfect C) (hnonempty : C.Nonempty) [CompleteSpace α] :
     ∃ f : (ℕ → Bool) → α, range f ⊆ C ∧ Continuous f ∧ Injective f := by
   obtain ⟨u, -, upos', hu⟩ := exists_seq_strictAnti_tendsto' (zero_lt_one' ℝ≥0∞)
   have upos := fun n => (upos' n).1

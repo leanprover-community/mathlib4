@@ -27,7 +27,7 @@ universe u
 
 -- This file is about Lean 3 declaration "Rel".
 
-/-- A type synonym for `Type`, which carries the category instance for which
+/-- A type synonym for `Type u`, which carries the category instance for which
     morphisms are binary relations. -/
 def RelCat :=
   Type u
@@ -83,9 +83,9 @@ instance graphFunctor_essSurj : graphFunctor.EssSurj :=
     graphFunctor.essSurj_of_surj Function.surjective_id
 
 /-- A relation is an isomorphism in `RelCat` iff it is the image of an isomorphism in
-`Type`. -/
+`Type u`. -/
 theorem rel_iso_iff {X Y : RelCat} (r : X ⟶ Y) :
-    IsIso (C := RelCat) r ↔ ∃ f : (Iso (C := Type) X Y), graphFunctor.map f.hom = r := by
+    IsIso (C := RelCat) r ↔ ∃ f : (Iso (C := Type u) X Y), graphFunctor.map f.hom = r := by
   constructor
   · intro h
     have h1 := congr_fun₂ h.hom_inv_id
@@ -93,7 +93,7 @@ theorem rel_iso_iff {X Y : RelCat} (r : X ⟶ Y) :
     simp only [RelCat.Hom.rel_comp_apply₂, RelCat.Hom.rel_id_apply₂, eq_iff_iff] at h1 h2
     obtain ⟨f, hf⟩ := Classical.axiomOfChoice (fun a => (h1 a a).mpr rfl)
     obtain ⟨g, hg⟩ := Classical.axiomOfChoice (fun a => (h2 a a).mpr rfl)
-    suffices hif : IsIso (C := Type) f by
+    suffices hif : IsIso (C := Type u) f by
       use asIso f
       ext x y
       simp only [asIso_hom, graphFunctor_map]
@@ -118,7 +118,7 @@ theorem rel_iso_iff {X Y : RelCat} (r : X ⟶ Y) :
 section Opposite
 open Opposite
 
-/-- The argument-swap isomorphism from `rel` to its opposite. -/
+/-- The argument-swap isomorphism from `RelCat` to its opposite. -/
 def opFunctor : RelCat ⥤ RelCatᵒᵖ where
   obj X := op X
   map {X Y} r := op (fun y x => r x y)
@@ -154,8 +154,8 @@ def unopFunctor : RelCatᵒᵖ ⥤ RelCat where
 @[simp] theorem unopFunctor_comp_opFunctor_eq :
     Functor.comp unopFunctor opFunctor = Functor.id _ := rfl
 
-/-- `rel` is self-dual: The map that swaps the argument order of a
-    relation induces an equivalence between `rel` and its opposite. -/
+/-- `RelCat` is self-dual: The map that swaps the argument order of a
+    relation induces an equivalence between `RelCat` and its opposite. -/
 @[simps]
 def opEquivalence : Equivalence RelCat RelCatᵒᵖ where
   functor := opFunctor

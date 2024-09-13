@@ -16,7 +16,6 @@ A universal partial recursive function, Rice's theorem, and the halting problem.
 * [Mario Carneiro, *Formalizing computability theory via partial recursive functions*][carneiro2019]
 -/
 
-
 open Mathlib (Vector)
 open Encodable Denumerable
 
@@ -215,7 +214,7 @@ theorem rice₂ (C : Set Code) (H : ∀ cf cg, eval cf = eval cg → (cf ∈ C �
                 (Partrec.nat_iff.1 <| eval_part.comp (const cg) Computable.id) ((hC _).1 fC),
         fun h => by {
           obtain rfl | rfl := h <;> simpa [ComputablePred, Set.mem_empty_iff_false] using
-            ⟨by infer_instance, Computable.const _⟩ }⟩
+            ⟨⟨inferInstance⟩, Computable.const _⟩ }⟩
 
 /-- The Halting problem is recursively enumerable -/
 theorem halting_problem_re (n) : RePred fun c => (eval c n).Dom :=

@@ -50,6 +50,10 @@ namespace IsConjExponent
 `q`: many computations using these exponents require clearing out denominators, which can be done
 with `field_simp` given a proof that these denominators are non-zero, so we record the most usual
 ones. -/
+
+section
+include h
+
 theorem pos : 0 < p := lt_trans zero_lt_one h.one_lt
 
 theorem nonneg : 0 ≤ p := le_of_lt h.pos
@@ -70,7 +74,7 @@ theorem one_div_nonneg : 0 ≤ 1 / p := le_of_lt h.one_div_pos
 
 theorem one_div_ne_zero : 1 / p ≠ 0 := ne_of_gt h.one_div_pos
 
-theorem conj_eq (h : p.IsConjExponent q) : q = p / (p - 1) := by
+theorem conj_eq : q = p / (p - 1) := by
   have := h.inv_add_inv_conj
   rw [← eq_sub_iff_add_eq', inv_eq_iff_eq_inv] at this
   field_simp [this, h.ne_zero]
@@ -86,7 +90,7 @@ theorem sub_one_mul_conj : (p - 1) * q = p :=
 theorem mul_eq_add : p * q = p + q := by
   simpa only [sub_mul, sub_eq_iff_eq_add, one_mul] using h.sub_one_mul_conj
 
-@[symm] protected lemma symm (h : p.IsConjExponent q) : q.IsConjExponent p where
+@[symm] protected lemma symm : q.IsConjExponent p where
   one_lt := by simpa only [h.conj_eq] using (one_lt_div h.sub_one_pos).mpr (sub_one_lt p)
   inv_add_inv_conj := by simpa [add_comm] using h.inv_add_inv_conj
 
@@ -99,11 +103,13 @@ theorem inv_add_inv_conj_ennreal : (ENNReal.ofReal p)⁻¹ + (ENNReal.ofReal q)�
     ← ENNReal.ofReal_inv_of_pos h.symm.pos, ← ENNReal.ofReal_add h.inv_nonneg h.symm.inv_nonneg,
     h.inv_add_inv_conj]
 
+end
+
 protected lemma inv_inv (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1) : a⁻¹.IsConjExponent b⁻¹ :=
-  ⟨one_lt_inv ha $ by linarith, by simpa only [inv_inv]⟩
+  ⟨one_lt_inv ha <| by linarith, by simpa only [inv_inv]⟩
 
 lemma inv_one_sub_inv (ha₀ : 0 < a) (ha₁ : a < 1) : a⁻¹.IsConjExponent (1 - a)⁻¹ :=
-  .inv_inv ha₀ (sub_pos_of_lt ha₁) $ add_tsub_cancel_of_le ha₁.le
+  .inv_inv ha₀ (sub_pos_of_lt ha₁) <| add_tsub_cancel_of_le ha₁.le
 
 lemma one_sub_inv_inv (ha₀ : 0 < a) (ha₁ : a < 1) : (1 - a)⁻¹.IsConjExponent a⁻¹ :=
   (inv_one_sub_inv ha₀ ha₁).symm
@@ -147,6 +153,10 @@ namespace IsConjExponent
 `q`: many computations using these exponents require clearing out denominators, which can be done
 with `field_simp` given a proof that these denominators are non-zero, so we record the most usual
 ones. -/
+
+section
+include h
+
 lemma one_le : 1 ≤ p := h.one_lt.le
 lemma pos : 0 < p := zero_lt_one.trans h.one_lt
 lemma ne_zero : p ≠ 0 := h.pos.ne'
@@ -159,7 +169,7 @@ lemma inv_ne_zero : p⁻¹ ≠ 0 := h.inv_pos.ne'
 
 lemma one_sub_inv : 1 - p⁻¹ = q⁻¹ := tsub_eq_of_eq_add_rev h.inv_add_inv_conj.symm
 
-lemma conj_eq (h : p.IsConjExponent q) : q = p / (p - 1) := by
+lemma conj_eq : q = p / (p - 1) := by
   simpa only [← coe_one, ← NNReal.coe_sub h.one_le, ← NNReal.coe_div, coe_inj] using h.coe.conj_eq
 
 lemma conjExponent_eq : conjExponent p = q := h.conj_eq.symm
@@ -171,7 +181,7 @@ lemma mul_eq_add : p * q = p + q := by
   simpa only [← NNReal.coe_mul, ← NNReal.coe_add, NNReal.coe_inj] using h.coe.mul_eq_add
 
 @[symm]
-protected lemma symm (h : p.IsConjExponent q) : q.IsConjExponent p where
+protected lemma symm : q.IsConjExponent p where
   one_lt := by
     rw [h.conj_eq]
     exact (one_lt_div h.sub_one_pos).mpr (tsub_lt_self h.pos zero_lt_one)
@@ -181,13 +191,15 @@ lemma div_conj_eq_sub_one : p / q = p - 1 := by field_simp [h.symm.ne_zero]; rw 
 
 lemma inv_add_inv_conj_ennreal : (p⁻¹ + q⁻¹ : ℝ≥0∞) = 1 := by norm_cast; exact h.inv_add_inv_conj
 
+end
+
 protected lemma inv_inv (ha : a ≠ 0) (hb : b ≠ 0) (hab : a + b = 1) :
     a⁻¹.IsConjExponent b⁻¹ :=
-  ⟨one_lt_inv ha.bot_lt $ by rw [← hab]; exact lt_add_of_pos_right _ hb.bot_lt, by
+  ⟨one_lt_inv ha.bot_lt <| by rw [← hab]; exact lt_add_of_pos_right _ hb.bot_lt, by
     simpa only [inv_inv] using hab⟩
 
 lemma inv_one_sub_inv (ha₀ : a ≠ 0) (ha₁ : a < 1) : a⁻¹.IsConjExponent (1 - a)⁻¹ :=
-  .inv_inv ha₀ (tsub_pos_of_lt ha₁).ne' $ add_tsub_cancel_of_le ha₁.le
+  .inv_inv ha₀ (tsub_pos_of_lt ha₁).ne' <| add_tsub_cancel_of_le ha₁.le
 
 lemma one_sub_inv_inv (ha₀ : a ≠ 0) (ha₁ : a < 1) : (1 - a)⁻¹.IsConjExponent a⁻¹ :=
   (inv_one_sub_inv ha₀ ha₁).symm

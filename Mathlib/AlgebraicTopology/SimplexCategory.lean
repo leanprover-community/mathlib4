@@ -520,7 +520,7 @@ theorem epi_iff_surjective {n m : SimplexCategory} {f : n ⟶ m} :
   simp only [skeletalFunctor_obj, skeletalFunctor_map,
     NonemptyFinLinOrd.epi_iff_surjective, NonemptyFinLinOrd.coe_of]
 
-/-- A monomorphism in `SimplexCategory` must increase lengths-/
+/-- A monomorphism in `SimplexCategory` must increase lengths -/
 theorem len_le_of_mono {x y : SimplexCategory} {f : x ⟶ y} : Mono f → x.len ≤ y.len := by
   intro hyp_f_mono
   have f_inj : Function.Injective f.toOrderHom.toFun := mono_iff_injective.1 hyp_f_mono
@@ -529,7 +529,7 @@ theorem len_le_of_mono {x y : SimplexCategory} {f : x ⟶ y} : Mono f → x.len 
 theorem le_of_mono {n m : ℕ} {f : ([n] : SimplexCategory) ⟶ [m]} : CategoryTheory.Mono f → n ≤ m :=
   len_le_of_mono
 
-/-- An epimorphism in `SimplexCategory` must decrease lengths-/
+/-- An epimorphism in `SimplexCategory` must decrease lengths -/
 theorem len_le_of_epi {x y : SimplexCategory} {f : x ⟶ y} : Epi f → y.len ≤ x.len := by
   intro hyp_f_epi
   have f_surj : Function.Surjective f.toOrderHom.toFun := epi_iff_surjective.1 hyp_f_epi
@@ -652,7 +652,7 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : mk 
       cases' Nat.le.dest h' with c hc
       cases c
       · exfalso
-        simp only [Nat.zero_eq, add_zero, len_mk, Fin.coe_pred] at hc
+        simp only [add_zero, len_mk, Fin.coe_pred] at hc
         rw [hc] at h''
         exact h'' rfl
       · rw [← hc]
@@ -725,7 +725,7 @@ theorem eq_id_of_mono {x : SimplexCategory} (i : x ⟶ x) [Mono i] : i = 𝟙 _ 
   apply isIso_of_bijective
   dsimp
   rw [Fintype.bijective_iff_injective_and_card i.toOrderHom, ← mono_iff_injective,
-    eq_self_iff_true, and_true_iff]
+    eq_self_iff_true, and_true]
   infer_instance
 
 theorem eq_id_of_epi {x : SimplexCategory} (i : x ⟶ x) [Epi i] : i = 𝟙 _ := by
@@ -735,7 +735,7 @@ theorem eq_id_of_epi {x : SimplexCategory} (i : x ⟶ x) [Epi i] : i = 𝟙 _ :=
   apply isIso_of_bijective
   dsimp
   rw [Fintype.bijective_iff_surjective_and_card i.toOrderHom, ← epi_iff_surjective,
-    eq_self_iff_true, and_true_iff]
+    eq_self_iff_true, and_true]
   infer_instance
 
 theorem eq_σ_of_epi {n : ℕ} (θ : mk (n + 1) ⟶ mk n) [Epi θ] : ∃ i : Fin (n + 1), θ = σ i := by

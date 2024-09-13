@@ -488,17 +488,17 @@ def finTwoArrow : (Fin 2 → α) ≃ᵐ α × α :=
   piFinTwo fun _ => α
 
 /-- Measurable equivalence between `Π j : Fin (n + 1), α j` and
-`α i × Π j : Fin n, α (Fin.succAbove i j)`. -/
+`α i × Π j : Fin n, α (Fin.succAbove i j)`.
+
+Measurable version of `Fin.insertNthEquiv`. -/
 @[simps! (config := .asFn)]
 def piFinSuccAbove {n : ℕ} (α : Fin (n + 1) → Type*) [∀ i, MeasurableSpace (α i)]
     (i : Fin (n + 1)) : (∀ j, α j) ≃ᵐ α i × ∀ j, α (i.succAbove j) where
-  toEquiv := .piFinSuccAbove α i
+  toEquiv := (Fin.insertNthEquiv α i).symm
   measurable_toFun := (measurable_pi_apply i).prod_mk <| measurable_pi_iff.2 fun j =>
     measurable_pi_apply _
   measurable_invFun := measurable_pi_iff.2 <| i.forall_iff_succAbove.2
-    ⟨by simp only [piFinSuccAbove_symm_apply, Fin.insertNth_apply_same, measurable_fst],
-      fun j => by simpa only [piFinSuccAbove_symm_apply, Fin.insertNth_apply_succAbove]
-        using (measurable_pi_apply _).comp measurable_snd⟩
+    ⟨by simp [measurable_fst], fun j => by simpa using (measurable_pi_apply _).comp measurable_snd⟩
 
 variable (π)
 
@@ -602,8 +602,9 @@ noncomputable def equivImage (s : Set α) (hf : MeasurableEmbedding f) : s ≃�
   toEquiv := Equiv.Set.image f s hf.injective
   measurable_toFun := (hf.measurable.comp measurable_id.subtype_val).subtype_mk
   measurable_invFun := by
-    rintro t ⟨u, hu, rfl⟩; simp [preimage_preimage, Set.image_symm_preimage hf.injective]
-    exact measurable_subtype_coe (hf.measurableSet_image' hu)
+    rintro t ⟨u, hu, rfl⟩
+    simpa [preimage_preimage, Set.image_symm_preimage hf.injective]
+      using measurable_subtype_coe (hf.measurableSet_image' hu)
 
 /-- The domain of `f` is equivalent to its range as measurable spaces,
   if `f` is a measurable embedding -/
@@ -623,8 +624,6 @@ theorem of_measurable_inverse (hf₁ : Measurable f) (hf₂ : MeasurableSet (ran
     (hg : Measurable g) (H : LeftInverse g f) : MeasurableEmbedding f :=
   of_measurable_inverse_on_range hf₁ hf₂ (hg.comp measurable_subtype_coe) H
 
-open scoped Classical
-
 /-- The **measurable Schröder-Bernstein Theorem**: given measurable embeddings
 `α → β` and `β → α`, we can find a measurable equivalence `α ≃ᵐ β`. -/
 noncomputable def schroederBernstein {f : α → β} {g : β → α} (hf : MeasurableEmbedding f)
@@ -635,6 +634,7 @@ noncomputable def schroederBernstein {f : α → β} {g : β → α} (hf : Measu
   -- However, we must find this fixed point manually instead of invoking Knaster-Tarski
   -- in order to make sure it is measurable.
   suffices Σ'A : Set α, MeasurableSet A ∧ F A = A by
+    classical
     rcases this with ⟨A, Ameas, Afp⟩
     let B := f '' A
     have Bmeas : MeasurableSet B := hf.measurableSet_image' Ameas

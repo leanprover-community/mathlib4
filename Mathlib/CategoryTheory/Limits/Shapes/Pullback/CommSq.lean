@@ -609,7 +609,7 @@ theorem paste_vert {X₁₁ X₁₂ X₂₁ X₂₂ X₃₁ X₃₂ : C} {h₁�
     {h₃₁ : X₃₁ ⟶ X₃₂} {v₁₁ : X₁₁ ⟶ X₂₁} {v₁₂ : X₁₂ ⟶ X₂₂} {v₂₁ : X₂₁ ⟶ X₃₁} {v₂₂ : X₂₂ ⟶ X₃₂}
     (s : IsPullback h₁₁ v₁₁ v₁₂ h₂₁) (t : IsPullback h₂₁ v₂₁ v₂₂ h₃₁) :
     IsPullback h₁₁ (v₁₁ ≫ v₂₁) (v₁₂ ≫ v₂₂) h₃₁ :=
-  of_isLimit (bigSquareIsPullback _ _ _ _ _ _ _ s.w t.w t.isLimit s.isLimit)
+  of_isLimit (pasteHorizIsPullback rfl t.isLimit s.isLimit)
 
 /-- Paste two pullback squares "horizontally" to obtain another pullback square.
 
@@ -648,7 +648,7 @@ theorem of_bot {X₁₁ X₁₂ X₂₁ X₂₂ X₃₁ X₃₂ : C} {h₁₁ : 
     {v₁₁ : X₁₁ ⟶ X₂₁} {v₁₂ : X₁₂ ⟶ X₂₂} {v₂₁ : X₂₁ ⟶ X₃₁} {v₂₂ : X₂₂ ⟶ X₃₂}
     (s : IsPullback h₁₁ (v₁₁ ≫ v₂₁) (v₁₂ ≫ v₂₂) h₃₁) (p : h₁₁ ≫ v₁₂ = v₁₁ ≫ h₂₁)
     (t : IsPullback h₂₁ v₂₁ v₂₂ h₃₁) : IsPullback h₁₁ v₁₁ v₁₂ h₂₁ :=
-  of_isLimit (leftSquareIsPullback _ _ _ _ _ _ _ p t.w t.isLimit s.isLimit)
+  of_isLimit (leftSquareIsPullback (PullbackCone.mk h₁₁ _ p) rfl t.isLimit s.isLimit)
 
 /-- Given a pullback square assembled from a commuting square on the left and
 a pullback square on the right, the left square is a pullback square.
@@ -913,7 +913,7 @@ theorem paste_vert {X₁₁ X₁₂ X₂₁ X₂₂ X₃₁ X₃₂ : C} {h₁�
     {h₃₁ : X₃₁ ⟶ X₃₂} {v₁₁ : X₁₁ ⟶ X₂₁} {v₁₂ : X₁₂ ⟶ X₂₂} {v₂₁ : X₂₁ ⟶ X₃₁} {v₂₂ : X₂₂ ⟶ X₃₂}
     (s : IsPushout h₁₁ v₁₁ v₁₂ h₂₁) (t : IsPushout h₂₁ v₂₁ v₂₂ h₃₁) :
     IsPushout h₁₁ (v₁₁ ≫ v₂₁) (v₁₂ ≫ v₂₂) h₃₁ :=
-  of_isColimit (bigSquareIsPushout _ _ _ _ _ _ _ s.w t.w t.isColimit s.isColimit)
+  of_isColimit (pasteHorizIsPushout rfl s.isColimit t.isColimit)
 
 /-- Paste two pushout squares "horizontally" to obtain another pushout square.
 
@@ -952,7 +952,8 @@ theorem of_top {X₁₁ X₁₂ X₂₁ X₂₂ X₃₁ X₃₂ : C} {h₁₁ : 
     {v₁₁ : X₁₁ ⟶ X₂₁} {v₁₂ : X₁₂ ⟶ X₂₂} {v₂₁ : X₂₁ ⟶ X₃₁} {v₂₂ : X₂₂ ⟶ X₃₂}
     (s : IsPushout h₁₁ (v₁₁ ≫ v₂₁) (v₁₂ ≫ v₂₂) h₃₁) (p : h₂₁ ≫ v₂₂ = v₂₁ ≫ h₃₁)
     (t : IsPushout h₁₁ v₁₁ v₁₂ h₂₁) : IsPushout h₂₁ v₂₁ v₂₂ h₃₁ :=
-  of_isColimit (rightSquareIsPushout _ _ _ _ _ _ _ t.w p t.isColimit s.isColimit)
+  of_isColimit <| rightSquareIsPushout
+    (PushoutCocone.mk _ _ p) (cocone_inr _) t.isColimit s.isColimit
 
 /-- Given a pushout square assembled from a pushout square on the left and
 a commuting square on the right, the right square is a pushout square.

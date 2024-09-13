@@ -43,6 +43,8 @@ variable {m₁ m₂ : X → X → X} {e₁ e₂ : X}
 variable (h₁ : IsUnital m₁ e₁) (h₂ : IsUnital m₂ e₂)
 variable (distrib : ∀ a b c d, ((a <m₂> b) <m₁> c <m₂> d) = (a <m₁> c) <m₂> b <m₁> d)
 
+include h₁ h₂ distrib
+
 /-- If a type carries two unital binary operations that distribute over each other,
 then they have the same unit elements.
 
@@ -78,10 +80,10 @@ theorem mul_assoc : Std.Associative m₂ :=
 
 /-- If a type carries a unital magma structure that distributes over a unital binary
 operation, then the magma structure is a commutative monoid. -/
-@[to_additive (attr := reducible)
+@[to_additive
       "If a type carries a unital additive magma structure that distributes over a unital binary
       operation, then the additive magma structure is a commutative additive monoid."]
-def commMonoid [h : MulOneClass X]
+abbrev commMonoid [h : MulOneClass X]
     (distrib : ∀ a b c d, ((a * b) <m₁> c * d) = (a <m₁> c) * b <m₁> d) : CommMonoid X :=
   { h with
       mul_comm := (mul_comm h₁ MulOneClass.isUnital distrib).comm,
@@ -89,10 +91,10 @@ def commMonoid [h : MulOneClass X]
 
 /-- If a type carries a group structure that distributes over a unital binary operation,
 then the group is commutative. -/
-@[to_additive (attr := reducible)
+@[to_additive
       "If a type carries an additive group structure that distributes over a unital binary
       operation, then the additive group is commutative."]
-def commGroup [G : Group X]
+abbrev commGroup [G : Group X]
     (distrib : ∀ a b c d, ((a * b) <m₁> c * d) = (a <m₁> c) * b <m₁> d) : CommGroup X :=
   { EckmannHilton.commMonoid h₁ distrib, G with .. }
 
