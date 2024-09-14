@@ -133,7 +133,7 @@ lemma IsMatching.coeSubgraph {G' : Subgraph G} {M : Subgraph G'.coe} (hM : M.IsM
   · obtain ⟨_, hw', hvw⟩ := (coeSubgraph_adj _ _ _).mp hy
     rw [← hw.2 ⟨y, hw'⟩ hvw]
 
-lemma IsMatching_ofFunction {u : Set V} (f : V → V) (h : ∀ v ∈ u, G.Adj v (f v))
+lemma IsMatching.ofFunction {u : Set V} (f : V → V) (h : ∀ v ∈ u, G.Adj v (f v))
     (hinj : u.InjOn f) (hd : Disjoint u (f '' u)) : (Subgraph.ofFunction f h).IsMatching := by
   rw [Set.disjoint_right] at hd
   intro v hv
