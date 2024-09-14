@@ -252,20 +252,17 @@ private local instance liouville_algebraic_galois' [FiniteDimensional F K] [IsGa
           simp [logDeriv, algEquiv_deriv']
         · rw [algEquiv_deriv']
 
-
 instance liouville_algebraic_galois [FiniteDimensional F K] :
-    IsLiouville F K := by
+    IsLiouville F K :=
   let map := (IsAlgClosed.lift (M := AlgebraicClosure F) (R := F) (S := K))
   let K' := map.fieldRange
-  have K'fd : FiniteDimensional F K' :=
+  haveI : FiniteDimensional F K' :=
     LinearMap.finiteDimensional_range map.toLinearMap
   let K'' := normalClosure F K' (AlgebraicClosure F)
   let B : IntermediateField F K'' := IntermediateField.restrict
     (F := K') (IntermediateField.le_normalClosure ..)
   have kequiv : K ≃ₐ[F] ↥B := (show K ≃ₐ[F] K' from AlgEquiv.ofInjectiveField map).trans
     (IntermediateField.restrict_algEquiv _)
-
-  have : IsGalois F K'' := IsGalois.normalClosure F K' _
-  apply IsLiouville.equiv kequiv.symm
+  IsLiouville.equiv kequiv.symm
 
 end Algebraic
