@@ -342,6 +342,10 @@ variable [CommSemiring R] [CommRing A] [CommRing M]
 variable [Algebra R A] [Algebra R M]
 variable {F : Type*} [FunLike F A M] [AlgHomClass F R A M]
 
+/--
+Lift a derivation via an algebra homomorphism `f` with a right inverse. This gives the derivation
+`f ∘ d ∘ f⁻¹`.
+-/
 def liftOfRightInverse (f : F) (f_inv : M → A) (hf : Function.RightInverse f_inv f)
     (d : Derivation R A A) (hd : ∀ x, f x = 0 → f (d x) = 0) : Derivation R M M where
   toFun x := f (d (f_inv x))
@@ -382,6 +386,9 @@ lemma liftOfRightInverse_apply (f : F) (f_inv : M → A) (hf : Function.RightInv
   apply hd
   simp [hf _]
 
+/--
+A noncomputable version of `liftOfRightInverse` for surjective homomorphisms.
+-/
 noncomputable abbrev liftOfSurjective (f : F) (hf : Function.Surjective f)
     (d : Derivation R A A) (hd : ∀ x, f x = 0 → f (d x) = 0) : Derivation R M M :=
   d.liftOfRightInverse f (Function.surjInv hf) (Function.rightInverse_surjInv hf) hd
