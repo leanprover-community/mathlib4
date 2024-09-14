@@ -130,6 +130,10 @@ theorem inductionOn₃ {p : Cardinal → Cardinal → Cardinal → Prop} (c₁ :
     (c₃ : Cardinal) (h : ∀ α β γ, p #α #β #γ) : p c₁ c₂ c₃ :=
   Quotient.inductionOn₃ c₁ c₂ c₃ h
 
+theorem induction_on_pi {ι : Type u} {p : (ι → Cardinal.{v}) → Prop}
+    (f : ι → Cardinal.{v}) (h : ∀ f : ι → Type v, p (fun i ↦ #(f i))) : p f :=
+  Quotient.induction_on_pi f h
+
 protected theorem eq : #α = #β ↔ Nonempty (α ≃ β) :=
   Quotient.eq'
 
@@ -746,6 +750,9 @@ theorem le_sum {ι} (f : ι → Cardinal) (i) : f i ≤ sum f := by
 theorem mk_sigma {ι} (f : ι → Type*) : #(Σ i, f i) = sum fun i => #(f i) :=
   mk_congr <| Equiv.sigmaCongrRight fun _ => outMkEquiv.symm
 
+theorem mk_sigma_arrow {ι} (α : Type*) (f : ι → Type*) :
+    #(Sigma f → α) = #(Π i, f i → α) := mk_congr <| Equiv.piCurry fun _ _ ↦ α
+
 @[simp]
 theorem sum_const (ι : Type u) (a : Cardinal.{v}) :
     (sum fun _ : ι => a) = lift.{v} #ι * lift.{u} a :=
@@ -917,6 +924,10 @@ def prod {ι : Type u} (f : ι → Cardinal) : Cardinal :=
 theorem mk_pi {ι : Type u} (α : ι → Type v) : #(∀ i, α i) = prod fun i => #(α i) :=
   mk_congr <| Equiv.piCongrRight fun _ => outMkEquiv.symm
 
+theorem mk_pi_eq {ι : Type u} {f g : ι → Type v} (h : ∀ i, #(f i) = #(g i)) :
+    #(Π i, f i) = #(Π i, g i) := by
+  simp_all only [mk_pi]
+
 @[simp]
 theorem prod_const (ι : Type u) (a : Cardinal.{v}) :
     (prod fun _ : ι => a) = lift.{u} a ^ lift.{v} #ι :=
@@ -936,6 +947,18 @@ theorem prod_eq_zero {ι} (f : ι → Cardinal.{u}) : prod f = 0 ↔ ∃ i, f i 
   simp only [mk_eq_zero_iff, ← mk_pi, isEmpty_pi]
 
 theorem prod_ne_zero {ι} (f : ι → Cardinal) : prod f ≠ 0 ↔ ∀ i, f i ≠ 0 := by simp [prod_eq_zero]
+
+theorem power_sum {ι} (a : Cardinal) (f : ι → Cardinal) :
+    a ^ (sum f) = prod (fun i ↦ a ^ (f i)) :=
+  inductionOn a fun α ↦ by
+    apply induction_on_pi f fun f ↦ ?_
+    rw [prod, sum, power_def]; simp_rw [power_def]
+    convert mk_sigma_arrow α f using 1
+    · exact mk_congr <| Equiv.arrowCongr
+        (Equiv.sigmaCongr (Equiv.cast rfl) (fun _ ↦ outMkEquiv)) (Equiv.refl α)
+    · apply mk_pi_eq
+      intro i
+      rw [mk_out]
 
 @[simp]
 theorem lift_prod {ι : Type u} (c : ι → Cardinal.{v}) :
