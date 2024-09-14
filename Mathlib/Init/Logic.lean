@@ -106,22 +106,29 @@ def LeftDistributive  := ∀ a b c, a * (b + c) = a * b + a * c
 @[deprecated (since := "2024-09-03")] -- unused in Mathlib
 def RightDistributive := ∀ a b c, (a + b) * c = a * c + b * c
 
-def RightCommutative (h : β → α → β) := ∀ b a₁ a₂, h (h b a₁) a₂ = h (h b a₂) a₁
-def LeftCommutative (h : α → β → β) := ∀ a₁ a₂ b, h a₁ (h a₂ b) = h a₂ (h a₁ b)
+/-- `LeftCommutative op` where `op : α → β → β` says that `op` is a left-commutative operation,
+i.e. `op a₁ (op a₂ b) = op a₂ (op a₁ b)`. -/
+class LeftCommutative (op : α → β → β) : Prop where
+  /-- A left-commutative operation satisfies `op a₁ (op a₂ b) = op a₂ (op a₁ b)`. -/
+  left_comm : (a₁ a₂ : α) → (b : β) → op a₁ (op a₂ b) = op a₂ (op a₁ b)
 
-theorem left_comm : Commutative f → Associative f → LeftCommutative f :=
-  fun hcomm hassoc a b c ↦
-    calc  a*(b*c)
-      _ = (a*b)*c := Eq.symm (hassoc a b c)
-      _ = (b*a)*c := hcomm a b ▸ rfl
-      _ = b*(a*c) := hassoc b a c
+/-- `RightCommutative op` where `op : β → α → β` says that `op` is a right-commutative operation,
+i.e. `op (op b a₁) a₂ = op (op b a₂) a₁`. -/
+class RightCommutative (op : β → α → β) : Prop where
+  /-- A right-commutative operation satisfies `op (op b a₁) a₂ = op (op b a₂) a₁`. -/
+  right_comm : (b : β) → (a₁ a₂ : α) → op (op b a₁) a₂ = op (op b a₂) a₁
 
-theorem right_comm : Commutative f → Associative f → RightCommutative f :=
-  fun hcomm hassoc a b c ↦
-    calc (a*b)*c
-      _ = a*(b*c) := hassoc a b c
-      _ = a*(c*b) := hcomm b c ▸ rfl
-      _ = (a*c)*b := Eq.symm (hassoc a c b)
+instance {f : α → β → β} [h : LeftCommutative f] : RightCommutative (fun x y ↦ f y x) :=
+  ⟨fun _ _ _ ↦ (h.left_comm _ _ _).symm⟩
+
+instance {f : β → α → β} [h : RightCommutative f] : LeftCommutative (fun x y ↦ f y x) :=
+  ⟨fun _ _ _ ↦ (h.right_comm _ _ _).symm⟩
+
+instance {f : α → α → α} [hc : Std.Commutative f] [ha : Std.Associative f] : LeftCommutative f :=
+  ⟨fun a b c ↦ by rw [← ha.assoc, hc.comm a, ha.assoc]⟩
+
+instance {f : α → α → α} [hc : Std.Commutative f] [ha : Std.Associative f] : RightCommutative f :=
+  ⟨fun a b c ↦ by rw [ha.assoc, hc.comm b, ha.assoc]⟩
 
 end Binary
 

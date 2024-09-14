@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Batteries.Classes.Order
-import Mathlib.Init.Logic
 import Mathlib.Data.Ordering.Basic
 import Mathlib.Tactic.Lemma
+import Mathlib.Tactic.Relation.Trans
 import Mathlib.Tactic.SplitIfs
+import Mathlib.Tactic.TypeStar
 
 /-!
 # Orders
@@ -461,8 +462,8 @@ lemma min_assoc (a b c : α) : min (min a b) c = min a (min b c) := by
   · intro d h₁ h₂; apply le_min; apply le_min h₁; apply le_trans h₂; apply min_le_left
     apply le_trans h₂; apply min_le_right
 
-lemma min_left_comm : ∀ a b c : α, min a (min b c) = min b (min a c) :=
-  left_comm (@min α _) (@min_comm α _) (@min_assoc α _)
+lemma min_left_comm (a b c : α) : min a (min b c) = min b (min a c) := by
+  rw [← min_assoc, min_comm a, min_assoc]
 
 @[simp] lemma min_self (a : α) : min a a = a := by simp [min_def]
 
@@ -485,8 +486,8 @@ lemma max_assoc (a b c : α) : max (max a b) c = max a (max b c) := by
   · intro d h₁ h₂; apply max_le; apply max_le h₁; apply le_trans (le_max_left _ _) h₂
     apply le_trans (le_max_right _ _) h₂
 
-lemma max_left_comm : ∀ a b c : α, max a (max b c) = max b (max a c) :=
-  left_comm (@max α _) (@max_comm α _) (@max_assoc α _)
+lemma max_left_comm (a b c : α) : max a (max b c) = max b (max a c) := by
+  rw [← max_assoc, max_comm a, max_assoc]
 
 @[simp] lemma max_self (a : α) : max a a = a := by simp [max_def]
 

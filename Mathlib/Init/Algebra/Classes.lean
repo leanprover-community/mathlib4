@@ -187,7 +187,7 @@ theorem lt_of_lt_of_incomp {α : Sort u} {lt : α → α → Prop} [IsStrictWeak
     [DecidableRel lt] : ∀ {a b c}, lt a b → ¬lt b c ∧ ¬lt c b → lt a c :=
   @fun a b c hab ⟨nbc, ncb⟩ =>
   have nca : ¬lt c a := fun hca => absurd (trans_of lt hca hab) ncb
-  Decidable.by_contradiction fun nac : ¬lt a c =>
+  Decidable.byContradiction fun nac : ¬lt a c =>
     have : ¬lt a b ∧ ¬lt b a := incomp_trans_of lt ⟨nac, nca⟩ ⟨ncb, nbc⟩
     absurd hab this.1
 
@@ -196,7 +196,7 @@ theorem lt_of_incomp_of_lt {α : Sort u} {lt : α → α → Prop} [IsStrictWeak
     [DecidableRel lt] : ∀ {a b c}, ¬lt a b ∧ ¬lt b a → lt b c → lt a c :=
   @fun a b c ⟨nab, nba⟩ hbc =>
   have nca : ¬lt c a := fun hca => absurd (trans_of lt hbc hca) nba
-  Decidable.by_contradiction fun nac : ¬lt a c =>
+  Decidable.byContradiction fun nac : ¬lt a c =>
     have : ¬lt b c ∧ ¬lt c b := incomp_trans_of lt ⟨nba, nab⟩ ⟨nac, nca⟩
     absurd hbc this.1
 

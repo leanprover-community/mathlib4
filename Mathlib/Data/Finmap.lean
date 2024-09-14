@@ -341,7 +341,8 @@ end
 /-- Fold a commutative function over the key-value pairs in the map -/
 def foldl {δ : Type w} (f : δ → ∀ a, β a → δ)
     (H : ∀ d a₁ b₁ a₂ b₂, f (f d a₁ b₁) a₂ b₂ = f (f d a₂ b₂) a₁ b₁) (d : δ) (m : Finmap β) : δ :=
-  m.entries.foldl (fun d s => f d s.1 s.2) (fun _ _ _ => H _ _ _ _ _) d
+  letI : RightCommutative fun d (s : Sigma β) ↦ f d s.1 s.2 := ⟨fun _ _ _ ↦ H _ _ _ _ _⟩
+  m.entries.foldl (fun d s => f d s.1 s.2) d
 
 /-- `any f s` returns `true` iff there exists a value `v` in `s` such that `f v = true`. -/
 def any (f : ∀ x, β x → Bool) (s : Finmap β) : Bool :=
