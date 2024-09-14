@@ -264,13 +264,6 @@ theorem count_le_one_of_centralizer_le_alternating
   suffices hτ : τ ∈ range_toPermHom' g by
     set k := toCentralizer a ⟨τ, hτ⟩ with hk
     have hk' : toPermHom g k = τ := toCentralizer_rightInverse a ⟨τ, hτ⟩
-    have hk2 (c : g.cycleFactorsFinset) : k • c = τ c := by rw [← hk']; rfl
-    /- have hksup : (k : Perm α).support ≤ g.support := by
-      intro x
-      simp only [Equiv.Perm.mem_support, not_imp_not]
-      intro hx
-      rw [← Equiv.Perm.not_mem_support] at hx
-      exact k_apply_of_not_mem_support a ⟨τ, hτ⟩ hx -/
     suffices hsign_k : Equiv.Perm.sign (k : Perm α) = -1 by
       rw [h _, ← Units.eq_iff] at hsign_k
       exact Int.noConfusion hsign_k
