@@ -173,7 +173,7 @@ theorem eq_const_of_zero {n : SimplexCategory} (f : ([0] : SimplexCategory) ⟶ 
     f = const _ n (f.toOrderHom 0) := by
   ext x; match x with | 0 => rfl
 
-theorem eq_const_of_zero' {n : SimplexCategory} (f : ([0] : SimplexCategory) ⟶ n) :
+theorem exists_eq_const_of_zero {n : SimplexCategory} (f : ([0] : SimplexCategory) ⟶ n) :
     ∃ a, f = const _ n a := ⟨_, eq_const_of_zero _⟩
 
 theorem eq_const_to_zero {n : SimplexCategory} (f : n ⟶ [0]) :
