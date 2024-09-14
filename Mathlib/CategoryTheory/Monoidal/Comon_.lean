@@ -260,7 +260,7 @@ the version provided in `tensorObj_comul` below.
 -/
 theorem tensorObj_comul' (A B : Comon_ C) :
     (A ⊗ B).comul =
-      (A.comul ⊗ B.comul) ≫ (tensor_μ Cᵒᵖ (op A.X, op B.X) (op A.X, op B.X)).unop := by
+      (A.comul ⊗ B.comul) ≫ (tensor_μ (op A.X) (op B.X) (op A.X) (op B.X)).unop := by
   rfl
 
 /--
@@ -269,7 +269,7 @@ the tensor product of the comultiplications followed by the tensor strength
 (to shuffle the factors back into order).
 -/
 theorem tensorObj_comul (A B : Comon_ C) :
-    (A ⊗ B).comul = (A.comul ⊗ B.comul) ≫ tensor_μ C (A.X, A.X) (B.X, B.X) := by
+    (A ⊗ B).comul = (A.comul ⊗ B.comul) ≫ tensor_μ A.X A.X B.X B.X := by
   rw [tensorObj_comul']
   congr
   simp only [tensor_μ, unop_tensorObj, unop_op]
