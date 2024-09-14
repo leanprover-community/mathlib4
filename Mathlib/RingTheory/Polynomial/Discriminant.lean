@@ -59,7 +59,7 @@ lemma Multiset.prod_map_eq_prod_fin {α M : Type*} [CommMonoid M] (s : Multiset 
 theorem resultant_eq_of_splits [Infinite K] (f g : K[X]) (hf0 : f ≠ 0) (hg0 : g ≠ 0)
     (hf : f.Splits (RingHom.id _)) (hg : g.Splits (RingHom.id _)) :
     resultant f g =
-      (-1)^(f.natDegree * g.natDegree) * leadingCoeff f ^ g.natDegree * leadingCoeff g ^ f.natDegree *
+      leadingCoeff f ^ g.natDegree * leadingCoeff g ^ f.natDegree *
         (f.roots.map (fun ai => (g.roots.map fun bj => (ai - bj)).prod)).prod := by
     conv_lhs =>
       rw [eq_prod_roots_of_splits_id hf, eq_prod_roots_of_splits_id hg]
@@ -71,6 +71,7 @@ theorem resultant_eq_of_splits [Infinite K] (f g : K[X]) (hf0 : f ≠ 0) (hg0 : 
     · simpa
     · simpa
 
+/-
 theorem resultant_eq_zero_iff_gcd [DecidableEq K] (f g : K[X])
     (hf0 : f ≠ 0) (hg0 : g ≠ 0) :
     resultant f g = 0 ↔ 0 < (gcd f g).natDegree := by
@@ -130,7 +131,7 @@ theorem resultant_eq_zero_iff_root' {L : Type*} [Field L] {φ : K →+* L}
     [DecidableEq K] [DecidableEq L] [CharZero K] (f g : K[X]) (hf0 : f ≠ 0) (hg0 : g ≠ 0)
     (hfg : (gcd f g).Splits φ) :
     resultant f g = 0 ↔ ∃ x : L, eval₂ φ x f = 0 ∧ eval₂ φ x g = 0 := by
-  rw [← (RingHom.injective φ).eq_iff, ← resultant_map φ f g, map_zero, resultant_eq_zero_iff_root]
+  rw [← (RingHom.injective φ).eq_iff, ← resultant_map _ f g, map_zero, resultant_eq_zero_iff_root]
   · exact exists_congr (fun _ => by rw [eval_map, eval_map])
   · simp [hf0]
   · simp [hg0]
@@ -138,10 +139,14 @@ theorem resultant_eq_zero_iff_root' {L : Type*} [Field L] {φ : K →+* L}
     · assumption
     · assumption
     · assumption
+  · exact RingHom.injective _
+-/
 
+/-
 theorem resultant_eq_zero_iff_exists_root [CharZero K] (φ : K →+* L) (splits φ f) (splits φ g) : resultant f g = 0 \iff \ex x : L, f.eval x = 0 \and g.eval x = 0
 
 theorem resultant_eq_zero_iff_exists_root [CharZero K] : resultant f g = 0 \iff \ex x : AlgebraicClosure K, f.aeval x = 0 \and g.aeval x = 0
+-/
 
 lemma hom_eval {S : Type*} [CommSemiring S] (f : R →+* S) (p : R[X]) (x : R) :
     f (eval x p) = eval₂ f (f x) p := by
@@ -149,30 +154,28 @@ lemma hom_eval {S : Type*} [CommSemiring S] (f : R →+* S) (p : R[X]) (x : R) :
 
 lemma prod_X_sub_C_resultant {ι : Type*} [DecidableEq ι] (s : Finset ι) (t : ι → K) (g : K[X]) :
     resultant (∏ i in s, (X - C (t i))) g =
-      (-1) ^ (s.card * g.natDegree) * ∏ i in s, eval (t i) g := by
+      ∏ i in s, eval (t i) g := by
   by_cases hg0 : g = 0
   · simp [hg0, resultant_zero']
   have : Splits (algebraMap K (AlgebraicClosure K)) g := (IsAlgClosed.splits_codomain g)
   apply RingHom.injective (algebraMap K (AlgebraicClosure K))
-  simp only [map_mul, map_pow, map_neg, map_one, ← resultant_map, Polynomial.map_prod,
-    Polynomial.map_sub, Polynomial.map_X, Polynomial.map_C, map_prod, hom_eval,
+  simp only [map_mul, map_pow, map_neg, map_one,
+    ← resultant_map (RingHom.injective (algebraMap K (AlgebraicClosure K))),
+    Polynomial.map_prod, Polynomial.map_sub, Polynomial.map_X, Polynomial.map_C, map_prod, hom_eval,
     ← Polynomial.eval_map]
   rw [eq_prod_roots_of_splits this,
       Finset.prod_eq_multiset_prod, ← one_mul (s.val.map _).prod, ← map_one C,
       resultant_multiset_eq_prod_roots]
-  simp only [Finset.card_val,
+  simp only [Finset.card_val, one_mul,
     one_pow, mul_one, Finset.prod_map_val, eval_mul, eval_C, Finset.prod_mul_distrib,
     Finset.prod_const, eval_multiset_prod, Multiset.map_map,
     Function.comp_apply, eval_sub, eval_X]
-  rw [← natDegree_eq_of_degree_eq_some (degree_eq_card_roots _ this), mul_assoc]
-  · assumption
   · exact one_ne_zero
   · exact (map_ne_zero_iff _ (RingHom.injective _)).mpr (leadingCoeff_ne_zero.mpr hg0)
 
 lemma resultant_prod_X_sub_C {ι : Type*} [DecidableEq ι] (f : K[X]) (s : Finset ι) (u : ι → K) :
-    resultant f (∏ i in s, (X - C (u i))) = ∏ i in s, eval (u i) f := by
-  rw [resultant_swap, prod_X_sub_C_resultant, mul_comm s.card, natDegree_prod_X_sub_C, ← mul_assoc,
-      ← mul_pow, neg_mul_neg, one_mul, one_pow, one_mul]
+    resultant f (∏ i in s, (X - C (u i))) = (-1) ^ (f.natDegree * s.card) * ∏ i in s, eval (u i) f := by
+  rw [resultant_swap, prod_X_sub_C_resultant, natDegree_prod_X_sub_C]
 
 /--
 The discriminant of a polynomial `f` is defined as the resultant of `f` and its derivative `f'`.
@@ -274,25 +277,18 @@ lemma natDegree_sum_eq {ι : Type*} [DecidableEq ι] {s : Finset ι} {p : ι →
 -- TODO: can we drop the CharZero assumption?
 lemma discriminant_prod_X_sub_C [CharZero K] {ι : Type*} [DecidableEq ι] (s : Finset ι) (t : ι → K) :
     discriminant (∏ i in s, (X - C (t i))) = ∏ i in s, ∏ j in s.erase i, (t i - t j) := by
-  obtain (rfl | hs0) := s.eq_empty_or_nonempty
-  · simp
-  rw [discriminant, derivative_prod_X_sub_C, prod_X_sub_C_resultant,
-      natDegree_sum_eq (n := s.card - 1) hs0, Even.neg_pow, one_pow, one_mul]
+  rw [discriminant, derivative_prod_X_sub_C, prod_X_sub_C_resultant]
   refine Finset.prod_congr rfl (fun i hi => ?_)
   simp [eval_finset_sum, eval_prod]
   refine Finset.sum_eq_single _
       (fun j _ hji => Finset.prod_eq_zero (Finset.mem_erase.mpr ⟨hji.symm, hi⟩) (sub_self _))
       (fun h => (h hi).elim)
-  · exact Nat.even_mul_pred_self s.card
-  · intro i hi
-    rw [natDegree_prod_X_sub_C, Finset.card_erase_of_mem hi]
-  · simpa only [leadingCoeff_prod_X_sub_C, Finset.sum_const, nsmul_one, ne_eq, Nat.cast_eq_zero,
-        Finset.card_eq_zero] using hs0.ne_empty
 
 @[simp]
 theorem discriminant_map {L : Type*} [Field L] (φ : K →+* L) (f : K[X]) :
     discriminant (f.map φ) = φ (discriminant f) := by
   rw [discriminant, derivative_map, resultant_map, discriminant]
+  · apply RingHom.injective
 
 theorem Splits.eq_fin_prod_roots {L : Type*} [Field L] {φ : K →+* L} {f : K[X]}
     (h : Splits φ f) :
@@ -320,9 +316,13 @@ lemma Fintype.card_subtype_congr {α : Type*} {p q : α → Prop} (e : ∀ x, p 
   Fintype.card_congr ((Equiv.refl _).subtypeEquiv e)
 
 -- TODO: promote me to instance?
-def Subtype.fintypeOr {α : Type*} {p q : α → Prop} [Fintype (Subtype p)] [Fintype (Subtype q)] :
+noncomputable def Subtype.fintypeOr {α : Type*} {p q : α → Prop}
+    [Fintype (Subtype p)] [Fintype (Subtype q)] :
     Fintype { x // p x ∨ q x } := by
-  sorry
+  classical
+  exact Fintype.ofSurjective
+    (Sum.elim (fun (x : Subtype p) => ⟨x.1, Or.inl x.2⟩) (fun (x : Subtype q) => ⟨x.1, Or.inr x.2⟩))
+    (fun x => x.2.casesOn (fun hx => ⟨Sum.inl ⟨x, hx⟩, rfl⟩) (fun hx => ⟨Sum.inr ⟨x, hx⟩, rfl⟩))
 
 theorem Multiset.card_subtype_mem {α : Type*} [DecidableEq α] (s : Multiset α)
     [DecidablePred (fun x => x ∈ s)] :
@@ -387,10 +387,6 @@ theorem Algebra.discr_of_isAdjoinRootMonic {K : Type*} [Field K] [Algebra ℚ K]
   apply RingHom.injective (algebraMap ℚ (AlgebraicClosure ℚ))
   rw [map_mul]
   let _ : Fintype (K →ₐ[ℚ] AlgebraicClosure ℚ) := PowerBasis.AlgHom.fintype f.powerBasis
-  have ft_aroots : ∀ T : ℚ[X], Fintype ({y // y ∈ aroots T (AlgebraicClosure ℚ)}) := fun _ =>
-    Multiset.Subtype.fintype _
-  have nd_aroots : (aroots T (AlgebraicClosure ℚ)).Nodup :=
-    (nodup_aroots_iff_of_splits hT0 (IsAlgClosed.splits_codomain (k := AlgebraicClosure ℚ) T)).mpr hT.separable
   have nd_aroots' : (aroots (minpoly ℚ f.root) (AlgebraicClosure ℚ)).Nodup :=
     (nodup_aroots_iff_of_splits (minpoly.ne_zero f.isIntegral_root)
       (IsAlgClosed.splits_codomain (k := AlgebraicClosure ℚ) _)).mpr
@@ -429,13 +425,15 @@ theorem Algebra.discr_of_isAdjoinRootMonic {K : Type*} [Field K] [Algebra ℚ K]
     rw [mul_left_comm]
     congr 1
     · rw [Finset.prod_univ_prod_Iio]
-      refine Fintype.prod_congr _ _ (fun i => Finset.prod_congr rfl (fun j hj => ?_))
+      refine Fintype.prod_congr _ _ (fun i => Finset.prod_congr rfl (fun j _ => ?_))
       erw [e_apply, e_apply]
-    · refine Eq.trans (Fintype.prod_congr _ _ (fun i => Finset.prod_congr rfl (fun j hj => by
+    · refine Eq.trans (Fintype.prod_congr _ _ (fun i => Finset.prod_congr rfl (fun j _ => by
         erw [e_apply, e_apply, ← neg_sub, ← neg_one_mul]))) ?_
       simp only [Finset.prod_mul_distrib, Finset.prod_const, Fin.card_Ioi, Finset.prod_pow_eq_pow_sum, Fin.sum_card_sub_one_sub_self,
         map_pow, map_neg, map_one]
 
+/-
 theorem Algebra.discr_of_isAdjoinRootMonic {T : ℤ[X]} (f : IsAdjoinRootMonic R T) :
     Algebra.discr ℤ (f.powerBasis).basis = Polynomial.discriminant T := by
   sorry
+-/

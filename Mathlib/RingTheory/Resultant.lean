@@ -3591,8 +3591,7 @@ lemma MvPolynomial.coeff_zero_lead_resultantPolynomialCoeff :
   simpa [Fin.ext_iff] using i.2.ne'
 
 lemma MvPolynomial.coeff_inl_resultantPolynomialRoots [Infinite R] [IsDomain R] :
-    MvPolynomial.coeff (Finsupp.equivFunOnFinite.symm (Sum.elim (α := ι) (β := κ) (fun x ↦ Fintype.card κ) 0)) (resultantPolynomialRoots (R := R)) =
-      (-1) ^ (Fintype.card ι * Fintype.card κ) := by
+    MvPolynomial.coeff (Finsupp.equivFunOnFinite.symm (Sum.elim (α := ι) (β := κ) (fun x ↦ Fintype.card κ) 0)) (resultantPolynomialRoots (R := R)) = 1 := by
   rcases isEmpty_or_nonempty ι with (hι | hι)
   · sorry
   rcases isEmpty_or_nonempty κ with (hκ | hκ)
@@ -3609,15 +3608,11 @@ lemma MvPolynomial.coeff_inl_resultantPolynomialRoots [Infinite R] [IsDomain R] 
     rw [coeff_zero_lead_resultantPolynomialCoeff, Finsupp.support_add_eq hdisj,
         Finset.prod_union hdisj, Finsupp.support_single_ne_zero _ Fintype.card_ne_zero,
         Finsupp.support_single_ne_zero _ Fintype.card_ne_zero]
-    convert mul_one _
-    simp only [Finsupp.coe_add, Pi.add_apply, Finset.prod_singleton, Sum.elim_inl,
-      Fin.snoc_apply_zero, Fintype.card_ne_zero, ↓reduceDIte, coeffOfRoots_zero, rename_monomial,
-      Finsupp.single_eq_same, ne_eq, not_false_eq_true, Finsupp.single_eq_of_ne, add_zero,
-      monomial_pow, one_pow, Sum.elim_inr, Fin.snoc_last, zero_add, mul_one, coeff_monomial,
-      ite_eq_left_iff, zero_ne_one, imp_false, Decidable.not_not]
-    ext (i | j)
-    · simp [Finsupp.mapDomain_apply Sum.inl_injective]
-    · simp [Finsupp.mapDomain_notin_range]
+    simp? [rename_monomial, monomial_pow, coeff_monomial]
+    rw [if_pos, ← pow_mul, ← mul_pow, neg_mul_neg, one_mul, one_pow]
+    · ext (i | j)
+      · simp [Finsupp.mapDomain_apply Sum.inl_injective]
+      · simp [Finsupp.mapDomain_notin_range]
   · intro b hb b_ne
     have : ∀ i ∈ b.support, Sum.elim (Fin.snoc (fun i ↦ (rename Sum.inl) (coeffOfRoots i)) 1)
               (Fin.snoc (fun i ↦ (rename Sum.inr) (coeffOfRoots i)) 1) i ∣
@@ -3680,12 +3675,11 @@ lemma resultant_eq_prod_roots_aux [DecidableEq ι] [DecidableEq κ] [IsDomain R]
     ∀ (t : ι → R) (u : κ → R),
         Polynomial.resultant (∏ i,
           (Polynomial.X - Polynomial.C (t i))) (∏ i, (Polynomial.X - Polynomial.C (u i))) =
-      (-1)^(Fintype.card ι * Fintype.card κ) * ∏ i, ∏ j, (t i - u j) := by
+      ∏ i, ∏ j, (t i - u j) := by
   intro t u
 
   suffices MvPolynomial.eval (Sum.elim t u) resultantPolynomialRoots =
-      MvPolynomial.eval (Sum.elim t u) (MvPolynomial.C ((-1) ^ (Fintype.card ι * Fintype.card κ)) *
-        ∏ i : ι, ∏ j : κ, (X (Sum.inl i) - X (Sum.inr j))) by
+      MvPolynomial.eval (Sum.elim t u) (∏ i : ι, ∏ j : κ, (X (Sum.inl i) - X (Sum.inr j))) by
     simpa [eval_resultantPolynomialRoots] using this
 
   obtain ⟨c, hc⟩ := MvPolynomial.IsWeightedHomogeneous.exists_C_mul_eq_of_dvd
@@ -3693,8 +3687,8 @@ lemma resultant_eq_prod_roots_aux [DecidableEq ι] [DecidableEq κ] [IsDomain R]
       isWeightedHomogeneous_prod_root_differences
       isWeightedHomogeneous_resultantPolynomialRoots
     (prod_root_differences_dvd_resultantPolynomialRoots (ι := ι) (κ := κ))
-  suffices c = ((-1) ^ (Fintype.card ι * Fintype.card κ)) by
-    rw [← hc, this]
+  suffices c = 1 by
+    rw [← hc, this, _root_.map_one, one_mul]
   -- We show the constant is as desired by inspecting the coefficients.
   obtain (x | ⟨⟨_⟩⟩) := isEmpty_or_nonempty ι
   · simp only [Finset.univ_eq_empty, Finset.prod_empty, mul_one,
@@ -3710,7 +3704,7 @@ lemma resultant_eq_prod_roots_aux [DecidableEq ι] [DecidableEq κ] [IsDomain R]
 lemma resultant_eq_prod_roots [Infinite K] -- TODO: should work over `ℤ`
     (t : Fin m → K) (u : Fin n → K) (x y : K) (hx : x ≠ 0) (hy : y ≠ 0) :
     Polynomial.resultant (C x * ∏ i, (X - C (t i))) (C y * ∏ i, (X - C (u i))) =
-      (-1)^(m * n) * x ^ n * y ^ m * ∏ i, ∏ j, (t i - u j) := by
+      x ^ n * y ^ m * ∏ i, ∏ j, (t i - u j) := by
   by_cases hm : m = 0
   · subst hm
     simp [natDegree_C_mul hy]
@@ -3725,11 +3719,6 @@ lemma resultant_eq_prod_roots [Infinite K] -- TODO: should work over `ℤ`
   · assumption
   · simpa
   · simpa [natDegree_C_mul hy]
-  /-
-  · rwa [natDegree_prod_X_sub_C, Finset.card_univ, Fintype.card_fin]
-  · rwa [natDegree_C_mul_prod_X_sub_C, Finset.card_univ, Fintype.card_fin]
-    · assumption
-  -/
 
 lemma Multiset.toList_cons (a : ι) (s : Multiset ι) :
     (a ::ₘ s).toList.Perm (a :: s.toList) := by
@@ -3769,7 +3758,7 @@ lemma resultant_list_eq_prod_roots {ι κ : Type*} (a : List ι) (b : List κ) [
     Polynomial.resultant
         (C x * (a.map (fun i => X - C (t i))).prod)
         (C y * (b.map (fun i => (X - C (u i)))).prod) =
-      (-1)^(a.length * b.length) * x ^ b.length * y ^ a.length *
+      x ^ b.length * y ^ a.length *
         (a.map (fun i => (b.map (fun j => t i - u j)).prod)).prod := by
   convert resultant_eq_prod_roots (t ∘ a.get) (u ∘ b.get) x y hx hy
   · exact (List.finset_prod_get a _).symm
@@ -3783,13 +3772,11 @@ lemma resultant_multiset_eq_prod_roots {ι κ : Type*} (a : Multiset ι) (b : Mu
     Polynomial.resultant
         (C x * (a.map (fun i => X - C (t i))).prod)
         (C y * (b.map (fun i => (X - C (u i)))).prod) =
-      (-1)^(Multiset.card a * Multiset.card b) * x ^ Multiset.card b * y ^ Multiset.card a *
+      x ^ Multiset.card b * y ^ Multiset.card a *
         (a.map (fun i => (b.map (fun j => t i - u j)).prod)).prod := by
   convert resultant_list_eq_prod_roots a.toList b.toList t u x y hx hy
   · exact (Multiset.prod_toList _).symm.trans (List.Perm.prod_eq (Multiset.toList_map _ _))
   · exact (Multiset.prod_toList _).symm.trans (List.Perm.prod_eq (Multiset.toList_map _ _))
-  · simp
-  · simp
   · simp
   · simp
   · rw [(Multiset.prod_toList _).symm.trans (List.Perm.prod_eq (Multiset.toList_map _ _))]
