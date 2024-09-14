@@ -62,7 +62,7 @@ theorem exists_isLUB {S : Set ℝ} (hne : S.Nonempty) (hbdd : BddAbove S) : ∃ 
     Int.exists_greatest_of_bdd (this d) ⟨⌊L * d⌋, L, hL, Int.floor_le _⟩
   have hf₁ : ∀ n > 0, ∃ y ∈ S, ((f n / n : ℚ) : ℝ) ≤ y := fun n n0 =>
     let ⟨y, yS, hy⟩ := (hf n).1
-    ⟨y, yS, by simpa using (div_le_iff (Nat.cast_pos.2 n0 : (_ : ℝ) < _)).2 hy⟩
+    ⟨y, yS, by simpa using (div_le_iff₀ (Nat.cast_pos.2 n0 : (_ : ℝ) < _)).2 hy⟩
   have hf₂ : ∀ n > 0, ∀ y ∈ S, (y - ((n : ℕ) : ℝ)⁻¹) < (f n / n : ℚ) := by
     intro n n0 y yS
     have := (Int.sub_one_lt_floor _).trans_le (Int.cast_le.2 <| (hf n).2 _ ⟨y, yS, Int.floor_le _⟩)
@@ -343,7 +343,7 @@ lemma exists_natCast_add_one_lt_pow_of_one_lt {a : ℝ} (ha : 1 < a) :
     refine le_of_forall_lt_rat_imp_le ?_
     intro q hq
     refine (ha q.den (by positivity)).trans ?_
-    rw [← le_sub_iff_add_le, div_le_iff (by positivity), sub_mul, one_mul]
+    rw [← le_sub_iff_add_le, div_le_iff₀ (by positivity), sub_mul, one_mul]
     norm_cast at hq ⊢
     rw [← q.num_div_den, one_lt_div (by positivity)] at hq
     rw [q.mul_den_eq_num]

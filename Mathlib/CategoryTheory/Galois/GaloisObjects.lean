@@ -35,7 +35,7 @@ open Limits Functor
 
 noncomputable instance {G : Type v} [Group G] [Finite G] :
     PreservesColimitsOfShape (SingleObj G) FintypeCat.incl.{w} := by
-  choose G' hg hf e using Finite.exists_type_zero_nonempty_mulEquiv G
+  choose G' hg hf e using Finite.exists_type_univ_nonempty_mulEquiv G
   exact Limits.preservesColimitsOfShapeOfEquiv (Classical.choice e).toSingleObjEquiv.symm _
 
 /-- A connected object `X` of `C` is Galois if the quotient `X / Aut X` is terminal. -/
@@ -83,7 +83,7 @@ theorem isGalois_iff_pretransitive (X : C) [IsConnected X] :
   rw [isGalois_iff_aux, Equiv.nonempty_congr <| quotientByAutTerminalEquivUniqueQuotient F X]
   exact (MulAction.pretransitive_iff_unique_quotient_of_nonempty (Aut X) (F.obj X)).symm
 
-/-- If `X` is Galois, the quotient `X / Aut X` is terminal.  -/
+/-- If `X` is Galois, the quotient `X / Aut X` is terminal. -/
 noncomputable def isTerminalQuotientOfIsGalois (X : C) [IsGalois X] :
     IsTerminal <| colimit <| SingleObj.functor <| Aut.toEnd X :=
   Nonempty.some IsGalois.quotientByAutTerminal

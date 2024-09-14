@@ -96,7 +96,7 @@ def lift : (L →ₗ⁅R⁆ A) ≃ (UniversalEnvelopingAlgebra R L →ₐ[R] A) 
   toFun f :=
     RingQuot.liftAlgHom R
       ⟨TensorAlgebra.lift R (f : L →ₗ[R] A), by
-        intro a b h; induction' h with x y
+        intro a b h; induction h
         simp only [LieRing.of_associative_ring_bracket, map_add, TensorAlgebra.lift_ι_apply,
           LieHom.coe_toLinearMap, LieHom.map_lie, map_mul, sub_add_cancel]⟩
   invFun F := (F : UniversalEnvelopingAlgebra R L →ₗ⁅R⁆ A).comp (ι R)

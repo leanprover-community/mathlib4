@@ -466,7 +466,7 @@ theorem le_glb_Ioi (a : α) (hb : IsGLB (Ioi a) b) : a ≤ b :=
 
 theorem lub_Iio_eq_self_or_Iio_eq_Iic [PartialOrder γ] {j : γ} (i : γ) (hj : IsLUB (Iio i) j) :
     j = i ∨ Iio i = Iic j := by
-  cases' eq_or_lt_of_le (lub_Iio_le i hj) with hj_eq_i hj_lt_i
+  rcases eq_or_lt_of_le (lub_Iio_le i hj) with hj_eq_i | hj_lt_i
   · exact Or.inl hj_eq_i
   · right
     exact Set.ext fun k => ⟨fun hk_lt => hj.1 hk_lt, fun hk_le_j => lt_of_le_of_lt hk_le_j hj_lt_i⟩
@@ -609,7 +609,7 @@ variable [SemilatticeSup γ] [DenselyOrdered γ]
 
 theorem isGLB_Ioo {a b : γ} (h : a < b) : IsGLB (Ioo a b) a :=
   ⟨fun x hx => hx.1.le, fun x hx => by
-    cases' eq_or_lt_of_le (le_sup_right : a ≤ x ⊔ a) with h₁ h₂
+    rcases eq_or_lt_of_le (le_sup_right : a ≤ x ⊔ a) with h₁ | h₂
     · exact h₁.symm ▸ le_sup_left
     obtain ⟨y, lty, ylt⟩ := exists_between h₂
     apply (not_lt_of_le (sup_le (hx ⟨lty, ylt.trans_le (sup_le _ h.le)⟩) lty.le) ylt).elim
@@ -759,7 +759,7 @@ theorem nonempty_of_not_bddBelow [Nonempty α] (h : ¬BddBelow s) : s.Nonempty :
 @[simp]
 theorem bddAbove_insert [IsDirected α (· ≤ ·)] {s : Set α} {a : α} :
     BddAbove (insert a s) ↔ BddAbove s := by
-  simp only [insert_eq, bddAbove_union, bddAbove_singleton, true_and_iff]
+  simp only [insert_eq, bddAbove_union, bddAbove_singleton, true_and]
 
 protected theorem BddAbove.insert [IsDirected α (· ≤ ·)] {s : Set α} (a : α) :
     BddAbove s → BddAbove (insert a s) :=
@@ -769,7 +769,7 @@ protected theorem BddAbove.insert [IsDirected α (· ≤ ·)] {s : Set α} (a : 
 @[simp]
 theorem bddBelow_insert [IsDirected α (· ≥ ·)] {s : Set α} {a : α} :
     BddBelow (insert a s) ↔ BddBelow s := by
-  simp only [insert_eq, bddBelow_union, bddBelow_singleton, true_and_iff]
+  simp only [insert_eq, bddBelow_union, bddBelow_singleton, true_and]
 
 protected theorem BddBelow.insert [IsDirected α (· ≥ ·)] {s : Set α} (a : α) :
     BddBelow s → BddBelow (insert a s) :=
@@ -1430,31 +1430,3 @@ lemma BddBelow.range_comp {γ : Type*} [Preorder β] [Preorder γ] {f : α → �
     (hf : BddBelow (range f)) (hg : Monotone g) : BddBelow (range (fun x => g (f x))) := by
   change BddBelow (range (g ∘ f))
   simpa only [Set.range_comp] using hg.map_bddBelow hf
-
-section ScottContinuous
-variable [Preorder α] [Preorder β] {f : α → β} {a : α}
-
-/-- A function between preorders is said to be Scott continuous if it preserves `IsLUB` on directed
-sets. It can be shown that a function is Scott continuous if and only if it is continuous wrt the
-Scott topology.
-
-The dual notion
-
-```lean
-∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≥ ·) d → ∀ ⦃a⦄, IsGLB d a → IsGLB (f '' d) (f a)
-```
-
-does not appear to play a significant role in the literature, so is omitted here.
--/
-def ScottContinuous (f : α → β) : Prop :=
-  ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → IsLUB (f '' d) (f a)
-
-protected theorem ScottContinuous.monotone (h : ScottContinuous f) : Monotone f := by
-  refine fun a b hab =>
-    (h (insert_nonempty _ _) (directedOn_pair le_refl hab) ?_).1
-      (mem_image_of_mem _ <| mem_insert _ _)
-  rw [IsLUB, upperBounds_insert, upperBounds_singleton,
-    inter_eq_self_of_subset_right (Ici_subset_Ici.2 hab)]
-  exact isLeast_Ici
-
-end ScottContinuous

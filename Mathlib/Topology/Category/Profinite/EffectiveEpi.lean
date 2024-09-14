@@ -54,7 +54,7 @@ instance : profiniteToCompHaus.ReflectsEffectiveEpis where
     ((Profinite.effectiveEpi_tfae f).out 0 2).mpr (((CompHaus.effectiveEpi_tfae _).out 0 2).mp h)
 
 /--
-An effective presentation of an `X : Profinite` with respect to the inclusion functor from `Stonean`
+An effective presentation of an `X : Profinite` with respect to the inclusion functor from `Stonean`
 -/
 noncomputable def profiniteToCompHausEffectivePresentation (X : CompHaus) :
     profiniteToCompHaus.EffectivePresentation X where
