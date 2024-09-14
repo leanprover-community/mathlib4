@@ -5,6 +5,8 @@ Authors: Daniel Weber
 -/
 import Mathlib.RingTheory.Derivation.DifferentialRing
 import Mathlib.Algebra.Polynomial.Module.Basic
+import Mathlib.Algebra.Polynomial.Derivation
+import Mathlib.FieldTheory.Separable
 
 /-!
 # Coefficient-wise derivation on polynomials
@@ -134,5 +136,52 @@ theorem deriv_aeval_eq (x : R) (p : A[X]) :
   convert Derivation.apply_aeval_eq' Differential.deriv _ (Algebra.linearMap A R) ..
   · simp [mapCoeffs]
   · simp [deriv_algebraMap]
+
+def implicitDeriv (v : A[X]) :
+    Derivation ℤ A[X] A[X] :=
+  mapCoeffs + v • derivative'.restrictScalars ℤ
+
+@[simp]
+lemma implicitDeriv_C (v : A[X]) (b : A) :
+    implicitDeriv v (C b) = C b′ := by
+  simp [implicitDeriv]
+
+lemma deriv_aeval_eq_implicitDeriv (x : R) (v : A[X]) (h : x′ = aeval x v) (p : A[X]) :
+    (aeval x p)′ = aeval x (implicitDeriv v p) := by
+  simp [deriv_aeval_eq, implicitDeriv, h, mul_comm]
+
+variable {R' : Type*} [CommRing R'] [Differential R'] [Algebra A R'] [DifferentialAlgebra A R']
+variable [IsDomain R'] [Nontrivial R]
+
+lemma algHom_deriv (f : R →ₐ[A] R') (hf : Function.Injective f) (x : R) (h : IsSeparable A x) :
+    f (x′) = (f x)′ := by
+  let p := minpoly A x
+  apply mul_left_cancel₀ (a := aeval (f x) (derivative p))
+  · rw [Polynomial.aeval_algHom]
+    simp only [AlgHom.coe_comp, Function.comp_apply, ne_eq, map_eq_zero_iff f hf]
+    apply Separable.aeval_derivative_ne_zero h (minpoly.aeval A x)
+  conv => lhs; rw [Polynomial.aeval_algHom]
+  simp [← map_mul]
+  apply add_left_cancel (a := aeval (f x) (mapCoeffs p))
+  rw [← deriv_aeval_eq]
+  simp only [aeval_algHom, AlgHom.coe_comp, Function.comp_apply, ← map_add, ← deriv_aeval_eq,
+    minpoly.aeval, map_zero, p]
+
+omit [Nontrivial R] in
+lemma algEquiv_deriv (f : R ≃ₐ[A] R') (x : R) (h : IsSeparable A x) :
+    f (x′) = (f x)′ :=
+  haveI := f.nontrivial
+  algHom_deriv f.toAlgHom f.injective x h
+
+variable [Algebra.IsSeparable A R]
+
+lemma algHom_deriv' (f : R →ₐ[A] R') (hf : Function.Injective f) (x : R) :
+    f (x′) = (f x)′ := algHom_deriv f hf x (Algebra.IsSeparable.isSeparable' x)
+
+omit [Nontrivial R] in
+lemma algEquiv_deriv' (f : R ≃ₐ[A] R') (x : R) :
+    f (x′) = (f x)′ :=
+  haveI := f.nontrivial
+  algHom_deriv' f.toAlgHom f.injective x
 
 end Differential
