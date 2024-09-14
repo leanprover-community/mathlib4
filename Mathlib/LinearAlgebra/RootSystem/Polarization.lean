@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
 import Mathlib.LinearAlgebra.RootSystem.RootPositive
+import Mathlib.Algebra.Ring.SumsOfSquares
 
 /-!
 # The polarization of a finite root pairing
@@ -34,15 +35,16 @@ Weyl group.
 
 ## Main results:
 
- * `Polarization` is strictly positive on non-zero linear combinations of roots.  That is, it is
-  positive-definite when restricted to the linear span of roots.  This gives us a convenient way to
-  eliminate certain Dynkin diagrams from the classification, since it suffices to produce a nonzero
-  linear combination of simple roots with non-positive norm.
- * Faithfulness of Weyl group action, and finiteness of Weyl group, for finite root systems.
+ * `polInner_rootPositive`: `PolInner` is strictly positive on roots.
+ * `polInner_posDef` : `PolInner` is strictly positive on non-zero linear combinations of roots.
+  That is, it is positive-definite when restricted to the linear span of roots.  This gives
+  us a convenient way to eliminate certain Dynkin diagrams from the classification, since it
+  suffices to produce a nonzero linear combination of simple roots with non-positive norm.
 
 ## Todo
 
-* Weyl group - how to do induction by subgroup closure?
+ * Weyl-invariance
+ * Faithfulness of Weyl group action, and finiteness of Weyl group, for finite root systems.
  * Relation to Coxeter weight.  In particular, positivity constraints for finite root pairings mean
   we restrict to weights between 0 and 4.
 
@@ -57,11 +59,20 @@ noncomputable section
 
 variable {ι R M N : Type*}
 
+theorem isSumSq_of_sum_of_squares [Mul R] [AddCommMonoid R] (s : Finset ι) (f : ι → R) :
+    IsSumSq (∑ i ∈ s, f i * f i) := by
+  induction s using Finset.cons_induction with
+  |empty =>
+    simpa only [Finset.sum_empty] using IsSumSq.zero
+  | cons i s his h =>
+    simp only [Finset.sum_cons]
+    exact IsSumSq.sq_add (f i) (∑ i ∈ s, f i * f i) h
+
 namespace RootPairing
 
-section
+section CommRing
 
-variable [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable [Fintype ι] [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 (P : RootPairing ι R M N)
 
 /-!
@@ -75,10 +86,8 @@ roots that has nonpositive norm.
 
 /-- An invariant linear map from weight space to coweight space. -/
 @[simps]
-def Polarization [Finite ι] : M →ₗ[R] N where
-  toFun m :=
-    haveI := Fintype.ofFinite ι
-    ∑ (i : ι), P.toPerfectPairing m (P.coroot i) • (P.coroot i)
+def Polarization : M →ₗ[R] N where
+  toFun m := ∑ (i : ι), P.toPerfectPairing m (P.coroot i) • (P.coroot i)
   map_add' x y := by
     simp only [← toLin_toPerfectPairing, map_add, PerfectPairing.toLin_apply, LinearMap.add_apply,
       add_smul, Finset.sum_add_distrib]
@@ -86,44 +95,38 @@ def Polarization [Finite ι] : M →ₗ[R] N where
     simp only [← toLin_toPerfectPairing, map_smul, LinearMap.smul_apply, RingHom.id_apply,
       Finset.smul_sum, smul_assoc]
 
-theorem polarization_self [Finite ι] (x : M) :
-    haveI := Fintype.ofFinite ι
+theorem polarization_self (x : M) :
     P.toPerfectPairing x (P.Polarization x) =
       ∑ (i : ι), P.toPerfectPairing x (P.coroot i) * P.toPerfectPairing x (P.coroot i) := by
   simp
 
-theorem polarization_root_self [Finite ι] (j : ι) :
-    haveI := Fintype.ofFinite ι
+theorem polarization_self_sum_of_squares (x : M) :
+    IsSumSq (P.toPerfectPairing x (P.Polarization x)) := by
+  rw [polarization_self]
+  exact isSumSq_of_sum_of_squares Finset.univ _
+
+theorem polarization_root_self (j : ι) :
     P.toPerfectPairing (P.root j) (P.Polarization (P.root j)) =
       ∑ (i : ι), (P.pairing j i) * (P.pairing j i) := by
   simp
 
--- reflections taken to coreflections.  polarization_self = sum of squares
+-- reflections taken to coreflections.
 
 /-- An invariant inner product on the weight space. -/
 @[simps]
-def PolInner [Finite ι] : M →ₗ[R] M →ₗ[R] R where
+def PolInner : M →ₗ[R] M →ₗ[R] R where
   toFun x := P.toLin x ∘ₗ P.Polarization
   map_add' x y := by simp only [map_add, LinearMap.add_comp]
   map_smul' r x := by simp only [LinearMapClass.map_smul, RingHom.id_apply, LinearMap.smul_comp]
 
-theorem polInner_symmetric [Finite ι] (x y : M) :
+theorem polInner_symmetric (x y : M) :
     P.PolInner x y = P.PolInner y x := by
   simp [mul_comm]
 
-lemma reflection_coroot_perm {i j : ι} (y : M) :
-    (P.toPerfectPairing ((P.reflection i) y)) (P.coroot j) =
-      P.toPerfectPairing y (P.coroot (P.reflection_perm i j)) := by
-  simp only [reflection_apply, map_sub, ← PerfectPairing.toLin_apply, map_smul, LinearMap.sub_apply,
-    LinearMap.smul_apply, root_coroot_eq_pairing, smul_eq_mul, coroot_reflection_perm,
-    coreflection_apply_coroot]
-  simp [mul_comm]
-
-theorem polInner_reflection_invariant [Finite ι] (i : ι) (x y : M) :
+theorem polInner_reflection_reflection_apply (i : ι) (x y : M) :
     P.PolInner (P.reflection i x) (P.reflection i y) = P.PolInner x y := by
   simp only [PolInner_apply, LinearMap.coe_comp, comp_apply, Polarization_apply, map_sum,
     LinearMapClass.map_smul, smul_eq_mul, reflection_coroot_perm, toLin_toPerfectPairing]
-  letI := Fintype.ofFinite ι
   exact Fintype.sum_equiv (P.reflection_perm i)
     (fun x_1 ↦ (P.toPerfectPairing y) (P.coroot ((P.reflection_perm i) x_1)) *
       (P.toPerfectPairing x) (P.coroot ((P.reflection_perm i) x_1)))
@@ -142,34 +145,13 @@ theorem polInner_reflection_invariant [Finite ι] (i : ι) (x y : M) :
   | inv => sorry
 -/
 
-lemma root_covector_coroot (x : N) (i : ι) :
-    (P.toPerfectPairing (P.root i) x) • P.coroot i = (x - P.coreflection i x) := by
-  rw [coreflection_apply, sub_sub_cancel]
-
-lemma pairing_reflection_perm (P : RootPairing ι R M N) (i j k : ι) :
-    P.pairing j (P.reflection_perm i k) = P.pairing (P.reflection_perm i j) k := by
-  simp only [pairing, coroot_reflection_perm, root_reflection_perm]
-  simp only [coreflection_apply_coroot, map_sub, root_coroot_eq_pairing, map_smul, smul_eq_mul,
-    reflection_apply_root]
-  simp only [← toLin_toPerfectPairing, map_smul, LinearMap.smul_apply, map_sub, map_smul,
-    LinearMap.sub_apply, smul_eq_mul]
-  simp only [PerfectPairing.toLin_apply, root_coroot_eq_pairing, sub_right_inj, mul_comm]
-
-@[simp]
-lemma pairing_reflection_perm_self (P : RootPairing ι R M N) (i j : ι) :
-    P.pairing (P.reflection_perm i i) j = - P.pairing i j := by
-  rw [pairing, ← reflection_perm_root, root_coroot_eq_pairing, pairing_same, two_smul,
-    sub_add_cancel_left, ← toLin_toPerfectPairing, LinearMap.map_neg₂, toLin_toPerfectPairing,
-    root_coroot_eq_pairing]
-
 /-- SGA3 XXI Lemma 1.2.1 (10) -/
-lemma PolInner_self_coroot (P : RootPairing ι R M N) [Finite ι] (i : ι) :
+lemma PolInner_self_coroot (P : RootPairing ι R M N) (i : ι) :
     (P.PolInner (P.root i) (P.root i)) • P.coroot i = 2 • P.Polarization (P.root i) := by
-  letI := Fintype.ofFinite ι
   have hP : P.Polarization (P.root i) =
       ∑ j : ι, P.pairing i (P.reflection_perm i j) • P.coroot (P.reflection_perm i j) := by
     simp_rw [Polarization_apply, root_coroot_eq_pairing]
-    convert (Fintype.sum_equiv (P.reflection_perm i)
+    exact (Fintype.sum_equiv (P.reflection_perm i)
           (fun j ↦ P.pairing i ((P.reflection_perm i) j) • P.coroot ((P.reflection_perm i) j))
           (fun j ↦ P.pairing i j • P.coroot j) (congrFun rfl)).symm
   rw [two_nsmul]
@@ -183,12 +165,49 @@ lemma PolInner_self_coroot (P : RootPairing ι R M N) [Finite ι] (i : ι) :
   rw [Finset.sum_smul, add_neg_eq_zero.mpr rfl]
   exact sub_eq_zero_of_eq rfl
 
-/-!
-positive definite on R-span of roots, Weyl-invariant.  If `P` is crystallographic,
-then this takes integer values.
+end CommRing
 
-LinearOrderedCommRing version of Cauchy-Schwarz:
+section LinearOrderedCommRing
+
+variable [Fintype ι] [LinearOrderedCommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N]
+[Module R N] (P : RootPairing ι R M N)
+
+theorem polInner_self_non_neg (x : M) : 0 ≤ P.PolInner x x := by
+  simp only [PolInner, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.coe_comp, comp_apply,
+    polarization_self, toLin_toPerfectPairing]
+  exact Finset.sum_nonneg fun i _ =>
+    (sq (P.toPerfectPairing x (P.coroot i))) ▸ sq_nonneg (P.toPerfectPairing x (P.coroot i))
+
+--lemma coxeter_weight_leq_4 :
+
+lemma polInner_root_self_pos (j : ι) :
+    0 < P.PolInner (P.root j) (P.root j) := by
+  simp only [PolInner, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.coe_comp, comp_apply,
+    polarization_root_self, toLin_toPerfectPairing]
+  refine Finset.sum_pos' (fun i _ => (sq (P.pairing j i)) ▸ sq_nonneg (P.pairing j i)) ?_
+  use j
+  refine ⟨Finset.mem_univ j, ?_⟩
+  simp only [pairing_same, Nat.ofNat_pos, mul_pos_iff_of_pos_left]
+
+lemma polInner_rootPositive : IsRootPositive P P.PolInner where
+  zero_lt_apply_root i := P.polInner_root_self_pos i
+  symm := P.polInner_symmetric
+  apply_reflection_eq := P.polInner_reflection_reflection_apply
+
+/-!
+lemma positive_definite_polInner {x : M} (hx : x ∈ span R (range P.root)) (h : P.PolInner x x = 0) :
+    x = 0 := by
+  rw [mem_span_range_iff_exists_fun] at hx
+  obtain ⟨c, hc⟩ := hx
+  rw [← hc] at h
+  simp at h
+
+  sorry
+
+For any bilinear form over a commutative ring,
 `|(x,y) • x - (x,x) • y|^2 = |x|^2(|x|^2 * |y|^2 - (x,y)^2)` (easy cancellation)
+LinearOrderedCommRing version of Cauchy-Schwarz: right side of above is non-neg, and only zero when
+`(x,y) • x - (x,x) • y = 0`, i.e., linearly dependent.
 
 This constrains coxeterWeight to at most 4, and proportionality when 4.
 -/
@@ -199,37 +218,6 @@ This constrains coxeterWeight to at most 4, and proportionality when 4.
 
 --positivity constraints for finite root pairings mean we restrict to weights between 0 and 4.
 
-end
-
-section linearOrderedCommRing
-
-variable [LinearOrderedCommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
-(P : RootPairing ι R M N)
-
--- should I just say positive semi-definite?
-theorem polInner_self_non_neg [Finite ι] (x : M) : 0 ≤ P.PolInner x x := by
-  simp only [PolInner, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.coe_comp, comp_apply,
-    polarization_self, toLin_toPerfectPairing]
-  exact Finset.sum_nonneg fun i _ =>
-    (sq (P.toPerfectPairing x (P.coroot i))) ▸ sq_nonneg (P.toPerfectPairing x (P.coroot i))
-
---lemma coxeter_weight_leq_4 :
-
-
-theorem polInner_root_self_pos [Finite ι] (j : ι) :
-    0 < P.PolInner (P.root j) (P.root j) := by
-  simp only [PolInner, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.coe_comp, comp_apply,
-    polarization_root_self, toLin_toPerfectPairing]
-  refine Finset.sum_pos' (fun i _ => (sq (P.pairing j i)) ▸ sq_nonneg (P.pairing j i)) ?_
-  use j
-  refine ⟨letI := Fintype.ofFinite ι; Finset.mem_univ j, ?_⟩
-  simp only [pairing_same, Nat.ofNat_pos, mul_pos_iff_of_pos_left]
-
-theorem polInner_root_positive [Finite ι] : IsRootPositive P P.PolInner where
-  zero_lt_apply_root i := P.polInner_root_self_pos i
-  symm := P.polInner_symmetric
-  apply_reflection_eq := P.polInner_reflection_invariant
-
-end linearOrderedCommRing
+end LinearOrderedCommRing
 
 end RootPairing
