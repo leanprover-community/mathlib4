@@ -133,29 +133,14 @@ lemma IsMatching.coeSubgraph {G' : Subgraph G} {M : Subgraph G'.coe} (hM : M.IsM
   · obtain ⟨_, hw', hvw⟩ := (coeSubgraph_adj _ _ _).mp hy
     rw [← hw.2 ⟨y, hw'⟩ hvw]
 
-lemma IsMatching_ofFunction {u : Set V} (f : V → V) (h : ∀ v ∈ u, G.Adj v (f v))
+lemma IsMatching.ofFunction {u : Set V} (f : V → V) (h : ∀ v ∈ u, G.Adj v (f v))
     (hinj : u.InjOn f) (hd : Disjoint u (f '' u)) : (Subgraph.ofFunction f h).IsMatching := by
   rw [Set.disjoint_right] at hd
-  intro v hv
-  simp only [ofFunction_adj]
-  cases' hv with hl hr
-  · use f v
-    simp only [and_true]
-    refine ⟨.inl hl, ?_⟩
-    intro y hy
-    cases' hy with h1 h2
-    · exact h1.2.symm
-    · exfalso
-      exact hd (by rw [Set.mem_image]; use y) hl
-  · rw [Set.mem_image] at hr
-    obtain ⟨w, hw⟩ := hr
-    use w
-    refine ⟨.inr hw, ?_⟩
-    intro y hy
-    cases' hy with h1 h2
-    · exfalso
-      exact hd (by rw [Set.mem_image]; use w) h1.1
-    · exact hinj h2.1 hw.1 (h2.2 ▸ hw.2.symm)
+  intro v _
+  unfold Subgraph.ofFunction
+  simp_rw [toSubgraph_adj,SimpleGraph.inf_adj]
+  
+  sorry
 
 /--
 The subgraph `M` of `G` is a perfect matching on `G` if it's a matching and every vertex `G` is

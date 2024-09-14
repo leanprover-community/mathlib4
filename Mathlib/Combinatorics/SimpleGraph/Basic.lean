@@ -836,4 +836,13 @@ theorem edgeSet_deleteEdges (s : Set (Sym2 V)) : (G.deleteEdges s).edgeSet = G.e
   simp [deleteEdges]
 
 end deleteEdges
+
+/-! ### Of function -/
+
+/-- Given a function, construct the graph where each node in a subset
+  u is connected to its value under the function --/
+@[simps]
+def ofFunction {u : Set V} (f : V → V) (h : ∀ v ∈ u, f v ≠ v): SimpleGraph V where
+  Adj v w := v ∈ u ∧ f v = w ∨ w ∈ u ∧ f w = v
+
 end SimpleGraph
