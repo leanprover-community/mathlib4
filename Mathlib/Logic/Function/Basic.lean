@@ -952,9 +952,6 @@ if for each pair of distinct points there is a function taking different values 
 def Set.SeparatesPoints {α β : Type*} (A : Set (α → β)) : Prop :=
   ∀ ⦃x y : α⦄, x ≠ y → ∃ f ∈ A, (f x : β) ≠ f y
 
-theorem IsSymmOp.flip_eq (op) [IsSymmOp α β op] : flip op = op :=
-  funext fun a ↦ funext fun b ↦ (IsSymmOp.symm_op a b).symm
-
 theorem InvImage.equivalence {α : Sort u} {β : Sort v} (r : β → β → Prop) (f : α → β)
     (h : Equivalence r) : Equivalence (InvImage r f) :=
   ⟨fun _ ↦ h.1 _, h.symm, h.trans⟩

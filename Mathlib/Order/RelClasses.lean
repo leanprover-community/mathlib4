@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Yury Kudryashov
 -/
 import Mathlib.Data.Nat.Defs
+import Mathlib.Init.Algebra.Classes
 import Mathlib.Logic.IsEmpty
 import Mathlib.Order.Basic
 import Mathlib.Tactic.MkIffOfInductiveProp
