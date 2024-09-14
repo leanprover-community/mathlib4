@@ -526,7 +526,7 @@ theorem eq_univ_card_lt [hX : Finite X] (hB : IsBlock G B) (hB' : Nat.card X < S
 
 /-- If a block has too many translates, then it is a (sub)singleton  -/
 theorem subsingleton_of_card_lt [Finite X] (hB : IsBlock G B)
-    (hB' : Nat.card X < 2 * Set.ncard (Set.range fun g : G => (g • B : Set X))) :
+    (hB' : Nat.card X < 2 * Set.ncard (orbit G B)) :
     B.Subsingleton := by
   suffices Set.ncard B < 2 by
     rw [Nat.lt_succ_iff, Set.ncard_le_one_iff_eq] at this
