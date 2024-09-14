@@ -24,6 +24,11 @@ Classical versions are in the namespace `Classical`.
 -/
 
 open Function
+
+-- attribute [refl] HEq.refl -- FIXME This is still rejected after #857
+attribute [refl] Iff.refl -- TODO: remove after mathlib upgrades to a version with lean4#5329
+attribute [trans] Iff.trans HEq.trans heq_of_eq_of_heq
+
 attribute [local instance 10] Classical.propDecidable
 
 section Miscellany

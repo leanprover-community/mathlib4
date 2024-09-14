@@ -108,6 +108,7 @@ section
 
 variable {α : Sort*} {r : α → α → Prop} {a b c : α}
 
+/-- Local notation for an arbitrary binary relation `r`. -/
 local infixl:50 " ≺ " => r
 
 lemma irrefl [IsIrrefl α r] (a : α) : ¬a ≺ a := IsIrrefl.irrefl a
@@ -137,6 +138,49 @@ lemma total_of [IsTotal α r] (a b : α) : a ≺ b ∨ b ≺ a := IsTotal.total 
 
 @[elab_without_expected_type]
 lemma trichotomous_of [IsTrichotomous α r] : ∀ a b : α, a ≺ b ∨ a = b ∨ b ≺ a := trichotomous
+
+section
+
+/-- `IsRefl` as a definition, suitable for use in proofs. -/
+def Reflexive := ∀ x, x ≺ x
+
+/-- `IsSymm` as a definition, suitable for use in proofs. -/
+def Symmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x
+
+/-- `IsTrans` as a definition, suitable for use in proofs. -/
+def Transitive := ∀ ⦃x y z⦄, x ≺ y → y ≺ z → x ≺ z
+
+/-- `IsIrrefl` as a definition, suitable for use in proofs. -/
+def Irreflexive := ∀ x, ¬x ≺ x
+
+/-- `IsAntisymm` as a definition, suitable for use in proofs. -/
+def AntiSymmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x → x = y
+
+/-- `IsTotal` as a definition, suitable for use in proofs. -/
+def Total := ∀ x y, x ≺ y ∨ y ≺ x
+
+@[deprecated Equivalence.refl (since := "2024-09-13")]
+theorem Equivalence.reflexive (h : Equivalence r) : Reflexive r := h.refl
+
+@[deprecated Equivalence.symm (since := "2024-09-13")]
+theorem Equivalence.symmetric (h : Equivalence r) : Symmetric r :=
+  fun _ _ ↦ h.symm
+
+@[deprecated Equivalence.trans (since := "2024-09-13")]
+theorem Equivalence.transitive (h : Equivalence r) : Transitive r :=
+  fun _ _ _ ↦ h.trans
+
+variable {β : Sort*} (r : β → β → Prop) (f : α → β)
+
+@[deprecated (since := "2024-09-13")]
+theorem InvImage.trans (h : Transitive r) : Transitive (InvImage r f) :=
+  fun (a₁ a₂ a₃ : α) (h₁ : InvImage r f a₁ a₂) (h₂ : InvImage r f a₂ a₃) ↦ h h₁ h₂
+
+@[deprecated (since := "2024-09-13")]
+theorem InvImage.irreflexive (h : Irreflexive r) : Irreflexive (InvImage r f) :=
+  fun (a : α) (h₁ : InvImage r f a a) ↦ h (f a) h₁
+
+end
 
 end
 
