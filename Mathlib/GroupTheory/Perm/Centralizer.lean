@@ -233,7 +233,7 @@ theorem Disjoint.disjoint_noncommProd {ι : Type*} {k : ι → Perm α} {s : Fin
   · exact disjoint_one_right f
   · exact hf
 
-variable [DecidableEq α] [Fintype α] 
+variable [DecidableEq α] [Fintype α]
 
 theorem mem_support_iff_mem_support_of_mem_cycleFactorsFinset {x : α} :
     x ∈ g.support ↔
