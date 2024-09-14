@@ -49,7 +49,7 @@ def docPrimeLinter : Linter where run := withSetOptionIn fun stx ↦ do
       rest.foldl (· ++ ·) default
     else (← getCurrNamespace) ++ declId[0].getId
   let msg := m!"`{declName}` is missing a doc-string, please add one.\n\
-          Declarations whose name contains a `'` are expected to contain an explanation for the \
+          Declarations whose name ends with a `'` are expected to contain an explanation for the \
           presence of a `'` in their doc-string. This may consist of discussion of the difference \
           relative to the unprimed version, or an explanation as to why no better naming scheme \
           is possible."
