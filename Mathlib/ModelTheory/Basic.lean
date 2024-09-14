@@ -132,12 +132,10 @@ theorem card_relations_sum (i : ℕ) :
       Cardinal.lift.{v'} #(L.Relations i) + Cardinal.lift.{v} #(L'.Relations i) := by
   simp [Language.sum]
 
-@[simp]
 theorem card_sum :
     (L.sum L').card = Cardinal.lift.{max u' v'} L.card + Cardinal.lift.{max u v} L'.card := by
-  simp only [card_eq_card_functions_add_card_relations, card_functions_sum, card_relations_sum,
-    sum_add_distrib', lift_add, lift_sum, lift_lift]
-  simp only [add_assoc, add_comm (Cardinal.sum fun i => (#(L'.Functions i)).lift)]
+  simp only [mk_sum, mk_sigma, card_functions_sum, sum_add_distrib', lift_add, lift_sum, lift_lift,
+    card_relations_sum, add_assoc, add_comm (Cardinal.sum fun i => (#(L'.Functions i)).lift)]
 
 /-- Passes a `DecidableEq` instance on a type of function symbols through the  `Language`
 constructor. Despite the fact that this is proven by `inferInstance`, it is still needed -

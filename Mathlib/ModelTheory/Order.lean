@@ -44,7 +44,7 @@ This file defines ordered first-order languages and structures, as well as their
 - `FirstOrder.Language.isFraisse_finite_linear_order` shows that the class of finite models of the
   theory of linear orders is Fraïssé.
 - `FirstOrder.Language.aleph0_categorical_dlo` shows that the theory of dense linear orders is
-  `ℵ₀`-categorical.
+  `ℵ₀`-categorical, and thus complete.
 
 -/
 
