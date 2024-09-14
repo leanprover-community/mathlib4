@@ -845,7 +845,7 @@ theorem θHom_disjoint_self_iff :
     rw [Function.funext_iff, Subtype.forall]
     apply forall₂_congr
     intro c hc
-    rw [disjoint_iff_disjoint_support, disjoint_of_le_iff_left_eq_bot _] 
+    rw [disjoint_iff_disjoint_support, disjoint_of_le_iff_left_eq_bot _]
     simp only [Finset.bot_eq_empty, support_eq_empty_iff, OneMemClass.coe_eq_one, Pi.one_apply]
     exact support_zpowers_of_mem_cycleFactorsFinset_le _
   exact disjoint_ofSubtype_of_memFixedPoints_self u
