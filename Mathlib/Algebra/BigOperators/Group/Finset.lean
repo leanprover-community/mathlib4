@@ -540,7 +540,7 @@ theorem prod_biUnion [DecidableEq α] {s : Finset γ} {t : γ → Finset α}
   rw [← disjiUnion_eq_biUnion _ _ hs, prod_disjiUnion]
 
 /-- Product over a sigma type equals the product of fiberwise products. For rewriting
-in the reverse direction, use `Finset.prod_sigma'`.  -/
+in the reverse direction, use `Finset.prod_sigma'`. -/
 @[to_additive "Sum over a sigma type equals the sum of fiberwise sums. For rewriting
 in the reverse direction, use `Finset.sum_sigma'`"]
 theorem prod_sigma {σ : α → Type*} (s : Finset α) (t : ∀ a, Finset (σ a)) (f : Sigma σ → β) :
@@ -1494,7 +1494,7 @@ theorem prod_pow (s : Finset α) (n : ℕ) (f : α → β) : ∏ x ∈ s, f x ^ 
   Multiset.prod_map_pow
 
 @[to_additive sum_nsmul_assoc]
-lemma prod_pow_eq_pow_sum  (s : Finset ι) (f : ι → ℕ) (a : β) :
+lemma prod_pow_eq_pow_sum (s : Finset ι) (f : ι → ℕ) (a : β) :
     ∏ i ∈ s, a ^ f i = a ^ ∑ i ∈ s, f i :=
   cons_induction (by simp) (fun _ _ _ _ ↦ by simp [prod_cons, sum_cons, pow_add, *]) s
 
@@ -2074,7 +2074,7 @@ theorem disjoint_list_sum_left {a : Multiset α} {l : List (Multiset α)} :
     simp only [zero_disjoint, List.not_mem_nil, IsEmpty.forall_iff, forall_const, List.sum_nil]
   | cons b bs ih =>
     simp_rw [List.sum_cons, disjoint_add_left, List.mem_cons, forall_eq_or_imp]
-    simp [and_congr_left_iff, iff_self_iff, ih]
+    simp [and_congr_left_iff, ih]
 
 theorem disjoint_list_sum_right {a : Multiset α} {l : List (Multiset α)} :
     Multiset.Disjoint a l.sum ↔ ∀ b ∈ l, Multiset.Disjoint a b := by
@@ -2093,7 +2093,7 @@ theorem disjoint_sum_right {a : Multiset α} {i : Multiset (Multiset α)} :
 theorem disjoint_finset_sum_left {β : Type*} {i : Finset β} {f : β → Multiset α} {a : Multiset α} :
     Multiset.Disjoint (i.sum f) a ↔ ∀ b ∈ i, Multiset.Disjoint (f b) a := by
   convert @disjoint_sum_left _ a (map f i.val)
-  simp [and_congr_left_iff, iff_self_iff]
+  simp [and_congr_left_iff]
 
 theorem disjoint_finset_sum_right {β : Type*} {i : Finset β} {f : β → Multiset α}
     {a : Multiset α} : Multiset.Disjoint a (i.sum f) ↔ ∀ b ∈ i, Multiset.Disjoint a (f b) := by
@@ -2260,3 +2260,5 @@ theorem Finset.sum_sym2_filter_not_isDiag {ι α} [LinearOrder ι] [AddCommMonoi
     simp [and_assoc]
   · rintro ⟨⟨i₁, j₁⟩, hij₁⟩
     simp
+
+set_option linter.style.longFile 2400

@@ -77,6 +77,16 @@ lemma term_of_ne_zero {n : ℕ} (hn : n ≠ 0) (f : ℕ → ℂ) (s : ℂ) :
     term f s n = f n / n ^ s :=
   if_neg hn
 
+/--
+If `s ≠ 0`, then the `if .. then .. else` construction in `LSeries.term` isn't needed, since
+`0 ^ s = 0`.
+-/
+lemma term_of_ne_zero' {s : ℂ} (hs : s ≠ 0) (f : ℕ → ℂ) (n : ℕ) :
+    term f s n = f n / n ^ s := by
+  rcases eq_or_ne n 0 with rfl | hn
+  · rw [term_zero, Nat.cast_zero, zero_cpow hs, div_zero]
+  · rw [term_of_ne_zero hn]
+
 lemma term_congr {f g : ℕ → ℂ} (h : ∀ {n}, n ≠ 0 → f n = g n) (s : ℂ) (n : ℕ) :
     term f s n = term g s n := by
   rcases eq_or_ne n 0 with hn | hn <;> simp [hn, h]

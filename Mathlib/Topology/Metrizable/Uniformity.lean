@@ -154,7 +154,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
       have hMl' : length (take M l) = M := (length_take _ _).trans (min_eq_left hMl.le)
       refine (ihn _ hMl _ _ _ hMl').trans ?_
       convert hMs.1.out
-      rw [take_zipWith, take, take_succ, getElem?_append hMl, getElem?_eq_getElem hMl,
+      rw [take_zipWith, take, take_succ, getElem?_append_left hMl, getElem?_eq_getElem hMl,
         ← Option.coe_def, Option.toList_some, take_append_of_le_length hMl.le, getElem_cons_succ]
   · exact single_le_sum (fun x _ => zero_le x) _ (mem_iff_get.2 ⟨⟨M, hM_lt⟩, getElem_zipWith⟩)
   · rcases hMl.eq_or_lt with (rfl | hMl)
@@ -206,7 +206,7 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
     split_ifs with h
     · rw [← not_forall] at h
       simp [h, pow_eq_zero_iff']
-    · simpa only [not_exists, Classical.not_not, eq_self_iff_true, true_iff_iff] using h
+    · simpa only [not_exists, Classical.not_not, eq_self_iff_true, true_iff] using h
   have hd_symm : ∀ x y, d x y = d y x := by
     intro x y
     simp only [d, @SymmetricRel.mk_mem_comm _ _ (hU_symm _) x y]

@@ -162,7 +162,7 @@ lemma exp_sub_sum_range_isBigO_pow (n : ℕ) :
     (fun x ↦ exp x - ∑ i ∈ Finset.range n, x ^ i / i !) =O[𝓝 0] (· ^ n) := by
   have := (Complex.exp_sub_sum_range_isBigO_pow n).comp_tendsto
     (Complex.continuous_ofReal.tendsto' 0 0 rfl)
-  simp only [(· ∘ ·)] at this
+  simp only [Function.comp_def] at this
   norm_cast at this
 
 lemma exp_sub_sum_range_succ_isLittleO_pow (n : ℕ) :
@@ -315,8 +315,8 @@ theorem tendsto_div_pow_mul_exp_add_atTop (b c : ℝ) (n : ℕ) (hb : 0 ≠ b) :
 def expOrderIso : ℝ ≃o Ioi (0 : ℝ) :=
   StrictMono.orderIsoOfSurjective _ (exp_strictMono.codRestrict exp_pos) <|
     (continuous_exp.subtype_mk _).surjective
-      (by simp only [tendsto_Ioi_atTop, Subtype.coe_mk, tendsto_exp_atTop])
-      (by simp [tendsto_exp_atBot_nhdsWithin])
+      (by rw [tendsto_Ioi_atTop]; simp only [tendsto_exp_atTop])
+      (by rw [tendsto_Ioi_atBot]; simp only [tendsto_exp_atBot_nhdsWithin])
 
 @[simp]
 theorem coe_expOrderIso_apply (x : ℝ) : (expOrderIso x : ℝ) = exp x :=
@@ -456,14 +456,14 @@ namespace Complex
 theorem comap_exp_cobounded : comap exp (cobounded ℂ) = comap re atTop :=
   calc
     comap exp (cobounded ℂ) = comap re (comap Real.exp atTop) := by
-      simp only [← comap_norm_atTop, Complex.norm_eq_abs, comap_comap, (· ∘ ·), abs_exp]
+      simp only [← comap_norm_atTop, Complex.norm_eq_abs, comap_comap, Function.comp_def, abs_exp]
     _ = comap re atTop := by rw [Real.comap_exp_atTop]
 
 @[simp]
 theorem comap_exp_nhds_zero : comap exp (𝓝 0) = comap re atBot :=
   calc
     comap exp (𝓝 0) = comap re (comap Real.exp (𝓝 0)) := by
-      simp only [comap_comap, ← comap_abs_nhds_zero, (· ∘ ·), abs_exp]
+      simp only [comap_comap, ← comap_abs_nhds_zero, Function.comp_def, abs_exp]
     _ = comap re atBot := by rw [Real.comap_exp_nhds_zero]
 
 theorem comap_exp_nhdsWithin_zero : comap exp (𝓝[≠] 0) = comap re atBot := by

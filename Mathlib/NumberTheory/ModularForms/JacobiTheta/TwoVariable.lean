@@ -285,7 +285,7 @@ lemma jacobiTheta₂'_undef (z : ℂ) {τ : ℂ} (hτ : im τ ≤ 0) : jacobiThe
   exact not_lt.mpr hτ
 
 /-!
-## Derivatives and continuity
+## Derivatives and continuity
 -/
 
 lemma hasFDerivAt_jacobiTheta₂ (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
@@ -373,7 +373,7 @@ lemma continuousAt_jacobiTheta₂' (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
   · exact norm_jacobiTheta₂'_term_le hT (le_of_lt hz') (le_of_lt hτ') n
 
 /-!
-## Periodicity and conjugation
+## Periodicity and conjugation
 -/
 
 /-- The two-variable Jacobi theta function is periodic in `τ` with period 2. -/

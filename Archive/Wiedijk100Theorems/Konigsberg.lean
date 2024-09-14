@@ -81,6 +81,6 @@ theorem not_isEulerian {u v : Verts} (p : graph.Walk u v) (h : p.IsEulerian) : F
   have h' := setOf_odd_degree_eq
   apply_fun Fintype.card at h'
   rw [h'] at h
-  norm_num at h
+  simp at h
 
 end Konigsberg
