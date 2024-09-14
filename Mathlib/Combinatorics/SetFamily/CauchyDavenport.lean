@@ -145,7 +145,7 @@ lemma Finset.min_le_card_mul (hs : s.Nonempty) (ht : t.Nonempty) :
   obtain hsg | hsg := eq_or_ne (op g • s) s
   · have hS : (zpowers g : Set α) ⊆ a⁻¹ • (s : Set α) := by
       refine forall_mem_zpowers.2 <| @zpow_induction_right _ _ _ (· ∈ a⁻¹ • (s : Set α))
-        ⟨_, ha, inv_mul_self _⟩ (fun c hc ↦ ?_) fun c hc ↦ ?_
+        ⟨_, ha, inv_mul_cancel _⟩ (fun c hc ↦ ?_) fun c hc ↦ ?_
       · rw [← hsg, coe_smul_finset, smul_comm]
         exact Set.smul_mem_smul_set hc
       · simp only

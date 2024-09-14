@@ -90,7 +90,7 @@ tends to zero.
 
 See also `tendsto_birkhoffAverage_apply_sub_birkhoffAverage`. -/
 theorem tendsto_birkhoffAverage_apply_sub_birkhoffAverage' {g : α → E}
-    (h : Bornology.IsBounded (range g)) (f : α → α) (x : α):
+    (h : Bornology.IsBounded (range g)) (f : α → α) (x : α) :
     Tendsto (fun n ↦ birkhoffAverage 𝕜 f g n (f x) - birkhoffAverage 𝕜 f g n x) atTop (𝓝 0) :=
   tendsto_birkhoffAverage_apply_sub_birkhoffAverage _ <| h.subset <| range_comp_subset_range _ _
 

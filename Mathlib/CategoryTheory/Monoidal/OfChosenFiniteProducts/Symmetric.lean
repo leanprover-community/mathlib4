@@ -6,8 +6,6 @@ Authors: Scott Morrison, Simon Hudon
 import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 import Mathlib.CategoryTheory.Monoidal.OfChosenFiniteProducts.Basic
 
-#align_import category_theory.monoidal.of_chosen_finite_products.symmetric from "leanprover-community/mathlib"@"95a87616d63b3cb49d3fe678d416fbe9c4217bf4"
-
 /-!
 # The symmetric monoidal structure on a category with chosen finite products.
 
@@ -37,7 +35,6 @@ theorem braiding_naturality {X X' Y Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
   dsimp [tensorHom, Limits.BinaryFan.braiding]
   apply (ℬ _ _).isLimit.hom_ext
   rintro ⟨⟨⟩⟩ <;> · dsimp [Limits.IsLimit.conePointUniqueUpToIso]; simp
-#align category_theory.monoidal_of_chosen_finite_products.braiding_naturality CategoryTheory.MonoidalOfChosenFiniteProducts.braiding_naturality
 
 theorem hexagon_forward (X Y Z : C) :
     (BinaryFan.associatorOfLimitCone ℬ X Y Z).hom ≫
@@ -52,7 +49,6 @@ theorem hexagon_forward (X Y Z : C) :
   · dsimp [Limits.IsLimit.conePointUniqueUpToIso]; simp
   · apply (ℬ _ _).isLimit.hom_ext
     rintro ⟨⟨⟩⟩ <;> · dsimp [Limits.IsLimit.conePointUniqueUpToIso]; simp
-#align category_theory.monoidal_of_chosen_finite_products.hexagon_forward CategoryTheory.MonoidalOfChosenFiniteProducts.hexagon_forward
 
 theorem hexagon_reverse (X Y Z : C) :
     (BinaryFan.associatorOfLimitCone ℬ X Y Z).inv ≫
@@ -72,16 +68,14 @@ theorem hexagon_reverse (X Y Z : C) :
   · dsimp [BinaryFan.associatorOfLimitCone, BinaryFan.associator,
       Limits.IsLimit.conePointUniqueUpToIso]
     simp
-#align category_theory.monoidal_of_chosen_finite_products.hexagon_reverse CategoryTheory.MonoidalOfChosenFiniteProducts.hexagon_reverse
 
 theorem symmetry (X Y : C) :
     (Limits.BinaryFan.braiding (ℬ X Y).isLimit (ℬ Y X).isLimit).hom ≫
         (Limits.BinaryFan.braiding (ℬ Y X).isLimit (ℬ X Y).isLimit).hom =
       𝟙 (tensorObj ℬ X Y) := by
   dsimp [tensorHom, Limits.BinaryFan.braiding]
-  apply (ℬ _ _).isLimit.hom_ext;
+  apply (ℬ _ _).isLimit.hom_ext
   rintro ⟨⟨⟩⟩ <;> · dsimp [Limits.IsLimit.conePointUniqueUpToIso]; simp
-#align category_theory.monoidal_of_chosen_finite_products.symmetry CategoryTheory.MonoidalOfChosenFiniteProducts.symmetry
 
 end MonoidalOfChosenFiniteProducts
 
@@ -97,6 +91,5 @@ def symmetricOfChosenFiniteProducts :
   hexagon_forward X Y Z := hexagon_forward ℬ X Y Z
   hexagon_reverse X Y Z := hexagon_reverse ℬ X Y Z
   symmetry X Y := symmetry ℬ X Y
-#align category_theory.symmetric_of_chosen_finite_products CategoryTheory.symmetricOfChosenFiniteProducts
 
 end CategoryTheory
