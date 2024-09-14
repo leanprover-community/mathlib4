@@ -69,7 +69,7 @@ lemma changeLevel_injective {m : ℕ} [NeZero m] (hm : n ∣ m) :
   intro _ _ h
   ext1 y
   obtain ⟨z, rfl⟩ := ZMod.unitsMap_surjective hm y
-  rw [ext_iff] at h
+  rw [MulChar.ext_iff] at h
   simpa [changeLevel_def] using h z
 
 @[simp]
@@ -161,7 +161,7 @@ noncomputable instance : Unique (DirichletCharacter R 1) := Unique.mk' (Dirichle
 
 lemma changeLevel_one {d : ℕ} (h : d ∣ n) :
     changeLevel h (1 : DirichletCharacter R d) = 1 := by
-  simp [changeLevel]
+  simp
 
 lemma factorsThrough_one_iff : FactorsThrough χ 1 ↔ χ = 1 := by
   refine ⟨fun ⟨_, χ₀, hχ₀⟩ ↦ ?_,

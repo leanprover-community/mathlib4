@@ -5,8 +5,6 @@ Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Polynomial.Basic
 
-#align_import data.polynomial.monomial from "leanprover-community/mathlib"@"220f71ba506c8958c9b41bd82226b3d06b0991e8"
-
 /-!
 # Univariate monomials
 
@@ -30,11 +28,9 @@ theorem monomial_one_eq_iff [Nontrivial R] {i j : ℕ} :
   -- Porting note: `ofFinsupp.injEq` is required.
   simp_rw [← ofFinsupp_single, ofFinsupp.injEq]
   exact AddMonoidAlgebra.of_injective.eq_iff
-#align polynomial.monomial_one_eq_iff Polynomial.monomial_one_eq_iff
 
 instance infinite [Nontrivial R] : Infinite R[X] :=
   Infinite.of_injective (fun i => monomial i 1) fun m n h => by simpa [monomial_one_eq_iff] using h
-#align polynomial.infinite Polynomial.infinite
 
 theorem card_support_le_one_iff_monomial {f : R[X]} :
     Finset.card f.support ≤ 1 ↔ ∃ n a, f = monomial n a := by
@@ -54,7 +50,6 @@ theorem card_support_le_one_iff_monomial {f : R[X]} :
     rw [← Finset.card_singleton n]
     apply Finset.card_le_card
     exact support_monomial' _ _
-#align polynomial.card_support_le_one_iff_monomial Polynomial.card_support_le_one_iff_monomial
 
 theorem ringHom_ext {S} [Semiring S] {f g : R[X] →+* S} (h₁ : ∀ a, f (C a) = g (C a))
     (h₂ : f X = g X) : f = g := by
@@ -78,12 +73,10 @@ theorem ringHom_ext {S} [Semiring S] {f g : R[X] →+* S} (h₁ : ∀ a, f (C a)
     simp only [RingEquiv.toRingHom_eq_coe, RingEquiv.symm_apply_apply, Function.comp_apply,
       RingHom.coe_comp, RingEquiv.coe_toRingHom]
   rw [B, C', A]
-#align polynomial.ring_hom_ext Polynomial.ringHom_ext
 
 @[ext high]
 theorem ringHom_ext' {S} [Semiring S] {f g : R[X] →+* S} (h₁ : f.comp C = g.comp C)
     (h₂ : f X = g X) : f = g :=
   ringHom_ext (RingHom.congr_fun h₁) h₂
-#align polynomial.ring_hom_ext' Polynomial.ringHom_ext'
 
 end Polynomial

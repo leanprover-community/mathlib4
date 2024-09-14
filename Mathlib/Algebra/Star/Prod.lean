@@ -7,8 +7,6 @@ import Mathlib.Algebra.Group.Action.Prod
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.Algebra.Star.Basic
 
-#align_import algebra.star.prod from "leanprover-community/mathlib"@"9abfa6f0727d5adc99067e325e15d1a9de17fd8e"
-
 /-!
 # `Star` on product types
 
@@ -27,16 +25,13 @@ instance [Star R] [Star S] : Star (R × S) where star x := (star x.1, star x.2)
 @[simp]
 theorem fst_star [Star R] [Star S] (x : R × S) : (star x).1 = star x.1 :=
   rfl
-#align prod.fst_star Prod.fst_star
 
 @[simp]
 theorem snd_star [Star R] [Star S] (x : R × S) : (star x).2 = star x.2 :=
   rfl
-#align prod.snd_star Prod.snd_star
 
 theorem star_def [Star R] [Star S] (x : R × S) : star x = (star x.1, star x.2) :=
   rfl
-#align prod.star_def Prod.star_def
 
 instance [Star R] [Star S] [TrivialStar R] [TrivialStar S] : TrivialStar (R × S) where
   star_trivial _ := Prod.ext (star_trivial _) (star_trivial _)
@@ -66,4 +61,3 @@ end Prod
 theorem Units.embed_product_star [Monoid R] [StarMul R] (u : Rˣ) :
     Units.embedProduct R (star u) = star (Units.embedProduct R u) :=
   rfl
-#align units.embed_product_star Units.embed_product_star

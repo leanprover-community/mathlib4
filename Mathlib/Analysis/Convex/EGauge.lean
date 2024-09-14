@@ -204,3 +204,5 @@ lemma egauge_ball_le_of_one_lt_norm (hc : 1 < ‖c‖) (h₀ : r ≠ 0 ∨ x ≠
 lemma egauge_ball_one_le_of_one_lt_norm (hc : 1 < ‖c‖) (x : E) :
     egauge 𝕜 (ball 0 1) x ≤ ‖c‖₊ * ‖x‖₊ := by
   simpa using egauge_ball_le_of_one_lt_norm hc (.inl one_ne_zero)
+
+end SeminormedAddCommGroup
