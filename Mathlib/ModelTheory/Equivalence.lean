@@ -12,9 +12,8 @@ import Mathlib.ModelTheory.Satisfiability
 - `FirstOrder.Language.Theory.Implies`: `φ ⟹[T] ψ` indicates that `φ` implies `ψ` in models of `T`.
 - `FirstOrder.Language.Theory.SemanticallyEquivalent`: `φ ⇔[T] ψ` indicates that `φ` and `ψ` are
   equivalent formulas or sentences in models of `T`.
-
-## TODO
-- Construct the quotient of `L.Formula α` modulo `⇔[T]` and its Boolean Algebra structure.
+- `FirstOrder.Language.Theory.Formula`: `T.Formula α` is the quotient of `L.Formula α` by
+  equivalence modulo a theory `T`.
 
 -/
 
@@ -194,6 +193,20 @@ protected theorem imp {φ ψ φ' ψ' : L.BoundedFormula α n} (h : φ ⇔[T] ψ)
     BoundedFormula.realize_imp]
   exact fun M v xs => imp_congr h.realize_bd_iff h'.realize_bd_iff
 
+protected theorem sup {φ ψ φ' ψ' : L.BoundedFormula α n}
+    (h : φ ⇔[T] ψ) (h' : φ' ⇔[T] ψ') :
+    (φ ⊔ φ') ⇔[T] (ψ ⊔ ψ') := by
+  simp_rw [SemanticallyEquivalent, ModelsBoundedFormula, BoundedFormula.realize_iff,
+    BoundedFormula.realize_sup]
+  exact fun M v xs => or_congr h.realize_bd_iff h'.realize_bd_iff
+
+protected theorem inf {φ ψ φ' ψ' : L.BoundedFormula α n}
+    (h : φ ⇔[T] ψ) (h' : φ' ⇔[T] ψ') :
+    (φ ⊓ φ') ⇔[T] (ψ ⊓ ψ') := by
+  simp_rw [SemanticallyEquivalent, ModelsBoundedFormula, BoundedFormula.realize_iff,
+    BoundedFormula.realize_inf]
+  exact fun M v xs => and_congr h.realize_bd_iff h'.realize_bd_iff
+
 end SemanticallyEquivalent
 
 /-- Semantic equivalence forms an equivalence relation on formulas. -/
@@ -248,6 +261,62 @@ theorem inf_semanticallyEquivalent_not_sup_not : (φ ⊓ ψ) ⇔[T] (φ.not ⊔ 
   BoundedFormula.inf_semanticallyEquivalent_not_sup_not φ ψ
 
 end Formula
+
+namespace Theory
+
+variable (T) (α)
+
+/-- The type of formulas modulo a theory. -/
+protected def Formula := Quot (T.SemanticallyEquivalent : L.Formula α → _)
+
+variable {T} {α}
+
+namespace Formula
+
+instance : Coe (L.Formula α) (T.Formula α) := ⟨Quot.mk _⟩
+
+@[simps]
+instance : BooleanAlgebra (T.Formula α) where
+  le := Quot.lift₂ T.Implies
+    (fun _ _ _ h => iff_eq_eq.mp ⟨fun h' => h'.trans h.implies, fun h' => h'.trans h.symm.implies⟩)
+    (fun _ _ _ h => iff_eq_eq.mp ⟨h.symm.implies.trans, h.implies.trans⟩)
+  le_refl := Quot.ind Implies.refl
+  le_trans := Quot.ind (fun _ => Quot.ind (fun _ => Quot.ind (fun _ => Implies.trans)))
+  le_antisymm := Quot.ind (fun _ => Quot.ind (fun _ h₁ h₂ =>
+    (T.semanticallyEquivalentSetoid.iseqv.quot_mk_eq_iff _ _).2
+    (semanticallyEquivalent_iff_implies_and_implies.2 ⟨h₁, h₂⟩)))
+  sup := Quot.map₂ (· ⊔ ·) (fun _ _ _ => (SemanticallyEquivalent.refl _).sup)
+     (fun _ _ _ h => h.sup (refl _))
+  le_sup_left := Quot.ind (fun _ => Quot.ind (fun _ => implies_sup_left))
+  le_sup_right := Quot.ind (fun _ => Quot.ind (fun _ => implies_sup_right))
+  sup_le := Quot.ind (fun _ => Quot.ind (fun _ => (Quot.ind (fun _ => sup_implies))))
+  inf := Quot.map₂ (· ⊓ ·) (fun _ _ _ => (SemanticallyEquivalent.refl _).inf)
+     (fun _ _ _ h => h.inf (refl _))
+  inf_le_left := Quot.ind (fun _ => Quot.ind (fun _ => inf_implies_left))
+  inf_le_right := Quot.ind (fun _ => Quot.ind (fun _ => inf_implies_right))
+  le_inf := Quot.ind (fun _ => Quot.ind (fun _ => (Quot.ind (fun _ => implies_inf))))
+  le_sup_inf := Quot.ind (fun _ => Quot.ind fun _ => Quot.ind (fun _ M v xs h => by
+    simp only [BoundedFormula.realize_inf, BoundedFormula.realize_sup] at *
+    tauto))
+  bot := Quot.mk _ ⊥
+  bot_le := Quot.ind bot_implies
+  top := Quot.mk _ ⊤
+  le_top := Quot.ind implies_top
+  compl := Quot.map Formula.not (fun _ _ h => h.not)
+  inf_compl_le_bot := Quot.ind inf_not_implies_bot
+  top_le_sup_compl := Quot.ind top_implies_sup_not
+
+/-- Evaluates a formula modulo `T` as true or false in a nonempty model of `T`. -/
+@[simp]
+def Realize (φ : T.Formula α) {M : Type*} [L.Structure M] [M ⊨ T] [Nonempty M] (v : α → M) : Prop :=
+  Quot.lift (fun (ψ : L.Formula α) => ψ.Realize v) (fun _ _ h => iff_eq_eq.mp h.realize_iff) φ
+
+lemma Realize_coe (φ : L.Formula α) {M : Type*} [L.Structure M] [M ⊨ T] [Nonempty M] (v : α → M) :
+    Formula.Realize (φ : T.Formula α) v ↔ φ.Realize v := by simp only [Realize]
+
+end Formula
+
+end Theory
 
 end Language
 
