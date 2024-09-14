@@ -92,6 +92,9 @@ instance : Unique Language.order.Symbols := ⟨⟨Sum.inr default⟩, by
   simp only [Symbols, Sum.forall, reduceCtorEq, Sum.inr.injEq, IsEmpty.forall_iff, true_and]
   exact Unique.eq_default⟩
 
+@[simp]
+lemma card_eq_one : Language.order.card = 1 := by simp [card]
+
 end order
 
 /-- A language is ordered if it has a symbol representing `≤`. -/

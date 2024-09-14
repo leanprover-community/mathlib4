@@ -93,7 +93,7 @@ abbrev Symbols :=
   (Σ l, L.Functions l) ⊕ (Σ l, L.Relations l)
 
 /-- The cardinality of a language is the cardinality of its type of symbols. -/
-abbrev card : Cardinal :=
+def card : Cardinal :=
   #L.Symbols
 
 variable {L} {L' : Language.{u', v'}}
@@ -102,7 +102,7 @@ theorem card_eq_card_functions_add_card_relations :
     L.card =
       (Cardinal.sum fun l => Cardinal.lift.{v} #(L.Functions l)) +
         Cardinal.sum fun l => Cardinal.lift.{u} #(L.Relations l) := by
-  simp only [mk_sum, mk_sigma, lift_sum]
+  simp only [card, mk_sum, mk_sigma, lift_sum]
 
 instance isRelational_sum [L.IsRelational] [L'.IsRelational] : IsRelational (L.sum L') :=
   fun _ => instIsEmptySum
@@ -110,7 +110,8 @@ instance isRelational_sum [L.IsRelational] [L'.IsRelational] : IsRelational (L.s
 instance isAlgebraic_sum [L.IsAlgebraic] [L'.IsAlgebraic] : IsAlgebraic (L.sum L') :=
   fun _ => instIsEmptySum
 
-theorem empty_card : Language.empty.card = 0 := by simp only [mk_sum, mk_sigma, mk_eq_zero,
+@[simp]
+theorem empty_card : Language.empty.card = 0 := by simp only [card, mk_sum, mk_sigma, mk_eq_zero,
   sum_const, mk_eq_aleph0, lift_id', mul_zero, add_zero]
 
 instance isEmpty_empty : IsEmpty Language.empty.Symbols := by
@@ -134,8 +135,9 @@ theorem card_relations_sum (i : ℕ) :
 
 theorem card_sum :
     (L.sum L').card = Cardinal.lift.{max u' v'} L.card + Cardinal.lift.{max u v} L'.card := by
-  simp only [mk_sum, mk_sigma, card_functions_sum, sum_add_distrib', lift_add, lift_sum, lift_lift,
-    card_relations_sum, add_assoc, add_comm (Cardinal.sum fun i => (#(L'.Functions i)).lift)]
+  simp only [card, mk_sum, mk_sigma, card_functions_sum, sum_add_distrib', lift_add, lift_sum,
+    lift_lift, card_relations_sum, add_assoc,
+    add_comm (Cardinal.sum fun i => (#(L'.Functions i)).lift)]
 
 /-- Passes a `DecidableEq` instance on a type of function symbols through the  `Language`
 constructor. Despite the fact that this is proven by `inferInstance`, it is still needed -
