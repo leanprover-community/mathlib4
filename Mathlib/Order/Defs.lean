@@ -515,14 +515,14 @@ lemma compare_gt_iff_gt : compare a b = .gt ↔ a > b := by
   split_ifs <;> simp only [*, lt_irrefl, not_lt_of_gt, reduceCtorEq]
   case _ h₁ h₂ =>
     have h : b < a := lt_trichotomy a b |>.resolve_left h₁ |>.resolve_left h₂
-    exact true_iff_iff.2 h
+    rwa [true_iff]
 
 lemma compare_eq_iff_eq : compare a b = .eq ↔ a = b := by
   rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
   split_ifs <;> try simp only [reduceCtorEq]
-  case _ h   => exact false_iff_iff.2 <| ne_iff_lt_or_gt.2 <| .inl h
-  case _ _ h => exact true_iff_iff.2 h
-  case _ _ h => exact false_iff_iff.2 h
+  case _ h   => rw [false_iff]; exact ne_iff_lt_or_gt.2 <| .inl h
+  case _ _ h => rwa [true_iff]
+  case _ _ h => rwa [false_iff]
 
 lemma compare_le_iff_le : compare a b ≠ .gt ↔ a ≤ b := by
   cases h : compare a b <;> simp
@@ -536,8 +536,8 @@ lemma compare_ge_iff_ge : compare a b ≠ .lt ↔ a ≥ b := by
   · exact le_of_eq <| (·.symm) <| compare_eq_iff_eq.1 h
   · exact le_of_lt <| compare_gt_iff_gt.1 h
 
-lemma compare_iff (a b : α) : compare a b = o ↔ o.toRel a b := by
-  cases o <;> simp only [Ordering.toRel]
+lemma compare_iff (a b : α) {o : Ordering} : compare a b = o ↔ o.Compares a b := by
+  cases o <;> simp only [Ordering.Compares]
   · exact compare_lt_iff_lt
   · exact compare_eq_iff_eq
   · exact compare_gt_iff_gt
