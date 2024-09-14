@@ -55,6 +55,7 @@ variable [Algebra A K] [IsFractionRing A K]
 variable (L : Type*) [Field L] (C : Type*) [CommRing C]
 variable [Algebra K L] [Algebra A L] [IsScalarTower A K L]
 variable [Algebra C L] [IsIntegralClosure C A L] [Algebra A C] [IsScalarTower A C L]
+include K L
 
 /-- If `L` is an algebraic extension of `K = Frac(A)` and `L` has no zero smul divisors by `A`,
 then `L` is the localization of the integral closure `C` of `A` in `L` at `A⁰`. -/
@@ -155,7 +156,7 @@ theorem FiniteDimensional.exists_is_basis_integral :
   · intro x; simp only [mul_inv_cancel_left₀ hy']
   · rintro ⟨x', hx'⟩
     simp only [Algebra.smul_def, Finset.mem_image, exists_prop, Finset.mem_univ,
-      true_and_iff] at his'
+      true_and] at his'
     simp only [Basis.map_apply, LinearEquiv.coe_mk]
     exact his' _ ⟨_, rfl⟩
 

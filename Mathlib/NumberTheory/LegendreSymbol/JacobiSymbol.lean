@@ -260,7 +260,7 @@ theorem eq_neg_one_at_prime_divisor_of_eq_neg_one {a : ℤ} {n : ℕ} (h : J(a |
     ∃ p : ℕ, p.Prime ∧ p ∣ n ∧ J(a | p) = -1 := by
   have hn₀ : n ≠ 0 := by
     rintro rfl
-    rw [zero_right, eq_neg_self_iff] at h
+    rw [zero_right, CharZero.eq_neg_self_iff] at h
     exact one_ne_zero h
   have hf₀ (p) (hp : p ∈ n.primeFactorsList) : p ≠ 0 := (Nat.pos_of_mem_primeFactorsList hp).ne.symm
   rw [← Nat.prod_primeFactorsList hn₀, list_prod_right hf₀] at h
@@ -529,7 +529,7 @@ decreasing_by
 private theorem fastJacobiSymAux.eq_jacobiSym {a b : ℕ} {flip : Bool} {ha0 : a > 0}
     (hb2 : b % 2 = 1) (hb1 : b > 1) :
     fastJacobiSymAux a b flip ha0 = if flip then -J(a | b) else J(a | b) := by
-  induction' a using Nat.strongInductionOn with a IH generalizing b flip
+  induction' a using Nat.strongRecOn with a IH generalizing b flip
   unfold fastJacobiSymAux
   split <;> rename_i ha4
   · rw [IH (a / 4) (a.div_lt_self ha0 (by decide)) hb2 hb1]
@@ -569,7 +569,7 @@ private def fastJacobiSym (a : ℤ) (b : ℕ) : ℤ :=
 
 @[csimp] private theorem fastJacobiSym.eq : jacobiSym = fastJacobiSym := by
   ext a b
-  induction' b using Nat.strongInductionOn with b IH
+  induction' b using Nat.strongRecOn with b IH
   unfold fastJacobiSym
   split_ifs with hb0 hb2 ha2 hb1 hab
   · rw [hb0, zero_right]

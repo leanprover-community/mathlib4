@@ -209,7 +209,7 @@ theorem condDistrib_ae_eq_condexp (hX : Measurable X) (hY : Measurable Y) (hs : 
   · exact fun t _ _ => (integrable_toReal_condDistrib hX.aemeasurable hs).integrableOn
   · intro t ht _
     rw [integral_toReal ((measurable_condDistrib hs).mono hX.comap_le le_rfl).aemeasurable
-      (eventually_of_forall fun ω => measure_lt_top (condDistrib Y X μ (X ω)) _),
+      (Eventually.of_forall fun ω => measure_lt_top (condDistrib Y X μ (X ω)) _),
       integral_indicator_const _ (hY hs), Measure.restrict_apply (hY hs), smul_eq_mul, mul_one,
       inter_comm, setLIntegral_condDistrib_of_measurableSet hX hY.aemeasurable hs ht]
   · refine (Measurable.stronglyMeasurable ?_).aeStronglyMeasurable'

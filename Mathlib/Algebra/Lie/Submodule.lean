@@ -79,8 +79,6 @@ instance instCanLiftSubmoduleLieSubmodule : CanLift (Submodule R M) (LieSubmodul
     (fun N ↦ ∀ {x : L} {m : M}, m ∈ N → ⁅x, m⁆ ∈ N) where
   prf N hN := ⟨⟨N, hN⟩, rfl⟩
 
--- Syntactic tautology
-
 @[norm_cast]
 theorem coe_toSubmodule : ((N : Submodule R M) : Set M) = N :=
   rfl
@@ -190,7 +188,9 @@ theorem coe_smul (t : R) (m : N) : (↑(t • m) : M) = t • (m : M) :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_bracket (x : L) (m : N) : (↑⁅x, m⁆ : M) = ⁅x, ↑m⁆ :=
+theorem coe_bracket (x : L) (m : N) :
+    letI : Bracket L N := LieRingModule.toBracket
+    (↑⁅x, m⁆ : M) = ⁅x, ↑m⁆ :=
   rfl
 
 variable [LieAlgebra R L] [LieModule R L M]
@@ -248,7 +248,9 @@ instance LieIdeal.lieRingModule {R L : Type*} [CommRing R] [LieRing L] [LieAlgeb
 
 @[simp]
 theorem LieIdeal.coe_bracket_of_module {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
-    (I : LieIdeal R L) [LieRingModule L M] (x : I) (m : M) : ⁅x, m⁆ = ⁅(↑x : L), m⁆ :=
+    (I : LieIdeal R L) [LieRingModule L M] (x : I) (m : M) :
+    letI : Bracket I M := LieRingModule.toBracket
+    ⁅x, m⁆ = ⁅(↑x : L), m⁆ :=
   LieSubalgebra.coe_bracket_of_module (I : LieSubalgebra R L) x m
 
 /-- Transfer the `LieModule` instance from the coercion `LieIdeal → LieSubalgebra`. -/
@@ -436,10 +438,13 @@ instance : SupSet (LieSubmodule R L M) where
         obtain ⟨s, hs, hsm⟩ := Submodule.mem_sSup_iff_exists_finset.mp hm
         clear hm
         classical
-        induction' s using Finset.induction_on with q t hqt ih generalizing m
-        · replace hsm : m = 0 := by simpa using hsm
+        induction s using Finset.induction_on generalizing m with
+        | empty =>
+          replace hsm : m = 0 := by simpa using hsm
           simp [hsm]
-        · rw [Finset.iSup_insert] at hsm
+        | insert hqt ih =>
+          rename_i q t
+          rw [Finset.iSup_insert] at hsm
           obtain ⟨m', hm', u, hu, rfl⟩ := Submodule.mem_sup.mp hsm
           rw [lie_add]
           refine add_mem ?_ (ih (Subset.trans (by simp) hs) hu)
@@ -545,7 +550,7 @@ nonrec theorem eq_bot_iff : N = ⊥ ↔ ∀ m : M, m ∈ N → m = 0 := by rw [e
 instance subsingleton_of_bot : Subsingleton (LieSubmodule R L ↑(⊥ : LieSubmodule R L M)) := by
   apply subsingleton_of_bot_eq_top
   ext ⟨x, hx⟩; change x ∈ ⊥ at hx; rw [Submodule.mem_bot] at hx; subst hx
-  simp only [true_iff_iff, eq_self_iff_true, Submodule.mk_eq_zero, LieSubmodule.mem_bot, mem_top]
+  simp only [eq_self_iff_true, Submodule.mk_eq_zero, LieSubmodule.mem_bot, mem_top]
 
 instance : IsModularLattice (LieSubmodule R L M) where
   sup_inf_le_assoc_of_le _ _ := by
@@ -560,18 +565,14 @@ variable (R L M)
     inj' := coeSubmodule_injective
     map_rel_iff' := Iff.rfl }
 
-theorem wellFounded_of_noetherian [IsNoetherian R M] :
-    WellFounded ((· > ·) : LieSubmodule R L M → LieSubmodule R L M → Prop) :=
-  RelHomClass.wellFounded (toSubmodule_orderEmbedding R L M).dual.ltEmbedding <|
-    isNoetherian_iff_wellFounded.mp inferInstance
+instance wellFoundedGT_of_noetherian [IsNoetherian R M] : WellFoundedGT (LieSubmodule R L M) :=
+  RelHomClass.isWellFounded (toSubmodule_orderEmbedding R L M).dual.ltEmbedding
 
-theorem wellFounded_of_isArtinian [IsArtinian R M] :
-    WellFounded ((· < ·) : LieSubmodule R L M → LieSubmodule R L M → Prop) :=
-  RelHomClass.wellFounded (toSubmodule_orderEmbedding R L M).ltEmbedding <|
-    IsArtinian.wellFounded_submodule_lt R M
+theorem wellFoundedLT_of_isArtinian [IsArtinian R M] : WellFoundedLT (LieSubmodule R L M) :=
+  RelHomClass.isWellFounded (toSubmodule_orderEmbedding R L M).ltEmbedding
 
 instance [IsArtinian R M] : IsAtomic (LieSubmodule R L M) :=
-  isAtomic_of_orderBot_wellFounded_lt <| wellFounded_of_isArtinian R L M
+  isAtomic_of_orderBot_wellFounded_lt <| (wellFoundedLT_of_isArtinian R L M).wf
 
 @[simp]
 theorem subsingleton_iff : Subsingleton (LieSubmodule R L M) ↔ Subsingleton M :=
@@ -1292,7 +1293,7 @@ def codRestrict (P : LieSubmodule R L N) (f : M →ₗ⁅R,L⁆ N) (h : ∀ m, f
     M →ₗ⁅R,L⁆ P where
   toFun := f.toLinearMap.codRestrict P h
   __ := f.toLinearMap.codRestrict P h
-  map_lie' {x m} := by ext; simp
+  map_lie' {x m} := by ext; simp; rfl
 
 @[simp]
 lemma codRestrict_apply (P : LieSubmodule R L N) (f : M →ₗ⁅R,L⁆ N) (h : ∀ m, f m ∈ P) (m : M) :

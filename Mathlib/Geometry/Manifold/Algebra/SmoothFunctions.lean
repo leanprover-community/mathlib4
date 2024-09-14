@@ -135,7 +135,7 @@ instance group {G : Type*} [Group G] [TopologicalSpace G] [ChartedSpace H' G] [L
     Group C^∞⟮I, N; I', G⟯ :=
   { SmoothMap.monoid with
     inv := fun f => ⟨fun x => (f x)⁻¹, f.smooth.inv⟩
-    mul_left_inv := fun a => by ext; exact mul_left_inv _
+    inv_mul_cancel := fun a => by ext; exact inv_mul_cancel _
     div := fun f g => ⟨f / g, f.smooth.div g.smooth⟩
     div_eq_mul_inv := fun f g => by ext; exact div_eq_mul_inv _ _ }
 
@@ -159,7 +159,7 @@ end GroupStructure
 section RingStructure
 
 /-!
-### Ring stucture
+### Ring structure
 
 In this section we show that smooth functions valued in a smooth ring `R` inherit a ring structure
 under pointwise multiplication.
@@ -223,7 +223,7 @@ end RingStructure
 section ModuleStructure
 
 /-!
-### Semimodule stucture
+### Semimodule structure
 
 In this section we show that smooth functions valued in a vector space `M` over a normed
 field `𝕜` inherit a vector space structure.

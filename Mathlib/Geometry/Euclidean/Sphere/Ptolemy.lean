@@ -64,6 +64,7 @@ theorem mul_dist_add_mul_dist_eq_mul_dist_of_cospherical {a b c d p : P}
     all_goals field_simp [mul_comm, hmul]
   have h₃ : dist d p = dist a p * dist c p / dist b p := by field_simp [mul_comm, hmul]
   have h₄ : ∀ x y : ℝ, x * (y * x) = x * x * y := fun x y => by rw [mul_left_comm, mul_comm]
+  -- takes 450ms, but the "equivalent" simp call leaves some remaining goals
   field_simp [h₁, h₂, dist_eq_add_dist_of_angle_eq_pi hbpd, h₃, hbp, dist_comm a b, h₄, ← sq,
     dist_sq_mul_dist_add_dist_sq_mul_dist b, hapc]
 
