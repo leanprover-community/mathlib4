@@ -563,8 +563,7 @@ theorem of_subset {B : Set X} (a : X) (hfB : B.Finite) :
     simp only [B', Set.mem_iInter, Set.mem_smul_set_iff_inv_smul_mem,
       smul_smul, ← mul_inv_rev] at hg hx ⊢
     exact fun _ ↦ hx _ ∘ hg _
-  have hag' : ∀ g : G, a ∈ g • B' → B' = g • B' := by
-    intro g hg
+  have hag' (g : G) (hg : a ∈ g • B') : B' = g • B' := by
     rw [eq_comm, ← mem_stabilizer_iff, mem_stabilizer_of_finite_iff_le_smul _ hfB']
     exact hag g hg
   rw [mk_notempty_one]
