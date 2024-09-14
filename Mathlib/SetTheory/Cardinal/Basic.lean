@@ -924,9 +924,17 @@ def prod {ι : Type u} (f : ι → Cardinal) : Cardinal :=
 theorem mk_pi {ι : Type u} (α : ι → Type v) : #(∀ i, α i) = prod fun i => #(α i) :=
   mk_congr <| Equiv.piCongrRight fun _ => outMkEquiv.symm
 
-theorem mk_pi_eq {ι : Type u} {f g : ι → Type v} (h : ∀ i, #(f i) = #(g i)) :
+theorem mk_pi_congr {ι : Type u} {f g : ι → Type v} (h : ∀ i, #(f i) = #(g i)) :
     #(Π i, f i) = #(Π i, g i) := by
   simp_all only [mk_pi]
+
+theorem mk_pi_congr_subtype {ι : Type u} {f g : ι → Type v} {S : Set ι}
+    (h : ∀ i ∈ S, #(f i) = #(g i)) : #(Π i ∈ S, f i) = #(Π i ∈ S, g i) :=
+  have h' : Π i ∈ S, f i ≃ g i := fun i is ↦ Classical.choice <| Cardinal.eq.mp (h i is)
+  mk_congr
+  ⟨fun f' i is ↦ h' i is (f' i is) , fun g' i is ↦ (h' i is).symm (g' i is),
+  fun _ ↦ by simp only [Equiv.symm_apply_apply],
+  fun _ ↦ by simp only [Equiv.apply_symm_apply]⟩
 
 @[simp]
 theorem prod_const (ι : Type u) (a : Cardinal.{v}) :
@@ -949,14 +957,14 @@ theorem prod_eq_zero {ι} (f : ι → Cardinal.{u}) : prod f = 0 ↔ ∃ i, f i 
 theorem prod_ne_zero {ι} (f : ι → Cardinal) : prod f ≠ 0 ↔ ∀ i, f i ≠ 0 := by simp [prod_eq_zero]
 
 theorem power_sum {ι} (a : Cardinal) (f : ι → Cardinal) :
-    a ^ (sum f) = prod (fun i ↦ a ^ (f i)) :=
+    a ^ sum f = prod fun i ↦ a ^ f i :=
   inductionOn a fun α ↦ by
     apply induction_on_pi f fun f ↦ ?_
     rw [prod, sum, power_def]; simp_rw [power_def]
     convert mk_sigma_arrow α f using 1
     · exact mk_congr <| Equiv.arrowCongr
         (Equiv.sigmaCongr (Equiv.cast rfl) (fun _ ↦ outMkEquiv)) (Equiv.refl α)
-    · apply mk_pi_eq
+    · apply mk_pi_congr
       intro i
       rw [mk_out]
 
