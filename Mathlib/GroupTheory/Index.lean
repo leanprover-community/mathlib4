@@ -568,8 +568,9 @@ theorem index_stabilizer (G : Type*) {X : Type*} [Group G] [MulAction G X] (x : 
   (Nat.card_congr (MulAction.orbitEquivQuotientStabilizer G x)).symm.trans
     (Set.Nat.card_coe_set_eq (orbit G x))
 
-theorem index_stabilizer' (G : Type*) {X : Type*} [Group G] [MulAction G X] [IsPretransitive G X]
-    (x : X) : (stabilizer G x).index = Nat.card X := by
+theorem index_stabilizer_of_transitive 
+    (G : Type*) {X : Type*} [Group G] [MulAction G X] [IsPretransitive G X] (x : X) :
+    (stabilizer G x).index = Nat.card X := by
   rw [index_stabilizer, orbit_eq_univ, Set.ncard_univ]
 
 end MulAction
