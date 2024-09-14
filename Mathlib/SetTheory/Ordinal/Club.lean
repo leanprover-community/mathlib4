@@ -31,7 +31,7 @@ universe u v
 
 namespace Ordinal
 
-/-- A set of ordinals is a club in an ordinal if it is closed and unbounded in it. -/
+/-- A set of ordinals is a club below an ordinal if it is closed and unbounded in it. -/
 def IsClub (S : Set Ordinal) (o : Ordinal) : Prop :=
   IsClosed S o ∧ IsAcc o S
 
@@ -74,21 +74,7 @@ theorem exists_above_of_lt_cof {p : Ordinal} (h : p < o) (hSemp : Nonempty S)
   use fUdown
   constructor
   · simp_all only [lift_inj, mem_inter_iff, f]
-  · constructor
-    exact lift_lt.mp <| fUlift ▸ (this.1)
-    exact lift_lt.mp (hq'.symm ▸ (fUlift ▸ this).2)
-
-theorem strictMono_of_succ_lt_omega (f : Iio ω → Iio o)
-    (hf : ∀ i, f i < f ⟨i + 1, omega_isLimit.succ_lt i.2⟩) (i j) (h : i < j) : f i < f j := by
-  have mono := strictMono_nat_of_lt_succ fun n ↦ hf ⟨n, nat_lt_omega n⟩
-  have := @mono (relIso_nat_omega.symm i) (relIso_nat_omega.symm j)
-    ((OrderIso.lt_iff_lt relIso_nat_omega.symm).mpr h)
-  simp at this
-  rw [(rfl : i = ⟨i.1, i.2⟩)] at this
-  change f ⟨↑(relIso_nat_omega.symm ⟨i.1, i.2⟩), _⟩ <
-    f ⟨↑(relIso_nat_omega.symm ⟨j.1, j.2⟩), _⟩ at this
-  simp_rw [relIso_nat_omega.symm_eq] at this
-  exact this
+  · exact ⟨lift_lt.mp <| fUlift ▸ (this.1), lift_lt.mp (hq'.symm ▸ (fUlift ▸ this).2)⟩
 
 /--
 Given a limit ordinal `o` and a property on pairs of ordinals `P`, such that
@@ -121,6 +107,10 @@ theorem exists_omega_seq_succ_prop (opos : 0 < o) {P : Ordinal → Ordinal → P
   simp [f]
   exact lt_succ r.1
 
+theorem _root_.LT.lt.bot_lt {α : Type u} [Preorder α] [OrderBot α] {a b : α} (h : a < b) :
+    ⊥ < b :=
+  lt_of_le_of_lt bot_le h
+
 theorem exists_omega_seq_succ_prop_pos (onelto : 1 < o) {P : Ordinal → Ordinal → Prop}
     (hP : ∀ p : Iio o, 0 < p.1 → ∃ q : Iio o, (p < q ∧ P p q)) (r : Iio o) :
     ∃ f : (Iio ω : Set Ordinal.{0}) → (Iio o), (∀ i, P (f i) (f ⟨i + 1, omega_isLimit.2 i i.2⟩))
@@ -140,9 +130,9 @@ theorem exists_omega_seq_succ_prop_pos (onelto : 1 < o) {P : Ordinal → Ordinal
   have rltf0 := hf.2.2
   by_cases hi' : i.1 = 0
   · refine this.resolve_left ?_
-    convert (pos_of_gt' rltf0 : (0 : Ordinal) < _).ne.symm
+    convert (LT.lt.bot_lt rltf0 : (0 : Ordinal) < _).ne.symm
   · refine this.resolve_left ?_
-    have aux' : (0 : Ordinal) < _ := pos_of_gt' (hf.2.1 ⟨0, omega_pos⟩ i
+    have aux' : (0 : Ordinal) < _ := LT.lt.bot_lt (hf.2.1 ⟨0, omega_pos⟩ i
       (Ordinal.pos_iff_ne_zero.mpr hi'))
     exact aux'.ne.symm
 
@@ -207,5 +197,20 @@ theorem isClub_iInter [Nonempty ι] (hCof : ℵ₀ < o.cof) (hf : ∀ i, IsClub 
     Set.ext fun x ↦ ⟨fun ⟨i, hi⟩ ↦ ⟨⟨i⟩, hi⟩, fun ⟨⟨i⟩, hi⟩ ↦ ⟨i, hi⟩⟩
   unfold iInter iInf; rw [this]
 
+instance blah : SuccOrder (Iio ω) where
+  succ := fun i ↦ ⟨succ i, omega_isLimit.succ_lt i.2⟩
+  le_succ := fun i ↦ (lt_succ i.1).le
+  max_of_succ_le {a} := by aesop
+  succ_le_of_lt {a b} := by aesop
+
+instance blahblah : IsSuccArchimedean (Iio ω) where
+  exists_succ_iterate_of_le := sorry
+
+#synth IsSuccArchimedean (Iio ω)
+
+#synth SuccOrder (Iio ω)
+
 end ClubIntersection
 end Ordinal
+
+#check iSup

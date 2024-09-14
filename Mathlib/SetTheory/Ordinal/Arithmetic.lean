@@ -305,7 +305,7 @@ theorem limitRecOn_limit {C} (o H₁ H₂ H₃ h) :
   simp_rw [limitRecOn, SuccOrder.prelimitRecOn_limit _ _ h.isSuccPrelimit, dif_neg h.1]
 
 /-- Bounded recursion on ordinals. Similar to `limitRecOn`, with the assumption `o < l`
-  added to all cases. The final term's domain is the ordinals below `l`. -/
+  added to all cases. The final term's domain is the ordinals below `Iio l`. -/
 @[elab_as_elim]
 def boundedLimitRec {l : Ordinal} (hLim : l.IsLimit) {C : Iio l → Sort*} (H₁ : C ⟨0, hLim.pos⟩)
     (H₂ : (o : Iio l) → C o → C ⟨o + 1, hLim.succ_lt o.2⟩)
@@ -2336,12 +2336,18 @@ def relIso_nat_omega : ℕ ≃o Iio ω where
   map_rel_iff' := @natCast_le
 
 theorem relIso_nat_omega.symm_eq {o : Ordinal} (h : o < ω) :
-    ↑(relIso_nat_omega.symm ⟨o, h⟩) = o := by
-  rcases lt_omega.mp h with ⟨n, hn⟩
-  have := relIso_nat_omega.symm_apply_apply n
-  rw [((SetCoe.ext hn).symm : relIso_nat_omega n = ⟨o, h⟩)] at this
-  rw [this]
-  exact hn.symm
+    relIso_nat_omega.symm ⟨o, h⟩ = o := by
+  rcases lt_omega.mp h with ⟨n, rfl⟩
+  exact congrArg Nat.cast <| relIso_nat_omega.symm_apply_apply n
+
+theorem strictMono_of_succ_lt_omega {o : Ordinal} (f : Iio ω → Iio o)
+    (hf : ∀ i, f i < f ⟨succ i, omega_isLimit.succ_lt i.2⟩) (i j) (h : i < j) : f i < f j := by
+  have mono := strictMono_nat_of_lt_succ fun n ↦ hf ⟨n, nat_lt_omega n⟩
+  have := mono <| (OrderIso.lt_iff_lt relIso_nat_omega.symm).mpr h
+  change f ⟨relIso_nat_omega.symm ⟨i.1, i.2⟩, _⟩ <
+    f ⟨relIso_nat_omega.symm ⟨j.1, j.2⟩, _⟩ at this
+  simp_rw [relIso_nat_omega.symm_eq] at this
+  exact this
 
 end Ordinal
 

@@ -229,12 +229,12 @@ theorem enumOrd_isNormal_iff_isClosed (hs : s.Unbounded (· < ·)) :
 
 open Set Filter
 
-/-- A positive ordinal is an accumulation point of a set of ordinals if there
+/-- An ordinal is an accumulation point of a set of ordinals if it is positive and there
 are elements in the set arbitrarily close to the ordinal from below. -/
 def IsAcc (o : Ordinal) (S : Set Ordinal) : Prop :=
-  o ≠ 0 ∧ ∀ p < o, ∃ s ∈ S, p < s ∧ s < o
+  o ≠ 0 ∧ ∀ p < o, (S ∩ Ioo p o).Nonempty
 
-/-- A set of ordinals is closed in an ordinal if it contains all of
+/-- A set of ordinals is closed below an ordinal if it contains all of
 its accumulation points below the ordinal. -/
 def IsClosed (S : Set Ordinal) (o : Ordinal) : Prop :=
   ∀ p < o, IsAcc p S → p ∈ S
@@ -248,47 +248,10 @@ theorem IsAcc.isLimit {o : Ordinal} {U : Set Ordinal} (h : o.IsAcc U) : IsLimit 
   exact (hx.symm ▸ (succ_le_iff.mpr hp.2.1)).not_lt hp.2.2
 
 theorem IsAcc.inter_Ioo_nonempty {o : Ordinal} {U : Set Ordinal} (hU : o.IsAcc U)
-    {p : Ordinal} (hp : p < o) : (U ∩ Ioo p o).Nonempty := by
-  rcases hU.2 p hp with ⟨q, hq⟩
-  exact ⟨q, hq.1, hq.2.1, hq.2.2⟩
+    {p : Ordinal} (hp : p < o) : (U ∩ Ioo p o).Nonempty := hU.2 p hp
 
 theorem isClosed_zero (S : Set Ordinal) : IsClosed S 0 := fun _ h ↦
   False.elim <| (Ordinal.zero_le _).not_lt h
-
-theorem isAcc_of_accPt {o p : Ordinal} (A : Set Ordinal) (hpos : p ≠ 0) (hp : p < o)
-    (h : AccPt ⟨p, hp⟩ (𝓟 {x : Iio o | x.1 ∈ A})) : IsAcc p A := by
-  use hpos
-  rw [accPt_iff_nhds] at h
-  intro q qltp
-  by_cases h' : Order.succ p = o
-  · let I : Set (Iio o) := Ioi ⟨q, qltp.trans hp⟩
-    have Inh : I ∈ nhds ⟨p, hp⟩ := IsOpen.mem_nhds isOpen_Ioi qltp
-    rcases h I Inh with ⟨r, ⟨rmemI, rmemA⟩, rnep⟩
-    use r, rmemA, rmemI
-    have : r ≤ p := Order.lt_succ_iff.mp (h' ▸ r.2)
-    exact this.lt_or_eq.resolve_right <| Subtype.coe_ne_coe.mpr rnep
-  · let I : Set (Iio o) := Ioo ⟨q, qltp.trans hp⟩ ⟨p + 1,
-      (succ_le_of_lt hp).lt_or_eq.resolve_right h'⟩
-    have Inh : I ∈ nhds ⟨p, hp⟩ := IsOpen.mem_nhds isOpen_Ioo ⟨qltp, lt_add_one p⟩
-    rcases h I Inh with ⟨r, ⟨rmemI, rmemA⟩, rnep⟩
-    use r, rmemA, rmemI.1
-    have : r.1 ≤ p := lt_succ_iff.mp rmemI.2
-    exact this.lt_or_eq.resolve_right <| Subtype.coe_ne_coe.mpr rnep
-
-theorem accPt_of_isAcc {o p : Ordinal} (A : Set Ordinal) (hp : p < o)
-    (h : IsAcc p A) : AccPt ⟨p, hp⟩ (𝓟 {x : Iio o | x.1 ∈ A}) := by
-  rw [accPt_iff_nhds]
-  intro u hu
-  have lb := exists_Ioc_subset_of_mem_nhds hu ⟨⟨0, pos_of_gt' hp⟩,
-    (Ordinal.zero_le p).lt_or_eq.resolve_right h.1.symm⟩
-  rcases lb with ⟨a, pmem, hi⟩
-  rcases h.2 a pmem with ⟨x, hx⟩
-  use ⟨x, hx.2.2.trans hp⟩
-  exact ⟨⟨hi ⟨hx.2.1, hx.2.2.le⟩, hx.1⟩, fun h ↦ hx.2.2.ne <| Subtype.mk_eq_mk.mp h⟩
-
-theorem isAcc_iff_accPt {o p : Ordinal} (A : Set Ordinal) (hp : p < o) (hpos : p ≠ 0) :
-    IsAcc p A ↔ AccPt ⟨p, hp⟩ (𝓟 {x : Iio o | x.1 ∈ A}) :=
-  ⟨accPt_of_isAcc A hp, isAcc_of_accPt A hpos hp⟩
 
 theorem not_accPt_zero {o : Ordinal} (ho : o ≠ 0) (S : Set (Iio o)) :
     ¬(AccPt ⟨0, Ordinal.pos_iff_ne_zero.mpr ho⟩ (𝓟 S)) := by
@@ -305,39 +268,65 @@ theorem not_accPt_zero {o : Ordinal} (ho : o ≠ 0) (S : Set (Iio o)) :
     rcases h Set.univ univ_mem with ⟨x, _, hx⟩
     exact hx <| SetCoe.ext <| Ordinal.lt_one_iff_zero.mp (this ▸ x.2)
 
+theorem AccPt.IsAcc {o p : Ordinal} (A : Set Ordinal) (hp : p < o)
+    (h : AccPt ⟨p, hp⟩ (𝓟 {x : Iio o | x.1 ∈ A})) : IsAcc p A := by
+  have hpos : p ≠ 0 := fun pz ↦ by
+    subst pz
+    exact not_accPt_zero (pos_of_gt' hp).ne.symm _ h
+  use hpos
+  rw [accPt_iff_nhds] at h
+  intro q qltp
+  by_cases h' : Order.succ p = o
+  · let I : Set (Iio o) := Ioi ⟨q, qltp.trans hp⟩
+    have Inh : I ∈ nhds ⟨p, hp⟩ := IsOpen.mem_nhds isOpen_Ioi qltp
+    rcases h I Inh with ⟨r, ⟨rmemI, rmemA⟩, rnep⟩
+    have : r ≤ p := Order.lt_succ_iff.mp (h' ▸ r.2)
+    exact ⟨r, rmemA, rmemI, this.lt_or_eq.resolve_right <| Subtype.coe_ne_coe.mpr rnep⟩
+  · let I : Set (Iio o) := Ioo ⟨q, qltp.trans hp⟩ ⟨p + 1,
+      (succ_le_of_lt hp).lt_or_eq.resolve_right h'⟩
+    have Inh : I ∈ nhds ⟨p, hp⟩ := IsOpen.mem_nhds isOpen_Ioo ⟨qltp, lt_add_one p⟩
+    rcases h I Inh with ⟨r, ⟨rmemI, rmemA⟩, rnep⟩
+    use r, rmemA, rmemI.1
+    have : r.1 ≤ p := lt_succ_iff.mp rmemI.2
+    exact this.lt_or_eq.resolve_right <| Subtype.coe_ne_coe.mpr rnep
+
+theorem IsAcc.AccPt {o p : Ordinal} (A : Set Ordinal) (hp : p < o)
+    (h : IsAcc p A) : AccPt ⟨p, hp⟩ (𝓟 {x : Iio o | x.1 ∈ A}) := by
+  rw [accPt_iff_nhds]
+  intro u hu
+  obtain ⟨a, pmem, hi⟩ := exists_Ioc_subset_of_mem_nhds hu ⟨⟨0, pos_of_gt' hp⟩,
+    (Ordinal.zero_le p).lt_or_eq.resolve_right h.1.symm⟩
+  rcases h.2 a pmem with ⟨x, hx⟩
+  use ⟨x, hx.2.2.trans hp⟩
+  exact ⟨⟨hi ⟨hx.2.1, hx.2.2.le⟩, hx.1⟩, fun h ↦ hx.2.2.ne <| Subtype.mk_eq_mk.mp h⟩
+
+theorem isAcc_iff_accPt {o p : Ordinal} (A : Set Ordinal) (hp : p < o) :
+    IsAcc p A ↔ AccPt ⟨p, hp⟩ (𝓟 {x : Iio o | x.1 ∈ A}) :=
+  ⟨IsAcc.AccPt A hp, AccPt.IsAcc A hp⟩
+
 theorem isClosed_iff {o : Ordinal} (A : Set Ordinal) :
     IsClosed A o ↔ _root_.IsClosed {x : Iio o | x.1 ∈ A} := by
-  by_cases ho : o = 0
-  · rw [ho, eq_true (isClosed_zero A)]
-    have : {x : Iio o | x.1 ∈ A} = ∅ := by
+  obtain rfl | _ := eq_or_ne o 0
+  · rw [eq_true (isClosed_zero A)]
+    have : {x : Iio 0 | x.1 ∈ A} = ∅ := by
       apply eq_empty_iff_forall_not_mem.mpr
       intro x
       have := x.2
-      simp_rw [ho] at this
       cases (Ordinal.zero_le _).not_lt this
-    have : _root_.IsClosed {x : Iio o | x.1 ∈ A} := by
+    have : _root_.IsClosed {x : Iio 0 | x.1 ∈ A} := by
       rw [this]
       exact isClosed_empty
-    have := ho ▸ (eq_true this)
+    have := eq_true this
     rw [this]
   rw [isClosed_iff_clusterPt]
   constructor
-  · intro h
-    intro r hr
-    change r.1 ∈ A
+  · intro h r hr
     match clusterPt_principal hr with
     | .inl h' => exact h'
-    | .inr h' =>
-      have rnz : r.1 ≠ 0 := fun h ↦ by
-        have := not_accPt_zero ho {x : Iio o | x.1 ∈ A}
-        simp_rw [← h] at this
-        exact this h'
-      have := (isAcc_iff_accPt A r.2 rnz)
-      exact h r.1 r.2 (this.mpr h')
+    | .inr h' => exact h r.1 r.2 (((isAcc_iff_accPt A r.2)).mpr h')
   · intro h p plto hp
-    apply h ⟨p, plto⟩
-    have := (isAcc_iff_accPt A plto hp.1).mp hp
-    apply ((acc_iff_cluster (⟨p, plto⟩ : Iio o) _).mp this).mono inf_le_right
+    exact h ⟨p, plto⟩ <| ((acc_iff_cluster (⟨p, plto⟩ : Iio o) _).mp
+      ((isAcc_iff_accPt A plto).mp hp)).mono inf_le_right
 
 theorem IsClosed.sInter {o : Ordinal.{u}} {S : Set (Set Ordinal)} (h : ∀ C ∈ S, IsClosed C o) :
     IsClosed (⋂₀ S) o :=
