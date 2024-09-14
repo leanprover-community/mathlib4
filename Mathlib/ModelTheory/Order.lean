@@ -43,6 +43,8 @@ This file defines ordered first-order languages and structures, as well as their
   theory of linear orders.
 - `FirstOrder.Language.isFraisse_finite_linear_order` shows that the class of finite models of the
   theory of linear orders is Fraïssé.
+- `FirstOrder.Language.aleph0_categorical_dlo` shows that the theory of dense linear orders is
+  `ℵ₀`-categorical.
 
 -/
 
@@ -486,7 +488,7 @@ lemma dlo_age [Language.order.Structure M] [Mdlo : M ⊨ Language.order.dlo] [No
 
 /-- Any countable nonempty model of the theory of dense linear orders is a Fraïssé limit of the
 class of finite models of the theory of linear orders. -/
-lemma isFraisseLimit_of_countable_nonempty_dlo (M : Type w)
+theorem isFraisseLimit_of_countable_nonempty_dlo (M : Type w)
     [Language.order.Structure M] [Countable M] [Nonempty M] [M ⊨ Language.order.dlo] :
     IsFraisseLimit {M : CategoryTheory.Bundled.{w} Language.order.Structure |
       Finite M ∧ M ⊨ Language.order.linearOrderTheory} M :=
@@ -498,6 +500,15 @@ theorem isFraisse_finite_linear_order :
       Finite M ∧ M ⊨ Language.order.linearOrderTheory} := by
   letI : Language.order.Structure ℚ := orderStructure _
   exact (isFraisseLimit_of_countable_nonempty_dlo ℚ).isFraisse
+
+open Cardinal
+
+/-- The theory of dense linear orders is `ℵ₀`-categorical. -/
+theorem aleph0_categorical_dlo : (ℵ₀).Categorical Language.order.dlo := fun M₁ M₂ h₁ h₂ => by
+  obtain ⟨_⟩ := denumerable_iff.2 h₁
+  obtain ⟨_⟩ := denumerable_iff.2 h₂
+  exact (isFraisseLimit_of_countable_nonempty_dlo M₁).nonempty_equiv
+    (isFraisseLimit_of_countable_nonempty_dlo M₂)
 
 end Fraisse
 
