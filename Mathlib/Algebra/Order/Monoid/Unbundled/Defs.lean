@@ -450,11 +450,11 @@ theorem covariant_lt_iff_contravariant_le [LinearOrder N] :
 
 variable (mu : N → N → N)
 
-theorem covariant_flip_iff [IsSymmOp N N mu] :
-    Covariant N N (flip mu) r ↔ Covariant N N mu r := by rw [IsSymmOp.flip_eq]
+theorem covariant_flip_iff [h : Std.Commutative mu] :
+    Covariant N N (flip mu) r ↔ Covariant N N mu r := by unfold flip; simp_rw [h.comm]
 
-theorem contravariant_flip_iff [IsSymmOp N N mu] :
-    Contravariant N N (flip mu) r ↔ Contravariant N N mu r := by rw [IsSymmOp.flip_eq]
+theorem contravariant_flip_iff [h : Std.Commutative mu] :
+    Contravariant N N (flip mu) r ↔ Contravariant N N mu r := by unfold flip; simp_rw [h.comm]
 
 instance contravariant_lt_of_covariant_le [LinearOrder N]
     [CovariantClass N N mu (· ≤ ·)] : ContravariantClass N N mu (· < ·) where
