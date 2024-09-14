@@ -7,7 +7,6 @@ import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.Algebra.Group.ULift
 import Mathlib.Data.DFinsupp.Basic
 import Mathlib.Data.Finsupp.Defs
-import Mathlib.Data.Finset.Pointwise.Basic
 
 /-!
 # Unique products and related notions
