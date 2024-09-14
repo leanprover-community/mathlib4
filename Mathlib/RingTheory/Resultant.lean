@@ -2842,6 +2842,7 @@ lemma MvPolynomial.isUnit_C [NoZeroDivisors R] {x : R} :
     exact ⟨⟨C a, C b, by simpa using congr_arg C ha, by simpa using congr_arg C hb⟩,
       by simpa using h⟩
 
+/-
 lemma MvPolynomial.totalDegree_mul_eq [NoZeroDivisors R] (p q : MvPolynomial σ R)
     (hp0 : p ≠ 0) (hq0 : q ≠ 0) :
     totalDegree (p * q) = totalDegree p + totalDegree q := by
@@ -2867,19 +2868,42 @@ lemma MvPolynomial.isUnit_iff [NoZeroDivisors R] {p : MvPolynomial σ R} :
       simp at hu
   · rintro ⟨c, hc, rfl⟩
     exact MvPolynomial.isUnit_C.mpr hc
+-/
 
-lemma MvPolynomial.irreducible_X_sub_X [NoZeroDivisors R] {σ : Type*} {i j : σ} (hij : i ≠ j) :
+lemma MulEquiv.map_irreducible_iff {R S : Type*} [Semiring R] [Semiring S] (f : R ≃* S) {x : R} :
+    Irreducible (f x) ↔ Irreducible x := by
+  simp only [irreducible_iff, MulEquiv.map_isUnit_iff, and_congr_right_iff]
+  intro hx
+  constructor
+  · rintro h a b rfl
+    simpa [MulEquiv.map_isUnit_iff] using h (f a) (f b) (by simp)
+  · rintro h a b hfx
+    simpa [MulEquiv.map_isUnit_iff] using h (f.symm a) (f.symm b)
+      (by simpa using congr_arg f.symm hfx)
+
+lemma map_irreducible_iff {F R S : Type*} [Semiring R] [Semiring S] [EquivLike F R S]
+    [RingEquivClass F R S] (f : F) {x : R} :
+    Irreducible (f x) ↔ Irreducible x := (f : R ≃* S).map_irreducible_iff
+
+lemma MvPolynomial.irreducible_X_sub_X [IsDomain R] {σ : Type*} {i j : σ} (hij : i ≠ j) :
     Irreducible (X i - X j : MvPolynomial σ R) := by
-  rw [irreducible_iff, MvPolynomial.isUnit_iff]
-  sorry
+  classical
+  let e : MvPolynomial σ R ≃ₐ[R] Polynomial (MvPolynomial {j : σ // j ≠ i} R) :=
+    .trans (renameEquiv _ (Equiv.optionSubtypeNe _).symm) (optionEquivLeft _ _)
+  convert (map_irreducible_iff e).mp _
+  simpa [e, hij.symm] using irreducible_X_sub_C _
 
 lemma MvPolynomial.isRelPrime_X_sub_X_of_ne_left [IsDomain R] {σ : Type*}
     {i i' j j' : σ} (hi : i ≠ i') (hij : i ≠ j) (hi'j' : i' ≠ j') (hij' : i ≠ j') :
     IsRelPrime (X i - X j : MvPolynomial σ R) (X i' - X j') := by
+  classical
   refine (MvPolynomial.irreducible_X_sub_X hij).isRelPrime_iff_not_dvd.mpr (mt (fun h => ?_) hi)
   obtain ⟨c, hc⟩ := ((isHomogeneous_X _ _).sub (isHomogeneous_X _ _)).exists_C_mul_eq_of_dvd
     ((isHomogeneous_X _ _).sub (isHomogeneous_X _ _)) h
-  sorry
+  have := congr_arg (coeff (Finsupp.single i 1)) hc
+  simp [coeff_X', Finsupp.single_eq_single_iff, hij.symm, hi.symm, hij'.symm] at this
+  rw [eq_comm, this, map_zero, zero_mul, sub_eq_zero, X_injective.eq_iff] at hc
+  contradiction
 
 lemma MvPolynomial.isRelPrime_X_sub_X_of_ne_right [IsDomain R] {σ : Type*}
     {i i' j j' : σ} (hij : i ≠ j) (hi'j' : i' ≠ j') (hi'j : i' ≠ j) (hj : j ≠ j') :
@@ -3548,11 +3572,17 @@ lemma MvPolynomial.coeff_zero_lead_resultantPolynomialCoeff :
 
 @[simp] lemma Fin.snoc_apply_zero {α : Type*} (f : Fin n → α) (x : α) :
     Fin.snoc (α := fun _ => α) f x 0 = if h : n = 0 then x else have : NeZero n := ⟨h⟩; f 0 := by
-  sorry
+  simp? [Fin.snoc, Nat.pos_iff_ne_zero]
+  congr
 
 @[simp] lemma MvPolynomial.coeffOfRoots_zero [NeZero (Fintype.card ι)] :
-    coeffOfRoots (ι := ι) (R := R) 0 = monomial (Finsupp.equivFunOnFinite.symm 1) 1 := by
-  sorry
+    coeffOfRoots (ι := ι) (R := R) 0 = monomial (Finsupp.equivFunOnFinite.symm 1) ((-1) ^ Fintype.card ι) := by
+  rw [coeffOfRoots, esymm_eq_sum_monomial, Fin.val_zero', Nat.sub_zero, ← Finset.card_univ,
+      Finset.powersetCard_self (Finset.univ), Finset.sum_singleton, ← _root_.map_one C, ← map_neg,
+      ← map_pow, C_mul_monomial, mul_one, monomial_eq_monomial_iff]
+  refine Or.inl ⟨?_, rfl⟩
+  ext i
+  simp [Finsupp.finset_sum_apply]
 
 @[simp] lemma Fin.castSucc_ne_last {n : ℕ} (i : Fin n) : i.castSucc ≠ Fin.last n := by
   simpa [Fin.ext_iff] using i.2.ne
