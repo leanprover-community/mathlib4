@@ -359,7 +359,7 @@ instance {n} : Inhabited (SSet.Truncated n) :=
 section adjunctions
 open SimplexCategory
 
-/-- The adjunction between n-truncation and the n-skeleton.-/
+/-- The adjunction between the n-skeleton and n-truncation.-/
 noncomputable def skAdj (n) : lan (Δ.ι n).op ⊣ truncation.{u} n := lanAdjunction _ _
 
 /-- The adjunction between n-truncation and the n-coskeleton.-/
