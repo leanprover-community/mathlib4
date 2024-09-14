@@ -1357,7 +1357,7 @@ def stecher_conjecture_counterexample : Prop := stecher1  ∧ stecher2
 instance : Decidable stecher2 := by unfold stecher2; apply decEq
 instance : Decidable stecher_conjecture_counterexample := by
   unfold stecher_conjecture_counterexample; unfold stecher1; unfold stecher2; exact instDecidableAnd
-
+--ONE OPTION IS TO COMMENT OUT EVERYTHING NOT NEEDED FOR THIS INSTANCE
 -- #eval stecher1
 -- #eval stecher2
 -- #reduce stecher_conjecture_counterexample
