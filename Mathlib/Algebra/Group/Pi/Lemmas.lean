@@ -248,6 +248,15 @@ theorem Pi.mulSingle_div [∀ i, Group <| f i] (i : I) (x y : f i) :
     mulSingle i (x / y) = mulSingle i x / mulSingle i y :=
   (MonoidHom.mulSingle f i).map_div x y
 
+@[to_additive]
+theorem Pi.mulSingle_pow [∀ i, Monoid (f i)] (i : I) (x : f i) (n : ℕ) :
+    mulSingle i (x ^ n) = mulSingle i x ^ n :=
+  (MonoidHom.mulSingle f i).map_pow x n
+
+@[to_additive]
+theorem Pi.mulSingle_zpow [∀ i, Group (f i)] (i : I) (x : f i) (n : ℤ) :
+    mulSingle i (x ^ n) = mulSingle i x ^ n :=
+  (MonoidHom.mulSingle f i).map_zpow x n
 
 /-- The injection into a pi group at different indices commutes.
 
