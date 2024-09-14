@@ -188,14 +188,14 @@ theorem max_lt_max (h₁ : a < c) (h₂ : b < d) : max a b < max c d :=
 theorem min_lt_min (h₁ : a < c) (h₂ : b < d) : min a b < min c d :=
   @max_lt_max αᵒᵈ _ _ _ _ _ h₁ h₂
 
-theorem min_right_comm (a b c : α) : min (min a b) c = min (min a c) b :=
-  right_comm min min_comm min_assoc a b c
+theorem min_right_comm (a b c : α) : min (min a b) c = min (min a c) b := by
+  rw [min_assoc, min_comm b, min_assoc]
 
-theorem Max.left_comm (a b c : α) : max a (max b c) = max b (max a c) :=
-  _root_.left_comm max max_comm max_assoc a b c
+theorem Max.left_comm (a b c : α) : max a (max b c) = max b (max a c) := by
+  rw [← max_assoc, max_comm a, max_assoc]
 
-theorem Max.right_comm (a b c : α) : max (max a b) c = max (max a c) b :=
-  _root_.right_comm max max_comm max_assoc a b c
+theorem Max.right_comm (a b c : α) : max (max a b) c = max (max a c) b := by
+  rw [max_assoc, max_comm b, max_assoc]
 
 theorem MonotoneOn.map_max (hf : MonotoneOn f s) (ha : a ∈ s) (hb : b ∈ s) : f (max a b) =
     max (f a) (f b) := by
@@ -239,8 +239,8 @@ instance instAssociativeMax : Std.Associative (α := α) max where assoc := max_
 instance instCommutativeMin : Std.Commutative (α := α) min where comm := min_comm
 instance instAssociativeMin : Std.Associative (α := α) min where assoc := min_assoc
 
-theorem max_left_commutative : LeftCommutative (max : α → α → α) := max_left_comm
-theorem min_left_commutative : LeftCommutative (min : α → α → α) := min_left_comm
+theorem max_left_commutative : LeftCommutative (max : α → α → α) := ⟨max_left_comm⟩
+theorem min_left_commutative : LeftCommutative (min : α → α → α) := ⟨min_left_comm⟩
 
 section deprecated
 set_option linter.deprecated false

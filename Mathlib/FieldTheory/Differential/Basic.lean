@@ -63,10 +63,10 @@ lemma logDeriv_multisetProd {ι : Type*} (s : Multiset ι) {f : ι → R} (h : �
   · rename_i h₂
     simp only [Function.comp_apply, Multiset.map_cons, Multiset.sum_cons, Multiset.prod_cons]
     rw [← h₂]
-    apply logDeriv_mul
-    simp [h]
-    apply Multiset.prod_ne_zero
-    all_goals simp_all
+    · apply logDeriv_mul
+      · simp [h]
+      · simp_all
+    · simp_all
 
 lemma logDeriv_prod (ι : Type*) (s : Finset ι) (f : ι → R) (h : ∀ x ∈ s, f x ≠ 0) :
     logDeriv (∏ x ∈ s, f x) = ∑ x ∈ s, logDeriv (f x) := logDeriv_multisetProd _ h
