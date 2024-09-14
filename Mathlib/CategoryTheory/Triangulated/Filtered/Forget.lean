@@ -680,6 +680,122 @@ lemma existence_omega_support_singleton (X : C) [IsLE X 0] (hsupp : Finset.card 
 
 open CategoryTheory.Pretriangulated.Opposite
 
+noncomputable abbrev distTriang_to_yoneda_comp_arrows₄ (Z : C) {X₁ X₂ X₃ : C} (u : X₁ ⟶ X₂)
+    (v : X₂ ⟶ X₃) (w : X₃ ⟶ X₁⟦(1 : ℤ)⟧) : ComposableArrows AddCommGrp 4 :=
+  ComposableArrows.mk₄ (((preadditiveYoneda.obj Z).map w.op)) (((preadditiveYoneda.obj Z).map v.op))
+  (((preadditiveYoneda.obj Z).map u.op)) ((preadditiveYoneda.obj Z).map (-w⟦(-1 : ℤ)⟧' ≫
+  (shiftEquiv C (1 : ℤ)).unitIso.inv.app _).op)
+
+noncomputable abbrev distTriang_to_yoneda_comp_arrows₄_hom (Z : C) {X₁ X₂ X₃ X'₁ X'₂ X'₃: C}
+    (u : X₁ ⟶ X₂) (v : X₂ ⟶ X₃) (w : X₃ ⟶ X₁⟦(1 : ℤ)⟧) (u' : X'₁ ⟶ X'₂) (v' : X'₂ ⟶ X'₃)
+    (w' : X'₃ ⟶ X'₁⟦(1 : ℤ)⟧) (f : Triangle.mk u' v' w' ⟶ Triangle.mk u v w) :
+    distTriang_to_yoneda_comp_arrows₄ Z u v w ⟶ distTriang_to_yoneda_comp_arrows₄ Z u' v' w' := by
+    refine ComposableArrows.homMk ?_ ?_
+    · intro i
+      match i with
+      | 0 => exact (preadditiveYoneda.obj Z).map (f.hom₁⟦(1 : ℤ)⟧').op
+      | 1 => exact (preadditiveYoneda.obj Z).map f.hom₃.op
+      | 2 => exact (preadditiveYoneda.obj Z).map f.hom₂.op
+      | 3 => exact (preadditiveYoneda.obj Z).map f.hom₁.op
+      | 4 => refine (preadditiveYoneda.obj Z).map (f.hom₃⟦-1⟧').op
+    · intro i _
+      match i with
+      | 0 => change (preadditiveYoneda.obj Z).map w.op ≫ (preadditiveYoneda.obj Z).map
+                 f.hom₃.op = (preadditiveYoneda.obj Z).map ((shiftFunctor C 1).map f.hom₁).op ≫
+                 (preadditiveYoneda.obj Z).map w'.op
+             rw [← Functor.map_comp, ← Functor.map_comp]
+             congr 1
+             change (f.hom₃ ≫ w).op = _
+             erw [← f.comm₃]; rfl
+      | 1 => change (preadditiveYoneda.obj Z).map v.op ≫ (preadditiveYoneda.obj Z).map
+                 f.hom₂.op = (preadditiveYoneda.obj Z).map f.hom₃.op ≫
+                 (preadditiveYoneda.obj Z).map v'.op
+             rw [← Functor.map_comp, ← Functor.map_comp]
+             congr 1
+             change (f.hom₂ ≫ v).op = _
+             erw [← f.comm₂]
+             rfl
+      | 2 => change (preadditiveYoneda.obj Z).map u.op ≫ (preadditiveYoneda.obj Z).map f.hom₁.op
+                 = (preadditiveYoneda.obj Z).map f.hom₂.op ≫ (preadditiveYoneda.obj Z).map u'.op
+             rw [← Functor.map_comp, ← Functor.map_comp]
+             congr 1
+             change (f.hom₁ ≫ u).op = _
+             erw [← f.comm₁]
+             rfl
+      | 3 => change (preadditiveYoneda.obj Z).map (-(shiftFunctor C (-1)).map w ≫
+                 (shiftEquiv C 1).unitIso.inv.app X₁).op ≫ (preadditiveYoneda.obj Z).map
+                 ((shiftFunctor C (-1)).map f.hom₃).op = (preadditiveYoneda.obj Z).map f.hom₁.op ≫
+                 (preadditiveYoneda.obj Z).map (-(shiftFunctor C (-1)).map w' ≫
+                 (shiftEquiv C 1).unitIso.inv.app X'₁).op
+             rw [← Functor.map_comp, ← Functor.map_comp]
+             congr 1
+             change (f.hom₃⟦-1⟧' ≫ (- w⟦-1⟧' ≫ (shiftEquiv C 1).unitIso.inv.app X₁)).op = _
+             conv_lhs => rw [Preadditive.comp_neg, ← assoc, ← Functor.map_comp]; erw [← f.comm₃]
+             change _ = ((-(shiftFunctor C (-1)).map w' ≫ (shiftEquiv C 1).unitIso.inv.app
+                 X'₁) ≫ f.hom₁).op
+             congr 1
+             conv_rhs => rw [Preadditive.neg_comp, assoc]
+                         erw [← (shiftEquiv C (1 : ℤ)).unitIso.inv.naturality f.hom₁]
+             simp only [Int.reduceNeg, Triangle.mk_obj₃, Functor.id_obj, Triangle.mk_obj₁,
+               Triangle.mk_mor₃, Functor.map_comp, shiftEquiv'_functor, shiftEquiv'_inverse,
+               shiftEquiv'_unitIso, Iso.symm_inv, assoc, Functor.comp_obj, Functor.comp_map]
+
+lemma distTriang_to_yoneda_comp_arrows₄_exact (Z : C) {X₁ X₂ X₃ : C} (u : X₁ ⟶ X₂) (v : X₂ ⟶ X₃)
+    (w : X₃ ⟶ X₁⟦(1 : ℤ)⟧) (dT : Triangle.mk u v w ∈ Pretriangulated.distinguishedTriangles) :
+    (distTriang_to_yoneda_comp_arrows₄ Z u v w).Exact := by
+  refine {zero := fun i _ ↦ ?_, exact := fun i _ ↦ ?_}
+  · match i with
+    | 0 => change ((preadditiveYoneda.obj Z).map w.op) ≫ ((preadditiveYoneda.obj Z).map
+                 v.op) = 0
+           rw [← Functor.map_comp]
+           change (preadditiveYoneda.obj Z).map (v ≫ w).op = 0
+           have : v ≫ w = 0 := Pretriangulated.comp_distTriang_mor_zero₂₃ _ dT
+           rw [this]
+           erw [Functor.map_zero]
+    | 1 => change ((preadditiveYoneda.obj Z).map v.op) ≫ ((preadditiveYoneda.obj Z).map
+                 u.op) = 0
+           rw [← Functor.map_comp]
+           change (preadditiveYoneda.obj Z).map (u ≫ v).op = 0
+           have : u ≫ v = 0 := Pretriangulated.comp_distTriang_mor_zero₁₂ _ dT
+           rw [this]
+           erw [Functor.map_zero]
+    | 2 => change ((preadditiveYoneda.obj Z).map u.op) ≫ ((preadditiveYoneda.obj Z).map
+                 ((-(w⟦-1⟧') ≫ (shiftEquiv C 1).unitIso.inv.app X₁)).op) = 0
+           rw [← Functor.map_comp]
+           change (preadditiveYoneda.obj Z).map ((-(w⟦-1⟧') ≫
+                 (shiftEquiv C 1).unitIso.inv.app X₁) ≫ u).op = 0
+           have : (-(w⟦-1⟧') ≫ (shiftEquiv C 1).unitIso.inv.app X₁) ≫ u = 0 :=
+                 Pretriangulated.comp_distTriang_mor_zero₁₂ _
+                 (Pretriangulated.inv_rot_of_distTriang _ dT)
+           rw [this]
+           erw [Functor.map_zero]
+  · match i with
+    | 0 => rw [Pretriangulated.rotate_distinguished_triangle] at dT
+           have dT' : (triangleOpEquivalence C).functor.obj (Opposite.op (Triangle.mk v w
+               (-u⟦1⟧'))) ∈ Opposite.distinguishedTriangles C := by
+             rw [Opposite.mem_distinguishedTriangles_iff']
+             existsi (Triangle.mk v w (-u⟦1⟧')), dT
+             exact Nonempty.intro (Iso.refl _)
+           exact Functor.IsHomological.exact (F := preadditiveYoneda.obj Z) _ dT'
+    | 1 => have dT' : (triangleOpEquivalence C).functor.obj (Opposite.op (Triangle.mk u v w)) ∈
+               Opposite.distinguishedTriangles C := by
+             rw [Opposite.mem_distinguishedTriangles_iff']
+             existsi (Triangle.mk u v w), dT
+             exact Nonempty.intro (Iso.refl _)
+           exact Functor.IsHomological.exact (F := preadditiveYoneda.obj Z) _ dT'
+    | 2 => set T'₂ := (triangleOpEquivalence C).functor.obj (Opposite.op (Triangle.mk
+                 (-w⟦(-1 : ℤ)⟧' ≫ (shiftEquiv C (1 : ℤ)).unitIso.inv.app _) u (v ≫
+                 (shiftEquiv C (1 : ℤ)).counitIso.inv.app _ )))
+           have dT' : ((triangleOpEquivalence C).functor.obj (Opposite.op (Triangle.mk
+               (-w⟦(-1 : ℤ)⟧' ≫ (shiftEquiv C (1 : ℤ)).unitIso.inv.app _) u (v ≫ (shiftEquiv C
+               (1 : ℤ)).counitIso.inv.app _ )))) ∈ Opposite.distinguishedTriangles C := by
+             rw [Opposite.mem_distinguishedTriangles_iff']
+             existsi (Triangle.mk (-w⟦(-1 : ℤ)⟧' ≫ (shiftEquiv C (1 : ℤ)).unitIso.inv.app _)
+                   u (v ≫ (shiftEquiv C (1 : ℤ)).counitIso.inv.app _ )),
+                   Pretriangulated.inv_rot_of_distTriang _ dT
+             exact Nonempty.intro (Iso.refl _)
+           exact Functor.IsHomological.exact (F := preadditiveYoneda.obj Z) _ dT'
+
 lemma existence_omega_aux (n : ℕ) : ∀ (X : C) [IsLE X 0], Finset.card (support X) = n →
     ∃ (Y : hP.Core') (s : X ⟶ Y.1),
     ∀ (Z : C), IsGE Z 0 → IsIso ((preadditiveYoneda.obj Z).map (Quiver.Hom.op s)) := by
@@ -748,118 +864,18 @@ lemma existence_omega_aux (n : ℕ) : ∀ (X : C) [IsLE X 0], Finset.card (suppo
         simp only [Triangle.mk_obj₃]; infer_instance
     existsi ⟨Y₂, hY₂⟩, s₂
     intro Z hZ
-    set R₁ : ComposableArrows AddCommGrp 4 :=
-      ComposableArrows.mk₄ (((preadditiveYoneda.obj Z).map w.op))
-      (((preadditiveYoneda.obj Z).map v.op)) (((preadditiveYoneda.obj Z).map u.op))
-      ((preadditiveYoneda.obj Z).map (-w⟦(-1 : ℤ)⟧' ≫
-      (shiftEquiv C (1 : ℤ)).unitIso.inv.app _).op)
-    set R₂ : ComposableArrows AddCommGrp 4 :=
-      ComposableArrows.mk₄ (((preadditiveYoneda.obj Z).map T.mor₃.op))
-      (((preadditiveYoneda.obj Z).map T.mor₂.op)) (((preadditiveYoneda.obj Z).map T.mor₁.op))
-      ((preadditiveYoneda.obj Z).map (-T.mor₃⟦(-1 : ℤ)⟧' ≫
-      (shiftEquiv C (1 : ℤ)).unitIso.inv.app _).op)
-    set φ : R₁ ⟶ R₂ := by
-      refine ComposableArrows.homMk ?_ ?_
-      · intro i
-        match i with
-        | 0 => exact (preadditiveYoneda.obj Z).map (s₁⟦(1 : ℤ)⟧').op
-        | 1 => exact (preadditiveYoneda.obj Z).map s₃.op
-        | 2 => exact (preadditiveYoneda.obj Z).map s₂.op
-        | 3 => exact (preadditiveYoneda.obj Z).map s₁.op
-        | 4 => refine (preadditiveYoneda.obj Z).map (s₃⟦-1⟧').op
-      · intro i _
-        match i with
-        | 0 => change (preadditiveYoneda.obj Z).map w.op ≫ (preadditiveYoneda.obj Z).map
-                 s₃.op = (preadditiveYoneda.obj Z).map ((shiftFunctor C 1).map s₁).op ≫
-                 (preadditiveYoneda.obj Z).map T.mor₃.op
-               rw [← Functor.map_comp, ← Functor.map_comp]
-               congr 1
-               change (s₃ ≫ w).op = _
-               rw [hw]; rfl
-        | 1 => change (preadditiveYoneda.obj Z).map v.op ≫ (preadditiveYoneda.obj Z).map
-                 s₂.op = (preadditiveYoneda.obj Z).map s₃.op ≫ (preadditiveYoneda.obj Z).map
-                 T.mor₂.op
-               rw [← Functor.map_comp, ← Functor.map_comp]
-               congr 1
-               change (s₂ ≫ v).op = _
-               erw [← hv]
-               rfl
-        | 2 => change (preadditiveYoneda.obj Z).map u.op ≫ (preadditiveYoneda.obj Z).map s₁.op
-                 = (preadditiveYoneda.obj Z).map s₂.op ≫ (preadditiveYoneda.obj Z).map T.mor₁.op
-               rw [← Functor.map_comp, ← Functor.map_comp]
-               congr 1
-               change (s₁ ≫ u).op = _
-               erw [← hu]
-               rfl
-        | 3 => change (preadditiveYoneda.obj Z).map (-(shiftFunctor C (-1)).map w ≫
-                 (shiftEquiv C 1).unitIso.inv.app Y₁.obj).op ≫ (preadditiveYoneda.obj Z).map
-                 ((shiftFunctor C (-1)).map s₃).op = (preadditiveYoneda.obj Z).map s₁.op ≫
-                 (preadditiveYoneda.obj Z).map (-(shiftFunctor C (-1)).map T.mor₃ ≫
-                 (shiftEquiv C 1).unitIso.inv.app T.obj₁).op
-               rw [← Functor.map_comp, ← Functor.map_comp]
-               congr 1
-               change (s₃⟦-1⟧' ≫ (- w⟦-1⟧' ≫ (shiftEquiv C 1).unitIso.inv.app Y₁.obj)).op
-                 = _
-               conv_lhs => rw [Preadditive.comp_neg, ← assoc, ← Functor.map_comp, hw]
-               change _ = ((-(shiftFunctor C (-1)).map T.mor₃ ≫ (shiftEquiv C 1).unitIso.inv.app
-                 T.obj₁) ≫ s₁).op
-               congr 1
-               conv_rhs => rw [Preadditive.neg_comp, assoc]
-                           erw [← (shiftEquiv C (1 : ℤ)).unitIso.inv.naturality s₁]
-               simp only [Int.reduceNeg, Functor.id_obj, Functor.map_comp, shiftEquiv'_functor,
-                 shiftEquiv'_inverse, shiftEquiv'_unitIso, Iso.symm_inv, assoc, Functor.comp_obj,
-                 Functor.comp_map]
-    set T'₂ := (triangleOpEquivalence C).functor.obj (Opposite.op (Triangle.mk u v w))
-    have dT'₂ : T'₂ ∈ Opposite.distinguishedTriangles C := by
-      rw [Opposite.mem_distinguishedTriangles_iff']
-      existsi (Triangle.mk u v w), dT'
-      exact Nonempty.intro (Iso.refl _)
-    refine Abelian.isIso_of_epi_of_isIso_of_isIso_of_mono (R₁ := R₁) (R₂ := R₂) ?_ ?_ φ
+    refine Abelian.isIso_of_epi_of_isIso_of_isIso_of_mono (R₁ := distTriang_to_yoneda_comp_arrows₄ Z
+      u v w) (R₂ := distTriang_to_yoneda_comp_arrows₄ Z T.mor₁ T.mor₂ T.mor₃)
+      (distTriang_to_yoneda_comp_arrows₄_exact Z u v w dT') (distTriang_to_yoneda_comp_arrows₄_exact
+      Z T.mor₁ T.mor₂ T.mor₃ dT) (distTriang_to_yoneda_comp_arrows₄_hom Z u v w T.mor₁ T.mor₂ T.mor₃
+      (Triangle.homMk T (Triangle.mk u v w) s₁ s₂ s₃ hu hv hw.symm))
       ?_ ?_ ?_ ?_
-    · refine {zero := fun i _ ↦ ?_, exact := fun i _ ↦ ?_}
-      · match i with
-        | 0 => change ((preadditiveYoneda.obj Z).map w.op) ≫ ((preadditiveYoneda.obj Z).map
-                 v.op) = 0
-               rw [← Functor.map_comp]
-               change (preadditiveYoneda.obj Z).map (v ≫ w).op = 0
-               have : v ≫ w = 0 := Pretriangulated.comp_distTriang_mor_zero₂₃ _ dT'
-               rw [this]
-               erw [Functor.map_zero]
-        | 1 => sorry
-        | 2 => sorry
-      · match i with
-        | 0 => have := Functor.IsHomological.exact (F := preadditiveYoneda.obj Z) _
-                 dT'₂
-               change (ShortComplex.mk ((preadditiveYoneda.obj Z).map w.op)
-                 ((preadditiveYoneda.obj Z).map v.op) sorry).Exact
-               change (ShortComplex.mk _ _ _).Exact at this
-               simp only [triangleOpEquivalence_functor,
-                 TriangleOpEquivalence.functor_obj, Triangle.mk_obj₃, Triangle.mk_obj₂,
-                 Triangle.mk_obj₁, Triangle.mk_mor₂, Triangle.mk_mor₁,
-                 opShiftFunctorEquivalence_inverse, opShiftFunctorEquivalence_functor,
-                 Functor.comp_obj, Functor.op_obj, Triangle.mk_mor₃, shortComplexOfDistTriangle_X₁,
-                 shortComplexOfDistTriangle_X₂,
-                 shortComplexOfDistTriangle_X₃, shortComplexOfDistTriangle_f, Functor.comp_map,
-                 Quiver.Hom.unop_op, shortComplexOfDistTriangle_g, T'₂] at this
-               sorry
-        | 1 => exact Functor.IsHomological.exact (F := preadditiveYoneda.obj Z) _ dT'₂
-        | 2 => sorry
-    · refine {zero := fun i _ ↦ ?_, exact := fun i _ ↦ ?_}
-      · match i with
-        | 0 => sorry
-        | 1 => sorry
-        | 2 => sorry
-      · match i with
-        | 0 => sorry
-        | 1 => sorry
-        | 2 => sorry
     · exact shift_omega_epi s₁ 0 1 (fun Z hZ ↦ @IsIso.epi_of_iso _ _ _ _ _ (hY₁ Z hZ)) Z hZ
     · exact hY₃ Z hZ
     · exact hY₁ Z hZ
     · exact shift_omega_mono s₃ 0 (-1) (fun Z hZ ↦ @IsIso.mono_of_iso _ _ _ _ _ (hY₃ Z hZ)) Z hZ
 
   #exit
-
 
 lemma existence_omega (X : C) [IsLE X 0] : ∃ (Y : hP.Core') (s : X ⟶ Y.1),
     ∀ (Z : C), IsGE Z 0 → Function.Bijective (fun (f : Y.1 ⟶ Z) ↦ s ≫ f) := sorry
