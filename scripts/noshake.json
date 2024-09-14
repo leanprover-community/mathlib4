@@ -103,6 +103,7 @@
   "Mathlib.Tactic.Find",
   "Mathlib.Tactic.GCongr",
   "Mathlib.Tactic.GCongr.Core",
+  "Mathlib.Tactic.GCongr.CoreAttrs",
   "Mathlib.Tactic.Generalize",
   "Mathlib.Tactic.GeneralizeProofs",
   "Mathlib.Tactic.Group",
