@@ -8,6 +8,7 @@ Authors: Antoine Chambert-Loir
 import Mathlib.GroupTheory.NoncommCoprod
 import Mathlib.GroupTheory.NoncommPiCoprod
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
 -- import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.GroupTheory.Perm.ConjAct
 import Mathlib.GroupTheory.Perm.Cycle.PossibleTypes
@@ -818,8 +819,8 @@ theorem support_θHom_of_fst_eq_one :
   rw [Finset.map_subset_iff_subset_preimage]
   suffices  g.support.preimage (Function.Embedding.subtype _) _ = ∅ by
     rw [this, Finset.subset_empty, Equiv.Perm.support_eq_empty_iff]
-    convert and_true_iff _
-    rw [iff_true]
+    suffices ∀ x ∈ Finset.univ, (v x : Perm α).support ⊆ g.support by
+      simp [this]
     intro c _
     exact support_zpowers_of_mem_cycleFactorsFinset_le (v c)
   ext x
@@ -827,7 +828,7 @@ theorem support_θHom_of_fst_eq_one :
     Finset.not_mem_empty, iff_false, Decidable.not_not]
   exact x.prop
 
-theorem θHom_disjoint_iff (f : Perm α) :
+theorem θHom_disjoint_iff {f : Perm α} :
     Disjoint (θHom g (u,v)) f ↔ Disjoint (ofSubtype u) f ∧ ∀ c, Disjoint (v c : Perm α) f := by
   classical
   simp only [disjoint_iff_disjoint_support, support_θHom, Finset.disjoint_union_left,
@@ -839,41 +840,41 @@ theorem θHom_disjoint_iff (f : Perm α) :
 theorem θHom_disjoint_self_iff :
     Disjoint (θHom g (u,v)) g ↔ v = 1 := by
   rw [θHom_disjoint_iff]
-  convert true_and_iff _
-  · rw [iff_true]
-    exact disjoint_ofSubtype_of_memFixedPoints_self u
-  · constructor
-    · intro hv; simp [hv]
-    · rw [Function.funext_iff]
-      apply forall_imp
-      intro c h
-      rw [disjoint_iff_disjoint_support, disjoint_of_le_iff_left_eq_bot _] at h
-      simpa only [Finset.bot_eq_empty, support_eq_empty_iff, OneMemClass.coe_eq_one] using h
-      exact support_zpowers_of_mem_cycleFactorsFinset_le _
+  suffices (ofSubtype u).Disjoint g by
+    simp only [this, Subtype.forall, true_and]
+    rw [Function.funext_iff, Subtype.forall]
+    apply forall₂_congr
+    intro c hc
+    rw [disjoint_iff_disjoint_support, disjoint_of_le_iff_left_eq_bot _] 
+    simp only [Finset.bot_eq_empty, support_eq_empty_iff, OneMemClass.coe_eq_one, Pi.one_apply]
+    exact support_zpowers_of_mem_cycleFactorsFinset_le _
+  exact disjoint_ofSubtype_of_memFixedPoints_self u
 
 theorem θHom_disjoint_cycle_iff {c : g.cycleFactorsFinset} :
     Disjoint (θHom g (u,v)) c ↔ v c = 1 := by
   rw [θHom_disjoint_iff]
-  classical
-  convert true_and_iff _
-  · rw [iff_true]
-    exact Equiv.Perm.Disjoint.mono (disjoint_ofSubtype_of_memFixedPoints_self u) le_rfl
-      (mem_cycleFactorsFinset_support_le c.prop)
-  · constructor
-    · intro hc
-      intro d
-      by_cases h : c = d
-      · rw [← h, hc]; simp
-      · apply Disjoint.mono (cycleFactorsFinset_pairwise_disjoint g d.prop c.prop _) _ le_rfl
-        exact Subtype.coe_ne_coe.mpr fun a ↦ h (id (Eq.symm a))
-        obtain ⟨m, hm⟩ := (v d).prop
-        simp only [← hm]
-        exact support_zpow_le _ m
+  suffices (ofSubtype u).Disjoint (c : Perm α) by
+    simp only [this, Subtype.forall, true_and]
+    constructor
     · intro h
-      specialize h c
+      specialize h c c.prop
       rw [disjoint_iff_disjoint_support, disjoint_of_le_iff_left_eq_bot _] at h
       simpa using h
       obtain ⟨m, hm⟩ := (v c).prop; simp only [← hm]; exact support_zpow_le _ m
+    · intro hc
+      intro d hd
+      by_cases h : c = d
+      · suffices c = ⟨d, hd⟩ by
+          rw [this] at hc
+          simp only [hc, OneMemClass.coe_one, disjoint_one_left]
+        simp only [← Subtype.coe_inj, h]
+      · apply Disjoint.mono (cycleFactorsFinset_pairwise_disjoint g hd c.prop _) _ le_rfl
+        exact fun a ↦ h (id (Eq.symm a))
+        obtain ⟨m, hm⟩ := (v ⟨d, hd⟩).prop
+        simp only [← hm]
+        exact support_zpow_le _ m
+  exact Equiv.Perm.Disjoint.mono (disjoint_ofSubtype_of_memFixedPoints_self u) le_rfl
+    (mem_cycleFactorsFinset_support_le c.prop)
 
 theorem θHom_apply (x : α) : θHom g (u,v) x =
     if hx : g.cycleOf x ∈ g.cycleFactorsFinset
