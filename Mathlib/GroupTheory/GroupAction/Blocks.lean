@@ -505,14 +505,14 @@ theorem ncard_block_mul_ncard_orbit_eq (hB : IsBlock G B) (hB_ne : B.Nonempty) :
     Set.ncard B * Set.ncard (orbit G B) = Nat.card X := by
   obtain ⟨x, hx⟩ := hB_ne
   rw [ncard_block_eq_relindex hB hx, ← index_stabilizer,
-      Subgroup.relindex_mul_index (hB.stabilizer_le hx), index_stabilizer']
+      Subgroup.relindex_mul_index (hB.stabilizer_le hx), index_stabilizer_of_transitive]
 
 /-- The cardinality of a block divides the cardinality of the ambient type -/
 theorem ncard_dvd_card (hB : IsBlock G B) (hB_ne : B.Nonempty) :
     Set.ncard B ∣ Nat.card X :=
   Dvd.intro _ (hB.ncard_block_mul_ncard_orbit_eq hB_ne)
 
-/-- A too large block is equal to ⊤ -/
+/-- A too large block is equal to `univ` -/
 theorem eq_univ_card_lt [hX : Finite X] (hB : IsBlock G B) (hB' : Nat.card X < Set.ncard B * 2) :
     B = Set.univ := by
   rcases Set.eq_empty_or_nonempty B with rfl | hB_ne
