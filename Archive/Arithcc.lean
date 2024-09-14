@@ -279,7 +279,6 @@ theorem compiler_correctness
   | const => simp [StateEq, step]; rfl
   -- 5.II
   | var =>
-    -- Porting note: was `finish [hmap, StateEq, step]`
     simp_all [StateEq, StateEqRs, step]
   -- 5.III
   | sum =>
