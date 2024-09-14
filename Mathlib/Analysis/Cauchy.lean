@@ -23,8 +23,7 @@ noncomputable def cauchyBound (p : K[X]) : ℝ≥0 :=
 
 lemma NNReal.geom_sum {x : ℝ≥0} (h : 1 < x) (n : ℕ) :
     ∑ i ∈ Finset.range n, x ^ i = (x ^ n - 1) / (x - 1) := by
-  have : 0 ≠ x - 1 := fun nh ↦ (h.trans_le (tsub_eq_zero_iff_le.mp nh.symm)).false
-  field_simp
+  apply eq_div_of_mul_eq (tsub_pos_of_lt h).ne'
   apply eq_tsub_of_add_eq
   convert geom_sum_mul_add (x - 1) n <;>
   rw [tsub_add_cancel_of_le h.le]
