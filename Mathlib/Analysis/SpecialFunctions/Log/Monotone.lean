@@ -41,8 +41,8 @@ theorem log_div_self_antitoneOn : AntitoneOn (fun x : ℝ => log x / x) { x | ex
   have x_pos : 0 < x := (exp_pos 1).trans_le hex
   have y_pos : 0 < y := (exp_pos 1).trans_le hey
   have hlogx : 1 ≤ log x := by rwa [le_log_iff_exp_le x_pos]
-  have hyx : 0 ≤ y / x - 1 := by rwa [le_sub_iff_add_le, le_div_iff x_pos, zero_add, one_mul]
-  rw [div_le_iff y_pos, ← sub_le_sub_iff_right (log x)]
+  have hyx : 0 ≤ y / x - 1 := by rwa [le_sub_iff_add_le, le_div_iff₀ x_pos, zero_add, one_mul]
+  rw [div_le_iff₀ y_pos, ← sub_le_sub_iff_right (log x)]
   calc
     log y - log x = log (y / x) := by rw [log_div y_pos.ne' x_pos.ne']
     _ ≤ y / x - 1 := log_le_sub_one_of_pos (div_pos y_pos x_pos)

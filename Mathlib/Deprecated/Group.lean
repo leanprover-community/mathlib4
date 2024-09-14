@@ -122,7 +122,7 @@ variable {M : Type*} {N : Type*} [MulOneClass M] [MulOneClass N]
 /-- A multiplicative isomorphism preserves multiplication (deprecated). -/
 @[to_additive "An additive isomorphism preserves addition (deprecated)."]
 theorem isMulHom (h : M ≃* N) : IsMulHom h :=
-  ⟨h.map_mul⟩
+  ⟨map_mul h⟩
 
 /-- A multiplicative bijection between two monoids is a monoid hom
   (deprecated -- use `MulEquiv.toMonoidHom`). -/
@@ -130,18 +130,17 @@ theorem isMulHom (h : M ≃* N) : IsMulHom h :=
       "An additive bijection between two additive monoids is an additive
       monoid hom (deprecated). "]
 theorem isMonoidHom (h : M ≃* N) : IsMonoidHom h :=
-  { map_mul := h.map_mul
+  { map_mul := map_mul h
     map_one := h.map_one }
 
 end MulEquiv
 
 namespace IsMonoidHom
 
-variable [MulOneClass α] [MulOneClass β] {f : α → β} (hf : IsMonoidHom f)
-
 /-- A monoid homomorphism preserves multiplication. -/
 @[to_additive "An additive monoid homomorphism preserves addition."]
-theorem map_mul' (x y) : f (x * y) = f x * f y :=
+theorem map_mul' [MulOneClass α] [MulOneClass β] {f : α → β} (hf : IsMonoidHom f) (x y) :
+    f (x * y) = f x * f y :=
   hf.map_mul x y
 
 /-- The inverse of a map which preserves multiplication,
@@ -216,7 +215,7 @@ theorem MonoidHom.isGroupHom {G H : Type*} {_ : Group G} {_ : Group H} (f : G �
 @[to_additive]
 theorem MulEquiv.isGroupHom {G H : Type*} {_ : Group G} {_ : Group H} (h : G ≃* H) :
     IsGroupHom h :=
-  { map_mul := h.map_mul }
+  { map_mul := map_mul h }
 
 /-- Construct `IsGroupHom` from its only hypothesis. -/
 @[to_additive "Construct `IsAddGroupHom` from its only hypothesis."]
@@ -227,6 +226,14 @@ theorem IsGroupHom.mk' [Group α] [Group β] {f : α → β} (hf : ∀ x y, f (x
 namespace IsGroupHom
 
 variable [Group α] [Group β] {f : α → β} (hf : IsGroupHom f)
+
+/-- The identity is a group homomorphism. -/
+@[to_additive "The identity is an additive group homomorphism."]
+theorem id : IsGroupHom (@id α) :=
+  { map_mul := fun _ _ => rfl }
+
+section
+include hf
 
 open IsMulHom (map_mul)
 
@@ -245,32 +252,28 @@ theorem map_one : f 1 = 1 :=
 
 /-- A group homomorphism sends inverses to inverses. -/
 @[to_additive "An additive group homomorphism sends negations to negations."]
-theorem map_inv (hf : IsGroupHom f) (a : α) : f a⁻¹ = (f a)⁻¹ :=
-  eq_inv_of_mul_eq_one_left <| by rw [← hf.map_mul, inv_mul_self, hf.map_one]
+theorem map_inv (a : α) : f a⁻¹ = (f a)⁻¹ :=
+  eq_inv_of_mul_eq_one_left <| by rw [← hf.map_mul, inv_mul_cancel, hf.map_one]
 
 @[to_additive]
-theorem map_div (hf : IsGroupHom f) (a b : α) : f (a / b) = f a / f b := by
+theorem map_div (a b : α) : f (a / b) = f a / f b := by
   simp_rw [div_eq_mul_inv, hf.map_mul, hf.map_inv]
-
-/-- The identity is a group homomorphism. -/
-@[to_additive "The identity is an additive group homomorphism."]
-theorem id : IsGroupHom (@id α) :=
-  { map_mul := fun _ _ => rfl }
 
 /-- The composition of two group homomorphisms is a group homomorphism. -/
 @[to_additive
       "The composition of two additive group homomorphisms is an additive
       group homomorphism."]
-theorem comp (hf : IsGroupHom f) {γ} [Group γ] {g : β → γ} (hg : IsGroupHom g) :
+theorem comp {γ} [Group γ] {g : β → γ} (hg : IsGroupHom g) :
     IsGroupHom (g ∘ f) :=
   { IsMulHom.comp hf.toIsMulHom hg.toIsMulHom with }
 
 /-- A group homomorphism is injective iff its kernel is trivial. -/
 @[to_additive "An additive group homomorphism is injective if its kernel is trivial."]
-theorem injective_iff {f : α → β} (hf : IsGroupHom f) :
-    Function.Injective f ↔ ∀ a, f a = 1 → a = 1 :=
+theorem injective_iff : Function.Injective f ↔ ∀ a, f a = 1 → a = 1 :=
   ⟨fun h _ => by rw [← hf.map_one]; exact @h _ _, fun h x y hxy =>
     eq_of_div_eq_one <| h _ <| by rwa [hf.map_div, div_eq_one]⟩
+
+end
 
 /-- The product of group homomorphisms is a group homomorphism if the target is commutative. -/
 @[to_additive

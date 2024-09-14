@@ -473,17 +473,19 @@ theorem eq_of_le_of_finrank_eq {S₁ S₂ : Submodule K V} [FiniteDimensional K 
 section Subalgebra
 
 variable {K L : Type*} [Field K] [Ring L] [Algebra K L] {F E : Subalgebra K L}
-  [hfin : FiniteDimensional K E] (h_le : F ≤ E)
+  [hfin : FiniteDimensional K E]
 
 /-- If a subalgebra is contained in a finite-dimensional
 subalgebra with the same or smaller dimension, they are equal. -/
-theorem _root_.Subalgebra.eq_of_le_of_finrank_le (h_finrank : finrank K E ≤ finrank K F) : F = E :=
+theorem _root_.Subalgebra.eq_of_le_of_finrank_le (h_le : F ≤ E)
+    (h_finrank : finrank K E ≤ finrank K F) : F = E :=
   haveI : Module.Finite K (Subalgebra.toSubmodule E) := hfin
   Subalgebra.toSubmodule_injective <| FiniteDimensional.eq_of_le_of_finrank_le h_le h_finrank
 
 /-- If a subalgebra is contained in a finite-dimensional
 subalgebra with the same dimension, they are equal. -/
-theorem _root_.Subalgebra.eq_of_le_of_finrank_eq (h_finrank : finrank K F = finrank K E) : F = E :=
+theorem _root_.Subalgebra.eq_of_le_of_finrank_eq (h_le : F ≤ E)
+    (h_finrank : finrank K F = finrank K E) : F = E :=
   Subalgebra.eq_of_le_of_finrank_le h_le h_finrank.ge
 
 end Subalgebra
@@ -682,7 +684,9 @@ noncomputable def divisionRingOfFiniteDimensional (F K : Type*) [Field F] [Ring 
     exact (Classical.choose_spec (FiniteDimensional.exists_mul_eq_one F hx):)
   inv_zero := dif_pos rfl
   nnqsmul := _
+  nnqsmul_def := fun q a => rfl
   qsmul := _
+  qsmul_def := fun q a => rfl
 
 /-- An integral domain that is module-finite as an algebra over a field is a field. -/
 noncomputable def fieldOfFiniteDimensional (F K : Type*) [Field F] [h : CommRing K] [IsDomain K]
@@ -718,6 +722,7 @@ theorem finrank_span_singleton {v : V} (hv : v ≠ 0) : finrank K (K ∙ v) = 1 
   · exact finrank_span_le_card ({v} : Set V)
   · rw [Nat.succ_le_iff, finrank_pos_iff]
     use ⟨v, mem_span_singleton_self v⟩, 0
+    apply Subtype.coe_ne_coe.mp
     simp [hv]
 
 /-- In a one-dimensional space, any vector is a multiple of any nonzero vector -/

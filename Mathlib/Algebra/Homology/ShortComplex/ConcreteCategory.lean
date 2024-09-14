@@ -38,7 +38,10 @@ lemma ShortComplex.zero_apply
 section preadditive
 
 variable [Preadditive C] [(forget₂ C Ab).Additive] [(forget₂ C Ab).PreservesHomology]
-  [HasZeroObject C] (S : ShortComplex C)
+  (S : ShortComplex C)
+
+section
+variable [HasZeroObject C]
 
 lemma Preadditive.mono_iff_injective {X Y : C} (f : X ⟶ Y) :
     Mono f ↔ Function.Injective ((forget₂ C Ab).map f) := by
@@ -70,6 +73,8 @@ lemma Preadditive.epi_iff_surjective' {X Y : C} (f : X ⟶ Y) :
   have e : forget₂ C Ab ⋙ forget Ab ≅ forget C := eqToIso (HasForget₂.forget_comp)
   exact Arrow.isoOfNatIso e (Arrow.mk f)
 
+end
+
 namespace ShortComplex
 
 lemma exact_iff_exact_map_forget₂ [S.HasHomology] :
@@ -84,12 +89,12 @@ lemma exact_iff_of_concreteCategory [S.HasHomology] :
 
 variable {S}
 
-lemma ShortExact.injective_f (hS : S.ShortExact) :
+lemma ShortExact.injective_f [HasZeroObject C] (hS : S.ShortExact) :
     Function.Injective ((forget₂ C Ab).map S.f) := by
   rw [← Preadditive.mono_iff_injective]
   exact hS.mono_f
 
-lemma ShortExact.surjective_g (hS : S.ShortExact) :
+lemma ShortExact.surjective_g [HasZeroObject C] (hS : S.ShortExact) :
     Function.Surjective ((forget₂ C Ab).map S.g) := by
   rw [← Preadditive.epi_iff_surjective]
   exact hS.epi_g

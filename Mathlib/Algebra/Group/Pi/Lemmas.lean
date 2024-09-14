@@ -38,6 +38,15 @@ theorem Set.preimage_one {α β : Type*} [One β] (s : Set β) [Decidable ((1 : 
     (1 : α → β) ⁻¹' s = if (1 : β) ∈ s then Set.univ else ∅ :=
   Set.preimage_const 1 s
 
+namespace Pi
+
+variable {α β : Type*} [Preorder α] [Preorder β]
+
+@[to_additive] lemma one_mono [One β] : Monotone (1 : α → β) := monotone_const
+@[to_additive] lemma one_anti [One β] : Antitone (1 : α → β) := antitone_const
+
+end Pi
+
 namespace MulHom
 
 @[to_additive]
@@ -239,25 +248,15 @@ theorem Pi.mulSingle_div [∀ i, Group <| f i] (i : I) (x y : f i) :
     mulSingle i (x / y) = mulSingle i x / mulSingle i y :=
   (MonoidHom.mulSingle f i).map_div x y
 
-section
-variable [∀ i, Mul <| f i]
+@[to_additive]
+theorem Pi.mulSingle_pow [∀ i, Monoid (f i)] (i : I) (x : f i) (n : ℕ) :
+    mulSingle i (x ^ n) = mulSingle i x ^ n :=
+  (MonoidHom.mulSingle f i).map_pow x n
 
 @[to_additive]
-theorem SemiconjBy.pi {x y z : ∀ i, f i} (h : ∀ i, SemiconjBy (x i) (y i) (z i)) :
-    SemiconjBy x y z :=
-  funext h
-
-@[to_additive]
-theorem Pi.semiconjBy_iff {x y z : ∀ i, f i} :
-    SemiconjBy x y z ↔ ∀ i, SemiconjBy (x i) (y i) (z i) := Function.funext_iff
-
-@[to_additive]
-theorem Commute.pi {x y : ∀ i, f i} (h : ∀ i, Commute (x i) (y i)) : Commute x y := .pi h
-
-@[to_additive]
-theorem Pi.commute_iff {x y : ∀ i, f i} : Commute x y ↔ ∀ i, Commute (x i) (y i) := semiconjBy_iff
-
-end
+theorem Pi.mulSingle_zpow [∀ i, Group (f i)] (i : I) (x : f i) (n : ℤ) :
+    mulSingle i (x ^ n) = mulSingle i x ^ n :=
+  (MonoidHom.mulSingle f i).map_zpow x n
 
 /-- The injection into a pi group at different indices commutes.
 
@@ -327,6 +326,26 @@ theorem Pi.mulSingle_mul_mulSingle_eq_mulSingle_mul_mulSingle {M : Type*} [CommM
     · simp_rw [← Pi.mulSingle_mul, h, mulSingle_one]
 
 end Single
+
+section
+variable [∀ i, Mul <| f i]
+
+@[to_additive]
+theorem SemiconjBy.pi {x y z : ∀ i, f i} (h : ∀ i, SemiconjBy (x i) (y i) (z i)) :
+    SemiconjBy x y z :=
+  funext h
+
+@[to_additive]
+theorem Pi.semiconjBy_iff {x y z : ∀ i, f i} :
+    SemiconjBy x y z ↔ ∀ i, SemiconjBy (x i) (y i) (z i) := Function.funext_iff
+
+@[to_additive]
+theorem Commute.pi {x y : ∀ i, f i} (h : ∀ i, Commute (x i) (y i)) : Commute x y := .pi h
+
+@[to_additive]
+theorem Pi.commute_iff {x y : ∀ i, f i} : Commute x y ↔ ∀ i, Commute (x i) (y i) := semiconjBy_iff
+
+end
 
 namespace Function
 

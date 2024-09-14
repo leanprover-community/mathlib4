@@ -12,7 +12,7 @@ import Mathlib.Data.Set.BoolIndicator
 A clopen set is a set that is both closed and open.
 -/
 
-open Set Filter Topology TopologicalSpace Classical
+open Set Filter Topology TopologicalSpace
 
 universe u v
 
@@ -59,27 +59,27 @@ lemma IsClopen.himp (hs : IsClopen s) (ht : IsClopen t) : IsClopen (s ⇨ t) := 
 theorem IsClopen.prod {t : Set Y} (hs : IsClopen s) (ht : IsClopen t) : IsClopen (s ×ˢ t) :=
   ⟨hs.1.prod ht.1, hs.2.prod ht.2⟩
 
-theorem isClopen_iUnion_of_finite [Finite Y] {s : Y → Set X} (h : ∀ i, IsClopen (s i)) :
+theorem isClopen_iUnion_of_finite {Y} [Finite Y] {s : Y → Set X} (h : ∀ i, IsClopen (s i)) :
     IsClopen (⋃ i, s i) :=
   ⟨isClosed_iUnion_of_finite (forall_and.1 h).1, isOpen_iUnion (forall_and.1 h).2⟩
 
-theorem Set.Finite.isClopen_biUnion {s : Set Y} {f : Y → Set X} (hs : s.Finite)
+theorem Set.Finite.isClopen_biUnion {Y} {s : Set Y} {f : Y → Set X} (hs : s.Finite)
     (h : ∀ i ∈ s, IsClopen <| f i) : IsClopen (⋃ i ∈ s, f i) :=
   ⟨hs.isClosed_biUnion fun i hi => (h i hi).1, isOpen_biUnion fun i hi => (h i hi).2⟩
 
-theorem isClopen_biUnion_finset {s : Finset Y} {f : Y → Set X}
+theorem isClopen_biUnion_finset {Y} {s : Finset Y} {f : Y → Set X}
     (h : ∀ i ∈ s, IsClopen <| f i) : IsClopen (⋃ i ∈ s, f i) :=
  s.finite_toSet.isClopen_biUnion h
 
-theorem isClopen_iInter_of_finite [Finite Y] {s : Y → Set X} (h : ∀ i, IsClopen (s i)) :
+theorem isClopen_iInter_of_finite {Y} [Finite Y] {s : Y → Set X} (h : ∀ i, IsClopen (s i)) :
     IsClopen (⋂ i, s i) :=
   ⟨isClosed_iInter (forall_and.1 h).1, isOpen_iInter_of_finite (forall_and.1 h).2⟩
 
-theorem Set.Finite.isClopen_biInter {s : Set Y} (hs : s.Finite) {f : Y → Set X}
+theorem Set.Finite.isClopen_biInter {Y} {s : Set Y} (hs : s.Finite) {f : Y → Set X}
     (h : ∀ i ∈ s, IsClopen (f i)) : IsClopen (⋂ i ∈ s, f i) :=
   ⟨isClosed_biInter fun i hi => (h i hi).1, hs.isOpen_biInter fun i hi => (h i hi).2⟩
 
-theorem isClopen_biInter_finset {s : Finset Y} {f : Y → Set X}
+theorem isClopen_biInter_finset {Y} {s : Finset Y} {f : Y → Set X}
     (h : ∀ i ∈ s, IsClopen (f i)) : IsClopen (⋂ i ∈ s, f i) :=
   s.finite_toSet.isClopen_biInter h
 

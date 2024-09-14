@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anand Rao, Rémi Bottinelli
 -/
 import Mathlib.CategoryTheory.CofilteredSystem
-import Mathlib.Combinatorics.SimpleGraph.Connectivity
+import Mathlib.Combinatorics.SimpleGraph.Path
 import Mathlib.Data.Finite.Set
 
 /-!
@@ -255,7 +255,9 @@ def componentComplFunctor : (Finset V)ᵒᵖ ⥤ Type u where
   obj K := G.ComponentCompl K.unop
   map f := ComponentCompl.hom (le_of_op_hom f)
   map_id _ := funext fun C => C.hom_refl
-  map_comp h h' := funext fun C => C.hom_trans (le_of_op_hom h) (le_of_op_hom h')
+  map_comp {_ Y Z} h h' := funext fun C => by
+    convert C.hom_trans (le_of_op_hom h) (le_of_op_hom _)
+    exact h'
 
 /-- The end of a graph, defined as the sections of the functor `component_compl_functor` . -/
 protected def «end» :=

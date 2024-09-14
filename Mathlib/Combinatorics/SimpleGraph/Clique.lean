@@ -3,15 +3,15 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Combinatorics.SimpleGraph.Connectivity
+import Mathlib.Combinatorics.SimpleGraph.Path
 import Mathlib.Combinatorics.SimpleGraph.Operations
 import Mathlib.Data.Finset.Pairwise
 
 /-!
 # Graph cliques
 
-This file defines cliques in simple graphs. A clique is a set of vertices that are pairwise
-adjacent.
+This file defines cliques in simple graphs.
+A clique is a set of vertices that are pairwise adjacent.
 
 ## Main declarations
 
@@ -125,9 +125,8 @@ theorem isClique_map_iff {f : α ↪ β} {t : Set β} :
   obtain (hs | hs) := s.subsingleton_or_nontrivial
   · simp [hs, IsClique.of_subsingleton]
   simp [or_iff_right hs.not_subsingleton, Set.image_eq_image f.injective]
-section DecidableEq
 
-variable [DecidableEq β] {f : α ↪ β} {t : Finset β}
+variable {f : α ↪ β} {t : Finset β}
 
 theorem isClique_map_finset_iff_of_nontrivial (ht : t.Nontrivial) :
     (G.map f).IsClique t ↔ ∃ (s : Finset α), G.IsClique s ∧ s.map f = t := by
@@ -152,8 +151,6 @@ theorem isClique_map_finset_iff :
 protected theorem IsClique.finsetMap {f : α ↪ β} {s : Finset α} (h : G.IsClique s) :
     (G.map f).IsClique (s.map f) := by
   simpa
-
-end DecidableEq
 
 end Clique
 
@@ -191,7 +188,7 @@ protected theorem IsNClique.map (h : G.IsNClique n s) {f : α ↪ β} :
     (G.map f).IsNClique n (s.map f) :=
   ⟨by rw [coe_map]; exact h.1.map, (card_map _).trans h.2⟩
 
-theorem isNClique_map_iff [DecidableEq β] (hn : 1 < n) {t : Finset β} {f : α ↪ β} :
+theorem isNClique_map_iff (hn : 1 < n) {t : Finset β} {f : α ↪ β} :
     (G.map f).IsNClique n t ↔ ∃ s : Finset α, G.IsNClique n s ∧ s.map f = t := by
   rw [isNClique_iff, isClique_map_finset_iff, or_and_right,
     or_iff_right (by rintro ⟨h', rfl⟩; exact h'.not_lt hn)]
@@ -273,9 +270,9 @@ theorem not_cliqueFree_of_top_embedding {n : ℕ} (f : (⊤ : SimpleGraph (Fin n
     ¬G.CliqueFree n := by
   simp only [CliqueFree, isNClique_iff, isClique_iff_induce_eq, not_forall, Classical.not_not]
   use Finset.univ.map f.toEmbedding
-  simp only [card_map, Finset.card_fin, eq_self_iff_true, and_true_iff]
+  simp only [card_map, Finset.card_fin, eq_self_iff_true, and_true]
   ext ⟨v, hv⟩ ⟨w, hw⟩
-  simp only [coe_map, Set.mem_image, coe_univ, Set.mem_univ, true_and_iff] at hv hw
+  simp only [coe_map, Set.mem_image, coe_univ, Set.mem_univ, true_and] at hv hw
   obtain ⟨v', rfl⟩ := hv
   obtain ⟨w', rfl⟩ := hw
   simp only [coe_sort_coe, RelEmbedding.coe_toEmbedding, comap_adj, Function.Embedding.coe_subtype,
@@ -326,7 +323,7 @@ theorem CliqueFree.comap {H : SimpleGraph β} (f : H ↪g G) : G.CliqueFree n �
   intro h; contrapose h
   exact not_cliqueFree_of_top_embedding <| f.comp (topEmbeddingOfNotCliqueFree h)
 
-@[simp] theorem cliqueFree_map_iff {f : α ↪ β} [DecidableEq β] [Nonempty α] :
+@[simp] theorem cliqueFree_map_iff {f : α ↪ β} [Nonempty α] :
     (G.map f).CliqueFree n ↔ G.CliqueFree n := by
   obtain (hle | hlt) := le_or_lt n 1
   · obtain (rfl | rfl) := Nat.le_one_iff_eq_zero_or_eq_one.1 hle

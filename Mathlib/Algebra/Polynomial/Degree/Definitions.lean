@@ -10,6 +10,7 @@ import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Nat.WithBot
 import Mathlib.Data.Nat.Cast.WithTop
 import Mathlib.Data.Nat.SuccPred
+import Mathlib.Algebra.Order.Ring.WithTop
 
 /-!
 # Theory of univariate polynomials
@@ -523,7 +524,7 @@ theorem ne_zero_of_natDegree_gt {n : ℕ} (h : n < natDegree p) : p ≠ 0 := fun
 
 theorem degree_lt_degree (h : natDegree p < natDegree q) : degree p < degree q := by
   by_cases hp : p = 0
-  · simp [hp]
+  · simp only [hp, degree_zero]
     rw [bot_lt_iff_ne_bot]
     intro hq
     simp [hp, degree_eq_bot.mp hq, lt_irrefl] at h
@@ -613,13 +614,21 @@ theorem degree_add_eq_left_of_degree_lt (h : degree q < degree p) : degree (p + 
 theorem degree_add_eq_right_of_degree_lt (h : degree p < degree q) : degree (p + q) = degree q := by
   rw [add_comm, degree_add_eq_left_of_degree_lt h]
 
+theorem natDegree_add_eq_left_of_degree_lt (h : degree q < degree p) :
+    natDegree (p + q) = natDegree p :=
+  natDegree_eq_of_degree_eq (degree_add_eq_left_of_degree_lt h)
+
 theorem natDegree_add_eq_left_of_natDegree_lt (h : natDegree q < natDegree p) :
     natDegree (p + q) = natDegree p :=
-  natDegree_eq_of_degree_eq (degree_add_eq_left_of_degree_lt (degree_lt_degree h))
+  natDegree_add_eq_left_of_degree_lt (degree_lt_degree h)
+
+theorem natDegree_add_eq_right_of_degree_lt (h : degree p < degree q) :
+    natDegree (p + q) = natDegree q :=
+  natDegree_eq_of_degree_eq (degree_add_eq_right_of_degree_lt h)
 
 theorem natDegree_add_eq_right_of_natDegree_lt (h : natDegree p < natDegree q) :
     natDegree (p + q) = natDegree q :=
-  natDegree_eq_of_degree_eq (degree_add_eq_right_of_degree_lt (degree_lt_degree h))
+  natDegree_add_eq_right_of_degree_lt (degree_lt_degree h)
 
 theorem degree_add_C (hp : 0 < degree p) : degree (p + C a) = degree p :=
   add_comm (C a) p ▸ degree_add_eq_right_of_degree_lt <| lt_of_le_of_lt degree_C_le hp
@@ -944,11 +953,11 @@ theorem natDegree_mul_le_of_le (hp : natDegree p ≤ m) (hg : natDegree q ≤ n)
 natDegree_mul_le.trans <| add_le_add ‹_› ‹_›
 
 theorem natDegree_pow_le {p : R[X]} {n : ℕ} : (p ^ n).natDegree ≤ n * p.natDegree := by
-  induction' n with i hi
-  · simp
-  · rw [pow_succ, Nat.succ_mul]
-    apply le_trans natDegree_mul_le
-    exact add_le_add_right hi _
+  induction n with
+  | zero => simp
+  | succ i hi =>
+    rw [pow_succ, Nat.succ_mul]
+    apply le_trans natDegree_mul_le (add_le_add_right hi _)
 
 theorem natDegree_pow_le_of_le (n : ℕ) (hp : natDegree p ≤ m) :
     natDegree (p ^ n) ≤ n * m :=
@@ -957,9 +966,10 @@ theorem natDegree_pow_le_of_le (n : ℕ) (hp : natDegree p ≤ m) :
 @[simp]
 theorem coeff_pow_mul_natDegree (p : R[X]) (n : ℕ) :
     (p ^ n).coeff (n * p.natDegree) = p.leadingCoeff ^ n := by
-  induction' n with i hi
-  · simp
-  · rw [pow_succ, pow_succ, Nat.succ_mul]
+  induction n with
+  | zero => simp
+  | succ i hi =>
+    rw [pow_succ, pow_succ, Nat.succ_mul]
     by_cases hp1 : p.leadingCoeff ^ i = 0
     · rw [hp1, zero_mul]
       by_cases hp2 : p ^ i = 0

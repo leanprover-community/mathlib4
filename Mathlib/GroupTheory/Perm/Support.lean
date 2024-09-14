@@ -164,7 +164,8 @@ theorem Disjoint.mul_apply_eq_iff {σ τ : Perm α} (hστ : Disjoint σ τ) {a 
   · exact ⟨(congr_arg σ hτ).symm.trans h, hτ⟩
 
 theorem Disjoint.mul_eq_one_iff {σ τ : Perm α} (hστ : Disjoint σ τ) :
-    σ * τ = 1 ↔ σ = 1 ∧ τ = 1 := by simp_rw [ext_iff, one_apply, hστ.mul_apply_eq_iff, forall_and]
+    σ * τ = 1 ↔ σ = 1 ∧ τ = 1 := by
+  simp_rw [Perm.ext_iff, one_apply, hστ.mul_apply_eq_iff, forall_and]
 
 theorem Disjoint.zpow_disjoint_zpow {σ τ : Perm α} (hστ : Disjoint σ τ) (m n : ℤ) :
     Disjoint (σ ^ m) (τ ^ n) := fun x =>
@@ -250,6 +251,16 @@ theorem set_support_mul_subset : { x | (p * q) x ≠ x } ⊆ { x | p x ≠ x } �
 
 end Set
 
+@[simp]
+theorem apply_pow_apply_eq_iff (f : Perm α) (n : ℕ) {x : α} :
+    f ((f ^ n) x) = (f ^ n) x ↔ f x = x := by
+  rw [← mul_apply, Commute.self_pow f, mul_apply, apply_eq_iff_eq]
+
+@[simp]
+theorem apply_zpow_apply_eq_iff (f : Perm α) (n : ℤ) {x : α} :
+    f ((f ^ n) x) = (f ^ n) x ↔ f x = x := by
+  rw [← mul_apply, Commute.self_zpow f, mul_apply, apply_eq_iff_eq]
+
 variable [DecidableEq α] [Fintype α] {f g : Perm α}
 
 /-- The `Finset` of nonfixed points of a permutation. -/
@@ -268,7 +279,7 @@ theorem coe_support_eq_set_support (f : Perm α) : (f.support : Set α) = { x | 
 
 @[simp]
 theorem support_eq_empty_iff {σ : Perm α} : σ.support = ∅ ↔ σ = 1 := by
-  simp_rw [Finset.ext_iff, mem_support, Finset.not_mem_empty, iff_false_iff, not_not,
+  simp_rw [Finset.ext_iff, mem_support, Finset.not_mem_empty, iff_false, not_not,
     Equiv.Perm.ext_iff, one_apply]
 
 @[simp]
@@ -315,19 +326,9 @@ theorem support_inv (σ : Perm α) : support σ⁻¹ = σ.support := by
 theorem apply_mem_support {x : α} : f x ∈ f.support ↔ x ∈ f.support := by
   rw [mem_support, mem_support, Ne, Ne, apply_eq_iff_eq]
 
-@[simp]
-theorem apply_pow_apply_eq_iff (f : Perm α) (n : ℕ) {x : α} :
-    f ((f ^ n) x) = (f ^ n) x ↔ f x = x := by
-  rw [← mul_apply, Commute.self_pow f, mul_apply, apply_eq_iff_eq]
-
 -- @[simp] -- Porting note (#10618): simp can prove this
 theorem pow_apply_mem_support {n : ℕ} {x : α} : (f ^ n) x ∈ f.support ↔ x ∈ f.support := by
   simp only [mem_support, ne_eq, apply_pow_apply_eq_iff]
-
-@[simp]
-theorem apply_zpow_apply_eq_iff (f : Perm α) (n : ℤ) {x : α} :
-    f ((f ^ n) x) = (f ^ n) x ↔ f x = x := by
-  rw [← mul_apply, Commute.self_zpow f, mul_apply, apply_eq_iff_eq]
 
 -- @[simp] -- Porting note (#10618): simp can prove this
 theorem zpow_apply_mem_support {n : ℤ} {x : α} : (f ^ n) x ∈ f.support ↔ x ∈ f.support := by
@@ -378,9 +379,9 @@ theorem support_swap {x y : α} (h : x ≠ y) : support (swap x y) = {x, y} := b
   ext z
   by_cases hx : z = x
   any_goals simpa [hx] using h.symm
-  by_cases hy : z = y <;>
-  · simp [swap_apply_of_ne_of_ne, hx, hy] <;>
-    exact h
+  by_cases hy : z = y
+  · simpa [swap_apply_of_ne_of_ne, hx, hy] using h
+  · simp [swap_apply_of_ne_of_ne, hx, hy]
 
 theorem support_swap_iff (x y : α) : support (swap x y) = {x, y} ↔ x ≠ y := by
   refine ⟨fun h => ?_, fun h => support_swap h⟩
@@ -389,7 +390,7 @@ theorem support_swap_iff (x y : α) : support (swap x y) = {x, y} ↔ x ≠ y :=
 
 theorem support_swap_mul_swap {x y z : α} (h : List.Nodup [x, y, z]) :
     support (swap x y * swap y z) = {x, y, z} := by
-  simp only [List.not_mem_nil, and_true_iff, List.mem_cons, not_false_iff, List.nodup_cons,
+  simp only [List.not_mem_nil, and_true, List.mem_cons, not_false_iff, List.nodup_cons,
     List.mem_singleton, and_self_iff, List.nodup_nil] at h
   push_neg at h
   apply le_antisymm
@@ -486,7 +487,7 @@ theorem support_extend_domain (f : α ≃ Subtype p) {g : Perm α} :
       rw [eq_symm_apply]
       exact Subtype.coe_injective ha
   · rw [extendDomain_apply_not_subtype _ _ pb]
-    simp only [not_exists, false_iff_iff, not_and, eq_self_iff_true, not_true]
+    simp only [not_exists, false_iff, not_and, eq_self_iff_true, not_true]
     rintro a _ rfl
     exact pb (Subtype.prop _)
 

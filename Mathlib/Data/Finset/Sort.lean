@@ -93,16 +93,16 @@ theorem sorted_zero_eq_min'_aux (s : Finset α) (h : 0 < (s.sort (· ≤ ·)).le
     exact s.min'_le _ this
 
 theorem sorted_zero_eq_min' {s : Finset α} {h : 0 < (s.sort (· ≤ ·)).length} :
-    (s.sort (· ≤ ·)).get ⟨0, h⟩ = s.min' (card_pos.1 <| by rwa [length_sort] at h) :=
+    (s.sort (· ≤ ·))[0] = s.min' (card_pos.1 <| by rwa [length_sort] at h) :=
   sorted_zero_eq_min'_aux _ _ _
 
 theorem min'_eq_sorted_zero {s : Finset α} {h : s.Nonempty} :
-    s.min' h = (s.sort (· ≤ ·)).get ⟨0, (by rw [length_sort]; exact card_pos.2 h)⟩ :=
+    s.min' h = (s.sort (· ≤ ·))[0]'(by rw [length_sort]; exact card_pos.2 h) :=
   (sorted_zero_eq_min'_aux _ _ _).symm
 
 theorem sorted_last_eq_max'_aux (s : Finset α)
     (h : (s.sort (· ≤ ·)).length - 1 < (s.sort (· ≤ ·)).length) (H : s.Nonempty) :
-    (s.sort (· ≤ ·)).get ⟨(s.sort (· ≤ ·)).length - 1, h⟩ = s.max' H := by
+    (s.sort (· ≤ ·))[(s.sort (· ≤ ·)).length - 1] = s.max' H := by
   let l := s.sort (· ≤ ·)
   apply le_antisymm
   · have : l.get ⟨(s.sort (· ≤ ·)).length - 1, h⟩ ∈ s :=
@@ -115,15 +115,15 @@ theorem sorted_last_eq_max'_aux (s : Finset α)
 
 theorem sorted_last_eq_max' {s : Finset α}
     {h : (s.sort (· ≤ ·)).length - 1 < (s.sort (· ≤ ·)).length} :
-    (s.sort (· ≤ ·)).get ⟨(s.sort (· ≤ ·)).length - 1, h⟩ =
+    (s.sort (· ≤ ·))[(s.sort (· ≤ ·)).length - 1] =
       s.max' (by rw [length_sort] at h; exact card_pos.1 (lt_of_le_of_lt bot_le h)) :=
-  sorted_last_eq_max'_aux _ _ _
+  sorted_last_eq_max'_aux _ h _
 
 theorem max'_eq_sorted_last {s : Finset α} {h : s.Nonempty} :
     s.max' h =
-      (s.sort (· ≤ ·)).get ⟨(s.sort (· ≤ ·)).length - 1,
-        by simpa using Nat.sub_lt (card_pos.mpr h) Nat.zero_lt_one⟩ :=
-  (sorted_last_eq_max'_aux _ _ _).symm
+      (s.sort (· ≤ ·))[(s.sort (· ≤ ·)).length - 1]'
+        (by simpa using Nat.sub_lt (card_pos.mpr h) Nat.zero_lt_one) :=
+  (sorted_last_eq_max'_aux _ (by simpa using Nat.sub_lt (card_pos.mpr h) Nat.zero_lt_one) _).symm
 
 /-- Given a finset `s` of cardinality `k` in a linear order `α`, the map `orderIsoOfFin s h`
 is the increasing bijection between `Fin k` and `s` as an `OrderIso`. Here, `h` is a proof that
@@ -150,8 +150,7 @@ theorem orderIsoOfFin_symm_apply (s : Finset α) {k : ℕ} (h : s.card = k) (x :
   rfl
 
 theorem orderEmbOfFin_apply (s : Finset α) {k : ℕ} (h : s.card = k) (i : Fin k) :
-    s.orderEmbOfFin h i =
-      (s.sort (· ≤ ·)).get ⟨i, by rw [length_sort, h]; exact i.2⟩ :=
+    s.orderEmbOfFin h i = (s.sort (· ≤ ·))[i]'(by rw [length_sort, h]; exact i.2) :=
   rfl
 
 @[simp]
@@ -170,7 +169,7 @@ theorem range_orderEmbOfFin (s : Finset α) {k : ℕ} (h : s.card = k) :
 /-- The bijection `orderEmbOfFin s h` sends `0` to the minimum of `s`. -/
 theorem orderEmbOfFin_zero {s : Finset α} {k : ℕ} (h : s.card = k) (hz : 0 < k) :
     orderEmbOfFin s h ⟨0, hz⟩ = s.min' (card_pos.mp (h.symm ▸ hz)) := by
-  simp only [orderEmbOfFin_apply, Fin.val_mk, sorted_zero_eq_min']
+  simp only [orderEmbOfFin_apply, Fin.getElem_fin, sorted_zero_eq_min']
 
 /-- The bijection `orderEmbOfFin s h` sends `k-1` to the maximum of `s`. -/
 theorem orderEmbOfFin_last {s : Finset α} {k : ℕ} (h : s.card = k) (hz : 0 < k) :
@@ -242,3 +241,21 @@ theorem sort_univ (n : ℕ) : Finset.univ.sort (fun x y : Fin n => x ≤ y) = Li
     (List.pairwise_le_finRange n)
 
 end Fin
+
+/-- Given a `Fintype` `α` of cardinality `k`, the map `orderIsoFinOfCardEq s h` is the increasing
+bijection between `Fin k` and `α` as an `OrderIso`. Here, `h` is a proof that the cardinality of `α`
+is `k`. We use this instead of an iso `Fin (Fintype.card α) ≃o α` to avoid casting issues in further
+uses of this function. -/
+def Fintype.orderIsoFinOfCardEq
+    (α : Type*) [LinearOrder α] [Fintype α] {k : ℕ} (h : Fintype.card α = k) :
+    Fin k ≃o α :=
+  (Finset.univ.orderIsoOfFin h).trans
+    ((OrderIso.setCongr _ _ Finset.coe_univ).trans OrderIso.Set.univ)
+
+/-- Any finite linear order order-embeds into any infinite linear order. -/
+lemma nonempty_orderEmbedding_of_finite_infinite
+    (α : Type*) [LinearOrder α] [hα : Finite α]
+    (β : Type*) [LinearOrder β] [hβ : Infinite β] : Nonempty (α ↪o β) := by
+  haveI := Fintype.ofFinite α
+  obtain ⟨s, hs⟩ := Infinite.exists_subset_card_eq β (Fintype.card α)
+  exact ⟨((Fintype.orderIsoFinOfCardEq α rfl).symm.toOrderEmbedding).trans (s.orderEmbOfFin hs)⟩

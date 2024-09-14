@@ -67,9 +67,8 @@ def Matrix.toLinearMap₂'Aux (f : Matrix n m N₂) : (n → R₁) →ₛₗ[σ�
 
 variable [DecidableEq n] [DecidableEq m]
 
-theorem Matrix.toLinearMap₂'Aux_stdBasis (f : Matrix n m N₂) (i : n) (j : m) :
-    f.toLinearMap₂'Aux σ₁ σ₂ (LinearMap.stdBasis R₁ (fun _ => R₁) i 1)
-      (LinearMap.stdBasis R₂ (fun _ => R₂) j 1) = f i j := by
+theorem Matrix.toLinearMap₂'Aux_single (f : Matrix n m N₂) (i : n) (j : m) :
+    f.toLinearMap₂'Aux σ₁ σ₂ (Pi.single i 1) (Pi.single j 1) = f i j := by
   rw [Matrix.toLinearMap₂'Aux, mk₂'ₛₗ_apply]
   have : (∑ i', ∑ j', (if i = i' then (1 : S₁) else (0 : S₁)) •
         (if j = j' then (1 : S₂) else (0 : S₂)) • f i' j') =
@@ -112,18 +111,17 @@ variable [DecidableEq n] [DecidableEq m]
 
 theorem LinearMap.toLinearMap₂'Aux_toMatrix₂Aux (f : (n → R₁) →ₛₗ[σ₁] (m → R₂) →ₛₗ[σ₂] N₂) :
     Matrix.toLinearMap₂'Aux σ₁ σ₂
-        (LinearMap.toMatrix₂Aux R (fun i => stdBasis R₁ (fun _ => R₁) i 1)
-          (fun j => stdBasis R₂ (fun _ => R₂) j 1) f) =
+        (LinearMap.toMatrix₂Aux R (fun i => Pi.single i 1) (fun j => Pi.single j 1) f) =
       f := by
   refine ext_basis (Pi.basisFun R₁ n) (Pi.basisFun R₂ m) fun i j => ?_
-  simp_rw [Pi.basisFun_apply, Matrix.toLinearMap₂'Aux_stdBasis, LinearMap.toMatrix₂Aux_apply]
+  simp_rw [Pi.basisFun_apply, Matrix.toLinearMap₂'Aux_single, LinearMap.toMatrix₂Aux_apply]
 
 theorem Matrix.toMatrix₂Aux_toLinearMap₂'Aux (f : Matrix n m N₂) :
-    LinearMap.toMatrix₂Aux R (fun i => LinearMap.stdBasis R₁ (fun _ => R₁) i 1)
-        (fun j => LinearMap.stdBasis R₂ (fun _ => R₂) j 1) (f.toLinearMap₂'Aux σ₁ σ₂) =
+    LinearMap.toMatrix₂Aux R (fun i => Pi.single i 1)
+        (fun j => Pi.single j 1) (f.toLinearMap₂'Aux σ₁ σ₂) =
       f := by
   ext i j
-  simp_rw [LinearMap.toMatrix₂Aux_apply, Matrix.toLinearMap₂'Aux_stdBasis]
+  simp_rw [LinearMap.toMatrix₂Aux_apply, Matrix.toLinearMap₂'Aux_single]
 
 end CommSemiring
 
@@ -137,7 +135,7 @@ This section deals with the conversion between matrices and sesquilinear maps on
 -/
 
 variable [CommSemiring R] [AddCommMonoid N₂] [Module R N₂] [Semiring R₁] [Semiring R₂]
-  [SMulCommClass R R N₂] [Semiring S₁] [Semiring S₂] [Module S₁ N₂] [Module S₂ N₂]
+  [Semiring S₁] [Semiring S₂] [Module S₁ N₂] [Module S₂ N₂]
   [SMulCommClass S₁ R N₂] [SMulCommClass S₂ R N₂] [SMulCommClass S₂ S₁ N₂]
 variable {σ₁ : R₁ →+* S₁} {σ₂ : R₂ →+* S₂}
 variable [Fintype n] [Fintype m]
@@ -147,9 +145,7 @@ variable (R)
 
 /-- The linear equivalence between sesquilinear maps and `n × m` matrices -/
 def LinearMap.toMatrixₛₗ₂' : ((n → R₁) →ₛₗ[σ₁] (m → R₂) →ₛₗ[σ₂] N₂) ≃ₗ[R] Matrix n m N₂ :=
-  { LinearMap.toMatrix₂Aux R (fun i => stdBasis R₁ (fun _ => R₁) i 1) fun j =>
-      stdBasis R₂ (fun _ => R₂) j
-        1 with
+  { LinearMap.toMatrix₂Aux R (fun i => Pi.single i 1) (fun j => Pi.single j 1) with
     toFun := LinearMap.toMatrix₂Aux R _ _
     invFun := Matrix.toLinearMap₂'Aux σ₁ σ₂
     left_inv := LinearMap.toLinearMap₂'Aux_toMatrix₂Aux R
@@ -197,16 +193,29 @@ theorem Matrix.toLinearMap₂'_apply' {T : Type*} [CommSemiring T] (M : Matrix n
   rw [smul_eq_mul, smul_eq_mul, mul_comm (w _), ← mul_assoc]
 
 @[simp]
+theorem Matrix.toLinearMapₛₗ₂'_single (M : Matrix n m N₂) (i : n) (j : m) :
+    Matrix.toLinearMapₛₗ₂' R σ₁ σ₂ M (Pi.single i 1) (Pi.single j 1) = M i j :=
+  Matrix.toLinearMap₂'Aux_single σ₁ σ₂ M i j
+
+set_option linter.deprecated false in
+@[simp, deprecated Matrix.toLinearMapₛₗ₂'_single (since := "2024-08-09")]
 theorem Matrix.toLinearMapₛₗ₂'_stdBasis (M : Matrix n m N₂) (i : n) (j : m) :
     Matrix.toLinearMapₛₗ₂' R σ₁ σ₂ M (LinearMap.stdBasis R₁ (fun _ => R₁) i 1)
       (LinearMap.stdBasis R₂ (fun _ => R₂) j 1) = M i j :=
-  Matrix.toLinearMap₂'Aux_stdBasis σ₁ σ₂ M i j
+  Matrix.toLinearMapₛₗ₂'_single ..
 
 @[simp]
+theorem Matrix.toLinearMap₂'_single (M : Matrix n m N₂) (i : n) (j : m) :
+    Matrix.toLinearMap₂' R M (Pi.single i 1) (Pi.single j 1) = M i j :=
+  Matrix.toLinearMap₂'Aux_single _ _ M i j
+
+set_option linter.deprecated false in
+@[simp, deprecated Matrix.toLinearMap₂'_single (since := "2024-08-09")]
 theorem Matrix.toLinearMap₂'_stdBasis (M : Matrix n m N₂) (i : n) (j : m) :
     Matrix.toLinearMap₂' R M (LinearMap.stdBasis R (fun _ => R) i 1)
       (LinearMap.stdBasis R (fun _ => R) j 1) = M i j :=
-  Matrix.toLinearMap₂'Aux_stdBasis _ _ M i j
+  show Matrix.toLinearMap₂' R M (Pi.single i 1) (Pi.single j 1) = M i j
+  from Matrix.toLinearMap₂'Aux_single _ _ M i j
 
 @[simp]
 theorem LinearMap.toMatrixₛₗ₂'_symm :
@@ -240,14 +249,12 @@ theorem LinearMap.toMatrix'_toLinearMap₂' (M : Matrix n m N₂) :
 
 @[simp]
 theorem LinearMap.toMatrixₛₗ₂'_apply (B : (n → R₁) →ₛₗ[σ₁] (m → R₂) →ₛₗ[σ₂] N₂) (i : n) (j : m) :
-    LinearMap.toMatrixₛₗ₂' R B i j =
-      B (stdBasis R₁ (fun _ => R₁) i 1) (stdBasis R₂ (fun _ => R₂) j 1) :=
+    LinearMap.toMatrixₛₗ₂' R B i j = B (Pi.single i 1) (Pi.single j 1) :=
   rfl
 
 @[simp]
 theorem LinearMap.toMatrix₂'_apply (B : (n → S₁) →ₗ[S₁] (m → S₂) →ₗ[S₂] N₂) (i : n) (j : m) :
-    LinearMap.toMatrix₂' R B i j =
-      B (stdBasis S₁ (fun _ => S₁) i 1) (stdBasis S₂ (fun _ => S₂) j 1) :=
+    LinearMap.toMatrix₂' R B i j = B (Pi.single i 1) (Pi.single j 1) :=
   rfl
 
 end ToMatrix'
@@ -351,8 +358,8 @@ noncomputable def Matrix.toLinearMap₂ : Matrix n m N₂ ≃ₗ[R] M₁ →ₗ[
 theorem LinearMap.toMatrix₂_apply (B : M₁ →ₗ[R] M₂ →ₗ[R] N₂) (i : n) (j : m) :
     LinearMap.toMatrix₂ b₁ b₂ B i j = B (b₁ i) (b₂ j) := by
   simp only [toMatrix₂, LinearEquiv.trans_apply, toMatrix₂'_apply, LinearEquiv.arrowCongr_apply,
-    Basis.equivFun_symm_apply, stdBasis_apply', ite_smul, one_smul, zero_smul, sum_ite_eq, mem_univ,
-    ↓reduceIte, LinearEquiv.refl_apply]
+    Basis.equivFun_symm_apply, Pi.single_apply, ite_smul, one_smul, zero_smul, sum_ite_eq',
+    mem_univ, ↓reduceIte, LinearEquiv.refl_apply]
 
 @[simp]
 theorem Matrix.toLinearMap₂_apply (M : Matrix n m N₂) (x : M₁) (y : M₂) :
@@ -478,7 +485,7 @@ end
 
 end ToMatrix
 
-/-! ### Adjoint pairs-/
+/-! ### Adjoint pairs -/
 
 
 section MatrixAdjoints
@@ -616,7 +623,7 @@ end MatrixAdjoints
 
 namespace LinearMap
 
-/-! ### Nondegenerate bilinear forms-/
+/-! ### Nondegenerate bilinear forms -/
 
 
 section Det

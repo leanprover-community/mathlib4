@@ -5,7 +5,6 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Algebra.Group.Even
 import Mathlib.Algebra.Order.Group.Lattice
--- import Mathlib.Algebra.Order.Group.Defs
 
 /-!
 # Absolute values in ordered groups
@@ -94,7 +93,7 @@ variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
 
 @[to_additive (attr := simp) abs_nonneg] lemma one_le_mabs (a : α) : 1 ≤ |a|ₘ := by
   apply pow_two_semiclosed _
-  rw [mabs, pow_two, mul_sup,  sup_mul, ← pow_two, mul_left_inv, sup_comm, ← sup_assoc]
+  rw [mabs, pow_two, mul_sup,  sup_mul, ← pow_two, inv_mul_cancel, sup_comm, ← sup_assoc]
   apply le_sup_right
 
 @[to_additive (attr := simp)] lemma mabs_mabs (a : α) : |(|a|ₘ)|ₘ = |a|ₘ :=
@@ -203,6 +202,8 @@ variable [Group α] [LinearOrder α] {a b : α}
 @[to_additive] lemma isSquare_mabs : IsSquare |a|ₘ ↔ IsSquare a :=
   mabs_by_cases (IsSquare · ↔ _) Iff.rfl isSquare_inv
 
+@[to_additive] lemma lt_of_mabs_lt : |a|ₘ < b → a < b := (le_mabs_self _).trans_lt
+
 variable [CovariantClass α α (· * ·) (· ≤ ·)] {a b c : α}
 
 @[to_additive (attr := simp) abs_pos] lemma one_lt_mabs : 1 < |a|ₘ ↔ a ≠ 1 := by
@@ -223,7 +224,7 @@ variable [CovariantClass α α (· * ·) (· ≤ ·)] {a b c : α}
   · simp [mabs_of_le_one h]
 
 @[to_additive add_abs_nonneg] lemma one_le_mul_mabs (a : α) : 1 ≤ a * |a|ₘ := by
-  rw [← mul_right_inv a]; exact mul_le_mul_left' (inv_le_mabs a) _
+  rw [← mul_inv_cancel a]; exact mul_le_mul_left' (inv_le_mabs a) _
 
 @[to_additive] lemma inv_mabs_le_inv (a : α) : |a|ₘ⁻¹ ≤ a⁻¹ := by simpa using inv_mabs_le a⁻¹
 
@@ -244,8 +245,6 @@ variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
   max_lt_iff.trans <| and_comm.trans <| by rw [inv_lt']
 
 @[to_additive] lemma inv_lt_of_mabs_lt (h : |a|ₘ < b) : b⁻¹ < a := (mabs_lt.mp h).1
-
-@[to_additive] lemma lt_of_mabs_lt : |a|ₘ < b → a < b := (le_mabs_self _).trans_lt
 
 @[to_additive] lemma max_div_min_eq_mabs' (a b : α) : max a b / min a b = |a / b|ₘ := by
   rcases le_total a b with ab | ba

@@ -7,6 +7,7 @@ import Batteries.Lean.Position
 import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Lean.GoalsLocation
 import Mathlib.Lean.Meta.KAbstractPositions
+import Lean.Util.FoldConsts
 
 /-!
 
@@ -160,7 +161,7 @@ def renderUnfolds (e : Expr) (occ : Option Nat) (loc : Option Name) (range : Lsp
         #[<span className="font-code" style={json% { "white-space" : "pre-wrap" }}> {
           Html.ofComponent MakeEditLink
             (.ofReplaceRange doc.meta range tactic)
-            #[.text $ Format.pretty $ (← Meta.ppExpr unfold)] }
+            #[.text <| Format.pretty <| (← Meta.ppExpr unfold)] }
         </span>]
       } </li>
   return <details «open»={true}>
@@ -220,7 +221,7 @@ Click on a suggestion to replace `unfold?` by a tactic that performs this rewrit
 elab stx:"unfold?" : tactic => do
   let some range := (← getFileMap).rangeOfStx? stx | return
   Widget.savePanelWidgetInfo (hash UnfoldComponent.javascript)
-    (pure $ json% { replaceRange : $range }) stx
+    (pure <| json% { replaceRange : $range }) stx
 
 /-- `#unfold? e` gives all unfolds of `e`.
 In tactic mode, use `unfold?` instead. -/
@@ -241,3 +242,7 @@ def elabUnfoldCommand : Command.CommandElab := fun stx =>
       let unfolds := unfolds.toList.map (m! "· {·}")
       logInfo (m! "Unfolds for {e}:\n"
         ++ .joinSep unfolds "\n")
+
+end InteractiveUnfold
+
+end Mathlib.Tactic

@@ -42,14 +42,14 @@ def isomorphismClasses : Cat.{v, u} ⥤ Type u where
   map {C D} F := Quot.map F.obj fun X Y ⟨f⟩ => ⟨F.mapIso f⟩
   map_id {C} := by  -- Porting note: this used to be `tidy`
     dsimp; apply funext; intro x
-    apply x.recOn  -- Porting note: `induction x` not working yet
+    apply @Quot.recOn _ _ _ x
     · intro _ _ p
       simp only [types_id_apply]
     · intro _
       rfl
   map_comp {C D E} f g := by -- Porting note(s): idem
     dsimp; apply funext; intro x
-    apply x.recOn
+    apply @Quot.recOn _ _ _ x
     · intro _ _ _
       simp only [types_id_apply]
     · intro _
