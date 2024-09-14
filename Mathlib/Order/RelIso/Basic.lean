@@ -3,7 +3,6 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Init.Algebra.Classes
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Logic.Embedding.Basic
 import Mathlib.Order.RelClasses
@@ -81,7 +80,7 @@ protected theorem isAsymm [RelHomClass F r s] (f : F) : ∀ [IsAsymm β s], IsAs
 protected theorem acc [RelHomClass F r s] (f : F) (a : α) : Acc s (f a) → Acc r a := by
   generalize h : f a = b
   intro ac
-  induction' ac with _ H IH generalizing a
+  induction ac generalizing a with | intro _ H IH => ?_
   subst h
   exact ⟨_, fun a' h => IH (f a') (map_rel f h) _ rfl⟩
 
@@ -327,7 +326,7 @@ protected theorem isStrictTotalOrder : ∀ (_ : r ↪r s) [IsStrictTotalOrder β
 protected theorem acc (f : r ↪r s) (a : α) : Acc s (f a) → Acc r a := by
   generalize h : f a = b
   intro ac
-  induction' ac with _ H IH generalizing a
+  induction ac generalizing a with | intro _ H IH => ?_
   subst h
   exact ⟨_, fun a' h => IH (f a') (f.map_rel_iff.2 h) _ rfl⟩
 
@@ -378,7 +377,7 @@ theorem acc_lift₂_iff [Setoid α] {r : α → α → Prop}
   constructor
   · exact RelHomClass.acc (Quotient.mkRelHom H) a
   · intro ac
-    induction' ac with _ _ IH
+    induction ac with | intro _ _ IH => ?_
     refine ⟨_, fun q h => ?_⟩
     obtain ⟨a', rfl⟩ := q.exists_rep
     exact IH a' h
@@ -701,7 +700,7 @@ lexicographic orders on the sum.
 def sumLexCongr {α₁ α₂ β₁ β₂ r₁ r₂ s₁ s₂} (e₁ : @RelIso α₁ β₁ r₁ s₁) (e₂ : @RelIso α₂ β₂ r₂ s₂) :
     Sum.Lex r₁ r₂ ≃r Sum.Lex s₁ s₂ :=
   ⟨Equiv.sumCongr e₁.toEquiv e₂.toEquiv, @fun a b => by
-    cases' e₁ with f hf; cases' e₂ with g hg; cases a <;> cases b <;> simp [hf, hg]⟩
+    obtain ⟨f, hf⟩ := e₁; obtain ⟨g, hg⟩ := e₂; cases a <;> cases b <;> simp [hf, hg]⟩
 
 /-- Given relation isomorphisms `r₁ ≃r s₁` and `r₂ ≃r s₂`, construct a relation isomorphism for the
 lexicographic orders on the product.

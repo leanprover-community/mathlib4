@@ -188,7 +188,7 @@ variable {α : Type*} {r : α → α → Prop} [IsTrans α r] {β γ : Type*} [N
 
 theorem Directed.finite_set_le (D : Directed r f) {s : Set γ} (hs : s.Finite) :
     ∃ z, ∀ i ∈ s, r (f i) (f z) := by
-  convert D.finset_le hs.toFinset; rw [Set.Finite.mem_toFinset]
+  convert D.finset_le hs.toFinset using 3; rw [Set.Finite.mem_toFinset]
 
 theorem Directed.finite_le (D : Directed r f) (g : β → γ) : ∃ z, ∀ i, r (f (g i)) (f z) := by
   classical
@@ -211,12 +211,14 @@ theorem Set.Finite.exists_ge [IsDirected α (· ≥ ·)] {s : Set α} (hs : s.Fi
     ∃ M, ∀ i ∈ s, M ≤ i :=
   directed_id.finite_set_le (r := (· ≥ ·)) hs
 
+@[simp]
 theorem Finite.bddAbove_range [IsDirected α (· ≤ ·)] (f : β → α) : BddAbove (Set.range f) := by
   obtain ⟨M, hM⟩ := Finite.exists_le f
   refine ⟨M, fun a ha => ?_⟩
   obtain ⟨b, rfl⟩ := ha
   exact hM b
 
+@[simp]
 theorem Finite.bddBelow_range [IsDirected α (· ≥ ·)] (f : β → α) : BddBelow (Set.range f) := by
   obtain ⟨M, hM⟩ := Finite.exists_ge f
   refine ⟨M, fun a ha => ?_⟩

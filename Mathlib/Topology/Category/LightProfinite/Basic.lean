@@ -17,8 +17,14 @@ implemented as totally disconnected second countable compact Hausdorff spaces.
 This file also defines the category `LightDiagram`, which consists of those spaces that can be
 written as a sequential limit (in `Profinite`) of finite sets.
 
-We define an equivalence of categories `LightProfinite ≌ LightDiagram` and prove that these are
+We define an equivalence of categories `LightProfinite ≌ LightDiagram` and prove that these are
 essentially small categories.
+
+## Implementation
+
+The category `LightProfinite` is defined using the structure `CompHausLike`. See the file
+`CompHausLike.Basic` for more information.
+
 -/
 
 /- The basic API for `LightProfinite` is largely copied from the API of `Profinite`;
@@ -225,6 +231,9 @@ theorem epi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
   · rw [← CategoryTheory.epi_iff_surjective]
     apply (forget LightProfinite).epi_of_epi_map
 
+instance : lightToProfinite.PreservesEpimorphisms where
+  preserves f _ := (Profinite.epi_iff_surjective _).mpr ((epi_iff_surjective f).mp inferInstance)
+
 end LightProfinite
 
 /-- A structure containing the data of sequential limit in `Profinite` of finite sets. -/
@@ -238,7 +247,7 @@ structure LightDiagram : Type (u+1) where
 
 namespace LightDiagram
 
-/-- The underlying `Profinite` of a `LightDiagram`. -/
+/-- The underlying `Profinite` of a `LightDiagram`. -/
 def toProfinite (S : LightDiagram) : Profinite := S.cone.pt
 
 @[simps!]

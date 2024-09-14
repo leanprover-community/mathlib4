@@ -180,7 +180,7 @@ theorem cauchySeq_finset_iff_prod_vanishing :
       ∀ e ∈ 𝓝 (1 : α), ∃ s : Finset β, ∀ t, Disjoint t s → (∏ b ∈ t, f b) ∈ e := by
   classical
   simp only [CauchySeq, cauchy_map_iff, and_iff_right atTop_neBot, prod_atTop_atTop_eq,
-    uniformity_eq_comap_nhds_one α, tendsto_comap_iff, (· ∘ ·), atTop_neBot, true_and]
+    uniformity_eq_comap_nhds_one α, tendsto_comap_iff, Function.comp_def, atTop_neBot, true_and]
   rw [tendsto_atTop']
   constructor
   · intro h e he

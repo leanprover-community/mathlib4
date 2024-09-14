@@ -57,7 +57,7 @@ universe u v
 
 /-- The set of matchings for `t` when restricted to a `Finset` of `ι`. -/
 def hallMatchingsOn {ι : Type u} {α : Type v} (t : ι → Finset α) (ι' : Finset ι) :=
-  { f : ι' → α | Function.Injective f ∧ ∀ x, f x ∈ t x }
+  { f : ι' → α | Function.Injective f ∧ ∀ (x : {x // x ∈ ι'}), f x ∈ t x }
 
 /-- Given a matching on a finset, construct the restriction of that matching to a subset. -/
 def hallMatchingsOn.restrict {ι : Type u} {α : Type v} (t : ι → Finset α) {ι' ι'' : Finset ι}

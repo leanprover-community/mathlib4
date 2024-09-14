@@ -128,7 +128,7 @@ theorem norm_max_aux₁ [CompleteSpace F] {f : ℂ → F} {z w : ℂ}
     exact fun ζ hζ => sub_ne_zero.2 (ne_of_mem_sphere hζ hr.ne')
   · show ∀ ζ ∈ sphere z r, ‖(ζ - z)⁻¹ • f ζ‖ ≤ ‖f z‖ / r
     rintro ζ (hζ : abs (ζ - z) = r)
-    rw [le_div_iff hr, norm_smul, norm_inv, norm_eq_abs, hζ, mul_comm, mul_inv_cancel_left₀ hr.ne']
+    rw [le_div_iff₀ hr, norm_smul, norm_inv, norm_eq_abs, hζ, mul_comm, mul_inv_cancel_left₀ hr.ne']
     exact hz (hsub hζ)
   show ‖(w - z)⁻¹ • f w‖ < ‖f z‖ / r
   rw [norm_smul, norm_inv, norm_eq_abs, ← div_eq_inv_mul]
@@ -143,8 +143,8 @@ theorem norm_max_aux₂ {f : ℂ → F} {z w : ℂ} (hd : DiffContOnCl ℂ f (ba
   set e : F →L[ℂ] F̂ := UniformSpace.Completion.toComplL
   have he : ∀ x, ‖e x‖ = ‖x‖ := UniformSpace.Completion.norm_coe
   replace hz : IsMaxOn (norm ∘ e ∘ f) (closedBall z (dist w z)) z := by
-    simpa only [IsMaxOn, (· ∘ ·), he] using hz
-  simpa only [he, (· ∘ ·)]
+    simpa only [IsMaxOn, Function.comp_def, he] using hz
+  simpa only [he, Function.comp_def]
     using norm_max_aux₁ (e.differentiable.comp_diffContOnCl hd) hz
 
 /-!
@@ -172,7 +172,7 @@ Finally, we generalize the theorem from a disk in `ℂ` to a closed ball in any 
 
 /-- **Maximum modulus principle** on a closed ball: if `f : E → F` is continuous on a closed ball,
 is complex differentiable on the corresponding open ball, and the norm `‖f w‖` takes its maximum
-value on the open ball at its center, then the norm `‖f w‖` is constant on the closed ball.  -/
+value on the open ball at its center, then the norm `‖f w‖` is constant on the closed ball. -/
 theorem norm_eqOn_closedBall_of_isMaxOn {f : E → F} {z : E} {r : ℝ}
     (hd : DiffContOnCl ℂ f (ball z r)) (hz : IsMaxOn (norm ∘ f) (ball z r) z) :
     EqOn (norm ∘ f) (const E ‖f z‖) (closedBall z r) := by
@@ -306,7 +306,7 @@ normed complex space to a strictly convex normed complex space has the following
 - it is complex differentiable on the corresponding open ball;
 - the norm `‖f w‖` takes its maximum value on the open ball at its center.
 
-Then `f` is a constant on the closed ball.  -/
+Then `f` is a constant on the closed ball. -/
 theorem eqOn_closedBall_of_isMaxOn_norm {f : E → F} {z : E} {r : ℝ}
     (hd : DiffContOnCl ℂ f (ball z r)) (hz : IsMaxOn (norm ∘ f) (ball z r) z) :
     EqOn f (const E (f z)) (closedBall z r) := fun _x hx =>
