@@ -43,14 +43,14 @@ include hr
 lemma Ico_filter_dvd_eq : (Ico a b).filter (r ∣ ·) =
     (Ico ⌈a / (r : ℚ)⌉ ⌈b / (r : ℚ)⌉).map ⟨(· * r), mul_left_injective₀ hr.ne'⟩ := by
   ext x
-  simp only [mem_map, mem_filter, mem_Ico, ceil_le, lt_ceil, div_le_iff, lt_div_iff,
+  simp only [mem_map, mem_filter, mem_Ico, ceil_le, lt_ceil, div_le_iff₀, lt_div_iff,
     dvd_iff_exists_eq_mul_left, cast_pos.2 hr, ← cast_mul, cast_lt, cast_le]
   aesop
 
 lemma Ioc_filter_dvd_eq : (Ioc a b).filter (r ∣ ·) =
     (Ioc ⌊a / (r : ℚ)⌋ ⌊b / (r : ℚ)⌋).map ⟨(· * r), mul_left_injective₀ hr.ne'⟩ := by
   ext x
-  simp only [mem_map, mem_filter, mem_Ioc, floor_lt, le_floor, div_lt_iff, le_div_iff,
+  simp only [mem_map, mem_filter, mem_Ioc, floor_lt, le_floor, div_lt_iff, le_div_iff₀,
     dvd_iff_exists_eq_mul_left, cast_pos.2 hr, ← cast_mul, cast_lt, cast_le]
   aesop
 
@@ -125,7 +125,7 @@ theorem count_modEq_card_eq_ceil (v : ℕ) :
     rw [← div_add_mod v r, cast_add, cast_mul, add_comm]
     tactic => simp_rw [← sub_sub, sub_div (_ - _), mul_div_cancel_left₀ _ hr'.ne', ceil_sub_nat]
     rw [sub_sub_sub_cancel_right, cast_zero, zero_sub]
-  rw [sub_eq_self, ceil_eq_zero_iff, Set.mem_Ioc, div_le_iff hr', lt_div_iff hr', neg_one_mul,
+  rw [sub_eq_self, ceil_eq_zero_iff, Set.mem_Ioc, div_le_iff₀ hr', lt_div_iff hr', neg_one_mul,
     zero_mul, neg_lt_neg_iff, cast_lt]
   exact ⟨mod_lt _ hr, by simp⟩
 
@@ -139,10 +139,10 @@ theorem count_modEq_card (v : ℕ) :
     mul_div_cancel_left₀ _ hr'.ne', add_comm, Int.ceil_add_nat, add_comm]
   rw [add_right_inj]
   split_ifs with h
-  · rw [← cast_sub h.le, Int.ceil_eq_iff, div_le_iff hr', lt_div_iff hr', cast_one, Int.cast_one,
+  · rw [← cast_sub h.le, Int.ceil_eq_iff, div_le_iff₀ hr', lt_div_iff hr', cast_one, Int.cast_one,
       sub_self, zero_mul, cast_pos, tsub_pos_iff_lt, one_mul, cast_le, tsub_le_iff_right]
     exact ⟨h, ((mod_lt _ hr).trans_le (by simp)).le⟩
-  · rw [cast_zero, ceil_eq_zero_iff, Set.mem_Ioc, div_le_iff hr', lt_div_iff hr', zero_mul,
+  · rw [cast_zero, ceil_eq_zero_iff, Set.mem_Ioc, div_le_iff₀ hr', lt_div_iff hr', zero_mul,
       tsub_nonpos, ← neg_eq_neg_one_mul, neg_lt_sub_iff_lt_add, ← cast_add, cast_lt, cast_le]
     exact ⟨(mod_lt _ hr).trans_le (by simp), not_lt.mp h⟩
 

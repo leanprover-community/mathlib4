@@ -184,11 +184,11 @@ instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C) where
               ext x y
               dsimp
               simp_rw [dite_comp, comp_dite]
-              simp only [ite_self, dite_eq_ite, dif_ctx_congr, Limits.comp_zero, Limits.zero_comp,
+              simp only [ite_self, dite_eq_ite, Limits.comp_zero, Limits.zero_comp,
                 eqToHom_trans, Finset.sum_congr]
               erw [Finset.sum_sigma]
               dsimp
-              simp only [if_congr, if_true, dif_ctx_congr, Finset.sum_dite_irrel, Finset.mem_univ,
+              simp only [if_true, Finset.sum_dite_irrel, Finset.mem_univ,
                 Finset.sum_const_zero, Finset.sum_congr, Finset.sum_dite_eq']
               split_ifs with h h'
               · substs h h'

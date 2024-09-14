@@ -118,7 +118,7 @@ theorem Subpresheaf.eq_top_iff_isIso : G = ⊤ ↔ IsIso G.ι := by
     infer_instance
   · intro H
     ext U x
-    apply iff_true_iff.mpr
+    apply (iff_of_eq (iff_true _)).mpr
     rw [← IsIso.inv_hom_id_apply (G.ι.app U) x]
     exact ((inv (G.ι.app U)) x).2
 
@@ -252,7 +252,7 @@ theorem Subpresheaf.sheafify_sheafify (h : Presieve.IsSheaf J F) :
     (G.sheafify J).sheafify J = G.sheafify J :=
   ((Subpresheaf.eq_sheafify_iff _ h).mpr <| G.sheafify_isSheaf h).symm
 
-/-- The lift of a presheaf morphism onto the sheafification subpresheaf.  -/
+/-- The lift of a presheaf morphism onto the sheafification subpresheaf. -/
 noncomputable def Subpresheaf.sheafifyLift (f : G.toPresheaf ⟶ F') (h : Presieve.IsSheaf J F') :
     (G.sheafify J).toPresheaf ⟶ F' where
   app U s := (h (G.sieveOfSection s.1) s.prop).amalgamate
@@ -292,7 +292,7 @@ theorem Subpresheaf.to_sheafify_lift_unique (h : Presieve.IsSheaf J F')
   apply (h _ hs).isSeparatedFor.ext
   rintro V i hi
   dsimp at hi
-  erw [← FunctorToTypes.naturality, ← FunctorToTypes.naturality]
+  rw [← FunctorToTypes.naturality, ← FunctorToTypes.naturality]
   exact (congr_fun (congr_app e <| op V) ⟨_, hi⟩ : _)
 
 theorem Subpresheaf.sheafify_le (h : G ≤ G') (hF : Presieve.IsSheaf J F)
@@ -305,7 +305,7 @@ theorem Subpresheaf.sheafify_le (h : G ≤ G') (hF : Presieve.IsSheaf J F)
     congr_arg (fun f : G.toPresheaf ⟶ G'.toPresheaf => (NatTrans.app f (op V) ⟨_, hi⟩).1)
       (G.to_sheafifyLift (Subpresheaf.homOfLe h) hG')
   convert this.symm
-  erw [← Subpresheaf.nat_trans_naturality]
+  rw [← Subpresheaf.nat_trans_naturality]
   rfl
 
 section Image
