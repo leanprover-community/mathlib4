@@ -3,8 +3,8 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Order.Lattice
 import Mathlib.Logic.OpClass
+import Mathlib.Order.Lattice
 
 /-!
 # `max` and `min`
