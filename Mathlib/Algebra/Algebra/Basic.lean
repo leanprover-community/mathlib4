@@ -141,8 +141,14 @@ abbrev semiringToRing (R : Type*) [CommRing R] [Semiring A] [Algebra R A] : Ring
     intCast_ofNat := fun z => by simp only [Int.cast_natCast, map_natCast]
     intCast_negSucc := fun z => by simp }
 
-instance {R : Type*} [Ring R] : Algebra (Subring.center R) R :=
-  Algebra.ofModule smul_mul_assoc mul_smul_comm
+instance {R : Type*} [Ring R] : Algebra (Subring.center R) R where
+  toFun := Subtype.val
+  map_one' := rfl
+  map_mul' _ _ := rfl
+  map_zero' := rfl
+  map_add' _ _ := rfl
+  commutes' r x := (Subring.mem_center_iff.1 r.2 x).symm
+  smul_def' _ _ := rfl
 
 end Ring
 

@@ -5,6 +5,34 @@ Authors: Wanyi He, Huanyu Zheng
 -/
 import Mathlib.Algebra.CharP.Subring
 
+/-!
+# Characteristics of Linear Maps
+
+This file contains properties of characteristics of linear maps.
+Characteristics of linear maps are determined by its scalar.
+
+## Main Results
+
+- `char_eq_if` : For a commutative semiring `R` and a `R`-module `M`,
+  the characteristic of `R` is equal to the characteristic of `R`-linear endomorphism of `M` when
+  `M` contains an element `x` that can eliminate `r` in `r • x = 0`
+
+## Notations
+
+- `R` is a commutative semiring
+- `M` is a additive commutative monoid
+- `M` is a `R`-module
+
+## Implementation Notes
+
+One can also deduce similar result via `charP_of_injective_ringHom` and
+  `R → (M →ₗ[R] M) : r ↦ (fun (x : M) ↦ r • x)`. But this will require stronger condition
+  compared to `char_eq_if`.
+
+## Reference
+
+-/
+
 variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 /-- For a commutative semiring `R` and a `R`-module `M`, if `M` contains an
