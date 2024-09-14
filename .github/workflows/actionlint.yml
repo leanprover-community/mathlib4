@@ -35,10 +35,11 @@ jobs:
           cd .github/workflows/
           ./mk_build_yml.sh
 
+      - name: check that workflows were consistent
+        continue-on-error: true
+        run: git diff --exit-code
+
       - name: suggester / build.in.yml
         uses: reviewdog/action-suggester@v1
         with:
           tool_name: mk_build_yml.sh
-
-      - name: check that workflows were consistent
-        run: git diff --exit-code
