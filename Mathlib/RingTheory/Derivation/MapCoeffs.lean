@@ -158,14 +158,26 @@ lemma deriv_aeval_eq_implicitDeriv (x : R) (v : K[X]) (h : x′ = aeval x v) (p 
     (aeval x p)′ = aeval x (implicitDeriv v p) := by
   simp [deriv_aeval_eq, implicitDeriv, h, mul_comm]
 
-lemma deriv_eq_implicitDeriv' {F : Type*} [Field F] [Differential F] [Algebra A F]
-    [DifferentialAlgebra A F] (x : F) (h : IsIntegral A x) :
-    x′ = implicitDeriv' A x := by
-  sorry
-  -- simp [deriv_aeval_eq, implicitDeriv, h, mul_comm]
+variable [CharZero K]
+
+lemma deriv_eq_implicitDeriv' {F : Type*} [Field F] [Differential F] [Algebra K F]
+    [DifferentialAlgebra K F] (x : F) (h : IsIntegral K x) :
+    x′ = implicitDeriv' K x := by
+  have := deriv_aeval_eq x (minpoly K x)
+  simp only [minpoly.aeval, map_zero] at this
+  simp [implicitDeriv']
+  have _ : aeval x (derivative (minpoly K x)) ≠ 0 := by
+    intro nh
+    absurd minpoly.degree_le_of_ne_zero K x (fun h2 ↦ ((minpoly.natDegree_pos h).trans_eq
+      (natDegree_eq_zero_of_derivative_eq_zero h2)).false) nh
+    simp only [not_le]
+    apply Polynomial.degree_derivative_lt
+    exact minpoly.ne_zero h
+  field_simp
+  linear_combination -this
 
 variable {R' : Type*} [CommRing R'] [Differential R'] [Algebra K R'] [DifferentialAlgebra K R']
-variable [IsLeftCancelMulZero R'] [Nontrivial R] [CharZero K]
+variable [IsLeftCancelMulZero R'] [Nontrivial R]
 
 lemma algHom_deriv (f : R →ₐ[K] R') (hf : Function.Injective f) (x : R) (h : IsIntegral K x) :
     f (x′) = (f x)′ := by
