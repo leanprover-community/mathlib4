@@ -64,7 +64,7 @@ theorem quadraticCharFun_eq_zero_iff {a : F} : quadraticCharFun F a = 0 ↔ a = 
   simp only [quadraticCharFun]
   by_cases ha : a = 0
   · simp only [ha, if_true]
-  · simp only [ha, if_false, iff_false_iff]
+  · simp only [ha, if_false]
     split_ifs <;> simp only [neg_eq_zero, one_ne_zero, not_false_iff]
 
 @[simp]
@@ -247,7 +247,7 @@ theorem quadraticChar_card_sqrts (hF : ringChar F ≠ 2) (a : F) :
       ext1
       -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5026):
       -- added (Set.mem_toFinset), Set.mem_setOf
-      simp only [(Set.mem_toFinset), Set.mem_setOf, not_mem_empty, iff_false_iff]
+      simp only [(Set.mem_toFinset), Set.mem_setOf, not_mem_empty, iff_false]
       rw [isSquare_iff_exists_sq] at h
       exact fun h' ↦ h ⟨_, h'.symm⟩
 
@@ -284,7 +284,7 @@ theorem quadraticChar_neg_one [DecidableEq F] (hF : ringChar F ≠ 2) :
 theorem FiniteField.isSquare_neg_one_iff : IsSquare (-1 : F) ↔ Fintype.card F % 4 ≠ 3 := by
   classical -- suggested by the linter (instead of `[DecidableEq F]`)
   by_cases hF : ringChar F = 2
-  · simp only [FiniteField.isSquare_of_char_two hF, Ne, true_iff_iff]
+  · simp only [FiniteField.isSquare_of_char_two hF, Ne, true_iff]
     exact fun hf ↦
       one_ne_zero <|
         (Nat.odd_of_mod_four_eq_three hf).symm.trans <| FiniteField.even_card_of_char_two hF

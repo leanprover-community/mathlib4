@@ -522,7 +522,7 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
         simpa [C] using hj
       rw [this]
       simp only [B, mem_sdiff, eq_self_iff_true, not_true, not_false_iff, Finset.mem_singleton,
-        update_same, and_false_iff]
+        update_same, and_false]
     · simp [hi]
   have Beq :
     Function.update (fun i => ∑ j ∈ A i, g i j) i₀ (∑ j ∈ B i₀, g i₀ j) = fun i =>
