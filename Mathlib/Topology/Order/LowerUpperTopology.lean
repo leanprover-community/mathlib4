@@ -523,16 +523,7 @@ lemma isTop_True : IsTop True := fun _ _ ↦ trivial
 
 lemma isBot_False : IsBot False := isBot_iff_eq_bot.mpr rfl
 
-lemma test2ba :  Iic False = {False} := by
-  aesop
-
-lemma test2b {a : Prop} : (¬ (a = True)) → IsOpen (Iic a)ᶜ := by
-  intro h
-  simp only [eq_iff_iff, iff_true] at h
-  have e1 : a=False := eq_false h
-  rw [e1]
-  rw [test2ba]
-  simp only [Prop.compl_singleton, not_false_eq_true, isOpen_singleton_true]
-
 lemma test2 {a : Prop} : IsOpen (Iic a)ᶜ :=
-  by_cases (fun h => by rw [h, IsTop.Iic_eq isTop_True, compl_univ]; exact isOpen_empty) test2b
+  by_cases (p := (a = True))
+    (fun h => by rw [h, IsTop.Iic_eq isTop_True, compl_univ]; exact isOpen_empty)
+    (fun h => by convert isOpen_singleton_true; rw [compl_eq_comm]; aesop)
