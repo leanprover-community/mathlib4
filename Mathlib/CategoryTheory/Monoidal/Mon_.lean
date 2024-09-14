@@ -107,7 +107,7 @@ instance : Category (Mon_ C) where
 -- Porting note: added, as `Hom.ext` does not apply to a morphism.
 @[ext]
 lemma ext {X Y : Mon_ C} {f g : X ⟶ Y} (w : f.hom = g.hom) : f = g :=
-  Hom.ext _ _ w
+  Hom.ext w
 
 @[simp]
 theorem id_hom' (M : Mon_ C) : (𝟙 M : Hom M M).hom = 𝟙 M.X :=
@@ -154,10 +154,11 @@ def mkIso {M N : Mon_ C} (f : M.X ≅ N.X) (one_f : M.one ≫ f.hom = N.one := b
       slice_rhs 2 3 => rw [mul_f]
       simp }
 
+@[simps]
 instance uniqueHomFromTrivial (A : Mon_ C) : Unique (trivial C ⟶ A) where
   default :=
   { hom := A.one
-    mul_hom := by dsimp; simp [A.one_mul, unitors_equal] }
+    mul_hom := by simp [A.one_mul, unitors_equal] }
   uniq f := by
     ext
     simp only [trivial_X]

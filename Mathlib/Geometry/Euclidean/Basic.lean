@@ -44,10 +44,7 @@ theorems that need it.
 
 -/
 
-
 noncomputable section
-
-open scoped Classical
 
 open RealInnerProductSpace
 
@@ -122,7 +119,7 @@ theorem dist_smul_vadd_eq_dist {v : V} (p₁ p₂ : P) (hv : v ≠ 0) (r : ℝ) 
   have hd : discrim ⟪v, v⟫ (2 * ⟪v, p₁ -ᵥ p₂⟫) 0 = 2 * ⟪v, p₁ -ᵥ p₂⟫ * (2 * ⟪v, p₁ -ᵥ p₂⟫) := by
     rw [discrim]
     ring
-  rw [quadratic_eq_zero_iff hvi hd, add_left_neg, zero_div, neg_mul_eq_neg_mul, ←
+  rw [quadratic_eq_zero_iff hvi hd, neg_add_cancel, zero_div, neg_mul_eq_neg_mul, ←
     mul_sub_right_distrib, sub_eq_add_neg, ← mul_two, mul_assoc, mul_div_assoc, mul_div_mul_left,
     mul_div_assoc]
   norm_num
@@ -164,6 +161,7 @@ theorem eq_of_dist_eq_of_dist_eq_of_mem_of_finrank_eq_two {s : AffineSubspace �
     intro v hv
     have hr : Set.range b = {c₂ -ᵥ c₁, p₂ -ᵥ p₁} := by
       have hu : (Finset.univ : Finset (Fin 2)) = {0, 1} := by decide
+      classical
       rw [← Fintype.coe_image_univ, hu]
       simp [b]
     rw [← hbs, hr, Submodule.mem_span_insert] at hv
@@ -173,13 +171,13 @@ theorem eq_of_dist_eq_of_dist_eq_of_mem_of_finrank_eq_two {s : AffineSubspace �
     exact ⟨t₁, t₂, hv⟩
   rcases hv (p -ᵥ p₁) (vsub_mem_direction hps hp₁s) with ⟨t₁, t₂, hpt⟩
   simp only [hpt, inner_add_right, inner_smul_right, ho, mul_zero, add_zero,
-    mul_eq_zero, inner_self_eq_zero, vsub_eq_zero_iff_eq, hc.symm, or_false_iff] at hop
+    mul_eq_zero, inner_self_eq_zero, vsub_eq_zero_iff_eq, hc.symm, or_false] at hop
   rw [hop, zero_smul, zero_add, ← eq_vadd_iff_vsub_eq] at hpt
   subst hpt
   have hp' : (p₂ -ᵥ p₁ : V) ≠ 0 := by simp [hp.symm]
   have hp₂ : dist ((1 : ℝ) • (p₂ -ᵥ p₁) +ᵥ p₁) c₁ = r₁ := by simp [hp₂c₁]
   rw [← hp₁c₁, dist_smul_vadd_eq_dist _ _ hp'] at hpc₁ hp₂
-  simp only [one_ne_zero, false_or_iff] at hp₂
+  simp only [one_ne_zero, false_or] at hp₂
   rw [hp₂.symm] at hpc₁
   cases' hpc₁ with hpc₁ hpc₁ <;> simp [hpc₁]
 

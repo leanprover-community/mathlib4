@@ -686,6 +686,10 @@ theorem iInter_iInter_eq_or_left {b : β} {p : β → Prop} {s : ∀ x : β, x =
     ⋂ (x) (h), s x h = s b (Or.inl rfl) ∩ ⋂ (x) (h : p x), s x (Or.inr h) := by
   simp only [iInter_or, iInter_inter_distrib, iInter_iInter_eq_left]
 
+lemma iUnion_sum {s : α ⊕ β → Set γ} : ⋃ x, s x = (⋃ x, s (.inl x)) ∪ ⋃ x, s (.inr x) := iSup_sum
+
+lemma iInter_sum {s : α ⊕ β → Set γ} : ⋂ x, s x = (⋂ x, s (.inl x)) ∩ ⋂ x, s (.inr x) := iInf_sum
+
 /-! ### Bounded unions and intersections -/
 
 
@@ -1247,6 +1251,7 @@ section
 open Function
 
 variable {f : α → β} {U : ι → Set β} (hU : iUnion U = univ)
+include hU
 
 theorem injective_iff_injective_of_iUnion_eq_univ :
     Injective f ↔ ∀ i, Injective ((U i).restrictPreimage f) := by
@@ -1930,3 +1935,5 @@ lemma forall_sUnion {S : Set (Set α)} {p : α → Prop} :
 lemma exists_sUnion {S : Set (Set α)} {p : α → Prop} :
     (∃ x ∈ ⋃₀ S, p x) ↔ ∃ s ∈ S, ∃ x ∈ s, p x := by
   simp_rw [← exists_prop, ← iSup_Prop_eq, iSup_sUnion]
+
+set_option linter.style.longFile 2100

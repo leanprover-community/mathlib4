@@ -12,7 +12,7 @@ import Mathlib.Data.Set.BoolIndicator
 A clopen set is a set that is both closed and open.
 -/
 
-open Set Filter Topology TopologicalSpace Classical
+open Set Filter Topology TopologicalSpace
 
 universe u v
 

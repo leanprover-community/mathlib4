@@ -1,6 +1,5 @@
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Lean.Exception
-import Mathlib.Util.Time
 import Qq.MetaM
 open Qq Lean Meta Elab Command ToAdditive
 
@@ -145,6 +144,20 @@ example {x} (h : 1 = x) : baz20 = x := by simp; guard_target = 1 = x; exact h
 def foo21 {N} {A} [Pow A N] (a : A) (n : N) : A := a ^ n
 
 run_cmd liftCoreM <| MetaM.run' <| guard <| relevantArgAttr.find? (← getEnv) `Test.foo21 == some 1
+
+@[to_additive bar22]
+abbrev foo22 {α} [Monoid α] (a : α) : ℕ → α
+  | 0 => 1
+  | _ => a
+
+run_cmd liftCoreM <| MetaM.run' <| do
+  -- make `abbrev` definition `reducible` automatically
+  guard <| (← getReducibilityStatus `Test.bar22) == .reducible
+  -- make `abbrev` definition `inline` automatically
+  guard <| (Compiler.getInlineAttribute? (← getEnv) `Test.bar22) == some .inline
+  -- some auxiliary definitions are also `abbrev` but not `reducible`
+  guard <| (← getReducibilityStatus `Test.bar22.match_1) != .reducible
+  guard <| (Compiler.getInlineAttribute? (← getEnv) `Test.bar22.match_1) == some .inline
 
 /- test the eta-expansion applied on `foo6`. -/
 run_cmd do

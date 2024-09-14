@@ -8,6 +8,7 @@ import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
 import Mathlib.Data.Ordering.Basic
 import Mathlib.Order.MinMax
 import Mathlib.Tactic.Contrapose
+import Mathlib.Tactic.Use
 
 /-!
 # Ordered monoids
@@ -953,7 +954,7 @@ section PartialOrder
 variable [PartialOrder α]
 
 @[to_additive]
-theorem mul_eq_one_iff' [CovariantClass α α (· * ·) (· ≤ ·)]
+theorem mul_eq_one_iff_of_one_le [CovariantClass α α (· * ·) (· ≤ ·)]
     [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b : α} (ha : 1 ≤ a) (hb : 1 ≤ b) :
     a * b = 1 ↔ a = 1 ∧ b = 1 :=
   Iff.intro
@@ -964,9 +965,9 @@ theorem mul_eq_one_iff' [CovariantClass α α (· * ·) (· ≤ ·)]
       have : b = 1 := le_antisymm this hb
       And.intro ‹a = 1› ‹b = 1›)
     (by rintro ⟨rfl, rfl⟩; rw [mul_one])
-    -- Porting note: original proof of the second implication,
-    -- `fun ⟨ha', hb'⟩ => by rw [ha', hb', mul_one]`,
-    -- had its `to_additive`-ization fail due to some bug
+
+@[deprecated (since := "2024-07-24")] alias mul_eq_one_iff' := mul_eq_one_iff_of_one_le
+@[deprecated (since := "2024-07-24")] alias add_eq_zero_iff' := add_eq_zero_iff_of_nonneg
 
 section Left
 

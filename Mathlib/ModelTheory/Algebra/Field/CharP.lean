@@ -10,16 +10,15 @@ import Mathlib.ModelTheory.Algebra.Ring.FreeCommRing
 import Mathlib.ModelTheory.Algebra.Field.Basic
 
 /-!
-
 # First order theory of fields
 
 This file defines the first order theory of fields of characteristic `p` as a theory over the
 language of rings
 
 ## Main definitions
-* `FirstOrder.Language.Theory.fieldOfChar` : the first order theory of fields of characteristic `p`
-  as a theory over the language of rings
 
+- `FirstOrder.Language.Theory.fieldOfChar` : the first order theory of fields of characteristic `p`
+  as a theory over the language of rings
 -/
 
 variable {p : ℕ} {K : Type*}
