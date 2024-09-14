@@ -518,3 +518,25 @@ lemma test {X : Set Prop} (h : IsOpen X) : IsUpperSet X :=
   | GenerateOpen.univ => fun ⦃a b⦄ _ a ↦ a
   | GenerateOpen.inter s t hs ht => IsUpperSet.inter (test hs) (test ht)
   | GenerateOpen.sUnion S hS => isUpperSet_sUnion (fun s hs => test (hS s hs))
+
+lemma test2aa : Iic True = univ := IsTop.Iic_eq fun _ _ ↦ trivial
+
+lemma test2a {a : Prop} : (a = True) → IsOpen (Iic a)ᶜ := by
+  intro h
+  rw [h]
+  rw [test2aa]
+  rw [compl_univ]
+  exact isOpen_empty
+
+lemma test2ba :  Iic False = {False} := by aesop
+
+lemma test2b {a : Prop} : (¬ (a = True)) → IsOpen (Iic a)ᶜ := by
+  intro h
+  simp at h
+  have e1 : a=False := eq_false h
+  rw [e1]
+  rw [test2ba]
+  simp only [Prop.compl_singleton, not_false_eq_true, isOpen_singleton_true]
+
+lemma test2 {a : Prop} : IsOpen (Iic a)ᶜ :=
+  by_cases test2a test2b
