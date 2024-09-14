@@ -11,7 +11,7 @@ import Mathlib.Order.Interval.Finset.Basic
 
 Given a preorder `α` and dependent function `f : (i : α) → π i` and `a : α`, one might want
 to consider the restriction of `f` to elements `≤ a`.
-This is defined in this file as `Prerder.restrictLe a f`.
+This is defined in this file as `Preorder.restrictLe a f`.
 Similarly, if we have `a b : α`, `hab : a ≤ b` and `f : (i : ↑(Set.Iic b)) → π ↑i`,
 one might want to restrict it to elements `≤ a`.
 This is defined in this file as `Preorder.restrictLe₂ hab f`.
