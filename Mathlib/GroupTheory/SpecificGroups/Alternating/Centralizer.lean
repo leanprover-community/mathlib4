@@ -263,7 +263,6 @@ theorem count_le_one_of_centralizer_le_alternating
   obtain ⟨a⟩ := Equiv.Perm.Basis.nonempty g
   suffices hτ : τ ∈ range_toPermHom' g by
     set k := toCentralizer a ⟨τ, hτ⟩ with hk
-    have hk' : toPermHom g k = τ := toCentralizer_rightInverse a ⟨τ, hτ⟩
     suffices hsign_k : Equiv.Perm.sign (k : Perm α) = -1 by
       rw [h _, ← Units.eq_iff] at hsign_k
       exact Int.noConfusion hsign_k
