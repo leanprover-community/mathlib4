@@ -249,7 +249,7 @@ section TendstoInMeasureOf
 variable [NormedAddCommGroup E] {p : ℝ≥0∞}
 variable {f : ι → α → E} {g : α → E}
 
-/-- This lemma is superceded by `MeasureTheory.tendstoInMeasure_of_tendsto_eLpNorm` where we
+/-- This lemma is superseded by `MeasureTheory.tendstoInMeasure_of_tendsto_eLpNorm` where we
 allow `p = ∞` and only require `AEStronglyMeasurable`. -/
 theorem tendstoInMeasure_of_tendsto_eLpNorm_of_stronglyMeasurable (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) (hf : ∀ n, StronglyMeasurable (f n)) (hg : StronglyMeasurable g)
@@ -278,7 +278,7 @@ theorem tendstoInMeasure_of_tendsto_eLpNorm_of_stronglyMeasurable (hp_ne_zero : 
 alias tendstoInMeasure_of_tendsto_snorm_of_stronglyMeasurable :=
   tendstoInMeasure_of_tendsto_eLpNorm_of_stronglyMeasurable
 
-/-- This lemma is superceded by `MeasureTheory.tendstoInMeasure_of_tendsto_eLpNorm` where we
+/-- This lemma is superseded by `MeasureTheory.tendstoInMeasure_of_tendsto_eLpNorm` where we
 allow `p = ∞`. -/
 theorem tendstoInMeasure_of_tendsto_eLpNorm_of_ne_top (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
     (hf : ∀ n, AEStronglyMeasurable (f n) μ) (hg : AEStronglyMeasurable g μ) {l : Filter ι}
@@ -306,7 +306,7 @@ theorem tendstoInMeasure_of_tendsto_eLpNorm_top {E} [NormedAddCommGroup E] {f : 
   specialize hfg (ENNReal.ofReal δ / 2)
       (ENNReal.div_pos_iff.2 ⟨(ENNReal.ofReal_pos.2 hδ).ne.symm, ENNReal.two_ne_top⟩)
   refine hfg.mono fun n hn => ?_
-  simp only [true_and_iff, gt_iff_lt, zero_tsub, zero_le, zero_add, Set.mem_Icc,
+  simp only [gt_iff_lt, zero_tsub, zero_le, zero_add, Set.mem_Icc,
     Pi.sub_apply] at *
   have : essSup (fun x : α => (‖f n x - g x‖₊ : ℝ≥0∞)) μ < ENNReal.ofReal δ :=
     lt_of_le_of_lt hn
