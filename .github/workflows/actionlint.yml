@@ -14,12 +14,12 @@ jobs:
   actionlint:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-    - name: actionlint
-      uses: raven-actions/actionlint@v1
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: actionlint
+        uses: raven-actions/actionlint@v1
 
-    - name: suggester / actionlint
+      - name: suggester / actionlint
         uses: reviewdog/action-suggester@v1
         with:
           tool_name: actionlint (comment with "bot fix style" to have the bot commit all suggestions)
