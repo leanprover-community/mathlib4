@@ -384,6 +384,15 @@ lemma Gr_ι_isIso_of_GE (X : C) (n m : ℤ) (h : n ≤ m) :
     Triangle.mk_obj₃]
   exact Gr_zero_of_isLE ((truncLT n).obj X) (n - 1) m (by linarith)
 
+lemma Gr_π_isIso_of_LT (X : C) (n m : ℤ) (h : m < n) :
+    IsIso ((Gr'' m).map ((truncLTπ n).app X)) := by
+  have := (Gr'' m).map_distinguished _ (triangleGELT_distinguished n X)
+  erw [← Triangle.isZero₁_iff_isIso₂ _ this]
+  simp only [Functor.mapTriangle_obj, triangleGELT_obj_obj₁, triangleGELT_obj_obj₂,
+    triangleGELT_obj_obj₃, triangleGELT_obj_mor₁, triangleGELT_obj_mor₂, triangleGELT_obj_mor₃,
+    Triangle.mk_obj₁]
+  exact Gr_zero_of_isGE ((truncGE n).obj X) n m h
+
 lemma Gr_π_isIso_of_LE (X : C) (n m : ℤ) (h : m ≤ n) :
     IsIso ((Gr'' m).map ((truncLEπ n).app X)) := by
   have := (Gr'' m).map_distinguished _ (triangleGELT_distinguished (n + 1) X)
@@ -515,17 +524,24 @@ lemma shift_isCore_iff_support_sub_singleton (X : C) (n n' : ℤ) (hnn' : n + n'
     have : a = 0 := by simp only [Finset.mem_singleton, add_left_eq_self] at this; exact this
     rw [this, Finset.mem_singleton]
 
-lemma support_truncLE (X : C) (n : ℤ) :
-    support ((truncLE n).obj X) = (support X).filter (fun a ↦ a ≤ n) := by
+lemma support_truncLT (X : C) (n : ℤ) :
+    support ((truncLT n).obj X) = (support X).filter (fun a ↦ a < n) := by
   ext a
   simp only [support_def, Finset.mem_filter]
-  by_cases h : a ≤ n
+  by_cases h : a < n
   · simp only [h, and_true]
-    have := Gr_π_isIso_of_LE X n a h
-    rw [← (asIso ((Gr'' a).map ((truncLEπ n).app X))).isZero_iff]
+    have := Gr_π_isIso_of_LT X n a h
+    rw [← (asIso ((Gr'' a).map ((truncLTπ n).app X))).isZero_iff]
     rfl
   · simp only [h, and_false, iff_false, Decidable.not_not]
-    exact Gr_zero_of_isLE ((truncLE n).obj X) n a (by linarith)
+    exact Gr_zero_of_isLE ((truncLT n).obj X) (n - 1) a (by linarith)
+
+lemma support_truncLE (X : C) (n : ℤ) :
+    support ((truncLE n).obj X) = (support X).filter (fun a ↦ a ≤ n) := by
+  dsimp [truncLE]; rw [support_truncLT]
+  ext a
+  simp only [Finset.mem_filter, and_congr_right_iff]
+  exact fun _ ↦ Int.lt_add_one_iff
 
 lemma support_truncGE (X : C) (n : ℤ) :
     support ((truncGE n).obj X) = (support X).filter (fun a ↦ n ≤ a) := by
@@ -680,16 +696,16 @@ lemma existence_omega_support_singleton (X : C) [IsLE X 0] (hsupp : Finset.card 
 
 open CategoryTheory.Pretriangulated.Opposite
 
-noncomputable abbrev distTriang_to_yoneda_comp_arrows₄ (Z : C) {X₁ X₂ X₃ : C} (u : X₁ ⟶ X₂)
+noncomputable abbrev triangle_to_yoneda_comp_arrows₄ (Z : C) {X₁ X₂ X₃ : C} (u : X₁ ⟶ X₂)
     (v : X₂ ⟶ X₃) (w : X₃ ⟶ X₁⟦(1 : ℤ)⟧) : ComposableArrows AddCommGrp 4 :=
   ComposableArrows.mk₄ (((preadditiveYoneda.obj Z).map w.op)) (((preadditiveYoneda.obj Z).map v.op))
   (((preadditiveYoneda.obj Z).map u.op)) ((preadditiveYoneda.obj Z).map (-w⟦(-1 : ℤ)⟧' ≫
   (shiftEquiv C (1 : ℤ)).unitIso.inv.app _).op)
 
-noncomputable abbrev distTriang_to_yoneda_comp_arrows₄_hom (Z : C) {X₁ X₂ X₃ X'₁ X'₂ X'₃: C}
+noncomputable abbrev triangle_to_yoneda_comp_arrows₄_hom (Z : C) {X₁ X₂ X₃ X'₁ X'₂ X'₃: C}
     (u : X₁ ⟶ X₂) (v : X₂ ⟶ X₃) (w : X₃ ⟶ X₁⟦(1 : ℤ)⟧) (u' : X'₁ ⟶ X'₂) (v' : X'₂ ⟶ X'₃)
     (w' : X'₃ ⟶ X'₁⟦(1 : ℤ)⟧) (f : Triangle.mk u' v' w' ⟶ Triangle.mk u v w) :
-    distTriang_to_yoneda_comp_arrows₄ Z u v w ⟶ distTriang_to_yoneda_comp_arrows₄ Z u' v' w' := by
+    triangle_to_yoneda_comp_arrows₄ Z u v w ⟶ triangle_to_yoneda_comp_arrows₄ Z u' v' w' := by
     refine ComposableArrows.homMk ?_ ?_
     · intro i
       match i with
@@ -740,9 +756,10 @@ noncomputable abbrev distTriang_to_yoneda_comp_arrows₄_hom (Z : C) {X₁ X₂ 
                Triangle.mk_mor₃, Functor.map_comp, shiftEquiv'_functor, shiftEquiv'_inverse,
                shiftEquiv'_unitIso, Iso.symm_inv, assoc, Functor.comp_obj, Functor.comp_map]
 
-lemma distTriang_to_yoneda_comp_arrows₄_exact (Z : C) {X₁ X₂ X₃ : C} (u : X₁ ⟶ X₂) (v : X₂ ⟶ X₃)
-    (w : X₃ ⟶ X₁⟦(1 : ℤ)⟧) (dT : Triangle.mk u v w ∈ Pretriangulated.distinguishedTriangles) :
-    (distTriang_to_yoneda_comp_arrows₄ Z u v w).Exact := by
+lemma triangle_to_yoneda_comp_arrows₄_exact_of_distinguished (Z : C) {X₁ X₂ X₃ : C} (u : X₁ ⟶ X₂)
+    (v : X₂ ⟶ X₃) (w : X₃ ⟶ X₁⟦(1 : ℤ)⟧)
+    (dT : Triangle.mk u v w ∈ Pretriangulated.distinguishedTriangles) :
+    (triangle_to_yoneda_comp_arrows₄ Z u v w).Exact := by
   refine {zero := fun i _ ↦ ?_, exact := fun i _ ↦ ?_}
   · match i with
     | 0 => change ((preadditiveYoneda.obj Z).map w.op) ≫ ((preadditiveYoneda.obj Z).map
@@ -803,7 +820,7 @@ lemma existence_omega_aux (n : ℕ) : ∀ (X : C) [IsLE X 0], Finset.card (suppo
   intro n hn X _ hX
   by_cases h : n = 0
   · existsi 0, 0
-    intro Z hZ
+    intro Z _
     have  h₁: IsZero ((preadditiveYoneda.obj Z).obj (Opposite.op (FullSubcategory.obj
         (0 : hP.Core')))) := by
       simp only [preadditiveYoneda_obj, Functor.comp_obj, preadditiveYonedaObj_obj,
@@ -832,10 +849,44 @@ lemma existence_omega_aux (n : ℕ) : ∀ (X : C) [IsLE X 0], Finset.card (suppo
   · set b := sSup (support X).toSet
     set T := (triangleGELT b).obj X
     set dT := triangleGELT_distinguished b X
-    have : IsLE T.obj₁ 0 := sorry
-    have : IsLE T.obj₃ 0 := sorry
-    have h₁ : Finset.card (support T.obj₁) = 1 := sorry
-    have h₃ : Finset.card (support T.obj₃) < n := sorry
+    have hb : b ∈ support X := by
+      dsimp [b]; rw [← Finset.mem_coe]
+      apply Set.Nonempty.csSup_mem
+      · rw [← hX, ← ne_eq, Finset.card_ne_zero, ← Finset.coe_nonempty] at h
+        exact h
+      · exact Finset.finite_toSet _
+    have : b ≤ 0 := by
+      apply csSup_le (Finset.coe_nonempty.mp ⟨b, hb⟩)
+      have : IsLE X 0 := inferInstance
+      rw [isLE_iff_support_bounded_above] at this
+      exact fun _ hn ↦ Set.mem_Iic.mp (this hn)
+    have : IsLE T.obj₃ 0 := by
+      have : IsLE T.obj₃ (b - 1) := by dsimp [T]; infer_instance
+      exact isLE_of_LE _ (b - 1) 0 (by linarith)
+    have : IsLE T.obj₁ 0 := by
+      have : IsLE T.obj₂ 0 := by dsimp [T]; infer_instance
+      exact LE_ext₁ _ dT 0
+    have h₁ : Finset.card (support T.obj₁) = 1 := by
+      dsimp [T]
+      rw [support_truncGE, Finset.card_eq_one]
+      existsi b
+      rw [Finset.eq_singleton_iff_unique_mem]
+      simp only [Finset.mem_filter, le_refl, and_true, and_imp]
+      constructor
+      · exact hb
+      · exact fun _ hn hbn ↦ le_antisymm (le_csSup (Finset.bddAbove _) hn) hbn
+    have h₃ : Finset.card (support T.obj₃) < n := by
+      have heq : support T.obj₃ = Finset.erase (support X) b := by
+        ext n
+        simp only [Finset.mem_erase, ne_eq]
+        dsimp [T]; rw [support_truncLT, Finset.mem_filter]
+        constructor
+        · exact fun h ↦ ⟨ne_of_lt h.2, h.1⟩
+        · intro h
+          rw [and_iff_right h.2, lt_iff_le_and_ne, ne_eq, and_iff_left h.1]
+          exact le_csSup (Finset.bddAbove _) (Finset.mem_coe.mpr h.2)
+      rw [heq, ← hX]
+      exact Finset.card_erase_lt_of_mem hb
     obtain ⟨Y₁, s₁, hY₁⟩ := existence_omega_support_singleton T.obj₁ h₁
     obtain ⟨Y₃, s₃, hY₃⟩ := hn _ h₃ T.obj₃ rfl
     have : IsLE Y₁.1 0 := {le := Y₁.2.1}
@@ -864,22 +915,23 @@ lemma existence_omega_aux (n : ℕ) : ∀ (X : C) [IsLE X 0], Finset.card (suppo
         simp only [Triangle.mk_obj₃]; infer_instance
     existsi ⟨Y₂, hY₂⟩, s₂
     intro Z hZ
-    refine Abelian.isIso_of_epi_of_isIso_of_isIso_of_mono (R₁ := distTriang_to_yoneda_comp_arrows₄ Z
-      u v w) (R₂ := distTriang_to_yoneda_comp_arrows₄ Z T.mor₁ T.mor₂ T.mor₃)
-      (distTriang_to_yoneda_comp_arrows₄_exact Z u v w dT') (distTriang_to_yoneda_comp_arrows₄_exact
-      Z T.mor₁ T.mor₂ T.mor₃ dT) (distTriang_to_yoneda_comp_arrows₄_hom Z u v w T.mor₁ T.mor₂ T.mor₃
-      (Triangle.homMk T (Triangle.mk u v w) s₁ s₂ s₃ hu hv hw.symm))
-      ?_ ?_ ?_ ?_
+    refine Abelian.isIso_of_epi_of_isIso_of_isIso_of_mono (R₁ := triangle_to_yoneda_comp_arrows₄ Z
+      u v w) (R₂ := triangle_to_yoneda_comp_arrows₄ Z T.mor₁ T.mor₂ T.mor₃)
+      (triangle_to_yoneda_comp_arrows₄_exact_of_distinguished Z u v w dT')
+      (triangle_to_yoneda_comp_arrows₄_exact_of_distinguished Z T.mor₁ T.mor₂ T.mor₃ dT)
+      (triangle_to_yoneda_comp_arrows₄_hom Z u v w T.mor₁ T.mor₂ T.mor₃
+      (Triangle.homMk T (Triangle.mk u v w) s₁ s₂ s₃ hu hv hw.symm)) ?_ ?_ ?_ ?_
     · exact shift_omega_epi s₁ 0 1 (fun Z hZ ↦ @IsIso.epi_of_iso _ _ _ _ _ (hY₁ Z hZ)) Z hZ
     · exact hY₃ Z hZ
     · exact hY₁ Z hZ
     · exact shift_omega_mono s₃ 0 (-1) (fun Z hZ ↦ @IsIso.mono_of_iso _ _ _ _ _ (hY₃ Z hZ)) Z hZ
 
-  #exit
-
 lemma existence_omega (X : C) [IsLE X 0] : ∃ (Y : hP.Core') (s : X ⟶ Y.1),
-    ∀ (Z : C), IsGE Z 0 → Function.Bijective (fun (f : Y.1 ⟶ Z) ↦ s ≫ f) := sorry
+    ∀ (Z : C), IsGE Z 0 → IsIso ((preadditiveYoneda.obj Z).map (Quiver.Hom.op s)) :=
+    /- Or? : Function.Bijective (fun (f : Y.1 ⟶ Z) ↦ s ≫ f) :=-/
+  existence_omega_aux (Finset.card (support X)) X rfl
 
+#exit
 
 end FilteredTriangulated
 
