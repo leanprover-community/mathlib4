@@ -71,49 +71,27 @@ convert back and forth between the representations. -/
 def equiv : WithCStarModule E ≃ E := Equiv.refl _
 
 instance instNontrivial [Nontrivial E] : Nontrivial (WithCStarModule E) := ‹Nontrivial E›
-instance instInhabited [Inhabited E] : Inhabited (WithCStarModule E) := ⟨(equiv E).symm default⟩
+instance instInhabited [Inhabited E] : Inhabited (WithCStarModule E) := ‹Inhabited E›
 instance instNonempty [Nonempty E] : Nonempty (WithCStarModule E) := ‹Nonempty E›
-instance instUnique [Unique E] : Unique (WithCStarModule E) where
-  uniq a := ‹Unique E›.uniq a
+instance instUnique [Unique E] : Unique (WithCStarModule E) := ‹Unique E›
 
 /-! ## `WithCStarModule E` inherits various module-adjacent structures from `E`. -/
 
-instance instZero [Zero E] : Zero (WithCStarModule E) := ⟨(equiv E).symm 0⟩
-instance instAdd [Add E] : Add (WithCStarModule E) :=
-  ⟨fun x y => (equiv E).symm ((equiv E) x + (equiv E) y)⟩
-instance instSub [Sub E] : Sub (WithCStarModule E) :=
-  ⟨fun x y => (equiv E).symm ((equiv E) x - (equiv E) y)⟩
-instance instNeg [Neg E] : Neg (WithCStarModule E) :=
-  ⟨fun x => (equiv E).symm <| -(equiv E) x⟩
+instance instZero [Zero E] : Zero (WithCStarModule E) := ‹Zero E›
+instance instAdd [Add E] : Add (WithCStarModule E) := ‹Add E›
+instance instSub [Sub E] : Sub (WithCStarModule E) := ‹Sub E›
+instance instNeg [Neg E] : Neg (WithCStarModule E) := ‹Neg E›
+instance instAddMonoid [AddMonoid E] : AddMonoid (WithCStarModule E) := ‹AddMonoid E›
+instance instSubNegMonoid [SubNegMonoid E] : SubNegMonoid (WithCStarModule E) := ‹SubNegMonoid E›
+instance instSubNegZeroMonoid [SubNegZeroMonoid E] : SubNegZeroMonoid (WithCStarModule E) :=
+  ‹SubNegZeroMonoid E›
 
-instance instAddMonoid [AddMonoid E] : AddMonoid (WithCStarModule E) where
-  nsmul := nsmulRec
-  add_assoc a b c := ‹AddMonoid E›.add_assoc a b c
-  zero_add a := ‹AddMonoid E›.zero_add a
-  add_zero a := ‹AddMonoid E›.add_zero a
+instance instAddCommGroup [AddCommGroup E] : AddCommGroup (WithCStarModule E) := ‹AddCommGroup E›
 
-instance instSubNegMonoid [SubNegMonoid E] : SubNegMonoid (WithCStarModule E) where
-  zsmul := zsmulRec
-  sub_eq_add_neg a b := ‹SubNegMonoid E›.sub_eq_add_neg a b
-
-instance instSubNegZeroMonoid [SubNegZeroMonoid E] : SubNegZeroMonoid (WithCStarModule E) where
-  neg_zero := ‹SubNegZeroMonoid E›.neg_zero
-
-instance instAddCommGroup [AddCommGroup E] : AddCommGroup (WithCStarModule E) where
-  neg_add_cancel a := ‹AddCommGroup E›.neg_add_cancel a
-  add_comm a b := ‹AddCommGroup E›.add_comm a b
-
-instance instSMul {R : Type*} [SMul R E] : SMul R (WithCStarModule E) :=
-  ⟨fun r x => (equiv E).symm (r • (equiv E x))⟩
+instance instSMul {R : Type*} [SMul R E] : SMul R (WithCStarModule E) := ‹SMul R E›
 
 instance instModule {R : Type*} [Semiring R] [AddCommGroup E] [Module R E] :
-    Module R (WithCStarModule E) where
-  one_smul _ := ‹Module R E›.one_smul _
-  mul_smul _ _ _ := ‹Module R E›.mul_smul _ _ _
-  smul_zero _ := ‹Module R E›.smul_zero _
-  smul_add _ _ _ := ‹Module R E›.smul_add _ _ _
-  add_smul _ _ _ := ‹Module R E›.add_smul _ _ _
-  zero_smul _ := ‹Module R E›.zero_smul _
+    Module R (WithCStarModule E) := ‹Module R E›
 
 instance instIsScalarTower [SMul R R'] [SMul R E] [SMul R' E]
     [IsScalarTower R R' E] : IsScalarTower R R' (WithCStarModule E) :=
