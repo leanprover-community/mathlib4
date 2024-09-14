@@ -41,7 +41,7 @@ theorem set_walk_self_length_zero_eq (u : V) : {p : G.Walk u u | p.length = 0} =
 theorem set_walk_length_zero_eq_of_ne {u v : V} (h : u ≠ v) :
     {p : G.Walk u v | p.length = 0} = ∅ := by
   ext p
-  simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false_iff]
+  simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
   exact fun h' => absurd (Walk.eq_of_length_eq_zero h') h
 
 theorem set_walk_length_succ_eq (u v : V) (n : ℕ) :
@@ -188,7 +188,8 @@ lemma ConnectedComponent.odd_card_supp_iff_odd_subcomponents {G'}
   rw [Nat.card_eq_card_toFinset, ← disjiUnion_supp_toFinset_eq_supp_toFinset h]
   simp only [Finset.card_disjiUnion, Set.toFinset_card]
   rw [Finset.odd_sum_iff_odd_card_odd, Nat.card_eq_fintype_card, Fintype.card_ofFinset]
-  simp only [Set.mem_setOf_eq, Nat.card_eq_fintype_card, Finset.filter_filter]
+  simp only [Nat.card_eq_fintype_card, Finset.filter_filter]
+  rfl
 
 end Finite
 

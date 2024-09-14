@@ -1437,7 +1437,7 @@ variable (R)
 theorem _root_.Algebra.adjoin_range_eq_range_aeval :
     Algebra.adjoin R (Set.range f) = (MvPolynomial.aeval f).range := by
   simp only [← Algebra.map_top, ← MvPolynomial.adjoin_range_X, AlgHom.map_adjoin, ← Set.range_comp,
-    (· ∘ ·), MvPolynomial.aeval_X]
+    Function.comp_def, MvPolynomial.aeval_X]
 
 theorem _root_.Algebra.adjoin_eq_range (s : Set S₁) :
     Algebra.adjoin R s = (MvPolynomial.aeval ((↑) : s → S₁)).range := by

@@ -130,7 +130,7 @@ theorem smul_le_stoppedValue_hitting [IsFiniteMeasure μ] (hsub : Submartingale 
 we have `ε • μ {ε ≤ f* n} ≤ ∫ ω in {ε ≤ f* n}, f n` where `f* n ω = max_{k ≤ n}, f k ω`.
 
 In some literature, the Doob's maximal inequality refers to what we call Doob's Lp inequality
-(which is a corollary of this lemma and will be proved in an upcomming PR). -/
+(which is a corollary of this lemma and will be proved in an upcoming PR). -/
 theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnonneg : 0 ≤ f) {ε : ℝ≥0}
     (n : ℕ) : ε • μ {ω | (ε : ℝ) ≤ (range (n + 1)).sup' nonempty_range_succ fun k => f k ω} ≤
     ENNReal.ofReal (∫ ω in {ω | (ε : ℝ) ≤ (range (n + 1)).sup' nonempty_range_succ fun k => f k ω},

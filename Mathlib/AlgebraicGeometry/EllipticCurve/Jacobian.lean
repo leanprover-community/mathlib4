@@ -7,6 +7,7 @@ import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Algebra.MvPolynomial.PDeriv
 import Mathlib.AlgebraicGeometry.EllipticCurve.Affine
 import Mathlib.Data.Fin.Tuple.Reflection
+import Mathlib.Tactic.LinearCombination'
 
 /-!
 # Jacobian coordinates for Weierstrass curves
@@ -498,7 +499,7 @@ lemma negY_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
 lemma Y_sub_Y_mul_Y_sub_negY {P Q : Fin 3 → R} (hP : W'.Equation P) (hQ : W'.Equation Q)
     (hx : P x * Q z ^ 2 = Q x * P z ^ 2) :
     (P y * Q z ^ 3 - Q y * P z ^ 3) * (P y * Q z ^ 3 - W'.negY Q * P z ^ 3) = 0 := by
-  linear_combination (norm := (rw [negY]; ring1)) Q z ^ 6 * (equation_iff P).mp hP
+  linear_combination' (norm := (rw [negY]; ring1)) Q z ^ 6 * (equation_iff P).mp hP
     - P z ^ 6 * (equation_iff Q).mp hQ + hx * hx * hx + W'.a₂ * P z ^ 2 * Q z ^ 2 * hx * hx
     + (W'.a₄ * P z ^ 4 * Q z ^ 4 - W'.a₁ * P y * P z * Q z ^ 4) * hx
 
@@ -678,7 +679,7 @@ lemma negDblY_smul (P : Fin 3 → R) (u : R) : W'.negDblY (u • P) = (u ^ 4) ^ 
 
 lemma negDblY_of_Z_eq_zero {P : Fin 3 → R} (hP : W'.Equation P) (hPz : P z = 0) :
     W'.negDblY P = -(P x ^ 2) ^ 3 := by
-  linear_combination (norm :=
+  linear_combination' (norm :=
       (rw [negDblY, dblU_of_Z_eq_zero hPz, dblX_of_Z_eq_zero hP hPz, negY_of_Z_eq_zero hPz]; ring1))
     (8 * (equation_of_Z_eq_zero hPz).mp hP - 12 * P x ^ 3) * (equation_of_Z_eq_zero hPz).mp hP
 

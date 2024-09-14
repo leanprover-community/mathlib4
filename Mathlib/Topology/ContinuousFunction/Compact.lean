@@ -202,6 +202,11 @@ theorem neg_norm_le_apply (f : C(α, ℝ)) (x : α) : -‖f‖ ≤ f x :=
 theorem norm_eq_iSup_norm : ‖f‖ = ⨆ x : α, ‖f x‖ :=
   (mkOfCompact f).norm_eq_iSup_norm
 
+-- A version with better keys
+instance {X : Type*} [TopologicalSpace X] (K : TopologicalSpace.Compacts X) :
+    CompactSpace (K : Set X) :=
+  TopologicalSpace.Compacts.instCompactSpaceSubtypeMem ..
+
 theorem norm_restrict_mono_set {X : Type*} [TopologicalSpace X] (f : C(X, E))
     {K L : TopologicalSpace.Compacts X} (hKL : K ≤ L) : ‖f.restrict K‖ ≤ ‖f.restrict L‖ :=
   (norm_le _ (norm_nonneg _)).mpr fun x => norm_coe_le_norm (f.restrict L) <| Set.inclusion hKL x
