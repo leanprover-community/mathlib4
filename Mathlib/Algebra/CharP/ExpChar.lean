@@ -257,6 +257,10 @@ theorem ExpChar.neg_one_pow_expChar_pow [Ring R] (q n : ℕ) [hR : ExpChar R q] 
   · simp only [one_pow, pow_one]
   haveI := Fact.mk hprime; exact CharP.neg_one_pow_char_pow R q n
 
+theorem center_expChar_eq_iff {R : Type u} [DivisionRing R] {p : ℕ} :
+    ExpChar R p ↔ ExpChar (Subring.center R) p :=
+  (RingHom.expChar_iff (algebraMap (Subring.center R) R) Subtype.val_injective p).symm
+
 section frobenius
 
 section CommSemiring

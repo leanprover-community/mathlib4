@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wanyi He, Huanyu Zheng
 -/
 import Mathlib.Algebra.CharP.Subring
+import Mathlib.Algebra.CharP.ExpChar
 
 /-!
 # Characteristics of Linear Maps
@@ -56,3 +57,10 @@ instance {D : Type*} [DivisionRing D] {p : ℕ} [CharP D p] :
   CharP (D →ₗ[(Subring.center D)] D) p :=
     charP_of_injective_ringHom (RingHom.injective
       (Algebra.lmul ((Subring.center D)) D).toRingHom) p
+
+instance {D : Type*} [DivisionRing D] {p : ℕ} [hchar : ExpChar D p] :
+  ExpChar (D →ₗ[(Subring.center D)] D) p :=
+    @expChar_of_injective_algebraMap (Subring.center D)
+      (D →ₗ[(Subring.center D)] D) _ _ _
+        (NoZeroSMulDivisors.algebraMap_injective
+          (Subring.center D) (D →ₗ[(Subring.center D)] D)) p (center_expChar_eq_iff.1 hchar)
