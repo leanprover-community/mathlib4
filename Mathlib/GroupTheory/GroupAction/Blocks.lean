@@ -490,7 +490,7 @@ section Finite
 
 namespace IsBlock
 
-variable [IsPretransitive G X] {B : Set X} 
+variable [IsPretransitive G X] {B : Set X}
 
 theorem ncard_block_eq_relindex (hB : IsBlock G B) {x : X} (hx : x ∈ B) :
     B.ncard = (stabilizer G x).relindex (stabilizer G B) := by
@@ -544,7 +544,7 @@ theorem subsingleton_of_card_lt [Finite X] (hB : IsBlock G B)
 
 /- The assumption `B.Finite` is necessary :
    For G = ℤ acting on itself, a = 0 and B = ℕ, the translates `k • B` of the statement
-   are just `k + ℕ`, for `k ≤ 0`, and the corresponding intersection is `ℕ`, which is not a block. 
+   are just `k + ℕ`, for `k ≤ 0`, and the corresponding intersection is `ℕ`, which is not a block.
    (Remark by Thomas Browning) -/
 -- Note : add {B} because otherwise Lean includes `hB : IsBlock G B`
 /-- The intersection of the translates of a *finite* subset which contain a given point
