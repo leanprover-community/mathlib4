@@ -33,6 +33,7 @@ section
 
 variable {R : Type u} [Ring R]
 
+/-- Constructor for elements in the module `(free R).obj X`. -/
 noncomputable def freeMk {X : Type u} (x : X) : (free R).obj X := Finsupp.single x 1
 
 @[ext 1200]
@@ -41,6 +42,8 @@ lemma free_hom_ext {X : Type u} {M : ModuleCat.{u} R} {f g : (free R).obj X ⟶ 
     f = g :=
   (Finsupp.lhom_ext' (fun x ↦ LinearMap.ext_ring (h x)))
 
+/-- The morphism of modules `(free R).obj X ⟶ M` corresponding
+to a map `f : X ⟶ M`. -/
 noncomputable def freeDesc {X : Type u} {M : ModuleCat.{u} R} (f : X ⟶ M) :
     (free R).obj X ⟶ M :=
   Finsupp.lift M R X f
@@ -66,6 +69,8 @@ namespace PresheafOfModules
 variable {C : Type u₁} [Category.{v₁} C] (R : Cᵒᵖ ⥤ RingCat.{u})
 
 variable {R} in
+/-- Given a presheaf of types `F : Cᵒᵖ ⥤ Type u`, this is the presheaf
+of modules over `R` which sends `X : Cᵒᵖ` to the free `R.obj X`-module on `F.obj X`. -/
 @[simps]
 noncomputable def freeObj (F : Cᵒᵖ ⥤ Type u) : PresheafOfModules.{u} R where
   obj := fun X ↦ (ModuleCat.free (R.obj X)).obj (F.obj X)
@@ -73,6 +78,7 @@ noncomputable def freeObj (F : Cᵒᵖ ⥤ Type u) : PresheafOfModules.{u} R whe
       (fun x ↦ ModuleCat.freeMk (R := R.obj Y) (F.map f x))
   map_id := by aesop
 
+/-- The free presheaf of modules functors `(Cᵒᵖ ⥤ Type u) ⥤ PresheafOfModules.{u} R`. -/
 @[simps]
 noncomputable def free : (Cᵒᵖ ⥤ Type u) ⥤ PresheafOfModules.{u} R where
   obj := freeObj
@@ -92,6 +98,8 @@ variable {R}
 
 variable {F : Cᵒᵖ ⥤ Type u} {G : PresheafOfModules.{u} R}
 
+/-- The morphism of presheaves of modules `freeObj F ⟶ G` corresponding to
+a morphism `F ⟶ G.presheaf ⋙ forget _` of presheaves of types. -/
 @[simps]
 noncomputable def freeObjDesc (φ : F ⟶ G.presheaf ⋙ forget _) : freeObj F ⟶ G where
   app X := ModuleCat.freeDesc (φ.app X)
@@ -101,11 +109,14 @@ noncomputable def freeObjDesc (φ : F ⟶ G.presheaf ⋙ forget _) : freeObj F �
     simpa using NatTrans.naturality_apply φ f x
 
 variable (F R) in
+/-- The unit of `PresheafOfModules.freeAdjunction`. -/
 @[simps]
 noncomputable def freeAdjunctionUnit : F ⟶ (freeObj (R := R) F).presheaf ⋙ forget _ where
   app X x := ModuleCat.freeMk x
   naturality X Y f := by ext; simp [presheaf]
 
+/-- The bijection `(freeObj F ⟶ G) ≃ (F ⟶ G.presheaf ⋙ forget _)` when
+`F` is a presheaf of types and `G` a presheaf of modules. -/
 noncomputable def freeHomEquiv : (freeObj F ⟶ G) ≃ (F ⟶ G.presheaf ⋙ forget _) where
   toFun ψ := freeAdjunctionUnit R F ≫ whiskerRight ((toPresheaf _).map ψ) _
   invFun φ := freeObjDesc φ
@@ -117,8 +128,10 @@ lemma free_hom_ext {ψ ψ' : freeObj F ⟶ G}
       freeAdjunctionUnit R F ≫ whiskerRight ((toPresheaf _).map ψ') _ ): ψ = ψ' :=
   freeHomEquiv.injective h
 
-variable (R)
 
+variable (R) in
+/-- The free presheaf of modules functor is left adjoint to the forget functor
+`PresheafOfModules.{u} R ⥤ Cᵒᵖ ⥤ Type u`. -/
 noncomputable def freeAdjunction :
     free.{u} R ⊣ (toPresheaf R ⋙ (whiskeringRight _ _ _).obj (forget Ab)) :=
   Adjunction.mkOfHomEquiv
@@ -131,6 +144,7 @@ variable (F G) in
 @[simp]
 lemma freeAdjunction_homEquiv : (freeAdjunction R).homEquiv F G = freeHomEquiv := rfl
 
+variable (R F) in
 @[simp]
 lemma freeAdjunction_unit_app :
     (freeAdjunction R).unit.app F = freeAdjunctionUnit R F := rfl
