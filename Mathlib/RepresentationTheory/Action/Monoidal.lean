@@ -66,36 +66,36 @@ theorem whiskerRight_hom {X Y : Action V G} (f : X ⟶ Y) (Z : Action V G) :
     (f ▷ Z).hom = f.hom ▷ Z.V :=
   rfl
 
--- Porting note: removed @[simp] as the simpNF linter complains
+@[simp]
 theorem associator_hom_hom {X Y Z : Action V G} :
     Hom.hom (α_ X Y Z).hom = (α_ X.V Y.V Z.V).hom := by
-  dsimp
+  dsimp [Monoidal.transportStruct_associator]
   simp
 
--- Porting note: removed @[simp] as the simpNF linter complains
+@[simp]
 theorem associator_inv_hom {X Y Z : Action V G} :
     Hom.hom (α_ X Y Z).inv = (α_ X.V Y.V Z.V).inv := by
-  dsimp
+  dsimp [Monoidal.transportStruct_associator]
   simp
 
--- Porting note: removed @[simp] as the simpNF linter complains
+@[simp]
 theorem leftUnitor_hom_hom {X : Action V G} : Hom.hom (λ_ X).hom = (λ_ X.V).hom := by
-  dsimp
+  dsimp [Monoidal.transportStruct_leftUnitor]
   simp
 
--- Porting note: removed @[simp] as the simpNF linter complains
+@[simp]
 theorem leftUnitor_inv_hom {X : Action V G} : Hom.hom (λ_ X).inv = (λ_ X.V).inv := by
-  dsimp
+  dsimp [Monoidal.transportStruct_leftUnitor]
   simp
 
--- Porting note: removed @[simp] as the simpNF linter complains
+@[simp]
 theorem rightUnitor_hom_hom {X : Action V G} : Hom.hom (ρ_ X).hom = (ρ_ X.V).hom := by
-  dsimp
+  dsimp [Monoidal.transportStruct_rightUnitor]
   simp
 
--- Porting note: removed @[simp] as the simpNF linter complains
+@[simp]
 theorem rightUnitor_inv_hom {X : Action V G} : Hom.hom (ρ_ X).inv = (ρ_ X.V).inv := by
-  dsimp
+  dsimp [Monoidal.transportStruct_rightUnitor]
   simp
 
 /-- Given an object `X` isomorphic to the tensor unit of `V`, `X` equipped with the trivial action
