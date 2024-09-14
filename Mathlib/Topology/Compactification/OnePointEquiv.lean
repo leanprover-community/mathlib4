@@ -10,8 +10,7 @@ import Mathlib.Topology.Compactification.OnePoint
 # One-point compactification and projectivization
 
 We construct a set-theoretic equivalence between
-`OnePoint K` and the projectivization `ℙ K (Fin 2 → K)`
-for an arbitrary field `K`.
+`OnePoint K` and the projectivization `ℙ K (Fin 2 → K)` for an arbitrary field `K`.
 
 (This equivalence can be extended to a homeomorphism
 in the case `K = ℝ`, where `OnePoint ℝ` gets the topology of one-point compactification.
