@@ -237,6 +237,9 @@ lemma odd_matches_node_outside {u : Set V} {c : ConnectedComponent (Subgraph.del
     Finset.card_image_of_injective _ (Subtype.val_injective), Set.toFinset_card] at hMeven ⊢
   exact hMeven
 
+
+end Finite
+
 lemma isClique_even_iff_matches [DecidableEq V] (u : Set V) (hu : Set.Finite u)
     (hc : G.IsClique u) : Even (Nat.card u) ↔ ∃ (M : Subgraph G), M.verts = u ∧ M.IsMatching := by
   haveI : Fintype u := hu.fintype
@@ -288,7 +291,6 @@ lemma completeGraph_even_iff_matches [Fintype V] [DecidableEq V] :
   simpa [Nat.card_eq_fintype_card, (set_fintype_card_eq_univ_iff _).mpr rfl] using
     isClique_even_iff_matches (Set.univ : Set V) Set.finite_univ IsClique.completeGraph
 
-end Finite
 end ConnectedComponent
 
 /--
