@@ -203,6 +203,7 @@ theorem IsInvariantBlock.isFixedBlock {B : Set X} (hfB : IsInvariantBlock G B) :
 theorem IsInvariantBlock.isBlock {B : Set X} (hfB : IsInvariantBlock G B) :
     IsBlock G B :=
   hfB.isFixedBlock.isBlock
+@[deprecated (since := "2024-09-14")] alias isFixedBlock_top := IsInvariantBlock.isBlock
 
 /-- An orbit is a block -/
 theorem isFixedBlock_orbit (a : X) : IsFixedBlock G (orbit G a) :=
@@ -541,7 +542,10 @@ theorem subsingleton_of_card_lt [Finite X] (hB : IsBlock G B)
     rw [← not_le]
     exact fun hb ↦ hB' (Nat.mul_le_mul_right _ hb)
 
--- TODO : Is the assumption B.finite necessary ?
+/- The assumption `B.Finite` is necessary :
+   For G = ℤ acting on itself, a = 0 and B = ℕ, the translates `k • B` of the statement
+   are just `k + ℕ`, for `k ≤ 0`, and the corresponding intersection is `ℕ`, which is not a block. 
+   (Remark by Thomas Browning) -/
 -- Note : add {B} because otherwise Lean includes `hB : IsBlock G B`
 /-- The intersection of the translates of a *finite* subset which contain a given point
 is a block (Wielandt, th. 7.3 )-/
