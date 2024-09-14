@@ -89,11 +89,11 @@ protected abbrev Constants :=
 /-- The type of symbols in a given language. -/
 -- Porting note(#5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
-def Symbols :=
+abbrev Symbols :=
   (Σ l, L.Functions l) ⊕ (Σ l, L.Relations l)
 
 /-- The cardinality of a language is the cardinality of its type of symbols. -/
-def card : Cardinal :=
+abbrev card : Cardinal :=
   #L.Symbols
 
 variable {L} {L' : Language.{u', v'}}
@@ -102,7 +102,7 @@ theorem card_eq_card_functions_add_card_relations :
     L.card =
       (Cardinal.sum fun l => Cardinal.lift.{v} #(L.Functions l)) +
         Cardinal.sum fun l => Cardinal.lift.{u} #(L.Relations l) := by
-  simp [card, Symbols]
+  simp only [mk_sum, mk_sigma, lift_sum]
 
 instance isRelational_sum [L.IsRelational] [L'.IsRelational] : IsRelational (L.sum L') :=
   fun _ => instIsEmptySum
@@ -110,8 +110,8 @@ instance isRelational_sum [L.IsRelational] [L'.IsRelational] : IsRelational (L.s
 instance isAlgebraic_sum [L.IsAlgebraic] [L'.IsAlgebraic] : IsAlgebraic (L.sum L') :=
   fun _ => instIsEmptySum
 
-@[simp]
-theorem empty_card : Language.empty.card = 0 := by simp [card_eq_card_functions_add_card_relations]
+theorem empty_card : Language.empty.card = 0 := by simp only [mk_sum, mk_sigma, mk_eq_zero,
+  sum_const, mk_eq_aleph0, lift_id', mul_zero, add_zero]
 
 instance isEmpty_empty : IsEmpty Language.empty.Symbols := by
   simp only [Language.Symbols, isEmpty_sum, isEmpty_sigma]

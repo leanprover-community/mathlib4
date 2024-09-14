@@ -82,6 +82,16 @@ instance instSubsingleton : Subsingleton (Language.order.Relations n) :=
 
 instance : IsEmpty (Language.order.Relations 0) := ⟨fun x => by cases x⟩
 
+instance : Unique (Σ n, Language.order.Relations n) :=
+  ⟨⟨⟨2, .le⟩⟩, fun ⟨n, R⟩ =>
+      match n, R with
+      | 2, .le => rfl⟩
+
+instance : Unique Language.order.Symbols := ⟨⟨Sum.inr default⟩, by
+  have : IsEmpty (Σ n, Language.order.Functions n) := isEmpty_sigma.2 inferInstance
+  simp only [Symbols, Sum.forall, reduceCtorEq, Sum.inr.injEq, IsEmpty.forall_iff, true_and]
+  exact Unique.eq_default⟩
+
 end order
 
 /-- A language is ordered if it has a symbol representing `≤`. -/
@@ -509,6 +519,14 @@ theorem aleph0_categorical_dlo : (ℵ₀).Categorical Language.order.dlo := fun 
   obtain ⟨_⟩ := denumerable_iff.2 h₂
   exact (isFraisseLimit_of_countable_nonempty_dlo M₁).nonempty_equiv
     (isFraisseLimit_of_countable_nonempty_dlo M₂)
+
+/-- The theory of dense linear orders is `ℵ₀`-complete. -/
+theorem dlo_isComplete : Language.order.dlo.IsComplete :=
+  aleph0_categorical_dlo.{0}.isComplete ℵ₀ _ le_rfl (by simp [one_le_aleph0])
+    ⟨by
+      letI : Language.order.Structure ℚ := orderStructure ℚ
+      exact Theory.ModelType.of _ ℚ⟩
+    fun M => inferInstance
 
 end Fraisse
 
