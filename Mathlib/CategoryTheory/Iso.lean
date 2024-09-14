@@ -355,7 +355,7 @@ theorem inv_id : inv (𝟙 X) = 𝟙 X := by
   apply inv_eq_of_hom_inv_id
   simp
 
-@[simp]
+@[simp, reassoc]
 theorem inv_comp [IsIso f] [IsIso h] : inv (f ≫ h) = inv h ≫ inv f := by
   apply inv_eq_of_hom_inv_id
   simp

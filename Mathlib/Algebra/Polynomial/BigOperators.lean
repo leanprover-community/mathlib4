@@ -47,7 +47,7 @@ theorem natDegree_list_sum_le (l : List S[X]) : natDegree l.sum ≤ (l.map natDe
   List.sum_le_foldr_max natDegree (by simp) natDegree_add_le _
 
 theorem natDegree_multiset_sum_le (l : Multiset S[X]) :
-    natDegree l.sum ≤ (l.map natDegree).foldr max max_left_comm 0 :=
+    natDegree l.sum ≤ (l.map natDegree).foldr max 0 :=
   Quotient.inductionOn l (by simpa using natDegree_list_sum_le)
 
 theorem natDegree_sum_le (f : ι → S[X]) :

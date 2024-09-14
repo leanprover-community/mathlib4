@@ -27,16 +27,23 @@ set_option linter.deprecated false
 
 universe u v
 
-/-- `IsSymmOp α β op` where `op : α → α → β` is the natural generalisation of
-`Std.IsCommutative` (`β = α`) and `IsSymm` (`β = Prop`). -/
-class IsSymmOp (α : Sort u) (β : Sort v) (op : α → α → β) : Prop where
+variable {α : Sort u} {β : Sort v}
+
+/-- `IsSymmOp op` where `op : α → α → β` says that `op` is a symmetric operation,
+i.e. `op a b = op b a`.
+It is the natural generalisation of `Std.Commutative` (`β = α`) and `IsSymm` (`β = Prop`). -/
+class IsSymmOp (op : α → α → β) : Prop where
+  /-- A symmetric operation satisfies `op a b = op b a`. -/
   symm_op : ∀ a b, op a b = op b a
 
 instance (priority := 100) isSymmOp_of_isCommutative (α : Sort u) (op : α → α → α)
-    [Std.Commutative op] : IsSymmOp α α op where symm_op := Std.Commutative.comm
+    [Std.Commutative op] : IsSymmOp op where symm_op := Std.Commutative.comm
 
 instance (priority := 100) isSymmOp_of_isSymm (α : Sort u) (op : α → α → Prop) [IsSymm α op] :
-    IsSymmOp α Prop op where symm_op a b := propext <| Iff.intro (IsSymm.symm a b) (IsSymm.symm b a)
+    IsSymmOp op where symm_op a b := propext <| Iff.intro (IsSymm.symm a b) (IsSymm.symm b a)
+
+theorem IsSymmOp.flip_eq (op : α → α → β) [IsSymmOp op] : flip op = op :=
+  funext fun a ↦ funext fun b ↦ (IsSymmOp.symm_op a b).symm
 
 @[deprecated (since := "2024-09-11")]
 class IsLeftCancel (α : Sort u) (op : α → α → α) : Prop where
@@ -180,7 +187,7 @@ theorem lt_of_lt_of_incomp {α : Sort u} {lt : α → α → Prop} [IsStrictWeak
     [DecidableRel lt] : ∀ {a b c}, lt a b → ¬lt b c ∧ ¬lt c b → lt a c :=
   @fun a b c hab ⟨nbc, ncb⟩ =>
   have nca : ¬lt c a := fun hca => absurd (trans_of lt hca hab) ncb
-  Decidable.by_contradiction fun nac : ¬lt a c =>
+  Decidable.byContradiction fun nac : ¬lt a c =>
     have : ¬lt a b ∧ ¬lt b a := incomp_trans_of lt ⟨nac, nca⟩ ⟨ncb, nbc⟩
     absurd hab this.1
 
@@ -189,7 +196,7 @@ theorem lt_of_incomp_of_lt {α : Sort u} {lt : α → α → Prop} [IsStrictWeak
     [DecidableRel lt] : ∀ {a b c}, ¬lt a b ∧ ¬lt b a → lt b c → lt a c :=
   @fun a b c ⟨nab, nba⟩ hbc =>
   have nca : ¬lt c a := fun hca => absurd (trans_of lt hbc hca) nba
-  Decidable.by_contradiction fun nac : ¬lt a c =>
+  Decidable.byContradiction fun nac : ¬lt a c =>
     have : ¬lt b c ∧ ¬lt c b := incomp_trans_of lt ⟨nba, nab⟩ ⟨nac, nca⟩
     absurd hbc this.1
 
