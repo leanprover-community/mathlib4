@@ -80,7 +80,6 @@ theorem map_id (M : CStarMatrix m n A) : M.map id = M := by
 @[simp]
 theorem map_id' (M : CStarMatrix m n A) : M.map (·) = M := map_id M
 
-@[simp]
 theorem map_map {C : Type*} {M : Matrix m n A} {f : A → B} {g : B → C} :
     (M.map f).map g = M.map (g ∘ f) := by ext; rfl
 
@@ -279,7 +278,6 @@ theorem smul_mul {l : Type*} [Fintype n] [Monoid R] [AddCommMonoid A] [Mul A] [D
     [IsScalarTower R A A] (a : R) (M : CStarMatrix m n A) (N : CStarMatrix n l A) :
     (a • M) * N = a • (M * N) := Matrix.smul_mul a M N
 
-@[simp]
 theorem mul_smul {l : Type*} [Fintype n] [Monoid R] [AddCommMonoid A] [Mul A] [DistribMulAction R A]
     [SMulCommClass R A A] (M : Matrix m n A) (a : R) (N : Matrix n l A) :
     M * (a • N) = a • (M * N) := Matrix.mul_smul M a N
@@ -324,7 +322,8 @@ instance instSemiring [Fintype n] [DecidableEq n] [Semiring A] :
 instance instRing [Fintype n] [DecidableEq n] [Ring A] : Ring (CStarMatrix n n A) :=
   { instSemiring, instAddCommGroupWithOne with }
 
-def ofMatrixRingEquiv [Fintype n] [DecidableEq n] [Semiring A] :
+/-- `ofMatrix` bundled as a ring equivalence. -/
+def ofMatrixRingEquiv [Fintype n] [Semiring A] :
     Matrix n n A ≃+* CStarMatrix n n A :=
   { ofMatrix with
     map_mul' := fun _ _ => rfl
@@ -452,7 +451,7 @@ lemma normedSpaceCore [DecidableEq n]: NormedSpace.Core ℂ (CStarMatrix m n A) 
     simpa only [norm_def, norm_eq_zero, ← injective_iff_map_eq_zero'] using toCLM_injective
 
 open WithCStarModule in
-lemma norm_entry_le_norm [DecidableEq n] [DecidableEq m] {M : CStarMatrix m n A} {i : m} {j : n} :
+lemma norm_entry_le_norm [DecidableEq n] {M : CStarMatrix m n A} {i : m} {j : n} :
     ‖M i j‖ ≤ ‖M‖ := by
   suffices ‖M i j‖ * ‖M i j‖ ≤ ‖M‖ * ‖M i j‖ by
     obtain (h | h) := (norm_nonneg (M i j)).eq_or_lt
@@ -464,7 +463,7 @@ lemma norm_entry_le_norm [DecidableEq n] [DecidableEq m] {M : CStarMatrix m n A}
   simp [norm_def]
 
 open CStarModule in
-lemma norm_le_of_forall_inner_le [DecidableEq n] {M : CStarMatrix m n A} {C : ℝ≥0}
+lemma norm_le_of_forall_inner_le {M : CStarMatrix m n A} {C : ℝ≥0}
     (h : ∀ v w, ‖⟪w, toCLM M v⟫_A‖ ≤ C * ‖v‖ * ‖w‖) : ‖M‖ ≤ C := by
   refine (toCLM M).opNorm_le_bound (by simp) fun v ↦ ?_
   obtain (h₀ | h₀) := (norm_nonneg (toCLM M v)).eq_or_lt
