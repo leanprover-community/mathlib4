@@ -39,6 +39,7 @@
   "Mathlib.CategoryTheory.Category.Init",
   "Mathlib.Combinatorics.SimpleGraph.Init",
   "Mathlib.Control.Traversable.Lemmas",
+  "Mathlib.Data.Finsupp.Notation",
   "Mathlib.Data.Int.Defs",
   "Mathlib.Data.Matrix.Notation",
   "Mathlib.Data.Matroid.Init",
@@ -194,7 +195,8 @@
  ["Batteries.Tactic.Basic", "Mathlib.Mathport.Syntax", "Mathlib.Tactic.Linter"],
  "ignore":
  {"Mathlib.Topology.Sheaves.Forget": ["Mathlib.Algebra.Category.Ring.Limits"],
-  "Mathlib.Topology.Order.LeftRightNhds": ["Mathlib.Algebra.Ring.Pointwise.Set"],
+  "Mathlib.Topology.Order.LeftRightNhds":
+  ["Mathlib.Algebra.Ring.Pointwise.Set"],
   "Mathlib.Topology.Germ": ["Mathlib.Analysis.Normed.Module.Basic"],
   "Mathlib.Topology.Defs.Basic": ["Mathlib.Tactic.FunProp"],
   "Mathlib.Topology.Category.UniformSpace":
@@ -237,7 +239,7 @@
   "Mathlib.Tactic.Lemma": ["Lean.Parser.Command"],
   "Mathlib.Tactic.IrreducibleDef": ["Mathlib.Data.Subtype"],
   "Mathlib.Tactic.ITauto":
-  ["Batteries.Logic", "Batteries.Tactic.Init", "Mathlib.Init.Logic"],
+  ["Batteries.Tactic.Init", "Mathlib.Logic.Basic"],
   "Mathlib.Tactic.Group": ["Mathlib.Algebra.Group.Commutator"],
   "Mathlib.Tactic.GCongr.Core": ["Mathlib.Order.Defs"],
   "Mathlib.Tactic.GCongr": ["Mathlib.Tactic.Positivity.Core"],
@@ -269,6 +271,8 @@
   "Mathlib.Tactic.Continuity": ["Mathlib.Tactic.Continuity.Init"],
   "Mathlib.Tactic.CongrExclamation": ["Mathlib.Logic.Basic"],
   "Mathlib.Tactic.Choose": ["Mathlib.Logic.Function.Basic"],
+  "Mathlib.Tactic.CategoryTheory.ToApp":
+  ["Mathlib.CategoryTheory.Category.Cat"],
   "Mathlib.Tactic.CategoryTheory.Slice":
   ["Mathlib.CategoryTheory.Category.Basic"],
   "Mathlib.Tactic.CategoryTheory.Reassoc":
@@ -372,6 +376,11 @@
   ["Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback",
    "Mathlib.CategoryTheory.Limits.Shapes.Pullbacks"],
   "Mathlib.CategoryTheory.Limits.IsLimit": ["Batteries.Tactic.Congr"],
+  "Mathlib.CategoryTheory.Bicategory.Functor.Oplax":
+  ["Mathlib.Tactic.CategoryTheory.ToApp"],
+  "Mathlib.CategoryTheory.Bicategory.Functor.Lax":
+  ["Mathlib.Tactic.CategoryTheory.ToApp"],
+  "Mathlib.CategoryTheory.Category.Basic": ["Mathlib.Tactic.StacksAttribute"],
   "Mathlib.Analysis.Normed.Operator.LinearIsometry":
   ["Mathlib.Algebra.Star.Basic"],
   "Mathlib.Analysis.InnerProductSpace.Basic":

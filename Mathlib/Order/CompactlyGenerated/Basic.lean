@@ -129,7 +129,7 @@ theorem isCompactElement_iff_le_of_directed_sSup_le (k : α) :
         apply sSup_le_sSup
         intro x hx
         use {x}
-        simpa only [and_true_iff, id, Finset.coe_singleton, eq_self_iff_true,
+        simpa only [and_true, id, Finset.coe_singleton, eq_self_iff_true,
           Finset.sup_singleton, Set.singleton_subset_iff]
       have Sne : S.Nonempty := by
         suffices ⊥ ∈ S from Set.nonempty_of_mem this
