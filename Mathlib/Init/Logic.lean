@@ -3,7 +3,6 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Floris van Doorn
 -/
-import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.Relation.Trans
 import Batteries.Tactic.Alias
 
@@ -20,8 +19,6 @@ set_option linter.deprecated false
 
 universe u v
 variable {α : Sort u}
-
-/- Eq, Ne, HEq, Iff -/
 
 -- attribute [refl] HEq.refl -- FIXME This is still rejected after #857
 attribute [trans] HEq.trans
@@ -45,13 +42,6 @@ def Symmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x
 /-- A relation is transitive if `x ≺ y` and `y ≺ z` together imply `x ≺ z`. -/
 def Transitive := ∀ ⦃x y z⦄, x ≺ y → y ≺ z → x ≺ z
 
-lemma Equivalence.reflexive {r : β → β → Prop} (h : Equivalence r) : Reflexive r := h.refl
-
-lemma Equivalence.symmetric {r : β → β → Prop} (h : Equivalence r) : Symmetric r := fun _ _ ↦ h.symm
-
-lemma Equivalence.transitive {r : β → β → Prop} (h : Equivalence r) : Transitive r :=
-  fun _ _ _ ↦ h.trans
-
 /-- A relation is total if for all `x` and `y`, either `x ≺ y` or `y ≺ x`. -/
 def Total := ∀ x y, x ≺ y ∨ y ≺ x
 
@@ -61,13 +51,22 @@ def Irreflexive := ∀ x, ¬ x ≺ x
 /-- A relation is antisymmetric if `x ≺ y` and `y ≺ x` together imply that `x = y`. -/
 def AntiSymmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x → x = y
 
-/-- An empty relation does not relate any elements. -/
-@[nolint unusedArguments]
-def EmptyRelation := fun _ _ : α ↦ False
+@[deprecated Equivalence.refl (since := "2024-09-13")]
+theorem Equivalence.reflexive {r : β → β → Prop} (h : Equivalence r) : Reflexive r := h.refl
 
+@[deprecated Equivalence.symm (since := "2024-09-13")]
+theorem Equivalence.symmetric {r : β → β → Prop} (h : Equivalence r) : Symmetric r :=
+  fun _ _ ↦ h.symm
+
+@[deprecated Equivalence.trans (since := "2024-09-13")]
+theorem Equivalence.transitive {r : β → β → Prop} (h : Equivalence r) : Transitive r :=
+  fun _ _ _ ↦ h.trans
+
+@[deprecated (since := "2024-09-13")]
 theorem InvImage.trans (f : α → β) (h : Transitive r) : Transitive (InvImage r f) :=
   fun (a₁ a₂ a₃ : α) (h₁ : InvImage r f a₁ a₂) (h₂ : InvImage r f a₂ a₃) ↦ h h₁ h₂
 
+@[deprecated (since := "2024-09-13")]
 theorem InvImage.irreflexive (f : α → β) (h : Irreflexive r) : Irreflexive (InvImage r f) :=
   fun (a : α) (h₁ : InvImage r f a a) ↦ h (f a) h₁
 
