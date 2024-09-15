@@ -72,6 +72,8 @@ theorem InvImage.irreflexive (f : α → β) (h : Irreflexive r) : Irreflexive (
 
 end Relation
 
+-- Everything below this line is deprecated
+
 section Binary
 
 variable {α : Type u} {β : Type v} (f : α → α → α) (inv : α → α) (one : α)
@@ -106,33 +108,7 @@ def LeftDistributive  := ∀ a b c, a * (b + c) = a * b + a * c
 @[deprecated (since := "2024-09-03")] -- unused in Mathlib
 def RightDistributive := ∀ a b c, (a + b) * c = a * c + b * c
 
-/-- `LeftCommutative op` where `op : α → β → β` says that `op` is a left-commutative operation,
-i.e. `op a₁ (op a₂ b) = op a₂ (op a₁ b)`. -/
-class LeftCommutative (op : α → β → β) : Prop where
-  /-- A left-commutative operation satisfies `op a₁ (op a₂ b) = op a₂ (op a₁ b)`. -/
-  left_comm : (a₁ a₂ : α) → (b : β) → op a₁ (op a₂ b) = op a₂ (op a₁ b)
-
-/-- `RightCommutative op` where `op : β → α → β` says that `op` is a right-commutative operation,
-i.e. `op (op b a₁) a₂ = op (op b a₂) a₁`. -/
-class RightCommutative (op : β → α → β) : Prop where
-  /-- A right-commutative operation satisfies `op (op b a₁) a₂ = op (op b a₂) a₁`. -/
-  right_comm : (b : β) → (a₁ a₂ : α) → op (op b a₁) a₂ = op (op b a₂) a₁
-
-instance {f : α → β → β} [h : LeftCommutative f] : RightCommutative (fun x y ↦ f y x) :=
-  ⟨fun _ _ _ ↦ (h.left_comm _ _ _).symm⟩
-
-instance {f : β → α → β} [h : RightCommutative f] : LeftCommutative (fun x y ↦ f y x) :=
-  ⟨fun _ _ _ ↦ (h.right_comm _ _ _).symm⟩
-
-instance {f : α → α → α} [hc : Std.Commutative f] [ha : Std.Associative f] : LeftCommutative f :=
-  ⟨fun a b c ↦ by rw [← ha.assoc, hc.comm a, ha.assoc]⟩
-
-instance {f : α → α → α} [hc : Std.Commutative f] [ha : Std.Associative f] : RightCommutative f :=
-  ⟨fun a b c ↦ by rw [ha.assoc, hc.comm b, ha.assoc]⟩
-
 end Binary
-
--- Everything below this line is deprecated
 
 @[deprecated (since := "2024-09-03")] alias not_of_eq_false := of_eq_false
 @[deprecated (since := "2024-09-03")] -- unused in Mathlib

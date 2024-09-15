@@ -177,7 +177,7 @@ jobs:
         with:
           linters: gcc
           run: |
-            bash -o pipefail -c "lake exe mk_all || echo "There are unaccounted for files, but I am not failing yet!"; env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
+            bash -o pipefail -c "lake exe mk_all || echo \"There are unaccounted for files, but I am not failing yet\!\"; env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
 
       - name: upload cache
         # We only upload the cache if the build started (whether succeeding, failing, or cancelled)
