@@ -669,7 +669,7 @@ def ZLattice.comap_equiv (e : F ≃ₗ[K] E) :
 
 @[simp]
 theorem ZLattice.comap_equiv_apply (e : F ≃ₗ[K] E) (x : L) :
-  ZLattice.comap_equiv K L e x = e.symm x := rfl
+    ZLattice.comap_equiv K L e x = e.symm x := rfl
 
 /-- The basis of `ZLattice.comap K L e` given by the image of a basis `b` of `L` by `e.symm`. -/
 def Basis.ofZLatticeComap (e : F ≃ₗ[K] E) {ι : Type*}
