@@ -1211,7 +1211,6 @@ end Succ
 
 end WithBot
 
-
 section OrderIso
 
 variable {X Y : Type*} [Preorder X] [Preorder Y]
