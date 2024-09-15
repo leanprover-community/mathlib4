@@ -30,7 +30,6 @@ This result is to be added in a different file.)
 one-point extension, projectivization
 -/
 
-
 open scoped LinearAlgebra.Projectivization OnePoint
 open Projectivization Classical
 
