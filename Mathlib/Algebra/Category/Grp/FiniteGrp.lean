@@ -9,7 +9,7 @@ import Mathlib.Algebra.Category.Grp.Basic
 
 ## Main definitions and results
 
-* `FiniteGrp` is the type of finite groups.
+* `FiniteGrp` is the category of finite groups.
 
 -/
 
@@ -17,14 +17,14 @@ universe u v
 
 open CategoryTheory
 
-/-- The category of finite groups -/
+/-- The category of finite groups. -/
 @[pp_with_univ]
 structure FiniteGrp where
   /-- A group that is finite -/
   toGrp : Grp
   [isFinite : Finite toGrp]
 
-/-- The category of finite groups -/
+/-- The category of finite additive groups. -/
 @[pp_with_univ]
 structure FiniteAddGrp where
   /-- A add group that is finite -/
