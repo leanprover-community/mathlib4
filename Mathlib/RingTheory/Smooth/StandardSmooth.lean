@@ -62,12 +62,8 @@ Finally, for ring homomorphisms we define:
 
 ## TODO
 
-- Show that the canonical presentation for localization away from an element is standard smooth
-  of relative dimension 0.
 - Show that the base change of a submersive presentation is submersive of equal relative
   dimension.
-- Show that the composition of submersive presentations of relative dimensions `n` and `m` is
-  submersive of relative dimension `n + m`.
 - Show that the module of Kaehler differentials of a standard smooth `R`-algebra `S` of relative
   dimension `n` is `S`-free of rank `n`. In particular this shows that the relative dimension
   is independent of the choice of the standard smooth presentation.
@@ -89,9 +85,9 @@ in June 2024.
 
 universe t t' w w' u v
 
-open TensorProduct
+open TensorProduct MvPolynomial Classical
 
-variable (n : ℕ)
+variable (n m : ℕ)
 
 namespace Algebra
 
@@ -174,32 +170,30 @@ section Localization
 variable (r : R) [IsLocalization.Away r S]
 
 variable (S) in
+/-- If `S` is the localization of `R` at `r`, this is the canonical submersive presentation
+of `S` as `R`-algebra. -/
 @[simps map]
 noncomputable def localizationAway : PreSubmersivePresentation R S where
-  toPresentation := Presentation.localizationAway r
+  __ := Presentation.localizationAway S r
   map _ := ()
   map_inj _ _ h := h
   relations_finite := inferInstanceAs <| Finite Unit
 
-open Classical
+instance : Fintype (localizationAway S r).rels :=
+  inferInstanceAs (Fintype Unit)
 
-lemma localizationAway_det : (localizationAway S r).jacobian = algebraMap R S r := by
-  simp [jacobian]
-  classical
-  letI : Fintype (localizationAway r (S := S)).rels := inferInstanceAs <| Fintype Unit
-  rw [← LinearMap.det_toMatrix (localizationAway r (S := S)).basis]
-  have : (LinearMap.toMatrix (localizationAway r (S := S)).basis (localizationAway S r).basis)
-      (localizationAway S r).differential = Matrix.diagonal (fun () ↦ MvPolynomial.C r) := by
-    ext (i : Unit) (j : Unit) : 1
-    simp [differential, LinearMap.toMatrix]
-    erw [Presentation.localizationAway_relation]
-    rw [map_sub]
-    erw [MvPolynomial.pderiv_C_mul]
-    rw [MvPolynomial.pderiv_X]
-    simp
-  rw [this]
-  rw [Matrix.det_diagonal]
-  simp
+instance : DecidableEq (localizationAway S r).rels :=
+  inferInstanceAs (DecidableEq Unit)
+
+lemma localizationAway_jacobiMatrix :
+    (localizationAway S r).jacobiMatrix = Matrix.diagonal (fun () ↦ MvPolynomial.C r) := by
+  have h : (pderiv ()) (C r * X () - 1) = C r := by simp
+  ext (i : Unit) (j : Unit) : 1
+  rwa [jacobiMatrix_apply]
+
+lemma localizationAway_jacobian : (localizationAway S r).jacobian = algebraMap R S r := by
+  rw [jacobian_eq_jacobiMatrix_det, localizationAway_jacobiMatrix]
+  simp [show Fintype.card (localizationAway r (S := S)).rels = 1 from rfl]
 
 end Localization
 
@@ -212,7 +206,7 @@ variable (Q : PreSubmersivePresentation S T) (P : PreSubmersivePresentation R S)
 this is the canonical pre-submersive presentation of `T` as an `R`-algebra. -/
 @[simps map]
 noncomputable def comp : PreSubmersivePresentation R T where
-  toPresentation := Q.toPresentation.comp P.toPresentation
+  __ := Q.toPresentation.comp P.toPresentation
   map := Sum.elim (fun rq ↦ Sum.inl <| Q.map rq) (fun rp ↦ Sum.inr <| P.map rp)
   map_inj := Function.Injective.sum_elim ((Sum.inl_injective).comp (Q.map_inj))
     ((Sum.inr_injective).comp (P.map_inj)) <| by simp
@@ -231,69 +225,33 @@ lemma dimension_comp_eq_dimension_add_dimension [Q.IsFinite] [P.IsFinite] :
   simp only [Nat.card_sum]
   omega
 
-lemma pderiv_rename {σ τ : Type*} [DecidableEq τ] [DecidableEq σ] {f : σ → τ}
-    (hf : Function.Injective f) (x : σ) (p : MvPolynomial σ R) :
-    MvPolynomial.pderiv (f x) (MvPolynomial.rename f p) =
-      MvPolynomial.rename f (MvPolynomial.pderiv x p) := by
-  induction' p using MvPolynomial.induction_on with a p q hp hq p a h
-  · simp
-  · simp [hp, hq]
-  · simp only [map_mul, MvPolynomial.rename_X, Derivation.leibniz, MvPolynomial.pderiv_X,
-      Pi.single_apply, hf.eq_iff, smul_eq_mul, mul_ite, mul_one, mul_zero, h, map_add, add_left_inj]
-    split_ifs <;> simp
-
-open MvPolynomial
-
 section
 
-variable [Fintype P.rels] [Fintype Q.rels] [Fintype (Q.comp P).rels]
+variable [Fintype (Q.comp P).rels]
 
-open Classical
-
-omit [Fintype P.rels] [Fintype Q.rels] in
-lemma jacobiMatrix_comp_inl_inr (i : Q.rels) (j : P.rels) :
+private lemma jacobiMatrix_comp_inl_inr (i : Q.rels) (j : P.rels) :
     (Q.comp P).jacobiMatrix (Sum.inl i) (Sum.inr j) = 0 := by
   rw [jacobiMatrix_apply]
   refine MvPolynomial.pderiv_eq_zero_of_not_mem_vars (fun hmem ↦ ?_)
   apply MvPolynomial.vars_rename at hmem
   simp at hmem
 
-omit [Fintype Q.rels] in
-lemma jacobiMatrix_comp_inr_inr (i j : P.rels) :
-    (Q.comp P).jacobiMatrix (Sum.inr i) (Sum.inr j) =
-      MvPolynomial.rename Sum.inr (P.jacobiMatrix i j) := by
-  rw [jacobiMatrix_apply, jacobiMatrix_apply]
-  simp only [comp_map, Sum.elim_inr]
-  apply pderiv_rename Sum.inr_injective
+private lemma jacobiMatrix_comp_₁₂ : (Q.comp P).jacobiMatrix.toBlocks₁₂ = 0 := by
+  ext i j : 1
+  simp [Matrix.toBlocks₁₂, jacobiMatrix_comp_inl_inr]
 
-lemma _root_.MvPolynomial.sum_aeval_pderiv {σ τ : Type*} (p : MvPolynomial (σ ⊕ τ) R)
-    (f : τ → S) (j : σ) :
-    (aeval (Sum.elim X (C ∘ f))) ((pderiv (Sum.inl j)) p) =
-    (pderiv j) ((aeval (Sum.elim X (C ∘ f))) p) := by
-  induction' p using MvPolynomial.induction_on with a p q hp hq p q h
-  · simp
-  · simp [hp, hq]
-  · simp only [Derivation.leibniz, pderiv_X, smul_eq_mul, map_add, map_mul, aeval_X, h]
-    cases q <;> simp [Pi.single_apply]
+variable (σ : Type*)
 
-omit [Fintype P.rels] in
-lemma jacobiMatrix_comp_inl_inl (i j : Q.rels) :
+variable [Fintype Q.rels]
+
+private lemma jacobiMatrix_comp_inl_inl (i j : Q.rels) :
     aeval (Sum.elim X (MvPolynomial.C ∘ P.val))
       ((Q.comp P).jacobiMatrix (Sum.inl j) (Sum.inl i)) = Q.jacobiMatrix j i := by
   rw [jacobiMatrix_apply, jacobiMatrix_apply, comp_map, Sum.elim_inl,
     ← Q.comp_aeval_relation_inl P.toPresentation]
-  apply sum_aeval_pderiv
+  apply aeval_sum_elim_pderiv_inl
 
-lemma aeval_sum_elim {σ τ : Type*} (p : MvPolynomial (σ ⊕ τ) R) (f : τ → S) (g : σ → T) :
-    (aeval (Sum.elim g (algebraMap S T ∘ f))) p =
-      (aeval g) ((aeval (Sum.elim X (C ∘ f))) p) := by
-  induction' p using MvPolynomial.induction_on with r p q hp hq p i h
-  · simp [← IsScalarTower.algebraMap_apply]
-  · simp [hp, hq]
-  · cases i <;> simp [h]
-
-omit [Fintype P.rels] in
-lemma jacobiMatrix_₁₁_det :
+private lemma jacobiMatrix_comp_₁₁_det :
     (aeval (Q.comp P).val) (Q.comp P).jacobiMatrix.toBlocks₁₁.det = Q.jacobian := by
   rw [jacobian_eq_jacobiMatrix_det, AlgHom.map_det (aeval (Q.comp P).val), RingHom.map_det]
   congr
@@ -301,8 +259,17 @@ lemma jacobiMatrix_₁₁_det :
   simp only [Matrix.map_apply, RingHom.mapMatrix_apply, ← Q.jacobiMatrix_comp_inl_inl P]
   apply aeval_sum_elim
 
-omit [Fintype Q.rels] in
-lemma jacobiMatrix_₂₂_det :
+omit [Fintype Q.rels]
+variable [Fintype P.rels]
+
+private lemma jacobiMatrix_comp_inr_inr (i j : P.rels) :
+    (Q.comp P).jacobiMatrix (Sum.inr i) (Sum.inr j) =
+      MvPolynomial.rename Sum.inr (P.jacobiMatrix i j) := by
+  rw [jacobiMatrix_apply, jacobiMatrix_apply]
+  simp only [comp_map, Sum.elim_inr]
+  apply pderiv_rename Sum.inr_injective
+
+private lemma jacobiMatrix_comp_₂₂_det :
     (aeval (Q.comp P).val) (Q.comp P).jacobiMatrix.toBlocks₂₂.det = algebraMap S T P.jacobian := by
   rw [jacobian_eq_jacobiMatrix_det]
   rw [AlgHom.map_det (aeval (Q.comp P).val), RingHom.map_det, RingHom.map_det]
@@ -321,21 +288,15 @@ lemma jacobiMatrix_₂₂_det :
     erw [Generators.comp_val]
     simp
 
-omit [Fintype P.rels] [Fintype Q.rels] in
-lemma jacobiMatrix_₁₂ : (Q.comp P).jacobiMatrix.toBlocks₁₂ = 0 := by
-  ext i j : 1
-  simp [Matrix.toBlocks₁₂, jacobiMatrix_comp_inl_inr]
-
 end
 
 /-- The jacobian of the composition of presentations is the product of the jacobians. -/
-lemma det_comp_eq_det_smul_det : (Q.comp P).jacobian = P.jacobian • Q.jacobian := by
+lemma comp_jacobian_eq_jacobian_smul_jacobian : (Q.comp P).jacobian = P.jacobian • Q.jacobian := by
   cases nonempty_fintype Q.rels
   cases nonempty_fintype P.rels
   letI : Fintype (Q.comp P).rels := inferInstanceAs <| Fintype (Q.rels ⊕ P.rels)
-  classical
   rw [jacobian_eq_jacobiMatrix_det, ← Matrix.fromBlocks_toBlocks ((Q.comp P).jacobiMatrix),
-    jacobiMatrix_₁₂]
+    jacobiMatrix_comp_₁₂]
   convert_to
     (aeval (Q.comp P).val) (Q.comp P).jacobiMatrix.toBlocks₁₁.det *
     (aeval (Q.comp P).val) (Q.comp P).jacobiMatrix.toBlocks₂₂.det = P.jacobian • Q.jacobian
@@ -343,7 +304,7 @@ lemma det_comp_eq_det_smul_det : (Q.comp P).jacobian = P.jacobian • Q.jacobian
     congr
     convert Matrix.det_fromBlocks_zero₁₂ (Q.comp P).jacobiMatrix.toBlocks₁₁
       (Q.comp P).jacobiMatrix.toBlocks₂₁ (Q.comp P).jacobiMatrix.toBlocks₂₂
-  · rw [jacobiMatrix_₁₁_det, jacobiMatrix_₂₂_det, mul_comm, Algebra.smul_def]
+  · rw [jacobiMatrix_comp_₁₁_det, jacobiMatrix_comp_₂₂_det, mul_comm, Algebra.smul_def]
 
 end Composition
 
@@ -361,6 +322,47 @@ structure SubmersivePresentation extends PreSubmersivePresentation.{t, w} R S wh
   isFinite : toPreSubmersivePresentation.IsFinite := by infer_instance
 
 attribute [instance] SubmersivePresentation.isFinite
+
+namespace SubmersivePresentation
+
+open PreSubmersivePresentation
+
+section Constructions
+
+section Composition
+
+variable {R S T} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+variable (Q : SubmersivePresentation S T) (P : SubmersivePresentation R S)
+
+/-- Given an `R`-algebra `S` and an `S`-algebra `T` with submersive presentations,
+this is the canonical submersive presentation of `T` as an `R`-algebra. -/
+noncomputable def comp : SubmersivePresentation R T where
+  __ := Q.toPreSubmersivePresentation.comp P.toPreSubmersivePresentation
+  jacobian_isUnit := by
+    rw [comp_jacobian_eq_jacobian_smul_jacobian, Algebra.smul_def, IsUnit.mul_iff]
+    exact ⟨RingHom.isUnit_map _ <| P.jacobian_isUnit, Q.jacobian_isUnit⟩
+  isFinite := Presentation.comp_isFinite Q.toPresentation P.toPresentation
+
+end Composition
+
+section Localization
+
+variable {R} (r : R) [IsLocalization.Away r S]
+
+/-- If `S` is the localization of `R` at `r`, this is the canonical submersive presentation
+of `S` as `R`-algebra. -/
+noncomputable def localizationAway : SubmersivePresentation R S where
+  __ := PreSubmersivePresentation.localizationAway S r
+  jacobian_isUnit := by
+    rw [localizationAway_jacobian]
+    apply IsLocalization.map_units' (⟨r, 1, by simp⟩ : Submonoid.powers r)
+  isFinite := Presentation.localizationAway_isFinite r
+
+end Localization
+
+end Constructions
+
+end SubmersivePresentation
 
 /--
 An `R`-algebra `S` is called standard smooth, if there
@@ -392,6 +394,37 @@ lemma IsStandardSmoothOfRelativeDimension.isStandardSmooth
     [IsStandardSmoothOfRelativeDimension.{t, w} n R S] :
     IsStandardSmooth.{t, w} R S :=
   ⟨‹IsStandardSmoothOfRelativeDimension n R S›.out.nonempty⟩
+
+section Composition
+
+variable (R S T) [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+
+lemma IsStandardSmooth.trans [IsStandardSmooth.{t, w} R S] [IsStandardSmooth.{t', w'} S T] :
+    IsStandardSmooth.{max t t', max w w'} R T where
+  out := by
+    obtain ⟨⟨P⟩⟩ := ‹IsStandardSmooth R S›
+    obtain ⟨⟨Q⟩⟩ := ‹IsStandardSmooth S T›
+    exact ⟨Q.comp P⟩
+
+lemma IsStandardSmoothOfRelativeDimension.trans [IsStandardSmoothOfRelativeDimension.{t, w} n R S]
+    [IsStandardSmoothOfRelativeDimension.{t', w'} m S T] :
+    IsStandardSmoothOfRelativeDimension.{max t t', max w w'} (m + n) R T where
+  out := by
+    obtain ⟨P, hP⟩ := ‹IsStandardSmoothOfRelativeDimension n R S›
+    obtain ⟨Q, hQ⟩ := ‹IsStandardSmoothOfRelativeDimension m S T›
+    refine ⟨Q.comp P, hP ▸ hQ ▸ ?_⟩
+    apply PreSubmersivePresentation.dimension_comp_eq_dimension_add_dimension
+
+end Composition
+
+lemma IsStandardSmooth.localization_away (r : R) [IsLocalization.Away r S] :
+    IsStandardSmooth.{0, 0} R S where
+  out := ⟨SubmersivePresentation.localizationAway S r⟩
+
+lemma IsStandardSmoothOfRelativeDimension.localization_away (r : R) [IsLocalization.Away r S] :
+    IsStandardSmoothOfRelativeDimension.{0, 0} 0 R S where
+  out := ⟨SubmersivePresentation.localizationAway S r,
+    Presentation.localizationAway_dimension_zero r⟩
 
 end Algebra
 
