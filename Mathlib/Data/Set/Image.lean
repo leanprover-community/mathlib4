@@ -1040,7 +1040,7 @@ theorem image_nontrivial (hf : f.Injective) : (f '' s).Nontrivial ↔ s.Nontrivi
   ⟨nontrivial_of_image f s, fun h ↦ h.image hf⟩
 
 @[simp]
-theorem image_nontrivial_iff_of_injOn (hf : s.InjOn f) :
+theorem InjOn.image_nontrivial_iff (hf : s.InjOn f) :
     (f '' s).Nontrivial ↔ s.Nontrivial :=
   ⟨nontrivial_of_image f s, fun h ↦ h.image_of_injOn hf⟩
 
