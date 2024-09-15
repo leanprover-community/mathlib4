@@ -520,6 +520,13 @@ lemma generateFrom_insert_univ {α : Type*} {s : Set (Set α)} :
     generateFrom (insert univ s) = generateFrom s :=
   generateFrom_insert_of_generateOpen .univ
 
+@[simp]
+lemma generateFrom_insert_empty {α : Type*} {s : Set (Set α)} :
+    generateFrom (insert ∅ s) = generateFrom s := by
+  rw [← sUnion_empty]
+  apply generateFrom_insert_of_generateOpen (.sUnion ∅ _)
+  exact fun s_1 a ↦ False.elim a
+
 /-- This construction is left adjoint to the operation sending a topology on `α`
   to its neighborhood filter at a fixed point `a : α`. -/
 def nhdsAdjoint (a : α) (f : Filter α) : TopologicalSpace α where
