@@ -107,7 +107,7 @@ theorem measurableSet_Ici : MeasurableSet (Ici a) :=
 
 @[simp, measurability]
 theorem nullMeasurableSet_Ici : NullMeasurableSet (Ici a) μ :=
-  nullMeasurableSet_Ici
+  measurableSet_Ici.nullMeasurableSet
 
 @[simp, measurability]
 theorem measurableSet_Iic : MeasurableSet (Iic a) :=
@@ -115,7 +115,7 @@ theorem measurableSet_Iic : MeasurableSet (Iic a) :=
 
 @[simp, measurability]
 theorem nullMeasurableSet_Iic : NullMeasurableSet (Iic a) μ :=
-  nullMeasurableSet_Iic
+  measurableSet_Iic.nullMeasurableSet
 
 @[simp, measurability]
 theorem measurableSet_Icc : MeasurableSet (Icc a b) :=
@@ -123,7 +123,7 @@ theorem measurableSet_Icc : MeasurableSet (Icc a b) :=
 
 @[simp, measurability]
 theorem nullMeasurableSet_Icc : NullMeasurableSet (Icc a b) μ :=
-  nullMeasurableSet_Icc
+  measurableSet_Icc.nullMeasurableSet
 
 instance nhdsWithin_Ici_isMeasurablyGenerated : (𝓝[Ici b] a).IsMeasurablyGenerated :=
   measurableSet_Ici.nhdsWithin_isMeasurablyGenerated _
@@ -169,7 +169,7 @@ end PartialOrder
 
 section LinearOrder
 
-variable [LinearOrder α] [OrderClosedTopology α] {a b x : α}
+variable [LinearOrder α] [OrderClosedTopology α] {a b x : α} {μ : Measure α}
 
 -- we open this locale only here to avoid issues with list being treated as intervals above
 open Interval
@@ -179,20 +179,40 @@ theorem measurableSet_Iio : MeasurableSet (Iio a) :=
   isOpen_Iio.measurableSet
 
 @[simp, measurability]
+theorem nullMeasurableSet_Iio : NullMeasurableSet (Iio a) μ :=
+  measurableSet_Iio.nullMeasurableSet
+
+@[simp, measurability]
 theorem measurableSet_Ioi : MeasurableSet (Ioi a) :=
   isOpen_Ioi.measurableSet
+
+@[simp, measurability]
+theorem nullMeasurableSet_Ioi : NullMeasurableSet (Ioi a) μ :=
+  measurableSet_Ioi.nullMeasurableSet
 
 @[simp, measurability]
 theorem measurableSet_Ioo : MeasurableSet (Ioo a b) :=
   isOpen_Ioo.measurableSet
 
 @[simp, measurability]
+theorem nullMeasurableSet_Ioo : NullMeasurableSet (Ioo a b) μ :=
+  measurableSet_Ioo.nullMeasurableSet
+
+@[simp, measurability]
 theorem measurableSet_Ioc : MeasurableSet (Ioc a b) :=
   measurableSet_Ioi.inter measurableSet_Iic
 
 @[simp, measurability]
+theorem nullMeasurableSet_Ioc : NullMeasurableSet (Ioc a b) μ :=
+  measurableSet_Ioc.nullMeasurableSet
+
+@[simp, measurability]
 theorem measurableSet_Ico : MeasurableSet (Ico a b) :=
   measurableSet_Ici.inter measurableSet_Iio
+
+@[simp, measurability]
+theorem nullMeasurableSet_Ico : NullMeasurableSet (Ico a b) μ :=
+  measurableSet_Ico.nullMeasurableSet
 
 instance nhdsWithin_Ioi_isMeasurablyGenerated : (𝓝[Ioi b] a).IsMeasurablyGenerated :=
   measurableSet_Ioi.nhdsWithin_isMeasurablyGenerated _
