@@ -139,7 +139,7 @@ instance fintypeSetPathLength (u v : V) (n : ℕ) :
 
 end LocallyFinite
 
-section Finite
+section Fintype
 
 variable [DecidableEq V] [Fintype V] [DecidableRel G.Adj]
 
@@ -179,7 +179,7 @@ lemma disjiUnion_supp_toFinset_eq_supp_toFinset {G' : SimpleGraph V} (h : G ≤ 
       c'.supp.toFinset :=
   Finset.coe_injective <| by simpa using ConnectedComponent.biUnion_supp_eq_supp h _
 
-end Finite
+end Fintype
 
 lemma ConnectedComponent.odd_card_supp_iff_odd_subcomponents [Finite V] {G'}
     (h : G ≤ G') (c' : ConnectedComponent G') :
