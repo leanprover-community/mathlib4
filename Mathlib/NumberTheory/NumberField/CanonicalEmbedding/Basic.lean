@@ -328,6 +328,7 @@ theorem forall_normAtPlace_eq_zero_iff {x : mixedSpace K} :
 
 @[deprecated (since := "2024-09-13")] alias normAtPlace_eq_zero := forall_normAtPlace_eq_zero_iff
 
+@[simp]
 theorem exists_normAtPlace_ne_zero_iff {x : mixedSpace K} :
     (∃ w, normAtPlace w x ≠ 0) ↔ x ≠ 0 := by
   rw [ne_eq, ← forall_normAtPlace_eq_zero_iff, not_forall]

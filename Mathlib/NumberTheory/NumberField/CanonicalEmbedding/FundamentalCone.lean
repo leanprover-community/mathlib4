@@ -42,6 +42,8 @@ instance : MulAction (𝓞 K)ˣ (mixedSpace K) where
 instance : SMulZeroClass (𝓞 K)ˣ (mixedSpace K) where
   smul_zero := fun _ ↦ by simp_rw [unitSMul_smul, mul_zero]
 
+variable {K}
+
 theorem unit_smul_eq_zero (u : (𝓞 K)ˣ) (x : mixedSpace K) :
     u • x = 0 ↔ x = 0 := by
   refine ⟨fun h ↦ ?_, fun h ↦ by rw [h, smul_zero]⟩
