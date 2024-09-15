@@ -60,22 +60,16 @@ instance (G H : FiniteGrp) : MonoidHomClass (G ⟶ H) G H :=
   inferInstanceAs <| MonoidHomClass (G →* H) G H
 
 /-- Construct a term of `FiniteGrp` from a type endowed with the structure of a finite group. -/
-@[to_additive]
+@[to_additive "Construct a term of `FiniteAddGrp` from a type endowed with the structure of a
+finite additive group."]
 def of (G : Type u) [Group G] [Finite G] : FiniteGrp where
   toGrp := Grp.of G
   isFinite := ‹_›
 
-/-- Construct a term of `FiniteAddGrp` from a type endowed with the structure of a
-  finite additive group. -/
-add_decl_doc FiniteAddGrp.of
-
 /-- The morphism in `FiniteGrp`, induced from morphism of the category `Grp`. -/
-@[to_additive]
+@[to_additive "The morphism in `FiniteAddGrp`, induced from morphism of the category `AddGrp`"]
 def ofHom {X Y : Type u} [Group X] [Finite X] [Group Y] [Finite Y] (f : X →* Y) : of X ⟶ of Y :=
   Grp.ofHom f
-
-/-- The morphism in `FiniteAddGrp`, induced from morphism of the category `AddGrp` -/
-add_decl_doc FiniteAddGrp.ofHom
 
 @[to_additive]
 lemma ofHom_apply {X Y : Type u} [Group X] [Finite X] [Group Y] [Finite Y] (f : X →* Y) (x : X) :
