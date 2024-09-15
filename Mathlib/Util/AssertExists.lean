@@ -105,7 +105,7 @@ elab "assert_not_exists " ns:ident+ : command => do
       try liftCoreM <| realizeGlobalConstNoOverloadWithInfo n
       catch _ =>
         Mathlib.AssertNotExist.addDeclEntry true n.getId (← getMainModule)
-        return
+        continue
     let c ← mkConstWithLevelParams decl
     let msg ← (do
       let mut some idx := env.getModuleIdxFor? decl
@@ -137,3 +137,4 @@ elab "assert_not_imported " ids:ident+ : command => do
       Mathlib.AssertNotExist.addDeclEntry false id.getId (← getMainModule)
 
 end
+#check commandAssert_not_exists_
