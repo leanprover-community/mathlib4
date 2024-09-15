@@ -1283,7 +1283,7 @@ theorem sup_sum {α : Type u} {β : Type v} (f : α ⊕ β → Ordinal) :
     rintro i ⟨a, rfl⟩
     apply mem_range_self
 
-theorem unbounded_range_of_iSup_ge {α β : Type u} (r : α → α → Prop) [IsWellOrder α r] (f : β → α)
+theorem unbounded_range_of_le_iSup {α β : Type u} (r : α → α → Prop) [IsWellOrder α r] (f : β → α)
     (h : type r ≤ ⨆ i, typein r (f i)) : Unbounded r (range f) :=
   (not_bounded_iff _).1 fun ⟨x, hx⟩ =>
     h.not_lt <| lt_of_le_of_lt
@@ -1291,10 +1291,10 @@ theorem unbounded_range_of_iSup_ge {α β : Type u} (r : α → α → Prop) [Is
       (typein_lt_type r x)
 
 set_option linter.deprecated false in
-@[deprecated unbounded_range_of_iSup_ge (since := "2024-08-27")]
+@[deprecated unbounded_range_of_le_iSup (since := "2024-08-27")]
 theorem unbounded_range_of_sup_ge {α β : Type u} (r : α → α → Prop) [IsWellOrder α r] (f : β → α)
     (h : type r ≤ sup.{u, u} (typein r ∘ f)) : Unbounded r (range f) :=
-  unbounded_range_of_iSup_ge r f h
+  unbounded_range_of_le_iSup r f h
 
 set_option linter.deprecated false in
 @[deprecated (since := "2024-08-27")]

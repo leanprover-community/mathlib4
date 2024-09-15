@@ -86,7 +86,7 @@ theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
       ∃ t, t ⊆ s ∧ t.Nonempty ∧ BddAbove t ∧ sSup t = a,
       ∃ (o : Ordinal.{u}), o ≠ 0 ∧ ∃ (f : ∀ x < o, Ordinal),
         (∀ x hx, f x hx ∈ s) ∧ bsup.{u, u} o f = a,
-      ∃ (ι : Type u), Nonempty ι ∧ ∃ f : ι → Ordinal, (∀ i, f i ∈ s) ∧ iSup f = a] := by
+      ∃ (ι : Type u), Nonempty ι ∧ ∃ f : ι → Ordinal, (∀ i, f i ∈ s) ∧ ⨆ i, f i = a] := by
   tfae_have 1 → 2
   · simp only [mem_closure_iff_nhdsWithin_neBot, inter_comm s, nhdsWithin_inter', nhds_left_eq_nhds]
     exact id
@@ -120,7 +120,7 @@ theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
 
 theorem mem_closure_iff_iSup :
     a ∈ closure s ↔
-      ∃ (ι : Type u) (_ : Nonempty ι) (f : ι → Ordinal), (∀ i, f i ∈ s) ∧ iSup f = a := by
+      ∃ (ι : Type u) (_ : Nonempty ι) (f : ι → Ordinal), (∀ i, f i ∈ s) ∧ ⨆ i, f i = a := by
   apply ((mem_closure_tfae a s).out 0 5).trans
   simp_rw [exists_prop]
 
@@ -131,17 +131,17 @@ theorem mem_closure_iff_sup :
       ∃ (ι : Type u) (_ : Nonempty ι) (f : ι → Ordinal), (∀ i, f i ∈ s) ∧ sup f = a :=
   mem_closure_iff_iSup
 
-theorem mem_closed_iff_iSup (hs : IsClosed s) :
+theorem mem_iff_iSup_of_isClosed (hs : IsClosed s) :
     a ∈ s ↔ ∃ (ι : Type u) (_hι : Nonempty ι) (f : ι → Ordinal),
-      (∀ i, f i ∈ s) ∧ iSup f = a := by
+      (∀ i, f i ∈ s) ∧ ⨆ i, f i = a := by
   rw [← mem_closure_iff_iSup, hs.closure_eq]
 
 set_option linter.deprecated false in
-@[deprecated mem_closed_iff_iSup (since := "2024-08-27")]
+@[deprecated mem_iff_iSup_of_isClosed (since := "2024-08-27")]
 theorem mem_closed_iff_sup (hs : IsClosed s) :
     a ∈ s ↔ ∃ (ι : Type u) (_hι : Nonempty ι) (f : ι → Ordinal),
       (∀ i, f i ∈ s) ∧ sup f = a :=
-  mem_closed_iff_iSup hs
+  mem_iff_iSup_of_isClosed hs
 
 theorem mem_closure_iff_bsup :
     a ∈ closure s ↔
@@ -158,18 +158,18 @@ theorem mem_closed_iff_bsup (hs : IsClosed s) :
 
 theorem isClosed_iff_iSup :
     IsClosed s ↔
-      ∀ {ι : Type u}, Nonempty ι → ∀ f : ι → Ordinal, (∀ i, f i ∈ s) → iSup f ∈ s := by
-  use fun hs ι hι f hf => (mem_closed_iff_iSup hs).2 ⟨ι, hι, f, hf, rfl⟩
+      ∀ {ι : Type u}, Nonempty ι → ∀ f : ι → Ordinal, (∀ i, f i ∈ s) → ⨆ i, f i ∈ s := by
+  use fun hs ι hι f hf => (mem_iff_iSup_of_isClosed hs).2 ⟨ι, hι, f, hf, rfl⟩
   rw [← closure_subset_iff_isClosed]
   intro h x hx
   rcases mem_closure_iff_iSup.1 hx with ⟨ι, hι, f, hf, rfl⟩
   exact h hι f hf
 
 set_option linter.deprecated false in
-@[deprecated mem_closed_iff_iSup (since := "2024-08-27")]
+@[deprecated mem_iff_iSup_of_isClosed (since := "2024-08-27")]
 theorem isClosed_iff_sup :
     IsClosed s ↔
-      ∀ {ι : Type u}, Nonempty ι → ∀ f : ι → Ordinal, (∀ i, f i ∈ s) → iSup f ∈ s := by
+      ∀ {ι : Type u}, Nonempty ι → ∀ f : ι → Ordinal, (∀ i, f i ∈ s) → ⨆ i, f i ∈ s := by
   use fun hs ι hι f hf => (mem_closed_iff_sup hs).2 ⟨ι, hι, f, hf, rfl⟩
   rw [← closure_subset_iff_isClosed]
   intro h x hx
@@ -214,7 +214,7 @@ theorem isNormal_iff_strictMono_and_continuous (f : Ordinal.{u} → Ordinal.{u})
     rintro ⟨h, h'⟩
     refine ⟨h, fun o ho a h => ?_⟩
     suffices o ∈ f ⁻¹' Set.Iic a from Set.mem_preimage.1 this
-    rw [mem_closed_iff_iSup (IsClosed.preimage h' (@isClosed_Iic _ _ _ _ a))]
+    rw [mem_iff_iSup_of_isClosed (IsClosed.preimage h' (@isClosed_Iic _ _ _ _ a))]
     exact
       ⟨_, toType_nonempty_iff_ne_zero.2 ho.1, typein (· < ·), fun i => h _ (typein_lt_self i),
         sup_typein_limit ho.2⟩
@@ -226,7 +226,7 @@ theorem enumOrd_isNormal_iff_isClosed (hs : s.Unbounded (· < ·)) :
     ⟨fun h => isClosed_iff_iSup.2 fun {ι} hι f hf => ?_, fun h =>
       (isNormal_iff_strictMono_limit _).2 ⟨Hs, fun a ha o H => ?_⟩⟩
   · let g : ι → Ordinal.{u} := fun i => (enumOrdOrderIso hs).symm ⟨_, hf i⟩
-    suffices enumOrd s (iSup g) = iSup f by
+    suffices enumOrd s (⨆ i, g i) = ⨆ i, f i by
       rw [← this]
       exact enumOrd_mem hs _
     rw [@IsNormal.iSup.{u, u, u} _ h ι g hι]
