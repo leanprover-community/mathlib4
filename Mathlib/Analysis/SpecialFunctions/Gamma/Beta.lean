@@ -466,6 +466,18 @@ lemma setIntegral_re {X : Type*} [MeasurableSpace X]
     (μ : Measure X) {s : Set X} {f : X → ℂ} (hf : IntegrableOn f s μ) :
     ∫ x in s, (f x).re ∂μ = (∫x in s, f x ∂μ).re := Complex.integral_re _ hf.integrable
 
+lemma intervalIntegral_re (μ: Measure ℝ) {a b : ℝ} {f:ℝ → ℂ} (hab: a ≤ b)
+    (hf: IntervalIntegrable f μ a b) :
+    ∫ x in (a)..b, (f x).re = (∫ x in (a)..b, f x).re := by
+    repeat rw [intervalIntegral.integral_of_le hab]
+    apply setIntegral_re
+    rw [← intervalIntegrable_iff_integrableOn_Ioc_of_le hab]
+    have : IntervalIntegrable f μ a b = IntervalIntegrable f volume a b := by
+      dsimp
+      sorry
+    rw [← this]
+    exact hf
+
 end Complex
 
 namespace Real
@@ -481,6 +493,12 @@ lemma integrable_iff_ofReal {X : Type*} [MeasurableSpace X] {μ : Measure X}
 
 lemma integrableOn_iff_ofReal {X : Type*} [MeasurableSpace X] {μ : Measure X} {s : Set X}
     {f : X → ℝ} : IntegrableOn f s μ ↔ IntegrableOn (fun x ↦ (f x : ℂ)) s μ := integrable_iff_ofReal
+
+lemma intervalIntegrable_iff_ofReal {μ : Measure ℝ} {a b : ℝ} {f : ℝ → ℝ}  (hab: a ≤ b):
+    IntervalIntegrable f μ a b ↔ IntervalIntegrable (fun x ↦ (f x : ℂ)) μ a b := by
+    repeat rw [intervalIntegrable_iff_integrableOn_Ioc_of_le]
+    apply integrableOn_iff_ofReal
+    all_goals exact hab
 
 lemma BetaIntegral_ofReal_interval {a b : ℝ} (ha : 0 < a) (hb : 0 < b) :
     (∫ (x : ℝ) in (0)..1, (x : ℂ) ^ (↑a - 1:ℂ) * (1 - ↑x) ^ (↑b - 1:ℂ)).re =
