@@ -90,12 +90,13 @@ end CommRing
 
 section FiniteField
 
-variable {F R : Type*} [Field F] [Fintype F] [DecidableEq F] [CommRing R]
+variable {F R : Type*} [Field F] [Fintype F] [CommRing R]
 
 /-- The Jacobi sum of twice the trivial multiplicative character on a finite field `F`
 equals `#F-2`. -/
 theorem jacobiSum_trivial_trivial :
     jacobiSum (MulChar.trivial F R) (MulChar.trivial F R) = Fintype.card F - 2 := by
+  classical
   rw [jacobiSum_eq_sum_sdiff]
   have : ∀ x ∈ univ \ {0, 1}, (MulChar.trivial F R) x * (MulChar.trivial F R) (1 - x) = 1 := by
     intros x hx
@@ -113,11 +114,11 @@ theorem jacobiSum_trivial_trivial :
 theorem jacobiSum_one_one : jacobiSum (1 : MulChar F R) 1 = Fintype.card F - 2 :=
   jacobiSum_trivial_trivial
 
-
 variable [IsDomain R] -- needed for `MulChar.sum_eq_zero_of_ne_one`
 
 /-- If `χ` is a nontrivial multiplicative character on a finite field `F`, then `J(1,χ) = -1`. -/
 theorem jacobiSum_one_nontrivial {χ : MulChar F R} (hχ : χ ≠ 1) : jacobiSum 1 χ = -1 := by
+  classical
   have : ∑ x ∈ univ \ {0, 1}, ((1 : MulChar F R) x - 1) * (χ (1 - x) - 1) = 0 := by
     apply Finset.sum_eq_zero
     simp (config := { contextual := true }) only [mem_sdiff, mem_univ, mem_insert, mem_singleton,
@@ -130,6 +131,7 @@ theorem jacobiSum_one_nontrivial {χ : MulChar F R} (hχ : χ ≠ 1) : jacobiSum
 /-- If `χ` is a nontrivial multiplicative character on a finite field `F`,
 then `J(χ,χ⁻¹) = -χ(-1)`. -/
 theorem jacobiSum_nontrivial_inv {χ : MulChar F R} (hχ : χ ≠ 1) : jacobiSum χ χ⁻¹ = -χ (-1) := by
+  classical
   rw [jacobiSum]
   conv => enter [1, 2, x]; rw [MulChar.inv_apply', ← map_mul, ← div_eq_mul_inv]
   rw [sum_eq_sum_diff_singleton_add (mem_univ (1 : F)), sub_self, div_zero, χ.map_zero, add_zero]
@@ -156,6 +158,7 @@ theorem jacobiSum_nontrivial_inv {χ : MulChar F R} (hχ : χ ≠ 1) : jacobiSum
 `χφ` is nontrivial, then `g(χφ) * J(χ,φ) = g(χ) * g(φ)`. -/
 theorem jacobiSum_mul_nontrivial {χ φ : MulChar F R} (h : χ * φ ≠ 1) (ψ : AddChar F R) :
     gaussSum (χ * φ) ψ * jacobiSum χ φ = gaussSum χ ψ * gaussSum φ ψ := by
+  classical
   rw [gaussSum_mul _ _ ψ, sum_eq_sum_diff_singleton_add (mem_univ (0 : F))]
   conv =>
     enter [2, 2, 2, x]
@@ -177,7 +180,7 @@ end FiniteField
 
 section field_field
 
-variable {F F' : Type*} [Fintype F] [DecidableEq F] [Field F] [Field F']
+variable {F F' : Type*} [Fintype F] [Field F] [Field F']
 
 /-- If `χ` and `φ` are multiplicative characters on a finite field `F` with values
 in another field `F'` and such that `χφ` is nontrivial, then `J(χ,φ) = g(χ) * g(φ) / g(χφ)`. -/
