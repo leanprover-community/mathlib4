@@ -509,3 +509,27 @@ lemma isLower_orderDual [Preorder α] [TopologicalSpace α] : IsLower αᵒᵈ �
   isUpper_orderDual.symm
 
 end Topology
+
+lemma Iic_False_compl : (Iic False)ᶜ = {True} := by
+  rw [compl_eq_comm, Prop.compl_singleton, not_true_eq_false]
+  aesop
+
+lemma Iic_True_compl : (Iic True)ᶜ = ∅ := by
+  rw [compl_eq_comm, compl_empty]
+  aesop
+
+/- The Sierpiński topology on `Prop` is the upper topology -/
+instance : Topology.IsUpper Prop where
+  topology_eq_upperTopology := by
+    have e1 : {s  | ∃ a, (Iic a)ᶜ = s} = {∅, {True}} := le_antisymm
+      (fun s ⟨a,ha⟩ => by
+        rw [← ha]
+        by_cases h : a = True
+        · apply Or.inl
+          rw [h, Iic_True_compl]
+        · apply Or.inr
+          rw [← Iic_False_compl]
+          aesop)
+      (fun _ hs => by rw [← Iic_False_compl, ← Iic_True_compl] at hs; aesop)
+    rw [Topology.upper, e1, generateFrom_insert_empty]
+    rfl
