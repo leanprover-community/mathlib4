@@ -621,9 +621,9 @@ theorem mem_cycleFactorsFinset_conj (g k c : Perm α) :
   rw [ha]
   simp only [Perm.smul_def, apply_inv_self]
 
-/-- If a permutation commutes with every cycle of `g`, then it commutes with `g` 
+/-- If a permutation commutes with every cycle of `g`, then it commutes with `g`
 
-NB. The converse is false. Commuting with every cycle of `g` means that we belong 
+NB. The converse is false. Commuting with every cycle of `g` means that we belong
 to the kernel of the action of `Equiv.Perm α` on `g.cycleFactorsFinset` -/
 theorem commute_of_mem_cycleFactorsFinset_commute (k g : Perm α)
     (hk : ∀ c ∈ g.cycleFactorsFinset, Commute k c) :

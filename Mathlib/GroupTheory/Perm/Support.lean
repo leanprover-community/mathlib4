@@ -334,7 +334,7 @@ theorem apply_mem_support {x : α} : f x ∈ f.support ↔ x ∈ f.support := by
 
 /-- The support of a permutation is invariant -/
 theorem isInvariant_of_support_le {c : Perm α} {s : Finset α} (hcs : c.support ≤ s) (x : α) :
-  x ∈ s ↔ c x ∈ s := by
+    x ∈ s ↔ c x ∈ s := by
   by_cases hx' : x ∈ c.support
   · simp only [hcs hx', true_iff_iff, hcs (apply_mem_support.mpr hx')]
   · rw [not_mem_support.mp hx']
@@ -355,7 +355,7 @@ lemma ofSubtype_eq_iff {g c : Equiv.Perm α} {s : Finset α}
       rw [mem_support, ← h a, ofSubtype_apply_of_not_mem (p := (· ∈ s)) _ ha'] at ha
       exact ha rfl
     · intro _ a ha
-      rw [← h a, ofSubtype_apply_of_mem (p := (· ∈ s)) _ ha, subtypePerm_apply]    
+      rw [← h a, ofSubtype_apply_of_mem (p := (· ∈ s)) _ ha, subtypePerm_apply]
   · rintro ⟨hc, h⟩ a
     specialize h (isInvariant_of_support_le hc)
     by_cases ha : a ∈ s
