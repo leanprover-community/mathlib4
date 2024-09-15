@@ -33,77 +33,36 @@ open MonoidalCategory
 
 variable [MonoidalCategory V]
 
+@[simps! tensorUnit_V tensorObj_V tensorHom_hom whiskerLeft_hom whiskerRight_hom
+  associator_hom_hom associator_inv_hom leftUnitor_hom_hom leftUnitor_inv_hom
+  rightUnitor_hom_hom rightUnitor_inv_hom]
 instance instMonoidalCategory : MonoidalCategory (Action V G) :=
   Monoidal.transport (Action.functorCategoryEquivalence _ _).symm
 
 @[simp]
-theorem tensorUnit_v : (𝟙_ (Action V G)).V = 𝟙_ V :=
-  rfl
-
--- Porting note: removed @[simp] as the simpNF linter complains
-theorem tensorUnit_rho {g : G} : (𝟙_ (Action V G)).ρ g = 𝟙 (𝟙_ V) :=
+theorem tensorUnit_rho' {g : G} :
+    @DFunLike.coe (G →* MonCat.of (End (𝟙_ V))) _ _ _ (𝟙_ (Action V G)).ρ g = 𝟙 (𝟙_ V) := by
   rfl
 
 @[simp]
-theorem tensor_v {X Y : Action V G} : (X ⊗ Y).V = X.V ⊗ Y.V :=
-  rfl
-
--- Porting note: removed @[simp] as the simpNF linter complains
-theorem tensor_rho {X Y : Action V G} {g : G} : (X ⊗ Y).ρ g = X.ρ g ⊗ Y.ρ g :=
+theorem tensorUnit_rho {g : G} :
+    (𝟙_ (Action V G)).ρ g = 𝟙 (𝟙_ V) := by
   rfl
 
 @[simp]
-theorem tensor_hom {W X Y Z : Action V G} (f : W ⟶ X) (g : Y ⟶ Z) : (f ⊗ g).hom = f.hom ⊗ g.hom :=
+theorem tensor_rho' {X Y : Action V G} {g : G} :
+    @DFunLike.coe (G →* MonCat.of (End (X.V ⊗ Y.V))) _ _ _ (X ⊗ Y).ρ g = X.ρ g ⊗ Y.ρ g :=
   rfl
 
 @[simp]
-theorem whiskerLeft_hom (X : Action V G) {Y Z : Action V G} (f : Y ⟶ Z) :
-    (X ◁ f).hom = X.V ◁ f.hom :=
+theorem tensor_rho {X Y : Action V G} {g : G} :
+    (X ⊗ Y).ρ g = X.ρ g ⊗ Y.ρ g :=
   rfl
-
-@[simp]
-theorem whiskerRight_hom {X Y : Action V G} (f : X ⟶ Y) (Z : Action V G) :
-    (f ▷ Z).hom = f.hom ▷ Z.V :=
-  rfl
-
-@[simp]
-theorem associator_hom_hom {X Y Z : Action V G} :
-    Hom.hom (α_ X Y Z).hom = (α_ X.V Y.V Z.V).hom := by
-  dsimp [Monoidal.transportStruct_associator]
-  simp
-
-@[simp]
-theorem associator_inv_hom {X Y Z : Action V G} :
-    Hom.hom (α_ X Y Z).inv = (α_ X.V Y.V Z.V).inv := by
-  dsimp [Monoidal.transportStruct_associator]
-  simp
-
-@[simp]
-theorem leftUnitor_hom_hom {X : Action V G} : Hom.hom (λ_ X).hom = (λ_ X.V).hom := by
-  dsimp [Monoidal.transportStruct_leftUnitor]
-  simp
-
-@[simp]
-theorem leftUnitor_inv_hom {X : Action V G} : Hom.hom (λ_ X).inv = (λ_ X.V).inv := by
-  dsimp [Monoidal.transportStruct_leftUnitor]
-  simp
-
-@[simp]
-theorem rightUnitor_hom_hom {X : Action V G} : Hom.hom (ρ_ X).hom = (ρ_ X.V).hom := by
-  dsimp [Monoidal.transportStruct_rightUnitor]
-  simp
-
-@[simp]
-theorem rightUnitor_inv_hom {X : Action V G} : Hom.hom (ρ_ X).inv = (ρ_ X.V).inv := by
-  dsimp [Monoidal.transportStruct_rightUnitor]
-  simp
 
 /-- Given an object `X` isomorphic to the tensor unit of `V`, `X` equipped with the trivial action
 is isomorphic to the tensor unit of `Action V G`. -/
 def tensorUnitIso {X : V} (f : 𝟙_ V ≅ X) : 𝟙_ (Action V G) ≅ Action.mk X 1 :=
-  Action.mkIso f fun _ => by
-    simp only [MonoidHom.one_apply, End.one_def, Category.id_comp f.hom, tensorUnit_rho,
-      MonCat.oneHom_apply, MonCat.one_of, Category.comp_id]
+  Action.mkIso f
 
 variable (V G)
 

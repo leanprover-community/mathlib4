@@ -243,7 +243,8 @@ Comonoid objects in a braided category form a monoidal category.
 
 This definition is via transporting back and forth to monoids in the opposite category,
 -/
-instance [BraidedCategory C] : MonoidalCategory (Comon_ C) :=
+@[simps!]
+instance monoidal [BraidedCategory C] : MonoidalCategory (Comon_ C) :=
   Monoidal.transport (Comon_EquivMon_OpOp C).symm
 
 variable [BraidedCategory C]
@@ -252,36 +253,6 @@ theorem tensorObj_X (A B : Comon_ C) : (A ⊗ B).X = A.X ⊗ B.X := rfl
 
 theorem tensorObj_counit (A B : Comon_ C) : (A ⊗ B).counit = (A.counit ⊗ B.counit) ≫ (λ_ _).hom :=
   rfl
-
-@[simp]
-theorem associator_hom (A B C : Comon_ C) : (α_ A B C).hom.hom = (α_ A.X B.X C.X).hom := by
-  dsimp [Monoidal.transportStruct_associator]
-  simp
-
-@[simp]
-theorem associator_inv (A B C : Comon_ C) : (α_ A B C).inv.hom = (α_ A.X B.X C.X).inv := by
-  dsimp [Monoidal.transportStruct_associator]
-  simp
-
-@[simp]
-theorem leftUnitor_hom (A : Comon_ C) : (λ_ A).hom.hom = (λ_ A.X).hom := by
-  dsimp [Monoidal.transportStruct_leftUnitor]
-  simp
-
-@[simp]
-theorem leftUnitor_inv (A : Comon_ C) : (λ_ A).inv.hom = (λ_ A.X).inv := by
-  dsimp [Monoidal.transportStruct_leftUnitor]
-  simp
-
-@[simp]
-theorem rightUnitor_hom (A : Comon_ C) : (ρ_ A).hom.hom = (ρ_ A.X).hom := by
-  dsimp [Monoidal.transportStruct_rightUnitor]
-  simp
-
-@[simp]
-theorem rightUnitor_inv (A : Comon_ C) : (ρ_ A).inv.hom = (ρ_ A.X).inv := by
-  dsimp [Monoidal.transportStruct_rightUnitor]
-  simp
 
 /--
 Preliminary statement of the comultiplication for a tensor product of comonoids.

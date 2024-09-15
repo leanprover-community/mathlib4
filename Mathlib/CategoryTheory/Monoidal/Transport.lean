@@ -135,7 +135,7 @@ def fromInduced [MonoidalCategoryStruct D] (F : D ⥤ C) [F.Faithful]
 
 /-- Transport a monoidal structure along an equivalence of (plain) categories.
 -/
-@[simps tensorObj whiskerLeft whiskerRight tensorHom tensorUnit]
+@[simps (config := {isSimp := false})]
 def transportStruct (e : C ≌ D) : MonoidalCategoryStruct.{v₂} D where
   tensorObj X Y := e.functor.obj (e.inverse.obj X ⊗ e.inverse.obj Y)
   whiskerLeft X _ _ f := e.functor.map (e.inverse.obj X ◁ e.inverse.map f)
@@ -154,12 +154,7 @@ def transportStruct (e : C ≌ D) : MonoidalCategoryStruct.{v₂} D where
     e.functor.mapIso ((whiskerLeftIso _ (e.unitIso.app _).symm) ≪≫ ρ_ (e.inverse.obj X)) ≪≫
       e.counitIso.app _
 
-attribute [simps (config := {isSimp := false}) associator leftUnitor rightUnitor] transportStruct
-
-attribute [local simp]
-  transportStruct_associator
-  transportStruct_leftUnitor
-  transportStruct_rightUnitor in
+attribute [local simp] transportStruct in
 /-- Transport a monoidal structure along an equivalence of (plain) categories.
 -/
 def transport (e : C ≌ D) : MonoidalCategory.{v₂} D :=
