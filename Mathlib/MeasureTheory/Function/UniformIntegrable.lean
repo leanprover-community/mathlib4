@@ -213,7 +213,7 @@ theorem Memℒp.integral_indicator_norm_ge_le (hf : Memℒp f 1 μ) (hmeas : Str
       · assumption
   rw [ENNReal.tendsto_atTop_zero] at this
   obtain ⟨M, hM⟩ := this (ENNReal.ofReal ε) (ENNReal.ofReal_pos.2 hε)
-  simp only [true_and_iff, zero_tsub, zero_le, sub_zero, zero_add, coe_nnnorm,
+  simp only [zero_tsub, zero_le, sub_zero, zero_add, coe_nnnorm,
     Set.mem_Icc] at hM
   refine ⟨M, ?_⟩
   convert hM M le_rfl
