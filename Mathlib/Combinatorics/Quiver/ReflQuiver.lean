@@ -14,6 +14,8 @@ a quiver with a specified endoarrow on each term in its type of objects.
 
 We also introduce morphisms between reflexive quivers, called reflexive prefunctors or "refl
 prefunctors" for short.
+
+Note: Currently Category does not extend ReflQuiver, although it could. (TODO: do this)
 -/
 namespace CategoryTheory
 universe v v₁ v₂ u u₁ u₂
@@ -51,7 +53,8 @@ lemma mk_obj {V W : Type*} [ReflQuiver V] [ReflQuiver W] {obj : V → W} {map} {
 lemma mk_map {V W : Type*} [ReflQuiver V] [ReflQuiver W] {obj : V → W} {map} {X Y : V} {f : X ⟶ Y} :
     (Prefunctor.mk obj map).map f = map f := rfl
 
--- @[ext]
+/-- Proving equality between reflexive prefunctors. This isn't an extensionality lemma,
+  because usually you don't really want to do this. -/
 theorem ext {V : Type u} [ReflQuiver.{v₁} V] {W : Type u₂} [ReflQuiver.{v₂} W]
     {F G : ReflPrefunctor V W}
     (h_obj : ∀ X, F.obj X = G.obj X)
