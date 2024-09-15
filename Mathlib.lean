@@ -3135,6 +3135,7 @@ import Mathlib.Logic.Lemmas
 import Mathlib.Logic.Nonempty
 import Mathlib.Logic.Nontrivial.Basic
 import Mathlib.Logic.Nontrivial.Defs
+import Mathlib.Logic.OpClass
 import Mathlib.Logic.Pairwise
 import Mathlib.Logic.Relation
 import Mathlib.Logic.Relator
