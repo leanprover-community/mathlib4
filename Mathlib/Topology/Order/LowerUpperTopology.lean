@@ -518,22 +518,17 @@ lemma Iic_True_compl : (Iic True)ᶜ = ∅ := by
   rw [compl_eq_comm, compl_empty]
   aesop
 
-lemma new4 : {s  | ∃ a, (Iic a)ᶜ = s} = {∅, {True}} := le_antisymm
-  (fun s hs => by
-    simp only [mem_setOf_eq] at hs
-    obtain ⟨a,ha⟩ := hs
-    simp only [mem_insert_iff, mem_singleton_iff]
-    rw [← ha]
-    by_cases h₁ : a = True
-    · apply Or.inl
-      rw [h₁, Iic_True_compl]
-    · apply Or.inr
-      rw [← Iic_False_compl]
-      aesop
-  )
-  (fun _ hs => by rw [← Iic_False_compl, ← Iic_True_compl] at hs; aesop)
-
-lemma new5 : Topology.upper Prop = generateFrom {{True}} := by
-  rw [Topology.upper]
-  rw [new4]
-  rw [generateFrom_insert_empty]
+instance : Topology.IsUpper Prop where
+  topology_eq_upperTopology := by
+    have e1 : {s  | ∃ a, (Iic a)ᶜ = s} = {∅, {True}} := le_antisymm
+      (fun s ⟨a,ha⟩ => by
+        rw [← ha]
+        by_cases h : a = True
+        · apply Or.inl
+          rw [h, Iic_True_compl]
+        · apply Or.inr
+          rw [← Iic_False_compl]
+          aesop)
+      (fun _ hs => by rw [← Iic_False_compl, ← Iic_True_compl] at hs; aesop)
+    rw [Topology.upper, e1, generateFrom_insert_empty]
+    rfl
