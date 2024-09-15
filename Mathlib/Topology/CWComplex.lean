@@ -104,8 +104,8 @@ noncomputable section Topology
 /-- The inclusion map from `X` to `X'`, given that `X'` is obtained from `X` by attaching
 `(n+1)`-disks -/
 def AttachCells.inclusion {X X' : TopCat.{u}} {n : ℤ} (att : AttachCells n X X') : X ⟶ X' :=
-  @Limits.pushout.inr TopCat _ _ _ X (sigmaSphereInclusion n att.cells)
-    (sigmaAttachMap n X att.attachMaps) _ ≫ att.iso_pushout.inv
+  Limits.pushout.inr (sigmaSphereInclusion n att.cells) (sigmaAttachMap n X att.attachMaps)
+    ≫ att.iso_pushout.inv
 
 /-- The inclusion map from `sk n` (i.e., the `(n-1)`-skeleton) to `sk (n+1)` (i.e., the
 `n`-skeleton) of a relative CW-complex -/
