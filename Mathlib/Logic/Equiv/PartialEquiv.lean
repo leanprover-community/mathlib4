@@ -289,9 +289,7 @@ theorem symm_target : e.symm.target = e.source :=
   rfl
 
 @[simp, mfld_simps]
-theorem symm_symm : e.symm.symm = e := by
-  cases e
-  rfl
+theorem symm_symm : e.symm.symm = e := rfl
 
 theorem symm_bijective :
     Function.Bijective (PartialEquiv.symm : PartialEquiv α β → PartialEquiv β α) :=
@@ -721,7 +719,7 @@ theorem EqOnSource.restr {e e' : PartialEquiv α β} (he : e ≈ e') (s : Set α
 theorem EqOnSource.source_inter_preimage_eq {e e' : PartialEquiv α β} (he : e ≈ e') (s : Set β) :
     e.source ∩ e ⁻¹' s = e'.source ∩ e' ⁻¹' s := by rw [he.eqOn.inter_preimage_eq, source_eq he]
 
-/-- Composition of a partial equivlance and its inverse is equivalent to
+/-- Composition of a partial equivalence and its inverse is equivalent to
 the restriction of the identity to the source. -/
 theorem self_trans_symm : e.trans e.symm ≈ ofSet e.source := by
   have A : (e.trans e.symm).source = e.source := by mfld_set_tac

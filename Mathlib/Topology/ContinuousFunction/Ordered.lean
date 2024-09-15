@@ -85,7 +85,7 @@ section Extend
 
 variable [LinearOrder α] [OrderTopology α] {a b : α} (h : a ≤ b)
 
-/-- Extend a continuous function `f : C(Set.Icc a b, β)` to a function `f : C(α, β)`.  -/
+/-- Extend a continuous function `f : C(Set.Icc a b, β)` to a function `f : C(α, β)`. -/
 def IccExtend (f : C(Set.Icc a b, β)) : C(α, β) where
   toFun := Set.IccExtend h f
 

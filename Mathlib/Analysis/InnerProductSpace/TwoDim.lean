@@ -418,12 +418,11 @@ theorem nonneg_inner_and_areaForm_eq_zero_iff_sameRay (x y : E) :
     have hx' : 0 < ‖x‖ := by simpa using hx
     have ha' : 0 ≤ a := nonneg_of_mul_nonneg_left ha (by positivity)
     have hb' : b = 0 := eq_zero_of_ne_zero_of_mul_right_eq_zero (pow_ne_zero 2 hx'.ne') hb
-    exact (SameRay.sameRay_nonneg_smul_right x ha').add_right $ by simp [hb']
+    exact (SameRay.sameRay_nonneg_smul_right x ha').add_right <| by simp [hb']
   · intro h
     obtain ⟨r, hr, rfl⟩ := h.exists_nonneg_left hx
     simp only [inner_smul_right, real_inner_self_eq_norm_sq, LinearMap.map_smulₛₗ,
-      areaForm_apply_self, Algebra.id.smul_eq_mul, mul_zero, eq_self_iff_true,
-      and_true_iff]
+      areaForm_apply_self, Algebra.id.smul_eq_mul, mul_zero, eq_self_iff_true, and_true]
     positivity
 
 /-- A complex-valued real-bilinear map on an oriented real inner product space of dimension 2. Its

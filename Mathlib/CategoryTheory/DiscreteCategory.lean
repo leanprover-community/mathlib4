@@ -270,9 +270,10 @@ open Opposite
 @[simps! functor_obj_as inverse_obj]
 protected def opposite (α : Type u₁) : (Discrete α)ᵒᵖ ≌ Discrete α :=
   let F : Discrete α ⥤ (Discrete α)ᵒᵖ := Discrete.functor fun x => op (Discrete.mk x)
-  Equivalence.mk F.leftOp F
-  (NatIso.ofComponents fun ⟨X⟩ => Iso.refl _)
-  (Discrete.natIso fun ⟨X⟩ => Iso.refl _)
+  { functor := F.leftOp
+    inverse := F
+    unitIso := NatIso.ofComponents fun ⟨X⟩ => Iso.refl _
+    counitIso := Discrete.natIso fun ⟨X⟩ => Iso.refl _ }
 
 variable {C : Type u₂} [Category.{v₂} C]
 

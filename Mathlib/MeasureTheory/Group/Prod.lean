@@ -243,7 +243,7 @@ theorem absolutelyContinuous_of_isMulLeftInvariant [IsMulLeftInvariant ν] (hν 
   refine AbsolutelyContinuous.mk fun s sm hνs => ?_
   have h1 := measure_mul_lintegral_eq μ ν sm 1 measurable_one
   simp_rw [Pi.one_apply, lintegral_one, mul_one, (measure_mul_right_null ν _).mpr hνs,
-    lintegral_zero, mul_eq_zero (M₀ := ℝ≥0∞), measure_univ_eq_zero.not.mpr hν, or_false_iff] at h1
+    lintegral_zero, mul_eq_zero (M₀ := ℝ≥0∞), measure_univ_eq_zero.not.mpr hν, or_false] at h1
   exact h1
 
 section SigmaFinite
@@ -356,7 +356,7 @@ theorem measurePreserving_prod_mul_swap_right [IsMulRightInvariant μ] :
 " The map `(x, y) ↦ (x + y, y)` preserves the measure `μ × ν`. "]
 theorem measurePreserving_mul_prod [IsMulRightInvariant μ] :
     MeasurePreserving (fun z : G × G => (z.1 * z.2, z.2)) (μ.prod ν) (μ.prod ν) :=
-  measurePreserving_swap.comp <| by apply measurePreserving_prod_mul_swap_right μ ν
+  measurePreserving_swap.comp (measurePreserving_prod_mul_swap_right μ ν)
 
 variable [MeasurableInv G]
 
@@ -378,7 +378,7 @@ theorem measurePreserving_prod_div_swap [IsMulRightInvariant μ] :
 " The map `(x, y) ↦ (x - y, y)` preserves the measure `μ × ν`. "]
 theorem measurePreserving_div_prod [IsMulRightInvariant μ] :
     MeasurePreserving (fun z : G × G => (z.1 / z.2, z.2)) (μ.prod ν) (μ.prod ν) :=
-  measurePreserving_swap.comp <| by apply measurePreserving_prod_div_swap μ ν
+  measurePreserving_swap.comp (measurePreserving_prod_div_swap μ ν)
 
 /-- The map `(x, y) ↦ (xy, x⁻¹)` is measure-preserving. -/
 @[to_additive measurePreserving_add_prod_neg_right
@@ -455,7 +455,7 @@ theorem quasiMeasurePreserving_mul_left [IsMulRightInvariant μ] (g : G) :
   have :=
     (quasiMeasurePreserving_inv_of_right_invariant μ).comp
       (this.comp (quasiMeasurePreserving_inv_of_right_invariant μ))
-  simp_rw [Function.comp, mul_inv_rev, inv_inv] at this
+  simp_rw [Function.comp_def, mul_inv_rev, inv_inv] at this
   exact this
 
 end QuasiMeasurePreserving

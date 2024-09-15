@@ -110,8 +110,7 @@ lemma annihilator_top_eq_ker_aeval [FaithfulSMul A M] :
 
 section Submodule
 
-variable {p : Submodule R M} (hp : p ≤ p.comap (Algebra.lsmul R R M a))
-  {q : Submodule R[X] <| AEval R M a}
+variable {p : Submodule R M} {q : Submodule R[X] <| AEval R M a}
 
 variable (R M) in
 /-- We can turn an `R[X]`-submodule into an `R`-submodule by forgetting the action of `X`. -/
@@ -132,13 +131,15 @@ def comapSubmodule :
 
 /-- An `R`-submodule which is stable under the action of `a` can be promoted to an
 `R[X]`-submodule. -/
-def mapSubmodule : Submodule R[X] <| AEval R M a :=
+def mapSubmodule (hp : p ≤ p.comap (Algebra.lsmul R R M a)) : Submodule R[X] <| AEval R M a :=
   { toAddSubmonoid := p.toAddSubmonoid.map (of R M a)
     smul_mem' := by
       rintro f - ⟨m : M, h : m ∈ p, rfl⟩
       simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup, AddSubmonoid.mem_map,
         Submodule.mem_toAddSubmonoid]
       exact ⟨aeval a f • m, aeval_apply_smul_mem_of_le_comap' h f a hp, of_aeval_smul a f m⟩ }
+
+variable (hp : p ≤ p.comap (Algebra.lsmul R R M a))
 
 @[simp] lemma mem_mapSubmodule {m : AEval R M a} :
     m ∈ mapSubmodule a hp ↔ (of R M a).symm m ∈ p :=

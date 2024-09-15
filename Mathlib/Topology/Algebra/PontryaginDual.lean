@@ -71,7 +71,7 @@ instance [LocallyCompactSpace G] : LocallyCompactSpace (PontryaginDual G) := by
           fun k _ ↦ ⟨Real.pi / 2 ^ (k + 1), by positivity, le_rfl⟩).map Circle.exp
     rw [Set.mem_setOf_eq] at ht ⊢
     refine lt_of_lt_of_le ht ?_
-    rw [div_le_iff' (pow_pos two_pos _), ← div_le_iff hx]
+    rw [div_le_iff₀' (pow_pos two_pos _), ← div_le_iff₀ hx]
     refine (Nat.le_ceil (Real.pi / x)).trans ?_
     exact_mod_cast (Nat.le_succ _).trans (Nat.lt_two_pow _).le
 

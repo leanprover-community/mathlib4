@@ -36,9 +36,9 @@ instance permGroup : Group (Perm α) where
   mul_one := refl_trans
   inv_mul_cancel := self_trans_symm
   npow n f := f ^ n
-  npow_succ n f := coe_fn_injective $ Function.iterate_succ _ _
+  npow_succ n f := coe_fn_injective <| Function.iterate_succ _ _
   zpow := zpowRec fun n f ↦ f ^ n
-  zpow_succ' n f := coe_fn_injective $ Function.iterate_succ _ _
+  zpow_succ' n f := coe_fn_injective <| Function.iterate_succ _ _
 
 @[simp]
 theorem default_eq : (default : Perm α) = 1 :=
@@ -396,7 +396,7 @@ theorem ofSubtype_apply_of_not_mem (f : Perm (Subtype p)) (ha : ¬p a) : ofSubty
 theorem mem_iff_ofSubtype_apply_mem (f : Perm (Subtype p)) (x : α) :
     p x ↔ p ((ofSubtype f : α → α) x) :=
   if h : p x then by
-    simpa only [h, true_iff_iff, MonoidHom.coe_mk, ofSubtype_apply_of_mem f h] using (f ⟨x, h⟩).2
+    simpa only [h, true_iff, MonoidHom.coe_mk, ofSubtype_apply_of_mem f h] using (f ⟨x, h⟩).2
   else by simp [h, ofSubtype_apply_of_not_mem f h]
 
 @[simp]

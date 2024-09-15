@@ -83,7 +83,7 @@ lemma inverseImage_iff (P : MorphismProperty D) (F : C ⥤ D) {X Y : C} (f : X �
 
 /-- The image (up to isomorphisms) of a `MorphismProperty C` by a functor `C ⥤ D` -/
 def map (P : MorphismProperty C) (F : C ⥤ D) : MorphismProperty D := fun _ _ f =>
-  ∃ (X' Y' : C)  (f' : X' ⟶ Y') (_ : P f'), Nonempty (Arrow.mk (F.map f') ≅ Arrow.mk f)
+  ∃ (X' Y' : C) (f' : X' ⟶ Y') (_ : P f'), Nonempty (Arrow.mk (F.map f') ≅ Arrow.mk f)
 
 lemma map_mem_map (P : MorphismProperty C) (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) (hf : P f) :
     (P.map F) (F.map f) := ⟨X, Y, f, hf, ⟨Iso.refl _⟩⟩
@@ -331,7 +331,7 @@ instance RespectsIso.isomorphisms : RespectsIso (isomorphisms C) := by
     · intro X Y Z e f
       simp only [isomorphisms.iff]
       intro
-      infer_instance
+      exact IsIso.comp_isIso
 
 @[deprecated (since := "2024-07-02")] alias RespectsIso.cancel_left_isIso :=
   cancel_left_of_respectsIso

@@ -13,6 +13,10 @@ import ImportGraph.Imports
 
 -- Import common Batteries tactics and commands
 import Batteries.Tactic.Where
+import Batteries.Tactic.Basic
+
+-- Import syntax for leansearch
+import LeanSearchClient
 
 -- Import Mathlib-specific linters.
 import Mathlib.Tactic.Linter.Lint

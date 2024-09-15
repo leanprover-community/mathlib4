@@ -86,7 +86,7 @@ lemma isUniform_one : G.IsUniform (1 : 𝕜) s t := by
 variable {G}
 
 lemma IsUniform.pos (hG : G.IsUniform ε s t) : 0 < ε :=
-  not_le.1 fun hε ↦ (hε.trans $ abs_nonneg _).not_lt $ hG (empty_subset _) (empty_subset _)
+  not_le.1 fun hε ↦ (hε.trans <| abs_nonneg _).not_lt <| hG (empty_subset _) (empty_subset _)
     (by simpa using mul_nonpos_of_nonneg_of_nonpos (Nat.cast_nonneg _) hε)
     (by simpa using mul_nonpos_of_nonneg_of_nonpos (Nat.cast_nonneg _) hε)
 
@@ -302,7 +302,7 @@ lemma IsEquipartition.card_interedges_sparsePairs_le (hP : P.IsEquipartition) (h
 private lemma aux {i j : ℕ} (hj : 0 < j) : j * (j - 1) * (i / j + 1) ^ 2 < (i + j) ^ 2 := by
   have : j * (j - 1) < j ^ 2 := by
     rw [sq]; exact Nat.mul_lt_mul_of_pos_left (Nat.sub_lt hj zero_lt_one) hj
-  apply (Nat.mul_lt_mul_of_pos_right this $ pow_pos Nat.succ_pos' _).trans_le
+  apply (Nat.mul_lt_mul_of_pos_right this <| pow_pos Nat.succ_pos' _).trans_le
   rw [← mul_pow]
   exact Nat.pow_le_pow_of_le_left (add_le_add_right (Nat.mul_div_le i j) _) _
 
@@ -329,15 +329,15 @@ lemma IsEquipartition.card_biUnion_offDiag_le (hε : 0 < ε) (hP : P.IsEquiparti
   obtain rfl | hA : A = ⊥ ∨ _ := A.eq_empty_or_nonempty
   · simp [Subsingleton.elim P ⊥]
   apply hP.card_biUnion_offDiag_le'.trans
-  rw [div_le_iff (Nat.cast_pos.2 (P.parts_nonempty hA.ne_empty).card_pos)]
+  rw [div_le_iff₀ (Nat.cast_pos.2 (P.parts_nonempty hA.ne_empty).card_pos)]
   have : (A.card : 𝕜) + P.parts.card ≤ 2 * A.card := by
     rw [two_mul]; exact add_le_add_left (Nat.cast_le.2 P.card_parts_le_card) _
-  refine (mul_le_mul_of_nonneg_left this $ by positivity).trans ?_
+  refine (mul_le_mul_of_nonneg_left this <| by positivity).trans ?_
   suffices 1 ≤ ε/4 * P.parts.card by
     rw [mul_left_comm, ← sq]
-    convert mul_le_mul_of_nonneg_left this (mul_nonneg zero_le_two $ sq_nonneg (A.card : 𝕜))
+    convert mul_le_mul_of_nonneg_left this (mul_nonneg zero_le_two <| sq_nonneg (A.card : 𝕜))
       using 1 <;> ring
-  rwa [← div_le_iff', one_div_div]
+  rwa [← div_le_iff₀', one_div_div]
   positivity
 
 lemma IsEquipartition.sum_nonUniforms_lt' (hA : A.Nonempty) (hε : 0 < ε) (hP : P.IsEquipartition)
@@ -347,7 +347,7 @@ lemma IsEquipartition.sum_nonUniforms_lt' (hA : A.Nonempty) (hε : 0 < ε) (hP :
     _ ≤ (P.nonUniforms G ε).card • (↑(A.card / P.parts.card + 1) : 𝕜) ^ 2 :=
       sum_le_card_nsmul _ _ _ ?_
     _ = _ := nsmul_eq_mul _ _
-    _ ≤ _ := mul_le_mul_of_nonneg_right hG $ by positivity
+    _ ≤ _ := mul_le_mul_of_nonneg_right hG <| by positivity
     _ < _ := ?_
   · simp only [Prod.forall, Finpartition.mk_mem_nonUniforms, and_imp]
     rintro U V hU hV - -
@@ -418,7 +418,7 @@ lemma unreduced_edges_subset :
   obtain rfl | hUV := eq_or_ne U V
   · exact Or.inr (Or.inl ⟨U, hU, hx, hy, G.ne_of_adj h⟩)
   by_cases h₂ : G.IsUniform (ε/8) U V
-  · exact Or.inr $ Or.inr ⟨U, V, hU, hV, hUV, h' _ hU _ hV hx hy hUV h₂, hx, hy, h⟩
+  · exact Or.inr <| Or.inr ⟨U, V, hU, hV, hUV, h' _ hU _ hV hx hy hUV h₂, hx, hy, h⟩
   · exact Or.inl ⟨U, V, hU, hV, hUV, h₂, hx, hy⟩
 
 end SimpleGraph

@@ -162,7 +162,7 @@ lemma mem_kstar_iff_exists_nonempty {x : List α} :
     refine ⟨S.filter fun l ↦ !List.isEmpty l, by simp, fun y hy ↦ ?_⟩
     -- Porting note: The previous code was:
     -- rw [mem_filter, empty_iff_eq_nil] at hy
-    rw [mem_filter, Bool.not_eq_true', ← Bool.bool_iff_false, isEmpty_iff_eq_nil] at hy
+    rw [mem_filter, Bool.not_eq_true', ← Bool.bool_iff_false, List.isEmpty_iff] at hy
     exact ⟨h y hy.1, hy.2⟩
   · rintro ⟨S, hx, h⟩
     exact ⟨S, hx, fun y hy ↦ (h y hy).1⟩

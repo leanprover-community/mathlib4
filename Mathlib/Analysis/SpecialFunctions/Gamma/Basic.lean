@@ -461,7 +461,7 @@ end GammaHasDeriv
 theorem tendsto_self_mul_Gamma_nhds_zero : Tendsto (fun z : ℂ => z * Gamma z) (𝓝[≠] 0) (𝓝 1) := by
   rw [show 𝓝 (1 : ℂ) = 𝓝 (Gamma (0 + 1)) by simp only [zero_add, Complex.Gamma_one]]
   convert (Tendsto.mono_left _ nhdsWithin_le_nhds).congr'
-    (eventuallyEq_of_mem self_mem_nhdsWithin Complex.Gamma_add_one)
+    (eventuallyEq_of_mem self_mem_nhdsWithin Complex.Gamma_add_one) using 1
   refine ContinuousAt.comp (g := Gamma) ?_ (continuous_id.add continuous_const).continuousAt
   refine (Complex.differentiableAt_Gamma _ fun m => ?_).continuousAt
   rw [zero_add, ← ofReal_natCast, ← ofReal_neg, ← ofReal_one, Ne, ofReal_inj]

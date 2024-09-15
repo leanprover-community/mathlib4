@@ -299,8 +299,7 @@ instance : SetLike (Sym2 α) α where
     induction' z with x y
     induction' z' with x' y'
     have hx := h x; have hy := h y; have hx' := h x'; have hy' := h y'
-    simp only [mem_iff', eq_self_iff_true, or_true_iff, iff_true_iff,
-      true_or_iff, true_iff_iff] at hx hy hx' hy'
+    simp only [mem_iff', eq_self_iff_true] at hx hy hx' hy'
     aesop
 
 @[simp]
@@ -318,7 +317,7 @@ theorem mem_mk_left (x y : α) : x ∈ s(x, y) :=
   ⟨y, rfl⟩
 
 theorem mem_mk_right (x y : α) : y ∈ s(x, y) :=
-  eq_swap.subst <| mem_mk_left y x
+  eq_swap ▸ mem_mk_left y x
 
 @[simp, aesop norm (rule_sets := [Sym2])]
 theorem mem_iff {a b c : α} : a ∈ s(b, c) ↔ a = b ∨ a = c :=
