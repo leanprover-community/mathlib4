@@ -62,10 +62,10 @@ structure AttachGeneralizedCells (X X' : TopCat.{u}) where
   /-- The index type over the generalized `(n+1)`-cells -/
   cells : Type
   /-- For each generalized `(n+1)`-cell, we have an attaching map from its boundary to `X`. -/
-  attach_maps : cells → C(S, X)
+  attachMaps : cells → C(S, X)
   /-- `X'` is the pushout obtained from `X` along `sigmaAttachMap`. -/
   iso_pushout : X' ≅ Limits.pushout (generalizedSigmaSphereInclusion f cells)
-    (generalizedSigmaAttachMap S X attach_maps)
+    (generalizedSigmaAttachMap S X attachMaps)
 
 /-- The inclusion map from the disjoint union of `n`-spheres to the disjoint union of `(n+1)`-disks,
 where both of the disjoint unions are indexed by `cells` -/
@@ -90,7 +90,7 @@ structure RelativeCWComplex where
   sk : ℕ → TopCat.{u}
   /-- Each `sk (n+1)` (i.e., the `n`-skeleton) is obtained from `sk n` (i.e., the
   `(n-1)`-skeleton) by attaching `n`-disks. -/
-  attach_cells (n : ℕ) : RelativeCWComplex.AttachCells (n - 1) (sk n) (sk (n + 1))
+  attachCells (n : ℕ) : RelativeCWComplex.AttachCells (n - 1) (sk n) (sk (n + 1))
 
 /-- A CW-complex is a relative CW-complex whose `sk 0` (i.e., `(-1)`-skeleton) is empty. -/
 structure CWComplex extends RelativeCWComplex.{u} where
@@ -105,12 +105,12 @@ noncomputable section Topology
 `(n+1)`-disks -/
 def AttachCells.inclusion {X X' : TopCat.{u}} {n : ℤ} (att : AttachCells n X X') : X ⟶ X' :=
   @Limits.pushout.inr TopCat _ _ _ X (sigmaSphereInclusion n att.cells)
-    (sigmaAttachMap n X att.attach_maps) _ ≫ att.iso_pushout.inv
+    (sigmaAttachMap n X att.attachMaps) _ ≫ att.iso_pushout.inv
 
 /-- The inclusion map from `sk n` (i.e., the `(n-1)`-skeleton) to `sk (n+1)` (i.e., the
 `n`-skeleton) of a relative CW-complex -/
 def skInclusion (X : RelativeCWComplex.{u}) (n : ℕ) : X.sk n ⟶ X.sk (n + 1) :=
-  (X.attach_cells n).inclusion
+  (X.attachCells n).inclusion
 
 /-- The topology on a relative CW-complex -/
 def toTopCat (X : RelativeCWComplex.{u}) : TopCat.{u} :=
