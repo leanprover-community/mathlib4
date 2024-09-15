@@ -195,7 +195,7 @@ theorem ergodic_mul_left_of_denseRange_zpow (hg : DenseRange (g ^ · : ℤ → G
 
 @[to_additive]
 theorem ergodic_mul_left_iff_denseRange_zpow (μ : Measure G) [IsFiniteMeasure μ]
-    [μ.InnerRegular] [μ.IsMulLeftInvariant] [μ.IsOpenPosMeasure] :
+    [μ.InnerRegular] [μ.IsMulLeftInvariant] [NeZero μ] :
     Ergodic (g * ·) μ ↔ DenseRange (g ^ · : ℤ → G) :=
   ⟨.zpow_of_ergodic_mul_left, (ergodic_mul_left_of_denseRange_zpow · μ)⟩
 
