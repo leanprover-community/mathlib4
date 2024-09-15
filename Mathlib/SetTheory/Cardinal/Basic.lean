@@ -933,7 +933,7 @@ theorem mk_pi_congr_subtype {ι : Type u} {f g : ι → Type v} {S : Set ι}
   have h' : Π i ∈ S, f i ≃ g i := fun i is ↦ Classical.choice <| Cardinal.eq.mp (h i is)
   mk_congr
   ⟨fun f' i is ↦ h' i is (f' i is) , fun g' i is ↦ (h' i is).symm (g' i is),
-  fun h'' ↦ by simp only [Equiv.symm_apply_apply],
+  fun _ ↦ by simp only [Equiv.symm_apply_apply],
   fun _ ↦ by simp only [Equiv.apply_symm_apply]⟩
 
 @[simp]
