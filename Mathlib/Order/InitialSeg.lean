@@ -13,8 +13,8 @@ import Mathlib.Data.Sum.Order
 This file defines initial and principal segment embeddings. Though these definitions make sense for
 arbitrary relations, they're intended for use with well orders.
 
-An initial segment is simply a lower set. A principal segment is a set of the form `Set.Iio x` for
-some `x`.
+An initial segment is simply a lower set, i.e. if `x` belongs to the range, then any `y < x` also
+belongs to the range. A principal segment is a set of the form `Set.Iio x` for some `x`.
 
 An initial segment embedding `r ≼i s` is an order embedding `r ↪ s` such that its range is an
 initial segment. Likewise, a principal segment embedding `r ≺i s` has a principal segment for a
@@ -199,8 +199,8 @@ end InitialSeg
 /-! ### Principal segments -/
 
 /-- If `r` is a relation on `α` and `s` in a relation on `β`, then `f : r ≺i s` is an initial
-segment embedding whose range is `Set.Iio top` for some element `top`. If `β` is a well-order, this
-is equivalent to the embedding not being surjective. -/
+segment embedding whose range is `Set.Iio x` for some element `x`. If `β` is a well-order, this is
+equivalent to the embedding not being surjective. -/
 structure PrincipalSeg {α β : Type*} (r : α → α → Prop) (s : β → β → Prop) extends r ↪r s where
   /-- The supremum of the principal segment. -/
   top : β
