@@ -7,7 +7,6 @@ import Mathlib.Algebra.Category.FiniteGrp.Basic
 import Mathlib.Topology.Category.Profinite.Basic
 import Mathlib.Topology.Algebra.ContinuousMonoidHom
 
-
 /-!
 
 # Category of Profinite Groups
@@ -188,3 +187,154 @@ def ofClosedSubgroup {G : ProfiniteGrp}
   of H
 
 end ProfiniteGrp
+
+/-!
+# The projective limit of finite groups is profinite
+
+* `FiniteGrp.limit` : the concretely constructed limit of finite group as a subgroup of the product
+
+* `ofFiniteGrpLimit`: direct limit of finite groups is a profinite group
+
+* Verify that the constructed limit satisfies the universal property.
+-/
+
+section Profiniteoflimit
+
+open TopologicalGroup
+
+universe w w'
+
+variable {J : Type v} [Category.{w, v} J] (F : J ⥤ FiniteGrp.{max v w'})
+
+attribute [local instance] ConcreteCategory.instFunLike ConcreteCategory.hasCoeToSort
+
+instance (j : J) : TopologicalSpace (F.obj j) := ⊥
+
+instance (j : J) : DiscreteTopology (F.obj j) := ⟨rfl⟩
+
+instance (j : J) : TopologicalGroup (F.obj j) := {}
+
+namespace FiniteGrp
+
+/-- Concretely constructing the limit of topological group as a subgroup of the product group. -/
+def limit : Subgroup (Π j : J, F.obj j) where
+  carrier := {x | ∀ ⦃i j : J⦄ (π : i ⟶ j), F.map π (x i) = x j}
+  mul_mem' hx hy _ _ π := by simp only [Pi.mul_apply, map_mul, hx π, hy π]
+  one_mem' := by simp only [Set.mem_setOf_eq, Pi.one_apply, map_one, implies_true]
+  inv_mem' h _ _ π := by simp only [Pi.inv_apply, map_inv, h π]
+
+@[simp]
+lemma mem_limit (x : Π j : J, F.obj j) : x ∈ limit F ↔
+  ∀ ⦃i j : J⦄ (π : i ⟶ j), F.map π (x i) = x j := Iff.rfl
+
+lemma limit_closed_in_product : IsClosed ((limit F) : Set (Π j : J, F.obj j)) := by
+  classical
+  let S ⦃i j : J⦄ (π : i ⟶ j) : Set (Π j : J, F.obj j) := {x | F.map π (x i) = x j}
+  have hS ⦃i j : J⦄ (π : i ⟶ j) : IsClosed (S π) := by
+    simp only [S, ← isOpen_compl_iff, isOpen_pi_iff]
+    rintro x (hx : ¬ _)
+    refine ⟨{i, j}, fun i => {x i}, ?_⟩
+    simp only [Finset.mem_singleton, isOpen_discrete, Set.mem_singleton_iff, and_self,
+      implies_true, Finset.coe_singleton, Set.singleton_pi, true_and]
+    intro y hy
+    simp only [Finset.coe_insert, Finset.coe_singleton, Set.insert_pi, Set.singleton_pi,
+      Set.mem_inter_iff, Set.mem_preimage, Function.eval, Set.mem_singleton_iff,
+      Set.mem_compl_iff, Set.mem_setOf_eq] at hy ⊢
+    rwa [hy.1, hy.2]
+  have eq : limit F = ⋂ (i : J) (j : J) (π : i ⟶ j), S π := by
+    ext x
+    simp only [Subgroup.coeSubtype, Subtype.range_coe_subtype, SetLike.mem_coe, mem_limit,
+      Set.mem_setOf_eq, Set.mem_iInter]
+    tauto
+  exact eq ▸ isClosed_iInter fun i => isClosed_iInter fun j => isClosed_iInter fun π => hS π
+
+instance : CompactSpace (limit F) := isCompact_iff_compactSpace.mp <|
+  IsClosed.isCompact <| limit_closed_in_product F
+
+end FiniteGrp
+
+namespace ProfiniteGrp
+
+/-- Making the direct limit of `FiniteGrp` into a `ProfiniteGrp`. -/
+def ofFiniteGrpLimit : ProfiniteGrp := .of (FiniteGrp.limit F)
+
+/-- Verify that the limit constructed above exist projections to the `FiniteGrps`
+that are compatible with the morphisms between them. -/
+def ofFiniteGrpLimitCone : Limits.Cone (F ⋙ forget₂ FiniteGrp ProfiniteGrp) where
+  pt := ofFiniteGrpLimit F
+  π :=
+  { app := fun j => {
+      toFun := fun x => x.1 j
+      map_one' := rfl
+      map_mul' := fun x y => rfl
+      continuous_toFun := by
+        exact (continuous_apply j).comp (continuous_iff_le_induced.mpr fun U a => a)
+    }
+    naturality := by
+      intro i j f
+      simp only [Functor.const_obj_obj, Functor.comp_obj,
+        Functor.const_obj_map, Category.id_comp, Functor.comp_map]
+      congr
+      exact funext fun x => (x.2 f).symm
+  }
+
+@[simp]
+lemma ofFiniteGrpLimitCone_pt : (ProfiniteGrp.ofFiniteGrpLimitCone F).pt =
+    ProfiniteGrp.ofFiniteGrpLimit F := rfl
+
+@[simp, nolint simpNF]
+lemma ofFiniteGrpLimitCone_π_app_apply  (j : J) (x : ↑(((CategoryTheory.Functor.const J).obj
+    (ProfiniteGrp.ofFiniteGrpLimit F)).obj j).toProfinite.toTop) :
+    ((ProfiniteGrp.ofFiniteGrpLimitCone F).π.app j) x = x.1 j := rfl
+
+/-- Verify that the limit constructed above satisfies the universal property. -/
+def ofFiniteGrpLimitConeIsLimit : Limits.IsLimit (ofFiniteGrpLimitCone F) where
+  lift cone := {
+    toFun := fun pt =>
+      { val := fun j => (cone.π.1 j) pt
+        property := fun i j πij => by
+          have := cone.π.2 πij
+          simp only [Functor.const_obj_obj, Functor.comp_obj, Functor.const_obj_map,
+            Category.id_comp, Functor.comp_map] at this
+          simp only [Functor.const_obj_obj, Functor.comp_obj, this]
+          rfl }
+    map_one' := by
+      apply SetCoe.ext
+      simp only [Functor.const_obj_obj, Functor.comp_obj, OneMemClass.coe_one, Pi.one_apply,
+        OneHom.toFun_eq_coe, OneHom.coe_mk, id_eq, Functor.const_obj_map, Functor.comp_map,
+        MonoidHom.toOneHom_coe, MonoidHom.coe_mk, eq_mpr_eq_cast, cast_eq, map_one]
+      rfl
+    map_mul' := fun x y => by
+      apply SetCoe.ext
+      simp only [Functor.const_obj_obj, Functor.comp_obj, OneMemClass.coe_one, Pi.one_apply,
+        OneHom.toFun_eq_coe, OneHom.coe_mk, id_eq, Functor.const_obj_map, Functor.comp_map,
+        MonoidHom.toOneHom_coe, MonoidHom.coe_mk, eq_mpr_eq_cast, cast_eq, map_mul]
+      rfl
+    continuous_toFun :=  continuous_induced_rng.mpr
+      (continuous_pi (fun j => (cone.π.1 j).continuous_toFun))
+  }
+  fac cone j := by
+    ext pt
+    simp only [comp_apply]
+    rfl
+  uniq := by
+    intro cone g hyp
+    ext pt
+    refine Subtype.ext <| funext fun j => ?_
+    show _ = cone.π.app _ _
+    rw [←hyp j]
+    rfl
+
+@[simp, nolint simpNF]
+lemma ofFiniteGrpLimitConeIsLimit_lift_toFun_coe (j : J) (cone : Limits.Cone
+  (F ⋙ forget₂ FiniteGrp.{max v w'} ProfiniteGrp.{max v w'})) (pt : ↑cone.pt.toProfinite.toTop) :
+  (((ProfiniteGrp.ofFiniteGrpLimitConeIsLimit F).lift cone) pt).val j = (cone.π.app j) pt := rfl
+
+instance : Limits.HasLimit (F ⋙ forget₂ FiniteGrp ProfiniteGrp) where
+  exists_limit := Nonempty.intro
+    { cone := ofFiniteGrpLimitCone F
+      isLimit := ofFiniteGrpLimitConeIsLimit F }
+
+end ProfiniteGrp
+
+end Profiniteoflimit
