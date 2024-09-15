@@ -746,6 +746,14 @@ theorem le_sum {ι} (f : ι → Cardinal) (i) : f i ≤ sum f := by
 theorem mk_sigma {ι} (f : ι → Type*) : #(Σ i, f i) = sum fun i => #(f i) :=
   mk_congr <| Equiv.sigmaCongrRight fun _ => outMkEquiv.symm
 
+theorem mk_sigma_congr {ι} {f g : ι → Type v} (h : ∀ i, #(f i) = #(g i)) :
+    #(Σ i, f i) = #(Σ i, g i) := by
+  simp_all only [mk_sigma]
+
+theorem mk_sigma_congr_subtype {ι : Type u} {f g : ι → Type v} {S : Set ι}
+    (h : ∀ i ∈ S, #(f i) = #(g i)) : #(Σ i : S, f i) = #(Σ i : S, g i) := by
+  simp_all only [mk_sigma, Subtype.coe_prop]
+
 @[simp]
 theorem sum_const (ι : Type u) (a : Cardinal.{v}) :
     (sum fun _ : ι => a) = lift.{v} #ι * lift.{u} a :=
