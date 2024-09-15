@@ -5,10 +5,7 @@ Authors: Anatole Dedecker, Eric Wieser
 -/
 import Mathlib.Analysis.Analytic.Basic
 import Mathlib.Analysis.Complex.Basic
-import Mathlib.Analysis.Normed.Field.InfiniteSum
 import Mathlib.Data.Nat.Choose.Cast
-import Mathlib.Data.Finset.NoncommProd
-import Mathlib.Topology.Algebra.Algebra
 
 /-!
 # Exponential in a Banach algebra

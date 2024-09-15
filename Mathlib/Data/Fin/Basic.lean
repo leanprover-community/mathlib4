@@ -1479,6 +1479,13 @@ lemma pos_of_ne_zero {n : ℕ} {a : Fin (n + 1)} (h : a ≠ 0) :
     0 < a :=
   Nat.pos_of_ne_zero (val_ne_of_ne h)
 
+lemma sub_succ_le_sub_of_le {n : ℕ} {u v : Fin (n + 2)} (h : u < v) : v - (u + 1) < v - u := by
+  have h' : u + 1 ≤ v := add_one_le_of_lt h
+  apply lt_def.mpr
+  simp only [sub_val_of_le h', sub_val_of_le (Fin.le_of_lt h)]
+  refine Nat.sub_lt_sub_left h (lt_def.mp ?_)
+  exact lt_add_one_iff.mpr (Fin.lt_of_lt_of_le h v.le_last)
+
 end AddGroup
 
 @[simp]

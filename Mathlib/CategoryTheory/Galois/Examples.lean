@@ -74,7 +74,7 @@ instance {X Y : Action FintypeCat (MonCat.of G)} (f : X ⟶ Y) :
 
 /-- The category of finite sets has quotients by finite groups in arbitrary universes. -/
 instance [Finite G] : HasColimitsOfShape (SingleObj G) FintypeCat.{w} := by
-  obtain ⟨G', hg, hf, ⟨e⟩⟩ := Finite.exists_type_zero_nonempty_mulEquiv G
+  obtain ⟨G', hg, hf, ⟨e⟩⟩ := Finite.exists_type_univ_nonempty_mulEquiv G
   exact Limits.hasColimitsOfShape_of_equivalence e.toSingleObjEquiv.symm
 
 noncomputable instance : PreservesFiniteLimits (forget (Action FintypeCat (MonCat.of G))) := by
@@ -95,6 +95,10 @@ noncomputable instance : FiberFunctor (Action.forget FintypeCat (MonCat.of G)) w
   preservesFiniteCoproducts := ⟨fun _ _ ↦ inferInstance⟩
   preservesQuotientsByFiniteGroups _ _ _ := inferInstance
   reflectsIsos := ⟨fun f (h : IsIso f.hom) => inferInstance⟩
+
+/-- The forgetful functor from finite `G`-sets to sets is a `FiberFunctor`. -/
+noncomputable instance : FiberFunctor (forget₂ (Action FintypeCat (MonCat.of G)) FintypeCat) :=
+  inferInstanceAs <| FiberFunctor (Action.forget FintypeCat (MonCat.of G))
 
 /-- The category of finite `G`-sets is a `GaloisCategory`. -/
 instance : GaloisCategory (Action FintypeCat (MonCat.of G)) where
