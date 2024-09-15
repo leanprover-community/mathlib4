@@ -583,6 +583,11 @@ theorem Pi.basisFun_det : (Pi.basisFun R ι).det = Matrix.detRowAlternating := b
   ext M
   rw [Basis.det_apply, Basis.coePiBasisFun.toMatrix_eq_transpose, det_transpose]
 
+theorem Pi.basisFun_det_apply (v : ι → ι → R) :
+    (Pi.basisFun R ι).det v = (Matrix.of v).det := by
+  rw [Pi.basisFun_det]
+  rfl
+
 /-- If we fix a background basis `e`, then for any other basis `v`, we can characterise the
 coordinates provided by `v` in terms of determinants relative to `e`. -/
 theorem Basis.det_smul_mk_coord_eq_det_update {v : ι → M} (hli : LinearIndependent R v)

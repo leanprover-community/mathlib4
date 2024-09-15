@@ -579,10 +579,6 @@ theorem reindex_toBasis (b : OrthonormalBasis ι 𝕜 E) (e : ι ≃ ι') :
     (b.reindex e).toBasis = b.toBasis.reindex e := Basis.eq_ofRepr_eq_repr fun _ ↦ congr_fun rfl
 
 @[simp]
-theorem reindex_toBasis (b : OrthonormalBasis ι 𝕜 E)  (e : ι ≃ ι') :
-    (b.reindex e).toBasis = b.toBasis.reindex e := Basis.eq_ofRepr_eq_repr fun _ ↦ congr_fun rfl
-
-@[simp]
 protected theorem coe_reindex (b : OrthonormalBasis ι 𝕜 E) (e : ι ≃ ι') :
     ⇑(b.reindex e) = b ∘ e.symm :=
   funext (b.reindex_apply e)
