@@ -526,7 +526,6 @@ end WeierstrassCurve
 
 /-- An elliptic curve over a commutative ring. Note that this definition is only mathematically
 accurate for certain rings whose Picard group has trivial 12-torsion, such as a field or a PID. -/
-@[ext]
 structure EllipticCurve (R : Type u) [CommRing R] extends WeierstrassCurve R where
   /-- The discriminant `Δ'` of an elliptic curve over `R`, which is given as a unit in `R`. -/
   Δ' : Rˣ
@@ -535,7 +534,31 @@ structure EllipticCurve (R : Type u) [CommRing R] extends WeierstrassCurve R whe
 
 namespace EllipticCurve
 
-variable {R : Type u} [CommRing R] (E : EllipticCurve R)
+variable {R : Type u} [CommRing R]
+
+section ext
+
+theorem ext' : Function.Injective (toWeierstrassCurve : EllipticCurve R → _) := by
+  intro x y h
+  obtain ⟨x1, _, x3⟩ := x
+  obtain ⟨y1, _, y3⟩ := y
+  change x1 = y1 at h
+  congr
+  exact Units.ext (by rw [x3, y3, h])
+
+variable {x y : EllipticCurve R}
+
+theorem ext_iff' : x = y ↔ x.toWeierstrassCurve = y.toWeierstrassCurve :=
+  ⟨fun h ↦ by rw [h], fun h ↦ EllipticCurve.ext' h⟩
+
+@[ext]
+theorem ext (h₁ : x.a₁ = y.a₁) (h₂ : x.a₂ = y.a₂) (h₃ : x.a₃ = y.a₃)
+    (h₄ : x.a₄ = y.a₄) (h₆ : x.a₆ = y.a₆) : x = y :=
+  ext' (WeierstrassCurve.ext h₁ h₂ h₃ h₄ h₆)
+
+end ext
+
+variable (E : EllipticCurve R)
 
 -- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The j-invariant `j` of an elliptic curve, which is invariant under isomorphisms over `R`. -/
