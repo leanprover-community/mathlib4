@@ -24,11 +24,6 @@ Classical versions are in the namespace `Classical`.
 -/
 
 open Function
-
--- attribute [refl] HEq.refl -- FIXME This is still rejected after #857
-attribute [refl] Iff.refl -- TODO: remove after mathlib upgrades to a version with lean4#5329
-attribute [trans] Iff.trans HEq.trans heq_of_eq_of_heq
-
 attribute [local instance 10] Classical.propDecidable
 
 section Miscellany
@@ -42,6 +37,8 @@ section Miscellany
 --   And.decidable Or.decidable Decidable.false Xor.decidable Iff.decidable Decidable.true
 --   Implies.decidable Not.decidable Ne.decidable Bool.decidableEq Decidable.toBool
 
+-- attribute [refl] HEq.refl -- FIXME This is still rejected after #857
+attribute [trans] Iff.trans HEq.trans heq_of_eq_of_heq
 attribute [simp] cast_heq
 
 /-- An identity function with its main argument implicit. This will be printed as `hidden` even
