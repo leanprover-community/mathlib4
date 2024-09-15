@@ -14,7 +14,7 @@ Define the Pareto measure over the reals.
 ## Main definitions
 * `paretoPDFReal`: the function `t r x ↦ r * t ^ r * x ^ -(r + 1)`
   for `t ≤ x` or `0` else, which is the probability density function of a Pareto distribution with
-  scale `t` and shape `r` (when `ht : 0 < t ` and `hr : 0 < r`).
+  scale `t` and shape `r` (when `ht : 0 < t` and `hr : 0 < r`).
 * `paretoPDF`: `ℝ≥0∞`-valued pdf,
   `paretoPDF t r = ENNReal.ofReal (paretoPDFReal t r)`.
 * `paretoMeasure`: a Pareto measure on `ℝ`, parametrized by its scale `t` and shape `r`.
@@ -30,11 +30,11 @@ namespace ProbabilityTheory
 
 section ParetoPDF
 
-/-- The pdf of the pareto distribution depending on its scale and rate. -/
+/-- The pdf of the Pareto distribution depending on its scale and rate. -/
 noncomputable def paretoPDFReal (t r x : ℝ) : ℝ :=
   if t ≤ x then r * t ^ r * x ^ (-(r + 1)) else 0
 
-/-- The pdf of the Pareto distribution, as a function valued in `ℝ≥0∞` -/
+/-- The pdf of the Pareto distribution, as a function valued in `ℝ≥0∞`. -/
 noncomputable def paretoPDF (t r x : ℝ) : ℝ≥0∞ :=
   ENNReal.ofReal (paretoPDFReal t r x)
 
@@ -48,7 +48,7 @@ lemma paretoPDF_of_le {t r x : ℝ} (hx : t ≤ x) :
     paretoPDF t r x = ENNReal.ofReal (r * t ^ r * x ^ (-(r + 1))) := by
   simp only [paretoPDF_eq, if_pos hx]
 
-/-- The Lebesgue integral of the Pareto pdf over reals ≤ t equals 0. -/
+/-- The Lebesgue integral of the Pareto pdf over reals `≤ t` equals `0`. -/
 lemma lintegral_paretoPDF_of_le {t r x : ℝ} (hx : x ≤ t) :
     ∫⁻ y in Iio x, paretoPDF t r y = 0 := by
   rw [setLIntegral_congr_fun (g := fun _ ↦ 0) measurableSet_Iio]
@@ -68,7 +68,7 @@ lemma measurable_paretoPDFReal (t r : ℝ) : Measurable (paretoPDFReal t r) :=
      StronglyMeasurable (paretoPDFReal t r) :=
    (measurable_paretoPDFReal t r).stronglyMeasurable
 
-/-- The Pareto pdf is positive for all reals >= t. -/
+/-- The Pareto pdf is positive for all reals `>= t`. -/
 lemma paretoPDFReal_pos {t r x : ℝ} (ht : 0 < t) (hr : 0 < r) (hx : t ≤ x) :
     0 < paretoPDFReal t r x := by
   rw [paretoPDFReal, if_pos hx]
@@ -91,7 +91,7 @@ lemma paretoPDFReal_nonneg {t r : ℝ} (ht : 0 ≤ t) (hr : 0 ≤ r) (x : ℝ) :
 
 open Measure
 
-/-- The pdf of the Pareto distribution integrates to 1. -/
+/-- The pdf of the Pareto distribution integrates to `1`. -/
 @[simp]
 lemma lintegral_paretoPDF_eq_one {t r : ℝ} (ht : 0 < t) (hr : 0 < r) :
     ∫⁻ x, paretoPDF t r x = 1 := by
@@ -107,10 +107,9 @@ lemma lintegral_paretoPDF_eq_one {t r : ℝ} (ht : 0 < t) (hr : 0 < r) :
       simp
     linarith
   · rw [EventuallyLE, ae_restrict_iff' measurableSet_Ici]
-    exact ae_of_all _ (fun x (hx : t ≤ x) ↦ by
-      have _ : 0 < x := by linarith
-      positivity
-    )
+    refine ae_of_all _ fun x (hx : t ≤ x) ↦ ?_
+    have := lt_of_lt_of_le ht hx
+    positivity
   · apply (measurable_paretoPDFReal t r).aestronglyMeasurable.congr
     refine (ae_restrict_iff' measurableSet_Ici).mpr <| ae_of_all _ fun x (hx : t ≤ x) ↦ ?_
     simp_rw [paretoPDFReal, eq_true_intro hx, ite_true]
@@ -123,7 +122,7 @@ open MeasureTheory
 noncomputable def paretoMeasure (t r : ℝ) : Measure ℝ :=
   volume.withDensity (paretoPDF t r)
 
-lemma isProbabilityMeasurePareto {t r : ℝ} (ht : 0 < t) (hr : 0 < r) :
+lemma isProbabilityMeasure_paretoMeasure {t r : ℝ} (ht : 0 < t) (hr : 0 < r) :
     IsProbabilityMeasure (paretoMeasure t r) where
   measure_univ := by simp [paretoMeasure, lintegral_paretoPDF_eq_one ht hr]
 
@@ -135,7 +134,7 @@ noncomputable def paretoCDFReal (t r : ℝ) : StieltjesFunction :=
 
 lemma paretoCDFReal_eq_integral {t r : ℝ} (ht : 0 < t) (hr : 0 < r) (x : ℝ) :
     paretoCDFReal t r x = ∫ x in Iic x, paretoPDFReal t r x := by
-  have : IsProbabilityMeasure (paretoMeasure t r) := isProbabilityMeasurePareto ht hr
+  have : IsProbabilityMeasure (paretoMeasure t r) := isProbabilityMeasure_paretoMeasure ht hr
   rw [paretoCDFReal, cdf_eq_toReal, paretoMeasure, withDensity_apply _ measurableSet_Iic]
   refine (integral_eq_lintegral_of_nonneg_ae ?_ ?_).symm
   · exact ae_of_all _ fun _ ↦ by simp only [Pi.zero_apply, paretoPDFReal_nonneg ht.le hr.le]
@@ -143,9 +142,8 @@ lemma paretoCDFReal_eq_integral {t r : ℝ} (ht : 0 < t) (hr : 0 < r) (x : ℝ) 
 
 lemma paretoCDFReal_eq_lintegral {t r : ℝ} (ht : 0 < t) (hr : 0 < r) (x : ℝ) :
     paretoCDFReal t r x = ENNReal.toReal (∫⁻ x in Iic x, paretoPDF t r x) := by
-  have : IsProbabilityMeasure (paretoMeasure t r) := isProbabilityMeasurePareto ht hr
-  simp only [paretoPDF, paretoCDFReal, cdf_eq_toReal]
-  simp only [paretoMeasure, measurableSet_Iic, withDensity_apply, paretoPDF]
+  have : IsProbabilityMeasure (paretoMeasure t r) := isProbabilityMeasure_paretoMeasure ht hr
+  rw [paretoCDFReal, cdf_eq_toReal, paretoMeasure, withDensity_apply _ measurableSet_Iic]
 
 end ParetoCDF
 end ProbabilityTheory
