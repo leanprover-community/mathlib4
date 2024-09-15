@@ -663,8 +663,7 @@ noncomputable def continuousMultilinearMapOption (B : G →L[𝕜] ContinuousMul
   · apply (B.le_opNorm _).trans
     gcongr
     exact norm_fst_le _
-  · exact fun i _ ↦ by positivity
-  · apply (norm_le_pi_norm _ _).trans (norm_snd_le _)
+  · exact (norm_le_pi_norm _ _).trans (norm_snd_le _)
 
 lemma continuousMultilinearMapOption_apply_eq_self (B : G →L[𝕜] ContinuousMultilinearMap 𝕜 E F)
     (a : G) (v : Π i, E i) : B.continuousMultilinearMapOption (fun _ ↦ (a, v)) = B a v := rfl
