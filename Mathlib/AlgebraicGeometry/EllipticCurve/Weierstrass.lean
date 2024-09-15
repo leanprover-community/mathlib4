@@ -538,13 +538,11 @@ variable {R : Type u} [CommRing R]
 
 section ext
 
-theorem ext' : Function.Injective (toWeierstrassCurve : EllipticCurve R → _) := by
-  intro x y h
-  obtain ⟨x1, _, x3⟩ := x
-  obtain ⟨y1, _, y3⟩ := y
-  change x1 = y1 at h
-  congr
-  exact Units.ext (by rw [x3, y3, h])
+theorem ext' : Function.Injective (toWeierstrassCurve : EllipticCurve R → _)
+  | ⟨x1, _, x3⟩, ⟨y1, _, y3⟩, h => by
+    change x1 = y1 at h
+    congr
+    exact Units.ext (by rw [x3, y3, h])
 
 variable {x y : EllipticCurve R}
 
