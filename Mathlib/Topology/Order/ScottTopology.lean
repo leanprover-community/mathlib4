@@ -342,6 +342,11 @@ instance [TopologicalSpace α] [IsUpper α] : IsScott α where
 
 end CompleteLinearOrder
 
+lemma isOpen_iff_Scott_continuous_char [Preorder α] {s : Set α} [TopologicalSpace α] [IsScott α] :
+    IsOpen s ↔ ScottContinuous fun x ↦ x ∈ s := by
+  rw [scottContinuous_iff_continuous]
+  exact isOpen_iff_continuous_mem
+
 end IsScott
 
 /--
