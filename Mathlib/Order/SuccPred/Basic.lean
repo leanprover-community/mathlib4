@@ -1214,9 +1214,11 @@ end WithBot
 
 section OrderIso
 
-@[reducible]
-def SuccOrder.of_orderIso {X Y : Type*} [Preorder X] [Preorder Y] [SuccOrder X] (f : X ≃o Y) :
-    SuccOrder Y where
+variable {X Y : Type*} [Preorder X] [Preorder Y]
+
+-- See note [reducible non instances]
+/-- `SuccOrder` transfers across equivalences between orders. -/
+protected abbrev SuccOrder.of_orderIso [SuccOrder X] (f : X ≃o Y) : SuccOrder Y where
   succ y := f (succ (f.symm y))
   le_succ y := by rw [← map_inv_le_iff f]; exact le_succ (f.symm y)
   max_of_succ_le h := by
@@ -1225,8 +1227,9 @@ def SuccOrder.of_orderIso {X Y : Type*} [Preorder X] [Preorder Y] [SuccOrder X] 
     simp [f.le_symm_apply, h]
   succ_le_of_lt h := by rw [← le_map_inv_iff]; exact succ_le_of_lt (by simp [h])
 
-@[reducible]
-def PredOrder.of_orderIso {X Y : Type*} [Preorder X] [Preorder Y] [PredOrder X] (f : X ≃o Y) :
+-- See note [reducible non instances]
+/-- `PredOrder` transfers across equivalences between orders. -/
+protected abbrev PredOrder.of_orderIso [PredOrder X] (f : X ≃o Y) :
     PredOrder Y where
   pred y := f (pred (f.symm y))
   pred_le y := by rw [← le_map_inv_iff f]; exact pred_le (f.symm y)
