@@ -1356,6 +1356,11 @@ theorem comp_aeval {B : Type*} [CommSemiring B] [Algebra R B] (φ : S₁ →ₐ[
   ext i
   simp
 
+lemma comp_aeval_apply {B : Type*} [CommSemiring B] [Algebra R B] (φ : S₁ →ₐ[R] B)
+    (p : MvPolynomial σ R) :
+    φ (aeval f p) = aeval (fun i ↦ φ (f i)) p := by
+  rw [← comp_aeval, AlgHom.coe_comp, comp_apply]
+
 @[simp]
 theorem map_aeval {B : Type*} [CommSemiring B] (g : σ → S₁) (φ : S₁ →+* B) (p : MvPolynomial σ R) :
     φ (aeval g p) = eval₂Hom (φ.comp (algebraMap R S₁)) (fun i => φ (g i)) p := by

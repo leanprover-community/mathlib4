@@ -163,7 +163,7 @@ lemma jacobian_eq_jacobiMatrix_det : P.jacobian = algebraMap P.Ring S P.jacobiMa
 
 lemma jacobiMatrix_apply (i j : P.rels) :
     P.jacobiMatrix i j = MvPolynomial.pderiv (P.map i) (P.relation j) := by
-  simp [jacobiMatrix, LinearMap.toMatrix, differential]
+  simp [jacobiMatrix, LinearMap.toMatrix, differential, basis]
 
 end Matrix
 
@@ -180,6 +180,8 @@ noncomputable def localizationAway : PreSubmersivePresentation R S where
   map _ := ()
   map_inj _ _ h := h
   relations_finite := inferInstanceAs <| Finite Unit
+
+open Classical
 
 lemma localizationAway_det : (localizationAway S r).jacobian = algebraMap R S r := by
   simp [jacobian]
@@ -228,6 +230,120 @@ lemma dimension_comp_eq_dimension_add_dimension [Q.IsFinite] [P.IsFinite] :
     card_relations_le_card_vars_of_isFinite Q
   simp only [Nat.card_sum]
   omega
+
+lemma pderiv_rename {σ τ : Type*} [DecidableEq τ] [DecidableEq σ] {f : σ → τ}
+    (hf : Function.Injective f) (x : σ) (p : MvPolynomial σ R) :
+    MvPolynomial.pderiv (f x) (MvPolynomial.rename f p) =
+      MvPolynomial.rename f (MvPolynomial.pderiv x p) := by
+  induction' p using MvPolynomial.induction_on with a p q hp hq p a h
+  · simp
+  · simp [hp, hq]
+  · simp only [map_mul, MvPolynomial.rename_X, Derivation.leibniz, MvPolynomial.pderiv_X,
+      Pi.single_apply, hf.eq_iff, smul_eq_mul, mul_ite, mul_one, mul_zero, h, map_add, add_left_inj]
+    split_ifs <;> simp
+
+open MvPolynomial
+
+section
+
+variable [Fintype P.rels] [Fintype Q.rels] [Fintype (Q.comp P).rels]
+
+open Classical
+
+omit [Fintype P.rels] [Fintype Q.rels] in
+lemma jacobiMatrix_comp_inl_inr (i : Q.rels) (j : P.rels) :
+    (Q.comp P).jacobiMatrix (Sum.inl i) (Sum.inr j) = 0 := by
+  rw [jacobiMatrix_apply]
+  refine MvPolynomial.pderiv_eq_zero_of_not_mem_vars (fun hmem ↦ ?_)
+  apply MvPolynomial.vars_rename at hmem
+  simp at hmem
+
+omit [Fintype Q.rels] in
+lemma jacobiMatrix_comp_inr_inr (i j : P.rels) :
+    (Q.comp P).jacobiMatrix (Sum.inr i) (Sum.inr j) =
+      MvPolynomial.rename Sum.inr (P.jacobiMatrix i j) := by
+  rw [jacobiMatrix_apply, jacobiMatrix_apply]
+  simp only [comp_map, Sum.elim_inr]
+  apply pderiv_rename Sum.inr_injective
+
+lemma _root_.MvPolynomial.sum_aeval_pderiv {σ τ : Type*} (p : MvPolynomial (σ ⊕ τ) R)
+    (f : τ → S) (j : σ) :
+    (aeval (Sum.elim X (C ∘ f))) ((pderiv (Sum.inl j)) p) =
+    (pderiv j) ((aeval (Sum.elim X (C ∘ f))) p) := by
+  induction' p using MvPolynomial.induction_on with a p q hp hq p q h
+  · simp
+  · simp [hp, hq]
+  · simp only [Derivation.leibniz, pderiv_X, smul_eq_mul, map_add, map_mul, aeval_X, h]
+    cases q <;> simp [Pi.single_apply]
+
+omit [Fintype P.rels] in
+lemma jacobiMatrix_comp_inl_inl (i j : Q.rels) :
+    aeval (Sum.elim X (MvPolynomial.C ∘ P.val))
+      ((Q.comp P).jacobiMatrix (Sum.inl j) (Sum.inl i)) = Q.jacobiMatrix j i := by
+  rw [jacobiMatrix_apply, jacobiMatrix_apply, comp_map, Sum.elim_inl,
+    ← Q.comp_aeval_relation_inl P.toPresentation]
+  apply sum_aeval_pderiv
+
+lemma aeval_sum_elim {σ τ : Type*} (p : MvPolynomial (σ ⊕ τ) R) (f : τ → S) (g : σ → T) :
+    (aeval (Sum.elim g (algebraMap S T ∘ f))) p =
+      (aeval g) ((aeval (Sum.elim X (C ∘ f))) p) := by
+  induction' p using MvPolynomial.induction_on with r p q hp hq p i h
+  · simp [← IsScalarTower.algebraMap_apply]
+  · simp [hp, hq]
+  · cases i <;> simp [h]
+
+omit [Fintype P.rels] in
+lemma jacobiMatrix_₁₁_det :
+    (aeval (Q.comp P).val) (Q.comp P).jacobiMatrix.toBlocks₁₁.det = Q.jacobian := by
+  rw [jacobian_eq_jacobiMatrix_det, AlgHom.map_det (aeval (Q.comp P).val), RingHom.map_det]
+  congr
+  ext i j : 1
+  simp only [Matrix.map_apply, RingHom.mapMatrix_apply, ← Q.jacobiMatrix_comp_inl_inl P]
+  apply aeval_sum_elim
+
+omit [Fintype Q.rels] in
+lemma jacobiMatrix_₂₂_det :
+    (aeval (Q.comp P).val) (Q.comp P).jacobiMatrix.toBlocks₂₂.det = algebraMap S T P.jacobian := by
+  rw [jacobian_eq_jacobiMatrix_det]
+  rw [AlgHom.map_det (aeval (Q.comp P).val), RingHom.map_det, RingHom.map_det]
+  congr
+  ext i j : 1
+  simp only [Matrix.toBlocks₂₂, AlgHom.mapMatrix_apply, Matrix.map_apply, Matrix.of_apply,
+    RingHom.mapMatrix_apply, Generators.algebraMap_apply, map_aeval, coe_eval₂Hom]
+  rw [jacobiMatrix_comp_inr_inr, ← IsScalarTower.algebraMap_eq]
+  simp only [aeval, AlgHom.coe_mk, coe_eval₂Hom]
+  generalize P.jacobiMatrix i j = p
+  induction' p using MvPolynomial.induction_on with a p q hp hq p i hp
+  · simp only [algHom_C, algebraMap_eq, eval₂_C]
+    erw [MvPolynomial.eval₂_C]
+  · simp [hp, hq]
+  · simp only [map_mul, rename_X, eval₂_mul, hp, eval₂_X]
+    erw [Generators.comp_val]
+    simp
+
+omit [Fintype P.rels] [Fintype Q.rels] in
+lemma jacobiMatrix_₁₂ : (Q.comp P).jacobiMatrix.toBlocks₁₂ = 0 := by
+  ext i j : 1
+  simp [Matrix.toBlocks₁₂, jacobiMatrix_comp_inl_inr]
+
+end
+
+/-- The jacobian of the composition of presentations is the product of the jacobians. -/
+lemma det_comp_eq_det_smul_det : (Q.comp P).jacobian = P.jacobian • Q.jacobian := by
+  cases nonempty_fintype Q.rels
+  cases nonempty_fintype P.rels
+  letI : Fintype (Q.comp P).rels := inferInstanceAs <| Fintype (Q.rels ⊕ P.rels)
+  classical
+  rw [jacobian_eq_jacobiMatrix_det, ← Matrix.fromBlocks_toBlocks ((Q.comp P).jacobiMatrix),
+    jacobiMatrix_₁₂]
+  convert_to
+    (aeval (Q.comp P).val) (Q.comp P).jacobiMatrix.toBlocks₁₁.det *
+    (aeval (Q.comp P).val) (Q.comp P).jacobiMatrix.toBlocks₂₂.det = P.jacobian • Q.jacobian
+  · simp only [Generators.algebraMap_apply, ← map_mul]
+    congr
+    convert Matrix.det_fromBlocks_zero₁₂ (Q.comp P).jacobiMatrix.toBlocks₁₁
+      (Q.comp P).jacobiMatrix.toBlocks₂₁ (Q.comp P).jacobiMatrix.toBlocks₂₂
+  · rw [jacobiMatrix_₁₁_det, jacobiMatrix_₂₂_det, mul_comm, Algebra.smul_def]
 
 end Composition
 

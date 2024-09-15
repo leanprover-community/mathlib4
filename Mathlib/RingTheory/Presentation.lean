@@ -333,7 +333,12 @@ noncomputable def comp : Presentation R T where
     (fun rp ↦ MvPolynomial.rename Sum.inr <| P.relation rp)
   span_range_relation_eq_ker := Q.span_range_relation_eq_ker_comp P
 
-lemma comp_relation_map (r : Q.rels) :
+@[simp]
+lemma comp_relation_inr (r : P.rels) :
+    (Q.comp P).relation (Sum.inr r) = rename Sum.inr (P.relation r) :=
+  rfl
+
+lemma comp_aeval_relation_inl (r : Q.rels) :
     aeval (Sum.elim X (MvPolynomial.C ∘ P.val)) ((Q.comp P).relation (Sum.inl r)) =
       Q.relation r := by
   show (Q.aux P) _ = _
