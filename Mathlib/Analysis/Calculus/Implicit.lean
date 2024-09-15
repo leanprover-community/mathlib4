@@ -471,8 +471,8 @@ functionality is wrapped by `HasStrictFDerivAt.implicitFunOfBivariate`.
 
 ## TODO
 
-* Provide another version with curried `f : X → Y → Z` and technical assumptions on the partial
-  derivatives.
+* Provide another version with curried `f : X → Y → Z` and with technical assumptions made on the
+  partial derivatives.
 * Establish results about higher derivatives.
 -/
 
@@ -482,8 +482,8 @@ variable {Y : Type*} [NormedAddCommGroup Y] [NormedSpace 𝕜 Y] [CompleteSpace 
 variable {Z : Type*} [NormedAddCommGroup Z] [NormedSpace 𝕜 Z] [CompleteSpace Z]
 
 /-- Given linear map `fx : X →L[𝕜] Z`, linear equivalence `fy : Y ≃L[𝕜] Z` and that
-`HasStrictFDerivAt f (fx.coprod fy) p₀`, we construct an object of type `ImplicitFunctionData` thus
-permitting use of the general machinery provided above. -/
+`HasStrictFDerivAt f (fx.coprod fy) p₀`, we construct an object of type `ImplicitFunctionData`
+thereby enabling use of the general machinery provided above. -/
 def implicitFunDataOfBivariate {f : X × Y → Z} {p₀ : X × Y}
     {fx : X →L[𝕜] Z} {fy : Y ≃L[𝕜] Z} (hf₀ : HasStrictFDerivAt f (fx.coprod fy) p₀) :
     ImplicitFunctionData 𝕜 (X × Y) Z X :=
@@ -505,7 +505,8 @@ def implicitFunDataOfBivariate {f : X × Y → Z} {p₀ : X × Y}
       aesop
     · rw [Submodule.codisjoint_iff_exists_add_eq]
       intro (ξ, η)
-      exact ⟨(ξ, fy.symm (fx (-ξ))), by simp, (0, η - fy.symm (fx (-ξ))), by simp, by simp⟩ }
+      use (ξ, fy.symm (fx (-ξ))), (0, η - fy.symm (fx (-ξ)))
+      simp }
 
 /-- Implicit function `ψ : X → Y` associated with the (uncurried) bivariate function `f : X × Y → Z`
 at `p₀ : X × Y`. -/
@@ -535,7 +536,7 @@ theorem image_implicitFunOfBivariate {f : X × Y → Z} {x₀ : X} {y₀ : Y}
     {fx : X →L[𝕜] Z} {fy : Y ≃L[𝕜] Z} (hf₀ : HasStrictFDerivAt f (fx.coprod fy) (x₀, y₀)) :
     ∀ᶠ x in 𝓝 x₀, f (x, hf₀.implicitFunOfBivariate x) = f (x₀, y₀) := by
   set ψ := hf₀.implicitFunOfBivariate
-  suffices ∀ᶠ x in 𝓝 x₀, f (x, ψ x) = f (x₀, y₀) ↔ ψ x = ψ x by simp [eventually_congr this]
+  suffices ∀ᶠ x in 𝓝 x₀, f (x, ψ x) = f (x₀, y₀) ↔ ψ x = ψ x by simpa
   apply Eventually.nhds_prod_image (r := fun x y => f (x, y) = f (x₀, y₀) ↔ ψ x = y)
   · convert hf₀.image_eq_iff_implicitFunOfBivariate
     rw [← hf₀.image_eq_iff_implicitFunOfBivariate.self_of_nhds]

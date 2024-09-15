@@ -394,11 +394,11 @@ theorem mem_sup' : x ∈ p ⊔ p' ↔ ∃ (y : p) (z : p'), (y : M) + z = x :=
   mem_sup.trans <| by simp only [Subtype.exists, exists_prop]
 
 theorem codisjoint_iff_exists_add_eq :
-    Codisjoint p p' ↔ ∀ x, ∃ y ∈ p, ∃ z ∈ p', y + z = x := by
+    Codisjoint p p' ↔ ∀ z, ∃ x y, x ∈ p ∧ y ∈ p' ∧ x + y = z := by
   rw [codisjoint_iff, eq_top_iff']
-  exact forall_congr' (fun x => mem_sup)
+  exact forall_congr' (fun z => mem_sup.trans <| by simp)
 
-@[deprecated codisjoint_iff_exists_add_eq (since := "2024-09-12")]
+@[deprecated codisjoint_iff_exists_add_eq (since := "2024-09-15")]
 lemma exists_add_eq_of_codisjoint (h : Codisjoint p p') (x : M) :
     ∃ y ∈ p, ∃ z ∈ p', y + z = x := by
   suffices x ∈ p ⊔ p' by exact Submodule.mem_sup.mp this
