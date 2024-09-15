@@ -225,7 +225,7 @@ def limit : Subgroup (Π j : J, F.obj j) where
 
 @[simp]
 lemma mem_limit (x : Π j : J, F.obj j) : x ∈ limit F ↔
-  ∀ ⦃i j : J⦄ (π : i ⟶ j), F.map π (x i) = x j := Iff.rfl
+    ∀ ⦃i j : J⦄ (π : i ⟶ j), F.map π (x i) = x j := Iff.rfl
 
 lemma limit_closed_in_product : IsClosed ((limit F) : Set (Π j : J, F.obj j)) := by
   classical
@@ -322,12 +322,12 @@ def ofFiniteGrpLimitConeIsLimit : Limits.IsLimit (ofFiniteGrpLimitCone F) where
     ext pt
     refine Subtype.ext <| funext fun j => ?_
     show _ = cone.π.app _ _
-    rw [←hyp j]
+    rw [← hyp j]
     rfl
 
 @[simp, nolint simpNF]
 lemma ofFiniteGrpLimitConeIsLimit_lift_toFun_coe (j : J) (cone : Limits.Cone
-  (F ⋙ forget₂ FiniteGrp.{max v w'} ProfiniteGrp.{max v w'})) (pt : ↑cone.pt.toProfinite.toTop) :
+    (F ⋙ forget₂ FiniteGrp.{max v w'} ProfiniteGrp.{max v w'})) (pt : ↑cone.pt.toProfinite.toTop) :
   (((ProfiniteGrp.ofFiniteGrpLimitConeIsLimit F).lift cone) pt).val j = (cone.π.app j) pt := rfl
 
 instance : Limits.HasLimit (F ⋙ forget₂ FiniteGrp ProfiniteGrp) where
