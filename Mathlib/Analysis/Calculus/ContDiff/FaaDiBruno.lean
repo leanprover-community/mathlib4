@@ -350,8 +350,7 @@ def eraseLeft (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) = {0}) :
     intro i j hij
     simp only [pred_lt_pred_iff, Nat.succ_eq_add_one]
     apply c.parts_strictMono (cast_strictMono _ (strictMono_succ hij))
-  disjoint := by
-    intro i _ j _ hij
+  disjoint i _ j _ hij := by
     apply Set.disjoint_iff_forall_ne.2
     simp only [mem_range, ne_eq, forall_exists_index, forall_apply_eq_imp_iff, pred_inj]
     intro a b
@@ -389,21 +388,34 @@ lemma apply_eq_of_range_eq_singleton {α β : Type*} {f : α → β} {b : β} (h
     f a = b := by
   simpa [h] using mem_range_self (f := f) a
 
+@[simp] lemma Nat.card_univ {α : Type*} : Nat.card (univ : Set α) = Nat.card α :=
+  Nat.card_congr (Equiv.Set.univ α)
+
+lemma Nat.card_range_of_injective {α β : Type*} {f : α → β} (hf : Injective f) :
+    Nat.card (range f) = Nat.card α := by
+  rw [← Nat.card_preimage_of_injective hf le_rfl]
+  simp
+
 lemma one_lt_partSize_index_zero (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) ≠ {0}) :
-    2 ≤ c.partSize (c.index 0) := by
-  have : c.partSize (c.index 0) = Fintype.card (range (c.emb (c.index 0))) := by
-    rw [card_range_of_injective (c.emb_strictMono _).injective]; simp
+    1 < c.partSize (c.index 0) := by
+  have : c.partSize (c.index 0) = Nat.card (range (c.emb (c.index 0))) := by
+    rw [Nat.card_range_of_injective (c.emb_strictMono _).injective]; simp
   rw [this]
   rcases eq_or_ne (c.index 0) 0 with h | h
-  · sorry
-  · have : {c.emb (c.index 0) 0,
+  · rw [← h] at hc
+    have : {0} ⊂ range (c.emb (c.index 0)) := by
+      apply ssubset_of_subset_of_ne ?_ hc.symm
+      simpa only [singleton_subset_iff, mem_range] using ⟨0, emb_zero c⟩
+    simpa using Set.Finite.card_lt_card (finite_range _) this
+  · apply one_lt_two.trans_le
+    have : {c.emb (c.index 0) 0,
         c.emb (c.index 0) ⟨c.partSize (c.index 0) - 1, Nat.sub_one_lt_of_lt (c.partSize_pos _)⟩}
-          ⊆ range (c.emb (c.index 0)) := sorry
+          ⊆ range (c.emb (c.index 0)) := by simp [insert_subset]
     simp [emb_zero] at this
-
-
-
-#exit
+    convert Nat.card_mono Subtype.finite this
+    simp only [Nat.card_eq_fintype_card, Fintype.card_ofFinset, toFinset_singleton]
+    apply (Finset.card_pair ?_).symm
+    exact ((Fin.zero_le _).trans_lt (c.parts_strictMono ((pos_iff_ne_zero' (c.index 0)).mpr h))).ne
 
 /-- Given an ordered finpartition of `n+1`, with a leftmost atom different from `{0}`, remove `{0}`
 from the atom that contains it, to form an ordered finpartition of `n`. -/
@@ -428,12 +440,94 @@ def eraseMiddle (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) ≠ {0})
       · simp [h]
       · conv_rhs => rw [← c.emb_invEmbedding 0]
         exact c.emb_ne_emb_of_ne h
-  emb_strictMono := sorry
-  parts_strictMono := sorry
-  disjoint := sorry
-  cover := sorry
-
-#exit
+  emb_strictMono i a b hab := by
+    rcases eq_or_ne i (c.index 0) with rfl | hi
+    · simp only [↓reduceDIte, Nat.succ_eq_add_one, pred_lt_pred_iff]
+      exact (c.emb_strictMono _).comp (cast_strictMono _) (by simpa using hab)
+    · simp only [hi, ↓reduceDIte, pred_lt_pred_iff, Nat.succ_eq_add_one]
+      exact (c.emb_strictMono _).comp (cast_strictMono _) hab
+  parts_strictMono i j hij := by
+    simp only [Fin.lt_iff_val_lt_val]
+    rw [← Nat.add_lt_add_iff_right (k := 1)]
+    convert Fin.lt_iff_val_lt_val.1 (c.parts_strictMono hij)
+    · rcases eq_or_ne i (c.index 0) with rfl | hi
+      · simp only [↓reduceDIte, Nat.succ_eq_add_one, update_same, succ_mk, cast_mk, coe_pred]
+        have A := c.one_lt_partSize_index_zero hc
+        rw [Nat.sub_add_cancel]
+        · congr; omega
+        · rw [Order.one_le_iff_pos]
+          conv_lhs => rw [show (0 : ℕ) = c.emb (c.index 0) 0 by simp [emb_zero]]
+          rw [← lt_iff_val_lt_val]
+          apply c.emb_strictMono
+          simp [lt_iff_val_lt_val]
+      · simp only [hi, ↓reduceDIte, ne_eq, not_false_eq_true, update_noteq, cast_mk, coe_pred]
+        apply Nat.sub_add_cancel
+        have : c.emb i ⟨c.partSize i - 1, Nat.sub_one_lt_of_lt (c.partSize_pos i)⟩
+            ≠ c.emb (c.index 0) 0 := c.emb_ne_emb_of_ne hi
+        simp only [c.emb_zero, ne_eq, ← val_eq_val, val_zero] at this
+        omega
+    · rcases eq_or_ne j (c.index 0) with rfl | hj
+      · simp only [↓reduceDIte, Nat.succ_eq_add_one, update_same, succ_mk, cast_mk, coe_pred]
+        have A := c.one_lt_partSize_index_zero hc
+        rw [Nat.sub_add_cancel]
+        · congr; omega
+        · rw [Order.one_le_iff_pos]
+          conv_lhs => rw [show (0 : ℕ) = c.emb (c.index 0) 0 by simp [emb_zero]]
+          rw [← lt_iff_val_lt_val]
+          apply c.emb_strictMono
+          simp [lt_iff_val_lt_val]
+      · simp only [hj, ↓reduceDIte, ne_eq, not_false_eq_true, update_noteq, cast_mk, coe_pred]
+        apply Nat.sub_add_cancel
+        have : c.emb j ⟨c.partSize j - 1, Nat.sub_one_lt_of_lt (c.partSize_pos j)⟩
+            ≠ c.emb (c.index 0) 0 := c.emb_ne_emb_of_ne hj
+        simp only [c.emb_zero, ne_eq, ← val_eq_val, val_zero] at this
+        omega
+  disjoint i _ j _ hij := by
+    wlog h : i ≠ c.index 0 generalizing i j
+    · apply Disjoint.symm
+        (this j (mem_univ j) i (mem_univ i) hij.symm ?_)
+      simp only [ne_eq, Decidable.not_not] at h
+      simpa [h] using hij.symm
+    rcases eq_or_ne j (c.index 0) with rfl | hj
+    · simp only [onFun, hij, ↓reduceDIte, Nat.succ_eq_add_one]
+      apply Set.disjoint_iff_forall_ne.2
+      simp only [mem_range, ne_eq, forall_exists_index, forall_apply_eq_imp_iff, pred_inj]
+      intro a b
+      exact c.emb_ne_emb_of_ne hij
+    · simp only [onFun, h, ↓reduceDIte, hj]
+      apply Set.disjoint_iff_forall_ne.2
+      simp only [mem_range, ne_eq, forall_exists_index, forall_apply_eq_imp_iff, pred_inj]
+      intro a b
+      exact c.emb_ne_emb_of_ne hij
+  cover := by
+    apply eq_univ_of_forall (fun x ↦ ?_)
+    simp only [mem_iUnion, mem_range]
+    obtain ⟨i, j, hij⟩ : ∃ (i : Fin c.length), ∃ (j : Fin (c.partSize i)), c.emb i j = succ x :=
+      ⟨c.index (succ x), c.invEmbedding (succ x), by simp⟩
+    rcases eq_or_ne i (c.index 0) with rfl | hi
+    · refine ⟨c.index 0, ?_⟩
+      have j_ne : j ≠ 0 := by
+        rintro rfl
+        simp only [c.emb_zero] at hij
+        exact (Fin.succ_ne_zero _).symm hij
+      have je_ne' : (j : ℕ) ≠ 0 := by simpa [← val_eq_val] using j_ne
+      simp only [↓reduceDIte, Nat.succ_eq_add_one]
+      have A : c.partSize (c.index 0) - 1 + 1 = c.partSize (c.index 0) :=
+        Nat.sub_add_cancel (c.partSize_pos _)
+      have B : update c.partSize (c.index 0) (c.partSize (c.index 0) - 1) (c.index 0) =
+        c.partSize (c.index 0) - 1 := by simp
+      refine ⟨Fin.cast B.symm (pred (Fin.cast A.symm j) ?_), ?_⟩
+      · simpa using j_ne
+      · have : x = pred (succ x) (succ_ne_zero x) := rfl
+        rw [this]
+        simp only [pred_inj, ← hij]
+        congr 1
+        rw [← val_eq_val]
+        simp only [coe_cast, val_succ, coe_pred]
+        omega
+    · have A : update c.partSize (c.index 0) (c.partSize (c.index 0) - 1) i = c.partSize i := by
+        simp [hi]
+      exact ⟨i, Fin.cast A.symm j, by simp [hi, hij]⟩
 
 theorem _root_.Fin.val_eq_val_of_heq {k l : ℕ} {i : Fin k} {j : Fin l} (h : HEq i j) :
     (i : ℕ) = (j : ℕ) := by
@@ -818,3 +912,5 @@ theorem analyticWithinOn_taylorComp
   apply AnalyticWithinOn.prod
   · exact (hq c.length).comp hf h
   · exact AnalyticWithinOn.pi (fun i ↦ hp _)
+
+#lint
