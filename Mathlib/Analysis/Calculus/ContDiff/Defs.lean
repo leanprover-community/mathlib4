@@ -387,7 +387,7 @@ theorem contDiffWithinAt_omega_iff_hasFDerivWithinAt :
       exact Hp.2.2.mono inter_subset_left
     · intro i
       change AnalyticWithinOn 𝕜
-        (fun x ↦ (continuousMultilinearCurryRightEquiv' 𝕜 i E F).symm (p x (i + 1))) (u ∩ v)
+        (fun x ↦ (continuousMultilinearCurryRightEquiv' 𝕜 i E F) (p x (i + 1))) (u ∩ v)
       exact (LinearIsometryEquiv.analyticOn _ _).comp_analyticWithinOn
         ((hp (i + 1)).mono inter_subset_left) (Set.mapsTo_univ _ _)
   · rintro ⟨u, hu, hf, f', f'_eq_deriv, Hf'⟩
@@ -698,7 +698,7 @@ theorem contDiffOn_of_analyticWithinOn_iteratedFDerivWithin
   · rw [insert_eq_of_mem hx]
     constructor
     · intro y _
-      simp only [ftaylorSeriesWithin, ContinuousMultilinearMap.uncurry0_apply,
+      simp only [ftaylorSeriesWithin, ContinuousMultilinearMap.curry0_apply,
         iteratedFDerivWithin_zero_apply]
     · intro k _ y hy
       exact ((h k).differentiableOn y hy).hasFDerivWithinAt
