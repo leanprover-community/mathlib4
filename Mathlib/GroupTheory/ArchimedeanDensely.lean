@@ -233,11 +233,9 @@ lemma LinearOrderedCommGroupWithZero.discrete_or_denselyOrdered (G : Type*)
   · intro H
     refine ⟨fun x y h ↦ ?_⟩
     rcases (zero_le' (a := x)).eq_or_lt with rfl|hx
-    · let y' := Units.mk0 y h.ne'
-      have hy' : y = y' := rfl
-      rw [hy']
+    · lift y to Gˣ using h.ne'.isUnit
       obtain ⟨z, hz⟩ := exists_ne (1 : Gˣ)
-      refine ⟨(y' * |z|ₘ⁻¹ : Gˣ), ?_, ?_⟩
+      refine ⟨(y * |z|ₘ⁻¹ : Gˣ), ?_, ?_⟩
       · simp [zero_lt_iff]
       · rw [Units.val_lt_val]
         simp [hz]
