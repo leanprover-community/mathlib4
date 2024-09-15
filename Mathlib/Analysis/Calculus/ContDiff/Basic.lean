@@ -575,7 +575,7 @@ theorem ContDiffWithinAt.comp {s : Set E} {t : Set F} {g : F → G} {f : E → F
     let w := insert x s ∩ (u ∩ f ⁻¹' v)
     have wv : w ⊆ f ⁻¹' v := fun y hy => hy.2.2
     have wu : w ⊆ u := fun y hy => hy.2.1
-    refine ⟨w, ?_, fun y ↦ (q (f y)).taylorComp (p y), faaDiBruno hq (hp.mono wu) wv, ?_⟩
+    refine ⟨w, ?_, fun y ↦ (q (f y)).taylorComp (p y), hq.comp (hp.mono wu) wv, ?_⟩
     · apply inter_mem self_mem_nhdsWithin (inter_mem hu ?_)
       apply (continuousWithinAt_insert_self.2 hf.continuousWithinAt).preimage_mem_nhdsWithin'
       apply nhdsWithin_mono _ _ hv
@@ -598,7 +598,7 @@ theorem ContDiffWithinAt.comp {s : Set E} {t : Set F} {g : F → G} {f : E → F
     let w := insert x s ∩ (u ∩ f ⁻¹' v)
     have wv : w ⊆ f ⁻¹' v := fun y hy => hy.2.2
     have wu : w ⊆ u := fun y hy => hy.2.1
-    refine ⟨w, ?_, fun y ↦ (q (f y)).taylorComp (p y), faaDiBruno hq (hp.mono wu) wv⟩
+    refine ⟨w, ?_, fun y ↦ (q (f y)).taylorComp (p y), hq.comp (hp.mono wu) wv⟩
     apply inter_mem self_mem_nhdsWithin (inter_mem hu ?_)
     apply (continuousWithinAt_insert_self.2 hf.continuousWithinAt).preimage_mem_nhdsWithin'
     apply nhdsWithin_mono _ _ hv

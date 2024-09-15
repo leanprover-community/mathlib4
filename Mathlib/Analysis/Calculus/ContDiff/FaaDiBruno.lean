@@ -907,7 +907,7 @@ lemma faaDiBruno_aux2 {m : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
 
 /-- *Faa di Bruno* formula: If two functions `g` and `f` have Taylor series up to `n` given by
 `q` and `p`, then `g ∘ f` also has a Taylor series, given by `q.taylorComp p`. -/
-theorem HasFTaylorSeriesUptoOn.comp {n : ℕ∞} {g : F → G} {f : E → F}
+theorem HasFTaylorSeriesUpToOn.comp {n : ℕ∞} {g : F → G} {f : E → F}
     (hg : HasFTaylorSeriesUpToOn n g q t) (hf : HasFTaylorSeriesUpToOn n f p s) (h : MapsTo f s t) :
     HasFTaylorSeriesUpToOn n (g ∘ f) (fun x ↦ (q (f x)).taylorComp (p x)) s := by
   classical
