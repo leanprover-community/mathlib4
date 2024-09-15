@@ -342,7 +342,7 @@ theorem hasFTaylorSeriesUpToOn_succ_nat_iff_right {n : ℕ} :
 for `p 1`, which is a derivative of `f`. -/
 theorem hasFTaylorSeriesUpToOn_top_iff_right :
     HasFTaylorSeriesUpToOn ⊤ f p s ↔
-      (∀ x ∈ s, (p x 0).uncurry0 = f x) ∧
+      (∀ x ∈ s, (p x 0).curry0 = f x) ∧
         (∀ x ∈ s, HasFDerivWithinAt (fun y => p y 0) (p x 1).curryLeft s x) ∧
           HasFTaylorSeriesUpToOn ⊤ (fun x => continuousMultilinearCurryFin1 𝕜 E F (p x 1))
             (fun x => (p x).shift) s := by
@@ -360,7 +360,7 @@ theorem hasFTaylorSeriesUpToOn_top_iff_right :
 for `p 1`, which is a derivative of `f`. Version for `n : ℕ∞`. -/
 theorem hasFTaylorSeriesUpToOn_succ_iff_right {n : ℕ∞} :
     HasFTaylorSeriesUpToOn (n + 1) f p s ↔
-      (∀ x ∈ s, (p x 0).uncurry0 = f x) ∧
+      (∀ x ∈ s, (p x 0).curry0 = f x) ∧
         (∀ x ∈ s, HasFDerivWithinAt (fun y => p y 0) (p x 1).curryLeft s x) ∧
           HasFTaylorSeriesUpToOn n (fun x => continuousMultilinearCurryFin1 𝕜 E F (p x 1))
             (fun x => (p x).shift) s := by
