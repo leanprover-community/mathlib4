@@ -144,9 +144,9 @@ def transportStruct (e : C ≌ D) : MonoidalCategoryStruct.{v₂} D where
   tensorUnit := e.functor.obj (𝟙_ C)
   associator X Y Z :=
     e.functor.mapIso
-      (whiskerRightIso (e.unitIso.app _).symm (e.inverse.obj Z) ≪≫
+      (whiskerRightIso (e.unitIso.app _).symm _ ≪≫
         α_ (e.inverse.obj X) (e.inverse.obj Y) (e.inverse.obj Z) ≪≫
-        whiskerLeftIso (e.inverse.obj X) (e.unitIso.app _))
+        whiskerLeftIso _ (e.unitIso.app _))
   leftUnitor X :=
     e.functor.mapIso ((whiskerRightIso (e.unitIso.app _).symm _) ≪≫ λ_ (e.inverse.obj X)) ≪≫
       e.counitIso.app _
