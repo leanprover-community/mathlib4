@@ -140,7 +140,9 @@ lemma lintegral_betaPDF_eq_one {a b : ℝ} (ha : 0 < a) (hb: 0 < b) :
     leftmid, right, zero_add]
   rw [← ENNReal.toReal_eq_one_iff, ← integral_eq_lintegral_of_nonneg_ae]
   · simp_rw [mul_assoc]
-    rw [integral_mul_left, ← BetaIntegral_ofReal ha hb, one_div_mul_cancel (Beta_pos ha hb).ne']
+    rw [integral_mul_left, ←integral_Ioc_eq_integral_Ioo,
+    ←intervalIntegral.integral_of_le zero_le_one, ← BetaIntegral_ofReal ha hb,
+    one_div_mul_cancel (Beta_pos ha hb).ne']
   · rw [EventuallyLE, ae_restrict_iff' measurableSet_Ioo]
     refine ae_of_all _ fun x hx ↦ ?_
     convert betaPDFReal_nonneg ha hb x using 1
