@@ -291,7 +291,7 @@ theorem SameCycle.exists_pow_eq [DecidableEq α] [Fintype α] (f : Perm α) (h :
     rw [not_mem_support] at hx
     rw [pow_apply_eq_self_of_apply_eq_self hx, zpow_apply_eq_self_of_apply_eq_self hx]
 
-theorem zpow_eq_zpow_on_iff [DecidableEq α] [Fintype α] 
+theorem zpow_eq_zpow_on_iff [DecidableEq α] [Fintype α]
     (g : Perm α) {m n : ℤ} {x : α} (hx : g x ≠ x) :
     (g ^ m) x = (g ^ n) x ↔
       m % (g.cycleOf x).support.card = n % (g.cycleOf x).support.card := by
@@ -653,7 +653,7 @@ theorem mem_support_cycle_of_cycle {g d c : Perm α}
 
 /-- If a permutation is a cycle of `g`, then its support is invariant under `g`-/
 theorem mem_cycleFactorsFinset_support {g c : Perm α} (hc : c ∈ g.cycleFactorsFinset) (a : α) :
-    a ∈ c.support ↔ g a ∈ c.support := 
+    a ∈ c.support ↔ g a ∈ c.support :=
   mem_support_iff_of_commute (self_mem_cycle_factors_commute hc).symm a
 
 end CycleFactorsFinset
