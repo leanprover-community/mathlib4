@@ -113,7 +113,7 @@ theorem HasIntegral.of_aeEq_zero {l : IntegrationParams} {I : Box ι} {f : (ι �
   have : ∀ n, ∃ U, N ⁻¹' {n} ⊆ U ∧ IsOpen U ∧ μ.restrict I U < δ n / n := fun n ↦ by
     refine (N ⁻¹' {n}).exists_isOpen_lt_of_lt _ ?_
     cases' n with n
-    · simpa [ENNReal.div_zero (ENNReal.coe_pos.2 (δ0 _)).ne'] using measure_lt_top (μ.restrict I) _
+    · simp [ENNReal.div_zero (ENNReal.coe_pos.2 (δ0 _)).ne']
     · refine (measure_mono_null ?_ hf).le.trans_lt ?_
       · exact fun x hxN hxf => n.succ_ne_zero ((Eq.symm hxN).trans <| N0.2 hxf)
       · simp [(δ0 _).ne']

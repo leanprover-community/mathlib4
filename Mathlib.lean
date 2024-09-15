@@ -64,6 +64,7 @@ import Mathlib.Algebra.Category.BialgebraCat.Basic
 import Mathlib.Algebra.Category.BoolRing
 import Mathlib.Algebra.Category.CoalgebraCat.Basic
 import Mathlib.Algebra.Category.CoalgebraCat.ComonEquivalence
+import Mathlib.Algebra.Category.CoalgebraCat.Monoidal
 import Mathlib.Algebra.Category.FGModuleCat.Basic
 import Mathlib.Algebra.Category.FGModuleCat.Limits
 import Mathlib.Algebra.Category.Grp.AB5
@@ -241,6 +242,7 @@ import Mathlib.Algebra.Group.Embedding
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Equiv.TypeTags
 import Mathlib.Algebra.Group.Even
+import Mathlib.Algebra.Group.EvenFunction
 import Mathlib.Algebra.Group.Ext
 import Mathlib.Algebra.Group.Fin.Basic
 import Mathlib.Algebra.Group.Fin.Tuple
@@ -262,6 +264,9 @@ import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.PNatPowAssoc
 import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Group.Pi.Lemmas
+import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+import Mathlib.Algebra.Group.Pointwise.Finset.Interval
+import Mathlib.Algebra.Group.Pointwise.Finset.NatCard
 import Mathlib.Algebra.Group.Pointwise.Set
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Semiconj.Basic
@@ -2161,9 +2166,6 @@ import Mathlib.Data.Finset.Pairwise
 import Mathlib.Data.Finset.Pi
 import Mathlib.Data.Finset.PiInduction
 import Mathlib.Data.Finset.Piecewise
-import Mathlib.Data.Finset.Pointwise.Basic
-import Mathlib.Data.Finset.Pointwise.Card
-import Mathlib.Data.Finset.Pointwise.Interval
 import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Finset.Prod
@@ -2635,6 +2637,7 @@ import Mathlib.FieldTheory.Adjoin
 import Mathlib.FieldTheory.AxGrothendieck
 import Mathlib.FieldTheory.Cardinality
 import Mathlib.FieldTheory.ChevalleyWarning
+import Mathlib.FieldTheory.Differential.Basic
 import Mathlib.FieldTheory.Extension
 import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.FieldTheory.Finite.GaloisField
@@ -3134,6 +3137,7 @@ import Mathlib.Logic.Lemmas
 import Mathlib.Logic.Nonempty
 import Mathlib.Logic.Nontrivial.Basic
 import Mathlib.Logic.Nontrivial.Defs
+import Mathlib.Logic.OpClass
 import Mathlib.Logic.Pairwise
 import Mathlib.Logic.Relation
 import Mathlib.Logic.Relator
@@ -3460,6 +3464,7 @@ import Mathlib.NumberTheory.Multiplicity
 import Mathlib.NumberTheory.NumberField.Basic
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
+import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.FundamentalCone
 import Mathlib.NumberTheory.NumberField.ClassNumber
 import Mathlib.NumberTheory.NumberField.Discriminant
 import Mathlib.NumberTheory.NumberField.Embeddings
@@ -4134,6 +4139,7 @@ import Mathlib.Tactic.CategoryTheory.Monoidal
 import Mathlib.Tactic.CategoryTheory.MonoidalComp
 import Mathlib.Tactic.CategoryTheory.Reassoc
 import Mathlib.Tactic.CategoryTheory.Slice
+import Mathlib.Tactic.CategoryTheory.ToApp
 import Mathlib.Tactic.Change
 import Mathlib.Tactic.Check
 import Mathlib.Tactic.Choose
