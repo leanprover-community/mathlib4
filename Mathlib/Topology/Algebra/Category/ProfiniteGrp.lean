@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Nailin Guan, Yuyang Zhao
 -/
 import Mathlib.Algebra.Category.Grp.FiniteGrp
-import Mathlib.Topology.Category.Profinite.Basic
 import Mathlib.Topology.Algebra.ContinuousMonoidHom
+import Mathlib.Topology.Category.Profinite.Basic
 
 /-!
 
@@ -16,9 +16,9 @@ disconnected.
 
 ## Main definitions and results
 
-* `ProfiniteGrp` is the type of profinite groups.
+* `ProfiniteGrp` is the category of profinite groups.
 
-* `Pi.profiniteGrp` : The product of profinite groups is also a profinite group.
+* `ProfiniteGrp.pi` : The product of profinite groups is also a profinite group.
 
 * `ofContinuousMulEquivProfiniteGrp` : If a topological group have a two-sided continuous
   isomorphism to a profinite group then it is profinite as well.
@@ -100,17 +100,14 @@ instance : ConcreteCategory ProfiniteGrp where
 
 /-- Construct a term of `ProfiniteGrp` from a type endowed with the structure of a
 compact and totally disconnected (implies Hausdorff in topological group) topological group. -/
-@[to_additive]
+@[to_additive "Construct a term of `ProfiniteAddGrp` from a type endowed with the structure of a
+compact and totally disconnected (implies Hausdorff in topological additive group)
+topological additive group."]
 def of (G : Type u) [Group G] [TopologicalSpace G] [TopologicalGroup G]
     [CompactSpace G] [TotallyDisconnectedSpace G] : ProfiniteGrp where
   toProfinite := .of G
   group := ‹_›
   topologicalGroup := ‹_›
-
-/-- Construct a term of `ProfiniteAddGrp` from a type endowed with the structure of a
-compact and totally disconnected (implies Hausdorff in topological additive group)
-topological additive group. -/
-add_decl_doc ProfiniteAddGrp.of
 
 @[to_additive (attr := simp)]
 theorem coe_of (X : ProfiniteGrp) : (of X : Type _) = X :=
@@ -127,16 +124,14 @@ theorem coe_comp {X Y Z : ProfiniteGrp} (f : X ⟶ Y) (g : Y ⟶ Z) :
 
 /-- Construct a term of `ProfiniteGrp` from a type endowed with the structure of a
 profinite topological group. -/
-@[to_additive]
+@[to_additive "Construct a term of `ProfiniteAddGrp` from a type endowed with the structure of a
+profinite topological additive group."]
 abbrev ofProfinite (G : Profinite) [Group G] [TopologicalGroup G] :
     ProfiniteGrp := of G
 
-/-- Construct a term of `ProfiniteAddGrp` from a type endowed with the structure of a
-profinite topological additive group. -/
-add_decl_doc ProfiniteAddGrp.ofProfinite
-
-/-- The product of profinite groups is a profinite group. -/
-@[to_additive]
+/-- The pi-type of profinite groups is a profinite group. -/
+@[to_additive "The pi-type of profinite additive groups is a
+profinite additive group."]
 def pi {α : Type u} (β : α → ProfiniteGrp) : ProfiniteGrp :=
   let pitype := Profinite.pi fun (a : α) => (β a).toProfinite
   letI (a : α): Group (β a).toProfinite := (β a).group
@@ -144,20 +139,14 @@ def pi {α : Type u} (β : α → ProfiniteGrp) : ProfiniteGrp :=
   letI : TopologicalGroup pitype := Pi.topologicalGroup
   ofProfinite pitype
 
-/-- The product of profinite additive groups is a profinite additive group. -/
-add_decl_doc ProfiniteAddGrp.pi
-
-/-- A `FiniteGrp` when given the discrete topology can be condsidered as a profinite group. -/
-@[to_additive]
+/-- A `FiniteGrp` when given the discrete topology can be considered as a profinite group. -/
+@[to_additive "A `FiniteAddGrp` when given the discrete topology can be considered as a
+profinite additive group."]
 def ofFiniteGrp (G : FiniteGrp) : ProfiniteGrp :=
   letI : TopologicalSpace G := ⊥
   letI : DiscreteTopology G := ⟨rfl⟩
   letI : TopologicalGroup G := {}
   of G
-
-/-- A `FiniteAddGrp` when given the discrete topology can be condsidered as a
-  profinite additive group. -/
-add_decl_doc ProfiniteAddGrp.ofFiniteAddGrp
 
 @[to_additive]
 instance : HasForget₂ FiniteGrp ProfiniteGrp where
