@@ -62,6 +62,13 @@ theorem map {F : Type*} [NormedAddCommGroup F] [NormedSpace K F] (f : E ≃ₗ[K
     Submodule.map (f.restrictScalars ℤ) (span ℤ (Set.range b)) = span ℤ (Set.range (b.map f)) := by
   simp_rw [Submodule.map_span, LinearEquiv.restrictScalars_apply, Basis.coe_map, Set.range_comp]
 
+open scoped Pointwise in
+theorem smul {c : K} (hc : c ≠ 0) :
+    c • span ℤ (Set.range b) = span ℤ (Set.range (b.isUnitSMul (fun _ ↦ Ne.isUnit hc))) := by
+  rw [smul_span, Set.smul_set_range]
+  congr!
+  rw [Basis.isUnitSMul_apply]
+
 /-- The fundamental domain of the ℤ-lattice spanned by `b`. See `ZSpan.isAddFundamentalDomain`
 for the proof that it is a fundamental domain. -/
 def fundamentalDomain : Set E := {m | ∀ i, b.repr m i ∈ Set.Ico (0 : K) 1}
@@ -694,5 +701,22 @@ theorem Basis.ofZLatticeComap_repr_apply (e : F ≃ₗ[K] E) {ι : Type*} (b : B
   simp [Basis.ofZLatticeComap]
 
 end comap
+
+section NormedLinearOrderedField_comap
+
+variable (K : Type*) [NormedLinearOrderedField K] [HasSolidNorm K] [FloorRing K]
+variable {E : Type*} [NormedAddCommGroup E]  [NormedSpace K E] [FiniteDimensional K E]
+  [ProperSpace E]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace K F]  [FiniteDimensional K F]
+  [ProperSpace F]
+variable (L : Submodule ℤ E) [DiscreteTopology L] [IsZLattice K L]
+
+theorem Basis.ofZLatticeBasis_comap (e : F ≃L[K] E) {ι : Type*} (b : Basis ι ℤ L) :
+    (b.ofZLatticeComap K L e.toLinearEquiv).ofZLatticeBasis K (ZLattice.comap K L e.toLinearMap) =
+    (b.ofZLatticeBasis K L).map e.symm.toLinearEquiv := by
+  ext
+  simp
+
+end NormedLinearOrderedField_comap
 
 end ZLattice
