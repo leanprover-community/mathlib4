@@ -1233,17 +1233,11 @@ set_option linter.deprecated false in
 theorem sup_unique {ι} [Unique ι] (f : ι → Ordinal) : sup f = f default :=
   ciSup_unique
 
-protected theorem sSup_le_sSup {s t : Set Ordinal} (hst : s ⊆ t) (ht : BddAbove t) :
-    sSup s ≤ sSup t := by
-  rcases eq_empty_or_nonempty s with rfl | h
-  · simp
-  · exact csSup_le_csSup ht h hst
-
 set_option linter.deprecated false in
-@[deprecated Ordinal.sSup_le_sSup (since := "2024-08-27")]
+@[deprecated csSup_le_csSup' (since := "2024-08-27")]
 theorem sup_le_of_range_subset {ι ι'} {f : ι → Ordinal} {g : ι' → Ordinal}
     (h : Set.range f ⊆ Set.range g) : sup.{u, max v w} f ≤ sup.{v, max u w} g :=
-  Ordinal.sSup_le_sSup h (bddAbove_range.{v, max u w} _)
+  csSup_le_csSup' (bddAbove_range.{v, max u w} _) h
 
 -- TODO: generalize or remove
 theorem iSup_eq_of_range_eq {ι ι'} {f : ι → Ordinal} {g : ι' → Ordinal}
@@ -1265,7 +1259,7 @@ theorem iSup_sum {α : Type u} {β : Type v} (f : α ⊕ β → Ordinal.{max u v
     · exact le_max_of_le_left (Ordinal.le_iSup.{u, max u v w} _ i)
     · exact le_max_of_le_right (Ordinal.le_iSup.{v, max u v w} _ i)
   all_goals
-    apply Ordinal.sSup_le_sSup _ (bddAbove_range _)
+    apply csSup_le_csSup' (bddAbove_range _)
     rintro i ⟨a, rfl⟩
     apply mem_range_self
 
