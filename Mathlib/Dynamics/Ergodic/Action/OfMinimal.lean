@@ -205,7 +205,14 @@ namespace MonoidHom
 
 variable {G : Type*} [Group G] [TopologicalSpace G]
   [TopologicalGroup G] [SecondCountableTopology G] [MeasurableSpace G] [BorelSpace G]
-@[to_additive]
+
+/-- Let `f : G →* G` be a group endomorphism of a topological group with second countable topology.
+If the preimages of `1` under the iterations of `f` are dense,
+then it is preergodic with respect to any finite inner regular left invariant measure. -/
+@[to_additive "Let `f : G →+ G` be an additive group endomorphism
+of a topological additive group with second countable topology.
+If the preimages of `0` under the iterations of `f` are dense,
+then it is preergodic with respect to any finite inner regular left invariant measure."]
 theorem preErgodic_of_dense_iUnion_preimage_one
     {μ : Measure G} [IsFiniteMeasure μ] [μ.InnerRegular] [μ.IsMulLeftInvariant]
     (f : G →* G) (hf : Dense (⋃ n, f^[n] ⁻¹' 1)) : PreErgodic f μ := by
@@ -218,7 +225,14 @@ theorem preErgodic_of_dense_iUnion_preimage_one
   ext y
   simp [hx]
 
-@[to_additive]
+/-- Let `f : G →* G` be a continuous surjective group endomorphism
+of a compact topological group with second countable topology.
+If the preimages of `1` under the iterations of `f` are dense,
+then `f` is ergodic with respect to any finite inner regular left invariant measure. -/
+@[to_additive "Let `f : G →+ G` be a continuous surjective additive group endomorphism
+of a compact topological additive group with second countable topology.
+If the preimages of `0` under the iterations of `f` are dense,
+then `f` is ergodic with respect to any finite inner regular left invariant measure."]
 theorem ergodic_of_dense_iUnion_preimage_one [CompactSpace G] {μ : Measure G} [μ.IsHaarMeasure]
     (f : G →* G) (hf : Dense (⋃ n, f^[n] ⁻¹' 1)) (hcont : Continuous f) (hsurj : Surjective f) :
     Ergodic f μ :=
