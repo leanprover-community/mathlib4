@@ -105,7 +105,6 @@ variable [Preorder α] [OrderClosedTopology α] {a b x : α} {μ : Measure α}
 theorem measurableSet_Ici : MeasurableSet (Ici a) :=
   isClosed_Ici.measurableSet
 
-@[simp, measurability]
 theorem nullMeasurableSet_Ici : NullMeasurableSet (Ici a) μ :=
   measurableSet_Ici.nullMeasurableSet
 
@@ -113,7 +112,6 @@ theorem nullMeasurableSet_Ici : NullMeasurableSet (Ici a) μ :=
 theorem measurableSet_Iic : MeasurableSet (Iic a) :=
   isClosed_Iic.measurableSet
 
-@[simp, measurability]
 theorem nullMeasurableSet_Iic : NullMeasurableSet (Iic a) μ :=
   measurableSet_Iic.nullMeasurableSet
 
@@ -121,7 +119,6 @@ theorem nullMeasurableSet_Iic : NullMeasurableSet (Iic a) μ :=
 theorem measurableSet_Icc : MeasurableSet (Icc a b) :=
   isClosed_Icc.measurableSet
 
-@[simp, measurability]
 theorem nullMeasurableSet_Icc : NullMeasurableSet (Icc a b) μ :=
   measurableSet_Icc.nullMeasurableSet
 
@@ -178,7 +175,6 @@ open Interval
 theorem measurableSet_Iio : MeasurableSet (Iio a) :=
   isOpen_Iio.measurableSet
 
-@[simp, measurability]
 theorem nullMeasurableSet_Iio : NullMeasurableSet (Iio a) μ :=
   measurableSet_Iio.nullMeasurableSet
 
@@ -186,7 +182,6 @@ theorem nullMeasurableSet_Iio : NullMeasurableSet (Iio a) μ :=
 theorem measurableSet_Ioi : MeasurableSet (Ioi a) :=
   isOpen_Ioi.measurableSet
 
-@[simp, measurability]
 theorem nullMeasurableSet_Ioi : NullMeasurableSet (Ioi a) μ :=
   measurableSet_Ioi.nullMeasurableSet
 
@@ -194,7 +189,6 @@ theorem nullMeasurableSet_Ioi : NullMeasurableSet (Ioi a) μ :=
 theorem measurableSet_Ioo : MeasurableSet (Ioo a b) :=
   isOpen_Ioo.measurableSet
 
-@[simp, measurability]
 theorem nullMeasurableSet_Ioo : NullMeasurableSet (Ioo a b) μ :=
   measurableSet_Ioo.nullMeasurableSet
 
@@ -202,7 +196,6 @@ theorem nullMeasurableSet_Ioo : NullMeasurableSet (Ioo a b) μ :=
 theorem measurableSet_Ioc : MeasurableSet (Ioc a b) :=
   measurableSet_Ioi.inter measurableSet_Iic
 
-@[simp, measurability]
 theorem nullMeasurableSet_Ioc : NullMeasurableSet (Ioc a b) μ :=
   measurableSet_Ioc.nullMeasurableSet
 
@@ -210,7 +203,6 @@ theorem nullMeasurableSet_Ioc : NullMeasurableSet (Ioc a b) μ :=
 theorem measurableSet_Ico : MeasurableSet (Ico a b) :=
   measurableSet_Ici.inter measurableSet_Iio
 
-@[simp, measurability]
 theorem nullMeasurableSet_Ico : NullMeasurableSet (Ico a b) μ :=
   measurableSet_Ico.nullMeasurableSet
 
