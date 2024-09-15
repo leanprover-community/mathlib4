@@ -607,13 +607,13 @@ def detach (P : Finpartition s.attach) : Finpartition s where
   not_bot_mem := by simpa using P.not_bot_mem
 
 lemma mem_detach_iff (P : Finpartition s.attach) :
-    t ∈ P.detach.parts ↔ t.subtype (· ∈ s) ∈ P.parts := by
+    t ∈ P.detach.parts ↔ t ⊆ s ∧ t.subtype (· ∈ s) ∈ P.parts := by
   simp_rw [detach, mem_map, Embedding.coeFn_mk]
-  constructor
-  · intro ⟨p, mp, ap⟩
+  refine ⟨fun ⟨p, mp, ap⟩ ↦ ⟨?_, ?_⟩, fun h ↦ ?_⟩
+  · have := P.le mp
     sorry
-  · intro h
-    sorry
+  · rwa [← ap, map_subtype]
+  · use t.subtype (· ∈ s), h.2, subtype_map_of_mem h.1
 
 lemma detach_attach : P.attach.detach = P := by
   sorry
