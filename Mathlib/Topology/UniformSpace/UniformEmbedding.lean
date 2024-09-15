@@ -265,20 +265,20 @@ theorem isComplete_image_iff {m : α → β} {s : Set α} (hm : UniformInducing 
   simp_rw [IsComplete, imp.swap (a := Cauchy _), ← mem_Iic (b := 𝓟 _), fact1.forall fact2,
     hm.cauchy_map_iff, exists_mem_image, map_le_iff_le_comap, hm.inducing.nhds_eq_comap]
 
-/-- If `f : X → Y` is an `Inducing` map, the image `f '' s` of a set `s` is complete
+/-- If `f : X → Y` is an `UniformInducing` map, the image `f '' s` of a set `s` is complete
   if and only if `s` is complete. -/
 theorem UniformInducing.isComplete_iff {f : α → β} {s : Set α} (hf : UniformInducing f) :
-    IsComplete s ↔ IsComplete (f '' s) := (isComplete_image_iff hf).symm
+    IsComplete (f '' s) ↔ IsComplete s := isComplete_image_iff hf
 
 /-- If `f : X → Y` is an `UniformEmbedding`, the image `f '' s` of a set `s` is complete
   if and only if `s` is complete. -/
-theorem UniformEmbedding.isCompact_iff {f : α → β} {s : Set α} (hf : UniformEmbedding f) :
-    IsComplete s ↔ IsComplete (f '' s) := hf.toUniformInducing.isComplete_iff
+theorem UniformEmbedding.isComplete_iff {f : α → β} {s : Set α} (hf : UniformEmbedding f) :
+    IsComplete (f '' s) ↔ IsComplete s := hf.toUniformInducing.isComplete_iff
 
 /-- Sets of subtype are complete iff the image under a coercion is. -/
 theorem Subtype.isComplete_iff {p : α → Prop} {s : Set { x // p x }} :
     IsComplete s ↔ IsComplete ((↑) '' s : Set α) :=
-  uniformEmbedding_subtype_val.isComplete_iff
+  uniformEmbedding_subtype_val.isComplete_iff.symm
 
 alias ⟨isComplete_of_complete_image, _⟩ := isComplete_image_iff
 
