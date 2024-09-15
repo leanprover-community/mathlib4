@@ -577,7 +577,7 @@ theorem Filter.Eventually.curry_nhds {p : X × Y → Prop} {x : X} {y : Y}
   rw [nhds_prod_eq] at h
   exact h.curry
 
-theorem Filter.Eventually.nhds_prod_image
+theorem Filter.Eventually.nhds_pair_image
     {g : X → Y} {x₀ : X} {r : X → Y → Prop} (hr : ∀ᶠ p in 𝓝 (x₀, g x₀), r p.1 p.2)
     (hg : ContinuousAt g x₀) : ∀ᶠ x in 𝓝 x₀, r x (g x) := by
   suffices ∀ᶠ p in map (Prod.map id g) (𝓝 x₀ ×ˢ 𝓝 x₀), r p.1 p.2 from diag_of_prod this

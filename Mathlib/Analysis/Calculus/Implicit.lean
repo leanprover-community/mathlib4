@@ -537,7 +537,7 @@ theorem image_implicitFunOfBivariate {f : X × Y → Z} {x₀ : X} {y₀ : Y}
     ∀ᶠ x in 𝓝 x₀, f (x, hf₀.implicitFunOfBivariate x) = f (x₀, y₀) := by
   set ψ := hf₀.implicitFunOfBivariate
   suffices ∀ᶠ x in 𝓝 x₀, f (x, ψ x) = f (x₀, y₀) ↔ ψ x = ψ x by simpa
-  apply Eventually.nhds_prod_image (r := fun x y => f (x, y) = f (x₀, y₀) ↔ ψ x = y)
+  apply Eventually.nhds_pair_image (r := fun x y => f (x, y) = f (x₀, y₀) ↔ ψ x = y)
   · convert hf₀.image_eq_iff_implicitFunOfBivariate
     rw [← hf₀.image_eq_iff_implicitFunOfBivariate.self_of_nhds]
   · exact hf₀.implicitFunOfBivariate_hasStrictFDerivAt.continuousAt
