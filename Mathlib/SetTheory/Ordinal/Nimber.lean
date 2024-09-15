@@ -31,6 +31,7 @@ needed.
 
 ## Todo
 
+- Add a `CharP 2` instance.
 - Define nim multiplication and prove nimbers are a commutative ring.
 - Define nim division and prove nimbers are a field.
 - Show the nimbers are algebraically closed.
@@ -218,8 +219,7 @@ private theorem add_nonempty (a b : Nimber.{u}) :
   simp_rw [Set.nonempty_compl, Set.setOf_or, ← Set.mem_Iio, ← Set.image.eq_1]
   apply_fun (fun a : Set Nimber ↦ Small.{u} a)
   have : Small.{u} ↑((· + b) '' Set.Iio a ∪ (a + ·) '' Set.Iio b) := inferInstance
-  simp [this, small_congr (Equiv.Set.univ _)]
-  exact not_small_nimber
+  simpa [this, small_congr (Equiv.Set.univ _)] using not_small_nimber
 
 theorem exists_of_lt_add (h : c < a + b) : (∃ a' < a, a' + b = c) ∨ ∃ b' < b, a + b' = c := by
   rw [add_def] at h
@@ -335,8 +335,6 @@ instance : AddCommGroupWithOne Nimber where
   zsmul := zsmulRec
   neg_add_cancel := add_self
   add_comm := Nimber.add_comm
-
--- TODO: add CharP 2 instance
 
 @[simp]
 theorem add_cancel_right (a b : Nimber) : a + b + b = a := by
