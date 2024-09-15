@@ -654,6 +654,7 @@ lemma FactorsThrough.extend_comp {g : α → γ} (e' : β → γ) (hf : FactorsT
     extend f g e' ∘ f = g :=
   funext fun a => hf.extend_apply e' a
 
+@[simp]
 lemma extend_const (f : α → β) (c : γ) : extend f (fun _ ↦ c) (fun _ ↦ c) = fun _ ↦ c :=
   funext fun _ ↦ ite_id _
 
