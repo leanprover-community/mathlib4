@@ -97,4 +97,16 @@ but don't use this assumption in the type.
     else if Name.isPrefixOf `Encodable declName then return none
     return ← checkUnusedAssumptionInType (← getConstInfo declName) #[`Encodable]
 
+/--
+Linter that checks for theorems that assume `[MetricSpace X]`,
+but don't use this assumption in the type.
+(Instead, `MetrisableSpace X` can suffice, or the assumption can be fully removed.)
+-/
+@[env_linter] def metricMetrisable : Linter where
+  noErrorsFound := "No uses of `MetricSpace` arguments should be replaced"
+  errorsFound := "USES OF `MetricSpace` SHOULD BE REPLACED WITH `MetrisableSpace` (OR REMOVED)."
+  test declName := do
+    if (← isAutoDecl declName) then return none
+    return ← checkUnusedAssumptionInType (← getConstInfo declName) #[`MetricSpace]
+
 end Batteries.Tactic.Lint
