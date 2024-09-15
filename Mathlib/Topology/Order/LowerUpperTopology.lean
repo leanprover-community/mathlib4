@@ -510,40 +510,28 @@ lemma isLower_orderDual [Preorder α] [TopologicalSpace α] : IsLower αᵒᵈ �
 
 end Topology
 
-lemma new1 : (Iic False)ᶜ = {True} := by
+lemma Iic_False_compl : (Iic False)ᶜ = {True} := by
   rw [compl_eq_comm, Prop.compl_singleton, not_true_eq_false]
   aesop
 
-lemma new1b : (Iic True)ᶜ = ∅ := by
+lemma Iic_True_compl : (Iic True)ᶜ = ∅ := by
   rw [compl_eq_comm, compl_empty]
   aesop
 
-lemma new2 : ({{True}}) ⊆ {s  | ∃ a, (Iic a)ᶜ = s} := by
-  rw [singleton_subset_iff, mem_setOf_eq]
-  use False
-  exact new1
-
-lemma new3 : Topology.upper Prop ≤ generateFrom {{True}} := by
-  apply generateFrom_anti new2
-
-lemma new4 : {s  | ∃ a, (Iic a)ᶜ = s} = {∅, {True}} := by
-  rw [← new1b, ← new1]
-  rw [le_antisymm_iff]
-  constructor
-  · intro s hs
+lemma new4 : {s  | ∃ a, (Iic a)ᶜ = s} = {∅, {True}} := le_antisymm
+  (fun s hs => by
     simp only [mem_setOf_eq] at hs
     obtain ⟨a,ha⟩ := hs
     simp only [mem_insert_iff, mem_singleton_iff]
     rw [← ha]
     by_cases h₁ : a = True
     · apply Or.inl
-      rw [h₁]
-    · have h₂ : a = False := by
-        aesop
-      rw [h₂]
-      exact Or.inr rfl
-  · intro s hs
-    aesop
+      rw [h₁, Iic_True_compl]
+    · apply Or.inr
+      rw [← Iic_False_compl]
+      aesop
+  )
+  (fun _ hs => by rw [← Iic_False_compl, ← Iic_True_compl] at hs; aesop)
 
 lemma new5 : Topology.upper Prop = generateFrom {{True}} := by
   rw [Topology.upper]
