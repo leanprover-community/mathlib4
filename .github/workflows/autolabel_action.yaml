@@ -34,11 +34,11 @@ jobs:
           # append the "noisy" commands, so we can read off their values and not fail CI
           printf '\nproduce_labels! "git"\n\nproduce_labels "git"\n' >> Mathlib/Tactic/Autolabels/Labels.lean
 
-          # a first run to store the values in the CI logs -- useful for debugging
-          lake build Mathlib.Tactic.Autolabels.Labels
+          # build the file, showing its output -- useful for debugging
+          # and save the cleaned up output in the `labels` variable
+          # source: https://serverfault.com/a/989827
+          { labels=$(lake build Mathlib.Tactic.Autolabels.Labels | tee /dev/fd/3 | sed -n 's=.*Applicable labels: *\(.*\)=\1=p')"); } 3>&1
 
-          labels="$(lake build Mathlib.Tactic.Autolabels.Labels |
-            sed -n 's=.*Applicable labels: *\(.*\)=\1=p')"
           if [ -z "${labels}" ]
           then
             printf 'No label found\n'
