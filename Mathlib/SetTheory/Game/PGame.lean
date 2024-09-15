@@ -349,7 +349,7 @@ instance isEmpty_one_rightMoves : IsEmpty (RightMoves 1) :=
 
 /-- The less or equal relation on pre-games.
 
-If `0 ≤ x`, then Left can win `x` as the second player. -/
+If `0 ≤ x`, then Left can win `x` as the second player. `x ≤ y` means that `0 ≤ y - x`. -/
 instance le : LE PGame :=
   ⟨Sym2.GameAdd.fix wf_isOption fun x y le =>
       (∀ i, ¬le y (x.moveLeft i) (Sym2.GameAdd.snd_fst <| IsOption.moveLeft i)) ∧
@@ -357,7 +357,7 @@ instance le : LE PGame :=
 
 /-- The less or fuzzy relation on pre-games.
 
-If `0 ⧏ x`, then Left can win `x` as the first player. -/
+If `0 ⧏ x`, then Left can win `x` as the first player. `x ⧏ y` means that `0 ⧏ y - x`. -/
 def LF (x y : PGame) : Prop :=
   ¬y ≤ x
 
