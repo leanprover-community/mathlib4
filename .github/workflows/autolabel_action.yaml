@@ -37,7 +37,7 @@ jobs:
           # build the file, showing its output -- useful for debugging
           # and save the cleaned up output in the `labels` variable
           # source: https://serverfault.com/a/989827
-          { labels=$(lake build Mathlib.Tactic.Autolabels.Labels | tee /dev/fd/3 | sed -n 's=.*Applicable labels: *\(.*\)=\1=p')"); } 3>&1
+          { labels="$(lake build Mathlib.Tactic.Autolabels.Labels | tee /dev/fd/3 | sed -n 's=.*Applicable labels: *\(.*\)=\1=p')"; } 3>&1
 
           if [ -z "${labels}" ]
           then
