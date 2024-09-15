@@ -25,8 +25,10 @@ jobs:
 
       - name: Summarize bench output
         run: |
-          { cat scripts/bench_summary.lean
-            printf $'run_cmd BenchAction.addBenchSummaryComment %s "leanprover-community/mathlib4"' "${PR}" } |
+          {
+            cat scripts/bench_summary.lean
+            printf $'run_cmd BenchAction.addBenchSummaryComment %s "leanprover-community/mathlib4"' "${PR}"
+          } |
             lake env lean --stdin
         env:
           PR:  ${{ github.event.issue.number }}
