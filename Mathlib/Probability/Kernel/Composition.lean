@@ -320,9 +320,9 @@ theorem compProd_restrict {s : Set β} {t : Set γ} (hs : MeasurableSet s) (ht :
     classical
     rw [Set.indicator_apply]
     split_ifs with h
-    · simp only [h, true_and_iff]
+    · simp only [h, true_and]
       rfl
-    · simp only [h, false_and_iff, and_false_iff, Set.setOf_false, measure_empty]
+    · simp only [h, false_and, and_false, Set.setOf_false, measure_empty]
   simp_rw [this]
   rw [lintegral_indicator _ hs]
 
