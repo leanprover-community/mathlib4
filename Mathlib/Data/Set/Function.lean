@@ -1640,6 +1640,10 @@ theorem antitoneOn_of_rightInvOn_of_mapsTo [PartialOrder α] [LinearOrder β]
     (φψs : Set.RightInvOn ψ φ s) (ψts : Set.MapsTo ψ s t) : AntitoneOn ψ s :=
   (monotoneOn_of_rightInvOn_of_mapsTo hφ.dual_left φψs ψts).dual_right
 
+lemma apply_eq_of_range_eq_singleton {f : α → β} {b : β} (h : range f = {b}) (a : α) :
+    f a = b := by
+  simpa only [h, mem_singleton_iff] using mem_range_self (f := f) a
+
 end Function
 
 /-! ### Equivalences, permutations -/
