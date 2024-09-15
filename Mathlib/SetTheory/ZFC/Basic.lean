@@ -193,7 +193,7 @@ theorem Subset.congr_right : ∀ {x y z : PSet}, Equiv x y → (z ⊆ x ↔ z �
       ⟨a, cb.trans (Equiv.symm ab)⟩⟩
 
 /-- `x ∈ y` as pre-sets if `x` is extensionally equivalent to a member of the family `y`. -/
-protected def Mem (x y : PSet.{u}) : Prop :=
+protected def Mem (y x : PSet.{u}) : Prop :=
   ∃ b, Equiv x (y.Func b)
 
 instance : Membership PSet PSet :=
@@ -260,10 +260,10 @@ instance : IsIrrefl PSet (· ∈ ·) :=
   mem_wf.isIrrefl
 
 theorem mem_asymm {x y : PSet} : x ∈ y → y ∉ x :=
-  asymm
+  asymm (r := (· ∈ ·))
 
 theorem mem_irrefl (x : PSet) : x ∉ x :=
-  irrefl x
+  irrefl (r := (· ∈ ·)) x
 
 /-- Convert a pre-set to a `Set` of pre-sets. -/
 def toSet (u : PSet.{u}) : Set PSet.{u} :=
@@ -617,11 +617,11 @@ theorem eval_mk {n f x} :
 
 /-- The membership relation for ZFC sets is inherited from the membership relation for pre-sets. -/
 protected def Mem : ZFSet → ZFSet → Prop :=
-  Quotient.lift₂ PSet.Mem fun _ _ _ _ hx hy =>
+  Quotient.lift₂ (· ∈ ·) fun _ _ _ _ hx hy =>
     propext ((Mem.congr_left hx).trans (Mem.congr_right hy))
 
-instance : Membership ZFSet ZFSet :=
-  ⟨ZFSet.Mem⟩
+instance : Membership ZFSet ZFSet where
+  mem t s := ZFSet.Mem s t
 
 @[simp]
 theorem mk_mem_iff {x y : PSet} : mk x ∈ mk y ↔ x ∈ y :=
@@ -1022,10 +1022,10 @@ instance : IsIrrefl ZFSet (· ∈ ·) :=
   mem_wf.isIrrefl
 
 theorem mem_asymm {x y : ZFSet} : x ∈ y → y ∉ x :=
-  asymm
+  asymm (r := (· ∈ ·))
 
 theorem mem_irrefl (x : ZFSet) : x ∉ x :=
-  irrefl x
+  irrefl (r := (· ∈ ·)) x
 
 theorem regularity (x : ZFSet.{u}) (h : x ≠ ∅) : ∃ y ∈ x, x ∩ y = ∅ :=
   by_contradiction fun ne =>
@@ -1120,7 +1120,7 @@ theorem pair_injective : Function.Injective2 pair := fun x x' y y' H => by
       rw [mem_singleton.mp m]
   have he : x = y → y = y' := by
     rintro rfl
-    cases' (ae {x, y'}).2 (by simp only [eq_self_iff_true, or_true_iff]) with xy'x xy'xx
+    cases' (ae {x, y'}).2 (by simp only [eq_self_iff_true, or_true]) with xy'x xy'xx
     · rw [eq_comm, ← mem_singleton, ← xy'x, mem_pair]
       exact Or.inr rfl
     · simpa [eq_comm] using (ZFSet.ext_iff.1 xy'xx y').1 (by simp)
@@ -1264,7 +1264,7 @@ def ToSet (B : Class.{u}) (A : Class.{u}) : Prop :=
   ∃ x : ZFSet, ↑x = A ∧ B x
 
 /-- `A ∈ B` if `A` is a ZFC set which satisfies `B` -/
-protected def Mem (A B : Class.{u}) : Prop :=
+protected def Mem (B A : Class.{u}) : Prop :=
   ToSet.{u} B A
 
 instance : Membership Class Class :=
@@ -1282,7 +1282,7 @@ theorem not_empty_hom (x : ZFSet.{u}) : ¬(∅ : Class.{u}) x :=
 
 @[simp]
 theorem mem_univ {A : Class.{u}} : A ∈ univ.{u} ↔ ∃ x : ZFSet.{u}, ↑x = A :=
-  exists_congr fun _ => and_true_iff _
+  exists_congr fun _ => iff_of_eq (and_true _)
 
 @[simp]
 theorem mem_univ_hom (x : ZFSet.{u}) : univ.{u} x :=
@@ -1315,10 +1315,10 @@ instance : IsIrrefl Class (· ∈ ·) :=
   mem_wf.isIrrefl
 
 theorem mem_asymm {x y : Class} : x ∈ y → y ∉ x :=
-  asymm
+  asymm (r := (· ∈ ·))
 
 theorem mem_irrefl (x : Class) : x ∉ x :=
-  irrefl x
+  irrefl (r := (· ∈ ·)) x
 
 /-- **There is no universal set.**
 This is stated as `univ ∉ univ`, meaning that `univ` (the class of all sets) is proper (does not
@@ -1333,7 +1333,7 @@ def congToClass (x : Set Class.{u}) : Class.{u} :=
 @[simp]
 theorem congToClass_empty : congToClass ∅ = ∅ := by
   ext z
-  simp only [congToClass, not_empty_hom, iff_false_iff]
+  simp only [congToClass, not_empty_hom, iff_false]
   exact Set.not_mem_empty z
 
 /-- Convert a class into a conglomerate (a collection of classes) -/
@@ -1391,7 +1391,7 @@ theorem coe_sep (p : Class.{u}) (x : ZFSet.{u}) :
 
 @[simp, norm_cast]
 theorem coe_empty : ↑(∅ : ZFSet.{u}) = (∅ : Class.{u}) :=
-  ext fun y => iff_false_iff.2 <| ZFSet.not_mem_empty y
+  ext fun y => iff_false _ ▸ ZFSet.not_mem_empty y
 
 @[simp, norm_cast]
 theorem coe_insert (x y : ZFSet.{u}) : ↑(insert x y) = @insert ZFSet.{u} Class.{u} _ x y :=
@@ -1564,3 +1564,5 @@ noncomputable def toSet_equiv : ZFSet.{u} ≃ {s : Set ZFSet.{u} // Small.{u, u+
   right_inv s := Subtype.coe_injective <| toSet_equiv_aux s.2
 
 end ZFSet
+
+set_option linter.style.longFile 1700

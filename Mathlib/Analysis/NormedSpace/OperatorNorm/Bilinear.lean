@@ -382,7 +382,7 @@ variable {𝕜₁' : Type*} {𝕜₂' : Type*} [NontriviallyNormedField 𝕜₁'
   [RingHomIsometric σ₂₃] [RingHomIsometric σ₁₃'] [RingHomIsometric σ₂₃']
 
 /-- Compose a bilinear map `E →SL[σ₁₃] F →SL[σ₂₃] G` with two linear maps
-`E' →SL[σ₁'] E` and `F' →SL[σ₂'] F`.  -/
+`E' →SL[σ₁'] E` and `F' →SL[σ₂'] F`. -/
 def bilinearComp (f : E →SL[σ₁₃] F →SL[σ₂₃] G) (gE : E' →SL[σ₁'] E) (gF : F' →SL[σ₂'] F) :
     E' →SL[σ₁₃'] F' →SL[σ₂₃'] G :=
   ((f.comp gE).flip.comp gF).flip

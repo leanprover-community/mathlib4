@@ -281,7 +281,7 @@ theorem Dense.borel_eq_generateFrom_Ico_mem {α : Type*} [TopologicalSpace α] [
 theorem borel_eq_generateFrom_Ico (α : Type*) [TopologicalSpace α] [SecondCountableTopology α]
     [LinearOrder α] [OrderTopology α] :
     borel α = .generateFrom { S : Set α | ∃ (l u : α), l < u ∧ Ico l u = S } := by
-  simpa only [exists_prop, mem_univ, true_and_iff] using
+  simpa only [exists_prop, mem_univ, true_and] using
     (@dense_univ α _).borel_eq_generateFrom_Ico_mem_aux (fun _ _ => mem_univ _) fun _ _ _ _ =>
       mem_univ _
 
@@ -307,7 +307,7 @@ theorem Dense.borel_eq_generateFrom_Ioc_mem {α : Type*} [TopologicalSpace α] [
 theorem borel_eq_generateFrom_Ioc (α : Type*) [TopologicalSpace α] [SecondCountableTopology α]
     [LinearOrder α] [OrderTopology α] :
     borel α = .generateFrom { S : Set α | ∃ l u, l < u ∧ Ioc l u = S } := by
-  simpa only [exists_prop, mem_univ, true_and_iff] using
+  simpa only [exists_prop, mem_univ, true_and] using
     (@dense_univ α _).borel_eq_generateFrom_Ioc_mem_aux (fun _ _ => mem_univ _) fun _ _ _ _ =>
       mem_univ _
 
@@ -398,8 +398,8 @@ theorem ext_of_Iic {α : Type*} [TopologicalSpace α] {m : MeasurableSpace α}
   · rcases exists_countable_dense_bot_top α with ⟨s, hsc, hsd, -, hst⟩
     have : DirectedOn (· ≤ ·) s := directedOn_iff_directed.2 (Subtype.mono_coe _).directed_le
     simp only [← biSup_measure_Iic hsc (hsd.exists_ge' hst) this, h]
-  rw [← Iic_diff_Iic, measure_diff (Iic_subset_Iic.2 hlt.le) measurableSet_Iic,
-    measure_diff (Iic_subset_Iic.2 hlt.le) measurableSet_Iic, h a, h b]
+  rw [← Iic_diff_Iic, measure_diff (Iic_subset_Iic.2 hlt.le) measurableSet_Iic.nullMeasurableSet,
+    measure_diff (Iic_subset_Iic.2 hlt.le) measurableSet_Iic.nullMeasurableSet, h a, h b]
   · rw [← h a]
     exact (measure_lt_top μ _).ne
   · exact (measure_lt_top μ _).ne
@@ -558,6 +558,7 @@ theorem Measurable.isLUB_of_mem {ι} [Countable ι] {f : ι → δ → α} {g g'
           simp only [mem_singleton_iff]
         · rintro - rfl
           exact ⟨i, rfl⟩
+      simp only [exists_prop'] at this
       simp [A, this, hg' hb, isLUB_singleton]
 
 theorem AEMeasurable.isLUB {ι} {μ : Measure δ} [Countable ι] {f : ι → δ → α} {g : δ → α}
@@ -924,8 +925,8 @@ theorem measure_eq_measure_preimage_add_measure_tsum_Ico_zpow {α : Type*} [Meas
       ext x
       simp only [mem_singleton_iff, mem_union, mem_Ioo, mem_Ioi, mem_preimage]
       obtain (H | H) : f x = ∞ ∨ f x < ∞ := eq_or_lt_of_le le_top
-      · simp only [H, eq_self_iff_true, or_false_iff, ENNReal.zero_lt_top, not_top_lt, and_false]
-      · simp only [H, H.ne, and_true_iff, false_or_iff]
+      · simp only [H, eq_self_iff_true, or_false, ENNReal.zero_lt_top, not_top_lt, and_false]
+      · simp only [H, H.ne, and_true, false_or]
     · refine disjoint_left.2 fun x hx h'x => ?_
       have : f x < ∞ := h'x.2.2
       exact lt_irrefl _ (this.trans_le (le_of_eq hx.2.symm))

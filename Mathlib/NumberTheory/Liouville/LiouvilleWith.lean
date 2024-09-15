@@ -103,7 +103,7 @@ theorem frequently_lt_rpow_neg (h : LiouvilleWith p x) (hlt : q < p) :
   refine ⟨m, hne, hlt.trans <| (div_lt_iff <| rpow_pos_of_pos hn _).2 ?_⟩
   rwa [mul_comm, ← rpow_add hn, ← sub_eq_add_neg]
 
-/-- The product of a Liouville number and a nonzero rational number is again a Liouville number.  -/
+/-- The product of a Liouville number and a nonzero rational number is again a Liouville number. -/
 theorem mul_rat (h : LiouvilleWith p x) (hr : r ≠ 0) : LiouvilleWith p (x * r) := by
   rcases h.exists_pos with ⟨C, _hC₀, hC⟩
   refine ⟨r.den ^ p * (|r| * C), (tendsto_id.nsmul_atTop r.pos).frequently (hC.mono ?_)⟩

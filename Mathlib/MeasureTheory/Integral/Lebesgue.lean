@@ -358,7 +358,7 @@ theorem lintegral_iSup {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (
   have eq : ∀ p, rs.map c ⁻¹' {p} = ⋃ n, rs.map c ⁻¹' {p} ∩ { a | p ≤ f n a } := by
     intro p
     rw [← inter_iUnion]; nth_rw 1 [← inter_univ (map c rs ⁻¹' {p})]
-    refine Set.ext fun x => and_congr_right fun hx => true_iff_iff.2 ?_
+    refine Set.ext fun x => and_congr_right fun hx => (iff_of_eq (true_iff _)).2 ?_
     by_cases p_eq : p = 0
     · simp [p_eq]
     simp only [coe_map, mem_preimage, Function.comp_apply, mem_singleton_iff] at hx
@@ -476,7 +476,7 @@ theorem exists_pos_setLIntegral_lt_of_measure_lt {f : α → ℝ≥0∞} (h : �
       exact SimpleFunc.lintegral_mono le_rfl Measure.restrict_le_self
     _ ≤ (SimpleFunc.const α (C : ℝ≥0∞)).lintegral (μ.restrict s) + ε₁ := by
       gcongr
-      exact SimpleFunc.lintegral_mono (fun x ↦ ENNReal.coe_le_coe.2 (hC x)) le_rfl
+      exact fun x ↦ ENNReal.coe_le_coe.2 (hC x)
     _ = C * μ s + ε₁ := by
       simp only [← SimpleFunc.lintegral_eq_lintegral, coe_const, lintegral_const,
         Measure.restrict_apply, MeasurableSet.univ, univ_inter, Function.const]
@@ -918,6 +918,15 @@ theorem lintegral_eq_zero_iff' {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) 
 theorem lintegral_eq_zero_iff {f : α → ℝ≥0∞} (hf : Measurable f) : ∫⁻ a, f a ∂μ = 0 ↔ f =ᵐ[μ] 0 :=
   lintegral_eq_zero_iff' hf.aemeasurable
 
+theorem setLIntegral_eq_zero_iff' {s : Set α} (hs : MeasurableSet s)
+    {f : α → ℝ≥0∞} (hf : AEMeasurable f (μ.restrict s)) :
+    ∫⁻ a in s, f a ∂μ = 0 ↔ ∀ᵐ x ∂μ, x ∈ s → f x = 0 :=
+  (lintegral_eq_zero_iff' hf).trans (ae_restrict_iff' hs)
+
+theorem setLIntegral_eq_zero_iff {s : Set α} (hs : MeasurableSet s) {f : α → ℝ≥0∞}
+    (hf : Measurable f) : ∫⁻ a in s, f a ∂μ = 0 ↔ ∀ᵐ x ∂μ, x ∈ s → f x = 0 :=
+  setLIntegral_eq_zero_iff' hs hf.aemeasurable
+
 theorem lintegral_pos_iff_support {f : α → ℝ≥0∞} (hf : Measurable f) :
     (0 < ∫⁻ a, f a ∂μ) ↔ 0 < μ (Function.support f) := by
   simp [pos_iff_ne_zero, hf, Filter.EventuallyEq, ae_iff, Function.support]
@@ -926,7 +935,7 @@ theorem setLintegral_pos_iff {f : α → ℝ≥0∞} (hf : Measurable f) {s : Se
     0 < ∫⁻ a in s, f a ∂μ ↔ 0 < μ (Function.support f ∩ s) := by
   rw [lintegral_pos_iff_support hf, Measure.restrict_apply (measurableSet_support hf)]
 
-/-- Weaker version of the monotone convergence theorem-/
+/-- Weaker version of the monotone convergence theorem -/
 theorem lintegral_iSup_ae {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (f n))
     (h_mono : ∀ n, ∀ᵐ a ∂μ, f n a ≤ f n.succ a) : ∫⁻ a, ⨆ n, f n a ∂μ = ⨆ n, ∫⁻ a, f n a ∂μ := by
   classical
@@ -1958,8 +1967,8 @@ theorem SimpleFunc.exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : Measurabl
       simp only [hc, ENNReal.coe_zero, zero_mul, not_lt_zero] at hL
     have : L / c < μ s := by
       rwa [ENNReal.div_lt_iff, mul_comm]
-      · simp only [c_ne_zero, Ne, ENNReal.coe_eq_zero, not_false_iff, true_or_iff]
-      · simp only [Ne, coe_ne_top, not_false_iff, true_or_iff]
+      · simp only [c_ne_zero, Ne, ENNReal.coe_eq_zero, not_false_iff, true_or]
+      · simp only [Ne, coe_ne_top, not_false_iff, true_or]
     obtain ⟨t, ht, ts, mlt, t_top⟩ :
       ∃ t : Set α, MeasurableSet t ∧ t ⊆ s ∧ L / ↑c < μ t ∧ μ t < ∞ :=
       Measure.exists_subset_measure_lt_top hs this
@@ -1973,8 +1982,8 @@ theorem SimpleFunc.exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : Measurabl
         piecewise_eq_indicator, ENNReal.coe_indicator, Function.const_apply, lintegral_indicator,
         lintegral_const, Measure.restrict_apply', univ_inter]
       rwa [mul_comm, ← ENNReal.div_lt_iff]
-      · simp only [c_ne_zero, Ne, ENNReal.coe_eq_zero, not_false_iff, true_or_iff]
-      · simp only [Ne, coe_ne_top, not_false_iff, true_or_iff]
+      · simp only [c_ne_zero, Ne, ENNReal.coe_eq_zero, not_false_iff, true_or]
+      · simp only [Ne, coe_ne_top, not_false_iff, true_or]
   · replace hL : L < ∫⁻ x, f₁ x ∂μ + ∫⁻ x, f₂ x ∂μ := by
       rwa [← lintegral_add_left f₁.measurable.coe_nnreal_ennreal]
     by_cases hf₁ : ∫⁻ x, f₁ x ∂μ = 0
@@ -2050,3 +2059,5 @@ lemma tendsto_measure_of_ae_tendsto_indicator_of_isFiniteMeasure
 end TendstoIndicator -- section
 
 end MeasureTheory
+
+set_option linter.style.longFile 2200

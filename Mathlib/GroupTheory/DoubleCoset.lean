@@ -74,8 +74,8 @@ def Quotient (H K : Set G) : Type _ :=
 theorem rel_iff {H K : Subgroup G} {x y : G} :
     (setoid ↑H ↑K).Rel x y ↔ ∃ a ∈ H, ∃ b ∈ K, y = a * x * b :=
   Iff.trans
-    ⟨fun hxy => (congr_arg _ hxy).mpr (mem_doset_self H K y), fun hxy => (doset_eq_of_mem hxy).symm⟩
-    mem_doset
+    ⟨fun (hxy : doset x H K = doset y H K) => hxy ▸ mem_doset_self H K y,
+      fun hxy => (doset_eq_of_mem hxy).symm⟩ mem_doset
 
 theorem bot_rel_eq_leftRel (H : Subgroup G) :
     (setoid ↑(⊥ : Subgroup G) ↑H).Rel = (QuotientGroup.leftRel H).Rel := by
@@ -140,7 +140,7 @@ theorem disjoint_out' {H K : Subgroup G} {a b : Quotient H.1 K} :
 theorem union_quotToDoset (H K : Subgroup G) : ⋃ q, quotToDoset H K q = Set.univ := by
   ext x
   simp only [Set.mem_iUnion, quotToDoset, mem_doset, SetLike.mem_coe, exists_prop, Set.mem_univ,
-    iff_true_iff]
+    iff_true]
   use mk H K x
   obtain ⟨h, k, h3, h4, h5⟩ := mk_out'_eq_mul H K x
   refine ⟨h⁻¹, H.inv_mem h3, k⁻¹, K.inv_mem h4, ?_⟩

@@ -144,7 +144,7 @@ theorem Prod.continuous_to_fun : ContinuousOn (Prod.toFun' e₁ e₂)
   · rw [e₁.source_eq, e₂.source_eq]
     exact mapsTo_preimage _ _
   rintro ⟨b, v₁, v₂⟩ ⟨hb₁, _⟩
-  simp only [f₃, Prod.toFun', Prod.mk.inj_iff, Function.comp_apply, and_true_iff]
+  simp only [f₃, Prod.toFun', Prod.mk.inj_iff, Function.comp_apply, and_true]
   rw [e₁.coe_fst]
   rw [e₁.source_eq, mem_preimage]
   exact hb₁
@@ -292,7 +292,7 @@ variable [TopologicalSpace F] [TopologicalSpace B]
 theorem Pullback.continuous_totalSpaceMk [∀ x, TopologicalSpace (E x)] [FiberBundle F E]
     {f : B' → B} {x : B'} : Continuous (@TotalSpace.mk _ F (f *ᵖ E) x) := by
   simp only [continuous_iff_le_induced, Pullback.TotalSpace.topologicalSpace, induced_compose,
-    induced_inf, Function.comp, induced_const, top_inf_eq, pullbackTopology_def]
+    induced_inf, Function.comp_def, induced_const, top_inf_eq, pullbackTopology_def]
   exact le_of_eq (FiberBundle.totalSpaceMk_inducing F E (f x)).induced
 
 variable {E F}
@@ -309,7 +309,7 @@ noncomputable def Trivialization.pullback (e : Trivialization F (π F E)) (f : K
   target := (f ⁻¹' e.baseSet) ×ˢ univ
   map_source' x h := by
     simp_rw [e.source_eq, mem_preimage, Pullback.lift_proj] at h
-    simp_rw [prod_mk_mem_set_prod_eq, mem_univ, and_true_iff, mem_preimage, h]
+    simp_rw [prod_mk_mem_set_prod_eq, mem_univ, and_true, mem_preimage, h]
   map_target' y h := by
     rw [mem_prod, mem_preimage] at h
     simp_rw [e.source_eq, mem_preimage, Pullback.lift_proj, h.1]
@@ -317,7 +317,7 @@ noncomputable def Trivialization.pullback (e : Trivialization F (π F E)) (f : K
     simp_rw [mem_preimage, e.mem_source, Pullback.lift_proj] at h
     simp_rw [Pullback.lift, e.symm_apply_apply_mk h]
   right_inv' x h := by
-    simp_rw [mem_prod, mem_preimage, mem_univ, and_true_iff] at h
+    simp_rw [mem_prod, mem_preimage, mem_univ, and_true] at h
     simp_rw [Pullback.lift_mk, e.apply_mk_symm h]
   open_source := by
     simp_rw [e.source_eq, ← preimage_comp]
@@ -330,7 +330,7 @@ noncomputable def Trivialization.pullback (e : Trivialization F (π F E)) (f : K
         e.continuousOn.comp (Pullback.continuous_lift F E f).continuousOn Subset.rfl)
   continuousOn_invFun := by
     dsimp only
-    simp_rw [(inducing_pullbackTotalSpaceEmbedding F E f).continuousOn_iff, Function.comp,
+    simp_rw [(inducing_pullbackTotalSpaceEmbedding F E f).continuousOn_iff, Function.comp_def,
       pullbackTotalSpaceEmbedding]
     refine
       continuousOn_fst.prod

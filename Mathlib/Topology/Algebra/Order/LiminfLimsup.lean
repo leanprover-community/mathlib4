@@ -7,7 +7,7 @@ import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.Order.Group.Indicator
 import Mathlib.Order.LiminfLimsup
-import Mathlib.Order.Filter.Archimedean
+import Mathlib.Order.Filter.AtTopBot.Archimedean
 import Mathlib.Order.Filter.CountableInter
 import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Data.Set.Lattice
@@ -303,7 +303,7 @@ theorem Antitone.map_limsSup_of_continuousAt {F : Filter R} [NeBot F] {f : R →
     (cobdd : F.IsCobounded (· ≤ ·) := by isBoundedDefault) :
     f F.limsSup = F.liminf f := by
   apply le_antisymm
-  · rw [limsSup, f_decr.map_sInf_of_continuousAt' f_cont bdd_above cobdd]
+  · rw [limsSup, f_decr.map_csInf_of_continuousAt f_cont bdd_above cobdd]
     apply le_of_forall_lt
     intro c hc
     simp only [liminf, limsInf, eventually_map] at hc ⊢

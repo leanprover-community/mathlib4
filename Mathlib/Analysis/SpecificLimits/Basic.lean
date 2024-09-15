@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Johannes Hölzl, Yury Kudryashov, Patrick Massot
 -/
 import Mathlib.Algebra.GeomSum
-import Mathlib.Order.Filter.Archimedean
+import Mathlib.Order.Filter.AtTopBot.Archimedean
 import Mathlib.Order.Iterate
 import Mathlib.Topology.Algebra.Algebra
 import Mathlib.Topology.Algebra.InfiniteSum.Real
@@ -258,7 +258,7 @@ protected theorem ENNReal.tendsto_pow_atTop_nhds_top_iff {r : ℝ≥0∞} :
     simp only [ENNReal.tendsto_pow_atTop_nhds_zero_iff, inv_zero] at obs
     simpa [← ENNReal.inv_pow] using obs <| ENNReal.inv_lt_one.mpr r_gt_one
 
-/-! ### Geometric series-/
+/-! ### Geometric series -/
 
 
 section Geometric

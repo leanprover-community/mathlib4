@@ -69,7 +69,7 @@ class PresheafedSpace.IsOpenImmersion {X Y : PresheafedSpace C} (f : X ⟶ Y) : 
   /-- the underlying continuous map of underlying spaces from the source to an open subset of the
     target. -/
   base_open : OpenEmbedding f.base
-  /-- the underlying sheaf morphism is an isomorphism on each open subset-/
+  /-- the underlying sheaf morphism is an isomorphism on each open subset -/
   c_iso : ∀ U : Opens X, IsIso (f.c.app (op (base_open.isOpenMap.functor.obj U)))
 
 /-- A morphism of SheafedSpaces is an open immersion if it is an open immersion as a morphism
