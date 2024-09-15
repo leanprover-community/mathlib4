@@ -2819,6 +2819,13 @@ instance normal_inf_normal (H K : Subgroup G) [hH : H.Normal] [hK : K.Normal] : 
   ⟨fun n hmem g => ⟨hH.conj_mem n hmem.1 g, hK.conj_mem n hmem.2 g⟩⟩
 
 @[to_additive]
+theorem normal_iInf_normal {ι G : Type*} [Group G] {a : ι → Subgroup G}
+    (norm : ∀ i : ι , (a i).Normal) : (iInf a).Normal := ⟨
+  fun g g_in_iInf h => by
+    rw [Subgroup.mem_iInf] at *
+    exact fun i => (norm i).conj_mem g (g_in_iInf i) h⟩
+
+@[to_additive]
 theorem subgroupOf_sup (A A' B : Subgroup G) (hA : A ≤ B) (hA' : A' ≤ B) :
     (A ⊔ A').subgroupOf B = A.subgroupOf B ⊔ A'.subgroupOf B := by
   refine
