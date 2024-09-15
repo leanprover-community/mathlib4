@@ -65,7 +65,7 @@ maps provided that it is true on `fun _ ↦ ∅` and for any function `g : ∀ i
 `i : ι`, and `x ∉ g i`, `p g` implies `p (update g i (insert x (g i)))`.
 
 See also `Finset.induction_on_pi_max` and `Finset.induction_on_pi_min` for specialized versions
-that require `∀ i, LinearOrder (α i)`.  -/
+that require `∀ i, LinearOrder (α i)`. -/
 theorem induction_on_pi {p : (∀ i, Finset (α i)) → Prop} (f : ∀ i, Finset (α i)) (h0 : p fun _ ↦ ∅)
     (step : ∀ (g : ∀ i, Finset (α i)) (i : ι), ∀ x ∉ g i, p g → p (update g i (insert x (g i)))) :
     p f :=

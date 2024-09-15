@@ -127,11 +127,11 @@ theorem ofSeq_surjective : Function.Surjective ofSeq := Quot.exists_rep
 theorem ofSeq_lt_ofSeq {f g : ℕ → ℝ} : ofSeq f < ofSeq g ↔ ∀ᶠ n in hyperfilter ℕ, f n < g n :=
   Germ.coe_lt
 
-/-- A sample infinitesimal hyperreal-/
+/-- A sample infinitesimal hyperreal -/
 noncomputable def epsilon : ℝ* :=
   ofSeq fun n => n⁻¹
 
-/-- A sample infinite hyperreal-/
+/-- A sample infinite hyperreal -/
 noncomputable def omega : ℝ* := ofSeq Nat.cast
 
 @[inherit_doc] scoped notation "ε" => Hyperreal.epsilon

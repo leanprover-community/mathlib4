@@ -12,7 +12,7 @@ import Mathlib.Topology.StoneCech
 
 This file constructs the left adjoint `typeToStonean` to the forgetful functor from Stonean spaces
 to sets, using the Stone-Cech compactification. This allows to conclude that the monomorphisms in
-`Stonean` are precisely the injective maps (see `Stonean.mono_iff_injective`).
+`Stonean` are precisely the injective maps (see `Stonean.mono_iff_injective`).
 -/
 
 universe u
