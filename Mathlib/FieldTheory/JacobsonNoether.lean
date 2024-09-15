@@ -208,17 +208,13 @@ section purelyInsep
 
 lemma temp_exists_pow_mem_center_ofInseparable (p : ℕ) [hchar : ExpChar D p] (a : D)
     (hinsep : ∀ x : D, IsSeparable k x → x ∈ k) : ∃ n, a ^ (p ^ n) ∈ k := by
-  have := (@isPurelyInseparable_iff_pow_mem
-    k (Algebra.adjoin k {a}) _ _ _ _ p (center_expChar_eq_iff.1 hchar)).1
-  have pure : IsPurelyInseparable k { x // x ∈ Algebra.adjoin k {a} } := by
-    refine { isIntegral := ?isIntegral, inseparable' := ?inseparable' }
-    · sorry
-    · intro x hx
-      replace hinsep := hinsep x
-      sorry
-  obtain ⟨n, ⟨m, hm⟩⟩ := (this pure) ⟨a, Algebra.self_mem_adjoin_singleton k a⟩
-  apply Subtype.val_inj.2 at hm
-  simp only [SubalgebraClass.coe_algebraMap, SubmonoidClass.mk_pow] at hm
+  have := (@isPurelyInseparable_iff_pow_mem k D _ _ _ _ p (center_expChar_eq_iff.1 hchar)).1
+  have bridge : ∀ x : k, (algebraMap k D) x = x := fun _ ↦ rfl
+  have bridge' : k = (algebraMap k D).range := Subring.ext_iff.mpr <| fun x ↦
+    ⟨fun hx ↦ Set.mem_range.mpr (Exists.intro ⟨x, hx⟩ rfl),
+    fun hx ↦ Exists.casesOn hx fun y hy ↦ (bridge y ▸ hy) ▸ y.2⟩
+  have pure : IsPurelyInseparable k D := ⟨Algebra.IsAlgebraic.isIntegral, (bridge' ▸ hinsep)⟩
+  obtain ⟨n, ⟨m, hm⟩⟩ := (this pure) a
   have := Subalgebra.range_subset (R := k) ⟨(k).toSubsemiring, by intro r; exact r.2⟩
   exact ⟨n, Set.mem_of_subset_of_mem this <| Set.mem_range.2 ⟨m, hm⟩⟩
 
