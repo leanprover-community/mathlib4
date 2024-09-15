@@ -135,8 +135,8 @@ def pi {α : Type u} (β : α → ProfiniteGrp) : ProfiniteGrp :=
   letI : TopologicalGroup pitype := Pi.topologicalGroup
   ofProfinite pitype
 
-/-- A `FiniteGrp` when given the discrete topology can be condsidered as a profinite group. -/
-@[to_additive "A `FiniteAddGrp` when given the discrete topology can be condsidered as a
+/-- A `FiniteGrp` when given the discrete topology can be considered as a profinite group. -/
+@[to_additive "A `FiniteAddGrp` when given the discrete topology can be considered as a
 profinite additive group."]
 def ofFiniteGrp (G : FiniteGrp) : ProfiniteGrp :=
   letI : TopologicalSpace G := ⊥
