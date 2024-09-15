@@ -34,7 +34,7 @@ variable {α : Type*} {m : List α}
 theorem groupBy_nil (r : α → α → Bool) : groupBy r [] = [] :=
   rfl
 
-theorem join_groupBy_loop (r : α → α → Bool) (l : List α) (a : α) (g : List α)
+private theorem join_groupBy_loop (r : α → α → Bool) (l : List α) (a : α) (g : List α)
     (gs : List (List α)) :
     (groupBy.loop r l a g gs).join = gs.reverse.join ++ g.reverse ++ a::l := by
   revert a g gs
@@ -52,7 +52,7 @@ theorem join_groupBy (r : α → α → Bool) (l : List α) : (l.groupBy r).join
   | nil => rfl
   | cons _ _ => join_groupBy_loop _ _ _ _ _
 
-theorem nil_not_mem_groupBy_loop (r : α → α → Bool) (l : List α) (a : α) (g : List α)
+private theorem nil_not_mem_groupBy_loop (r : α → α → Bool) (l : List α) (a : α) (g : List α)
     {gs : List (List α)} (h : [] ∉ gs) : [] ∉ groupBy.loop r l a g gs := by
   revert a g gs
   induction l with
@@ -76,7 +76,7 @@ theorem ne_nil_of_mem_groupBy (r : α → α → Bool) {l : List α} (h : m ∈ 
   rintro rfl
   exact nil_not_mem_groupBy r l h
 
-theorem chain'_of_mem_groupBy_loop {r : α → α → Bool} {l : List α} {a : α} {g : List α}
+private theorem chain'_of_mem_groupBy_loop {r : α → α → Bool} {l : List α} {a : α} {g : List α}
     (hga : ∀ b ∈ g.head?, r b a) (hg : g.Chain' (fun x y ↦ r y x)) {gs : List (List α)}
     (hgs : ∀ m ∈ gs, m.Chain' (fun x y ↦ r x y)) (h : m ∈ groupBy.loop r l a g gs) :
     m.Chain' (fun x y ↦ r x y) := by
@@ -118,8 +118,8 @@ theorem chain'_of_mem_groupBy {r : α → α → Bool} {l : List α} (h : m ∈ 
       · exact chain'_nil
       · rintro _ ⟨⟩
 
-theorem chain'_last_ne_head_groupBy_loop {r : α → α → Bool} (l : List α) {a : α} {g : List α}
-    {gs : List (List α)} (hgs' : [] ∉ gs)
+private theorem chain'_last_ne_head_groupBy_loop {r : α → α → Bool} (l : List α) {a : α}
+    {g : List α} {gs : List (List α)} (hgs' : [] ∉ gs)
     (hgs : gs.Chain' (fun b a ↦ ∃ ha hb, r (a.getLast ha) (b.head hb) = false))
     (hga : ∀ m ∈ gs.head?, ∃ ha hb, r (m.getLast ha) ((g.reverse ++ [a]).head hb) = false) :
     (groupBy.loop r l a g gs).Chain' (fun a b ↦ ∃ ha hb, r (a.getLast ha) (b.head hb) = false) := by
