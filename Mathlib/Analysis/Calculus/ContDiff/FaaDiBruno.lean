@@ -8,8 +8,60 @@ import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
 
 /-!
-# Faa Di Bruno formula
+# Faa di Bruno formula
 
+The Faa di Bruno formula gives the iterated derivative of `g ∘ f` in terms of those of
+`g` and `f`. It is expressed in terms of partitions `I` of `{1, ..., n}`. For such a
+partition, denote by `k` its number of parts, write the parts as `I₁, ..., Iₖ` ordered so
+that `max I₁ < ... < max Iₖ`, and let `iₘ` be the number of elements of `Iₘ`. Then
+`D^n (g ∘ f) (x) (v_1, ..., v_n) =
+  ∑_{I partition of {1, ..., n}} D^k g (f x) (D^{i₁} f (x) (v_{I₁}), ..., D^{iₖ} f (x) (v_{Iₖ}))`
+where by `v_{Iₘ}` we mean the vectors `vᵢ` with indices in `Iₘ`.
+
+For instance, for `n = 2`, there are 2 partitions of `{1, 2}`, given by `{1} {2}` and `{1, 2}`,
+and therefore
+`D^2(g ∘ f) (x) (v₁, v₂) = D^2 g (f x) (Df (x) v₁, Df (x) v₂) + Dg (f x) (D^2f (x) (v₁, v₂))`.
+
+The formula is straightforward to prove by induction, as differentiating
+`D^k g (f x) (D^{i₁} f (x) (v_{I₁}), ..., D^{i_k} f (x) (v_{Iₖ}))` gives a sum with `k + 1` terms
+where one differentiates either `D^k g (f x)`, or one of the `D^{iₘ} f (x)`, amounting to
+adding to the partition `I` either a new atom `{0}` to its left, or extending `Iₘ` by adding `0`
+to it. In this way, one obtains bijectively all partitions of `{0, ..., n}`, and the proof can
+go on (up to relabelling).
+
+The main difficulty is to write down things in a precise language, namely to write
+`D^k g (f x) (D^{i₁} f (x) (v_{I₁}), ..., D^{iₖ} f (x) (v_{Iₖ}))` as a continuous multilinear maps
+of the `vᵢ`. For this, instead of working with partitions of `{1, ..., n}` and ordering their
+parts, we work with partitions in which the ordering is part of the data -- this is equivalent,
+but much more convenient to implement. We call these `OrderedFinpartition n`.
+
+## Main results
+
+Given `c : OrderedFinpartition n` and two formal multilinear series `q` and `p`, we
+define `c. q p` as an `n`-multilinear map given by the formula above,
+i.e., `(v₁, ..., vₙ) ↦ qₖ (p_{i₁} (v_{I₁}), ..., p_{iₖ} (v_{Iₖ}))`.
+
+Then, we define `q.taylorComp p` as a formal multilinear series whose `n`-th term is
+the sum of `c.compAlongOrderedFinpartition q p` over all ordered finpartitions of size `n`.
+
+Finally, we prove in `HasFTaylorSeriesUptoOn.comp` that, if two functions `g` and `f` have Taylor
+series up to `n` given by `q` and `p`, then `g ∘ f` also has a Taylor series,
+given by `q.taylorComp p`.
+
+## Implementation
+
+A first technical difficulty is to implement the extension process of `OrderedFinpartition`
+corresponding to adding a new atom, or appending an atom to an existing part, and defining the
+associated increasing parameterizations that show up in the definition
+of `compAlongOrderedFinpartition`.
+
+Then, one has to show that the ordered finpartitions thus
+obtained give exactly all ordered finpartitions of order `n+1`. For this, we define the inverse
+process (shrinking a finpartition of `n+1` by erasing `0`, either as an atom or from the part
+that contains it), and we show that these processes are inverse to each other, yielding an
+equivalence between `((c : OrderedFinpartition n) × Option (Fin c.length))`
+and `OrderedFinpartition (n + 1)`. This equivalence shows up prominently in the inductive proof
+of Faa di Bruno formula to identify the sums that show up.
 -/
 
 noncomputable section
@@ -45,6 +97,8 @@ structure OrderedFinpartition (n : ℕ) where
   cover : ⋃ m, range (emb m) = univ
 
 namespace OrderedFinpartition
+
+/-! ### Basic API for ordered finpartitions -/
 
 /-- The ordered finpartition of `Fin n` into singletons. -/
 @[simps] def atomic (n : ℕ) : OrderedFinpartition n where
@@ -128,6 +182,19 @@ noncomputable def invEmbedding (j : Fin n) :
     c.emb (c.index j) (c.invEmbedding j) = j :=
   (c.exists_inverse j).choose_spec
 
+/-- An ordered finpartition gives an equivalence between `Fin n` and the disjoint union of the
+parts, each of them parameterized by `Fin (c.partSize i)`. -/
+noncomputable def equivSigma : ((i : Fin c.length) × Fin (c.partSize i)) ≃ Fin n where
+  toFun p := c.emb p.1 p.2
+  invFun i := ⟨c.index i, c.invEmbedding i⟩
+  right_inv _ := by simp
+  left_inv _ := by apply c.emb_injective; simp
+
+@[to_additive] lemma prod_sigma_eq_prod {α : Type*} [CommMonoid α] (v : Fin n → α) :
+    ∏ (m : Fin c.length), ∏ (r : Fin (c.partSize m)), v (c.emb m r) = ∏ i, v i := by
+  rw [Finset.prod_sigma']
+  exact Fintype.prod_equiv c.equivSigma _ _ (fun p ↦ rfl)
+
 lemma length_pos (h : 0 < n) : 0 < c.length := Nat.zero_lt_of_lt (c.index ⟨0, h⟩).2
 
 lemma neZero_length [NeZero n] (c : OrderedFinpartition n) : NeZero (c.length) :=
@@ -142,6 +209,54 @@ lemma emb_zero [NeZero n] : c.emb (c.index 0) 0 = 0 := by
   apply le_antisymm _ (Fin.zero_le' _)
   conv_rhs => rw [← c.emb_invEmbedding 0]
   apply (c.emb_strictMono _).monotone (Fin.zero_le' _)
+
+lemma partSize_eq_one_of_range_emb_eq_singleton
+    (c : OrderedFinpartition n) {i : Fin c.length} {j : Fin n}
+    (hc : range (c.emb i) = {j}) :
+    c.partSize i = 1 := by
+  have : Fintype.card (range (c.emb i)) = Fintype.card (Fin (c.partSize i)) :=
+    card_range_of_injective (c.emb_strictMono i).injective
+  simpa [hc] using this.symm
+
+/-- If the left-most part is not `{0}`, then the part containing `0` has at least two elements:
+either because it's the left-most part, and then it's not just `0` by assumption, or because it's
+not the left-most part and then, by increasingness of maximal elements in parts, it contains
+a positive element. -/
+lemma one_lt_partSize_index_zero (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) ≠ {0}) :
+    1 < c.partSize (c.index 0) := by
+  have : c.partSize (c.index 0) = Nat.card (range (c.emb (c.index 0))) := by
+    rw [Nat.card_range_of_injective (c.emb_strictMono _).injective]; simp
+  rw [this]
+  rcases eq_or_ne (c.index 0) 0 with h | h
+  · rw [← h] at hc
+    have : {0} ⊂ range (c.emb (c.index 0)) := by
+      apply ssubset_of_subset_of_ne ?_ hc.symm
+      simpa only [singleton_subset_iff, mem_range] using ⟨0, emb_zero c⟩
+    simpa using Set.Finite.card_lt_card (finite_range _) this
+  · apply one_lt_two.trans_le
+    have : {c.emb (c.index 0) 0,
+        c.emb (c.index 0) ⟨c.partSize (c.index 0) - 1, Nat.sub_one_lt_of_lt (c.partSize_pos _)⟩}
+          ⊆ range (c.emb (c.index 0)) := by simp [insert_subset]
+    simp [emb_zero] at this
+    convert Nat.card_mono Subtype.finite this
+    simp only [Nat.card_eq_fintype_card, Fintype.card_ofFinset, toFinset_singleton]
+    apply (Finset.card_pair ?_).symm
+    exact ((Fin.zero_le _).trans_lt (c.parts_strictMono ((pos_iff_ne_zero' (c.index 0)).mpr h))).ne
+
+/-!
+### Extending and shrinking ordered finpartitions
+
+We show how an ordered finpartition can be extended to the left, either by adding a new atomic
+part (in `extendLeft`) or adding the new element to an existing part (in `extendMiddle`).
+Conversely, one can shrink a finpartition by deleting the element to the left, with a different
+behavior if it was an atomic part (in `eraseLeft`, in which case the number of parts decreases by
+one) or if it belonged to a non-atomic part (in `eraseMiddle`, in which case the number of parts
+stays the same).
+
+These operations are inverse to each other, giving rise to an equivalence between
+`((c : OrderedFinpartition n) × Option (Fin c.length))` and `OrderedFinpartition (n + 1)`
+called `OrderedFinPartion.extendEquiv`.
+-/
 
 /-- Extend an ordered partition of `n` entries, by adding a new singleton part to the left. -/
 def extendLeft (c : OrderedFinpartition n) : OrderedFinpartition (n + 1) where
@@ -321,14 +436,6 @@ def extend (c : OrderedFinpartition n) (i : Option (Fin c.length)) : OrderedFinp
   | none => c.extendLeft
   | some i => c.extendMiddle i
 
-lemma cast_strictMono {k l : ℕ} (h : k = l) : StrictMono (Fin.cast h) := fun {_ _} h ↦ h
-
-lemma cast_injective {k l : ℕ} (h : k = l) : Injective (Fin.cast h) :=
-  (cast_strictMono h).injective
-
-@[simp] lemma _root_.Fin.cast_eq_zero {k l : ℕ} [NeZero k] [NeZero l]
-    (h : k = l) (x : Fin k) : Fin.cast h x = 0 ↔ x = 0 := by simp [← val_eq_val]
-
 /-- Given an ordered finpartition of `n+1`, with a leftmost atom equal to `{0}`, remove this
 atom to form an ordered finpartition of `n`. -/
 def eraseLeft (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) = {0}) :
@@ -376,55 +483,13 @@ def eraseLeft (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) = {0}) :
     · simp
     · simp [Fin.heq_ext_iff]
 
-lemma partSize_eq_one_of_range_emb_eq_singleton
-    (c : OrderedFinpartition n) {i : Fin c.length} {j : Fin n}
-    (hc : range (c.emb i) = {j}) :
-    c.partSize i = 1 := by
-  have : Fintype.card (range (c.emb i)) = Fintype.card (Fin (c.partSize i)) :=
-    card_range_of_injective (c.emb_strictMono i).injective
-  simpa [hc] using this.symm
-
-lemma apply_eq_of_range_eq_singleton {α β : Type*} {f : α → β} {b : β} (h : range f = {b}) (a : α) :
-    f a = b := by
-  simpa [h] using mem_range_self (f := f) a
-
-@[simp] lemma Nat.card_univ {α : Type*} : Nat.card (univ : Set α) = Nat.card α :=
-  Nat.card_congr (Equiv.Set.univ α)
-
-lemma Nat.card_range_of_injective {α β : Type*} {f : α → β} (hf : Injective f) :
-    Nat.card (range f) = Nat.card α := by
-  rw [← Nat.card_preimage_of_injective hf le_rfl]
-  simp
-
-lemma one_lt_partSize_index_zero (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) ≠ {0}) :
-    1 < c.partSize (c.index 0) := by
-  have : c.partSize (c.index 0) = Nat.card (range (c.emb (c.index 0))) := by
-    rw [Nat.card_range_of_injective (c.emb_strictMono _).injective]; simp
-  rw [this]
-  rcases eq_or_ne (c.index 0) 0 with h | h
-  · rw [← h] at hc
-    have : {0} ⊂ range (c.emb (c.index 0)) := by
-      apply ssubset_of_subset_of_ne ?_ hc.symm
-      simpa only [singleton_subset_iff, mem_range] using ⟨0, emb_zero c⟩
-    simpa using Set.Finite.card_lt_card (finite_range _) this
-  · apply one_lt_two.trans_le
-    have : {c.emb (c.index 0) 0,
-        c.emb (c.index 0) ⟨c.partSize (c.index 0) - 1, Nat.sub_one_lt_of_lt (c.partSize_pos _)⟩}
-          ⊆ range (c.emb (c.index 0)) := by simp [insert_subset]
-    simp [emb_zero] at this
-    convert Nat.card_mono Subtype.finite this
-    simp only [Nat.card_eq_fintype_card, Fintype.card_ofFinset, toFinset_singleton]
-    apply (Finset.card_pair ?_).symm
-    exact ((Fin.zero_le _).trans_lt (c.parts_strictMono ((pos_iff_ne_zero' (c.index 0)).mpr h))).ne
-
 /-- Given an ordered finpartition of `n+1`, with a leftmost atom different from `{0}`, remove `{0}`
 from the atom that contains it, to form an ordered finpartition of `n`. -/
 def eraseMiddle (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) ≠ {0}) :
     OrderedFinpartition n where
   length := c.length
   partSize := update c.partSize (c.index 0) (c.partSize (c.index 0) - 1)
-  partSize_pos := by
-    intro i
+  partSize_pos i := by
     rcases eq_or_ne i (c.index 0) with rfl | hi
     · simpa using c.one_lt_partSize_index_zero hc
     · simp only [ne_eq, hi, not_false_eq_true, update_noteq]
@@ -529,22 +594,13 @@ def eraseMiddle (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) ≠ {0})
         simp [hi]
       exact ⟨i, Fin.cast A.symm j, by simp [hi, hij]⟩
 
-theorem _root_.Fin.val_eq_val_of_heq {k l : ℕ} {i : Fin k} {j : Fin l} (h : HEq i j) :
-    (i : ℕ) = (j : ℕ) := by
-  have : Fintype.card (Fin k) = Fintype.card (Fin l) := by simp [type_eq_of_heq h]
-  exact (Fin.heq_ext_iff (by simpa)).1 h
-
-@[simp] theorem Fin.cast_eq_zero {k l : ℕ} [NeZero k] [NeZero l]
-    (h : k = l) (x : Fin k) : Fin.cast h x = 0 ↔ x = 0 :=
-  eq_iff_eq_of_cmp_eq_cmp rfl
-
 open Classical in
 /-- Extending the ordered partitions of `Fin n` bijects with the ordered partitions
 of `Fin (n+1)`. -/
 def extendEquiv (n : ℕ) :
-     ((i : OrderedFinpartition n) × Option (Fin i.length)) ≃ OrderedFinpartition (n + 1) where
-  toFun := fun c ↦ c.1.extend c.2
-  invFun := fun c ↦ if h : range (c.emb 0) = {0} then ⟨c.eraseLeft h, none⟩ else
+     ((c : OrderedFinpartition n) × Option (Fin c.length)) ≃ OrderedFinpartition (n + 1) where
+  toFun c := c.1.extend c.2
+  invFun c := if h : range (c.emb 0) = {0} then ⟨c.eraseLeft h, none⟩ else
     ⟨c.eraseMiddle h, some (c.index 0)⟩
   left_inv := by
     rintro ⟨c, o⟩
@@ -629,6 +685,8 @@ def extendEquiv (n : ℕ) :
               rfl
           · simp [hi]
 
+/-! ### Applying ordered finpartitions to multilinear maps -/
+
 /-- Given a formal multilinear series `p`, an ordered partition `c` of `n` and the index `i` of a
 block of `c`, we may define a function on `Fin n → E` by picking the variables in the `i`-th block
 of `n`, and applying the corresponding coefficient of `p` to these variables. This function is
@@ -641,20 +699,7 @@ lemma applyOrderedFinpartition_apply (p : ∀ (i : Fin c.length), E[×c.partSize
     (v : Fin n → E) :
   c.applyOrderedFinpartition p v = (fun m ↦ p m (v ∘ c.emb m)) := rfl
 
-/-- An ordered finpartition gives an equivalence between `Fin n` and the disjoint union of the
-parts, each of them parameterized by `Fin (c.partSize i)`. -/
-noncomputable def equivSigma : ((i : Fin c.length) × Fin (c.partSize i)) ≃ Fin n where
-  toFun p := c.emb p.1 p.2
-  invFun i := ⟨c.index i, c.invEmbedding i⟩
-  right_inv _ := by simp
-  left_inv _ := by apply c.emb_injective; simp
-
-@[to_additive] lemma prod_sigma_eq_prod {α : Type*} [CommMonoid α] (v : Fin n → α) :
-    ∏ (m : Fin c.length), ∏ (r : Fin (c.partSize m)), v (c.emb m r) = ∏ i, v i := by
-  rw [Finset.prod_sigma']
-  exact Fintype.prod_equiv c.equivSigma _ _ (fun p ↦ rfl)
-
-/-- Technical lemma stating how `p.applyOrderedFinpartition` commutes with updating variables. This
+/-- Technical lemma stating how `c.applyOrderedFinpartition` commutes with updating variables. This
 will be the key point to show that functions constructed from `applyOrderedFinpartition` retain
 multilinearity. -/
 theorem applyOrderedFinpartition_update_right
@@ -752,7 +797,6 @@ noncomputable def compAlongOrderedFinpartitionL :
   apply (f.le_opNorm _).trans
   rw [mul_assoc, ← c.prod_sigma_eq_prod, ← Finset.prod_mul_distrib]
   gcongr with m _
-  · exact fun i _ ↦ by positivity
   exact (p m).le_opNorm _
 
 @[simp] lemma compAlongOrderedFinpartitionL_apply
@@ -762,7 +806,7 @@ noncomputable def compAlongOrderedFinpartitionL :
 
 end OrderedFinpartition
 
-
+/-! ### The Faa di Bruno formula -/
 
 namespace FormalMultilinearSeries
 
@@ -786,8 +830,8 @@ theorem compAlongOrderedFinpartition_apply {n : ℕ} (q : FormalMultilinearSerie
 composition is defined to be the sum of `q.compAlongOrderedFinpartition p c` over all
 ordered partitions of `n`. In other words, this term (as a multilinear function applied to
 `v_0, ..., v_{n-1}`) is
-`∑'_{k} ∑'_{I_1 ⊔ ... ⊔ I_k = {0, ..., n-1}} qₖ (p_{i_1} (...), ..., p_{i_k} (...))`, where
-`i_m` is the size of `I_m` and one puts all variables of `I_m` as arguments to `p_{i_m}`, in
+`∑'_{k} ∑'_{I_1 ⊔ ... ⊔ I_k = {0, ..., n-1}} qₖ (p_{i₁} (...), ..., p_{iₖ} (...))`, where
+`i_m` is the size of `I_m` and one puts all variables of `I_m` as arguments to `p_{iₘ}`, in
 increasing order. The sets `I_1, ..., I_k` are ordered so that `max I_1 < max I_2 < ... < max I_k`.
 
 This definition is chosen so that the `n`-th derivative of `g ∘ f` is the Taylor composition of
@@ -802,6 +846,20 @@ protected noncomputable def taylorComp
   fun n ↦ ∑ c : OrderedFinpartition n, q.compAlongOrderedFinpartition p c
 
 end FormalMultilinearSeries
+
+theorem analyticWithinOn_taylorComp
+    (hq : ∀ (n : ℕ), AnalyticWithinOn 𝕜 (fun x ↦ q x n) t)
+    (hp : ∀ n, AnalyticWithinOn 𝕜 (fun x ↦ p x n) s) {f : E → F}
+    (hf : AnalyticWithinOn 𝕜 f s) (h : MapsTo f s t) (n : ℕ) :
+    AnalyticWithinOn 𝕜 (fun x ↦ (q (f x)).taylorComp (p x) n) s := by
+  apply Finset.analyticWithinOn_sum _ (fun c _ ↦ ?_)
+  let B := c.compAlongOrderedFinpartitionL 𝕜 E F G
+  change AnalyticWithinOn 𝕜
+    ((fun p ↦ B p.1 p.2) ∘ (fun x ↦ (q (f x) c.length, fun m ↦ p x (c.partSize m)))) s
+  apply B.analyticOn_uncurry_of_multilinear.comp_analyticWithinOn ?_ (mapsTo_univ _ _)
+  apply AnalyticWithinOn.prod
+  · exact (hq c.length).comp hf h
+  · exact AnalyticWithinOn.pi (fun i ↦ hp _)
 
 open OrderedFinpartition
 
@@ -847,7 +905,9 @@ lemma faaDiBruno_aux2 {m : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
     apply FormalMultilinearSeries.congr _ (by simp [hij])
     simp
 
-theorem faaDiBruno {n : ℕ∞} {g : F → G} {f : E → F}
+/-- *Faa di Bruno* formula: If two functions `g` and `f` have Taylor series up to `n` given by
+`q` and `p`, then `g ∘ f` also has a Taylor series, given by `q.taylorComp p`. -/
+theorem HasFTaylorSeriesUptoOn.comp {n : ℕ∞} {g : F → G} {f : E → F}
     (hg : HasFTaylorSeriesUpToOn n g q t) (hf : HasFTaylorSeriesUpToOn n f p s) (h : MapsTo f s t) :
     HasFTaylorSeriesUpToOn n (g ∘ f) (fun x ↦ (q (f x)).taylorComp (p x)) s := by
   classical
@@ -898,19 +958,3 @@ theorem faaDiBruno {n : ℕ∞} {g : F → G} {f : E → F}
     · apply continuousOn_pi.2 (fun i ↦ ?_)
       have : (c.partSize i : ℕ∞) ≤ m := by exact_mod_cast OrderedFinpartition.partSize_le c i
       exact hf.cont _ (this.trans hm)
-
-theorem analyticWithinOn_taylorComp
-    (hq : ∀ (n : ℕ), AnalyticWithinOn 𝕜 (fun x ↦ q x n) t)
-    (hp : ∀ n, AnalyticWithinOn 𝕜 (fun x ↦ p x n) s) {f : E → F}
-    (hf : AnalyticWithinOn 𝕜 f s) (h : MapsTo f s t) (n : ℕ) :
-    AnalyticWithinOn 𝕜 (fun x ↦ (q (f x)).taylorComp (p x) n) s := by
-  apply Finset.analyticWithinOn_sum _ (fun c _ ↦ ?_)
-  let B := c.compAlongOrderedFinpartitionL 𝕜 E F G
-  change AnalyticWithinOn 𝕜
-    ((fun p ↦ B p.1 p.2) ∘ (fun x ↦ (q (f x) c.length, fun m ↦ p x (c.partSize m)))) s
-  apply B.analyticOn_uncurry_of_multilinear.comp_analyticWithinOn ?_ (mapsTo_univ _ _)
-  apply AnalyticWithinOn.prod
-  · exact (hq c.length).comp hf h
-  · exact AnalyticWithinOn.pi (fun i ↦ hp _)
-
-#lint
