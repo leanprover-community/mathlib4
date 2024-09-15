@@ -54,7 +54,7 @@ of `n`.
   blocks of `c`.
 * `join_splitWrtComposition` states that splitting a list and then joining it gives back the
   original list.
-* `joinSplitWrtComposition_join` states that joining a list of lists, and then splitting it back
+* `splitWrtComposition_join` states that joining a list of lists, and then splitting it back
   according to the right composition, gives back the original list of lists.
 
 We turn to the second viewpoint on compositions, that we realize as a finset of `Fin (n+1)`.
