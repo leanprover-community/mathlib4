@@ -35,18 +35,10 @@ open Elab Meta Term
 
 variable {α : Type*} {a a' a₁ a₂ b b' b₁ b₂ c : α}
 
-theorem pf_add_c [Add α] (p : a = b) (c : α) : a + c = b + c := p ▸ rfl
-theorem c_add_pf [Add α] (p : b = c) (a : α) : a + b = a + c := p ▸ rfl
 theorem add_pf [Add α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ + a₂ = b₁ + b₂ := p₁ ▸ p₂ ▸ rfl
-theorem pf_sub_c [Sub α] (p : a = b) (c : α) : a - c = b - c := p ▸ rfl
-theorem c_sub_pf [Sub α] (p : b = c) (a : α) : a - b = a - c := p ▸ rfl
 theorem pf_mul_c [Mul α] (p : a = b) (c : α) : a * c = b * c := p ▸ rfl
 theorem c_mul_pf [Mul α] (p : b = c) (a : α) : a * b = a * c := p ▸ rfl
-theorem mul_pf [Mul α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ * a₂ = b₁ * b₂ := p₁ ▸ p₂ ▸ rfl
-theorem inv_pf [Inv α] (p : (a:α) = b) : a⁻¹ = b⁻¹ := p ▸ rfl
 theorem pf_div_c [Div α] (p : a = b) (c : α) : a / c = b / c := p ▸ rfl
-theorem c_div_pf [Div α] (p : b = c) (a : α) : a / b = a / c := p ▸ rfl
-theorem div_pf [Div α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ / a₂ = b₁ / b₂ := p₁ ▸ p₂ ▸ rfl
 
 /-- Result of `expandLinearCombo`, either an equality proof or a value. -/
 inductive Expanded
@@ -69,35 +61,40 @@ partial def expandLinearCombo (ty : Expr) (stx : Syntax.Term) : TermElabM Expand
   | `($e₁ + $e₂) => do
     match ← expandLinearCombo ty e₁, ← expandLinearCombo ty e₂ with
     | .const c₁, .const c₂ => .const <$> ``($c₁ + $c₂)
-    | .proof p₁, .const c₂ => .proof <$> ``(pf_add_c $p₁ $c₂)
-    | .const c₁, .proof p₂ => .proof <$> ``(c_add_pf $p₂ $c₁)
     | .proof p₁, .proof p₂ => .proof <$> ``(add_pf $p₁ $p₂)
+    | .proof p, .const c | .const c, .proof p =>
+      logWarningAt c "this constant has no effect on the linear combination; it can be dropped \
+        from the term"
+      pure (.proof p)
   | `($e₁ - $e₂) => do
     match ← expandLinearCombo ty e₁, ← expandLinearCombo ty e₂ with
     | .const c₁, .const c₂ => .const <$> ``($c₁ - $c₂)
-    | .proof p₁, .const c₂ => .proof <$> ``(pf_sub_c $p₁ $c₂)
-    | .const c₁, .proof p₂ => .proof <$> ``(c_sub_pf $p₂ $c₁)
+    | .proof p, .const c =>
+      logWarningAt c "this constant has no effect on the linear combination; it can be dropped \
+        from the term"
+      pure (.proof p)
+    | .const c, .proof p =>
+      logWarningAt c "this constant has no effect on the linear combination; it can be dropped \
+        from the term"
+      .proof <$> ``(Eq.symm $p)
     | .proof p₁, .proof p₂ => .proof <$> ``(add_pf $p₁ (Eq.symm $p₂))
   | `(-$e) => do
     match ← expandLinearCombo ty e with
     | .const c => .const <$> `(-$c)
     | .proof p => .proof <$> ``(Eq.symm $p)
-  | `($e₁ * $e₂) => do
+  | `($e₁ *%$tk $e₂) => do
     match ← expandLinearCombo ty e₁, ← expandLinearCombo ty e₂ with
     | .const c₁, .const c₂ => .const <$> ``($c₁ * $c₂)
     | .proof p₁, .const c₂ => .proof <$> ``(pf_mul_c $p₁ $c₂)
     | .const c₁, .proof p₂ => .proof <$> ``(c_mul_pf $p₂ $c₁)
-    | .proof p₁, .proof p₂ => .proof <$> ``(mul_pf $p₁ $p₂)
-  | `($e⁻¹) => do
-    match ← expandLinearCombo ty e with
-    | .const c => .const <$> `($c⁻¹)
-    | .proof p => .proof <$> ``(inv_pf $p)
-  | `($e₁ / $e₂) => do
+    | .proof _, .proof _ =>
+      throwErrorAt tk "'linear_combination' supports only linear operations"
+  | `($e₁ /%$tk $e₂) => do
     match ← expandLinearCombo ty e₁, ← expandLinearCombo ty e₂ with
     | .const c₁, .const c₂ => .const <$> ``($c₁ / $c₂)
     | .proof p₁, .const c₂ => .proof <$> ``(pf_div_c $p₁ $c₂)
-    | .const c₁, .proof p₂ => .proof <$> ``(c_div_pf $p₂ $c₁)
-    | .proof p₁, .proof p₂ => .proof <$> ``(div_pf $p₁ $p₂)
+    | _, .proof _ =>
+      throwErrorAt tk "'linear_combination' supports only linear operations"
   | e =>
     -- We have the expected type from the goal, so we can fully synthesize this leaf node.
     withSynthesize do
@@ -130,7 +127,10 @@ def elabLinearCombination (tk : Syntax)
   | none => `(Eq.refl 0)
   | some e =>
     match ← expandLinearCombo ty e with
-    | .const _ => throwError "To run 'linear_combination' without hypotheses, call it without input"
+    | .const c =>
+      logWarningAt c "this constant has no effect on the linear combination; it can be dropped \
+        from the term"
+      `(Eq.refl 0)
     | .proof p => pure p
   let norm := norm?.getD (Unhygienic.run <| withRef tk `(tactic| ring1))
   let lem : Ident ← mkIdent <$> do
@@ -169,8 +169,8 @@ syntax expStx := atomic(" (" &"exp" " := ") withoutPosition(num) ")"
   of a list of equalities and subtracting it from the target.
   The tactic will create a linear
   combination by adding the equalities together from left to right, so the order
-  of the input hypotheses does matter.  If the `normalize` field of the
-  configuration is set to false, then the tactic will simply set the user up to
+  of the input hypotheses does matter.  If the `norm` field of the
+  tactic is set to `skip`, then the tactic will simply set the user up to
   prove their target using the linear combination instead of normalizing the subtraction.
 
 Note: The left and right sides of all the equalities should have the same type `α`, and the
