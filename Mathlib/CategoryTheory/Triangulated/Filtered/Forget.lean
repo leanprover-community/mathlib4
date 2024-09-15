@@ -638,13 +638,48 @@ lemma adj_left_extended (n : ℕ) : ∀ (X Y : C) (m : ℤ) [IsLE X m] [IsGE Y (
 
 /- Lemmas about omega and shifting.-/
 
+#check shiftFunctorComm
+
 lemma shift_omega_mono {X Y : C} (f : X ⟶ Y) (n m : ℤ) (hf : ∀ (Z : C) (hZ : IsGE Z n),
     Mono ((preadditiveYoneda.obj Z).map f.op)) : ∀ (Z : C) (hZ : IsGE Z n),
-    Mono ((preadditiveYoneda.obj Z).map (f⟦m⟧').op) := sorry
+    Mono ((preadditiveYoneda.obj Z).map (f⟦m⟧').op) := by
+  intro Z hZ
+  set e := shiftNegShift Z m
+  have hf := hf (Z⟦-m⟧) inferInstance
+  rw [AddCommGrp.mono_iff_ker_eq_bot, AddSubgroup.eq_bot_iff_forall] at hf ⊢
+  intro g hg
+  change f⟦m⟧' ≫ g = 0 at hg
+  rw [← cancel_mono e.inv, zero_comp] at hg ⊢
+  rw [assoc] at hg
+  obtain ⟨g', hg'⟩ := Functor.Full.map_surjective (F := shiftFunctor C m) (g ≫ e.inv)
+  rw [← hg'] at hg ⊢
+  rw [← Functor.map_comp] at hg
+  have heq : (0 : X ⟶ Z⟦-m⟧)⟦m⟧' = 0 := by rw [Functor.map_zero]
+  rw [← heq] at hg
+  rw [hf g' (Functor.Faithful.map_injective (F := shiftFunctor C m) hg), Functor.map_zero]
 
 lemma shift_omega_epi {X Y : C} (f : X ⟶ Y) (n m : ℤ) (hf : ∀ (Z : C) (hZ : IsGE Z n),
     Epi ((preadditiveYoneda.obj Z).map f.op)) : ∀ (Z : C) (hZ : IsGE Z n),
-    Epi ((preadditiveYoneda.obj Z).map (f⟦m⟧').op) := sorry
+    Epi ((preadditiveYoneda.obj Z).map (f⟦m⟧').op) := by
+  intro Z hZ
+  set e := shiftNegShift Z m
+  have hf := hf (Z⟦-m⟧) inferInstance
+  rw [AddCommGrp.epi_iff_range_eq_top, AddSubgroup.eq_top_iff'] at hf ⊢
+  intro g
+  change X⟦m⟧ ⟶ Z at g
+  rw [AddMonoidHom.mem_range]
+  obtain ⟨g', hg'⟩ := AddMonoidHom.mem_range.mp (hf ((shiftShiftNeg X m).inv ≫ g⟦-m⟧'))
+  change f ≫ g' = _ at hg'
+  existsi g'⟦m⟧' ≫ (shiftNegShift Z m).hom
+  change f⟦m⟧' ≫ g'⟦m⟧' ≫ _ = _
+  rw [← assoc, ← Functor.map_comp, hg', Functor.map_comp]
+  have := shift_equiv_triangle m X
+  rw [← cancel_mono (shiftNegShift ((shiftFunctor C m).obj X) m).inv, id_comp, assoc,
+    Iso.hom_inv_id, comp_id] at this
+  rw [this]
+  erw [← (shiftEquiv C m).counitIso.inv.naturality g]
+  simp only [Functor.id_obj, shiftEquiv'_inverse, shiftEquiv'_functor, Functor.comp_obj,
+    Functor.id_map, shiftEquiv'_counitIso, Iso.app_hom, assoc, Iso.inv_hom_id_app, comp_id]
 
 /- The functor forgetting filtrations on the subcategory of objects `X` such that `IsLE X 0`.-/
 
