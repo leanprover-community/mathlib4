@@ -503,11 +503,11 @@ theorem trans_eq_refl_iff_symm_eq {f : α ≃ β} {g : β ≃ α} :
   rw [trans_eq_refl_iff_eq_symm]
   exact ⟨fun h ↦ h ▸ rfl, fun h ↦ h ▸ rfl⟩
 
-theorem eq_symm_trans_eq_refl {f : α ≃ β} {g : β ≃ α} :
+theorem eq_symm_iff_trans_eq_refl {f : α ≃ β} {g : β ≃ α} :
     f = g.symm ↔ f.trans g = Equiv.refl α :=
   trans_eq_refl_iff_eq_symm.symm
 
-theorem symm_eq_trans_eq_refl_iff{f : α ≃ β} {g : β ≃ α} :
+theorem symm_eq_iff_trans_eq_refl {f : α ≃ β} {g : β ≃ α} :
     f.symm = g ↔ f.trans g = Equiv.refl α :=
   trans_eq_refl_iff_symm_eq.symm
 
