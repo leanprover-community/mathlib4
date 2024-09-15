@@ -536,25 +536,16 @@ namespace EllipticCurve
 
 variable {R : Type u} [CommRing R]
 
-section ext
-
-theorem ext' : Function.Injective (toWeierstrassCurve : EllipticCurve R → _)
+theorem toWeierstrassCurve_injective : Function.Injective (toWeierstrassCurve (R := R))
   | ⟨x1, _, x3⟩, ⟨y1, _, y3⟩, h => by
     change x1 = y1 at h
     congr
     exact Units.ext (by rw [x3, y3, h])
 
-variable {x y : EllipticCurve R}
-
-theorem ext_iff' : x = y ↔ x.toWeierstrassCurve = y.toWeierstrassCurve :=
-  ⟨fun h ↦ by rw [h], fun h ↦ EllipticCurve.ext' h⟩
-
 @[ext]
-theorem ext (h₁ : x.a₁ = y.a₁) (h₂ : x.a₂ = y.a₂) (h₃ : x.a₃ = y.a₃)
+theorem ext {x y : EllipticCurve R} (h₁ : x.a₁ = y.a₁) (h₂ : x.a₂ = y.a₂) (h₃ : x.a₃ = y.a₃)
     (h₄ : x.a₄ = y.a₄) (h₆ : x.a₆ = y.a₆) : x = y :=
-  ext' (WeierstrassCurve.ext h₁ h₂ h₃ h₄ h₆)
-
-end ext
+  toWeierstrassCurve_injective (WeierstrassCurve.ext h₁ h₂ h₃ h₄ h₆)
 
 variable (E : EllipticCurve R)
 
