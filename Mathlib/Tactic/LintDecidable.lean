@@ -49,9 +49,32 @@ but don't use this assumption in the type.
   errorsFound := "USES OF `Decidable` SHOULD BE REPLACED WITH `classical` IN THE PROOF."
   test declName := do
     if (← isAutoDecl declName) then return none
-    let names :=
-      if Name.isPrefixOf `Decidable declName then #[`Fintype, `Encodable]
-      else #[`Decidable, `DecidableEq, `DecidablePred, `Inhabited, `Fintype, `Encodable]
+    else if Name.isPrefixOf declName `Decidable then return none
+    let names := #[`Decidable, `DecidableEq, `DecidablePred, `Inhabited]
     return ← checkUnusedAssumptionInType (← getConstInfo declName) names
+
+/--
+Linter that checks for theorems that assume `[Fintype p]`,
+but don't use this assumption in the type.
+(Instead, `Finite p` can suffice, or the assumption can be fully removed.)
+-/
+@[env_linter] def finiteFintype : Linter where
+  noErrorsFound := "No uses of `Fintype` arguments should be replaced"
+  errorsFound := "USES OF `Fintype` SHOULD BE REPLACED WITH `Finite` (OR REMOVED)."
+  test declName := do
+    if (← isAutoDecl declName) then return none
+    return ← checkUnusedAssumptionInType (← getConstInfo declName) #[`Fintype]
+
+/--
+Linter that checks for theorems that assume `[Encodable p]`,
+but don't use this assumption in the type.
+(Instead, `Denumerable p` can suffice, or the assumption can be fully removed.)
+-/
+@[env_linter] def encodableDenumerable : Linter where
+  noErrorsFound := "No uses of `Encodable` arguments should be replaced"
+  errorsFound := "USES OF `Encodable` SHOULD BE REPLACED WITH `Denumerable` (OR REMOVED)."
+  test declName := do
+    if (← isAutoDecl declName) then return none
+    return ← checkUnusedAssumptionInType (← getConstInfo declName) #[`Encodable]
 
 end Std.Tactic.Lint
