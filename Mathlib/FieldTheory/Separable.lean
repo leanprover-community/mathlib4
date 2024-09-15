@@ -579,10 +579,10 @@ instance Algebra.isSeparable_self (F : Type*) [Field F] : Algebra.IsSeparable F 
     exact separable_X_sub_C⟩
 
 -- See note [lower instance priority]
-/-- A finite field extension in characteristic 0 is separable. -/
-instance (priority := 100) Algebra.IsSeparable.of_finite (F K : Type*) [Field F] [Field K]
-    [Algebra F K] [FiniteDimensional F K] [CharZero F] : Algebra.IsSeparable F K :=
-  ⟨fun x => (minpoly.irreducible <| .of_finite F x).separable⟩
+/-- An integral extension in characteristic 0 is separable. -/
+instance (priority := 100) Algebra.IsSeparable.of_integral (F K : Type*) [Field F] [Ring K]
+    [IsDomain K] [Algebra F K] [Algebra.IsIntegral F K] [CharZero F] : Algebra.IsSeparable F K :=
+  ⟨fun x => (minpoly.irreducible <| Algebra.IsIntegral.isIntegral x).separable⟩
 
 section IsSeparableTower
 

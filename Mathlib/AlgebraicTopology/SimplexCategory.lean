@@ -725,7 +725,7 @@ theorem eq_id_of_mono {x : SimplexCategory} (i : x ⟶ x) [Mono i] : i = 𝟙 _ 
   apply isIso_of_bijective
   dsimp
   rw [Fintype.bijective_iff_injective_and_card i.toOrderHom, ← mono_iff_injective,
-    eq_self_iff_true, and_true_iff]
+    eq_self_iff_true, and_true]
   infer_instance
 
 theorem eq_id_of_epi {x : SimplexCategory} (i : x ⟶ x) [Epi i] : i = 𝟙 _ := by
@@ -735,7 +735,7 @@ theorem eq_id_of_epi {x : SimplexCategory} (i : x ⟶ x) [Epi i] : i = 𝟙 _ :=
   apply isIso_of_bijective
   dsimp
   rw [Fintype.bijective_iff_surjective_and_card i.toOrderHom, ← epi_iff_surjective,
-    eq_self_iff_true, and_true_iff]
+    eq_self_iff_true, and_true]
   infer_instance
 
 theorem eq_σ_of_epi {n : ℕ} (θ : mk (n + 1) ⟶ mk n) [Epi θ] : ∃ i : Fin (n + 1), θ = σ i := by

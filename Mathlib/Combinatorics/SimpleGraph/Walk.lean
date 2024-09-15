@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Maps
+import Mathlib.Data.List.Lemmas
 
 /-!
 
@@ -499,6 +500,17 @@ theorem support_reverse {u v : V} (p : G.Walk u v) : p.reverse.support = p.suppo
 @[simp]
 theorem support_ne_nil {u v : V} (p : G.Walk u v) : p.support ≠ [] := by cases p <;> simp
 
+@[simp]
+theorem head_support {G : SimpleGraph V} {a b : V} (p : G.Walk a b) :
+    p.support.head (by simp) = a := by cases p <;> simp
+
+@[simp]
+theorem getLast_support {G : SimpleGraph V} {a b : V} (p : G.Walk a b) :
+    p.support.getLast (by simp) = b := by
+  induction p
+  · simp
+  · simpa
+
 theorem tail_support_append {u v w : V} (p : G.Walk u v) (p' : G.Walk v w) :
     (p.append p').support.tail = p.support.tail ++ p'.support.tail := by
   rw [support_append, List.tail_append_of_ne_nil _ _ (support_ne_nil _)]
@@ -548,7 +560,7 @@ theorem subset_support_append_left {V : Type u} {G : SimpleGraph V} {u v w : V}
 theorem subset_support_append_right {V : Type u} {G : SimpleGraph V} {u v w : V}
     (p : G.Walk u v) (q : G.Walk v w) : q.support ⊆ (p.append q).support := by
   intro h
-  simp (config := { contextual := true }) only [mem_support_append_iff, or_true_iff, imp_true_iff]
+  simp (config := { contextual := true }) only [mem_support_append_iff, or_true, imp_true_iff]
 
 theorem coe_support {u v : V} (p : G.Walk u v) :
     (p.support : Multiset V) = {u} + p.support.tail := by cases p <;> rfl
@@ -640,6 +652,21 @@ theorem map_fst_darts_append {u v : V} (p : G.Walk u v) :
 
 theorem map_fst_darts {u v : V} (p : G.Walk u v) : p.darts.map (·.fst) = p.support.dropLast := by
   simpa! using congr_arg List.dropLast (map_fst_darts_append p)
+
+@[simp]
+theorem head_darts_fst {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (hp : p.darts ≠ []) :
+    (p.darts.head hp).fst = a := by
+  cases p
+  · contradiction
+  · simp
+
+@[simp]
+theorem getLast_darts_snd {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (hp : p.darts ≠ []) :
+    (p.darts.getLast hp).snd = b := by
+  rw [← List.getLast_map (f := fun x : G.Dart ↦ x.snd)]
+  simp_rw [p.map_snd_darts, List.getLast_tail]
+  exact p.getLast_support
+  simpa
 
 @[simp]
 theorem edges_nil {u : V} : (nil : G.Walk u u).edges = [] := rfl
@@ -1174,7 +1201,7 @@ theorem map_injective_of_injective {f : G →g G'} (hinj : Function.Injective f)
     | cons _ _ =>
       simp only [map_cons, cons.injEq] at h
       cases hinj h.1
-      simp only [cons.injEq, heq_iff_eq, true_and_iff]
+      simp only [cons.injEq, heq_iff_eq, true_and]
       apply ih
       simpa using h.2
 
