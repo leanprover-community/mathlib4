@@ -470,7 +470,7 @@ end Complex
 
 namespace Real
 
-/-- The `Γ` function (of a real variable `s`). -/
+/-- The `Beta` function (of a real variables `a` and `b`). -/
 @[pp_nodot]
 def Beta (a b : ℝ) : ℝ :=
   (Complex.betaIntegral a b).re
