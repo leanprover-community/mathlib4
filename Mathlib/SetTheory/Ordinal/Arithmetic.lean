@@ -2379,7 +2379,7 @@ theorem add_le_of_forall_add_lt {a b c : Ordinal} (hb : 0 < b) (h : ∀ d < b, a
   exact (h _ hb).ne H
 
 theorem IsNormal.apply_omega {f : Ordinal.{u} → Ordinal.{v}} (hf : IsNormal f) :
-    ⨆ i : ℕ, f i = f ω := by rw [← iSup_natCast, hf.map_iSup]
+    ⨆ n : ℕ, f n = f ω := by rw [← iSup_natCast, hf.map_iSup]
 
 @[simp]
 theorem iSup_add_nat (o : Ordinal) : ⨆ n : ℕ, o + n = o + ω :=
