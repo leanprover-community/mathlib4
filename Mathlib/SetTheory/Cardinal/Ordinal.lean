@@ -236,8 +236,7 @@ def aleph'Equiv : Ordinal ≃ Cardinal :=
 
 For a version including finite cardinals, see `Cardinal.aleph'`. -/
 def aleph : Ordinal ↪o Cardinal :=
-  OrderEmbedding.ofMapLEIff
-    (fun o => aleph' (ω + o)) fun _ _=> aleph'_le.trans (add_le_add_iff_left ω)
+  (OrderEmbedding.addLeft ω).trans aleph'.toOrderEmbedding
 
 theorem aleph_eq_aleph' (o : Ordinal) : aleph o = aleph' (ω + o) :=
   rfl
