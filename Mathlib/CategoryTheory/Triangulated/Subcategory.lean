@@ -260,6 +260,8 @@ section
 
 variable (T : Triangle C) (hT : T ∈ distTriang C)
 
+include hT
+
 lemma ext₁ [ClosedUnderIsomorphisms S.P] (h₂ : S.P T.obj₂) (h₃ : S.P T.obj₃) :
     S.P T.obj₁ :=
   S.ext₂ _ (inv_rot_of_distTriang _ hT) (S.shift _ _ h₃) h₂

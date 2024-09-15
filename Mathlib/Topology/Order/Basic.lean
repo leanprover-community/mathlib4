@@ -144,8 +144,8 @@ hold everywhere. -/
 theorem tendsto_of_tendsto_of_tendsto_of_le_of_le [OrderTopology α] {f g h : β → α} {b : Filter β}
     {a : α} (hg : Tendsto g b (𝓝 a)) (hh : Tendsto h b (𝓝 a)) (hgf : g ≤ f) (hfh : f ≤ h) :
     Tendsto f b (𝓝 a) :=
-  tendsto_of_tendsto_of_tendsto_of_le_of_le' hg hh (eventually_of_forall hgf)
-    (eventually_of_forall hfh)
+  tendsto_of_tendsto_of_tendsto_of_le_of_le' hg hh (Eventually.of_forall hgf)
+    (Eventually.of_forall hfh)
 
 theorem nhds_order_unbounded [OrderTopology α] {a : α} (hu : ∃ u, a < u) (hl : ∃ l, l < a) :
     𝓝 a = ⨅ (l) (_ : l < a) (u) (_ : a < u), 𝓟 (Ioo l u) := by
@@ -320,11 +320,11 @@ theorem tendsto_nhds_bot_mono [TopologicalSpace β] [Preorder β] [OrderBot β] 
 
 theorem tendsto_nhds_top_mono' [TopologicalSpace β] [Preorder β] [OrderTop β] [OrderTopology β]
     {l : Filter α} {f g : α → β} (hf : Tendsto f l (𝓝 ⊤)) (hg : f ≤ g) : Tendsto g l (𝓝 ⊤) :=
-  tendsto_nhds_top_mono hf (eventually_of_forall hg)
+  tendsto_nhds_top_mono hf (Eventually.of_forall hg)
 
 theorem tendsto_nhds_bot_mono' [TopologicalSpace β] [Preorder β] [OrderBot β] [OrderTopology β]
     {l : Filter α} {f g : α → β} (hf : Tendsto f l (𝓝 ⊥)) (hg : g ≤ f) : Tendsto g l (𝓝 ⊥) :=
-  tendsto_nhds_bot_mono hf (eventually_of_forall hg)
+  tendsto_nhds_bot_mono hf (Eventually.of_forall hg)
 
 section LinearOrder
 

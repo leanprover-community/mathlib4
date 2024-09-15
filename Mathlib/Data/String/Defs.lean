@@ -3,9 +3,8 @@ Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Keeley Hoek, Floris van Doorn, Chris Bailey
 -/
-import Batteries.Data.List.Basic
-import Batteries.Data.String.Basic
 
+import Mathlib.Init
 /-!
 # Definitions for `String`
 
@@ -43,8 +42,6 @@ def IsSuffix : String → String → Prop
 then reassembles the string by intercalating the separator token `c` over the mapped tokens. -/
 def mapTokens (c : Char) (f : String → String) : String → String :=
   intercalate (singleton c) ∘ List.map f ∘ (·.split (· = c))
-
-@[deprecated (since := "2024-06-04")] alias getRest := dropPrefix?
 
 /-- Produce the head character from the string `s`, if `s` is not empty, otherwise `'A'`. -/
 def head (s : String) : Char :=

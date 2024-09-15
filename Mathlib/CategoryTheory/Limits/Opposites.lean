@@ -322,11 +322,11 @@ instance : HasProduct (op <| Z ·) := hasLimitOfIso
     (Discrete.opposite α).inverse ⋙ (Discrete.functor Z).op ≅
     Discrete.functor (op <| Z ·))
 
-/-- A `Cofan` gives a `Fan` in the opposite category.  -/
+/-- A `Cofan` gives a `Fan` in the opposite category. -/
 @[simp]
 def Cofan.op (c : Cofan Z) : Fan (op <| Z ·) := Fan.mk _ (fun a ↦ (c.inj a).op)
 
-/-- If a `Cofan` is colimit, then its opposite is limit. -/
+/-- If a `Cofan` is colimit, then its opposite is limit. -/
 def Cofan.IsColimit.op {c : Cofan Z} (hc : IsColimit c) : IsLimit c.op := by
   let e : Discrete.functor (Opposite.op <| Z ·) ≅ (Discrete.opposite α).inverse ⋙
     (Discrete.functor Z).op := Discrete.natIso (fun _ ↦ Iso.refl _)
@@ -422,7 +422,7 @@ instance : HasCoproduct (op <| Z ·) := hasColimitOfIso
 @[simp]
 def Fan.op (f : Fan Z) : Cofan (op <| Z ·) := Cofan.mk _ (fun a ↦ (f.proj a).op)
 
-/-- If a `Fan` is limit, then its opposite is colimit. -/
+/-- If a `Fan` is limit, then its opposite is colimit. -/
 def Fan.IsLimit.op {f : Fan Z} (hf : IsLimit f) : IsColimit f.op := by
   let e : Discrete.functor (Opposite.op <| Z ·) ≅ (Discrete.opposite α).inverse ⋙
     (Discrete.functor Z).op := Discrete.natIso (fun _ ↦ Iso.refl _)
@@ -495,6 +495,70 @@ theorem opProductIsoCoproduct_inv_comp_lift [HasProduct Z] {X : C} (π : (a : α
   · ext; simp [Sigma.desc, coproductIsCoproduct]
 
 end OppositeProducts
+
+section BinaryProducts
+
+variable {A B : C} [HasBinaryProduct A B]
+
+instance : HasBinaryCoproduct (op A) (op B) := by
+  have : HasProduct fun x ↦ (WalkingPair.casesOn x A B : C) := ‹_›
+  show HasCoproduct _
+  convert inferInstanceAs (HasCoproduct fun x ↦ op (WalkingPair.casesOn x A B : C)) with x
+  cases x <;> rfl
+
+variable (A B) in
+/--
+The canonical isomorphism from the opposite of the binary product to the coproduct in the opposite
+category.
+-/
+def opProdIsoCoprod : op (A ⨯ B) ≅ (op A ⨿ op B) where
+  hom := (prod.lift coprod.inl.unop coprod.inr.unop).op
+  inv := coprod.desc prod.fst.op prod.snd.op
+  hom_inv_id := by
+    apply Quiver.Hom.unop_inj
+    ext <;>
+    · simp only [limit.lift_π]
+      apply Quiver.Hom.op_inj
+      simp
+  inv_hom_id := by
+    ext <;>
+    · simp only [colimit.ι_desc_assoc]
+      apply Quiver.Hom.unop_inj
+      simp
+
+@[reassoc (attr := simp)]
+lemma fst_opProdIsoCoprod_hom : prod.fst.op ≫ (opProdIsoCoprod A B).hom = coprod.inl := by
+  rw [opProdIsoCoprod, ← op_comp, prod.lift_fst, Quiver.Hom.op_unop]
+
+@[reassoc (attr := simp)]
+lemma snd_opProdIsoCoprod_hom : prod.snd.op ≫ (opProdIsoCoprod A B).hom = coprod.inr := by
+  rw [opProdIsoCoprod, ← op_comp, prod.lift_snd, Quiver.Hom.op_unop]
+
+@[reassoc (attr := simp)]
+lemma inl_opProdIsoCoprod_inv : coprod.inl ≫ (opProdIsoCoprod A B).inv = prod.fst.op := by
+  rw [Iso.comp_inv_eq, fst_opProdIsoCoprod_hom]
+
+@[reassoc (attr := simp)]
+lemma inr_opProdIsoCoprod_inv : coprod.inr ≫ (opProdIsoCoprod A B).inv = prod.snd.op := by
+  rw [Iso.comp_inv_eq, snd_opProdIsoCoprod_hom]
+
+@[reassoc (attr := simp)]
+lemma opProdIsoCoprod_hom_fst : (opProdIsoCoprod A B).hom.unop ≫ prod.fst = coprod.inl.unop := by
+  simp [opProdIsoCoprod]
+
+@[reassoc (attr := simp)]
+lemma opProdIsoCoprod_hom_snd : (opProdIsoCoprod A B).hom.unop ≫ prod.snd = coprod.inr.unop := by
+  simp [opProdIsoCoprod]
+
+@[reassoc (attr := simp)]
+lemma opProdIsoCoprod_inv_inl : (opProdIsoCoprod A B).inv.unop ≫ coprod.inl.unop = prod.fst := by
+  rw [← unop_comp, inl_opProdIsoCoprod_inv, Quiver.Hom.unop_op]
+
+@[reassoc (attr := simp)]
+lemma opProdIsoCoprod_inv_inr : (opProdIsoCoprod A B).inv.unop ≫ coprod.inr.unop = prod.snd := by
+  rw [← unop_comp, inr_opProdIsoCoprod_inv, Quiver.Hom.unop_op]
+
+end BinaryProducts
 
 instance hasEqualizers_opposite [HasCoequalizers C] : HasEqualizers Cᵒᵖ := by
   haveI : HasColimitsOfShape WalkingParallelPairᵒᵖ C :=

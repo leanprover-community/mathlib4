@@ -17,7 +17,7 @@ open List
 
 variable {α : Type u} {β : α → Type v}
 
-/-! ### Multisets of sigma types-/
+/-! ### Multisets of sigma types -/
 
 namespace Multiset
 
@@ -143,9 +143,6 @@ theorem induction_on₃ {C : Finmap β → Finmap β → Finmap β → Prop} (s�
 theorem ext : ∀ {s t : Finmap β}, s.entries = t.entries → s = t
   | ⟨l₁, h₁⟩, ⟨l₂, _⟩, H => by congr
 
-protected theorem ext_iff {s t : Finmap β} : s = t ↔ s.entries = t.entries :=
-  ⟨congr_arg _, ext⟩
-
 @[simp]
 theorem ext_iff' {s t : Finmap β} : s.entries = t.entries ↔ s = t :=
   Finmap.ext_iff.symm
@@ -154,7 +151,7 @@ theorem ext_iff' {s t : Finmap β} : s.entries = t.entries ↔ s = t :=
 
 /-- The predicate `a ∈ s` means that `s` has a value associated to the key `a`. -/
 instance : Membership α (Finmap β) :=
-  ⟨fun a s => a ∈ s.entries.keys⟩
+  ⟨fun s a => a ∈ s.entries.keys⟩
 
 theorem mem_def {a : α} {s : Finmap β} : a ∈ s ↔ a ∈ s.entries.keys :=
   Iff.rfl
@@ -216,7 +213,7 @@ theorem keys_singleton (a : α) (b : β a) : (singleton a b).keys = {a} :=
 
 @[simp]
 theorem mem_singleton (x y : α) (b : β y) : x ∈ singleton y b ↔ x = y := by
-  simp only [singleton]; erw [mem_cons, mem_nil_iff, or_false_iff]
+  simp only [singleton]; erw [mem_cons, mem_nil_iff, or_false]
 
 section
 

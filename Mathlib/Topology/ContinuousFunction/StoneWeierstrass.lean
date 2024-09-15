@@ -425,7 +425,7 @@ theorem polynomialFunctions.starClosure_topologicalClosure {𝕜 : Type*} [RCLik
 
 /-- Continuous algebra homomorphisms from `C(s, ℝ)` into an `ℝ`-algebra `A` which agree
 at `X : 𝕜[X]` (interpreted as a continuous map) are, in fact, equal. -/
-@[ext]
+@[ext (iff := false)]
 theorem ContinuousMap.algHom_ext_map_X {A : Type*} [Ring A]
     [Algebra ℝ A] [TopologicalSpace A] [T2Space A] {s : Set ℝ} [CompactSpace s]
     {φ ψ : C(s, ℝ) →ₐ[ℝ] A} (hφ : Continuous φ) (hψ : Continuous ψ)
@@ -438,7 +438,7 @@ theorem ContinuousMap.algHom_ext_map_X {A : Type*} [Ring A]
 
 /-- Continuous star algebra homomorphisms from `C(s, 𝕜)` into a star `𝕜`-algebra `A` which agree
 at `X : 𝕜[X]` (interpreted as a continuous map) are, in fact, equal. -/
-@[ext]
+@[ext (iff := false)]
 theorem ContinuousMap.starAlgHom_ext_map_X {𝕜 A : Type*} [RCLike 𝕜] [Ring A] [StarRing A]
     [Algebra 𝕜 A] [TopologicalSpace A] [T2Space A] {s : Set 𝕜} [CompactSpace s]
     {φ ψ : C(s, 𝕜) →⋆ₐ[𝕜] A} (hφ : Continuous φ) (hψ : Continuous ψ)

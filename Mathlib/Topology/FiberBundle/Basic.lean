@@ -171,7 +171,8 @@ open TopologicalSpace Filter Set Bundle Topology
 
 section FiberBundle
 
-variable (F) [TopologicalSpace B] [TopologicalSpace F] (E : B → Type*)
+variable (F)
+variable [TopologicalSpace B] [TopologicalSpace F] (E : B → Type*)
   [TopologicalSpace (TotalSpace F E)] [∀ b, TopologicalSpace (E b)]
 
 /-- A (topological) fiber bundle with fiber `F` over a base `B` is a space projecting on `B`
@@ -207,7 +208,8 @@ end FiberBundle
 export FiberBundle (totalSpaceMk_inducing trivializationAtlas trivializationAt
   mem_baseSet_trivializationAt trivialization_mem_atlas)
 
-variable {F E}
+variable {F}
+variable {E}
 
 /-- Given a type `E` equipped with a fiber bundle structure, this is a `Prop` typeclass
 for trivializations of `E`, expressing that a trivialization is in the designated atlas for the
@@ -297,7 +299,8 @@ theorem continuousAt_totalSpace (f : X → TotalSpace F E) {x₀ : X} :
 
 end FiberBundle
 
-variable (F E)
+variable (F)
+variable (E)
 
 /-- If `E` is a fiber bundle over a conditionally complete linear order,
 then it is trivial over any closed interval. -/
@@ -436,7 +439,7 @@ def trivChange (i j : ι) : PartialHomeomorph (B × F) (B × F) where
     exacts [hx.1, ⟨⟨hx.1, hx.2⟩, hx.1⟩]
   right_inv' := by
     rintro ⟨x, v⟩ hx
-    simp only [prod_mk_mem_set_prod_eq, mem_inter_iff, and_true_iff, mem_univ] at hx
+    simp only [prod_mk_mem_set_prod_eq, mem_inter_iff, and_true, mem_univ] at hx
     dsimp only
     rw [Z.coordChange_comp, Z.coordChange_self]
     · exact hx.2
@@ -466,9 +469,9 @@ def localTrivAsPartialEquiv (i : ι) : PartialEquiv Z.TotalSpace (B × F) where
   invFun p := ⟨p.1, Z.coordChange i (Z.indexAt p.1) p.1 p.2⟩
   toFun p := ⟨p.1, Z.coordChange (Z.indexAt p.1) i p.1 p.2⟩
   map_source' p hp := by
-    simpa only [Set.mem_preimage, and_true_iff, Set.mem_univ, Set.prod_mk_mem_set_prod_eq] using hp
+    simpa only [Set.mem_preimage, and_true, Set.mem_univ, Set.prod_mk_mem_set_prod_eq] using hp
   map_target' p hp := by
-    simpa only [Set.mem_preimage, and_true_iff, Set.mem_univ, Set.mem_prod] using hp
+    simpa only [Set.mem_preimage, and_true, Set.mem_univ, Set.mem_prod] using hp
   left_inv' := by
     rintro ⟨x, v⟩ hx
     replace hx : x ∈ Z.baseSet i := hx
@@ -476,7 +479,7 @@ def localTrivAsPartialEquiv (i : ι) : PartialEquiv Z.TotalSpace (B × F) where
     rw [Z.coordChange_comp, Z.coordChange_self] <;> apply_rules [mem_baseSet_at, mem_inter]
   right_inv' := by
     rintro ⟨x, v⟩ hx
-    simp only [prod_mk_mem_set_prod_eq, and_true_iff, mem_univ] at hx
+    simp only [prod_mk_mem_set_prod_eq, and_true, mem_univ] at hx
     dsimp only
     rw [Z.coordChange_comp, Z.coordChange_self]
     exacts [hx, ⟨⟨hx, Z.mem_baseSet_at _⟩, hx⟩]
@@ -490,7 +493,7 @@ theorem mem_localTrivAsPartialEquiv_source (p : Z.TotalSpace) :
 theorem mem_localTrivAsPartialEquiv_target (p : B × F) :
     p ∈ (Z.localTrivAsPartialEquiv i).target ↔ p.1 ∈ Z.baseSet i := by
   erw [mem_prod]
-  simp only [and_true_iff, mem_univ]
+  simp only [and_true, mem_univ]
 
 theorem localTrivAsPartialEquiv_apply (p : Z.TotalSpace) :
     (Z.localTrivAsPartialEquiv i) p = ⟨p.1, Z.coordChange (Z.indexAt p.1) i p.1 p.2⟩ :=
@@ -505,9 +508,9 @@ theorem localTrivAsPartialEquiv_trans (i j : ι) :
     simp only [mem_localTrivAsPartialEquiv_target, mfld_simps]
     rfl
   · rintro ⟨x, v⟩ hx
-    simp only [trivChange, localTrivAsPartialEquiv, PartialEquiv.symm, true_and_iff,
+    simp only [trivChange, localTrivAsPartialEquiv, PartialEquiv.symm,
       Prod.mk.inj_iff, prod_mk_mem_set_prod_eq, PartialEquiv.trans_source, mem_inter_iff,
-      and_true_iff, mem_preimage, proj, mem_univ, eq_self_iff_true, (· ∘ ·),
+      mem_preimage, proj, mem_univ, eq_self_iff_true, (· ∘ ·),
       PartialEquiv.coe_trans, TotalSpace.proj] at hx ⊢
     simp only [Z.coordChange_comp, hx, mem_inter_iff, and_self_iff, mem_baseSet_at]
 
@@ -671,7 +674,7 @@ instance fiberBundle : FiberBundle F Z.Fiber where
   totalSpaceMk_inducing' b := inducing_iff_nhds.2 fun x ↦ by
     rw [(Z.localTrivAt b).nhds_eq_comap_inf_principal (mk_mem_localTrivAt_source _ _ _), comap_inf,
       comap_principal, comap_comap]
-    simp only [(· ∘ ·), localTrivAt_apply_mk, Trivialization.coe_coe,
+    simp only [Function.comp_def, localTrivAt_apply_mk, Trivialization.coe_coe,
       ← (embedding_prod_mk b).nhds_eq_comap]
     convert_to 𝓝 x = 𝓝 x ⊓ 𝓟 univ
     · congr
@@ -700,7 +703,8 @@ end FiberBundleCore
 
 /-! ### Prebundle construction for constructing fiber bundles -/
 
-variable (F) (E : B → Type*) [TopologicalSpace B] [TopologicalSpace F]
+variable (F)
+variable (E : B → Type*) [TopologicalSpace B] [TopologicalSpace F]
   [∀ x, TopologicalSpace (E x)]
 
 /-- This structure permits to define a fiber bundle when trivializations are given as local

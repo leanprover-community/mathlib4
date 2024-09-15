@@ -27,7 +27,7 @@ https://ncatlab.org/nlab/show/too+simple+to+be+simple#relationship_to_biased_def
 
 -/
 
-open Set Classical
+open Set
 
 variable {X : Type*} {Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X}
 
@@ -74,7 +74,7 @@ protected alias ⟨_, IsIrreducible.closure⟩ := isIrreducible_iff_closure
 
 theorem exists_preirreducible (s : Set X) (H : IsPreirreducible s) :
     ∃ t : Set X, IsPreirreducible t ∧ s ⊆ t ∧ ∀ u, IsPreirreducible u → t ⊆ u → u = t :=
-  let ⟨m, hm, hsm, hmm⟩ :=
+  let ⟨m, hsm, hm⟩ :=
     zorn_subset_nonempty { t : Set X | IsPreirreducible t }
       (fun c hc hcc _ =>
         ⟨⋃₀ c, fun u v hu hv ⟨y, hy, hyu⟩ ⟨x, hx, hxv⟩ =>
@@ -89,11 +89,11 @@ theorem exists_preirreducible (s : Set X) (H : IsPreirreducible s) :
             ⟨x, mem_sUnion_of_mem hxp hpc, hxuv⟩,
           fun _ hxc => subset_sUnion_of_mem hxc⟩)
       s H
-  ⟨m, hm, hsm, fun _u hu hmu => hmm _ hu hmu⟩
+  ⟨m, hm.prop, hsm, fun _u hu hmu => (hm.eq_of_subset hu hmu).symm⟩
 
 /-- The set of irreducible components of a topological space. -/
 def irreducibleComponents (X : Type*) [TopologicalSpace X] : Set (Set X) :=
-  maximals (· ≤ ·) { s : Set X | IsIrreducible s }
+  {s | Maximal IsIrreducible s}
 
 theorem isClosed_of_mem_irreducibleComponents (s) (H : s ∈ irreducibleComponents X) :
     IsClosed s := by
@@ -101,7 +101,7 @@ theorem isClosed_of_mem_irreducibleComponents (s) (H : s ∈ irreducibleComponen
   exact subset_closure.antisymm (H.2 H.1.closure subset_closure)
 
 theorem irreducibleComponents_eq_maximals_closed (X : Type*) [TopologicalSpace X] :
-    irreducibleComponents X = maximals (· ≤ ·) { s : Set X | IsClosed s ∧ IsIrreducible s } := by
+    irreducibleComponents X = { s | Maximal (fun x ↦ IsClosed x ∧ IsIrreducible x) s} := by
   ext s
   constructor
   · intro H
@@ -220,6 +220,7 @@ theorem isIrreducible_iff_sInter :
     IsIrreducible s ↔
       ∀ (U : Finset (Set X)), (∀ u ∈ U, IsOpen u) → (∀ u ∈ U, (s ∩ u).Nonempty) →
         (s ∩ ⋂₀ ↑U).Nonempty := by
+  classical
   refine ⟨fun h U hu hU => ?_, fun h => ⟨?_, ?_⟩⟩
   · induction U using Finset.induction_on with
     | empty => simpa using h.nonempty
@@ -271,6 +272,7 @@ theorem IsPreirreducible.subset_irreducible {S U : Set X} (ht : IsPreirreducible
   replace ht : IsIrreducible t := ⟨⟨z, h₂ (h₁ hz)⟩, ht⟩
   refine ⟨⟨z, h₁ hz⟩, ?_⟩
   rintro u v hu hv ⟨x, hx, hx'⟩ ⟨y, hy, hy'⟩
+  classical
   obtain ⟨x, -, hx'⟩ : Set.Nonempty (t ∩ ⋂₀ ↑({U, u, v} : Finset (Set X))) := by
     refine isIrreducible_iff_sInter.mp ht {U, u, v} ?_ ?_
     · simp [*]

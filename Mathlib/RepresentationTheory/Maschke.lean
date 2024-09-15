@@ -71,12 +71,13 @@ theorem conjugate_apply (g : G) (v : W) :
     π.conjugate g v = MonoidAlgebra.single g⁻¹ (1 : k) • π (MonoidAlgebra.single g (1 : k) • v) :=
   rfl
 
-variable (i : V →ₗ[MonoidAlgebra k G] W) (h : ∀ v : V, (π : W → V) (i v) = v)
+variable (i : V →ₗ[MonoidAlgebra k G] W)
 
 section
 
-theorem conjugate_i (g : G) (v : V) : (conjugate π g : W → V) (i v) = v := by
-  rw [conjugate_apply, ← i.map_smul, h, ← mul_smul, single_mul_single, mul_one, mul_left_inv,
+theorem conjugate_i (h : ∀ v : V, (π : W → V) (i v) = v) (g : G) (v : V) :
+    (conjugate π g : W → V) (i v) = v := by
+  rw [conjugate_apply, ← i.map_smul, h, ← mul_smul, single_mul_single, mul_one, inv_mul_cancel,
     ← one_def, one_smul]
 
 end
@@ -119,7 +120,8 @@ theorem equivariantProjection_apply (v : W) :
     π.equivariantProjection G v = ⅟(Fintype.card G : k) • ∑ g : G, π.conjugate g v := by
   simp only [equivariantProjection, smul_apply, sumOfConjugatesEquivariant_apply]
 
-theorem equivariantProjection_condition (v : V) : (π.equivariantProjection G) (i v) = v := by
+theorem equivariantProjection_condition (h : ∀ v : V, (π : W → V) (i v) = v) (v : V) :
+    (π.equivariantProjection G) (i v) = v := by
   rw [equivariantProjection_apply]
   simp only [conjugate_i π i h]
   rw [Finset.sum_const, Finset.card_univ, ← Nat.cast_smul_eq_nsmul k, smul_smul,

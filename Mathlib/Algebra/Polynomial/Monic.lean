@@ -83,16 +83,15 @@ theorem monic_of_degree_le (n : ℕ) (H1 : degree p ≤ n) (H2 : coeff p n = 1) 
     fun H : ¬degree p < n => by
     rwa [Monic, Polynomial.leadingCoeff, natDegree, (lt_or_eq_of_le H1).resolve_left H]
 
-theorem monic_X_pow_add {n : ℕ} (H : degree p ≤ n) : Monic (X ^ (n + 1) + p) :=
-  have H1 : degree p < (n + 1 : ℕ) := lt_of_le_of_lt H (WithBot.coe_lt_coe.2 (Nat.lt_succ_self n))
-  monic_of_degree_le (n + 1)
-    (le_trans (degree_add_le _ _) (max_le (degree_X_pow_le _) (le_of_lt H1)))
-    (by rw [coeff_add, coeff_X_pow, if_pos rfl, coeff_eq_zero_of_degree_lt H1, add_zero])
+theorem monic_X_pow_add {n : ℕ} (H : degree p < n) : Monic (X ^ n + p) :=
+  monic_of_degree_le n
+    (le_trans (degree_add_le _ _) (max_le (degree_X_pow_le _) (le_of_lt H)))
+    (by rw [coeff_add, coeff_X_pow, if_pos rfl, coeff_eq_zero_of_degree_lt H, add_zero])
 
 variable (a) in
-theorem monic_X_pow_add_C {n : ℕ} (h : n ≠ 0) : (X ^ n + C a).Monic := by
-  obtain ⟨k, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h
-  exact monic_X_pow_add <| degree_C_le.trans Nat.WithBot.coe_nonneg
+theorem monic_X_pow_add_C {n : ℕ} (h : n ≠ 0) : (X ^ n + C a).Monic :=
+   monic_X_pow_add <| (lt_of_le_of_lt degree_C_le
+     (by simp only [Nat.cast_pos, Nat.pos_iff_ne_zero, ne_eq, h, not_false_eq_true]))
 
 theorem monic_X_add_C (x : R) : Monic (X + C x) :=
   pow_one (X : R[X]) ▸ monic_X_pow_add_C x one_ne_zero
@@ -184,9 +183,7 @@ theorem nextCoeff_mul (hp : Monic p) (hq : Monic q) :
     nextCoeff (p * q) = nextCoeff p + nextCoeff q := by
   nontriviality
   simp only [← coeff_one_reverse]
-  rw [reverse_mul] <;>
-    simp [coeff_mul, antidiagonal, hp.leadingCoeff, hq.leadingCoeff, add_comm,
-      show Nat.succ 0 = 1 from rfl]
+  rw [reverse_mul] <;> simp [hp.leadingCoeff, hq.leadingCoeff, mul_coeff_one, add_comm]
 
 theorem nextCoeff_pow (hp : p.Monic) (n : ℕ) : (p ^ n).nextCoeff = n • p.nextCoeff := by
   induction n with
@@ -206,9 +203,9 @@ theorem eq_one_of_map_eq_one {S : Type*} [Semiring S] [Nontrivial S] (f : R →+
   rw [← hndeg, ← Polynomial.leadingCoeff, hp.leadingCoeff, C.map_one]
 
 theorem natDegree_pow (hp : p.Monic) (n : ℕ) : (p ^ n).natDegree = n * p.natDegree := by
-  induction' n with n hn
-  · simp
-  · rw [pow_succ, (hp.pow n).natDegree_mul hp, hn, Nat.succ_mul, add_comm]
+  induction n with
+  | zero => simp
+  | succ n hn => rw [pow_succ, (hp.pow n).natDegree_mul hp, hn, Nat.succ_mul, add_comm]
 
 end Monic
 
@@ -220,7 +217,7 @@ theorem Monic.eq_one_of_isUnit (hm : Monic p) (hpu : IsUnit p) : p = 1 := by
   nontriviality R
   obtain ⟨q, h⟩ := hpu.exists_right_inv
   have := hm.natDegree_mul' (right_ne_zero_of_mul_eq_one h)
-  rw [h, natDegree_one, eq_comm, add_eq_zero_iff] at this
+  rw [h, natDegree_one, eq_comm, add_eq_zero] at this
   exact hm.natDegree_eq_zero_iff_eq_one.mp this.1
 
 theorem Monic.isUnit_iff (hm : p.Monic) : IsUnit p ↔ p = 1 :=
@@ -340,8 +337,8 @@ variable [Ring R] {p : R[X]}
 theorem monic_X_sub_C (x : R) : Monic (X - C x) := by
   simpa only [sub_eq_add_neg, C_neg] using monic_X_add_C (-x)
 
-theorem monic_X_pow_sub {n : ℕ} (H : degree p ≤ n) : Monic (X ^ (n + 1) - p) := by
-  simpa [sub_eq_add_neg] using monic_X_pow_add (show degree (-p) ≤ n by rwa [← degree_neg p] at H)
+theorem monic_X_pow_sub {n : ℕ} (H : degree p < n) : Monic (X ^ n - p) := by
+  simpa [sub_eq_add_neg] using monic_X_pow_add (show degree (-p) < n by rwa [← degree_neg p] at H)
 
 /-- `X ^ n - a` is monic. -/
 theorem monic_X_pow_sub_C {R : Type u} [Ring R] (a : R) {n : ℕ} (h : n ≠ 0) :

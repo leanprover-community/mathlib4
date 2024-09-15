@@ -5,7 +5,6 @@ Authors: Michael Rothgang
 -/
 
 import Lean.Elab.Command
-import Lean.Linter.Util
 
 /-!
 ## Style linters
@@ -22,12 +21,12 @@ namespace Mathlib.Linter
 
 /-- The `setOption` linter emits a warning on a `set_option` command, term or tactic
 which sets a `pp`, `profiler` or `trace` option. -/
-register_option linter.setOption : Bool := {
-  defValue := true
+register_option linter.style.setOption : Bool := {
+  defValue := false
   descr := "enable the `setOption` linter"
 }
 
-namespace Style.SetOption
+namespace Style.setOption
 
 /-- Whether a syntax element is a `set_option` command, tactic or term:
 Return the name of the option being set, if any. -/
@@ -42,9 +41,6 @@ def parse_set_option : Syntax → Option Name
 def is_set_option : Syntax → Bool :=
   fun stx ↦ parse_set_option stx matches some _name
 
-/-- Gets the value of the `linter.setOption` option. -/
-def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.setOption o
-
 /-- The `setOption` linter: this lints any `set_option` command, term or tactic
 which sets a `pp`, `profiler` or `trace` option.
 
@@ -54,18 +50,15 @@ used in production code.
 (Some tests will intentionally use one of these options; in this case, simply allow the linter.)
 -/
 def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
-    unless getLinterHash (← getOptions) do
+    unless Linter.getLinterValue linter.style.setOption (← getOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
-      return
-    -- TODO: once mathlib's Lean version includes leanprover/lean4#4741, make this configurable
-    unless #[`Mathlib, `test, `Archive, `Counterexamples].contains (← getMainModule).getRoot do
       return
     if let some head := stx.find? is_set_option then
       if let some name := parse_set_option head then
         let forbidden := [`debug, `pp, `profiler, `trace]
         if forbidden.contains name.getRoot then
-          Linter.logLint linter.setOption head
+          Linter.logLint linter.style.setOption head
             m!"Setting options starting with '{"', '".intercalate (forbidden.map (·.toString))}' \
                is only intended for development and not for final code. \
                If you intend to submit this contribution to the Mathlib project, \
@@ -73,6 +66,6 @@ def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
 
 initialize addLinter setOptionLinter
 
-end Style.SetOption
+end Style.setOption
 
 end Mathlib.Linter

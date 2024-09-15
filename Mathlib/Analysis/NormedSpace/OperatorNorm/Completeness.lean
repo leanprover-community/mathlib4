@@ -17,7 +17,7 @@ suppress_compilation
 
 open Bornology Metric Set Real
 open Filter hiding map_smul
-open scoped Classical NNReal Topology Uniformity
+open scoped NNReal Topology Uniformity
 
 -- the `ₗ` subscript variables are for special cases about linear (as opposed to semilinear) maps
 variable {𝕜 𝕜₂ 𝕜₃ E Eₗ F Fₗ G Gₗ 𝓕 : Type*}
@@ -60,7 +60,7 @@ def ofTendstoOfBoundedRange {α : Type*} {l : Filter α} [l.NeBot] (f : E' → F
     (g : α → E' →SL[σ₁₂] F) (hf : Tendsto (fun a x => g a x) l (𝓝 f))
     (hg : IsBounded (Set.range g)) : E' →SL[σ₁₂] F :=
   ofMemClosureImageCoeBounded f hg <| mem_closure_of_tendsto hf <|
-    eventually_of_forall fun _ => mem_image_of_mem _ <| Set.mem_range_self _
+    Eventually.of_forall fun _ => mem_image_of_mem _ <| Set.mem_range_self _
 
 /-- If a Cauchy sequence of continuous linear map converges to a continuous linear map pointwise,
 then it converges to the same map in norm. This lemma is used to prove that the space of continuous
@@ -184,7 +184,7 @@ section
 variable (h_e : UniformInducing e)
 
 /-- Extension of a continuous linear map `f : E →SL[σ₁₂] F`, with `E` a normed space and `F` a
-complete normed space, along a uniform and dense embedding `e : E →L[𝕜] Fₗ`.  -/
+complete normed space, along a uniform and dense embedding `e : E →L[𝕜] Fₗ`. -/
 def extend : Fₗ →SL[σ₁₂] F :=
   -- extension of `f` is continuous
   have cont := (uniformContinuous_uniformly_extend h_e h_dense f.uniformContinuous).continuous

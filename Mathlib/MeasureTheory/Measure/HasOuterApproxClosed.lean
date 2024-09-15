@@ -59,7 +59,7 @@ theorem tendsto_lintegral_nn_filter_of_le_const {ι : Type*} {L : Filter ι} [L.
     (fs_lim : ∀ᵐ ω : Ω ∂μ, Tendsto (fun i ↦ fs i ω) L (𝓝 (f ω))) :
     Tendsto (fun i ↦ ∫⁻ ω, fs i ω ∂μ) L (𝓝 (∫⁻ ω, f ω ∂μ)) := by
   refine tendsto_lintegral_filter_of_dominated_convergence (fun _ ↦ c)
-    (eventually_of_forall fun i ↦ (ENNReal.continuous_coe.comp (fs i).continuous).measurable) ?_
+    (Eventually.of_forall fun i ↦ (ENNReal.continuous_coe.comp (fs i).continuous).measurable) ?_
     (@lintegral_const_lt_top _ _ μ _ _ (@ENNReal.coe_ne_top c)).ne ?_
   · simpa only [Function.comp_apply, ENNReal.coe_le_coe] using fs_le_const
   · simpa only [Function.comp_apply, ENNReal.tendsto_coe] using fs_lim
@@ -72,7 +72,7 @@ This formulation assumes:
  * boundedness holds almost everywhere.
 -/
 theorem measure_of_cont_bdd_of_tendsto_filter_indicator {ι : Type*} {L : Filter ι}
-    [L.IsCountablyGenerated] [TopologicalSpace Ω] [OpensMeasurableSpace Ω] (μ : Measure Ω)
+    [L.IsCountablyGenerated] (μ : Measure Ω)
     [IsFiniteMeasure μ] {c : ℝ≥0} {E : Set Ω} (E_mble : MeasurableSet E) (fs : ι → Ω →ᵇ ℝ≥0)
     (fs_bdd : ∀ᶠ i in L, ∀ᵐ ω : Ω ∂μ, fs i ω ≤ c)
     (fs_lim : ∀ᵐ ω ∂μ, Tendsto (fun i ↦ fs i ω) L (𝓝 (indicator E (fun _ ↦ (1 : ℝ≥0)) ω))) :
@@ -90,7 +90,7 @@ measure of the set.
 A similar result with more general assumptions is
 `MeasureTheory.measure_of_cont_bdd_of_tendsto_filter_indicator`.
 -/
-theorem measure_of_cont_bdd_of_tendsto_indicator [OpensMeasurableSpace Ω]
+theorem measure_of_cont_bdd_of_tendsto_indicator
     (μ : Measure Ω) [IsFiniteMeasure μ] {c : ℝ≥0} {E : Set Ω} (E_mble : MeasurableSet E)
     (fs : ℕ → Ω →ᵇ ℝ≥0) (fs_bdd : ∀ n ω, fs n ω ≤ c)
     (fs_lim : Tendsto (fun n ω ↦ fs n ω) atTop (𝓝 (indicator E fun _ ↦ (1 : ℝ≥0)))) :
@@ -100,7 +100,7 @@ theorem measure_of_cont_bdd_of_tendsto_indicator [OpensMeasurableSpace Ω]
     rw [tendsto_pi_nhds] at fs_lim
     exact fun ω ↦ fs_lim ω
   apply measure_of_cont_bdd_of_tendsto_filter_indicator μ E_mble fs
-    (eventually_of_forall fun n ↦ eventually_of_forall (fs_bdd n)) (eventually_of_forall fs_lim')
+    (Eventually.of_forall fun n ↦ Eventually.of_forall (fs_bdd n)) (Eventually.of_forall fs_lim')
 
 /-- The integrals of thickened indicators of a closed set against a finite measure tend to the
 measure of the closed set if the thickening radii tend to zero. -/

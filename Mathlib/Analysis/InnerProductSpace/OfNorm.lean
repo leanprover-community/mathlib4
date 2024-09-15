@@ -127,6 +127,7 @@ theorem inner_.norm_sq (x : E) : ‖x‖ ^ 2 = re (inner_ 𝕜 x x) := by
     map_add, ofReal_re, ofNat_im, ofReal_im, mul_im, I_re, inv_im]
   ring
 
+attribute [local simp] map_ofNat in -- use `ofNat` simp theorem with bad keys
 theorem inner_.conj_symm (x y : E) : conj (inner_ 𝕜 y x) = inner_ 𝕜 x y := by
   simp only [inner_]
   have h4 : conj (4⁻¹ : 𝕜) = 4⁻¹ := by norm_num
@@ -232,7 +233,7 @@ theorem add_left (x y z : E) : inner_ 𝕜 (x + y) z = inner_ 𝕜 x z + inner_ 
 
 theorem nat (n : ℕ) (x y : E) : inner_ 𝕜 ((n : 𝕜) • x) y = (n : 𝕜) * inner_ 𝕜 x y := by
   induction' n with n ih
-  · simp only [inner_, Nat.zero_eq, zero_sub, Nat.cast_zero, zero_mul,
+  · simp only [inner_, zero_sub, Nat.cast_zero, zero_mul,
       eq_self_iff_true, zero_smul, zero_add, mul_zero, sub_self, norm_neg, smul_zero]
   · simp only [Nat.cast_succ, add_smul, one_smul]
     rw [add_left, ih, add_mul, one_mul]
@@ -246,13 +247,13 @@ private theorem int_prop (n : ℤ) : innerProp' E (n : 𝕜) := by
   simp only [Int.cast_natCast, map_natCast, map_intCast, Int.cast_mul, map_mul, mul_smul]
   obtain hn | rfl | hn := lt_trichotomy n 0
   · rw [Int.sign_eq_neg_one_of_neg hn, innerProp_neg_one ((n.natAbs : 𝕜) • x), nat]
-    simp only [map_neg, neg_mul, one_mul, mul_eq_mul_left_iff, true_or_iff, Int.natAbs_eq_zero,
+    simp only [map_neg, neg_mul, one_mul, mul_eq_mul_left_iff, Int.natAbs_eq_zero,
       eq_self_iff_true, Int.cast_one, map_one, neg_inj, Nat.cast_eq_zero, Int.cast_neg]
   · simp only [inner_, Int.cast_zero, zero_sub, Nat.cast_zero, zero_mul,
       eq_self_iff_true, Int.sign_zero, zero_smul, zero_add, mul_zero, smul_zero,
       sub_self, norm_neg, Int.natAbs_zero]
   · rw [Int.sign_eq_one_of_pos hn]
-    simp only [one_mul, mul_eq_mul_left_iff, true_or_iff, Int.natAbs_eq_zero, eq_self_iff_true,
+    simp only [one_mul, mul_eq_mul_left_iff, Int.natAbs_eq_zero, eq_self_iff_true,
       Int.cast_one, one_smul, Nat.cast_eq_zero, nat]
 
 private theorem rat_prop (r : ℚ) : innerProp' E (r : 𝕜) := by
@@ -277,7 +278,7 @@ private theorem I_prop : innerProp' E (I : 𝕜) := by
   by_cases hI : (I : 𝕜) = 0
   · rw [hI, ← Nat.cast_zero]; exact nat_prop _
   intro x y
-  have hI' : (-I : 𝕜) * I = 1 := by rw [← inv_I, inv_mul_cancel hI]
+  have hI' : (-I : 𝕜) * I = 1 := by rw [← inv_I, inv_mul_cancel₀ hI]
   rw [conj_I, inner_, inner_, mul_left_comm]
   congr 1
   rw [smul_smul, I_mul_I_of_nonzero hI, neg_one_smul]

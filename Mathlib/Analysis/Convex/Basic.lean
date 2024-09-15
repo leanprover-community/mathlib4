@@ -1,10 +1,11 @@
 /-
 Copyright (c) 2019 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alexander Bentkamp, Yury Kudriashov, Yaël Dillies
+Authors: Alexander Bentkamp, Yury Kudryashov, Yaël Dillies
 -/
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.Module.OrderedSMul
+import Mathlib.Algebra.Order.Module.Synonym
 import Mathlib.Analysis.Convex.Star
 import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
 
@@ -511,7 +512,8 @@ theorem Convex.exists_mem_add_smul_eq (h : Convex 𝕜 s) {x y : E} {p q : 𝕜}
   rcases _root_.em (p = 0 ∧ q = 0) with (⟨rfl, rfl⟩ | hpq)
   · use x, hx
     simp
-  · replace hpq : 0 < p + q := (add_nonneg hp hq).lt_of_ne' (mt (add_eq_zero_iff' hp hq).1 hpq)
+  · replace hpq : 0 < p + q :=
+      (add_nonneg hp hq).lt_of_ne' (mt (add_eq_zero_iff_of_nonneg hp hq).1 hpq)
     refine ⟨_, convex_iff_div.1 h hx hy hp hq hpq, ?_⟩
     simp only [smul_add, smul_smul, mul_div_cancel₀ _ hpq.ne']
 

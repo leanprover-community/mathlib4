@@ -242,7 +242,7 @@ instance : PartialOrder (Coverage C) where
   le A B := A.covering ≤ B.covering
   le_refl A X := le_refl _
   le_trans A B C h1 h2 X := le_trans (h1 X) (h2 X)
-  le_antisymm A B h1 h2 := Coverage.ext A B <| funext <|
+  le_antisymm A B h1 h2 := Coverage.ext <| funext <|
     fun X => le_antisymm (h1 X) (h2 X)
 
 variable (C) in
@@ -309,7 +309,7 @@ Any sieve that contains a covering presieve for a coverage is a covering sieve f
 Grothendieck topology.
 -/
 theorem mem_toGrothendieck_sieves_of_superset (K : Coverage C) {X : C} {S : Sieve X}
-    {R : Presieve X} (h : R ≤ S) (hR : R ∈ K.covering X) : S ∈ (K.toGrothendieck C).sieves X :=
+    {R : Presieve X} (h : R ≤ S) (hR : R ∈ K.covering X) : S ∈ (K.toGrothendieck C) X :=
   K.saturate_of_superset ((Sieve.generate_le_iff _ _).mpr h) (Coverage.Saturate.of X _ hR)
 
 end Coverage

@@ -105,7 +105,7 @@ theorem edist_div_right [DivInvMonoid M] [PseudoEMetricSpace M] [IsometricSMul M
 @[to_additive (attr := simp)]
 theorem edist_inv_inv [PseudoEMetricSpace G] [IsometricSMul G G] [IsometricSMul Gᵐᵒᵖ G]
     (a b : G) : edist a⁻¹ b⁻¹ = edist a b := by
-  rw [← edist_mul_left a, ← edist_mul_right _ _ b, mul_right_inv, one_mul, inv_mul_cancel_right,
+  rw [← edist_mul_left a, ← edist_mul_right _ _ b, mul_inv_cancel, one_mul, inv_mul_cancel_right,
     edist_comm]
 
 @[to_additive]
