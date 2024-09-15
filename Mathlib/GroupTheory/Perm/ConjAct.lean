@@ -5,9 +5,9 @@ Authors: Antoine Chambert-Loir
 -/
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.GroupTheory.GroupAction.ConjAct
-import Mathlib.GroupTheory.Perm.Support
 import Mathlib.GroupTheory.Perm.Cycle.Basic
 import Mathlib.GroupTheory.Perm.Cycle.Factors
+import Mathlib.GroupTheory.Perm.Support
 /-! # Some lemmas pertaining to the action of `ConjAct (Perm α)` on `Perm α`
 
 We prove some lemmas related to the action of `ConjAct (Perm α)` on `Perm α`:
