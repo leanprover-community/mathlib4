@@ -58,6 +58,11 @@ variable (b : Basis ι K E)
 
 theorem span_top : span K (span ℤ (Set.range b) : Set E) = ⊤ := by simp [span_span_of_tower]
 
+
+theorem map {F : Type*} [NormedAddCommGroup F] [NormedSpace K F] (f : E ≃ₗ[K] F) :
+    Submodule.map (f.restrictScalars ℤ) (span ℤ (Set.range b)) = span ℤ (Set.range (b.map f)) := by
+  simp_rw [Submodule.map_span, LinearEquiv.restrictScalars_apply, Basis.coe_map, Set.range_comp]
+
 open scoped Pointwise
 
 theorem smul {c : K} (hc : c ≠ 0) :
@@ -414,6 +419,8 @@ theorem _root_.ZSpan.isZLattice {E ι : Type*} [NormedAddCommGroup E] [NormedSpa
     IsZLattice ℝ (span ℤ (Set.range b)) where
   span_top := ZSpan.span_top b
 
+section NormedLinearOrderedField
+
 variable (K : Type*) [NormedLinearOrderedField K] [HasSolidNorm K] [FloorRing K]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E] [FiniteDimensional K E]
 variable [ProperSpace E] (L : Submodule ℤ E) [DiscreteTopology L]
@@ -621,5 +628,72 @@ instance instCountable_of_discrete_submodule {E : Type*} [NormedAddCommGroup E] 
     Countable L := by
   simp_rw [← (Module.Free.chooseBasis ℤ L).ofZLatticeBasis_span ℝ]
   infer_instance
+
+end NormedLinearOrderedField
+
+section map
+
+variable (K : Type*) [NormedField K] {E F : Type*} [NormedAddCommGroup E] [NormedSpace K E]
+    [NormedAddCommGroup F] [NormedSpace K F] (L : Submodule ℤ E) (e : E ≃L[K] F)
+
+/--- The image of a `ZLattice` by a continuous linear equiv. It is also a `ZLattice`. -/
+protected def ZLattice.map := L.map (e.restrictScalars ℤ)
+
+theorem ZLattice.map_refl :
+    ZLattice.map K L (ContinuousLinearEquiv.refl K E) = L := Submodule.map_id L
+
+theorem ZLattice.map_comp {G : Type*} [NormedAddCommGroup G] [NormedSpace K G]
+    (e : E ≃L[K] F) (e' : F ≃L[K] G) :
+    (ZLattice.map K (ZLattice.map K L e) e') = ZLattice.map K L (e.trans e') :=
+  (Submodule.map_comp _ _ L).symm
+
+theorem ZLattice.map_map_symm :
+    (ZLattice.map K (ZLattice.map K L e) e.symm) = L := by
+  rw [ZLattice.map_comp]
+  convert ZLattice.map_refl K L
+  ext; simp
+
+instance [DiscreteTopology L] :
+    DiscreteTopology (ZLattice.map K L e) := by
+  change DiscreteTopology (e '' L)
+  rw [ContinuousLinearEquiv.image_eq_preimage]
+  exact DiscreteTopology.preimage_of_continuous_injective _ e.symm.continuous e.symm.injective
+
+instance [DiscreteTopology L] [IsZLattice K L] :
+    IsZLattice K (ZLattice.map K L e) where
+  span_top := by
+    simp_rw [ZLattice.map, map_coe, LinearEquiv.restrictScalars_apply, ← Submodule.map_span,
+      IsZLattice.span_top, Submodule.map_top, LinearEquivClass.range]
+
+/-- The `ℤ`-linear equivalence between `L` and `ZLattice.map K L e` induced by `e`. -/
+def ZLattice.map_equiv :
+    L ≃ₗ[ℤ] (ZLattice.map K L e) :=
+  LinearEquiv.ofBijective
+    ((e.toLinearMap.restrictScalars ℤ).restrict (fun _ h ↦ Set.mem_image_of_mem _ h))
+    ⟨(injective_iff_map_eq_zero _).mpr fun _ h ↦ by simp_all [LinearMap.restrict_apply, h],
+     fun ⟨x, hx⟩ ↦
+      ⟨⟨e.symm x, ZLattice.map_map_symm K L e ▸ Set.mem_image_of_mem e.symm hx⟩,
+        by simp only [LinearMap.restrict_apply, LinearMap.coe_restrictScalars, LinearEquiv.coe_coe,
+        ContinuousLinearEquiv.coe_toLinearEquiv, ContinuousLinearEquiv.apply_symm_apply]⟩⟩
+
+@[simp]
+theorem ZLattice.map_equiv_apply (x : L) :
+    (ZLattice.map_equiv K L e) x = e x := rfl
+
+/-- The basis of `ZLattice.map K L e` given by the image of a basis `b` of `L` by `e`. -/
+def Basis.ofZLatticeMap {ι : Type*} (b : Basis ι ℤ L) :
+    Basis ι ℤ (ZLattice.map K L e) :=
+  b.map (ZLattice.map_equiv K L e)
+
+@[simp]
+theorem Basis.ofZLatticeMap_apply {ι : Type*} (b : Basis ι ℤ L) (i : ι) :
+    b.ofZLatticeMap K L e i = e (b i) := by simp [Basis.ofZLatticeMap]
+
+@[simp]
+theorem Basis.ofZLatticeMap_repr_apply {ι : Type*} (b : Basis ι ℤ L) (x : L) (i : ι) :
+    (b.ofZLatticeMap K L e).repr (ZLattice.map_equiv K L e x) i = b.repr x i := by
+  simp [Basis.ofZLatticeMap]
+
+end map
 
 end ZLattice

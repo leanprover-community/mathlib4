@@ -6,6 +6,7 @@ Authors: Xavier Roblot
 import Mathlib.Algebra.Module.ZLattice.Basic
 import Mathlib.Analysis.BoxIntegral.UnitPartition
 import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
+import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
 /-!
 # Covolume of ℤ-lattices
@@ -36,13 +37,21 @@ be a function such that `F (c • x) = c ^ card ι * F x`. Then the number of po
 infinity. See also `Zlattice.covolume.tendsto_card_le_div'` for a version for
 `InnerProductSpace ℝ E` and `Zlattice.covolume.tendsto_card_le_div''` for the general version.
 
+## Naming conventions
+
+Many of the same results are true in the pi case `E` is `ι → ℝ` and in the case `E` is an
+`InnerProductSpace`. We use the following convention: the plain name is for the pi case, for eg.
+`volume_image_eq_volume_div_covolume`. For the same result in the `InnerProductSpace` case, we add
+a `prime`, for eg. `volume_image_eq_volume_div_covolume'`. When the same result exists in the
+general case, we had two primes, eg. `Zlattice.covolume.tendsto_card_div_pow''`.
+
 -/
 
 noncomputable section
 
 namespace ZLattice
 
-open Submodule MeasureTheory FiniteDimensional Module Bornology
+open Submodule MeasureTheory FiniteDimensional Module Bornology ZSpan
 
 section General
 
@@ -80,6 +89,21 @@ theorem covolume_ne_zero : covolume L μ ≠ 0 := by
 theorem covolume_pos : 0 < covolume L μ :=
   lt_of_le_of_ne ENNReal.toReal_nonneg (covolume_ne_zero L μ).symm
 
+theorem covolume_map {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F]
+    [MeasurableSpace F] [BorelSpace F] (ν : Measure F := by volume_tac) [Measure.IsAddHaarMeasure ν]
+    {e : E ≃L[ℝ] F} (he : MeasurePreserving e μ ν) :
+    covolume (ZLattice.map ℝ L e) ν = covolume L μ := by
+  rw [covolume_eq_measure_fundamentalDomain _ _ (isAddFundamentalDomain (Free.chooseBasis ℤ L) μ),
+    covolume_eq_measure_fundamentalDomain _ _ (isAddFundamentalDomain
+    ((Free.chooseBasis ℤ L).ofZLatticeMap ℝ L e) ν), ← he.measure_preimage
+    (fundamentalDomain_measurableSet _).nullMeasurableSet, ← e.image_symm_eq_preimage,
+    ← e.symm.coe_toLinearEquiv, map_fundamentalDomain]
+  congr!
+  ext i
+  simp_rw [ContinuousLinearEquiv.symm_toLinearEquiv, Basis.map_apply, Basis.ofZLatticeBasis_apply,
+    Basis.ofZLatticeMap_apply]
+  exact e.symm_apply_apply _
+
 theorem covolume_eq_det_mul_measure {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Basis ι ℤ L)
     (b₀ : Basis ι ℝ E) :
     covolume L μ = |b₀.det ((↑) ∘ b)| * (μ (ZSpan.fundamentalDomain b₀)).toReal := by
@@ -108,7 +132,7 @@ theorem covolume_eq_det_inv {ι : Type*} [Fintype ι] [DecidableEq ι] (L : Subm
     IsUnit.unit_spec, Basis.det_basis, LinearEquiv.coe_det]
   rfl
 
-theorem volume_image_eq_volume_div_covolume' {ι : Type*} [Fintype ι] [DecidableEq ι]
+theorem volume_image_eq_volume_div_covolume {ι : Type*} [Fintype ι] [DecidableEq ι]
     (L : Submodule ℤ (ι → ℝ)) [DiscreteTopology L] [IsZLattice ℝ L] (b : Basis ι ℤ L)
     {s : Set (ι → ℝ)} :
     (volume ((b.ofZLatticeBasis ℝ L).equivFun '' s)).toReal = (volume s).toReal / covolume L := by
@@ -116,17 +140,39 @@ theorem volume_image_eq_volume_div_covolume' {ι : Type*} [Fintype ι] [Decidabl
     ENNReal.toReal_mul, covolume_eq_det_inv L b, div_inv_eq_mul, mul_comm, ENNReal.toReal_ofReal
     (abs_nonneg _), LinearEquiv.coe_det]
 
-theorem volume_image_eq_volume_div_covolume {E : Type*} [NormedAddCommGroup E]
-    [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [MeasureSpace E] [BorelSpace E]
-    {s : Set E} (hs : MeasurableSet s) (L : Submodule ℤ E) [DiscreteTopology L] [IsZLattice ℝ L]
-    {ι : Type*} [Fintype ι] (b : Basis ι ℤ L) :
-    volume ((b.ofZLatticeBasis ℝ).equivFun '' s) = volume s / ENNReal.ofReal (covolume L) := by
-  sorry
+theorem volume_image_eq_volume_div_covolume' {E : Type*} [NormedAddCommGroup E]
+    [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
+    (L : Submodule ℤ E) [DiscreteTopology L] [IsZLattice ℝ L] {ι : Type*} [Fintype ι]
+    (b : Basis ι ℤ L) {s : Set E} (hs : NullMeasurableSet s) :
+    (volume ((b.ofZLatticeBasis ℝ).equivFun '' s)).toReal = (volume s).toReal / covolume L := by
+  let e : Fin (finrank ℝ E) ≃ ι :=
+    Fintype.equivOfCardEq (by rw [Fintype.card_fin, finrank_eq_card_basis (b.ofZLatticeBasis ℝ)])
+  let f := (stdOrthonormalBasis ℝ E).toBasis.equivFun.toContinuousLinearEquiv
+  have hf : MeasurePreserving f volume volume := by
+    have t1 :=  (EuclideanSpace.volume_preserving_measurableEquiv (Fin (finrank ℝ E)))
+    have t2 := OrthonormalBasis.measurePreserving_repr (stdOrthonormalBasis ℝ E)
+    have := MeasureTheory.MeasurePreserving.comp t1 t2
+    exact this
+  have hf' : MeasurePreserving f.symm := sorry
+  let L' := ZLattice.map ℝ L f
+  let B' := Basis.ofZLatticeMap ℝ L f b
+  have := volume_image_eq_volume_div_covolume L' (B'.reindex e.symm) (s := f '' s)
+  convert this
+  · rw [volume_pi, ← (measurePreserving_piCongrLeft _ e).measure_preimage]
+    congr
+    ext
+    simp [B', f]
+    sorry
+    sorry
+  · rw [f.image_eq_preimage]
+    refine (MeasurePreserving.measure_preimage hf' ?_).symm
+    exact hs
+  · exact (covolume_map L volume volume hf).symm
 
 #exit
 
 theorem volume_image_eq_volume_div_covolume {E : Type*} [NormedAddCommGroup E]
-    [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [MeasureSpace E] [BorelSpace E]
+    [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
     {s : Set E} (hs : MeasurableSet s) (L : Submodule ℤ E) [DiscreteTopology L] [IsZLattice ℝ L]
     {ι : Type*} [Fintype ι] (b : Basis ι ℤ L) :
     volume ((b.ofZLatticeBasis ℝ).equivFun '' s) = volume s / ENNReal.ofReal (covolume L) := by
