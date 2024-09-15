@@ -1024,8 +1024,7 @@ theorem IsCycle.commute_iff' {g c : Perm α} (hc : c.IsCycle) :
         subtypePerm g hc' ∈ Subgroup.zpowers c.subtypePermOfSupport := by
   constructor
   · intro hgc
-    -- maybe we should have `mem_support_iff_of_commute` in the other (initial) direction
-    have hgc' := fun x ↦ (mem_support_iff_of_commute hgc x).symm
+    have hgc' := mem_support_iff_of_commute hgc
     use hgc'
     obtain ⟨a, ha⟩ := IsCycle.nonempty_support hc
     obtain ⟨i, hi⟩ := hc.sameCycle (mem_support.mp ha) (mem_support.mp ((hgc' a).mp ha))
