@@ -45,8 +45,7 @@ theorem tensorUnit_rho' {g : G} :
   rfl
 
 @[simp]
-theorem tensorUnit_rho {g : G} :
-    (𝟙_ (Action V G)).ρ g = 𝟙 (𝟙_ V) := by
+theorem tensorUnit_rho {g : G} : (𝟙_ (Action V G)).ρ g = 𝟙 (𝟙_ V) :=
   rfl
 
 @[simp]
@@ -54,9 +53,7 @@ theorem tensor_rho' {X Y : Action V G} {g : G} :
     @DFunLike.coe (G →* MonCat.of (End (X.V ⊗ Y.V))) _ _ _ (X ⊗ Y).ρ g = X.ρ g ⊗ Y.ρ g :=
   rfl
 
-@[simp]
-theorem tensor_rho {X Y : Action V G} {g : G} :
-    (X ⊗ Y).ρ g = X.ρ g ⊗ Y.ρ g :=
+theorem tensor_rho {X Y : Action V G} {g : G} : (X ⊗ Y).ρ g = X.ρ g ⊗ Y.ρ g :=
   rfl
 
 /-- Given an object `X` isomorphic to the tensor unit of `V`, `X` equipped with the trivial action
