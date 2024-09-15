@@ -64,6 +64,7 @@ import Mathlib.Algebra.Category.BialgebraCat.Basic
 import Mathlib.Algebra.Category.BoolRing
 import Mathlib.Algebra.Category.CoalgebraCat.Basic
 import Mathlib.Algebra.Category.CoalgebraCat.ComonEquivalence
+import Mathlib.Algebra.Category.CoalgebraCat.Monoidal
 import Mathlib.Algebra.Category.FGModuleCat.Basic
 import Mathlib.Algebra.Category.FGModuleCat.Limits
 import Mathlib.Algebra.Category.Grp.AB5
@@ -2635,6 +2636,7 @@ import Mathlib.FieldTheory.Adjoin
 import Mathlib.FieldTheory.AxGrothendieck
 import Mathlib.FieldTheory.Cardinality
 import Mathlib.FieldTheory.ChevalleyWarning
+import Mathlib.FieldTheory.Differential.Basic
 import Mathlib.FieldTheory.Extension
 import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.FieldTheory.Finite.GaloisField
@@ -3134,6 +3136,7 @@ import Mathlib.Logic.Lemmas
 import Mathlib.Logic.Nonempty
 import Mathlib.Logic.Nontrivial.Basic
 import Mathlib.Logic.Nontrivial.Defs
+import Mathlib.Logic.OpClass
 import Mathlib.Logic.Pairwise
 import Mathlib.Logic.Relation
 import Mathlib.Logic.Relator
@@ -3460,6 +3463,7 @@ import Mathlib.NumberTheory.Multiplicity
 import Mathlib.NumberTheory.NumberField.Basic
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
+import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.FundamentalCone
 import Mathlib.NumberTheory.NumberField.ClassNumber
 import Mathlib.NumberTheory.NumberField.Discriminant
 import Mathlib.NumberTheory.NumberField.Embeddings
