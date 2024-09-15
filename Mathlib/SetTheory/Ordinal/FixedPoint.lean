@@ -373,7 +373,7 @@ theorem nfp_eq_nfpFamily (f : Ordinal → Ordinal) : nfp f = nfpFamily fun _ : U
   rfl
 
 theorem iSup_iterate_eq_nfp (f : Ordinal.{u} → Ordinal.{u}) (a : Ordinal.{u}) :
-    (⨆ n : ℕ, f^[n] a) = nfp f a := by
+    ⨆ n : ℕ, f^[n] a = nfp f a := by
   apply le_antisymm
   · rw [Ordinal.iSup_le_iff]
     intro n
