@@ -27,7 +27,7 @@ structure FiniteGrp where
 /-- The category of finite additive groups. -/
 @[pp_with_univ]
 structure FiniteAddGrp where
-  /-- A add group that is finite -/
+  /-- An add group that is finite -/
   toAddGrp : AddGrp
   [isFinite : Finite toAddGrp]
 
