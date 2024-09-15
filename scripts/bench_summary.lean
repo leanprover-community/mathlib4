@@ -203,6 +203,7 @@ def addBenchSummaryComment (PR : Nat) (repo : String) (tempFile : String := "ben
     { cmd := "gh", args := #["pr", "comment", PR, "--repo", repo, "--body", report] }
   let _ ← IO.Process.run add_comment
 
---run_cmd addBenchSummaryComment putPR "leanprover-community/mathlib4"
-
 end BenchAction
+
+-- CI adds the following line, replacing `putPR` with the PR number:
+--run_cmd BenchAction.addBenchSummaryComment putPR "leanprover-community/mathlib4"
