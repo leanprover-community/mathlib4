@@ -23,7 +23,7 @@ If a monoid `M` continuously acts on an R₁ topological space `X`,
 and `μ` is a finite inner regular measure on `X` which is ergodic with respect to the action of `M`,
 then the scalar multiplication by `g` is an ergodic map.
 
-We also prove that a continuous monoid homomorphism `f : G →* G` is dense,
+We also prove that a continuous monoid homomorphism `f : G →* G` is ergodic,
 if it is surjective and the preimages of `1` under iterations of `f` are dense in the group.
 This theorem applies, e.g., to the map `z ↦ n • z` on the additive circle or a torus.
 -/
@@ -144,10 +144,10 @@ section TopologicalGroup
 variable {G : Type*} [Group G] [TopologicalSpace G] [TopologicalGroup G] [MeasurableSpace G]
 
 /-- If the left multiplication by `g` is ergodic
-with respect to a measure which is open on nonempty open sets,
+with respect to a measure which is positive on nonempty open sets,
 then the integer powers of `g` are dense in `G`. -/
 @[to_additive "If the left addition of `g` is ergodic
-with respect to a measure which is open on nonempty open sets,
+with respect to a measure which is positive on nonempty open sets,
 then the integer multiples of `g` are dense in `G`."]
 theorem DenseRange.zpow_of_ergodic_mul_left [OpensMeasurableSpace G]
     {μ : Measure G} [μ.IsOpenPosMeasure] {g : G} (hg : Ergodic (g * ·) μ) :
