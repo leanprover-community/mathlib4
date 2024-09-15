@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Data.ENat.Basic
-import Mathlib.Data.Nat.Factorization.Basic
+import Mathlib.Data.ENat.Lattice
 
 /-!
 # Extended natural power
