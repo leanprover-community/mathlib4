@@ -57,13 +57,13 @@ theorem uncurryBilinear_apply (f : E →L[𝕜] F →L[𝕜] G) (m : Fin 2 → E
 
 /-- Formal multilinear series expansion of a bilinear function `f : E →L[𝕜] F →L[𝕜] G`. -/
 def fpowerSeriesBilinear (f : E →L[𝕜] F →L[𝕜] G) (x : E × F) : FormalMultilinearSeries 𝕜 (E × F) G
-  | 0 => ContinuousMultilinearMap.curry0 𝕜 _ (f x.1 x.2)
+  | 0 => ContinuousMultilinearMap.uncurry0 𝕜 _ (f x.1 x.2)
   | 1 => (continuousMultilinearCurryFin1 𝕜 (E × F) G).symm (f.deriv₂ x)
   | 2 => f.uncurryBilinear
   | _ => 0
 
 theorem fpowerSeriesBilinear_apply_zero (f : E →L[𝕜] F →L[𝕜] G) (x : E × F) :
-    fpowerSeriesBilinear f x 0 = ContinuousMultilinearMap.curry0 𝕜 _ (f x.1 x.2) :=
+    fpowerSeriesBilinear f x 0 = ContinuousMultilinearMap.uncurry0 𝕜 _ (f x.1 x.2) :=
   rfl
 
 theorem fpowerSeriesBilinear_apply_one (f : E →L[𝕜] F →L[𝕜] G) (x : E × F) :

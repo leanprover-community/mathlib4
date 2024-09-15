@@ -141,7 +141,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable_of_sigmaFinite
         · simp only [h_copy, h h', indicator_of_not_mem, not_false_iff, mem_Ici, not_le, mul_zero]
         · have : s ∉ Ioi (0 : ℝ) := h'
           simp only [this, h', indicator_of_not_mem, not_false_iff, mul_zero,
-            zero_mul, mem_Ioc, false_and_iff]
+            zero_mul, mem_Ioc, false_and]
     simp_rw [aux₁]
     rw [lintegral_const_mul']
     swap
