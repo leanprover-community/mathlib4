@@ -174,5 +174,17 @@ variable [CanonicallyOrderedCommMonoid M] {l : List M}
     exact le_self_mul
   · simp [take_of_length_le h, take_of_length_le (le_trans h (Nat.le_succ _))]
 
+@[to_additive] theorem le_prod_of_mem
+    {xs : List M} {x : M} (h₁ : x ∈ xs) : x ≤ xs.prod := by
+  induction xs with
+  | nil => simp at h₁
+  | cons y ys ih =>
+    simp only [mem_cons] at h₁
+    rcases h₁ with (rfl | h₁)
+    · simp
+    · specialize ih h₁
+      simp only [List.prod_cons]
+      exact le_mul_left ih
+
 end CanonicallyOrderedCommMonoid
 end List
