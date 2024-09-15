@@ -201,7 +201,7 @@ theorem iteratedFDeriv_tsum (hf : ∀ i, ContDiff 𝕜 N (f i))
     rw [fderiv_tsum (hv _ hk) (fun n => (hf n).differentiable_iteratedFDeriv h'k) _ A]
     · ext1 x
       exact (continuousMultilinearCurryLeftEquiv 𝕜
-        (fun _ : Fin (k + 1) => E) F).toContinuousLinearEquiv.map_tsum
+        (fun _ : Fin (k + 1) => E) F).symm.toContinuousLinearEquiv.map_tsum
     · intro n x
       simpa only [iteratedFDeriv_succ_eq_comp_left, LinearIsometryEquiv.norm_map, comp_apply]
         using h'f k.succ n x hk
