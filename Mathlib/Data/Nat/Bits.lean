@@ -340,7 +340,7 @@ theorem binaryRec_eq' {C : ℕ → Sort*} {z : C 0} {f : ∀ b n, C n → C (bit
   split_ifs with h'
   · rcases bit_eq_zero_iff.mp h' with ⟨rfl, rfl⟩
     rw [binaryRec_zero]
-    simp only [imp_false, or_false_iff, eq_self_iff_true, not_true, reduceCtorEq] at h
+    simp only [imp_false, or_false, eq_self_iff_true, not_true, reduceCtorEq] at h
     exact h.symm
   · dsimp only []
     generalize_proofs e

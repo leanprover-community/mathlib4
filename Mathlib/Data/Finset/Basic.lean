@@ -1427,7 +1427,7 @@ theorem insert_inter_of_not_mem {s₁ s₂ : Finset α} {a : α} (h : a ∉ s₂
     insert a s₁ ∩ s₂ = s₁ ∩ s₂ :=
   ext fun x => by
     have : ¬(x = a ∧ x ∈ s₂) := by rintro ⟨rfl, H⟩; exact h H
-    simp only [mem_inter, mem_insert, or_and_right, this, false_or_iff]
+    simp only [mem_inter, mem_insert, or_and_right, this, false_or]
 
 @[simp]
 theorem inter_insert_of_not_mem {s₁ s₂ : Finset α} {a : α} (h : a ∉ s₁) :
@@ -1479,7 +1479,7 @@ instance : DistribLattice (Finset α) :=
   { le_sup_inf := fun a b c => by
       simp (config := { contextual := true }) only
         [sup_eq_union, inf_eq_inter, le_eq_subset, subset_iff, mem_inter, mem_union, and_imp,
-        or_imp, true_or_iff, imp_true_iff, true_and_iff, or_true_iff] }
+        or_imp, true_or, imp_true_iff, true_and, or_true] }
 
 @[simp]
 theorem union_left_idem (s t : Finset α) : s ∪ (s ∪ t) = s ∪ t := sup_left_idem _ _
@@ -1637,7 +1637,7 @@ theorem erase_eq_self : s.erase a = s ↔ a ∉ s :=
 theorem erase_insert_eq_erase (s : Finset α) (a : α) : (insert a s).erase a = s.erase a :=
   ext fun x => by
     simp (config := { contextual := true }) only [mem_erase, mem_insert, and_congr_right_iff,
-      false_or_iff, iff_self_iff, imp_true_iff]
+      false_or, iff_self, imp_true_iff]
 
 theorem erase_insert {a : α} {s : Finset α} (h : a ∉ s) : erase (insert a s) a = s := by
   rw [erase_insert_eq_erase, erase_eq_of_not_mem h]
@@ -1654,7 +1654,7 @@ theorem erase_cons_of_ne {a b : α} {s : Finset α} (ha : a ∉ s) (hb : a ≠ b
 
 @[simp] theorem insert_erase (h : a ∈ s) : insert a (erase s a) = s :=
   ext fun x => by
-    simp only [mem_insert, mem_erase, or_and_left, dec_em, true_and_iff]
+    simp only [mem_insert, mem_erase, or_and_left, dec_em, true_and]
     apply or_iff_right_of_imp
     rintro rfl
     exact h
@@ -1772,11 +1772,11 @@ instance : GeneralizedBooleanAlgebra (Finset α) :=
       simp only [Finset.ext_iff, mem_union, mem_sdiff, inf_eq_inter, sup_eq_union, mem_inter,
         ← and_or_left, em, and_true, implies_true]
     inf_inf_sdiff := fun x y => by
-      simp only [Finset.ext_iff, inter_sdiff_self, inter_empty, inter_assoc, false_iff_iff,
+      simp only [Finset.ext_iff, inter_sdiff_self, inter_empty, inter_assoc, false_iff,
         inf_eq_inter, not_mem_empty, bot_eq_empty, not_false_iff, implies_true] }
 
 theorem not_mem_sdiff_of_mem_right (h : a ∈ t) : a ∉ s \ t := by
-  simp only [mem_sdiff, h, not_true, not_false_iff, and_false_iff]
+  simp only [mem_sdiff, h, not_true, not_false_iff, and_false]
 
 theorem not_mem_sdiff_of_not_mem_left (h : a ∉ s) : a ∉ s \ t := by simp [h]
 
@@ -2393,7 +2393,7 @@ theorem filter_insert (a : α) (s : Finset α) :
 
 theorem filter_erase (a : α) (s : Finset α) : filter p (erase s a) = erase (filter p s) a := by
   ext x
-  simp only [and_assoc, mem_filter, iff_self_iff, mem_erase]
+  simp only [and_assoc, mem_filter, iff_self, mem_erase]
 
 theorem filter_or (s : Finset α) : (s.filter fun a => p a ∨ q a) = s.filter p ∪ s.filter q :=
   ext fun _ => by simp [mem_filter, mem_union, and_or_left]
@@ -2463,7 +2463,7 @@ theorem filter_eq [DecidableEq β] (s : Finset β) (b : β) :
     rintro rfl
     exact ⟨h, rfl⟩
   · ext
-    simp only [mem_filter, not_and, iff_false_iff, not_mem_empty, decide_eq_true_eq]
+    simp only [mem_filter, not_and, iff_false, not_mem_empty, decide_eq_true_eq]
     rintro m rfl
     exact h m
 
@@ -2595,7 +2595,7 @@ end Range
 
 -- useful rules for calculations with quantifiers
 theorem exists_mem_empty_iff (p : α → Prop) : (∃ x, x ∈ (∅ : Finset α) ∧ p x) ↔ False := by
-  simp only [not_mem_empty, false_and_iff, exists_false]
+  simp only [not_mem_empty, false_and, exists_false]
 
 theorem exists_mem_insert [DecidableEq α] (a : α) (s : Finset α) (p : α → Prop) :
     (∃ x, x ∈ insert a s ∧ p x) ↔ p a ∨ ∃ x, x ∈ s ∧ p x := by

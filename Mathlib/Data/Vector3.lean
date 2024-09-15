@@ -235,7 +235,7 @@ theorem vectorAllP_singleton (p : α → Prop) (x : α) : VectorAllP p (cons x [
 @[simp]
 theorem vectorAllP_cons (p : α → Prop) (x : α) (v : Vector3 α n) :
     VectorAllP p (x :: v) ↔ p x ∧ VectorAllP p v :=
-  Vector3.recOn v (and_true_iff _).symm fun _ _ _ => Iff.rfl
+  Vector3.recOn v (iff_of_eq (and_true _)).symm fun _ _ _ => Iff.rfl
 
 theorem vectorAllP_iff_forall (p : α → Prop) (v : Vector3 α n) :
     VectorAllP p v ↔ ∀ i, p (v i) := by

@@ -281,7 +281,7 @@ theorem degree_divByMonic_le (p q : R[X]) : degree (p /ₘ q) ≤ degree p :=
         exact WithBot.coe_le_coe.2 (Nat.le_add_left _ _)
       else by
         unfold divByMonic divModByMonicAux
-        simp [dif_pos hq, h, false_and_iff, if_false, degree_zero, bot_le]
+        simp [dif_pos hq, h, if_false, degree_zero, bot_le]
     else (divByMonic_eq_of_not_monic p hq).symm ▸ bot_le
 
 theorem degree_divByMonic_lt (p : R[X]) {q : R[X]} (hq : Monic q) (hp0 : p ≠ 0)

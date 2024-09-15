@@ -71,6 +71,13 @@ section SMul
 
 variable [SMul M X] [ContinuousSMul M X]
 
+lemma IsScalarTower.continuousSMul {M : Type*} (N : Type*) {α : Type*} [Monoid N] [SMul M N]
+    [MulAction N α] [SMul M α] [IsScalarTower M N α] [TopologicalSpace M] [TopologicalSpace N]
+    [TopologicalSpace α] [ContinuousSMul M N] [ContinuousSMul N α] : ContinuousSMul M α :=
+  { continuous_smul := by
+      suffices Continuous (fun p : M × α ↦ (p.1 • (1 : N)) • p.2) by simpa
+      fun_prop }
+
 @[to_additive]
 instance : ContinuousSMul (ULift M) X :=
   ⟨(continuous_smul (M := M)).comp₂ (continuous_uLift_down.comp continuous_fst) continuous_snd⟩

@@ -739,7 +739,7 @@ theorem closure_withConstants_eq :
   refine closure_eq_of_le ((A.subset_union_right).trans subset_closure) ?_
   rw [← (L.lhomWithConstants A).substructureReduct.le_iff_le]
   simp only [subset_closure, reduct_withConstants, closure_le, LHom.coe_substructureReduct,
-    Set.union_subset_iff, and_true_iff]
+    Set.union_subset_iff, and_true]
   exact subset_closure_withConstants
 
 end Substructure
@@ -926,7 +926,7 @@ namespace Equiv
 
 theorem toHom_range (f : M ≃[L] N) : f.toHom.range = ⊤ := by
   ext n
-  simp only [Hom.mem_range, coe_toHom, Substructure.mem_top, iff_true_iff]
+  simp only [Hom.mem_range, coe_toHom, Substructure.mem_top, iff_true]
   exact ⟨f.symm n, apply_symm_apply _ _⟩
 
 end Equiv
