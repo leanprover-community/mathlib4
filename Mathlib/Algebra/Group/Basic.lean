@@ -148,12 +148,12 @@ section CommSemigroup
 variable [CommSemigroup G]
 
 @[to_additive]
-theorem mul_left_comm : ∀ a b c : G, a * (b * c) = b * (a * c) :=
-  left_comm Mul.mul mul_comm mul_assoc
+theorem mul_left_comm (a b c : G) : a * (b * c) = b * (a * c) := by
+  rw [← mul_assoc, mul_comm a, mul_assoc]
 
 @[to_additive]
-theorem mul_right_comm : ∀ a b c : G, a * b * c = a * c * b :=
-  right_comm Mul.mul mul_comm mul_assoc
+theorem mul_right_comm (a b c : G) : a * b * c = a * c * b := by
+  rw [mul_assoc, mul_comm b, mul_assoc]
 
 @[to_additive]
 theorem mul_mul_mul_comm (a b c d : G) : a * b * (c * d) = a * c * (b * d) := by
