@@ -39,6 +39,7 @@ variable [MonoidalCategory V]
 instance instMonoidalCategory : MonoidalCategory (Action V G) :=
   Monoidal.transport (Action.functorCategoryEquivalence _ _).symm
 
+/- Adding this solves `simpNF` linter report at `tensorUnit_ρ` -/
 @[simp]
 theorem tensorUnit_ρ' {g : G} :
     @DFunLike.coe (G →* MonCat.of (End (𝟙_ V))) _ _ _ (𝟙_ (Action V G)).ρ g = 𝟙 (𝟙_ V) := by
@@ -48,6 +49,7 @@ theorem tensorUnit_ρ' {g : G} :
 theorem tensorUnit_ρ {g : G} : (𝟙_ (Action V G)).ρ g = 𝟙 (𝟙_ V) :=
   rfl
 
+/- Adding this solves `simpNF` linter report at `tensor_ρ` -/
 @[simp]
 theorem tensor_ρ' {X Y : Action V G} {g : G} :
     @DFunLike.coe (G →* MonCat.of (End (X.V ⊗ Y.V))) _ _ _ (X ⊗ Y).ρ g = X.ρ g ⊗ Y.ρ g :=
@@ -239,7 +241,7 @@ noncomputable def leftRegularTensorIso (G : Type u) [Group G] (X : Action (Type 
       comm := fun (g : G) => by
         funext ⟨(x₁ : G), (x₂ : X.V)⟩
         refine Prod.ext rfl ?_
-        erw [tensor_rho, tensor_rho]
+        rw [tensor_ρ, tensor_ρ]
         dsimp
         -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
         erw [leftRegular_ρ_apply]
