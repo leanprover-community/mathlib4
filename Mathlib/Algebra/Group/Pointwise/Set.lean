@@ -1146,7 +1146,7 @@ theorem isUnit_singleton (a : α) : IsUnit ({a} : Set α) :=
 
 @[to_additive (attr := simp)]
 theorem isUnit_iff_singleton : IsUnit s ↔ ∃ a, s = {a} := by
-  simp only [isUnit_iff, Group.isUnit, and_true_iff]
+  simp only [isUnit_iff, Group.isUnit, and_true]
 
 @[to_additive (attr := simp)]
 theorem image_mul_left : (a * ·) '' t = (a⁻¹ * ·) ⁻¹' t := by

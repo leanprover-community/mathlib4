@@ -52,7 +52,7 @@ theorem _root_.Squarefree.natFactorization_le_one {n : ℕ} (p : ℕ) (hn : Squa
   rw [multiplicity.squarefree_iff_multiplicity_le_one] at hn
   by_cases hp : p.Prime
   · have := hn p
-    simp only [multiplicity_eq_factorization hp hn', Nat.isUnit_iff, hp.ne_one, or_false_iff]
+    simp only [multiplicity_eq_factorization hp hn', Nat.isUnit_iff, hp.ne_one, or_false]
       at this
     exact mod_cast this
   · rw [factorization_eq_zero_of_non_prime _ hp]

@@ -715,7 +715,7 @@ theorem isUnit_pure (a : α) : IsUnit (pure a : Filter α) :=
 
 @[simp]
 theorem isUnit_iff_singleton : IsUnit f ↔ ∃ a, f = pure a := by
-  simp only [isUnit_iff, Group.isUnit, and_true_iff]
+  simp only [isUnit_iff, Group.isUnit, and_true]
 
 @[to_additive]
 theorem map_inv' : f⁻¹.map m = (f.map m)⁻¹ :=

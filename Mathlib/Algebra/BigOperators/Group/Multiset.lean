@@ -36,17 +36,17 @@ variable [CommMonoid α] [CommMonoid β] {s t : Multiset α} {a : α} {m : Multi
       "Sum of a multiset given a commutative additive monoid structure on `α`.
       `sum {a, b, c} = a + b + c`"]
 def prod : Multiset α → α :=
-  foldr (· * ·) (fun x y z => by simp [mul_left_comm]) 1
+  foldr (· * ·) 1
 
 @[to_additive]
 theorem prod_eq_foldr (s : Multiset α) :
-    prod s = foldr (· * ·) (fun x y z => by simp [mul_left_comm]) 1 s :=
+    prod s = foldr (· * ·) 1 s :=
   rfl
 
 @[to_additive]
 theorem prod_eq_foldl (s : Multiset α) :
-    prod s = foldl (· * ·) (fun x y z => by simp [mul_right_comm]) 1 s :=
-  (foldr_swap _ _ _ _).trans (by simp [mul_comm])
+    prod s = foldl (· * ·) 1 s :=
+  (foldr_swap _ _ _).trans (by simp [mul_comm])
 
 @[to_additive (attr := simp, norm_cast)]
 theorem prod_coe (l : List α) : prod ↑l = l.prod :=
@@ -63,7 +63,7 @@ theorem prod_zero : @prod α _ 0 = 1 :=
 
 @[to_additive (attr := simp)]
 theorem prod_cons (a : α) (s) : prod (a ::ₘ s) = a * prod s :=
-  foldr_cons _ _ _ _ _
+  foldr_cons _ _ _ _
 
 @[to_additive (attr := simp)]
 theorem prod_erase [DecidableEq α] (h : a ∈ s) : a * (s.erase a).prod = s.prod := by
@@ -183,7 +183,7 @@ theorem prod_map_prod_map (m : Multiset β') (n : Multiset γ) {f : β' → γ �
 theorem prod_induction (p : α → Prop) (s : Multiset α) (p_mul : ∀ a b, p a → p b → p (a * b))
     (p_one : p 1) (p_s : ∀ a ∈ s, p a) : p s.prod := by
   rw [prod_eq_foldr]
-  exact foldr_induction (· * ·) (fun x y z => by simp [mul_left_comm]) 1 p s p_mul p_one p_s
+  exact foldr_induction (· * ·) 1 p s p_mul p_one p_s
 
 @[to_additive]
 theorem prod_induction_nonempty (p : α → Prop) (p_mul : ∀ a b, p a → p b → p (a * b)) (hs : s ≠ ∅)
