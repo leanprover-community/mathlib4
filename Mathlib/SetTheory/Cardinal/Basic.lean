@@ -131,7 +131,7 @@ theorem inductionOn₃ {p : Cardinal → Cardinal → Cardinal → Prop} (c₁ :
   Quotient.inductionOn₃ c₁ c₂ c₃ h
 
 theorem induction_on_pi {ι : Type u} {p : (ι → Cardinal.{v}) → Prop}
-    (f : ι → Cardinal.{v}) (h : ∀ f : ι → Type v, p (fun i ↦ #(f i))) : p f :=
+    (f : ι → Cardinal.{v}) (h : ∀ f : ι → Type v, p fun i ↦ #(f i)) : p f :=
   Quotient.induction_on_pi f h
 
 protected theorem eq : #α = #β ↔ Nonempty (α ≃ β) :=
@@ -933,7 +933,7 @@ theorem mk_pi_congr_subtype {ι : Type u} {f g : ι → Type v} {S : Set ι}
   have h' : Π i ∈ S, f i ≃ g i := fun i is ↦ Classical.choice <| Cardinal.eq.mp (h i is)
   mk_congr
   ⟨fun f' i is ↦ h' i is (f' i is) , fun g' i is ↦ (h' i is).symm (g' i is),
-  fun _ ↦ by simp only [Equiv.symm_apply_apply],
+  fun h'' ↦ by simp only [Equiv.symm_apply_apply],
   fun _ ↦ by simp only [Equiv.apply_symm_apply]⟩
 
 @[simp]
@@ -960,7 +960,8 @@ theorem power_sum {ι} (a : Cardinal) (f : ι → Cardinal) :
     a ^ sum f = prod fun i ↦ a ^ f i :=
   inductionOn a fun α ↦ by
     apply induction_on_pi f fun f ↦ ?_
-    rw [prod, sum, power_def]; simp_rw [power_def]
+    rw [prod, sum]
+    simp_rw [power_def]
     convert mk_sigma_arrow α f using 1
     · exact mk_congr <| Equiv.arrowCongr
         (Equiv.sigmaCongr (Equiv.cast rfl) (fun _ ↦ outMkEquiv)) (Equiv.refl α)
