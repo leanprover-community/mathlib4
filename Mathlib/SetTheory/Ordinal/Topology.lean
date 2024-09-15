@@ -229,7 +229,7 @@ theorem enumOrd_isNormal_iff_isClosed (hs : s.Unbounded (· < ·)) :
     suffices enumOrd s (⨆ i, g i) = ⨆ i, f i by
       rw [← this]
       exact enumOrd_mem hs _
-    rw [@IsNormal.iSup.{u, u, u} _ h ι g hι]
+    rw [IsNormal.map_iSup h g]
     congr
     ext x
     change ((enumOrdOrderIso hs) _).val = f x
