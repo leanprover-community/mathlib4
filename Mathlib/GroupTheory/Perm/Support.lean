@@ -336,7 +336,7 @@ theorem apply_mem_support {x : α} : f x ∈ f.support ↔ x ∈ f.support := by
 theorem isInvariant_of_support_le {c : Perm α} {s : Finset α} (hcs : c.support ≤ s) (x : α) :
     x ∈ s ↔ c x ∈ s := by
   by_cases hx' : x ∈ c.support
-  · simp only [hcs hx', true_iff_iff, hcs (apply_mem_support.mpr hx')]
+  · simp only [hcs hx', true_iff, hcs (apply_mem_support.mpr hx')]
   · rw [not_mem_support.mp hx']
 
 /-- A permutation c is the extension of a restriction of g to s
