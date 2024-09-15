@@ -138,8 +138,7 @@ lemma paretoCDFReal_eq_integral {t r : ℝ} (ht : 0 < t) (hr : 0 < r) (x : ℝ) 
   have : IsProbabilityMeasure (paretoMeasure t r) := isProbabilityMeasurePareto ht hr
   rw [paretoCDFReal, cdf_eq_toReal, paretoMeasure, withDensity_apply _ measurableSet_Iic]
   refine (integral_eq_lintegral_of_nonneg_ae ?_ ?_).symm
-  · apply ae_of_all
-    simp [Pi.zero_apply, paretoPDFReal_nonneg (le_of_lt ht) (le_of_lt hr)]
+  · exact ae_of_all _ fun _ ↦ by simp only [Pi.zero_apply, paretoPDFReal_nonneg ht.le hr.le]
   · exact (measurable_paretoPDFReal t r).aestronglyMeasurable.restrict
 
 lemma paretoCDFReal_eq_lintegral {t r : ℝ} (ht : 0 < t) (hr : 0 < r) (x : ℝ) :
