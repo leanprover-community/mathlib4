@@ -644,8 +644,7 @@ lemma map_j : (E.map φ).j = φ E.j := by
 
 lemma map_injective {φ : R →+* A} (hφ : Function.Injective φ) :
     Function.Injective <| map (φ := φ) := fun _ _ h => by
-  rcases mk.inj h with ⟨h1, h2⟩
-  replace h2 := (Units.mk.inj h2).left
+  rcases mk.inj h with ⟨h1, _⟩
   rcases WeierstrassCurve.mk.inj h1 with ⟨_, _, _, _, _⟩
   ext <;> apply_fun _ using hφ <;> assumption
 
