@@ -158,9 +158,7 @@ corresponds to starting from a Taylor series (`HasFTaylorSeriesUpTo`) for the de
 function, and building a Taylor series for the function itself. -/
 def unshift (q : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F)) (z : F) : FormalMultilinearSeries 𝕜 E F
   | 0 => (continuousMultilinearCurryFin0 𝕜 E F).symm z
-  | n + 1 => -- Porting note: added type hint here and explicit universes to fix compile
-    (continuousMultilinearCurryRightEquiv' 𝕜 n E F :
-      (E [×n]→L[𝕜] E →L[𝕜] F) → (E [×n.succ]→L[𝕜] F)) (q n)
+  | n + 1 => (continuousMultilinearCurryRightEquiv' 𝕜 n E F).symm (q n)
 
 end FormalMultilinearSeries
 
@@ -316,7 +314,7 @@ def constFormalMultilinearSeries (𝕜 : Type*) [NontriviallyNormedField 𝕜] (
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [ContinuousConstSMul 𝕜 E] [TopologicalAddGroup E]
     {F : Type*} [NormedAddCommGroup F] [TopologicalAddGroup F] [NormedSpace 𝕜 F]
     [ContinuousConstSMul 𝕜 F] (c : F) : FormalMultilinearSeries 𝕜 E F
-  | 0 => ContinuousMultilinearMap.curry0 _ _ c
+  | 0 => ContinuousMultilinearMap.uncurry0 _ _ c
   | _ => 0
 
 @[simp]
@@ -333,7 +331,7 @@ lemma constFormalMultilinearSeries_zero [NontriviallyNormedField 𝕜] [NormedAd
   simp only [FormalMultilinearSeries.zero_apply, ContinuousMultilinearMap.zero_apply,
     constFormalMultilinearSeries]
   induction n
-  · simp only [ContinuousMultilinearMap.curry0_apply]
+  · simp only [ContinuousMultilinearMap.uncurry0_apply]
   · simp only [constFormalMultilinearSeries.match_1.eq_2, ContinuousMultilinearMap.zero_apply]
 
 end Const
@@ -349,12 +347,12 @@ namespace ContinuousLinearMap
 /-- Formal power series of a continuous linear map `f : E →L[𝕜] F` at `x : E`:
 `f y = f x + f (y - x)`. -/
 def fpowerSeries (f : E →L[𝕜] F) (x : E) : FormalMultilinearSeries 𝕜 E F
-  | 0 => ContinuousMultilinearMap.curry0 𝕜 _ (f x)
+  | 0 => ContinuousMultilinearMap.uncurry0 𝕜 _ (f x)
   | 1 => (continuousMultilinearCurryFin1 𝕜 E F).symm f
   | _ => 0
 
 theorem fpowerSeries_apply_zero (f : E →L[𝕜] F) (x : E) :
-    f.fpowerSeries x 0 = ContinuousMultilinearMap.curry0 𝕜 _ (f x) :=
+    f.fpowerSeries x 0 = ContinuousMultilinearMap.uncurry0 𝕜 _ (f x) :=
   rfl
 
 theorem fpowerSeries_apply_one (f : E →L[𝕜] F) (x : E) :
