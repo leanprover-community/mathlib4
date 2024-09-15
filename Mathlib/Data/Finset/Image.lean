@@ -429,10 +429,6 @@ theorem filter_image {p : β → Prop} [DecidablePred p] :
       ⟨by rintro ⟨⟨x, h1, rfl⟩, h2⟩; exact ⟨x, ⟨h1, h2⟩, rfl⟩,
        by rintro ⟨x, ⟨h1, h2⟩, rfl⟩; exact ⟨⟨x, h1, rfl⟩, h2⟩⟩
 
-theorem filter_mem_image_eq_image (h : ∀ x ∈ s, f x ∈ t) :
-    t.filter (· ∈ s.image f) = s.image f := by
-  rwa [filter_mem_eq_inter, inter_eq_right, image_subset_iff]
-
 theorem fiber_nonempty_iff_mem_image (y : β) : (s.filter (f · = y)).Nonempty ↔ y ∈ s.image f := by
   simp [Finset.Nonempty]
 
