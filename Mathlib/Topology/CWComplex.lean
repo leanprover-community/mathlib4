@@ -52,7 +52,7 @@ def generalizedSigmaSphereInclusion (cells : Type) :
 
 /-- Given an attaching map for each `S` (boundary of a generalized cell), we construct
 the attaching map for the disjoint union of all the `S`. -/
-def generalizedSigmaAttachMap (S X : TopCat.{u}) (cells : Type) (attach_maps : cells → C(S, X)) :
+def generalizedSigmaAttachMap (S X : TopCat.{u}) {cells : Type} (attach_maps : cells → C(S, X)) :
     TopCat.of (Σ (_ : cells), S) ⟶ X where
   toFun := fun ⟨i, x⟩ ↦ attach_maps i x
   continuous_toFun := continuous_sigma fun i ↦ (attach_maps i).continuous_toFun
@@ -65,7 +65,7 @@ structure AttachGeneralizedCells (X X' : TopCat.{u}) where
   attach_maps : cells → C(S, X)
   /-- `X'` is the pushout obtained from `X` along `sigmaAttachMap`. -/
   iso_pushout : X' ≅ Limits.pushout (generalizedSigmaSphereInclusion f cells)
-    (generalizedSigmaAttachMap S X cells attach_maps)
+    (generalizedSigmaAttachMap S X attach_maps)
 
 /-- The inclusion map from the disjoint union of `n`-spheres to the disjoint union of `(n+1)`-disks,
 where both of the disjoint unions are indexed by `cells` -/
@@ -105,7 +105,7 @@ noncomputable section Topology
 `(n+1)`-disks -/
 def AttachCells.inclusion (X X' : TopCat.{u}) (n : ℤ) (att : AttachCells n X X') : X ⟶ X' :=
   @Limits.pushout.inr TopCat _ _ _ X (sigmaSphereInclusion n att.cells)
-    (sigmaAttachMap n X att.cells att.attach_maps) _ ≫ att.iso_pushout.inv
+    (sigmaAttachMap n X att.attach_maps) _ ≫ att.iso_pushout.inv
 
 /-- The inclusion map from `sk n` (i.e., the `(n-1)`-skeleton) to `sk (n+1)` (i.e., the
 `n`-skeleton) of a relative CW-complex -/
