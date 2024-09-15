@@ -286,7 +286,7 @@ def fixInduction {C : α → Sort*} {f : α →. β ⊕ α} {b : β} {a : α} (h
   have h₂ := (Part.mem_assert_iff.1 h).snd
   generalize_proofs at h₂
   clear h
-  induction' ‹Acc _ _› with a ha IH
+  induction ‹Acc _ _› with | intro a ha IH => _
   have h : b ∈ f.fix a := Part.mem_assert_iff.2 ⟨⟨a, ha⟩, h₂⟩
   exact H a h fun a' fa' => IH a' fa' (Part.mem_assert_iff.1 (fix_fwd h fa')).snd
 
@@ -545,7 +545,7 @@ theorem mem_prodLift {f : α →. β} {g : α →. γ} {x : α} {y : β × γ} :
   trans ∃ hp hq, (f x).get hp = y.1 ∧ (g x).get hq = y.2
   · simp only [prodLift, Part.mem_mk_iff, And.exists, Prod.ext_iff]
   -- Porting note: was just `[exists_and_left, exists_and_right]`
-  · simp only [exists_and_left, exists_and_right, (· ∈ ·), Part.Mem]
+  · simp only [exists_and_left, exists_and_right, Membership.mem, Part.Mem]
 
 /-- Product of partial functions. -/
 def prodMap (f : α →. γ) (g : β →. δ) : α × β →. γ × δ := fun x =>
@@ -569,7 +569,7 @@ theorem mem_prodMap {f : α →. γ} {g : β →. δ} {x : α × β} {y : γ × 
     y ∈ f.prodMap g x ↔ y.1 ∈ f x.1 ∧ y.2 ∈ g x.2 := by
   trans ∃ hp hq, (f x.1).get hp = y.1 ∧ (g x.2).get hq = y.2
   · simp only [prodMap, Part.mem_mk_iff, And.exists, Prod.ext_iff]
-  · simp only [exists_and_left, exists_and_right, (· ∈ ·), Part.Mem]
+  · simp only [exists_and_left, exists_and_right, Membership.mem, Part.Mem]
 
 @[simp]
 theorem prodLift_fst_comp_snd_comp (f : α →. γ) (g : β →. δ) :
