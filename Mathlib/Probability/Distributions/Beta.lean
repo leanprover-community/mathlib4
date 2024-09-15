@@ -9,49 +9,40 @@ import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
 
 /-! # Beta distributions over ℝ
 
-Define the beta measure over the reals.
+Define the Beta measure over the reals.
 
 ## Main definitions
 * `betaPDFReal`: the function `a b x ↦ 1 / (betaIntegral a b) * x ^ (a - 1) * (1 - x) ^ (b - 1)`
-  for `0 ≤ x` or `0` else, which is the probability density function of a beta distribution with
-  shape `a` and rate `r` (when `ha : 0 < a ` and `hb: 0 < b`).
+  for `0 ≤ x` or `0` else, which is the probability density function of a Beta distribution with
+  shape parameters `a` and `b` (when `ha : 0 < a ` and `hb: 0 < b`).
 * `betaPDF`: `ℝ≥0∞`-valued pdf,
   `betaPDF a b = ENNReal.ofReal (betaPDFReal a b)`.
-* `betaMeasure`: a beta measure on `ℝ`, parametrized by its shape `a` and rate `r`.
+* `betaMeasure`: a Beta measure on `ℝ`, parametrized by its shape parameters `a` and `b`.
 * `betaCDFReal`: the CDF given by the definition of CDF in `ProbabilityTheory.CDF` applied to the
-  beta measure.
+  Beta measure.
 -/
 
 open scoped ENNReal NNReal
 
 open MeasureTheory Real Set Filter Topology
 
-/-- A Lebesgue Integral from -∞ to y can be expressed as the sum of one from -∞ to 0 and 0 to x -/
-lemma lintegral_Iic_eq_lintegral_Iio_add_Icc {y z : ℝ} (f : ℝ → ℝ≥0∞) (hzy : z ≤ y) :
-    ∫⁻ x in Iic y, f x = (∫⁻ x in Iio z, f x) + ∫⁻ x in Icc z y, f x := by
-  rw [← Iio_union_Icc_eq_Iic hzy, lintegral_union measurableSet_Icc]
-  rw [Set.disjoint_iff]
-  rintro x ⟨h1 : x < _, h2, _⟩
-  linarith
-
 namespace ProbabilityTheory
 
 section BetaPDF
 
-/-- The pdf of the beta distribution depending on its scale and rate -/
-noncomputable
-def betaPDFReal (a b x : ℝ) : ℝ :=
+/-- The pdf of the Beta distribution depending on its scale and rate. -/
+noncomputable def betaPDFReal (a b x : ℝ) : ℝ :=
   if 0 < x ∧ x < 1 then 1 / (Beta a b) * x ^ (a - 1) * (1 - x) ^ (b - 1) else 0
 
-/-- The pdf of the beta distribution, as a function valued in `ℝ≥0∞` -/
-noncomputable
-def betaPDF (a b x : ℝ) : ℝ≥0∞ :=
+/-- The pdf of the Beta distribution, as a function valued in `ℝ≥0∞` -/
+noncomputable def betaPDF (a b x : ℝ) : ℝ≥0∞ :=
   ENNReal.ofReal (betaPDFReal a b x)
 
 lemma betaPDF_eq (a b x : ℝ) :
     betaPDF a b x = ENNReal.ofReal (if 0 < x ∧ x < 1
     then 1 / (Beta a b) * x ^ (a - 1) * (1 - x) ^ (b - 1) else 0) := rfl
 
+-- TODO: if a,b <= 0, result holds by the integrand vanishing.
 lemma betaPDFReal_nonneg {a b : ℝ} (ha : 0 < a) (hb : 0 < b) (x : ℝ) : 0 ≤ betaPDFReal a b x := by
   unfold betaPDFReal
   split_ifs with ht
@@ -60,23 +51,27 @@ lemma betaPDFReal_nonneg {a b : ℝ} (ha : 0 < a) (hb : 0 < b) (x : ℝ) : 0 ≤
       have hp : 1 - x ≥ 0 := by linarith
       exact rpow_nonneg hp (b - 1)
     have hbeta:= Beta_pos ha hb
-
     positivity
   trivial
 
-lemma betaPDF_of_non01 {a b x : ℝ} (hx : x <= 0 ∨ x >= 1) : betaPDF a b x = 0 := by
+lemma betaPDF_of_nonpos_or_one_le {a b x : ℝ} (hx : x <= 0 ∨ 1 ≤ x) : betaPDF a b x = 0 := by
   rw [betaPDF_eq]
   have hx_n : ¬(0 < x ∧ x < 1) := by
     simp only [not_and_or, not_lt]
     exact hx
-
   rw [if_neg hx_n, ENNReal.ofReal_zero]
 
-lemma betaPDF_of_01 {a b x : ℝ} (hx : 0 < x ∧ x < 1) :
+lemma betaPDF_of_nonpos {a b x : ℝ} (hx : x <= 0) : betaPDF a b x = 0 :=
+betaPDF_of_nonpos_or_one_le (Or.inl hx)
+
+lemma betaPDF_of_one_le {a b x : ℝ} (hx : 1 ≤ x) : betaPDF a b x = 0 :=
+betaPDF_of_nonpos_or_one_le (Or.inr hx)
+
+lemma betaPDF_of_pos_lt_one {a b x : ℝ} (hx : 0 < x ∧ x < 1) :
     betaPDF a b x = ENNReal.ofReal (1 / (Beta a b) * x ^ (a - 1) * (1 - x) ^ (b - 1)) := by
   simp only [betaPDF_eq, if_pos hx]
 
-/-- The Lebesgue integral of the beta pdf over nonpositive reals equals 0 -/
+/-- The Lebesgue integral of the Beta pdf over nonpositive reals equals 0. -/
 lemma lintegral_betaPDF_of_nonpos {x a b : ℝ} (hx : x ≤ 0) :
     ∫⁻ y in Iio x, betaPDF a b y = 0 := by
   rw [setLIntegral_congr_fun (g := fun _ ↦ 0) measurableSet_Iio]
@@ -87,10 +82,9 @@ lemma lintegral_betaPDF_of_nonpos {x a b : ℝ} (hx : x ≤ 0) :
       simp only [not_and_or, not_lt]
       left
       linarith
-
     rw [if_neg hx_a]
 
-lemma lintegral_betaPDF_of_1up {x a b : ℝ} (hx : x ≥ 1) :
+lemma lintegral_betaPDF_of_one_le {x a b : ℝ} (hx : 1 ≤ x) :
     ∫⁻ y in Ioi x, betaPDF a b y = 0 := by
   rw [setLIntegral_congr_fun (g := fun _ ↦ 0) measurableSet_Ioi]
   · rw [lintegral_zero, ← ENNReal.ofReal_zero]
@@ -100,18 +94,17 @@ lemma lintegral_betaPDF_of_1up {x a b : ℝ} (hx : x ≥ 1) :
       simp only [not_and_or, not_lt]
       right
       linarith
-
     rw [if_neg hx_a]
 
-/-- The beta pdf is measurable. -/
-@[measurability]
+/-- The Beta pdf is measurable. -/
+@[measurability, fun_prop]
 lemma measurable_betaPDFReal (a b : ℝ) : Measurable (betaPDFReal a b) :=
   Measurable.ite
     measurableSet_Ioo (((measurable_id'.pow_const _).const_mul _).mul
     ((measurable_const.sub' measurable_id').pow_const _))
     measurable_const
 
-/-- The beta pdf is strongly measurable -/
+/-- The Beta pdf is strongly measurable. -/
 @[measurability]
  lemma stronglyMeasurable_betaPDFReal (a b : ℝ) :
      StronglyMeasurable (betaPDFReal a b) :=
@@ -119,7 +112,7 @@ lemma measurable_betaPDFReal (a b : ℝ) : Measurable (betaPDFReal a b) :=
 
 open Measure
 
-/-- A Lebesgue Integral from -∞ to y can be expressed as the sum of one from -∞ to 0 and 0 to x -/
+/-- A Lebesgue Integral from -∞ to y can be expressed as the sum of one from -∞ to 0 and 0 to x. -/
 lemma lintegral_Iio_eq_lintegral_Iic_add_Ioo {y z : ℝ} (f : ℝ → ℝ≥0∞) (hzy : z < y) :
     ∫⁻ x in Iio y, f x = (∫⁻ x in Iic z, f x) + ∫⁻ x in Ioo z y, f x := by
   rw [← Iic_union_Ioo_eq_Iio hzy, lintegral_union measurableSet_Ioo]
@@ -127,60 +120,41 @@ lemma lintegral_Iio_eq_lintegral_Iic_add_Ioo {y z : ℝ} (f : ℝ → ℝ≥0∞
   rintro x ⟨h1 : x ≤ _, h2, _⟩
   linarith
 
-/-- The pdf of the beta distribution integrates to 1 -/
+/-- The pdf of the Beta distribution integrates to 1. -/
 @[simp]
 lemma lintegral_betaPDF_eq_one {a b : ℝ} (ha : 0 < a) (hb: 0 < b) :
     ∫⁻ x, betaPDF a b x = 1 := by
   have left : ∫⁻ x in Iic 0, betaPDF a b x = 0 := by
     rw [setLIntegral_congr_fun measurableSet_Iic
-      (ae_of_all _ (fun x (hx : x ≤ 0) ↦ betaPDF_of_non01 (Or.inl hx))), lintegral_zero]
-
+      (ae_of_all _ (fun x (hx : x ≤ 0) ↦ betaPDF_of_nonpos hx)), lintegral_zero]
   have middle : ∫⁻ x in Ioo 0 1, betaPDF a b x =
       ∫⁻ x in Ioo 0 1, ENNReal.ofReal (1 / (Beta a b) * x ^ (a - 1) * (1 - x) ^ (b - 1)) :=
-    setLIntegral_congr_fun measurableSet_Ioo (ae_of_all _ (fun _ ↦ betaPDF_of_01))
-
+    setLIntegral_congr_fun measurableSet_Ioo (ae_of_all _ (fun _ ↦ betaPDF_of_pos_lt_one))
   have right : ∫⁻ x in Ici 1, betaPDF a b x = 0 := by
     rw [setLIntegral_congr_fun measurableSet_Ici
-      (ae_of_all _ (fun x (hx : x ≥ 1) ↦ betaPDF_of_non01 (Or.inr hx))), lintegral_zero]
-
+      (ae_of_all _ (fun x (hx : x ≥ 1) ↦ betaPDF_of_one_le hx)), lintegral_zero]
   have leftmid : ∫⁻ x in Iio 1, betaPDF a b x =
   ∫⁻ x in Ioo 0 1, ENNReal.ofReal (1 / (Beta a b) * x ^ (a - 1) * (1 - x) ^ (b - 1)) := by
-    have expand : ∫⁻ x in Iio 1, betaPDF a b x =
-    (∫⁻ x in Iic 0, betaPDF a b x) + (∫⁻ x in Ioo 0 1, betaPDF a b x) := by
-      apply lintegral_Iio_eq_lintegral_Iic_add_Ioo (betaPDF a b)
-      apply zero_lt_one
-    rw [expand, left, middle, zero_add]
-
+    rw [lintegral_Iio_eq_lintegral_Iic_add_Ioo _ zero_lt_one, left, middle, zero_add]
   rw [← lintegral_add_compl _ measurableSet_Ici, compl_Ici,
     leftmid, right, zero_add]
   rw [← ENNReal.toReal_eq_one_iff, ← integral_eq_lintegral_of_nonneg_ae]
-
   · simp_rw [mul_assoc]
-    rw [integral_mul_left]
-    rw [← BetaIntegral_ofReal ha hb]
-    ring_nf
-    apply DivisionRing.mul_inv_cancel
-    have h_betapos := Beta_pos ha hb
-    positivity
+    rw [integral_mul_left, ← BetaIntegral_ofReal ha hb, one_div_mul_cancel (Beta_pos ha hb).ne']
   · rw [EventuallyLE, ae_restrict_iff' measurableSet_Ioo]
-    exact ae_of_all _ (fun x (hx : 0 < x ∧ x < 1) ↦ by
-      rw [Pi.zero_apply]
-      have hpos := betaPDFReal_nonneg ha hb
-      unfold betaPDFReal at hpos
-      specialize hpos x
-      rw [if_pos hx] at hpos
-      exact hpos
-    )
+    refine ae_of_all _ fun x hx ↦ ?_
+    convert betaPDFReal_nonneg ha hb x using 1
+    rw [betaPDFReal, if_pos (mem_Ioo.1 hx)]
   · apply (measurable_betaPDFReal a b).aestronglyMeasurable.congr
     refine (ae_restrict_iff' measurableSet_Ioo).mpr <| ae_of_all _ fun x (hx : 0 < x ∧ x < 1) ↦ ?_
     simp_rw [betaPDFReal, eq_true_intro hx, ite_true]
+
 end BetaPDF
 
 open MeasureTheory
 
-/-- Measure defined by the beta distribution -/
-noncomputable
-def betaMeasure (a b : ℝ) : Measure ℝ :=
+/-- Measure defined by the Beta distribution. -/
+noncomputable def betaMeasure (a b : ℝ) : Measure ℝ :=
   volume.withDensity (betaPDF a b)
 
 lemma isProbabilityMeasureBeta {a b : ℝ} (ha : 0 < a) (hb: 0 < b) :
@@ -189,9 +163,8 @@ lemma isProbabilityMeasureBeta {a b : ℝ} (ha : 0 < a) (hb: 0 < b) :
 
 section BetaCDF
 
-/-- CDF of the beta distribution -/
-noncomputable
-def betaCDFReal (a b : ℝ) : StieltjesFunction :=
+/-- CDF of the Beta distribution. -/
+noncomputable def betaCDFReal (a b : ℝ) : StieltjesFunction :=
   cdf (betaMeasure a b)
 
 lemma betaCDFReal_eq_integral {a b : ℝ} (ha : 0 < a) (hb: 0 < b) (x : ℝ) :

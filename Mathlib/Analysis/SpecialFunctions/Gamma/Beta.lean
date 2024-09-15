@@ -504,24 +504,8 @@ lemma BetaIntegral_ofReal_interval {a b : ℝ} (ha : 0 < a) (hb : 0 < b) :
   exact Complex.betaIntegral_convergent ha' hb'
 
 lemma BetaIntegral_ofReal {a b : ℝ} (ha : 0 < a) (hb : 0 < b) :
-    Beta a b = ∫ (x : ℝ) in Ioo 0 1, x ^ (a - 1) * (1 - x) ^ (b - 1) := by
-  rw [Beta, Complex.betaIntegral]
-  rw [BetaIntegral_ofReal_interval ha hb]
-  rw [intervalIntegral.integral_of_le (by norm_num)]
-  rw [integral_Ioc_eq_integral_Ioo]
-
-private lemma Beta_integrable_cast {a b : ℝ} :
-    IntervalIntegrable (fun x ↦ (x : ℂ) ^ (↑a - 1:ℂ) * (1 - ↑x) ^ (↑b - 1:ℂ)) volume 0 1 ↔
-    IntervalIntegrable (fun x ↦ x ^ (a - 1) * (1 - x) ^ (b - 1)) volume 0 1 := by
-  rw [intervalIntegrable_iff_integrableOn_Ioc_of_le (by norm_num),
-    intervalIntegrable_iff_integrableOn_Ioc_of_le (by norm_num),
-    integrableOn_iff_ofReal]
-  refine integrableOn_congr_fun (fun x hx ↦ ?_) measurableSet_Ioc
-  rw [mem_Ioc] at hx
-  norm_cast
-  rw [← Complex.ofReal_cpow, ← Complex.ofReal_cpow]
-  simp
-  any_goals linarith
+    Beta a b = ∫ (x : ℝ) in (0)..1, x ^ (a - 1) * (1 - x) ^ (b - 1) := by
+    rw [Beta, Complex.betaIntegral, BetaIntegral_ofReal_interval ha hb]
 
 lemma Beta_integrand_intervalIntegrable {a b : ℝ} (ha : 0 < a) (hb : 0 < b):
     IntervalIntegrable (fun x ↦ x ^ (a - 1) * (1 - x) ^ (b - 1)) volume 0 1 := by
@@ -531,14 +515,23 @@ lemma Beta_integrand_intervalIntegrable {a b : ℝ} (ha : 0 < a) (hb : 0 < b):
   have hb' : 0 < (↑b : ℂ).re := by
     rw [Complex.ofReal_re]
     exact hb
-  have h := Complex.betaIntegral_convergent ha' hb'
-  rw [Beta_integrable_cast] at h
-  exact h
+  have : IntervalIntegrable (fun x ↦ (x : ℂ) ^ (↑a - 1:ℂ) * (1 - ↑x) ^ (↑b - 1:ℂ)) volume 0 1 ↔
+    IntervalIntegrable (fun x ↦ x ^ (a - 1) * (1 - x) ^ (b - 1)) volume 0 1 := by
+    rw [intervalIntegrable_iff_integrableOn_Ioc_of_le (by norm_num),
+    intervalIntegrable_iff_integrableOn_Ioc_of_le (by norm_num),
+    integrableOn_iff_ofReal]
+    refine integrableOn_congr_fun (fun x hx ↦ ?_) measurableSet_Ioc
+    rw [mem_Ioc] at hx
+    norm_cast
+    rw [← Complex.ofReal_cpow, ← Complex.ofReal_cpow]
+    simp
+    any_goals linarith
+
+  rw [← this]
+  exact Complex.betaIntegral_convergent ha' hb'
 
 lemma Beta_pos {a b : ℝ} (ha : 0 < a) (hb : 0 < b) : Beta a b > 0 := by
-  rw [Beta, Complex.betaIntegral]
-  rw [BetaIntegral_ofReal_interval ha hb]
-
+  rw [Beta, Complex.betaIntegral, BetaIntegral_ofReal_interval ha hb]
   apply intervalIntegral.intervalIntegral_pos_of_pos_on
   · exact Beta_integrand_intervalIntegrable ha hb
   · simp
