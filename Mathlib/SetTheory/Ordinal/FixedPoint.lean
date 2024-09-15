@@ -49,10 +49,10 @@ finitely many functions in the family to `a`.
 `Ordinal.nfpFamily_fp` shows this is a fixed point, `Ordinal.le_nfpFamily` shows it's at
 least `a`, and `Ordinal.nfpFamily_le_fp` shows this is the least ordinal with these properties. -/
 def nfpFamily (f : ι → Ordinal.{max u v} → Ordinal.{max u v}) (a : Ordinal.{max u v}) : Ordinal :=
-  iSup (List.foldr f a)
+  ⨆ i, List.foldr f a i
 
 theorem nfpFamily_eq_sup (f : ι → Ordinal.{max u v} → Ordinal.{max u v}) (a : Ordinal.{max u v}) :
-    nfpFamily.{u, v} f a = iSup (List.foldr f a) :=
+    nfpFamily.{u, v} f a = ⨆ i, List.foldr f a i :=
   rfl
 
 theorem foldr_le_nfpFamily (f : ι → Ordinal → Ordinal)
