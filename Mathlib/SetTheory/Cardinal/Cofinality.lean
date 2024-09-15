@@ -314,8 +314,10 @@ theorem cof_iSup_le_lift {ι} {f : ι → Ordinal} (H : ∀ i, f i < iSup f) :
 set_option linter.deprecated false in
 @[deprecated cof_iSup_le_lift (since := "2024-08-27")]
 theorem cof_sup_le_lift {ι} {f : ι → Ordinal} (H : ∀ i, f i < sup.{u, v} f) :
-    cof (sup.{u, v} f) ≤ Cardinal.lift.{v, u} #ι :=
-  cof_iSup_le_lift H
+    cof (sup.{u, v} f) ≤ Cardinal.lift.{v, u} #ι := by
+  rw [← sup_eq_lsub_iff_lt_sup.{u, v}] at H
+  rw [H]
+  exact cof_lsub_le_lift f
 
 theorem cof_iSup_le {ι} {f : ι → Ordinal} (H : ∀ i, f i < iSup f) :
     cof (iSup f) ≤ #ι := by
