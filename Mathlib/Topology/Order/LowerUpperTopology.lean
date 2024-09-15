@@ -510,20 +510,42 @@ lemma isLower_orderDual [Preorder α] [TopologicalSpace α] : IsLower αᵒᵈ �
 
 end Topology
 
-noncomputable instance : LinearOrder Prop := Prop.linearOrder
+lemma new1 : (Iic False)ᶜ = {True} := by
+  rw [compl_eq_comm, Prop.compl_singleton, not_true_eq_false]
+  aesop
 
-lemma test {X : Set Prop} (h : IsOpen X) : IsUpperSet X :=
-  match h with
-  | GenerateOpen.basic s hs => by aesop
-  | GenerateOpen.univ => fun ⦃a b⦄ _ a ↦ a
-  | GenerateOpen.inter s t hs ht => IsUpperSet.inter (test hs) (test ht)
-  | GenerateOpen.sUnion S hS => isUpperSet_sUnion (fun s hs => test (hS s hs))
+lemma new1b : (Iic True)ᶜ = ∅ := by
+  rw [compl_eq_comm, compl_empty]
+  aesop
 
-lemma isTop_True : IsTop True := fun _ _ ↦ trivial
+lemma new2 : ({{True}}) ⊆ {s  | ∃ a, (Iic a)ᶜ = s} := by
+  rw [singleton_subset_iff, mem_setOf_eq]
+  use False
+  exact new1
 
-lemma isBot_False : IsBot False := isBot_iff_eq_bot.mpr rfl
+lemma new3 : Topology.upper Prop ≤ generateFrom {{True}} := by
+  apply generateFrom_anti new2
 
-lemma test2 {a : Prop} : IsOpen (Iic a)ᶜ :=
-  by_cases (p := (a = True))
-    (fun h => by rw [h, IsTop.Iic_eq isTop_True, compl_univ]; exact isOpen_empty)
-    (fun h => by convert isOpen_singleton_true; rw [compl_eq_comm]; aesop)
+lemma new4 : {s  | ∃ a, (Iic a)ᶜ = s} = {∅, {True}} := by
+  rw [← new1b, ← new1]
+  rw [le_antisymm_iff]
+  constructor
+  · intro s hs
+    simp only [mem_setOf_eq] at hs
+    obtain ⟨a,ha⟩ := hs
+    simp only [mem_insert_iff, mem_singleton_iff]
+    rw [← ha]
+    by_cases h₁ : a = True
+    · apply Or.inl
+      rw [h₁]
+    · have h₂ : a = False := by
+        aesop
+      rw [h₂]
+      exact Or.inr rfl
+  · intro s hs
+    aesop
+
+lemma new5 : Topology.upper Prop = generateFrom {{True}} := by
+  rw [Topology.upper]
+  rw [new4]
+  rw [generateFrom_insert_empty]
