@@ -244,21 +244,25 @@ section Pi
 
 open Filter Fintype Pointwise Topology Bornology
 
-variable {ι : Type*} [Fintype ι] [DecidableEq ι]
+private theorem frontier_equivFun {E : Type*} [AddCommGroup E] [Module ℝ E] {ι : Type*} [Fintype ι]
+    [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousSMul ℝ E] [T2Space E]
+    (b : Basis ι ℝ E) (s : Set E) :
+    frontier (b.equivFun '' s) = b.equivFun '' (frontier s) := by
+  rw [LinearEquiv.image_eq_preimage, LinearEquiv.image_eq_preimage]
+  exact (Homeomorph.preimage_frontier b.equivFunL.toHomeomorph.symm s).symm
+
+variable {ι : Type*} [Fintype ι]
 variable (L : Submodule ℤ (ι → ℝ)) [DiscreteTopology L] [IsZLattice ℝ L]
 
 theorem tendsto_card_div_pow (b : Basis ι ℤ L) {s : Set (ι → ℝ)} (hs₁ : IsBounded s)
     (hs₂ : MeasurableSet s) (hs₃ : volume (frontier s) = 0) :
     Tendsto (fun n : ℕ ↦ (Nat.card (s ∩ (n : ℝ)⁻¹ • L : Set (ι → ℝ)) : ℝ) / n ^ card ι)
       atTop (𝓝 ((volume s).toReal / covolume L)) := by
+  classical
   convert tendsto_card_div_pow'' b hs₁ hs₂ ?_
   · rw [volume_image_eq_volume_div_covolume L b, ENNReal.toReal_div,
       ENNReal.toReal_ofReal (covolume_pos L volume).le]
-  · change volume (frontier ((b.ofZLatticeBasis ℝ L).equivFunL '' s)) = 0
-    rw [ContinuousLinearEquiv.image_eq_preimage, ← ContinuousLinearEquiv.coe_toHomeomorph,
-      ← Homeomorph.preimage_frontier, ContinuousLinearEquiv.coe_toHomeomorph,
-      ← ContinuousLinearEquiv.image_eq_preimage, Measure.addHaar_image_continuousLinearEquiv,
-      hs₃, mul_zero]
+  · rw [frontier_equivFun, volume_image_eq_volume_div_covolume, hs₃, ENNReal.zero_div]
 
 theorem tendsto_card_le_div {X : Set (ι → ℝ)} (hX : ∀ ⦃x⦄ ⦃r : ℝ⦄, x ∈ X → 0 ≤ r → r • x ∈ X)
     {F : (ι → ℝ) → ℝ} (h₁ : ∀ x ⦃r : ℝ⦄, 0 ≤ r →  F (r • x) = r ^ card ι * (F x))
@@ -267,6 +271,7 @@ theorem tendsto_card_le_div {X : Set (ι → ℝ)} (hX : ∀ ⦃x⦄ ⦃r : ℝ�
     Tendsto (fun c : ℝ ↦
       Nat.card ({x ∈ X | F x ≤ c} ∩ L : Set (ι → ℝ)) / (c : ℝ))
         atTop (𝓝 ((volume {x ∈ X | F x ≤ 1}).toReal / covolume L)) := by
+  classical
   let e : Free.ChooseBasisIndex ℤ ↥L ≃ ι := by
     refine Fintype.equivOfCardEq ?_
     rw [← finrank_eq_card_chooseBasisIndex, ZLattice.rank ℝ, finrank_fintype_fun_eq_card]
@@ -274,11 +279,7 @@ theorem tendsto_card_le_div {X : Set (ι → ℝ)} (hX : ∀ ⦃x⦄ ⦃r : ℝ�
   convert tendsto_card_le_div'' b hX h₁ h₂ h₃ ?_
   · rw [volume_image_eq_volume_div_covolume L b, ENNReal.toReal_div,
       ENNReal.toReal_ofReal (covolume_pos L volume).le]
-  · change volume (frontier ((b.ofZLatticeBasis ℝ L).equivFunL '' _)) = 0
-    rw [ContinuousLinearEquiv.image_eq_preimage, ← ContinuousLinearEquiv.coe_toHomeomorph,
-      ← Homeomorph.preimage_frontier, ContinuousLinearEquiv.coe_toHomeomorph,
-      ← ContinuousLinearEquiv.image_eq_preimage, Measure.addHaar_image_continuousLinearEquiv,
-      h₄, mul_zero]
+  · rw [frontier_equivFun, volume_image_eq_volume_div_covolume, h₄, ENNReal.zero_div]
 
 end Pi
 
@@ -299,12 +300,7 @@ theorem tendsto_card_div_pow' {s : Set E} (hs₁ : IsBounded s) (hs₂ : Measura
   · rw [← finrank_eq_card_chooseBasisIndex, ZLattice.rank ℝ L]
   · rw [volume_image_eq_volume_div_covolume' L b hs₂.nullMeasurableSet, ENNReal.toReal_div,
       ENNReal.toReal_ofReal (covolume_pos L volume).le]
-  · change volume (frontier ((b.ofZLatticeBasis ℝ L).equivFunL '' _)) = 0
-    rw [ContinuousLinearEquiv.image_eq_preimage, ← ContinuousLinearEquiv.coe_toHomeomorph,
-      ← Homeomorph.preimage_frontier, ContinuousLinearEquiv.coe_toHomeomorph,
-      ← ContinuousLinearEquiv.image_eq_preimage]
-    change volume (⇑(Basis.ofZLatticeBasis ℝ L b).equivFun '' frontier s) = 0
-    rw [volume_image_eq_volume_div_covolume', hs₃, ENNReal.zero_div]
+  · rw [frontier_equivFun, volume_image_eq_volume_div_covolume', hs₃, ENNReal.zero_div]
     exact NullMeasurableSet.of_null hs₃
 
 theorem tendsto_card_le_div' [Nontrivial E] {X : Set E} {F : E → ℝ}
@@ -322,12 +318,7 @@ theorem tendsto_card_le_div' [Nontrivial E] {X : Set E} {F : E → ℝ}
   · have : Nontrivial L := nontrivial_of_finrank_pos <| (ZLattice.rank ℝ L).symm ▸ finrank_pos
     infer_instance
   · rwa [← finrank_eq_card_chooseBasisIndex, ZLattice.rank ℝ L]
-  · change volume (frontier ((b.ofZLatticeBasis ℝ L).equivFunL '' _)) = 0
-    rw [ContinuousLinearEquiv.image_eq_preimage, ← ContinuousLinearEquiv.coe_toHomeomorph,
-      ← Homeomorph.preimage_frontier, ContinuousLinearEquiv.coe_toHomeomorph,
-      ← ContinuousLinearEquiv.image_eq_preimage]
-    change volume (⇑(Basis.ofZLatticeBasis ℝ L b).equivFun '' frontier _) = 0
-    rw [volume_image_eq_volume_div_covolume', h₄, ENNReal.zero_div]
+  · rw [frontier_equivFun, volume_image_eq_volume_div_covolume', h₄, ENNReal.zero_div]
     exact NullMeasurableSet.of_null h₄
 
 end InnerProductSpace
