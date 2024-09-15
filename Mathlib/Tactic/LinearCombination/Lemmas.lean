@@ -8,6 +8,8 @@ import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Lemmas for the linear_combination tactic
+
+These should not be used directly in user code.
 -/
 
 namespace Mathlib.Tactic.LinearCombination
