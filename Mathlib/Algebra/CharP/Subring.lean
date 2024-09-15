@@ -36,7 +36,6 @@ instance subring' (R : Type u) [CommRing R] (p : ℕ) [CharP R p] (S : Subring R
   of its center-/
 theorem center_char_eq_iff {R : Type u} [DivisionRing R] {p : ℕ} :
     CharP R p ↔ CharP (Subring.center R) p :=
-  (algebraMap (Subring.center R) R).charP_iff
-    ((NoZeroSMulDivisors.algebraMap_injective (Subring.center R) R)) p |>.symm
+  (algebraMap (Subring.center R) R).charP_iff (Subtype.val_injective) p |>.symm
 
 end CharP

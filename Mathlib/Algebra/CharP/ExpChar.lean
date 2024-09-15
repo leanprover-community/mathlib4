@@ -259,7 +259,7 @@ theorem ExpChar.neg_one_pow_expChar_pow [Ring R] (q n : ℕ) [hR : ExpChar R q] 
 
 theorem center_expChar_eq_iff {R : Type u} [DivisionRing R] {p : ℕ} :
     ExpChar R p ↔ ExpChar (Subring.center R) p :=
-  (RingHom.expChar_iff (algebraMap (Subring.center R) R) Subtype.val_injective p).symm
+  (algebraMap (Subring.center R) R).expChar_iff Subtype.val_injective p |>.symm
 
 section frobenius
 
