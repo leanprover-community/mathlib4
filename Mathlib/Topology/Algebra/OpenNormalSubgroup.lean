@@ -37,7 +37,7 @@ instance (H : OpenNormalSubgroup G) : H.toSubgroup.Normal := H.isNormal'
 
 @[to_additive]
 theorem toSubgroup_injective : Function.Injective
-  (fun H => H.toOpenSubgroup.toSubgroup : OpenNormalSubgroup G → Subgroup G) :=
+    (fun H => H.toOpenSubgroup.toSubgroup : OpenNormalSubgroup G → Subgroup G) :=
   fun A B h => by
   ext
   dsimp at h
