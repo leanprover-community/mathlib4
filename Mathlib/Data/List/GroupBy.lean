@@ -77,7 +77,7 @@ theorem ne_nil_of_mem_groupBy (r : α → α → Bool) {l : List α} (h : m ∈ 
   exact nil_not_mem_groupBy r l h
 
 private theorem chain'_of_mem_groupBy_loop {r : α → α → Bool} {l : List α} {a : α} {g : List α}
-    (hga : ∀ b ∈ g.head?, r b a) (hg : g.Chain' (fun x y ↦ r y x)) {gs : List (List α)}
+    (hga : ∀ b ∈ g.head?, r b a) (hg : g.Chain' (fun y x ↦ r x y)) {gs : List (List α)}
     (hgs : ∀ m ∈ gs, m.Chain' (fun x y ↦ r x y)) (h : m ∈ groupBy.loop r l a g gs) :
     m.Chain' (fun x y ↦ r x y) := by
   revert a g gs
