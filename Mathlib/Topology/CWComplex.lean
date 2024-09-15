@@ -109,12 +109,12 @@ def AttachCells.inclusion (X X' : TopCat.{u}) (n : ℤ) (att : AttachCells n X X
 
 /-- The inclusion map from `sk n` (i.e., the `(n-1)`-skeleton) to `sk (n+1)` (i.e., the
 `n`-skeleton) of a relative CW-complex -/
-def inclusion (X : RelativeCWComplex.{u}) (n : ℕ) : X.sk n ⟶ X.sk (n + 1) :=
-  RelativeCWComplex.AttachCells.inclusion (X.sk n) (X.sk (n + 1)) (n - 1) (X.attach_cells n)
+def skInclusion (X : RelativeCWComplex.{u}) (n : ℕ) : X.sk n ⟶ X.sk (n + 1) :=
+  AttachCells.inclusion (X.sk n) (X.sk (n + 1)) (n - 1) (X.attach_cells n)
 
 /-- The topology on a relative CW-complex -/
 def toTopCat (X : RelativeCWComplex.{u}) : TopCat.{u} :=
-  Limits.colimit <| Functor.ofSequence <| inclusion X
+  Limits.colimit (Functor.ofSequence X.skInclusion)
 
 instance : Coe RelativeCWComplex TopCat where coe X := toTopCat X
 
