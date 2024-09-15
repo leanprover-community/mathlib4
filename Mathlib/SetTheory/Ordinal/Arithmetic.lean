@@ -1201,7 +1201,7 @@ theorem sup_eq_zero_iff {ι : Type u} {f : ι → Ordinal.{max u v}} :
   exact le_sup f i
 
 -- TODO: generalize universes, make sSup version.
-theorem IsNormal.iSup {f : Ordinal.{max u v} → Ordinal.{max u w}} (H : IsNormal f) {ι : Type u}
+theorem IsNormal.map_iSup {f : Ordinal.{max u v} → Ordinal.{max u w}} (H : IsNormal f) {ι : Type u}
     (g : ι → Ordinal.{max u v}) [Nonempty ι] : f (⨆ i, g i) = ⨆ i, f (g i) := by
   apply eq_of_forall_ge_iff
   intro a
@@ -1213,10 +1213,10 @@ theorem IsNormal.iSup {f : Ordinal.{max u v} → Ordinal.{max u w}} (H : IsNorma
     simp
 
 set_option linter.deprecated false in
-@[deprecated IsNormal.iSup (since := "2024-08-27")]
+@[deprecated IsNormal.map_iSup (since := "2024-08-27")]
 theorem IsNormal.sup {f : Ordinal.{max u v} → Ordinal.{max u w}} (H : IsNormal f) {ι : Type u}
     (g : ι → Ordinal.{max u v}) [Nonempty ι] : f (sup.{_, v} g) = sup.{_, w} (f ∘ g) :=
-  H.iSup g
+  H.map_iSup g
 
 set_option linter.deprecated false in
 @[deprecated ciSup_of_empty (since := "2024-08-27")]
@@ -2385,7 +2385,7 @@ theorem add_le_of_forall_add_lt {a b c : Ordinal} (hb : 0 < b) (h : ∀ d < b, a
   exact (h _ hb).ne H
 
 theorem IsNormal.apply_omega {f : Ordinal.{u} → Ordinal.{v}} (hf : IsNormal f) :
-    ⨆ i : ℕ, f i = f ω := by rw [← iSup_natCast, hf.iSup]
+    ⨆ i : ℕ, f i = f ω := by rw [← iSup_natCast, hf.map_iSup]
 
 @[simp]
 theorem iSup_add_nat (o : Ordinal) : ⨆ n : ℕ, o + n = o + ω :=
