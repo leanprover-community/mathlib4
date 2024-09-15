@@ -586,6 +586,11 @@ theorem isSuccPrelimitRecOn_of_isSuccPrelimit (hb : IsSuccPrelimit b) :
     isSuccPrelimitRecOn b hs hl = hl b hb :=
   dif_pos hb
 
+@[deprecated isSuccPrelimitRecOn_of_isSuccPrelimit (since := "2024-09-05")]
+alias isSuccLimitRecOn_limit := isSuccPrelimitRecOn_of_isSuccPrelimit
+@[deprecated isSuccPrelimitRecOn_of_isSuccPrelimit (since := "2024-09-14")]
+alias isSuccPrelimitRecOn_limit := isSuccPrelimitRecOn_of_isSuccPrelimit
+
 end PartialOrder
 
 section LinearOrder
@@ -593,7 +598,7 @@ section LinearOrder
 variable [LinearOrder α] [SuccOrder α]
   (hs : ∀ a, ¬ IsMax a → C (succ a)) (hl : ∀ a, IsSuccPrelimit a → C a)
 
-theorem isSuccPrelimitRecOn_succ' (hb : ¬ IsMax b) :
+theorem isSuccPrelimitRecOn_succ_of_not_isMax (hb : ¬ IsMax b) :
     isSuccPrelimitRecOn (succ b) hs hl = hs b hb := by
   have hb' := not_isSuccPrelimit_succ_of_not_isMax hb
   have H := Classical.choose_spec (not_isSuccPrelimit_iff.1 hb')
@@ -601,10 +606,15 @@ theorem isSuccPrelimitRecOn_succ' (hb : ¬ IsMax b) :
   congr
   exacts [(succ_eq_succ_iff_of_not_isMax H.1 hb).1 H.2, proof_irrel_heq _ _]
 
+@[deprecated isSuccPrelimitRecOn_succ_of_not_isMax (since := "2024-09-05")]
+alias isSuccLimitRecOn_succ' := isSuccPrelimitRecOn_succ_of_not_isMax
+@[deprecated isSuccPrelimitRecOn_succ_of_not_isMax (since := "2024-09-14")]
+alias isSuccPrelimitRecOn_succ' := isSuccPrelimitRecOn_succ_of_not_isMax
+
 @[simp]
 theorem isSuccPrelimitRecOn_succ [NoMaxOrder α] (b : α) :
     isSuccPrelimitRecOn (succ b) hs hl = hs b (not_isMax b) :=
-  isSuccPrelimitRecOn_succ' _ _ _
+  isSuccPrelimitRecOn_succ_of_not_isMax _ _ _
 
 end LinearOrder
 
@@ -627,6 +637,11 @@ theorem isPredPrelimitRecOn_of_isPredPrelimit (hb : IsPredPrelimit b) :
     isPredPrelimitRecOn b hs hl = hl b hb :=
   isSuccPrelimitRecOn_of_isSuccPrelimit _ _ hb.dual
 
+@[deprecated isPredPrelimitRecOn_of_isPredPrelimit (since := "2024-09-05")]
+alias isPredLimitRecOn_limit := isPredPrelimitRecOn_of_isPredPrelimit
+@[deprecated isPredPrelimitRecOn_of_isPredPrelimit (since := "2024-09-14")]
+alias isPredPrelimitRecOn_limit := isPredPrelimitRecOn_of_isPredPrelimit
+
 end PartialOrder
 
 section LinearOrder
@@ -636,7 +651,12 @@ variable [LinearOrder α] [PredOrder α]
 
 theorem isPredPrelimitRecOn_pred_of_not_isMin (hb : ¬ IsMin b) :
     isPredPrelimitRecOn (pred b) hs hl = hs b hb :=
-  isSuccPrelimitRecOn_succ' (α := αᵒᵈ) _ _ _
+  isSuccPrelimitRecOn_succ_of_not_isMax (α := αᵒᵈ) _ _ _
+
+@[deprecated isPredPrelimitRecOn_pred_of_not_isMin (since := "2024-09-05")]
+alias isPredLimitRecOn_pred' := isPredPrelimitRecOn_pred_of_not_isMin
+@[deprecated isPredPrelimitRecOn_pred_of_not_isMin (since := "2024-09-14")]
+alias isPredPrelimitRecOn_pred' := isPredPrelimitRecOn_pred_of_not_isMin
 
 @[simp]
 theorem isPredPrelimitRecOn_pred [NoMinOrder α] (b : α) :
@@ -677,7 +697,7 @@ variable [LinearOrder α] [SuccOrder α]
 
 theorem isSuccLimitRecOn_succ_of_not_isMax (hb : ¬ IsMax b) :
     isSuccLimitRecOn (succ b) hm hs hl = hs b hb := by
-  rw [isSuccLimitRecOn, isSuccPrelimitRecOn_succ']
+  rw [isSuccLimitRecOn, isSuccPrelimitRecOn_succ_of_not_isMax]
 
 @[simp]
 theorem isSuccLimitRecOn_succ [NoMaxOrder α] (b : α) :
@@ -761,6 +781,11 @@ theorem prelimitRecOn_of_isSuccPrelimit (hb : IsSuccPrelimit b) :
     prelimitRecOn b hs hl = hl b hb fun x _ ↦ SuccOrder.prelimitRecOn x hs hl := by
   rw [prelimitRecOn, WellFounded.fix_eq, dif_pos hb]; rfl
 
+@[deprecated prelimitRecOn_of_isSuccPrelimit (since := "2024-09-05")]
+alias limitRecOn_limit := prelimitRecOn_of_isSuccPrelimit
+@[deprecated prelimitRecOn_of_isSuccPrelimit (since := "2024-09-14")]
+alias prelimitRecOn_limit := prelimitRecOn_of_isSuccPrelimit
+
 end PartialOrder
 
 section LinearOrder
@@ -776,6 +801,11 @@ theorem prelimitRecOn_succ_of_not_isMax (hb : ¬ IsMax b) :
   have {a c : α} {ha hc} {x : ∀ a, C a} (h : a = c) :
     cast (congr_arg (C ∘ succ) h) (hs a ha (x a)) = hs c hc (x c) := by subst h; rfl
   exact this <| (succ_eq_succ_iff_of_not_isMax H.1 hb).1 H.2
+
+@[deprecated prelimitRecOn_succ_of_not_isMax (since := "2024-09-05")]
+alias limitRecOn_succ' := prelimitRecOn_succ_of_not_isMax
+@[deprecated prelimitRecOn_succ_of_not_isMax (since := "2024-09-14")]
+alias prelimitRecOn_succ' := prelimitRecOn_succ_of_not_isMax
 
 @[simp]
 theorem prelimitRecOn_succ [NoMaxOrder α] (b : α) :
@@ -851,6 +881,11 @@ theorem prelimitRecOn_of_isPredPrelimit (hb : IsPredPrelimit b) :
     prelimitRecOn b hp hl = hl b hb fun x _ ↦ prelimitRecOn x hp hl :=
   SuccOrder.prelimitRecOn_of_isSuccPrelimit _ _ hb.dual
 
+@[deprecated prelimitRecOn_of_isPredPrelimit (since := "2024-09-05")]
+alias limitRecOn_limit := prelimitRecOn_of_isPredPrelimit
+@[deprecated prelimitRecOn_of_isPredPrelimit (since := "2024-09-14")]
+alias prelimitRecOn_limit := prelimitRecOn_of_isPredPrelimit
+
 end PartialOrder
 
 section LinearOrder
@@ -861,6 +896,11 @@ variable [LinearOrder α] [PredOrder α] [WellFoundedGT α]
 theorem prelimitRecOn_pred_of_not_isMin (hb : ¬ IsMin b) :
     prelimitRecOn (Order.pred b) hp hl = hp b hb (prelimitRecOn b hp hl) :=
   SuccOrder.prelimitRecOn_succ_of_not_isMax _ _ _
+
+@[deprecated prelimitRecOn_pred_of_not_isMin (since := "2024-09-05")]
+alias limitRecOn_pred' := prelimitRecOn_pred_of_not_isMin
+@[deprecated prelimitRecOn_pred_of_not_isMin (since := "2024-09-14")]
+alias prelimitRecOn_pred' := prelimitRecOn_pred_of_not_isMin
 
 @[simp]
 theorem prelimitRecOn_pred [NoMinOrder α] (b : α) :
