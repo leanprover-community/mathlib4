@@ -44,3 +44,5 @@ but don't use this assumption in the type.
             k < args.size && !e.containsFVar args[k]!.fvarId!
     if impossibleArgs.isEmpty then return none
     return some <| .joinSep (impossibleArgs.toList.map Prod.snd) ", "
+
+end Std.Tactic.Lint
