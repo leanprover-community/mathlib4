@@ -658,6 +658,10 @@ lemma extend_const (f : α → β) (c : γ) : extend f (fun _ ↦ c) (fun _ ↦ 
   funext fun _ ↦ ite_id _
 
 @[simp]
+lemma extend_const (f : α → β) (c : γ) : extend f (fun _ ↦ c) (fun _ ↦ c) = fun _ ↦ c :=
+  funext fun _ ↦ ite_id _
+
+@[simp]
 theorem extend_comp (hf : Injective f) (g : α → γ) (e' : β → γ) : extend f g e' ∘ f = g :=
   funext fun a ↦ hf.extend_apply g e' a
 
