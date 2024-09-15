@@ -21,6 +21,7 @@ structure OpenNormalSubgroup (G : Type u) [Group G] [TopologicalSpace G]
   extends OpenSubgroup G where
   isNormal' : toSubgroup.Normal := by infer_instance
 
+/-- The type of open normal subgroups of a topological additive group. -/
 @[ext]
 structure OpenNormalAddSubgroup (G : Type u) [AddGroup G] [TopologicalSpace G]
   extends OpenAddSubgroup G where
