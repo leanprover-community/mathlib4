@@ -23,10 +23,10 @@ that keeps track of an array of `Label`s.
 ## The `Label` structure
 
 A `Label` is a structure containing
-* the GitHub label (as a `String` -- `Label.label`);
-* the array of folders associated to the given label (as an `Array String` -- `Label.dirs`);
+* the GitHub label (as a `String`);
+* the array of folders associated to the given label (as an `Array String`);
 * the array of folders that forbid a given label, even though a path may satisfy the conditions
-  implied by `dirs` (as an `Array String` -- `Label.exclusions`).
+  implied by `dirs` (as an `Array String`).
 
 For example, the files in the `Tactic` folder should be labelled as `t-meta`,
 except the ones in `Tactic/Linter` that should be labelled `t-linter`.
