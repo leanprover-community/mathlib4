@@ -548,6 +548,88 @@ lemma card_mod_card_parts_le : s.card % P.parts.card ≤ P.parts.card := by
     rw [h, h']
   · exact (Nat.mod_lt _ h).le
 
+section Equiv
+
+/-- Helper injection for `Finpartition.attach`. -/
+def attachAux : P.parts ↪ Finset s where
+  toFun p := p.1.subtype (· ∈ s)
+  inj' p q e := by
+    simp_rw [Finset.ext_iff, mem_subtype, Subtype.forall] at e
+    ext x
+    exact ⟨fun h ↦ (e _ (P.le p.2 h)).mp h, fun h ↦ (e _ (P.le q.2 h)).mpr h⟩
+
+lemma map_attachAux_eq (p : P.parts) : (P.attachAux p).map (Embedding.subtype _) = p.1 :=
+  subtype_map_of_mem fun _ h ↦ P.le p.2 h
+
+lemma card_attachAux (p : P.parts) : (P.attachAux p).card = p.1.card :=
+  card_map _ ▸ congr($(P.map_attachAux_eq p).card)
+
+/-- Attach `x ∈ s` to each element in `P : Finpartition s`. -/
+def attach : Finpartition s.attach where
+  parts := P.parts.attach.map P.attachAux
+  supIndep := by
+    rw [supIndep_map, id_comp, supIndep_iff_pairwiseDisjoint]
+    intro ⟨p, mp⟩ _ ⟨q, mq⟩ _ hn
+    simp_rw [← disjoint_map (Embedding.subtype _), map_attachAux_eq]
+    exact P.disjoint mp mq (Subtype.coe_ne_coe.mpr hn)
+  sup_parts := by
+    ext ⟨x, hx⟩
+    simp_rw [sup_eq_biUnion, mem_biUnion, mem_map, mem_attach, true_and, iff_true, Subtype.exists]
+    use P.attachAux ⟨_, P.part_mem hx⟩
+    simp_rw [EmbeddingLike.apply_eq_iff_eq, Subtype.mk.injEq, exists_prop, exists_eq_right]
+    simp [attachAux, P.mem_part hx, P.part_mem hx]
+  not_bot_mem := by
+    simp_rw [bot_eq_empty, mem_map, ← card_eq_zero, card_attachAux]
+    simpa using P.not_bot_mem
+
+lemma mem_attach_iff (p : Finset s) :
+    p ∈ P.attach.parts ↔ p.map (Embedding.subtype _) ∈ P.parts := by
+  simp_rw [attach, mem_map, mem_attach, true_and]
+  constructor
+  · rintro ⟨p, rfl⟩; rw [map_attachAux_eq]; exact p.2
+  · simp_rw [Subtype.exists, attachAux, Embedding.coeFn_mk]
+    intro h; use p.map (Embedding.subtype _), h; ext ⟨x, hx⟩; simp [hx]
+
+/-- Remove the data introduced by `Finpartition.attach`. -/
+def detach (P : Finpartition s.attach) : Finpartition s where
+  parts := P.parts.map ⟨(·.map (Embedding.subtype _)), map_injective _⟩
+  supIndep := by
+    rw [supIndep_map, supIndep_iff_pairwiseDisjoint]
+    exact fun _ mp _ mq hn ↦ by simpa using P.disjoint mp mq hn
+  sup_parts := by
+    rw [sup_map, Embedding.coeFn_mk, id_comp, sup_eq_biUnion, Finset.ext_iff]
+    intro x
+    have := P.biUnion_parts
+    simp_rw [attach_eq_univ, eq_univ_iff_forall, mem_biUnion] at this
+    simp_rw [mem_biUnion, mem_map, Embedding.coe_subtype, Subtype.exists, exists_and_right,
+      exists_eq_right]
+    exact ⟨fun ⟨_, _, _, _⟩ ↦ by simp_all, fun h ↦ by simp_all⟩
+  not_bot_mem := by simpa using P.not_bot_mem
+
+lemma mem_detach_iff (P : Finpartition s.attach) :
+    t ∈ P.detach.parts ↔ t ⊆ s ∧ t.subtype (· ∈ s) ∈ P.parts := by
+  simp_rw [detach, mem_map, Embedding.coeFn_mk]
+  refine ⟨fun ⟨p, mp, ap⟩ ↦ ⟨?_, ?_⟩, fun h ↦ ?_⟩
+  · rw [← ap]; apply map_subtype_subset
+  · rwa [← ap, map_subtype]
+  · use t.subtype (· ∈ s), h.2, subtype_map_of_mem h.1
+
+lemma detach_attach : P.attach.detach = P := by
+  ext p; rw [mem_detach_iff, mem_attach_iff, subtype_map]
+  exact ⟨fun ⟨h₁, h₂⟩ ↦ filter_true_of_mem h₁ ▸ h₂,
+    fun h ↦ ⟨P.le h, (filter_true_of_mem (P.le h)).symm ▸ h⟩⟩
+
+lemma attach_detach (P : Finpartition s.attach) : P.detach.attach = P := by
+  ext p; rw [mem_attach_iff, mem_detach_iff, map_subtype, and_iff_right_iff_imp]
+  exact fun _ ↦ map_subtype_subset _
+
+/-- Equivalence between finpartitions of `s` and finpartitions of `s.attach`, the latter of which
+is always over a finite type. -/
+def attachEquiv : Finpartition s ≃ Finpartition s.attach :=
+  ⟨attach, detach, detach_attach, attach_detach⟩
+
+end Equiv
+
 section Setoid
 
 variable [Fintype α]
