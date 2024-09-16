@@ -946,7 +946,7 @@ theorem Sentence.realize_cardGe (n) : M ⊨ Sentence.cardGe L n ↔ ↑n ≤ #M 
     BoundedFormula.realize_exs]
   simp_rw [BoundedFormula.realize_foldr_inf]
   simp only [Function.comp_apply, List.mem_map, Prod.exists, Ne, List.mem_product,
-    List.mem_finRange, forall_exists_index, and_imp, List.mem_filter, true_and_iff]
+    List.mem_finRange, forall_exists_index, and_imp, List.mem_filter, true_and]
   refine ⟨?_, fun xs => ⟨xs.some, ?_⟩⟩
   · rintro ⟨xs, h⟩
     refine ⟨⟨xs, fun i j ij => ?_⟩⟩

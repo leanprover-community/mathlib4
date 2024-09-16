@@ -728,7 +728,7 @@ theorem isOpen_prod_iff' {s : Set X} {t : Set Y} :
         rw [← snd_image_prod st.1 t]
         exact isOpenMap_snd _ H
     · intro H
-      simp only [st.1.ne_empty, st.2.ne_empty, not_false_iff, or_false_iff] at H
+      simp only [st.1.ne_empty, st.2.ne_empty, not_false_iff, or_false] at H
       exact H.1.prod H.2
 
 theorem quotientMap_fst [Nonempty Y] : QuotientMap (Prod.fst : X × Y → X) :=

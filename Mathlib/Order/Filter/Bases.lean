@@ -543,7 +543,7 @@ theorem hasBasis_iSup {ι : Sort*} {ι' : ι → Type*} {l : ι → Filter α} {
 theorem HasBasis.sup_principal (hl : l.HasBasis p s) (t : Set α) :
     (l ⊔ 𝓟 t).HasBasis p fun i => s i ∪ t :=
   ⟨fun u => by
-    simp only [(hl.sup' (hasBasis_principal t)).mem_iff, PProd.exists, exists_prop, and_true_iff,
+    simp only [(hl.sup' (hasBasis_principal t)).mem_iff, PProd.exists, exists_prop, and_true,
       Unique.exists_iff]⟩
 
 theorem HasBasis.sup_pure (hl : l.HasBasis p s) (x : α) :
