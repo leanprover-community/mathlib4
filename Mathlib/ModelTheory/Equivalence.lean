@@ -14,7 +14,7 @@ import Mathlib.ModelTheory.Satisfiability
   equivalent formulas or sentences in models of `T`.
 
 ## TODO
-- Construct the quotient of `L.Formula α` modulo `⇔[T]` and its Boolean Algebra structure.
+- Define the quotient of `L.Formula α` modulo `⇔[T]` and its Boolean Algebra structure.
 
 -/
 
