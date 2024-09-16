@@ -7,8 +7,6 @@ import Mathlib.Algebra.Algebra.Basic
 import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
 import Mathlib.Data.Real.Archimedean
 
-#align_import number_theory.class_number.admissible_abs from "leanprover-community/mathlib"@"e97cf15cd1aec9bd5c193b2ffac5a6dc9118912b"
-
 /-!
 # Admissible absolute value on the integers
 This file defines an admissible absolute value `AbsoluteValue.absIsAdmissible`
@@ -50,14 +48,12 @@ theorem exists_partition_int (n : ℕ) {ε : ℝ} (hε : 0 < ε) {b : ℤ} (hb :
   have hi := abs_sub_lt_one_of_floor_eq_floor hi
   rw [abs_sub_comm, ← sub_div, abs_div, abs_of_nonneg hbε.le, div_lt_iff hbε, one_mul] at hi
   rwa [Int.cast_abs, Int.cast_sub]
-#align absolute_value.exists_partition_int AbsoluteValue.exists_partition_int
 
 /-- `abs : ℤ → ℤ` is an admissible absolute value. -/
 noncomputable def absIsAdmissible : IsAdmissible AbsoluteValue.abs :=
   { AbsoluteValue.abs_isEuclidean with
     card := fun ε ↦ ⌈1 / ε⌉₊
     exists_partition' := fun n _ hε _ hb ↦ exists_partition_int n hε hb }
-#align absolute_value.abs_is_admissible AbsoluteValue.absIsAdmissible
 
 noncomputable instance : Inhabited (IsAdmissible AbsoluteValue.abs) :=
   ⟨absIsAdmissible⟩

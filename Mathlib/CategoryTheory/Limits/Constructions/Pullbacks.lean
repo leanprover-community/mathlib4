@@ -7,8 +7,6 @@ import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 
-#align_import category_theory.limits.constructions.pullbacks from "leanprover-community/mathlib"@"cd7a8a184d7c5635e30083eabc4baf5589c30b7a"
-
 /-!
 # Constructing pullbacks from binary products and equalizers
 
@@ -43,7 +41,6 @@ theorem hasLimit_cospan_of_hasLimit_pair_of_hasLimit_parallelPair {C : Type u} [
           ext
           · dsimp; simpa using h₁
           · simpa using h₂ }
-#align category_theory.limits.has_limit_cospan_of_has_limit_pair_of_has_limit_parallel_pair CategoryTheory.Limits.hasLimit_cospan_of_hasLimit_pair_of_hasLimit_parallelPair
 
 section
 
@@ -55,7 +52,6 @@ attribute [local instance] hasLimit_cospan_of_hasLimit_pair_of_hasLimit_parallel
 theorem hasPullbacks_of_hasBinaryProducts_of_hasEqualizers (C : Type u) [Category.{v} C]
     [HasBinaryProducts C] [HasEqualizers C] : HasPullbacks C :=
   { has_limit := fun F => hasLimitOfIso (diagramIsoCospan F).symm }
-#align category_theory.limits.has_pullbacks_of_has_binary_products_of_has_equalizers CategoryTheory.Limits.hasPullbacks_of_hasBinaryProducts_of_hasEqualizers
 
 end
 
@@ -81,7 +77,6 @@ theorem hasColimit_span_of_hasColimit_pair_of_hasColimit_parallelPair {C : Type 
           ext
           · simpa using h₁
           · simpa using h₂ }
-#align category_theory.limits.has_colimit_span_of_has_colimit_pair_of_has_colimit_parallel_pair CategoryTheory.Limits.hasColimit_span_of_hasColimit_pair_of_hasColimit_parallelPair
 
 section
 
@@ -93,7 +88,6 @@ attribute [local instance] hasColimit_span_of_hasColimit_pair_of_hasColimit_para
 theorem hasPushouts_of_hasBinaryCoproducts_of_hasCoequalizers (C : Type u) [Category.{v} C]
     [HasBinaryCoproducts C] [HasCoequalizers C] : HasPushouts C :=
   hasPushouts_of_hasColimit_span C
-#align category_theory.limits.has_pushouts_of_has_binary_coproducts_of_has_coequalizers CategoryTheory.Limits.hasPushouts_of_hasBinaryCoproducts_of_hasCoequalizers
 
 end
 

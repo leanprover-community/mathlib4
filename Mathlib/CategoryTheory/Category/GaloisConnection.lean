@@ -7,8 +7,6 @@ import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.Order.GaloisConnection
 
-#align_import category_theory.category.galois_connection from "leanprover-community/mathlib"@"d82b87871d9a274884dff5263fa4f5d93bcce1d6"
-
 /-!
 
 # Galois connections between preorders are adjunctions.
@@ -30,9 +28,10 @@ def GaloisConnection.adjunction {l : X → Y} {u : Y → X} (gc : GaloisConnecti
     gc.monotone_l.functor ⊣ gc.monotone_u.functor :=
   CategoryTheory.Adjunction.mkOfHomEquiv
     { homEquiv := fun X Y =>
-        ⟨fun f => CategoryTheory.homOfLE (gc.le_u f.le),
-         fun f => CategoryTheory.homOfLE (gc.l_le f.le), _, _⟩ }
-#align galois_connection.adjunction GaloisConnection.adjunction
+        { toFun := fun f => CategoryTheory.homOfLE (gc.le_u f.le)
+          invFun := fun f => CategoryTheory.homOfLE (gc.l_le f.le)
+          left_inv := by aesop_cat
+          right_inv := by aesop_cat } }
 
 end
 
@@ -45,6 +44,5 @@ variable {X : Type u} {Y : Type v} [Preorder X] [Preorder Y]
 theorem Adjunction.gc {L : X ⥤ Y} {R : Y ⥤ X} (adj : L ⊣ R) : GaloisConnection L.obj R.obj :=
   fun x y =>
   ⟨fun h => ((adj.homEquiv x y).toFun h.hom).le, fun h => ((adj.homEquiv x y).invFun h.hom).le⟩
-#align category_theory.adjunction.gc CategoryTheory.Adjunction.gc
 
 end CategoryTheory

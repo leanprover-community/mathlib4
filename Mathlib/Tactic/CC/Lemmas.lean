@@ -4,47 +4,45 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 
-import Mathlib.Init.Logic
-
 /-! Lemmas use by the congruence closure module -/
 
 namespace Mathlib.Tactic.CC
 
 theorem iff_eq_of_eq_true_left {a b : Prop} (h : a = True) : (a ↔ b) = b :=
-  h.symm ▸ propext true_iff_iff
+  h.symm ▸ true_iff _
 
 theorem iff_eq_of_eq_true_right {a b : Prop} (h : b = True) : (a ↔ b) = a :=
-  h.symm ▸ propext iff_true_iff
+  h.symm ▸ iff_true _
 
 theorem iff_eq_true_of_eq {a b : Prop} (h : a = b) : (a ↔ b) = True :=
-  h ▸ propext (iff_self_iff _)
+  h ▸ iff_self _
 
 theorem and_eq_of_eq_true_left {a b : Prop} (h : a = True) : (a ∧ b) = b :=
-  h.symm ▸ propext (true_and_iff _)
+  h.symm ▸ true_and _
 
 theorem and_eq_of_eq_true_right {a b : Prop} (h : b = True) : (a ∧ b) = a :=
-  h.symm ▸ propext (and_true_iff _)
+  h.symm ▸ and_true _
 
 theorem and_eq_of_eq_false_left {a b : Prop} (h : a = False) : (a ∧ b) = False :=
-  h.symm ▸ propext (false_and_iff _)
+  h.symm ▸ false_and _
 
 theorem and_eq_of_eq_false_right {a b : Prop} (h : b = False) : (a ∧ b) = False :=
-  h.symm ▸ propext (and_false_iff _)
+  h.symm ▸ and_false _
 
 theorem and_eq_of_eq {a b : Prop} (h : a = b) : (a ∧ b) = a :=
   h ▸ propext and_self_iff
 
 theorem or_eq_of_eq_true_left {a b : Prop} (h : a = True) : (a ∨ b) = True :=
-  h.symm ▸ propext (true_or_iff _)
+  h.symm ▸ true_or _
 
 theorem or_eq_of_eq_true_right {a b : Prop} (h : b = True) : (a ∨ b) = True :=
-  h.symm ▸ propext (or_true_iff _)
+  h.symm ▸ or_true _
 
 theorem or_eq_of_eq_false_left {a b : Prop} (h : a = False) : (a ∨ b) = b :=
-  h.symm ▸ propext (false_or_iff _)
+  h.symm ▸ false_or _
 
 theorem or_eq_of_eq_false_right {a b : Prop} (h : b = False) : (a ∨ b) = a :=
-  h.symm ▸ propext (or_false_iff _)
+  h.symm ▸ or_false _
 
 theorem or_eq_of_eq {a b : Prop} (h : a = b) : (a ∨ b) = a :=
   h ▸ propext or_self_iff
@@ -88,7 +86,7 @@ theorem if_eq_of_eq_true {c : Prop} [d : Decidable c] {α : Sort u} (t e : α) (
 
 theorem if_eq_of_eq_false {c : Prop} [d : Decidable c] {α : Sort u} (t e : α) (h : c = False) :
     @ite α c d t e = e :=
-  if_neg (not_of_eq_false h)
+  if_neg (of_eq_false h)
 
 theorem if_eq_of_eq (c : Prop) [d : Decidable c] {α : Sort u} {t e : α} (h : t = e) :
     @ite α c d t e = t :=

@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving
 -/
 import Mathlib.Control.ULiftable
-import Mathlib.Order.Fin
-
-#align_import control.random from "leanprover-community/mathlib"@"fdc286cc6967a012f41b87f76dcd2797b53152af"
+import Mathlib.Order.Fin.Basic
 
 /-!
 # Rand Monad and Random Class
@@ -34,14 +32,14 @@ set_option autoImplicit true
 
 /-- A monad transformer to generate random objects using the generic generator type `g` -/
 abbrev RandGT (g : Type) := StateT (ULift g)
-/-- A monad to generate random objects using the generator type `g`.  -/
+/-- A monad to generate random objects using the generator type `g`. -/
 abbrev RandG (g : Type) := RandGT g Id
 
 /-- A monad transformer to generate random objects using the generator type `StdGen`.
 `RandT m α` should be thought of a random value in `m α`. -/
 abbrev RandT := RandGT StdGen
 
-/-- A monad to generate random objects using the generator type `StdGen`.  -/
+/-- A monad to generate random objects using the generator type `StdGen`. -/
 abbrev Rand := RandG StdGen
 
 instance [MonadLift m n] : MonadLiftT (RandGT g m) (RandGT g n) where

@@ -6,8 +6,6 @@ Authors: Scott Morrison, Joël Riou
 import Mathlib.Algebra.Homology.QuasiIso
 import Mathlib.Algebra.Homology.SingleHomology
 
-#align_import category_theory.preadditive.projective_resolution from "leanprover-community/mathlib"@"324a7502510e835cdbd3de1519b6c66b51fb2467"
-
 /-!
 # Projective resolutions
 
@@ -47,8 +45,6 @@ structure ProjectiveResolution (Z : C) where
   π : complex ⟶ (ChainComplex.single₀ C).obj Z
   /-- the morphism to the single chain complex with `Z` in degree `0` is a quasi-isomorphism -/
   quasiIso : QuasiIso π := by infer_instance
-set_option linter.uppercaseLean3 false in
-#align category_theory.ProjectiveResolution CategoryTheory.ProjectiveResolution
 
 open ProjectiveResolution in
 attribute [instance] projective hasHomology ProjectiveResolution.quasiIso
@@ -57,7 +53,6 @@ attribute [instance] projective hasHomology ProjectiveResolution.quasiIso
 -/
 class HasProjectiveResolution (Z : C) : Prop where
   out : Nonempty (ProjectiveResolution Z)
-#align category_theory.has_projective_resolution CategoryTheory.HasProjectiveResolution
 
 variable (C)
 
@@ -67,7 +62,6 @@ By itself it's enough to set up the basic theory of derived functors.
 -/
 class HasProjectiveResolutions : Prop where
   out : ∀ Z : C, HasProjectiveResolution Z
-#align category_theory.has_projective_resolutions CategoryTheory.HasProjectiveResolutions
 
 attribute [instance 100] HasProjectiveResolutions.out
 
@@ -89,22 +83,16 @@ lemma exact_succ (n : ℕ) :
 @[simp]
 theorem π_f_succ (n : ℕ) : P.π.f (n + 1) = 0 :=
   (isZero_single_obj_X _ _ _ _ (by simp)).eq_of_tgt _ _
-set_option linter.uppercaseLean3 false in
-#align category_theory.ProjectiveResolution.π_f_succ CategoryTheory.ProjectiveResolution.π_f_succ
 
 @[reassoc (attr := simp)]
 theorem complex_d_comp_π_f_zero :
     P.complex.d 1 0 ≫ P.π.f 0 = 0 := by
   rw [← P.π.comm 1 0, single_obj_d, comp_zero]
-set_option linter.uppercaseLean3 false in
-#align category_theory.ProjectiveResolution.complex_d_comp_π_f_zero CategoryTheory.ProjectiveResolution.complex_d_comp_π_f_zero
 
 -- Porting note (#10618): removed @[simp] simp can prove this
 theorem complex_d_succ_comp (n : ℕ) :
     P.complex.d n (n + 1) ≫ P.complex.d (n + 1) (n + 2) = 0 := by
   simp
-set_option linter.uppercaseLean3 false in
-#align category_theory.ProjectiveResolution.complex_d_succ_comp CategoryTheory.ProjectiveResolution.complex_d_succ_comp
 
 /-- The (limit) cokernel cofork given by the composition
 `P.complex.X 1 ⟶ P.complex.X 0 ⟶ Z` when `P : ProjectiveResolution Z`. -/
@@ -142,8 +130,6 @@ noncomputable def self [Projective Z] : ProjectiveResolution Z where
     · apply IsZero.projective
       apply HomologicalComplex.isZero_single_obj_X
       simp
-set_option linter.uppercaseLean3 false in
-#align category_theory.ProjectiveResolution.self CategoryTheory.ProjectiveResolution.self
 
 end ProjectiveResolution
 

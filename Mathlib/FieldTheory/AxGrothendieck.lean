@@ -7,8 +7,6 @@ import Mathlib.Algebra.MvPolynomial.Basic
 import Mathlib.Data.Fintype.Card
 import Mathlib.RingTheory.Algebraic
 
-#align_import field_theory.ax_grothendieck from "leanprover-community/mathlib"@"4e529b03dd62b7b7d13806c3fb974d9d4848910e"
-
 /-!
 # Ax-Grothendieck for algebraic extensions of `ZMod p`
 
@@ -64,4 +62,3 @@ theorem ax_grothendieck_of_locally_finite {ι K R : Type*} [Field K] [Finite K] 
     cases' hres_surj fun i => ⟨v i, hv i⟩ with w hw
     use fun i => w i
     simpa only [Subtype.ext_iff, funext_iff] using hw
-#align ax_grothendieck_of_locally_finite ax_grothendieck_of_locally_finite

@@ -164,10 +164,13 @@ theorem degree_eq_of_le_of_coeff_ne_zero' {deg m o : WithBot ℕ} {c : R} {p : R
   · obtain ⟨m, rfl⟩ := WithBot.ne_bot_iff_exists.mp hh
     exact degree_eq_of_le_of_coeff_ne_zero ‹_› ‹_›
 
-variable {m n : ℕ} {f : R[X]} {r : R} (h : coeff f m = r) (natDeg_eq_coeff : m = n)
+variable {m n : ℕ} {f : R[X]} {r : R}
 
-theorem coeff_congr_lhs : coeff f n = r := natDeg_eq_coeff ▸ h
-theorem coeff_congr {s : R} (rs : r = s) : coeff f n = s := natDeg_eq_coeff ▸ rs ▸ h
+theorem coeff_congr_lhs (h : coeff f m = r) (natDeg_eq_coeff : m = n) : coeff f n = r :=
+  natDeg_eq_coeff ▸ h
+theorem coeff_congr (h : coeff f m = r) (natDeg_eq_coeff : m = n) {s : R} (rs : r = s) :
+    coeff f n = s :=
+  natDeg_eq_coeff ▸ rs ▸ h
 
 end congr_lemmas
 
@@ -220,7 +223,7 @@ Sample outputs:
 * `degree (f * g) = d => (degree, Eq, HMul.hMul, d.isMVar, none)` (similarly for `≤`);
 * `coeff (1 : ℕ[X]) c = x => (coeff, Eq, one, x.isMVar, c.isMVar)` (no `≤` option!).
 -/
-def twoHeadsArgs (e : Expr) : Name × Name × Sum Name Name × List Bool := Id.run do
+def twoHeadsArgs (e : Expr) : Name × Name × (Name ⊕ Name) × List Bool := Id.run do
   let (eq_or_le, lhs, rhs) ← match e.getAppFnArgs with
     | (na@``Eq, #[_, lhs, rhs])       => pure (na, lhs, rhs)
     | (na@``LE.le, #[_, _, lhs, rhs]) => pure (na, lhs, rhs)
@@ -297,7 +300,7 @@ Using the information contained in `twoH`, it decides which lemma is the most ap
 --  Internally, `dispatchLemma` produces 3 names: these are the lemmas that are appropriate
 --  for goals of the form `natDegree f ≤ d`, `degree f ≤ d`, `coeff f d = a`, in this order.
 def dispatchLemma
-    (twoH : Name × Name × Sum Name Name × List Bool) (debug : Bool := false) : Name :=
+    (twoH : Name × Name × (Name ⊕ Name) × List Bool) (debug : Bool := false) : Name :=
   match twoH with
     | (.anonymous, _, _) => ``id -- `twoH` gave default value, so we do nothing
     | (_, .anonymous, _) => ``id -- `twoH` gave default value, so we do nothing
@@ -441,7 +444,7 @@ The tactic may leave goals of the form `d' = d` `d' ≤ d`, or `r ≠ 0`, where 
 `WithBot ℕ` is the tactic's guess of the degree, and `r` is the coefficient's guess of the
 leading coefficient of `f`.
 
-`compute_degree` applies `norm_num` to the left-hand side of all side goals, trying to clos them.
+`compute_degree` applies `norm_num` to the left-hand side of all side goals, trying to close them.
 
 The variant `compute_degree!` first applies `compute_degree`.
 Then it uses `norm_num` on all the whole remaining goals and tries `assumption`.

@@ -4,8 +4,16 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Mario Carneiro, Alex J. Best
 -/
 
+import Mathlib.Init
 import Lean
 
+/-!
+# The `simp_rw` tactic
+
+This file defines the `simp_rw` tactic: it functions as a mix of `simp` and `rw`.
+Like `rw`, it applies each rewrite rule in the given order, but like `simp` it repeatedly applies
+these rules and also under binders like `∀ x, ...`, `∃ x, ...` and `fun x ↦ ...`.
+-/
 namespace Mathlib.Tactic
 
 open Lean Parser.Tactic Elab.Tactic
@@ -70,3 +78,5 @@ elab s:"simp_rw " cfg:(config)? rws:rwRuleSeq g:(location)? : tactic => focus do
         `(tactic| simp%$e $[$cfg]? only [← $e:term] $g ?)
       else
         `(tactic| simp%$e $[$cfg]? only [$e:term] $g ?))
+
+end Mathlib.Tactic

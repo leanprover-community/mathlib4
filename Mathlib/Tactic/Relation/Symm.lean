@@ -3,13 +3,12 @@ Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
+import Mathlib.Init
 import Lean.Meta.Tactic.Symm
 
 /-!
 # `relSidesIfSymm?`
 -/
-
-set_option autoImplicit true
 
 open Lean Meta Symm
 
@@ -33,3 +32,5 @@ def _root_.Lean.Expr.relSidesIfSymm? (e : Expr) : MetaM (Option (Name × Expr ×
       | some n => return some (n, lhs, rhs)
       | none => return none
   return none
+
+end Mathlib.Tactic

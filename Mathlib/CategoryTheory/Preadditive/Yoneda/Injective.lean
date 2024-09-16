@@ -8,8 +8,6 @@ import Mathlib.CategoryTheory.Preadditive.Injective
 import Mathlib.Algebra.Category.Grp.EpiMono
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
 
-#align_import category_theory.preadditive.yoneda.injective from "leanprover-community/mathlib"@"f8d8465c3c392a93b9ed226956e26dee00975946"
-
 /-!
 An object is injective iff the preadditive yoneda functor on it preserves epimorphisms.
 -/
@@ -38,7 +36,6 @@ theorem injective_iff_preservesEpimorphisms_preadditiveYoneda_obj (J : C) :
       Functor.preservesEpimorphisms_of_preserves_of_reflects (preadditiveYoneda.obj J) (forget _)
   · intro
     exact (inferInstance : (preadditiveYoneda.obj J ⋙ forget _).PreservesEpimorphisms)
-#align category_theory.injective.injective_iff_preserves_epimorphisms_preadditive_yoneda_obj CategoryTheory.Injective.injective_iff_preservesEpimorphisms_preadditiveYoneda_obj
 
 theorem injective_iff_preservesEpimorphisms_preadditive_yoneda_obj' (J : C) :
     Injective J ↔ (preadditiveYonedaObj J).PreservesEpimorphisms := by
@@ -49,7 +46,6 @@ theorem injective_iff_preservesEpimorphisms_preadditive_yoneda_obj' (J : C) :
       Functor.preservesEpimorphisms_of_preserves_of_reflects (preadditiveYonedaObj J) (forget _)
   · intro
     exact (inferInstance : (preadditiveYonedaObj J ⋙ forget _).PreservesEpimorphisms)
-#align category_theory.injective.injective_iff_preserves_epimorphisms_preadditive_yoneda_obj' CategoryTheory.Injective.injective_iff_preservesEpimorphisms_preadditive_yoneda_obj'
 
 end Injective
 

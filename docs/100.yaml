@@ -314,7 +314,7 @@
 80:
   title  : The Fundamental Theorem of Arithmetic
   decls  :
-    - Nat.factors_unique
+    - Nat.primeFactorsList_unique
     - Int.euclideanDomain
     - EuclideanDomain.to_principal_ideal_domain
     - UniqueFactorizationMonoid
