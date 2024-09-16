@@ -657,7 +657,7 @@ section
 variable [StarModule R A]
 
 theorem ext_adjoin {s : Set A} [FunLike F (adjoin R s) B]
-    [AlgHomClass F R (adjoin R s) B] [StarAlgHomClass F R (adjoin R s) B] {f g : F}
+    [AlgHomClass F R (adjoin R s) B] [StarHomClass F (adjoin R s) B] {f g : F}
     (h : ∀ x : adjoin R s, (x : A) ∈ s → f x = g x) : f = g := by
   refine DFunLike.ext f g fun a =>
     adjoin_induction' (p := fun y => f y = g y) a (fun x hx => ?_) (fun r => ?_)
@@ -669,7 +669,7 @@ theorem ext_adjoin {s : Set A} [FunLike F (adjoin R s) B]
   · simp only [map_star, hx]
 
 theorem ext_adjoin_singleton {a : A} [FunLike F (adjoin R ({a} : Set A)) B]
-    [AlgHomClass F R (adjoin R ({a} : Set A)) B] [StarAlgHomClass F R (adjoin R ({a} : Set A)) B]
+    [AlgHomClass F R (adjoin R ({a} : Set A)) B] [StarHomClass F (adjoin R ({a} : Set A)) B]
     {f g : F} (h : f ⟨a, self_mem_adjoin_singleton R a⟩ = g ⟨a, self_mem_adjoin_singleton R a⟩) :
     f = g :=
   ext_adjoin fun x hx =>
@@ -677,7 +677,7 @@ theorem ext_adjoin_singleton {a : A} [FunLike F (adjoin R ({a} : Set A)) B]
           Subtype.ext <| Set.mem_singleton_iff.mp hx).symm ▸
       h
 
-variable [FunLike F A B] [AlgHomClass F R A B] [StarAlgHomClass F R A B] (f g : F)
+variable [FunLike F A B] [AlgHomClass F R A B] [StarHomClass F A B] (f g : F)
 
 /-- The equalizer of two star `R`-algebra homomorphisms. -/
 def equalizer : StarSubalgebra R A :=
