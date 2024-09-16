@@ -7,6 +7,20 @@ import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
 import Mathlib.Tactic.CategoryTheory.Coherence.PureCoherence
 import Mathlib.CategoryTheory.Category.Basic
 
+/-!
+# The Core function for `monoidal` and `bicategory` tactics
+
+This file provides the function `BicategoryLike.main` for proving equalities in monoidal categories
+and bicategories. Using `main`, we will define the following tactics:
+- `monoidal` at `Mathlib.Tactic.CategoryTheory.Monoidal.Basic`
+- `bicategory` at `Mathlib.Tactic.CategoryTheory.Bicategory.Basic` (TODO)
+
+The `main` first normalizes the both sides using `eval`, then compares the corresponding components.
+It closes the goal at non-structural parts with `rfl` and the goal at structural parts by
+`pureCoherence`.
+
+-/
+
 open Lean Meta Elab
 open CategoryTheory Mathlib.Tactic.BicategoryLike
 
