@@ -310,7 +310,7 @@ instance instTopologicalSpace : TopologicalSpace (WeakSpace 𝕜 E) :=
 instance instContinuousAdd : ContinuousAdd (WeakSpace 𝕜 E) :=
   WeakBilin.instContinuousAdd (topDualPairing 𝕜 E).flip
 
-instance instModule' [CommSemiring 𝕝] [Module 𝕝 𝕜] [Module 𝕝 E] : Module 𝕝 (WeakSpace 𝕜 E) :=
+instance instModule' [CommSemiring 𝕝] [Module 𝕝 E] : Module 𝕝 (WeakSpace 𝕜 E) :=
   WeakBilin.instModule' (topDualPairing 𝕜 E).flip
 
 instance instIsScalarTower [CommSemiring 𝕝] [Module 𝕝 𝕜] [Module 𝕝 E] [IsScalarTower 𝕝 𝕜 E] :
