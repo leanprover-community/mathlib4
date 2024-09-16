@@ -93,11 +93,6 @@ theorem m_iUnion (v : VectorMeasure α M) {f : ℕ → Set α} (hf₁ : ∀ i, M
     (hf₂ : Pairwise (Disjoint on f)) : HasSum (fun i => v (f i)) (v (⋃ i, f i)) :=
   v.m_iUnion' hf₁ hf₂
 
-theorem of_disjoint_iUnion_nat [T2Space M] (v : VectorMeasure α M) {f : ℕ → Set α}
-    (hf₁ : ∀ i, MeasurableSet (f i)) (hf₂ : Pairwise (Disjoint on f)) :
-    v (⋃ i, f i) = ∑' i, v (f i) :=
-  (v.m_iUnion hf₁ hf₂).tsum_eq.symm
-
 theorem coe_injective : @Function.Injective (VectorMeasure α M) (Set α → M) (⇑) := fun v w h => by
   cases v
   cases w
@@ -120,52 +115,29 @@ theorem ext_iff (v w : VectorMeasure α M) : v = w ↔ ∀ i : Set α, Measurabl
 theorem ext {s t : VectorMeasure α M} (h : ∀ i : Set α, MeasurableSet i → s i = t i) : s = t :=
   (ext_iff s t).2 h
 
-variable [T2Space M] {v : VectorMeasure α M} {f : ℕ → Set α}
+variable [Countable β] {v : VectorMeasure α M} {f : β → Set α}
 
-theorem hasSum_of_disjoint_iUnion [Countable β] {f : β → Set α} (hf₁ : ∀ i, MeasurableSet (f i))
-    (hf₂ : Pairwise (Disjoint on f)) : HasSum (fun i => v (f i)) (v (⋃ i, f i)) := by
+theorem hasSum_of_disjoint_iUnion (hm : ∀ i, MeasurableSet (f i)) (hd : Pairwise (Disjoint on f)) :
+    HasSum (fun i => v (f i)) (v (⋃ i, f i)) := by
   rcases Countable.exists_injective_nat β with ⟨e, he⟩
   rw [← hasSum_extend_zero he]
   convert m_iUnion v (f := Function.extend e f fun _ ↦ ∅) _ _
-  · simp only [Pi.zero_def, Function.apply_extend v, Function.comp, empty]
+  · simp only [Pi.zero_def, Function.apply_extend v, Function.comp_def, empty]
   · exact (iSup_extend_bot he _).symm
-  · simp [Function.apply_extend MeasurableSet, (· ∘ ·), hf₁, Function.extend_const]
-  · 
-  cases nonempty_encodable β
-  set g := fun i : ℕ => ⋃ (b : β) (_ : b ∈ Encodable.decode₂ β i), f b with hg
-  have hg₁ : ∀ i, MeasurableSet (g i) :=
-    fun _ => MeasurableSet.iUnion fun b => MeasurableSet.iUnion fun _ => hf₁ b
-  have hg₂ : Pairwise (Disjoint on g) := Encodable.iUnion_decode₂_disjoint_on hf₂
-  have := v.of_disjoint_iUnion_nat hg₁ hg₂
-  rw [hg, Encodable.iUnion_decode₂] at this
-  have hg₃ : (fun i : β => v (f i)) = fun i => v (g (Encodable.encode i)) := by
-    ext x
-    rw [hg]
-    simp only
-    congr
-    ext y
-    simp only [exists_prop, Set.mem_iUnion, Option.mem_def]
-    constructor
-    · intro hy
-      exact ⟨x, (Encodable.decode₂_is_partial_inv _ _).2 rfl, hy⟩
-    · rintro ⟨b, hb₁, hb₂⟩
-      rw [Encodable.decode₂_is_partial_inv _ _] at hb₁
-      rwa [← Encodable.encode_injective hb₁]
-  rw [Summable.hasSum_iff, this, ← tsum_iUnion_decode₂]
-  · exact v.empty
-  · rw [hg₃]
-    change Summable ((fun i => v (g i)) ∘ Encodable.encode)
-    rw [Function.Injective.summable_iff Encodable.encode_injective]
-    · exact (v.m_iUnion hg₁ hg₂).summable
-    · intro x hx
-      convert v.empty
-      simp only [g, Set.iUnion_eq_empty, Option.mem_def, not_exists, Set.mem_range] at hx ⊢
-      intro i hi
-      exact False.elim ((hx i) ((Encodable.decode₂_is_partial_inv _ _).1 hi))
+  · simp [Function.apply_extend MeasurableSet, Function.comp_def, hm]
+  · exact hd.disjoint_extend_bot (he.factorsThrough _)
 
-theorem of_disjoint_iUnion [Countable β] {f : β → Set α} (hf₁ : ∀ i, MeasurableSet (f i))
-    (hf₂ : Pairwise (Disjoint on f)) : v (⋃ i, f i) = ∑' i, v (f i) :=
-  (hasSum_of_disjoint_iUnion hf₁ hf₂).tsum_eq.symm
+variable [T2Space M]
+
+theorem of_disjoint_iUnion (hm : ∀ i, MeasurableSet (f i)) (hd : Pairwise (Disjoint on f)) :
+    v (⋃ i, f i) = ∑' i, v (f i) :=
+  (hasSum_of_disjoint_iUnion hm hd).tsum_eq.symm
+
+@[deprecated of_disjoint_iUnion (since := "2024-09-15")]
+theorem of_disjoint_iUnion_nat (v : VectorMeasure α M) {f : ℕ → Set α}
+    (hf₁ : ∀ i, MeasurableSet (f i)) (hf₂ : Pairwise (Disjoint on f)) :
+    v (⋃ i, f i) = ∑' i, v (f i) :=
+  of_disjoint_iUnion hf₁ hf₂
 
 theorem of_union {A B : Set α} (h : Disjoint A B) (hA : MeasurableSet A) (hB : MeasurableSet B) :
     v (A ∪ B) = v A + v B := by
@@ -202,12 +174,12 @@ theorem of_diff_of_diff_eq_zero {A B : Set α} (hA : MeasurableSet A) (hB : Meas
 theorem of_iUnion_nonneg {M : Type*} [TopologicalSpace M] [OrderedAddCommMonoid M]
     [OrderClosedTopology M] {v : VectorMeasure α M} (hf₁ : ∀ i, MeasurableSet (f i))
     (hf₂ : Pairwise (Disjoint on f)) (hf₃ : ∀ i, 0 ≤ v (f i)) : 0 ≤ v (⋃ i, f i) :=
-  (v.of_disjoint_iUnion_nat hf₁ hf₂).symm ▸ tsum_nonneg hf₃
+  (v.of_disjoint_iUnion hf₁ hf₂).symm ▸ tsum_nonneg hf₃
 
 theorem of_iUnion_nonpos {M : Type*} [TopologicalSpace M] [OrderedAddCommMonoid M]
     [OrderClosedTopology M] {v : VectorMeasure α M} (hf₁ : ∀ i, MeasurableSet (f i))
     (hf₂ : Pairwise (Disjoint on f)) (hf₃ : ∀ i, v (f i) ≤ 0) : v (⋃ i, f i) ≤ 0 :=
-  (v.of_disjoint_iUnion_nat hf₁ hf₂).symm ▸ tsum_nonpos hf₃
+  (v.of_disjoint_iUnion hf₁ hf₂).symm ▸ tsum_nonpos hf₃
 
 theorem of_nonneg_disjoint_union_eq_zero {s : SignedMeasure α} {A B : Set α} (h : Disjoint A B)
     (hA₁ : MeasurableSet A) (hB₁ : MeasurableSet B) (hA₂ : 0 ≤ s A) (hB₂ : 0 ≤ s B)
@@ -1169,7 +1141,7 @@ def toMeasureOfZeroLE (s : SignedMeasure α) (i : Set α) (hi₁ : MeasurableSet
       intro n m hnm
       exact ((hf₂ hnm).inf_left' i).inf_right' i
     simp only [toMeasureOfZeroLE', s.restrict_apply hi₁ (MeasurableSet.iUnion hf₁), Set.inter_comm,
-      Set.inter_iUnion, s.of_disjoint_iUnion_nat h₁ h₂, ENNReal.some_eq_coe, id]
+      Set.inter_iUnion, s.of_disjoint_iUnion h₁ h₂, ENNReal.some_eq_coe, id]
     have h : ∀ n, 0 ≤ s (i ∩ f n) := fun n =>
       s.nonneg_of_zero_le_restrict (s.zero_le_restrict_subset hi₁ Set.inter_subset_left hi₂)
     rw [NNReal.coe_tsum_of_nonneg h, ENNReal.coe_tsum]
