@@ -381,6 +381,11 @@ protected theorem norm_ne_zero_iff {x : mixedSpace K} :
   rw [← not_iff_not]
   simp_rw [ne_eq, mixedEmbedding.norm_eq_zero_iff, not_not, not_forall, not_not]
 
+theorem norm_eq_of_normAtPlace_eq {x y : mixedSpace K}
+    (h : ∀ w, normAtPlace w x = normAtPlace w y) :
+    mixedEmbedding.norm x = mixedEmbedding.norm y := by
+  simp_rw [mixedEmbedding.norm_apply, h]
+
 theorem norm_smul (c : ℝ) (x : mixedSpace K) :
     mixedEmbedding.norm (c • x) = |c| ^ finrank ℚ K * (mixedEmbedding.norm x) := by
   simp_rw [mixedEmbedding.norm_apply, normAtPlace_smul, mul_pow, prod_mul_distrib,
