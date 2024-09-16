@@ -110,6 +110,17 @@ theorem restrict_extend_compl_range (f : α → β) (g : α → γ) (g' : β →
   classical
   exact restrict_dite_compl _ _
 
+/-- If a function `f` is restricted to a set `t`, and `s ⊆ t`, this is the restriction to `s`. -/
+@[simp]
+def restrict₂ {s t : Set α} (hst : s ⊆ t) (f : ∀ a : t, π a) : ∀ a : s, π a :=
+  fun x => f ⟨x.1, hst x.2⟩
+
+theorem restrict₂_comp_restrict {s t : Set α} (hst : s ⊆ t) :
+    (restrict₂ (π := π) hst) ∘ t.restrict = s.restrict := rfl
+
+theorem restrict₂_comp_restrict₂ {s t u : Set α} (hst : s ⊆ t) (htu : t ⊆ u) :
+    (restrict₂ (π := π) hst) ∘ (restrict₂ htu) = restrict₂ (hst.trans htu) := rfl
+
 theorem range_extend_subset (f : α → β) (g : α → γ) (g' : β → γ) :
     range (extend f g g') ⊆ range g ∪ g' '' (range f)ᶜ := by
   classical
