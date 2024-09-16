@@ -69,15 +69,6 @@ deprecatedFiles="$(git ls-files '**/Deprecated/*.lean' | xargs wc -l | sed 's=^ 
 
 printf '%s|%s\n' "$(printf '%s' "${deprecatedFiles}" | wc -l)" "\`Deprecated\` files"
 printf '%s|%s\n' "$(printf '%s\n' "${deprecatedFiles}" | grep total | sed 's= total==')"  'total LoC in `Deprecated` files'
-
-initFiles="$(git ls-files '**/Init/*.lean' | xargs wc -l | sed 's=^ *==')"
-
-printf '%s|%s\n' "$(printf '%s' "${initFiles}" | wc -l)" "\`Init\` files"
-printf '%s|%s\n\n' "$(printf '%s\n' "${initFiles}" | grep total | sed 's= total==')"  'total LoC in `Init` files'
-
-printf $'```spoiler Changed \'Init\' lines by file\n%s\n```\n' "$(
-    printf '%s\n' "${initFiles}" | awk 'BEGIN{print("|LoC|Change|File|\n|-:|:-:|-|")} {printf("%s|%s\n", $1, $2)}'
-  )"
 }
 
 # collect the technical debts from the current mathlib
