@@ -118,14 +118,13 @@ def topCatAdjunctionUnit (X : LightCondSet.{u}) : X ⟶ X.toTopCat.toLightCondSe
       rfl }
 
 /-- The adjunction `lightCondSetToTopCat ⊣ topCatToLightCondSet` -/
-noncomputable def topCatAdjunction : lightCondSetToTopCat.{u} ⊣ topCatToLightCondSet :=
-  Adjunction.mkOfUnitCounit {
-    unit := { app := topCatAdjunctionUnit }
-    counit := { app := topCatAdjunctionCounit }
-    left_triangle := by
-      ext Y
-      change Y.val.map (𝟙 _) _ = _
-      simp }
+noncomputable def topCatAdjunction : lightCondSetToTopCat.{u} ⊣ topCatToLightCondSet where
+  unit := { app := topCatAdjunctionUnit }
+  counit := { app := topCatAdjunctionCounit }
+  left_triangle_components Y := by
+    ext
+    change Y.val.map (𝟙 _) _ = _
+    simp
 
 instance (X : TopCat) : Epi (topCatAdjunction.counit.app X) := by
   rw [TopCat.epi_iff_surjective]

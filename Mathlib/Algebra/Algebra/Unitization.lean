@@ -751,6 +751,66 @@ theorem starLift_symm_apply_apply (φ : Unitization R A →⋆ₐ[R] C) (a : A) 
 
 end StarAlgHom
 
+section StarMap
+
+variable {R A B C : Type*} [CommSemiring R] [StarRing R]
+variable [NonUnitalSemiring A] [StarRing A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
+variable [NonUnitalSemiring B] [StarRing B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
+variable [NonUnitalSemiring C] [StarRing C] [Module R C] [SMulCommClass R C C] [IsScalarTower R C C]
+variable [StarModule R B] [StarModule R C]
+
+/-- The functorial map on morphisms between the category of non-unital C⋆-algebras with non-unital
+star homomorphisms and unital C⋆-algebras with unital star homomorphisms.
+
+This sends `φ : A →⋆ₙₐ[R] B` to a map `Unitization R A →⋆ₐ[R] Unitization R B` given by the formula
+`(r, a) ↦ (r, φ a)` (or perhaps more precisely,
+`algebraMap R _ r + ↑a ↦ algebraMap R _ r + ↑(φ a)`). -/
+@[simps!]
+def starMap (φ : A →⋆ₙₐ[R] B) : Unitization R A →⋆ₐ[R] Unitization R B :=
+  Unitization.starLift <| (Unitization.inrNonUnitalStarAlgHom R B).comp φ
+
+@[simp high]
+lemma starMap_inr (φ : A →⋆ₙₐ[R] B) (a : A) :
+    starMap φ (inr a) = inr (φ a) := by
+  simp
+
+@[simp high]
+lemma starMap_inl (φ : A →⋆ₙₐ[R] B) (r : R) :
+    starMap φ (inl r) = algebraMap R (Unitization R B) r := by
+  simp
+
+/-- If `φ : A →⋆ₙₐ[R] B` is injective, the lift `starMap φ : Unitization R A →⋆ₐ[R] Unitization R B`
+is also injective. -/
+lemma starMap_injective {φ : A →⋆ₙₐ[R] B} (hφ : Function.Injective φ) :
+    Function.Injective (starMap φ) := by
+  intro x y h
+  ext
+  · simpa using congr(fst $(h))
+  · exact hφ <| by simpa [algebraMap_eq_inl] using congr(snd $(h))
+
+/-- If `φ : A →⋆ₙₐ[R] B` is surjective, the lift
+`starMap φ : Unitization R A →⋆ₐ[R] Unitization R B` is also surjective. -/
+lemma starMap_surjective {φ : A →⋆ₙₐ[R] B} (hφ : Function.Surjective φ) :
+    Function.Surjective (starMap φ) := by
+  intro x
+  induction x using Unitization.ind with
+  | inl_add_inr r b =>
+    obtain ⟨a, rfl⟩ := hφ b
+    exact ⟨(r, a), by rfl⟩
+
+/-- `starMap` is functorial: `starMap (ψ.comp φ) = (starMap ψ).comp (starMap φ)`. -/
+lemma starMap_comp {φ : A →⋆ₙₐ[R] B} {ψ : B →⋆ₙₐ[R] C} :
+    starMap (ψ.comp φ) = (starMap ψ).comp (starMap φ) := by
+  ext; all_goals simp
+
+/-- `starMap` is functorial:
+`starMap (NonUnitalStarAlgHom.id R B) = StarAlgHom.id R (Unitization R B)`. -/
+@[simp]
+lemma starMap_id : starMap (NonUnitalStarAlgHom.id R B) = StarAlgHom.id R (Unitization R B) := by
+  ext; all_goals simp
+
+end StarMap
+
 section StarNormal
 
 variable {R A : Type*} [Semiring R]

@@ -435,7 +435,7 @@ variable {F R S A B : Type*} {p : A → Prop} {q : B → Prop}
   [Module S A] [Module S B] [IsScalarTower R S A] [IsScalarTower R S B]
   [NonUnitalContinuousFunctionalCalculus R p] [NonUnitalContinuousFunctionalCalculus R q]
   [UniqueNonUnitalContinuousFunctionalCalculus R B] [FunLike F A B] [NonUnitalAlgHomClass F S A B]
-  [NonUnitalStarAlgHomClass F S A B]
+  [StarHomClass F A B]
 
 include S in
 /-- Non-unital star algebra homomorphisms commute with the non-unital continuous functional
@@ -484,7 +484,7 @@ variable {F R S A B : Type*} {p : A → Prop} {q : B → Prop}
   [CommSemiring S] [Algebra R S] [Algebra S A] [Algebra S B] [IsScalarTower R S A]
   [IsScalarTower R S B] [ContinuousFunctionalCalculus R p] [ContinuousFunctionalCalculus R q]
   [UniqueContinuousFunctionalCalculus R B] [FunLike F A B] [AlgHomClass F S A B]
-  [StarAlgHomClass F S A B]
+  [StarHomClass F A B]
 
 include S in
 /-- Star algebra homomorphisms commute with the continuous functional calculus. -/
