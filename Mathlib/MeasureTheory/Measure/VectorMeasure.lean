@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
 import Mathlib.MeasureTheory.Measure.Typeclasses
-import Mathlib.Analysis.Complex.Basic
+import Mathlib.Topology.Algebra.InfiniteSum.Module
 
 /-!
 
@@ -62,10 +62,6 @@ structure VectorMeasure (α : Type*) [MeasurableSpace α] (M : Type*) [AddCommMo
 /-- A `SignedMeasure` is an `ℝ`-vector measure. -/
 abbrev SignedMeasure (α : Type*) [MeasurableSpace α] :=
   VectorMeasure α ℝ
-
-/-- A `ComplexMeasure` is a `ℂ`-vector measure. -/
-abbrev ComplexMeasure (α : Type*) [MeasurableSpace α] :=
-  VectorMeasure α ℂ
 
 open Set MeasureTheory
 

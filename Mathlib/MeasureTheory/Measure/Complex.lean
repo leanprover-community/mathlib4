@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
 import Mathlib.MeasureTheory.Measure.VectorMeasure
+import Mathlib.Analysis.Complex.Basic
 
 /-!
 # Complex measure
@@ -41,6 +42,10 @@ variable {α β : Type*} {m : MeasurableSpace α}
 namespace MeasureTheory
 
 open VectorMeasure
+
+/-- A `ComplexMeasure` is a `ℂ`-vector measure. -/
+abbrev ComplexMeasure (α : Type*) [MeasurableSpace α] :=
+  VectorMeasure α ℂ
 
 namespace ComplexMeasure
 
