@@ -541,13 +541,13 @@ theorem AnalyticAt.inv {f : E → 𝕝} {x : E} (fa : AnalyticAt 𝕜 f x) (f0 :
     AnalyticAt 𝕜 (fun x ↦ (f x)⁻¹) x :=
   (analyticAt_inv f0).comp fa
 
-/-- `x⁻¹` is analytic away from zero -/
+/-- `(f x)⁻¹` is analytic away from `f x = 0` -/
 theorem AnalyticWithinOn.inv {f : E → 𝕝} {s : Set E}
     (fa : AnalyticWithinOn 𝕜 f s) (f0 : ∀ x ∈ s, f x ≠ 0) :
     AnalyticWithinOn 𝕜 (fun x ↦ (f x)⁻¹) s :=
   fun x m ↦ (fa x m).inv (f0 x m)
 
-/-- `x⁻¹` is analytic away from zero -/
+/-- `(f x)⁻¹` is analytic away from `f x = 0` -/
 theorem AnalyticOn.inv {f : E → 𝕝} {s : Set E} (fa : AnalyticOn 𝕜 f s) (f0 : ∀ x ∈ s, f x ≠ 0) :
     AnalyticOn 𝕜 (fun x ↦ (f x)⁻¹) s :=
   fun x m ↦ (fa x m).inv (f0 x m)
