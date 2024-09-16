@@ -109,8 +109,6 @@ fi |
   }'
 )
 
-set +e ## TODO, bisect the error...
-
 ## report may be empty, if every declaration is accounted for.
 report="$(if [ "${short}" == "0" ]
 then
