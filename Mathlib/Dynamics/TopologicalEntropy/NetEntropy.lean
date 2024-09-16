@@ -84,7 +84,7 @@ lemma isDynNetOf_singleton (T : X → X) {F : Set X} (U : Set (X × X)) (n : ℕ
   ⟨singleton_subset_iff.2 h, pairwise_singleton x _⟩
 
 /-- Given an entourage `U` and a time `n`, a dynamical net has a smaller cardinal than a dynamical
-  cover. This lemma is the first of two key results to compare two versions topological entropy:
+  cover. This lemma is the first of two key results to compare two versions of  topological entropy:
   with cover and with nets, the second being `coverMincard_le_netMaxcard`.-/
 lemma IsDynNetOf.card_le_card_of_isDynCoverOf {T : X → X} {F : Set X} {U : Set (X × X)}
     (U_symm : SymmetricRel U) {n : ℕ} {s t : Finset X} (hs : IsDynNetOf T F U n s)
