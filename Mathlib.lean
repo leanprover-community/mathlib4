@@ -2616,6 +2616,7 @@ import Mathlib.Dynamics.BirkhoffSum.Basic
 import Mathlib.Dynamics.BirkhoffSum.NormedSpace
 import Mathlib.Dynamics.Circle.RotationNumber.TranslationNumber
 import Mathlib.Dynamics.Ergodic.Action.Basic
+import Mathlib.Dynamics.Ergodic.Action.OfMinimal
 import Mathlib.Dynamics.Ergodic.Action.Regular
 import Mathlib.Dynamics.Ergodic.AddCircle
 import Mathlib.Dynamics.Ergodic.Conservative
@@ -4229,6 +4230,7 @@ import Mathlib.Tactic.Linarith.Preprocessing
 import Mathlib.Tactic.Linarith.Verification
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.LinearCombination'
+import Mathlib.Tactic.LinearCombination.Lemmas
 import Mathlib.Tactic.Linter
 import Mathlib.Tactic.Linter.AdmitLinter
 import Mathlib.Tactic.Linter.FlexibleLinter

@@ -300,21 +300,6 @@ lemma AnalyticWithinOn.mono {f : E → F} {s t : Set E} (h : AnalyticWithinOn �
 
 
 /-!
-### Analyticity within respects composition
-
--/
-
-lemma AnalyticWithinOn.comp {f : F → G} {g : E → F} {s : Set F}
-    {t : Set E} (hf : AnalyticWithinOn 𝕜 f s) (hg : AnalyticWithinOn 𝕜 g t) (h : MapsTo g t s) :
-    AnalyticWithinOn 𝕜 (f ∘ g) t :=
-  fun x m ↦ (hf _ (h m)).comp (hg x m) h
-
-lemma AnalyticOn.comp_analyticWithinOn {f : F → G} {g : E → F} {s : Set F}
-    {t : Set E} (hf : AnalyticOn 𝕜 f s) (hg : AnalyticWithinOn 𝕜 g t) (h : MapsTo g t s) :
-    AnalyticWithinOn 𝕜 (f ∘ g) t :=
-  fun x m ↦ (hf _ (h m)).comp_analyticWithinAt (hg x m)
-
-/-!
 ### Analyticity within implies smoothness
 -/
 

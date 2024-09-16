@@ -181,7 +181,7 @@ protected theorem heq_fun₂_iff {α : Sort*} {k l k' l' : ℕ} (h : k = l) (h' 
   subst h'
   simp [Function.funext_iff]
 
-/-- Two elements of `Fin k` and `Fin l` are heq iff they values in `ℕ` coincide. This requires
+/-- Two elements of `Fin k` and `Fin l` are heq iff their values in `ℕ` coincide. This requires
 `k = l`. For the left implication without this assumption, see `val_eq_val_of_heq`. -/
 protected theorem heq_ext_iff {k l : ℕ} (h : k = l) {i : Fin k} {j : Fin l} :
     HEq i j ↔ (i : ℕ) = (j : ℕ) := by
@@ -1523,16 +1523,6 @@ protected theorem zero_mul' [NeZero n] (k : Fin n) : (0 : Fin n) * k = 0 := by
   simp [Fin.ext_iff, mul_def]
 
 end Mul
-
-open Qq in
-instance toExpr (n : ℕ) : Lean.ToExpr (Fin n) where
-  toTypeExpr := q(Fin $n)
-  toExpr := match n with
-    | 0 => finZeroElim
-    | k + 1 => fun i => show Q(Fin $n) from
-      have i : Q(Nat) := Lean.mkRawNatLit i -- raw literal to avoid ofNat-double-wrapping
-      have : Q(NeZero $n) := haveI : $n =Q $k + 1 := ⟨⟩; by exact q(NeZero.succ)
-      q(OfNat.ofNat $i)
 
 end Fin
 

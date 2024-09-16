@@ -236,6 +236,8 @@
   "Mathlib.Tactic.Measurability":
   ["Mathlib.Algebra.Group.Defs", "Mathlib.Tactic.Measurability.Init"],
   "Mathlib.Tactic.Linter.UnusedTactic": ["Batteries.Tactic.Unreachable"],
+  "Mathlib.Tactic.LinearCombination":
+  ["Mathlib.Tactic.LinearCombination.Lemmas"],
   "Mathlib.Tactic.Lemma": ["Lean.Parser.Command"],
   "Mathlib.Tactic.IrreducibleDef": ["Mathlib.Data.Subtype"],
   "Mathlib.Tactic.ITauto":
