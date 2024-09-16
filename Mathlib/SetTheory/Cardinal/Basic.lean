@@ -215,30 +215,18 @@ theorem mk_set_le (s : Set α) : #s ≤ #α :=
   mk_subtype_le s
 
 /-- The universe lift operation on cardinals. You can specify the universes explicitly with
-`lift.{u v} : Cardinal.{v} → Cardinal.{max v u}` -/
+`lift.{u v} : Cardinal.{v} → Cardinal.{max v u}`. -/
 @[pp_with_univ]
-def lift : @InitialSeg Cardinal.{v} Cardinal.{max v u} (· < ·) (· < ·) where
-  toFun := map ULift (fun _ _ e => Equiv.ulift.trans <| e.trans Equiv.ulift.symm)
-  inj' a b := by
-    refine inductionOn₂ a b ?_
-    intro α β
-    rw [map_mk, map_mk, Cardinal.eq, Cardinal.eq]
-    rintro ⟨e⟩
-    exact ⟨(Equiv.ulift.symm.trans e).trans Equiv.ulift⟩
-  map_rel_iff' := by
-    intro a b
-    refine inductionOn₂ a b ?_
-    intro α β
-    rw [← le_iff_le_iff_lt_iff_lt]
-    constructor <;>
-    rintro ⟨e⟩
+def lift : @InitialSeg Cardinal.{v} Cardinal.{max v u} (· < ·) (· < ·) := by
+  refine ⟨(OrderEmbedding.ofMapLEIff
+    (map ULift fun _ _ e => Equiv.ulift.trans <| e.trans Equiv.ulift.symm) ?_).ltEmbedding, ?_⟩ <;>
+  intro a b <;> refine inductionOn₂ a b ?_ <;> intro α β
+  · constructor <;> rintro ⟨e⟩
     exacts [⟨e.congr Equiv.ulift Equiv.ulift⟩, ⟨e.congr Equiv.ulift.symm Equiv.ulift.symm⟩]
-  init' a b := by
-    refine inductionOn₂ a b ?_
-    intro α β h
+  · intro h
     obtain ⟨e⟩ := h.le
     replace e := e.congr (Equiv.refl β) Equiv.ulift
-    refine ⟨#(range e), Cardinal.eq.2 ⟨Equiv.ulift.trans <| Equiv.symm ?_⟩⟩
+    refine ⟨#(range e), mk_congr (Equiv.ulift.trans <| Equiv.symm ?_)⟩
     apply (e.codRestrict _ mem_range_self).equivOfSurjective
     rintro ⟨a, ⟨b, rfl⟩⟩
     exact ⟨b, rfl⟩
