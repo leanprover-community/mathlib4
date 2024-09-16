@@ -5,7 +5,6 @@ Authors: Christian Merten
 -/
 import Mathlib.CategoryTheory.Galois.Prorepresentability
 import Mathlib.Topology.Algebra.Group.Basic
-import Mathlib.CategoryTheory.Galois.Decomposition
 
 /-!
 
