@@ -25,7 +25,7 @@ and `Nat.digits`.
 
 -- Once we're in the `Nat` namespace, `xor` will inconveniently resolve to `Nat.xor`.
 /-- `bxor` denotes the `xor` function i.e. the exclusive-or function on type `Bool`. -/
-local notation "bxor" => _root_.xor
+local notation "bxor" => xor
 
 namespace Nat
 universe u
