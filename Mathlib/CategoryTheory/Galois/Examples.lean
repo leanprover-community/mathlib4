@@ -54,7 +54,7 @@ noncomputable def Action.imageComplement {X Y : Action FintypeCat (MonCat.of G)}
       use X.ρ g⁻¹ x
       calc (X.ρ g⁻¹ ≫ f.hom) x
           = (Y.ρ g⁻¹ * Y.ρ g) y.val := by rw [f.comm, FintypeCat.comp_apply, h]; rfl
-        _ = y.val := by rw [← map_mul, mul_left_inv, Action.ρ_one, FintypeCat.id_apply]
+        _ = y.val := by rw [← map_mul, inv_mul_cancel, Action.ρ_one, FintypeCat.id_apply]
     map_one' := by simp only [Action.ρ_one]; rfl
     map_mul' := fun g h ↦ FintypeCat.hom_ext _ _ <| fun y ↦ Subtype.ext <| by
       exact congrFun (MonoidHom.map_mul Y.ρ g h) y.val
@@ -108,7 +108,7 @@ theorem Action.pretransitive_of_isConnected (X : Action FintypeCat (MonCat.of G)
     connectedness, the orbit equals `X.V`. -/
     let T : Set X.V := MulAction.orbit G x
     have : Fintype T := Fintype.ofFinite T
-    letI : MulAction G (FintypeCat.of T) := MulAction.instMulActionElemOrbit
+    letI : MulAction G (FintypeCat.of T) := inferInstanceAs <| MulAction G ↑(MulAction.orbit G x)
     let T' : Action FintypeCat (MonCat.of G) := Action.FintypeCat.ofMulAction G (FintypeCat.of T)
     let i : T' ⟶ X := ⟨Subtype.val, fun _ ↦ rfl⟩
     have : Mono i := ConcreteCategory.mono_of_injective _ (Subtype.val_injective)

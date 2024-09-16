@@ -3,6 +3,7 @@ Copyright (c) 2021 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Init
 import Lean.CoreM
 import Lean.Util.FoldConsts
 
@@ -11,8 +12,6 @@ A rudimentary export format, adapted from
 <https://github.com/leanprover-community/lean/blob/master/doc/export_format.md>
 with support for lean 4 kernel primitives.
 -/
-
-set_option autoImplicit true
 
 open Lean (HashMap HashSet)
 
@@ -196,7 +195,7 @@ where
 
 end
 
-def runExportM (m : ExportM α) : CoreM α := m.run' default
+def runExportM {α : Type} (m : ExportM α) : CoreM α := m.run' default
 
 -- #eval runExportM (exportDef `Lean.Expr)
 end Export

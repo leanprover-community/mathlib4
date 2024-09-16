@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2023 Anne Baanen, Sam v. Gool, Leo Mayer, Brendan S. Murphy. All rights reserved.
+Copyright (c) 2023 Anne Baanen, Sam van Gool, Leo Mayer, Brendan Murphy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anne Baanen, Sam v. Gool, Leo Mayer, Brendan S. Murphy
+Authors: Anne Baanen, Sam van Gool, Leo Mayer, Brendan Murphy
 -/
 import Mathlib.Topology.Category.Locale
 
@@ -41,16 +41,14 @@ open CategoryTheory Order Set Topology TopologicalSpace
 
 namespace Locale
 
-/- ### Definition of the points functor `pt` --/
-
+/-! ### Definition of the points functor `pt` --/
 section pt_definition
 
 variable (L : Type*) [CompleteLattice L]
 
 /-- The type of points of a complete lattice `L`, where a *point* of a complete lattice is,
 by definition, a frame homomorphism from `L` to `Prop`. -/
-@[reducible]
-def PT := FrameHom L Prop
+abbrev PT := FrameHom L Prop
 
 /-- The frame homomorphism from a complete lattice `L` to the complete lattice of sets of
 points of `L`. -/
@@ -77,6 +75,9 @@ instance instTopologicalSpace : TopologicalSpace (PT L) where
 lemma isOpen_iff (U : Set (PT L)) : IsOpen U ↔ ∃ u : L, {x | x u} = U := Iff.rfl
 
 end PT
+
+-- This was a global instance prior to #13170. We may experiment with removing it.
+attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
 
 /-- The covariant functor `pt` from the category of locales to the category of
 topological spaces, which sends a locale `L` to the topological space `PT L` of homomorphisms
