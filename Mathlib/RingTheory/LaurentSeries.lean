@@ -765,7 +765,7 @@ theorem Cauchy.eventually_mem_nhds {ℱ : Filter (LaurentSeries K)} (hℱ : Cauc
   intro _ hf
   apply lt_of_le_of_lt (valuation_le_iff_coeff_lt_eq_zero K |>.mpr _) hD
   intro n hn
-  rw [HahnSeries.sub_coeff, sub_eq_zero, hf n hn |>.symm] ; rfl
+  rw [HahnSeries.sub_coeff, sub_eq_zero, hf n hn |>.symm]; rfl
 
 /- Laurent Series with coefficients in a field are complete w.r.t. the `X`-adic valuation -/
 instance : CompleteSpace (LaurentSeries K) :=
