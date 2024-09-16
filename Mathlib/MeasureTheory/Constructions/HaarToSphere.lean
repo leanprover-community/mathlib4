@@ -32,8 +32,8 @@ local notation "dim" => FiniteDimensional.finrank ℝ
 noncomputable section
 namespace MeasureTheory
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
-  [MeasurableSpace E] [BorelSpace E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  [MeasurableSpace E]
 
 namespace Measure
 
@@ -52,6 +52,8 @@ theorem toSphere_apply_aux (s : Set (sphere (0 : E) 1)) (r : Ioi (0 : ℝ)) :
     ← image_subtype_val_Ioi_Iio, image2_image_left, image2_swap, ← image_prod]
   rfl
 
+variable [BorelSpace E]
+
 theorem toSphere_apply' {s : Set (sphere (0 : E) 1)} (hs : MeasurableSet s) :
     μ.toSphere s = dim E * μ (Ioo (0 : ℝ) 1 • ((↑) '' s)) := by
   rw [toSphere, smul_apply, fst_apply hs, restrict_apply (measurable_fst hs),
@@ -62,7 +64,7 @@ theorem toSphere_apply' {s : Set (sphere (0 : E) 1)} (hs : MeasurableSet s) :
 theorem toSphere_apply_univ' : μ.toSphere univ = dim E * μ (ball 0 1 \ {0}) := by
   rw [μ.toSphere_apply' .univ, image_univ, Subtype.range_coe, Ioo_smul_sphere_zero] <;> simp
 
-variable [μ.IsAddHaarMeasure]
+variable [FiniteDimensional ℝ E] [μ.IsAddHaarMeasure]
 
 @[simp]
 theorem toSphere_apply_univ : μ.toSphere univ = dim E * μ (ball 0 1) := by
@@ -72,8 +74,8 @@ theorem toSphere_apply_univ : μ.toSphere univ = dim E * μ (ball 0 1) := by
 instance : IsFiniteMeasure μ.toSphere where
   measure_univ_lt_top := by
     rw [toSphere_apply_univ']
-    exact ENNReal.mul_lt_top (ENNReal.natCast_ne_top _) <|
-      ne_top_of_le_ne_top measure_ball_lt_top.ne <| measure_mono diff_subset
+    exact ENNReal.mul_lt_top (ENNReal.natCast_lt_top _) <|
+      measure_ball_lt_top.trans_le' <| measure_mono diff_subset
 
 /-- The measure on `(0, +∞)` that has density `(· ^ n)` with respect to the Lebesgue measure. -/
 def volumeIoiPow (n : ℕ) : Measure (Ioi (0 : ℝ)) :=
@@ -127,7 +129,7 @@ theorem measurePreserving_homeomorphUnitSphereProd :
 end Measure
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-  [Nontrivial E] (μ : Measure E) [μ.IsAddHaarMeasure]
+  [Nontrivial E] (μ : Measure E) [FiniteDimensional ℝ E] [BorelSpace E] [μ.IsAddHaarMeasure]
 
 lemma integral_fun_norm_addHaar (f : ℝ → F) :
     ∫ x, f (‖x‖) ∂μ = dim E • (μ (ball 0 1)).toReal • ∫ y in Ioi (0 : ℝ), y ^ (dim E - 1) • f y :=

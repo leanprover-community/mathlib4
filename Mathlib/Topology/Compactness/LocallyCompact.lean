@@ -12,11 +12,11 @@ We define the following classes of topological spaces:
 * `LocallyCompactSpace`: for every point `x`, every open neighborhood of `x` contains a compact
   neighborhood of `x`. The definition is formulated in terms of the neighborhood filter.
 -/
-open Set Filter Topology TopologicalSpace Classical
+
+open Set Filter Topology TopologicalSpace
 
 variable {X : Type*} {Y : Type*} {ι : Type*}
 variable [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X}
-
 
 instance [WeaklyLocallyCompactSpace X] [WeaklyLocallyCompactSpace Y] :
     WeaklyLocallyCompactSpace (X × Y) where
@@ -28,12 +28,22 @@ instance [WeaklyLocallyCompactSpace X] [WeaklyLocallyCompactSpace Y] :
 instance {ι : Type*} [Finite ι] {X : ι → Type*} [(i : ι) → TopologicalSpace (X i)]
     [(i : ι) → WeaklyLocallyCompactSpace (X i)] :
     WeaklyLocallyCompactSpace ((i : ι) → X i) where
-  exists_compact_mem_nhds := fun f ↦ by
+  exists_compact_mem_nhds f := by
     choose s hsc hs using fun i ↦ exists_compact_mem_nhds (f i)
     exact ⟨pi univ s, isCompact_univ_pi hsc, set_pi_mem_nhds univ.toFinite fun i _ ↦ hs i⟩
 
 instance (priority := 100) [CompactSpace X] : WeaklyLocallyCompactSpace X where
   exists_compact_mem_nhds _ := ⟨univ, isCompact_univ, univ_mem⟩
+
+protected theorem ClosedEmbedding.weaklyLocallyCompactSpace [WeaklyLocallyCompactSpace Y]
+    {f : X → Y} (hf : ClosedEmbedding f) : WeaklyLocallyCompactSpace X where
+  exists_compact_mem_nhds x :=
+    let ⟨K, hK, hKx⟩ := exists_compact_mem_nhds (f x)
+    ⟨f ⁻¹' K, hf.isCompact_preimage hK, hf.continuous.continuousAt hKx⟩
+
+protected theorem IsClosed.weaklyLocallyCompactSpace [WeaklyLocallyCompactSpace X]
+    {s : Set X} (hs : IsClosed s) : WeaklyLocallyCompactSpace s :=
+  (closedEmbedding_subtype_val hs).weaklyLocallyCompactSpace
 
 /-- In a weakly locally compact space,
 every compact set is contained in the interior of a compact set. -/
@@ -101,7 +111,8 @@ instance Pi.locallyCompactSpace [∀ i, CompactSpace (X i)] : LocallyCompactSpac
     refine ⟨s.pi n'', ?_, subset_trans (fun _ => ?_) hsub, ?_⟩
     · exact (set_pi_mem_nhds_iff hs _).mpr fun i _ => hn'' i
     · exact forall₂_imp fun i _ hi' => hsub' i hi'
-    · rw [← Set.univ_pi_ite]
+    · classical
+      rw [← Set.univ_pi_ite]
       refine isCompact_univ_pi fun i => ?_
       by_cases h : i ∈ s
       · rw [if_pos h]

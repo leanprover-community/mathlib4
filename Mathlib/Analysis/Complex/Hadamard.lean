@@ -72,7 +72,7 @@ noncomputable def sSupNormIm {E : Type*} [NormedAddCommGroup E]
 
 section invInterpStrip
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] (f : ℂ → E) (z : ℂ)
+variable {E : Type*} [NormedAddCommGroup E] (f : ℂ → E) (z : ℂ)
 
 /--
 The inverse of the interpolation of `sSupNormIm` on the two boundaries.
@@ -85,7 +85,7 @@ noncomputable def invInterpStrip (ε : ℝ) : ℂ :=
   (ε + sSupNormIm f 0) ^ (z - 1) * (ε + sSupNormIm f 1) ^ (-z)
 
 /-- A function useful for the proofs steps. We will aim to show that it is bounded by 1. -/
-noncomputable def F (ε : ℝ) := fun z ↦ invInterpStrip f z ε • f z
+noncomputable def F [NormedSpace ℂ E] (ε : ℝ) := fun z ↦ invInterpStrip f z ε • f z
 
 /-- `sSup` of `norm` is nonneg applied to the image of `f` on the vertical line `re z = x` -/
 lemma sSupNormIm_nonneg (x : ℝ) : 0 ≤ sSupNormIm f x := by
@@ -136,6 +136,8 @@ lemma norm_lt_sSupNormIm_eps (f : ℂ → E) (ε : ℝ) (hε : ε > 0) (z : ℂ)
     (hD : z ∈ verticalClosedStrip 0 1) (hB : BddAbove ((norm ∘ f) '' (verticalClosedStrip 0 1))) :
     ‖f z‖ < ε + sSupNormIm f (z.re) :=
   lt_add_of_pos_of_le hε (norm_le_sSupNormIm f z hD hB)
+
+variable [NormedSpace ℂ E]
 
 /-- When the function `f` is bounded above on a vertical strip, then so is `F`. -/
 lemma F_BddAbove (f : ℂ → E) (ε : ℝ) (hε : ε > 0)
@@ -217,7 +219,7 @@ theorem norm_mul_invInterpStrip_le_one_of_mem_verticalClosedStrip (f : ℂ → E
   rw [Asymptotics.isBigO_iff]
   use 1
   rw [eventually_inf_principal]
-  apply eventually_of_forall
+  apply Eventually.of_forall
   intro x hx
   norm_num
   exact (hBF x ((preimage_mono Ioo_subset_Icc_self) hx)).trans
@@ -227,7 +229,7 @@ end invInterpStrip
 
 -----
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] (f : ℂ → E)
+variable {E : Type*} [NormedAddCommGroup E] (f : ℂ → E)
 
 /--
 The interpolation of `sSupNormIm` on the two boundaries.
@@ -293,6 +295,8 @@ lemma diffContOnCl_interpStrip :
     · refine DifferentiableAt.const_cpow ?_ ?_
       · apply differentiableAt_id'
       · left; simp only [Ne, ofReal_eq_zero]; rwa [eq_comm]
+
+variable [NormedSpace ℂ E]
 
 lemma norm_le_interpStrip_of_mem_verticalClosedStrip_eps (ε : ℝ) (hε : ε > 0) (z : ℂ)
     (hB : BddAbove ((norm ∘ f) '' (verticalClosedStrip 0 1)))

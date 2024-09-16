@@ -189,9 +189,9 @@ theorem toSubgraph_adj_getVert {u v} (w : G.Walk u v) {i : ℕ} (hi : i < w.leng
   | nil => cases hi
   | cons hxy i' ih =>
     cases i
-    · simp only [Walk.toSubgraph, Walk.getVert_zero, zero_add, cons_getVert_succ, Subgraph.sup_adj,
+    · simp only [Walk.toSubgraph, Walk.getVert_zero, zero_add, getVert_cons_succ, Subgraph.sup_adj,
       subgraphOfAdj_adj, true_or]
-    · simp only [Walk.toSubgraph, cons_getVert_succ, Subgraph.sup_adj, subgraphOfAdj_adj, Sym2.eq,
+    · simp only [Walk.toSubgraph, getVert_cons_succ, Subgraph.sup_adj, subgraphOfAdj_adj, Sym2.eq,
       Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk]
       right
       exact ih (Nat.succ_lt_succ_iff.mp hi)
@@ -211,7 +211,7 @@ theorem toSubgraph_adj_iff {u v u' v'} (w : G.Walk u v) :
       cases hadj with
       | inl hl =>
         use 0
-        simp only [Walk.getVert_zero, zero_add, cons_getVert_succ]
+        simp only [Walk.getVert_zero, zero_add, getVert_cons_succ]
         refine ⟨?_, by simp only [length_cons, Nat.zero_lt_succ]⟩
         simp only [Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk]
         cases hl with
@@ -220,7 +220,7 @@ theorem toSubgraph_adj_iff {u v u' v'} (w : G.Walk u v) :
       | inr hr =>
         obtain ⟨i, hi⟩ := (toSubgraph_adj_iff _).mp hr
         use i + 1
-        simp only [cons_getVert_succ]
+        simp only [getVert_cons_succ]
         constructor
         · exact hi.1
         · simp only [Walk.length_cons, add_lt_add_iff_right, Nat.add_lt_add_right hi.2 1]

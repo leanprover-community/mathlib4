@@ -3,17 +3,16 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Johan Commelin, Patrick Massot
 -/
-import Mathlib.Algebra.Group.WithOne.Defs
 import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.GroupWithZero.Units.Equiv
 import Mathlib.Algebra.GroupWithZero.WithZero
+import Mathlib.Algebra.Order.AddGroupWithTop
 import Mathlib.Algebra.Order.Group.Units
 import Mathlib.Algebra.Order.GroupWithZero.Synonym
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled
 import Mathlib.Algebra.Order.Monoid.Basic
-import Mathlib.Algebra.Order.AddGroupWithTop
 import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Algebra.Order.Monoid.TypeTags
-import Mathlib.Algebra.Order.ZeroLEOne
 
 /-!
 # Linearly ordered commutative groups and monoids with a zero element adjoined
@@ -99,41 +98,60 @@ end LinearOrderedCommMonoidWithZero
 section LinearOrderedCommGroupWithZero
 variable [LinearOrderedCommGroupWithZero α] {a b c d : α} {m n : ℕ}
 
--- TODO: Do we really need the following two?
+-- See note [lower instance priority]
+instance (priority := 100) LinearOrderedCommGroupWithZero.toMulPosMono : MulPosMono α where
+  elim _a _b _c hbc := mul_le_mul_right' hbc _
+
+-- See note [lower instance priority]
+instance (priority := 100) LinearOrderedCommGroupWithZero.toPosMulMono : PosMulMono α where
+  elim _a _b _c hbc := mul_le_mul_left' hbc _
+
+-- See note [lower instance priority]
+instance (priority := 100) LinearOrderedCommGroupWithZero.toPosMulReflectLE :
+    PosMulReflectLE α where
+  elim a b c hbc := by simpa [a.2.ne'] using mul_le_mul_left' hbc a⁻¹
+
+-- See note [lower instance priority]
+instance (priority := 100) LinearOrderedCommGroupWithZero.toMulPosReflectLE :
+    MulPosReflectLE α where
+  elim a b c hbc := by simpa [a.2.ne'] using mul_le_mul_right' hbc a⁻¹
+
+-- See note [lower instance priority]
+instance (priority := 100) LinearOrderedCommGroupWithZero.toPosMulReflectLT :
+    PosMulReflectLT α where elim _a _b _c := lt_of_mul_lt_mul_left'
+
+-- See note [lower instance priority]
+instance (priority := 100) LinearOrderedCommGroupWithZero.toPosMulStrictMono :
+    PosMulStrictMono α where
+  elim a b c hbc := by by_contra! h; exact hbc.not_le <| (mul_le_mul_left a.2).1 h
+
+-- See note [lower instance priority]
+instance (priority := 100) LinearOrderedCommGroupWithZero.toMulPosStrictMono :
+    MulPosStrictMono α where
+  elim a b c hbc := by by_contra! h; exact hbc.not_le <| (mul_le_mul_right a.2).1 h
+
 /-- Alias of `mul_le_one'` for unification. -/
+@[deprecated mul_le_one' (since := "2024-08-21")]
 theorem mul_le_one₀ (ha : a ≤ 1) (hb : b ≤ 1) : a * b ≤ 1 :=
   mul_le_one' ha hb
 
 /-- Alias of `one_le_mul'` for unification. -/
+@[deprecated one_le_mul (since := "2024-08-21")]
 theorem one_le_mul₀ (ha : 1 ≤ a) (hb : 1 ≤ b) : 1 ≤ a * b :=
   one_le_mul ha hb
 
-theorem le_of_le_mul_right (h : c ≠ 0) (hab : a * c ≤ b * c) : a ≤ b := by
-  simpa only [mul_inv_cancel_right₀ h] using mul_le_mul_right' hab c⁻¹
+@[deprecated mul_le_mul_right (since := "2024-08-21")]
+theorem le_of_le_mul_right (h : c ≠ 0) (hab : a * c ≤ b * c) : a ≤ b :=
+  (mul_le_mul_right (zero_lt_iff.2 h)).1 hab
 
+@[deprecated le_mul_inv_iff₀ (since := "2024-08-21")]
 theorem le_mul_inv_of_mul_le (h : c ≠ 0) (hab : a * c ≤ b) : a ≤ b * c⁻¹ :=
-  le_of_le_mul_right h (by simpa [h] using hab)
+  (le_mul_inv_iff₀ (zero_lt_iff.2 h)).2 hab
 
 theorem mul_inv_le_of_le_mul (hab : a ≤ b * c) : a * c⁻¹ ≤ b := by
   by_cases h : c = 0
   · simp [h]
-  · exact le_of_le_mul_right h (by simpa [h] using hab)
-
-theorem inv_le_one₀ (ha : a ≠ 0) : a⁻¹ ≤ 1 ↔ 1 ≤ a :=
-  inv_le_one' (a := Units.mk0 a ha)
-
-theorem one_le_inv₀ (ha : a ≠ 0) : 1 ≤ a⁻¹ ↔ a ≤ 1 :=
-  one_le_inv' (a := Units.mk0 a ha)
-
-theorem le_mul_inv_iff₀ (hc : c ≠ 0) : a ≤ b * c⁻¹ ↔ a * c ≤ b :=
-  ⟨fun h ↦ inv_inv c ▸ mul_inv_le_of_le_mul h, le_mul_inv_of_mul_le hc⟩
-
-theorem mul_inv_le_iff₀ (hc : c ≠ 0) : a * c⁻¹ ≤ b ↔ a ≤ b * c :=
-  ⟨fun h ↦ inv_inv c ▸ le_mul_inv_of_mul_le (inv_ne_zero hc) h, mul_inv_le_of_le_mul⟩
-
-theorem div_le_div₀ (a b c d : α) (hb : b ≠ 0) (hd : d ≠ 0) :
-    a * b⁻¹ ≤ c * d⁻¹ ↔ a * d ≤ c * b := by
-  rw [mul_inv_le_iff₀ hb, mul_right_comm, le_mul_inv_iff₀ hd]
+  · exact (mul_le_mul_right (zero_lt_iff.2 h)).1 (by simpa [h] using hab)
 
 @[simp]
 theorem Units.zero_lt (u : αˣ) : (0 : α) < u :=
@@ -163,9 +181,9 @@ theorem inv_mul_lt_of_lt_mul₀ (h : a < b * c) : b⁻¹ * a < c := by
   rw [mul_comm] at *
   exact mul_inv_lt_of_lt_mul₀ h
 
-theorem mul_lt_right₀ (c : α) (h : a < b) (hc : c ≠ 0) : a * c < b * c := by
-  contrapose! h
-  exact le_of_le_mul_right hc h
+@[deprecated mul_lt_mul_of_pos_right (since := "2024-08-21")]
+theorem mul_lt_right₀ (c : α) (h : a < b) (hc : c ≠ 0) : a * c < b * c :=
+  mul_lt_mul_of_pos_right h (zero_lt_iff.2 hc)
 
 theorem inv_lt_one₀ (ha : a ≠ 0) : a⁻¹ < 1 ↔ 1 < a :=
   inv_lt_one' (a := Units.mk0 a ha)
@@ -189,31 +207,26 @@ theorem lt_of_mul_lt_mul_of_le₀ (h : a * b < c * d) (hc : 0 < c) (hh : c ≤ a
   have := mul_lt_mul_of_lt_of_le₀ hh (inv_ne_zero (ne_of_gt hc)) h
   simpa [inv_mul_cancel_left₀ ha, inv_mul_cancel_left₀ (ne_of_gt hc)] using this
 
+@[deprecated mul_le_mul_right (since := "2024-08-21")]
 theorem mul_le_mul_right₀ (hc : c ≠ 0) : a * c ≤ b * c ↔ a ≤ b :=
-  ⟨le_of_le_mul_right hc, fun hab ↦ mul_le_mul_right' hab _⟩
+  mul_le_mul_right (zero_lt_iff.2 hc)
 
-theorem mul_le_mul_left₀ (ha : a ≠ 0) : a * b ≤ a * c ↔ b ≤ c := by
-  simp only [mul_comm a]
-  exact mul_le_mul_right₀ ha
+@[deprecated mul_le_mul_left (since := "2024-08-21")]
+theorem mul_le_mul_left₀ (ha : a ≠ 0) : a * b ≤ a * c ↔ b ≤ c :=
+  mul_le_mul_left (zero_lt_iff.2 ha)
 
 theorem div_le_div_right₀ (hc : c ≠ 0) : a / c ≤ b / c ↔ a ≤ b := by
-  rw [div_eq_mul_inv, div_eq_mul_inv, mul_le_mul_right₀ (inv_ne_zero hc)]
+  rw [div_eq_mul_inv, div_eq_mul_inv, mul_le_mul_right (zero_lt_iff.2 (inv_ne_zero hc))]
 
 theorem div_le_div_left₀ (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 0) : a / b ≤ a / c ↔ c ≤ b := by
-  simp only [div_eq_mul_inv, mul_le_mul_left₀ ha, inv_le_inv₀ hb hc]
-
-theorem le_div_iff₀ (hc : c ≠ 0) : a ≤ b / c ↔ a * c ≤ b := by
-  rw [div_eq_mul_inv, le_mul_inv_iff₀ hc]
-
-theorem div_le_iff₀ (hc : c ≠ 0) : a / c ≤ b ↔ a ≤ b * c := by
-  rw [div_eq_mul_inv, mul_inv_le_iff₀ hc]
+  simp only [div_eq_mul_inv, mul_le_mul_left (zero_lt_iff.2 ha), inv_le_inv₀ hb hc]
 
 /-- `Equiv.mulLeft₀` as an `OrderIso` on a `LinearOrderedCommGroupWithZero.`.
 
 Note that `OrderIso.mulLeft₀` refers to the `LinearOrderedField` version. -/
 @[simps! (config := { simpRhs := true }) apply toEquiv]
 def OrderIso.mulLeft₀' {a : α} (ha : a ≠ 0) : α ≃o α :=
-  { Equiv.mulLeft₀ a ha with map_rel_iff' := mul_le_mul_left₀ ha }
+  { Equiv.mulLeft₀ a ha with map_rel_iff' := mul_le_mul_left (zero_lt_iff.2 ha) }
 
 theorem OrderIso.mulLeft₀'_symm {a : α} (ha : a ≠ 0) :
     (OrderIso.mulLeft₀' ha).symm = OrderIso.mulLeft₀' (inv_ne_zero ha) := by
@@ -225,7 +238,7 @@ theorem OrderIso.mulLeft₀'_symm {a : α} (ha : a ≠ 0) :
 Note that `OrderIso.mulRight₀` refers to the `LinearOrderedField` version. -/
 @[simps! (config := { simpRhs := true }) apply toEquiv]
 def OrderIso.mulRight₀' {a : α} (ha : a ≠ 0) : α ≃o α :=
-  { Equiv.mulRight₀ a ha with map_rel_iff' := mul_le_mul_right₀ ha }
+  { Equiv.mulRight₀ a ha with map_rel_iff' := mul_le_mul_right (zero_lt_iff.2 ha) }
 
 theorem OrderIso.mulRight₀'_symm {a : α} (ha : a ≠ 0) :
     (OrderIso.mulRight₀' ha).symm = OrderIso.mulRight₀' (inv_ne_zero ha) := by
@@ -241,11 +254,11 @@ instance : LinearOrderedAddCommGroupWithTop (Additive αᵒᵈ) :=
   { Additive.subNegMonoid, instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual,
     Additive.instNontrivial with
     neg_top := set_option backward.isDefEq.lazyProjDelta false in @inv_zero _ (_)
-    add_neg_cancel := fun a ha ↦ mul_inv_cancel (G₀ := α) (id ha : Additive.toMul a ≠ 0) }
+    add_neg_cancel := fun a ha ↦ mul_inv_cancel₀ (G₀ := α) (id ha : Additive.toMul a ≠ 0) }
 
 lemma pow_lt_pow_succ (ha : 1 < a) : a ^ n < a ^ n.succ := by
   rw [← one_mul (a ^ n), pow_succ']
-  exact mul_lt_right₀ _ ha (pow_ne_zero _ (zero_lt_one.trans ha).ne')
+  exact mul_lt_mul_of_pos_right ha (pow_pos (zero_lt_one.trans ha) _)
 
 lemma pow_lt_pow_right₀ (ha : 1 < a) (hmn : m < n) : a ^ m < a ^ n := by
   induction' hmn with n _ ih; exacts [pow_lt_pow_succ ha, lt_trans ih (pow_lt_pow_succ ha)]
@@ -309,7 +322,6 @@ instance covariantClass_mul_le [Mul α] [CovariantClass α α (· * ·) (· ≤ 
   rw [← coe_mul _ c, ← coe_mul, coe_le_coe]
   exact mul_le_mul_left' hbc' _
 
--- Porting note: same issue as `covariantClass_mul_le`
 protected lemma covariantClass_add_le [AddZeroClass α] [CovariantClass α α (· + ·) (· ≤ ·)]
     (h : ∀ a : α, 0 ≤ a) : CovariantClass (WithZero α) (WithZero α) (· + ·) (· ≤ ·) := by
   refine ⟨fun a b c hbc => ?_⟩
@@ -321,9 +333,8 @@ protected lemma covariantClass_add_le [AddZeroClass α] [CovariantClass α α (�
     · rw [add_zero]
     · rw [← coe_add, coe_le_coe]
       exact le_add_of_nonneg_right (h _)
-  · rcases WithBot.coe_le_iff.1 hbc with ⟨c, rfl, hbc'⟩
-    refine le_trans ?_ (le_of_eq <| coe_add _ _)
-    rw [← coe_add, coe_le_coe]
+  · rcases WithZero.coe_le_iff.1 hbc with ⟨c, rfl, hbc'⟩
+    rw [← coe_add, ← coe_add _ c, coe_le_coe]
     exact add_le_add_left hbc' _
 
 instance existsAddOfLE [Add α] [ExistsAddOfLE α] : ExistsAddOfLE (WithZero α) :=

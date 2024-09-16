@@ -60,7 +60,7 @@ theorem integer.integers : v.Integers v.integer :=
 
 namespace Integers
 
-variable {v O} [CommRing O] [Algebra O R]
+variable {v O}
 
 theorem one_of_isUnit' {x : O} (hx : IsUnit x) (H : ∀ x, v (algebraMap O R x) ≤ 1) :
     v (algebraMap O R x) = 1 :=
@@ -116,7 +116,7 @@ theorem dvd_of_le (hv : Integers v O) {x y : O}
       hx.symm ▸ dvd_zero y)
     fun hy : algebraMap O F y ≠ 0 =>
     have : v ((algebraMap O F y)⁻¹ * algebraMap O F x) ≤ 1 := by
-      rw [← v.map_one, ← inv_mul_cancel hy, v.map_mul, v.map_mul]
+      rw [← v.map_one, ← inv_mul_cancel₀ hy, v.map_mul, v.map_mul]
       exact mul_le_mul_left' h _
     let ⟨z, hz⟩ := hv.3 this
     ⟨z, hv.1 <| ((algebraMap O F).map_mul y z).symm ▸ hz.symm ▸ (mul_inv_cancel_left₀ hy _).symm⟩

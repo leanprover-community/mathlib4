@@ -320,7 +320,6 @@ end Inv
 
 section InjectiveMul
 variable [Fintype n] [Fintype m] [DecidableEq m] [CommRing α]
-variable [Fintype l] [DecidableEq l]
 
 lemma mul_left_injective_of_inv (A : Matrix m n α) (B : Matrix n m α) (h : A * B = 1) :
     Function.Injective (fun x : Matrix l m α => x * A) := fun _ _ g => by
@@ -334,13 +333,12 @@ end InjectiveMul
 
 section vecMul
 
-variable [DecidableEq m] [DecidableEq n]
-
 section Semiring
 
 variable {R : Type*} [Semiring R]
 
-theorem vecMul_surjective_iff_exists_left_inverse [Fintype m] [Finite n] {A : Matrix m n R} :
+theorem vecMul_surjective_iff_exists_left_inverse
+    [DecidableEq n] [Fintype m] [Finite n] {A : Matrix m n R} :
     Function.Surjective A.vecMul ↔ ∃ B : Matrix n m R, B * A = 1 := by
   cases nonempty_fintype n
   refine ⟨fun h ↦ ?_, fun ⟨B, hBA⟩ y ↦ ⟨y ᵥ* B, by simp [hBA]⟩⟩
@@ -349,7 +347,8 @@ theorem vecMul_surjective_iff_exists_left_inverse [Fintype m] [Finite n] {A : Ma
   rw [mul_apply_eq_vecMul, one_eq_pi_single, ← hrows]
   rfl
 
-theorem mulVec_surjective_iff_exists_right_inverse [Finite m] [Fintype n] {A : Matrix m n R} :
+theorem mulVec_surjective_iff_exists_right_inverse
+    [DecidableEq m] [Finite m] [Fintype n] {A : Matrix m n R} :
     Function.Surjective A.mulVec ↔ ∃ B : Matrix n m R, A * B = 1 := by
   cases nonempty_fintype m
   refine ⟨fun h ↦ ?_, fun ⟨B, hBA⟩ y ↦ ⟨B *ᵥ y, by simp [hBA]⟩⟩
@@ -360,7 +359,7 @@ theorem mulVec_surjective_iff_exists_right_inverse [Finite m] [Fintype n] {A : M
 
 end Semiring
 
-variable {R K : Type*} [CommRing R] [Field K] [Fintype m]
+variable [DecidableEq m] {R K : Type*} [CommRing R] [Field K] [Fintype m]
 
 theorem vecMul_surjective_iff_isUnit {A : Matrix m m R} :
     Function.Surjective A.vecMul ↔ IsUnit A := by
@@ -711,7 +710,7 @@ end Submatrix
 
 section Det
 
-variable [Fintype m] [DecidableEq m] [CommRing α]
+variable [Fintype m] [DecidableEq m]
 
 /-- A variant of `Matrix.det_units_conj`. -/
 theorem det_conj {M : Matrix m m α} (h : IsUnit M) (N : Matrix m m α) :

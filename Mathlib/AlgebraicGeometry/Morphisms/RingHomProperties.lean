@@ -55,7 +55,7 @@ We also provide the instances `P.IsMultiplicative`, `P.IsStableUnderComposition`
 
 -/
 
--- Explicit universe annotations were used in this file to improve perfomance #12737
+-- Explicit universe annotations were used in this file to improve performance #12737
 
 universe u
 
@@ -158,7 +158,7 @@ theorem sourceAffineLocally_isLocal (h₁ : RingHom.RespectsIso P)
     intro r
     simp_rw [sourceAffineLocally_morphismRestrict] at hs'
     have := hs' r ⟨X.basicOpen (f.appLE ⊤ U le_top r.1), U.2.basicOpen (f.appLE ⊤ U le_top r.1)⟩
-      (by simpa [Scheme.Hom.appLE] using Scheme.basicOpen_restrict _ _ _)
+      (by simp [Scheme.Hom.appLE])
     rwa [IsAffineOpen.appLE_eq_away_map f (isAffineOpen_top Y) U.2,
       ← h₁.is_localization_away_iff] at this
 
@@ -200,6 +200,7 @@ theorem app_top (H : P f) [IsAffine X] [IsAffine Y] : Q (f.app ⊤) := by
   rw [Scheme.Hom.app_eq_appLE]
   exact appLE P f H ⟨_, isAffineOpen_top _⟩ ⟨_, isAffineOpen_top _⟩ _
 
+include Q in
 theorem comp_of_isOpenImmersion [IsOpenImmersion f] (H : P g) :
     P (f ≫ g) := by
   rw [eq_affineLocally P, affineLocally_iff_affineOpens_le] at H ⊢
@@ -280,7 +281,7 @@ instance : IsLocalAtSource P := by
   simp_rw [← HasAffineProperty.iff_of_isAffine (P := P),
     iff_of_source_openCover 𝒰.affineRefinement.openCover,
     fun i ↦ iff_of_source_openCover (P := P) (f := 𝒰.map i ≫ f) (𝒰.obj i).affineCover]
-  simp [Scheme.OpenCover.affineRefinement]
+  simp [Scheme.OpenCover.affineRefinement, Sigma.forall]
 
 instance : P.ContainsIdentities where
   id_mem X := by
@@ -340,6 +341,7 @@ theorem of_comp
 
 instance : P.IsMultiplicative where
 
+include Q in
 lemma of_isOpenImmersion [IsOpenImmersion f] : P f := IsLocalAtSource.of_isOpenImmersion f
 
 lemma stableUnderBaseChange (hP : RingHom.StableUnderBaseChange Q) : P.StableUnderBaseChange := by

@@ -148,7 +148,7 @@ instance triangleCategory : Category (Triangle C) where
 @[ext]
 lemma Triangle.hom_ext {A B : Triangle C} (f g : A ⟶ B)
     (h₁ : f.hom₁ = g.hom₁) (h₂ : f.hom₂ = g.hom₂) (h₃ : f.hom₃ = g.hom₃) : f = g :=
-  TriangleMorphism.ext _ _ h₁ h₂ h₃
+  TriangleMorphism.ext h₁ h₂ h₃
 
 @[simp]
 lemma id_hom₁ (A : Triangle C) : TriangleMorphism.hom₁ (𝟙 A) = 𝟙 _ := rfl

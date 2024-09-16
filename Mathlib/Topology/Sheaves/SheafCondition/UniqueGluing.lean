@@ -17,12 +17,12 @@ functor `C ⥤ Type` preserves limits and reflects isomorphisms. The usual categ
 structures, such as `MonCat`, `AddCommGrp`, `RingCat`, `CommRingCat` etc. are all examples of
 this kind of category.
 
-A presheaf `F : presheaf C X` satisfies the sheaf condition if and only if, for every
+A presheaf `F : Presheaf C X` satisfies the sheaf condition if and only if, for every
 compatible family of sections `sf : Π i : ι, F.obj (op (U i))`, there exists a unique gluing
-`s : F.obj (op (supr U))`.
+`s : F.obj (op (iSup U))`.
 
 Here, the family `sf` is called compatible, if for all `i j : ι`, the restrictions of `sf i`
-and `sf j` to `U i ⊓ U j` agree. A section `s : F.obj (op (supr U))` is a gluing for the
+and `sf j` to `U i ⊓ U j` agree. A section `s : F.obj (op (iSup U))` is a gluing for the
 family `sf`, if `s` restricts to `sf i` on `U i` for all `i : ι`
 
 We show that the sheaf condition in terms of unique gluings is equivalent to the definition
@@ -65,9 +65,9 @@ def IsGluing (sf : ∀ i : ι, F.obj (op (U i))) (s : F.obj (op (iSup U))) : Pro
   ∀ i : ι, F.map (Opens.leSupr U i).op s = sf i
 
 /--
-The sheaf condition in terms of unique gluings. A presheaf `F : presheaf C X` satisfies this sheaf
+The sheaf condition in terms of unique gluings. A presheaf `F : Presheaf C X` satisfies this sheaf
 condition if and only if, for every compatible family of sections `sf : Π i : ι, F.obj (op (U i))`,
-there exists a unique gluing `s : F.obj (op (supr U))`.
+there exists a unique gluing `s : F.obj (op (iSup U))`.
 
 We prove this to be equivalent to the usual one below in
 `TopCat.Presheaf.isSheaf_iff_isSheafUniqueGluing`

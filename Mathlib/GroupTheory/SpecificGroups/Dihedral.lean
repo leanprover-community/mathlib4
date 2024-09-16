@@ -5,6 +5,7 @@ Authors: Shing Tak Lam
 -/
 import Mathlib.Data.ZMod.Basic
 import Mathlib.GroupTheory.Exponent
+import Mathlib.GroupTheory.GroupAction.CardCommute
 
 /-!
 # Dihedral Groups
@@ -67,9 +68,9 @@ instance : Group (DihedralGroup n) where
     · exact congr_arg r (add_zero a)
     · exact congr_arg sr (add_zero a)
   inv := inv
-  mul_left_inv := by
+  inv_mul_cancel := by
     rintro (a | a)
-    · exact congr_arg r (neg_add_self a)
+    · exact congr_arg r (neg_add_cancel a)
     · exact congr_arg r (sub_self a)
 
 @[simp]
@@ -110,7 +111,7 @@ instance : Infinite (DihedralGroup 0) :=
   DihedralGroup.fintypeHelper.infinite_iff.mp inferInstance
 
 instance : Nontrivial (DihedralGroup n) :=
-  ⟨⟨r 0, sr 0, by simp_rw [ne_eq, not_false_eq_true]⟩⟩
+  ⟨⟨r 0, sr 0, by simp_rw [ne_eq, reduceCtorEq, not_false_eq_true]⟩⟩
 
 /-- If `0 < n`, then `DihedralGroup n` has `2n` elements.
 -/
@@ -149,7 +150,7 @@ theorem orderOf_sr (i : ZMod n) : orderOf (sr i) = 2 := by
   · rw [sq, sr_mul_self]
   · -- Porting note: Previous proof was `decide`
     revert n
-    simp_rw [one_def, ne_eq, forall_const, not_false_eq_true]
+    simp_rw [one_def, ne_eq, reduceCtorEq, forall_const, not_false_eq_true]
 
 /-- If `0 < n`, then `r 1` has order `n`.
 -/
