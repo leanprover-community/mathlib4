@@ -1117,8 +1117,6 @@ theorem hasFTaylorSeriesUpToOn_pi' {n : ℕ} :
           (P' x m)) s := by
   convert hasFTaylorSeriesUpToOn_pi (𝕜 := 𝕜) (φ := fun i x ↦ Φ x i); ext; rfl
 
-#check ContinuousMultilinearMap.pi
-
 theorem contDiffWithinAt_pi :
     ContDiffWithinAt 𝕜 n Φ s x ↔ ∀ i, ContDiffWithinAt 𝕜 n (fun x => Φ x i) s x := by
   set pr := @ContinuousLinearMap.proj 𝕜 _ ι F' _ _ _
@@ -1127,16 +1125,17 @@ theorem contDiffWithinAt_pi :
   | ω =>
     choose u hux p hp h'p using h
     refine ⟨⋂ i, u i, Filter.iInter_mem.2 hux, _,
-      hasFTaylorSeriesUpToOn_pi.2 fun i => (hp i).mono <| iInter_subset _ _, fun i ↦ ?_⟩
-    apply AnalyticWithinOn.pi
-
+      hasFTaylorSeriesUpToOn_pi.2 fun i => (hp i).mono <| iInter_subset _ _, fun m ↦ ?_⟩
+    set L : (∀ i, E[×m]→L[𝕜] F' i) ≃ₗᵢ[𝕜] E[×m]→L[𝕜] ∀ i, F' i :=
+      ContinuousMultilinearMap.piₗᵢ _ _
+    change AnalyticWithinOn 𝕜 (fun x ↦ L (fun i ↦ p i x m)) (⋂ i, u i)
+    apply (L.analyticOn univ).comp_analyticWithinOn ?_ (mapsTo_univ _ _)
+    exact AnalyticWithinOn.pi (fun i ↦ (h'p i m).mono (iInter_subset _ _))
   | (n : ℕ∞) =>
     intro m hm
     choose u hux p hp using fun i => h i m hm
     exact ⟨⋂ i, u i, Filter.iInter_mem.2 hux, _,
       hasFTaylorSeriesUpToOn_pi.2 fun i => (hp i).mono <| iInter_subset _ _⟩
-
-#exit
 
 theorem contDiffOn_pi : ContDiffOn 𝕜 n Φ s ↔ ∀ i, ContDiffOn 𝕜 n (fun x => Φ x i) s :=
   ⟨fun h _ x hx => contDiffWithinAt_pi.1 (h x hx) _, fun h x hx =>
@@ -1177,7 +1176,7 @@ end Pi
 
 section Add
 
-theorem HasFTaylorSeriesUpToOn.add {q g} (hf : HasFTaylorSeriesUpToOn n f p s)
+theorem HasFTaylorSeriesUpToOn.add {n : ℕ∞} {q g} (hf : HasFTaylorSeriesUpToOn n f p s)
     (hg : HasFTaylorSeriesUpToOn n g q s) : HasFTaylorSeriesUpToOn n (f + g) (p + q) s := by
   convert HasFTaylorSeriesUpToOn.continuousLinearMap_comp
     (ContinuousLinearMap.fst 𝕜 F F + .snd 𝕜 F F) (hf.prod hg)
