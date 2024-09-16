@@ -33,6 +33,10 @@ def sort (s : Finset α) : List α :=
   Multiset.sort r s.1
 
 @[simp]
+theorem sort_val (s : Finset α) : Multiset.sort r s.val = sort r s :=
+  rfl
+
+@[simp]
 theorem sort_sorted (s : Finset α) : List.Sorted r (sort r s) :=
   Multiset.sort_sorted _ _
 
@@ -65,14 +69,12 @@ theorem sort_singleton (a : α) : sort r {a} = [a] :=
   Multiset.sort_singleton r a
 
 theorem sort_cons {a : α} {s : Finset α} (h₁ : ∀ b ∈ s, r a b) (h₂ : a ∉ s) :
-    sort r (cons a h₂) = cons a (mem_sort.2 h₂) := by
-  rw [sort, insert_val, ndinsert_of_not_mem h₂]
-  exact Multiset.sort_insert r a _ h₁
+    sort r (cons a s h₂) = a :: sort r s := by
+  rw [sort, cons_val, Multiset.sort_cons r a _ h₁, sort_val]
 
 theorem sort_insert [DecidableEq α] {a : α} {s : Finset α} (h₁ : ∀ b ∈ s, r a b) (h₂ : a ∉ s) :
     sort r (insert a s) = a :: sort r s := by
-  rw [sort, insert_val, ndinsert_of_not_mem h₂]
-  exact Multiset.sort_insert r a _ h₁
+  rw [← cons_eq_insert _ _ h₂, sort_cons r h₁]
 
 open scoped List in
 theorem sort_perm_toList (s : Finset α) : sort r s ~ s.toList := by
