@@ -13,7 +13,7 @@ import Mathlib.CategoryTheory.Category.Basic
 This file provides the function `BicategoryLike.main` for proving equalities in monoidal categories
 and bicategories. Using `main`, we will define the following tactics:
 - `monoidal` at `Mathlib.Tactic.CategoryTheory.Monoidal.Basic`
-- `bicategory` at `Mathlib.Tactic.CategoryTheory.Bicategory.Basic` (TODO)
+- `bicategory` at `Mathlib.Tactic.CategoryTheory.Bicategory.Basic`
 
 The `main` first normalizes the both sides using `eval`, then compares the corresponding components.
 It closes the goal at non-structural parts with `rfl` and the goal at structural parts by

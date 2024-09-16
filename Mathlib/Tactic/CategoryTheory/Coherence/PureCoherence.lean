@@ -20,7 +20,7 @@ See these files for a mathematical explanation of the proof of the coherence the
 
 The actual tactics that users will use are given in
 - `Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence`
-- `Mathlib.Tactic.CategoryTheory.Bicategory.PureCoherence` (TODO)
+- `Mathlib.Tactic.CategoryTheory.Bicategory.PureCoherence`
 
 -/
 
