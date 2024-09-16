@@ -748,7 +748,7 @@ theorem Cauchy.coeff_eventually_equal {ℱ : Filter (LaurentSeries K)} (hℱ : C
       rw [this, biInter_mem (Set.finite_Ico N D)]
       intro _ _
       apply hℱ.coeff_tendsto
-      simp only [principal_singleton, mem_pure] ; rfl
+      simp only [principal_singleton, mem_pure]; rfl
 
 /- The main result showing that the Cauchy filter tends to the `hℱ.mk_LaurentSeries`-/
 theorem Cauchy.eventually_mem_nhds {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ)
