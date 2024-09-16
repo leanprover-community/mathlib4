@@ -636,6 +636,7 @@ namespace IsSimpleOrder
 section Preorder
 
 variable [Preorder α] [BoundedOrder α] [IsSimpleOrder α] {a b : α} (h : a < b)
+include h
 
 theorem eq_bot_of_lt : a = ⊥ :=
   (IsSimpleOrder.eq_bot_or_eq_top _).resolve_right h.ne_top
@@ -717,8 +718,7 @@ end DecidableEq
 
 variable [Lattice α] [BoundedOrder α] [IsSimpleOrder α]
 
-open scoped Classical
-
+open Classical in
 /-- A simple `BoundedOrder` is also complete. -/
 protected noncomputable def completeLattice : CompleteLattice α :=
   { (inferInstance : Lattice α),
@@ -746,6 +746,7 @@ protected noncomputable def completeLattice : CompleteLattice α :=
         intro con
         exact top_ne_bot (eq_bot_iff.2 (h ⊥ con)) }
 
+open Classical in
 /-- A simple `BoundedOrder` is also a `CompleteBooleanAlgebra`. -/
 protected noncomputable def completeBooleanAlgebra : CompleteBooleanAlgebra α :=
   { __ := IsSimpleOrder.completeLattice
@@ -971,6 +972,7 @@ variable [Lattice α] [BoundedOrder α] [IsModularLattice α]
 namespace IsCompl
 
 variable {a b : α} (hc : IsCompl a b)
+include hc
 
 theorem isAtom_iff_isCoatom : IsAtom a ↔ IsCoatom b :=
   Set.isSimpleOrder_Iic_iff_isAtom.symm.trans <|
@@ -1001,8 +1003,8 @@ theorem isAtomic_of_isCoatomic_of_complementedLattice_of_isModular [IsCoatomic �
   isCoatomic_dual_iff_isAtomic.1 isCoatomic_of_isAtomic_of_complementedLattice_of_isModular
 
 theorem isAtomic_iff_isCoatomic : IsAtomic α ↔ IsCoatomic α :=
-  ⟨fun h => @isCoatomic_of_isAtomic_of_complementedLattice_of_isModular _ _ _ _ _ h, fun h =>
-    @isAtomic_of_isCoatomic_of_complementedLattice_of_isModular _ _ _ _ _ h⟩
+  ⟨fun _ => isCoatomic_of_isAtomic_of_complementedLattice_of_isModular,
+   fun _ => isAtomic_of_isCoatomic_of_complementedLattice_of_isModular⟩
 
 /-- A complemented modular atomic lattice is strongly atomic.
 Not an instance to prevent loops. -/

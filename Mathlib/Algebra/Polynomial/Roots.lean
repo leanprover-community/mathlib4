@@ -6,6 +6,7 @@ Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker, Johan Co
 
 import Mathlib.Algebra.Polynomial.RingDivision
 import Mathlib.RingTheory.Localization.FractionRing
+import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Theory of univariate polynomials
@@ -205,9 +206,10 @@ theorem roots_prod {ι : Type*} (f : ι → R[X]) (s : Finset ι) :
 
 @[simp]
 theorem roots_pow (p : R[X]) (n : ℕ) : (p ^ n).roots = n • p.roots := by
-  induction' n with n ihn
-  · rw [pow_zero, roots_one, zero_smul, empty_eq_zero]
-  · rcases eq_or_ne p 0 with (rfl | hp)
+  induction n with
+  | zero => rw [pow_zero, roots_one, zero_smul, empty_eq_zero]
+  | succ n ihn =>
+    rcases eq_or_ne p 0 with (rfl | hp)
     · rw [zero_pow n.succ_ne_zero, roots_zero, smul_zero]
     · rw [pow_succ, roots_mul (mul_ne_zero (pow_ne_zero _ hp) hp), ihn, add_smul, one_smul]
 
@@ -310,7 +312,7 @@ theorem mul_mem_nthRootsFinset
     η₁ * η₂ ∈ nthRootsFinset n R := by
   cases n with
   | zero =>
-    simp only [Nat.zero_eq, nthRootsFinset_zero, not_mem_empty] at hη₁
+    simp only [nthRootsFinset_zero, not_mem_empty] at hη₁
   | succ n =>
     rw [mem_nthRootsFinset n.succ_pos] at hη₁ hη₂ ⊢
     rw [mul_pow, hη₁, hη₂, one_mul]
@@ -320,7 +322,7 @@ theorem ne_zero_of_mem_nthRootsFinset {η : R} (hη : η ∈ nthRootsFinset n R)
   rintro rfl
   cases n with
   | zero =>
-    simp only [Nat.zero_eq, nthRootsFinset_zero, not_mem_empty] at hη
+    simp only [nthRootsFinset_zero, not_mem_empty] at hη
   | succ n =>
     rw [mem_nthRootsFinset n.succ_pos, zero_pow n.succ_ne_zero] at hη
     exact zero_ne_one hη

@@ -104,10 +104,9 @@ def eval₂AddMonoidHom : R[X] →+ S where
 
 @[simp]
 theorem eval₂_natCast (n : ℕ) : (n : R[X]).eval₂ f x = n := by
-  induction' n with n ih
-  -- Porting note: `Nat.zero_eq` is required.
-  · simp only [eval₂_zero, Nat.cast_zero, Nat.zero_eq]
-  · rw [n.cast_succ, eval₂_add, ih, eval₂_one, n.cast_succ]
+  induction n with
+  | zero => simp only [eval₂_zero, Nat.cast_zero]
+  | succ n ih => rw [n.cast_succ, eval₂_add, ih, eval₂_one, n.cast_succ]
 
 @[deprecated (since := "2024-04-17")]
 alias eval₂_nat_cast := eval₂_natCast
@@ -401,9 +400,9 @@ theorem eval_mul_X : (p * X).eval x = p.eval x * x := by
 
 @[simp]
 theorem eval_mul_X_pow {k : ℕ} : (p * X ^ k).eval x = p.eval x * x ^ k := by
-  induction' k with k ih
-  · simp
-  · simp [pow_succ, ← mul_assoc, ih]
+  induction k with
+  | zero => simp
+  | succ k ih => simp [pow_succ, ← mul_assoc, ih]
 
 theorem eval_sum (p : R[X]) (f : ℕ → R → R[X]) (x : R) :
     (p.sum f).eval x = p.sum fun n a => (f n a).eval x :=
@@ -512,15 +511,15 @@ theorem mul_X_comp : (p * X).comp r = p.comp r * r := by
 
 @[simp]
 theorem X_pow_comp {k : ℕ} : (X ^ k).comp p = p ^ k := by
-  induction' k with k ih
-  · simp
-  · simp [pow_succ, mul_X_comp, ih]
+  induction k with
+  | zero => simp
+  | succ k ih => simp [pow_succ, mul_X_comp, ih]
 
 @[simp]
 theorem mul_X_pow_comp {k : ℕ} : (p * X ^ k).comp r = p.comp r * r ^ k := by
-  induction' k with k ih
-  · simp
-  · simp [ih, pow_succ, ← mul_assoc, mul_X_comp]
+  induction k with
+  | zero => simp
+  | succ k ih => simp [ih, pow_succ, ← mul_assoc, mul_X_comp]
 
 @[simp]
 theorem C_mul_comp : (C a * p).comp r = C a * p.comp r := by
@@ -899,9 +898,9 @@ theorem eval₂_comp {x : S} : eval₂ f x (p.comp q) = eval₂ f (eval₂ f x q
 @[simp]
 theorem iterate_comp_eval₂ (k : ℕ) (t : S) :
     eval₂ f t (p.comp^[k] q) = (fun x => eval₂ f x p)^[k] (eval₂ f t q) := by
-  induction' k with k IH
-  · simp
-  · rw [Function.iterate_succ_apply', Function.iterate_succ_apply', eval₂_comp, IH]
+  induction k with
+  | zero => simp
+  | succ k IH => rw [Function.iterate_succ_apply', Function.iterate_succ_apply', eval₂_comp, IH]
 
 end
 
@@ -918,7 +917,7 @@ theorem eval₂_mul' :
 theorem eval₂_pow' (n : ℕ) :
     (p ^ n).eval₂ (algebraMap R S) x = (p.eval₂ (algebraMap R S) x) ^ n := by
   induction n with
-  | zero => simp only [Nat.zero_eq, pow_zero, eval₂_one]
+  | zero => simp only [pow_zero, eval₂_one]
   | succ n ih => rw [pow_succ, pow_succ, eval₂_mul', ih]
 
 @[simp]
@@ -1104,7 +1103,7 @@ alias eval_int_cast := eval_intCast
 
 @[simp]
 theorem eval₂_neg {S} [Ring S] (f : R →+* S) {x : S} : (-p).eval₂ f x = -p.eval₂ f x := by
-  rw [eq_neg_iff_add_eq_zero, ← eval₂_add, add_left_neg, eval₂_zero]
+  rw [eq_neg_iff_add_eq_zero, ← eval₂_add, neg_add_cancel, eval₂_zero]
 
 @[simp]
 theorem eval₂_sub {S} [Ring S] (f : R →+* S) {x : S} :

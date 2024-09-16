@@ -222,7 +222,7 @@ open Finset
 unseal Algebra.TensorProduct.mul in
 theorem matPolyEquiv_coeff_apply_aux_1 (i j : n) (k : ℕ) (x : R) :
     matPolyEquiv (stdBasisMatrix i j <| monomial k x) = monomial k (stdBasisMatrix i j x) := by
-  simp only [matPolyEquiv, AlgEquiv.trans_apply, matrixEquivTensor_apply_std_basis]
+  simp only [matPolyEquiv, AlgEquiv.trans_apply, matrixEquivTensor_apply_stdBasisMatrix]
   apply (polyEquivTensor R (Matrix n n R)).injective
   simp only [AlgEquiv.apply_symm_apply,Algebra.TensorProduct.comm_tmul,
     polyEquivTensor_apply, eval₂_monomial]

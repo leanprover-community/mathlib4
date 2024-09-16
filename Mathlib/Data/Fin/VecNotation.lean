@@ -171,7 +171,7 @@ theorem range_cons_cons_empty (x y : α) (u : Fin 0 → α) :
 
 @[simp]
 theorem vecCons_const (a : α) : (vecCons a fun _ : Fin n => a) = fun _ => a :=
-  funext <| Fin.forall_fin_succ.2 ⟨rfl, cons_val_succ _ _⟩
+  funext <| Fin.forall_iff_succ.2 ⟨rfl, cons_val_succ _ _⟩
 
 theorem vec_single_eq_const (a : α) : ![a] = fun _ => a :=
   let _ : Unique (Fin 1) := inferInstance
@@ -208,8 +208,7 @@ theorem cons_val_fin_one (x : α) (u : Fin 0 → α) : ∀ (i : Fin 1), vecCons 
 theorem cons_fin_one (x : α) (u : Fin 0 → α) : vecCons x u = fun _ => x :=
   funext (cons_val_fin_one x u)
 
-open Lean in
-open Qq in
+open Lean Qq in
 protected instance _root_.PiFin.toExpr [ToLevel.{u}] [ToExpr α] (n : ℕ) : ToExpr (Fin n → α) :=
   have lu := toLevel.{u}
   have eα : Q(Type $lu) := toTypeExpr α
@@ -317,7 +316,7 @@ theorem vecAlt1_vecAppend (v : Fin (n + 1) → α) :
   cases n with
   | zero =>
     cases' i with i hi
-    simp only [Nat.zero_eq, Nat.zero_add, Nat.lt_one_iff] at hi; subst i; rfl
+    simp only [Nat.zero_add, Nat.lt_one_iff] at hi; subst i; rfl
   | succ n =>
     split_ifs with h <;> congr
     · simp [Nat.mod_eq_of_lt, h]

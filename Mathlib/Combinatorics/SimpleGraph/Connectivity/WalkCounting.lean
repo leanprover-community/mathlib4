@@ -3,8 +3,10 @@ Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.Connectivity
+import Mathlib.Algebra.BigOperators.Ring.Nat
+import Mathlib.Combinatorics.SimpleGraph.Path
 import Mathlib.Combinatorics.SimpleGraph.Subgraph
+import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
 # Counting walks of a given length
@@ -39,7 +41,7 @@ theorem set_walk_self_length_zero_eq (u : V) : {p : G.Walk u u | p.length = 0} =
 theorem set_walk_length_zero_eq_of_ne {u v : V} (h : u ≠ v) :
     {p : G.Walk u v | p.length = 0} = ∅ := by
   ext p
-  simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false_iff]
+  simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
   exact fun h' => absurd (Walk.eq_of_length_eq_zero h') h
 
 theorem set_walk_length_succ_eq (u v : V) (n : ℕ) :
@@ -56,8 +58,6 @@ theorem set_walk_length_succ_eq (u v : V) (n : ℕ) :
     · rintro ⟨w, huw, pwv, rfl, rfl, rfl⟩
       rfl
 
-variable [DecidableEq V]
-
 /-- Walks of length two from `u` to `v` correspond bijectively to common neighbours of `u` and `v`.
 Note that `u` and `v` may be the same. -/
 @[simps]
@@ -71,7 +71,7 @@ def walkLengthTwoEquivCommonNeighbors (u v : V) :
 
 section LocallyFinite
 
-variable [LocallyFinite G]
+variable [DecidableEq V] [LocallyFinite G]
 
 /-- The `Finset` of length-`n` walks from `u` to `v`.
 This is used to give `{p : G.walk u v | p.length = n}` a `Fintype` instance, and it
@@ -139,9 +139,9 @@ instance fintypeSetPathLength (u v : V) (n : ℕ) :
 
 end LocallyFinite
 
-section Finite
+section Fintype
 
-variable [Fintype V] [DecidableRel G.Adj]
+variable [DecidableEq V] [Fintype V] [DecidableRel G.Adj]
 
 theorem reachable_iff_exists_finsetWalkLength_nonempty (u v : V) :
     G.Reachable u v ↔ ∃ n : Fin (Fintype.card V), (G.finsetWalkLength n u v).Nonempty := by
@@ -167,9 +167,45 @@ instance : Decidable G.Connected := by
   infer_instance
 
 instance instDecidableMemSupp (c : G.ConnectedComponent) (v : V) : Decidable (v ∈ c.supp) :=
-  c.recOn (fun w ↦ decidable_of_iff (G.Reachable v w) $ by simp)
+  c.recOn (fun w ↦ decidable_of_iff (G.Reachable v w) <| by simp)
     (fun _ _ _ _ ↦ Subsingleton.elim _ _)
-end Finite
+
+variable {G} in
+lemma disjiUnion_supp_toFinset_eq_supp_toFinset {G' : SimpleGraph V} (h : G ≤ G')
+    (c' : ConnectedComponent G') [Fintype c'.supp]
+    [DecidablePred fun c : G.ConnectedComponent ↦ c.supp ⊆ c'.supp] :
+    .disjiUnion {c : ConnectedComponent G | c.supp ⊆ c'.supp} (fun c ↦ c.supp.toFinset)
+      (fun x _ y _ hxy ↦ by simpa using pairwise_disjoint_supp_connectedComponent _ hxy) =
+      c'.supp.toFinset :=
+  Finset.coe_injective <| by simpa using ConnectedComponent.biUnion_supp_eq_supp h _
+
+end Fintype
+
+lemma ConnectedComponent.odd_card_supp_iff_odd_subcomponents [Finite V] {G'}
+    (h : G ≤ G') (c' : ConnectedComponent G') :
+    Odd (Nat.card c'.supp) ↔ Odd (Nat.card
+    ({c : ConnectedComponent G | c.supp ⊆ c'.supp ∧ Odd (Nat.card c.supp) })) := by
+  classical
+  cases nonempty_fintype V
+  rw [Nat.card_eq_card_toFinset, ← disjiUnion_supp_toFinset_eq_supp_toFinset h]
+  simp only [Finset.card_disjiUnion, Set.toFinset_card]
+  rw [Finset.odd_sum_iff_odd_card_odd, Nat.card_eq_fintype_card, Fintype.card_ofFinset]
+  simp only [Nat.card_eq_fintype_card, Finset.filter_filter]
+  rfl
+
+lemma odd_card_iff_odd_components [Finite V] : Odd (Nat.card V) ↔
+    Odd (Nat.card ({(c : ConnectedComponent G) | Odd (Nat.card c.supp)})) := by
+  classical
+  cases nonempty_fintype V
+  rw [Nat.card_eq_fintype_card]
+  simp only [← (set_fintype_card_eq_univ_iff _).mpr G.iUnion_connectedComponentSupp,
+    ConnectedComponent.mem_supp_iff, Fintype.card_subtype_compl,
+    ← Set.toFinset_card, Set.toFinset_iUnion ConnectedComponent.supp]
+  rw [Finset.card_biUnion
+    (fun x _ y _ hxy ↦ Set.disjoint_toFinset.mpr (pairwise_disjoint_supp_connectedComponent _ hxy))]
+  simp_rw [Set.toFinset_card, ← Nat.card_eq_fintype_card]
+  rw [Nat.card_eq_fintype_card, Fintype.card_ofFinset]
+  exact (Finset.odd_sum_iff_odd_card_odd (fun x : G.ConnectedComponent ↦ Nat.card x.supp))
 
 end WalkCounting
 

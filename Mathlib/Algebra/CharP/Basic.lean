@@ -110,6 +110,11 @@ theorem add_pow_char_pow [CommSemiring R] {p : ℕ} [Fact p.Prime] [CharP R p] {
     (x + y) ^ p ^ n = x ^ p ^ n + y ^ p ^ n :=
   add_pow_char_pow_of_commute _ _ _ (Commute.all _ _)
 
+theorem add_pow_eq_add_pow_mod_mul_pow_add_pow_div
+    [CommSemiring R] {p : ℕ} [Fact p.Prime] [CharP R p] {n : ℕ} (x y : R) :
+    (x + y) ^ n = (x + y) ^ (n % p) * (x ^ p + y ^ p) ^ (n / p) := by
+  rw [← add_pow_char, ← pow_mul, ← pow_add, Nat.mod_add_div]
+
 theorem sub_pow_char [CommRing R] {p : ℕ} [Fact p.Prime] [CharP R p] (x y : R) :
     (x - y) ^ p = x ^ p - y ^ p :=
   sub_pow_char_of_commute _ _ _ (Commute.all _ _)
@@ -118,18 +123,23 @@ theorem sub_pow_char_pow [CommRing R] {p : ℕ} [Fact p.Prime] [CharP R p] {n : 
     (x - y) ^ p ^ n = x ^ p ^ n - y ^ p ^ n :=
   sub_pow_char_pow_of_commute _ _ _ (Commute.all _ _)
 
+theorem sub_pow_eq_sub_pow_mod_mul_pow_sub_pow_div
+    [CommRing R] {p : ℕ} [Fact p.Prime] [CharP R p] {n : ℕ} (x y : R) :
+    (x - y) ^ n = (x - y) ^ (n % p) * (x ^ p - y ^ p) ^ (n / p) := by
+  rw [← sub_pow_char, ← pow_mul, ← pow_add, Nat.mod_add_div]
+
 theorem CharP.neg_one_pow_char [Ring R] (p : ℕ) [CharP R p] [Fact p.Prime] :
     (-1 : R) ^ p = -1 := by
   rw [eq_neg_iff_add_eq_zero]
   nth_rw 2 [← one_pow p]
-  rw [← add_pow_char_of_commute R _ _ (Commute.one_right _), add_left_neg,
+  rw [← add_pow_char_of_commute R _ _ (Commute.one_right _), neg_add_cancel,
     zero_pow (Fact.out (p := Nat.Prime p)).ne_zero]
 
 theorem CharP.neg_one_pow_char_pow [Ring R] (p n : ℕ) [CharP R p] [Fact p.Prime] :
     (-1 : R) ^ p ^ n = -1 := by
   rw [eq_neg_iff_add_eq_zero]
   nth_rw 2 [← one_pow (p ^ n)]
-  rw [← add_pow_char_pow_of_commute R _ _ (Commute.one_right _), add_left_neg,
+  rw [← add_pow_char_pow_of_commute R _ _ (Commute.one_right _), neg_add_cancel,
     zero_pow (pow_ne_zero _ (Fact.out (p := Nat.Prime p)).ne_zero)]
 
 namespace CharP

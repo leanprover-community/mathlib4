@@ -4,7 +4,7 @@ import Mathlib.Tactic.AdaptationNote
 def why2 : True → True := (by refine ·)
 
 example : True := by
-  #adaptation_note /--hi-/
+  #adaptation_note /-- hi -/
   exact .intro
 
 -- both `;` and `<;>` are unseen by the linter

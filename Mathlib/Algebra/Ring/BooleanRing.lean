@@ -48,18 +48,16 @@ class BooleanRing (α) extends Ring α where
   /-- Multiplication in a boolean ring is idempotent. -/
   mul_self : ∀ a : α, a * a = a
 
-section BooleanRing
+namespace BooleanRing
 
 variable [BooleanRing α] (a b : α)
 
 instance : Std.IdempotentOp (α := α) (· * ·) :=
   ⟨BooleanRing.mul_self⟩
 
-@[simp]
-theorem mul_self : a * a = a :=
-  BooleanRing.mul_self _
+attribute [scoped simp] mul_self
 
-@[simp]
+@[scoped simp]
 theorem add_self : a + a = 0 := by
   have : a + a = a + a + (a + a) :=
     calc
@@ -68,11 +66,11 @@ theorem add_self : a + a = 0 := by
       _ = a + a + (a + a) := by rw [mul_self]
   rwa [self_eq_add_left] at this
 
-@[simp]
+@[scoped simp]
 theorem neg_eq : -a = a :=
   calc
     -a = -a + 0 := by rw [add_zero]
-    _ = -a + -a + a := by rw [← neg_add_self, add_assoc]
+    _ = -a + -a + a := by rw [← neg_add_cancel, add_assoc]
     _ = a := by rw [add_self, zero_add]
 
 theorem add_eq_zero' : a + b = 0 ↔ a = b :=
@@ -90,14 +88,14 @@ theorem mul_add_mul : a * b + b * a = 0 := by
       _ = a + b + (a * b + b * a) := by abel
   rwa [self_eq_add_right] at this
 
-@[simp]
+@[scoped simp]
 theorem sub_eq_add : a - b = a + b := by rw [sub_eq_add_neg, add_right_inj, neg_eq]
 
 @[simp]
 theorem mul_one_add_self : a * (1 + a) = 0 := by rw [mul_add, mul_one, mul_self, add_self]
 
 -- Note [lower instance priority]
-instance (priority := 100) BooleanRing.toCommRing : CommRing α :=
+instance (priority := 100) toCommRing : CommRing α :=
   { (inferInstance : BooleanRing α) with
     mul_comm := fun a b => by rw [← add_eq_zero', mul_add_mul] }
 
@@ -235,6 +233,8 @@ def toBooleanAlgebra : BooleanAlgebra α :=
 scoped[BooleanAlgebraOfBooleanRing] attribute [instance] BooleanRing.toBooleanAlgebra
 
 end BooleanRing
+
+open BooleanRing
 
 instance : BooleanAlgebra (AsBoolAlg α) :=
   @BooleanRing.toBooleanAlgebra α _
@@ -385,7 +385,7 @@ abbrev GeneralizedBooleanAlgebra.toNonUnitalCommRing [GeneralizedBooleanAlgebra 
   zero_mul := bot_inf_eq
   mul_zero := inf_bot_eq
   neg := id
-  add_left_neg := symmDiff_self
+  neg_add_cancel := symmDiff_self
   add_comm := symmDiff_comm
   mul := (· ⊓ ·)
   mul_assoc := inf_assoc
@@ -526,7 +526,7 @@ instance : BooleanRing Bool where
   zero_add := Bool.false_xor
   add_zero := Bool.xor_false
   sub_eq_add_neg _ _ := rfl
-  add_left_neg := Bool.xor_self
+  neg_add_cancel := Bool.xor_self
   add_comm := xor_comm
   mul_assoc := and_assoc
   one_mul := Bool.true_and

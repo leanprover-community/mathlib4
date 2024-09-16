@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Data.Set.Function
 import Mathlib.Logic.Pairwise
+import Mathlib.Logic.Relation
 
 /-!
 # Relations holding pairwise
@@ -128,8 +129,7 @@ theorem pairwise_union_of_symmetric (hr : Symmetric r) :
 
 theorem pairwise_insert :
     (insert a s).Pairwise r ↔ s.Pairwise r ∧ ∀ b ∈ s, a ≠ b → r a b ∧ r b a := by
-  simp only [insert_eq, pairwise_union, pairwise_singleton, true_and_iff, mem_singleton_iff,
-    forall_eq]
+  simp only [insert_eq, pairwise_union, pairwise_singleton, true_and, mem_singleton_iff, forall_eq]
 
 theorem pairwise_insert_of_not_mem (ha : a ∉ s) :
     (insert a s).Pairwise r ↔ s.Pairwise r ∧ ∀ b ∈ s, r a b ∧ r b a :=
@@ -292,6 +292,10 @@ lemma pairwiseDisjoint_range_iff {α β : Type*} {f : α → (Set β)} :
     apply h.eq_or_disjoint (Set.mem_range_self x) (Set.mem_range_self y)
   · rintro h _ ⟨x, rfl⟩ _ ⟨y, rfl⟩ hxy
     exact (h x y).resolve_left hxy
+
+/-- If the range of `f` is pairwise disjoint, then the image of any set `s` under `f` is as well. -/
+lemma _root_.Pairwise.pairwiseDisjoint (h : Pairwise (Disjoint on f)) (s : Set ι) :
+    s.PairwiseDisjoint f := h.set_pairwise s
 
 end PartialOrderBot
 

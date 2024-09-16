@@ -3,10 +3,11 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Algebra.Star.Order
+import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Logic.Equiv.Fin
+import Mathlib.Tactic.Bound.Attribute
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 
 /-!
@@ -50,6 +51,12 @@ Additionally, let `f` be a function from `E` to `F`.
 * `AnalyticAt 𝕜 f x`: there exists a power series `p` such that holds `HasFPowerSeriesAt f p x`.
 * `AnalyticOn 𝕜 f s`: the function `f` is analytic at every point of `s`.
 
+We also define versions of `HasFPowerSeriesOnBall`, `AnalyticAt`, and `AnalyticOn` restricted to a
+set, similar to `ContinuousWithinAt`. See `Mathlib.Analysis.Analytic.Within` for basic properties.
+
+* `AnalyticWithinAt 𝕜 f s x` means a power series at `x` converges to `f` on `𝓝[s ∪ {x}] x`.
+* `AnalyticWithinOn 𝕜 f s t` means `∀ x ∈ t, AnalyticWithinAt 𝕜 f s x`.
+
 We develop the basic properties of these notions, notably:
 * If a function admits a power series, it is continuous (see
   `HasFPowerSeriesOnBall.continuousOn` and `HasFPowerSeriesAt.continuousAt` and
@@ -73,10 +80,7 @@ noncomputable section
 
 variable {𝕜 E F G : Type*}
 
-open scoped Classical
-open Topology NNReal Filter ENNReal
-
-open Set Filter Asymptotics
+open Topology NNReal Filter ENNReal Set Asymptotics
 
 namespace FormalMultilinearSeries
 
@@ -218,7 +222,7 @@ theorem lt_radius_of_isBigO (h₀ : r ≠ 0) {a : ℝ} (ha : a ∈ Ioo (-1 : ℝ
   norm_cast at this
   rw [← ENNReal.coe_lt_coe] at this
   refine this.trans_le (p.le_radius_of_bound C fun n => ?_)
-  rw [NNReal.coe_div, div_pow, ← mul_div_assoc, div_le_iff (pow_pos ha.1 n)]
+  rw [NNReal.coe_div, div_pow, ← mul_div_assoc, div_le_iff₀ (pow_pos ha.1 n)]
   exact (le_abs_self _).trans (hp n)
 
 /-- For `r` strictly smaller than the radius of `p`, then `‖pₙ‖ rⁿ` is bounded. -/
@@ -231,7 +235,7 @@ theorem norm_mul_pow_le_of_lt_radius (p : FormalMultilinearSeries 𝕜 E F) {r :
 theorem norm_le_div_pow_of_pos_of_lt_radius (p : FormalMultilinearSeries 𝕜 E F) {r : ℝ≥0}
     (h0 : 0 < r) (h : (r : ℝ≥0∞) < p.radius) : ∃ C > 0, ∀ n, ‖p n‖ ≤ C / (r : ℝ) ^ n :=
   let ⟨C, hC, hp⟩ := p.norm_mul_pow_le_of_lt_radius h
-  ⟨C, hC, fun n => Iff.mpr (le_div_iff (pow_pos h0 _)) (hp n)⟩
+  ⟨C, hC, fun n => Iff.mpr (le_div_iff₀ (pow_pos h0 _)) (hp n)⟩
 
 /-- For `r` strictly smaller than the radius of `p`, then `‖pₙ‖ rⁿ` is bounded. -/
 theorem nnnorm_mul_pow_le_of_lt_radius (p : FormalMultilinearSeries 𝕜 E F) {r : ℝ≥0}
@@ -325,7 +329,7 @@ theorem radius_le_radius_continuousLinearMap_comp (p : FormalMultilinearSeries �
   apply le_radius_of_isBigO
   apply (IsBigO.trans_isLittleO _ (p.isLittleO_one_of_lt_radius hr)).isBigO
   refine IsBigO.mul (@IsBigOWith.isBigO _ _ _ _ _ ‖f‖ _ _ _ ?_) (isBigO_refl _ _)
-  refine IsBigOWith.of_bound (eventually_of_forall fun n => ?_)
+  refine IsBigOWith.of_bound (Eventually.of_forall fun n => ?_)
   simpa only [norm_norm] using f.norm_compContinuousMultilinearMap_le (p n)
 
 end FormalMultilinearSeries
@@ -335,7 +339,7 @@ end FormalMultilinearSeries
 
 section
 
-variable {f g : E → F} {p pf pg : FormalMultilinearSeries 𝕜 E F} {x : E} {r r' : ℝ≥0∞}
+variable {f g : E → F} {p pf pg : FormalMultilinearSeries 𝕜 E F} {s t : Set E} {x : E} {r r' : ℝ≥0∞}
 
 /-- Given a function `f : E → F` and a formal multilinear series `p`, we say that `f` has `p` as
 a power series on the ball of radius `r > 0` around `x` if `f (x + y) = ∑' pₙ yⁿ` for all `‖y‖ < r`.
@@ -347,10 +351,29 @@ structure HasFPowerSeriesOnBall (f : E → F) (p : FormalMultilinearSeries 𝕜 
   hasSum :
     ∀ {y}, y ∈ EMetric.ball (0 : E) r → HasSum (fun n : ℕ => p n fun _ : Fin n => y) (f (x + y))
 
+/-- Analogue of `HasFPowerSeriesOnBall` where convergence is required only on a set `s`. We also
+require convergence at `x` as the behavior of this notion is very bad otherwise. -/
+structure HasFPowerSeriesWithinOnBall (f : E → F) (p : FormalMultilinearSeries 𝕜 E F) (s : Set E)
+    (x : E) (r : ℝ≥0∞) : Prop where
+  /-- `p` converges on `ball 0 r` -/
+  r_le : r ≤ p.radius
+  /-- The radius of convergence is positive -/
+  r_pos : 0 < r
+  /-- `p converges to f` within `s` -/
+  hasSum : ∀ {y}, x + y ∈ insert x s → y ∈ EMetric.ball (0 : E) r →
+    HasSum (fun n : ℕ => p n fun _ : Fin n => y) (f (x + y))
+
 /-- Given a function `f : E → F` and a formal multilinear series `p`, we say that `f` has `p` as
 a power series around `x` if `f (x + y) = ∑' pₙ yⁿ` for all `y` in a neighborhood of `0`. -/
 def HasFPowerSeriesAt (f : E → F) (p : FormalMultilinearSeries 𝕜 E F) (x : E) :=
   ∃ r, HasFPowerSeriesOnBall f p x r
+
+/-- Analogue of `HasFPowerSeriesAt` where convergence is required only on a set `s`. -/
+def HasFPowerSeriesWithinAt (f : E → F) (p : FormalMultilinearSeries 𝕜 E F) (s : Set E) (x : E) :=
+  ∃ r, HasFPowerSeriesWithinOnBall f p s x r
+
+-- Teach the `bound` tactic that power series have positive radius
+attribute [bound_forward] HasFPowerSeriesOnBall.r_pos HasFPowerSeriesWithinOnBall.r_pos
 
 variable (𝕜)
 
@@ -359,10 +382,19 @@ series expansion around `x`. -/
 def AnalyticAt (f : E → F) (x : E) :=
   ∃ p : FormalMultilinearSeries 𝕜 E F, HasFPowerSeriesAt f p x
 
+/-- `f` is analytic within `s` at `x` if it has a power series at `x` that converges on `𝓝[s] x` -/
+def AnalyticWithinAt (f : E → F) (s : Set E) (x : E) : Prop :=
+  ∃ p : FormalMultilinearSeries 𝕜 E F, HasFPowerSeriesWithinAt f p s x
+
 /-- Given a function `f : E → F`, we say that `f` is analytic on a set `s` if it is analytic around
 every point of `s`. -/
 def AnalyticOn (f : E → F) (s : Set E) :=
   ∀ x, x ∈ s → AnalyticAt 𝕜 f x
+
+/-- `f` is analytic within `s` if it is analytic within `s` at each point of `t`.  Note that
+this is weaker than `AnalyticOn 𝕜 f s`, as `f` is allowed to be arbitrary outside `s`. -/
+def AnalyticWithinOn (f : E → F) (s : Set E) : Prop :=
+  ∀ x ∈ s, AnalyticWithinAt 𝕜 f s x
 
 variable {𝕜}
 
@@ -375,6 +407,17 @@ theorem HasFPowerSeriesAt.analyticAt (hf : HasFPowerSeriesAt f p x) : AnalyticAt
 
 theorem HasFPowerSeriesOnBall.analyticAt (hf : HasFPowerSeriesOnBall f p x r) : AnalyticAt 𝕜 f x :=
   hf.hasFPowerSeriesAt.analyticAt
+
+theorem HasFPowerSeriesWithinOnBall.hasFPowerSeriesWithinAt
+    (hf : HasFPowerSeriesWithinOnBall f p s x r) : HasFPowerSeriesWithinAt f p s x :=
+  ⟨r, hf⟩
+
+theorem HasFPowerSeriesWithinAt.analyticWithinAt (hf : HasFPowerSeriesWithinAt f p s x) :
+    AnalyticWithinAt 𝕜 f s x := ⟨p, hf⟩
+
+theorem HasFPowerSeriesWithinOnBall.analyticWithinAt (hf : HasFPowerSeriesWithinOnBall f p s x r) :
+    AnalyticWithinAt 𝕜 f s x :=
+  hf.hasFPowerSeriesWithinAt.analyticWithinAt
 
 theorem HasFPowerSeriesOnBall.congr (hf : HasFPowerSeriesOnBall f p x r)
     (hg : EqOn f g (EMetric.ball x r)) : HasFPowerSeriesOnBall g p x r :=
@@ -395,6 +438,13 @@ theorem HasFPowerSeriesOnBall.comp_sub (hf : HasFPowerSeriesOnBall f p x r) (y :
       convert hf.hasSum hz using 2
       abel }
 
+theorem HasFPowerSeriesWithinOnBall.hasSum_sub (hf : HasFPowerSeriesWithinOnBall f p s x r) {y : E}
+    (hy : y ∈ (insert x s) ∩ EMetric.ball x r) :
+    HasSum (fun n : ℕ => p n fun _ => y - x) (f y) := by
+  have : y - x ∈ EMetric.ball (0 : E) r := by simpa [edist_eq_coe_nnnorm_sub] using hy.2
+  have := hf.hasSum (by simpa only [add_sub_cancel] using hy.1) this
+  simpa only [add_sub_cancel]
+
 theorem HasFPowerSeriesOnBall.hasSum_sub (hf : HasFPowerSeriesOnBall f p x r) {y : E}
     (hy : y ∈ EMetric.ball x r) : HasSum (fun n : ℕ => p n fun _ => y - x) (f y) := by
   have : y - x ∈ EMetric.ball (0 : E) r := by simpa [edist_eq_coe_nnnorm_sub] using hy
@@ -403,9 +453,18 @@ theorem HasFPowerSeriesOnBall.hasSum_sub (hf : HasFPowerSeriesOnBall f p x r) {y
 theorem HasFPowerSeriesOnBall.radius_pos (hf : HasFPowerSeriesOnBall f p x r) : 0 < p.radius :=
   lt_of_lt_of_le hf.r_pos hf.r_le
 
+theorem HasFPowerSeriesWithinOnBall.radius_pos (hf : HasFPowerSeriesWithinOnBall f p s x r) :
+    0 < p.radius :=
+  lt_of_lt_of_le hf.r_pos hf.r_le
+
 theorem HasFPowerSeriesAt.radius_pos (hf : HasFPowerSeriesAt f p x) : 0 < p.radius :=
   let ⟨_, hr⟩ := hf
   hr.radius_pos
+
+theorem HasFPowerSeriesWithinOnBall.of_le
+    (hf : HasFPowerSeriesWithinOnBall f p s x r) (r'_pos : 0 < r') (hr : r' ≤ r) :
+    HasFPowerSeriesWithinOnBall f p s x r' :=
+  ⟨le_trans hr hf.1, r'_pos, fun hy h'y => hf.hasSum hy (EMetric.ball_subset_ball hr h'y)⟩
 
 theorem HasFPowerSeriesOnBall.mono (hf : HasFPowerSeriesOnBall f p x r) (r'_pos : 0 < r')
     (hr : r' ≤ r) : HasFPowerSeriesOnBall f p x r' :=
@@ -418,6 +477,12 @@ theorem HasFPowerSeriesAt.congr (hf : HasFPowerSeriesAt f p x) (hg : f =ᶠ[𝓝
   exact ⟨min r₁ r₂,
     (h₁.mono (lt_min h₁.r_pos h₂pos) inf_le_left).congr
       fun y hy => h₂ (EMetric.ball_subset_ball inf_le_right hy)⟩
+
+protected theorem HasFPowerSeriesWithinAt.eventually (hf : HasFPowerSeriesWithinAt f p s x) :
+    ∀ᶠ r : ℝ≥0∞ in 𝓝[>] 0, HasFPowerSeriesWithinOnBall f p s x r :=
+  let ⟨_, hr⟩ := hf
+  mem_of_superset (Ioo_mem_nhdsWithin_Ioi (left_mem_Ico.2 hr.r_pos)) fun _ hr' =>
+    hr.of_le hr'.1 hr'.2.le
 
 protected theorem HasFPowerSeriesAt.eventually (hf : HasFPowerSeriesAt f p x) :
     ∀ᶠ r : ℝ≥0∞ in 𝓝[>] 0, HasFPowerSeriesOnBall f p x r :=
@@ -452,6 +517,59 @@ theorem HasFPowerSeriesAt.eventually_eq_zero
     (hf : HasFPowerSeriesAt f (0 : FormalMultilinearSeries 𝕜 E F) x) : ∀ᶠ z in 𝓝 x, f z = 0 :=
   let ⟨_, hr⟩ := hf
   hr.eventually_eq_zero
+
+@[simp] lemma hasFPowerSeriesWithinOnBall_univ :
+    HasFPowerSeriesWithinOnBall f p univ x r ↔ HasFPowerSeriesOnBall f p x r := by
+  constructor
+  · intro h
+    refine ⟨h.r_le, h.r_pos, fun {y} m ↦ h.hasSum (by simp) m⟩
+  · intro h
+    exact ⟨h.r_le, h.r_pos, fun {y} _ m => h.hasSum m⟩
+
+@[simp] lemma hasFPowerSeriesWithinAt_univ :
+    HasFPowerSeriesWithinAt f p univ x ↔ HasFPowerSeriesAt f p x := by
+  simp only [HasFPowerSeriesWithinAt, hasFPowerSeriesWithinOnBall_univ, HasFPowerSeriesAt]
+
+@[simp] lemma analyticWithinAt_univ :
+    AnalyticWithinAt 𝕜 f univ x ↔ AnalyticAt 𝕜 f x := by
+  simp [AnalyticWithinAt, AnalyticAt]
+
+@[simp] lemma analyticWithinOn_univ {f : E → F} :
+    AnalyticWithinOn 𝕜 f univ ↔ AnalyticOn 𝕜 f univ := by
+  simp only [AnalyticWithinOn, analyticWithinAt_univ, AnalyticOn]
+
+lemma HasFPowerSeriesWithinOnBall.mono (hf : HasFPowerSeriesWithinOnBall f p s x r) (h : t ⊆ s) :
+    HasFPowerSeriesWithinOnBall f p t x r where
+  r_le := hf.r_le
+  r_pos := hf.r_pos
+  hasSum hy h'y := hf.hasSum (insert_subset_insert h hy) h'y
+
+lemma HasFPowerSeriesOnBall.hasFPowerSeriesWithinOnBall (hf : HasFPowerSeriesOnBall f p x r) :
+    HasFPowerSeriesWithinOnBall f p s x r := by
+  rw [← hasFPowerSeriesWithinOnBall_univ] at hf
+  exact hf.mono (subset_univ _)
+
+lemma HasFPowerSeriesWithinAt.mono (hf : HasFPowerSeriesWithinAt f p s x) (h : t ⊆ s) :
+    HasFPowerSeriesWithinAt f p t x := by
+  obtain ⟨r, hp⟩ := hf
+  exact ⟨r, hp.mono h⟩
+
+lemma HasFPowerSeriesAt.hasFPowerSeriesWithinAt (hf : HasFPowerSeriesAt f p x) :
+    HasFPowerSeriesWithinAt f p s x := by
+  rw [← hasFPowerSeriesWithinAt_univ] at hf
+  apply hf.mono (subset_univ _)
+
+lemma AnalyticWithinAt.mono (hf : AnalyticWithinAt 𝕜 f s x) (h : t ⊆ s) :
+    AnalyticWithinAt 𝕜 f t x := by
+  obtain ⟨p, hp⟩ := hf
+  exact ⟨p, hp.mono h⟩
+
+lemma AnalyticAt.analyticWithinAt (hf : AnalyticAt 𝕜 f x) : AnalyticWithinAt 𝕜 f s x := by
+  rw [← analyticWithinAt_univ] at hf
+  apply hf.mono (subset_univ _)
+
+lemma AnalyticOn.analyticWithinOn (hf : AnalyticOn 𝕜 f s) : AnalyticWithinOn 𝕜 f s :=
+  fun x hx ↦ (hf x hx).analyticWithinAt
 
 theorem hasFPowerSeriesOnBall_const {c : F} {e : E} :
     HasFPowerSeriesOnBall (fun _ => c) (constFormalMultilinearSeries 𝕜 E c) e ⊤ := by
@@ -522,42 +640,52 @@ theorem AnalyticAt.sub (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x) :
 theorem AnalyticOn.mono {s t : Set E} (hf : AnalyticOn 𝕜 f t) (hst : s ⊆ t) : AnalyticOn 𝕜 f s :=
   fun z hz => hf z (hst hz)
 
-theorem AnalyticOn.congr' {s : Set E} (hf : AnalyticOn 𝕜 f s) (hg : f =ᶠ[𝓝ˢ s] g) :
+theorem AnalyticOn.congr' (hf : AnalyticOn 𝕜 f s) (hg : f =ᶠ[𝓝ˢ s] g) :
     AnalyticOn 𝕜 g s :=
   fun z hz => (hf z hz).congr (mem_nhdsSet_iff_forall.mp hg z hz)
 
-theorem analyticOn_congr' {s : Set E} (h : f =ᶠ[𝓝ˢ s] g) : AnalyticOn 𝕜 f s ↔ AnalyticOn 𝕜 g s :=
+theorem analyticOn_congr' (h : f =ᶠ[𝓝ˢ s] g) : AnalyticOn 𝕜 f s ↔ AnalyticOn 𝕜 g s :=
   ⟨fun hf => hf.congr' h, fun hg => hg.congr' h.symm⟩
 
-theorem AnalyticOn.congr {s : Set E} (hs : IsOpen s) (hf : AnalyticOn 𝕜 f s) (hg : s.EqOn f g) :
+theorem AnalyticOn.congr (hs : IsOpen s) (hf : AnalyticOn 𝕜 f s) (hg : s.EqOn f g) :
     AnalyticOn 𝕜 g s :=
   hf.congr' <| mem_nhdsSet_iff_forall.mpr
     (fun _ hz => eventuallyEq_iff_exists_mem.mpr ⟨s, hs.mem_nhds hz, hg⟩)
 
-theorem analyticOn_congr {s : Set E} (hs : IsOpen s) (h : s.EqOn f g) : AnalyticOn 𝕜 f s ↔
+theorem analyticOn_congr (hs : IsOpen s) (h : s.EqOn f g) : AnalyticOn 𝕜 f s ↔
     AnalyticOn 𝕜 g s := ⟨fun hf => hf.congr hs h, fun hg => hg.congr hs h.symm⟩
 
-theorem AnalyticOn.add {s : Set E} (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g s) :
+theorem AnalyticOn.add (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g s) :
     AnalyticOn 𝕜 (f + g) s :=
   fun z hz => (hf z hz).add (hg z hz)
 
-theorem AnalyticOn.neg {s : Set E} (hf : AnalyticOn 𝕜 f s) : AnalyticOn 𝕜 (-f) s :=
+theorem AnalyticOn.neg (hf : AnalyticOn 𝕜 f s) : AnalyticOn 𝕜 (-f) s :=
   fun z hz ↦ (hf z hz).neg
 
-theorem AnalyticOn.sub {s : Set E} (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g s) :
+theorem AnalyticOn.sub (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g s) :
     AnalyticOn 𝕜 (f - g) s :=
   fun z hz => (hf z hz).sub (hg z hz)
 
-theorem HasFPowerSeriesOnBall.coeff_zero (hf : HasFPowerSeriesOnBall f pf x r) (v : Fin 0 → E) :
-    pf 0 v = f x := by
+theorem HasFPowerSeriesWithinOnBall.coeff_zero (hf : HasFPowerSeriesWithinOnBall f pf s x r)
+    (v : Fin 0 → E) : pf 0 v = f x := by
   have v_eq : v = fun i => 0 := Subsingleton.elim _ _
   have zero_mem : (0 : E) ∈ EMetric.ball (0 : E) r := by simp [hf.r_pos]
   have : ∀ i, i ≠ 0 → (pf i fun j => 0) = 0 := by
     intro i hi
     have : 0 < i := pos_iff_ne_zero.2 hi
     exact ContinuousMultilinearMap.map_coord_zero _ (⟨0, this⟩ : Fin i) rfl
-  have A := (hf.hasSum zero_mem).unique (hasSum_single _ this)
+  have A := (hf.hasSum (by simp) zero_mem).unique (hasSum_single _ this)
   simpa [v_eq] using A.symm
+
+theorem HasFPowerSeriesOnBall.coeff_zero (hf : HasFPowerSeriesOnBall f pf x r)
+    (v : Fin 0 → E) : pf 0 v = f x := by
+  rw [← hasFPowerSeriesWithinOnBall_univ] at hf
+  exact hf.coeff_zero v
+
+theorem HasFPowerSeriesWithinAt.coeff_zero (hf : HasFPowerSeriesWithinAt f pf s x) (v : Fin 0 → E) :
+    pf 0 v = f x :=
+  let ⟨_, hrf⟩ := hf
+  hrf.coeff_zero v
 
 theorem HasFPowerSeriesAt.coeff_zero (hf : HasFPowerSeriesAt f pf x) (v : Fin 0 → E) :
     pf 0 v = f x :=
@@ -584,18 +712,104 @@ theorem ContinuousLinearMap.comp_analyticOn {s : Set E} (g : F →L[𝕜] G) (h 
   rcases h x hx with ⟨p, r, hp⟩
   exact ⟨g.compFormalMultilinearSeries p, r, g.comp_hasFPowerSeriesOnBall hp⟩
 
+theorem HasFPowerSeriesWithinOnBall.tendsto_partialSum
+    (hf : HasFPowerSeriesWithinOnBall f p s x r) {y : E} (hy : y ∈ EMetric.ball (0 : E) r)
+    (h'y : x + y ∈ insert x s) :
+    Tendsto (fun n => p.partialSum n y) atTop (𝓝 (f (x + y))) :=
+  (hf.hasSum h'y hy).tendsto_sum_nat
+
+theorem HasFPowerSeriesOnBall.tendsto_partialSum
+    (hf : HasFPowerSeriesOnBall f p x r) {y : E} (hy : y ∈ EMetric.ball (0 : E) r) :
+    Tendsto (fun n => p.partialSum n y) atTop (𝓝 (f (x + y))) :=
+  (hf.hasSum hy).tendsto_sum_nat
+
+open Finset in
+/-- If a function admits a power series expansion within a ball, then the partial sums
+`p.partialSum n z` converge to `f (x + y)` as `n → ∞` and `z → y`. Note that `x + z` doesn't need
+to belong to the set where the power series expansion holds. -/
+theorem HasFPowerSeriesWithinOnBall.tendsto_partialSum_prod {y : E}
+    (hf : HasFPowerSeriesWithinOnBall f p s x r) (hy : y ∈ EMetric.ball (0 : E) r)
+    (h'y : x + y ∈ insert x s) :
+    Tendsto (fun (z : ℕ × E) ↦ p.partialSum z.1 z.2) (atTop ×ˢ 𝓝 y) (𝓝 (f (x + y))) := by
+  have A : Tendsto (fun (z : ℕ × E) ↦ p.partialSum z.1 y) (atTop ×ˢ 𝓝 y) (𝓝 (f (x + y))) := by
+    apply (hf.tendsto_partialSum hy h'y).comp tendsto_fst
+  suffices Tendsto (fun (z : ℕ × E) ↦ p.partialSum z.1 z.2 - p.partialSum z.1 y)
+    (atTop ×ˢ 𝓝 y) (𝓝 0) by simpa using A.add this
+  apply Metric.tendsto_nhds.2 (fun ε εpos ↦ ?_)
+  obtain ⟨r', yr', r'r⟩ : ∃ (r' : ℝ≥0), ‖y‖₊ < r' ∧ r' < r := by
+    simp [edist_eq_coe_nnnorm] at hy
+    simpa using ENNReal.lt_iff_exists_nnreal_btwn.1 hy
+  have yr'_2 : ‖y‖ < r' := by simpa [← coe_nnnorm] using yr'
+  have S : Summable fun n ↦ ‖p n‖ * ↑r' ^ n := p.summable_norm_mul_pow (r'r.trans_le hf.r_le)
+  obtain ⟨k, hk⟩ : ∃ k, ∑' (n : ℕ), ‖p (n + k)‖ * ↑r' ^ (n + k) < ε / 4 := by
+    have : Tendsto (fun k ↦ ∑' n, ‖p (n + k)‖ * ↑r' ^ (n + k)) atTop (𝓝 0) := by
+      apply _root_.tendsto_sum_nat_add (f := fun n ↦ ‖p n‖ * ↑r' ^ n)
+    exact ((tendsto_order.1 this).2 _ (by linarith)).exists
+  have A : ∀ᶠ (z : ℕ × E) in atTop ×ˢ 𝓝 y,
+      dist (p.partialSum k z.2) (p.partialSum k y) < ε / 4 := by
+    have : ContinuousAt (fun z ↦ p.partialSum k z) y := (p.partialSum_continuous k).continuousAt
+    exact tendsto_snd (Metric.tendsto_nhds.1 this.tendsto (ε / 4) (by linarith))
+  have B : ∀ᶠ (z : ℕ × E) in atTop ×ˢ 𝓝 y, ‖z.2‖₊ < r' := by
+    suffices ∀ᶠ (z : E) in 𝓝 y, ‖z‖₊ < r' from tendsto_snd this
+    have : Metric.ball 0 r' ∈ 𝓝 y := Metric.isOpen_ball.mem_nhds (by simpa using yr'_2)
+    filter_upwards [this] with a ha using by simpa [← coe_nnnorm] using ha
+  have C : ∀ᶠ (z : ℕ × E) in atTop ×ˢ 𝓝 y, k ≤ z.1 := tendsto_fst (Ici_mem_atTop _)
+  filter_upwards [A, B, C]
+  rintro ⟨n, z⟩ hz h'z hkn
+  simp only [dist_eq_norm, sub_zero] at hz ⊢
+  have I (w : E) (hw : ‖w‖₊ < r') : ‖∑ i ∈ Ico k n, p i (fun _ ↦ w)‖ ≤ ε / 4 := calc
+    ‖∑ i ∈ Ico k n, p i (fun _ ↦ w)‖
+    _ = ‖∑ i ∈ range (n - k), p (i + k) (fun _ ↦ w)‖ := by
+        rw [sum_Ico_eq_sum_range]
+        congr with i
+        rw [add_comm k]
+    _ ≤ ∑ i ∈ range (n - k), ‖p (i + k) (fun _ ↦ w)‖ := norm_sum_le _ _
+    _ ≤ ∑ i ∈ range (n - k), ‖p (i + k)‖ * ‖w‖ ^ (i + k) := by
+        gcongr with i _hi; exact ((p (i + k)).le_opNorm _).trans_eq (by simp)
+    _ ≤ ∑ i ∈ range (n - k), ‖p (i + k)‖ * ↑r' ^ (i + k) := by
+        gcongr with i _hi; simpa [← coe_nnnorm] using hw.le
+    _ ≤ ∑' i, ‖p (i + k)‖ * ↑r' ^ (i + k) := by
+        apply sum_le_tsum _ (fun i _hi ↦ by positivity)
+        apply ((_root_.summable_nat_add_iff k).2 S)
+    _ ≤ ε / 4 := hk.le
+  calc
+  ‖p.partialSum n z - p.partialSum n y‖
+  _ = ‖∑ i ∈ range n, p i (fun _ ↦ z) - ∑ i ∈ range n, p i (fun _ ↦ y)‖ := rfl
+  _ = ‖(∑ i ∈ range k, p i (fun _ ↦ z) + ∑ i ∈ Ico k n, p i (fun _ ↦ z))
+        - (∑ i ∈ range k, p i (fun _ ↦ y) + ∑ i ∈ Ico k n, p i (fun _ ↦ y))‖ := by
+    simp [sum_range_add_sum_Ico _ hkn]
+  _ = ‖(p.partialSum k z - p.partialSum k y) + (∑ i ∈ Ico k n, p i (fun _ ↦ z))
+        + (- ∑ i ∈ Ico k n, p i (fun _ ↦ y))‖ := by
+    congr 1
+    simp only [FormalMultilinearSeries.partialSum]
+    abel
+  _ ≤ ‖p.partialSum k z - p.partialSum k y‖ + ‖∑ i ∈ Ico k n, p i (fun _ ↦ z)‖
+      + ‖- ∑ i ∈ Ico k n, p i (fun _ ↦ y)‖ := norm_add₃_le _ _ _
+  _ ≤ ε / 4 + ε / 4 + ε / 4 := by
+    gcongr
+    · exact I _ h'z
+    · simp only [norm_neg]; exact I _ yr'
+  _ < ε := by linarith
+
+/-- If a function admits a power series on a ball, then the partial sums
+`p.partialSum n z` converges to `f (x + y)` as `n → ∞` and `z → y`. -/
+theorem HasFPowerSeriesOnBall.tendsto_partialSum_prod {y : E}
+    (hf : HasFPowerSeriesOnBall f p x r) (hy : y ∈ EMetric.ball (0 : E) r) :
+    Tendsto (fun (z : ℕ × E) ↦ p.partialSum z.1 z.2) (atTop ×ˢ 𝓝 y) (𝓝 (f (x + y))) :=
+  (hf.hasFPowerSeriesWithinOnBall (s := univ)).tendsto_partialSum_prod hy (by simp)
+
 /-- If a function admits a power series expansion, then it is exponentially close to the partial
 sums of this power series on strict subdisks of the disk of convergence.
 
 This version provides an upper estimate that decreases both in `‖y‖` and `n`. See also
-`HasFPowerSeriesOnBall.uniform_geometric_approx` for a weaker version. -/
-theorem HasFPowerSeriesOnBall.uniform_geometric_approx' {r' : ℝ≥0}
-    (hf : HasFPowerSeriesOnBall f p x r) (h : (r' : ℝ≥0∞) < r) :
-    ∃ a ∈ Ioo (0 : ℝ) 1, ∃ C > 0, ∀ y ∈ Metric.ball (0 : E) r', ∀ n,
+`HasFPowerSeriesWithinOnBall.uniform_geometric_approx` for a weaker version. -/
+theorem HasFPowerSeriesWithinOnBall.uniform_geometric_approx' {r' : ℝ≥0}
+    (hf : HasFPowerSeriesWithinOnBall f p s x r) (h : (r' : ℝ≥0∞) < r) :
+    ∃ a ∈ Ioo (0 : ℝ) 1, ∃ C > 0, ∀ y ∈ Metric.ball (0 : E) r', ∀ n, x + y ∈ insert x s →
       ‖f (x + y) - p.partialSum n y‖ ≤ C * (a * (‖y‖ / r')) ^ n := by
   obtain ⟨a, ha, C, hC, hp⟩ : ∃ a ∈ Ioo (0 : ℝ) 1, ∃ C > 0, ∀ n, ‖p n‖ * (r' : ℝ) ^ n ≤ C * a ^ n :=
     p.norm_mul_pow_le_mul_pow_of_lt_radius (h.trans_le hf.r_le)
-  refine ⟨a, ha, C / (1 - a), div_pos hC (sub_pos.2 ha.2), fun y hy n => ?_⟩
+  refine ⟨a, ha, C / (1 - a), div_pos hC (sub_pos.2 ha.2), fun y hy n ys => ?_⟩
   have yr' : ‖y‖ < r' := by
     rw [ball_zero_eq] at hy
     exact hy
@@ -611,7 +825,7 @@ theorem HasFPowerSeriesOnBall.uniform_geometric_approx' {r' : ℝ≥0}
     have : 0 < a := ha.1
     gcongr
     apply_rules [sub_pos.2, ha.2]
-  apply norm_sub_le_of_geometric_bound_of_hasSum (ya.trans_lt ha.2) _ (hf.hasSum this)
+  apply norm_sub_le_of_geometric_bound_of_hasSum (ya.trans_lt ha.2) _ (hf.hasSum ys this)
   intro n
   calc
     ‖(p n) fun _ : Fin n => y‖
@@ -621,58 +835,94 @@ theorem HasFPowerSeriesOnBall.uniform_geometric_approx' {r' : ℝ≥0}
     _ ≤ C * (a * (‖y‖ / r')) ^ n := by rw [mul_pow, mul_assoc]
 
 /-- If a function admits a power series expansion, then it is exponentially close to the partial
-sums of this power series on strict subdisks of the disk of convergence. -/
-theorem HasFPowerSeriesOnBall.uniform_geometric_approx {r' : ℝ≥0}
+sums of this power series on strict subdisks of the disk of convergence.
+
+This version provides an upper estimate that decreases both in `‖y‖` and `n`. See also
+`HasFPowerSeriesOnBall.uniform_geometric_approx` for a weaker version. -/
+theorem HasFPowerSeriesOnBall.uniform_geometric_approx' {r' : ℝ≥0}
     (hf : HasFPowerSeriesOnBall f p x r) (h : (r' : ℝ≥0∞) < r) :
+    ∃ a ∈ Ioo (0 : ℝ) 1, ∃ C > 0, ∀ y ∈ Metric.ball (0 : E) r', ∀ n,
+      ‖f (x + y) - p.partialSum n y‖ ≤ C * (a * (‖y‖ / r')) ^ n := by
+   rw [← hasFPowerSeriesWithinOnBall_univ] at hf
+   simpa using hf.uniform_geometric_approx' h
+
+/-- If a function admits a power series expansion within a set in a ball, then it is exponentially
+close to the partial sums of this power series on strict subdisks of the disk of convergence. -/
+theorem HasFPowerSeriesWithinOnBall.uniform_geometric_approx {r' : ℝ≥0}
+    (hf : HasFPowerSeriesWithinOnBall f p s x r) (h : (r' : ℝ≥0∞) < r) :
     ∃ a ∈ Ioo (0 : ℝ) 1,
-      ∃ C > 0, ∀ y ∈ Metric.ball (0 : E) r', ∀ n, ‖f (x + y) - p.partialSum n y‖ ≤ C * a ^ n := by
+      ∃ C > 0, ∀ y ∈ Metric.ball (0 : E) r', ∀ n, x + y ∈ insert x s →
+      ‖f (x + y) - p.partialSum n y‖ ≤ C * a ^ n := by
   obtain ⟨a, ha, C, hC, hp⟩ : ∃ a ∈ Ioo (0 : ℝ) 1, ∃ C > 0, ∀ y ∈ Metric.ball (0 : E) r', ∀ n,
-      ‖f (x + y) - p.partialSum n y‖ ≤ C * (a * (‖y‖ / r')) ^ n :=
+      x + y ∈ insert x s → ‖f (x + y) - p.partialSum n y‖ ≤ C * (a * (‖y‖ / r')) ^ n :=
     hf.uniform_geometric_approx' h
-  refine ⟨a, ha, C, hC, fun y hy n => (hp y hy n).trans ?_⟩
+  refine ⟨a, ha, C, hC, fun y hy n ys => (hp y hy n ys).trans ?_⟩
   have yr' : ‖y‖ < r' := by rwa [ball_zero_eq] at hy
   have := ha.1.le -- needed to discharge a side goal on the next line
   gcongr
   exact mul_le_of_le_one_right ha.1.le (div_le_one_of_le yr'.le r'.coe_nonneg)
 
-/-- Taylor formula for an analytic function, `IsBigO` version. -/
-theorem HasFPowerSeriesAt.isBigO_sub_partialSum_pow (hf : HasFPowerSeriesAt f p x) (n : ℕ) :
-    (fun y : E => f (x + y) - p.partialSum n y) =O[𝓝 0] fun y => ‖y‖ ^ n := by
+/-- If a function admits a power series expansion, then it is exponentially close to the partial
+sums of this power series on strict subdisks of the disk of convergence. -/
+theorem HasFPowerSeriesOnBall.uniform_geometric_approx {r' : ℝ≥0}
+    (hf : HasFPowerSeriesOnBall f p x r) (h : (r' : ℝ≥0∞) < r) :
+    ∃ a ∈ Ioo (0 : ℝ) 1,
+      ∃ C > 0, ∀ y ∈ Metric.ball (0 : E) r', ∀ n,
+      ‖f (x + y) - p.partialSum n y‖ ≤ C * a ^ n := by
+  rw [← hasFPowerSeriesWithinOnBall_univ] at hf
+  simpa using hf.uniform_geometric_approx h
+
+/-- Taylor formula for an analytic function within a set, `IsBigO` version. -/
+theorem HasFPowerSeriesWithinAt.isBigO_sub_partialSum_pow
+    (hf : HasFPowerSeriesWithinAt f p s x) (n : ℕ) :
+    (fun y : E => f (x + y) - p.partialSum n y)
+      =O[𝓝[(x + ·)⁻¹' insert x s] 0] fun y => ‖y‖ ^ n := by
   rcases hf with ⟨r, hf⟩
   rcases ENNReal.lt_iff_exists_nnreal_btwn.1 hf.r_pos with ⟨r', r'0, h⟩
   obtain ⟨a, -, C, -, hp⟩ : ∃ a ∈ Ioo (0 : ℝ) 1, ∃ C > 0, ∀ y ∈ Metric.ball (0 : E) r', ∀ n,
-      ‖f (x + y) - p.partialSum n y‖ ≤ C * (a * (‖y‖ / r')) ^ n :=
+      x + y ∈ insert x s → ‖f (x + y) - p.partialSum n y‖ ≤ C * (a * (‖y‖ / r')) ^ n :=
     hf.uniform_geometric_approx' h
   refine isBigO_iff.2 ⟨C * (a / r') ^ n, ?_⟩
   replace r'0 : 0 < (r' : ℝ) := mod_cast r'0
-  filter_upwards [Metric.ball_mem_nhds (0 : E) r'0] with y hy
-  simpa [mul_pow, mul_div_assoc, mul_assoc, div_mul_eq_mul_div] using hp y hy n
+  filter_upwards [inter_mem_nhdsWithin _ (Metric.ball_mem_nhds (0 : E) r'0)] with y hy
+  simpa [mul_pow, mul_div_assoc, mul_assoc, div_mul_eq_mul_div]
+    using hp y hy.2 n (by simpa using hy.1)
 
-/-- If `f` has formal power series `∑ n, pₙ` on a ball of radius `r`, then for `y, z` in any smaller
-ball, the norm of the difference `f y - f z - p 1 (fun _ ↦ y - z)` is bounded above by
-`C * (max ‖y - x‖ ‖z - x‖) * ‖y - z‖`. This lemma formulates this property using `IsBigO` and
-`Filter.principal` on `E × E`. -/
-theorem HasFPowerSeriesOnBall.isBigO_image_sub_image_sub_deriv_principal
-    (hf : HasFPowerSeriesOnBall f p x r) (hr : r' < r) :
-    (fun y : E × E => f y.1 - f y.2 - p 1 fun _ => y.1 - y.2) =O[𝓟 (EMetric.ball (x, x) r')]
+/-- Taylor formula for an analytic function, `IsBigO` version. -/
+theorem HasFPowerSeriesAt.isBigO_sub_partialSum_pow
+    (hf : HasFPowerSeriesAt f p x) (n : ℕ) :
+    (fun y : E => f (x + y) - p.partialSum n y) =O[𝓝 0] fun y => ‖y‖ ^ n := by
+  rw [← hasFPowerSeriesWithinAt_univ] at hf
+  simpa using hf.isBigO_sub_partialSum_pow n
+
+/-- If `f` has formal power series `∑ n, pₙ` in a set, within a ball of radius `r`, then
+for `y, z` in any smaller ball, the norm of the difference `f y - f z - p 1 (fun _ ↦ y - z)` is
+bounded above by `C * (max ‖y - x‖ ‖z - x‖) * ‖y - z‖`. This lemma formulates this property
+using `IsBigO` and `Filter.principal` on `E × E`. -/
+theorem HasFPowerSeriesWithinOnBall.isBigO_image_sub_image_sub_deriv_principal
+    (hf : HasFPowerSeriesWithinOnBall f p s x r) (hr : r' < r) :
+    (fun y : E × E => f y.1 - f y.2 - p 1 fun _ => y.1 - y.2)
+      =O[𝓟 (EMetric.ball (x, x) r' ∩ ((insert x s) ×ˢ (insert x s)))]
       fun y => ‖y - (x, x)‖ * ‖y.1 - y.2‖ := by
   lift r' to ℝ≥0 using ne_top_of_lt hr
   rcases (zero_le r').eq_or_lt with (rfl | hr'0)
-  · simp only [isBigO_bot, EMetric.ball_zero, principal_empty, ENNReal.coe_zero]
+  · simp only [ENNReal.coe_zero, EMetric.ball_zero, empty_inter, principal_empty, isBigO_bot]
   obtain ⟨a, ha, C, hC : 0 < C, hp⟩ :
       ∃ a ∈ Ioo (0 : ℝ) 1, ∃ C > 0, ∀ n : ℕ, ‖p n‖ * (r' : ℝ) ^ n ≤ C * a ^ n :=
     p.norm_mul_pow_le_mul_pow_of_lt_radius (hr.trans_le hf.r_le)
-  simp only [← le_div_iff (pow_pos (NNReal.coe_pos.2 hr'0) _)] at hp
+  simp only [← le_div_iff₀ (pow_pos (NNReal.coe_pos.2 hr'0) _)] at hp
   set L : E × E → ℝ := fun y =>
     C * (a / r') ^ 2 * (‖y - (x, x)‖ * ‖y.1 - y.2‖) * (a / (1 - a) ^ 2 + 2 / (1 - a))
-  have hL : ∀ y ∈ EMetric.ball (x, x) r', ‖f y.1 - f y.2 - p 1 fun _ => y.1 - y.2‖ ≤ L y := by
-    intro y hy'
+  have hL : ∀ y ∈ EMetric.ball (x, x) r' ∩ ((insert x s) ×ˢ (insert x s)),
+      ‖f y.1 - f y.2 - p 1 fun _ => y.1 - y.2‖ ≤ L y := by
+    intro y ⟨hy', ys⟩
     have hy : y ∈ EMetric.ball x r ×ˢ EMetric.ball x r := by
       rw [EMetric.ball_prod_same]
       exact EMetric.ball_subset_ball hr.le hy'
     set A : ℕ → F := fun n => (p n fun _ => y.1 - x) - p n fun _ => y.2 - x
     have hA : HasSum (fun n => A (n + 2)) (f y.1 - f y.2 - p 1 fun _ => y.1 - y.2) := by
-      convert (hasSum_nat_add_iff' 2).2 ((hf.hasSum_sub hy.1).sub (hf.hasSum_sub hy.2)) using 1
+      convert (hasSum_nat_add_iff' 2).2
+        ((hf.hasSum_sub ⟨ys.1, hy.1⟩).sub (hf.hasSum_sub ⟨ys.2, hy.2⟩)) using 1
       rw [Finset.sum_range_succ, Finset.sum_range_one, hf.coeff_zero, hf.coeff_zero, sub_self,
         zero_add, ← Subsingleton.pi_single_eq (0 : Fin 1) (y.1 - x), Pi.single,
         ← Subsingleton.pi_single_eq (0 : Fin 1) (y.2 - x), Pi.single, ← (p 1).map_sub, ← Pi.single,
@@ -708,7 +958,8 @@ theorem HasFPowerSeriesOnBall.isBigO_image_sub_image_sub_deriv_principal
       exact (hasSum_coe_mul_geometric_of_norm_lt_one this).add  -- Porting note: was `convert`!
           ((hasSum_geometric_of_norm_lt_one this).mul_left 2)
     exact hA.norm_le_of_bounded hBL hAB
-  suffices L =O[𝓟 (EMetric.ball (x, x) r')] fun y => ‖y - (x, x)‖ * ‖y.1 - y.2‖ by
+  suffices L =O[𝓟 (EMetric.ball (x, x) r' ∩ ((insert x s) ×ˢ (insert x s)))]
+      fun y => ‖y - (x, x)‖ * ‖y.1 - y.2‖ by
     refine (IsBigO.of_bound 1 (eventually_principal.2 fun y hy => ?_)).trans this
     rw [one_mul]
     exact (hL y hy).trans (le_abs_self _)
@@ -717,14 +968,50 @@ theorem HasFPowerSeriesOnBall.isBigO_image_sub_image_sub_deriv_principal
 
 /-- If `f` has formal power series `∑ n, pₙ` on a ball of radius `r`, then for `y, z` in any smaller
 ball, the norm of the difference `f y - f z - p 1 (fun _ ↦ y - z)` is bounded above by
+`C * (max ‖y - x‖ ‖z - x‖) * ‖y - z‖`. This lemma formulates this property using `IsBigO` and
+`Filter.principal` on `E × E`. -/
+theorem HasFPowerSeriesOnBall.isBigO_image_sub_image_sub_deriv_principal
+    (hf : HasFPowerSeriesOnBall f p x r) (hr : r' < r) :
+    (fun y : E × E => f y.1 - f y.2 - p 1 fun _ => y.1 - y.2)
+      =O[𝓟 (EMetric.ball (x, x) r')] fun y => ‖y - (x, x)‖ * ‖y.1 - y.2‖ := by
+  rw [← hasFPowerSeriesWithinOnBall_univ] at hf
+  simpa using hf.isBigO_image_sub_image_sub_deriv_principal hr
+
+/-- If `f` has formal power series `∑ n, pₙ` within a set, on a ball of radius `r`, then for `y, z`
+in any smaller ball, the norm of the difference `f y - f z - p 1 (fun _ ↦ y - z)` is bounded above
+by `C * (max ‖y - x‖ ‖z - x‖) * ‖y - z‖`. -/
+theorem HasFPowerSeriesWithinOnBall.image_sub_sub_deriv_le
+    (hf : HasFPowerSeriesWithinOnBall f p s x r) (hr : r' < r) :
+    ∃ C, ∀ᵉ (y ∈ insert x s ∩ EMetric.ball x r') (z ∈ insert x s ∩ EMetric.ball x r'),
+      ‖f y - f z - p 1 fun _ => y - z‖ ≤ C * max ‖y - x‖ ‖z - x‖ * ‖y - z‖ := by
+  have := hf.isBigO_image_sub_image_sub_deriv_principal hr
+  simp only [isBigO_principal, mem_inter_iff, EMetric.mem_ball, Prod.edist_eq, max_lt_iff, mem_prod,
+    norm_mul, Real.norm_eq_abs, abs_norm, and_imp, Prod.forall, mul_assoc] at this ⊢
+  rcases this with ⟨C, hC⟩
+  exact ⟨C, fun y ys hy z zs hz ↦ hC y z hy hz ys zs⟩
+
+/-- If `f` has formal power series `∑ n, pₙ` on a ball of radius `r`, then for `y, z` in any smaller
+ball, the norm of the difference `f y - f z - p 1 (fun _ ↦ y - z)` is bounded above by
 `C * (max ‖y - x‖ ‖z - x‖) * ‖y - z‖`. -/
-theorem HasFPowerSeriesOnBall.image_sub_sub_deriv_le (hf : HasFPowerSeriesOnBall f p x r)
-    (hr : r' < r) :
+theorem HasFPowerSeriesOnBall.image_sub_sub_deriv_le
+    (hf : HasFPowerSeriesOnBall f p x r) (hr : r' < r) :
     ∃ C, ∀ᵉ (y ∈ EMetric.ball x r') (z ∈ EMetric.ball x r'),
       ‖f y - f z - p 1 fun _ => y - z‖ ≤ C * max ‖y - x‖ ‖z - x‖ * ‖y - z‖ := by
-  simpa only [isBigO_principal, mul_assoc, norm_mul, norm_norm, Prod.forall, EMetric.mem_ball,
-    Prod.edist_eq, max_lt_iff, and_imp, @forall_swap (_ < _) E] using
-    hf.isBigO_image_sub_image_sub_deriv_principal hr
+  rw [← hasFPowerSeriesWithinOnBall_univ] at hf
+  simpa only [mem_univ, insert_eq_of_mem, univ_inter] using hf.image_sub_sub_deriv_le hr
+
+/-- If `f` has formal power series `∑ n, pₙ` at `x` within a set `s`, then
+`f y - f z - p 1 (fun _ ↦ y - z) = O(‖(y, z) - (x, x)‖ * ‖y - z‖)` as `(y, z) → (x, x)`
+within `s × s`. -/
+theorem HasFPowerSeriesWithinAt.isBigO_image_sub_norm_mul_norm_sub
+    (hf : HasFPowerSeriesWithinAt f p s x) :
+    (fun y : E × E => f y.1 - f y.2 - p 1 fun _ => y.1 - y.2)
+      =O[𝓝[(insert x s) ×ˢ (insert x s)] (x, x)] fun y => ‖y - (x, x)‖ * ‖y.1 - y.2‖ := by
+  rcases hf with ⟨r, hf⟩
+  rcases ENNReal.lt_iff_exists_nnreal_btwn.1 hf.r_pos with ⟨r', r'0, h⟩
+  refine (hf.isBigO_image_sub_image_sub_deriv_principal h).mono ?_
+  rw [inter_comm]
+  exact le_principal_iff.2 (inter_mem_nhdsWithin _ (EMetric.ball_mem_nhds _ r'0))
 
 /-- If `f` has formal power series `∑ n, pₙ` at `x`, then
 `f y - f z - p 1 (fun _ ↦ y - z) = O(‖(y, z) - (x, x)‖ * ‖y - z‖)` as `(y, z) → (x, x)`.
@@ -732,10 +1019,25 @@ In particular, `f` is strictly differentiable at `x`. -/
 theorem HasFPowerSeriesAt.isBigO_image_sub_norm_mul_norm_sub (hf : HasFPowerSeriesAt f p x) :
     (fun y : E × E => f y.1 - f y.2 - p 1 fun _ => y.1 - y.2) =O[𝓝 (x, x)] fun y =>
       ‖y - (x, x)‖ * ‖y.1 - y.2‖ := by
-  rcases hf with ⟨r, hf⟩
-  rcases ENNReal.lt_iff_exists_nnreal_btwn.1 hf.r_pos with ⟨r', r'0, h⟩
-  refine (hf.isBigO_image_sub_image_sub_deriv_principal h).mono ?_
-  exact le_principal_iff.2 (EMetric.ball_mem_nhds _ r'0)
+  rw [← hasFPowerSeriesWithinAt_univ] at hf
+  simpa using hf.isBigO_image_sub_norm_mul_norm_sub
+
+/-- If a function admits a power series expansion within a set at `x`, then it is the uniform limit
+of the partial sums of this power series on strict subdisks of the disk of convergence, i.e.,
+`f (x + y)` is the uniform limit of `p.partialSum n y` there. -/
+theorem HasFPowerSeriesWithinOnBall.tendstoUniformlyOn {r' : ℝ≥0}
+    (hf : HasFPowerSeriesWithinOnBall f p s x r) (h : (r' : ℝ≥0∞) < r) :
+    TendstoUniformlyOn (fun n y => p.partialSum n y) (fun y => f (x + y)) atTop
+      ((x + ·)⁻¹' (insert x s) ∩ Metric.ball (0 : E) r') := by
+  obtain ⟨a, ha, C, -, hp⟩ : ∃ a ∈ Ioo (0 : ℝ) 1, ∃ C > 0, ∀ y ∈ Metric.ball (0 : E) r', ∀ n,
+    x + y ∈ insert x s → ‖f (x + y) - p.partialSum n y‖ ≤ C * a ^ n := hf.uniform_geometric_approx h
+  refine Metric.tendstoUniformlyOn_iff.2 fun ε εpos => ?_
+  have L : Tendsto (fun n => (C : ℝ) * a ^ n) atTop (𝓝 ((C : ℝ) * 0)) :=
+    tendsto_const_nhds.mul (tendsto_pow_atTop_nhds_zero_of_lt_one ha.1.le ha.2)
+  rw [mul_zero] at L
+  refine (L.eventually (gt_mem_nhds εpos)).mono fun n hn y hy => ?_
+  rw [dist_eq_norm]
+  exact (hp y hy.2 n hy.1).trans_lt hn
 
 /-- If a function admits a power series expansion at `x`, then it is the uniform limit of the
 partial sums of this power series on strict subdisks of the disk of convergence, i.e., `f (x + y)`
@@ -744,15 +1046,25 @@ theorem HasFPowerSeriesOnBall.tendstoUniformlyOn {r' : ℝ≥0} (hf : HasFPowerS
     (h : (r' : ℝ≥0∞) < r) :
     TendstoUniformlyOn (fun n y => p.partialSum n y) (fun y => f (x + y)) atTop
       (Metric.ball (0 : E) r') := by
-  obtain ⟨a, ha, C, -, hp⟩ : ∃ a ∈ Ioo (0 : ℝ) 1, ∃ C > 0, ∀ y ∈ Metric.ball (0 : E) r', ∀ n,
-    ‖f (x + y) - p.partialSum n y‖ ≤ C * a ^ n := hf.uniform_geometric_approx h
-  refine Metric.tendstoUniformlyOn_iff.2 fun ε εpos => ?_
-  have L : Tendsto (fun n => (C : ℝ) * a ^ n) atTop (𝓝 ((C : ℝ) * 0)) :=
-    tendsto_const_nhds.mul (tendsto_pow_atTop_nhds_zero_of_lt_one ha.1.le ha.2)
-  rw [mul_zero] at L
-  refine (L.eventually (gt_mem_nhds εpos)).mono fun n hn y hy => ?_
-  rw [dist_eq_norm]
-  exact (hp y hy n).trans_lt hn
+  rw [← hasFPowerSeriesWithinOnBall_univ] at hf
+  simpa using hf.tendstoUniformlyOn h
+
+/-- If a function admits a power series expansion within a set at `x`, then it is the locally
+uniform limit of the partial sums of this power series on the disk of convergence, i.e., `f (x + y)`
+is the locally uniform limit of `p.partialSum n y` there. -/
+theorem HasFPowerSeriesWithinOnBall.tendstoLocallyUniformlyOn
+    (hf : HasFPowerSeriesWithinOnBall f p s x r) :
+    TendstoLocallyUniformlyOn (fun n y => p.partialSum n y) (fun y => f (x + y)) atTop
+      ((x + ·)⁻¹' (insert x s) ∩ EMetric.ball (0 : E) r) := by
+  intro u hu y hy
+  rcases ENNReal.lt_iff_exists_nnreal_btwn.1 hy.2 with ⟨r', yr', hr'⟩
+  have : EMetric.ball (0 : E) r' ∈ 𝓝 y := IsOpen.mem_nhds EMetric.isOpen_ball yr'
+  refine ⟨(x + ·)⁻¹' (insert x s) ∩ EMetric.ball (0 : E) r', ?_, ?_⟩
+  · rw [nhdsWithin_inter_of_mem']
+    · exact inter_mem_nhdsWithin _ this
+    · apply mem_nhdsWithin_of_mem_nhds
+      apply Filter.mem_of_superset this (EMetric.ball_subset_ball hr'.le)
+  · simpa [Metric.emetric_ball_nnreal] using hf.tendstoUniformlyOn hr' u hu
 
 /-- If a function admits a power series expansion at `x`, then it is the locally uniform limit of
 the partial sums of this power series on the disk of convergence, i.e., `f (x + y)`
@@ -760,11 +1072,20 @@ is the locally uniform limit of `p.partialSum n y` there. -/
 theorem HasFPowerSeriesOnBall.tendstoLocallyUniformlyOn (hf : HasFPowerSeriesOnBall f p x r) :
     TendstoLocallyUniformlyOn (fun n y => p.partialSum n y) (fun y => f (x + y)) atTop
       (EMetric.ball (0 : E) r) := by
-  intro u hu x hx
-  rcases ENNReal.lt_iff_exists_nnreal_btwn.1 hx with ⟨r', xr', hr'⟩
-  have : EMetric.ball (0 : E) r' ∈ 𝓝 x := IsOpen.mem_nhds EMetric.isOpen_ball xr'
-  refine ⟨EMetric.ball (0 : E) r', mem_nhdsWithin_of_mem_nhds this, ?_⟩
-  simpa [Metric.emetric_ball_nnreal] using hf.tendstoUniformlyOn hr' u hu
+  rw [← hasFPowerSeriesWithinOnBall_univ] at hf
+  simpa using hf.tendstoLocallyUniformlyOn
+
+/-- If a function admits a power series expansion within a set at `x`, then it is the uniform limit
+of the partial sums of this power series on strict subdisks of the disk of convergence, i.e., `f y`
+is the uniform limit of `p.partialSum n (y - x)` there. -/
+theorem HasFPowerSeriesWithinOnBall.tendstoUniformlyOn' {r' : ℝ≥0}
+    (hf : HasFPowerSeriesWithinOnBall f p s x r) (h : (r' : ℝ≥0∞) < r) :
+    TendstoUniformlyOn (fun n y => p.partialSum n (y - x)) f atTop
+      (insert x s ∩ Metric.ball (x : E) r') := by
+  convert (hf.tendstoUniformlyOn h).comp fun y => y - x using 1
+  · simp [Function.comp_def]
+  · ext z
+    simp [dist_eq_norm]
 
 /-- If a function admits a power series expansion at `x`, then it is the uniform limit of the
 partial sums of this power series on strict subdisks of the disk of convergence, i.e., `f y`
@@ -772,18 +1093,17 @@ is the uniform limit of `p.partialSum n (y - x)` there. -/
 theorem HasFPowerSeriesOnBall.tendstoUniformlyOn' {r' : ℝ≥0} (hf : HasFPowerSeriesOnBall f p x r)
     (h : (r' : ℝ≥0∞) < r) :
     TendstoUniformlyOn (fun n y => p.partialSum n (y - x)) f atTop (Metric.ball (x : E) r') := by
-  convert (hf.tendstoUniformlyOn h).comp fun y => y - x using 1
-  · simp [(· ∘ ·)]
-  · ext z
-    simp [dist_eq_norm]
+  rw [← hasFPowerSeriesWithinOnBall_univ] at hf
+  simpa using hf.tendstoUniformlyOn' h
 
-/-- If a function admits a power series expansion at `x`, then it is the locally uniform limit of
-the partial sums of this power series on the disk of convergence, i.e., `f y`
+/-- If a function admits a power series expansion within a set at `x`, then it is the locally
+uniform limit of the partial sums of this power series on the disk of convergence, i.e., `f y`
 is the locally uniform limit of `p.partialSum n (y - x)` there. -/
-theorem HasFPowerSeriesOnBall.tendstoLocallyUniformlyOn' (hf : HasFPowerSeriesOnBall f p x r) :
+theorem HasFPowerSeriesWithinOnBall.tendstoLocallyUniformlyOn'
+    (hf : HasFPowerSeriesWithinOnBall f p s x r) :
     TendstoLocallyUniformlyOn (fun n y => p.partialSum n (y - x)) f atTop
-      (EMetric.ball (x : E) r) := by
-  have A : ContinuousOn (fun y : E => y - x) (EMetric.ball (x : E) r) :=
+      (insert x s ∩ EMetric.ball (x : E) r) := by
+  have A : ContinuousOn (fun y : E => y - x) (insert x s ∩ EMetric.ball (x : E) r) :=
     (continuous_id.sub continuous_const).continuousOn
   convert hf.tendstoLocallyUniformlyOn.comp (fun y : E => y - x) _ A using 1
   · ext z
@@ -791,17 +1111,65 @@ theorem HasFPowerSeriesOnBall.tendstoLocallyUniformlyOn' (hf : HasFPowerSeriesOn
   · intro z
     simp [edist_eq_coe_nnnorm, edist_eq_coe_nnnorm_sub]
 
-/-- If a function admits a power series expansion on a disk, then it is continuous there. -/
-protected theorem HasFPowerSeriesOnBall.continuousOn (hf : HasFPowerSeriesOnBall f p x r) :
-    ContinuousOn f (EMetric.ball x r) :=
+/-- If a function admits a power series expansion at `x`, then it is the locally uniform limit of
+the partial sums of this power series on the disk of convergence, i.e., `f y`
+is the locally uniform limit of `p.partialSum n (y - x)` there. -/
+theorem HasFPowerSeriesOnBall.tendstoLocallyUniformlyOn' (hf : HasFPowerSeriesOnBall f p x r) :
+    TendstoLocallyUniformlyOn (fun n y => p.partialSum n (y - x)) f atTop
+      (EMetric.ball (x : E) r) := by
+  rw [← hasFPowerSeriesWithinOnBall_univ] at hf
+  simpa using hf.tendstoLocallyUniformlyOn'
+
+/-- If a function admits a power series expansion within a set on a ball, then it is
+continuous there. -/
+protected theorem HasFPowerSeriesWithinOnBall.continuousOn
+    (hf : HasFPowerSeriesWithinOnBall f p s x r) :
+    ContinuousOn f (insert x s ∩ EMetric.ball x r) :=
   hf.tendstoLocallyUniformlyOn'.continuousOn <|
-    eventually_of_forall fun n =>
+    Eventually.of_forall fun n =>
       ((p.partialSum_continuous n).comp (continuous_id.sub continuous_const)).continuousOn
+
+/-- If a function admits a power series expansion on a ball, then it is continuous there. -/
+protected theorem HasFPowerSeriesOnBall.continuousOn (hf : HasFPowerSeriesOnBall f p x r) :
+    ContinuousOn f (EMetric.ball x r) := by
+  rw [← hasFPowerSeriesWithinOnBall_univ] at hf
+  simpa using hf.continuousOn
+
+protected theorem HasFPowerSeriesWithinOnBall.continuousWithinAt_insert
+    (hf : HasFPowerSeriesWithinOnBall f p s x r) :
+    ContinuousWithinAt f (insert x s) x := by
+  apply (hf.continuousOn.continuousWithinAt (x := x) (by simp [hf.r_pos])).mono_of_mem
+  exact inter_mem_nhdsWithin _ (EMetric.ball_mem_nhds x hf.r_pos)
+
+protected theorem HasFPowerSeriesWithinOnBall.continuousWithinAt
+    (hf : HasFPowerSeriesWithinOnBall f p s x r) :
+    ContinuousWithinAt f s x :=
+  hf.continuousWithinAt_insert.mono (subset_insert x s)
+
+protected theorem HasFPowerSeriesWithinAt.continuousWithinAt_insert
+    (hf : HasFPowerSeriesWithinAt f p s x) :
+    ContinuousWithinAt f (insert x s) x := by
+  rcases hf with ⟨r, hr⟩
+  apply hr.continuousWithinAt_insert
+
+protected theorem HasFPowerSeriesWithinAt.continuousWithinAt
+    (hf : HasFPowerSeriesWithinAt f p s x) :
+    ContinuousWithinAt f s x :=
+  hf.continuousWithinAt_insert.mono (subset_insert x s)
 
 protected theorem HasFPowerSeriesAt.continuousAt (hf : HasFPowerSeriesAt f p x) :
     ContinuousAt f x :=
   let ⟨_, hr⟩ := hf
   hr.continuousOn.continuousAt (EMetric.ball_mem_nhds x hr.r_pos)
+
+protected theorem AnalyticWithinAt.continuousWithinAt_insert (hf : AnalyticWithinAt 𝕜 f s x) :
+    ContinuousWithinAt f (insert x s) x :=
+  let ⟨_, hp⟩ := hf
+  hp.continuousWithinAt_insert
+
+protected theorem AnalyticWithinAt.continuousWithinAt (hf : AnalyticWithinAt 𝕜 f s x) :
+    ContinuousWithinAt f s x :=
+  hf.continuousWithinAt_insert.mono (subset_insert x s)
 
 protected theorem AnalyticAt.continuousAt (hf : AnalyticAt 𝕜 f x) : ContinuousAt f x :=
   let ⟨_, hp⟩ := hf
@@ -863,9 +1231,9 @@ theorem Asymptotics.IsBigO.continuousMultilinearMap_apply_eq_zero {n : ℕ} {p :
   cases' n with n
   · exact norm_eq_zero.mp (by
       -- Porting note: the symmetric difference of the `simpa only` sets:
-      -- added `Nat.zero_eq, zero_add, pow_one`
+      -- added `zero_add, pow_one`
       -- removed `zero_pow, Ne.def, Nat.one_ne_zero, not_false_iff`
-      simpa only [Nat.zero_eq, fin0_apply_norm, norm_eq_zero, norm_zero, zero_add, pow_one,
+      simpa only [fin0_apply_norm, norm_eq_zero, norm_zero, zero_add, pow_one,
         mul_zero, norm_le_zero_iff] using ht 0 (δε (Metric.mem_ball_self δ_pos)))
   · refine Or.elim (Classical.em (y = 0))
       (fun hy => by simpa only [hy] using p.map_zero) fun hy => ?_
@@ -902,7 +1270,7 @@ theorem Asymptotics.IsBigO.continuousMultilinearMap_apply_eq_zero {n : ℕ} {p :
         rw [← mul_assoc]
         simp [norm_mul, mul_pow]
       _ ≤ 0 + ε := by
-        rw [inv_mul_cancel (norm_pos_iff.mp k_pos)]
+        rw [inv_mul_cancel₀ (norm_pos_iff.mp k_pos)]
         simpa using h₃.le
 
 /-- If a formal multilinear series `p` represents the zero function at `x : E`, then the
@@ -930,7 +1298,7 @@ theorem HasFPowerSeriesAt.eq_zero {p : FormalMultilinearSeries 𝕜 𝕜 E} {x :
 /-- One-dimensional formal multilinear series representing the same function are equal. -/
 theorem HasFPowerSeriesAt.eq_formalMultilinearSeries {p₁ p₂ : FormalMultilinearSeries 𝕜 𝕜 E}
     {f : 𝕜 → E} {x : 𝕜} (h₁ : HasFPowerSeriesAt f p₁ x) (h₂ : HasFPowerSeriesAt f p₂ x) : p₁ = p₂ :=
-  sub_eq_zero.mp (HasFPowerSeriesAt.eq_zero (by simpa only [sub_self] using h₁.sub h₂))
+  sub_eq_zero.mp (HasFPowerSeriesAt.eq_zero (x := x) (by simpa only [sub_self] using h₁.sub h₂))
 
 theorem HasFPowerSeriesAt.eq_formalMultilinearSeries_of_eventually
     {p q : FormalMultilinearSeries 𝕜 𝕜 E} {f g : 𝕜 → E} {x : 𝕜} (hp : HasFPowerSeriesAt f p x)
@@ -1007,10 +1375,10 @@ The definition is such that `p.changeOriginSeriesTerm k l s hs (fun _ ↦ x) (fu
 p (k + l) (s.piecewise (fun _ ↦ x) (fun _ ↦ y))`
 -/
 def changeOriginSeriesTerm (k l : ℕ) (s : Finset (Fin (k + l))) (hs : s.card = l) :
-    E[×l]→L[𝕜] E[×k]→L[𝕜] F := by
+    E[×l]→L[𝕜] E[×k]→L[𝕜] F :=
   let a := ContinuousMultilinearMap.curryFinFinset 𝕜 E F hs
     (by erw [Finset.card_compl, Fintype.card_fin, hs, add_tsub_cancel_right])
-  exact a (p (k + l))
+  a (p (k + l))
 
 theorem changeOriginSeriesTerm_apply (k l : ℕ) (s : Finset (Fin (k + l))) (hs : s.card = l)
     (x y : E) :
@@ -1284,11 +1652,11 @@ variable {𝕜}
 
 theorem AnalyticAt.eventually_analyticAt {f : E → F} {x : E} (h : AnalyticAt 𝕜 f x) :
     ∀ᶠ y in 𝓝 x, AnalyticAt 𝕜 f y :=
-(isOpen_analyticAt 𝕜 f).mem_nhds h
+  (isOpen_analyticAt 𝕜 f).mem_nhds h
 
 theorem AnalyticAt.exists_mem_nhds_analyticOn {f : E → F} {x : E} (h : AnalyticAt 𝕜 f x) :
     ∃ s ∈ 𝓝 x, AnalyticOn 𝕜 f s :=
-h.eventually_analyticAt.exists_mem
+  h.eventually_analyticAt.exists_mem
 
 /-- If we're analytic at a point, we're analytic in a nonempty ball -/
 theorem AnalyticAt.exists_ball_analyticOn {f : E → F} {x : E} (h : AnalyticAt 𝕜 f x) :
@@ -1313,7 +1681,7 @@ theorem hasFPowerSeriesAt_iff :
   simp only [Metric.eventually_nhds_iff]
   rintro ⟨r, r_pos, h⟩
   refine ⟨p.radius ⊓ r.toNNReal, by simp, ?_, ?_⟩
-  · simp only [r_pos.lt, lt_inf_iff, ENNReal.coe_pos, Real.toNNReal_pos, and_true_iff]
+  · simp only [r_pos.lt, lt_inf_iff, ENNReal.coe_pos, Real.toNNReal_pos, and_true]
     obtain ⟨z, z_pos, le_z⟩ := NormedField.exists_norm_lt 𝕜 r_pos.lt
     have : (‖z‖₊ : ENNReal) ≤ p.radius := by
       simp only [dist_zero_right] at h
@@ -1334,3 +1702,6 @@ theorem hasFPowerSeriesAt_iff' :
   simp_rw [add_sub_cancel_left]
 
 end
+
+/- TODO: move the part on `ChangeOrigin` to another file. -/
+set_option linter.style.longFile 1800
