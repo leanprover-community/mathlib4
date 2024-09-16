@@ -84,7 +84,7 @@ theorem apply_lt_nfpFamily_iff [Nonempty ι] (H : ∀ i, IsNormal (f i)) {a b} :
   ⟨fun h =>
     lt_nfpFamily.2 <|
       let ⟨l, hl⟩ := lt_sup.1 <| h <| Classical.arbitrary ι
-      ⟨l, ((H _).id_le b).trans_lt hl⟩,
+      ⟨l, ((H _).le_apply b).trans_lt hl⟩,
     apply_lt_nfpFamily H⟩
 
 theorem nfpFamily_le_apply [Nonempty ι] (H : ∀ i, IsNormal (f i)) {a b} :
@@ -108,13 +108,13 @@ theorem nfpFamily_fp {i} (H : IsNormal (f i)) (a) :
   rw [@IsNormal.sup.{u, v, v} _ H _ _ ⟨[]⟩]
   apply le_antisymm <;> refine Ordinal.sup_le fun l => ?_
   · exact le_sup _ (i::l)
-  · exact (H.id_le _).trans (le_sup _ _)
+  · exact (H.le_apply _).trans (le_sup _ _)
 
 theorem apply_le_nfpFamily [hι : Nonempty ι] {f : ι → Ordinal → Ordinal} (H : ∀ i, IsNormal (f i))
     {a b} : (∀ i, f i b ≤ nfpFamily.{u, v} f a) ↔ b ≤ nfpFamily.{u, v} f a := by
   refine ⟨fun h => ?_, fun h i => ?_⟩
   · cases' hι with i
-    exact ((H i).id_le b).trans (h i)
+    exact ((H i).le_apply b).trans (h i)
   rw [← nfpFamily_fp (H i)]
   exact (H i).monotone h
 
@@ -173,7 +173,7 @@ theorem le_iff_derivFamily (H : ∀ i, IsNormal (f i)) {a} :
     (∀ i, f i a ≤ a) ↔ ∃ o, derivFamily.{u, v} f o = a :=
   ⟨fun ha => by
     suffices ∀ (o) (_ : a ≤ derivFamily.{u, v} f o), ∃ o, derivFamily.{u, v} f o = a from
-      this a ((derivFamily_isNormal _).id_le _)
+      this a ((derivFamily_isNormal _).le_apply _)
     intro o
     induction' o using limitRecOn with o IH o l IH
     · intro h₁
@@ -288,7 +288,7 @@ theorem apply_le_nfpBFamily (ho : o ≠ 0) (H : ∀ i hi, IsNormal (f i hi)) {a 
     (∀ i hi, f i hi b ≤ nfpBFamily.{u, v} o f a) ↔ b ≤ nfpBFamily.{u, v} o f a := by
   refine ⟨fun h => ?_, fun h i hi => ?_⟩
   · have ho' : 0 < o := Ordinal.pos_iff_ne_zero.2 ho
-    exact ((H 0 ho').id_le b).trans (h 0 ho')
+    exact ((H 0 ho').le_apply b).trans (h 0 ho')
   · rw [← nfpBFamily_fp (H i hi)]
     exact (H i hi).monotone h
 
@@ -420,7 +420,7 @@ theorem IsNormal.nfp_fp {f} (H : IsNormal f) : ∀ a, f (nfp f a) = nfp f a :=
   @nfpFamily_fp Unit (fun _ => f) Unit.unit H
 
 theorem IsNormal.apply_le_nfp {f} (H : IsNormal f) {a b} : f b ≤ nfp f a ↔ b ≤ nfp f a :=
-  ⟨le_trans (H.id_le _), fun h => by simpa only [H.nfp_fp] using H.le_iff.2 h⟩
+  ⟨le_trans (H.le_apply _), fun h => by simpa only [H.nfp_fp] using H.le_iff.2 h⟩
 
 theorem nfp_eq_self {f : Ordinal → Ordinal} {a} (h : f a = a) : nfp f a = a :=
   nfpFamily_eq_self fun _ => h
