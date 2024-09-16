@@ -13,7 +13,8 @@ import Mathlib.Topology.Algebra.InfiniteSum.Module
 This file defines vector valued measures, which are σ-additive functions from a set to an add monoid
 `M` such that it maps the empty set and non-measurable sets to zero. In the case
 that `M = ℝ`, we called the vector measure a signed measure and write `SignedMeasure α`.
-Similarly, when `M = ℂ`, we call the measure a complex measure and write `ComplexMeasure α`.
+Similarly, when `M = ℂ`, we call the measure a complex measure and write `ComplexMeasure α`
+(defined in `MeasureTheory/Measure/Complex`).
 
 ## Main definitions
 
