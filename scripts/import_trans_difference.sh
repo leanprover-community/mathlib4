@@ -34,9 +34,9 @@ then
   shift
 fi
 
-commit1=${1:-$(git rev-parse HEAD)}
+commit1="${1:-"$(git rev-parse HEAD)"}"
 
-commit2=${2:-$(git merge-base master ${commit1})}
+commit2="${2:-"$(git merge-base master ${commit1})"}"
 
 #printf 'commit1: %s\ncommit2: %s\n' "$commit1" "$commit2"
 
