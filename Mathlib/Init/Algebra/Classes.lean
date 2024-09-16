@@ -13,8 +13,6 @@ The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
 We intend to move all the content of these files out into the main `Mathlib` directory structure.
 Contributions assisting with this are appreciated.
 
-(Jeremy Tan: The only non-deprecated thing in this file now is `IsSymmOp`)
-
 # Unbundled algebra classes
 
 These classes were part of an incomplete refactor described
@@ -28,22 +26,6 @@ set_option linter.deprecated false
 universe u v
 
 variable {α : Sort u} {β : Sort v}
-
-/-- `IsSymmOp op` where `op : α → α → β` says that `op` is a symmetric operation,
-i.e. `op a b = op b a`.
-It is the natural generalisation of `Std.Commutative` (`β = α`) and `IsSymm` (`β = Prop`). -/
-class IsSymmOp (op : α → α → β) : Prop where
-  /-- A symmetric operation satisfies `op a b = op b a`. -/
-  symm_op : ∀ a b, op a b = op b a
-
-instance (priority := 100) isSymmOp_of_isCommutative (α : Sort u) (op : α → α → α)
-    [Std.Commutative op] : IsSymmOp op where symm_op := Std.Commutative.comm
-
-instance (priority := 100) isSymmOp_of_isSymm (α : Sort u) (op : α → α → Prop) [IsSymm α op] :
-    IsSymmOp op where symm_op a b := propext <| Iff.intro (IsSymm.symm a b) (IsSymm.symm b a)
-
-theorem IsSymmOp.flip_eq (op : α → α → β) [IsSymmOp op] : flip op = op :=
-  funext fun a ↦ funext fun b ↦ (IsSymmOp.symm_op a b).symm
 
 @[deprecated (since := "2024-09-11")]
 class IsLeftCancel (α : Sort u) (op : α → α → α) : Prop where
