@@ -12,6 +12,11 @@ import Mathlib.RingTheory.Smooth.StandardSmooth
 In this file we define standard smooth ring homomorphisms and show their
 meta properties.
 
+## Notes
+
+This contribution was created as part of the AIM workshop "Formalizing algebraic geometry"
+in June 2024.
+
 -/
 
 universe t t' w w' u v
