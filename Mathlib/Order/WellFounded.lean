@@ -175,7 +175,7 @@ theorem StrictMono.id_le [WellFoundedLT β] {f : β → β} (hf : StrictMono f) 
 theorem StrictMono.apply_le [WellFoundedGT β] {f : β → β} (hf : StrictMono f) : ∀ x, f x ≤ x :=
   StrictMono.le_apply (β := βᵒᵈ) hf.dual
 
-/-- A strict monotonic function `f` on a dual well order satisfies `f x ≤ x` for all `x`. -/
+/-- A strictly monotone function `f` on a cowell-order satisfies `f x ≤ x` for all `x`. -/
 theorem StrictMono.le_id [WellFoundedGT β] {f : β → β} (hf : StrictMono f) : f ≤ id :=
   StrictMono.id_le (β := βᵒᵈ) hf.dual
 
