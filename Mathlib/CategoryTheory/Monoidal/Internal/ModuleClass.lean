@@ -45,15 +45,15 @@ instance Ring_of_Mon_Class (A : (ModuleCat.{u} R)) [Mon_Class A] : Ring A :=
     one := (η : _ ⟶ A) (1 : R)
     mul := fun x y => (μ : _ ⟶ A) (x ⊗ₜ y)
     one_mul := fun x => by
-      have := LinearMap.congr_fun (Mon_Class.one_mul A) ((1 : R) ⊗ₜ x)
+      have := LinearMap.congr_fun (Mon_Class.one_mul (X := A)) ((1 : R) ⊗ₜ x)
       convert this
       rw [MonoidalCategory.leftUnitor_hom_apply, one_smul]
     mul_one := fun x => by
-      have := LinearMap.congr_fun (Mon_Class.mul_one A) (x ⊗ₜ (1 : R))
+      have := LinearMap.congr_fun (Mon_Class.mul_one (X := A)) (x ⊗ₜ (1 : R))
       convert this
       erw [MonoidalCategory.leftUnitor_hom_apply, one_smul]
     mul_assoc := fun x y z => by
-      have := LinearMap.congr_fun (Mon_Class.mul_assoc A) (x ⊗ₜ y ⊗ₜ z)
+      have := LinearMap.congr_fun (Mon_Class.mul_assoc (X := A)) (x ⊗ₜ y ⊗ₜ z)
       convert this
     left_distrib := fun x y z => by
       have := (μ : _ ⟶ A).map_add (x ⊗ₜ y) (x ⊗ₜ z)
@@ -75,17 +75,17 @@ instance Algebra_of_Mon_Class (A : (ModuleCat.{u} R)) [Mon_Class A] : Algebra R 
     map_zero' := (η : _ ⟶ A).map_zero
     map_one' := rfl
     map_mul' := fun x y => by
-      have h := LinearMap.congr_fun (Mon_Class.one_mul A).symm (x ⊗ₜ (η : _ ⟶ A) y)
+      have h := LinearMap.congr_fun (Mon_Class.one_mul (X := A)).symm (x ⊗ₜ (η : _ ⟶ A) y)
       rwa [MonoidalCategory.leftUnitor_hom_apply, ← (η : _ ⟶ A).map_smul] at h
     commutes' := fun r a => by
       dsimp
-      have h₁ := LinearMap.congr_fun (Mon_Class.one_mul A) (r ⊗ₜ a)
-      have h₂ := LinearMap.congr_fun (Mon_Class.mul_one A) (a ⊗ₜ r)
+      have h₁ := LinearMap.congr_fun (Mon_Class.one_mul (X := A)) (r ⊗ₜ a)
+      have h₂ := LinearMap.congr_fun (Mon_Class.mul_one (X := A)) (a ⊗ₜ r)
       exact h₁.trans h₂.symm
-    smul_def' := fun r a => (LinearMap.congr_fun (Mon_Class.one_mul A) (r ⊗ₜ a)).symm }
+    smul_def' := fun r a => (LinearMap.congr_fun (Mon_Class.one_mul (X := A)) (r ⊗ₜ a)).symm }
 
 @[simp]
-theorem algebraMap (A : (ModuleCat.{u} R)) [Mon_Class A] (r : R) : algebraMap R A r = (η : _ ⟶ A) r :=
+theorem algebraMap (A : (ModuleCat.{u} R)) [Mon_Class A] (r : R) : algebraMap R A r = η[A] r :=
   rfl
 
 /-- Converting a monoid object in `ModuleCat R` to a bundled algebra.
@@ -111,7 +111,7 @@ instance inverseObj (A : AlgebraCat.{u} R) :
     Mon_Class (ModuleCat.of R A) where
   one := Algebra.linearMap R A
   mul := LinearMap.mul' R A
-  one_mul' := by
+  one_mul := by
     -- Porting note: `ext` did not pick up `TensorProduct.ext`
     refine TensorProduct.ext <| LinearMap.ext_ring <| LinearMap.ext fun x => ?_
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
@@ -124,7 +124,7 @@ instance inverseObj (A : AlgebraCat.{u} R) :
     -- Porting note: because `dsimp` is not effective, `rw` needs to be changed to `erw`
     erw [LinearMap.mul'_apply, MonoidalCategory.leftUnitor_hom_apply, ← Algebra.smul_def]
     erw [id_apply]
-  mul_one' := by
+  mul_one := by
     -- Porting note: `ext` did not pick up `TensorProduct.ext`
     refine TensorProduct.ext <| LinearMap.ext fun x => LinearMap.ext_ring ?_
     -- Porting note: this `dsimp` does nothing
@@ -138,7 +138,7 @@ instance inverseObj (A : AlgebraCat.{u} R) :
     erw [LinearMap.mul'_apply, ModuleCat.MonoidalCategory.rightUnitor_hom_apply, ← Algebra.commutes,
       ← Algebra.smul_def]
     erw [id_apply]
-  mul_assoc' := by
+  mul_assoc := by
     set_option tactic.skipAssignedInstances false in
     -- Porting note: `ext` did not pick up `TensorProduct.ext`
     refine TensorProduct.ext <| TensorProduct.ext <| LinearMap.ext fun x => LinearMap.ext fun y =>

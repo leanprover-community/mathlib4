@@ -38,28 +38,65 @@ variable [BraidedCategory C]
 open scoped Mon_Class Comon_Class
 
 class Bimon_Class (M : C) extends Mon_Class M, Comon_Class M where
-  mul_comul' : μ ≫ Δ = (Δ ⊗ Δ) ≫ tensor_μ C (M, M) (M, M) ≫ (μ ⊗ μ) := by aesop_cat
-  one_comul' : (η ≫ Δ : 𝟙_ C ⟶ M ⊗ M) = η := by aesop_cat
-  mul_counit' : (μ ≫ ε : M ⊗ M ⟶ 𝟙_ C) = ε := by aesop_cat
-  one_counit' : (η : 𝟙_ C ⟶ M) ≫ ε = 𝟙 (𝟙_ C) := by aesop_cat
+  mul_comul : μ ≫ Δ = (Δ[M] ⊗ Δ[M]) ≫ tensor_μ M M M M ≫ (μ ⊗ μ) := by aesop_cat
+  one_comul : (η ≫ Δ : 𝟙_ C ⟶ M ⊗ M) = η := by aesop_cat
+  mul_counit : (μ ≫ ε : M ⊗ M ⟶ 𝟙_ C) = ε := by aesop_cat
+  one_counit : (η : 𝟙_ C ⟶ M) ≫ ε = 𝟙 (𝟙_ C) := by aesop_cat
 
 namespace Bimon_Class
 
-show_panel_widgets [local Mathlib.Tactic.Widget.StringDiagram]
+-- show_panel_widgets [local Mathlib.Tactic.Widget.StringDiagram]
+
+attribute [reassoc (attr := simp)] mul_comul one_comul mul_counit one_counit
 
 variable (M : C) [Bimon_Class M]
 
-@[reassoc (attr := simp)]
-theorem mul_comul : μ ≫ Δ = (Δ ⊗ Δ) ≫ tensor_μ C (M, M) (M, M) ≫ (μ ⊗ μ) := mul_comul'
+-- @[reassoc (attr := simp)]
+-- theorem mul_comul : μ ≫ Δ = (Δ[M] ⊗ Δ[M]) ≫ tensor_μ C (M, M) (M, M) ≫ (μ ⊗ μ) := mul_comul'
 
-@[reassoc (attr := simp)]
-theorem one_comul : (η ≫ Δ : 𝟙_ C ⟶ M ⊗ M) = η := one_comul'
+-- @[reassoc (attr := simp)]
+-- theorem one_comul : (η ≫ Δ : 𝟙_ C ⟶ M ⊗ M) = η := one_comul'
 
-@[reassoc (attr := simp)]
-theorem mul_counit : (μ ≫ ε : M ⊗ M ⟶ 𝟙_ C) = ε := mul_counit'
+-- @[reassoc (attr := simp)]
+-- theorem mul_counit : (μ ≫ ε : M ⊗ M ⟶ 𝟙_ C) = ε := mul_counit'
 
-@[reassoc (attr := simp)]
-theorem one_counit : (η : 𝟙_ C ⟶ M) ≫ ε = 𝟙 (𝟙_ C) := one_counit'
+-- @[reassoc (attr := simp)]
+-- theorem one_counit : (η : 𝟙_ C ⟶ M) ≫ ε = 𝟙 (𝟙_ C) := one_counit'
+
+@[simps!]
+instance (M : C) [Bimon_Class M] : Comon_Class (Mon_Cat.mk M) where
+  counit := { hom := (ε : M ⟶ 𝟙_ C) }
+  comul := { hom := (Δ : M ⟶ M ⊗ M) }
+
+@[simps!]
+instance (M : C) [Bimon_Class M] : Mon_Class (Comon_Cat.mk M) where
+  one := { hom := (η : 𝟙_ C ⟶ M) }
+  mul := { hom := (μ : M ⊗ M ⟶ M) }
+
+/-- A morphism of monoid objects. -/
+@[ext]
+structure Hom (M N : C) [Bimon_Class M] [Bimon_Class N] where
+  hom : M ⟶ N
+  one_hom : η ≫ hom = η := by aesop_cat
+  mul_hom : μ ≫ hom = (hom ⊗ hom) ≫ μ := by aesop_cat
+  hom_counit : hom ≫ ε = ε := by aesop_cat
+  hom_comul : hom ≫ Δ = Δ ≫ (hom ⊗ hom) := by aesop_cat
+
+attribute [reassoc (attr := simp)] Hom.one_hom Hom.mul_hom Hom.hom_counit Hom.hom_comul
+
+/-- The identity morphism on a monoid object. -/
+@[simps]
+def Hom.id (M : C) [Bimon_Class M] : Hom M M where
+  hom := 𝟙 M
+
+instance homInhabited (M : C) [Bimon_Class M] : Inhabited (Hom M M) :=
+  ⟨.id M⟩
+
+/-- Composition of morphisms of monoid objects. -/
+@[simps]
+def Hom.comp {M N O : C} [Bimon_Class M] [Bimon_Class N] [Bimon_Class O]
+    (f : Hom M N) (g : Hom N O) : Hom M O where
+  hom := f.hom ≫ g.hom
 
 end Bimon_Class
 
@@ -77,23 +114,15 @@ variable {C}
 
 instance : Category (Bimon_Cat C) := inferInstanceAs (Category (Comon_Cat (Mon_Cat C)))
 
-@[simps!]
-instance (M : C) [Bimon_Class M] : Comon_Class (Mon_Cat.mk M) where
-  counit := { hom := (ε : M ⟶ 𝟙_ C) }
-  comul := { hom := (Δ : M ⟶ M ⊗ M) }
 
-@[simps!]
-instance (M : C) [Bimon_Class M] : Mon_Class (Comon_Cat.mk M) where
-  one := { hom := (η : 𝟙_ C ⟶ M) }
-  mul := { hom := (μ : M ⊗ M ⟶ M) }
 
 def mk (M : C) [Bimon_Class M] : Bimon_Cat C where
   X := Mon_Cat.mk M
 
 @[ext] lemma ext {X Y : Bimon_Cat C} {f g : X ⟶ Y} (w : f.hom.hom = g.hom.hom) : f = g :=
-  Comon_Class.Hom.ext _ _ (Mon_Class.Hom.ext _ _ w)
+  Comon_ClassHom.ext (Mon_ClassHom.ext w)
 
-@[simp] theorem id_hom' (M : Bimon_Cat C) : Comon_Class.Hom.hom (𝟙 M) = 𝟙 M.X := rfl
+@[simp] theorem id_hom' (M : Bimon_Cat C) : Comon_ClassHom.hom (𝟙 M) = 𝟙 M.X := rfl
 
 @[simp]
 theorem comp_hom' {M N K : Bimon_Cat C} (f : M ⟶ N) (g : N ⟶ K) : (f ≫ g).hom = f.hom ≫ g.hom :=
@@ -102,144 +131,211 @@ theorem comp_hom' {M N K : Bimon_Cat C} (f : M ⟶ N) (g : N ⟶ K) : (f ≫ g).
 variable (C)
 
 /-- The forgetful functor from bimonoid objects to monoid objects. -/
-abbrev toMon_Class : Bimon_Cat C ⥤ Mon_Cat C := Comon_Cat.forget (Mon_Cat C)
+abbrev toMonCat : Bimon_Cat C ⥤ Mon_Cat C := Comon_Cat.forget (Mon_Cat C)
 
 /-- The forgetful functor from bimonoid objects to the underlying category. -/
-def forget : Bimon_Cat C ⥤ C := toMon_Class C ⋙ Mon_Cat.forget C
+def forget : Bimon_Cat C ⥤ C := toMonCat C ⋙ Mon_Cat.forget C
 
 @[simp]
-theorem toMon_Classforget : toMon_Class C ⋙ Mon_Cat.forget C = forget C := rfl
+theorem toMonCatforget : toMonCat C ⋙ Mon_Cat.forget C = forget C := rfl
 
 /-- The forgetful functor from bimonoid objects to comonoid objects. -/
 @[simps!]
-def toComon_Class : Bimon_Cat C ⥤ Comon_Cat C :=
+def toComonCat : Bimon_Cat C ⥤ Comon_Cat C :=
   (Mon_Cat.forgetMonoidal C).toOplaxMonoidalFunctor.mapComonCat
 
--- instance (M : Bimon_Cat C) : Comon_Class (toComon_Class C ⋙ forget C) M := inferInstance
-
 @[simp]
-theorem toComon_Classforget : toComon_Class C ⋙ Comon_Cat.forget C = forget C := rfl
+theorem toComonCat_forget : toComonCat C ⋙ Comon_Cat.forget C = forget C := rfl
 
 open scoped Mon_Class Comon_Class
 
+@[simps! (config := {isSimp := false})]
+def Comon_ClassXX (M : Bimon_Cat C) : Comon_Class M.X.X :=
+  inferInstanceAs (Comon_Class (((toComonCat C).obj M).X))
+
+-- attribute [local instance] Comon_ClassXX in
+-- theorem Comon_ClassXX_counit (M : Bimon_Cat C) : (ε : M.X.X ⟶ _) = (ε : M.X ⟶ _).hom := by
+--   -- change _ = _ ≫ _
+--   change _ ≫ _ = _
+--   simp
+
+-- @[simps?]
+-- instance (M : Bimon_Cat C) : Comon_Class M.X.X where
+--   counit := ε[M.X].hom
+--   comul := Δ[M.X].hom
+--   counit_comul' := by
+--     rw [← Comon_ClassXX_counit, ← Comon_ClassXX_comul, Comon_Class.counit_comul]
+--   comul_counit' := by
+--     rw [← Comon_ClassXX_counit, ← Comon_ClassXX_comul, Comon_Class.comul_counit]
+--   comul_assoc' := by
+--     simp_rw [← Comon_ClassXX_comul, Comon_Class.comul_assoc]
+
+-- attribute [local instance] Comon_ClassXX in
+@[simps! (config := {isSimp := false}) comul counit]
+-- attribute [local simp] Bimon_Cat.instComon_ClassXXMon_Cat in
+instance isBimon_Class (M : Bimon_Cat C) : Bimon_Class M.X.X where
+  counit := ε[M.X].hom
+  comul := Δ[M.X].hom
+  counit_comul := by
+    rw [← Comon_ClassXX_counit, ← Comon_ClassXX_comul]
+    convert Comon_Class.counit_comul
+  comul_counit := by
+    rw [← Comon_ClassXX_counit, ← Comon_ClassXX_comul]
+    convert Comon_Class.comul_counit
+  comul_assoc := by
+    simp_rw [← Comon_ClassXX_comul, Comon_Class.comul_assoc]
+  -- one := _
+  -- mul := _
+  -- one_mul' := _
+  -- mul_one' := _
+  -- mul_assoc' := _
+  -- __ := inferInstanceAs (Comon_Class (((toComonCat C).obj M).X))
+  -- counit := ε[M.X.X]
+  -- comul := _
+  -- counit_comul' := _
+  -- comul_counit' := _
+  -- comul_assoc' := _
+  -- mul_comul' := by
+  --   simp
+  -- one_comul' := _
+  -- mul_counit' := _
+  -- one_counit' := _
+
+-- theorem aaaa (M : Bimon_Cat C) : (η : _ ⟶ M.X.X) = (η : _ ⟶ M.X.X) := by
+-- change _ = _ ≫ _
+--   rfl
+
+/-- The object level part of the forward direction of
+`Comon_Cat (Mon_Cat C) ≌ Mon_Cat (Comon_Cat C)` -/
 @[simps!]
-instance (M : Bimon_Cat C) : Comon_Class M.X.X := inferInstanceAs (Comon_Class (((toComon_Class C).obj M).X))
-
--- @[simps!?]
-instance (M : Bimon_Cat C) : Bimon_Class M.X.X where
-
--- @[simp]
--- theorem toComon_Classcounit  (M : Bimon_Cat C)  :
---     (ε : M.X.X  ⟶ _) = (ε : M.X ⟶ _).hom := by
---   erw [OplaxMonoidalFunctor.instComon_ClassObj_counit]
---   simp
-
--- @[simp]
--- theorem toComon_Classcomul (M : Bimon_Cat C)  :
---     (Δ : M.X.X ⟶ _) = (Δ : M.X ⟶ _).hom := by
---   erw [OplaxMonoidalFunctor.instComon_ClassObj_comul]
---   simp
-
-/-- The object level part of the forward direction of `Comon_Class (Mon_Class C) ≌ Mon_Class (Comon_Class C)` -/
-def toMon_ClassComon_Classobj (M : C) [Bimon_Class M] : Mon_Cat (Comon_Cat C) where
+def toMonCatComonCatObj (M : C) [Bimon_Class M] : Mon_Cat (Comon_Cat C) where
   X := Comon_Cat.mk M
 
-attribute [simps!] toMon_ClassComon_Classobj -- We add this after the fact to avoid a timeout.
+example {M N : Bimon_Cat C} (f : M ⟶ N) : ((toComonCat C).map f).hom = f.hom.hom := by
+  rfl
 
-/-- The forward direction of `Comon_Class (Mon_Class C) ≌ Mon_Class (Comon_Class C)` -/
-@[simps]
-def toMon_ClassComon_Class : Bimon_Cat C ⥤ Mon_Cat (Comon_Cat C) where
-  obj M := toMon_ClassComon_Classobj C M.X.X
-  map f :=
-  { hom := (toComon_Class C).map f }
+variable {M N : Bimon_Cat C} (f : M ⟶ N)  in
 
--- instance (M : C) [Bimon_Class M] : Mon_Class M := inferInstance
---   inferInstanceAs (Mon_Class ((Comon_Cat.forgetMonoidal C).obj (Comon_Cat.mk M)))
-
-@[simps!]
-instance (M : (Comon_Cat C)) [Mon_Class M] : Mon_Class M.X :=
-  inferInstanceAs (Mon_Class ((Comon_Cat.forgetMonoidal C).obj M))
+-- set_option diagnostics true
+-- example {M N : Bimon_Cat C} (f : M ⟶ N) : f.hom.hom ≫ ε = ε := by
+--   simpa using ((toComonCat C).map f).hom_counit
 
 
+-- #exit
+-- attribute [simps!] toMonCatComonCatObj -- We add this after the fact to avoid a timeout.
 
+/-- The forward direction of `Comon_Cat (Mon_Cat C) ≌ Mon_Cat (Comon_Cat C)` -/
+-- @[simps!? obj_X_X map_hom_hom]
+def toMonCatComonCat : Bimon_Cat C ⥤ Mon_Cat (Comon_Cat C) where
+  obj M := toMonCatComonCatObj C M.X.X
+  map f := {
+    hom := Comon_Cat.mkHom {
+      hom := f.hom.hom
+      hom_counit := by simpa [Comon_ClassXX_counit] using ((toComonCat C).map f).hom_counit
+      hom_comul := by simpa [Comon_ClassXX_comul] using ((toComonCat C).map f).hom_comul } }
 
--- @[simp]
--- theorem MonCatComonCatOne (M : C) [Bimon_Class M] :
---     (η : 𝟙_ C ⟶ M) = (η : 𝟙_ (Comon_Cat C) ⟶ (Comon_Cat.mk M)).hom := rfl
-  -- calc
-  --   _ = 𝟙 (𝟙_ C) ≫ (η : 𝟙_ (Comon_Cat C) ⟶ (Comon_Cat.mk M)).hom := rfl
-  --   _ = _ := by simp
+def toMonCatComonCatObjXX (M : Bimon_Cat C) : ((toMonCatComonCat C).obj M).X.X ≅ M.X.X :=
+  Iso.refl _
 
--- @[simp]
--- theorem MonCatComonCatmul (M : C) [Bimon_Class M] :
---     (μ : M ⊗ M ⟶ M) = (μ :  (Comon_Cat.mk M) ⊗  (Comon_Cat.mk M) ⟶  (Comon_Cat.mk M)).hom :=
---   calc
---     _ = 𝟙 (M ⊗ M) ≫ (μ : (Comon_Cat.mk M) ⊗  (Comon_Cat.mk M) ⟶  (Comon_Cat.mk M)).hom := rfl
---     _ = _ := by simp
+example {X₁ X₂ : Comon_Cat C} (f : X₁ ⟶ X₂) (X : Comon_Cat C) : (f ▷ X).hom = f.hom ▷ X.X := by
+  rfl
 
--- @[simp]
--- theorem MonCatComonCatOne (M : Mon_Cat (Comon_Cat C)) :
---     (η : 𝟙_ (Comon_Cat C) ⟶ M.X).hom  = (η : 𝟙_ C ⟶ M.X.X) :=
---   calc
---     _ = 𝟙 (𝟙_ C) ≫ (η : 𝟙_ (Comon_Cat C) ⟶ M.X).hom := by simp
---     _ = _ := rfl
+-- set_option trace.profiler true in
+@[simps! (config := {isSimp := false}) one mul]
+instance (M : Comon_Cat C) [Mon_Class M] : Mon_Class M.X where
+  one := η[M].hom
+  mul := μ[M].hom
+  one_mul := show ((η[M] ▷ M) ≫ μ[M]).hom = (λ_ M.X).hom from by rw [Mon_Class.one_mul]; simp
+  mul_one := show (M ◁ η ≫ μ).hom = (ρ_ M.X).hom from by rw [Mon_Class.mul_one]; simp
+  mul_assoc := show (μ ▷ M ≫ μ).hom = (α_ M.X M.X M.X).hom ≫ (M ◁ μ ≫ μ).hom from by
+    rw [Mon_Class.mul_assoc]
+    simp only [Comon_Class.instMonoidalCategoryComon_CatOfBraidedCategory_tensorObj_X,
+      Comon_Cat.comp_hom',
+      Comon_Class.instMonoidalCategoryComon_CatOfBraidedCategory_associator_hom_hom,
+      Comon_Class.instMonoidalCategoryComon_CatOfBraidedCategory_whiskerLeft_hom]
 
--- instance (M : C) [Bimon_Class M] : Comon_Class (Mon_Cat.mk M.X) where
---   counit :=
---   { hom := (ε : M.X ⟶ _) }
---   comul :=
---   { hom := (Δ : M.X ⟶ _),
---     mul_hom := by dsimp; simp [tensor_μ] }
-
-
--- instance (M : (Comon_Cat C)) [Mon_Class M] : Comon_Class (Mon_Cat.mk M.X) where
---   counit := (ε : M.X ⟶ _)
---   comul := (Δ : M.X ⟶ _)
-  -- { hom := (Δ : M.X ⟶ _),
-  -- mul_hom' := by dsimp; simp [tensor_μ]
-
--- instance (M : Mon_Cat (Comon_Cat C)) : Comon_Class M where
---   counit :=
---   { hom := (ε : M.X.X ⟶ _) }
---   comul :=
---   { hom := (Δ : M.X.X ⟶ _),
---     mul_hom := by dsimp; simp [tensor_μ] }
-
--- @[simps!?]
+attribute [local simp] instMon_ClassXOfComon_Cat_one instMon_ClassXOfComon_Cat_mul in
+@[simps! (config := {isSimp := false}) mul one]
 instance (M : Mon_Cat (Comon_Cat C)) : Bimon_Class M.X.X where
 
--- @[simp]
--- theorem XXComon_Cat_one (M : Mon_Cat (Comon_Cat C)) : η = (η : 𝟙_ (Comon_Cat C) ⟶ M.X).hom := by
---   simp
-
--- @[simp]
--- theorem XXComon_Cat_mul (M : Mon_Cat (Comon_Cat C)) :
---     (μ : M.X.X ⊗ M.X.X ⟶ M.X.X) = (μ : M.X ⊗ M.X ⟶ M.X).hom := by
---   simp
-
-/-- The object level part of the backward direction of `Comon_Class (Mon_Class C) ≌ Mon_Class (Comon_Class C)` -/
-@[simps]
-def ofMon_ClassComon_Classobj (M : C) [Bimon_Class M] : Bimon_Cat C where
+/-- The object level part of the backward direction of
+`Comon_Cat (Mon_Cat C) ≌ Mon_Cat (Comon_Cat C)` -/
+-- @[simps?]
+def ofMonCatComonCatobj (M : C) [Bimon_Class M] : Bimon_Cat C where
   X := Mon_Cat.mk M
 
-/-- The backward direction of `Comon_Class (Mon_Class C) ≌ Mon_Class (Comon_Class C)` -/
-@[simps]
-def ofMon_ClassComon_Class : Mon_Cat (Comon_Cat C) ⥤ Bimon_Cat C where
-  obj M := ofMon_ClassComon_Classobj C M.X.X
-  map f :=
-  { hom := (Comon_Cat.forgetMonoidal C).toLaxMonoidalFunctor.mapMonCat.map f }
+-- set_option diagnostics true
+/-- The backward direction of `Comon_Cat (Mon_Cat C) ≌ Mon_Cat (Comon_Cat C)` -/
+-- @[simps?! map]
+def ofMonCatComonCat : Mon_Cat (Comon_Cat C) ⥤ Bimon_Cat C where
+  obj M := ofMonCatComonCatobj C M.X.X
+  map {M N} f :=
+    { hom := Mon_Cat.mkHom {
+        hom := f.hom.hom
+        one_hom := by
+          have := ((Comon_Cat.forgetMonoidal C).mapMonCat.map f).one_hom
+          simp at this
+          have : (𝟙 (𝟙_ C) ≫ η) ≫ f.hom.hom = 𝟙 (𝟙_ C) ≫ η :=
+            ((Comon_Cat.forgetMonoidal C).mapMonCat.map f).one_hom
+          simpa using this
+        mul_hom := by
+          have : (𝟙 _ ≫ μ) ≫ f.hom.hom = (f.hom.hom ⊗ f.hom.hom) ≫ 𝟙 _ ≫ μ :=
+            ((Comon_Cat.forgetMonoidal C).mapMonCat.map f).mul_hom
+          simpa using this }
+      hom_comul := by aesop_cat
+      hom_counit :=  by aesop_cat }
+  map_id := by aesop_cat
+  map_comp := by aesop_cat
+  -- { hom := (Comon_Cat.forgetMonoidal C).mapMonCat.map f }
 
-/-- The equivalence `Comon_Class (Mon_Class C) ≌ Mon_Class (Comon_Class C)` -/
-def equivMon_ClassComon_Class : Bimon_Cat C ≌ Mon_Cat (Comon_Cat C) where
-  functor := toMon_ClassComon_Class C
-  inverse := ofMon_ClassComon_Class C
-  unitIso := NatIso.ofComponents (fun M =>
-    Comon_Cat.mkIso (Comon_Class.mkIso (Mon_Cat.mkIso (Mon_Class.mkIso (Iso.refl M.X.X)
-      (by simp; change _ = _ ≫ _; simp) (by simp; change _ = _ ≫ _; simp)))
-      (by ext; simp; change _ ≫ _ = _; simp) (by ext; simp; change _ ≫ _ = _; simp)))
-  counitIso := NatIso.ofComponents (fun M =>
-    Mon_Cat.mkIso (Mon_Class.mkIso (Comon_Cat.mkIso (Comon_Class.mkIso (Iso.refl M.X.X)
-      (by simp; change _ = _ ≫ _; simp) (by simp; change _ = _ ≫ _; simp)))
-      (by ext; simp; change _ ≫ _ = _; simp) (by ext; simp; change _ ≫ _ = _; simp)))
+variable {C}
+
+example (M : Bimon_Cat C) :
+  (ε : ((toMonCatComonCat C).obj M).X.X ⟶ _) = (ε : M.X.X ⟶ 𝟙_ C) := by
+  rfl
+
+theorem extracted (M : Mon_Cat (Comon_Cat C)) : 𝟙 M.X.X ≫ ε = ε := by
+  simp
+
+@[simp]
+theorem toMonCatComonCat_ofMonCatComonCat_X_X (M : Mon_Cat (Comon_Cat C)) :
+    ((toMonCatComonCat C).obj ((ofMonCatComonCat C).obj M)).X.X = M.X.X := by
+  rfl
+
+@[simp]
+theorem toComonCatMonCat_ofComonCatMonCat_X_X (M N : Mon_Cat (Comon_Cat C)) (f : M ⟶ N) :
+    ((toMonCatComonCat C).map ((ofMonCatComonCat C).map f)).hom.hom = f.hom.hom := by
+  rfl
+
+@[simps!]
+def equivMonCatComonCatUnitIsoAppX (M : Bimon_Cat C) :
+    M.X ≅ ((toMonCatComonCat C ⋙ ofMonCatComonCat C).obj M).X :=
+  Mon_Cat.mkIso' <| Mon_ClassIso.mk (Iso.refl M.X.X)
+
+@[simps!]
+def equivMonCatComonCatUnitIsoApp (M : Bimon_Cat C) :
+    M ≅ (toMonCatComonCat C ⋙ ofMonCatComonCat C).obj M :=
+  Comon_Cat.mkIso <| Comon_ClassIso.mk (equivMonCatComonCatUnitIsoAppX M)
+
+@[simps!]
+def equivMonCatComonCatCounitIsoAppX (M : Mon_Cat (Comon_Cat C)) :
+    ((ofMonCatComonCat C ⋙ toMonCatComonCat C).obj M).X ≅ M.X :=
+  Comon_Cat.mkIso' <| Comon_ClassIso.mk (Iso.refl M.X.X)
+    -- (by simp)
+    -- (by simp)
+
+@[simps!]
+def equivMonCatComonCatCounitIsoApp (M : Mon_Cat (Comon_Cat C)) :
+    (ofMonCatComonCat C ⋙ toMonCatComonCat C).obj M ≅ M :=
+  Mon_Cat.mkIso' <| Mon_ClassIso.mk (equivMonCatComonCatCounitIsoAppX M)
+
+variable (C)
+
+/-- The equivalence `Comon_Cat (Mon_Cat C) ≌ Mon_Cat (Comon_Cat C)` -/
+def equivMonCatComonCat : Bimon_Cat C ≌ Mon_Cat (Comon_Cat C) where
+  functor := toMonCatComonCat C
+  inverse := ofMonCatComonCat C
+  unitIso := NatIso.ofComponents equivMonCatComonCatUnitIsoApp
+  counitIso := NatIso.ofComponents equivMonCatComonCatCounitIsoApp
 
 end Bimon_Cat

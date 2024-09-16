@@ -58,19 +58,19 @@ instance : Category (CommMon_Cat C) :=
   InducedCategory.category CommMon_Cat.toMon_Cat
 
 @[simp]
-theorem id_hom (A : CommMon_Cat C) : Mon_Class.Hom.hom (𝟙 A) = 𝟙 A.X :=
+theorem id_hom (A : CommMon_Cat C) : Mon_ClassHom.hom (𝟙 A) = 𝟙 A.X :=
   rfl
 
 @[simp]
 theorem comp_hom {R S T : CommMon_Cat C} (f : R ⟶ S) (g : S ⟶ T) :
-    Mon_Class.Hom.hom (f ≫ g) = f.hom ≫ g.hom :=
+    Mon_ClassHom.hom (f ≫ g) = f.hom ≫ g.hom :=
   rfl
 
 -- Porting note (#5229): added because `Mon_Class.Hom.ext` is not triggered automatically
 -- for morphisms in `CommMon_Cat C`
 @[ext]
 lemma hom_ext {A B : CommMon_Cat C} (f g : A ⟶ B) (h : f.hom = g.hom) : f = g :=
-  Mon_Class.Hom.ext _ _ h
+  Mon_ClassHom.ext h
 
 -- Porting note (#10688): the following two lemmas `id'` and `comp'`
 -- have been added to ease automation;
@@ -187,8 +187,8 @@ def commMonToLaxBraided : CommMon_Cat C ⥤ LaxBraidedFunctor (Discrete PUnit.{u
   map f :=
     { app := fun _ => f.hom
       naturality := fun _ _ _ => by dsimp; rw [Category.id_comp, Category.comp_id]
-      unit := Mon_Class.Hom.one_hom f
-      tensor := fun _ _ => Mon_Class.Hom.mul_hom f }
+      unit := Mon_ClassHom.one_hom f
+      tensor := fun _ _ => Mon_ClassHom.mul_hom f }
 
 /-- Implementation of `CommMon_Class.equivLaxBraidedFunctorPUnit`. -/
 @[simps!]

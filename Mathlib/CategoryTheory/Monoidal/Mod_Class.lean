@@ -55,7 +55,8 @@ instance homInhabited : Inhabited (Hom A M M) :=
 
 /-- Composition of module object morphisms. -/
 @[simps]
-def comp {M N O : C} [Mod_Class A M] [Mod_Class A N] [Mod_Class A O] (f : Hom A M N) (g : Hom A N O) :
+def comp {M N O : C} [Mod_Class A M] [Mod_Class A N] [Mod_Class A O]
+    (f : Hom A M N) (g : Hom A N O) :
     Hom A M O where
   hom := f.hom ≫ g.hom
 
@@ -90,7 +91,7 @@ theorem of_X (A X : C) [Mon_Class A] [Mod_Class A X] : (Mod_Cat.of A X).X = X :=
 -- Porting note (#5229): added because `Hom.ext` is not triggered automatically
 @[ext]
 lemma hom_ext {M N : Mod_Cat A} (f₁ f₂ : M ⟶ N) (h : f₁.hom = f₂.hom) : f₁ = f₂ :=
-  Mod_Class.Hom.ext _ _ h
+  Mod_Class.Hom.ext h
 
 @[simp]
 theorem id_hom' (M : Mod_Cat A) : (𝟙 M : M ⟶ M).hom = 𝟙 M.X := by
@@ -116,7 +117,7 @@ instance : Inhabited (Mod_Class A A) :=
   ⟨regular A⟩
 
 @[simps]
-def comap {A B : C} [Mon_Class A] [Mon_Class B] (f : Mon_Class.Hom A B) (M : C) [Mod_Class B M] :
+def comap {A B : C} [Mon_Class A] [Mon_Class B] (f : Mon_ClassHom A B) (M : C) [Mod_Class B M] :
     Mod_Class A M where
   act := (f.hom ▷ M) ≫ act
   one_act := by
@@ -149,7 +150,7 @@ open CategoryTheory.MonoidalCategory
 between the categories of module objects.
 -/
 @[simps]
-def comap {A B : C} [Mon_Class A] [Mon_Class B] (f : Mon_Class.Hom A B) : Mod_Cat B ⥤ Mod_Cat A where
+def comap {A B : C} [Mon_Class A] [Mon_Class B] (f : Mon_ClassHom A B) : Mod_Cat B ⥤ Mod_Cat A where
   obj M :=
     { X := M.X
       isMod := Mod_Class.comap f M.X }
