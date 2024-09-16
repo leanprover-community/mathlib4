@@ -635,7 +635,7 @@ theorem uniformContinuous_coeff {uK : UniformSpace K} (h : uK = ⊥) (d : ℤ) :
 `laurent_series K` gives rise to a Cauchy filter in `K` for every `d : ℤ`, and such Cauchy filter
 in `K` converges to a principal filter -/
 def Cauchy.coeff {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) : ℤ → K :=
-  let _ : UniformSpace K := ⊥ ;
+  let _ : UniformSpace K := ⊥;
   fun d ↦ cauchy_discrete_is_constant rfl (hℱ.map (uniformContinuous_coeff rfl d))
 
 theorem Cauchy.coeff_tendsto {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) (D : ℤ) :
