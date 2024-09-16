@@ -186,7 +186,7 @@ lemma StableUnderBaseChange.of_isLocalization
 end
 
 variable {R S Rᵣ Sᵣ : Type u} [CommRing R] [CommRing S] [CommRing Rᵣ] [CommRing Sᵣ] [Algebra R Rᵣ]
-  [Algebra S Sᵣ] 
+  [Algebra S Sᵣ]
 
 include hP in
 /-- If `P` is stable under base change and holds for `f`, then `P` holds for `f` localized
