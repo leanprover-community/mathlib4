@@ -39,7 +39,7 @@ a product set.
 
 -/
 
-open Set Function
+open Set
 
 namespace MeasureTheory
 
@@ -106,10 +106,10 @@ theorem isPiSystem_squareCylinders {C : ∀ i, Set (Set (α i))} (hC : ∀ i, Is
 
 theorem comap_eval_le_generateFrom_squareCylinders_singleton
     (α : ι → Type*) [m : ∀ i, MeasurableSpace (α i)] (i : ι) :
-    MeasurableSpace.comap (eval i) (m i) ≤
+    MeasurableSpace.comap (Function.eval i) (m i) ≤
       MeasurableSpace.generateFrom
         ((fun t ↦ ({i} : Set ι).pi t) '' univ.pi fun i ↦ {s : Set (α i) | MeasurableSet s}) := by
-  simp only [eval, singleton_pi]
+  simp only [Function.eval, singleton_pi]
   rw [MeasurableSpace.comap_eq_generateFrom]
   refine MeasurableSpace.generateFrom_mono fun S ↦ ?_
   simp only [mem_setOf_eq, mem_image, mem_univ_pi, forall_exists_index, and_imp]
@@ -123,7 +123,7 @@ theorem comap_eval_le_generateFrom_squareCylinders_singleton
     · simp only [hji, not_false_iff, dif_neg, MeasurableSet.univ]
   · simp only [id_eq, eq_mpr_eq_cast, ← h]
     ext1 x
-    simp only [singleton_pi, eval, cast_eq, dite_eq_ite, ite_true, mem_preimage]
+    simp only [singleton_pi, Function.eval, cast_eq, dite_eq_ite, ite_true, mem_preimage]
 
 /-- The square cylinders formed from measurable sets generate the product σ-algebra. -/
 theorem generateFrom_squareCylinders [∀ i, MeasurableSpace (α i)] :
@@ -349,12 +349,12 @@ theorem generateFrom_measurableCylinders :
   · refine iSup_le fun i ↦ ?_
     refine (comap_eval_le_generateFrom_squareCylinders_singleton α i).trans ?_
     refine MeasurableSpace.generateFrom_mono (fun x ↦ ?_)
-    simp only [singleton_pi, eval, mem_image, mem_pi, mem_univ, mem_setOf_eq,
+    simp only [singleton_pi, Function.eval, mem_image, mem_pi, mem_univ, mem_setOf_eq,
       forall_true_left, mem_measurableCylinders, exists_prop, forall_exists_index, and_imp]
     rintro t ht rfl
     refine ⟨{i}, {f | f ⟨i, Finset.mem_singleton_self i⟩ ∈ t i}, measurable_pi_apply _ (ht i), ?_⟩
     ext1 x
-    simp only [mem_preimage, eval, mem_cylinder, mem_setOf_eq, Finset.restrict]
+    simp only [mem_preimage, Function.eval, mem_cylinder, mem_setOf_eq, Finset.restrict]
 
 end cylinders
 
