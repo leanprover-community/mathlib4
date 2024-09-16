@@ -10,6 +10,7 @@ import Mathlib.Algebra.Ring.Pointwise.Set
 import Mathlib.Data.Finset.NAry
 import Mathlib.Data.Set.Pointwise.Finite
 import Mathlib.Data.Set.Pointwise.ListOfFn
+import Mathlib.Data.Set.Pointwise.SMul
 
 /-!
 # Pointwise operations of finsets
@@ -987,12 +988,12 @@ to
   ∃ a, s = {a} ∧ IsUnit a -/
 -- @[simp]
 theorem isUnit_iff_singleton : IsUnit s ↔ ∃ a, s = {a} := by
-  simp only [isUnit_iff, Group.isUnit, and_true_iff]
+  simp only [isUnit_iff, Group.isUnit, and_true]
 
 @[simp]
 theorem isUnit_iff_singleton_aux {α} [Group α] {s : Finset α} :
     (∃ a, s = {a} ∧ IsUnit a) ↔ ∃ a, s = {a} := by
-  simp only [Group.isUnit, and_true_iff]
+  simp only [Group.isUnit, and_true]
 
 @[to_additive (attr := simp)]
 theorem image_mul_left :
@@ -1569,6 +1570,17 @@ theorem singleton_mul_inter : {a} * (s ∩ t) = {a} * s ∩ ({a} * t) :=
 theorem card_le_card_mul_left {s : Finset α} (hs : s.Nonempty) : t.card ≤ (s * t).card :=
   card_le_card_image₂_left _ hs mul_right_injective
 
+/--
+The size of `s * s` is at least the size of `s`, version with left-cancellative multiplication.
+See `card_le_card_mul_self'` for the version with right-cancellative multiplication.
+-/
+@[to_additive
+"The size of `s + s` is at least the size of `s`, version with left-cancellative addition.
+See `card_le_card_add_self'` for the version with right-cancellative addition."
+]
+theorem card_le_card_mul_self {s : Finset α} : s.card ≤ (s * s).card := by
+  cases s.eq_empty_or_nonempty <;> simp [card_le_card_mul_left, *]
+
 end IsLeftCancelMul
 
 section
@@ -1586,6 +1598,17 @@ theorem inter_mul_singleton : s ∩ t * {a} = s * {a} ∩ (t * {a}) :=
 @[to_additive]
 theorem card_le_card_mul_right {t : Finset α} (ht : t.Nonempty) : s.card ≤ (s * t).card :=
   card_le_card_image₂_right _ ht mul_left_injective
+
+/--
+The size of `s * s` is at least the size of `s`, version with right-cancellative multiplication.
+See `card_le_card_mul_self` for the version with left-cancellative multiplication.
+-/
+@[to_additive
+"The size of `s + s` is at least the size of `s`, version with right-cancellative addition.
+See `card_le_card_add_self` for the version with left-cancellative addition."
+]
+theorem card_le_card_mul_self' {s : Finset α} : s.card ≤ (s * s).card := by
+  cases s.eq_empty_or_nonempty <;> simp [card_le_card_mul_right, *]
 
 end
 

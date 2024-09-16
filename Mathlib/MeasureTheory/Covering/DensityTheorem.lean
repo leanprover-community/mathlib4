@@ -69,7 +69,7 @@ theorem closedBall_mem_vitaliFamily_of_dist_le_mul {K : ℝ} {x y : α} {r : ℝ
     (rpos : 0 < r) : closedBall y r ∈ (vitaliFamily μ K).setsAt x := by
   let R := scalingScaleOf μ (max (4 * K + 3) 3)
   simp only [vitaliFamily, VitaliFamily.enlarge, Vitali.vitaliFamily, mem_union, mem_setOf_eq,
-    isClosed_ball, true_and_iff, (nonempty_ball.2 rpos).mono ball_subset_interior_closedBall,
+    isClosed_ball, true_and, (nonempty_ball.2 rpos).mono ball_subset_interior_closedBall,
     measurableSet_closedBall]
   /- The measure is doubling on scales smaller than `R`. Therefore, we treat differently small
     and large balls. For large balls, this follows directly from the enlargement we used in the

@@ -173,7 +173,7 @@ theorem pred_eq_iff_not_succ' {o} : pred o = o ↔ ∀ a, o ≠ succ a := by
   simpa using pred_eq_iff_not_succ
 
 theorem pred_lt_iff_is_succ {o} : pred o < o ↔ ∃ a, o = succ a :=
-  Iff.trans (by simp only [le_antisymm_iff, pred_le_self, true_and_iff, not_le])
+  Iff.trans (by simp only [le_antisymm_iff, pred_le_self, true_and, not_le])
     (iff_not_comm.1 pred_eq_iff_not_succ).symm
 
 @[simp]
@@ -212,7 +212,9 @@ theorem lift_pred (o : Ordinal.{v}) : lift.{u} (pred o) = pred (lift.{u} o) := b
 /-! ### Limit ordinals -/
 
 
-/-- A limit ordinal is an ordinal which is not zero and not a successor. -/
+/-- A limit ordinal is an ordinal which is not zero and not a successor.
+
+TODO: deprecate this in favor of `Order.IsSuccLimit`. -/
 def IsLimit (o : Ordinal) : Prop :=
   o ≠ 0 ∧ ∀ a < o, succ a < o
 
@@ -461,7 +463,7 @@ alias IsLimit.add := add_isLimit
 
 
 /-- The set in the definition of subtraction is nonempty. -/
-theorem sub_nonempty {a b : Ordinal} : { o | a ≤ b + o }.Nonempty :=
+private theorem sub_nonempty {a b : Ordinal} : { o | a ≤ b + o }.Nonempty :=
   ⟨a, le_add_left _ _⟩
 
 /-- `a - b` is the unique ordinal satisfying `b + (a - b) = a` when `b ≤ a`. -/
@@ -570,15 +572,15 @@ instance monoid : Monoid Ordinal.{u} where
       Quotient.sound
         ⟨⟨punitProd _, @fun a b => by
             rcases a with ⟨⟨⟨⟩⟩, a⟩; rcases b with ⟨⟨⟨⟩⟩, b⟩
-            simp only [Prod.lex_def, EmptyRelation, false_or_iff]
-            simp only [eq_self_iff_true, true_and_iff]
+            simp only [Prod.lex_def, EmptyRelation, false_or]
+            simp only [eq_self_iff_true, true_and]
             rfl⟩⟩
   one_mul a :=
     inductionOn a fun α r _ =>
       Quotient.sound
         ⟨⟨prodPUnit _, @fun a b => by
             rcases a with ⟨a, ⟨⟨⟩⟩⟩; rcases b with ⟨b, ⟨⟨⟩⟩⟩
-            simp only [Prod.lex_def, EmptyRelation, and_false_iff, or_false_iff]
+            simp only [Prod.lex_def, EmptyRelation, and_false, or_false]
             rfl⟩⟩
 
 @[simp]
@@ -623,8 +625,7 @@ instance leftDistribClass : LeftDistribClass Ordinal.{u} :=
             simp only [Prod.lex_def, Sum.lex_inl_inl, Sum.Lex.sep, Sum.lex_inr_inl, Sum.lex_inr_inr,
               sumProdDistrib_apply_left, sumProdDistrib_apply_right, reduceCtorEq] <;>
             -- Porting note: `Sum.inr.inj_iff` is required.
-            simp only [Sum.inl.inj_iff, Sum.inr.inj_iff,
-              true_or_iff, false_and_iff, false_or_iff]⟩⟩⟩
+            simp only [Sum.inl.inj_iff, Sum.inr.inj_iff, true_or, false_and, false_or]⟩⟩⟩
 
 theorem mul_succ (a b : Ordinal) : a * succ b = a * b + a :=
   mul_add_one a b
@@ -684,11 +685,11 @@ private theorem mul_le_of_limit_aux {α β r s} [IsWellOrder α r] [IsWellOrder 
     intro h
     by_cases e₁ : b = b₁ <;> by_cases e₂ : b = b₂
     · substs b₁ b₂
-      simpa only [subrel_val, Prod.lex_def, @irrefl _ s _ b, true_and_iff, false_or_iff,
+      simpa only [subrel_val, Prod.lex_def, @irrefl _ s _ b, true_and, false_or,
         eq_self_iff_true, dif_pos, Sum.lex_inr_inr] using h
     · subst b₁
       simp only [subrel_val, Prod.lex_def, e₂, Prod.lex_def, dif_pos, subrel_val, eq_self_iff_true,
-        or_false_iff, dif_neg, not_false_iff, Sum.lex_inr_inl, false_and_iff] at h ⊢
+        or_false, dif_neg, not_false_iff, Sum.lex_inr_inl, false_and] at h ⊢
       cases' h₂ with _ _ _ _ h₂_h h₂_h <;> [exact asymm h h₂_h; exact e₂ rfl]
     · simp [e₂, dif_neg e₁, show b₂ ≠ b₁ from e₂ ▸ e₁]
     · simpa only [dif_neg e₁, dif_neg e₂, Prod.lex_def, subrel_val, Subtype.mk_eq_mk,
@@ -755,7 +756,7 @@ theorem smul_eq_mul : ∀ (n : ℕ) (a : Ordinal), n • a = a * n
 
 
 /-- The set in the definition of division is nonempty. -/
-theorem div_nonempty {a b : Ordinal} (h : b ≠ 0) : { o | a < b * succ o }.Nonempty :=
+private theorem div_nonempty {a b : Ordinal} (h : b ≠ 0) : { o | a < b * succ o }.Nonempty :=
   ⟨a, (succ_le_iff (a := a) (b := b * succ a)).1 <| by
     simpa only [succ_zero, one_mul] using
       mul_le_mul_right' (succ_le_of_lt (Ordinal.pos_iff_ne_zero.2 h)) (succ a)⟩
@@ -768,7 +769,7 @@ instance div : Div Ordinal :=
 theorem div_zero (a : Ordinal) : a / 0 = 0 :=
   dif_pos rfl
 
-theorem div_def (a) {b : Ordinal} (h : b ≠ 0) : a / b = sInf { o | a < b * succ o } :=
+private theorem div_def (a) {b : Ordinal} (h : b ≠ 0) : a / b = sInf { o | a < b * succ o } :=
   dif_neg h
 
 theorem lt_mul_succ_div (a) {b : Ordinal} (h : b ≠ 0) : a < b * succ (a / b) := by
@@ -792,8 +793,7 @@ theorem le_div {a b c : Ordinal} (c0 : c ≠ 0) : a ≤ b / c ↔ c * a ≤ b :=
   | H₂ _ _ => rw [succ_le_iff, lt_div c0]
   | H₃ _ h₁ h₂ =>
     revert h₁ h₂
-    simp (config := { contextual := true }) only [mul_le_of_limit, limit_le, iff_self_iff,
-      forall_true_iff]
+    simp (config := { contextual := true }) only [mul_le_of_limit, limit_le, forall_true_iff]
 
 theorem div_lt {a b c : Ordinal} (b0 : b ≠ 0) : a / b < c ↔ a < b * c :=
   lt_iff_lt_of_le_iff_le <| le_div b0

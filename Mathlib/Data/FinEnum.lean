@@ -76,7 +76,7 @@ noncomputable def ofInjective {α β} (f : α → β) [DecidableEq α] [FinEnum 
   ofList ((toList β).filterMap (partialInv f))
     (by
       intro x
-      simp only [mem_toList, true_and_iff, List.mem_filterMap]
+      simp only [mem_toList, true_and, List.mem_filterMap]
       use f x
       simp only [h, Function.partialInv_left])
 
@@ -133,7 +133,7 @@ theorem Finset.mem_enum [DecidableEq α] (s : Finset α) (xs : List α) :
       by_cases h : xs_hd ∈ s
       · have : {xs_hd} ⊆ s := by
           simp only [HasSubset.Subset, *, forall_eq, mem_singleton]
-        simp only [union_sdiff_of_subset this, or_true_iff, Finset.union_sdiff_of_subset,
+        simp only [union_sdiff_of_subset this, or_true, Finset.union_sdiff_of_subset,
           eq_self_iff_true]
       · left
         symm
