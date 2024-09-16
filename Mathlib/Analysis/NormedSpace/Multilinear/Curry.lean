@@ -609,10 +609,10 @@ namespace ContinuousLinearMap
 variable {F G : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
-/-- Given a linear map intro continuous multilinear maps
+/-- Given a linear map into continuous multilinear maps
 `B : G →L[𝕜] ContinuousMultilinearMap 𝕜 E F`, one can not always uncurry it as `G` and `E` might
 live in a different universe. However, one can always lift it to a continuous multilinear map
-on `(G × (Π i, E i)) ^ (1 + ι)`, which maps `(v_0, ..., v_n)` to `B (g_0) (u_1, ..., u_n)` where
+on `(G × (Π i, E i)) ^ (1 + n)`, which maps `(v_0, ..., v_n)` to `B (g_0) (u_1, ..., u_n)` where
 `g_0` is the `G`-coordinate of `v_0` and `u_i` is the `E_i` coordinate of `v_i`. -/
 noncomputable def continuousMultilinearMapOption (B : G →L[𝕜] ContinuousMultilinearMap 𝕜 E F) :
     ContinuousMultilinearMap 𝕜 (fun (_ : Option ι) ↦ (G × (Π i, E i))) F :=
@@ -622,7 +622,7 @@ noncomputable def continuousMultilinearMapOption (B : G →L[𝕜] ContinuousMul
       intro inst v j x y
       match j with
       | none => simp
-      | (some j) =>
+      | some j =>
         classical
         have B z : (fun i ↦ (Function.update v (some j) z (some i)).2 i) =
             Function.update (fun (i : ι) ↦ (v i).2 i) j (z.2 j) := by
@@ -635,7 +635,7 @@ noncomputable def continuousMultilinearMapOption (B : G →L[𝕜] ContinuousMul
       intro inst v j c x
       match j with
       | none => simp
-      | (some j) =>
+      | some j =>
         classical
         have B z : (fun i ↦ (Function.update v (some j) z (some i)).2 i) =
             Function.update (fun (i : ι) ↦ (v i).2 i) j (z.2 j) := by
