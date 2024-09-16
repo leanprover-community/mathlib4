@@ -29,7 +29,7 @@ if the appropriate framework was available.
 
 universe v₁ v₂ u₁ u₂
 
-open CategoryTheory MonoidalCategory
+open CategoryTheory MonoidalCategory Mon_Class
 
 namespace CategoryTheory.Monoidal
 
@@ -40,20 +40,22 @@ namespace MonFunctorCategoryEquivalence
 
 variable {C D}
 
-/-- A monoid object in a functor category induces a functor to the category of monoid objects. -/
 @[simps]
+instance (A : C ⥤ D) [Mon_Class A] (X : C) : Mon_Class (A.obj X) where
+  one := η[A].app X
+  mul := μ[A].app X
+  one_mul := congr_app (one_mul' A) X
+  mul_one := congr_app (mul_one' A) X
+  mul_assoc := congr_app (mul_assoc' A) X
+
+/-- A monoid object in a functor category induces a functor to the category of monoid objects. -/
+@[simps!]
 def functorObj (A : Mon_ (C ⥤ D)) : C ⥤ Mon_ D where
-  obj X :=
-  { X := A.X.obj X
-    one := A.one.app X
-    mul := A.mul.app X
-    one_mul := congr_app A.one_mul X
-    mul_one := congr_app A.mul_one X
-    mul_assoc := congr_app A.mul_assoc X }
+  obj X := { X := A.X.obj X }
   map f :=
   { hom := A.X.map f
-    one_hom := by rw [← A.one.naturality, tensorUnit_map]; dsimp; rw [Category.id_comp]
-    mul_hom := by dsimp; rw [← A.mul.naturality, tensorObj_map] }
+    one_hom := by dsimp; rw [← η[A.X].naturality, tensorUnit_map]; dsimp; rw [Category.id_comp]
+    mul_hom := by dsimp; rw [← μ[A.X].naturality, tensorObj_map] }
   map_id X := by ext; dsimp; rw [CategoryTheory.Functor.map_id]
   map_comp f g := by ext; dsimp; rw [Functor.map_comp]
 
@@ -69,13 +71,16 @@ def functor : Mon_ (C ⥤ D) ⥤ C ⥤ Mon_ D where
       one_hom := congr_app f.one_hom X
       mul_hom := congr_app f.mul_hom X } }
 
+@[simps]
+instance (F : C ⥤ Mon_ D) : Mon_Class (F ⋙ Mon_.forget D) where
+  one := { app := fun X => η[(F.obj X).X] }
+  mul := { app := fun X => μ[(F.obj X).X] }
+
 /-- A functor to the category of monoid objects can be translated as a monoid object
 in the functor category. -/
-@[simps]
+@[simps! X]
 def inverseObj (F : C ⥤ Mon_ D) : Mon_ (C ⥤ D) where
   X := F ⋙ Mon_.forget D
-  one := { app := fun X => (F.obj X).one }
-  mul := { app := fun X => (F.obj X).mul }
 
 /-- Functor translating a functor into the category of monoid objects
 to a monoid object in the functor category
@@ -86,7 +91,7 @@ def inverse : (C ⥤ Mon_ D) ⥤ Mon_ (C ⥤ D) where
   map α :=
   { hom :=
     { app := fun X => (α.app X).hom
-      naturality := fun X Y f => congr_arg Mon_.Hom.hom (α.naturality f) } }
+      naturality := fun X Y f => congr_arg Mon_ClassHom.hom (α.naturality f) } }
 
 /-- The unit for the equivalence `Mon_ (C ⥤ D) ≌ C ⥤ Mon_ D`.
 -/

@@ -18,7 +18,7 @@ in particular `MonCat`, `SemiRingCat`, `RingCat`, and `AlgebraCat R`.)
 -/
 
 
-open CategoryTheory Limits Monoidal
+open CategoryTheory Limits Monoidal Mon_Class
 
 universe v u w
 
@@ -34,9 +34,18 @@ by interpreting it as a functor `Mon_ (J ⥤ C)`,
 and noting that taking limits is a lax monoidal functor,
 and hence sends monoid objects to monoid objects.
 -/
-@[simps!]
+@[simps! X]
 def limit (F : J ⥤ Mon_ C) : Mon_ C :=
   limLax.mapMon.obj ((monFunctorCategoryEquivalence J C).inverse.obj F)
+
+@[simp]
+theorem limit_one (F : J ⥤ Mon_ C) : η[(limit F).X] = limLax.ε ≫ limLax.map η :=
+  rfl
+
+@[simp]
+theorem limit_mul (F : J ⥤ Mon_ C) : μ[(limit F).X] =
+    limLax.μ (F ⋙ forget C) (F ⋙ forget C) ≫ limMap μ :=
+  rfl
 
 /-- Implementation of `Mon_.hasLimits`: a limiting cone over a functor `F : J ⥤ Mon_ C`.
 -/
@@ -65,8 +74,10 @@ def limitConeIsLimit (F : J ⥤ Mon_ C) : IsLimit (limitCone F) where
         dsimp
         ext
         simp only [Functor.comp_obj, forget_obj, Category.assoc, limit.lift_π, Functor.mapCone_pt,
-          Functor.mapCone_π_app, forget_map, Hom.mul_hom, limit_mul, Cones.postcompose_obj_pt,
-          Cones.postcompose_obj_π, NatTrans.comp_app, Functor.const_obj_obj, tensorObj_obj]
+          Functor.mapCone_π_app, forget_map, Mon_ClassHom.mul_hom, limit.lift_map,
+          Cones.postcompose_obj_pt, Cones.postcompose_obj_π, NatTrans.comp_app,
+          Functor.const_obj_obj, tensorObj_obj,
+          MonFunctorCategoryEquivalence.instMon_ClassFunctorCompMon_Forget_mul_app]
         slice_rhs 1 2 => rw [← MonoidalCategory.tensor_comp, limit.lift_π]
         rfl }
   fac s h := by ext; simp
@@ -74,7 +85,7 @@ def limitConeIsLimit (F : J ⥤ Mon_ C) : IsLimit (limitCone F) where
     ext1
     refine limit.hom_ext (fun j => ?_)
     dsimp; simp only [Mon_.forget_map, limit.lift_π, Functor.mapCone_π_app]
-    exact congr_arg Mon_.Hom.hom (w j)
+    exact congr_arg Mon_ClassHom.hom (w j)
 
 instance hasLimitsOfShape [HasLimitsOfShape J C] : HasLimitsOfShape J (Mon_ C) where
   has_limit := fun F => HasLimit.mk

@@ -13,14 +13,14 @@ import Mathlib.CategoryTheory.Monoidal.Mon_
 
 universe v₁ v₂ u₁ u₂ u
 
-open CategoryTheory MonoidalCategory
+open CategoryTheory MonoidalCategory Mon_Class
 
 variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C] [BraidedCategory.{v₁} C]
 
 /-- A commutative monoid object internal to a monoidal category.
 -/
 structure CommMon_ extends Mon_ C where
-  mul_comm : (β_ _ _).hom ≫ mul = mul := by aesop_cat
+  mul_comm : (β_ X X).hom ≫ μ = μ := by aesop_cat
 
 attribute [reassoc (attr := simp)] CommMon_.mul_comm
 
@@ -42,19 +42,19 @@ instance : Category (CommMon_ C) :=
   InducedCategory.category CommMon_.toMon_
 
 @[simp]
-theorem id_hom (A : CommMon_ C) : Mon_.Hom.hom (𝟙 A) = 𝟙 A.X :=
+theorem id_hom (A : CommMon_ C) : Mon_ClassHom.hom (𝟙 A) = 𝟙 A.X :=
   rfl
 
 @[simp]
 theorem comp_hom {R S T : CommMon_ C} (f : R ⟶ S) (g : S ⟶ T) :
-    Mon_.Hom.hom (f ≫ g) = f.hom ≫ g.hom :=
+    Mon_ClassHom.hom (f ≫ g) = f.hom ≫ g.hom :=
   rfl
 
--- Porting note (#5229): added because `Mon_.Hom.ext` is not triggered automatically
+-- Porting note (#5229): added because `Mon_ClassHom.ext` is not triggered automatically
 -- for morphisms in `CommMon_ C`
 @[ext]
 lemma hom_ext {A B : CommMon_ C} (f g : A ⟶ B) (h : f.hom = g.hom) : f = g :=
-  Mon_.Hom.ext h
+  Mon_ClassHom.ext h
 
 -- Porting note (#10688): the following two lemmas `id'` and `comp'`
 -- have been added to ease automation;
@@ -73,16 +73,19 @@ variable (C)
 def forget₂Mon_ : CommMon_ C ⥤ Mon_ C :=
   inducedFunctor CommMon_.toMon_
 
+instance (A : CommMon_ C) : Mon_Class ((forget₂Mon_ C).obj A).X :=
+  inferInstanceAs <| Mon_Class A.X
+
 -- Porting note: no delta derive handler, see https://github.com/leanprover-community/mathlib4/issues/5020
 instance : (forget₂Mon_ C).Full := InducedCategory.full _
 instance : (forget₂Mon_ C).Faithful := InducedCategory.faithful _
 
 @[simp]
-theorem forget₂_Mon_obj_one (A : CommMon_ C) : ((forget₂Mon_ C).obj A).one = A.one :=
+theorem forget₂_Mon_obj_one (A : CommMon_ C) : η[((forget₂Mon_ C).obj A).X] = η[A.X] :=
   rfl
 
 @[simp]
-theorem forget₂_Mon_obj_mul (A : CommMon_ C) : ((forget₂Mon_ C).obj A).mul = A.mul :=
+theorem forget₂_Mon_obj_mul (A : CommMon_ C) : μ[((forget₂Mon_ C).obj A).X] = μ[A.X] :=
   rfl
 
 @[simp]
@@ -151,15 +154,15 @@ def commMonToLaxBraided : CommMon_ C ⥤ LaxBraidedFunctor (Discrete PUnit.{u + 
   obj A :=
     { obj := fun _ => A.X
       map := fun _ => 𝟙 _
-      ε := A.one
-      μ := fun _ _ => A.mul
+      «ε» := η
+      «μ» := fun _ _ => μ
       map_id := fun _ => rfl
       map_comp := fun _ _ => (Category.id_comp (𝟙 A.X)).symm }
   map f :=
     { app := fun _ => f.hom
       naturality := fun _ _ _ => by dsimp; rw [Category.id_comp, Category.comp_id]
-      unit := Mon_.Hom.one_hom f
-      tensor := fun _ _ => Mon_.Hom.mul_hom f }
+      unit := Mon_ClassHom.one_hom f
+      tensor := fun _ _ => Mon_ClassHom.mul_hom f }
 
 /-- Implementation of `CommMon_.equivLaxBraidedFunctorPUnit`. -/
 @[simps!]
@@ -173,6 +176,16 @@ def unitIso :
           (fun _ => F.toLaxMonoidalFunctor.toFunctor.mapIso (eqToIso (by ext)))
           (by rintro ⟨⟩ ⟨⟩ f; aesop_cat) (by aesop_cat) (by aesop_cat)))
 
+-- @[simp]
+theorem counitIso_one (F : CommMon_ C) :
+    η[((commMonToLaxBraided C ⋙ laxBraidedToCommMon C).obj F).X] = η ≫ 𝟙 F.X := rfl
+
+-- @[simp]
+theorem counitIso_one_mul (F : CommMon_ C) :
+    μ[((commMonToLaxBraided C ⋙ laxBraidedToCommMon C).obj F).X] = μ ≫ 𝟙 F.X := rfl
+
+
+attribute [local simp] counitIso_one counitIso_one_mul in
 /-- Implementation of `CommMon_.equivLaxBraidedFunctorPUnit`. -/
 @[simps!]
 def counitIso : commMonToLaxBraided C ⋙ laxBraidedToCommMon C ≅ 𝟭 (CommMon_ C) :=

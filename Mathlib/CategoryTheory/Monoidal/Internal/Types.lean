@@ -21,14 +21,16 @@ universe v u
 
 open CategoryTheory
 
+open scoped Mon_Class
+
 namespace MonTypeEquivalenceMon
 
-instance monMonoid (A : Mon_ (Type u)) : Monoid A.X where
-  one := A.one PUnit.unit
-  mul x y := A.mul (x, y)
-  one_mul x := by convert congr_fun A.one_mul (PUnit.unit, x)
-  mul_one x := by convert congr_fun A.mul_one (x, PUnit.unit)
-  mul_assoc x y z := by convert congr_fun A.mul_assoc ((x, y), z)
+instance monMonoid (A : Type u) [Mon_Class A] : Monoid A where
+  one := η[A] PUnit.unit
+  mul x y := μ[A] (x, y)
+  one_mul x := by convert congr_fun (Mon_Class.one_mul (X := A)) (PUnit.unit, x)
+  mul_one x := by convert congr_fun (Mon_Class.mul_one (X := A)) (x, PUnit.unit)
+  mul_assoc x y z := by convert congr_fun (Mon_Class.mul_assoc (X := A)) ((x, y), z)
 
 /-- Converting a monoid object in `Type` to a bundled monoid.
 -/
@@ -39,16 +41,18 @@ noncomputable def functor : Mon_ (Type u) ⥤ MonCat.{u} where
       map_one' := congr_fun f.one_hom PUnit.unit
       map_mul' := fun x y => congr_fun f.mul_hom (x, y) }
 
+@[simps]
+instance (A : Type u) [Monoid A] : Mon_Class A where
+  one := fun _ => 1
+  mul := fun p => p.1 * p.2
+  one_mul := by ext ⟨_, _⟩; dsimp; simp
+  mul_one := by ext ⟨_, _⟩; dsimp; simp
+  mul_assoc := by ext ⟨⟨x, y⟩, z⟩; simp [mul_assoc]
+
 /-- Converting a bundled monoid to a monoid object in `Type`.
 -/
 noncomputable def inverse : MonCat.{u} ⥤ Mon_ (Type u) where
-  obj A :=
-    { X := A
-      one := fun _ => 1
-      mul := fun p => p.1 * p.2
-      one_mul := by ext ⟨_, _⟩; dsimp; simp
-      mul_one := by ext ⟨_, _⟩; dsimp; simp
-      mul_assoc := by ext ⟨⟨x, y⟩, z⟩; simp [mul_assoc] }
+  obj A := { X := A }
   map f := { hom := f }
 
 end MonTypeEquivalenceMon
@@ -93,7 +97,7 @@ noncomputable instance monTypeInhabited : Inhabited (Mon_ (Type u)) :=
 namespace CommMonTypeEquivalenceCommMon
 
 instance commMonCommMonoid (A : CommMon_ (Type u)) : CommMonoid A.X :=
-  { MonTypeEquivalenceMon.monMonoid A.toMon_ with
+  { MonTypeEquivalenceMon.monMonoid A.X with
     mul_comm := fun x y => by convert congr_fun A.mul_comm (y, x) }
 
 /-- Converting a commutative monoid object in `Type` to a bundled commutative monoid.
