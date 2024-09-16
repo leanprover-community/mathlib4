@@ -51,9 +51,9 @@ def coroot_of_reflective (hx : IsReflective B x) :
     M →ₗ[R] R where
   toFun y := (hx.2 y).choose
   map_add' a b := by
-    refine hx.regular.left ?_
+    refine hx.1.1 ?_
     simp only
-    rw [← (hx.dvd_two_mul (a + b)).choose_spec, mul_add, ← (hx.2 a).choose_spec,
+    rw [← (hx.2 (a + b)).choose_spec, mul_add, ← (hx.2 a).choose_spec,
       ← (hx.2 b).choose_spec, map_add, mul_add]
   map_smul' r a := by
     refine hx.1.1 ?_
