@@ -300,7 +300,7 @@ theorem exists_unitSMul_mem_integralPoint {x : mixedSpace K} (hx : x ≠ 0)
     ∃ u : (𝓞 K)ˣ, u • x ∈ integralPoint K := by
   replace hx : mixedEmbedding.norm x ≠ 0 :=
       (norm_eq_zero_iff' (Set.mem_range_of_mem_image (mixedEmbedding K) _ hx')).not.mpr hx
-  obtain ⟨u, hu⟩ := exists_unitSMul_mem hx
+  obtain ⟨u, hu⟩ := exists_unit_smul_mem hx
   obtain ⟨_, ⟨⟨x, rfl⟩, ⟨_, rfl⟩⟩⟩ := hx'
   exact ⟨u, hu, (u * x : K), ⟨u * x, rfl⟩, by simp_rw [unitSMul_smul, ← map_mul]⟩
 
@@ -309,7 +309,7 @@ theorem torsion_unitSMul_mem_integralPoint {x : mixedSpace K} {ζ : (𝓞 K)ˣ} 
     (hx : x ∈ integralPoint K) :
     ζ • x ∈ integralPoint K := by
   obtain ⟨_, ⟨a, rfl⟩, rfl⟩ := hx.2
-  exact ⟨torsion_unitSMul_mem_of_mem hx.1 hζ, ⟨ζ * a, ⟨ζ * a, rfl⟩, by rw [unitSMul_smul, map_mul]⟩⟩
+  exact ⟨torsion_smul_mem_of_mem hx.1 hζ, ⟨ζ * a, ⟨ζ * a, rfl⟩, by rw [unitSMul_smul, map_mul]⟩⟩
 
 /-- The action of `torsion K` on `integralPoint K`. -/
 @[simps]
@@ -337,7 +337,7 @@ def quotIntNorm :
     Quotient (MulAction.orbitRel (torsion K) (integralPoint K)) → ℕ :=
   Quotient.lift (fun x ↦ intNorm x) fun a b ⟨u, hu⟩ ↦ by
     rw [← Nat.cast_inj (R := ℝ), intNorm_coe, intNorm_coe, ← hu, integralPoint_torsionSMul_smul_coe,
-      norm_unitSMul]
+      norm_unit_smul]
 
 @[simp]
 theorem quotIntNorm_apply (a : integralPoint K) : quotIntNorm ⟦a⟧ = intNorm a := rfl
@@ -377,7 +377,7 @@ theorem integralPointToAssociates_eq_iff (a b : integralPoint K) :
     mixedEmbedding_preimageOfIntegralPoint, integralPoint_torsionSMul_smul_coe]
   refine ⟨fun ⟨u, h⟩ ↦  ⟨⟨unitsNonZeroDivisorsEquiv u, ?_⟩, by simpa using h⟩,
     fun ⟨⟨u, _⟩, h⟩ ↦ ⟨unitsNonZeroDivisorsEquiv.symm u, by simpa using h⟩⟩
-  exact (unitSMul_mem_iff_mem_torsion a.prop.1 _).mp (by simpa [h] using b.prop.1)
+  exact (unit_smul_mem_iff_mem_torsion a.prop.1 _).mp (by simpa [h] using b.prop.1)
 
 variable (K) in
 /-- The equivalence between `integralPoint K / torsion K` and `Associates (𝓞 K)⁰`. -/
