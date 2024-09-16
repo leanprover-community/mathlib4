@@ -324,18 +324,36 @@ lemma AnalyticWithinAt.pi (hf : ∀ i, AnalyticWithinAt 𝕜 (f i) s e) :
   choose p hp using hf
   exact ⟨FormalMultilinearSeries.pi p, HasFPowerSeriesWithinAt.pi hp⟩
 
+lemma analyticWithinAt_pi_iff :
+    AnalyticWithinAt 𝕜 (fun x ↦ (f · x)) s e ↔ ∀ i, AnalyticWithinAt 𝕜 (f i) s e := by
+  refine ⟨fun h i ↦ ?_, fun h ↦ .pi h⟩
+  exact ((ContinuousLinearMap.proj (R := 𝕜) i).analyticAt _).comp_analyticWithinAt h
+
 lemma AnalyticAt.pi (hf : ∀ i, AnalyticAt 𝕜 (f i) e) :
     AnalyticAt 𝕜 (fun x ↦ (f · x)) e := by
   simp_rw [← analyticWithinAt_univ] at hf ⊢
   exact AnalyticWithinAt.pi hf
 
+lemma analyticAt_pi_iff :
+    AnalyticAt 𝕜 (fun x ↦ (f · x)) e ↔ ∀ i, AnalyticAt 𝕜 (f i) e := by
+  simp_rw [← analyticWithinAt_univ]
+  exact analyticWithinAt_pi_iff
+
 lemma AnalyticWithinOn.pi (hf : ∀ i, AnalyticWithinOn 𝕜 (f i) s) :
     AnalyticWithinOn 𝕜 (fun x ↦ (f · x)) s :=
   fun x hx ↦ AnalyticWithinAt.pi (fun i ↦ hf i x hx)
 
+lemma analyticWithinOn_pi_iff :
+    AnalyticWithinOn 𝕜 (fun x ↦ (f · x)) s ↔ ∀ i, AnalyticWithinOn 𝕜 (f i) s :=
+  ⟨fun h i x hx ↦ analyticWithinAt_pi_iff.1 (h x hx) i, fun h ↦ .pi h⟩
+
 lemma AnalyticOn.pi (hf : ∀ i, AnalyticOn 𝕜 (f i) s) :
     AnalyticOn 𝕜 (fun x ↦ (f · x)) s :=
   fun x hx ↦ AnalyticAt.pi (fun i ↦ hf i x hx)
+
+lemma analyticOn_pi_iff :
+    AnalyticOn 𝕜 (fun x ↦ (f · x)) s ↔ ∀ i, AnalyticOn 𝕜 (f i) s :=
+  ⟨fun h i x hx ↦ analyticAt_pi_iff.1 (h x hx) i, fun h ↦ .pi h⟩
 
 end
 
@@ -523,13 +541,13 @@ theorem AnalyticAt.inv {f : E → 𝕝} {x : E} (fa : AnalyticAt 𝕜 f x) (f0 :
     AnalyticAt 𝕜 (fun x ↦ (f x)⁻¹) x :=
   (analyticAt_inv f0).comp fa
 
-/-- `x⁻¹` is analytic away from zero -/
+/-- `(f x)⁻¹` is analytic away from `f x = 0` -/
 theorem AnalyticWithinOn.inv {f : E → 𝕝} {s : Set E}
     (fa : AnalyticWithinOn 𝕜 f s) (f0 : ∀ x ∈ s, f x ≠ 0) :
     AnalyticWithinOn 𝕜 (fun x ↦ (f x)⁻¹) s :=
   fun x m ↦ (fa x m).inv (f0 x m)
 
-/-- `x⁻¹` is analytic away from zero -/
+/-- `(f x)⁻¹` is analytic away from `f x = 0` -/
 theorem AnalyticOn.inv {f : E → 𝕝} {s : Set E} (fa : AnalyticOn 𝕜 f s) (f0 : ∀ x ∈ s, f x ≠ 0) :
     AnalyticOn 𝕜 (fun x ↦ (f x)⁻¹) s :=
   fun x m ↦ (fa x m).inv (f0 x m)
