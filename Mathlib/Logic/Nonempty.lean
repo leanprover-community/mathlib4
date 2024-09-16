@@ -32,9 +32,7 @@ theorem Nonempty.exists {α} {p : Nonempty α → Prop} : (∃ h : Nonempty α, 
 theorem exists_true_iff_nonempty {α : Sort*} : (∃ _ : α, True) ↔ Nonempty α :=
   Iff.intro (fun ⟨a, _⟩ ↦ ⟨a⟩) fun ⟨a⟩ ↦ ⟨a, trivial⟩
 
-@[simp]
-theorem nonempty_Prop {p : Prop} : Nonempty p ↔ p :=
-  Iff.intro (fun ⟨h⟩ ↦ h) fun h ↦ ⟨h⟩
+@[deprecated (since := "2024-08-30")] alias nonempty_Prop := nonempty_prop
 
 theorem Nonempty.imp {α} {p : Prop} : (Nonempty α → p) ↔ (α → p) :=
   Nonempty.forall
@@ -55,7 +53,7 @@ theorem nonempty_pprod {α β} : Nonempty (PProd α β) ↔ Nonempty α ∧ None
   Iff.intro (fun ⟨⟨a, b⟩⟩ ↦ ⟨⟨a⟩, ⟨b⟩⟩) fun ⟨⟨a⟩, ⟨b⟩⟩ ↦ ⟨⟨a, b⟩⟩
 
 @[simp]
-theorem nonempty_psum {α β} : Nonempty (PSum α β) ↔ Nonempty α ∨ Nonempty β :=
+theorem nonempty_psum {α β} : Nonempty (α ⊕' β) ↔ Nonempty α ∨ Nonempty β :=
   Iff.intro
     (fun ⟨h⟩ ↦
       match h with
@@ -136,7 +134,7 @@ theorem nonempty_sigma : Nonempty (Σa : α, γ a) ↔ ∃ a : α, Nonempty (γ 
   Iff.intro (fun ⟨⟨a, c⟩⟩ ↦ ⟨a, ⟨c⟩⟩) fun ⟨a, ⟨c⟩⟩ ↦ ⟨⟨a, c⟩⟩
 
 @[simp]
-theorem nonempty_sum : Nonempty (Sum α β) ↔ Nonempty α ∨ Nonempty β :=
+theorem nonempty_sum : Nonempty (α ⊕ β) ↔ Nonempty α ∨ Nonempty β :=
   Iff.intro
     (fun ⟨h⟩ ↦
       match h with

@@ -60,9 +60,6 @@ theorem Applicative.ext {F} :
 
 end Lemmas
 
--- Porting note: mathport failed to see the #align on `CommApplicative`,
--- therefore using `IsCommApplicative` instead.
-
 -- Porting note: we have a monad instance for `Id` but not `id`, mathport can't tell
 -- which one is intended
 
@@ -85,11 +82,11 @@ theorem map_pure (f : α → β) (x : α) : (f <$> pure x : Comp F G β) = pure 
   Comp.ext <| by simp
 
 theorem seq_pure (f : Comp F G (α → β)) (x : α) : f <*> pure x = (fun g : α → β => g x) <$> f :=
-  Comp.ext <| by simp [(· ∘ ·), functor_norm]
+  Comp.ext <| by simp [comp_def, functor_norm]
 
 theorem seq_assoc (x : Comp F G α) (f : Comp F G (α → β)) (g : Comp F G (β → γ)) :
     g <*> (f <*> x) = @Function.comp α β γ <$> g <*> f <*> x :=
-  Comp.ext <| by simp [(· ∘ ·), functor_norm]
+  Comp.ext <| by simp [comp_def, functor_norm]
 
 theorem pure_seq_eq_map (f : α → β) (x : Comp F G α) : pure f <*> x = f <$> x :=
   Comp.ext <| by simp [Applicative.pure_seq_eq_map', functor_norm]
@@ -98,21 +95,21 @@ theorem pure_seq_eq_map (f : α → β) (x : Comp F G α) : pure f <*> x = f <$>
 instance instLawfulApplicativeComp : LawfulApplicative (Comp F G) where
   seqLeft_eq := by intros; rfl
   seqRight_eq := by intros; rfl
-  pure_seq := @Comp.pure_seq_eq_map F G _ _ _ _
-  map_pure := @Comp.map_pure F G _ _ _ _
-  seq_pure := @Comp.seq_pure F G _ _ _ _
-  seq_assoc := @Comp.seq_assoc F G _ _ _ _
+  pure_seq := Comp.pure_seq_eq_map
+  map_pure := Comp.map_pure
+  seq_pure := Comp.seq_pure
+  seq_assoc := Comp.seq_assoc
 
 -- Porting note: mathport wasn't aware of the new implicit parameter omission in these `fun` binders
 
 theorem applicative_id_comp {F} [AF : Applicative F] [LawfulApplicative F] :
     @instApplicativeComp Id F _ _ = AF :=
-  @Applicative.ext F _ _ (@instLawfulApplicativeComp Id F _ _ _ _) _
+  @Applicative.ext F _ _ (instLawfulApplicativeComp (F := Id)) _
     (fun _ => rfl) (fun _ _ => rfl)
 
 theorem applicative_comp_id {F} [AF : Applicative F] [LawfulApplicative F] :
     @Comp.instApplicativeComp F Id _ _ = AF :=
-  @Applicative.ext F _ _ (@Comp.instLawfulApplicativeComp F Id _ _ _ _) _
+  @Applicative.ext F _ _ (instLawfulApplicativeComp (G := Id)) _
     (fun _ => rfl) (fun f x => show id <$> f <*> x = f <*> x by rw [id_map])
 
 open CommApplicative
@@ -122,7 +119,7 @@ instance {f : Type u → Type w} {g : Type v → Type u} [Applicative f] [Applic
   commutative_prod _ _ := by
     simp! [map, Seq.seq]
     rw [commutative_map]
-    simp only [mk, flip, seq_map_assoc, Function.comp, map_map]
+    simp only [mk, flip, seq_map_assoc, Function.comp_def, map_map]
     congr
     funext x y
     rw [commutative_map]

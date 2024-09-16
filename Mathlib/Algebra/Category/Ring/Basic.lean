@@ -211,8 +211,6 @@ def ofHom {R S : Type u} [Ring R] [Ring S] (f : R →+* S) : of R ⟶ of S :=
 -- @[simp]
 -- theorem ofHom_apply {R S : Type u} [Ring R] [Ring S] (f : R →+* S) (x : R) : ofHom f x = f x :=
 --   rfl
--- set_option linter.uppercaseLean3 false in
--- #align Ring.of_hom_apply RingCat.ofHom_apply
 
 instance : Inhabited RingCat :=
   ⟨of PUnit⟩
@@ -343,7 +341,6 @@ lemma RingEquiv_coe_eq {X Y : Type _} [CommSemiring X] [CommSemiring Y] (e : X �
 -- theorem ofHom_apply {R S : Type u} [CommSemiring R] [CommSemiring S] (f : R →+* S) (x : R) :
 --     ofHom f x = f x :=
 --   rfl
--- set_option linter.uppercaseLean3 false in
 
 instance : Inhabited CommSemiRingCat :=
   ⟨of PUnit⟩
@@ -457,6 +454,12 @@ lemma coe_comp {X Y Z : CommRingCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X 
 /-- Specialization of `ConcreteCategory.id_apply` because `simp` can't see through the defeq. -/
 @[simp] lemma id_apply (R : CommRingCat) (x : R) : 𝟙 R x = x := rfl
 
+@[simp]
+theorem comp_apply {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) (x : R) :
+    (f ≫ g) x = g (f x) := rfl
+
+@[simp] theorem forget_obj (R : CommRingCat) : (forget _).obj R = R := rfl
+
 @[simp] lemma forget_map {X Y : CommRingCat} (f : X ⟶ Y) :
     (forget CommRingCat).map f = (f : X → Y) := rfl
 
@@ -488,7 +491,7 @@ def ofHom {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) : of R ⟶ of
 
 @[simp]
 lemma RingEquiv_coe_eq {X Y : Type _} [CommRing X] [CommRing Y] (e : X ≃+* Y) :
-    (@DFunLike.coe (CommRingCat.of X ⟶ CommRingCat.of Y) _ (fun _ => (forget CommRingCat).obj _)
+    (@DFunLike.coe (CommRingCat.of X ⟶ CommRingCat.of Y) X (fun _ => Y)
       ConcreteCategory.instFunLike (e : X →+* Y) : X → Y) = ↑e :=
   rfl
 
@@ -497,7 +500,6 @@ lemma RingEquiv_coe_eq {X Y : Type _} [CommRing X] [CommRing Y] (e : X ≃+* Y) 
 -- theorem ofHom_apply {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) (x : R) :
 --     ofHom f x = f x :=
 --   rfl
--- set_option linter.uppercaseLean3 false in
 
 instance : Inhabited CommRingCat :=
   ⟨of PUnit⟩

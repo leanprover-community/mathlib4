@@ -3,10 +3,10 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.Group.ConjFinite
 import Mathlib.GroupTheory.Perm.Fin
 import Mathlib.GroupTheory.Subgroup.Simple
 import Mathlib.Tactic.IntervalCases
+import Mathlib.Data.Fintype.Units
 
 /-!
 # Alternating Groups
@@ -52,7 +52,7 @@ def alternatingGroup : Subgroup (Perm α) :=
   sign.ker
 
 -- Porting note (#10754): manually added instance
-instance fta : Fintype (alternatingGroup α) :=
+instance alternatingGroup.instFintype : Fintype (alternatingGroup α) :=
   @Subtype.fintype _ _ sign.decidableMemKer _
 
 instance [Subsingleton α] : Unique (alternatingGroup α) :=

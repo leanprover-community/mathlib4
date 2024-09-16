@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Wojciech Nawrocki
 -/
 import Batteries.Data.RBMap.Basic
 import Mathlib.Data.Nat.Notation
-import Mathlib.Mathport.Rename
 import Mathlib.Tactic.TypeStar
 import Mathlib.Util.CompileInductive
 

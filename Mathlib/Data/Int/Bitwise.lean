@@ -24,7 +24,7 @@ def div2 : ℤ → ℤ
   | (n : ℕ) => n.div2
   | -[n +1] => negSucc n.div2
 
-/-- `bodd n` returns `true` if `n` is odd-/
+/-- `bodd n` returns `true` if `n` is odd -/
 def bodd : ℤ → Bool
   | (n : ℕ) => n.bodd
   | -[n +1] => not (n.bodd)
@@ -81,7 +81,7 @@ def ldiff : ℤ → ℤ → ℤ
   | -[m +1], -[n +1] => Nat.ldiff n m
 
 -- Porting note: I don't know why `Nat.xor'` got the prime, but I'm matching this change here
-/-- `xor` computes the bitwise `xor` of two natural numbers-/
+/-- `xor` computes the bitwise `xor` of two natural numbers -/
 protected def xor : ℤ → ℤ → ℤ
   | (m : ℕ), (n : ℕ) => (m ^^^ n)
   | (m : ℕ), -[n +1] => -[(m ^^^ n) +1]
@@ -234,7 +234,6 @@ theorem testBit_bit_succ (m b) : ∀ n, testBit (bit b n) (Nat.succ m) = testBit
 -- Porting note (#11215): TODO
 -- private unsafe def bitwise_tac : tactic Unit :=
 --   sorry
--- #align int.bitwise_tac int.bitwise_tac
 
 -- Porting note: Was `bitwise_tac` in mathlib
 theorem bitwise_or : bitwise or = lor := by

@@ -122,9 +122,6 @@ theorem map_dite (F : C ⥤ D) {X Y : C} {P : Prop} [Decidable P]
     F.map (if h : P then f h else g h) = if h : P then F.map (f h) else F.map (g h) := by
   aesop_cat
 
--- Porting note: `to_prefunctor_obj` and `to_prefunctor_map` are now tautologies,
--- so have not been ported.
-
 @[simp]
 theorem toPrefunctor_comp (F : C ⥤ D) (G : D ⥤ E) :
     F.toPrefunctor.comp G.toPrefunctor = (F ⋙ G).toPrefunctor := rfl

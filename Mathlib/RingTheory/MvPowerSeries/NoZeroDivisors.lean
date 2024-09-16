@@ -56,8 +56,10 @@ theorem mem_nonZeroDivisors_of_constantCoeff {φ : MvPowerSeries σ R}
   rw [Finset.sum_eq_single (e,0), coeff_zero_eq_constantCoeff]
   · rintro ⟨u, _⟩ huv _
     suffices u < e by simp only [he u this, zero_mul, map_zero]
-    have hue : u ≤ e := by simp only [← mem_antidiagonal.mp huv, le_add_iff_nonneg_right, zero_le]
-    exact ⟨hue, fun h ↦ by simp_all [mem_antidiagonal.mp huv, le_antisymm hue h]⟩
+    apply lt_of_le_of_ne
+    · simp only [← mem_antidiagonal.mp huv, le_add_iff_nonneg_right, zero_le]
+    · rintro rfl
+      simp_all
   · simp only [mem_antidiagonal, add_zero, not_true_eq_false, coeff_zero_eq_constantCoeff,
       false_implies]
 

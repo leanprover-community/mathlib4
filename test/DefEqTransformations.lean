@@ -1,10 +1,11 @@
 import Mathlib.Tactic.DefEqTransformations
-import Mathlib.Init.Logic
 
 set_option autoImplicit true
 
 private axiom test_sorry : ∀ {α}, α
 namespace Tests
+
+set_option linter.unusedTactic false
 
 example : id (1 = 1) := by
   with_reducible whnf
@@ -182,3 +183,5 @@ example (n : Fin 5) : n = ⟨n.val2, n.prop2⟩ := by
   eta_struct
   guard_target =ₛ n = n
   rfl
+
+end Tests

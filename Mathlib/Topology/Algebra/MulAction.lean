@@ -61,6 +61,8 @@ export ContinuousVAdd (continuous_vadd)
 
 attribute [to_additive] ContinuousSMul
 
+attribute [continuity, fun_prop] continuous_smul continuous_vadd
+
 section Main
 
 variable {M X Y α : Type*} [TopologicalSpace M] [TopologicalSpace X] [TopologicalSpace Y]
@@ -69,6 +71,13 @@ section SMul
 
 variable [SMul M X] [ContinuousSMul M X]
 
+lemma IsScalarTower.continuousSMul {M : Type*} (N : Type*) {α : Type*} [Monoid N] [SMul M N]
+    [MulAction N α] [SMul M α] [IsScalarTower M N α] [TopologicalSpace M] [TopologicalSpace N]
+    [TopologicalSpace α] [ContinuousSMul M N] [ContinuousSMul N α] : ContinuousSMul M α :=
+  { continuous_smul := by
+      suffices Continuous (fun p : M × α ↦ (p.1 • (1 : N)) • p.2) by simpa
+      fun_prop }
+
 @[to_additive]
 instance : ContinuousSMul (ULift M) X :=
   ⟨(continuous_smul (M := M)).comp₂ (continuous_uLift_down.comp continuous_fst) continuous_snd⟩
@@ -76,6 +85,15 @@ instance : ContinuousSMul (ULift M) X :=
 @[to_additive]
 instance (priority := 100) ContinuousSMul.continuousConstSMul : ContinuousConstSMul M X where
   continuous_const_smul _ := continuous_smul.comp (continuous_const.prod_mk continuous_id)
+
+theorem ContinuousSMul.induced {R : Type*} {α : Type*} {β : Type*} {F : Type*} [FunLike F α β]
+    [Semiring R] [AddCommMonoid α] [AddCommMonoid β] [Module R α] [Module R β]
+    [TopologicalSpace R] [LinearMapClass F R α β] [tβ : TopologicalSpace β] [ContinuousSMul R β]
+    (f : F) : @ContinuousSMul R α _ _ (tβ.induced f) := by
+  let tα := tβ.induced f
+  refine ⟨continuous_induced_rng.2 ?_⟩
+  simp only [Function.comp_def, map_smul]
+  fun_prop
 
 @[to_additive]
 theorem Filter.Tendsto.smul {f : α → M} {g : α → X} {l : Filter α} {c : M} {a : X}
@@ -205,6 +223,12 @@ variable [Group M] [MulAction M X] [ContinuousSMul M X]
 instance Subgroup.continuousSMul {S : Subgroup M} : ContinuousSMul S X :=
   S.toSubmonoid.continuousSMul
 
+variable (M)
+
+/-- The stabilizer of a continuous group action on a discrete space is an open subgroup. -/
+lemma stabilizer_isOpen [DiscreteTopology X] (x : X) : IsOpen (MulAction.stabilizer M x : Set M) :=
+  IsOpen.preimage (f := fun g ↦ g • x) (by fun_prop) (isOpen_discrete {x})
+
 end Group
 
 @[to_additive]
@@ -258,6 +282,7 @@ section AddTorsor
 variable (G : Type*) (P : Type*) [AddGroup G] [AddTorsor G P] [TopologicalSpace G]
 variable [PreconnectedSpace G] [TopologicalSpace P] [ContinuousVAdd G P]
 
+include G in
 /-- An `AddTorsor` for a connected space is a connected space. This is not an instance because
 it loops for a group as a torsor over itself. -/
 protected theorem AddTorsor.connectedSpace : ConnectedSpace P :=

@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov, Alex Kontorovich
+Authors: Yury Kudryashov, Alex Kontorovich
 -/
 import Mathlib.Order.Filter.Bases
 
@@ -20,10 +20,7 @@ In this file we define two filters on `Π i, α i` and prove some basic properti
 -/
 
 
-open Set Function
-
-open scoped Classical
-open Filter
+open Set Function Filter
 
 namespace Filter
 
@@ -83,6 +80,7 @@ theorem mem_pi' {s : Set (∀ i, α i)} :
 
 theorem mem_of_pi_mem_pi [∀ i, NeBot (f i)] {I : Set ι} (h : I.pi s ∈ pi f) {i : ι} (hi : i ∈ I) :
     s i ∈ f i := by
+  classical
   rcases mem_pi.1 h with ⟨I', -, t, htf, hts⟩
   refine mem_of_superset (htf i) fun x hx => ?_
   have : ∀ i, (t i).Nonempty := fun i => nonempty_of_mem (htf i)
@@ -102,7 +100,7 @@ theorem Eventually.eval_pi {i : ι} (hf : ∀ᶠ x : α i in f i, p i x) :
 theorem eventually_pi [Finite ι] (hf : ∀ i, ∀ᶠ x in f i, p i x) :
     ∀ᶠ x : ∀ i, α i in pi f, ∀ i, p i (x i) := eventually_all.2 fun _i => (hf _).eval_pi
 
-theorem hasBasis_pi {ι' : ι → Type} {s : ∀ i, ι' i → Set (α i)} {p : ∀ i, ι' i → Prop}
+theorem hasBasis_pi {ι' : ι → Type*} {s : ∀ i, ι' i → Set (α i)} {p : ∀ i, ι' i → Prop}
     (h : ∀ i, (f i).HasBasis (p i) (s i)) :
     (pi f).HasBasis (fun If : Set ι × ∀ i, ι' i => If.1.Finite ∧ ∀ i ∈ If.1, p i (If.2 i))
       fun If : Set ι × ∀ i, ι' i => If.1.pi fun i => s i <| If.2 i := by
@@ -138,6 +136,7 @@ theorem pi_inf_principal_univ_pi_eq_bot :
 @[simp]
 theorem pi_inf_principal_pi_eq_bot [∀ i, NeBot (f i)] {I : Set ι} :
     pi f ⊓ 𝓟 (Set.pi I s) = ⊥ ↔ ∃ i ∈ I, f i ⊓ 𝓟 (s i) = ⊥ := by
+  classical
   rw [← univ_pi_piecewise_univ I, pi_inf_principal_univ_pi_eq_bot]
   refine exists_congr fun i => ?_
   by_cases hi : i ∈ I <;> simp [hi, NeBot.ne']

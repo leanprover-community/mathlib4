@@ -11,6 +11,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.Tactic.CategoryTheory.Elementwise
 import Mathlib.Data.Set.Subsingleton
+import Mathlib.Logic.Relation
 
 /-!
 # Special shapes for limits in `Type`.
@@ -552,7 +553,7 @@ theorem coequalizer_preimage_image_eq_of_preimage_eq (π : Y ⟶ Z) (e : f ≫ �
       (mono_iff_injective
             (h.coconePointUniqueUpToIso (coequalizerColimit f g).isColimit).inv).mp
         inferInstance e'
-    exact (eqv.eqvGen_iff.mp (EqvGen.mono lem (Quot.exact _ e'))).mp hy
+    exact (eqv.eqvGen_iff.mp (Relation.EqvGen.mono lem (Quot.eqvGen_exact e'))).mp hy
   · exact fun hx => ⟨_, hx, rfl⟩
 
 /-- The categorical coequalizer in `Type u` is the quotient by `f g ~ g x`. -/
@@ -574,12 +575,6 @@ end Cofork
 
 section Pullback
 
-open CategoryTheory.Limits.WalkingPair
-
-open CategoryTheory.Limits.WalkingCospan
-
-open CategoryTheory.Limits.WalkingCospan.Hom
-
 -- #synth HasPullbacks.{u} (Type u)
 instance : HasPullbacks.{u} (Type u) :=
   -- FIXME does not work via `inferInstance` despite `#synth HasPullbacks.{u} (Type u)` succeeding.
@@ -590,8 +585,8 @@ instance : HasPullbacks.{u} (Type u) :=
 instance : HasPushouts.{u} (Type u) :=
   hasPushouts_of_hasWidePushouts.{u} (Type u)
 
-variable {W X Y Z : Type u}
-variable (f : X ⟶ Z) (g : Y ⟶ Z)
+variable {X Y Z : Type u} {X' Y' Z' : Type v}
+variable (f : X ⟶ Z) (g : Y ⟶ Z) (f' : X' ⟶ Z') (g' : Y' ⟶ Z')
 
 -- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- The usual explicit pullback in the category of types, as a subtype of the product.
@@ -623,47 +618,116 @@ def pullbackLimitCone (f : X ⟶ Z) (g : Y ⟶ Z) : Limits.LimitCone (cospan f g
         Subtype.ext <|
           Prod.ext (congr_fun (w WalkingCospan.left) x) (congr_fun (w WalkingCospan.right) x)
 
-/-- The pullback cone given by the instance `HasPullbacks (Type u)` is isomorphic to the
-explicit pullback cone given by `pullbackLimitCone`.
--/
-noncomputable def pullbackConeIsoPullback : limit.cone (cospan f g) ≅ pullbackCone f g :=
-  (limit.isLimit _).uniqueUpToIso (pullbackLimitCone f g).isLimit
+end Pullback
+
+end Types
+
+section Pullback
+
+variable {X Y S : Type v} {f : X ⟶ S} {g : Y ⟶ S} {c : PullbackCone f g}
+
+namespace PullbackCone
+
+namespace IsLimit
+
+variable (hc : IsLimit c)
+
+/-- A limit pullback cone in the category of types identifies to the explicit pullback. -/
+noncomputable def equivPullbackObj : c.pt ≃ Types.PullbackObj f g :=
+  (IsLimit.conePointUniqueUpToIso hc (Types.pullbackLimitCone f g).isLimit).toEquiv
+
+@[simp]
+lemma equivPullbackObj_apply_fst (x : c.pt) : (equivPullbackObj hc x).1.1 = c.fst x :=
+  congr_fun (IsLimit.conePointUniqueUpToIso_hom_comp hc
+    (Types.pullbackLimitCone f g).isLimit .left) x
+
+@[simp]
+lemma equivPullbackObj_apply_snd (x : c.pt) : (equivPullbackObj hc x).1.2 = c.snd x :=
+  congr_fun (IsLimit.conePointUniqueUpToIso_hom_comp hc
+    (Types.pullbackLimitCone f g).isLimit .right) x
+
+@[simp]
+lemma equivPullbackObj_symm_apply_fst (x : Types.PullbackObj f g) :
+    c.fst ((equivPullbackObj hc).symm x) = x.1.1 := by
+  obtain ⟨x, rfl⟩ := (equivPullbackObj hc).surjective x
+  simp
+
+@[simp]
+lemma equivPullbackObj_symm_apply_snd (x : Types.PullbackObj f g) :
+    c.snd ((equivPullbackObj hc).symm x) = x.1.2 := by
+  obtain ⟨x, rfl⟩ := (equivPullbackObj hc).surjective x
+  simp
+
+include hc in
+lemma type_ext {x y : c.pt} (h₁ : c.fst x = c.fst y) (h₂ : c.snd x = c.snd y) : x = y :=
+  (equivPullbackObj hc).injective (by ext <;> assumption)
+
+end IsLimit
+
+variable (c)
+
+/-- Given `c : PullbackCone f g` in the category of types, this is
+the canonical map `c.pt → Types.PullbackObj f g`. -/
+@[simps coe_fst coe_snd]
+def toPullbackObj (x : c.pt) : Types.PullbackObj f g :=
+  ⟨⟨c.fst x, c.snd x⟩, congr_fun c.condition x⟩
+
+/-- A pullback cone `c` in the category of types is limit iff the
+map `c.toPullbackObj : c.pt → Types.PullbackObj f g` is a bijection. -/
+noncomputable def isLimitEquivBijective :
+    IsLimit c ≃ Function.Bijective c.toPullbackObj where
+  toFun h := (IsLimit.equivPullbackObj h).bijective
+  invFun h := IsLimit.ofIsoLimit (Types.pullbackLimitCone f g).isLimit
+    (Iso.symm (PullbackCone.ext (Equiv.ofBijective _ h).toIso))
+  left_inv _ := Subsingleton.elim _ _
+  right_inv _ := rfl
+
+end PullbackCone
+
+end Pullback
+
+namespace Types
+
+section Pullback
+
+open CategoryTheory.Limits.WalkingCospan
+
+variable {W X Y Z : Type u}
+variable (f : X ⟶ Z) (g : Y ⟶ Z)
 
 /-- The pullback given by the instance `HasPullbacks (Type u)` is isomorphic to the
 explicit pullback object given by `PullbackObj`.
 -/
 noncomputable def pullbackIsoPullback : pullback f g ≅ PullbackObj f g :=
-  (Cones.forget _).mapIso <| pullbackConeIsoPullback f g
+  (PullbackCone.IsLimit.equivPullbackObj (pullbackIsPullback f g)).toIso
 
 @[simp]
 theorem pullbackIsoPullback_hom_fst (p : pullback f g) :
     ((pullbackIsoPullback f g).hom p : X × Y).fst = (pullback.fst f g) p :=
-  congr_fun ((pullbackConeIsoPullback f g).hom.w left) p
+  PullbackCone.IsLimit.equivPullbackObj_apply_fst (pullbackIsPullback f g) p
 
 @[simp]
 theorem pullbackIsoPullback_hom_snd (p : pullback f g) :
     ((pullbackIsoPullback f g).hom p : X × Y).snd = (pullback.snd f g) p :=
-  congr_fun ((pullbackConeIsoPullback f g).hom.w right) p
-
-@[simp]
-theorem pullbackIsoPullback_inv_fst :
-    (pullbackIsoPullback f g).inv ≫ pullback.fst _ _ = fun p => (p.1 : X × Y).fst :=
-  (pullbackConeIsoPullback f g).inv.w left
+  PullbackCone.IsLimit.equivPullbackObj_apply_snd (pullbackIsPullback f g) p
 
 @[simp]
 theorem pullbackIsoPullback_inv_fst_apply (x : (Types.pullbackCone f g).pt) :
-    (pullback.fst f g) ((pullbackIsoPullback f g).inv x) = (fun p => (p.1 : X × Y).fst) x := by
-  rw [elementwise_of% pullbackIsoPullback_inv_fst]
-
-@[simp]
-theorem pullbackIsoPullback_inv_snd :
-    (pullbackIsoPullback f g).inv ≫ pullback.snd _ _ = fun p => (p.1 : X × Y).snd :=
-  (pullbackConeIsoPullback f g).inv.w right
+    (pullback.fst f g) ((pullbackIsoPullback f g).inv x) = (fun p => (p.1 : X × Y).fst) x :=
+  PullbackCone.IsLimit.equivPullbackObj_symm_apply_fst (pullbackIsPullback f g) x
 
 @[simp]
 theorem pullbackIsoPullback_inv_snd_apply (x : (Types.pullbackCone f g).pt) :
-    (pullback.snd f g) ((pullbackIsoPullback f g).inv x) = (fun p => (p.1 : X × Y).snd) x := by
-  rw [elementwise_of% pullbackIsoPullback_inv_snd]
+    (pullback.snd f g) ((pullbackIsoPullback f g).inv x) = (fun p => (p.1 : X × Y).snd) x :=
+  PullbackCone.IsLimit.equivPullbackObj_symm_apply_snd (pullbackIsPullback f g) x
+
+@[simp]
+theorem pullbackIsoPullback_inv_fst :
+    (pullbackIsoPullback f g).inv ≫ pullback.fst _ _ = fun p => (p.1 : X × Y).fst := by aesop
+
+@[simp]
+theorem pullbackIsoPullback_inv_snd :
+    (pullbackIsoPullback f g).inv ≫ pullback.snd _ _ = fun p => (p.1 : X × Y).snd := by aesop
 
 end Pullback
 

@@ -16,8 +16,8 @@ series.  In the multiplicative case, a standard example is the action of non-neg
 an ordered field.
 
 ## Implementation notes
-
-* Beause these classes mix the algebra and order hierarchies, we write them as `Prop`-valued mixins.
+* Because these classes mix the algebra and order hierarchies, we write them as `Prop`-valued
+  mixins.
 * Despite the file name, Ordered AddTorsors are not defined as a separate class.  To implement them,
   combine `[AddTorsor G P]` with `[IsOrderedCancelVAdd G P]`
 
@@ -42,10 +42,9 @@ an ordered field.
 * IsOrderedCancelVAdd.toContravariantClassLeft
 
 ## TODO
-* definitions and finiteness results for antidiagonals
 * (lex) prod instances
 * Pi instances
-
+* WithTop (in a different file?)
 -/
 
 open Function
@@ -75,6 +74,18 @@ instance [LE G] [LE P] [SMul G P] [IsOrderedSMul G P] : CovariantClass G P (· �
 instance [OrderedCommMonoid G] : IsOrderedSMul G G where
   smul_le_smul_left _ _ := mul_le_mul_left'
   smul_le_smul_right _ _ := mul_le_mul_right'
+
+@[to_additive]
+theorem IsOrderedSMul.smul_le_smul [Preorder G] [Preorder P] [SMul G P] [IsOrderedSMul G P]
+    {a b : G} {c d : P} (hab : a ≤ b) (hcd : c ≤ d) : a • c ≤ b • d :=
+  (IsOrderedSMul.smul_le_smul_left _ _ hcd _).trans (IsOrderedSMul.smul_le_smul_right _ _ hab _)
+
+@[to_additive]
+theorem Monotone.smul {γ : Type*} [Preorder G] [Preorder P] [Preorder γ] [SMul G P]
+    [IsOrderedSMul G P] {f : γ → G} {g : γ → P} (hf : Monotone f) (hg : Monotone g) :
+    Monotone fun x => f x • g x :=
+  fun _ _ hab => (IsOrderedSMul.smul_le_smul_left _ _ (hg hab) _).trans
+    (IsOrderedSMul.smul_le_smul_right _ _ (hf hab) _)
 
 /-- A vector addition is cancellative if it is pointwise injective on the left and right. -/
 class IsCancelVAdd (G P : Type*) [VAdd G P] : Prop where
@@ -118,6 +129,11 @@ instance [OrderedCancelCommMonoid G] : IsOrderedCancelSMul G G where
   le_of_smul_le_smul_left _ _ _ := le_of_mul_le_mul_left'
   le_of_smul_le_smul_right _ _ _ := le_of_mul_le_mul_right'
 
+@[to_additive]
+instance (priority := 200) [LE G] [LE P] [SMul G P] [IsOrderedCancelSMul G P] :
+    ContravariantClass G P (· • ·) (· ≤ ·) :=
+  ⟨IsOrderedCancelSMul.le_of_smul_le_smul_left⟩
+
 namespace SMul
 
 @[to_additive]
@@ -142,8 +158,3 @@ theorem smul_lt_smul_of_lt_of_le [Preorder G] [Preorder P] [SMul G P] [IsOrdered
   simp_all only [not_true_eq_false, and_false]
 
 end SMul
-
-@[to_additive]
-instance (priority := 200) [LE G] [LE P] [SMul G P] [IsOrderedCancelSMul G P] :
-    ContravariantClass G P (· • ·) (· ≤ ·) :=
-  ⟨IsOrderedCancelSMul.le_of_smul_le_smul_left⟩

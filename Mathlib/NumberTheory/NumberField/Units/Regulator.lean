@@ -3,7 +3,7 @@ Copyright (c) 2024 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.Algebra.Module.Zlattice.Covolume
+import Mathlib.Algebra.Module.ZLattice.Covolume
 import Mathlib.LinearAlgebra.Matrix.Determinant.Misc
 import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
 
@@ -37,12 +37,12 @@ open MeasureTheory Classical BigOperators NumberField.InfinitePlace
 
 variable [NumberField K]
 
-/-- The regulator of a number fied `K`. -/
-def regulator : ℝ := Zlattice.covolume (unitLattice K)
+/-- The regulator of a number field `K`. -/
+def regulator : ℝ := ZLattice.covolume (unitLattice K)
 
-theorem regulator_ne_zero : regulator K ≠ 0 := Zlattice.covolume_ne_zero (unitLattice K) volume
+theorem regulator_ne_zero : regulator K ≠ 0 := ZLattice.covolume_ne_zero (unitLattice K) volume
 
-theorem regulator_pos : 0 < regulator K := Zlattice.covolume_pos (unitLattice K) volume
+theorem regulator_pos : 0 < regulator K := ZLattice.covolume_pos (unitLattice K) volume
 
 #adaptation_note
 /--
@@ -58,9 +58,9 @@ set_option maxSynthPendingDepth 2 -- Note this is active for the remainder of th
 
 theorem regulator_eq_det' (e : {w : InfinitePlace K // w ≠ w₀} ≃ Fin (rank K)) :
     regulator K = |(Matrix.of fun i ↦ (logEmbedding K) (fundSystem K (e i))).det| := by
-  simp_rw [regulator, Zlattice.covolume_eq_det _
+  simp_rw [regulator, ZLattice.covolume_eq_det _
     (((basisModTorsion K).map (logEmbeddingEquiv K)).reindex e.symm), Basis.coe_reindex,
-    Function.comp, Basis.map_apply, ← fundSystem_mk, Equiv.symm_symm]
+    Function.comp_def, Basis.map_apply, ← fundSystem_mk, Equiv.symm_symm]
   rfl
 
 /-- Let `u : Fin (rank K) → (𝓞 K)ˣ` be a family of units and let `w₁` and `w₂` be two infinite
@@ -84,14 +84,14 @@ theorem abs_det_eq_abs_det (u : Fin (rank K) → (𝓞 K)ˣ)
   rw [← h_col]
   have h := congr_arg abs <| Matrix.submatrix_succAbove_det_eq_negOnePow_submatrix_succAbove_det'
     (Matrix.of fun i w ↦ (mult (f w) : ℝ) * ((f w) (u i)).log) ?_ 0 (f.symm w₂)
-  rw [← Matrix.det_reindex_self e₁, ← Matrix.det_reindex_self g]
-  · rw [Units.smul_def, abs_zsmul, Int.abs_negOnePow, one_smul] at h
-    convert h
-    · ext; simp only [ne_eq, Matrix.reindex_apply, Matrix.submatrix_apply, Matrix.of_apply,
-        Equiv.apply_symm_apply, Equiv.trans_apply, Fin.succAbove_zero, id_eq, finSuccEquiv_succ,
-        Equiv.optionSubtype_symm_apply_apply_coe, f]
-    · ext; simp only [ne_eq, Equiv.coe_trans, Matrix.reindex_apply, Matrix.submatrix_apply,
-        Function.comp_apply, Equiv.apply_symm_apply, id_eq, Matrix.of_apply]; rfl
+  · rw [← Matrix.det_reindex_self e₁, ← Matrix.det_reindex_self g]
+    · rw [Units.smul_def, abs_zsmul, Int.abs_negOnePow, one_smul] at h
+      convert h
+      · ext; simp only [ne_eq, Matrix.reindex_apply, Matrix.submatrix_apply, Matrix.of_apply,
+          Equiv.apply_symm_apply, Equiv.trans_apply, Fin.succAbove_zero, id_eq, finSuccEquiv_succ,
+          Equiv.optionSubtype_symm_apply_apply_coe, f]
+      · ext; simp only [ne_eq, Equiv.coe_trans, Matrix.reindex_apply, Matrix.submatrix_apply,
+          Function.comp_apply, Equiv.apply_symm_apply, id_eq, Matrix.of_apply]; rfl
   · intro _
     simp_rw [Matrix.of_apply, ← Real.log_pow]
     rw [← Real.log_prod, Equiv.prod_comp f (fun w ↦ (w (u _) ^ (mult w))), prod_eq_abs_norm,

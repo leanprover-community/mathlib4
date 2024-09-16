@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Adam Topaz, Bhavik Mehta
+Authors: Adam Topaz, Bhavik Mehta, Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Monad.Limits
 import Mathlib.Topology.StoneCech
@@ -17,12 +17,17 @@ The type of compact Hausdorff spaces is denoted `CompHaus`, and it is endowed wi
 instance making it a full subcategory of `TopCat`.
 The fully faithful functor `CompHaus ⥤ TopCat` is denoted `compHausToTop`.
 
-**Note:** The file `Topology/Category/Compactum.lean` provides the equivalence between `Compactum`,
-which is defined as the category of algebras for the ultrafilter monad, and `CompHaus`.
+**Note:** The file `Mathlib/Topology/Category/Compactum.lean` provides the equivalence between
+`Compactum`, which is defined as the category of algebras for the ultrafilter monad, and `CompHaus`.
 `CompactumToCompHaus` is the functor from `Compactum` to `CompHaus` which is proven to be an
 equivalence of categories in `CompactumToCompHaus.isEquivalence`.
-See `Topology/Category/Compactum.lean` for a more detailed discussion where these definitions are
-introduced.
+See `Mathlib/Topology/Category/Compactum.lean` for a more detailed discussion where these
+definitions are introduced.
+
+## Implementation
+
+The category `CompHaus` is defined using the structure `CompHausLike`. See the file
+`CompHausLike.Basic` for more information.
 
 -/
 
@@ -40,7 +45,7 @@ abbrev CompHaus := CompHausLike (fun _ ↦ True)
 namespace CompHaus
 
 instance : Inhabited CompHaus :=
-  ⟨{ toTop := { α := PEmpty }, prop := trivial}, ⟩
+  ⟨{ toTop := { α := PEmpty }, prop := trivial}⟩
 
 instance : CoeSort CompHaus Type* :=
   ⟨fun X => X.toTop⟩
@@ -219,6 +224,6 @@ theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Functi
 
 end CompHaus
 
-/-- Every `CompHausLike` admits a functor to `CompHaus`. -/
+/-- Every `CompHausLike` admits a functor to `CompHaus`. -/
 abbrev compHausLikeToCompHaus (P : TopCat → Prop) : CompHausLike P ⥤ CompHaus :=
   CompHausLike.toCompHausLike (by simp only [implies_true])

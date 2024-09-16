@@ -415,6 +415,7 @@ def gluedIsLimit : IsLimit (PullbackCone.mk _ _ (p_comm 𝒰 f g)) := by
       pullbackSymmetry_hom_comp_snd_assoc, pullback.lift_fst_assoc, Category.comp_id,
       pullbackRightPullbackFstIso_hom_fst_assoc, ← pullback.condition_assoc, h₂]
 
+include 𝒰 in
 theorem hasPullback_of_cover : HasPullback f g :=
   ⟨⟨⟨_, gluedIsLimit 𝒰 f g⟩⟩⟩
 
@@ -438,18 +439,8 @@ instance base_affine_hasPullback {C : CommRingCat} {X Y : Scheme} (f : X ⟶ Spe
 
 instance left_affine_comp_pullback_hasPullback {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z)
     (i : Z.affineCover.J) : HasPullback ((Z.affineCover.pullbackCover f).map i ≫ f) g := by
-  let Xᵢ := pullback f (Z.affineCover.map i)
-  let Yᵢ := pullback g (Z.affineCover.map i)
-  let W := pullback (pullback.snd _ _ : Yᵢ ⟶ _) (pullback.snd _ _ : Xᵢ ⟶ _)
-  have :=
-    bigSquareIsPullback (pullback.fst _ _ : W ⟶ _) (pullback.fst _ _ : Yᵢ ⟶ _)
-      (pullback.snd _ _ : Xᵢ ⟶ _) (Z.affineCover.map i) (pullback.snd _ _)
-      (pullback.snd _ _) g pullback.condition.symm
-      pullback.condition.symm (PullbackCone.isLimitOfFlip <| pullbackIsPullback _ _)
-      (PullbackCone.isLimitOfFlip <| pullbackIsPullback _ _)
-  have : HasPullback (pullback.snd _ _ ≫ Z.affineCover.map i : Xᵢ ⟶ _) g := ⟨⟨⟨_, this⟩⟩⟩
-  rw [← pullback.condition] at this
-  exact this
+  simp only [OpenCover.pullbackCover_obj, OpenCover.pullbackCover_map, pullback.condition]
+  exact hasPullback_assoc_symm f (Z.affineCover.map i) (Z.affineCover.map i) g
 
 instance {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) : HasPullback f g :=
   hasPullback_of_cover (Z.affineCover.pullbackCover f) f g
@@ -512,22 +503,15 @@ def openCoverOfLeftRight (𝒰X : X.OpenCover) (𝒰Y : Y.OpenCover) (f : X ⟶ 
 def openCoverOfBase' (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCover (pullback f g) := by
   apply (openCoverOfLeft (𝒰.pullbackCover f) f g).bind
   intro i
-  let Xᵢ := pullback f (𝒰.map i)
-  let Yᵢ := pullback g (𝒰.map i)
-  let W := pullback (pullback.snd _ _ : Yᵢ ⟶ _) (pullback.snd _ _ : Xᵢ ⟶ _)
-  have :=
-    bigSquareIsPullback (pullback.fst _ _ : W ⟶ _) (pullback.fst _ _ : Yᵢ ⟶ _)
-      (pullback.snd _ _ : Xᵢ ⟶ _) (𝒰.map i) (pullback.snd _ _) (pullback.snd _ _) g
-      pullback.condition.symm pullback.condition.symm
-      (PullbackCone.isLimitOfFlip <| pullbackIsPullback _ _)
-      (PullbackCone.isLimitOfFlip <| pullbackIsPullback _ _)
+  have := PullbackCone.flipIsLimit <|
+    pasteVertIsPullback rfl (pullbackIsPullback g (𝒰.map i))
+      (pullbackIsPullback (pullback.snd g (𝒰.map i)) (pullback.snd f (𝒰.map i)))
   refine
     @openCoverOfIsIso
       (f := (pullbackSymmetry _ _).hom ≫ (limit.isoLimitCone ⟨_, this⟩).inv ≫
-        pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) ?_ ?_) ?_
+        pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) ?_ ?_) inferInstance
   · simp [← pullback.condition]
   · simp only [Category.comp_id, Category.id_comp]
-  · infer_instance
 
 /-- Given an open cover `{ Zᵢ }` of `Z`, then `X ×[Z] Y` is covered by `Xᵢ ×[Zᵢ] Yᵢ`, where
   `Xᵢ = X ×[Z] Zᵢ` and `Yᵢ = Y ×[Z] Zᵢ` is the preimage of `Zᵢ` in `X` and `Y`. -/
@@ -547,8 +531,9 @@ def openCoverOfBase (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCover
   apply pullback.hom_ext <;> dsimp <;>
   · simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, Category.assoc,
       limit.lift_π_assoc, cospan_left, Category.comp_id, limit.isoLimitCone_inv_π,
-      limit.isoLimitCone_inv_π_assoc, pullbackSymmetry_hom_comp_fst_assoc,
-      pullbackSymmetry_hom_comp_snd_assoc]
+      limit.isoLimitCone_inv_π_assoc, PullbackCone.flip_pt, PullbackCone.π_app_left,
+      PullbackCone.π_app_right, PullbackCone.flip_fst, PullbackCone.flip_snd,
+      pullbackSymmetry_hom_comp_snd_assoc, pullbackSymmetry_hom_comp_fst_assoc]
     rfl
 
 end Pullback

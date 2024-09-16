@@ -3,7 +3,6 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Init.Data.Prod
 import Mathlib.Data.Seq.WSeq
 
 /-!
@@ -24,7 +23,7 @@ open Stream'
 
 variable {α : Type u} {β : Type v}
 
-def parallel.aux2 : List (Computation α) → Sum α (List (Computation α)) :=
+def parallel.aux2 : List (Computation α) → α ⊕ (List (Computation α)) :=
   List.foldr
     (fun c o =>
       match o with
@@ -34,7 +33,7 @@ def parallel.aux2 : List (Computation α) → Sum α (List (Computation α)) :=
 
 def parallel.aux1 :
     List (Computation α) × WSeq (Computation α) →
-      Sum α (List (Computation α) × WSeq (Computation α))
+      α ⊕ (List (Computation α) × WSeq (Computation α))
   | (l, S) =>
     rmap
       (fun l' =>
@@ -129,7 +128,6 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
     · have C : corec parallel.aux1 (l, S) = pure a := by
         apply destruct_eq_pure
         rw [corec_eq, parallel.aux1]
-        dsimp only []
         rw [h]
         simp only [rmap]
       rw [C]
@@ -147,7 +145,6 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
     · have C : corec parallel.aux1 (l, S) = pure a := by
         apply destruct_eq_pure
         rw [corec_eq, parallel.aux1]
-        dsimp only []
         rw [h]
         simp only [rmap]
       rw [C]
@@ -186,7 +183,7 @@ theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parall
       corec parallel.aux1 (l, S) = C → ∃ c, (c ∈ l ∨ c ∈ S) ∧ a ∈ c from
     let ⟨c, h1, h2⟩ := this _ h [] S rfl
     ⟨c, h1.resolve_left <| List.not_mem_nil _, h2⟩
-  let F : List (Computation α) → Sum α (List (Computation α)) → Prop := by
+  let F : List (Computation α) → α ⊕ (List (Computation α)) → Prop := by
     intro l a
     cases' a with a l'
     · exact ∃ c ∈ l, a ∈ c

@@ -72,9 +72,7 @@ We also add wrappers around structures which already exist. Here are the main on
 universe u
 
 open CategoryTheory Filter Ultrafilter TopologicalSpace CategoryTheory.Limits FiniteInter
-
-open scoped Classical
-open Topology
+open scoped Topology
 
 local notation "β" => ofTypeMonad Ultrafilter
 
@@ -213,7 +211,7 @@ private theorem cl_cl {X : Compactum} (A : Set X) : cl (cl A) ⊆ cl A := by
   have claim1 : ∀ (B) (_ : B ∈ C0) (C) (_ : C ∈ C0), B ∩ C ∈ C0 := by
     rintro B ⟨Q, hQ, rfl⟩ C ⟨R, hR, rfl⟩
     use Q ∩ R
-    simp only [and_true_iff, eq_self_iff_true, Set.preimage_inter]
+    simp only [and_true, eq_self_iff_true, Set.preimage_inter]
     exact inter_sets _ hQ hR
   -- All sets in C0 are nonempty.
   have claim2 : ∀ B ∈ C0, Set.Nonempty B := by
@@ -410,7 +408,7 @@ end Compactum
 /-- The functor functor from Compactum to CompHaus. -/
 def compactumToCompHaus : Compactum ⥤ CompHaus where
   obj X := { toTop := { α := X }, prop := trivial }
-  map := @fun X Y f =>
+  map := fun f =>
     { toFun := f
       continuous_toFun := Compactum.continuous_of_hom _ }
 

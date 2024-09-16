@@ -59,8 +59,6 @@ structure Hom (A B : Algebra T) where
   /-- Compatibility with the structure morphism, for a morphism of algebras. -/
   h : (T : C ⥤ C).map f ≫ B.a = A.a ≫ f := by aesop_cat
 
--- Porting note: Manually adding aligns.
-
 -- Porting note: no need to restate axioms in lean4.
 --restate_axiom hom.h
 
@@ -86,7 +84,7 @@ instance : CategoryStruct (Algebra T) where
 
 -- Porting note (#11041): Adding this `ext` lemma to help automation below.
 @[ext]
-lemma Hom.ext' (X Y : Algebra T) (f g : X ⟶ Y) (h : f.f = g.f) : f = g := Hom.ext _ _ h
+lemma Hom.ext' (X Y : Algebra T) (f g : X ⟶ Y) (h : f.f = g.f) : f = g := Hom.ext h
 
 @[simp]
 theorem comp_eq_comp {A A' A'' : Algebra T} (f : A ⟶ A') (g : A' ⟶ A'') :
@@ -299,8 +297,6 @@ structure Hom (A B : Coalgebra G) where
   /-- Compatibility with the structure morphism, for a morphism of coalgebras. -/
   h : A.a ≫ (G : C ⥤ C).map f = f ≫ B.a := by aesop_cat
 
--- Porting note: Manually adding aligns.
-
 -- Porting note: no need to restate axioms in lean4.
 --restate_axiom hom.h
 
@@ -324,7 +320,7 @@ instance : CategoryStruct (Coalgebra G) where
 
 -- Porting note (#11041): Adding `ext` lemma to help automation below.
 @[ext]
-lemma Hom.ext' (X Y : Coalgebra G) (f g : X ⟶ Y) (h : f.f = g.f) : f = g := Hom.ext _ _ h
+lemma Hom.ext' (X Y : Coalgebra G) (f g : X ⟶ Y) (h : f.f = g.f) : f = g := Hom.ext h
 
 @[simp]
 theorem comp_eq_comp {A A' A'' : Coalgebra G} (f : A ⟶ A') (g : A' ⟶ A'') :

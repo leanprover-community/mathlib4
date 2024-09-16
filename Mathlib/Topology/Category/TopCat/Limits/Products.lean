@@ -6,7 +6,7 @@ Authors: Patrick Massot, Scott Morrison, Mario Carneiro, Andrew Yang
 import Mathlib.Topology.Category.TopCat.EpiMono
 import Mathlib.Topology.Category.TopCat.Limits.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Products
-import Mathlib.CategoryTheory.Limits.ConcreteCategory
+import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Tactic.CategoryTheory.Elementwise
 
@@ -58,7 +58,7 @@ equipped with the product topology.
 -/
 def piIsoPi {ι : Type v} (α : ι → TopCat.{max v u}) : ∏ᶜ α ≅ TopCat.of (∀ i, α i) :=
   (limit.isLimit _).conePointUniqueUpToIso (piFanIsLimit.{v, u} α)
-  -- Specifying the universes in `piFanIsLimit` wasn't necessary when we had `TopCatMax` 
+  -- Specifying the universes in `piFanIsLimit` wasn't necessary when we had `TopCatMax`
 
 @[reassoc (attr := simp)]
 theorem piIsoPi_inv_π {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) :
@@ -106,7 +106,7 @@ def sigmaCofanIsColimit {ι : Type v} (β : ι → TopCat.{max v u}) : IsColimit
 -/
 def sigmaIsoSigma {ι : Type v} (α : ι → TopCat.{max v u}) : ∐ α ≅ TopCat.of (Σi, α i) :=
   (colimit.isColimit _).coconePointUniqueUpToIso (sigmaCofanIsColimit.{v, u} α)
-  -- Specifying the universes in `sigmaCofanIsColimit` wasn't necessary when we had `TopCatMax` 
+  -- Specifying the universes in `sigmaCofanIsColimit` wasn't necessary when we had `TopCatMax`
 
 @[reassoc (attr := simp)]
 theorem sigmaIsoSigma_hom_ι {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) :
@@ -263,7 +263,7 @@ end Prod
 
 /-- The binary coproduct cofan in `TopCat`. -/
 protected def binaryCofan (X Y : TopCat.{u}) : BinaryCofan X Y :=
-  BinaryCofan.mk (⟨Sum.inl, by continuity⟩ : X ⟶ TopCat.of (Sum X Y)) ⟨Sum.inr, by continuity⟩
+  BinaryCofan.mk (⟨Sum.inl, by continuity⟩ : X ⟶ TopCat.of (X ⊕ Y)) ⟨Sum.inr, by continuity⟩
 
 /-- The constructed binary coproduct cofan in `TopCat` is the coproduct. -/
 def binaryCofanIsColimit (X Y : TopCat.{u}) : IsColimit (TopCat.binaryCofan X Y) := by

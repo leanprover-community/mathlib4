@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.Algebra.Category.Ring.Basic
 import Mathlib.RingTheory.Localization.Away.Basic
-import Mathlib.RingTheory.Ideal.LocalRing
+import Mathlib.RingTheory.LocalRing.RingHom.Basic
 
 /-!
 # Ring-theoretic results in terms of categorical languages

@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Indicator
-import Mathlib.Algebra.Order.Group.Abs
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.Group.Synonym
+import Mathlib.Algebra.Order.Group.Unbundled.Abs
+import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
 /-!
 # Support of a function in an order
@@ -98,6 +100,11 @@ lemma mulIndicator_apply_le_one (h : a ∈ s → f a ≤ 1) : mulIndicator s f a
 @[to_additive]
 lemma mulIndicator_le_one (h : ∀ a ∈ s, f a ≤ 1) (a : α) : mulIndicator s f a ≤ 1 :=
   mulIndicator_apply_le_one (h a)
+
+@[to_additive]
+lemma mulIndicator_le_mulIndicator' (h : a ∈ s → f a ≤ g a) :
+    mulIndicator s f a ≤ mulIndicator s g a :=
+  mulIndicator_rel_mulIndicator le_rfl h
 
 @[to_additive]
 lemma mulIndicator_le_mulIndicator (h : f a ≤ g a) : mulIndicator s f a ≤ mulIndicator s g a :=

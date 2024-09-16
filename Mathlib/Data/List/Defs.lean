@@ -18,12 +18,6 @@ This file contains various definitions on lists. It does not contain
 proofs about these definitions, those are contained in other files in `Data.List`
 -/
 
--- Porting note
--- Many of the definitions in `Data.List.Defs` were already defined upstream in `Batteries`
--- These have been annotated with `#align`s
--- To make this easier for review, the `#align`s have been placed in order of occurrence
--- in `mathlib`
-
 namespace List
 
 open Function Nat
@@ -35,14 +29,29 @@ variable {α β γ δ ε ζ : Type*}
 instance [DecidableEq α] : SDiff (List α) :=
   ⟨List.diff⟩
 
--- mathlib3 `array` is not ported.
--- Porting note: see
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/List.2Ehead/near/313204716
--- for the fooI naming convention.
 /-- "Inhabited" `get` function: returns `default` instead of `none` in the case
   that the index is out of bounds. -/
 def getI [Inhabited α] (l : List α) (n : Nat) : α :=
   getD l n default
+
+/-- The head of a list, or the default element of the type is the list is `nil`. -/
+def headI [Inhabited α] : List α → α
+  | []       => default
+  | (a :: _) => a
+
+@[simp] theorem headI_nil [Inhabited α] : ([] : List α).headI = default := rfl
+@[simp] theorem headI_cons [Inhabited α] {h : α} {t : List α} : (h :: t).headI = h := rfl
+
+/-- The last element of a list, with the default if list empty -/
+def getLastI [Inhabited α] : List α → α
+  | [] => default
+  | [a] => a
+  | [_, b] => b
+  | _ :: _ :: l => getLastI l
+
+/-- List with a single given element. -/
+@[inline, deprecated List.pure (since := "2024-03-24")]
+protected def ret {α : Type u} (a : α) : List α := [a]
 
 /-- "Inhabited" `take` function: Take `n` elements from a list `l`. If `l` has less than `n`
   elements, append `n - length l` elements `default`. -/
@@ -108,13 +117,6 @@ end foldIdxM
 
 
 section mapIdxM
-
--- Porting note: This was defined in `mathlib` with an `Applicative`
--- constraint on `m` and have been `#align`ed to the `Batteries` versions defined
--- with a `Monad` typeclass constraint.
--- Since all `Monad`s are `Applicative` this won't cause issues
--- downstream & `Monad`ic code is more performant per Mario C
--- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Applicative.20variants.20of.20Monadic.20functions/near/313213172
 
 variable {m : Type v → Type w} [Monad m]
 
@@ -443,5 +445,65 @@ theorem iterateTR_loop_eq (f : α → α) (a : α) (n : ℕ) (l : List α) :
 theorem iterate_eq_iterateTR : @iterate = @iterateTR := by
   funext α f a n
   exact Eq.symm <| iterateTR_loop_eq f a n []
+
+section MapAccumr
+
+/-- Runs a function over a list returning the intermediate results and a final result. -/
+def mapAccumr (f : α → γ → γ × β) : List α → γ → γ × List β
+  | [], c => (c, [])
+  | y :: yr, c =>
+    let r := mapAccumr f yr c
+    let z := f y r.1
+    (z.1, z.2 :: r.2)
+
+/-- Length of the list obtained by `mapAccumr`. -/
+@[simp]
+theorem length_mapAccumr :
+    ∀ (f : α → γ → γ × β) (x : List α) (s : γ), length (mapAccumr f x s).2 = length x
+  | f, _ :: x, s => congr_arg succ (length_mapAccumr f x s)
+  | _, [], _ => rfl
+
+/-- Runs a function over two lists returning the intermediate results and a final result. -/
+def mapAccumr₂ (f : α → β → γ → γ × δ) : List α → List β → γ → γ × List δ
+  | [], _, c => (c, [])
+  | _, [], c => (c, [])
+  | x :: xr, y :: yr, c =>
+    let r := mapAccumr₂ f xr yr c
+    let q := f x y r.1
+    (q.1, q.2 :: r.2)
+
+/-- Length of a list obtained using `mapAccumr₂`. -/
+@[simp]
+theorem length_mapAccumr₂ :
+    ∀ (f : α → β → γ → γ × δ) (x y c), length (mapAccumr₂ f x y c).2 = min (length x) (length y)
+  | f, _ :: x, _ :: y, c =>
+    calc
+      succ (length (mapAccumr₂ f x y c).2) = succ (min (length x) (length y)) :=
+        congr_arg succ (length_mapAccumr₂ f x y c)
+      _ = min (succ (length x)) (succ (length y)) := Eq.symm (succ_min_succ (length x) (length y))
+  | _, _ :: _, [], _ => rfl
+  | _, [], _ :: _, _ => rfl
+  | _, [], [], _ => rfl
+
+end MapAccumr
+
+section Deprecated
+
+@[deprecated List.mem_cons (since := "2024-08-10")]
+theorem mem_cons_eq (a y : α) (l : List α) : (a ∈ y :: l) = (a = y ∨ a ∈ l) :=
+  propext List.mem_cons
+
+alias ⟨eq_or_mem_of_mem_cons, _⟩ := mem_cons
+
+@[deprecated List.not_mem_nil (since := "2024-08-10")]
+theorem not_exists_mem_nil (p : α → Prop) : ¬∃ x ∈ @nil α, p x :=
+  fun ⟨_, hx, _⟩ => List.not_mem_nil _ hx
+
+@[deprecated (since := "2024-03-23")] alias not_bex_nil := not_exists_mem_nil
+@[deprecated (since := "2024-03-23")] alias bex_cons := exists_mem_cons
+
+@[deprecated (since := "2024-08-10")] alias length_le_of_sublist := Sublist.length_le
+
+end Deprecated
 
 end List

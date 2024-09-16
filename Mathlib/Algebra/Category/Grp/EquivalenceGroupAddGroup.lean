@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
 import Mathlib.Algebra.Category.Grp.Basic
-import Mathlib.Algebra.Group.Equiv.TypeTags
 
 /-!
 # Equivalence between `Group` and `AddGroup`
@@ -27,7 +26,7 @@ private instance (X : CommGrp) : MulOneClass X.α := X.str.toMulOneClass
 private instance (X : AddGrp) : AddZeroClass X.α := X.str.toAddZeroClass
 private instance (X : AddCommGrp) : AddZeroClass X.α := X.str.toAddZeroClass
 
-/-- The functor `Group ⥤ AddGroup` by sending `X ↦ additive X` and `f ↦ f`.
+/-- The functor `Grp ⥤ AddGrp` by sending `X ↦ Additive X` and `f ↦ f`.
 -/
 @[simps]
 def toAddGrp : Grp ⥤ AddGrp where
@@ -38,7 +37,7 @@ end Grp
 
 namespace CommGrp
 
-/-- The functor `CommGroup ⥤ AddCommGroup` by sending `X ↦ additive X` and `f ↦ f`.
+/-- The functor `CommGrp ⥤ AddCommGrp` by sending `X ↦ Additive X` and `f ↦ f`.
 -/
 @[simps]
 def toAddCommGrp : CommGrp ⥤ AddCommGrp where
@@ -49,7 +48,7 @@ end CommGrp
 
 namespace AddGrp
 
-/-- The functor `AddGroup ⥤ Group` by sending `X ↦ multiplicative Y` and `f ↦ f`.
+/-- The functor `AddGrp ⥤ Grp` by sending `X ↦ Multiplicative Y` and `f ↦ f`.
 -/
 @[simps]
 def toGrp : AddGrp ⥤ Grp where
@@ -60,7 +59,7 @@ end AddGrp
 
 namespace AddCommGrp
 
-/-- The functor `AddCommGroup ⥤ CommGroup` by sending `X ↦ multiplicative Y` and `f ↦ f`.
+/-- The functor `AddCommGrp ⥤ CommGrp` by sending `X ↦ Multiplicative Y` and `f ↦ f`.
 -/
 @[simps]
 def toCommGrp : AddCommGrp ⥤ CommGrp where
@@ -69,16 +68,20 @@ def toCommGrp : AddCommGrp ⥤ CommGrp where
 
 end AddCommGrp
 
-/-- The equivalence of categories between `Group` and `AddGroup`
+/-- The equivalence of categories between `Grp` and `AddGrp`
 -/
-def groupAddGroupEquivalence : Grp ≌ AddGrp :=
-  CategoryTheory.Equivalence.mk Grp.toAddGrp AddGrp.toGrp
-    (NatIso.ofComponents fun X => MulEquiv.toGrpIso (MulEquiv.multiplicativeAdditive X))
-    (NatIso.ofComponents fun X => AddEquiv.toAddGrpIso (AddEquiv.additiveMultiplicative X))
+@[simps]
+def groupAddGroupEquivalence : Grp ≌ AddGrp where
+  functor := Grp.toAddGrp
+  inverse := AddGrp.toGrp
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
 
-/-- The equivalence of categories between `CommGroup` and `AddCommGroup`.
+/-- The equivalence of categories between `CommGrp` and `AddCommGrp`.
 -/
-def commGroupAddCommGroupEquivalence : CommGrp ≌ AddCommGrp :=
-  CategoryTheory.Equivalence.mk CommGrp.toAddCommGrp AddCommGrp.toCommGrp
-    (NatIso.ofComponents fun X => MulEquiv.toCommGrpIso (MulEquiv.multiplicativeAdditive X))
-    (NatIso.ofComponents fun X => AddEquiv.toAddCommGrpIso (AddEquiv.additiveMultiplicative X))
+@[simps]
+def commGroupAddCommGroupEquivalence : CommGrp ≌ AddCommGrp where
+  functor := CommGrp.toAddCommGrp
+  inverse := AddCommGrp.toCommGrp
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _

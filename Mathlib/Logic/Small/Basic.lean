@@ -16,8 +16,10 @@ universe u w v v'
 
 section
 
-open scoped Classical
 
+-- TODO(timotree3): lower the priority on this instance?
+-- This instance applies to every synthesis problem of the form `Small ↥s` for some set `s`,
+-- but we have lots of instances of `Small` for specific set constructions.
 instance small_subtype (α : Type v) [Small.{w} α] (P : α → Prop) : Small.{w} { x // P x } :=
   small_map (equivShrink α).subtypeEquivOfSubtype'
 
@@ -59,8 +61,8 @@ instance small_Pi {α} (β : α → Type*) [Small.{w} α] [∀ a, Small.{w} (β 
 instance small_prod {α β} [Small.{w} α] [Small.{w} β] : Small.{w} (α × β) :=
   ⟨⟨Shrink α × Shrink β, ⟨Equiv.prodCongr (equivShrink α) (equivShrink β)⟩⟩⟩
 
-instance small_sum {α β} [Small.{w} α] [Small.{w} β] : Small.{w} (Sum α β) :=
-  ⟨⟨Sum (Shrink α) (Shrink β), ⟨Equiv.sumCongr (equivShrink α) (equivShrink β)⟩⟩⟩
+instance small_sum {α β} [Small.{w} α] [Small.{w} β] : Small.{w} (α ⊕ β) :=
+  ⟨⟨Shrink α ⊕ Shrink β, ⟨Equiv.sumCongr (equivShrink α) (equivShrink β)⟩⟩⟩
 
 instance small_set {α} [Small.{w} α] : Small.{w} (Set α) :=
   ⟨⟨Set (Shrink α), ⟨Equiv.Set.congr (equivShrink α)⟩⟩⟩

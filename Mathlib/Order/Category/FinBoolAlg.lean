@@ -51,7 +51,6 @@ attribute [instance] FinBoolAlg.isFintype
 -- @[simp]
 -- theorem coe_toBoolAlg (X : FinBoolAlg) : ↥X.toBoolAlg = ↥X :=
 --   rfl
--- #align FinBoolAlg.coe_to_BoolAlg FinBoolAlg.coe_toBoolAlg
 
 /-- Construct a bundled `FinBoolAlg` from `BooleanAlgebra` + `Fintype`. -/
 def of (α : Type*) [BooleanAlgebra α] [Fintype α] : FinBoolAlg :=

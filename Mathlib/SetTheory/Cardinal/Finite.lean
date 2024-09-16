@@ -152,6 +152,14 @@ lemma card_preimage_of_injOn {f : α → β} {s : Set β} (hf : (f ⁻¹' s).Inj
 lemma card_preimage_of_injective {f : α → β} {s : Set β} (hf : Injective f) (hsf : s ⊆ range f) :
     Nat.card (f ⁻¹' s) = Nat.card s := card_preimage_of_injOn hf.injOn hsf
 
+@[simp] lemma card_univ : Nat.card (univ : Set α) = Nat.card α :=
+  card_congr (Equiv.Set.univ α)
+
+lemma card_range_of_injective {f : α → β} (hf : Injective f) :
+    Nat.card (range f) = Nat.card α := by
+  rw [← Nat.card_preimage_of_injective hf le_rfl]
+  simp
+
 end Set
 
 /-- If the cardinality is positive, that means it is a finite type, so there is
@@ -174,7 +182,7 @@ theorem card_eq_one_iff_unique : Nat.card α = 1 ↔ Subsingleton α ∧ Nonempt
 
 theorem card_eq_one_iff_exists : Nat.card α = 1 ↔ ∃ x : α, ∀ y : α, y = x := by
   rw [card_eq_one_iff_unique]
-  exact ⟨fun  ⟨s, ⟨a⟩⟩ ↦ ⟨a, fun x ↦ s.elim x a⟩, fun ⟨x, h⟩ ↦ ⟨subsingleton_of_forall_eq x h, ⟨x⟩⟩⟩
+  exact ⟨fun ⟨s, ⟨a⟩⟩ ↦ ⟨a, fun x ↦ s.elim x a⟩, fun ⟨x, h⟩ ↦ ⟨subsingleton_of_forall_eq x h, ⟨x⟩⟩⟩
 
 theorem card_eq_two_iff : Nat.card α = 2 ↔ ∃ x y : α, x ≠ y ∧ {x, y} = @Set.univ α :=
   toNat_eq_ofNat.trans mk_eq_two_iff

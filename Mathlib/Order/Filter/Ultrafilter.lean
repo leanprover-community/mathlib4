@@ -19,15 +19,11 @@ In this file we define
 * `hyperfilter`: the ultrafilter extending the cofinite filter.
 -/
 
-
 universe u v
 
 variable {α : Type u} {β : Type v} {γ : Type*}
 
 open Set Filter Function
-
-open scoped Classical
-open Filter
 
 /-- `Filter α` is an atomic type: for every filter there exists an ultrafilter that is less than or
 equal to this filter. -/
@@ -54,7 +50,7 @@ instance : CoeTC (Ultrafilter α) (Filter α) :=
   ⟨Ultrafilter.toFilter⟩
 
 instance : Membership (Set α) (Ultrafilter α) :=
-  ⟨fun s f => s ∈ (f : Filter α)⟩
+  ⟨fun f s => s ∈ (f : Filter α)⟩
 
 theorem unique (f : Ultrafilter α) {g : Filter α} (h : g ≤ f) (hne : NeBot g := by infer_instance) :
     g = f :=
@@ -119,7 +115,7 @@ theorem diff_mem_iff (f : Ultrafilter α) : s \ t ∈ f ↔ s ∈ f ∧ t ∉ f 
   inter_mem_iff.trans <| and_congr Iff.rfl compl_mem_iff_not_mem
 
 /-- If `sᶜ ∉ f ↔ s ∈ f`, then `f` is an ultrafilter. The other implication is given by
-`Ultrafilter.compl_not_mem_iff`.  -/
+`Ultrafilter.compl_not_mem_iff`. -/
 def ofComplNotMemIff (f : Filter α) (h : ∀ s, sᶜ ∉ f ↔ s ∈ f) : Ultrafilter α where
   toFilter := f
   neBot' := ⟨fun hf => by simp [hf] at h⟩

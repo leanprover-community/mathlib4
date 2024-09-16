@@ -169,9 +169,9 @@ def Matroid.ExchangeProperty {α : Type _} (P : Set α → Prop) : Prop :=
   ∀ X Y, P X → P Y → ∀ a ∈ X \ Y, ∃ b ∈ Y \ X, P (insert b (X \ {a}))
 
 /-- A set `X` has the maximal subset property for a predicate `P` if every subset of `X` satisfying
-  `P` is contained in a maximal subset of `X` satisfying `P`.  -/
+  `P` is contained in a maximal subset of `X` satisfying `P`. -/
 def Matroid.ExistsMaximalSubsetProperty {α : Type _} (P : Set α → Prop) (X : Set α) : Prop :=
-  ∀ I, P I → I ⊆ X → (maximals (· ⊆ ·) {Y | P Y ∧ I ⊆ Y ∧ Y ⊆ X}).Nonempty
+  ∀ I, P I → I ⊆ X → ∃ J, I ⊆ J ∧ Maximal (fun K ↦ P K ∧ K ⊆ X) J
 
 /-- A `Matroid α` is a ground set `E` of type `Set α`, and a nonempty collection of its subsets
   satisfying the exchange property and the maximal subset property. Each such set is called a
@@ -186,7 +186,7 @@ def Matroid.ExistsMaximalSubsetProperty {α : Type _} (P : Set α → Prop) (X :
 @[ext] structure Matroid (α : Type _) where
   /-- `M` has a ground set `E`. -/
   (E : Set α)
-  /-- `M` has a predicate `Base` definining its bases. -/
+  /-- `M` has a predicate `Base` defining its bases. -/
   (Base : Set α → Prop)
   /-- `M` has a predicate `Indep` defining its independent sets. -/
   (Indep : Set α → Prop)
@@ -256,10 +256,11 @@ theorem rkPos_iff_empty_not_base : M.RkPos ↔ ¬M.Base ∅ :=
 section exchange
 namespace ExchangeProperty
 
-variable {Base : Set α → Prop} (exch : ExchangeProperty Base) {B B' : Set α}
+variable {Base : Set α → Prop} {B B' : Set α}
 
 /-- A family of sets with the exchange property is an antichain. -/
-theorem antichain (hB : Base B) (hB' : Base B') (h : B ⊆ B') : B = B' :=
+theorem antichain (exch : ExchangeProperty Base) (hB : Base B) (hB' : Base B') (h : B ⊆ B') :
+    B = B' :=
   h.antisymm (fun x hx ↦ by_contra
     (fun hxB ↦ let ⟨_, hy, _⟩ := exch B' B hB' hB x ⟨hx, hxB⟩; hy.2 <| h hy.1))
 
@@ -288,14 +289,16 @@ variable {B₁ B₂ : Set α}
 
 /-- For any two sets `B₁`, `B₂` in a family with the exchange property, the differences `B₁ \ B₂`
 and `B₂ \ B₁` have the same `ℕ∞`-cardinality. -/
-theorem encard_diff_eq (hB₁ : Base B₁) (hB₂ : Base B₂) : (B₁ \ B₂).encard = (B₂ \ B₁).encard :=
+theorem encard_diff_eq (exch : ExchangeProperty Base) (hB₁ : Base B₁) (hB₂ : Base B₂) :
+    (B₁ \ B₂).encard = (B₂ \ B₁).encard :=
   (encard_diff_le_aux exch hB₁ hB₂).antisymm (encard_diff_le_aux exch hB₂ hB₁)
 
 /-- Any two sets `B₁`, `B₂` in a family with the exchange property have the same
 `ℕ∞`-cardinality. -/
-theorem encard_base_eq (hB₁ : Base B₁) (hB₂ : Base B₂) : B₁.encard = B₂.encard := by
-rw [← encard_diff_add_encard_inter B₁ B₂, exch.encard_diff_eq hB₁ hB₂, inter_comm,
-     encard_diff_add_encard_inter]
+theorem encard_base_eq (exch : ExchangeProperty Base) (hB₁ : Base B₁) (hB₂ : Base B₂) :
+    B₁.encard = B₂.encard := by
+  rw [← encard_diff_add_encard_inter B₁ B₂, exch.encard_diff_eq hB₁ hB₂, inter_comm,
+    encard_diff_add_encard_inter]
 
 end ExchangeProperty
 
@@ -458,9 +461,9 @@ theorem eq_of_base_iff_base_forall {M₁ M₂ : Matroid α} (hE : M₁.E = M₂.
       fun hB ↦ (h <| hB.subset_ground.trans_eq hE.symm).2 hB⟩
   ext <;> simp [hE, M₁.indep_iff', M₂.indep_iff', h']
 
-theorem base_compl_iff_mem_maximals_disjoint_base (hB : B ⊆ M.E := by aesop_mat) :
-    M.Base (M.E \ B) ↔ B ∈ maximals (· ⊆ ·) {I | I ⊆ M.E ∧ ∃ B, M.Base B ∧ Disjoint I B} := by
-  simp_rw [mem_maximals_setOf_iff, and_iff_right hB, and_imp, forall_exists_index]
+theorem base_compl_iff_maximal_disjoint_base (hB : B ⊆ M.E := by aesop_mat) :
+    M.Base (M.E \ B) ↔ Maximal (fun I ↦ I ⊆ M.E ∧ ∃ B, M.Base B ∧ Disjoint I B) B := by
+  simp_rw [maximal_iff, and_iff_right hB, and_imp, forall_exists_index]
   refine ⟨fun h ↦ ⟨⟨_, h, disjoint_sdiff_right⟩,
     fun I hI B' ⟨hB', hIB'⟩ hBI ↦ hBI.antisymm ?_⟩, fun ⟨⟨B', hB', hBB'⟩,h⟩ ↦ ?_⟩
   · rw [hB'.eq_of_subset_base h, ← subset_compl_iff_disjoint_right, diff_eq, compl_inter,
@@ -566,16 +569,15 @@ theorem Base.eq_of_subset_indep (hB : M.Base B) (hI : M.Indep I) (hBI : B ⊆ I)
   let ⟨B', hB', hB'I⟩ := hI.exists_base_superset
   hBI.antisymm (by rwa [hB.eq_of_subset_base hB' (hBI.trans hB'I)])
 
-theorem base_iff_maximal_indep : M.Base B ↔ M.Indep B ∧ ∀ I, M.Indep I → B ⊆ I → B = I := by
-  refine ⟨fun h ↦ ⟨h.indep, fun _ ↦ h.eq_of_subset_indep ⟩, fun ⟨h, h'⟩ ↦ ?_⟩
+theorem base_iff_maximal_indep : M.Base B ↔ Maximal M.Indep B := by
+  rw [maximal_subset_iff]
+  refine ⟨fun h ↦ ⟨h.indep, fun _ ↦ h.eq_of_subset_indep⟩, fun ⟨h, h'⟩ ↦ ?_⟩
   obtain ⟨B', hB', hBB'⟩ := h.exists_base_superset
-  rwa [h' _ hB'.indep hBB']
+  rwa [h' hB'.indep hBB']
 
-theorem setOf_base_eq_maximals_setOf_indep : {B | M.Base B} = maximals (· ⊆ ·) {I | M.Indep I} := by
-  ext B; rw [mem_maximals_setOf_iff, mem_setOf, base_iff_maximal_indep]
-
-theorem Indep.base_of_maximal (hI : M.Indep I) (h : ∀ J, M.Indep J → I ⊆ J → I = J) : M.Base I :=
-  base_iff_maximal_indep.mpr ⟨hI,h⟩
+theorem Indep.base_of_maximal (hI : M.Indep I) (h : ∀ ⦃J⦄, M.Indep J → I ⊆ J → I = J) :
+    M.Base I := by
+  rwa [base_iff_maximal_indep, maximal_subset_iff, and_iff_right hI]
 
 theorem Base.dep_of_ssubset (hB : M.Base B) (h : B ⊂ X) (hX : X ⊆ M.E := by aesop_mat) : M.Dep X :=
   ⟨fun hX ↦ h.ne (hB.eq_of_subset_indep hX h.subset), hX⟩
@@ -634,11 +636,10 @@ theorem Indep.exists_insert_of_not_base (hI : M.Indep I) (hI' : ¬M.Base I) (hB 
 
 /-- This is the same as `Indep.exists_insert_of_not_base`, but phrased so that
   it is defeq to the augmentation axiom for independent sets. -/
-theorem Indep.exists_insert_of_not_mem_maximals (M : Matroid α) ⦃I B : Set α⦄ (hI : M.Indep I)
-    (hInotmax : I ∉ maximals (· ⊆ ·) {I | M.Indep I}) (hB : B ∈ maximals (· ⊆ ·) {I | M.Indep I}) :
+theorem Indep.exists_insert_of_not_maximal (M : Matroid α) ⦃I B : Set α⦄ (hI : M.Indep I)
+    (hInotmax : ¬ Maximal M.Indep I) (hB : Maximal M.Indep B) :
     ∃ x ∈ B \ I, M.Indep (insert x I) := by
-  simp only [mem_maximals_iff, mem_setOf_eq, not_and, not_forall, exists_prop,
-    exists_and_left, iff_true_intro hI, true_imp_iff] at hB hInotmax
+  simp only [maximal_subset_iff, hI, not_and, not_forall, exists_prop, true_imp_iff] at hB hInotmax
   refine hI.exists_insert_of_not_base (fun hIb ↦ ?_) ?_
   · obtain ⟨I', hII', hI', hne⟩ := hInotmax
     exact hne <| hIb.eq_of_subset_indep hII' hI'
@@ -661,9 +662,12 @@ theorem Base.exists_insert_of_ssubset (hB : M.Base B) (hIB : I ⊂ B) (hB' : M.B
 
 theorem eq_of_indep_iff_indep_forall {M₁ M₂ : Matroid α} (hE : M₁.E = M₂.E)
     (h : ∀ I, I ⊆ M₁.E → (M₁.Indep I ↔ M₂.Indep I)) : M₁ = M₂ :=
-  let h' : ∀ I, M₁.Indep I ↔ M₂.Indep I := fun I ↦
-    (em (I ⊆ M₁.E)).elim (h I) (fun h' ↦ iff_of_false (fun hi ↦ h' (hi.subset_ground))
-      (fun hi ↦ h' (hi.subset_ground.trans_eq hE.symm)))
+  have h' : M₁.Indep = M₂.Indep := by
+    ext I
+    by_cases hI : I ⊆ M₁.E
+    · rwa [h]
+    exact iff_of_false (fun hi ↦ hI hi.subset_ground)
+      (fun hi ↦ hI (hi.subset_ground.trans_eq hE.symm))
   eq_of_base_iff_base_forall hE (fun B _ ↦ by simp_rw [base_iff_maximal_indep, h'])
 
 theorem eq_iff_indep_iff_indep_forall {M₁ M₂ : Matroid α} :
@@ -706,12 +710,12 @@ section Basis
 /-- A Basis for a set `X ⊆ M.E` is a maximal independent subset of `X`
   (Often in the literature, the word 'Basis' is used to refer to what we call a 'Base'). -/
 def Basis (M : Matroid α) (I X : Set α) : Prop :=
-  I ∈ maximals (· ⊆ ·) {A | M.Indep A ∧ A ⊆ X} ∧ X ⊆ M.E
+  Maximal (fun A ↦ M.Indep A ∧ A ⊆ X) I ∧ X ⊆ M.E
 
 /-- A `Basis'` is a basis without the requirement that `X ⊆ M.E`. This is convenient for some
-  API building, especially when working with rank and closure.  -/
+  API building, especially when working with rank and closure. -/
 def Basis' (M : Matroid α) (I X : Set α) : Prop :=
-  I ∈ maximals (· ⊆ ·) {A | M.Indep A ∧ A ⊆ X}
+  Maximal (fun A ↦ M.Indep A ∧ A ⊆ X) I
 
 variable {B I J X Y : Set α} {e : α}
 
@@ -733,9 +737,6 @@ theorem Basis'.basis (hI : M.Basis' I X) (hX : X ⊆ M.E := by aesop_mat) : M.Ba
 theorem Basis'.subset (hI : M.Basis' I X) : I ⊆ X :=
   hI.1.2
 
-theorem setOf_basis_eq (M : Matroid α) (hX : X ⊆ M.E := by aesop_mat) :
-    {I | M.Basis I X} = maximals (· ⊆ ·) ({I | M.Indep I} ∩ Iic X) := by
-  ext I; simp [Matroid.Basis, maximals, iff_true_intro hX]
 
 @[aesop unsafe 15% (rule_sets := [Matroid])]
 theorem Basis.subset_ground (hI : M.Basis I X) : X ⊆ M.E :=
@@ -756,20 +757,18 @@ theorem Basis.eq_of_subset_indep (hI : M.Basis I X) (hJ : M.Indep J) (hIJ : I �
 theorem Basis.Finite (hI : M.Basis I X) [FiniteRk M] : I.Finite := hI.indep.finite
 
 theorem basis_iff' :
-    M.Basis I X ↔ (M.Indep I ∧ I ⊆ X ∧ ∀ J, M.Indep J → I ⊆ J → J ⊆ X → I = J) ∧ X ⊆ M.E := by
-  simp [Basis, mem_maximals_setOf_iff, and_assoc, and_congr_left_iff, and_imp,
-    and_congr_left_iff, and_congr_right_iff, @Imp.swap (_ ⊆ X)]
+    M.Basis I X ↔ (M.Indep I ∧ I ⊆ X ∧ ∀ ⦃J⦄, M.Indep J → I ⊆ J → J ⊆ X → I = J) ∧ X ⊆ M.E := by
+  rw [Basis, maximal_subset_iff]
+  tauto
 
 theorem basis_iff (hX : X ⊆ M.E := by aesop_mat) :
     M.Basis I X ↔ (M.Indep I ∧ I ⊆ X ∧ ∀ J, M.Indep J → I ⊆ J → J ⊆ X → I = J) := by
   rw [basis_iff', and_iff_left hX]
 
 theorem basis'_iff_basis_inter_ground : M.Basis' I X ↔ M.Basis I (X ∩ M.E) := by
-  rw [Basis', Basis, and_iff_left inter_subset_right]
-  convert Iff.rfl using 3
-  ext I
-  simp only [subset_inter_iff, mem_setOf_eq, and_congr_right_iff, and_iff_left_iff_imp]
-  exact fun h _ ↦ h.subset_ground
+  rw [Basis', Basis, and_iff_left inter_subset_right, maximal_iff_maximal_of_imp_of_forall]
+  · exact fun I hI ↦ ⟨hI.1, hI.2.trans inter_subset_left⟩
+  exact fun I hI ↦ ⟨I, rfl.le, hI.1, subset_inter hI.2 hI.1.subset_ground⟩
 
 theorem basis'_iff_basis (hX : X ⊆ M.E := by aesop_mat) : M.Basis' I X ↔ M.Basis I X := by
   rw [basis'_iff_basis_inter_ground, inter_eq_self_of_subset_left hX]
@@ -788,13 +787,9 @@ theorem Basis'.insert_not_indep (hI : M.Basis' I X) (he : e ∈ X \ I) : ¬ M.In
   fun hi ↦ he.2 <| insert_eq_self.1 <| Eq.symm <|
     hI.eq_of_subset_indep hi (subset_insert _ _) (insert_subset he.1 hI.subset)
 
-theorem basis_iff_mem_maximals (hX : X ⊆ M.E := by aesop_mat) :
-    M.Basis I X ↔ I ∈ maximals (· ⊆ ·) {I | M.Indep I ∧ I ⊆ X} := by
+theorem basis_iff_maximal (hX : X ⊆ M.E := by aesop_mat) :
+    M.Basis I X ↔ Maximal (fun I ↦ M.Indep I ∧ I ⊆ X) I := by
   rw [Basis, and_iff_left hX]
-
-theorem basis_iff_mem_maximals_Prop (hX : X ⊆ M.E := by aesop_mat) :
-    M.Basis I X ↔ I ∈ maximals (· ⊆ ·) (fun I ↦ M.Indep I ∧ I ⊆ X) :=
-  basis_iff_mem_maximals
 
 theorem Indep.basis_of_maximal_subset (hI : M.Indep I) (hIX : I ⊆ X)
     (hmax : ∀ ⦃J⦄, M.Indep J → I ⊆ J → J ⊆ X → J ⊆ I) (hX : X ⊆ M.E := by aesop_mat) :
@@ -837,10 +832,8 @@ theorem Basis.not_basis_of_ssubset (hI : M.Basis I X) (hJI : J ⊂ I) : ¬ M.Bas
 
 theorem Indep.subset_basis_of_subset (hI : M.Indep I) (hIX : I ⊆ X) (hX : X ⊆ M.E := by aesop_mat) :
     ∃ J, M.Basis J X ∧ I ⊆ J := by
-  obtain ⟨J, ⟨(hJ : M.Indep J),hIJ,hJX⟩, hJmax⟩ := M.maximality X hX I hI hIX
-  use J
-  rw [and_iff_left hIJ, basis_iff, and_iff_right hJ, and_iff_right hJX]
-  exact fun K hK hJK hKX ↦ hJK.antisymm (hJmax ⟨hK, hIJ.trans hJK, hKX⟩ hJK)
+  obtain ⟨J, hJ, hJmax⟩ := M.maximality X hX I hI hIX
+  exact ⟨J, ⟨hJmax, hX⟩, hJ⟩
 
 theorem Indep.subset_basis'_of_subset (hI : M.Indep I) (hIX : I ⊆ X) :
     ∃ J, M.Basis' J X ∧ I ⊆ J := by
@@ -884,23 +877,21 @@ theorem Basis.exists_base (hI : M.Basis I X) : ∃ B, M.Base B ∧ I = B ∩ X :
     inter_subset_right])⟩
 
 @[simp] theorem basis_ground_iff : M.Basis B M.E ↔ M.Base B := by
-  rw [base_iff_maximal_indep, basis_iff', and_assoc, and_congr_right]
-  rw [and_iff_left (rfl.subset : M.E ⊆ M.E)]
-  exact fun h ↦ ⟨fun h' I hI hBI ↦ h'.2 _ hI hBI hI.subset_ground,
-    fun h' ↦ ⟨h.subset_ground,fun J hJ hBJ _ ↦ h' J hJ hBJ⟩⟩
+  rw [Basis, and_iff_left rfl.subset, base_iff_maximal_indep,
+    maximal_and_iff_right_of_imp (fun _ h ↦ h.subset_ground),
+    and_iff_left_of_imp (fun h ↦ h.1.subset_ground)]
 
 theorem Base.basis_ground (hB : M.Base B) : M.Basis B M.E :=
   basis_ground_iff.mpr hB
 
 theorem Indep.basis_iff_forall_insert_dep (hI : M.Indep I) (hIX : I ⊆ X) :
     M.Basis I X ↔ ∀ e ∈ X \ I, M.Dep (insert e I) := by
-  rw [basis_iff', and_iff_right hIX, and_iff_right hI]
-  refine ⟨fun h e he ↦ ⟨fun hi ↦ he.2 ?_, insert_subset (h.2 he.1) hI.subset_ground⟩,
-    fun h ↦ ⟨fun J hJ hIJ hJX ↦ hIJ.antisymm (fun e heJ ↦ by_contra (fun heI ↦ ?_)), ?_⟩⟩
-  · exact (h.1 _ hi (subset_insert _ _) (insert_subset he.1 hIX)).symm.subset (mem_insert e I)
-  · exact (h e ⟨hJX heJ, heI⟩).not_indep (hJ.subset (insert_subset heJ hIJ))
-  rw [← diff_union_of_subset hIX, union_subset_iff, and_iff_left hI.subset_ground]
-  exact fun e he ↦ (h e he).subset_ground (mem_insert _ _)
+  rw [Basis, maximal_iff_forall_insert (fun I J hI hIJ ↦ ⟨hI.1.subset hIJ, hIJ.trans hI.2⟩)]
+  simp only [hI, hIX, and_self, insert_subset_iff, and_true, not_and, true_and, mem_diff, and_imp,
+    Dep, hI.subset_ground]
+  exact ⟨fun h e heX heI ↦ ⟨fun hi ↦ h.1 e heI hi heX, h.2 heX⟩,
+    fun h ↦ ⟨fun e heI hi heX ↦ (h e heX heI).1 hi,
+      fun e heX ↦ (em (e ∈ I)).elim (fun h ↦ hI.subset_ground h) fun heI ↦ (h _ heX heI).2 ⟩⟩
 
 theorem Indep.basis_of_forall_insert (hI : M.Indep I) (hIX : I ⊆ X)
     (he : ∀ e ∈ X \ I, M.Dep (insert e I)) : M.Basis I X :=

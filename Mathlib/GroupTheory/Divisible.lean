@@ -3,11 +3,9 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.Algebra.Group.Pi.Lemmas
-import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Algebra.Group.ULift
-import Mathlib.GroupTheory.QuotientGroup
-import Mathlib.Tactic.NormNum
+import Mathlib.GroupTheory.QuotientGroup.Basic
+import Mathlib.Tactic.NormNum.Eq
 
 /-!
 # Divisible Group and rootable group

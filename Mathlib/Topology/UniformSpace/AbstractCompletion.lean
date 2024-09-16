@@ -187,7 +187,7 @@ theorem map_unique {f : α → β} {g : hatα → hatβ} (hg : UniformContinuous
   pkg.funext (pkg.continuous_map _ _) hg.continuous <| by
     intro a
     change pkg.extend (ι' ∘ f) _ = _
-    simp_rw [(· ∘ ·), h, ← comp_apply (f := g)]
+    simp_rw [Function.comp_def, h, ← comp_apply (f := g)]
     rw [pkg.extend_coe (hg.comp pkg.uniformContinuous_coe)]
 
 @[simp]
@@ -262,12 +262,14 @@ extension of `f` to `pkg'`. The situation is described in the following diagram,
 two diagonal arrows are the extensions of `f` to the two different completions `pkg` and `pkg'`;
 the statement of `compare_comp_eq_compare` is the commutativity of the right triangle.
 
+```
 `α^`=`pkg` ≅ `α^'`=`pkg'`   *here `≅` is `compare`*
   ∧     \        /
   |      \      /
   |       \    /
   |        V  ∨
  α ---f---> γ
+```
  -/
 theorem compare_comp_eq_compare (γ : Type*) [TopologicalSpace γ]
     [T3Space γ] {f : α → γ} (cont_f : Continuous f) :

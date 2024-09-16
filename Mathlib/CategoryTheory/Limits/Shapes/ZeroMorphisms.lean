@@ -86,7 +86,6 @@ private theorem ext_aux (I J : HasZeroMorphisms C)
   congr
   · apply proof_irrel_heq
   · apply proof_irrel_heq
--- Porting note: private def; no align
 
 /-- If you're tempted to use this lemma "in the wild", you should probably
 carefully consider whether you've made a mistake in allowing two
@@ -608,6 +607,20 @@ lemma IsLimit.isZero_pt {c : Cone F} (hc : IsLimit c) (hF : IsZero F) : IsZero c
 lemma IsColimit.isZero_pt {c : Cocone F} (hc : IsColimit c) (hF : IsZero F) : IsZero c.pt :=
   (isZero_zero C).of_iso (IsColimit.coconePointUniqueUpToIso hc
     (IsColimit.ofIsZero (Cocone.mk 0 0) hF (isZero_zero C)))
+
+end
+
+section
+
+variable [HasZeroMorphisms C]
+
+lemma IsTerminal.isZero {X : C} (hX : IsTerminal X) : IsZero X := by
+  rw [IsZero.iff_id_eq_zero]
+  apply hX.hom_ext
+
+lemma IsInitial.isZero {X : C} (hX : IsInitial X) : IsZero X := by
+  rw [IsZero.iff_id_eq_zero]
+  apply hX.hom_ext
 
 end
 

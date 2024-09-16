@@ -3,7 +3,6 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Mathlib.Mathport.Rename
 import Mathlib.Data.Nat.Notation
 
 /-!
@@ -49,7 +48,7 @@ def Any (p : α → Prop) (s : Stream' α) := ∃ n, p (get s n)
 
 /-- `a ∈ s` means that `a = Stream'.get n s` for some `n`. -/
 instance : Membership α (Stream' α) :=
-  ⟨fun a s => Any (fun b => a = b) s⟩
+  ⟨fun s a => Any (fun b => a = b) s⟩
 
 /-- Apply a function `f` to all elements of a stream `s`. -/
 def map (f : α → β) (s : Stream' α) : Stream' β := fun n => f (get s n)
@@ -78,8 +77,6 @@ def corecOn (a : α) (f : α → β) (g : α → α) : Stream' β :=
 
 def corec' (f : α → β × α) : α → Stream' β :=
   corec (Prod.fst ∘ f) (Prod.snd ∘ f)
-
--- Porting note: this `#align` should be elsewhere but idk where
 
 /-- Use a state monad to generate a stream through corecursion -/
 def corecState {σ α} (cmd : StateM σ α) (s : σ) : Stream' α :=

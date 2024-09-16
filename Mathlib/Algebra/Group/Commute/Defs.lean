@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Semiconj.Defs
-import Mathlib.Init.Algebra.Classes
+import Mathlib.Order.Defs
 
 /-!
 # Commuting pairs of elements in monoids
@@ -118,7 +118,6 @@ end Semigroup
 @[to_additive]
 protected theorem all [CommMagma S] (a b : S) : Commute a b :=
   mul_comm a b
--- not sure why this needs an `ₓ`, maybe instance names not aligned?
 
 section MulOneClass
 

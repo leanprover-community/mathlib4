@@ -24,7 +24,7 @@ namespace Multiset
 variable {α β : Type*} (s : Multiset α) (t : Multiset β)
 
 /-- Disjoint sum of multisets. -/
-def disjSum : Multiset (Sum α β) :=
+def disjSum : Multiset (α ⊕ β) :=
   s.map inl + t.map inr
 
 @[simp]
@@ -39,7 +39,7 @@ theorem disjSum_zero : s.disjSum (0 : Multiset β) = s.map inl :=
 theorem card_disjSum : Multiset.card (s.disjSum t) = Multiset.card s + Multiset.card t := by
   rw [disjSum, card_add, card_map, card_map]
 
-variable {s t} {s₁ s₂ : Multiset α} {t₁ t₂ : Multiset β} {a : α} {b : β} {x : Sum α β}
+variable {s t} {s₁ s₂ : Multiset α} {t₁ t₂ : Multiset β} {a : α} {b : β} {x : α ⊕ β}
 
 theorem mem_disjSum : x ∈ s.disjSum t ↔ (∃ a, a ∈ s ∧ inl a = x) ∨ ∃ b, b ∈ t ∧ inr b = x := by
   simp_rw [disjSum, mem_add, mem_map]
@@ -67,7 +67,7 @@ theorem disjSum_mono_left (t : Multiset β) : Monotone fun s : Multiset α => s.
   fun _ _ hs => add_le_add_right (map_le_map hs) _
 
 theorem disjSum_mono_right (s : Multiset α) :
-    Monotone (s.disjSum : Multiset β → Multiset (Sum α β)) := fun _ _ ht =>
+    Monotone (s.disjSum : Multiset β → Multiset (α ⊕ β)) := fun _ _ ht =>
   add_le_add_left (map_le_map ht) _
 
 theorem disjSum_lt_disjSum_of_lt_of_le (hs : s₁ < s₂) (ht : t₁ ≤ t₂) :
@@ -82,7 +82,7 @@ theorem disjSum_strictMono_left (t : Multiset β) : StrictMono fun s : Multiset 
   fun _ _ hs => disjSum_lt_disjSum_of_lt_of_le hs le_rfl
 
 theorem disjSum_strictMono_right (s : Multiset α) :
-    StrictMono (s.disjSum : Multiset β → Multiset (Sum α β)) := fun _ _ =>
+    StrictMono (s.disjSum : Multiset β → Multiset (α ⊕ β)) := fun _ _ =>
   disjSum_lt_disjSum_of_le_of_lt le_rfl
 
 protected theorem Nodup.disjSum (hs : s.Nodup) (ht : t.Nodup) : (s.disjSum t).Nodup := by

@@ -3,11 +3,7 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.FreeAlgebra
-import Mathlib.GroupTheory.Finiteness
 import Mathlib.RingTheory.Adjoin.Tower
-import Mathlib.RingTheory.Finiteness
-import Mathlib.RingTheory.Noetherian
 
 /-!
 # Finiteness conditions in commutative algebra
@@ -126,7 +122,8 @@ theorem iff_quotient_freeAlgebra :
     intro x
     have hrw : (↑s : Set A) = fun x : A => x ∈ s.val := rfl
     rw [← Set.mem_range, ← AlgHom.coe_range]
-    erw [← adjoin_eq_range_freeAlgebra_lift, ← hrw, hs]
+    erw [← adjoin_eq_range_freeAlgebra_lift]
+    simp_rw [← hrw, hs]
     exact Set.mem_univ x
   · rintro ⟨s, ⟨f, hsur⟩⟩
     exact FiniteType.of_surjective (FiniteType.freeAlgebra R s) f hsur
@@ -141,7 +138,8 @@ theorem iff_quotient_mvPolynomial :
     use s, MvPolynomial.aeval (↑)
     intro x
     have hrw : (↑s : Set S) = fun x : S => x ∈ s.val := rfl
-    rw [← Set.mem_range, ← AlgHom.coe_range, ← adjoin_eq_range, ← hrw, hs]
+    rw [← Set.mem_range, ← AlgHom.coe_range, ← adjoin_eq_range]
+    simp_rw [← hrw, hs]
     exact Set.mem_univ x
   · rintro ⟨s, ⟨f, hsur⟩⟩
     exact FiniteType.of_surjective (FiniteType.mvPolynomial R { x // x ∈ s }) f hsur

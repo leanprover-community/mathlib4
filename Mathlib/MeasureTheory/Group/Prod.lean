@@ -46,7 +46,7 @@ open Function MeasureTheory
 
 open Filter hiding map
 
-open scoped Classical ENNReal Pointwise MeasureTheory
+open scoped ENNReal Pointwise MeasureTheory
 
 variable (G : Type*) [MeasurableSpace G]
 variable [Group G] [MeasurableMul₂ G]
@@ -83,7 +83,7 @@ There, the map in this lemma is called `S`. -/
 theorem measurePreserving_prod_mul [IsMulLeftInvariant ν] :
     MeasurePreserving (fun z : G × G => (z.1, z.1 * z.2)) (μ.prod ν) (μ.prod ν) :=
   (MeasurePreserving.id μ).skew_product measurable_mul <|
-    Filter.eventually_of_forall <| map_mul_left_eq_self ν
+    Filter.Eventually.of_forall <| map_mul_left_eq_self ν
 
 /-- The map `(x, y) ↦ (y, yx)` sends the measure `μ × ν` to `ν × μ`.
 This is the map `SR` in [Halmos, §59].
@@ -165,6 +165,11 @@ theorem inv_ae : (ae μ)⁻¹ = ae μ := by
   nth_rewrite 1 [← inv_inv (ae μ)]
   exact Filter.map_mono (quasiMeasurePreserving_inv μ).tendsto_ae
 
+@[to_additive (attr := simp)]
+theorem eventuallyConst_inv_set_ae :
+    EventuallyConst (s⁻¹ : Set G) (ae μ) ↔ EventuallyConst s (ae μ) := by
+  rw [← inv_preimage, eventuallyConst_preimage, Filter.map_inv, inv_ae]
+
 @[to_additive]
 theorem inv_absolutelyContinuous : μ.inv ≪ μ :=
   (quasiMeasurePreserving_inv μ).absolutelyContinuous
@@ -238,7 +243,7 @@ theorem absolutelyContinuous_of_isMulLeftInvariant [IsMulLeftInvariant ν] (hν 
   refine AbsolutelyContinuous.mk fun s sm hνs => ?_
   have h1 := measure_mul_lintegral_eq μ ν sm 1 measurable_one
   simp_rw [Pi.one_apply, lintegral_one, mul_one, (measure_mul_right_null ν _).mpr hνs,
-    lintegral_zero, mul_eq_zero (M₀ := ℝ≥0∞), measure_univ_eq_zero.not.mpr hν, or_false_iff] at h1
+    lintegral_zero, mul_eq_zero (M₀ := ℝ≥0∞), measure_univ_eq_zero.not.mpr hν, or_false] at h1
   exact h1
 
 section SigmaFinite
@@ -337,7 +342,7 @@ section RightInvariant
 theorem measurePreserving_prod_mul_right [IsMulRightInvariant ν] :
     MeasurePreserving (fun z : G × G => (z.1, z.2 * z.1)) (μ.prod ν) (μ.prod ν) :=
   MeasurePreserving.skew_product (g := fun x y => y * x) (MeasurePreserving.id μ)
-    (measurable_snd.mul measurable_fst) <| Filter.eventually_of_forall <| map_mul_right_eq_self ν
+    (measurable_snd.mul measurable_fst) <| Filter.Eventually.of_forall <| map_mul_right_eq_self ν
 
 /-- The map `(x, y) ↦ (y, xy)` sends the measure `μ × ν` to `ν × μ`. -/
 @[to_additive measurePreserving_prod_add_swap_right
@@ -351,7 +356,7 @@ theorem measurePreserving_prod_mul_swap_right [IsMulRightInvariant μ] :
 " The map `(x, y) ↦ (x + y, y)` preserves the measure `μ × ν`. "]
 theorem measurePreserving_mul_prod [IsMulRightInvariant μ] :
     MeasurePreserving (fun z : G × G => (z.1 * z.2, z.2)) (μ.prod ν) (μ.prod ν) :=
-  measurePreserving_swap.comp <| by apply measurePreserving_prod_mul_swap_right μ ν
+  measurePreserving_swap.comp (measurePreserving_prod_mul_swap_right μ ν)
 
 variable [MeasurableInv G]
 
@@ -373,7 +378,7 @@ theorem measurePreserving_prod_div_swap [IsMulRightInvariant μ] :
 " The map `(x, y) ↦ (x - y, y)` preserves the measure `μ × ν`. "]
 theorem measurePreserving_div_prod [IsMulRightInvariant μ] :
     MeasurePreserving (fun z : G × G => (z.1 / z.2, z.2)) (μ.prod ν) (μ.prod ν) :=
-  measurePreserving_swap.comp <| by apply measurePreserving_prod_div_swap μ ν
+  measurePreserving_swap.comp (measurePreserving_prod_div_swap μ ν)
 
 /-- The map `(x, y) ↦ (xy, x⁻¹)` is measure-preserving. -/
 @[to_additive measurePreserving_add_prod_neg_right
@@ -417,7 +422,7 @@ theorem quasiMeasurePreserving_div_left_of_right_invariant [IsMulRightInvariant 
 @[to_additive]
 theorem quasiMeasurePreserving_div_of_right_invariant [IsMulRightInvariant μ] :
     QuasiMeasurePreserving (fun p : G × G => p.1 / p.2) (μ.prod ν) μ := by
-  refine QuasiMeasurePreserving.prod_of_left measurable_div (eventually_of_forall fun y => ?_)
+  refine QuasiMeasurePreserving.prod_of_left measurable_div (Eventually.of_forall fun y => ?_)
   exact (measurePreserving_div_right μ y).quasiMeasurePreserving
 
 @[to_additive]
@@ -450,7 +455,7 @@ theorem quasiMeasurePreserving_mul_left [IsMulRightInvariant μ] (g : G) :
   have :=
     (quasiMeasurePreserving_inv_of_right_invariant μ).comp
       (this.comp (quasiMeasurePreserving_inv_of_right_invariant μ))
-  simp_rw [Function.comp, mul_inv_rev, inv_inv] at this
+  simp_rw [Function.comp_def, mul_inv_rev, inv_inv] at this
   exact this
 
 end QuasiMeasurePreserving

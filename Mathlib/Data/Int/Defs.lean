@@ -234,7 +234,7 @@ where
     conv => rhs; exact b.add_zero.symm
     rw [Int.add_lt_add_iff_left]; apply negSucc_lt_zero
 
-variable (b) {z b b H0 Hs Hp}
+variable {z b H0 Hs Hp}
 
 lemma inductionOn'_self : b.inductionOn' b H0 Hs Hp = H0 :=
   cast_eq_iff_heq.mpr <| .symm <| by rw [b.sub_self, ← cast_eq_iff_heq]; rfl
@@ -333,9 +333,9 @@ lemma natAbs_add_of_nonpos {a b : Int} (ha : a ≤ 0) (hb : b ≤ 0) :
 lemma natAbs_surjective : natAbs.Surjective := fun n => ⟨n, natAbs_ofNat n⟩
 
 lemma natAbs_pow (n : ℤ) (k : ℕ) : Int.natAbs (n ^ k) = Int.natAbs n ^ k := by
-  induction' k with k ih
-  · rfl
-  · rw [Int.pow_succ, natAbs_mul, Nat.pow_succ, ih, Nat.mul_comm]
+  induction k with
+  | zero => rfl
+  | succ k ih => rw [Int.pow_succ, natAbs_mul, Nat.pow_succ, ih, Nat.mul_comm]
 
 lemma pow_right_injective (h : 1 < a.natAbs) : ((a ^ ·) : ℕ → ℤ).Injective := by
   refine (?_ : (natAbs ∘ (a ^ · : ℕ → ℤ)).Injective).of_comp
@@ -349,12 +349,6 @@ alias natAbs_pow_two := natAbs_sq
 
 /-! ### `/`  -/
 
--- Porting note: Many of the lemmas in this section are dubious alignments because the default
--- division on `Int` has changed from the E-rounding convention to the T-rounding convention
--- (see `Int.ediv`). We have attempted to align the lemmas to continue to use the `/` symbol
--- where possible, but some lemmas fail to hold on T-rounding division and have been aligned to
--- `Int.ediv` instead.
-
 @[simp, norm_cast] lemma natCast_div (m n : ℕ) : ((m / n : ℕ) : ℤ) = m / n := rfl
 
 lemma natCast_ediv (m n : ℕ) : ((m / n : ℕ) : ℤ) = ediv m n := rfl
@@ -365,9 +359,6 @@ lemma ediv_of_neg_of_pos {a b : ℤ} (Ha : a < 0) (Hb : 0 < b) : ediv a b = -((-
     rw [show (- -[m+1] : ℤ) = (m + 1 : ℤ) by rfl]; rw [Int.add_sub_cancel]; rfl
 
 /-! ### mod -/
-
--- Porting note: this should be a doc comment, but the lemma isn't here any more!
-/- See also `Int.divModEquiv` for a similar statement as an `Equiv`. -/
 
 @[simp, norm_cast] lemma natCast_mod (m n : ℕ) : (↑(m % n) : ℤ) = ↑m % ↑n := rfl
 
@@ -571,13 +562,12 @@ lemma lt_of_toNat_lt {a b : ℤ} (h : toNat a < toNat b) : a < b :=
   (toNat_lt_toNat <| lt_toNat.1 <| Nat.lt_of_le_of_lt (Nat.zero_le _) h).1 h
 
 @[simp] lemma toNat_pred_coe_of_pos {i : ℤ} (h : 0 < i) : ((i.toNat - 1 : ℕ) : ℤ) = i - 1 := by
-  simp [h, Int.le_of_lt h, push_cast]
+  simp only [lt_toNat, Nat.cast_ofNat_Int, h, natCast_pred_of_pos, Int.le_of_lt h, toNat_of_nonneg]
 
 @[simp] lemma toNat_eq_zero : ∀ {n : ℤ}, n.toNat = 0 ↔ n ≤ 0
   | (n : ℕ) => by simp
   | -[n+1] => by simpa [toNat] using Int.le_of_lt (negSucc_lt_zero n)
 
-@[simp]
 theorem toNat_sub_of_le {a b : ℤ} (h : b ≤ a) : (toNat (a - b) : ℤ) = a - b :=
   Int.toNat_of_nonneg (Int.sub_nonneg_of_le h)
 
@@ -613,3 +603,5 @@ attribute [simp] natCast_pow
 @[deprecated (since := "2024-04-02")] alias sign_coe_nat_of_nonzero := sign_natCast_of_ne_zero
 @[deprecated (since := "2024-04-02")] alias toNat_coe_nat := toNat_natCast
 @[deprecated (since := "2024-04-02")] alias toNat_coe_nat_add_one := toNat_natCast_add_one
+
+end Int

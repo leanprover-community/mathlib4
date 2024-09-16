@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Batteries.Tactic.Exact
-import Mathlib.Tactic.Hint
+import Batteries.Tactic.Init
+import Mathlib.Logic.Basic
 import Mathlib.Tactic.DeriveToExpr
 import Mathlib.Util.AtomM
-import Mathlib.Init.Logic
 import Qq
 
 /-!
@@ -730,3 +730,5 @@ macro_rules
 --     category := DocCategory.tactic
 --     declNames := [`tactic.interactive.itauto]
 --     tags := ["logic", "propositional logic", "intuitionistic logic", "decision procedure"] }
+
+end Mathlib.Tactic.ITauto

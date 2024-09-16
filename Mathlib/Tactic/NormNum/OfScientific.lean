@@ -23,7 +23,7 @@ variable {α : Type*}
 theorem isRat_ofScientific_of_true [DivisionRing α] :
     {m e : ℕ} → {n : ℤ} → {d : ℕ} →
     IsRat (mkRat m (10 ^ e) : α) n d → IsRat (OfScientific.ofScientific m true e : α) n d
-  | _, _, _, _, ⟨_, eq⟩ => ⟨_, by
+  | _, _, _, _, ⟨_, eq⟩ => ⟨‹_›, by
     rwa [← Rat.cast_ofScientific, ← Rat.ofScientific_eq_ofScientific, Rat.ofScientific_true_def]⟩
 
 -- see note [norm_num lemma function equality]

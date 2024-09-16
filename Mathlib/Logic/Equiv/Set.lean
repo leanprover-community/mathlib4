@@ -239,13 +239,16 @@ TODO: this is the same as `Equiv.setCongr`! -/
 protected def ofEq {α : Type u} {s t : Set α} (h : s = t) : s ≃ t :=
   Equiv.setCongr h
 
+lemma Equiv.strictMono_setCongr {α : Type*} [PartialOrder α] {S T : Set α} (h : S = T) :
+    StrictMono (setCongr h) := fun _ _ ↦ id
+
 /-- If `a ∉ s`, then `insert a s` is equivalent to `s ⊕ PUnit`. -/
 protected def insert {α} {s : Set.{u} α} [DecidablePred (· ∈ s)] {a : α} (H : a ∉ s) :
-    (insert a s : Set α) ≃ Sum s PUnit.{u + 1} :=
+    (insert a s : Set α) ≃ s ⊕ PUnit.{u + 1} :=
   calc
     (insert a s : Set α) ≃ ↥(s ∪ {a}) := Equiv.Set.ofEq (by simp)
-    _ ≃ Sum s ({a} : Set α) := Equiv.Set.union fun x ⟨hx, _⟩ => by simp_all
-    _ ≃ Sum s PUnit.{u + 1} := sumCongr (Equiv.refl _) (Equiv.Set.singleton _)
+    _ ≃ s ⊕ ({a} : Set α) := Equiv.Set.union fun x ⟨hx, _⟩ => by simp_all
+    _ ≃ s ⊕ PUnit.{u + 1} := sumCongr (Equiv.refl _) (Equiv.Set.singleton _)
 
 @[simp]
 theorem insert_symm_apply_inl {α} {s : Set.{u} α} [DecidablePred (· ∈ s)] {a : α} (H : a ∉ s)
@@ -268,9 +271,9 @@ theorem insert_apply_right {α} {s : Set.{u} α} [DecidablePred (· ∈ s)] {a :
   (Equiv.Set.insert H).apply_eq_iff_eq_symm_apply.2 rfl
 
 /-- If `s : Set α` is a set with decidable membership, then `s ⊕ sᶜ` is equivalent to `α`. -/
-protected def sumCompl {α} (s : Set α) [DecidablePred (· ∈ s)] : Sum s (sᶜ : Set α) ≃ α :=
+protected def sumCompl {α} (s : Set α) [DecidablePred (· ∈ s)] : s ⊕ (sᶜ : Set α) ≃ α :=
   calc
-    Sum s (sᶜ : Set α) ≃ ↥(s ∪ sᶜ) := (Equiv.Set.union (by simp [Set.ext_iff])).symm
+    s ⊕ (sᶜ : Set α) ≃ ↥(s ∪ sᶜ) := (Equiv.Set.union (by simp [Set.ext_iff])).symm
     _ ≃ @univ α := Equiv.Set.ofEq (by simp)
     _ ≃ α := Equiv.Set.univ _
 
@@ -298,20 +301,20 @@ theorem sumCompl_symm_apply_of_not_mem {α : Type u} {s : Set α} [DecidablePred
 
 @[simp]
 theorem sumCompl_symm_apply {α : Type*} {s : Set α} [DecidablePred (· ∈ s)] {x : s} :
-    (Equiv.Set.sumCompl s).symm x = Sum.inl x := by
-  cases' x with x hx; exact Set.sumCompl_symm_apply_of_mem hx
+    (Equiv.Set.sumCompl s).symm x = Sum.inl x :=
+  Set.sumCompl_symm_apply_of_mem x.2
 
 @[simp]
 theorem sumCompl_symm_apply_compl {α : Type*} {s : Set α} [DecidablePred (· ∈ s)]
-    {x : (sᶜ : Set α)} : (Equiv.Set.sumCompl s).symm x = Sum.inr x := by
-  cases' x with x hx; exact Set.sumCompl_symm_apply_of_not_mem hx
+    {x : (sᶜ : Set α)} : (Equiv.Set.sumCompl s).symm x = Sum.inr x :=
+  Set.sumCompl_symm_apply_of_not_mem x.2
 
 /-- `sumDiffSubset s t` is the natural equivalence between
 `s ⊕ (t \ s)` and `t`, where `s` and `t` are two sets. -/
 protected def sumDiffSubset {α} {s t : Set α} (h : s ⊆ t) [DecidablePred (· ∈ s)] :
-    Sum s (t \ s : Set α) ≃ t :=
+    s ⊕ (t \ s : Set α) ≃ t :=
   calc
-    Sum s (t \ s : Set α) ≃ (s ∪ t \ s : Set α) :=
+    s ⊕ (t \ s : Set α) ≃ (s ∪ t \ s : Set α) :=
       (Equiv.Set.union (by simp [inter_diff_self])).symm
     _ ≃ t := Equiv.Set.ofEq (by simp [union_diff_self, union_eq_self_of_subset_left h])
 
@@ -328,31 +331,29 @@ theorem sumDiffSubset_apply_inr {α} {s t : Set α} (h : s ⊆ t) [DecidablePred
 theorem sumDiffSubset_symm_apply_of_mem {α} {s t : Set α} (h : s ⊆ t) [DecidablePred (· ∈ s)]
     {x : t} (hx : x.1 ∈ s) : (Equiv.Set.sumDiffSubset h).symm x = Sum.inl ⟨x, hx⟩ := by
   apply (Equiv.Set.sumDiffSubset h).injective
-  simp only [apply_symm_apply, sumDiffSubset_apply_inl]
-  exact Subtype.eq rfl
+  simp only [apply_symm_apply, sumDiffSubset_apply_inl, Set.inclusion_mk]
 
 theorem sumDiffSubset_symm_apply_of_not_mem {α} {s t : Set α} (h : s ⊆ t) [DecidablePred (· ∈ s)]
     {x : t} (hx : x.1 ∉ s) : (Equiv.Set.sumDiffSubset h).symm x = Sum.inr ⟨x, ⟨x.2, hx⟩⟩ := by
   apply (Equiv.Set.sumDiffSubset h).injective
-  simp only [apply_symm_apply, sumDiffSubset_apply_inr]
-  exact Subtype.eq rfl
+  simp only [apply_symm_apply, sumDiffSubset_apply_inr, Set.inclusion_mk]
 
 /-- If `s` is a set with decidable membership, then the sum of `s ∪ t` and `s ∩ t` is equivalent
 to `s ⊕ t`. -/
 protected def unionSumInter {α : Type u} (s t : Set α) [DecidablePred (· ∈ s)] :
-    Sum (s ∪ t : Set α) (s ∩ t : Set α) ≃ Sum s t :=
+    (s ∪ t : Set α) ⊕ (s ∩ t : Set α) ≃ s ⊕ t :=
   calc
-    Sum (s ∪ t : Set α) (s ∩ t : Set α)
-      ≃ Sum (s ∪ t \ s : Set α) (s ∩ t : Set α) := by rw [union_diff_self]
-    _ ≃ Sum (Sum s (t \ s : Set α)) (s ∩ t : Set α) :=
+    (s ∪ t : Set α) ⊕ (s ∩ t : Set α)
+      ≃ (s ∪ t \ s : Set α) ⊕ (s ∩ t : Set α) := by rw [union_diff_self]
+    _ ≃ (s ⊕ (t \ s : Set α)) ⊕ (s ∩ t : Set α) :=
       sumCongr (Set.union <| subset_empty_iff.2 (inter_diff_self _ _)) (Equiv.refl _)
-    _ ≃ Sum s (Sum (t \ s : Set α) (s ∩ t : Set α)) := sumAssoc _ _ _
-    _ ≃ Sum s (t \ s ∪ s ∩ t : Set α) :=
+    _ ≃ s ⊕ ((t \ s : Set α) ⊕ (s ∩ t : Set α)) := sumAssoc _ _ _
+    _ ≃ s ⊕ (t \ s ∪ s ∩ t : Set α) :=
       sumCongr (Equiv.refl _)
         (by
           refine (Set.union' (· ∉ s) ?_ ?_).symm
           exacts [fun x hx => hx.2, fun x hx => not_not_intro hx.1])
-    _ ≃ Sum s t := by
+    _ ≃ s ⊕ t := by
       { rw [(_ : t \ s ∪ s ∩ t = t)]
         rw [union_comm, inter_comm, inter_union_diff] }
 
@@ -373,8 +374,8 @@ protected def compl {α : Type u} {β : Type v} {s : Set α} {t : Set β} [Decid
   invFun e₁ :=
     Subtype.mk
       (calc
-        α ≃ Sum s (sᶜ : Set α) := (Set.sumCompl s).symm
-        _ ≃ Sum t (tᶜ : Set β) := e₀.sumCongr e₁
+        α ≃ s ⊕ (sᶜ : Set α) := (Set.sumCompl s).symm
+        _ ≃ t ⊕ (tᶜ : Set β) := e₀.sumCongr e₁
         _ ≃ β := Set.sumCompl t
         )
       fun x => by

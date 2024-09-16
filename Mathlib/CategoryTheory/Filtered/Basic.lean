@@ -3,13 +3,7 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Scott Morrison
 -/
-import Mathlib.CategoryTheory.FinCategory.Basic
-import Mathlib.CategoryTheory.Limits.Cones
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
-import Mathlib.CategoryTheory.Adjunction.Basic
-import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.CategoryTheory.Category.ULift
-import Mathlib.CategoryTheory.PEmpty
 
 /-!
 # Filtered categories
@@ -129,11 +123,9 @@ variable [IsFilteredOrEmpty C]
 --
 -- theorem cocone_objs : ∀ X Y : C, ∃ (Z : _) (f : X ⟶ Z) (g : Y ⟶ Z), True :=
 --  IsFilteredOrEmpty.cocone_objs
--- #align category_theory.is_filtered.cocone_objs CategoryTheory.IsFiltered.cocone_objs
 --
 --theorem cocone_maps : ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), ∃ (Z : _) (h : Y ⟶ Z), f ≫ h = g ≫ h :=
 --  IsFilteredOrEmpty.cocone_maps
---#align category_theory.is_filtered.cocone_maps CategoryTheory.IsFiltered.cocone_maps
 
 /-- `max j j'` is an arbitrary choice of object to the right of both `j` and `j'`,
 whose existence is ensured by `IsFiltered`.
@@ -188,14 +180,15 @@ variable {C}
 variable [IsFilteredOrEmpty C]
 variable {D : Type u₁} [Category.{v₁} D]
 
-/-- If `C` is filtered or emtpy, and we have a functor `R : C ⥤ D` with a left adjoint, then `D` is
+/-- If `C` is filtered or empty, and we have a functor `R : C ⥤ D` with a left adjoint, then `D` is
 filtered or empty.
 -/
 theorem of_right_adjoint {L : D ⥤ C} {R : C ⥤ D} (h : L ⊣ R) : IsFilteredOrEmpty D :=
   { cocone_objs := fun X Y =>
-      ⟨_, h.homEquiv _ _ (leftToMax _ _), h.homEquiv _ _ (rightToMax _ _), ⟨⟩⟩
+      ⟨R.obj (max (L.obj X) (L.obj Y)),
+        h.homEquiv _ _ (leftToMax _ _), h.homEquiv _ _ (rightToMax _ _), ⟨⟩⟩
     cocone_maps := fun X Y f g =>
-      ⟨_, h.homEquiv _ _ (coeqHom _ _), by
+      ⟨R.obj (coeq (L.map f) (L.map g)), h.homEquiv _ _ (coeqHom _ _), by
         rw [← h.homEquiv_naturality_left, ← h.homEquiv_naturality_left, coeq_condition]⟩ }
 
 /-- If `C` is filtered or empty, and we have a right adjoint functor `R : C ⥤ D`, then `D` is
@@ -564,11 +557,9 @@ variable [IsCofilteredOrEmpty C]
 --
 --theorem cone_objs : ∀ X Y : C, ∃ (W : _) (f : W ⟶ X) (g : W ⟶ Y), True :=
 --  IsCofilteredOrEmpty.cone_objs
---#align category_theory.is_cofiltered.cone_objs CategoryTheory.IsCofiltered.cone_objs
 --
 --theorem cone_maps : ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), ∃ (W : _) (h : W ⟶ X), h ≫ f = h ≫ g :=
 --  IsCofilteredOrEmpty.cone_maps
---#align category_theory.is_cofiltered.cone_maps CategoryTheory.IsCofiltered.cone_maps
 
 /-- `min j j'` is an arbitrary choice of object to the left of both `j` and `j'`,
 whose existence is ensured by `IsCofiltered`.

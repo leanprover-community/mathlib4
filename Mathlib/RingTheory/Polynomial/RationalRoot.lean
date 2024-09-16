@@ -67,9 +67,7 @@ theorem num_dvd_of_is_root {p : A[X]} {r : K} (hr : aeval r p = 0) : num A r ∣
     simp only [coeff_scaleRoots, tsub_zero] at this
     haveI inst := Classical.propDecidable
     by_cases hr : num A r = 0
-    · obtain ⟨u, hu⟩ := (isUnit_den_of_num_eq_zero hr).pow p.natDegree
-      rw [← hu] at this
-      exact Units.dvd_mul_right.mp this
+    · simp_all [nonZeroDivisors.coe_ne_zero]
     · refine dvd_of_dvd_mul_left_of_no_prime_factors hr ?_ this
       intro q dvd_num dvd_denom_pow hq
       apply hq.not_unit

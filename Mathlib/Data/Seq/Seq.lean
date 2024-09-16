@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Option.NAry
 import Mathlib.Data.Seq.Computation
-import Batteries.Data.LazyList
 
 /-!
 # Possibly infinite lists
@@ -127,7 +126,7 @@ def tail (s : Seq α) : Seq α :=
     exact al n'⟩
 
 /-- member definition for `Seq`-/
-protected def Mem (a : α) (s : Seq α) :=
+protected def Mem (s : Seq α) (a : α) :=
   some a ∈ s.1
 
 instance : Membership α (Seq α) :=
@@ -259,7 +258,7 @@ theorem mem_rec_on {C : Seq α → Prop} {a s} (M : a ∈ s)
     rw [h_eq] at e
     apply h1 _ _ (Or.inr (IH e))
 
-/-- Corecursor over pairs of `Option` values-/
+/-- Corecursor over pairs of `Option` values -/
 def Corec.f (f : β → Option (α × β)) : Option β → Option α × Option β
   | none => (none, none)
   | some b =>
@@ -316,8 +315,9 @@ def BisimO : Option (Seq1 α) → Option (Seq1 α) → Prop
   | _, _ => False
 
 attribute [simp] BisimO
+attribute [nolint simpNF] BisimO.eq_3
 
-/-- a relation is bisimilar if it meets the `BisimO` test-/
+/-- a relation is bisimilar if it meets the `BisimO` test -/
 def IsBisimulation :=
   ∀ ⦃s₁ s₂⦄, s₁ ~ s₂ → BisimO R (destruct s₁) (destruct s₂)
 
@@ -402,30 +402,39 @@ def ofStream (s : Stream' α) : Seq α :=
 instance coeStream : Coe (Stream' α) (Seq α) :=
   ⟨ofStream⟩
 
-/-- Embed a `LazyList α` as a sequence. Note that even though this
+section MLList
+
+/-- Embed a `MLList α` as a sequence. Note that even though this
   is non-meta, it will produce infinite sequences if used with
-  cyclic `LazyList`s created by meta constructions. -/
-def ofLazyList : LazyList α → Seq α :=
+  cyclic `MLList`s created by meta constructions. -/
+def ofMLList : MLList Id α → Seq α :=
   corec fun l =>
-    match l with
-    | LazyList.nil => none
-    | LazyList.cons a l' => some (a, l'.get)
+    match l.uncons with
+    | .none => none
+    | .some (a, l') => some (a, l')
 
-instance coeLazyList : Coe (LazyList α) (Seq α) :=
-  ⟨ofLazyList⟩
+@[deprecated (since := "2024-07-26")] alias ofLazyList := ofMLList
 
-/-- Translate a sequence into a `LazyList`. Since `LazyList` and `List`
-  are isomorphic as non-meta types, this function is necessarily meta. -/
-unsafe def toLazyList : Seq α → LazyList α
+instance coeMLList : Coe (MLList Id α) (Seq α) :=
+  ⟨ofMLList⟩
+
+@[deprecated (since := "2024-07-26")] alias coeLazyList := coeMLList
+
+/-- Translate a sequence into a `MLList`. -/
+unsafe def toMLList : Seq α → MLList Id α
   | s =>
     match destruct s with
-    | none => LazyList.nil
-    | some (a, s') => LazyList.cons a (toLazyList s')
+    | none => .nil
+    | some (a, s') => .cons a (toMLList s')
+
+@[deprecated (since := "2024-07-26")] alias toLazyList := toMLList
+
+end MLList
 
 /-- Translate a sequence to a list. This function will run forever if
   run on an infinite sequence. -/
 unsafe def forceToList (s : Seq α) : List α :=
-  (toLazyList s).toList
+  (toMLList s).force
 
 /-- The sequence of natural numbers some 0, some 1, ... -/
 def nats : Seq ℕ :=
@@ -547,7 +556,7 @@ def toStream (s : Seq α) (h : ¬s.Terminates) : Stream' α := fun n =>
 /-- Convert a sequence into either a list or a stream depending on whether
   it is finite or infinite. (Without decidability of the infiniteness predicate,
   this is not constructively possible.) -/
-def toListOrStream (s : Seq α) [Decidable s.Terminates] : Sum (List α) (Stream' α) :=
+def toListOrStream (s : Seq α) [Decidable s.Terminates] : List α ⊕ Stream' α :=
   if h : s.Terminates then Sum.inl (toList s h) else Sum.inr (toStream s h)
 
 @[simp]

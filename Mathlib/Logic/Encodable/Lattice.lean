@@ -39,11 +39,11 @@ theorem iUnion_decode₂_cases {f : β → Set α} {C : Set α → Prop} (H0 : C
     C (⋃ b ∈ decode₂ β n, f b) :=
   match decode₂ β n with
   | none => by
-    simp only [Option.mem_def, iUnion_of_empty, iUnion_empty]
+    simp only [Option.mem_def, iUnion_of_empty, iUnion_empty, reduceCtorEq]
     apply H0
   | some b => by
     convert H1 b
-    simp [ext_iff]
+    simp [Set.ext_iff]
 
 theorem iUnion_decode₂_disjoint_on {f : β → Set α} (hd : Pairwise (Disjoint on f)) :
     Pairwise (Disjoint on fun i => ⋃ b ∈ decode₂ β i, f b) := by
