@@ -46,13 +46,14 @@ instance Restrict.isFiniteMeasure (μ : Measure α) [hs : Fact (μ s < ∞)] :
     IsFiniteMeasure (μ.restrict s) :=
   ⟨by simpa using hs.elim⟩
 
+@[simp]
 theorem measure_lt_top (μ : Measure α) [IsFiniteMeasure μ] (s : Set α) : μ s < ∞ :=
   (measure_mono (subset_univ s)).trans_lt IsFiniteMeasure.measure_univ_lt_top
 
 instance isFiniteMeasureRestrict (μ : Measure α) (s : Set α) [h : IsFiniteMeasure μ] :
-    IsFiniteMeasure (μ.restrict s) :=
-  ⟨by simpa using measure_lt_top μ s⟩
+    IsFiniteMeasure (μ.restrict s) := ⟨by simp⟩
 
+@[simp]
 theorem measure_ne_top (μ : Measure α) [IsFiniteMeasure μ] (s : Set α) : μ s ≠ ∞ :=
   ne_of_lt (measure_lt_top μ s)
 
@@ -1104,13 +1105,11 @@ instance SMul.sigmaFinite {μ : Measure α} [SigmaFinite μ] (c : ℝ≥0) :
 instance [SigmaFinite (μ.restrict s)] [SigmaFinite (μ.restrict t)] :
     SigmaFinite (μ.restrict (s ∪ t)) := sigmaFinite_of_le _ (restrict_union_le _ _)
 
-instance [h : SigmaFinite (μ.restrict s)] : SigmaFinite (μ.restrict (s ∩ t)) := by
-  convert sigmaFinite_of_le _ (restrict_mono_ae (ae_of_all _ Set.inter_subset_left))
-  exact h
+instance [SigmaFinite (μ.restrict s)] : SigmaFinite (μ.restrict (s ∩ t)) :=
+  sigmaFinite_of_le (μ.restrict s) (restrict_mono_ae (ae_of_all _ Set.inter_subset_left))
 
-instance [h : SigmaFinite (μ.restrict t)] : SigmaFinite (μ.restrict (s ∩ t)) := by
-  convert sigmaFinite_of_le _ (restrict_mono_ae (ae_of_all _ Set.inter_subset_right))
-  exact h
+instance [SigmaFinite (μ.restrict t)] : SigmaFinite (μ.restrict (s ∩ t)) :=
+  sigmaFinite_of_le (μ.restrict t) (restrict_mono_ae (ae_of_all _ Set.inter_subset_right))
 
 theorem SigmaFinite.of_map (μ : Measure α) {f : α → β} (hf : AEMeasurable f μ)
     (h : SigmaFinite (μ.map f)) : SigmaFinite μ :=

@@ -465,7 +465,8 @@ def part (a : α) : Finset α := if ha : a ∈ s then choose (hp := P.existsUniq
 
 lemma part_mem (ha : a ∈ s) : P.part a ∈ P.parts := by simp [part, ha, choose_mem]
 
-lemma mem_part (ha : a ∈ s) : a ∈ P.part a := by simp [part, ha, choose_property]
+lemma mem_part (ha : a ∈ s) : a ∈ P.part a := by
+  simp [part, ha, choose_property (p := fun s => a ∈ s) P.parts (P.existsUnique_mem ha)]
 
 lemma part_eq_of_mem (ht : t ∈ P.parts) (hat : a ∈ t) : P.part a = t := by
   apply P.eq_of_mem_parts (P.part_mem _) ht (P.mem_part _) hat <;> exact mem_of_subset (P.le ht) hat
@@ -547,6 +548,8 @@ lemma card_mod_card_parts_le : s.card % P.parts.card ≤ P.parts.card := by
     rw [h, h']
   · exact (Nat.mod_lt _ h).le
 
+section Setoid
+
 variable [Fintype α]
 
 /-- A setoid over a finite type induces a finpartition of the type's elements,
@@ -585,6 +588,8 @@ theorem mem_part_ofSetoid_iff_rel {s : Setoid α} [DecidableRel s.r] {b : α} :
   obtain ⟨⟨_, hc⟩, this⟩ := this
   simp only [← hc, mem_univ, mem_filter, true_and] at this ⊢
   exact ⟨s.trans (s.symm this), s.trans this⟩
+
+end Setoid
 
 section Atomise
 

@@ -71,6 +71,13 @@ section SMul
 
 variable [SMul M X] [ContinuousSMul M X]
 
+lemma IsScalarTower.continuousSMul {M : Type*} (N : Type*) {α : Type*} [Monoid N] [SMul M N]
+    [MulAction N α] [SMul M α] [IsScalarTower M N α] [TopologicalSpace M] [TopologicalSpace N]
+    [TopologicalSpace α] [ContinuousSMul M N] [ContinuousSMul N α] : ContinuousSMul M α :=
+  { continuous_smul := by
+      suffices Continuous (fun p : M × α ↦ (p.1 • (1 : N)) • p.2) by simpa
+      fun_prop }
+
 @[to_additive]
 instance : ContinuousSMul (ULift M) X :=
   ⟨(continuous_smul (M := M)).comp₂ (continuous_uLift_down.comp continuous_fst) continuous_snd⟩
@@ -85,7 +92,7 @@ theorem ContinuousSMul.induced {R : Type*} {α : Type*} {β : Type*} {F : Type*}
     (f : F) : @ContinuousSMul R α _ _ (tβ.induced f) := by
   let tα := tβ.induced f
   refine ⟨continuous_induced_rng.2 ?_⟩
-  simp only [Function.comp, map_smul]
+  simp only [Function.comp_def, map_smul]
   fun_prop
 
 @[to_additive]
@@ -215,6 +222,12 @@ variable [Group M] [MulAction M X] [ContinuousSMul M X]
 @[to_additive]
 instance Subgroup.continuousSMul {S : Subgroup M} : ContinuousSMul S X :=
   S.toSubmonoid.continuousSMul
+
+variable (M)
+
+/-- The stabilizer of a continuous group action on a discrete space is an open subgroup. -/
+lemma stabilizer_isOpen [DiscreteTopology X] (x : X) : IsOpen (MulAction.stabilizer M x : Set M) :=
+  IsOpen.preimage (f := fun g ↦ g • x) (by fun_prop) (isOpen_discrete {x})
 
 end Group
 

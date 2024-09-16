@@ -7,7 +7,7 @@ on:
 jobs:
   ping_zulip:
     name: Ping maintainers on Zulip
-    if: (github.event.issue.pull_request != 'null') && (startsWith(github.event.comment.body, 'maintainer merge') || contains(toJSON(github.event.comment.body), '\nmaintainer merge'))
+    if: github.event.issue.pull_request && (startsWith(github.event.comment.body, 'maintainer merge') || contains(toJSON(github.event.comment.body), '\nmaintainer merge'))
     runs-on: ubuntu-latest
     steps:
       - name: Check whether user is part of mathlib-reviewers team
@@ -28,7 +28,8 @@ jobs:
         run: |
           ./scripts/get_tlabel.sh "${PR}" >> "$GITHUB_OUTPUT"
         env:
-          PR:  /repos/{owner}/{repo}/issues/{pull_number}
+          PR:  /repos/leanprover-community/mathlib4/issues/${{ github.event.issue.number }}
+          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
       - name: Send message on Zulip
         uses: zulip/github-actions-zulip/send-message@v1
@@ -45,7 +46,7 @@ jobs:
             > ${{ github.event.issue.title }}
 
       - name: Add comment to PR
-        uses: GrantBirki/comment@v2.0.1
+        uses: GrantBirki/comment@v2
         with:
           issue-number: ${{ github.event.issue.number }}
           body: |

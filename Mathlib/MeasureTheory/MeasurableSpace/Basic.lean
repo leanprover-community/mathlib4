@@ -351,6 +351,16 @@ theorem measurable_to_countable' [MeasurableSpace α] [Countable α] [Measurable
     (h : ∀ x, MeasurableSet (f ⁻¹' {x})) : Measurable f :=
   measurable_to_countable fun y => h (f y)
 
+theorem ENat.measurable_iff {α : Type*} [MeasurableSpace α] {f : α → ℕ∞} :
+    Measurable f ↔ ∀ n : ℕ, MeasurableSet (f ⁻¹' {↑n}) := by
+  refine ⟨fun hf n ↦ hf <| measurableSet_singleton _, fun h ↦ measurable_to_countable' fun n ↦ ?_⟩
+  cases n with
+  | top =>
+    rw [← WithTop.none_eq_top, ← compl_range_some, preimage_compl, ← iUnion_singleton_eq_range,
+      preimage_iUnion]
+    exact .compl <| .iUnion h
+  | coe n => exact h n
+
 @[measurability]
 theorem measurable_unit [MeasurableSpace α] (f : Unit → α) : Measurable f :=
   measurable_from_top
@@ -508,7 +518,7 @@ alias Measurable.subtype_val := Measurable.subtype_coe
 @[measurability]
 theorem Measurable.subtype_mk {p : β → Prop} {f : α → β} (hf : Measurable f) {h : ∀ x, p (f x)} :
     Measurable fun x => (⟨f x, h x⟩ : Subtype p) := fun t ⟨s, hs⟩ =>
-  hs.2 ▸ by simp only [← preimage_comp, (· ∘ ·), Subtype.coe_mk, hf hs.1]
+  hs.2 ▸ by simp only [← preimage_comp, Function.comp_def, Subtype.coe_mk, hf hs.1]
 
 @[measurability]
 protected theorem Measurable.rangeFactorization {f : α → β} (hf : Measurable f) :
@@ -661,6 +671,7 @@ theorem Measurable.prod_mk {β γ} {_ : MeasurableSpace β} {_ : MeasurableSpace
     {g : α → γ} (hf : Measurable f) (hg : Measurable g) : Measurable fun a : α => (f a, g a) :=
   Measurable.prod hf hg
 
+@[fun_prop]
 theorem Measurable.prod_map [MeasurableSpace δ] {f : α → β} {g : γ → δ} (hf : Measurable f)
     (hg : Measurable g) : Measurable (Prod.map f g) :=
   (hf.comp measurable_fst).prod_mk (hg.comp measurable_snd)
@@ -805,7 +816,7 @@ variable [∀ a, MeasurableSpace (π a)] [MeasurableSpace γ]
 
 theorem measurable_pi_iff {g : α → ∀ a, π a} : Measurable g ↔ ∀ a, Measurable fun x => g x a := by
   simp_rw [measurable_iff_comap_le, MeasurableSpace.pi, MeasurableSpace.comap_iSup,
-    MeasurableSpace.comap_comp, Function.comp, iSup_le_iff]
+    MeasurableSpace.comap_comp, Function.comp_def, iSup_le_iff]
 
 @[fun_prop, aesop safe 100 apply (rule_sets := [Measurable])]
 theorem measurable_pi_apply (a : δ) : Measurable fun f : ∀ a, π a => f a :=
@@ -853,6 +864,42 @@ theorem measurable_update (f : ∀ a : δ, π a) {a : δ} [DecidableEq δ] : Mea
 theorem measurable_update_left {a : δ} [DecidableEq δ] {x : π a} :
     Measurable (update · a x) :=
   measurable_update'.comp measurable_prod_mk_right
+
+@[measurability, fun_prop]
+theorem Set.measurable_restrict (s : Set δ) : Measurable (s.restrict (π := π)) :=
+  measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
+
+@[measurability, fun_prop]
+theorem Set.measurable_restrict₂ {s t : Set δ} (hst : s ⊆ t) :
+    Measurable (restrict₂ (π := π) hst) :=
+  measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
+
+@[measurability, fun_prop]
+theorem Finset.measurable_restrict (s : Finset δ) : Measurable (s.restrict (π := π)) :=
+  measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
+
+@[measurability, fun_prop]
+theorem Finset.measurable_restrict₂ {s t : Finset δ} (hst : s ⊆ t) :
+    Measurable (Finset.restrict₂ (π := π) hst) :=
+  measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
+
+@[measurability, fun_prop]
+theorem Set.measurable_restrict_apply (s : Set α) {f : α → γ} (hf : Measurable f) :
+    Measurable (s.restrict f) := hf.comp measurable_subtype_coe
+
+@[measurability, fun_prop]
+theorem Set.measurable_restrict₂_apply {s t : Set α} (hst : s ⊆ t)
+    {f : t → γ} (hf : Measurable f) :
+    Measurable (restrict₂ (π := fun _ ↦ γ) hst f) := hf.comp (measurable_inclusion hst)
+
+@[measurability, fun_prop]
+theorem Finset.measurable_restrict_apply (s : Finset α) {f : α → γ} (hf : Measurable f) :
+    Measurable (s.restrict f) := hf.comp measurable_subtype_coe
+
+@[measurability, fun_prop]
+theorem Finset.measurable_restrict₂_apply {s t : Finset α} (hst : s ⊆ t)
+    {f : t → γ} (hf : Measurable f) :
+    Measurable (restrict₂ (π := fun _ ↦ γ) hst f) := hf.comp (measurable_inclusion hst)
 
 variable (π) in
 theorem measurable_eq_mp {i i' : δ} (h : i = i') : Measurable (congr_arg π h).mp := by
@@ -1218,7 +1265,7 @@ namespace MeasurableSet
 variable [MeasurableSpace α]
 
 instance Subtype.instMembership : Membership α (Subtype (MeasurableSet : Set α → Prop)) :=
-  ⟨fun a s => a ∈ (s : Set α)⟩
+  ⟨fun s a => a ∈ (s : Set α)⟩
 
 @[simp]
 theorem mem_coe (a : α) (s : Subtype (MeasurableSet : Set α → Prop)) : a ∈ (s : Set α) ↔ a ∈ s :=

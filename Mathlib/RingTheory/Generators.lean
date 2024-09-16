@@ -166,7 +166,7 @@ def comp (Q : Generators S T) (P : Generators R S) : Generators R T where
   σ' x := (Q.σ x).sum (fun n r ↦ rename Sum.inr (P.σ r) * monomial (n.mapDomain Sum.inl) 1)
   aeval_val_σ' s := by
     have (x : P.Ring) : aeval (algebraMap S T ∘ P.val) x = algebraMap S T (aeval P.val x) := by
-      rw [map_aeval, aeval_def, coe_eval₂Hom, ← IsScalarTower.algebraMap_eq, Function.comp]
+      rw [map_aeval, aeval_def, coe_eval₂Hom, ← IsScalarTower.algebraMap_eq, Function.comp_def]
     conv_rhs => rw [← Q.aeval_val_σ s, ← (Q.σ s).sum_single]
     simp only [map_finsupp_sum, map_mul, aeval_rename, Sum.elim_comp_inr, this, aeval_val_σ,
       aeval_monomial, map_one, Finsupp.prod_mapDomain_index_inj Sum.inl_injective, Sum.elim_inl,
