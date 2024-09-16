@@ -467,32 +467,36 @@ theorem card_isPrincipal_norm_eq (n : ℕ) :
   rw [torsionOrder, PNat.mk_coe, ← Nat.card_eq_fintype_card, ← Nat.card_prod]
   exact Nat.card_congr (integralPointEquivNorm K n).symm
 
-/-- For `n : ℕ`, the number of principal nonzero ideals in `𝓞 K` of norm `≤ n` multiplied by the
-number of roots of unity in `K` is equal to the number of `integralPoint K` of norm `≤ n`. -/
-theorem card_isPrincipal_norm_le (n : ℕ) :
+/-- For `s : ℝ`, the number of principal nonzero ideals in `𝓞 K` of norm `≤ s` multiplied by the
+number of roots of unity in `K` is equal to the number of `integralPoint K` of norm `≤ s`. -/
+theorem card_isPrincipal_norm_le (s : ℝ) :
     Nat.card {I : (Ideal (𝓞 K))⁰ | IsPrincipal (I : Ideal (𝓞 K)) ∧
-      absNorm (I : Ideal (𝓞 K)) ≤ n} * torsionOrder K =
-        Nat.card {a : integralPoint K | intNorm a ≤ n} := by
-  rw [torsionOrder, PNat.mk_coe, ← Nat.card_eq_fintype_card, ← Nat.card_prod]
-  refine Nat.card_congr <| @Equiv.ofFiberEquiv _ (γ := Finset.Iic n) _
+      absNorm (I : Ideal (𝓞 K)) ≤ s} * torsionOrder K =
+        Nat.card {a : integralPoint K | intNorm a ≤ s} := by
+  obtain hs | hs := le_or_gt 0 s
+  · simp_rw [← Nat.le_floor_iff hs]
+    rw [torsionOrder, PNat.mk_coe, ← Nat.card_eq_fintype_card, ← Nat.card_prod]
+    refine Nat.card_congr <| @Equiv.ofFiberEquiv _ (γ := Finset.Iic _) _
       (fun I ↦ ⟨absNorm (I.1 : Ideal (𝓞 K)), Finset.mem_Iic.mpr I.1.2.2⟩)
       (fun a ↦ ⟨intNorm a.1, Finset.mem_Iic.mpr a.2⟩) fun ⟨i, hi⟩ ↦ ?_
-  simp_rw [Subtype.mk.injEq]
-  calc
-    _ ≃ {I : {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.1 ∧ absNorm I.1 ≤ n} // absNorm I.1.1 = i}
+    simp_rw [Subtype.mk.injEq]
+    calc
+    _ ≃ {I : {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.1 ∧ absNorm I.1 ≤ _} // absNorm I.1.1 = i}
           × torsion K := Equiv.prodSubtypeFstEquivSubtypeProd
-    _ ≃ {I : (Ideal (𝓞 K))⁰ // (IsPrincipal I.1 ∧ absNorm I.1 ≤ n) ∧ absNorm I.1 = i}
+    _ ≃ {I : (Ideal (𝓞 K))⁰ // (IsPrincipal I.1 ∧ absNorm I.1 ≤ _) ∧ absNorm I.1 = i}
           × torsion K := Equiv.prodCongrLeft fun _ ↦ (Equiv.subtypeSubtypeEquivSubtypeInter
-      (p := fun I : (Ideal (𝓞 K))⁰ ↦ IsPrincipal I.1 ∧ absNorm I.1 ≤ n)
+      (p := fun I : (Ideal (𝓞 K))⁰ ↦ IsPrincipal I.1 ∧ absNorm I.1 ≤ _)
       (q := fun I ↦ absNorm I.1 = i))
-    _ ≃ {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.1 ∧ absNorm I.1 = i ∧ absNorm I.1 ≤ n}
+    _ ≃ {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.1 ∧ absNorm I.1 = i ∧ absNorm I.1 ≤ _}
           × torsion K := Equiv.prodCongrLeft fun _ ↦ (Equiv.subtypeEquivRight fun _ ↦ by aesop)
     _ ≃ {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.1 ∧ absNorm I.1 = i} × torsion K :=
       Equiv.prodCongrLeft fun _ ↦ (Equiv.subtypeEquivRight fun _ ↦ by
       rw [and_iff_left_of_imp (a := absNorm _ = _) fun h ↦ Finset.mem_Iic.mp (h ▸ hi)])
     _ ≃ {a : integralPoint K // intNorm a = i} := (integralPointEquivNorm K i).symm
-    _ ≃ {a : {a : integralPoint K // intNorm a ≤ n} // intNorm a.1 = i} :=
+    _ ≃ {a : {a : integralPoint K // intNorm a ≤ _} // intNorm a.1 = i} :=
       (Equiv.subtypeSubtypeEquivSubtype fun h ↦ Finset.mem_Iic.mp (h ▸ hi)).symm
+  · simp_rw [lt_iff_not_le.mp (lt_of_lt_of_le hs (Nat.cast_nonneg _)), and_false, Set.setOf_false,
+      Nat.card_eq_fintype_card, Fintype.card_ofIsEmpty, zero_mul]
 
 end fundamentalCone
 
