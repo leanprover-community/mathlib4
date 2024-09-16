@@ -16,6 +16,7 @@ This file provides the basic API for `List.groupBy`. The main results are the fo
   the specified relation.
 - `List.chain'_last_head_groupBy`: the last element of each list in `List.groupBy` is not related
   to the first element of the next list.
+- `List.groupBy_eq_iff`: the previous four properties uniquely characterize `List.groupBy`.
 -/
 
 namespace List
