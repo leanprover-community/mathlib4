@@ -12,16 +12,8 @@ IFS=$'\n\t'
 # the script takes two optional arguments `<optCurrCommit> <optReferenceCommit>`
 # and tallies the same technical debts on `<optCurrCommit>` using `<optReferenceCommit>`
 # as a reference.
-
-currCommit=${1:-}
-if [ -z currCommit ]; then
-  currCommit="$(git rev-parse HEAD)"
-fi
-
-refCommit=${2:-}
-if [ -z refCommit ]; then
-  refCommit="$(git log --pretty=%H --since="$(date -I -d 'last week')" | tail -n -1)"
-fi
+currCommit=${1:-$(git rev-parse HEAD)}
+refCommit=${2:-$(git log --pretty=%H --since="$(date -I -d 'last week')" | tail -n -1)}
 
 # `tdc` produces a semi-formatted output of the form
 # ...
