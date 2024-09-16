@@ -6,6 +6,7 @@ Authors: Jung Tao Cheng, Christian Merten, Andrew Yang
 import Mathlib.Algebra.MvPolynomial.PDeriv
 import Mathlib.LinearAlgebra.Determinant
 import Mathlib.RingTheory.Presentation
+import Mathlib.RingTheory.RingHomProperties
 
 /-!
 # Standard smooth algebras
@@ -162,6 +163,29 @@ lemma jacobiMatrix_apply (i j : P.rels) :
 end Matrix
 
 section Constructions
+
+/-- If `algebraMap R S` is bijective, the empty generators are a pre-submersive
+presentation with no relations. -/
+noncomputable def ofBijectiveAlgebraMap (h : Function.Bijective (algebraMap R S)) :
+    PreSubmersivePresentation.{t, w} R S where
+  toPresentation := Presentation.ofBijectiveAlgebraMap.{t, w} h
+  map := PEmpty.elim
+  map_inj (a b : PEmpty) h := by contradiction
+  relations_finite := inferInstanceAs (Finite PEmpty.{t + 1})
+
+instance (h : Function.Bijective (algebraMap R S)) : Fintype (ofBijectiveAlgebraMap h).vars :=
+  inferInstanceAs (Fintype PEmpty)
+
+instance (h : Function.Bijective (algebraMap R S)) : Fintype (ofBijectiveAlgebraMap h).rels :=
+  inferInstanceAs (Fintype PEmpty)
+
+lemma ofBijectiveAlgebraMap_jacobian (h : Function.Bijective (algebraMap R S)) :
+    (ofBijectiveAlgebraMap h).jacobian = 1 := by
+  have : (algebraMap (ofBijectiveAlgebraMap h).Ring S).mapMatrix
+      (ofBijectiveAlgebraMap h).jacobiMatrix = 1 := by
+    ext (i j : PEmpty)
+    contradiction
+  rw [jacobian_eq_jacobiMatrix_det, RingHom.map_det, this, Matrix.det_one]
 
 section Localization
 
@@ -357,6 +381,21 @@ open PreSubmersivePresentation
 
 section Constructions
 
+variable {R S} in
+/-- If `algebraMap R S` is bijective, the empty generators are a submersive
+presentation with no relations. -/
+noncomputable def ofBijectiveAlgebraMap (h : Function.Bijective (algebraMap R S)) :
+    SubmersivePresentation.{t, w} R S where
+  __ := PreSubmersivePresentation.ofBijectiveAlgebraMap.{t, w} h
+  jacobian_isUnit := by
+    rw [ofBijectiveAlgebraMap_jacobian]
+    exact isUnit_one
+  isFinite := Presentation.ofBijectiveAlgebraMap_isFinite h
+
+/-- The canonical submersive `R`-presentation of `R` with no generators and no relations. -/
+noncomputable def id : SubmersivePresentation.{t, w} R R :=
+  ofBijectiveAlgebraMap Function.bijective_id
+
 section Composition
 
 variable {R S T} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
@@ -436,6 +475,16 @@ lemma IsStandardSmoothOfRelativeDimension.isStandardSmooth
     IsStandardSmooth.{t, w} R S :=
   ⟨‹IsStandardSmoothOfRelativeDimension n R S›.out.nonempty⟩
 
+lemma IsStandardSmoothOfRelativeDimension.of_algebraMap_bijective
+    (h : Function.Bijective (algebraMap R S)) :
+    IsStandardSmoothOfRelativeDimension.{t, w} 0 R S :=
+  ⟨SubmersivePresentation.ofBijectiveAlgebraMap h, Presentation.ofBijectiveAlgebraMap_dimension h⟩
+
+variable (R) in
+instance IsStandardSmoothOfRelativeDimension.id :
+    IsStandardSmoothOfRelativeDimension.{t, w} 0 R R :=
+  IsStandardSmoothOfRelativeDimension.of_algebraMap_bijective Function.bijective_id
+
 section Composition
 
 variable (R S T) [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
@@ -487,26 +536,3 @@ instance IsStandardSmoothOfRelativeDimension.baseChange
 end BaseChange
 
 end Algebra
-
-namespace RingHom
-
-variable {R : Type u} [CommRing R]
-variable {S : Type v} [CommRing S]
-
-/-- A ring homomorphism `R →+* S` is standard smooth if `S` is standard smooth as `R`-algebra. -/
-def IsStandardSmooth (f : R →+* S) : Prop :=
-  @Algebra.IsStandardSmooth.{t, w} _ _ _ _ f.toAlgebra
-
-/-- A ring homomorphism `R →+* S` is standard smooth of relative dimension `n` if
-`S` is standard smooth of relative dimension `n` as `R`-algebra. -/
-def IsStandardSmoothOfRelativeDimension (f : R →+* S) : Prop :=
-  @Algebra.IsStandardSmoothOfRelativeDimension.{t, w} n _ _ _ _ f.toAlgebra
-
-lemma IsStandardSmoothOfRelativeDimension.isStandardSmooth (f : R →+* S)
-    (hf : IsStandardSmoothOfRelativeDimension.{t, w} n f) :
-    IsStandardSmooth.{t, w} f :=
-  letI : Algebra R S := f.toAlgebra
-  letI : Algebra.IsStandardSmoothOfRelativeDimension.{t, w} n R S := hf
-  Algebra.IsStandardSmoothOfRelativeDimension.isStandardSmooth n
-
-end RingHom
