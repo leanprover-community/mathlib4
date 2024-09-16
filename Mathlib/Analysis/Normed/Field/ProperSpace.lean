@@ -24,6 +24,8 @@ This is a special case of `ProperSpace.of_locallyCompactSpace` from
 with a proof that requires fewer imports.
 -/
 
+assert_not_exists FiniteDimensional
+
 open Metric Filter
 
 /-- A weakly locally compact normed field is proper.
