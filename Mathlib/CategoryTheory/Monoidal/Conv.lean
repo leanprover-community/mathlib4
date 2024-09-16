@@ -13,7 +13,7 @@ When `M : Comon_ C` and `N : Mon_ C`, the morphisms `M.X ⟶ N.X` form a monoid 
 
 universe v₁ u₁
 namespace CategoryTheory
-open MonoidalCategory
+open MonoidalCategory Mon_Class
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory C]
 
 /--
@@ -26,14 +26,14 @@ namespace Conv
 variable {M : Comon_ C} {N : Mon_ C}
 
 instance : One (Conv M N) where
-  one := M.counit ≫ N.one
+  one := M.counit ≫ η
 
-theorem one_eq : (1 : Conv M N) = M.counit ≫ N.one := rfl
+theorem one_eq : (1 : Conv M N) = M.counit ≫ η := rfl
 
 instance : Mul (Conv M N) where
-  mul := fun f g => M.comul ≫ f ▷ M.X ≫ N.X ◁ g ≫ N.mul
+  mul := fun f g => M.comul ≫ f ▷ M.X ≫ N.X ◁ g ≫ μ
 
-theorem mul_eq (f g : Conv M N) : f * g = M.comul ≫ f ▷ M.X ≫ N.X ◁ g ≫ N.mul := rfl
+theorem mul_eq (f g : Conv M N) : f * g = M.comul ≫ f ▷ M.X ≫ N.X ◁ g ≫ μ := rfl
 
 instance : Monoid (Conv M N) where
   one_mul f := by simp [one_eq, mul_eq, ← whisker_exchange_assoc]
@@ -53,7 +53,7 @@ instance : Monoid (Conv M N) where
     slice_lhs 6 7 =>
       rw [← associator_inv_naturality_right]
     slice_lhs 8 9 =>
-      rw [N.mul_assoc]
+      rw [Mon_Class.mul_assoc]
     simp
 
 end Conv

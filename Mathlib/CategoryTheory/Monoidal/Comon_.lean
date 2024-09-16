@@ -178,20 +178,22 @@ variable (C)
 /--
 Turn a comonoid object into a monoid object in the opposite category.
 -/
-@[simps] def Comon_ToMon_OpOp_obj' (A : Comon_ C) : Mon_ (Cᵒᵖ) where
+@[simps X isMon_Class_one isMon_Class_mul]
+def Comon_ToMon_OpOp_obj' (A : Comon_ C) : Mon_ (Cᵒᵖ) where
   X := op A.X
-  one := A.counit.op
-  mul := A.comul.op
-  one_mul := by
-    rw [← op_whiskerRight, ← op_comp, counit_comul]
-    rfl
-  mul_one := by
-    rw [← op_whiskerLeft, ← op_comp, comul_counit]
-    rfl
-  mul_assoc := by
-    rw [← op_inv_associator, ← op_whiskerRight, ← op_comp, ← op_whiskerLeft, ← op_comp,
-      comul_assoc_flip, op_comp, op_comp_assoc]
-    rfl
+  isMon_Class :=
+  { one := A.counit.op
+    mul := A.comul.op
+    one_mul := by
+      rw [← op_whiskerRight, ← op_comp, counit_comul]
+      rfl
+    mul_one := by
+      rw [← op_whiskerLeft, ← op_comp, comul_counit]
+      rfl
+    mul_assoc := by
+      rw [← op_inv_associator, ← op_whiskerRight, ← op_comp, ← op_whiskerLeft, ← op_comp,
+        comul_assoc_flip, op_comp, op_comp_assoc]
+      rfl }
 
 /--
 The contravariant functor turning comonoid objects into monoid objects in the opposite category.
@@ -208,13 +210,13 @@ Turn a monoid object in the opposite category into a comonoid object.
 -/
 @[simps] def Mon_OpOpToComon_obj' (A : (Mon_ (Cᵒᵖ))) : Comon_ C where
   X := unop A.X
-  counit := A.one.unop
-  comul := A.mul.unop
-  counit_comul := by rw [← unop_whiskerRight, ← unop_comp, Mon_.one_mul]; rfl
-  comul_counit := by rw [← unop_whiskerLeft, ← unop_comp, Mon_.mul_one]; rfl
+  counit := Mon_Class.one.unop
+  comul := Mon_Class.mul.unop
+  counit_comul := by rw [← unop_whiskerRight, ← unop_comp, Mon_Class.one_mul]; rfl
+  comul_counit := by rw [← unop_whiskerLeft, ← unop_comp, Mon_Class.mul_one]; rfl
   comul_assoc := by
     rw [← unop_whiskerRight, ← unop_whiskerLeft, ← unop_comp_assoc, ← unop_comp,
-      Mon_.mul_assoc_flip]
+      Mon_Class.mul_assoc_flip]
     rfl
 
 /--
