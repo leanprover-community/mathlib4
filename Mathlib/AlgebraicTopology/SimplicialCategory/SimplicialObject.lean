@@ -32,7 +32,7 @@ open Simplicial
 noncomputable instance : EnrichedCategory SSet.{v} (SimplicialObject D)  :=
   inferInstanceAs (EnrichedCategory (SimplexCategoryᵒᵖ ⥤ Type v) (SimplexCategoryᵒᵖ ⥤ D))
 
-/-- If `K` and `L` are simplicial objects, the zero-simplicies of the simplicial
+/-- If `K` and `L` are simplicial objects, the zero-simplices of the simplicial
 hom from `K` to `L` identifies to `K ⟶ L`. -/
 def sHom₀Equiv (K L : SimplicialObject D) :
     EnrichedCategory.Hom (V := SSet.{v}) K L _[0] ≃ (K ⟶ L) where
