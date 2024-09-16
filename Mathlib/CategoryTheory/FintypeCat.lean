@@ -99,7 +99,7 @@ def equivEquivIso {A B : FintypeCat} : A ≃ B ≃ (A ≅ B) where
   left_inv := by aesop_cat
   right_inv := by aesop_cat
 
-instance foo (X Y : FintypeCat) : Finite (X ⟶ Y) :=
+instance (X Y : FintypeCat) : Finite (X ⟶ Y) :=
   inferInstanceAs <| Finite (X → Y)
 
 instance (X Y : FintypeCat) : Finite (X ≅ Y) :=
@@ -203,53 +203,58 @@ section Universes
 universe v
 
 /-- If `u` and `v` are two arbitrary universes, we may construct a functor
-`switchUniverse.{u, v} : FintypeCat.{u} ⥤ FintypeCat.{v}` by sending
+`uSwitch.{u, v} : FintypeCat.{u} ⥤ FintypeCat.{v}` by sending
 `X : FintypeCat.{u}` to `ULift.{v} (Fin (Fintype.card X))`. -/
-noncomputable def switchUniverse : FintypeCat.{u} ⥤ FintypeCat.{v} where
+noncomputable def uSwitch : FintypeCat.{u} ⥤ FintypeCat.{v} where
   obj X := FintypeCat.of <| ULift.{v} (Fin (Fintype.card X))
   map {X Y} f x := ULift.up <| (Fintype.equivFin Y) (f ((Fintype.equivFin X).symm x.down))
   map_comp {X Y Z} f g := by ext; simp
 
 /-- Switching the universe of an object `X : FintypeCat.{u}` does not change `X` up to equivalence
-of types. This is natural in the sense that it commutes with `switchUniverse.map f` for
+of types. This is natural in the sense that it commutes with `uSwitch.map f` for
 any `f : X ⟶ Y` in `FintypeCat.{u}`. -/
-noncomputable def switchUniverseEquiv (X : FintypeCat.{u}) :
-    switchUniverse.{u, v}.obj X ≃ X :=
+noncomputable def uSwitchEquiv (X : FintypeCat.{u}) :
+    uSwitch.{u, v}.obj X ≃ X :=
   Equiv.ulift.trans (Fintype.equivFin X).symm
 
-lemma switchUniverseEquiv_naturality {X Y : FintypeCat.{u}} (f : X ⟶ Y)
-    (x : switchUniverse.{u, v}.obj X) :
-    f (X.switchUniverseEquiv x) = Y.switchUniverseEquiv (switchUniverse.map f x) := by
-  simp only [switchUniverse, switchUniverseEquiv, Equiv.trans_apply]
+lemma uSwitchEquiv_naturality {X Y : FintypeCat.{u}} (f : X ⟶ Y)
+    (x : uSwitch.{u, v}.obj X) :
+    f (X.uSwitchEquiv x) = Y.uSwitchEquiv (uSwitch.map f x) := by
+  simp only [uSwitch, uSwitchEquiv, Equiv.trans_apply]
   erw [Equiv.ulift_apply, Equiv.ulift_apply]
   simp only [Equiv.symm_apply_apply]
 
-lemma switchUniverseEquiv_naturality' {X Y : FintypeCat.{u}} (f : X ⟶ Y) (x : X) :
-    switchUniverse.map f (X.switchUniverseEquiv.symm x) = Y.switchUniverseEquiv.symm (f x) := by
-  rw [← Equiv.apply_eq_iff_eq_symm_apply, ← switchUniverseEquiv_naturality f,
+lemma uSwitchEquiv_symm_naturality {X Y : FintypeCat.{u}} (f : X ⟶ Y) (x : X) :
+    uSwitch.map f (X.uSwitchEquiv.symm x) = Y.uSwitchEquiv.symm (f x) := by
+  rw [← Equiv.apply_eq_iff_eq_symm_apply, ← uSwitchEquiv_naturality f,
     Equiv.apply_symm_apply]
 
-/-- `switchUniverse.{u, v}` is an equivalence of categories with quasi-inverse
-`switchUniverse.{v, u}`. -/
-noncomputable def switchUniverseEquivalence : FintypeCat.{u} ≌ FintypeCat.{v} :=
-  CategoryTheory.Equivalence.mk switchUniverse switchUniverse
-    (NatIso.ofComponents (fun X ↦ equivEquivIso.toFun <|
-        X.switchUniverseEquiv.symm.trans (switchUniverse.obj X).switchUniverseEquiv.symm) <| by
-      intro X Y f
-      ext x
-      simp only [Functor.comp_obj, Functor.id_obj, Functor.id_map, Equiv.toFun_as_coe, comp_apply,
-        equivEquivIso_apply_hom, Equiv.trans_apply, Functor.comp_map]
-      rw [switchUniverseEquiv_naturality', switchUniverseEquiv_naturality'])
-    (NatIso.ofComponents (fun X ↦ equivEquivIso.toFun <|
-        (switchUniverse.obj X).switchUniverseEquiv.trans X.switchUniverseEquiv) <| by
-      intro X Y f
-      ext x
-      simp only [Functor.id_obj, Functor.comp_obj, Functor.comp_map, Equiv.toFun_as_coe, comp_apply,
-        equivEquivIso_apply_hom, Equiv.trans_apply, Functor.id_map]
-      rw [switchUniverseEquiv_naturality f, ← switchUniverseEquiv_naturality])
+lemma uSwitch_map_uSwitch_map {X Y : FintypeCat.{u}} (f : X ⟶ Y) :
+    uSwitch.map (uSwitch.map f) =
+    (equivEquivIso ((uSwitch.obj X).uSwitchEquiv.trans X.uSwitchEquiv)).hom ≫
+      f ≫ (equivEquivIso ((uSwitch.obj Y).uSwitchEquiv.trans
+      Y.uSwitchEquiv)).inv := by
+  ext x
+  simp only [comp_apply, equivEquivIso_apply_hom, Equiv.trans_apply]
+  rw [uSwitchEquiv_naturality f, ← uSwitchEquiv_naturality]
+  rfl
 
-instance : switchUniverse.IsEquivalence :=
-  switchUniverseEquivalence.isEquivalence_functor
+/-- `uSwitch.{u, v}` is an equivalence of categories with quasi-inverse `uSwitch.{v, u}`. -/
+noncomputable def uSwitchEquivalence : FintypeCat.{u} ≌ FintypeCat.{v} where
+  functor := uSwitch
+  inverse := uSwitch
+  unitIso := NatIso.ofComponents (fun X ↦ (equivEquivIso <|
+    (uSwitch.obj X).uSwitchEquiv.trans X.uSwitchEquiv).symm) <| by
+    simp [uSwitch_map_uSwitch_map]
+  counitIso := NatIso.ofComponents (fun X ↦ equivEquivIso <|
+    (uSwitch.obj X).uSwitchEquiv.trans X.uSwitchEquiv) <| by
+    simp [uSwitch_map_uSwitch_map]
+  functor_unitIso_comp X := by
+    ext x
+    simp [← uSwitchEquiv_naturality]
+
+instance : uSwitch.IsEquivalence :=
+  uSwitchEquivalence.isEquivalence_functor
 
 end Universes
 

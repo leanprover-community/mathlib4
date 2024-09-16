@@ -125,11 +125,12 @@ set `I` of connected objects of `C` such that every `σ : Aut F` that induces th
 on `F.obj X` for all `X ∈ I` is contained in `H`. In other words: The kernel
 of the evaluation map `Aut F →* ∏ X : I ↦ Aut (F.obj X)` is contained in `H`.
 -/
-lemma exists_set_ker_evaluation_subset_of_isOpen {H : Set (Aut F)} (hone : 1 ∈ H)
-    (h : IsOpen H) : ∃ (I : Set C) (_ : Fintype I), (∀ X ∈ I, IsConnected X) ∧
-    (∀ σ : Aut F, (∀ X : I, σ.hom.app X = 𝟙 (F.obj X)) → σ ∈ H) := by
+lemma exists_set_ker_evaluation_subset_of_isOpen
+    {H : Set (Aut F)} (h1 : 1 ∈ H) (h : IsOpen H) :
+    ∃ (I : Set C) (_ : Fintype I), (∀ X ∈ I, IsConnected X) ∧
+      (∀ σ : Aut F, (∀ X : I, σ.hom.app X = 𝟙 (F.obj X)) → σ ∈ H) := by
   obtain ⟨U, hUopen, rfl⟩ := isOpen_induced_iff.mp h
-  obtain ⟨I, u, ho, ha⟩ := isOpen_pi_iff.mp hUopen 1 hone
+  obtain ⟨I, u, ho, ha⟩ := isOpen_pi_iff.mp hUopen 1 h1
   choose fι ff fc h4 h5 h6 using (fun X : I => has_decomp_connected_components X.val)
   refine ⟨⋃ X, Set.range (ff X), Fintype.ofFinite _, ?_, ?_⟩
   · rintro X ⟨A, ⟨Y, rfl⟩, hA2⟩

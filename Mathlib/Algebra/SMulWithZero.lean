@@ -7,7 +7,6 @@ import Mathlib.Algebra.Group.Action.Opposite
 import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.GroupWithZero.Opposite
-import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Introduce `SMulWithZero`
@@ -48,8 +47,6 @@ or `m` equals `0`. -/
 class SMulWithZero [Zero R] [Zero M] extends SMulZeroClass R M where
   /-- Scalar multiplication by the scalar `0` is `0`. -/
   zero_smul : ∀ m : M, (0 : R) • m = 0
-
-set_synth_order SMulWithZero.toSMulZeroClass #[4, 2, 3]
 
 instance MulZeroClass.toSMulWithZero [MulZeroClass R] : SMulWithZero R R where
   smul := (· * ·)
@@ -128,14 +125,10 @@ class MulActionWithZero extends MulAction R M where
   /-- Scalar multiplication by the scalar `0` is `0`. -/
   zero_smul : ∀ m : M, (0 : R) • m = 0
 
-set_synth_order MulActionWithZero.toMulAction #[4, 2, 3]
-
 -- see Note [lower instance priority]
 instance (priority := 100) MulActionWithZero.toSMulWithZero [m : MulActionWithZero R M] :
     SMulWithZero R M :=
   { m with }
-
-set_synth_order MulActionWithZero.toSMulWithZero #[4, 2, 3]
 
 /-- See also `Semiring.toModule` -/
 instance MonoidWithZero.toMulActionWithZero : MulActionWithZero R R :=
@@ -205,8 +198,3 @@ theorem smul_inv₀ [SMulCommClass α β β] [IsScalarTower α β β] (c : α) (
     rw [smul_mul_smul_comm, inv_mul_cancel₀ hc, inv_mul_cancel₀ hx, one_smul]
 
 end GroupWithZero
-
--- This instance seems a bit incongruous in this file, but `#find_home!` told me to put it here.
-instance NonUnitalNonAssocSemiring.toDistribSMul [NonUnitalNonAssocSemiring R] :
-    DistribSMul R R where
-  smul_add := mul_add

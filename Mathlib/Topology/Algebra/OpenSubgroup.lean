@@ -275,6 +275,11 @@ lemma isClosed_of_isOpen [ContinuousMul G] (U : Subgroup G) (h : IsOpen (U : Set
   OpenSubgroup.isClosed ⟨U, h⟩
 
 @[to_additive]
+lemma subgroupOf_isOpen (U K : Subgroup G) (h : IsOpen (K : Set G)) :
+    IsOpen (K.subgroupOf U : Set U) :=
+  Continuous.isOpen_preimage (continuous_iff_le_induced.mpr fun _ ↦ id) _ h
+
+@[to_additive]
 lemma discreteTopology [ContinuousMul G] (U : Subgroup G) (h : IsOpen (U : Set G)) :
     DiscreteTopology (G ⧸ U) := by
   refine singletons_open_iff_discrete.mp (fun g ↦ ?_)
@@ -287,19 +292,32 @@ lemma discreteTopology [ContinuousMul G] (U : Subgroup G) (h : IsOpen (U : Set G
     simp
   · exact Homeomorph.mulLeft g |>.isOpen_image |>.mpr h
 
+@[to_additive]
+instance [ContinuousMul G] (U : OpenSubgroup G) : DiscreteTopology (G ⧸ U.toSubgroup) :=
+  discreteTopology U.toSubgroup U.isOpen
+
+@[to_additive]
 lemma quotient_finite_of_isOpen [ContinuousMul G] [CompactSpace G] (U : Subgroup G)
     (h : IsOpen (U : Set G)) : Finite (G ⧸ U) :=
-  have : CompactSpace (G ⧸ U) := Quotient.compactSpace
   have : DiscreteTopology (G ⧸ U) := U.discreteTopology h
   finite_of_compact_of_discrete
 
-lemma quotient_finite_of_isOpen' [TopologicalGroup G] [CompactSpace G] (U K : Subgroup G)
-    (hUopen : IsOpen (U : Set G)) (hKopen : IsOpen (K : Set G)) :
-    Finite (U ⧸ K.subgroupOf U) := by
+@[to_additive]
+instance [ContinuousMul G] [CompactSpace G] (U : OpenSubgroup G) : Finite (G ⧸ U.toSubgroup) :=
+  quotient_finite_of_isOpen U.toSubgroup U.isOpen
+
+@[to_additive]
+lemma quotient_finite_of_isOpen' [TopologicalGroup G] [CompactSpace G] (U : Subgroup G)
+    (K : Subgroup U) (hUopen : IsOpen (U : Set G)) (hKopen : IsOpen (K : Set U)) :
+    Finite (U ⧸ K) :=
   have : CompactSpace U := isCompact_iff_compactSpace.mp <| IsClosed.isCompact <|
     U.isClosed_of_isOpen hUopen
-  apply (K.subgroupOf U).quotient_finite_of_isOpen
-  exact Continuous.isOpen_preimage (continuous_iff_le_induced.mpr fun _ a ↦ a) _ hKopen
+  K.quotient_finite_of_isOpen hKopen
+
+@[to_additive]
+instance [TopologicalGroup G] [CompactSpace G] (U : OpenSubgroup G) (K : OpenSubgroup U) :
+    Finite (U ⧸ K.toSubgroup) :=
+  quotient_finite_of_isOpen' U.toSubgroup K.toSubgroup U.isOpen K.isOpen
 
 end Subgroup
 

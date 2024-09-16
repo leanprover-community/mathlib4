@@ -123,7 +123,7 @@ variable {ι R M N}
 variable (P : RootPairing ι R M N) (i j : ι)
 
 lemma ne_zero [CharZero R] : (P.root i : M) ≠ 0 :=
-  fun h ↦ by simpa [h] using P.root_coroot_two i
+  fun h ↦ by simpa [h, map_zero] using P.root_coroot_two i
 
 lemma ne_zero' [CharZero R] : (P.coroot i : N) ≠ 0 :=
   fun h ↦ by simpa [h] using P.root_coroot_two i
@@ -295,7 +295,7 @@ lemma coreflection_eq_flip_reflection :
 lemma reflection_dualMap_eq_coreflection :
     (P.reflection i).dualMap ∘ₗ P.toLin.flip = P.toLin.flip ∘ₗ P.coreflection i := by
   ext n m
-  simp [coreflection_apply, reflection_apply, mul_comm (P.toPerfectPairing m (P.coroot i))]
+  simp [map_sub, coreflection_apply, reflection_apply, mul_comm (P.toPerfectPairing m (P.coroot i))]
 
 lemma coroot_eq_coreflection_of_root_eq
     {i j k : ι} (hk : P.root k = P.reflection i (P.root j)) :
