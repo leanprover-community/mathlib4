@@ -46,7 +46,7 @@ open CategoryTheory.Limits
 
 /-- The category of finite dimensional `k`-linear representations of a monoid `G`. -/
 abbrev FDRep (k G : Type u) [Field k] [Monoid G] :=
-  Action (FGModuleCat.{u} k) (MonCat.of G)
+  Action (FGModuleCat.{u} k) G
 
 @[deprecated (since := "2024-07-05")]
 alias FdRep := FDRep
@@ -86,13 +86,13 @@ def ρ (V : FDRep k G) : G →* V →ₗ[k] V :=
 
 /-- The underlying `LinearEquiv` of an isomorphism of representations. -/
 def isoToLinearEquiv {V W : FDRep k G} (i : V ≅ W) : V ≃ₗ[k] W :=
-  FGModuleCat.isoToLinearEquiv ((Action.forget (FGModuleCat k) (MonCat.of G)).mapIso i)
+  FGModuleCat.isoToLinearEquiv ((Action.forget (FGModuleCat k) G).mapIso i)
 
 theorem Iso.conj_ρ {V W : FDRep k G} (i : V ≅ W) (g : G) :
     W.ρ g = (FDRep.isoToLinearEquiv i).conj (V.ρ g) := by
   -- Porting note: Changed `rw` to `erw`
   erw [FDRep.isoToLinearEquiv, ← FGModuleCat.Iso.conj_eq_conj, Iso.conj_apply]
-  rw [Iso.eq_inv_comp ((Action.forget (FGModuleCat k) (MonCat.of G)).mapIso i)]
+  rw [Iso.eq_inv_comp ((Action.forget (FGModuleCat k) G).mapIso i)]
   exact (i.hom.comm g).symm
 
 /-- Lift an unbundled representation to `FDRep`. -/
@@ -102,7 +102,7 @@ def of {V : Type u} [AddCommGroup V] [Module k V] [FiniteDimensional k V]
   ⟨FGModuleCat.of k V, ρ⟩
 
 instance : HasForget₂ (FDRep k G) (Rep k G) where
-  forget₂ := (forget₂ (FGModuleCat k) (ModuleCat k)).mapAction (MonCat.of G)
+  forget₂ := (forget₂ (FGModuleCat k) (ModuleCat k)).mapAction G
 
 theorem forget₂_ρ (V : FDRep k G) : ((forget₂ (FDRep k G) (Rep k G)).obj V).ρ = V.ρ := by
   ext g v; rfl

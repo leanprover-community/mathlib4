@@ -253,14 +253,25 @@ noncomputable def ofMulAction : Representation k G (H →₀ k) where
     ext z w
     simp [mul_smul]
 
+noncomputable abbrev leftRegular := ofMulAction k G G
+
 variable {k G H}
 
 theorem ofMulAction_def (g : G) : ofMulAction k G H g = Finsupp.lmapDomain k k (g • ·) :=
   rfl
 
+@[simp]
 theorem ofMulAction_single (g : G) (x : H) (r : k) :
     ofMulAction k G H g (Finsupp.single x r) = Finsupp.single (g • x) r :=
   Finsupp.mapDomain_single
+/-
+theorem ofMulAction_erm (g : G) (x : H) (r : k) :
+    @DFunLike.coe no_index ((H →₀ k) →ₗ[k] (H →₀ k))
+      (no_index (H →₀ k)) (no_index (fun _ => H →₀ k)) _
+      (@DFunLike.coe (no_index (Representation k G (H →₀ k)))
+        G (no_index fun _ => (H →₀ k) →ₗ[k] (H →₀ k)) _ (ofMulAction k G H) g) (Finsupp.single x r)
+      = Finsupp.single (g • x) r :=
+  Finsupp.mapDomain_single-/
 
 end MulAction
 section DistribMulAction
@@ -460,5 +471,32 @@ theorem dualTensorHom_comm (g : G) :
   ext; simp [Module.Dual.transpose_apply]
 
 end LinearHom
+
+variable {k G : Type*} [CommSemiring k] [Monoid G] {α A B : Type*}
+  [AddCommMonoid A] [Module k A] (ρ : Representation k G A)
+  [AddCommMonoid B] [Module k B] (τ : Representation k G B)
+
+noncomputable def finsupp (α : Type*) :
+    Representation k G (α →₀ A) where
+  toFun := fun g => Finsupp.lsum k fun i => (Finsupp.lsingle i).comp (ρ g)
+  map_one' := Finsupp.lhom_ext (fun i x => by simp)
+  map_mul' := fun g h => Finsupp.lhom_ext (fun i x => by simp)
+
+lemma finsupp_apply {ρ : Representation k G A} {α : Type*} (g : G) :
+    finsupp ρ α g = Finsupp.lsum k fun i => (Finsupp.lsingle i).comp (ρ g) := rfl
+
+@[simp] lemma finsupp_single (g : G) (x : α) (a : A) :
+    ρ.finsupp α g (Finsupp.single x a) = Finsupp.single x (ρ g a) := by
+  simp only [finsupp_apply, Finsupp.coe_lsum, LinearMap.coe_comp, Function.comp_apply, map_zero,
+    Finsupp.sum_single_index, Finsupp.lsingle_apply]
+
+noncomputable def free (k G : Type*) [CommSemiring k] [Monoid G] (α : Type*) :
+    Representation k G (α →₀ G →₀ k) :=
+  finsupp (leftRegular k G) α
+
+@[simp] lemma free_single_single (g h : G) (i : α) (r : k) :
+    free k G α g (Finsupp.single i (Finsupp.single h r)) =
+      Finsupp.single i (Finsupp.single (g * h) r) := by
+  simp only [free, finsupp_single, ofMulAction_single, smul_eq_mul]
 
 end Representation

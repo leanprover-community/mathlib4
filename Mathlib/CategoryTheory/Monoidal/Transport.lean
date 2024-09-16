@@ -135,7 +135,7 @@ def fromInduced [MonoidalCategoryStruct D] (F : D ⥤ C) [F.Faithful]
 
 /-- Transport a monoidal structure along an equivalence of (plain) categories.
 -/
-@[simps]
+@[simps (config := .lemmasOnly)]
 def transportStruct (e : C ≌ D) : MonoidalCategoryStruct.{v₂} D where
   tensorObj X Y := e.functor.obj (e.inverse.obj X ⊗ e.inverse.obj Y)
   whiskerLeft X _ _ f := e.functor.map (e.inverse.obj X ◁ e.inverse.map f)
@@ -158,9 +158,21 @@ def transportStruct (e : C ≌ D) : MonoidalCategoryStruct.{v₂} D where
 -/
 def transport (e : C ≌ D) : MonoidalCategory.{v₂} D :=
   letI : MonoidalCategoryStruct.{v₂} D := transportStruct e
-  induced e.inverse
-    { μIso := fun X Y => e.unitIso.app _
-      εIso := e.unitIso.app _ }
+  induced e.inverse {
+    μIso :=  fun X Y => e.unitIso.app _
+    whiskerLeft_eq := fun _ _ _ _ => by simp [transportStruct_whiskerLeft]
+    whiskerRight_eq := fun _ _ => by simp [transportStruct_whiskerRight]
+    tensorHom_eq := fun _ _ => by simp [transportStruct_tensorHom]
+    εIso := e.unitIso.app _
+    associator_eq := fun _ _ _ => by
+      have := transportStruct_associator e
+      aesop_cat
+    leftUnitor_eq := fun _ => by
+      have := transportStruct_leftUnitor e
+      aesop_cat
+    rightUnitor_eq := fun _ => by
+      have := transportStruct_rightUnitor e
+      aesop_cat }
 
 /-- A type synonym for `D`, which will carry the transported monoidal structure. -/
 @[nolint unusedArguments]
