@@ -99,11 +99,9 @@ lemma symm_large_n : h.symm.large_n = h.large_n := by
 lemma N_le_large_n : h.N ≤ h.large_n := by
   have hp : 0 < φ (a * b + 1) := Nat.totient_pos.2 (Nat.add_pos_right _ zero_lt_one)
   rw [large_n, add_mul, one_mul, Nat.add_sub_assoc (Nat.one_le_of_lt hp)]
-  suffices h.N ≤ h.N * φ (a * b + 1) + (φ (a * b + 1) - 1) by
-    refine this.trans ?_
-    gcongr
-    simp
-  exact Nat.le_add_right_of_le (Nat.le_mul_of_pos_right _ hp)
+  apply (Nat.le_add_right_of_le (Nat.le_mul_of_pos_right _ hp)).trans
+  gcongr
+  simp
 
 lemma dvd_large_n_sub_neg_one : (φ (a * b + 1) : ℤ) ∣ (h.large_n : ℤ) - (-1 : ℤ) := by
   simp [large_n]
@@ -120,11 +118,9 @@ lemma symm_large_n_0 : h.symm.large_n_0 = h.large_n_0 := by
 lemma N_le_large_n_0 : h.N ≤ h.large_n_0 := by
   have hp : 0 < φ (a * b + 1) := Nat.totient_pos.2 (Nat.add_pos_right _ zero_lt_one)
   rw [large_n_0]
-  suffices h.N ≤ h.N * φ (a * b + 1) by
-    refine this.trans ?_
-    gcongr
-    simp
-  exact Nat.le_mul_of_pos_right _ hp
+  apply (Nat.le_mul_of_pos_right _ hp).trans
+  gcongr
+  simp
 
 lemma dvd_large_n_0_sub_zero : (φ (a * b + 1) : ℤ) ∣ (h.large_n_0 : ℤ) - (0 : ℤ) := by
   simp [large_n_0]
