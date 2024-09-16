@@ -262,9 +262,6 @@ theorem difference_quotients_converge_uniformly
     TendstoUniformlyOnFilter (fun n : ι => fun y : E => (‖y - x‖⁻¹ : 𝕜) • (f n y - f n x))
       (fun y : E => (‖y - x‖⁻¹ : 𝕜) • (g y - g x)) l (𝓝 x) := by
   let A : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 _
-  rcases eq_or_ne l ⊥ with (hl | hl)
-  · simp only [hl, TendstoUniformlyOnFilter, bot_prod, eventually_bot, imp_true_iff]
-  haveI : NeBot l := ⟨hl⟩
   refine
     UniformCauchySeqOnFilter.tendstoUniformlyOnFilter_of_tendsto ?_
       ((hfg.and (eventually_const.mpr hfg.self_of_nhds)).mono fun y hy =>
