@@ -15,13 +15,13 @@ This module defines simple graphs on a vertex type `V` as an irreflexive symmetr
 
 ## Main definitions
 
-* `SimpleGraph` is a structure for symmetric, irreflexive relations
+* `SimpleGraph` is a structure for symmetric, irreflexive relations.
 
-* `SimpleGraph.neighborSet` is the `Set` of vertices adjacent to a given vertex
+* `SimpleGraph.neighborSet` is the `Set` of vertices adjacent to a given vertex.
 
-* `SimpleGraph.commonNeighbors` is the intersection of the neighbor sets of two given vertices
+* `SimpleGraph.commonNeighbors` is the intersection of the neighbor sets of two given vertices.
 
-* `SimpleGraph.incidenceSet` is the `Set` of edges containing a given vertex
+* `SimpleGraph.incidenceSet` is the `Set` of edges containing a given vertex.
 
 * `CompleteAtomicBooleanAlgebra` instance: Under the subgraph relation, `SimpleGraph` forms a
   `CompleteAtomicBooleanAlgebra`. In other words, this is the complete lattice of spanning subgraphs
@@ -29,10 +29,10 @@ This module defines simple graphs on a vertex type `V` as an irreflexive symmetr
 
 ## TODO
 
-* This is the simplest notion of an unoriented graph.  This should
-  eventually fit into a more complete combinatorics hierarchy which
-  includes multigraphs and directed graphs.  We begin with simple graphs
-  in order to start learning what the combinatorics hierarchy should
+* This is the simplest notion of an unoriented graph.
+  This should eventually fit into a more complete combinatorics hierarchy which includes
+  multigraphs and directed graphs.
+  We begin with simple graphs in order to start learning what the combinatorics hierarchy should
   look like.
 -/
 
@@ -68,9 +68,8 @@ macro (name := aesop_graph?) "aesop_graph?" c:Aesop.tactic_clause* : tactic =>
       (rule_sets := [$(Lean.mkIdent `SimpleGraph):ident]))
 
 /--
-A variant of `aesop_graph` which does not fail if it is unable to solve the
-goal. Use this only for exploration! Nonterminal Aesop is even worse than
-nonterminal `simp`.
+A variant of `aesop_graph` which does not fail if it is unable to solve the goal.
+Use this only for exploration! Nonterminal Aesop is even worse than nonterminal `simp`.
 -/
 macro (name := aesop_graph_nonterminal) "aesop_graph_nonterminal" c:Aesop.tactic_clause* : tactic =>
   `(tactic|

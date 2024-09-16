@@ -271,6 +271,8 @@
   "Mathlib.Tactic.Continuity": ["Mathlib.Tactic.Continuity.Init"],
   "Mathlib.Tactic.CongrExclamation": ["Mathlib.Logic.Basic"],
   "Mathlib.Tactic.Choose": ["Mathlib.Logic.Function.Basic"],
+  "Mathlib.Tactic.CategoryTheory.ToApp":
+  ["Mathlib.CategoryTheory.Category.Cat"],
   "Mathlib.Tactic.CategoryTheory.Slice":
   ["Mathlib.CategoryTheory.Category.Basic"],
   "Mathlib.Tactic.CategoryTheory.Reassoc":
@@ -374,6 +376,10 @@
   ["Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback",
    "Mathlib.CategoryTheory.Limits.Shapes.Pullbacks"],
   "Mathlib.CategoryTheory.Limits.IsLimit": ["Batteries.Tactic.Congr"],
+  "Mathlib.CategoryTheory.Bicategory.Functor.Oplax":
+  ["Mathlib.Tactic.CategoryTheory.ToApp"],
+  "Mathlib.CategoryTheory.Bicategory.Functor.Lax":
+  ["Mathlib.Tactic.CategoryTheory.ToApp"],
   "Mathlib.CategoryTheory.Category.Basic": ["Mathlib.Tactic.StacksAttribute"],
   "Mathlib.Analysis.Normed.Operator.LinearIsometry":
   ["Mathlib.Algebra.Star.Basic"],

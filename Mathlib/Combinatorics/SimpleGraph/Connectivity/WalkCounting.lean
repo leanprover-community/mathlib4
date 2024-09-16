@@ -184,7 +184,6 @@ lemma ConnectedComponent.odd_card_supp_iff_odd_subcomponents {G'}
     Odd (Nat.card c'.supp) ↔ Odd (Nat.card
     ({c : ConnectedComponent G | c.supp ⊆ c'.supp ∧ Odd (Nat.card c.supp) })) := by
   classical
-  -- have := Fintype.ofFinite:
   rw [Nat.card_eq_card_toFinset, ← disjiUnion_supp_toFinset_eq_supp_toFinset h]
   simp only [Finset.card_disjiUnion, Set.toFinset_card]
   rw [Finset.odd_sum_iff_odd_card_odd, Nat.card_eq_fintype_card, Fintype.card_ofFinset]

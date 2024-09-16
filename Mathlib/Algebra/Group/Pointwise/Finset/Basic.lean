@@ -1570,6 +1570,17 @@ theorem singleton_mul_inter : {a} * (s ∩ t) = {a} * s ∩ ({a} * t) :=
 theorem card_le_card_mul_left {s : Finset α} (hs : s.Nonempty) : t.card ≤ (s * t).card :=
   card_le_card_image₂_left _ hs mul_right_injective
 
+/--
+The size of `s * s` is at least the size of `s`, version with left-cancellative multiplication.
+See `card_le_card_mul_self'` for the version with right-cancellative multiplication.
+-/
+@[to_additive
+"The size of `s + s` is at least the size of `s`, version with left-cancellative addition.
+See `card_le_card_add_self'` for the version with right-cancellative addition."
+]
+theorem card_le_card_mul_self {s : Finset α} : s.card ≤ (s * s).card := by
+  cases s.eq_empty_or_nonempty <;> simp [card_le_card_mul_left, *]
+
 end IsLeftCancelMul
 
 section
@@ -1587,6 +1598,17 @@ theorem inter_mul_singleton : s ∩ t * {a} = s * {a} ∩ (t * {a}) :=
 @[to_additive]
 theorem card_le_card_mul_right {t : Finset α} (ht : t.Nonempty) : s.card ≤ (s * t).card :=
   card_le_card_image₂_right _ ht mul_left_injective
+
+/--
+The size of `s * s` is at least the size of `s`, version with right-cancellative multiplication.
+See `card_le_card_mul_self` for the version with left-cancellative multiplication.
+-/
+@[to_additive
+"The size of `s + s` is at least the size of `s`, version with right-cancellative addition.
+See `card_le_card_add_self` for the version with left-cancellative addition."
+]
+theorem card_le_card_mul_self' {s : Finset α} : s.card ≤ (s * s).card := by
+  cases s.eq_empty_or_nonempty <;> simp [card_le_card_mul_right, *]
 
 end
 

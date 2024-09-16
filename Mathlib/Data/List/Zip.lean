@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau
 -/
 import Mathlib.Data.List.Forall2
+import Mathlib.Init.Algebra.Classes
 
 /-!
 # zip & unzip
@@ -92,7 +93,7 @@ theorem zipWith3_same_right (f : α → β → β → γ) :
   | _ :: _, [] => rfl
   | _ :: as, _ :: bs => congr_arg (cons _) <| zipWith3_same_right f as bs
 
-instance (f : α → α → β) [IsSymmOp α β f] : IsSymmOp (List α) (List β) (zipWith f) :=
+instance (f : α → α → β) [IsSymmOp f] : IsSymmOp (zipWith f) :=
   ⟨zipWith_comm_of_comm f IsSymmOp.symm_op⟩
 
 @[simp]
