@@ -16,7 +16,7 @@ associators, unitors, and identities) with different strings of structural morph
 source and target. In other words, `monoidal` solves equalities where both sides have the same
 string diagrams.
 
-The core function for the monoidal tactic is provided in
+The core function for the `monoidal` tactic is provided in
 `Mathlib.Tactic.CategoryTheory.Coherence.Basic`. See this file for more details about the
 implementation.
 
