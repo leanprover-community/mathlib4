@@ -314,7 +314,7 @@ theorem IsIntegrallyClosed.of_localization_maximal {R : Type*} [CommRing R] [IsD
         NoZeroSMulDivisors.algebraMap_injective R (Localization R⁰) <| mk'_eq_iff_eq.mp <|
           (mk'_eq_algebraMap_mk'_of_submonoid_le _ _ p.primeCompl_le_nonZeroDivisors y.1 y.2).trans
             <| show algebraMap (Localization.AtPrime p) _ (mk' _ y.1 y.2) = mk' _ x.1 x.2
-              from by simpa only [← mk_eq_mk', ← hy] using by rfl
+              by simpa only [← mk_eq_mk', ← hy] using by rfl
     -- `y.2.1 ∈ I` implies `y.2.1 ∈ p` since `I ⊆ p`, which contradicts to the choice of `y`.
     exact y.2.2 (hpi hyi)
   rcases mem_span_singleton'.mp (h1 x.1 (mem_span_singleton_self x.1)) with ⟨y, hy⟩
