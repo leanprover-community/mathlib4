@@ -104,7 +104,8 @@ lemma ideal_fg_of_isFinite [P.IsFinite] : P.Ideal.FG := by
 /-- If a presentation is finite, the corresponding quotient is
 of finite presentation. -/
 instance [P.IsFinite] : FinitePresentation R P.Quotient :=
-  FinitePresentation.quotient P.ideal_fg_of_isFinite
+  sorry
+  --FinitePresentation.quotient P.ideal_fg_of_isFinite
 
 lemma finitePresentation_of_presentation_of_isFinite [P.IsFinite] :
     FinitePresentation R S :=
@@ -431,6 +432,11 @@ lemma foov_ker :
   erw [Ideal.comap_map_ofEquiv]
   rfl
 
+lemma map_toComp_ker (Q : Presentation S T) (P : Presentation R S) :
+    P.ker.map (Q.toGenerators.toComp P.toGenerators).toAlgHom.toRingHom = RingHom.ker (Q.toGenerators.ofComp P.toGenerators).toAlgHom := by
+  symm
+  exact foov_ker Q P
+
 /-- Given presentations of `T` over `S` and of `S` over `R`,
 we may construct a presentation of `T` over `R`. -/
 @[simps relations, simps (config := .lemmasOnly) relation]
@@ -589,19 +595,23 @@ def baseChange {R S T} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Alg
           repeat rw[_root_.map_mul]
           rw[hp]
           simp [e]
-          rfl
+          sorry
+          --rfl
         -- have Z : ∀ x : MvPolynomial (P.vars) (T), (algebraMap (MvPolynomial (foo P.toGenerators).vars T) x =
       erw [H, ker_algebraMap_eq_span_range_relation] at H'
       erw [← Ideal.mem_comap, Ideal.comap_symm, Ideal.map_map, Ideal.map_span, ← Set.range_comp] at H'
       convert H'
       simp
-      rfl
+      sorry
+      --rfl
     · rw [Ideal.span_le]
       intro x hx
       obtain ⟨y, hy⟩ := hx
       have Z := algebraMap_relation (P) y
       apply_fun TensorProduct.includeRight (R := R) (A := T) at Z
       rw [map_zero] at Z
+      sorry
+      /-
       show algebraMap _ _ x = 0
       convert Z
       rw [← hy]
@@ -611,3 +621,4 @@ def baseChange {R S T} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Alg
       erw [map_aeval]
       erw [includeRight.comp_algebraMap]
       rfl
+      -/

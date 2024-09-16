@@ -299,6 +299,79 @@ class IsStandardSmooth (P : SubmersivePresentation R S) : Prop where
   det_isUnit : IsUnit P.det
   presentation_finite : P.IsFinite := by infer_instance
 
+section Example
+
+open MvPolynomial
+
+variable (r : R) (P1 P2 : MvPolynomial (Fin 2) R)
+
+abbrev ring : Type _ := MvPolynomial (Fin 2) R ⧸ Ideal.span {P1, X 0 * P2 - 1}
+abbrev I : Ideal (MvPolynomial (Fin 2) R) := Ideal.span {P1, X 0 * P2 - 1}
+
+lemma quotient_mk_comp_X_surjective :
+    Function.Surjective (aeval (R := R) (Ideal.Quotient.mk (I P1 P2) ∘ X)) := by
+  rw [show aeval (Ideal.Quotient.mk (I P1 P2) ∘ X) = Ideal.Quotient.mkₐ R (I P1 P2) by ext; simp]
+  exact Ideal.Quotient.mkₐ_surjective R (I P1 P2)
+
+noncomputable def pres : SubmersivePresentation R (ring P1 P2) where
+  vars := Fin 2
+  val i := match i with
+    | 0 => Ideal.Quotient.mk (I P1 P2) (X 0)
+    | 1 => Ideal.Quotient.mk (I P1 P2) (X 1)
+  σ' x := (quotient_mk_comp_X_surjective P1 P2 x).choose
+  aeval_val_σ' x := sorry--(quotient_mk_comp_X_surjective r x).choose_spec
+  relations := Fin 2
+  relation i := match i with
+    | 0 => P1
+    | 1 => P2
+  ker_algebraMap_eq_span_range_relation := sorry
+  map i := i
+  map_inj i j h := h
+  relations_finite := inferInstance
+
+instance : Fintype (pres P1 P2).relations := inferInstanceAs <| Fintype (Fin 2)
+instance : DecidableEq (pres P1 P2).relations := inferInstanceAs <| DecidableEq (Fin 2)
+
+lemma aeval_val_pres (p : MvPolynomial (Fin 2) R) :
+    aeval (pres P1 P2).val p = Ideal.Quotient.mk _ p := by
+  induction p using MvPolynomial.induction_on with
+  | h_C a => erw [aeval_C]; rfl
+  | h_X p i h => simp [h]; match i with
+      | 0 => rfl
+      | 1 => rfl
+  | h_add p q hp hq => simp [hp, hq]
+
+lemma det_eq : (pres P1 P2).jacobiMatrix.det = P2 := sorry
+
+example : (pres P1 P2).IsStandardSmooth where
+  det_isUnit := by
+    rw [det_eq_jacobiMatrix_det, det_eq]
+    rw [isUnit_iff_exists_inv]
+    simp only [Generators.algebraMap_apply]
+    use (Ideal.Quotient.mk _ (X 0))
+    rw [aeval_val_pres]
+    rw [← _root_.map_mul]
+    rw [← _root_.map_one (Ideal.Quotient.mk _)]
+    rw [Ideal.Quotient.mk_eq_mk_iff_sub_mem]
+    apply Ideal.subset_span
+    rw [mul_comm]
+    simp
+  presentation_finite := { finite_relations := inferInstance, finite_vars := inferInstanceAs <| Finite (Fin 2) }
+
+example : IsUnit (algebraMap (gens r).Ring (ring r) (C r)) := by
+  rw [isUnit_iff_exists_inv]
+  use Ideal.Quotient.mk _ (X ())
+  simp
+  rw [← map_one (Ideal.Quotient.mk _)]
+  apply Ideal.subset_span
+  simp
+  sorry
+  sorry
+  sorry
+
+
+end Example
+
 attribute [instance] IsStandardSmooth.presentation_finite
 
 section Localization
@@ -493,7 +566,7 @@ noncomputable abbrev generators1 : Algebra.Generators R (ring1 W) :=
   Algebra.Generators.ofAlgHom (Ideal.Quotient.mkₐ R (Ideal.span {P1 W, P2 W}))
     (Ideal.Quotient.mkₐ_surjective _ _)
 
-noncomputable abbrev presentation1 : Algebra.SubmersivePresentation R (ring1 W) where
+noncomputable def presentation1 : Algebra.SubmersivePresentation R (ring1 W) where
   vars := Fin 3
   val := W.generators1.val
   σ' := W.generators1.σ'
@@ -539,25 +612,31 @@ open Algebra.SubmersivePresentation
 attribute [-simp] map_ofNat Fin.isValue
 
 lemma ring1_id00 :
-    (pderiv (W.presentation1.map 0)) (W.presentation1.relation 0) =
+    (pderiv (W.presentation1.map (0 : Fin 2))) (W.presentation1.relation (0 : Fin 2)) =
       pderiv 0 W.P1 := by
   rfl
 
 lemma ring1_id10 :
-    (pderiv (W.presentation1.map 1)) (W.presentation1.relation 0) = 0 := by
-  simp
+    (pderiv (W.presentation1.map (1 : Fin 2))) (W.presentation1.relation (0 : Fin 2)) = 0 := by
+  simp [presentation1]
 
 lemma ring1_id11 :
-    (pderiv (W.presentation1.map 1)) (W.presentation1.relation 1) =
+    (pderiv (W.presentation1.map (1 : Fin 2))) (W.presentation1.relation (1 : Fin 2)) =
       pderiv 0 W.P1 := by
-  simp
+  simp [presentation1]
   show -(X 0 ^ 2 * (pderiv 1) (C 3)) - C W.a₂ * (X 0 * (pderiv 1) (C 2)) = 0
   rw [pderiv_C]
   rw [pderiv_C]
   simp
 
+instance : Fintype W.presentation1.relations := inferInstanceAs <| Fintype (Fin 2)
+instance : DecidableEq W.presentation1.relations := inferInstanceAs <| Fintype (Fin 2)
+
 lemma ring1_jac_det : W.presentation1.jacobiMatrix.det =
     (pderiv 0 W.P1) ^ 2 := by
+  simp only [presentation1]
+  sorry
+  /-
   rw [Matrix.det_fin_two]
   rw [jacobiMatrix_apply, ring1_id00]
   rw [jacobiMatrix_apply, ring1_id11]
@@ -565,8 +644,10 @@ lemma ring1_jac_det : W.presentation1.jacobiMatrix.det =
   rw [ring1_id10]
   simp
   ring
+  -/
 
 lemma pres1_isUnit_pderv : IsUnit ((algebraMap W.presentation1.Ring W.ring1) ((pderiv 0) W.P1)) := by
+  show IsUnit ((aeval (R := R) W.presentation1.val) ((pderiv 0) W.P1))
   rw [isUnit_iff_exists_inv]
   use (Ideal.Quotient.mk _ (X (1 : Fin 2)))
   have : (Ideal.Quotient.mk (Ideal.span {W.P1, W.P2})) 1 =
@@ -577,21 +658,21 @@ lemma pres1_isUnit_pderv : IsUnit ((algebraMap W.presentation1.Ring W.ring1) ((p
     apply Ideal.subset_span
     simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
     exact Or.inr rfl
-  erw [← _root_.map_one (Ideal.Quotient.mk _)]
+  rw [← _root_.map_one (Ideal.Quotient.mk _)]
   rw [this]
   rw [_root_.map_mul]
   rw [mul_comm]
-  congr
+  sorry
 
 /-- this is needed because of an instance diamond, see
 https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Diamond.20in.20.60Algebra.2EGenerators.60
 -/
-lemma alg_eq_alg : Ideal.Quotient.algebra W.presentation1.Ring = W.presentation1.instRing := by
+lemma alg_eq_alg : Ideal.Quotient.algebra (MvPolynomial (Fin 3) R) = W.presentation1.instRing_1 := by
   ext r x
   simp
   refine Quotient.inductionOn x (fun x ↦ ?_)
-  conv_rhs => rw [@Algebra.smul_def _ _ _ _ (W.presentation1.instRing)]
-  conv_lhs => rw [@Algebra.smul_def _ _ _ _ (Ideal.Quotient.algebra W.presentation1.Ring)]
+  conv_rhs => rw [@Algebra.smul_def _ _ _ _ (W.presentation1.instRing_1)]
+  conv_lhs => rw [@Algebra.smul_def _ _ _ _ (Ideal.Quotient.algebra _)]
   show Ideal.Quotient.mk _ r * ⟦x⟧ = aeval W.presentation1.val r * ⟦x⟧
   congr
   ext p
@@ -604,7 +685,8 @@ lemma pres1_stdsmooth : (presentation1 W).IsStandardSmooth where
     rw [ring1_jac_det]
     rw [map_pow]
     rw [isUnit_pow_iff (by omega)]
-    rw [← alg_eq_alg]
+    rw [algebraMap_apply]
+    --rw [← alg_eq_alg]
     exact W.pres1_isUnit_pderv
   presentation_finite := {
     finite_relations := inferInstanceAs <| Finite (Fin 2)

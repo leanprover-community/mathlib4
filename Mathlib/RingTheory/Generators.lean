@@ -58,6 +58,9 @@ variable (P : Generators.{w} R S)
 protected
 abbrev Ring : Type (max w u) := MvPolynomial P.vars R
 
+noncomputable instance : CommRing P.Ring := inferInstanceAs <| CommRing (MvPolynomial P.vars R)
+noncomputable instance : Algebra R P.Ring := inferInstanceAs <| Algebra R (MvPolynomial P.vars R)
+
 /-- The designated section of wrt a family of generators. -/
 def σ : S → P.Ring := P.σ'
 
@@ -71,11 +74,19 @@ lemma aeval_val_σ (s) : aeval P.val (P.σ s) = s := P.aeval_val_σ' s
 
 instance : Algebra P.Ring S := (aeval P.val).toAlgebra
 
-noncomputable instance {R₀} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
+section
+
+variable {R₀} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S]
+
+noncomputable instance : Algebra R₀ P.Ring := inferInstanceAs <| Algebra R₀ (MvPolynomial P.vars R)
+
+noncomputable instance :
     IsScalarTower R₀ P.Ring S := IsScalarTower.of_algebraMap_eq'
   ((aeval (R := R) P.val).comp_algebraMap_of_tower R₀).symm
 
-lemma algebraMap_eq : algebraMap P.Ring S = ↑(aeval (R := R) P.val) := rfl
+end
+
+lemma algebraMap_eq : algebraMap P.Ring S = (aeval (R := R) P.val).toRingHom := rfl
 
 @[simp]
 lemma algebraMap_apply (x) : algebraMap P.Ring S x = aeval (R := R) P.val x := rfl
@@ -111,9 +122,11 @@ def ofAlgHom {I} (f : MvPolynomial I R →ₐ[R] S) (h : Function.Surjective f) 
 @[simp]
 lemma ofAlgHom_algebraMap {I} (f : MvPolynomial I R →ₐ[R] S) (h : Function.Surjective f) :
     algebraMap (ofAlgHom f h).Ring S = f.toRingHom := by
-  ext x
+  apply MvPolynomial.ringHom_ext
+  intro x
   show (aeval (f ∘ X)) (C x) = f (C x)
   simp
+  intro x
   show aeval (f ∘ X) (X x) = f (X x)
   simp
 
@@ -283,7 +296,7 @@ def Hom.equivAlgHom :
   toFun f := ⟨f.toAlgHom, f.algebraMap_toAlgHom⟩
   invFun f := ⟨fun i ↦ f.1 (.X i), fun i ↦ by simp [f.2]⟩
   left_inv f := by ext; simp
-  right_inv f := by ext; simp
+  right_inv f := by ext; simp;
 
 variable (P P')
 
@@ -307,7 +320,7 @@ noncomputable def Hom.comp (f : Hom P' P'') (g : Hom P P') : Hom P P'' where
     simp only
     rw [IsScalarTower.algebraMap_apply S S' S'', ← g.aeval_val]
     induction g.val x using MvPolynomial.induction_on with
-    | h_C r => simp [← IsScalarTower.algebraMap_apply]
+    | h_C r => simp [← IsScalarTower.algebraMap_apply];
     | h_add x y hx hy => simp only [map_add, hx, hy]
     | h_X p i hp => simp only [_root_.map_mul, hp, aeval_X, aeval_val]
 
